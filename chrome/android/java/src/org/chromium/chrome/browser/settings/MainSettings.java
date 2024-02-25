@@ -15,16 +15,18 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -32,25 +34,32 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
+import org.chromium.chrome.browser.sync.settings.SignInPreference;
+import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -59,12 +68,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The main settings screen, shown when the user first opens Settings.
- */
-public class MainSettings extends PreferenceFragmentCompat
-        implements TemplateUrlService.LoadListener, SyncService.SyncStateChangedListener,
-                   SigninManager.SignInStateObserver, ProfileDependentSetting {
+/** The main settings screen, shown when the user first opens Settings. */
+public class MainSettings extends ChromeBaseSettingsFragment
+        implements TemplateUrlService.LoadListener,
+                SyncService.SyncStateChangedListener,
+                SigninManager.SignInStateObserver {
     public static final String PREF_SYNC_PROMO = "sync_promo";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -74,6 +82,7 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_HOMEPAGE = "homepage";
+    public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_PRIVACY = "privacy";
@@ -84,17 +93,17 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_AUTOFILL_OPTIONS = "autofill_options";
     public static final String PREF_AUTOFILL_ADDRESSES = "autofill_addresses";
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
+    public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
 
-    private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
+
+    private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
-    private Profile mProfile;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public MainSettings() {
         setHasOptionsMenu(true);
-        mManagedPreferenceDelegate = createManagedPreferenceDelegate();
     }
 
     @Override
@@ -129,11 +138,11 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStart() {
         super.onStart();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.addSignInStateObserver(this);
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -142,11 +151,11 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStop() {
         super.onStop();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.removeSignInStateObserver(this);
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -158,17 +167,42 @@ public class MainSettings extends PreferenceFragmentCompat
         updatePreferences();
     }
 
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
-    }
-
     private void createPreferences() {
+        mManagedPreferenceDelegate = createManagedPreferenceDelegate();
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
+
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext());
+        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
+
+        SyncPromoPreference syncPromoPreference = findPreference(PREF_SYNC_PROMO);
+        syncPromoPreference.initialize(
+                profileDataCache,
+                accountManagerFacade,
+                signinManager,
+                identityManager,
+                new SyncPromoController(
+                        getProfile(),
+                        SigninAccessPoint.SETTINGS,
+                        SyncConsentActivityLauncherImpl.get()));
+
+        SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
+        signInPreference.initialize(
+                profileDataCache,
+                accountManagerFacade,
+                UserPrefs.get(getProfile()),
+                SyncServiceFactory.getForProfile(getProfile()),
+                signinManager,
+                identityManager);
 
         cachePreferences();
 
         updateAutofillPreferences();
+        updatePlusAddressesPreference();
 
         // TODO(crbug.com/1373451): Remove the passwords managed subtitle for local and UPM
         // unenrolled users who can see it directly in the context of the setting.
@@ -180,16 +214,18 @@ public class MainSettings extends PreferenceFragmentCompat
             // Settings notifications page.
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE,
+            intent.putExtra(
+                    Settings.EXTRA_APP_PACKAGE,
                     ContextUtils.getApplicationContext().getPackageName());
             PackageManager pm = getActivity().getPackageManager();
             if (intent.resolveActivity(pm) != null) {
                 Preference notifications = findPreference(PREF_NOTIFICATIONS);
-                notifications.setOnPreferenceClickListener(preference -> {
-                    startActivity(intent);
-                    // We handle the click so the default action isn't triggered.
-                    return true;
-                });
+                notifications.setOnPreferenceClickListener(
+                        preference -> {
+                            startActivity(intent);
+                            // We handle the click so the default action isn't triggered.
+                            return true;
+                        });
             } else {
                 removePreferenceIfPresent(PREF_NOTIFICATIONS);
             }
@@ -199,17 +235,26 @@ public class MainSettings extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
         }
 
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
         if (!templateUrlService.isLoaded()) {
             templateUrlService.registerLoadListener(this);
             templateUrlService.load();
         }
 
-        new AdaptiveToolbarStatePredictor(null).recomputeUiState(uiState -> {
-            // We don't show the toolbar shortcut settings page if disabled from finch.
-            if (uiState.canShowUi) return;
-            getPreferenceScreen().removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
-        });
+        new AdaptiveToolbarStatePredictor(null)
+                .recomputeUiState(
+                        uiState -> {
+                            // We don't show the toolbar shortcut settings page if disabled from
+                            // finch.
+                            if (uiState.canShowUi) return;
+                            getPreferenceScreen()
+                                    .removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
+                        });
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
+        }
     }
 
     /**
@@ -231,8 +276,9 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
-        if (IdentityServicesProvider.get().getSigninManager(mProfile).isSigninSupported(
-                    /*requireUpdatedPlayServices=*/false)) {
+        if (IdentityServicesProvider.get()
+                .getSigninManager(getProfile())
+                .isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);
@@ -241,14 +287,22 @@ public class MainSettings extends PreferenceFragmentCompat
         updateManageSyncPreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
+        updatePlusAddressesPreference();
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
 
+        if (HomeModulesConfigManager.getInstance().hasModuleShownInSettings()) {
+            addPreferenceIfAbsent(PREF_HOME_MODULES_CONFIG);
+        } else {
+            removePreferenceIfPresent(PREF_HOME_MODULES_CONFIG);
+        }
+
         if (NightModeUtils.isNightModeSupported()) {
             addPreferenceIfAbsent(PREF_UI_THEME)
                     .getExtras()
-                    .putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                    .putInt(
+                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                             ThemeSettingsEntry.SETTINGS);
         } else {
             removePreferenceIfPresent(PREF_UI_THEME);
@@ -273,36 +327,47 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updateManageSyncPreference() {
-        String primaryAccountName = CoreAccountInfo.getEmailFrom(
-                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
-                        ConsentLevel.SIGNIN));
+        String primaryAccountName =
+                CoreAccountInfo.getEmailFrom(
+                        IdentityServicesProvider.get()
+                                .getIdentityManager(getProfile())
+                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         boolean showManageSync = primaryAccountName != null;
         mManageSync.setVisible(showManageSync);
         if (!showManageSync) return;
 
         boolean isSyncConsentAvailable =
-                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
-                        ConsentLevel.SYNC)
-                != null;
-        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
-        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
-        mManageSync.setOnPreferenceClickListener(pref -> {
-            Context context = getContext();
-            if (SyncServiceFactory.getForProfile(mProfile).isSyncDisabledByEnterprisePolicy()) {
-                SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
-            } else if (isSyncConsentAvailable) {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
-            } else {
-                SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                        context, SigninAccessPoint.SETTINGS_SYNC_OFF_ROW, primaryAccountName);
-            }
-            return true;
-        });
+                IdentityServicesProvider.get()
+                                .getIdentityManager(getProfile())
+                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        != null;
+
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+
+        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), syncService));
+        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), syncService));
+        mManageSync.setOnPreferenceClickListener(
+                pref -> {
+                    Context context = getContext();
+                    if (syncService.isSyncDisabledByEnterprisePolicy()) {
+                        SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
+                    } else if (isSyncConsentAvailable) {
+                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                        settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
+                    } else {
+                        SyncConsentActivityLauncherImpl.get()
+                                .launchActivityForPromoDefaultFlow(
+                                        context,
+                                        SigninAccessPoint.SETTINGS_SYNC_OFF_ROW,
+                                        primaryAccountName);
+                    }
+                    return true;
+                });
     }
 
     private void updateSearchEnginePreference() {
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
         if (!templateUrlService.isLoaded()) {
             ChromeBasePreference searchEnginePref =
                     (ChromeBasePreference) findPreference(PREF_SEARCH_ENGINE);
@@ -326,28 +391,63 @@ public class MainSettings extends PreferenceFragmentCompat
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
             preference.setFragment(null);
-            preference.setOnPreferenceClickListener(unused -> {
-                new SettingsLauncherImpl().launchSettingsActivity(getContext(),
-                        AutofillOptionsFragment.class,
-                        AutofillOptionsFragment.createRequiredArgs(
-                                AutofillOptionsReferrer.SETTINGS));
-                return true; // Means event is consumed.
-            });
+            preference.setOnPreferenceClickListener(
+                    unused -> {
+                        new SettingsLauncherImpl()
+                                .launchSettingsActivity(
+                                        getContext(),
+                                        AutofillOptionsFragment.class,
+                                        AutofillOptionsFragment.createRequiredArgs(
+                                                AutofillOptionsReferrer.SETTINGS));
+                        return true; // Means event is consumed.
+                    });
         } else {
             removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
-                .setOnPreferenceClickListener(preference
-                        -> SettingsLauncherHelper.showAutofillCreditCardSettings(getActivity()));
+                .setOnPreferenceClickListener(
+                        preference ->
+                                SettingsLauncherHelper.showAutofillCreditCardSettings(
+                                        getActivity()));
         findPreference(PREF_AUTOFILL_ADDRESSES)
-                .setOnPreferenceClickListener(preference
-                        -> SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
-        findPreference(PREF_PASSWORDS).setOnPreferenceClickListener(preference -> {
-            PasswordManagerLauncher.showPasswordSettings(getActivity(),
-                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
-                    /*managePasskeys=*/false);
-            return true;
-        });
+                .setOnPreferenceClickListener(
+                        preference ->
+                                SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
+        PasswordsPreference passwordsPreference = findPreference(PREF_PASSWORDS);
+        passwordsPreference.setProfile(getProfile());
+        passwordsPreference.setOnPreferenceClickListener(
+                preference -> {
+                    PasswordManagerLauncher.showPasswordSettings(
+                            getActivity(),
+                            getProfile(),
+                            ManagePasswordsReferrer.CHROME_SETTINGS,
+                            mModalDialogManagerSupplier,
+                            /* managePasskeys= */ false);
+                    return true;
+                });
+    }
+
+    private void updatePlusAddressesPreference() {
+        // TODO(crbug.com/1467623): Replace with a static string once name is finalized.
+        String title =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label");
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
+                && !title.isEmpty()) {
+            addPreferenceIfAbsent(PREF_PLUS_ADDRESSES);
+            Preference preference = findPreference(PREF_PLUS_ADDRESSES);
+            preference.setTitle(title);
+            preference.setOnPreferenceClickListener(
+                    unused -> {
+                        String url =
+                                ChromeFeatureList.getFieldTrialParamByFeature(
+                                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "manage-url");
+                        CustomTabActivity.showInfoPage(getContext(), url);
+                        return true;
+                    });
+        } else {
+            removePreferenceIfPresent(PREF_PLUS_ADDRESSES);
+        }
     }
 
     private void setOnOffSummary(Preference pref, boolean isOn) {
@@ -370,7 +470,7 @@ public class MainSettings extends PreferenceFragmentCompat
     // TemplateUrlService.LoadListener implementation.
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
+        TemplateUrlServiceFactory.getForProfile(getProfile()).unregisterLoadListener(this);
         updateSearchEnginePreference();
     }
 
@@ -385,16 +485,16 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                    return TemplateUrlServiceFactory.getForProfile(getProfile())
                             .isDefaultSearchManaged();
                 }
                 if (PREF_PASSWORDS.equals(preference.getKey())) {
-                    return UserPrefs.get(mProfile).isManagedPreference(
-                            Pref.CREDENTIALS_ENABLE_SERVICE);
+                    return UserPrefs.get(getProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
                 }
                 return false;
             }
@@ -402,7 +502,7 @@ public class MainSettings extends PreferenceFragmentCompat
             @Override
             public boolean isPreferenceClickDisabled(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                    return TemplateUrlServiceFactory.getForProfile(getProfile())
                             .isDefaultSearchManaged();
                 }
                 if (PREF_PASSWORDS.equals(preference.getKey())) {

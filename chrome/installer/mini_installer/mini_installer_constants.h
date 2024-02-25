@@ -14,6 +14,7 @@ extern const wchar_t kSetupPrefix[];
 
 // Unprefixed command line switch names for setup.exe.
 extern const wchar_t kCmdInstallArchive[];
+extern const wchar_t kCmdUncompressedArchive[];
 extern const wchar_t kCmdUpdateSetupExe[];
 extern const wchar_t kCmdNewSetupExe[];
 extern const wchar_t kCmdPreviousVersion[];
@@ -23,6 +24,9 @@ extern const wchar_t kFullInstallerSuffix[];
 
 // The resource types that would be unpacked from the mini installer.
 extern const wchar_t kBinResourceType[];
+#if defined(COMPONENT_BUILD)
+extern const wchar_t kDepResourceType[];
+#endif
 extern const wchar_t kLZCResourceType[];
 extern const wchar_t kLZMAResourceType[];
 

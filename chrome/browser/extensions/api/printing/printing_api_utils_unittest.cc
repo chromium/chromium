@@ -180,7 +180,7 @@ ConstructPrinterCapabilitiesWithCustomSize() {
 TEST(PrintingApiUtilsTest, GetDefaultPrinterRules) {
   std::string default_printer_rules_str =
       R"({"kind": "local", "idPattern": "id.*", "namePattern": "name.*"})";
-  absl::optional<DefaultPrinterRules> default_printer_rules =
+  std::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(default_printer_rules_str);
   ASSERT_TRUE(default_printer_rules.has_value());
   EXPECT_EQ("local", default_printer_rules->kind);
@@ -190,7 +190,7 @@ TEST(PrintingApiUtilsTest, GetDefaultPrinterRules) {
 
 TEST(PrintingApiUtilsTest, GetDefaultPrinterRules_EmptyPref) {
   std::string default_printer_rules_str;
-  absl::optional<DefaultPrinterRules> default_printer_rules =
+  std::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(default_printer_rules_str);
   EXPECT_FALSE(default_printer_rules.has_value());
 }
@@ -199,7 +199,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
   crosapi::mojom::LocalDestinationInfo printer(kId, kName, kDescription, true,
                                                kUri);
 
-  absl::optional<DefaultPrinterRules> default_printer_rules =
+  std::optional<DefaultPrinterRules> default_printer_rules =
       DefaultPrinterRules();
   default_printer_rules->kind = "local";
   default_printer_rules->name_pattern = "n.*e";
@@ -212,7 +212,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
   EXPECT_EQ(kName, idl_printer.name);
   EXPECT_EQ(kDescription, idl_printer.description);
   EXPECT_EQ(kUri, idl_printer.uri);
-  EXPECT_EQ(idl::PRINTER_SOURCE_POLICY, idl_printer.source);
+  EXPECT_EQ(idl::PrinterSource::kPolicy, idl_printer.source);
   EXPECT_EQ(true, idl_printer.is_default);
   ASSERT_TRUE(idl_printer.recently_used_rank);
   EXPECT_EQ(kRank, *idl_printer.recently_used_rank);

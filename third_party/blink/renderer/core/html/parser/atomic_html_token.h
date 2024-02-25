@@ -27,11 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_string_cache.h"
@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -56,7 +58,7 @@ class CORE_EXPORT HTMLTokenName {
  public:
   explicit HTMLTokenName(html_names::HTMLTag tag) : tag_(tag) {
     if (tag != html_names::HTMLTag::kUnknown)
-      local_name_ = html_names::TagToQualifedName(tag).LocalName();
+      local_name_ = html_names::TagToQualifiedName(tag).LocalName();
   }
 
   // Returns an HTMLTokenName for the specified string. This function looks up
@@ -192,6 +194,23 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
+  DOMPartTokenType DOMPartType() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    DCHECK_EQ(type_, HTMLToken::kDOMPart);
+    return dom_part_data_->type_;
+  }
+
+  WTF::Vector<String> DOMPartMetadata() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    DCHECK_EQ(type_, HTMLToken::kDOMPart);
+    return dom_part_data_->metadata_;
+  }
+
+  DOMPartsNeeded GetDOMPartsNeeded() {
+    DCHECK_EQ(type_, HTMLToken::kStartTag);
+    return dom_parts_needed_;
+  }
+
   explicit AtomicHTMLToken(HTMLToken& token)
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
@@ -201,9 +220,15 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::DOCTYPE:
         doctype_data_ = token.ReleaseDoctypeData();
         break;
+      case HTMLToken::kDOMPart:
+        DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+        dom_part_data_ = token.ReleaseDOMPartData();
+        break;
       case HTMLToken::kEndOfFile:
         break;
       case HTMLToken::kStartTag:
+        dom_parts_needed_ = token.GetDOMPartsNeeded();
+        [[fallthrough]];
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
         const HTMLToken::AttributeList& attributes = token.Attributes();
@@ -301,6 +326,10 @@ class CORE_EXPORT AtomicHTMLToken {
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
+
+  // For DOM Parts
+  std::unique_ptr<DOMPartData> dom_part_data_;
+  DOMPartsNeeded dom_parts_needed_;
 
   // For StartTag and EndTag
   bool self_closing_ = false;

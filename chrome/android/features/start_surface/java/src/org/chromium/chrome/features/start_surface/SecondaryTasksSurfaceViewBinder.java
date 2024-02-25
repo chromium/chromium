@@ -16,8 +16,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** The binder controls the display of the secondary {@link TasksView} in its parent. */
 class SecondaryTasksSurfaceViewBinder {
-    public static void bind(PropertyModel model,
-            StartSurfaceWithParentViewBinder.ViewHolder viewHolder, PropertyKey propertyKey) {
+    public static void bind(
+            PropertyModel model,
+            StartSurfaceWithParentViewBinder.ViewHolder viewHolder,
+            PropertyKey propertyKey) {
         if (IS_SECONDARY_SURFACE_VISIBLE == propertyKey) {
             updateVisibility(viewHolder, model);
         } else if (TOP_MARGIN == propertyKey) {

@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/style/option_button_base.h"
+#include "base/memory/raw_ref.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace arc::input_overlay {
 
@@ -15,6 +17,8 @@ namespace arc::input_overlay {
 // Functions within a group of action type buttons. Please refer to
 // `ActionTypeButtonGroup` for more details.
 class ActionTypeButton : public ash::OptionButtonBase {
+  METADATA_HEADER(ActionTypeButton, ash::OptionButtonBase)
+
  public:
   ActionTypeButton(PressedCallback callback,
                    const std::u16string& label,
@@ -23,8 +27,8 @@ class ActionTypeButton : public ash::OptionButtonBase {
   ActionTypeButton& operator=(const ActionTypeButton&) = delete;
   ~ActionTypeButton() override;
 
-  // Used by the button group to change text color.
-  void RefreshTextColor();
+  // Used by the button group to change colors.
+  void RefreshColors();
 
  private:
   // ash::OptionButtonBase:
@@ -32,14 +36,16 @@ class ActionTypeButton : public ash::OptionButtonBase {
   bool IsIconOnTheLeftSide() override;
 
   // views::LabelButton:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  // Assigns a11y name/label and a11y role as a radio button.
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 }  // namespace arc::input_overlay

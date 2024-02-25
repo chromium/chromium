@@ -68,14 +68,6 @@ class ImeService : public mojom::ImeService,
                                                const char* param_name) override;
 
  private:
-  // ImeService only allows at most one Mojo connection, to either the "decoder"
-  // engine or the "system" engine.
-  enum class Mode {
-    kNotConnected,
-    kConnectedToDecoderEngine,
-    kConnectedToSystemEngine,
-  };
-
   // mojom::ImeService overrides:
   void SetPlatformAccessProvider(
       mojo::PendingRemote<mojom::PlatformAccessProvider> provider) override;
@@ -116,7 +108,6 @@ class ImeService : public mojom::ImeService,
   // To be called before attempting to initialise a new backend connection, to
   // ensure there is one and only one such connection at any point in time.
   void ResetAllBackendConnections();
-  void OnDisconnect();
 
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -124,19 +115,14 @@ class ImeService : public mojom::ImeService,
   // For the duration of this ImeService's lifetime, there should be one and
   // only one of these backend connections (represented as "engine" instances)
   // at any point in time.
-  // TODO(b/214153032): Rename to better reflect what these represent:
-  //     decoder_engine_     --> proto_mode_shared_lib_engine_
-  //     system_engine_      --> mojo_mode_shared_lib_engine_
-  std::unique_ptr<DecoderEngine> decoder_engine_;
-  std::unique_ptr<SystemEngine> system_engine_;
-  Mode mode_ = Mode::kNotConnected;
+  std::unique_ptr<DecoderEngine> proto_mode_shared_lib_engine_;
+  std::unique_ptr<SystemEngine> mojo_mode_shared_lib_engine_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
-  raw_ptr<ImeSharedLibraryWrapper, ExperimentalAsh> ime_shared_library_ =
-      nullptr;
+  raw_ptr<ImeSharedLibraryWrapper> ime_shared_library_ = nullptr;
 
   std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;
 };

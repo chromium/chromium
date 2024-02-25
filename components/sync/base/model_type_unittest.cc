@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <set>
 #include <string>
 
 #include "base/strings/string_util.h"
-#include "base/test/values_test_util.h"
-#include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,25 +14,6 @@ namespace syncer {
 namespace {
 
 class ModelTypeTest : public testing::Test {};
-
-TEST_F(ModelTypeTest, ModelTypeToValue) {
-  for (int i = 0; i < GetNumModelTypes(); ++i) {
-    ModelType model_type = ModelTypeFromInt(i);
-    base::ExpectStringValue(ModelTypeToDebugString(model_type),
-                            ModelTypeToValue(model_type));
-  }
-}
-
-TEST_F(ModelTypeTest, ModelTypeSetToValue) {
-  const ModelTypeSet model_types = {BOOKMARKS, APPS};
-
-  base::Value::List value_list(ModelTypeSetToValue(model_types));
-  ASSERT_EQ(2u, value_list.size());
-  ASSERT_TRUE(value_list[0].is_string());
-  EXPECT_EQ("Bookmarks", value_list[0].GetString());
-  ASSERT_TRUE(value_list[1].is_string());
-  EXPECT_EQ("Apps", value_list[1].GetString());
-}
 
 TEST_F(ModelTypeTest, IsRealDataType) {
   EXPECT_FALSE(IsRealDataType(UNSPECIFIED));
@@ -93,7 +71,7 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   // identifiers are stable.
   EXPECT_EQ(3, ModelTypeToStableIdentifier(BOOKMARKS));
   EXPECT_EQ(7, ModelTypeToStableIdentifier(AUTOFILL));
-  EXPECT_EQ(9, ModelTypeToStableIdentifier(TYPED_URLS));
+  EXPECT_EQ(52, ModelTypeToStableIdentifier(HISTORY));
 }
 
 TEST_F(ModelTypeTest, DefaultFieldValues) {

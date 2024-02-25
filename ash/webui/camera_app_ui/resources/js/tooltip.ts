@@ -4,45 +4,12 @@
 
 import {assert} from './assert.js';
 import * as dom from './dom.js';
+import {TextTooltip} from './lit/components/text-tooltip.js';
 
 /**
  * Wrapper element that shows tooltip.
  */
-let tooltipElement: HTMLElement|null = null;
-
-/**
- * The element whose tooltip should be shown.
- */
-let activeElement: HTMLElement|null = null;
-
-/**
- * Name of event triggered for positioning tooltip.
- */
-export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
-
-/**
- * Positions tooltip relative to UI.
- *
- * @param rect UI's reference region.
- */
-export function position(rect: DOMRectReadOnly): void {
-  assert(tooltipElement !== null);
-
-  const [edgeMargin, elementMargin] = [5, 8];
-  let tooltipTop = rect.top - tooltipElement.offsetHeight - elementMargin;
-  if (tooltipTop < edgeMargin) {
-    tooltipTop = rect.bottom + elementMargin;
-  }
-  tooltipElement.style.top = tooltipTop + 'px';
-
-  // Center over the active element but avoid touching edges.
-  const activeElementCenter = rect.left + rect.width / 2;
-  const left = Math.min(
-      Math.max(
-          activeElementCenter - tooltipElement.clientWidth / 2, edgeMargin),
-      document.body.offsetWidth - tooltipElement.offsetWidth - edgeMargin);
-  tooltipElement.style.left = Math.round(left) + 'px';
-}
+let tooltipElement: TextTooltip|null = null;
 
 /**
  * Hides the shown tooltip.
@@ -50,33 +17,8 @@ export function position(rect: DOMRectReadOnly): void {
 export function hide(): void {
   assert(tooltipElement !== null);
 
-  activeElement = null;
-  tooltipElement.textContent = '';
-  tooltipElement.classList.remove('visible');
-}
-
-/**
- * Shows a tooltip over the active element.
- *
- * @param element Active element whose tooltip to be shown.
- */
-function show(element: HTMLElement) {
-  assert(tooltipElement !== null);
-
-  hide();
-  let message = element.getAttribute('aria-label');
-  if (element instanceof HTMLInputElement) {
-    if (element.hasAttribute('tooltip-true') && element.checked) {
-      message = element.getAttribute('tooltip-true');
-    }
-    if (element.hasAttribute('tooltip-false') && !element.checked) {
-      message = element.getAttribute('tooltip-false');
-    }
-  }
-  tooltipElement.textContent = message;
-  activeElement = element;
-  triggerPosition(element);
-  tooltipElement.classList.add('visible');
+  tooltipElement.anchorTarget = null;
+  tooltipElement.target = null;
 }
 
 /**
@@ -87,12 +29,20 @@ function show(element: HTMLElement) {
 export function setupElements(elements: HTMLElement[]): void {
   for (const el of elements) {
     function hideHandler() {
-      if (activeElement === el) {
+      assert(tooltipElement !== null);
+      if (tooltipElement.target === el) {
         hide();
       }
     }
     function showHandler() {
-      show(el);
+      assert(tooltipElement !== null);
+      let anchor = el;
+      const selector = el.dataset['tooltipAnchor'];
+      if (selector !== undefined) {
+        anchor = dom.getFrom(el, selector, HTMLElement);
+      }
+      tooltipElement.target = el;
+      tooltipElement.anchorTarget = anchor;
     }
     el.addEventListener('mouseleave', hideHandler);
     el.addEventListener('click', hideHandler);
@@ -106,20 +56,5 @@ export function setupElements(elements: HTMLElement[]): void {
  *  Initializes the tooltips. This should be called before other methods.
  */
 export function init(): void {
-  tooltipElement = dom.get('#tooltip', HTMLElement);
-
-  window.addEventListener('resize', () => {
-    if (activeElement !== null) {
-      triggerPosition(activeElement);
-    }
-  });
-}
-
-function triggerPosition(element: HTMLElement) {
-  const event =
-      new CustomEvent(TOOLTIP_POSITION_EVENT_NAME, {cancelable: true});
-  const doDefault = element.dispatchEvent(event);
-  if (doDefault) {
-    position(element.getBoundingClientRect());
-  }
+  tooltipElement = dom.get('text-tooltip', TextTooltip);
 }

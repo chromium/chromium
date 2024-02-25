@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
@@ -17,7 +19,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -46,14 +47,15 @@ constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 constexpr char kQuickAnswersSettingsUrl[] =
     "chrome://os-settings/osSearch/search";
 
-// Open the specified URL in a new tab in the primary browser.
-void OpenUrl(const GURL& url) {
+// Open the specified URL in a new tab with the specified profile
+void OpenUrl(Profile* profile, const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+  // We always want to open a link in Lacros browser if LacrosOnly is true.
+  // `GetPrimary` returns a proper delegate depending on the flag.
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
   NavigateParams navigate_params(
       profile, url,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
@@ -72,7 +74,8 @@ QuickAnswersUiController::QuickAnswersUiController(
 
 QuickAnswersUiController::~QuickAnswersUiController() = default;
 
-void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
+void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
+                                                      const gfx::Rect& bounds,
                                                       const std::string& title,
                                                       const std::string& query,
                                                       bool is_internal) {
@@ -85,7 +88,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
   }
 
   DCHECK(!IsShowingUserConsentView());
-  SetActiveQuery(query);
+  SetActiveQuery(profile, query);
 
   // Owned by view hierarchy.
   quick_answers_widget_ = quick_answers::QuickAnswersView::CreateWidget(
@@ -96,23 +99,19 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
 void QuickAnswersUiController::CreateRichAnswersView() {
   CHECK(controller_->quick_answer());
 
-  // TODO(b/279061152): Build result type specific rich answers view with
-  // reading `controller_->structured_result()`. Note that each result type
-  // will be copyable, i.e. we can copy a struct to a view without worrying
-  // about object-life-time management.
   views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
       quick_answers_view()->GetAnchorViewBounds(), weak_factory_.GetWeakPtr(),
-      *controller_->quick_answer());
+      *controller_->quick_answer(), *controller_->structured_result());
 
   if (!widget) {
     // If the rich card widget cannot be created, fall-back to open the query
     // in Google Search.
-    OpenUrl(quick_answers::GetDetailsUrlForQuery(query_));
+    OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
     controller_->OnQuickAnswerClick();
   }
 
   rich_answers_widget_ = std::move(widget);
-  rich_answers_widget_->ShowInactive();
+  rich_answers_widget_->Show();
   controller_->SetVisibility(QuickAnswersVisibility::kRichAnswersVisible);
   return;
 }
@@ -128,12 +127,12 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
     return;
   }
 
-  OpenUrl(quick_answers::GetDetailsUrlForQuery(query_));
+  OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
   controller_->OnQuickAnswerClick();
 }
 
 void QuickAnswersUiController::OnGoogleSearchLabelPressed() {
-  OpenUrl(quick_answers::GetDetailsUrlForQuery(query_));
+  OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
 
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kUnspecified);
@@ -170,7 +169,9 @@ void QuickAnswersUiController::RenderQuickAnswersViewWithResult(
   quick_answers_view()->UpdateView(anchor_bounds, quick_answer);
 }
 
-void QuickAnswersUiController::SetActiveQuery(const std::string& query) {
+void QuickAnswersUiController::SetActiveQuery(Profile* profile,
+                                              const std::string& query) {
+  profile_ = profile;
   query_ = query;
 }
 
@@ -214,7 +215,7 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  OpenUrl(GURL(kQuickAnswersSettingsUrl));
+  OpenUrl(profile_, GURL(kQuickAnswersSettingsUrl));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // OS settings app is implemented in Ash, but OpenUrl here does not qualify
   // for redirection in Lacros due to security limitations. Thus we need to

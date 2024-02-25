@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] state selector has influence when state is applied
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'green' must start with '--'.
+[FAIL] state selector only applies on given ident
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'foo' must start with '--'.
+Harness: the test ran to completion.
+

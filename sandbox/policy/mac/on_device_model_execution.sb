@@ -1,0 +1,70 @@
+; Copyright 2023 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Allow cf prefs to work.
+(allow user-preference-read)
+
+(allow-cvms-blobs)
+
+(allow ipc-posix-shm)
+
+; Needed for metal decoding - https://crbug.com/957217
+(if (>= os-version 1014)
+  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
+)
+
+(allow mach-lookup
+  (global-name "com.apple.system.opendirectoryd.membership") ; https://crbug.com/1126350#c5
+)
+
+(allow iokit-open
+  (iokit-connection "IOAccelerator")
+  (iokit-user-client-class "AGPMClient")
+  (iokit-user-client-class "AppleGraphicsControlClient")
+  (iokit-user-client-class "AppleGraphicsPolicyClient")
+  (iokit-user-client-class "AppleIntelMEUserClient")
+  (iokit-user-client-class "AppleMGPUPowerControlClient")
+  (iokit-user-client-class "AppleSNBFBUserClient")
+  (iokit-user-client-class "IOAccelerationUserClient")
+  (iokit-user-client-class "IOSurfaceRootUserClient")
+)
+
+(allow ipc-posix-shm-read-data
+  (ipc-posix-name "apple.shm.notification_center"))
+
+(allow sysctl-read
+  (sysctl-name "hw.busfrequency_max")
+  (sysctl-name "hw.cachelinesize")
+  (sysctl-name "hw.logicalcpu_max")
+  (sysctl-name "hw.memsize")
+  (sysctl-name "hw.model")
+  (sysctl-name "kern.osvariant_status")
+)
+
+(allow file-read-data
+  (path "/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (path "/System/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (regex (user-homedir-path #"/Library/Preferences/(.*/)?com\.apple\.driver\..*\.plist"))
+  (regex (user-homedir-path #"/Library/Preferences/ByHost/com.apple.AppleGVA.*"))
+)
+
+(allow file-read*
+  (path (user-homedir-path "/Library/Preferences")) ; List contents of preference directories https://crbug.com/1126350#c14.
+  (path (user-homedir-path "/Library/Preferences/ByHost"))
+  (subpath "/Library/GPUBundles")
+  (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
+)
+
+; crbug.com/980134
+(allow file-read* file-write*
+  (subpath (param darwin-user-cache-dir))
+  (subpath (param darwin-user-dir))
+  (subpath (param darwin-user-temp-dir))
+)
+
+(if (not (maybe-disable-metal-shader-cache))
+  (maybe-allow-metal-shader-cache-access))
+

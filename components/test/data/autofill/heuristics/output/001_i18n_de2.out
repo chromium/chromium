@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | ct | Stadt: |  | ln_1
 ADDRESS_HOME_ZIP | zc | Postleitzahl: |  | ln_1
 ADDRESS_HOME_COUNTRY | st | Land: |  | ln_1
 EMAIL_ADDRESS | em | E-Mail-Adresse: |  | ln_1
-PHONE_HOME_WHOLE_NUMBER | ph | Telefonnummer: |  | ln_1
+PHONE_HOME_CITY_AND_NUMBER | ph | Telefonnummer: |  | ln_1
 CREDIT_CARD_NAME_FULL | c1 | Karteninhaber: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | Kartennummer: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | gültig bis monat: |  | c1_2

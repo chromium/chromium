@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
@@ -21,12 +20,11 @@ namespace ash {
 class CastZeroStateViewPixelTest : public AshTestBase {
  public:
   CastZeroStateViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -46,12 +44,14 @@ TEST_F(CastZeroStateViewPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowCastDetailedView();
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "cast_zero_state_view",
-      /*revision_number=*/7, detailed_view));
+      /*revision_number=*/12, detailed_view));
 }
 
 }  // namespace ash

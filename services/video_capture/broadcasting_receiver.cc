@@ -263,8 +263,7 @@ void BroadcastingReceiver::OnNewBuffer(
 }
 
 void BroadcastingReceiver::OnFrameReadyInBuffer(
-    media::ReadyFrameInBuffer frame,
-    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
+    media::ReadyFrameInBuffer frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool has_consumers = false;
   for (auto& client : clients_) {
@@ -286,17 +285,6 @@ void BroadcastingReceiver::OnFrameReadyInBuffer(
       std::make_pair(buffer_context->buffer_context_id(),
                      std::move(frame.buffer_read_permission)));
   DCHECK(result.second);
-  std::vector<BufferContext*> scaled_buffer_contexts;
-  scaled_buffer_contexts.reserve(scaled_frames.size());
-  for (auto& scaled_frame : scaled_frames) {
-    it = FindUnretiredBufferContextFromBufferId(scaled_frame.buffer_id);
-    CHECK(it != buffer_contexts_.end());
-    result = scoped_access_permissions_by_buffer_context_id_.insert(
-        std::make_pair(it->buffer_context_id(),
-                       std::move(scaled_frame.buffer_read_permission)));
-    DCHECK(result.second);
-    scaled_buffer_contexts.push_back(&(*it));
-  }
   // Broadcast to all clients.
   for (auto& client : clients_) {
     if (client.second.is_suspended())
@@ -321,17 +309,7 @@ void BroadcastingReceiver::OnFrameReadyInBuffer(
         buffer_context->buffer_context_id(), frame.frame_feedback_id,
         frame.frame_info.Clone());
 
-    std::vector<mojom::ReadyFrameInBufferPtr> scaled_ready_buffers;
-    scaled_ready_buffers.reserve(scaled_frames.size());
-    for (size_t i = 0; i < scaled_frames.size(); ++i) {
-      scaled_buffer_contexts[i]->IncreaseConsumerCount();
-      scaled_ready_buffers.push_back(mojom::ReadyFrameInBuffer::New(
-          scaled_buffer_contexts[i]->buffer_context_id(),
-          scaled_frames[i].frame_feedback_id,
-          scaled_frames[i].frame_info.Clone()));
-    }
-    client.second.client()->OnFrameReadyInBuffer(
-        std::move(ready_buffer), std::move(scaled_ready_buffers));
+    client.second.client()->OnFrameReadyInBuffer(std::move(ready_buffer));
   }
 }
 
@@ -371,10 +349,12 @@ void BroadcastingReceiver::OnFrameDropped(
   }
 }
 
-void BroadcastingReceiver::OnNewCropVersion(uint32_t crop_version) {
+void BroadcastingReceiver::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_) {
-    client.second.client()->OnNewCropVersion(crop_version);
+    client.second.client()->OnNewSubCaptureTargetVersion(
+        sub_capture_target_version);
   }
 }
 

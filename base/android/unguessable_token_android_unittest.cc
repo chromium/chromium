@@ -18,7 +18,7 @@ TEST(UnguessableTokenAndroid, BasicCreateToken) {
       base::UnguessableToken::CreateForTesting(high, low);
   ScopedJavaLocalRef<jobject> jtoken =
       UnguessableTokenAndroid::Create(env, token);
-  absl::optional<base::UnguessableToken> result =
+  std::optional<base::UnguessableToken> result =
       UnguessableTokenAndroid::FromJavaUnguessableToken(env, jtoken);
 
   ASSERT_TRUE(result.has_value());
@@ -35,7 +35,7 @@ TEST(UnguessableTokenAndroid, ParcelAndUnparcel) {
       UnguessableTokenAndroid::Create(env, token);
   ScopedJavaLocalRef<jobject> jtoken_clone =
       UnguessableTokenAndroid::ParcelAndUnparcelForTesting(env, jtoken);
-  absl::optional<base::UnguessableToken> token_clone =
+  std::optional<base::UnguessableToken> token_clone =
       UnguessableTokenAndroid::FromJavaUnguessableToken(env, jtoken_clone);
 
   ASSERT_TRUE(token_clone.has_value());

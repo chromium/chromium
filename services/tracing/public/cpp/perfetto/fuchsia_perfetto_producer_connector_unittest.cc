@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
+
 #include <fcntl.h>
 #include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
 #include <lib/async/default.h>
@@ -11,6 +13,7 @@
 #include <zircon/types.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -20,9 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 namespace {
@@ -145,7 +146,7 @@ class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  absl::optional<FuchsiaPerfettoProducerConnector> connector_client_;
+  std::optional<FuchsiaPerfettoProducerConnector> connector_client_;
 
   // The fake service runs on a separate thread so that it can respond
   // when synchronous calls are made to it from the main thread.

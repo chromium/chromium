@@ -11,9 +11,14 @@ namespace blink {
 
 // These are defined here because of PaintLayer dependency.
 
-FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
-
+FragmentData::RareData::RareData() = default;
 FragmentData::RareData::~RareData() = default;
+
+void FragmentData::RareData::EnsureId() {
+  if (!unique_id) {
+    unique_id = NewUniqueObjectId();
+  }
+}
 
 void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
   if (layer && layer != new_layer) {
@@ -26,36 +31,7 @@ void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
 void FragmentData::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(layer);
   visitor->Trace(sticky_constraints);
-  visitor->Trace(next_fragment_);
-}
-
-void FragmentData::ClearNextFragment() {
-  if (!rare_data_)
-    return;
-  // Take next_fragment_ which clears it in this fragment.
-  FragmentData* next = rare_data_->next_fragment_.Release();
-  while (next && next->rare_data_) {
-    next = next->rare_data_->next_fragment_.Release();
-  }
-}
-
-FragmentData& FragmentData::EnsureNextFragment() {
-  if (!NextFragment())
-    EnsureRareData().next_fragment_ = MakeGarbageCollected<FragmentData>();
-  return *rare_data_->next_fragment_;
-}
-
-FragmentData& FragmentData::LastFragment() {
-  for (FragmentData* fragment = this;;) {
-    FragmentData* next = fragment->NextFragment();
-    if (!next)
-      return *fragment;
-    fragment = next;
-  }
-}
-
-const FragmentData& FragmentData::LastFragment() const {
-  return const_cast<FragmentData*>(this)->LastFragment();
+  visitor->Trace(additional_fragments);
 }
 
 FragmentData::RareData& FragmentData::EnsureRareData() {
@@ -65,6 +41,7 @@ FragmentData::RareData& FragmentData::EnsureRareData() {
 }
 
 void FragmentData::SetLayer(PaintLayer* layer) {
+  AssertIsFirst();
   if (rare_data_ || layer)
     EnsureRareData().SetLayer(layer);
 }
@@ -151,6 +128,50 @@ const EffectPaintPropertyNodeOrAlias& FragmentData::ContentsEffect() const {
       return *properties->EffectIsolationNode();
   }
   return LocalBorderBoxProperties().Effect();
+}
+
+FragmentData& FragmentDataList::AppendNewFragment() {
+  AssertIsFirst();
+  FragmentData* new_fragment = MakeGarbageCollected<FragmentData>();
+  EnsureRareData().additional_fragments.push_back(new_fragment);
+  return *new_fragment;
+}
+
+void FragmentDataList::Shrink(wtf_size_t new_size) {
+  CHECK_GE(new_size, 1u);
+  CHECK_LE(new_size, size());
+  if (rare_data_) {
+    rare_data_->additional_fragments.resize(new_size - 1);
+  }
+}
+
+FragmentData& FragmentDataList::back() {
+  AssertIsFirst();
+  if (rare_data_ && !rare_data_->additional_fragments.empty()) {
+    return *rare_data_->additional_fragments.back();
+  }
+  return *this;
+}
+
+const FragmentData& FragmentDataList::back() const {
+  return const_cast<FragmentDataList*>(this)->back();
+}
+
+FragmentData& FragmentDataList::at(wtf_size_t idx) {
+  AssertIsFirst();
+  if (idx == 0) {
+    return *this;
+  }
+  CHECK(rare_data_);
+  return *rare_data_->additional_fragments.at(idx - 1);
+}
+
+const FragmentData& FragmentDataList::at(wtf_size_t idx) const {
+  return const_cast<FragmentDataList*>(this)->at(idx);
+}
+
+wtf_size_t FragmentDataList::size() const {
+  return rare_data_ ? rare_data_->additional_fragments.size() + 1 : 1;
 }
 
 }  // namespace blink

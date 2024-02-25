@@ -31,10 +31,20 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       /*has_remaining_local_changes=*/false);
 }
 
+CoreAccountInfo GetDefaultAccountInfo() {
+  CoreAccountInfo account;
+  account.email = "foo@bar.com";
+  account.gaia = "foo-gaia-id";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  return account;
+}
+
 }  // namespace
 
 TestSyncService::TestSyncService()
-    : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
+    : user_settings_(this),
+      account_info_(GetDefaultAccountInfo()),
+      last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
 
 TestSyncService::~TestSyncService() = default;
 
@@ -66,13 +76,6 @@ void TestSyncService::SetSetupInProgress(bool in_progress) {
 void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
   has_sync_consent_ = has_sync_consent;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void TestSyncService::SetSyncFeatureDisabledViaDashboard(
-    bool disabled_via_dashboard) {
-  sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TestSyncService::SetPersistentAuthError() {
   transport_state_ = TransportState::PAUSED;
@@ -175,7 +178,7 @@ base::android::ScopedJavaLocalRef<jobject> TestSyncService::GetJavaObject() {
 
 void TestSyncService::SetSyncFeatureRequested() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  sync_feature_disabled_via_dashboard_ = false;
+  user_settings_.SetSyncFeatureDisabledViaDashboard(false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -231,12 +234,6 @@ bool TestSyncService::RequiresClientUpgrade() const {
          syncer::UPGRADE_CLIENT;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool TestSyncService::IsSyncFeatureDisabledViaDashboard() const {
-  return sync_feature_disabled_via_dashboard_;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 std::unique_ptr<SyncSetupInProgressHandle>
 TestSyncService::GetSetupInProgressHandle() {
   return nullptr;
@@ -255,7 +252,7 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
     return ModelTypeSet();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (sync_feature_disabled_via_dashboard_) {
+  if (user_settings_.IsSyncFeatureDisabledViaDashboard()) {
     return ModelTypeSet();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -344,16 +341,26 @@ void TestSyncService::GetAllNodesForDebugging(
 
 SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     ModelType type) const {
-  if (base::Contains(download_statuses_, type)) {
+  if (download_statuses_.contains(type)) {
     return download_statuses_.at(type);
   }
   return ModelTypeDownloadStatus::kUpToDate;
 }
 
+void TestSyncService::RecordReasonIfWaitingForUpdates(
+    ModelType type,
+    const std::string& histogram_name) const {}
+
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool TestSyncService::IsSyncFeatureConsideredRequested() const {
-  return HasSyncConsent();
+bool TestSyncService::SupportsExplicitPassphrasePlatformClient() {
+  return !!send_passphrase_to_platform_client_cb_;
+}
+
+void TestSyncService::SendExplicitPassphraseToPlatformClient() {
+  if (SupportsExplicitPassphrasePlatformClient()) {
+    send_passphrase_to_platform_client_cb_.Run();
+  }
 }
 
 void TestSyncService::Shutdown() {
@@ -366,8 +373,36 @@ void TestSyncService::SetTypesWithUnsyncedData(const ModelTypeSet& types) {
 }
 
 void TestSyncService::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> cb) const {
-  std::move(cb).Run(unsynced_types_);
+  std::move(cb).Run(base::Intersection(requested_types, unsynced_types_));
 }
+
+void TestSyncService::SetLocalDataDescriptions(
+    const std::map<ModelType, LocalDataDescription>& local_data_descriptions) {
+  local_data_descriptions_ = local_data_descriptions;
+}
+
+void TestSyncService::SetPassphrasePlatformClientCallback(
+    const base::RepeatingClosure& send_passphrase_to_platform_client_cb) {
+  send_passphrase_to_platform_client_cb_ =
+      send_passphrase_to_platform_client_cb;
+}
+
+void TestSyncService::GetLocalDataDescriptions(
+    ModelTypeSet types,
+    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+        callback) {
+  std::map<ModelType, LocalDataDescription> result;
+  for (ModelType type : types) {
+    if (auto it = local_data_descriptions_.find(type);
+        it != local_data_descriptions_.end()) {
+      result.insert(*it);
+    }
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void TestSyncService::TriggerLocalDataMigration(ModelTypeSet types) {}
 
 }  // namespace syncer

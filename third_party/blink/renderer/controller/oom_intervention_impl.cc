@@ -21,8 +21,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -167,8 +167,12 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
 }
 
 void OomInterventionImpl::TriggerGC() {
-  V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
-      v8::MemoryPressureLevel::kCritical);
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+        isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
+      }));
 }
 
 }  // namespace blink

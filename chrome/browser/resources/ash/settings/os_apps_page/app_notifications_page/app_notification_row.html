@@ -31,8 +31,8 @@
     padding-inline-end: var(--cr-controlled-by-spacing);
   }
 </style>
-<div id="container" class="cr-row" on-click="onNotificationRowClicked_"
-    actionable>
+<div id="container" class="cr-row"
+    actionable$="[[!app.notificationPermission.isManaged]]">
   <img id="appIcon" src="chrome://app-icon/[[app.id]]/64"
       alt="[[app.title]] app icon." aria-hidden="true">
   <div id="appTitle" aria-hidden="true">[[app.title]]</div>
@@ -41,7 +41,7 @@
   </template>
   <cr-toggle id="appToggle" disabled="[[app.notificationPermission.isManaged]]"
       checked="[[checked_]]"
-      on-click="onNotificationRowClicked_"
+      on-change="onToggleChangeByUser_"
       aria-labelledby="appTitle">
   </cr-toggle>
 </div>

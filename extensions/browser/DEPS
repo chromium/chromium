@@ -6,6 +6,7 @@ include_rules = [
   "+components/guest_view",
   "+components/keyed_service",
   "+components/pref_registry",
+  "+components/safe_browsing/core/browser/hashprefix_realtime",
   "+components/services/unzip/content",
   "+components/services/unzip/public",
   "+components/sessions",

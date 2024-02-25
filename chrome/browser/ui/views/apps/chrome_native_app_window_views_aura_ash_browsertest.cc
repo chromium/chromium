@@ -161,7 +161,7 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
         extensions::AppWindow::FULLSCREEN_TYPE_OS, /*is_shelf_hidden=*/false);
   }
 
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow, DanglingUntriaged> app_window_ = nullptr;
 };
 
 class ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest
@@ -491,9 +491,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   ash::SplitViewTestApi split_view_test_api;
   split_view_test_api.SnapWindow(app1_window->GetNativeWindow(),
-                                 ash::SplitViewTestApi::SnapPosition::LEFT);
+                                 ash::SnapPosition::kPrimary);
   ASSERT_EQ(app1_window->GetNativeWindow(),
-            split_view_test_api.GetLeftWindow());
+            split_view_test_api.GetPrimaryWindow());
 
   // Open a second app window that should be created maximized. It should be
   // snapped.
@@ -501,5 +501,5 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   extensions::AppWindow* app2_window =
       CreateAppWindowFromParams(browser()->profile(), extension, params);
   ASSERT_EQ(app2_window->GetNativeWindow(),
-            split_view_test_api.GetRightWindow());
+            split_view_test_api.GetSecondaryWindow());
 }

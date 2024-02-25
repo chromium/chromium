@@ -17,6 +17,7 @@
 #include "chromeos/ash/services/libassistant/util.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -76,7 +77,8 @@ assistant::AssistantNotification ToAssistantNotification(
 
   if (notification.expiry_timestamp_ms) {
     assistant_notification.expiry_time =
-        base::Time::FromJavaTime(notification.expiry_timestamp_ms);
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            notification.expiry_timestamp_ms);
   }
 
   // The server sometimes sends an empty |notification_id|, but our client
@@ -193,7 +195,7 @@ class ConversationController::GrpcEventsObserver
 
   int next_interaction_id_ = 1;
   std::map<std::string, AssistantInteractionMetadata> pending_interactions_;
-  const raw_ref<ConversationController, ExperimentalAsh> parent_;
+  const raw_ref<ConversationController> parent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -234,26 +236,15 @@ void ConversationController::AddAuthenticationStateObserver(
   authentication_state_observers_.Add(std::move(observer));
 }
 
-void ConversationController::OnAssistantClientCreated(
-    AssistantClient* assistant_client) {
-  if (!assistant::features::IsLibAssistantV2Enabled()) {
-    // Registers ActionModule when AssistantClient has been created but not yet
-    // started.
-    assistant_client->RegisterActionModule(action_module_.get());
-  }
-}
-
 void ConversationController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   // Only when Libassistant is running we can start sending queries.
   assistant_client_ = assistant_client;
   requests_are_allowed_ = true;
 
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    // Register the action module when all libassistant services are ready.
-    // `action_module_` outlives gRPC services.
-    assistant_client->RegisterActionModule(action_module_.get());
-  }
+  // Register the action module when all libassistant services are ready.
+  // `action_module_` outlives gRPC services.
+  assistant_client->RegisterActionModule(action_module_.get());
 
   assistant_client_->AddConversationStateEventObserver(events_observer_.get());
   assistant_client_->AddDeviceStateEventObserver(events_observer_.get());

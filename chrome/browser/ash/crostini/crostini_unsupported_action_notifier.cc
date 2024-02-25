@@ -11,7 +11,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system/toast_manager.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +20,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -30,7 +31,7 @@ namespace {
 enum class NotificationReason {
   kTabletMode = 0,
   kVirtualKeyboard = 1,
-  kUnsupportedIME = 2,
+  kUnsupportedIME = 2,  // Removed in M120.
   kMaxValue = kUnsupportedIME,
 };
 
@@ -52,27 +53,23 @@ CrostiniUnsupportedActionNotifier::CrostiniUnsupportedActionNotifier()
 CrostiniUnsupportedActionNotifier::CrostiniUnsupportedActionNotifier(
     std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
-  delegate_->AddTabletModeObserver(this);
+  delegate_->AddDisplayObserver(this);
   delegate_->AddFocusObserver(this);
-  delegate_->AddInputMethodObserver(this);
   delegate_->AddKeyboardControllerObserver(this);
 }
 
 CrostiniUnsupportedActionNotifier::~CrostiniUnsupportedActionNotifier() {
-  delegate_->RemoveTabletModeObserver(this);
+  delegate_->RemoveDisplayObserver(this);
   delegate_->RemoveFocusObserver(this);
-  delegate_->RemoveInputMethodObserver(this);
   delegate_->RemoveKeyboardControllerObserver(this);
 }
 
-// Testing on using Debian/stretch on Eve shows Crostini supports all tested xkb
-// IMEs but no non-xkb IMEs.
-bool CrostiniUnsupportedActionNotifier::IsIMESupportedByCrostini(
-    const ash::input_method::InputMethodDescriptor& method) {
-  return method.id().find("xkb:") != std::string::npos;
-}
+void CrostiniUnsupportedActionNotifier::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kInTabletMode) {
+    return;
+  }
 
-void CrostiniUnsupportedActionNotifier::OnTabletModeStarted() {
   ShowVirtualKeyboardUnsupportedNotifictionIfNeeded();
 }
 
@@ -80,14 +77,6 @@ void CrostiniUnsupportedActionNotifier::OnWindowFocused(
     aura::Window* gained_focus,
     aura::Window* lost_focus) {
   ShowVirtualKeyboardUnsupportedNotifictionIfNeeded();
-  ShowIMEUnsupportedNotificationIfNeeded();
-}
-
-void CrostiniUnsupportedActionNotifier::InputMethodChanged(
-    ash::input_method::InputMethodManager* manager,
-    Profile* profile,
-    bool show_message) {
-  ShowIMEUnsupportedNotificationIfNeeded();
 }
 
 void CrostiniUnsupportedActionNotifier::OnKeyboardVisibilityChanged(
@@ -124,45 +113,12 @@ void CrostiniUnsupportedActionNotifier::
   }
 }
 
-void CrostiniUnsupportedActionNotifier::
-    ShowIMEUnsupportedNotificationIfNeeded() {
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
-    // IME support is not yet available for all Crostini apps, but Chrome can
-    // not yet determine up front whether an app is supported or not.
-    return;
-  }
-  auto method_opt = delegate_->GetCurrentInputMethod();
-  if (!method_opt.has_value()) {
-    return;
-  }
-  auto method = *method_opt;
-
-  if (IsIMESupportedByCrostini(method) ||
-      !delegate_->IsFocusedWindowCrostini()) {
-    return;
-  }
-  EmitMetricReasonTriggered(NotificationReason::kUnsupportedIME);
-  if (!ime_unsupported_message_shown_) {
-    auto ime_name =
-        base::UTF8ToUTF16(delegate_->GetLocalizedDisplayName(method));
-    ash::ToastData data = {
-        /*id=*/"IMEUnsupportedInCrostini",
-        ash::ToastCatalogName::kCrostiniUnsupportedIME,
-        /*text=*/
-        l10n_util::GetStringFUTF16(IDS_CROSTINI_UNSUPPORTED_IME, ime_name),
-        delegate_->ToastTimeout()};
-    delegate_->ShowToast(std::move(data));
-    ime_unsupported_message_shown_ = true;
-    EmitMetricReasonShown(NotificationReason::kUnsupportedIME);
-  }
-}  // namespace crostini
-
 CrostiniUnsupportedActionNotifier::Delegate::Delegate() = default;
 
 CrostiniUnsupportedActionNotifier::Delegate::~Delegate() = default;
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsInTabletMode() {
-  return ash::TabletMode::Get()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
@@ -175,17 +131,6 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
           static_cast<int>(ash::AppType::CROSTINI_APP));
 }
 
-absl::optional<ash::input_method::InputMethodDescriptor>
-CrostiniUnsupportedActionNotifier::Delegate::GetCurrentInputMethod() {
-  auto active_ime_state =
-      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
-  if (!active_ime_state) {
-    return absl::nullopt;
-  }
-
-  return active_ime_state->GetCurrentInputMethod();
-}
-
 bool CrostiniUnsupportedActionNotifier::Delegate::IsVirtualKeyboardVisible() {
   return ash::KeyboardController::Get()->IsKeyboardVisible();
 }
@@ -193,14 +138,6 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsVirtualKeyboardVisible() {
 void CrostiniUnsupportedActionNotifier::Delegate::ShowToast(
     ash::ToastData toast_data) {
   ash::ToastManager::Get()->Show(std::move(toast_data));
-}
-
-std::string
-CrostiniUnsupportedActionNotifier::Delegate::GetLocalizedDisplayName(
-    const ash::input_method::InputMethodDescriptor& descriptor) {
-  return ash::input_method::InputMethodManager::Get()
-      ->GetInputMethodUtil()
-      ->GetLocalizedDisplayName(descriptor);
 }
 
 base::TimeDelta CrostiniUnsupportedActionNotifier::Delegate::ToastTimeout() {
@@ -227,34 +164,21 @@ void CrostiniUnsupportedActionNotifier::Delegate::RemoveFocusObserver(
   }
 }
 
-void CrostiniUnsupportedActionNotifier::Delegate::AddTabletModeObserver(
-    TabletModeObserver* observer) {
-  auto* client = ash::TabletMode::Get();
-  DCHECK(client);
-  client->AddObserver(observer);
+void CrostiniUnsupportedActionNotifier::Delegate::AddDisplayObserver(
+    display::DisplayObserver* observer) {
+  display::Screen::GetScreen()->AddObserver(observer);
 }
 
-void CrostiniUnsupportedActionNotifier::Delegate::RemoveTabletModeObserver(
-    TabletModeObserver* observer) {
-  auto* client = ash::TabletMode::Get();
-  DCHECK(client);
-  client->RemoveObserver(observer);
-}
-
-void CrostiniUnsupportedActionNotifier::Delegate::AddInputMethodObserver(
-    ash::input_method::InputMethodManager::Observer* observer) {
-  ash::input_method::InputMethodManager::Get()->AddObserver(observer);
-}
-
-void CrostiniUnsupportedActionNotifier::Delegate::RemoveInputMethodObserver(
-    ash::input_method::InputMethodManager::Observer* observer) {
-  ash::input_method::InputMethodManager::Get()->RemoveObserver(observer);
+void CrostiniUnsupportedActionNotifier::Delegate::RemoveDisplayObserver(
+    display::DisplayObserver* observer) {
+  display::Screen::GetScreen()->RemoveObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddKeyboardControllerObserver(
     ash::KeyboardControllerObserver* observer) {
   ash::KeyboardController::Get()->AddObserver(observer);
 }
+
 void CrostiniUnsupportedActionNotifier::Delegate::
     RemoveKeyboardControllerObserver(
         ash::KeyboardControllerObserver* observer) {

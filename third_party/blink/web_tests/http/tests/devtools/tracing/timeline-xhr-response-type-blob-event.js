@@ -8,7 +8,6 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for XMLHttpReqeust with responseType="blob"\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

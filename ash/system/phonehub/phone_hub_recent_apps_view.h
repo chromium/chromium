@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APPS_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_connected_view.h"
@@ -13,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -33,6 +34,8 @@ class PhoneHubManager;
 class ASH_EXPORT PhoneHubRecentAppsView
     : public views::View,
       public phonehub::RecentAppsInteractionHandler::Observer {
+  METADATA_HEADER(PhoneHubRecentAppsView, views::View)
+
  public:
   explicit PhoneHubRecentAppsView(
       phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler,
@@ -44,9 +47,6 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
   // phonehub::RecentAppsInteractionHandler::Observer:
   void OnRecentAppsUiStateUpdated() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
  protected:
   friend class RecentAppButtonsViewTest;
@@ -72,24 +72,25 @@ class ASH_EXPORT PhoneHubRecentAppsView
   class PlaceholderView;
 
   class HeaderView : public views::View {
+    METADATA_HEADER(HeaderView, views::View)
+
    public:
     explicit HeaderView(views::ImageButton::PressedCallback callback);
     ~HeaderView() override = default;
     HeaderView(HeaderView&) = delete;
     HeaderView operator=(HeaderView&) = delete;
 
-    // views::View:
-    const char* GetClassName() const override;
-
     void SetErrorButtonVisible(bool is_visible);
 
     views::ImageButton* get_error_button_for_test() { return error_button_; }
 
    private:
-    raw_ptr<views::ImageButton, ExperimentalAsh> error_button_;
+    raw_ptr<views::ImageButton> error_button_;
   };
 
   class RecentAppButtonsView : public views::View {
+    METADATA_HEADER(RecentAppButtonsView, views::View)
+
    public:
     RecentAppButtonsView();
     ~RecentAppButtonsView() override;
@@ -98,8 +99,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
-    void Layout() override;
-    const char* GetClassName() const override;
+    void Layout(PassKey) override;
 
     views::View* AddRecentAppButton(
         std::unique_ptr<views::View> recent_app_button);
@@ -112,6 +112,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
   };
 
   class LoadingView : public views::BoxLayoutView {
+    METADATA_HEADER(LoadingView, views::BoxLayoutView)
+
    public:
     LoadingView();
     ~LoadingView() override;
@@ -120,8 +122,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
-    void Layout() override;
-    const char* GetClassName() const override;
+    void Layout(PassKey) override;
 
     void StartLoadingAnimation();
     void StopLoadingAnimation();
@@ -129,9 +130,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
     base::WeakPtr<LoadingView> GetWeakPtr();
 
    private:
-    std::vector<AppLoadingIcon*> app_loading_icons_;
-    raw_ptr<PhoneHubMoreAppsButton, ExperimentalAsh> more_apps_button_ =
-        nullptr;
+    std::vector<raw_ptr<AppLoadingIcon, VectorExperimental>> app_loading_icons_;
+    raw_ptr<PhoneHubMoreAppsButton> more_apps_button_ = nullptr;
     base::WeakPtrFactory<LoadingView> weak_ptr_factory_{this};
   };
 
@@ -161,17 +161,15 @@ class ASH_EXPORT PhoneHubRecentAppsView
   base::TimeTicks loading_animation_start_time_ = base::TimeTicks();
   base::TimeTicks error_button_start_time_ = base::TimeTicks();
 
-  raw_ptr<RecentAppButtonsView, ExperimentalAsh> recent_app_buttons_view_ =
-      nullptr;
-  std::vector<views::View*> recent_app_button_list_;
-  raw_ptr<phonehub::RecentAppsInteractionHandler, ExperimentalAsh>
+  raw_ptr<RecentAppButtonsView> recent_app_buttons_view_ = nullptr;
+  std::vector<raw_ptr<views::View, VectorExperimental>> recent_app_button_list_;
+  raw_ptr<phonehub::RecentAppsInteractionHandler>
       recent_apps_interaction_handler_ = nullptr;
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
-  raw_ptr<PlaceholderView, ExperimentalAsh> placeholder_view_ = nullptr;
-  raw_ptr<HeaderView, ExperimentalAsh> header_view_ = nullptr;
-  raw_ptr<LoadingView, ExperimentalAsh> loading_view_ = nullptr;
-  raw_ptr<PhoneConnectedView, ExperimentalAsh> connected_view_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
+  raw_ptr<PlaceholderView> placeholder_view_ = nullptr;
+  raw_ptr<HeaderView> header_view_ = nullptr;
+  raw_ptr<LoadingView> loading_view_ = nullptr;
+  raw_ptr<PhoneConnectedView> connected_view_ = nullptr;
 };
 
 }  // namespace ash

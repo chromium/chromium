@@ -31,7 +31,7 @@ TEST_F(ListSelectionModelTest, SetSelectedIndex) {
 
 TEST_F(ListSelectionModelTest, SetSelectedIndexToEmpty) {
   ListSelectionModel model;
-  model.SetSelectedIndex(absl::nullopt);
+  model.SetSelectedIndex(std::nullopt);
   EXPECT_EQ("active=<none> anchor=<none> selection=", model.ToString());
   EXPECT_TRUE(model.empty());
 }

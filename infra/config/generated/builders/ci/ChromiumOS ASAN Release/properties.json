@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ChromiumOS ASAN Release/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -25,7 +28,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_asan",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -42,6 +46,12 @@
           "bucket": "ci",
           "builder": "ChromiumOS ASAN Release",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-chromeos-asan-rel",
+          "group": "tryserver.chromium.fuzz"
         }
       ]
     }

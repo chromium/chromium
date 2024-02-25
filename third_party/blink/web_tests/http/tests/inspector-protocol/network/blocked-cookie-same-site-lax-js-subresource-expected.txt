@@ -20,6 +20,7 @@ Browser initiated navigation blocked cookies:[
             sourceScheme : Secure
             value : value
         }
+        exemptionReason : None
     }
 ]
 Javascript initiated navigation blocked cookies:[
@@ -42,6 +43,7 @@ Javascript initiated navigation blocked cookies:[
             sourceScheme : Secure
             value : value
         }
+        exemptionReason : None
     }
 ]
 Javascript initiated subresource blocked cookies:[
@@ -65,6 +67,7 @@ Javascript initiated subresource blocked cookies:[
             sourceScheme : Secure
             value : value
         }
+        exemptionReason : None
     }
 ]
 

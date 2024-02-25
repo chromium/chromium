@@ -157,8 +157,7 @@ TfLiteObjectDetectorOptions TfLiteObjectDetectorOptionsCreate(void);
 // TfLiteSupportErrorDelete(error)
 //
 TfLiteObjectDetector* TfLiteObjectDetectorFromOptions(
-    const TfLiteObjectDetectorOptions* options,
-    TfLiteSupportError** error);
+    const TfLiteObjectDetectorOptions* options, TfLiteSupportError** error);
 
 // Invokes the encapsulated TFLite model and performs object detection on the
 // frame_buffer. Returns a pointer to the created object detection result result
@@ -186,8 +185,7 @@ TfLiteObjectDetector* TfLiteObjectDetectorFromOptions(
 // TfLiteSupportErrorDelete(error)
 //
 TfLiteDetectionResult* TfLiteObjectDetectorDetect(
-    const TfLiteObjectDetector* detector,
-    const TfLiteFrameBuffer* frame_buffer,
+    const TfLiteObjectDetector* detector, const TfLiteFrameBuffer* frame_buffer,
     TfLiteSupportError** error);
 
 // Disposes off the object detector.

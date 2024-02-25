@@ -27,19 +27,14 @@ class WebstoreDataFetcherDelegate {
 
   // Keys for indexing the returned webstore data.
   static const char kAverageRatingKey[];
-  static const char kExternalInstallDefaultButtonKey[];
-  static const char kFamilyUnsafeKey[];
   static const char kIconUrlKey[];
   static const char kIdKey[];
   static const char kLocalizedDescriptionKey[];
   static const char kLocalizedNameKey[];
   static const char kManifestKey[];
   static const char kRatingCountKey[];
-  static const char kRedirectUrlKey[];
   static const char kShowUserCountKey[];
   static const char kUsersKey[];
-  static const char kVerifiedSiteKey[];
-  static const char kVerifiedSitesKey[];
 
   // Some common error strings.
   static const char kInvalidWebstoreResponseError[];

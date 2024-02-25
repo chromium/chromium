@@ -1,7 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>Vibration"
 }
 team_email: "device-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
+}
+buganizer_public: {
+  component_id: 1456204
 }

@@ -4,10 +4,12 @@
 
 #include "components/crx_file/crx_verifier.h"
 
+#include <algorithm>
 #include <climits>
 #include <cstring>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -25,7 +27,6 @@
 #include "crypto/secure_util.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crx_file {
 
@@ -42,6 +43,9 @@ constexpr uint8_t kPublisherTestKeyHash[] = {
     0x6c, 0x46, 0x41, 0x3b, 0x00, 0xd0, 0xfa, 0x0e, 0x72, 0xc8, 0xd2,
     0x5f, 0x64, 0xf3, 0xa6, 0x17, 0x03, 0x0d, 0xde, 0x21, 0x61, 0xbe,
     0xb7, 0x95, 0x91, 0x95, 0x83, 0x68, 0x12, 0xe9, 0x78, 0x1e};
+
+constexpr uint8_t kEocd[] = {'P', 'K', 0x05, 0x06};
+constexpr uint8_t kEocd64[] = {'P', 'K', 0x06, 0x07};
 
 using VerifierCollection =
     std::vector<std::unique_ptr<crypto::SignatureVerifier>>;
@@ -109,6 +113,18 @@ VerifierResult VerifyCrx3(
       header_size) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
+
+  // If the header contains a ZIP EOCD or EOCD64 token, unzipping may not work
+  // correctly.
+  if (std::search(std::begin(header_bytes), std::end(header_bytes),
+                  std::begin(kEocd),
+                  std::end(kEocd)) != std::end(header_bytes) ||
+      std::search(std::begin(header_bytes), std::end(header_bytes),
+                  std::begin(kEocd64),
+                  std::end(kEocd64)) != std::end(header_bytes)) {
+    return VerifierResult::ERROR_HEADER_INVALID;
+  }
+
   CrxFileHeader header;
   if (!header.ParseFromArray(header_bytes.data(), header_size))
     return VerifierResult::ERROR_HEADER_INVALID;
@@ -126,8 +142,8 @@ VerifierResult VerifyCrx3(
   if (!signed_header_data.ParseFromString(signed_header_data_str))
     return VerifierResult::ERROR_HEADER_INVALID;
   const std::string& crx_id_encoded = signed_header_data.crx_id();
-  const std::string declared_crx_id = id_util::GenerateIdFromHex(
-      base::HexEncode(crx_id_encoded.data(), crx_id_encoded.size()));
+  const std::string declared_crx_id =
+      id_util::GenerateIdFromHex(base::HexEncode(crx_id_encoded));
 
   // Create a little-endian representation of [signed-header-size].
   const int signed_header_size = signed_header_data_str.size();
@@ -157,7 +173,7 @@ VerifierResult VerifyCrx3(
 
   std::vector<uint8_t> publisher_key(std::begin(kPublisherKeyHash),
                                      std::end(kPublisherKeyHash));
-  absl::optional<std::vector<uint8_t>> publisher_test_key;
+  std::optional<std::vector<uint8_t>> publisher_test_key;
   if (accept_publisher_test_key) {
     publisher_test_key.emplace(std::begin(kPublisherTestKeyHash),
                                std::end(kPublisherTestKeyHash));
@@ -204,7 +220,7 @@ VerifierResult VerifyCrx3(
   if (!ReadHashAndVerifyArchive(file, hash, verifiers))
     return VerifierResult::ERROR_SIGNATURE_VERIFICATION_FAILED;
 
-  base::Base64Encode(public_key_bytes, public_key);
+  *public_key = base::Base64Encode(public_key_bytes);
   *crx_id = declared_crx_id;
   return VerifierResult::OK_FULL;
 }

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Testing that the Node ID can be retrieved before the onload event is triggered');
     /*
      1. Create an iframe and point it to a page with a debugger statement.

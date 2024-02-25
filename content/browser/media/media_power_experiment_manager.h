@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_POWER_EXPERIMENT_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -70,7 +70,7 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
   std::map<MediaPlayerId, ExperimentCB> players_;
 
   // If set, this is the player that has a running experiment.
-  absl::optional<MediaPlayerId> current_experiment_player_;
+  std::optional<MediaPlayerId> current_experiment_player_;
   ExperimentCB current_experiment_cb_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

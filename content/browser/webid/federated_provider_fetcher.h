@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -15,40 +16,44 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace content {
+class RenderFrameHost;
 
 // Fetches the config and well-known files for a list of identity providers.
 // Validates returned information and calls callback when done.
-class FederatedProviderFetcher {
+class CONTENT_EXPORT FederatedProviderFetcher {
  public:
-  struct FetchError {
+  struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
     FetchError(blink::mojom::FederatedAuthRequestResult result,
                FedCmRequestIdTokenStatus token_status,
-               absl::optional<std::string> additional_console_error_message);
+               std::optional<std::string> additional_console_error_message);
     ~FetchError();
 
     blink::mojom::FederatedAuthRequestResult result;
     FedCmRequestIdTokenStatus token_status;
-    absl::optional<std::string> additional_console_error_message;
+    std::optional<std::string> additional_console_error_message;
   };
 
-  struct FetchResult {
+  struct CONTENT_EXPORT FetchResult {
     FetchResult();
     FetchResult(const FetchResult&);
     ~FetchResult();
     GURL identity_provider_config_url;
+    IdpNetworkRequestManager::WellKnown wellknown;
     IdpNetworkRequestManager::Endpoints endpoints;
-    absl::optional<IdentityProviderMetadata> metadata;
-    absl::optional<FetchError> error;
+    std::optional<IdentityProviderMetadata> metadata;
+    std::optional<FetchError> error;
   };
 
   using RequesterCallback = base::OnceCallback<void(std::vector<FetchResult>)>;
 
-  explicit FederatedProviderFetcher(IdpNetworkRequestManager* network_manager);
+  // TODO(crbug.com/1487668): Remove |render_frame_host| when the IDP signin
+  // status API is enabled by default.
+  FederatedProviderFetcher(RenderFrameHost& render_frame_host,
+                           IdpNetworkRequestManager* network_manager);
   ~FederatedProviderFetcher();
 
   FederatedProviderFetcher(const FederatedProviderFetcher&) = delete;
@@ -57,17 +62,24 @@ class FederatedProviderFetcher {
   // Starts fetch of config and well-known files. Start() should be called at
   // most once per FederatedProviderFetcher instance.
   void Start(const std::set<GURL>& identity_provider_config_urls,
+             blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
              int icon_minimum_size,
              RequesterCallback callback);
 
+  // Given a FetchResult, validates all of the conditions that the config file
+  // and the well-known files need to meet. Sets an "error" in the result in
+  // case the validation fails.
+  void ValidateAndMaybeSetError(FetchResult& result);
+
  private:
-  void OnWellKnownFetched(FetchResult& fetch_result,
-                          IdpNetworkRequestManager::FetchStatus status,
-                          const std::set<GURL>& urls);
+  void OnWellKnownFetched(
+      FetchResult& fetch_result,
+      IdpNetworkRequestManager::FetchStatus status,
+      const IdpNetworkRequestManager::WellKnown& well_known);
   void OnConfigFetched(FetchResult& fetch_result,
                        IdpNetworkRequestManager::FetchStatus status,
-                       IdpNetworkRequestManager::Endpoints,
+                       IdpNetworkRequestManager::Endpoints endpoints,
                        IdentityProviderMetadata idp_metadata);
 
   // Called when fetching either the config endpoint or the well-known
@@ -75,9 +87,13 @@ class FederatedProviderFetcher {
   void OnError(FetchResult& fetch_result,
                blink::mojom::FederatedAuthRequestResult result,
                content::FedCmRequestIdTokenStatus token_status,
-               absl::optional<std::string> additional_console_error_message);
+               std::optional<std::string> additional_console_error_message);
 
   void RunCallbackIfDone();
+
+  bool ShouldSkipWellKnownEnforcementForIdp(const GURL& idp_url);
+
+  raw_ref<RenderFrameHost> render_frame_host_;
 
   RequesterCallback callback_;
 

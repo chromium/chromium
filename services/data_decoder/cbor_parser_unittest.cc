@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,15 +16,14 @@
 #include "components/cbor/writer.h"
 #include "services/data_decoder/cbor_parser_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
 namespace {
-void CopyResultCallback(absl::optional<::base::Value>& output_result,
-                        absl::optional<std::string>& output_error,
-                        absl::optional<::base::Value> result,
-                        const absl::optional<std::string>& error) {
+void CopyResultCallback(std::optional<::base::Value>& output_result,
+                        std::optional<std::string>& output_error,
+                        std::optional<::base::Value> result,
+                        const std::optional<std::string>& error) {
   output_result = std::move(result);
   output_error = error;
 }
@@ -81,8 +81,8 @@ TEST_F(CborToValueTest, SuccesfulParseValues) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
     CborParserImpl parser;
-    absl::optional<base::Value> result;
-    absl::optional<std::string> error;
+    std::optional<base::Value> result;
+    std::optional<std::string> error;
 
     parser.Parse(
         test_case.input,
@@ -120,8 +120,8 @@ TEST_F(CborToValueTest, FailingParseValues) {
     SCOPED_TRACE(test_case.name);
     CborParserImpl parser;
 
-    absl::optional<base::Value> result;
-    absl::optional<std::string> error;
+    std::optional<base::Value> result;
+    std::optional<std::string> error;
 
     parser.Parse(
         test_case.input,

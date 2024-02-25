@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
@@ -59,8 +60,8 @@
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 using content::BrowserContext;
@@ -147,13 +148,11 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
                                     prefs::kDownloadDefaultDirectory};
   for (const char* path_pref : kPathPrefs) {
     const PrefService::Preference* pref = prefs->FindPreference(path_pref);
-    const base::FilePath current = prefs->GetFilePath(path_pref);
-    base::FilePath migrated;
     // Update the download directory if the pref is from user pref store or
     // default pref.
-    LOG(ERROR) << "DownloadPrefs::DownloadPrefs" << pref->IsUserControlled()
-               << "," << pref->IsDefaultValue() << "," << current.value();
     if (pref->IsUserControlled()) {
+      const base::FilePath current = prefs->GetFilePath(path_pref);
+      base::FilePath migrated;
       if (!current.empty() &&
           file_manager::util::MigratePathFromOldFormat(
               profile_, GetDefaultDownloadDirectory(), current, &migrated)) {
@@ -212,6 +211,9 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   prompt_for_download_android_.Init(prefs::kPromptForDownloadAndroid, prefs);
   RecordDownloadPromptStatus(
       static_cast<DownloadPromptStatus>(*prompt_for_download_android_));
+  if (base::FeatureList::IsEnabled(chrome::android::kOpenDownloadDialog)) {
+    auto_open_pdf_enabled_.Init(prefs::kAutoOpenPdfEnabled, prefs);
+  }
 #endif
   download_path_.Init(prefs::kDownloadDefaultDirectory, prefs);
   save_file_path_.Init(prefs::kSaveFileDefaultDirectory, prefs);
@@ -219,9 +221,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
   download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
-  download_bubble_enabled_.Init(prefs::kDownloadBubbleEnabled, prefs);
-  prompt_for_duplicate_file_.Init(prefs::kDownloadDuplicateFilePromptEnabled,
-                                  prefs);
 
   pref_change_registrar_.Add(
       prefs::kDownloadExtensionsToOpenByPolicy,
@@ -291,18 +290,13 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kSaveFileType,
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
-  registry->RegisterBooleanPref(prefs::kDownloadBubbleEnabled, true);
   // The following two prefs are ignored on ChromeOS Lacros if SysUI integration
   // is enabled.
   // TODO(chlily): Clean them up once SysUI integration is enabled by default.
   registry->RegisterBooleanPref(prefs::kDownloadBubblePartialViewEnabled, true);
   registry->RegisterIntegerPref(prefs::kDownloadBubblePartialViewImpressions,
                                 0);
-  registry->RegisterBooleanPref(
-      prefs::kDownloadBubbleIphSuppression, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kDownloadDuplicateFilePromptEnabled,
-                                true);
+
   registry->RegisterBooleanPref(prefs::kSafeBrowsingForTrustedSourcesEnabled,
                                 true);
 
@@ -311,8 +305,6 @@ void DownloadPrefs::RegisterProfilePrefs(
                                  default_download_path);
   registry->RegisterFilePathPref(prefs::kSaveFileDefaultDirectory,
                                  default_download_path);
-  registry->RegisterTimePref(prefs::kDownloadLastCompleteTime,
-                             /*default_value=*/base::Time());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(prefs::kOpenPdfDownloadInSystemReader, false);
@@ -327,6 +319,9 @@ void DownloadPrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterBooleanPref(prefs::kShowMissingSdCardErrorAndroid, true);
+  if (base::FeatureList::IsEnabled(chrome::android::kOpenDownloadDialog)) {
+    registry->RegisterBooleanPref(prefs::kAutoOpenPdfEnabled, false);
+  }
 #endif
 }
 
@@ -388,15 +383,6 @@ void DownloadPrefs::SetSaveFilePath(const base::FilePath& path) {
 
 void DownloadPrefs::SetSaveFileType(int type) {
   save_file_type_.SetValue(type);
-}
-
-base::Time DownloadPrefs::GetLastCompleteTime() {
-  return profile_->GetPrefs()->GetTime(prefs::kDownloadLastCompleteTime);
-}
-
-void DownloadPrefs::SetLastCompleteTime(const base::Time& last_complete_time) {
-  profile_->GetPrefs()->SetTime(prefs::kDownloadLastCompleteTime,
-                                last_complete_time);
 }
 
 bool DownloadPrefs::PromptForDownload() const {
@@ -530,6 +516,15 @@ void DownloadPrefs::SkipSanitizeDownloadTargetPathForTesting() {
   skip_sanitize_download_target_path_for_testing_ = true;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool DownloadPrefs::IsAutoOpenPdfEnabled() {
+  if (!base::FeatureList::IsEnabled(chrome::android::kOpenDownloadDialog)) {
+    return false;
+  }
+  return *auto_open_pdf_enabled_;
+}
+#endif
+
 void DownloadPrefs::SaveAutoOpenState() {
   std::string extensions;
   for (auto it : auto_open_by_user_) {
@@ -571,6 +566,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return SanitizeDownloadTargetPath(migrated_drive_path);
   }
 
+  base::FilePath onedrive_path;
+  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
+                                                      &onedrive_path)) {
+    return SanitizeDownloadTargetPath(onedrive_path);
+  }
+
   const base::FilePath default_downloads_path =
       GetDefaultDownloadDirectoryForProfile();
   // Relative paths might be unsafe, so use the default path.
@@ -594,6 +595,9 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&drivefs);
   if (drivefs_mounted && drivefs.IsParent(path))
     return path;
+
+  // TODO(b/325897784): Allow paths under OneDrive mount point if the feature
+  // flag is enabled.
 
   // Allow paths for removable media devices.
   base::FilePath removable_media_path;
@@ -636,6 +640,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return SanitizeDownloadTargetPath(migrated_drive_path);
   }
 
+  base::FilePath onedrive_path;
+  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
+                                                      &onedrive_path)) {
+    return SanitizeDownloadTargetPath(onedrive_path);
+  }
+
   // If |path| isn't absolute, fall back to the default directory.
   base::FilePath profile_myfiles_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
@@ -652,6 +662,14 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service && integration_service->is_enabled() &&
       integration_service->GetMountPointPath().IsParent(path)) {
+    return path;
+  }
+
+  // Allow paths under one drive mount point if the feature flag is enabled.
+  auto odfs_path = ash::cloud_upload::GetODFSFuseboxMount(profile_);
+  if (base::FeatureList::IsEnabled(features::kSkyVault) &&
+      ash::cloud_upload::IsODFSMounted(profile_) &&
+      ((odfs_path == path) || odfs_path.IsParent(path))) {
     return path;
   }
 
@@ -715,15 +733,6 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
   }
 
   auto_open_allowed_by_urls_.swap(allowed_urls);
-}
-
-bool DownloadPrefs::PromptForDuplicateFile() const {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return download::IsDownloadBubbleV2Enabled(profile_) &&
-         prompt_for_duplicate_file_.GetValue();
-#endif
 }
 
 bool DownloadPrefs::AutoOpenCompareFunctor::operator()(

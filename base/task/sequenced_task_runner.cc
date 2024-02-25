@@ -77,10 +77,16 @@ bool SequencedTaskRunner::PostDelayedTaskAt(
                              : delayed_run_time - TimeTicks::Now());
 }
 
+bool SequencedTaskRunner::RunOrPostTask(subtle::RunOrPostTaskPassKey,
+                                        const Location& from_here,
+                                        OnceClosure task) {
+  return PostTask(from_here, std::move(task));
+}
+
 // static
 const scoped_refptr<SequencedTaskRunner>&
 SequencedTaskRunner::GetCurrentDefault() {
-  CHECK(current_default_handle)
+  CHECK(HasCurrentDefault())
       << "Error: This caller requires a sequenced context (i.e. the current "
          "task needs to run from a SequencedTaskRunner). If you're in a test "
          "refer to //docs/threading_and_tasks_testing.md.";
@@ -89,19 +95,29 @@ SequencedTaskRunner::GetCurrentDefault() {
 
 // static
 bool SequencedTaskRunner::HasCurrentDefault() {
-  return !!current_default_handle;
+  return !!current_default_handle && !!current_default_handle->task_runner_;
 }
 
 SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
     scoped_refptr<SequencedTaskRunner> task_runner)
-    : resetter_(&current_default_handle, this, nullptr),
-      task_runner_(std::move(task_runner)) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    : CurrentDefaultHandle(std::move(task_runner), MayAlreadyExist{}) {
+  CHECK(!previous_handle_ || !previous_handle_->task_runner_);
 }
 
 SequencedTaskRunner::CurrentDefaultHandle::~CurrentDefaultHandle() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(current_default_handle, this);
+  current_default_handle = previous_handle_;
+}
+
+SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    MayAlreadyExist)
+    : task_runner_(std::move(task_runner)),
+      previous_handle_(current_default_handle) {
+  // Support overriding the current default with a null task runner or a task
+  // runner that runs its tasks in the current sequence.
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  current_default_handle = this;
 }
 
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(

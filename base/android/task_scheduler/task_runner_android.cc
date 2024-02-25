@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/android_runtime_unchecked_jni_headers/Runnable_jni.h"
+#include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/base_jni/TaskRunnerImpl_jni.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -41,22 +41,8 @@ void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
         base::StrCat({"JniPostTask: ", runnable_class_name});
     ctx.event()->set_name(event_name.c_str());
   });
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   JNI_Runnable::Java_Runnable_run(env, task);
-  if (UNLIKELY(base::android::HasException(env))) {
-    // We can only return control to Java on UI threads (eg. JavaHandlerThread
-    // or the Android Main Thread).
-    if (base::CurrentUIThread::IsSet()) {
-      // Tell the message loop to not perform any tasks after the current one -
-      // we want to make sure we return to Java cleanly without first making any
-      // new JNI calls. This will cause the uncaughtExceptionHandler to catch
-      // and report the Java exception, rather than catching a JNI Exception
-      // with an associated Java stack.
-      base::CurrentUIThread::Get()->Abort();
-    } else {
-      base::android::CheckException(env);
-    }
-  }
 }
 
 }  // namespace

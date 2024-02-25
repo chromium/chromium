@@ -10,7 +10,6 @@
 #include <cmath>
 #include <limits>
 
-#include "base/numerics/math_constants.h"
 #include "base/strings/stringprintf.h"
 
 namespace {

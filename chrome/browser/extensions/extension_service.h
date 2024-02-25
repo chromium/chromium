@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -52,7 +53,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
@@ -656,7 +656,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // the manager and retried later.
   void InstallationFromExternalFileFinished(
       const std::string& extension_id,
-      const absl::optional<CrxInstallError>& error);
+      const std::optional<CrxInstallError>& error);
 
   raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_ = nullptr;
 
@@ -825,8 +825,6 @@ class ExtensionService : public ExtensionServiceInterface,
                            ExtensionsNotAllowlistedThenBlocklisted);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAllowlistUnitTest,
                            ExtensionsBlocklistedThenNotAllowlisted);
-  FRIEND_TEST_ALL_PREFIXES(OmahaAttributesHandlerUnitTest,
-                           NoUnsetBlocklistWhenSBBlocklistPolicyDisabled);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            GreylistedExtensionDisabled);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
@@ -849,8 +847,6 @@ class ExtensionService : public ExtensionServiceInterface,
                            ExtensionUninstalledWhenBlocklisted);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            ExtensionUninstalledWhenBlocklistFetching);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
-                           ReloadBlocklistedExtensionWhenPolicyDisabled);
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
   friend class BlocklistStatesInteractionUnitTest;

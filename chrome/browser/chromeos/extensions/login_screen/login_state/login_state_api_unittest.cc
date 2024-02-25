@@ -107,7 +107,7 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
     // |AshTestHelper::bluetooth_config_test_helper()|.
     session_manager::SessionManager::Get()->SetSessionState(test.session_state);
     auto function = base::MakeRefCounted<LoginStateGetSessionStateFunction>();
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunctionAndReturnValue(function.get(), "[]");
     EXPECT_EQ(test.expected, result->GetString());
   }

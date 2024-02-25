@@ -55,7 +55,7 @@ class TestingWebHistoryService : public WebHistoryService {
 
   // This is sorta an override but override and static don't mix.
   // This function just calls WebHistoryService::ReadResponse.
-  static absl::optional<base::Value::Dict> ReadResponse(Request* request);
+  static std::optional<base::Value::Dict> ReadResponse(Request* request);
 
   const std::string& GetExpectedPostData(WebHistoryService::Request* request);
 
@@ -173,7 +173,7 @@ WebHistoryService::Request* TestingWebHistoryService::CreateRequest(
   return request;
 }
 
-absl::optional<base::Value::Dict> TestingWebHistoryService::ReadResponse(
+std::optional<base::Value::Dict> TestingWebHistoryService::ReadResponse(
     Request* request) {
   return WebHistoryService::ReadResponse(request);
 }
@@ -331,7 +331,7 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   auto response_value = TestingWebHistoryService::ReadResponse(request.get());
   ASSERT_TRUE(response_value);
   bool enabled_value = false;
-  if (absl::optional<bool> enabled =
+  if (std::optional<bool> enabled =
           response_value->FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
   }
@@ -348,7 +348,7 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   auto response_value2 = TestingWebHistoryService::ReadResponse(request2.get());
   ASSERT_TRUE(response_value2);
   enabled_value = true;
-  if (absl::optional<bool> enabled =
+  if (std::optional<bool> enabled =
           response_value2->FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
   }

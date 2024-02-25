@@ -125,10 +125,8 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<const ClipboardHistory, DanglingUntriaged | ExperimentalAsh>
-      clipboard_history_;
-  raw_ptr<const ClipboardHistoryResourceManager,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<const ClipboardHistory, DanglingUntriaged> clipboard_history_;
+  raw_ptr<const ClipboardHistoryResourceManager, DanglingUntriaged>
       resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };
@@ -146,8 +144,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url");
   }
   FlushMessageLoop();
 
@@ -170,8 +167,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<table test>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<table test>", "source_url");
   }
   FlushMessageLoop();
 
@@ -195,8 +191,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"HTML with no img or table tag", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"HTML with no img or table tag", "source_url");
   }
   FlushMessageLoop();
 
@@ -221,15 +216,13 @@ TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   // are added to the clipboard history.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url_1",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url_1");
   }
   FlushMessageLoop();
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url_2",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url_2");
   }
   FlushMessageLoop();
 
@@ -259,15 +252,13 @@ TEST_F(ClipboardHistoryResourceManagerTest, DifferentHTML) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url");
   }
   FlushMessageLoop();
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img different>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img different>", "source_url");
   }
   FlushMessageLoop();
 
@@ -292,8 +283,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, IneligibleDisplayTypes) {
   // image model should be rendered.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url");
     scw.WriteImage(GetRandomBitmap());
   }
   FlushMessageLoop();
@@ -345,8 +335,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url",
-                  ui::ClipboardContentType::kSanitized);
+    scw.WriteHTML(u"<img test>", "source_url");
   }
 
   // Wait for the clipboard history item to be created. This allows us to check
@@ -427,8 +416,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
   struct {
     const std::u16string text;
-    const absl::optional<std::u16string> returned_title;
-    const absl::optional<std::u16string> expected_secondary_display_text;
+    const std::optional<std::u16string> returned_title;
+    const std::optional<std::u16string> expected_secondary_display_text;
   } test_cases[]{
       // Test that copying a visited URL sets the item's secondary display text
       // with the page's title.
@@ -438,13 +427,13 @@ TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
       {u"https://visited.com", u" Title ", u"Title"},
       // Test that a whitespace-only title is not treated as text an item should
       // display.
-      {u"https://visited.com", u" ", absl::nullopt},
+      {u"https://visited.com", u" ", std::nullopt},
       // Test that copying an unvisited URL triggers a history query but does
       // not set the item's secondary display text.
-      {u"https://unvisited.com", absl::nullopt, absl::nullopt},
+      {u"https://unvisited.com", std::nullopt, std::nullopt},
       // Test that copying non-URL text does not trigger a history query or set
       // the item's secondary display text.
-      {u"Not a URL", absl::nullopt, absl::nullopt},
+      {u"Not a URL", std::nullopt, std::nullopt},
   };
 
   for (const auto& [text, returned_title, expected_secondary_display_text] :
@@ -462,7 +451,7 @@ TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
     const auto& item = clipboard_history()->GetItems().front();
     EXPECT_EQ(
         item.secondary_display_text(),
-        should_fetch_title ? expected_secondary_display_text : absl::nullopt);
+        should_fetch_title ? expected_secondary_display_text : std::nullopt);
   }
 }
 

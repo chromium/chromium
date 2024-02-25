@@ -31,10 +31,13 @@ public class NonInstrumentedCrashDetector {
 
     private static File readBreakpadDumpFromCommandLine() {
         try {
-            String commandLine = new String(TestFileUtil.readUtf8File(
-                    "/data/local/tmp/chrome-command-line", Integer.MAX_VALUE));
-            Matcher matcher = Pattern.compile("breakpad-dump-location=['\"]?([^'\"\\s]*)")
-                                      .matcher(commandLine);
+            String commandLine =
+                    new String(
+                            TestFileUtil.readUtf8File(
+                                    "/data/local/tmp/chrome-command-line", Integer.MAX_VALUE));
+            Matcher matcher =
+                    Pattern.compile("breakpad-dump-location=['\"]?([^'\"\\s]*)")
+                            .matcher(commandLine);
             assertTrue(matcher.find());
             return new File(matcher.group(1));
         } catch (Exception e) {

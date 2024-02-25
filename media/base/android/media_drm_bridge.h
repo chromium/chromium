@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/version.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android/media_crypto_context_impl.h"
@@ -103,6 +104,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // Returns the scheme UUID for |key_system|.
   static std::vector<uint8_t> GetUUID(const std::string& key_system);
 
+  // Gets the current version for |key_system|.
+  static base::Version GetVersion(const std::string& key_system);
+
   // Same as Create() except that no session callbacks are provided. This is
   // used when we need to use MediaDrmBridge without creating any sessions.
   //
@@ -118,25 +122,26 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   MediaDrmBridge& operator=(const MediaDrmBridge&) = delete;
 
   // ContentDecryptionModule implementation.
-  void SetServerCertificate(
-      const std::vector<uint8_t>& certificate,
-      std::unique_ptr<media::SimpleCdmPromise> promise) override;
+  void SetServerCertificate(const std::vector<uint8_t>& certificate,
+                            std::unique_ptr<SimpleCdmPromise> promise) override;
+  void GetStatusForPolicy(
+      HdcpVersion min_hdcp_version,
+      std::unique_ptr<KeyStatusCdmPromise> promise) override;
   void CreateSessionAndGenerateRequest(
       CdmSessionType session_type,
-      media::EmeInitDataType init_data_type,
+      EmeInitDataType init_data_type,
       const std::vector<uint8_t>& init_data,
-      std::unique_ptr<media::NewSessionCdmPromise> promise) override;
-  void LoadSession(
-      CdmSessionType session_type,
-      const std::string& session_id,
-      std::unique_ptr<media::NewSessionCdmPromise> promise) override;
+      std::unique_ptr<NewSessionCdmPromise> promise) override;
+  void LoadSession(CdmSessionType session_type,
+                   const std::string& session_id,
+                   std::unique_ptr<NewSessionCdmPromise> promise) override;
   void UpdateSession(const std::string& session_id,
                      const std::vector<uint8_t>& response,
-                     std::unique_ptr<media::SimpleCdmPromise> promise) override;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
   void CloseSession(const std::string& session_id,
-                    std::unique_ptr<media::SimpleCdmPromise> promise) override;
+                    std::unique_ptr<SimpleCdmPromise> promise) override;
   void RemoveSession(const std::string& session_id,
-                     std::unique_ptr<media::SimpleCdmPromise> promise) override;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
   CdmContext* GetCdmContext() override;
   void DeleteOnCorrectThread() const override;
 
@@ -166,6 +171,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   void ResolvePromise(uint32_t promise_id);
   void ResolvePromiseWithSession(uint32_t promise_id,
                                  const std::string& session_id);
+  void ResolvePromiseWithKeyStatus(uint32_t promise_id,
+                                   CdmKeyInformation::KeyStatus key_status);
   void RejectPromise(uint32_t promise_id,
                      CdmPromise::Exception exception_code,
                      MediaDrmSystemCode system_code,
@@ -301,8 +308,14 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   ~MediaDrmBridge() override;
 
-  // Get the security level of the media.
+  // Get the security level of the media. Only valid for Widevine.
   SecurityLevel GetSecurityLevel();
+
+  // Returns the version of the CDM.
+  std::string GetVersionInternal();
+
+  // Get the Current HDCP level of the device.
+  HdcpVersion GetCurrentHdcpLevel();
 
   // A helper method that is called when MediaCrypto is ready.
   void NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto);

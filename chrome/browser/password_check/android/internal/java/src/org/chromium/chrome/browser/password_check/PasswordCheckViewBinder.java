@@ -43,10 +43,10 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -72,23 +72,28 @@ class PasswordCheckViewBinder {
     static void bindPasswordCheckView(
             PropertyModel model, PasswordCheckFragmentView view, PropertyKey propertyKey) {
         if (propertyKey == ITEMS) {
-            view.getListView().setAdapter(new RecyclerViewAdapter<>(
-                    new SimpleRecyclerViewMcp<>(model.get(ITEMS),
-                            PasswordCheckProperties::getItemType,
-                            PasswordCheckViewBinder::connectPropertyModel),
-                    PasswordCheckViewBinder::createViewHolder));
+            view.getListView()
+                    .setAdapter(
+                            new RecyclerViewAdapter<>(
+                                    new SimpleRecyclerViewMcp<>(
+                                            model.get(ITEMS),
+                                            PasswordCheckProperties::getItemType,
+                                            PasswordCheckViewBinder::connectPropertyModel),
+                                    PasswordCheckViewBinder::createViewHolder));
         } else if (propertyKey == DELETION_CONFIRMATION_HANDLER) {
             if (model.get(DELETION_CONFIRMATION_HANDLER) == null) return; // Initial or onDismiss.
-            view.showDialogFragment(new PasswordCheckDeletionDialogFragment(
-                    model.get(DELETION_CONFIRMATION_HANDLER), model.get(DELETION_ORIGIN)));
+            view.showDialogFragment(
+                    new PasswordCheckDeletionDialogFragment(
+                            model.get(DELETION_CONFIRMATION_HANDLER), model.get(DELETION_ORIGIN)));
         } else if (propertyKey == DELETION_ORIGIN) {
             // Binding not necessary (only used indirectly).
         } else if (propertyKey == VIEW_CREDENTIAL) {
             // Binding not necessary (only used indirectly).
         } else if (propertyKey == VIEW_DIALOG_HANDLER) {
             if (model.get(VIEW_DIALOG_HANDLER) == null) return; // Initial or onDismiss.
-            view.showDialogFragment(new PasswordCheckViewDialogFragment(
-                    model.get(VIEW_DIALOG_HANDLER), model.get(VIEW_CREDENTIAL)));
+            view.showDialogFragment(
+                    new PasswordCheckViewDialogFragment(
+                            model.get(VIEW_DIALOG_HANDLER), model.get(VIEW_CREDENTIAL)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -104,10 +109,13 @@ class PasswordCheckViewBinder {
             ViewGroup parent, @ItemType int itemType) {
         switch (itemType) {
             case ItemType.HEADER:
-                return new PasswordCheckViewHolder(parent, R.layout.password_check_header_item,
+                return new PasswordCheckViewHolder(
+                        parent,
+                        R.layout.password_check_header_item,
                         PasswordCheckViewBinder::bindHeaderView);
             case ItemType.COMPROMISED_CREDENTIAL:
-                return new PasswordCheckViewHolder(parent,
+                return new PasswordCheckViewHolder(
+                        parent,
                         R.layout.password_check_compromised_credential_item,
                         PasswordCheckViewBinder::bindCredentialView);
         }
@@ -149,17 +157,23 @@ class PasswordCheckViewBinder {
             reason.setText(getReasonForCredential(credential));
 
             ListMenuButton more = view.findViewById(R.id.credential_menu_button);
-            more.setDelegate(() -> {
-                return createCredentialMenu(view.getContext(), model.get(COMPROMISED_CREDENTIAL),
-                        model.get(CREDENTIAL_HANDLER));
-            });
+            more.setDelegate(
+                    () -> {
+                        return createCredentialMenu(
+                                view.getContext(),
+                                model.get(COMPROMISED_CREDENTIAL),
+                                model.get(CREDENTIAL_HANDLER));
+                    });
 
             ButtonCompat button = view.findViewById(R.id.credential_change_button);
-            button.setOnClickListener(unusedView -> {
-                model.get(CREDENTIAL_HANDLER).onChangePasswordButtonClick(credential);
-            });
-            setTintListForCompoundDrawables(button.getCompoundDrawablesRelative(),
-                    view.getContext(), R.color.default_text_color_on_accent1_list);
+            button.setOnClickListener(
+                    unusedView -> {
+                        model.get(CREDENTIAL_HANDLER).onChangePasswordButtonClick(credential);
+                    });
+            setTintListForCompoundDrawables(
+                    button.getCompoundDrawablesRelative(),
+                    view.getContext(),
+                    R.color.default_text_color_on_accent1_list);
         } else if (propertyKey == CREDENTIAL_HANDLER) {
             assert model.get(CREDENTIAL_HANDLER) != null;
             // Is read-only and must therefore be bound initially, so no action required.
@@ -174,10 +188,14 @@ class PasswordCheckViewBinder {
             PasswordCheckIconHelper.FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
             Resources resources = view.getResources();
             Context context = view.getContext();
-            imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
-                    data.mUrlOrAppName, PasswordCheckIconHelper.getIconColor(data, context),
-                    FaviconUtils.createCircularIconGenerator(context), resources,
-                    resources.getDimensionPixelSize(R.dimen.default_favicon_size)));
+            imageView.setImageDrawable(
+                    FaviconUtils.getIconDrawableWithoutFilter(
+                            data.mIcon,
+                            data.mUrlOrAppName,
+                            PasswordCheckIconHelper.getIconColor(data, context),
+                            FaviconUtils.createCircularIconGenerator(context),
+                            resources,
+                            resources.getDimensionPixelSize(R.dimen.default_favicon_size)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -203,35 +221,54 @@ class PasswordCheckViewBinder {
      */
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         Pair<Integer, Integer> progress = model.get(CHECK_PROGRESS);
-        @PasswordCheckUIStatus
-        int status = model.get(CHECK_STATUS);
+        @PasswordCheckUIStatus int status = model.get(CHECK_STATUS);
         Long checkTimestamp = model.get(CHECK_TIMESTAMP);
         Integer compromisedCredentialsCount = model.get(COMPROMISED_CREDENTIALS_COUNT);
         Runnable launchCheckupInAccount = model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION);
         boolean showStatusSubtitle = model.get(SHOW_CHECK_SUBTITLE);
 
         if (key == CHECK_PROGRESS) {
-            updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
+            updateStatusText(
+                    view,
+                    status,
+                    compromisedCredentialsCount,
+                    checkTimestamp,
+                    progress,
                     launchCheckupInAccount);
         } else if (key == CHECK_STATUS) {
             updateActionButton(view, status, model.get(RESTART_BUTTON_ACTION));
             updateStatusIcon(view, status, compromisedCredentialsCount);
             updateStatusIllustration(view, status, compromisedCredentialsCount);
-            updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
+            updateStatusText(
+                    view,
+                    status,
+                    compromisedCredentialsCount,
+                    checkTimestamp,
+                    progress,
                     launchCheckupInAccount);
             updateStatusSubtitle(view, status, showStatusSubtitle, compromisedCredentialsCount);
         } else if (key == CHECK_TIMESTAMP) {
-            updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
+            updateStatusText(
+                    view,
+                    status,
+                    compromisedCredentialsCount,
+                    checkTimestamp,
+                    progress,
                     launchCheckupInAccount);
         } else if (key == COMPROMISED_CREDENTIALS_COUNT) {
             updateStatusIcon(view, status, compromisedCredentialsCount);
             updateStatusIllustration(view, status, compromisedCredentialsCount);
-            updateStatusText(view, status, compromisedCredentialsCount, checkTimestamp, progress,
+            updateStatusText(
+                    view,
+                    status,
+                    compromisedCredentialsCount,
+                    checkTimestamp,
+                    progress,
                     launchCheckupInAccount);
             updateStatusSubtitle(view, status, showStatusSubtitle, compromisedCredentialsCount);
         } else if (key == LAUNCH_ACCOUNT_CHECKUP_ACTION) {
-            assert model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION)
-                    != null : "Launch checkup in account is always required.";
+            assert model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION) != null
+                    : "Launch checkup in account is always required.";
         } else if (key == RESTART_BUTTON_ACTION) {
             assert model.get(RESTART_BUTTON_ACTION) != null : "Restart action is always required.";
         } else if (key == SHOW_CHECK_SUBTITLE) {
@@ -251,9 +288,11 @@ class PasswordCheckViewBinder {
 
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) textWrapper.getLayoutParams();
-        layoutParams.setMarginEnd(shouldBeVisible ? 0
-                                                  : view.getResources().getDimensionPixelSize(
-                                                          R.dimen.check_status_text_margin));
+        layoutParams.setMarginEnd(
+                shouldBeVisible
+                        ? 0
+                        : view.getResources()
+                                .getDimensionPixelSize(R.dimen.check_status_text_margin));
 
         restartButton.setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
         restartButton.setOnClickListener(shouldBeVisible ? unusedView -> startCheck.run() : null);
@@ -319,9 +358,13 @@ class PasswordCheckViewBinder {
         return status == PasswordCheckUIStatus.RUNNING ? View.VISIBLE : View.GONE;
     }
 
-    private static void updateStatusText(View view, @PasswordCheckUIStatus int status,
-            Integer compromisedCredentialsCount, Long checkTimestamp,
-            Pair<Integer, Integer> progress, Runnable launchCheckupInAccount) {
+    private static void updateStatusText(
+            View view,
+            @PasswordCheckUIStatus int status,
+            Integer compromisedCredentialsCount,
+            Long checkTimestamp,
+            Pair<Integer, Integer> progress,
+            Runnable launchCheckupInAccount) {
         // TODO(crbug.com/1114051): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE
                 && (compromisedCredentialsCount == null || checkTimestamp == null)) {
@@ -330,8 +373,13 @@ class PasswordCheckViewBinder {
         if (status == PasswordCheckUIStatus.RUNNING && progress == null) return;
 
         TextView statusMessage = view.findViewById(R.id.check_status_message);
-        statusMessage.setText(getStatusMessage(
-                view, status, compromisedCredentialsCount, progress, launchCheckupInAccount));
+        statusMessage.setText(
+                getStatusMessage(
+                        view,
+                        status,
+                        compromisedCredentialsCount,
+                        progress,
+                        launchCheckupInAccount));
         statusMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
         LinearLayout textLayout = view.findViewById(R.id.check_status_text_layout);
@@ -343,17 +391,22 @@ class PasswordCheckViewBinder {
         statusDescription.setVisibility(getStatusDescriptionVisibility(status));
     }
 
-    private static CharSequence getStatusMessage(View view, @PasswordCheckUIStatus int status,
-            Integer compromisedCredentialsCount, Pair<Integer, Integer> progress,
+    private static CharSequence getStatusMessage(
+            View view,
+            @PasswordCheckUIStatus int status,
+            Integer compromisedCredentialsCount,
+            Pair<Integer, Integer> progress,
             Runnable launchCheckupInAccount) {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;
                 return compromisedCredentialsCount == 0
                         ? getString(view, R.string.password_check_status_message_idle_no_leaks)
-                        : getResources(view).getQuantityString(
-                                R.plurals.password_check_status_message_idle_with_leaks,
-                                compromisedCredentialsCount, compromisedCredentialsCount);
+                        : getResources(view)
+                                .getQuantityString(
+                                        R.plurals.password_check_status_message_idle_with_leaks,
+                                        compromisedCredentialsCount,
+                                        compromisedCredentialsCount);
             case PasswordCheckUIStatus.RUNNING:
                 assert progress != null;
                 if (progress.equals(UNKNOWN_PROGRESS)) {
@@ -361,7 +414,8 @@ class PasswordCheckViewBinder {
                 } else {
                     return String.format(
                             getString(view, R.string.password_check_status_message_running),
-                            progress.first, progress.second);
+                            progress.first,
+                            progress.second);
                 }
             case PasswordCheckUIStatus.ERROR_OFFLINE:
                 return getString(view, R.string.password_check_status_message_error_offline);
@@ -372,11 +426,14 @@ class PasswordCheckViewBinder {
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
                 return getString(view, R.string.password_check_status_message_error_quota_limit);
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
-                NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
-                        view.getContext(), unusedView -> launchCheckupInAccount.run());
+                NoUnderlineClickableSpan linkSpan =
+                        new NoUnderlineClickableSpan(
+                                view.getContext(), unusedView -> launchCheckupInAccount.run());
                 return SpanApplier.applySpans(
-                        getString(view,
-                                R.string.password_check_status_message_error_quota_limit_account_check),
+                        getString(
+                                view,
+                                R.string
+                                        .password_check_status_message_error_quota_limit_account_check),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan));
             case PasswordCheckUIStatus.ERROR_UNKNOWN:
                 return getString(view, R.string.password_check_status_message_error_unknown);
@@ -408,7 +465,8 @@ class PasswordCheckViewBinder {
     private static String getStatusDescription(View view, Long checkTimestamp) {
         if (checkTimestamp == null) return null;
         Resources res = getResources(view);
-        return res.getString(R.string.password_check_status_description_idle,
+        return res.getString(
+                R.string.password_check_status_description_idle,
                 getTimestamp(res, System.currentTimeMillis() - checkTimestamp));
     }
 
@@ -452,8 +510,9 @@ class PasswordCheckViewBinder {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;
-                return compromisedCredentialsCount == 0 ? R.drawable.password_check_positive
-                                                        : R.drawable.password_checkup_warning;
+                return compromisedCredentialsCount == 0
+                        ? R.drawable.password_check_positive
+                        : R.drawable.password_checkup_warning;
             case PasswordCheckUIStatus.RUNNING:
             case PasswordCheckUIStatus.ERROR_OFFLINE:
             case PasswordCheckUIStatus.ERROR_NO_PASSWORDS:
@@ -468,8 +527,11 @@ class PasswordCheckViewBinder {
         return 0;
     }
 
-    private static void updateStatusSubtitle(View view, @PasswordCheckUIStatus int status,
-            boolean showStatusSubtitle, Integer compromisedCredentialsCount) {
+    private static void updateStatusSubtitle(
+            View view,
+            @PasswordCheckUIStatus int status,
+            boolean showStatusSubtitle,
+            Integer compromisedCredentialsCount) {
         // TODO(crbug.com/1114051): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         TextView statusSubtitle = view.findViewById(R.id.check_status_subtitle);
@@ -478,15 +540,20 @@ class PasswordCheckViewBinder {
         statusSubtitle.setVisibility(showStatusSubtitle ? View.VISIBLE : View.GONE);
     }
 
-    private static String getSubtitleText(View view, @PasswordCheckUIStatus int status,
-            boolean showStatusSubtitle, Integer compromisedCredentialsCount) {
+    private static String getSubtitleText(
+            View view,
+            @PasswordCheckUIStatus int status,
+            boolean showStatusSubtitle,
+            Integer compromisedCredentialsCount) {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;
                 return compromisedCredentialsCount == 0
                         ? getString(view, R.string.password_check_status_subtitle_no_findings)
-                        : getString(view,
-                                R.string.password_check_status_subtitle_found_compromised_credentials);
+                        : getString(
+                                view,
+                                R.string
+                                        .password_check_status_subtitle_found_compromised_credentials);
             case PasswordCheckUIStatus.RUNNING:
             case PasswordCheckUIStatus.ERROR_OFFLINE:
             case PasswordCheckUIStatus.ERROR_NO_PASSWORDS:
@@ -494,7 +561,8 @@ class PasswordCheckViewBinder {
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
             case PasswordCheckUIStatus.ERROR_UNKNOWN:
-                return getString(view,
+                return getString(
+                        view,
                         R.string.password_check_status_subtitle_found_compromised_credentials);
             default:
                 assert false : "Unhandled check status " + status + "on icon update";
@@ -502,29 +570,46 @@ class PasswordCheckViewBinder {
         return null;
     }
 
-    private static ListMenu createCredentialMenu(Context context, CompromisedCredential credential,
+    private static ListMenu createCredentialMenu(
+            Context context,
+            CompromisedCredential credential,
             PasswordCheckCoordinator.CredentialEventHandler credentialHandler) {
         MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_view_button_caption, 0, 0, true));
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_edit_button_caption, 0, 0, true));
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_remove_button_caption, 0, 0, true));
-        ListMenu.Delegate delegate = (listModel) -> {
-            int textId = listModel.get(ListMenuItemProperties.TITLE_ID);
-            if (textId == R.string.password_check_credential_menu_item_view_button_caption) {
-                credentialHandler.onView(credential);
-            } else if (textId == R.string.password_check_credential_menu_item_edit_button_caption) {
-                credentialHandler.onEdit(credential, context);
-            } else if (textId
-                    == R.string.password_check_credential_menu_item_remove_button_caption) {
-                credentialHandler.onRemove(credential);
-            } else {
-                assert false : "No action defined for " + context.getString(textId);
-            }
-        };
-        return new BasicListMenu(context, menuItems, delegate);
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_view_button_caption,
+                        0,
+                        0,
+                        true));
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_edit_button_caption,
+                        0,
+                        0,
+                        true));
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_remove_button_caption,
+                        0,
+                        0,
+                        true));
+        ListMenu.Delegate delegate =
+                (listModel) -> {
+                    int textId = listModel.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId
+                            == R.string.password_check_credential_menu_item_view_button_caption) {
+                        credentialHandler.onView(credential);
+                    } else if (textId
+                            == R.string.password_check_credential_menu_item_edit_button_caption) {
+                        credentialHandler.onEdit(credential, context);
+                    } else if (textId
+                            == R.string.password_check_credential_menu_item_remove_button_caption) {
+                        credentialHandler.onRemove(credential);
+                    } else {
+                        assert false : "No action defined for " + context.getString(textId);
+                    }
+                };
+        return BrowserUiListMenuUtils.getBasicListMenu(context, menuItems, delegate);
     }
 
     private static String getString(View view, int resourceId) {

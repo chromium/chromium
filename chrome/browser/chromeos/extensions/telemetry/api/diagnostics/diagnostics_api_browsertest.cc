@@ -122,6 +122,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery,
         crosapi::DiagnosticsRoutineEnum::kBluetoothScanning,
         crosapi::DiagnosticsRoutineEnum::kBluetoothPairing,
+        crosapi::DiagnosticsRoutineEnum::kFan,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -164,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "audio_driver",
               "bluetooth_discovery",
               "bluetooth_scanning",
-              "bluetooth_pairing"
+              "bluetooth_pairing",
+              "fan"
             ]
           }, response);
         chrome.test.succeed();
@@ -474,15 +476,30 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothDiscoveryRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothDiscoveryRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunBluetoothDiscoveryRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function runBluetoothDiscoveryRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
-        }, [],
-          'chrome.os.diagnostics.runBluetoothDiscoveryRoutine is not a function'
-        );
+      async function runBluetoothDiscoveryRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);
@@ -490,19 +507,33 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothScanningRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothScanningRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunBluetoothScanningRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kBluetoothScanning);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function runBluetoothScanningRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothScanningRoutine(
+      async function runBluetoothScanningRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBluetoothScanningRoutine(
             {
               length_seconds: 10
-            }
-          );
-        }, [],
-          'chrome.os.diagnostics.runBluetoothScanningRoutine is not a function'
-        );
+            });
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);
@@ -510,19 +541,34 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPairingRoutineWithoutFeatureFlagFail) {
+                       RunBluetoothPairingRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunBluetoothPairingRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kBluetoothPairing);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function runBluetoothPairingRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothPairingRoutine(
+      async function runBluetoothPairingRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBluetoothPairingRoutine(
             {
               peripheral_id: "HEALTHD_TEST_ID"
             }
           );
-        }, [],
-          'chrome.os.diagnostics.runBluetoothPairingRoutine is not a function'
-        );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
     ]);
@@ -1278,114 +1324,30 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 }
 
-class PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest
-    : public TelemetryExtensionDiagnosticsApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
-    RunBluetoothDiscoveryRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunFanRoutineSuccess) {
   // Configure FakeDiagnosticsService.
   {
     auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
     expected_response->id = 0;
     expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
 
-    // Set the return value for a call to RunBluetoothDiscoveryRoutine.
+    // Set the return value for a call to RunFanRoutine.
     auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.
     fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery);
+        crosapi::DiagnosticsRoutineEnum::kFan);
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      async function runBluetoothDiscoveryRoutine() {
+      async function runFanRoutine() {
         const response =
-          await chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
-    RunBluetoothScanningRoutineWithFeatureFlagSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
-
-    // Set the return value for a call to RunBluetoothScanningRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected called routine.
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBluetoothScanning);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runBluetoothScanningRoutine() {
-        const response =
-          await chrome.os.diagnostics.runBluetoothScanningRoutine(
-            {
-              length_seconds: 10
-            });
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest,
-    RunBluetoothPairingRoutineWithFeatureFlagSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
-
-    // Set the return value for a call to RunBluetoothPairingRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected called routine.
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPairing);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runBluetoothPairingRoutine() {
-        const response =
-          await chrome.os.diagnostics.runBluetoothPairingRoutine(
-            {
-              peripheral_id: "HEALTHD_TEST_ID"
-            }
-          );
+          await chrome.os.diagnostics.runFanRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
@@ -1394,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest
-    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
+    : public TelemetryExtensionDiagnosticsApiBrowserTest {
  public:
   NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest() = default;
 
@@ -1469,97 +1431,6 @@ IN_PROC_BROWSER_TEST_F(
           'Error: Unauthorized access to ' +
           'chrome.os.diagnostics.runBluetoothPairingRoutine. Extension ' +
           'doesn\'t have the permission.'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class BlockedTelemetryExtensionDiagnosticsApiBrowserTest
-    : public PendingApprovalTelemetryExtensionDiagnosticsApiBrowserTest {
- public:
-  BlockedTelemetryExtensionDiagnosticsApiBrowserTest() = default;
-
-  std::string public_key() const override {
-    return "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm6NnMxmC5iaSFAILkuIkGXl"
-           "lW1Tie3AW+7Ty3R3sbQ7EVNG3HtFIG7jbJIvSko+lrTa1U1VveOXZw1u3y1T49ihR2X"
-           "FU0w6+3OAXzjuUimKUviGao6EN4KfCegtKyDQnMw0zATBisqBxrPLzGBXxP/AhxH2OG"
-           "gyyioVOzoCF+rnBY7ed+Wh+mPI7s9lrECeisUHHM5xbHXXgr8bnvt3U27jnsctwJWKH"
-           "fcbd3rpMJwBfOmPfuQ0MZvySVkTr/WYeemkwR8/4mek9/UIGMB8X+mXdU9OV/qhylqy"
-           "6FzRw/FdV+RcmzAwEgNmhgXP7TwtFBsUdtTIe2Kio26ciK7PSKwIDAQAB";
-  }
-
-  std::string matches_origin() const override {
-    return "https://hpcs-appschr.hpcloud.hp.com/*";
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPowerRoutineFromBlockedExtensionFail) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function runBluetoothPowerRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothPowerRoutine();
-        }, [],
-          'chrome.os.diagnostics.runBluetoothPowerRoutine is not a function'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothDiscoveryRoutineFromBlockedExtensionFail) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function runBluetoothDiscoveryRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothDiscoveryRoutine();
-        }, [],
-          'chrome.os.diagnostics.runBluetoothDiscoveryRoutine is not a function'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothScanningRoutineFromBlockedExtensionFail) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function runBluetoothScanningRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothScanningRoutine(
-            {
-              length_seconds: 10
-            }
-          );
-        }, [],
-          'chrome.os.diagnostics.runBluetoothScanningRoutine is not a function'
-        );
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(BlockedTelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPairingRoutineFromBlockedExtensionFail) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function runBluetoothPairingRoutineNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.runBluetoothPairingRoutine(
-            {
-              peripheral_id: "HEALTHD_TEST_ID"
-            }
-          );
-        }, [],
-          'chrome.os.diagnostics.runBluetoothPairingRoutine is not a function'
         );
         chrome.test.succeed();
       }

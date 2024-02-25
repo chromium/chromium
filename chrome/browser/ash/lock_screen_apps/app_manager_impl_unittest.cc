@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -29,6 +30,9 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/traits_bag.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
@@ -59,7 +63,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace lock_screen_apps {
 
@@ -111,10 +114,10 @@ class LockScreenEventObserver
     if (event.restrict_to_browser_context)
       EXPECT_EQ(context_, event.restrict_to_browser_context);
 
-    std::unique_ptr<extensions::api::app_runtime::LaunchData> launch_data =
-        extensions::api::app_runtime::LaunchData::FromValueDeprecated(
-            arg_value);
-    ASSERT_TRUE(launch_data);
+    ASSERT_TRUE(arg_value.is_dict());
+    std::optional<extensions::api::app_runtime::LaunchData> launch_data =
+        extensions::api::app_runtime::LaunchData::FromValue(
+            arg_value.GetDict());
     ASSERT_TRUE(launch_data->action_data);
     EXPECT_EQ(extensions::api::app_runtime::ActionType::kNewNote,
               launch_data->action_data->action_type);
@@ -141,7 +144,7 @@ class LockScreenEventObserver
 
  private:
   std::vector<std::string> launched_apps_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
   bool expect_restore_action_state_ = true;
 };
 
@@ -195,6 +198,11 @@ class LockScreenAppManagerImplTest
     profile_ = CreatePrimaryProfile();
 
     InitExtensionSystem(profile());
+
+    // Wait for AppServiceProxy to be ready - NoteTakingHelper depends on
+    // AppService.
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile_));
 
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -484,7 +492,7 @@ class LockScreenAppManagerImplTest
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   std::unique_ptr<LockScreenEventObserver> event_observer_;
 
@@ -506,32 +514,32 @@ bool IsInstalled(const std::string& app_id, Profile* profile) {
 
 bool IsInstalledAndEnabled(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app;
 }
 
 bool PathExists(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app && base::PathExists(app->path());
 }
 
 base::FilePath GetPath(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app ? app->path() : base::FilePath();
 }
 
-absl::optional<std::string> GetVersion(const std::string& app_id,
-                                       Profile* profile) {
+std::optional<std::string> GetVersion(const std::string& app_id,
+                                      Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   if (!app)
-    return absl::nullopt;
+    return std::nullopt;
   return app->VersionString();
 }
 

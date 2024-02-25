@@ -26,8 +26,7 @@ import java.util.Locale;
  * The milli picker is not displayed if step >= SECOND_IN_MILLIS
  * The second picker is not displayed if step >= MINUTE_IN_MILLIS.
  */
-public class MultiFieldTimePickerDialog
-        extends AlertDialog implements OnClickListener {
+public class MultiFieldTimePickerDialog extends AlertDialog implements OnClickListener {
 
     private final NumberPicker mHourSpinner;
     private final NumberPicker mMinuteSpinner;
@@ -39,9 +38,7 @@ public class MultiFieldTimePickerDialog
     private final int mBaseMilli;
     private final boolean mIs24hourFormat;
 
-    /**
-     * Adds an onTimeSet() method.
-     */
+    /** Adds an onTimeSet() method. */
     public interface OnMultiFieldTimeSetListener {
         void onTimeSet(int hourOfDay, int minute, int second, int milli);
     }
@@ -53,8 +50,14 @@ public class MultiFieldTimePickerDialog
     public MultiFieldTimePickerDialog(
             Context context,
             int theme,
-            int hour, int minute, int second, int milli,
-            int min, int max, int step, boolean is24hourFormat,
+            int hour,
+            int minute,
+            int second,
+            int milli,
+            int min,
+            int max,
+            int step,
+            boolean is24hourFormat,
             OnMultiFieldTimeSetListener listener) {
         super(context, theme);
         mListener = listener;
@@ -70,8 +73,7 @@ public class MultiFieldTimePickerDialog
         }
 
         LayoutInflater inflater =
-                (LayoutInflater) context.getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.multi_field_time_picker_dialog, null);
         setView(view);
 
@@ -99,10 +101,11 @@ public class MultiFieldTimePickerDialog
             int amPm = hour / 12;
             mAmPmSpinner.setMinValue(minAmPm);
             mAmPmSpinner.setMaxValue(maxAmPm);
-            mAmPmSpinner.setDisplayedValues(new String[] {
-                    context.getString(R.string.time_picker_dialog_am),
-                    context.getString(R.string.time_picker_dialog_pm)
-            });
+            mAmPmSpinner.setDisplayedValues(
+                    new String[] {
+                        context.getString(R.string.time_picker_dialog_am),
+                        context.getString(R.string.time_picker_dialog_pm)
+                    });
 
             hour %= 12;
             if (hour == 0) {
@@ -150,7 +153,7 @@ public class MultiFieldTimePickerDialog
             if (minMinute == maxMinute) {
                 // Set this otherwise the box is empty until you stroke it.
                 mMinuteSpinner.setDisplayedValues(
-                        new String[] { twoDigitPaddingFormatter.format(minMinute) });
+                        new String[] {twoDigitPaddingFormatter.format(minMinute)});
                 mMinuteSpinner.setEnabled(false);
                 minute = minMinute;
             }
@@ -162,8 +165,7 @@ public class MultiFieldTimePickerDialog
         mMinuteSpinner.setValue(minute);
         if (step % HOUR_IN_MILLIS == 0) {
             mMinuteSpinner.setEnabled(false);
-            // TODO(tkent): We should set minutes value of
-            // WebDateTimeChooserParams::stepBase.
+            // TODO(tkent): We should set minutes value of WebDateTimeChooserParams::stepBase.
             mMinuteSpinner.setValue(minMinute);
         }
 
@@ -186,7 +188,7 @@ public class MultiFieldTimePickerDialog
             if (minSecond == maxSecond) {
                 // Set this otherwise the box is empty until you stroke it.
                 mSecSpinner.setDisplayedValues(
-                        new String[] { twoDigitPaddingFormatter.format(minSecond) });
+                        new String[] {twoDigitPaddingFormatter.format(minSecond)});
                 mSecSpinner.setEnabled(false);
                 second = minSecond;
             }
@@ -268,7 +270,7 @@ public class MultiFieldTimePickerDialog
     /**
      * Clear focus before retrieving so that values inserted with
      * keyboard are taken into account.
-    */
+     */
     private int getPickerValue(NumberPicker picker) {
         picker.clearFocus();
         return picker.getValue();

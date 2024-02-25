@@ -24,6 +24,10 @@ class DownloadManager;
 
 namespace ash {
 
+namespace holding_space_metrics {
+enum class EventSource;
+}  // namespace holding_space_metrics
+
 // A delegate of `HoldingSpaceKeyedService` tasked with monitoring the status of
 // of downloads on its behalf.
 class HoldingSpaceDownloadsDelegate
@@ -40,9 +44,9 @@ class HoldingSpaceDownloadsDelegate
   ~HoldingSpaceDownloadsDelegate() override;
 
   // Attempts to mark the download underlying the given `item` to open when
-  // complete. Returns `absl::nullopt` on success or the reason if the attempt
+  // complete. Returns `std::nullopt` on success or the reason if the attempt
   // was not successful.
-  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  std::optional<holding_space_metrics::ItemLaunchFailureReason>
   OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:
@@ -106,9 +110,15 @@ class HoldingSpaceDownloadsDelegate
                                       bool invalidate_image);
 
   // Attempts to cancel/pause/resume the download underlying the given `item`.
-  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
-  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
-  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Cancel(const HoldingSpaceItem* item,
+              HoldingSpaceCommandId command_id,
+              holding_space_metrics::EventSource event_source);
+  void Pause(const HoldingSpaceItem* item,
+             HoldingSpaceCommandId command_id,
+             holding_space_metrics::EventSource event_source);
+  void Resume(const HoldingSpaceItem* item,
+              HoldingSpaceCommandId command_id,
+              holding_space_metrics::EventSource event_source);
 
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>

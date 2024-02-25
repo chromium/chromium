@@ -49,8 +49,7 @@ bool ForWhichExtensionType::Matches(
 
   if (extension->is_extension()) {
     // Web File Handlers use the `file_handlers` manifest key for registration.
-    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-            extension->manifest_version())) {
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
       return true;
     }
 

@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -34,6 +35,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
@@ -61,6 +64,7 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -118,7 +122,8 @@ const ui::Layer* NextLayer(const ui::Layer* layer) {
   const ui::Layer* parent = layer->parent();
   if (!parent)
     return nullptr;
-  const std::vector<ui::Layer*> children = parent->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>> children =
+      parent->children();
   const auto i = base::ranges::find(children, layer) + 1;
   return (i == children.cend()) ? parent : FirstLayer(*i);
 }
@@ -221,9 +226,15 @@ using ViewTest = ViewsTestBase;
 
 // A derived class for testing purpose.
 class TestView : public View {
+  METADATA_HEADER(TestView, View)
+
  public:
   TestView() = default;
-  ~TestView() override = default;
+  ~TestView() override {
+    if (destruction_callback_) {
+      std::move(destruction_callback_).Run();
+    }
+  }
 
   // Reset all test state
   void Reset() {
@@ -235,6 +246,7 @@ class TestView : public View {
     received_mouse_exit_ = false;
     did_paint_ = false;
     accelerator_count_map_.clear();
+    destruction_callback_.Reset();
   }
 
   // Exposed as public for testing.
@@ -242,9 +254,13 @@ class TestView : public View {
 
   void DoBlur() { views::View::Blur(); }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     did_layout_ = true;
-    View::Layout();
+    LayoutSuperclass<View>(this);
+  }
+
+  void SetDestructionCallback(base::OnceClosure destruction_callback) {
+    destruction_callback_ = std::move(destruction_callback);
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -288,19 +304,82 @@ class TestView : public View {
 
   // Accessibility events
   ax::mojom::Event last_a11y_event_ = ax::mojom::Event::kNone;
+
+  base::OnceClosure destruction_callback_;
 };
 
+void TestView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  did_change_bounds_ = true;
+  new_bounds_ = bounds();
+}
+
+bool TestView::OnMousePressed(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+  if (delete_on_pressed_) {
+    delete this;
+  }
+  return true;
+}
+
+bool TestView::OnMouseDragged(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+  return true;
+}
+
+void TestView::OnMouseReleased(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+}
+
+void TestView::OnMouseEntered(const ui::MouseEvent& event) {
+  received_mouse_enter_ = true;
+}
+
+void TestView::OnMouseExited(const ui::MouseEvent& event) {
+  received_mouse_exit_ = true;
+}
+
+void TestView::OnPaint(gfx::Canvas* canvas) {
+  did_paint_ = true;
+}
+
+void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
+  scheduled_paint_rects_.push_back(rect);
+  View::OnDidSchedulePaint(rect);
+}
+
+bool TestView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  accelerator_count_map_[accelerator]++;
+  return true;
+}
+
+void TestView::OnThemeChanged() {
+  View::OnThemeChanged();
+  native_theme_ = GetNativeTheme();
+}
+
+void TestView::OnAccessibilityEvent(ax::mojom::Event event_type) {
+  last_a11y_event_ = event_type;
+}
+
+BEGIN_METADATA(TestView)
+END_METADATA
+
 class A11yTestView : public TestView {
+  METADATA_HEADER(A11yTestView, TestView)
+
  public:
   // Convenience constructor to test `View::SetAccessibilityProperties`
   explicit A11yTestView(
-      absl::optional<ax::mojom::Role> role = absl::nullopt,
-      absl::optional<std::u16string> name = absl::nullopt,
-      absl::optional<std::u16string> description = absl::nullopt,
-      absl::optional<std::u16string> role_description = absl::nullopt,
-      absl::optional<ax::mojom::NameFrom> name_from = absl::nullopt,
-      absl::optional<ax::mojom::DescriptionFrom> description_from =
-          absl::nullopt) {
+      std::optional<ax::mojom::Role> role = std::nullopt,
+      std::optional<std::u16string> name = std::nullopt,
+      std::optional<std::u16string> description = std::nullopt,
+      std::optional<std::u16string> role_description = std::nullopt,
+      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
+      std::optional<ax::mojom::DescriptionFrom> description_from =
+          std::nullopt) {
     SetAccessibilityProperties(
         std::move(role), std::move(name), std::move(description),
         std::move(role_description), std::move(name_from),
@@ -321,18 +400,21 @@ class A11yTestView : public TestView {
     }
   }
 
-  void SetAccessibleNamePrefix(absl::optional<std::u16string> name_prefix) {
+  void SetAccessibleNamePrefix(std::optional<std::u16string> name_prefix) {
     name_prefix_ = std::move(name_prefix);
   }
 
-  void SetAccessibleNameFrom(absl::optional<ax::mojom::NameFrom> name_from) {
+  void SetAccessibleNameFrom(std::optional<ax::mojom::NameFrom> name_from) {
     name_from_ = std::move(name_from);
   }
 
  private:
-  absl::optional<std::u16string> name_prefix_;
-  absl::optional<ax::mojom::NameFrom> name_from_;
+  std::optional<std::u16string> name_prefix_;
+  std::optional<ax::mojom::NameFrom> name_from_;
 };
+
+BEGIN_METADATA(A11yTestView)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // Metadata
@@ -389,8 +471,42 @@ TEST_F(ViewTest, SizeToPreferredSizeInducesLayout) {
   EXPECT_TRUE(example_view.did_layout_);
 }
 
-void TestView::OnAccessibilityEvent(ax::mojom::Event event_type) {
-  last_a11y_event_ = event_type;
+namespace {
+
+// A view that provides direct and indirect ways to trigger
+// `LayoutSuperclass<>()`.
+class SuperclassLayoutTestView : public TestView {
+ public:
+  int layout_count() const { return layout_count_; }
+
+  void AttemptSuperclassLayout() {
+    ++layout_count_;
+    LayoutSuperclass<TestView>(this);
+  }
+
+  void Layout(PassKey) override { AttemptSuperclassLayout(); }
+
+ private:
+  int layout_count_ = 0;
+};
+
+}  // namespace
+
+// Verifies that LayoutSuperclass<>() can only be invoked while layout is
+// occurring.
+TEST_F(ViewTest, CannotLayoutSuperclassOutsideLayout) {
+  // Construction should not automatically attempt layout.
+  SuperclassLayoutTestView view;
+  EXPECT_EQ(0, view.layout_count());
+
+  // Triggering layout through the standard method should attempt superclass
+  // layout, which should succeed.
+  view.InvalidateLayout();
+  test::RunScheduledLayout(&view);
+  EXPECT_EQ(1, view.layout_count());
+
+  // Attempting superclass layout outside that flow should checkfail.
+  EXPECT_CHECK_DEATH(view.AttemptSuperclassLayout());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -519,8 +635,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleAndRoleDescription) {
   A11yTestView v(ax::mojom::Role::kButton,
-                 /*name*/ absl::nullopt,
-                 /*description*/ absl::nullopt, u"Super Button");
+                 /*name*/ std::nullopt,
+                 /*description*/ std::nullopt, u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetAccessibleNodeData(&data);
   EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
@@ -919,11 +1035,6 @@ TEST_F(ViewTest, OnBoundsChangedFiresA11yEvent) {
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
 }
 
-void TestView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  did_change_bounds_ = true;
-  new_bounds_ = bounds();
-}
-
 TEST_F(ViewTest, OnBoundsChanged) {
   TestView v;
 
@@ -974,33 +1085,6 @@ TEST_F(ViewTest, OnStateChangedFiresA11yEvent) {
 ////////////////////////////////////////////////////////////////////////////////
 // MouseEvent
 ////////////////////////////////////////////////////////////////////////////////
-
-bool TestView::OnMousePressed(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-  if (delete_on_pressed_)
-    delete this;
-  return true;
-}
-
-bool TestView::OnMouseDragged(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-  return true;
-}
-
-void TestView::OnMouseReleased(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-}
-
-void TestView::OnMouseEntered(const ui::MouseEvent& event) {
-  received_mouse_enter_ = true;
-}
-
-void TestView::OnMouseExited(const ui::MouseEvent& event) {
-  received_mouse_exit_ = true;
-}
 
 TEST_F(ViewTest, MouseEvent) {
   auto view1 = std::make_unique<TestView>();
@@ -1127,10 +1211,6 @@ TEST_F(ViewTest, DetectReturnFormDrag) {
 ////////////////////////////////////////////////////////////////////////////////
 // Painting
 ////////////////////////////////////////////////////////////////////////////////
-
-void TestView::OnPaint(gfx::Canvas* canvas) {
-  did_paint_ = true;
-}
 
 namespace {
 
@@ -1886,6 +1966,8 @@ TEST_F(ViewTest, PaintInPromotedToLayer) {
 
 // A derived class for testing paint.
 class TestPaintView : public TestView {
+  METADATA_HEADER(TestPaintView, TestView)
+
  public:
   TestPaintView() = default;
   ~TestPaintView() override = default;
@@ -1901,6 +1983,9 @@ class TestPaintView : public TestView {
  private:
   gfx::Rect canvas_bounds_;
 };
+
+BEGIN_METADATA(TestPaintView)
+END_METADATA
 
 TEST_F(ViewTest, PaintLocalBounds) {
   ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
@@ -1929,11 +2014,6 @@ TEST_F(ViewTest, PaintLocalBounds) {
   // Check that the canvas produced by |v1| for paint contains all of |v1|'s
   // visible bounds.
   EXPECT_TRUE(v1->canvas_bounds().Contains(v1->GetVisibleBounds()));
-}
-
-void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
-  scheduled_paint_rects_.push_back(rect);
-  View::OnDidSchedulePaint(rect);
 }
 
 namespace {
@@ -2760,10 +2840,6 @@ TEST_F(ViewPaintOptimizationTest, PaintDirtyViewsOnly) {
 ////////////////////////////////////////////////////////////////////////////////
 // Accelerators
 ////////////////////////////////////////////////////////////////////////////////
-bool TestView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  accelerator_count_map_[accelerator]++;
-  return true;
-}
 
 namespace {
 
@@ -3011,6 +3087,8 @@ TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
 // Native view hierachy
 ////////////////////////////////////////////////////////////////////////////////
 class ToplevelWidgetObserverView : public View {
+  METADATA_HEADER(ToplevelWidgetObserverView, View)
+
  public:
   ToplevelWidgetObserverView() = default;
 
@@ -3038,6 +3116,9 @@ class ToplevelWidgetObserverView : public View {
  private:
   raw_ptr<Widget> toplevel_ = nullptr;
 };
+
+BEGIN_METADATA(ToplevelWidgetObserverView)
+END_METADATA
 
 // Test that
 // a) a view can track the current top level widget by overriding
@@ -3086,6 +3167,8 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
 ////////////////////////////////////////////////////////////////////////////////
 
 class TransformPaintView : public TestView {
+  METADATA_HEADER(TransformPaintView, TestView)
+
  public:
   TransformPaintView() = default;
 
@@ -3107,6 +3190,9 @@ class TransformPaintView : public TestView {
  private:
   gfx::Rect scheduled_paint_rect_;
 };
+
+BEGIN_METADATA(TransformPaintView)
+END_METADATA
 
 TEST_F(ViewTest, TransformPaint) {
   auto view1 = std::make_unique<TransformPaintView>();
@@ -3309,6 +3395,8 @@ TEST_F(ViewTest, TransformVisibleBound) {
 // OnVisibleBoundsChanged()
 
 class VisibleBoundsView : public View {
+  METADATA_HEADER(VisibleBoundsView, View)
+
  public:
   VisibleBoundsView() = default;
 
@@ -3331,6 +3419,9 @@ class VisibleBoundsView : public View {
 
   bool received_notification_ = false;
 };
+
+BEGIN_METADATA(VisibleBoundsView)
+END_METADATA
 
 TEST_F(ViewTest, OnVisibleBoundsChanged) {
   gfx::Rect viewport_bounds(0, 0, 100, 100);
@@ -3806,6 +3897,8 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
 }
 
 class ObserverView : public View {
+  METADATA_HEADER(ObserverView, View)
+
  public:
   ObserverView();
 
@@ -3816,11 +3909,11 @@ class ObserverView : public View {
 
   void ForgetOldDetails();
 
-  absl::optional<ViewHierarchyChangedDetails> add_details() {
+  std::optional<ViewHierarchyChangedDetails> add_details() {
     return add_details_;
   }
 
-  absl::optional<ViewHierarchyChangedDetails> remove_details() {
+  std::optional<ViewHierarchyChangedDetails> remove_details() {
     return remove_details_;
   }
 
@@ -3829,8 +3922,8 @@ class ObserverView : public View {
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
 
-  absl::optional<ViewHierarchyChangedDetails> add_details_;
-  absl::optional<ViewHierarchyChangedDetails> remove_details_;
+  std::optional<ViewHierarchyChangedDetails> add_details_;
+  std::optional<ViewHierarchyChangedDetails> remove_details_;
 };
 
 ObserverView::ObserverView() = default;
@@ -3846,6 +3939,9 @@ void ObserverView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   (details.is_add ? add_details_ : remove_details_).emplace(details);
 }
+
+BEGIN_METADATA(ObserverView)
+END_METADATA
 
 using ViewHierarchyChangedTest = ViewTest;
 
@@ -3979,6 +4075,8 @@ TEST_F(ViewHierarchyChangedTest, HierarchyReceivesMove) {
 }
 
 class WidgetObserverView : public View {
+  METADATA_HEADER(WidgetObserverView, View)
+
  public:
   WidgetObserverView();
 
@@ -4018,6 +4116,9 @@ void WidgetObserverView::AddedToWidget() {
 void WidgetObserverView::RemovedFromWidget() {
   ++removed_from_widget_count_;
 }
+
+BEGIN_METADATA(WidgetObserverView)
+END_METADATA
 
 // Verifies that AddedToWidget and RemovedFromWidget are called for a view when
 // it is added to hierarchy.
@@ -4987,6 +5088,8 @@ TEST_F(ViewLayerTest, OrphanLayerAfterViewRemove) {
 }
 
 class PaintTrackingView : public View {
+  METADATA_HEADER(PaintTrackingView, View)
+
  public:
   PaintTrackingView() = default;
 
@@ -5001,6 +5104,9 @@ class PaintTrackingView : public View {
  private:
   bool painted_ = false;
 };
+
+BEGIN_METADATA(PaintTrackingView)
+END_METADATA
 
 // Makes sure child views with layers aren't painted when paint starts at an
 // ancestor.
@@ -5184,7 +5290,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrder) {
   v2->SetPaintToLayer();
 
   // Test the initial z-order.
-  const std::vector<ui::Layer*>& child_layers_pre = v->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers_pre =
+      v->layer()->children();
   ASSERT_EQ(2u, child_layers_pre.size());
   EXPECT_EQ(v1->layer(), child_layers_pre[0]);
   EXPECT_EQ(v2->layer(), child_layers_pre[1]);
@@ -5193,7 +5300,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrder) {
 
   // Test the new layer order. We expect: |v1| |v1_old_layer| |v2|.
   // for |v1| and |v2|.
-  const std::vector<ui::Layer*>& child_layers_post = v->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers_post =
+      v->layer()->children();
   ASSERT_EQ(3u, child_layers_post.size());
   EXPECT_EQ(v1->layer(), child_layers_post[0]);
   EXPECT_EQ(v1_old_layer.get(), child_layers_post[1]);
@@ -5213,7 +5321,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrderWidgetParent) {
   ui::Layer* root_layer = GetRootLayer();
 
   // Test the initial z-order.
-  const std::vector<ui::Layer*>& child_layers_pre = root_layer->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers_pre =
+      root_layer->children();
   ASSERT_EQ(2u, child_layers_pre.size());
   EXPECT_EQ(v1->layer(), child_layers_pre[0]);
   EXPECT_EQ(v2->layer(), child_layers_pre[1]);
@@ -5221,7 +5330,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrderWidgetParent) {
   std::unique_ptr<ui::Layer> v1_old_layer(v1->RecreateLayer());
 
   // Test the new layer order. We expect: |v1| |v1_old_layer| |v2|.
-  const std::vector<ui::Layer*>& child_layers_post = root_layer->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& child_layers_post =
+      root_layer->children();
   ASSERT_EQ(3u, child_layers_post.size());
   EXPECT_EQ(v1->layer(), child_layers_post[0]);
   EXPECT_EQ(v1_old_layer.get(), child_layers_post[1]);
@@ -5594,6 +5704,8 @@ TEST_F(ViewLayerTest, LayerBeneathMovedWithView) {
 namespace {
 
 class PaintLayerView : public View {
+  METADATA_HEADER(PaintLayerView, View)
+
  public:
   PaintLayerView() = default;
 
@@ -5612,6 +5724,9 @@ class PaintLayerView : public View {
  private:
   std::unique_ptr<PaintInfo> last_paint_info_;
 };
+
+BEGIN_METADATA(PaintLayerView)
+END_METADATA
 
 }  // namespace
 
@@ -5755,11 +5870,6 @@ TEST_F(ViewTest, FocusableAssertions) {
 // NativeTheme
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestView::OnThemeChanged() {
-  View::OnThemeChanged();
-  native_theme_ = GetNativeTheme();
-}
-
 TEST_F(ViewTest, OnThemeChanged) {
   auto test_view = std::make_unique<TestView>();
   EXPECT_FALSE(test_view->native_theme_);
@@ -5858,6 +5968,8 @@ class WidgetWithCustomTheme : public Widget {
 
 // See comment above test for details.
 class ViewThatAddsViewInOnThemeChanged : public View {
+  METADATA_HEADER(ViewThatAddsViewInOnThemeChanged, View)
+
  public:
   ViewThatAddsViewInOnThemeChanged() { SetPaintToLayer(); }
 
@@ -5882,6 +5994,9 @@ class ViewThatAddsViewInOnThemeChanged : public View {
  private:
   bool on_native_theme_changed_called_ = false;
 };
+
+BEGIN_METADATA(ViewThatAddsViewInOnThemeChanged)
+END_METADATA
 
 // Creates and adds a new child view to |parent| that has a layer.
 void AddViewWithChildLayer(View* parent) {
@@ -5916,6 +6031,8 @@ TEST_F(ViewTest, CrashOnAddFromFromOnThemeChanged) {
 
 // A View that removes its Layer when hidden.
 class NoLayerWhenHiddenView : public View {
+  METADATA_HEADER(NoLayerWhenHiddenView, View)
+
  public:
   using RemovedFromWidgetCallback = base::OnceCallback<void()>;
   explicit NoLayerWhenHiddenView(RemovedFromWidgetCallback removed_from_widget)
@@ -5946,6 +6063,9 @@ class NoLayerWhenHiddenView : public View {
   bool was_hidden_ = false;
   RemovedFromWidgetCallback removed_from_widget_;
 };
+
+BEGIN_METADATA(NoLayerWhenHiddenView)
+END_METADATA
 
 // Test that Views can safely manipulate Layers during Widget closure.
 TEST_F(ViewTest, DestroyLayerInClose) {
@@ -5978,6 +6098,8 @@ TEST_F(ViewTest, DestroyLayerInClose) {
 
 // A View that keeps the children with a special ID above other children.
 class OrderableView : public View {
+  METADATA_HEADER(OrderableView, View)
+
  public:
   // ID used by the children that are stacked above other children.
   static constexpr int VIEW_ID_RAISED = 1000;
@@ -5998,6 +6120,9 @@ class OrderableView : public View {
   }
 };
 
+BEGIN_METADATA(OrderableView)
+END_METADATA
+
 TEST_F(ViewTest, ChildViewZOrderChanged) {
   const size_t kNumChildren = 4;
   auto view = std::make_unique<OrderableView>();
@@ -6005,7 +6130,8 @@ TEST_F(ViewTest, ChildViewZOrderChanged) {
   for (size_t i = 0; i < kNumChildren; ++i)
     AddViewWithChildLayer(view.get());
   View::Views children = view->GetChildrenInZOrder();
-  const std::vector<ui::Layer*>& layers = view->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers =
+      view->layer()->children();
   ASSERT_EQ(kNumChildren, children.size());
   ASSERT_EQ(kNumChildren, layers.size());
   for (size_t i = 0; i < kNumChildren; ++i) {
@@ -6047,7 +6173,8 @@ TEST_F(ViewTest, AttachChildViewWithComplicatedLayers) {
   // grand_child_view has layer.
   View* grand_child_view = child_view2->AddChildView(std::make_unique<View>());
   grand_child_view->SetPaintToLayer();
-  const std::vector<ui::Layer*>& layers = parent_view->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers =
+      parent_view->layer()->children();
   EXPECT_EQ(2u, layers.size());
   EXPECT_EQ(layers[0], grand_child_view->layer());
   EXPECT_EQ(layers[1], child_view1->layer());
@@ -6056,8 +6183,8 @@ TEST_F(ViewTest, AttachChildViewWithComplicatedLayers) {
   // should not change.
   OrderableView* parent_view_ptr =
       grand_parent_view->AddChildView(std::move(parent_view));
-  const std::vector<ui::Layer*>& layers_after_attached =
-      parent_view_ptr->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>&
+      layers_after_attached = parent_view_ptr->layer()->children();
   EXPECT_EQ(2u, layers_after_attached.size());
   EXPECT_EQ(layers_after_attached[0], grand_child_view->layer());
   EXPECT_EQ(layers_after_attached[1], child_view1->layer());
@@ -6272,6 +6399,9 @@ class TestViewObserver : public ViewObserver {
       observations_.AddObservation(view);
     }
   }
+
+  void AddObservation(View* view) { observations_.AddObservation(view); }
+
   ~TestViewObserver() override = default;
 
   // ViewObserver:
@@ -6297,12 +6427,34 @@ class TestViewObserver : public ViewObserver {
     view_reordered_ = view;
   }
 
+  void OnViewHierarchyWillBeDeleted(View* observed_view) override {
+    on_view_hierarchy_will_be_deleted_called_ = true;
+    if (verify_on_view_hierarchy_will_be_deleted_callback_) {
+      std::move(verify_on_view_hierarchy_will_be_deleted_callback_).Run();
+    }
+  }
+
+  void OnViewIsDeleting(View* observed_view) override {
+    observations_.RemoveObservation(observed_view);
+  }
+
+  void SetVerifyOnViewHierarchyWillBeDeletedCallback(
+      base::OnceClosure verify_on_view_hierarchy_will_be_deleted_callback) {
+    verify_on_view_hierarchy_will_be_deleted_callback_ =
+        std::move(verify_on_view_hierarchy_will_be_deleted_callback);
+  }
+
   int child_view_added_times() { return child_view_added_times_; }
   int child_view_removed_times() { return child_view_removed_times_; }
   const View* child_view_added() const { return child_view_added_; }
   const View* child_view_added_parent() const {
     return child_view_added_parent_;
   }
+
+  bool has_on_view_hierarchy_will_be_deleted_called() {
+    return on_view_hierarchy_will_be_deleted_called_;
+  }
+
   const View* child_view_removed() const { return child_view_removed_; }
   const View* child_view_removed_parent() const {
     return child_view_removed_parent_;
@@ -6321,6 +6473,8 @@ class TestViewObserver : public ViewObserver {
 
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
+  bool on_view_hierarchy_will_be_deleted_called_ = false;
+  base::OnceClosure verify_on_view_hierarchy_will_be_deleted_callback_;
 
   raw_ptr<View> child_view_added_parent_ = nullptr;
   raw_ptr<View> child_view_added_ = nullptr;
@@ -6333,6 +6487,28 @@ class TestViewObserver : public ViewObserver {
 };
 
 using ViewObserverTest = ViewTest;
+
+TEST_F(ViewObserverTest, ViewHierarchyWillBeDeleted) {
+  TestViewObserver observer({});
+  {
+    auto parent = std::make_unique<View>();
+    View* main_view = parent->AddChildView(std::make_unique<View>());
+    TestView* child_view =
+        main_view->AddChildView(std::make_unique<TestView>());
+    observer.AddObservation(main_view);
+    child_view->SetDestructionCallback(base::BindOnce(
+        [](TestViewObserver& observer) {
+          EXPECT_TRUE(observer.has_on_view_hierarchy_will_be_deleted_called());
+        },
+        std::ref(observer)));
+    observer.SetVerifyOnViewHierarchyWillBeDeletedCallback(base::BindOnce(
+        [](View* main_view, View* parent_view) {
+          EXPECT_EQ(parent_view->children().size(), 1u);
+          EXPECT_EQ(main_view->children().size(), 1u);
+        },
+        base::Unretained(main_view), base::Unretained(parent.get())));
+  }
+}
 
 TEST_F(ViewObserverTest, ViewParentChanged) {
   auto parent1 = std::make_unique<View>();
@@ -6493,6 +6669,8 @@ TEST_F(ViewObserverTest, ViewPropertyChanged) {
 // Provides a simple parent view implementation which tracks layer change
 // notifications from child views.
 class TestParentView : public View {
+  METADATA_HEADER(TestParentView, View)
+
  public:
   TestParentView() = default;
 
@@ -6525,6 +6703,9 @@ class TestParentView : public View {
   int layer_change_count_ = 0;
 };
 
+BEGIN_METADATA(TestParentView)
+END_METADATA
+
 // Tests the following cases.
 // 1. We receive the OnChildLayerChanged() notification when a layer change
 //    occurs in a child view.
@@ -6551,6 +6732,8 @@ namespace {
 
 // This view always resizes the associated layer when bounds change.
 class LayerResizingView : public View {
+  METADATA_HEADER(LayerResizingView, View)
+
  public:
   explicit LayerResizingView(ui::Layer* layer) : layer_(layer) {}
 
@@ -6563,6 +6746,9 @@ class LayerResizingView : public View {
 
   raw_ptr<ui::Layer> layer_;
 };
+
+BEGIN_METADATA(LayerResizingView)
+END_METADATA
 
 }  // namespace
 
@@ -6618,6 +6804,19 @@ TEST(ViewTestUnfixtured, ViewLayerSizeStayInSync) {
   EXPECT_EQ(0, region_layer->GetTargetBounds().width());
 
   view = nullptr;
+}
+
+using BaseActionViewInterfaceTest = ViewsTestBase;
+
+TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
+  auto action_view = std::make_unique<View>();
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder().SetActionId(0).SetEnabled(false).Build();
+  action_view->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_FALSE(action_view->GetEnabled());
 }
 
 }  // namespace views

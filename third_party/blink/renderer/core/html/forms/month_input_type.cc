@@ -52,10 +52,6 @@ void MonthInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeMonth);
 }
 
-const AtomicString& MonthInputType::FormControlType() const {
-  return input_type_names::kMonth;
-}
-
 double MonthInputType::ValueAsDate() const {
   DateComponents date;
   if (!ParseToDateComponents(GetElement().Value(), &date))
@@ -66,11 +62,12 @@ double MonthInputType::ValueAsDate() const {
 }
 
 String MonthInputType::SerializeWithDate(
-    const absl::optional<base::Time>& value) const {
+    const std::optional<base::Time>& value) const {
   DateComponents date;
-  if (!value ||
-      !date.SetMillisecondsSinceEpochForMonth(value->ToJsTimeIgnoringNull()))
+  if (!value || !date.SetMillisecondsSinceEpochForMonth(
+                    value->InMillisecondsFSinceUnixEpochIgnoringNull())) {
     return String();
+  }
   return SerializeWithComponents(date);
 }
 

@@ -6,6 +6,7 @@
 
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -36,7 +37,7 @@ TEST_F(FeedbackPrivateHooksDelegateTest, MAYBE_SendFeedback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context =
-      CreateScriptContext(context, nullptr, Feature::WEBUI_CONTEXT);
+      CreateScriptContext(context, nullptr, mojom::ContextType::kWebUi);
   script_context->set_url(GURL("chrome://feedback"));
   bindings_system()->UpdateBindingsForContext(script_context);
 

@@ -21,7 +21,7 @@ namespace test_helpers {
 
 void SetPasswordFormFillData(const std::string& url,
                              const char* form_name,
-                             uint32_t unique_renderer_id,
+                             uint32_t form_id,
                              const char* username_field,
                              uint32_t username_unique_id,
                              const char* username_value,
@@ -32,12 +32,12 @@ void SetPasswordFormFillData(const std::string& url,
                              const char* additional_password,
                              PasswordFormFillData* form_data) {
   form_data->url = GURL(url);
-  form_data->form_renderer_id = FormRendererId(unique_renderer_id);
+  form_data->form_renderer_id = FormRendererId(form_id);
   form_data->username_element_renderer_id = FieldRendererId(username_unique_id);
   form_data->preferred_login.username_value = base::UTF8ToUTF16(username_value);
   form_data->password_element_renderer_id = FieldRendererId(password_unique_id);
   form_data->preferred_login.password_value = base::UTF8ToUTF16(password_value);
-  if (additional_username) {
+  if (additional_username != nullptr) {
     autofill::PasswordAndMetadata additional_password_data;
     additional_password_data.username_value =
         base::UTF8ToUTF16(additional_username);
@@ -74,17 +74,17 @@ void SetFormData(const std::string& origin,
                  FormData* form_data) {
   DCHECK(form_data);
   form_data->url = GURL(origin);
-  form_data->unique_renderer_id = FormRendererId(form_id);
+  form_data->renderer_id = FormRendererId(form_id);
 
   FormFieldData field;
   field.value = base::UTF8ToUTF16(username_value);
-  field.form_control_type = "text";
-  field.unique_renderer_id = FieldRendererId(username_field_id);
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.renderer_id = FieldRendererId(username_field_id);
   form_data->fields.push_back(field);
 
   field.value = base::UTF8ToUTF16(password_value);
-  field.form_control_type = "password";
-  field.unique_renderer_id = FieldRendererId(password_field_id);
+  field.form_control_type = autofill::FormControlType::kInputPassword;
+  field.renderer_id = FieldRendererId(password_field_id);
   form_data->fields.push_back(field);
 }
 
@@ -99,14 +99,14 @@ autofill::FormData MakeSimpleFormData() {
   field.id_attribute = field.name;
   field.name_attribute = field.name;
   field.value = u"googleuser";
-  field.form_control_type = "text";
+  field.form_control_type = autofill::FormControlType::kInputText;
   form_data.fields.push_back(field);
 
   field.name = u"Passwd";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
   field.value = u"p4ssword";
-  field.form_control_type = "password";
+  field.form_control_type = autofill::FormControlType::kInputPassword;
   form_data.fields.push_back(field);
 
   return form_data;

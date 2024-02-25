@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
@@ -70,7 +70,8 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller_test_api.h"
@@ -126,7 +127,11 @@ void EnableTabletMode(bool enable) {
   // again at the end of |TabletModeController::TabletModeController|.
   base::RunLoop().RunUntilIdle();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
+  if (enable) {
+    ash::TabletModeControllerTestApi().EnterTabletMode();
+  } else {
+    ash::TabletModeControllerTestApi().LeaveTabletMode();
+  }
 
   // The app list will be shown automatically when tablet mode is enabled (Home
   // launcher flag is enabled). Wait here for the animation complete.
@@ -137,7 +142,6 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
     const std::string& result_id) {
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
-  suggestion_result->set_is_omnibox_search(true);
   suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
@@ -281,7 +285,7 @@ class AppListPresenterTest : public AshTestBase,
 
   SearchResultContainerView* GetDefaultSearchResultListView() {
     return search_result_page()
-        ->search_view_for_test()
+        ->search_view()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -404,7 +408,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
           ->result_container_views_for_test()[kBestMatchContainerIndex];
     }
     return GetFullscreenSearchPage()
-        ->search_view_for_test()
+        ->search_view()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -416,7 +420,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
     }
 
     return GetFullscreenSearchPage()
-        ->search_view_for_test()
+        ->search_view()
         ->result_selection_controller_for_test();
   }
 
@@ -529,8 +533,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> apps_grid_view_ =
-      nullptr;
+  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -619,7 +622,7 @@ class PopulatedAppListTest : public AshTestBase,
         Shell::Get()->app_list_controller()->fullscreen_presenter();
     presenter->Show(AppListViewState::kFullscreenAllApps,
                     GetPrimaryDisplay().id(), base::TimeTicks::Now(),
-                    /*show_source=*/absl::nullopt);
+                    /*show_source=*/std::nullopt);
     app_list_view_ = presenter->GetView();
   }
 
@@ -703,10 +706,10 @@ class PopulatedAppListTest : public AshTestBase,
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
+  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
       nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged | ExperimentalAsh>
-      apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
+  raw_ptr<PagedAppsGridView, DanglingUntriaged> apps_grid_view_ =
+      nullptr;  // Owned by |app_list_view_|.
   base::test::ScopedFeatureList scoped_feature_list_;
   const bool is_drag_drop_refactor_enabled_;
 };
@@ -1681,7 +1684,8 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
 
   SearchBoxView* search_box_view = GetSearchBoxView();
   search_box_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   LeftClickOn(search_box_view->close_button());
 
   EXPECT_EQ(std::vector<std::u16string>({u""}),
@@ -3397,13 +3401,13 @@ TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
           ->shelf_layout_manager();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
-            shelf_layout_manager->GetShelfBackgroundType());
+            shelf_layout_manager->shelf_background_type());
 
   // Add a window. It should be in-app because it is in tablet mode.
   auto window = CreateTestWindow();
   wm::ActivateWindow(window.get());
   EXPECT_EQ(ShelfBackgroundType::kInApp,
-            shelf_layout_manager->GetShelfBackgroundType());
+            shelf_layout_manager->shelf_background_type());
 }
 
 // Tests that the bottom shelf is auto hidden when a window is fullscreened in
@@ -3936,7 +3940,7 @@ class AppListPresenterHomeLauncherTest
   bool IsAppListVisible() {
     auto* app_list_controller = Shell::Get()->app_list_controller();
     return app_list_controller->IsVisible() &&
-           app_list_controller->GetTargetVisibility(absl::nullopt);
+           app_list_controller->GetTargetVisibility(std::nullopt);
   }
 
  protected:
@@ -4159,7 +4163,7 @@ TEST_F(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   // Enable overview mode.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ui::Layer* layer = GetAppListView()->GetWidget()->GetNativeWindow()->layer();
@@ -4248,8 +4252,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
   GoHome();
@@ -4263,7 +4266,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -4283,12 +4286,11 @@ TEST_F(AppListPresenterHomeLauncherTest,
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -4651,7 +4653,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   const auto expected_opacity = layer->opacity();
   const auto expected_transform = layer->transform();
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
 
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -4684,7 +4686,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   const auto initial_opacity = 0.01f;
   const auto initial_transform = scaled_down_transform;
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_EQ(layer->opacity(), initial_opacity);
   EXPECT_EQ(layer->GetTargetOpacity(), 1.0f);
   EXPECT_EQ(layer->transform(), initial_transform);
@@ -4692,7 +4694,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 
   // Interrupt clamshell -> tablet transition by switching back to clamshell
   // mode. Current transform and opacity stay at initial values.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_EQ(layer->opacity(), initial_opacity);
   EXPECT_EQ(layer->GetTargetOpacity(), 0.0f);
   EXPECT_EQ(layer->transform(), initial_transform);
@@ -4700,7 +4702,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 
   // Interrupt tablet -> clamshell transition by switching back to tablet mode.
   // Current transform and opacity stay at initial values.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_EQ(layer->opacity(), initial_opacity);
   EXPECT_EQ(layer->GetTargetOpacity(), 1.0f);
   EXPECT_EQ(layer->transform(), initial_transform);
@@ -4715,13 +4717,13 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   app_list_controller->AddObserver(visibility_observer.get());
 
   // Switch to tablet mode and set normal animation duration.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
 }
 

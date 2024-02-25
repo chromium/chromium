@@ -91,8 +91,7 @@ class VideoFrameHandlerProxyLacros::VideoFrameAccessHandlerProxy
 
 VideoFrameHandlerProxyLacros::VideoFrameHandlerProxyLacros(
     mojo::PendingReceiver<crosapi::mojom::VideoFrameHandler> proxy_receiver,
-    absl::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
-        handler_remote,
+    std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>> handler_remote,
     base::WeakPtr<media::VideoFrameReceiver> handler_remote_in_process) {
   CHECK(handler_remote || handler_remote_in_process);
   receiver_.Bind(std::move(proxy_receiver));
@@ -124,9 +123,15 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<crosapi::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
+  NOTREACHED_NORETURN()
+      << "This method is deprecated, use OnFrameReadyInBuffer instead.";
+}
+
+void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+    crosapi::mojom::ReadyFrameInBufferPtr buffer) {
   if (handler_.is_bound()) {
     if (!access_permission_proxy_map_) {
       access_permission_proxy_map_ = new AccessPermissionProxyMap();
@@ -142,25 +147,11 @@ void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
         buffer->buffer_id, std::move(buffer->access_permission));
     mojom::ReadyFrameInBufferPtr video_capture_buffer =
         ToVideoCaptureBuffer(std::move(buffer));
-    std::vector<mojom::ReadyFrameInBufferPtr> video_capture_scaled_buffers;
-    for (auto& b : scaled_buffers) {
-      access_permission_proxy_map_->InsertAccessPermission(
-          b->buffer_id, std::move(b->access_permission));
-      video_capture_scaled_buffers.push_back(
-          ToVideoCaptureBuffer(std::move(b)));
-    }
 
-    handler_->OnFrameReadyInBuffer(std::move(video_capture_buffer),
-                                   std::move(video_capture_scaled_buffers));
+    handler_->OnFrameReadyInBuffer(std::move(video_capture_buffer));
   } else if (handler_in_process_) {
-    std::vector<media::ReadyFrameInBuffer> media_scaled_buffers;
-    for (auto& b : scaled_buffers) {
-      media_scaled_buffers.push_back(ConvertToMediaReadyFrame(std::move(b)));
-    }
-
     handler_in_process_->OnFrameReadyInBuffer(
-        ConvertToMediaReadyFrame(std::move(buffer)),
-        std::move(media_scaled_buffers));
+        ConvertToMediaReadyFrame(std::move(buffer)));
   }
 }
 
@@ -189,11 +180,18 @@ void VideoFrameHandlerProxyLacros::OnFrameDropped(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnNewCropVersion(uint32_t crop_version) {
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnNewCropVersion(
+    uint32_t crop_version) {
+  OnNewSubCaptureTargetVersion(crop_version);
+}
+
+void VideoFrameHandlerProxyLacros::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   if (handler_.is_bound()) {
-    handler_->OnNewCropVersion(crop_version);
+    handler_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
   } else if (handler_in_process_) {
-    handler_in_process_->OnNewCropVersion(crop_version);
+    handler_in_process_->OnNewSubCaptureTargetVersion(
+        sub_capture_target_version);
   }
 }
 

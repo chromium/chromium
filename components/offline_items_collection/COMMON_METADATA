@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "UI>Browser>Downloads"
 }
-
 team_email: "chrome-downloads@chromium.org"
+buganizer_public: {
+  component_id: 1457176
+}

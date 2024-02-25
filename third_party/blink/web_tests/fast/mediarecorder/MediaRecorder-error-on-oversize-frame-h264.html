@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script src="utils/MediaRecorder-error-oversize-frame.js"></script>
+<script>
+  const maxPixels = 36864 << 8;
+  const maxSize = maxPixels / canvasHeight;
+  genTest('video/webm; codecs="h264"', maxSize);
+  // AVC1 has exactly the same impl as H264, so we don't test it separately.
+</script>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_api.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -13,14 +15,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -31,11 +34,24 @@ using ResponseAction = ExtensionFunction::ResponseAction;
 constexpr char kNoDelegateError[] =
     "Operation failed because PasswordsPrivateDelegate wasn't created.";
 
+constexpr char kPasswordManagerDisabledByPolicy[] =
+    "Operation failed because CredentialsEnableService policy is set to false "
+    "by admin.";
+
 scoped_refptr<PasswordsPrivateDelegate> GetDelegate(
     content::BrowserContext* browser_context) {
   return PasswordsPrivateDelegateFactory::GetForBrowserContext(
       browser_context,
       /*create=*/false);
+}
+
+bool IsPasswordManagerDisabledByPolicy(
+    content::BrowserContext* browser_context) {
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
+  return !prefs->GetBoolean(
+             password_manager::prefs::kCredentialsEnableService) &&
+         prefs->IsManagedPreference(
+             password_manager::prefs::kCredentialsEnableService);
 }
 
 }  // namespace
@@ -130,7 +146,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 }
 
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
-    absl::optional<std::u16string> password) {
+    std::optional<std::u16string> password) {
   if (password) {
     Respond(WithArguments(std::move(*password)));
     return;
@@ -288,6 +304,10 @@ ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
+  if (IsPasswordManagerDisabledByPolicy(browser_context())) {
+    return RespondNow(Error(kPasswordManagerDisabledByPolicy));
+  }
+
   auto parameters =
       api::passwords_private::ImportPasswords::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
@@ -365,10 +385,11 @@ ResponseAction PasswordsPrivateExportPasswordsFunction::Run() {
 
 void PasswordsPrivateExportPasswordsFunction::ExportRequestCompleted(
     const std::string& error) {
-  if (error.empty())
+  if (error.empty()) {
     Respond(NoArguments());
-  else
+  } else {
     Respond(Error(error));
+  }
 }
 
 // PasswordsPrivateRequestExportProgressStatusFunction
@@ -541,7 +562,7 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
       api::passwords_private::GetUrlCollection::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const absl::optional<api::passwords_private::UrlCollection> url_collection =
+  const std::optional<api::passwords_private::UrlCollection> url_collection =
       GetDelegate(browser_context())->GetUrlCollection(parameters->url);
   if (!url_collection) {
     return RespondNow(
@@ -558,6 +579,10 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
 ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
+  }
+
+  if (IsPasswordManagerDisabledByPolicy(browser_context())) {
+    return RespondNow(Error(kPasswordManagerDisabledByPolicy));
   }
 
   auto parameters = api::passwords_private::AddPassword::Params::Create(args());
@@ -584,7 +609,7 @@ ResponseAction PasswordsPrivateExtendAuthValidityFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  GetDelegate(browser_context())->ExtendAuthValidity();
+  GetDelegate(browser_context())->RestartAuthTimer();
   return RespondNow(NoArguments());
 }
 

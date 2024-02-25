@@ -20,6 +20,7 @@ enum SourceRegistrationError {
   kFilterDataHasSourceTypeKey = 7,
   kFilterDataHasLookbackWindowKey = 24,
   kFilterDataKeyTooLong = 8,
+  kFilterDataKeyReserved = 49,
   kFilterDataListWrongType = 9,
   kFilterDataListTooLong = 10,
   kFilterDataValueWrongType = 11,
@@ -49,4 +50,34 @@ enum SourceRegistrationError {
   kEventReportWindowsEndTimeValueInvalid = 34,
   kEventReportWindowsEndTimeDurationLTEStart = 35,
   kBothEventReportWindowFieldsFound = 36,
+
+  kTriggerDataMatchingWrongType = 37,
+  kTriggerDataMatchingUnknownValue = 38,
+
+  kTriggerSpecsWrongType = 39,
+  kTriggerSpecWrongType = 40,
+  kTriggerSpecTriggerDataMissing = 41,
+  kTriggerSpecTriggerDataWrongType = 42,
+  kTriggerSpecTriggerDataEmpty = 43,
+  kTriggerSpecTriggerDataValueWrongType = 44,
+  kTriggerSpecTriggerDataValueOutOfRange = 45,
+
+  kExcessiveTriggerData = 46,
+  kDuplicateTriggerData = 47,
+  kInvalidTriggerDataForMatchingMode = 48,
+
+  kSummaryWindowOperatorWrongType = 50,
+  kSummaryWindowOperatorUnknownValue = 51,
+
+  kSummaryBucketsWrongType = 52,
+  kSummaryBucketsEmpty = 53,
+  kSummaryBucketsTooLong = 54,
+  kSummaryBucketsValueWrongType = 55,
+  kSummaryBucketsValueOutOfRange = 56,
+  kSummaryBucketsNonIncreasing = 57,
+
+  kEventLevelEpsilonWrongType = 58,
+  kEventLevelEpsilonValueInvalid = 59,
+
+  kTopLevelTriggerDataAndTriggerSpecs = 60,
 };

@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
@@ -14,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_features.h"
 #include "components/sessions/core/session_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -49,14 +49,14 @@ class ClosedTabCache {
   ~ClosedTabCache();
 
   // ClosedTabCache needs to decide if it could cache a WebContents or not.
-  bool CanCacheWebContents(absl::optional<SessionID> id);
+  bool CanCacheWebContents(std::optional<SessionID> id);
 
   // Stores all |cacheable_web_contents| in ClosedTabCache. It is assumed that
   // each passed WebContents is cacheable. This needs to be checked upfront by
   // calling ClosedTabCache::CanCacheWebContents.
   void CacheWebContents(
-      std::pair<absl::optional<SessionID>,
-                std::unique_ptr<content::WebContents>> cached);
+      std::pair<std::optional<SessionID>, std::unique_ptr<content::WebContents>>
+          cached);
 
   // Moves a WebContents out of ClosedTabCache knowing its |id|. Returns nullptr
   // if none is found.

@@ -47,6 +47,8 @@ static const int kLayoutToChannels[] = {
     5,   // CHANNEL_LAYOUT_4_1_QUAD_SIDE
     0,   // CHANNEL_LAYOUT_BITSTREAM
     6,   // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
+    2,   // CHANNEL_LAYOUT_1_1
+    4,   // CHANNEL_LAYOUT_3_1_BACK
 };
 
 // The channel orderings for each layout as specified by FFmpeg. Each value
@@ -100,13 +102,13 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  0  , 1  , 2  , 3   , 4  , 5  , -1    , -1    , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_7_0
-    {  0  , 1  , 2  , -1  , 5  , 6  , -1    , -1    , -1 , 3  ,  4 },
+    {  0  , 1  , 2  , -1  , 3  , 4  , -1    , -1    , -1 , 5  ,  6 },
 
     // CHANNEL_LAYOUT_7_1
-    {  0  , 1  , 2  , 3   , 6  , 7  , -1    , -1    , -1 , 4  ,  5 },
+    {  0  , 1  , 2  , 3   , 4  , 5  , -1    , -1    , -1 , 6  ,  7 },
 
     // CHANNEL_LAYOUT_7_1_WIDE
-    {  0  , 1  , 2  , 3   , -1 , -1 , 6     , 7     , -1 , 4  ,  5 },
+    {  0  , 1  , 2  , 3   , -1 , -1 , 4     , 5     , -1 , 6  ,  7 },
 
     // CHANNEL_LAYOUT_STEREO_DOWNMIX
     {  0  , 1  , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
@@ -118,13 +120,13 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  0  , 1  ,  2 ,  3  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_4_1
-    {  0  , 1  ,  2 ,  4  , -1 , -1 , -1    , -1    ,  3 , -1 , -1 },
+    {  0  , 1  ,  2 ,  3  , -1 , -1 , -1    , -1    ,  4 , -1 , -1 },
 
     // CHANNEL_LAYOUT_6_0
-    {  0  , 1  , 2  , -1  , -1 , -1 , -1    , -1    ,  5 , 3  ,  4 },
+    {  0  , 1  , 2  , -1  , -1 , -1 , -1    , -1    ,  3 , 4  ,  5 },
 
     // CHANNEL_LAYOUT_6_0_FRONT
-    {  0  , 1  , -1 , -1  , -1 , -1 ,  4    ,  5    , -1 , 2  ,  3 },
+    {  0  , 1  , -1 , -1  , -1 , -1 ,  2    ,  3    , -1 , 4  ,  5 },
 
     // FL | FR | FC | LFE | BL | BR | FLofC | FRofC | BC | SL | SR
 
@@ -132,22 +134,22 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  0  , 1  , 2  , -1  , 3  , 4  , -1    , -1    ,  5 , -1 , -1 },
 
     // CHANNEL_LAYOUT_6_1
-    {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    ,  6 , 4  ,  5 },
+    {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    ,  4 , 5  ,  6 },
 
     // CHANNEL_LAYOUT_6_1_BACK
     {  0  , 1  , 2  , 3   , 4  , 5  , -1    , -1    ,  6 , -1 , -1 },
 
     // CHANNEL_LAYOUT_6_1_FRONT
-    {  0  , 1  , -1 , 6   , -1 , -1 , 4     , 5     , -1 , 2  ,  3 },
+    {  0  , 1  , -1 , 2   , -1 , -1 , 3     , 4     , -1 , 5  ,  6 },
 
     // CHANNEL_LAYOUT_7_0_FRONT
-    {  0  , 1  , 2  , -1  , -1 , -1 , 5     , 6     , -1 , 3  ,  4 },
+    {  0  , 1  , 2  , -1  , -1 , -1 , 3     , 4     , -1 , 5  ,  6 },
 
     // CHANNEL_LAYOUT_7_1_WIDE_BACK
     {  0  , 1  , 2  , 3   , 4  , 5  , 6     , 7     , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_OCTAGONAL
-    {  0  , 1  , 2  , -1  , 5  , 6  , -1    , -1    ,  7 , 3  ,  4 },
+    {  0  , 1  , 2  , -1  , 3  , 4  , -1    , -1    ,  5 , 6  ,  7 },
 
     // CHANNEL_LAYOUT_DISCRETE
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
@@ -156,7 +158,7 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  0  , 1  , 2  , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_4_1_QUAD_SIDE
-    {  0  , 1  , -1 ,  4  , -1 , -1 , -1    , -1    , -1 , 2  ,  3 },
+    {  0  , 1  , -1 ,  2  , -1 , -1 , -1    , -1    , -1 , 3  ,  4 },
 
     // CHANNEL_LAYOUT_BITSTREAM
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
@@ -165,6 +167,12 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
 
     // CHANNEL_LAYOUT_5_1_4, downmixed to six channels (5.1)
     {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    , -1 , 4  ,  5 },
+
+    // CHANNEL_LAYOUT_1_1
+     { -1 , -1 , 0  ,  1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
+
+    // CHANNEL_LAYOUT_3_1_BACK
+    {  0  , 1  , -1 ,  2  , -1 , -1 , -1    , -1    ,  3 , -1 , -1 },
 };
 
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
@@ -276,6 +284,10 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
       return "BITSTREAM";
     case CHANNEL_LAYOUT_5_1_4_DOWNMIX:
       return "5.1.4 DOWNMIX";
+    case CHANNEL_LAYOUT_1_1:
+      return "1.1";
+    case CHANNEL_LAYOUT_3_1_BACK:
+      return "3.1_BACK";
   }
   NOTREACHED() << "Invalid channel layout provided: " << layout;
   return "";

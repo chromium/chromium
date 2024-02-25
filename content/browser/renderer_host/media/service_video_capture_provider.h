@@ -96,7 +96,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
 
   // We own this but it must operate on the UI thread.
   class ServiceProcessObserver;
-  absl::optional<base::SequenceBound<ServiceProcessObserver>>
+  std::optional<base::SequenceBound<ServiceProcessObserver>>
       service_process_observer_;
 
   base::WeakPtrFactory<ServiceVideoCaptureProvider> weak_ptr_factory_{this};

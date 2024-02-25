@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
@@ -110,7 +110,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     std::move(callback).Run(
         pending_request_ ? CredentialManagerError::PENDING_REQUEST
                          : CredentialManagerError::PASSWORDSTOREUNAVAILABLE,
-        absl::nullopt);
+        std::nullopt);
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kRejected, mediation);
     return;
@@ -232,7 +232,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     GetLoginMatchType match_type = GetMatchType(form);
     if (match_type == GetLoginMatchType::kPSL ||
         (match_type == GetLoginMatchType::kAffiliated &&
-         !IsValidAndroidFacetURI(form.signon_realm))) {
+         !affiliations::IsValidAndroidFacetURI(form.signon_realm))) {
       form_manager_->Save();
       return;
     }
@@ -241,7 +241,8 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
     // return.
-    for (auto* match : form_manager_->GetFormFetcher()->GetFederatedMatches()) {
+    for (const password_manager::PasswordForm* match :
+         form_manager_->GetFormFetcher()->GetFederatedMatches()) {
       if (match->username_value == form.username_value &&
           match->federation_origin.IsSameOriginWith(form.federation_origin)) {
         form_manager_->Update(*match);
@@ -250,11 +251,16 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     }
   } else if (!form_manager_->IsNewLogin()) {
     // Otherwise, if this is not a new password credential, update the existing
-    // credential without prompting the user. This will also update the
-    // 'skip_zero_click' state, as we've gotten an explicit signal that the page
-    // understands the credential management API and so can be trusted to notify
-    // us when they sign the user out.
+    // credential prompting confirmation helium bubble to the user. This will
+    // also update the 'skip_zero_click' state, as we've gotten an explicit
+    // signal that the page understands the credential management API and so can
+    // be trusted to notify us when they sign the user out.
+    bool is_update_confirmation = form_manager_->IsPasswordUpdate();
     form_manager_->Update(form_manager_->GetPendingCredentials());
+    if (is_update_confirmation) {
+      client_->AutomaticPasswordSave(std::move(form_manager_),
+                                     /*is_update_confirmation=*/true);
+    }
     return;
   }
 

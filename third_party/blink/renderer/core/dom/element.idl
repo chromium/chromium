@@ -18,16 +18,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// See
-// https://docs.google.com/document/d/1VnvAqeWFG9JFZfgG5evBqrLGDZYRE5w6G5jEDORekPY
-// for details.
-enum NativeScrollBehavior { "disable-native-scroll", "perform-before-native-scroll", "perform-after-native-scroll" };
-callback ScrollStateCallback = void (ScrollState scrollState);
-
 // https://drafts.csswg.org/cssom-view/#dictdef-checkvisibilityoptions
 dictionary CheckVisibilityOptions {
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean contentVisibilityAuto = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean opacityProperty = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean visibilityProperty = false;
 };
 
 // https://dom.spec.whatwg.org/#interface-element
@@ -103,9 +100,16 @@ dictionary CheckVisibilityOptions {
     [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString innerHTML;
     [CEReactions, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
+    // https://github.com/whatwg/html/pull/9538
+    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html);
 
-    // Declarative Shadow DOM getInnerHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    // Declarative Shadow DOM getInnerHTML() function. This version should be
+    // considered deprecated, as we work to standardize the version below,
+    // getHTML().
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+
+    // Declarative Shadow DOM getHTML() function.
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException, RuntimeEnabled=ElementGetHTML] HTMLString getHTML(optional GetHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
@@ -115,10 +119,10 @@ dictionary CheckVisibilityOptions {
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
     [Measure] DOMRectList getClientRects();
-    [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
+    [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
-    [RuntimeEnabled=checkVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
+    [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.
@@ -138,6 +142,9 @@ dictionary CheckVisibilityOptions {
     readonly attribute long clientWidth;
     readonly attribute long clientHeight;
 
+    // Used by both Anchor Positioning and Popover
+    [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
+
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
 
@@ -148,9 +155,9 @@ dictionary CheckVisibilityOptions {
     // Accessibility Object Model
     [RuntimeEnabled=AccessibilityObjectModel] readonly attribute AccessibleNode? accessibleNode;
 
-    // Confirmation of Action API
+    // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
-    [RuntimeEnabled=ConfirmationOfAction] void ariaNotify(HTMLString announcement, optional AriaNotificationOptions options = {});
+    [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
     // Event handler attributes
     attribute EventHandler onbeforecopy;
@@ -160,11 +167,6 @@ dictionary CheckVisibilityOptions {
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
-
-    // CSS Toggles
-    // See https://tabatkins.github.io/css-toggle/#dom and
-    // https://github.com/tabatkins/css-toggle/issues/26
-    [RuntimeEnabled=CSSToggles, SameObject] readonly attribute CSSToggleMap toggles;
 };
 
 Element includes ParentNode;

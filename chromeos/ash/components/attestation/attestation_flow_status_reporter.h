@@ -5,8 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -40,13 +41,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   // Encode the recorded parameters into a UMA entry and report it.
   void Report();
   // The flag that is set by `OnHasProxy()`.
-  absl::optional<bool> has_proxy_;
+  std::optional<bool> has_proxy_;
   // The flag that is set by `OnIsSystemProxyAvailable()`.
-  absl::optional<bool> is_system_proxy_available_;
+  std::optional<bool> is_system_proxy_available_;
   // The flag that is set/unset by `OnDefaultFlowStatus()`.
-  absl::optional<bool> does_default_flow_succeed_;
+  std::optional<bool> does_default_flow_succeed_;
   // The flag that is set/unset by `OnFallbackFlowStatus()`.
-  absl::optional<bool> does_fallback_flow_succeed_;
+  std::optional<bool> does_fallback_flow_succeed_;
 };
 
 }  // namespace attestation

@@ -28,7 +28,7 @@ BufferedSpdyFramer::BufferedSpdyFramer(uint32_t max_header_list_size,
       net_log_(net_log),
       time_func_(time_func) {
   // Do not bother decoding response header payload above the limit.
-  deframer_.GetHpackDecoder()->set_max_decode_buffer_size_bytes(
+  deframer_.GetHpackDecoder().set_max_decode_buffer_size_bytes(
       max_header_list_size_);
 }
 
@@ -208,7 +208,7 @@ void BufferedSpdyFramer::OnPushPromise(spdy::SpdyStreamId stream_id,
 
 void BufferedSpdyFramer::OnAltSvc(
     spdy::SpdyStreamId stream_id,
-    absl::string_view origin,
+    std::string_view origin,
     const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector& altsvc_vector) {
   visitor_->OnAltSvc(stream_id, origin, altsvc_vector);
 }
@@ -227,7 +227,7 @@ size_t BufferedSpdyFramer::ProcessInput(const char* data, size_t len) {
 }
 
 void BufferedSpdyFramer::UpdateHeaderDecoderTableSize(uint32_t value) {
-  deframer_.GetHpackDecoder()->ApplyHeaderTableSizeSetting(value);
+  deframer_.GetHpackDecoder().ApplyHeaderTableSizeSetting(value);
 }
 
 http2::Http2DecoderAdapter::SpdyFramerError

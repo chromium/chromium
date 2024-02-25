@@ -12,7 +12,6 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/account_id/account_id.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
@@ -148,7 +148,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   FakeVolumeMounterInstance volume_mounter_instance_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeArcVolumeMounterBridgeDelegate delegate_;
   std::unique_ptr<ArcVolumeMounterBridge> bridge_;
 };
@@ -356,6 +356,69 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents) {
   mojom::MountPointInfoPtr mount_point_info_non_removable =
       volume_mounter_instance()->GetMountPointInfo(kNonRemovableMountPath);
   EXPECT_TRUE(mount_point_info_non_removable.is_null());
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  EXPECT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(mount_point_info_myfiles->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath)
+                                           .SetMountPath(kRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
+
+  // Disable external storage by policy.
+  prefs()->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for MyFiles, but not for
+  // /media/removable/FOO.
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  EXPECT_TRUE(mount_point_info_removable.is_null());
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  EXPECT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(mount_point_info_myfiles->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageAccess) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath)
+                                           .SetMountPath(kRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
+
+  // Disable external storage access by feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kExternalStorageAccess);
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for MyFiles, but not for
+  // /media/removable/FOO.
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  EXPECT_TRUE(mount_point_info_removable.is_null());
 
   mojom::MountPointInfoPtr mount_point_info_myfiles =
       volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);

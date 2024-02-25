@@ -12,7 +12,7 @@ import argparse
 import sys
 
 import codegen
-import model
+from sync import model
 import templates_events as templates
 
 parser = argparse.ArgumentParser(
@@ -23,16 +23,16 @@ parser.add_argument('--output', help='Path to generated files.')
 
 def main():
   args = parser.parse_args()
-  data = model.Model(open(args.input).read())
+  data = model.Model(open(args.input, encoding='utf-8').read())
 
-  codegen.Template(
-      data,
-      args.output,
-      'structured_events.h',
-      file_template=templates.HEADER_FILE_TEMPLATE,
-      project_template=templates.HEADER_PROJECT_TEMPLATE,
-      event_template=templates.HEADER_EVENT_TEMPLATE,
-      metric_template=templates.HEADER_METRIC_TEMPLATE).write_file()
+  codegen.Template(data,
+                   args.output,
+                   'structured_events.h',
+                   file_template=templates.HEADER_FILE_TEMPLATE,
+                   project_template=templates.HEADER_PROJECT_TEMPLATE,
+                   event_template=templates.HEADER_EVENT_TEMPLATE,
+                   metric_template=templates.HEADER_METRIC_TEMPLATE,
+                   header=True).write_file()
 
   codegen.Template(data,
                    args.output,
@@ -40,7 +40,8 @@ def main():
                    file_template=templates.IMPL_FILE_TEMPLATE,
                    project_template=templates.IMPL_PROJECT_TEMPLATE,
                    event_template=templates.IMPL_EVENT_TEMPLATE,
-                   metric_template=templates.IMPL_METRIC_TEMPLATE).write_file()
+                   metric_template=templates.IMPL_METRIC_TEMPLATE,
+                   header=False).write_file()
 
   return 0
 

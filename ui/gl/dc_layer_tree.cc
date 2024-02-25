@@ -82,7 +82,7 @@ constexpr gfx::Size kSolidColorSurfaceSize = gfx::Size(1, 1);
 
 #if DCHECK_IS_ON()
 bool VisualTreeValid(
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay,
     const std::vector<bool>& prev_subtree_is_attached_to_root) {
   for (size_t i = 0; i < subtree_index_to_overlay.size(); i++) {
     // Unused subtrees must be removed from the root.
@@ -166,7 +166,7 @@ class SolidColorSurface final {
   Microsoft::WRL::ComPtr<IDCompositionSurface> surface_;
 
   // Only set if |surface_| was successfully filled to this color.
-  absl::optional<SkColor4f> color_;
+  std::optional<SkColor4f> color_;
 };
 
 SolidColorSurfacePool::SolidColorSurfacePool(
@@ -377,7 +377,9 @@ bool DCLayerTree::Initialize(
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     const gfx::Size& input_size,
-    const gfx::Size& output_size) {
+    const gfx::Size& output_size,
+    bool& video_processor_recreated) {
+  video_processor_recreated = false;
   if (!video_processor_wrapper_.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
     if (FAILED(d3d11_device_.As(&video_processor_wrapper_.video_device))) {
@@ -396,10 +398,10 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   }
 
   // Calculate input and output size to be maximum in a sliding window.
-  max_video_processor_input_width_.Put(input_size.width());
-  max_video_processor_input_height_.Put(input_size.height());
-  max_video_processor_output_width_.Put(output_size.width());
-  max_video_processor_output_height_.Put(output_size.height());
+  max_video_processor_input_width_.AddSample(input_size.width());
+  max_video_processor_input_height_.AddSample(input_size.height());
+  max_video_processor_output_width_.AddSample(output_size.width());
+  max_video_processor_output_height_.AddSample(output_size.height());
   gfx::Size effective_input_size(max_video_processor_input_width_.Max(),
                                  max_video_processor_input_height_.Max());
   gfx::Size effective_output_size(max_video_processor_output_width_.Max(),
@@ -460,6 +462,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   video_processor_wrapper_.video_context
       ->VideoProcessorSetStreamAutoProcessingMode(
           video_processor_wrapper_.video_processor.Get(), 0, FALSE);
+
+  video_processor_recreated = true;
   return &video_processor_wrapper_;
 }
 
@@ -499,7 +503,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     const gfx::Transform& quad_to_root_transform,
     const gfx::RRectF& rounded_corner_bounds,
     float opacity,
-    const absl::optional<gfx::Rect>& clip_rect_in_root) {
+    const std::optional<gfx::Rect>& clip_rect_in_root) {
   bool needs_commit = false;
 
   // Helper function to set |field| to |parameter| and return whether it
@@ -968,18 +972,18 @@ bool DCLayerTree::VisualTree::BuildTreeOptimized(
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
   // current frame. Each entry indexes into |visual_subtrees_|, which are the
-  // subtrees for the previous frame. Initialized with absl::nullopt,
+  // subtrees for the previous frame. Initialized with std::nullopt,
   // meaning not reused.
-  std::vector<absl::optional<size_t>> overlay_index_to_reused_subtree(
-      overlays.size(), absl::nullopt);
+  std::vector<std::optional<size_t>> overlay_index_to_reused_subtree(
+      overlays.size(), std::nullopt);
 
   // Index into the current frame overlay that uses the subtree of the previous
   // frame for the given subtree index. |subtree_index_to_overlay| has an entry
   // for every subtree in the previous frame. Each entry indexes into |overlays|
-  // of the current frame. Initialized with absl::nullopt, meaning the subtree
+  // of the current frame. Initialized with std::nullopt, meaning the subtree
   // is not being reused in the current frame.
-  std::vector<absl::optional<size_t>> subtree_index_to_overlay(
-      visual_subtrees_.size(), absl::nullopt);
+  std::vector<std::optional<size_t>> subtree_index_to_overlay(
+      visual_subtrees_.size(), std::nullopt);
 
   // |visual_subtrees| will become |visual_subtrees_| of the current frame;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
@@ -1101,7 +1105,7 @@ bool DCLayerTree::VisualTree::BuildTreeOptimized(
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
 
-  if (add_delegated_ink_visual) {
+  if (add_delegated_ink_visual && root_surface_visual) {
     needs_commit |= dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
         root_surface_visual.Get());
   }
@@ -1120,8 +1124,8 @@ DCLayerTree::VisualTree::VisualSubtreeMap
 DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
     std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+    std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay) {
   CHECK_EQ(overlay_index_to_reused_subtree.size(), overlays.size());
   CHECK_EQ(new_visual_subtrees.size(), overlays.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
@@ -1166,8 +1170,8 @@ DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
 
 size_t DCLayerTree::VisualTree::ReuseUnmatchedSubtrees(
     std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+    std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay) {
   CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
 
@@ -1226,8 +1230,8 @@ bool DCLayerTree::VisualTree::DetachUnusedSubtreesFromRoot(
 
 bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
     const std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    const std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    const std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    const std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    const std::vector<std::optional<size_t>>& subtree_index_to_overlay,
     std::vector<bool>& prev_subtree_is_attached_to_root) {
   CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());

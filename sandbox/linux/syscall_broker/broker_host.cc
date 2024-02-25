@@ -23,7 +23,6 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
@@ -54,21 +53,21 @@ int sys_open(const char* pathname, int flags) {
 
 // Applies a rewrite from /proc/self/ to /proc/[pid of sandboxed process]/.
 // Returns either a rewritten or the original pathname.
-absl::optional<std::string> BrokerHost::RewritePathname(const char* pathname) {
+std::optional<std::string> BrokerHost::RewritePathname(const char* pathname) {
   if (base::StartsWith(pathname, kProcSelf)) {
     return base::StringPrintf("/proc/%d/%s", sandboxed_process_pid_,
                               pathname + kProcSelfNumChars);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::pair<const char*, int>> BrokerHost::GetPathAndFlags(
+std::optional<std::pair<const char*, int>> BrokerHost::GetPathAndFlags(
     BrokerSimpleMessage* message) {
   const char* pathname;
   int flags;
   if (!message->ReadString(&pathname) || !message->ReadInt(&flags)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return {{pathname, flags}};
 }
@@ -87,7 +86,7 @@ void BrokerHost::AccessFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -115,7 +114,7 @@ void BrokerHost::MkdirFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -146,8 +145,7 @@ void BrokerHost::OpenFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
-      RewritePathname(file_to_open);
+  std::optional<std::string> rewritten_filename = RewritePathname(file_to_open);
   if (rewritten_filename.has_value()) {
     file_to_open = rewritten_filename.value().c_str();
   }
@@ -180,13 +178,13 @@ void BrokerHost::RenameFileForIPC(const char* old_filename,
     return;
   }
 
-  absl::optional<std::string> old_rewritten_filename =
+  std::optional<std::string> old_rewritten_filename =
       RewritePathname(old_file_to_access);
   if (old_rewritten_filename) {
     old_file_to_access = old_rewritten_filename.value().c_str();
   }
 
-  absl::optional<std::string> new_rewritten_filename =
+  std::optional<std::string> new_rewritten_filename =
       RewritePathname(new_file_to_access);
   if (new_rewritten_filename) {
     new_file_to_access = new_rewritten_filename.value().c_str();
@@ -211,7 +209,7 @@ void BrokerHost::ReadlinkFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -238,7 +236,7 @@ void BrokerHost::RmdirFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -267,7 +265,7 @@ void BrokerHost::StatFileForIPC(BrokerCommand command_type,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -318,7 +316,7 @@ void BrokerHost::UnlinkFileForIPC(const char* requested_filename,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();
@@ -344,7 +342,7 @@ void BrokerHost::InotifyAddWatchForIPC(base::ScopedFD inotify_fd,
     return;
   }
 
-  absl::optional<std::string> rewritten_filename =
+  std::optional<std::string> rewritten_filename =
       RewritePathname(file_to_access);
   if (rewritten_filename.has_value()) {
     file_to_access = rewritten_filename.value().c_str();

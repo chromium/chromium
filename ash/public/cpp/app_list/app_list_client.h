@@ -42,6 +42,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on searching:
 
+  // Returns the search categories that are available for users to choose if
+  // they want to have the results in the categories displayed in launcher
+  // search.
+  virtual std::vector<AppListSearchControlCategory> GetToggleableCategories()
+      const = 0;
+
   // Refreshes the search zero-state suggestions and invokes `on_done` when
   // complete. The client must run `on_done` before `timeout` because this
   // method is called when the user tries to open the launcher and the UI waits
@@ -124,18 +130,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
 
-  // Opens the url in a browser for the search box IPH.
-  virtual void OpenSearchBoxIphUrl() = 0;
-
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
 
   // Returns the sorting order that is saved in perf service and gets shared
   // among synced devices.
   virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
-
-  // Invoked to commit the app list temporary sort order.
-  virtual void CommitTemporarySortOrder() = 0;
 
  protected:
   virtual ~AppListClient() = default;

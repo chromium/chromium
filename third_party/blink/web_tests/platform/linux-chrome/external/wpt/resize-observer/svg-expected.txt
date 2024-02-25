@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] test15: observe svg:text content and border box
+  assert_equals: expected 360 but got 138.3125
+Harness: the test ran to completion.

@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_TEST_LIST_GRID_VIEW_H_
 #define UI_VIEWS_ACCESSIBILITY_TEST_LIST_GRID_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -16,6 +17,8 @@ namespace test {
 
 // Class used for testing row and column count accessibility APIs.
 class TestListGridView : public View {
+  METADATA_HEADER(TestListGridView, View)
+
  public:
   TestListGridView();
   ~TestListGridView() override;
@@ -28,10 +31,10 @@ class TestListGridView : public View {
   void UnsetTableSize();
 
  private:
-  absl::optional<int> aria_row_count = absl::nullopt;
-  absl::optional<int> aria_column_count = absl::nullopt;
-  absl::optional<int> table_row_count = absl::nullopt;
-  absl::optional<int> table_column_count = absl::nullopt;
+  std::optional<int> aria_row_count = std::nullopt;
+  std::optional<int> aria_column_count = std::nullopt;
+  std::optional<int> table_row_count = std::nullopt;
+  std::optional<int> table_column_count = std::nullopt;
 };
 
 }  // namespace test

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -193,7 +194,7 @@ EntryResult SimpleEntryImpl::OpenEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CREATE_CALL);
 
@@ -212,8 +213,8 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
     // If we are optimistically returning before a preceeding doom, we need to
     // wait for that IO, about which we will be notified externally.
     if (optimistic_create_pending_doom_state_ != CREATE_NORMAL) {
-      DCHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
-                optimistic_create_pending_doom_state_);
+      CHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
+               optimistic_create_pending_doom_state_);
       state_ = STATE_IO_PENDING;
     }
   } else {
@@ -234,7 +235,7 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(
       net::NetLogEventType::SIMPLE_CACHE_ENTRY_OPEN_OR_CREATE_CALL);
@@ -256,7 +257,7 @@ EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
         EntryResultCallback()));
 
     // The post-doom stuff should go through CreateEntry, not here.
-    DCHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+    CHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   } else {
     pending_operations_.push(SimpleEntryOperation::OpenOrCreateOperation(
         this, index_state, SimpleEntryOperation::ENTRY_NEEDS_CALLBACK,
@@ -285,9 +286,9 @@ net::Error SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
     if (optimistic_create_pending_doom_state_ == CREATE_NORMAL) {
       post_doom_waiting_ = backend_->OnDoomStart(entry_hash_);
     } else {
-      DCHECK_EQ(STATE_IO_PENDING, state_);
-      DCHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
-                optimistic_create_pending_doom_state_);
+      CHECK_EQ(STATE_IO_PENDING, state_);
+      CHECK_EQ(CREATE_OPTIMISTIC_PENDING_DOOM,
+               optimistic_create_pending_doom_state_);
       // If we are in this state, we went ahead with making the entry even
       // though the backend was already keeping track of a doom, so it can't
       // keep track of ours. So we delay notifying it until
@@ -308,13 +309,13 @@ net::Error SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
 }
 
 void SimpleEntryImpl::SetCreatePendingDoom() {
-  DCHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+  CHECK_EQ(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   optimistic_create_pending_doom_state_ = CREATE_OPTIMISTIC_PENDING_DOOM;
 }
 
 void SimpleEntryImpl::NotifyDoomBeforeCreateComplete() {
-  DCHECK_EQ(STATE_IO_PENDING, state_);
-  DCHECK_NE(CREATE_NORMAL, optimistic_create_pending_doom_state_);
+  CHECK_EQ(STATE_IO_PENDING, state_);
+  CHECK_NE(CREATE_NORMAL, optimistic_create_pending_doom_state_);
   if (backend_.get() && optimistic_create_pending_doom_state_ ==
                             CREATE_OPTIMISTIC_PENDING_DOOM_FOLLOWED_BY_DOOM)
     post_doom_waiting_ = backend_->OnDoomStart(entry_hash_);
@@ -354,7 +355,7 @@ void SimpleEntryImpl::Close() {
 
 std::string SimpleEntryImpl::GetKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return key_;
+  return *key_;
 }
 
 Time SimpleEntryImpl::GetLastUsed() const {
@@ -454,8 +455,12 @@ int SimpleEntryImpl::WriteData(int stream_index,
   // Stream 0 data is kept in memory, so can be written immediatly if there are
   // no IO operations pending.
   if (stream_index == 0 && state_ == STATE_READY &&
-      pending_operations_.size() == 0)
-    return SetStream0Data(buf, offset, buf_len, truncate);
+      pending_operations_.size() == 0) {
+    state_ = STATE_IO_PENDING;
+    SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_READY;
+    return buf_len;
+  }
 
   // We can only do optimistic Write if there is no pending operations, so
   // that we are sure that the next call to RunNextOperationIfNeeded will
@@ -479,8 +484,8 @@ int SimpleEntryImpl::WriteData(int stream_index,
     // here to avoid paying the price of the RefCountedThreadSafe atomic
     // operations.
     if (buf) {
-      op_buf = base::MakeRefCounted<IOBuffer>(buf_len);
-      memcpy(op_buf->data(), buf->data(), buf_len);
+      op_buf = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
+      std::copy(buf->data(), buf->data() + buf_len, op_buf->data());
     }
     op_callback = CompletionOnceCallback();
     ret_value = buf_len;
@@ -848,7 +853,7 @@ void SimpleEntryImpl::CreateEntryInternal(
 
   OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::CreateEntry, cache_type_, path_,
-                     key_, entry_hash_, file_tracker_,
+                     *key_, entry_hash_, file_tracker_,
                      file_operations_factory_->CreateUnbound(), results.get());
   OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
@@ -909,7 +914,7 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
 
   base::OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::OpenOrCreateEntry, cache_type_,
-                     path_, key_, entry_hash_, index_state, optimistic_create,
+                     path_, *key_, entry_hash_, index_state, optimistic_create,
                      file_tracker_, file_operations_factory_->CreateUnbound(),
                      trailer_prefetch_size, results.get());
 
@@ -1011,16 +1016,20 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
 
   // Since stream 0 data is kept in memory, it is read immediately.
   if (stream_index == 0) {
-    int rv = ReadFromBuffer(stream_0_data_.get(), offset, buf_len, buf);
-    return PostToCallbackIfNeeded(sync_possible, std::move(callback), rv);
+    state_ = STATE_IO_PENDING;
+    ReadFromBuffer(stream_0_data_.get(), offset, buf_len, buf);
+    state_ = STATE_READY;
+    return PostToCallbackIfNeeded(sync_possible, std::move(callback), buf_len);
   }
 
   // Sometimes we can read in-ram prefetched stream 1 data immediately, too.
   if (stream_index == 1) {
     if (stream_1_prefetch_data_) {
-      int rv =
-          ReadFromBuffer(stream_1_prefetch_data_.get(), offset, buf_len, buf);
-      return PostToCallbackIfNeeded(sync_possible, std::move(callback), rv);
+      state_ = STATE_IO_PENDING;
+      ReadFromBuffer(stream_1_prefetch_data_.get(), offset, buf_len, buf);
+      state_ = STATE_READY;
+      return PostToCallbackIfNeeded(sync_possible, std::move(callback),
+                                    buf_len);
     }
   }
 
@@ -1089,10 +1098,12 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
 
   // Since stream 0 data is kept in memory, it will be written immediatly.
   if (stream_index == 0) {
-    int ret_value = SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_IO_PENDING;
+    SetStream0Data(buf, offset, buf_len, truncate);
+    state_ = STATE_READY;
     if (!callback.is_null()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), ret_value));
+          FROM_HERE, base::BindOnce(std::move(callback), buf_len));
     }
     return;
   }
@@ -1406,7 +1417,6 @@ void SimpleEntryImpl::CreationOperationComplete(
   if (backend_ && doom_state_ == DOOM_NONE)
     backend_->index()->Insert(entry_hash_);
 
-  state_ = STATE_READY;
   synchronous_entry_ = in_results->sync_entry;
 
   // Copy over any pre-fetched data and its CRCs.
@@ -1427,13 +1437,13 @@ void SimpleEntryImpl::CreationOperationComplete(
 
   // If this entry was opened by hash, key_ could still be empty. If so, update
   // it with the key read from the synchronous entry.
-  if (key_.empty()) {
-    SetKey(synchronous_entry_->key());
+  if (!key_.has_value()) {
+    SetKey(*synchronous_entry_->key());
   } else {
     // This should only be triggered when creating an entry. In the open case
     // the key is either copied from the arguments to open, or checked
     // in the synchronous entry.
-    DCHECK_EQ(key_, synchronous_entry_->key());
+    DCHECK_EQ(*key_, *synchronous_entry_->key());
   }
 
   // Prefer index last used time to disk's, since that may be pretty inaccurate.
@@ -1458,6 +1468,8 @@ void SimpleEntryImpl::CreationOperationComplete(
   // ultimately release `in_results->sync_entry`, and thus leading to having a
   // dangling pointer here.
   in_results = nullptr;
+
+  state_ = STATE_READY;
   if (result_state == SimpleEntryOperation::ENTRY_NEEDS_CALLBACK) {
     ReturnEntryToCallerAsync(!created, std::move(completion_callback));
   }
@@ -1473,8 +1485,8 @@ void SimpleEntryImpl::UpdateStateAfterOperationComplete(
     state_ = STATE_FAILURE;
     MarkAsDoomed(DOOM_COMPLETED);
   } else {
-    state_ = STATE_READY;
     UpdateDataFromEntryStat(entry_stat);
+    state_ = STATE_READY;
   }
 }
 
@@ -1610,7 +1622,7 @@ void SimpleEntryImpl::DoomOperationComplete(
   PostClientCallback(std::move(callback), result);
   RunNextOperationIfNeeded();
   if (post_doom_waiting_) {
-    post_doom_waiting_->OnDoomComplete(entry_hash_);
+    post_doom_waiting_->OnOperationComplete(entry_hash_);
     post_doom_waiting_ = nullptr;
   }
 }
@@ -1636,7 +1648,10 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
     const SimpleEntryStat& entry_stat) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(synchronous_entry_);
-  DCHECK_EQ(STATE_READY, state_);
+  // We want to only be called in STATE_IO_PENDING so that if call to
+  // SimpleIndex::UpdateEntrySize() ends up triggering eviction and queuing
+  // Dooms it doesn't also run any queued operations.
+  CHECK_EQ(state_, STATE_IO_PENDING);
 
   last_used_ = entry_stat.last_used();
   last_modified_ = entry_stat.last_modified();
@@ -1655,28 +1670,28 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
 int64_t SimpleEntryImpl::GetDiskUsage() const {
   int64_t file_size = 0;
   for (int data_size : data_size_) {
-    file_size += simple_util::GetFileSizeFromDataSize(key_.size(), data_size);
+    file_size += simple_util::GetFileSizeFromDataSize(key_->size(), data_size);
   }
   file_size += sparse_data_size_;
   return file_size;
 }
 
-int SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
-                                    int offset,
-                                    int buf_len,
-                                    net::IOBuffer* out_buf) {
+void SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
+                                     int offset,
+                                     int buf_len,
+                                     net::IOBuffer* out_buf) {
   DCHECK_GE(buf_len, 0);
 
-  memcpy(out_buf->data(), in_buf->data() + offset, buf_len);
+  std::copy(in_buf->data() + offset, in_buf->data() + offset + buf_len,
+            out_buf->data());
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
-  return buf_len;
 }
 
-int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
-                                    int offset,
-                                    int buf_len,
-                                    bool truncate) {
+void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
+                                     int offset,
+                                     int buf_len,
+                                     bool truncate) {
   // Currently, stream 0 is only used for HTTP headers, and always writes them
   // with a single, truncating write. Detect these writes and record the size
   // changes of the headers. Also, support writes to stream 0 that have
@@ -1686,7 +1701,7 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   int data_size = GetDataSize(0);
   if (offset == 0 && truncate) {
     stream_0_data_->SetCapacity(buf_len);
-    memcpy(stream_0_data_->data(), buf->data(), buf_len);
+    std::copy(buf->data(), buf->data() + buf_len, stream_0_data_->data());
     data_size_[0] = buf_len;
   } else {
     const int buffer_size =
@@ -1695,10 +1710,14 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     // If |stream_0_data_| was extended, the extension until offset needs to be
     // zero-filled.
     const int fill_size = offset <= data_size ? 0 : offset - data_size;
-    if (fill_size > 0)
-      memset(stream_0_data_->data() + data_size, 0, fill_size);
-    if (buf)
-      memcpy(stream_0_data_->data() + offset, buf->data(), buf_len);
+    if (fill_size > 0) {
+      std::fill(stream_0_data_->data() + data_size,
+                stream_0_data_->data() + data_size + fill_size, 0);
+    }
+    if (buf) {
+      std::copy(buf->data(), buf->data() + buf_len,
+                stream_0_data_->data() + offset);
+    }
     data_size_[0] = buffer_size;
   }
   RecordHeaderSize(cache_type_, data_size_[0]);
@@ -1711,7 +1730,6 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   UpdateDataFromEntryStat(
       SimpleEntryStat(modification_time, modification_time, data_size_,
                       sparse_data_size_));
-  return buf_len;
 }
 
 }  // namespace disk_cache

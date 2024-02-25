@@ -17,14 +17,17 @@ class MockFeatureAggregator : public FeatureAggregator {
  public:
   MockFeatureAggregator();
   ~MockFeatureAggregator() override;
-  MOCK_METHOD(absl::optional<std::vector<float>>,
+  MOCK_METHOD(std::optional<std::vector<float>>,
               Process,
               (proto::SignalType signal_type,
+               uint64_t name_hash,
                proto::Aggregation aggregation,
                uint64_t bucket_count,
+               const base::Time& start_time,
                const base::Time& end_time,
                const base::TimeDelta& bucket_duration,
-               const std::vector<SignalDatabase::Sample>& samples),
+               const std::vector<int32_t>& accepted_enum_ids,
+               const std::vector<SignalDatabase::DbEntry>& all_samples),
               (const override));
   MOCK_METHOD(void,
               FilterEnumSamples,

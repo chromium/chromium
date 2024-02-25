@@ -20,8 +20,8 @@ class MockLeakDetectionRequest : public LeakDetectionRequestInterface {
   MOCK_METHOD(void,
               LookupSingleLeak,
               (network::mojom::URLLoaderFactory*,
-               const absl::optional<std::string>&,
-               const absl::optional<std::string>&,
+               const std::optional<std::string>&,
+               const std::optional<std::string>&,
                LookupSingleLeakPayload,
                LookupSingleLeakCallback),
               (override));

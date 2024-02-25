@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "ipcz/box.h"
@@ -155,11 +156,11 @@ void NodeLink::RemoveRemoteRouterLink(SublinkId sublink) {
   sublinks_.erase(sublink);
 }
 
-absl::optional<NodeLink::Sublink> NodeLink::GetSublink(SublinkId sublink) {
+std::optional<NodeLink::Sublink> NodeLink::GetSublink(SublinkId sublink) {
   absl::MutexLock lock(&mutex_);
   auto it = sublinks_.find(sublink);
   if (it == sublinks_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -641,7 +642,7 @@ bool NodeLink::OnAcceptParcelDriverObjects(
 }
 
 bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
-  absl::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
+  std::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
   if (!sublink) {
     // The sublink may have already been removed, for example if the application
     // has already closed the associated router. It is therefore not considered
@@ -656,7 +657,7 @@ bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
 }
 
 bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
-  absl::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
+  std::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
   if (!sublink) {
     return true;
   }
@@ -670,7 +671,7 @@ bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
 }
 
 bool NodeLink::OnBypassPeer(msg::BypassPeer& bypass) {
-  absl::optional<Sublink> sublink = GetSublink(bypass.params().sublink);
+  std::optional<Sublink> sublink = GetSublink(bypass.params().sublink);
   if (!sublink) {
     return true;
   }
@@ -958,7 +959,7 @@ bool NodeLink::AcceptSplitParcel(
 
 bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
                                     std::unique_ptr<Parcel> parcel) {
-  const absl::optional<Sublink> sublink = GetSublink(for_sublink);
+  const std::optional<Sublink> sublink = GetSublink(for_sublink);
   if (!sublink) {
     DVLOG(4) << "Dropping " << parcel->Describe() << " at "
              << local_node_name_.ToString() << ", arriving from "

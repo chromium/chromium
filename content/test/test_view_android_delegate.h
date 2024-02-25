@@ -11,10 +11,6 @@ namespace ui {
 class ViewAndroid;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace content {
 
 // Provides a test version of the ViewAndroidDelegate with a native interface
@@ -35,8 +31,6 @@ class TestViewAndroidDelegate {
   // Insets the Visual Viewport bottom.  |SetupTestDelegate| must be called
   // first.
   void InsetViewportBottom(int bottom);
-
-  void SetDisplayFeatureForTesting(const gfx::Rect& display_feature);
 
  private:
   base::android::ScopedJavaLocalRef<jobject> j_delegate_;

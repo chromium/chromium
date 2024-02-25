@@ -7,64 +7,55 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "password_sync_util.h"
 
 namespace password_manager {
 
-SyncCredentialsFilter::SyncCredentialsFilter(
-    PasswordManagerClient* client,
-    SyncServiceFactoryFunction sync_service_factory_function)
-    : client_(client),
-      sync_service_factory_function_(std::move(sync_service_factory_function)) {
-}
+SyncCredentialsFilter::SyncCredentialsFilter(PasswordManagerClient* client)
+    : client_(client) {}
 
 SyncCredentialsFilter::~SyncCredentialsFilter() = default;
 
 bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
-  if (client_->IsOffTheRecord())
+  if (client_->IsOffTheRecord()) {
     return false;
+  }
 
-  if (form.form_data.is_gaia_with_skip_save_password_form)
+  if (form.form_data.is_gaia_with_skip_save_password_form) {
     return false;
-
-  const syncer::SyncService* sync_service =
-      sync_service_factory_function_.Run();
-  const signin::IdentityManager* identity_manager =
-      client_->GetIdentityManager();
-
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    // Legacy code path, subject to clean-up.
-    // If kEnablePasswordsAccountStorage is NOT enabled, then don't allow saving
-    // the password for the sync account specifically.
-    return !sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                               sync_service, identity_manager);
   }
 
   if (!sync_util::IsGaiaCredentialPage(form.signon_realm)) {
     return true;
   }
 
+  // Note that `sync_service` may be null in advanced cases like --disable-sync
+  // being used as per syncer::IsSyncAllowedByFlag().
+  const syncer::SyncService* sync_service = client_->GetSyncService();
+
   // The requirement to fulfill is "don't offer to save a Gaia password inside
   // its own account".
   // Let's assume that if the browser is signed-in, new passwords are saved to
   // the primary signed-in account. Per sync_util::GetAccountForSaving(), that's
   // not always true, but let's not overcomplicate.
-  CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const CoreAccountInfo primary_account = sync_service != nullptr
+                                              ? sync_service->GetAccountInfo()
+                                              : CoreAccountInfo();
   if (!primary_account.IsEmpty()) {
-    // This returns false when `primary_account` just signed-in on the web and
-    // already made it to the IdentityManager.
-    return !gaia::AreEmailsSame(base::UTF16ToUTF8(form.username_value),
+    // Only save if the account is not the same. If the username is empty, in
+    // doubt don't save (this is relevant in the password change page).
+    return !form.username_value.empty() &&
+           !gaia::AreEmailsSame(base::UTF16ToUTF8(form.username_value),
                                 primary_account.email);
   }
 
@@ -101,19 +92,10 @@ bool SyncCredentialsFilter::ShouldSaveEnterprisePasswordHash(
 
 bool SyncCredentialsFilter::IsSyncAccountEmail(
     const std::string& username) const {
-  return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager());
-}
-
-void SyncCredentialsFilter::ReportFormLoginSuccess(
-    const PasswordFormManager& form_manager) const {
-  const PasswordForm& form = form_manager.GetPendingCredentials();
-  if (!form_manager.IsNewLogin() &&
-      sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                         sync_service_factory_function_.Run(),
-                                         client_->GetIdentityManager())) {
-    base::RecordAction(base::UserMetricsAction(
-        "PasswordManager_SyncCredentialFilledAndLoginSuccessfull"));
-  }
+  // TODO(https://crbug.com/1464264): `signin::ConsentLevel::kSync` is
+  // deprecated. Remove this usage.
+  return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager(),
+                                       signin::ConsentLevel::kSync);
 }
 
 }  // namespace password_manager

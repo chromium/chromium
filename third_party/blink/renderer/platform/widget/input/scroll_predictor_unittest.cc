@@ -195,10 +195,10 @@ class ScrollPredictorTest : public testing::Test {
   }
 
   void InitLinearResamplingTest(bool use_frames_based_experimental_prediction) {
-    base::FieldTrialParams params;
-    params["filter"] = ::features::kPredictorNameLinearResampling;
+    base::FieldTrialParams predictor_params;
+    predictor_params["predictor"] = ::features::kPredictorNameLinearResampling;
     base::test::FeatureRefAndParams prediction_params = {
-        features::kResamplingScrollEvents, params};
+        features::kResamplingScrollEvents, predictor_params};
 
     base::FieldTrialParams prediction_type_params;
     prediction_type_params["mode"] =
@@ -209,9 +209,16 @@ class ScrollPredictorTest : public testing::Test {
         ::features::kResamplingScrollEventsExperimentalPrediction,
         prediction_type_params};
 
+    base::FieldTrialParams filter_params;
+    filter_params["filter"] = "";
+    base::test::FeatureRefAndParams resampling_and_filter = {
+        features::kFilteringScrollPrediction, filter_params};
+
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {prediction_params, experimental_prediction_params}, {});
+        {prediction_params, experimental_prediction_params,
+         resampling_and_filter},
+        {});
     scroll_predictor_ = std::make_unique<ScrollPredictor>();
 
     VerifyPredictorType(::features::kPredictorNameLinearResampling);
@@ -255,6 +262,8 @@ TEST_F(ScrollPredictorTest, ScrollResamplingStates) {
 }
 
 TEST_F(ScrollPredictorTest, ResampleGestureScrollEvents) {
+  ConfigurePredictorFieldTrialAndInitialize(features::kResamplingScrollEvents,
+                                            ::features::kPredictorNameEmpty);
   SendGestureScrollBegin();
   EXPECT_FALSE(PredictionAvailable());
 
@@ -294,6 +303,8 @@ TEST_F(ScrollPredictorTest, ResampleGestureScrollEvents) {
 }
 
 TEST_F(ScrollPredictorTest, ScrollInDifferentDirection) {
+  ConfigurePredictorFieldTrialAndInitialize(features::kResamplingScrollEvents,
+                                            ::features::kPredictorNameEmpty);
   SendGestureScrollBegin();
 
   // Scroll down.
@@ -366,6 +377,8 @@ TEST_F(ScrollPredictorTest, ScrollUpdateWithEmptyOriginalEventList) {
 }
 
 TEST_F(ScrollPredictorTest, LSQPredictorTest) {
+  ConfigureFilterFieldTrialAndInitialize(features::kFilteringScrollPrediction,
+                                         "");
   SetUpLSQPredictor();
   SendGestureScrollBegin();
 
@@ -474,6 +487,8 @@ TEST_F(ScrollPredictorTest, LinearResamplingPredictorTest) {
 }
 
 TEST_F(ScrollPredictorTest, ScrollPredictorNotChangeScrollDirection) {
+  ConfigureFilterFieldTrialAndInitialize(features::kFilteringScrollPrediction,
+                                         "");
   SetUpLSQPredictor();
   SendGestureScrollBegin();
 

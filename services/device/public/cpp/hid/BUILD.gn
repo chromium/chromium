@@ -32,6 +32,8 @@ source_set("hid") {
     "hid_switches.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//components/variations",
     "//services/device/public/mojom",

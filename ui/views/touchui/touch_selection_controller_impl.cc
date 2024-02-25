@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client.h"
@@ -152,13 +151,13 @@ ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
   const gfx::VectorIcon* icon = nullptr;
   switch (bound_type) {
     case gfx::SelectionBound::LEFT:
-      icon = &kTextSelectionHandleLeftIcon;
+      icon = &ui::kTextSelectionHandleLeftIcon;
       break;
     case gfx::SelectionBound::CENTER:
-      icon = &kTextSelectionHandleCenterIcon;
+      icon = &ui::kTextSelectionHandleCenterIcon;
       break;
     case gfx::SelectionBound::RIGHT:
-      icon = &kTextSelectionHandleRightIcon;
+      icon = &ui::kTextSelectionHandleRightIcon;
       break;
     default:
       NOTREACHED_NORETURN()
@@ -279,8 +278,9 @@ using EditingHandleView = TouchSelectionControllerImpl::EditingHandleView;
 
 // A View that displays the text selection handle.
 class TouchSelectionControllerImpl::EditingHandleView : public View {
+  METADATA_HEADER(EditingHandleView, View)
+
  public:
-  METADATA_HEADER(EditingHandleView);
   EditingHandleView(TouchSelectionControllerImpl* controller,
                     bool is_cursor_handle)
       : controller_(controller),
@@ -446,7 +446,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool is_dragging_ = false;
 };
 
-BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
+BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDragging)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, HandleImageSize)
@@ -457,7 +457,6 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
     : client_view_(client_view) {
   DCHECK(client_view_);
   CreateHandleWidgets();
-  selection_start_time_ = base::TimeTicks::Now();
   aura::Window* client_window = client_view_->GetNativeView();
   client_widget_ = Widget::GetTopLevelWidgetForNativeView(client_window);
   // Observe client widget moves and resizes to update the selection handles.
@@ -474,8 +473,6 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
 }
 
 TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
-  UMA_HISTOGRAM_BOOLEAN("Event.TouchSelection.EndedWithAction",
-                        command_executed_);
   HideQuickMenu();
   HideMagnifier();
   aura::Env::GetInstance()->RemoveEventObserver(this);
@@ -682,12 +679,6 @@ bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
 
 void TouchSelectionControllerImpl::ExecuteCommand(int command_id,
                                                   int event_flags) {
-  command_executed_ = true;
-  base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
-  // Note that we only log the duration stats for the 'successful' selections,
-  // i.e. selections ending with the execution of a command.
-  UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.Duration", duration,
-                             base::Milliseconds(500), base::Seconds(60), 60);
   client_view_->ExecuteCommand(command_id, event_flags);
 }
 
@@ -710,6 +701,7 @@ void TouchSelectionControllerImpl::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(client_widget_, widget);
   client_widget_->RemoveObserver(this);
   client_widget_ = nullptr;
+  client_view_ = nullptr;
 }
 
 void TouchSelectionControllerImpl::OnWidgetBoundsChanged(

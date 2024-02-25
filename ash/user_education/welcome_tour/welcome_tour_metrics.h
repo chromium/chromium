@@ -22,12 +22,14 @@ namespace ash::welcome_tour_metrics {
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
 enum class AbortedReason {
-  kUnknown = 0,
+  kMinValue = 0,
+  kUnknown = kMinValue,
   kAccelerator = 1,
   kChromeVoxEnabled = 2,
   kTabletModeEnabled = 3,
   kUserDeclinedTour = 4,
-  kMaxValue = kUserDeclinedTour,
+  kShutdown = 5,
+  kMaxValue = kShutdown,
 };
 
 // Enumeration of reasons the Welcome Tour may be prevented. These values are
@@ -88,11 +90,13 @@ enum class Interaction {
   kQuickSettings = 2,
   kSearch = 3,
   kSettingsApp = 4,
-  kMaxValue = kSettingsApp,
+  kExploreApp = 5,
+  kMaxValue = kExploreApp,
 };
 
 static constexpr auto kAllInteractionsSet =
     base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>({
+        Interaction::kExploreApp,
         Interaction::kFilesApp,
         Interaction::kLauncher,
         Interaction::kQuickSettings,

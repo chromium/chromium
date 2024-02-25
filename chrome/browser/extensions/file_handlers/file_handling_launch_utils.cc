@@ -17,8 +17,7 @@ void EnqueueLaunchParamsInWebContents(content::WebContents* web_contents,
                                       const Extension& extension,
                                       const GURL& url,
                                       std::vector<base::FilePath> paths) {
-  CHECK(extensions::WebFileHandlers::SupportsWebFileHandlers(
-      extension.manifest_version()));
+  CHECK(extensions::WebFileHandlers::SupportsWebFileHandlers(extension));
 
   // Enable LaunchQueue in Web file handlers.
   web_app::WebAppLaunchParams launch_params;

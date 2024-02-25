@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -47,7 +47,7 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   // |ash::kDeviceDisplayResolution| setting value.
   static std::unique_ptr<InternalDisplaySettings> FromPolicySetting(
       const base::Value::Dict* pref) {
-    const absl::optional<int> scale_value =
+    const std::optional<int> scale_value =
         pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
     return scale_value ? std::make_unique<InternalDisplaySettings>(*scale_value)
                        : nullptr;
@@ -58,7 +58,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   bool use_native = false;
   int width = 0;
   int height = 0;
-  absl::optional<int> scale_percentage = absl::nullopt;
+  std::optional<int> scale_percentage = std::nullopt;
 
   bool operator==(const ExternalDisplaySettings& rhs) const {
     return use_native == rhs.use_native && width == rhs.width &&
@@ -117,16 +117,16 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
     result->scale_percentage =
         pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalScale);
 
-    const absl::optional<bool> use_native_value =
+    const std::optional<bool> use_native_value =
         pref->FindBool(ash::kDeviceDisplayResolutionKeyExternalUseNative);
     if (use_native_value && *use_native_value) {
       result->use_native = true;
       return result;
     }
 
-    const absl::optional<int> width_value =
+    const std::optional<int> width_value =
         pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalWidth);
-    const absl::optional<int> height_value =
+    const std::optional<int> height_value =
         pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalHeight);
     if (width_value && height_value) {
       result->width = *width_value;
@@ -164,7 +164,7 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 
   bool new_recommended = false;
   policy_enabled_ = new_external_config || new_internal_config;
-  const absl::optional<bool> recommended_value =
+  const std::optional<bool> recommended_value =
       resolution_pref->FindBool(ash::kDeviceDisplayResolutionKeyRecommended);
 
   if (recommended_value)

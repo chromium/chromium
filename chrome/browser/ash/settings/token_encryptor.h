@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace crypto {
 class SymmetricKey;
@@ -23,11 +24,21 @@ class TokenEncryptor {
   // Encrypts |token| with the system salt key (stable for the lifetime
   // of the device).  Useful to avoid storing plain text in place like
   // Local State.
-  virtual std::string EncryptWithSystemSalt(const std::string& token) = 0;
+  virtual std::string EncryptWithSystemSalt(std::string_view token) = 0;
 
   // Decrypts |token| with the system salt key (stable for the lifetime
   // of the device).
   virtual std::string DecryptWithSystemSalt(
+      std::string_view encrypted_token_hex) = 0;
+
+  // Old deprecated versions of Encrypt and Decrypt. These functions are weak
+  // because they do not use a proper counter with the encryptor.
+  //
+  // The WeakEncrypt function will CHECK-fail if called in non-test code. No new
+  // code should ever use it, the function is only kept to enable testing of
+  // WeakDecrypt. The WeakDecrypt is available to allow code to read old tokens.
+  virtual std::string WeakEncryptWithSystemSalt(const std::string& token) = 0;
+  virtual std::string WeakDecryptWithSystemSalt(
       const std::string& encrypted_token_hex) = 0;
 };
 
@@ -43,8 +54,11 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
   ~CryptohomeTokenEncryptor() override;
 
   // TokenEncryptor overrides:
-  std::string EncryptWithSystemSalt(const std::string& token) override;
+  std::string EncryptWithSystemSalt(std::string_view token) override;
   std::string DecryptWithSystemSalt(
+      std::string_view encrypted_token_hex) override;
+  std::string WeakEncryptWithSystemSalt(const std::string& token) override;
+  std::string WeakDecryptWithSystemSalt(
       const std::string& encrypted_token_hex) override;
 
  private:
@@ -52,16 +66,6 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
   std::unique_ptr<crypto::SymmetricKey> PassphraseToKey(
       const std::string& passphrase,
       const std::string& salt);
-
-  // Encrypts (AES) the token given |key| and |salt|.
-  std::string EncryptTokenWithKey(const crypto::SymmetricKey* key,
-                                  const std::string& salt,
-                                  const std::string& token);
-
-  // Decrypts (AES) hex encoded encrypted token given |key| and |salt|.
-  std::string DecryptTokenWithKey(const crypto::SymmetricKey* key,
-                                  const std::string& salt,
-                                  const std::string& encrypted_token_hex);
 
   // The cached system salt passed to the constructor, originally coming
   // from cryptohome daemon.

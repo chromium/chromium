@@ -173,16 +173,6 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
     return;
   }
 
-  int64_t start_time_ms = url_utils::GetTimeFromDistillerUrl(
-      render_frame_host->GetLastCommittedURL());
-  if (start_time_ms > 0) {
-    base::TimeTicks start_time =
-        base::Milliseconds(start_time_ms) + base::TimeTicks();
-    base::TimeDelta latency = base::TimeTicks::Now() - start_time;
-
-    UMA_HISTOGRAM_TIMES("DomDistiller.Time.ViewerLoading", latency);
-  }
-
   // No SendJavaScript() calls allowed before |buffer_| is run and cleared.
   waiting_for_page_ready_ = false;
   if (!buffer_.empty()) {

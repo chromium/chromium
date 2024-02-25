@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS document.timeline identity tests
-FAIL document.timeline.currentTime value tests assert_equals: document.timeline.currentTime matches requestAnimationFrame time expected 168.61000000062631 but got 173.48366666738002
-PASS document.timeline.currentTime liveness tests
-PASS iframe document.timeline.currentTime liveness tests
-PASS document.timeline.currentTime time should be the same for all RAF callbacks in a frame
-Harness: the test ran to completion.
-

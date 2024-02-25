@@ -15,4 +15,8 @@ bool WebUIConfig::IsWebUIEnabled(BrowserContext* browser_context) {
   return true;
 }
 
+bool WebUIConfig::ShouldHandleURL(const GURL& url) {
+  return true;
+}
+
 }  // namespace content

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_ROUTINE_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_ROUTINE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -28,7 +28,8 @@ namespace ash::network_diagnostics {
 // Tests whether a DNS resolution can be completed successfully.
 class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
  public:
-  DnsResolutionRoutine();
+  explicit DnsResolutionRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   DnsResolutionRoutine(const DnsResolutionRoutine&) = delete;
   DnsResolutionRoutine& operator=(const DnsResolutionRoutine&) = delete;
   ~DnsResolutionRoutine() override;
@@ -50,17 +51,16 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
  private:
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata);
   void CreateHostResolver();
   void AttemptResolution();
 
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
-      nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   static constexpr int kTotalNumRetries = 1;
   int num_retries_ = kTotalNumRetries;
   bool resolved_address_received_ = false;

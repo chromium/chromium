@@ -37,7 +37,12 @@ async function runSelectRawURL(href, resolve_to_config = false) {
   }
   return await sharedStorage.selectURL(
       'test-url-selection-operation', [{url: href,
-          reportingMetadata: {'reserved.top_navigation': BEACON_URL}}], {
+          reportingMetadata: {
+            'reserved.top_navigation_start': BEACON_URL +
+                "?type=reserved.top_navigation_start",
+            'reserved.top_navigation_commit': BEACON_URL +
+                "?type=reserved.top_navigation_commit",
+          }}], {
         data: {'mockResult': 0},
         resolveToConfig: resolve_to_config,
         keepAlive: true,
@@ -79,23 +84,23 @@ async function generateURNFromFledgeRawURL(
 
   const ad_components_list = nested_urls.map((url) => {
     return ad_with_size ?
-      { renderUrl: url, sizeGroup: "group1" } :
-      { renderUrl: url }
+      { renderURL: url, sizeGroup: "group1" } :
+      { renderURL: url }
   });
 
   let interestGroup =
       {
         name: 'testAd1',
         owner: location.origin,
-    biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
-        ads: [{renderUrl: href, bid: 1}],
+        biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
+        ads: [{renderURL: href, bid: 1}],
         userBiddingSignals: {biddingToken: bidding_token},
         trustedBiddingSignalsKeys: ['key1'],
         adComponents: ad_components_list,
       };
 
   let biddingURLParams =
-    new URLSearchParams(interestGroup.biddingLogicURL.search);
+      new URLSearchParams(interestGroup.biddingLogicURL.search);
   if (requested_size)
     biddingURLParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
@@ -118,17 +123,17 @@ async function generateURNFromFledgeRawURL(
   let auctionConfig = {
     seller: location.origin,
     interestGroupBuyers: [location.origin],
-    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     resolveToConfig: resolve_to_config
   };
 
   if (requested_size) {
-    let decisionUrlParams =
-      new URLSearchParams(auctionConfig.decisionLogicUrl.search);
-    decisionUrlParams.set(
+    let decisionURLParams =
+      new URLSearchParams(auctionConfig.decisionLogicURL.search);
+    decisionURLParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
-    auctionConfig.decisionLogicUrl.search = decisionUrlParams;
+    auctionConfig.decisionLogicURL.search = decisionURLParams;
 
     auctionConfig['requestedSize'] = {width: requested_size[0], height: requested_size[1]};
   }
@@ -245,6 +250,11 @@ function buildRemoteContextForObject(object, uuid, html) {
     }
   };
 
+  // If `object` is null (e.g. a window created with noopener), set it to a
+  // dummy value so that the Proxy constructor won't fail.
+  if (object == null) {
+    object = {};
+  }
   const proxy = new Proxy(object, handler);
   return proxy;
 }
@@ -269,13 +279,26 @@ function attachContext(object_constructor, html, headers, origin) {
 // 2. crbug.com/1394559: unfenced-top.https.html
 async function attachOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
-    automatic_beacon, object_constructor, html, headers, origin) {
+    automatic_beacon, object_constructor, html, headers, origin,
+    num_components) {
   const [uuid, url] = generateRemoteContextURL(headers, origin);
+
+  let components_list = [];
+  for (let i = 0; i < num_components; i++) {
+    let [component_uuid, component_url] =
+        generateRemoteContextURL(headers, origin);
+    // This field will be read by attachComponentFrameContext() in order to
+    // know what uuid to point to when building the remote context.
+    html += '<input type=\'hidden\' id=\'component_uuid_' + i + '\' value=\'' +
+        component_uuid + '\'>';
+    components_list.push(component_url);
+  }
+
   const id = await (
       generator_api == 'fledge' ?
           generateURNFromFledge(
-              url, [], [], resolve_to_config, ad_with_size, requested_size,
-              automatic_beacon) :
+              url, [], components_list, resolve_to_config, ad_with_size,
+              requested_size, automatic_beacon) :
           runSelectURL(url, [], resolve_to_config));
   const object = object_constructor(id);
   return buildRemoteContextForObject(object, uuid, html);
@@ -283,12 +306,14 @@ async function attachOpaqueContext(
 
 function attachPotentiallyOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
-    automatic_beacon, frame_constructor, html, headers, origin) {
+    automatic_beacon, frame_constructor, html, headers, origin,
+    num_components) {
   generator_api = generator_api.toLowerCase();
   if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
     return attachOpaqueContext(
         generator_api, resolve_to_config, ad_with_size, requested_size,
-        automatic_beacon, frame_constructor, html, headers, origin);
+        automatic_beacon, frame_constructor, html, headers, origin,
+        num_components);
   } else {
     return attachContext(frame_constructor, html, headers, origin);
   }
@@ -296,7 +321,8 @@ function attachPotentiallyOpaqueContext(
 
 function attachFrameContext(
     element_name, generator_api, resolve_to_config, ad_with_size,
-    requested_size, automatic_beacon, html, headers, attributes, origin) {
+    requested_size, automatic_beacon, html, headers, attributes, origin,
+    num_components) {
   frame_constructor = (id) => {
     frame = document.createElement(element_name);
     attributes.forEach(attribute => {
@@ -315,7 +341,8 @@ function attachFrameContext(
   };
   return attachPotentiallyOpaqueContext(
       generator_api, resolve_to_config, ad_with_size, requested_size,
-      automatic_beacon, frame_constructor, html, headers, origin);
+      automatic_beacon, frame_constructor, html, headers, origin,
+      num_components);
 }
 
 function replaceFrameContext(frame_proxy, {
@@ -377,11 +404,13 @@ function attachFencedFrameContext({
   html = '',
   headers = [],
   attributes = [],
-  origin = ''
+  origin = '',
+  num_components = 0
 } = {}) {
   return attachFrameContext(
       'fencedframe', generator_api, resolve_to_config, ad_with_size,
-      requested_size, automatic_beacon, html, headers, attributes, origin);
+      requested_size, automatic_beacon, html, headers, attributes, origin,
+      num_components);
 }
 
 // Attach an iframe that waits for scripts to execute.
@@ -392,12 +421,13 @@ function attachIFrameContext({
   html = '',
   headers = [],
   attributes = [],
-  origin = ''
+  origin = '',
+  num_components = 0
 } = {}) {
   return attachFrameContext(
       'iframe', generator_api, resolve_to_config = false, ad_with_size = false,
       requested_size = null, automatic_beacon, html, headers, attributes,
-      origin);
+      origin, num_components);
 }
 
 // Open a window that waits for scripts to execute.
@@ -409,6 +439,45 @@ function attachWindowContext({target="_blank", html="", headers=[], origin=""}={
   }
 
   return attachContext(window_constructor, html, headers, origin);
+}
+
+// Attaches an ad component in a fenced frame. For this to work, this must be
+// called in a frame that was generated with attachFrameContext() using the
+// Protected Audience API (generator_api: 'fledge').
+function attachComponentFencedFrameContext(
+    index = 0, {attributes = [], html = ''} = {}) {
+  const urn = window.fence.getNestedConfigs()[index];
+  return attachComponentFrameContext(
+      index, 'fencedframe', urn, attributes, html);
+}
+
+// Same as attachComponentFencedFrameContext, but in a urn iframe.
+function attachComponentIFrameContext(
+    index = 0, {attributes = [], html = ''} = {}) {
+  const urn = navigator.adAuctionComponents(index + 1)[index];
+  return attachComponentFrameContext(index, 'iframe', urn, attributes, html);
+}
+
+function attachComponentFrameContext(
+    index, element_name, urn, attributes, html) {
+  assert_not_equals(
+      document.getElementById('component_uuid_' + index), null,
+      'Component frames can only be attached to frames loaded with ' +
+          'attach*FrameContext() with `num_components` set to at least ' +
+          (index + 1) + '.');
+
+  let frame = document.createElement(element_name);
+  attributes.forEach(attribute => {
+    frame.setAttribute(attribute[0], attribute[1]);
+  });
+  if (element_name == 'iframe') {
+    frame.src = urn;
+  } else {
+    frame.config = urn;
+  }
+  document.body.append(frame);
+  const context_uuid = document.getElementById('component_uuid_' + index).value;
+  return buildRemoteContextForObject(frame, context_uuid, html);
 }
 
 // Converts a key string into a key uuid using a cryptographic hash function.
@@ -462,8 +531,8 @@ async function readValueFromServer(key) {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${STORE_URL}?key=${key}`;
-  const response = await fetch(serverUrl);
+  const serverURL = `${STORE_URL}?key=${key}`;
+  const response = await fetch(serverURL);
   if (!response.ok)
     throw new Error('An error happened in the server');
   const value = await response.text();
@@ -494,12 +563,16 @@ async function nextValueFromServer(key) {
   }
 }
 
-// Reads the data from the latest automatic beacon sent to the server.
-async function readAutomaticBeaconDataFromServer() {
-  const serverUrl = `${BEACON_URL}`;
-  const response = await fetch(serverUrl);
+// Checks the automatic beacon data server to see if it has received an
+// automatic beacon with a given event type and body.
+async function readAutomaticBeaconDataFromServer(event_type, expected_body) {
+  let serverURL = `${BEACON_URL}`;
+  const response = await fetch(serverURL + "?" + new URLSearchParams({
+    type: event_type,
+    expected_body: expected_body,
+  }));
   if (!response.ok)
-    throw new Error('An error happened in the server');
+    throw new Error('An error happened in the server ' + response.status);
   const value = await response.text();
 
   // The value is not stored in the server.
@@ -510,11 +583,14 @@ async function readAutomaticBeaconDataFromServer() {
 }
 
 // Convenience wrapper around the above getter that will wait until a value is
-// available on the server.
-async function nextAutomaticBeacon() {
+// available on the server. The server uses a hash of the concatenated event
+// type and beacon data as the key when storing the beacon in the database. To
+// retrieve it, we need to supply the endpoint with both pieces of information.
+async function nextAutomaticBeacon(event_type, expected_body) {
   while (true) {
     // Fetches the test result from the server.
-    const { status, value } = await readAutomaticBeaconDataFromServer();
+    const { status, value } =
+        await readAutomaticBeaconDataFromServer(event_type, expected_body);
     if (!status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 20));
@@ -530,8 +606,8 @@ async function writeValueToServer(key, value, origin = '') {
   // Resolve the key if it is a Promise.
   key = await key;
 
-  const serverUrl = `${origin}${STORE_URL}?key=${key}&value=${value}`;
-  await fetch(serverUrl, {"mode": "no-cors"});
+  const serverURL = `${origin}${STORE_URL}?key=${key}&value=${value}`;
+  await fetch(serverURL, {"mode": "no-cors"});
 }
 
 // Simulates a user gesture.
@@ -573,5 +649,21 @@ function setupCSP(csp, second_csp=null) {
     second_meta.httpEquiv = "Content-Security-Policy";
     second_meta.content = "frame-src " + second_csp;
     document.head.appendChild(second_meta);
+  }
+}
+
+// Clicking in WPT tends to be flaky (https://crbug.com/1066891), so you may
+// need to click multiple times to have an effect. This function clicks at
+// coordinates `{x, y}` relative to `click_origin`, by default 3 times. Should
+// not be used for tests where multiple clicks have distinct impact on the state
+// of the page, but rather to bruteforce through flakes that rely on only one
+// click.
+async function multiClick(x, y, click_origin, times = 3) {
+  for (let i = 0; i < times; i++) {
+    let actions = new test_driver.Actions();
+    await actions.pointerMove(x, y, {origin: click_origin})
+        .pointerDown()
+        .pointerUp()
+        .send();
   }
 }

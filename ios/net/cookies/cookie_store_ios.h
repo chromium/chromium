@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ios/net/cookies/cookie_cache.h"
@@ -25,7 +27,6 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 @class NSHTTPCookie;
@@ -82,8 +83,8 @@ class CookieStoreIOS : public net::CookieStore,
       const GURL& source_url,
       const net::CookieOptions& options,
       SetCookiesCallback callback,
-      absl::optional<net::CookieAccessResult> cookie_access_result =
-          absl::nullopt) override;
+      std::optional<net::CookieAccessResult> cookie_access_result =
+          std::nullopt) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,
@@ -159,11 +160,11 @@ class CookieStoreIOS : public net::CookieStore,
     AddCallbackForCookie(
         const GURL& url,
         const std::string& name,
-        const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+        const std::optional<net::CookiePartitionKey>& cookie_partition_key,
         CookieChangeCallback callback) override;
     [[nodiscard]] std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
         const GURL& url,
-        const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+        const std::optional<net::CookiePartitionKey>& cookie_partition_key,
         CookieChangeCallback callback) override;
     [[nodiscard]] std::unique_ptr<CookieChangeSubscription>
     AddCallbackForAllChanges(CookieChangeCallback callback) override;
@@ -171,7 +172,7 @@ class CookieStoreIOS : public net::CookieStore,
    private:
     // Instances of this class are always members of CookieStoreIOS, so
     // |cookie_store| is guaranteed to outlive this instance.
-    CookieStoreIOS* const cookie_store_;
+    const raw_ptr<CookieStoreIOS> cookie_store_;
   };
 
   // Interface only used by CookieChangeDispatcherIOS.

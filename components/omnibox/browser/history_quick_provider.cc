@@ -55,13 +55,10 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
                                  bool minimal_changes) {
   TRACE_EVENT0("omnibox", "HistoryQuickProvider::Start");
   matches_.clear();
-  if (disabled_ ||
-      input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (disabled_ || input.IsZeroSuggest() ||
+      input.type() == metrics::OmniboxInputType::EMPTY) {
     return;
-
-  // Don't bother with INVALID.
-  if ((input.type() == metrics::OmniboxInputType::EMPTY))
-    return;
+  }
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
@@ -91,7 +88,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = InKeywordMode(autocomplete_input_)
+  size_t max_matches = autocomplete_input_.InKeywordMode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
 
@@ -133,8 +130,9 @@ void HistoryQuickProvider::DoAutocomplete() {
   // `provider_max_matches_`.
 
   // In keyword mode, already have enough matches.
-  if (InKeywordMode(autocomplete_input_))
+  if (autocomplete_input_.InKeywordMode()) {
     return;
+  }
 
   static const size_t domain_suggestions_min_char =
       OmniboxFieldTrial::kDomainSuggestionsMinInputLength.Get();
@@ -178,7 +176,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   }
 }
 
-absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
+std::optional<int> HistoryQuickProvider::MaxMatchScore() {
   // Figure out if HistoryURL provider has a URL-what-you-typed match
   // that ought to go first and what its score will be.
   bool will_have_url_what_you_typed_match_first = false;
@@ -265,8 +263,8 @@ absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
     }
   }
   return will_have_url_what_you_typed_match_first
-             ? absl::optional<int>{url_what_you_typed_match_score - 1}
-             : absl::nullopt;
+             ? std::optional<int>{url_what_you_typed_match_score - 1}
+             : std::nullopt;
 }
 
 AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
@@ -364,7 +362,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
   }
 
-  if (InKeywordMode(autocomplete_input_)) {
+  if (autocomplete_input_.InKeywordMode()) {
     match.from_keyword = true;
   }
 

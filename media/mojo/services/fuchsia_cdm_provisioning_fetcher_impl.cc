@@ -45,7 +45,7 @@ void FuchsiaCdmProvisioningFetcherImpl::Fetch(
     return;
   }
 
-  absl::optional<std::string> request_str =
+  std::optional<std::string> request_str =
       base::StringFromMemBuffer(request.message);
   if (!request_str) {
     DLOG(WARNING) << "Failed to read ProvisioningRequest.";

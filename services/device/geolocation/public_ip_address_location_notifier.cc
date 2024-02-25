@@ -120,7 +120,8 @@ void PublicIpAddressLocationNotifier::MakeNetworkLocationRequest() {
 void PublicIpAddressLocationNotifier::OnNetworkLocationResponse(
     mojom::GeopositionResultPtr result,
     const bool server_error,
-    const WifiData& /* wifi_data */) {
+    const WifiData& /* wifi_data */,
+    mojom::NetworkLocationResponsePtr /* response data */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (server_error) {
     network_changed_since_last_request_ = true;

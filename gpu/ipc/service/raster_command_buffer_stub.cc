@@ -31,7 +31,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -72,12 +71,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
   if (share_command_buffer_stub) {
     LOG(ERROR) << "Using a share group is not supported with RasterDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
-  if (surface_handle_ != kNullSurfaceHandle) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "RasterInterface clients must render offscreen.";
     return ContextResult::kFatalFailure;
   }
 

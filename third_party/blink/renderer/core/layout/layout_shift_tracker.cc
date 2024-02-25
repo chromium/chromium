@@ -174,10 +174,6 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return false;
     if (object.IsBR())
       return false;
-    if (layout_text->ContainsOnlyWhitespaceOrNbsp() ==
-        OnlyWhitespaceOrNbsp::kYes) {
-      return false;
-    }
     if (object.StyleRef().GetFont().ShouldSkipDrawing())
       return false;
     return true;
@@ -188,8 +184,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
     return false;
   }
 
-  if (SmallerThanRegionGranularity(
-          box->PhysicalVisualOverflowRectAllowingUnset())) {
+  if (SmallerThanRegionGranularity(box->VisualOverflowRectAllowingUnset())) {
     return false;
   }
 
@@ -362,7 +357,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", " << object << " moved from "
             << old_rect_in_root.ToString() << " to "
             << new_rect_in_root.ToString() << " (visible from "
@@ -371,7 +366,7 @@ void LayoutShiftTracker::ObjectShifted(
     if (old_starting_point_in_root != old_rect_in_root.origin() ||
         new_starting_point_in_root != new_rect_in_root.origin() ||
         !translation_delta.IsZero() || !scroll_delta.IsZero()) {
-      VLOG(1) << " (starting point from "
+      VLOG(2) << " (starting point from "
               << old_starting_point_in_root.ToString() << " to "
               << new_starting_point_in_root.ToString() << ")";
     }
@@ -382,7 +377,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   if (Node* node = object.GetNode()) {
     MaybeRecordAttribution(
-        {DOMNodeIds::IdForNode(node), visible_old_rect, visible_new_rect});
+        {node->GetDomNodeId(), visible_old_rect, visible_new_rect});
   }
 }
 
@@ -554,7 +549,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", viewport was "
             << (impact_fraction * 100) << "% impacted with distance fraction "
             << move_distance_factor << " and subframe weighting factor "
@@ -635,7 +630,7 @@ void LayoutShiftTracker::ReportShift(double score_delta,
       "frame", GetFrameIdForTracing(&frame));
 
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url().GetString() << ", layout shift of "
             << score_delta
             << (had_recent_input ? " excluded by recent input" : " reported")
@@ -851,7 +846,7 @@ void ReattachHookScope::NotifyDetach(const Node& node) {
 
   // Save the visual rect for restoration on future reattachment.
   const auto& box = To<LayoutBox>(*layout_object);
-  PhysicalRect visual_overflow_rect = box.PreviousPhysicalVisualOverflowRect();
+  PhysicalRect visual_overflow_rect = box.PreviousVisualOverflowRect();
   if (visual_overflow_rect.IsEmpty() && box.PreviousSize().IsEmpty())
     return;
   bool has_paint_offset_transform = false;

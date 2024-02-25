@@ -186,5 +186,31 @@ TEST_F(AmbientAnimationProgressTrackerTest, AnimationsDestroyed) {
   EXPECT_THAT(global_progress.current_timestamp, FloatEq(.25f));
 }
 
+TEST_F(AmbientAnimationProgressTrackerTest, AnimationRestarted) {
+  AmbientAnimationProgressTracker tracker;
+  auto animation =
+      std::make_unique<lottie::Animation>(CreateSkottie(/*duration_secs=*/10));
+  tracker.RegisterAnimation(animation.get());
+  animation->Start();
+  Paint(*animation);
+
+  clock_ += base::Seconds(5);
+  Paint(*animation);
+
+  ASSERT_TRUE(tracker.HasActiveAnimations());
+  EXPECT_THAT(tracker.GetGlobalProgress().current_timestamp, FloatEq(0.5f));
+
+  animation->Stop();
+  EXPECT_FALSE(tracker.HasActiveAnimations());
+  // Should be a no-op.
+  tracker.RegisterAnimation(animation.get());
+
+  animation->Start();
+  Paint(*animation);
+
+  ASSERT_TRUE(tracker.HasActiveAnimations());
+  EXPECT_THAT(tracker.GetGlobalProgress().current_timestamp, FloatEq(0.f));
+}
+
 }  // namespace
 }  // namespace ash

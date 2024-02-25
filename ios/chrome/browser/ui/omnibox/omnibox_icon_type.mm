@@ -18,6 +18,8 @@ NSString* GetLocationBarSecuritySymbolName(
       return kSecureLocationBarSymbol;
     case NOT_SECURE_WARNING:
       return kWarningFillSymbol;
+    case DANGEROUS:
+      return kDangerousOmniboxSymbol;
     case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
       NOTREACHED();
       return kInfoCircleSymbol;

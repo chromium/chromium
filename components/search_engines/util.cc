@@ -14,17 +14,126 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/version_info/version_info.h"
+#include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
-#include "components/signin/public/base/signin_switches.h"
+
+namespace {
+
+// Indicates whether updates to the search engines database are needed.
+struct MergeEngineRequirements {
+  // `metadata.HasBuiltinKeywordUpdate()` and
+  // `metadata.HasStarterPackUpdate()` indicate the status for the
+  // two types of search engines, and when they are `true`, individual fields
+  // will contain the associated metadata that should be also added to the
+  // database.
+  WDKeywordsResult::Metadata metadata;
+
+  // The status to which `prefs::kDefaultSearchProviderKeywordsUseExtendedList`
+  // should be set.
+  enum class ShouldKeywordsUseExtendedList { kUnknown, kYes, kNo };
+  ShouldKeywordsUseExtendedList should_keywords_use_extended_list =
+      ShouldKeywordsUseExtendedList::kUnknown;
+};
+
+MergeEngineRequirements ComputeMergeEnginesRequirements(
+    PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const WDKeywordsResult::Metadata& keywords_metadata) {
+  if (!prefs) {
+    CHECK_IS_TEST();
+    return {};
+  }
+  if (!search_engine_choice_service) {
+    CHECK_IS_TEST();
+    return {};
+  }
+
+  const int prepopulate_resource_keyword_version =
+      TemplateURLPrepopulateData::GetDataVersion(prefs);
+  const int country_id = search_engine_choice_service->GetCountryId();
+  const bool should_keywords_use_extended_list =
+      search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny) &&
+      search_engines::IsEeaChoiceCountry(country_id);
+  const int milestone = version_info::GetMajorVersionNumberAsInt();
+
+  bool update_builtin_keywords;
+  if (keywords_metadata.builtin_keyword_data_version >
+      prepopulate_resource_keyword_version) {
+    // The version in the database is more recent than the version in the Chrome
+    // binary. Downgrades are not supported, so don't update it.
+    update_builtin_keywords = false;
+  } else if (keywords_metadata.builtin_keyword_data_version <
+             prepopulate_resource_keyword_version) {
+    // The built-in data from `prepopulated_engines.json` has been updated.
+    update_builtin_keywords = true;
+  } else if (keywords_metadata.builtin_keyword_country != 0 &&
+             keywords_metadata.builtin_keyword_country != country_id) {
+    // The country associated with the profile has changed.
+    // We skip cases where the country was not previously set to avoid
+    // unnecessary churn. We expect that by the time this might matter, the
+    // client will have this data populated when the search engine choice
+    // feature gets enabled.
+    update_builtin_keywords = true;
+  } else if (prefs->GetBoolean(
+                 prefs::kDefaultSearchProviderKeywordsUseExtendedList) !=
+             should_keywords_use_extended_list) {
+    // The state of the search engine choice feature has changed.
+    // We started writing the pref while we were not checking the country
+    // before. Once the feature flag is removed, we can clean up this pref.
+    update_builtin_keywords = true;
+  } else if (should_keywords_use_extended_list &&
+             keywords_metadata.builtin_keyword_milestone != 0 &&
+             keywords_metadata.builtin_keyword_milestone < milestone) {
+    // The milestone changed and we need to recompute the list of visible search
+    // engines. This is needed only in the EEA.
+    // We skip cases where the milestone was not previously set to avoid
+    // unnecessary churn. We expect that by the time this might matter, the
+    // client will have this data populated when the search engine choice
+    // feature gets enabled.
+    update_builtin_keywords = true;
+  } else {
+    update_builtin_keywords = false;
+  }
+
+  MergeEngineRequirements merge_requirements;
+
+  if (update_builtin_keywords) {
+    merge_requirements.metadata.builtin_keyword_data_version =
+        prepopulate_resource_keyword_version;
+    merge_requirements.metadata.builtin_keyword_milestone = milestone;
+    merge_requirements.metadata.builtin_keyword_country = country_id;
+    merge_requirements.should_keywords_use_extended_list =
+        should_keywords_use_extended_list
+            ? MergeEngineRequirements::ShouldKeywordsUseExtendedList::kYes
+            : MergeEngineRequirements::ShouldKeywordsUseExtendedList::kNo;
+  }
+
+  const int starter_pack_data_version =
+      TemplateURLStarterPackData::GetDataVersion();
+  if (keywords_metadata.starter_pack_version < starter_pack_data_version) {
+    merge_requirements.metadata.starter_pack_version =
+        starter_pack_data_version;
+  }
+
+  return merge_requirements;
+}
+
+}  // namespace
 
 std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
@@ -320,7 +429,8 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 }
 
 const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     const auto& default_search_provider =
         prefs.GetString(prefs::kDefaultSearchProviderGUID);
 
@@ -341,7 +451,8 @@ const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs) {
 
 void SetDefaultSearchProviderPrefValue(PrefService& prefs,
                                        const std::string& value) {
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
     prefs.SetString(prefs::kDefaultSearchProviderGUID, value);
   } else {
     prefs.SetString(prefs::kSyncedDefaultSearchProviderGUID, value);
@@ -432,7 +543,7 @@ void ApplyActionsFromCurrentData(
   DCHECK(template_urls);
 
   // Remove items.
-  for (const auto* removed_engine : actions.removed_engines) {
+  for (const TemplateURL* removed_engine : actions.removed_engines) {
     auto j = FindTemplateURL(template_urls, removed_engine);
     DCHECK(j != template_urls->end());
     DCHECK(!default_search_provider ||
@@ -466,16 +577,15 @@ void GetSearchProvidersUsingKeywordResult(
     const WDTypedResult& result,
     KeywordWebDataService* service,
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
-    int* new_resource_keyword_version,
-    int* new_resource_starter_pack_version,
+    WDKeywordsResult::Metadata& out_updated_keywords_metadata,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   DCHECK(template_urls->empty());
   DCHECK_EQ(KEYWORDS_RESULT, result.GetType());
-  DCHECK(new_resource_keyword_version);
 
   WDKeywordsResult keyword_result = reinterpret_cast<
       const WDResult<WDKeywordsResult>*>(&result)->GetValue();
@@ -495,55 +605,68 @@ void GetSearchProvidersUsingKeywordResult(
     template_urls->push_back(std::make_unique<TemplateURL>(keyword));
   }
 
-  *new_resource_keyword_version = keyword_result.builtin_keyword_version;
-  *new_resource_starter_pack_version = keyword_result.starter_pack_version;
+  out_updated_keywords_metadata = keyword_result.metadata;
   GetSearchProvidersUsingLoadedEngines(
-      service, prefs, template_urls, default_search_provider, search_terms_data,
-      new_resource_keyword_version, new_resource_starter_pack_version,
+      service, prefs, search_engine_choice_service, template_urls,
+      default_search_provider, search_terms_data, out_updated_keywords_metadata,
       removed_keyword_guids);
+
+  // If a data change happened, it should not cause a version downgrade.
+  // Upgrades (builtin > new) or feature-related merges (builtin == new) only
+  // are expected.
+  DCHECK(!out_updated_keywords_metadata.HasBuiltinKeywordData() ||
+         out_updated_keywords_metadata.builtin_keyword_data_version >=
+             keyword_result.metadata.builtin_keyword_data_version);
 }
 
 void GetSearchProvidersUsingLoadedEngines(
     KeywordWebDataService* service,
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
-    int* resource_keyword_version,
-    int* resource_starter_pack_version,
+    WDKeywordsResult::Metadata& in_out_keywords_metadata,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
-  DCHECK(resource_keyword_version);
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs, nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs, search_engine_choice_service, nullptr);
   RemoveDuplicatePrepopulateIDs(service, prepopulated_urls,
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);
 
-  const int prepopulate_resource_keyword_version =
-      TemplateURLPrepopulateData::GetDataVersion(prefs);
-  if (*resource_keyword_version < prepopulate_resource_keyword_version) {
+  MergeEngineRequirements merge_requirements = ComputeMergeEnginesRequirements(
+      prefs, search_engine_choice_service, in_out_keywords_metadata);
+
+  if (merge_requirements.metadata.HasBuiltinKeywordData()) {
     MergeEnginesFromPrepopulateData(service, &prepopulated_urls, template_urls,
                                     default_search_provider,
                                     removed_keyword_guids);
-    *resource_keyword_version = prepopulate_resource_keyword_version;
-  } else {
-    *resource_keyword_version = 0;
   }
 
-  const int starter_pack_data_version =
-      TemplateURLStarterPackData::GetDataVersion();
-  bool overwrite_user_edits =
-      (*resource_starter_pack_version <
-       TemplateURLStarterPackData::GetFirstCompatibleDataVersion());
-  if (*resource_starter_pack_version < starter_pack_data_version) {
+  if (merge_requirements.metadata.HasStarterPackData()) {
+    bool overwrite_user_edits =
+        (in_out_keywords_metadata.starter_pack_version <
+         TemplateURLStarterPackData::GetFirstCompatibleDataVersion());
     MergeEnginesFromStarterPackData(
         service, template_urls, default_search_provider, removed_keyword_guids,
         (overwrite_user_edits ? TemplateURLMergeOption::kOverwriteUserEdits
                               : TemplateURLMergeOption::kDefault));
-    *resource_starter_pack_version = starter_pack_data_version;
-  } else {
-    *resource_starter_pack_version = 0;
+  }
+
+  in_out_keywords_metadata = merge_requirements.metadata;
+  switch (merge_requirements.should_keywords_use_extended_list) {
+    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kUnknown:
+      // Do nothing.
+      break;
+    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kYes:
+      prefs->SetBoolean(prefs::kDefaultSearchProviderKeywordsUseExtendedList,
+                        true);
+      break;
+    case MergeEngineRequirements::ShouldKeywordsUseExtendedList::kNo:
+      prefs->ClearPref(prefs::kDefaultSearchProviderKeywordsUseExtendedList);
+      break;
   }
 }
 

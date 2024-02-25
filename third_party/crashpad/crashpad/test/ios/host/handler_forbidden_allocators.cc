@@ -17,9 +17,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <malloc/malloc.h>
 #include <pthread.h>
+
 #include <limits>
 
 #include "base/apple/mach_logging.h"
+#include "base/check_op.h"
 #include "client/crashpad_client.h"
 #include "util/ios/raw_logging.h"
 
@@ -32,10 +34,10 @@ uint64_t g_main_thread = 0;
 uint64_t g_mach_exception_thread = 0;
 
 // Somewhat simplified logic copied from Chromium's
-// base/allocator/partition_allocator/shim/malloc_zone_functions_apple.h. The
-// arrays g_original_zones and g_original_zones_ptr stores all information about
-// malloc zones before they are shimmed. This information needs to be accessed
-// during dispatch back into the zone.
+// base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h.
+// The arrays g_original_zones and g_original_zones_ptr stores all information
+// about malloc zones before they are shimmed. This information needs to be
+// accessed during dispatch back into the zone.
 constexpr int kMaxZoneCount = 30;
 malloc_zone_t g_original_zones[kMaxZoneCount];
 malloc_zone_t* g_original_zones_ptr[kMaxZoneCount];

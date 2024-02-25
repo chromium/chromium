@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol PasswordIssuesPresenter;
@@ -17,7 +18,8 @@ enum class WarningType;
 
 // Screen with a list of compromised credentials.
 @interface PasswordIssuesTableViewController
-    : SettingsRootTableViewController <PasswordIssuesConsumer>
+    : SettingsRootTableViewController <PasswordIssuesConsumer,
+                                       SettingsControllerProtocol>
 
 - (instancetype)initWithWarningType:(password_manager::WarningType)warningType
     NS_DESIGNATED_INITIALIZER;

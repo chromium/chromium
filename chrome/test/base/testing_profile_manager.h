@@ -75,9 +75,9 @@ class TestingProfileManager : public ProfileObserver {
       int avatar_id,
       TestingProfile::TestingFactories testing_factories,
       bool is_supervised_profile = false,
-      absl::optional<bool> is_new_profile = absl::nullopt,
-      absl::optional<std::unique_ptr<policy::PolicyService>> policy_service =
-          absl::nullopt,
+      std::optional<bool> is_new_profile = std::nullopt,
+      std::optional<std::unique_ptr<policy::PolicyService>> policy_service =
+          std::nullopt,
       bool is_main_profile = false,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
           nullptr);

@@ -17,9 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-/**
- * Unit test for UrlAllowlistTest.
- */
+/** Unit test for UrlAllowlistTest. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UrlAllowlistTest {
@@ -33,8 +31,9 @@ public class UrlAllowlistTest {
         assertTrue(urlAllowlist.isAllowed(new String[] {"http://www.abc.org"}));
         assertFalse(urlAllowlist.isAllowed(new String[] {"http://chromium.org"}));
         // Test any url is allowed.
-        assertTrue(urlAllowlist.isAllowed(
-                new String[] {"http://www.chromium.org", "http://chromium.org"}));
+        assertTrue(
+                urlAllowlist.isAllowed(
+                        new String[] {"http://www.chromium.org", "http://chromium.org"}));
     }
 
     @Test
@@ -48,8 +47,11 @@ public class UrlAllowlistTest {
         assertTrue(urlAllowlist.isAllowed(new String[] {"http://www.abc.org"}));
         assertFalse(urlAllowlist.isAllowed(new String[] {"http://abcd.org"}));
         // Test any url is allowed.
-        assertTrue(urlAllowlist.isAllowed(new String[] {
-                "http://www.chromium.org", "http://chromium.org", "http://abcd.org"}));
+        assertTrue(
+                urlAllowlist.isAllowed(
+                        new String[] {
+                            "http://www.chromium.org", "http://chromium.org", "http://abcd.org"
+                        }));
     }
 
     @Test

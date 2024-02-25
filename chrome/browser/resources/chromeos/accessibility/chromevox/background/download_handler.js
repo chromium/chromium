@@ -6,6 +6,8 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -45,6 +47,7 @@ let DownloadDelta;
 const DownloadItem = chrome.downloads.DownloadItem;
 const DownloadState = chrome.downloads.State;
 
+/** Handles all download events and notifications for ChromeVox. */
 export class DownloadHandler {
   /** @private */
   constructor() {
@@ -135,21 +138,15 @@ export class DownloadHandler {
         return;
       } else if (timeRemaining < 60) {
         // Seconds. Use up until 1 minute remaining.
-        timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('seconds')).format({
-          COUNT: timeRemaining,
-        });
+        timeUnit = Msgs.getMsgWithCount('seconds', timeRemaining);
       } else if (timeRemaining < 3600) {
         // Minutes. Use up until 1 hour remaining.
         timeRemaining = Math.floor(timeRemaining / 60);
-        timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('minutes')).format({
-          COUNT: timeRemaining,
-        });
+        timeUnit = Msgs.getMsgWithCount('minutes', timeRemaining);
       } else if (timeRemaining < 36000) {
         // Hours. Use up until 10 hours remaining.
         timeRemaining = Math.floor(timeRemaining / 3600);
-        timeUnit = new goog.i18n.MessageFormat(Msgs.getMsg('hours')).format({
-          COUNT: timeRemaining,
-        });
+        timeUnit = Msgs.getMsgWithCount('hours', timeRemaining);
       } else {
         // If 10+ hours remaining, do not report progress.
         return;
@@ -309,3 +306,5 @@ const FILE_LIMIT = 20;
  * @const {number}
  */
 const INTERVAL_TIME_MILLISECONDS = 10000;
+
+TestImportManager.exportForTesting(DownloadHandler);

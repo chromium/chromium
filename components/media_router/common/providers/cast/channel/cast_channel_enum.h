@@ -94,6 +94,9 @@ enum class ChallengeReplyError {
   TLS_CERT_EXPIRED,
   CRL_INVALID,
   CERT_REVOKED,
+  CRL_OK_FALLBACK_CRL,
+  FALLBACK_CRL_INVALID,
+  CERTS_REVOKED_BY_FALLBACK_CRL,
   SENDER_NONCE_MISMATCH,
   SIGNATURE_EMPTY,
   DIGEST_UNSUPPORTED,
@@ -143,7 +146,7 @@ constexpr int kNumCastChannelFlags = 8;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with CastChannelFlag enum in tools/metrics/enums.xml.
+// Keep in sync with CastChannelFlag enum in tools/metrics/histograms/enums.xml.
 enum class CastChannelFlag : uint16_t {
   kFlagsNone = 0,
   kSha1DigestAlgorithm = 1,

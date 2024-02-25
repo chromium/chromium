@@ -5,29 +5,38 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/passwords/password_manager_app_interface.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+static constexpr char kFormUsername[] = "un";
 static constexpr char kFormPassword[] = "pw";
 
 namespace {
@@ -44,9 +53,47 @@ BOOL WaitForKeyboardToAppear() {
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
+// Get the top presented view controller, in this case the bottom sheet view
+// controller.
+UIViewController* TopPresentedViewController() {
+  UIViewController* topController =
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
+  for (UIViewController* controller = [topController presentedViewController];
+       controller && ![controller isBeingDismissed];
+       controller = [controller presentedViewController]) {
+    topController = controller;
+  }
+  return topController;
+}
+
 id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   return grey_allOf(grey_accessibilityID(id),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+id<GREYMatcher> SubtitleString(const GURL& url) {
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url)));
+}
+
+// Verifies the number of Password Details visits recorded.
+void CheckPasswordDetailsVisitMetricCount(int count) {
+  // Check password details visit metric.
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:count
+          forHistogram:
+              @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
+  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+
+  error = [MetricsAppInterface
+       expectCount:count
+         forBucket:static_cast<int>(password_manager::PasswordManagerSurface::
+                                        kPasswordDetails)
+      forHistogram:
+          @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
+  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
 }
 
 }  // namespace
@@ -69,11 +116,20 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
   // enabled by default.
   [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [PasswordManagerAppInterface clearCredentials];
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface removeMockReauthenticationModule];
+
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
   [super tearDown];
 }
 
@@ -83,8 +139,24 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordBottomSheet);
 
+  if ([self isRunningTest:@selector(testOpenPasswordBottomOnAutofocus)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
+  if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
   if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetOpenPasswordDetails)]) {
+            (testOpenPasswordBottomSheetOpenPasswordDetails)] ||
+      [self
+          isRunningTest:@selector
+          (testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication
+              )] ||
+      [self
+          isRunningTest:@selector(testOpenPasswordBottomSheetDeletePassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -96,6 +168,15 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
+  if ([self isRunningTest:@selector
+            (testOpenPasswordBottomSheetWithSingleSharedPassword)] ||
+      [self isRunningTest:@selector
+            (testOpenPasswordBottomSheetWithMultipleSharedPasswords)] ||
+      [self isRunningTest:@selector
+            (testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kSharedPasswordNotificationUI);
+  }
   return config;
 }
 
@@ -104,16 +185,57 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
 // Loads simple page on localhost.
 - (void)loadLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
-// Return the edit button from the navigation bar.
+- (void)loadLoginAutofocusPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "/simple_login_form_empty_autofocus.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+- (void)loadLoginPasskeyPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty_passkey.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+}
+
+// Returns the matcher for the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
                     grey_not(chrome_test_util::TabGridEditButton()),
                     grey_userInteractionEnabled(), nil);
+}
+
+// Returns the matcher for the use password button.
+id<GREYMatcher> UsePasswordButton() {
+  return chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
+}
+
+// Returns the matcher for the open keyboard button.
+id<GREYMatcher> OpenKeyboardButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+}
+
+- (void)verifyPasswordFieldsHaveBeenFilled:(NSString*)username {
+  // Verify that the username has been filled.
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormUsername, username];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Verify that the password field is not empty.
+  NSString* filledFieldCondition =
+      [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
+                                 kFormPassword];
+  [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
 }
 
 #pragma mark - Tests
@@ -123,13 +245,13 @@ id<GREYMatcher> NavigationBarEditButton() {
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
+
+  GURL URL = self.testServer->GetURL("/simple_login_form_empty.html");
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
-                              URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+                              URL:net::NSURLWithGURL(URL)];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -138,18 +260,75 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  // Verify that the subtitle string appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SubtitleString(URL)];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
+
+  // No histogram logged because there is only 1 credential shown to the user.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"PasswordManager.TouchToFill.CredentialIndex"],
+      @"Unexpected histogram error for touch to fill credential index");
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
-// Notes:
-// - Using the password twice will allow us to know if observers are
-//   properly removed between 2 uses of the bottom sheet.
-// - Testing in incognito mode will allow us to know if we're using a
-//   coherent browser state for all the objects in the bottom sheet.
-- (void)testOpenPasswordBottomSheetUsePasswordTwiceIncognito {
+// This test verifies that the bottom sheet opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is enabled.
+- (void)testOpenPasswordBottomOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginAutofocusPage];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
+}
+
+// This test verifies that the keyboard opens on autofocus events, when the
+// kIOSPasswordBottomSheetAutofocus feature is disabled.
+- (void)testOpenKeyboardOnAutofocus {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_autofocus."
+                                      "html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self loadLoginAutofocusPage];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
+// This test verifies that the password bottom sheet does not open when the
+// webpage has enabled passkey login.
+- (void)testOpenKeyboardOnPasskey {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty_passkey."
+                                      "html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self loadLoginPasskeyPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
+// This test will allow us to know if we're using a coherent browser state to
+// open the bottom sheet in incognito mode.
+- (void)testOpenPasswordBottomSheetUsePasswordIncognito {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -158,35 +337,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+                                      "/simple_login_form_empty.html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGrey openNewIncognitoTab];
-  [self loadLoginPage];
-
-  for (int i = 0; i < 2; ++i) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
-
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
-        performAction:grey_tap()];
-  }
-}
-
-- (void)testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
-  [PasswordManagerAppInterface
-      storeCredentialWithUsername:@"user"
-                         password:@"password"
-                              URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -195,19 +349,37 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+}
+
+- (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty.html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -269,10 +441,9 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetails {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -328,21 +499,100 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_notVisible()];
 
-  // Emit auth result so password details surface is revealed.
+  // Verify visit metric was not recorded yet.
+  CheckPasswordDetailsVisitMetricCount(0);
 
+  // Emit auth result so password details surface is revealed.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_textFieldValue(@"user2")];
+
+  // Verify visit metric was recorded.
+  CheckPasswordDetailsVisitMetricCount(1);
+}
+
+// Verifies that Password Details is not revealed when local authentication
+// fails.
+- (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
+
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
+                                                  password:@"password"
+                                                       URL:URL];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
+                                                  password:@"password2"
+                                                       URL:URL];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(2, credentialsCount, @".");
+
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Delay the auth result to be able to validate that password details is
+  // not visible until the result is emitted.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Long press to open context menu.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
+                     grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Password details shouldn't be visible until auth is passed.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify visit metric was not recorded yet.
+  CheckPasswordDetailsVisitMetricCount(0);
+
+  // Emit auth result so password details surface is dismissed due to failed
+  // auth.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Validate the whole settings UI is gone.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify visit metric was not recorded.
+  CheckPasswordDetailsVisitMetricCount(0);
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -388,13 +638,15 @@ id<GREYMatcher> NavigationBarEditButton() {
       selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_textFieldValue(@"user2")];
+
+  // Verify visit metric was recorded.
+  CheckPasswordDetailsVisitMetricCount(1);
 }
 
 - (void)testOpenPasswordBottomSheetDeletePassword {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -425,14 +677,6 @@ id<GREYMatcher> NavigationBarEditButton() {
   // Long press to open context menu.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
       performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
-                     grey_interactable(), nullptr)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -440,11 +684,19 @@ id<GREYMatcher> NavigationBarEditButton() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
+                     grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
   NSString* website = [URL.absoluteString
-      stringByReplacingOccurrencesOfString:@"simple_login_form.html"
+      stringByReplacingOccurrencesOfString:@"simple_login_form_empty.html"
                                 withString:@""];
   DeleteCredential(@"user2", website);
 
@@ -466,10 +718,9 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 - (void)testOpenPasswordBottomSheetSelectPassword {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -477,12 +728,31 @@ id<GREYMatcher> NavigationBarEditButton() {
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
                                                   password:@"password"
                                                        URL:URL];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  // Tapping the single item doesn't change anything.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
                                                   password:@"password2"
                                                        URL:URL];
-  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(2, credentialsCount, @"Wrong number of stored credentials.");
 
+  // Reload the page, now with 2 credentials.
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -497,30 +767,31 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
 
+  // Select the second item.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:
+                             @"PasswordManager.TouchToFill.CredentialIndex"],
+      @"Unexpected histogram error for touch to fill credential index");
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user2"];
 
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenPasswordBottomSheetExpand \
-  DISABLED_testOpenPasswordBottomSheetExpand
-#else
-#define MAYBE_testOpenPasswordBottomSheetExpand \
-  testOpenPasswordBottomSheetExpand
-#endif
-- (void)MAYBE_testOpenPasswordBottomSheetExpand {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+- (void)DISABLED_testOpenPasswordBottomSheetExpand {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -547,9 +818,9 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
 
   // Scroll to the last password.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kPasswordSuggestionBottomSheetTableViewId)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertUnderTitleViewAccessibilityIdentifier)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [ChromeEarlGrey
@@ -558,10 +829,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user9")]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user9"];
 }
 
 - (void)testPasswordBottomSheetDismiss3TimesNotShownAnymore {
@@ -569,9 +840,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+                                      "/simple_login_form_empty.html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Dismiss #1.
   [self loadLoginPage];
@@ -582,12 +852,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #2.
   [self loadLoginPage];
@@ -598,12 +866,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Dismiss #3.
   [self loadLoginPage];
@@ -614,29 +880,20 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 }
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenPasswordBottomSheetNoUsername \
-  DISABLED_testOpenPasswordBottomSheetNoUsername
-#else
-#define MAYBE_testOpenPasswordBottomSheetNoUsername \
-  testOpenPasswordBottomSheetNoUsername
-#endif
-- (void)MAYBE_testOpenPasswordBottomSheetNoUsername {
+- (void)DISABLED_testOpenPasswordBottomSheetNoUsername {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -645,9 +902,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@""
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+                                      "/simple_login_form_empty.html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -662,9 +918,7 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
 
   // Verify that selecting credentials with no username disables the bottom
@@ -672,7 +926,219 @@ id<GREYMatcher> NavigationBarEditButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  WaitForKeyboardToAppear();
+  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+}
+
+// Tests that the Password Bottom Sheet appears when tapping on a password
+// related field and that the buttons are still visible after we chang the trait
+// collection to larger content size.
+- (void)testOpenPasswordBottomSheetUsePasswordAfterTraitCollectionChange {
+  if (@available(iOS 17.0, *)) {
+    [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+    [PasswordSuggestionBottomSheetAppInterface
+        mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                     kSuccess];
+    [PasswordManagerAppInterface
+        storeCredentialWithUsername:@"user"
+                           password:@"password"
+                                URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                        "/simple_login_form_empty.html"))];
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    [self loadLoginPage];
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+    // Change trait collection to use accessibility large content size.
+    ScopedTraitOverrider overrider(TopPresentedViewController());
+    overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
+
+    [ChromeEarlGreyUI waitForAppToIdle];
+
+    // Verify that the "Use Password" and "No Thanks" buttons are still visible.
+    [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+        assertWithMatcher:grey_notNil()];
+
+    [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+        assertWithMatcher:grey_notNil()];
+
+    // Verify the credit card tablew view is still visible.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
+        assertWithMatcher:grey_notNil()];
+
+    [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+        performAction:grey_tap()];
+
+    [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"Not available for under iOS 17.");
+  }
+}
+
+- (void)testOpenPasswordBottomSheetWithSingleSharedPassword {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+
+  // Save 1 password that has been received via sharing and the other not.
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user1"
+                                                  password:@"password1"
+                                                       URL:URL
+                                                    shared:YES];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
+                                                  password:@"password2"
+                                                       URL:URL
+                                                    shared:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+
+  // Verify that the sharing notification title is visible.
+  id<GREYMatcher> titleMatcher = grey_accessibilityLabel(
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE, 1)));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the other password is also accessible to fill.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1")]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+  [self verifyPasswordFieldsHaveBeenFilled:@"user2"];
+
+  // Verify that after using the shared password regular bottom sheet is
+  // displayed.
+  [self loadLoginPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+
+  // Verify that the sharing notification is not visible anymore.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+  [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
+}
+
+- (void)testOpenPasswordBottomSheetWithMultipleSharedPasswords {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user1"
+                                                  password:@"password1"
+                                                       URL:URL
+                                                    shared:YES];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
+                                                  password:@"password2"
+                                                       URL:URL
+                                                    shared:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+
+  // Verify that the sharing notification title is visible.
+  id<GREYMatcher> titleMatcher = grey_accessibilityLabel(
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE, 2)));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1")]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+  [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
+}
+
+- (void)testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+
+  // Save a password that has been received via sharing.
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user1"
+                         password:@"password1"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty.html"))
+                           shared:YES];
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+
+  // Verify that the sharing notification title is visible.
+  id<GREYMatcher> titleMatcher = grey_accessibilityLabel(
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE, 1)));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      performAction:grey_tap()];
+
+  // Verify that after dismissing the shared notification bottom sheet, regular
+  // bottom sheet is displayed.
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user1")];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(titleMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
 
 @end

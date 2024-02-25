@@ -171,6 +171,7 @@ void InputInjectorChromeos::Core::InjectKeyEvent(const KeyEvent& event) {
 
   // Ignore events which can't be mapped.
   if (dom_code != ui::DomCode::NONE) {
+    VLOG(3) << "Injecting key " << (event.pressed() ? "down" : "up") << " event.";
     delegate_->InjectKeyEvent(dom_code, event.pressed(),
                               true /* suppress_auto_repeat */);
   }

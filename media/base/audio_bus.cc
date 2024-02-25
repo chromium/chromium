@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_parameters.h"
@@ -19,11 +21,6 @@
 #include "media/base/vector_math.h"
 
 namespace media {
-
-static bool IsAligned(void* ptr) {
-  return (reinterpret_cast<uintptr_t>(ptr) &
-          (AudioBus::kChannelAlignment - 1)) == 0U;
-}
 
 // In order to guarantee that the memory block for each channel starts at an
 // aligned address when splitting a contiguous block of memory into one block
@@ -247,22 +244,30 @@ void AudioBus::Zero() {
 
 bool AudioBus::AreFramesZero() const {
   DCHECK(!is_bitstream_format_);
-  for (size_t i = 0; i < channel_data_.size(); ++i) {
+  for (const auto* channel : channel_data_) {
     for (int j = 0; j < frames_; ++j) {
-      if (channel_data_[i][j])
+      if (channel[j]) {
         return false;
+      }
     }
   }
   return true;
 }
 
+// static
 int AudioBus::CalculateMemorySize(const AudioParameters& params) {
   return CalculateMemorySizeInternal(
       params.channels(), params.frames_per_buffer(), NULL);
 }
 
+// static
 int AudioBus::CalculateMemorySize(int channels, int frames) {
   return CalculateMemorySizeInternal(channels, frames, NULL);
+}
+
+// static
+bool AudioBus::IsAligned(void* ptr) {
+  return base::IsAligned(ptr, kChannelAlignment);
 }
 
 void AudioBus::BuildChannelData(int channels, int aligned_frames, float* data) {

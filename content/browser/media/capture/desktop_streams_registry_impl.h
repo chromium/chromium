@@ -30,7 +30,7 @@ class DesktopStreamsRegistryImpl : public DesktopStreamsRegistry {
 
   // DesktopStreamsRegistry:
   std::string RegisterStream(int render_process_id,
-                             absl::optional<int> restrict_to_render_frame_id,
+                             std::optional<int> restrict_to_render_frame_id,
                              const url::Origin& origin,
                              const DesktopMediaID& source,
                              const DesktopStreamRegistryType type) override;
@@ -45,7 +45,7 @@ class DesktopStreamsRegistryImpl : public DesktopStreamsRegistry {
   // Type used to store list of accepted desktop media streams.
   struct ApprovedDesktopMediaStream {
     int render_process_id = content::ChildProcessHost::kInvalidUniqueID;
-    absl::optional<int> restrict_to_render_frame_id;
+    std::optional<int> restrict_to_render_frame_id;
     url::Origin origin;
     DesktopMediaID source;
     DesktopStreamRegistryType type;

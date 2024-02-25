@@ -57,7 +57,7 @@ class PointScanControllerTest : public AshTestBase {
     while (true) {
       aura::Window* window = Shell::GetPrimaryRootWindow();
       base::RunLoop run_loop;
-      ui::GrabWindowSnapshotAndScaleAsync(
+      ui::GrabWindowSnapshotAndScale(
           window, bounds, bounds.size(),
           base::BindOnce(
               [](base::RunLoop* run_loop, gfx::Image* image,

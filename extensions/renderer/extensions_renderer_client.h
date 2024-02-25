@@ -5,12 +5,16 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSIONS_RENDERER_CLIENT_H_
 #define EXTENSIONS_RENDERER_EXTENSIONS_RENDERER_CLIENT_H_
 
+#include <memory>
+
 #include "extensions/common/extension_id.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 
 class GURL;
 
 namespace extensions {
 class Extension;
+class ExtensionsRendererAPIProvider;
 class Dispatcher;
 
 // Interface to allow the extensions module to make render-process-specific
@@ -21,7 +25,8 @@ class Dispatcher;
 // they are only used in the renderer process.
 class ExtensionsRendererClient {
  public:
-  virtual ~ExtensionsRendererClient() {}
+  ExtensionsRendererClient();
+  virtual ~ExtensionsRendererClient();
 
   // Returns true if the current render process was launched incognito.
   virtual bool IsIncognitoProcess() const = 0;
@@ -47,11 +52,19 @@ class ExtensionsRendererClient {
       const GURL& scope,
       const GURL& script_url) const = 0;
 
+  // Adds an API provider that can extend the behavior of extension's renderer
+  // side. API providers need to be added before |Dispatcher| is created.
+  void AddAPIProvider(
+      std::unique_ptr<ExtensionsRendererAPIProvider> api_provider);
+
   // Returns the single instance of |this|.
   static ExtensionsRendererClient* Get();
 
   // Initialize the single instance.
   static void Set(ExtensionsRendererClient* client);
+
+ protected:
+  std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers_;
 };
 
 }  // namespace extensions

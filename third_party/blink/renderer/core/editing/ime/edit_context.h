@@ -20,7 +20,7 @@ namespace blink {
 class DOMRect;
 class EditContext;
 class EditContextInit;
-class Element;
+class HTMLElement;
 class ExceptionState;
 class InputMethodController;
 
@@ -31,7 +31,6 @@ class InputMethodController;
 
 class CORE_EXPORT EditContext final : public EventTarget,
                                       public ActiveScriptWrappable<EditContext>,
-                                      public ExecutionContextClient,
                                       public WebInputMethodController,
                                       public ElementRareDataField {
   DEFINE_WRAPPERTYPEINFO();
@@ -94,7 +93,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
                   ExceptionState& exception_state);
 
   // Get elements that are associated with this EditContext.
-  const HeapVector<Member<Element>>& attachedElements();
+  const HeapVector<Member<HTMLElement>>& attachedElements();
 
   // Returns the text of the EditContext.
   String text() const;
@@ -118,6 +117,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  LocalDOMWindow* DomWindow() const;
+
   // ActiveScriptWrappable overrides.
   bool HasPendingActivity() const override;
 
@@ -137,7 +138,6 @@ class CORE_EXPORT EditContext final : public EventTarget,
       ConfirmCompositionBehavior selection_behavior) override;
   WebTextInputInfo TextInputInfo() override;
   int ComputeWebTextInputNextPreviousFlags() override { return 0; }
-  int TextInputFlags() const;
   WebRange CompositionRange() const override;
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
@@ -186,6 +186,15 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+  // Delete `before` characters preceding the current `selection_start_` and
+  // `after` characters following the current `selection_end_`.
+  void DeleteSurroundingText(int before, int after);
+
+  // Called from WebLocalFrame to change the selection range.
+  // Unlike updateSelection(), we need to dispatch TextInputEvent to notify the
+  // page that the selection has changed since in this case the change was not
+  // triggered by the page.
+  void SetSelection(int start, int end);
 
   // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
   // for the character range specified by `location` and `length`.
@@ -195,8 +204,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
                                   uint32_t length,
                                   gfx::Rect& rect_in_viewport);
 
-  void AttachElement(Element* element_to_attach);
-  void DetachElement(Element* element_to_detach);
+  void AttachElement(HTMLElement* element_to_attach);
+  void DetachElement(HTMLElement* element_to_detach);
 
  private:
   InputMethodController& GetInputMethodController() const;
@@ -257,10 +266,22 @@ class CORE_EXPORT EditContext final : public EventTarget,
 
   void ClearCompositionState();
 
+  // Returns selection_start_ if selection_start_ <= selection_end_,
+  // otherwise returns selection_end_.
+  uint32_t OrderedSelectionStart() const;
+  // Returns selection_end_ if selection_end_ >= selection_start_,
+  // otherwise returns selection_start_.
+  uint32_t OrderedSelectionEnd() const;
+
   // EditContext member variables.
   String text_;
+
+  // It is possible that selection_start > selection_end_,
+  // indicating a "backwards" selection (e.g. when the user
+  // drags the selection from right to left).
   uint32_t selection_start_ = 0;
   uint32_t selection_end_ = 0;
+
   gfx::Rect control_bounds_;
   gfx::Rect selection_bounds_;
   WebVector<gfx::Rect> character_bounds_;
@@ -272,10 +293,13 @@ class CORE_EXPORT EditContext final : public EventTarget,
   bool has_composition_ = false;
   // This is used to keep track of the active composition text range.
   // It is reset once the composition ends.
+  // composition_range_end_ should always be >= composition_range_start_.
   uint32_t composition_range_start_ = 0;
   uint32_t composition_range_end_ = 0;
   // Elements that are associated with this EditContext.
-  HeapVector<Member<Element>> attached_elements_;
+  HeapVector<Member<HTMLElement>> attached_elements_;
+
+  WeakMember<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

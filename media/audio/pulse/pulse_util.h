@@ -48,6 +48,7 @@ void DestroyPulse(pa_threaded_mainloop* mainloop, pa_context* context);
 
 // Triggers pa_threaded_mainloop_signal() to avoid deadlocks.
 void StreamSuccessCallback(pa_stream* s, int error, void* mainloop);
+void ContextSuccessCallback(pa_context* context, int success, void* mainloop);
 void ContextStateCallback(pa_context* context, void* mainloop);
 
 pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout);
@@ -70,7 +71,7 @@ constexpr SampleFormat kInputSampleFormat = kSampleFormatS16;
 // |stream|.
 bool CreateInputStream(pa_threaded_mainloop* mainloop,
                        pa_context* context,
-                       pa_stream** stream,
+                       raw_ptr<pa_stream>* stream,
                        const AudioParameters& params,
                        const std::string& device_id,
                        pa_stream_notify_cb_t stream_callback,
@@ -80,9 +81,9 @@ bool CreateInputStream(pa_threaded_mainloop* mainloop,
 // otherwise false. This function will create a new Pulse threaded mainloop,
 // and the handles of the mainloop, context and stream will be returned by
 // |mainloop|, |context| and |stream|.
-bool CreateOutputStream(pa_threaded_mainloop** mainloop,
-                        pa_context** context,
-                        pa_stream** stream,
+bool CreateOutputStream(raw_ptr<pa_threaded_mainloop>* mainloop,
+                        raw_ptr<pa_context>* context,
+                        raw_ptr<pa_stream>* stream,
                         const AudioParameters& params,
                         const std::string& device_id,
                         const std::string& app_name,
@@ -100,6 +101,11 @@ std::string GetOutputCorrespondingTo(pa_threaded_mainloop* mainloop,
 std::string GetRealDefaultDeviceId(pa_threaded_mainloop* mainloop,
                                    pa_context* context,
                                    RequestType type);
+
+// Get the name of the monitor associated with the given sink.
+std::string GetMonitorSourceNameForSink(pa_threaded_mainloop* mainloop,
+                                        pa_context* context,
+                                        const std::string& sink_name);
 }  // namespace pulse
 
 }  // namespace media

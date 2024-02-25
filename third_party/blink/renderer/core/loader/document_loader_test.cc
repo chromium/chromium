@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -60,12 +59,11 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
       client_->DecodedBodyDataReceived(data, encoding_data, encoded_data);
     }
 
-    void BodyLoadingFinished(
-        base::TimeTicks completion_time,
-        int64_t total_encoded_data_length,
-        int64_t total_encoded_body_length,
-        int64_t total_decoded_body_length,
-        const absl::optional<WebURLError>& error) override {
+    void BodyLoadingFinished(base::TimeTicks completion_time,
+                             int64_t total_encoded_data_length,
+                             int64_t total_encoded_body_length,
+                             int64_t total_decoded_body_length,
+                             const std::optional<WebURLError>& error) override {
       client_->BodyLoadingFinished(completion_time, total_encoded_data_length,
                                    total_encoded_body_length,
                                    total_decoded_body_length, error);
@@ -166,6 +164,7 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
 
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

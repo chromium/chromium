@@ -6,15 +6,16 @@
 #define CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -120,7 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // If any of these cases occurred, sets |result| to VALID_WITH_WARNINGS and
   // otherwise to VALID.
   // For details, see the class comment.
-  absl::optional<base::Value::Dict> ValidateAndRepairObject(
+  std::optional<base::Value::Dict> ValidateAndRepairObject(
       const OncValueSignature* object_signature,
       const base::Value::Dict& onc_object,
       Result* result);
@@ -218,8 +219,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   bool IsValidValue(const std::string& field_value,
                     const std::vector<const char*>& valid_values);
 
-  bool IsInDevicePolicy(base::Value::Dict* result,
-                        const std::string& field_name);
+  bool IsInDevicePolicy(base::Value::Dict* result, std::string_view field_name);
 
   bool FieldExistsAndHasNoValidValue(
       const base::Value::Dict& object,

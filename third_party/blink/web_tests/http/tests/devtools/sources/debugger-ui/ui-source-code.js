@@ -5,12 +5,13 @@
 import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests UISourceCode class.\n`);
   await TestRunner.showPanel('sources');
 
-  var MockProject = class extends Workspace.ProjectStore {
+  var MockProject = class extends Workspace.Workspace.ProjectStore {
     requestFileContent(uri) {
       TestRunner.addResult('Content is requested from SourceCodeProvider.');
       return new Promise(resolve => {
@@ -27,7 +28,7 @@ import * as Common from 'devtools/core/common/common.js';
     }
 
     type() {
-      return Workspace.projectTypes.Debugger;
+      return Workspace.Workspace.projectTypes.Debugger;
     }
 
     url() {
@@ -36,7 +37,7 @@ import * as Common from 'devtools/core/common/common.js';
   };
 
   TestRunner.runTestSuite([function testUISourceCode(next) {
-    var uiSourceCode = new Workspace.UISourceCode(new MockProject(), 'url', Common.ResourceType.resourceTypes.Script);
+    var uiSourceCode = new Workspace.UISourceCode.UISourceCode(new MockProject(), 'url', Common.ResourceType.resourceTypes.Script);
     function didRequestContent(callNumber, { content, error, isEncoded }) {
       TestRunner.addResult('Callback ' + callNumber + ' is invoked.');
       TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());

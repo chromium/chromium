@@ -8,8 +8,9 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.components.autofill.PaymentsBubbleClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -46,17 +47,13 @@ class MandatoryReauthOptInBottomSheetViewBridge {
                 new MandatoryReauthOptInBottomSheetCoordinator(context, controller, delegate));
     }
 
-    /**
-     * Shows the view.
-     */
+    /** Shows the view. */
     @CalledByNative
     boolean show() {
         return mComponent.show();
     }
 
-    /**
-     * Closes the view.
-     */
+    /** Closes the view. */
     @CalledByNative
     void close() {
         mComponent.close(PaymentsBubbleClosedReason.NOT_INTERACTED);

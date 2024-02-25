@@ -12,10 +12,44 @@ namespace chromeos {
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
 // the user of the `profile`. A user is eligible if they are not managed.
-bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
+// If `kUploadOfficeToCloudForEnterprise` is enabled too, the condition is
+// loosened and the user becomes eligible if they're not a child profile.
+bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
 namespace cloud_upload {
+
+constexpr char kCloudUploadPolicyAllowed[] = "allowed";
+constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
+constexpr char kCloudUploadPolicyAutomated[] = "automated";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Returns true if the MicrosoftOneDriveMount policy is set to `allowed` or
+// `automated` and false otherwise.
+bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile);
+
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
+// IsEligibleAndEnabledUploadOfficeToCloud() is true.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kMicrosoftOfficeCloudUpload` is set to `allowed` or `automated`.
+bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile);
+
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kMicrosoftOfficeCloudUpload` is set to `automated`.
+bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile);
+
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
+// IsEligibleAndEnabledUploadOfficeToCloud() is true.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kGoogleWorkspaceCloudUpload` is set to `allowed` or `automated`.
+bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile);
+
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kGoogleWorkspaceCloudUpload` is set to `automated`.
+bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile);
+
 }  // namespace cloud_upload
 
 }  // namespace chromeos

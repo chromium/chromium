@@ -54,6 +54,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
       const StoragePartitionConfig& partition_config);
   static scoped_refptr<SiteInstanceImpl> CreateForFencedFrame(
       SiteInstanceImpl* embedder_site_instance);
+  static scoped_refptr<SiteInstanceImpl> CreateForFixedStoragePartition(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const StoragePartitionConfig& partition_config);
 
   // Similar to above, but creates an appropriate SiteInstance in a new
   // BrowsingInstance for a particular `url_info`. This is a more generic
@@ -65,12 +69,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // within a guest; when true, the guest's StoragePartition information must
   // also be provided in `url_info`. `is_fenced` specifies if the
   // BrowsingInstance is for a fenced frame, and is used to isolate them from
-  // non-fenced BrowsingInstances.
+  // non-fenced BrowsingInstances. `is_fixed_storage_partition` specifies if
+  // the StoragePartition should be applied across navigation. It must be set
+  // to true if `is_guest` is true.
   static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
       BrowserContext* browser_context,
       const UrlInfo& url_info,
       bool is_guest,
-      bool is_fenced);
+      bool is_fenced,
+      bool is_fixed_storage_partition);
 
   // Creates a SiteInstance that will be use for a service worker.
   // `url_info` - The UrlInfo for the service worker. It contains the URL and
@@ -170,6 +177,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) override;
   int EstimateOriginAgentClusterOverheadForMetrics() override;
+
+  // Return true if the StoragePartition should be preserved across future
+  // navigations in the frames belonging to this SiteInstance. For <webview>
+  // tags, this always returns true.
+  bool IsFixedStoragePartition();
 
   // This is called every time a renderer process is assigned to a SiteInstance
   // and is used by the content embedder for collecting metrics.
@@ -476,7 +488,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // BrowsingInstance. This is only guaranteed by the use of a unique COOP value
   // across the BrowsingInstance. It is empty if the BrowsingInstance does not
   // contain COOP: same-origin or COOP: restrict-properties documents.
-  const absl::optional<url::Origin>& GetCommonCoopOrigin() const;
+  const std::optional<url::Origin>& GetCommonCoopOrigin() const;
 
   // Finds an existing SiteInstance in this SiteInstance's BrowsingInstance that
   // matches this `url_info` but with the `is_sandboxed_` flag true. It's

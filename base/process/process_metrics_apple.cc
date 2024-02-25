@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_math.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -79,21 +80,21 @@ bool GetPowerInfo(mach_port_t task, task_power_info* power_info_data) {
 }  // namespace
 
 // Implementations of ProcessMetrics class shared by Mac and iOS.
-mach_port_t ProcessMetrics::TaskForPid(ProcessHandle process) const {
+mach_port_t ProcessMetrics::TaskForHandle(ProcessHandle process_handle) const {
   mach_port_t task = MACH_PORT_NULL;
 #if BUILDFLAG(IS_MAC)
   if (port_provider_) {
-    task = port_provider_->TaskForPid(process_);
+    task = port_provider_->TaskForHandle(process_);
   }
 #endif
-  if (task == MACH_PORT_NULL && process_ == getpid()) {
+  if (task == MACH_PORT_NULL && process_handle == getpid()) {
     task = mach_task_self();
   }
   return task;
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   if (task == MACH_PORT_NULL) {
     return TimeDelta();
   }
@@ -128,11 +129,22 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   timeradd(&user_timeval, &task_timeval, &task_timeval);
   timeradd(&system_timeval, &task_timeval, &task_timeval);
 
-  return Microseconds(TimeValToMicroseconds(task_timeval));
+  const TimeDelta measured_cpu =
+      Microseconds(TimeValToMicroseconds(task_timeval));
+  if (measured_cpu < last_measured_cpu_) {
+    // When a thread terminates, its CPU time is immediately removed from the
+    // running thread times returned by TASK_THREAD_TIMES_INFO, but there can be
+    // a lag before it shows up in the terminated thread times returned by
+    // GetTaskInfo(). Make sure CPU usage doesn't appear to go backwards if
+    // GetCumulativeCPUUsage() is called in the interval.
+    return last_measured_cpu_;
+  }
+  last_measured_cpu_ = measured_cpu;
+  return measured_cpu;
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   task_power_info power_info_data;
 
   GetPowerInfo(task, &power_info_data);
@@ -152,7 +164,7 @@ int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
 }
 
 int ProcessMetrics::GetIdleWakeupsPerSecond() {
-  mach_port_t task = TaskForPid(process_);
+  mach_port_t task = TaskForHandle(process_);
   task_power_info power_info_data;
 
   GetPowerInfo(task, &power_info_data);

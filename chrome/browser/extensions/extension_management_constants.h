@@ -43,6 +43,8 @@ extern const char kToolbarPin[];
 extern const char kForcePinned[];
 extern const char kDefaultUnpinned[];
 
+extern const char kFileUrlNavigationAllowed[];
+
 // If the install of an extension is blocked this admin defined message is
 // appended to the error message displayed in the Chrome Webstore.
 extern const char kBlockedInstallMessage[];

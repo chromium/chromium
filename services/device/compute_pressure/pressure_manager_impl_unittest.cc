@@ -4,6 +4,7 @@
 
 #include "services/device/compute_pressure/pressure_manager_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -13,8 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "services/device/compute_pressure/cpu_probe.h"
-#include "services/device/compute_pressure/pressure_test_support.h"
+#include "components/system_cpu/pressure_test_support.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
@@ -27,31 +27,6 @@ namespace {
 
 constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
     base::Milliseconds(10);
-
-// Synchronous proxy to a device::mojom::PressureManager.
-class PressureManagerImplSync {
- public:
-  explicit PressureManagerImplSync(mojom::PressureManager* manager)
-      : manager_(raw_ref<mojom::PressureManager>::from_ptr(manager)) {}
-  ~PressureManagerImplSync() = default;
-
-  PressureManagerImplSync(const PressureManagerImplSync&) = delete;
-  PressureManagerImplSync& operator=(const PressureManagerImplSync&) = delete;
-
-  mojom::PressureStatus AddClient(
-      mojo::PendingRemote<mojom::PressureClient> client,
-      mojom::PressureSource source) {
-    base::test::TestFuture<mojom::PressureStatus> future;
-    manager_->AddClient(std::move(client), source, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  // The reference is immutable, so accessing it is thread-safe. The referenced
-  // device::mojom::PressureManager implementation is called synchronously,
-  // so it's acceptable to rely on its own thread-safety checks.
-  const raw_ref<mojom::PressureManager> manager_;
-};
 
 class FakePressureClient : public mojom::PressureClient {
  public:
@@ -121,27 +96,37 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
 
     manager_impl_ = PressureManagerImpl::Create();
-    manager_impl_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>(
-        kDefaultSamplingIntervalForTesting,
-        base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                            base::Unretained(manager_impl_.get()),
-                            mojom::PressureSource::kCpu)));
+    std::unique_ptr<CpuProbeManager> cpu_probe_manager =
+        std::make_unique<CpuProbeManager>(
+            kDefaultSamplingIntervalForTesting,
+            base::BindRepeating(&PressureManagerImpl::UpdateClients,
+                                base::Unretained(manager_impl_.get()),
+                                mojom::PressureSource::kCpu));
+    auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
+    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.42});
+    cpu_probe_manager->SetCpuProbeForTesting(std::move(fake_cpu_probe));
+    manager_impl_->SetCpuProbeManagerForTesting(std::move(cpu_probe_manager));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
-    manager_impl_sync_ =
-        std::make_unique<PressureManagerImplSync>(manager_.get());
+  }
+
+  mojom::PressureStatus AddPressureClient(
+      mojo::PendingRemote<mojom::PressureClient> client,
+      mojom::PressureSource source) {
+    base::test::TestFuture<mojom::PressureStatus> future;
+    manager_->AddClient(std::move(client), source, future.GetCallback());
+    return future.Get();
   }
 
  protected:
   std::unique_ptr<PressureManagerImpl> manager_impl_;
   mojo::Remote<mojom::PressureManager> manager_;
-  std::unique_ptr<PressureManagerImplSync> manager_impl_sync_;
 };
 
 TEST_F(PressureManagerImplTest, OneClient) {
   FakePressureClient client;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                          mojom::PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
+                              mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
 
   client.WaitForUpdate();
@@ -152,16 +137,16 @@ TEST_F(PressureManagerImplTest, OneClient) {
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
   FakePressureClient client1;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client1.BindNewPipeAndPassRemote(),
-                                          mojom::PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client1.BindNewPipeAndPassRemote(),
+                              mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
   FakePressureClient client2;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client2.BindNewPipeAndPassRemote(),
-                                          mojom::PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client2.BindNewPipeAndPassRemote(),
+                              mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
   FakePressureClient client3;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client3.BindNewPipeAndPassRemote(),
-                                          mojom::PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client3.BindNewPipeAndPassRemote(),
+                              mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
 
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
@@ -177,11 +162,11 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
 }
 
 TEST_F(PressureManagerImplTest, AddClientNoProbe) {
-  manager_impl_->SetCpuProbeForTesting(nullptr);
+  manager_impl_->SetCpuProbeManagerForTesting(nullptr);
 
   FakePressureClient client;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote(),
-                                          mojom::PressureSource::kCpu),
+  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
+                              mojom::PressureSource::kCpu),
             mojom::PressureStatus::kNotSupported);
 }
 

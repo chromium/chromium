@@ -27,6 +27,7 @@ include_rules = [
 specific_include_rules = {
   "run_all_unittests.cc": [
     "+mojo/core/embedder",
+    "+ui/accessibility/platform/provide_ax_platform_for_tests.h",
   ],
   "ax_assistant_util.h": [
     "+ui/accessibility/mojom",

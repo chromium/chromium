@@ -23,10 +23,8 @@ import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooksImpl;
 /** Tests for {@link XSurfaceProcessScopeProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class XSurfaceProcessScopeProviderTest {
-    @Mock
-    private XSurfaceHooks mXSurfaceHooks;
-    @Mock
-    private ProcessScope mProcessScope;
+    @Mock private XSurfaceHooks mXSurfaceHooks;
+    @Mock private ProcessScope mProcessScope;
 
     @Before
     public void setUp() {

@@ -1,0 +1,27 @@
+caption: Enable read aloud (text distillation and text-to-speech synthesis) for web pages
+default: true
+desc: |-
+  Setting the policy to be true allows users to have eligible web
+  pages read aloud using text-to-speech. This is achieved by server
+  side content distillation and audio synthesis. Setting to false
+  disables this feature. If this policy is set to default or unset,
+  read aloud is enabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Always allow read aloud
+  value: true
+- caption: Never allow read aloud
+  value: false
+owners:
+- basiaz@chromium.org
+- file://chrome/browser/readaloud/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:122-
+tags:
+- google-sharing
+type: main

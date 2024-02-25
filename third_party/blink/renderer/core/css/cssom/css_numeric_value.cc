@@ -310,12 +310,15 @@ CSSNumericValue* CSSNumericValue::parse(
           range.Peek().FunctionId() == CSSValueID::kMin ||
           range.Peek().FunctionId() == CSSValueID::kMax ||
           range.Peek().FunctionId() == CSSValueID::kClamp) {
+        using enum CSSMathExpressionNode::Flag;
+        using Flags = CSSMathExpressionNode::Flags;
+
         // TODO(crbug.com/1309178): Decide how to handle anchor queries here.
         CSSMathExpressionNode* expression =
             CSSMathExpressionNode::ParseMathFunction(
                 CSSValueID::kCalc, range,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
-                true /* is_percentage_allowed */, kCSSAnchorQueryTypesNone);
+                Flags({AllowPercent}), kCSSAnchorQueryTypesNone);
         if (expression) {
           return CalcToNumericValue(*expression);
         }
@@ -333,8 +336,11 @@ CSSNumericValue* CSSNumericValue::parse(
 // static
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
-    return CalcToNumericValue(
-        *To<CSSMathFunctionValue>(value).ExpressionNode());
+    const auto& math_function = To<CSSMathFunctionValue>(value);
+    if (math_function.InvolvesAnchorQueries()) {
+      return nullptr;
+    }
+    return CalcToNumericValue(*math_function.ExpressionNode());
   }
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
@@ -398,7 +404,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     }
   }
 
-  const absl::optional<CSSNumericSumValue> sum = SumValue();
+  const std::optional<CSSNumericSumValue> sum = SumValue();
   if (!sum.has_value()) {
     exception_state.ThrowTypeError("Invalid value for conversion");
     return nullptr;

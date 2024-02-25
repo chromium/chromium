@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/common/features.h"
@@ -17,24 +18,25 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
+#import "ios/chrome/browser/web/model/features.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -61,13 +63,13 @@ struct PrivacyTableViewControllerTestConfig {
 };
 
 class PrivacyTableViewControllerTest
-    : public ChromeTableViewControllerTest,
+    : public LegacyChromeTableViewControllerTest,
       public testing::WithParamInterface<PrivacyTableViewControllerTestConfig> {
  protected:
   PrivacyTableViewControllerTest() {}
 
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
@@ -88,8 +90,7 @@ class PrivacyTableViewControllerTest
         std::make_unique<base::Value>(
             static_cast<int>(GetParam().incognitoModeAvailability)));
 
-    // TODO(crbug.com/1443624): Remove when feature is enabled by default.
-    feature_list_.InitAndEnableFeature(web::kBrowserLockdownModeAvailable);
+    feature_list_.InitAndEnableFeature(kPrivacyGuideIos);
   }
 
   void TearDown() override {
@@ -103,10 +104,10 @@ class PrivacyTableViewControllerTest
     }
     [base::apple::ObjCCastStrict<PrivacyTableViewController>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[PrivacyTableViewController alloc] initWithBrowser:browser_.get()
                                         reauthenticationModule:nil];
   }
@@ -146,13 +147,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 6;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -166,6 +163,13 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil,
       currentSection, 0);
+
+  // PrivacyGuide section.
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_PRIVACY_GUIDE_TITLE), nil, currentSection,
+      0);
 
   // SafeBrowsing section.
   currentSection++;
@@ -224,23 +228,30 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   }
 
   // Lockdown Mode section.
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
-    currentSection++;
-    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-    CheckTextCellTextAndDetailText(
-        l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
-        l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
-  }
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
+      l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
 
   // Testing section index and text of the privacy footer.
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-      /* section= */ expectedNumberOfSections - 1);
+  if (base::FeatureList::IsEnabled(kLinkAccountSettingsToPrivacyFooter)) {
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
+        /* section= */ expectedNumberOfSections - 1);
+  } else {
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+        /* section= */ expectedNumberOfSections - 1);
+  }
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
 // non-syncing user.
 TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLinkAccountSettingsToPrivacyFooter);
+
   ON_CALL(*mock_sync_service()->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(false));
@@ -248,13 +259,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 6;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 
@@ -279,13 +286,9 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 4;
+  int expectedNumberOfSections = 6;
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  if (base::FeatureList::IsEnabled(web::kBrowserLockdownModeAvailable)) {
     expectedNumberOfSections++;
   }
 

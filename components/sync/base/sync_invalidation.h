@@ -27,10 +27,9 @@ class SyncInvalidation {
   virtual bool IsUnknownVersion() const = 0;
 
   // Returns the payload of this item.
-  // DCHECKs if this is an unknown version invalidation.
   virtual const std::string& GetPayload() const = 0;
 
-  // Retursn the version of this item.
+  // Returns the version of this item.
   // DCHECKs if this is an unknown version invalidation.
   //
   // It is preferable to use the LessThan() function, which handles unknown

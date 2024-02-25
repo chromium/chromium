@@ -90,7 +90,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   };
 
   void OnNotificationClicked(const std::string& notification_id,
-                             absl::optional<int> button_index);
+                             std::optional<int> button_index);
   NotificationInteractionType GetMetricValueForClickOnNotificationBody(
       const std::string& clicked_notification_id) const;
   void OnNotificationClosed(const std::string& notification_id);
@@ -111,8 +111,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
                                          const std::string& notification_id);
   void RemoveNotificationIfVisible(const std::string& notification_id);
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  raw_ptr<NetworkConnect, DanglingUntriaged | ExperimentalAsh> network_connect_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<NetworkConnect, DanglingUntriaged> network_connect_;
 
   // The ID of the currently showing notification.
   std::string showing_notification_id_;

@@ -4,7 +4,7 @@
 
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -54,14 +53,15 @@ constexpr char kActionHistogramName[] =
 }  // namespace
 
 ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
-    views::View* anchor,
+    LoginShelfButton* anchor,
     ShelfAlignment alignment,
     base::OnceClosure on_confirm_callback,
     base::OnceClosure on_cancel_callback)
     : ShelfBubble(anchor,
                   alignment,
                   /*for_tooltip=*/false,
-                  /*arrow_position=*/absl::nullopt) {
+                  /*arrow_position=*/std::nullopt),
+      anchor_(anchor) {
   DCHECK(on_confirm_callback);
   DCHECK(on_cancel_callback);
   confirm_callback_ = std::move(on_confirm_callback);
@@ -97,14 +97,9 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  if (chromeos::features::IsJellyEnabled()) {
-    title_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
-                                          *title_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(title_,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
+  title_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
+                                        *title_);
   title_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE));
   title_->SetProperty(
@@ -149,6 +144,10 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
+  // The bubble content size changes after border setting, therefore resize
+  // the widget to its content.
+  // TODO(crbug.com/1520953): widget should autoresize to its content.
+  SizeToContents();
   GetWidget()->Show();
 
   base::UmaHistogramEnumeration(
@@ -205,6 +204,7 @@ void ShelfShutdownConfirmationBubble::OnConfirmed() {
 }
 
 void ShelfShutdownConfirmationBubble::OnClosed() {
+  anchor_->SetIsActive(false);
   switch (dialog_result_) {
     case DialogResult::kCancelled:
       ReportBubbleAction(

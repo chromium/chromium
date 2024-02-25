@@ -25,10 +25,9 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_response_info.h"
-#include "net/http/http_version.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -119,8 +118,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    ParamTraits<net::OCSPVerifyResult> {
-  typedef net::OCSPVerifyResult param_type;
+    ParamTraits<bssl::OCSPVerifyResult> {
+  typedef bssl::OCSPVerifyResult param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
@@ -235,10 +234,10 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 
 IPC_ENUM_TRAITS(net::ProxyServer::Scheme)  // BitMask.
 
-IPC_ENUM_TRAITS_MAX_VALUE(net::OCSPVerifyResult::ResponseStatus,
-                          net::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR)
-IPC_ENUM_TRAITS_MAX_VALUE(net::OCSPRevocationStatus,
-                          net::OCSPRevocationStatus::UNKNOWN)
+IPC_ENUM_TRAITS_MAX_VALUE(bssl::OCSPVerifyResult::ResponseStatus,
+                          bssl::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR)
+IPC_ENUM_TRAITS_MAX_VALUE(bssl::OCSPRevocationStatus,
+                          bssl::OCSPRevocationStatus::UNKNOWN)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::ct::SCTVerifyStatus, net::ct::SCT_STATUS_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(net::RequestPriority, net::MAXIMUM_PRIORITY)
@@ -274,8 +273,8 @@ IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
   IPC_STRUCT_TRAITS_MEMBER(critical_ch_restart_time)
 IPC_STRUCT_TRAITS_END()
 
-IPC_ENUM_TRAITS_MAX_VALUE(net::HttpResponseInfo::ConnectionInfo,
-                          net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS - 1)
+IPC_ENUM_TRAITS_MAX_VALUE(net::HttpConnectionInfo,
+                          net::HttpConnectionInfo::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::EffectiveConnectionType,
                           net::EFFECTIVE_CONNECTION_TYPE_LAST - 1)

@@ -30,6 +30,7 @@ namespace {
 constexpr int kTooltipRoundedCornerRadius = 6;
 constexpr gfx::Insets kTooltipBorderInset = gfx::Insets::VH(5, 8);
 constexpr int kTooltipMinLineHeight = 18;
+constexpr int kTooltipMaxLines = 3;
 
 // A themed fully rounded rect background whose corner radius equals to the half
 // of the minimum dimension of its view's local bounds.
@@ -87,7 +88,7 @@ class RoundedCornerHighlightPathGenerator
       const RoundedCornerHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(rect, corners_);
   }
 
@@ -186,7 +187,7 @@ void StyleUtil::ConfigureInkDropAttributes(views::View* view,
 // static
 views::FocusRing* StyleUtil::SetUpFocusRingForView(
     views::View* view,
-    absl::optional<int> halo_inset) {
+    std::optional<int> halo_inset) {
   DCHECK(view);
   views::FocusRing::Install(view);
   views::FocusRing* focus_ring = views::FocusRing::Get(view);
@@ -222,6 +223,8 @@ StyleUtil::CreateAshStyleTooltipView() {
   tooltip_view->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosAnnotation1));
   tooltip_view->SetMinLineHeight(kTooltipMinLineHeight);
+  tooltip_view->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+  tooltip_view->SetMaxLines(kTooltipMaxLines);
   return tooltip_view;
 }
 

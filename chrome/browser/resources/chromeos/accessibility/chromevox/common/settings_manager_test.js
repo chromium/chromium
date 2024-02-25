@@ -9,18 +9,6 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
  * Test fixture for SettingsManager.
  */
 ChromeVoxSettingsManagerTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-      importModule('Settings', '/common/settings.js'),
-    ]);
-  }
-
   async getStoragePrefs(prefNames) {
     const prefs = {};
     for (const prefName of prefNames) {

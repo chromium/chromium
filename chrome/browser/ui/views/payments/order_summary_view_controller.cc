@@ -39,9 +39,9 @@ namespace {
 constexpr int kLineItemRowVerticalInset = 4;
 
 class LineItemRow : public views::View {
- public:
-  METADATA_HEADER(LineItemRow);
+  METADATA_HEADER(LineItemRow, views::View)
 
+ public:
   LineItemRow()
       : row_insets_(
             gfx::Insets::TLBR(kLineItemRowVerticalInset,
@@ -65,7 +65,7 @@ class LineItemRow : public views::View {
   gfx::Insets row_insets_;
 };
 
-BEGIN_METADATA(LineItemRow, views::View)
+BEGIN_METADATA(LineItemRow)
 END_METADATA
 
 // Creates a view for a line item to be displayed in the Order Summary Sheet.

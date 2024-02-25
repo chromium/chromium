@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -18,15 +19,15 @@
 namespace extensions {
 
 TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
-  absl::optional<base::HistogramEnumEntryMap> enums =
-      base::ReadEnumFromEnumsXml("ExtensionFunctions");
+  std::optional<base::HistogramEnumEntryMap> enums = base::ReadEnumFromEnumsXml(
+      "ExtensionFunctions", /*subdirectory=*/"extensions");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.
   EXPECT_EQ(enums->size(), functions::ENUM_BOUNDARY);
 
   base::FilePath src_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
   base::FilePath function_histogram_value =
       src_root.AppendASCII("extensions")
           .AppendASCII("browser")
@@ -48,7 +49,7 @@ TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
     //   not (yet) worth making it smart enough to deal with that.
     std::string expected_string =
         base::StringPrintf(" %s = %d", entry.second.c_str(), entry.first);
-    EXPECT_NE(std::string::npos, file_contents.find(expected_string))
+    EXPECT_TRUE(base::Contains(file_contents, expected_string))
         << "Failed to find entry " << entry.second << " with value "
         << entry.first;
   }

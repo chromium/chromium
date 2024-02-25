@@ -182,7 +182,7 @@ TEST(AutocompleteInputTest, InputType) {
     {u"devtools:", metrics::OmniboxInputType::QUERY},
     {u"devtools://", metrics::OmniboxInputType::QUERY},
     {u"devtools://x", metrics::OmniboxInputType::URL},
-    {u"about://f;", metrics::OmniboxInputType::QUERY},
+    {u"about://f;", metrics::OmniboxInputType::URL},
     {u"://w", metrics::OmniboxInputType::UNKNOWN},
     {u":w", metrics::OmniboxInputType::UNKNOWN},
     {u".\u062A", metrics::OmniboxInputType::UNKNOWN},

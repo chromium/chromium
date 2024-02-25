@@ -1,0 +1,155 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+static_library("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+    "//chrome/browser/data_sharing:*",
+    "//chrome/test:*",
+    "//ios/chrome/browser/data_sharing/model",
+  ]
+
+  sources = [
+    "data_sharing_network_loader_impl.cc",
+    "data_sharing_network_loader_impl.h",
+    "data_sharing_service_impl.cc",
+    "data_sharing_service_impl.h",
+    "empty_data_sharing_service.cc",
+    "empty_data_sharing_service.h",
+  ]
+
+  deps = [
+    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/data_sharing_network_loader_android.cc",
+      "android/data_sharing_network_loader_android.h",
+      "android/data_sharing_service_android.cc",
+      "android/data_sharing_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/data_sharing:unit_tests" ]
+
+  sources = [
+    "data_sharing_network_loader_impl_unittest.cc",
+    "data_sharing_service_impl_unittest.cc",
+    "empty_data_sharing_service_unittest.cc",
+  ]
+
+  if (is_android) {
+    sources += [ "android/data_sharing_network_loader_android_unittest.cc" ]
+  }
+
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/endpoint_fetcher:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    deps += [
+      ":test_support",
+      "//url",
+    ]
+  }
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [
+      "//chrome/android:chrome_all_java",
+      "//components:*",
+    ]
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/data_sharing/public:public_java",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
+    ]
+  }
+
+  robolectric_library("data_sharing_junit_tests") {
+    sources = [ "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImplTest.java" ]
+
+    deps = [
+      ":internal_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:gurl_java",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "mock_data_sharing_network_loader.cc",
+    "mock_data_sharing_network_loader.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//testing/gmock",
+    "//url",
+  ]
+}

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -84,6 +84,9 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
                 ? IDS_A11Y_ALERT_SAVED_DESKS_LIBRARY_MODE_ENTERED
                 : IDS_A11Y_ALERT_SAVED_DESKS_SAVED_FOR_LATER_MODE_ENTERED;
       break;
+    case ash::AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP:
+      msg = IDS_A11Y_ALERT_FASTER_SPLITSCREEN_TOAST;
+      break;
     case ash::AccessibilityAlert::NONE:
       msg = 0;
       break;
@@ -153,7 +156,7 @@ void AccessibilityControllerClient::RequestSelectToSpeakStateChange() {
 }
 
 void AccessibilityControllerClient::RequestAutoclickScrollableBoundsForPoint(
-    gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen) {
   AccessibilityManager::Get()->RequestAutoclickScrollableBoundsForPoint(
       point_in_screen);
 }

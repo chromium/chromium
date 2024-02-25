@@ -25,9 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 
-#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -335,16 +333,7 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kBackgroundAttr) {
-    String url = StripLeadingAndTrailingHTMLSpaces(value);
-    if (!url.empty()) {
-      CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
-          AtomicString(url), GetDocument().CompleteURL(url),
-          Referrer(GetExecutionContext()->OutgoingReferrer(),
-                   GetExecutionContext()->GetReferrerPolicy()),
-          OriginClean::kTrue, false /* is_ad_related */);
-      style->SetLonghandProperty(CSSPropertyValue(
-          CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
-    }
+    AddHTMLBackgroundImageToStyle(style, value);
   } else if (name == html_names::kValignAttr) {
     if (!value.empty()) {
       AddPropertyToPresentationAttributeStyle(
@@ -648,10 +637,6 @@ bool HTMLTableElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLTableElement::SubResourceAttributeName() const {
-  return html_names::kBackgroundAttr;
-}
-
 HTMLTableRowsCollection* HTMLTableElement::rows() {
   return EnsureCachedCollection<HTMLTableRowsCollection>(kTableRows);
 }
@@ -666,13 +651,6 @@ const AtomicString& HTMLTableElement::Rules() const {
 
 const AtomicString& HTMLTableElement::Summary() const {
   return FastGetAttribute(html_names::kSummaryAttr);
-}
-
-void HTMLTableElement::FinishParsingChildren() {
-  HTMLElement::FinishParsingChildren();
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->FinishedParsingTable(this);
-  }
 }
 
 void HTMLTableElement::Trace(Visitor* visitor) const {

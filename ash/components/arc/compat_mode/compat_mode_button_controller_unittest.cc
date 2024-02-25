@@ -67,9 +67,10 @@ class CompatModeButtonControllerTest : public CompatModeTestBase {
   // CompatModeTestBase:
   void SetUp() override {
     CompatModeTestBase::SetUp();
-    widget_ = CreateArcWidget(/*app_id=*/absl::nullopt);
+    widget_ = CreateArcWidget(/*app_id=*/std::nullopt);
     controller_.set_frame_header(
         std::make_unique<FakeFrameHeader>(widget_.get()));
+    controller_.SetPrefDelegate(pref_delegate());
   }
   void TearDown() override {
     widget_->CloseNow();
@@ -90,7 +91,7 @@ TEST_F(CompatModeButtonControllerTest, ConstructDestruct) {}
 TEST_F(CompatModeButtonControllerTest, UpdateWithoutAppId) {
   const auto* frame_header = controller()->GetFrameHeader(window());
 
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_FALSE(frame_header->GetCenterButton());
 }
 
@@ -103,7 +104,7 @@ TEST_F(CompatModeButtonControllerTest, UpdateWithStateUndefined) {
   pref_delegate()->SetResizeLockState(app_id,
                                       mojom::ArcResizeLockState::UNDEFINED);
   SyncResizeLockPropertyWithMojoState(widget());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_FALSE(frame_header->GetCenterButton());
 }
 
@@ -115,7 +116,7 @@ TEST_F(CompatModeButtonControllerTest, UpdateWithStateReady) {
 
   pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
   SyncResizeLockPropertyWithMojoState(widget());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_FALSE(frame_header->GetCenterButton());
 }
 
@@ -129,12 +130,12 @@ TEST_F(CompatModeButtonControllerTest, UpdateWithStateOn) {
   SyncResizeLockPropertyWithMojoState(widget());
   // Phone
   ResizeLockToPhone(widget(), pref_delegate());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_TRUE(frame_header->GetCenterButton());
   EXPECT_TRUE(frame_header->GetCenterButton()->GetEnabled());
   // Tablet
   ResizeLockToTablet(widget(), pref_delegate());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_TRUE(frame_header->GetCenterButton());
   EXPECT_TRUE(frame_header->GetCenterButton()->GetEnabled());
 }
@@ -147,7 +148,7 @@ TEST_F(CompatModeButtonControllerTest, UpdateWithStateOff) {
 
   pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::OFF);
   SyncResizeLockPropertyWithMojoState(widget());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_TRUE(frame_header->GetCenterButton());
   EXPECT_TRUE(frame_header->GetCenterButton()->GetEnabled());
 }
@@ -164,12 +165,12 @@ TEST_F(CompatModeButtonControllerTest, UpdateWithStateFullyLocked) {
   SyncResizeLockPropertyWithMojoState(widget());
   // Phone
   ResizeLockToPhone(widget(), pref_delegate());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_TRUE(frame_header->GetCenterButton());
   EXPECT_FALSE(frame_header->GetCenterButton()->GetEnabled());
   // Tablet
   ResizeLockToTablet(widget(), pref_delegate());
-  controller()->Update(pref_delegate(), window());
+  controller()->Update(window());
   EXPECT_TRUE(frame_header->GetCenterButton());
   EXPECT_FALSE(frame_header->GetCenterButton()->GetEnabled());
 }

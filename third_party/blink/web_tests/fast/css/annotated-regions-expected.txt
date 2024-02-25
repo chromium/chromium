@@ -12,6 +12,12 @@ PASS draggableRegions() is '45,25+50x30'
 PASS nonDraggableRegions() is '45,25+30x10'
 PASS draggableRegions() is '20,10+100x60'
 PASS nonDraggableRegions() is '20,10+60x20'
+PASS draggableRegions() is ''
+PASS nonDraggableRegions() is ''
+PASS draggableRegions() is ''
+PASS nonDraggableRegions() is ''
+PASS draggableRegions() is ''
+PASS nonDraggableRegions() is ''
 PASS successfullyParsed is true
 
 TEST COMPLETE

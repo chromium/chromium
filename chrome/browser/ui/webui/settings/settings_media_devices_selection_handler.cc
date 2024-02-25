@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/strings/grit/extensions_strings.h"
@@ -24,6 +24,16 @@ namespace {
 const char kAudio[] = "mic";
 const char kVideo[] = "camera";
 
+blink::MediaStreamDevices::const_iterator GetPreferredDeviceInfoIter(
+    const std::string& id,
+    const blink::MediaStreamDevices& infos) {
+  auto preferred_iter = std::find_if(
+      infos.begin(), infos.end(),
+      [id](const blink::MediaStreamDevice& info) { return info.id == id; });
+  CHECK(preferred_iter < infos.end());
+  return preferred_iter;
+}
+
 }  // namespace
 
 namespace settings {
@@ -31,8 +41,7 @@ namespace settings {
 MediaDevicesSelectionHandler::MediaDevicesSelectionHandler(Profile* profile)
     : profile_(profile) {}
 
-MediaDevicesSelectionHandler::~MediaDevicesSelectionHandler() {
-}
+MediaDevicesSelectionHandler::~MediaDevicesSelectionHandler() = default;
 
 void MediaDevicesSelectionHandler::OnJavascriptAllowed() {
   // Register to the device observer list to get up-to-date device lists.
@@ -58,12 +67,22 @@ void MediaDevicesSelectionHandler::RegisterMessages() {
 
 void MediaDevicesSelectionHandler::OnUpdateAudioDevices(
     const blink::MediaStreamDevices& devices) {
-  UpdateDevicesMenu(AUDIO, devices);
+  PrefService* prefs = profile_->GetPrefs();
+  audio_device_infos_ = devices;
+  media_prefs::PreferenceRankAudioDeviceInfos(*prefs, audio_device_infos_);
+  UpdateDevicesMenu(kAudio, audio_device_infos_);
 }
 
 void MediaDevicesSelectionHandler::OnUpdateVideoDevices(
     const blink::MediaStreamDevices& devices) {
-  UpdateDevicesMenu(VIDEO, devices);
+  PrefService* prefs = profile_->GetPrefs();
+  video_device_infos_ = devices;
+  media_prefs::PreferenceRankVideoDeviceInfos(*prefs, video_device_infos_);
+  UpdateDevicesMenu(kVideo, video_device_infos_);
+}
+
+void MediaDevicesSelectionHandler::SetWebUiForTest(content::WebUI* web_ui) {
+  set_web_ui(web_ui);
 }
 
 void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
@@ -76,73 +95,60 @@ void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
   const std::string& type = args[0].GetString();
   DCHECK(!type.empty());
 
-  if (type == kAudio)
-    UpdateDevicesMenuForType(AUDIO);
-  else if (type == kVideo)
-    UpdateDevicesMenuForType(VIDEO);
+  if (type == kAudio) {
+    OnUpdateAudioDevices(
+        MediaCaptureDevicesDispatcher::GetInstance()->GetAudioCaptureDevices());
+  } else if (type == kVideo) {
+    OnUpdateVideoDevices(
+        MediaCaptureDevicesDispatcher::GetInstance()->GetVideoCaptureDevices());
+  }
 }
 
 void MediaDevicesSelectionHandler::SetDefaultCaptureDevice(
     const base::Value::List& args) {
-  DCHECK_EQ(2U, args.size());
+  CHECK_EQ(2U, args.size());
   if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
   }
   const std::string& type = args[0].GetString();
-  const std::string& device = args[1].GetString();
+  const std::string& device_id = args[1].GetString();
 
-  DCHECK(!type.empty());
-  DCHECK(!device.empty());
+  CHECK(!type.empty());
+  CHECK(!device_id.empty());
 
   PrefService* prefs = profile_->GetPrefs();
-  if (type == kAudio)
-    prefs->SetString(prefs::kDefaultAudioCaptureDevice, device);
-  else if (type == kVideo)
-    prefs->SetString(prefs::kDefaultVideoCaptureDevice, device);
-  else
+  if (type == kAudio) {
+    auto preferred_iter =
+        GetPreferredDeviceInfoIter(device_id, audio_device_infos_);
+    media_prefs::UpdateAudioDevicePreferenceRanking(*prefs, preferred_iter,
+                                                    audio_device_infos_);
+  } else if (type == kVideo) {
+    auto preferred_iter =
+        GetPreferredDeviceInfoIter(device_id, video_device_infos_);
+    media_prefs::UpdateVideoDevicePreferenceRanking(*prefs, preferred_iter,
+                                                    video_device_infos_);
+  } else {
     NOTREACHED();
+  }
 }
 
 void MediaDevicesSelectionHandler::UpdateDevicesMenu(
-    DeviceType type,
+    std::string type,
     const blink::MediaStreamDevices& devices) {
   AllowJavascript();
 
-  // Get the default device unique id from prefs.
-  PrefService* prefs = profile_->GetPrefs();
-  std::string default_device;
-  std::string device_type;
-  switch (type) {
-    case AUDIO:
-      default_device = prefs->GetString(prefs::kDefaultAudioCaptureDevice);
-      device_type = kAudio;
-      break;
-    case VIDEO:
-      default_device = prefs->GetString(prefs::kDefaultVideoCaptureDevice);
-      device_type = kVideo;
-      break;
-  }
-
   // Build the list of devices to send to JS.
-  std::string default_id;
   base::Value::List device_list;
   for (const auto& device : devices) {
     base::Value::Dict entry;
     entry.Set("name", GetDeviceDisplayName(device));
     entry.Set("id", device.id);
     device_list.Append(std::move(entry));
-    if (device.id == default_device)
-      default_id = default_device;
   }
 
-  // Use the first device as the default device if the preferred default device
-  // does not exist in the OS.
-  if (!devices.empty() && default_id.empty())
-    default_id = devices[0].id;
-
-  base::Value default_value(default_id);
-  base::Value type_value(device_type);
+  base::Value default_value(devices.empty() ? "" : devices.front().id);
+  base::Value type_value(type);
 
   FireWebUIListener("updateDevicesMenu", type_value, device_list,
                     default_value);
@@ -162,7 +168,7 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
       break;
     case media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE:
       break;
-    case media::VideoFacingMode::NUM_MEDIA_VIDEO_FACING_MODES:
+    default:
       NOTREACHED();
       break;
   }
@@ -171,22 +177,6 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
   if (facing_info.empty())
     return device.name;
   return device.name + " " + facing_info;
-}
-
-void MediaDevicesSelectionHandler::UpdateDevicesMenuForType(DeviceType type) {
-  blink::MediaStreamDevices devices;
-  switch (type) {
-    case AUDIO:
-      devices = MediaCaptureDevicesDispatcher::GetInstance()->
-          GetAudioCaptureDevices();
-      break;
-    case VIDEO:
-      devices = MediaCaptureDevicesDispatcher::GetInstance()->
-          GetVideoCaptureDevices();
-      break;
-  }
-
-  UpdateDevicesMenu(type, devices);
 }
 
 }  // namespace settings

@@ -8,6 +8,7 @@ group("tests") {
     "check_stable_mojom_compatibility.py",
     "const_unittest.py",
     "enum_unittest.py",
+    "feature_unittest.py",
     "mojom_parser_test_case.py",
     "mojom_parser_unittest.py",
     "mojom_parser.py",

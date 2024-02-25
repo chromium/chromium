@@ -33,7 +33,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -84,17 +86,20 @@ Node* Text::MergeNextSiblingNodesIfPossible() {
     String next_text_data = next_text->data();
     String old_text_data = data();
     SetDataWithoutUpdate(data() + next_text_data);
-    UpdateTextLayoutObject(old_text_data.length(), 0);
+    UpdateTextLayoutObject(
+        TextDiffRange::Insert(old_text_data.length(), next_text_data.length()));
 
     GetDocument().DidMergeTextNodes(*this, *next_text, offset);
 
     // Empty nextText for layout update.
     next_text->SetDataWithoutUpdate(g_empty_string);
-    next_text->UpdateTextLayoutObject(0, next_text_data.length());
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Delete(0, next_text_data.length()));
 
     // Restore nextText for mutation event.
     next_text->SetDataWithoutUpdate(next_text_data);
-    next_text->UpdateTextLayoutObject(0, 0);
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Insert(0, next_text_data.length()));
 
     GetDocument().IncDOMTreeVersion();
     DidModifyData(old_text_data, CharacterData::kUpdateFromNonParser);
@@ -128,11 +133,20 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (exception_state.HadException())
     return nullptr;
 
-  if (GetLayoutObject()) {
-    GetLayoutObject()->SetTextWithOffset(data(), 0, old_str.length());
-    if (ContainsOnlyWhitespaceOrEmpty()) {
+  if (LayoutText* layout_text = GetLayoutObject()) {
+    if (RuntimeEnabledFeatures::TextDiffSplitFixEnabled()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
-      SetForceReattachLayoutTree();
+      const bool by_reattach = ContainsOnlyWhitespaceOrEmpty();
+      UpdateTextLayoutObject(
+          TextDiffRange::Delete(offset, old_str.length() - offset), by_reattach,
+          *layout_text);
+    } else {
+      layout_text->SetTextWithOffset(
+          data(), TextDiffRange::Delete(0, old_str.length()));
+      if (ContainsOnlyWhitespaceOrEmpty()) {
+        // To avoid |LayoutText| has empty text, we rebuild layout tree.
+        SetForceReattachLayoutTree();
+      }
     }
   }
 
@@ -143,8 +157,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   // [NewObject] must always create a new wrapper.  Check that a wrapper
   // does not exist yet.
-  DCHECK(
-      DOMDataStore::GetWrapper(new_text, v8::Isolate::GetCurrent()).IsEmpty());
+  DCHECK(DOMDataStore::GetWrapper(GetDocument().GetAgent().isolate(), new_text)
+             .IsEmpty());
 
   return new_text;
 }
@@ -260,16 +274,15 @@ static inline bool CanHaveWhitespaceChildren(
 
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
       parent.IsLayoutTableCol() || parent.IsFrameSet() ||
-      parent.IsFlexibleBoxIncludingNG() || parent.IsLayoutNGGrid() ||
-      parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
-      parent.IsSVGShape()) {
+      parent.IsFlexibleBox() || parent.IsLayoutGrid() || parent.IsSVGRoot() ||
+      parent.IsSVGContainer() || parent.IsSVGImage() || parent.IsSVGShape()) {
     if (!context.use_previous_in_flow || !context.previous_in_flow ||
         !context.previous_in_flow->IsText())
       return false;
 
     return style.ShouldPreserveBreaks() ||
            !EndsWithWhitespace(
-               To<LayoutText>(context.previous_in_flow)->GetText());
+               To<LayoutText>(context.previous_in_flow)->TransformedText());
   }
   return true;
 }
@@ -314,7 +327,7 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
 
   if (context.previous_in_flow->IsText()) {
     return !EndsWithWhitespace(
-        To<LayoutText>(context.previous_in_flow)->GetText());
+        To<LayoutText>(context.previous_in_flow)->TransformedText());
   }
 
   return context.previous_in_flow->IsInline() &&
@@ -336,16 +349,13 @@ LayoutText* Text::CreateTextLayoutObject() {
 
 void Text::AttachLayoutTree(AttachContext& context) {
   if (context.parent) {
-    ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);
-    if (style_parent) {
-      // To handle <body> to <html> writing-mode propagation, we should use
-      // style in layout object instead of |Node::GetComputedStyle()|.
-      // See http://crbug.com/988585
+    if (Element* style_parent =
+            LayoutTreeBuilderTraversal::ParentElement(*this)) {
       const ComputedStyle* const style =
           IsA<HTMLHtmlElement>(style_parent) && style_parent->GetLayoutObject()
               ? style_parent->GetLayoutObject()->Style()
               : style_parent->GetComputedStyle();
-      DCHECK(style);
+      CHECK(style);
       if (TextLayoutObjectIsNeeded(context, *style)) {
         LayoutTreeBuilderForText(*this, context, style).CreateLayoutObject();
         context.previous_in_flow = GetLayoutObject();
@@ -357,11 +367,11 @@ void Text::AttachLayoutTree(AttachContext& context) {
 
 void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
   bool layout_object_is_needed = false;
-  ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);
+  Element* style_parent = LayoutTreeBuilderTraversal::ParentElement(*this);
   if (style_parent && context.parent) {
-    DCHECK(style_parent->GetComputedStyle());
-    layout_object_is_needed =
-        TextLayoutObjectIsNeeded(context, *style_parent->GetComputedStyle());
+    const ComputedStyle* style = style_parent->GetComputedStyle();
+    CHECK(style);
+    layout_object_is_needed = TextLayoutObjectIsNeeded(context, *style);
   }
 
   if (layout_object_is_needed == !!GetLayoutObject())
@@ -375,7 +385,7 @@ void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
     LayoutTreeBuilderForText(*this, context, style_parent->GetComputedStyle())
         .CreateLayoutObject();
   } else {
-    DetachLayoutTree(true /* performing_reattach*/);
+    DetachLayoutTree(/*performing_reattach=*/true);
   }
   CharacterData::AttachLayoutTree(reattach_context);
 }
@@ -457,11 +467,20 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   // editing with the combination of -webkit-text-security in author styles on
   // other elements in combination with ::first-letter.
   // See crbug.com/1240988
-  if (text_layout_object->IsSecure())
+  if (text_layout_object->IsSecure()) {
     return false;
+  }
+  FirstLetterPseudoElement::Punctuation punctuation1 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::Punctuation punctuation2 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  bool preserve_breaks = ShouldPreserveBreaks(
+      text_layout_object->StyleRef().GetWhiteSpaceCollapse());
   if (!FirstLetterPseudoElement::FirstLetterLength(
-          text_layout_object->GetText()) &&
-      FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
+          text_layout_object->TransformedText(), preserve_breaks,
+          punctuation1) &&
+      FirstLetterPseudoElement::FirstLetterLength(
+          text_node.data(), preserve_breaks, punctuation2)) {
     // We did not previously apply ::first-letter styles to this |text_node|,
     // and if there was no first formatted letter, but now is, we may need to
     // reattach.
@@ -470,18 +489,23 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   return false;
 }
 
-void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
-                                  unsigned length_of_replaced_data) {
+void Text::UpdateTextLayoutObject(const TextDiffRange& diff) {
   if (!InActiveDocument())
     return;
   LayoutText* text_layout_object = GetLayoutObject();
-  if (ShouldUpdateLayoutByReattaching(*this, text_layout_object)) {
+  UpdateTextLayoutObject(
+      diff, ShouldUpdateLayoutByReattaching(*this, text_layout_object),
+      *text_layout_object);
+}
+
+void Text::UpdateTextLayoutObject(const TextDiffRange& diff,
+                                  bool by_reattach,
+                                  LayoutText& layout_text) {
+  if (by_reattach) {
     SetForceReattachLayoutTree();
     return;
   }
-
-  text_layout_object->SetTextWithOffset(data(), offset_of_replaced_data,
-                                        length_of_replaced_data);
+  layout_text.SetTextWithOffset(data(), diff);
 }
 
 CharacterData* Text::CloneWithData(Document& factory,

@@ -22,8 +22,21 @@ namespace {
 const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
 
 // Name of a cmdline parameter that can be used to add a regular expressions
-// that matches paths that should be excluded from the raw_ptr checks.
+// that matches paths that should be excluded from the raw pointer usage checks.
 const char kRawPtrExcludePathArgPrefix[] = "raw-ptr-exclude-path=";
+
+// Name of a cmdline parameter that can be used to add a regular expressions
+// that matches paths that should be excluded from the bad raw_ptr casts checks.
+const char kBadRawPtrCastExcludePathArgPrefix[] =
+    "check-bad-raw-ptr-cast-exclude-path=";
+
+// Name of a cmdline parameter that can be used to add a regular expressions
+// that matches function names that should be excluded from the bad raw_ptr cast
+// checks. All implicit casts in CallExpr to the specified functions are
+// excluded from the check. Use if you know that function does not break a
+// reference count.
+const char kCheckBadRawPtrCastExcludeFuncArgPrefix[] =
+    "check-bad-raw-ptr-cast-exclude-func=";
 
 }  // namespace
 
@@ -58,12 +71,20 @@ std::unique_ptr<ASTConsumer> FindBadConstructsAction::CreateASTConsumer(
 bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
                                         const std::vector<std::string>& args) {
   for (llvm::StringRef arg : args) {
-    if (arg.startswith(kExcludeFieldsArgPrefix)) {
+    if (arg.starts_with(kExcludeFieldsArgPrefix)) {
       options_.exclude_fields_file =
           arg.substr(strlen(kExcludeFieldsArgPrefix)).str();
-    } else if (arg.startswith(kRawPtrExcludePathArgPrefix)) {
+    } else if (arg.starts_with(kRawPtrExcludePathArgPrefix)) {
       options_.raw_ptr_paths_to_exclude_lines.push_back(
           arg.substr(strlen(kRawPtrExcludePathArgPrefix)).str());
+    } else if (arg.starts_with(kCheckBadRawPtrCastExcludeFuncArgPrefix)) {
+      options_.check_bad_raw_ptr_cast_exclude_funcs.push_back(
+          arg.substr(strlen(kCheckBadRawPtrCastExcludeFuncArgPrefix)).str());
+    } else if (arg.starts_with(kBadRawPtrCastExcludePathArgPrefix)) {
+      options_.check_bad_raw_ptr_cast_exclude_paths.push_back(
+          arg.substr(strlen(kBadRawPtrCastExcludePathArgPrefix)).str());
+    } else if (arg == "check-allow-auto-typedefs-better-nested") {
+      // This flag to be removed once clang rolls.
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
@@ -81,12 +102,12 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_raw_ptr_fields = true;
     } else if (arg == "check-raw-ptr-to-stack-allocated") {
       options_.check_raw_ptr_to_stack_allocated = true;
+    } else if (arg == "disable-check-raw-ptr-to-stack-allocated-error") {
+      options_.disable_check_raw_ptr_to_stack_allocated_error = true;
     } else if (arg == "check-stack-allocated") {
       options_.check_stack_allocated = true;
     } else if (arg == "check-raw-ref-fields") {
       options_.check_raw_ref_fields = true;
-    } else if (arg == "raw-ptr-fix-crbug-1449812") {
-      options_.raw_ptr_fix_crbug_1449812 = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

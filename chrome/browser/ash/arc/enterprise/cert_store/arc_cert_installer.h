@@ -97,7 +97,7 @@ class ArcCertInstaller : public policy::RemoteCommandsQueue::Observer {
   void OnJobStarted(policy::RemoteCommandJob* command) override {}
   void OnJobFinished(policy::RemoteCommandJob* command) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // not owned
+  raw_ptr<Profile> profile_;  // not owned
 
   // A valid callback when the caller of |InstallArcCerts| method is awaiting
   // for a response.

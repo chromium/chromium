@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -28,22 +29,23 @@ public class ShoppingAccessoryCoordinator {
 
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param context The calling context, usually the parent view.
-     * @param visual Whether the visual row should be used.
      */
     static ShoppingAccessoryView buildView(Context context) {
         ShoppingAccessoryView view = new ShoppingAccessoryView(context, null);
-        view.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        LayoutInflater.from(context).inflate(
-                org.chromium.chrome.R.layout.shopping_accessory_view_layout, view);
+        LayoutInflater.from(context).inflate(R.layout.shopping_accessory_view_layout, view);
         view.onFinishInflate();
         return view;
     }
 
     /**
      * Constructor for the shopping view coordinator.
+     *
      * @param context The calling context.
      * @param specifics The shopping specifics.
      * @param shoppingService The shopping service to query price-trackability.
@@ -56,14 +58,18 @@ public class ShoppingAccessoryCoordinator {
         ProductPrice currentPrice = specifics.getCurrentPrice();
         ProductPrice previousPrice = specifics.getPreviousPrice();
 
-        mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
-                new PriceInfo(previousPrice.getAmountMicros(), currentPrice.getAmountMicros(),
+        mModel.set(
+                ShoppingAccessoryViewProperties.PRICE_INFO,
+                new PriceInfo(
+                        previousPrice.getAmountMicros(),
+                        currentPrice.getAmountMicros(),
                         new CurrencyFormatter(
                                 currentPrice.getCurrencyCode(), Locale.getDefault())));
 
         CommerceSubscription subscription =
                 PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(specifics);
-        mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED,
+        mModel.set(
+                ShoppingAccessoryViewProperties.PRICE_TRACKED,
                 shoppingService.isSubscribedFromCache(subscription));
 
         PropertyModelChangeProcessor.create(mModel, mView, ShoppingAccessoryViewBinder::bind);
@@ -81,6 +87,7 @@ public class ShoppingAccessoryCoordinator {
 
     /**
      * Sets the price-tracking state.
+     *
      * @param enabled Whether price-tracking is enabled.
      */
     public void setPriceTrackingEnabled(boolean enabled) {

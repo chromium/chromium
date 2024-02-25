@@ -44,9 +44,11 @@ class ConnectionAttemptImpl : public ConnectionAttempt,
   // mojom::ConnectionDelegate:
   void OnConnectionAttemptFailure(
       mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
-                    mojo::PendingReceiver<mojom::MessageReceiver>
-                        message_receiver_receiver) override;
+  void OnConnection(
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_receiver) override;
 
  private:
   mojo::Receiver<mojom::ConnectionDelegate> receiver_{this};

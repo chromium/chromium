@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="blockquote"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++++TextView text:"First blockquote has a child element." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="blockquote"}, {display="block"}]
+++++TextView text:"Second blockquote has no child." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

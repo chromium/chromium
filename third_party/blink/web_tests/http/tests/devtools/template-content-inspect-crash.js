@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`This test verifies that template's content DocumentFragment is accessible from DevTools.\n`);
-  await TestRunner.loadLegacyModule('elements');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>
@@ -21,7 +21,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   ElementsTestRunner.expandElementsTree(function() {
     var contentNode = ElementsTestRunner.expandedNodeWithId('tpl').templateContent();
-    UI.panels.elements.selectDOMNode(contentNode, true);
+    Elements.ElementsPanel.ElementsPanel.instance().selectDOMNode(contentNode, true);
     ConsoleTestRunner.evaluateInConsole('$0', callback);
   });
 

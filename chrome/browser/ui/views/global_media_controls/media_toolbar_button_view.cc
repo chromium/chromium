@@ -116,25 +116,8 @@ void MediaToolbarButtonView::Enable() {
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
   if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-    // Live Caption multi language is only enabled when SODA is also enabled.
-    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       browser_->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHLiveCaptionFeature);
-    } else {
-      // Live Caption only works for English-language speech for now, so we only
-      // show the promo to users whose fluent languages include english. Fluent
-      // languages are set in chrome://settings/languages.
-      language::LanguageModel* language_model =
-          LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
-              ->GetPrimaryModel();
-      for (const auto& lang : language_model->GetLanguages()) {
-        if (base::MatchPattern(lang.lang_code, "en*")) {
-          browser_->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHLiveCaptionFeature);
-          break;
-        }
-      }
-    }
   }
 
   for (auto& observer : observers_)
@@ -148,6 +131,15 @@ void MediaToolbarButtonView::Disable() {
 
   for (auto& observer : observers_)
     observer.OnMediaButtonDisabled();
+}
+
+void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
+      service_->should_show_cast_local_media_iph()) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHGMCLocalMediaCastingFeature);
+  }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
@@ -184,5 +176,5 @@ void MediaToolbarButtonView::ClosePromoBubble() {
       feature_engagement::kIPHGMCCastStartStopFeature);
 }
 
-BEGIN_METADATA(MediaToolbarButtonView, ToolbarButton)
+BEGIN_METADATA(MediaToolbarButtonView)
 END_METADATA

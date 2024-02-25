@@ -6,6 +6,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -28,7 +29,7 @@
 namespace ash {
 
 constexpr char kGuestTosId[] = "guest-tos";
-const test::UIPath kLoadedDialog = {kGuestTosId, "loaded"};
+const test::UIPath kOverviewDialog = {kGuestTosId, "overview"};
 const test::UIPath kGuestTosAcceptButton = {kGuestTosId, "acceptButton"};
 
 // Tests guest user log in.
@@ -57,7 +58,7 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
     ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
     OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
-    test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
     test::OobeJS().ClickOnPath(kGuestTosAcceptButton);
   }
 

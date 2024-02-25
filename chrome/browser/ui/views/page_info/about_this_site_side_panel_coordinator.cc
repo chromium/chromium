@@ -176,12 +176,12 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
 }
 
 BrowserView* AboutThisSideSidePanelCoordinator::GetBrowserView() const {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
 SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }
 

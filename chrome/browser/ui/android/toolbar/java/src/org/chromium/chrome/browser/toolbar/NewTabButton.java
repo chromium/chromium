@@ -13,7 +13,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -21,47 +20,35 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.Toast;
 
-/**
- * Button for creating new tabs.
- */
-public class NewTabButton
-        extends ChromeImageButton implements IncognitoStateObserver, View.OnLongClickListener {
+/** Button for creating new tabs. */
+public class NewTabButton extends ChromeImageButton
+        implements IncognitoStateObserver, View.OnLongClickListener {
     private final ColorStateList mLightModeTint;
     private final ColorStateList mDarkModeTint;
     private final boolean mIsTablet;
     private IncognitoStateProvider mIncognitoStateProvider;
     private boolean mIsIncognito;
-    private boolean mIsGridTabSwitcherEnabled;
     private boolean mIsStartSurfaceEnabled;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NewTabButton(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mIsIncognito = false;
-        mLightModeTint = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_light_tint_list);
-        mDarkModeTint = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_tint_list);
-        setImageDrawable(TraceEventVectorDrawableCompat.create(
-                getContext().getResources(), R.drawable.new_tab_icon, getContext().getTheme()));
+        mLightModeTint =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_light_tint_list);
+        mDarkModeTint =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_tint_list);
+        setImageDrawable(
+                TraceEventVectorDrawableCompat.create(
+                        getContext().getResources(),
+                        R.drawable.new_tab_icon,
+                        getContext().getTheme()));
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         updateDrawableTint();
         setOnLongClickListener(this);
-    }
-
-    /**
-     * Set grid-type tab switcher feature flag.
-     * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled.
-     */
-    public void setGridTabSwitcherEnabled(boolean isGridTabSwitcherEnabled) {
-        if (mIsGridTabSwitcherEnabled == isGridTabSwitcherEnabled) return;
-        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
-
-        updateDrawableTint();
-        invalidate();
     }
 
     /**
@@ -78,8 +65,12 @@ public class NewTabButton
 
     @Override
     public boolean onLongClick(View v) {
-        CharSequence description = getResources().getString(
-                mIsIncognito ? R.string.button_new_incognito_tab : R.string.button_new_tab);
+        CharSequence description =
+                getResources()
+                        .getString(
+                                mIsIncognito
+                                        ? R.string.button_new_incognito_tab
+                                        : R.string.button_new_tab);
         return Toast.showAnchoredToast(getContext(), v, description);
     }
 
@@ -94,8 +85,10 @@ public class NewTabButton
         mIsIncognito = isIncognito;
 
         @StringRes
-        int resId = mIsIncognito ? R.string.accessibility_toolbar_btn_new_incognito_tab
-                                 : R.string.accessibility_toolbar_btn_new_tab;
+        int resId =
+                mIsIncognito
+                        ? R.string.accessibility_toolbar_btn_new_incognito_tab
+                        : R.string.accessibility_toolbar_btn_new_tab;
         setContentDescription(getResources().getText(resId));
 
         updateDrawableTint();
@@ -109,16 +102,11 @@ public class NewTabButton
 
     /** Update the tint for the icon drawable for Chrome Modern. */
     private void updateDrawableTint() {
-        final boolean shouldUseLightMode = mIsTablet
-                || ((DeviceClassManager.enableAccessibilityLayout(getContext())
-                            || mIsGridTabSwitcherEnabled || mIsStartSurfaceEnabled)
-                        && mIsIncognito);
+        final boolean shouldUseLightMode = mIsTablet || mIsIncognito;
         ImageViewCompat.setImageTintList(this, shouldUseLightMode ? mLightModeTint : mDarkModeTint);
     }
 
-    /**
-     * Clean up any state when the new tab button is destroyed.
-     */
+    /** Clean up any state when the new tab button is destroyed. */
     public void destroy() {
         if (mIncognitoStateProvider != null) {
             mIncognitoStateProvider.removeObserver(this);

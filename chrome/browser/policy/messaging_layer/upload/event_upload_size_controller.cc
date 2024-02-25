@@ -78,8 +78,7 @@ uint64_t EventUploadSizeController::ComputeMaxUploadSize(
 
 // static
 std::vector<EncryptedRecord> EventUploadSizeController::BuildEncryptedRecords(
-    const google::protobuf::RepeatedPtrField<EncryptedRecord>&
-        encrypted_records,
+    google::protobuf::RepeatedPtrField<EncryptedRecord> encrypted_records,
     EventUploadSizeController&& controller) {
   std::vector<EncryptedRecord> records;
   for (auto& record : encrypted_records) {

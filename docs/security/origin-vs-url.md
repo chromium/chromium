@@ -71,8 +71,7 @@ Use the following datatypes to represent origins:
   [avoid sending origins](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/mojo.md#Do-not-send-unnecessary-or-privilege_presuming-data)
   in the first place.
 - Java: `org.chromium.url.Origin`
-  (see also `url::Origin::FromJavaObject`
-  and `url::Origin::CreateJavaObject`).
+  (see also `url::Origin::FromJavaObject` and `url::Origin::ToJavaObject`).
 
 
 ## Avoid converting URLs to origins.

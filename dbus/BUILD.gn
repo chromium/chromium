@@ -48,6 +48,7 @@ component("dbus") {
   public_deps = [ "//base" ]
 
   public_configs = [ "//build/config/linux/dbus" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 proto_library("test_proto") {

@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,9 +13,9 @@ def _build_supported_extended_attributes():
     # T_EXPOSURE is used at 'applicable_to' if an extended attribute changes
     # the exposure of the IDL construct.
     T_EXPOSURE = [
-        T.ATTRIBUTE, T.CALLBACK_INTERFACE, T.CONSTANT, T.CONSTRUCTOR,
-        T.DICTIONARY_MEMBER, T.INTERFACE, T.LEGACY_WINDOW_ALIAS, T.NAMESPACE,
-        T.OPERATION
+        T.ASYNC_ITERABLE, T.ATTRIBUTE, T.CALLBACK_INTERFACE, T.CONSTANT,
+        T.CONSTRUCTOR, T.DICTIONARY_MEMBER, T.INTERFACE, T.ITERABLE,
+        T.LEGACY_WINDOW_ALIAS, T.NAMESPACE, T.OPERATION
     ]
     # V_CALL_WITH is used at 'values' of [CallWith], [GetterCallWith], and
     # [SetterCallWith].
@@ -75,6 +75,9 @@ def _build_supported_extended_attributes():
           forms=[F.NO_ARGS, F.IDENT, F.IDENT_LIST],
           values=["Getter", "Setter"]),
         E("CrossOriginIsolated", applicable_to=T_EXPOSURE),
+        E("CrossOriginIsolatedOrRuntimeEnabled",
+          applicable_to=T_EXPOSURE,
+          forms=[F.IDENT]),
         E("DeprecateAs",
           applicable_to=[
               T.ATTRIBUTE, T.CONSTANT, T.CONSTRUCTOR, T.DICTIONARY_MEMBER,
@@ -92,6 +95,7 @@ def _build_supported_extended_attributes():
           values=V_CALL_WITH),
         E("Global", applicable_to=[T.INTERFACE], forms=[F.IDENT,
                                                         F.IDENT_LIST]),
+        E("HasAsyncIteratorReturnAlgorithm", applicable_to=[T.ASYNC_ITERABLE]),
         E("HighEntropy",
           applicable_to=[T.ATTRIBUTE, T.CONSTRUCTOR, T.OPERATION],
           forms=[F.NO_ARGS, F.IDENT],
@@ -103,6 +107,7 @@ def _build_supported_extended_attributes():
               T.INTERFACE, T.NAMESPACE, T.OPERATION
           ],
           forms=F.IDENT),
+        E("IDLTypeImplementedAsV8Promise", applicable_to=[T.TYPE]),
         E("IsCodeLike", applicable_to=[T.INTERFACE]),
         E("IsolatedContext", applicable_to=T_EXPOSURE),
         E("LegacyFactoryFunction",

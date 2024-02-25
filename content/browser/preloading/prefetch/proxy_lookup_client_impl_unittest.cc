@@ -20,7 +20,7 @@ namespace {
 class TestNetworkContext : public network::TestNetworkContext {
  public:
   TestNetworkContext(bool call_on_proxy_lookup_complete,
-                     absl::optional<net::ProxyInfo> proxy_info)
+                     std::optional<net::ProxyInfo> proxy_info)
       : call_on_proxy_lookup_complete_(call_on_proxy_lookup_complete),
         proxy_info_(proxy_info) {}
 
@@ -39,7 +39,7 @@ class TestNetworkContext : public network::TestNetworkContext {
   // If false, then simulates the mojo pipe disconnecting before the result of
   // the proxy lookup is sent.
   bool call_on_proxy_lookup_complete_;
-  absl::optional<net::ProxyInfo> proxy_info_;
+  std::optional<net::ProxyInfo> proxy_info_;
 };
 
 class ProxyLookupClientImplTest : public ::testing::Test {};
@@ -48,7 +48,7 @@ TEST_F(ProxyLookupClientImplTest, NoProxyInfo) {
   BrowserTaskEnvironment task_environment;
 
   TestNetworkContext network_context(/*call_on_proxy_lookup_complete_=*/true,
-                                     absl::nullopt);
+                                     std::nullopt);
 
   base::RunLoop run_loop;
   GURL test_url("example.com");

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 
+#include <optional>
+
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
@@ -37,18 +38,17 @@ class VIZ_COMMON_EXPORT SharedQuadState {
 
   void SetAll(const SharedQuadState& other);
 
-  // TODO(kylechar): Remove default value for `layer_id` after updating all
-  // callers.
   void SetAll(const gfx::Transform& transform,
               const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
               const gfx::MaskFilterInfo& filter_info,
-              const absl::optional<gfx::Rect>& clip,
+              const std::optional<gfx::Rect>& clip,
               bool contents_opaque,
               float opacity_f,
               SkBlendMode blend,
               int sorting_context,
-              uint32_t layer_id = 0);
+              uint32_t layer_id,
+              bool fast_rounded_corner);
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
   // Transforms quad rects into the target content space.
@@ -66,7 +66,7 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // the clip rect given by the Rect part of |roudned_corner_bounds|.
   gfx::MaskFilterInfo mask_filter_info;
   // This rect lives in the target content space.
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
   // Indicates whether the content in |quad_layer_rect| are fully opaque.
   bool are_contents_opaque = true;
   float opacity = 1.0f;
@@ -87,7 +87,9 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // and the OverlayProcessor. Do not set the value in CompositorRenderPass.
   // This index points to the damage rect in the surface damage rect list where
   // the overlay quad belongs to. SetAll() doesn't update this data.
-  absl::optional<size_t> overlay_damage_index;
+  // TODO(crbug.com/1482361): Consider moving this member out of this struct and
+  // into the quads themselves.
+  std::optional<size_t> overlay_damage_index;
 };
 
 }  // namespace viz

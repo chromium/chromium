@@ -32,16 +32,12 @@ _EXPECTED_NON_EMPTY_ARRAY_DEFINITION = (
   0x0557fa92,  // Back
   0x290eb683,  // NewTab
   0x67d2f674,  // Forward
-};
-
-const size_t kNumExpiredHistograms = 3;""")
+};""")
 
 _EXPECTED_EMPTY_ARRAY_DEFINITION = (
     """const uint32_t kExpiredHistogramsHashes[] = {
   0x00000000,  // Dummy.Histogram
-};
-
-const size_t kNumExpiredHistograms = 1;""")
+};""")
 
 
 class ExpiredHistogramsTest(unittest.TestCase):

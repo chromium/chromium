@@ -131,21 +131,6 @@ void CacheStorageContextImpl::AddReceiver(
   }
 }
 
-void CacheStorageContextImpl::GetAllStorageKeysInfo(
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->GetAllStorageKeysUsage(
-      storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
-}
-
-void CacheStorageContextImpl::DeleteForStorageKey(
-    const blink::StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->DeleteStorageKeyData(
-      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI);
-}
-
 void CacheStorageContextImpl::AddObserver(
     mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -173,9 +158,9 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const absl::optional<storage::BucketLocator> bucket =
-      result.has_value() ? absl::make_optional(result->ToBucketLocator())
-                         : absl::nullopt;
+  const std::optional<storage::BucketLocator> bucket =
+      result.has_value() ? std::make_optional(result->ToBucketLocator())
+                         : std::nullopt;
 
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
                                 std::move(coep_reporter), storage_key, bucket,

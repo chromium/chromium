@@ -1,0 +1,20 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PinUnlockAutosubmitEnabled": true
+        },
+        "prefs": {
+          "pin_unlock_autosubmit_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

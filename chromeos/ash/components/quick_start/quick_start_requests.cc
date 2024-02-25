@@ -5,13 +5,11 @@
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 
 #include "base/base64.h"
-#include "base/json/json_writer.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "crypto/aead.h"
 #include "crypto/sha2.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,7 +41,6 @@ constexpr int kAccountRequirementSingle = 2;
 constexpr int kFlowTypeTargetChallenge = 2;
 
 const char kRelyingPartyId[] = "google.com";
-const char kCtapRequestType[] = "webauthn.get";
 const char kOrigin[] = "https://accounts.google.com";
 
 // Maps to CBOR byte labelling FIDO request as GetAssertion.
@@ -77,6 +74,14 @@ constexpr char kDeviceTypeKey[] = "deviceType";
 // http://google3/java/com/google/android/gmscore/integ/client/smartdevice/src/com/google/android/gms/smartdevice/d2d/DeviceType.java;l=57
 constexpr int kDeviceTypeChrome = 7;
 
+// BootstrapState maps to values set here:
+// http://google3/java/com/google/android/gmscore/integ/modules/smartdevice/src/com/google/android/gms/smartdevice/d2d/data/BootstrapState.java
+constexpr int kBootstrapStateCancel = 1;
+constexpr int kBootstrapStateComplete = 2;
+
+// Key in BootstrapState message.
+constexpr char kBootstrapStateKey[] = "bootstrapState";
+
 }  // namespace
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
@@ -90,8 +95,8 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
 }
 
 std::unique_ptr<QuickStartMessage> BuildAssertionRequestMessage(
-    const Base64UrlString& challenge) {
-  cbor::Value request = GenerateGetAssertionRequest(challenge);
+    std::array<uint8_t, crypto::kSHA256Length> client_data_hash) {
+  cbor::Value request = GenerateGetAssertionRequest(client_data_hash);
   std::vector<uint8_t> ctap_request_command =
       CBOREncodeGetAssertionRequest(std::move(request));
 
@@ -115,41 +120,25 @@ std::unique_ptr<QuickStartMessage> BuildGetInfoRequestMessage() {
 }
 
 std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
-    int32_t session_id,
+    uint64_t session_id,
     std::string& shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
           QuickStartMessageType::kQuickStartPayload);
   message->GetPayload()->Set(kRequestWifiKey, true);
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, session_id);
+  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 
   return message;
 }
 
-std::string CreateFidoClientDataJson(const url::Origin& origin,
-                                     const Base64UrlString& challenge) {
-  base::Value::Dict fido_collected_client_data;
-  fido_collected_client_data.Set("type", kCtapRequestType);
-  fido_collected_client_data.Set("challenge", *challenge);
-  fido_collected_client_data.Set("origin", origin.Serialize());
-  fido_collected_client_data.Set("crossOrigin", false);
-  std::string fido_client_data_json;
-  base::JSONWriter::Write(fido_collected_client_data, &fido_client_data_json);
-  return fido_client_data_json;
-}
-
-cbor::Value GenerateGetAssertionRequest(const Base64UrlString& challenge) {
+cbor::Value GenerateGetAssertionRequest(
+    std::array<uint8_t, crypto::kSHA256Length> client_data_hash) {
   url::Origin origin = url::Origin::Create(GURL(kOrigin));
-  std::string client_data_json = CreateFidoClientDataJson(origin, challenge);
   cbor::Value::MapValue cbor_map;
   cbor_map.insert_or_assign(cbor::Value(0x01), cbor::Value(kRelyingPartyId));
-  std::array<uint8_t, crypto::kSHA256Length> client_data_hash;
-  crypto::SHA256HashString(client_data_json, client_data_hash.data(),
-                           client_data_hash.size());
   cbor_map.insert_or_assign(cbor::Value(0x02), cbor::Value(client_data_hash));
   cbor::Value::MapValue option_map;
   option_map.insert_or_assign(cbor::Value(kUserPresenceMapKey),
@@ -163,8 +152,7 @@ cbor::Value GenerateGetAssertionRequest(const Base64UrlString& challenge) {
 
 std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
   // Encode the CtapGetAssertionRequest into cbor bytes vector.
-  absl::optional<std::vector<uint8_t>> cbor_bytes =
-      cbor::Writer::Write(request);
+  std::optional<std::vector<uint8_t>> cbor_bytes = cbor::Writer::Write(request);
   CHECK(cbor_bytes);
   std::vector<uint8_t> request_bytes = std::move(*cbor_bytes);
   // Add the command byte to the beginning of this now fully encoded cbor bytes
@@ -175,7 +163,7 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
 }
 
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
-    int32_t session_id,
+    uint64_t session_id,
     const base::span<uint8_t, 32> shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
@@ -183,11 +171,27 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
   message->GetPayload()->Set(kNotifySourceOfUpdateMessageKey, true);
 
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, session_id);
+  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 
   return message;
 }
+
+std::unique_ptr<QuickStartMessage> BuildBootstrapStateCancelMessage() {
+  std::unique_ptr<QuickStartMessage> message =
+      std::make_unique<QuickStartMessage>(
+          QuickStartMessageType::kBootstrapState);
+  message->GetPayload()->Set(kBootstrapStateKey, kBootstrapStateCancel);
+  return message;
+}
+
+std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage() {
+  std::unique_ptr<QuickStartMessage> message =
+      std::make_unique<QuickStartMessage>(
+          QuickStartMessageType::kBootstrapState);
+  message->GetPayload()->Set(kBootstrapStateKey, kBootstrapStateComplete);
+  return message;
+}
+
 }  // namespace ash::quick_start::requests

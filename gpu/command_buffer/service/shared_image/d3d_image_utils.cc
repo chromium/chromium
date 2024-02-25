@@ -8,13 +8,16 @@
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
+#if BUILDFLAG(USE_DAWN)
 using dawn::native::ExternalImageDescriptor;
 using dawn::native::d3d::ExternalImageDescriptorD3D11Texture;
 using dawn::native::d3d::ExternalImageDescriptorDXGISharedHandle;
 using dawn::native::d3d::ExternalImageDXGI;
+#endif
 
 namespace gpu {
 
+#if BUILDFLAG(USE_DAWN)
 namespace {
 
 wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
@@ -27,12 +30,18 @@ wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
       return wgpu::TextureFormat::R8Unorm;
     case DXGI_FORMAT_R8G8_UNORM:
       return wgpu::TextureFormat::RG8Unorm;
+    case DXGI_FORMAT_R16_UNORM:
+      return wgpu::TextureFormat::R16Unorm;
+    case DXGI_FORMAT_R16G16_UNORM:
+      return wgpu::TextureFormat::RG16Unorm;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return wgpu::TextureFormat::RGBA16Float;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
       return wgpu::TextureFormat::RGB10A2Unorm;
     case DXGI_FORMAT_NV12:
       return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+    case DXGI_FORMAT_P010:
+      return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
     default:
       NOTREACHED();
       return wgpu::TextureFormat::Undefined;
@@ -44,9 +53,15 @@ wgpu::TextureUsage GetAllowedDawnUsages(
     const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
     const wgpu::TextureFormat wgpu_format) {
   DCHECK_EQ(wgpu_format, DXGIToWGPUFormat(d3d11_texture_desc.Format));
-  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-    // R8BG8Biplanar420Unorm is only supported as a texture binding.
-    return wgpu::TextureUsage::TextureBinding;
+  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+      wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+    if (d3d11_texture_desc.BindFlags & D3D11_BIND_RENDER_TARGET &&
+        device.HasFeature(wgpu::FeatureName::MultiPlanarRenderTargets)) {
+      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding |
+             wgpu::TextureUsage::RenderAttachment;
+    } else {
+      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    }
   }
 
   wgpu::TextureUsage wgpu_usage =
@@ -68,6 +83,7 @@ wgpu::TextureUsage GetAllowedDawnUsages(
 }
 
 }  // namespace
+#endif  // BUILDFLAG(USE_DAWN)
 
 bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
@@ -94,6 +110,7 @@ bool ClearD3D11TextureToColor(
   return true;
 }
 
+#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
     const wgpu::Device& device,
     uint32_t shared_image_usage,
@@ -178,5 +195,6 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   DCHECK(external_image->IsValid());
   return external_image;
 }
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

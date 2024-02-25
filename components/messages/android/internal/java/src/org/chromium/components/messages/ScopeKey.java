@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A key stands for a scope instance of a certain scope type.
- */
+/** A key stands for a scope instance of a certain scope type. */
 class ScopeKey {
     public final @MessageScopeType int scopeType;
     public final @Nullable WebContents webContents;
@@ -34,7 +32,8 @@ class ScopeKey {
     public boolean equals(@Nullable Object other) {
         if (!(other instanceof ScopeKey)) return false;
         ScopeKey otherScopeKey = (ScopeKey) other;
-        return scopeType == otherScopeKey.scopeType && windowAndroid == otherScopeKey.windowAndroid
+        return scopeType == otherScopeKey.scopeType
+                && windowAndroid == otherScopeKey.windowAndroid
                 && webContents == otherScopeKey.webContents;
     }
 

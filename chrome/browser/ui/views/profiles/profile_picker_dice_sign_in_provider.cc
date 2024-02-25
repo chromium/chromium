@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
@@ -28,11 +30,11 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -56,13 +58,10 @@ bool IsExternalURL(const GURL& url) {
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     ProfilePickerWebContentsHost* host,
     signin_metrics::AccessPoint signin_access_point,
-    absl::optional<base::FilePath> profile_path)
+    base::FilePath profile_path)
     : host_(host),
       signin_access_point_(signin_access_point),
-      profile_path_(profile_path) {
-  // If the path is provided, it must be non-empty.
-  DCHECK(!(profile_path.has_value() && profile_path->empty()));
-}
+      profile_path_(profile_path) {}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
@@ -97,10 +96,9 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
       &ProfilePickerDiceSignInProvider::OnProfileInitialized,
       weak_ptr_factory_.GetWeakPtr(), std::move(switch_finished_callback));
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_path_.has_value()) {
+  if (!profile_path_.empty()) {
     bool profile_exists = profile_manager->LoadProfileByPath(
-        profile_path_.value(), /*incognito=*/false,
-        std::move(profile_init_callback));
+        profile_path_, /*incognito=*/false, std::move(profile_init_callback));
     DCHECK(profile_exists);
   } else {
     size_t icon_index = profiles::GetPlaceholderAvatarIndex();
@@ -151,6 +149,19 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
+  // ForceSignin flow should not have any potential link that opens a new
+  // browser. Currently the regular sign in flow does not contain any, but the
+  // SAML Force Signin flow contains a SAML speedbump page, which still contains
+  // external links like "Help", "Privacy" and "Terms" that will attempt to open
+  // a browser. As long as those links are accessible, we should not try to open
+  // them while Force Signin is enabled.
+  // TODO(https://crbug.com/1520921): Remove this check if the SAML speedbump is
+  // removed or if the links on the page are removed.
+  if (signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    return;
+  }
+
   NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
   // Open all links as new popups.
   params.disposition = WindowOpenDisposition::NEW_POPUP;
@@ -168,7 +179,10 @@ bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
 void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL())) {
+  if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL()) &&
+      // SAML with ForceSignin in Profile Picker should follow the regular flow.
+      (!signin_util::IsForceSigninEnabled() ||
+       !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker))) {
     // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
     // after a successful sign-in.
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
@@ -176,7 +190,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
-    FinishFlow(CoreAccountId());
+    FinishFlow(CoreAccountInfo());
   }
 }
 
@@ -222,7 +236,7 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   // Apply the default theme to get consistent colors for toolbars in newly
   // created profiles (this matters for linux where the 'system' theme is used
   // for new profiles).
-  if (!profile_path_.has_value()) {
+  if (profile_path_.empty()) {
     auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
     theme_service->UseDefaultTheme();
   }
@@ -253,28 +267,32 @@ bool ProfilePickerDiceSignInProvider::IsInitialized() const {
 }
 
 void ProfilePickerDiceSignInProvider::FinishFlow(
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
-  std::move(callback_).Run(profile_.get(), account_id, std::move(contents_));
+  std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 
 void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
     Profile* profile,
     signin_metrics::AccessPoint /*access_point*/,
     signin_metrics::PromoAction /*promo_action*/,
-    signin_metrics::Reason /*reason*/,
     content::WebContents* /*contents*/,
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
-  FinishFlow(account_id);
+  FinishFlow(account_info);
 }
 
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
+  // Use the Emebedded flow if we are in the context of ForceSignin.
+  signin::Flow signin_flow = signin_util::IsForceSigninEnabled()
+                                 ? signin::Flow::EMBEDDED_PROMO
+                                 : signin::Flow::PROMO;
+
   return signin::GetChromeSyncURLForDice({
       .request_dark_scheme = host_->ShouldUseDarkColors(),
-      .for_promo_flow = true,
+      .flow = signin_flow,
   });
 }
 
@@ -317,5 +335,6 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       std::move(redirect_url), record_signin_started_metrics,
-      std::move(enable_sync_callback), std::move(show_signin_error_callback));
+      std::move(enable_sync_callback), DiceTabHelper::OnSigninHeaderReceived(),
+      std::move(show_signin_error_callback));
 }

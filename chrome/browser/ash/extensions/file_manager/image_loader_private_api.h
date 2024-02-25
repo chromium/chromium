@@ -51,7 +51,7 @@ class ImageLoaderPrivateGetDriveThumbnailFunction
 
  private:
   // A callback invoked when thumbnail data has been generated.
-  void GotThumbnail(const absl::optional<std::vector<uint8_t>>& data);
+  void GotThumbnail(const std::optional<std::vector<uint8_t>>& data);
 };
 
 class ImageLoaderPrivateGetPdfThumbnailFunction

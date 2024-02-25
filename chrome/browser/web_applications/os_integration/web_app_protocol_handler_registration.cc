@@ -7,7 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -17,7 +17,7 @@ namespace web_app {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 // Registers a protocol handler for the web app with the OS.
 void RegisterProtocolHandlersWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name,
     const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
@@ -27,7 +27,7 @@ void RegisterProtocolHandlersWithOs(
 }
 
 // Unregisters protocol handlers for a web app with the OS.
-void UnregisterProtocolHandlersWithOs(const AppId& app_id,
+void UnregisterProtocolHandlersWithOs(const webapps::AppId& app_id,
                                       const base::FilePath profile_path,
                                       ResultCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_WEB_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_WEB_DIALOG_VIEW_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -24,7 +25,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
     gfx::NativeView parent,
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
-    absl::optional<views::Widget::InitParams> extra_params,
+    std::optional<views::Widget::InitParams> extra_params,
     bool show = true);
 
 }  // namespace chrome

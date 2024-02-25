@@ -1,0 +1,89 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "TabOrganizationProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+message TabOrganization {
+  // The label that describes this tab organization.
+  string label = 1;
+
+  // The tabs that belong in this organization.
+  repeated Tab tabs = 2;
+}
+
+message Tab {
+  // A unique identifier for the tab.
+  int64 tab_id = 1;
+
+  // The title of the tab.
+  string title = 2;
+
+  // The URL of the tab.
+  string url = 3;
+}
+
+message TabOrganizationRequest {
+  // The tabs that are requested to be organized.
+  repeated Tab tabs = 1;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 2;
+}
+
+message TabOrganizationResponse {
+  // The organizations that were deemed suitable for the requested tabs.
+  //
+  // These organizations will be in the order of suitability and it is expected
+  // for them to be shown in the order present in the list.
+  //
+  // Note that not all requested tabs are guaranteed to be present in at least
+  // one organization.
+  repeated TabOrganization tab_organizations = 1;
+}
+
+message TabOrganizationQuality {
+  message Organization {
+    // What the user decided to do with the organization. NOT_USED means that
+    // the user either didn't choose an action when presented with the
+    // organization or it wasnt shown to the user. Accepted means the
+    // organization was used. Rejected means the user did not want the
+    // organization.
+    enum Choice {
+      NOT_USED = 0;
+      ACCEPTED = 1;
+      REJECTED = 2;
+    }
+
+    // The label of the organization if it was accepted. |edited| signifies that the label was
+    // edited.
+    message Label {
+      bool edited = 1;
+    }
+
+    // Any tabs that were removed from the organization before accepting.
+    repeated int64 removed_tab_ids = 1;
+    Label label = 2;
+    Choice choice = 3;
+    UserFeedback user_feedback = 4;
+  }
+
+  repeated Organization organizations = 1;
+}
+
+// TabOrganizationLoggingData consists of model execution Request,
+// Response and Quality data.
+message TabOrganizationLoggingData {
+  TabOrganizationRequest request_data = 1;
+  TabOrganizationResponse response_data = 2;
+  TabOrganizationQuality quality_data = 3;
+}

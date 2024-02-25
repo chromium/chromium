@@ -7,8 +7,27 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//components/country_codes",
+    "//components/version_info:channel",
+    "//ios/chrome/app:background_mode_buildflags",
+    "//ios/chrome/browser/ui/ntp/feed_top_section:constants",
+    "//ios/chrome/common",
+    "//ui/base",
+  ]
   public_deps = [ "//base" ]
+}
+
+source_set("features_utils") {
+  sources = [
+    "features_utils.h",
+    "features_utils.mm",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
+  ]
 }
 
 source_set("system_flags") {
@@ -16,16 +35,16 @@ source_set("system_flags") {
     "system_flags.h",
     "system_flags.mm",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//components/autofill/core/common",
     "//components/password_manager/core/common:features",
     "//components/variations",
-    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/safety_check:constants",
+    "//ios/chrome/browser/memory/model:features",
+    "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/public/features",
   ]
 }

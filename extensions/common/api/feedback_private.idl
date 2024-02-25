@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.feedbackPrivate</code> API to provide Chrome [OS]
 // feedback to the Google Feedback servers.
-[modernised_enums]
 namespace feedbackPrivate {
 
   dictionary AttachedFile {
@@ -31,7 +30,10 @@ namespace feedbackPrivate {
     sadTabCrash,
 
     // Flow for internal Google users.
-    googleInternal
+    googleInternal,
+
+    // Flow for AI features.
+    ai
   };
 
   dictionary FeedbackInfo {
@@ -112,6 +114,12 @@ namespace feedbackPrivate {
     // Whether or not |autofillMetadata| should be included in the feedback
     // report.
     boolean? sendAutofillMetadata;
+
+    // Whether or not the content is offensive or unsafe.
+    boolean? isOffensiveOrUnsafe;
+
+    // A JSON formatted string containing ai metadata.
+    DOMString? aiMetadata;
   };
 
   // Possible statuses that can result from sending feedback.
@@ -233,10 +241,11 @@ namespace feedbackPrivate {
     // information is slow.
     // |formOpenTime|: The epoch time when the feedback form was opened. This is
     // used for metrics.
-    [supportsPromises] static void sendFeedback(FeedbackInfo feedback,
-                                                optional boolean loadSystemInfo,
-                                                optional double formOpenTime,
-                                                SendFeedbackCallback callback);
+    static void sendFeedback(
+        FeedbackInfo feedback,
+        optional boolean loadSystemInfo,
+        optional double formOpenTime,
+        SendFeedbackCallback callback);
 
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:
@@ -263,8 +272,9 @@ namespace feedbackPrivate {
     //       </li>
     //   <li>Returns the same <code>readerId</code> value to the callback.</li>
     // </ul>
-    static void readLogSource(ReadLogSourceParams params,
-                              ReadLogSourceCallback callback);
+    static void readLogSource(
+        ReadLogSourceParams params,
+        ReadLogSourceCallback callback);
 
   };
 

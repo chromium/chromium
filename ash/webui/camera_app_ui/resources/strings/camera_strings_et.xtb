@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Kustuta <ph name="PAGE_NUMBER" />. leht</translation>
 <translation id="1113173431709655881">Kaamerarežiim</translation>
 <translation id="1153190633558910465">Ruudustik on välja lülitatud</translation>
-<translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. leht on kustutatud</translation>
 <translation id="1258009455399840361">Pööra 90 kraadi päripäeva</translation>
 <translation id="1417314334557041815">Muuda <ph name="INDEX" />. lehte</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Panoraami paremale</translation>
 <translation id="3081586908890909590">Vaheta video salvestamise režiimile</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Liitu võrguga „<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link on kopeeritud</translation>
 <translation id="3354465018370944241">Foto seaded</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Video töötlemine ...</translation>
 <translation id="3789724198583203151">Pööra 90 kraadi vastupäeva</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="4060608699153044055">Te ei saa salvestada, sest seadmes on liiga vähe salvestusruumi. Salvestamise alustamiseks peate oma seadmes ruumi vabastama.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Peata salvestamine</translation>
 <translation id="4121305183798804752">Tuvastati dokument</translation>
 <translation id="414641094616694804">See kaamera ei saa eraldusvõimet muuta</translation>
 <translation id="4176463684765177261">Keelatud</translation>
-<translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="428234092390943511">Lehe pisipilt</translation>
 <translation id="4349714250734879769">Kaadreid skaleerib Chrome</translation>
 <translation id="4383571725254449280">Toimivuslogide trükkimine</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Täiseraldusvõime</translation>
 <translation id="4864143361253542638">Skannitud lehtede loend</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopeeri lingi aadress <ph name="URL" /></translation>
 <translation id="491895758387112773">Mitmevooline videosalvestus</translation>
 <translation id="495170559598752135">Toimingud</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Foto kuvasuhe</translation>
 <translation id="5057360777601936059">Teie kaamera pole praegu saadaval.
         Kontrollige, kas kaamera on korralikult ühendatud.</translation>
+<translation id="5157591164390831335">Tuvastati URL.</translation>
 <translation id="5163387177077603948">Liigub paremale</translation>
-<translation id="5219374179772385066">Kiirendatud video režiim on nüüd saadaval!</translation>
 <translation id="5235304959032763950">16 : 9</translation>
 <translation id="5266635337630551423">Dokumendi vasak ülanurk</translation>
 <translation id="5317780077021120954">Salvesta</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Täname, et andsite tagasisidet rakenduse Kaamera kohta.
 
 Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena näidisfoto või -video ja kirjeldage, mis on valesti. (Näiteks foto on liiga tume või objekt pole teravustatud.)</translation>
+<translation id="6519884562954018934">Liitu võrguga <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6617916774429601017">Kuva kõik eraldusvõimed</translation>
 <translation id="6631515515009660915">Peegeldamine on välja lülitatud</translation>
@@ -133,6 +133,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
 <translation id="7488619942230388918">GIF-video salvestamine</translation>
 <translation id="7557677699350329807">Vaheta järgmisele kaamerale</translation>
+<translation id="7562584071994185503">Kopeeri tekst <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7608223098072244877">4 korda 4</translation>
 <translation id="761421184377987513">Liigub vasakule alla</translation>
@@ -155,10 +156,12 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8346544573713510785">Kaadreid skaleerib kaamera HAL</translation>
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8609951387004618906">Ava <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>
+<translation id="874854738381978209">Tuvastati Wi-Fi-võrk.</translation>
 <translation id="8815966864175525708">Vaheta portreefoto jäädvustamiseks</translation>
 <translation id="8828441885228359828">Jätka salvestamist</translation>
 <translation id="8870695351537079478">Salvestamise alustamine ebaõnnestus</translation>

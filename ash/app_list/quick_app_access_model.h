@@ -5,13 +5,13 @@
 #ifndef ASH_APP_LIST_QUICK_APP_ACCESS_MODEL_H_
 #define ASH_APP_LIST_QUICK_APP_ACCESS_MODEL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -93,7 +93,7 @@ class QuickAppAccessModel : public AppListItemObserver,
   void ClearQuickApp();
 
   // The time that the icon load is requested.
-  absl::optional<base::TimeTicks> icon_load_start_time_;
+  std::optional<base::TimeTicks> icon_load_start_time_;
 
   base::ObserverList<Observer> observers_;
 

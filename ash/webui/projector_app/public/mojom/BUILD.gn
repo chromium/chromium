@@ -12,11 +12,17 @@ cur_dir = rebase_path(".", "//")
 mojom("annotator_mojo_bindings") {
   sources = [ "annotator_structs.mojom" ]
   webui_module_path = "/$cur_dir"
+
+  # Projector app is still using JS + Closure Compiler.
+  generate_webui_js_bindings = true
 }
 
 mojom("projector_mojo_bindings") {
   sources = [ "projector_types.mojom" ]
   webui_module_path = "/$cur_dir"
+
+  # Projector app is still using JS + Closure Compiler.
+  generate_webui_js_bindings = true
   public_deps = [ "//mojo/public/mojom/base" ]
   cpp_typemaps = [
     {

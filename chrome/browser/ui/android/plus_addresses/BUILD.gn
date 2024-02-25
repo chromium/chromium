@@ -1,0 +1,78 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.plus_addresses"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/plus_address_creation_prompt.xml" ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java" ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/glue:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}

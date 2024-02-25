@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #import "tensorflow_lite_support/ios/text/tokenizers/Sources/TFLSentencepieceTokenizer.h"
-#include "absl/memory/memory.h"
+#include "absl/memory/memory.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/text/tokenizers/sentencepiece_tokenizer.h"
 #import "tensorflow_lite_support/ios/text/tokenizers/Sources/TFLTokenizerUtil.h"
 #import "tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"

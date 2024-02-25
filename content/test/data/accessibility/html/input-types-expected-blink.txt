@@ -39,6 +39,8 @@ rootWebArea
 ++++++++++image
 ++++++++++staticText name='Submit'
 ++++++++++++inlineTextBox name='Submit'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '

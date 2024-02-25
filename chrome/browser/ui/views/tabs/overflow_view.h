@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -37,6 +38,8 @@
 // If there are 2 indicator views defined, then the first goes on the left and
 // the the second goes on the right, else only the right gets filled.
 class OverflowView : public views::View {
+  METADATA_HEADER(OverflowView, views::View)
+
  public:
   OverflowView(std::unique_ptr<views::View> primary_view,
                std::unique_ptr<views::View> prefix_indicator_view,
@@ -54,7 +57,7 @@ class OverflowView : public views::View {
   }
 
   // View:
-  void Layout() override;
+  void Layout(PassKey) override;
   views::SizeBounds GetAvailableSize(const View* child) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;

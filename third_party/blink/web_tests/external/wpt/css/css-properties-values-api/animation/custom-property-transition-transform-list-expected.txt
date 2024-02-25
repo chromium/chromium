@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL A custom property of type <transform-list> can yield a CSS Transition assert_equals: Element has the expected animated value expected "translateX(150px) scale(3)" but got "translateX(200px) scale(4)"
-Harness: the test ran to completion.
-

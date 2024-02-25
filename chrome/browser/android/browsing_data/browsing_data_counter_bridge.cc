@@ -11,7 +11,7 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
 
 using base::android::JavaParamRef;
@@ -20,6 +20,7 @@ using base::android::ScopedJavaLocalRef;
 BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jprofile,
     jint data_type,
     jint clear_browsing_data_tab)
     : jobject_(obj) {
@@ -43,15 +44,14 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     return;
   }
 
-  Profile* profile =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
-  counter_ = BrowsingDataCounterFactory::GetForProfileAndPref(profile, pref);
+  profile_ = ProfileAndroid::FromProfileAndroid(jprofile)->GetOriginalProfile();
+  counter_ = BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref);
 
   if (!counter_)
     return;
 
   counter_->Init(
-      profile->GetPrefs(), clear_browsing_data_tab_,
+      profile_->GetPrefs(), clear_browsing_data_tab_,
       base::BindRepeating(&BrowsingDataCounterBridge::onCounterFinished,
                           base::Unretained(this)));
   counter_->Restart();
@@ -67,13 +67,11 @@ void BrowsingDataCounterBridge::Destroy(JNIEnv* env,
 
 void BrowsingDataCounterBridge::onCounterFinished(
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Profile* profile =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> result_string =
       base::android::ConvertUTF16ToJavaString(
           env, browsing_data_counter_utils::GetChromeCounterTextFromResult(
-                   result.get(), profile));
+                   result.get(), profile_));
   Java_BrowsingDataCounterBridge_onBrowsingDataCounterFinished(env, jobject_,
                                                                result_string);
 }
@@ -81,8 +79,9 @@ void BrowsingDataCounterBridge::onCounterFinished(
 static jlong JNI_BrowsingDataCounterBridge_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jprofile,
     jint data_type,
     jint clear_browsing_data_tab) {
   return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
-      env, obj, data_type, clear_browsing_data_tab));
+      env, obj, jprofile, data_type, clear_browsing_data_tab));
 }

@@ -39,7 +39,12 @@ struct ProposedCandidateKey {
 
 struct ProposedCandidateKeyHasher {
   std::size_t operator()(const ProposedCandidateKey& k) const {
-    return base::Hash(&k, sizeof(k));
+    // Assert that there is no padding - otherwise the bytes-based hash below
+    // may differ for otherwise equal objects.
+    static_assert(sizeof(ProposedCandidateKey) ==
+                  sizeof(decltype(k.strategy_id)) +
+                      sizeof(decltype(k.tracking_id)));
+    return base::FastHash(base::as_bytes(base::span_from_ref(k)));
   }
 };
 

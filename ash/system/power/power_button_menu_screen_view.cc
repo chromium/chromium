@@ -14,7 +14,7 @@
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_menu_view_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -64,6 +64,8 @@ using TransformDirection = PowerButtonMenuView::TransformDirection;
 class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     : public views::View,
       public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(PowerButtonMenuBackgroundView, views::View)
+
  public:
   explicit PowerButtonMenuBackgroundView(
       base::RepeatingClosure show_animation_done)
@@ -103,11 +105,6 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     layer()->SetOpacity(show ? kPowerButtonMenuOpacity : 0.f);
   }
 
-  // views::View:
-  const char* GetClassName() const override {
-    return "PowerButtonMenuBackgroundView";
-  }
-
  private:
   // views::View:
   void OnThemeChanged() override {
@@ -119,6 +116,9 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   // A callback for when the animation that shows the power menu has finished.
   base::RepeatingClosure show_animation_done_;
 };
+
+BEGIN_METADATA(PowerButtonMenuScreenView, PowerButtonMenuBackgroundView)
+END_METADATA
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(
     ShutdownReason shutdown_reason,
@@ -179,7 +179,7 @@ void PowerButtonMenuScreenView::OnWidgetShown(
   if (power_button_position_ != PowerButtonPosition::NONE) {
     UpdateMenuBoundsOrigins();
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 PowerButtonMenuCurtainView*
@@ -191,11 +191,7 @@ PowerButtonMenuScreenView::GetOrCreateCurtainView() {
   return power_button_menu_curtain_view_;
 }
 
-const char* PowerButtonMenuScreenView::GetClassName() const {
-  return "PowerButtonMenuScreenView";
-}
-
-void PowerButtonMenuScreenView::Layout() {
+void PowerButtonMenuScreenView::Layout(PassKey) {
   power_button_screen_background_shield_->SetBoundsRect(GetContentsBounds());
   if (IsCurtainModeEnabled()) {
     LayoutMenuCurtainView();
@@ -384,7 +380,7 @@ gfx::Rect PowerButtonMenuScreenView::GetMenuBounds() {
   gfx::Rect menu_bounds;
 
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     menu_bounds = GetContentsBounds();
     menu_bounds.ClampToCenteredSize(GetMenuViewPreferredSize());
   } else {
@@ -404,5 +400,8 @@ gfx::Size PowerButtonMenuScreenView::GetMenuViewPreferredSize() {
     return power_button_menu_view_->GetPreferredSize();
   }
 }
+
+BEGIN_METADATA(PowerButtonMenuScreenView)
+END_METADATA
 
 }  // namespace ash

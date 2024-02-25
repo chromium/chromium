@@ -100,10 +100,10 @@ class ASH_EXPORT OnboardingNudgeController
 
   bool is_nudge_clicked_ = false;
   bool is_phone_hub_icon_clicked_ = false;
-  raw_ptr<views::View, ExperimentalAsh> anchored_view_;
+  raw_ptr<views::View> anchored_view_;
   base::RepeatingClosure stop_animation_callback_;
   base::RepeatingClosure start_animation_callback_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace ash

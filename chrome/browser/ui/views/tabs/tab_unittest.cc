@@ -292,6 +292,10 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
 };
 
 TEST_F(TabTest, HitTestTopPixel) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab =
@@ -318,8 +322,12 @@ TEST_F(TabTest, HitTestTopPixel) {
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
-  static const absl::optional<TabAlertState> kAlertStatesToTest[] = {
-      absl::nullopt,
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
+  static const std::optional<TabAlertState> kAlertStatesToTest[] = {
+      std::nullopt,
       TabAlertState::TAB_CAPTURING,
       TabAlertState::AUDIO_PLAYING,
       TabAlertState::AUDIO_MUTING,
@@ -340,7 +348,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   // results.
   for (bool is_pinned_tab : {false, true}) {
     for (bool is_active_tab : {false, true}) {
-      for (absl::optional<TabAlertState> alert_state : kAlertStatesToTest) {
+      for (std::optional<TabAlertState> alert_state : kAlertStatesToTest) {
         SCOPED_TRACE(
             ::testing::Message()
             << (is_active_tab ? "Active " : "Inactive ")
@@ -370,7 +378,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         const int height = GetLayoutConstant(TAB_HEIGHT);
         for (; width >= min_width; --width) {
           SCOPED_TRACE(::testing::Message() << "width=" << width);
-          tab->SetBounds(0, 0, width, height);  // Invokes Tab::Layout().
+          tab->SetBounds(0, 0, width, height);  // Invokes layout.
           CheckForExpectedLayoutAndVisibilityOfElements(*tab);
         }
       }
@@ -378,7 +386,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   }
 }
 
-// Regression test for http://crbug.com/226253. Calling Layout() more than once
+// Regression test for http://crbug.com/226253. Performing layout more than once
 // shouldn't change the insets of the close button.
 TEST_F(TabTest, CloseButtonLayout) {
   FakeTabSlotController tab_slot_controller;
@@ -539,6 +547,10 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
 }
 
 TEST_F(TabTest, SmallTabsHideCloseButton) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -558,6 +570,10 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
 }
 
 TEST_F(TabTest, ExtraLeftPaddingNotShownOnSmallActiveTab) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -595,6 +611,10 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
 }
 
 TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
+  // TODO (crbug/1520660): Fix or remove test.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));

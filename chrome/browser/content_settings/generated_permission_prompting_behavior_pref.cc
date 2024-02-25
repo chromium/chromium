@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 
 #include "base/check.h"
-#include "chrome/browser/content_settings/generated_notification_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -18,8 +17,8 @@ typedef extensions::settings_private::GeneratedPref GeneratedPref;
 
 namespace content_settings {
 
-const char kGeneratedGeolocationPref[] =
-    "generated.prompting_behavior.geolocation";
+const char kGeneratedGeolocationPref[] = "generated.geolocation";
+const char kGeneratedNotificationPref[] = "generated.notification";
 
 GeneratedPermissionPromptingBehaviorPref::
     GeneratedPermissionPromptingBehaviorPref(
@@ -121,7 +120,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
 
   settings_api::PrefObject pref_object;
   pref_object.key = generated_pref_name_;
-  pref_object.type = settings_api::PREF_TYPE_NUMBER;
+  pref_object.type = settings_api::PrefType::kNumber;
 
   std::string content_setting_provider;
   const auto content_setting =
@@ -154,7 +153,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   }
 
   if (content_setting_managed) {
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     GeneratedPref::ApplyControlledByFromContentSettingSource(
         &pref_object, SETTING_SOURCE_POLICY);
   }

@@ -232,7 +232,7 @@ TEST_F(
     PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExistOnExternalDisplay) {
   UpdateDisplay("500x400,500x400");
   ForceHideShelvesForTest();
-  auto* root_window = Shell::GetAllRootWindows()[1];
+  auto* root_window = Shell::GetAllRootWindows()[1].get();
 
   // Position the PIP window on the side of the screen where it will be next
   // to an edge and therefore in a resting position for the whole test.

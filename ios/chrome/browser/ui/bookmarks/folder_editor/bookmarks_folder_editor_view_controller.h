@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 #import <set>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 class AuthenticationService;
 @class BookmarksFolderEditorViewController;
@@ -60,7 +60,7 @@ class SyncService;
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
 @interface BookmarksFolderEditorViewController
-    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, weak) id<BookmarksFolderEditorViewControllerDelegate>
     delegate;

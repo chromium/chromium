@@ -4,11 +4,10 @@
 
 #include "net/websockets/websocket_handshake_response_info.h"
 
-#include <string>
+#include <utility>
 
 #include "base/time/time.h"
 #include "net/http/http_response_headers.h"
-#include "url/gurl.h"
 
 namespace net {
 

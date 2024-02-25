@@ -8,32 +8,13 @@
 -All/CompositedScrollingMetricTest.PassiveEventHandlers/1
 -All/CompositedScrollingMetricTest.RecordCorrectScrollingThread/0
 -All/CompositedScrollingMetricTest.RecordCorrectScrollingThread/1
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink0
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink1
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink0
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink1
--All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink0
--All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink1
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink0
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink1
--All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink0
--All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink1
--All/DumpAccessibilityTreeTest.AccessibilitySelect/blink0
--All/DumpAccessibilityTreeTest.AccessibilitySelect/blink1
--All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink0
--All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink1
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink0
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink1
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink0
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink
+-All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink
+-All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink
+-All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelect/blink
+-All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/0
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/1
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/0
@@ -42,7 +23,6 @@
 -All/SitePerProcessBrowserTest.TextAutosizerPageInfo/1
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/0
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/1
--All/SyntheticInputTest.SmoothScrollWheel/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/1
 -All/TouchpadPinchBrowserTest.WheelListenerAllowingPinch/0
@@ -51,17 +31,12 @@
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingDoubleTap/1
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/0
 -All/TouchpadPinchBrowserTest.WheelListenerPreventingPinch/1
--All/WorkerTest.WebSocketSharedWorker/0
--All/WorkerTest.WebSocketSharedWorker/1
--All/WorkerTest.WebSocketSharedWorker/2
 -BackForwardCacheBrowserTest.DoesNotCacheIfRunFileChooserIsInvoked
 -BackForwardCacheBrowserTest.WebSocketCachedIfClosed
 -BackForwardCacheBrowserTest.WebSocketNotCached
 -BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenarioDefaultName
 -BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenarioRuleId
 -BrowserGpuChannelHostFactoryTest.GrContextKeepsGpuChannelAlive
--BrowserSideFlingBrowserTest.EarlyTouchpadFlingCancelationOnInertialGSUAckNotConsumed
--BrowserSideFlingBrowserTest.EarlyTouchscreenFlingCancelationOnInertialGSUAckNotConsumed
 -CaptureScreenshotTest.CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
 -CaptureScreenshotTest.TransparentScreenshotsFull
 -ContentBrowserTest.RendererCrashCallStack
@@ -77,7 +52,6 @@
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
 -FakeSystemTracingDevToolsProtocolTest.TracingWithFakeSystemBackend
--FontPreferencesBrowserTest.GenericFamilies
 -FontUniqueNameBrowserTest.ContentLocalFontsMatching
 -InputEventBrowserTest.MouseDownEventTimeStamp
 -KeyboardLockBrowserTest.CancelInFullscreen
@@ -101,9 +75,7 @@
 -MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
 -NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackAfterHiddenNavigationFails
--NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackIfSwapFailedBeforeNavigation
 -NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterHiddenNavigation
--NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterInitialNavigation
 -NoGPUCaptureScreenshotTest.LargeScreenshot
 -PointerLockBrowserTest.PointerLockRequestUnadjustedMovement
 -PointerLockBrowserTest.PointerLockWheelEventRouting
@@ -117,15 +89,9 @@
 -RenderWidgetHostSitePerProcessTest.BrowserClosesSelectPopup
 -RenderWidgetHostTouchEmulatorBrowserTest.TouchEmulatorPinchWithGestureFling
 -RenderWidgetHostViewChildFrameBrowserTest.VisualPropertiesPropagation_RootWindowSegments
--RenderWidgetHostViewChildFrameBrowserTest.VisualPropertiesPropagation_VisibleViewportSize
--RenderWidgetHostViewPresentationFeedbackBrowserTest.HideWhileCapturing
--RenderWidgetHostViewPresentationFeedbackBrowserTest.Show
--RenderWidgetHostViewPresentationFeedbackBrowserTest.ShowThenHide
--RenderWidgetHostViewPresentationFeedbackBrowserTest.ShowWhileCapturing
 -SRC_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
 -ScrollBehaviorBrowserTest.InstantScriptScrollAdjustsSmoothWheelScroll
 -ScrollBehaviorBrowserTest.SmoothWheelScrollCompletesWithScriptedMirror
--ScrollLatencyScrollbarBrowserTest.ScrollbarThumbDragLatency
 -SignedExchangeSubresourcePrefetchBrowserTest.IntegrityMismatchSendsReport
 -SitePerProcessHighDPIHitTestBrowserTest.CursorUpdateReceivedFromCrossSiteIframe
 -SitePerProcessHitTestBrowserTest.CrossProcessMouseCapture
@@ -134,10 +100,6 @@
 -SitePerProcessHitTestBrowserTest.PopupMenuTest
 -SitePerProcessHitTestBrowserTest.ScrolledNestedPopupMenuTest
 -SitePerProcessHitTestBrowserTest.TouchpadDoubleTapZoomOverOOPIF
--TouchInputBrowserTest.MultiPointTouchPress
--TouchInputBrowserTest.TouchNoHandler
--TouchInputBrowserTest.TouchStartConsume
--TouchInputBrowserTest.TouchStartNoConsume
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.CrashForBug1201589
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.HasSharedArrayBuffer
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.HasSharedArrayBufferReuseContext
@@ -163,6 +125,9 @@
 -MediaColorTest.Yuv420pRec709H264
 -MediaColorTest.Yuvj420pH264
 -MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+
+# TODO(crbug.com/1509461): these flakily timeout.
+-All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
 
 # TODO(crbug.com/1466881): hitting unexpected driver errors.
 -ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
@@ -190,21 +155,180 @@
 # TODO(crbug.com/1467854): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
+# TODO(crbug.com/1477792): This test is flaky.
+-All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink
+
+# TODO(crbug.com/1482265): These consistently fail.
+-All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
+
+# TODO(crbug.com/325678250): This test is failing due to the line wrapping.
+-All/DumpAccessibilityTreeTest.AccessibilityInputRadioCheckboxLabel/blink
+
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
--BackForwardCacheBrowserTest.CCNSAndWebSocketBothRecorded
+-BackForwardCacheBrowserTestNoTestingConfig.CCNSAndWebSocketBothRecorded
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
+# TODO(crbug.com/1484998): These tests fail by a different width for a frame.
+-All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink
+-All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink
+
+# TODO(crbug.com/1489278): Audio output unit startup is failing with partition
+# alloc
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/1
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/3
+-AudioContextManagerTest.AudioContextPlaybackRecorded
+-AudioContextManagerTest.AudioContextPlaybackTimeUkm
+-BackForwardCacheBrowserTest.VideoSuspendAndResume
+-Default/MediaTest.AudioBearFlac/0
+-Default/MediaTest.AudioBearFlac/1
+-Default/MediaTest.AudioBearFlac192kHzMp4/0
+-Default/MediaTest.AudioBearFlac192kHzMp4/1
+-Default/MediaTest.AudioBearFlacMp4/0
+-Default/MediaTest.AudioBearFlacMp4/1
+-Default/MediaTest.AudioBearFlacOgg/0
+-Default/MediaTest.AudioBearFlacOgg/1
+-Default/MediaTest.AudioBearOpusMp4/0
+-Default/MediaTest.AudioBearOpusMp4/1
+-Default/MediaTest.AudioBearOpusOgg/0
+-Default/MediaTest.AudioBearOpusOgg/1
+-Default/MediaTest.AudioBearOpusOgg_FileProtocol/0
+-Default/MediaTest.AudioBearOpusOgg_FileProtocol/1
+-Default/MediaTest.AudioBearOpusWebm/0
+-Default/MediaTest.AudioBearOpusWebm/1
+-Default/MediaTest.Navigate/0
+-Default/MediaTest.Navigate/1
+-Default/MediaTest.VideoBear3gpAacH264/0
+-Default/MediaTest.VideoBear3gpAacH264/1
+-Default/MediaTest.VideoBearHighBitDepthMp4/0
+-Default/MediaTest.VideoBearHighBitDepthMp4/1
+-Default/MediaTest.VideoBearMovPcmS16be/0
+-Default/MediaTest.VideoBearMovPcmS16be/1
+-Default/MediaTest.VideoBearMovPcmS24be/0
+-Default/MediaTest.VideoBearMovPcmS24be/1
+-Default/MediaTest.VideoBearMp4/0
+-Default/MediaTest.VideoBearTheora/0
+-Default/MediaTest.VideoBearTheora/1
+-Default/MediaTest.VideoBearWavAlaw/0
+-Default/MediaTest.VideoBearWavAlaw/1
+-Default/MediaTest.VideoBearWavMulaw/0
+-Default/MediaTest.VideoBearWavMulaw/1
+-Default/MediaTest.VideoBearWavPcm/0
+-Default/MediaTest.VideoBearWavPcm/1
+-Default/MediaTest.VideoBearWavPcm192kHz/0
+-Default/MediaTest.VideoBearWavPcm192kHz/1
+-Default/MediaTest.VideoBearWavPcm3kHz/0
+-Default/MediaTest.VideoBearWavPcm3kHz/1
+-Default/MediaTest.VideoBearWebm/0
+-Default/MediaTest.VideoBearWebm/1
+-Default/MediaTest.VideoBearWebm_FileProtocol/0
+-Default/MediaTest.VideoBearWebm_FileProtocol/1
+-Default/MediaTest.VideoTulipWebm/0
+-Default/MediaTest.VideoTulipWebm/1
+-MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
+-MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
+-MediaRedirectTest.CanPlayHiddenWebm
+-MediaSourceTest.ConfigChangeVideo
+-MediaSourceTest.Playback_AudioOnly_AAC_ADTS
+-MediaSourceTest.Playback_AudioOnly_FLAC_MP4
+-MediaSourceTest.Playback_AudioOnly_MP3
+-MediaSourceTest.Playback_AudioOnly_Opus_WebM
+-MediaSourceTest.Playback_AudioOnly_WebM
+-MediaSourceTest.Playback_VideoAudio_WebM
+-MediaSourceTest.Playback_Video_WEBM_Audio_MP4
+-MediaSuspendTest.ForcedSrcSuspend
+-OpenCodec/WebRtcMediaRecorderTest.PeerConnection/0
+-OpenCodec/WebRtcMediaRecorderTest.PeerConnection/1
+-OpenCodec/WebRtcMediaRecorderTest.PeerConnection/2
+-OpenCodec/WebRtcMediaRecorderTest.PeerConnection/3
+-OpenCodec/WebRtcMediaRecorderTest.PeerConnection/4
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/2
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/3
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/4
+-ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
+-WebRtcAudioBrowserTest.CanMakeVideoCallAndThenRenegotiateToAudio
+-WebRtcAudioBrowserTest.EnsureLocalVideoMuteDoesntMuteAudio
+-WebRtcAudioBrowserTest.EnsureRemoteVideoMuteDoesntMuteAudio
+-WebRtcAudioBrowserTest.EstablishAudioOnlyCallAndEnsureAudioIsPlaying
+-WebRtcAudioBrowserTest.EstablishAudioOnlyCallAndVerifyGetSynchronizationSourcesWorks
+-WebRtcAudioBrowserTest.EstablishAudioVideoCallAndEnsureAudioIsPlaying
+-WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyLocalMutingWorks
+-WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyRemoteMutingWorks
+-WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyUnmutingWorks
+-WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
+-WebRtcMediaRecorderTest.TwoChannelAudioRecording
+
+# TODO(crbug.com/1492573): reports the wrong width/height.
+-RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
+
+# TODO(crbug.com/1495761): Text area handle has shrunk.
+-FormControlsBrowserTest.Textarea
+
+# TODO(crbug.com/1500334): Flakily fails on the platform.
+-ThirdPartyCookiesContentSecurityPolicyBrowserTest.CSPMediaThirdPartyCookieBlocking
+
+# TODO(crbug.com/1502136): Flakily fails on the platform.
+-TouchInputBrowserTest.TouchStartConsume
+-TouchInputBrowserTest.TouchStartNoConsume
+-TouchInputBrowserTest.MultiPointTouchPress
+
+# TODO(crbug.com/1501820): Consistently fails on the platform.
+-PrerenderBrowserTest.ActivateOnWindowOpen
+
+# TODO(crbug.com/325442902): Consistently fails on the platform.
+-PrerenderBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
+
+# TODO(crbug.com/1502137): Consistently fails on the platform.
+-All/PrerenderTargetAgnosticBrowserTest.RenderFrameHostLifecycleState/_blank
+
+# TODO(crbug.com/1503172): Fails due to video capture issues.
+-*.DoesNotCacheIfDisplayMediaAccessGranted*
+-All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/0
+-All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/1
+
+# TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
+-All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
+-All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink
+
+# TODO(crbug.com/1511011): These emit an extra inlineTextBox
+-All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
+-All/DumpAccessibilityTreeTest.ReusedMapMoveImage/blink
+-All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
+-All/YieldingParserDumpAccessibilityTreeTest.ReusedMapMoveImage/blink
+
+# TODO(crbug.com/1516750): the following consistently crash.
+-SystemTracingEndToEndBrowserTest.PerformanceMark
+-SystemTracingEndToEndBrowserTest.SimpleTraceEvent
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
+-All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/1
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/1
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
+-IndexedDBBrowserTest.CanDeleteWhenOverQuotaTest
 -NavigationBrowserTest.NavigateToAboutBlankWhileFirstNavigationPending
 -PortalHitTestBrowserTest.InputToOOPIFAfterActivation
+-WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
 -WebRtcGetUserMediaBrowserTest.InvalidSourceIdInIFrameAndCloseInFailureCb
+
+# TODO(crbug.com/40274214): Assertion happens because |spawner_url_base_| is
+# empty.
+-All/WorkerTest.WebSocketSharedWorker/0
+-All/WorkerTest.WebSocketSharedWorker/1
+-All/WorkerTest.WebSocketSharedWorker/2
+-All/WorkerTest.WebSocketSharedWorker/3

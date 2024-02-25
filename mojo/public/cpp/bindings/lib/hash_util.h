@@ -7,11 +7,11 @@
 
 #include <cstring>
 #include <functional>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
 #include "mojo/public/cpp/bindings/lib/template_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace internal {
@@ -62,8 +62,8 @@ struct HashTraits<std::vector<T>, false> {
 };
 
 template <typename T>
-struct HashTraits<absl::optional<std::vector<T>>, false> {
-  static size_t Hash(size_t seed, const absl::optional<std::vector<T>>& value) {
+struct HashTraits<std::optional<std::vector<T>>, false> {
+  static size_t Hash(size_t seed, const std::optional<std::vector<T>>& value) {
     if (!value)
       return HashCombine(seed, 0);
 

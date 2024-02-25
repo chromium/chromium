@@ -8,7 +8,7 @@ proto_library("proto") {
   visibility = [
     "//components/download/content/factory",
     "//components/download/internal/background_service/:*",
-    "//ios/chrome/browser/download/background_service",
+    "//ios/chrome/browser/download/model/background_service",
   ]
 
   sources = [

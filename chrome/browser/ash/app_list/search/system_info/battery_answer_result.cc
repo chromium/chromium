@@ -57,7 +57,7 @@ void BatteryAnswerResult::PowerChanged(
   std::unique_ptr<BatteryHealth> new_battery_health =
       std::make_unique<BatteryHealth>();
   PopulatePowerStatus(power_supply_properties, *new_battery_health.get());
-  UpdateTitleAndDetails(/*title=*/base::EmptyString16(),
+  UpdateTitleAndDetails(/*title=*/std::u16string(),
                         new_battery_health->GetPowerTime(),
                         new_battery_health->GetAccessibilityLabel());
   UpdateBarChartPercentage(new_battery_health->GetBatteryPercentage());

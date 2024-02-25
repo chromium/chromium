@@ -13,6 +13,8 @@ source_set("controlled_frame") {
     "controlled_frame_api_provider.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chrome/common:resources_grit",
     "//chrome/common/controlled_frame/api",

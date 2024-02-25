@@ -1,0 +1,117 @@
+<style include="settings-shared">
+  :host {
+    /* The tap target extends slightly above each visible menu item. */
+    --tap-target-padding: 3px;
+
+    align-items: center;
+    background: transparent;
+    /* Always apply border so item doesn't shift when focused. */
+    border-color: transparent;
+    border-style: solid;
+    border-width: var(--settings-menu-item-border-width);
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-direction: row;
+    font: var(--cros-button-1-font);
+    text-decoration: none;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)):host {
+    /* No border or border radius on window edge (left in LTR, right in RTL). */
+    border-end-end-radius: 20px;
+    border-start-end-radius: 20px;
+    border-inline-start-width: 0;
+    min-height: 32px;
+    padding: var(--tap-target-padding) 0;
+    padding-inline-start: 20px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled):host {
+    border-radius: 16px;
+    box-sizing: border-box;
+    height: 60px;
+    /* Consider border width for padding */
+    padding-inline-start: calc(12px - var(--settings-menu-item-border-width));
+    padding-inline-end: calc(12px - var(--settings-menu-item-border-width));
+    width: var(--settings-menu-item-width);
+  }
+
+  /* Label & sublabel styles */
+  #labelWrapper {
+    /* Expand to fill remaining space */
+    flex-grow: 1;
+    max-width: 200px;
+  }
+
+  #label,
+  #sublabel {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #sublabel {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
+  }
+
+  paper-tooltip {
+    --paper-tooltip-min-width: max-content;
+  }
+
+  /* Default icon styles */
+  iron-icon {
+    pointer-events: none;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)) iron-icon {
+    margin-inline-end: 16px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) iron-icon {
+    margin-inline-end: 12px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled):host(:not(.iron-selected))
+      iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
+  /* Hover state */
+  :host(:not(.iron-selected):hover) {
+    background-color: var(--cros-sys-hover_on_subtle) !important;
+  }
+
+  /* Focused state */
+  :host-context(.focus-outline-visible):host(:focus) {
+    border-color: var(--cros-focus-ring-color);
+  }
+
+  /* Selected state */
+  :host(.iron-selected) {
+    background-color: var(--cros-sys-primary) !important;
+    color: var(--cros-sys-on_primary);
+  }
+
+  :host(.iron-selected) > iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-on_primary);
+  }
+
+  :host(.iron-selected) #sublabel {
+    color: var(--cros-sys-surface_variant);
+  }
+</style>
+
+<iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
+<div id="labelWrapper">
+  <div id="label">[[label]]</div>
+  <div id="sublabel">[[sublabel]]</div>
+</div>
+<paper-tooltip
+    position="[[tooltipPosition]]"
+    offset="4"
+    fit-to-visible-bounds
+    aria-hidden="true">
+  [[label]]
+</paper-tooltip>

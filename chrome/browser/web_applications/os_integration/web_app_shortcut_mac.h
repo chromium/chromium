@@ -177,6 +177,12 @@ base::FilePath GetChromeAppsFolder();
 // Remove the specified app from the OS login item list.
 void RemoveAppShimFromLoginItems(const std::string& app_id);
 
+// Returns the bundle identifier for an app. If |profile_path| is unset, then
+// the returned bundle id will be profile-agnostic.
+std::string GetBundleIdentifierForShim(
+    const std::string& app_id,
+    const base::FilePath& profile_path = base::FilePath());
+
 class WebAppAutoLoginUtil {
  public:
   WebAppAutoLoginUtil() = default;
@@ -292,6 +298,9 @@ class WebAppShortcutCreator {
 
   // Updates the icon for the shortcut.
   bool UpdateIcon(const base::FilePath& app_path) const;
+
+  // Updates the code signature of |app_path|.
+  bool UpdateSignature(const base::FilePath& app_path) const;
 
   // Path to the data directory for this app. For example:
   // ~/Library/Application Support/Chromium/Default/Web Applications/_crx_abc/

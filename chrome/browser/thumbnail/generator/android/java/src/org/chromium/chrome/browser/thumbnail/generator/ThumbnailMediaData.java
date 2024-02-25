@@ -6,25 +6,17 @@ package org.chromium.chrome.browser.thumbnail.generator;
 
 import android.graphics.Bitmap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
-/**
- * Contains local media metadata and thumbnails.
- */
+/** Contains local media metadata and thumbnails. */
 public class ThumbnailMediaData {
-    /**
-     * The duration of the media file in seconds. Or -1 if no duration in the metadata.
-     */
+    /** The duration of the media file in seconds. Or -1 if no duration in the metadata. */
     public final double duration;
 
-    /**
-     * Title of the media.
-     */
+    /** Title of the media. */
     public final String title;
 
-    /**
-     * Artist of the media.
-     */
+    /** Artist of the media. */
     public final String artist;
 
     /**

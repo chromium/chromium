@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -22,6 +23,7 @@ class LogoutConfirmationController;
 // countdown and informs the user that a logout will happen automatically if no
 // choice is made before the countdown has expired.
 class LogoutConfirmationDialog : public views::DialogDelegateView {
+  METADATA_HEADER(LogoutConfirmationDialog, views::DialogDelegateView)
  public:
   LogoutConfirmationDialog(LogoutConfirmationController* controller,
                            base::TimeTicks logout_time);
@@ -41,16 +43,15 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
 
  private:
   void UpdateLabel();
   void OnDialogAccepted();
 
-  raw_ptr<LogoutConfirmationController, ExperimentalAsh> controller_;
+  raw_ptr<LogoutConfirmationController> controller_;
   base::TimeTicks logout_time_;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
 
   base::RepeatingTimer update_timer_;
 };

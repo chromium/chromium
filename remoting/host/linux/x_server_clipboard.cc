@@ -17,7 +17,6 @@
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace remoting {
 
@@ -34,10 +33,6 @@ void XServerClipboard::Init(x11::Connection* connection,
     HOST_LOG << "X server does not support XFixes.";
     return;
   }
-
-  // Let the server know the client version.
-  connection_->xfixes().QueryVersion(
-      {x11::XFixes::major_version, x11::XFixes::minor_version});
 
   clipboard_window_ = connection_->GenerateId<x11::Window>();
   connection_->CreateWindow({
@@ -109,25 +104,32 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
 }
 
 void XServerClipboard::ProcessXEvent(const x11::Event& event) {
-  if (clipboard_window_ == x11::Window::None ||
-      event.window() != clipboard_window_) {
+  if (clipboard_window_ == x11::Window::None) {
     return;
   }
 
   if (auto* property_notify = event.As<x11::PropertyNotifyEvent>()) {
-    OnPropertyNotify(*property_notify);
+    if (property_notify->window == clipboard_window_) {
+      OnPropertyNotify(*property_notify);
+    }
   } else if (auto* selection_notify = event.As<x11::SelectionNotifyEvent>()) {
-    OnSelectionNotify(*selection_notify);
+    if (selection_notify->requestor == clipboard_window_) {
+      OnSelectionNotify(*selection_notify);
+    }
   } else if (auto* selection_request = event.As<x11::SelectionRequestEvent>()) {
-    OnSelectionRequest(*selection_request);
+    if (selection_request->owner == clipboard_window_) {
+      OnSelectionRequest(*selection_request);
+    }
   } else if (auto* selection_clear = event.As<x11::SelectionClearEvent>()) {
-    OnSelectionClear(*selection_clear);
-  }
-
-  if (auto* xfixes_selection_notify =
-          event.As<x11::XFixes::SelectionNotifyEvent>()) {
-    OnSetSelectionOwnerNotify(xfixes_selection_notify->selection,
-                              xfixes_selection_notify->selection_timestamp);
+    if (selection_clear->owner == clipboard_window_) {
+      OnSelectionClear(*selection_clear);
+    }
+  } else if (auto* xfixes_selection_notify =
+                 event.As<x11::XFixes::SelectionNotifyEvent>()) {
+    if (xfixes_selection_notify->window == clipboard_window_) {
+      OnSetSelectionOwnerNotify(xfixes_selection_notify->selection,
+                                xfixes_selection_notify->selection_timestamp);
+    }
   }
 }
 
@@ -166,7 +168,7 @@ void XServerClipboard::OnPropertyNotify(const x11::PropertyNotifyEvent& event) {
   if (large_selection_property_ != x11::Atom::None &&
       event.atom == large_selection_property_ &&
       event.state == x11::Property::NewValue) {
-    auto req = connection_->GetProperty({
+    auto req = connection()->GetProperty({
         .c_delete = true,
         .window = clipboard_window_,
         .property = large_selection_property_,
@@ -190,7 +192,7 @@ void XServerClipboard::OnPropertyNotify(const x11::PropertyNotifyEvent& event) {
 void XServerClipboard::OnSelectionNotify(
     const x11::SelectionNotifyEvent& event) {
   if (event.property != x11::Atom::None) {
-    auto req = connection_->GetProperty({
+    auto req = connection()->GetProperty({
         .c_delete = true,
         .window = clipboard_window_,
         .property = event.property,
@@ -241,8 +243,8 @@ void XServerClipboard::OnSelectionRequest(
                          selection_event.target);
     }
   }
-  x11::SendEvent(selection_event, selection_event.requestor,
-                 x11::EventMask::NoEvent, connection_);
+  connection_->SendEvent(selection_event, selection_event.requestor,
+                         x11::EventMask::NoEvent);
 }
 
 void XServerClipboard::OnSelectionClear(const x11::SelectionClearEvent& event) {

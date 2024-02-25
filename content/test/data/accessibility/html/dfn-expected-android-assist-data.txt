@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:2 htmlInfo:[{htmlTag="dfn"}, {display="inline"}]
+++++++TextView text:"Web Browser" textSize:16.0 style:2 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

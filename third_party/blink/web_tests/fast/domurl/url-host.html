@@ -75,8 +75,8 @@ test(function() {
 test(function() {
     var url = new URL('https:/\rww.my@domain.com:8080/path/');
     assert_equals(url.host, 'domain.com:8080');
-    url.host = 'www.other!domain.com:15';
-    assert_equals(url.href, 'https://ww.my@www.other%21domain.com:15/path/');
+    url.host = 'www.other^domain.com:15';
+    assert_equals(url.href, 'https://ww.my@domain.com:8080/path/');
 }, 'Set host to a malformed URL');
 
 test(function() {
@@ -87,8 +87,8 @@ test(function() {
 
 test(function() {
     var url = new URL('https://rwwmy@domain.com:8080/purl..th/');
-    url.host = 'www.other!domain.com:25';
-    assert_equals(url.href, 'https://rwwmy@www.other%21domain.com:25/purl..th/');
+    url.host = 'www.other^domain.com:25';
+    assert_equals(url.href, 'https://rwwmy@domain.com:8080/purl..th/');
 }, 'Set host to URL containing username and ..');
 
 test(function() {

@@ -6,11 +6,11 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/bluetooth_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -55,14 +55,14 @@ class BluetoothHelperImpl : public BluetoothHelper {
   // BluetoothHelper:
   std::unique_ptr<DataWithTimestamp> GenerateForegroundAdvertisement(
       const DeviceIdPair& device_id_pair) override;
-  absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
+  std::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) override;
   std::string GetBluetoothPublicAddress(const std::string& device_id) override;
   std::string ExpectedServiceDataToString(
       const DeviceIdPairSet& device_id_pair_set) override;
 
-  absl::optional<BluetoothHelper::DeviceWithBackgroundBool>
+  std::optional<BluetoothHelper::DeviceWithBackgroundBool>
   PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const std::string& local_device_id,
@@ -72,7 +72,7 @@ class BluetoothHelperImpl : public BluetoothHelper {
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
       std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator);
 
-  raw_ptr<multidevice::RemoteDeviceCache, ExperimentalAsh> remote_device_cache_;
+  raw_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
   std::unique_ptr<BackgroundEidGenerator> background_eid_generator_;
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
 };

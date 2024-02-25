@@ -490,6 +490,8 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
   auto* element =
       MakeGarbageCollected<HTMLDivElement>(EditElement().GetDocument());
   element->SetShadowPseudoId(text_pseudo_id);
+  element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                  CSSValueID::kNormal);
   if (parameters_.locale.IsRTL() && text.length()) {
     WTF::unicode::CharDirection dir = WTF::unicode::Direction(text[0]);
     if (dir == WTF::unicode::kSegmentSeparator ||
@@ -545,6 +547,7 @@ DateTimeEditElement::DateTimeEditElement(Document& document,
   SetHasCustomStyleCallbacks();
   SetShadowPseudoId(AtomicString("-webkit-datetime-edit"));
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdDateTimeEdit);
+  SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kNormal);
 }
 
 DateTimeEditElement::~DateTimeEditElement() = default;
@@ -653,8 +656,8 @@ void DateTimeEditElement::FocusByOwner(Element* old_focused_element) {
     DateTimeFieldElement* old_focused_field =
         static_cast<DateTimeFieldElement*>(old_focused_element);
     wtf_size_t index = FieldIndexOf(*old_focused_field);
-    GetDocument().UpdateStyleAndLayoutTreeForNode(old_focused_field,
-                                                  DocumentUpdateReason::kFocus);
+    GetDocument().UpdateStyleAndLayoutTreeForElement(
+        old_focused_field, DocumentUpdateReason::kFocus);
     if (index != kInvalidFieldIndex && old_focused_field->IsFocusable()) {
       old_focused_field->Focus(FocusParams(FocusTrigger::kUserGesture));
       return;
@@ -768,6 +771,8 @@ void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
   if (!HasChildren()) {
     auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
     element->SetShadowPseudoId(fields_wrapper_pseudo_id);
+    element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                    CSSValueID::kNormal);
     AppendChild(element);
   }
   Element* fields_wrapper = FieldsWrapperElement();
@@ -868,7 +873,7 @@ DateTimeFieldElement* DateTimeEditElement::GetField(DateTimeField type) const {
   auto* it = base::ranges::find(fields_, type, &DateTimeFieldElement::Type);
   if (it == fields_.end())
     return nullptr;
-  return *it;
+  return it->Get();
 }
 
 bool DateTimeEditElement::HasField(DateTimeField type) const {

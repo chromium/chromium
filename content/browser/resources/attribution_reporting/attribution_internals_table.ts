@@ -2,139 +2,340 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './attribution_internals_table.html.js';
-import {TableModel} from './table_model.js';
 
-/**
- * Helper function for setting sort attributes on |th|.
- */
-function setSortAttrs(th: HTMLElement, sortDesc: boolean|null) {
-  let nextDir;
-  if (sortDesc === null) {
-    th.ariaSort = 'none';
-    nextDir = 'ascending';
-  } else if (sortDesc) {
-    th.ariaSort = 'descending';
-    nextDir = 'ascending';
-  } else {
-    th.ariaSort = 'ascending';
-    nextDir = 'descending';
-  }
+export type CompareFunc<T> = (a: T, b: T) => number;
 
-  th.title = `Sort by ${th.innerText} ${nextDir}`;
-  th.ariaLabel = th.title;
+function reverse<T>(f: CompareFunc<T>): CompareFunc<T> {
+  return (a, b) => f(b, a);
 }
 
-/**
- * Table abstracts the logic for rendering and sorting a table. The table's
- * columns are supplied by a TableModel supplied to the decorate function. Each
- * Column knows how to render the underlying value of the row type T, and
- * optionally sort rows of type T by that value.
- */
+export type RenderFunc<T> = (e: HTMLElement, data: T) => void;
+
+export interface DataColumn<T> {
+  readonly label: string;
+  readonly render: RenderFunc<T>;
+  readonly compare?: CompareFunc<T>;
+  readonly defaultSort?: boolean;
+}
+
+function renderSelection(td: HTMLElement, selectable: boolean): void {
+  if (!selectable) {
+    td.parentElement!.ariaSelected = 'undefined';
+    td.replaceChildren();
+  } else if (!td.querySelector('input')) {
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.title = 'Select';
+    td.replaceChildren(input);
+  }
+}
+
+export type GetIdFunc<T> = (data: T, updated: boolean) => bigint|undefined;
+
+export type IsSelectableFunc<T> = (data: T) => boolean;
+
+export interface InitOpts<T> {
+  readonly getId?: GetIdFunc<T>;
+  readonly isSelectable?: IsSelectableFunc<T>;
+  readonly styleRow?: RenderFunc<T>;
+}
+
 export class AttributionInternalsTableElement<T> extends CustomElement {
   static override get template() {
     return getTemplate();
   }
 
-  private model_: TableModel<T>|null = null;
-  private sortDesc_: boolean = false;
+  private cols_?: Array<RenderFunc<T>>;
+  private compare_?: CompareFunc<T>;
+  private getId_?: GetIdFunc<T>;
+  private styleRow_: RenderFunc<T> = () => {};
 
-  setModel(model: TableModel<T>) {
-    this.model_ = model;
-    this.sortDesc_ = false;
+  init(dataCols: Iterable<DataColumn<T>>, {
+    getId,
+    isSelectable,
+    styleRow = () => {},
+  }: InitOpts<T> = {}): void {
+    this.cols_ = [];
+    this.getId_ = getId;
+    this.styleRow_ = styleRow;
 
-    const tr = this.$<HTMLElement>('tr');
-    assert(tr);
-    model.cols.forEach((col, idx) => {
+    const tr = this.$<HTMLElement>('thead > tr')!;
+    tr.addEventListener('click', e => this.onSortButtonClick_(e));
+
+    const addTh = (content: Node|string, render: RenderFunc<T>) => {
       const th = document.createElement('th');
       th.scope = 'col';
-      col.renderHeader(th);
+      th.append(content);
+      tr.append(th);
+      this.cols_!.push(render);
+      return th;
+    };
 
+    if (isSelectable) {
+      const selectAll = document.createElement('input');
+      selectAll.type = 'checkbox';
+      selectAll.title = 'Select All';
+      selectAll.disabled = true;
+
+      selectAll.addEventListener(
+          'change', () => this.onSelectAllChange_(selectAll));
+
+      const listener = () => this.onSelectionChange_(selectAll);
+      this.$('tbody')!.addEventListener('change', listener);
+      this.addEventListener('rows-change', listener);
+
+      this.$('table')!.ariaMultiSelectable = 'true';
+
+      addTh(selectAll, (td, data) => renderSelection(td, isSelectable(data)));
+    }
+
+    for (const col of dataCols) {
       if (col.compare) {
-        th.setAttribute('role', 'button');
-        setSortAttrs(th, /*sortDesc=*/ null);
-        th.addEventListener('click', () => this.changeSortHeader_(idx));
+        const button = new SortButtonElement(col.compare);
+        button.innerText = col.label;
+        button.title = `Sort by ${col.label} ascending`;
+
+        addTh(button, col.render).ariaSort = 'none';
+
+        if (col.defaultSort) {
+          button.click();
+        }
+      } else {
+        addTh(col.label, col.render);
       }
+    }
 
-      tr.appendChild(th);
-    });
-
-    this.addSpanningText_();
-    this.model_.rowsChangedListeners.add(() => this.updateTbody());
+    this.dispatchRowsChange_();
   }
 
-  private addSpanningText_() {
-    const td = document.createElement('td');
-    assert(this.model_);
-    td.textContent = this.model_.emptyRowText;
-    td.colSpan = this.model_.cols.length;
-    const tr = document.createElement('tr');
-    tr.appendChild(td);
-    const tbody = this.$<HTMLElement>('tbody');
-    assert(tbody);
-    tbody.appendChild(tr);
-  }
+  private onSortButtonClick_(e: Event): void {
+    if (!(e.target instanceof SortButtonElement)) {
+      return;
+    }
 
-  private changeSortHeader_(idx: number) {
-    const ths = this.$all<HTMLElement>('thead th');
+    // Matches `ascending` and `descending` but not `none` or missing.
+    const currentButton =
+        this.$<HTMLElement>('thead > tr > th[aria-sort$="g"] > button');
+    if (currentButton && currentButton !== e.target) {
+      currentButton.title = `Sort by ${currentButton.innerText} ascending`;
+      currentButton.parentElement!.ariaSort = 'none';
+    }
 
-    assert(this.model_);
-    if (idx === this.model_.sortIdx) {
-      this.sortDesc_ = !this.sortDesc_;
+    const th = e.target.parentElement! as HTMLElement;
+    if (th.ariaSort === 'ascending') {
+      th.ariaSort = 'descending';
+      e.target.title = `Sort by ${e.target.innerText} ascending`;
+      this.setCompare_(reverse(e.target.compare));
     } else {
-      this.sortDesc_ = false;
-      if (this.model_.sortIdx >= 0) {
-        setSortAttrs(ths[this.model_.sortIdx]!, /*descending=*/ null);
+      th.ariaSort = 'ascending';
+      e.target.title = `Sort by ${e.target.innerText} descending`;
+      this.setCompare_(e.target.compare);
+    }
+  }
+
+  private rowCount_(): number {
+    return this.$<HTMLTableSectionElement>('tbody')!.rows.length;
+  }
+
+  private dispatchRowsChange_(): void {
+    const td = this.$<HTMLTableCellElement>('tfoot td')!;
+    td.colSpan = this.cols_!.length;
+
+    const rowCount = this.rowCount_();
+    td.innerText = `Rows: ${rowCount}`;
+
+    this.dispatchEvent(new CustomEvent('rows-change', {
+      bubbles: true,
+      detail: {rowCount},
+    }));
+  }
+
+  private setCompare_(f: CompareFunc<T>): void {
+    this.compare_ = f;
+
+    const tbody = this.$('tbody')!;
+    Array.from(this.dataRows_())
+        .sort((a, b) => f(a.data, b.data))
+        .forEach(tr => tbody.append(tr));
+  }
+
+  private dataRows_(): NodeListOf<DataRowElement<T>> {
+    return this.$all('tbody > tr');
+  }
+
+  private newRow_(data: T): DataRowElement<T> {
+    const tr = new DataRowElement(data);
+    for (const render of this.cols_!) {
+      render(tr.insertCell(), data);
+    }
+    this.styleRow_(tr, data);
+    return tr;
+  }
+
+  addRow(data: T): void {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    // TODO(apaseltiner): This should really remove the oldest rather than clear
+    // out everything.
+    if (this.rowCount_() >= 1000) {
+      this.clearRows();
+    }
+
+    if (this.getId_) {
+      this.updateRows([data]);
+      return;
+    }
+
+    let nextTr: DataRowElement<T>|undefined;
+    if (this.compare_) {
+      // TODO(apaseltiner): Use binary search.
+      nextTr = Array.prototype.find.call(
+          this.dataRows_(), tr => this.compare_!(tr.data, data) > 0);
+    }
+
+    const tr = this.newRow_(data);
+    if (nextTr) {
+      nextTr.before(tr);
+    } else {
+      this.$('tbody')!.append(tr);
+    }
+
+    this.dispatchRowsChange_();
+  }
+
+  updateRows(updatedDatas: Iterable<T>): void {
+    const updatedDatasById = new Map<bigint, T>();
+    const trs: Array<DataRowElement<T>> = [];
+
+    for (const data of updatedDatas) {
+      const id = this.getId_!(data, /*updated=*/ true);
+      if (id === undefined) {
+        trs.push(this.newRow_(data));
+      } else {
+        updatedDatasById.set(id, data);
       }
     }
 
-    this.model_.sortIdx = idx;
-    setSortAttrs(ths[this.model_.sortIdx]!, this.sortDesc_);
-    this.updateTbody();
-  }
-
-  private sort_(rows: T[]) {
-    assert(this.model_);
-    if (this.model_.sortIdx < 0) {
-      return;
+    for (const tr of this.dataRows_()) {
+      const id = this.getId_!(tr.data, /*updated=*/ false);
+      if (id === undefined) {
+        trs.push(tr);
+      } else {
+        const updatedData = updatedDatasById.get(id);
+        if (updatedData === undefined) {
+          tr.remove();
+        } else {
+          updatedDatasById.delete(id);
+          tr.data = updatedData;
+          this.cols_!.forEach(
+              (render, idx) => render(tr.cells[idx]!, updatedData));
+          this.styleRow_(tr, updatedData);
+          trs.push(tr);
+        }
+      }
     }
 
-    const multiplier = this.sortDesc_ ? -1 : 1;
-    rows.sort(
-        (a, b) => this.model_!.cols[this.model_!.sortIdx]!.compare!(a, b) *
-            multiplier);
-  }
-
-  updateTbody() {
-    const tbody = this.$<HTMLElement>('tbody');
-    assert(tbody);
-    tbody.innerText = '';
-
-    assert(this.model_);
-    const rows = this.model_.getRows();
-    if (rows.length === 0) {
-      this.addSpanningText_();
-      return;
+    for (const data of updatedDatasById.values()) {
+      trs.push(this.newRow_(data));
     }
 
-    this.sort_(rows);
+    if (this.compare_) {
+      trs.sort((a, b) => this.compare_!(a.data, b.data));
+    }
 
-    rows.forEach((row) => {
-      const tr = document.createElement('tr');
-      assert(this.model_);
-      this.model_.cols.forEach((col) => {
-        const td = document.createElement('td');
-        col.render(td, row);
-        tr.appendChild(td);
-      });
-      this.model_.styleRow(tr, row);
-      tbody.appendChild(tr);
-    });
+    const tbody = this.$('tbody')!;
+    for (const tr of trs) {
+      tbody.append(tr);
+    }
+
+    this.dispatchRowsChange_();
+  }
+
+  clearRows(shouldDelete?: (data: T) => boolean): void {
+    if (shouldDelete) {
+      for (const tr of this.dataRows_()) {
+        if (shouldDelete(tr.data)) {
+          tr.remove();
+        }
+      }
+    } else {
+      this.$('tbody')!.replaceChildren();
+    }
+    this.dispatchRowsChange_();
+  }
+
+  * selectedData(): Iterable<T> {
+    for (const tr of this.$all<DataRowElement<T>>(
+             'tbody > tr[aria-selected="true"]')) {
+      yield tr.data;
+    }
+  }
+
+  private selectionInputs_(): NodeListOf<HTMLInputElement> {
+    return this.$all('tbody > tr > td:first-child > input');
+  }
+
+  private dispatchSelectionChange_(anySelected: boolean): void {
+    this.dispatchEvent(
+        new CustomEvent('selection-change', {detail: {anySelected}}));
+  }
+
+  private onSelectAllChange_(selectAll: HTMLInputElement): void {
+    for (const input of this.selectionInputs_()) {
+      input.checked = selectAll.checked;
+      input.closest('tr')!.ariaSelected = selectAll.checked.toString();
+    }
+    this.dispatchSelectionChange_(selectAll.checked);
+  }
+
+  private onSelectionChange_(selectAll: HTMLInputElement): void {
+    let anySelected = false;
+    let anyUnselected = false;
+    for (const input of this.selectionInputs_()) {
+      input.closest('tr')!.ariaSelected = input.checked.toString();
+      if (input.checked) {
+        anySelected = true;
+      } else {
+        anyUnselected = true;
+      }
+    }
+
+    selectAll.disabled = !anySelected && !anyUnselected;
+    selectAll.checked = anySelected && !anyUnselected;
+    selectAll.indeterminate = anySelected && anyUnselected;
+
+    this.dispatchSelectionChange_(anySelected);
   }
 }
 
 customElements.define(
     'attribution-internals-table', AttributionInternalsTableElement);
+
+class DataRowElement<T> extends HTMLTableRowElement {
+  constructor(public data: T) {
+    super();
+  }
+}
+
+customElements.define(
+    'attribution-internals-data-row', DataRowElement, {extends: 'tr'});
+
+class SortButtonElement<T> extends HTMLButtonElement {
+  constructor(readonly compare: CompareFunc<T>) {
+    super();
+  }
+}
+
+customElements.define(
+    'attribution-internals-sort-button', SortButtonElement,
+    {extends: 'button'});
+
+declare global {
+  interface HTMLElementEventMap {
+    'rows-change': CustomEvent<{rowCount: number}>;
+    'selection-change': CustomEvent<{anySelected: boolean}>;
+  }
+}

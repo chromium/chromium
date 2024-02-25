@@ -10,7 +10,7 @@
       <template is="dom-repeat" items="[[options]]" as="colorMode">
         <option value="[[colorMode]]"
             selected$="[[isDefaultOption(colorMode)]]">
-          [[getColorModeString_(colorMode)]]
+          [[getColorModeAsString(colorMode)]]
         </option>
       </template>
     </select>

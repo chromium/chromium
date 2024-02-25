@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'https://example.test:8443/inspector-protocol/resources/permissions-policy-page.php',
       'Verifies that we can successfully retrieve permissions policy state in frame tree');

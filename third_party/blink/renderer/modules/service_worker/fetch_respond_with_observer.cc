@@ -352,7 +352,8 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
     scoped_refptr<BlobDataHandle> blob_data_handle =
         buffer->DrainAsBlobDataHandle(
-            BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize);
+            BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize,
+            exception_state);
 
     if (blob_data_handle) {
       // Handle the blob response body.
@@ -408,7 +409,7 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
   }
 
   auto* body_buffer = event_->request()->BodyBuffer();
-  absl::optional<network::DataElementChunkedDataPipe> request_body_to_pass;
+  std::optional<network::DataElementChunkedDataPipe> request_body_to_pass;
   if (body_buffer && !request_body_has_source_) {
     auto* body_stream = body_buffer->Stream();
     if (body_stream->IsLocked() || body_stream->IsDisturbed()) {

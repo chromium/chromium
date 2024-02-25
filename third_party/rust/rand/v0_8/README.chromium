@@ -3,7 +3,8 @@ URL: https://crates.io/crates/rand
 Description: Random number generators and other randomness functionality.
 
 Version: 0.8.5
-Security Critical: yes
+Security Critical: no
 Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/rand-0.8.5/LICENSE-APACHE
 Revision: 937320cbfeebd4352a23086d9c6e68f067f74644

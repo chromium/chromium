@@ -7,16 +7,33 @@
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 
 void SyncSigninDelegateAndroid::SigninFake(Profile* profile,
-                                           const std::string& username) {
-  sync_test_utils_android::SetUpAccountAndSignInForTesting();
+                                           const std::string& username,
+                                           signin::ConsentLevel consent_level) {
+  // TODO(crbug.com/1117345,crbug.com/1169662): Pass `username` to Java.
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      sync_test_utils_android::SetUpAccountAndSignInForTesting();
+      break;
+    case signin::ConsentLevel::kSync:
+      // TODO(crbug.com/1117345,crbug.com/1169662): Ideally (for consistency
+      // with desktop), this should sign in an account with ConsentLevel::kSync,
+      // but *not* actually enable Sync-the-feature.
+      sync_test_utils_android::SetUpAccountAndSignInAndEnableSyncForTesting();
+      break;
+  }
 }
 
 bool SyncSigninDelegateAndroid::SigninUI(Profile* profile,
                                          const std::string& username,
-                                         const std::string& password) {
+                                         const std::string& password,
+                                         signin::ConsentLevel consent_level) {
   return false;
 }
 
-bool SyncSigninDelegateAndroid::ConfirmSigninUI(Profile* profile) {
+bool SyncSigninDelegateAndroid::ConfirmSyncUI(Profile* profile) {
   return true;
+}
+
+void SyncSigninDelegateAndroid::SignOutPrimaryAccount(Profile* profile) {
+  sync_test_utils_android::SignOutForTesting();
 }

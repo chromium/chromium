@@ -9,11 +9,14 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Section for screen captures in the `RecentFilesBubble`.
 class ScreenCapturesSection : public HoldingSpaceItemViewsSection {
+  METADATA_HEADER(ScreenCapturesSection, HoldingSpaceItemViewsSection)
+
  public:
   explicit ScreenCapturesSection(HoldingSpaceViewDelegate* delegate);
   ScreenCapturesSection(const ScreenCapturesSection& other) = delete;
@@ -21,7 +24,6 @@ class ScreenCapturesSection : public HoldingSpaceItemViewsSection {
   ~ScreenCapturesSection() override;
 
   // HoldingSpaceItemViewsSection:
-  const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(

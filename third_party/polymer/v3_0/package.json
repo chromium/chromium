@@ -26,7 +26,6 @@
     "@polymer/iron-selector": "3.0.1",
     "@polymer/iron-test-helpers": "3.0.1",
     "@polymer/neon-animation": "3.0.1",
-    "@polymer/paper-behaviors": "3.0.1",
     "@polymer/paper-progress": "3.0.1",
     "@polymer/paper-ripple": "3.0.1",
     "@polymer/paper-spinner": "3.0.2",

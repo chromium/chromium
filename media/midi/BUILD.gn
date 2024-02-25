@@ -12,8 +12,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_android) {
-  # For generate_jni().
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 # Common configuration for targets in the media/midi directory.
@@ -50,9 +50,9 @@ if (is_android) {
   android_library("midi_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [ ":midi_jni_headers" ]
@@ -98,10 +98,8 @@ component("midi") {
   configs += [ ":midi_config" ]
 
   defines = [ "MIDI_IMPLEMENTATION" ]
-  deps = [
-    ":mojo",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
+  deps = [ ":mojo" ]
   libs = []
 
   if (is_android) {

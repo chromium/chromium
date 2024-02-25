@@ -14,6 +14,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",
+    "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/instrumentation",
     "+third_party/blink/renderer/platform/network/mime/mime_type_registry.h",
     "+third_party/blink/renderer/platform/platform_export.h",
@@ -21,4 +22,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/wtf/shared_buffer.h",
     "+third_party/blink/renderer/platform/testing",
     "+third_party/blink/renderer/platform/wtf",
+    "+third_party/fuzztest",
+    "+ui/base/test",
 ]

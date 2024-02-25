@@ -4,12 +4,14 @@
 
 import './strings.m.js';
 
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ImageQuery, LinkOpenMetadata, MethodType, PromoAction, PromoType, VisualSearchResult} from './companion.mojom-webui.js';
-import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
+import type {ImageQuery, LinkOpenMetadata, VisualSearchResult} from './companion.mojom-webui.js';
+import {MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
+import type {CompanionProxy} from './companion_proxy.js';
+import {CompanionProxyImpl} from './companion_proxy.js';
 
 /**
  * Method arguments to be passed as part of the JSON message object to be sent
@@ -71,8 +73,17 @@ enum ParamType {
   // Arguments for sending Visual Search results from browser to iframe.
   VISUAL_SEARCH_PARAMS = 'visualSearchParams',
 
+  // Arguments for sending Visual Search alt text from browser to iframe.
+  VISUAL_SEARCH_IMAGE_ALT_TEXTS = 'visualSearchImageAltTexts',
+
   // Arguments for sending companion loading state from iframe to browser.
   COMPANION_LOADING_STATE = 'companionLoadingState',
+
+  // Arguments for sending page title from browser to iframe.
+  PAGE_TITLE = 'pageTitle',
+
+  // Arguments for sending innerHtml from browser to iframe.
+  INNER_HTML = 'innerHtml',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -101,6 +112,23 @@ function initialize() {
         const message = {
           [ParamType.METHOD_TYPE]: MethodType.kUpdateCompanionPage,
           [ParamType.COMPANION_UPDATE_PARAMS]: companionUpdateProto,
+        };
+
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(message, companionOrigin);
+        }
+      });
+
+  companionProxy.callbackRouter.updatePageContent.addListener(
+      (pageTitle: string, innerHtml: string) => {
+        const companionOrigin =
+            new URL(loadTimeData.getString('companion_origin')).origin;
+        const message = {
+          [ParamType.METHOD_TYPE]: MethodType.kUpdatePageContent,
+          [ParamType.PAGE_TITLE]: pageTitle,
+          [ParamType.INNER_HTML]: innerHtml,
         };
 
         const frame = document.body.querySelector('iframe');
@@ -180,10 +208,12 @@ function initialize() {
   companionProxy.callbackRouter.onDeviceVisualClassificationResult.addListener(
       (results: VisualSearchResult[]) => {
         const dataUris = results.map(result => result.dataUri);
+        const altTexts = results.map(result => result.altText);
         const message = {
           [ParamType.METHOD_TYPE]:
               MethodType.kOnDeviceVisualClassificationResult,
           [ParamType.VISUAL_SEARCH_PARAMS]: dataUris,
+          [ParamType.VISUAL_SEARCH_IMAGE_ALT_TEXTS]: altTexts,
         };
 
         const companionOrigin =
@@ -252,8 +282,7 @@ function onCompanionMessageEvent(event: MessageEvent) {
     companionProxy.handler.onExpsOptInStatusAvailable(
         data[ParamType.IS_EXPS_OPTED_IN]);
   } else if (methodType === MethodType.kOnOpenInNewTabButtonURLChanged) {
-    const openInNewTabUrl = new Url();
-    openInNewTabUrl.url = data[ParamType.URL_FOR_OPEN_IN_NEW_TAB];
+    const openInNewTabUrl: Url = {url: data[ParamType.URL_FOR_OPEN_IN_NEW_TAB]};
     companionProxy.handler.onOpenInNewTabButtonURLChanged(openInNewTabUrl);
   } else if (methodType === MethodType.kRecordUiSurfaceShown) {
     const uiSurfacePosition = data[ParamType.UI_SURFACE_POSITION] || -1;
@@ -276,13 +305,16 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnCqJumptagClicked) {
     companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
   } else if (methodType === MethodType.kOpenUrlInBrowser) {
-    const urlToOpen = new Url();
-    urlToOpen.url = data[ParamType.URL_TO_OPEN] || '';
+    const urlToOpen: Url = {url: data[ParamType.URL_TO_OPEN] || ''};
     companionProxy.handler.openUrlInBrowser(
         urlToOpen, data[ParamType.USE_NEW_TAB]);
   } else if (methodType === MethodType.kCompanionLoadingState) {
     companionProxy.handler.onLoadingState(
         data[ParamType.COMPANION_LOADING_STATE]);
+  } else if (methodType === MethodType.kRefreshCompanionPage) {
+    companionProxy.handler.refreshCompanionPage();
+  } else if (methodType === MethodType.kServerSideUrlFilterEvent) {
+    companionProxy.handler.onServerSideUrlFilterEvent();
   }
 }
 

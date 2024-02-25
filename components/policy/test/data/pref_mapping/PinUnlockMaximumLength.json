@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PinUnlockMaximumLength": 0
+        },
+        "prefs": {
+          "pin_unlock_maximum_length": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

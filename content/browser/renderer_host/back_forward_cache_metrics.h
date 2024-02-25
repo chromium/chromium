@@ -7,6 +7,7 @@
 
 #include <bitset>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -14,7 +15,6 @@
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 
@@ -45,7 +45,8 @@ class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
   // Please keep in sync with BackForwardCacheNotRestoredReason in
-  // tools/metrics/histograms/enums.xml. These values should not be renumbered.
+  // tools/metrics/histograms/metadata/navigation/enums.xml. These values should
+  // not be renumbered.
   enum class NotRestoredReason : uint8_t {
     kMinValue = 0,
     kNotPrimaryMainFrame = 0,
@@ -85,7 +86,7 @@ class BackForwardCacheMetrics
     kEnteredBackForwardCacheBeforeServiceWorkerHostAdded = 26,
     // 27: kRenderFrameHostReused_SameSite was removed.
     // 28: kRenderFrameHostReused_CrossSite was removed.
-    kNotMostRecentNavigationEntry = 29,
+    // 29: kNotMostRecentNavigationEntry was removed.
     kServiceWorkerClaim = 30,
     kIgnoreEventAndEvict = 31,
     kHaveInnerContents = 32,
@@ -120,7 +121,7 @@ class BackForwardCacheMetrics
     kNoResponseHead = 56,
     // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
     kErrorDocument = 58,
-    kFencedFramesEmbedder = 59,
+    // 59: kFencedFramesEmbedder was removed.
     kCookieDisabled = 60,
     kHTTPAuthRequired = 61,
     kCookieFlushed = 62,
@@ -182,13 +183,13 @@ class BackForwardCacheMetrics
       EvictedAfterDocumentRestoredReason reason);
 
   // Sets the reason why the browsing instance is swapped/not swapped when
-  // navigating away from `navigated_away_rfh`. Passing`reason` as absl::nullopt
+  // navigating away from `navigated_away_rfh`. Passing`reason` as std::nullopt
   // resets the reason and other tracked information.
   void SetBrowsingInstanceSwapResult(
-      absl::optional<ShouldSwapBrowsingInstance> reason,
+      std::optional<ShouldSwapBrowsingInstance> reason,
       RenderFrameHostImpl* navigated_away_rfh);
 
-  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result()
+  std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result()
       const {
     return browsing_instance_swap_result_;
   }
@@ -367,9 +368,9 @@ class BackForwardCacheMetrics
   blink::scheduler::WebSchedulerTrackedFeatures same_origin_frames_features_;
   blink::scheduler::WebSchedulerTrackedFeatures cross_origin_frames_features_;
 
-  absl::optional<base::TimeTicks> started_navigation_timestamp_;
-  absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
-  absl::optional<base::TimeTicks> renderer_killed_timestamp_;
+  std::optional<base::TimeTicks> started_navigation_timestamp_;
+  std::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
+  std::optional<base::TimeTicks> renderer_killed_timestamp_;
 
   // TODO: Store BackForwardCacheCanStoreDocumentResultWithTree instead of
   // storing unique_ptr of BackForwardCacheCanStoreDocumentResult and
@@ -379,7 +380,7 @@ class BackForwardCacheMetrics
 
   // The reason why the last attempted navigation in the main frame used or
   // didn't use a new BrowsingInstance.
-  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
+  std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
 
   // The number of related active contents for the page.
   int related_active_contents_count_ = 1;

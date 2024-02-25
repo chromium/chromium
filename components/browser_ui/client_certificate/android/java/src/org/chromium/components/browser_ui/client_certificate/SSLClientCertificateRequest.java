@@ -15,12 +15,13 @@ import android.security.KeyChainException;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -103,8 +104,8 @@ public class SSLClientCertificateRequest {
         @Override
         protected void onPostExecute(Void result) {
             ThreadUtils.assertOnUiThread();
-            SSLClientCertificateRequestJni.get().onSystemRequestCompletion(
-                    mNativePtr, mEncodedChain, mPrivateKey);
+            SSLClientCertificateRequestJni.get()
+                    .onSystemRequestCompletion(mNativePtr, mEncodedChain, mPrivateKey);
         }
 
         private String getAlias() {
@@ -160,24 +161,26 @@ public class SSLClientCertificateRequest {
 
             // This is called by KeyChainActivity in a background thread. Post task to
             // handle the certificate selection on the UI thread.
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-                if (alias == null) {
-                    // No certificate was selected.
-                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                            ()
-                                    -> SSLClientCertificateRequestJni.get()
-                                               .onSystemRequestCompletion(mNativePtr, null, null));
-                } else {
-                    new CertAsyncTaskKeyChain(mContext, mNativePtr, alias)
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (alias == null) {
+                            // No certificate was selected.
+                            PostTask.runOrPostTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    () ->
+                                            SSLClientCertificateRequestJni.get()
+                                                    .onSystemRequestCompletion(
+                                                            mNativePtr, null, null));
+                        } else {
+                            new CertAsyncTaskKeyChain(mContext, mNativePtr, alias)
+                                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        }
+                    });
         }
     }
 
-    /**
-     * Wrapper class for the static KeyChain#choosePrivateKeyAlias method to facilitate testing.
-     */
+    /** Wrapper class for the static KeyChain#choosePrivateKeyAlias method to facilitate testing. */
     @VisibleForTesting
     static class KeyChainCertSelectionWrapper {
         private final Activity mActivity;
@@ -188,8 +191,13 @@ public class SSLClientCertificateRequest {
         private final int mPort;
         private final String mAlias;
 
-        public KeyChainCertSelectionWrapper(Activity activity, KeyChainAliasCallback callback,
-                String[] keyTypes, Principal[] principalsForCallback, String hostName, int port,
+        public KeyChainCertSelectionWrapper(
+                Activity activity,
+                KeyChainAliasCallback callback,
+                String[] keyTypes,
+                Principal[] principalsForCallback,
+                String hostName,
+                int port,
                 String alias) {
             mActivity = activity;
             mCallback = callback;
@@ -207,8 +215,14 @@ public class SSLClientCertificateRequest {
         // WrongConstant: @KeyProperties.KeyAlgorithmEnum for mKeyTypes is hidden with @hide.
         @SuppressWarnings("WrongConstant")
         public void choosePrivateKeyAlias() throws ActivityNotFoundException {
-            KeyChain.choosePrivateKeyAlias(mActivity, mCallback, mKeyTypes, mPrincipalsForCallback,
-                    mHostName, mPort, mAlias);
+            KeyChain.choosePrivateKeyAlias(
+                    mActivity,
+                    mCallback,
+                    mKeyTypes,
+                    mPrincipalsForCallback,
+                    mHostName,
+                    mPort,
+                    mAlias);
         }
     }
 
@@ -225,18 +239,17 @@ public class SSLClientCertificateRequest {
             mContext = context;
         }
 
-        /**
-         * Builds and shows the dialog.
-         */
+        /** Builds and shows the dialog. */
         public void show() {
             final AlertDialog.Builder builder =
                     new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog);
             builder.setTitle(R.string.client_cert_unsupported_title)
                     .setMessage(R.string.client_cert_unsupported_message)
-                    .setNegativeButton(R.string.close,
-                            (OnClickListener) (dialog, which)
-                                    -> {
-                                            // Do nothing
+                    .setNegativeButton(
+                            R.string.close,
+                            (OnClickListener)
+                                    (dialog, which) -> {
+                                        // Do nothing
                                     });
             builder.show();
         }
@@ -255,8 +268,12 @@ public class SSLClientCertificateRequest {
      * Note that nativeOnSystemRequestComplete will be called iff this method returns true.
      */
     @CalledByNative
-    private static boolean selectClientCertificate(final long nativePtr, final WindowAndroid window,
-            final String[] keyTypes, byte[][] encodedPrincipals, final String hostName,
+    private static boolean selectClientCertificate(
+            final long nativePtr,
+            final WindowAndroid window,
+            final String[] keyTypes,
+            byte[][] encodedPrincipals,
+            final String hostName,
             final int port) {
         ThreadUtils.assertOnUiThread();
 
@@ -285,8 +302,9 @@ public class SSLClientCertificateRequest {
 
         KeyChainCertSelectionCallback callback =
                 new KeyChainCertSelectionCallback(activity.getApplicationContext(), nativePtr);
-        KeyChainCertSelectionWrapper keyChain = new KeyChainCertSelectionWrapper(
-                activity, callback, keyTypes, principals, hostName, port, null);
+        KeyChainCertSelectionWrapper keyChain =
+                new KeyChainCertSelectionWrapper(
+                        activity, callback, keyTypes, principals, hostName, port, null);
         maybeShowCertSelection(keyChain, callback, new CertSelectionFailureDialog(context));
 
         // We've taken ownership of the native ssl request object.
@@ -298,8 +316,10 @@ public class SSLClientCertificateRequest {
      * CertSelectionFailureDialog if the platform's cert selection activity can't be found.
      */
     @VisibleForTesting
-    static void maybeShowCertSelection(KeyChainCertSelectionWrapper keyChain,
-            KeyChainAliasCallback callback, CertSelectionFailureDialog failureDialog) {
+    static void maybeShowCertSelection(
+            KeyChainCertSelectionWrapper keyChain,
+            KeyChainAliasCallback callback,
+            CertSelectionFailureDialog failureDialog) {
         try {
             keyChain.choosePrivateKeyAlias();
         } catch (ActivityNotFoundException e) {
@@ -321,6 +341,7 @@ public class SSLClientCertificateRequest {
     @NativeMethods
     interface Natives {
         void notifyClientCertificatesChangedOnIOThread();
+
         // Called to pass request results to native side.
         void onSystemRequestCompletion(long requestPtr, byte[][] certChain, PrivateKey privateKey);
     }

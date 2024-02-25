@@ -212,7 +212,7 @@ class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
   }
 
  private:
-  raw_ptr<MockInputMethod, ExperimentalAsh> mock_input_method_;
+  raw_ptr<MockInputMethod> mock_input_method_;
   mojo::Receiver<ime::mojom::ConnectionFactory> connection_factory_{this};
 };
 
@@ -819,6 +819,10 @@ INSTANTIATE_TEST_SUITE_P(
         InputMethodMetadataCase{
             "DownloadedUs840",
             /*provider=*/AutocorrectSuggestionProvider::kUsEnglish840,
+            /*autocorrect_enabled=*/true},
+        InputMethodMetadataCase{
+            "DownloadedUs840V2",
+            /*provider=*/AutocorrectSuggestionProvider::kUsEnglish840V2,
             /*autocorrect_enabled=*/true},
     }),
     [](const testing::TestParamInfo<InputMethodMetadataCase> info) {

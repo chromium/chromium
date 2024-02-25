@@ -27,8 +27,10 @@ class SkBitmap;
 class WebAppIdentityUpdateConfirmationView
     : public views::DialogDelegateView,
       public web_app::WebAppInstallManagerObserver {
+  METADATA_HEADER(WebAppIdentityUpdateConfirmationView,
+                  views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(WebAppIdentityUpdateConfirmationView);
   WebAppIdentityUpdateConfirmationView(
       Profile* profile,
       const std::string& app_id,

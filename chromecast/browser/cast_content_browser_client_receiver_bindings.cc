@@ -160,7 +160,6 @@ void CastContentBrowserClient::CreateMediaService(
       base::BindRepeating(&CastContentBrowserClient::CreateCdmFactory,
                           base::Unretained(this)),
       GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
-      browser_main_parts()->media_connector(),
       base::BindRepeating(&CastContentBrowserClient::IsBufferingEnabled,
                           base::Unretained(this)));
   mojo_media_client->SetVideoGeometrySetterService(

@@ -51,8 +51,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedUDPSocket
       SendToCallback callback,
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   std::unique_ptr<UDPSocket> udp_socket_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;

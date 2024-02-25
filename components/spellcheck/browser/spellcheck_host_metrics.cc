@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -51,8 +52,7 @@ void SpellCheckHostMetrics::RecordCheckedWordStats(const std::u16string& word,
 
   // Collects actual number of checked words, excluding duplication.
   base::MD5Digest digest;
-  base::MD5Sum(reinterpret_cast<const unsigned char*>(word.c_str()),
-               word.size() * sizeof(char16_t), &digest);
+  base::MD5Sum(base::as_byte_span(word), &digest);
   checked_word_hashes_.insert(base::MD5DigestToBase16(digest));
 
   RecordWordCounts();

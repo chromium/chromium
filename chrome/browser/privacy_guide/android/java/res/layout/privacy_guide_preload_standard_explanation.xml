@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/preload_standard_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="@dimen/bottom_sheet_title_marginTop"
+            android:layout_marginBottom="@dimen/bottom_sheet_title_marginBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/preload_pages_standard_preloading_title"
+            style="@style/TextAppearance.Headline.Primary" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_guide_when_on" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_bolt_24dp"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/preload_pages_standard_privacy_guide_bullet_one" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_select_window_24dp"
+            app:summaryText="@string/preload_pages_standard_privacy_guide_bullet_two" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_guide_things_to_consider" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_cookie_24dp"
+            app:summaryText="@string/preload_pages_standard_privacy_guide_bullet_three" />
+
+    </LinearLayout>
+
+</ScrollView>

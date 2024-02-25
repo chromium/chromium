@@ -33,7 +33,8 @@ AwPingManagerFactory::AwPingManagerFactory()
 
 AwPingManagerFactory::~AwPingManagerFactory() = default;
 
-KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AwPingManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Never fetch the access token for android_webview since ESB is unsupported
   auto get_should_fetch_access_token =

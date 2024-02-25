@@ -71,10 +71,10 @@ libFuzzer-based fuzzer_test. However it will also have libprotobuf-mutator in
 its deps. This is an example of what it will look like:
 
 ```python
-// You must wrap the target in "use_libfuzzer" since trying to compile the
-// target without use_libfuzzer will fail (for reasons alluded to in the next
+// You must wrap the target in "use_fuzzing_engine_with_lpm" since trying to compile the
+// target without a suitable fuzzing engine will fail (for reasons alluded to in the next
 // step), which the commit queue will try.
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("my_fuzzer") {
     sources = [ "my_fuzzer.cc" ]
     deps = [
@@ -96,7 +96,7 @@ line is incompatible with libprotobuf-mutator. Thus, we need to modify the
 `proto_library` build target so that builds when fuzzing are compatible with
 libprotobuf-mutator. To do this, change your `proto_library` to
 `fuzzable_proto_library` (don't worry, this works just like `proto_library` when
-`use_libfuzzer` is `false`) like so:
+`use_fuzzing_engine_with_lpm` is `false`) like so:
 
 ```python
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -339,8 +339,8 @@ find useful.
 
 ## Wrapping Up
 Once you have written a fuzzer with libprotobuf-mutator, building and running
-it is pretty much the same as if the fuzzer were a standard libFuzzer-based
-fuzzer (with minor exceptions, like your seed corpus must be in protobuf
+it is pretty much the same as if the fuzzer were a [standard libFuzzer-based
+fuzzer] (with minor exceptions, like your seed corpus must be in protobuf
 format).
 
 ## General Tips
@@ -367,3 +367,4 @@ fuzzer).
 [here]: https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
 [lpm_test_fuzzer]: https://cs.chromium.org/#search&q=lpm_test_fuzzer+file:%5Esrc/third_party/libprotobuf-mutator/BUILD.gn
 [mojo_parse_messages_proto_fuzzer]: https://cs.chromium.org/chromium/src/mojo/public/tools/fuzzers/mojo_parse_message_proto_fuzzer.cc?l=25
+[standard libFuzzer-based fuzzer]:getting_started_with_libfuzzer.md

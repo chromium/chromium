@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -171,7 +172,7 @@ int GetBookmarkDragOperation(content::BrowserContext* browser_context,
 
   int move = ui::DragDropTypes::DRAG_MOVE;
   if (!prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) ||
-      !model->client()->CanBeEditedByUser(node)) {
+      model->client()->IsNodeManaged(node)) {
     move = ui::DragDropTypes::DRAG_NONE;
   }
   if (node->is_url())
@@ -208,14 +209,15 @@ DragOperation GetBookmarkDropOperation(Profile* profile,
     return DragOperation::kNone;
 
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-  if (!model->client()->CanBeEditedByUser(parent))
+  if (model->client()->IsNodeManaged(parent)) {
     return DragOperation::kNone;
+  }
 
   const BookmarkNode* dragged_node =
       data.GetFirstNode(model, profile->GetPath());
   if (dragged_node) {
     // User is dragging from this profile.
-    if (!model->client()->CanBeEditedByUser(dragged_node)) {
+    if (model->client()->IsNodeManaged(dragged_node)) {
       // Do a copy instead of a move when dragging bookmarks that the user can't
       // modify.
       return DragOperation::kCopy;
@@ -241,19 +243,21 @@ bool IsValidBookmarkDropLocation(Profile* profile,
     return false;
 
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-  if (!model->client()->CanBeEditedByUser(drop_parent))
+  if (model->client()->IsNodeManaged(drop_parent)) {
     return false;
+  }
 
   const base::FilePath& profile_path = profile->GetPath();
   if (data.IsFromProfilePath(profile_path)) {
-    std::vector<const BookmarkNode*> nodes = data.GetNodes(model, profile_path);
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+        data.GetNodes(model, profile_path);
     for (size_t i = 0; i < nodes.size(); ++i) {
       // Don't allow the drop if the user is attempting to drop on one of the
       // nodes being dragged.
       const BookmarkNode* node = nodes[i];
-      absl::optional<size_t> node_index =
-          (drop_parent == node->parent()) ? drop_parent->GetIndexOf(nodes[i])
-                                          : absl::nullopt;
+      std::optional<size_t> node_index = (drop_parent == node->parent())
+                                             ? drop_parent->GetIndexOf(nodes[i])
+                                             : std::nullopt;
       if (node_index.has_value() &&
           (index == node_index.value() || index == node_index.value() + 1)) {
         return false;

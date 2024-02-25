@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_FCM_HANDLER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_FCM_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -77,7 +79,7 @@ class FCMHandler : public gcm::GCMAppHandler {
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
 
   // Used to get an obtained FCM token. Returns null if it doesn't have a token.
-  const absl::optional<std::string>& GetFCMRegistrationToken() const;
+  const std::optional<std::string>& GetFCMRegistrationToken() const;
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
@@ -92,14 +94,14 @@ class FCMHandler : public gcm::GCMAppHandler {
 
  private:
   // Called when a subscription token is obtained from the GCM server.
-  void DidRetrieveToken(const std::string& subscription_token,
+  void DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
+                        bool is_validation,
+                        const std::string& subscription_token,
                         instance_id::InstanceID::Result result);
   void ScheduleNextTokenValidation();
   void StartTokenValidation();
-  void DidReceiveTokenForValidation(const std::string& new_token,
-                                    instance_id::InstanceID::Result result);
 
-  void StartTokenFetch(instance_id::InstanceID::GetTokenCallback callback);
+  void StartTokenFetch(bool is_validation);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -110,7 +112,7 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   // Contains an FCM registration token. Token is null if the experiment is off
   // or we don't have a valid token yet and contains valid token otherwise.
-  absl::optional<std::string> fcm_registration_token_;
+  std::optional<std::string> fcm_registration_token_;
 
   base::OneShotTimer token_validation_timer_;
 

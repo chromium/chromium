@@ -22,7 +22,6 @@
 
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
-class Profile;
 
 namespace extensions {
 class Extension;
@@ -92,12 +91,12 @@ class MediaCaptureDevicesDispatcher
   // Method called from WebCapturerDelegate implementations to check media
   // access permission. Note that this does not query the user.
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type);
 
   // Same as above but for an |extension|, which may not be NULL.
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type,
                                   const extensions::Extension* extension);
 
@@ -106,23 +105,17 @@ class MediaCaptureDevicesDispatcher
   // signleton.
   void DisableDeviceEnumerationForTesting();
 
-  // Helper to get default device IDs. If the returned value is an empty string,
-  // it means that there is no default device for the given device |type|. The
-  // only supported |type| values are
-  // blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE and
-  // blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE.
-  // Must be called on the UI thread.
-  std::string GetDefaultDeviceIDForProfile(Profile* profile,
-                                           blink::mojom::MediaStreamType type);
-
   // webrtc::MediaStreamDeviceEnumeratorImpl:
   const blink::MediaStreamDevices& GetAudioCaptureDevices() const override;
   const blink::MediaStreamDevices& GetVideoCaptureDevices() const override;
-  void GetDefaultDevicesForBrowserContext(
-      content::BrowserContext* context,
-      bool audio,
-      bool video,
-      blink::mojom::StreamDevices& devices) override;
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredAudioDeviceForBrowserContext(
+      content::BrowserContext* browser_context,
+      const std::vector<std::string>& eligible_audio_device_ids) const override;
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredVideoDeviceForBrowserContext(
+      content::BrowserContext* browser_context,
+      const std::vector<std::string>& eligible_video_device_ids) const override;
 
   // content::MediaObserver:
   void OnAudioCaptureDevicesChanged() override;

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -21,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
@@ -103,6 +103,16 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // force-enable off.
   void EnableAccountCapabilitiesFetcherForTest(bool enabled);
 
+  // Returns the AccountCapabilitiesFetcherFactory, for use in tests only.
+  AccountCapabilitiesFetcherFactory*
+  GetAccountCapabilitiesFetcherFactoryForTest();
+
+  // Calling this method provides a hint that Account Capabilities may be
+  // fetched in the near future, and front-loads some processing to speed
+  // up future fetches. This is purely a latency optimization; calling this
+  // method is optional.
+  void PrepareForFetchingAccountCapabilities();
+
 #if BUILDFLAG(IS_ANDROID)
   // Refresh the AccountInfo if the existing one is stale
   void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
@@ -111,6 +121,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void SetIsChildAccount(const CoreAccountId& account_id,
                          bool is_child_account);
 #endif
+
+  // Destroy any fetchers created for the specified account.
+  void DestroyFetchers(const CoreAccountId& account_id);
 
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
@@ -143,7 +156,8 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 #endif
 
   bool IsAccountCapabilitiesFetchingEnabled();
-  void StartFetchingAccountCapabilities(const CoreAccountInfo& account_info);
+  void StartFetchingAccountCapabilities(
+      const CoreAccountInfo& core_account_info);
 
   // Refreshes the AccountInfo associated with |account_id|.
   void RefreshAccountInfo(const CoreAccountId& account_id,
@@ -157,7 +171,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Called by AccountCapabilitiesFetcher.
   void OnAccountCapabilitiesFetchComplete(
       const CoreAccountId& account_id,
-      const absl::optional<AccountCapabilities>& account_capabilities);
+      const std::optional<AccountCapabilities>& account_capabilities);
 
   image_fetcher::ImageFetcherImpl* GetOrCreateImageFetcher();
 

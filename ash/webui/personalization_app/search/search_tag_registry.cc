@@ -182,8 +182,8 @@ const SearchConcept& GetAmbientTimeOfDaySearchConcept() {
   return *search_concept;
 }
 
-const std::vector<const SearchConcept>& GetAmbientOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<const SearchConcept>> tags({
+const std::vector<SearchConcept>& GetAmbientOnSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {
           .id = mojom::SearchConceptId::kAmbientModeChooseSource,
           .message_id =
@@ -239,8 +239,8 @@ SearchTagRegistry::SearchConceptUpdates GetAmbientPrefChangedUpdates(
   return updates;
 }
 
-const std::vector<const SearchConcept>& GetDarkModeSearchConcepts() {
-  static const base::NoDestructor<std::vector<const SearchConcept>> tags({
+const std::vector<SearchConcept>& GetDarkModeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {
           .id = mojom::SearchConceptId::kDarkMode,
           .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE,

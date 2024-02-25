@@ -75,7 +75,7 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
                              {{to_append}});
   app_info2.UpdateAppActivityPreference(entry, /* replace */ false);
 
-  absl::optional<PersistedAppInfo> updated_entry =
+  std::optional<PersistedAppInfo> updated_entry =
       PersistedAppInfo::PersistedAppInfoFromDict(
           &entry, /* include_app_activity_array */ true);
   ASSERT_TRUE(updated_entry.has_value());
@@ -90,7 +90,7 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
   EXPECT_EQ(active_times[3], to_append);
 
   app_info2.UpdateAppActivityPreference(entry, /* replace */ true);
-  absl::optional<PersistedAppInfo> final_entry =
+  std::optional<PersistedAppInfo> final_entry =
       PersistedAppInfo::PersistedAppInfoFromDict(
           &entry, /* include_app_activity_array */ true);
   EXPECT_TRUE(final_entry.has_value());

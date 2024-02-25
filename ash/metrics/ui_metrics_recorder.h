@@ -5,6 +5,7 @@
 #ifndef ASH_METRICS_UI_METRICS_RECORDER_H_
 #define ASH_METRICS_UI_METRICS_RECORDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/event_latency_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -30,7 +30,6 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow(double percent) override;
   void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
@@ -46,18 +45,11 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   State state_ = State::kBeforeLogin;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // True when trying to determine session init time by checking ADF numbers.
-  bool check_session_init_ = false;
-
-  // Whether session is considered as fully initialized. This flag is set after
-  // observing good ADF for 5s during login.
-  bool session_initialized_ = false;
-
   // Login time and session start time of the primary user.
-  absl::optional<base::TimeTicks> user_logged_in_time_;
-  absl::optional<base::TimeTicks> user_session_start_time_;
+  std::optional<base::TimeTicks> user_logged_in_time_;
+  std::optional<base::TimeTicks> user_session_start_time_;
 
-  absl::optional<base::TimeTicks> last_good_dropped_frame_time_;
+  std::optional<base::TimeTicks> last_good_dropped_frame_time_;
 };
 
 }  // namespace ash

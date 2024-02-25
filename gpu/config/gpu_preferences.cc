@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 
@@ -31,6 +32,22 @@ size_t GetCustomGpuCacheSizeBytesIfExists(base::StringPiece switch_string) {
 }
 #endif
 
+BASE_FEATURE(kDefaultGpuDiskCacheSize,
+             "DefaultGpuDiskCacheSize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_INT(GetGpuDefaultMaxProgramCacheMemoryBytes,
+                          kDefaultGpuDiskCacheSize,
+                          "GpuDefaultMaxProgramCacheMemoryBytes",
+                          kDefaultMaxProgramCacheMemoryBytes)
+
+#if BUILDFLAG(IS_ANDROID)
+MIRACLE_PARAMETER_FOR_INT(GetGpuLowEndMaxProgramCacheMemoryBytes,
+                          kDefaultGpuDiskCacheSize,
+                          "GpuLowEndMaxProgramCacheMemoryBytes",
+                          kLowEndMaxProgramCacheMemoryBytes)
+#endif
+
 }  // namespace
 
 size_t GetDefaultGpuDiskCacheSize() {
@@ -39,13 +56,29 @@ size_t GetDefaultGpuDiskCacheSize() {
       GetCustomGpuCacheSizeBytesIfExists(switches::kGpuDiskCacheSizeKB);
   if (custom_cache_size)
     return custom_cache_size;
-  return kDefaultMaxProgramCacheMemoryBytes;
+  return GetGpuDefaultMaxProgramCacheMemoryBytes();
 #else   // !BUILDFLAG(IS_ANDROID)
   if (!base::SysInfo::IsLowEndDevice())
-    return kDefaultMaxProgramCacheMemoryBytes;
+    return GetGpuDefaultMaxProgramCacheMemoryBytes();
   else
-    return kLowEndMaxProgramCacheMemoryBytes;
+    return GetGpuLowEndMaxProgramCacheMemoryBytes();
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+std::string GrContextTypeToString(GrContextType type) {
+  switch (type) {
+    case GrContextType::kNone:
+      return "None";
+    case GrContextType::kGL:
+      return "GaneshGL";
+    case GrContextType::kVulkan:
+      return "GaneshVulkan";
+    case GrContextType::kGraphiteDawn:
+      return "GraphiteDawn";
+    case GrContextType::kGraphiteMetal:
+      return "GraphiteMetal";
+  }
+  NOTREACHED_NORETURN();
 }
 
 GpuPreferences::GpuPreferences() = default;
@@ -56,13 +89,7 @@ GpuPreferences::~GpuPreferences() = default;
 
 std::string GpuPreferences::ToSwitchValue() {
   std::vector<uint8_t> serialized = gpu::mojom::GpuPreferences::Serialize(this);
-
-  std::string encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(serialized.data()),
-                        serialized.size()),
-      &encoded);
-  return encoded;
+  return base::Base64Encode(serialized);
 }
 
 bool GpuPreferences::FromSwitchValue(const std::string& data) {

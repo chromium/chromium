@@ -22,8 +22,9 @@ class CredentialManagerDialogController;
 
 class AccountChooserDialogView : public views::BubbleDialogDelegateView,
                                  public AccountChooserPrompt {
+  METADATA_HEADER(AccountChooserDialogView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(AccountChooserDialogView);
   AccountChooserDialogView(CredentialManagerDialogController* controller,
                            content::WebContents* web_contents);
   AccountChooserDialogView(const AccountChooserDialogView&) = delete;

@@ -17,6 +17,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+services/resource_coordinator/public/cpp/memory_instrumentation",
   "+services/service_manager/public/cpp",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
   "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/common/storage_key/storage_key.h",
   "+third_party/blink/public/common/tokens",
@@ -26,4 +27,8 @@ include_rules = [
   "+third_party/blink/public/mojom/tokens",
   "+third_party/leveldatabase",
   "+ui/gfx/geometry",
+
+  # Aliases used in the resource_attribution implementation should never be
+  # included elsewhere, to avoid cluttering the public namespace.
+  "-components/performance_manager/resource_attribution/performance_manager_aliases.h",
 ]

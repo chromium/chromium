@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -34,6 +36,29 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace ash {
+
+// State of the fwupd daemon. Enum defined here:
+// https://github.com/fwupd/fwupd/blob/4389f9f913588edae7243a8dbed88ce3788c8bc2/libfwupd/fwupd-enums.h
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class FwupdStatus {
+  kUnknown,
+  kIdle,
+  kLoading,
+  kDecompressing,
+  kDeviceRestart,
+  kDeviceWrite,
+  kDeviceVerify,
+  kScheduling,
+  kDownloading,
+  kDeviceRead,
+  kDeviceErase,
+  kWaitingForAuth,
+  kDeviceBusy,
+  kShutdown,
+  kWaitingForUser,
+  kMaxValue = kWaitingForUser,
+};
+
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
@@ -44,6 +69,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
   ~FirmwareUpdateManager() override;
+
+  // Used in histograms. Keep in sync with FirmwareUpdateInstallResult in
+  // tools/metrics/histograms/metadata/chromeos/enums.xml.
+  enum class InstallResult {
+    kSuccess = 0,
+    kInstallFailed = 1,
+    kFailedToCreateUpdateDirectory = 2,
+    // DEPRECATED: kInvalidDestinationFile = 3,
+    kInvalidFileDescriptor = 4,
+    kFailedToDownloadToFile = 5,
+    kFailedToCreatePatchFile = 6,
+    kEmptyPatchFile = 7,
+    kInvalidPatchFileUri = 8,
+    kInvalidPatchFile = 9,
+    kInstallFailedTimeout = 10,
+    kMaxValue = kInstallFailedTimeout,
+  };
 
   class Observer : public base::CheckedObserver {
    public:
@@ -74,7 +116,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void BeginUpdate(const std::string& device_id,
                    const base::FilePath& filepath) override;
 
-  void AddObserver(
+  void AddDeviceRequestObserver(
+      mojo::PendingRemote<firmware_update::mojom::DeviceRequestObserver>
+          observer) override;
+
+  void AddUpdateProgressObserver(
       mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
           observer) override;
 
@@ -89,23 +135,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // it calls this function and passes the response.
   void OnDeviceListResponse(FwupdDeviceList* devices) override;
 
+  void OnDeviceRequestResponse(FwupdRequest request) override;
+
   // When the fwupd DBus client gets a response with updates from fwupd,
   // it calls this function and passes the response.
   void OnUpdateListResponse(const std::string& device_id,
                             FwupdUpdateList* updates) override;
-  void OnInstallResponse(bool success) override;
   // TODO(jimmyxgong): Implement this function to send property updates via
   // mojo.
   void OnPropertiesChangedResponse(FwupdProperties* properties) override;
 
   // Query all updates for all devices.
   void RequestAllUpdates();
-
-  // TODO(jimmyxgong): This should override the mojo api interface.
-  // Download and prepare the install file for a specific device.
-  void StartInstall(const std::string& device_id,
-                    const base::FilePath& filepath,
-                    base::OnceCallback<void()> callback);
 
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
@@ -130,38 +171,53 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
+  typedef base::OnceCallback<void(InstallResult)> InstallCallback;
+
+  // Download and prepare the install file for a specific device.
+  void StartInstall(const std::string& device_id,
+                    const base::FilePath& filepath,
+                    InstallCallback callback);
+
   // Callback handler after fetching the file descriptor.
   void OnGetFileDescriptor(const std::string& device_id,
                            FirmwareInstallOptions options,
-                           base::OnceCallback<void()> callback,
+                           InstallCallback callback,
                            base::ScopedFD file_descriptor);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
                      FirmwareInstallOptions options,
-                     base::OnceCallback<void()> callback,
+                     InstallCallback callback,
                      base::File patch_file);
+
+  // Response from fwupd DBus client InstallUpdate call.
+  void OnInstallResponse(InstallCallback callback, bool success);
+
+  // InstallComplete will be called exactly once with a result when an install
+  // attempt succeeds or fails for any reason.
+  void InstallComplete(InstallResult result);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,
                             const base::FilePath& filepath,
-                            base::OnceCallback<void()> callback);
+                            InstallCallback callback,
+                            bool create_dir_success);
 
   void MaybeDownloadFileToInternal(const base::FilePath& patch_path,
                                    const std::string& device_id,
                                    const base::FilePath& filepath,
-                                   base::OnceCallback<void()> callback,
+                                   InstallCallback callback,
                                    bool write_file_success);
 
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
                               const base::FilePath& filepath,
-                              base::OnceCallback<void()> callback);
+                              InstallCallback callback);
 
   void OnUrlDownloadedToFile(
       const std::string& device_id,
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      base::OnceCallback<void()> callback,
+      InstallCallback callback,
       base::FilePath download_path);
 
   // Notifies observers registered with ObservePeripheralUpdates() the current
@@ -213,6 +269,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // The device update that is currently inflight.
   firmware_update::mojom::FirmwareUpdatePtr inflight_update_;
 
+  // The most recent FwupdStatus, used for the purpose of recording metrics.
+  FwupdStatus last_fwupd_status_ = FwupdStatus::kUnknown;
+
+  // The most recent DeviceRequest, used for the purpose of recording metrics.
+  firmware_update::mojom::DeviceRequestPtr last_device_request_ = nullptr;
+
+  // Timestamp of when the last device request began. Used to calculate a
+  // duration for metrics.
+  std::optional<base::Time> last_request_started_timestamp_;
+
   // Used to show the firmware update notification and to determine which
   // metric to fire (Startup/Refresh).
   bool is_first_response_ = true;
@@ -227,6 +293,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // list of firmware updates.
   mojo::RemoteSet<firmware_update::mojom::UpdateObserver>
       update_list_observers_;
+
+  // Remote for tracking observer that will be notified of incoming
+  // DeviceRequests.
+  mojo::Remote<firmware_update::mojom::DeviceRequestObserver>
+      device_request_observer_;
 
   // Remote for tracking observer that will be notified of changes to
   // the in-progress update.

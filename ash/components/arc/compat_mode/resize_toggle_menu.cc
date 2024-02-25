@@ -6,10 +6,11 @@
 
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
-#include "ash/components/arc/vector_icons/vector_icons.h"
+#include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -46,6 +48,9 @@ namespace {
 
 class RoundedCornerBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(RoundedCornerBubbleDialogDelegateView,
+                  views::BubbleDialogDelegateView)
+
  public:
   explicit RoundedCornerBubbleDialogDelegateView(int corner_radius)
       : corner_radius_(corner_radius) {}
@@ -66,6 +71,9 @@ class RoundedCornerBubbleDialogDelegateView
   base::WeakPtrFactory<RoundedCornerBubbleDialogDelegateView> weak_factory_{
       this};
 };
+
+BEGIN_METADATA(RoundedCornerBubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 
@@ -104,7 +112,7 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   }
 
   SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   constexpr int kBorderThicknessDp = 1;
   const auto button_radius =
@@ -206,6 +214,9 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   GetBorder()->set_color(border_color);
 }
 
+BEGIN_METADATA(ResizeToggleMenu, MenuButtonView)
+END_METADATA
+
 ResizeToggleMenu::ResizeToggleMenu(
     base::OnceClosure on_bubble_widget_closing_callback,
     views::Widget* widget,
@@ -297,7 +308,7 @@ std::unique_ptr<views::BubbleDialogDelegateView>
 ResizeToggleMenu::MakeBubbleDelegateView(
     views::Widget* parent,
     gfx::Rect anchor_rect,
-    base::RepeatingCallback<void(ResizeCompatMode)> command_handler) {
+    base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler) {
   const int kCornerRadius = chromeos::features::IsJellyEnabled() ? 12 : 16;
 
   auto delegate_view =
@@ -326,7 +337,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
   if (chromeos::features::IsJellyEnabled()) {
     delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1));
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
     // Add empty view for background blur.
     views::View* background_view = nullptr;
@@ -357,24 +368,24 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   const auto add_menu_button = [&container_view, &command_handler](
-                                   ResizeCompatMode command_id,
+                                   ash::ResizeCompatMode command_id,
                                    const gfx::VectorIcon& icon, int string_id) {
     return container_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
-  phone_button_ = add_menu_button(ResizeCompatMode::kPhone,
+  phone_button_ = add_menu_button(ash::ResizeCompatMode::kPhone,
                                   chromeos::features::IsJellyEnabled()
                                       ? ash::kSystemMenuPhoneIcon
                                       : ash::kSystemMenuPhoneLegacyIcon,
                                   IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
   tablet_button_ = add_menu_button(
-      ResizeCompatMode::kTablet,
+      ash::ResizeCompatMode::kTablet,
       chromeos::features::IsJellyEnabled() ? ash::kSystemMenuTabletIcon
                                            : ash::kSystemMenuTabletLegacyIcon,
       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
-  resizable_button_ =
-      add_menu_button(ResizeCompatMode::kResizable, kResizableIcon,
-                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
+  resizable_button_ = add_menu_button(
+      ash::ResizeCompatMode::kResizable, ash::kAppCompatResizableIcon,
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
 
@@ -396,21 +407,22 @@ void ResizeToggleMenu::UpdateSelectedButton() {
   if (!widget_)
     return;
 
-  const auto selected_mode = PredictCurrentMode(widget_);
-  phone_button_->SetSelected(selected_mode == ResizeCompatMode::kPhone);
-  tablet_button_->SetSelected(selected_mode == ResizeCompatMode::kTablet);
-  resizable_button_->SetSelected(selected_mode == ResizeCompatMode::kResizable);
+  const auto selected_mode = ash::compat_mode_util::PredictCurrentMode(widget_);
+  phone_button_->SetSelected(selected_mode == ash::ResizeCompatMode::kPhone);
+  tablet_button_->SetSelected(selected_mode == ash::ResizeCompatMode::kTablet);
+  resizable_button_->SetSelected(selected_mode ==
+                                 ash::ResizeCompatMode::kResizable);
 }
 
-void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
+void ResizeToggleMenu::ApplyResizeCompatMode(ash::ResizeCompatMode mode) {
   switch (mode) {
-    case ResizeCompatMode::kPhone:
+    case ash::ResizeCompatMode::kPhone:
       ResizeLockToPhone(widget_, pref_delegate_);
       break;
-    case ResizeCompatMode::kTablet:
+    case ash::ResizeCompatMode::kTablet:
       ResizeLockToTablet(widget_, pref_delegate_);
       break;
-    case ResizeCompatMode::kResizable:
+    case ash::ResizeCompatMode::kResizable:
       EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
   }

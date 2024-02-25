@@ -4,19 +4,8 @@ rootWebArea isLineBreakingObject=true
 ++++++genericContainer isLineBreakingObject=true
 ++++++++staticText name='blockDisplay'
 ++++++++++inlineTextBox name='blockDisplay'
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='noneDisplay'
-++++++genericContainer ignored invisible isLineBreakingObject=true
-++++++++staticText ignored invisible name='blockDisplay Hiddentrue'
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='noneDisplay Hiddentrue'
 ++++++genericContainer isLineBreakingObject=true
 ++++++++staticText name='blockDisplay Hiddenfalse'
 ++++++++++inlineTextBox name='blockDisplay Hiddenfalse'
-++++++genericContainer invisible
-++++++++staticText ignored invisible name='noneDisplay Hiddenfalse'
 ++++++genericContainer invisible name='blockDisplay Hiddentruefocusable' isLineBreakingObject=true
 ++++++++staticText ignored invisible name='blockDisplay Hiddentruefocusable'
-++++++genericContainer ignored invisible
-++++++++heading invisible name='noneDisplayParent Hiddenfalse' isLineBreakingObject=true
-++++++++++staticText ignored invisible name='noneDisplayParent Hiddenfalse'

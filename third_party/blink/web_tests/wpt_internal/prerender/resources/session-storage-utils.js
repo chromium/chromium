@@ -58,7 +58,7 @@ async function RunSessionStorageTest(func, uid) {
   const isPrerendering = params.has('prerendering');
   const prerenderChannel = new PrerenderChannel('prerender-channel', uid);
   const testChannel = new PrerenderChannel('test-channel', uid);
-  window.addEventListener('unload', () => {
+  window.addEventListener('pagehide', () => {
     prerenderChannel.close();
     testChannel.close();
   });

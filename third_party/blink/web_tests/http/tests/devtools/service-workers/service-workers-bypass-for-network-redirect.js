@@ -7,23 +7,22 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests "Bypass for network" checkbox with redirection doesn't cause crash.\n`);
-  await TestRunner.loadLegacyModule('console');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   const url = 'http://localhost:8000/devtools/service-workers/resources/' +
       'bypass-for-network-redirect.php';
   const frameId = 'frame_id';
 
-  UI.inspectorView.showPanel('sources')
+  UI.InspectorView.InspectorView.instance().showPanel('sources')
       .then(function() {
-        Common.Settings.settingForTest('bypassServiceWorker').set(true);
+        Common.Settings.settingForTest('bypass-service-worker').set(true);
         let callback;
         const promise = new Promise((fulfill) => callback = fulfill);
         ConsoleTestRunner.addConsoleSniffer(message => {

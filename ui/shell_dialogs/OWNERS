@@ -1,3 +1,5 @@
 per-file *lacros*=file://chromeos/LACROS_OWNERS
 
+per-file *linux*=thomasanderson@chromium.org
+
 per-file *win*=robliao@chromium.org

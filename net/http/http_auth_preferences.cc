@@ -39,11 +39,11 @@ std::string HttpAuthPreferences::AuthAndroidNegotiateAccountType() const {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 bool HttpAuthPreferences::AllowGssapiLibraryLoad() const {
   return allow_gssapi_library_load_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 bool HttpAuthPreferences::CanUseDefaultCredentials(
     const url::SchemeHostPort& auth_scheme_host_port) const {

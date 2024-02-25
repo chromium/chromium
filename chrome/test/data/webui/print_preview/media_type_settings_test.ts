@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import {MediaTypeCapability, PrintPreviewMediaTypeSettingsElement} from 'chrome://print/print_preview.js';
+import type {MediaTypeCapability, PrintPreviewMediaTypeSettingsElement} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';

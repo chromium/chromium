@@ -8,6 +8,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import android.content.Context;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,17 +22,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link BookmarkUiPrefs}. */
 @Batch(Batch.UNIT_TESTS)
@@ -38,20 +42,17 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 public class BookmarkUiPrefsTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private BookmarkUiPrefs.Observer mObserver;
+    @Mock private BookmarkUiPrefs.Observer mObserver;
 
     private SharedPreferencesManager mSharedPreferencesManager;
     private BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Before
     public void setUp() {
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mBookmarkUiPrefs = new BookmarkUiPrefs(mSharedPreferencesManager);
     }
 
@@ -62,7 +63,6 @@ public class BookmarkUiPrefsTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
@@ -74,7 +74,6 @@ public class BookmarkUiPrefsTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags_noShopping() {
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
@@ -153,5 +152,47 @@ public class BookmarkUiPrefsTest {
         mSharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, BookmarkRowSortOrder.CHRONOLOGICAL);
         verify(mObserver).onBookmarkRowSortOrderChanged(BookmarkRowSortOrder.CHRONOLOGICAL);
+    }
+
+    @Test
+    public void testSortOrderAccessibilityAnnouncementText() {
+        Context context = ContextUtils.getApplicationContext();
+        Assert.assertEquals(
+                "Sorting by oldest",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.CHRONOLOGICAL));
+        Assert.assertEquals(
+                "Sorting by newest",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL));
+        Assert.assertEquals(
+                "Sorting from A to Z",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.ALPHABETICAL));
+        Assert.assertEquals(
+                "Sorting from Z to A",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.REVERSE_ALPHABETICAL));
+        Assert.assertEquals(
+                "Sorting by last opened",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.RECENTLY_USED));
+        Assert.assertEquals(
+                "Sorting by manual order",
+                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
+                        context, BookmarkRowSortOrder.MANUAL));
+    }
+
+    @Test
+    public void testViewOptionsAccessibilityAnnouncementText() {
+        Context context = ContextUtils.getApplicationContext();
+        Assert.assertEquals(
+                "Showing visual view",
+                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                        context, BookmarkRowDisplayPref.VISUAL));
+        Assert.assertEquals(
+                "Showing compact view",
+                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
+                        context, BookmarkRowDisplayPref.COMPACT));
     }
 }

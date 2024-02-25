@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NTPContentSuggestionsEnabled": false
+        },
+        "prefs": {
+          "ntp_snippets.enable": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

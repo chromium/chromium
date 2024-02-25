@@ -2,25 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
+import type {Policies} from '../native_layer.js';
+import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
+
 // <if expr="is_chromeos">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
 // </if>
-import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
-import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
-import {DocumentSettings} from './document_info.js';
-import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
-import {ScalingType} from './scaling.js';
-import {Size} from './size.js';
+
+import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
+import type {Destination, RecentDestination} from './destination.js';
+import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
+import type {DocumentSettings} from './document_info.js';
+import type {Margins, MarginsSetting} from './margins.js';
+import {CustomMarginsOrientation, MarginsType} from './margins.js';
 
 // <if expr="is_chromeos">
 import {PrinterStatusReason} from './printer_status_cros.js';
 // </if>
+
+import {ScalingType} from './scaling.js';
+import type {Size} from './size.js';
 
 /**
  * |key| is the field in the serialized settings state that corresponds to the
@@ -36,6 +42,7 @@ export interface Setting {
   setFromUi: boolean;
   key: string;
   updatesPreview: boolean;
+  policyDefaultValue?: any;
 }
 
 export interface Settings {
@@ -46,6 +53,7 @@ export interface Settings {
   color: Setting;
   customMargins: Setting;
   mediaSize: Setting;
+  borderless: Setting;
   mediaType: Setting;
   margins: Setting;
   dpi: Setting;
@@ -73,6 +81,7 @@ export interface SerializedSettings {
   recentDestinations?: RecentDestination[];
   dpi?: DpiOption;
   mediaSize?: MediaSizeOption;
+  borderless?: boolean;
   mediaType?: MediaTypeOption;
   marginsType?: MarginsType;
   customMargins?: MarginsSetting;
@@ -140,6 +149,7 @@ export interface MediaSizeValue {
   imageable_area_bottom_microns?: number;
   imageable_area_right_microns?: number;
   imageable_area_top_microns?: number;
+  has_borderless_variant?: boolean;
 }
 
 export interface Ticket {
@@ -162,6 +172,7 @@ export interface Ticket {
   scalingType: ScalingType;
   shouldPrintBackgrounds: boolean;
   shouldPrintSelectionOnly: boolean;
+  borderless?: boolean;
   mediaType?: string;
   advancedSettings?: object;
   capabilities?: string;
@@ -223,6 +234,7 @@ export function whenReady(): Promise<void> {
  */
 const STICKY_SETTING_NAMES: string[] = [
   'recentDestinations',
+  'borderless',
   'collate',
   'color',
   'cssBackground',
@@ -254,13 +266,15 @@ const MINIMUM_HEIGHT_MICRONS: number = 25400;
 // <if expr="is_chromeos">
 /**
  * Helper function for configurePolicySetting_(). Calculates default duplex
- * value based on allowed and default policies.
+ * value based on allowed and default policies. Return undefined when both
+ * allowed and default duplex policies are not set.
  * @param allowedMode Duplex allowed mode set by policy.
  * @param defaultMode Duplex default mode set by policy.
  */
 function getDuplexDefaultValue(
     allowedMode: DuplexModeRestriction|undefined,
-    defaultMode: DuplexModeRestriction): DuplexModeRestriction {
+    defaultMode: DuplexModeRestriction|undefined): DuplexModeRestriction|
+    undefined {
   if (allowedMode !== DuplexModeRestriction.DUPLEX) {
     return (allowedMode === undefined ||
             allowedMode === DuplexModeRestriction.UNSET) ?
@@ -269,18 +283,51 @@ function getDuplexDefaultValue(
   }
 
   // If allowedMode === DUPLEX, then we need to use defaultMode as the
-  // default value if it's compliant with allowedMode. That's because
-  // "DUPLEX" is not a single mode, but a group of modes, so we have to
-  // pick one of them as a default value. Other two-sided modes are also
-  // available in this case.
+  // default value if it's compliant with allowedMode. Other two-sided modes are
+  // also available in this case.
   if (defaultMode === DuplexModeRestriction.SHORT_EDGE ||
       defaultMode === DuplexModeRestriction.LONG_EDGE) {
     return defaultMode;
   }
 
-  // In this case defaultMode is non-compliant with allowedMode, so we can
-  // choose any allowed default value.
-  return DuplexModeRestriction.LONG_EDGE;
+  // In this case defaultMode is either not set or non-compliant with
+  // allowedMode. Note that "DUPLEX" is not a single mode, but a group of modes.
+  return DuplexModeRestriction.DUPLEX;
+}
+
+/**
+ * Helper function that checks whether the duplex default value set by policy
+ * is supported by a printing destination.
+ * @param duplexPolicyDefault Duplex value policy default.
+ * @param duplexShortEdgePolicyDefault DuplexShortEdge value policy default.
+ * @param caps Capabilities of a printing destination.
+ */
+function getDuplexPolicyDefaultValueAvailable(
+    duplexPolicyDefault: boolean|undefined,
+    duplexShortEdgePolicyDefault: boolean|undefined,
+    caps: CddCapabilities|null): boolean {
+  // `duplexShortEdgePolicyDefault` is undefined if the default mode is set to
+  // "Simplex". `duplexPolicyDefault` is defined if and only if there is a
+  // default duplex policy.
+  if (duplexPolicyDefault === undefined) {
+    return false;
+  }
+  const capsHasDuplexOptions = !!caps && !!caps.duplex && !!caps.duplex.option;
+  if (!capsHasDuplexOptions) {
+    // There are no duplex capabilities reported by the printer.
+    return false;
+  }
+
+  let defaultPolicyDuplexType: DuplexType|null = null;
+  if (duplexPolicyDefault === false) {
+    defaultPolicyDuplexType = DuplexType.NO_DUPLEX;
+  } else if (duplexShortEdgePolicyDefault === true) {
+    defaultPolicyDuplexType = DuplexType.SHORT_EDGE;
+  } else {
+    defaultPolicyDuplexType = DuplexType.LONG_EDGE;
+  }
+
+  return caps!.duplex!.option.some(o => o.type === defaultPolicyDuplexType);
 }
 // </if>
 
@@ -373,6 +420,16 @@ export class PrintPreviewModelElement extends PolymerElement {
               setByPolicy: false,
               setFromUi: false,
               key: 'mediaSize',
+              updatesPreview: true,
+            },
+            borderless: {
+              value: false,
+              unavailableValue: false,
+              valid: true,
+              available: false,
+              setByPolicy: false,
+              setFromUi: false,
+              key: 'borderless',
               updatesPreview: true,
             },
             mediaType: {
@@ -840,6 +897,8 @@ export class PrintPreviewModelElement extends PolymerElement {
         'mediaSize.available',
         !!caps && !!caps.media_size && !knownSizeToSaveAsPdf);
     this.setSettingPath_(
+        'borderless.available', this.isBorderlessAvailable_(caps));
+    this.setSettingPath_(
         'mediaType.available',
         loadTimeData.getBoolean('isBorderlessPrintingEnabled') && !!caps &&
             !!caps.media_type && !!caps.media_type.option &&
@@ -978,6 +1037,16 @@ export class PrintPreviewModelElement extends PolymerElement {
     return hasLandscapeOption && hasAutoOrPortraitOption;
   }
 
+  /**
+   * @return Whether the borderless setting should be available.
+   */
+  private isBorderlessAvailable_(caps: CddCapabilities|null): boolean {
+    return loadTimeData.getBoolean('isBorderlessPrintingEnabled') && !!caps &&
+        !!caps.media_size?.option?.find(o => {
+          return o.has_borderless_variant;
+        });
+  }
+
   private updateSettingsValues_(caps: CddCapabilities|null) {
     if (this.settings.mediaSize.available) {
       const defaultOption =
@@ -995,6 +1064,14 @@ export class PrintPreviewModelElement extends PolymerElement {
         });
       }
       this.setSetting('mediaSize', matchingOption || defaultOption, true);
+    }
+
+    if (this.settings.borderless.available) {
+      this.setSetting(
+          'borderless',
+          this.settings.borderless.setFromUi &&
+              this.getSettingValue('borderless'),
+          true);
     }
 
     if (this.settings.mediaType.available) {
@@ -1058,7 +1135,19 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSettingPath_('color.unavailableValue', false);
     }
 
-    if (!this.settings.duplex.setFromUi && this.settings.duplex.available) {
+    // Duplex policy is available on ChromeOS only. Therefore, we don't need to
+    // check printing destinations' duplex availability on other platforms.
+    // <if expr="is_chromeos">
+    const duplexPolicyDefaultValueAvailable =
+        getDuplexPolicyDefaultValueAvailable(
+            this.getSetting('duplex').policyDefaultValue,
+            this.getSetting('duplexShortEdge').policyDefaultValue, caps);
+    // </if>
+    // <if expr="not is_chromeos">
+    const duplexPolicyDefaultValueAvailable = false;
+    // </if>
+    if (!this.settings.duplex.setFromUi && this.settings.duplex.available &&
+        !duplexPolicyDefaultValueAvailable) {
       const defaultOption = caps!.duplex!.option.find(o => !!o.is_default);
       if (defaultOption !== undefined) {
         const defaultOptionIsDuplex =
@@ -1240,9 +1329,11 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
       case 'duplex': {
         const value = getDuplexDefaultValue(allowedMode, defaultMode);
-        this.setPolicySetting_(
-            settingName, value, !!allowedMode,
-            /*applyOnDestinationUpdate=*/ false);
+        if (value !== undefined) {
+          this.setPolicySetting_(
+              settingName, value, !!allowedMode,
+              /*applyOnDestinationUpdate=*/ false);
+        }
         break;
       }
       case 'pin': {
@@ -1406,12 +1497,19 @@ export class PrintPreviewModelElement extends PolymerElement {
         if (settingName === 'duplex') {
           const isDuplex =
               (policyEntry.value === DuplexModeRestriction.SHORT_EDGE ||
-               policyEntry.value === DuplexModeRestriction.LONG_EDGE);
+               policyEntry.value === DuplexModeRestriction.LONG_EDGE ||
+               policyEntry.value === DuplexModeRestriction.DUPLEX);
 
           this.set('settings.duplex.value', isDuplex);
-          if (isDuplex) {
+          this.set('settings.duplex.policyDefaultValue', isDuplex);
+
+          if (policyEntry.value === DuplexModeRestriction.SHORT_EDGE ||
+              policyEntry.value === DuplexModeRestriction.LONG_EDGE) {
             this.set(
                 'settings.duplexShortEdge.value',
+                policyEntry.value === DuplexModeRestriction.SHORT_EDGE);
+            this.set(
+                'settings.duplexShortEdge.policyDefaultValue',
                 policyEntry.value === DuplexModeRestriction.SHORT_EDGE);
           }
 
@@ -1634,6 +1732,9 @@ export class PrintPreviewModelElement extends PolymerElement {
         'scalingType';
     const ticket: PrintTicket = {
       mediaSize: this.getSettingValue('mediaSize') as MediaSizeValue,
+      borderless: loadTimeData.getBoolean('isBorderlessPrintingEnabled') &&
+          this.getSettingValue('mediaSize')?.has_borderless_variant &&
+          this.getSettingValue('borderless'),
       mediaType: this.getSettingValue('mediaType')?.vendor_id,
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),

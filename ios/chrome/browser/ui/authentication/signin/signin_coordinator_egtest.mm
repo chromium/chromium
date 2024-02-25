@@ -7,36 +7,34 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -72,11 +70,19 @@ using testing::ButtonWithAccessibilityLabel;
 
 typedef NS_ENUM(NSInteger, OpenSigninMethod) {
   OpenSigninMethodFromSettings,
-  OpenSigninMethodFromBookmarks,
+  OpenPrimarySigninMethodFromBookmarks,
+  OpenSecondarySigninMethodFromBookmarks,
   OpenSigninMethodFromRecentTabs,
   OpenSigninMethodFromTabSwitcher,
 };
 
+// TODO(crbug.com/1277545): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSwipeDownInAdvancedSettings \
+  DISABLED_testSwipeDownInAdvancedSettings
+#else
+#define MAYBE_testSwipeDownInAdvancedSettings testSwipeDownInAdvancedSettings
+#endif
 namespace {
 
 // Label used to find the 'Learn more' link.
@@ -157,13 +163,13 @@ void ExpectSigninConsentHistogram(
   GREYAssertNil(error, @"Failed to record show count histogram");
 }
 
-void ExpectSyncConsentHistogram(
+void ExpectNoSyncConsentHistogram(
     signin_metrics::SigninAccountType signinAccountType) {
   NSError* error =
-      [MetricsAppInterface expectTotalCount:1
+      [MetricsAppInterface expectTotalCount:0
                                forHistogram:@"Signin.AccountType.SyncConsent"];
   GREYAssertNil(error, @"Failed to record show count histogram");
-  error = [MetricsAppInterface expectCount:1
+  error = [MetricsAppInterface expectCount:0
                                  forBucket:static_cast<int>(signinAccountType)
                               forHistogram:@"Signin.AccountType.SyncConsent"];
   GREYAssertNil(error, @"Failed to record show count histogram");
@@ -187,28 +193,58 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (testDismissAdvancedSigninBookmarksFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector(testDismissSigninFromBookmarks)] ||
-      [self isRunningTest:@selector(testSignInCancelFromBookmarks)] ||
-      [self isRunningTest:@selector(testSigninPromoClosedWhenSyncOff)] ||
-      [self isRunningTest:@selector(testSigninPromoWhenSyncOff)]) {
-    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
-    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  }
-
-  if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)] ||
+            (testSignInSwitchAccountsAndKeepDataSeparate)] ||
+      [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
+      [self isRunningTest:@selector(testSignInCancelAuthenticationFlow)] ||
       [self isRunningTest:@selector
-            (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)]) {
+            (testDismissAdvancedSigninSettingsFromAdvancedSigninSettings)] ||
+      [self isRunningTest:@selector
+            (testDismissSigninFromRecentTabsFromAdvancedSigninSettings)] ||
+      [self isRunningTest:@selector
+            (testDismissSigninFromTabSwitcherFromAdvancedSigninSettings)] ||
+      [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
+      [self isRunningTest:@selector
+            (testSignInWithOneAccountStartSyncWithAnotherAccount)] ||
+      [self isRunningTest:@selector(testSyncTypesDisabledPolicy)] ||
+      [self
+          isRunningTest:@selector(testSwipeDownSignInViewWithoutAnIdentity)] ||
+      [self isRunningTest:@selector(MAYBE_testSwipeDownInAdvancedSettings)] ||
+      [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
+      [self
+          isRunningTest:@selector
+          (testPrimaryAccountLabelUpdate_ReplaceSyncPromosWithSignInPromosDisabled
+              )]) {
+    // TODO(crbug.com/1477295): Evaluate if these tests are relevant with
+    // kReplaceSyncPromosWithSignInPromos enabled.
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  if ([self isRunningTest:@selector
+  if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
+      [self isRunningTest:@selector(testSignInFromSettingsMenu)] ||
+      [self isRunningTest:@selector(testSignInCancelIdentityPicker)] ||
+      [self isRunningTest:@selector
+            (testSignOutForSupervisedUserClearAccountData)] ||
+      [self isRunningTest:@selector(testSignInCancelAddAccount)] ||
+      [self isRunningTest:@selector
+            (testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
+      [self isRunningTest:@selector
+            (testDismissSigninFromTabSwitcherFromIdentityPicker)] ||
+      [self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
+      [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
+      [self isRunningTest:@selector
+            (testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy)] ||
       [self isRunningTest:@selector
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
             (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
-      [self isRunningTest:@selector(testSwitchToSupervisedUser)]) {
+      [self isRunningTest:@selector(testOpeningAddAccountView)] ||
+      [self isRunningTest:@selector(testSwitchToSupervisedUser)] ||
+      [self isRunningTest:@selector(testSigninDisabledByPolicy)] ||
+      [self isRunningTest:@selector(testSignInFromNTPAndDeclineHistorySync)] ||
+      [self isRunningTest:@selector(testSignInFromNTPAndAcceptHistorySync)] ||
+      [self isRunningTest:@selector(testSignInDisconnectFromChromeManaged)] ||
+      [self isRunningTest:@selector(testSignInOneUser)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -225,8 +261,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
-  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
-  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (void)tearDown {
@@ -246,7 +280,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
-  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
+  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
@@ -281,12 +315,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
-  // Confirmation choice is ignored when `kReplaceSyncPromosWithSignInPromos` is
-  // enabled.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Sign in with fake supervised identity.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeSupervisedIdentity];
@@ -320,20 +351,19 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
-  // Sign out from the supervised account with option to keep local data.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  // Sign out from the supervised account.
+  [SigninEarlGreyUI signOut];
 
   // Verify bookmarks are available.
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests that signing out a supervised user account with the clear local data
-// option is honored.
-- (void)testSignOutWithClearDataForSupervisedUser {
+// Tests that signing out a supervised user account clears the account data.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testSignOutForSupervisedUserClearAccountData {
   // Sign in with a fake supervised identity.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
@@ -345,11 +375,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Sign out from the supervised account with option to clear local data.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  // Sign out from the supervised account.
+  [SigninEarlGreyUI signOut];
 
   // Verify bookmarks are cleared.
   [BookmarkEarlGreyUI openBookmarks];
@@ -358,24 +388,28 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to keep the browsing data separate during the switch.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no option to keep
+// data on sign-out.
 - (void)testSignInSwitchAccountsAndKeepDataSeparate {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataKeepSeparateButton());
 }
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to import the browsing data during the switch.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no option to keep
+// data on sign-out.
 - (void)testSignInSwitchAccountsAndImportData {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataImportButton());
 }
 
 // Tests that signing out from the Settings works correctly.
+// TODO(crbug.com/1477295): Evaluate if the test is relevant with
+// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSignInDisconnectFromChrome {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 }
 
 // Tests that signing out of a managed account from the Settings works
@@ -385,11 +419,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
-  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
+  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 }
 
 // Opens the sign in screen and then cancel it by opening a new tab. Ensures
@@ -424,15 +456,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
-  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
-      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kIdentityButtonControlIdentifier),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+                 grey_allOf(ButtonWithAccessibilityLabelId(
+                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -441,6 +475,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Starts an authentication flow and cancel it by opening a new tab. Ensures
 // that the authentication flow is correctly canceled and dismissed.
 // crbug.com/462202
+// kReplaceSyncPromosWithSignInPromos is disabled because it specifically tests
+// having data from a previous account which became impossible. Appart from
+// that, the test is identical to `testSignInCancelIdentityPicker`.
 - (void)testSignInCancelAuthenticationFlow {
   // Set up the fake identities.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
@@ -506,59 +543,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey verifySignedOut];
 }
 
-// Opens the sign in screen from the bookmarks and then cancel it by tapping on
-// done. Ensures that the sign in screen is correctly dismissed.
-// Regression test for crbug.com/596029.
-- (void)testSignInCancelFromBookmarks {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  // Open Bookmarks and tap on Sign In promo button.
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SecondarySignInButton()];
-
-  // Assert sign-in screen was shown.
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  // Verifies that the Chrome sign-in view is visible.
-  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
-      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Open new tab to cancel sign-in.
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL expectedURL = self.testServer->GetURL("/echo");
-  [ChromeEarlGrey
-      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
-
-  // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
-  // this will fail.
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SecondarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  // Verifies that the Chrome sign-in view is visible.
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Close sign-in screen and Bookmarks.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarDoneButton()]
-      performAction:grey_tap()];
-}
-
 #pragma mark - Dismiss tests
 
 // Tests to dismiss sign-in by opening an URL from another app.
@@ -572,24 +556,10 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: setting menu.
 // Interrupted at: advanced sign-in.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissAdvancedSigninSettingsFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromSettings
-                        tapSettingsLink:YES];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: bookmark view.
-// Interrupted at: user consent.
-- (void)testDismissSigninFromBookmarks {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromBookmarks
-                        tapSettingsLink:NO];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: bookmark view.
-// Interrupted at: advanced sign-in.
-- (void)testDismissAdvancedSigninBookmarksFromAdvancedSigninSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromBookmarks
                         tapSettingsLink:YES];
 }
 
@@ -604,6 +574,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: recent tabs.
 // Interrupted at: advanced sign-in.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissSigninFromRecentTabsFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs
                         tapSettingsLink:YES];
@@ -620,6 +592,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: tab switcher.
 // Interrupted at: advanced sign-in.
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)testDismissSigninFromTabSwitcherFromAdvancedSigninSettings {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher
                         tapSettingsLink:YES];
@@ -649,7 +623,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // app.
 - (void)testInterruptReauthSignin {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey triggerReauthDialogWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -660,14 +634,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Verifies that the user is signed in when selecting "Yes I'm In", after the
 // advanced settings were swiped to dismiss.
-// TODO(crbug.com/1277545): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSwipeDownInAdvancedSettings \
-  DISABLED_testSwipeDownInAdvancedSettings
-#else
-#define MAYBE_testSwipeDownInAdvancedSettings \
-  testSwipeDownInAdvancedSettings
-#endif
+// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
+// sign-in anymore.
 - (void)MAYBE_testSwipeDownInAdvancedSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -694,11 +662,18 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [ChromeEarlGreyUI openSettingsMenu];
       [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
       break;
-    case OpenSigninMethodFromBookmarks:
+    case OpenPrimarySigninMethodFromBookmarks:
       [ChromeEarlGreyUI openToolsMenu];
       [ChromeEarlGreyUI
           tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
       [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+          performAction:grey_tap()];
+      break;
+    case OpenSecondarySigninMethodFromBookmarks:
+      [ChromeEarlGreyUI openToolsMenu];
+      [ChromeEarlGreyUI
+          tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
+      [[EarlGrey selectElementWithMatcher:SecondarySignInButton()]
           performAction:grey_tap()];
       break;
     case OpenSigninMethodFromRecentTabs:
@@ -721,8 +696,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
 - (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod
                         tapSettingsLink:(BOOL)tapSettingsLink {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [self openSigninFromView:openSigninMethod tapSettingsLink:tapSettingsLink];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -750,19 +725,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
-// Tests the "ADD ACCOUNT" button in the identity chooser view controller.
-- (void)testAddAccountAutomatically {
+// Tests that the "add account" view can be opened from settings.
+- (void)testOpeningAddAccountView {
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
   [ChromeEarlGreyUI waitForAppToIdle];
-  // Tap on "ADD ACCOUNT".
-  [SigninEarlGreyUI tapAddAccountButton];
 
   [self assertFakeSSOScreenIsVisible];
-  // Close sign-in screen and Settings.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
-      performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
@@ -835,15 +803,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
-  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
-      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:signin_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kIdentityButtonControlIdentifier),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+                 grey_allOf(ButtonWithAccessibilityLabelId(
+                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
+                            grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -875,6 +845,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that the sign-in coordinator isn't started when sign-in is disabled by
 // policy.
+// kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSigninDisabledByPolicy {
   // Disable browser sign-in only after the "Sign in to Chrome" button is
   // visible.
@@ -949,7 +920,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that a signed-in user can open "Settings" screen from the NTP.
-- (void)testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy {
+- (void)testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
@@ -964,26 +935,28 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
-  // Ensure the Settings menu is displayed.
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Ensure the fake add-account menu is displayed. The existence of the "add
+  // account" accessibility button on screen verifies that the screen
+  // was shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
-- (void)testOpenSignInAndSyncFromNTP {
+- (void)testOpenSignInFromNTP {
   // Select the identity disc particle.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityLabel(GetNSString(
-              IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
       performAction:grey_tap()];
 
-  // Ensure the sign-in and sync menu is displayed. The existence of the skip
-  // accessibility button on screen verifies that tha sign-in screen was
-  // shown.
+  // Ensure the fake add-account menu is displayed. The existence of the "add
+  // account" accessibility button on screen verifies that the screen
+  // was shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
-      performAction:grey_tap()];
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that a signed-out user with device accounts can open "Sign in" sheet
@@ -1002,6 +975,108 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when signing-in using the NTP avatar disc, the user is not signed
+// out if history sync is declined.
+- (void)testSignInFromNTPAndDeclineHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the NTP avatar disc.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the footer is shown without the user's email.
+  id<GREYMatcher> footerTextMatcher = grey_allOf(
+      grey_text(
+          l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL)),
+      grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:footerTextMatcher]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      assertWithMatcher:grey_notNil()];
+
+  // Decline History Sync.
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
+  // Verify that the history sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
+  // Verify that the identity is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that accepting History Sync after tapping on the NTP avatar disc while
+// signed-out enables sync for tabs and history.
+- (void)testSignInFromNTPAndAcceptHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the NTP avatar disc.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Confirm sign in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
+  // Verify that the history sync is enabled.
+  GREYAssertTrue(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
+  // Verify that the identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that a signed-out user with no device account can open the auth
@@ -1047,6 +1122,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
+// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSignInFromSettingsMenu {
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1055,16 +1131,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Check the Settings Menu labels for sync state.
+  // Check the Settings Menu labels.
   [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(
-                                       GetNSString(IDS_IOS_SETTING_ON)),
-                                   grey_accessibilityID(
-                                       kSettingsGoogleSyncAndServicesCellId),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsGoogleServicesCellId)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -1074,6 +1142,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Sync Off tab and signin in
 // will turn Sync On.
+// kReplaceSyncPromosWithSignInPromos is disabled, as this test is about sync.
 - (void)testSignInFromSyncOffLink {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1109,6 +1178,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Sync Off tab and canceling the
 // sign-in flow will leave a signed-in with sync off user in the same state.
+// kReplaceSyncPromosWithSignInPromos is disabled as Sync Off does not exists
+// when it is enabled.
 - (void)testCancelFromSyncOffLink {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1196,78 +1267,33 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that the sign-in promo for Sync is displayed when the user is signed in
-// with Sync off.
-- (void)testSigninPromoWhenSyncOff {
-  // Add identity to the device.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-}
-
-// Tests that no sign-in promo for Sync is displayed when the user is signed in
-// with Sync off and has closed the sign-in promo for Sync.
-- (void)testSigninPromoClosedWhenSyncOff {
-  // Add identity to the device.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-  // Tap on dismiss button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kSigninPromoCloseButtonId),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-// TODO(crbug.com/1277545): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
-  DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn
-#else
-#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
-  testSyncOnWhenPassphraseIntroducedAfterSignIn
-#endif
-- (void)MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn {
+- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+      performAction:grey_tap()];
 
   // Give the Sync state a chance to finish UI updates.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       GoogleServicesSettingsButton()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(GetNSString(
-                                       IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
-                                   grey_accessibilityID(
-                                       kSettingsGoogleSyncAndServicesCellId),
-                                   grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       performAction:grey_tap()];
+
+  // Checks the user is invited to enter the passphrase.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.
   [[EarlGrey selectElementWithMatcher:
@@ -1290,11 +1316,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
   [ChromeEarlGreyUI openSettingsMenu];
 
-  // Check Sync On label is visible.
-  [SigninEarlGrey verifySyncUIEnabled:YES];
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      performAction:grey_tap()];
+
+  // Check the user is not invited to enter the passphrase
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.
+// kReplaceSyncPromosWithSignInPromos is disabled as it is sync specific.
 - (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -1322,6 +1354,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that when the syncTypesListDisabled policy is enabled, a policy warning
 // is displayed with a link to the policy management page.
+// kReplaceSyncPromosWithSignInPromos is disabled, because on sign-in with
+// kReplaceSyncPromosWithSignInPromos, the user is not warned that the browser is managed.
 - (void)testSyncTypesDisabledPolicy {
   // Set policy.
   base::Value::List list;
@@ -1399,12 +1433,61 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests to dismiss the sign-in view by swipe down without an identity.
 // See http://crbug.com/1434238.
+// kReplaceSyncPromosWithSignInPromos is disabled because, when enabled,
+// the add account view is directly opened, skipping the sign-in view.
 - (void)testSwipeDownSignInViewWithoutAnIdentity {
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kUnifiedConsentScrollViewIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   // Test no crash.
+}
+
+// Tests in the sign-in+sync consent dialog, that the primary button title is
+// "Add Account" when there is no account, and the title is updated to
+// "Yes, I'm In" once the account has been added.
+// This test can be removed once `ReplaceSyncPromosWithSignInPromos` flag is
+// removed.
+// Related to crbug.com/1497272.
+- (void)
+    testPrimaryAccountLabelUpdate_ReplaceSyncPromosWithSignInPromosDisabled {
+  // "Add Account" button matcher (with title and accessibility identifier).
+  id<GREYMatcher> addAccountButtonMatcher = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)),
+      grey_accessibilityID(kAddAccountAccessibilityIdentifier), nil);
+  // "Yes, I'm In" button matcher (with title and accessibility identifier).
+  id<GREYMatcher> yesIamInButtonMatcher = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
+      grey_accessibilityID(kConfirmationAccessibilityIdentifier), nil);
+  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify that the "Add Account" button is visible and the "Yes, I'm In" is
+  // not.
+  [[EarlGrey selectElementWithMatcher:addAccountButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:yesIamInButtonMatcher]
+      assertWithMatcher:grey_notVisible()];
+  // Set up a fake identity to add and sign-in with.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  // Open Add Account screen.
+  [SigninEarlGreyUI tapAddAccountButton];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify that the "Yes, I'm In" button is visible and the "Add Account" is
+  // not.
+  [[EarlGrey selectElementWithMatcher:yesIamInButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:addAccountButtonMatcher]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

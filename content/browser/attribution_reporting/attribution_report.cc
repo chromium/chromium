@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,13 +16,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -31,11 +31,23 @@ namespace content {
 
 namespace {
 
-base::Value::Dict GetReportBody(
-    const AttributionReport::CommonAggregatableData& data,
-    absl::optional<uint64_t> trigger_debug_key) {
-  base::Value::Dict dict;
+void PopulateSourceDebugKey(base::Value::Dict& dict,
+                            std::optional<uint64_t> debug_key) {
+  if (debug_key.has_value()) {
+    dict.Set("source_debug_key", base::NumberToString(*debug_key));
+  }
+}
 
+void PopulateTriggerDebugKey(base::Value::Dict& dict,
+                             std::optional<uint64_t> debug_key) {
+  if (debug_key.has_value()) {
+    dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
+  }
+}
+
+void PopulateReportBody(base::Value::Dict& dict,
+                        const AttributionReport::CommonAggregatableData& data,
+                        std::optional<uint64_t> trigger_debug_key) {
   if (const auto& assembled_report = data.assembled_report;
       assembled_report.has_value()) {
     dict = assembled_report->GetAsJson();
@@ -46,16 +58,18 @@ base::Value::Dict GetReportBody(
     dict.Set("aggregation_service_payloads", "not generated prior to send");
   }
 
-  if (trigger_debug_key) {
-    dict.Set("trigger_debug_key", base::NumberToString(*trigger_debug_key));
-  }
+  PopulateTriggerDebugKey(dict, trigger_debug_key);
 
-  return dict;
+  if (const auto& trigger_context_id =
+          data.aggregatable_trigger_config.trigger_context_id();
+      trigger_context_id.has_value()) {
+    dict.Set("trigger_context_id", *trigger_context_id);
+  }
 }
 
 }  // namespace
 
-AttributionReport::EventLevelData::EventLevelData(uint64_t trigger_data,
+AttributionReport::EventLevelData::EventLevelData(uint32_t trigger_data,
                                                   int64_t priority,
                                                   StoredSource source)
     : trigger_data(trigger_data),
@@ -76,14 +90,14 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData(
-    absl::optional<attribution_reporting::SuitableOrigin>
+    std::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin,
-    absl::optional<std::string> verification_token,
-    attribution_reporting::mojom::SourceRegistrationTimeConfig
-        source_registration_time_config)
+    std::optional<std::string> verification_token,
+    attribution_reporting::AggregatableTriggerConfig
+        aggregatable_trigger_config)
     : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       verification_token(std::move(verification_token)),
-      source_registration_time_config(source_registration_time_config) {}
+      aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData() = default;
 
@@ -214,11 +228,11 @@ GURL AttributionReport::ReportURL(bool debug) const {
 }
 
 base::Value::Dict AttributionReport::ReportBody() const {
-  return absl::visit(
-      base::Overloaded{
-          [this](const EventLevelData& data) {
-            base::Value::Dict dict;
+  base::Value::Dict dict;
 
+  absl::visit(
+      base::Overloaded{
+          [&](const EventLevelData& data) {
             const StoredSource& source = data.source;
 
             dict.Set("attribution_destination",
@@ -235,50 +249,40 @@ base::Value::Dict AttributionReport::ReportBody() const {
             dict.Set("source_type", attribution_reporting::SourceTypeName(
                                         source.common_info().source_type()));
 
-            dict.Set("report_id",
-                     this->external_report_id().AsLowercaseString());
+            dict.Set("report_id", external_report_id_.AsLowercaseString());
 
             // Round to 7 digits of precision, which allows us to express binary
             // randomized response with epsilon = 14 without rounding to 0
             // (0.00000166305 -> 0.0000017).
             double rounded_rate =
-                round(data.source.randomized_response_rate() * 10000000) /
+                round(source.randomized_response_rate() * 10000000) /
                 10000000.0;
             dict.Set("randomized_trigger_rate", rounded_rate);
 
-            if (absl::optional<uint64_t> debug_key = source.debug_key()) {
-              dict.Set("source_debug_key", base::NumberToString(*debug_key));
-            }
-
-            if (absl::optional<uint64_t> debug_key =
-                    this->attribution_info().debug_key) {
-              dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
-            }
+            PopulateSourceDebugKey(dict, source.debug_key());
+            PopulateTriggerDebugKey(dict, attribution_info_.debug_key);
 
             dict.Set("scheduled_report_time",
                      base::NumberToString(
                          (initial_report_time_ - base::Time::UnixEpoch())
                              .InSeconds()));
-
-            return dict;
           },
 
-          [this](const AggregatableAttributionData& data) {
-            base::Value::Dict dict = GetReportBody(
-                data.common_data, this->attribution_info().debug_key);
+          [&](const AggregatableAttributionData& data) {
+            PopulateReportBody(dict, data.common_data,
+                               attribution_info_.debug_key);
 
-            if (absl::optional<uint64_t> debug_key = data.source.debug_key()) {
-              dict.Set("source_debug_key", base::NumberToString(*debug_key));
-            }
-
-            return dict;
+            PopulateSourceDebugKey(dict, data.source.debug_key());
           },
 
-          [this](const NullAggregatableData& data) {
-            return GetReportBody(data.common_data,
-                                 this->attribution_info().debug_key);
-          }},
+          [&](const NullAggregatableData& data) {
+            PopulateReportBody(dict, data.common_data,
+                               attribution_info_.debug_key);
+          },
+      },
       data_);
+
+  return dict;
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {
@@ -291,9 +295,9 @@ void AttributionReport::set_external_report_id(base::Uuid external_report_id) {
 }
 
 // static
-absl::optional<base::Time> AttributionReport::MinReportTime(
-    absl::optional<base::Time> a,
-    absl::optional<base::Time> b) {
+std::optional<base::Time> AttributionReport::MinReportTime(
+    std::optional<base::Time> a,
+    std::optional<base::Time> b) {
   if (!a.has_value()) {
     return b;
   }
@@ -307,10 +311,25 @@ absl::optional<base::Time> AttributionReport::MinReportTime(
 
 void AttributionReport::PopulateAdditionalHeaders(
     net::HttpRequestHeaders& headers) const {
-  if (const auto* data = absl::get_if<AggregatableAttributionData>(&data_);
-      data && data->common_data.verification_token.has_value()) {
+  const std::optional<std::string>* verification_token = absl::visit(
+      base::Overloaded{
+          [](const EventLevelData&) -> const std::optional<std::string>* {
+            return nullptr;
+          },
+
+          [](const AggregatableAttributionData& data) {
+            return &data.common_data.verification_token;
+          },
+
+          [](const NullAggregatableData& data) {
+            return &data.common_data.verification_token;
+          },
+      },
+      data_);
+
+  if (verification_token && verification_token->has_value()) {
     headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                      *data->common_data.verification_token);
+                      **verification_token);
   }
 }
 

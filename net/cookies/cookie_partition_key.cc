@@ -10,20 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/types/optional_util.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
-
-namespace {
-
-bool PartitionedCookiesEnabled(
-    const absl::optional<base::UnguessableToken>& nonce) {
-  return base::FeatureList::IsEnabled(net::features::kPartitionedCookies) ||
-         (base::FeatureList::IsEnabled(
-              net::features::kNoncedPartitionedCookies) &&
-          nonce);
-}
-
-}  // namespace
 
 namespace net {
 
@@ -31,7 +18,7 @@ CookiePartitionKey::CookiePartitionKey() = default;
 
 CookiePartitionKey::CookiePartitionKey(
     const SchemefulSite& site,
-    absl::optional<base::UnguessableToken> nonce)
+    std::optional<base::UnguessableToken> nonce)
     : site_(site), nonce_(nonce) {}
 
 CookiePartitionKey::CookiePartitionKey(const GURL& url)
@@ -66,7 +53,7 @@ bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
 }
 
 // static
-bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
+bool CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in,
                                    std::string& out) {
   if (!in) {
     out = kEmptyCookiePartitionKey;
@@ -84,15 +71,10 @@ bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
 
 // static
 bool CookiePartitionKey::Deserialize(const std::string& in,
-                                     absl::optional<CookiePartitionKey>& out) {
+                                     std::optional<CookiePartitionKey>& out) {
   if (in == kEmptyCookiePartitionKey) {
-    out = absl::nullopt;
+    out = std::nullopt;
     return true;
-  }
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    DLOG(WARNING) << "Attempting to deserialize CookiePartitionKey when "
-                     "PartitionedCookies is disabled";
-    return false;
   }
   auto schemeful_site = SchemefulSite::Deserialize(in);
   // SchemfulSite is opaque if the input is invalid.
@@ -100,50 +82,38 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
     DLOG(WARNING) << "Cannot deserialize opaque origin to CookiePartitionKey";
     return false;
   }
-  out = absl::make_optional(CookiePartitionKey(schemeful_site, absl::nullopt));
+  out = std::make_optional(CookiePartitionKey(schemeful_site, std::nullopt));
   return true;
 }
 
-absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
+std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) {
-  absl::optional<base::UnguessableToken> nonce =
+  const std::optional<base::UnguessableToken>& nonce =
       network_isolation_key.GetNonce();
-  // If PartitionedCookies is enabled, all partitioned cookies are allowed.
-  // If NoncedPartitionedCookies is enabled, only partitioned cookies whose
-  // partition key has a nonce are allowed.
-  if (!PartitionedCookiesEnabled(nonce))
-    return absl::nullopt;
 
   // Use frame site for nonced partitions. Since the nonce is unique, this still
   // creates a unique partition key. The reason we use the frame site is to
   // align CookiePartitionKey's implementation of nonced partitions with
   // StorageKey's. See https://crbug.com/1440765.
-  const absl::optional<SchemefulSite>& partition_key_site =
+  const std::optional<SchemefulSite>& partition_key_site =
       nonce ? network_isolation_key.GetFrameSiteForCookiePartitionKey(
                   NetworkIsolationKey::CookiePartitionKeyPassKey())
             : network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
-    return absl::nullopt;
+    return std::nullopt;
 
   return net::CookiePartitionKey(*partition_key_site, nonce);
 }
 
 // static
-absl::optional<net::CookiePartitionKey>
+std::optional<net::CookiePartitionKey>
 CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
-    const absl::optional<base::UnguessableToken>& nonce) {
-  if (!PartitionedCookiesEnabled(nonce))
-    return absl::nullopt;
+    const std::optional<base::UnguessableToken>& nonce) {
   return CookiePartitionKey::FromWire(site, nonce);
 }
 
 bool CookiePartitionKey::IsSerializeable() const {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    DLOG(WARNING) << "Attempting to serialize CookiePartitionKey when "
-                     "PartitionedCookies feature is disabled";
-    return false;
-  }
   // We should not try to serialize a partition key created by a renderer.
   DCHECK(!from_script_);
   return !site_.opaque() && !nonce_.has_value();

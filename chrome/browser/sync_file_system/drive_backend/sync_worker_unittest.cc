@@ -98,8 +98,7 @@ class MockExtensionService : public TestExtensionService {
   extensions::ExtensionRegistry registry_;
 };
 
-class SyncWorkerTest : public testing::Test,
-                       public base::SupportsWeakPtr<SyncWorkerTest> {
+class SyncWorkerTest : public testing::Test {
  public:
   SyncWorkerTest() {}
 
@@ -162,6 +161,10 @@ class SyncWorkerTest : public testing::Test,
     return sync_worker_->GetMetadataDatabase();
   }
 
+  base::WeakPtr<SyncWorkerTest> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir profile_dir_;
@@ -169,6 +172,7 @@ class SyncWorkerTest : public testing::Test,
 
   std::unique_ptr<MockExtensionService> extension_service_;
   std::unique_ptr<SyncWorker> sync_worker_;
+  base::WeakPtrFactory<SyncWorkerTest> weak_ptr_factory_{this};
 };
 
 TEST_F(SyncWorkerTest, EnableOrigin) {

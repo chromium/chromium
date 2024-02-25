@@ -139,10 +139,7 @@ std::string UserActionsCollector::EntryToString(
   visit_metadata_proto.SerializeToString(&serialized_entry);
   DCHECK(!serialized_entry.empty());
 
-  std::string base64_encoded;
-  base::Base64Encode(serialized_entry, &base64_encoded);
-
-  return base64_encoded;
+  return base::Base64Encode(serialized_entry);
 }
 
 bool UserActionsCollector::ShouldIncludeVisitMetadataEntry(

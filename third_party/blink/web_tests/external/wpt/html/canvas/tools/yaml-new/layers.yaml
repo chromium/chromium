@@ -102,7 +102,6 @@
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
         ctx.shadowBlur = 3;
 
-
 - name: 2d.layer.global-states.filter
   desc: Checks that layers with filters correctly use global render states.
   size: [200, 200]
@@ -308,68 +307,106 @@
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
 
-- name: 2d.layer.unclosed
-  desc: Check that layers are rendered even if not closed.
-  size: [200, 200]
+- name: 2d.layer.clip-outside
+  desc: Check clipping set outside the layer
+  size: [100, 100]
   code: |
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
 
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillRect(40, 40, 75, 50);
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(50, 50, 75, 50);
-  reference: |
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(40, 40, 75, 50);
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(50, 50, 75, 50);
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
     ctx.endLayer();
-
-- name: 2d.layer.unclosed-nested
-  desc: Check that layers are rendered even if not closed.
-  size: [200, 200]
-  code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer();
-    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
-
-    ctx.beginLayer();
-    ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
-
-    ctx.endLayer();
-    // Missing ctx.endLayer() here.
   reference: |
-    const canvas1 = document.createElement('canvas');
-    const ctx1 = canvas1.getContext('2d');
-    ctx1.fillStyle = 'rgba(0,255,0,1)';
-    ctx1.fillRect(70,70,75,50);
-
-    const canvas2 = document.createElement('canvas');
+    const canvas2 = new OffscreenCanvas(200, 200);
     const ctx2 = canvas2.getContext('2d');
-    ctx2.fillStyle = 'rgba(225,0,0,1)';
-    ctx2.fillRect(50,50,75,50);
-    ctx2.drawImage(canvas1, 0, 0);
 
-    ctx.fillStyle = 'rgba(0,0,255,1)';
-    ctx.fillRect(60,60,75,50);
-    ctx.globalAlpha = 0.5;
+    ctx2.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+    ctx2.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
     ctx.drawImage(canvas2, 0, 0);
 
-- name: 2d.layer.render-opportunities
+- name: 2d.layer.clip-inside
+  desc: Check clipping set inside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.drawImage(canvas2, 0, 0);
+    ctx.endLayer();
+
+- name: 2d.layer.clip-inside-and-outside
+  desc: Check clipping set inside and outside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    const canvas3 = new OffscreenCanvas(200, 200);
+    const ctx3 = canvas3.getContext('2d');
+
+    ctx3.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx3.drawImage(canvas2, 0, 0);
+    ctx3.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+    ctx.drawImage(canvas3, 0, 0);
+
+- name: 2d.layer.flush-on-frame-presentation
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
   size: [200, 200]
+  canvasType: ['HTMLCanvas']
+  test_type: "promise"
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -381,7 +418,7 @@
     ctx.fillRect(50, 50, 75, 50);
 
     // Force a flush and restoration of the state stack:
-    {{ flush_canvas }}
+    await new Promise(resolve => requestAnimationFrame(resolve));
 
     ctx.fillRect(70, 70, 75, 50);
     ctx.fillStyle = 'orange';
@@ -399,9 +436,7 @@
     ctx.fillRect(40, 40, 75, 50);
     ctx.fillStyle = 'grey';
     ctx.fillRect(50, 50, 75, 50);
-    ctx.endLayer();
 
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
     ctx.fillStyle = 'grey';
     ctx.fillRect(70, 70, 75, 50);
     ctx.fillStyle = 'orange';
@@ -409,78 +444,72 @@
     ctx.endLayer();
 
     ctx.fillRect(80, 40, 75, 50);
+
+- name: 2d.layer.malformed-operations
+  desc: >-
+    Check that exceptions are thrown for operations that are malformed while
+    layers are open.
+  size: [200, 200]
+  code: |
+    {{ setup }}
+    // Shouldn't throw on its own.
+    {{ operation }};
+    // Make sure the exception isn't caused by calling the function twice.
+    {{ operation }};
+    // Calling again inside a layer should throw.
+    ctx.beginLayer();
+    assert_throws_dom("InvalidStateError",
+                      () => {{ operation }});
   variants:
-    convertToBlob:
-      test_type: "promise"
-      canvasType: ['OffscreenCanvas', 'Worker']
-      flush_canvas: |-
-        await canvas.convertToBlob();
-    createImageBitmap:
-      flush_canvas: createImageBitmap(canvas);
+    createPattern:
+      operation: ctx.createPattern(canvas, 'repeat')
     drawImage:
-      flush_canvas: |-
+      setup: |-
         const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
         const ctx2 = canvas2.getContext('2d');
-        ctx2.drawImage(canvas, 0, 0);
+      operation: |-
+        ctx2.drawImage(canvas, 0, 0)
     getImageData:
-      flush_canvas: ctx.getImageData(0, 0, {{ size[0] }}, {{ size[1] }});
-    requestAnimationFrame:
-      canvasType: ['HTMLCanvas']
-      test_type: "promise"
-      flush_canvas: |-
-        await new Promise(resolve => requestAnimationFrame(resolve));
+      operation: ctx.getImageData(0, 0, {{ size[0] }}, {{ size[1] }})
     putImageData:
-      flush_canvas: |-
+      setup: |-
         const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
-        const ctx2 = canvas2.getContext('2d');
-        ctx.putImageData(ctx2.getImageData(0, 0, 1, 1), 0, 0);
-    toBlob:
-      test_type: "promise"
-      canvasType: ['HTMLCanvas']
-      flush_canvas: |-
-        await new Promise(resolve => canvas.toBlob(resolve));
+        const ctx2 = canvas2.getContext('2d')
+        const data = ctx2.getImageData(0, 0, 1, 1);
+      operation: |-
+        ctx.putImageData(data, 0, 0)
     toDataURL:
       canvasType: ['HTMLCanvas']
-      flush_canvas: canvas.toDataURL();
+      operation: canvas.toDataURL()
+    transferToImageBitmap:
+      canvasType: ['OffscreenCanvas', 'Worker']
+      operation: canvas.transferToImageBitmap()
 
-
-- name: 2d.layer.render-opportunities.transferToImageBitmap
-  desc: Checks that transferToImageBitmap flushes and rebuilds the state stack.
+- name: 2d.layer.malformed-operations-with-promises
+  desc: >-
+    Check that exceptions are thrown for operations that are malformed while
+    layers are open.
   size: [200, 200]
-  canvasType: ['OffscreenCanvas', 'Worker']
+  test_type: "promise"
   code: |
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(60, 60, 75, 50);
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillRect(40, 40, 75, 50);
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(50, 50, 75, 50);
-
-    // Force a flush and restoration of the state stack.
-    // `transferToImageBitmap` clears the frame but preserves render states.
-    canvas.transferToImageBitmap();
-
-    ctx.fillRect(70, 70, 75, 50);
-    ctx.fillStyle = 'orange';
-    ctx.fillRect(80, 80, 75, 50);
-    ctx.endLayer();
-
-    ctx.fillRect(80, 40, 75, 50);
-  reference: |
-    ctx.fillStyle = 'purple';
-    ctx.globalAlpha = 0.5;
-
-    ctx.beginLayer({filter: {name: 'dropShadow', dx: -2, dy: 2}});
-    ctx.fillStyle = 'grey';
-    ctx.fillRect(70, 70, 75, 50);
-    ctx.fillStyle = 'orange';
-    ctx.fillRect(80, 80, 75, 50);
-    ctx.endLayer();
-
-    ctx.fillRect(80, 40, 75, 50);
-
+    // Shouldn't throw on its own.
+    await {{ operation }};
+    // Make sure the exception isn't caused by calling the function twice.
+    await {{ operation }};
+    // Calling again inside a layer should throw.
+    ctx.beginLayer();
+    await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
+  variants:
+    convertToBlob:
+      canvasType: ['OffscreenCanvas', 'Worker']
+      operation: |-
+        canvas.convertToBlob()
+    createImageBitmap:
+      operation: createImageBitmap(canvas)
+    toBlob:
+      canvasType: ['HTMLCanvas']
+      operation: |-
+        new Promise(resolve => canvas.toBlob(resolve))
 
 - name: 2d.layer.several-complex
   desc: >-
@@ -558,6 +587,88 @@
     ctx.fillRect(10, 10, 75, 50);
   reference:
     ctx.fillRect(10, 10, 75, 50);
+
+- name: 2d.layer.clearRect.partial
+  desc: clearRect inside a layer can clear a portion of the layer content.
+  size: [100, 100]
+  code: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 50);
+
+    ctx.beginLayer();
+    ctx.fillStyle = 'red';
+    ctx.fillRect(20, 20, 80, 50);
+    ctx.clearRect(30, 30, 60, 30);
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 50);
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect(20, 20, 80, 10);
+    ctx.fillRect(20, 60, 80, 10);
+    ctx.fillRect(20, 20, 10, 50);
+    ctx.fillRect(90, 20, 10, 50);
+
+- name: 2d.layer.clearRect.full
+  desc: clearRect inside a layer can clear all of the layer content.
+  size: [100, 100]
+  code: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 50);
+
+    ctx.beginLayer();
+    ctx.fillStyle = 'red';
+    ctx.fillRect(20, 20, 80, 50);
+    ctx.fillStyle = 'green';
+    ctx.clearRect(0, 0, {{ size[0] }}, {{ size[1] }});
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 50);
+
+- name: 2d.layer.drawImage
+  size: [200, 200]
+  desc: >-
+    Checks that drawImage writes the image to the layer and not the parent
+    directly.
+  code: |
+    ctx.fillStyle = 'skyblue';
+    ctx.fillRect(0, 0, 100, 100);
+
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: -10,
+      stdDeviation: 0, floodColor: 'navy'}});
+
+    ctx.fillStyle = 'maroon';
+    ctx.fillRect(20, 20, 50, 50);
+
+    ctx.globalCompositeOperation = 'xor';
+
+    // The image should xor only with the layer content, not the parents'.
+    const canvas_image = new OffscreenCanvas(200,200);
+    const ctx_image = canvas_image.getContext("2d");
+    ctx_image.fillStyle = 'pink';
+    ctx_image.fillRect(40, 40, 50, 50);
+    ctx.drawImage(canvas_image, 0, 0);
+
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'skyblue';
+    ctx.fillRect(0, 0, 100, 100);
+
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: -10,
+      stdDeviation: 0, floodColor: 'navy'}});
+
+    ctx.fillStyle = 'maroon';
+    ctx.fillRect(20, 20, 50, 50);
+
+    ctx.globalCompositeOperation = 'xor';
+
+    // Should xor only with the layer content, not the parents'.
+    ctx.fillStyle = 'pink';
+    ctx.fillRect(40, 40, 50, 50);
+
+    ctx.endLayer();
 
 - name: 2d.layer.valid-calls
   desc: No exception raised on {{ variant_desc }}.
@@ -681,9 +792,274 @@
     ctx.beginLayer({filter: []}); ctx.endLayer();
     ctx.beginLayer({filter: {}}); ctx.endLayer();
     ctx.beginLayer({filter: {name: "unknown"}}); ctx.endLayer();
+    ctx.beginLayer({filter: ''}); ctx.endLayer();
 
-    @assert throws TypeError ctx.beginLayer({filter: ''});
-    @assert throws TypeError ctx.beginLayer({filter: 0});
-    @assert throws TypeError ctx.beginLayer({filter: 1});
-    @assert throws TypeError ctx.beginLayer({filter: true});
-    @assert throws TypeError ctx.beginLayer({filter: false});
+    // These cases don't throw TypeError since they can be casted to a
+    // DOMString.
+    ctx.beginLayer({filter: 0}); ctx.endLayer();
+    ctx.beginLayer({filter: 1}); ctx.endLayer();
+    ctx.beginLayer({filter: true}); ctx.endLayer();
+    ctx.beginLayer({filter: false}); ctx.endLayer();
+
+- name: 2d.layer.blur-from-outside-canvas
+  desc: Checks blur leaking inside from drawing outside the canvas
+  size: [200, 200]
+  code: |
+    {{ clipping }}
+
+    ctx.beginLayer({filter: [ {name: 'gaussianBlur', stdDeviation: 30} ]});
+
+    ctx.fillStyle = 'turquoise';
+    ctx.fillRect(201, 50, 100, 100);
+    ctx.fillStyle = 'indigo';
+    ctx.fillRect(50, 201, 100, 100);
+    ctx.fillStyle = 'orange';
+    ctx.fillRect(-1, 50, -100, 100);
+    ctx.fillStyle = 'brown';
+    ctx.fillRect(50, -1, 100, -100);
+
+    ctx.endLayer();
+  reference: |
+    const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg"
+          width="{{ size[0] }}" height="{{ size[1] }}"
+          color-interpolation-filters="sRGB">
+      <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="30" />
+      </filter>
+      <g filter="url(#filter)">
+        <rect x="201" y="50" width="100" height="100" fill="turquoise"/>
+        <rect x="50" y="201" width="100" height="100" fill="indigo"/>
+        <rect x="-101" y="50" width="100" height="100" fill="orange"/>
+        <rect x="50" y="-101" width="100" height="100" fill="brown"/>
+      </g>
+    </svg>`;
+    const img = new Image();
+    img.width = {{ size[0] }};
+    img.height = {{ size[1] }};
+    img.onload = () => {
+        {{ clipping | indent(4) }}
+
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(svg);
+  variants:
+    no-clipping:
+      clipping: // No clipping.
+    with-clipping:
+      clipping: |-
+        const clipRegion = new Path2D();
+        clipRegion.rect(20, 20, 160, 160);
+        ctx.clip(clipRegion);
+
+- name: 2d.layer.shadow-from-outside-canvas
+  desc: Checks shadow produced by object drawn outside the canvas
+  size: [200, 200]
+  code: |
+    {{ distance }}
+
+    {{ clipping }}
+
+    ctx.beginLayer({filter: [
+        {name: 'dropShadow', dx: -({{ size[0] }} + delta),
+          dy: -({{ size[1] }} + delta), stdDeviation: 0,
+          floodColor: 'green'},
+        ]});
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect({{ size[0] }} + delta, {{ size[1] }} + delta, 100, 100);
+
+    ctx.endLayer();
+  reference: |
+    {{ distance }}
+
+    {{ clipping }}
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 100, 100);
+  variants:
+    short-distance:
+      distance: |-
+        const delta = 1;
+      clipping: // No clipping.
+    short-distance-with-clipping:
+      distance: |-
+        const delta = 1;
+      clipping: |-
+        const clipRegion = new Path2D();
+        clipRegion.rect(20, 20, 160, 160);
+        ctx.clip(clipRegion);
+    long-distance:
+      distance: |-
+        const delta = 10000;
+      clipping: // No clipping.
+    long-distance-with-clipping:
+      distance: |-
+        const delta = 10000;
+      clipping: |-
+        const clipRegion = new Path2D();
+        clipRegion.rect(20, 20, 160, 160);
+        ctx.clip(clipRegion);
+
+- name: 2d.layer.opaque-canvas
+  desc: Checks that layer blending works inside opaque canvas
+  size: [300, 300]
+  code: |
+    {% if canvas_type == 'htmlcanvas' %}
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = 200;
+    canvas2.height = 200;
+    {% else %}
+    const canvas2 = new OffscreenCanvas(200, 200);
+    {% endif %}
+    const ctx2 = canvas2.getContext('2d', {alpha: false});
+
+    ctx2.fillStyle = 'purple';
+    ctx2.fillRect(10, 10, 100, 100);
+
+    ctx2.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: 10,
+                              stdDeviation: 0,
+                              floodColor: 'rgba(200, 100, 50, 0.5)'}});
+    ctx2.fillStyle = 'green';
+    ctx2.fillRect(50, 50, 100, 100);
+    ctx2.globalAlpha = 0.8;
+    ctx2.fillStyle = 'yellow';
+    ctx2.fillRect(75, 25, 100, 100);
+    ctx2.endLayer();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 300, 300);
+    ctx.drawImage(canvas2, 0, 0);
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 300, 300);
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, 200, 200);
+
+    ctx.fillStyle = 'purple';
+    ctx.fillRect(10, 10, 100, 100);
+
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'green';
+    ctx2.fillRect(50, 50, 100, 100);
+    ctx2.globalAlpha = 0.8;
+    ctx2.fillStyle = 'yellow';
+    ctx2.fillRect(75, 25, 100, 100);
+
+    ctx.shadowColor = 'rgba(200, 100, 50, 0.5)';
+    ctx.shadowOffsetX = -10;
+    ctx.shadowOffsetY = 10;
+    ctx.drawImage(canvas2, 0, 0);
+
+- name: 2d.layer.css-filters
+  desc: Checks that beginLayer works with a CSS filter string as input.
+  size: [200, 200]
+  code: &filter-test-code |
+    ctx.beginLayer({filter: {{ ctx_filter }}});
+
+    ctx.fillStyle = 'teal';
+    ctx.fillRect(50, 50, 100, 100);
+
+    ctx.endLayer();
+  html_reference: &filter-test-reference |
+    <svg xmlns="http://www.w3.org/2000/svg"
+          width="{{ size[0] }}" height="{{ size[1] }}"
+          color-interpolation-filters="sRGB">
+      <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
+        {{ svg_filter | indent(4) }}
+      </filter>
+      <g filter="url(#filter)">
+        <rect x="50" y="50" width="100" height="100" fill="teal"/>
+      </g>
+    </svg>
+  variants:
+    blur:
+      ctx_filter: |-
+        'blur(10px)'
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="10" />
+    shadow:
+      ctx_filter: |-
+        'drop-shadow(-10px -10px 5px purple)'
+      svg_filter: |-
+        <feDropShadow dx="-10" dy="-10" stdDeviation="5" flood-color="purple" />
+    blur-and-shadow:
+      ctx_filter: |-
+        'blur(5px) drop-shadow(10px 10px 5px orange)'
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="5" />
+        <feDropShadow dx="10" dy="10" stdDeviation="5" flood-color="orange" />
+
+- name: 2d.layer.anisotropic-blur
+  desc: Checks that layers allow gaussian blur with separate X and Y components.
+  size: [200, 200]
+  code: *filter-test-code
+  html_reference: *filter-test-reference
+  variants:
+    x-only:
+      ctx_filter: |-
+        { name: 'gaussianBlur', stdDeviation: [4, 0] }
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="4 0" />
+    mostly-x:
+      ctx_filter: |-
+        { name: 'gaussianBlur', stdDeviation: [4, 1] }
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="4 1" />
+    isotropic:
+      ctx_filter: |-
+        { name: 'gaussianBlur', stdDeviation: [4, 4] }
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="4 4" />
+    mostly-y:
+      ctx_filter: |-
+        { name: 'gaussianBlur', stdDeviation: [1, 4] }
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="1 4" />
+    y-only:
+      ctx_filter: |-
+        { name: 'gaussianBlur', stdDeviation: [0, 4] }
+      svg_filter: |-
+        <feGaussianBlur stdDeviation="0 4" />
+
+- name: 2d.layer.nested-filters
+  desc: Checks that nested layers work properly when both apply filters.
+  size: [400, 200]
+  code: |
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: -20, dy: -20,
+      stdDeviation: 0, floodColor: 'yellow'}});
+    ctx.beginLayer({filter: 'drop-shadow(-10px -10px 0 blue)'});
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect(50, 50, 100, 100);
+
+    ctx.endLayer();
+    ctx.endLayer();
+
+    ctx.beginLayer({filter: 'drop-shadow(20px 20px 0 blue)'});
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: 10, dy: 10,
+      stdDeviation: 0, floodColor: 'yellow'}});
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect(250, 50, 100, 100);
+
+    ctx.endLayer();
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'yellow';
+    ctx.fillRect(20, 20, 100, 100);
+    ctx.fillRect(30, 30, 100, 100);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(40, 40, 100, 100);
+    ctx.fillStyle = 'red';
+    ctx.fillRect(50, 50, 100, 100);
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(280, 80, 100, 100);
+    ctx.fillRect(270, 70, 100, 100);
+    ctx.fillStyle = 'yellow';
+    ctx.fillRect(260, 60, 100, 100);
+    ctx.fillStyle = 'red';
+    ctx.fillRect(250, 50, 100, 100);

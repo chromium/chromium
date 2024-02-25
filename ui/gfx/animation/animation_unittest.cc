@@ -80,11 +80,11 @@ class EndAnimation : public LinearAnimation {
 // DeletingAnimationDelegate
 
 // AnimationDelegate implementation that deletes the animation in ended.
-class DeletingAnimationDelegate : public AnimationDelegate {
+class DeletingAnimationDelegate : public TestAnimationDelegate {
  public:
   void AnimationEnded(const Animation* animation) override {
     delete animation;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    QuitRunLoop();
   }
 };
 
@@ -94,21 +94,25 @@ class DeletingAnimationDelegate : public AnimationDelegate {
 // LinearCase
 
 TEST_F(AnimationTest, RunCase) {
+  base::RunLoop loop;
   TestAnimationDelegate ad;
+  ad.set_quit_closure(loop.QuitWhenIdleClosure());
   RunAnimation a1(150, &ad);
   a1.SetDuration(base::Seconds(2));
   a1.Start();
-  base::RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(ad.finished());
   EXPECT_FALSE(ad.canceled());
 }
 
 TEST_F(AnimationTest, CancelCase) {
+  base::RunLoop loop;
   TestAnimationDelegate ad;
+  ad.set_quit_closure(loop.QuitWhenIdleClosure());
   CancelAnimation a2(base::Seconds(2), 150, &ad);
   a2.Start();
-  base::RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(ad.finished());
   EXPECT_TRUE(ad.canceled());
@@ -117,10 +121,12 @@ TEST_F(AnimationTest, CancelCase) {
 // Lets an animation run, invoking End part way through and make sure we get the
 // right delegate methods invoked.
 TEST_F(AnimationTest, EndCase) {
+  base::RunLoop loop;
   TestAnimationDelegate ad;
+  ad.set_quit_closure(loop.QuitWhenIdleClosure());
   EndAnimation a2(base::Seconds(2), 150, &ad);
   a2.Start();
-  base::RunLoop().Run();
+  loop.Run();
 
   EXPECT_TRUE(ad.finished());
   EXPECT_FALSE(ad.canceled());
@@ -128,10 +134,12 @@ TEST_F(AnimationTest, EndCase) {
 
 // Runs an animation with a delegate that deletes the animation in end.
 TEST_F(AnimationTest, DeleteFromEnd) {
+  base::RunLoop loop;
   DeletingAnimationDelegate delegate;
+  delegate.set_quit_closure(loop.QuitWhenIdleClosure());
   RunAnimation* animation = new RunAnimation(150, &delegate);
   animation->Start();
-  base::RunLoop().Run();
+  loop.Run();
   // delegate should have deleted animation.
 }
 

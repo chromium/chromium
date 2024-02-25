@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {height="300"}, {width="300"}]
+++++++View text:"Group with circle and text" textSize:16.0 style:0 htmlInfo:[{htmlTag="g"}, {display="inline"}]
+++++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="text"}, {display="block"}]
+++++++++++TextView text:"hello world" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

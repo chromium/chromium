@@ -1,0 +1,118 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.privacy_sandbox;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+
+import java.util.HashSet;
+import java.util.List;
+
+/** Fragment for managing all the topics. */
+public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
+    private static final String MANAGE_TOPICS_PREFERENCE = "topics_list";
+
+    private PreferenceCategory mTopicsCategory;
+
+    private Dialog mConfirmationDialog;
+
+    @Override
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
+        super.onCreatePreferences(bundle, s);
+        getActivity().setTitle(R.string.settings_topics_page_manage_topics_heading);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_manage_preference);
+
+        mTopicsCategory = findPreference(MANAGE_TOPICS_PREFERENCE);
+        mTopicsCategory.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(R.string.settings_topics_page_manage_topics_explanation),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onLearnMoreClicked))));
+
+        populateTopics();
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.PageOpened");
+    }
+
+    private void populateTopics() {
+        mTopicsCategory.removeAll();
+        List<Topic> firstLevelTopics = PrivacySandboxBridge.getFirstLevelTopics();
+        var blockedTopics = new HashSet<Topic>(PrivacySandboxBridge.getBlockedTopics());
+        for (Topic topic : firstLevelTopics) {
+            var preference = new TopicSwitchPreference(getContext(), topic);
+            preference.setChecked(!blockedTopics.contains(topic));
+            preference.setOnPreferenceChangeListener(this::onToggleChange);
+            mTopicsCategory.addPreference(preference);
+        }
+    }
+
+    private boolean onToggleChange(Preference preference, Object newValue) {
+        var topicPreference = (TopicSwitchPreference) (preference);
+        if (!((boolean) newValue)) {
+            return handleBlockTopic(topicPreference);
+        }
+        PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), true);
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicEnabled");
+        return true;
+    }
+
+    private boolean handleBlockTopic(TopicSwitchPreference preference) {
+        Topic topic = preference.getTopic();
+        // Check if a child level topic is assigned.
+        List<Topic> childTopics = PrivacySandboxBridge.getChildTopicsCurrentlyAssigned(topic);
+        if (childTopics.isEmpty()) {
+            PrivacySandboxBridge.setTopicAllowed(topic, false);
+            RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.TopicBlocked");
+            return true;
+        }
+        // There are assigned child topics - display a confirmation prompt.
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(
+                                getString(
+                                        R.string.settings_manage_topics_dialog_clank_title,
+                                        topic.getName()))
+                        .setMessage(
+                                getString(
+                                        R.string.settings_manage_topics_dialog_clank_body,
+                                        topic.getName()))
+                        .setPositiveButton(
+                                R.string.continue_button,
+                                (dialog, which) -> {
+                                    PrivacySandboxBridge.setTopicAllowed(topic, false);
+                                    RecordUserAction.record(
+                                            "Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed");
+                                })
+                        .setNegativeButton(
+                                R.string.cancel,
+                                (dialog, which) -> {
+                                    preference.setChecked(true);
+                                    mConfirmationDialog = null;
+                                    RecordUserAction.record(
+                                            "Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled");
+                                })
+                        .show();
+        return true;
+    }
+
+    private void onLearnMoreClicked(View view) {
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
+        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+    }
+}

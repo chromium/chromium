@@ -8,12 +8,16 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,24 +26,23 @@
 // static
 DiceTabHelper::EnableSyncCallback
 DiceTabHelper::GetEnableSyncCallbackForBrowser() {
-  return base::BindRepeating(
-      [](Profile* profile, signin_metrics::AccessPoint access_point,
-         signin_metrics::PromoAction promo_action,
-         signin_metrics::Reason reason, content::WebContents* web_contents,
-         const CoreAccountId& account_id) {
-        DCHECK(profile);
-        Browser* browser =
-            web_contents ? chrome::FindBrowserWithWebContents(web_contents)
-                         : chrome::FindBrowserWithProfile(profile);
-        if (!browser) {
-          return;
-        }
-        // TurnSyncOnHelper is suicidal (it will kill itself once it
-        // finishes enabling sync).
-        new TurnSyncOnHelper(
-            profile, browser, access_point, promo_action, reason, account_id,
-            TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
-      });
+  return base::BindRepeating([](Profile* profile,
+                                signin_metrics::AccessPoint access_point,
+                                signin_metrics::PromoAction promo_action,
+                                content::WebContents* web_contents,
+                                const CoreAccountInfo& account_info) {
+    DCHECK(profile);
+    Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
+                                    : chrome::FindBrowserWithProfile(profile);
+    if (!browser) {
+      return;
+    }
+    // TurnSyncOnHelper is suicidal (it will kill itself once it
+    // finishes enabling sync).
+    new TurnSyncOnHelper(profile, browser, access_point, promo_action,
+                         account_info.account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  });
 }
 
 // static
@@ -51,9 +54,8 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
     if (!profile) {
       return;
     }
-    Browser* browser = web_contents
-                           ? chrome::FindBrowserWithWebContents(web_contents)
-                           : chrome::FindBrowserWithProfile(profile);
+    Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
+                                    : chrome::FindBrowserWithProfile(profile);
     if (!browser) {
       return;
     }
@@ -82,6 +84,7 @@ void DiceTabHelper::InitializeSigninFlow(
     const GURL& redirect_url,
     bool record_signin_started_metrics,
     EnableSyncCallback enable_sync_callback,
+    OnSigninHeaderReceived on_signin_header_received_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
   DCHECK(signin_url.is_valid());
   DCHECK(state_.signin_url.is_empty() || state_.signin_url == signin_url);
@@ -93,6 +96,8 @@ void DiceTabHelper::InitializeSigninFlow(
   state_.signin_promo_action = promo_action;
   state_.signin_reason = reason;
   state_.enable_sync_callback = std::move(enable_sync_callback);
+  state_.on_signin_header_received_callback =
+      std::move(on_signin_header_received_callback);
   state_.show_signin_error_callback = std::move(show_signin_error_callback);
 
   is_chrome_signin_page_ = true;
@@ -100,6 +105,15 @@ void DiceTabHelper::InitializeSigninFlow(
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kPreconnectAccountCapabilitiesBeforeSignIn)) {
+    // This profile creation may lead to the user signing in. To speed up a
+    // potential subsequent account capabililties fetch, notify IdentityManager.
+    IdentityManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
+        ->PrepareForAddingNewAccount();
   }
 
   if (!record_signin_started_metrics) {

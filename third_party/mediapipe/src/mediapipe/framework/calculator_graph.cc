@@ -17,15 +17,18 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <functional>
 #include <map>
 #include <memory>
-#include <queue>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "absl/container/fixed_array.h"
 #include "absl/container/flat_hash_set.h"
-#include "absl/log/log.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/log/check.h"  // nogncheck
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -38,9 +41,15 @@
 #include "mediapipe/framework/calculator_base.h"
 #include "mediapipe/framework/counter_factory.h"
 #include "mediapipe/framework/delegating_executor.h"
+#include "mediapipe/framework/executor.h"
+#include "mediapipe/framework/graph_output_stream.h"
 #include "mediapipe/framework/graph_service_manager.h"
 #include "mediapipe/framework/input_stream_manager.h"
 #include "mediapipe/framework/mediapipe_profiling.h"
+#include "mediapipe/framework/output_side_packet_impl.h"
+#include "mediapipe/framework/output_stream_manager.h"
+#include "mediapipe/framework/output_stream_poller.h"
+#include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/packet_generator.h"
 #include "mediapipe/framework/packet_generator.pb.h"
 #include "mediapipe/framework/packet_set.h"
@@ -49,14 +58,18 @@
 #include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/core_proto_inc.h"
 #include "mediapipe/framework/port/logging.h"
+#include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/source_location.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
+#include "mediapipe/framework/port/status_macros.h"
+#include "mediapipe/framework/scheduler.h"
 #include "mediapipe/framework/status_handler.h"
 #include "mediapipe/framework/status_handler.pb.h"
 #include "mediapipe/framework/thread_pool_executor.h"
 #include "mediapipe/framework/thread_pool_executor.pb.h"
+#include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/fill_packet_set.h"
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/tool/tag_map.h"
@@ -66,7 +79,6 @@
 #include "mediapipe/gpu/gpu_service.h"
 #include "mediapipe/gpu/graph_support.h"
 #include "mediapipe/util/cpu_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -134,10 +146,10 @@ CalculatorGraph::CalculatorGraph(CalculatorGraphConfig config)
 // they only need to be fully visible here, where their destructor is
 // instantiated.
 CalculatorGraph::~CalculatorGraph() {
-  // Stop periodic profiler output to ublock Executor destructors.
+  // Stop periodic profiler output to unblock Executor destructors.
   absl::Status status = profiler()->Stop();
   if (!status.ok()) {
-    LOG(ERROR) << "During graph destruction: " << status;
+    ABSL_LOG(ERROR) << "During graph destruction: " << status;
   }
 }
 
@@ -181,6 +193,7 @@ absl::Status CalculatorGraph::InitializeStreams() {
     const EdgeInfo& edge_info = validated_graph_->InputStreamInfos()[index];
     MP_RETURN_IF_ERROR(input_stream_managers_[index].Initialize(
         edge_info.name, edge_info.packet_type, edge_info.back_edge));
+    input_stream_to_index_[&input_stream_managers_[index]] = index;
   }
 
   // Create and initialize the output streams.
@@ -195,7 +208,7 @@ absl::Status CalculatorGraph::InitializeStreams() {
 
   // Initialize GraphInputStreams.
   int graph_input_stream_count = 0;
-  ASSIGN_OR_RETURN(
+  MP_ASSIGN_OR_RETURN(
       auto input_tag_map,
       tool::TagMap::Create(validated_graph_->Config().input_stream()));
   for (const auto& stream_name : input_tag_map->Names()) {
@@ -359,7 +372,7 @@ absl::Status CalculatorGraph::InitializeExecutors() {
                 "CalculatorGraph::SetExecutor() call.";
     }
     // clang-format off
-    ASSIGN_OR_RETURN(Executor* executor,
+    MP_ASSIGN_OR_RETURN(Executor* executor,
                      ExecutorRegistry::CreateByNameInNamespace(
                          validated_graph_->Package(),
                          executor_config.type(), executor_config.options()));
@@ -482,6 +495,17 @@ absl::Status CalculatorGraph::ObserveOutputStream(
   return absl::OkStatus();
 }
 
+absl::Status CalculatorGraph::SetErrorCallback(
+    std::function<void(const absl::Status&)> error_callback) {
+  // Require setting error callback before initialization to:
+  // - impose the strictest requirement
+  // - save the future possibility of reporting initialization errors
+  RET_CHECK(!initialized_)
+      << "SetErrorCallback must be called before Initialize()";
+  error_callback_ = error_callback;
+  return absl::OkStatus();
+}
+
 absl::StatusOr<OutputStreamPoller> CalculatorGraph::AddOutputStreamPoller(
     const std::string& stream_name, bool observe_timestamp_bounds) {
   RET_CHECK(initialized_).SetNoLogging()
@@ -589,7 +613,7 @@ absl::Status CalculatorGraph::MaybeSetUpGpuServiceFromLegacySidePacket(
   if (legacy_sp.IsEmpty()) return absl::OkStatus();
   auto gpu_resources = service_manager_.GetServiceObject(kGpuService);
   if (gpu_resources) {
-    LOG(WARNING)
+    ABSL_LOG(WARNING)
         << "::mediapipe::GpuSharedData provided as a side packet while the "
         << "graph already had one; ignoring side packet";
     return absl::OkStatus();
@@ -717,7 +741,7 @@ absl::Status CalculatorGraph::PrepareForRun(
   absl::Status error_status;
   if (has_error_) {
     GetCombinedErrors(&error_status);
-    LOG(ERROR) << error_status.ToString(kStatusLogFlags);
+    ABSL_LOG(ERROR) << error_status.ToString(kStatusLogFlags);
     return error_status;
   }
 
@@ -796,7 +820,7 @@ absl::Status CalculatorGraph::PrepareForRun(
   }
 
   if (GetCombinedErrors(&error_status)) {
-    LOG(ERROR) << error_status.ToString(kStatusLogFlags);
+    ABSL_LOG(ERROR) << error_status.ToString(kStatusLogFlags);
     CleanupAfterRun(&error_status);
     return error_status;
   }
@@ -850,7 +874,7 @@ absl::Status CalculatorGraph::PrepareForRun(
 
 absl::Status CalculatorGraph::WaitUntilIdle() {
   if (has_sources_) {
-    LOG_FIRST_N(WARNING, 1)
+    ABSL_LOG_FIRST_N(WARNING, 1)
         << "WaitUntilIdle called on a graph with source nodes, which "
            "is not fully supported at the moment. Source nodes: "
         << ListSourceNodes();
@@ -860,7 +884,7 @@ absl::Status CalculatorGraph::WaitUntilIdle() {
   VLOG(2) << "Scheduler idle.";
   absl::Status status = absl::OkStatus();
   if (GetCombinedErrors(&status)) {
-    LOG(ERROR) << status.ToString(kStatusLogFlags);
+    ABSL_LOG(ERROR) << status.ToString(kStatusLogFlags);
   }
   return status;
 }
@@ -878,12 +902,12 @@ absl::Status CalculatorGraph::WaitForObservedOutput() {
 }
 
 absl::Status CalculatorGraph::AddPacketToInputStream(
-    const std::string& stream_name, const Packet& packet) {
+    absl::string_view stream_name, const Packet& packet) {
   return AddPacketToInputStreamInternal(stream_name, packet);
 }
 
 absl::Status CalculatorGraph::AddPacketToInputStream(
-    const std::string& stream_name, Packet&& packet) {
+    absl::string_view stream_name, Packet&& packet) {
   return AddPacketToInputStreamInternal(stream_name, std::move(packet));
 }
 
@@ -906,14 +930,18 @@ absl::Status CalculatorGraph::SetInputStreamTimestampBound(
 // std::forward will deduce the correct type as we pass along packet.
 template <typename T>
 absl::Status CalculatorGraph::AddPacketToInputStreamInternal(
-    const std::string& stream_name, T&& packet) {
+    absl::string_view stream_name, T&& packet) {
+  auto stream_it = graph_input_streams_.find(stream_name);
   std::unique_ptr<GraphInputStream>* stream =
-      mediapipe::FindOrNull(graph_input_streams_, stream_name);
+      stream_it == graph_input_streams_.end() ? nullptr : &stream_it->second;
   RET_CHECK(stream).SetNoLogging() << absl::Substitute(
       "AddPacketToInputStream called on input stream \"$0\" which is not a "
       "graph input stream.",
       stream_name);
-  int node_id = mediapipe::FindOrDie(graph_input_stream_node_ids_, stream_name);
+  auto node_id_it = graph_input_stream_node_ids_.find(stream_name);
+  ABSL_CHECK(node_id_it != graph_input_stream_node_ids_.end())
+      << "Map key not found: " << stream_name;
+  int node_id = node_id_it->second;
   ABSL_CHECK_GE(node_id, validated_graph_->CalculatorInfos().size());
   {
     absl::MutexLock lock(&full_input_streams_mutex_);
@@ -1053,11 +1081,15 @@ void CalculatorGraph::RecordError(const absl::Status& error) {
     }
     if (errors_.size() > kMaxNumAccumulatedErrors) {
       for (const absl::Status& error : errors_) {
-        LOG(ERROR) << error;
+        ABSL_LOG(ERROR) << error;
       }
-      LOG(FATAL) << "Forcefully aborting to prevent the framework running out "
-                    "of memory.";
+      ABSL_LOG(FATAL)
+          << "Forcefully aborting to prevent the framework running out "
+             "of memory.";
     }
+  }
+  if (error_callback_) {
+    error_callback_(error);
   }
 }
 
@@ -1101,7 +1133,8 @@ void CalculatorGraph::CallStatusHandlers(GraphRunState graph_run_state,
     absl::StatusOr<std::unique_ptr<internal::StaticAccessToStatusHandler>>
         static_access_statusor = internal::StaticAccessToStatusHandlerRegistry::
             CreateByNameInNamespace(validated_graph_->Package(), handler_type);
-    ABSL_CHECK(static_access_statusor.ok()) << handler_type << " is not registered.";
+    ABSL_CHECK(static_access_statusor.ok())
+        << handler_type << " is not registered.";
     auto static_access = std::move(static_access_statusor).value();
     absl::Status handler_result;
     if (graph_run_state == GraphRunState::PRE_RUN) {
@@ -1224,7 +1257,7 @@ bool CalculatorGraph::UnthrottleSources() {
   // NOTE: We can be sure that this function will grow input streams enough
   // to unthrottle at least one source node.  The current stream queue sizes
   // will remain unchanged until at least one source node becomes unthrottled.
-  // This is a sufficient because succesfully growing at least one full input
+  // This is a sufficient because successfully growing at least one full input
   // stream during each call to UnthrottleSources will eventually resolve
   // each deadlock.
   absl::flat_hash_set<InputStreamManager*> full_streams;
@@ -1244,7 +1277,8 @@ bool CalculatorGraph::UnthrottleSources() {
   for (InputStreamManager* stream : full_streams) {
     if (Config().report_deadlock()) {
       RecordError(absl::UnavailableError(absl::StrCat(
-          "Detected a deadlock due to input throttling for: \"", stream->Name(),
+          "Detected a deadlock due to input throttling for input stream: \"",
+          stream->Name(), "\" of a node \"", GetParentNodeDebugName(stream),
           "\". All calculators are idle while packet sources remain active "
           "and throttled.  Consider adjusting \"max_queue_size\" or "
           "\"report_deadlock\".")));
@@ -1252,10 +1286,11 @@ bool CalculatorGraph::UnthrottleSources() {
     }
     int new_size = stream->QueueSize() + 1;
     stream->SetMaxQueueSize(new_size);
-    LOG_EVERY_N(WARNING, 100)
-        << "Resolved a deadlock by increasing max_queue_size of input stream: "
-        << stream->Name() << " to: " << new_size
-        << ". Consider increasing max_queue_size for better performance.";
+    ABSL_LOG_EVERY_N(WARNING, 100) << absl::StrCat(
+        "Resolved a deadlock by increasing max_queue_size of input stream: \"",
+        stream->Name(), "\" of a node \"", GetParentNodeDebugName(stream),
+        "\" to ", new_size,
+        ". Consider increasing max_queue_size for better performance.");
   }
   return !full_streams.empty();
 }
@@ -1319,7 +1354,7 @@ absl::Status CalculatorGraph::CreateDefaultThreadPool(
   }
   options->set_num_threads(num_threads);
   // clang-format off
-  ASSIGN_OR_RETURN(Executor* executor,
+  MP_ASSIGN_OR_RETURN(Executor* executor,
                    ThreadPoolExecutor::Create(extendable_options));
   // clang-format on
   return SetExecutorInternal("", std::shared_ptr<Executor>(executor));
@@ -1394,6 +1429,27 @@ std::string CalculatorGraph::ListSourceNodes() const {
   return absl::StrJoin(sources, ", ");
 }
 
+std::string CalculatorGraph::GetParentNodeDebugName(
+    InputStreamManager* stream) const {
+  auto iter = input_stream_to_index_.find(stream);
+  if (iter == input_stream_to_index_.end()) {
+    return absl::StrCat("Unknown (node with input stream: ", stream->Name(),
+                        ")");
+  }
+
+  const int input_stream_index = iter->second;
+  const EdgeInfo& edge_info =
+      validated_graph_->InputStreamInfos()[input_stream_index];
+  const int node_index = edge_info.parent_node.index;
+  const CalculatorGraphConfig& config = validated_graph_->Config();
+  if (node_index < 0 || node_index >= config.node_size()) {
+    return absl::StrCat("Unknown (node index: ", node_index,
+                        ", with input stream: ", stream->Name(), ")");
+  }
+
+  return DebugName(config.node(node_index));
+}
+
 namespace {
 void PrintTimingToInfo(const std::string& label, int64_t timer_value) {
   const int64_t total_seconds = timer_value / 1000000ll;
@@ -1402,12 +1458,13 @@ void PrintTimingToInfo(const std::string& label, int64_t timer_value) {
   const int64_t minutes = (total_seconds / 60ll) % 60ll;
   const int64_t seconds = total_seconds % 60ll;
   const int64_t milliseconds = (timer_value / 1000ll) % 1000ll;
-  LOG(INFO) << label << " took "
-            << absl::StrFormat(
-                   "%02lld days, %02lld:%02lld:%02lld.%03lld (total seconds: "
-                   "%lld.%06lld)",
-                   days, hours, minutes, seconds, milliseconds, total_seconds,
-                   timer_value % int64_t{1000000});
+  ABSL_LOG(INFO)
+      << label << " took "
+      << absl::StrFormat(
+             "%02lld days, %02lld:%02lld:%02lld.%03lld (total seconds: "
+             "%lld.%06lld)",
+             days, hours, minutes, seconds, milliseconds, total_seconds,
+             timer_value % int64_t{1000000});
 }
 
 bool MetricElementComparator(const std::pair<std::string, int64_t>& e1,

@@ -114,9 +114,9 @@ class ESimProfile : public mojom::ESimProfile {
   bool IsProfileManaged();
 
   // Reference to Euicc that owns this profile.
-  raw_ptr<Euicc, ExperimentalAsh> euicc_;
+  raw_ptr<Euicc> euicc_;
   // Reference to ESimManager that owns Euicc of this profile.
-  raw_ptr<ESimManager, ExperimentalAsh> esim_manager_;
+  raw_ptr<ESimManager> esim_manager_;
   UninstallProfileCallback uninstall_callback_;
   SetProfileNicknameCallback set_profile_nickname_callback_;
   InstallProfileCallback install_callback_;

@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -124,7 +123,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   };
 
   static ScriptState* Create(v8::Local<v8::Context>,
-                             scoped_refptr<DOMWrapperWorld>,
+                             DOMWrapperWorld*,
                              ExecutionContext*);
 
   ScriptState(const ScriptState&) = delete;
@@ -175,13 +174,20 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // associated with a ScriptState. This is necessary in unit tests when a
   // v8::Context is created directly on the v8 API without going through the
   // usual blink codepaths.
+  // This is also called in some situations where DissociateContext() has
+  // already been called and therefore the ScriptState pointer on the
+  // v8::Context has already been nulled.
   static ScriptState* MaybeFrom(v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     if (context->GetNumberOfEmbedderDataFields() <=
         kV8ContextPerContextDataIndex) {
       return nullptr;
     }
-    return From(context);
+    ScriptState* script_state =
+        static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
+            kV8ContextPerContextDataIndex));
+    SECURITY_CHECK(!script_state || script_state->context_ == context);
+    return script_state;
   }
 
   v8::Isolate* GetIsolate() const { return isolate_; }
@@ -207,28 +213,20 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   void DissociateContext();
 
  protected:
-  ScriptState(v8::Local<v8::Context>,
-              scoped_refptr<DOMWrapperWorld>,
-              ExecutionContext*);
+  ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
 
  private:
   static void OnV8ContextCollectedCallback(
       const v8::WeakCallbackInfo<ScriptState>&);
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   // This persistent handle is weak.
   ScopedPersistent<v8::Context> context_;
 
   // This refptr doesn't cause a cycle because all persistent handles that
   // DOMWrapperWorld holds are weak.
-  scoped_refptr<DOMWrapperWorld> world_;
+  Member<DOMWrapperWorld> world_;
 
-  // This std::unique_ptr causes a cycle:
-  // V8PerContextData --(Persistent)--> v8::Context --(RefPtr)--> ScriptState
-  //     --(std::unique_ptr)--> V8PerContextData
-  // So you must explicitly clear the std::unique_ptr by calling
-  // disposePerContextData() once you no longer need V8PerContextData.
-  // Otherwise, the v8::Context will leak.
   Member<V8PerContextData> per_context_data_;
 
   // v8::Context has an internal field to this ScriptState* as a raw pointer,
@@ -243,7 +241,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   V8ContextToken token_;
 
   using CreateCallback = ScriptState* (*)(v8::Local<v8::Context>,
-                                          scoped_refptr<DOMWrapperWorld>,
+                                          DOMWrapperWorld*,
                                           ExecutionContext*);
   static CreateCallback s_create_callback_;
   static void SetCreateCallback(CreateCallback);
@@ -274,7 +272,7 @@ class ScriptStateProtectingContext final
 
   void Trace(Visitor* visitor) const { visitor->Trace(script_state_); }
 
-  ScriptState* Get() const { return script_state_; }
+  ScriptState* Get() const { return script_state_.Get(); }
   void Reset() {
     script_state_ = nullptr;
     context_.Clear();

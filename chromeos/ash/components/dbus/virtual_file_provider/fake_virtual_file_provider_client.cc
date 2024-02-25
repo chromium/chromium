@@ -19,7 +19,7 @@ void FakeVirtualFileProviderClient::Init(dbus::Bus* bus) {}
 void FakeVirtualFileProviderClient::GenerateVirtualFileId(
     int64_t size,
     GenerateVirtualFileIdCallback callback) {
-  absl::optional<std::string> id;
+  std::optional<std::string> id;
   if (size != expected_size_)
     LOG(ERROR) << "Unexpected size " << size << " vs " << expected_size_;
   else

@@ -16,9 +16,19 @@ interface SimpleTestDriver {
   RequestQuit() => ();
 };
 
+interface Terminator {
+  [Sync] Terminate() => ();
+};
+
 interface SimpleTestClient {
   [Sync]
   RequestValue() => (int32 value);
+
+  [Sync]
+  BindSync(pending_associated_receiver<SimpleTestClient> receiver) => ();
+
+  GetReceiverWithQueuedSyncMessage() =>
+      (pending_associated_receiver<SimpleTestClient> receiver);
 };
 
 interface PingReceiver {
@@ -52,4 +62,10 @@ interface InterfacePassingTestDriver {
   GetAssociatedPingReceiver(
       array<pending_associated_receiver<PingReceiver>> receiver) => ();
   Quit();
+};
+
+interface InterfaceWithUrgentMethod {
+  [SupportsUrgent] MaybeUrgentMessage(bool is_urgent);
+  NonUrgentMessage();
+  RequestQuit() => ();
 };

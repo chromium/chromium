@@ -8,23 +8,25 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -59,23 +61,29 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
             initWithAppState:app_state_
                 browserState:browser_state_.get()]),
         agent_([[StartSurfaceSceneAgent alloc] init]) {
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+        -1);
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     agent_.sceneState = scene_state_;
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    TestingApplicationContext::GetGlobal()->SetLocalState(&pref_service_);
   }
 
   void TearDown() override {
     agent_ = nil;
     scene_state_ = nil;
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     PlatformTest::TearDown();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeStartupInformation* startup_information_;
   FakeAppStateInitStage* app_state_;
@@ -87,7 +95,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   // Create WebState at `index` with `url` as the current url.
-  void InsertNewWebState(int index, WebStateOpener opener, GURL url) {
+  void InsertNewWebState(int index, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
     test_web_state->SetNavigationItemCount(1);
@@ -96,14 +104,14 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     WebStateList* web_state_list = browser->GetWebStateList();
     NewTabPageTabHelper::CreateForWebState(test_web_state.get());
-    web_state_list->InsertWebState(index, std::move(test_web_state),
-                                   WebStateList::INSERT_FORCE_INDEX, opener);
+    web_state_list->InsertWebState(
+        std::move(test_web_state),
+        WebStateList::InsertionParams::AtIndex(index));
   }
 
   // Create a WebState that has a navigation history of more than one at `index`
   // with `url` as the current url.
   void InsertNewWebStateWithNavigationHistory(int index,
-                                              WebStateOpener opener,
                                               GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
@@ -111,8 +119,9 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     WebStateList* web_state_list = browser->GetWebStateList();
-    web_state_list->InsertWebState(index, std::move(test_web_state),
-                                   WebStateList::INSERT_FORCE_INDEX, opener);
+    web_state_list->InsertWebState(
+        std::move(test_web_state),
+        WebStateList::InsertionParams::AtIndex(index));
   }
 };
 
@@ -125,10 +134,10 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
 
-  InsertNewWebState(0, WebStateOpener(), GURL(kChromeUINewTabURL));
-  InsertNewWebState(1, WebStateOpener(), GURL(kURL));
-  InsertNewWebState(2, WebStateOpener(), GURL(kChromeUINewTabURL));
-  InsertNewWebState(3, WebStateOpener(), GURL(kChromeUINewTabURL));
+  InsertNewWebState(0, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kURL));
+  InsertNewWebState(2, GURL(kChromeUINewTabURL));
+  InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
@@ -152,11 +161,10 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
 
-  InsertNewWebState(0, WebStateOpener(), GURL(kChromeUINewTabURL));
-  InsertNewWebState(1, WebStateOpener(), GURL(kURL));
-  InsertNewWebStateWithNavigationHistory(2, WebStateOpener(),
-                                         GURL(kChromeUINewTabURL));
-  InsertNewWebState(3, WebStateOpener(), GURL(kChromeUINewTabURL));
+  InsertNewWebState(0, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kURL));
+  InsertNewWebStateWithNavigationHistory(2, GURL(kChromeUINewTabURL));
+  InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
@@ -178,10 +186,9 @@ TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
-  InsertNewWebStateWithNavigationHistory(0, WebStateOpener(),
-                                         GURL(kChromeUINewTabURL));
-  InsertNewWebState(1, WebStateOpener(), GURL(kURL));
-  InsertNewWebState(2, WebStateOpener(), GURL(kChromeUINewTabURL));
+  InsertNewWebStateWithNavigationHistory(0, GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, GURL(kURL));
+  InsertNewWebState(2, GURL(kChromeUINewTabURL));
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
@@ -207,8 +214,8 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
 
   app_state_.initStageForTesting = InitStageFinal;
 
-  InsertNewWebState(0, WebStateOpener(), GURL(kURL));
-  InsertNewWebState(1, WebStateOpener(), GURL(kChromeUINewTabURL));
+  InsertNewWebState(0, GURL(kURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
@@ -236,8 +243,8 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
   app_state_.initStageForTesting = InitStageFinal;
   [startup_information_ setIsColdStart:YES];
 
-  InsertNewWebState(0, WebStateOpener(), GURL(kURL));
-  InsertNewWebState(1, WebStateOpener(), GURL(kChromeUINewTabURL));
+  InsertNewWebState(0, GURL(kURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();

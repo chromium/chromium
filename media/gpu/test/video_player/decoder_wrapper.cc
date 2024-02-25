@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/waiting.h"
 #include "media/gpu/macros.h"
@@ -39,7 +40,7 @@ namespace {
 // This helper thunk wraps a WeakPtr into an 'Optional' value, so the WeakPtr is
 // only dereferenced after rescheduling the task on the specified task runner.
 template <typename F, typename... Args>
-void CallbackThunk(absl::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
+void CallbackThunk(std::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    F f,
                    Args... args) {
@@ -366,7 +367,9 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
       FROM_HERE,
       base::BindOnce(&DecoderWrapper::DecodeNextFragmentTask, weak_this_),
 #if BUILDFLAG(USE_V4L2_CODEC)
-      base::Milliseconds(1)
+      base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)
+          ? base::Milliseconds(5)
+          : base::Milliseconds(1)
 #else
       base::Milliseconds(0)
 #endif
@@ -378,6 +381,14 @@ void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   DVLOGF(4) << current_frame_index_;
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK(video_frame->metadata().power_efficient);
+
+  // Technically VideoDecoder clients shouldn't care about |video_frame|'s'
+  // timestamps but we do because we feed non-zeros in DecodeNextFragmentTask().
+  // Note that we cannot enforce non-strictly monotonically increasing time
+  // deltas because the feeding order might not be the same as the output order
+  // (e.g. in H.264 with B-frames the output order would be the "presentation"
+  // order and not the "decode" or "transmission" order).
+  DCHECK_NE(video_frame->timestamp(), base::TimeDelta());
 
   frame_renderer_->RenderFrame(video_frame);
 

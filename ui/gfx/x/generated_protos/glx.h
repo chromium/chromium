@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_GLX_H_
 #define UI_GFX_X_GENERATED_PROTOS_GLX_H_
@@ -45,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -288,7 +271,7 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct PbufferClobberEvent {
-    static constexpr int type_id = 4;
+    static constexpr uint8_t type_id = 1;
     static constexpr uint8_t opcode = 0;
     uint16_t sequence{};
     uint16_t event_type{};
@@ -301,14 +284,10 @@ class COMPONENT_EXPORT(X11) Glx {
     uint16_t width{};
     uint16_t height{};
     uint16_t count{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct BufferSwapCompleteEvent {
-    static constexpr int type_id = 5;
+    static constexpr uint8_t type_id = 2;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     uint16_t event_type{};
@@ -318,10 +297,6 @@ class COMPONENT_EXPORT(X11) Glx {
     uint32_t msc_hi{};
     uint32_t msc_lo{};
     uint32_t sbc{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct RenderRequest {

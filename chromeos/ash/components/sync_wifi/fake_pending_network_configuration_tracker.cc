@@ -18,7 +18,7 @@ FakePendingNetworkConfigurationTracker::
 
 std::string FakePendingNetworkConfigurationTracker::TrackPendingUpdate(
     const NetworkIdentifier& id,
-    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
+    const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
   std::string change_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   id_to_pending_update_map_.emplace(
       id, PendingNetworkConfigurationUpdate(id, change_id, specifics,
@@ -56,13 +56,13 @@ FakePendingNetworkConfigurationTracker::GetPendingUpdates() {
   return list;
 }
 
-absl::optional<PendingNetworkConfigurationUpdate>
+std::optional<PendingNetworkConfigurationUpdate>
 FakePendingNetworkConfigurationTracker::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   if (!base::Contains(id_to_pending_update_map_, id) ||
       id_to_pending_update_map_.at(id).change_guid() != change_guid) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return id_to_pending_update_map_.at(id);

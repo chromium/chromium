@@ -65,7 +65,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityDispatcher {
 
   raw_ptr<MockableTime> time_;
   std::set<std::unique_ptr<Task>, base::UniquePtrComparator> tasks_;
-  std::set<Task*> eligible_tasks_;
+  std::set<raw_ptr<Task, SetExperimental>> eligible_tasks_;
 };
 
 }  // namespace domain_reliability

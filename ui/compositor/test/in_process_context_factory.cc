@@ -129,7 +129,7 @@ class InProcessContextFactory::PerCompositorData
     display_ = std::move(display);
   }
   void SetMaxVrrInterval(
-      absl::optional<base::TimeDelta> max_vrr_interval) override {
+      std::optional<base::TimeDelta> max_vrr_interval) override {
     max_vrr_interval_ = max_vrr_interval;
   }
 
@@ -138,7 +138,7 @@ class InProcessContextFactory::PerCompositorData
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
-    max_vrr_interval_ = absl::nullopt;
+    max_vrr_interval_ = std::nullopt;
   }
 
   void Bind(
@@ -159,7 +159,7 @@ class InProcessContextFactory::PerCompositorData
   }
   base::TimeTicks vsync_timebase() { return vsync_timebase_; }
   base::TimeDelta vsync_interval() { return vsync_interval_; }
-  absl::optional<base::TimeDelta> max_vrr_interval() {
+  std::optional<base::TimeDelta> max_vrr_interval() {
     return max_vrr_interval_;
   }
 
@@ -172,7 +172,7 @@ class InProcessContextFactory::PerCompositorData
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
-  absl::optional<base::TimeDelta> max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vrr_interval_;
 
   mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
@@ -275,10 +275,11 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
-      compositor->frame_sink_id(), std::move(display_dependency),
-      std::move(output_surface), std::move(overlay_processor),
-      std::move(scheduler), compositor->task_runner()));
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
+      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
+      std::move(display_dependency), std::move(output_surface),
+      std::move(overlay_processor), std::move(scheduler),
+      compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|
@@ -298,27 +299,26 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
 scoped_refptr<viz::ContextProvider>
 InProcessContextFactory::SharedMainThreadContextProvider() {
-  if (shared_main_thread_contexts_ &&
-      shared_main_thread_contexts_->ContextGL()->GetGraphicsResetStatusKHR() ==
-          GL_NO_ERROR)
-    return shared_main_thread_contexts_;
-
-  shared_main_thread_contexts_ =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
-
-  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
-  if (result != gpu::ContextResult::kSuccess)
-    shared_main_thread_contexts_.reset();
-
-  return shared_main_thread_contexts_;
+  return nullptr;
 }
 
 scoped_refptr<viz::RasterContextProvider>
 InProcessContextFactory::SharedMainThreadRasterContextProvider() {
-  SharedMainThreadContextProvider();
-  DCHECK(!shared_main_thread_contexts_ ||
-         shared_main_thread_contexts_->RasterInterface());
+  if (shared_main_thread_contexts_ &&
+      shared_main_thread_contexts_->RasterInterface()
+              ->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
+    return shared_main_thread_contexts_;
+  }
+
+  shared_main_thread_contexts_ =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+
+  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
+  if (result != gpu::ContextResult::kSuccess) {
+    shared_main_thread_contexts_.reset();
+  }
+
   return shared_main_thread_contexts_;
 }
 
@@ -386,11 +386,11 @@ base::TimeDelta InProcessContextFactory::GetDisplayVSyncTimeInterval(
   return iter->second->vsync_interval();
 }
 
-absl::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
+std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second->max_vrr_interval();
 }

@@ -20,7 +20,7 @@ namespace {
 // Whether to enable a series of optimizations that reduce total CPU
 // utilization.
 BASE_FEATURE(kReduceCpuUtilization,
-             "ReduceCpuUtilization",
+             "ReduceCpuUtilization2",
              FEATURE_ENABLED_BY_DEFAULT);
 
 class CpuReductionExperimentSubSampler {

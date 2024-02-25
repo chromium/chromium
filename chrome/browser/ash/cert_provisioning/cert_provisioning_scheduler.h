@@ -78,6 +78,9 @@ class CertProvisioningScheduler {
   // Returns "false" if `cert_profile_id` is not found and "true" otherwise.
   virtual bool UpdateOneWorker(const CertProfileId& cert_profile_id) = 0;
   virtual void UpdateAllWorkers() = 0;
+  // Resets the process of provisioning a specific certificate.
+  // Returns "false" if `cert_profile_id` is not found and "true" otherwise.
+  virtual bool ResetOneWorker(const CertProfileId& cert_profile_id) = 0;
 
   // Returns all certificate provisioning workers that are currently active.
   virtual const WorkerMap& GetWorkers() const = 0;
@@ -133,6 +136,7 @@ class CertProvisioningSchedulerImpl
   // CertProvisioningScheduler:
   bool UpdateOneWorker(const CertProfileId& cert_profile_id) override;
   void UpdateAllWorkers() override;
+  bool ResetOneWorker(const CertProfileId& cert_profile_id) override;
   const WorkerMap& GetWorkers() const override;
   const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const override;
@@ -142,7 +146,7 @@ class CertProvisioningSchedulerImpl
   // Invoked when the CertProvisioningWorker corresponding to |profile| reached
   // its final state.
   // Public so it can be called from tests.
-  void OnProfileFinished(const CertProfile& profile,
+  void OnProfileFinished(CertProfile profile,
                          CertProvisioningWorkerState state);
 
   // Called when any state visible from the outside has changed.
@@ -182,7 +186,7 @@ class CertProvisioningSchedulerImpl
   // Continues an existing worker if it is in a waiting state.
   void ProcessProfile(const CertProfile& profile);
 
-  absl::optional<CertProfile> GetOneCertProfile(
+  std::optional<CertProfile> GetOneCertProfile(
       const CertProfileId& cert_profile_id);
   std::vector<CertProfile> GetCertProfiles();
 
@@ -193,8 +197,10 @@ class CertProvisioningSchedulerImpl
   CertProvisioningWorker* AddWorkerToMap(
       std::unique_ptr<CertProvisioningWorker> worker);
   // Removes the element referenced by |worker_iter| from |workers_|.
-  // Triggers a state change notification.
-  void RemoveWorkerFromMap(WorkerMap::iterator worker_iter);
+  // Triggers a state change notification if send_visible_state_changed_update
+  // is true.
+  void RemoveWorkerFromMap(WorkerMap::iterator worker_iter,
+                           bool send_visible_state_changed_update);
 
   // Returns true if the process can be continued (if it's not required to
   // wait).
@@ -220,15 +226,13 @@ class CertProvisioningSchedulerImpl
   CertScope cert_scope_ = CertScope::kUser;
   // |profile_| can be nullptr for the device-wide instance of
   // CertProvisioningScheduler.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   const char* pref_name_ = nullptr;
   std::unique_ptr<CertProvisioningClient> cert_provisioning_client_;
   // |platform_keys_service_| can be nullptr if it has been shut down.
-  raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

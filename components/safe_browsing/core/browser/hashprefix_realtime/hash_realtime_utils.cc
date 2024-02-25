@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
@@ -12,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/variations/service/variations_service.h"
 
 namespace safe_browsing::hash_realtime_utils {
 // Used by tests so that more than just GOOGLE_CHROME_BRANDING bots are capable
@@ -30,20 +32,37 @@ bool HasGoogleChromeBranding() {
 
 bool CanCheckUrl(const GURL& url,
                  network::mojom::RequestDestination request_destination) {
-  // TODO(crbug.com/1444511): Add a histogram to see how many urls are filtered
-  // by CanGetReputationOfUrl.
+  bool can_check_reputation = CanGetReputationOfUrl(url);
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.CanGetReputationOfUrl",
+                            can_check_reputation);
   return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
+         can_check_reputation;
 }
 
-bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
-  switch (threat_type) {
+bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
+  if (base::Contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+#if BUILDFLAG(IS_IOS)
+    // iOS doesn't support CANARY threat attribute.
+    return false;
+#else
+    if (detail.threat_type() != V5::ThreatType::SOCIAL_ENGINEERING) {
+      // CANARY should only be attached with SOCIAL_ENGINEERING,
+      // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION or API_ABUSE. Only
+      // SOCIAL_ENGINEERING is relevant to hash real time checks (the others
+      // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
+      return false;
+    }
+    if (base::Contains(detail.attributes(), V5::ThreatAttribute::FRAME_ONLY)) {
+      // CANARY and FRAME_ONLY should not be set at the same time.
+      return false;
+    }
+#endif
+  }
+
+  switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
     case V5::ThreatType::SOCIAL_ENGINEERING:
     case V5::ThreatType::UNWANTED_SOFTWARE:
-#if !BUILDFLAG(IS_IOS)
-    case V5::ThreatType::SUSPICIOUS:
-#endif
     case V5::ThreatType::TRICK_TO_BILL:
       return true;
     default:
@@ -60,9 +79,22 @@ bool IsHashRealTimeLookupEligibleInSession() {
   return HasGoogleChromeBranding() &&
          base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
+bool IsHashRealTimeLookupEligibleInSessionAndLocation(
+    std::optional<std::string> stored_permanent_country) {
+  return IsHashRealTimeLookupEligibleInSession() &&
+         (!stored_permanent_country.has_value() ||
+          !base::Contains(GetExcludedCountries(),
+                          stored_permanent_country.value()));
+}
+std::optional<std::string> GetCountryCode(
+    variations::VariationsService* variations_service) {
+  return variations_service ? variations_service->GetStoredPermanentCountry()
+                            : std::optional<std::string>();
+}
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
+    std::optional<std::string> stored_permanent_country,
     bool log_usage_histograms) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
@@ -71,8 +103,9 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
     std::string failed_requirement_histogram_suffix;
     bool passes_requirement;
   } requirements[] = {
-      {"IneligibleForSession",
-       hash_realtime_utils::IsHashRealTimeLookupEligibleInSession()},
+      {"IneligibleForSessionOrLocation",
+       hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+           stored_permanent_country)},
       {"OffTheRecord", !is_off_the_record},
       {"NotStandardProtection", safe_browsing::GetSafeBrowsingState(*prefs) ==
                                     SafeBrowsingState::STANDARD_PROTECTION},

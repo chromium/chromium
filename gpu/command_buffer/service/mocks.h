@@ -63,7 +63,8 @@ class AsyncAPIMock : public AsyncAPIInterface {
 
    private:
     unsigned int arg_count_;
-    raw_ptr<volatile CommandBufferEntry, DanglingUntriaged> args_;
+    raw_ptr<volatile CommandBufferEntry, DanglingUntriaged | AllowPtrArithmetic>
+        args_;
   };
 
   void BeginDecoding() override {}

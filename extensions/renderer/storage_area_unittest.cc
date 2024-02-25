@@ -9,6 +9,7 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -34,7 +35,7 @@ TEST_F(StorageAreaTest, TestUnboundedUse) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -63,7 +64,7 @@ TEST_F(StorageAreaTest, TestUseAfterInvalidation) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -95,7 +96,7 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -129,7 +130,7 @@ TEST_F(StorageAreaTest, HasOnChanged) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -169,7 +170,7 @@ TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -218,7 +219,7 @@ TEST_F(StorageAreaTest, PromiseBasedFunctionsDisallowedForManifestV2) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);

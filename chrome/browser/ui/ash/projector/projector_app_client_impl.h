@@ -52,7 +52,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OpenFeedbackDialog() const override;
   void GetVideo(
       const std::string& video_file_id,
-      const absl::optional<std::string>& resource_key,
+      const std::optional<std::string>& resource_key,
       ash::ProjectorAppClient::OnGetVideoCallback callback) const override;
   void SetAnnotatorPageHandler(
       ash::UntrustedAnnotatorPageHandlerImpl* handler) override;
@@ -84,8 +84,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
   ash::ScreencastManager screencast_manager_;
 
-  raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl, ExperimentalAsh>
-      annotator_handler_ = nullptr;
+  raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

@@ -111,7 +111,7 @@ class WifiLanServerSocketTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   size_t num_running_accept_calls_ = 0;
   base::OnceClosure on_accept_calls_finished_;
-  raw_ptr<ash::nearby::FakeTcpServerSocket, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::nearby::FakeTcpServerSocket, DanglingUntriaged>
       fake_tcp_server_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPServerSocket>
       tcp_server_socket_self_owned_receiver_ref_;
@@ -158,7 +158,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Failure) {
       /*expected_success=*/false,
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
   fake_tcp_server_socket_->FinishNextAccept(net::ERR_FAILED,
-                                            /*remote_addr=*/absl::nullopt);
+                                            /*remote_addr=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -172,7 +172,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Failure_ConcurrentCalls) {
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
     fake_tcp_server_socket_->FinishNextAccept(net::ERR_FAILED,
-                                              /*remote_addr=*/absl::nullopt);
+                                              /*remote_addr=*/std::nullopt);
   }
   run_loop.Run();
 }

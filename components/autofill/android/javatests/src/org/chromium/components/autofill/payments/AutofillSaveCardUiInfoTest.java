@@ -5,6 +5,7 @@
 package org.chromium.components.autofill.payments;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
 import android.annotation.SuppressLint;
@@ -31,12 +32,33 @@ public class AutofillSaveCardUiInfoTest {
                 .withLogoIcon(0)
                 .withIsForUpload(false)
                 .withCardDetail(new CardDetail(0, "", ""))
+                .withCardDescription("")
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withTitleText("")
                 .withConfirmText("")
                 .withCancelText("")
                 .withIsGooglePayBrandingEnabled(false)
                 .withDescriptionText("");
+    }
+
+    @Test
+    public void testConstructor_createsEmptyListWhenLegalMessageLinesIsNull() {
+        var uiInfo =
+                new AutofillSaveCardUiInfo(
+                        /* isForUpload= */ false,
+                        /* logoIcon= */ 0,
+                        /* issuerIcon= */ 0,
+                        /* legalMessageLines= */ null,
+                        /* cardLabel= */ null,
+                        /* cardSubLabel= */ null,
+                        /* cardDescription= */ null,
+                        /* titleText= */ null,
+                        /* confirmText= */ null,
+                        /* cancelText= */ null,
+                        /* isGooglePayBrandingEnabled= */ false,
+                        /* descriptionText= */ null);
+
+        assertThat(uiInfo.getLegalMessageLines(), empty());
     }
 
     @Test
@@ -59,7 +81,8 @@ public class AutofillSaveCardUiInfoTest {
         @SuppressLint("ResourceType")
         AutofillSaveCardUiInfo uiInfo =
                 defaultBuilder()
-                        .withCardDetail(new CardDetail(/*iconId=*/1, "cardLabel", "cardSubLabel"))
+                        .withCardDetail(
+                                new CardDetail(/* iconId= */ 1, "cardLabel", "cardSubLabel"))
                         .build();
 
         assertThat(uiInfo.getCardDetail().issuerIconDrawableId, equalTo(1));
@@ -68,17 +91,30 @@ public class AutofillSaveCardUiInfoTest {
     }
 
     @Test
+    public void testBuilder_setsCardDescription() {
+        AutofillSaveCardUiInfo uiInfo =
+                defaultBuilder().withCardDescription("cardDescription").build();
+
+        assertThat(uiInfo.getCardDescription(), equalTo("cardDescription"));
+    }
+
+    @Test
     public void testBuilder_setsLegalMessageLine() {
-        List<LegalMessageLine> legalMessageLines = Arrays.asList(new LegalMessageLine("abc"),
-                new LegalMessageLine("xyz"), new LegalMessageLine("uvw"));
+        List<LegalMessageLine> legalMessageLines =
+                Arrays.asList(
+                        new LegalMessageLine("abc"),
+                        new LegalMessageLine("xyz"),
+                        new LegalMessageLine("uvw"));
 
         AutofillSaveCardUiInfo uiInfo =
                 defaultBuilder().withLegalMessageLines(legalMessageLines).build();
 
-        assertThat(uiInfo.getLegalMessageLines(),
-                Matchers.contains(legalMessageLines.stream()
-                                          .map(line -> equalToLegalMessageLineWithText(line.text))
-                                          .collect(Collectors.toList())));
+        assertThat(
+                uiInfo.getLegalMessageLines(),
+                Matchers.contains(
+                        legalMessageLines.stream()
+                                .map(line -> equalToLegalMessageLineWithText(line.text))
+                                .collect(Collectors.toList())));
     }
 
     private static Matcher<LegalMessageLine> equalToLegalMessageLineWithText(String text) {
@@ -96,7 +132,8 @@ public class AutofillSaveCardUiInfoTest {
             @Override
             protected void describeMismatchSafely(
                     LegalMessageLine item, Description mismatchDescription) {
-                mismatchDescription.appendText("LegalLineMessage with text of ")
+                mismatchDescription
+                        .appendText("LegalLineMessage with text of ")
                         .appendValue(item.text);
             }
         };

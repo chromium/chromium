@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/media/audio_stream_broker_helper.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_observer.h"
@@ -91,10 +92,16 @@ AudioOutputStreamBroker::AudioOutputStreamBroker(
   client_.set_disconnect_handler(
       base::BindOnce(&AudioOutputStreamBroker::Cleanup, base::Unretained(this),
                      DisconnectReason::kTerminatedByClient));
+
+  NotifyFrameHostOfAudioStreamStarted(render_process_id, render_frame_id,
+                                      /*is_capturing=*/false);
 }
 
 AudioOutputStreamBroker::~AudioOutputStreamBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+  NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id(),
+                                      /*is_capturing=*/false);
 
   const StreamBrokerDisconnectReason reason =
       GetDisconnectReason(disconnect_reason_, AwaitingCreated());

@@ -5,6 +5,7 @@ Revision: See DEPS
 License: BSD 3-clause
 License File: lss/linux_syscall_support.h
 Security Critical: yes
+Shipped: yes
 
 Description:
 Every so often, projects need to directly embed Linux system calls instead of

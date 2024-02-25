@@ -135,12 +135,8 @@ StatusOr<FrameBuffer::Format> GetYUVImageFormat(const uint8* u_buffer,
 }
 
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromByteBuffer(
-    JNIEnv* env,
-    jobject jimage_byte_buffer,
-    jint width,
-    jint height,
-    jint jorientation,
-    jint jcolor_space_type) {
+    JNIEnv* env, jobject jimage_byte_buffer, jint width, jint height,
+    jint jorientation, jint jcolor_space_type) {
   absl::string_view image = GetMappedFileBuffer(env, jimage_byte_buffer);
   return CreateFromRawBuffer(
       reinterpret_cast<const uint8*>(image.data()),
@@ -150,13 +146,8 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromByteBuffer(
 }
 
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromBytes(
-    JNIEnv* env,
-    jbyteArray jimage_bytes,
-    jint width,
-    jint height,
-    jint jorientation,
-    jint jcolor_space_type,
-    jlongArray jbyte_array_handle) {
+    JNIEnv* env, jbyteArray jimage_bytes, jint width, jint height,
+    jint jorientation, jint jcolor_space_type, jlongArray jbyte_array_handle) {
   jbyte* jimage_ptr = env->GetByteArrayElements(jimage_bytes, NULL);
   // Free jimage_ptr together with frame_buffer after inference is finished.
   jlong jimage_ptr_handle = reinterpret_cast<jlong>(jimage_ptr);
@@ -177,16 +168,9 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromBytes(
 }
 
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromYuvPlanes(
-    JNIEnv* env,
-    jobject jy_plane,
-    jobject ju_plane,
-    jobject jv_plane,
-    jint width,
-    jint height,
-    jint row_stride_y,
-    jint row_stride_uv,
-    jint pixel_stride_uv,
-    jint jorientation) {
+    JNIEnv* env, jobject jy_plane, jobject ju_plane, jobject jv_plane,
+    jint width, jint height, jint row_stride_y, jint row_stride_uv,
+    jint pixel_stride_uv, jint jorientation) {
   const uint8* y_plane =
       reinterpret_cast<const uint8*>(GetMappedFileBuffer(env, jy_plane).data());
   const uint8* u_plane =
@@ -195,7 +179,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFrameBufferFromYuvPlanes(
       reinterpret_cast<const uint8*>(GetMappedFileBuffer(env, jv_plane).data());
 
   FrameBuffer::Format format;
-  ASSIGN_OR_RETURN(format,
+  TFLITE_ASSIGN_OR_RETURN(format,
                    GetYUVImageFormat(u_plane, v_plane, pixel_stride_uv));
 
   return CreateFromYuvRawBuffer(

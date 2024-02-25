@@ -34,6 +34,7 @@
 #include "base/functional/callback.h"
 
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -45,7 +46,7 @@ class Font;
 class SimpleFontData;
 class HarfBuzzShaper;
 struct ReshapeQueueItem;
-struct RangeData;
+struct RangeContext;
 struct BufferSlice;
 
 class PLATFORM_EXPORT HarfBuzzShaper final {
@@ -71,35 +72,57 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // occur, such as at the beginning or end of lines or at element boundaries.
   // If given arbitrary positions the results are not guaranteed to be correct.
   // May be called multiple times; font and direction may vary between calls.
-  scoped_refptr<ShapeResult> Shape(const Font*,
-                                   TextDirection,
-                                   unsigned start,
-                                   unsigned end) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end) const;
 
   // Shape a range that has already been pre-segmented. Start and end positions
   // must match the positions defined by the ranges and must be at valid break
   // positions.
-  scoped_refptr<ShapeResult> Shape(
-      const Font*,
-      TextDirection,
-      unsigned start,
-      unsigned end,
-      const Vector<RunSegmenter::RunSegmenterRange>&) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end,
+                     const Vector<RunSegmenter::RunSegmenterRange>&,
+                     ShapeOptions = ShapeOptions()) const;
 
   // Shape a single range. Start and end positions defined by the range.
-  scoped_refptr<ShapeResult> Shape(const Font*,
-                                   TextDirection,
-                                   unsigned start,
-                                   unsigned end,
-                                   const RunSegmenter::RunSegmenterRange) const;
+  ShapeResult* Shape(const Font*,
+                     TextDirection,
+                     unsigned start,
+                     unsigned end,
+                     const RunSegmenter::RunSegmenterRange,
+                     ShapeOptions = ShapeOptions()) const;
 
   // Shape the entire string with a single font and direction.
   // Equivalent to calling the range version with a start offset of zero and an
   // end offset equal to the length.
-  scoped_refptr<ShapeResult> Shape(const Font*, TextDirection) const;
+  ShapeResult* Shape(const Font*, TextDirection) const;
 
   const String& GetText() const { return text_; }
   unsigned TextLength() const { return text_.length(); }
+
+  // This function is between `Shape` and `SimpleFontData::GlyphForCharacter`.
+  //
+  // Unlike `Shape`, it works only for one `SimpleFontData`, not `Font`, without
+  // cascading nor fallback. Missing glyphs are reported as `.notdef` (0). Also
+  // it's a lot less expensive than `Shape`.
+  //
+  // Unlike `SimpleFontData::GlyphForCharacter`, it shapes, taking locale,
+  // script, and OpenType features into account.
+  struct GlyphData {
+    unsigned cluster;
+    Glyph glyph;
+    gfx::PointF advance;
+    gfx::PointF offset;
+  };
+  using GlyphDataList = Vector<GlyphData, 16>;
+  void GetGlyphData(const SimpleFontData& font_data,
+                    const LayoutLocale& locale,
+                    UScriptCode script,
+                    bool is_horizontal,
+                    GlyphDataList& glyphs);
 
   ~HarfBuzzShaper() = default;
 
@@ -108,11 +131,11 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // one or more times taking font fallback into account. The start and end
   // parameters are for the entire text run, not the segment, and are used to
   // determine pre- and post-context for shaping.
-  void ShapeSegment(RangeData*,
+  void ShapeSegment(RangeContext*,
                     const RunSegmenter::RunSegmenterRange&,
                     ShapeResult*) const;
 
-  void ExtractShapeResults(RangeData*,
+  void ExtractShapeResults(RangeContext*,
                            bool& font_cycle_queued,
                            const ReshapeQueueItem&,
                            const SimpleFontData*,
@@ -125,7 +148,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                                 bool needs_hint_list,
                                 Vector<UChar32>& hint) const;
 
-  void CommitGlyphs(RangeData*,
+  void CommitGlyphs(RangeContext*,
                     const SimpleFontData* current_font,
                     UScriptCode current_run_script,
                     CanvasRotationInVertical,

@@ -81,15 +81,12 @@ TEST(AutofillCountryTest, UsaAddressRequirements) {
   EXPECT_TRUE(country.requires_city());
   EXPECT_TRUE(country.requires_line1());
 
-  // The same expectations via ServerFieldType.
+  // The same expectations via FieldType.
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_ZIP));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STATE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_CITY));
   EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_ZIP));
-  EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_STATE));
-  EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_CITY));
-  EXPECT_TRUE(country.IsAddressFieldRequired(
-      ServerFieldType::ADDRESS_HOME_STREET_ADDRESS));
+      country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Test that unknown country codes have US requirements.
@@ -120,15 +117,12 @@ TEST(AutofillCountryTest, BrAddressRequirements) {
   EXPECT_TRUE(country.requires_city());
   EXPECT_TRUE(country.requires_line1());
 
-  // The same expectations via ServerFieldType.
+  // The same expectations via FieldType.
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_ZIP));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STATE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_CITY));
   EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_ZIP));
-  EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_STATE));
-  EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_CITY));
-  EXPECT_TRUE(country.IsAddressFieldRequired(
-      ServerFieldType::ADDRESS_HOME_STREET_ADDRESS));
+      country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Test the address requirement method for Turkey.
@@ -145,35 +139,12 @@ TEST(AutofillCountryTest, TrAddressRequirements) {
   EXPECT_TRUE(country.requires_city());
   EXPECT_TRUE(country.requires_line1());
 
-  // The same expectations via ServerFieldType.
-  EXPECT_FALSE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_ZIP));
+  // The same expectations via FieldType.
+  EXPECT_FALSE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_ZIP));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STATE));
+  EXPECT_TRUE(country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_CITY));
   EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_STATE));
-  EXPECT_TRUE(
-      country.IsAddressFieldRequired(ServerFieldType::ADDRESS_HOME_CITY));
-  EXPECT_TRUE(country.IsAddressFieldRequired(
-      ServerFieldType::ADDRESS_HOME_STREET_ADDRESS));
-}
-
-// Test the full name requirement depending on the
-// kAutofillRequireNameForProfileImport feature flag.
-TEST(AutofillCountryTest, IsAddressFieldRequired_RequireName) {
-  AutofillCountry country("US", "en_US");
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kAutofillRequireNameForProfileImport);
-    EXPECT_FALSE(country.IsAddressFieldRequired(ServerFieldType::NAME_FULL));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kAutofillRequireNameForProfileImport);
-    EXPECT_TRUE(country.IsAddressFieldRequired(ServerFieldType::NAME_FULL));
-  }
+      country.IsAddressFieldRequired(FieldType::ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Test mapping all country codes to country names.

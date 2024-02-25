@@ -34,15 +34,15 @@ public class LogcatCrashExtractor {
 
     @VisibleForTesting
     protected static final String BEGIN_MICRODUMP = "-----BEGIN BREAKPAD MICRODUMP-----";
+
     @VisibleForTesting
     protected static final String END_MICRODUMP = "-----END BREAKPAD MICRODUMP-----";
+
     @VisibleForTesting
     protected static final String SNIPPED_MICRODUMP =
             "-----SNIPPED OUT BREAKPAD MICRODUMP FOR THIS CRASH-----";
 
-    /**
-     * @param minidump The minidump file that needs logcat output to be attached.
-     */
+    /** @param minidump The minidump file that needs logcat output to be attached. */
     public File attachLogcatToMinidump(File minidump, CrashFileManager fileManager) {
         Log.i(TAG, "Trying to extract logcat for minidump %s.", minidump.getName());
 

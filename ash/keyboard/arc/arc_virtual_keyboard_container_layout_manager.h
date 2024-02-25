@@ -33,7 +33,7 @@ class ArcVirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
                       const gfx::Rect& requested_bounds) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> arc_ime_window_parent_container_;
+  raw_ptr<aura::Window> arc_ime_window_parent_container_;
 };
 
 }  // namespace ash

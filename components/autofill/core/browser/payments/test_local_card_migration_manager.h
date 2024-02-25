@@ -16,19 +16,15 @@
 
 namespace autofill {
 
-namespace payments {
-class TestPaymentsClient;
-}  // namespace payments
-
 class AutofillClient;
 class AutofillDriver;
 
 class TestLocalCardMigrationManager : public LocalCardMigrationManager {
  public:
-  TestLocalCardMigrationManager(AutofillDriver* driver,
-                                AutofillClient* client,
-                                payments::TestPaymentsClient* payments_client,
-                                TestPersonalDataManager* personal_data_manager);
+  TestLocalCardMigrationManager(
+      AutofillDriver* driver,
+      AutofillClient* client,
+      TestPersonalDataManager* personal_data_manager);
 
   TestLocalCardMigrationManager(const TestLocalCardMigrationManager&) = delete;
   TestLocalCardMigrationManager& operator=(

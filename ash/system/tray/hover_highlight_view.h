@@ -7,12 +7,14 @@
 
 #include <memory>
 
-#include "ash/system/tray/actionable_view.h"
+#include "ash/ash_export.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/controls/button/button.h"
 
 namespace views {
 class Border;
@@ -27,7 +29,9 @@ class ViewClickListener;
 // A view that changes background color on hover, and triggers a callback in the
 // associated ViewClickListener on click. The view can also be forced to
 // maintain a fixed height.
-class ASH_EXPORT HoverHighlightView : public ActionableView {
+class ASH_EXPORT HoverHighlightView : public views::Button {
+  METADATA_HEADER(HoverHighlightView, views::Button)
+
  public:
   enum class AccessibilityState {
     // The default accessibility view.
@@ -115,13 +119,11 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
  private:
   friend class TrayAccessibilityTest;
 
-  // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
+  void PerformAction();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -138,20 +140,14 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   // be called before re-populating the view.
   bool is_populated_ = false;
 
-  const raw_ptr<ViewClickListener, DanglingUntriaged | ExperimentalAsh>
-      listener_ = nullptr;
-  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> icon_ =
-      nullptr;
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> text_label_ =
-      nullptr;
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> sub_text_label_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> left_view_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> right_view_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> sub_row_ = nullptr;
-  raw_ptr<TriView, DanglingUntriaged | ExperimentalAsh> tri_view_ = nullptr;
+  const raw_ptr<ViewClickListener, DanglingUntriaged> listener_ = nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged> icon_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> text_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> sub_text_label_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> left_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> right_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> sub_row_ = nullptr;
+  raw_ptr<TriView, DanglingUntriaged> tri_view_ = nullptr;
   bool expandable_ = false;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
   base::CallbackListSubscription enabled_changed_subscription_ =

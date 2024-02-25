@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -28,7 +31,7 @@ void VerifySigninPromoSufficientlyVisible() {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+        selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
@@ -36,6 +39,30 @@ void VerifySigninPromoSufficientlyVisible() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Sign-in promo not visible");
+}
+
+void VerifyHystoryOptInPromoSufficientlyVisible() {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"History opt-in promo not visible");
+}
+
+// Opens an NTP, sends Chrome to background and brings it back to foreground.
+// The upgrade promo can be triggered when Chrome moves to foreground and
+// nothing is displayed on the tab (so the tab grid must not be opened).
+void OpenNTPAndBackgroundAndForegroundApp() {
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 }  // namespace
@@ -47,10 +74,24 @@ void VerifySigninPromoSufficientlyVisible() {
 @implementation UpgradeSigninPromoTestCase
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
-  // Make sure the new tab is opened to open the upgrade sign-in promo.
-  [ChromeEarlGrey openNewTab];
+  [[self class] testForStartup];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kDisplayedSSORecallPromoCountKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kDisplayedSSORecallForMajorVersionKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
+}
+
+- (void)tearDown {
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -59,37 +100,59 @@ void VerifySigninPromoSufficientlyVisible() {
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
+  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableUpgradeSigninPromo);
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+  // Without relaunch upgrade signin promo will not be shown again.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
 
 // Tests that the sign-in promo is not visible at start-up with no identity.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testNoSigninPromoWithNoIdentity {
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
+- (void)testNoSigninPromoWithNoIdentity {
+  OpenNTPAndBackgroundAndForegroundApp();
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the sign-in promo is not visible at start-up once
-// the user has signed in to their account previously.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testStartupSigninPromoUserSignedIn {
+// Tests that the history opt-in promo is shown if the user is signed in to
+// an account without history sync.
+- (void)testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  OpenNTPAndBackgroundAndForegroundApp();
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  VerifyHystoryOptInPromoSufficientlyVisible();
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self expectUpgradePromoMetricsAndPreferences];
+}
+
+- (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
+
+  OpenNTPAndBackgroundAndForegroundApp();
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -98,31 +161,38 @@ void VerifySigninPromoSufficientlyVisible() {
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:NO
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:NO
+                                                  forIdentity:fakeIdentity];
 
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
+  OpenNTPAndBackgroundAndForegroundApp();
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the sign-in promo is visible at start-up for regular user.
-// TODO(crbug.com/1442297): Need to enable this test.
-- (void)DISABLED_testStartupSigninPromoShownForNoneMinor {
+// Tests that the sign-in promo is visible at start-up for regular user, and
+// followed by the history sync opt-in.
+- (void)testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  OpenNTPAndBackgroundAndForegroundApp();
 
   VerifySigninPromoSufficientlyVisible();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self expectUpgradePromoMetricsAndPreferences];
 }
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if
@@ -133,19 +203,58 @@ void VerifySigninPromoSufficientlyVisible() {
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
-                                          forIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
+                                                  forIdentity:fakeIdentity];
 
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  OpenNTPAndBackgroundAndForegroundApp();
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     VerifySigninPromoSufficientlyVisible();
   } else {
     [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+        selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
         assertWithMatcher:grey_notVisible()];
   }
+}
+
+#pragma mark - Helpers
+
+- (void)expectUpgradePromoMetricsAndPreferences {
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:1
+                     forHistogram:base::SysUTF8ToNSString(
+                                      kUMASSORecallAccountsAvailable)];
+  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
+                kUMASSORecallAccountsAvailable, error);
+  error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:1
+                     forHistogram:base::SysUTF8ToNSString(
+                                      kUMASSORecallPromoSeenCount)];
+  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
+                kUMASSORecallPromoSeenCount, error);
+  error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:PromoActionEnabledSSOAccount
+                     forHistogram:base::SysUTF8ToNSString(
+                                      kUMASSORecallPromoAction)];
+  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
+                kUMASSORecallPromoAction, error);
+  NSNumber* value =
+      [ChromeEarlGrey userDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
+  GREYAssertEqual(1, value.integerValue, @"Failed to increase %@ pref",
+                  kSigninPromoViewDisplayCountKey);
+  NSArray* gaiaIds = [ChromeEarlGrey
+      userDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
+  // It is not possible to do `GREYAssertEqualObjects(expectedGaiaIds, gaiaIds),
+  // since gaiaIds is EDOObject type (the object is in Chrome app).
+  GREYAssertEqual(1, gaiaIds.count, @"Expect to have only one gaia id %@",
+                  gaiaIds);
+  GREYAssertEqualObjects([FakeSystemIdentity fakeIdentity1].gaiaID, gaiaIds[0],
+                         @"Wrong gaia id in %@",
+                         kLastShownAccountGaiaIdVersionKey);
 }
 
 @end

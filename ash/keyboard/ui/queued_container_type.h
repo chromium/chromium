@@ -31,7 +31,7 @@ class QueuedContainerType {
   gfx::Rect target_bounds() { return bounds_; }
 
  private:
-  raw_ptr<KeyboardUIController, ExperimentalAsh> controller_;
+  raw_ptr<KeyboardUIController> controller_;
   ContainerType container_type_;
   gfx::Rect bounds_;
   base::OnceCallback<void(bool success)> callback_;

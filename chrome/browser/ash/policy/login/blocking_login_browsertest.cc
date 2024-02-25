@@ -209,7 +209,7 @@ class BlockingLoginTest
         &BlockingLoginTest::HandleRequest, base::Unretained(this)));
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_added_;
+  raw_ptr<Profile> profile_added_;
 
  private:
   std::vector<std::unique_ptr<net::test_server::HttpResponse>> responses_;

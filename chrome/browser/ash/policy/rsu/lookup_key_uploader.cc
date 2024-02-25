@@ -73,7 +73,7 @@ void LookupKeyUploader::OnStoreError(CloudPolicyStore* store) {
 }
 
 void LookupKeyUploader::OnRsuDeviceIdReceived(
-    absl::optional<user_data_auth::GetRsuDeviceIdReply> result) {
+    std::optional<user_data_auth::GetRsuDeviceIdReply> result) {
   if (!result.has_value()) {
     Result(std::string(), false /* success */);
     return;
@@ -87,8 +87,7 @@ void LookupKeyUploader::OnRsuDeviceIdReceived(
   const std::string rsu_device_id = result->rsu_device_id();
 
   // Making it printable so we can store it in prefs.
-  std::string encoded_rsu_device_id;
-  base::Base64Encode(rsu_device_id, &encoded_rsu_device_id);
+  std::string encoded_rsu_device_id = base::Base64Encode(rsu_device_id);
 
   // If this ID was uploaded previously -- we are not uploading it.
   if (rsu_device_id == prefs_->GetString(prefs::kLastRsuDeviceIdUploaded))

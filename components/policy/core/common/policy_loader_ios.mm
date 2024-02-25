@@ -102,7 +102,7 @@ base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
   if ((schema.type() == base::Value::Type::DICT ||
        schema.type() == base::Value::Type::LIST) &&
       value.is_string()) {
-    absl::optional<base::Value> decoded_value = base::JSONReader::Read(
+    std::optional<base::Value> decoded_value = base::JSONReader::Read(
         value.GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (decoded_value.has_value()) {
       return std::move(decoded_value.value());

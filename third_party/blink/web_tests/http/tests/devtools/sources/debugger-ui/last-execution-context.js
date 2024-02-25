@@ -5,17 +5,18 @@
 import {TestRunner} from 'test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as Main from 'devtools/entrypoints/main/main.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests how execution context and target are selected.\n`);
-  await TestRunner.loadLegacyModule('main');
   await TestRunner.showPanel('sources');
 
-  var context = new UI.Context();
+  var context = new UIModule.Context.Context();
   context.addFlavorChangeListener(SDK.RuntimeModel.ExecutionContext, executionContextChanged, this);
   context.addFlavorChangeListener(SDK.Target.Target, targetChanged, this);
-  new Main.ExecutionContextSelector(SDK.TargetManager.TargetManager.instance(), context);
+  new Main.ExecutionContextSelector.ExecutionContextSelector(SDK.TargetManager.TargetManager.instance(), context);
 
   function executionContextChanged(event) {
     var executionContext = event.data;

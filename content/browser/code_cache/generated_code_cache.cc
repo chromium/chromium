@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "net/base/completion_once_callback.h"
@@ -23,6 +23,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/http/http_cache.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/gurl.h"
 
 using storage::BigIOBuffer;
@@ -50,7 +51,8 @@ void CheckValidKeys(const GURL& resource_url,
       resource_url.SchemeIs(content::kChromeUIScheme) ||
       resource_url.SchemeIs(content::kChromeUIUntrustedScheme);
   DCHECK(resource_url.SchemeIsHTTPOrHTTPS() ||
-         resource_url_is_chrome_or_chrome_untrusted);
+         resource_url_is_chrome_or_chrome_untrusted ||
+         blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme()));
 
   // |origin_lock| should be either empty or should have
   // Http/Https/chrome/chrome-untrusted schemes and it should not be a URL with
@@ -59,10 +61,12 @@ void CheckValidKeys(const GURL& resource_url,
   bool origin_lock_is_chrome_or_chrome_untrusted =
       origin_lock.SchemeIs(content::kChromeUIScheme) ||
       origin_lock.SchemeIs(content::kChromeUIUntrustedScheme);
-  DCHECK(origin_lock.is_empty() ||
-         ((origin_lock.SchemeIsHTTPOrHTTPS() ||
-           origin_lock_is_chrome_or_chrome_untrusted) &&
-          !url::Origin::Create(origin_lock).opaque()));
+  DCHECK(
+      origin_lock.is_empty() ||
+      ((origin_lock.SchemeIsHTTPOrHTTPS() ||
+        origin_lock_is_chrome_or_chrome_untrusted ||
+        blink::CommonSchemeRegistry::IsExtensionScheme(origin_lock.scheme())) &&
+       !url::Origin::Create(origin_lock).opaque()));
 
   // The chrome and chrome-untrusted schemes are only used with the WebUI
   // code cache type.
@@ -473,7 +477,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     crypto::SHA256HashString(
         base::StringPiece(reinterpret_cast<char*>(copy.data()), copy.size()),
         result, std::size(result));
-    std::string checksum_key = base::HexEncode(result, std::size(result));
+    std::string checksum_key = base::HexEncode(result);
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + kSHAKeySizeInBytes);
     // Copy |checksum_key| into the small buffer.

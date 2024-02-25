@@ -16,9 +16,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Tests the object registry, which maintains bidirectional object/ID mappings.
- */
+/** Tests the object registry, which maintains bidirectional object/ID mappings. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class RemoteObjectRegistryTest {
     @Test

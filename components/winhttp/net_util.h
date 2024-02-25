@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_WINHTTP_NET_UTIL_H_
 #define COMPONENTS_WINHTTP_NET_UTIL_H_
 
+#include <stdint.h>
 #include <windows.h>
 #include <winhttp.h>
 
-#include <stdint.h>
-
 #include <string>
 
+#include "base/check.h"
 #include "base/check_op.h"
 
 namespace winhttp {
@@ -40,7 +40,7 @@ template <typename T>
 HRESULT QueryOption(HINTERNET handle, uint32_t option, T* value) {
   auto num_bytes = sizeof(*value);
   if (!::WinHttpQueryOption(handle, option, value, &num_bytes)) {
-    DCHECK_EQ(sizeof(*value), num_bytes);
+    DUMP_WILL_BE_CHECK(sizeof(*value) == num_bytes);
     return HRESULTFromLastError();
   }
   return S_OK;
@@ -50,8 +50,9 @@ HRESULT QueryOption(HINTERNET handle, uint32_t option, T* value) {
 // is successful.
 template <typename T>
 HRESULT SetOption(HINTERNET handle, uint32_t option, T value) {
-  if (!::WinHttpSetOption(handle, option, &value, sizeof(value)))
+  if (!::WinHttpSetOption(handle, option, &value, sizeof(value))) {
     return HRESULTFromLastError();
+  }
   return S_OK;
 }
 

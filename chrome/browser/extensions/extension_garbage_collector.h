@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -46,10 +47,10 @@ class ExtensionGarbageCollector : public KeyedService, public InstallObserver {
   // InstallObserver:
   void OnBeginCrxInstall(content::BrowserContext* context,
                          const CrxInstaller& installer,
-                         const std::string& extension_id) override;
+                         const ExtensionId& extension_id) override;
   void OnFinishCrxInstall(content::BrowserContext* context,
                           const CrxInstaller& installer,
-                          const std::string& extension_id,
+                          const ExtensionId& extension_id,
                           bool success) override;
 
  protected:
@@ -64,7 +65,7 @@ class ExtensionGarbageCollector : public KeyedService, public InstallObserver {
 
   static void GarbageCollectExtensionsOnFileThread(
       const base::FilePath& install_directory,
-      const std::multimap<std::string, base::FilePath>& extension_paths,
+      const std::multimap<ExtensionId, base::FilePath>& extension_paths,
       bool unpacked);
 
   // The BrowserContext associated with the GarbageCollector.

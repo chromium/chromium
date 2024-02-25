@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/autotest_ambient_api.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/ambient/ambient_controller.h"
@@ -11,12 +12,12 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/test_ash_web_view.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -32,10 +33,10 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
+using ash::personalization_app::mojom::AmbientTheme;
 using ::testing::NotNull;
 
 constexpr base::TimeDelta kVideoPlaybackTimeout = base::Seconds(10);
@@ -50,7 +51,7 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
       ASSERT_FALSE(web_view->GetVisibleURL().is_empty());
       base::Value::Dict url_fragment_dict;
       url_fragment_dict.Set("playback_started", success);
-      absl::optional<std::string> url_fragment =
+      std::optional<std::string> url_fragment =
           base::WriteJson(url_fragment_dict);
       CHECK(url_fragment);
       web_view->Navigate(
@@ -63,7 +64,6 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
         delay);
   }
 
-  data_decoder::test::InProcessDataDecoder data_decoder_;
   base::test::TestFuture<void> completion_;
   base::test::TestFuture<void> timeout_;
   base::test::TestFuture<std::string> error_;

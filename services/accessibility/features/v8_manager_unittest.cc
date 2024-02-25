@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -302,5 +305,70 @@ TEST_F(V8ManagerTest, MAYBE_MojoCancelBindings) {
     };
     new TestWrapper();)JS");
 }
+
+// TODO(b:262637071) Fails on Fuchsia due to ReadFileToString failing.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ExecuteModuleWithImports DISABLED_ExecuteModuleWithImports
+#else
+#define MAYBE_ExecuteModuleWithImports ExecuteModuleWithImports
+#endif  // BUILDFLAG(IS_FUCHSIA)
+TEST_F(V8ManagerTest, MAYBE_ExecuteModuleWithImports) {
+  base::FilePath gen_test_data_root;
+  CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT,
+                               &gen_test_data_root));
+  base::FilePath file_1_path = gen_test_data_root.Append(FILE_PATH_LITERAL(
+      "services/accessibility/features/mojo/test/test_api.test-mojom.m.js"));
+  base::File file1(file_1_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file1.IsValid());
+  base::FilePath file_2_path = gen_test_data_root.Append(FILE_PATH_LITERAL(
+      "services/accessibility/features/mojo/test/module_import.js"));
+  base::File file2(file_2_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file2.IsValid());
+
+  base::FilePath file_3_path = gen_test_data_root.Append(
+      FILE_PATH_LITERAL("mojo/public/js/bindings.js"));
+  base::File file3(file_3_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file3.IsValid());
+
+  base::RunLoop module_waiter;
+  std::unique_ptr<JSTestInterface> test_interface =
+      std::make_unique<JSTestInterface>(
+          base::BindLambdaForTesting([&module_waiter](bool success) {
+            EXPECT_TRUE(success) << "Mojo JS was not successful";
+            module_waiter.Quit();
+          }));
+  V8Manager manager;
+  manager.AddInterfaceForTest(std::move(test_interface));
+
+  // Important: files are added in fifo order (first file 2 will be evaluated
+  // which will request 1 and then 3).
+  manager.AddFileForTest(std::move(file2));
+  manager.AddFileForTest(std::move(file1));
+  manager.AddFileForTest(std::move(file3));
+  manager.FinishContextSetUp();
+  manager.ExecuteModule(file_2_path, base::DoNothing());
+  module_waiter.Run();
+}
+
+TEST_F(V8ManagerTest, NormalizesPaths) {
+  std::string result = V8Environment::NormalizeRelativePath("a.txt", "b/c");
+  EXPECT_EQ(result, "b/c/a.txt");
+  result = V8Environment::NormalizeRelativePath("./a.txt", "b/c");
+  EXPECT_EQ(result, "b/c/a.txt");
+  result = V8Environment::NormalizeRelativePath("../d.txt", "b/c");
+  EXPECT_EQ(result, "b/d.txt");
+
+  // Should fail, no base directory to resolve to.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("e.txt", ""), "");
+
+  // Should fail, base directory ends with '/'.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("e.txt", "a/"), "");
+
+  // Should fail, relative path references parent of base directory.
+  EXPECT_DEATH(V8Environment::NormalizeRelativePath("../../../e.txt", "a/b"),
+               "");
+}
+
+// TODO(b:313924294): add test to handle missing files.
 
 }  // namespace ax

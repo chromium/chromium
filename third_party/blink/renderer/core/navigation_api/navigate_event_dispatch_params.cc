@@ -22,7 +22,7 @@ NavigateEventDispatchParams::NavigateEventDispatchParams(
 NavigateEventDispatchParams::~NavigateEventDispatchParams() = default;
 
 void NavigateEventDispatchParams::Trace(Visitor* visitor) const {
-  visitor->Trace(form);
+  visitor->Trace(source_element);
   visitor->Trace(destination_item);
 }
 

@@ -4,7 +4,8 @@
 
 #include <inttypes.h>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 
 #include "base/json/json_reader.h"
@@ -110,7 +111,7 @@ struct GraphicsEventsContext {
   // To keep in correct order of creation. This converts pair of 'B' and 'E'
   // events to the completed event, 'X'.
   ArcTracingModel::TracingEvents converted_events;
-  std::map<uint32_t, std::vector<ArcTracingEvent*>>
+  std::map<uint32_t, std::vector<raw_ptr<ArcTracingEvent, VectorExperimental>>>
       per_thread_pending_events_stack;
 
   std::map<std::pair<char, std::string>, std::unique_ptr<ArcTracingEvent>>
@@ -357,7 +358,7 @@ void ArcTracingModel::SetMinMaxTime(uint64_t min_timestamp,
 }
 
 bool ArcTracingModel::Build(const std::string& data) {
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value) {
     LOG(ERROR) << "Cannot parse trace data";
     return false;
@@ -392,6 +393,8 @@ bool ArcTracingModel::Build(const std::string& data) {
     std::sort(group_events.second.begin(), group_events.second.end(),
               SortByTimestampPred);
   }
+  std::sort(nongroup_events_.begin(), nongroup_events_.end(),
+            SortByTimestampPred);
 
   return true;
 }
@@ -409,6 +412,11 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetRoots() const {
       result.emplace_back(event.get());
     }
   }
+
+  for (const auto& event : nongroup_events_) {
+    result.emplace_back(event.get());
+  }
+
   return result;
 }
 
@@ -470,6 +478,7 @@ bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
       case TRACE_EVENT_PHASE_ASYNC_BEGIN:
       case TRACE_EVENT_PHASE_ASYNC_STEP_INTO:
       case TRACE_EVENT_PHASE_ASYNC_END:
+      case TRACE_EVENT_PHASE_INSTANT:
         break;
       default:
         // Ignore at this moment. They are not currently used.
@@ -491,12 +500,12 @@ bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
   for (auto& event : parsed_events) {
     switch (event->GetPhase()) {
       case TRACE_EVENT_PHASE_METADATA:
-        metadata_events_.push_back(std::move(event));
-        break;
       case TRACE_EVENT_PHASE_ASYNC_BEGIN:
       case TRACE_EVENT_PHASE_ASYNC_STEP_INTO:
       case TRACE_EVENT_PHASE_ASYNC_END:
-        group_events_[event->GetId()].push_back(std::move(event));
+        break;
+      case TRACE_EVENT_PHASE_INSTANT:
+        nongroup_events_.push_back(std::move(event));
         break;
       case TRACE_EVENT_PHASE_COMPLETE:
       case TRACE_EVENT_PHASE_COUNTER:

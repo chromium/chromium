@@ -90,7 +90,7 @@ SecurityEventSyncBridgeImpl::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SecurityEventSyncBridgeImpl::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -101,7 +101,7 @@ SecurityEventSyncBridgeImpl::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SecurityEventSyncBridgeImpl::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -152,7 +152,7 @@ void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(
 }
 
 void SecurityEventSyncBridgeImpl::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -167,7 +167,7 @@ void SecurityEventSyncBridgeImpl::OnStoreCreated(
 
 void SecurityEventSyncBridgeImpl::OnReadData(
     DataCallback callback,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
     std::unique_ptr<syncer::ModelTypeStore::IdList> missing_id_list) {
   OnReadAllData(std::move(callback), error, std::move(data_records));
@@ -175,7 +175,7 @@ void SecurityEventSyncBridgeImpl::OnReadData(
 
 void SecurityEventSyncBridgeImpl::OnReadAllData(
     DataCallback callback,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -199,7 +199,7 @@ void SecurityEventSyncBridgeImpl::OnReadAllData(
 }
 
 void SecurityEventSyncBridgeImpl::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "SecurityEventSyncBridgeImpl::OnReadAllMetadata");
   if (error) {
@@ -210,7 +210,7 @@ void SecurityEventSyncBridgeImpl::OnReadAllMetadata(
 }
 
 void SecurityEventSyncBridgeImpl::OnCommit(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

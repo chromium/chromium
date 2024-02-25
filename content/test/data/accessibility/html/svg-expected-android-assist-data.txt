@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"svg SVG Title Tag" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-label="svg"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="text"}, {display="block"}, {fill="red"}, {x="150"}, {y="130"}]
+++++++++TextView text:"Test" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -50,12 +50,6 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
   void AutoscrollStart(const gfx::PointF& position) override;
   void AutoscrollFling(const gfx::Vector2dF& position) override;
   void AutoscrollEnd() override;
-  void StartDragging(blink::mojom::DragDataPtr drag_data,
-                     blink::DragOperationsMask operations_allowed,
-                     const SkBitmap& bitmap,
-                     const gfx::Vector2d& cursor_offset_in_dip,
-                     const gfx::Rect& drag_obj_rect_in_dip,
-                     blink::mojom::DragEventSourceInfoPtr event_info) override;
 
   // blink::mojom::WidgetHost overrides.
   void SetCursor(const ui::Cursor& cursor) override;
@@ -100,9 +94,11 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
   void ImeCancelComposition() override;
   void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void SetMouseCapture(bool capture) override;
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override;
   void RequestMouseLock(bool from_user_gesture,
                         bool unadjusted_movement,
                         RequestMouseLockCallback callback) override;
@@ -127,6 +123,9 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
  private:
   gfx::Range last_composition_range_;
   std::vector<gfx::Rect> last_composition_bounds_;
+
+  mojo::Remote<blink::mojom::RenderInputRouterClient> client_remote_;
+
   mojo::AssociatedReceiver<blink::mojom::FrameWidgetHost>
       frame_widget_host_receiver_{this};
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote_;

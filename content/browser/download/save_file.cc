@@ -4,12 +4,13 @@
 
 #include "content/browser/download/save_file.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

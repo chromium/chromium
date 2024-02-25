@@ -33,7 +33,7 @@ proto_library("tflite_support_proto") {
   cc_generator_options = "lite=true:"
 
   import_dirs = [ "//third_party/tflite/src" ]
-  proto_deps = [ "//third_party/tflite:tflite-config-proto" ]
+  proto_deps = [ "//third_party/tflite:tflite_proto" ]
 }
 
 config("tflite_support_flags") {
@@ -44,6 +44,7 @@ config("tflite_support_flags") {
     "-Wno-sign-compare",
     "-Wno-ignored-attributes",
     "-Wno-deprecated-declarations",
+    "-Wno-unused-function",
     "-Wno-unused-variable",
   ]
   if (!is_win) {
@@ -152,7 +153,7 @@ static_library("tflite_support") {
     "//third_party/smhasher:murmurhash2",
     "//third_party/tensorflow-text",
     "//third_party/tflite",
-    "//third_party/tflite:tflite-config-proto",
+    "//third_party/tflite:tflite_proto",
     "//third_party/tflite:tflite_public_headers",
     "//third_party/zlib:minizip",
   ]

@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -92,7 +93,9 @@ FakeFlossSocketManager::~FakeFlossSocketManager() = default;
 void FakeFlossSocketManager::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index,
+                                  base::Version version,
                                   base::OnceClosure on_ready) {
+  version_ = version;
   std::move(on_ready).Run();
 }
 
@@ -141,7 +144,7 @@ void FakeFlossSocketManager::ConnectUsingL2cap(
     const int psm,
     const Security security_level,
     ConnectionCompleted callback) {
-  std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+  std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
 }
 
 void FakeFlossSocketManager::ConnectUsingL2capLe(
@@ -149,7 +152,7 @@ void FakeFlossSocketManager::ConnectUsingL2capLe(
     const int psm,
     const Security security_level,
     ConnectionCompleted callback) {
-  std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+  std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
 }
 
 void FakeFlossSocketManager::ConnectUsingRfcomm(
@@ -160,7 +163,7 @@ void FakeFlossSocketManager::ConnectUsingRfcomm(
   // Check for the supported uuid or return error.
   if (uuid.canonical_value() !=
       device::BluetoothUUID(kRfcommUuid).canonical_value()) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -172,12 +175,12 @@ void FakeFlossSocketManager::ConnectUsingRfcomm(
   socket.uuid = uuid;
   socket.fd = base::ScopedFD(SimulateSocket());
 
-  absl::optional<FlossSocket> sockout(std::move(socket));
+  std::optional<FlossSocket> sockout(std::move(socket));
   std::move(callback).Run(BtifStatus::kSuccess, std::move(sockout));
 }
 
 void FakeFlossSocketManager::Accept(const SocketId id,
-                                    absl::optional<uint32_t> timeout_ms,
+                                    std::optional<uint32_t> timeout_ms,
                                     ResponseCallback<BtifStatus> callback) {
   auto found = listening_sockets_to_callbacks_.find(id);
   if (found != listening_sockets_to_callbacks_.end()) {
@@ -199,9 +202,9 @@ void FakeFlossSocketManager::Close(const SocketId id,
     FlossListeningSocket socket;
     socket.id = id;
 
+    std::move(callback).Run(BtifStatus::kSuccess);
     state_changed.Run(ServerSocketState::kClosed, std::move(socket),
                       BtifStatus::kSuccess);
-    std::move(callback).Run(BtifStatus::kSuccess);
 
     listening_sockets_to_callbacks_.erase(found);
   } else {
@@ -212,8 +215,7 @@ void FakeFlossSocketManager::Close(const SocketId id,
 void FakeFlossSocketManager::SendSocketReady(const SocketId id,
                                              const device::BluetoothUUID& uuid,
                                              const BtifStatus status) {
-  if (listening_sockets_to_callbacks_.find(id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, id)) {
     FlossListeningSocket socket;
     socket.id = id;
     socket.type = SocketType::kRfcomm;
@@ -226,8 +228,7 @@ void FakeFlossSocketManager::SendSocketReady(const SocketId id,
 
 void FakeFlossSocketManager::SendSocketClosed(const SocketId id,
                                               const BtifStatus status) {
-  if (listening_sockets_to_callbacks_.find(id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, id)) {
     FlossListeningSocket socket;
     socket.id = id;
     socket.type = SocketType::kRfcomm;
@@ -242,8 +243,7 @@ void FakeFlossSocketManager::SendIncomingConnection(
     const SocketId listener_id,
     const FlossDeviceId& remote_device,
     const device::BluetoothUUID& uuid) {
-  if (listening_sockets_to_callbacks_.find(listener_id) !=
-      listening_sockets_to_callbacks_.end()) {
+  if (base::Contains(listening_sockets_to_callbacks_, listener_id)) {
     // Create a fake socket and send a new connection callback.
     FlossSocket socket;
     socket.id = listener_id;

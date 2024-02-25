@@ -398,7 +398,8 @@ PepperPluginInstanceImpl* PepperPluginInstanceImpl::Create(
     RenderFrameImpl* render_frame,
     PluginModule* module,
     WebPluginContainer* container,
-    const GURL& plugin_url) {
+    const GURL& plugin_url,
+    v8::Isolate* isolate) {
   base::RepeatingCallback<const void*(const char*)> get_plugin_interface_func =
       base::BindRepeating(&PluginModule::GetPluginInterface, module);
   PPP_Instance_Combined* ppp_instance_combined =
@@ -406,11 +407,9 @@ PepperPluginInstanceImpl* PepperPluginInstanceImpl::Create(
   if (!ppp_instance_combined)
     return nullptr;
 
-  return new PepperPluginInstanceImpl(render_frame,
-                                      module,
-                                      ppp_instance_combined,
-                                      container,
-                                      plugin_url);
+  return new PepperPluginInstanceImpl(render_frame, module,
+                                      ppp_instance_combined, container,
+                                      plugin_url, isolate);
 }
 
 // static
@@ -494,7 +493,8 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
     PluginModule* module,
     ppapi::PPP_Instance_Combined* instance_interface,
     WebPluginContainer* container,
-    const GURL& plugin_url)
+    const GURL& plugin_url,
+    v8::Isolate* isolate)
     : RenderFrameObserver(render_frame),
       render_frame_(render_frame),
       module_(module),
@@ -532,7 +532,7 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       selection_anchor_(0),
       document_loader_(nullptr),
       external_document_load_(false),
-      isolate_(v8::Isolate::GetCurrent()),
+      isolate_(isolate),
       is_deleted_(false),
       initialized_(false),
       created_in_process_instance_(false),
@@ -1609,13 +1609,22 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
     return 0;
   }
 
+  const blink::WebPrintPageDescription& description =
+      print_params.default_page_description;
+  gfx::SizeF page_area_size = description.size;
+  page_area_size.set_width(std::max(0.0f, page_area_size.width() -
+                                              description.margin_left -
+                                              description.margin_right));
+  page_area_size.set_height(std::max(0.0f, page_area_size.height() -
+                                               description.margin_top -
+                                               description.margin_bottom));
+
   PP_PrintSettings_Dev print_settings;
   print_settings.printable_area =
       CSSPixelsToPoints(print_params.printable_area_in_css_pixels);
-  print_settings.content_area =
-      CSSPixelsToPoints(print_params.print_content_area_in_css_pixels);
-  print_settings.paper_size =
-      CSSPixelsToPoints(print_params.paper_size_in_css_pixels);
+  print_settings.content_area.point = PP_Point();
+  print_settings.content_area.size = CSSPixelsToPoints(page_area_size);
+  print_settings.paper_size = CSSPixelsToPoints(description.size);
   print_settings.dpi = print_params.printer_dpi;
   print_settings.orientation = PP_PRINTORIENTATION_NORMAL;
   print_settings.grayscale = PP_FALSE;

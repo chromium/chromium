@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -113,8 +114,7 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
  private:
   void OnExtensionUpdatingStarted(Profile* profile);
 
-  std::vector<Profile*> profiles_;
-  content::NotificationRegistrar registrar_;
+  std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
 
   base::WeakPtrFactory<ExtensionsMatchChecker> weak_ptr_factory_{this};
 };

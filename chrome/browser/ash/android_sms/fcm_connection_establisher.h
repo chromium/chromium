@@ -10,7 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -61,9 +61,7 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
         content::ServiceWorkerContext* service_worker_context);
     GURL service_worker_scope;
     MessageType message_type;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION content::ServiceWorkerContext* service_worker_context;
+    raw_ptr<content::ServiceWorkerContext> service_worker_context;
   };
 
   struct InFlightMessage {
@@ -94,7 +92,7 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
   void OnMessageDispatchResult(bool status);
 
   std::unique_ptr<base::OneShotTimer> retry_timer_;
-  absl::optional<InFlightMessage> in_flight_message_;
+  std::optional<InFlightMessage> in_flight_message_;
 
   // A queue of messages to be dispatched. Messages are dispatched and retried
   // one at a time from this queue.

@@ -129,4 +129,12 @@ UIResourceBitmap::UIResourceBitmap(sk_sp<SkPixelRef> pixel_ref,
 UIResourceBitmap::UIResourceBitmap(const UIResourceBitmap& other) = default;
 
 UIResourceBitmap::~UIResourceBitmap() = default;
+
+SkBitmap UIResourceBitmap::GetBitmapForTesting() const {
+  SkBitmap bitmap;
+  bitmap.setInfo(info_);
+  bitmap.setPixelRef(pixel_ref_, 0, 0);
+  return bitmap;
+}
+
 }  // namespace cc

@@ -6,8 +6,20 @@
 
 typedef (Request or USVString) RequestInfo;
 
-enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report",
-    "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
+enum RequestDestination {
+    // https://fetch.spec.whatwg.org/#requestdestination
+    "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "json", "manifest", "object", "paintworklet", "report",
+    "script", "sharedworker", "style",  "track", "video", "worker", "xslt",
+
+    // https://wicg.github.io/fenced-frame/#new-request-destination
+    "fencedframe",
+
+    // https://github.com/WICG/compression-dictionary-transport
+    "dictionary",
+
+    // https://wicg.github.io/nav-speculation/speculation-rules.html#fetch-destination
+    "speculationrules"
+};
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestRedirect { "follow", "error", "manual" };

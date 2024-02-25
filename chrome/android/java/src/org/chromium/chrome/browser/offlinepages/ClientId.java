@@ -8,9 +8,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 
 import java.util.UUID;
 
-/**
- * Object to hold a client identifier for an offline page.
- */
+/** Object to hold a client identifier for an offline page. */
 public class ClientId {
     private String mNamespace;
     private String mId;

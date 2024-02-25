@@ -1,0 +1,51 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "device_variations_restrictions_by_policy": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceChromeVariations": 0
+        },
+        "prefs": {
+          "device_variations_restrictions_by_policy": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceChromeVariations": 1
+        },
+        "prefs": {
+          "device_variations_restrictions_by_policy": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceChromeVariations": 2
+        },
+        "prefs": {
+          "device_variations_restrictions_by_policy": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

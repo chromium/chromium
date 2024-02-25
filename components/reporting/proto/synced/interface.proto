@@ -26,7 +26,7 @@ message EnqueueRecordRequest {
   optional Priority priority = 2;
 
   // Flag indicating health data logging state (`true` means "enable logging").
-  // Can also be set by upload response.
+  // Can only be present when originating from Ash.
   optional bool health_data_logging_enabled = 3 [default = false];
 }
 
@@ -52,6 +52,9 @@ message EnqueueRecordResponse {
   //     "The daemon has no available threads for processing"
   //     - Retryable
   optional StatusProto status = 1;
+
+  // Portion of debug logging (if enabled).
+  optional ERPHealthData health_data = 2;
 }
 
 // FlushPriorityRequest requests that the indicated priority
@@ -59,6 +62,10 @@ message EnqueueRecordResponse {
 message FlushPriorityRequest {
   // Priority of the desired queue. Defaults to MANUAL_BATCH.
   optional Priority priority = 1 [default = MANUAL_BATCH];
+
+  // Flag indicating health data logging state (`true` means "enable logging").
+  // Can only be present when originating from Ash.
+  optional bool health_data_logging_enabled = 2 [default = false];
 }
 
 // FlushPriorityResponse indicates success or failure of
@@ -80,6 +87,9 @@ message FlushPriorityResponse {
   //     "The daemon is still starting."
   //     - Retryable
   optional StatusProto status = 1;
+
+  // Portion of debug logging (if enabled).
+  optional ERPHealthData health_data = 2;
 }
 
 // --------------- CHROME CALLS AND RESPONSES -------------------
@@ -121,7 +131,7 @@ message UploadEncryptedRecordResponse {
   optional bool disable = 2 [default = false];
 
   // Flag indicating health data logging state (`true` means "enable logging").
-  // Can also be set by enqueue request.
+  // Can only be present when originating from Ash.
   optional bool health_data_logging_enabled = 3 [default = false];
 }
 
@@ -138,6 +148,10 @@ message ConfirmRecordUploadRequest {
   // If true, daemon should update to the provided sequence_information
   // regardless of its current state.
   optional bool force_confirm = 2;
+
+  // Flag indicating health data logging state (`true` means "enable logging").
+  // Can only be present when originating from Ash.
+  optional bool health_data_logging_enabled = 3 [default = false];
 }
 
 // ConfirmRecordUploadResponse indicates that the request was
@@ -162,6 +176,9 @@ message ConfirmRecordUploadResponse {
   //     "The daemon is still starting."
   //     - Retryable
   optional StatusProto status = 1;
+
+  // Portion of debug logging (if enabled).
+  optional ERPHealthData health_data = 2;
 }
 
 // UpdateEncryptionKeyRequest sends a SignedEncryptionInfo to the daemon.

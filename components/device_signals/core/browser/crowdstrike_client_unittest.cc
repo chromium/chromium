@@ -76,8 +76,8 @@ void DeleteRegistryKey() {
   ASSERT_EQ(res, ERROR_SUCCESS);
 }
 
-void SetUpCrowdStrikeInfo(const absl::optional<std::string>& customer_id,
-                          const absl::optional<std::string>& agent_id) {
+void SetUpCrowdStrikeInfo(const std::optional<std::string>& customer_id,
+                          const std::optional<std::string>& agent_id) {
   CreateRegistryKey();
 
   base::win::RegKey key;
@@ -131,10 +131,10 @@ class CrowdStrikeClientTest : public testing::Test {
     return scoped_temp_dir_.GetPath().Append(kFakeFileName);
   }
 
-  absl::optional<CrowdStrikeSignals> GetSignals(
-      absl::optional<SignalCollectionError> expected_error = absl::nullopt) {
-    base::test::TestFuture<absl::optional<CrowdStrikeSignals>,
-                           absl::optional<SignalCollectionError>>
+  std::optional<CrowdStrikeSignals> GetSignals(
+      std::optional<SignalCollectionError> expected_error = std::nullopt) {
+    base::test::TestFuture<std::optional<CrowdStrikeSignals>,
+                           std::optional<SignalCollectionError>>
         future;
     client_->GetIdentifiers(future.GetCallback());
 
@@ -148,9 +148,9 @@ class CrowdStrikeClientTest : public testing::Test {
     return future.Get<0>();
   }
 
-  absl::optional<SignalCollectionError> GetSignalCollectionError() {
-    base::test::TestFuture<absl::optional<CrowdStrikeSignals>,
-                           absl::optional<SignalCollectionError>>
+  std::optional<SignalCollectionError> GetSignalCollectionError() {
+    base::test::TestFuture<std::optional<CrowdStrikeSignals>,
+                           std::optional<SignalCollectionError>>
         future;
     client_->GetIdentifiers(future.GetCallback());
 
@@ -160,7 +160,7 @@ class CrowdStrikeClientTest : public testing::Test {
     return future.Get<1>();
   }
 
-  void ValidateHistogram(absl::optional<SignalsParsingError> error) {
+  void ValidateHistogram(std::optional<SignalsParsingError> error) {
     static constexpr char kCrowdStrikeErrorHistogram[] =
         "Enterprise.DeviceSignals.Collection.CrowdStrike.Error";
     if (error) {
@@ -189,7 +189,7 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NoFile) {
   EXPECT_FALSE(GetSignalCollectionError());
 
   // No value logged, not having the file available is not considered a failure.
-  ValidateHistogram(absl::nullopt);
+  ValidateHistogram(std::nullopt);
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_EmptyFile) {
@@ -199,7 +199,7 @@ TEST_F(CrowdStrikeClientTest, Identifiers_EmptyFile) {
   EXPECT_FALSE(GetSignalCollectionError());
 
   // No value logged, having an empty file is not considered a failure.
-  ValidateHistogram(absl::nullopt);
+  ValidateHistogram(std::nullopt);
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_NotJwt) {
@@ -286,7 +286,7 @@ TEST_F(CrowdStrikeClientTest, Identifiers_Success) {
   EXPECT_EQ(signals->agent_id, kExpectedAgentId);
   EXPECT_EQ(signals->customer_id, kExpectedCustomerId);
 
-  ValidateHistogram(absl::nullopt);
+  ValidateHistogram(std::nullopt);
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_Success_CachedValue) {
@@ -318,7 +318,7 @@ TEST_F(CrowdStrikeClientTest, Identifiers_Success_CachedValue) {
 // Tests that only having the customer ID in the registry is treated
 // as insufficient, and no value is returned.
 TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_RegistryNoAgentId) {
-  SetUpCrowdStrikeInfo(kFakeHexCSCustomerId, absl::nullopt);
+  SetUpCrowdStrikeInfo(kFakeHexCSCustomerId, std::nullopt);
 
   auto signals = GetSignals();
 
@@ -328,7 +328,7 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_RegistryNoAgentId) {
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_RegistryNoCustomerId) {
-  SetUpCrowdStrikeInfo(absl::nullopt, kFakeHexCSAgentId);
+  SetUpCrowdStrikeInfo(std::nullopt, kFakeHexCSAgentId);
 
   auto signals = GetSignals();
 

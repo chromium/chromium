@@ -6,12 +6,12 @@
 #define CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
-#include "components/metrics/call_stack_profile_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -60,6 +60,10 @@ class ThreadProfilerConfiguration {
   void AppendCommandLineSwitchForChildProcess(
       base::CommandLine* command_line) const;
 
+#if BUILDFLAG(IS_ANDROID)
+  bool IsJavaNameHashingEnabled() const;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   friend base::NoDestructor<ThreadProfilerConfiguration>;
 
@@ -77,8 +81,18 @@ class ThreadProfilerConfiguration {
     // kProfileDisabled group).
     kProfileControl,
 
+#if BUILDFLAG(IS_ANDROID)
+    // Enabled within the experiment (and paired with equal-sized
+    // kProfileDisabled and kProfileControl groups). Java names will be
+    // hashed within this group.
+    kProfileEnabledWithJavaNameHashing,
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Enabled outside of the experiment.
     kProfileEnabled,
+
+    // Disabled outside of the experiment.
+    kProfileDisabledOutsideOfExperiment,
   };
 
   struct BrowserProcessConfiguration {
@@ -86,12 +100,12 @@ class ThreadProfilerConfiguration {
     // profiling is disabled and no variations state is reported. Otherwise
     // profiling is enabled based on the VariationGroup and the variation state
     // is reported.
-    absl::optional<VariationGroup> variation_group;
+    std::optional<VariationGroup> variation_group;
 
     // In pick-single-type-of-process-to-sample mode, only a single process
     // type will be profiled when profiling is enabled. If !has_value(), the
     // profiling will be enabled for as many processes as possible.
-    absl::optional<metrics::CallStackProfileParams::Process>
+    std::optional<metrics::CallStackProfileParams::Process>
         process_type_to_sample;
   };
 
@@ -116,7 +130,7 @@ class ThreadProfilerConfiguration {
 
   // True if the profiler is to be enabled for |variation_group|.
   static bool EnableForVariationGroup(
-      absl::optional<VariationGroup> variation_group);
+      std::optional<VariationGroup> variation_group);
 
   // True if the given process is picked to enable profiling. In pick-single-
   // type-of-process-to-sample mode, only one type of process is picked to

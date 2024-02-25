@@ -15,7 +15,9 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -150,6 +152,18 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromSysTrayCalendar",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromInstaller:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromInstaller",
+                                    default_app_name);
+      break;
+    case apps::LaunchSource::kFromFirstRun:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromFirstRun",
+                                    default_app_name);
+      break;
+    case apps::LaunchSource::kFromWelcomeTour:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWelcomeTour",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
@@ -160,22 +174,57 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
+                                  apps::LaunchSource launch_source) {
+  // This metric is intended to capture actual user actions after the user
+  // completed the Welcome Tour. Do not log automatically launched apps,
+  // including apps that were automatically launched by the Welcome Tour.
+  if (launch_source == apps::LaunchSource::kFromChromeInternal ||
+      launch_source == apps::LaunchSource::kFromWelcomeTour) {
+    return;
+  }
+
+  switch (default_app_name) {
+    case apps::DefaultAppName::kFiles:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kFilesApp);
+      break;
+    case apps::DefaultAppName::kHelpApp:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kExploreApp);
+      break;
+    case apps::DefaultAppName::kSettings:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kSettingsApp);
+      break;
+    default:
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 namespace apps {
 
 void RecordAppLaunch(const std::string& app_id,
                      apps::LaunchSource launch_source) {
-  if (const absl::optional<apps::DefaultAppName> app_name =
+  if (const std::optional<apps::DefaultAppName> app_name =
           PreinstalledWebAppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (const absl::optional<apps::DefaultAppName> app_name =
+  if (const std::optional<apps::DefaultAppName> app_name =
           SystemWebAppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
+
+    if (ash::features::IsWelcomeTourEnabled()) {
+      RecordWelcomeTourInteraction(app_name.value(), launch_source);
+    }
+
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -235,25 +284,7 @@ void RecordAppLaunch(const std::string& app_id,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void RecordBuiltInAppSearchResult(const std::string& app_id) {
-  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kKeyboardShortcutViewer);
-  } else if (app_id == ash::kInternalAppIdSettings) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kSettings);
-  } else if (app_id == ash::kInternalAppIdContinueReading) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kContinueReading);
-  } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kPluginVm);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
+const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
   if (app_id == web_app::kCalculatorAppId) {
     return apps::DefaultAppName::kCalculator;
@@ -292,12 +323,12 @@ const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
   } else if (app_id == web_app::kYoutubeMusicAppId) {
     return apps::DefaultAppName::kYouTubeMusic;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
+const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id) {
   // These apps should all have chrome:// URLs.
   if (app_id == web_app::kCameraAppId) {
@@ -330,7 +361,7 @@ const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
   } else if (app_id == web_app::kShortcutCustomizationAppId) {
     return apps::DefaultAppName::kShortcutCustomizationApp;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -23,7 +25,7 @@ const base::Value kVpnPackageValue(kVpnPackage);
 void OnGetProperties(bool* success_out,
                      std::string* package_name_out,
                      base::OnceClosure callback,
-                     absl::optional<base::Value::Dict> result) {
+                     std::optional<base::Value::Dict> result) {
   *success_out = result.has_value();
   if (result) {
     const std::string* value =
@@ -72,7 +74,8 @@ class AlwaysOnVpnManagerTest : public testing::Test {
 };
 
 TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownUnset) {
-  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(pref_service());
+  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(
+      pref_service(), /*delay_lockdown_until_vpn_connected=*/false);
 
   EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
 
@@ -84,7 +87,8 @@ TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownUnset) {
 TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownTrue) {
   pref_service()->Set(arc::prefs::kAlwaysOnVpnLockdown, base::Value(true));
 
-  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(pref_service());
+  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(
+      pref_service(), /*delay_lockdown_until_vpn_connected=*/false);
 
   EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
 
@@ -93,7 +97,7 @@ TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownTrue) {
   EXPECT_EQ(kVpnPackage, GetAlwaysOnPackageName());
 
   pref_service()->Set(arc::prefs::kAlwaysOnVpnPackage,
-                      base::Value(base::StringPiece()));
+                      base::Value(std::string_view()));
 
   EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
 }
@@ -102,7 +106,8 @@ TEST_F(AlwaysOnVpnManagerTest, SetPackageThatsAlreadySetAtBoot) {
   pref_service()->Set(arc::prefs::kAlwaysOnVpnLockdown, base::Value(true));
   pref_service()->Set(arc::prefs::kAlwaysOnVpnPackage, kVpnPackageValue);
 
-  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(pref_service());
+  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(
+      pref_service(), /*delay_lockdown_until_vpn_connected=*/false);
 
   EXPECT_EQ(kVpnPackage, GetAlwaysOnPackageName());
 }
@@ -110,7 +115,8 @@ TEST_F(AlwaysOnVpnManagerTest, SetPackageThatsAlreadySetAtBoot) {
 TEST_F(AlwaysOnVpnManagerTest, SetLockdown) {
   pref_service()->Set(arc::prefs::kAlwaysOnVpnPackage, kVpnPackageValue);
 
-  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(pref_service());
+  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(
+      pref_service(), /*delay_lockdown_until_vpn_connected=*/false);
 
   pref_service()->Set(arc::prefs::kAlwaysOnVpnLockdown, base::Value(true));
 
@@ -119,6 +125,25 @@ TEST_F(AlwaysOnVpnManagerTest, SetLockdown) {
   pref_service()->Set(arc::prefs::kAlwaysOnVpnLockdown, base::Value(false));
 
   EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
+}
+
+// Verify that the shill::kAlwaysOnVpnPackageProperty property is not set if the
+// browser user traffic is restricted by the AlwaysOnVpnPreConnectUrlAllowlist
+// preference.
+TEST_F(AlwaysOnVpnManagerTest, EnforceAlwaysOnVpnPreConnectUrlAllowlist) {
+  auto always_on_manager = std::make_unique<AlwaysOnVpnManager>(
+      pref_service(), /*delay_lockdown_until_vpn_connected=*/false);
+
+  pref_service()->Set(arc::prefs::kAlwaysOnVpnLockdown, base::Value(true));
+  pref_service()->Set(arc::prefs::kAlwaysOnVpnPackage, kVpnPackageValue);
+  EXPECT_EQ(kVpnPackage, GetAlwaysOnPackageName());
+
+  always_on_manager->SetDelayLockdownUntilVpnConnectedState(/*enabled=*/true);
+  EXPECT_EQ(std::string(), GetAlwaysOnPackageName());
+
+  always_on_manager->SetDelayLockdownUntilVpnConnectedState(
+      /*enabled=*/false);
+  EXPECT_EQ(kVpnPackage, GetAlwaysOnPackageName());
 }
 
 }  // namespace

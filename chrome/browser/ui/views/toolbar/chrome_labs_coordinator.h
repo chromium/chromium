@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/view_observer.h"
@@ -62,9 +62,6 @@ class ChromeLabsCoordinator {
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<const ChromeLabsModel, AcrossTasksDanglingUntriaged>
       chrome_labs_model_;
-  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_ =
-      nullptr;
-
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
   std::unique_ptr<ChromeLabsViewController> controller_;

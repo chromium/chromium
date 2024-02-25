@@ -19,6 +19,7 @@ namespace blink {
 
 class BroadcastChannelTester;
 class ScriptValue;
+class StorageAccessHandle;
 
 class MODULES_EXPORT BroadcastChannel final
     : public EventTarget,
@@ -34,6 +35,10 @@ class MODULES_EXPORT BroadcastChannel final
                                   ExceptionState&);
 
   BroadcastChannel(ExecutionContext*, const String& name);
+  BroadcastChannel(base::PassKey<StorageAccessHandle>,
+                   ExecutionContext* execution_context,
+                   const String& name,
+                   mojom::blink::BroadcastChannelProvider* provider);
   BroadcastChannel(
       base::PassKey<BroadcastChannelTester>,
       ExecutionContext*,
@@ -78,6 +83,8 @@ class MODULES_EXPORT BroadcastChannel final
           receiver,
       mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient>
           remote);
+
+  void SetupDisconnectHandlers();
 
   void PostMessageInternal(
       scoped_refptr<SerializedScriptValue> value,

@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -17,15 +18,25 @@ void RecordDownloadSource(ChromeDownloadSource source) {
                                 CHROME_DOWNLOAD_SOURCE_LAST_ENTRY);
 }
 
-void RecordDangerousDownloadWarningShown(
-    download::DownloadDangerType danger_type,
-    const base::FilePath& file_path,
-    bool is_https,
-    bool has_user_gesture) {
-  base::UmaHistogramEnumeration("Download.ShowedDownloadWarning", danger_type,
+void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model) {
+  if (!model.IsDangerous()) {
+    return;
+  }
+  if (model.WasUIWarningShown()) {
+    return;
+  }
+  base::UmaHistogramEnumeration("Download.ShowedDownloadWarning",
+                                model.GetDangerType(),
                                 download::DOWNLOAD_DANGER_TYPE_MAX);
+#if !BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration("SBClientDownload.TailoredWarningType",
+                                model.GetTailoredWarningType());
+#endif  // BUILDFLAG(IS_ANDROID)
   safe_browsing::RecordDangerousDownloadWarningShown(
-      danger_type, file_path, is_https, has_user_gesture);
+      model.GetDangerType(), model.GetTargetFilePath(),
+      model.GetURL().SchemeIs(url::kHttpsScheme), model.HasUserGesture());
+
+  model.SetWasUIWarningShown(true);
 }
 
 void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
@@ -38,11 +49,6 @@ void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
           mime_type_string, /*record_content_subcategory=*/false);
   base::UmaHistogramEnumeration("Download.Open.ContentType", download_content,
                                 download::DownloadContent::MAX);
-}
-
-void RecordDownloadOpenButtonPressed(bool is_download_completed) {
-  base::UmaHistogramBoolean("Download.OpenButtonPressed.IsDownloadCompleted",
-                            is_download_completed);
 }
 
 void RecordDatabaseAvailability(bool is_available) {
@@ -82,11 +88,6 @@ void RecordDownloadShelfDragInfo(DownloadDragInfo drag_info) {
                                 DownloadDragInfo::COUNT);
 }
 
-void RecordDownloadBubbleDragInfo(DownloadDragInfo drag_info) {
-  base::UmaHistogramEnumeration("Download.Bubble.DragInfo", drag_info,
-                                DownloadDragInfo::COUNT);
-}
-
 void RecordDownloadStartPerProfileType(Profile* profile) {
   base::UmaHistogramEnumeration(
       "Download.Start.PerProfileType",
@@ -105,9 +106,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     DownloadCommands::Command download_command,
     bool clicked) {
   switch (download_command) {
-    case DownloadCommands::Command::MAX:
-      NOTREACHED();
-      return DownloadShelfContextMenuAction::kMaxValue;
     case DownloadCommands::Command::SHOW_IN_FOLDER:
       return clicked ? DownloadShelfContextMenuAction::kShowInFolderClicked
                      : DownloadShelfContextMenuAction::kShowInFolderEnabled;
@@ -154,7 +152,7 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::DEEP_SCAN:
       return clicked ? DownloadShelfContextMenuAction::kDeepScanClicked
                      : DownloadShelfContextMenuAction::kDeepScanEnabled;
-    case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
       return clicked
                  ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
                  : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
@@ -166,6 +164,7 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::CANCEL_DEEP_SCAN:
     case DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::Command::OPEN_SAFE_BROWSING_SETTING:
+    case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
       NOTREACHED();
       return DownloadShelfContextMenuAction::kNotReached;
   }

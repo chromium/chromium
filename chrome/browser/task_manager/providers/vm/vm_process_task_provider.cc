@@ -104,7 +104,7 @@ void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
 
 void VmProcessTaskProvider::OnListVms(
     const base::ProcessIterator::ProcessEntries& snapshot,
-    absl::optional<vm_tools::concierge::ListVmsResponse> response) {
+    std::optional<vm_tools::concierge::ListVmsResponse> response) {
   std::vector<VmProcessData> vm_process_list;
   const base::ProcessId vm_init_pid = GetVmInitProcessId(snapshot);
 

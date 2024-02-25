@@ -113,7 +113,7 @@ class GestureNavigationScreenTest
     run_loop.Run();
   }
 
-  absl::optional<GestureNavigationScreen::Result> screen_result_;
+  std::optional<GestureNavigationScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:

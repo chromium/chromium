@@ -18,6 +18,7 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -137,7 +138,8 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
     request->is_main_resource_load = true;
 
     return std::make_unique<ServiceWorkerFetchDispatcher>(
-        std::move(request), destination, std::string() /* client_id */, version,
+        std::move(request), destination, std::string() /* client_id */,
+        std::string() /* resulting_client_id */, version,
         base::DoNothing() /* prepare_result */, std::move(fetch_callback),
         is_offline_capability_check);
   }

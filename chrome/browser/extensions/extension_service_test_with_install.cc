@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/common/verifier_formats.h"
@@ -227,8 +226,7 @@ const Extension* ExtensionServiceTestWithInstall::VerifyCrxInstall(
       EXPECT_EQ(expected_extensions_count_, actual_extension_count) <<
           path.value();
       extension = loaded_extensions_[0].get();
-      EXPECT_TRUE(registry()->GetExtensionById(extension->id(),
-                                               ExtensionRegistry::ENABLED))
+      EXPECT_TRUE(registry()->enabled_extensions().GetByID(extension->id()))
           << path.value();
     }
 
@@ -288,7 +286,7 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   if (installer) {
     base::RunLoop run_loop;
     installer->AddInstallerCallback(base::BindLambdaForTesting(
-        [&run_loop](const absl::optional<CrxInstallError>& error) {
+        [&run_loop](const std::optional<CrxInstallError>& error) {
           run_loop.Quit();
         }));
     installer->InstallCrxFile(crx_info);

@@ -8,8 +8,9 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
-import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {SettingsReviewNotificationPermissionsElement} from 'chrome://settings/lazy_load.js';
+import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 // clang-format on
 

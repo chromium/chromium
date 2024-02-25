@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DLP_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DLP_ASH_H_
 
+#include "base/files/file_path.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -40,6 +41,9 @@ class DlpAsh : public mojom::Dlp {
       ::mojo::PendingRemote<mojom::StateChangeDelegate> delegate) override;
   void OnScreenShareStopped(const std::string& label,
                             mojom::ScreenShareAreaPtr area) override;
+  void ShowBlockedFiles(std::optional<uint64_t> task_id,
+                        const std::vector<base::FilePath>& blocked_files,
+                        mojom::FileAction action) override;
 
  private:
   // Callback to pass request to change screen share state to remote.
@@ -49,6 +53,8 @@ class DlpAsh : public mojom::Dlp {
 
   // Callback to pass request to stop screen share to remote.
   void StopScreenShare(mojo::RemoteSetElementId id);
+
+  void OnDisconnect();
 
   mojo::ReceiverSet<mojom::Dlp> receivers_;
   mojo::RemoteSet<mojom::StateChangeDelegate> screen_share_remote_delegates_;

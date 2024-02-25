@@ -5,9 +5,10 @@
 /**
  * @fileoverview Handles automation from ChromeVox's current range.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
 import {ChromeVox} from '../chromevox.js';
@@ -72,8 +73,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     while (retarget && retarget !== retarget.root) {
       // Table headers require retargeting for events because they often have
       // event types we care about e.g. sort direction.
-      if (retarget.role === RoleType.COLUMN_HEADER ||
-          retarget.role === RoleType.ROW_HEADER) {
+      if (AutomationPredicate.tableHeader(retarget)) {
         this.node_ = retarget;
         break;
       }
@@ -102,6 +102,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         EventType.CHECKED_STATE_DESCRIPTION_CHANGED,
         this.onCheckedStateChanged);
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
+    this.addListener_(EventType.CONTROLS_CHANGED, this.onControlsChanged);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
     this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
@@ -197,9 +198,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     // Only report attribute changes on some *Option roles if it is selected.
-    if ((evt.target.role === RoleType.MENU_LIST_OPTION ||
-         evt.target.role === RoleType.LIST_BOX_OPTION) &&
-        !evt.target.selected) {
+    if (AutomationPredicate.listOption(evt.target) && !evt.target.selected) {
       return;
     }
 
@@ -222,6 +221,15 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
           intents: evt.intents,
         });
     this.onEventIfInRange(event);
+  }
+
+  /** @param {!ChromeVoxEvent} event */
+  onControlsChanged(event) {
+    if (event.target.role === RoleType.TAB) {
+      new Output()
+          .withSpeech(CursorRange.fromNode(event.target), null, event.type)
+          .go();
+    }
   }
 
   /**

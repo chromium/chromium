@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -43,7 +43,7 @@ class FakeConnectionManager : public ConnectionManager {
  private:
   // ConnectionManager:
   Status GetStatus() const override;
-  void AttemptNearbyConnection() override;
+  bool AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
@@ -53,7 +53,7 @@ class FakeConnectionManager : public ConnectionManager {
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
 
   Status status_;
   std::vector<std::string> sent_messages_;

@@ -85,7 +85,7 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<ui::LayerAnimator, DanglingUntriaged | ExperimentalAsh> animator_;
+  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
   base::TimeDelta duration_;
 };
 
@@ -134,7 +134,7 @@ class FrameAnimator : public ui::ImplicitAnimationObserver {
     animation_started_ = true;
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
   bool animation_started_ = false;
 };

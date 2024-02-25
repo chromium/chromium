@@ -435,8 +435,8 @@ class BiodClientImpl : public BiodClient {
       observer.BiodSessionFailedReceived();
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_ = nullptr;
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> biod_proxy_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> biod_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
   std::unique_ptr<dbus::ObjectPath> current_enroll_session_path_;
   std::unique_ptr<dbus::ObjectPath> current_auth_session_path_;

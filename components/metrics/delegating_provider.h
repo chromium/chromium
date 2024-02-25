@@ -38,6 +38,7 @@ class DelegatingProvider final : public MetricsProvider {
   void OnRecordingDisabled() override;
   void OnClientStateCleared() override;
   void OnAppEnterBackground() override;
+  void OnPageLoadStarted() override;
   bool HasIndependentMetrics() override;
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;

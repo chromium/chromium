@@ -25,7 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_timeouts.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -57,6 +57,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -65,11 +66,13 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace chrome {
 namespace {
@@ -160,8 +163,9 @@ class DragAndDropSimulator {
 
     aura::client::DragDropDelegate* delegate =
         GetOmniboxDragDropDelegate(omnibox);
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     active_drag_event_ = base::WrapUnique(new ui::DropTargetEvent(
         *os_exchange_data_, gfx::PointF(location), gfx::PointF(location),
@@ -182,8 +186,9 @@ class DragAndDropSimulator {
     }
 
     aura::client::DragDropDelegate* delegate = GetDropDelegate();
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     gfx::PointF event_location;
     gfx::PointF event_root_location;
@@ -214,8 +219,9 @@ class DragAndDropSimulator {
 
     aura::client::DragDropDelegate* delegate =
         GetOmniboxDragDropDelegate(omnibox);
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     active_drag_event_->set_location_f(gfx::PointF(location));
     active_drag_event_->set_root_location_f(gfx::PointF(location));
@@ -237,8 +243,9 @@ class DragAndDropSimulator {
     }
 
     aura::client::DragDropDelegate* delegate = GetDragDelegate();
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
 
     gfx::PointF event_location;
     gfx::PointF event_root_location;
@@ -345,10 +352,12 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // WaitUntilDragStart can take a long time to return (it returns only after
   // the OS decides that the drag-and-drop has ended).
   //
-  // Before returning populates |text|, |html| and other parameters with data
-  // that would have been passed to the OS).  If the caller is not interested in
-  // this data, then the corresponding argument can be null.
-  void WaitUntilDragStart(std::string* text,
+  // Before returning populates `source_origin`, `text`, `html` and other
+  // parameters with data that would have been passed to the OS). If the caller
+  // is not interested in this data, then the corresponding argument can be
+  // null.
+  void WaitUntilDragStart(std::optional<url::Origin>* source_origin,
+                          std::string* text,
                           std::string* html,
                           int* operation,
                           gfx::Point* location_inside_web_contents) {
@@ -357,14 +366,25 @@ class DragStartWaiter : public aura::client::DragDropClient {
     // message_loop_runner_->Quit is only called from StartDragAndDrop.
     DCHECK(drag_started_);
 
-    if (text)
+    if (source_origin) {
+      *source_origin = source_origin_;
+    }
+    if (text) {
       *text = text_;
-    if (html)
+    }
+    if (html) {
       *html = html_;
-    if (operation)
+    }
+    if (operation) {
       *operation = operation_;
-    if (location_inside_web_contents)
+    }
+    if (location_inside_web_contents) {
       *location_inside_web_contents = location_inside_web_contents_;
+    }
+  }
+
+  void WaitUntilDragStart() {
+    WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr, nullptr);
   }
 
   void SuppressPassingStartDragFurther() {
@@ -387,18 +407,21 @@ class DragStartWaiter : public aura::client::DragDropClient {
       drag_started_ = true;
       message_loop_runner_->Quit();
 
+      source_origin_ = data->GetRendererTaintedOrigin();
       std::u16string text;
-      if (data->GetString(&text))
+      if (data->GetString(&text)) {
         text_ = base::UTF16ToUTF8(text);
-      else
+      } else {
         text_ = "<no text>";
+      }
 
       GURL base_url;
       std::u16string html;
-      if (data->GetHtml(&html, &base_url))
+      if (data->GetHtml(&html, &base_url)) {
         html_ = base::UTF16ToUTF8(html);
-      else
+      } else {
         html_ = "<no html>";
+      }
 
       gfx::Rect bounds =
           web_contents_->GetContentNativeView()->GetBoundsInScreen();
@@ -415,8 +438,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
       callback_to_run_inside_drag_and_drop_message_loop_.Reset();
     }
 
-    if (suppress_passing_of_start_drag_further_)
+    if (suppress_passing_of_start_drag_further_) {
       return DragOperation::kNone;
+    }
 
     // Start a nested drag-and-drop loop (might not return for a long time).
     return old_client_->StartDragAndDrop(std::move(data), root_window,
@@ -448,6 +472,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
 
   // Data captured during the first intercepted StartDragAndDrop call.
   bool drag_started_;
+  std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
   int operation_;
@@ -483,8 +508,9 @@ class DOMDragEventWaiter {
     bool got_right_event_type = false;
     bool got_right_window_name = false;
     do {
-      if (!dom_message_queue_.WaitForMessage(&candidate_event))
+      if (!dom_message_queue_.WaitForMessage(&candidate_event)) {
         return false;
+      }
 
       got_right_event_type =
           IsExpectedEventType(candidate_event, event_type_to_wait_for_);
@@ -492,8 +518,9 @@ class DOMDragEventWaiter {
           IsExpectedWindowName(candidate_event, target_frame_name_);
     } while (!got_right_event_type || !got_right_window_name);
 
-    if (found_event)
+    if (found_event) {
       *found_event = candidate_event;
+    }
 
     return true;
   }
@@ -580,8 +607,9 @@ class DOMDragEventVerifier {
   static testing::Matcher<std::string> FieldMatches(
       const std::string& field_name,
       const std::string& expected_value) {
-    if (expected_value == "<no expectation>")
+    if (expected_value == "<no expectation>") {
       return testing::A<std::string>();
+    }
 
     return testing::HasSubstr(base::StringPrintf(
         "\"%s\":\"%s\"", field_name.c_str(), expected_value.c_str()));
@@ -679,7 +707,8 @@ using TestParam = std::tuple<bool, double>;
 class DragAndDropBrowserTest : public InProcessBrowserTest,
                                public testing::WithParamInterface<TestParam> {
  public:
-  DragAndDropBrowserTest() = default;
+  DragAndDropBrowserTest()
+      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   DragAndDropBrowserTest(const DragAndDropBrowserTest&) = delete;
   DragAndDropBrowserTest& operator=(const DragAndDropBrowserTest&) = delete;
@@ -700,6 +729,10 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   void CrossSiteDrag_Step2(CrossSiteDrag_TestState*);
   void CrossSiteDrag_Step3(CrossSiteDrag_TestState*);
 
+  struct CrossNavCrossSiteDrag_TestState;
+  void CrossNavCrossSiteDrag_Step2(CrossNavCrossSiteDrag_TestState*);
+  void CrossNavCrossSiteDrag_Step3(CrossNavCrossSiteDrag_TestState*);
+
   struct CrossTabDrag_TestState;
   void CrossTabDrag_Step2(CrossTabDrag_TestState*);
   void CrossTabDrag_Step3(CrossTabDrag_TestState*);
@@ -714,8 +747,10 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    content::SetupCrossSiteRedirector(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    https_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    content::SetupCrossSiteRedirector(https_test_server());
+    ASSERT_TRUE(https_test_server()->Start());
     drag_simulator_ = std::make_unique<DragAndDropSimulator>(web_contents());
   }
 
@@ -748,9 +783,12 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   //////////////////////
   // Navigation helpers.
 
-  bool NavigateToTestPage(const std::string& origin_of_main_frame) {
-    GURL url =
-        embedded_test_server()->GetURL(origin_of_main_frame, kTestPagePath);
+  bool NavigateToTestPage(const std::string& origin) {
+    return NavigateMainFrame(origin, kTestPagePath);
+  }
+
+  bool NavigateMainFrame(const std::string& origin, const std::string& path) {
+    GURL url = https_test_server()->GetURL(origin, path);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return web_contents()->GetLastCommittedURL() == url;
   }
@@ -766,7 +804,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     replacement_text.push_back(
         std::make_pair("REPLACE_WITH_HOST_AND_PORT",
                        base::StringPrintf("%s:%d", image_origin.c_str(),
-                                          embedded_test_server()->port())));
+                                          https_test_server()->port())));
     replacement_text.push_back(std::make_pair(
         "REPLACE_WITH_CROSSORIGIN",
         std::string(image_crossorigin_attr ? "crossorigin" : "")));
@@ -796,8 +834,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
                           content::WebContents* web_contents = nullptr) {
     content::RenderFrameHost* frame = GetFrameByName(frame_name, web_contents);
 
-    if (!frame)
+    if (!frame) {
       return false;
+    }
 
     // Navigate the frame and wait for the load event.
     std::string script = base::StringPrintf(
@@ -840,18 +879,23 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     DOMDragEventWaiter mouse_move_event_waiter("mousemove", GetLeftFrame());
     DOMDragEventWaiter mouse_down_event_waiter("mousedown", GetLeftFrame());
 
-    if (!SimulateMouseMove(kMiddleOfLeftFrame))
+    if (!SimulateMouseMove(kMiddleOfLeftFrame)) {
       return false;
-    if (!mouse_move_event_waiter.WaitForNextMatchingEvent(nullptr))
+    }
+    if (!mouse_move_event_waiter.WaitForNextMatchingEvent(nullptr)) {
       return false;
+    }
 
-    if (!SimulateMouseDown())
+    if (!SimulateMouseDown()) {
       return false;
-    if (!mouse_down_event_waiter.WaitForNextMatchingEvent(nullptr))
+    }
+    if (!mouse_down_event_waiter.WaitForNextMatchingEvent(nullptr)) {
       return false;
+    }
 
-    if (!SimulateMouseMove(expected_location_of_drag_start_in_left_frame()))
+    if (!SimulateMouseMove(expected_location_of_drag_start_in_left_frame())) {
       return false;
+    }
 
     return true;
   }
@@ -933,10 +977,13 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window->GetRootWindow());
     gfx::Point screen_position(kMiddleOfRightFrame);
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointToScreen(window, &screen_position);
+    }
     return screen_position;
   }
+
+  net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
  private:
   // Constants with coordinates within content/test/data/drag_and_drop/page.html
@@ -976,13 +1023,20 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   std::unique_ptr<DragAndDropSimulator> drag_simulator_;
+  net::EmbeddedTestServer https_test_server_;
 };
 
 // Scenario: drag text from outside the browser and drop to the right frame.
 // Test coverage: dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  // TODO (crbug/1521094): Test fails when ChromeRefresh2023 and
+  //                       ChromeRefreshSecondary2023 is enabled. Evaluate cause
+  //                       and fix.
+  if (features::IsChromeRefresh2023() && std::get<double>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
 
   // Setup test expectations.
@@ -1002,6 +1056,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
     ASSERT_TRUE(dragover_waiter.WaitForNextMatchingEvent(&dragover_event));
     EXPECT_THAT(dragover_event, expected_dom_event_data.Matches());
   }
+
+  // Allow the dragenter and dragover events to update the current drag
+  // operations on the WebContentsView before proceeding to the drop, since
+  // the latter needs that information to determine whether to force a
+  // default action in the renderer process.
+  base::RunLoop().RunUntilIdle();
 
   // Drop into the right frame.
   {
@@ -1023,8 +1083,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
 // behavior.  This test explicitly does not cover the dragover and/or drop DOM
 // events - they are already covered via the DropTextFromOutside test above.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1039,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
   // Drag a normal URL from outside the browser into/over the right frame.
-  GURL dragged_url = embedded_test_server()->GetURL("d.com", "/title2.html");
+  GURL dragged_url = https_test_server()->GetURL("d.test", "/title2.html");
   ASSERT_TRUE(SimulateDragEnterToRightFrame(dragged_url));
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
@@ -1070,8 +1130,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1097,7 +1157,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   // Drag a normal URL from outside the browser into the Omnibox.
-  GURL dragged_url = embedded_test_server()->GetURL("d.com", "/title2.html");
+  GURL dragged_url = https_test_server()->GetURL("d.test", "/title2.html");
   ASSERT_TRUE(SimulateDragEnterToOmnibox(dragged_url));
 
   // Drop into the Omnibox.
@@ -1132,8 +1192,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
 // behavior.  This test explicitly does not cover the dragover and/or drop DOM
 // events - they are already covered via the DropTextFromOutside test above.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1181,8 +1241,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
 // Mostly focuses on covering the navigation path (the dragover and/or drop DOM
 // events are already covered via the DropTextFromOutside test above).
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::NavigationController& controller = web_contents()->GetController();
   int initial_history_count = controller.GetEntryCount();
@@ -1215,16 +1275,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
 
 // Scenario: starting a drag in left frame
 // Test coverage: dragstart DOM event, dragstart data passed to the OS.
-//
-// TODO(https://crbug.com/1444100): Re-enable the test once fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_DragStartInFrame DISABLED_DragStartInFrame
-#else
-#define MAYBE_DragStartInFrame DragStartInFrame
-#endif
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
 
   // Setup test expectations.
@@ -1264,18 +1317,23 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
 
   // Verify data being passed to the OS.
   {
+    std::optional<url::Origin> source_origin;
     std::string text;
     std::string html;
     int operation = 0;
     gfx::Point location_inside_web_contents;
-    drag_start_waiter.WaitUntilDragStart(&text, &html, &operation,
+    drag_start_waiter.WaitUntilDragStart(&source_origin, &text, &html,
+                                         &operation,
                                          &location_inside_web_contents);
-    EXPECT_EQ(embedded_test_server()->GetURL(frame_site,
-                                             "/drag_and_drop/cors-allowed.jpg"),
+    ASSERT_TRUE(source_origin.has_value());
+    EXPECT_EQ(https_test_server()->GetOrigin(frame_site), source_origin);
+    EXPECT_EQ(https_test_server()->GetURL(frame_site,
+                                          "/drag_and_drop/cors-allowed.jpg"),
               text);
     EXPECT_THAT(
-        html, testing::MatchesRegex(
-                  R"(<img .*src="http://.*/drag_and_drop/cors-allowed.jpg">)"));
+        html,
+        testing::MatchesRegex(
+            R"(<img .*src="https://.*/drag_and_drop/cors-allowed.jpg">)"));
     EXPECT_EQ(expected_location_of_drag_start_in_left_frame(),
               location_inside_web_contents);
     EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, operation);
@@ -1314,6 +1372,12 @@ struct DragAndDropBrowserTest::DragImageBetweenFrames_TestState {
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragSameOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/true,
                                /*image_crossorigin_attr=*/false);
 }
@@ -1335,6 +1399,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCorsSameOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
                                /*image_crossorigin_attr=*/true);
 }
@@ -1356,6 +1426,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Regression test for https://crbug.com/1264873.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCrossOriginImageBetweenFrames) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
                                /*image_crossorigin_attr=*/false);
 }
@@ -1366,10 +1442,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Start(
   // Note that drag and drop will not expose data across cross-site frames on
   // the same page - this is why the same |frame_site| is used below both for
   // the left and the right frame.  See also https://crbug.com/59081.
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site,
-                                image_same_origin ? frame_site : "c.com",
+                                image_same_origin ? frame_site : "c.test",
                                 image_crossorigin_attr, "image_source.html"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
 
@@ -1402,7 +1478,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Start(
   // The next step of the test (DragImageBetweenFrames_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart();
 
   DragImageBetweenFrames_Step3(&state);
 }
@@ -1478,10 +1554,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -1608,9 +1684,15 @@ struct DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState {
 // Test coverage: dragenter, dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragImageFromDisappearingFrame) {
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
   // Load the test page.
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
 
@@ -1634,7 +1716,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
   // The next step of the test (DragImageFromDisappearingFrame_Step2) runs
   // inside the nested drag-and-drop message loop - the call below won't return
   // until the drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart();
 
   DragImageFromDisappearingFrame_Step3(&state);
 }
@@ -1667,10 +1749,10 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -1725,9 +1807,10 @@ struct DragAndDropBrowserTest::CrossSiteDrag_TestState {
 // Test coverage: absence of dragenter, dragover, drop DOM events
 // + presence of dragstart, dragleave and dragend.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossSiteDrag) {
-  std::string left_frame_site = "c.com";  // Always cross-site VS main frame.
-  std::string right_frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string left_frame_site = "c.test";  // Always cross-site VS main frame.
+  std::string right_frame_site =
+      use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(left_frame_site, "image_source.html"));
   ASSERT_TRUE(NavigateRightFrame(right_frame_site, "drop_target.html"));
 
@@ -1748,7 +1831,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossSiteDrag) {
   // The next step of the test (CrossSiteDrag_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart();
 
   CrossSiteDrag_Step3(&state);
 }
@@ -1813,6 +1896,114 @@ void DragAndDropBrowserTest::CrossSiteDrag_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CrossNavCrossSiteDrag DISABLED_CrossNavCrossSiteDrag
+#else
+#define MAYBE_CrossNavCrossSiteDrag CrossNavCrossSiteDrag
+#endif
+
+struct DragAndDropBrowserTest::CrossNavCrossSiteDrag_TestState {
+  // Tracks events in the left frame of the initial site.
+  std::unique_ptr<DOMDragEventCounter> left_frame_events_counter;
+  // Tracks events in the main frame of the navigated-to site.
+  std::unique_ptr<DOMDragEventCounter> post_nav_events_counter;
+};
+
+// Scenario: drag from a cross-site frame, navigate the main frame, then drop.
+// This is a regression test for https://crbug.com/1485266.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossNavCrossSiteDrag) {
+  std::string left_frame_site = "b.test";  // Always cross-site VS main frame.
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
+  ASSERT_TRUE(NavigateLeftFrame(left_frame_site, "image_source.html"));
+
+  // Setup test expectations.
+  DragAndDropBrowserTest::CrossNavCrossSiteDrag_TestState state;
+  state.left_frame_events_counter =
+      std::make_unique<DOMDragEventCounter>(GetLeftFrame());
+
+  // Start the drag in the left frame.
+  DragStartWaiter drag_start_waiter(web_contents());
+  drag_start_waiter.PostTaskWhenDragStarts(
+      base::BindOnce(&DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step2,
+                     base::Unretained(this), base::Unretained(&state)));
+  EXPECT_TRUE(SimulateMouseDownAndDragStartInLeftFrame());
+
+  // The next step of the test (CrossNavCrossSiteDrag_Step2) runs inside the
+  // nested drag-and-drop message loop - the call below won't return until the
+  // drag-and-drop has already ended.
+  drag_start_waiter.WaitUntilDragStart();
+
+  CrossNavCrossSiteDrag_Step3(&state);
+}
+
+void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step2(
+    DragAndDropBrowserTest::CrossNavCrossSiteDrag_TestState* state) {
+  // Drag has started; navigate the main frame and make sure the RVH has changed
+  // (to validate this test is working as intended).
+  content::RenderViewHost* rvh_before_nav =
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
+  ASSERT_TRUE(NavigateMainFrame("c.test", "/drag_and_drop/drop_target.html"));
+  EXPECT_NE(rvh_before_nav,
+            web_contents()->GetPrimaryMainFrame()->GetRenderViewHost());
+  state->post_nav_events_counter = std::make_unique<DOMDragEventCounter>(
+      web_contents()->GetPrimaryMainFrame());
+
+  // While "dragleave" and "drop" events are not expected in this test, we
+  // simulate extra mouse operations for consistency with
+  // DragImageBetweenFrames_Step2.
+  ASSERT_TRUE(SimulateMouseMove(gfx::Point(15, 15)));
+  for (int i = 0; i < 3; i++) {
+    content::DOMMessageQueue dom_message_queue(web_contents());
+    ASSERT_TRUE(SimulateMouseMove(gfx::Point(15, 16 + i)));
+
+    // No events are expected from the right frame, so we can't wait for a
+    // dragover event here.  Still - we do want to wait until the right frame
+    // has had a chance to process any previous browser IPCs, so that in case
+    // there *is* a bug and a dragover event *does* happen, we won't terminate
+    // the test before the event has had a chance to be reported back to the
+    // browser.
+    std::string expected_response = base::StringPrintf("\"i%d\"", i);
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            base::UTF8ToUTF16(
+                base::StringPrintf("domAutomationController.send(%s);",
+                                   expected_response.c_str())),
+            base::NullCallback());
+
+    // Wait until our response comes back (it might be mixed with responses
+    // carrying events that are sent by event_monitoring.js).
+    std::string actual_response;
+    do {
+      ASSERT_TRUE(dom_message_queue.WaitForMessage(&actual_response));
+    } while (actual_response != expected_response);
+  }
+
+  // Release the mouse button to end the drag.
+  SimulateMouseUp();
+  // The test will continue in CrossNavCrossSiteDrag_Step3.
+}
+
+void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
+    DragAndDropBrowserTest::CrossNavCrossSiteDrag_TestState* state) {
+  // Since the start of the test the left frame should have seen a single
+  // "dragstart". The "dragend" may be missing since the navigation happened in
+  // the middle of the drag.
+  EXPECT_EQ(1, state->left_frame_events_counter->GetNumberOfReceivedEvents(
+                   "dragstart"));
+  EXPECT_EQ(
+      0, state->left_frame_events_counter->GetNumberOfReceivedEvents("drop"));
+
+  // No events should have fired in the site, because it is cross-site
+  // from the source of the drag but is in the same tab. This is the essence of
+  // this test.
+  EXPECT_EQ(0, state->post_nav_events_counter->GetNumberOfReceivedEvents(
+                   {"dragstart", "dragleave", "dragenter", "dragover", "drop",
+                    "dragend"}));
+}
+
+// There is no known way to execute test-controlled tasks during
+// a drag-and-drop loop run by Windows OS.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS_ASH) && \
                           (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
 // https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
@@ -1841,12 +2032,19 @@ struct DragAndDropBrowserTest::CrossTabDrag_TestState {
 //
 // Test coverage: dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
-  std::string right_frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
-  ASSERT_TRUE(NavigateLeftFrame("c.com", "image_source.html"));
+  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
+  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
+  //                       enabled.
+  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+    GTEST_SKIP();
+  }
+  std::string right_frame_site =
+      use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
+  ASSERT_TRUE(NavigateLeftFrame("c.test", "image_source.html"));
 
   // Add a new tab navigated to the test page, and navigate the right subframe.
-  GURL url = embedded_test_server()->GetURL("a.com", kTestPagePath);
+  GURL url = https_test_server()->GetURL("a.test", kTestPagePath);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -1886,7 +2084,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   // The next step of the test (CrossTabDrag_Step2) runs inside the
   // nested drag-and-drop message loop - the call below won't return until the
   // drag-and-drop has already ended.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr);
+  drag_start_waiter.WaitUntilDragStart();
 
   CrossTabDrag_Step3(&state);
 }
@@ -1951,10 +2149,10 @@ void DragAndDropBrowserTest::CrossTabDrag_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -2050,15 +2248,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
   // In addition to offsetting the window, use a small window size to avoid
   // rejection of the new bounds by the system.
   browser()->window()->SetBounds(gfx::Rect(200, 100, 700, 500));
-  do {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  } while (browser()->window()->GetBounds().origin() != gfx::Point(200, 100));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()->window()->GetBounds().origin() == gfx::Point(200, 100);
+  }));
 
-  std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
-  ASSERT_TRUE(NavigateToTestPage("a.com"));
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
 
   const gfx::Point screen_position = GetMiddleOfRightFrameInScreenCoords();

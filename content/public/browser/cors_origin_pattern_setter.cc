@@ -54,8 +54,9 @@ void CorsOriginPatternSetter::Set(
           PassKey(), source_origin, mojo::Clone(allow_patterns),
           mojo::Clone(block_patterns), barrier_closure);
   browser_context->ForEachLoadedStoragePartition(
-      base::BindRepeating(&CorsOriginPatternSetter::SetForStoragePartition,
-                          base::RetainedRef(setter)));
+      [&](StoragePartition* partition) {
+        setter->SetForStoragePartition(partition);
+      });
 
   // Keep the per-profile access list up to date so that we can use this to
   // restore NetworkContext settings at anytime, e.g. on restarting the

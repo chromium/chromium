@@ -4,11 +4,11 @@
 
 #include "content/browser/sms/sms_parser.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

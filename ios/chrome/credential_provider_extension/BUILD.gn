@@ -56,10 +56,7 @@ source_set("credential_provider") {
 }
 
 generate_localizable_strings("system_strings") {
-  visibility = [
-    "//ios/chrome/credential_provider_extension/*",
-    "//ios/showcase:*",
-  ]
+  visibility = [ "//ios/chrome/credential_provider_extension/*" ]
   _packed_resources_target = ":packed_resources"
   config_file = "credential_provider_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")

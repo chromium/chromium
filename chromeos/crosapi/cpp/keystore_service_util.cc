@@ -4,10 +4,11 @@
 
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 
+#include <optional>
+
 #include "base/numerics/safe_math.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace keystore_service_util {
@@ -17,7 +18,7 @@ const char kWebCryptoRsassaPkcs1v15[] = "RSASSA-PKCS1-v1_5";
 const char kWebCryptoNamedCurveP256[] = "P-256";
 
 // Converts a signing algorithm into a WebCrypto dictionary.
-absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
+std::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
     const crosapi::mojom::KeystoreSigningAlgorithmPtr& algorithm) {
   base::Value::Dict value;
   switch (algorithm->which()) {
@@ -26,14 +27,14 @@ absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
 
       if (!base::IsValueInRangeForNumericType<int>(
               algorithm->get_pkcs115()->modulus_length)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       value.Set("modulusLength",
                 static_cast<int>(algorithm->get_pkcs115()->modulus_length));
 
       if (!algorithm->get_pkcs115()->public_exponent) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       value.Set("publicExponent",
                 base::Value::BlobStorage(
@@ -44,24 +45,24 @@ absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
       value.Set("namedCurve", algorithm->get_ecdsa()->named_curve);
       return value;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
+std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
 SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
   const std::string* name = dictionary.FindString("name");
   if (!name)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (*name == kWebCryptoRsassaPkcs1v15) {
-    absl::optional<int> modulus_length = dictionary.FindInt("modulusLength");
+    std::optional<int> modulus_length = dictionary.FindInt("modulusLength");
     const std::vector<uint8_t>* public_exponent =
         dictionary.FindBlob("publicExponent");
     if (!modulus_length || !public_exponent)
-      return absl::nullopt;
+      return std::nullopt;
     if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value()))
-      return absl::nullopt;
+      return std::nullopt;
     crosapi::mojom::KeystorePKCS115ParamsPtr params =
         crosapi::mojom::KeystorePKCS115Params::New();
     params->modulus_length =
@@ -74,7 +75,7 @@ SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
   if (*name == kWebCryptoEcdsa) {
     const std::string* named_curve = dictionary.FindString("namedCurve");
     if (!named_curve)
-      return absl::nullopt;
+      return std::nullopt;
     crosapi::mojom::KeystoreECDSAParamsPtr params =
         crosapi::mojom::KeystoreECDSAParams::New();
     params->named_curve = *named_curve;
@@ -82,7 +83,7 @@ SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
         std::move(params));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(

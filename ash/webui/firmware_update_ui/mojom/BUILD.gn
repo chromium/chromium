@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   disable_variants = true
 
+  webui_module_path = "/ash/webui/firmware_update_ui"
+
   sources = [ "firmware_update.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]

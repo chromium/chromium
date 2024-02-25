@@ -28,6 +28,13 @@ void AXTreeCombiner::AddTree(const AXTreeUpdate& tree, bool is_root) {
 }
 
 bool AXTreeCombiner::Combine() {
+  if (trees_.size() == 1) {
+    // Nothing to combine -- only one tree.
+    DCHECK(root_tree_id_ == trees_[0].tree_data.tree_id);
+    combined_ = trees_[0];
+    return true;
+  }
+
   // First create a map from tree ID to tree update.
   for (const auto& tree : trees_) {
     AXTreeID tree_id = tree.tree_data.tree_id;

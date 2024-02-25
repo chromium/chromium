@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,7 +21,6 @@ namespace blink {
 
 class CookieStoreGetOptions;
 class ExceptionState;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class CookieStoreManager final : public ScriptWrappable,
@@ -44,8 +44,9 @@ class CookieStoreManager final : public ScriptWrappable,
       ScriptState* script_state,
       const HeapVector<Member<CookieStoreGetOptions>>& subscription,
       ExceptionState& exception_state);
-  ScriptPromise getSubscriptions(ScriptState* script_state,
-                                 ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<CookieStoreGetOptions>> getSubscriptions(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
@@ -59,7 +60,7 @@ class CookieStoreManager final : public ScriptWrappable,
   // its ServiceWorkerRegistration alive.
   void OnSubscribeResult(ScriptPromiseResolver* resolver, bool backend_result);
   void OnGetSubscriptionsResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>* resolver,
       Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,
       bool backend_success);
 

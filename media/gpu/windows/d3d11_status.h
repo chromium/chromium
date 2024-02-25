@@ -64,6 +64,8 @@ enum class D3D11StatusCode : StatusCodeType {
   kProduceVideoDecodeImageRepresentationFailed = 46,
   kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed = 47,
   kGetCommandBufferHelperFailed = 48,
+  kDecoderGetCreationParametersFailed = 49,
+  kGetDeviceFailed = 50,
 };
 
 struct D3D11StatusTraits {

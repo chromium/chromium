@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -20,10 +20,15 @@
 
 @implementation NSNotificationCenter(OCMAdditions)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)addMockObserver:(OCObserverMockObject *)notificationObserver name:(NSString *)notificationName object:(id)notificationSender
 {
     [notificationObserver autoRemoveFromCenter:self];
-	[self addObserver:notificationObserver selector:@selector(handleNotification:) name:notificationName object:notificationSender];
+    [self addObserver:notificationObserver selector:@selector(handleNotification:) name:notificationName object:notificationSender];
 }
+
+#pragma clang diagnostic pop
 
 @end

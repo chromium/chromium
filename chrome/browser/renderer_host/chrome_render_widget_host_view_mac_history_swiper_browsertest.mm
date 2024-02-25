@@ -149,12 +149,13 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
         CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitLine, 2, 0,
                                       0));
-    CGEventSetIntegerValueField(cg_event, kCGScrollWheelEventIsContinuous, 1);
-    CGEventSetIntegerValueField(
-        cg_event, kCGScrollWheelEventPointDeltaAxis2, delta.x);
-    CGEventSetIntegerValueField(
-        cg_event, kCGScrollWheelEventPointDeltaAxis1, delta.y);
-    NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+    CGEventSetIntegerValueField(cg_event.get(), kCGScrollWheelEventIsContinuous,
+                                1);
+    CGEventSetIntegerValueField(cg_event.get(),
+                                kCGScrollWheelEventPointDeltaAxis2, delta.x);
+    CGEventSetIntegerValueField(cg_event.get(),
+                                kCGScrollWheelEventPointDeltaAxis1, delta.y);
+    NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
 
     id mock_event = [OCMockObject partialMockForObject:event];
     [[[mock_event stub] andReturnBool:NO] isDirectionInvertedFromDevice];

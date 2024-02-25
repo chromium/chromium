@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -68,11 +67,11 @@ class WelcomeScreen : public BaseScreen,
   };
 
   enum class Result {
-    NEXT,
-    NEXT_OS_INSTALL,
-    SETUP_DEMO,
-    ENABLE_DEBUGGING,
-    QUICK_START
+    kNext,
+    kNextOSInstall,
+    kSetupDemo,
+    kEnableDebugging,
+    kQuickStart
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -141,9 +140,7 @@ class WelcomeScreen : public BaseScreen,
                           Profile* profile,
                           bool show_message) override;
 
-  void EnableQuickStart();
-  void OnGetQuickStartFeatureSupportStatus(
-      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+  void SetQuickStartButtonVisibility(bool visible);
 
   // Handlers for various user actions:
   // Proceed with common user flow.
@@ -180,6 +177,9 @@ class WelcomeScreen : public BaseScreen,
       const AccessibilityStatusEventDetails& details);
   void UpdateA11yState();
 
+  // Starts the QuickStart flow
+  void OnQuickStartClicked();
+
   // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
   // exit_callback with given Result
   void Exit(Result result) const;
@@ -198,9 +198,6 @@ class WelcomeScreen : public BaseScreen,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
-      bootstrap_controller_;
 
   // WeakPtrFactory used to schedule and cancel tasks related to language update
   // in this object.

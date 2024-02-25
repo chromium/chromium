@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -49,9 +51,9 @@ class CheckboxTargeter : public views::ViewTargeterDelegate {
 
 class SuppressBubbleSettingRow : public views::View,
                                  public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(SuppressBubbleSettingRow);
+  METADATA_HEADER(SuppressBubbleSettingRow, views::View)
 
+ public:
   SuppressBubbleSettingRow(
       base::WeakPtr<Browser> browser,
       bool should_show_settings_link,
@@ -141,7 +143,8 @@ class SuppressBubbleSettingRow : public views::View,
         views::ViewTargeterDelegate::TargetForRect(root, rect);
     // Links should operate as expected, but all other gestures on this view
     // should be forwarded to the checkbox.
-    if (target->GetClassName() == views::LinkFragment::kViewClassName) {
+    if (std::string_view(target->GetClassName()) ==
+        std::string_view(views::LinkFragment::kViewClassName)) {
       return target;
     }
 
@@ -160,7 +163,6 @@ class SuppressBubbleSettingRow : public views::View,
 
   void SettingsLinkClicked() {
     if (bubble_controller_ && browser_) {
-      bubble_controller_->RecordDownloadBubbleInteraction();
       chrome::ShowSettingsSubPage(browser_.get(), chrome::kDownloadsSubPage);
     }
   }
@@ -173,7 +175,7 @@ class SuppressBubbleSettingRow : public views::View,
   raw_ptr<views::StyledLabel> settings_text_ = nullptr;
 };
 
-BEGIN_METADATA(SuppressBubbleSettingRow, views::View)
+BEGIN_METADATA(SuppressBubbleSettingRow)
 END_METADATA
 
 bool ShouldShowSuppressSetting(Profile* profile, int impressions) {
@@ -207,7 +209,7 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
+    const DownloadBubbleRowListViewInfo& info,
     base::OnceClosure on_interacted_closure)
     : on_interacted_closure_(std::move(on_interacted_closure)) {
   MaybeAddOtrInfoRow(browser.get());
@@ -225,13 +227,10 @@ DownloadBubblePartialView::DownloadBubblePartialView(
         std::max(preferred_width, setting_row->GetPreferredSize().width());
   }
 
-  if (!rows.empty() && rows.front()->GetEndTime() != base::Time()) {
-    last_download_completed_time_ = rows.front()->GetEndTime();
-  }
+  last_download_completed_time_ = info.last_completed_time();
 
   BuildAndAddScrollView(std::move(browser), std::move(bubble_controller),
-                        std::move(navigation_handler), std::move(rows),
-                        preferred_width);
+                        std::move(navigation_handler), info, preferred_width);
 
   if (setting_row) {
     const int separator_spacing =
@@ -256,6 +255,10 @@ DownloadBubblePartialView::~DownloadBubblePartialView() {
 base::StringPiece DownloadBubblePartialView::GetVisibleTimeHistogramName()
     const {
   return kPartialBubbleVisibleHistogramName;
+}
+
+bool DownloadBubblePartialView::IsPartialView() const {
+  return true;
 }
 
 void DownloadBubblePartialView::AddedToWidget() {
@@ -302,5 +305,5 @@ void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
   OnInteracted();
 }
 
-BEGIN_METADATA(DownloadBubblePartialView, DownloadBubblePrimaryView)
+BEGIN_METADATA(DownloadBubblePartialView)
 END_METADATA

@@ -44,7 +44,7 @@ class CGaiaCredentialProviderModule
   // validity is up to date.
   void RefreshTokenHandleValidity();
 
-  // Fires a thread and checks the status of GCPW extensioon and runs it if not
+  // Fires a thread and checks the status of GCPW extension and runs it if not
   // running.
   void CheckGCPWExtension();
 

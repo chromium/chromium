@@ -43,7 +43,7 @@ class FileSuggestKeyedServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
@@ -52,7 +52,7 @@ TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
       ->GetService(profile_)
       ->GetSuggestFileData(
           FileSuggestionType::kDriveFile,
-          base::BindOnce([](const absl::optional<std::vector<FileSuggestData>>&
+          base::BindOnce([](const std::optional<std::vector<FileSuggestData>>&
                                 suggest_data) {
             EXPECT_FALSE(suggest_data.has_value());
           }));
@@ -97,15 +97,15 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
                  temp_dir_.GetPath().Append("proto"))}};
   }
 
-  absl::optional<std::vector<FileSuggestData>> GetSuggestionsForType(
+  std::optional<std::vector<FileSuggestData>> GetSuggestionsForType(
       FileSuggestionType type) {
-    absl::optional<std::vector<FileSuggestData>> suggestions;
+    std::optional<std::vector<FileSuggestData>> suggestions;
     base::RunLoop run_loop;
     file_suggest_service_->GetSuggestFileData(
         type, base::BindOnce(
                   [](base::RunLoop* run_loop,
-                     absl::optional<std::vector<FileSuggestData>>* suggestions,
-                     const absl::optional<std::vector<FileSuggestData>>&
+                     std::optional<std::vector<FileSuggestData>>* suggestions,
+                     const std::optional<std::vector<FileSuggestData>>&
                          fetched_suggestions) {
                     *suggestions = fetched_suggestions;
                     run_loop->Quit();
@@ -135,8 +135,10 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
     for (size_t index = 0; index < count; ++index) {
       suggested_file_paths.push_back(mount_point->CreateArbitraryFile());
       suggestions.emplace_back(type, suggested_file_paths.back(),
-                               /*new_prediction_reason=*/absl::nullopt,
-                               /*new_score=*/absl::nullopt);
+                               /*new_prediction_reason=*/std::nullopt,
+                               /*timestamp=*/std::nullopt,
+                               /*secondary_timestamp=*/std::nullopt,
+                               /*new_score=*/std::nullopt);
     }
     file_suggest_service_->SetSuggestionsForType(type, suggestions);
     return suggested_file_paths;
@@ -147,8 +149,7 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
 
   // This test verifies the suggestion removal only. Therefore, a mock file
   // suggest keyed service is sufficient.
-  raw_ptr<MockFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
-      nullptr;
+  raw_ptr<MockFileSuggestKeyedService> file_suggest_service_ = nullptr;
 
   // The mount point for local files.
   std::unique_ptr<ScopedTestMountPoint> local_fs_mount_point_;
@@ -165,7 +166,7 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveDriveFileSuggestions) {
   const base::FilePath& file_path_1 = drive_file_suggestions[0];
   const base::FilePath& file_path_2 = drive_file_suggestions[1];
 
-  absl::optional<std::vector<FileSuggestData>> suggestions =
+  std::optional<std::vector<FileSuggestData>> suggestions =
       GetSuggestionsForType(FileSuggestionType::kDriveFile);
   EXPECT_EQ(suggestions->size(), 2u);
   EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());
@@ -201,7 +202,7 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveLocalFileSuggestions) {
   const base::FilePath& file_path_1 = local_file_suggestions[0];
   const base::FilePath& file_path_2 = local_file_suggestions[1];
 
-  absl::optional<std::vector<FileSuggestData>> suggestions =
+  std::optional<std::vector<FileSuggestData>> suggestions =
       GetSuggestionsForType(FileSuggestionType::kLocalFile);
   EXPECT_EQ(suggestions->size(), 2u);
   EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());

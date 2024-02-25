@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {

@@ -16,8 +16,9 @@ namespace ash {
 // not enough. For now this is only used for desk bar triggered by desk button
 // on the shelf. Going forward, this will support overview desk bar as well.
 class ASH_EXPORT DeskBarView : public DeskBarViewBase {
+  METADATA_HEADER(DeskBarView, DeskBarViewBase)
+
  public:
-  METADATA_HEADER(DeskBarView);
   explicit DeskBarView(aura::Window* root);
 
   DeskBarView(const DeskBarView&) = delete;
@@ -25,6 +26,10 @@ class ASH_EXPORT DeskBarView : public DeskBarViewBase {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+
+  // DeskBarViewBase:
+  gfx::Rect GetAvailableBounds() const override;
+  void UpdateBarBounds() override;
 };
 
 }  // namespace ash

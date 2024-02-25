@@ -128,7 +128,7 @@ class AppEventsObserver : public MetricEventObserver,
 
   // App install tracker used by the event observer to filter out install event
   // notifications that include pre-installed apps.
-  const std::unique_ptr<AppInstallTracker> app_install_tracker_
+  std::unique_ptr<AppInstallTracker> app_install_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the

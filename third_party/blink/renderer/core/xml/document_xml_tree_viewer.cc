@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ void TransformDocumentToXMLTreeView(Document& document) {
   String css_string =
       UncompressResourceAsASCIIString(IDR_DOCUMENTXMLTREEVIEWER_CSS);
 
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
+  v8::HandleScope handle_scope(document.GetAgent().isolate());
 
   ClassicScript::CreateUnspecifiedScript(script_string,
                                          ScriptSourceLocationType::kInternal)

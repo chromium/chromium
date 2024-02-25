@@ -67,8 +67,8 @@ void AssistantSuggestionsControllerImpl::OnAssistantControllerDestroying() {
 void AssistantSuggestionsControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   // When Assistant is finishing a session, we update our cache of conversation
   // starters so that they're fresh for the next launch.
   if (assistant::util::IsFinishingSession(new_visibility))

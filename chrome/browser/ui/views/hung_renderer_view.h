@@ -140,9 +140,9 @@ class HungPagesTableModel : public ui::TableModel,
 // renderer process.
 class HungRendererDialogView : public views::DialogDelegateView,
                                public HungPagesTableModel::Delegate {
- public:
-  METADATA_HEADER(HungRendererDialogView);
+  METADATA_HEADER(HungRendererDialogView, views::DialogDelegateView)
 
+ public:
   HungRendererDialogView(const HungRendererDialogView&) = delete;
   HungRendererDialogView& operator=(const HungRendererDialogView&) = delete;
 

@@ -143,7 +143,7 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfHistory
       int frames_per_second,
       GetPerfInfoCallback got_info_cb,
       bool database_success,
-      absl::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats);
+      std::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats);
 
   // Internal callback for database queries made from SavePerfRecord(). Compares
   // past performance to this latest record as means of "grading" the accuracy
@@ -153,7 +153,7 @@ class MEDIA_MOJO_EXPORT WebrtcVideoPerfHistory
       const WebrtcVideoStatsDB::VideoStats& new_stats,
       base::OnceClosure save_done_cb,
       bool success,
-      absl::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats);
+      std::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats);
 
   // Internal callback for saving to database. Will run `save_done_cb` if
   // nonempty.

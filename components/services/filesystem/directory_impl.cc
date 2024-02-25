@@ -40,10 +40,9 @@ void DirectoryImpl::Read(ReadCallback callback) {
     entries.push_back(std::move(entry));
   }
 
-  std::move(callback).Run(base::File::Error::FILE_OK,
-                          entries.empty()
-                              ? absl::nullopt
-                              : absl::make_optional(std::move(entries)));
+  std::move(callback).Run(
+      base::File::Error::FILE_OK,
+      entries.empty() ? std::nullopt : std::make_optional(std::move(entries)));
 }
 
 // TODO(erg): Consider adding an implementation of Stat()/Touch() to the

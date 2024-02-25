@@ -34,7 +34,7 @@ class TestDialog : public views::DialogDelegateView {
     SetModalType(ui::MODAL_TYPE_CHILD);
     // Dialogs that take focus must have a name and role to pass accessibility
     // checks.
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
 
@@ -67,8 +67,9 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 
 }  // namespace
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Unexpected multiple focus managers on MacViews: http://crbug.com/824551
+// TODO(crbug.com/1509159):  Enable for Linux after resolving failure.
 #define MAYBE_FocusTest DISABLED_FocusTest
 #else
 #define MAYBE_FocusTest FocusTest
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 // shown when its tab is selected again.
 // Flaky on ASAN builds (https://crbug.com/997634)
 // Flaky on Mac (https://crbug.com/1385896)
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
+// Fails on Linux (https://crbug.com/1509135)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TabSwitchTest DISABLED_TabSwitchTest
 #else
 #define MAYBE_TabSwitchTest TabSwitchTest

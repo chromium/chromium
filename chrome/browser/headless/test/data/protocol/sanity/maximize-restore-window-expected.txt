@@ -1,0 +1,4 @@
+Tests browser window maximize and restore.
+Initial: normal visible
+Maximized: maximized visible
+Restored: normal visible

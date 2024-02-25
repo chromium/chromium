@@ -1,0 +1,10 @@
+inter-container-iterator-comparison.cpp:25:7: error: [iterator-checker] Potentially invalid iterator comparison.
+  if (it1 == it2) {
+      ^
+inter-container-iterator-comparison.cpp:36:7: error: [iterator-checker] Potentially invalid iterator comparison.
+  if (v1.begin() != v2.end()) {
+      ^
+inter-container-iterator-comparison.cpp:41:7: error: [iterator-checker] Potentially invalid iterator comparison.
+  if (it != v2.end()) {
+      ^
+3 errors generated.

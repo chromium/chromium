@@ -6,12 +6,12 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_PARSING_FORM_DATA_PARSER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -54,7 +54,8 @@ struct ProcessedField {
   // The flag derived from field->autocomplete_attribute.
   AutocompleteFlag autocomplete_flag = AutocompleteFlag::kNone;
 
-  // True if field->form_control_type == "password".
+  // True if field->form_control_type ==
+  // autofill::FormControlType::kInputPassword.
   bool is_password = false;
 
   // True if field is predicted to be a password.
@@ -138,19 +139,32 @@ class FormDataParser {
 
   void reset_predictions() { predictions_.reset(); }
 
-  const absl::optional<FormPredictions>& predictions() { return predictions_; }
+  const std::optional<FormPredictions>& predictions() { return predictions_; }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
   // Parse DOM information |form_data| into Password Manager's form
-  // representation PasswordForm. Return nullptr when parsing is unsuccessful.
-  std::unique_ptr<PasswordForm> Parse(const autofill::FormData& form_data,
-                                      Mode mode);
+  // representation `PasswordForm` and how the username was found. Return
+  // {nullptr, UsernameDetectionMethod::kNoUsernameDetected} when parsing is
+  // unsuccessful.
+  std::tuple<std::unique_ptr<PasswordForm>, UsernameDetectionMethod>
+  ParseAndReturnUsernameDetection(
+      const autofill::FormData& form_data,
+      Mode mode,
+      const base::flat_set<std::u16string>& stored_usernames);
+
+  // Parse DOM information `form_data` into Password Manager's form
+  // representation `PasswordForm`. Return nullptr when parsing is unsuccessful.
+  // Wrapper around `ParseAndReturnUsernameDetection()`.
+  std::unique_ptr<PasswordForm> Parse(
+      const autofill::FormData& form_data,
+      Mode mode,
+      const base::flat_set<std::u16string>& stored_usernames);
 
  private:
   // Predictions are an optional source of server-side information about field
   // types.
-  absl::optional<FormPredictions> predictions_;
+  std::optional<FormPredictions> predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().

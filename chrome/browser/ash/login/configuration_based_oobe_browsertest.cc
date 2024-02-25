@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -31,9 +30,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/mock_notification_observer.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {
@@ -147,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   // scheme to be able to compare them.
 
   const std::string ime_id =
-      imm->GetInputMethodUtil()->MigrateInputMethod("xkb:de:neo:ger");
+      imm->GetInputMethodUtil()->GetMigratedInputMethod("xkb:de:neo:ger");
   EXPECT_EQ(ime_id, imm->GetActiveIMEState()->GetCurrentInputMethod().id());
 
   const std::string language_code = g_browser_process->local_state()->GetString(

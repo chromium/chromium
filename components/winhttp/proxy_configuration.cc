@@ -29,16 +29,16 @@ int ProxyConfiguration::DoGetAccessType() const {
                                     !proxy_info_.proxy.empty();
 
   return is_using_named_proxy ? WINHTTP_ACCESS_TYPE_NAMED_PROXY
-                              : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY;
+                              : WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
 }
 
-absl::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
+std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
     HINTERNET session_handle,
     const GURL& url) const {
   return DoGetProxyForUrl(session_handle, url);
 }
 
-absl::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
+std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     HINTERNET session_handle,
     const GURL& url) const {
   // Detect proxy settings using Web Proxy Auto Detection (WPAD).
@@ -87,15 +87,16 @@ absl::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     winhttp_proxy_info.set_proxy_bypass(proxy_info_.proxy_bypass);
   }
 
-  if (!winhttp_proxy_info.IsValid())
+  if (!winhttp_proxy_info.IsValid()) {
     return {};
+  }
 
   return winhttp_proxy_info;
 }
 
 void SetProxyForRequest(
     const HINTERNET request_handle,
-    const absl::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
+    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
   // Set the proxy option on the request handle.
   if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
     const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
@@ -112,7 +113,7 @@ int AutoProxyConfiguration::DoGetAccessType() const {
   return WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
 }
 
-absl::optional<ScopedWinHttpProxyInfo> AutoProxyConfiguration::DoGetProxyForUrl(
+std::optional<ScopedWinHttpProxyInfo> AutoProxyConfiguration::DoGetProxyForUrl(
     HINTERNET,
     const GURL&) const {
   // When using automatic proxy settings, Windows will resolve the proxy

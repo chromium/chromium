@@ -53,6 +53,7 @@
 
 #include "third_party/blink/renderer/core/html/html_document.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -98,7 +99,7 @@ void HTMLDocument::AddNamedItem(const AtomicString& name) {
   named_item_counts_.insert(name);
   if (LocalDOMWindow* window = domWindow()) {
     window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld())
+        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
         ->NamedItemAdded(this, name);
   }
 }
@@ -109,7 +110,7 @@ void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   named_item_counts_.erase(name);
   if (LocalDOMWindow* window = domWindow()) {
     window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld())
+        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
         ->NamedItemRemoved(this, name);
   }
 }

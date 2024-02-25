@@ -1,0 +1,103 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleView.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleViewUtils.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//components/browser_ui/util/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/embedder_support/android:simple_factory_key_java",
+    "//components/embedder_support/android:util_java",
+    "//components/image_fetcher:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/metrics_proto:metrics_proto_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.price_change"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/price_change_module_favicon_background.xml",
+    "java/res/drawable/price_change_module_image_background.xml",
+    "java/res/drawable/price_change_module_price_drop_background.xml",
+    "java/res/layout/price_change_module_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.price_change"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBuilderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleMediatorUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/commerce/core/android:core_java",
+    "//components/embedder_support/android:util_java",
+    "//components/image_fetcher:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_junit_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}

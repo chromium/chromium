@@ -47,7 +47,7 @@ const char kExternalDataPath[] = "policy/blank.html";
 class UserCloudExternalDataManagerTest : public LoginPolicyTestBase {
  protected:
   void SetUp() override {
-    fake_gaia_.set_initialize_fake_merge_session(false);
+    fake_gaia_.set_initialize_configuration(false);
 
     LoginPolicyTestBase::SetUp();
   }
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
   {
     base::test::TestFuture<void> refresh_policy_future;
     policy_connector->policy_service()->RefreshPolicies(
-        refresh_policy_future.GetCallback());
+        refresh_policy_future.GetCallback(), PolicyFetchReason::kTest);
     ASSERT_TRUE(refresh_policy_future.Wait())
         << "RefreshPolicies did not invoke the finished callback.";
   }

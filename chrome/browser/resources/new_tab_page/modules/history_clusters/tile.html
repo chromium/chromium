@@ -5,6 +5,7 @@
     border-radius: var(--ntp-module-item-border-radius);
     color: var(--color-new-tab-page-primary-foreground);
     display: inline-block;
+    min-width: 0;
     width: 100%;
   }
 
@@ -200,7 +201,7 @@
   }
 
   :host([has-discount]) #title{
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   :host([has-discount][large-format]) #title{
@@ -229,7 +230,7 @@
   }
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
-   aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
+    aria-label$="[[tileLabel_]]">
   <div id="image">
     <template is="dom-if" if="[[imageUrl_]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"

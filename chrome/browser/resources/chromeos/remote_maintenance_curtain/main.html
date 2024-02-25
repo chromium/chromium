@@ -5,19 +5,37 @@ found in the LICENSE file.
 -->
 
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="jelly-enabled">
+
 
 <head>
   <meta charset="utf-8">
 
   <link rel="stylesheet"
-      href="chrome://resources/chromeos/colors/cros_styles.css">
+    href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=sys">
   <link rel="stylesheet" href="./oobe.css">
+  <link rel="stylesheet" href="./oobe_screen.css">
+
+  <script type="module" src='./curtain_screen.js'></script>
 </head>
 
-<body>
-  <curtain-screen></curtain-screen>
-  <script type="module" src='./curtain_screen.js'></script>
+<custom-style>
+  <style include="oobe-flex-layout-styles"></style>
+</custom-style>
+
+<body class="oobe-display chromeos" style="font-family:$i18n{fontfamily}">
+  <div id="scroll-container">
+    <div id="outer-container" class="layout vertical">
+      <div class="oobe-vertical-margin"></div>
+      <div id="oobe" class="">
+        <div id="inner-container" class="down">
+          <curtain-screen></curtain-screen>
+        </div>
+      </div>
+      <div class="oobe-vertical-margin"></div>
+    </div>
+  </div>
 </body>
 
 </html>

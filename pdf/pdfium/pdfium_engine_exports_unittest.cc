@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "pdf/pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -24,7 +24,7 @@ class PDFiumEngineExportsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &pdf_data_dir_));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pdf_data_dir_));
     pdf_data_dir_ = pdf_data_dir_.Append(FILE_PATH_LITERAL("pdf"))
                         .Append(FILE_PATH_LITERAL("test"))
                         .Append(FILE_PATH_LITERAL("data"));
@@ -67,7 +67,7 @@ TEST_F(PDFiumEngineExportsTest, GetPDFPageSizeByIndex) {
   ASSERT_TRUE(GetPDFDocInfo(pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);
   for (int page_index = 0; page_index < page_count; ++page_index) {
-    absl::optional<gfx::SizeF> page_size =
+    std::optional<gfx::SizeF> page_size =
         GetPDFPageSizeByIndex(pdf_span, page_index);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(200, 200), page_size.value());
@@ -109,7 +109,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfPagesToNupPdf) {
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(1, page_count);
 
-  absl::optional<gfx::SizeF> page_size =
+  std::optional<gfx::SizeF> page_size =
       GetPDFPageSizeByIndex(output_pdf_span, 0);
   ASSERT_TRUE(page_size.has_value());
   EXPECT_EQ(gfx::SizeF(792, 612), page_size.value());
@@ -137,7 +137,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);
   for (int page_index = 0; page_index < page_count; ++page_index) {
-    absl::optional<gfx::SizeF> page_size =
+    std::optional<gfx::SizeF> page_size =
         GetPDFPageSizeByIndex(output_pdf_span, page_index);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(612, 792), page_size.value());

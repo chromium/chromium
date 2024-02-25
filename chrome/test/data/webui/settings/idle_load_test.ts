@@ -9,13 +9,6 @@ import {getTrustedHTML} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // #clang-format on
 
-declare global {
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): void;
-  }
-}
-
 suite('Settings idle load tests', function() {
   setup(function() {
     document.body.innerHTML = getTrustedHTML`
@@ -39,7 +32,7 @@ suite('Settings idle load tests', function() {
   });
 
   test('stamps after idle', function(done) {
-    window.requestIdleCallback(function() {
+    requestIdleCallback(function() {
       // After JS calls idle-callbacks, this should be accessible.
       assertTrue(!!document.body.querySelector('div'));
       done();

@@ -64,6 +64,7 @@ blink_core_tests_fetch = [
   "fetch_data_loader_test.cc",
   "fetch_header_list_test.cc",
   "fetch_request_data_test.cc",
+  "fetch_manager_test.cc",
   "fetch_response_data_test.cc",
   "form_data_bytes_consumer_test.cc",
   "multipart_parser_test.cc",
@@ -71,4 +72,5 @@ blink_core_tests_fetch = [
   "readable_stream_bytes_consumer_test.cc",
   "request_test.cc",
   "response_test.cc",
+  "trust_token_to_mojom_test.cc",
 ]

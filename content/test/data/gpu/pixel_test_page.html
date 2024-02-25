@@ -1,0 +1,31 @@
+<!--
+Test page used for running pixel tests.
+
+Actual test pages are loaded into the iframe. This is so that we can guarantee
+that our asynchronous test setup is complete before the test starts.
+-->
+<head>
+  <meta id="viewport" name="viewport"/>
+</head>
+<body style="margin:0; padding:0;">
+<iframe id="test_iframe" style="width: 100vw; height: 100vh; border: 0; margin: 0; padding:0;"></iframe>
+<script>
+var viewport = document.getElementById('viewport');
+var testIframe = document.getElementById('test_iframe');
+var testIframeLoaded = false;
+function runTest(url, initial_scaling) {
+  // This is a workaround for viewport scaling not applying to iframes. The
+  // Python test harness will determine whether the actual test page has
+  // viewport scaling.
+  if (initial_scaling) {
+    viewport.setAttribute('content', `initial-scale=${initial_scaling}`);
+  } else {
+    viewport.setAttribute('content', '');
+  }
+  testIframeLoaded = false;
+  wrapper.sendTestStarted();
+  testIframe.onload = (_) => { testIframeLoaded = true; };
+  testIframe.src = url;
+}
+</script>
+</body>

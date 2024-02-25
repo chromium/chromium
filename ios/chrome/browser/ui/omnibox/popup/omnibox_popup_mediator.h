@@ -13,7 +13,7 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
@@ -120,7 +120,9 @@ class OmniboxPopupMediatorDelegate {
     protocolProvider;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
-@property(nonatomic, assign) PrefService* prefService;
+/// Pref service from the original browser state, used to retrieve preferred
+/// omnibox position.
+@property(nonatomic, assign) PrefService* originalPrefService;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)

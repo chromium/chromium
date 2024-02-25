@@ -1,9 +1,10 @@
 # Oilpan - Blink GC
 
-Oilpan is a garbage collection system for Blink objects.
+Oilpan is a garbage collector (GC) for Blink objects.
 This document explores the design, API and usage of the GC.
 
 [TOC]
+
 
 ## Overview
 
@@ -13,12 +14,16 @@ This section focuses on the Blink specific extensions to that design.
 ## Threading model
 
 Oilpan assumes heaps are not shared among threads.
-Blink creates and uses a different heap and root set for each thread.
-Matching a thread to its relevant heap is maintained by `blink::ThreadState`.
-
-Any object or `Persistent` (See [Persistent, WeakPersistent, CrossThreadPersistent, CrossThreadWeakPersistent](https://chromium.googlesource.com/v8/v8/+/main/include/cppgc/README.md#Persistent,-WeakPersistent,-CrossThreadPersistent,-CrossThreadWeakPersistent) for details) that is allocated on a thread automatically belong to that thread's heap or root set.
 
 Threads that want to allocate Oilpan objects must be *attached* to Oilpan, by calling either `blink::ThreadState::AttachMainThread()` or `blink::ThreadState::AttachCurrentThread()`.
+
+Blink creates heaps and root sets (that directly refer to objects) per thread.
+Matching a thread to its relevant heap is maintained by `blink::ThreadState`.
+
+An object belongs to the thread it is allocated on.
+
+Oilpan allows referring to objects from the same thread and cross-thread in various ways.
+See [Handles](#Handles) for details.
 
 ## Heap partitioning
 
@@ -29,7 +34,8 @@ Blink assigns the following types to custom spaces in Oilpan's heap:
 ## Mode of operation
 
 - Blink uses concurrent garbage collection (marking and sweeping), except for during thread termination and heap destruction.
-- When under memory pressure, Blink triggers a conservative GC.
+- Blink tries to schedule GCs through the message loop where it is known that no objects are referred to from the native stack.
+- When under memory pressure, Blink triggers a conservative GC on allocations.
 
 # Oilpan API reference
 
@@ -150,6 +156,7 @@ void foo() {
 }
 ```
 
+
 ## Class properties
 
 ### USING_PRE_FINALIZER
@@ -254,31 +261,41 @@ Stack allocated classes must not inherit a on-heap garbage collected class.
 
 Marking a class as STACK_ALLOCATED implicitly implies [DISALLOW_NEW](#DISALLOW_NEW), and thus disallow the use of `operator new` and `MakeGarbageCollected<T>`.
 
+
 ## Handles
 
-Class templates in this section are smart pointers, each carrying a pointer to an on-heap object (think of `scoped_refptr<T>`
-for `RefCounted<T>`).
+Class templates in this section are smart pointers, each carrying a pointer to an on-heap object (think of `scoped_refptr<T>` for `RefCounted<T>`, or `std::unique_ptr`).
 Collectively, they are called *handles*.
 
 On-heap objects must be retained by any of these, depending on the situation.
 
+### Raw pointers
+
+Using raw pointers to garbage-collected objects on-heap is forbidden and will yield in memory corruptions.
+On-stack references to garbage-collected object (including function parameters and return types), on the other hand, must use raw pointers.
+This is the only case where raw pointers to on-heap objects should be used.
+
+```c++
+void Foo() {
+  SomeGarbageCollectedClass* object = MakeGarbageCollected<SomeGarbageCollectedClass>(); // OK, retained by a raw pointer.
+  // ...
+}
+// OK to leave the object behind. The GC will reclaim it when it becomes unused.
+```
+
 ### Member, WeakMember
 <small>**Declared in:** `third_party/blink/renderer/platform/heap/member.h`</small>
 
-In a garbage-collected class, on-heap objects must be retained by `Member<T>` or `WeakMember<T>`, depending on
-the desired semantics.
+In a garbage-collected class, on-heap objects must be retained by `Member<T>` or `WeakMember<T>`, for strong or weak traced semantics, respectively.
+Both references may only refer to objects that are owned by the same thread.
 
-`Member<T>` represents a *strong* reference to an object of type `T`, which means that the referred object is kept
-alive as long as the owner class instance is alive.
-Unlike `scoped_refptr<T>`, it is okay to form a reference cycle with
-members (in on-heap objects) and raw pointers (on stack).
+`Member<T>` represents a *strong* reference to an object of type `T`, which means that the referred object is kept alive as long as the owner class instance is alive.
+Unlike `scoped_refptr<T>`, it is okay to form a reference cycle with members (in on-heap objects) and raw pointers (on stack).
 
 `WeakMember<T>` is a *weak* reference to an object of type `T`.
-Unlike `Member<T>`, `WeakMember<T>` does not keep
-the pointed object alive.
+Unlike `Member<T>`, `WeakMember<T>` does not keep the pointed object alive.
 The pointer in a `WeakMember<T>` can become `nullptr` when the object gets garbage-collected.
-It may take some time for the pointer in a `WeakMember<T>` to become `nullptr` after the object actually becomes unreachable,
-because this rewrite is only done within Oilpan's garbage collection cycle.
+It may take some time for the pointer in a `WeakMember<T>` to become `nullptr` after the object actually becomes unreachable, because this rewrite is only done within Oilpan's garbage collection cycle.
 
 ```c++
 class SomeGarbageCollectedClass : public GarbageCollected<SomeGarbageCollectedClass> {
@@ -288,20 +305,31 @@ private:
   WeakMember<AnotherGarbageCollectedClass> anotherWeak_; // OK, weak reference.
 };
 ```
+It is required that every `Member<T>` and `WeakMember<T>` in a garbage-collected class be traced. See [Tracing](#Tracing).
 
 The use of `WeakMember<T>` incurs some overhead in garbage collector's performance.
 Use it sparingly.
 Usually, weak members are not necessary at all, because reference cycles with members are allowed.
-
 More specifically, `WeakMember<T>` should be used only if the owner of a weak member can outlive the pointed object.
 Otherwise, `Member<T>` should be used.
 
-It is required that every `Member<T>` and `WeakMember<T>` in a garbage-collected class be traced. See [Tracing](#Tracing).
+Generally `WeakMember<T>` requires to be converted into a strong reference to avoid reclamation until access.
+The following example uses a raw pointer to create a strong reference on stack.
+```c++
+void Foo(WeakMember<T>& weak_object) {
+  T* proxy = weak_object.Get();  // OK, proxy will keep weak_object alive.
+  if (proxy) {
+    GC();
+    proxy->Bar();
+  }
+}
+```
 
 ### UntracedMember
 <small>**Declared in:** `third_party/blink/renderer/platform/heap/member.h`</small>
 
 `UntracedMember<T>` represents a reference to a garbage collected object which is ignored by Oilpan.
+The reference may only refer to objects that are owned by the same thread.
 
 Unlike `Member<T>`, `UntracedMember<T>` will not keep an object alive.
 However, unlike `WeakMember<T>`, the reference will not be cleared (i.e. set to `nullptr`) if the referenced object dies.
@@ -309,20 +337,17 @@ Furthermore, class fields of type `UntracedMember<T>` should not be traced by th
 
 Users should avoid using `UntracedMember<T>` in any case other than when implementing [custom weakness semantics](#Custom-weak-callbacks).
 
-### Persistent, WeakPersistent, CrossThreadPersistent, CrossThreadWeakPersistent
+### Persistent, WeakPersistent
 <small>**Declared in:** `third_party/blink/renderer/platform/heap/persistent.h`</small>
 
-In a non-garbage-collected class, on-heap objects must be retained by `Persistent<T>`, `WeakPersistent<T>`,
-`CrossThreadPersistent<T>`, or `CrossThreadWeakPersistent<T>`, depending on the situations and the desired semantics.
+In a non-garbage-collected class, on-heap objects must be retained by `Persistent<T>`, or `WeakPersistent<T>`.
+Both references may only refer to objects that are owned by the same thread.
 
 `Persistent<T>` is the most basic handle in the persistent family, which makes the referred object alive
 unconditionally, as long as the persistent handle is alive.
 
 `WeakPersistent<T>` does not keep the referred object alive, and becomes `nullptr` when the object gets
 garbage-collected, just like `WeakMember<T>`.
-
-`CrossThreadPersistent<T>` and `CrossThreadWeakPersistent<T>` are cross-thread variants of `Persistent<T>` and
-`WeakPersistent<T>`, respectively, which can point to an object in a different thread (i.e. in a different heap).
 
 ```c++
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -334,37 +359,45 @@ private:
 };
 ```
 
-***
-**Warning:** `Persistent<T>` and `CrossThreadPersistent<T>` are vulnerable to reference cycles.
-If a reference cycle is formed with `Persistent`s, `Member`s, `RefPtr`s and `OwnPtr`s, all the objects in the cycle **will leak**, since
-no object in the cycle can be aware of whether they are ever referred to from outside the cycle.
-
-Be careful not to create a reference cycle when adding a new persistent.
-If a cycle is inevitable, make sure the cycle is eventually cut by someone outside the cycle.
-***
-
 Persistents have a small unavoidable overhead because they require maintaining a list of all persistents.
 Therefore, creating or keeping a lot of persistents at once would have performance implications and should be avoided when possible.
 
 Weak variants have overhead just like `WeakMember<T>`.
 Use them sparingly.
 
+***
+**Warning:** `Persistent<T>` is vulnerable to reference cycles.
+If a reference cycle is formed with `Persistent`s, `Member`s, `RefPtr`s and `OwnPtr`s, all the objects in the cycle **will leak**, since
+no object in the cycle can be aware of whether they are ever referred to from outside the cycle.
+
+Be careful not to create a reference cycle when adding a new persistent.
+If a cycle is inevitable, make sure the cycle is eventually cut and objects become reclaimable.
+***
+
+### CrossThreadPersistent, CrossThreadWeakPersistent
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/cross_thread_persistent.h`</small>
+
+`CrossThreadPersistent<T>` and `CrossThreadWeakPersistent<T>` are cross-thread variants of `Persistent<T>` and
+`WeakPersistent<T>`, respectively, which can point to an object owned by a different thread (i.e. in a different heap).
+
+In general, Blink does not support shared-memory concurrency designs.
 The need of cross-thread persistents may indicate a poor design in multi-thread object ownership.
 Think twice if they are really necessary.
 
-### Raw pointers
+Similar to `Persistent<T>`, `CrossThreadPersistent<T>` is prone to creating cycles that results in memory leaks.
 
-Using raw pointers to garbage-collected objects on-heap is forbidden, as they may cause memory corruptions.
-On-stack references to garbage-collected object (including function parameters and return types), on the other hand, must use raw pointers.
-This is the only case where raw pointers to on-heap objects should be used.
+### CrossThreadHandle, CrossThreadWeakHandle
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/cross_thread_handle.h`</small>
 
-```c++
-void someFunction() {
-  SomeGarbageCollectedClass* object = MakeGarbageCollected<SomeGarbageCollectedClass>(); // OK, retained by a pointer.
-  ...
-}
-// OK to leave the object behind. The Blink GC system will free it up when it becomes unused.
-```
+`CrossThreadHandle<T>` and `CrossThreadWeakHandle<T>` are cross-thread variants of `Persistent<T>` and
+`WeakPersistent<T>`, respectively, which can point to an object owned by a different thread (i.e. in a different heap).
+The difference to `CrossThreadPersistent<T>` is that these handles prohibit deref on any thread except the thread that owns the object pointed to.
+In other words, CrossThreadHandle<T> only support thread-safe copy, move, and destruction.
+
+The main use case for `CrossThreadHandle<T>` is delegating work to some other thread while retaining callbacks or other objects that are eventually used from the originating thread.
+
+Similar to `Persistent<T>`, `CrossThreadHandle<T>` is prone to creating cycles that results in memory leaks.
+
 
 ## Tracing
 
@@ -496,9 +529,21 @@ In associative containers such as `HeapHashMap` or `HeapHashSet` Oilpan distingu
 
 The semantics then are as follows:
 - Pure weakness: Oilpan will automatically remove the entries from the container if any of its declared `WeakMember<T>` fields points to a dead object.
-- Mixed weakness: Oilpan applies ephemeron semantics meaning that the strong parts of an entry are only treated as strong if the `WeakMember<T>` fields point to a live object.
+- Mixed weakness: Oilpan applies ephemeron semantics for mixed weakness with `WeakMember<T>` and `Member<T>`. Mixing `WeakMember<T>` with non-tracable types results in pure weakness treatment for the corresponding entry.
 
 Weak references (e.g. `WeakMember<T>`) are not supported in sequential containers such as `HeapVector` or `HeapDeque`.
+
+Iterators to weak collections keep their collections alive strongly.
+This allows for the GC to kick in during weak collection iteration.
+
+```c++
+template <typename Callback>
+void IterateAndCall(HeapHashMapM<WeakMember<T>, WeakMember<U>>* hash_map, Callback callback) {
+  for (auto pair& : *hash_map) {
+    callback(pair.first, pair.second);  // OK, will invoke callback(WeakMember<T>, WeakMember<U>).
+  }
+}
+```
 
 ### Custom weak callbacks
 

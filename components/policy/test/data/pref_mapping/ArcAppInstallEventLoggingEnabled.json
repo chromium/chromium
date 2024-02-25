@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Checking default value (no policies set).",
+        "prefs": {
+          "arc.app_install_event_logging_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ArcAppInstallEventLoggingEnabled": true
+        },
+        "prefs": {
+          "arc.app_install_event_logging_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

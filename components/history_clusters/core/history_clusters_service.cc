@@ -37,7 +37,6 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_backend.h"
-#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
@@ -63,12 +62,6 @@ base::Value::Dict KeywordsCacheToDict(
     base::Value::Dict cluster_keyword_dict;
     cluster_keyword_dict.Set("type", pair.second.type);
     cluster_keyword_dict.Set("score", pair.second.score);
-    base::Value::List entity_collections_list;
-    for (std::string entity : pair.second.entity_collections) {
-      entity_collections_list.Append(entity);
-    }
-    cluster_keyword_dict.Set("entity_collections",
-                             std::move(entity_collections_list));
     keyword_dict.Set(base::UTF16ToUTF8(pair.first),
                      std::move(cluster_keyword_dict));
   }
@@ -86,24 +79,16 @@ HistoryClustersService::KeywordMap DictToKeywordsCache(
 
   for (auto pair : *dict) {
     const base::Value::Dict& entry_dict = pair.second.GetDict();
-    absl::optional<int> type = entry_dict.FindInt("type");
-    absl::optional<double> score = entry_dict.FindDouble("score");
+    std::optional<int> type = entry_dict.FindInt("type");
+    std::optional<double> score = entry_dict.FindDouble("score");
     if (!type || !score) {
       continue;
-    }
-    std::vector<std::string> entity_collections;
-    const base::Value::List* entity_collections_list =
-        entry_dict.FindList("entity_collections");
-    if (entity_collections_list) {
-      for (const auto& val : *entity_collections_list) {
-        entity_collections.push_back(val.GetString());
-      }
     }
     keyword_map.insert(std::make_pair(
         base::UTF8ToUTF16(pair.first),
         history::ClusterKeywordData(
             static_cast<history::ClusterKeywordData::ClusterKeywordType>(*type),
-            *score, entity_collections)));
+            *score)));
   }
 
   return keyword_map;
@@ -116,7 +101,6 @@ constexpr base::TimeDelta kAllKeywordsCacheRefreshAge = base::Hours(2);
 HistoryClustersService::HistoryClustersService(
     const std::string& application_locale,
     history::HistoryService* history_service,
-    optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
     TemplateURLService* template_url_service,
@@ -154,8 +138,7 @@ HistoryClustersService::HistoryClustersService(
   backend_ = FileClusteringBackend::CreateIfEnabled();
   if (!backend_) {
     backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        entity_metadata_provider, engagement_score_provider,
-        optimization_guide_decider, JourneysMidBlocklist());
+        engagement_score_provider, optimization_guide_decider);
   }
 
   LoadCachesFromPrefs();
@@ -341,15 +324,15 @@ void HistoryClustersService::UpdateClusters() {
   }
 }
 
-absl::optional<history::ClusterKeywordData>
+std::optional<history::ClusterKeywordData>
 HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   if (!IsJourneysEnabledAndVisible()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // We don't want any omnibox jank for low-end devices.
   if (base::SysInfo::IsLowEndDevice())
-    return absl::nullopt;
+    return std::nullopt;
 
   StartKeywordCacheRefresh();
   if (GetConfig().persist_on_query)
@@ -358,7 +341,7 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   // Early exit for single-character queries, even if it's an exact match.
   // We still want to allow for two-character exact matches like "uk".
   if (query.length() <= 1)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
 
@@ -372,7 +355,7 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
     return it->second;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void HistoryClustersService::ClearKeywordCache() {

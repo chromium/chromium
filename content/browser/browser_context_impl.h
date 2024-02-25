@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 
 namespace media {
@@ -106,6 +107,10 @@ class CONTENT_EXPORT BrowserContextImpl {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
+  ResourceContext* GetResourceContext() const {
+    return resource_context_.get();
+  }
+
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
   // decoding performance stats.  Exposed here rather than StoragePartition
@@ -138,6 +143,12 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
+
+  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  // Created on the UI thread, otherwise lives on and is destroyed on the IO
+  // thread.
+  std::unique_ptr<ResourceContext> resource_context_ =
+      std::make_unique<ResourceContext>();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;

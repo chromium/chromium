@@ -57,11 +57,11 @@ class TwoClientSessionsSyncTest : public SyncTest {
   }
 };
 
-static const char* kURL1 = "data:text/html,<html><title>Test</title></html>";
-static const char* kURL2 = "data:text/html,<html><title>Test2</title></html>";
-static const char* kURL3 = "data:text/html,<html><title>Test3</title></html>";
-static const char* kURL4 = "data:text/html,<html><title>Test4</title></html>";
-static const char* kURLTemplate =
+constexpr char kURL1[] = "data:text/html,<html><title>Test</title></html>";
+constexpr char kURL2[] = "data:text/html,<html><title>Test2</title></html>";
+constexpr char kURL3[] = "data:text/html,<html><title>Test3</title></html>";
+constexpr char kURL4[] = "data:text/html,<html><title>Test4</title></html>";
+constexpr char kURLTemplate[] =
     "data:text/html,<html><title>Test%s</title></html>";
 
 // TODO(zea): Test each individual session command we care about separately.

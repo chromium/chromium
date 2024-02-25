@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/printing/specifics_translation.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -131,7 +131,7 @@ void MergePrinterToSpecifics(const chromeos::Printer& printer,
                             printer.ppd_reference());
 }
 
-std::string MakeAndModel(base::StringPiece make, base::StringPiece model) {
+std::string MakeAndModel(std::string_view make, std::string_view model) {
   return base::StartsWith(model, make) ? std::string(model)
                                        : base::JoinString({make, model}, " ");
 }

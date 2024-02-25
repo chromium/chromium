@@ -67,6 +67,7 @@ enum AcceleratorLayoutStyle {
 };
 
 // Enum of top-level accelerator categories. Used in the UI for categorization.
+// Must be kept in sync with enums.xml: `ShortcutCustomizationMainCategory`.
 enum AcceleratorCategory {
   kGeneral,
   kDevice,

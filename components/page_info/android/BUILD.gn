@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 static_library("android") {
   sources = [
@@ -22,6 +23,7 @@ static_library("android") {
     "//components/page_info",
     "//components/page_info/android:jni_headers",
     "//components/page_info/core",
+    "//components/permissions:permissions_common",
     "//components/security_state/core:core",
     "//components/strings:components_strings_grit",
     "//content/public/browser:browser",
@@ -45,7 +47,6 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/xml/page_info_ad_personalization_preference.xml",
-    "java/res/xml/page_info_cookie_preference.xml",
     "java/res/xml/page_info_cookie_preference_user_bypass.xml",
   ]
   deps = [
@@ -64,13 +65,13 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
     "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationController.java",
-    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationPreference.java",
+    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
     "java/src/org/chromium/components/page_info/PageInfoContainer.java",
     "java/src/org/chromium/components/page_info/PageInfoController.java",
     "java/src/org/chromium/components/page_info/PageInfoControllerDelegate.java",
     "java/src/org/chromium/components/page_info/PageInfoCookiesController.java",
-    "java/src/org/chromium/components/page_info/PageInfoCookiesPreference.java",
+    "java/src/org/chromium/components/page_info/PageInfoCookiesSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoDialog.java",
     "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
     "java/src/org/chromium/components/page_info/PageInfoHighlight.java",
@@ -88,7 +89,6 @@ android_library("java") {
     ":java_resources",
     ":page_info_action_enum_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
@@ -119,6 +119,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -137,6 +138,6 @@ generate_jni("jni_headers") {
 }
 
 android_library("page_info_action_enum_java") {
-  srcjar_deps = [ "//components/page_info:page_info_action_javagen" ]
+  srcjar_deps = [ "//components/page_info/core:page_info_action_javagen" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

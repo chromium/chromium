@@ -6,11 +6,10 @@
 #define EXTENSIONS_RENDERER_ISOLATED_WORLD_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
-
 #include "base/sequence_checker.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class InjectionHost;
@@ -48,7 +47,7 @@ class IsolatedWorldManager {
   std::string GetHostIdForIsolatedWorld(int world_id);
 
   // Returns the execution world for the given `world_id`, if any exists.
-  absl::optional<mojom::ExecutionWorld> GetExecutionWorldForIsolatedWorld(
+  std::optional<mojom::ExecutionWorld> GetExecutionWorldForIsolatedWorld(
       int world_id);
 
   // Removes all isolated worlds associated with the given `host_id`, if any
@@ -60,7 +59,7 @@ class IsolatedWorldManager {
   // world data stored in blink so that any newly-created worlds will be
   // properly initialized.
   void SetUserScriptWorldProperties(const std::string& host_id,
-                                    absl::optional<std::string> csp,
+                                    std::optional<std::string> csp,
                                     bool enable_messaging);
 
   // Returns whether messaging APIs should be enabled in worlds for the given
@@ -96,7 +95,7 @@ class IsolatedWorldManager {
     GURL url;
 
     // CSP to use for the isolated world, if any.
-    absl::optional<std::string> csp;
+    std::optional<std::string> csp;
   };
 
   // A set of data to store properties for newly-created isolated worlds.
@@ -106,7 +105,7 @@ class IsolatedWorldManager {
     PendingWorldInfo(PendingWorldInfo&&);
 
     // The CSP to use for newly-created isolated worlds, if any.
-    absl::optional<std::string> csp;
+    std::optional<std::string> csp;
 
     // Whether to enable messaging APIs in newly-created isolated worlds.
     bool enable_messaging = false;

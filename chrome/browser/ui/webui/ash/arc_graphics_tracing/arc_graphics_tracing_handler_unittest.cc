@@ -7,10 +7,12 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/test/test_window_builder.h"
 #include "base/files/file_path.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,13 +24,25 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace ash {
 
+using EventType = arc::ArcTracingGraphicsModel::EventType;
+
 namespace {
+
+constexpr std::string_view kBasicSystrace =
+    "{\"traceEvents\":[],\"systemTraceEvents\":\""
+    // clang-format off
+    "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
+    // clang-format on
+    "\"}";
 
 class TestHandler : public ArcGraphicsTracingHandler {
  public:
+  using ArcGraphicsTracingHandler::max_tracing_time_;
   using content::WebUIMessageHandler::set_web_ui;
 
   void StartTracingOnControllerRespond() {
@@ -45,6 +59,11 @@ class TestHandler : public ArcGraphicsTracingHandler {
     downloads_folder_ = downloads_folder;
   }
 
+  void VerifyNoUnrespondedCallback() {
+    DCHECK(after_start_.is_null());
+    DCHECK(after_stop_.is_null());
+  }
+
   void set_now(base::Time now) { now_ = now; }
   base::Time Now() override { return now_; }
   base::TimeTicks SystemTicksNow() override {
@@ -54,6 +73,8 @@ class TestHandler : public ArcGraphicsTracingHandler {
   void set_trace_time_base(base::Time trace_time_base) {
     trace_time_base_ = trace_time_base;
   }
+
+  aura::Window* GetWebUIWindow() override { return web_ui_window_.get(); }
 
  private:
   void StartTracingOnController(
@@ -68,11 +89,6 @@ class TestHandler : public ArcGraphicsTracingHandler {
     after_stop_ = std::move(after_stop);
   }
 
-  void ActivateWebUIWindow() override {
-    // TODO(matvore): See if we can make the default implementation for this
-    // method run in tests.
-  }
-
   base::FilePath GetDownloadsFolder() override { return downloads_folder_; }
 
   content::TracingController::StartTracingDoneCallback after_start_;
@@ -81,6 +97,10 @@ class TestHandler : public ArcGraphicsTracingHandler {
   base::Time trace_time_base_;
   base::FilePath downloads_folder_;
   base::Time now_;
+  std::unique_ptr<aura::Window> web_ui_window_ =
+      TestWindowBuilder()
+          .SetWindowTitle(u"arc-overview-tracing web UI")
+          .Build();
 };
 
 class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
@@ -118,9 +138,18 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kEnableArcVm);
+
+    saved_tz_.reset(icu::TimeZone::createDefault());
+  }
+
+  static void SetTimeZone(const char* name) {
+    std::unique_ptr<icu::TimeZone> tz{icu::TimeZone::createTimeZone(name)};
+    icu::TimeZone::setDefault(*tz);
   }
 
   void TearDown() override {
+    icu::TimeZone::setDefault(*saved_tz_);
+
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     local_pref_service_.reset();
 
@@ -142,7 +171,7 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
   }
 
   void SendStartStopKey() {
-    ui::KeyEvent ev{ui::ET_KEY_RELEASED, ui::VKEY_G,
+    ui::KeyEvent ev{ui::ET_KEY_PRESSED, ui::VKEY_G,
                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN};
     handler_->OnKeyEvent(&ev);
   }
@@ -156,6 +185,7 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
   base::FilePath download_path_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<TestHandler> handler_;
+  std::unique_ptr<icu::TimeZone> saved_tz_;
 
   std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
 };
@@ -163,40 +193,51 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
 TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
   base::FilePath download_path = base::FilePath::FromASCII("/mnt/downloads");
   handler_->set_downloads_folder(download_path);
+  base::Time timestamp = base::Time::UnixEpoch() + base::Seconds(1);
 
-  handler_->set_now(base::Time::UnixEpoch() + base::Seconds(1));
+  std::unique_ptr<icu::TimeZone> tz;
+  SetTimeZone("America/Chicago");
   EXPECT_EQ(download_path.AppendASCII(
-                "overview_tracing_test_title_1_11644473601.json"),
-            handler_->GetModelPathFromTitle("Test Title #:1"));
-  EXPECT_EQ(
-      download_path.AppendASCII(
-          "overview_tracing_0123456789012345678901234567890_11644473601.json"),
-      handler_->GetModelPathFromTitle(
-          "0123456789012345678901234567890123456789"));
+                "overview_tracing_test_title_1_1969-12-31_18-00-01.json"),
+            handler_->GetModelPathFromTitle("Test Title #:1", timestamp));
+  SetTimeZone("Indian/Maldives");
+  EXPECT_EQ(download_path.AppendASCII(
+                "overview_tracing_0123456789012345678901234567890_"
+                "1970-01-01_05-00-01.json"),
+            handler_->GetModelPathFromTitle(
+                "0123456789012345678901234567890123456789", timestamp));
 
-  handler_->set_now(base::Time::UnixEpoch() + base::Days(50));
-  EXPECT_EQ(
-      download_path.AppendASCII("overview_tracing_xyztitle_11648793600.json"),
-      handler_->GetModelPathFromTitle("xyztitle"));
+  SetTimeZone("Etc/UTC");
+  timestamp = base::Time::UnixEpoch() + base::Days(50);
+  EXPECT_EQ(download_path.AppendASCII(
+                "overview_tracing_xyztitle_1970-02-20_00-00-00.json"),
+            handler_->GetModelPathFromTitle("xyztitle", timestamp));
 
+  SetTimeZone("Japan");
   download_path = base::FilePath::FromASCII("/var/DownloadFolder");
   handler_->set_downloads_folder(download_path);
-  EXPECT_EQ(
-      download_path.AppendASCII("overview_tracing_secret_app_11648793600.json"),
-      handler_->GetModelPathFromTitle("Secret App"));
+  EXPECT_EQ(download_path.AppendASCII(
+                "overview_tracing_secret_app_1970-02-20_09-00-00.json"),
+            handler_->GetModelPathFromTitle("Secret App", timestamp));
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
-  handler_->set_now(base::Time::FromJavaTime(1'500'088'880'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'500'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'500'088'880'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'500'000'000'000));
 
-  auto arc_widget = arc::ArcTaskWindowBuilder().BuildOwnsNativeWidget();
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetShellRootSurface(&s)
+                        .BuildOwnsNativeWidget();
+
   arc_widget->Show();
   SendStartStopKey();
   handler_->StartTracingOnControllerRespond();
 
   // Fast forward past the max tracing interval.
-  FastForwardClockAndTaskQueue(handler_->max_tracing_time() +
+  FastForwardClockAndTaskQueue(handler_->max_tracing_time_ +
                                base::Milliseconds(500));
 
   // Pass results from trace controller to handler. First and last events should
@@ -242,8 +283,10 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
-  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
-  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
 
   exo::Surface s;
   auto arc_widget = arc::ArcTaskWindowBuilder()
@@ -265,7 +308,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
 
   // Fast forward past the max tracing interval. This will stop the trace at the
   // end of the fast-forward, which is 400ms after the timeout.
-  FastForwardClockAndTaskQueue(handler_->max_tracing_time() +
+  FastForwardClockAndTaskQueue(handler_->max_tracing_time_ +
                                base::Milliseconds(400));
 
   // While model is being built, switch to the ARC window to change
@@ -275,12 +318,8 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
   other_arc_widget->Activate();
 
   // Pass results from trace controller to handler.
-  handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
-      "{\"traceEvents\":[],\"systemTraceEvents\":\""
-      // clang-format off
-      "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
-      // clang-format on
-      "\"}"));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
 
   task_environment()->RunUntilIdle();
 
@@ -293,6 +332,175 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
     const auto& cpu_events = (*events_by_cpu)[3].GetList();
     ASSERT_EQ(1UL, cpu_events.size()) << cpu_events;
   }
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s)
+                        .SetTitle("the first app")
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetShellRootSurface(&s)
+                              .SetTitle("another ARC app")
+                              .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  other_arc_widget->ShowInactive();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+  other_arc_widget->Activate();
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+  task_environment()->RunUntilIdle();
+
+  // Fast forward past the max tracing interval. This will stop the trace at the
+  // end of the fast-forward, which is 400ms after the timeout.
+  FastForwardClockAndTaskQueue(base::Milliseconds(4500));
+
+  // Pass results from trace controller to handler.
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+
+  task_environment()->RunUntilIdle();
+
+  // The current behavior when activating a separate window during a trace is to
+  // stop the trace and switch to the web UI. This behavior may change, but this
+  // test was originally added to avoid a DCHECK failure upon switching the
+  // active window. NOTE even if the below asserts are no longer valid, this
+  // test is still important for what has occurred before this line.
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+  EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
+  EXPECT_TRUE(handler_->GetWebUIWindow()->HasFocus());
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowBeforeTraceStart) {
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s1, s2;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s1)
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetTitle("i will be traced")
+                              .SetShellRootSurface(&s2)
+                              .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  other_arc_widget->ShowInactive();
+  SendStartStopKey();
+  other_arc_widget->Activate();
+
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->VerifyNoUnrespondedCallback();
+
+  // We should be able to do a trace now - no trace state should be lingering.
+  // The web UI will be active - switch back to an ARC app.
+  other_arc_widget->Activate();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+  task_environment()->RunUntilIdle();
+
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+  EXPECT_EQ(*dict.FindStringByDottedPath("information.title"),
+            "i will be traced");
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s)
+                        .SetTitle("the first app")
+                        .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+
+  for (int i = 0; i < 5; i++) {
+    s.Commit();
+    std::list<exo::Surface::FrameCallback> frame_callbacks;
+    std::list<exo::Surface::PresentationCallback> presentation_callbacks;
+    s.AppendSurfaceHierarchyCallbacks(&frame_callbacks,
+                                      &presentation_callbacks);
+    gfx::PresentationFeedback feedback(handler_->SystemTicksNow(),
+                                       base::TimeDelta() /* interval */,
+                                       0 /* flags */);
+    for (auto& cb : presentation_callbacks) {
+      cb.Run(feedback);
+    }
+    FastForwardClockAndTaskQueue(base::Milliseconds(42));
+  }
+
+  FastForwardClockAndTaskQueue(base::Seconds(5));
+
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+
+  task_environment()->RunUntilIdle();
+
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+
+  LOG(INFO) << "checking JSON model: " << dict;
+
+  auto validate_events = [&](EventType type, const base::Value::List* events) {
+    ASSERT_TRUE(events);
+    std::queue<double> expected_times({0, 42000, 84000, 126000, 168000});
+    ASSERT_EQ(events->size(), expected_times.size());
+    for (const auto& event : *events) {
+      const auto& list = event.GetList();
+      ASSERT_EQ(list.size(), 2ul);
+      ASSERT_EQ(list[0].GetInt(), static_cast<int>(type));
+      ASSERT_EQ(list[1].GetDouble(), expected_times.front());
+      expected_times.pop();
+    }
+  };
+
+  validate_events(EventType::kChromeOSPresentationDone,
+                  dict.FindListByDottedPath("chrome.global_events"));
+  const auto* events_by_buffer =
+      (*dict.FindListByDottedPath("views"))[0].GetDict().FindListByDottedPath(
+          "buffers");
+
+  ASSERT_TRUE(events_by_buffer);
+  ASSERT_EQ(events_by_buffer->size(), 1ul);
+  validate_events(EventType::kExoSurfaceCommit,
+                  (*events_by_buffer)[0].GetIfList());
 }
 
 }  // namespace

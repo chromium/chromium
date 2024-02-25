@@ -8,11 +8,19 @@ build_webui("build") {
   grd_prefix = "connectors_internals"
 
   static_files = [ "index.html" ]
+
   web_component_files = [
     "app.ts",
     "connectors_tabs.ts",
     "device_trust_connector.ts",
+    "managed_client_certificate.ts",
   ]
+
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "connectors_utils.ts",
+  ]
+
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom-webui.ts" ]
   mojo_files_deps = [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings_ts__generator" ]
 

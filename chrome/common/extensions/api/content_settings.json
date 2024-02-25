@@ -8,8 +8,7 @@
     "namespace": "contentSettings",
     "description": "Use the <code>chrome.contentSettings</code> API to change settings that control whether websites can use features such as cookies, JavaScript, and plugins. More generally speaking, content settings allow you to customize Chrome's behavior on a per-site basis instead of globally.",
     "compiler_options": {
-      "generate_type_functions": true,
-      "modernised_enums": true
+      "generate_type_functions": true
     },
     "types": [
       {
@@ -178,6 +177,11 @@
         "enum": ["allow", "block"]
       },
       {
+        "id": "ClipboardContentSetting",
+        "type": "string",
+        "enum": ["allow", "block", "ask"]
+      },
+      {
         "id": "CookiesContentSetting",
         "type": "string",
         "enum": ["allow", "block", "session_only"]
@@ -330,6 +334,14 @@
         "value": [
           "media-stream-mic",
           {"$ref":"MicrophoneContentSetting"}
+        ]
+      },
+      "clipboard": {
+        "$ref": "ContentSetting",
+        "description": "Whether to allow sites to access the clipboard via advanced capabilities of the Async Clipboard API. \"Advanced\" capabilities include anything besides writing built-in formats after a user gesture, i.e. the ability to read, the ability to write custom formats, and the ability to write without a user gesture. One of <br><var>allow</var>: Allow sites to use advanced clipboard capabilities,<br><var>block</var>: Don't allow sites to use advanced clipboard capabilties,<br><var>ask</var>: Ask when a site wants to use advanced clipboard capabilities. <br>Default is <var>ask</var>.<br>The primary URL is the URL of the document which requested clipboard access. The secondary URL is not used.",
+        "value": [
+          "clipboard",
+          {"$ref":"ClipboardContentSetting"}
         ]
       },
       "camera": {

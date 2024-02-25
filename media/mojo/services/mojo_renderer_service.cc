@@ -5,6 +5,7 @@
 #include "media/mojo/services/mojo_renderer_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/services/media_resource_shim.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -55,7 +55,7 @@ MojoRendererService::~MojoRendererService() = default;
 
 void MojoRendererService::Initialize(
     mojo::PendingAssociatedRemote<mojom::RendererClient> client,
-    absl::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
+    std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
         streams,
     mojom::MediaUrlParamsPtr media_url_params,
     InitializeCallback callback) {
@@ -79,6 +79,7 @@ void MojoRendererService::Initialize(
       nullptr, media_url_params->media_url, media_url_params->site_for_cookies,
       media_url_params->top_frame_origin, media_url_params->has_storage_access,
       media_url_params->allow_credentials, media_url_params->is_hls);
+  media_resource_->SetHeaders(media_url_params->headers);
   renderer_->Initialize(
       media_resource_.get(), this,
       base::BindOnce(&MojoRendererService::OnRendererInitializeDone, weak_this_,
@@ -118,7 +119,7 @@ void MojoRendererService::SetVolume(float volume) {
 }
 
 void MojoRendererService::SetCdm(
-    const absl::optional<base::UnguessableToken>& cdm_id,
+    const std::optional<base::UnguessableToken>& cdm_id,
     SetCdmCallback callback) {
   if (cdm_context_ref_) {
     DVLOG(1) << "Switching CDM not supported";
@@ -213,7 +214,7 @@ void MojoRendererService::OnVideoOpacityChange(bool opaque) {
   client_->OnVideoOpacityChange(opaque);
 }
 
-void MojoRendererService::OnVideoFrameRateChange(absl::optional<int> fps) {
+void MojoRendererService::OnVideoFrameRateChange(std::optional<int> fps) {
   DVLOG(2) << __func__ << "(" << (fps ? *fps : -1) << ")";
   // TODO(liberato): plumb to |client_|.
 }

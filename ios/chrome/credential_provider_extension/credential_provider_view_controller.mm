@@ -224,17 +224,12 @@ UIColor* BackgroundColor() {
   id<Credential> credential =
       [self.credentialStore credentialWithRecordIdentifier:identifier];
   if (credential) {
-    NSString* password =
-        PasswordWithKeychainIdentifier(credential.keychainIdentifier);
-    if (password) {
-      UpdateUMACountForKey(
-          app_group::kCredentialExtensionQuickPasswordUseCount);
-      ASPasswordCredential* ASCredential =
-          [ASPasswordCredential credentialWithUser:credential.user
-                                          password:password];
-      [self completeRequestWithSelectedCredential:ASCredential];
-      return;
-    }
+    UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasswordUseCount);
+    ASPasswordCredential* ASCredential =
+        [ASPasswordCredential credentialWithUser:credential.user
+                                        password:credential.password];
+    [self completeRequestWithSelectedCredential:ASCredential];
+    return;
   }
   [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
 }

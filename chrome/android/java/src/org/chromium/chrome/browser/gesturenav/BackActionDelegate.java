@@ -11,13 +11,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Delegates actions when back navigation gesture is made.
- */
+/** Delegates actions when back navigation gesture is made. */
 public interface BackActionDelegate {
-    /**
-     * Type of actions triggered by back navigation gesture.
-     */
+    /** Type of actions triggered by back navigation gesture. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ActionType.NAVIGATE_BACK, ActionType.CLOSE_TAB, ActionType.EXIT_APP})
     public @interface ActionType {
@@ -33,9 +29,7 @@ public interface BackActionDelegate {
     @ActionType
     int getBackActionType(Tab tab);
 
-    /**
-     * Performs an action upon back gesture.
-     */
+    /** Performs an action upon back gesture. */
     void onBackGesture();
 
     /**

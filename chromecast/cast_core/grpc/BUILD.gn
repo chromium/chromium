@@ -51,6 +51,7 @@ source_set("unit_tests") {
 
   sources = [
     "grpc_server_streaming_test.cc",
+    "grpc_server_test.cc",
     "grpc_status_or_test.cc",
     "grpc_unary_test.cc",
   ]

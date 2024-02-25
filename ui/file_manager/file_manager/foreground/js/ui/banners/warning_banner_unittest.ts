@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './warning_banner.js';
+
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 
 import {BannerEvent} from './types.js';
-import {WarningBanner} from './warning_banner.js';
+import type {WarningBanner} from './warning_banner.js';
 
 let warningBanner: WarningBanner;
 
@@ -45,13 +47,11 @@ export async function testDismissHandlerEmitsEvent(done: () => void) {
  * button is clicked.
  */
 export async function testAdditionalButtonCanBeClicked() {
-  const mockVisitURL = mockUtilVisitURL();
   warningBanner.addEventListener(
       'click', () => console.log('additional event listner'));
   warningBanner.querySelector<CrButtonElement>(
                    '[slot="extra-button"]')!.click();
-  assertEquals(mockVisitURL.getURL(), 'http://test.com');
-  mockVisitURL.restoreVisitURL();
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**

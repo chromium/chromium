@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/services/secure_channel/fake_secure_channel.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -29,14 +30,18 @@ void FakeSecureChannel::InitiateConnectionToDevice(
     const std::string& feature,
     ConnectionMedium connection_medium,
     ConnectionPriority connection_priority,
-    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate,
+    mojo::PendingRemote<mojom::SecureChannelStructuredMetricsLogger>
+        secure_channel_structured_metrics_logger) {
   delegate_from_last_initiate_call_.Bind(std::move(delegate));
+  secure_channel_structured_metrics_logger_.Bind(
+      std::move(secure_channel_structured_metrics_logger));
 }
 
 void FakeSecureChannel::GetLastSeenTimestamp(
     const std::string& remote_device_id,
     GetLastSeenTimestampCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace ash::secure_channel

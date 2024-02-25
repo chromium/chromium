@@ -121,16 +121,7 @@ gfx::Size CalculateGpuRawDrawTileSize(const gfx::Size& base_tile_size,
 
 // AffectingParams.
 bool TileSizeCalculator::AffectingParams::operator==(
-    const AffectingParams& other) const {
-  return max_texture_size == other.max_texture_size &&
-         use_gpu_rasterization == other.use_gpu_rasterization &&
-         device_scale_factor == other.device_scale_factor &&
-         max_tile_size == other.max_tile_size &&
-         gpu_raster_max_texture_size == other.gpu_raster_max_texture_size &&
-         max_untiled_layer_size == other.max_untiled_layer_size &&
-         default_tile_size == other.default_tile_size &&
-         layer_content_bounds == other.layer_content_bounds;
-}
+    const AffectingParams& other) const = default;
 
 // TileSizeCalculator.
 TileSizeCalculator::TileSizeCalculator(PictureLayerImpl* layer_impl)
@@ -138,8 +129,8 @@ TileSizeCalculator::TileSizeCalculator(PictureLayerImpl* layer_impl)
       is_using_raw_draw_(features::IsUsingRawDraw()),
       raw_draw_tile_size_factor_(features::RawDrawTileSizeFactor()) {}
 
-bool TileSizeCalculator::IsAffectingParamsChanged() {
-  AffectingParams new_params = GetAffectingParams();
+bool TileSizeCalculator::UpdateAffectingParams(gfx::Size content_bounds) {
+  AffectingParams new_params = GetAffectingParams(content_bounds);
 
   if (affecting_params_ == new_params)
     return false;
@@ -148,7 +139,8 @@ bool TileSizeCalculator::IsAffectingParamsChanged() {
   return true;
 }
 
-TileSizeCalculator::AffectingParams TileSizeCalculator::GetAffectingParams() {
+TileSizeCalculator::AffectingParams TileSizeCalculator::GetAffectingParams(
+    gfx::Size content_bounds) const {
   AffectingParams params;
   LayerTreeImpl* layer_tree_impl = layer_impl()->layer_tree_impl();
   params.max_texture_size = layer_tree_impl->max_texture_size();
@@ -162,13 +154,11 @@ TileSizeCalculator::AffectingParams TileSizeCalculator::GetAffectingParams() {
   params.max_untiled_layer_size =
       layer_tree_impl->settings().max_untiled_layer_size;
   params.default_tile_size = layer_tree_impl->settings().default_tile_size;
-  params.layer_content_bounds = layer_impl()->content_bounds();
+  params.content_bounds = content_bounds;
   return params;
 }
 
-gfx::Size TileSizeCalculator::CalculateTileSize() {
-  gfx::Size content_bounds = layer_impl()->content_bounds();
-
+gfx::Size TileSizeCalculator::CalculateTileSize(gfx::Size content_bounds) {
   if (layer_impl()->is_backdrop_filter_mask()) {
     // Backdrop filter masks are not tiled, so if we can't cover the whole mask
     // with one tile, we shouldn't have such a tiling at all.
@@ -181,8 +171,9 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
 
   // If |affecting_params_| is already computed and not changed, return
   // pre-calculated tile size.
-  if (!IsAffectingParamsChanged())
+  if (!UpdateAffectingParams(content_bounds)) {
     return tile_size_;
+  }
 
   int default_tile_width = 0;
   int default_tile_height = 0;

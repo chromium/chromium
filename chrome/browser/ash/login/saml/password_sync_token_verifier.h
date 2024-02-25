@@ -65,8 +65,8 @@ class PasswordSyncTokenVerifier : public KeyedService,
   // Init sync token.
   void CreateTokenAsync();
 
-  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
-  const raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  const raw_ptr<Profile> primary_profile_;
+  const raw_ptr<const user_manager::User> primary_user_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
   net::BackoffEntry retry_backoff_;
 

@@ -16,9 +16,7 @@ import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Shared code for media route dialogs.
- */
+/** Shared code for media route dialogs. */
 public abstract class BaseMediaRouteDialogManager {
     /**
      * A helper class to handle the system visibility change caused by the dialog showing up.

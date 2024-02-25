@@ -9,9 +9,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/features.h"
@@ -51,7 +53,8 @@ class OneTimePermissionProviderTest : public testing::Test {
  protected:
   content_settings::ContentSettingConstraints one_time_constraints() {
     content_settings::ContentSettingConstraints constraints;
-    constraints.set_session_model(content_settings::SessionModel::OneTime);
+    constraints.set_session_model(
+        content_settings::mojom::SessionModel::ONE_TIME);
     return constraints;
   }
 
@@ -83,7 +86,8 @@ TEST_F(OneTimePermissionProviderTest, SetAndGetContentSetting) {
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(
@@ -108,7 +112,8 @@ TEST_F(OneTimePermissionProviderTest,
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(
@@ -125,7 +130,8 @@ TEST_F(OneTimePermissionProviderTest,
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW), {});
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW), {},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(
@@ -144,15 +150,18 @@ TEST_F(OneTimePermissionProviderTest,
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->SetWebsiteSetting(
       other_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
-      url::Origin::Create(primary_url));
+      url::Origin::Create(primary_url),
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(
@@ -186,12 +195,14 @@ TEST_F(OneTimePermissionProviderTest, CaptureExpiryRevokesPermissions) {
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_CAMERA,
-      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints());
+      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_MIC, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->OnCapturingVideoExpired(
       url::Origin::Create(primary_url));
@@ -256,15 +267,18 @@ TEST_F(OneTimePermissionProviderTest,
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_CAMERA,
-      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints());
+      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_MIC, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
-      url::Origin::Create(primary_url));
+      url::Origin::Create(primary_url),
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(
@@ -287,11 +301,13 @@ TEST_F(OneTimePermissionProviderTest, ManualRevocationUmaTest) {
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION, base::Value(), one_time_constraints());
+      ContentSettingsType::GEOLOCATION, base::Value(), one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
@@ -339,12 +355,14 @@ TEST_F(OneTimePermissionProviderTest, SuspendExpiresAllGrants) {
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_CAMERA,
-      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints());
+      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::MEDIASTREAM_MIC, base::Value(CONTENT_SETTING_ALLOW),
-      one_time_constraints());
+      one_time_constraints(),
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   one_time_permission_provider_->OnSuspend();
 
@@ -410,7 +428,8 @@ TEST_P(OneTimePermissionProviderExpiryTest, RenewContentSetting_Noop) {
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, primary_pattern, ContentSettingsType::GEOLOCATION,
-      base::Value(CONTENT_SETTING_ALLOW), constraints);
+      base::Value(CONTENT_SETTING_ALLOW), constraints,
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -429,8 +448,8 @@ TEST_P(OneTimePermissionProviderExpiryTest, RenewContentSetting_Noop) {
   base::Time original_expiration = metadata.expiration();
 
   EXPECT_FALSE(one_time_permission_provider_->RenewContentSetting(
-      primary_url, primary_url, ContentSettingsType::GEOLOCATION,
-      absl::nullopt));
+      primary_url, primary_url, ContentSettingsType::GEOLOCATION, std::nullopt,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(

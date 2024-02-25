@@ -24,7 +24,7 @@ export enum MultiDeviceSettingsMode {
 export enum MultiDeviceFeature {
   BETTER_TOGETHER_SUITE = 0,
   INSTANT_TETHERING = 1,
-  MESSAGES = 2,
+  // MESSAGES (2) is deprecated.
   SMART_LOCK = 3,
   PHONE_HUB = 4,
   PHONE_HUB_NOTIFICATIONS = 5,
@@ -45,13 +45,14 @@ export enum MultiDeviceFeatureState {
   ENABLED_BY_USER = 2,
   NOT_SUPPORTED_BY_CHROMEBOOK = 3,
   NOT_SUPPORTED_BY_PHONE = 4,
-  UNAVAILABLE_NO_VERIFIED_HOST = 5,
+  // UNAVAILABLE_NO_VERIFIED_HOST (5) is deprecated.
   UNAVAILABLE_INSUFFICIENT_SECURITY = 6,
   UNAVAILABLE_SUITE_DISABLED = 7,
   FURTHER_SETUP_REQUIRED = 8,
   UNAVAILABLE_TOP_LEVEL_FEATURE_DISABLED = 9,
   UNAVAILABLE_NO_VERIFIED_HOST_CLIENT_NOT_READY = 10,
   UNAVAILABLE_NO_VERIFIED_HOST_NO_ELIGIBLE_HOST = 11,
+  UNAVAILABLE_NO_VERIFIED_HOST_HOST_EXISTS_BUT_NOT_SET_AND_VERIFIED = 12,
 }
 
 /**
@@ -155,7 +156,6 @@ export interface MultiDevicePageContentData {
   hostDeviceName: string|undefined;
   betterTogetherState: MultiDeviceFeatureState;
   instantTetheringState: MultiDeviceFeatureState;
-  messagesState: MultiDeviceFeatureState;
   smartLockState: MultiDeviceFeatureState;
   phoneHubState: MultiDeviceFeatureState;
   phoneHubCameraRollState: MultiDeviceFeatureState;
@@ -163,7 +163,6 @@ export interface MultiDevicePageContentData {
   phoneHubTaskContinuationState: MultiDeviceFeatureState;
   phoneHubAppsState: MultiDeviceFeatureState;
   wifiSyncState: MultiDeviceFeatureState;
-  isAndroidSmsPairingComplete: boolean;
   cameraRollAccessStatus: PhoneHubFeatureAccessStatus;
   notificationAccessStatus: PhoneHubFeatureAccessStatus;
   appsAccessStatus: PhoneHubFeatureAccessStatus;

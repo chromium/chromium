@@ -223,9 +223,9 @@ As with `[LegacyNoInterfaceObject]` does not affect generated code for the inter
 All non-callback interfaces without `[LegacyNoInterfaceObject]` have a corresponding interface property on the global object. Note that in the Web IDL spec, callback interfaces with constants also have interface properties, but in Blink callback interfaces only have methods (no constants or attributes), so this is not applicable. `[Exposed]` can be used with different values to indicate on which global object or objects the property should be generated. Valid values are:
 
 * `Window`
-* [Worker](http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#the-workerglobalscope-common-interface)
-* [SharedWorker](http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dedicated-workers-and-the-dedicatedworkerglobalscope-interface)
-* [DedicatedWorker](http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#shared-workers-and-the-sharedworkerglobalscope-interface)
+* [Worker](https://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#the-workerglobalscope-common-interface)
+* [SharedWorker](https://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#shared-workers-and-the-sharedworkerglobalscope-interface)
+* [DedicatedWorker](https://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#dedicated-workers-and-the-dedicatedworkerglobalscope-interface)
 * [ServiceWorker](https://rawgithub.com/slightlyoff/ServiceWorker/master/spec/service_worker/index.html#service-worker-global-scope)
 
 For reference, see [ECMAScript 5.1: 15.1 The Global Object](http://www.ecma-international.org/ecma-262/5.1/#sec-15.1) ([annotated](http://es5.github.io/#x15.1)), [HTML: 10 Web workers](http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html), [Web Workers](http://dev.w3.org/html5/workers/), and [Service Workers](https://rawgithub.com/slightlyoff/ServiceWorker/master/spec/service_worker/index.html) specs.
@@ -1185,6 +1185,14 @@ The FlexibleArrayBufferView extended attribute always requires the AllowShared e
 
 Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextBase.idl for an example.
 
+### [HasAsyncIteratorReturnAlgorithm]
+
+Summary: `[HasAsyncIteratorReturnAlgorithm]` indicates whether an [asynchronously iterable declaration](https://webidl.spec.whatwg.org/#dfn-async-iterable-declaration) has an [asynchronous iterator return algorithm](https://webidl.spec.whatwg.org/#asynchronous-iterator-return).
+
+This tells the code generator to add a `return()` method to the async iterator. The Blink implementation must then provide the return algorithm by overriding `AsyncIterationSourceBase::AsyncIteratorReturn()`.
+
+Usage: Applies only to `async iterable` declarations. See core/streams/readable_stream.idl for an example.
+
 ### [IsolatedContext]
 
 Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
@@ -1282,6 +1290,12 @@ These extended attributes are _discouraged_ - they are not deprecated, but they 
 Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
 
 Consult with the bindings team before you use this extended attribute.
+
+### [IDLTypeImplementedAsV8Promise]
+
+Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromise` type.
+
+This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 
 ### [TargetOfExposed]
 

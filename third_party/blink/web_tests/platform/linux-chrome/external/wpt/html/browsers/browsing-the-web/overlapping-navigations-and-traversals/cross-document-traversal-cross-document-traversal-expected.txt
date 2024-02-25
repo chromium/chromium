@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] cross-document traversals in opposite directions, second traversal invalid at queuing time but valid at the time it is run: the result is going nowhere
+  assert_unreached: second load event Reached unreachable code
+[FAIL PASS] cross-document traversals in the same (back) direction: the result is going -2 with only one load event
+  assert_equals: first load event must be going back expected "?1" but got "?2"
+Harness: the test ran to completion.
+

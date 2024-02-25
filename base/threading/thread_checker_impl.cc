@@ -6,20 +6,21 @@
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/sequence_token.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_local.h"
 
 namespace {
-bool g_log_thread_and_sequence_checker_binding = false;
+bool g_log_stack = false;
 }
 
 namespace base {
 
 // static
 void ThreadCheckerImpl::EnableStackLogging() {
-  g_log_thread_and_sequence_checker_binding = true;
+  g_log_stack = true;
 }
 
 ThreadCheckerImpl::ThreadCheckerImpl() {
@@ -30,40 +31,37 @@ ThreadCheckerImpl::ThreadCheckerImpl() {
 ThreadCheckerImpl::~ThreadCheckerImpl() = default;
 
 ThreadCheckerImpl::ThreadCheckerImpl(ThreadCheckerImpl&& other) {
-  // Verify that |other| is called on its associated thread and bind it now if
-  // it is currently detached (even if this isn't a DCHECK build).
-  const bool other_called_on_valid_thread = other.CalledOnValidThread();
-  DCHECK(other_called_on_valid_thread);
+  // Verify that `other` is called on the correct thread.
+  // Note: This binds `other` if not already bound.
+  CHECK(other.CalledOnValidThread());
 
-  // Intentionally not using |other.lock_| to let TSAN catch racy construct from
-  // |other|.
+  //  Not using `other.lock_` to let TSAN catch racy construct from `other`.
   bound_at_ = std::move(other.bound_at_);
-  thread_id_ = other.thread_id_;
+  thread_ref_ = other.thread_ref_;
   task_token_ = other.task_token_;
   sequence_token_ = other.sequence_token_;
 
-  // other.bound_at_ was moved from so it's null.
-  other.thread_id_ = PlatformThreadRef();
-  other.task_token_ = TaskToken();
-  other.sequence_token_ = SequenceToken();
+  // `other.bound_at_` was moved from so it's null.
+  other.thread_ref_ = PlatformThreadRef();
+  other.task_token_ = internal::TaskToken();
+  other.sequence_token_ = internal::SequenceToken();
 }
 
 ThreadCheckerImpl& ThreadCheckerImpl::operator=(ThreadCheckerImpl&& other) {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread());
 
-  // Verify that |other| is called on its associated thread and bind it now if
-  // it is currently detached (even if this isn't a DCHECK build).
-  const bool other_called_on_valid_thread = other.CalledOnValidThread();
-  DCHECK(other_called_on_valid_thread);
+  // Verify that `other` is called on the correct thread.
+  // Note: This binds `other` if not already bound.
+  CHECK(other.CalledOnValidThread());
 
   // Intentionally not using either |lock_| to let TSAN catch racy assign.
-  TS_UNCHECKED_READ(thread_id_) = TS_UNCHECKED_READ(other.thread_id_);
+  TS_UNCHECKED_READ(thread_ref_) = TS_UNCHECKED_READ(other.thread_ref_);
   TS_UNCHECKED_READ(task_token_) = TS_UNCHECKED_READ(other.task_token_);
   TS_UNCHECKED_READ(sequence_token_) = TS_UNCHECKED_READ(other.sequence_token_);
 
-  TS_UNCHECKED_READ(other.thread_id_) = PlatformThreadRef();
-  TS_UNCHECKED_READ(other.task_token_) = TaskToken();
-  TS_UNCHECKED_READ(other.sequence_token_) = SequenceToken();
+  TS_UNCHECKED_READ(other.thread_ref_) = PlatformThreadRef();
+  TS_UNCHECKED_READ(other.task_token_) = internal::TaskToken();
+  TS_UNCHECKED_READ(other.sequence_token_) = internal::SequenceToken();
 
   return *this;
 }
@@ -71,71 +69,78 @@ ThreadCheckerImpl& ThreadCheckerImpl::operator=(ThreadCheckerImpl&& other) {
 bool ThreadCheckerImpl::CalledOnValidThread(
     std::unique_ptr<debug::StackTrace>* out_bound_at) const {
   AutoLock auto_lock(lock_);
-  return CalledOnValidThreadInternal(out_bound_at);
-}
-
-bool ThreadCheckerImpl::CalledOnValidThreadInternal(
-    std::unique_ptr<debug::StackTrace>* out_bound_at) const {
   // If we're detached, bind to current state.
   EnsureAssigned();
+  DCHECK(sequence_token_.IsValid());
 
-  // Always return true when called from the task from which this
-  // ThreadCheckerImpl was assigned to a thread.
-  if (task_token_.IsValid() &&
-      task_token_ == TaskToken::GetForCurrentThread()) {
-    return true;
-  }
-
-  // If this ThreadCheckerImpl is bound to a valid SequenceToken, it must be
-  // equal to the current SequenceToken and there must be a registered
-  // SingleThreadTaskRunner::CurrentDefaultHandle. Otherwise, the fact that
-  // the current task runs on the thread to which this ThreadCheckerImpl is
-  // bound is fortuitous.
+  // Cases to handle:
   //
-  // TODO(pbos): This preserves existing behavior that `sequence_token_` is
-  // ignored after TLS shutdown. It should either be documented here why that is
-  // necessary (shouldn't this destroy on sequence?) or
-  // SequenceCheckerTest.CalledOnValidSequenceFromThreadDestruction should be
-  // updated to reflect the expected behavior.
-  //
-  // See SequenceCheckerImpl::CalledOnValidSequence for additional context.
-  const bool sequence_is_invalid =
-      sequence_token_.IsValid() &&
-      (sequence_token_ != SequenceToken::GetForCurrentThread() ||
-       !SingleThreadTaskRunner::HasCurrentDefault()) &&
-      !ThreadLocalStorage::HasBeenDestroyed();
+  // 1. Bound outside a task and used on the same thread: return true.
+  // 2. Used on the same thread, TLS destroyed: return true.
+  //         Note: This case exists for historical reasons and should be
+  //         removed. See details in `SequenceCheckerImpl`.
+  // 3. Same sequence as when this was bound:
+  //   3a. Sequence is associated with a thread: return true.
+  //   3b. Sequence may run on any thread: return false.
+  //         Note: Return false even if this happens on the same thread as when
+  //         this was bound, because that would be fortuitous.
+  // 4. Different sequence than when this was bound: return false.
 
-  if (sequence_is_invalid || thread_id_ != PlatformThread::CurrentRef()) {
-    if (out_bound_at && bound_at_) {
-      *out_bound_at = std::make_unique<debug::StackTrace>(*bound_at_);
+  if (thread_ref_ == PlatformThread::CurrentRef()) {
+    // If this runs on the bound thread:
+
+    // Return true if the checker was bound outside of a `TaskScope`.
+    if (!task_token_.IsValid()) {
+      return true;
     }
-    return false;
+
+    // Return true if the checker was bound in the same `TaskScope`.
+    if (task_token_ == internal::TaskToken::GetForCurrentThread()) {
+      return true;
+    }
+
+    // Return true if TLS has been destroyed.
+    //
+    // This exists for historical reasons and can probably be removed. See
+    // details in `SequenceCheckerImpl::CalledOnValidSequence()`.
+    if (ThreadLocalStorage::HasBeenDestroyed()) {
+      return true;
+    }
+
+    // Return true if the checker was bound in the same thread-bound sequence.
+    // `CurrentTaskIsThreadBound()` avoids returning true when non-thread-bound
+    // tasks from the same sequence run on the same thread by chance.
+    if (sequence_token_ == internal::SequenceToken::GetForCurrentThread() &&
+        internal::CurrentTaskIsThreadBound()) {
+      return true;
+    }
   }
-  return true;
+
+  // On failure, set the `out_bound_at` argument.
+  if (out_bound_at && bound_at_) {
+    *out_bound_at = std::make_unique<debug::StackTrace>(*bound_at_);
+  }
+  return false;
 }
 
 void ThreadCheckerImpl::DetachFromThread() {
   AutoLock auto_lock(lock_);
   bound_at_ = nullptr;
-  thread_id_ = PlatformThreadRef();
-  task_token_ = TaskToken();
-  sequence_token_ = SequenceToken();
-}
-
-std::unique_ptr<debug::StackTrace> ThreadCheckerImpl::GetBoundAt() const {
-  if (!bound_at_)
-    return nullptr;
-  return std::make_unique<debug::StackTrace>(*bound_at_);
+  thread_ref_ = PlatformThreadRef();
+  task_token_ = internal::TaskToken();
+  sequence_token_ = internal::SequenceToken();
 }
 
 void ThreadCheckerImpl::EnsureAssigned() const {
-  if (!thread_id_.is_null())
+  if (!thread_ref_.is_null()) {
     return;
-  if (g_log_thread_and_sequence_checker_binding)
+  }
+  if (g_log_stack) {
     bound_at_ = std::make_unique<debug::StackTrace>(size_t{10});
-  thread_id_ = PlatformThread::CurrentRef();
-  task_token_ = TaskToken::GetForCurrentThread();
-  sequence_token_ = SequenceToken::GetForCurrentThread();
+  }
+  thread_ref_ = PlatformThread::CurrentRef();
+  task_token_ = internal::TaskToken::GetForCurrentThread();
+  sequence_token_ = internal::SequenceToken::GetForCurrentThread();
 }
 
 }  // namespace base

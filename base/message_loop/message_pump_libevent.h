@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +24,10 @@
 struct event_base;
 struct event;
 namespace base {
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+BASE_EXPORT BASE_DECLARE_FEATURE(kMessagePumpEpoll);
+#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 
 class MessagePumpEpoll;
 
@@ -78,12 +83,23 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     bool was_controller_destroyed() const { return was_controller_destroyed_; }
 
     void WatchForControllerDestruction() {
-      DCHECK(!controller_->was_destroyed_);
-      controller_->was_destroyed_ = &was_controller_destroyed_;
+      DCHECK_GE(nested_controller_destruction_watchers_, 0);
+      if (nested_controller_destruction_watchers_ == 0) {
+        DCHECK(!controller_->was_destroyed_);
+        controller_->was_destroyed_ = &was_controller_destroyed_;
+      } else {
+        // If this is a nested event we should already be watching `controller_`
+        // for destruction from an outer event handler.
+        DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
+      }
+      ++nested_controller_destruction_watchers_;
     }
 
     void StopWatchingForControllerDestruction() {
-      if (!was_controller_destroyed_) {
+      --nested_controller_destruction_watchers_;
+      DCHECK_GE(nested_controller_destruction_watchers_, 0);
+      if (nested_controller_destruction_watchers_ == 0 &&
+          !was_controller_destroyed_) {
         DCHECK_EQ(controller_->was_destroyed_, &was_controller_destroyed_);
         controller_->was_destroyed_ = nullptr;
       }
@@ -97,6 +113,10 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     const EpollInterestParams params_;
     bool active_ = true;
     bool was_controller_destroyed_ = false;
+
+    // Avoid resetting `controller_->was_destroyed` when nested destruction
+    // watchers are active.
+    int nested_controller_destruction_watchers_ = 0;
   };
 
   // Note that this class is used as the FdWatchController for both
@@ -174,13 +194,6 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   MessagePumpLibevent();
 
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-  // Constructs a MessagePumpLibevent which is forced to use epoll directly
-  // instead of libevent.
-  enum { kUseEpoll };
-  explicit MessagePumpLibevent(decltype(kUseEpoll));
-#endif
-
   MessagePumpLibevent(const MessagePumpLibevent&) = delete;
   MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
 
@@ -220,8 +233,8 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-    // `delegate` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
+    // profiler data and tab_search:top100:2020).
     RAW_PTR_EXCLUSION Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
@@ -235,10 +248,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   std::unique_ptr<MessagePumpEpoll> epoll_pump_;
 #endif
 
-  // State for the current invocation of Run(). null if not running.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   // This flag is set if libevent has processed I/O events.
   bool processed_io_events_ = false;

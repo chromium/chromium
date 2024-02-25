@@ -408,10 +408,12 @@ class TestExpectations:
                                                      base_test, test))
         return exp
 
+    @memoized
     def get_expectations(self, test):
         return self._get_expectations_with_fallback(self._flag_expectations,
                                                     self._expectations, test)
 
+    @memoized
     def get_flag_expectations(self, test):
         exp = self._get_expectations_with_fallback(self._flag_expectations, [],
                                                    test)
@@ -419,6 +421,7 @@ class TestExpectations:
             return None
         return exp
 
+    @memoized
     def get_base_expectations(self, test):
         return self._get_expectations_with_fallback(self._base_expectations,
                                                     [], test)
@@ -794,7 +797,7 @@ class TestExpectationsCache:
         self._cache: Dict[Tuple[str, Optional[str]], TestExpectations] = {}
 
     def load(self, port: 'Port') -> TestExpectations:
-        cache_key = port.port_name, port.get_option('flag_specific')
+        cache_key = port.name(), port.get_option('flag_specific')
         expectations = self._cache.get(cache_key)
         if not expectations:
             self._cache[cache_key] = expectations = TestExpectations(port)

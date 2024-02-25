@@ -18,6 +18,20 @@
       --paper-spinner-color: var(--google-blue-300);
     }
   }
+
+  #gradientWithBorder {
+    border: solid 1px var(--google-blue-300);
+    border-radius: 16px;
+    box-sizing: border-box;
+    padding: 16px;
+    width: 100%;
+  }
+
+  #customColors {
+    --cr-loading-gradient-color-start: cyan;
+    --cr-loading-gradient-color-middle: gold;
+    --cr-loading-gradient-color-end: hotpink;
+  }
 </style>
 <h1>paper-progress</h1>
 <div class="demos">
@@ -27,4 +41,50 @@
 <h1>paper-spinner-lite</h1>
 <div class="demos">
   <paper-spinner-lite active></paper-spinner-lite>
+</div>
+
+<h1>Loading gradients</h1>
+<div class="demos">
+  <h2>Avatar icon clipPath</h2>
+  <cr-loading-gradient>
+    <svg width="24" height="24">
+      <clipPath>
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0
+              2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z">
+        </path>
+      </clipPath>
+    </svg>
+  </cr-loading-gradient>
+
+  <h2>Rectangular clipPath</h2>
+  <cr-loading-gradient>
+    <svg width="100%" height="5">
+      <clipPath>
+        <rect x="0" y="0" width="100%" height="5" rx="5"></rect>
+      </clipPath>
+    </svg>
+  </cr-loading-gradient>
+
+  <h2>Multiple regions clipPath with external border</h2>
+  <div id="gradientWithBorder">
+    <cr-loading-gradient>
+      <svg width="100%" height="64">
+        <clipPath>
+          <rect x="0" y="0" width="100%" height="16" rx="8"></rect>
+          <rect x="0" y="24" width="100%" height="16" rx="8"></rect>
+          <rect x="0" y="48" width="100%" height="16" rx="8"></rect>
+        </clipPath>
+      </svg>
+    </cr-loading-gradient>
+  </div>
+
+  <h2>Custom colors</h2>
+  <cr-loading-gradient id="customColors">
+    <svg width="200" height="200">
+      <clipPath>
+        <circle cx="100" cy="100" r="100"></circle>
+      </clipPath>
+    </svg>
+  </cr-loading-gradient>
 </div>

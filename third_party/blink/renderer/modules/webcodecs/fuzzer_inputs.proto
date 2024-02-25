@@ -20,6 +20,9 @@ message AllowSharedBufferSource {
   optional ViewType view_type = 3;
   optional uint32 view_offset = 4;
   optional uint32 view_length = 5;
+
+  // Transfer ArrayBuffer into ctor
+  optional bool transfer = 6;
 }
 
 message DOMRectInit {
@@ -37,6 +40,35 @@ message PlaneLayout {
 message VideoFrameCopyToOptions {
   optional DOMRectInit rect = 1;
   repeated PlaneLayout layout = 2;
+}
+
+message VideoColorSpaceInit {
+  enum VideoColorPrimaries {
+    VCP_BT709 = 0;
+    VCP_BT470BG = 1;
+    VCP_SMPTE170M = 2;
+    VCP_BT2020 = 3;
+    VCP_SMPTE432 = 4;
+  }
+  optional VideoColorPrimaries primaries = 1;
+  enum VideoTransferCharacteristics {
+    VTC_BT709 = 0;
+    VTC_SMPTE170M = 1;
+    VTC_IEC61966_2_1 = 2;
+    VTC_LINEAR = 3;
+    VTC_PQ = 4;
+    VTC_HLG = 5;
+  }
+  optional VideoTransferCharacteristics transfer = 2;
+  enum VideoMatrixCoefficients {
+    VMC_RGB = 0;
+    VMC_BT709 = 1;
+    VMC_BT470BG = 2;
+    VMC_SMPTE170M = 3;
+    VMC_BT2020_NCL = 4;
+  }
+  optional VideoMatrixCoefficients matrix = 3;
+  optional bool full_range = 4;
 }
 
 message VideoFrameBufferInit {
@@ -64,7 +96,7 @@ message VideoFrameBufferInit {
   optional uint32 display_width = 8;
   optional uint32 display_height = 9;
 
-  // TODO(sandersd): Support color_space.
+  optional VideoColorSpaceInit color_space = 10;
 }
 
 message VideoFrameBufferInitInvocation {
@@ -100,6 +132,13 @@ message ConfigureVideoEncoder {
     REALTIME = 1;
   }
 
+  enum ContentHint {
+    NONE = 0;
+    MOTION = 1;
+    DETAIL = 2;
+    TEXT = 3;
+  }
+
   enum VideoEncoderBitrateMode {
     CONSTANT = 0;
     VARIABLE = 1;
@@ -132,6 +171,8 @@ message ConfigureVideoEncoder {
   optional LatencyMode latency_mode = 11;
 
   optional AlphaOption alpha = 12;
+
+  optional ContentHint content_hint = 13;
 }
 
 message ConfigureAudioDecoder {
@@ -150,8 +191,25 @@ enum AacFormat {
   ADTS = 1;
 }
 
+enum BitrateMode {
+  VARIABLE = 0;
+  CONSTANT = 1;
+}
+
 message AacEncoderConfig {
   optional AacFormat format = 1;
+}
+
+message OpusEncoderConfig {
+  optional uint64 frame_duration = 1;
+
+  optional uint32 complexity = 2;
+
+  optional uint32 packetlossperc = 3;
+
+  optional bool useinbandfec = 4;
+
+  optional bool usedtx = 5;
 }
 
 message ConfigureAudioEncoder {
@@ -165,6 +223,10 @@ message ConfigureAudioEncoder {
   optional uint64 bitrate = 4;
 
   optional AacEncoderConfig aac = 5;
+
+  optional OpusEncoderConfig opus = 6;
+
+  optional BitrateMode bitrate_mode = 7;
 }
 
 enum EncodedChunkType {
@@ -224,10 +286,16 @@ message AudioDataInit {
   repeated bytes channels = 4;
 
   required AudioSampleFormat format = 5;
+
+  // Transfer ArrayBuffer into ctor
+  optional bool transfer = 6;
 }
 
 message EncodeVideo {
-  optional VideoFrameBitmapInit frame = 1;
+  oneof Frames {
+    VideoFrameBitmapInit frame = 1;
+    VideoFrameBufferInitInvocation frame_from_buffer = 3;
+  }
   message EncodeOptionsForAv1 {
     optional uint32 quantizer = 1;
   };

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html>
-<head>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
 <script src="../../../resources/testdriver.js"></script>
 <script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
+
 <input type='month' id='month0' value='2019-04'>
 <script>
 'use strict';
@@ -59,5 +57,3 @@ promise_test(() => {
 }, "Month picker: After modification, single escape should close popup if it was changed back to the initial value.");
 
 </script>
-</body>
-</html>

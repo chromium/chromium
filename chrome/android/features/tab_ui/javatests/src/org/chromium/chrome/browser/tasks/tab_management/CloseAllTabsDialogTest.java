@@ -39,16 +39,15 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * An end-to-end test of the close all tabs dialog.
- */
+/** An end-to-end test of the close all tabs dialog. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CloseAllTabsDialogTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("NonIncognito"),
+            Arrays.asList(
+                    new ParameterSet().value(false).name("NonIncognito"),
                     new ParameterSet().value(true).name("Incognito"));
 
     @Rule
@@ -65,9 +64,7 @@ public class CloseAllTabsDialogTest {
         mActivityTestRule.startMainActivityWithURL("about:blank");
     }
 
-    /**
-     * Tests that close all tabs works after modal dialog.
-     */
+    /** Tests that close all tabs works after modal dialog. */
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
@@ -79,12 +76,12 @@ public class CloseAllTabsDialogTest {
         onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button)).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { assertEquals(0, selector.getModel(mIsIncognito).getCount()); });
+                () -> {
+                    assertEquals(0, selector.getModel(mIsIncognito).getCount());
+                });
     }
 
-    /**
-     * Tests that close all tabs stops if dismissing modal dialog.
-     */
+    /** Tests that close all tabs stops if dismissing modal dialog. */
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
@@ -96,7 +93,9 @@ public class CloseAllTabsDialogTest {
         onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button)).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { assertEquals(1, selector.getModel(mIsIncognito).getCount()); });
+                () -> {
+                    assertEquals(1, selector.getModel(mIsIncognito).getCount());
+                });
     }
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
@@ -109,23 +108,29 @@ public class CloseAllTabsDialogTest {
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         onViewWaiting(withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))
                 .check(matches(isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         onViewWaiting(withId(org.chromium.chrome.test.R.id.app_menu_list))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Click close all tabs.
         if (mIsIncognito) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                AppMenuTestSupport.callOnItemClick(mActivityTestRule.getAppMenuCoordinator(),
-                        org.chromium.chrome.test.R.id.close_all_incognito_tabs_menu_id);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        AppMenuTestSupport.callOnItemClick(
+                                mActivityTestRule.getAppMenuCoordinator(),
+                                org.chromium.chrome.test.R.id.close_all_incognito_tabs_menu_id);
+                    });
             return;
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(mActivityTestRule.getAppMenuCoordinator(),
-                    org.chromium.chrome.test.R.id.close_all_tabs_menu_id);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.callOnItemClick(
+                            mActivityTestRule.getAppMenuCoordinator(),
+                            org.chromium.chrome.test.R.id.close_all_tabs_menu_id);
+                });
     }
 }

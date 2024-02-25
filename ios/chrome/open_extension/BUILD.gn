@@ -1,0 +1,64 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/chrome/extension_repack.gni")
+import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
+
+assert(
+    ios_enable_open_extension,
+    "ios_enable_open_extension must be true to depend on //ios/chrome/open_extension")
+
+group("resources") {
+  deps = [ "//ios/chrome/open_extension/strings" ]
+}
+
+repack_locales("packed_resources") {
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
+
+  source_patterns = [ "$root_gen_dir/ios/open_extension/ios_open_extension_${branding_path_product}_strings_" ]
+
+  deps = [ "//ios/chrome/open_extension/strings" ]
+}
+
+source_set("open") {
+  sources = [
+    "open_view_controller.h",
+    "open_view_controller.mm",
+  ]
+
+  deps = [
+    ":system_strings",
+    "//base",
+    "//ios/chrome/common:extension_open_url",
+    "//ios/chrome/common/app_group:app_group",
+    "//ios/chrome/common/app_group:command",
+    "//ios/chrome/common/crash_report",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "MobileCoreServices.framework",
+    "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
+}
+
+generate_localizable_strings("system_strings") {
+  visibility = [ "//ios/chrome/open_extension/*" ]
+  _packed_resources_target = ":packed_resources"
+  config_file = "open_extension_localize_strings_config.plist"
+  datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
+  packed_locales = locales_as_apple_outputs
+  output_filenames = [
+    "InfoPlist.strings",
+    "Localizable.strings",
+  ]
+  deps = [
+    "//ios/chrome/open_extension/strings",
+    _packed_resources_target,
+  ]
+}

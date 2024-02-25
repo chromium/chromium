@@ -1,0 +1,31 @@
+# crbug.com/1314114
+-GLHelperTest.BGRAASyncReadbackTest
+-GLHelperTest.RGBAASyncReadbackTest
+-*GLHelperPixelReadbackTest.ScaleTest*
+
+# crbug.com/1314115
+-SharedImageGLBackingProduceDawnTest.Basic
+-WebGPUMailboxTest.*
+-WebGPUTest.*
+
+# crbug.com/1314118
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName*
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters*
+
+# crbug.com/1314120
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3GettersArray*
+
+# crbug.com/1314124
+-ExternalVkImageBackingFactoryTest.SkiaVulkanWrite_DawnRead
+-ExternalVkImageBackingFactoryTest.DawnWrite_SkiaVulkanRead
+
+# crbug.com/1472516
+-Service/EGLImageBackingFactoryThreadSafeTest.*
+
+# crbug.com/1518651
+-GLReadbackTest.ReadPixelsFloat

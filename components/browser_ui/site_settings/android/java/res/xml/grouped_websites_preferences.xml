@@ -18,8 +18,8 @@ found in the LICENSE file.
         android:title="@string/website_settings_usage_category" />
     <org.chromium.components.browser_ui.site_settings.ClearWebsiteStorage
         android:key="clear_data"
-        android:title="@string/webstorage_clear_data_dialog_title"
-        android:positiveButtonText="@string/webstorage_clear_data_dialog_ok_button"
+        android:title="@string/webstorage_delete_data_dialog_title"
+        android:positiveButtonText="@string/webstorage_delete_data_dialog_ok_button"
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
     <PreferenceCategory

@@ -59,6 +59,10 @@ class FakeSecurityDomainsServer {
   // Resets |state_| to the initial one.
   void ResetData();
 
+  // Resets |state_| to the one derived from parameters.
+  void ResetDataToState(const std::vector<std::vector<uint8_t>>& keys,
+                        int last_key_version);
+
   // Causes the security domain to enter the degraded recoverability state
   // unless the provided |public_key| matches a member's public key.
   void RequirePublicKeyToAvoidRecoverabilityDegraded(

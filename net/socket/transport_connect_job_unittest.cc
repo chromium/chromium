@@ -17,7 +17,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -60,14 +59,19 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*http_auth_handler_factory=*/nullptr,
             /*spdy_session_pool=*/nullptr,
             /*quic_supported_versions=*/nullptr,
-            /*quic_stream_factory=*/nullptr,
+            /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
             /*http_user_agent_settings=*/nullptr,
             &ssl_client_context_,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
-            /*websocket_endpoint_lock_manager=*/nullptr) {}
+            /*websocket_endpoint_lock_manager=*/nullptr,
+            /*http_server_properties=*/nullptr,
+            /*alpn_protos=*/nullptr,
+            /*application_settings=*/nullptr,
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr) {}
 
   ~TransportConnectJobTest() override = default;
 
@@ -94,11 +98,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
-  SSLClientContext ssl_client_context_{&ssl_config_service_,
-                                       &cert_verifier_,
+  SSLClientContext ssl_client_context_{&ssl_config_service_, &cert_verifier_,
                                        &transport_security_state_,
-                                       &ct_policy_enforcer_,
                                        /*ssl_client_session_cache=*/nullptr,
                                        /*sct_auditing_delegate=*/nullptr};
   const CommonConnectJobParams common_connect_job_params_;
@@ -192,8 +193,9 @@ TEST_F(TransportConnectJobTest, ConnectionTimeout) {
     EXPECT_FALSE(test_delegate.has_result());
 
     // In the async case, the host resolution completes now.
-    if (!host_resolution_synchronous)
+    if (!host_resolution_synchronous) {
       host_resolver_.ResolveOnlyRequestNow();
+    }
 
     // After (almost) the second half of timeout, just before the full timeout
     // period, the ConnectJob is still live.
@@ -886,9 +888,6 @@ TEST_F(TransportConnectJobTest, GetHostResolverEndpointResult) {
 // If the client and server both support ECH, TransportConnectJob should switch
 // to SVCB-reliant mode and disable the A/AAAA fallback.
 TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
   endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
   endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
@@ -930,52 +929,8 @@ TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
 }
 
 // SVCB-reliant mode should be disabled for ECH servers when ECH is disabled via
-// `base::Feature`.
-TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
-
-  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
-  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
-  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
-  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
-  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
-  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
-  endpoint2.metadata.ech_config_list = {1, 2, 3, 4};
-  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
-  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
-  host_resolver_.rules()->AddRule(
-      kHostName, MockHostResolverBase::RuleResolver::RuleResult(
-                     std::vector{endpoint1, endpoint2, endpoint3}));
-
-  // `TransportConnectJob` should try `endpoint3`.
-  MockTransportClientSocketFactory::Rule rules[] = {
-      MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kFailing,
-          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
-      MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kFailing,
-          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
-      MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kSynchronous,
-          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
-  };
-  client_socket_factory_.SetRules(rules);
-
-  TestConnectJobDelegate test_delegate;
-  TransportConnectJob transport_connect_job(
-      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
-      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
-  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
-                                        /*expect_sync_result=*/false);
-}
-
-// SVCB-reliant mode should be disabled for ECH servers when ECH is disabled via
 // config.
 TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledConfig) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   SSLContextConfig config;
   config.ech_enabled = false;
   ssl_config_service_.UpdateSSLConfigAndNotify(config);
@@ -1018,9 +973,6 @@ TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledConfig) {
 // SVCB-reliant mode should be disabled if not all SVCB/HTTPS records include
 // ECH.
 TEST_F(TransportConnectJobTest, SvcbOptionalIfEchInconsistent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
   endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
   endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};

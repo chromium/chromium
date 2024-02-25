@@ -15,15 +15,6 @@ namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-#define RETURN_ON_HR_FAILURE(expr_name, expr, code) \
-  do {                                              \
-    HRESULT expr_value = (expr);                    \
-    if (FAILED(expr_value)) {                       \
-      RecordFailure(#expr_name, code, expr_value);  \
-      return false;                                 \
-    }                                               \
-  } while (0)
-
 D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
                                          MediaLog* media_log)
     : D3DAccelerator(client, media_log), status_feedback_(0) {}
@@ -231,8 +222,7 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> picture,
     const Vp9SegmentationParams& segmentation_params,
     const Vp9LoopFilterParams& loop_filter_params,
-    const Vp9ReferenceFrameVector& reference_frames,
-    base::OnceClosure on_finished_cb) {
+    const Vp9ReferenceFrameVector& reference_frames) {
   D3D11VP9Picture* pic = static_cast<D3D11VP9Picture*>(picture.get());
 
   if (!BeginFrame(*pic))
@@ -254,8 +244,6 @@ DecodeStatus D3D11VP9Accelerator::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
-  if (on_finished_cb)
-    std::move(on_finished_cb).Run();
   return DecodeStatus::kOk;
 }
 
@@ -265,11 +253,6 @@ bool D3D11VP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> picture) {
 }
 
 bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
-  return false;
-}
-
-bool D3D11VP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> picture,
-                                          Vp9FrameContext* frame_context) {
   return false;
 }
 

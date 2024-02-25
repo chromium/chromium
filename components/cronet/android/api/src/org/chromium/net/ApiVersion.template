@@ -5,7 +5,20 @@
 package org.chromium.net;
 
 /**
- * Version based on chrome/VERSION.
+ * Build version information for Cronet API code.
+ *
+ * <p>Note that this class will not necessarily return the same information as
+ * {@link org.chromium.net.impl.ImplVersion}. Notably, in the case of Cronet
+ * being loaded via Google Play Services, the API and impl are shipped
+ * separately and the app can end up running impl code that was not built from
+ * the same version as the API code.
+ *
+ * <p>CAUTION: this class is part of Cronet API code, but is called directly
+ * from impl code - be very careful when changing the API/ABI of this class, and
+ * keep in mind the caller code is not necessarily built from the same version
+ * as this code.
+ *
+ * @see org.chromium.net.impl.ImplVersion
  * {@hide as it's only used internally}
  */
 public class ApiVersion {
@@ -41,7 +54,9 @@ public class ApiVersion {
     }
 
     /**
-     * The minimum API level of implementations that are compatible with this API.
+     * The *minimum* API level of implementations that are compatible with this API.
+     * Not to be confused with the *current* API level, which is returned by {@link
+     * #getMaximumAvailableApiLevel}.
      * Returns the last API level which broke backwards API compatibility. In other words, the
      * Cronet API that this class is part of won't work with Cronet implementations that implement
      * API levels less than this value. That is if

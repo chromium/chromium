@@ -31,8 +31,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,10 +43,6 @@
 #include "content/public/common/webplugininfo.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 using base::ASCIIToUTF16;
 using base::UserMetricsAction;
@@ -165,10 +161,12 @@ void NaClDomHandler::OnJavascriptDisallowed() {
 void AddPair(base::Value::List* list,
              const std::u16string& key,
              const std::u16string& value) {
-  base::Value::Dict results;
-  results.Set("key", key);
-  results.Set("value", value);
-  list->Append(std::move(results));
+  // clang-format off
+  list->Append(
+      base::Value::Dict()
+          .Set("key", key)
+          .Set("value", value));
+  // clang-format on
 }
 
 // Generate an empty data-pair which acts as a line break.
@@ -195,35 +193,7 @@ void NaClDomHandler::AddOperatingSystemInfo(base::Value::List* list) {
            chrome::GetChannelName(chrome::WithExtendedStable(true)), ")"})));
 
   // OS version information.
-  // TODO(jvoung): refactor this to share the extra windows labeling
-  // with about:flash, or something.
   std::string os_label(version_info::GetOSType());
-#if BUILDFLAG(IS_WIN)
-  base::win::OSInfo* os = base::win::OSInfo::GetInstance();
-  switch (os->version()) {
-    case base::win::Version::XP:
-      os_label += " XP";
-      break;
-    case base::win::Version::SERVER_2003:
-      os_label += " Server 2003 or XP Pro 64 bit";
-      break;
-    case base::win::Version::VISTA:
-      os_label += " Vista or Server 2008";
-      break;
-    case base::win::Version::WIN7:
-      os_label += " 7 or Server 2008 R2";
-      break;
-    case base::win::Version::WIN8:
-      os_label += " 8 or Server 2012";
-      break;
-    default:  os_label += " UNKNOWN"; break;
-  }
-  os_label += " SP" + base::NumberToString(os->service_pack().major);
-  if (os->service_pack().minor > 0)
-    os_label += "." + base::NumberToString(os->service_pack().minor);
-  if (os->GetArchitecture() == base::win::OSInfo::X64_ARCHITECTURE)
-    os_label += " 64 bit";
-#endif
   AddPair(list, l10n_util::GetStringUTF16(IDS_VERSION_UI_OS),
           ASCIIToUTF16(os_label));
   AddLineBreak(list);
@@ -332,9 +302,7 @@ base::Value::Dict NaClDomHandler::GetPageInformation() {
   // Display information relevant to NaCl (non-portable.
   AddNaClInfo(&list);
   // naclInfo will take ownership of list, and clean it up on destruction.
-  base::Value::Dict dict;
-  dict.Set("naclInfo", std::move(list));
-  return dict;
+  return base::Value::Dict().Set("naclInfo", std::move(list));
 }
 
 void NaClDomHandler::DidCheckPathAndVersion(const std::string* version,

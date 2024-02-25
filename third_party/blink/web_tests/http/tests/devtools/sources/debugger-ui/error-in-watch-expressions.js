@@ -4,16 +4,17 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests that watches pane renders errors in red.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var foo = 123
   `);
 
-  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
+  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack.showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
     watchExpressionsPane.createWatchExpression('#$%');
     watchExpressionsPane.saveExpressions();

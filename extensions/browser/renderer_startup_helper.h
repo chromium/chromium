@@ -78,6 +78,10 @@ class RendererStartupHelper : public KeyedService,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int32_t call_type) override;
+  void WakeEventPage(const ExtensionId& extension_id,
+                     WakeEventPageCallback callback) override;
+  void GetMessageBundle(const ExtensionId& extension_id,
+                        GetMessageBundleCallback callback) override;
 
   // Sends a message to the specified |process| activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been
@@ -98,7 +102,7 @@ class RendererStartupHelper : public KeyedService,
   // Sets properties for the user script world CSP for the given `extension`
   // in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,
-                                    absl::optional<std::string> csp,
+                                    std::optional<std::string> csp,
                                     bool enable_messaging);
 
   // Returns mojom::Renderer* corresponding to |process|. This would return
@@ -134,7 +138,8 @@ class RendererStartupHelper : public KeyedService,
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Tracks the set of loaded extensions and the processes they are loaded in.
-  std::map<ExtensionId, std::set<content::RenderProcessHost*>>
+  std::map<ExtensionId,
+           std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>>
       extension_process_map_;
 
   // The set of ids for extensions that are active in a process that has not

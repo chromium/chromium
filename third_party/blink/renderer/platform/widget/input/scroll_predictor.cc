@@ -31,11 +31,11 @@ ScrollPredictor::ScrollPredictor()
 
   if (filtering_enabled_) {
     // Get the filter from feature flags
-    std::string filter_name = GetFieldTrialParamValueByFeature(
-        blink::features::kFilteringScrollPrediction, "filter");
+    std::string filter_name =
+        blink::features::kFilteringScrollPredictionFilterParam.Get();
 
     input_prediction::FilterType filter_type =
-        filter_factory_->GetFilterTypeFromName(filter_name);
+        FilterFactory::GetFilterTypeFromName(filter_name);
 
     filter_factory_ = std::make_unique<FilterFactory>(
         blink::features::kFilteringScrollPrediction, predictor_type,

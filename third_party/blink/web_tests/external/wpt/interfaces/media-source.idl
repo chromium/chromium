@@ -4,14 +4,14 @@
 // Source: Media Source Extensions™ (https://w3c.github.io/media-source/)
 
 enum ReadyState {
-    "closed",
-    "open",
-    "ended"
+  "closed",
+  "open",
+  "ended",
 };
 
 enum EndOfStreamError {
-    "network",
-    "decode"
+  "network",
+  "decode",
 };
 
 [Exposed=(Window,DedicatedWorker)]
@@ -41,8 +41,8 @@ interface MediaSource : EventTarget {
 interface MediaSourceHandle {};
 
 enum AppendMode {
-    "segments",
-    "sequence"
+  "segments",
+  "sequence",
 };
 
 [Exposed=(Window,DedicatedWorker)]
@@ -73,6 +73,32 @@ interface SourceBufferList : EventTarget {
                     attribute EventHandler  onaddsourcebuffer;
                     attribute EventHandler  onremovesourcebuffer;
     getter SourceBuffer (unsigned long index);
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface ManagedMediaSource : MediaSource {
+  constructor();
+  readonly attribute boolean streaming;
+  attribute EventHandler onstartstreaming;
+  attribute EventHandler onendstreaming;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface BufferedChangeEvent : Event {
+  constructor(DOMString type, optional BufferedChangeEventInit eventInitDict = {});
+
+  [SameObject] readonly attribute TimeRanges addedRanges;
+  [SameObject] readonly attribute TimeRanges removedRanges;
+};
+
+dictionary BufferedChangeEventInit : EventInit {
+  TimeRanges addedRanges;
+  TimeRanges removedRanges;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface ManagedSourceBuffer : SourceBuffer {
+  attribute EventHandler onbufferedchange;
 };
 
 [Exposed=(Window,DedicatedWorker)]

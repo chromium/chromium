@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -17,6 +18,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,7 +29,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
@@ -42,7 +44,6 @@ namespace device {
 class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
-class BluetoothLocalGattService;
 #if BUILDFLAG(IS_CHROMEOS)
 class BluetoothLowEnergyScanFilter;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -68,6 +69,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     kNotSupported,
     kSupported
   };
+  enum class BluetoothRole { kCentral = 0, kPeripheral, kCentralPeripheral };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Interface for observing changes from bluetooth adapters.
@@ -151,11 +153,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     // returns the raw values that have been parsed from EIR.
     virtual void DeviceAdvertisementReceived(
         const std::string& device_address,
-        const absl::optional<std::string>& device_name,
-        const absl::optional<std::string>& advertisement_name,
-        absl::optional<int8_t> rssi,
-        absl::optional<int8_t> tx_power,
-        absl::optional<uint16_t> appearance,
+        const std::optional<std::string>& device_name,
+        const std::optional<std::string>& advertisement_name,
+        std::optional<int8_t> rssi,
+        std::optional<int8_t> tx_power,
+        std::optional<uint16_t> appearance,
         const BluetoothDevice::UUIDList& advertised_uuids,
         const BluetoothDevice::ServiceDataMap& service_data_map,
         const BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {}
@@ -355,9 +357,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     ServiceOptions();
     ~ServiceOptions();
 
-    absl::optional<int> channel;
-    absl::optional<int> psm;
-    absl::optional<std::string> name;
+    std::optional<int> channel;
+    std::optional<int> psm;
+    std::optional<std::string> name;
 
     // Clients can configure this option to choose if they want to enforce
     // bonding with remote devices that connect to this device. Options:
@@ -367,7 +369,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     //     use this are responsible for securing their communication at the
     //     application level.
     //   * Set to true: bonding is enforced by the local device.
-    absl::optional<bool> require_authentication;
+    std::optional<bool> require_authentication;
   };
 
   // The ErrorCallback is used for methods that can fail in which case it is
@@ -377,7 +379,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using DiscoverySessionCallback =
       base::OnceCallback<void(std::unique_ptr<BluetoothDiscoverySession>)>;
   using DeviceList = std::vector<BluetoothDevice*>;
-  using ConstDeviceList = std::vector<const BluetoothDevice*>;
+  using ConstDeviceList =
+      std::vector<raw_ptr<const BluetoothDevice, VectorExperimental>>;
   using UUIDList = std::vector<BluetoothUUID>;
   using CreateServiceCallback =
       base::OnceCallback<void(scoped_refptr<BluetoothSocket>)>;
@@ -633,6 +636,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Indicates whether LE extended advertising is supported.
+  virtual bool IsExtendedAdvertisementsAvailable() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Sets the interval between two consecutive advertisements. Valid ranges
   // for the interval are from 20ms to 10.24 seconds, with min <= max.
@@ -658,7 +666,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // a valid reference (in which case this method will fail).
   virtual void ConnectDevice(
       const std::string& address,
-      const absl::optional<BluetoothDevice::AddressType>& address_type,
+      const std::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) = 0;
 #endif
@@ -671,6 +679,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // given identifier. Returns NULL if the service doesn't exist.
   virtual BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const = 0;
+
+  // Creates a GATT services associated with this adapter with the
+  // given identifier. Currently only derived and implemented on BlueZ and
+  // Floss. All other platforms use default behavior of returning nullptr.
+  virtual base::WeakPtr<BluetoothLocalGattService> CreateLocalGattService(
+      const BluetoothUUID& uuid,
+      bool is_primary,
+      BluetoothLocalGattService::Delegate* delegate);
 
   // The following methods are used to send various events to observers.
   void NotifyAdapterPresentChanged(bool present);
@@ -762,6 +778,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
+
+  // Returns a list of all the roles that are supported by the adapter.
+  virtual std::vector<BluetoothRole> GetSupportedRoles() = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -929,7 +948,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // will remove itself from this list when it gets destroyed or becomes
   // inactive by calling DiscoverySessionBecameInactive(), hence no pointers to
   // deallocated sessions are kept.
-  std::set<BluetoothDiscoverySession*> discovery_sessions_;
+  std::set<raw_ptr<BluetoothDiscoverySession, SetExperimental>>
+      discovery_sessions_;
 
  private:
   // This is the callback for all OS level calls to StartScanWithFilter,

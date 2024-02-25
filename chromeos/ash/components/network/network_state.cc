@@ -43,7 +43,7 @@ constexpr char kPaymentPortalMethodPost[] = "POST";
 
 // |dict| may be an empty value, in which case return an empty string.
 std::string GetStringFromDictionary(
-    const absl::optional<base::Value::Dict>& dict,
+    const std::optional<base::Value::Dict>& dict,
     const char* key) {
   const std::string* stringp =
       dict.has_value() ? dict->FindString(key) : nullptr;
@@ -178,6 +178,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetBooleanValue(key, value, &hidden_ssid_);
   } else if (key == shill::kPasspointIDProperty) {
     return GetStringValue(key, value, &passpoint_id_);
+  } else if (key == shill::kMeteredProperty) {
+    return GetBooleanValue(key, value, &metered_);
   } else if (key == shill::kOutOfCreditsProperty) {
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
   } else if (key == shill::kIccidProperty) {
@@ -195,7 +197,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_.reset();
       return true;
     }
-    absl::optional<base::Value::Dict> proxy_config =
+    std::optional<base::Value::Dict> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config.has_value()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
@@ -460,6 +462,7 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
       connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   }
+  chrome_portal_state_ = PortalState::kUnknown;
 }
 
 bool NetworkState::IsManagedByPolicy() const {
@@ -473,7 +476,7 @@ bool NetworkState::IndicateRoaming() const {
 }
 
 bool NetworkState::IsDynamicWep() const {
-  return security_class_ == shill::kSecurityWep &&
+  return security_class_ == shill::kSecurityClassWep &&
          eap_key_mgmt_ == shill::kKeyManagementIEEE8021X;
 }
 
@@ -523,11 +526,12 @@ NetworkState::PortalState NetworkState::GetPortalState() const {
 }
 
 bool NetworkState::IsSecure() const {
-  return !security_class_.empty() && security_class_ != shill::kSecurityNone;
+  return !security_class_.empty() &&
+         security_class_ != shill::kSecurityClassNone;
 }
 
 std::string NetworkState::GetHexSsid() const {
-  return base::HexEncode(raw_ssid().data(), raw_ssid().size());
+  return base::HexEncode(raw_ssid());
 }
 
 std::string NetworkState::GetDnsServersAsString() const {
@@ -712,21 +716,12 @@ void NetworkState::UpdateCaptivePortalState(
     return;
   }
 
-  int status_code =
-      properties.FindInt(shill::kPortalDetectionFailedStatusCodeProperty)
-          .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
     shill_portal_state_ = PortalState::kNoInternet;
   } else if (connection_state_ == shill::kStateRedirectFound) {
     shill_portal_state_ = PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
-    if (status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
-      // If Shill's portal detection HTTP probe returns a 407 response, Shill
-      // will treat that as a portal-suspected state.
-      shill_portal_state_ = PortalState::kProxyAuthRequired;
-    } else {
-      shill_portal_state_ = PortalState::kPortalSuspected;
-    }
+    shill_portal_state_ = PortalState::kPortalSuspected;
   } else if (connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
   } else {
@@ -737,10 +732,7 @@ void NetworkState::UpdateCaptivePortalState(
                                 shill_portal_state_);
   if (shill_portal_state_ != PortalState::kOnline) {
     NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
-                   << " = " << shill_portal_state_
-                   << " ,status_code=" << status_code;
-    base::UmaHistogramSparse("Network.CaptivePortalStatusCode",
-                             std::abs(status_code));
+                   << " = " << shill_portal_state_;
   }
 }
 
@@ -759,11 +751,11 @@ void NetworkState::SetVpnProvider(const std::string& id,
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const NetworkState::PortalState& state) {
-  using PortalState = NetworkState::PortalState;
+                         const NetworkState::PortalState state) {
+  using State = NetworkState::PortalState;
   switch (state) {
-#define PRINT(s)          \
-  case PortalState::k##s: \
+#define PRINT(s)    \
+  case State::k##s: \
     return out << #s;
     PRINT(Unknown)
     PRINT(Online)
@@ -775,7 +767,28 @@ std::ostream& operator<<(std::ostream& out,
   }
 
   return out << "PortalState("
-             << static_cast<std::underlying_type_t<PortalState>>(state) << ")";
+             << static_cast<std::underlying_type_t<State>>(state) << ")";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const NetworkState::NetworkTechnologyType type) {
+  using Type = NetworkState::NetworkTechnologyType;
+  switch (type) {
+#define PRINT(s)   \
+  case Type::k##s: \
+    return out << #s;
+    PRINT(Cellular)
+    PRINT(Ethernet)
+    PRINT(EthernetEap)
+    PRINT(WiFi)
+    PRINT(Tether)
+    PRINT(VPN)
+    PRINT(Unknown)
+#undef PRINT
+  }
+
+  return out << "NetworkTechnologyType("
+             << static_cast<std::underlying_type_t<Type>>(type) << ")";
 }
 
 }  // namespace ash

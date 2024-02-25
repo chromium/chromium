@@ -20,11 +20,9 @@ const int kStreamIdLengthBytes = 16;
 const int kApprovedStreamTimeToLiveSeconds = 10;
 
 std::string GenerateRandomStreamId() {
-  char buffer[kStreamIdLengthBytes];
-  crypto::RandBytes(buffer, std::size(buffer));
-  std::string result;
-  base::Base64Encode(base::StringPiece(buffer, std::size(buffer)), &result);
-  return result;
+  uint8_t buffer[kStreamIdLengthBytes];
+  crypto::RandBytes(buffer);
+  return base::Base64Encode(buffer);
 }
 
 }  // namespace
@@ -47,7 +45,7 @@ DesktopStreamsRegistryImpl::~DesktopStreamsRegistryImpl() {}
 
 std::string DesktopStreamsRegistryImpl::RegisterStream(
     int render_process_id,
-    absl::optional<int> restrict_to_render_frame_id,
+    std::optional<int> restrict_to_render_frame_id,
     const url::Origin& origin,
     const DesktopMediaID& source,
     const DesktopStreamRegistryType type) {

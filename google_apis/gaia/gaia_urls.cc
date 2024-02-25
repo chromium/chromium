@@ -4,11 +4,12 @@
 
 #include "google_apis/gaia/gaia_urls.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros/concat.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -42,16 +43,19 @@ const char kEmbeddedSetupChromeOsKidSignupUrlSuffix[] =
 const char kEmbeddedSetupChromeOsKidSigninUrlSuffix[] =
     "embedded/setup/kidsignin/chromeos";
 const char kEmbeddedSetupWindowsUrlSuffix[] = "embedded/setup/windows";
+const char kSamlRedirectChromeOsUrlSuffix[] = "samlredirect";
 // Parameter "ssp=1" is used to skip showing the password bubble when a user
 // signs in to Chrome. Note that Gaia will pass this client specified parameter
 // to all URLs that are loaded as part of thi sign-in flow.
 const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
+// Opens the "Verify it's you" reauth gaia page.
+const char kAccountChooser[] = "AccountChooser";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/android";
 #elif BUILDFLAG(IS_IOS)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/ios";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/chromeos";
 #else
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/desktop";
@@ -64,8 +68,6 @@ const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
 
 const char kServiceLogoutUrlSuffix[] = "Logout";
 const char kBlankPageSuffix[] = "chrome/blank.html";
-const char kMergeSessionUrlSuffix[] = "MergeSession";
-const char kOAuth1LoginUrlSuffix[] = "OAuthLogin";
 const char kOAuthMultiloginSuffix[] = "oauth/multilogin";
 const char kListAccountsSuffix[] = "ListAccounts?json=standard";
 const char kEmbeddedSigninSuffix[] = "embedded/setup/chrome/usermenu";
@@ -93,8 +95,8 @@ const char kRotateBoundCookiesUrlSuffix[] = "RotateBoundCookies";
 
 GaiaUrls* g_instance_for_testing = nullptr;
 
-void GetSwitchValueWithDefault(base::StringPiece switch_value,
-                               base::StringPiece default_value,
+void GetSwitchValueWithDefault(std::string_view switch_value,
+                               std::string_view default_value,
                                std::string* output_value) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switch_value)) {
@@ -104,8 +106,8 @@ void GetSwitchValueWithDefault(base::StringPiece switch_value,
   }
 }
 
-GURL GetURLSwitchValueWithDefault(base::StringPiece switch_value,
-                                  base::StringPiece default_value) {
+GURL GetURLSwitchValueWithDefault(std::string_view switch_value,
+                                  std::string_view default_value) {
   std::string string_value;
   GetSwitchValueWithDefault(switch_value, default_value, &string_value);
   const GURL result(string_value);
@@ -117,8 +119,8 @@ GURL GetURLSwitchValueWithDefault(base::StringPiece switch_value,
   return GURL(default_value);
 }
 
-url::Origin GetOriginSwitchValueWithDefault(base::StringPiece switch_value,
-                                            base::StringPiece default_value) {
+url::Origin GetOriginSwitchValueWithDefault(std::string_view switch_value,
+                                            std::string_view default_value) {
   std::string string_value;
   GetSwitchValueWithDefault(switch_value, default_value, &string_value);
   const url::Origin result = url::Origin::Create(GURL(string_value));
@@ -132,16 +134,16 @@ url::Origin GetOriginSwitchValueWithDefault(base::StringPiece switch_value,
 }
 
 void SetDefaultURLIfInvalid(GURL* url_to_set,
-                            base::StringPiece switch_value,
-                            base::StringPiece default_value) {
+                            std::string_view switch_value,
+                            std::string_view default_value) {
   if (!url_to_set->is_valid()) {
     *url_to_set = GetURLSwitchValueWithDefault(switch_value, default_value);
   }
 }
 
 void SetDefaultOriginIfOpaqueOrInvalidScheme(url::Origin* origin_to_set,
-                                             base::StringPiece switch_value,
-                                             base::StringPiece default_value) {
+                                             std::string_view switch_value,
+                                             std::string_view default_value) {
   if (origin_to_set->opaque() ||
       !origin_to_set->GetURL().SchemeIsHTTPOrHTTPS()) {
     *origin_to_set =
@@ -151,7 +153,7 @@ void SetDefaultOriginIfOpaqueOrInvalidScheme(url::Origin* origin_to_set,
 
 void ResolveURLIfInvalid(GURL* url_to_set,
                          const GURL& base_url,
-                         base::StringPiece suffix) {
+                         std::string_view suffix) {
   if (!url_to_set->is_valid()) {
     *url_to_set = base_url.Resolve(suffix);
   }
@@ -217,8 +219,16 @@ const GURL& GaiaUrls::embedded_reauth_chromeos_url() const {
   return embedded_reauth_chromeos_url_;
 }
 
+const GURL& GaiaUrls::saml_redirect_chromeos_url() const {
+  return saml_redirect_chromeos_url_;
+}
+
 const GURL& GaiaUrls::signin_chrome_sync_dice() const {
   return signin_chrome_sync_dice_;
+}
+
+const GURL& GaiaUrls::reauth_chrome_dice() const {
+  return reauth_chrome_dice_;
 }
 
 const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
@@ -234,20 +244,12 @@ const GURL& GaiaUrls::service_logout_url() const {
   return service_logout_url_;
 }
 
-const GURL& GaiaUrls::merge_session_url() const {
-  return merge_session_url_;
-}
-
 const GURL& GaiaUrls::oauth_multilogin_url() const {
   return oauth_multilogin_url_;
 }
 
 const GURL& GaiaUrls::oauth_user_info_url() const {
   return oauth_user_info_url_;
-}
-
-const GURL& GaiaUrls::oauth1_login_url() const {
-  return oauth1_login_url_;
 }
 
 const GURL& GaiaUrls::embedded_signin_url() const {
@@ -339,6 +341,13 @@ GURL GaiaUrls::GetCheckConnectionInfoURLWithSource(const std::string& source) {
                               base::StringPrintf("?source=%s", source.c_str()));
 }
 
+GURL GaiaUrls::LogOutURLWithContinueURL(const GURL& continue_url) {
+  std::string params = base::StringPrintf(
+      "?continue=%s", (continue_url.is_valid() ? continue_url.spec().c_str()
+                                               : kDefaultGaiaUrl));
+  return service_logout_url_.Resolve(params);
+}
+
 void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&google_url_, switches::kGoogleUrl, kDefaultGoogleUrl);
   SetDefaultOriginIfOpaqueOrInvalidScheme(&gaia_origin_, switches::kGaiaUrl,
@@ -384,8 +393,11 @@ void GaiaUrls::InitializeDefault() {
                       kEmbeddedSetupWindowsUrlSuffix);
   ResolveURLIfInvalid(&embedded_reauth_chromeos_url_, gaia_url,
                       kEmbeddedReauthChromeOsUrlSuffix);
+  ResolveURLIfInvalid(&saml_redirect_chromeos_url_, gaia_url,
+                      kSamlRedirectChromeOsUrlSuffix);
   ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url,
                       kSigninChromeSyncDice);
+  ResolveURLIfInvalid(&reauth_chrome_dice_, gaia_url, kAccountChooser);
   ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url,
                       kSigninChromeSyncKeysRetrievalUrl);
   ResolveURLIfInvalid(
@@ -394,9 +406,7 @@ void GaiaUrls::InitializeDefault() {
                     kSigninChromeSyncKeysRecoverabilityUrlSuffix}));
   ResolveURLIfInvalid(&service_logout_url_, gaia_url, kServiceLogoutUrlSuffix);
   ResolveURLIfInvalid(&blank_page_url_, gaia_url, kBlankPageSuffix);
-  ResolveURLIfInvalid(&merge_session_url_, gaia_url, kMergeSessionUrlSuffix);
   ResolveURLIfInvalid(&oauth_multilogin_url_, gaia_url, kOAuthMultiloginSuffix);
-  ResolveURLIfInvalid(&oauth1_login_url_, gaia_url, kOAuth1LoginUrlSuffix);
   ResolveURLIfInvalid(&list_accounts_url_, gaia_url, kListAccountsSuffix);
   ResolveURLIfInvalid(&embedded_signin_url_, gaia_url, kEmbeddedSigninSuffix);
   ResolveURLIfInvalid(&add_account_url_, gaia_url, kAddAccountSuffix);
@@ -456,17 +466,17 @@ void GaiaUrls::InitializeFromConfig() {
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_windows_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_reauth_chromeos_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(saml_redirect_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
+  config->GetURLIfExists(URL_KEY_AND_PTR(reauth_chrome_dice));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_retrieval_url));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_recoverability_degraded_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_logout_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(blank_page_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(merge_session_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_multilogin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_user_info_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(oauth1_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(list_accounts_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(add_account_url));

@@ -15,9 +15,10 @@ Search result #2: uiSourceCode.url = file:///var/www/search.html
 Search result #3: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
 
 Running: testCaseSensitive
 Search result #1: uiSourceCode.url = file:///var/www/search.css
@@ -32,8 +33,9 @@ Search result #2: uiSourceCode.url = file:///var/www/search.html
 Search result #3: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
 
 Running: testFileHTML
 Search result #1: uiSourceCode.url = file:///var/www/search.html
@@ -46,9 +48,10 @@ Running: testFileJS
 Search result #1: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
 
 Running: testFileHTMLJS
 
@@ -77,6 +80,7 @@ Search result #1: uiSourceCode.url = file:///var/www/search.html
   search match #3: lineNumber = 8, lineContent = '<!-- searchTestUniqueString -->'
   search match #4: lineNumber = 10, lineContent = '<div id="searchTestUniqueString">div text</div>'
   search match #5: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
+  search match #6: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
 
 Running: testSeveralQueriesFileHTML_SEARCH
 Search result #1: uiSourceCode.url = file:///var/www/search.html
@@ -85,6 +89,7 @@ Search result #1: uiSourceCode.url = file:///var/www/search.html
   search match #3: lineNumber = 8, lineContent = '<!-- searchTestUniqueString -->'
   search match #4: lineNumber = 10, lineContent = '<div id="searchTestUniqueString">div text</div>'
   search match #5: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
+  search match #6: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
 
 Running: testSeveralQueriesFileJS_SEARCH_HTML
 
@@ -102,13 +107,16 @@ Search result #1: uiSourceCode.url = file:///var/www/search.html
   search match #3: lineNumber = 8, lineContent = '<!-- searchTestUniqueString -->'
   search match #4: lineNumber = 10, lineContent = '<div id="searchTestUniqueString">div text</div>'
   search match #5: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
+  search match #6: lineNumber = 14, lineContent = '<!-- searchTestUnique space String -->'
 Search result #2: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
-  search match #6: lineNumber = 14, lineContent = '// searchTestUnique space String'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #7: lineNumber = 14, lineContent = '// searchTestUnique space String'
+  search match #8: lineNumber = 14, lineContent = '// searchTestUnique space String'
 
 Running: testFileQueryWithProjectName
 Running a file query with existing project name first:
@@ -126,10 +134,11 @@ Search result #2: uiSourceCode.url = file:///var/www/search.html
 Search result #3: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
-  search match #6: lineNumber = 14, lineContent = '// searchTestUnique space String'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #7: lineNumber = 14, lineContent = '// searchTestUnique space String'
 Running a file query with non-existing project name now:
 
 Running: testDirtyFiles

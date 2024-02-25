@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -34,7 +34,6 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
@@ -68,7 +67,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
   base::RunLoop run_loop_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};
-  absl::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
+  std::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
 };
 
 }  // namespace
@@ -213,8 +212,16 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 
 // Tests that the confirm button is focused by default in the enterprise
 // interception dialog.
+// TODO(crbug.com/1503125): Enable the flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EnterpriseConfirmationDefaultFocus \
+  DISABLED_EnterpriseConfirmationDefaultFocus
+#else
+#define MAYBE_EnterpriseConfirmationDefaultFocus \
+  EnterpriseConfirmationDefaultFocus
+#endif
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
-                       EnterpriseConfirmationDefaultFocus) {
+                       MAYBE_EnterpriseConfirmationDefaultFocus) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This test runs in the main profile.
   EXPECT_TRUE(
@@ -229,11 +236,12 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
       GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
 #endif
   content::TestNavigationObserver content_observer(
-      GURL("chrome://enterprise-profile-welcome/"));
+      (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
-  browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, /*force_new_profile=*/true, /*show_link_data_option=*/true,
+  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
+      account_info, /*force_new_profile=*/true,
+      /*show_link_data_option=*/true,
       base::BindOnce(
           [](Browser* browser, signin::SigninChoice* result,
              signin::SigninChoice choice) {

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests the data of user marks trace events');
 
@@ -80,7 +80,7 @@
   tracingHelper.logEventShape(userTimings[0]);
   testRunner.log(`Phase of begin event: ${userTimings[0].ph}`);
   testRunner.log(`Phase of end event: ${userTimings[1].ph}`);
-  if (userTimings[0].id === userTimings[1].id) {
+  if (userTimings[0].id2.local === userTimings[1].id2.local) {
     testRunner.log('user timing event ids are equal.');
   }
 

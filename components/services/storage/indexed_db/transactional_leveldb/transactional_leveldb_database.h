@@ -8,16 +8,15 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
@@ -63,9 +62,9 @@ class TransactionalLevelDBDatabase
 
   ~TransactionalLevelDBDatabase() override;
 
-  leveldb::Status Put(const base::StringPiece& key, std::string* value);
-  leveldb::Status Remove(const base::StringPiece& key);
-  virtual leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Put(std::string_view key, std::string* value);
+  leveldb::Status Remove(std::string_view key);
+  virtual leveldb::Status Get(std::string_view key,
                               std::string* value,
                               bool* found);
   virtual leveldb::Status Write(LevelDBWriteBatch* write_batch);
@@ -78,7 +77,7 @@ class TransactionalLevelDBDatabase
   std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
       leveldb::ReadOptions options);
 
-  void Compact(const base::StringPiece& start, const base::StringPiece& stop);
+  void Compact(std::string_view start, std::string_view stop);
   void CompactAll();
 
   leveldb::ReadOptions DefaultReadOptions();
@@ -91,7 +90,6 @@ class TransactionalLevelDBDatabase
   leveldb::DB* db() { return level_db_state_->db(); }
   leveldb::Env* env() { return level_db_state_->in_memory_env(); }
   LevelDBScopes* scopes() { return scopes_.get(); }
-  base::Time LastModified() const { return last_modified_; }
 
   TransactionalLevelDBFactory* class_factory() const { return class_factory_; }
 
@@ -136,7 +134,6 @@ class TransactionalLevelDBDatabase
   scoped_refptr<LevelDBState> level_db_state_;
   std::unique_ptr<LevelDBScopes> scopes_;
   raw_ptr<TransactionalLevelDBFactory> class_factory_;
-  base::Time last_modified_;
   std::unique_ptr<base::Clock> clock_;
 
   // Contains all iterators created by this database directly through
@@ -150,7 +147,8 @@ class TransactionalLevelDBDatabase
   // of TransactionalLevelDBDatabase ensures a maximum number of
   // kDefaultMaxOpenIteratorsPerDatabase loaded iterators.
   base::flat_set<TransactionalLevelDBIterator*> db_only_loaded_iterators_;
-  std::set<TransactionalLevelDBIterator*> db_only_evicted_iterators_;
+  std::set<raw_ptr<TransactionalLevelDBIterator, SetExperimental>>
+      db_only_evicted_iterators_;
   bool is_evicting_all_loaded_iterators_ = false;
 
   struct DetachIteratorOnDestruct {

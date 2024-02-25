@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,18 @@ declare namespace chrome {
 
     export interface CrazyObject {}
 
-    export function funcWithInlineObj(inlineObj: {
-      foo?: boolean,
-         bar: number,
-         baz: {
-           depth: number,
-         },
-         quu: ArrayBuffer,
-    }): {
+    export function funcWithInlineObj(
+        inlineObj: {
+          foo?: boolean,
+             bar: number,
+             baz: {
+               depth: number,
+             },
+             quu: ArrayBuffer,
+        },
+        callback: (returnObj: {
+          str: string,
+        }) => void): {
       str: string,
       int: number,
     };

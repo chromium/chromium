@@ -40,10 +40,9 @@ namespace smb_client {
 // filesystems.
 // SMB is an application level protocol used by Windows and Samba fileservers.
 // Allows Files App to mount SMB filesystems.
-class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
-                      public base::SupportsWeakPtr<SmbFileSystem> {
+class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface {
  public:
-  SmbFileSystem(
+  explicit SmbFileSystem(
       const file_system_provider::ProvidedFileSystemInfo& file_system_info);
   SmbFileSystem(const SmbFileSystem&) = delete;
   SmbFileSystem& operator=(const SmbFileSystem&) = delete;
@@ -175,6 +174,7 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
   const file_system_provider::ProvidedFileSystemInfo file_system_info_;
   // opened_files_ is marked const since is currently unsupported.
   const file_system_provider::OpenedFiles opened_files_;
+  base::WeakPtrFactory<SmbFileSystem> weak_ptr_factory_{this};
 };
 
 }  // namespace smb_client

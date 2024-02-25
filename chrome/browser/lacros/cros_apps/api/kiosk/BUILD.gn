@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_lacros)
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "cros_kiosk_apitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/browser/chromeos/cros_apps/api/test:apitest_support",
+    "//chrome/browser/ui",
+    "//chromeos/constants",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

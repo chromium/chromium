@@ -303,12 +303,17 @@ class ModelTypeWorker : public UpdateHandler,
   // Copies |pending_invalidations_| vector to |model_type_state_|.
   void UpdateModelTypeStateInvalidations();
 
-  // Encrypt the specifics and hide the title if necessary.
+  // Encrypts the specifics and hides the title if necessary.
   void EncryptPasswordSpecificsData(CommitRequestDataList* request_data_list);
 
   // Encrypts password sharing invitation using cross user sharing encryption.
   void EncryptOutgoingPasswordSharingInvitations(
       CommitRequestDataList* request_data_list);
+
+  // Encrypts the specifics, must be called only when encryption is enabled.
+  // Note that Passwords and OutgoingPasswordSharingInvitations have their own
+  // encryption scheme.
+  void EncryptSpecifics(CommitRequestDataList* request_data_list);
 
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.
@@ -373,7 +378,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Pending GC directive if received during the current sync cycle. If there
   // are several pending GC directives, the latest one will be stored.
-  absl::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
+  std::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
 
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.
@@ -408,7 +413,7 @@ class GetLocalChangesRequest
     : public base::RefCountedThreadSafe<GetLocalChangesRequest>,
       public CancelationSignal::Observer {
  public:
-  explicit GetLocalChangesRequest(CancelationSignal* cancelation_signal);
+  GetLocalChangesRequest();
 
   GetLocalChangesRequest(const GetLocalChangesRequest&) = delete;
   GetLocalChangesRequest& operator=(const GetLocalChangesRequest&) = delete;
@@ -418,16 +423,12 @@ class GetLocalChangesRequest
 
   // Blocks current thread until either SetResponse is called or
   // cancelation_signal_ is signaled.
-  void WaitForResponseOrCancelation();
+  void WaitForResponseOrCancelation(CancelationSignal* cancelation_signal);
 
   // SetResponse takes ownership of |local_changes| and unblocks
   // WaitForResponseOrCancelation call. It is called by model type through
   // callback passed to GetLocalChanges.
   void SetResponse(CommitRequestDataList&& local_changes);
-
-  // Checks if WaitForResponseOrCancelation was canceled through
-  // CancelationSignal. When returns true calling ExtractResponse is unsafe.
-  bool WasCancelled();
 
   // Returns response set by SetResponse().
   CommitRequestDataList&& ExtractResponse();
@@ -436,7 +437,6 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  raw_ptr<CancelationSignal, AcrossTasksDanglingUntriaged> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };

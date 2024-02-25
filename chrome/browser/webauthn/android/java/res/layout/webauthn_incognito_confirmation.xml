@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <include layout="@layout/bottom_sheet_handlebar"/>
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_below="@id/handlebar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textDirection="locale">
+
+            <ImageView
+                android:id="@+id/webauthn_incognito_confirmation_imageview"
+                android:importantForAccessibility="no"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:scaleType="centerInside"
+                android:paddingVertical="16dp"
+                android:src="@drawable/webauthn_incognito_confirmation_icon"/>
+
+            <TextView
+                android:id="@+id/webauthn_incognito_confirmation_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/webauthn_incognito_confirmation_imageview"
+                android:gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="4dp"
+                android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+                android:text="@string/webauthn_incognito_confirmation_title"/>
+
+            <TextView
+                android:id="@+id/webauthn_incognito_confirmation_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/webauthn_incognito_confirmation_heading"
+                android:gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:text="@string/webauthn_incognito_confirmation_body"/>
+
+            <org.chromium.components.browser_ui.widget.DualControlLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/webauthn_incognito_confirmation_body"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                app:buttonAlignment="apart">
+
+                <!-- "OK" button -->
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/continue_button"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/webauthn_incognito_confirmation_continue"
+                    style="@style/TextButton"/>
+
+                <!-- "Cancel" button -->
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/cancel_button"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/cancel"
+                    style="@style/TextButton"/>
+
+            </org.chromium.components.browser_ui.widget.DualControlLayout>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

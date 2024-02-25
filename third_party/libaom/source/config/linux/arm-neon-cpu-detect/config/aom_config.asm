@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2023, Alliance for Open Media. All rights reserved
+; Copyright (c) 2024, Alliance for Open Media. All rights reserved
 ;
 ; This source code is subject to the terms of the BSD 2 Clause License and
 ; the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -40,6 +40,7 @@ CONFIG_GPROF equ 0
 CONFIG_INSPECTION equ 0
 CONFIG_INTERNAL_STATS equ 0
 CONFIG_INTER_STATS_ONLY equ 0
+CONFIG_LIBVMAF_PSNR_PEAK equ 1
 CONFIG_LIBYUV equ 0
 CONFIG_MAX_DECODE_PROFILE equ 0
 CONFIG_MISMATCH_DEBUG equ 0

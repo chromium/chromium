@@ -22,7 +22,7 @@ class PlatformHandleInternal {
     return {.high = token.GetHighForSerialization(),
             .low = token.GetLowForSerialization()};
   }
-  static absl::optional<base::UnguessableToken> UnmarshalUnguessableToken(
+  static std::optional<base::UnguessableToken> UnmarshalUnguessableToken(
       const MojoSharedBufferGuid* guid) {
     return base::UnguessableToken::Deserialize(guid->high, guid->low);
   }

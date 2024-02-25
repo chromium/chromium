@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,6 +10,7 @@
 import synth_common
 
 from synth_common import ms_to_ns
+
 trace = synth_common.create_trace()
 
 

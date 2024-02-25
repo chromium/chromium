@@ -27,13 +27,6 @@ constexpr size_t kCommonNamePrefixRemovalFieldThreshold = 3;
 // Minimum required length for prefixes to be removed.
 constexpr size_t kMinCommonNamePrefixLength = 16;
 
-// AutofillLabelAffixRemoval removes prefixes and suffixes more aggressively by
-// separating the strings into intervals of size at least `kMinSizeOfInterval`
-// and common affix of at least `kMinAffixLengthForInterval`.
-// We don't know what good values would be and the current choice is arbitrary.
-constexpr size_t kMinSizeOfInterval = 3;
-constexpr size_t kMinAffixLengthForInterval = 5;
-
 // Returns true if `parseable_name` is a valid parseable_name. To be considered
 // valid, the string cannot be empty or consist of digits only.
 // This condition prevents the logic from simplifying strings like
@@ -66,51 +59,6 @@ void MaybeRemoveAffix(base::span<base::StringPiece16> strings,
   }
 }
 
-// Finds the largest prefix of `strings` such that the longest common affix of
-// the strings within that prefix is at least `kMinAffixLengthForInterval`.
-// Returns the size of that prefix and the length of the longest common affix
-// of the strings within that prefix.
-// To maintain the interval's affix length with increasing size efficiently, we
-// use the following property of longest common prefixes (a similar statement
-// holds for suffixes):
-// Given strings s1...sn,
-//   min(lcp(si, sj)) for all i, j = min(lcp(s1, sk)) for all k
-std::pair<size_t, size_t> FindEndOfInterval(
-    base::span<base::StringPiece16> strings,
-    bool prefix) {
-  size_t affix_len = std::numeric_limits<size_t>::max();
-  for (size_t i = 0; i < strings.size(); i++) {
-    size_t current_affix = FindLongestCommonAffixLength(
-        std::array{strings[0], strings[i]}, prefix);
-    if (current_affix < kMinAffixLengthForInterval)
-      return {i, affix_len};
-    affix_len = std::min(affix_len, current_affix);
-  }
-  return {strings.size(), affix_len};
-}
-
-// Divides `strings` into the smallest number of intervals such that the longest
-// common affix of the strings in each interval is at least
-// `kMinAffixLengthForInterval`. Then removes this common affix for every
-// interval.
-// Intervals shorter than `kMinSizeOfInterval` and strings shorter than
-// `kMinAffixLengthForInterval` are left as-is.
-// This is useful for removing common prefixes like "shipping-". It cannot be
-// done after sectioning, as the field names are required for local heuristics.
-void RemoveCommonAffixInIntervals(base::span<base::StringPiece16> strings,
-                                  bool prefix) {
-  auto it = strings.begin();
-  while (it != strings.end()) {
-    auto [size, affix_len] = FindEndOfInterval({it, strings.end()}, prefix);
-    if (size >= kMinSizeOfInterval) {
-      MaybeRemoveAffix({it, size}, affix_len, prefix);
-    } else if (size == 0) {
-      size = 1;  // `*it` is smaller than the threshold. Skip it.
-    }
-    it += size;
-  }
-}
-
 }  // namespace
 
 size_t FindLongestCommonAffixLength(
@@ -132,11 +80,6 @@ size_t FindLongestCommonAffixLength(
 }
 
 void ComputeParseableNames(base::span<base::StringPiece16> field_names) {
-  if (base::FeatureList::IsEnabled(features::kAutofillLabelAffixRemoval)) {
-    RemoveCommonAffixInIntervals(field_names, /*prefix=*/true);
-    RemoveCommonAffixInIntervals(field_names, /*prefix=*/false);
-    return;
-  }
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
     return;
   size_t lcp = FindLongestCommonAffixLength(field_names, /*prefix=*/true);

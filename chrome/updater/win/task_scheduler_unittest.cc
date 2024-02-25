@@ -11,6 +11,7 @@
 #include <taskschd.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -82,17 +83,10 @@ class TaskSchedulerTests : public ::testing::Test {
   }
 
   std::wstring GetRegKeyTaskCacheTasksContents() {
-    base::FilePath system_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
-    std::string output;
-    EXPECT_TRUE(base::GetAppOutput(
-        base::StrCat({system_path.Append(L"reg.exe").value(), L" query ",
-                      base::CommandLine::QuoteForCommandLineToArgvW(
-                          L"HKLM\\SOFTWARE\\Microsoft\\Windows "
-                          L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks"),
-                      L" /s"}),
-        &output));
-    return base::ASCIIToWide(output);
+    std::optional<std::wstring> contents = GetRegKeyContents(
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows "
+        L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks");
+    return contents ? *contents : L"";
   }
 
   void ExpectRegisterTaskSucceeds(const std::wstring& task_name,
@@ -146,7 +140,7 @@ class TaskSchedulerTests : public ::testing::Test {
       EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
     }
 
-    VLOG(0) << [this]() {
+    VLOG(0) << [this] {
       TaskScheduler::TaskInfo info;
       EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, info));
       return info;
@@ -155,7 +149,7 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(
         event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
     EXPECT_TRUE(test::WaitFor(
-        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
+        [&] { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
 
     if (trigger_type == TaskScheduler::TRIGGER_TYPE_NOW) {
       base::Time next_run_time;
@@ -302,13 +296,13 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
                                     TaskScheduler::TRIGGER_TYPE_NOW, false));
 
   EXPECT_TRUE(test::WaitFor(
-      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); }));
+      [&] { return task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
   EXPECT_TRUE(test::WaitFor(
-      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
+      [&] { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 

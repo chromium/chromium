@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="iframe"}, {display="inline"}, {height="300px"}, {src="offscreen-iframe-content.html"}, {width="200px"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++++++++View text:"iframe_onscreen" textSize:16.0 style:0 bgColor:-65536 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="iframe_onscreen"}, {role="group"}, {style="height:300px; background-color: red;"}]
+++++++++View text:"iframe_offscreen" textSize:16.0 style:0 bgColor:-16744448 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="iframe_offscreen"}, {role="group"}, {style="height:200px; background-color: green"}]

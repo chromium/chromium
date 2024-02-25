@@ -22,7 +22,8 @@
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_tabs.html.js';
 
@@ -96,8 +97,9 @@ export class CrTabsElement extends PolymerElement {
 
   private onSelectedChanged_(newSelected: number, oldSelected: number) {
     const tabs = this.shadowRoot!.querySelectorAll('.tab');
-    if (tabs.length === 0 || oldSelected === undefined) {
-      // Tabs are not rendered yet.
+    if (tabs.length === 0 || oldSelected === undefined ||
+        tabs.length <= newSelected || tabs.length <= oldSelected) {
+      // Tabs are not fully rendered yet.
       return;
     }
 

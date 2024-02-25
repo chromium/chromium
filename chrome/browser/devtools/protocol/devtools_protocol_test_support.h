@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_
 
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 
-class DevToolsProtocolTestBase : public InProcessBrowserTest,
+class DevToolsProtocolTestBase : public MixinBasedInProcessBrowserTest,
                                  public content::TestDevToolsProtocolClient {
  public:
   DevToolsProtocolTestBase();

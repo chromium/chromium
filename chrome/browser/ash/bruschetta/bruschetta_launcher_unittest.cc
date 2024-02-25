@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char kLaunchHistogram[] = "Bruschetta.LaunchResult";
@@ -84,6 +84,7 @@ class BruschettaLauncherTest : public testing::Test,
     base::Value::Dict config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
+    config.Set(prefs::kPolicyNameKey, "Display Name");
 
     base::Value::Dict vtpm;
     vtpm.Set(prefs::kPolicyVTPMEnabledKey, true);

@@ -13,6 +13,7 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/adapters.h"
@@ -188,7 +189,7 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   } else {
     MruWindowTracker* mru = Shell::Get()->mru_window_tracker();
     aura::Window::Windows windows = mru->BuildMruWindowList(kActiveDesk);
-    starting_window = windows.empty() ? ignore : windows[0];
+    starting_window = windows.empty() ? ignore : windows[0].get();
   }
   DCHECK(starting_window);
 

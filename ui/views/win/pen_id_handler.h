@@ -11,13 +11,13 @@
 #include <windows.ui.input.h>
 #include <wrl.h>
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -48,7 +48,7 @@ class VIEWS_EXPORT PenIdHandler {
 
   PenIdHandler();
   virtual ~PenIdHandler();
-  absl::optional<int32_t> TryGetPenUniqueId(UINT32 pointer_id);
+  std::optional<int32_t> TryGetPenUniqueId(UINT32 pointer_id);
 
  private:
   friend class FakePenIdHandler;
@@ -79,7 +79,7 @@ class VIEWS_EXPORT PenIdHandler {
 
   // Checks if a PenDevice can be retrieved for the `pointer_id` and returns its
   // GUID if it exists.
-  absl::optional<std::string> TryGetGuid(UINT32 pointer_id) const;
+  std::optional<std::string> TryGetGuid(UINT32 pointer_id) const;
   // This is a fallback scenario when TryGetGUID doesn't retrieve a PenDevice.
   // Happens when the device doesn't have both TSN/TVID (e.g.
   // SurfaceHub 1 + SurfaceHub Pen -> only has TSN, no TVID).

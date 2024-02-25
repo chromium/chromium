@@ -27,7 +27,7 @@ enum class PasswordProtectionTrigger {
 };
 
 PasswordProtectionTrigger ConvertPasswordProtectionTrigger(
-    const absl::optional<safe_browsing::PasswordProtectionTrigger>&
+    const std::optional<safe_browsing::PasswordProtectionTrigger>&
         policy_value) {
   if (!policy_value) {
     return PasswordProtectionTrigger::kUnset;

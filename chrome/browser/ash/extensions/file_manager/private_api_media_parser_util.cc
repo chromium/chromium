@@ -15,7 +15,7 @@
 namespace {
 
 template <class T>
-void SetValueOptional(T value, absl::optional<T>* destination) {
+void SetValueOptional(T value, std::optional<T>* destination) {
   DCHECK(destination);
   if (value >= 0) {
     *destination = value;
@@ -24,7 +24,7 @@ void SetValueOptional(T value, absl::optional<T>* destination) {
 
 template <>
 void SetValueOptional(std::string value,
-                      absl::optional<std::string>* destination) {
+                      std::optional<std::string>* destination) {
   DCHECK(destination);
   if (!value.empty()) {
     *destination = std::move(value);

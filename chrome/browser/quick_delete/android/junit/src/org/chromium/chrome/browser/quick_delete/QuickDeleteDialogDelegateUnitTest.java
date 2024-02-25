@@ -47,22 +47,15 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * Unit tests for Quick Delete dialog.
- */
+/** Unit tests for Quick Delete dialog. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteDialogDelegateUnitTest {
-    @Mock
-    private Callback<Integer> mOnDismissCallbackMock;
-    @Mock
-    private TabModelSelector mTabModelSelectorMock;
-    @Mock
-    private Tab mTabMock;
-    @Mock
-    private SettingsLauncher mSettingsLauncherMock;
-    @Mock
-    private TimePeriodChangeObserver mTimePeriodChangeObserverMock;
+    @Mock private Callback<Integer> mOnDismissCallbackMock;
+    @Mock private TabModelSelector mTabModelSelectorMock;
+    @Mock private Tab mTabMock;
+    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private TimePeriodChangeObserver mTimePeriodChangeObserverMock;
 
     private FakeModalDialogManager mModalDialogManager;
 
@@ -88,30 +81,43 @@ public class QuickDeleteDialogDelegateUnitTest {
     @Test
     @SmallTest
     public void testObserverFired_OnSpinnerChanges() {
-        new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
-                mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
-                mTimePeriodChangeObserverMock)
+        new QuickDeleteDialogDelegate(
+                        mActivity,
+                        mQuickDeleteView,
+                        mModalDialogManager,
+                        mOnDismissCallbackMock,
+                        mTabModelSelectorMock,
+                        mSettingsLauncherMock,
+                        mTimePeriodChangeObserverMock)
                 .showDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_HOUR_SELECTED);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Spinner spinnerView = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
-            // Set the time selection for LAST_HOUR.
-            spinnerView.setSelection(1);
-            histogramWatcher.assertExpected();
-            verify(mTimePeriodChangeObserverMock).onTimePeriodChanged(eq(TimePeriod.LAST_HOUR));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Spinner spinnerView = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
+                    // Set the time selection for LAST_HOUR.
+                    spinnerView.setSelection(1);
+                    histogramWatcher.assertExpected();
+                    verify(mTimePeriodChangeObserverMock)
+                            .onTimePeriodChanged(eq(TimePeriod.LAST_HOUR));
+                });
     }
 
     @Test
     @SmallTest
     public void testCancelQuickDelete() {
-        new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
-                mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
-                mTimePeriodChangeObserverMock)
+        new QuickDeleteDialogDelegate(
+                        mActivity,
+                        mQuickDeleteView,
+                        mModalDialogManager,
+                        mOnDismissCallbackMock,
+                        mTabModelSelectorMock,
+                        mSettingsLauncherMock,
+                        mTimePeriodChangeObserverMock)
                 .showDialog();
 
         mModalDialogManager.clickNegativeButton();
@@ -122,9 +128,14 @@ public class QuickDeleteDialogDelegateUnitTest {
     @Test
     @SmallTest
     public void testConfirmQuickDelete() {
-        new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
-                mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
-                mTimePeriodChangeObserverMock)
+        new QuickDeleteDialogDelegate(
+                        mActivity,
+                        mQuickDeleteView,
+                        mModalDialogManager,
+                        mOnDismissCallbackMock,
+                        mTabModelSelectorMock,
+                        mSettingsLauncherMock,
+                        mTimePeriodChangeObserverMock)
                 .showDialog();
 
         mModalDialogManager.clickPositiveButton();
@@ -136,11 +147,17 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguation_SearchHistoryLink() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.SEARCH_HISTORY_LINK_CLICKED);
-        new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
-                mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
-                mTimePeriodChangeObserverMock)
+        new QuickDeleteDialogDelegate(
+                        mActivity,
+                        mQuickDeleteView,
+                        mModalDialogManager,
+                        mOnDismissCallbackMock,
+                        mTabModelSelectorMock,
+                        mSettingsLauncherMock,
+                        mTimePeriodChangeObserverMock)
                 .showDialog();
 
         TextViewWithClickableSpans searchHistoryDisambiguation =
@@ -163,11 +180,17 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguation_OtherActivityLink() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED);
-        new QuickDeleteDialogDelegate(mActivity, mQuickDeleteView, mModalDialogManager,
-                mOnDismissCallbackMock, mTabModelSelectorMock, mSettingsLauncherMock,
-                mTimePeriodChangeObserverMock)
+        new QuickDeleteDialogDelegate(
+                        mActivity,
+                        mQuickDeleteView,
+                        mModalDialogManager,
+                        mOnDismissCallbackMock,
+                        mTabModelSelectorMock,
+                        mSettingsLauncherMock,
+                        mTimePeriodChangeObserverMock)
                 .showDialog();
 
         TextViewWithClickableSpans searchHistoryDisambiguation =

@@ -64,11 +64,13 @@ class CORE_EXPORT ScopedStyleResolver final
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
 
-  CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
+  CounterStyleMap* GetCounterStyleMap() { return counter_style_map_.Get(); }
   static void CounterStyleRulesChanged(TreeScope& scope);
 
   StyleRulePositionFallback* PositionFallbackForName(
       const AtomicString& fallback_name);
+
+  StyleRuleFunction* FunctionForName(StringView name);
 
   const FontFeatureValuesStorage* FontFeatureValuesForFamily(
       AtomicString font_family);
@@ -76,10 +78,10 @@ class CORE_EXPORT ScopedStyleResolver final
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector& sheets);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
   const CascadeLayerMap* GetCascadeLayerMap() const {
-    return cascade_layer_map_;
+    return cascade_layer_map_.Get();
   }
-  const HeapVector<Member<CSSStyleSheet>>& GetStyleSheets() const {
-    return style_sheets_;
+  const ActiveStyleSheetVector& GetActiveStyleSheets() const {
+    return active_style_sheets_;
   }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
@@ -106,7 +108,7 @@ class CORE_EXPORT ScopedStyleResolver final
 
  private:
   template <class Func>
-  void ForAllStylesheets(const Func& func);
+  void ForAllStylesheets(ElementRuleCollector&, const Func& func);
 
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
@@ -117,13 +119,19 @@ class CORE_EXPORT ScopedStyleResolver final
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
   void AddPositionFallbackRules(const RuleSet&);
-  void AddViewTransitionsRules(const RuleSet&);
+  void AddFunctionRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
+  void AddImplicitScopeTriggers(CSSStyleSheet&, const RuleSet&);
+  void AddImplicitScopeTrigger(Element&, const StyleScope&);
+  void RemoveImplicitScopeTriggers();
+  void RemoveImplicitScopeTriggers(CSSStyleSheet&, const RuleSet&);
+  void RemoveImplicitScopeTrigger(Element&, const StyleScope&);
+
   Member<TreeScope> scope_;
 
-  HeapVector<Member<CSSStyleSheet>> style_sheets_;
+  ActiveStyleSheetVector active_style_sheets_;
   MediaQueryResultFlags media_query_result_flags_;
 
   using KeyframesRuleMap =
@@ -133,6 +141,9 @@ class CORE_EXPORT ScopedStyleResolver final
   using PositionFallbackRuleMap =
       HeapHashMap<AtomicString, Member<StyleRulePositionFallback>>;
   PositionFallbackRuleMap position_fallback_rule_map_;
+
+  using FunctionRuleMap = HeapHashMap<String, Member<StyleRuleFunction>>;
+  FunctionRuleMap function_rule_map_;
 
   // Multiple entries are created pointing to the same
   // StyleRuleFontFeatureValues for each mentioned family name in the

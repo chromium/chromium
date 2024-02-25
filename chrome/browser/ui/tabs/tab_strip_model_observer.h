@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 
@@ -70,7 +70,7 @@ class TabStripModelChange {
     RemovedTab(content::WebContents* contents,
                int index,
                RemoveReason remove_reason,
-               absl::optional<SessionID> session_id);
+               std::optional<SessionID> session_id);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
@@ -81,7 +81,7 @@ class TabStripModelChange {
     RAW_PTR_EXCLUSION content::WebContents* contents;
     int index;
     RemoveReason remove_reason;
-    absl::optional<SessionID> session_id;
+    std::optional<SessionID> session_id;
   };
 
   struct ContentsWithIndex {
@@ -380,7 +380,7 @@ class TabStripModelObserver {
 
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
-      absl::optional<tab_groups::TabGroupId> group,
+      std::optional<tab_groups::TabGroupId> group,
       content::WebContents* contents,
       int index);
 
@@ -388,6 +388,10 @@ class TabStripModelObserver {
   // use this as a trigger to try and close the window containing the
   // TabStripModel, for example...
   virtual void TabStripEmpty();
+
+  // Called when a tab is attempted to be closed but the closure is not
+  // permitted by the `TabStripModel::IsTabClosable` oracle.
+  virtual void TabCloseCancelled(const content::WebContents* contents);
 
   // Sent any time an attempt is made to close all the tabs. This is not
   // necessarily the result of CloseAllTabs(). For example, if the user closes
@@ -438,7 +442,7 @@ class TabStripModelObserver {
   virtual ~TabStripModelObserver();
 
  private:
-  std::set<TabStripModel*> observed_models_;
+  std::set<raw_ptr<TabStripModel, SetExperimental>> observed_models_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_

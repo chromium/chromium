@@ -9,8 +9,9 @@
 #import "base/i18n/rtl.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/autofill/form_suggestion_client.h"
-#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -21,11 +22,18 @@ namespace {
 
 // Vertical margin between suggestions and the edge of the suggestion content
 // frame.
-const CGFloat kSuggestionVerticalMargin = 6;
+constexpr CGFloat kSuggestionVerticalMargin = 6;
 
 // Horizontal margin around suggestions (i.e. between suggestions, and between
 // the end suggestions and the suggestion content frame).
-const CGFloat kSuggestionHorizontalMargin = 6;
+constexpr CGFloat kSuggestionHorizontalMargin = 6;
+
+// Initial spacing between suggestion chips at the beginning of the scroll hint
+// animation.
+constexpr CGFloat kScrollHintInitialSpacing = 50;
+
+// The amount of time (in seconds) the scroll hint animation takes.
+constexpr CGFloat kScrollHintDuration = 0.5;
 
 }  // namespace
 
@@ -44,28 +52,44 @@ const CGFloat kSuggestionHorizontalMargin = 6;
 
 #pragma mark - Public
 
-- (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions {
+- (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions
+           showScrollHint:(BOOL)showScrollHint
+               completion:(void (^)(BOOL finished))completion {
   if ([self.suggestions isEqualToArray:suggestions] && !suggestions.count) {
+    if (completion) {
+      completion(NO);
+    }
     return;
   }
   self.suggestions = [suggestions copy];
 
-  if (self.stackView) {
-    for (UIView* view in [self.stackView.arrangedSubviews copy]) {
-      [self.stackView removeArrangedSubview:view];
-      [view removeFromSuperview];
+  if (!self.stackView) {
+    if (completion) {
+      completion(NO);
     }
-    self.contentInset = UIEdgeInsetsZero;
-    [self createAndInsertArrangedSubviews];
-    [self setContentOffset:CGPointZero];
+    return;
+  }
+
+  for (UIView* view in [self.stackView.arrangedSubviews copy]) {
+    [self.stackView removeArrangedSubview:view];
+    [view removeFromSuperview];
+  }
+  self.contentInset = UIEdgeInsetsZero;
+  [self createAndInsertArrangedSubviews];
+  [self setContentOffset:CGPointZero];
+  if (showScrollHint) {
+    [self scrollHint:completion];
+  } else if (completion) {
+    completion(NO);
   }
 }
 
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated {
   self.delegate = nil;
+  __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:animated ? 0.2 : 0.0
                    animations:^{
-                     self.contentInset = UIEdgeInsetsZero;
+                     weakSelf.contentInset = UIEdgeInsetsZero;
                    }];
 }
 
@@ -78,12 +102,15 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   // Because the way the scroll view is transformed for RTL, the insets don't
   // need to be directed.
   UIEdgeInsets lockedContentInsets = UIEdgeInsetsMake(0, -layoutOffset, 0, 0);
+  __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:0.2
       animations:^{
-        self.contentInset = lockedContentInsets;
+        weakSelf.contentInset = lockedContentInsets;
       }
       completion:^(BOOL finished) {
-        self.delegate = self;
+        if (!IsKeyboardAccessoryUpgradeEnabled()) {
+          weakSelf.delegate = weakSelf;
+        }
       }];
 }
 
@@ -162,6 +189,45 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   }
 }
 
+// Performs the scroll hint. This is triggered when the keyboard accessory
+// initially receives suggestions.
+- (void)scrollHint:(void (^)(BOOL finished))completion {
+  if (!IsKeyboardAccessoryUpgradeEnabled() ||
+      !self.stackView.arrangedSubviews.count) {
+    if (completion) {
+      completion(NO);
+    }
+    return;
+  }
+
+  // Make sure all the subview layouts are done before computing frame offsets.
+  for (UIView* view in self.stackView.arrangedSubviews) {
+    [view layoutIfNeeded];
+  }
+
+  // This creates an animation where suggestions fly in from the right.
+  [self spaceSubviews:kScrollHintInitialSpacing alpha:0];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kScrollHintDuration
+                   animations:^{
+                     [weakSelf spaceSubviews:-kScrollHintInitialSpacing
+                                       alpha:1];
+                   }
+                   completion:completion];
+}
+
+// Inserts spacing between suggestion views and sets their transparency.
+- (void)spaceSubviews:(CGFloat)spacing alpha:(CGFloat)alpha {
+  CGFloat offset = spacing;
+  for (UIView* view in self.stackView.arrangedSubviews) {
+    CGRect frame = view.frame;
+    frame.origin.x += offset;
+    view.frame = frame;
+    view.alpha = alpha;
+    offset += spacing;
+  }
+}
+
 #pragma mark - Setters
 
 - (void)setTrailingView:(UIView*)subview {
@@ -175,7 +241,11 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   }
 }
 
+#pragma mark - UIScrollViewDelegate
+
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  DCHECK(!IsKeyboardAccessoryUpgradeEnabled());
+
   CGFloat offset = self.contentOffset.x;
   CGFloat inset = self.contentInset.left;  // Inset is negative when locked.
   CGFloat diff = offset + inset;

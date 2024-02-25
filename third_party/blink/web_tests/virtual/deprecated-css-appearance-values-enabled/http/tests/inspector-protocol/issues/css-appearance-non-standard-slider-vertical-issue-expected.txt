@@ -1,0 +1,42 @@
+Tests that non-standard appearance value slider-vertical trigger a deprecation issue.
+Issue for appearance "slider-vertical": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&slider-vertical
+                }
+                type : CSSValueAppearanceSliderVertical
+            }
+        }
+    }
+}
+Issue for -webkit-appearance "slider-vertical": {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 14
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&slider-vertical
+                }
+                type : CSSValueAppearanceSliderVertical
+            }
+        }
+    }
+}
+appearance value "auto" did not generate issue.
+-webkit-appearance value "auto" did not generate issue.
+

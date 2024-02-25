@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
+#include "chrome/services/sharing/nearby/test_support/fake_nearby_presence_credential_storage.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
@@ -129,6 +130,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
     // NearbyDependenciesProvider:
     sharing::mojom::NearbyDependenciesPtr GetDependencies() override {
       fake_adapter_ = std::make_unique<bluetooth::FakeAdapter>();
+      fake_nearby_presence_credential_storage_ =
+          std::make_unique<presence::FakeNearbyPresenceCredentialStorage>();
       webrtc_dependencies_ =
           std::make_unique<sharing::MockWebRtcDependencies>();
 
@@ -167,6 +170,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
               std::move(cros_network_config_remote),
               std::move(firewall_hole_factory_remote),
               std::move(tcp_socket_factory_remote)),
+          fake_nearby_presence_credential_storage_->receiver()
+              .BindNewPipeAndPassRemote(),
           ::nearby::api::LogMessage::Severity::kInfo);
     }
 
@@ -178,6 +183,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
     network_config::CrosNetworkConfigTestHelper
         cros_network_config_test_helper_;
     std::unique_ptr<bluetooth::FakeAdapter> fake_adapter_;
+    std::unique_ptr<presence::FakeNearbyPresenceCredentialStorage>
+        fake_nearby_presence_credential_storage_;
     std::unique_ptr<sharing::MockWebRtcDependencies> webrtc_dependencies_;
     int prepare_for_shutdown_count_ = 0;
   };
@@ -254,7 +261,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
 
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer> mock_timer_ = nullptr;
 };
 
 TEST_F(NearbyProcessManagerImplTest, StartAndStop) {

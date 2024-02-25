@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class DOMDataStore;
 class ScriptState;
 
 // ScriptWrappable provides a way to map from/to C++ DOM implementation to/from
@@ -104,15 +105,6 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
 
-  // The following methods may override lifetime of ScriptWrappable objects when
-  // needed. In particular if `HasPendingActivity()` returns true *and* the
-  // child type also inherits from `ActiveScriptWrappable`, the objects will not
-  // be reclaimed by the GC, even if they are otherwise unreachable.
-  //
-  // Note: These methods are queried during garbage collection and *must not*
-  // allocate any new objects.
-  virtual bool HasPendingActivity() const { return false; }
-
   const char* NameInHeapSnapshot() const override;
 
   virtual void Trace(Visitor*) const;
@@ -165,8 +157,14 @@ class PLATFORM_EXPORT ScriptWrappable
   // This method must be overridden by DEFINE_WRAPPERTYPEINFO macro.
   virtual const WrapperTypeInfo* GetWrapperTypeInfo() const = 0;
 
-  // Creates and returns a new wrapper object.
-  virtual v8::MaybeLocal<v8::Value> Wrap(ScriptState*);
+  // Returns a wrapper object, creating it if needed.
+  v8::Local<v8::Value> ToV8(ScriptState*);
+  v8::Local<v8::Value> ToV8(v8::Isolate*,
+                            v8::Local<v8::Object> creation_context_object);
+
+  // Creates and returns a new wrapper object. This DCHECKs that a wrapper does
+  // not exist yet. Use ToV8() if a wrapper might already exist.
+  virtual v8::Local<v8::Value> Wrap(ScriptState*);
 
   // Associates the instance with the given |wrapper| if this instance is not
   // yet associated with any wrapper.  Returns the wrapper already associated
@@ -177,70 +175,21 @@ class PLATFORM_EXPORT ScriptWrappable
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper);
 
-  // Associates this instance with the given |wrapper| if this instance is not
-  // yet associated with any wrapper.  Returns true if the given wrapper is
-  // associated with this instance, or false if this instance is already
-  // associated with a wrapper.  In the latter case, |wrapper| will be updated
-  // to the existing wrapper.
-  [[nodiscard]] bool SetWrapper(v8::Isolate* isolate,
-                                const WrapperTypeInfo* wrapper_type_info,
-                                v8::Local<v8::Object>& wrapper) {
-    DCHECK(!wrapper.IsEmpty());
-    if (UNLIKELY(ContainsWrapper())) {
-      wrapper = MainWorldWrapper(isolate);
-      return false;
-    }
-    main_world_wrapper_.Reset(isolate, wrapper);
-    DCHECK(ContainsWrapper());
-    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_);
-    return true;
-  }
-
-  bool IsEqualTo(const v8::Local<v8::Object>& other) const {
-    return main_world_wrapper_ == other;
-  }
-
-  bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    return_value.Set(main_world_wrapper_);
-    return ContainsWrapper();
-  }
-
-  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
-
  protected:
   ScriptWrappable() = default;
 
  private:
-  v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
-    return main_world_wrapper_.Get(isolate);
-  }
-
-  // Clear the main world wrapper if it is set to |handle|.
-  bool UnsetMainWorldWrapperIfSet(
-      const v8::TracedReference<v8::Object>& handle);
-
   static_assert(
       std::is_trivially_destructible<
           TraceWrapperV8Reference<v8::Object>>::value,
       "TraceWrapperV8Reference<v8::Object> should be trivially destructible.");
 
-  TraceWrapperV8Reference<v8::Object> main_world_wrapper_;
-
-  // These classes are exceptionally allowed to directly interact with the main
-  // world wrapper.
+  // Inline storage for the a single wrapper reference. Only
+  // `DOMDataStore::UncheckedInlineStorageForWrappable()` should access this
+  // field.
+  TraceWrapperV8Reference<v8::Object> wrapper_;
   friend class DOMDataStore;
-  friend class DOMWrapperWorld;
-  friend class HeapSnaphotWrapperVisitor;
 };
-
-inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
-    const v8::TracedReference<v8::Object>& handle) {
-  if (main_world_wrapper_ == handle) {
-    main_world_wrapper_.Reset();
-    return true;
-  }
-  return false;
-}
 
 // Defines |GetWrapperTypeInfo| virtual method which returns the WrapperTypeInfo
 // of the instance. Also declares a static member of type WrapperTypeInfo, of

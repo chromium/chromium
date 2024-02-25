@@ -47,12 +47,12 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
     manually_assigned_slot_ = slot;
   }
 
-  HTMLSlotElement* AssignedSlot() { return assigned_slot_; }
-  Node* PreviousInAssignedNodes() { return previous_in_assigned_nodes_; }
-  Node* NextInAssignedNodes() { return next_in_assigned_nodes_; }
+  HTMLSlotElement* AssignedSlot() { return assigned_slot_.Get(); }
+  Node* PreviousInAssignedNodes() { return previous_in_assigned_nodes_.Get(); }
+  Node* NextInAssignedNodes() { return next_in_assigned_nodes_.Get(); }
 
   HTMLSlotElement* ManuallyAssignedSlot() const {
-    return manually_assigned_slot_;
+    return manually_assigned_slot_.Get();
   }
 
   friend class FlatTreeTraversal;

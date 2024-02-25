@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
 import typing
 import unittest
 
@@ -26,6 +27,24 @@ class ExpectationUnittest(unittest.TestCase):
     # With status
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL')
     self.assertTrue(e.AppliesToResult(r))
+    # With date
+    r = data_types.Result('suite',
+                          'test', ('win', 'nvidia'),
+                          'id',
+                          date=datetime.date(2023, 3, 8))
+    self.assertTrue(e.AppliesToResult(r))
+    # With is_slow
+    r = data_types.Result('suite',
+                          'test', ('win', 'nvidia'),
+                          'id',
+                          is_slow=True)
+    self.assertTrue(e.AppliesToResult(r))
+    # With typ_expectations
+    r = data_types.Result('suite',
+                          'test', ('win', 'nvidia'),
+                          'id',
+                          typ_expectations=['Pass'])
+    self.assertTrue(e.AppliesToResult(r))
     # Tag subset
     r = data_types.Result('suite', 'test', ('win', 'nvidia', 'release'), 'id')
     self.assertTrue(e.AppliesToResult(r))
@@ -41,6 +60,24 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertFalse(e.AppliesToResult(r))
     # With status
     r = data_types.Result('suite', 'notatest', ('win', 'nvidia'), 'id', 'FAIL')
+    self.assertFalse(e.AppliesToResult(r))
+    # With date
+    r = data_types.Result('suite',
+                          'notatest', ('win', 'nvidia'),
+                          'id',
+                          date=datetime.date(2023, 3, 8))
+    self.assertFalse(e.AppliesToResult(r))
+    # With is_slow
+    r = data_types.Result('suite',
+                          'notatest', ('win', 'nvidia'),
+                          'id',
+                          is_slow=True)
+    self.assertFalse(e.AppliesToResult(r))
+    # With typ_expectations
+    r = data_types.Result('suite',
+                          'notatest', ('win', 'nvidia'),
+                          'id',
+                          typ_expectations=['Pass'])
     self.assertFalse(e.AppliesToResult(r))
     # Tag superset
     r = data_types.Result('suite', 'test', tuple(['win']), 'id')
@@ -88,6 +125,30 @@ class ResultUnittest(unittest.TestCase):
     self.assertEqual(r, other)
 
     other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL')
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min)
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL',
+                              datetime.date(2023, 3, 8))
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False)
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, True)
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False, [])
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False, ['Pass'])
     self.assertNotEqual(r, other)
 
 

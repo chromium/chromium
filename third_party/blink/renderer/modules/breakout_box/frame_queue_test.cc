@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -19,6 +20,7 @@ class FrameQueueTest : public testing::Test {
   FrameQueueTest() : io_task_runner_(Platform::Current()->GetIOTaskRunner()) {}
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 };
@@ -30,7 +32,7 @@ TEST_F(FrameQueueTest, PushPopMatches) {
   for (int i = 0; i < kMaxSize; ++i)
     queue->Push(i);
   for (int i = 0; i < kMaxSize; ++i) {
-    absl::optional<int> element = queue->Pop();
+    std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
     EXPECT_EQ(*element, i);
   }
@@ -40,7 +42,7 @@ TEST_F(FrameQueueTest, PushReturnsReplacedElement) {
   const int kMaxSize = 2;
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
-  absl::optional<int> replaced = queue->Push(1);
+  std::optional<int> replaced = queue->Push(1);
   EXPECT_FALSE(replaced.has_value());
 
   replaced = queue->Push(2);
@@ -58,7 +60,7 @@ TEST_F(FrameQueueTest, PushReturnsReplacedElement) {
 TEST_F(FrameQueueTest, EmptyQueueReturnsNullopt) {
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(5);
-  absl::optional<int> element = queue->Pop();
+  std::optional<int> element = queue->Pop();
   EXPECT_FALSE(element.has_value());
 }
 
@@ -70,7 +72,7 @@ TEST_F(FrameQueueTest, QueueDropsOldElements) {
   for (int i = 0; i < kNumInsertions; ++i)
     queue->Push(i);
   for (int i = 0; i < kMaxSize; ++i) {
-    absl::optional<int> element = queue->Pop();
+    std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
     EXPECT_EQ(*element, kNumInsertions - kMaxSize + i);
   }
@@ -93,7 +95,7 @@ TEST_F(FrameQueueTest, FrameQueueHandle) {
   for (int i = 0; i < kMaxSize; ++i) {
     auto queue = handle2.Queue();
     EXPECT_TRUE(queue);
-    absl::optional<int> element = queue->Pop();
+    std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
     EXPECT_EQ(*element, i);
   }
@@ -137,7 +139,7 @@ TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
   int last_value_read = -1;
   start_event.Wait();
   for (int i = 0; i < kNumElements; ++i) {
-    absl::optional<int> element = queue->Pop();
+    std::optional<int> element = queue->Pop();
     if (element) {
       EXPECT_GE(*element, 0);
       EXPECT_LT(*element, kNumElements);
@@ -151,7 +153,7 @@ TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
 
   int num_read = 0;
   while (!queue->IsEmpty()) {
-    absl::optional<int> element = queue->Pop();
+    std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
     EXPECT_GE(*element, 0);
     EXPECT_LT(*element, kNumElements);
@@ -169,10 +171,10 @@ TEST_F(FrameQueueTest, LockedOperations) {
   base::AutoLock locker(queue->GetLock());
   EXPECT_TRUE(queue->IsEmptyLocked());
 
-  absl::optional<int> peeked = queue->PeekLocked();
+  std::optional<int> peeked = queue->PeekLocked();
   EXPECT_FALSE(peeked.has_value());
 
-  absl::optional<int> popped = queue->PushLocked(1);
+  std::optional<int> popped = queue->PushLocked(1);
   EXPECT_FALSE(popped.has_value());
   EXPECT_FALSE(queue->IsEmptyLocked());
 

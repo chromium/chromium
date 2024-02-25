@@ -20,27 +20,26 @@ void DialogModelMenuModelAdapter::Close() {
   NOTREACHED_NORETURN();
 }
 
-void DialogModelMenuModelAdapter::OnFieldAdded(DialogModelField* field) {
-  NOTREACHED_NORETURN();
-}
-
-void DialogModelMenuModelAdapter::OnFieldChanged(DialogModelField* field) {
+// TODO(pbos): This should probably not be hosting a DialogModel but rather
+// another model with DialogModelSection(s).
+void DialogModelMenuModelAdapter::OnDialogButtonChanged() {
   NOTREACHED_NORETURN();
 }
 
 size_t DialogModelMenuModelAdapter::GetItemCount() const {
-  return model_->fields(GetPassKey()).size();
+  return model_->fields(DialogModelHost::GetPassKey()).size();
 }
 
 MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
-  return GetField(index)->type(GetPassKey()) == DialogModelField::kSeparator
+  return GetField(index)->type() == DialogModelField::kSeparator
              ? TYPE_SEPARATOR
              : TYPE_COMMAND;
 }
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
     size_t index) const {
-  DCHECK_EQ(GetField(index)->type(GetPassKey()), DialogModelField::kSeparator);
+  CHECK_EQ(GetField(index)->type(), DialogModelField::kSeparator,
+           base::NotFatalUntil::M123);
   return MenuSeparatorType::NORMAL_SEPARATOR;
 }
 
@@ -51,7 +50,7 @@ int DialogModelMenuModelAdapter::GetCommandIdAt(size_t index) const {
 }
 
 std::u16string DialogModelMenuModelAdapter::GetLabelAt(size_t index) const {
-  return GetField(index)->AsMenuItem(GetPassKey())->label(GetPassKey());
+  return GetField(index)->AsMenuItem()->label();
 }
 
 bool DialogModelMenuModelAdapter::IsItemDynamicAt(size_t index) const {
@@ -75,7 +74,7 @@ int DialogModelMenuModelAdapter::GetGroupIdAt(size_t index) const {
 }
 
 ImageModel DialogModelMenuModelAdapter::GetIconAt(size_t index) const {
-  return GetField(index)->AsMenuItem(GetPassKey())->icon(GetPassKey());
+  return GetField(index)->AsMenuItem()->icon();
 }
 
 ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
@@ -84,19 +83,19 @@ ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
 }
 
 bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
-  DCHECK_LT(index, GetItemCount());
+  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
 
   const DialogModelField* const field = GetField(index);
-  return field->type(GetPassKey()) != DialogModelField::kSeparator &&
-         field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
+  return field->type() != DialogModelField::kSeparator &&
+         field->AsMenuItem()->is_enabled();
 }
 
 ui::ElementIdentifier DialogModelMenuModelAdapter::GetElementIdentifierAt(
     size_t index) const {
-  DCHECK_LT(index, GetItemCount());
+  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
 
   const DialogModelField* const field = GetField(index);
-  return field->AsMenuItem(GetPassKey())->id(GetPassKey());
+  return field->AsMenuItem()->id();
 }
 
 MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(size_t index) const {
@@ -110,14 +109,14 @@ void DialogModelMenuModelAdapter::ActivatedAt(size_t index) {
 }
 
 void DialogModelMenuModelAdapter::ActivatedAt(size_t index, int event_flags) {
-  DialogModelMenuItem* menu_item = GetField(index)->AsMenuItem(GetPassKey());
-  menu_item->OnActivated(GetPassKey(), event_flags);
+  DialogModelMenuItem* menu_item = GetField(index)->AsMenuItem();
+  menu_item->OnActivated(DialogModelFieldHost::GetPassKey(), event_flags);
 }
 
 const DialogModelField* DialogModelMenuModelAdapter::GetField(
     size_t index) const {
-  DCHECK_LT(index, GetItemCount());
-  return model_->fields(GetPassKey())[index].get();
+  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
+  return model_->fields(DialogModelHost::GetPassKey())[index].get();
 }
 
 DialogModelField* DialogModelMenuModelAdapter::GetField(size_t index) {

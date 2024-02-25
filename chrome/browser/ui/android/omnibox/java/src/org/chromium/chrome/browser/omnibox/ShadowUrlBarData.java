@@ -9,9 +9,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.url.GURL;
 
-/**
- * Shadow of the UrlBarData, that permits stubbing/mocking static methods for testing.
- */
+/** Shadow of the UrlBarData, that permits stubbing/mocking static methods for testing. */
 @Implements(UrlBarData.class)
 public class ShadowUrlBarData {
     public static boolean sShouldShowNextUrl = true;

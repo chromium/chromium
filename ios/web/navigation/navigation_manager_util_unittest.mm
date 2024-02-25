@@ -44,7 +44,7 @@ TEST_F(NavigationManagerUtilTest, GetCommittedItemWithUniqueID) {
   // Start with NavigationManager that only has a pending item.
   std::unique_ptr<NavigationContextImpl> context =
       NavigationContextImpl::CreateNavigationContext(
-          /*web_state=*/nullptr, GURL::EmptyGURL(),
+          /*web_state=*/nullptr, GURL(),
           /*has_user_gesture=*/false, ui::PAGE_TRANSITION_TYPED,
           /*is_renderer_initiated=*/false);
   manager_->AddPendingItem(

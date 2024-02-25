@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 
-#include <string.h>
 #include <set>
 
 #include "ash/style/style_util.h"
@@ -29,6 +28,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -78,6 +78,8 @@ bool IsBottom(TapLabelPosition position) {
 }
 
 class ActionLabelTap : public ActionLabel {
+  METADATA_HEADER(ActionLabelTap, ActionLabel)
+
  public:
   ActionLabelTap(MouseAction mouse_action, TapLabelPosition label_position)
       : ActionLabel(mouse_action), label_position_(label_position) {
@@ -99,7 +101,7 @@ class ActionLabelTap : public ActionLabel {
       return;
     }
 
-    auto* action_view = static_cast<ActionView*>(parent());
+    auto* action_view = GetParent();
 
     switch (label_position_) {
       case TapLabelPosition::kBottomLeft:
@@ -154,7 +156,7 @@ class ActionLabelTap : public ActionLabel {
       TapLabelPosition label_position) {
     DCHECK_NE(label_position_, label_position);
     DCHECK_NE(label_position, TapLabelPosition::kNone);
-    auto* action_view = static_cast<ActionView*>(parent());
+    auto* action_view = GetParent();
     auto fix_pos = action_view->GetTouchCenterInWindow();
     fix_pos.Offset(-touch_point_size_.width() / 2,
                    -touch_point_size_.height() / 2);
@@ -182,7 +184,12 @@ class ActionLabelTap : public ActionLabel {
   TapLabelPosition label_position_ = TapLabelPosition::kNone;
 };
 
+BEGIN_METADATA(ActionLabelTap)
+END_METADATA
+
 class ActionLabelMove : public ActionLabel {
+  METADATA_HEADER(ActionLabelMove, ActionLabel)
+
  public:
   ActionLabelMove(const std::u16string& text, size_t index)
       : ActionLabel(text, index) {}
@@ -204,20 +211,23 @@ class ActionLabelMove : public ActionLabel {
     int y = center + kDirection[index_][1] * offset_to_center -
             label_size.height() / 2;
     SetPosition(gfx::Point(x, y));
-    static_cast<ActionView*>(parent())->SetTouchPointCenter(
-        gfx::Point(center, center));
+    GetParent()->SetTouchPointCenter(gfx::Point(center, center));
   }
 
   void UpdateLabelPositionType(TapLabelPosition label_position) override {}
 };
 
+BEGIN_METADATA(ActionLabelMove)
+END_METADATA
+
 }  // namespace
 
-std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
-                                            ActionType action_type,
-                                            const InputElement& input_element,
-                                            TapLabelPosition label_position) {
-  std::vector<ActionLabel*> labels;
+std::vector<raw_ptr<ActionLabel, VectorExperimental>> ActionLabel::Show(
+    views::View* parent,
+    ActionType action_type,
+    const InputElement& input_element,
+    TapLabelPosition label_position) {
+  std::vector<raw_ptr<ActionLabel, VectorExperimental>> labels;
   gfx::Size touch_point_size;
 
   switch (action_type) {
@@ -263,7 +273,7 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
       break;
   }
 
-  for (auto* label : labels) {
+  for (arc::input_overlay::ActionLabel* label : labels) {
     label->Init();
     label->set_touch_point_size(touch_point_size);
   }
@@ -283,7 +293,11 @@ ActionLabel::ActionLabel(MouseAction mouse_action)
     : mouse_action_(mouse_action) {}
 
 ActionLabel::ActionLabel(const std::u16string& text, size_t index)
-    : views::LabelButton(views::Button::PressedCallback(), text),
+    : views::LabelButton(
+          IsBeta() ? base::BindRepeating(&ActionLabel::OnButtonPressed,
+                                         base::Unretained(this))
+                   : views::Button::PressedCallback(),
+          text),
       index_(index) {
   DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
 }
@@ -298,7 +312,7 @@ void ActionLabel::SetTextActionLabel(const std::u16string& text) {
     return;
   }
 
-  if (text == kUnknownBind) {
+  if (text == kUnknownBind && !GetParent()->action()->is_new()) {
     SetToEditUnbindInput();
   } else {
     SetToEditDefault();
@@ -327,7 +341,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
         SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
       } else {
         SetFocusBehavior(FocusBehavior::ALWAYS);
-        static_cast<ActionView*>(parent())->ShowInfoMsg(
+        GetParent()->ShowInfoMsg(
             l10n_util::GetStringUTF8(
                 IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
             this);
@@ -349,6 +363,10 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       NOTREACHED();
       break;
   }
+}
+
+void ActionLabel::RemoveNewState() {
+  SetBackgroundForEdit();
 }
 
 void ActionLabel::ClearFocus() {
@@ -377,6 +395,12 @@ void ActionLabel::OnSiblingUpdateFocus(bool sibling_focused) {
   }
 }
 
+ActionView* ActionLabel::GetParent() {
+  auto* view = views::AsViewClass<ActionView>(parent());
+  DCHECK(view);
+  return view;
+}
+
 gfx::Size ActionLabel::CalculatePreferredSize() const {
   auto size = LabelButton::CalculatePreferredSize();
   size.SetToMax(kLabelSize);
@@ -391,7 +415,7 @@ void ActionLabel::ChildPreferredSizeChanged(View* child) {
 bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
   DCHECK(parent());
   auto code = event.code();
-  auto* parent_view = static_cast<ActionView*>(parent());
+  auto* parent_view = GetParent();
   if (GetDisplayText(code) == GetText() ||
       parent_view->ShouldShowErrorMsg(code)) {
     return true;
@@ -416,15 +440,14 @@ void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
-  static_cast<ActionView*>(parent())->OnChildLabelUpdateFocus(this,
-                                                              /*focus=*/true);
+  GetParent()->OnChildLabelUpdateFocus(this, /*focus=*/true);
 
   if (IsInputUnbound()) {
-    static_cast<ActionView*>(parent())->ShowErrorMsg(
+    GetParent()->ShowErrorMsg(
         l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this,
         /*ax_annouce=*/false);
   } else {
-    static_cast<ActionView*>(parent())->ShowFocusInfoMsg(
+    GetParent()->ShowFocusInfoMsg(
         l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY), this);
   }
 }
@@ -432,9 +455,13 @@ void ActionLabel::OnFocus() {
 void ActionLabel::OnBlur() {
   SetToEditDefault();
   LabelButton::OnBlur();
-  static_cast<ActionView*>(parent())->OnChildLabelUpdateFocus(this,
-                                                              /*focus=*/false);
-  static_cast<ActionView*>(parent())->RemoveMessage();
+  GetParent()->OnChildLabelUpdateFocus(this, /*focus=*/false);
+  GetParent()->RemoveMessage();
+}
+
+void ActionLabel::OnButtonPressed() {
+  DCHECK(IsBeta());
+  GetParent()->ShowButtonOptionsMenu();
 }
 
 void ActionLabel::SetToViewMode() {
@@ -447,13 +474,13 @@ void ActionLabel::SetToViewMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
 
@@ -484,13 +511,13 @@ void ActionLabel::SetToEditMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
   SetToEditDefault();
@@ -501,7 +528,7 @@ void ActionLabel::SetToEditDefault() {
                                      gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kTextColorDefault);
   SetBackgroundForEdit();
-  views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+  views::FocusRing::Get(this)->SetColorId(std::nullopt);
 }
 
 void ActionLabel::SetToEditHover(bool hovered) {
@@ -509,7 +536,7 @@ void ActionLabel::SetToEditHover(bool hovered) {
     views::FocusRing::Get(this)->SetColorId(
         ui::kColorAshActionLabelFocusRingHover);
   } else {
-    views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+    views::FocusRing::Get(this)->SetColorId(std::nullopt);
   }
 }
 
@@ -546,7 +573,9 @@ void ActionLabel::SetToEditInactive() {
 
 void ActionLabel::SetBackgroundForEdit() {
   SetBackground(views::CreateRoundedRectBackground(
-      IsInputUnbound() ? kEditedUnboundBgColor : kBackgroundColorDefault,
+      IsInputUnbound() && !(GetParent()->action()->is_new())
+          ? kEditedUnboundBgColor
+          : kBackgroundColorDefault,
       kCornerRadius));
 }
 
@@ -566,7 +595,7 @@ std::u16string ActionLabel::CalculateAccessibleName() {
       .append(GetDisplayTextAccessibleName(label()->GetText()));
 }
 
-BEGIN_METADATA(ActionLabel, views::LabelButton)
+BEGIN_METADATA(ActionLabel)
 END_METADATA
 
 }  // namespace arc::input_overlay

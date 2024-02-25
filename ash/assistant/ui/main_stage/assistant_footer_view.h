@@ -11,6 +11,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -26,6 +27,8 @@ class SuggestionContainerView;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
     : public views::View,
       public AssistantStateObserver {
+  METADATA_HEADER(AssistantFooterView, views::View)
+
  public:
   explicit AssistantFooterView(AssistantViewDelegate* delegate);
 
@@ -35,7 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   ~AssistantFooterView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
 
@@ -50,13 +52,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   void OnAnimationStarted(const ui::CallbackLayerAnimationObserver& observer);
   bool OnAnimationEnded(const ui::CallbackLayerAnimationObserver& observer);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      delegate_;  // Owned by Shell.
+  const raw_ptr<AssistantViewDelegate> delegate_;  // Owned by Shell.
 
-  raw_ptr<SuggestionContainerView, ExperimentalAsh>
-      suggestion_container_;  // Owned by view hierarchy.
-  raw_ptr<AssistantOptInView, ExperimentalAsh>
-      opt_in_view_;  // Owned by view hierarchy.
+  raw_ptr<SuggestionContainerView>
+      suggestion_container_;                 // Owned by view hierarchy.
+  raw_ptr<AssistantOptInView> opt_in_view_;  // Owned by view hierarchy.
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 };

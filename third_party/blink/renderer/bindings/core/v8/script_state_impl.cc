@@ -16,16 +16,16 @@ void ScriptStateImpl::Init() {
 
 // static
 ScriptState* ScriptStateImpl::Create(v8::Local<v8::Context> context,
-                                     scoped_refptr<DOMWrapperWorld> world,
+                                     DOMWrapperWorld* world,
                                      ExecutionContext* execution_context) {
   return MakeGarbageCollected<ScriptStateImpl>(context, std::move(world),
                                                execution_context);
 }
 
 ScriptStateImpl::ScriptStateImpl(v8::Local<v8::Context> context,
-                                 scoped_refptr<DOMWrapperWorld> world,
+                                 DOMWrapperWorld* world,
                                  ExecutionContext* execution_context)
-    : ScriptState(context, std::move(world), execution_context),
+    : ScriptState(context, world, execution_context),
       execution_context_(execution_context) {}
 
 void ScriptStateImpl::Trace(Visitor* visitor) const {

@@ -10,5 +10,6 @@ Filtered by 'AAA':
 
 Filtered by 'BBB':
  BBB selfTime: 80
+  AAA selfTime: 80
 
 

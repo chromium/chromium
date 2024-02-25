@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 android_library("java") {
@@ -29,21 +30,32 @@ android_library("java") {
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetContent.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaInstallBottomSheetView.java",
-    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetContent.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetCoordinator.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetView.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetViewBinder.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreProperties.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetContent.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetMediator.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetView.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetViewBinder.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallProperties.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/browser/android/webapk/proto:proto_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/infobars/android:java",
-    "//components/infobars/android:java_resources",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -65,7 +77,7 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
-    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
   ]
 }
 
@@ -97,15 +109,26 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/google_play.png",
     "java/res/drawable-xxxhdpi/star_gray.png",
     "java/res/drawable-xxxhdpi/star_green.png",
+    "java/res/drawable/pwa_restore_app_item_background_bottom.xml",
+    "java/res/drawable/pwa_restore_app_item_background_middle.xml",
+    "java/res/drawable/pwa_restore_app_item_background_top.xml",
+    "java/res/drawable/pwa_restore_icon.xml",
     "java/res/drawable/rating_bar.xml",
     "java/res/layout/add_to_homescreen_dialog.xml",
     "java/res/layout/image_zoom_view.xml",
     "java/res/layout/pwa_install_bottom_sheet_content.xml",
+    "java/res/layout/pwa_restore_bottom_sheet_content.xml",
+    "java/res/layout/pwa_restore_bottom_sheet_preview.xml",
+    "java/res/layout/pwa_restore_list_item_app.xml",
+    "java/res/layout/pwa_restore_list_item_label.xml",
+    "java/res/layout/pwa_universal_install_bottom_sheet_content.xml",
     "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxxhdpi/shortcut_icon_shadow.png",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
   ]
@@ -114,6 +137,7 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/webapk/android/libs/common:splash_resources",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
   ]
 }
 
@@ -168,16 +192,51 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/webapps/AddToHomescreenDialogViewTest.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenMediatorTest.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenViewBinderTest.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetContentTest.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetCoordinatorTest.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetContentTest.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinatorTest.java",
   ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//base/test:test_support_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/share/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_junit_test_support",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.components.webapps"
+
+  sources = [ "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetViewRenderTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:unit_device_javatests",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }

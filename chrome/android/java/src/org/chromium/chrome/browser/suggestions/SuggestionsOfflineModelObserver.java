@@ -63,9 +63,7 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
         }
     }
 
-    /**
-     * Update offline information for all offlinable suggestions by querying offline page model.
-     */
+    /** Update offline information for all offlinable suggestions by querying offline page model. */
     public void updateAllSuggestionsOfflineAvailability() {
         for (T suggestion : getOfflinableSuggestions()) {
             updateSuggestionOfflineAvailability(suggestion);
@@ -86,7 +84,9 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
         // TabId is relevant only for recent tab offline pages, which we do not handle here, so we
         // do not care about tab id.
         mOfflinePageBridge.selectPageForOnlineUrl(
-                suggestion.getUrl(), /* tabId = */ 0, new Callback<OfflinePageItem>() {
+                suggestion.getUrl(),
+                /* tabId= */ 0,
+                new Callback<OfflinePageItem>() {
                     @Override
                     public void onResult(OfflinePageItem item) {
                         onSuggestionOfflineIdChanged(suggestion, item);
@@ -100,8 +100,9 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
      */
     public static boolean isPrefetchedOfflinePage(@Nullable OfflinePageItem item) {
         return item != null
-                && TextUtils.equals(item.getClientId().getNamespace(),
-                           OfflinePageBridge.SUGGESTED_ARTICLES_NAMESPACE);
+                && TextUtils.equals(
+                        item.getClientId().getNamespace(),
+                        OfflinePageBridge.SUGGESTED_ARTICLES_NAMESPACE);
     }
 
     /**

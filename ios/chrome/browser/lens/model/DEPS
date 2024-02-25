@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/search_engines/model",
+]
+
+specific_include_rules = {
+  "^lens_browser_agent.mm": [
+    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  ],
+  "^lens_tab_helper.mm": [
+    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  ],
+}

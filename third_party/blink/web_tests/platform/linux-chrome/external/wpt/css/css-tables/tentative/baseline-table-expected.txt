@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+[FAIL] .container 1
+  assert_equals: \n<div class="container">\n  Xp<table data-offset-y="10">\n  </table>\n</div>\noffsetTop expected 10 but got 12
+[FAIL] .container 2
+  assert_equals: \n<div class="container">\n  Xp<table data-offset-y="10">\n    <tbody>\n    </tbody>\n  </table>\n</div>\noffsetTop expected 10 but got 12
+[FAIL] .container 3
+  assert_equals: \n<div class="container">\n  Xp<table data-offset-y="25">\n    <tbody>\n      <tr></tr>\n    </tbody>\n  </table>\n</div>\noffsetTop expected 25 but got 27
+[FAIL] .container 4
+  assert_equals: \n<div class="container">\n  Xp<table style="font: 12px fixed" data-offset-y="25">\n    <tbody>\n      <tr></tr>\n      <tr><td>1,0</td></tr>\n    </tbody>\n  </table>\n</div>\noffsetTop expected 25 but got 27
+[FAIL] .container 5
+  assert_equals: \n<div class="container">\n  Xp<table style="font-size: 24px" data-offset-y="2">\n    <tbody>\n      <tr><td style="vertical-align:baseline">Xp</td></tr>\n    </tbody>\n  </table></div>\noffsetTop expected 2 but got 3
+[FAIL] .container 8
+  assert_equals: \n<div class="container">\n  Xp<table style="vertical-align:middle" data-offset-y="5"></table>\n</div>\noffsetTop expected 5 but got 16
+[FAIL] .container 10
+  assert_equals: \n<div class="container">\n  Xp<table style="vertical-align:top" data-offset-y="0"></table>\n  <table style="vertical-align:middle" data-offset-y="5"></table>\n  <table style="vertical-align:bottom" data-offset-y="20"></table>\n</div>\noffsetTop expected 5 but got 16
+[FAIL] .container 11
+  assert_equals: \n<div class="container">\n  Xp<table data-offset-y="25" data-expected-height="50">\n    <tbody><tr style="height:20px"></tr>\n    <tr></tr>\n  </tbody></table>\n</div>\noffsetTop expected 25 but got 27
+[FAIL] .container 12
+  assert_equals: \n<div class="container">\n  Xp<table data-offset-y="25" data-expected-height="68">\n    <tbody><tr style="height:20px"></tr>\n    <tr><td style="font-size:10px">X</td></tr>\n  </tbody></table>\n</div>\noffsetTop expected 25 but got 27
+[FAIL] .container 13
+  assert_equals: \n<div class="container">\n  Xp<table>\n    <tbody><tr>\n      <td rowspan="2" style="height:80px"></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td></td>\n    </tr>\n  </tbody></table><div style="display:inline-block" data-offset-y="15">pX</div>\n</div>\noffsetTop expected 15 but got 13
+Harness: the test ran to completion.

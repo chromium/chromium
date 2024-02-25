@@ -1,0 +1,7 @@
+Test that CanvasCreated breakpoing is hit when offscreen context is created in the page
+Paused: {
+    eventName : instrumentation:canvasContextCreated
+}
+PAGE: created first context (should pause)
+PAGE: created first context (should NOT pause)
+

@@ -6,12 +6,8 @@ include_rules = [
     "+third_party/blink/renderer/platform/mojo",
 
     # Dependencies.
-    "+base/containers/span.h",
-    "+base/observer_list.h",
     "+base/strings/latin1_string_conversions.h",
     "+base/task/current_thread.h",
-    "+mojo/public/cpp/base/time_mojom_traits.h",
-    "+mojo/public/mojom/base/string16.mojom-blink.h",
     "+skia/public/mojom/bitmap_skbitmap_mojom_traits.h",
 
     "+third_party/blink/renderer/platform/blob/blob_data.h",

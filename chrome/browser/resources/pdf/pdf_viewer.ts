@@ -15,32 +15,49 @@ import './pdf_viewer_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 
-import {Bookmark} from './bookmark_type.js';
-import {BrowserApi} from './browser_api.js';
-import {Attachment, DocumentMetadata, ExtendedKeyEvent, FittingType, Point, SaveRequestType} from './constants.js';
-import {MessageData, PluginController} from './controller.js';
+import type {Bookmark} from './bookmark_type.js';
+import type {BrowserApi} from './browser_api.js';
+import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
+import {FittingType, SaveRequestType} from './constants.js';
+import type {MessageData} from './controller.js';
+import {PluginController} from './controller.js';
 // <if expr="enable_ink">
-import {ContentController} from './controller.js';
+import type {ContentController} from './controller.js';
 // </if>
-import {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, NavigateDetail} from './elements/viewer-bookmark.js';
-import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
-import {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
-import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
-import {ViewerToolbarElement} from './elements/viewer-toolbar.js';
+import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer-bookmark.js';
+import {ChangePageOrigin} from './elements/viewer-bookmark.js';
+import type {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
+import type {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
+import type {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
+import type {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {record, UserAction} from './metrics.js';
+import {record, recordEnumeration, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
 import {getTemplate} from './pdf_viewer.html.js';
-import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import type {KeyEventData} from './pdf_viewer_base.js';
+import {PdfViewerBaseElement} from './pdf_viewer_base.js';
+import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+
+/**
+ * Keep in sync with the values for enum PDFPostMessageDataType in
+ * tools/metrics/histograms/metadata/pdf/enums.xml.
+ * These values are persisted to logs. Entries should not be renumbered, removed
+ * or reused.
+ */
+enum PostMessageDataType {
+  GET_SELECTED_TEXT = 0,
+  PRINT = 1,
+  SELECT_ALL = 2,
+}
 
 interface EmailMessageData {
   type: string;
@@ -249,6 +266,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private docLength_: number;
   private documentHasFocus_: boolean;
   private documentMetadata_: DocumentMetadata;
+  private embedded_: boolean;
   private fileName_: string;
   private hadPassword_: boolean;
   private hasEdits_: boolean;
@@ -312,8 +330,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.inkController_.init(this.viewport);
     this.tracker.add(
         this.inkController_.getEventTarget(),
-        InkControllerEventType.HAS_UNSAVED_CHANGES,
-        () => chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true));
+        InkControllerEventType.HAS_UNSAVED_CHANGES, () => {
+          // TODO(crbug.com/1445746): Write an equivalent API call for
+          // chrome.pdfViewerPrivate.
+          if (!this.pdfOopifEnabled) {
+            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true);
+          }
+        });
     // </if>
 
     this.fileName_ = getFilenameFromURL(this.originalUrl);
@@ -334,9 +357,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         new NavigatorDelegateImpl(browserApi));
 
     // Listen for save commands from the browser.
-    if (chrome.mimeHandlerPrivate && chrome.mimeHandlerPrivate.onSave) {
+    if (this.pdfOopifEnabled) {
+      chrome.pdfViewerPrivate.onSave.addListener(this.onSave_.bind(this));
+    } else {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
+
+    this.embedded_ = this.browserApi!.getStreamInfo().embedded;
   }
 
   handleKeyEvent(e: KeyboardEvent) {
@@ -363,7 +390,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     switch (e.key) {
       case 'a':
-        if (hasCtrlModifier(e)) {
+        // Take over Ctrl+A (but not other combinations like Ctrl-Shift-A).
+        // Note that on macOS, "Ctrl" is Command.
+        if (hasCtrlModifierOnly(e)) {
           this.pluginController_!.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
@@ -693,20 +722,28 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return true;
     }
 
+    let messageType;
     switch (message.data.type.toString()) {
       case 'getSelectedText':
+        messageType = PostMessageDataType.GET_SELECTED_TEXT;
         this.pluginController_!.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
         break;
       case 'print':
+        messageType = PostMessageDataType.PRINT;
         this.pluginController_!.print();
         break;
       case 'selectAll':
+        messageType = PostMessageDataType.SELECT_ALL;
         this.pluginController_!.selectAll();
         break;
       default:
         return false;
     }
+
+    recordEnumeration(
+        'PDF.PostMessageDataType', messageType,
+        Object.keys(PostMessageDataType).length);
     return true;
   }
 
@@ -912,7 +949,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             writer.write(blob);
             // Unblock closing the window now that the user has saved
             // successfully.
-            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            // TODO(crbug.com/1445746): Write an equivalent API call for
+            // chrome.pdfViewerPrivate.
+            if (!this.pdfOopifEnabled) {
+              chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            }
           });
         });
   }
@@ -1043,7 +1084,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             writer.write(blob);
             // Unblock closing the window now that the user has saved
             // successfully.
-            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            // TODO(crbug.com/1445746): Write an equivalent API call for
+            // chrome.pdfViewerPrivate.
+            if (!this.pdfOopifEnabled) {
+              chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            }
           });
         });
 

@@ -8,17 +8,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-/**
- * Helper methods to deal with threading related tasks.
- */
+/** Helper methods to deal with threading related tasks. */
 public class ThreadUtils {
 
     private static final Object sLock = new Object();
@@ -33,9 +33,8 @@ public class ThreadUtils {
      * A helper object to ensure that interactions with a particular object only happens on a
      * particular thread.
      *
-     * Example:
-     * <pre>
-     * {@code
+     * <pre>Example:
+     *
      * class Foo {
      *     // Valid thread is set during construction here.
      *     private final ThreadChecker mThreadChecker = new ThreadChecker();
@@ -44,33 +43,27 @@ public class ThreadUtils {
      *         mThreadChecker.assertOnValidThread();
      *     }
      * }
-     * }
-     * </pre>
-     *
-     * Another way to use this class is to also use the baked in support for destruction:
-     * <pre>
-     * {@code
-     * class Foo {
-     *     // Valid thread is set during construction here.
-     *     private final ThreadChecker mThreadChecker = new ThreadChecker();
-     *
-     *     public void doFoo() {
-     *         mThreadChecker.assertOnValidThreadAndState();
-     *     }
-     * }
-     * }
      * </pre>
      */
+    // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
-        private final long mThreadId = Process.myTid();
+        private long mThreadId;
+
+        public ThreadChecker() {
+            resetThreadId();
+        }
+
+        public void resetThreadId() {
+            mThreadId = BuildConfig.ENABLE_ASSERTS ? Process.myTid() : 0;
+        }
 
         /**
          * Asserts that the current thread is the same as the one the ThreadChecker was constructed
          * on.
          */
         public void assertOnValidThread() {
-            assert sThreadAssertsDisabledForTesting
-                    || mThreadId == Process.myTid() : "Must only be used on a single thread.";
+            assert sThreadAssertsDisabledForTesting || mThreadId == Process.myTid()
+                    : "Must only be used on a single thread.";
         }
     }
 
@@ -98,9 +91,13 @@ public class ThreadUtils {
                 // Must come after PostTask is initialized since it uses PostTask.
                 TraceEvent.onUiThreadReady();
             } else if (sUiThreadHandler.getLooper() != looper) {
-                throw new RuntimeException("UI thread looper is already set to "
-                        + sUiThreadHandler.getLooper() + " (Main thread looper is "
-                        + Looper.getMainLooper() + "), cannot set to new looper " + looper);
+                throw new RuntimeException(
+                        "UI thread looper is already set to "
+                                + sUiThreadHandler.getLooper()
+                                + " (Main thread looper is "
+                                + Looper.getMainLooper()
+                                + "), cannot set to new looper "
+                                + looper);
             }
         }
     }
@@ -285,9 +282,7 @@ public class ThreadUtils {
         return getUiThreadHandler().getLooper();
     }
 
-    /**
-     * Set thread priority to audio.
-     */
+    /** Set thread priority to audio. */
     @CalledByNative
     public static void setThreadPriorityAudio(int tid) {
         Process.setThreadPriority(tid, Process.THREAD_PRIORITY_AUDIO);

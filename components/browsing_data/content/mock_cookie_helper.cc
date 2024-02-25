@@ -5,13 +5,13 @@
 #include "components/browsing_data/content/mock_cookie_helper.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "net/cookies/cookie_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_data {
 
@@ -34,9 +34,9 @@ void MockCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
 void MockCookieHelper::AddCookieSamples(
     const GURL& url,
     const std::string& cookie_line,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
+    std::optional<net::CookiePartitionKey> cookie_partition_key) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
       cookie_partition_key));
 
   if (cc.get()) {

@@ -7,7 +7,8 @@ import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
+import type {TestPaymentsManager} from './autofill_fake_data.js';
+import {createCreditCardEntry, createIbanEntry} from './autofill_fake_data.js';
 import {createPaymentsSection, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod} from './payments_section_utils.js';
 // clang-format on
 
@@ -27,7 +28,7 @@ suite('PaymentSectionFocusTests', function() {
         [
           createIbanEntry('FI1410093000123458', 'NickName'),
         ],
-        [], {credit_card_enabled: {value: true}});
+        {credit_card_enabled: {value: true}});
     const manager = (PaymentsManagerImpl.getInstance() as TestPaymentsManager);
 
     const addButton = section.shadowRoot!.querySelector('#addPaymentMethods');

@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UPDATE_SERVICE_IMPL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/updater/update_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -31,6 +31,7 @@ class UpdateClient;
 namespace updater {
 class Configurator;
 class PersistedData;
+class PolicyService;
 struct RegistrationRequest;
 
 using AppClientInstallData = base::flat_map<std::string, std::string>;
@@ -117,6 +118,15 @@ class UpdateServiceImpl : public UpdateService {
       Callback callback,
       bool update_blocked);
 
+  void OnShouldBlockForceInstallForMeteredNetwork(
+      const std::vector<std::string>& app_ids,
+      const AppClientInstallData& app_client_install_data,
+      const AppInstallDataIndex& app_install_data_index,
+      PolicySameVersionUpdate policy_same_version_update,
+      StateChangeCallback state_update,
+      Callback callback,
+      bool update_blocked);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<Configurator> config_;
@@ -133,6 +143,27 @@ class UpdateServiceImpl : public UpdateService {
 
 namespace internal {
 UpdateService::Result ToResult(update_client::Error error);
+
+void GetComponents(
+    scoped_refptr<PolicyService> policy_service,
+    crx_file::VerifierFormat verifier_format,
+    scoped_refptr<PersistedData> persisted_data,
+    const AppClientInstallData& app_client_install_data,
+    const AppInstallDataIndex& app_install_data_index,
+    UpdateService::Priority priority,
+    bool update_blocked,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<std::optional<update_client::CrxComponent>>&)>
+        callback);
+
+#if BUILDFLAG(IS_WIN)
+std::string GetInstallerText(UpdateService::ErrorCategory error_category,
+                             int error_code,
+                             int extra_code,
+                             bool is_installer_error = false);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace internal
 
 }  // namespace updater

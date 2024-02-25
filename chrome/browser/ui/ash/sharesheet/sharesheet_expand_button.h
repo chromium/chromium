@@ -15,9 +15,9 @@ namespace ash {
 namespace sharesheet {
 
 class SharesheetExpandButton : public views::Button {
- public:
-  METADATA_HEADER(SharesheetExpandButton);
+  METADATA_HEADER(SharesheetExpandButton, views::Button)
 
+ public:
   explicit SharesheetExpandButton(PressedCallback callback);
   SharesheetExpandButton(const SharesheetExpandButton&) = delete;
   SharesheetExpandButton& operator=(const SharesheetExpandButton&) = delete;
@@ -26,8 +26,8 @@ class SharesheetExpandButton : public views::Button {
   void SetToExpandedState();
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace sharesheet

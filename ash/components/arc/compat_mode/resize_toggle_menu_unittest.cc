@@ -51,7 +51,7 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
         on_bubble_widget_closing_callback_, widget_.get(), pref_delegate());
   }
 
-  bool IsCommandButtonDisabled(ResizeCompatMode command_id) {
+  bool IsCommandButtonDisabled(ash::ResizeCompatMode command_id) {
     return GetButtonByCommandId(command_id)->GetState() ==
            views::Button::ButtonState::STATE_DISABLED;
   }
@@ -60,7 +60,7 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
     return on_bubble_widget_closing_callback_called_;
   }
 
-  void ClickButton(ResizeCompatMode command_id) {
+  void ClickButton(ash::ResizeCompatMode command_id) {
     const auto* button = GetButtonByCommandId(command_id);
     LeftClickOnView(widget_.get(), button);
     SyncResizeLockPropertyWithMojoState(widget());
@@ -72,13 +72,13 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
   ResizeToggleMenu* resize_toggle_menu() { return resize_toggle_menu_.get(); }
 
  private:
-  views::Button* GetButtonByCommandId(ResizeCompatMode command_id) {
+  views::Button* GetButtonByCommandId(ash::ResizeCompatMode command_id) {
     switch (command_id) {
-      case ResizeCompatMode::kPhone:
+      case ash::ResizeCompatMode::kPhone:
         return resize_toggle_menu_->phone_button_;
-      case ResizeCompatMode::kTablet:
+      case ash::ResizeCompatMode::kTablet:
         return resize_toggle_menu_->tablet_button_;
-      case ResizeCompatMode::kResizable:
+      case ash::ResizeCompatMode::kResizable:
         return resize_toggle_menu_->resizable_button_;
     }
   }
@@ -108,21 +108,21 @@ TEST_F(ResizeToggleMenuTest, TestResizePhone) {
   EXPECT_TRUE(IsMenuRunning());
 
   // Test that resize command is properly handled.
-  ClickButton(ResizeCompatMode::kPhone);
+  ClickButton(ash::ResizeCompatMode::kPhone);
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
   // Test that the selected item is changed dynamically after the resize.
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 
   // Test that the item is selected after re-showing.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 }
 
 TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
@@ -130,21 +130,21 @@ TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
   EXPECT_TRUE(IsMenuRunning());
 
   // Test that resize command is properly handled.
-  ClickButton(ResizeCompatMode::kTablet);
+  ClickButton(ash::ResizeCompatMode::kTablet);
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
 
   // Test that the selected item is changed dynamically after the resize.
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 
   // Test that the item is selected after re-showing.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 }
 
 TEST_F(ResizeToggleMenuTest, TestResizable) {
@@ -156,21 +156,21 @@ TEST_F(ResizeToggleMenuTest, TestResizable) {
   SyncResizeLockPropertyWithMojoState(widget());
 
   // Test that resize command is properly handled.
-  ClickButton(ResizeCompatMode::kResizable);
+  ClickButton(ash::ResizeCompatMode::kResizable);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(kTestAppId),
             mojom::ArcResizeLockState::OFF);
 
   // Test that the selected item is changed dynamically.
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 
   // Test that the item is selected after the resize.
   ReshowMenu();
   EXPECT_TRUE(IsMenuRunning());
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 }
 
 // Test that the button state is dynamically changed even if no bounds change
@@ -179,27 +179,27 @@ TEST_F(ResizeToggleMenuTest, TestButtonStateChangeWithoutBoundsChange) {
   // Verify pre-conditions.
   EXPECT_TRUE(IsMenuRunning());
 
-  ClickButton(ResizeCompatMode::kPhone);
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  ClickButton(ash::ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 
-  ClickButton(ResizeCompatMode::kResizable);
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  ClickButton(ash::ResizeCompatMode::kResizable);
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 
-  ClickButton(ResizeCompatMode::kPhone);
-  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
-  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+  ClickButton(ash::ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsCommandButtonDisabled(ash::ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ash::ResizeCompatMode::kResizable));
 }
 
 // Test that the menu is closed with delay when the button is clicked.
 TEST_F(ResizeToggleMenuTest, TestDelayedAutoClose) {
   EXPECT_TRUE(IsMenuRunning());
 
-  ClickButton(ResizeCompatMode::kPhone);
+  ClickButton(ash::ResizeCompatMode::kPhone);
   EXPECT_TRUE(IsMenuRunning());
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
@@ -211,11 +211,11 @@ TEST_F(ResizeToggleMenuTest, TestDelayedAutoClose) {
 TEST_F(ResizeToggleMenuTest, TestDelayedAutoCloseCancel) {
   EXPECT_TRUE(IsMenuRunning());
 
-  ClickButton(ResizeCompatMode::kPhone);
+  ClickButton(ash::ResizeCompatMode::kPhone);
   EXPECT_TRUE(IsMenuRunning());
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
-  ClickButton(ResizeCompatMode::kTablet);
+  ClickButton(ash::ResizeCompatMode::kTablet);
   EXPECT_TRUE(IsMenuRunning());
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsMenuRunning());
@@ -227,7 +227,7 @@ TEST_F(ResizeToggleMenuTest, TestDelayedAutoCloseCancel) {
 TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
   base::UserActionTester user_action_tester;
 
-  ClickButton(ResizeCompatMode::kPhone);
+  ClickButton(ash::ResizeCompatMode::kPhone);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToPhone)));
@@ -235,7 +235,7 @@ TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::TurnOnResizeLock)));
 
-  ClickButton(ResizeCompatMode::kTablet);
+  ClickButton(ash::ResizeCompatMode::kTablet);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToTablet)));
@@ -243,12 +243,12 @@ TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::TurnOnResizeLock)));
 
-  ClickButton(ResizeCompatMode::kResizable);
+  ClickButton(ash::ResizeCompatMode::kResizable);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::TurnOffResizeLock)));
 
-  ClickButton(ResizeCompatMode::kPhone);
+  ClickButton(ash::ResizeCompatMode::kPhone);
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToPhone)));

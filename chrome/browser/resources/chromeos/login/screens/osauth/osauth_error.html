@@ -1,0 +1,24 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+</style>
+<oobe-adaptive-dialog id="osauthErrorDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'osauthErrorTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="retryButton" inverse
+        class="focus-on-show"
+        text-key="osauthRetryButton"
+        on-click="onRetryLoginButtonPressed"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

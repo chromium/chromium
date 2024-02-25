@@ -96,8 +96,8 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
       hostnames_to_allow_unknown_roots.insert("");
     }
     return std::make_unique<ProofVerifierChromium>(
-        context->cert_verifier(), context->ct_policy_enforcer(),
-        context->transport_security_state(), context->sct_auditing_delegate(),
+        context->cert_verifier(), context->transport_security_state(),
+        context->sct_auditing_delegate(),
         std::move(hostnames_to_allow_unknown_roots), anonymization_key);
   }
 
@@ -119,18 +119,18 @@ void RecordNetLogQuicSessionClientStateChanged(
     NetLogWithSource& net_log,
     WebTransportState last_state,
     WebTransportState next_state,
-    const absl::optional<WebTransportError>& error) {
+    const std::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        base::Value::Dict dict;
-        dict.Set("last_state", WebTransportStateString(last_state));
-        dict.Set("next_state", WebTransportStateString(next_state));
+        auto dict = base::Value::Dict()
+                        .Set("last_state", WebTransportStateString(last_state))
+                        .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
-          base::Value::Dict error_dict;
-          error_dict.Set("net_error", error->net_error);
-          error_dict.Set("quic_error", error->quic_error);
-          error_dict.Set("details", error->details);
-          dict.Set("error", std::move(error_dict));
+          dict.Set("error",
+                   base::Value::Dict()
+                       .Set("net_error", error->net_error)
+                       .Set("quic_error", static_cast<int>(error->quic_error))
+                       .Set("details", error->details));
         }
         return dict;
       });
@@ -189,14 +189,12 @@ class DedicatedWebTransportHttp3ClientSession
       quic::QuicConnection* connection,
       const quic::QuicServerId& server_id,
       quic::QuicCryptoClientConfig* crypto_config,
-      quic::QuicClientPushPromiseIndex* push_promise_index,
       DedicatedWebTransportHttp3Client* client)
       : quic::QuicSpdyClientSession(config,
                                     supported_versions,
                                     connection,
                                     server_id,
-                                    crypto_config,
-                                    push_promise_index),
+                                    crypto_config),
         client_(client) {}
 
   bool OnSettingsFrame(const quic::SettingsFrame& frame) override {
@@ -241,11 +239,10 @@ class DedicatedWebTransportHttp3ClientSession
     return stream_ptr;
   }
 
-  void OnDatagramProcessed(
-      absl::optional<quic::MessageStatus> status) override {
+  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override {
     client_->OnDatagramProcessed(
-        status.has_value() ? absl::optional<quic::MessageStatus>(*status)
-                           : absl::optional<quic::MessageStatus>());
+        status.has_value() ? std::optional<quic::MessageStatus>(*status)
+                           : std::optional<quic::MessageStatus>());
   }
 
  private:
@@ -268,7 +265,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   void OnIncomingUnidirectionalStreamAvailable() override {
     visitor_->OnIncomingUnidirectionalStreamAvailable();
   }
-  void OnDatagramReceived(absl::string_view datagram) override {
+  void OnDatagramReceived(std::string_view datagram) override {
     visitor_->OnDatagramReceived(datagram);
   }
   void OnCanCreateNewOutgoingBidirectionalStream() override {
@@ -416,7 +413,7 @@ void DedicatedWebTransportHttp3Client::Connect() {
 }
 
 void DedicatedWebTransportHttp3Client::Close(
-    const absl::optional<WebTransportCloseInfo>& close_info) {
+    const std::optional<WebTransportCloseInfo>& close_info) {
   CHECK(session());
   base::TimeDelta probe_timeout = base::Microseconds(
       connection_->sent_packet_manager().GetPtoDelay().ToMicroseconds());
@@ -551,7 +548,7 @@ int DedicatedWebTransportHttp3Client::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      url::SchemeHostPort(url_), anonymization_key_, net_log_, absl::nullopt);
+      url::SchemeHostPort(url_), anonymization_key_, net_log_, std::nullopt);
   return resolve_host_request_->Start(base::BindOnce(
       &DedicatedWebTransportHttp3Client::DoLoop, base::Unretained(this)));
 }
@@ -610,14 +607,15 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       InitializeQuicConfig(*quic_context_->params()), supported_versions_,
       connection.release(),
       quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
-      &push_promise_index_, this);
+      this);
   if (!original_supported_versions_.empty()) {
     session_->set_client_original_supported_versions(
         original_supported_versions_);
   }
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
-      socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
+      std::move(socket_), quic_context_->clock(), this,
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_);
@@ -876,7 +874,7 @@ void DedicatedWebTransportHttp3Client::
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramReceived(
-    absl::string_view datagram) {
+    std::string_view datagram) {
   visitor_->OnDatagramReceived(datagram);
 }
 
@@ -973,7 +971,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
-    absl::optional<quic::MessageStatus> status) {
+    std::optional<quic::MessageStatus> status) {
   visitor_->OnDatagramProcessed(status);
 }
 

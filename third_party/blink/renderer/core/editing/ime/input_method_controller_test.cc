@@ -41,7 +41,7 @@ class InputMethodControllerTest : public EditingTestBase {
   // TODO(editing-dev): We should use |CompositionEphemeralRange()| instead
   // of having |GetCompositionRange()| and marking |InputMethodControllerTest|
   // as friend class.
-  Range* GetCompositionRange() { return Controller().composition_range_; }
+  Range* GetCompositionRange() { return Controller().composition_range_.Get(); }
 
   Element* InsertHTMLElement(const char* element_code, const char* element_id);
   void CreateHTMLWithCompositionInputEventListeners();
@@ -306,12 +306,12 @@ TEST_F(InputMethodControllerTest, SetCompositionAfterEmoji) {
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Extent()
+                   .Focus()
                    .ComputeOffsetInContainerNode());
 
   Controller().SetComposition(String("a"), ime_text_spans, 1, 1);
@@ -551,12 +551,12 @@ TEST_F(InputMethodControllerTest, SelectionOnConfirmExistingText) {
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Extent()
+                   .Focus()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -1789,7 +1789,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(3, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 
   // Insert 'test'.
@@ -1800,7 +1800,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(7, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 
   // Focus change finishes composition.
@@ -1812,7 +1812,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(7, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -2924,7 +2924,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(11, GetFrame()
                     .Selection()
                     .GetSelectionInDOMTree()
-                    .Base()
+                    .Anchor()
                     .ComputeOffsetInContainerNode());
 }
 
@@ -2961,7 +2961,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -2995,7 +2995,7 @@ TEST_F(
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3029,7 +3029,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3063,7 +3063,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3096,7 +3096,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3134,7 +3134,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3168,7 +3168,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(11, GetFrame()
                     .Selection()
                     .GetSelectionInDOMTree()
-                    .Base()
+                    .Anchor()
                     .ComputeOffsetInContainerNode());
 }
 
@@ -3202,7 +3202,7 @@ TEST_F(
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3236,7 +3236,7 @@ TEST_F(
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3268,7 +3268,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3300,7 +3300,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3719,4 +3719,23 @@ TEST_F(InputMethodControllerTest, SetCompositionTamil) {
             GetSelectionTextFromBody());
 }
 
+TEST_F(InputMethodControllerTest, EditContextCanvasHasEditableType) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* noneditable_canvas = InsertHTMLElement(
+      "<canvas id='noneditable-canvas'></canvas>", "noneditable-canvas");
+  Element* editable_canvas = InsertHTMLElement(
+      "<canvas id='editable-canvas'></canvas>", "editable-canvas");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.getElementById('editable-canvas').editContext = new "
+      "EditContext()");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  noneditable_canvas->Focus();
+  EXPECT_EQ(kWebTextInputTypeNone, Controller().TextInputType());
+
+  editable_canvas->Focus();
+  EXPECT_EQ(kWebTextInputTypeContentEditable, Controller().TextInputType());
+}
 }  // namespace blink

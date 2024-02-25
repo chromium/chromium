@@ -5,15 +5,19 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 
@@ -31,13 +35,19 @@ struct AppLaunchParams;
 //
 // See components/services/app_service/README.md.
 class StandaloneBrowserApps : public AppPublisher,
-                              public crosapi::BrowserManagerObserver {
+                              public crosapi::BrowserManagerObserver,
+                              public crosapi::mojom::AppPublisher {
  public:
   explicit StandaloneBrowserApps(AppServiceProxy* proxy);
   ~StandaloneBrowserApps() override;
 
   StandaloneBrowserApps(const StandaloneBrowserApps&) = delete;
   StandaloneBrowserApps& operator=(const StandaloneBrowserApps&) = delete;
+
+  // Register the Lacros app host from lacros-chrome to allow lacros-chrome
+  // publishing the Lacros app to app service in ash-chrome.
+  void RegisterCrosapiHost(
+      mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
  private:
   friend class PublisherHost;
@@ -64,11 +74,22 @@ class StandaloneBrowserApps : public AppPublisher,
   // crosapi::BrowserManagerObserver
   void OnLoadComplete(bool success, const base::Version& version) override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  // crosapi::mojom::AppPublisher overrides.
+  void OnApps(std::vector<AppPtr> deltas) override;
+  void RegisterAppController(
+      mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
+  void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas) override;
+
+  // Called when the crosapi termination is terminated [e.g. Lacros is closed].
+  void OnCrosapiDisconnected();
+
+  const raw_ptr<Profile> profile_;
   bool is_browser_load_success_ = true;
-  const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged>
       browser_app_instance_registry_;
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  // Receives Lacros app publisher events from Lacros.
+  mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
 
   // Used to observe the browser manager for image load changes.
   base::ScopedObservation<crosapi::BrowserManager,

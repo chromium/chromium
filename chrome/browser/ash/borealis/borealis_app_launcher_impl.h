@@ -34,9 +34,9 @@ class BorealisAppLauncherImpl : public BorealisAppLauncher {
               OnLaunchedCallback callback) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace borealis
 
-#endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_APP_LAUNCHER_H_
+#endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_APP_LAUNCHER_IMPL_H_

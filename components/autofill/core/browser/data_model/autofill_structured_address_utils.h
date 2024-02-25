@@ -7,17 +7,18 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/autofill/core/browser/geo/address_rewriter.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
@@ -34,26 +35,26 @@ struct AddressToken {
 enum class RegEx;
 
 // Enum to express the few quantifiers needed to parse values.
-enum MatchQuantifier {
+enum class MatchQuantifier {
   // The capture group is required.
-  MATCH_REQUIRED,
+  kRequired,
   // The capture group is optional.
-  MATCH_OPTIONAL,
+  kOptional,
   // The capture group is lazy optional meaning that it is avoided if an overall
   // match is possible.
-  MATCH_LAZY_OPTIONAL,
+  kLazyOptional,
 };
 
 // The result status of comparing two sets of sorted tokens.
-enum SortedTokenComparisonStatus {
+enum class SortedTokenComparisonStatus {
   // The tokens are neither the same nor super/sub sets.
-  DISTINCT,
+  kDistinct,
   // The token exactly match.
-  MATCH,
+  kMatch,
   // The first value is a subset of the second.
-  SUBSET,
+  kSubset,
   // The first value is a superset of the other.
-  SUPERSET
+  kSuperset
 };
 
 // The result from comparing two sets of sorted tokens containing the status and
@@ -66,7 +67,7 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonResult& operator=(SortedTokenComparisonResult&& other);
   ~SortedTokenComparisonResult();
   // The status of the token comparison.
-  SortedTokenComparisonStatus status = DISTINCT;
+  SortedTokenComparisonStatus status = SortedTokenComparisonStatus::kDistinct;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
   // Returns true if the first is a subset of the second;
@@ -90,11 +91,8 @@ struct CaptureOptions {
   // empty.
   std::string separator = ",|\\s+|$";
   // Indicates if the group is required, optional or even lazy optional.
-  MatchQuantifier quantifier = MATCH_REQUIRED;
+  MatchQuantifier quantifier = MatchQuantifier::kRequired;
 };
-
-// Returns true if honorific prefixes are enabled.
-bool HonorificPrefixEnabled();
 
 // A cache for compiled RE2 regular expressions.
 class Re2RegExCache {
@@ -132,38 +130,6 @@ class Re2RegExCache {
   base::Lock lock_;
 };
 
-// A cache for address rewriter for different countries.
-class RewriterCache {
- public:
-  RewriterCache& operator=(const RewriterCache&) = delete;
-  RewriterCache(const RewriterCache&) = delete;
-  ~RewriterCache() = delete;
-
-  // Returns a singleton instance.
-  static RewriterCache* GetInstance();
-
-  // Applies the rewriter to |text| for a specific county given by
-  // |country_code|.
-  static std::u16string Rewrite(const std::u16string& country_code,
-                                const std::u16string& text);
-
- private:
-  RewriterCache();
-
-  // Returns the Rewriter for |country_code|.
-  const AddressRewriter& GetRewriter(const std::u16string& country_code);
-
-  // Since the constructor is private, |base::NoDestructor| must be friend to be
-  // allowed to construct the cache.
-  friend class base::NoDestructor<RewriterCache>;
-
-  // Stores a country-specific Rewriter keyed by its corresponding |pattern|.
-  std::map<std::u16string, const AddressRewriter> rewriter_map_;
-
-  // A lock to prevent concurrent access to the map.
-  base::Lock lock_;
-};
-
 // Returns true if |name| has the characteristics of a Chinese, Japanese or
 // Korean name:
 // * It must only contain CJK characters with at most one separator in between.
@@ -190,11 +156,11 @@ std::u16string ReduceToInitials(const std::u16string& value);
 // If the expression is fully matched, returns the matching results, keyed by
 // the name of the capture group with the captured substrings as the value.
 // Otherwise returns `nullopt`.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex);
 
 // Same as above, but accepts pattern instead of a compiled regular expression.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern);
 
@@ -219,21 +185,21 @@ std::vector<std::string> GetAllPartialMatches(const std::string& value,
 std::vector<std::string> ExtractAllPlaceholders(const std::string& value);
 
 // Returns |value| as a placeholder token: ${value}.
-std::string GetPlaceholderToken(const std::string& value);
+std::string GetPlaceholderToken(std::string_view value);
 
 // Returns a named capture group created by the concatenation of the
 // StringPieces in |pattern_span_initializer_list|. The group is named by the
 // string representation of |type| and respects |options|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list,
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options);
 
 // Same as |CaptureTypeWithPattern(type, pattern_span_initializer_list,
 // options)| but uses default options.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list);
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list);
 
 // A pattern that is used to capture tokens that are not supposed to be
 // associated into a type.
@@ -244,7 +210,7 @@ std::string NoCapturePattern(const std::string& pattern,
 // matches |pattern| with an additional uncaptured |prefix_pattern| and
 // |suffix_pattern|.
 std::string CaptureTypeWithAffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const std::string& suffix_pattern,
@@ -253,7 +219,7 @@ std::string CaptureTypeWithAffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |suffix_pattern|.
 std::string CaptureTypeWithPrefixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -261,7 +227,7 @@ std::string CaptureTypeWithPrefixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern|.
 std::string CaptureTypeWithSuffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const std::string& suffix_pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -269,9 +235,15 @@ std::string CaptureTypeWithSuffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern| and |suffix_pattern|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
+
+// Normalizes and rewrites |text| using the rules for |country_code|.
+// If |country_code| is empty, it defaults to US.
+std::u16string NormalizeAndRewrite(const std::u16string& country_code,
+                                   const std::u16string& text,
+                                   bool keep_white_space);
 
 // Collapses white spaces and line breaks, converts the string to lower case and
 // removes diacritics.

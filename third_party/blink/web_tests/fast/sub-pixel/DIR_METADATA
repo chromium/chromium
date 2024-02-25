@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>Layout>Subpixel"
 }
 team_email: "layout-dev@chromium.org"
-
+buganizer_public: {
+  component_id: 1457005
+}

@@ -9,8 +9,9 @@
 #include "ui/views/view.h"
 
 class BulletedLabelListView : public views::View {
+  METADATA_HEADER(BulletedLabelListView, views::View)
+
  public:
-  METADATA_HEADER(BulletedLabelListView);
   BulletedLabelListView();
   explicit BulletedLabelListView(const std::vector<std::u16string>& texts);
   BulletedLabelListView(const BulletedLabelListView&) = delete;

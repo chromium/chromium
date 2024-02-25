@@ -76,9 +76,9 @@ class WaylandExtendedKeyboardImpl : public KeyboardObserver {
  private:
   wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
-  raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
+  const raw_ptr<wl_resource> resource_;
+  const raw_ptr<SerialTracker> serial_tracker_;
+  raw_ptr<Keyboard> keyboard_;
 };
 
 void extended_keyboard_destroy(wl_client* client, wl_resource* resource) {

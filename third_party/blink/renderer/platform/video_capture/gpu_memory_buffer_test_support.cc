@@ -59,7 +59,7 @@ FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
 
 TestingPlatformSupportForGpuMemoryBuffer::
     TestingPlatformSupportForGpuMemoryBuffer()
-    : sii_(new viz::TestSharedImageInterface),
+    : sii_(base::MakeRefCounted<viz::TestSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
   gpu_factories_->SetVideoFrameOutputFormat(
@@ -84,6 +84,11 @@ TestingPlatformSupportForGpuMemoryBuffer::GetGpuFactories() {
 void TestingPlatformSupportForGpuMemoryBuffer::SetGpuCapabilities(
     gpu::Capabilities* capabilities) {
   capabilities_ = capabilities;
+}
+
+void TestingPlatformSupportForGpuMemoryBuffer::SetSharedImageCapabilities(
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
+  sii_->SetCapabilities(shared_image_capabilities);
 }
 
 }  // namespace blink

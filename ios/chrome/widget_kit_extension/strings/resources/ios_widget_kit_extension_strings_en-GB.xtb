@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1324575488877808473">Open Chrome to see your most visited sites here.</translation>
 <translation id="2513892053093488070">Voice search</translation>
 <translation id="2535710892645968259">Jump into the Chrome Dino game from your lock screen.</translation>
 <translation id="2542770169955243077">Chrome dino game</translation>
-<translation id="2803429804752388720">Search passwords</translation>
 <translation id="2922313168575194078">Safely search for your saved passwords on Google Password Manager</translation>
 <translation id="302608144225178783">Jump into the Chrome dino game from your home screen.</translation>
 <translation id="3296938369177810197">Voice search</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Start a new search or open your most visited sites from your iPad homepage.</translation>
 <translation id="6721566127904256183">Your most visited sites will show up here.</translation>
 <translation id="6855322554930231468">Search</translation>
+<translation id="6973491011026415905">Search passwords on Google Password Manager</translation>
 <translation id="7010831364920321713">Incognito search</translation>
 <translation id="7048549665319929185">Search or
 type URL</translation>

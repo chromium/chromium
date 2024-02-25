@@ -37,19 +37,13 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 }
 
 std::vector<uint8_t> SliceToVector(const leveldb::Slice& s) {
-  auto span = base::make_span(s.data(), s.size());
+  auto span = base::make_span(s);
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
 void ErrorCallback(leveldb::Status* status_out, leveldb::Status status) {
   *status_out = status;
 }
-
-// The leveldb::Env used by the Indexed DB backend.
-class LevelDBEnv : public leveldb_env::ChromiumEnv {
- public:
-  LevelDBEnv() : ChromiumEnv("LevelDBEnv.SessionStorageMetadataTest") {}
-};
 
 class SessionStorageMetadataTest : public testing::Test {
  public:
@@ -60,7 +54,7 @@ class SessionStorageMetadataTest : public testing::Test {
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageMetadataTest",
+        std::nullopt, "SessionStorageMetadataTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
     loop.Run();
@@ -458,7 +452,7 @@ class SessionStorageMetadataMigrationTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_path_;
-  LevelDBEnv leveldb_env_;
+  leveldb_env::ChromiumEnv leveldb_env_;
   std::string test_namespace1_id_;
   std::string test_namespace2_id_;
   blink::StorageKey test_storage_key1_;
@@ -508,7 +502,7 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   leveldb::Status s = db()->Get(options, leveldb::Slice("version"), &db_value);
   EXPECT_TRUE(s.IsNotFound());
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks;
-  EXPECT_TRUE(metadata.ParseDatabaseVersion(absl::nullopt, &migration_tasks));
+  EXPECT_TRUE(metadata.ParseDatabaseVersion(std::nullopt, &migration_tasks));
   EXPECT_FALSE(migration_tasks.empty());
   EXPECT_EQ(1ul, migration_tasks.size());
 
@@ -533,14 +527,28 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   EXPECT_TRUE(metadata.ParseNamespaces(std::move(values), &migration_tasks));
   EXPECT_EQ(2ul, migration_tasks.size());
 
-  leveldb::WriteBatch batch;
-  DomStorageDatabase* null_db = nullptr;
+  // Make a database for testing.
+  base::RunLoop loop;
+  std::unique_ptr<AsyncDomStorageDatabase> database =
+      AsyncDomStorageDatabase::OpenInMemory(
+          std::nullopt, "SessionStorageMetadataMigrationTest",
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+          base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
+  loop.Run();
 
-  // Run the tasks on our local batch object. Note that these migration tasks
-  // only manipulate |batch|, so it's safe enough to pass them a reference to a
-  // null database.
-  for (auto& task : migration_tasks)
-    std::move(task).Run(&batch, *null_db);
+  // Run the tasks on our local batch object.
+  leveldb::WriteBatch batch;
+  base::RunLoop loop2;
+  database->RunDatabaseTask(
+      base::OnceCallback<bool(const DomStorageDatabase&)>(
+          base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+            for (auto& task : migration_tasks) {
+              std::move(task).Run(&batch, db);
+            }
+            return true;
+          })),
+      base::BindLambdaForTesting([&](bool) { loop2.Quit(); }));
+  loop2.Run();
 
   BatchCollector collector;
   batch.Iterate(&collector);

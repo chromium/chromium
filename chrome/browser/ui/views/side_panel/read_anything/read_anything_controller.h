@@ -14,6 +14,10 @@
 
 class Browser;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingController
 //
@@ -21,14 +25,19 @@ class Browser;
 //  business logic of this feature and updates the model.
 //  The controller is meant to be internal to the Read Anything feature and
 //  classes outside this feature should not be making calls to it. The
-//  coordinator is the external-facing API.
-//  This class is owned by the ReadAnythingCoordinator and has the same lifetime
-//  as the browser.
+//  coordinator or side panel controller is the external-facing API.
+//  When the side panel entry is global, this class is owned by the
+//  ReadAnythingCoordinator and has the same lifetime as the browser.
+//  When the side panel entry is local. this class is owned by the
+//  ReadAnythingSidePanelController and has the same lifetime as the associated
+//  web contents.
 //
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
                                public ReadAnythingFontCombobox::Delegate {
  public:
   ReadAnythingController(ReadAnythingModel* model, Browser* browser);
+  ReadAnythingController(ReadAnythingModel* model,
+                         content::WebContents* web_contents);
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
   virtual ~ReadAnythingController() = default;
@@ -49,11 +58,17 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   void OnLetterSpacingChanged(int new_index) override;
   ReadAnythingMenuModel* GetLetterSpacingModel() override;
   void OnSystemThemeChanged() override;
+  void OnLinksEnabledChanged(bool is_enabled) override;
+  bool GetLinksEnabled() override;
+
+  Profile* GetProfile();
 
   const raw_ptr<ReadAnythingModel> model_;
+  const raw_ptr<content::WebContents> web_contents_;
 
-  // ReadAnythingController is owned by ReadAnythingCoordinator which is a
-  // browser user data, so this pointer is always valid.
+  // Set when the ReadAnythingController is owned by a ReadAnythingCoordinator.
+  // ReadAnythingCoordinator is a browser user data, so this pointer is always
+  // valid.
   raw_ptr<Browser, DanglingUntriaged> browser_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

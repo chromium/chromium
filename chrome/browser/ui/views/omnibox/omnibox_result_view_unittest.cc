@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -276,4 +277,12 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
   EXPECT_FALSE(
       popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
+}
+
+TEST_F(OmniboxResultViewTest, StarterPackMatch) {
+  base::test::ScopedFeatureList features(omnibox::kOmniboxKeywordModeRefresh);
+  AutocompleteMatch match(nullptr, 1350, false,
+                          AutocompleteMatchType::STARTER_PACK);
+  result_view()->SetMatch(match);
+  // No assertions necessary; just exercising code paths for starter pack match.
 }

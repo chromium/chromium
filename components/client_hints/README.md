@@ -104,7 +104,7 @@ Programmatic access only exposes UA client hints. All other client hints are onl
 
 Client Hint preferences are stored in the preferences service as a content setting (`ContentSettingsType::CLIENT_HINTS`), keyed to the origin. This storage is accessed through the [content::ClientHintsControllerDelegate] interface, with the principle implementation being [client_hints::ClientHints] in //components (to share across multiple platforms). The delegate is accessible in the browser process as a property of the [content::BrowserContext] (in //chrome land, this is implemented as the Profile and “Off The Record” Profile. An important note is that there is an “incognito profile” that gets its own client hints storage).
 
-This storage is marked as `content_settings::SessionModel::Durable`. This means that the client hint settings are read in from disk on browser start up and loaded into memory. Practically, this means that the client hint settings persist until the user clears site data or cookies for the origin.
+This storage is marked as `content_settings::mojom::SessionModel::DURABLE`. This means that the client hint settings are read in from disk on browser start up and loaded into memory. Practically, this means that the client hint settings persist until the user clears site data or cookies for the origin.
 
 The code for reading from and writing to the client hint preferences in content is in [/content/browser/client_hints/client_hints.cc]
 
@@ -122,9 +122,9 @@ The Critical-CH retry mechanism is implemented as [content::CriticalClientHintsT
 
 ### ACCEPT_CH restart
 
-The ACCEPT_CH restart mechanism is implemented with the navigation stack. The mojo interface [network::mojom::AcceptCHFrameObserver](/services/network/public/mojom/accept_ch_frame_observer.mojom) is implemented by [content::NavigationURLLoaderImpl](/content/browser/loader/navigation_url_loader_impl.h) and the resulting pipe is passed to the URLLoaderFactory and so on through the [network::ResourceRequest](/services/network/public/cpp/resource_request.h) and related mojo interface. 
+The ACCEPT_CH restart mechanism is implemented with the navigation stack. The mojo interface [network::mojom::AcceptCHFrameObserver](/services/network/public/mojom/accept_ch_frame_observer.mojom) is implemented by [content::NavigationURLLoaderImpl](/content/browser/loader/navigation_url_loader_impl.h) and the resulting pipe is passed to the URLLoaderFactory and so on through the [network::ResourceRequest](/services/network/public/cpp/resource_request.h) and related mojo interface.
 
-On the network side, when a TLS socket is selected (either created or re-used from the socket pool) that contains an ACCEPT_CH ALPS frame, it's checked against the headers in the request in [ComputeAcceptCHFrame](/services/network/url_loader.cc), which removes any tokens from the ACCEPT_CH frame that are already present in the request as headers and checks if the result is empty. 
+On the network side, when a TLS socket is selected (either created or re-used from the socket pool) that contains an ACCEPT_CH ALPS frame, it's checked against the headers in the request in [ComputeAcceptCHFrame](/services/network/url_loader.cc), which removes any tokens from the ACCEPT_CH frame that are already present in the request as headers and checks if the result is empty.
 
 If the result is not empty, it's passed through the AcceptCHFrameObserver mojo pipe (back to content::NavigationURLLoaderImpl) to the browser, and if new headers are added the and navigation is restarted.
 

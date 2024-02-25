@@ -28,9 +28,9 @@ class Widget;
 class SubtleNotificationView;
 
 // ExclusiveAccessBubbleViews is responsible for showing a bubble atop the
-// screen in fullscreen/mouse lock mode, telling users how to exit and providing
-// a click target. The bubble auto-hides, and re-shows when the user moves to
-// the screen top.
+// screen in fullscreen/pointer lock mode, telling users how to exit and
+// providing a click target. The bubble auto-hides, and re-shows when the user
+// moves to the screen top.
 class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
                                    public FullscreenObserver,
                                    public views::WidgetObserver {
@@ -77,9 +77,9 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   bool IsVisibleForTesting() const { return IsVisible(); }
 
  private:
-  // Starts or stops polling the mouse location based on |popup_| and
+  // Starts or stops polling the mouse pointer location based on |popup_| and
   // |bubble_type_|.
-  void UpdateMouseWatcher();
+  void UpdateMousePointerWatcher();
 
   // Updates |popup|'s bounds given |animation_| and |animated_attribute_|.
   void UpdateBounds();
@@ -102,7 +102,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   void Hide() override;
   void Show() override;
   bool IsAnimating() override;
-  bool CanTriggerOnMouse() const override;
+  bool CanTriggerOnMousePointer() const override;
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;

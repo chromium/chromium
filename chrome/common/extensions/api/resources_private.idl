@@ -17,7 +17,8 @@ namespace resourcesPrivate {
     //
     // |component| : Internal Chrome component to get strings for.
     // |callback| : Called with a dictionary mapping names to strings.
-    [supportsPromises] static void getStrings(Component component,
-                                              GetStringsCallback callback);
+    static void getStrings(
+        Component component,
+        GetStringsCallback callback);
   };
 };

@@ -4,14 +4,12 @@
 
 package org.chromium.components.policy;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeClassQualifiedName;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeClassQualifiedName;
+import org.jni_zero.NativeMethods;
 
-/**
- * Wrapper of the native PolicyMap class in the Java.
- */
+/** Wrapper of the native PolicyMap class in the Java. */
 @JNINamespace("policy::android")
 public class PolicyMap {
     private long mNativePolicyMap;
@@ -80,16 +78,22 @@ public class PolicyMap {
     public interface Natives {
         @NativeClassQualifiedName("PolicyMapAndroid")
         boolean hasValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         int getIntValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         boolean getBooleanValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         String getStringValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         String getListValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         String getDictValue(long nativePolicyMap, PolicyMap caller, String policy);
+
         @NativeClassQualifiedName("PolicyMapAndroid")
         boolean equals(long nativePolicyMap, PolicyMap caller, long nativeOtherPolicyMap);
     }

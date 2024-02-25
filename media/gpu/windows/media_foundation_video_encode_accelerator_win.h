@@ -27,6 +27,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -71,11 +72,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void Encode(scoped_refptr<VideoFrame> frame,
               const EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate_allocation,
-      uint32_t framerate) override;
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -97,11 +101,26 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Holds output buffers coming from the client ready to be filled.
   struct BitstreamBufferRef;
 
+  // A helper for parsing bitstream buffer after encoding.
+  class BitstreamParserHelper;
+
   // Holds output buffers coming from the encoder.
   class EncodeOutput;
 
   // Pending encode input.
-  using PendingInput = VideoEncoder::PendingEncode;
+  struct PendingInput : public VideoEncoder::PendingEncode {
+    // If true, output bits should be discarded and the rate control object
+    // shouldn't be let known about the encode.
+    bool discard_output = false;
+  };
+
+  // Metadata whose meaning should be carried over from input to output.
+  struct OutOfBandMetadata {
+    gfx::ColorSpace color_space;
+    bool discard_output = false;
+    std::optional<int> qp;
+    uint32_t frame_id;
+  };
 
   // Encoder state.
   enum State {
@@ -114,12 +133,18 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     // We issued a drain message to the MF encoder want wait for the drain
     // to complete.
     kFlushing,
+    // We wait to return all encoded outputs from `encoder_output_queue_`
+    // before signaling that Flush() has finished.
+    kPostFlushing,
     kError,
   };
 
-  // Get supported profiles for specific codec.
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
-      VideoCodec codec);
+  PendingInput MakeInput(scoped_refptr<media::VideoFrame> frame,
+                         const VideoEncoder::EncodeOptions& options,
+                         bool discard_output);
+  void EncodeInternal(scoped_refptr<VideoFrame> frame,
+                      const EncodeOptions& options,
+                      bool discard_output);
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
@@ -153,16 +178,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
   HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
 
-  // Assign TemporalID by bitstream or external state machine(based on SVC
-  // Spec).
-  bool AssignTemporalId(ComMFMediaBuffer output_buffer,
-                        size_t size,
-                        int* temporal_id,
-                        bool keyframe);
+  // Assign TemporalID by state machine(based on SVC Spec).
+  int AssignTemporalIdBySvcSpec(uint32_t frame_id);
 
-  int AssignTemporalIdBySvcSpec(bool keyframe);
-
-  bool temporal_scalable_coding() const { return num_temporal_layers_ > 1; }
+  bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output.
   void ProcessOutput();
@@ -173,6 +192,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Sends MFT_MESSAGE_COMMAND_DRAIN to the encoder to make it
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
+
+  // Check if |size| is supported by current profile. It depends on the result
+  // of |GetSupportedProfiles|. As max resolution is hard coded at this time,
+  // frame size larger than 1920x1088 will be rejected even it could be
+  // supported by hardware and driver.
+  bool IsFrameSizeAllowed(const gfx::Size& size);
+  // Update frame size without re-initializing the encoder.
+  void UpdateFrameSize(const gfx::Size& size);
 
   // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
@@ -201,18 +228,22 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // EncodeOutput needs to be copied into a BitstreamBufferRef as a FIFO.
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
 
-  // Counter of outputs which is used to assign temporal layer indexes
+  // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
-  uint32_t outputs_since_keyframe_count_ = 0;
+  uint32_t input_since_keyframe_count_ = 0;
+
+  // Each time we get a non-keyframe with temporal layer index equals to 0,
+  // zero_layer_counter_ increases.
+  uint32_t zero_layer_counter_ = 0;
 
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ = kUninitialized;
 
-  // This parser is used to assign temporalId.
-  H264Parser h264_parser_;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  H265NaluParser h265_nalu_parser_;
-#endif
+  // True if keyframe was requested for the last frame.
+  bool last_frame_was_keyframe_request_ = false;
+
+  // This helper is used for parsing bitstream and assign metadata.
+  std::unique_ptr<BitstreamParserHelper> parser_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0u;
@@ -225,8 +256,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool low_latency_mode_ = false;
   int num_temporal_layers_ = 1;
 
-  // Codec type used for encoding.
+  // Codec type and profile used for encoding.
   VideoCodec codec_ = VideoCodec::kUnknown;
+  VideoCodecProfile profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // Vendor of the active video encoder.
   DriverVendor vendor_ = DriverVendor::kOther;
@@ -263,6 +295,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   ComD3D11VideoContext video_context_;
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc_ = {};
   ComD3D11Texture2D scaled_d3d11_texture_;
+  D3D11_TEXTURE2D_DESC scaled_d3d11_texture_desc_ = {};
   ComD3D11VideoProcessorOutputView vp_output_view_;
   // Destination texture used by the copy operation.
   ComD3D11Texture2D copied_d3d11_texture_;
@@ -282,17 +315,23 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Preferred adapter for DXGIDeviceManager.
   const CHROME_LUID luid_;
 
-  // A buffer used as a scratch space for I420 to NV12 conversion
-  std::vector<uint8_t> resize_buffer_;
+  // Used for frame format conversion.
+  VideoFrameConverter frame_converter_;
 
   FlushCallback flush_callback_;
 
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
 
-  // Color space of the first frame sent to Encode(). Every input gets an entry
-  // in `output_color_spaces_`, new outputs take the color space from the front.
-  base::circular_deque<gfx::ColorSpace> output_color_spaces_;
+  // Queue of metadata whose meaning should be carried over from input to
+  // output. Every input pushes back a new entry, and outputs consumes entries
+  // from the front.
+  base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
+  gpu::GpuDriverBugWorkarounds workarounds_;
+
+  // Enumerating supported profiles takes time, so cache the result here for
+  // future requests.
+  std::optional<SupportedProfiles> supported_profiles_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

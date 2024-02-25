@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace wl {
@@ -38,7 +39,8 @@ DataSource<T>::~DataSource() {
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
   VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
-  delegate_->OnDataSourceFinish(completed);
+  // No timestamp for these events. Use EventTimeForNow(), for now.
+  delegate_->OnDataSourceFinish(this, ui::EventTimeForNow(), completed);
 }
 
 // Writes |data_str| to file descriptor |fd| assuming it is flagged as
@@ -65,7 +67,7 @@ bool WriteDataNonBlocking(int fd, const std::string& data_str) {
 template <typename T>
 void DataSource<T>::HandleSendEvent(const std::string& mime_type, int32_t fd) {
   std::string contents;
-  delegate_->OnDataSourceSend(mime_type, &contents);
+  delegate_->OnDataSourceSend(this, mime_type, &contents);
   bool done = WriteDataNonBlocking(fd, contents);
   VPLOG_IF(1, !done) << "Failed to write";
   close(fd);

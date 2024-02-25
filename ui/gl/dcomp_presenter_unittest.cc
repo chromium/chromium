@@ -35,9 +35,7 @@
 #include "ui/gfx/test/sk_color_eq.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
-#include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -190,7 +188,7 @@ DCLayerOverlayImage CreateDCompSurface(
 // the bounds of |image|, or |content_rect_override|, if set.
 std::unique_ptr<DCLayerOverlayParams> CreateParamsFromImage(
     DCLayerOverlayImage image,
-    absl::optional<gfx::RectF> content_rect_override = {}) {
+    std::optional<gfx::RectF> content_rect_override = {}) {
   auto params = std::make_unique<DCLayerOverlayParams>();
   params->content_rect =
       content_rect_override.value_or(gfx::RectF(image.size()));
@@ -210,13 +208,8 @@ class DCompPresenterTest : public testing::Test {
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
 
-    gl_surface_ = init::CreateOffscreenGLSurface(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
-
-    scoped_refptr<GLContext> context = gl::init::CreateGLContext(
-        nullptr, gl_surface_.get(), GLContextAttribs());
-    EXPECT_TRUE(context->MakeCurrent(gl_surface_.get()));
-    context_ = std::move(context);
+    std::tie(gl_surface_, context_) =
+        GLTestHelper::CreateOffscreenGLSurfaceAndContext();
 
     // These tests are assumed to run on battery.
     fake_power_monitor_source_.SetOnBatteryPower(true);
@@ -242,11 +235,10 @@ class DCompPresenterTest : public testing::Test {
   }
 
   scoped_refptr<DCompPresenter> CreateDCompPresenter() {
-    DirectCompositionSurfaceWin::Settings settings;
+    DCompPresenter::Settings settings;
     scoped_refptr<DCompPresenter> presenter =
         base::MakeRefCounted<DCompPresenter>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(),
-            DCompPresenter::VSyncCallback(), settings);
+            gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
     EXPECT_TRUE(presenter->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
@@ -670,6 +662,29 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
     EXPECT_EQ(surfaces_frame1[0], surfaces_frame2[1]);
     EXPECT_EQ(surfaces_frame1[1], surfaces_frame2[0]);
   }
+}
+
+// Check that there is no crash when building the layer tree if
+// there are no overlays.
+// TODO(crbug.com/1519186): Change this test to check whether delegated
+// ink still works when root_surface_visual does not exist.
+TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
+  DCHECK(base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
+  std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
+      std::make_unique<gfx::DelegatedInkMetadata>(
+          gfx::PointF(12, 12), /*diameter=*/3, SK_ColorBLACK,
+          base::TimeTicks::Now(), gfx::RectF(10, 10, 90, 90),
+          /*hovering=*/false);
+
+  // Set start point to initialize ink renderer.
+  DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+  if (!layer_tree->SupportsDelegatedInk()) {
+    return;
+  }
+  layer_tree->SetDelegatedInkTrailStartPoint(std::move(metadata));
+
+  EXPECT_FALSE(layer_tree->HasPendingOverlaysForTesting());
+  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays(nullptr));
 }
 
 class DCompPresenterPixelTest : public DCompPresenterTest {
@@ -1666,8 +1681,8 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     if (!pixel_diff_->CompareScreenshot(
             ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
                 ::testing::UnitTest::GetInstance()->current_test_info(),
-                capture_name.empty() ? absl::nullopt
-                                     : absl::make_optional(capture_name)),
+                capture_name.empty() ? std::nullopt
+                                     : std::make_optional(capture_name)),
             window_readback, matching_algorithm_.get())) {
       ADD_FAILURE_AT(caller_location.file_name(), caller_location.line_number())
           << "Screenshot mismatch for "
@@ -1836,7 +1851,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
     auto& [color, bounds] = colors[i];
     auto overlay = std::make_unique<DCLayerOverlayParams>();
     overlay->quad_rect = bounds;
-    overlay->background_color = absl::optional<SkColor4f>(color);
+    overlay->background_color = std::optional<SkColor4f>(color);
     overlay->z_order = i + 1;
     presenter_->ScheduleDCLayer(std::move(overlay));
   }
@@ -1895,7 +1910,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
 
         auto overlay = std::make_unique<DCLayerOverlayParams>();
         overlay->quad_rect = quad_rect;
-        overlay->background_color = absl::optional<SkColor4f>(overlay_color);
+        overlay->background_color = std::optional<SkColor4f>(overlay_color);
         return overlay;
       }));
 
@@ -2011,7 +2026,7 @@ TEST_F(DCompPresenterSkiaGoldTest,
   for (auto& quad : quads) {
     auto overlay = std::make_unique<DCLayerOverlayParams>();
     overlay->quad_rect = quad;
-    overlay->background_color = absl::optional<SkColor4f>(SkColors::kWhite);
+    overlay->background_color = std::optional<SkColor4f>(SkColors::kWhite);
     overlay->z_order = overlay_z_order;
     overlay->rounded_corner_bounds = bounds;
     presenter_->ScheduleDCLayer(std::move(overlay));
@@ -2248,9 +2263,19 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          &DCompPresenterBufferCountTest::GetParamName);
 
+struct LetterboxingTestParams {
+  LetterboxingTestParams(bool use_letterbox_video_optimization,
+                         bool use_float_rounding)
+      : use_letterbox_video_optimization(use_letterbox_video_optimization),
+        use_float_rounding(use_float_rounding) {}
+
+  bool use_letterbox_video_optimization;
+  bool use_float_rounding;
+};
+
 class DCompPresenterLetterboxingTest
     : public DCompPresenterTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<LetterboxingTestParams> {
  protected:
   void SetUp() override {
     SetupScopedFeatureList();
@@ -2259,19 +2284,46 @@ class DCompPresenterLetterboxingTest
   }
 
   virtual void SetupScopedFeatureList() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().use_letterbox_video_optimization) {
+      enabled_features.push_back(
           features::kDirectCompositionLetterboxVideoOptimization);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kDirectCompositionLetterboxVideoOptimization);
     }
+
+    if (GetParam().use_float_rounding) {
+      enabled_features.push_back(
+          features::kUseSwapChainPresenterFloatingPointAdjustments);
+    } else {
+      disabled_features.push_back(
+          features::kUseSwapChainPresenterFloatingPointAdjustments);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DCompPresenterLetterboxingTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(None,
+                         DCompPresenterLetterboxingTest,
+                         ::testing::Values(LetterboxingTestParams(false,
+                                                                  false)));
+INSTANTIATE_TEST_SUITE_P(LetterBoxOpt,
+                         DCompPresenterLetterboxingTest,
+                         ::testing::Values(LetterboxingTestParams(true,
+                                                                  false)));
+INSTANTIATE_TEST_SUITE_P(FloatRounding,
+                         DCompPresenterLetterboxingTest,
+                         ::testing::Values(LetterboxingTestParams(false,
+                                                                  true)));
+INSTANTIATE_TEST_SUITE_P(LetterBoxOptFloatRounding,
+                         DCompPresenterLetterboxingTest,
+                         ::testing::Values(LetterboxingTestParams(true, true)));
 
 TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Define 1920x1200 monitor size.
@@ -2332,7 +2384,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
 
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -2371,7 +2423,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   ASSERT_TRUE(swap_chain2);
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
 
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be four pixels more to cover extra blank bar since the
     // adjustment is basically a padding without movedown.
@@ -2390,7 +2442,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
 
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -2428,7 +2480,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
       presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain3);
   EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be two pixels more to cover extra blank bar since the
     // adjustment is basically a moveup.
@@ -2447,7 +2499,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
 
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -2512,7 +2564,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_EQ(1920u, desc.Width);
   EXPECT_EQ(1080u, desc.Height);
 
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // Check desktop plane removal part 1.
     Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
     EXPECT_HRESULT_SUCCEEDED(
@@ -2536,7 +2588,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
-  if (GetParam()) {
+  if (GetParam().use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay.
@@ -2671,6 +2723,490 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
       swap_chain3->GetLastPresentCount(&last_present_count));
   // The present count should increase with the new image presentation.
   EXPECT_EQ(3u, last_present_count);
+}
+
+// Pillarboxing is generally considered as a special letterboxing.
+TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
+  // Define 1920x1200 monitor size.
+  const gfx::Size monitor_size(1920, 1200);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+  EXPECT_TRUE(presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+
+  // Schedule the overlay for root surface.
+  InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
+
+  // Make a 1800*1200 texture as display input.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+  const gfx::Size texture_size(1800, 1200);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  // First test if swap chain and its visual info is adjusted to fit the
+  // monitor when letterboxing is generated for full screen presentation.
+  const int letterboxing_width =
+      (monitor_size.width() - texture_size.width()) / 2;
+  const gfx::Rect quad_rect =
+      gfx::Rect(0, 0, texture_size.width(), texture_size.height());
+  gfx::Rect clip_rect = gfx::Rect(letterboxing_width, 0, texture_size.width(),
+                                  texture_size.height());
+  gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(letterboxing_width, 0)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size.
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+  EXPECT_EQ(1800u, desc.Width);
+  EXPECT_EQ(1200u, desc.Height);
+
+  // Make sure the new transform matrix is adjusted, so it transforms the swap
+  // chain to |new_on_screen_rect| which fits the monitor.
+  gfx::Transform visual_transform;
+  gfx::Point visual_offset;
+  gfx::Rect visual_clip_rect;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform, &visual_offset, &visual_clip_rect);
+
+  if (GetParam().use_letterbox_video_optimization) {
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // DWM will do the swap chain positioning in case of overlay. And visual
+    // clip rect has been set to monitor rect.
+    EXPECT_EQ(gfx::Rect(monitor_size), visual_clip_rect);
+  } else {
+    // In case DirectCompositionLetterboxVideoOptimization feature is disabled,
+    // keep the origin clip rect from DCLayerOverlayParams.
+    EXPECT_EQ(quad_to_root_transform, visual_transform);
+    EXPECT_EQ(clip_rect, visual_clip_rect);
+  }
+
+  // Second test if swap chain visual info is adjusted to fit the monitor when
+  // some negative offset from typical letterboxing positioning.
+  texture = CreateNV12Texture(d3d11_device, texture_size);
+  clip_rect = gfx::Rect(letterboxing_width - 2, 0, texture_size.width(),
+                        texture_size.height());
+  quad_to_root_transform = gfx::Transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(letterboxing_width - 2, 0)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size.
+  DXGI_SWAP_CHAIN_DESC1 desc2;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain2);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
+
+  if (GetParam().use_letterbox_video_optimization) {
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // there would be four pixels more to cover extra blank bar since the
+    // adjustment is basically a padding without move-right.
+    EXPECT_EQ(1804u, desc2.Width);
+    EXPECT_EQ(1200u, desc2.Height);
+  } else {
+    EXPECT_EQ(1800u, desc2.Width);
+    EXPECT_EQ(1200u, desc2.Height);
+  }
+
+  // Make sure the new transform matrix is adjusted, so it transforms the swap
+  // chain to |new_on_screen_rect| which fits the monitor.
+  gfx::Transform visual_transform2;
+  gfx::Point visual_offset2;
+  gfx::Rect visual_clip_rect2;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
+
+  if (GetParam().use_letterbox_video_optimization) {
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // DWM will do the swap chain positioning in case of overlay. And visual
+    // clip rect has been set to monitor rect.
+    EXPECT_EQ(gfx::Rect(monitor_size), visual_clip_rect2);
+  } else {
+    // In case DirectCompositionLetterboxVideoOptimization feature is disabled,
+    // keep the origin clip rect from DCLayerOverlayParams.
+    EXPECT_EQ(quad_to_root_transform, visual_transform2);
+    EXPECT_EQ(clip_rect, visual_clip_rect2);
+  }
+
+  // Third test if swap chain visual info is adjusted to fit the monitor when
+  // some positive offset from typical letterboxing positioning.
+  texture = CreateNV12Texture(d3d11_device, texture_size);
+  clip_rect = gfx::Rect(letterboxing_width + 2, 0, texture_size.width(),
+                        texture_size.height());
+  quad_to_root_transform = gfx::Transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(letterboxing_width + 2, 0)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size
+  DXGI_SWAP_CHAIN_DESC1 desc3;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain3);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
+  if (GetParam().use_letterbox_video_optimization) {
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // there would be two pixels more to cover extra blank bar since the
+    // adjustment is basically a move-left.
+    EXPECT_EQ(1802u, desc3.Width);
+    EXPECT_EQ(1200u, desc3.Height);
+  } else {
+    EXPECT_EQ(1800u, desc3.Width);
+    EXPECT_EQ(1200u, desc3.Height);
+  }
+
+  // Make sure the new transform matrix is adjusted, so it transforms the swap
+  // chain to |new_on_screen_rect| which fits the monitor.
+  gfx::Transform visual_transform3;
+  gfx::Point visual_offset3;
+  gfx::Rect visual_clip_rect3;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
+
+  if (GetParam().use_letterbox_video_optimization) {
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // DWM will do the swap chain positioning in case of overlay. And visual
+    // clip rect has been set to monitor rect.
+    EXPECT_EQ(gfx::Rect(monitor_size), visual_clip_rect3);
+  } else {
+    // In case DirectCompositionLetterboxVideoOptimization feature is disabled,
+    // keep the origin clip rect from DCLayerOverlayParams.
+    EXPECT_EQ(quad_to_root_transform, visual_transform3);
+    EXPECT_EQ(clip_rect, visual_clip_rect3);
+  }
+}
+
+TEST_P(DCompPresenterLetterboxingTest,
+       FullScreenPillarboxingWithDesktopPlaneRemoval) {
+  // Define 1920x1200 monitor size.
+  const gfx::Size monitor_size(1920, 1200);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+  EXPECT_TRUE(presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+
+  // Schedule the overlay for root surface.
+  InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
+
+  // Make a 1800*1200 texture as display input.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+  const gfx::Size texture_size(1800, 1200);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  // Test if swap chain and its visual info is adjusted to fit the monitor when
+  // letterboxing is generated for full screen presentation.
+  const int letterboxing_width =
+      (monitor_size.width() - texture_size.width()) / 2;
+  const gfx::Rect quad_rect =
+      gfx::Rect(0, 0, texture_size.width(), texture_size.height());
+  const gfx::Rect clip_rect = gfx::Rect(
+      letterboxing_width, 0, texture_size.width(), texture_size.height());
+  const gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(letterboxing_width, 0)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size.
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+  EXPECT_EQ(1800u, desc.Width);
+  EXPECT_EQ(1200u, desc.Height);
+
+  if (GetParam().use_letterbox_video_optimization) {
+    // Check desktop plane removal part 1.
+    Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
+    EXPECT_HRESULT_SUCCEEDED(
+        swap_chain->QueryInterface(IID_PPV_ARGS(&decode_swap_chain)));
+    // The dest size has been set to monitor size.
+    uint32_t dest_width, dest_height;
+    EXPECT_HRESULT_SUCCEEDED(
+        decode_swap_chain->GetDestSize(&dest_width, &dest_height));
+    EXPECT_EQ(1920u, dest_width);
+    EXPECT_EQ(1200u, dest_height);
+
+    // The target rect has been set to the onscreen content rect.
+    RECT target_rect;
+    EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
+    EXPECT_EQ(clip_rect, gfx::Rect(target_rect));
+  }
+
+  // Swap chain visual is clipped to the whole monitor size.
+  gfx::Transform visual_transform;
+  gfx::Point visual_offset;
+  gfx::Rect visual_clip_rect;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform, &visual_offset, &visual_clip_rect);
+  if (GetParam().use_letterbox_video_optimization) {
+    // Check desktop plane removal part 2.
+    // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
+    // DWM will do the swap chain positioning in case of overlay.
+    EXPECT_TRUE(visual_transform.IsIdentity());
+    // Visual clip rect has been set to monitor rect.
+    EXPECT_EQ(gfx::Rect(monitor_size), visual_clip_rect);
+  } else {
+    // In case DirectCompositionLetterboxVideoOptimization feature is disabled,
+    // keep the origin transform and clip rect from DCLayerOverlayParams.
+    EXPECT_EQ(quad_to_root_transform, visual_transform);
+    EXPECT_EQ(clip_rect, visual_clip_rect);
+  }
+}
+
+class DCompPresenterFullscreenRoundingTest
+    : public DCompPresenterTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    SetupScopedFeatureList();
+
+    DCompPresenterTest::SetUp();
+  }
+
+  virtual void SetupScopedFeatureList() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseSwapChainPresenterFloatingPointAdjustments);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseSwapChainPresenterFloatingPointAdjustments);
+    }
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DCompPresenterFullscreenRoundingTest,
+                         testing::Bool());
+
+TEST_P(DCompPresenterFullscreenRoundingTest,
+       FullScreenRoundingWithHalfPixelTranslation) {
+  // Define 1920x1080 monitor size.
+  const gfx::Size monitor_size(1920, 1080);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+  EXPECT_TRUE(presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+
+  // Schedule the overlay for root surface.
+  InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
+
+  // Make a 1920*1080 texture as display input.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+  const gfx::Size texture_size(1920, 1080);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  // Simulate a half pixel translation in the DCLayerParams
+  const gfx::Rect quad_rect = gfx::Rect(0, 0, 1920, 1080);
+  const gfx::Rect clip_rect = quad_rect;
+  const gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(0.5, 0.5)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size.
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+
+  if (GetParam()) {
+    EXPECT_EQ(1920u, desc.Width);
+    EXPECT_EQ(1080u, desc.Height);
+  } else {
+    // Without float based rounding we expect full screen
+    // rounding to fail today.
+    EXPECT_NE(1920u, desc.Width);
+    EXPECT_NE(1080u, desc.Height);
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
+  EXPECT_HRESULT_SUCCEEDED(
+      swap_chain->QueryInterface(IID_PPV_ARGS(&decode_swap_chain)));
+  // The dest size has been set to monitor size.
+  uint32_t dest_width, dest_height;
+  EXPECT_HRESULT_SUCCEEDED(
+      decode_swap_chain->GetDestSize(&dest_width, &dest_height));
+
+  if (GetParam()) {
+    EXPECT_EQ(1920u, dest_width);
+    EXPECT_EQ(1080u, dest_height);
+  } else {
+    // Without float based rounding we expect full screen
+    // rounding to fail today.
+    EXPECT_NE(1920u, dest_width);
+    EXPECT_NE(1080u, dest_height);
+  }
+
+  // The target rect has been set to the onscreen content rect.
+  RECT target_rect;
+  EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
+
+  if (GetParam()) {
+    EXPECT_EQ(clip_rect, gfx::Rect(target_rect));
+  } else {
+    // Without float based rounding we expect full screen
+    // rounding to fail today.
+    EXPECT_NE(clip_rect, gfx::Rect(target_rect));
+  }
+
+  // Ensure translation was removed.
+  gfx::Transform visual_transform;
+  gfx::Point visual_offset;
+  gfx::Rect visual_clip_rect;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform, &visual_offset, &visual_clip_rect);
+  DVLOG(1) << "visual_transform" << visual_transform.ToString();
+
+  if (GetParam()) {
+    EXPECT_TRUE(visual_transform.IsIdentity());
+  } else {
+    // Without float based rounding we expect full screen
+    // rounding to fail today.
+    EXPECT_FALSE(visual_transform.IsIdentity());
+  }
+}
+
+// This test attempts to emulate the behavior of
+// https://codepen.io/OpherV/pen/vYxxbMQ The test site has a 2560x1440 video
+// which is scaled to 200% width & 200% height, which should result in just the
+// upper left portion of the frame being shown. When in full screen on a
+// 1920x1080 monitor the video at 200% scaling should have a swap chain size of
+// 3840 x 2160 but the clipping rect should match the monitor size of 1920x1080.
+TEST_P(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
+  // Define 1920x1080 monitor size.
+  const gfx::Size monitor_size(1920, 1080);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+  EXPECT_TRUE(presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+
+  // Schedule the overlay for root surface.
+  InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
+
+  // Make a 2560*1440 texture as display input.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+  const gfx::Size texture_size(2560, 1440);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  // Simulate a scaled up visual that will be clipped in half
+  const gfx::Rect quad_rect = gfx::Rect(0, 0, 2560, 1440);
+  const gfx::Rect clip_rect = gfx::Rect(0, 0, 1920, 1080);
+  const gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(1.5, gfx::Vector2dF(0, 0)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Swap chain size is set to onscreen content size.
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+  EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+  EXPECT_EQ(3840u, desc.Width);
+  EXPECT_EQ(2160u, desc.Height);
+
+  Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
+  EXPECT_HRESULT_SUCCEEDED(
+      swap_chain->QueryInterface(IID_PPV_ARGS(&decode_swap_chain)));
+  // The dest size has been set to monitor size.
+  uint32_t dest_width, dest_height;
+  EXPECT_HRESULT_SUCCEEDED(
+      decode_swap_chain->GetDestSize(&dest_width, &dest_height));
+  EXPECT_EQ(3840u, dest_width);
+  EXPECT_EQ(2160u, dest_height);
+
+  // The target rect has been set to the onscreen content rect.
+  RECT target_rect;
+  EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
+  EXPECT_EQ(gfx::Rect(target_rect), gfx::Rect(3840, 2160));
+
+  // Ensure translation was removed.
+  gfx::Transform visual_transform;
+  gfx::Point visual_offset;
+  gfx::Rect visual_clip_rect;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform, &visual_offset, &visual_clip_rect);
+  DVLOG(1) << "visual_transform" << visual_transform.ToString();
+  EXPECT_TRUE(visual_transform.IsIdentity());
+  EXPECT_EQ(clip_rect, visual_clip_rect);
 }
 
 }  // namespace gl

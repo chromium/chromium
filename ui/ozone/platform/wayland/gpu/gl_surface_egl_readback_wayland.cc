@@ -86,10 +86,6 @@ bool GLSurfaceEglReadbackWayland::Resize(const gfx::Size& size,
   return true;
 }
 
-bool GLSurfaceEglReadbackWayland::IsOffscreen() {
-  return false;
-}
-
 bool GLSurfaceEglReadbackWayland::SupportsAsyncSwap() {
   return true;
 }

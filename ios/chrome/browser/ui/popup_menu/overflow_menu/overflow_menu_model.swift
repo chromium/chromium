@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Combine
+import SwiftUI
 
 /// Holds all the data necessary to create the views for the overflow menu.
 @objcMembers public class OverflowMenuModel: NSObject, ObservableObject {
@@ -45,5 +45,11 @@ import Combine
 
   public func endCustomization() {
     customization = nil
+  }
+
+  public func setDestinationsWithAnimation(_ destinations: [OverflowMenuDestination]) {
+    withAnimation {
+      self.destinations = destinations
+    }
   }
 }

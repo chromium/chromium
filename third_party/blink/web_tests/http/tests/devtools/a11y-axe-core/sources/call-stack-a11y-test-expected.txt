@@ -1,6 +1,6 @@
 Testing accessibility in the call stack sidebar pane.
 Set timer for test function.
-Call stack pane content: Show ignore-listed framesNot pausedSome call frames have warnings(anonymous)test.js:23callWithAsyncStacktest.js:16call1wrapper.js:1setTimeout (async)scheduleTestFunctionVM:3(anonymous)VM:1Show more
+Call stack pane content: Show ignore-listed framesNot pausedSome call frames have warnings(anonymous)test.js:25callWithAsyncStacktest.js:18call1wrapper.js:1setTimeout (async)scheduleTestFunctionVM:3(anonymous)VM:1Show more
 Running the axe-core linter on the call stack sidebar pane.
 aXe violations: []
 

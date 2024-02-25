@@ -27,13 +27,6 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
 
   void Trace(Visitor*) const override;
 
-  // When clicking the scroll bar, chrome will find its first focusable parent
-  // and focus on it. In order to prevent popup menu from losing focus (which
-  // will close the menu), we are setting the popup menu support focus and mouse
-  // focusable.
-  bool IsMouseFocusable() const override { return true; }
-  bool SupportsFocus() const override { return true; }
-
  protected:
   MediaControlPopupMenuElement(MediaControlsImpl&);
 

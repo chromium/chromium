@@ -10,24 +10,22 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
-// WARNING: This hash functions should not be used for any cryptographic
+// WARNING: These hash functions should not be used for any cryptographic
 // purpose.
 
 // Deprecated: Computes a hash of a memory buffer, use FastHash() instead.
 // If you need to persist a change on disk or between computers, use
 // PersistentHash().
 // TODO(https://crbug.com/1025358): Migrate client code to new hash function.
-BASE_EXPORT uint32_t Hash(const void* data, size_t length);
 BASE_EXPORT uint32_t Hash(const std::string& str);
-BASE_EXPORT uint32_t Hash(const std::u16string& str);
 
 // Really *fast* and high quality hash.
 // Recommended hash function for general use, we pick the best performant
@@ -36,7 +34,7 @@ BASE_EXPORT uint32_t Hash(const std::u16string& str);
 // publicly available.
 // May changed without warning, do not expect stability of outputs.
 BASE_EXPORT size_t FastHash(base::span<const uint8_t> data);
-inline size_t FastHash(StringPiece str) {
+inline size_t FastHash(std::string_view str) {
   return FastHash(as_bytes(make_span(str)));
 }
 
@@ -47,8 +45,7 @@ inline size_t FastHash(StringPiece str) {
 //
 // WARNING: This hash function should not be used for any cryptographic purpose.
 BASE_EXPORT uint32_t PersistentHash(base::span<const uint8_t> data);
-BASE_EXPORT uint32_t PersistentHash(const void* data, size_t length);
-BASE_EXPORT uint32_t PersistentHash(const std::string& str);
+BASE_EXPORT uint32_t PersistentHash(std::string_view str);
 
 // Hash pairs of 32-bit or 64-bit numbers.
 BASE_EXPORT size_t HashInts32(uint32_t value1, uint32_t value2);

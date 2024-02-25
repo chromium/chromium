@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -34,21 +33,15 @@ class PredictionModelStore {
   using PredictionModelLoadedCallback =
       base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
 
-  // Returns the singleton model store.
-  static PredictionModelStore* GetInstance();
+  PredictionModelStore();
 
-  static std::unique_ptr<PredictionModelStore>
-  CreatePredictionModelStoreForTesting(PrefService* local_state,
-                                       const base::FilePath& base_store_dir);
-
-  // Initializes the model store with |local_state| and the |base_store_dir|.
-  // Model store will be usable only after it is initialized.
-  void Initialize(PrefService* local_state,
-                  const base::FilePath& base_store_dir);
+  // Initializes the model store with |base_store_dir|. Model store will be
+  // usable only after it is initialized.
+  void Initialize(const base::FilePath& base_store_dir);
 
   PredictionModelStore(const PredictionModelStore&) = delete;
   PredictionModelStore& operator=(const PredictionModelStore&) = delete;
-  ~PredictionModelStore();
+  virtual ~PredictionModelStore();
 
   // Initializes the model store with |local_state| and the |base_store_dir|, if
   // initialization hasn't happened already. Model store will be usable only
@@ -81,7 +74,8 @@ class PredictionModelStore {
 
   // Update the model for |model_info| in the store represented by
   // |optimization_target| and |model_cache_key|. The model files are stored in
-  // |base_model_dir|. |callback| is invoked on completion.
+  // |base_model_dir|. |callback| is invoked on completion. This will schedule
+  // the old model files to be removed.
   void UpdateModel(proto::OptimizationTarget optimization_target,
                    const proto::ModelCacheKey& model_cache_key,
                    const proto::ModelInfo& model_info,
@@ -110,14 +104,17 @@ class PredictionModelStore {
                    const proto::ModelCacheKey& model_cache_key,
                    PredictionModelStoreModelRemovalReason model_removal_reason);
 
+  // Returns the local state that stores the prefs across all profiles.
+  virtual PrefService* GetLocalState() const = 0;
+
+  base::FilePath GetBaseStoreDirForTesting() const;
+
   // Allows tests to reset the store for subsequent tests since the store is a
   // singleton.
   void ResetForTesting();
 
  private:
-  friend base::NoDestructor<PredictionModelStore>;
-
-  PredictionModelStore();
+  friend class PredictionModelStoreBrowserTestBase;
 
   // Loads the model and verifies if the model files exist and returns the
   // model. Otherwise nullptr is returned on any failures.
@@ -138,6 +135,9 @@ class PredictionModelStore {
                              base::OnceClosure callback,
                              bool model_paths_exist);
 
+  // Schedules the removal of `base_model_dir` in the next Chrome session.
+  void ScheduleModelDirRemoval(const base::FilePath& base_model_dir);
+
   // Removes all models that are considered inactive, such as expired models,
   // models unused for a long time. When models' |keep_beyond_valid_duration| is
   // set they are not treated as expired. This is called on startup, so the
@@ -151,11 +151,6 @@ class PredictionModelStore {
 
   // Invoked when model files gets deleted.
   void OnFilePathDeleted(const std::string& path_to_delete, bool success);
-
-  // Local state that stores the prefs across all profiles. Not owned and
-  // outlives |this|.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);

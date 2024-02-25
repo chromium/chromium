@@ -13,6 +13,7 @@
 #include "extensions/browser/api/socket/udp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
 namespace extensions {
@@ -60,12 +61,12 @@ UDPSocketEventDispatcher::ReceiveParams::ReceiveParams(
 
 UDPSocketEventDispatcher::ReceiveParams::~ReceiveParams() = default;
 
-void UDPSocketEventDispatcher::OnSocketBind(const std::string& extension_id,
+void UDPSocketEventDispatcher::OnSocketBind(const ExtensionId& extension_id,
                                             int socket_id) {
   OnSocketResume(extension_id, socket_id);
 }
 
-void UDPSocketEventDispatcher::OnSocketResume(const std::string& extension_id,
+void UDPSocketEventDispatcher::OnSocketResume(const ExtensionId& extension_id,
                                               int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
@@ -176,7 +177,7 @@ void UDPSocketEventDispatcher::PostEvent(const ReceiveParams& params,
 
 /*static*/
 void UDPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
-                                             const std::string& extension_id,
+                                             const ExtensionId& extension_id,
                                              std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

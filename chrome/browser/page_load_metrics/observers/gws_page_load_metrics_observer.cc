@@ -22,14 +22,26 @@ using page_load_metrics::PageAbortReason;
 
 namespace internal {
 
+#define HISTOGRAM_PREFIX "PageLoad.Clients.GoogleSearch."
+
+const char kHistogramGWSNavigationStartToFinalRequestStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalRequestStart";
+const char kHistogramGWSNavigationStartToFinalResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalResponseStart";
+const char kHistogramGWSNavigationStartToFinalLoaderCallback[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalLoaderCallback";
+const char kHistogramGWSNavigationStartToFirstRequestStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstRequestStart";
+const char kHistogramGWSNavigationStartToFirstResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstResponseStart";
+const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSFirstContentfulPaint[] =
-    "PageLoad.Clients.GoogleSearch.PaintTiming."
-    "NavigationToFirstContentfulPaint";
+    HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
-    "PageLoad.Clients.GoogleSearch.PaintTiming."
-    "NavigationToLargestContentfulPaint";
+    HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramGWSParseStart[] =
-    "PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart";
+    HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
 
 }  // namespace internal
 
@@ -38,9 +50,13 @@ GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() = default;
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  return page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())
-             ? CONTINUE_OBSERVING
-             : STOP_OBSERVING;
+  if (!page_load_metrics::IsGoogleSearchResultUrl(
+          navigation_handle->GetURL())) {
+    return STOP_OBSERVING;
+  }
+
+  navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
+  return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -105,6 +121,45 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     return;
   }
+  RecordNavigationTimingHistograms();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
                       all_frames_largest_contentful_paint.Time().value());
+}
+
+void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
+  const base::TimeTicks navigation_start_time =
+      GetDelegate().GetNavigationStart();
+  const content::NavigationHandleTiming& timing = navigation_handle_timing_;
+
+  // Record metrics for navigation only when all relevant milestones are
+  // recorded and in the expected order. It is allowed that they have the same
+  // value for some cases (e.g., internal redirection for HSTS).
+  if (navigation_start_time.is_null() ||
+      timing.first_request_start_time.is_null() ||
+      timing.first_response_start_time.is_null() ||
+      timing.first_loader_callback_time.is_null() ||
+      timing.final_request_start_time.is_null() ||
+      timing.final_response_start_time.is_null() ||
+      timing.final_loader_callback_time.is_null() ||
+      timing.navigation_commit_sent_time.is_null()) {
+    return;
+  }
+
+  // Record the elapsed time from the navigation start milestone.
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToFirstRequestStart,
+                      timing.first_request_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart,
+      timing.first_response_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback,
+      timing.first_loader_callback_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToFinalRequestStart,
+                      timing.final_request_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFinalResponseStart,
+      timing.final_response_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFinalLoaderCallback,
+      timing.final_loader_callback_time - navigation_start_time);
 }

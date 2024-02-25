@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -44,9 +45,10 @@
 
 namespace extensions {
 
-class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
-                                     public ExtensionUninstallDialog::Delegate,
-                                     public ExtensionRegistryObserver {
+class ExtensionDisabledGlobalError final
+    : public GlobalErrorWithStandardBubble,
+      public ExtensionUninstallDialog::Delegate,
+      public ExtensionRegistryObserver {
  public:
   ExtensionDisabledGlobalError(ExtensionService* service,
                                const Extension* extension,
@@ -71,6 +73,7 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
   void OnBubbleViewDidClose(Browser* browser) override {}
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
   void BubbleViewCancelButtonPressed(Browser* browser) override;
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override;
   bool ShouldCloseOnDeactivate() const override;
   bool ShouldShowCloseButton() const override;
 
@@ -100,6 +103,8 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
+
+  base::WeakPtrFactory<ExtensionDisabledGlobalError> weak_ptr_factory_{this};
 };
 
 // TODO(yoz): create error at startup for disabled extensions.
@@ -224,6 +229,11 @@ void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(
                                 base::RetainedRef(extension_),
                                 UNINSTALL_REASON_EXTENSION_DISABLED,
                                 UNINSTALL_SOURCE_PERMISSIONS_INCREASE));
+}
+
+base::WeakPtr<GlobalErrorWithStandardBubble>
+ExtensionDisabledGlobalError::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool ExtensionDisabledGlobalError::ShouldCloseOnDeactivate() const {

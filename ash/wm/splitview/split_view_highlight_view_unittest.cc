@@ -52,10 +52,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged | ExperimentalAsh>
-      left_highlight_;
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged | ExperimentalAsh>
-      right_highlight_;
+  raw_ptr<SplitViewHighlightView, DanglingUntriaged> left_highlight_;
+  raw_ptr<SplitViewHighlightView, DanglingUntriaged> right_highlight_;
   std::unique_ptr<views::Widget> widget_;
 
  private:
@@ -63,8 +61,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
     // The animation type only determines the duration and tween. For testing,
     // any valid animation type would work.
     auto animation_type =
-        animate ? absl::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN)
-                : absl::nullopt;
+        animate ? std::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN)
+                : std::nullopt;
     auto* highlight_view =
         is_left ? left_highlight_.get() : right_highlight_.get();
     highlight_view->SetBounds(bounds, animation_type);

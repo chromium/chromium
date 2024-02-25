@@ -6,6 +6,7 @@
 #import <string>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"
@@ -95,7 +96,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
   TableViewTextHeaderFooterView* _footerView;
 
   // Owns `self`.
-  autofill::CardNameFixFlowViewBridge* _bridge;  // weak
+  raw_ptr<autofill::CardNameFixFlowViewBridge> _bridge;  // weak
 }
 
 @end
@@ -150,9 +151,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
           : nil;
 
   _footerView = [[TableViewTextHeaderFooterView alloc] init];
-  _footerView.subtitleLabel.textColor =
-      [UIColor colorNamed:kTextSecondaryColor];
-  _footerView.subtitleLabel.text = inferredNameTooltipText;
+  [_footerView setSubtitle:inferredNameTooltipText];
 
   [self.tableView registerClass:[TableViewTextEditCell class]
          forCellReuseIdentifier:kCellReuseID];
@@ -240,7 +239,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
                                           .whitespaceAndNewlineCharacterSet];
 
   // After an edit, refresh footer text to no longer include name tooltip.
-  _footerView.subtitleLabel.text = nil;
+  [_footerView setSubtitle:nil];
 
   _confirmedName = confirmedName;
   [self updateSaveButtonEnabledStatus];

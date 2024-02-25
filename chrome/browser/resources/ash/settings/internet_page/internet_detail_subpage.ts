@@ -18,18 +18,18 @@ import 'chrome://resources/ash/common/network/network_nameservers.js';
 import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '/shared/settings/controls/controlled_button.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/controlled_button.js';
+import '../controls/settings_toggle_button.js';
 import './cellular_roaming_toggle_button.js';
 import './internet_shared.css.js';
 import './network_proxy_section.js';
@@ -45,23 +45,23 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './internet_detail_subpage.html.js';
@@ -82,7 +82,7 @@ const SettingsInternetDetailPageElementBase =
                 DeepLinkingMixinInterface&NetworkListenerBehaviorInterface&
                 CrPolicyNetworkBehaviorMojoInterface>;
 
-class SettingsInternetDetailPageElement extends
+export class SettingsInternetDetailPageElement extends
     SettingsInternetDetailPageElementBase {
   static get is() {
     return 'settings-internet-detail-subpage' as const;
@@ -295,6 +295,22 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      isSuppressTextMessagesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isSuppressTextMessagesEnabled') &&
+              loadTimeData.getBoolean('isSuppressTextMessagesEnabled');
+        },
+      },
+
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
+
       isPasspointEnabled_: {
         type: Boolean,
         value() {
@@ -396,6 +412,9 @@ class SettingsInternetDetailPageElement extends
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
+  private isSuppressTextMessagesEnabled_: boolean;
+  private suppressTextMessagesOverride_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
   private isPasspointEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
@@ -701,6 +720,13 @@ class SettingsInternetDetailPageElement extends
     this.updateAutoConnectPref_();
     this.updateHiddenPref_();
 
+    if (this.isSuppressTextMessagesEnabled_ &&
+        this.isCellular_(this.managedProperties_) &&
+        this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+      this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
+          this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
+    }
+
     const metered = this.managedProperties_.metered;
     if (metered && metered.activeValue !== this.meteredOverride_) {
       this.meteredOverride_ = metered.activeValue;
@@ -930,6 +956,28 @@ class SettingsInternetDetailPageElement extends
     this.hiddenPref_ = newPrefValue;
   }
 
+  private suppressTextMessagesChanged_(e: CustomEvent<{value: boolean}>): void {
+    if (!this.isSuppressTextMessagesEnabled_ || !this.propertiesReceived_ ||
+        !this.isCellular_(this.managedProperties_) ||
+        !this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+      return;
+    }
+    const config =
+        OncMojo.getDefaultConfigProperties(this.managedProperties_!.type);
+    config.typeConfig.cellular = {
+      textMessageAllowState: {
+        allowTextMessages: e.detail.value,
+      },
+      roaming: undefined,
+      apn: undefined,
+    };
+    this.networkConfig_.setProperties(this.guid, config).then(response => {
+      if (!response.success) {
+        console.warn('Unable to set properties: ' + JSON.stringify(config));
+      }
+    });
+  }
+
   private meteredChanged_(e: CustomEvent<{value: boolean}>): void {
     if (!this.propertiesReceived_) {
       return;
@@ -1077,7 +1125,7 @@ class SettingsInternetDetailPageElement extends
     if (!this.propertiesReceived_ || !this.guid || this.applyingChanges_) {
       return;
     }
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for updating network properties.
     const response = await this.networkConfig_.setProperties(this.guid, config);
     if (!response.success) {
       console.warn('Unable to set properties: ' + JSON.stringify(config));
@@ -1113,6 +1161,11 @@ class SettingsInternetDetailPageElement extends
       }
     }
 
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return this.i18n('networkMobileProviderLocked');
+    }
+
     return this.i18n(
         OncMojo.getConnectionStateString(managedProperties.connectionState));
   }
@@ -1142,10 +1195,17 @@ class SettingsInternetDetailPageElement extends
         !this.isRestrictedConnectivity_(managedProperties);
   }
 
-  private showRestrictedConnectivity_(managedProperties: ManagedProperties|
-                                      undefined): boolean {
+  private showRestrictedConnectivity_(
+      managedProperties: ManagedProperties|undefined,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
     if (!managedProperties) {
       return false;
+    }
+
+    // Display carrier locked network as warning
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return true;
     }
 
     // State must be connected and restricted.
@@ -1222,6 +1282,20 @@ class SettingsInternetDetailPageElement extends
   private shouldShowApnList_(): boolean {
     return !this.isApnRevampEnabled_ &&
         this.isCellular_(this.managedProperties_);
+  }
+
+  private shouldShowSuppressTextMessagesToggle_(): boolean {
+    if (!this.isSuppressTextMessagesEnabled_ || !this.managedProperties_ ||
+        !this.deviceState_) {
+      return false;
+    }
+    const networkState = this.getNetworkState_(this.managedProperties_);
+    if (!networkState) {
+      return false;
+    }
+    // Only show the toggle for the active SIM with the flag enabled.
+    return this.isCellular_(this.managedProperties_) &&
+        isActiveSim(networkState, this.deviceState_);
   }
 
   private showConnect_(
@@ -1549,13 +1623,14 @@ class SettingsInternetDetailPageElement extends
           {networkState: networkState, bypassConnectionDialog: bypassDialog},
     });
     this.dispatchEvent(networkConnectEvent);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for connecting to network.
   }
 
   private async handleDisconnectClick_(): Promise<void> {
-    recordSettingChange();
     const response = await this.networkConfig_.startDisconnect(this.guid);
-    if (!response.success) {
+    if (response.success) {
+      recordSettingChange(Setting.kDisconnectWifiNetwork);
+    } else {
       console.warn('Disconnect failed for: ' + this.guid);
     }
   }
@@ -1626,7 +1701,7 @@ class SettingsInternetDetailPageElement extends
     if (this.managedProperties_!.type === NetworkType.kWiFi) {
       recordSettingChange(Setting.kForgetWifiNetwork);
     } else {
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for other network types.
     }
 
     const response = await this.networkConfig_.forgetNetwork(this.guid);
@@ -1650,7 +1725,7 @@ class SettingsInternetDetailPageElement extends
         (this.isThirdPartyVpn_(this.managedProperties_) ||
          this.isArcVpn_(this.managedProperties_))) {
       this.browserProxy_.configureThirdPartyVpn(this.guid);
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for third party VPN configure.
       return;
     }
 
@@ -1737,6 +1812,7 @@ class SettingsInternetDetailPageElement extends
     }
 
     return getApnDisplayName(
+        this.i18n.bind(this),
         this.managedProperties_!.typeProperties.cellular!.connectedApn);
   }
 
@@ -1815,7 +1891,8 @@ class SettingsInternetDetailPageElement extends
   private messagesDividerClass_(
       name: string, managedProperties: ManagedProperties,
       globalPolicy: GlobalPolicy, managedNetworkAvailable: boolean,
-      isSecondaryUser: boolean, isWifiSyncEnabled: boolean): string {
+      isSecondaryUser: boolean, isWifiSyncEnabled: boolean,
+      deviceState: OncMojo.DeviceStateProperties|null): string {
     let first = '';
     if (this.isBlockedByPolicy_(
             managedProperties, globalPolicy, managedNetworkAvailable)) {
@@ -1823,13 +1900,19 @@ class SettingsInternetDetailPageElement extends
     } else if (isSecondaryUser) {
       first = 'secondary';
     } else if (this.showShared_(
-                   managedProperties, globalPolicy, managedNetworkAvailable)) {
+                   managedProperties, globalPolicy, managedNetworkAvailable,
+                   deviceState)) {
       first = 'shared';
     } else if (this.showSynced_(
                    managedProperties, globalPolicy, managedNetworkAvailable,
                    isWifiSyncEnabled)) {
       first = 'synced';
+    } else if (
+        this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      first = 'carrierlocked';
     }
+
     return first === name ? 'continuation' : '';
   }
 
@@ -1842,10 +1925,40 @@ class SettingsInternetDetailPageElement extends
 
   private showShared_(
       managedProperties: ManagedProperties, _globalPolicy: GlobalPolicy,
-      _managedNetworkAvailable: boolean): boolean {
+      _managedNetworkAvailable: boolean,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
+    if (this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return false;
+    }
+
     return !this.propertiesMissingOrBlockedByPolicy_() &&
         (managedProperties.source === OncSource.kDevice ||
          managedProperties.source === OncSource.kDevicePolicy);
+  }
+
+  private isCarrierLockedActiveSim_(
+      managedProperties: ManagedProperties|undefined,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+    if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(managedProperties);
+
+    if (!isActiveSim(networkState, deviceState)) {
+      return false;
+    }
+    const simLockStatus = deviceState.simLockStatus;
+    if (!simLockStatus) {
+      return false;
+    }
+    return simLockStatus.lockType === 'network-pin';
   }
 
   private showAutoConnect_(
@@ -1859,7 +1972,7 @@ class SettingsInternetDetailPageElement extends
             managedProperties, globalPolicy, managedNetworkAvailable);
   }
 
-  private showHiddenNetwork_(): boolean {
+  private showHiddenNetworkToggle_(): boolean {
     if (!this.showHiddenToggle_) {
       return false;
     }
@@ -2282,6 +2395,13 @@ class SettingsInternetDetailPageElement extends
     if (!this.deviceState_ ||
         this.deviceState_.type !== NetworkType.kCellular) {
       return false;
+    }
+    // If device is carrier locked, all the settings should be
+    // disabled for non compatible SIMs.
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(
+            this.managedProperties_, this.deviceState_)) {
+      return true;
     }
     // If this is a cellular device and inhibited, state cannot be changed, so
     // the page's inputs should be disabled.

@@ -5,7 +5,6 @@
 #include "extensions/shell/browser/shell_content_browser_client.h"
 
 #include <stddef.h>
-
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -28,10 +28,8 @@
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_protocols.h"
@@ -111,15 +109,12 @@ ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 
 void ShellContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
+#if BUILDFLAG(ENABLE_NACL)
   int render_process_id = host->GetID();
   BrowserContext* browser_context = browser_main_parts_->browser_context();
-  host->AddFilter(
-      new ExtensionMessageFilter(render_process_id, browser_context));
-  host->AddFilter(
-      new MessagingAPIMessageFilter(render_process_id, browser_context));
+
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
-#if BUILDFLAG(ENABLE_NACL)
   host->AddFilter(new nacl::NaClHostMessageFilter(
       render_process_id, browser_context->IsOffTheRecord(),
       browser_context->GetPath()));
@@ -158,7 +153,7 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
-void ShellContentBrowserClient::SiteInstanceGotProcess(
+void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
     content::SiteInstance* site_instance) {
   // If this isn't an extension renderer there's nothing to do.
   const Extension* extension = GetExtension(site_instance);
@@ -218,13 +213,6 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  associated_registry->AddInterface<mojom::EventRouter>(base::BindRepeating(
-      &EventRouter::BindForRenderer, render_process_host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          render_process_host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }
@@ -233,6 +221,11 @@ void ShellContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
+  int render_process_id = render_frame_host.GetProcess()->GetID();
+  associated_registry.AddInterface<mojom::EventRouter>(
+      base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
+  associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
+      &RendererStartupHelper::BindForRenderer, render_process_id));
   associated_registry.AddInterface<extensions::mojom::LocalFrameHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -242,6 +235,12 @@ void ShellContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
+  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
+                          render_frame_host.GetGlobalId()));
+  associated_registry.AddInterface<mojom::GuestView>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForExtensions,
+                          render_frame_host.GetGlobalId()));
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
@@ -263,19 +262,18 @@ ShellContentBrowserClient::GetNavigationUIData(
   return std::make_unique<ShellNavigationUIData>(navigation_handle);
 }
 
-void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
-    int frame_tree_node_id,
-    ukm::SourceIdObj ukm_source_id,
-    NonNetworkURLLoaderFactoryMap* factories) {
-  DCHECK(factories);
-
-  content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  factories->emplace(
-      extensions::kExtensionScheme,
-      extensions::CreateExtensionNavigationURLLoaderFactory(
-          web_contents->GetBrowserContext(), ukm_source_id,
-          !!extensions::WebViewGuest::FromWebContents(web_contents)));
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ShellContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
+    const std::string& scheme,
+    int frame_tree_node_id) {
+  if (scheme == extensions::kExtensionScheme) {
+    content::WebContents* web_contents =
+        content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+    return extensions::CreateExtensionNavigationURLLoaderFactory(
+        web_contents->GetBrowserContext(),
+        !!extensions::WebViewGuest::FromWebContents(web_contents));
+  }
+  return {};
 }
 
 void ShellContentBrowserClient::
@@ -307,7 +305,7 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
-    const absl::optional<url::Origin>& request_initiator_origin,
+    const std::optional<url::Origin>& request_initiator_origin,
     NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(factories);
 
@@ -316,15 +314,15 @@ void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
                          render_process_id, render_frame_id));
 }
 
-bool ShellContentBrowserClient::WillCreateURLLoaderFactory(
+void ShellContentBrowserClient::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,
     int render_process_id,
     URLLoaderFactoryType type,
     const url::Origin& request_initiator,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    network::URLLoaderFactoryBuilder& factory_builder,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     bool* bypass_redirect_checks,
@@ -336,11 +334,10 @@ bool ShellContentBrowserClient::WillCreateURLLoaderFactory(
           browser_context);
   bool use_proxy = web_request_api->MaybeProxyURLLoaderFactory(
       browser_context, frame, render_process_id, type, std::move(navigation_id),
-      ukm_source_id, factory_receiver, header_client,
+      ukm_source_id, factory_builder, header_client,
       std::move(navigation_response_task_runner));
   if (bypass_redirect_checks)
     *bypass_redirect_checks = use_proxy;
-  return use_proxy;
 }
 
 bool ShellContentBrowserClient::HandleExternalProtocol(
@@ -353,7 +350,7 @@ bool ShellContentBrowserClient::HandleExternalProtocol(
     network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::RenderFrameHost* initiator_document,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   return false;

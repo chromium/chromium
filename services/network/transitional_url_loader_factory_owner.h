@@ -37,7 +37,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   // |this| must outlive the URLRequestContext underlying
   // |url_request_context_getter|.
   explicit TransitionalURLLoaderFactoryOwner(
-      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter,
+      bool is_trusted = false);
 
   TransitionalURLLoaderFactoryOwner(const TransitionalURLLoaderFactoryOwner&) =
       delete;
@@ -64,6 +65,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
+  bool is_trusted_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

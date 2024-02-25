@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,24 +22,16 @@ namespace exo::wayland::test {
 // on a dedicated thread.
 class WaylandServerTest : public WaylandServerTestBase {
  public:
+  WaylandServerTest();
   WaylandServerTest(const WaylandServerTest&) = delete;
   WaylandServerTest& operator=(const WaylandServerTest&) = delete;
-
- protected:
-  WaylandServerTest();
-
-  // Constructs a WaylandServerTest with |traits| being forwarded to its
-  // TaskEnvironment. See the corresponding |WaylandServerTestBase| constructor.
-  template <typename... TaskEnvironmentTraits>
-  explicit WaylandServerTest(TaskEnvironmentTraits&&... traits)
-      : WaylandServerTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
-
   ~WaylandServerTest() override;
 
   // WaylandServerTestBase:
   void SetUp() override;
   void TearDown() override;
 
+ protected:
   // Posts `callback` or `closure` to run on the client thread; blocks till the
   // callable is run and all pending Wayland requests and events are delivered.
   void PostToClientAndWait(
@@ -56,6 +48,10 @@ class WaylandServerTest : public WaylandServerTestBase {
     PostToClientAndWait(base::BindLambdaForTesting(std::move(lambda)));
   }
 
+  // Initiates a client disconnect from the client thread. Waits until the
+  // disconnect has been processed on the server thread.
+  void DisconnectClientAndWait();
+
   // Subclasses can override this method to create a TestClient subclass
   // instance or customize client configuration if needed.
   // This method is run on the client thread.
@@ -65,6 +61,7 @@ class WaylandServerTest : public WaylandServerTestBase {
   std::unique_ptr<Server> server_;
 
   std::unique_ptr<TestWaylandClientThread> client_thread_;
+  raw_ptr<wl_client> client_resource_;
 };
 
 }  // namespace exo::wayland::test

@@ -24,16 +24,16 @@ namespace syncer {
 class SyncService;
 }
 
-namespace ui {
+namespace content {
 class WebUI;
-}
+}  // namespace content
 
 enum class SyncConfirmationStyle;
 
 // WebUI controller for the sync confirmation dialog.
 //
 // Note: This controller does not set the WebUI message handler. It is
-// the responsability of the caller to pass the correct message handler.
+// the responsibility of the caller to pass the correct message handler.
 class SyncConfirmationUI : public SigninWebDialogUI {
  public:
   // Exposed for testing

@@ -14,7 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -22,19 +22,16 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Operations that need to be executed on startup for incognito mode.
- */
+/** Operations that need to be executed on startup for incognito mode. */
 public class IncognitoStartup {
     public static void onResumeWithNative(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Set<String> componentNames) {
         if (shouldDestroyIncognitoProfileOnStartup(
-                    tabModelSelectorSupplier.get().getCurrentModel().isIncognito(),
-                    componentNames)) {
-            Profile.getLastUsedRegularProfile()
-                    .getPrimaryOTRProfile(/*createIfNeeded=*/true)
-                    .destroyWhenAppropriate();
+                tabModelSelectorSupplier.get().getCurrentModel().isIncognito(), componentNames)) {
+            ProfileManager.destroyWhenAppropriate(
+                    ProfileManager.getLastUsedRegularProfile()
+                            .getPrimaryOTRProfile(/* createIfNeeded= */ true));
         } else {
             CookiesFetcher.restoreCookies();
         }
@@ -49,7 +46,7 @@ public class IncognitoStartup {
     @SuppressLint("NewApi")
     private static boolean shouldDestroyIncognitoProfileOnStartup(
             boolean selectedTabModelIsIncognito, Set<String> componentNames) {
-        if (!Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
+        if (!ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
             return false;
         }
 

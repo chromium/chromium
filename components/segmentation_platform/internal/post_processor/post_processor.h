@@ -27,6 +27,9 @@ class PostProcessor {
   PostProcessor(const PostProcessor&) = delete;
   PostProcessor& operator=(const PostProcessor&) = delete;
 
+  static bool IsClassificationResult(
+      const proto::PredictionResult& prediction_result);
+
   // Called when the result from model execution are ready. Gives list of
   // ordered `output_labels` based on the classifier given by the client in the
   // OutputConfig.

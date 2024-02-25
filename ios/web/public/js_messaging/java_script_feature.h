@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/content_world.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -93,6 +93,19 @@ class JavaScriptFeature {
         const PlaceholderReplacementsCallback& replacements_callback =
             PlaceholderReplacementsCallback());
 
+    // Creates a FeatureScript with the string `script` to be injected at
+    // `injection_time` into `target_frames` using `reinjection_behavior`. If
+    // `replacements` is provided, it will be used to replace placeholder with
+    // the corresponding string values.
+    static FeatureScript CreateWithString(
+        const std::string& script,
+        InjectionTime injection_time,
+        TargetFrames target_frames,
+        ReinjectionBehavior reinjection_behavior =
+            ReinjectionBehavior::kInjectOncePerWindow,
+        const PlaceholderReplacementsCallback& replacements_callback =
+            PlaceholderReplacementsCallback());
+
     FeatureScript(const FeatureScript& other);
     FeatureScript& operator=(const FeatureScript&);
 
@@ -108,7 +121,9 @@ class JavaScriptFeature {
     ~FeatureScript();
 
    private:
-    FeatureScript(const std::string& filename,
+    FeatureScript(std::optional<std::string> filename,
+                  std::optional<std::string> script,
+                  NSString* injection_token,
                   InjectionTime injection_time,
                   TargetFrames target_frames,
                   ReinjectionBehavior reinjection_behavior,
@@ -118,7 +133,9 @@ class JavaScriptFeature {
     // instructed by `replacements_callback_`.
     NSString* ReplacePlaceholders(NSString* script) const;
 
-    std::string script_filename_;
+    std::optional<std::string> script_filename_;
+    std::optional<std::string> script_;
+    NSString* injection_token_;
     InjectionTime injection_time_;
     TargetFrames target_frames_;
     ReinjectionBehavior reinjection_behavior_;
@@ -163,14 +180,14 @@ class JavaScriptFeature {
 
   // Returns the script message handler name which this feature will receive
   // messages from JavaScript. Returning null will not register any handler.
-  virtual absl::optional<std::string> GetScriptMessageHandlerName() const;
+  virtual std::optional<std::string> GetScriptMessageHandlerName() const;
 
   using ScriptMessageHandler =
       base::RepeatingCallback<void(WebState* web_state,
                                    const ScriptMessage& message)>;
   // Returns the script message handler callback if
   // `GetScriptMessageHandlerName()` returns a handler name.
-  absl::optional<ScriptMessageHandler> GetScriptMessageHandler() const;
+  std::optional<ScriptMessageHandler> GetScriptMessageHandler() const;
 
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 

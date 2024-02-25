@@ -213,11 +213,10 @@ class ArcAuthService : public KeyedService,
   void OnMainAccountResolutionStatus(mojom::MainAccountResolutionStatus status);
 
   // Non-owning pointers.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
-  raw_ptr<ash::AccountAppsAvailability, ExperimentalAsh>
-      account_apps_availability_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
+  raw_ptr<ash::AccountAppsAvailability> account_apps_availability_ = nullptr;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool url_loader_factory_for_testing_set_ = false;

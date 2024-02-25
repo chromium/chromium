@@ -32,7 +32,7 @@ def _download_corpus(args):
   download_dir = args[1]
   target_folder = os.path.join(download_dir, target)
   subprocess.run(['mkdir', target_folder])
-  target_path = os.path.join(CORPORA_BUCKET_BASE_URL, target, "public.zip")
+  target_path = os.path.join(CORPORA_BUCKET_BASE_URL, target, "latest.zip")
   gsutil_cmd = ['gsutil', 'cp', target_path, target_folder]
   _gsutil(gsutil_cmd)
 
@@ -41,9 +41,9 @@ def _unzip_corpus(args):
   target = args[0]
   download_dir = args[1]
   target_folder = os.path.join(download_dir, target)
-  target_path = os.path.join(download_dir, target, "public.zip")
-  subprocess.run(['unzip', "public.zip"], cwd=target_folder)
-  subprocess.run(['rm', 'public.zip'], cwd=target_folder)
+  target_path = os.path.join(download_dir, target, "latest.zip")
+  subprocess.run(['unzip', "latest.zip"], cwd=target_folder)
+  subprocess.run(['rm', 'latest.zip'], cwd=target_folder)
   try:
     # Unzipping the corpora often also contains a "regressions" folder, which
     # is a subset of the total corpus, so can be ignored/removed

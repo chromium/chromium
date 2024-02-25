@@ -4,6 +4,7 @@
 
 #include "chrome/installer/setup/setup_install_details.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -16,7 +17,6 @@
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -35,10 +35,10 @@ const install_static::InstallConstants* FindInstallMode(
 
 // Returns the value of `switch_name` from `command_line` if it is present, or
 // nullopt otherwise.
-absl::optional<std::wstring> GetSwitchValue(
+std::optional<std::wstring> GetSwitchValue(
     const base::CommandLine& command_line,
     base::StringPiece switch_name) {
-  absl::optional<std::wstring> result;
+  std::optional<std::wstring> result;
   if (command_line.HasSwitch(switch_name))
     result = command_line.GetSwitchValueNative(switch_name);
   return result;
@@ -88,7 +88,7 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   std::wstring update_ap;
   std::wstring update_cohort_name;
 
-  absl::optional<std::wstring> channel_from_cmd_line =
+  std::optional<std::wstring> channel_from_cmd_line =
       GetSwitchValue(command_line, installer::switches::kChannel);
 
   auto channel = install_static::DetermineChannel(

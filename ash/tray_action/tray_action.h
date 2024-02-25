@@ -88,8 +88,7 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
   // updated.
   void NotifyLockScreenNoteStateChanged();
 
-  const raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
-      backlights_forced_off_setter_;
+  const raw_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
 
   // Last known state for lock screen note action.
   mojom::TrayActionState lock_screen_note_state_ =

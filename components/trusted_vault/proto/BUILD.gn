@@ -7,6 +7,7 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   sources = [
     "local_trusted_vault.proto",
+    "recovery_key_store.proto",
     "vault.proto",
   ]
 

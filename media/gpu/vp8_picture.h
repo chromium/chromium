@@ -26,7 +26,7 @@ class VP8Picture : public CodecPicture {
 
   std::unique_ptr<Vp8FrameHeader> frame_hdr;
 
-  absl::optional<Vp8Metadata> metadata_for_encoding;
+  std::optional<Vp8Metadata> metadata_for_encoding;
 
  protected:
   ~VP8Picture() override;

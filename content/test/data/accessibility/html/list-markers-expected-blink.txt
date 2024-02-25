@@ -25,7 +25,8 @@ rootWebArea
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='Some '
 ++++++++++++inlineTextBox name='Some '
-++++++++++staticText name='more'
-++++++++++++inlineTextBox name='more'
+++++++++++strong
+++++++++++++staticText name='more'
+++++++++++++++inlineTextBox name='more'
 ++++++++++staticText name=' text.'
 ++++++++++++inlineTextBox name=' text.'

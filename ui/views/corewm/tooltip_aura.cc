@@ -73,6 +73,10 @@ void TooltipAura::RemoveObserver(wm::TooltipObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void TooltipAura::SetMaxWidth(int width) {
+  max_width_ = width;
+}
+
 // static
 void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
   // TODO(crbug.com/1410707): Should adjust with actual cursor size.
@@ -199,7 +203,7 @@ void TooltipAura::DestroyWidget() {
 int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(screen->GetDisplayNearestPoint(location).bounds());
-  return std::min(kTooltipMaxWidth, (display_bounds.width() + 1) / 2);
+  return std::min(max_width_, (display_bounds.width() + 1) / 2);
 }
 
 void TooltipAura::Update(aura::Window* window,

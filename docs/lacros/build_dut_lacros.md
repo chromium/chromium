@@ -60,7 +60,7 @@ The gn args for amd64-generic would be:
 % cat out_amd64-generic/Release/args.gn
 
 import("//build/args/chromeos/amd64-generic.gni")
-use_goma = true
+use_remoteexec=true
 ```
 Build with:
 ```
@@ -121,13 +121,13 @@ Generate your args.gn, and then build Chrome.
 target_os="chromeos"
 is_chromeos_device=true
 chromeos_is_browser_only=true
-use_goma=true
+use_remoteexec=true
 is_chrome_branded=true
 is_official_build=false
 is_debug=false
-use_thin_lto = false
-is_cfi = false
-is_component_build = false' > out_device_lacros/Release/args.gn
+use_thin_lto=false
+is_cfi=false
+is_component_build=false' > out_device_lacros/Release/args.gn
 % gn gen out_device_lacros/Release
 % autoninja -C out_device_lacros/Release chrome
 ```
@@ -163,10 +163,11 @@ to include the appropriate flags.
 Specifically, if you connect your DUT via SSH’s reverse proxy, you can specify
 --device=localhost:8022 (assuming your forwarding port is 8022).
 
-You can now launch your copy of lacros-chrome by clicking on the yellow Lacros
-icon in the app list or shelf. Logs go to /home/chronos/user/lacros/lacros.log.
-Use LOG() macros to emit logs, or use stdout/stderr. All of them output to the
-file.su.
+You can now launch your copy of lacros-chrome by clicking on the
+Chrome icon in the app list or shelf. Logs go to the /var/log/lacros
+directory, with /var/log/lacros/lacros.log being the latest file. Use
+LOG() macros to emit logs, or use stdout/stderr. All of them output to
+the file.
 
 See Appendix if you need to launch lacros-chrome manually from the DUT command
 line.

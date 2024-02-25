@@ -24,7 +24,8 @@ class AppServiceShortcutContextMenu : public app_list::AppContextMenu {
   AppServiceShortcutContextMenu(app_list::AppContextMenuDelegate* delegate,
                                 Profile* profile,
                                 const apps::ShortcutId& shortcut_id,
-                                AppListControllerDelegate* controller);
+                                AppListControllerDelegate* controller,
+                                ash::AppListItemContext item_context);
   ~AppServiceShortcutContextMenu() override;
 
   AppServiceShortcutContextMenu(const AppServiceShortcutContextMenu&) = delete;

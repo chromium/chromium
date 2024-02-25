@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+    <ImageView
+        android:id="@+id/color_picker_icon"
+        android:layout_marginLeft="@dimen/color_picker_color_item_horizontal_padding"
+        android:layout_marginRight="@dimen/color_picker_color_item_horizontal_padding"
+        android:layout_marginTop="@dimen/color_picker_color_item_vertical_padding"
+        android:layout_marginBottom="@dimen/color_picker_color_item_vertical_padding"
+        android:layout_width="@dimen/color_picker_color_item_size"
+        android:layout_height="@dimen/color_picker_color_item_size"
+        android:contentDescription="@null"
+        android:background="@drawable/color_picker_color_icon" />
+</FrameLayout>

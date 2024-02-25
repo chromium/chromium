@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {AnnotationTool} from './annotation_tool.js';
-import {SaveRequestType} from './constants.js';
-import {ContentController, SaveAttachmentMessageData} from './controller.js';
-import {ViewerInkHostElement} from './elements/viewer-ink-host.js';
-import {Viewport} from './viewport.js';
+import type {AnnotationTool} from './annotation_tool.js';
+import type {SaveRequestType} from './constants.js';
+import type {ContentController, SaveAttachmentMessageData} from './controller.js';
+import type {ViewerInkHostElement} from './elements/viewer-ink-host.js';
+import type {Viewport} from './viewport.js';
 
 /** Event types dispatched by the ink controller. */
 export enum InkControllerEventType {

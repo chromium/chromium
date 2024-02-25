@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Property background-blend-mode value 'normal'
+  assert_equals: expected "normal" but got "normal, normal, normal"
+[FAIL] Property background-blend-mode value 'multiply'
+  assert_equals: expected "multiply" but got "multiply, multiply, multiply"
+[FAIL] Property background-blend-mode value 'normal, luminosity'
+  assert_equals: expected "normal, luminosity" but got "normal, luminosity, normal"
+[FAIL] Property background-blend-mode value 'screen, overlay'
+  assert_equals: expected "screen, overlay" but got "screen, overlay, screen"
+[FAIL] Property background-blend-mode value 'color, saturation'
+  assert_equals: expected "color, saturation" but got "color, saturation, color"
+Harness: the test ran to completion.
+

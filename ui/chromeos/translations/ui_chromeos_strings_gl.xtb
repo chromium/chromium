@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1000498691615767391">Selecciona un cartafol para abrir</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> non se puido copiar porque está encriptado.</translation>
 <translation id="1047956942837015229">Eliminando <ph name="COUNT" /> elementos...</translation>
 <translation id="1049926623896334335">Documento de Word</translation>
 <translation id="1056775291175587022">Non se atoparon redes</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1060368002126861100">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes movelos ao cartafol de ficheiros de Windows.</translation>
 <translation id="1062407476771304334">Substituír</translation>
+<translation id="1119383441774809183">Mostrar mensaxes de texto</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1120073797882051782">Romaja hangul</translation>
 <translation id="112387589102719461">Inglés (EUA) con teclado Dvorak para programadores</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Compartir cartafol con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoa con flores</translation>
 <translation id="1458457385801829801">Expulsar <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Non se puideron copiar <ph name="NUMBER_OF_FILES" /> ficheiros porque están encriptados.</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1482884275703521657">Finés</translation>
 <translation id="148466539719134488">Suízo</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portugués con teclado internacional estadounidense</translation>
 <translation id="1629521517399325891">O certificado de usuario non está dispoñible para a autenticación da rede.</translation>
 <translation id="1641780993263690097">Chinés (pinyin)</translation>
-<translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Tes ocupado todo o espazo de almacenamento de Google Workspace para a unidade compartida.</translation>
 <translation id="1661867754829461514">Non se atopa o PIN</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Non dispoñible</translation>
 <translation id="3254434849914415189">Selecciona a aplicación predeterminada para os ficheiros <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Árabe</translation>
+<translation id="326396468955264502">Non se puideron mover <ph name="NUMBER_OF_FILES" /> ficheiros porque están encriptados.</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">Non se puido abrir <ph name="PATH" /></translation>
 <translation id="3280431534455935878">Preparando</translation>
+<translation id="3280719573299097127">Estás nunha rede de pago por consumo. A sincronización de ficheiros púxose en pausa.</translation>
 <translation id="3280987981688031357">Disco de vinilo</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3291218047831493686">Para cambiar a opción de configuración de bloqueo da SIM, conéctate a esta rede</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3511705761158917664">Preparando sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3523225005467146490">Compartiuse 1 ficheiro con <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartafol</translation>
+<translation id="3529424493985988200">Se necesitas máis información, ponte en contacto coa persoa administradora.</translation>
 <translation id="3548125359243647069">Meteuse un PIN incorrecto demasiadas veces.</translation>
 <translation id="3549797760399244642">Vai a drive.google.com...</translation>
 <translation id="3553048479571901246">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes copialos no cartafol de ficheiros de Windows.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3619593063686672873">Non hai vídeos recentes</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, xestionada polo teu administrador, detalles</translation>
+<translation id="36451918667380448">O provedor de rede de telefonía móbil está bloqueado. Ponte en contacto co teu provedor para obter asistencia.</translation>
 <translation id="3645233063072417428">Movéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ficheiros seleccionados</translation>
 <translation id="3685122418104378273">A sincronización con Google Drive está desactivada de xeito predeterminado cando se utilizan os datos móbiles.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Flor de gazania</translation>
 <translation id="4943368462779413526">Fútbol</translation>
 <translation id="4961158930123534723">Compartiuse 1 cartafol con Parallels Desktop</translation>
+<translation id="4965874878399872778">Estase comprobando se os ficheiros cumpren as políticas de seguranza da túa organización...</translation>
 <translation id="496656650103537022">Restaurouse <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Non se puido terminar de configurar a sincronización de ficheiros</translation>
@@ -553,7 +559,6 @@
 <translation id="5275973617553375938">Ficheiros recuperados de Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar este elemento, arrástrao a un cartafol novo fóra da papeleira. Eliminouse o cartafol orixinal "<ph name="PARENT_FOLDER_NAME" />" deste elemento.</translation>
 <translation id="5283101102242354279">Como activar as extensións no modo de incógnito:</translation>
-<translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5293615890992542006">A política do administrador bloqueou a función de mover este ficheiro</translation>
 <translation id="5305688511332277257">Ningún instalado</translation>
@@ -631,6 +636,7 @@
 <translation id="5838451609423551646">Quitáronse todas as entradas da selección.</translation>
 <translation id="5838825566232597749">Internacional Workman estadounidense</translation>
 <translation id="5845721951356578987">Membro do persoal de enfermaría</translation>
+<translation id="5858478190805449225">O modo de aforro de batería está activado. Téntao de novo cando o modo estea desactivado.</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5861477046012235702">Persoa xogadora</translation>
 <translation id="5864471791310927901">Produciuse un erro na busca de DHCP</translation>
@@ -697,11 +703,13 @@
 <translation id="637062427944097960">Este ficheiro abriuse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
 <translation id="6394388407447716302">Só lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> non se puido mover porque está encriptado.</translation>
 <translation id="642282551015776456">Non se pode utilizar este nome como nome de ficheiro de cartafol</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
 <translation id="6430271654280079150">Quédache 1 intento.</translation>
 <translation id="643243556292470964">Os ficheiros eliminados movéronse á papeleira</translation>
 <translation id="6438480100790416671">Comprobando espazo de almacenamento…</translation>
+<translation id="6451527188465304418">Estase comprobando se o ficheiro cumpre as políticas de seguranza da túa organización...</translation>
 <translation id="6485131920355264772">Non se puido recuperar a información sobre o espazo</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="649877868557234318">Extraendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -709,7 +717,6 @@
 <translation id="6503285896705205014">A política do administrador bloqueou a función de copiar <ph name="COUNT" /> ficheiros</translation>
 <translation id="6509122719576673235">Noruegués</translation>
 <translation id="6528513914570774834">Permitir que outros usuarios deste dispositivo utilicen esta rede</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Produciuse un erro. É posible que non se eliminen algúns elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"...</translation>
@@ -843,7 +850,6 @@
 <translation id="7553492409867692754">Concede permiso ás aplicacións de Linux para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Estás sen conexión. Retomarase a sincronización de ficheiros cando teñas conexión a Internet</translation>
 <translation id="7589661784326793847">Espere só un segundo</translation>
-<translation id="7592775719802218421">Activando acceso sen conexión a <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrícula</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> xa existe. Cámbialle o nome e téntao de novo.</translation>
@@ -897,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
 <translation id="7925247922861151263">Erro de comprobación de AAA</translation>
-<translation id="7925686952655276919">Non utilizar datos móbiles para a sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>
 <translation id="7933875256234974853">Preparando todo para sincronizar ficheiros de Drive...</translation>
 <translation id="7943385054491506837">Colemak para EUA</translation>
@@ -920,6 +925,7 @@
 <translation id="8087576439476816834">Descargar, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartido comigo</translation>
 <translation id="8116072619078571545">Auga xeada</translation>
+<translation id="8120392982188717723">Permitir sincronización en redes de pago por consumo</translation>
 <translation id="8124093710070495550">Problema de sincronización</translation>
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">Compartiuse "<ph name="FILENAME" />" contigo. Non podes eliminalo porque non es o propietario.</translation>
@@ -927,6 +933,7 @@
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8147028810663464959">A largura do carácter é completa</translation>
 <translation id="8151638057146502721">Configurar</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}other{# erros.}}</translation>
 <translation id="8154842056504218462">Seleccionáronse todas as entradas.</translation>
 <translation id="8157684860301034423">Non se puido recuperar a información da aplicación.</translation>
 <translation id="8175731104491895765">Francés (Bélxica)</translation>
@@ -960,6 +967,7 @@
 <translation id="83651606385705612">Concede permiso a <ph name="VM_NAME" /> para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
+<translation id="8377269993083688872">Deseños de correo electrónico</translation>
 <translation id="8386903983509584791">Finalizou a busca</translation>
 <translation id="8387733224523483503">Extraeuse <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensións</translation>
@@ -998,7 +1006,6 @@
 <translation id="8569764466147087991">Selecciona un ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos...</translation>
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
@@ -1011,6 +1018,7 @@
 <translation id="8698877009525468705">Este ficheiro é confidencial e está suxeito ás restricións da política do administrador.</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8713112442029511308">Maltés</translation>
+<translation id="8714138378966541668">Bloqueada polo provedor</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
@@ -1018,6 +1026,7 @@
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
 <translation id="8790981080411996443">Persoa regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertencia.}other{# advertencias.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Produciuse un erro na compresión. Xa existe o elemento "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>
@@ -1048,7 +1057,6 @@
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9065512565307033593">Se non levas a cabo a verificación correctamente, desactivaráseche o acceso á rede.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advertencia.}other{<ph name="COUNT" /> advertencias.}}</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>

@@ -1,0 +1,28 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++main
+++++++++group name='These radio buttons will randomly not have a label on Chromium web browsers.'
+++++++++++legend
+++++++++++++staticText name='These radio buttons will randomly not have a label on Chromium web browsers.'
+++++++++++++++inlineTextBox name='These radio buttons will randomly not have a label on Chromium web browsers.'
+++++++++++radioButton name='Apple' checkedState=false
+++++++++++labelText
+++++++++++++staticText name='Apple'
+++++++++++++++inlineTextBox name='Apple'
+++++++++++radioButton name='Banana' checkedState=false
+++++++++++labelText
+++++++++++++staticText name='Banana'
+++++++++++++++inlineTextBox name='Banana'
+++++++++++radioButton name='Cherry' checkedState=false
+++++++++++labelText
+++++++++++++staticText name='Cherry'
+++++++++++++++inlineTextBox name='Cherry'
+++++++++++radioButton name='Durian' checkedState=false
+++++++++++labelText
+++++++++++++staticText name='Durian'
+++++++++++++++inlineTextBox name='Durian'
+++++++++++radioButton name='Eggplant' checkedState=false
+++++++++++labelText
+++++++++++++staticText name='Eggplant'
+++++++++++++++inlineTextBox name='Eggplant'

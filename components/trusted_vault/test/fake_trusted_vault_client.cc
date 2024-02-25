@@ -11,14 +11,26 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace trusted_vault {
 
 FakeTrustedVaultClient::CachedKeysPerUser::CachedKeysPerUser() = default;
 FakeTrustedVaultClient::CachedKeysPerUser::~CachedKeysPerUser() = default;
+
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::RecoveryMethod(
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint)
+    : public_key(public_key), method_type_hint(method_type_hint) {}
+
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::RecoveryMethod(
+    const RecoveryMethod&) = default;
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::~RecoveryMethod() = default;
 
 FakeTrustedVaultClient::FakeServer::FakeServer() = default;
 FakeTrustedVaultClient::FakeServer::~FakeServer() = default;
@@ -60,24 +72,49 @@ FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
   return latest_keys;
 }
 
-FakeTrustedVaultClient::FakeTrustedVaultClient() = default;
+void FakeTrustedVaultClient::FakeServer::AddRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint) {
+  gaia_id_to_recovery_methods_[gaia_id].emplace_back(public_key,
+                                                     method_type_hint);
+}
+
+std::vector<FakeTrustedVaultClient::FakeServer::RecoveryMethod>
+FakeTrustedVaultClient::FakeServer::GetRecoveryMethods(
+    const std::string& gaia_id) const {
+  auto it = gaia_id_to_recovery_methods_.find(gaia_id);
+  if (it == gaia_id_to_recovery_methods_.end()) {
+    return {};
+  }
+  return it->second;
+}
+
+FakeTrustedVaultClient::FakeTrustedVaultClient(bool auto_complete_requests)
+    : auto_complete_requests_(auto_complete_requests) {}
+
 FakeTrustedVaultClient::~FakeTrustedVaultClient() = default;
 
-bool FakeTrustedVaultClient::CompleteFetchKeysRequest() {
+bool FakeTrustedVaultClient::CompleteAllPendingRequests() {
   if (pending_responses_.empty()) {
     return false;
   }
-
-  base::OnceClosure cb = std::move(pending_responses_.front());
-  pending_responses_.pop_front();
-  std::move(cb).Run();
+  // Response callbacks may add new requests, ensure that only those added
+  // before this call are completed in the current task.
+  size_t original_request_count = pending_responses_.size();
+  for (size_t i = 0; i < original_request_count; ++i) {
+    std::move(pending_responses_[i]).Run();
+  }
+  pending_responses_.erase(pending_responses_.begin(),
+                           pending_responses_.begin() + original_request_count);
   return true;
 }
 
-void FakeTrustedVaultClient::SetIsRecoverabilityDegraded(
-    bool is_recoverability_degraded) {
-  is_recoverability_degraded_ = is_recoverability_degraded;
-  for (Observer& observer : observer_list_) {
+void FakeTrustedVaultClient::SetIsRecoveryMethodRequired(
+    bool is_recovery_method_required) {
+  is_recovery_method_required_ = is_recovery_method_required;
+  for (auto& observer : observer_list_) {
+    // May be a false positive, but observers should handle this well.
     observer.OnTrustedVaultRecoverabilityChanged();
   }
 }
@@ -103,6 +140,13 @@ void FakeTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
         callback) {
+  if (auto_complete_requests_) {
+    // This posts a task to call CompleteAllPendingRequests(). It is okay to
+    // call it now even though `pending_responses_` is not yet updated, because
+    // it will be next task.
+    PostCompleteAllPendingRequests();
+  }
+
   const std::string& gaia_id = account_info.gaia;
 
   ++fetch_count_;
@@ -171,7 +215,14 @@ void FakeTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
   ++get_is_recoverablity_degraded_call_count_;
-  std::move(callback).Run(is_recoverability_degraded_);
+  const bool is_recoverability_degraded =
+      is_recovery_method_required_ &&
+      server_.GetRecoveryMethods(account_info.gaia).empty();
+  pending_responses_.push_back(
+      base::BindOnce(std::move(callback), is_recoverability_degraded));
+  if (auto_complete_requests_) {
+    PostCompleteAllPendingRequests();
+  }
 }
 
 void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -179,7 +230,13 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {
-  NOTIMPLEMENTED();
+  server_.AddRecoveryMethod(gaia_id, public_key, method_type_hint);
+  std::move(callback).Run();
+
+  for (auto& observer : observer_list_) {
+    // May be a false positive, but observers should handle this well.
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
 }
 
 void FakeTrustedVaultClient::ClearLocalDataForAccount(
@@ -188,6 +245,14 @@ void FakeTrustedVaultClient::ClearLocalDataForAccount(
   if (it != gaia_id_to_cached_keys_.end()) {
     gaia_id_to_cached_keys_.erase(it);
   }
+}
+
+void FakeTrustedVaultClient::PostCompleteAllPendingRequests() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(
+                         &FakeTrustedVaultClient::CompleteAllPendingRequests),
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace trusted_vault

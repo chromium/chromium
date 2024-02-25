@@ -70,8 +70,8 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
   void OnIsDeveloperMode(bool developer_mode);
 
   // Unowned pointers.
-  const raw_ptr<arc::ArcPowerBridge, ExperimentalAsh> power_bridge_;
-  const raw_ptr<arc::ArcInstanceThrottle, ExperimentalAsh> instance_throttle_;
+  const raw_ptr<arc::ArcPowerBridge> power_bridge_;
+  const raw_ptr<arc::ArcInstanceThrottle> instance_throttle_;
 
   // Collects system stats runtime.
   base::Time timestamp_;

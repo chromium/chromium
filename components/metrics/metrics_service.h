@@ -45,10 +45,6 @@ FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
 FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 
-namespace base {
-class PrefService;
-}  // namespace base
-
 namespace variations {
 class SyntheticTrialRegistry;
 }
@@ -110,6 +106,14 @@ class MetricsService {
   // recording is not currently running.
   std::string GetClientId() const;
 
+  // Get the low entropy source values.
+  int GetLowEntropySource();
+  int GetOldLowEntropySource();
+  int GetPseudoLowEntropySource();
+
+  // Get the limited entropy randomization source.
+  std::string_view GetLimitedEntropyRandomizationSource();
+
   // Set an external provided id for the metrics service. This method can be
   // set by a caller which wants to explicitly control the *next* id used by the
   // metrics service. Note that setting the external client id will *not* change
@@ -141,6 +145,9 @@ class MetricsService {
   // Called when the application is coming out of background mode.
   void OnAppEnterForeground(bool force_open_new_log = false);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  // Called when a document first starts loading.
+  void OnPageLoadStarted();
 
   // Signals that the browser is shutting down cleanly. Intended to be called
   // during shutdown after critical shutdown tasks have completed.
@@ -215,11 +222,11 @@ class MetricsService {
   //
   // See comments at MetricsServiceClient::GetCurrentUserMetricsConsent() for
   // more details.
-  absl::optional<bool> GetCurrentUserMetricsConsent() const;
+  std::optional<bool> GetCurrentUserMetricsConsent() const;
 
   // Returns the current logged in user id. See comments at
   // MetricsServiceClient::GetCurrentUserId() for more details.
-  absl::optional<std::string> GetCurrentUserId() const;
+  std::optional<std::string> GetCurrentUserId() const;
 
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
@@ -582,11 +589,13 @@ class MetricsService {
   // Snapshots histogram deltas using the passed |log_histogram_writer| and then
   // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
   // |signing_key| are used to finalize the log (see FinalizeLog()).
+  // Semantically, this is equivalent to SnapshotUnloggedSamplesAndFinalizeLog()
+  // followed by MarkUnloggedSamplesAsLogged().
   static FinalizedLog SnapshotDeltasAndFinalizeLog(
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string&& current_app_version,
       std::string&& signing_key);
 
@@ -600,7 +609,7 @@ class MetricsService {
       MetricsLogHistogramWriter* log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string&& current_app_version,
       std::string&& signing_key);
 
@@ -609,7 +618,7 @@ class MetricsService {
   static FinalizedLog FinalizeLog(
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       const std::string& current_app_version,
       const std::string& signing_key);
 

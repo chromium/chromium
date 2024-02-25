@@ -9,10 +9,12 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -67,6 +69,9 @@ class AppShimRegistry {
   std::set<std::string> GetInstalledAppsForProfile(
       const base::FilePath& profile) const;
 
+  // Returns all apps installed in multiple profiles. Used for metrics.
+  std::set<std::string> GetAppsInstalledInMultipleProfiles() const;
+
   // Called when the file and/or protocol handlers for an app are updated in a
   // specific profile. Used to calculate the union of all handlers for a app
   // when updating the app shim.
@@ -103,6 +108,34 @@ class AppShimRegistry {
   std::map<base::FilePath, HandlerInfo> GetHandlersForApp(
       const std::string& app_id);
 
+  // Return whether a code directory hash has ever been associated with any app.
+  bool HasSavedAnyCdHashes() const;
+
+  // Associate the given code directory hash with a given app.
+  void SaveCdHashForApp(const std::string& app_id,
+                        base::span<const uint8_t> cd_hash);
+
+  // Verify that the given code directory hash matches the one previously
+  // associated with the given app.
+  bool VerifyCdHashForApp(const std::string& app_id,
+                          base::span<const uint8_t> cd_hash);
+
+  // Called when changes to the system level notification permission status for
+  // the given app have been detected.
+  void SaveNotificationPermissionStatusForApp(
+      const std::string& app_id,
+      mac_notifications::mojom::PermissionStatus status);
+
+  // Gets the last known system level notification permission status for the
+  // given app. Returns kNotDetermined if no value has been stored.
+  mac_notifications::mojom::PermissionStatus
+  GetNotificationPermissionStatusForApp(const std::string& app_id);
+
+  // Register a callback to be called any time data associated with an app
+  // changes. The callback is passed the app_id of the changed app.
+  base::CallbackListSubscription RegisterAppChangedCallback(
+      base::RepeatingCallback<void(const std::string&)> callback);
+
   // Helper functions for testing.
   void SetPrefServiceAndUserDataDirForTesting(
       PrefService* pref_service,
@@ -114,8 +147,8 @@ class AppShimRegistry {
  protected:
   friend class base::NoDestructor<AppShimRegistry>;
 
-  AppShimRegistry() = default;
-  ~AppShimRegistry() = default;
+  AppShimRegistry();
+  ~AppShimRegistry();
 
   PrefService* GetPrefService() const;
   base::FilePath GetFullProfilePath(const std::string& profile_path) const;
@@ -126,6 +159,23 @@ class AppShimRegistry {
                             const std::string& profiles_key,
                             std::set<base::FilePath>* profiles) const;
 
+  using HmacKey = std::vector<uint8_t>;
+  static constexpr size_t kHmacKeySize = 32;
+
+  // Retrieve the key used to create HMACs of app's code directory hashes,
+  // generating a new key if needed.
+  HmacKey GetCdHashHmacKey();
+
+  // Helper function used by GetCdHashHmacKey
+  // Retrieve the existing key used to create HMACs of app's code directory
+  // hashes. Returns nullopt if no key was found or the existing key could not
+  // be decoded or decrypted.
+  std::optional<HmacKey> GetExistingCdHashHmacKey();
+
+  // Helper function used by GetCdHashHmacKey
+  // Encode and encrypt the given HMAC key and save it to preferences.
+  void SaveCdHashHmacKey(const HmacKey& key);
+
   // Update the local storage for |app_id|. Update |installed_profiles| and
   // |last_active_profiles| only if they are non-nullptr. If
   // |installed_profiles| is non-nullptr and empty, remove the entry for
@@ -133,10 +183,16 @@ class AppShimRegistry {
   void SetAppInfo(const std::string& app_id,
                   const std::set<base::FilePath>* installed_profiles,
                   const std::set<base::FilePath>* last_active_profiles,
-                  const std::map<base::FilePath, HandlerInfo>* handlers);
+                  const std::map<base::FilePath, HandlerInfo>* handlers,
+                  const std::string* cd_hash_hmac_base64,
+                  const mac_notifications::mojom::PermissionStatus*
+                      notification_permission_status);
 
   raw_ptr<PrefService> override_pref_service_ = nullptr;
   base::FilePath override_user_data_dir_;
+
+  base::RepeatingCallbackList<void(const std::string& app_id)>
+      app_changed_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SHIM_REGISTRY_MAC_H_

@@ -10,7 +10,10 @@
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -131,14 +134,14 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
   CoordBox coord_box_;
 };
 
-std::unique_ptr<InterpolableValue> ConvertCoordinate(
+InterpolableValue* ConvertCoordinate(
     const BasicShapeCenterCoordinate& coordinate,
     double zoom) {
   return InterpolableLength::MaybeConvertLength(coordinate.ComputedLength(),
                                                 zoom);
 }
 
-std::unique_ptr<InterpolableValue> CreateNeutralInterpolableCoordinate() {
+InterpolableValue* CreateNeutralInterpolableCoordinate() {
   return InterpolableLength::CreateNeutral();
 }
 
@@ -162,25 +165,48 @@ enum RayComponentIndex : unsigned {
 InterpolationValue CreateValue(const StyleRay& ray,
                                CoordBox coord_box,
                                double zoom) {
-  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
-  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(ray.Angle()));
+  auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex,
+            MakeGarbageCollected<InterpolableNumber>(ray.Angle()));
   list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), zoom));
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), zoom));
   list->Set(kRayHasExplicitCenterIndex,
-            std::make_unique<InterpolableNumber>(ray.HasExplicitCenter()));
-  return InterpolationValue(std::move(list), CSSRayNonInterpolableValue::Create(
-                                                 RayMode(ray, coord_box)));
+            MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
+  return InterpolationValue(
+      list, CSSRayNonInterpolableValue::Create(RayMode(ray, coord_box)));
 }
 
 InterpolationValue CreateNeutralValue(const RayMode& mode) {
-  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
-  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(0));
+  auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(0));
   list->Set(kRayCenterXIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayHasExplicitCenterIndex,
-            std::make_unique<InterpolableNumber>(0));
-  return InterpolationValue(std::move(list),
-                            CSSRayNonInterpolableValue::Create(mode));
+            MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(list, CSSRayNonInterpolableValue::Create(mode));
+}
+
+InterpolationValue CreateValue(const CSSValue& angle,
+                               const StyleRay& ray,
+                               CoordBox coord_box,
+                               double zoom) {
+  auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
+  if (auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(angle)) {
+    list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(
+                                  numeric_value->ComputeDegrees(),
+                                  CSSPrimitiveValue::UnitType::kDegrees));
+  } else {
+    CHECK(angle.IsMathFunctionValue());
+    const auto& function_value = To<CSSMathFunctionValue>(angle);
+    list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(
+                                  *function_value.ExpressionNode()));
+  }
+  list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), zoom));
+  list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), zoom));
+  list->Set(kRayHasExplicitCenterIndex,
+            MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
+  return InterpolationValue(
+      list, CSSRayNonInterpolableValue::Create(RayMode(ray, coord_box)));
 }
 
 }  // namespace
@@ -193,16 +219,19 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
   const auto& list = To<InterpolableList>(interpolable_value);
   scoped_refptr<StyleRay> style_ray = StyleRay::Create(
-      To<InterpolableNumber>(list.Get(kRayAngleIndex))->Value(),
+      To<InterpolableNumber>(list.Get(kRayAngleIndex))
+          ->Value(state.CssToLengthConversionData()),
       ray_non_interpolable_value.Mode().Size(),
       ray_non_interpolable_value.Mode().Contain(),
       CreateCoordinate(*list.Get(kRayCenterXIndex),
                        state.CssToLengthConversionData()),
       CreateCoordinate(*list.Get(kRayCenterYIndex),
                        state.CssToLengthConversionData()),
-      To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))->Value());
-  state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
-      style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
+      To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))
+          ->Value(state.CssToLengthConversionData()));
+  state.StyleBuilder().SetOffsetPath(
+      MakeGarbageCollected<ShapeOffsetPathOperation>(
+          style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
 }
 
 void CSSRayInterpolationType::Composite(
@@ -230,7 +259,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertNeutral(
   const RayMode& underlying_mode =
       To<CSSRayNonInterpolableValue>(*underlying.non_interpolable_value).Mode();
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingRayModeChecker>(underlying_mode));
+      MakeGarbageCollected<UnderlyingRayModeChecker>(underlying_mode));
   return CreateNeutralValue(underlying_mode);
 }
 
@@ -252,7 +281,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
     return nullptr;
 
   conversion_checkers.push_back(
-      std::make_unique<InheritedRayChecker>(inherited_ray, coord_box));
+      MakeGarbageCollected<InheritedRayChecker>(inherited_ray, coord_box));
   return CreateValue(*inherited_ray, coord_box,
                      state.ParentStyle()->EffectiveZoom());
 }
@@ -288,20 +317,24 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
   DCHECK(state);
   scoped_refptr<BasicShape> shape = nullptr;
   CoordBox coord_box = CoordBox::kBorderBox;
+  const CSSPrimitiveValue* angle = nullptr;
+  // TODO(crbug.com/326260768): Don't use the resolved center coordinates.
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     if (list->First().IsRayValue()) {
+      angle = &To<cssvalue::CSSRayValue>(list->First()).Angle();
       shape = BasicShapeForValue(*state, list->First());
       if (list->length() == 2) {
         coord_box = To<CSSIdentifierValue>(list->Last()).ConvertTo<CoordBox>();
       }
     }
   } else if (value.IsRayValue()) {
+    angle = &To<cssvalue::CSSRayValue>(value).Angle();
     shape = BasicShapeForValue(*state, value);
   }
   if (!shape) {
     return nullptr;
   }
-  return CreateValue(To<StyleRay>(*shape), coord_box,
+  return CreateValue(*angle, To<StyleRay>(*shape), coord_box,
                      state->ParentStyle()->EffectiveZoom());
 }
 

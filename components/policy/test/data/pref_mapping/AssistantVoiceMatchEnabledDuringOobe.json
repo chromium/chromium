@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Checking default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "settings.voice_interaction.oobe_voice_match.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AssistantVoiceMatchEnabledDuringOobe": false
+        },
+        "prefs": {
+          "settings.voice_interaction.oobe_voice_match.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

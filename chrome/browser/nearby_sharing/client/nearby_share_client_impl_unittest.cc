@@ -19,16 +19,16 @@
 #include "chrome/browser/nearby_sharing/client/nearby_share_client_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -196,33 +196,35 @@ class NearbyShareClientImplTest : public testing::Test,
 
   // NearbyShareHttpNotifier::Observer:
   void OnUpdateDeviceRequest(
-      const nearbyshare::proto::UpdateDeviceRequest& request) override {
+      const nearby::sharing::proto::UpdateDeviceRequest& request) override {
     update_device_request_from_notifier_ = request;
   }
 
   void OnUpdateDeviceResponse(
-      const nearbyshare::proto::UpdateDeviceResponse& response) override {
+      const nearby::sharing::proto::UpdateDeviceResponse& response) override {
     update_device_response_from_notifier_ = response;
   }
 
   void OnListContactPeopleRequest(
-      const nearbyshare::proto::ListContactPeopleRequest& request) override {
+      const nearby::sharing::proto::ListContactPeopleRequest& request)
+      override {
     list_contact_people_request_from_notifier_ = request;
   }
 
   void OnListContactPeopleResponse(
-      const nearbyshare::proto::ListContactPeopleResponse& response) override {
+      const nearby::sharing::proto::ListContactPeopleResponse& response)
+      override {
     list_contact_people_response_from_notifier_ = response;
   }
 
   void OnListPublicCertificatesRequest(
-      const nearbyshare::proto::ListPublicCertificatesRequest& request)
+      const nearby::sharing::proto::ListPublicCertificatesRequest& request)
       override {
     list_public_certificate_request_from_notifier_ = request;
   }
 
   void OnListPublicCertificatesResponse(
-      const nearbyshare::proto::ListPublicCertificatesResponse& response)
+      const nearby::sharing::proto::ListPublicCertificatesResponse& response)
       override {
     list_public_certificate_response_from_notifier_ = response;
   }
@@ -254,21 +256,23 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
   void VerifyRequestNotification(
-      const nearbyshare::proto::UpdateDeviceRequest& expected_request) const {
+      const nearby::sharing::proto::UpdateDeviceRequest& expected_request)
+      const {
     ASSERT_TRUE(update_device_request_from_notifier_);
     EXPECT_EQ(expected_request.SerializeAsString(),
               update_device_request_from_notifier_->SerializeAsString());
   }
 
   void VerifyResponseNotification(
-      const nearbyshare::proto::UpdateDeviceResponse& expected_response) const {
+      const nearby::sharing::proto::UpdateDeviceResponse& expected_response)
+      const {
     ASSERT_TRUE(update_device_response_from_notifier_);
     EXPECT_EQ(expected_response.SerializeAsString(),
               update_device_response_from_notifier_->SerializeAsString());
   }
 
   void VerifyRequestNotification(
-      const nearbyshare::proto::ListContactPeopleRequest& expected_request)
+      const nearby::sharing::proto::ListContactPeopleRequest& expected_request)
       const {
     ASSERT_TRUE(list_contact_people_request_from_notifier_);
     EXPECT_EQ(expected_request.SerializeAsString(),
@@ -276,16 +280,16 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
   void VerifyResponseNotification(
-      const nearbyshare::proto::ListContactPeopleResponse& expected_response)
-      const {
+      const nearby::sharing::proto::ListContactPeopleResponse&
+          expected_response) const {
     ASSERT_TRUE(list_contact_people_response_from_notifier_);
     EXPECT_EQ(expected_response.SerializeAsString(),
               list_contact_people_response_from_notifier_->SerializeAsString());
   }
 
   void VerifyRequestNotification(
-      const nearbyshare::proto::ListPublicCertificatesRequest& expected_request)
-      const {
+      const nearby::sharing::proto::ListPublicCertificatesRequest&
+          expected_request) const {
     ASSERT_TRUE(list_public_certificate_request_from_notifier_);
     EXPECT_EQ(
         expected_request.SerializeAsString(),
@@ -293,7 +297,7 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
   void VerifyResponseNotification(
-      const nearbyshare::proto::ListPublicCertificatesResponse&
+      const nearby::sharing::proto::ListPublicCertificatesResponse&
           expected_response) const {
     ASSERT_TRUE(list_public_certificate_response_from_notifier_);
     EXPECT_EQ(
@@ -302,31 +306,30 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
  protected:
-  absl::optional<nearbyshare::proto::UpdateDeviceRequest>
+  std::optional<nearby::sharing::proto::UpdateDeviceRequest>
       update_device_request_from_notifier_;
-  absl::optional<nearbyshare::proto::UpdateDeviceResponse>
+  std::optional<nearby::sharing::proto::UpdateDeviceResponse>
       update_device_response_from_notifier_;
-  absl::optional<nearbyshare::proto::ListContactPeopleRequest>
+  std::optional<nearby::sharing::proto::ListContactPeopleRequest>
       list_contact_people_request_from_notifier_;
-  absl::optional<nearbyshare::proto::ListContactPeopleResponse>
+  std::optional<nearby::sharing::proto::ListContactPeopleResponse>
       list_contact_people_response_from_notifier_;
-  absl::optional<nearbyshare::proto::ListPublicCertificatesRequest>
+  std::optional<nearby::sharing::proto::ListPublicCertificatesRequest>
       list_public_certificate_request_from_notifier_;
-  absl::optional<nearbyshare::proto::ListPublicCertificatesResponse>
+  std::optional<nearby::sharing::proto::ListPublicCertificatesResponse>
       list_public_certificate_response_from_notifier_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  raw_ptr<FakeNearbyShareApiCallFlow, DanglingUntriaged | ExperimentalAsh>
-      api_call_flow_;
+  raw_ptr<FakeNearbyShareApiCallFlow, DanglingUntriaged> api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   NearbyShareHttpNotifier notifier_;
   std::unique_ptr<NearbyShareClient> client_;
 };
 
 TEST_F(NearbyShareClientImplTest, UpdateDeviceSuccess) {
-  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+  base::test::TestFuture<const nearby::sharing::proto::UpdateDeviceResponse&>
       future;
-  nearbyshare::proto::UpdateDeviceRequest request_proto;
+  nearby::sharing::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
   client_->UpdateDevice(
       request_proto, future.GetCallback(),
@@ -341,12 +344,12 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceSuccess) {
   EXPECT_EQ(request_url(), GURL(std::string(kTestGoogleApisUrl) + "/v1/" +
                                 std::string(kDeviceIdPath)));
 
-  nearbyshare::proto::UpdateDeviceRequest expected_request;
+  nearby::sharing::proto::UpdateDeviceRequest expected_request;
   EXPECT_TRUE(expected_request.ParseFromString(serialized_request()));
   EXPECT_EQ(kDeviceIdPath, expected_request.device().name());
 
-  nearbyshare::proto::UpdateDeviceResponse response_proto;
-  nearbyshare::proto::Device& device = *response_proto.mutable_device();
+  nearby::sharing::proto::UpdateDeviceResponse response_proto;
+  nearby::sharing::proto::Device& device = *response_proto.mutable_device();
 
   device.set_name(kDeviceIdPath);
   device.add_contacts();
@@ -366,31 +369,31 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceSuccess) {
   VerifyResponseNotification(response_proto);
 
   // Check that the result received in callback is the same as the response.
-  nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
+  nearby::sharing::proto::UpdateDeviceResponse result_proto = future.Take();
   ASSERT_EQ(3, result_proto.device().contacts_size());
-  EXPECT_EQ(nearbyshare::proto::Contact::Identifier::kPhoneNumber,
+  EXPECT_EQ(nearby::sharing::proto::Contact::Identifier::kPhoneNumber,
             result_proto.device().contacts(0).identifier().identifier_case());
   EXPECT_EQ(kPhoneNumber1,
             result_proto.device().contacts(0).identifier().phone_number());
-  EXPECT_EQ(nearbyshare::proto::Contact::Identifier::kAccountName,
+  EXPECT_EQ(nearby::sharing::proto::Contact::Identifier::kAccountName,
             result_proto.device().contacts(1).identifier().identifier_case());
   EXPECT_EQ(kAccountName1,
             result_proto.device().contacts(1).identifier().account_name());
-  EXPECT_EQ(nearbyshare::proto::Contact::Identifier::kObfuscatedGaia,
+  EXPECT_EQ(nearby::sharing::proto::Contact::Identifier::kObfuscatedGaia,
             result_proto.device().contacts(2).identifier().identifier_case());
   EXPECT_EQ(kObfuscatedGaia1,
             result_proto.device().contacts(2).identifier().obfuscated_gaia());
 }
 
 TEST_F(NearbyShareClientImplTest, UpdateDeviceFailure) {
-  nearbyshare::proto::UpdateDeviceRequest request;
+  nearby::sharing::proto::UpdateDeviceRequest request;
   request.mutable_device()->set_name(kDeviceIdPath);
 
   base::test::TestFuture<ash::nearby::NearbyHttpError> future;
   client_->UpdateDevice(
       request,
       base::BindOnce(
-          &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
+          &NotCalledConstRef<nearby::sharing::proto::UpdateDeviceResponse>),
       future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -405,9 +408,10 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceFailure) {
 }
 
 TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
-  base::test::TestFuture<const nearbyshare::proto::ListContactPeopleResponse&>
+  base::test::TestFuture<
+      const nearby::sharing::proto::ListContactPeopleResponse&>
       future;
-  nearbyshare::proto::ListContactPeopleRequest request_proto;
+  nearby::sharing::proto::ListContactPeopleRequest request_proto;
   request_proto.set_page_size(kPageSize1);
   request_proto.set_page_token(kPageToken1);
 
@@ -431,7 +435,7 @@ TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
       std::vector<std::string>{kPageToken1},
       ExpectQueryStringValues(request_as_query_parameters(), "page_token"));
 
-  nearbyshare::proto::ListContactPeopleResponse response_proto;
+  nearby::sharing::proto::ListContactPeopleResponse response_proto;
   response_proto.add_contact_records();
   response_proto.mutable_contact_records(0)->set_id(kContactId1);
   response_proto.mutable_contact_records(0)->set_person_name(kPersonName1);
@@ -444,24 +448,25 @@ TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
   FinishApiCallFlow(&response_proto);
   VerifyResponseNotification(response_proto);
 
-  nearbyshare::proto::ListContactPeopleResponse result_proto = future.Take();
+  nearby::sharing::proto::ListContactPeopleResponse result_proto =
+      future.Take();
   EXPECT_EQ(1, result_proto.contact_records_size());
   EXPECT_EQ(kContactId1, result_proto.contact_records(0).id());
   EXPECT_EQ(kPersonName1, result_proto.contact_records(0).person_name());
   EXPECT_EQ(kImageUrl1, result_proto.contact_records(0).image_url());
   EXPECT_EQ(1, result_proto.contact_records(0).identifiers_size());
-  EXPECT_EQ(
-      nearbyshare::proto::Contact::Identifier::IdentifierCase::kObfuscatedGaia,
-      result_proto.contact_records(0).identifiers(0).identifier_case());
+  EXPECT_EQ(nearby::sharing::proto::Contact::Identifier::IdentifierCase::
+                kObfuscatedGaia,
+            result_proto.contact_records(0).identifiers(0).identifier_case());
   EXPECT_EQ(kObfuscatedGaia1,
             result_proto.contact_records(0).identifiers(0).obfuscated_gaia());
 }
 
 TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
   base::test::TestFuture<
-      const nearbyshare::proto::ListPublicCertificatesResponse&>
+      const nearby::sharing::proto::ListPublicCertificatesResponse&>
       future;
-  nearbyshare::proto::ListPublicCertificatesRequest request_proto;
+  nearby::sharing::proto::ListPublicCertificatesRequest request_proto;
   request_proto.set_parent(kDeviceIdPath);
   request_proto.set_page_size(kPageSize1);
   request_proto.set_page_token(kPageToken1);
@@ -494,7 +499,7 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
       (std::vector<std::string>{kSecretId1Encoded, kSecretId2Encoded}),
       ExpectQueryStringValues(request_as_query_parameters(), "secret_ids"));
 
-  nearbyshare::proto::ListPublicCertificatesResponse response_proto;
+  nearby::sharing::proto::ListPublicCertificatesResponse response_proto;
   response_proto.set_next_page_token(kPageToken2);
   response_proto.add_public_certificates();
   response_proto.mutable_public_certificates(0)->set_secret_id(kSecretId1);
@@ -522,7 +527,7 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
   FinishApiCallFlow(&response_proto);
   VerifyResponseNotification(response_proto);
 
-  nearbyshare::proto::ListPublicCertificatesResponse result_proto =
+  nearby::sharing::proto::ListPublicCertificatesResponse result_proto =
       future.Take();
   EXPECT_EQ(kPageToken2, result_proto.next_page_token());
   EXPECT_EQ(1, result_proto.public_certificates_size());
@@ -546,9 +551,9 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
 TEST_F(NearbyShareClientImplTest, FetchAccessTokenFailure) {
   base::test::TestFuture<ash::nearby::NearbyHttpError> future;
   client_->UpdateDevice(
-      nearbyshare::proto::UpdateDeviceRequest(),
+      nearby::sharing::proto::UpdateDeviceRequest(),
       base::BindOnce(
-          &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
+          &NotCalledConstRef<nearby::sharing::proto::UpdateDeviceResponse>),
       future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -558,14 +563,14 @@ TEST_F(NearbyShareClientImplTest, FetchAccessTokenFailure) {
 }
 
 TEST_F(NearbyShareClientImplTest, ParseResponseProtoFailure) {
-  nearbyshare::proto::UpdateDeviceRequest request_proto;
+  nearby::sharing::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
   base::test::TestFuture<ash::nearby::NearbyHttpError> future;
   client_->UpdateDevice(
       request_proto,
       base::BindOnce(
-          &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
+          &NotCalledConstRef<nearby::sharing::proto::UpdateDeviceResponse>),
       future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -580,11 +585,11 @@ TEST_F(NearbyShareClientImplTest, ParseResponseProtoFailure) {
 }
 
 TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
-  nearbyshare::proto::UpdateDeviceRequest request_proto;
+  nearby::sharing::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
   // Make first request.
-  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+  base::test::TestFuture<const nearby::sharing::proto::UpdateDeviceResponse&>
       future;
   client_->UpdateDevice(
       request_proto, future.GetCallback(),
@@ -601,29 +606,29 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
   {
     base::test::TestFuture<ash::nearby::NearbyHttpError> future2;
     EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
-        nearbyshare::proto::ListPublicCertificatesRequest(),
+        nearby::sharing::proto::ListPublicCertificatesRequest(),
         base::BindOnce(&NotCalledConstRef<
-                       nearbyshare::proto::ListPublicCertificatesResponse>),
+                       nearby::sharing::proto::ListPublicCertificatesResponse>),
         future2.GetCallback()));
   }
 
   // Complete first request.
   {
-    nearbyshare::proto::UpdateDeviceResponse response_proto;
+    nearby::sharing::proto::UpdateDeviceResponse response_proto;
     response_proto.mutable_device()->set_name(kDeviceIdPath);
     FinishApiCallFlow(&response_proto);
   }
 
-  nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
+  nearby::sharing::proto::UpdateDeviceResponse result_proto = future.Take();
   EXPECT_EQ(kDeviceIdPath, result_proto.device().name());
 }
 
 TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
   // Make first request successfully.
   {
-    base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+    base::test::TestFuture<const nearby::sharing::proto::UpdateDeviceResponse&>
         future;
-    nearbyshare::proto::UpdateDeviceRequest request_proto;
+    nearby::sharing::proto::UpdateDeviceRequest request_proto;
     request_proto.mutable_device()->set_name(kDeviceIdPath);
 
     client_->UpdateDevice(
@@ -637,10 +642,10 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
     EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
                                  std::string(kDeviceIdPath));
 
-    nearbyshare::proto::UpdateDeviceResponse response_proto;
+    nearby::sharing::proto::UpdateDeviceResponse response_proto;
     response_proto.mutable_device()->set_name(kDeviceIdPath);
     FinishApiCallFlow(&response_proto);
-    nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
+    nearby::sharing::proto::UpdateDeviceResponse result_proto = future.Take();
     EXPECT_EQ(kDeviceIdPath, result_proto.device().name());
   }
 
@@ -648,9 +653,9 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
   {
     base::test::TestFuture<ash::nearby::NearbyHttpError> future;
     EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
-        nearbyshare::proto::ListPublicCertificatesRequest(),
+        nearby::sharing::proto::ListPublicCertificatesRequest(),
         base::BindOnce(&NotCalledConstRef<
-                       nearbyshare::proto::ListPublicCertificatesResponse>),
+                       nearby::sharing::proto::ListPublicCertificatesResponse>),
         future.GetCallback()));
   }
 }
@@ -658,9 +663,9 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
 TEST_F(NearbyShareClientImplTest, GetAccessTokenUsed) {
   EXPECT_TRUE(client_->GetAccessTokenUsed().empty());
 
-  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+  base::test::TestFuture<const nearby::sharing::proto::UpdateDeviceResponse&>
       future;
-  nearbyshare::proto::UpdateDeviceRequest request_proto;
+  nearby::sharing::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
   client_->UpdateDevice(

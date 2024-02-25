@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -96,7 +96,7 @@ std::string GetSessionTagWithPrefs(const std::string& cache_guid,
 }
 
 void ForwardError(syncer::OnceModelErrorHandler error_handler,
-                  const absl::optional<syncer::ModelError>& error) {
+                  const std::optional<syncer::ModelError>& error) {
   if (error) {
     std::move(error_handler).Run(*error);
   }
@@ -104,7 +104,7 @@ void ForwardError(syncer::OnceModelErrorHandler error_handler,
 
 // Parses the content of |record_list| into |*initial_data|. The output
 // parameters are first for binding purposes.
-absl::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
+std::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
     std::map<std::string, sync_pb::SessionSpecifics>* initial_data,
     std::string* session_name,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
@@ -126,14 +126,13 @@ absl::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
 
   *session_name = syncer::GetPersonalizableDeviceNameBlocking();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
 struct SessionStore::Builder {
-  raw_ptr<SyncSessionsClient, AcrossTasksDanglingUntriaged> sessions_client =
-      nullptr;
+  base::WeakPtr<SyncSessionsClient> sessions_client;
   OpenCallback callback;
   SessionInfo local_session_info;
   std::unique_ptr<syncer::ModelTypeStore> underlying_store;
@@ -150,7 +149,7 @@ void SessionStore::Open(const std::string& cache_guid,
   DVLOG(1) << "Opening session store";
 
   auto builder = std::make_unique<Builder>();
-  builder->sessions_client = sessions_client;
+  builder->sessions_client = sessions_client->AsWeakPtr();
   builder->callback = std::move(callback);
 
   builder->local_session_info.device_type = syncer::GetLocalDeviceType();
@@ -328,7 +327,7 @@ std::string SessionStore::GetTabClientTagForTest(const std::string& session_tag,
 // static
 void SessionStore::OnStoreCreated(
     std::unique_ptr<Builder> builder,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<ModelTypeStore> underlying_store) {
   DCHECK(builder);
 
@@ -350,7 +349,7 @@ void SessionStore::OnStoreCreated(
 // static
 void SessionStore::OnReadAllMetadata(
     std::unique_ptr<Builder> builder,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "sync_sessions::SessionStore::OnReadAllMetadata");
   DCHECK(builder);
@@ -377,7 +376,7 @@ void SessionStore::OnReadAllMetadata(
 // static
 void SessionStore::OnReadAllData(
     std::unique_ptr<Builder> builder,
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   TRACE_EVENT0("sync", "sync_sessions::SessionStore::OnReadAllData");
   DCHECK(builder);
 
@@ -399,10 +398,11 @@ void SessionStore::OnReadAllData(
   auto session_store = base::WrapUnique(new SessionStore(
       builder->local_session_info, std::move(builder->underlying_store),
       std::move(builder->initial_data),
-      builder->metadata_batch->GetAllMetadata(), builder->sessions_client));
+      builder->metadata_batch->GetAllMetadata(),
+      builder->sessions_client.get()));
 
   std::move(builder->callback)
-      .Run(/*error=*/absl::nullopt, std::move(session_store),
+      .Run(/*error=*/std::nullopt, std::move(session_store),
            std::move(builder->metadata_batch));
 }
 
@@ -421,6 +421,7 @@ SessionStore::SessionStore(
       local_session_info_.device_type, local_session_info_.device_form_factor);
 
   DCHECK(store_);
+  DCHECK(sessions_client_);
 
   DVLOG(1) << "Initializing session store with " << initial_data.size()
            << " restored entities and " << initial_metadata.size()

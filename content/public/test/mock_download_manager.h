@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,7 +43,7 @@ class MockDownloadManager : public DownloadManager {
     std::string serialized_embedder_download_data;
     GURL tab_url;
     GURL tab_referrer_url;
-    absl::optional<url::Origin> request_initiator;
+    std::optional<url::Origin> request_initiator;
     std::string mime_type;
     std::string original_mime_type;
     base::Time start_time;
@@ -71,7 +71,7 @@ class MockDownloadManager : public DownloadManager {
         const std::string& serialized_embedder_download_data,
         const GURL& tab_url,
         const GURL& tab_refererr_url,
-        const absl::optional<url::Origin>& request_initiator,
+        const std::optional<url::Origin>& request_initiator,
         const std::string& mime_type,
         const std::string& original_mime_type,
         base::Time start_time,
@@ -134,7 +134,7 @@ class MockDownloadManager : public DownloadManager {
       const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,

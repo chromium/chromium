@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (is_android) {
@@ -54,10 +55,7 @@ source_set("public") {
       "android/tile_provider_bridge.h",
     ]
 
-    deps += [
-      ":jni_headers",
-      "//url:gurl_android",
-    ]
+    deps += [ ":jni_headers" ]
   }
 }
 
@@ -102,10 +100,10 @@ if (is_android) {
     deps = [
       ":query_tile_java",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/browser_ui/widget/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
       "//url:gurl_java",
     ]

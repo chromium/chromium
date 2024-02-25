@@ -8,11 +8,13 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -44,6 +46,7 @@ bool IsUsingContainerRelativeUnits(const char* text) {
 }
 
 TEST(CSSGradientValueTest, RadialGradient_Equals) {
+  test::TaskEnvironment task_environment;
   // Trivially identical.
   EXPECT_TRUE(CompareGradients(
       "radial-gradient(circle closest-corner at 100px 60px, blue, red)",
@@ -82,6 +85,7 @@ TEST(CSSGradientValueTest, RadialGradient_Equals) {
 }
 
 TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>();
   Document& document = dummy_page_holder->GetDocument();
@@ -101,11 +105,13 @@ TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
   ASSERT_TRUE(radial);
 
   // This should not fail any DCHECKs.
-  radial->CreateGradient(conversion_data, gfx::SizeF(800, 200), document,
-                         document.ComputedStyleRef());
+  radial->CreateGradient(
+      conversion_data, gfx::SizeF(800, 200), document,
+      document.GetStyleEngine().GetStyleResolver().InitialStyle());
 }
 
 TEST(CSSGradientValueTest, IsUsingContainerRelativeUnits) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(
       IsUsingContainerRelativeUnits("linear-gradient(green 5cqw, blue 10cqh)"));
   EXPECT_TRUE(

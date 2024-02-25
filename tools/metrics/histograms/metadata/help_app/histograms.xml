@@ -22,20 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Discover.Search.SearchStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2022-01-08">
+<histogram name="Discover.Overall.AppLaunched" enum="LaunchSource"
+    expires_after="2025-02-16">
   <owner>callistus@google.com</owner>
   <owner>showoff-eng@google.com</owner>
   <summary>
-    Records the search status when searching with the Local Search Service in
-    the Discover (internally &quot;Showoff&quot;) app. This is logged once per
-    user search and will count the number of searches while the index is still
-    empty, successful searches, etc.
+    Records where the Help app was launched from. This is similar to the
+    &quot;Apps.DefaultAppLaunch{DefaultAppLaunchSource}&quot; histogram, however
+    it is specific to the Help app and the tokens are enums instead.
   </summary>
 </histogram>
 
 <histogram name="Discover.SearchConcept.ReadStatus"
-    enum="HelpAppSearchConceptReadStatus" expires_after="2023-12-10">
+    enum="HelpAppSearchConceptReadStatus" expires_after="2025-03-24">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
@@ -49,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchConcept.WriteStatus"
-    enum="HelpAppSearchConceptWriteStatus" expires_after="2023-12-10">
+    enum="HelpAppSearchConceptWriteStatus" expires_after="2025-03-24">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
@@ -62,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
-    expires_after="2023-12-10">
+    expires_after="2024-07-28">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
@@ -74,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchResultStatus"
-    enum="HelpAppSearchHandlerSearchResultStatus" expires_after="2024-02-11">
+    enum="HelpAppSearchHandlerSearchResultStatus" expires_after="2025-03-24">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>zufeng@google.com</owner>

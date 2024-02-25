@@ -1,4 +1,4 @@
-CONSOLE ERROR: Uncaught SecurityError: Sandbox access violation: Blocked a frame at "http://127.0.0.1:8000" from accessing a frame at "http://127.0.0.1:8000".  The frame requesting access is sandboxed and lacks the "allow-same-origin" flag.
+CONSOLE ERROR: Uncaught SecurityError: Failed to read a named property 'document' from 'Window': Sandbox access violation: Blocked a frame at "http://127.0.0.1:8000" from accessing a frame at "http://127.0.0.1:8000".  The frame requesting access is sandboxed and lacks the "allow-same-origin" flag.
 This is a "sanity" test case to verify that a sandboxed frame cannot break out of its sandbox by modifying its own sandbox attribute. Two attempts are made:
 
 First, an attempt is made to modify the sandbox attribute of the "self" object, referring to the frame's window. This should not have any effect (the attribute is associated with the iframe DOM node, not the window). No warning is expected.

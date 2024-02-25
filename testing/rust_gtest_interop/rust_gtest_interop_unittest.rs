@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use rust_gtest_interop::prelude::*;
+use std::path::PathBuf;
 
 #[gtest(Test, InTopModule)]
 fn test() {
@@ -96,25 +97,64 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
 
 #[gtest(Test, Paths)]
 fn test() {
-    expect_eq!(rust_gtest_interop::__private::make_canonical_file_path("foo/bar.rs"), "foo/bar.rs");
+    let expected_result =
+        ["foo", "bar.rs"].iter().collect::<PathBuf>().to_string_lossy().to_string();
+
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("foo/bar.rs"),
+        expected_result
+    );
     expect_eq!(
         rust_gtest_interop::__private::make_canonical_file_path("../foo/bar.rs"),
-        "foo/bar.rs"
+        expected_result
     );
     expect_eq!(
         rust_gtest_interop::__private::make_canonical_file_path("../../foo/bar.rs"),
-        "foo/bar.rs"
+        expected_result
     );
     expect_eq!(
         rust_gtest_interop::__private::make_canonical_file_path("a/../foo/bar.rs"),
-        "foo/bar.rs"
+        expected_result
     );
     expect_eq!(
         rust_gtest_interop::__private::make_canonical_file_path("a/../../../foo/bar.rs"),
-        "foo/bar.rs"
+        expected_result
     );
     expect_eq!(
         rust_gtest_interop::__private::make_canonical_file_path("a/../b/../../foo/bar.rs"),
-        "foo/bar.rs"
+        expected_result
     );
+
+    #[cfg(windows)]
+    {
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"foo\bar.rs"),
+            r"foo\bar.rs"
+        );
+
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"..\foo\bar.rs"),
+            r"foo\bar.rs"
+        );
+
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"..\..\foo\bar.rs"),
+            r"foo\bar.rs"
+        );
+
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"a\..\foo\bar.rs"),
+            r"foo\bar.rs"
+        );
+
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"a\..\..\..\foo\bar.rs"),
+            r"foo\bar.rs"
+        );
+
+        expect_eq!(
+            rust_gtest_interop::__private::make_canonical_file_path(r"a\..\b\..\..\foo\bar.rs"),
+            expected_result
+        );
+    }
 }

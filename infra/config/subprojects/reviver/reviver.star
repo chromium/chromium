@@ -53,7 +53,7 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
-        "ci/android-nougat-x86-rel",
+        "ci/android-oreo-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
     ],
@@ -61,12 +61,13 @@ polymorphic.launcher(
 
 polymorphic.launcher(
     name = "android-coverage-launcher",
-    # Match the replicated builder's schedule for comparable data
+    # Match the replicated builders' schedule for comparable data
     schedule = "0 4 * * *",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
     runner = "reviver/coverage-runner",
     target_builders = [
+        "ci/android-code-coverage",
         "ci/android-code-coverage-native",
     ],
 )
@@ -179,7 +180,7 @@ polymorphic.launcher(
     target_builders = [
         "ci/fuchsia-fyi-arm64-dbg",
         "ci/fuchsia-fyi-x64-dbg",
-        "ci/fuchsia-x64-rel",
+        "ci/fuchsia-x64-cast-receiver-rel",
     ],
 )
 

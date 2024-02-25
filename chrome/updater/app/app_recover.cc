@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
@@ -95,7 +96,7 @@ void AppRecover::FirstTaskRun() {
 std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
   CHECK(global_prefs_);
   scoped_refptr<PersistedData> data = base::MakeRefCounted<PersistedData>(
-      updater_scope(), global_prefs_->GetPrefService());
+      updater_scope(), global_prefs_->GetPrefService(), nullptr);
   std::vector<RegistrationRequest> apps;
   bool found_browser_registration = false;
   for (const std::string& app : data->GetAppIds()) {

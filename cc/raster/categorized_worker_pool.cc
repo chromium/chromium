@@ -515,7 +515,7 @@ bool CategorizedWorkerPoolJob::PostDelayedTask(const base::Location& from_here,
 
 void CategorizedWorkerPoolJob::Run(base::span<const TaskCategory> categories,
                                    base::JobDelegate* job_delegate) {
-  absl::optional<TaskGraphWorkQueue::PrioritizedTask> prioritized_task;
+  std::optional<TaskGraphWorkQueue::PrioritizedTask> prioritized_task;
 
   while (!job_delegate->ShouldYield()) {
     base::JobHandle* job_handle_to_notify = nullptr;
@@ -563,7 +563,7 @@ void CategorizedWorkerPoolJob::Run(base::span<const TaskCategory> categories,
   }
 }
 
-absl::optional<TaskGraphWorkQueue::PrioritizedTask>
+std::optional<TaskGraphWorkQueue::PrioritizedTask>
 CategorizedWorkerPoolJob::GetNextTaskToRunWithLockAcquired(
     base::span<const TaskCategory> categories) {
   lock_.AssertAcquired();
@@ -572,7 +572,7 @@ CategorizedWorkerPoolJob::GetNextTaskToRunWithLockAcquired(
       return work_queue_.GetNextTaskToRun(category);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CategorizedWorkerPoolJob::FlushForTesting() {

@@ -68,7 +68,7 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
     j_bitmap = gfx::ConvertToJavaBitmap(*status.image.ToSkBitmap(),
                                         gfx::OomBehavior::kReturnNullOnOom);
   }
-  jlong j_timestamp = entry->GetTimestamp().ToJavaTime();
+  jlong j_timestamp = entry->GetTimestamp().InMillisecondsSinceUnixEpoch();
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_title, j_bitmap,
@@ -235,8 +235,7 @@ void NavigationControllerAndroid::GoToNavigationIndex(
   navigation_controller_->GoToIndex(index);
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
-NavigationControllerAndroid::LoadUrl(
+base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& url,
@@ -258,7 +257,8 @@ NavigationControllerAndroid::LoadUrl(
     jboolean should_clear_history_list,
     const base::android::JavaParamRef<jobject>& j_additional_navigation_params,
     jlong input_start,
-    jlong navigation_ui_data_ptr) {
+    jlong navigation_ui_data_ptr,
+    jboolean is_pdf) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -276,6 +276,7 @@ NavigationControllerAndroid::LoadUrl(
   params.should_replace_current_entry = should_replace_current_entry;
   params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = should_clear_history_list;
+  params.is_pdf = is_pdf;
 
   if (j_additional_navigation_params) {
     params.initiator_frame_token =
@@ -358,7 +359,7 @@ NavigationControllerAndroid::LoadUrl(
     return nullptr;
   }
 
-  return base::android::ScopedJavaGlobalRef<jobject>(
+  return base::android::ScopedJavaLocalRef<jobject>(
       handle->GetJavaNavigationHandle());
 }
 
@@ -572,13 +573,6 @@ void NavigationControllerAndroid::SetEntryExtraData(
   MapData* map_data =
       MapData::Get(navigation_controller_->GetEntryAtIndex(index));
   map_data->map()[key] = value;
-}
-
-jboolean NavigationControllerAndroid::IsEntryMarkedToBeSkipped(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    jint index) {
-  return navigation_controller_->IsEntryMarkedToBeSkipped(index);
 }
 
 }  // namespace content

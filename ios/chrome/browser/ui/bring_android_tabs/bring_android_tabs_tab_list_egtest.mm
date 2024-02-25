@@ -67,8 +67,7 @@ void TriggerTabList() {
 @implementation BringAndroidTabsTabListTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  return GetConfiguration(/*is_android_switcher=*/YES,
-                          /*show_bottom_message=*/NO);
+  return GetConfiguration(/*is_android_switcher=*/YES);
 }
 
 - (void)setUp {
@@ -98,8 +97,7 @@ void TriggerTabList() {
   // New tab page already exists in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:GetTabCountOnPrompt() + 1];
   VerifyTabListPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/YES, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Deselects a tab and tests that the remaining tab is opened.
@@ -116,8 +114,7 @@ void TriggerTabList() {
   // Expected tab count accounts for the existing new tab page in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:GetTabCountOnPrompt()];
   VerifyTabListPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/YES, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that swiping down on the list dismisses the view and does not open any
@@ -132,8 +129,7 @@ void TriggerTabList() {
   // New tab page is in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:1];
   VerifyTabListPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/YES, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that tapping cancel dismisses the view and does not open any tabs.
@@ -149,8 +145,7 @@ void TriggerTabList() {
   // New tab page is in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:1];
   VerifyTabListPromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/YES, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 // Tests that the open tabs button is disabled when all of the tabs are
@@ -168,8 +163,7 @@ void TriggerTabList() {
   [[EarlGrey selectElementWithMatcher:OpenButtonMatcher()]
       assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
                                    grey_sufficientlyVisible(), nil)];
-  VerifyThatPromptDoesNotShowOnRestart(
-      /*bottom_message=*/YES, self.testServer->base_url());
+  VerifyThatPromptDoesNotShowOnRestart(self.testServer->base_url());
 }
 
 @end

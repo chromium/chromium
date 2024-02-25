@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -29,6 +29,8 @@
   NSArray<NSLayoutConstraint*>* _compactConstraints;
   NSArray<NSLayoutConstraint*>* _floatingConstraints;
   NSLayoutConstraint* _largeNewTabButtonBottomAnchor;
+  TabGridNewTabButton* _smallNewTabButton;
+  TabGridNewTabButton* _largeNewTabButton;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
@@ -446,7 +448,7 @@
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
-  [_toolbar setBackgroundImage:[UIImage new]
+  [_toolbar setBackgroundImage:[[UIImage alloc] init]
             forToolbarPosition:UIBarPositionAny
                     barMetrics:UIBarMetricsDefault];
 }
@@ -472,7 +474,7 @@
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  return @[ UIKeyCommand.cr_undo ];
+  return @[ UIKeyCommand.cr_undo, UIKeyCommand.cr_close ];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -481,6 +483,9 @@
   }
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return _doneButton.enabled;
   }
   return [super canPerformAction:action withSender:sender];
 }
@@ -497,26 +502,41 @@
   [self closeAllButtonTapped:nil];
 }
 
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  [self doneButtonTapped:nil];
+}
+
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  [self.buttonsDelegate closeAllButtonTapped:sender];
+  if (_closeAllOrUndoButton.enabled) {
+    [self.buttonsDelegate closeAllButtonTapped:sender];
+  }
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.buttonsDelegate doneButtonTapped:sender];
+  if (_doneButton.enabled) {
+    [self.buttonsDelegate doneButtonTapped:sender];
+  }
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  [self.buttonsDelegate newTabButtonTapped:sender];
+  if (_largeNewTabButton.enabled || _smallNewTabButton.enabled) {
+    [self.buttonsDelegate newTabButtonTapped:sender];
+  }
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  [self.buttonsDelegate closeSelectedTabs:sender];
+  if (_closeTabsButton.enabled) {
+    [self.buttonsDelegate closeSelectedTabs:sender];
+  }
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  [self.buttonsDelegate shareSelectedTabs:sender];
+  if (_shareButton.enabled) {
+    [self.buttonsDelegate shareSelectedTabs:sender];
+  }
 }
 
 @end

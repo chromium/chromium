@@ -25,15 +25,10 @@ static_library("impl") {
     "fcm_invalidation_listener.h",
     "fcm_invalidation_service.cc",
     "fcm_invalidation_service.h",
-    "fcm_invalidation_service_base.cc",
-    "fcm_invalidation_service_base.h",
     "fcm_network_handler.cc",
     "fcm_network_handler.h",
     "fcm_sync_network_channel.cc",
     "fcm_sync_network_channel.h",
-    "invalidation_logger.cc",
-    "invalidation_logger.h",
-    "invalidation_logger_observer.h",
     "invalidation_prefs.cc",
     "invalidation_prefs.h",
     "invalidation_service_util.cc",
@@ -50,8 +45,6 @@ static_library("impl") {
     "profile_invalidation_provider.h",
     "status.cc",
     "status.h",
-    "unacked_invalidation_set.cc",
-    "unacked_invalidation_set.h",
   ]
 
   public_deps = [
@@ -81,7 +74,6 @@ source_set("unit_tests") {
     "fcm_invalidation_listener_unittest.cc",
     "fcm_invalidation_service_unittest.cc",
     "fcm_network_handler_unittests.cc",
-    "invalidation_logger_unittest.cc",
     "invalidator_registrar_with_memory_unittest.cc",
     "per_user_topic_subscription_manager_unittest.cc",
     "per_user_topic_subscription_request_unittest.cc",
@@ -105,15 +97,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (!is_android) {
-    # Non-Android tests.
-    sources += [
-      "single_topic_invalidation_set_unittest.cc",
-      "topic_invalidation_map_unittest.cc",
-      "unacked_invalidation_set_unittest.cc",
-    ]
-  }
 }
 
 static_library("test_support") {
@@ -123,12 +106,6 @@ static_library("test_support") {
     "fake_invalidation_handler.h",
     "fake_invalidation_service.cc",
     "fake_invalidation_service.h",
-    "invalidation_service_test_template.cc",
-    "invalidation_service_test_template.h",
-    "invalidation_test_util.cc",
-    "invalidation_test_util.h",
-    "topic_invalidation_map_test_util.cc",
-    "topic_invalidation_map_test_util.h",
   ]
 
   public_deps = [ ":impl" ]

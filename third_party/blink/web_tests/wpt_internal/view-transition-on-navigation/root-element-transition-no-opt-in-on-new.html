@@ -1,27 +1,24 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
+<html class="reftest-wait">
 <title>View transitions: basic cross-document navigation</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <link rel="match" href="root-element-transition-no-opt-in-ref.html">
 <meta name="view-transition" content="same-origin">
-
 <script src="/common/reftest-wait.js"></script>
 <style>
-  html {
-    background: blue;
-  }
-
-  .hidden {
-    width: 10px;
-    height: 10px;
-    view-transition-name: hidden;
-    background: green;
-    contain: layout;
-  }
+html {
+  background: blue;
+}
+.hidden {
+  width: 10px;
+  height: 10px;
+  view-transition-name: hidden;
+  background: green;
+  contain: layout;
+}
 </style>
 <div class="hidden"></div>
-
 <script>
 function runTest() {
   const url = "resources/root-element-transition-no-opt-in.html";
@@ -29,4 +26,4 @@ function runTest() {
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>
-
+</html>

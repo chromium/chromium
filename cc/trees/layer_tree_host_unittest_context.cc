@@ -113,13 +113,13 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
                                    LayerTreeHostImpl::FrameData* frame,
                                    DrawResult draw_result) override {
-    if (draw_result == DRAW_ABORTED_MISSING_HIGH_RES_CONTENT) {
+    if (draw_result == DrawResult::kAbortedMissingHighResContent) {
       // Only valid for single-threaded compositing, which activates
       // immediately and will try to draw again when content has finished.
       DCHECK(!host_impl->task_runner_provider()->HasImplThread());
       return draw_result;
     }
-    EXPECT_EQ(DRAW_SUCCESS, draw_result);
+    EXPECT_EQ(DrawResult::kSuccess, draw_result);
     if (!times_to_lose_during_draw_)
       return draw_result;
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -33,7 +34,7 @@ class TestObject {
   ~TestObject() { ++(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 }  // namespace
@@ -81,7 +82,6 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
     if (!test_task_queue_) {
       return;
     }
-    test_task_queue_->ShutdownTaskQueue();
     test_task_queue_.reset();
   }
 
@@ -89,7 +89,6 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
     if (!backup_task_queue_) {
       return;
     }
-    backup_task_queue_->ShutdownTaskQueue();
     backup_task_queue_.reset();
   }
 

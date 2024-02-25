@@ -352,6 +352,12 @@ class SoundContentSettingObserverFencedFrameBrowserTest
   SoundContentSettingObserverFencedFrameBrowserTest() = default;
   ~SoundContentSettingObserverFencedFrameBrowserTest() override = default;
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());

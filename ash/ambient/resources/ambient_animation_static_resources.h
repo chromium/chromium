@@ -6,11 +6,11 @@
 #define ASH_AMBIENT_RESOURCES_AMBIENT_ANIMATION_STATIC_RESOURCES_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 
 namespace cc {
 class SkottieWrapper;
@@ -65,7 +65,7 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   //
   // Returns an empty ImageSkia instance if the |asset_id| is unknown.
   virtual gfx::ImageSkia GetStaticImageAsset(
-      base::StringPiece asset_id) const = 0;
+      std::string_view asset_id) const = 0;
 
   // Returns the AmbientUiSettings that the static resources belong to.
   virtual const AmbientUiSettings& GetUiSettings() const = 0;

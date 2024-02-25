@@ -33,6 +33,11 @@ bool BlobCacheExtensionAvailable(gl::GLDisplayEGL* gl_display) {
 // forced to have this be global.
 PassthroughProgramCache* g_program_cache = nullptr;
 
+// Blob cache function pointers can only be set once per EGLDisplay. Using a
+// single bool is not technically correct, but it's acceptable since we only
+// have one EGLDisplay in practice.
+bool g_blob_cache_funcs_set = false;
+
 }  // namespace
 
 PassthroughProgramCache::PassthroughProgramCache(
@@ -52,10 +57,11 @@ PassthroughProgramCache::PassthroughProgramCache(
   g_program_cache = this;
 
   // display is EGL_NO_DISPLAY during unittests.
-  if (egl_display != EGL_NO_DISPLAY &&
+  if (egl_display != EGL_NO_DISPLAY && !g_blob_cache_funcs_set &&
       BlobCacheExtensionAvailable(gl_display)) {
     // Register the blob cache callbacks.
     eglSetBlobCacheFuncsANDROID(egl_display, BlobCacheSet, BlobCacheGet);
+    g_blob_cache_funcs_set = true;
   }
 #endif  // defined(USE_EGL)
 }
@@ -161,10 +167,8 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
                                    key.size());
       base::StringPiece value_string(
           reinterpret_cast<const char*>(value.data()), value.size());
-      std::string key_string_64;
-      std::string value_string_64;
-      base::Base64Encode(key_string, &key_string_64);
-      base::Base64Encode(value_string, &value_string_64);
+      std::string key_string_64 = base::Base64Encode(key_string);
+      std::string value_string_64 = base::Base64Encode(value_string);
       cache_program_callback_.Run(key_string_64, value_string_64);
     }
 
@@ -200,6 +204,9 @@ EGLsizeiANDROID PassthroughProgramCache::BlobCacheGetImpl(
   base::AutoLock auto_lock(lock_);
   const PassthroughProgramCache::ProgramCacheValue* cache_value =
       g_program_cache->Get(std::move(entry_key));
+
+  UMA_HISTOGRAM_BOOLEAN("Gpu.PassthroughProgramCacheLoadHitInCache",
+                        cache_value != nullptr);
 
   if (!cache_value) {
     return 0;

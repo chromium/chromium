@@ -9,18 +9,19 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 #include <wrl/event.h>
+
 #include <functional>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
 
@@ -108,8 +109,8 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
   GetSensorFactoryFunctor get_sensor_factory_callback_;
 
-  // absl::nullopt if the sensor has not been started, non-empty otherwise.
-  absl::optional<EventRegistrationToken> reading_callback_token_;
+  // std::nullopt if the sensor has not been started, non-empty otherwise.
+  std::optional<EventRegistrationToken> reading_callback_token_;
 
   base::TimeDelta minimum_report_interval_;
   Microsoft::WRL::ComPtr<ISensorWinrtClass> sensor_;
@@ -323,7 +324,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
           ABI::Windows::Devices::Sensors::
               IOrientationSensorReadingChangedEventArgs> {
  public:
-  static constexpr double kRadianThreshold = gfx::DegToRad(0.1);
+  static constexpr double kRadianThreshold = base::DegToRad(0.1);
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 

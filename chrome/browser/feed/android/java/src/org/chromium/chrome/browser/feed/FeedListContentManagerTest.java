@@ -60,10 +60,20 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     private int mItemMovedCurIndex;
     private int mItemMovedNewIndex;
     private String mObservedChanges = "";
-    private final FeedLoggingParameters mLoggingParametersA = new FeedLoggingParameters(
-            "instance-id", "A", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
-    private final FeedLoggingParameters mLoggingParametersB = new FeedLoggingParameters(
-            "instance-id", "B", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true, null);
+    private final FeedLoggingParameters mLoggingParametersA =
+            new FeedLoggingParameters(
+                    "instance-id",
+                    "A",
+                    /* loggingEnabled= */ true,
+                    /* viewActionsEnabled= */ true,
+                    null);
+    private final FeedLoggingParameters mLoggingParametersB =
+            new FeedLoggingParameters(
+                    "instance-id",
+                    "B",
+                    /* loggingEnabled= */ true,
+                    /* viewActionsEnabled= */ true,
+                    null);
 
     @Before
     public void setUp() {
@@ -248,10 +258,13 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testGetContextValuesReturnsLoggingParameters() {
-        addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createExternalViewContent("A", mLoggingParametersA),
-                        createExternalViewContent("B", mLoggingParametersB)}));
+        addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createExternalViewContent("A", mLoggingParametersA),
+                            createExternalViewContent("B", mLoggingParametersB)
+                        }));
 
         LoggingParameters parameters1 =
                 (LoggingParameters) mManager.getContextValues(0).get(LoggingParameters.KEY);
@@ -264,12 +277,16 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testGetContextValues_SetHandlersAfterAddingContent() {
-        addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createExternalViewContent("A", mLoggingParametersA)}));
+        addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createExternalViewContent("A", mLoggingParametersA)
+                        }));
         mManager.setHandlers(Map.of("HKEY1", "someHandler"));
 
-        assertEquals(Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
+        assertEquals(
+                Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
                 mManager.getContextValues(0));
     }
 
@@ -277,11 +294,15 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @SmallTest
     public void testGetContextValues_SetHandlersBeforeAddingContent() {
         mManager.setHandlers(Map.of("HKEY1", "someHandler"));
-        addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createExternalViewContent("A", mLoggingParametersA)}));
+        addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createExternalViewContent("A", mLoggingParametersA)
+                        }));
 
-        assertEquals(Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
+        assertEquals(
+                Map.of("HKEY1", "someHandler", LoggingParameters.KEY, mLoggingParametersA),
                 mManager.getContextValues(0));
     }
 
@@ -310,8 +331,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testReplaceRange_Empty() {
-        boolean changed = mManager.replaceRange(
-                0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {}));
 
         assertThat(getContentKeys(), Matchers.empty());
         assertFalse(changed);
@@ -323,8 +345,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     public void testReplaceRange_twoWhileEmpty() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        boolean changed = mManager.replaceRange(
-                0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2}));
 
         assertThat(getContentKeys(), contains("a", "b"));
         assertTrue(changed);
@@ -343,13 +366,14 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                1, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
+        boolean changed =
+                mManager.replaceRange(
+                        1, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
 
         assertThat(getContentKeys(), contains("a", "d", "e", "c"));
         assertTrue(changed);
-        assertEquals("rangeRemoved index=1 count=1"
-                        + "\nrangeInserted index=1 count=2",
+        assertEquals(
+                "rangeRemoved index=1 count=1" + "\nrangeInserted index=1 count=2",
                 mObservedChanges);
     }
 
@@ -365,13 +389,14 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                2, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
+        boolean changed =
+                mManager.replaceRange(
+                        2, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
 
         assertThat(getContentKeys(), contains("a", "b", "d", "e"));
         assertTrue(changed);
-        assertEquals("rangeRemoved index=2 count=1"
-                        + "\nrangeInserted index=2 count=2",
+        assertEquals(
+                "rangeRemoved index=2 count=1" + "\nrangeInserted index=2 count=2",
                 mObservedChanges);
     }
 
@@ -387,13 +412,14 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                0, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 1, Arrays.asList(new FeedListContentManager.FeedContent[] {c4, c5}));
 
         assertThat(getContentKeys(), contains("d", "e", "b", "c"));
         assertTrue(changed);
-        assertEquals("rangeRemoved index=0 count=1"
-                        + "\nrangeInserted index=0 count=2",
+        assertEquals(
+                "rangeRemoved index=0 count=1" + "\nrangeInserted index=0 count=2",
                 mObservedChanges);
     }
 
@@ -407,8 +433,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {c2, c3, c1}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {c2, c3, c1}));
 
         assertTrue(changed);
         assertThat(getContentKeys(), contains("b", "c", "a"));
@@ -425,8 +452,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {c3, c2, c1}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {c3, c2, c1}));
 
         assertTrue(changed);
         assertThat(getContentKeys(), contains("c", "b", "a"));
@@ -443,8 +471,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {c1, c2, c3}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(
-                0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {}));
+        boolean changed =
+                mManager.replaceRange(
+                        0, 3, Arrays.asList(new FeedListContentManager.FeedContent[] {}));
 
         assertTrue(changed);
         assertThat(getContentKeys(), Matchers.empty());
@@ -467,12 +496,17 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
                 0, 0, Arrays.asList(new FeedListContentManager.FeedContent[] {a, b, c, d, e}));
         mObservedChanges = "";
 
-        boolean changed = mManager.replaceRange(0, 5,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {f, g, a, h, c, e, i}));
+        boolean changed =
+                mManager.replaceRange(
+                        0,
+                        5,
+                        Arrays.asList(
+                                new FeedListContentManager.FeedContent[] {f, g, a, h, c, e, i}));
 
         assertTrue(changed);
         assertThat(getContentKeys(), contains("f", "g", "a", "h", "c", "e", "i"));
-        assertEquals("rangeRemoved index=3 count=1"
+        assertEquals(
+                "rangeRemoved index=3 count=1"
                         + "\nrangeRemoved index=1 count=1"
                         + "\nrangeInserted index=0 count=2"
                         + "\nrangeInserted index=3 count=1"
@@ -482,8 +516,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
 
     @Override
     public void onItemRangeInserted(int startIndex, int count) {
-        logChange("rangeInserted index=" + String.valueOf(startIndex)
-                + " count=" + String.valueOf(count));
+        logChange(
+                "rangeInserted index="
+                        + String.valueOf(startIndex)
+                        + " count="
+                        + String.valueOf(count));
         mItemRangeInserted = true;
         mItemRangeInsertedStartIndex = startIndex;
         mItemRangeInsertedCount = count;
@@ -491,8 +528,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
 
     @Override
     public void onItemRangeRemoved(int startIndex, int count) {
-        logChange("rangeRemoved index=" + String.valueOf(startIndex)
-                + " count=" + String.valueOf(count));
+        logChange(
+                "rangeRemoved index="
+                        + String.valueOf(startIndex)
+                        + " count="
+                        + String.valueOf(count));
         mItemRangeRemoved = true;
         mItemRangeRemovedStartIndex = startIndex;
         mItemRangeRemovedCount = count;
@@ -500,8 +540,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
 
     @Override
     public void onItemRangeChanged(int startIndex, int count) {
-        logChange("rangeChanged index=" + String.valueOf(startIndex)
-                + " count=" + String.valueOf(count));
+        logChange(
+                "rangeChanged index="
+                        + String.valueOf(startIndex)
+                        + " count="
+                        + String.valueOf(count));
         mItemRangeChanged = true;
         mItemRangeChangedStartIndex = startIndex;
         mItemRangeChangedCount = count;
@@ -581,6 +624,7 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
         assertTrue(view instanceof FrameLayout);
         return ((FrameLayout) view).getChildAt(0);
     }
+
     private List<String> getContentKeys() {
         List<String> result = new ArrayList<>();
         for (FeedListContentManager.FeedContent content : mManager.getContentList()) {

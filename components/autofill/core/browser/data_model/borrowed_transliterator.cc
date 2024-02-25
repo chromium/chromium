@@ -28,26 +28,37 @@ base::Lock& BorrowedTransliterator::GetLock() {
 }
 
 // static
-std::unique_ptr<icu::Transliterator>
-BorrowedTransliterator::CreateTransliterator() {
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::Transliterator> transliterator(
-      icu::Transliterator::createInstance(
-          "NFD; [:Nonspacing Mark:] Remove; Lower; NFC", UTRANS_FORWARD,
-          status));
-  if (U_FAILURE(status) || transliterator == nullptr) {
-    // TODO(rogerm): Add a histogram to count how often this happens.
-    LOG(ERROR) << "Failed to create ICU Transliterator: "
-               << u_errorName(status);
-  }
-  return transliterator;
-}
-
-// static
 std::unique_ptr<icu::Transliterator>&
 BorrowedTransliterator::GetTransliterator() {
-  static base::NoDestructor<std::unique_ptr<icu::Transliterator>> instance(
-      CreateTransliterator());
+  static base::NoDestructor<std::unique_ptr<icu::Transliterator>> instance([] {
+    UErrorCode status = U_ZERO_ERROR;
+    UParseError parse_error;
+    // This is happening in the following rule:
+    // "::NFD;" performs a decomposition and normalization. (â becomes a and  ̂)
+    // "::[:Nonspacing Mark:] Remove;" removes the " ̂"
+    // "::Lower;" converts the result to lower case
+    // "::NFC;" re-composes the decomposed characters
+    // "::Latin-ASCII;" converts various other Latin characters to an ASCII
+    //   representation (e.g. "ł", which does not get decomposed, to "l"; "ß" to
+    //   "ss").
+    //
+    // It would be interesting to transliterate umlauts according to DIN 5007-2
+    // (::de-ASCII) for German addresses ("ö" to "oe"), but that does not match
+    // our assumptions from
+    // components/autofill/core/browser/geo/address_rewrite_rules/.
+    icu::UnicodeString transliteration_rules =
+        "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;";
+    std::unique_ptr<icu::Transliterator> transliterator(
+        icu::Transliterator::createFromRules(
+            "NormalizeForAddresses", transliteration_rules, UTRANS_FORWARD,
+            parse_error, status));
+    if (U_FAILURE(status) || transliterator == nullptr) {
+      // TODO(rogerm): Add a histogram to count how often this happens.
+      LOG(ERROR) << "Failed to create ICU Transliterator: "
+                 << u_errorName(status);
+    }
+    return transliterator;
+  }());
   return *instance;
 }
 

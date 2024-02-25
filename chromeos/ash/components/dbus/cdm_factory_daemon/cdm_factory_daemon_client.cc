@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -67,7 +67,7 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
   }
 
   // D-Bus proxy for the CdmFactoryDaemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<CdmFactoryDaemonClientImpl> weak_factory_{this};
 };

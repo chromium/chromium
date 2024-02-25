@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -88,7 +89,7 @@ class CORE_EXPORT XMLHttpRequest final
   static XMLHttpRequest* Create(ScriptState*);
   static XMLHttpRequest* Create(ExecutionContext*);
 
-  XMLHttpRequest(ExecutionContext*, scoped_refptr<const DOMWrapperWorld> world);
+  XMLHttpRequest(ExecutionContext*, const DOMWrapperWorld* world);
   ~XMLHttpRequest() override;
 
   // These exact numeric values are important because JS expects them.
@@ -126,8 +127,6 @@ class CORE_EXPORT XMLHttpRequest final
   State readyState() const;
   bool withCredentials() const { return with_credentials_; }
   void setWithCredentials(bool, ExceptionState&);
-  bool deprecatedBrowsingTopics() const { return deprecated_browsing_topics_; }
-  void setDeprecatedBrowsingTopics(bool);
   void open(const AtomicString& method, const String& url, ExceptionState&);
   void open(const AtomicString& method,
             const String& url,
@@ -298,6 +297,11 @@ class CORE_EXPORT XMLHttpRequest final
   //   so there is no need.
   void ReportMemoryUsageToV8();
 
+  // Creates a task scope used for firing events if the `parent_task_` is set
+  // and different from the current task.
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  MaybeCreateTaskAttributionScope();
+
   Member<XMLHttpRequestUpload> upload_;
 
   KURL url_;
@@ -322,6 +326,7 @@ class CORE_EXPORT XMLHttpRequest final
   std::unique_ptr<TextResourceDecoder> decoder_;
 
   StringBuilder response_text_;
+  bool response_text_overflow_ = false;
   size_t response_text_last_reported_size_ = 0;
   Member<Document> response_document_;
   Member<DocumentParser> response_document_parser_;
@@ -348,7 +353,7 @@ class CORE_EXPORT XMLHttpRequest final
   ResponseTypeCode response_type_code_ = kResponseTypeDefault;
 
   // The DOMWrapperWorld in which the request initiated. Can be null.
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
   // Stores the SecurityOrigin associated with the |world_| if it's an isolated
   // world.
   scoped_refptr<const SecurityOrigin> isolated_world_security_origin_;
@@ -357,16 +362,11 @@ class CORE_EXPORT XMLHttpRequest final
   // |m_responseTypeCode| is NOT ResponseTypeBlob.
   Member<BlobLoader> blob_loader_;
 
-  // Positive if we are dispatching events.
-  // This is an integer specifying the recursion level rather than a boolean
-  // because in some cases we have recursive dispatching.
-  int event_dispatch_recursion_level_ = 0;
+  Member<scheduler::TaskAttributionInfo> parent_task_;
 
   bool async_ = true;
 
   bool with_credentials_ = false;
-
-  bool deprecated_browsing_topics_ = false;
 
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =

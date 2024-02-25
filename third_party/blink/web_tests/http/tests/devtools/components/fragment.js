@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   function check(f) {
     TestRunner.addResult(f.toString() + '\n  ' + f());
@@ -12,7 +14,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.addResult(`Tests how fragment works.\n`);
 
   var inner = document.createElement('div');
-  var f1 = UI.Fragment.build`
+  var f1 = UIModule.Fragment.Fragment.build`
     <div-a $=name-a attr=val>
       <div-b $=name-b foo1=bar1 foo${'2'}=${'b'}ar${'2'} ${''} ${element => element.divb = true} s-state1-attr=val-state1>
       </div-b>
@@ -51,7 +53,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.addResult('');
 
   function cached(child) {
-    return UI.Fragment.cached`
+    return UIModule.Fragment.Fragment.cached`
       <div>${child}</div>
     `;
   }
@@ -68,10 +70,10 @@ import {TestRunner} from 'test_runner';
   check(() => f3.element().firstChild === f2.element());
   TestRunner.addResult('');
 
-  check(() => UI.html`<div>${[1, 2, 3].map(x => UI.html`<span>${x}</span>`)}</div>`.childNodes.length === 3);
-  check(() => UI.html`first ${UI.html`<b>bold</b>`} second`.textContent === 'first bold second');
+  check(() => UIModule.Fragment.html`<div>${[1, 2, 3].map(x => UIModule.Fragment.html`<span>${x}</span>`)}</div>`.childNodes.length === 3);
+  check(() => UIModule.Fragment.html`first ${UIModule.Fragment.html`<b>bold</b>`} second`.textContent === 'first bold second');
   const url = 'http://example.com/';
-  check(() => UI.html`<a href='${url}'></a>`.href === url);
+  check(() => UIModule.Fragment.html`<a href='${url}'></a>`.href === url);
 
   TestRunner.completeTest();
 })();

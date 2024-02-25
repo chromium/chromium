@@ -66,23 +66,58 @@ class MakeSettingsWriter(json5_generator.Writer):
         self.json5_file.name_dictionaries.sort(
             key=lambda entry: entry['name'].original)
 
+        for setting in self.json5_file.name_dictionaries:
+            # If 'initial' is a dict, extract a list of specified platforms.
+            if isinstance(setting['initial'], dict):
+                assert 'default' in setting[
+                    'initial'], "a 'default' initial value is required for '{}'".format(
+                        setting['name'])
+                setting[
+                    'initial_platforms'] = self._platforms_with_initial_values(
+                        setting['initial'])
+
         self._outputs = {
-            ('settings_macros.h'): self.generate_macros,
+            'settings_base.cc': self.generate_cc,
+            'settings_base.h': self.generate_h,
         }
-        self._template_context = {
+
+    def _platforms_with_initial_values(self, initial):
+        initial_platforms = set(initial.keys()) & set(self._all_platforms())
+        return list(sorted(initial_platforms))
+
+    def _all_platforms(self):
+        # Remove all occurrences of 'default' from 'valid_keys'
+        platforms = self.json5_file.parameters['initial']['valid_keys']
+        return [platform for platform in platforms if platform != 'default']
+
+    def _get_include_paths(self):
+        include_paths = set()
+        for setting in self.json5_file.name_dictionaries:
+            include_paths.update(setting['include_paths'])
+        return list(sorted(include_paths))
+
+    @template_expander.use_jinja('templates/settings_base.cc.tmpl',
+                                 filters=filters)
+    def generate_cc(self):
+        return {
+            'input_files': self._input_files,
+            'settings': self.json5_file.name_dictionaries,
+        }
+
+    @template_expander.use_jinja('templates/settings_base.h.tmpl',
+                                 filters=filters)
+    def generate_h(self):
+        return {
             'input_files':
             self._input_files,
+            'include_paths':
+            self._get_include_paths(),
             'settings':
             self.json5_file.name_dictionaries,
             'header_guard':
             self.make_header_guard(self._relative_output_dir +
-                                   'settings_macros.h')
+                                   'settings_base.h')
         }
-
-    @template_expander.use_jinja(
-        'templates/settings_macros.h.tmpl', filters=filters)
-    def generate_macros(self):
-        return self._template_context
 
 
 if __name__ == '__main__':

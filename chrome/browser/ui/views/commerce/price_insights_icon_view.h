@@ -16,8 +16,9 @@ class Profile;
 // price insight information. Upon clicking, it opens the side panel with more
 // price information.
 class PriceInsightsIconView : public PageActionIconView {
+  METADATA_HEADER(PriceInsightsIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(PriceInsightsIconView);
   PriceInsightsIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate,
@@ -57,19 +58,19 @@ class PriceInsightsIconView : public PageActionIconView {
   bool ShouldShow() const;
 
   // Show page action label if it meets the feature engagement requirements.
-  // Return true if the label is really shown.
-  bool MaybeShowPageActionLabel();
+  void MaybeShowPageActionLabel();
 
-  // Return the page action label. If no label should be shown, return
-  // PriceInsightsIconLabelType::kNone.
-  PriceInsightsIconView::PriceInsightsIconLabelType
-  GetPriceInsightsIconLabelType();
+  // Gets the label type from the commerce tab helper. This is a proxy method
+  // for CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage.
+  PriceInsightsIconView::PriceInsightsIconLabelType GetLabelTypeForPage();
+
+  // Update the label for the page action based on the last known label type.
+  void UpdatePriceInsightsIconLabel();
 
   // Hides the page action label.
   void HidePageActionLabel();
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<const gfx::VectorIcon> icon_;
 
   // Animates out the price tracking icon label after a fixed period of time.
   // This keeps the label visible for long enough to give users an opportunity
@@ -78,9 +79,6 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
-
-  // Last shown label type.
-  PriceInsightsIconView::PriceInsightsIconLabelType last_shown_label_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

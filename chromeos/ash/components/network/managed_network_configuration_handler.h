@@ -225,6 +225,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // installed from policy. The network list should be updated at this point.
   virtual void OnCellularPoliciesApplied(const NetworkProfile& profile) = 0;
 
+  // Triggers performing tasks to wipe network configuration elements marked as
+  // ephemeral by device policy.
+  virtual void TriggerEphemeralNetworkConfigActions() = 0;
+
   // Return true if AllowCellularSimLock policy is enabled.
   virtual bool AllowCellularSimLock() const = 0;
 
@@ -243,6 +247,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   // Return true if the AllowOnlyPolicyNetworksToAutoconnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToAutoconnect() const = 0;
+
+  // Return true if the RecommendedValuesAreEphemeral policy is enabled.
+  virtual bool RecommendedValuesAreEphemeral() const = 0;
+
+  // Return true if the UserCreatedNetworkConfigurationsAreEphemeral policy is
+  // enabled.
+  virtual bool UserCreatedNetworkConfigurationsAreEphemeral() const = 0;
+
+  // Return true if the following user prefs exist and meet the following
+  // conditions: `arc::prefs::kAlwaysOnVpnPackage` is non-empty,
+  // `arc::prefs::kAlwaysOnVpnLockdown` is true, and `prefs::kVpnConfigAllowed`
+  // is false.
+  virtual bool IsProhibitedFromConfiguringVpn() const = 0;
 
   // Returns the value for the AllowTextMessages policy.
   virtual PolicyTextMessageSuppressionState GetAllowTextMessages() const = 0;

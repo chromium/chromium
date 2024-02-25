@@ -5,7 +5,7 @@
 // Preferences API test for extension controlled prefs where the underlying
 // feature lives in ash. These tests verify that prefs can be read by
 // extensions running in Lacros secondary profile.
-// Run with lacros_chrome_browsertests_run_in_series \
+// Run with lacros_chrome_browsertests \
 //     --ash-chrome-path {path_to_ash_build}/test_ash_chrome
 //     --gtest_filter= \
 //         ExtensionPreferenceLacrosBrowserTest.LacrosSecondaryProfile

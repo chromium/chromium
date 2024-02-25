@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 namespace chromecast {
@@ -21,8 +21,8 @@ BindingsManagerFuchsia::BindingsManagerFuchsia() = default;
 
 BindingsManagerFuchsia::~BindingsManagerFuchsia() = default;
 
-void BindingsManagerFuchsia::AddBinding(base::StringPiece binding_name,
-                                        base::StringPiece binding_script) {
+void BindingsManagerFuchsia::AddBinding(std::string_view binding_name,
+                                        std::string_view binding_script) {
   std::pair<std::string, fuchsia::mem::Buffer> new_entry = {
       std::string(binding_name),
       base::MemBufferFromString(binding_script, "cast-binding-script")};

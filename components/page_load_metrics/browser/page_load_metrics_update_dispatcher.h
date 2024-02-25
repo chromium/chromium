@@ -118,8 +118,7 @@ class PageLoadMetricsUpdateDispatcher {
     virtual PrerenderingState GetPrerenderingState() const = 0;
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
-    virtual void OnPageInputTimingChanged(uint64_t num_interactions,
-                                          uint64_t num_input_events) = 0;
+    virtual void OnPageInputTimingChanged(uint64_t num_interactions) = 0;
     virtual void OnSubFrameTimingChanged(
         content::RenderFrameHost* rfh,
         const mojom::PageLoadTiming& timing) = 0;
@@ -178,7 +177,7 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::FrameRenderDataUpdatePtr render_data,
                      mojom::CpuTimingPtr new_cpu_timing,
                      mojom::InputTimingPtr input_timing_delta,
-                     const absl::optional<blink::SubresourceLoadMetrics>&
+                     const std::optional<blink::SubresourceLoadMetrics>&
                          subresource_load_metrics,
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
                      internal::PageLoadTrackerPageType page_type);
@@ -219,16 +218,14 @@ class PageLoadMetricsUpdateDispatcher {
                ? layout_shift_normalization_for_bfcache_.normalized_cls_data()
                : layout_shift_normalization_.normalized_cls_data();
   }
-  const NormalizedResponsivenessMetrics& normalized_responsiveness_metrics()
-      const {
-    return responsiveness_metrics_normalization_
-        .GetNormalizedResponsivenessMetrics();
+  const ResponsivenessMetricsNormalization&
+  responsiveness_metrics_normalization() const {
+    return responsiveness_metrics_normalization_;
   }
 
-  const NormalizedResponsivenessMetrics&
-  soft_navigation_interval_normalized_responsiveness_metrics() const {
-    return soft_navigation_interval_responsiveness_metrics_normalization_
-        .GetNormalizedResponsivenessMetrics();
+  const ResponsivenessMetricsNormalization&
+  soft_navigation_interval_responsiveness_metrics_normalization() const {
+    return soft_navigation_interval_responsiveness_metrics_normalization_;
   }
 
   const NormalizedCLSData& soft_navigation_interval_normalized_layout_shift()
@@ -236,7 +233,7 @@ class PageLoadMetricsUpdateDispatcher {
     return soft_nav_interval_layout_shift_normalization_.normalized_cls_data();
   }
 
-  void ResetSoftNavigationIntervalNormalizedResponsivenessMetrics() {
+  void ResetSoftNavigationIntervalResponsivenessMetricsNormalization() {
     soft_navigation_interval_responsiveness_metrics_normalization_
         .ClearAllUserInteractionLatencies();
   }
@@ -247,8 +244,8 @@ class PageLoadMetricsUpdateDispatcher {
   const mojom::InputTiming& page_input_timing() const {
     return *page_input_timing_;
   }
-  const absl::optional<blink::SubresourceLoadMetrics>&
-  subresource_load_metrics() const {
+  const std::optional<blink::SubresourceLoadMetrics>& subresource_load_metrics()
+      const {
     return subresource_load_metrics_;
   }
   void UpdateResponsivenessMetricsNormalizationForBfcache() {
@@ -352,7 +349,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::InputTimingPtr page_input_timing_;
 
   // SubresourceLoadMetrics for the main frame.
-  absl::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
+  std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
 
   // True if this page load started in prerender.
   const bool is_prerendered_page_load_;
@@ -381,7 +378,7 @@ class PageLoadMetricsUpdateDispatcher {
 
   // The last main frame viewport rect dispatched to page load metrics
   // observers.
-  absl::optional<gfx::Rect> main_frame_viewport_rect_;
+  std::optional<gfx::Rect> main_frame_viewport_rect_;
 
   LayoutShiftNormalization layout_shift_normalization_;
   LayoutShiftNormalization soft_nav_interval_layout_shift_normalization_;

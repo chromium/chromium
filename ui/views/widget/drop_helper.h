@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view.h"
@@ -25,8 +24,6 @@ class OSExchangeData;
 using ui::OSExchangeData;
 
 namespace views {
-
-class RootView;
 
 // DropHelper provides support for managing the view a drop is going to occur
 // at during dnd as well as sending the view the appropriate dnd methods.
@@ -110,7 +107,7 @@ class VIEWS_EXPORT DropHelper {
   View* CalculateTargetViewImpl(const gfx::Point& root_view_location,
                                 const OSExchangeData& data,
                                 bool check_can_drop,
-                                View** deepest_view);
+                                raw_ptr<View>* deepest_view);
 
   // Methods to send the appropriate drop notification to the targeted view.
   // These do nothing if the target view is NULL.
@@ -123,15 +120,13 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  raw_ptr<View, DanglingUntriaged> root_view_;
+  const raw_ptr<View, DanglingUntriaged> root_view_;
 
   // View we're targeting events at.
-  raw_ptr<View, DanglingUntriaged> target_view_;
+  raw_ptr<View> target_view_ = nullptr;
 
   // The deepest view under the current drop coordinate.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION View* deepest_view_ = nullptr;
+  raw_ptr<View> deepest_view_ = nullptr;
 };
 
 }  // namespace views

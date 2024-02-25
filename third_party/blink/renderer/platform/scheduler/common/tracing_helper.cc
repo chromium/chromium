@@ -169,6 +169,8 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
       return RendererMainThreadTaskExecution::TASK_TYPE_WEB_LOCKS;
     case TaskType::kStorage:
       return RendererMainThreadTaskExecution::TASK_TYPE_STORAGE;
+    case TaskType::kClipboard:
+      return RendererMainThreadTaskExecution::TASK_TYPE_CLIPBOARD;
     case TaskType::kWebSchedulingPostedTask:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_WEB_SCHEDULING_POSTED_TASK;
@@ -194,9 +196,9 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
           TASK_TYPE_MAIN_THREAD_TASK_QUEUE_IPC_TRACKING;
     case TaskType::kNetworkingUnfreezable:
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING_UNFREEZABLE;
-    case TaskType::kNetworkingUnfreezableImageLoading:
+    case TaskType::kNetworkingUnfreezableRenderBlockingLoading:
       return RendererMainThreadTaskExecution::
-          TASK_TYPE_NETWORKING_UNFREEZABLE_IMAGE_LOADING;
+          TASK_TYPE_NETWORKING_UNFREEZABLE_RENDER_BLOCKING_LOADING;
     case TaskType::kWakeLock:
       return RendererMainThreadTaskExecution::TASK_TYPE_WAKE_LOCK;
     case TaskType::kInternalInputBlocking:

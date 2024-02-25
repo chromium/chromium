@@ -6,11 +6,11 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_CHALLENGE_RESPONSE_CERT_UTILS_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class X509Certificate;
@@ -21,7 +21,7 @@ namespace ash {
 // Maps from the TLS 1.3 SignatureScheme value into the challenge-response key
 // algorithm.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
-absl::optional<ChallengeResponseKey::SignatureAlgorithm>
+std::optional<ChallengeResponseKey::SignatureAlgorithm>
 GetChallengeResponseKeyAlgorithmFromSsl(uint16_t ssl_algorithm);
 
 // Constructs the ChallengeResponseKey instance based on the public key referred

@@ -136,14 +136,13 @@ function convert_srcs_to_project_files() {
   local intrinsic_list=$(echo "$source_list" \
     | egrep '(mmx|sse2|sse3|ssse3|sse4|avx|avx2|avx512).c$')
 
-  # Select all neon files ending in C but only when building in RTCD mode
-  if [[ "libvpx_srcs_arm_neon_cpu_detect" == "$2" ]]; then
-    # Select all arm neon files ending in _neon.c and all asm files.
+  if [[ "$2" =~ arm ]]; then
+    # Select all arm neon files ending in _neon*.c, _sve*.c and all asm files.
     # The asm files need to be included in the intrinsics target because
     # they need the -mfpu=neon flag.
     # the pattern may need to be updated if vpx_scale gets intrinsics
     local intrinsic_list=$(echo "$source_list" \
-      | egrep 'neon.*(\.c|\.asm)$')
+      | egrep '(neon|sve).*(\.c|\.asm)$')
   fi
 
   # Select loongarch lsx files ending in C from source_list.
@@ -194,12 +193,24 @@ function convert_srcs_to_project_files() {
       local c_headers=$(echo "$source_list" | egrep '\.h$')
       local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" | \
         egrep '\.asm$')
-      local neon_sources=$(echo "$intrinsic_list" | grep '_neon\.c$')
+      local neon_sources=$(echo "$intrinsic_list" | \
+        grep -e '_neon\.c$' -e '_neon_asm\.c')
       write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
       write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
       write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
       if [ 0 -ne ${#neon_sources} ]; then
         write_gni neon_sources $2_neon "$BASE_DIR/libvpx_srcs.gni"
+      fi
+      if [[ "$2" =~ arm64 ]]; then
+        local neon_dotprod_sources=$(echo "$intrinsic_list" | \
+          grep '_neon_dotprod\.c$')
+        local neon_i8mm_sources=$(echo "$intrinsic_list" | \
+          grep '_neon_i8mm\.c$')
+        local sve_sources=$(echo "$intrinsic_list" | grep '_sve\.c$')
+        write_gni neon_dotprod_sources $2_neon_dotprod \
+          "$BASE_DIR/libvpx_srcs.gni"
+        write_gni neon_i8mm_sources $2_neon_i8mm "$BASE_DIR/libvpx_srcs.gni"
+        write_gni sve_sources $2_sve "$BASE_DIR/libvpx_srcs.gni"
       fi
      fi
   fi
@@ -349,23 +360,20 @@ function gen_config_files() {
 }
 
 function update_readme() {
-  local IFS=$'\n'
-  # Split git log output '<date>\n<commit hash>' on the newline to produce 2
-  # array entries.
-  local vals=($(git --no-pager log -1 --format="%cd%n%H" \
-    --date=format:"%A %B %d %Y"))
+  local revision=$(git --no-pager log -1 --format="%H")
   sed -E -i.bak \
-    -e "s/^(Date:)[[:space:]]+.*$/\1 ${vals[0]}/" \
-    -e "s/^(Revision:)[[:space:]]+[a-f0-9]{40}/\1 ${vals[1]}/" \
+    -e "s/^(Revision:)[[:space:]]+[a-f0-9]{40}/\1 ${revision}/" \
     ${BASE_DIR}/README.chromium
   rm ${BASE_DIR}/README.chromium.bak
   cat <<EOF
 
 README.chromium updated with:
-Date: ${vals[0]}
-Revision: ${vals[1]}
+Revision: ${revision}
 EOF
 }
+
+# Fetch the latest tags; used in creating vpx_version.h.
+git -C "${LIBVPX_SRC_DIR}" fetch --tags
 
 find_duplicates
 
@@ -392,13 +400,16 @@ gen_config_files linux/ia32 \
 gen_config_files linux/x64 \
   "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/arm \
-  "--target=armv7-linux-gcc --disable-neon ${all_platforms}"
-gen_config_files linux/arm-neon "--target=armv7-linux-gcc ${all_platforms}"
+  "--target=armv7-linux-gcc --disable-neon --disable-runtime-cpu-detect \
+  ${all_platforms}"
+gen_config_files linux/arm-neon "--target=armv7-linux-gcc \
+  --disable-runtime-cpu-detect ${all_platforms}"
 gen_config_files linux/arm-neon-cpu-detect \
   "--target=armv7-linux-gcc --enable-runtime-cpu-detect ${all_platforms}"
 gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms}"
 gen_config_files linux/arm-neon-highbd \
-  "--target=armv7-linux-gcc ${all_platforms} ${HIGHBD}"
+  "--target=armv7-linux-gcc --disable-runtime-cpu-detect \
+  ${all_platforms} ${HIGHBD}"
 gen_config_files linux/arm64-highbd \
   "--target=armv8-linux-gcc ${all_platforms} ${HIGHBD}"
 gen_config_files linux/mipsel "--target=mips32-linux-gcc ${all_platforms}"
@@ -407,7 +418,7 @@ gen_config_files linux/loongarch \
   "--target=loongarch64-linux-gcc ${all_platforms}"
 gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
-gen_config_files win/arm64 \
+gen_config_files win/arm64-highbd \
   "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
 gen_config_files win/ia32 \
   "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
@@ -417,7 +428,8 @@ gen_config_files mac/ia32 \
   "--target=x86-darwin9-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files mac/x64 \
   "--target=x86_64-darwin9-gcc ${all_platforms} ${x86_platforms}"
-gen_config_files ios/arm-neon "--target=armv7-linux-gcc ${all_platforms}"
+gen_config_files ios/arm-neon "--target=armv7-linux-gcc \
+  --disable-runtime-cpu-detect ${all_platforms}"
 gen_config_files ios/arm64 "--target=armv8-linux-gcc ${all_platforms}"
 gen_config_files nacl "--target=generic-gnu $HIGHBD ${all_platforms}"
 
@@ -439,7 +451,7 @@ lint_config linux/mips64el
 lint_config linux/loongarch
 lint_config linux/ppc64
 lint_config linux/generic
-lint_config win/arm64
+lint_config win/arm64-highbd
 lint_config win/ia32
 lint_config win/x64
 lint_config mac/ia32
@@ -456,27 +468,31 @@ cd $TEMP_DIR
 
 # chromium has required sse2 for x86 since 2014
 require_sse2="--require-mmx --require-sse --require-sse2"
+require_neon="--require-neon"
 
 gen_rtcd_header linux/ia32 x86 "${require_sse2}"
 gen_rtcd_header linux/x64 x86_64
 gen_rtcd_header linux/arm armv7 "--disable-neon --disable-neon_asm"
-gen_rtcd_header linux/arm-neon armv7
+gen_rtcd_header linux/arm-neon armv7 "${require_neon}"
 gen_rtcd_header linux/arm-neon-cpu-detect armv7
-gen_rtcd_header linux/arm64 armv8
-gen_rtcd_header linux/arm-neon-highbd armv7
-gen_rtcd_header linux/arm64-highbd armv8
+gen_rtcd_header linux/arm64 armv8 "${require_neon}"
+gen_rtcd_header linux/arm-neon-highbd armv7 "${require_neon}"
+gen_rtcd_header linux/arm64-highbd armv8 "${require_neon}"
 gen_rtcd_header linux/mipsel mipsel
 gen_rtcd_header linux/mips64el mips64el
 gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
-gen_rtcd_header win/arm64 armv8
+# SVE is disabled due to a limitation with clang-cl-18:
+# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+# error: cannot mangle this built-in __SVInt8_t type yet
+gen_rtcd_header win/arm64-highbd armv8 "${require_neon} --disable-sve"
 gen_rtcd_header win/ia32 x86 "${require_sse2}"
 gen_rtcd_header win/x64 x86_64
 gen_rtcd_header mac/ia32 x86 "${require_sse2}"
 gen_rtcd_header mac/x64 x86_64
-gen_rtcd_header ios/arm-neon armv7
-gen_rtcd_header ios/arm64 armv8
+gen_rtcd_header ios/arm-neon armv7 "${require_neon}"
+gen_rtcd_header ios/arm64 armv8 "${require_neon}"
 gen_rtcd_header nacl nacl
 
 echo "Prepare Makefile."
@@ -586,10 +602,9 @@ echo "Remove temporary directory."
 cd $BASE_DIR
 rm -rf $TEMP_DIR
 
-gn format --in-place $BASE_DIR/BUILD.gn
-gn format --in-place $BASE_DIR/libvpx_srcs.gni
-
 cd $BASE_DIR/$LIBVPX_SRC_DIR
 update_readme
 
 cd $BASE_DIR
+git cl format > /dev/null \
+  || echo "ERROR: 'git cl format' failed. Please run 'git cl format' manually."

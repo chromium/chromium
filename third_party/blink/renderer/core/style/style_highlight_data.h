@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_HIGHLIGHT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_HIGHLIGHT_DATA_H_
 
+#include <optional>
+
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -44,6 +45,8 @@ class CORE_EXPORT StyleHighlightData final {
   void SetSpellingError(const ComputedStyle*);
   void SetGrammarError(const ComputedStyle*);
   void SetCustomHighlight(const AtomicString&, const ComputedStyle*);
+
+  bool DependsOnSizeContainerQueries() const;
 
   void Trace(Visitor*) const;
 

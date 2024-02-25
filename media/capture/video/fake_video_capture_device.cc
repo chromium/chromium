@@ -23,6 +23,7 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/gpu_memory_buffer_utils.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -177,6 +178,25 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
 }
 
 }  // anonymous namespace
+
+FakeDeviceState::FakeDeviceState(double pan,
+                                 double tilt,
+                                 double zoom,
+                                 double exposure_time,
+                                 double focus_distance,
+                                 float frame_rate,
+                                 VideoPixelFormat pixel_format)
+    : pan(pan),
+      tilt(tilt),
+      zoom(zoom),
+      exposure_time(exposure_time),
+      focus_distance(focus_distance),
+      format(gfx::Size(), frame_rate, pixel_format) {
+  exposure_mode = (exposure_time >= 0.0f) ? mojom::MeteringMode::MANUAL
+                                          : mojom::MeteringMode::CONTINUOUS;
+  focus_mode = (focus_distance >= 0.0f) ? mojom::MeteringMode::MANUAL
+                                        : mojom::MeteringMode::CONTINUOUS;
+}
 
 // Paints and delivers frames to a client, which is set via Initialize().
 class FrameDeliverer {
@@ -438,7 +458,7 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
   bitmap.setPixels(target_buffer);
   SkPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
-  SkFont font;
+  SkFont font = skia::DefaultFont();
   font.setEdging(SkFont::Edging::kAlias);
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
 
@@ -678,6 +698,13 @@ void FakePhotoDevice::GetPhotoState(
                                           ? mojom::BackgroundBlurMode::BLUR
                                           : mojom::BackgroundBlurMode::OFF;
 
+  photo_state->supported_eye_gaze_correction_modes = {
+      mojom::EyeGazeCorrectionMode::OFF, mojom::EyeGazeCorrectionMode::ON};
+  photo_state->current_eye_gaze_correction_mode =
+      fake_device_state_->eye_gaze_correction
+          ? mojom::EyeGazeCorrectionMode::ON
+          : mojom::EyeGazeCorrectionMode::OFF;
+
   std::move(callback).Run(std::move(photo_state));
 }
 
@@ -725,6 +752,19 @@ void FakePhotoDevice::SetPhotoOptions(
       case mojom::BackgroundBlurMode::BLUR:
         device_state_write_access->background_blur = true;
         break;
+    }
+  }
+
+  if (settings->eye_gaze_correction_mode.has_value()) {
+    switch (settings->eye_gaze_correction_mode.value()) {
+      case mojom::EyeGazeCorrectionMode::OFF:
+        device_state_write_access->eye_gaze_correction = false;
+        break;
+      case mojom::EyeGazeCorrectionMode::ON:
+        device_state_write_access->eye_gaze_correction = true;
+        break;
+      case mojom::EyeGazeCorrectionMode::STARE:
+        return;  // Not a supported fake eye gaze correction mode.
     }
   }
 

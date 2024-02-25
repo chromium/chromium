@@ -11,9 +11,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 
-/**
- * WebView subclass that can add Clip to canvas inside onDraw to trigger External Stencil behaviour.
- */
+/** WebView subclass that can add Clip to canvas inside onDraw to trigger External Stencil behaviour. */
 public class WebViewWithClipPath extends WebView {
     private Path mClipPath;
     private boolean mShouldClip;

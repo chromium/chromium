@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -31,8 +32,10 @@ const CGFloat kIconSize = 56;
 
     [self.imageContainerView addSubview:_iconView];
     AddSameConstraints(self.imageContainerView, _iconView);
+    CGFloat iconSize =
+        IsMagicStackEnabled() ? kMagicStackImageContainerWidth : kIconSize;
     [NSLayoutConstraint activateConstraints:@[
-      [_iconView.widthAnchor constraintEqualToConstant:kIconSize],
+      [_iconView.widthAnchor constraintEqualToConstant:iconSize],
       [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
     ]];
 
@@ -61,7 +64,8 @@ const CGFloat kIconSize = 56;
     // When in the Magic Stack, a smaller preferred font is desired.
     self.titleLabel.font = [self titleLabelFont];
   }
-  self.accessibilityTraits = config.accessibilityTraits;
+  self.accessibilityTraits =
+      UIAccessibilityTraitButton | config.accessibilityTraits;
   self.accessibilityLabel = config.accessibilityLabel.length
                                 ? config.accessibilityLabel
                                 : config.title;

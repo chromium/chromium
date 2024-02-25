@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -15,7 +16,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -31,8 +31,7 @@
 namespace blink {
 namespace {
 
-absl::optional<EProfileIdc> ToOpenH264Profile(
-    media::VideoCodecProfile profile) {
+std::optional<EProfileIdc> ToOpenH264Profile(media::VideoCodecProfile profile) {
   static constexpr auto kProfileToEProfileIdc =
       base::MakeFixedFlatMap<media::VideoCodecProfile, EProfileIdc>({
           {media::H264PROFILE_BASELINE, PRO_BASELINE},
@@ -45,10 +44,10 @@ absl::optional<EProfileIdc> ToOpenH264Profile(
   if (it != kProfileToEProfileIdc.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
+std::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   static constexpr auto kLevelToELevelIdc =
       base::MakeFixedFlatMap<uint8_t, ELevelIdc>({
           {10, LEVEL_1_0},
@@ -73,7 +72,7 @@ absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   const auto* it = kLevelToELevelIdc.find(level);
   if (it != kLevelToELevelIdc.end())
     return it->second;
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -89,11 +88,15 @@ H264Encoder::H264Encoder(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     VideoTrackRecorder::CodecProfile codec_profile,
-    uint32_t bits_per_second)
+    uint32_t bits_per_second,
+    bool is_screencast,
+    const VideoTrackRecorder::OnErrorCB on_error_cb)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second),
-      codec_profile_(codec_profile) {
+      codec_profile_(codec_profile),
+      is_screencast_(is_screencast),
+      on_error_cb_(on_error_cb) {
   DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::kH264);
 }
 
@@ -121,6 +124,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   const gfx::Size frame_size = frame->visible_rect().size();
   if (!openh264_encoder_ || configured_size_ != frame_size) {
     if (!ConfigureEncoder(frame_size)) {
+      on_error_cb_.Run();
       return;
     }
     first_frame_timestamp_ = capture_timestamp;
@@ -155,7 +159,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         {media::EncoderStatus::Codes::kEncoderFailedEncode,
          base::StrCat(
              {"OpenH264 failed to encode: ", base::NumberToString(ret)})});
-    NOTREACHED() << "OpenH264 encoding failed";
+    on_error_cb_.Run();
     return;
   }
   const media::Muxer::VideoParameters video_params(*frame);
@@ -184,7 +188,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   metrics_provider_->IncrementEncodedFrameCount();
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
-                           absl::nullopt, capture_timestamp, is_key_frame);
+                           std::nullopt, capture_timestamp, is_key_frame);
 }
 
 bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
@@ -204,7 +208,8 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
 
   SEncParamExt init_params;
   openh264_encoder_->GetDefaultParams(&init_params);
-  init_params.iUsageType = CAMERA_VIDEO_REAL_TIME;
+  init_params.iUsageType =
+      is_screencast_ ? SCREEN_CONTENT_REAL_TIME : CAMERA_VIDEO_REAL_TIME;
 
   DCHECK_EQ(AUTO_REF_PIC_COUNT, init_params.iNumRefFrame);
   DCHECK(!init_params.bSimulcastAVC);
@@ -251,8 +256,6 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
       codec_profile_.level
           ? ToOpenH264Level(*codec_profile_.level).value_or(LEVEL_UNKNOWN)
           : LEVEL_UNKNOWN;
-  DCHECK_EQ(init_params.sSpatialLayers[0].uiProfileIdc == PRO_UNKNOWN,
-            init_params.sSpatialLayers[0].uiLevelIdc == LEVEL_UNKNOWN);
 
   // When uiSliceMode = SM_FIXEDSLCNUM_SLICE, uiSliceNum = 0 means auto design
   // it with cpu core number.

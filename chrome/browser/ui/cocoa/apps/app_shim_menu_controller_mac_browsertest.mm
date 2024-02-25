@@ -142,8 +142,9 @@ class AppShimMenuControllerBrowserTest
 };
 
 // Test that focusing an app window changes the menu bar.
+// Disabled; https://crbug.com/1493413.
 IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
-                       PlatformAppFocusUpdatesMenuBar) {
+                       DISABLED_PlatformAppFocusUpdatesMenuBar) {
   SetUpApps(PACKAGED_1 | PACKAGED_2);
   // When an app is focused, all Chrome menu items should be hidden, and a menu
   // item for the app should be added.
@@ -219,8 +220,9 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
 }
 
 // Test that uninstalling an app restores the main menu.
+// Disabled per crbug.com/1513792.
 IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
-                       ExtensionUninstallUpdatesMenuBar) {
+                       DISABLED_ExtensionUninstallUpdatesMenuBar) {
   SetUpApps(PACKAGED_1 | PACKAGED_2);
 
   FirstWindowForApp(app_2_)->GetBaseWindow()->Close();

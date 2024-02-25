@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 
+#include <optional>
+
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -12,7 +14,6 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -60,7 +61,7 @@ class NodeDataDescriberUtilTest : public GraphTestHarness {
                   base::StringPiece json,
                   bool expect_empty_dict) {
     SCOPED_TRACE(::testing::Message() << msg << " " << json);
-    absl::optional<base::Value> parsed_json = base::JSONReader::Read(json);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(json);
     ASSERT_TRUE(parsed_json.has_value());
     ASSERT_TRUE(parsed_json.value().is_dict());
     EXPECT_EQ(parsed_json.value().GetDict().empty(), expect_empty_dict);

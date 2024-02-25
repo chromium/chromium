@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -34,7 +35,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTestWithUIStringParams,
               ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDriveUrl)));
   added_run_loop.Run();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester_->GetNotification(
           kIPHGoogleOneOfferNotificationId);
   ASSERT_TRUE(notification.has_value());
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest,
   // Make sure that fallback texts are set if UI strings are not provided via
   // params. Note that UI strings should be provided via params on prod and
   // fallback texts should not be used. This is to test fail-safe case.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester_->GetNotification(
           kIPHGoogleOneOfferNotificationId);
   ASSERT_TRUE(notification.has_value());
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest,
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kIPHGoogleOneOfferNotificationId,
-                                         kGetPerkButtonIndex, absl::nullopt);
+                                         kGetPerkButtonIndex, std::nullopt);
   closed_run_loop.Run();
   tab_added_waiter.Wait();
   EXPECT_EQ(GURL(kGoogleOneOfferUrl),
@@ -296,10 +296,10 @@ IN_PROC_BROWSER_TEST_P(GoogleOneOfferIphTabHelperTestParameterized,
   ASSERT_TRUE(nullptr !=
               ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDriveUrl)));
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester_->GetNotification(
           kIPHGoogleOneOfferNotificationId);
-  EXPECT_EQ(absl::nullopt, notification);
+  EXPECT_EQ(std::nullopt, notification);
 }
 
 }  // namespace

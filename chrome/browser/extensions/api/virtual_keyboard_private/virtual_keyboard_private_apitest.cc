@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -53,7 +54,8 @@ class VirtualKeyboardPrivateApiTest : public extensions::ExtensionApiTest {
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir.AppendASCII("chrome/test/data/ash/clipboard_history"));
@@ -90,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, MAYBE_Multipaste) {
   CopyBitmapItem();
   CopyFileItem();
 
-  ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private", {},
+  ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private",
+                               {.custom_arg = "multipaste"},
                                {.load_as_component = true}))
       << message_;
 }
@@ -107,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, MultipasteLockedScreen) {
   tester.Lock();
 
   ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private",
-                               {.custom_arg = "locked"},
+                               {.custom_arg = "multipasteUnderLockScreen"},
                                {.load_as_component = true}))
       << message_;
 }

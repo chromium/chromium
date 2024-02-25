@@ -1,0 +1,83 @@
+This is a testharness.js-based test.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] inset(10ex round 10ex) - computed
+  assert_equals: expected "inset(128px round 128px)" but got "inset(80px round 80px)"
+[FAIL] inset(10ex round 10ex / 10ex) - computed
+  assert_equals: expected "inset(128px round 128px)" but got "inset(80px round 80px)"
+[FAIL] inset(10ex round 10ex / 10ex 20ex) - computed
+  assert_equals: expected "inset(128px round 128px / 128px 256px)" but got "inset(80px round 80px / 80px 160px)"
+[FAIL] inset(10ex round 10ex / 10ex 20ex 30ex) - computed
+  assert_equals: expected "inset(128px round 128px / 128px 256px 384px)" but got "inset(80px round 80px / 80px 160px 240px)"
+[FAIL] inset(10ex round 10ex / 10ex 20ex 30ex 40ex) - computed
+  assert_equals: expected "inset(128px round 128px / 128px 256px 384px 512px)" but got "inset(80px round 80px / 80px 160px 240px 320px)"
+[FAIL] inset(10ex round 10ex 20ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px)" but got "inset(80px round 80px 160px)"
+[FAIL] inset(10ex round 10ex 20ex / 10ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px / 128px)" but got "inset(80px round 80px 160px / 80px)"
+[FAIL] inset(10ex round 10ex 20ex / 10ex 20ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px)" but got "inset(80px round 80px 160px)"
+[FAIL] inset(10ex round 10ex 20ex / 10ex 20ex 30ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px / 128px 256px 384px)" but got "inset(80px round 80px 160px / 80px 160px 240px)"
+[FAIL] inset(10ex round 10ex 20ex / 10ex 20ex 30ex 40ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px / 128px 256px 384px 512px)" but got "inset(80px round 80px 160px / 80px 160px 240px 320px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px)" but got "inset(80px round 80px 160px 240px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex / 10ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px / 128px)" but got "inset(80px round 80px 160px 240px / 80px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex / 10ex 20ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px / 128px 256px)" but got "inset(80px round 80px 160px 240px / 80px 160px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px)" but got "inset(80px round 80px 160px 240px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex 40ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px / 128px 256px 384px 512px)" but got "inset(80px round 80px 160px 240px / 80px 160px 240px 320px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex 40ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px 512px)" but got "inset(80px round 80px 160px 240px 320px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex 40ex / 10ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px 512px / 128px)" but got "inset(80px round 80px 160px 240px 320px / 80px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px 512px / 128px 256px)" but got "inset(80px round 80px 160px 240px 320px / 80px 160px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px 512px / 128px 256px 384px)" but got "inset(80px round 80px 160px 240px 320px / 80px 160px 240px)"
+[FAIL] inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex 40ex) - computed
+  assert_equals: expected "inset(128px round 128px 256px 384px 512px)" but got "inset(80px round 80px 160px 240px 320px)"
+[FAIL] inset(10ch round 10ch) - computed
+  assert_equals: expected "inset(160px round 160px)" but got "inset(80px round 80px)"
+[FAIL] inset(10ch round 10ch / 10ch) - computed
+  assert_equals: expected "inset(160px round 160px)" but got "inset(80px round 80px)"
+[FAIL] inset(10ch round 10ch / 10ch 20ch) - computed
+  assert_equals: expected "inset(160px round 160px / 160px 320px)" but got "inset(80px round 80px / 80px 160px)"
+[FAIL] inset(10ch round 10ch / 10ch 20ch 30ch) - computed
+  assert_equals: expected "inset(160px round 160px / 160px 320px 480px)" but got "inset(80px round 80px / 80px 160px 240px)"
+[FAIL] inset(10ch round 10ch / 10ch 20ch 30ch 40ch) - computed
+  assert_equals: expected "inset(160px round 160px / 160px 320px 480px 640px)" but got "inset(80px round 80px / 80px 160px 240px 320px)"
+[FAIL] inset(10ch round 10ch 20ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px)" but got "inset(80px round 80px 160px)"
+[FAIL] inset(10ch round 10ch 20ch / 10ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px / 160px)" but got "inset(80px round 80px 160px / 80px)"
+[FAIL] inset(10ch round 10ch 20ch / 10ch 20ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px)" but got "inset(80px round 80px 160px)"
+[FAIL] inset(10ch round 10ch 20ch / 10ch 20ch 30ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px / 160px 320px 480px)" but got "inset(80px round 80px 160px / 80px 160px 240px)"
+[FAIL] inset(10ch round 10ch 20ch / 10ch 20ch 30ch 40ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px / 160px 320px 480px 640px)" but got "inset(80px round 80px 160px / 80px 160px 240px 320px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px)" but got "inset(80px round 80px 160px 240px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch / 10ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px / 160px)" but got "inset(80px round 80px 160px 240px / 80px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch / 10ch 20ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px / 160px 320px)" but got "inset(80px round 80px 160px 240px / 80px 160px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px)" but got "inset(80px round 80px 160px 240px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch 40ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px / 160px 320px 480px 640px)" but got "inset(80px round 80px 160px 240px / 80px 160px 240px 320px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch 40ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px 640px)" but got "inset(80px round 80px 160px 240px 320px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch 40ch / 10ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px 640px / 160px)" but got "inset(80px round 80px 160px 240px 320px / 80px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px 640px / 160px 320px)" but got "inset(80px round 80px 160px 240px 320px / 80px 160px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px 640px / 160px 320px 480px)" but got "inset(80px round 80px 160px 240px 320px / 80px 160px 240px)"
+[FAIL] inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch 40ch) - computed
+  assert_equals: expected "inset(160px round 160px 320px 480px 640px)" but got "inset(80px round 80px 160px 240px 320px)"
+Harness: the test ran to completion.

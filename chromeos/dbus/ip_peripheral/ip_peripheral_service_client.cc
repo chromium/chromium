@@ -191,7 +191,7 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
                                  ip_peripheral::kGetControlMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip);
-    writer.AppendArrayOfBytes(guid_le.data(), guid_le.size());
+    writer.AppendArrayOfBytes(guid_le);
     writer.AppendByte(control_selector);
     writer.AppendByte(uvc_get_request);
     ip_peripheral_service_proxy_->CallMethod(
@@ -208,9 +208,9 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
                                  ip_peripheral::kSetControlMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip);
-    writer.AppendArrayOfBytes(guid_le.data(), guid_le.size());
+    writer.AppendArrayOfBytes(guid_le);
     writer.AppendByte(control_selector);
-    writer.AppendArrayOfBytes(control_setting.data(), control_setting.size());
+    writer.AppendArrayOfBytes(control_setting);
     ip_peripheral_service_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&OnSetControlMethod, std::move(callback)));
@@ -223,8 +223,7 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
   }
 
  private:
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> ip_peripheral_service_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> ip_peripheral_service_proxy_ = nullptr;
 };
 
 }  // namespace

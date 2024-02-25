@@ -1,0 +1,2 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ProgressBar text:"three" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-valuemax="96"}, {aria-valuemin="1"}, {aria-valuenow="3"}, {aria-valuetext="three"}, {role="progressbar"}]

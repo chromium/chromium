@@ -221,6 +221,9 @@ GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
   // Always use GL_TEXTURE_2D as the target for RGB textures.
   // https://crbug.com/916728
   if (format == gfx::BufferFormat::R_8 || format == gfx::BufferFormat::RG_88 ||
+#if BUILDFLAG(IS_CHROMEOS)
+      format == gfx::BufferFormat::RGBA_F16 ||
+#endif
       format == gfx::BufferFormat::RGBA_8888 ||
       format == gfx::BufferFormat::BGRA_8888 ||
       format == gfx::BufferFormat::RGBX_8888 ||

@@ -27,6 +27,8 @@ source_set("cups_proxy") {
     "socket_manager.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/services/cups_proxy/public/cpp",

@@ -12,12 +12,13 @@ import android.os.RemoteException;
 import android.util.SparseArray;
 import android.view.Surface;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
@@ -56,15 +57,17 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     @Override
     public void onServiceBound(Intent intent) {
         LibraryLoader.getInstance().getMediator().takeLoadAddressFromBundle(intent.getExtras());
-        LibraryLoader.getInstance().setLibraryProcessType(
-                ChildProcessCreationParamsImpl.getLibraryProcessType(intent.getExtras()));
+        LibraryLoader.getInstance()
+                .setLibraryProcessType(
+                        ChildProcessCreationParamsImpl.getLibraryProcessType(intent.getExtras()));
     }
 
     @Override
     public void onConnectionSetup(Bundle connectionBundle, List<IBinder> clientInterfaces) {
-        mGpuCallback = clientInterfaces != null && !clientInterfaces.isEmpty()
-                ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
-                : null;
+        mGpuCallback =
+                clientInterfaces != null && !clientInterfaces.isEmpty()
+                        ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
+                        : null;
 
         mCpuCount = connectionBundle.getInt(ContentChildProcessConstants.EXTRA_CPU_COUNT);
         mCpuFeatures = connectionBundle.getLong(ContentChildProcessConstants.EXTRA_CPU_FEATURES);
@@ -100,8 +103,8 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         // Now that the library is loaded, get the FD map,
         // TODO(jcivelli): can this be done in onBeforeMain? We would have to mode onBeforeMain
         // so it's called before FDs are registered.
-        ContentChildProcessServiceDelegateJni.get().retrieveFileDescriptorsIdsToKeys(
-                ContentChildProcessServiceDelegate.this);
+        ContentChildProcessServiceDelegateJni.get()
+                .retrieveFileDescriptorsIdsToKeys(ContentChildProcessServiceDelegate.this);
     }
 
     @Override
@@ -120,12 +123,15 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void onBeforeMain() {
-        ContentChildProcessServiceDelegateJni.get().initChildProcess(
-                ContentChildProcessServiceDelegate.this, mCpuCount, mCpuFeatures);
-        ThreadUtils.getUiThreadHandler().post(() -> {
-            ContentChildProcessServiceDelegateJni.get().initMemoryPressureListener();
-            MemoryPressureUma.initializeForChildService();
-        });
+        ContentChildProcessServiceDelegateJni.get()
+                .initChildProcess(ContentChildProcessServiceDelegate.this, mCpuCount, mCpuFeatures);
+        ThreadUtils.getUiThreadHandler()
+                .post(
+                        () -> {
+                            ContentChildProcessServiceDelegateJni.get()
+                                    .initMemoryPressureListener();
+                            MemoryPressureUma.initializeForChildService();
+                        });
     }
 
     @Override

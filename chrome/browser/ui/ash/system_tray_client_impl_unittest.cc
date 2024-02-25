@@ -17,6 +17,9 @@
 namespace {
 
 constexpr const char kShowTouchpadSettingsPage[] = "ShowTouchpadSettingsPage";
+constexpr const char kShowMouseSettingsPage[] = "ShowMouseSettingsPage";
+constexpr const char kShowGraphicsTabletSettingsPage[] =
+    "ShowGraphicsTabletSettingsPage";
 constexpr const char kShowRemapKeysSettingsSubpage[] =
     "ShowRemapKeysSettingsSubpage";
 
@@ -76,6 +79,29 @@ TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
 }
 
+TEST_F(SystemTrayClientImplTest, ShowMouseSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowMouseSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPerDeviceMouseSubpagePath));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowMouseSettingsPage));
+}
+
+TEST_F(SystemTrayClientImplTest, ShowGraphicsTabletSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowGraphicsTabletSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kGraphicsTabletSubpagePath));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kShowGraphicsTabletSettingsPage));
+}
+
 TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
@@ -89,6 +115,17 @@ TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
                           "?keyboardId=1"}));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kShowRemapKeysSettingsSubpage));
+}
+
+TEST_F(SystemTrayClientImplTest, ShowApnSubpage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  client_impl_->ShowApnSubpage(/*network_id=*/"guid");
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            base::StrCat({chrome::GetOSSettingsUrl(
+                              chromeos::settings::mojom::kApnSubpagePath)
+                              .spec(),
+                          "?guid=guid"}));
 }
 
 }  // namespace

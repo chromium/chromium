@@ -121,6 +121,13 @@ class TestResultSink(object):
         # https://chromium.googlesource.com/infra/luci/luci-go/+/master/resultdb/proto/type/common.proto#56
         pair = lambda k, v: {'key': k, 'value': v}
 
+        # According to //third_party/blink/web_tests/SlowTests, a test is
+        # considered slow if it is slower than ~30% of its timeout since test
+        # times can vary by up to 3x.
+        portion_of_timeout = result.total_run_time / (self._port.timeout_ms() /
+                                                      1000)
+        test_was_slow = portion_of_timeout > 0.3
+
         tags = [
             pair('test_name', result.test_name),
             pair('web_tests_device_failed', str(result.device_failed)),
@@ -129,6 +136,7 @@ class TestResultSink(object):
                  self._port.flag_specific_config_name() or ''),
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
+            pair('web_tests_test_was_slow', json.dumps(test_was_slow)),
         ]
 
         # The hash allows `rebaseline-cl` to determine whether baselines are

@@ -5,129 +5,32 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
-#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
-// Structure which contains all the required information to display about a
-// credit card.
-@interface PaymentsSuggestionBottomSheetCreditCardInfo
-    : NSObject <PaymentsSuggestionBottomSheetData>
-
-- (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
-                              icon:(UIImage*)icon;
-
-@property(nonatomic, strong) NSString* cardNameAndLastFourDigits;
-@property(nonatomic, strong) NSString* cardDetails;
-@property(nonatomic, strong) NSString* backendIdentifier;
-@property(nonatomic, strong) NSString* accessibleCardName;
-@property(nonatomic, strong) UIImage* icon;
-
-@end
-
-@implementation PaymentsSuggestionBottomSheetCreditCardInfo
-
-- (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
-                              icon:(UIImage*)icon {
-  if (self = [super init]) {
-    self.cardNameAndLastFourDigits =
-        base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
-    self.cardDetails = base::SysUTF16ToNSString(
-        (creditCard->record_type() ==
-         autofill::CreditCard::RecordType::kVirtualCard)
-            ? l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
-            : creditCard->AbbreviatedExpirationDateForDisplay(
-                  /* with_prefix=*/false));
-    self.accessibleCardName = [self accessibleCardName:creditCard];
-    self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
-
-    if (icon.size.width > 0.0 && icon.size.width < 40.0 && icon.scale > 1.0) {
-      // If the icon is smaller than desired, but is scaled, reduce the scale
-      // (to a minimum of 1.0) in order to attempt to achieve the desired size.
-      self.icon = [UIImage
-          imageWithCGImage:[icon CGImage]
-                     scale:MAX((icon.scale * icon.size.width / 40.0), 1.0)
-               orientation:(icon.imageOrientation)];
-    } else {
-      self.icon = icon;
-    }
-  }
-  return self;
-}
-
-#pragma mark - Private
-
-- (NSString*)accessibleCardName:(const autofill::CreditCard*)creditCard {
-  // Get the card name. Prepend the card type if the card name doesn't already
-  // start with the card type.
-  NSString* cardType = base::SysUTF16ToNSString(
-      creditCard->GetRawInfo(autofill::CREDIT_CARD_TYPE));
-  NSString* cardAccessibleName =
-      base::SysUTF16ToNSString(creditCard->CardNameForAutofillDisplay());
-  if (![cardAccessibleName hasPrefix:cardType]) {
-    // If the card name doesn't already start with the card type, add the card
-    // type at the beginning of the card name.
-    cardAccessibleName =
-        [@[ cardType, cardAccessibleName ] componentsJoinedByString:@" "];
-  }
-
-  // Split the last 4 digits, so that they are pronounced separately. For
-  // example, "1215" will become "1 2 1 5" and will read "one two one five"
-  // instead of "one thousand two hundred and fifteen".
-  NSString* cardLastDigits =
-      base::SysUTF16ToNSString(creditCard->LastFourDigits());
-  NSMutableArray* digits = [[NSMutableArray alloc] init];
-  if (cardLastDigits.length > 0) {
-    for (NSUInteger i = 0; i < cardLastDigits.length; i++) {
-      [digits addObject:[cardLastDigits substringWithRange:NSMakeRange(i, 1)]];
-    }
-    cardLastDigits = [digits componentsJoinedByString:@" "];
-  }
-
-  // Add mention that the credit card ends with the last 4 digits.
-  cardAccessibleName = base::SysUTF16ToNSString(
-      l10n_util::GetStringFUTF16(IDS_IOS_PAYMENT_BOTTOM_SHEET_CARD_DESCRIPTION,
-                                 base::SysNSStringToUTF16(cardAccessibleName),
-                                 base::SysNSStringToUTF16(cardLastDigits)));
-
-  // Either prepend that the card is a virtual card OR append the expiration
-  // date.
-  if (creditCard->record_type() ==
-      autofill::CreditCard::RecordType::kVirtualCard) {
-    cardAccessibleName = [@[ self.cardDetails, cardAccessibleName ]
-        componentsJoinedByString:@" "];
-  } else {
-    cardAccessibleName = base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
-        base::SysNSStringToUTF16(cardAccessibleName),
-        base::SysNSStringToUTF16(self.cardDetails)));
-  }
-
-  return cardAccessibleName;
-}
-
-@end
+using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 @interface PaymentsSuggestionBottomSheetMediator () <
     CRWWebStateObserver,
@@ -211,6 +114,8 @@
         base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
         _webStateListObserver.get());
     _webStateListObservation->Observe(_webStateList);
+
+    [self setupSuggestionsProvider];
   }
   return self;
 }
@@ -247,6 +152,11 @@
   return _hasCreditCards;
 }
 
+- (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason {
+  base::UmaHistogramEnumeration("IOS.PaymentsBottomSheet.ExitReason",
+                                exitReason);
+}
+
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {
@@ -268,13 +178,28 @@
   }
 
   BOOL hasNonLocalCard = NO;
-  NSMutableArray<id<PaymentsSuggestionBottomSheetData>>* creditCardData =
+  NSMutableArray<CreditCardData*>* creditCardData =
       [[NSMutableArray alloc] initWithCapacity:creditCards.size()];
-  for (const auto* creditCard : creditCards) {
+  for (const autofill::CreditCard* creditCard : creditCards) {
     CHECK(creditCard);
+    // If the current card is enrolled to be a virtual card, create the virtual
+    // card and add it to creditCardData array directly before the original
+    // card.
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableVirtualCards) &&
+        creditCard->virtual_card_enrollment_state() ==
+            autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+      const autofill::CreditCard virtualCard =
+          autofill::CreditCard::CreateVirtualCard(*creditCard);
+      [creditCardData
+          addObject:[[CreditCardData alloc]
+                        initWithCreditCard:virtualCard
+                                      icon:[self
+                                               iconForCreditCard:creditCard]]];
+    }
     [creditCardData
-        addObject:[[PaymentsSuggestionBottomSheetCreditCardInfo alloc]
-                      initWithCreditCard:creditCard
+        addObject:[[CreditCardData alloc]
+                      initWithCreditCard:*creditCard
                                     icon:[self iconForCreditCard:creditCard]]];
     hasNonLocalCard |= !autofill::IsCreditCardLocal(*creditCard);
   }
@@ -285,36 +210,57 @@
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(NSString*)backendIdentifier {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
+  if (!_webStateList) {
+    return;
+  }
+
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return;
   }
 
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  _needsRefocus = false;
-
   FormSuggestionTabHelper* tabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
   DCHECK(tabHelper);
 
-  id<FormSuggestionClient> client = tabHelper->GetAccessoryViewProvider();
-  DCHECK(client);
+  id<FormInputSuggestionsProvider> provider =
+      tabHelper->GetAccessoryViewProvider();
+  DCHECK(provider);
+
+  if (provider.type != SuggestionProviderTypeAutofill) {
+    // Last resort safety exit: On the unlikely event that the provider was set
+    // incorrectly (for example if local predictions and server predictions are
+    // different), simply exit and open the keyboard.
+    _needsRefocus = true;
+    [self disableBottomSheet];
+    [self logExitReason:kBadProvider];
+    return;
+  }
+  _needsRefocus = false;
 
   // Create a form suggestion containing the selected credit card's backend id
   // so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:nil
+                      minorValue:nil
               displayDescription:nil
                             icon:nil
-                     popupItemId:autofill::PopupItemId::kCreditCardEntry
-               backendIdentifier:backendIdentifier
+                     popupItemId:
+                         ((base::FeatureList::IsEnabled(
+                               autofill::features::
+                                   kAutofillEnableVirtualCards) &&
+                           ([creditCardData recordType] ==
+                            autofill::CreditCard::RecordType::kVirtualCard))
+                              ? autofill::PopupItemId::kVirtualCreditCardEntry
+                              : autofill::PopupItemId::kCreditCardEntry)
+               backendIdentifier:[creditCardData backendIdentifier]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [client didSelectSuggestion:suggestion params:_params];
+  [provider didSelectSuggestion:suggestion params:_params];
 }
 
 - (void)disableBottomSheet {
@@ -371,6 +317,35 @@
   [self.consumer dismiss];
 }
 
+// Make sure the suggestions provider is properly set up. We need to make sure
+// that FormSuggestionController's "_provider" member is set, which happens
+// within [FormSuggestionController onSuggestionsReady:provider:], before the
+// credit card suggestion is selected.
+// TODO(crbug.com/1479175): Remove this dependency on suggestions.
+- (void)setupSuggestionsProvider {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  FormSuggestionTabHelper* tabHelper =
+      FormSuggestionTabHelper::FromWebState(activeWebState);
+  if (!tabHelper) {
+    return;
+  }
+
+  id<FormInputSuggestionsProvider> provider =
+      tabHelper->GetAccessoryViewProvider();
+  // Setting this to true only when we are retrieving suggestions for the bottom
+  // sheet. We are not using the results from this call, it is just to set the
+  // provider so the bottom sheet can fill the fields later.
+  autofill::FormActivityParams params = _params;
+  params.has_user_gesture = true;
+  [provider retrieveSuggestionsForForm:params
+                              webState:activeWebState
+              accessoryViewUpdateBlock:nil];
+}
+
 // Returns the icon associated with the provided credit card.
 - (UIImage*)iconForCreditCard:(const autofill::CreditCard*)creditCard {
   // Check if custom card art is available.
@@ -384,12 +359,13 @@
   }
 
   // Otherwise, try to get the default card icon
-  std::string icon = creditCard->CardIconStringForAutofillSuggestion();
-  return icon.empty() ? nil
-                      : ui::ResourceBundle::GetSharedInstance()
-                            .GetNativeImageNamed(
-                                autofill::CreditCard::IconResourceId(icon))
-                            .ToUIImage();
+  autofill::Suggestion::Icon icon = creditCard->CardIconForAutofillSuggestion();
+  return icon == autofill::Suggestion::Icon::kNoIcon
+             ? nil
+             : ui::ResourceBundle::GetSharedInstance()
+                   .GetNativeImageNamed(
+                       autofill::CreditCard::IconResourceId(icon))
+                   .ToUIImage();
 }
 
 @end

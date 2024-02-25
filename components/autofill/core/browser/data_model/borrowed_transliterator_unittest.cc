@@ -14,8 +14,8 @@ namespace autofill {
 
 TEST(BorrowedTransliterator, RemoveDiacriticsAndConvertToLowerCase) {
   EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(
-                u"āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūž"),
-            u"aeaa11.iucgklnszkaaadeilnooooorstuz");
+                u"āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūžßł"),
+            u"aeaa11.iucgklnszkaaadeilnooooorstuzssl");
 }
 
 }  // namespace autofill

@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
@@ -100,7 +100,13 @@
 #pragma mark - PrivacySafeBrowsingNavigationCommands
 
 - (void)showSafeBrowsingEnhancedProtection {
-  DCHECK(!self.safeBrowsingEnhancedProtectionCoordinator);
+  // Asynchronized UI sequences can cause coordinators to exist when
+  // re-initializing a new coordinator. To ensure that the object is reset
+  // properly, we forcefully stop the coordinator so that we can properly
+  // initialize a new one.
+  if (self.safeBrowsingEnhancedProtectionCoordinator) {
+    [self stopSafeBrowsingEnhancedProtectionCoordinator];
+  }
   self.safeBrowsingEnhancedProtectionCoordinator =
       [[SafeBrowsingEnhancedProtectionCoordinator alloc]
           initWithBaseNavigationController:self.baseNavigationController
@@ -110,7 +116,13 @@
 }
 
 - (void)showSafeBrowsingStandardProtection {
-  DCHECK(!self.safeBrowsingStandardProtectionCoordinator);
+  // Asynchronized UI sequences can cause coordinators to exist when
+  // re-initializing a new coordinator. To ensure that the object is reset
+  // properly, we forcefully stop the coordinator so that we can properly
+  // initialize a new one.
+  if (self.safeBrowsingStandardProtectionCoordinator) {
+    [self stopSafeBrowsingStandardProtectionCoordinator];
+  }
   self.safeBrowsingStandardProtectionCoordinator =
       [[SafeBrowsingStandardProtectionCoordinator alloc]
           initWithBaseNavigationController:self.baseNavigationController

@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -119,7 +119,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   }
 
   std::unique_ptr<UdpProber> CreateAndExecuteUdpProber(
-      UdpProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       base::span<const uint8_t> data,
       net::NetworkTrafficAnnotationTag tag,
@@ -135,7 +135,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   }
 
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) {
@@ -162,7 +162,8 @@ class VideoConferencingRoutineTest : public ::testing::Test {
                     std::deque<TlsProberReturnValue> fake_tls_probe_results) {
     fake_udp_probe_results_ = std::move(fake_udp_probe_results);
     fake_tls_probe_results_ = std::move(fake_tls_probe_results);
-    video_conferencing_routine_ = std::make_unique<VideoConferencingRoutine>();
+    video_conferencing_routine_ = std::make_unique<VideoConferencingRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     video_conferencing_routine_->set_udp_prober_getter_callback_for_testing(
         base::BindRepeating(
             &VideoConferencingRoutineTest::CreateAndExecuteUdpProber,

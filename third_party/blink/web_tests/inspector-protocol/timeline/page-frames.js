@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
     <iframe src='data:text/html,<script>window.foo = 42</script>' name='frame0'></iframe>
   `, 'Tests certain trace events in iframes.');

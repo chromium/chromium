@@ -48,7 +48,7 @@ class WaylandOverlayConfigStructTraitsTest
 }  // namespace
 
 TEST_F(WaylandOverlayConfigStructTraitsTest, OverlayTransform) {
-  const gfx::OverlayTransform t = gfx::OVERLAY_TRANSFORM_ROTATE_90;
+  const gfx::OverlayTransform t = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   absl::variant<gfx::OverlayTransform, gfx::Transform> input(t);
   mojo::Remote<mojom::ConfigTraitsTestService> remote = GetTraitsTestRemote();
   absl::variant<gfx::OverlayTransform, gfx::Transform> output;

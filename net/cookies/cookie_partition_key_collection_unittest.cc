@@ -57,12 +57,12 @@ TEST(CookiePartitionKeyCollectionTest, ContainsAll) {
 
 TEST(CookiePartitionKeyCollectionTest, FromOptional) {
   CookiePartitionKeyCollection key_collection =
-      CookiePartitionKeyCollection::FromOptional(absl::nullopt);
+      CookiePartitionKeyCollection::FromOptional(std::nullopt);
   EXPECT_TRUE(key_collection.IsEmpty());
   EXPECT_FALSE(key_collection.ContainsAllKeys());
 
   key_collection = CookiePartitionKeyCollection::FromOptional(
-      absl::make_optional<CookiePartitionKey>(
+      std::make_optional<CookiePartitionKey>(
           CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
   EXPECT_FALSE(key_collection.IsEmpty());
   EXPECT_FALSE(key_collection.ContainsAllKeys());

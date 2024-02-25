@@ -48,8 +48,7 @@ bool HistoricVisitsMigrationTask::RunOnDBThread(
          visit != url_visits.end();
          ++visit) {
       usage_reports_buffer_service_->AddVisit(
-          url_id,
-          visit->visit_time.ToJavaTime(),
+          url_id, visit->visit_time.InMillisecondsSinceUnixEpoch(),
           usage_report_util::IsTypedVisit(visit->transition));
     }
   }

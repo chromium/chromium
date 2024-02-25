@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -59,9 +60,10 @@ std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state) {
          ")";
 }
 
-int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
-                    chromeos::DisplayPowerState state,
-                    std::vector<bool>* display_power) {
+int GetDisplayPower(
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    chromeos::DisplayPowerState state,
+    std::vector<bool>* display_power) {
   int num_on_displays = 0;
   if (display_power) {
     display_power->resize(displays.size());
@@ -191,12 +193,16 @@ std::vector<float> GetDisplayZoomFactors(const ManagedDisplayMode& mode) {
   const int effective_width = std::round(
       static_cast<float>(std::max(mode.size().width(), mode.size().height())) /
       mode.device_scale_factor());
+  return GetDisplayZoomFactorsByDsiplayWidth(effective_width);
+}
 
+std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+    const int display_width) {
   std::size_t index = kZoomListBuckets.size() - 1;
-  while (index > 0 && effective_width < kZoomListBuckets[index].first) {
+  while (index > 0 && display_width < kZoomListBuckets[index].first) {
     index--;
   }
-  DCHECK_GE(effective_width, kZoomListBuckets[index].first);
+  DCHECK_GE(display_width, kZoomListBuckets[index].first);
 
   const auto& zoom_array = kZoomListBuckets[index].second;
   return std::vector<float>(zoom_array.begin(), zoom_array.end());

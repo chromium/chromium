@@ -57,7 +57,7 @@ class ASH_EXPORT ContextualNudge : public views::BubbleDialogDelegateView {
  private:
   base::RepeatingClosure tap_callback_;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,7 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 
 ts_files = [
   "background.ts",
+  "background_main.ts",
   "desk_api_impl.ts",
   "message_type.ts",
   "notification_api_impl.ts",
@@ -44,6 +45,12 @@ ts_library("build_ts") {
     ":copy_definition",
     ":copy_src",
   ]
+
+  # Using custom config to turn off useDefineForClassFields TS compiler flag
+  # which is necessary for the js_binary() call below to work. An alternative
+  # workaround would be to set TS compiler's `target` flag to 'es2021' or
+  # earlier.
+  tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/tsc"
   in_files = ts_files

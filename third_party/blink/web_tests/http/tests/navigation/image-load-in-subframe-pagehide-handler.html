@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <script>
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
+
+    function test() {
+      document.getElementsByTagName("body")[0].removeChild(document.getElementById("target"));
+    }
+
+    function finish() {
+      setTimeout(function () {
+        if (window.testRunner)
+          testRunner.notifyDone();
+      }, 300);
+    }
+  </script>
+  <iframe id="target" name="target" src="resources/image-load-in-subframe-pagehide-handler-helper.html"></iframe>
+  This test triggers an pagehide handler that starts an image load in a different frame (and deletes both frames), but
+  ensures the main frame is not destroyed. We pass if we don't crash.
+</body>
+
+</html>

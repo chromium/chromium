@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -43,8 +44,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 class ProvidedFileSystemInterface;
@@ -211,13 +211,13 @@ class Service : public KeyedService,
       file_system_map_;
   std::map<std::string, FileSystemKey> mount_point_name_to_key_map_;
   std::unique_ptr<RegistryInterface> registry_;
+  std::unique_ptr<ContentCache> content_cache_;
   base::ThreadChecker thread_checker_;
   ProviderMap provider_map_;
 
   base::WeakPtrFactory<Service> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_H_

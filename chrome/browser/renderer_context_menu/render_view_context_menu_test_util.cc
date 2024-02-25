@@ -26,23 +26,24 @@ TestRenderViewContextMenu::~TestRenderViewContextMenu() {}
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
     content::WebContents* web_contents,
-    const GURL& page_url,
+    const GURL& frame_url,
     const GURL& link_url,
-    const GURL& frame_url) {
-  return Create(web_contents->GetPrimaryMainFrame(), page_url, link_url,
-                frame_url);
+    bool is_subframe) {
+  return Create(web_contents->GetPrimaryMainFrame(), frame_url, link_url,
+                is_subframe);
 }
 
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
     content::RenderFrameHost* render_frame_host,
-    const GURL& page_url,
+    const GURL& frame_url,
     const GURL& link_url,
-    const GURL& frame_url) {
+    bool is_subframe) {
   content::ContextMenuParams params;
-  params.page_url = page_url;
-  params.link_url = link_url;
+  params.page_url = frame_url;
   params.frame_url = frame_url;
+  params.link_url = link_url;
+  params.is_subframe = is_subframe;
   auto menu =
       std::make_unique<TestRenderViewContextMenu>(*render_frame_host, params);
   menu->Init();
@@ -54,13 +55,13 @@ bool TestRenderViewContextMenu::IsItemPresent(int command_id) const {
 }
 
 bool TestRenderViewContextMenu::IsItemChecked(int command_id) const {
-  const absl::optional<size_t> index =
+  const std::optional<size_t> index =
       menu_model_.GetIndexOfCommandId(command_id);
   return index && menu_model_.IsItemCheckedAt(*index);
 }
 
 bool TestRenderViewContextMenu::IsItemEnabled(int command_id) const {
-  const absl::optional<size_t> index =
+  const std::optional<size_t> index =
       menu_model_.GetIndexOfCommandId(command_id);
   return index && menu_model_.IsEnabledAt(*index);
 }
@@ -136,3 +137,14 @@ void TestRenderViewContextMenu::set_dlp_rules_manager(
   dlp_rules_manager_ = dlp_rules_manager;
 }
 #endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+ChromeComposeClient* TestRenderViewContextMenu::GetChromeComposeClient() const {
+  return compose_client_;
+}
+
+void TestRenderViewContextMenu::SetChromeComposeClient(
+    ChromeComposeClient* compose_client) {
+  compose_client_ = compose_client;
+}
+#endif  // BUILDFLAG(ENABLE_COMPOSE)

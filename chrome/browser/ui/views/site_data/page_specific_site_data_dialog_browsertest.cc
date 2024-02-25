@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/page_info/core/features.h"
@@ -56,10 +58,6 @@ class PageSpecificSiteDataDialogBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageSpecificSiteDataDialogBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {net::features::kPartitionedCookies, {}}};
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -144,12 +142,12 @@ class PageSpecificSiteDataDialogBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     return web_contents
                ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                     ->infobar_count()
+                     ->infobars()
+                     .size()
                : 0;
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
@@ -414,8 +412,25 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
-                       PartitionedCookies) {
+class PageSpecificSiteDataDialogPre3pcdBrowserTest
+    : public PageSpecificSiteDataDialogBrowserTest {
+ public:
+  PageSpecificSiteDataDialogPre3pcdBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogPre3pcdBrowserTest,
+                       PartitionedCookiesAndAllowedThirdParty) {
+  // Allow third-party cookies.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+
   content::CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 8);
 

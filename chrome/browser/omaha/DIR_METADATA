@@ -3,3 +3,6 @@ monorail: {
 }
 team_email: "chrome-updates-dev@chromium.org"
 os: ANDROID
+buganizer_public: {
+  component_id: 1456937
+}

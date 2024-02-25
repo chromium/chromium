@@ -6,13 +6,13 @@
 
 namespace net {
 
-absl::optional<quic::QuicErrorCode> HttpStream::GetQuicErrorCode() const {
-  return absl::nullopt;
+std::optional<quic::QuicErrorCode> HttpStream::GetQuicErrorCode() const {
+  return std::nullopt;
 }
 
-absl::optional<quic::QuicRstStreamErrorCode>
+std::optional<quic::QuicRstStreamErrorCode>
 HttpStream::GetQuicRstStreamErrorCode() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace net

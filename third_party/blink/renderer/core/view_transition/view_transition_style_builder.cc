@@ -20,19 +20,6 @@ const char* kNewImageTagName = "html::view-transition-new";
 const char* kOldImageTagName = "html::view-transition-old";
 const char* kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
 
-const char* TextOrientationToString(ETextOrientation text_orientation) {
-  switch (text_orientation) {
-    case ETextOrientation::kMixed:
-      return "mixed";
-    case ETextOrientation::kSideways:
-      return "sideways";
-    case ETextOrientation::kUpright:
-      return "upright";
-  }
-  NOTREACHED();
-  return "";
-}
-
 }  // namespace
 
 void ViewTransitionStyleBuilder::AddUAStyle(const String& style) {
@@ -63,7 +50,8 @@ void ViewTransitionStyleBuilder::AddRules(const String& selector,
 void ViewTransitionStyleBuilder::AddAnimations(
     AnimationType type,
     const String& tag,
-    const ContainerProperties& source_properties) {
+    const ContainerProperties& source_properties,
+    const CapturedCssProperties& animated_css_properties) {
   switch (type) {
     case AnimationType::kOldOnly:
       AddRules(kOldImageTagName, tag,
@@ -86,7 +74,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
 
       AddRules(kImagePairTagName, tag, "isolation: isolate");
 
-      const String& animation_name = AddKeyframes(tag, source_properties);
+      const String& animation_name =
+          AddKeyframes(tag, source_properties, animated_css_properties);
       StringBuilder rule_builder;
       rule_builder.Append("animation-name: ");
       rule_builder.Append(animation_name);
@@ -102,7 +91,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
 
 String ViewTransitionStyleBuilder::AddKeyframes(
     const String& tag,
-    const ContainerProperties& source_properties) {
+    const ContainerProperties& source_properties,
+    const CapturedCssProperties& animated_css_properties) {
   String keyframe_name = [&tag]() {
     StringBuilder builder;
     builder.Append(kKeyframeNamePrefix);
@@ -118,8 +108,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           transform: %s;
           width: %.3fpx;
           height: %3fpx;
-        }
-      })CSS",
+      )CSS",
       ComputedStyleUtils::ValueForTransform(source_properties.snapshot_matrix,
                                             1, false)
           ->CssText()
@@ -127,27 +116,27 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           .c_str(),
       source_properties.border_box_size_in_css_space.width.ToFloat(),
       source_properties.border_box_size_in_css_space.height.ToFloat());
+
+  for (const auto& [id, value] : animated_css_properties) {
+    builder_.AppendFormat(
+        "%s: %s;\n",
+        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
+        value.Utf8().c_str());
+  }
+  builder_.Append("}}");
   return keyframe_name;
 }
 
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
-    WritingMode writing_mode,
-    BlendMode blend_mode,
-    ETextOrientation text_orientation) {
-  std::ostringstream writing_mode_stream;
-  writing_mode_stream << writing_mode;
-
+    const CapturedCssProperties& captured_css_properties) {
   StringBuilder rule_builder;
   rule_builder.AppendFormat(
       R"CSS(
         width: %.3fpx;
         height: %.3fpx;
         transform: %s;
-        writing-mode: %s;
-        mix-blend-mode: %s;
-        text-orientation: %s;
       )CSS",
       properties.border_box_size_in_css_space.width.ToFloat(),
       properties.border_box_size_in_css_space.height.ToFloat(),
@@ -155,10 +144,13 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
                                             false)
           ->CssText()
           .Utf8()
-          .c_str(),
-      writing_mode_stream.str().c_str(),
-      BlendModeToString(blend_mode).Utf8().c_str(),
-      TextOrientationToString(text_orientation));
+          .c_str());
+  for (const auto& [id, value] : captured_css_properties) {
+    rule_builder.AppendFormat(
+        "%s: %s;\n",
+        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
+        value.Utf8().c_str());
+  }
 
   AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
 }

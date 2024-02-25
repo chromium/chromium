@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -360,7 +360,7 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       clear_overscan_insets_(false),
       bits_per_channel_(0),
       variable_refresh_rate_state_(kVrrNotCapable),
-      vsync_rate_min_(absl::nullopt) {}
+      vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
                                        const std::string& name,
@@ -383,7 +383,7 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       clear_overscan_insets_(false),
       bits_per_channel_(0),
       variable_refresh_rate_state_(kVrrNotCapable),
-      vsync_rate_min_(absl::nullopt) {}
+      vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
     default;
@@ -413,6 +413,11 @@ Display::Rotation ManagedDisplayInfo::GetRotation(
   return rotations_.at(source);
 }
 
+void ManagedDisplayInfo::AddZoomFactorForSize(const std::string& size,
+                                              float zoom_factor) {
+  zoom_factor_map_[size] = zoom_factor;
+}
+
 void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   DCHECK(id_ == native_info.id_);
   port_display_id_ = native_info.port_display_id_;
@@ -426,6 +431,8 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 
   active_rotation_source_ = native_info.active_rotation_source_;
   touch_support_ = native_info.touch_support_;
+  connection_type_ = native_info.connection_type_;
+  physical_size_ = native_info.physical_size_;
   device_scale_factor_ = native_info.device_scale_factor_;
   DCHECK(!native_info.bounds_in_native_.IsEmpty());
   bounds_in_native_ = native_info.bounds_in_native_;
@@ -559,7 +566,8 @@ std::string ManagedDisplayInfo::ToString() const {
       "ManagedDisplayInfo[%lld] port_display_id=%lld, edid_display_id=%lld, "
       "native bounds=%s, size=%s, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "panel_corners_radii=%s, panel_orientation=%s, detected=%s",
+      "panel_corners_radii=%s, panel_orientation=%s, detected=%s, "
+      "color_space=%s",
       static_cast<long long int>(id_),
       static_cast<long long int>(port_display_id_),
       static_cast<long long int>(edid_display_id_),
@@ -571,7 +579,8 @@ std::string ManagedDisplayInfo::ToString() const {
                                                              : "unknown",
       panel_corners_radii_.ToString().c_str(),
       PanelOrientationToString(panel_orientation_).c_str(),
-      detected_ ? "true" : "false");
+      detected_ ? "true" : "false",
+      display_color_spaces_.GetRasterColorSpace().ToString().c_str());
 
   return result;
 }

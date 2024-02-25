@@ -25,7 +25,6 @@ cast_source_set("test_support") {
     "test/mock_frame_consumer.h",
     "test/mock_frame_provider.cc",
     "test/mock_frame_provider.h",
-    "test/mock_multiroom_manager.h",
   ]
 
   deps = [

@@ -6,30 +6,32 @@
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_H_
 
 #include "ash/system/tray/tray_bubble_base.h"
+#include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/unified/date_tray.h"
 #include "base/memory/raw_ptr.h"
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
 class CalendarView;
-class ClassroomBubbleTeacherView;
 class ClassroomBubbleStudentView;
 class GlanceableTrayBubbleView;
-class TasksBubbleView;
 
 // Manages the bubble that contains GlanceableTrayView.
 // Shows the bubble on the constructor, and closes the bubble on the destructor.
 class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
  public:
-  explicit GlanceableTrayBubble(DateTray* tray);
+  // `from_keyboard` - whether the bubble is shown in response to a keyboard
+  // event, in which case the bubble should be activated when shown.
+  GlanceableTrayBubble(DateTray* tray, bool from_keyboard);
 
   GlanceableTrayBubble(const GlanceableTrayBubble&) = delete;
   GlanceableTrayBubble& operator=(const GlanceableTrayBubble&) = delete;
 
   ~GlanceableTrayBubble() override;
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
 
   // TrayBubbleBase:
   TrayBackgroundView* GetTray() const override;
@@ -37,26 +39,22 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   views::Widget* GetBubbleWidget() const override;
   bool IsBubbleActive() const;
 
-  TasksBubbleView* GetTasksView();
-  ClassroomBubbleTeacherView* GetClassroomTeacherView();
+  views::View* GetTasksView();
   ClassroomBubbleStudentView* GetClassroomStudentView();
   CalendarView* GetCalendarView();
 
  private:
+  // Wrapper around `GetBubbleView()` that returns the bubble view as
+  // `GlanceableTrayBubbleView`.
+  GlanceableTrayBubbleView* GetGlanceableTrayBubbleView();
+
   void UpdateBubble();
 
   // Owner of this class.
-  raw_ptr<DateTray, ExperimentalAsh> tray_;
+  raw_ptr<DateTray> tray_;
 
-  // Widget that contains GlanceableTrayView. Unowned.
-  // When the widget is closed by deactivation, |bubble_widget_| pointer is
-  // invalidated and we have to delete GlanceableTrayBubble by calling
-  // DateTray::CloseBubble().
-  // In order to do this, we observe OnWidgetDestroying().
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-
-  // Main bubble view anchored to `tray_`.
-  raw_ptr<GlanceableTrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  // Bubble wrapper that manages the bubble widget when shown.
+  std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
 };
 
 }  // namespace ash

@@ -80,9 +80,6 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
         requirements._3d->features, api::requirements::_3DFeature::kWebgl);
   }
 
-  if (requirements.window && requirements.window->shape)
-    requirements_info->window_shape = *requirements.window->shape;
-
   extension->SetManifestData(ManifestKeys::kRequirements,
                              std::move(requirements_info));
   return true;

@@ -127,7 +127,7 @@ void UserInfoFetcher::OnFetchComplete(
   DCHECK(unparsed_data);
   DVLOG_POLICY(1, POLICY_AUTH)
       << "Received UserInfo response: " << *unparsed_data;
-  absl::optional<base::Value> parsed_value =
+  std::optional<base::Value> parsed_value =
       base::JSONReader::Read(*unparsed_data);
   if (parsed_value && parsed_value->is_dict()) {
     delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());

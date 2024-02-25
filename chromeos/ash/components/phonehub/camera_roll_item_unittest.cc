@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 namespace phonehub {
@@ -16,9 +17,7 @@ namespace phonehub {
 namespace {
 
 const gfx::Image CreateTestImage() {
-  SkBitmap test_bitmap;
-  test_bitmap.allocN32Pixels(1, 1);
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(test_bitmap);
+  gfx::ImageSkia image_skia = gfx::test::CreateImageSkia(/*size=*/1);
   image_skia.MakeThreadSafe();
   return gfx::Image(image_skia);
 }

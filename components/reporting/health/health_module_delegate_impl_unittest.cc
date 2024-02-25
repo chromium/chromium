@@ -4,8 +4,10 @@
 
 #include "components/reporting/health/health_module_delegate_impl.h"
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,20 +23,6 @@ constexpr uint32_t kMaxWriteCount = 10u;
 constexpr uint32_t kMaxStorage =
     kMaxWriteCount * (kRepeatedPtrFieldSizeOverhead + kDefaultCallSize);
 constexpr uint32_t kTinyStorage = 2u;
-
-constexpr char kHexCharLookup[0x10] = {
-    '0', '1', '2', '3', '4', '5', '6', '7',
-    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-};
-
-std::string BytesToHexString(std::string_view bytes) {
-  std::string result;
-  for (char byte : bytes) {
-    result.push_back(kHexCharLookup[(byte >> 4) & 0xf]);
-    result.push_back(kHexCharLookup[byte & 0xf]);
-  }
-  return result;
-}
 
 void CompareHealthData(std::string_view expected, ERPHealthData got) {
   EXPECT_THAT(expected, StrEq(got.SerializeAsString()));
@@ -62,7 +50,8 @@ TEST_F(HealthModuleDelegateImplTest, TestInit) {
   auto call = AddEnqueueRecordCall();
   *ref_data.add_history() = call;
   ASSERT_TRUE(AppendLine(temp_dir_.GetPath().AppendASCII(file_name),
-                         BytesToHexString(call.SerializeAsString()))
+                         base::HexEncode(base::as_bytes(
+                             base::make_span(call.SerializeAsString()))))
                   .ok());
 
   HealthModuleDelegateImpl delegate(temp_dir_.GetPath(), kMaxStorage,

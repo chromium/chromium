@@ -20,20 +20,15 @@ sudo apt install debootstrap schroot
 Create a configuration for a Focal chroot:
 
 ```shell
-sudo $EDITOR /etc/schroot/chroot.d/focal_amd64.conf
-```
-
-Add the following to the new file, replacing the instances of `thomasanderson`
-with your own username.
-
-```
+cat | sudo tee /etc/schroot/chroot.d/focal_amd64.conf > /dev/null <<EOF
 [focal_amd64]
 description=Ubuntu 20.04 Focal for amd64
 directory=/srv/chroot/focal_amd64
 personality=linux
-root-users=thomasanderson
+root-users=$USER
 type=directory
-users=thomasanderson
+users=$USER
+EOF
 ```
 
 Bootstrap the chroot:
@@ -51,21 +46,17 @@ where I'm assuming you keep your source tree and `depot_tools`.
 sudo mount --bind "$HOME" /home
 ```
 
-Add `sources.list`:
+Populate `sources.list`:
 
 ```shell
-sudo $EDITOR /srv/chroot/focal_amd64/etc/apt/sources.list
-```
-
-Add the following contents to the file:
-
-```
+cat | sudo tee -a /srv/chroot/focal_amd64/etc/apt/sources.list > /dev/null <<EOF
 deb     http://archive.ubuntu.com/ubuntu/ focal          main restricted universe
 deb-src	http://archive.ubuntu.com/ubuntu/ focal          main restricted universe
 deb     http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe
 deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe
 deb     http://archive.ubuntu.com/ubuntu/ focal-updates  main restricted universe
 deb-src http://archive.ubuntu.com/ubuntu/ focal-updates  main restricted universe
+EOF
 ```
 
 Enter the chroot and install the necessary packages:
@@ -79,7 +70,7 @@ apt install lsb-release sudo python pkg-config libgtk2.0-bin libdrm-dev nih-dbus
 Install library packages:
 
 ```shell
-third_party/instrumented_libraries/scripts/install-build-deps.sh
+third_party/instrumented_libraries/focal/scripts/install-build-deps.sh
 ```
 
 Change to a non-root user:
@@ -105,7 +96,8 @@ third_party/instrumented_libraries/scripts/build_and_package.py --parallel -j $(
 ## Uploading the libraries
 
 This requires write permission on the `chromium-instrumented-libraries` GCS
-bucket. `dpranke@` can grant access.
+bucket. File a ticket at [go/peepsec-bug](https://goto.google.com/peepsec-bug)
+to request access.
 
 ```shell
 # Exit the chroot.

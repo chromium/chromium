@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
-
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +19,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom-blink.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
 
@@ -54,7 +54,7 @@ class FakeRemoteFactory
   void RequestDeviceAuthorization(
       mojo::PendingReceiver<media::mojom::blink::AudioOutputStreamProvider>
           stream_provider,
-      const absl::optional<base::UnguessableToken>& session_id,
+      const std::optional<base::UnguessableToken>& session_id,
       const String& device_id,
       RequestDeviceAuthorizationCallback callback) override {
     std::move(callback).Run(
@@ -111,6 +111,7 @@ class AudioOutputIPCFactoryTest : public testing::Test {
 
  private:
   FakeAudioOutputIPCDelegate fake_delegate;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {

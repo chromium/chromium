@@ -4,6 +4,8 @@
 
 component("capture_mode") {
   sources = [
+    "audio_capturer.cc",
+    "audio_capturer.h",
     "camera_video_frame_handler.cc",
     "camera_video_frame_handler.h",
     "capture_mode_export.h",
@@ -16,6 +18,7 @@ component("capture_mode") {
     "//components/viz/common",
     "//media",
     "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
     "//services/video_capture/public/mojom",
     "//ui/compositor",
     "//ui/gfx",

@@ -17,5 +17,5 @@ package org.tensorflow.lite.support.common;
 
 /** Processes T object with prepared {@code Operator<T>}. */
 public interface Processor<T> {
-    T process(T input);
+  T process(T input);
 }

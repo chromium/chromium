@@ -34,6 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
@@ -48,14 +49,14 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-/**
- * Instrumentation tests to make sure the Running in Chrome prompt is shown.
- */
+
+/** Instrumentation tests to make sure the Running in Chrome prompt is shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RunningInChromeTest {
@@ -63,8 +64,11 @@ public class RunningInChromeTest {
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
 
-    private static final Set<Integer> TEST_SNACKBARS = new HashSet<>(Arrays.asList(
-            Snackbar.UMA_TWA_PRIVACY_DISCLOSURE, Snackbar.UMA_TWA_PRIVACY_DISCLOSURE_V2));
+    private static final Set<Integer> TEST_SNACKBARS =
+            new HashSet<>(
+                    Arrays.asList(
+                            Snackbar.UMA_TWA_PRIVACY_DISCLOSURE,
+                            Snackbar.UMA_TWA_PRIVACY_DISCLOSURE_V2));
 
     private final CustomTabActivityTestRule mCustomTabActivityTestRule =
             new CustomTabActivityTestRule();
@@ -72,43 +76,83 @@ public class RunningInChromeTest {
     private final MockNotificationManagerProxy mMockNotificationManager =
             new MockNotificationManagerProxy();
 
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            ChromeActivityCommonsModule.Factory.class,
-            (activity, bottomSheetController, tabModelSelectorSupplier, browserControlsManager,
-                    browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
-                    layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
-                    activityTabProvider, tabContentManager, activityWindowAndroid,
-                    compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
-                    isPromotableToTabSupplier, statusBarColorController, screenOrientationProvider,
-                    notificationManagerProxySupplier, tabContentManagerSupplier,
-                    activityTabStartupMetricsTrackerSupplier, compositorViewHolderInitializer,
-                    chromeActivityNativeDelegate, modalDialogManagerSupplier,
-                    browserControlsStateProvider, savedInstanceStateSupplier,
-                    autofillUiBottomInsetSupplier, shareDelegateSupplier, tabModelInitializer,
-                    activityType) -> {
-                return new ChromeActivityCommonsModule(activity, bottomSheetController,
-                        tabModelSelectorSupplier, browserControlsManager,
-                        browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
-                        layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
-                        activityTabProvider, tabContentManager, activityWindowAndroid,
-                        compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
-                        isPromotableToTabSupplier, statusBarColorController,
-                        screenOrientationProvider,
-                        ()
-                                -> mMockNotificationManager,
-                        tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
-                        compositorViewHolderInitializer, chromeActivityNativeDelegate,
-                        modalDialogManagerSupplier, browserControlsStateProvider,
-                        savedInstanceStateSupplier, autofillUiBottomInsetSupplier,
-                        shareDelegateSupplier, tabModelInitializer, activityType);
-            });
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule()
+                    .setOverride(
+                            ChromeActivityCommonsModule.Factory.class,
+                            (activity,
+                                    bottomSheetController,
+                                    tabModelSelectorSupplier,
+                                    browserControlsManager,
+                                    browserControlsVisibilityManager,
+                                    browserControlsSizer,
+                                    fullscreenManager,
+                                    layoutManagerSupplier,
+                                    lifecycleDispatcher,
+                                    snackbarManagerSupplier,
+                                    profileProvider,
+                                    activityTabProvider,
+                                    tabContentManager,
+                                    activityWindowAndroid,
+                                    compositorViewHolderSupplier,
+                                    tabCreatorManager,
+                                    tabCreatorSupplier,
+                                    isPromotableToTabSupplier,
+                                    statusBarColorController,
+                                    screenOrientationProvider,
+                                    notificationManagerProxySupplier,
+                                    tabContentManagerSupplier,
+                                    activityTabStartupMetricsTrackerSupplier,
+                                    compositorViewHolderInitializer,
+                                    chromeActivityNativeDelegate,
+                                    modalDialogManagerSupplier,
+                                    browserControlsStateProvider,
+                                    savedInstanceStateSupplier,
+                                    autofillUiBottomInsetSupplier,
+                                    shareDelegateSupplier,
+                                    tabModelInitializer,
+                                    activityType) -> {
+                                return new ChromeActivityCommonsModule(
+                                        activity,
+                                        bottomSheetController,
+                                        tabModelSelectorSupplier,
+                                        browserControlsManager,
+                                        browserControlsVisibilityManager,
+                                        browserControlsSizer,
+                                        fullscreenManager,
+                                        layoutManagerSupplier,
+                                        lifecycleDispatcher,
+                                        snackbarManagerSupplier,
+                                        profileProvider,
+                                        activityTabProvider,
+                                        tabContentManager,
+                                        activityWindowAndroid,
+                                        compositorViewHolderSupplier,
+                                        tabCreatorManager,
+                                        tabCreatorSupplier,
+                                        isPromotableToTabSupplier,
+                                        statusBarColorController,
+                                        screenOrientationProvider,
+                                        () -> mMockNotificationManager,
+                                        tabContentManagerSupplier,
+                                        activityTabStartupMetricsTrackerSupplier,
+                                        compositorViewHolderInitializer,
+                                        chromeActivityNativeDelegate,
+                                        modalDialogManagerSupplier,
+                                        browserControlsStateProvider,
+                                        savedInstanceStateSupplier,
+                                        autofillUiBottomInsetSupplier,
+                                        shareDelegateSupplier,
+                                        tabModelInitializer,
+                                        activityType);
+                            });
 
     @Rule
-    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
-            .around(mCustomTabActivityTestRule)
-            .around(mEmbeddedTestServerRule)
-            .around(mModuleOverridesRule);
-
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain()
+                    .around(mCustomTabActivityTestRule)
+                    .around(mEmbeddedTestServerRule)
+                    .around(mModuleOverridesRule);
 
     private String mTestPage;
     private BrowserServicesStore mStore;
@@ -123,8 +167,9 @@ public class RunningInChromeTest {
 
         mMockNotificationManager.setNotificationsEnabled(false);
 
-        mStore = new BrowserServicesStore(
-                ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager());
+        mStore =
+                new BrowserServicesStore(
+                        ChromeApplicationImpl.getComponent().resolveChromeSharedPreferences());
         mStore.removeTwaDisclosureAcceptanceForPackage(PACKAGE_NAME);
     }
 
@@ -136,12 +181,12 @@ public class RunningInChromeTest {
         clearOtherSnackbars();
 
         assertTrue(isTrustedWebActivity(mCustomTabActivityTestRule.getActivity()));
-        Espresso.onView(withText(containsString(getString())))
-                .check(matches(isDisplayed()));
+        Espresso.onView(withText(containsString(getString()))).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void showsNotification() throws TimeoutException {
         mMockNotificationManager.setNotificationsEnabled(true);
 
@@ -153,6 +198,19 @@ public class RunningInChromeTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    public void showsNoNotificationOnAutomotive() throws TimeoutException {
+        mMockNotificationManager.setNotificationsEnabled(true);
+
+        launch(createTrustedWebActivityIntent(mTestPage));
+
+        String scope = Origin.createOrThrow(mTestPage).toString();
+        CriteriaHelper.pollUiThread(() -> !showingNotification(scope));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void dismissesNotification_onNavigation() throws TimeoutException {
         mMockNotificationManager.setNotificationsEnabled(true);
 
@@ -168,6 +226,7 @@ public class RunningInChromeTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void dismissesNotification_onActivityClose() throws TimeoutException {
         mMockNotificationManager.setNotificationsEnabled(true);
 
@@ -204,20 +263,23 @@ public class RunningInChromeTest {
         // On the trybots a Downloads Snackbar is shown over the one we want to test.
         SnackbarManager manager = mCustomTabActivityTestRule.getActivity().getSnackbarManager();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            while (true) {
-                Snackbar snackbar = manager.getCurrentSnackbarForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    while (true) {
+                        Snackbar snackbar = manager.getCurrentSnackbarForTesting();
 
-                if (snackbar == null) break;
-                if (TEST_SNACKBARS.contains(snackbar.getIdentifierForTesting())) break;
+                        if (snackbar == null) break;
+                        if (TEST_SNACKBARS.contains(snackbar.getIdentifierForTesting())) break;
 
-                manager.dismissSnackbars(snackbar.getController());
-            }
-        });
+                        manager.dismissSnackbars(snackbar.getController());
+                    }
+                });
     }
 
     private String getString() {
-        return mCustomTabActivityTestRule.getActivity().getResources()
+        return mCustomTabActivityTestRule
+                .getActivity()
+                .getResources()
                 .getString(R.string.twa_running_in_chrome);
     }
 }

@@ -6,11 +6,11 @@
  * @fileoverview 'settings-disconnect-drive-confirmation-dialog' is a wrapper of
  * <cr-dialog>.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './google_drive_confirmation_dialog.html.js';
@@ -52,21 +52,21 @@ class SettingsDriveConfirmationDialogElement extends PolymerElement {
   /**
    * When the cancel button is pressed, cancel the dialog.
    */
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 
   /**
    * When the action button is pressed, close the dialog.
    */
-  private onActionClick_() {
+  private onActionClick_(): void {
     this.$.dialog.close();
   }
 
   /**
    * When the dialog is cancelled ensure the `accept_` is false.
    */
-  private onDialogCancel_() {
+  private onDialogCancel_(): void {
     this.accept_ = false;
   }
 
@@ -74,12 +74,12 @@ class SettingsDriveConfirmationDialogElement extends PolymerElement {
    * When the dialog is closed (either through cancellation or acceptance) send
    * a custom event to the enclosing container.
    */
-  private onDialogClose_(e: Event) {
+  private onDialogClose_(e: Event): void {
     e.stopPropagation();
 
     const closeEvent = new CustomEvent(
         'close',
-        {bubbles: true, composed: true, detail: {'accept': this.accept_}});
+        {bubbles: true, composed: true, detail: {accept: this.accept_}});
     this.dispatchEvent(closeEvent);
   }
 }

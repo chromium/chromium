@@ -62,7 +62,7 @@ void UserActionSignalHandler::OnUserAction(const std::string& user_action,
     return;
 
   db_->WriteSample(
-      proto::SignalType::USER_ACTION, user_action_hash, absl::nullopt,
+      proto::SignalType::USER_ACTION, user_action_hash, std::nullopt,
       base::BindOnce(&UserActionSignalHandler::OnSampleWritten,
                      weak_ptr_factory_.GetWeakPtr(), user_action, action_time));
 }

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -12,9 +13,9 @@
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ParseJson;
 using base::test::ParseJsonDict;
@@ -36,7 +37,7 @@ base::Value::Dict SimpleManifest() {
 }  // namespace
 
 struct RecordingCondition {
-  typedef int MatchData;
+  using MatchData = int;
 
   raw_ptr<URLMatcherConditionFactory> factory;
   std::unique_ptr<base::Value> value;
@@ -62,7 +63,7 @@ struct RecordingCondition {
     return result;
   }
 };
-typedef DeclarativeConditionSet<RecordingCondition> RecordingConditionSet;
+using RecordingConditionSet = DeclarativeConditionSet<RecordingCondition>;
 
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
@@ -141,7 +142,7 @@ struct FulfillableCondition {
     result->condition_set_id =
         id.has_value() ? static_cast<base::MatcherStringPattern::ID>(id.value())
                        : base::MatcherStringPattern::kInvalidId;
-    if (absl::optional<int> max_value_int = dict.FindInt("max")) {
+    if (std::optional<int> max_value_int = dict.FindInt("max")) {
       result->max_value = *max_value_int;
     } else {
       *error = "Expected integer at ['max']";
@@ -156,7 +157,7 @@ struct FulfillableCondition {
 };
 
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
-  typedef DeclarativeConditionSet<FulfillableCondition> FulfillableConditionSet;
+  using FulfillableConditionSet = DeclarativeConditionSet<FulfillableCondition>;
   base::Value::List conditions;
   conditions.Append(ParseJson("{\"url_id\": 1, \"max\": 3}"));
   conditions.Append(ParseJson("{\"url_id\": 2, \"max\": 5}"));
@@ -209,7 +210,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
 
 class SummingAction : public base::RefCounted<SummingAction> {
  public:
-  typedef int ApplyInfo;
+  using ApplyInfo = int;
 
   SummingAction(int increment, int min_priority)
       : increment_(increment), min_priority_(min_priority) {}
@@ -230,14 +231,14 @@ class SummingAction : public base::RefCounted<SummingAction> {
       return nullptr;
     }
 
-    absl::optional<int> increment = dict.FindInt("value");
+    std::optional<int> increment = dict.FindInt("value");
     EXPECT_TRUE(increment);
     int min_priority = dict.FindInt("priority").value_or(0);
     return scoped_refptr<const SummingAction>(
         new SummingAction(*increment, min_priority));
   }
 
-  void Apply(const std::string& extension_id,
+  void Apply(const ExtensionId& extension_id,
              const base::Time& install_time,
              int* sum) const {
     *sum += increment_;
@@ -255,7 +256,7 @@ class SummingAction : public base::RefCounted<SummingAction> {
   int increment_;
   int min_priority_;
 };
-typedef DeclarativeActionSet<SummingAction> SummingActionSet;
+using SummingActionSet = DeclarativeActionSet<SummingAction>;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
   base::Value::List actions;
@@ -301,9 +302,8 @@ TEST(DeclarativeActionTest, ApplyActionSet) {
 }
 
 TEST(DeclarativeRuleTest, Create) {
-  typedef DeclarativeRule<FulfillableCondition, SummingAction> Rule;
-  Rule::JsonRule json_rule;
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"(
+  using Rule = DeclarativeRule<FulfillableCondition, SummingAction>;
+  auto json_rule = Rule::JsonRule::FromValue(ParseJsonDict(R"(
       {
         "id": "rule1",
         "conditions": [
@@ -316,8 +316,8 @@ TEST(DeclarativeRuleTest, Create) {
           }
         ],
         "priority": 200
-      })"),
-                                       json_rule));
+      })"));
+  ASSERT_TRUE(json_rule);
 
   const char kExtensionId[] = "ext1";
   scoped_refptr<const Extension> extension = ExtensionBuilder()
@@ -331,7 +331,7 @@ TEST(DeclarativeRuleTest, Create) {
   std::string error;
   std::unique_ptr<Rule> rule(Rule::Create(
       matcher.condition_factory(), nullptr, extension.get(), install_time,
-      json_rule, Rule::ConsistencyChecker(), &error));
+      *json_rule, Rule::ConsistencyChecker(), &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(rule.get());
 
@@ -369,17 +369,16 @@ bool AtLeastOneCondition(
 }
 
 TEST(DeclarativeRuleTest, CheckConsistency) {
-  typedef DeclarativeRule<FulfillableCondition, SummingAction> Rule;
+  using Rule = DeclarativeRule<FulfillableCondition, SummingAction>;
   URLMatcher matcher;
   std::string error;
-  Rule::JsonRule json_rule;
   const char kExtensionId[] = "ext1";
   scoped_refptr<const Extension> extension = ExtensionBuilder()
                                                  .SetManifest(SimpleManifest())
                                                  .SetID(kExtensionId)
                                                  .Build();
 
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"(
+  auto json_rule = Rule::JsonRule::FromValue(ParseJsonDict(R"(
       {
         "id": "rule1",
         "conditions": [
@@ -392,15 +391,15 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
           }
         ],
         "priority": 200
-      })"),
-                                       json_rule));
+      })"));
+  ASSERT_TRUE(json_rule);
   std::unique_ptr<Rule> rule(Rule::Create(
       matcher.condition_factory(), nullptr, extension.get(), base::Time(),
-      json_rule, base::BindOnce(AtLeastOneCondition), &error));
+      *json_rule, base::BindOnce(AtLeastOneCondition), &error));
   EXPECT_TRUE(rule);
   EXPECT_EQ("", error);
 
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"({
+  json_rule = Rule::JsonRule::FromValue(ParseJsonDict(R"({
                                                    "id": "rule1",
                                                    "conditions": [
                                                    ],
@@ -410,10 +409,10 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
                                                      }
                                                    ],
                                                    "priority": 200
-                                                 })"),
-                                       json_rule));
+                                                 })"));
+  ASSERT_TRUE(json_rule);
   rule = Rule::Create(matcher.condition_factory(), nullptr, extension.get(),
-                      base::Time(), json_rule,
+                      base::Time(), *json_rule,
                       base::BindOnce(AtLeastOneCondition), &error);
   EXPECT_FALSE(rule);
   EXPECT_EQ("No conditions", error);

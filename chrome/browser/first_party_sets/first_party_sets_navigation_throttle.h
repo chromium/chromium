@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -63,7 +64,7 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Timer starting when a navigation gets deferred.
-  absl::optional<base::ElapsedTimer> throttle_navigation_timer_
+  std::optional<base::ElapsedTimer> throttle_navigation_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores the state of whether the navigation has been resumed, to make sure

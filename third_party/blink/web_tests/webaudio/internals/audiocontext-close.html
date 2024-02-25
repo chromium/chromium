@@ -12,7 +12,7 @@
   </head>
   <body>
     <script id="layout-test-code">
-      let context;
+      let context, context3;
       let destination;
       let offline;
       let osc;
@@ -28,7 +28,7 @@
             label: 'test-online-context-1',
             description: 'Test online context 1'
           },
-          function(task, should) {
+          async function(task, should) {
             // Create a context and verify that the various states are correct
             // and that close() exists.
             should(
@@ -54,15 +54,12 @@
 
             // Close the context.  When the promise is resolved, continue the
             // next test task.
-            let promise = context.close().then(() => {
-              should(
-                  () => gain.disconnect(destination),
-                  'gain.disconnect(destination) after close')
-                  .notThrow();
-            });
-            should(promise, 'context0.close()')
-                .beResolved()
-                .then(task.done.bind(this));
+            let closePromise = context.close();
+            should(() => gain.disconnect(destination),
+                'gain.disconnect(destination) after close')
+                .notThrow();
+            await should(closePromise, 'context0.close()').beResolved();
+            task.done.bind(this);
           });
 
       // Task: test online context (2).
@@ -71,7 +68,7 @@
             label: 'test-online-context-2',
             description: 'Test closed online context 2'
           },
-          function(task, should) {
+          async function(task, should) {
             // Context is closed, so verify that we cannot create any more
             // nodes, nor connect any.
             should(() => context.createAnalyser(), 'context.createAnalyser()')
@@ -145,30 +142,29 @@
             should(() => gain.disconnect(), 'gain.disconnect()').notThrow();
 
             // Can't resume a context that is closed (released).
-            should(context.resume(), 'context.resume()')
-                .beRejected()
-                .then(task.done.bind(task));
+            await should(context.resume(), 'context.resume()')
+                .beRejected();
+            task.done.bind(task);
           });
 
       // Task: test online context (3).
       audit.define(
           {
             label: 'test-online-context-3',
-            description: 'Close an online context again'
+            description: 'Double-close an online context'
           },
-          function(task, should) {
+          async function(task, should) {
+            context3 = new AudioContext();
+            should(context3.close(), 'context3.close()')
+              .beResolved();
             // Try closing the context again. The promise should be rejected.
-            should(context.close(), 'context.close() again')
-                .beRejected()
-                .then(() => {
-                  // Finally, run GC. The context should be gone, but this seems
-                  // difficult to verify.
-                  if (window.gc)
-                    gc();
-                  should(context.destination, 'context.destination')
-                      .notBeEqualTo(null);
-                })
-                .then(task.done.bind(task));
+            should(context3.close(), 'context3.close() again').beRejected();
+            // Finally, GC. The context should be gone, but this seems difficult
+            // to verify.
+            await asyncGC();
+            should(context3.destination, 'context3.destination')
+                .notBeEqualTo(null);
+            task.done.bind(task);
           });
 
       // Task: test online context (4).
@@ -177,7 +173,7 @@
             label: 'test-online-context-4',
             description: 'Test closed online context 4'
           },
-          function(task, should) {
+          async function(task, should) {
             // Create a context and verify that its sampleRate and baseLatency
             // return valid values whether it's open or closed.
             should(
@@ -190,19 +186,15 @@
                 .beGreaterThan('0');
 
             should(context.close(), 'context1.close()')
-                .beResolved()
-                .then(() => {
-                  should(context.sampleRate, 'After close, context1.sampleRate')
-                      .beGreaterThan('0');
-                  should(
-                      context.sampleRate, 'After close, context1.baseLatency')
-                      .beGreaterThan('0');
-                })
-                .then(async () => {
-                  context = null;
-                  await asyncGC();
-                  task.done();
-                });
+                .beResolved();
+            should(context.sampleRate, 'After close, context1.sampleRate')
+                .beGreaterThan('0');
+            should(
+                context.sampleRate, 'After close, context1.baseLatency')
+                .beGreaterThan('0');
+            context = null;
+            await asyncGC();
+            task.done();
           });
 
       // Task: test offline context (1).

@@ -5,6 +5,9 @@
 #ifndef ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 #define ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 
+#include <vector>
+
+#include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"
@@ -38,7 +41,6 @@ class ASH_EXPORT LockContentsViewTestApi {
   views::View* note_action() const;
   views::View* tooltip_bubble() const;
   views::View* management_bubble() const;
-  LoginErrorBubble* auth_error_bubble() const;
   LoginErrorBubble* detachable_base_error_bubble() const;
   LoginErrorBubble* warning_banner_bubble() const;
   views::View* user_adding_screen_indicator() const;
@@ -58,8 +60,37 @@ class ASH_EXPORT LockContentsViewTestApi {
   bool IsOobeDialogVisible() const;
   FingerprintState GetFingerPrintState(const AccountId& account_id) const;
 
+  // AuthErrorBubble functions.
+  AuthErrorBubble* auth_error_bubble() const;
+  bool IsAuthErrorBubbleVisible() const;
+  void ShowAuthErrorBubble(int unlock_attempt) const;
+  void HideAuthErrorBubble() const;
+  void PressAuthErrorRecoveryButton() const;
+  void PressAuthErrorLearnMoreButton() const;
+
+  // Called for debugging to make |user| managed and display an icon along with
+  // a note in the menu user view.
+  void ToggleManagementForUser(const AccountId& user);
+
+  // Called for debugging to make |user| having a multi-user-sign-in policy.
+  void SetMultiUserSignInPolicyForUser(
+      const AccountId& user,
+      user_manager::MultiUserSignInPolicy policy);
+
+  // Called for debugging to toggle forced online sign-in form |user|.
+  void ToggleForceOnlineSignInForUser(const AccountId& user);
+
+  // Called for debugging to toggle TPM disabled message for |user|.
+  void ToggleDisableTpmForUser(const AccountId& user);
+
+  // Called for debugging to remove forced online sign-in form |user|.
+  void UndoForceOnlineSignInForUser(const AccountId& user);
+
+  // Set device to have kiosk license.
+  void SetKioskLicenseMode(bool is_kiosk_license_mode);
+
  private:
-  const raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh> view_;
+  const raw_ptr<LockContentsView, DanglingUntriaged> view_;
 };
 
 }  // namespace ash

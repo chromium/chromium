@@ -11,30 +11,10 @@
 namespace ios {
 namespace provider {
 
-ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
-    UIViewController* view_controller,
-    Browser* browser) {
-  NOTREACHED_NORETURN();
-}
-
-ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
-    UINavigationController* navigation_controller,
-    Browser* browser,
-    id<FirstRunScreenDelegate> first_run_delegate) {
-  NOTREACHED_NORETURN();
-}
-
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler(
-    ChromeBrowserState* browserState) {
-  NOTREACHED_NORETURN();
-}
-
-id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager) {
-  NOTREACHED_NORETURN();
-}
-
-bool IsChoiceEnabled() {
-  return false;
+bool DisableDefaultSearchEngineChoice() {
+  // The search engine choice should not be automatically displayed for unit
+  // tests.
+  return true;
 }
 
 }  // namespace provider

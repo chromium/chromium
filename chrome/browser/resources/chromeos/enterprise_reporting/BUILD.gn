@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,8 +8,24 @@ assert(is_chromeos_ash)
 
 build_webui("build") {
   grd_prefix = "enterprise_reporting"
-  static_files = [ "enterprise_reporting.html" ]
-  non_web_component_files = [ "enterprise_reporting.ts" ]
+  static_files = [
+    "enterprise_reporting.html",
+    "enterprise_reporting.css",
+  ]
+  web_component_files = [
+    "reporting_history.ts",
+    "device_info.ts",
+  ]
+  non_web_component_files = [ "browser_proxy.ts" ]
 
-  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
+  ts_composite = true
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom-webui.ts" ]
 }

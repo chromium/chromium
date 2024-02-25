@@ -10,20 +10,18 @@ void SetFillStyleString(BaseRenderingContext2D* ctx,
                         ScriptState* script_state,
                         const String& string) {
   NonThrowableExceptionState exception_state;
-  ctx->setFillStyle(
-      script_state->GetIsolate(),
-      ToV8Traits<IDLString>::ToV8(script_state, string).ToLocalChecked(),
-      exception_state);
+  ctx->setFillStyle(script_state->GetIsolate(),
+                    ToV8Traits<IDLString>::ToV8(script_state, string),
+                    exception_state);
 }
 
 void SetStrokeStyleString(BaseRenderingContext2D* ctx,
                           ScriptState* script_state,
                           const String& string) {
   NonThrowableExceptionState exception_state;
-  ctx->setStrokeStyle(
-      script_state->GetIsolate(),
-      ToV8Traits<IDLString>::ToV8(script_state, string).ToLocalChecked(),
-      exception_state);
+  ctx->setStrokeStyle(script_state->GetIsolate(),
+                      ToV8Traits<IDLString>::ToV8(script_state, string),
+                      exception_state);
 }
 
 String GetStrokeStyleAsString(BaseRenderingContext2D* ctx,

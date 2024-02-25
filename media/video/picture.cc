@@ -14,76 +14,18 @@ PictureBuffer::PictureBuffer(int32_t id, const gfx::Size& size)
 
 PictureBuffer::PictureBuffer(int32_t id,
                              const gfx::Size& size,
-                             const TextureIds& client_texture_ids)
-    : id_(id), size_(size), client_texture_ids_(client_texture_ids) {
-  DCHECK(!client_texture_ids_.empty());
-}
-
-PictureBuffer::PictureBuffer(int32_t id,
-                             const gfx::Size& size,
-                             const TextureIds& client_texture_ids,
-                             const TextureIds& service_texture_ids,
+                             uint32_t service_texture_id,
                              uint32_t texture_target,
                              VideoPixelFormat pixel_format)
     : id_(id),
       size_(size),
-      client_texture_ids_(client_texture_ids),
-      service_texture_ids_(service_texture_ids),
+      service_texture_id_(service_texture_id),
       texture_target_(texture_target),
-      pixel_format_(pixel_format) {
-  // We either not have client texture ids at all, or if we do, then their
-  // number must be the same as the number of service texture ids.
-  DCHECK(client_texture_ids_.empty() ||
-         client_texture_ids_.size() == service_texture_ids_.size());
-}
-
-PictureBuffer::PictureBuffer(int32_t id,
-                             const gfx::Size& size,
-                             const TextureIds& client_texture_ids,
-                             const std::vector<gpu::Mailbox>& texture_mailboxes,
-                             uint32_t texture_target,
-                             VideoPixelFormat pixel_format)
-    : id_(id),
-      size_(size),
-      client_texture_ids_(client_texture_ids),
-      texture_mailboxes_(texture_mailboxes),
-      texture_target_(texture_target),
-      pixel_format_(pixel_format) {
-  DCHECK_EQ(client_texture_ids.size(), texture_mailboxes.size());
-}
-
-PictureBuffer::PictureBuffer(int32_t id,
-                             const gfx::Size& size,
-                             const TextureSizes& texture_sizes,
-                             const TextureIds& client_texture_ids,
-                             const TextureIds& service_texture_ids,
-                             uint32_t texture_target,
-                             VideoPixelFormat pixel_format)
-    : id_(id),
-      size_(size),
-      texture_sizes_(texture_sizes),
-      client_texture_ids_(client_texture_ids),
-      service_texture_ids_(service_texture_ids),
-      texture_target_(texture_target),
-      pixel_format_(pixel_format) {
-  // We either not have client texture ids at all, or if we do, then their
-  // number must be the same as the number of service texture ids.
-  DCHECK(client_texture_ids_.empty() ||
-         client_texture_ids_.size() == service_texture_ids_.size());
-}
+      pixel_format_(pixel_format) {}
 
 PictureBuffer::PictureBuffer(const PictureBuffer& other) = default;
 
 PictureBuffer::~PictureBuffer() = default;
-
-gfx::Size PictureBuffer::texture_size(size_t plane) const {
-  if (plane >= texture_sizes_.size()) {
-    LOG(ERROR) << "Missing texture size for plane " << plane;
-    return gfx::Size();
-  }
-
-  return texture_sizes_[plane];
-}
 
 Picture::Picture(int32_t picture_buffer_id,
                  int32_t bitstream_buffer_id,

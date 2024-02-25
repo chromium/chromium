@@ -24,8 +24,9 @@ class MenuButtonController;
 //
 ////////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT MenuButton : public LabelButton {
+  METADATA_HEADER(MenuButton, LabelButton)
+
  public:
-  METADATA_HEADER(MenuButton);
   explicit MenuButton(PressedCallback callback = PressedCallback(),
                       const std::u16string& text = std::u16string(),
                       int button_context = style::CONTEXT_BUTTON);

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h"
@@ -76,7 +77,7 @@ class MockPendingBeacon : public GarbageCollected<MockPendingBeacon>,
     on_send_.Run(id_);
     PendingBeaconDispatcher::From(*ec_)->Unregister(this);
   }
-  ExecutionContext* GetExecutionContext() override { return ec_; }
+  ExecutionContext* GetExecutionContext() override { return ec_.Get(); }
   bool IsPending() const override { return is_pending_; }
   void MarkNotPending() override { is_pending_ = false; }
 
@@ -115,6 +116,9 @@ class PendingBeaconDispatcherTestBase : public ::testing::Test {
     }
     return beacons;
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 struct BeaconIdToTimeoutsTestType {

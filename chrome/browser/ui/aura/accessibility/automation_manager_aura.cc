@@ -56,8 +56,10 @@ void AutomationManagerAura::Enable() {
   // GetTopLevelWindows() returns the correct values when automation is enabled
   // with multiple displays connected.
   if (send_window_state_on_enable_) {
-    for (auto* host : aura::Env::GetInstance()->window_tree_hosts())
+    for (aura::WindowTreeHost* host :
+         aura::Env::GetInstance()->window_tree_hosts()) {
       cache_->OnRootWindowObjCreated(host->window());
+    }
   }
 
   // Send this event immediately to push the initial desktop tree state.
@@ -72,7 +74,8 @@ void AutomationManagerAura::Enable() {
   const display::Display& display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window* root_window = nullptr;
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
     if (display.id() == host->GetDisplayId()) {
       root_window = host->window();
       break;
@@ -98,7 +101,6 @@ void AutomationManagerAura::Enable() {
 
 void AutomationManagerAura::Disable() {
   enabled_ = false;
-  cache_ = std::make_unique<views::AXAuraObjCache>();
   if (tree_) {
     if (automation_event_router_interface_)
       automation_event_router_interface_->DispatchTreeDestroyedEvent(
@@ -107,6 +109,7 @@ void AutomationManagerAura::Disable() {
   }
   tree_serializer_.reset();
   alert_window_.reset();
+  cache_ = std::make_unique<views::AXAuraObjCache>();
 
   if (automation_event_router_observer_.IsObserving())
     automation_event_router_observer_.Reset();
@@ -160,7 +163,8 @@ void AutomationManagerAura::ExtensionListenerAdded() {
   Reset(true /* reset serializer */);
 }
 
-void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
+void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type,
+                                        bool from_user) {
   if (!enabled_)
     return;
 
@@ -169,7 +173,8 @@ void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
   if (!obj)
     return;
 
-  PostEvent(obj->GetUniqueId(), event_type);
+  PostEvent(obj->GetUniqueId(), event_type, /*action_request_id=*/-1,
+            /*from_user=*/from_user);
 }
 
 void AutomationManagerAura::HandleAlert(const std::string& text) {
@@ -240,7 +245,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
   if (!tree_) {
     auto desktop_root = std::make_unique<AXRootObjWrapper>(this, cache_.get());
     tree_ = std::make_unique<views::AXTreeSourceViews>(
-        desktop_root.get(), ax_tree_id(), cache_.get());
+        desktop_root->GetUniqueId(), ax_tree_id(), cache_.get());
     cache_->CreateOrReplace(std::move(desktop_root));
   }
   if (reset_serializer) {
@@ -259,9 +264,10 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
 
 void AutomationManagerAura::PostEvent(int id,
                                       ax::mojom::Event event_type,
-                                      int action_request_id) {
-  pending_events_.push_back(
-      {id, event_type, action_request_id, currently_performing_action_});
+                                      int action_request_id,
+                                      bool from_user) {
+  pending_events_.push_back({id, event_type, action_request_id,
+                             currently_performing_action_, from_user});
 
   if (processing_posted_)
     return;
@@ -316,6 +322,8 @@ void AutomationManagerAura::SendPendingEvents() {
       if (event_copy.currently_performing_action != ax::mojom::Action::kNone) {
         event.event_from = ax::mojom::EventFrom::kAction;
         event.event_from_action = event_copy.currently_performing_action;
+      } else if (event_copy.from_user) {
+        event.event_from = ax::mojom::EventFrom::kUser;
       }
       event.action_request_id = event_copy.action_request_id;
       events.push_back(std::move(event));
@@ -346,7 +354,8 @@ void AutomationManagerAura::PerformHitTest(
 
   // Require a window in |display|; prefer it also be focused.
   aura::Window* root_window = nullptr;
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
     if (display.id() == host->GetDisplayId()) {
       root_window = host->window();
       if (aura::client::GetFocusClient(root_window)->GetFocusedWindow())

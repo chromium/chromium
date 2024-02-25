@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -26,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -60,6 +62,8 @@ std::string GetSchema(Database* db) {
 class SqlRecoveryTestBase : public testing::Test {
  public:
   void SetUp() override {
+    db_.set_histogram_tag("MyFeatureDatabase");
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_.Open(db_path_));
@@ -89,6 +93,9 @@ class SqlRecoveryTestBase : public testing::Test {
   }
 
  protected:
+  explicit SqlRecoveryTestBase(DatabaseOptions options)
+      : db_(std::move(options)) {}
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -98,15 +105,29 @@ class SqlRecoveryTestBase : public testing::Test {
 
 // Tests both the legacy `sql::Recovery` interface and the newer
 // `sql::BuiltInRecovery` interface, if it's supported.
-class SqlRecoveryTest : public SqlRecoveryTestBase,
-                        public testing::WithParamInterface<bool> {
+//
+// Parameters are as follows:
+//   - Is BuiltInRecovery enabled?
+//   - Is WAL mode enabled?
+class SqlRecoveryTest
+    : public SqlRecoveryTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  SqlRecoveryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kUseBuiltInRecoveryIfSupported, GetParam());
+  SqlRecoveryTest()
+      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = UseWalMode()}) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kUseBuiltInRecoveryIfSupported, std::get<0>(GetParam())},
+         {features::kEnableWALModeByDefault, UseWalMode()}});
   }
 
-  bool UseBuiltIn() { return GetParam() && BuiltInRecovery::IsSupported(); }
+  bool UseBuiltIn() {
+    return std::get<0>(GetParam()) && BuiltInRecovery::IsSupported();
+  }
+
+  bool UseWalMode() {
+    // The legacy recovery module does not support recovering WAL databases.
+    return std::get<1>(GetParam()) && BuiltInRecovery::IsSupported();
+  }
 };
 
 // Tests specific to the newer `sql::BuiltInRecovery` interface.
@@ -116,7 +137,7 @@ class SqlRecoveryTest : public SqlRecoveryTestBase,
 // the legacy `sql::Recovery` module.
 class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
  public:
-  SqlBuiltInRecoveryTest() {
+  SqlBuiltInRecoveryTest() : SqlRecoveryTestBase(DatabaseOptions{}) {
     scoped_feature_list_.InitAndEnableFeature(
         features::kUseBuiltInRecoveryIfSupported);
   }
@@ -129,18 +150,21 @@ class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
 // the new `sql::BuiltInRecovery` module.
 class SqlLegacyRecoveryTest : public SqlRecoveryTestBase {
  public:
-  SqlLegacyRecoveryTest() {
+  SqlLegacyRecoveryTest()
+      // The legacy recovery module does not support recovering WAL databases.
+      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = false}) {
     scoped_feature_list_.InitAndDisableFeature(
         features::kUseBuiltInRecoveryIfSupported);
+
+    // TODO(https://crbug.com/1385500): All databases which use legacy recovery
+    // must either disable WAL mode manually or be migrated to the new recovery
+    // module before WAL mode may be turned on globally. This assertion is added
+    // here as a guard against accidental regression.
+    assert(!base::FeatureList::IsEnabled(features::kEnableWALModeByDefault));
   }
 };
 
 TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
-  // Fuchsia.
-  ASSERT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
-#else
   // Attempt to recover from corruption.
   ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 
@@ -164,7 +188,6 @@ TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
   // the error callback should be reset before recovery is attempted.
   db_.set_error_callback(base::DoNothing());
   EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 // Baseline Recovery test covering the different ways to dispose of the scoped
@@ -504,7 +527,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
     EXPECT_TRUE(expecter.SawExpectedErrors());
     // PRAGMAs executed inside Database::Open() will error out.
   }
@@ -1137,6 +1160,21 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleMeta) {
                       std::move(run_recovery));
 }
 
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithoutErrorCallback) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    // `RecoverIfPossible()` should not set an error callback.
+    EXPECT_FALSE(db_.has_error_callback());
+    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT,
+        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+    EXPECT_TRUE(recovery_was_attempted);
+    EXPECT_FALSE(db_.has_error_callback());
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
 TEST_P(SqlRecoveryTest, RecoverIfPossibleWithErrorCallback) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
     db_.set_error_callback(base::DoNothing());
@@ -1164,6 +1202,36 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
                       std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze,
+        &features::kUseBuiltInRecoveryIfSupported));
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
+                      std::move(run_recovery));
+
+  if (UseBuiltIn()) {
+    // Log to the overall histograms.
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         BuiltInRecovery::Result::kSuccess,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                         SqliteLoggedResultCode::kNoError,
+                                         /*expected_bucket_count=*/1);
+    // And the histograms for this specific feature.
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
+        BuiltInRecovery::Result::kSuccess,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
+        SqliteLoggedResultCode::kNoError,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
@@ -1232,7 +1300,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
 
     // This should "recover" the database by making it valid, but empty.
     if (UseBuiltIn()) {
@@ -1279,15 +1347,15 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
-  // Run recovery code, then rollback.  Database remains the same.
-  {
+  if (!UseBuiltIn()) {
+    // Run recovery code, then rollback.  Database remains the same.
     std::unique_ptr<Recovery> recovery =
         Recovery::BeginRecoverDatabase(&db_, db_path_);
     ASSERT_TRUE(recovery);
     Recovery::Rollback(std::move(recovery));
+    db_.Close();
+    ASSERT_TRUE(Reopen());
   }
-  db_.Close();
-  ASSERT_TRUE(Reopen());
 
   static const char kIndexedCountSql[] =
       "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
@@ -1331,7 +1399,7 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
 
     // Begin() should fail.
     if (UseBuiltIn()) {
@@ -1468,7 +1536,6 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
   }
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 // TODO(https://crbug.com/1255316): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // that it is passed a non-null database pointer and will instead likely result
@@ -1498,9 +1565,58 @@ TEST_P(SqlRecoveryTest, BuiltInRecoveryNotAttempedIfNotEnabled) {
       IsSqliteSuccessCode(BuiltInRecovery::RecoverDatabase(
           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze)));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
-INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Bool());
+// This test mimics the case where a database that was using WAL mode crashed,
+// then next Chrome launch the database is not opened in WAL mode. This may
+// occur when e.g. WAL mode if configured via Finch and the user not in the
+// experiment group on the second launch of Chrome.
+TEST_F(SqlBuiltInRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
+  base::FilePath wal_db_path =
+      temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
+
+  // Open the DB in WAL mode to set journal_mode="wal".
+  Database wal_db{{.wal_mode = true}};
+  ASSERT_TRUE(wal_db.Open(wal_db_path));
+
+  EXPECT_TRUE(wal_db.UseWALMode());
+  EXPECT_EQ(ExecuteWithResult(&wal_db, "PRAGMA journal_mode"), "wal");
+
+  // Crash the database somehow, foregoing the opportunity for any cleanup.
+  wal_db.set_error_callback(base::DoNothing());
+  EXPECT_DCHECK_DEATH(wal_db.set_error_callback(base::DoNothing()));
+}
+
+TEST_F(SqlBuiltInRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
+  base::FilePath wal_db_path =
+      temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
+
+  Database non_wal_db{{.wal_mode = false}};
+  ASSERT_TRUE(non_wal_db.Open(wal_db_path));
+
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
+                  &non_wal_db,
+                  BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+              SqliteResultCode::kOk);
+  });
+
+  TestRecoverDatabase(non_wal_db, wal_db_path, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SqlRecoveryTest,
+    testing::Values(
+        std::tuple(true, false),  // BuiltInRecovery with non-WAL databases.
+        std::tuple(false, false)  // Legacy recovery with non-WAL databases.
+// Recovering WAL databases is not supported on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+        ,
+        std::tuple(true, true)  // BuiltInRecovery with WAL databases.
+#endif
+        // The legacy recovery module does not support recovering WAL databases.
+        ));
 
 }  // namespace
 

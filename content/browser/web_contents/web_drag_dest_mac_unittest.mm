@@ -9,6 +9,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/drop_data.h"
 #include "content/test/test_render_view_host.h"
@@ -24,6 +25,7 @@ class WebDragDestTest : public content::RenderViewHostImplTestHarness {
     drag_dest_ = [[WebDragDest alloc] initWithWebContentsImpl:contents()];
   }
 
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool pool_;
   WebDragDest* __strong drag_dest_;
 };

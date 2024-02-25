@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -55,7 +56,7 @@ void AssistantTestApiImpl::DisableAnimations() {
 }
 
 bool AssistantTestApiImpl::IsVisible() {
-  if (!TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return Shell::Get()->app_list_controller()->IsVisible() &&
            GetAppListBubbleView()->assistant_page_->GetVisible();
   }
@@ -74,7 +75,7 @@ void AssistantTestApiImpl::SendTextQuery(const std::string& query) {
 }
 
 views::View* AssistantTestApiImpl::page_view() {
-  if (!TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     auto* bubble_view = GetAppListBubbleView();
     DCHECK(bubble_view)
         << "App list is not showing. Display the assistant UI first.";

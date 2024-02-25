@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/common/all_download_event_notifier.h"
 #include "components/download/public/common/download_item.h"
@@ -72,7 +73,7 @@ void SimpleDownloadManagerCoordinator::DownloadUrl(
 }
 
 void SimpleDownloadManagerCoordinator::GetAllDownloads(
-    std::vector<DownloadItem*>* downloads) {
+    std::vector<raw_ptr<DownloadItem, VectorExperimental>>* downloads) {
   if (simple_download_manager_) {
     simple_download_manager_->GetAllDownloads(downloads);
     simple_download_manager_->GetUninitializedActiveDownloadsIfAny(downloads);

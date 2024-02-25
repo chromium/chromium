@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/run_loop.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
@@ -43,7 +44,7 @@ void ValidateFavicon(const fuchsia::web::Favicon& favicon,
   ASSERT_TRUE(favicon.has_height());
   EXPECT_EQ(favicon.height(), expected_height);
   ASSERT_TRUE(favicon.has_data());
-  absl::optional<std::string> data = base::StringFromMemBuffer(favicon.data());
+  std::optional<std::string> data = base::StringFromMemBuffer(favicon.data());
   ASSERT_TRUE(data.has_value());
   size_t expected_size = expected_width * expected_height * sizeof(uint32_t);
   ASSERT_EQ(data->size(), expected_size);

@@ -7,11 +7,12 @@
 #include <cstdlib>
 #include <string>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -35,7 +36,6 @@
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
@@ -64,7 +64,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_image_reader_compat.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
@@ -110,7 +109,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
       .force_nv12_overlay_support =
           gpu_feature_info.IsWorkaroundEnabled(gpu::FORCE_NV12_OVERLAY_SUPPORT),
       .force_rgb10a2_overlay_support = gpu_feature_info.IsWorkaroundEnabled(
-          gpu::FORCE_RGB10A2_OVERLAY_SUPPORT_FLAGS),
+          gpu::FORCE_RGB10A2_OVERLAY_SUPPORT),
       .check_ycbcr_studio_g22_left_p709_for_nv12_support =
           gpu_feature_info.IsWorkaroundEnabled(
               gpu::CHECK_YCBCR_STUDIO_G22_LEFT_P709_FOR_NV12_SUPPORT)};
@@ -155,9 +154,7 @@ class GpuWatchdogInit {
   void SetGpuWatchdogPtr(GpuWatchdogThread* ptr) { watchdog_ptr_ = ptr; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION GpuWatchdogThread* watchdog_ptr_ = nullptr;
+  raw_ptr<GpuWatchdogThread, DanglingUntriaged> watchdog_ptr_ = nullptr;
 };
 
 void PauseGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
@@ -446,9 +443,53 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings*/ false, gl::GpuPreference::kDefault);
     if (!gl_display) {
+      // If GL initialization failed, GPU process will be teardown later, sp set
+      // gpu_preferences_.gr_context_type to kGL to avoid initializing
+      // DawnContextProvider later.
+      gpu_preferences_.gr_context_type = GrContextType::kGL;
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return false;
     }
+  }
+
+  const bool need_fallback_from_graphite = [this]() {
+    // If graphite is requested, check ANGLE implementation.
+    if (gpu_preferences_.gr_context_type != GrContextType::kGraphiteDawn &&
+        gpu_preferences_.gr_context_type != GrContextType::kGraphiteMetal) {
+      return false;
+    }
+
+#if BUILDFLAG(IS_APPLE)
+    // Graphite requires ANGLE Metal (or Swiftshader, handled below) on Mac
+    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kMetal;
+#elif BUILDFLAG(IS_WIN)
+    // Graphite requires ANGLE D3D11 (or Swiftshader, handled below) on Windows
+    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
+#else
+    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
+#endif
+    if (kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
+        gl::GetANGLEImplementation() == kRequiredANGLEImplementation) {
+      // If ANGLE is using required implementation, fallback is not needed.
+      return false;
+    }
+
+    // If ANGLE is using Swiftshader, fallback is not needed.
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader) {
+      return false;
+    }
+
+    // If graphite is requested from command line, fallback is not needed.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableSkiaGraphite)) {
+      return false;
+    }
+
+    return true;
+  }();
+
+  if (need_fallback_from_graphite) {
+    gpu_preferences_.gr_context_type = GrContextType::kGL;
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -588,19 +629,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
-  // On MacOS, the default texture target for native GpuMemoryBuffers is
-  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
-  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
-  // it's necessary to use GL_TEXTURE_2D instead.
-  // TODO(crbug.com/1056312): The proper behavior is to check the config
-  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
 #if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
-    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
-    gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
-  }
+  SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+  gpu_info_.macos_specific_texture_target = GetPlatformSpecificTextureTarget();
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -620,6 +651,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                               nullptr);
 
 #if defined(DAWN_USE_BUILT_DXC)
+      // TODO(crbug.com/1496679): Preload dxil.dll to avoid loader lock issues
+      // since dxcompiler.dll loads dxil.dll from DllMain.
+      base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
       base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
 #endif
     }
@@ -639,8 +673,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
       // back to GL if Vulkan init fails.
       LOG(FATAL) << "Vulkan initialization failed";
-#endif
+#else
       gpu_preferences_.gr_context_type = GrContextType::kGL;
+#endif
     }
   } else {
     // TODO(https://crbug.com/1095744): It would be better to cleanly tear
@@ -691,8 +726,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
   if (!gl_disabled && !gl_use_swiftshader_) {
-    if (!CollectGraphicsInfo(&gpu_info_))
+    if (!CollectGraphicsInfo(&gpu_info_)) {
       return false;
+    }
     SetKeysForCrashLogging(gpu_info_);
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, nullptr);
@@ -780,6 +816,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_info_.sandboxed = sandbox_helper_->EnsureSandboxInitialized(
         watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
   }
+  UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
 
   init_successful_ = true;
 #if BUILDFLAG(IS_OZONE)
@@ -827,8 +864,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   gl::GLDisplay* gl_display = InitializeGLThreadSafe(
       command_line, gpu_preferences_, &gpu_info_, &gpu_feature_info_);
 
-  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
-      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
     bool result = InitializeVulkan();
     // There is no fallback for webview.
     CHECK(result);
@@ -926,19 +962,9 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     }
   }
 
-  // On MacOS, the default texture target for native GpuMemoryBuffers is
-  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
-  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
-  // it's necessary to use GL_TEXTURE_2D instead.
-  // TODO(crbug.com/1056312): The proper behavior is to check the config
-  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
 #if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
-    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
-    gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
-  }
+  SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+  gpu_info_.macos_specific_texture_target = GetPlatformSpecificTextureTarget();
 #endif  // BUILDFLAG(IS_MAC)
 
   if (!gl_disabled) {
@@ -1037,12 +1063,33 @@ bool GpuInit::InitializeVulkan() {
       gpu_preferences_.use_vulkan == VulkanImplementationName::kForcedNative;
   bool use_swiftshader = gl_use_swiftshader_ || vulkan_use_swiftshader;
 
+  const base::FeatureParam<std::string> force_enable_patterns(
+      &features::kVulkan, "force_enable_by_gl_renderer", "");
+  forced_native |=
+      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
+
+  const base::FeatureParam<std::string> disable_by_renderer(
+      &features::kVulkan, "disable_by_gl_renderer", "");
+  bool disabled = MatchGLInfo(gpu_info_.gl_renderer, disable_by_renderer.Get());
+  const base::FeatureParam<std::string> disable_by_driver(
+      &features::kVulkan, "disable_by_gl_driver", "");
+  disabled |=
+      MatchGLInfo(gpu_info_.gpu.driver_version, disable_by_driver.Get());
+#if !BUILDFLAG(IS_ANDROID)
+  // For non-Android, check disabling params before Vulkan initialization.
+  // Android disabling params are checked later, because they can be overridden
+  // by |enable_by_device_name| which requires Vulkan to already be initialized.
+  if (!use_swiftshader && !forced_native && disabled) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   vulkan_implementation_ = CreateVulkanImplementation(
       vulkan_use_swiftshader, gpu_preferences_.enable_vulkan_protected_memory);
   if (!vulkan_implementation_ ||
       !vulkan_implementation_->InitializeVulkanInstance(
           !gpu_preferences_.disable_vulkan_surface)) {
-    DLOG(ERROR) << "Failed to create and initialize Vulkan implementation.";
+    LOG(ERROR) << "Failed to create and initialize Vulkan implementation.";
     vulkan_implementation_ = nullptr;
     CHECK(!gpu_preferences_.disable_vulkan_fallback_to_gl_for_testing);
   }
@@ -1055,17 +1102,12 @@ bool GpuInit::InitializeVulkan() {
   if (!vulkan_implementation_)
     return false;
 
-  const base::FeatureParam<std::string> force_enable_patterns(
-      &features::kVulkan, "force_enable_by_gl_renderer", "");
-  forced_native |=
-      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
-
   const base::FeatureParam<std::string> enable_by_device_name(
       &features::kVulkan, "enable_by_device_name", "");
   if (!use_swiftshader && !forced_native &&
-      !CheckVulkanCompabilities(
+      !CheckVulkanCompatibilities(
           vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          enable_by_device_name.Get())) {
+          enable_by_device_name.Get(), disabled)) {
     vulkan_implementation_.reset();
     return false;
   }

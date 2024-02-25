@@ -40,7 +40,7 @@ const char kExampleUrl[] =
     "https://helper.test/.well-known/aggregation-service/keys.json";
 
 const aggregation_service::TestHpkeKey kExampleHpkeKey =
-    aggregation_service::GenerateKey("abcd");
+    aggregation_service::TestHpkeKey("abcd");
 const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
     R"({
           "version": "",
@@ -51,9 +51,10 @@ const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
               }
           ]
        })",
-    {kExampleHpkeKey.base64_encoded_public_key},
+    {kExampleHpkeKey.GetPublicKeyBase64()},
     /*offsets=*/nullptr);
-const std::vector<PublicKey> kExamplePublicKeys = {kExampleHpkeKey.public_key};
+const std::vector<PublicKey> kExamplePublicKeys = {
+    kExampleHpkeKey.GetPublicKey()};
 
 constexpr char kKeyFetcherStatusHistogramName[] =
     "PrivacySandbox.AggregationService.KeyFetcher.Status2";
@@ -104,7 +105,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, FetchPublicKeys_Success) {
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_TRUE(keyset.has_value());
         EXPECT_TRUE(aggregation_service::PublicKeysEqual(kExamplePublicKeys,
                                                          keyset->keys));
@@ -129,7 +130,7 @@ TEST_F(AggregationServiceNetworkFetcherTest,
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_FALSE(keyset.has_value());
         quit_closure.Run();
       }));
@@ -150,7 +151,7 @@ TEST_F(AggregationServiceNetworkFetcherTest,
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_FALSE(keyset.has_value());
         quit_closure.Run();
       }));
@@ -170,7 +171,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, FetchPublicKeysLargeBody_Failed) {
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_FALSE(keyset.has_value());
         quit_closure.Run();
       }));
@@ -204,7 +205,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, FetchRequestHangs_TimesOut) {
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_FALSE(keyset.has_value());
         quit_closure.Run();
       }));
@@ -234,7 +235,7 @@ TEST_F(AggregationServiceNetworkFetcherTest,
     auto quit_closure = task_environment_.QuitClosure();
     network_fetcher_->FetchPublicKeys(
         GURL(kExampleUrl),
-        base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+        base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
           EXPECT_FALSE(keyset.has_value());
           quit_closure.Run();
         }));
@@ -273,7 +274,7 @@ TEST_F(AggregationServiceNetworkFetcherTest,
     auto quit_closure = task_environment_.QuitClosure();
     network_fetcher_->FetchPublicKeys(
         GURL(kExampleUrl),
-        base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+        base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
           EXPECT_TRUE(keyset.has_value());
           EXPECT_TRUE(aggregation_service::PublicKeysEqual(kExamplePublicKeys,
                                                            keyset->keys));
@@ -308,7 +309,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, HttpError_CallbackRuns) {
   GURL url(kExampleUrl);
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
-      url, base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      url, base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         quit_closure.Run();
       }));
 
@@ -334,7 +335,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, MultipleRequests_AllCallbacksRun) {
   for (int i = 0; i < 10; i++) {
     network_fetcher_->FetchPublicKeys(
         url,
-        base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+        base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
           barrier_closure.Run();
         }));
   }
@@ -364,7 +365,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, VerifyExpiryTime) {
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_TRUE(keyset.has_value());
         EXPECT_TRUE(aggregation_service::PublicKeysEqual(kExamplePublicKeys,
                                                          keyset->keys));
@@ -403,7 +404,7 @@ TEST_F(AggregationServiceNetworkFetcherTest, VerifyExpiredKeyOnFetch) {
   auto quit_closure = task_environment_.QuitClosure();
   network_fetcher_->FetchPublicKeys(
       GURL(kExampleUrl),
-      base::BindLambdaForTesting([&](absl::optional<PublicKeyset> keyset) {
+      base::BindLambdaForTesting([&](std::optional<PublicKeyset> keyset) {
         EXPECT_FALSE(keyset.has_value());
         quit_closure.Run();
       }));

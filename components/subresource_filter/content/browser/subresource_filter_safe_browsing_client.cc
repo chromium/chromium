@@ -45,14 +45,10 @@ SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
 
 SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
 
-void SubresourceFilterSafeBrowsingClient::CheckUrlOnIO(
-    const GURL& url,
-    size_t request_id,
-    base::TimeTicks start_time) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
+                                                   size_t request_id,
+                                                   base::TimeTicks start_time) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!url.is_empty());
 
   auto request = std::make_unique<SubresourceFilterSafeBrowsingClientRequest>(
@@ -71,25 +67,13 @@ void SubresourceFilterSafeBrowsingClient::CheckUrlOnIO(
 void SubresourceFilterSafeBrowsingClient::OnCheckBrowseUrlResult(
     SubresourceFilterSafeBrowsingClientRequest* request,
     const CheckResult& check_result) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("loading"), "SubresourceFilterSBCheck",
       TRACE_ID_LOCAL(request), "check_result", check_result.ToTracedValue());
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    if (throttle_) {
-      throttle_->OnCheckUrlResultOnUI(check_result);
-    }
-  } else {
-    throttle_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SubresourceFilterSafeBrowsingActivationThrottle::
-                           OnCheckUrlResultOnUI,
-                       throttle_, check_result));
+  if (throttle_) {
+    throttle_->OnCheckUrlResultOnUI(check_result);
   }
-
   DCHECK(requests_.find(request) != requests_.end());
   requests_.erase(request);
 }

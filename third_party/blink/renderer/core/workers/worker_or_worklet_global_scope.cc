@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -116,10 +117,10 @@ class OutsideSettingsCSPDelegate final
     return nullptr;
   }
 
-  absl::optional<uint16_t> GetStatusCode() override {
+  std::optional<uint16_t> GetStatusCode() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928965): Plumb the status code of the parent Document if any.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   String GetDocumentReferrer() override {
@@ -189,6 +190,23 @@ class OutsideSettingsCSPDelegate final
   THREAD_CHECKER(worker_thread_checker_);
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WorkerOrWorkletInterfaceNameType {
+  kOther = 0,
+  kDedicatedWorkerGlobalScope = 1,
+  kSharedWorkerGlobalScope = 2,
+  kServiceWorkerGlobalScope = 3,
+  kAnimationWorkletGlobalScope = 4,
+  kAudioWorkletGlobalScope = 5,
+  kLayoutWorkletGlobalScope = 6,
+  kPaintWorkletGlobalScope = 7,
+  kShadowRealmGlobalScope = 8,
+  kSharedStorageWorkletGlobalScope = 9,
+
+  kMaxValue = kSharedStorageWorkletGlobalScope,
+};
+
 }  // namespace
 
 WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
@@ -203,7 +221,8 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     std::unique_ptr<WebContentSettingsClient> content_settings_client,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     WorkerReportingProxy& reporting_proxy,
-    bool is_worker_loaded_from_data_url)
+    bool is_worker_loaded_from_data_url,
+    bool is_default_world_of_isolate)
     : ExecutionContext(isolate, agent),
       is_creator_secure_context_(is_creator_secure_context),
       name_(name),
@@ -211,8 +230,10 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
       worker_clients_(worker_clients),
       content_settings_client_(std::move(content_settings_client)),
       web_worker_fetch_context_(std::move(web_worker_fetch_context)),
-      script_controller_(
-          MakeGarbageCollected<WorkerOrWorkletScriptController>(this, isolate)),
+      script_controller_(MakeGarbageCollected<WorkerOrWorkletScriptController>(
+          this,
+          isolate,
+          /*is_default_world_of_isolate=*/is_default_world_of_isolate)),
       v8_cache_options_(v8_cache_options),
       reporting_proxy_(reporting_proxy) {
   GetSecurityContext().SetIsWorkerLoadedFromDataURL(
@@ -233,11 +254,10 @@ const AtomicString& WorkerOrWorkletGlobalScope::InterfaceName() const {
   return g_null_atom;
 }
 
-v8::MaybeLocal<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
+v8::Local<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
   LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
                 "method. The global object of ECMAScript environment is used "
                 "as the wrapper.";
-  return v8::Local<v8::Value>();
 }
 
 v8::Local<v8::Object> WorkerOrWorkletGlobalScope::AssociateWithWrapper(
@@ -247,13 +267,6 @@ v8::Local<v8::Object> WorkerOrWorkletGlobalScope::AssociateWithWrapper(
   LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
                 "method. The global object of ECMAScript environment is used "
                 "as the wrapper.";
-  return v8::Local<v8::Object>();
-}
-
-bool WorkerOrWorkletGlobalScope::HasPendingActivity() const {
-  // The global scope wrapper is kept alive as longs as its execution context is
-  // active.
-  return !ExecutionContext::IsContextDestroyed();
 }
 
 void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
@@ -271,6 +284,40 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   if (used_features_[static_cast<size_t>(feature)])
     return;
   used_features_.set(static_cast<size_t>(feature));
+
+  // Record CountUse users for investigating crbug.com/40918057.
+  base::UmaHistogramSparse("ServiceWorker.CountUse.WebFeature",
+                           static_cast<int>(feature));
+  {
+    WorkerOrWorkletInterfaceNameType type =
+        WorkerOrWorkletInterfaceNameType::kOther;
+    if (IsDedicatedWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kDedicatedWorkerGlobalScope;
+      base::UmaHistogramSparse(
+          "ServiceWorker.CountUse.DedicatedWorker.WebFeature",
+          static_cast<int>(feature));
+    } else if (IsSharedWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kSharedWorkerGlobalScope;
+    } else if (IsServiceWorkerGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kServiceWorkerGlobalScope;
+    } else if (IsAnimationWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kAnimationWorkletGlobalScope;
+    } else if (IsAudioWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kAudioWorkletGlobalScope;
+    } else if (IsLayoutWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kLayoutWorkletGlobalScope;
+    } else if (IsPaintWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kPaintWorkletGlobalScope;
+    } else if (IsShadowRealmGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kShadowRealmGlobalScope;
+    } else if (IsSharedStorageWorkletGlobalScope()) {
+      type = WorkerOrWorkletInterfaceNameType::kSharedStorageWorkletGlobalScope;
+    }
+
+    base::UmaHistogramEnumeration("ServiceWorker.CountUse.CallerInterface",
+                                  type);
+  }
+
   ReportingProxy().CountFeature(feature);
 }
 
@@ -315,7 +362,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::Fetcher() {
 
   // Check if the fetcher has already been initialized, otherwise initialize it.
   if (inside_settings_resource_fetcher_)
-    return inside_settings_resource_fetcher_;
+    return inside_settings_resource_fetcher_.Get();
 
   // Because CSP is initialized inside the WorkerGlobalScope or
   // WorkletGlobalScope constructor, GetContentSecurityPolicy() should be
@@ -327,7 +374,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::Fetcher() {
   inside_settings_resource_fetcher_ = CreateFetcherInternal(
       *MakeGarbageCollected<FetchClientSettingsObjectImpl>(*this),
       *GetContentSecurityPolicy(), *resource_timing_notifier);
-  return inside_settings_resource_fetcher_;
+  return inside_settings_resource_fetcher_.Get();
 }
 
 ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(

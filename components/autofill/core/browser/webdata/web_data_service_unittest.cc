@@ -24,11 +24,13 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -93,8 +95,8 @@ class MockAutofillWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
   MOCK_METHOD(void,
-              AutofillEntriesChanged,
-              (const AutofillChangeList& changes),
+              AutocompleteEntriesChanged,
+              (const AutocompleteChangeList& changes),
               (override));
   MOCK_METHOD(void,
               AutofillProfileChanged,
@@ -117,7 +119,9 @@ class WebDataServiceTest : public testing::Test {
 
     wdbs_ = new WebDatabaseService(
         path, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
-    wdbs_->AddTable(std::make_unique<AutofillTable>());
+    wdbs_->AddTable(std::make_unique<AddressAutofillTable>());
+    wdbs_->AddTable(std::make_unique<AutocompleteTable>());
+    wdbs_->AddTable(std::make_unique<PaymentsAutofillTable>());
     wdbs_->LoadDatabase();
 
     wds_ = new AutofillWebDataService(
@@ -198,14 +202,16 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
 };
 
 TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::ADD, AutofillKey(name1_, value1_)),
-      AutofillChange(AutofillChange::ADD, AutofillKey(name2_, value2_))};
+  const AutocompleteChange expected_changes[] = {
+      AutocompleteChange(AutocompleteChange::ADD,
+                         AutocompleteKey(name1_, value1_)),
+      AutocompleteChange(AutocompleteChange::ADD,
+                         AutocompleteKey(name2_, value2_))};
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
+  // passing the correct list of autocomplete keys in the details.
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
 
   std::vector<FormFieldData> form_fields;
@@ -216,7 +222,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
   // The event will be signaled when the mock observer is notified.
   done_event_.TimedWait(test_timeout_);
 
-  AutofillWebDataServiceWaiter<std::vector<AutofillEntry>> consumer;
+  AutofillWebDataServiceWaiter<std::vector<AutocompleteEntry>> consumer;
   WebDataServiceBase::Handle handle;
   static const int limit = 10;
   handle = wds_->GetFormValuesForElementName(name1_, std::u16string(), limit,
@@ -227,8 +233,8 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
 }
 
 TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
-  // First add some values to autofill.
-  EXPECT_CALL(observer_, AutofillEntriesChanged(_))
+  // First add some values to autocomplete.
+  EXPECT_CALL(observer_, AutocompleteEntriesChanged(_))
       .WillOnce(SignalEvent(&done_event_));
   std::vector<FormFieldData> form_fields;
   AppendFormField(name1_, value1_, &form_fields);
@@ -238,11 +244,11 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
   done_event_.TimedWait(test_timeout_);
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name1_, value1_))};
+  // passing the correct list of autocomplete keys in the details.
+  const AutocompleteChange expected_changes[] = {AutocompleteChange(
+      AutocompleteChange::REMOVE, AutocompleteKey(name1_, value1_))};
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
   wds_->RemoveFormValueForElementName(name1_, value1_);
 
@@ -254,7 +260,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
   base::TimeDelta one_day(base::Days(1));
   Time t = AutofillClock::Now();
 
-  EXPECT_CALL(observer_, AutofillEntriesChanged(_))
+  EXPECT_CALL(observer_, AutocompleteEntriesChanged(_))
       .WillOnce(SignalEvent(&done_event_));
 
   std::vector<FormFieldData> form_fields;
@@ -266,12 +272,14 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
   done_event_.TimedWait(test_timeout_);
 
   // This will verify that the correct notification is triggered,
-  // passing the correct list of autofill keys in the details.
-  const AutofillChange expected_changes[] = {
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name1_, value1_)),
-      AutofillChange(AutofillChange::REMOVE, AutofillKey(name2_, value2_))};
+  // passing the correct list of autocomplete keys in the details.
+  const AutocompleteChange expected_changes[] = {
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(name1_, value1_)),
+      AutocompleteChange(AutocompleteChange::REMOVE,
+                         AutocompleteKey(name2_, value2_))};
   EXPECT_CALL(observer_,
-              AutofillEntriesChanged(ElementsAreArray(expected_changes)))
+              AutocompleteEntriesChanged(ElementsAreArray(expected_changes)))
       .WillOnce(SignalEvent(&done_event_));
   wds_->RemoveFormElementsAddedBetween(t, t + one_day);
 
@@ -280,7 +288,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
   // Check that GUID-based notification was sent.
   const AutofillProfileChange expected_change(AutofillProfileChange::ADD,
@@ -302,7 +310,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
   // Add a profile.
   EXPECT_CALL(observer_, AutofillProfileChanged(_))
@@ -341,11 +349,15 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
 TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   // The GUIDs are alphabetical for easier testing.
-  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B");
+  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B",
+                           AutofillProfile::Source::kLocalOrSyncable,
+                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FIRST, u"Abe");
   profile1.FinalizeAfterImport();
 
-  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15");
+  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15",
+                           AutofillProfile::Source::kLocalOrSyncable,
+                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FIRST, u"Alice");
   profile2.FinalizeAfterImport();
 
@@ -467,7 +479,7 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   // Add a profile.
   EXPECT_CALL(observer_, AutofillProfileChanged(_))
       .WillOnce(SignalEvent(&done_event_));
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   wds_->AddAutofillProfile(profile);
   done_event_.TimedWait(test_timeout_);
 

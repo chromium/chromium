@@ -44,10 +44,10 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   ~ClipboardRecentContentIOS() override;
 
   // ClipboardRecentContent implementation.
-  absl::optional<GURL> GetRecentURLFromClipboard() override;
-  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
-  absl::optional<std::set<ClipboardContentType>>
-  GetCachedClipboardContentTypes() override;
+  std::optional<GURL> GetRecentURLFromClipboard() override;
+  std::optional<std::u16string> GetRecentTextFromClipboard() override;
+  std::optional<std::set<ClipboardContentType>> GetCachedClipboardContentTypes()
+      override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
@@ -59,7 +59,7 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   void ClearClipboardContent() override;
 
  private:
-  absl::optional<gfx::Image> GetRecentImageFromClipboardInternal();
+  std::optional<gfx::Image> GetRecentImageFromClipboardInternal();
   void OnGetRecentImageFromClipboard(GetRecentImageCallback callback,
                                      const SkBitmap& sk_bitmap);
 

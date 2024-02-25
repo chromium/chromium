@@ -15,12 +15,12 @@
  */
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import '../controls/settings_toggle_button.js';
 import './setup_pin_dialog.js';
 import './pin_autosubmit_dialog.js';
 import './local_data_recovery_dialog.js';
@@ -29,9 +29,8 @@ import '../multidevice_page/multidevice_smartlock_item.js';
 import './password_settings.js';
 import './pin_settings.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -39,10 +38,11 @@ import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} fro
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
@@ -121,17 +121,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
-       * True if cryptohome recovery feature is enabled.
-       */
-      cryptohomeRecoveryEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('cryptohomeRecoveryEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * State of the recovery toggle. Is |null| iff recovery is not a
        * available.
        */
@@ -155,17 +144,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       showPasswordSettings_: {
         type: Boolean,
         value: false,
-      },
-
-      /**
-       * Alias for the SmartLockUIRevamp feature flag.
-       */
-      smartLockUIRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('smartLockUIRevampEnabled');
-        },
-        readOnly: true,
       },
 
       noRecoveryVirtualPref_: Object,
@@ -194,12 +172,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private numFingerprintDescription_: string;
   private lockScreenNotificationsEnabled_: boolean;
   private lockScreenHideSensitiveNotificationSupported_: boolean;
-  private cryptohomeRecoveryEnabled_: boolean;
   private recovery_: chrome.settingsPrivate.PrefObject|null;
   private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
   private showPasswordSettings_: boolean;
-  private smartLockUIRevampEnabled_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
 
@@ -237,13 +213,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     this.authFactorConfig.observeFactorChanges(remote);
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.updateNumFingerprints_();
   }
 
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route): void {
     if (newRoute === routes.LOCK_SCREEN) {
       this.updateNumFingerprints_();
       this.attemptDeepLink();
@@ -286,9 +262,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   private recoveryToggleSubLabel_(): string {
-    if (!this.cryptohomeRecoveryEnabled_) {
-      return '';
-    }
     if (this.recovery_) {
       return this.i18n('recoveryToggleSubLabel');
     }
@@ -296,14 +269,14 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   private recoveryToggleLearnMoreUrl_(): string {
-    if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
+    if (this.recovery_) {
       return '';
     }
-    return this.i18n('recoveryNotSupportedMessage');
+    return this.i18n('recoveryLearnMoreUrl');
   }
 
   private recoveryToggleDisabled_(): boolean {
-    if (!this.cryptohomeRecoveryEnabled_ || !this.recovery_) {
+    if (!this.recovery_) {
       return true;
     }
     return this.recoveryChangeInProcess_;

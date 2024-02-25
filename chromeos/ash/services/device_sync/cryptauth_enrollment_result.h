@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_RESULT_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_RESULT_H_
 
+#include <optional>
 #include <ostream>
 
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -117,14 +117,14 @@ class CryptAuthEnrollmentResult {
 
   CryptAuthEnrollmentResult(
       ResultCode result_code,
-      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
+      const std::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthEnrollmentResult(const CryptAuthEnrollmentResult& other);
 
   ~CryptAuthEnrollmentResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const std::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -135,7 +135,7 @@ class CryptAuthEnrollmentResult {
 
  private:
   ResultCode result_code_;
-  absl::optional<cryptauthv2::ClientDirective> client_directive_;
+  std::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

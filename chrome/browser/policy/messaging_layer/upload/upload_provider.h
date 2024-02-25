@@ -49,6 +49,8 @@ class EncryptedReportingUploadProvider {
       ScopedReservation scoped_reservation,
       base::OnceCallback<void(Status)> result_cb);
 
+  base::WeakPtr<EncryptedReportingUploadProvider> GetWeakPtr();
+
  private:
   // EncryptedReportingUploadProvider helper class.
   class UploadHelper;

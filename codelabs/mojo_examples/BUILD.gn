@@ -1,0 +1,150 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("codelab_mojo_examples") {
+  testonly = true
+
+  # These examples rely on base::LaunchOptions which do not exist in the iOS
+  # simulator.
+  if (!is_ios) {
+    deps = [
+      ":01-mojo-browser",
+      ":01-mojo-renderer",
+      ":02-mojo-browser",
+      ":02-mojo-renderer",
+      ":03-mojo-browser",
+      ":03-mojo-renderer",
+      ":04-mojo-browser",
+      ":04-mojo-renderer",
+    ]
+  }
+}
+
+if (!is_ios) {
+  executable("01-mojo-browser") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "01-multi-process/browser.cc",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("01-mojo-renderer") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "01-multi-process/renderer.cc",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("02-mojo-browser") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "02-associated-interface-freezing/browser.cc",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("02-mojo-renderer") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "02-associated-interface-freezing/renderer.cc",
+      "mojo_impls.cc",
+      "mojo_impls.h",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("03-mojo-browser") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "03-channel-associated-interface-freezing/browser.cc",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("03-mojo-renderer") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "03-channel-associated-interface-freezing/renderer.cc",
+      "mojo_impls.cc",
+      "mojo_impls.h",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("04-mojo-browser") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "04-legacy-ipc-with-sepearate-remote/browser.cc",
+      "process_bootstrapper.h",
+    ]
+  }
+
+  executable("04-mojo-renderer") {
+    deps = [
+      "//base",
+      "//codelabs/mojo_examples/mojom",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/mojom/base",
+    ]
+    sources = [
+      "04-legacy-ipc-with-sepearate-remote/renderer.cc",
+      "mojo_impls.cc",
+      "mojo_impls.h",
+      "process_bootstrapper.h",
+    ]
+  }
+}

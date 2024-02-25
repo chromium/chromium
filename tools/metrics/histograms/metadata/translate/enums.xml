@@ -1,0 +1,238 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="HrefTranslateStatus">
+  <int value="0" label="Auto translated"/>
+  <int value="1" label="Auto translated using a different target language"/>
+  <int value="2" label="Not auto translated (Deprecated in M87)"/>
+  <int value="3" label="UI shown and not auto translated"/>
+  <int value="4" label="UI not shown and not auto translated"/>
+</enum>
+
+<enum name="MenuTranslationUnavailableReason">
+  <int value="0" label="The kTranslate feature is disabled"/>
+  <int value="1" label="The network is offline"/>
+  <int value="2" label="API keys for translate are unavailable"/>
+  <int value="3" label="Translate not supported for this page MIME type"/>
+  <int value="4" label="URL is of a type not considered translatable"/>
+  <int value="5" label="Could not identify the target language"/>
+  <int value="6" label="Translate is not allowed by policy"/>
+  <int value="7" label="Could not identify the source language"/>
+</enum>
+
+<enum name="PartialTranslateBubbleUiEvent">
+  <int value="0" label="Bubble was shown"/>
+  <int value="1" label="Triggered translation by clicking target language tab"/>
+  <int value="2" label="Reverted translation by clicking source language tab"/>
+  <int value="3" label="Translate Full Page button clicked"/>
+  <int value="4" label="Close button clicked"/>
+  <int value="5" label="Try Again button in error view clicked"/>
+  <int value="6"
+      label="Page is Not in {Source Language} item in options menu clicked"/>
+  <int value="7" label="Choose Another Language item in options menu clicked"/>
+  <int value="8" label="Language selected in source language combobox"/>
+  <int value="9" label="Language selected in target language combobox"/>
+  <int value="10"
+      label="Reset button in source language selection view clicked"/>
+  <int value="11"
+      label="Reset button in target language selection view clicked"/>
+  <int value="12"
+      label="Done button in source language selection view clicked"/>
+  <int value="13"
+      label="Translate button in source language selection view clicked"/>
+  <int value="14"
+      label="Done button in target language selection view clicked"/>
+  <int value="15"
+      label="Translate button in target language selection view clicked"/>
+</enum>
+
+<enum name="PartialTranslateTranslationStatus">
+  <int value="0" label="Partial Translate success"/>
+  <int value="1" label="Partial Translate error"/>
+</enum>
+
+<enum name="TranslateCompactUIEvent">
+  <int value="0" label="Infobar impression"/>
+  <int value="1" label="Translation accepted by clicking on tab language"/>
+  <int value="2"
+      label="X is clicked without a prior translation and without a choice of
+             never translate"/>
+  <int value="3" label="Options menu clicked"/>
+  <int value="4" label="More languages clicked"/>
+  <int value="5"
+      label="Translation accepted by clicking on language in more languages"/>
+  <int value="6" label="Page not in language clicked"/>
+  <int value="7" label="Always translate clicked in the options menu"/>
+  <int value="8" label="Never translate clicked in the options menu"/>
+  <int value="9" label="Never translate site clicked in the options menu"/>
+  <int value="10" label="Infobar hidden on scroll"/>
+  <int value="11" label="Infobar shown on scroll"/>
+  <int value="12" label="Show original language clicked"/>
+  <int value="13"
+      label="Always translate snackbar impression when triggered from the
+             options menu"/>
+  <int value="14"
+      label="Never translate snackbar impression when triggered from the
+             options menu"/>
+  <int value="15"
+      label="Never translate site snackbar impression when triggered from the
+             options menu"/>
+  <int value="16"
+      label="Cancel clicked on always translate snackbar when triggered from
+             the options menu"/>
+  <int value="17"
+      label="Cancel clicked on never translate this site snackbar when
+             triggered from the options menu"/>
+  <int value="18"
+      label="Cancel clicked on never translate snackbar when triggered from
+             the options menu"/>
+  <int value="19" label="Undo always translate clicked in the options menu"/>
+  <int value="20" label="[Deprecated] X clicked to close infobar"/>
+  <int value="21" label="Auto-always translate snackbar impression"/>
+  <int value="22" label="Auto-never translate snackbar impression"/>
+  <int value="23" label="Cancel clicked on auto-always translate snackbar"/>
+  <int value="24" label="Cancel clicked on auto-never translate snackbar"/>
+  <int value="25"
+      label="[Deprecated] before M112 was both 'Never translate language
+             unchecked' and 'Never translate site unchecked'"/>
+  <int value="26" label="Never translate unchecked in the options menu"/>
+  <int value="27" label="Never translate site unchecked in the options menu"/>
+</enum>
+
+<enum name="TranslateLanguageDetectionTiming">
+  <int value="0" label="On time"/>
+  <int value="1" label="Deferred"/>
+  <int value="2" label="Resumed"/>
+</enum>
+
+<enum name="TranslateLanguageVerification">
+  <int value="0" label="(deprecated) Model is disabled"/>
+  <int value="1" label="Model only (no Content-Language)"/>
+  <int value="2" label="Model unkown (use Content-Language)"/>
+  <int value="3" label="Model agrees with Content-Language"/>
+  <int value="4" label="Model disagrees with Content-Language"/>
+  <int value="5" label="Model overrides 'en' Content-Language">
+    If the model predicts a language in 'kWellKnownCodesOnWrongConfiguration'
+    but the Content-Language is 'en' we use the model language.
+  </int>
+  <int value="6" label="Model compliments country code">
+    A country code is required for zh, use the model version if the page
+    language does not include one.
+  </int>
+</enum>
+
+<enum name="TranslateTargetLanguageOrigin">
+  <int value="0" label="Recent target language"/>
+  <int value="1" label="Language model"/>
+  <int value="2" label="Application UI"/>
+  <int value="3" label="Accept languages"/>
+  <int value="4" label="Default English"/>
+  <int value="5" label="Changed by user"/>
+  <int value="6" label="Uninitialized"/>
+  <int value="7" label="Auto Translate"/>
+</enum>
+
+<enum name="TranslationStatus">
+  <int value="0" label="Uninitialized"/>
+  <int value="1"
+      label="Deprecated 07/2021. Succeeded, from manual translation"/>
+  <int value="2" label="Succeeded, automatic translation by user preference"/>
+  <int value="3" label="Succeeded, automatic translation by link"/>
+  <int value="4"
+      label="Deprecated 07/2021. Reverted by user, manual translation"/>
+  <int value="5" label="Reverted by user, automatic translation"/>
+  <int value="6" label="New translation requested by user"/>
+  <int value="7" label="Abandoned"/>
+  <int value="8"
+      label="Deprecated 07/2021. Failed with no error, manual translation"/>
+  <int value="9" label="Failed with no error, automatic translation"/>
+  <int value="10"
+      label="Deprecated 07/2021. Failed with an error, manual translation"/>
+  <int value="11" label="Failed with an error, automatic translation"/>
+  <int value="12" label="Succeeded, from manual translation from Translate UI"/>
+  <int value="13"
+      label="Reverted by user, manual translation from Translate UI"/>
+  <int value="14"
+      label="Failed with no error, manual translation from Translate UI"/>
+  <int value="15"
+      label="Failed with an error, manual translation from Translate UI"/>
+  <int value="16" label="Succeeded, from manual translation from Context Menu"/>
+  <int value="17"
+      label="Reverted by user, manual translation from Context Menu"/>
+  <int value="18"
+      label="Failed with no error, manual translation from Context Menu"/>
+  <int value="19"
+      label="Failed with an error, manual translation from Context Menu"/>
+  <int value="20"
+      label="Succeeded, automatic translation to a predefined target language"/>
+  <int value="21"
+      label="Reverted by user, automatic translation to a predefined target
+             language"/>
+  <int value="22"
+      label="Failed with no error, automatic translation to a predefined
+             target language"/>
+  <int value="23"
+      label="Failed with an error, automatic translation to a predefined
+             target language"/>
+  <int value="24" label="Succeeded, automatic translation by hrefTranslate"/>
+  <int value="25"
+      label="Reverted by user, automatic translation by hrefTranslate"/>
+  <int value="26"
+      label="Failed with no error, automatic translation by hrefTranslate"/>
+  <int value="27"
+      label="Failed with an error, automatic translation by hrefTranslate"/>
+</enum>
+
+<enum name="TranslationType">
+  <int value="0" label="Uninitialized"/>
+  <int value="1"
+      label="Deprecated 07/2021. Manual translation, first translation of
+             page load"/>
+  <int value="2"
+      label="Deprecated 07/2021. Manual translation, after page was already
+             translated"/>
+  <int value="3" label="Automatic translation by user preference"/>
+  <int value="4" label="Automatic translation by link"/>
+  <int value="5"
+      label="Manual translation from Translate UI, first translation of page
+             load"/>
+  <int value="6"
+      label="Manual translation from Translate UI, after page was already
+             translated"/>
+  <int value="7"
+      label="Manual translation from Context Menu, first translation of page
+             load"/>
+  <int value="8"
+      label="Manual translation Context Menu, after page was already
+             translated"/>
+  <int value="9" label="Automatic translation to a predefined target language"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

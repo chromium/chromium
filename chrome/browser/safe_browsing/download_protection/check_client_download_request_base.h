@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -67,6 +67,8 @@ class CheckClientDownloadRequestBase {
 
   DownloadProtectionService* service() const { return service_; }
 
+  virtual download::DownloadItem* item() const = 0;
+
  protected:
   // Subclasses can call this method to mark the request as finished (for
   // example because the download was cancelled) before the safe browsing
@@ -88,6 +90,16 @@ class CheckClientDownloadRequestBase {
   void StartTimeout();
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+
+  // If we need to perform additional prompting (e.g. deep scanning, local
+  // password decryption) due to the response, this method will update `result`
+  // and `reason` appropriately. This method also performs logging related to
+  // these additional prompts. If both prompts are allowed, deep scanning will
+  // be prioritized.
+  void GetAdditionalPromptResult(const ClientDownloadResponse& response,
+                                 DownloadCheckResult* result,
+                                 DownloadCheckResultReason* reason,
+                                 std::string* token) const;
 
   virtual bool IsSupportedDownload(DownloadCheckResultReason* reason) = 0;
   virtual content::BrowserContext* GetBrowserContext() const = 0;
@@ -117,8 +129,8 @@ class CheckClientDownloadRequestBase {
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file
-  // should be uploaded for deep scanning, or absl::nullopt if it should not.
-  virtual absl::optional<enterprise_connectors::AnalysisSettings>
+  // should be uploaded for deep scanning, or std::nullopt if it should not.
+  virtual std::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(DownloadCheckResultReason reason) = 0;
 
   // If ShouldUploadBinary returns settings, actually performs the upload to
@@ -137,6 +149,11 @@ class CheckClientDownloadRequestBase {
   virtual bool ShouldPromptForDeepScanning(
       bool server_requests_prompt) const = 0;
 
+  // Called when finishing the download, to decide whether to prompt the user
+  // for local decryption or not.
+  virtual bool ShouldPromptForLocalDecryption(
+      bool server_requests_prompt) const = 0;
+
   // Called when |token_fetcher_| has finished fetching the access token.
   void OnGotAccessToken(const std::string& access_token);
 
@@ -148,7 +165,19 @@ class CheckClientDownloadRequestBase {
   // |client_download_request_| with their origin.
   void SanitizeRequest();
 
-  // Source URL being downloaded from. This shuold always be set, but could be
+  // Called when we decide whether or not to show a deep scanning prompt
+  virtual void LogDeepScanningPrompt(bool did_prompt) const = 0;
+
+  // Returns whether we should skip sending a ping to Safe Browsing because the
+  // provided password was incorrect.
+  virtual bool ShouldPromptForIncorrectPassword() const = 0;
+
+  // Returns whether we should skip sending a ping to Safe Browsing because
+  // extraction failed in a way that makes the data useless (e.g. disk write
+  // failure).
+  virtual bool ShouldShowScanFailure() const = 0;
+
+  // Source URL being downloaded from. This should always be set, but could be
   // for example an artificial blob: URL if there is no source URL.
   const GURL source_url_;
   const base::FilePath target_file_path_;

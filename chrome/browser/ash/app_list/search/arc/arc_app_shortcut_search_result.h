@@ -53,8 +53,11 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
 
  private:
   // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   // Gets app id of the app that publishes this app shortcut.
   std::string GetAppId() const;
@@ -70,8 +73,8 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
 
   std::unique_ptr<AppServiceAppIconLoader> badge_icon_loader_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;  // Owned by ProfileInfo.
+  const raw_ptr<AppListControllerDelegate>
       list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcAppShortcutSearchResult> weak_ptr_factory_{this};

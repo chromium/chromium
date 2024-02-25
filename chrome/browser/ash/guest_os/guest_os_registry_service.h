@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -98,7 +99,6 @@ class GuestOsRegistryService : public KeyedService {
     std::string ContainerName() const;
 
     std::string Name() const;
-    std::string Comment() const;
     std::string Exec() const;
     std::string ExecutableFileName() const;
     std::set<std::string> Extensions() const;
@@ -118,12 +118,15 @@ class GuestOsRegistryService : public KeyedService {
 
     guest_os::GuestId ToGuestId() const;
 
+    std::string StartupWmClass() const;
+    bool StartupNotify() const;
+
    private:
-    std::string GetString(base::StringPiece key) const;
-    bool GetBool(base::StringPiece key) const;
-    base::Time GetTime(base::StringPiece key) const;
-    std::string GetLocalizedString(base::StringPiece key) const;
-    std::set<std::string> GetLocalizedList(base::StringPiece key) const;
+    std::string GetString(std::string_view key) const;
+    bool GetBool(std::string_view key) const;
+    base::Time GetTime(std::string_view key) const;
+    std::string GetLocalizedString(std::string_view key) const;
+    std::set<std::string> GetLocalizedList(std::string_view key) const;
 
     std::string app_id_;
     base::Value pref_;
@@ -140,6 +143,12 @@ class GuestOsRegistryService : public KeyedService {
         const std::vector<std::string>& updated_apps,
         const std::vector<std::string>& removed_apps,
         const std::vector<std::string>& inserted_apps) {}
+
+    // Called at the end of AppLaunched().
+    virtual void OnAppLastLaunchTimeUpdated(
+        VmType vm_type,
+        const std::string& app_id,
+        const base::Time& last_launch_time) {}
 
    protected:
     virtual ~Observer() = default;
@@ -168,11 +177,11 @@ class GuestOsRegistryService : public KeyedService {
       VmType vm_type) const;
 
   // Return null if `app_id` is not found in the registry.
-  absl::optional<GuestOsRegistryService::Registration> GetRegistration(
+  std::optional<GuestOsRegistryService::Registration> GetRegistration(
       const std::string& app_id) const;
 
   // Return the preferred handler for the given URL, if any.
-  absl::optional<GuestOsUrlHandler> GetHandler(const GURL& url) const;
+  std::optional<GuestOsUrlHandler> GetHandler(const GURL& url) const;
 
   // Register a non-app handler of URLs.
   // Handlers registered here take priority over apps (since they come from
@@ -258,7 +267,7 @@ class GuestOsRegistryService : public KeyedService {
 
   // Apply a coloured badge to the app icon if Crostini multi-container
   // feature is enabled.
-  void ApplyContainerBadge(const absl::optional<std::string>& app_id,
+  void ApplyContainerBadge(const std::optional<std::string>& app_id,
                            gfx::ImageSkia* image_skia);
 
   // Returns the AppId that will be used to refer to the given GuestOs
@@ -315,8 +324,8 @@ class GuestOsRegistryService : public KeyedService {
                            std::string png_icon_content);
 
   // Owned by the Profile.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
   // Keeps root folder where Crostini app icons for different scale factors are
   // stored.
@@ -324,7 +333,7 @@ class GuestOsRegistryService : public KeyedService {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   std::vector<std::pair<GuestOsUrlHandler, CanHandleUrlCallback>> url_handlers_;
 

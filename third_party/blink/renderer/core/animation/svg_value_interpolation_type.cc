@@ -46,7 +46,7 @@ InterpolationValue SVGValueInterpolationType::MaybeConvertSVGValue(
   SVGPropertyBase* referenced_value =
       const_cast<SVGPropertyBase*>(&value);  // Take ref.
   return InterpolationValue(
-      std::make_unique<InterpolableList>(0),
+      MakeGarbageCollected<InterpolableList>(0),
       SVGValueNonInterpolableValue::Create(referenced_value));
 }
 

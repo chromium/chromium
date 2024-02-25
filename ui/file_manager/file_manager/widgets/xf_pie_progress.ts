@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
-
 import {css, customElement, html, property, svg, XfBase} from './xf_base.js';
 
 /**
@@ -79,35 +77,7 @@ export class XfPieProgress extends XfBase {
 }
 
 function getCSS() {
-  const legacyStyle = css`
-    svg {
-      height: 100%;
-      width: 100%;
-    }
-
-    .queued {
-      fill: none;
-      stroke: var(--cros-icon-color-secondary);
-    }
-
-    .edge {
-      fill: none;
-      stroke: var(--cros-icon-color-prominent);
-    }
-
-    .pie {
-      fill: none;
-      stroke: var(--cros-icon-color-prominent);
-      transition: stroke-dashoffset 1s ease-out;
-    }
-
-    .outline {
-      fill: var(--xf-icon-color-outline, transparent);
-      stroke: none;
-    }
-  `;
-
-  const refresh23Style = css`
+  return css`
     svg {
       height: 100%;
       width: 100%;
@@ -134,9 +104,4 @@ function getCSS() {
       stroke: none;
     }
   `;
-
-  return [
-    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
-    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
-  ];
 }

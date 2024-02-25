@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
@@ -28,11 +29,13 @@ class PasswordFormManagerForUI {
   virtual const GURL& GetURL() const = 0;
 
   // Returns the best saved matches for the observed form.
-  virtual const std::vector<const PasswordForm*>& GetBestMatches() const = 0;
+  virtual const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetBestMatches() const = 0;
 
   // Returns the federated saved matches for the observed form.
   // TODO(crbug.com/831123): merge with GetBestMatches.
-  virtual std::vector<const PasswordForm*> GetFederatedMatches() const = 0;
+  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetFederatedMatches() const = 0;
 
   // Returns credentials that are ready to be written (saved or updated) to a
   // password store.
@@ -51,7 +54,8 @@ class PasswordFormManagerForUI {
   virtual base::span<const InteractionsStats> GetInteractionsStats() const = 0;
 
   // List of insecure passwords for the current site.
-  virtual std::vector<const PasswordForm*> GetInsecureCredentials() const = 0;
+  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetInsecureCredentials() const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.
   virtual bool IsBlocklisted() const = 0;
@@ -70,6 +74,10 @@ class PasswordFormManagerForUI {
   // |credentials_to_update| should be one of the best matches or the pending
   // credentials.
   virtual void Update(const PasswordForm& credentials_to_update) = 0;
+
+  // This method returns true if the current "update" is to a password that is
+  // saved in Google Account.
+  virtual bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const = 0;
 
   // Updates the username value. Called when user edits the username and clicks
   // the save button. Updates the username and modifies internal state

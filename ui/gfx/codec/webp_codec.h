@@ -5,9 +5,9 @@
 #ifndef UI_GFX_CODEC_WEBP_CODEC_H_
 #define UI_GFX_CODEC_WEBP_CODEC_H_
 
+#include <optional>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/encode/SkEncoder.h"
@@ -60,14 +60,14 @@ class CODEC_EXPORT WebpCodec {
                      std::vector<unsigned char>* output);
 
   // Encodes the pixmap 'frames' as an animated WebP image. Returns the encoded
-  // data on success, or absl::nullopt on failure.
-  static absl::optional<std::vector<uint8_t>> EncodeAnimated(
+  // data on success, or std::nullopt on failure.
+  static std::optional<std::vector<uint8_t>> EncodeAnimated(
       const std::vector<SkEncoder::Frame>& frames,
       const SkWebpEncoder::Options& options);
 
   // Encodes the bitmap 'frames' as an animated WebP image. Returns the encoded
-  // data on success, or absl::nullopt on failure.
-  static absl::optional<std::vector<uint8_t>> EncodeAnimated(
+  // data on success, or std::nullopt on failure.
+  static std::optional<std::vector<uint8_t>> EncodeAnimated(
       const std::vector<Frame>& frames,
       const SkWebpEncoder::Options& options);
 };

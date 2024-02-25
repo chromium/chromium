@@ -16,16 +16,11 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-
-namespace {
-// This is how many bits UIViewAnimationCurve needs to be shifted to be in
-// UIViewAnimationOptions format. Must match the one in UIView.h.
-const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
-}  // namespace
 
 @interface SecondaryToolbarViewController ()
 
@@ -34,10 +29,7 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 @end
 
-@implementation SecondaryToolbarViewController {
-  /// The disabler created when the keyboard is visible.
-  std::unique_ptr<ScopedFullscreenDisabler> _keyboardDisabler;
-}
+@implementation SecondaryToolbarViewController
 
 @dynamic view;
 
@@ -64,7 +56,6 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 - (void)disconnect {
   _fullscreenController = nullptr;
-  _keyboardDisabler = nullptr;
 }
 
 #pragma mark - AdaptiveToolbarViewController
@@ -73,6 +64,16 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   [super collapsedToolbarButtonTapped];
 
   if ([self.view.locationBarKeyboardConstraint isActive]) {
+    // When the bottom omnibox is collapsed above the keyboard, it's positioned
+    // behind an `omniboxTypingShield` (transparent view) in the
+    // `formInputAccessoryView`. This allow the keyboard to know about the size
+    // of the omnibox (crbug.com/1490601).
+    // When voice over is off, tapping the collapsed bottom omnibox interacts
+    // with the `omniboxTypingShield`. The logic to dismiss the keyboard is
+    // handled in `formInputAccessoryViewHandler`. However, the typing shield
+    // has `isAccessibilityElement` equals NO to let the user interact with the
+    // omnibox on voice over. In this mode, logic to dismiss the keyboard is
+    // handled here in `SecondaryToolbarViewController`.
     CHECK(IsBottomOmniboxSteadyStateEnabled());
     CHECK([self hasOmnibox]);
     UIResponder* responder = GetFirstResponder();
@@ -124,26 +125,21 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 /// Collapses secondary toolbar when it's moved above the keyboard.
 - (void)collapseForKeyboard {
-  // Disable fullscreen because:
-  // - It interfers with the animation when moving the secondary toolbar above
-  // the keyboard.
-  // - Fullscreen should not resize the toolbar it's above the keyboard.
   if (_fullscreenController) {
-    _keyboardDisabler =
-        std::make_unique<ScopedFullscreenDisabler>(_fullscreenController);
-    _fullscreenController->ForceEnterFullscreen();
+    _fullscreenController->EnterForceFullscreenMode();
   }
   self.view.locationBarTopConstraint.constant = 0;
   self.view.bottomSeparator.alpha = 1.0;
+  [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
 }
 
 /// Resets secondary toolbar when it's detached from the keyboard.
 - (void)removeFromKeyboard {
   if (_fullscreenController) {
-    _fullscreenController->ExitFullscreenWithoutAnimation();
-    _keyboardDisabler = nullptr;
+    _fullscreenController->ExitForceFullscreenMode();
   }
   self.view.bottomSeparator.alpha = 0.0;
+  [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
 }
 
 /// Updates keyboard constraints with `notification`. When
@@ -160,36 +156,14 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       if (![self.view.locationBarKeyboardConstraint isActive]) {
         self.view.locationBarKeyboardConstraint.active = YES;
         [self collapseForKeyboard];
+        [self.view layoutIfNeeded];
       }
     }
-    const CGRect keyboardFrame =
-        [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    const CGRect keyboardInFrame =
-        CGRectIntersection(keyboardFrame, self.view.window.bounds);
-    const CGFloat keyboardHeight = CGRectGetHeight(keyboardInFrame);
-
-    NSTimeInterval duration =
-        [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey]
-            doubleValue];
-    UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
-        [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey]
-            integerValue]);
-    UIViewAnimationOptions options = curve
-                                     << kUIViewAnimationCurveToOptionsShift;
-    [UIView animateWithDuration:duration
-                          delay:0
-                        options:options
-                     animations:^{
-                       self.view.locationBarKeyboardConstraint.constant =
-                           keyboardHeight;
-                       [self.view layoutIfNeeded];
-                     }
-                     completion:nil];
   } else if ([self.view.locationBarKeyboardConstraint isActive]) {
     self.view.locationBarKeyboardConstraint.active = NO;
     [self removeFromKeyboard];
+    [self.view layoutIfNeeded];
   }
-  [self.view layoutIfNeeded];
 }
 
 @end

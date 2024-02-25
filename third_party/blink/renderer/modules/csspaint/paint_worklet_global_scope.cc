@@ -59,7 +59,7 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
         return false;
 
       for (const auto& type : argument_types) {
-        absl::optional<CSSSyntaxDefinition> syntax_definition =
+        std::optional<CSSSyntaxDefinition> syntax_definition =
             CSSSyntaxStringParser(type).Parse();
         if (!syntax_definition) {
           exception_state->ThrowTypeError("Invalid argument types.");
@@ -103,9 +103,10 @@ PaintWorkletGlobalScope* PaintWorkletGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<PaintWorkletGlobalScope>(
       frame, std::move(creation_params), reporting_proxy);
   global_scope->ScriptController()->Initialize(NullURL());
-  MainThreadDebugger::Instance()->ContextCreated(
-      global_scope->ScriptController()->GetScriptState(),
-      global_scope->GetFrame(), global_scope->DocumentSecurityOrigin());
+  MainThreadDebugger::Instance(global_scope->GetIsolate())
+      ->ContextCreated(global_scope->ScriptController()->GetScriptState(),
+                       global_scope->GetFrame(),
+                       global_scope->DocumentSecurityOrigin());
   return global_scope;
 }
 
@@ -140,8 +141,8 @@ void PaintWorkletGlobalScope::Dispose() {
             PaintWorkletProxyClient::From(Clients()))
       proxy_client->Dispose();
   } else {
-    MainThreadDebugger::Instance()->ContextWillBeDestroyed(
-        ScriptController()->GetScriptState());
+    MainThreadDebugger::Instance(GetIsolate())
+        ->ContextWillBeDestroyed(ScriptController()->GetScriptState());
   }
   WorkletGlobalScope::Dispose();
 

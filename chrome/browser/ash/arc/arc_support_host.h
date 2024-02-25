@@ -62,7 +62,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // A struct to represent the error to display on the screen.
   struct ErrorInfo {
     explicit ErrorInfo(Error error);
-    ErrorInfo(Error error, const absl::optional<int>& arg);
+    ErrorInfo(Error error, const std::optional<int>& arg);
     ErrorInfo(const ErrorInfo&);
     ErrorInfo& operator=(const ErrorInfo&);
 
@@ -74,7 +74,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // be passed using this arg. For SIGN_IN_UNKNOWN_ERROR the arg should be
     // specific provisioning result code. For SIGN_IN_CLOUD_PROVISION_FLOW_*
     // errors the arg should be error code received from ARC.
-    absl::optional<int> arg;
+    std::optional<int> arg;
   };
 
   // Delegate to handle manual authentication related events.
@@ -91,6 +91,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // Called when "RETRY" button on the error page is clicked during terms of
     // service negotiation.
     virtual void OnTermsRetryClicked() = 0;
+
+    // Called when terms of service page is loaded or fails to load.
+    virtual void OnTermsLoadResult(bool success) = 0;
 
    protected:
     virtual ~TermsOfServiceDelegate() = default;
@@ -116,6 +119,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
     // Called when network tests link on error page is clicked.
     virtual void OnRunNetworkTestsClicked() = 0;
+
+    // Called when error page is shown.
+    virtual void OnErrorPageShown(bool network_tests_shown) = 0;
 
    protected:
     virtual ~ErrorDelegate() = default;
@@ -220,14 +226,14 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
   void DisconnectMessageHost();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   RequestOpenAppCallback request_open_app_callback_;
 
   // Not owned.
-  raw_ptr<TermsOfServiceDelegate, ExperimentalAsh> tos_delegate_ = nullptr;
+  raw_ptr<TermsOfServiceDelegate> tos_delegate_ = nullptr;
 
   // Not owned.
-  raw_ptr<ErrorDelegate, ExperimentalAsh> error_delegate_ = nullptr;
+  raw_ptr<ErrorDelegate> error_delegate_ = nullptr;
 
   // True, if ARC support app is requested to start, but the connection is not
   // yet established. Reset to false, when the app is started and the
@@ -235,9 +241,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   bool app_start_pending_ = false;
 
   // The instance is created and managed by Chrome.
-  raw_ptr<arc::ArcSupportMessageHost, ExperimentalAsh> message_host_ = nullptr;
+  raw_ptr<arc::ArcSupportMessageHost> message_host_ = nullptr;
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   // The lifetime of the message_host_ is out of control from ARC.
   // Fields below are UI parameter cache in case the value is set before
@@ -245,7 +251,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   UIPage ui_page_ = UIPage::NO_PAGE;
 
   // These have valid values iff ui_page_ == ERROR.
-  absl::optional<ErrorInfo> error_info_;
+  std::optional<ErrorInfo> error_info_;
   bool should_show_send_feedback_;
   bool should_show_run_network_tests_;
 

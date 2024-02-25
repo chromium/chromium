@@ -37,9 +37,6 @@ class TabModelJniBridge : public TabModel {
   ~TabModelJniBridge() override;
 
   // Called by JNI
-  base::android::ScopedJavaLocalRef<jobject> GetProfileAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   void TabAddedToModel(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
                        const base::android::JavaParamRef<jobject>& jtab);
@@ -69,7 +66,7 @@ class TabModelJniBridge : public TabModel {
   bool IsActiveModel() const override;
 
   // Return whether |tab| is grouped together with other Tab objects.
-  static bool HasOtherRelatedTabs(TabAndroid* tab);
+  static bool IsTabInTabGroup(TabAndroid* tab);
 
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;

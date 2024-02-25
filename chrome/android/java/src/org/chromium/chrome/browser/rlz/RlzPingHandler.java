@@ -6,18 +6,18 @@ package org.chromium.chrome.browser.rlz;
 
 import android.text.TextUtils;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 
 import java.util.List;
 import java.util.Locale;
 
-/**
- * A handler for revenue related pings that needs customized brand and event codes.
- */
+/** A handler for revenue related pings that needs customized brand and event codes. */
 @JNINamespace("chrome::android")
 public class RlzPingHandler {
     private static final String ID_SALT = "RLZSalt";
@@ -38,8 +38,14 @@ public class RlzPingHandler {
         String id = new SettingsSecureBasedIdentificationGenerator().getUniqueId(ID_SALT);
         id = generate50CharacterId(id.toUpperCase(Locale.getDefault()));
 
-        RlzPingHandlerJni.get().startPing(Profile.getLastUsedRegularProfile(), brand,
-                Locale.getDefault().getLanguage(), TextUtils.join(",", events), id, callback);
+        RlzPingHandlerJni.get()
+                .startPing(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        brand,
+                        Locale.getDefault().getLanguage(),
+                        TextUtils.join(",", events),
+                        id,
+                        callback);
     }
 
     private static String generate50CharacterId(String baseId) {
@@ -52,7 +58,12 @@ public class RlzPingHandler {
 
     @NativeMethods
     interface Natives {
-        void startPing(Profile profile, String brand, String language, String events, String id,
+        void startPing(
+                Profile profile,
+                String brand,
+                String language,
+                String events,
+                String id,
                 Callback<Boolean> callback);
     }
 }

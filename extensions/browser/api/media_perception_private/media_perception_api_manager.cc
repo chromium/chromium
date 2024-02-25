@@ -111,8 +111,7 @@ class MediaPerceptionAPIManager::MediaPerceptionControllerClient
 
  private:
   // Provides access to methods for talking to core Chrome code.
-  raw_ptr<MediaPerceptionAPIDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
+  raw_ptr<MediaPerceptionAPIDelegate, DanglingUntriaged> delegate_;
 
   // Receiver of the MediaPerceptionControllerClient to the message pipe.
   mojo::Receiver<
@@ -563,7 +562,7 @@ void MediaPerceptionAPIManager::UpstartRestartCallback(
 
 void MediaPerceptionAPIManager::StateCallback(
     APIStateCallback callback,
-    absl::optional<mri::State> result) {
+    std::optional<mri::State> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         GetStateForServiceError(extensions::api::media_perception_private::
@@ -577,7 +576,7 @@ void MediaPerceptionAPIManager::StateCallback(
 
 void MediaPerceptionAPIManager::GetDiagnosticsCallback(
     APIGetDiagnosticsCallback callback,
-    absl::optional<mri::Diagnostics> result) {
+    std::optional<mri::Diagnostics> result) {
   if (!result.has_value()) {
     std::move(callback).Run(GetDiagnosticsForServiceError(
         extensions::api::media_perception_private::ServiceError::

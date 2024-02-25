@@ -74,7 +74,7 @@ DiagnosticsDialog::DiagnosticsDialog(DiagnosticsDialog::DiagnosticsPage page)
 
 DiagnosticsDialog::~DiagnosticsDialog() = default;
 
-const std::string& DiagnosticsDialog::Id() {
+std::string DiagnosticsDialog::Id() {
   return dialog_id_;
 }
 

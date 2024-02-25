@@ -7,20 +7,21 @@
 #import <cmath>
 
 #import "base/ios/device_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/web_state.h"
@@ -30,7 +31,10 @@ using base::UserMetricsAction;
 
 namespace {
 // Spacing between cards.
-const CGFloat kCardHorizontalSpacing = 30;
+const CGFloat kCardHorizontalSpacing = 16;
+
+// Corner radius of cards.
+const CGFloat kCardCornerRadius = 32;
 
 // Portion of the screen an edge card can be dragged.
 const CGFloat kEdgeCardDragPercentage = 0.35;
@@ -68,7 +72,7 @@ const CGFloat kResizeFactor = 4;
   CGPoint _currentPoint;
 
   // WebStateList provided from the initializer.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 }
 
 @synthesize backgroundTopConstraint = _backgroundTopConstraint;
@@ -103,8 +107,12 @@ const CGFloat kResizeFactor = 4;
 
     _rightCard =
         [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _rightCard.layer.cornerRadius = kCardCornerRadius;
+    _rightCard.layer.masksToBounds = YES;
     _leftCard =
         [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _leftCard.layer.cornerRadius = kCardCornerRadius;
+    _leftCard.layer.masksToBounds = YES;
     [_rightCard setTranslatesAutoresizingMaskIntoConstraints:NO];
     [_leftCard setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self addSubview:_rightCard];

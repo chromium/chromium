@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -76,6 +77,41 @@ TEST(CSSPropertyNamesTest, AlternativeViewTimelineWithInset) {
     EXPECT_EQ(CSSPropertyID::kAlternativeViewTimelineWithInset,
               UnresolvedCSSPropertyID(/* execution_context */ nullptr,
                                       "view-timeline"));
+  }
+}
+
+TEST(CSSPropertyNamesTest, WebkitAlternativeMaskSize) {
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(false);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask-size");
+    EXPECT_EQ(CSSPropertyID::kWebkitMaskSize, property_id);
+    EXPECT_FALSE(IsPropertyAlias(property_id));
+  }
+
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(true);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask-size");
+    EXPECT_EQ(CSSPropertyID::kAliasWebkitAlternativeMaskSize, property_id);
+    EXPECT_TRUE(IsPropertyAlias(property_id));
+    EXPECT_EQ(CSSPropertyID::kMaskSize, ResolveCSSPropertyID(property_id));
+  }
+}
+
+TEST(CSSPropertyNamesTest, AlternativeMask) {
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(false);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask");
+    EXPECT_EQ(CSSPropertyID::kWebkitMask, property_id);
+  }
+
+  {
+    ScopedCSSMaskingInteropForTest scoped_feature(true);
+    CSSPropertyID property_id = UnresolvedCSSPropertyID(
+        /* execution_context */ nullptr, "-webkit-mask");
+    EXPECT_EQ(CSSPropertyID::kAliasWebkitAlternativeMask, property_id);
   }
 }
 

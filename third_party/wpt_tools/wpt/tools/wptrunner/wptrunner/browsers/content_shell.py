@@ -1,24 +1,33 @@
 # mypy: allow-untyped-defs
 
+import contextlib
 import os
 import subprocess
 from multiprocessing import Queue, Event
 from threading import Thread
+from urllib.parse import urljoin
 
 from . import chrome_spki_certs
 from .base import (
     Browser,
     ExecutorBrowser,
     OutputHandler,
+    browser_command,
 )
 from .base import get_timeout_multiplier   # noqa: F401
+from .chrome import debug_args
 from ..executors import executor_kwargs as base_executor_kwargs
+from ..executors.base import server_url
 from ..executors.executorcontentshell import (  # noqa: F401
     ContentShellCrashtestExecutor,
     ContentShellPrintRefTestExecutor,
     ContentShellRefTestExecutor,
     ContentShellTestharnessExecutor,
 )
+
+ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
+DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
+DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
 
 
 __wptrunner__ = {"product": "content_shell",
@@ -52,19 +61,31 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
     if not kwargs["headless"]:
         args.append("--disable-headless-mode")
 
+    if kwargs["debug_info"]:
+        args.extend(debug_args(kwargs["debug_info"]))
+
     # `--run-web-tests -` are specific to content_shell - they activate web
     # test protocol mode.
     args.append("--run-web-tests")
     for arg in kwargs.get("binary_args", []):
         if arg not in args:
             args.append(arg)
+
+    # Temporary workaround to align with RWT behavior. Unless a vts explicitly
+    # enables threaded compositing, we should use single threaded compositing
+    if ENABLE_THREADED_COMPOSITING_FLAG not in subsuite.config.get("binary_args", []):
+        args.extend([DISABLE_THREADED_COMPOSITING_FLAG,
+                     DISABLE_THREADED_ANIMATION_FLAG])
+
     for arg in subsuite.config.get("binary_args", []):
         if arg not in args:
             args.append(arg)
     args.append("-")
 
     return {"binary": kwargs["binary"],
-            "binary_args": args}
+            "binary_args": args,
+            "debug_info": kwargs["debug_info"],
+            "pac_origin": server_url(config, "http")}
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data,
@@ -84,7 +105,8 @@ def env_extras(**kwargs):
 
 def env_options():
     return {"server_host": "127.0.0.1",
-            "testharnessreport": "testharnessreport-content-shell.js"}
+            "testharnessreport": "testharnessreport-content-shell.js",
+            "supports_debugger": True}
 
 
 def update_properties():
@@ -97,26 +119,38 @@ class ContentShellBrowser(Browser):
     Upon startup, the stdout, stderr, and stdin pipes of the underlying content_shell
     process are connected to multiprocessing Queues so that the runner process can
     interact with content_shell through its protocol mode.
+
+    See Also:
+        Protocol Mode: https://chromium.googlesource.com/chromium/src.git/+/HEAD/content/web_test/browser/test_info_extractor.h
     """
-    # Seconds to wait for the process to stop after it was sent `SIGTERM` or
-    # `TerminateProcess()`. The value is inherited from:
+    # Seconds to wait for the process to stop after it was sent a `QUIT`
+    # command, after which `SIGTERM` or `TerminateProcess()` forces termination.
+    # The timeout is ported from:
     # https://chromium.googlesource.com/chromium/src/+/b175d48d3ea4ea66eea35c88c11aa80d233f3bee/third_party/blink/tools/blinkpy/web_tests/port/base.py#476
     termination_timeout: float = 3
 
-    def __init__(self, logger, binary="content_shell", binary_args=[], **kwargs):
+    def __init__(self, logger, binary="content_shell", binary_args=None,
+                 debug_info=None, pac_origin=None, **kwargs):
         super().__init__(logger)
-        self._args = [binary] + binary_args
+        self._debug_cmd_prefix, self._browser_cmd = browser_command(
+            binary, binary_args or [], debug_info)
         self._output_handler = None
         self._proc = None
+        self._pac_origin = pac_origin
+        self._pac = None
 
-    def start(self, group_metadata, **kwargs):
-        self.logger.debug("Starting content shell: %s..." % self._args[0])
-        self._output_handler = OutputHandler(self.logger, self._args)
+    def start(self, group_metadata, **settings):
+        browser_cmd, pac = list(self._browser_cmd), settings.get("pac")
+        if pac:
+            browser_cmd.insert(1, f"--proxy-pac-url={pac}")
+        self.logger.debug(f"Starting content shell: {browser_cmd[0]}...")
+        args = [*self._debug_cmd_prefix, *browser_cmd]
+        self._output_handler = OutputHandler(self.logger, args)
         if os.name == "posix":
             close_fds, preexec_fn = True, lambda: os.setpgid(0, 0)
         else:
             close_fds, preexec_fn = False, None
-        self._proc = subprocess.Popen(self._args,
+        self._proc = subprocess.Popen(args,
                                       stdin=subprocess.PIPE,
                                       stdout=subprocess.PIPE,
                                       stderr=subprocess.PIPE,
@@ -144,45 +178,55 @@ class ContentShellBrowser(Browser):
         # Content shell is likely still in the process of initializing. The actual waiting
         # for the startup to finish is done in the ContentShellProtocol.
         self.logger.debug("Content shell has been started.")
-        self._output_handler.start(group_metadata=group_metadata, **kwargs)
+        self._output_handler.start(group_metadata=group_metadata, **settings)
 
     def stop(self, force=False):
         self.logger.debug("Stopping content shell...")
 
-        clean_shutdown = True
+        clean_shutdown = stopped = True
         if self.is_alive():
-            self._proc.terminate()
-            try:
-                self._proc.wait(timeout=self.termination_timeout)
-            except subprocess.TimeoutExpired:
-                clean_shutdown = False
-                self.logger.warning(
-                    "Content shell failed to stop gracefully (PID: "
-                    f"{self._proc.pid}, timeout: {self.termination_timeout}s)")
-                if force:
-                    self._proc.kill()
+            clean_shutdown = self._terminate_process(force=force)
 
-        # We need to shut down these queues cleanly to avoid broken pipe error spam in the logs.
-        self._stdout_reader.join(2)
-        self._stderr_reader.join(2)
-
+        # Close these queues cleanly to avoid broken pipe error spam in the logs.
         self._stdin_queue.put(None)
-        self._stdin_writer.join(2)
-
         for thread in [self._stdout_reader, self._stderr_reader, self._stdin_writer]:
+            thread.join(2)
             if thread.is_alive():
                 self.logger.warning(f"Content shell IO thread {thread.name} did not shut down gracefully.")
-                return False
+                stopped = False
 
-        stopped = not self.is_alive()
-        if stopped:
-            self.logger.debug("Content shell has been stopped.")
+        if not self.is_alive():
+            self.logger.debug(
+                "Content shell has been stopped "
+                f"(PID: {self._proc.pid}, exit code: {self._proc.returncode})")
         else:
-            self.logger.warning("Content shell failed to stop.")
+            stopped = False
+            self.logger.warning(f"Content shell failed to stop (PID: {self._proc.pid})")
         if stopped and self._output_handler is not None:
             self._output_handler.after_process_stop(clean_shutdown)
             self._output_handler = None
         return stopped
+
+    def _terminate_process(self, force: bool = False) -> bool:
+        self._stdin_queue.put(b"QUIT\n")
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            self._proc.wait(timeout=self.termination_timeout)
+            return True
+        self.logger.warning(
+            "Content shell failed to respond to QUIT command "
+            f"(PID: {self._proc.pid}, timeout: {self.termination_timeout}s)")
+        # Skip `terminate()` on Windows, which is an alias for `kill()`, and
+        # only `kill()` for `force=True`.
+        #
+        # [1]: https://docs.python.org/3/library/subprocess.html#subprocess.Popen.kill
+        if os.name == "posix":
+            self._proc.terminate()
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                self._proc.wait(timeout=1)
+                return False
+        if force:
+            self._proc.kill()
+        return False
 
     def is_alive(self):
         return self._proc is not None and self._proc.poll() is None
@@ -203,6 +247,13 @@ class ContentShellBrowser(Browser):
 
     def check_crash(self, process, test):
         return not self.is_alive()
+
+    def settings(self, test):
+        pac_path = test.environment.get("pac")
+        if self._pac_origin and pac_path:
+            self._pac = urljoin(self._pac_origin, pac_path)
+            return {"pac": self._pac}
+        return {}
 
     def _create_reader_thread(self, name, stream, queue, prefix=b""):
         """This creates (and starts) a background thread which reads lines from `stream` and

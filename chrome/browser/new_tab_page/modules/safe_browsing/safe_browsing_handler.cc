@@ -80,7 +80,7 @@ void SafeBrowsingHandler::CanShowModule(CanShowModuleCallback callback) {
     return;
   }
 
-  absl::optional<base::Time> latest_event_time =
+  std::optional<base::Time> latest_event_time =
       metrics_collector_->GetLatestSecuritySensitiveEventTimestamp();
   // Do not show if there is no security sensitive event after the latest
   // cooldown.

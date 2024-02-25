@@ -16,6 +16,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "minidump/minidump_writer_util.h"
 #include "util/file/file_writer.h"

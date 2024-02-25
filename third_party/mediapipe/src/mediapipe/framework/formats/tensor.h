@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
+#include <memory>
 #include <numeric>
 #include <tuple>
 #include <type_traits>
@@ -25,26 +26,24 @@
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"
+#include "absl/log/absl_check.h"
+#include "absl/status/status.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/formats/tensor/internal.h"
+#include "mediapipe/framework/memory_manager.h"
+// Exports MEDIAPIPE_TENSOR_USE_AHWB macro.
 #include "mediapipe/framework/port.h"
-
-#ifndef MEDIAPIPE_NO_JNI
-#if __ANDROID_API__ >= 26 || defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
-#define MEDIAPIPE_TENSOR_USE_AHWB 1
-#endif  // __ANDROID_API__ >= 26 ||
-        // defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
-#endif  // MEDIAPIPE_NO_JNI
 
 #ifdef MEDIAPIPE_TENSOR_USE_AHWB
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <android/hardware_buffer.h>
+
+#include "mediapipe/framework/formats/hardware_buffer.h"
+#include "mediapipe/framework/formats/hardware_buffer_pool.h"
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
 #include "mediapipe/gpu/gl_base.h"
 #include "mediapipe/gpu/gl_context.h"
-#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
 
 #if defined __has_builtin
@@ -95,10 +94,10 @@ class Tensor {
     // Non-copyable.
     View(const View&) = delete;
     View& operator=(const View&) = delete;
-    View(View&& src) = default;
 
    protected:
-    View(std::unique_ptr<absl::MutexLock>&& lock) : lock_(std::move(lock)) {}
+    explicit View(std::unique_ptr<absl::MutexLock>&& lock)
+        : lock_(std::move(lock)) {}
     std::unique_ptr<absl::MutexLock> lock_;
   };
 
@@ -141,9 +140,11 @@ class Tensor {
     int zero_point = 0;
   };
 
-  Tensor(ElementType element_type, const Shape& shape);
   Tensor(ElementType element_type, const Shape& shape,
-         const QuantizationParameters& quantization_parameters);
+         MemoryManager* memory_manager = nullptr);
+  Tensor(ElementType element_type, const Shape& shape,
+         const QuantizationParameters& quantization_parameters,
+         MemoryManager* memory_manager = nullptr);
 
   // Non-copyable.
   Tensor(const Tensor&) = delete;
@@ -162,7 +163,7 @@ class Tensor {
       return static_cast<typename std::tuple_element<
           std::is_const<T>::value, std::tuple<P*, const P*> >::type>(buffer_);
     }
-    CpuView(CpuView&& src) : View(std::move(src)) {
+    CpuView(CpuView&& src) : View(std::move(src.lock_)) {
       buffer_ = std::exchange(src.buffer_, nullptr);
       release_callback_ = std::exchange(src.release_callback_, nullptr);
     }
@@ -191,9 +192,12 @@ class Tensor {
   using FinishingFunc = std::function<bool(bool)>;
   class AHardwareBufferView : public View {
    public:
-    AHardwareBuffer* handle() const { return handle_; }
-    AHardwareBufferView(AHardwareBufferView&& src) : View(std::move(src)) {
-      handle_ = std::exchange(src.handle_, nullptr);
+    AHardwareBuffer* handle() const {
+      return hardware_buffer_->GetAHardwareBuffer();
+    }
+    AHardwareBufferView(AHardwareBufferView&& src)
+        : View(std::move(src.lock_)) {
+      hardware_buffer_ = std::move(src.hardware_buffer_);
       file_descriptor_ = src.file_descriptor_;
       fence_fd_ = std::exchange(src.fence_fd_, nullptr);
       ahwb_written_ = std::exchange(src.ahwb_written_, nullptr);
@@ -218,17 +222,17 @@ class Tensor {
 
    protected:
     friend class Tensor;
-    AHardwareBufferView(AHardwareBuffer* handle, int file_descriptor,
+    AHardwareBufferView(HardwareBuffer* hardware_buffer, int file_descriptor,
                         int* fence_fd, FinishingFunc* ahwb_written,
                         std::function<void()>* release_callback,
                         std::unique_ptr<absl::MutexLock>&& lock)
         : View(std::move(lock)),
-          handle_(handle),
+          hardware_buffer_(hardware_buffer),
           file_descriptor_(file_descriptor),
           fence_fd_(fence_fd),
           ahwb_written_(ahwb_written),
           release_callback_(release_callback) {}
-    AHardwareBuffer* handle_;
+    HardwareBuffer* hardware_buffer_;
     int file_descriptor_;
     // The view sets some Tensor's fields. The view is released prior to tensor.
     int* fence_fd_;
@@ -251,8 +255,8 @@ class Tensor {
    public:
     GLuint name() const { return name_; }
     OpenGlTexture2dView(OpenGlTexture2dView&& src)
-        : View(std::move(src)), name_(src.name_) {
-      src.name_ = GL_INVALID_INDEX;
+        : View(std::move(src.lock_)) {
+      name_ = std::exchange(src.name_, GL_INVALID_INDEX);
     }
     // To fit a tensor into a texture two layouts are used:
     // 1. Aligned. Width of the texture = tensor_width * num_slices, where slice
@@ -281,18 +285,22 @@ class Tensor {
   class OpenGlBufferView : public View {
    public:
     GLuint name() const { return name_; }
-    OpenGlBufferView(OpenGlBufferView&& src) : View(std::move(src)) {
+
+    OpenGlBufferView(OpenGlBufferView&& src) : View(std::move(src.lock_)) {
       name_ = std::exchange(src.name_, GL_INVALID_INDEX);
       ssbo_read_ = std::exchange(src.ssbo_read_, nullptr);
     }
     ~OpenGlBufferView() {
       if (ssbo_read_) {
+        // TODO: update tensor to properly handle cases when
+        // multiple views were requested multiple sync fence may be needed.
         *ssbo_read_ = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
       }
     }
 
    protected:
     friend class Tensor;
+
     OpenGlBufferView(GLuint name, std::unique_ptr<absl::MutexLock>&& lock,
                      GLsync* ssbo_read)
         : View(std::move(lock)), name_(name), ssbo_read_(ssbo_read) {}
@@ -380,7 +388,10 @@ class Tensor {
   mutable std::unique_ptr<MtlResources> mtl_resources_;
 
 #ifdef MEDIAPIPE_TENSOR_USE_AHWB
-  mutable AHardwareBuffer* ahwb_ = nullptr;
+  mutable std::shared_ptr<HardwareBuffer> ahwb_;
+  // Allocates and pools HardwareBuffer instances. Holding the shared_ptr to the
+  // pool ensures it outlives the internal ahwb_.
+  std::shared_ptr<HardwareBufferPool> hardware_buffer_pool_;
   // Signals when GPU finished writing into SSBO so AHWB can be used then. Or
   // signals when writing into AHWB has been finished so GPU can read from SSBO.
   // Sync and FD are bound together.
@@ -396,7 +407,7 @@ class Tensor {
   // If the input parameter is 'true' then wait for the writing to be finished.
   mutable FinishingFunc ahwb_written_;
   mutable std::function<void()> release_callback_;
-  bool AllocateAHardwareBuffer(int size_alignment = 0) const;
+  absl::Status AllocateAHardwareBuffer(int size_alignment = 0) const;
   void CreateEglSyncAndFd() const;
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
   // Use Ahwb for other views: OpenGL / CPU buffer.

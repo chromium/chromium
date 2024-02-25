@@ -62,16 +62,18 @@ class TestHandler : public MessagePumpForIO::FdWatcher {
   void OnFileCanReadWithoutBlocking(int fd) override {
     watcher_to_delete_ = nullptr;
     is_readable_ = true;
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_->QuitWhenIdle();
   }
   void OnFileCanWriteWithoutBlocking(int fd) override {
     watcher_to_delete_ = nullptr;
     is_writable_ = true;
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_->QuitWhenIdle();
   }
+  void set_run_loop(base::RunLoop* loop) { loop_ = loop; }
 
   bool is_readable_ = false;
   bool is_writable_ = false;
+  raw_ptr<base::RunLoop> loop_;
 
   // If set then the contained watcher will be deleted on notification.
   std::unique_ptr<MessagePumpForIO::FdWatchController> watcher_to_delete_;
@@ -171,13 +173,16 @@ TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherDeleteInCallback) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 
   TestHandler handler;
+  base::RunLoop loop;
+  handler.set_run_loop(&loop);
+
   handler.watcher_to_delete_ =
       std::make_unique<MessagePumpForIO::FdWatchController>(FROM_HERE);
 
   CurrentIOThread::Get()->WatchFileDescriptor(
       write_fd_.get(), true, MessagePumpForIO::WATCH_WRITE,
       handler.watcher_to_delete_.get(), &handler);
-  RunLoop().Run();
+  loop.Run();
 }
 
 // A watcher that owns its controller and will either delete itself or stop
@@ -330,7 +335,8 @@ TEST_P(MessageLoopForIoPosixReadAndWriteTest, AfterWrite) {
 TEST_F(FdWatchControllerPosixTest, WatchReadable) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
-
+  base::RunLoop loop;
+  handler.set_run_loop(&loop);
   // Watch the pipe for readability.
   MessagePumpForIO::FdWatchController watcher(FROM_HERE);
   ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
@@ -338,7 +344,7 @@ TEST_F(FdWatchControllerPosixTest, WatchReadable) {
       &watcher, &handler));
 
   // The pipe should not be readable when first created.
-  RunLoop().RunUntilIdle();
+  loop.RunUntilIdle();
   ASSERT_FALSE(handler.is_readable_);
   ASSERT_FALSE(handler.is_writable_);
 
@@ -346,7 +352,7 @@ TEST_F(FdWatchControllerPosixTest, WatchReadable) {
 
   // We don't want to assume that the read fd becomes readable the
   // instant a bytes is written, so Run until quit by an event.
-  RunLoop().Run();
+  loop.Run();
 
   ASSERT_TRUE(handler.is_readable_);
   ASSERT_FALSE(handler.is_writable_);
@@ -356,7 +362,9 @@ TEST_F(FdWatchControllerPosixTest, WatchReadable) {
 TEST_F(FdWatchControllerPosixTest, WatchWritable) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
+  base::RunLoop loop;
 
+  handler.set_run_loop(&loop);
   // Watch the pipe for writability.
   MessagePumpForIO::FdWatchController watcher(FROM_HERE);
   ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
@@ -369,7 +377,7 @@ TEST_F(FdWatchControllerPosixTest, WatchWritable) {
 
   // The pipe should be writable immediately, but wait for the quit closure
   // anyway, to be sure.
-  RunLoop().Run();
+  loop.Run();
 
   ASSERT_FALSE(handler.is_readable_);
   ASSERT_TRUE(handler.is_writable_);
@@ -379,7 +387,8 @@ TEST_F(FdWatchControllerPosixTest, WatchWritable) {
 TEST_F(FdWatchControllerPosixTest, RunUntilIdle) {
   test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
   TestHandler handler;
-
+  base::RunLoop loop;
+  handler.set_run_loop(&loop);
   // Watch the pipe for readability.
   MessagePumpForIO::FdWatchController watcher(FROM_HERE);
   ASSERT_TRUE(CurrentIOThread::Get()->WatchFileDescriptor(
@@ -387,13 +396,13 @@ TEST_F(FdWatchControllerPosixTest, RunUntilIdle) {
       &watcher, &handler));
 
   // The pipe should not be readable when first created.
-  RunLoop().RunUntilIdle();
+  loop.RunUntilIdle();
   ASSERT_FALSE(handler.is_readable_);
 
   TriggerReadEvent();
 
   while (!handler.is_readable_)
-    RunLoop().RunUntilIdle();
+    loop.RunUntilIdle();
 }
 
 void StopWatching(MessagePumpForIO::FdWatchController* controller,

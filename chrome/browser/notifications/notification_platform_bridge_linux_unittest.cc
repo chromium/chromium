@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -194,17 +195,6 @@ struct TestParams {
   bool connect_signals;
 };
 
-const SkBitmap CreateBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseARGB(255, 0, 255, 0);
-  return bitmap;
-}
-
-gfx::ImageSkia CreateImageSkia(int width, int height) {
-  return gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height));
-}
-
 NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
   // The "Notify" message must have type (susssasa{sv}i).
   // https://developer.gnome.org/notification-spec/#command-notify
@@ -353,9 +343,9 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                        NotificationHandler::Type notification_type,
                        const GURL& origin,
                        const std::string& notification_id,
-                       const absl::optional<int>& action_index,
-                       const absl::optional<std::u16string>& reply,
-                       const absl::optional<bool>& by_user) {
+                       const std::optional<int>& action_index,
+                       const std::optional<std::u16string>& reply,
+                       const std::optional<bool>& by_user) {
     last_operation_ = operation;
     last_action_index_ = action_index;
     last_reply_ = reply;
@@ -453,9 +443,9 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationPlatformBridgeLinux> notification_bridge_linux_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
-  absl::optional<NotificationOperation> last_operation_;
-  absl::optional<int> last_action_index_;
-  absl::optional<std::u16string> last_reply_;
+  std::optional<NotificationOperation> last_operation_;
+  std::optional<int> last_action_index_;
+  std::optional<std::u16string> last_reply_;
 
  private:
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {
@@ -589,7 +579,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationImages) {
   const int expected_height = kMaxImageHeight / 2;
 
   gfx::Image original_image =
-      gfx::Image(CreateImageSkia(original_width, original_height));
+      gfx::Image(gfx::test::CreateImageSkia(original_width, original_height));
 
   EXPECT_CALL(*mock_notification_proxy_.get(),
               CallMethodAndBlock(Calls("Notify"), _))

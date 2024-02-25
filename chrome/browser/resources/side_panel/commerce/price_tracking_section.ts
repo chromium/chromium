@@ -6,10 +6,12 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {BookmarkProductInfo, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './price_tracking_section.html.js';
@@ -39,7 +41,7 @@ export class PriceTrackingSection extends PolymerElement {
     return {
       productInfo: Object,
 
-      isProductTracked_: {
+      isProductTracked: {
         type: Boolean,
         value: false,
       },
@@ -48,13 +50,15 @@ export class PriceTrackingSection extends PolymerElement {
 
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
-  private isProductTracked_: boolean;
+  isProductTracked: boolean;
   private listenerIds_: number[] = [];
   private toggleAnnotationText_: string;
+  private saveLocationStartText_: string;
+  private saveLocationEndText_: string;
+  private showSaveLocationText_: boolean;
   private folderName_: string;
 
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -70,28 +74,49 @@ export class PriceTrackingSection extends PolymerElement {
         callbackRouter.operationFailedForBookmark.addListener(
             (product: BookmarkProductInfo, attemptedTrack: boolean) =>
                 this.onBookmarkOperationFailed(product, attemptedTrack)),
+        callbackRouter.onProductBookmarkMoved.addListener(
+            (product: BookmarkProductInfo) =>
+                this.onProductBookmarkMoved(product)),
     );
 
-
-    this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
-      this.updatePriceTrackingSection_(res.tracked);
-    });
+    this.updatePriceTrackingSection_(this.isProductTracked);
   }
 
   private async updatePriceTrackingSection_(tracked: boolean) {
     if (!tracked) {
       this.folderName_ = '';
-      // TODO(crbug.com/1456420): Update the string to include the period.
       this.toggleAnnotationText_ =
           loadTimeData.getString('trackPriceDescription');
     } else {
       const {name} =
           await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
       this.folderName_ = decodeString16(name);
+
       this.toggleAnnotationText_ =
-          loadTimeData.getStringF('trackPriceDone', '');
+          loadTimeData.getString('trackPriceSaveDescription');
     }
-    this.isProductTracked_ = tracked;
+    this.updateSaveLocationText(this.folderName_);
+    this.isProductTracked = tracked;
+  }
+
+  private updateSaveLocationText(folderName: string) {
+    if (folderName.length === 0) {
+      this.showSaveLocationText_ = false;
+      this.saveLocationStartText_ = '';
+      this.saveLocationEndText_ = '';
+      return;
+    }
+
+    const fullText: string =
+        loadTimeData.getStringF('trackPriceSaveLocation', folderName);
+
+    // TODO(1456420): Find a better way to dynamically add a link to a templated
+    //                string and possibly avoid using substring.
+    this.saveLocationStartText_ =
+        fullText.substring(0, fullText.lastIndexOf(folderName));
+    this.saveLocationEndText_ = fullText.substring(
+        fullText.lastIndexOf(folderName) + folderName.length);
+    this.showSaveLocationText_ = true;
   }
 
   override disconnectedCallback() {
@@ -103,9 +128,9 @@ export class PriceTrackingSection extends PolymerElement {
 
   private onPriceTrackingToggled_() {
     this.shoppingApi_.setPriceTrackingStatusForCurrentUrl(
-        this.isProductTracked_);
+        this.isProductTracked);
     chrome.metricsPrivate.recordEnumerationValue(
-        this.isProductTracked_ ?
+        this.isProductTracked ?
             'Commerce.PriceTracking.PriceInsightsSidePanel.Track' :
             'Commerce.PriceTracking.PriceInsightsSidePanel.Untrack',
         this.priceInsightsInfo.bucket,
@@ -140,7 +165,17 @@ export class PriceTrackingSection extends PolymerElement {
     }
     this.toggleAnnotationText_ = loadTimeData.getString('trackPriceError');
     this.folderName_ = '';
-    this.isProductTracked_ = !attemptedTrack;
+    this.updateSaveLocationText('');
+    this.isProductTracked = !attemptedTrack;
+  }
+
+  private async onProductBookmarkMoved(product: BookmarkProductInfo) {
+    if (product.info.clusterId === this.productInfo.clusterId &&
+        this.isProductTracked) {
+      const {name} =
+          await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
+      this.folderName_ = decodeString16(name);
+    }
   }
 }
 

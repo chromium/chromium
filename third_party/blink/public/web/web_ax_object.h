@@ -38,6 +38,9 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_source.h"
 
 namespace gfx {
 class Point;
@@ -49,6 +52,7 @@ class Transform;
 
 namespace ui {
 struct AXActionData;
+class AXNode;
 struct AXNodeData;
 }
 
@@ -104,7 +108,6 @@ class BLINK_EXPORT WebAXObject {
   void Serialize(ui::AXNodeData* node_data,
                  ui::AXMode accessibility_mode) const;
 
-  void MarkSerializerSubtreeDirty() const;
   void OnLoadInlineTextBoxes() const;
   void SetImageAsDataNodeId(const gfx::Size& max_size) const;
   int ImageDataNodeId() const;
@@ -270,10 +273,8 @@ class BLINK_EXPORT WebAXObject {
                          gfx::Transform& container_transform,
                          bool* clips_children = nullptr) const;
 
-  // Marks ths object as dirty (needing serialization). If subtree is true,
-  // the entire AX subtree should be invalidated as well.
-  void MarkAXObjectDirtyWithDetails(
-      bool subtree,
+  // Marks this object as dirty (needing serialization).
+  void AddDirtyObjectToSerializationQueue(
       ax::mojom::EventFrom event_from,
       ax::mojom::Action event_from_action,
       std::vector<ui::AXEventIntent> event_intents) const;
@@ -282,7 +283,17 @@ class BLINK_EXPORT WebAXObject {
   // role and name.
   WebString ToString(bool verbose = false) const;
 
-  void HandleAutofillStateChanged(const WebAXAutofillState state) const;
+  void HandleAutofillSuggestionAvailabilityChanged(
+      WebAXAutofillSuggestionAvailability suggestion_availability) const;
+
+  // Methods for plugins to stitch a tree into this node.
+
+  // Get a new AXID that's not used by any accessibility node in this process,
+  // for when the client needs to insert additional nodes into the accessibility
+  // tree.
+  int GenerateAXID();
+  void SetPluginTreeSource(ui::AXTreeSource<const ui::AXNode*>* source);
+  void MarkPluginDescendantDirty(ui::AXNodeID node_id);
 
   // For testing only, returns whether or not we have the permission to
   // call AOM event listeners.

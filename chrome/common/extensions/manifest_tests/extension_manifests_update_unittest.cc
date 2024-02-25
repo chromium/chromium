@@ -12,8 +12,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace errors = extensions::manifest_errors;
 
-class UpdateURLManifestTest : public ChromeManifestTest {
-};
+using UpdateURLManifestTest = ChromeManifestTest;
 
 TEST_F(UpdateURLManifestTest, UpdateUrls) {
   // Test several valid update urls

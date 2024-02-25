@@ -28,25 +28,25 @@ class MockEncrypter : public quic::QuicEncrypter {
   ~MockEncrypter() override = default;
 
   // QuicEncrypter implementation
-  bool SetKey(absl::string_view key) override;
-  bool SetNoncePrefix(absl::string_view nonce_prefix) override;
-  bool SetHeaderProtectionKey(absl::string_view key) override;
-  bool SetIV(absl::string_view iv) override;
+  bool SetKey(std::string_view key) override;
+  bool SetNoncePrefix(std::string_view nonce_prefix) override;
+  bool SetHeaderProtectionKey(std::string_view key) override;
+  bool SetIV(std::string_view iv) override;
   bool EncryptPacket(uint64_t packet_number,
-                     absl::string_view associated_data,
-                     absl::string_view plaintext,
+                     std::string_view associated_data,
+                     std::string_view plaintext,
                      char* output,
                      size_t* output_length,
                      size_t max_output_length) override;
-  std::string GenerateHeaderProtectionMask(absl::string_view sample) override;
+  std::string GenerateHeaderProtectionMask(std::string_view sample) override;
   size_t GetKeySize() const override;
   size_t GetNoncePrefixSize() const override;
   size_t GetIVSize() const override;
   size_t GetMaxPlaintextSize(size_t ciphertext_size) const override;
   size_t GetCiphertextSize(size_t plaintext_size) const override;
   quic::QuicPacketCount GetConfidentialityLimit() const override;
-  absl::string_view GetKey() const override;
-  absl::string_view GetNoncePrefix() const override;
+  std::string_view GetKey() const override;
+  std::string_view GetNoncePrefix() const override;
 };
 
 }  // namespace net

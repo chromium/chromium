@@ -164,7 +164,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
 
   {
     base::test::ScopedRunLoopTimeout timeout(
-        FROM_HERE, absl::nullopt,
+        FROM_HERE, std::nullopt,
         base::BindRepeating(
             [](const base::FilePath& extension_path) {
               return "GetNextResult timeout while RunExtensionTest: " +

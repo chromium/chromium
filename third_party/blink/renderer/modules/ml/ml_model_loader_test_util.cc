@@ -32,14 +32,14 @@ void FakeMLService::BindFakeService(mojo::ScopedMessagePipeHandle pipe) {
 
 void FakeMLService::CreateModelLoader(CreateModelLoaderOptionsPtr opts,
                                       CreateModelLoaderCallback callback) {
-  std::move(create_model_loader_).Run(std::move(opts), std::move(callback));
+  create_model_loader_.Run(std::move(opts), std::move(callback));
 }
 
 ScopedSetMLServiceBinder::ScopedSetMLServiceBinder(FakeMLService* ml_service,
                                                    const V8TestingScope& scope)
     : interface_broker_(
           scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-  interface_broker_.SetBinderForTesting(
+  interface_broker_->SetBinderForTesting(
       MLService::Name_,
       WTF::BindRepeating(&FakeMLService::BindFakeService,
                          // Safe to WTF::Unretained, we unregister the
@@ -48,7 +48,8 @@ ScopedSetMLServiceBinder::ScopedSetMLServiceBinder(FakeMLService* ml_service,
 }
 
 ScopedSetMLServiceBinder::~ScopedSetMLServiceBinder() {
-  interface_broker_.SetBinderForTesting(MLService::Name_, base::NullCallback());
+  interface_broker_->SetBinderForTesting(MLService::Name_,
+                                         base::NullCallback());
 }
 
 FakeMLModelLoader::FakeMLModelLoader() = default;
@@ -60,7 +61,7 @@ void FakeMLModelLoader::SetLoad(LoadFn fn) {
 }
 
 FakeMLService::CreateModelLoaderFn FakeMLModelLoader::CreateFromThis() {
-  return WTF::BindOnce(
+  return WTF::BindRepeating(
       &FakeMLModelLoader::OnCreateModelLoader,
       // Safe to WTF::Unretained, method won't be called after test finishes.
       WTF::Unretained(this));
@@ -68,8 +69,8 @@ FakeMLService::CreateModelLoaderFn FakeMLModelLoader::CreateFromThis() {
 
 FakeMLService::CreateModelLoaderFn
 FakeMLModelLoader::CreateForUnsupportedContext() {
-  return WTF::BindOnce([](CreateModelLoaderOptionsPtr,
-                          MLService::CreateModelLoaderCallback callback) {
+  return WTF::BindRepeating([](CreateModelLoaderOptionsPtr,
+                               MLService::CreateModelLoaderCallback callback) {
     std::move(callback).Run(CreateModelLoaderResult::kNotSupported,
                             mojo::NullRemote());
   });
@@ -85,7 +86,7 @@ void FakeMLModelLoader::OnCreateModelLoader(
 
 void FakeMLModelLoader::Load(mojo_base::BigBuffer buf,
                              ModelLoader::LoadCallback callback) {
-  std::move(load_).Run(std::move(buf), std::move(callback));
+  load_.Run(std::move(buf), std::move(callback));
 }
 
 }  // namespace blink

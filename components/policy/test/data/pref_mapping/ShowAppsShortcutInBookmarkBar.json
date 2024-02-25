@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ShowAppsShortcutInBookmarkBar": false
+        },
+        "prefs": {
+          "bookmark_bar.show_apps_shortcut": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

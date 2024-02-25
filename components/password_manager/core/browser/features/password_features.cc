@@ -3,96 +3,180 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace password_manager::features {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Enables biometric authentication before form filling.
-BASE_FEATURE(kBiometricAuthenticationForFilling,
-             "BiometricAuthenticationForFilling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
-#if BUILDFLAG(IS_MAC)
-// Enables biometric authentication in settings.
-BASE_FEATURE(kBiometricAuthenticationInSettings,
-             "BiometricAuthenticationInSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
+             "AutoApproveSharedPasswordUpdatesFromSameSender",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables fallback filling if the server or the autocomplete attribute says it
-// is a credit card field.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kButterOnDesktopFollowup,
+             "ButterOnDesktopFollowup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
+             "ClearUndecryptablePasswordsInSync",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kDisablePasswordsDropdownForCvcFields,
              "DisablePasswordsDropdownForCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a second, Gaia-account-scoped password store for users who are signed
-// in but not syncing.
-BASE_FEATURE(kEnablePasswordsAccountStorage,
-             "EnablePasswordsAccountStorage",
 #if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kRemoveUPMUnenrollment,
+             "RemoveUPMUnenrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables filling password on a website when there is saved password on
-// affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFetchGaiaHashOnSignIn,
+             "FetchGaiaHashOnSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// This flag enables password filling across grouped websites. Information about
-// website groups is provided by the affiliation service.
 BASE_FEATURE(kFillingAcrossGroupedSites,
              "FillingAcrossGroupedSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the experiment for the password manager to only fill on account
-// selection, rather than autofilling on page load, with highlighting of fields.
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the notification UI that is displayed to the user when visiting a
-// website for which a stored password has been shared by another user.
-BASE_FEATURE(kSharedPasswordNotificationUI,
-             "SharedPasswordNotificationUI",
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIOSPasswordSignInUff,
+             "IOSPasswordSignInUff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // IS_IOS
+
+BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
+             "LocalStateEnterprisePasswordHashes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables password receiving service including incoming password sharing
-// invitation sync data type.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
+             "NewConfirmationBubbleForGeneratedPasswords",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enabled in M121. Remove at or after M123.
+BASE_FEATURE(kPasskeysPrefetchAffiliations,
+             "PasskeysPrefetchAffiliations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kPasswordGenerationExperiment,
+             "PasswordGenerationExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kPasswordManagerEnableReceiverService,
              "PasswordManagerEnableReceiverService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables password sender service including outgoing password sharing
-// invitation sync data type.
 BASE_FEATURE(kPasswordManagerEnableSenderService,
              "PasswordManagerEnableSenderService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables logging the content of chrome://password-manager-internals to the
-// terminal.
 BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Improves PSL matching capabilities by utilizing PSL-extension list from
-// affiliation service. It fixes problem with incorrect password suggestions on
-// websites like slack.com.
+BASE_FEATURE(kPasswordManualFallbackAvailable,
+             "PasswordManualFallbackAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kRestartToGainAccessToKeychain,
+             "RestartToGainAccessToKeychain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kSharedPasswordNotificationUI,
+             "SharedPasswordNotificationUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipUndecryptablePasswords,
+             "SkipUndecryptablePasswords",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+             "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+             "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kUseExtensionListForPSLMatching,
              "UseExtensionListForPSLMatching",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kUseServerPredictionsOnSaveParsing,
+             "UseServerPredictionsOnSaveParsing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
+             "UsernameFirstFlowFallbackCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
+             "UsernameFirstFlowHonorAutocomplete",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUsernameFirstFlowStoreSeveralValues,
+             "UsernameFirstFlowStoreSeveralValues",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
+    &kUsernameFirstFlowStoreSeveralValues, /*name=*/"max_elements",
+    /*default_value=*/10};
+
+BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
+             "UsernameFirstFlowWithIntermediateValues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<int> kSingleUsernameTimeToLive{
+    &kUsernameFirstFlowWithIntermediateValues, /*name=*/"ttl",
+    /*default_value=*/5};
+
+BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions,
+             "UsernameFirstFlowWithIntermediateValuesPredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting,
+             "UsernameFirstFlowWithIntermediateValuesVoting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUseGMSCoreForBrandingInfo,
+             "UseGMSCoreForBrandingInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

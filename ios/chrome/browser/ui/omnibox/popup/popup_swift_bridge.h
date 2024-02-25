@@ -8,7 +8,7 @@
 // Bridging header between Swift and Obj-C. These types/imports need to be pure
 // Obj-C and have no C++ in them.
 
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal.h"
 #import "ios/chrome/grit/ios_strings.h"

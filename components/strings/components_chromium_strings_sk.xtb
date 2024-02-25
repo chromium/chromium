@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="130631256467250065">Zmeny sa prejavia po ďalšom reštartovaní zariadenia.</translation>
-<translation id="1555506416658437797">upravte spôsoby platby.</translation>
 <translation id="275588974610408078">Správy o zlyhaní nie sú v prehliadači Chromium k dispozícii.</translation>
 <translation id="3064346599913645280">Prezeráte si zabezpečenú stránku prehliadača Chromium</translation>
 <translation id="3255926992597692024">Chromium sa pokúša upraviť nastavenia vypĺňania spôsobov platby.</translation>
@@ -29,7 +28,6 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy" alebo „priame".</translation>
-<translation id="585620188971323280">upraviť nastavenia vypĺňania spôsobov platby.</translation>
 <translation id="6549378540556750549">Prehliadač Chromium je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
 <translation id="7681937895330411637">Prehliadač Chromium je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>

@@ -40,7 +40,9 @@ constexpr char kValidResponse[] = R"()]}'
             "valueAndUnit": {
               "rawText": "9.055 inches"
             }
-          }
+          },
+          "category": "Length",
+          "sourceAmount": 23
         }
       }
     ]

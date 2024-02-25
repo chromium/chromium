@@ -4,10 +4,10 @@
 
 # Targets in ths file are to take a V8 context snapshot on build time.
 # Created V8 context snapshot is used in
-# third_party/WebKit/Source/bindings/core/v8/V8ContextSnapshot.{cpp|h}.
+# third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.{cc|h}.
 # to speedup creating a V8 context and setting up around it.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//v8/gni/v8.gni")

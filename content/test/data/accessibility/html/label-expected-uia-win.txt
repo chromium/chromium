@@ -1,4 +1,4 @@
 Document
 ++Group IsControlElement=false
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='Label'

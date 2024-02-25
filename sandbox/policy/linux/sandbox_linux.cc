@@ -47,6 +47,7 @@
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
 #include "sandbox/linux/system_headers/linux_stat.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -84,6 +85,22 @@ bool IsRunningTSAN() {
 #else
   return false;
 #endif
+}
+
+// In processes which must bring up GPU drivers before sandbox initialization,
+// we can't ensure that other threads won't be running already.
+bool ShouldAllowThreadsDuringSandboxInit(const std::string& process_type,
+                                         sandbox::mojom::Sandbox sandbox_type) {
+  if (process_type == switches::kGpuProcess) {
+    return true;
+  }
+
+  if (process_type == switches::kUtilityProcess &&
+      sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
+    return true;
+  }
+
+  return false;
 }
 
 // Get a file descriptor to /proc. Either duplicate |proc_fd| or try to open
@@ -310,12 +327,18 @@ bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
           ? SandboxBPF::SeccompLevel::MULTI_THREADED
           : SandboxBPF::SeccompLevel::SINGLE_THREADED;
 
+  bool force_disable_spectre_variant2_mitigation =
+      base::FeatureList::IsEnabled(
+          features::kForceDisableSpectreVariant2MitigationInNetworkService) &&
+      sandbox_type == sandbox::mojom::Sandbox::kNetwork;
+
   // If the kernel supports the sandbox, and if the command line says we
   // should enable it, enable it or die.
   std::unique_ptr<BPFBasePolicy> policy =
       SandboxSeccompBPF::PolicyForSandboxType(sandbox_type, options);
   SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::move(policy), OpenProc(proc_fd_), seccomp_level);
+      std::move(policy), OpenProc(proc_fd_), seccomp_level,
+      force_disable_spectre_variant2_mitigation);
   SandboxSeccompBPF::RunSandboxSanityChecks(sandbox_type, options);
   seccomp_bpf_started_ = true;
   LogSandboxStarted("seccomp-bpf");
@@ -361,8 +384,10 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
     if (IsRunningTSAN())
       return false;
 
-    // The GPU process is allowed to call InitializeSandbox() with threads.
-    bool sandbox_failure_fatal = process_type != switches::kGpuProcess;
+    // Only a few specific processes are allowed to call InitializeSandbox()
+    // with multiple threads running.
+    bool sandbox_failure_fatal =
+        !ShouldAllowThreadsDuringSandboxInit(process_type, sandbox_type);
     // This can be disabled with the '--gpu-sandbox-failures-fatal' flag.
     // Setting the flag with no value or any value different than 'yes' or 'no'
     // is equal to setting '--gpu-sandbox-failures-fatal=yes'.
@@ -472,17 +497,26 @@ rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
     // to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    rlim_t limit;
     if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
         physical_memory > 64 * GB) {
-      return 64 * GB;
+      limit = 64 * GB;
     } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
                physical_memory > 32 * GB) {
-      return 32 * GB;
+      limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
-      return 16 * GB;
+      limit = 16 * GB;
     } else {
-      return 8 * GB;
+      limit = 8 * GB;
     }
+
+    if (sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kHigherRendererMemoryLimit)) {
+      limit *= 2;
+    }
+
+    return limit;
   }
 #endif
 
@@ -529,7 +563,7 @@ void SandboxLinux::StartBrokerProcess(
   // other LSMs like AppArmor and Landlock. Some userspace code, such as
   // glibc's |dlopen|, expect to see EACCES rather than EPERM. See
   // crbug.com/1233028 for an example.
-  auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+  auto policy = std::make_optional<syscall_broker::BrokerSandboxConfig>(
       allowed_command_set, std::move(permissions), EACCES);
   // Leaked at shutdown, so use bare |new|.
   broker_process_ = new syscall_broker::BrokerProcess(

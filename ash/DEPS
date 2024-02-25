@@ -15,6 +15,8 @@ include_rules = [
   "+components/language/core/browser/pref_names.h",
   "+components/live_caption",
   "+components/media_message_center",
+  "+components/metrics/structured/structured_events.h",
+  "+components/metrics/structured/structured_metrics_client.h",
   "+components/pref_registry",
   "+components/prefs",
   "+components/quirks",
@@ -64,7 +66,9 @@ include_rules = [
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
   "+chromeos/ash/components/audio",
+  "+chromeos/ash/components/auth_panel",
   "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/emoji",
   "+chromeos/ash/components/feature_usage",
   "+chromeos/ash/components/human_presence",
   "+chromeos/ash/components/local_search_service",
@@ -73,8 +77,9 @@ include_rules = [
   "+chromeos/ash/components/osauth/public",
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/proximity_auth",
+  "+chromeos/ash/components/standalone_browser",
   "+chromeos/ash/components/system",
-  "+chromeos/components/kiosk",
+  "+chromeos/components/mahi",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
@@ -109,6 +114,7 @@ include_rules = [
   "+chromeos/services/power/public",
   "+chromeos/strings",
   "+chromeos/ui",
+  "+chromeos/utils",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
   "-ui/base/idle",

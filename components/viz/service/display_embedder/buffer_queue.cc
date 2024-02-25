@@ -77,14 +77,20 @@ void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
 void BufferQueue::SwapBuffersComplete() {
   DCHECK(!in_flight_buffers_.empty());
 
-  if (in_flight_buffers_.front()) {
-    if (displayed_buffer_) {
-      available_buffers_.push_back(std::move(displayed_buffer_));
-    }
-    displayed_buffer_ = std::move(in_flight_buffers_.front());
+  if (displayed_buffer_) {
+    available_buffers_.push_back(std::move(displayed_buffer_));
   }
-
+  displayed_buffer_ = std::move(in_flight_buffers_.front());
   in_flight_buffers_.pop_front();
+
+  if (buffers_can_be_purged_) {
+    for (auto& buffer : available_buffers_) {
+      if (SetBufferPurgeable(*buffer, true)) {
+        // Set a single available buffer to purgeable each swap.
+        break;
+      }
+    }
+  }
 }
 
 void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
@@ -106,6 +112,12 @@ bool BufferQueue::Reshape(const gfx::Size& size,
     return true;
   }
 
+  if (buffers_can_be_purged_) {
+    // If buffers are purgeable wait to recreate until they will be used again.
+    DestroyBuffers();
+    return true;
+  }
+
   FreeAllBuffers();
   AllocateBuffers(number_of_buffers_);
 
@@ -116,6 +128,13 @@ void BufferQueue::RecreateBuffers() {
   if (buffers_destroyed_) {
     return;
   }
+
+  if (buffers_can_be_purged_) {
+    // If buffers are purgeable wait to recreate until they will be used again.
+    DestroyBuffers();
+    return;
+  }
+
   FreeAllBuffers();
   AllocateBuffers(number_of_buffers_);
 }
@@ -144,6 +163,16 @@ void BufferQueue::FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer) {
   skia_output_surface_->DestroySharedImage(buffer->mailbox);
 }
 
+bool BufferQueue::SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable) {
+  if (buffer.purgeable == purgeable) {
+    return false;
+  }
+
+  skia_output_surface_->SetSharedImagePurgeable(buffer.mailbox, purgeable);
+  buffer.purgeable = true;
+  return true;
+}
+
 void BufferQueue::AllocateBuffers(size_t n) {
   DCHECK(format_);
   const SharedImageFormat format =
@@ -156,7 +185,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
     const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
-        format, size_, color_space_, usage, "VizBufferQueue", surface_handle_);
+        format, size_, color_space_, RenderPassAlphaType::kPremul, usage,
+        "VizBufferQueue", surface_handle_);
     DCHECK(!mailbox.IsZero());
 
     available_buffers_.push_back(
@@ -182,9 +212,9 @@ gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
     return gpu::Mailbox();
   }
 
-  // The last swapped buffer will generally be in displayed_buffer_, as long as
-  // SwapBuffersComplete() has been called at least once for a non-empty swap
-  // since the last Reshape().
+  // The last swapped buffer will generally be in `displayed_buffer_`, unless
+  // the last completed swap was empty or there haven't been any completed swaps
+  // since Reshape() was last called.
   if (displayed_buffer_) {
     return displayed_buffer_->mailbox;
   }
@@ -225,16 +255,31 @@ void BufferQueue::DestroyBuffers() {
   FreeAllBuffers();
 }
 
-void BufferQueue::RecreateBuffersIfDestroyed() {
-  if (!buffers_destroyed_) {
+void BufferQueue::SetBuffersPurgeable() {
+  if (buffers_can_be_purged_) {
     return;
   }
-  AllocateBuffers(number_of_buffers_);
-  buffers_destroyed_ = false;
-  base::TimeDelta elapsed = destroyed_timer_->Elapsed();
-  UMA_HISTOGRAM_TIMES("Compositing.BufferQueue.TimeUntilBuffersRecreatedMs",
-                      elapsed);
-  destroyed_timer_.reset();
+  buffers_can_be_purged_ = true;
+}
+
+void BufferQueue::RecreateBuffersIfDestroyed() {
+  if (buffers_can_be_purged_) {
+    // Mark buffers as not purgeable. It's possible they were destroyed and
+    // `available_buffers_` is empty.
+    buffers_can_be_purged_ = false;
+    for (auto& buffer : available_buffers_) {
+      SetBufferPurgeable(*buffer, false);
+    }
+  }
+
+  if (buffers_destroyed_) {
+    buffers_destroyed_ = false;
+    AllocateBuffers(number_of_buffers_);
+    base::TimeDelta elapsed = destroyed_timer_->Elapsed();
+    UMA_HISTOGRAM_TIMES("Compositing.BufferQueue.TimeUntilBuffersRecreatedMs",
+                        elapsed);
+    destroyed_timer_.reset();
+  }
 }
 
 BufferQueue::AllocatedBuffer::AllocatedBuffer(const gpu::Mailbox& mailbox,

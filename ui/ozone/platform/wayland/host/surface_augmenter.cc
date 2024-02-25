@@ -15,7 +15,8 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 9;
+constexpr uint32_t kMaxVersion =
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION;
 
 // The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
 // with a local coordinates bounds.
@@ -58,11 +59,6 @@ SurfaceAugmenter::~SurfaceAugmenter() = default;
 bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
   return GetSurfaceAugmentorVersion() >=
          SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
-}
-
-bool SurfaceAugmenter::SupportsClipRect() const {
-  return GetSurfaceAugmentorVersion() >=
-         AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
 }
 
 bool SurfaceAugmenter::SupportsClipRectOnAugmentedSurface() const {

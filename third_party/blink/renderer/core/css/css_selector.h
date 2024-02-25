@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/toggle_root.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -215,6 +214,7 @@ class CORE_EXPORT CSSSelector {
 
   enum PseudoType {
     kPseudoActive,
+    kPseudoActiveViewTransition,
     kPseudoAfter,
     kPseudoAny,
     kPseudoAnyLink,
@@ -228,7 +228,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoDecrement,
     kPseudoDefault,
     kPseudoDetailsContent,
-    kPseudoDetailsSummary,
     kPseudoDialogInTopLayer,
     kPseudoDisabled,
     kPseudoDoubleButton,
@@ -270,6 +269,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoOptional,
     kPseudoParent,  // Written as & (in nested rules).
     kPseudoPart,
+    kPseudoPermissionGranted,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
     kPseudoReadOnly,
@@ -285,17 +285,26 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarThumb,
     kPseudoScrollbarTrack,
     kPseudoScrollbarTrackPiece,
+    kPseudoSelectAuthorButton,
+    kPseudoSelectAuthorDatalist,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
     kPseudoStart,
+    // kPseudoState is for :state(foo). kPseudoStateDeprecated is for :--foo.
+    // :--foo is deprecated and is replacing :state(foo).
+    // TODO(crbug.com/1514397): Remove kPseudoStateDeprecatedSyntax after the
+    // deprecation is done.
     kPseudoState,
+    kPseudoStateDeprecatedSyntax,
     kPseudoTarget,
     kPseudoUnknown,
     // Something that was unparsable, but contained either a nesting
     // selector (&), or a :scope pseudo-class, and must therefore be kept
     // for serialization purposes.
     kPseudoUnparsed,
+    kPseudoUserInvalid,
+    kPseudoUserValid,
     kPseudoValid,
     kPseudoVertical,
     kPseudoVisited,
@@ -314,7 +323,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoPaused,
     kPseudoPictureInPicture,
     kPseudoPlaying,
-    kPseudoToggle,
     kPseudoXrOverlay,
     // Pseudo elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
@@ -342,7 +350,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoRelativeAnchor,
     kPseudoSlotted,
     kPseudoSpatialNavigationFocus,
-    kPseudoSpatialNavigationInterest,
     kPseudoSpellingError,
     kPseudoTargetText,
     // Always matches. See SetTrue().
@@ -443,11 +450,9 @@ class CORE_EXPORT CSSSelector {
   // pseudo selector at all), or if we are a & rule that's in a non-nesting
   // context (which is valid, but won't match anything).
   const CSSSelector* SelectorListOrParent() const;
-  const Vector<AtomicString>* PartNames() const {
-    return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
-  }
-  const ToggleRoot::State* ToggleValue() const {
-    return has_rare_data_ ? data_.rare_data_->toggle_value_.get() : nullptr;
+  const Vector<AtomicString>& IdentList() const {
+    CHECK(has_rare_data_ && data_.rare_data_->ident_list_);
+    return *data_.rare_data_->ident_list_;
   }
   bool ContainsPseudoInsideHasPseudoClass() const {
     return has_rare_data_ ? data_.rare_data_->bits_.has_.contains_pseudo_
@@ -469,9 +474,7 @@ class CORE_EXPORT CSSSelector {
   void SetAttribute(const QualifiedName&, AttributeMatchType);
   void SetArgument(const AtomicString&);
   void SetSelectorList(CSSSelectorList*);
-  void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
-  void SetToggle(const AtomicString& name,
-                 std::unique_ptr<ToggleRoot::State>&& value);
+  void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
@@ -549,6 +552,60 @@ class CORE_EXPORT CSSSelector {
   // position like :first-of-type and :nth-child().
   bool IsChildIndexedSelector() const;
 
+  // Signaling Rules
+  // ================
+  //
+  // Signaling rules are style rules whose declarations trigger
+  // a certain use-counter. The use-counter is triggered by StyleCascade
+  // when a signaling declaration satisfies all of the following:
+  //
+  //  - The declaration is added to the cascade map.
+  //  - Adding the declaration to the map actually changed the value,
+  //    i.e. the cascaded value before/after isn't the same.
+  //  - The declaration ultimately won the cascade, i.e. nothing else
+  //    overwrote it.
+  //
+  // Note: the final goal of signaling rules is to hopefully unblock
+  // the following CSSWG issues:
+  //
+  //  - https://github.com/w3c/csswg-drafts/issues/8738
+  //  - https://github.com/w3c/csswg-drafts/issues/9492
+  //
+  // TODO(crbug.com/1517290): Remove signaling rules when we're done
+  // use-counting.
+
+  enum class Signal {
+    kNone = 0,
+
+    // WebFeature::kCSSBareDeclarationShift
+    kBareDeclarationShift = 1,
+
+    // WebFeature::kCSSNestedGroupRuleSpecificity
+    kNestedGroupRuleSpecificity = 2,
+
+    kMax = kNestedGroupRuleSpecificity,
+  };
+
+  void SetSignal(Signal signal) { signal_ = static_cast<unsigned>(signal); }
+  Signal GetSignal() const { return static_cast<Signal>(signal_); }
+
+  // Invisible Rules
+  // ===============
+  //
+  // Invisible rules are rules which exist internally for use-counting
+  // purposes, but don't have any author-visible effect on the cascade,
+  // and are not otherwise reachable through APIs.
+  //
+  // Invisible rules are useful when used in conjunction with signaling rules
+  // (above), because it makes it possible to check if a given rule has
+  // any impact in the presence of some alternative/hypothetical rule.
+  //
+  // TODO(crbug.com/1517290): Remove invisible rules when we're done
+  // use-counting.
+
+  void SetInvisible() { is_invisible = true; }
+  bool IsInvisible() const { return is_invisible; }
+
   void Trace(Visitor* visitor) const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
@@ -581,6 +638,8 @@ class CORE_EXPORT CSSSelector {
   // This always starts out false, and is set when we bucket a given
   // RuleData (by calling MarkAsCoveredByBucketing()).
   unsigned is_covered_by_bucketing_ : 1;
+  unsigned signal_ : 2 = static_cast<unsigned>(Signal::kNone);
+  unsigned is_invisible : 1 = false;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -628,12 +687,11 @@ class CORE_EXPORT CSSSelector {
       CSSNestingType unparsed_nesting_type_;
     } bits_;
     QualifiedName attribute_;  // Used for attribute selector
-    AtomicString argument_;    // Used for :contains, :lang, :dir, :toggle, etc.
+    AtomicString argument_;    // Used for :contains, :lang, :dir, etc.
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>
-        part_names_;  // Used for ::part() selectors.
-    std::unique_ptr<ToggleRoot::State> toggle_value_;  // used for :toggle()
+        ident_list_;  // Used for ::part(), :active-view-transition().
 
     void Trace(Visitor* visitor) const;
   };
@@ -791,6 +849,8 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       is_for_page_(o.is_for_page_),
       is_implicitly_added_(o.is_implicitly_added_),
       is_covered_by_bucketing_(o.is_covered_by_bucketing_),
+      signal_(o.signal_),
+      is_invisible(o.is_invisible),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);
@@ -839,7 +899,7 @@ inline const QualifiedName& CSSSelector::TagQName() const {
 inline const StyleRule* CSSSelector::ParentRule() const {
   DCHECK_EQ(match_, static_cast<unsigned>(kPseudoClass));
   DCHECK_EQ(pseudo_type_, static_cast<unsigned>(kPseudoParent));
-  return data_.parent_rule_;
+  return data_.parent_rule_.Get();
 }
 
 inline const AtomicString& CSSSelector::Value() const {

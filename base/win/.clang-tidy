@@ -1,8 +1,13 @@
 ---
 Checks: '-*,
          bugprone-argument-comment,
+         bugprone-bool-pointer-implicit-conversion,
+         bugprone-unique-ptr-array-mismatch,
+         bugprone-virtual-near-miss,
          google-build-namespaces,
+         google-default-arguments,
          google-readability-namespace-comments,
+         google-upgrade-googletest-case,
          modernize-avoid-bind,
          modernize-concat-nested-namespaces,
          modernize-make-shared,

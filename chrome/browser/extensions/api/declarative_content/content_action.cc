@@ -18,16 +18,15 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -332,21 +331,21 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
   for (const auto& css_file_name : script_data.css_file_names) {
     GURL url = extension->GetResourceURL(css_file_name);
     ExtensionResource resource = extension->GetResource(css_file_name);
-    script_.css_scripts().push_back(std::make_unique<UserScript::File>(
+    script_.css_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));
   }
   for (const auto& js_file_name : script_data.js_file_names) {
     GURL url = extension->GetResourceURL(js_file_name);
     ExtensionResource resource = extension->GetResource(js_file_name);
-    script_.js_scripts().push_back(std::make_unique<UserScript::File>(
+    script_.js_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));
   }
 }
 
 void RequestContentScript::AddScript() {
   DCHECK(script_loader_);
-  auto scripts = std::make_unique<UserScriptList>();
-  scripts->push_back(UserScript::CopyMetadataFrom(script_));
+  UserScriptList scripts;
+  scripts.push_back(UserScript::CopyMetadataFrom(script_));
   script_loader_->AddScripts(std::move(scripts),
                              UserScriptLoader::ScriptsLoadedCallback());
 }
@@ -364,9 +363,9 @@ void RequestContentScript::Revert(const ApplyInfo& apply_info) const {}
 void RequestContentScript::InstructRenderProcessToInject(
     content::WebContents* contents,
     const Extension* extension) const {
-  ContentScriptTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
-                                        contents->GetPrimaryMainFrame(),
-                                        *extension);
+  ScriptInjectionTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
+                                          contents->GetPrimaryMainFrame(),
+                                          *extension);
 
   mojom::LocalFrame* local_frame =
       ExtensionWebContentsObserver::GetForWebContents(contents)->GetLocalFrame(
@@ -417,8 +416,6 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   const SkBitmap bitmap = image.AsBitmap();
   const bool is_sufficiently_visible =
       extensions::image_util::IsIconSufficientlyVisible(bitmap);
-  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisible",
-                            is_sufficiently_visible);
   if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
     *error = kIconNotSufficientlyVisible;
     return nullptr;

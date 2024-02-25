@@ -65,8 +65,11 @@ bundle_data("crashy_module_bundle") {
 }
 
 ios_app_bundle("ios_crash_xcuitests") {
-  info_plist = "Info.plist"
   testonly = true
+  info_plist = "Info.plist"
+  if (crashpad_is_in_chromium) {
+    bundle_identifier = shared_bundle_id_for_test_apps
+  }
   deps = [
     ":app_host_sources",
     ":crashy_module_bundle",

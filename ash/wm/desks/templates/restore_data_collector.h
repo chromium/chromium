@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/account_id/account_id.h"
 #include "ui/aura/window_tracker.h"
 
 namespace app_restore {
@@ -47,7 +48,8 @@ class RestoreDataCollector {
   void CaptureActiveDeskAsSavedDesk(GetDeskTemplateCallback callback,
                                     DeskTemplateType template_type,
                                     const std::string& template_name,
-                                    aura::Window* root_window_to_show);
+                                    aura::Window* root_window_to_show,
+                                    AccountId current_account_id);
 
  private:
   // Keeps the state for the asynchronous call for `AppLaunchData` to the apps.
@@ -59,11 +61,12 @@ class RestoreDataCollector {
 
     DeskTemplateType template_type;
     std::string template_name;
-    raw_ptr<aura::Window, ExperimentalAsh> root_window_to_show;
-    std::vector<aura::Window*> unsupported_apps;
+    raw_ptr<aura::Window> root_window_to_show;
+    std::vector<raw_ptr<aura::Window, VectorExperimental>> unsupported_apps;
     size_t non_persistable_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;
     uint32_t pending_request_count = 0;
+    uint64_t lacros_profile_id = 0;
     GetDeskTemplateCallback callback;
   };
 

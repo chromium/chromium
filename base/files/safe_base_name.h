@@ -5,9 +5,10 @@
 #ifndef BASE_FILES_SAFE_BASE_NAME_H_
 #define BASE_FILES_SAFE_BASE_NAME_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -16,7 +17,7 @@ namespace base {
 // directories and is considered safe to be passed over IPC. See
 // FilePath::BaseName().
 // Usage examples:
-// absl::optional<SafeBaseName> a
+// std::optional<SafeBaseName> a
 //     (SafeBaseName::Create(FILE_PATH_LITERAL("file.txt")));
 // FilePath dir(FILE_PATH_LITERAL("foo")); dir.Append(*a);
 class BASE_EXPORT SafeBaseName {
@@ -24,11 +25,11 @@ class BASE_EXPORT SafeBaseName {
   // TODO(crbug.com/1269986): Change to only be exposed to Mojo.
   SafeBaseName() = default;
 
-  // Factory method that returns a valid SafeBaseName or absl::nullopt.
-  static absl::optional<SafeBaseName> Create(const FilePath&);
+  // Factory method that returns a valid SafeBaseName or std::nullopt.
+  static std::optional<SafeBaseName> Create(const FilePath&);
 
   // Same as above, but takes a StringPieceType for convenience.
-  static absl::optional<SafeBaseName> Create(FilePath::StringPieceType);
+  static std::optional<SafeBaseName> Create(FilePath::StringPieceType);
   const FilePath& path() const { return path_; }
 
   bool operator==(const SafeBaseName& that) const;

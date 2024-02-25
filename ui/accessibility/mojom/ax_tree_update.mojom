@@ -8,6 +8,7 @@ import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_event_intent.mojom";
 import "ui/accessibility/mojom/ax_node_data.mojom";
 import "ui/accessibility/mojom/ax_tree_data.mojom";
+import "ui/accessibility/mojom/ax_tree_checks.mojom";
 
 // See ui::AXTreeUpdate for comments / explanations of these fields.
 [Stable, Uuid="add7185a-6b62-4f4f-ac43-2c6894a99dbc"]
@@ -20,4 +21,5 @@ struct AXTreeUpdate {
   ax.mojom.EventFrom event_from;
   ax.mojom.Action event_from_action;
   array<EventIntent> event_intents;
+  [MinVersion=2] AXTreeChecks? tree_checks;
 };

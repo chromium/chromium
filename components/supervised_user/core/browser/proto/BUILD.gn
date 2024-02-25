@@ -6,9 +6,13 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [
+    "discover_feed.proto",
     "families_common.proto",
+    "get_discover_feed_request.proto",
+    "get_discover_feed_response.proto",
     "kidschromemanagement_messages.proto",
     "permissions_common.proto",
+    "rendered_result.proto",
   ]
 }
 

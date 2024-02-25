@@ -6,6 +6,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("tab_switcher") {
   sources = [
+    "pinned_tab_collection_consumer.h",
     "tab_collection_consumer.h",
     "tab_collection_drag_drop_handler.h",
     "tab_collection_drag_drop_metrics.h",
@@ -22,8 +23,8 @@ source_set("tab_switcher") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model",
     "//ios/web/public",
     "//url",
   ]
@@ -38,13 +39,13 @@ source_set("tab_utils") {
   deps = [
     ":tab_switcher",
     "//base",
-    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/web/public",
   ]

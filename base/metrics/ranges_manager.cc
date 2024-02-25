@@ -9,8 +9,9 @@ namespace base {
 RangesManager::RangesManager() = default;
 
 RangesManager::~RangesManager() {
-  if (!do_not_release_ranges_on_destroy_for_testing_)
+  if (!do_not_release_ranges_on_destroy_for_testing_) {
     ReleaseBucketRanges();
+  }
 }
 
 size_t RangesManager::BucketRangesHash::operator()(
@@ -24,39 +25,73 @@ bool RangesManager::BucketRangesEqual::operator()(
   return a->Equals(b);
 }
 
-const BucketRanges* RangesManager::RegisterOrDeleteDuplicateRanges(
+const BucketRanges* RangesManager::GetOrRegisterCanonicalRanges(
     const BucketRanges* ranges) {
+  // Note: This code is run in a critical lock path from StatisticsRecorder
+  // so we intentionally don't use a CHECK() here.
   DCHECK(ranges->HasValidChecksum());
 
   // Attempt to insert |ranges| into the set of registered BucketRanges. If an
   // equivalent one already exists (one with the exact same ranges), this
   // fetches the pre-existing one and does not insert the passed |ranges|.
-  const BucketRanges* const registered = *ranges_.insert(ranges).first;
-
-  // If there is already a registered equivalent BucketRanges, delete the passed
-  // |ranges|.
-  if (registered != ranges)
-    delete ranges;
-
-  return registered;
+  return *GetRanges().insert(ranges).first;
 }
 
 std::vector<const BucketRanges*> RangesManager::GetBucketRanges() const {
   std::vector<const BucketRanges*> out;
-  out.reserve(ranges_.size());
-  out.assign(ranges_.begin(), ranges_.end());
+  out.reserve(GetRanges().size());
+  out.assign(GetRanges().begin(), GetRanges().end());
   return out;
 }
 
 void RangesManager::ReleaseBucketRanges() {
-  for (auto* range : ranges_) {
+  for (auto* range : GetRanges()) {
     delete range;
   }
-  ranges_.clear();
+  GetRanges().clear();
+}
+
+RangesManager::RangesMap& RangesManager::GetRanges() {
+  return ranges_;
+}
+
+const RangesManager::RangesMap& RangesManager::GetRanges() const {
+  return ranges_;
 }
 
 void RangesManager::DoNotReleaseRangesOnDestroyForTesting() {
   do_not_release_ranges_on_destroy_for_testing_ = true;
+}
+
+ThreadSafeRangesManager::ThreadSafeRangesManager() = default;
+
+ThreadSafeRangesManager::~ThreadSafeRangesManager() = default;
+
+const BucketRanges* ThreadSafeRangesManager::GetOrRegisterCanonicalRanges(
+    const BucketRanges* ranges) {
+  base::AutoLock auto_lock(lock_);
+  return RangesManager::GetOrRegisterCanonicalRanges(ranges);
+}
+
+std::vector<const BucketRanges*> ThreadSafeRangesManager::GetBucketRanges()
+    const {
+  base::AutoLock auto_lock(lock_);
+  return RangesManager::GetBucketRanges();
+}
+
+void ThreadSafeRangesManager::ReleaseBucketRanges() {
+  base::AutoLock auto_lock(lock_);
+  RangesManager::ReleaseBucketRanges();
+}
+
+RangesManager::RangesMap& ThreadSafeRangesManager::GetRanges() {
+  lock_.AssertAcquired();
+  return RangesManager::GetRanges();
+}
+
+const RangesManager::RangesMap& ThreadSafeRangesManager::GetRanges() const {
+  lock_.AssertAcquired();
+  return RangesManager::GetRanges();
 }
 
 }  // namespace base

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -15,14 +16,15 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/frame_rate_throttling.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -35,6 +37,9 @@ namespace {
 BatterySaverModeManager* g_battery_saver_mode_manager = nullptr;
 
 constexpr base::TimeDelta kBatteryUsageWriteFrequency = base::Days(1);
+
+using BatterySaverModeState =
+    performance_manager::user_tuning::prefs::BatterySaverModeState;
 
 // On certain platforms (ChromeOS), the battery level displayed to the user is
 // artificially lower than the actual battery level. Unfortunately, the battery
@@ -60,32 +65,75 @@ class FrameThrottlingDelegateImpl
  public:
   void StartThrottlingAllFrameSinks() override {
     content::StartThrottlingAllFrameSinks(base::Hertz(30));
-    NotifyPageTimelineMonitor(/*battery_saver_mode_enabled=*/true);
   }
 
   void StopThrottlingAllFrameSinks() override {
     content::StopThrottlingAllFrameSinks();
-    NotifyPageTimelineMonitor(/*battery_saver_mode_enabled=*/false);
   }
 
   ~FrameThrottlingDelegateImpl() override = default;
+};
+
+class RenderTuningDelegateImpl
+    : public BatterySaverModeManager::RenderTuningDelegate,
+      public content::RenderProcessHostCreationObserver,
+      public content::RenderProcessHostObserver {
+ public:
+  ~RenderTuningDelegateImpl() override = default;
+  RenderTuningDelegateImpl() = default;
 
  private:
-  void NotifyPageTimelineMonitor(bool battery_saver_mode_enabled) {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](bool enabled, performance_manager::Graph* graph) {
-              auto* monitor = graph->GetRegisteredObjectAs<
-                  performance_manager::metrics::PageTimelineMonitor>();
-              // It's possible for this to be null if the PageTimeline finch
-              // feature is disabled.
-              if (monitor) {
-                monitor->SetBatterySaverEnabled(enabled);
-              }
-            },
-            battery_saver_mode_enabled));
+  void ToggleRenderBatterySaverModeForAllRenderProcessHosts(bool enabled) {
+    for (content::RenderProcessHost::iterator iter(
+             content::RenderProcessHost::AllHostsIterator());
+         !iter.IsAtEnd(); iter.Advance()) {
+      content::RenderProcessHost* host = iter.GetCurrentValue();
+
+      if (host->IsReady()) {
+        host->SetBatterySaverMode(enabled);
+      }
+    }
+
+    battery_saver_mode_enabled_ = enabled;
   }
+
+  void EnableRenderBatterySaverMode() override {
+    ToggleRenderBatterySaverModeForAllRenderProcessHosts(true);
+  }
+
+  void DisableRenderBatterySaverMode() override {
+    ToggleRenderBatterySaverModeForAllRenderProcessHosts(false);
+  }
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override {
+    // The RenderProcessHost can be reused for a new process, sending a new
+    // `OnRenderProcessHostCreated` notification. In this case, the RPH is
+    // already being observed so no need to observe it again.
+    if (!observed_render_process_hosts_.IsObservingSource(host)) {
+      observed_render_process_hosts_.AddObservation(host);
+    }
+  }
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessReady(content::RenderProcessHost* host) override {
+    // The default state is false, so only do the mojo call if the state should
+    // be set to true.
+    if (battery_saver_mode_enabled_) {
+      host->SetBatterySaverMode(battery_saver_mode_enabled_);
+    }
+  }
+
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override {
+    CHECK(observed_render_process_hosts_.IsObservingSource(host));
+    observed_render_process_hosts_.RemoveObservation(host);
+  }
+
+  bool battery_saver_mode_enabled_ = false;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      observed_render_process_hosts_{this};
 };
 
 }  // namespace
@@ -126,7 +174,7 @@ class DesktopBatterySaverProvider
       battery_state_sampler_obs_.Observe(battery_state_sampler);
     }
 
-    OnBatterySaverModePrefChanged();
+    UpdateBatterySaverModeState();
   }
 
   ~DesktopBatterySaverProvider() override {
@@ -135,6 +183,16 @@ class DesktopBatterySaverProvider
 
   // BatterySaverProvider:
   bool DeviceHasBattery() const override { return has_battery_; }
+  bool IsBatterySaverModeEnabled() override {
+    BatterySaverModeState state = performance_manager::user_tuning::prefs::
+        GetCurrentBatterySaverModeState(pref_change_registrar_.prefs());
+    return state != BatterySaverModeState::kDisabled;
+  }
+  bool IsBatterySaverModeManaged() override {
+    auto* pref = pref_change_registrar_.prefs()->FindPreference(
+        prefs::kBatterySaverModeState);
+    return pref->IsManaged();
+  }
   bool IsBatterySaverActive() const override {
     return battery_saver_mode_enabled_;
   }
@@ -162,11 +220,14 @@ class DesktopBatterySaverProvider
   void OnBatterySaverModePrefChanged() {
     battery_saver_mode_disabled_for_session_ = false;
     UpdateBatterySaverModeState();
+    manager_->NotifyOnBatterySaverModeChanged(
+        performance_manager::user_tuning::prefs::
+            GetCurrentBatterySaverModeState(pref_change_registrar_.prefs()) !=
+        performance_manager::user_tuning::prefs::BatterySaverModeState::
+            kDisabled);
   }
 
   void UpdateBatterySaverModeState() {
-    using BatterySaverModeState =
-        performance_manager::user_tuning::prefs::BatterySaverModeState;
     BatterySaverModeState state = performance_manager::user_tuning::prefs::
         GetCurrentBatterySaverModeState(pref_change_registrar_.prefs());
 
@@ -197,7 +258,7 @@ class DesktopBatterySaverProvider
       return;
     }
 
-    manager_->NotifyOnBatterySaverModeChanged(battery_saver_mode_enabled_);
+    manager_->NotifyOnBatterySaverActiveChanged(battery_saver_mode_enabled_);
   }
 
   // base::PowerStateObserver:
@@ -216,7 +277,7 @@ class DesktopBatterySaverProvider
 
   // base::BatteryStateSampler::Observer:
   void OnBatteryStateSampled(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state) override {
     if (!battery_state) {
       return;
@@ -310,12 +371,19 @@ class ChromeOSBatterySaverProvider
     client->GetBatterySaverModeState(base::BindOnce(
         &ChromeOSBatterySaverProvider::OnInitialBatterySaverModeObtained,
         weak_ptr_factory_.GetWeakPtr()));
+
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(
+            BatterySaverModeManager::kForceDeviceHasBatterySwitch)) {
+      force_has_battery_ = true;
+      has_battery_ = true;
+    }
   }
 
   ~ChromeOSBatterySaverProvider() override = default;
 
   void OnInitialBatterySaverModeObtained(
-      absl::optional<power_manager::BatterySaverModeState> state) {
+      std::optional<power_manager::BatterySaverModeState> state) {
     if (state) {
       BatterySaverModeStateChanged(*state);
     }
@@ -330,11 +398,21 @@ class ChromeOSBatterySaverProvider
 
     enabled_ = state.enabled();
 
-    manager_->NotifyOnBatterySaverModeChanged(enabled_);
+    manager_->NotifyOnBatterySaverActiveChanged(enabled_);
+  }
+
+  void PowerChanged(
+      const power_manager::PowerSupplyProperties& proto) override {
+    bool device_has_battery =
+        proto.battery_state() !=
+        power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
+    has_battery_ = force_has_battery_ || device_has_battery;
   }
 
   // BatterySaverProvider:
-  bool DeviceHasBattery() const override { return false; }
+  bool DeviceHasBattery() const override { return has_battery_; }
+  bool IsBatterySaverModeEnabled() override { return false; }
+  bool IsBatterySaverModeManaged() override { return false; }
   bool IsBatterySaverActive() const override { return enabled_; }
   bool IsUsingBatteryPower() const override { return false; }
   base::Time GetLastBatteryUsageTimestamp() const override {
@@ -349,6 +427,8 @@ class ChromeOSBatterySaverProvider
 
  private:
   bool enabled_ = false;
+  bool has_battery_ = false;
+  bool force_has_battery_ = false;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
@@ -393,6 +473,16 @@ bool BatterySaverModeManager::DeviceHasBattery() const {
   return battery_saver_provider_ && battery_saver_provider_->DeviceHasBattery();
 }
 
+bool BatterySaverModeManager::IsBatterySaverModeEnabled() {
+  return battery_saver_provider_ &&
+         battery_saver_provider_->IsBatterySaverModeEnabled();
+}
+
+bool BatterySaverModeManager::IsBatterySaverModeManaged() const {
+  return battery_saver_provider_ &&
+         battery_saver_provider_->IsBatterySaverModeManaged();
+}
+
 bool BatterySaverModeManager::IsBatterySaverActive() const {
   return battery_saver_provider_ &&
          battery_saver_provider_->IsBatterySaverActive();
@@ -428,11 +518,16 @@ bool BatterySaverModeManager::IsBatterySaverModeDisabledForSession() const {
 
 BatterySaverModeManager::BatterySaverModeManager(
     PrefService* local_state,
-    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate)
+    std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
+    std::unique_ptr<RenderTuningDelegate> render_tuning_delegate)
     : frame_throttling_delegate_(
           frame_throttling_delegate
               ? std::move(frame_throttling_delegate)
-              : std::make_unique<FrameThrottlingDelegateImpl>()) {
+              : std::make_unique<FrameThrottlingDelegateImpl>()),
+      render_tuning_delegate_(
+          render_tuning_delegate
+              ? std::move(render_tuning_delegate)
+              : std::make_unique<RenderTuningDelegateImpl>()) {
   DCHECK(!g_battery_saver_mode_manager);
   g_battery_saver_mode_manager = this;
 
@@ -456,16 +551,32 @@ void BatterySaverModeManager::Start() {
 
 void BatterySaverModeManager::NotifyOnBatterySaverModeChanged(
     bool battery_saver_mode_enabled) {
-  if (battery_saver_mode_enabled) {
+  for (auto& obs : observers_) {
+    obs.OnBatterySaverModeChanged(battery_saver_mode_enabled);
+  }
+}
+
+void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
+    bool battery_saver_mode_active) {
+  if (battery_saver_mode_active) {
     frame_throttling_delegate_->StartThrottlingAllFrameSinks();
   } else {
     frame_throttling_delegate_->StopThrottlingAllFrameSinks();
   }
 
+  if (base::FeatureList::IsEnabled(features::kBatterySaverModeRenderTuning)) {
+    if (battery_saver_mode_active) {
+      render_tuning_delegate_->EnableRenderBatterySaverMode();
+    } else {
+      render_tuning_delegate_->DisableRenderBatterySaverMode();
+    }
+  }
+
   for (auto& obs : observers_) {
-    obs.OnBatterySaverModeChanged(battery_saver_mode_enabled);
+    obs.OnBatterySaverActiveChanged(battery_saver_mode_active);
   }
 }
+
 void BatterySaverModeManager::NotifyOnExternalPowerConnectedChanged(
     bool on_battery_power) {
   for (auto& obs : observers_) {

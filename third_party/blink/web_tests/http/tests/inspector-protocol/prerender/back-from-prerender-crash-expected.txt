@@ -1,0 +1,19 @@
+Tests that we don't crash when navigating from pre-rendered page to BF-cached original page.
+{
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        subtype : prerender
+        targetId : <string>
+        title : 
+        type : page
+        url : 
+    }
+    waitingForDebugger : true
+}
+Navigation: http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+Navigated to http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+Now back to http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/simple-prerender.html
+

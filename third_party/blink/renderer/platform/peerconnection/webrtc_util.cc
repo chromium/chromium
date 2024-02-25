@@ -23,13 +23,23 @@ String WebrtcCodecNameFromMimeType(const String& mime_type,
   return "";
 }
 
-webrtc::SdpVideoFormat::Parameters ConvertToSdpVideoFormatParameters(
+std::map<std::string, std::string> ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters) {
-  webrtc::SdpVideoFormat::Parameters sdp_parameters;
+  std::map<std::string, std::string> sdp_parameters;
   for (const auto& parameter : parameters) {
     sdp_parameters[parameter.name.Utf8()] = parameter.value.Utf8();
   }
   return sdp_parameters;
+}
+
+base::TimeTicks PLATFORM_EXPORT ConvertToBaseTimeTicks(webrtc::Timestamp time) {
+  if (time == webrtc::Timestamp::PlusInfinity()) {
+    return base::TimeTicks::Max();
+  } else if (time == webrtc::Timestamp::MinusInfinity()) {
+    return base::TimeTicks::Min();
+  } else {
+    return base::TimeTicks() + base::Microseconds(time.us());
+  }
 }
 
 }  // namespace blink

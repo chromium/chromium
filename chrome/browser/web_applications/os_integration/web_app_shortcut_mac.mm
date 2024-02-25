@@ -63,6 +63,7 @@
 #import "chrome/common/mac/app_mode_common.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/crx_file/id_util.h"
+#include "components/variations/net/variations_command_line.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,6 +90,27 @@
 #include "base/bits.h"
 #include "base/process/launch.h"
 #endif
+
+// <https://github.com/apple-oss-distributions/Security/blob/Security-60420.101.4/OSX/libsecurity_codesigning/lib/SecCodeSigner.h>
+extern "C" {
+
+extern const CFStringRef kSecCodeSignerFlags;
+extern const CFStringRef kSecCodeSignerIdentity;
+extern const CFStringRef kSecCodeSignerEntitlements;
+
+const uint32_t kSecCodeMagicEntitlement = 0xfade7171;
+
+typedef struct __SecCodeSigner* SecCodeSignerRef;
+
+OSStatus SecCodeSignerCreate(CFDictionaryRef parameters,
+                             SecCSFlags flags,
+                             SecCodeSignerRef* signer);
+
+OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
+                                             SecStaticCodeRef code,
+                                             SecCSFlags flags,
+                                             CFErrorRef* errors);
+}  // extern "C"
 
 // A TerminationObserver observes a NSRunningApplication for when it
 // terminates. On termination, it will run the specified callback on the UI
@@ -234,7 +256,8 @@ enum class CreateShortcutResult {
   kFailToUpdateIcon = 12,
   kFailToCreateParentDir = 13,
   kFailToCopyApp = 14,
-  kMaxValue = kFailToCopyApp
+  kFailToSign = 15,
+  kMaxValue = kFailToSign,
 };
 
 // Records the result of creating shortcut to UMA.
@@ -430,17 +453,6 @@ base::CommandLine BuildCommandLineForShimLaunch() {
       app_mode::kLaunchedByChromeFrameworkDylibPath,
       framework_bundle_path.Append(chrome::kFrameworkExecutableName));
 
-  // The shim must use the same Mojo implementation as this browser. Since
-  // feature parameters and field trials are otherwise not passed to shim
-  // processes, we use feature override switches to ensure Mojo parity.
-  if (mojo::core::IsMojoIpczEnabled()) {
-    command_line.AppendSwitchASCII(switches::kEnableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  } else {
-    command_line.AppendSwitchASCII(switches::kDisableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  }
-
   return command_line;
 }
 
@@ -551,6 +563,13 @@ void LaunchTheFirstShimThatWorksOnFileThread(
   if (launched_after_rebuild) {
     command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
   }
+
+  // The shim must have the same feature parameter and field trial state as
+  // Chrome, so pass this over the command line. This is not done as part of
+  // `BuildcommandLineForShimLaunch`, as the other caller of that method is
+  // to simulate a launch by the OS, which would not have these arguments.
+  variations::VariationsCommandLine::GetForCurrentProcess().ApplyToCommandLine(
+      command_line);
 
   LaunchApplicationWithRetry(
       shim_path, command_line, /*url_specs=*/{},
@@ -818,23 +837,6 @@ base::FilePath GetMultiProfileAppDataDir(base::FilePath app_data_dir) {
       .Append(app_name_dir);
 }
 
-// Returns the bundle identifier for an app. If |profile_path| is unset, then
-// the returned bundle id will be profile-agnostic.
-std::string GetBundleIdentifier(
-    const std::string& app_id,
-    const base::FilePath& profile_path = base::FilePath()) {
-  // Note that this matches APP_MODE_APP_BUNDLE_ID in chrome/chrome.gyp.
-  if (!profile_path.empty()) {
-    // Replace spaces in the profile path with hyphen.
-    std::string normalized_profile_path;
-    base::ReplaceChars(profile_path.BaseName().value(), " ", "-",
-                       &normalized_profile_path);
-    return base::apple::BaseBundleID() + std::string(".app.") +
-           normalized_profile_path + "-" + app_id;
-  }
-  return base::apple::BaseBundleID() + std::string(".app.") + app_id;
-}
-
 // Return all bundles with the specified |bundle_id| which are for the current
 // user data dir.
 std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
@@ -843,7 +845,7 @@ std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
   // First search using LaunchServices.
   NSArray* bundle_urls =
       base::apple::CFToNSOwnershipCast(LSCopyApplicationURLsForBundleIdentifier(
-          base::SysUTF8ToCFStringRef(bundle_id), /*outError=*/nullptr));
+          base::SysUTF8ToCFStringRef(bundle_id).get(), /*outError=*/nullptr));
   for (NSURL* url : bundle_urls) {
     base::FilePath bundle_path = base::apple::NSURLToFilePath(url);
     BundleInfoPlist info(bundle_path);
@@ -1110,6 +1112,30 @@ gfx::Image MaskedIcon(const gfx::Image& base_icon) {
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
+NSData* AppShimEntitlements() {
+  // Entitlement data to disable library validation with the hardened runtime.
+  // The first 8 bytes of the entitlement data consists of two 32-bit values:
+  // a magic constant and the length of the data. They are populated below.
+  char entitlement_bytes[] =
+      R"xml(12345678<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>
+)xml";
+
+  // The magic constant and length are expected to be big endian.
+  uint32_t* entitlement_header = reinterpret_cast<uint32_t*>(entitlement_bytes);
+  entitlement_header[0] = CFSwapInt32HostToBig(kSecCodeMagicEntitlement);
+  entitlement_header[1] = CFSwapInt32HostToBig(sizeof(entitlement_bytes) - 1);
+
+  return [NSData dataWithBytes:static_cast<void*>(entitlement_bytes)
+                        length:sizeof(entitlement_bytes) - 1];
+}
+
 }  // namespace
 
 bool AppShimCreationAndLaunchDisabledForTest() {
@@ -1330,6 +1356,22 @@ bool WebAppShortcutCreator::BuildShortcut(
     LOG(ERROR) << "Failed to copy asan library: " << asan_library_path;
     return false;
   }
+
+  // The address sanitizer runtime must have a valid signature in order for the
+  // containing app bundle to be signed. On Apple Silicon the address sanitizer
+  // runtime library has a linker-generated ad-hoc code signature, but this is
+  // treated as equivalent to being unsigned when signing the containing app
+  // bundle.
+  std::string codesign_output;
+  std::vector<std::string> codesign_argv = {
+      "codesign", "--sign", "-",
+      destination_executable_path.Append(asan_library_path.BaseName()).value()};
+  CHECK(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
+                                   &codesign_output))
+      << "Failed to sign executable at "
+      << destination_executable_path.Append(asan_library_path.BaseName())
+             .value()
+      << ": " << codesign_output;
 #endif
 
   // Copy the Info.plist.
@@ -1363,6 +1405,10 @@ bool WebAppShortcutCreator::BuildShortcut(
   if (!result) {
     RecordCreateShortcut(CreateShortcutResult::kFailToUpdateIcon);
   }
+  result = UpdateSignature(staging_path);
+  if (!result) {
+    RecordCreateShortcut(CreateShortcutResult::kFailToSign);
+  }
   return result;
 }
 
@@ -1371,6 +1417,38 @@ bool WebAppShortcutCreator::BuildShortcut(
 base::Lock& GetUpdateShortcutsLock() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
+}
+
+bool CopyStagingBundleToDestination(base::FilePath staging_path,
+                                    base::FilePath dst_app_path) {
+  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+    return base::CopyDirectory(staging_path, dst_app_path, true);
+  }
+
+  // When using ad-hoc signing for web app shims, the final app shim must be
+  // written to disk by a separate helper tool. This helper tool is used
+  // so that binary authorization tools, such as Santa, can transitively trust
+  // app shims that it creates without trusting all files written by Chrome.
+  // This allows app shims to be trusted by the binary authorization tool
+  // despite having only ad-hoc code signatures.
+
+  base::FilePath web_app_shortcut_copier_path =
+      base::apple::FrameworkBundlePath().Append("Helpers").Append(
+          "web_app_shortcut_copier");
+  base::CommandLine command_line(web_app_shortcut_copier_path);
+  command_line.AppendArgPath(staging_path);
+  command_line.AppendArgPath(dst_app_path);
+
+  // Synchronously wait for the copy to complete to match the semantics of
+  // `base::CopyDirectory`.
+  std::string command_output;
+  int exit_code;
+  if (base::GetAppOutputWithExitCode(command_line, &command_output,
+                                     &exit_code)) {
+    return !exit_code;
+  }
+
+  return false;
 }
 
 void WebAppShortcutCreator::CreateShortcutsAt(
@@ -1419,7 +1497,7 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::DeletePathRecursively(dst_app_path);
 
     // Copy the bundle to |dst_app_path|.
-    if (!base::CopyDirectory(staging_path, dst_app_path, true)) {
+    if (!CopyStagingBundleToDestination(staging_path, dst_app_path)) {
       RecordCreateShortcut(CreateShortcutResult::kFailToCopyApp);
       LOG(ERROR) << "Copying app to dst dir: " << dst_parent_dir.value()
                  << " failed";
@@ -1434,7 +1512,7 @@ void WebAppShortcutCreator::CreateShortcutsAt(
 
     // LaunchServices will eventually detect the (updated) app, but explicitly
     // calling LSRegisterURL ensures tests see the right state immediately.
-    LSRegisterURL(base::apple::FilePathToCFURL(dst_app_path), true);
+    LSRegisterURL(base::apple::FilePathToCFURL(dst_app_path).get(), true);
 
     updated_paths->push_back(dst_app_path);
   }
@@ -1559,14 +1637,14 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
       base::SysUTF8ToNSString(info_->version_for_display);
   if (IsMultiProfile()) {
     plist[base::apple::CFToNSPtrCast(kCFBundleIdentifierKey)] =
-        base::SysUTF8ToNSString(GetBundleIdentifier(info_->app_id));
+        base::SysUTF8ToNSString(GetBundleIdentifierForShim(info_->app_id));
     base::FilePath data_dir = GetMultiProfileAppDataDir(app_data_dir_);
     plist[app_mode::kCrAppModeUserDataDirKey] =
         base::apple::FilePathToNSString(data_dir);
   } else {
     plist[base::apple::CFToNSPtrCast(kCFBundleIdentifierKey)] =
         base::SysUTF8ToNSString(
-            GetBundleIdentifier(info_->app_id, info_->profile_path));
+            GetBundleIdentifierForShim(info_->app_id, info_->profile_path));
     plist[app_mode::kCrAppModeUserDataDirKey] =
         base::apple::FilePathToNSString(app_data_dir_);
     plist[app_mode::kCrAppModeProfileDirKey] =
@@ -1648,7 +1726,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
 
     plist[app_mode::kCFBundleURLTypesKey] = @[ @{
       app_mode::kCFBundleURLNameKey :
-          base::SysUTF8ToNSString(GetBundleIdentifier(info_->app_id)),
+          base::SysUTF8ToNSString(GetBundleIdentifierForShim(info_->app_id)),
       app_mode::kCFBundleURLSchemesKey : handlers
     } ];
   }
@@ -1743,10 +1821,73 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   return icns_encoder.WriteToFile(resources_path.Append("app.icns"));
 }
 
+bool WebAppShortcutCreator::UpdateSignature(
+    const base::FilePath& app_path) const {
+  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+    return true;
+  }
+
+  base::apple::ScopedCFTypeRef<CFURLRef> app_url =
+      base::apple::FilePathToCFURL(app_path);
+  base::apple::ScopedCFTypeRef<SecStaticCodeRef> app_code;
+  if (SecStaticCodeCreateWithPath(app_url.get(), kSecCSDefaultFlags,
+                                  app_code.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+
+  // Use the most restrictive flags possible. Library validation cannot be
+  // enabled as an adhoc binary's signing identity inherently does not match the
+  // signing identity of the non-system libraries that the app shim loads.
+  uint32_t code_signer_flags = kSecCodeSignatureRestrict |
+                               kSecCodeSignatureForceKill |
+                               kSecCodeSignatureRuntime;
+
+  auto* signer_params = @{
+    static_cast<id>(kSecCodeSignerFlags) : @(code_signer_flags),
+    static_cast<id>(kSecCodeSignerIdentity) : [NSNull null],
+    static_cast<id>(kSecCodeSignerEntitlements) : AppShimEntitlements(),
+  };
+  base::apple::ScopedCFTypeRef<SecCodeSignerRef> signer;
+  if (SecCodeSignerCreate(base::apple::NSToCFPtrCast(signer_params),
+                          kSecCSDefaultFlags,
+                          signer.InitializeInto()) != errSecSuccess) {
+    return false;
+  }
+
+  base::apple::ScopedCFTypeRef<CFErrorRef> errors;
+  if (SecCodeSignerAddSignatureWithErrors(
+          signer.get(), app_code.get(), kSecCSDefaultFlags,
+          errors.InitializeInto()) != errSecSuccess) {
+    LOG(ERROR) << "Failed to sign web app shim: " << errors.get();
+    return false;
+  }
+
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> app_shim_info;
+  if (SecCodeCopySigningInformation(app_code.get(), kSecCSSigningInformation,
+                                    app_shim_info.InitializeInto()) !=
+      errSecSuccess) {
+    LOG(ERROR) << "Failed to copy signing information from web app shim";
+    return false;
+  }
+
+  CFDataRef cd_hash_data = base::apple::GetValueFromDictionary<CFDataRef>(
+      app_shim_info.get(), kSecCodeInfoUnique);
+  std::vector<uint8_t> cd_hash(
+      CFDataGetBytePtr(cd_hash_data),
+      CFDataGetBytePtr(cd_hash_data) + CFDataGetLength(cd_hash_data));
+
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&AppShimRegistry::SaveCdHashForApp,
+                                base::Unretained(AppShimRegistry::Get()),
+                                info_->app_id, std::move(cd_hash)));
+
+  return true;
+}
+
 std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()
     const {
   // Search using LaunchServices using the default bundle id.
-  const std::string bundle_id = GetBundleIdentifier(
+  const std::string bundle_id = GetBundleIdentifierForShim(
       info_->app_id, IsMultiProfile() ? base::FilePath() : info_->profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
 
@@ -1754,7 +1895,7 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()
   // case the user has an old shim hanging around.
   if (bundle_infos.empty() && IsMultiProfile()) {
     const std::string profile_scoped_bundle_id =
-        GetBundleIdentifier(info_->app_id, info_->profile_path);
+        GetBundleIdentifierForShim(info_->app_id, info_->profile_path);
     bundle_infos = SearchForBundlesById(profile_scoped_bundle_id);
   }
 
@@ -1797,7 +1938,7 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesById() const {
 }
 
 std::string WebAppShortcutCreator::GetAppBundleId() const {
-  return GetBundleIdentifier(
+  return GetBundleIdentifierForShim(
       info_->app_id, IsMultiProfile() ? base::FilePath() : info_->profile_path);
 }
 
@@ -1854,13 +1995,6 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
   command_line.AppendSwitch(app_mode::kLaunchedForTest);
   command_line.AppendSwitch(app_mode::kIsNormalLaunch);
   command_line.AppendSwitchPath(app_mode::kLaunchChromeForTest, chromium_path);
-  if (mojo::core::IsMojoIpczEnabled()) {
-    command_line.AppendSwitchASCII(switches::kEnableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  } else {
-    command_line.AppendSwitchASCII(switches::kDisableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  }
 
   std::vector<std::string> url_specs;
   url_specs.reserve(urls.size());
@@ -1892,7 +2026,7 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
                                  const std::string& app_id,
                                  bool terminate_shim) {
-  std::string bundle_id = GetBundleIdentifier(app_id);
+  std::string bundle_id = GetBundleIdentifierForShim(app_id);
   NSRunningApplication* matching_app =
       FindRunningApplicationForBundleIdAndPath(bundle_id, shim_path);
   if (!matching_app) {
@@ -1915,12 +2049,26 @@ void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
 void RemoveAppShimFromLoginItems(const std::string& app_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  const std::string bundle_id = GetBundleIdentifier(app_id);
+  const std::string bundle_id = GetBundleIdentifierForShim(app_id);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         bundle_info.bundle_path());
   }
+}
+
+std::string GetBundleIdentifierForShim(const std::string& app_id,
+                                       const base::FilePath& profile_path) {
+  // Note that this matches APP_MODE_APP_BUNDLE_ID in chrome/chrome.gyp.
+  if (!profile_path.empty()) {
+    // Replace spaces in the profile path with hyphen.
+    std::string normalized_profile_path;
+    base::ReplaceChars(profile_path.BaseName().value(), " ", "-",
+                       &normalized_profile_path);
+    return base::apple::BaseBundleID() + std::string(".app.") +
+           normalized_profile_path + "-" + app_id;
+  }
+  return base::apple::BaseBundleID() + std::string(".app.") + app_id;
 }
 
 namespace internals {
@@ -1979,8 +2127,8 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
     test_override->RegisterProtocolSchemes(shortcut_info.app_id,
                                            std::vector<std::string>());
   }
-  const std::string bundle_id =
-      GetBundleIdentifier(shortcut_info.app_id, shortcut_info.profile_path);
+  const std::string bundle_id = GetBundleIdentifierForShim(
+      shortcut_info.app_id, shortcut_info.profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   bool result = true;
   for (const auto& bundle_info : bundle_infos) {
@@ -2002,7 +2150,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
-  const std::string bundle_id = GetBundleIdentifier(app_id);
+  const std::string bundle_id = GetBundleIdentifierForShim(app_id);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
@@ -2014,7 +2162,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
 Result UpdatePlatformShortcuts(
     const base::FilePath& app_data_path,
     const std::u16string& old_app_title,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);

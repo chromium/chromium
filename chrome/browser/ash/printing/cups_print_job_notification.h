@@ -44,8 +44,10 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
 
   // message_center::NotificationObserver
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
+
+  message_center::Notification* GetNotificationDataForTesting();
 
  private:
   // Update the notification based on the print job's status.
@@ -53,16 +55,20 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationTitle();
   void UpdateNotificationIcon();
   void UpdateNotificationBodyMessage();
-  void UpdateNotificationTimeout();
 
   void CleanUpNotification();
 
-  raw_ptr<CupsPrintJobNotificationManager, ExperimentalAsh>
-      notification_manager_;
+  raw_ptr<CupsPrintJobNotificationManager> notification_manager_;
   std::unique_ptr<message_center::Notification> notification_;
   std::string notification_id_;
   base::WeakPtr<CupsPrintJob> print_job_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
+
+  // Whether this print job has been submitted via the Web Printing API.
+  // This field is separate from `print_job_` since the WeakPtr might expire
+  // while the notification is still being shown, which could affect the logic
+  // of handling clicks.
+  const bool is_web_printing_api_initiated_;
 
   // If the notification has been closed in the middle of printing or not. If it
   // is true, then prevent the following print job progress update after close,

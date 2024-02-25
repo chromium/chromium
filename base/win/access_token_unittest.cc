@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/win/atl.h"
@@ -16,7 +17,6 @@
 #include "base/win/security_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
@@ -49,7 +49,7 @@ void CompareGroups(const std::vector<AccessToken::Group>& groups,
   ASSERT_EQ(sids.GetCount(), attrs.GetCount());
   std::map<std::wstring, DWORD> group_map;
   for (const AccessToken::Group& group : groups) {
-    absl::optional<std::wstring> sddl = group.GetSid().ToSddlString();
+    std::optional<std::wstring> sddl = group.GetSid().ToSddlString();
     ASSERT_TRUE(sddl);
     group_map.insert({*sddl, group.GetAttributes()});
   }
@@ -102,7 +102,7 @@ void CompareIntegrityLevel(const AccessToken& token,
   TOKEN_MANDATORY_LABEL* label =
       reinterpret_cast<TOKEN_MANDATORY_LABEL*>(buffer);
   ASSERT_TRUE(label->Label.Sid);
-  absl::optional<Sid> il_sid = Sid::FromIntegrityLevel(token.IntegrityLevel());
+  std::optional<Sid> il_sid = Sid::FromIntegrityLevel(token.IntegrityLevel());
   ASSERT_TRUE(il_sid);
   EXPECT_TRUE(il_sid->Equal(label->Label.Sid));
 }
@@ -137,7 +137,7 @@ void CompareDefaultDacl(const AccessToken& token,
   CAcl::CAceTypeArray types;
   CAcl::CAceFlagArray flags;
   atl_dacl.GetAclEntries(&sids, &access, &types, &flags);
-  absl::optional<AccessControlList> dacl = token.DefaultDacl();
+  std::optional<AccessControlList> dacl = token.DefaultDacl();
   ASSERT_TRUE(dacl);
   ACL* acl_ptr = dacl->get();
   ASSERT_TRUE(acl_ptr);
@@ -158,7 +158,7 @@ void CompareDefaultDacl(const AccessToken& token,
       ACCESS_ALLOWED_ACE* ace =
           reinterpret_cast<ACCESS_ALLOWED_ACE*>(ace_header);
       EXPECT_EQ(ace->Mask, access[index]);
-      absl::optional<Sid> sid = Sid::FromPSID(&ace->SidStart);
+      std::optional<Sid> sid = Sid::FromPSID(&ace->SidStart);
       ASSERT_TRUE(sid);
       EXPECT_TRUE(EqualSid(*sid, sids[index]));
     }
@@ -189,7 +189,7 @@ void CompareTokens(const AccessToken& token,
   ATL::CSid primary_group;
   ASSERT_TRUE(atl_token.GetPrimaryGroup(&primary_group));
   EXPECT_TRUE(EqualSid(token.PrimaryGroup(), primary_group));
-  absl::optional<Sid> logon_sid = token.LogonId();
+  std::optional<Sid> logon_sid = token.LogonId();
   if (!logon_sid) {
     EXPECT_EQ(DWORD{ERROR_NOT_FOUND}, ::GetLastError());
   }
@@ -221,7 +221,7 @@ void CompareTokens(const AccessToken& token,
   ASSERT_TRUE(atl_token.GetPrivileges(&atl_privs));
   ComparePrivileges(token.Privileges(), atl_privs);
   CompareDefaultDacl(token, atl_token);
-  absl::optional<AccessToken> linked_token = token.LinkedToken();
+  std::optional<AccessToken> linked_token = token.LinkedToken();
   ATL::CAccessToken atl_linked_token;
   bool result = GetLinkedToken(atl_token, &atl_linked_token);
   if (!linked_token) {
@@ -253,7 +253,7 @@ bool CreateImpersonationToken(SECURITY_IMPERSONATION_LEVEL impersonation_level,
   return token.CreateImpersonationToken(imp_token, impersonation_level);
 }
 
-void CheckTokenError(const absl::optional<AccessToken>& token,
+void CheckTokenError(const std::optional<AccessToken>& token,
                      DWORD expected_error) {
   DWORD error = ::GetLastError();
   EXPECT_FALSE(token);
@@ -325,7 +325,7 @@ void CompareAppContainer(const Sid& package_sid, const std::vector<Sid>& caps) {
       cap_count > 0 ? cap_groups->Groups : nullptr, 0, nullptr);
   ASSERT_EQ(0, status);
   ScopedHandle scoped_tmp_token(tmp_token);
-  absl::optional<AccessToken> ac_token =
+  std::optional<AccessToken> ac_token =
       AccessToken::FromToken(scoped_tmp_token.get());
   ASSERT_TRUE(ac_token);
   EXPECT_TRUE(ac_token->IsAppContainer());
@@ -334,7 +334,7 @@ void CompareAppContainer(const Sid& package_sid, const std::vector<Sid>& caps) {
 }
 
 ACCESS_MASK GetTokenAccess(const AccessToken& token) {
-  absl::optional<ACCESS_MASK> granted_access = GetGrantedAccess(token.get());
+  std::optional<ACCESS_MASK> granted_access = GetGrantedAccess(token.get());
   CHECK(granted_access);
   return *granted_access;
 }
@@ -361,13 +361,13 @@ TEST(AccessTokenTest, FromToken) {
   ATL::CAccessToken atl_token;
   ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY));
 
-  absl::optional<AccessToken> token =
+  std::optional<AccessToken> token =
       AccessToken::FromToken(atl_token.GetHandle());
   ASSERT_TRUE(token);
   CompareTokens(*token, atl_token);
   EXPECT_EQ(GetTokenAccess(*token), DWORD{TOKEN_QUERY});
 
-  absl::optional<AccessToken> all_access_token =
+  std::optional<AccessToken> all_access_token =
       AccessToken::FromToken(atl_token.GetHandle(), kTokenAllNoQuery);
   ASSERT_TRUE(all_access_token);
   EXPECT_EQ(GetTokenAccess(*all_access_token), DWORD{TOKEN_ALL_ACCESS});
@@ -383,7 +383,7 @@ TEST(AccessTokenTest, FromToken) {
   // Check that we duplicate with the correct access rights.
   ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY_SOURCE));
   ASSERT_FALSE(atl_token.GetTokenId(&temp_luid));
-  absl::optional<AccessToken> token2 =
+  std::optional<AccessToken> token2 =
       AccessToken::FromToken(atl_token.GetHandle());
   ASSERT_TRUE(token2);
   EXPECT_TRUE(CompareLuid(token2->Id(), luid));
@@ -420,20 +420,20 @@ TEST(AccessTokenTest, FromProcess) {
   process.Set(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE,
                             ::GetCurrentProcessId()));
   ASSERT_TRUE(process.is_valid());
-  absl::optional<AccessToken> token = AccessToken::FromProcess(process.get());
+  std::optional<AccessToken> token = AccessToken::FromProcess(process.get());
   ASSERT_TRUE(token);
   EXPECT_EQ(GetTokenAccess(*token), DWORD{TOKEN_QUERY});
   ASSERT_FALSE(token->IsImpersonation());
   ATL::CAccessToken atl_token;
   ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY, process.get()));
   CompareTokens(*token, atl_token);
-  absl::optional<AccessToken> imp_token =
+  std::optional<AccessToken> imp_token =
       AccessToken::FromProcess(process.get(), true);
   ASSERT_TRUE(imp_token);
   ASSERT_TRUE(imp_token->IsImpersonation());
   ASSERT_TRUE(imp_token->IsIdentification());
 
-  absl::optional<AccessToken> all_access_token =
+  std::optional<AccessToken> all_access_token =
       AccessToken::FromProcess(process.get(), false, kTokenAllNoQuery);
   ASSERT_TRUE(all_access_token);
   EXPECT_EQ(GetTokenAccess(*all_access_token), DWORD{TOKEN_ALL_ACCESS});
@@ -445,18 +445,18 @@ TEST(AccessTokenTest, FromProcess) {
 }
 
 TEST(AccessTokenTest, FromCurrentProcess) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   ASSERT_FALSE(token->IsImpersonation());
   ATL::CAccessToken atl_token;
   ASSERT_TRUE(atl_token.GetProcessToken(TOKEN_QUERY));
   CompareTokens(*token, atl_token);
-  absl::optional<AccessToken> imp_token = AccessToken::FromCurrentProcess(true);
+  std::optional<AccessToken> imp_token = AccessToken::FromCurrentProcess(true);
   ASSERT_TRUE(imp_token);
   ASSERT_TRUE(imp_token->IsImpersonation());
   ASSERT_TRUE(imp_token->IsIdentification());
 
-  absl::optional<AccessToken> all_access_token =
+  std::optional<AccessToken> all_access_token =
       AccessToken::FromCurrentProcess(false, kTokenAllNoQuery);
   ASSERT_TRUE(all_access_token);
   EXPECT_EQ(GetTokenAccess(*all_access_token), DWORD{TOKEN_ALL_ACCESS});
@@ -485,8 +485,8 @@ TEST(AccessTokenTest, FromThread) {
   thread.Set(::OpenThread(THREAD_QUERY_LIMITED_INFORMATION, FALSE,
                           ::GetCurrentThreadId()));
   ASSERT_TRUE(thread.is_valid());
-  absl::optional<AccessToken> imp_token = AccessToken::FromThread(thread.get());
-  absl::optional<AccessToken> all_access_token =
+  std::optional<AccessToken> imp_token = AccessToken::FromThread(thread.get());
+  std::optional<AccessToken> all_access_token =
       AccessToken::FromThread(thread.get(), true, kTokenAllNoQuery);
   atl_imp_token.Revert();
   ASSERT_TRUE(imp_token);
@@ -503,7 +503,7 @@ TEST(AccessTokenTest, FromThread) {
   CAutoRevertImpersonation scoped_imp2(&atl_id_token);
   CheckTokenError(AccessToken::FromThread(thread.get(), false),
                   ERROR_BAD_IMPERSONATION_LEVEL);
-  absl::optional<AccessToken> id_token =
+  std::optional<AccessToken> id_token =
       AccessToken::FromThread(thread.get(), true);
   atl_id_token.Revert();
   ASSERT_TRUE(id_token);
@@ -522,8 +522,8 @@ TEST(AccessTokenTest, FromCurrentThread) {
   ASSERT_TRUE(atl_imp_token.Impersonate());
   CAutoRevertImpersonation scoped_imp(&atl_imp_token);
 
-  absl::optional<AccessToken> imp_token = AccessToken::FromCurrentThread();
-  absl::optional<AccessToken> all_access_token =
+  std::optional<AccessToken> imp_token = AccessToken::FromCurrentThread();
+  std::optional<AccessToken> all_access_token =
       AccessToken::FromCurrentThread(true, kTokenAllNoQuery);
   atl_imp_token.Revert();
   ASSERT_TRUE(imp_token);
@@ -540,7 +540,7 @@ TEST(AccessTokenTest, FromCurrentThread) {
   ATL::CAutoRevertImpersonation scoped_imp2(&atl_id_token);
   CheckTokenError(AccessToken::FromCurrentThread(false),
                   ERROR_BAD_IMPERSONATION_LEVEL);
-  absl::optional<AccessToken> id_token = AccessToken::FromCurrentThread(true);
+  std::optional<AccessToken> id_token = AccessToken::FromCurrentThread(true);
   atl_id_token.Revert();
   ASSERT_TRUE(id_token);
   EXPECT_TRUE(id_token->IsIdentification());
@@ -550,9 +550,9 @@ TEST(AccessTokenTest, FromCurrentThread) {
 TEST(AccessTokenTest, FromEffective) {
   // Make sure we have no impersonation token before starting.
   ::RevertToSelf();
-  absl::optional<base::win::AccessToken> primary_token =
+  std::optional<base::win::AccessToken> primary_token =
       AccessToken::FromEffective();
-  absl::optional<base::win::AccessToken> all_access_token =
+  std::optional<base::win::AccessToken> all_access_token =
       AccessToken::FromEffective(kTokenAllNoQuery);
   ASSERT_TRUE(primary_token);
   EXPECT_EQ(GetTokenAccess(*primary_token), DWORD{TOKEN_QUERY});
@@ -569,7 +569,7 @@ TEST(AccessTokenTest, FromEffective) {
   ASSERT_TRUE(atl_imp_token.Impersonate());
   CAutoRevertImpersonation scoped_imp(&atl_imp_token);
 
-  absl::optional<AccessToken> imp_token = AccessToken::FromEffective();
+  std::optional<AccessToken> imp_token = AccessToken::FromEffective();
   all_access_token = AccessToken::FromEffective(kTokenAllNoQuery);
   atl_imp_token.Revert();
   ASSERT_TRUE(imp_token);
@@ -604,16 +604,16 @@ TEST(AccessTokenTest, AccessTokenPrivilege) {
 }
 
 TEST(AccessTokenTest, IsMember) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   ASSERT_FALSE(token->IsImpersonation());
   CheckError(token->IsMember(WellKnownSid::kWorld),
              ERROR_NO_IMPERSONATION_TOKEN);
-  absl::optional<Sid> sid = Sid::FromSddlString(L"S-1-1-2-3-4-5-6-7-8");
+  std::optional<Sid> sid = Sid::FromSddlString(L"S-1-1-2-3-4-5-6-7-8");
   ASSERT_TRUE(sid);
   CheckError(token->IsMember(*sid), ERROR_NO_IMPERSONATION_TOKEN);
 
-  absl::optional<AccessToken> imp_token = AccessToken::FromCurrentProcess(true);
+  std::optional<AccessToken> imp_token = AccessToken::FromCurrentProcess(true);
   EXPECT_TRUE(imp_token->IsMember(WellKnownSid::kWorld));
   EXPECT_FALSE(imp_token->IsMember(WellKnownSid::kNull));
   EXPECT_TRUE(imp_token->IsMember(imp_token->User()));
@@ -631,7 +631,7 @@ TEST(AccessTokenTest, Restricted) {
   ATL::CAccessToken atl_restricted;
   ASSERT_TRUE(atl_token.CreateRestrictedToken(&atl_restricted, disable_groups,
                                               restrict_groups));
-  absl::optional<AccessToken> restricted =
+  std::optional<AccessToken> restricted =
       AccessToken::FromToken(atl_restricted.GetHandle());
   ASSERT_TRUE(restricted);
   EXPECT_TRUE(restricted->IsRestricted());
@@ -647,10 +647,10 @@ TEST(AccessTokenTest, Restricted) {
 }
 
 TEST(AccessTokenTest, AppContainer) {
-  absl::optional<Sid> package_sid =
+  std::optional<Sid> package_sid =
       Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");
   ASSERT_TRUE(package_sid);
-  absl::optional<std::vector<Sid>> caps =
+  std::optional<std::vector<Sid>> caps =
       Sid::FromKnownCapabilityVector({WellKnownCapability::kInternetClient,
                                       WellKnownCapability::kDocumentsLibrary});
   ASSERT_TRUE(caps);
@@ -665,12 +665,12 @@ TEST(AccessTokenTest, Anonymous) {
   bool result = atl_anon_token.GetThreadToken(TOKEN_ALL_ACCESS);
   ::RevertToSelf();
   ASSERT_TRUE(result);
-  absl::optional<AccessToken> anon_token =
+  std::optional<AccessToken> anon_token =
       AccessToken::FromToken(atl_anon_token.GetHandle());
   ASSERT_TRUE(anon_token);
   CompareTokens(*anon_token, atl_anon_token);
   EXPECT_EQ(Sid(WellKnownSid::kAnonymous), anon_token->User());
-  absl::optional<Sid> logon_sid = anon_token->LogonId();
+  std::optional<Sid> logon_sid = anon_token->LogonId();
   EXPECT_FALSE(anon_token->LogonId());
   EXPECT_EQ(DWORD{ERROR_NOT_FOUND}, ::GetLastError());
 }
@@ -680,14 +680,14 @@ TEST(AccessTokenTest, SetDefaultDacl) {
   ASSERT_TRUE(atl_token.GetProcessToken(MAXIMUM_ALLOWED));
   ATL::CAccessToken atl_dup_token;
   ASSERT_TRUE(atl_token.CreatePrimaryToken(&atl_dup_token));
-  absl::optional<AccessToken> read_only_token =
+  std::optional<AccessToken> read_only_token =
       AccessToken::FromToken(atl_dup_token.GetHandle());
   AccessControlList default_dacl;
   Sid world_sid(WellKnownSid::kWorld);
   ASSERT_TRUE(default_dacl.SetEntry(world_sid, SecurityAccessMode::kGrant,
                                     GENERIC_ALL, 0));
   EXPECT_FALSE(read_only_token->SetDefaultDacl(default_dacl));
-  absl::optional<AccessToken> token =
+  std::optional<AccessToken> token =
       AccessToken::FromToken(atl_dup_token.GetHandle(), TOKEN_ADJUST_DEFAULT);
   EXPECT_TRUE(token->SetDefaultDacl(default_dacl));
 
@@ -710,11 +710,11 @@ TEST(AccessTokenTest, SetIntegrityLevel) {
   ASSERT_TRUE(atl_token.GetProcessToken(MAXIMUM_ALLOWED));
   ATL::CAccessToken atl_dup_token;
   ASSERT_TRUE(atl_token.CreatePrimaryToken(&atl_dup_token));
-  absl::optional<AccessToken> read_only_token =
+  std::optional<AccessToken> read_only_token =
       AccessToken::FromToken(atl_dup_token.GetHandle());
   EXPECT_FALSE(
       read_only_token->SetIntegrityLevel(SECURITY_MANDATORY_UNTRUSTED_RID));
-  absl::optional<AccessToken> token =
+  std::optional<AccessToken> token =
       AccessToken::FromToken(atl_dup_token.GetHandle(), TOKEN_ADJUST_DEFAULT);
   EXPECT_TRUE(token->SetIntegrityLevel(SECURITY_MANDATORY_LOW_RID));
   EXPECT_EQ(token->IntegrityLevel(), DWORD{SECURITY_MANDATORY_LOW_RID});
@@ -723,12 +723,12 @@ TEST(AccessTokenTest, SetIntegrityLevel) {
 }
 
 TEST(AccessTokenTest, DuplicatePrimary) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   CheckTokenError(token->DuplicatePrimary(), ERROR_ACCESS_DENIED);
   token = AccessToken::FromCurrentProcess(false, TOKEN_DUPLICATE);
   ASSERT_TRUE(token);
-  absl::optional<AccessToken> dup_token = token->DuplicatePrimary();
+  std::optional<AccessToken> dup_token = token->DuplicatePrimary();
   ASSERT_TRUE(dup_token);
   EXPECT_FALSE(dup_token->IsImpersonation());
   EXPECT_EQ(GetTokenAccess(*dup_token), DWORD{TOKEN_QUERY});
@@ -739,14 +739,14 @@ TEST(AccessTokenTest, DuplicatePrimary) {
 }
 
 TEST(AccessTokenTest, DuplicateImpersonation) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   CheckTokenError(
       token->DuplicateImpersonation(SecurityImpersonationLevel::kImpersonation),
       ERROR_ACCESS_DENIED);
   token = AccessToken::FromCurrentProcess(false, TOKEN_DUPLICATE);
   ASSERT_TRUE(token);
-  absl::optional<AccessToken> dup_token = token->DuplicateImpersonation();
+  std::optional<AccessToken> dup_token = token->DuplicateImpersonation();
   ASSERT_TRUE(dup_token);
   EXPECT_TRUE(dup_token->IsImpersonation());
   EXPECT_FALSE(dup_token->IsIdentification());
@@ -790,12 +790,12 @@ TEST(AccessTokenTest, DuplicateImpersonation) {
 }
 
 TEST(AccessTokenTest, CreateRestricted) {
-  absl::optional<AccessToken> primary_token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> primary_token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(primary_token);
   CheckTokenError(primary_token->CreateRestricted(0, {}, {}, {}),
                   ERROR_ACCESS_DENIED);
   primary_token = AccessToken::FromCurrentProcess(false, TOKEN_ALL_ACCESS);
-  absl::optional<AccessToken> restricted_token =
+  std::optional<AccessToken> restricted_token =
       primary_token->CreateRestricted(DISABLE_MAX_PRIVILEGE, {}, {}, {});
   ASSERT_TRUE(restricted_token);
   EXPECT_FALSE(restricted_token->IsRestricted());
@@ -838,15 +838,15 @@ TEST(AccessTokenTest, CreateRestricted) {
 }
 
 TEST(AccessTokenTest, CreateAppContainer) {
-  absl::optional<AccessToken> primary_token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> primary_token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(primary_token);
-  absl::optional<Sid> package_sid =
+  std::optional<Sid> package_sid =
       Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");
   ASSERT_TRUE(package_sid);
   CheckTokenError(primary_token->CreateAppContainer(*package_sid, {}),
                   ERROR_ACCESS_DENIED);
   primary_token = AccessToken::FromCurrentProcess(false, TOKEN_ALL_ACCESS);
-  absl::optional<AccessToken> ac_token =
+  std::optional<AccessToken> ac_token =
       primary_token->CreateAppContainer(*package_sid, {});
   ASSERT_TRUE(ac_token);
   EXPECT_EQ(GetTokenAccess(*ac_token), DWORD{TOKEN_QUERY});
@@ -859,7 +859,7 @@ TEST(AccessTokenTest, CreateAppContainer) {
   EXPECT_TRUE(ac_token->IsAppContainer());
   EXPECT_EQ(GetTokenAccess(*ac_token), DWORD{TOKEN_ALL_ACCESS});
 
-  absl::optional<std::vector<Sid>> caps =
+  std::optional<std::vector<Sid>> caps =
       Sid::FromKnownCapabilityVector({WellKnownCapability::kInternetClient,
                                       WellKnownCapability::kDocumentsLibrary});
   ASSERT_TRUE(caps);
@@ -877,14 +877,14 @@ TEST(AccessTokenTest, CreateAppContainer) {
 }
 
 TEST(AccessTokenTest, SetPrivilege) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
   EXPECT_FALSE(token->SetPrivilege(SE_CHANGE_NOTIFY_NAME, false));
   token = AccessToken::FromCurrentProcess(true, TOKEN_ADJUST_PRIVILEGES);
   EXPECT_FALSE(token->SetPrivilege(L"ThisIsNotValid", false));
-  absl::optional<bool> original_state =
+  std::optional<bool> original_state =
       token->SetPrivilege(SE_CHANGE_NOTIFY_NAME, false);
   EXPECT_TRUE(original_state);
-  absl::optional<bool> curr_state =
+  std::optional<bool> curr_state =
       token->SetPrivilege(SE_CHANGE_NOTIFY_NAME, true);
   EXPECT_TRUE(curr_state);
   EXPECT_FALSE(*curr_state);
@@ -895,7 +895,7 @@ TEST(AccessTokenTest, SetPrivilege) {
 }
 
 TEST(AccessTokenTest, RemovePrivilege) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
   EXPECT_FALSE(token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME));
   token = AccessToken::FromCurrentProcess(true, TOKEN_ADJUST_PRIVILEGES);
   EXPECT_FALSE(token->RemovePrivilege(L"ThisIsNotValid"));
@@ -903,8 +903,17 @@ TEST(AccessTokenTest, RemovePrivilege) {
   EXPECT_FALSE(token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME));
 }
 
+TEST(AccessTokenTest, RemoveAllPrivileges) {
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
+  EXPECT_FALSE(token->RemoveAllPrivileges());
+  token = AccessToken::FromCurrentProcess(true, TOKEN_ADJUST_PRIVILEGES);
+  EXPECT_TRUE(token->RemoveAllPrivileges());
+  EXPECT_EQ(token->Privileges().size(), 0U);
+  EXPECT_TRUE(token->RemoveAllPrivileges());
+}
+
 TEST(AccessTokenTest, CheckRelease) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   EXPECT_TRUE(token->is_valid());
   ScopedHandle handle(token->release());

@@ -4,27 +4,22 @@
 
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace blink {
 
 namespace {
-
-SkBitmap CreateBitmap(int width, int height, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
 
 // Returns true if |lhs| and |rhs| have the same width and height and the
 // pixel at position (0, 0) is the same color in both.
@@ -50,7 +45,8 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.vibration_pattern.assign(
       vibration_pattern, vibration_pattern + std::size(vibration_pattern));
 
-  notification_data.timestamp = base::Time::FromJsTime(1513966159000.);
+  notification_data.timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(1513966159000.);
   notification_data.renotify = true;
   notification_data.silent = true;
   notification_data.require_interaction = true;
@@ -67,7 +63,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.actions[0]->action = "buttonAction";
   notification_data.actions[0]->title = u"Button Title!";
   notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0]->placeholder = absl::nullopt;
+  notification_data.actions[0]->placeholder = std::nullopt;
 
   notification_data.actions[1] = blink::mojom::NotificationAction::New();
   notification_data.actions[1]->type =
@@ -213,13 +209,15 @@ TEST(NotificationStructTraitsTest, DataExceedsMaximumSize) {
 TEST(NotificationStructTraitsTest, NotificationResourcesRoundtrip) {
   NotificationResources resources;
 
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
-  resources.notification_icon = CreateBitmap(100, 50, SK_ColorGREEN);
-  resources.badge = CreateBitmap(20, 10, SK_ColorBLUE);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.notification_icon = gfx::test::CreateBitmap(100, 50, SK_ColorGREEN);
+  resources.badge = gfx::test::CreateBitmap(20, 10, SK_ColorBLUE);
 
   resources.action_icons.resize(2);
-  resources.action_icons[0] = CreateBitmap(10, 10, SK_ColorLTGRAY);
-  resources.action_icons[1] = CreateBitmap(11, 11, SK_ColorDKGRAY);
+  resources.action_icons[0] =
+      gfx::test::CreateBitmap(/*size=*/10, SK_ColorLTGRAY);
+  resources.action_icons[1] =
+      gfx::test::CreateBitmap(/*size=*/11, SK_ColorDKGRAY);
 
   NotificationResources roundtrip_resources;
 

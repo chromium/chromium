@@ -21,8 +21,8 @@ using ::testing::NiceMock;
 namespace cc {
 namespace {
 
-const float kIdleThicknessScale =
-    SingleScrollbarAnimationControllerThinning::kIdleThicknessScale;
+// Redefinition from ui/native_theme/overlay_scrollbar_constants_aura.h
+const float kIdleThicknessScale = 0.4f;
 
 class MockSingleScrollbarAnimationControllerClient
     : public ScrollbarAnimationControllerClient {
@@ -35,7 +35,7 @@ class MockSingleScrollbarAnimationControllerClient
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const override {
     return host_impl_->ScrollbarsFor(scroll_element_id);
   }
-  bool IsFluentScrollbar() const override { return is_fluent_; }
+  bool IsFluentOverlayScrollbar() const override { return is_fluent_; }
 
   MOCK_METHOD2(PostDelayedScrollbarAnimationTask,
                void(base::OnceClosure start_fade, base::TimeDelta delay));
@@ -73,7 +73,7 @@ class SingleScrollbarAnimationControllerThinningTest
     const bool kIsLeftSideVerticalScrollbar = false;
 
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        ScrollbarOrientation::VERTICAL, kThumbThickness, kTrackStart,
+        ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
@@ -89,8 +89,8 @@ class SingleScrollbarAnimationControllerThinningTest
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
-        scroll_layer->element_id(), ScrollbarOrientation::VERTICAL, &client_,
-        kThinningDuration);
+        scroll_layer->element_id(), ScrollbarOrientation::kVertical, &client_,
+        kThinningDuration, kIdleThicknessScale);
     mouse_move_distance_to_trigger_fade_in_ =
         scrollbar_controller_->MouseMoveDistanceToTriggerFadeIn();
     mouse_move_distance_to_trigger_expand_ =
@@ -112,11 +112,18 @@ gfx::PointF NearScrollbar(float offset_x, float offset_y) {
   return p;
 }
 
+class SingleScrollbarAnimationControllerThinningAuraTest
+    : public SingleScrollbarAnimationControllerThinningTest {
+ public:
+  SingleScrollbarAnimationControllerThinningAuraTest()
+      : SingleScrollbarAnimationControllerThinningTest(/*is_fluent=*/false) {}
+};
+
 class SingleScrollbarAnimationControllerThinningFluentTest
     : public SingleScrollbarAnimationControllerThinningTest {
  public:
   SingleScrollbarAnimationControllerThinningFluentTest()
-      : SingleScrollbarAnimationControllerThinningTest(/* is_fluent */ true) {}
+      : SingleScrollbarAnimationControllerThinningTest(/*is_fluent=*/true) {}
 };
 
 // Check initialization of scrollbar. Should start thin.
@@ -214,7 +221,7 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest, MouseOver) {
 // First move the pointer over the scrollbar off of it. Make sure the thinning
 // animation kicked off in DidMouseMoveOffScrollbar gets overridden by the
 // thickening animation in the DidMouseMove call.
-TEST_P(SingleScrollbarAnimationControllerThinningTest,
+TEST_F(SingleScrollbarAnimationControllerThinningAuraTest,
        MouseNearThenAwayWhileAnimating) {
   base::TimeTicks time;
   time += base::Seconds(1);
@@ -318,6 +325,12 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest,
   scrollbar_controller_->Animate(time);
   time += kThinningDuration;
   scrollbar_controller_->Animate(time);
+  // Fluent scrollbars dont thin out on mouse leave, they go straight to the
+  // scrollbar disappearance animation (via ScrolbarAnimationController).
+  if (client_.IsFluentOverlayScrollbar()) {
+    EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->thumb_thickness_scale_factor());
+    return;
+  }
   EXPECT_FLOAT_EQ(kIdleThicknessScale,
                   scrollbar_layer_->thumb_thickness_scale_factor());
 }
@@ -409,8 +422,7 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest, ThicknessAnimated) {
 // Make sure the Fluent scrollbar transitions to the full mode (thick) after
 // moving the mouse over scrollbar track and get back to the minimal mode (thin)
 // when moved away both inside and outside the layer.
-TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
-       FluentMouseOverTrack) {
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest, MouseOverTrack) {
   base::TimeTicks time;
   time += base::Seconds(1);
 
@@ -461,6 +473,137 @@ TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
                   scrollbar_layer_->thumb_thickness_scale_factor());
 }
 
+// Check that Fluent overlay scrollbar doesn't get thicker and doesn't get
+// shown when mousing over it while it is hidden.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       MouseOverHiddenBar) {
+  // Scrollbars opacity value is 1.f on these tests start up. Set it 0 to
+  // simulate a hidden scrollbar
+  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+  EXPECT_FLOAT_EQ(0.f, scrollbar_layer_->Opacity());
+
+  // Move mouse on top of scrollbar.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+
+  // Tick the animations and ensure its thickness remains thin.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  scrollbar_controller_->Animate(time + kThinningDuration);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(0.f, scrollbar_layer_->Opacity());
+}
+
+// Check that Fluent overlay scrollbar doesn't get thinner when released outside
+// of the scrollbar area with tickmarks showing.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       ShowTickmarksAndReleaseOutsideBar) {
+  EXPECT_CALL(client_, SetNeedsAnimateForScrollbarAnimation()).Times(0);
+  // Simulate tickmarks showing. Scrollbar should be visible and fully thick.
+  scrollbar_controller_->UpdateTickmarksVisibility(true);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+
+  // Move mouse on top of scrollbar and capture it.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->DidMouseDown();
+  EXPECT_TRUE(scrollbar_controller_->captured());
+
+  // Move mouse away from scrollbar and release it.
+  scrollbar_controller_->DidMouseMove(
+      NearScrollbar(-mouse_move_distance_to_trigger_fade_in_ - 1, 0));
+  scrollbar_controller_->DidMouseUp();
+
+  // Pass time and ensure scrollbar remains visible and fully thick.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+}
+
+// Check that Fluent overlay scrollbar doesn't get thinner when tickmarks are
+// showing and the mouse moves over the scrollbar and then leaves the scrollable
+// area.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       ShowTickmarksAndMouseLeave) {
+  EXPECT_CALL(client_, SetNeedsAnimateForScrollbarAnimation()).Times(0);
+  // Simulate tickmarks showing. Scrollbar should be visible and fully thick.
+  scrollbar_controller_->UpdateTickmarksVisibility(true);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+
+  // Move mouse on top of scrollbar and leave scrollable area.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->DidMouseLeave();
+
+  // Pass time and ensure scrollbar remains visible and fully thick.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+}
+
+// Check that if the mouse leaves while thickening animation is happening, the
+// animation finishes as a thinning one.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       ThickeningToThinningOnMouseLeave) {
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  base::TimeTicks time;
+  time += base::Seconds(1);
+
+  // Move mouse on top of scrollbar and animate half of the thickening
+  // animation.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  time += kThinningDuration / 2.f;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale + (1.f - kIdleThicknessScale) / 2.f,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+
+  // Mouse leaves, the controller should make the animation be a thinning one.
+  scrollbar_controller_->DidMouseLeave();
+  scrollbar_controller_->Animate(time);
+  time += kThinningDuration / 2.f;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale + (1.f - kIdleThicknessScale) / 2.f,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  time += kThinningDuration / 2.f;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+}
+
+// Check that if the mouse leaves after the thickening animation is complete
+// no thinning animation gets queued.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       DoesntAnimateOnFullModeMouseLeave) {
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+  base::TimeTicks time;
+  time += base::Seconds(1);
+
+  // Move mouse on top of scrollbar and animate the full animation duration.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->Animate(time);
+  time += kThinningDuration;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+
+  // Mouse leaves, the controller should not queue an animation.
+  scrollbar_controller_->DidMouseLeave();
+  EXPECT_FALSE(scrollbar_controller_->Animate(time));
+}
+
 // Test that the last pointer location variable is set on DidMouseMove calls and
 // mouse position variables are correctly updated in DidScrollUpdate() calls.
 TEST_P(SingleScrollbarAnimationControllerThinningTest,
@@ -497,15 +640,8 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest,
 
 // Test that DidScrollUpdate correctly queues thinning animations when the thumb
 // moves under the pointer and when it moves away from it.
-TEST_P(SingleScrollbarAnimationControllerThinningTest,
+TEST_F(SingleScrollbarAnimationControllerThinningAuraTest,
        DidScrollUpdateQueuesAnimations) {
-  // Fluent scrollbars queue animations based on proximity to the track, not the
-  // thumb, which get queued on DidMouseMove(). For Fluent Scrollbars
-  // DidScrollUpdate() only updates the mouse location variables, behavior that
-  // is tested in HoverTrackAndMoveThumbUnderPointer.
-  if (client_.IsFluentScrollbar())
-    return;
-
   base::TimeTicks time;
   time += base::Seconds(1);
 

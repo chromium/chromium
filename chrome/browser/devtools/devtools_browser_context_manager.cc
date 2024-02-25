@@ -39,6 +39,11 @@ DevToolsBrowserContextManager& DevToolsBrowserContextManager::GetInstance() {
 
 Profile* DevToolsBrowserContextManager::GetProfileById(
     const std::string& context_id) {
+  Profile* default_profile =
+      ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
+  if (context_id == default_profile->UniqueId()) {
+    return default_profile;
+  }
   auto it = otr_profiles_.find(context_id);
   if (it == otr_profiles_.end())
     return nullptr;
@@ -92,7 +97,7 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
 
   Profile* profile = it->second;
   bool has_opened_browser = false;
-  for (auto* opened_browser : *BrowserList::GetInstance()) {
+  for (Browser* opened_browser : *BrowserList::GetInstance()) {
     if (opened_browser->profile() == profile) {
       has_opened_browser = true;
       break;
@@ -120,12 +125,13 @@ void DevToolsBrowserContextManager::OnProfileWillBeDestroyed(Profile* profile) {
   // This is likely happening during shutdown. We'll immediately
   // close all browser windows for our profile without unload handling.
   BrowserList::BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile)
       browsers_to_close.push_back(browser);
   }
-  for (auto* browser : browsers_to_close)
+  for (Browser* browser : browsers_to_close) {
     browser->window()->Close();
+  }
 
   StopObservingProfileIfAny(profile);
 }
@@ -135,7 +141,7 @@ void DevToolsBrowserContextManager::OnBrowserRemoved(Browser* browser) {
   auto pending_disposal = pending_context_disposals_.find(context_id);
   if (pending_disposal == pending_context_disposals_.end())
     return;
-  for (auto* opened_browser : *BrowserList::GetInstance()) {
+  for (Browser* opened_browser : *BrowserList::GetInstance()) {
     if (opened_browser->profile() == browser->profile())
       return;
   }

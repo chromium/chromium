@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
@@ -44,16 +44,16 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/user_education/user_education_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -71,6 +71,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_education/common/events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -82,6 +83,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -130,6 +132,40 @@ void ExpectNotFocused(views::View* view) {
   EXPECT_FALSE(view->Contains(view->GetFocusManager()->GetFocusedView()));
 }
 
+class LayerAnimationWaiter : public ui::LayerAnimationObserver {
+ public:
+  explicit LayerAnimationWaiter(ui::LayerAnimator* animator)
+      : animator_(animator) {
+    animator_->AddObserver(this);
+  }
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnAnimationCompleted() {
+    if (animator_->is_animating() == false) {
+      animator_->RemoveObserver(this);
+      run_loop_.Quit();
+    }
+  }
+
+  // Dangling when executing ShelfViewPromiseAppTest.PromiseIconLayers because
+  // layer is destroyed by the ShelfView.
+  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
+  base::RunLoop run_loop_;
+};
+
 class TestShelfObserver : public ShelfObserver {
  public:
   explicit TestShelfObserver(Shelf* shelf) : shelf_(shelf) {
@@ -160,7 +196,7 @@ class TestShelfObserver : public ShelfObserver {
   }
 
  private:
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
 };
@@ -195,6 +231,35 @@ class AsyncContextMenuShelfItemDelegate : public ShelfItemDelegate {
   void Close() override {}
 
   GetContextMenuCallback pending_context_menu_callback_;
+};
+
+// ProgressIndicatorWaiter -----------------------------------------------------
+
+// A class which supports waiting for a progress indicator to reach a desired
+// state of progress.
+class ProgressIndicatorWaiter {
+ public:
+  ProgressIndicatorWaiter() = default;
+  ProgressIndicatorWaiter(const ProgressIndicatorWaiter&) = delete;
+  ProgressIndicatorWaiter& operator=(const ProgressIndicatorWaiter&) = delete;
+  ~ProgressIndicatorWaiter() = default;
+
+  // Waits for `progress_indicator` to reach the specified `progress`. If the
+  // `progress_indicator` is already at `progress`, this method no-ops.
+  void WaitForProgress(ProgressIndicator* progress_indicator,
+                       const std::optional<float>& progress) {
+    if (progress_indicator->progress() == progress) {
+      return;
+    }
+    base::RunLoop run_loop;
+    auto subscription = progress_indicator->AddProgressChangedCallback(
+        base::BindLambdaForTesting([&]() {
+          if (progress_indicator->progress() == progress) {
+            run_loop.Quit();
+          }
+        }));
+    run_loop.Run();
+  }
 };
 
 }  // namespace
@@ -458,7 +523,7 @@ class ShelfViewTest : public AshTestBase {
 
     auto subscription =
         ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-            user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(),
+            user_education::kHelpBubbleAnchorBoundsChangedEvent,
             views::ElementTrackerViews::GetContextForView(shelf_view_),
             base::BindLambdaForTesting(
                 [&](ui::TrackedElement* tracked_element) {
@@ -666,12 +731,10 @@ class ShelfViewTest : public AshTestBase {
         ui::HapticTouchpadEffectStrength::kMedium);
   }
 
-  raw_ptr<ShelfModel, DanglingUntriaged | ExperimentalAsh> model_ = nullptr;
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> navigation_view_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> status_area_ =
-      nullptr;
+  raw_ptr<ShelfModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> navigation_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> status_area_ = nullptr;
 
   int id_ = 0;
 
@@ -938,7 +1001,7 @@ TEST_F(ShelfViewTest, DragAppsToPin) {
 
   // After pinning the last unpinned app by dragging, the separator is removed
   // as there is no unpinned app on the shelf.
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), std::nullopt);
 }
 
 // Ensure that the unpinnable apps can not be pinned by dragging.
@@ -969,6 +1032,33 @@ TEST_F(ShelfViewTest, NotPinnableItemCantBePinnedByDragging) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
   EXPECT_FALSE(IsAppPinned(id));
+}
+
+// Verifies that a "dialog" item is correctly detected as not pinned when
+// determining the separator position, and that it cannot be dragged to pinned
+// state.
+TEST_F(ShelfViewTest, SeparatorCorrectlyPositionedNextToDialogItem) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  size_t pinned_apps_size = id_map.size();
+
+  const ShelfID dialog_id = AddItem(TYPE_DIALOG, true);
+  id_map.emplace_back(dialog_id, GetButtonByID(dialog_id));
+
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+
+  // Drag an unpinnable dialog item and move it to the beginning of the shelf.
+  // The item cannot be moved across the separator so the dragged item will
+  // remain unpinned after release.
+  views::View* dragged_button =
+      SimulateDrag(ShelfView::MOUSE, id_map.size() - 1, 0, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+  EXPECT_FALSE(IsAppPinned(dialog_id));
 }
 
 // Check that separator index updates as expected when a drag view is dragged
@@ -1400,7 +1490,7 @@ TEST_P(LtrRtlShelfViewTest, HomeButtonMetricsInTablet) {
   Shell::Get()
       ->accessibility_controller()
       ->SetTabletModeShelfNavigationButtonsEnabled(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   const HomeButton* home_button =
       GetPrimaryShelf()->navigation_widget()->GetHomeButton();
@@ -1693,12 +1783,12 @@ TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   shelf_view_->shelf()->SetAlignment(ShelfAlignment::kBottom);
   SetShelfAlignmentPref(prefs, id, ShelfAlignment::kBottom);
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
@@ -1707,12 +1797,12 @@ TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   shelf_view_->shelf()->SetAlignment(ShelfAlignment::kLeft);
   SetShelfAlignmentPref(prefs, id, ShelfAlignment::kLeft);
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 }
@@ -1734,7 +1824,7 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // Start tablet mode, which should close the menu.
-  shelf_view_->OnTabletModeStarted();
+  shelf_view_->OnDisplayTabletStateChanged(display::TabletState::kInTabletMode);
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());
@@ -1744,7 +1834,8 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // End tablet mode, which should close the menu.
-  shelf_view_->OnTabletModeEnded();
+  shelf_view_->OnDisplayTabletStateChanged(
+      display::TabletState::kInClamshellMode);
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());
@@ -1951,7 +2042,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   const ShelfID first_app_id = AddAppShortcut();
   const ShelfID second_app_id = AddAppShortcut();
   const int last_index = model_->items().size() - 1;
-  ASSERT_TRUE(last_index >= 0);
+  ASSERT_GE(last_index, 0);
 
   ShelfAppButton* button = GetButtonByID(first_app_id);
   ASSERT_TRUE(button);
@@ -2295,11 +2386,11 @@ TEST_P(LtrRtlShelfViewTest, FirstAndLastVisibleIndex) {
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // By enabling tablet mode, the back button (index 0) should become visible,
   // but that does not change the first and last visible indices.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // Turn tablet mode off again.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
 }
@@ -2464,7 +2555,7 @@ TEST_F(ShelfViewTest, ItemHasCorrectNotificationBadgeIndicator) {
 TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
   const ShelfID test_item_id = AddApp();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   views::View* const test_item_button = GetButtonByID(test_item_id);
   ASSERT_TRUE(test_item_button);
@@ -2490,7 +2581,7 @@ TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
 TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
   const ShelfID test_item_id = AddApp();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   views::View* const test_item_button = GetButtonByID(test_item_id);
   ASSERT_TRUE(test_item_button);
@@ -2817,16 +2908,12 @@ class ShelfViewInkDropTest : public ShelfViewTest {
         .SetInkDrop(std::move(browser_button_ink_drop));
   }
 
-  raw_ptr<HomeButton, DanglingUntriaged | ExperimentalAsh> home_button_ =
+  raw_ptr<HomeButton, DanglingUntriaged> home_button_ = nullptr;
+  raw_ptr<InkDropSpy, DanglingUntriaged> home_button_ink_drop_ = nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> browser_button_ = nullptr;
+  raw_ptr<InkDropSpy, DanglingUntriaged> browser_button_ink_drop_ = nullptr;
+  raw_ptr<views::InkDropImpl, DanglingUntriaged> browser_button_ink_drop_impl_ =
       nullptr;
-  raw_ptr<InkDropSpy, DanglingUntriaged | ExperimentalAsh>
-      home_button_ink_drop_ = nullptr;
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> browser_button_ =
-      nullptr;
-  raw_ptr<InkDropSpy, DanglingUntriaged | ExperimentalAsh>
-      browser_button_ink_drop_ = nullptr;
-  raw_ptr<views::InkDropImpl, DanglingUntriaged | ExperimentalAsh>
-      browser_button_ink_drop_impl_ = nullptr;
 };
 
 // Tests that changing visibility of the app list transitions home button's
@@ -3533,7 +3620,7 @@ TEST_F(ShelfViewFocusWithNoShelfNavigationTest,
                   ->HasFocus());
 
   // Switch to tablet mode, which should hide navigation buttons.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
 
   ASSERT_FALSE(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -3569,10 +3656,8 @@ class ShelfViewGestureTapTest : public ShelfViewTest {
   }
 
  protected:
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> app_icon1_ =
-      nullptr;
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> app_icon2_ =
-      nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> app_icon1_ = nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> app_icon2_ = nullptr;
 };
 
 // Verifies the shelf app button's inkdrop behavior when the mouse click
@@ -3760,7 +3845,7 @@ class ShelfViewDeskButtonTest : public ShelfViewTest {
     prefs_ = Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   }
 
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3781,9 +3866,9 @@ TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
   // The button should disappear in overview mode and reappear after.
   ToggleOverview();
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
-  // Since the desk button is hidden, the hotseat should expand to use the space
-  // the desk button was occupying.
-  EXPECT_GT(GetPrimaryShelf()
+  // To avoid unnecessary re-layout before/after overview, keep hotseat the same
+  // width.
+  EXPECT_EQ(GetPrimaryShelf()
                 ->shelf_widget()
                 ->hotseat_widget()
                 ->GetWindowBoundsInScreen()
@@ -3807,31 +3892,30 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
   // In tablet mode, the shelf should be visible but the desk button shouldn't.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 }
 
-// Verify that the desk button is 136px wide if the screen width is greater than
-// 1280px, 96px if the screen width is less than or equal to 1280px, and 36px if
-// the screen width is small enough to cause shelf overflow. We also test that
-// the button is 36x36 in vertical alignment.
+// Verify that the desk button is 218px wide if the screen width is greater than
+// or equal to 1280px, 118px if the screen width is less than 1280px. We also
+// test that the button is 48x50 in vertical alignment.
 TEST_F(ShelfViewDeskButtonTest, Position) {
   SetShowDeskButtonInShelfPref(prefs_, true);
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
   UpdateDisplay("1281x400");
-  EXPECT_EQ(136, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
   UpdateDisplay("200x1281");
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(118, desk_button_widget()->GetTargetBounds().width());
   UpdateDisplay("1280x400");
-  EXPECT_EQ(96, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().height());
+  EXPECT_EQ(48, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(50, desk_button_widget()->GetTargetBounds().height());
 }
 
 // Verify that the desk button does not appear by default, appears when the user
@@ -3844,8 +3928,8 @@ TEST_F(ShelfViewDeskButtonTest, NewDeskVisibility) {
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
   // Going into and out of tablet mode and overview shouldn't change this.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
   EXPECT_FALSE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
@@ -3901,8 +3985,8 @@ TEST_F(ShelfViewDeskButtonTest, PrefHidden) {
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
@@ -3954,6 +4038,251 @@ TEST_F(ShelfViewDeskButtonTest, VisibilityMetrics) {
       static_cast<int>(ShelfContextMenuModel::CommandId::MENU_HIDE_DESK_NAME),
       /*event_flags=*/0);
   histogram_tester.ExpectTotalCount(kDeskButtonHiddenHistogramName, 1);
+}
+
+class ShelfViewPromiseAppTest : public ShelfViewTest {
+ public:
+  ShelfViewPromiseAppTest() = default;
+  ShelfViewPromiseAppTest(const ShelfViewPromiseAppTest&) = delete;
+  ShelfViewPromiseAppTest& operator=(const ShelfViewPromiseAppTest&) = delete;
+  ~ShelfViewPromiseAppTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kPromiseIcons};
+};
+
+TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  item.app_status = AppStatus::kPending;
+  item.progress = 0.0f;
+  item.is_promise_app = true;
+  model_->Set(index, item);
+
+  // Start install progress bar.
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.0f;
+  model_->Set(index, item);
+  ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
+  ASSERT_TRUE(progress_indicator);
+
+  EXPECT_EQ(item.progress, 0.f);
+  EXPECT_EQ(button->progress(), 0.f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.3f);
+  EXPECT_EQ(button->progress(), 0.3f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.3f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.7f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.7f);
+  EXPECT_EQ(button->progress(), 0.7f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 1.5f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 1.5f);
+  EXPECT_EQ(button->progress(), 1.5f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 1.0f);
+}
+
+TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  // Promise apps are created with app_status kPending.
+  item.app_status = AppStatus::kPending;
+  item.is_promise_app = true;
+  model_->Set(index, item);
+
+  ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
+  ASSERT_TRUE(progress_indicator);
+  // Change app status to installing and send a progress update. Verify that the
+  // progress indicator correctly reflects the progress.
+  EXPECT_EQ(button->progress(), -1.0f);
+  EXPECT_EQ(button->app_status(), AppStatus::kPending);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  // Start install progress bar.
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+
+  EXPECT_EQ(button->progress(), 0.3f);
+  EXPECT_EQ(button->app_status(), AppStatus::kInstalling);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.3f);
+
+  // Change app status back to pending state. Verify that even if the item had
+  // progress previously associated to it, the progress indicator reflects as
+  // 0 progress since it is pending.
+  item.app_status = AppStatus::kPending;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.3f);
+  EXPECT_EQ(button->progress(), 0.3f);
+  EXPECT_EQ(button->app_status(), AppStatus::kPending);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  // Send another progress update. Since the app status is still pending, the
+  // progress indicator still be 0.
+  item.progress = 0.7f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.7f);
+  EXPECT_EQ(button->progress(), 0.7f);
+  EXPECT_EQ(button->app_status(), AppStatus::kPending);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  // Set the last status update to kReady as if the app had finished installing.
+  item.app_status = AppStatus::kReady;
+  model_->Set(index, item);
+  EXPECT_EQ(button->app_status(), AppStatus::kReady);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+}
+
+TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  const std::string promise_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  // Promise apps are created with app_status kPending.
+  item.app_status = AppStatus::kPending;
+  item.is_promise_app = true;
+  model_->Set(index, item);
+
+  ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
+  ASSERT_TRUE(progress_indicator);
+  // Change app status to installing and send a progress update. Verify that the
+  // progress indicator correctly reflects the progress.
+  EXPECT_EQ(button->progress(), -1.0f);
+  EXPECT_EQ(button->app_status(), AppStatus::kPending);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  // Start install progress bar.
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+
+  EXPECT_EQ(button->progress(), 0.3f);
+  EXPECT_EQ(button->app_status(), AppStatus::kInstalling);
+  EXPECT_TRUE(button->layer());
+
+  // Set the last status update to kInstallSuccess as if the app had finished
+  // installing.
+  item.app_status = AppStatus::kInstallSuccess;
+  model_->Set(index, item);
+  EXPECT_EQ(button->app_status(), AppStatus::kInstallSuccess);
+  EXPECT_TRUE(button->layer());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate pushing the installed app.
+  model_->RemoveItemAt(index);
+
+  ASSERT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
+
+  {
+    ShelfItem installed_item;
+    installed_item.id = ShelfID("foo");
+    installed_item.title = u"Test app";
+    installed_item.type = TYPE_APP;
+    installed_item.package_id = promise_app_id;
+    ShelfModel::Get()->Add(
+        installed_item,
+        std::make_unique<TestShelfItemDelegate>(installed_item.id));
+    ShelfAppButton* installed_button = GetButtonByID(installed_item.id);
+
+    ASSERT_TRUE(installed_button->layer());
+    EXPECT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
+
+    // Verify that the icon layer is animating.
+    EXPECT_FALSE(installed_button->layer()->GetAnimator()->is_animating());
+    EXPECT_TRUE(
+        installed_button->icon_view()->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(gfx::Transform(), installed_button->icon_view()
+                                    ->layer()
+                                    ->GetAnimator()
+                                    ->GetTargetTransform());
+    LayerAnimationWaiter animation_waiter(
+        installed_button->icon_view()->layer()->GetAnimator());
+    animation_waiter.Wait();
+  }
+
+  EXPECT_FALSE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
+}
+
+class ShelfViewWebAppShortcutTest : public ShelfViewTest {
+ public:
+  ShelfViewWebAppShortcutTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSeparateWebAppShortcutBadgeIcon,
+         chromeos::features::kCrosWebAppShortcutUiUpdate},
+        {});
+  }
+  ShelfViewWebAppShortcutTest(const ShelfViewWebAppShortcutTest&) = delete;
+  ShelfViewWebAppShortcutTest& operator=(const ShelfViewWebAppShortcutTest&) =
+      delete;
+  ~ShelfViewWebAppShortcutTest() override = default;
+
+ protected:
+  ShelfID AddWebAppShortcut(bool wait_for_animations) {
+    ShelfItem item = ShelfTestUtil::AddWebAppShortcut(
+        base::NumberToString(id_++), true, CreateImageSkiaIcon(SK_ColorRED),
+        CreateImageSkiaIcon(SK_ColorCYAN));
+    // Set a delegate; some tests require one to select the item.
+    model_->ReplaceShelfItemDelegate(
+        item.id, std::make_unique<ShelfItemSelectionTracker>());
+    if (wait_for_animations) {
+      test_api_->RunMessageLoopUntilAnimationsDone();
+    }
+    return item.id;
+  }
+
+  gfx::ImageSkia GetHostBadgeImage(ShelfID id) {
+    ShelfAppButton* button = GetButtonByID(id);
+    return button->GetHostBadgeImageForTest();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ShelfViewWebAppShortcutTest,
+       ShortcutIconEffectsShowOnShortcutItemWithHostBadge) {
+  // Add a shortcut app button.
+  ShelfID last_added = AddWebAppShortcut(true);
+  const std::string web_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+
+  EXPECT_FALSE(item.badge_image.isNull());
+  EXPECT_FALSE(GetHostBadgeImage(last_added).isNull());
+}
+
+TEST_F(ShelfViewWebAppShortcutTest,
+       NoShortcutIconEffectOntItemWithoutHostBadge) {
+  // Add a shortcut app button.
+  ShelfID last_added = AddAppShortcut();
+  const std::string web_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+
+  EXPECT_TRUE(item.badge_image.isNull());
+  EXPECT_TRUE(GetHostBadgeImage(last_added).isNull());
 }
 
 }  // namespace ash

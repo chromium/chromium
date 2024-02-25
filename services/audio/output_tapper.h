@@ -6,11 +6,11 @@
 #define SERVICES_AUDIO_OUTPUT_TAPPER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "services/audio/reference_output.h"
 
 namespace audio {
@@ -18,7 +18,7 @@ class DeviceOutputListener;
 
 class OutputTapper {
  public:
-  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
+  using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
   OutputTapper(DeviceOutputListener* device_output_listener,
                ReferenceOutput::Listener* listener,

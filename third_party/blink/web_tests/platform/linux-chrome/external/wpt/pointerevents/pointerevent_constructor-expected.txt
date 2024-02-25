@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+[FAIL] getCoalescedEvents in event
+  assert_equals: expected false but got true
+[FAIL] getPredictedEvents()[0].target
+  assert_equals: expected null but got Element node <div id="target0"></div>
+[FAIL] getPredictedEvents()[0].offsetX
+  assert_equals: expected 320 but got 312
+[FAIL] getPredictedEvents()[0].offsetY
+  assert_equals: expected 0 but got -119.140625
+[FAIL] getPredictedEvents()[1].target
+  assert_equals: expected null but got Element node <div id="target0"></div>
+[FAIL] getPredictedEvents()[1].offsetX
+  assert_equals: expected 330 but got 322
+[FAIL] getPredictedEvents()[1].offsetY
+  assert_equals: expected 0 but got -119.140625
+Harness: the test ran to completion.

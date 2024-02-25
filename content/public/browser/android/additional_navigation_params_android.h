@@ -17,8 +17,8 @@ CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
     base::UnguessableToken initiator_frame_token,
     int initiator_process_id,
-    absl::optional<base::UnguessableToken> attribution_src_token,
-    absl::optional<network::AttributionReportingRuntimeFeatures>
+    std::optional<base::UnguessableToken> attribution_src_token,
+    std::optional<network::AttributionReportingRuntimeFeatures>
         runtime_features);
 
 }  // namespace content

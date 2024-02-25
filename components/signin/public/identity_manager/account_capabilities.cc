@@ -41,6 +41,16 @@ AccountCapabilities::GetSupportedAccountCapabilityNames() {
   return *kCapabilityNames;
 }
 
+bool AccountCapabilities::AreAnyCapabilitiesKnown() const {
+  for (const std::string& capability_name :
+       GetSupportedAccountCapabilityNames()) {
+    if (GetCapabilityByName(capability_name) != signin::Tribool::kUnknown) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool AccountCapabilities::AreAllCapabilitiesKnown() const {
   for (const std::string& capability_name :
        GetSupportedAccountCapabilityNames()) {
@@ -64,9 +74,10 @@ signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::can_offer_extended_chrome_sync_promos()
-    const {
-  return GetCapabilityByName(kCanOfferExtendedChromeSyncPromosCapabilityName);
+signin::Tribool AccountCapabilities::
+    can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
+  return GetCapabilityByName(
+      kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
 }
 
 signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
@@ -85,6 +96,10 @@ signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
 
 signin::Tribool AccountCapabilities::can_use_chrome_ip_protection() const {
   return GetCapabilityByName(kCanUseChromeIpProtectionName);
+}
+
+signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
+  return GetCapabilityByName(kCanUseModelExecutionFeaturesName);
 }
 
 signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {

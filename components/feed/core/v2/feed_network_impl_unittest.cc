@@ -33,6 +33,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -48,6 +49,10 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace feed {
 namespace {
@@ -278,6 +283,29 @@ class FeedNetworkTest : public testing::Test {
   TestingPrefServiceSimple profile_prefs_;
   base::HistogramTester histogram_;
 };
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+TEST_F(FeedNetworkTest, SendKidFriendlyQueryRequestSendsValidRequest) {
+  CallbackReceiver<FeedNetwork::KidFriendlyQueryRequestResult> receiver;
+  // TODO(b/295472540): Populate with kid-friendly feed parameters.
+  feed_network()->SendKidFriendlyApiRequest(
+      supervised_user::GetDiscoverFeedRequest(), account_info(),
+      receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest("", net::HTTP_OK);
+
+  // TODO(b/295472540): This will be populated with a server endpoint.
+  EXPECT_TRUE(resource_request.url.is_empty());
+  EXPECT_EQ("GET", resource_request.method);
+  EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
+  std::string authorization;
+  EXPECT_TRUE(
+      resource_request.headers.GetHeader("Authorization", &authorization));
+  EXPECT_EQ(authorization, "Bearer access_token");
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.SupervisedFeed", 200, 1);
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
   CallbackReceiver<QueryRequestResult> receiver;
@@ -919,6 +947,26 @@ TEST_F(FeedNetworkTest, AppCloseRefreshRequestReasonHasUrl) {
       "https://www.google.com/httpservice/noretry/TrellisClankService/"
       "FeedQuery",
       result.response_info.base_request_url);
+}
+
+TEST_F(FeedNetworkTest, SendAsynccDataRequest) {
+  CallbackReceiver<FeedNetwork::RawResponse> receiver;
+  feed_network()->SendAsyncDataRequest(GURL("https://example.com"), "POST",
+                                       net::HttpRequestHeaders(), "post data",
+                                       account_info(), receiver.Bind());
+  response_headers_ = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\nname1: value1\nname2: value2\n\n"));
+  RespondToDiscoverRequest("dummy response", net::HTTP_OK);
+
+  ASSERT_TRUE(receiver.GetResult());
+  const FeedNetwork::RawResponse& result = *receiver.GetResult();
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+  std::vector<std::string> expected_response_headers = {"name1", "value1",
+                                                        "name2", "value2"};
+  EXPECT_EQ(expected_response_headers,
+            result.response_info.response_header_names_and_values);
+  EXPECT_EQ("dummy response", result.response_bytes);
 }
 
 }  // namespace

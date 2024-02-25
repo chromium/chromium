@@ -68,6 +68,7 @@ void BootingAnimationController::Show() {
   // fill the screen with the widget. This is required even for
   // fullscreen widgets.
   params.delegate->SetCanMaximize(true);
+  params.delegate->SetCanFullscreen(true);
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "BootingAnimationWidget";
   params.show_state = ui::SHOW_STATE_FULLSCREEN;

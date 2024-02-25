@@ -98,8 +98,8 @@ class WindowPropertyObserver : public aura::WindowObserver {
     properties_changed_.push_back(key);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  std::vector<const void*> properties_changed_;
+  raw_ptr<aura::Window> window_;
+  std::vector<raw_ptr<const void, VectorExperimental>> properties_changed_;
 };
 
 TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
@@ -550,9 +550,12 @@ TEST_F(WorkspaceEventHandlerTest, DeleteWhileInRunLoop) {
   ASSERT_TRUE(::wm::GetWindowMoveClient(window->GetRootWindow()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 window.get());
-  ::wm::GetWindowMoveClient(window->GetRootWindow())
-      ->RunMoveLoop(window.release(), gfx::Vector2d(),
-                    ::wm::WINDOW_MOVE_SOURCE_MOUSE);
+
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(::wm::GetWindowMoveClient(window->GetRootWindow())
+                ->RunMoveLoop(window.release(), gfx::Vector2d(),
+                              ::wm::WINDOW_MOVE_SOURCE_MOUSE),
+            ::wm::MOVE_CANCELED);
 }
 
 // Verifies that double clicking in the header does not maximize if the target

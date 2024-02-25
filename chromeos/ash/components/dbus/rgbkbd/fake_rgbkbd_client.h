@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
 namespace ash {
@@ -38,12 +39,12 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   void SetAnimationMode(rgbkbd::RgbAnimationMode mode) override;
 
   void set_rgb_keyboard_capabilities(
-      absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities) {
+      std::optional<rgbkbd::RgbKeyboardCapabilities> capabilities) {
     capabilities_ = capabilities;
   }
 
-  absl::optional<rgbkbd::RgbKeyboardCapabilities>
-  get_rgb_keyboard_capabilities() const {
+  std::optional<rgbkbd::RgbKeyboardCapabilities> get_rgb_keyboard_capabilities()
+      const {
     return capabilities_;
   }
 
@@ -73,7 +74,7 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   void ResetStoredRgbColors();
 
  private:
-  absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities_;
+  std::optional<rgbkbd::RgbKeyboardCapabilities> capabilities_;
   bool caps_lock_state_ = false;
   bool is_rainbow_mode_set_ = false;
   RgbColor rgb_color_;

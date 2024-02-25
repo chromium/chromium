@@ -30,17 +30,19 @@ class ServiceUrls {
     return remoting_server_endpoint_;
   }
 
+  const std::string& remoting_corp_endpoint() const {
+    return remoting_corp_endpoint_;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<ServiceUrls>;
 
   ServiceUrls();
   virtual ~ServiceUrls();
 
-  std::string directory_base_url_;
-  std::string directory_hosts_url_;
-  std::string ice_config_url_;
   std::string ftl_server_endpoint_;
   std::string remoting_server_endpoint_;
+  std::string remoting_corp_endpoint_;
 };
 
 }  // namespace remoting

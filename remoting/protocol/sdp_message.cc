@@ -5,10 +5,10 @@
 #include "remoting/protocol/sdp_message.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
@@ -68,7 +68,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
 
     // A valid SDP contains only one "m=video" line. So instead of continue, if
     // this line is invalid, we should return false immediately.
-    std::vector<base::StringPiece> fields = base::SplitStringPiece(
+    std::vector<std::string_view> fields = base::SplitStringPiece(
         sdp_line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     // The first three fields are "m=video", port and proto.
     static constexpr int kSkipFields = 3;
@@ -80,7 +80,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
 
     for (const auto& payload : payload_types) {
       auto pos = std::find(first_codec_pos, fields.end(),
-                           base::StringPiece(payload.second));
+                           std::string_view(payload.second));
       // The codec has not been found in codec list.
       if (pos == fields.end()) {
         continue;

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/utility_process_host.h"
+
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -151,8 +154,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     service_->WriteToPreloadedPipe();
     char buf[4];
-    ASSERT_TRUE(base::ReadFromFD(read_fd.get(), buf, sizeof(buf)));
-    base::StringPiece msg(buf, sizeof(buf));
+    ASSERT_TRUE(base::ReadFromFD(read_fd.get(), buf));
+    std::string_view msg(buf, sizeof(buf));
     ASSERT_EQ(msg, "test");
     OnSomething();
   }
@@ -266,7 +269,8 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
 
 // TODO(crbug.com/1407089): Re-enable this test on Android when
 // `files_to_preload` is actually fixed there.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1511497): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FileDescriptorStore DISABLED_FileDescriptorStore
 #else
 #define MAYBE_FileDescriptorStore FileDescriptorStore
@@ -325,8 +329,9 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 
 // Disabled because it crashes on android-arm64-tests:
 // https://crbug.com/1358585.
+// TODO(crbug.com/1511497): Re-enable this test on ChromeOS.
 #if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
-#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LaunchProcessAndCrash DISABLED_LaunchProcessAndCrash
 #else
 #define MAYBE_LaunchProcessAndCrash LaunchProcessAndCrash

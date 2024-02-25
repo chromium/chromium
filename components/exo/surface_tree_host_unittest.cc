@@ -15,6 +15,8 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/viz/test/test_raster_interface.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/layout_manager.h"
@@ -126,7 +128,7 @@ TEST_F(SurfaceTreeHostTest,
             std::make_pair(internal_display_id, external_display_id));
 
   // Change to mirror mode, which should make internal display primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(leave_enter_ids.size(), 2u);
@@ -134,7 +136,7 @@ TEST_F(SurfaceTreeHostTest,
             std::make_pair(external_display_id, internal_display_id));
 
   // Switch back to extend mode, which should restore external as primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(leave_enter_ids.size(), 3u);
@@ -294,6 +296,176 @@ TEST_F(SurfaceTreeHostTest,
     test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
     EXPECT_EQ(gfx::Rect(0, 0, 0, 0), shell_surface->host_window()->bounds());
   }
+}
+
+namespace {
+
+//
+class InterceptingTestRasterInterface : public viz::TestRasterInterface {
+ public:
+  InterceptingTestRasterInterface() = default;
+  ~InterceptingTestRasterInterface() override = default;
+
+  // Returns verified and unverified sync tokens the raster interface received
+  // via VerifySyncTokensCHROMIUM.
+  std::pair<int, int> GetAndResetSyncTokensCount() {
+    auto verified_tokens = verified_sync_tokens_;
+    auto unverified_tokens = unverified_sync_tokens_;
+    ResetSyncTokensCount();
+    return {verified_tokens, unverified_tokens};
+  }
+
+  void ResetSyncTokensCount() {
+    verified_sync_tokens_ = 0;
+    unverified_sync_tokens_ = 0;
+  }
+
+  // gpu::raster::RasterInterface overrides:
+  void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override {
+    ResetSyncTokensCount();
+    for (GLsizei i = 0; i < count; ++i) {
+      gpu::SyncToken sync_token_data;
+      memcpy(sync_token_data.GetData(), sync_tokens[i],
+             sizeof(sync_token_data));
+      if (sync_token_data.verified_flush()) {
+        verified_sync_tokens_++;
+      } else {
+        unverified_sync_tokens_++;
+      }
+    }
+    viz::TestRasterInterface::VerifySyncTokensCHROMIUM(sync_tokens, count);
+  }
+
+ private:
+  int verified_sync_tokens_ = 0;
+  int unverified_sync_tokens_ = 0;
+};
+
+class FakeRasterContextProvider
+    : public base::RefCountedThreadSafe<FakeRasterContextProvider>,
+      public viz::RasterContextProvider {
+ public:
+  FakeRasterContextProvider() = default;
+
+  FakeRasterContextProvider(FakeRasterContextProvider&) = delete;
+  FakeRasterContextProvider& operator=(FakeRasterContextProvider&) = delete;
+
+  void SetOnDestroyedClosure(base::OnceClosure on_destroyed) {
+    on_destroyed_ = std::move(on_destroyed);
+  }
+
+  // viz::RasterContextProvider implementation;
+  void AddRef() const override {
+    base::RefCountedThreadSafe<FakeRasterContextProvider>::AddRef();
+  }
+  void Release() const override {
+    base::RefCountedThreadSafe<FakeRasterContextProvider>::Release();
+  }
+  gpu::ContextResult BindToCurrentSequence() override {
+    ADD_FAILURE();
+    return gpu::ContextResult::kFatalFailure;
+  }
+  void AddObserver(viz::ContextLostObserver* obs) override { ADD_FAILURE(); }
+  void RemoveObserver(viz::ContextLostObserver* obs) override { ADD_FAILURE(); }
+  base::Lock* GetLock() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  viz::ContextCacheController* CacheController() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::ContextSupport* ContextSupport() override { return nullptr; }
+  class GrDirectContext* GrContext() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::SharedImageInterface* SharedImageInterface() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  const gpu::Capabilities& ContextCapabilities() const override {
+    ADD_FAILURE();
+    static gpu::Capabilities dummy_caps;
+    return dummy_caps;
+  }
+  const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override {
+    ADD_FAILURE();
+    static gpu::GpuFeatureInfo dummy_feature_info;
+    return dummy_feature_info;
+  }
+  gpu::gles2::GLES2Interface* ContextGL() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::raster::RasterInterface* RasterInterface() override {
+    return GetInterceptingTestRasterInterface();
+  }
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override {
+    ADD_FAILURE();
+    return 0;
+  }
+
+  InterceptingTestRasterInterface* GetInterceptingTestRasterInterface() {
+    return &intercepting_test_raster_interface_;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<FakeRasterContextProvider>;
+
+  ~FakeRasterContextProvider() override {
+    if (on_destroyed_) {
+      std::move(on_destroyed_).Run();
+    }
+  }
+
+  base::OnceClosure on_destroyed_;
+
+  InterceptingTestRasterInterface intercepting_test_raster_interface_;
+};
+
+}  // namespace
+
+// The SurfaceTreeHost can set sync tokens as verified in advance to have less
+// load on the IPC if they were verified in the previous frame.
+TEST_F(SurfaceTreeHostTest, DoesntVerifyVerifiedSyncTokens) {
+  auto shell_surface = test::ShellSurfaceBuilder({50, 50})
+                           .SetClientSubmitsInPixelCoordinates(true)
+                           .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  scoped_refptr<FakeRasterContextProvider> ctx_prodiver =
+      base::MakeRefCounted<FakeRasterContextProvider>();
+  auto old_provider =
+      shell_surface->SetRasterContextProviderForTesting(ctx_prodiver);
+
+  auto* raster_interface = ctx_prodiver->GetInterceptingTestRasterInterface();
+  raster_interface->ResetSyncTokensCount();
+
+  // Create a buffer and attach it to the surface.
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer({50, 50}));
+  surface->Attach(buffer.get());
+
+  surface->Commit();
+
+  // Its a new buffer and a newly generated sync token that shouldn't be known
+  // by the surface_tree_host. Thus, it must be unverified.
+  std::pair<int, int> sync_tokens_count =
+      raster_interface->GetAndResetSyncTokensCount();
+  EXPECT_EQ(0, sync_tokens_count.first);
+  EXPECT_EQ(1, sync_tokens_count.second);
+
+  // Commit the same buffer the second time.
+  surface->Commit();
+  // Same buffer, nothing has been changed. The sync token is known by the
+  // surface_tree_host. Thus, it must be a verified token.
+  sync_tokens_count = raster_interface->GetAndResetSyncTokensCount();
+  EXPECT_EQ(1, sync_tokens_count.first);
+  EXPECT_EQ(0, sync_tokens_count.second);
+
+  shell_surface->SetRasterContextProviderForTesting(old_provider);
 }
 
 }  // namespace exo

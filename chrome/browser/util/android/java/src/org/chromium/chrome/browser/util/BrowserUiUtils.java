@@ -8,21 +8,26 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Deals with multiple parts of browser UI code calls.
- */
+/** Deals with multiple parts of browser UI code calls. */
 public class BrowserUiUtils {
     /**
      * ModuleTypeOnStartAndNTP defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
-    @IntDef({ModuleTypeOnStartAndNTP.MOST_VISITED_TILES, ModuleTypeOnStartAndNTP.OMNIBOX,
-            ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD, ModuleTypeOnStartAndNTP.FEED,
-            ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.HOME_BUTTON,
-            ModuleTypeOnStartAndNTP.PROFILE_BUTTON, ModuleTypeOnStartAndNTP.DOODLE,
-            ModuleTypeOnStartAndNTP.MENU_BUTTON, ModuleTypeOnStartAndNTP.NUM_ENTRIES})
-    public @interface ModuleTypeOnStartAndNTP {
+    @IntDef({
+        ModuleTypeOnStartAndNtp.MOST_VISITED_TILES,
+        ModuleTypeOnStartAndNtp.OMNIBOX,
+        ModuleTypeOnStartAndNtp.SINGLE_TAB_CARD,
+        ModuleTypeOnStartAndNtp.FEED,
+        ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON,
+        ModuleTypeOnStartAndNtp.HOME_BUTTON,
+        ModuleTypeOnStartAndNtp.PROFILE_BUTTON,
+        ModuleTypeOnStartAndNtp.DOODLE,
+        ModuleTypeOnStartAndNtp.MENU_BUTTON,
+        ModuleTypeOnStartAndNtp.NUM_ENTRIES
+    })
+    public @interface ModuleTypeOnStartAndNtp {
         int MOST_VISITED_TILES = 0;
         int OMNIBOX = 1;
         int SINGLE_TAB_CARD = 2;
@@ -37,11 +42,13 @@ public class BrowserUiUtils {
         int NUM_ENTRIES = 9;
     }
 
-    /**
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
-     */
-    @IntDef({HostSurface.NOT_SET, HostSurface.NEW_TAB_PAGE, HostSurface.START_SURFACE,
-            HostSurface.NUM_ENTRIES})
+    /** Do not reorder or remove items, only add new items before NUM_ENTRIES. */
+    @IntDef({
+        HostSurface.NOT_SET,
+        HostSurface.NEW_TAB_PAGE,
+        HostSurface.START_SURFACE,
+        HostSurface.NUM_ENTRIES
+    })
     public @interface HostSurface {
         int NOT_SET = 0;
         int NEW_TAB_PAGE = 1;
@@ -72,26 +79,32 @@ public class BrowserUiUtils {
 
     /**
      * Records user clicking on different modules in New tab page or Start surface.
-     * @param hostSurface The corresponding item of the host name in {@link HostSurface}
-     *                    which indicates the page where the recording action happened.
+     *
+     * @param hostSurface The corresponding item of the host name in {@link HostSurface} which
+     *     indicates the page where the recording action happened.
      * @param sample Sample to be recorded in the enumerated histogram.
      */
     public static void recordModuleClickHistogram(
-            @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
-        RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.Click",
-                sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+            @HostSurface int hostSurface, @ModuleTypeOnStartAndNtp int sample) {
+        RecordHistogram.recordEnumeratedHistogram(
+                getHostName(hostSurface) + ".Module.Click",
+                sample,
+                ModuleTypeOnStartAndNtp.NUM_ENTRIES);
     }
 
     /**
      * Records user perform long clicking on different modules in New tab page or Start surface.
-     * @param hostSurface The corresponding item of the host name in {@link HostSurface}
-     *                    which indicates the page where the recording action happened.
+     *
+     * @param hostSurface The corresponding item of the host name in {@link HostSurface} which
+     *     indicates the page where the recording action happened.
      * @param sample Sample to be recorded in the enumerated histogram.
      */
     public static void recordModuleLongClickHistogram(
-            @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
-        RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.LongClick",
-                sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+            @HostSurface int hostSurface, @ModuleTypeOnStartAndNtp int sample) {
+        RecordHistogram.recordEnumeratedHistogram(
+                getHostName(hostSurface) + ".Module.LongClick",
+                sample,
+                ModuleTypeOnStartAndNtp.NUM_ENTRIES);
     }
 
     /**
@@ -104,10 +117,10 @@ public class BrowserUiUtils {
         // Initially, we differentiate based on the value of isStartSurface.
         if (isStartSurface) {
             recordModuleClickHistogram(
-                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
         } else if (isTabNtp) {
             recordModuleClickHistogram(
-                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
         }
     }
 }

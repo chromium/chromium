@@ -264,12 +264,12 @@ by tests that stick to Web Platform APIs. The `testharnessreport.js` file in
 and uses the `testRunner` API.
 ***
 
-See the [content/shell/renderer/web_test/](../../content/shell/renderer/web_test/) directory and
+See the [content/web_test/renderer/](../../content/web_test/renderer/) directory and
 [WebKit's LayoutTests guide](https://trac.webkit.org/wiki/Writing%20Layout%20Tests%20for%20DumpRenderTree)
 for other useful APIs. For example, `eventSender`
-([content/shell/renderer/web_test/event_sender.h](../../content/shell/renderer/web_test/event_sender.h)
+([content/shell/renderer/web_test/event_sender.h](../../content/web_test/renderer/event_sender.h)
 and
-[content/shell/renderer/web_test/event_sender.cc](../../content/shell/renderer/web_test/event_sender.cc))
+[content/shell/renderer/web_test/event_sender.cc](../../content/web_test/renderer/event_sender.cc))
 has methods that simulate events input such as keyboard / mouse input and
 drag-and-drop.
 

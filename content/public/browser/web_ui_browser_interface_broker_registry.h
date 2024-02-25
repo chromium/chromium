@@ -11,7 +11,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/web_ui_js_bridge_traits.h"
 
 namespace content {
 
@@ -115,50 +114,6 @@ class CONTENT_EXPORT WebUIBrowserInterfaceBrokerRegistry {
 
     return InterfaceRegistrationHelper<ControllerType>(
         &binder_initializers_[type]);
-  }
-
-  // Used to register interfaces for a WebUIController that has an
-  // associated WebUIJsBridge. Returns an object that can be used to register
-  // interfaces e.g.:
-  //
-  // registry.ForWebUIWithJsBridge<FooUIController>()
-  //         .AddBinder<Foo>(FooImpl::Bind)
-  //         .AddBinder<Bar, Baz>(BarBazImpl::Bind);
-  //
-  // TODO(crbug.com/1407936): Point to WebUIJsBridge documentation.
-  template <typename ControllerType>
-  JsBridgeTraits<ControllerType>::BinderInitializer& ForWebUIWithJsBridge() {
-    using Traits = JsBridgeTraits<ControllerType>;
-    using Interface = Traits::Interface;
-    using JsBridgeBinderInitializer = Traits::BinderInitializer;
-
-    // WebUIController::GetType() requires an instantiated WebUIController
-    // (because it's a virtual method and can't be static). Here we only have
-    // type information, so we need to figure out the type from the controller's
-    // class declaration.
-    WebUIController::Type type = &ControllerType::kWebUIControllerType;
-
-    CHECK(binder_initializers_.count(type) == 0)
-        << "Interfaces for a WebUI should be registered together.";
-
-    auto binder_initializer = std::make_unique<JsBridgeBinderInitializer>();
-    auto* binder_initializer_ptr = binder_initializer.get();
-
-    auto binder_initializer_callback = base::BindRepeating(
-        [](JsBridgeBinderInitializer* binder_initializer,
-           WebUIBinderMap* binder_map) {
-          // The binder returned by GetWebUIJsBridgeBinder() creates
-          // WebUIJsBridgeImpl and binds Interface to it.
-          binder_map->Add<Interface>(
-              binder_initializer->GetWebUIJsBridgeBinder());
-        },
-        base::Owned(std::move(binder_initializer)));
-    binder_initializers_[type].push_back(binder_initializer_callback);
-
-    // Return a reference to the binder initializer that callers can use to add
-    // binders to it. These binders are passed to WebUIJsBridgeImpl in
-    // BinderInitializer::GetWebUIJsBridgeBinder().
-    return *binder_initializer_ptr;
   }
 
   // Creates an unbounded interface broker for |controller|. Caller should call

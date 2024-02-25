@@ -12,7 +12,7 @@
 #include "base/test/test_timeouts.h"
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/common/content_features.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 
@@ -30,8 +30,7 @@ struct FeatureState {
 };
 
 struct Version {
-  int32_t major;
-  int32_t minor;
+  int packed_version;
   bool supported;
 };
 
@@ -483,7 +482,7 @@ class WindowOcclusionBrowserTestMac
       watcher = [[WebContentVisibilityUpdateCounter alloc] init];
     }
 
-    [window orderWindow:NSWindowAbove relativeTo:0];
+    [window orderFront:nil];
     ASSERT_TRUE([window isVisible]);
 
     if (kEnhancedWindowOcclusionDetection.Get()) {
@@ -492,7 +491,7 @@ class WindowOcclusionBrowserTestMac
   }
 
   void OrderWindowOut(NSWindow* window) {
-    [window orderWindow:NSWindowOut relativeTo:0];
+    [window orderOut:nil];
     ASSERT_FALSE(window.visible);
 
     WaitForOcclusionUpdate();
@@ -605,12 +604,13 @@ IN_PROC_BROWSER_TEST_P(WindowOcclusionBrowserTestMac, MacOSVersionChecking) {
   Class WebContentsOcclusionCheckerMac =
       NSClassFromString(@"WebContentsOcclusionCheckerMac");
   std::vector<Version> versions = {
-      {11, 0, true},  {12, 0, true},  {12, 9, true}, {13, 0, false},
-      {13, 1, false}, {13, 2, false}, {13, 3, true}, {14, 0, true}};
+      {11'00'00, true},  {12'00'00, true},  {12'09'00, true}, {13'00'00, false},
+      {13'01'00, false}, {13'02'00, false}, {13'03'00, true}, {14'00'00, true}};
 
   for (const auto& version : versions) {
-    bool supported = [WebContentsOcclusionCheckerMac manualOcclusionDetectionSupportedForVersion:version.major
-                                                                                                :version.minor];
+    bool supported = [WebContentsOcclusionCheckerMac
+        manualOcclusionDetectionSupportedForPackedVersion:version
+                                                              .packed_version];
     EXPECT_EQ(supported, version.supported);
   }
 }

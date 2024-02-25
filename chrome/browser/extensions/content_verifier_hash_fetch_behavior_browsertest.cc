@@ -77,7 +77,7 @@ class ContentVerifierHashTest
 
   void TearDown() override {
     ExtensionBrowserTest::TearDown();
-    ChromeContentVerifierDelegate::SetDefaultModeForTesting(absl::nullopt);
+    ChromeContentVerifierDelegate::SetDefaultModeForTesting(std::nullopt);
   }
 
   void TearDownOnMainThread() override {
@@ -223,9 +223,8 @@ class ContentVerifierHashTest
   }
 
   bool ExtensionIsDisabledForCorruption() {
-    const Extension* extension = extensions::ExtensionRegistry::Get(profile())
-                                     ->disabled_extensions()
-                                     .GetByID(id());
+    const Extension* extension =
+        ExtensionRegistry::Get(profile())->disabled_extensions().GetByID(id());
     if (!extension)
       return false;
 
@@ -237,9 +236,8 @@ class ContentVerifierHashTest
   }
 
   bool ExtensionIsEnabled() {
-    return extensions::ExtensionRegistry::Get(profile())
-        ->enabled_extensions()
-        .Contains(id());
+    return ExtensionRegistry::Get(profile())->enabled_extensions().Contains(
+        id());
   }
 
   bool HasValidComputedHashes() {
@@ -247,7 +245,7 @@ class ContentVerifierHashTest
     ComputedHashes::Status computed_hashes_status;
     return ComputedHashes::CreateFromFile(
                file_util::GetComputedHashesPath(info_->extension_root),
-               &computed_hashes_status) != absl::nullopt;
+               &computed_hashes_status) != std::nullopt;
   }
 
   bool HasValidVerifiedContents() {

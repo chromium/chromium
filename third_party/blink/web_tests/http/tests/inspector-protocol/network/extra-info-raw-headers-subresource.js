@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that cross origin requests have their raw headers shown in Network.*ExtraInfo events by checking cookie headers.\n`);
 

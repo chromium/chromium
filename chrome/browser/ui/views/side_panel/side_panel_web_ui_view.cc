@@ -18,16 +18,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                                        base::RepeatingClosure close_cb,
-                                       BubbleContentsWrapper* contents_wrapper)
+                                       WebUIContentsWrapper* contents_wrapper)
     : on_show_cb_(std::move(on_show_cb)),
       close_cb_(std::move(close_cb)),
       contents_wrapper_(contents_wrapper) {
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(false);
   SetVisible(false);
+  SetID(kSidePanelWebViewId);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
 }
@@ -80,3 +82,6 @@ bool SidePanelWebUIView::HandleKeyboardEvent(
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
+
+BEGIN_METADATA(SidePanelWebUIView)
+END_METADATA

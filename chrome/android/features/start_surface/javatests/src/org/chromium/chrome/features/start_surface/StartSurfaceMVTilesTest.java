@@ -45,6 +45,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
@@ -62,7 +64,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.tile.TileView;
@@ -76,30 +77,32 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests of MV tiles on the {@link StartSurface}.
- */
+/** Integration tests of MV tiles on the {@link StartSurface}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Restriction(
-        {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures(
-        {ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EMPTY_STATES})
+@Restriction({
+    UiRestriction.RESTRICTION_TYPE_PHONE,
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+})
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
 public class StartSurfaceMVTilesTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    /**
-     * Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled.
-     */
+    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
     private final boolean mUseInstantStart;
 
     /**
@@ -111,8 +114,7 @@ public class StartSurfaceMVTilesTest {
 
     private CallbackHelper mLayoutChangedCallbackHelper;
     private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
-    @LayoutType
-    private int mCurrentlyActiveLayout;
+    @LayoutType private int mCurrentlyActiveLayout;
     private FakeMostVisitedSites mMostVisitedSites;
 
     public StartSurfaceMVTilesTest(boolean useInstantStart, boolean immediateReturn) {
@@ -136,22 +138,29 @@ public class StartSurfaceMVTilesTest {
             mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
         }
 
-        mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(@LayoutType int layoutType) {
-                mCurrentlyActiveLayout = layoutType;
-                mLayoutChangedCallbackHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver((manager) -> {
-                if (manager.getActiveLayout() != null) {
-                    mCurrentlyActiveLayout = manager.getActiveLayout().getLayoutType();
-                    mLayoutChangedCallbackHelper.notifyCalled();
-                }
-                manager.addObserver(mLayoutObserver);
-            });
-        });
+        mLayoutObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(@LayoutType int layoutType) {
+                        mCurrentlyActiveLayout = layoutType;
+                        mLayoutChangedCallbackHelper.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getLayoutManagerSupplier()
+                            .addObserver(
+                                    (manager) -> {
+                                        if (manager.getActiveLayout() != null) {
+                                            mCurrentlyActiveLayout =
+                                                    manager.getActiveLayout().getLayoutType();
+                                            mLayoutChangedCallbackHelper.notifyCalled();
+                                        }
+                                        manager.addObserver(mLayoutObserver);
+                                    });
+                });
     }
 
     @Test
@@ -161,11 +170,16 @@ public class StartSurfaceMVTilesTest {
     public void testTapMVTilesInSingleSurface() {
         testTapMVTilesInSingleSurfaceImpl();
     }
+
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/use_magic_space/true"})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR, ChromeFeatureList.SURFACE_POLISH})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_REFACTOR,
+        ChromeFeatureList.SURFACE_POLISH,
+        ChromeFeatureList.MAGIC_STACK_ANDROID
+    })
     public void testTapMVTilesInSingleSurfaceWithSurfacePolish() {
         testTapMVTilesInSingleSurfaceImpl();
     }
@@ -179,7 +193,7 @@ public class StartSurfaceMVTilesTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
 
         // Press back button should close the tab opened from the Start surface.
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
@@ -192,14 +206,18 @@ public class StartSurfaceMVTilesTest {
     @MediumTest
     @Feature({"StartSurface"})
     // Disable feed placeholder animation because it causes waitForSnackbar() to time out.
-    @CommandLineFlags.
-    Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS, FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
+    @CommandLineFlags.Add({
+        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS,
+        FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH
+    })
     public void testDismissTileWithContextMenuAndUndo() throws Exception {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
-                mCurrentlyActiveLayout, mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper,
+                mCurrentlyActiveLayout,
+                mActivityTestRule.getActivity());
 
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToDismiss);
@@ -241,8 +259,9 @@ public class StartSurfaceMVTilesTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB);
         // This tab should be opened in the background.
-        Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(
-                StartSurfaceTestUtils.getStartSurfaceLayoutType()));
+        Assert.assertTrue(
+                cta.getLayoutManager()
+                        .isLayoutVisible(StartSurfaceTestUtils.getStartSurfaceLayoutType()));
         // Verifies a new tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
     }
@@ -270,11 +289,12 @@ public class StartSurfaceMVTilesTest {
         // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
     }
+
     /* MV tiles context menu tests ends. */
 
     /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and
-     * {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
+     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
+     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;
@@ -302,15 +322,16 @@ public class StartSurfaceMVTilesTest {
         if (removedTile == null) return;
 
         final CallbackHelper callback = new CallbackHelper();
-        mvTilesLayout.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
-            @Override
-            public void onChildViewAdded(View parent, View child) {}
+        mvTilesLayout.setOnHierarchyChangeListener(
+                new ViewGroup.OnHierarchyChangeListener() {
+                    @Override
+                    public void onChildViewAdded(View parent, View child) {}
 
-            @Override
-            public void onChildViewRemoved(View parent, View child) {
-                if (child == removedTile) callback.notifyCalled();
-            }
-        });
+                    @Override
+                    public void onChildViewRemoved(View parent, View child) {
+                        if (child == removedTile) callback.notifyCalled();
+                    }
+                });
         callback.waitForCallback("The expected tile was not removed.", 0);
         mvTilesLayout.setOnHierarchyChangeListener(null);
     }
@@ -318,8 +339,10 @@ public class StartSurfaceMVTilesTest {
     private void invokeContextMenu(View view, int contextMenuItemId) throws ExecutionException {
         TestTouchUtils.performLongClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mActivityTestRule.getActivity(), contextMenuItemId, 0));
+        Assert.assertTrue(
+                InstrumentationRegistry.getInstrumentation()
+                        .invokeContextMenuAction(
+                                mActivityTestRule.getActivity(), contextMenuItemId, 0));
     }
 
     private List<SiteSuggestion> getNewSitesAfterDismiss(SiteSuggestion siteToDismiss) {
@@ -337,14 +360,16 @@ public class StartSurfaceMVTilesTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         final String expectedSnackbarMessage =
                 cta.getResources().getString(R.string.most_visited_item_removed);
-        CriteriaHelper.pollUiThread(() -> {
-            SnackbarManager snackbarManager = cta.getSnackbarManager();
-            Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
-            TextView snackbarMessage = cta.findViewById(R.id.snackbar_message);
-            Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
-            Criteria.checkThat(
-                    snackbarMessage.getText().toString(), Matchers.is(expectedSnackbarMessage));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager = cta.getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
+                    TextView snackbarMessage = cta.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbarMessage.getText().toString(),
+                            Matchers.is(expectedSnackbarMessage));
+                });
 
         return cta.findViewById(R.id.snackbar_button);
     }
@@ -368,37 +393,48 @@ public class StartSurfaceMVTilesTest {
 
         int expectedMvtLateralMargin =
                 res.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
-        Assert.assertEquals("The left margin of the most visited tiles container is wrong.",
+        Assert.assertEquals(
+                "The left margin of the most visited tiles container is wrong.",
                 expectedMvtLateralMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).leftMargin);
-        Assert.assertEquals("The right margin of the most visited tiles container is wrong.",
+        Assert.assertEquals(
+                "The right margin of the most visited tiles container is wrong.",
                 expectedMvtLateralMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).rightMargin);
-        Assert.assertEquals("The width of the most visited tiles container is wrong.",
+        Assert.assertEquals(
+                "The width of the most visited tiles container is wrong.",
                 expectedMvtLateralMargin * 2,
                 startSurfaceView.getWidth() - mvTilesContainer.getWidth());
 
         int expectedMvtTopMargin =
                 res.getDimensionPixelSize(R.dimen.mvt_container_top_margin_polish);
-        Assert.assertEquals("The top margin of the most visited tiles container is wrong.",
+        Assert.assertEquals(
+                "The top margin of the most visited tiles container is wrong.",
                 expectedMvtTopMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).topMargin);
-        Assert.assertEquals("The bottom margin of the most visited tiles container is wrong.", 0,
+        Assert.assertEquals(
+                "The bottom margin of the most visited tiles container is wrong.",
+                0,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
 
         int expectedMvtTopPadding =
                 res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_polish);
         int expectedMvtBottomPadding =
                 res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_polish);
-        Assert.assertEquals("The top padding of the most visited tiles container is wrong.",
-                expectedMvtTopPadding, mvTilesContainer.getPaddingTop());
-        Assert.assertEquals("The bottom padding of the most visited tiles container is wrong.",
-                expectedMvtBottomPadding, mvTilesContainer.getPaddingBottom());
+        Assert.assertEquals(
+                "The top padding of the most visited tiles container is wrong.",
+                expectedMvtTopPadding,
+                mvTilesContainer.getPaddingTop());
+        Assert.assertEquals(
+                "The bottom padding of the most visited tiles container is wrong.",
+                expectedMvtBottomPadding,
+                mvTilesContainer.getPaddingBottom());
 
         int expectedTitleTopMargin =
                 res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
         TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
-        Assert.assertEquals("The top margin of the tile element's title is wrong.",
+        Assert.assertEquals(
+                "The top margin of the tile element's title is wrong.",
                 expectedTitleTopMargin,
                 ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
                         .topMargin);
@@ -407,6 +443,7 @@ public class StartSurfaceMVTilesTest {
                 (GradientDrawable) mvTilesContainer.getBackground();
         Assert.assertEquals(
                 "The shape of the background of the most visited tiles container is wrong.",
-                GradientDrawable.RECTANGLE, mvTilesContainerBackground.getShape());
+                GradientDrawable.RECTANGLE,
+                mvTilesContainerBackground.getShape());
     }
 }

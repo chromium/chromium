@@ -30,9 +30,9 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     kInterpolablePalette = 4,
   };
 
-  // Data layout should match SkFontarguments::PaletteOverride::ColorOverride.
+  // Data layout should match SkFontArguments::PaletteOverride::ColorOverride.
   struct FontPaletteOverride {
-    int index;
+    uint16_t index;
     Color color;
 
     bool operator==(const FontPaletteOverride& other) const {
@@ -87,14 +87,14 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   // property’s value at time 0.5 between the palettes “--p1” and “--p2” will be
   // presented as palette-mix(--p1, –p2, 0.5).
   static scoped_refptr<FontPalette> Mix(
-      scoped_refptr<FontPalette> start,
-      scoped_refptr<FontPalette> end,
+      scoped_refptr<const FontPalette> start,
+      scoped_refptr<const FontPalette> end,
       double start_percentage,
       double end_percentage,
       double normalized_percentage,
       double alpha_multiplier,
       Color::ColorSpace color_interpolation_space,
-      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
+      std::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
     return base::AdoptRef(new FontPalette(
         start, end, NonNormalizedPercentages(start_percentage, end_percentage),
         normalized_percentage, alpha_multiplier, color_interpolation_space,
@@ -136,13 +136,13 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
 
   AtomicString GetMatchFamilyName() { return match_font_family_; }
 
-  scoped_refptr<FontPalette> GetStart() const {
+  scoped_refptr<const FontPalette> GetStart() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return start_;
   }
 
-  scoped_refptr<FontPalette> GetEnd() const {
+  scoped_refptr<const FontPalette> GetEnd() const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
     return end_;
@@ -185,7 +185,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return color_interpolation_space_;
   }
 
-  absl::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
+  std::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
       const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
@@ -207,13 +207,13 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
         palette_values_name_(palette_values_name),
         base_palette_({kNoBasePalette, 0}) {}
   FontPalette(
-      scoped_refptr<FontPalette> start,
-      scoped_refptr<FontPalette> end,
+      scoped_refptr<const FontPalette> start,
+      scoped_refptr<const FontPalette> end,
       NonNormalizedPercentages percentages,
       double normalized_percentage,
       double alpha_multiplier,
       Color::ColorSpace color_interpoaltion_space,
-      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method)
+      std::optional<Color::HueInterpolationMethod> hue_interpolation_method)
       : palette_keyword_(kInterpolablePalette),
         start_(start),
         end_(end),
@@ -230,13 +230,13 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   BasePaletteValue base_palette_;
   AtomicString match_font_family_;
   Vector<FontPaletteOverride> palette_overrides_;
-  scoped_refptr<FontPalette> start_;
-  scoped_refptr<FontPalette> end_;
+  scoped_refptr<const FontPalette> start_;
+  scoped_refptr<const FontPalette> end_;
   NonNormalizedPercentages percentages_;
   double normalized_percentage_;
   double alpha_multiplier_;
   Color::ColorSpace color_interpolation_space_;
-  absl::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
+  std::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
 };
 
 }  // namespace blink

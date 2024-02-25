@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": false
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": true
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

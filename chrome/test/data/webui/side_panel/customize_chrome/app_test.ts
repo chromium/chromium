@@ -4,12 +4,13 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
-import {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
-import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
+import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from './test_support.js';
 
@@ -130,6 +131,53 @@ suite('AppTest', () => {
         sectionsScrolledTo[0]);
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+  });
+
+  suite('ExtensionCard', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'extensionsCardEnabled': true,
+      });
+    });
+
+    test(
+        'clicking "coupon" card opens Chrome Web Store category page',
+        async () => {
+          ((customizeChromeApp.shadowRoot!.querySelector('#couponsButton')!) as
+           HTMLElement)
+              .click();
+          assertEquals(
+              1, handler.getCallCount('openChromeWebStoreCategoryPage'));
+        });
+
+    test(
+        'clicking "writing" card opens Chrome Web Store collection page',
+        async () => {
+          ((customizeChromeApp.shadowRoot!.querySelector('#writingButton')!) as
+           HTMLElement)
+              .click();
+          assertEquals(
+              1, handler.getCallCount('openChromeWebStoreCollectionPage'));
+        });
+
+    test(
+        'clicking "productivity" card opens Chrome Web Store category page',
+        async () => {
+          ((customizeChromeApp.shadowRoot!.querySelector('#productivityButton')!
+            ) as HTMLElement)
+              .click();
+          assertEquals(
+              1, handler.getCallCount('openChromeWebStoreCategoryPage'));
+        });
+
+    test(
+        'clicking Chrome Web Store link opens Chrome Web Store home page',
+        async () => {
+          ((customizeChromeApp.shadowRoot!.querySelector('#chromeWebstoreLink')!
+            ) as HTMLElement)
+              .click();
+          assertEquals(1, handler.getCallCount('openChromeWebStoreHomePage'));
+        });
   });
 
   [true, false].forEach((flagEnabled) => {

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] HTTP cache invalidates after a successful response from an unknown method
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Location URL after a successful response from a POST
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Location URL after a successful response from a PUT
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Location URL after a successful response from a DELETE
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Location URL after a successful response from an unknown method
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Content-Location URL after a successful response from a POST
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Content-Location URL after a successful response from a PUT
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Content-Location URL after a successful response from a DELETE
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+[FAIL] HTTP cache invalidates Content-Location URL after a successful response from an unknown method
+  assert_equals: Response 3 comes from cache expected 3 but got 1
+Harness: the test ran to completion.
+

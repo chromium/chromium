@@ -31,8 +31,7 @@ class AmbientViewDelegateImpl : public AmbientViewDelegate {
   void NotifyObserversMarkerHit(AmbientPhotoConfig::Marker marker);
 
  private:
-  const raw_ptr<AmbientController, ExperimentalAsh>
-      ambient_controller_;  // Owned by Shell.
+  const raw_ptr<AmbientController> ambient_controller_;  // Owned by Shell.
 
   base::ObserverList<AmbientViewDelegateObserver> view_delegate_observers_;
 };

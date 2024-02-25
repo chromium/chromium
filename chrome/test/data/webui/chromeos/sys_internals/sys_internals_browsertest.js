@@ -18,12 +18,12 @@ SysInternalsBrowserTest.prototype = {
   __proto__: testing.Test.prototype,
 
   browsePreload:
-      'chrome://sys-internals/index.html?module=chromeos/sys_internals/all_tests.js&host=test',
+      'chrome://sys-internals/index.html?module=chromeos/sys_internals/all_tests.js',
 
   isAsync: true,
 
   extraLibraries: [
-    '//third_party/mocha/mocha.js',
+    '//third_party/node/node_modules/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
 };

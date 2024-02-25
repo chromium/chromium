@@ -76,7 +76,8 @@ class KioskAppServiceLauncher :
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::AppType app_type) override;
+  void OnAppTypePublishing(const std::vector<apps::AppPtr>& deltas,
+                           apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
@@ -94,16 +95,16 @@ class KioskAppServiceLauncher :
   // A keyed service. Not owned by this class.
   raw_ptr<apps::AppServiceProxy> app_service_;
 
-  absl::optional<base::OnceClosure> app_type_initialized_callback_;
+  std::optional<base::OnceClosure> app_type_initialized_callback_;
 
-  absl::optional<AppLaunchedCallback> app_launched_callback_;
+  std::optional<AppLaunchedCallback> app_launched_callback_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_observation_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<base::OnceClosure> app_visible_callback_;
+  std::optional<base::OnceClosure> app_visible_callback_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

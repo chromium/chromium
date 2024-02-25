@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/net/network.h"
-
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -31,9 +31,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -158,6 +159,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPPOST, 1L) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
+                       GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPHEADER, headers) ||
       curl_easy_setopt(curl_.get(), CURLOPT_POSTFIELDSIZE, post_data.size()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_POSTFIELDS, post_data.c_str()) ||
@@ -236,6 +239,8 @@ void LibcurlNetworkFetcherImpl::DownloadToFile(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_.get(), CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_HTTPGET, 1L) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_USERAGENT,
+                       GetUpdaterUserAgent().c_str()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlWriteFileCallback) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA, &file) ||
@@ -405,12 +410,13 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) override;
 
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override;
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override;
 
  private:
   base::SequenceBound<LibcurlNetworkFetcherImpl> impl_;
@@ -436,7 +442,7 @@ void LibcurlNetworkFetcher::PostRequest(
                 std::move(post_request_complete_callback));
 }
 
-void LibcurlNetworkFetcher::DownloadToFile(
+base::OnceClosure LibcurlNetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -446,6 +452,7 @@ void LibcurlNetworkFetcher::DownloadToFile(
       .WithArgs(url, file_path, std::move(response_started_callback),
                 std::move(progress_callback),
                 std::move(download_to_file_complete_callback));
+  return base::DoNothing();
 }
 
 }  // namespace
@@ -453,7 +460,7 @@ void LibcurlNetworkFetcher::DownloadToFile(
 class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>) {}
+    std::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

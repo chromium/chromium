@@ -40,6 +40,10 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class CORE_EXPORT StyleColor {
@@ -78,6 +82,38 @@ class CORE_EXPORT StyleColor {
     UnresolvedColorMix(const UnresolvedColorMix& other);
     UnresolvedColorMix& operator=(const UnresolvedColorMix& other);
     Color Resolve(const Color& current_color) const;
+
+    static bool Equals(const ColorOrUnresolvedColorMix& first,
+                       const ColorOrUnresolvedColorMix& second,
+                       UnderlyingColorType type) {
+      switch (type) {
+        case UnderlyingColorType::kCurrentColor:
+          return true;
+
+        case UnderlyingColorType::kColor:
+          return first.color == second.color;
+
+        case UnderlyingColorType::kColorMix:
+          return *first.unresolved_color_mix == *second.unresolved_color_mix;
+      }
+    }
+
+    bool operator==(const UnresolvedColorMix& other) const {
+      if (color_interpolation_space_ != other.color_interpolation_space_ ||
+          hue_interpolation_method_ != other.hue_interpolation_method_ ||
+          percentage_ != other.percentage_ ||
+          alpha_multiplier_ != other.alpha_multiplier_ ||
+          color1_type_ != other.color1_type_ ||
+          color2_type_ != other.color2_type_) {
+        return false;
+      }
+      return Equals(color1_, other.color1_, color1_type_) &&
+             Equals(color2_, other.color2_, color2_type_);
+    }
+
+    bool operator!=(const UnresolvedColorMix& other) const {
+      return !(*this == other);
+    }
 
    private:
     Color::ColorSpace color_interpolation_space_ = Color::ColorSpace::kNone;
@@ -141,23 +177,29 @@ class CORE_EXPORT StyleColor {
 
   Color Resolve(const Color& current_color,
                 mojom::blink::ColorScheme color_scheme,
-                bool* is_current_color = nullptr,
-                bool is_forced_color = false) const;
+                bool* is_current_color = nullptr) const;
 
   // Resolve and override the resolved color's alpha channel as specified by
   // |alpha|.
   Color ResolveWithAlpha(Color current_color,
                          mojom::blink::ColorScheme color_scheme,
                          int alpha,
-                         bool* is_current_color = nullptr,
-                         bool is_forced_color = false) const;
+                         bool* is_current_color = nullptr) const;
+
+  // Re-resolve the current system color keyword. This is needed in cases such
+  // as forced colors mode because initial values for some internal forced
+  // colors properties are system colors so we need to re-resolve them to ensure
+  // they pick up the correct color on theme change.
+  StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
+                                const ui::ColorProvider* color_provider) const;
 
   bool IsNumeric() const {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
   }
 
   static Color ColorFromKeyword(CSSValueID,
-                                mojom::blink::ColorScheme color_scheme);
+                                mojom::blink::ColorScheme color_scheme,
+                                const ui::ColorProvider* color_provider);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);
@@ -172,8 +214,9 @@ class CORE_EXPORT StyleColor {
     }
 
     if (IsUnresolvedColorMixFunction()) {
-      return color_or_unresolved_color_mix_.unresolved_color_mix ==
-             other.color_or_unresolved_color_mix_.unresolved_color_mix;
+      DCHECK(other.IsUnresolvedColorMixFunction());
+      return *color_or_unresolved_color_mix_.unresolved_color_mix ==
+             *other.color_or_unresolved_color_mix_.unresolved_color_mix;
     }
 
     return color_or_unresolved_color_mix_.color ==

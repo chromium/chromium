@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,28 +35,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Robolectric tests for {@link QuickDeleteMediator}.
- */
-
+/** Robolectric tests for {@link QuickDeleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteMediatorTest {
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
-    @Mock
-    private Profile mProfileMock;
-    @Mock
-    private QuickDeleteBridge mQuickDeleteBridgeMock;
-    @Mock
-    private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
-    @Mock
-    private List<Tab> mTabsListMock;
+    @Mock private Profile mProfileMock;
+    @Mock private QuickDeleteBridge mQuickDeleteBridgeMock;
+    @Mock private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
+    @Mock private List<Tab> mTabsListMock;
 
     private PropertyModel mPropertyModel;
     private QuickDeleteMediator mQuickDeleteMediator;
@@ -80,11 +72,18 @@ public class QuickDeleteMediatorTest {
         setSignedInStatus(true);
 
         when(mTabsListMock.size()).thenReturn(1);
-        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed(eq(TimePeriod.LAST_15_MINUTES)))
+        doNothing()
+                .when(mQuickDeleteTabsFilterMock)
+                .prepareListOfTabsToBeClosed(eq(TimePeriod.LAST_15_MINUTES));
+        when(mQuickDeleteTabsFilterMock.getListOfTabsFilteredToBeClosed())
                 .thenReturn(mTabsListMock);
 
-        mQuickDeleteMediator = new QuickDeleteMediator(
-                mPropertyModel, mProfileMock, mQuickDeleteBridgeMock, mQuickDeleteTabsFilterMock);
+        mQuickDeleteMediator =
+                new QuickDeleteMediator(
+                        mPropertyModel,
+                        mProfileMock,
+                        mQuickDeleteBridgeMock,
+                        mQuickDeleteTabsFilterMock);
         mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
 
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));

@@ -70,10 +70,8 @@ void CameraVideoFrameRenderer::Initialize() {
       context_provider_->ContextCapabilities().max_texture_size;
   video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       context_provider_.get(), layer_tree_frame_sink_.get(),
-      &client_resource_provider_,
-      /*use_stream_video_draw_quad=*/false,
-      /*use_gpu_memory_buffer_resources=*/false,
-      /*use_r16_texture=*/false, max_texture_size);
+      &client_resource_provider_, /*use_stream_video_draw_quad=*/false,
+      /*use_gpu_memory_buffer_resources=*/false, max_texture_size);
 
   video_frame_handler_.StartHandlingFrames(/*delegate=*/this);
 }
@@ -144,9 +142,9 @@ void CameraVideoFrameRenderer::SetBeginFrameSource(
     begin_frame_source_->AddObserver(this);
 }
 
-absl::optional<viz::HitTestRegionList>
+std::optional<viz::HitTestRegionList>
 CameraVideoFrameRenderer::BuildHitTestData() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CameraVideoFrameRenderer::ReclaimResources(
@@ -272,7 +270,7 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
       render_pass.get(), std::move(video_frame), transform, quad_rect,
       /*visible_quad_rect=*/quad_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/absl::nullopt, context_opaque,
+      /*clip_rect=*/std::nullopt, context_opaque,
       /*draw_opacity=*/1.0f, /*sorting_context_id=*/0);
   compositor_frame.render_pass_list.emplace_back(std::move(render_pass));
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<head>
+<title>IDB test that origins over quota aren't trapped Part 1 / 2</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+function test() {
+  indexedDBTest(prepareDatabase, startNewTransaction);
+}
+
+function prepareDatabase()
+{
+  db = event.target.result;
+  objectStore = db.createObjectStore("test123");
+  data = generateRandomString(1);
+  numTransactions = 0;
+}
+
+function startNewTransaction() {
+  debug("Starting new transaction.");
+
+  var trans = db.transaction(['test123'], 'readwrite');
+  trans.onabort = e => {
+    if (trans.error.name === 'QuotaExceededError') done();
+    else fail('unexpected error ' + trans.error.name);
+  };
+  trans.oncomplete = getQuotaAndUsage;
+  var store = trans.objectStore('test123');
+  request = store.put({x: numTransactions, data: data}, numTransactions);
+  request.onerror = unexpectedErrorCallback;
+}
+
+function getQuotaAndUsage() {
+  numTransactions++;
+  navigator.webkitTemporaryStorage.queryUsageAndQuota(
+    usageCallback, unexpectedErrorCallback);
+}
+
+function usageCallback(usage, quota) {
+  debug("Transaction finished.");
+  returnedUsage = usage;
+  returnedQuota = quota;
+  debug("Allotted quota is " + displaySize(returnedQuota));
+  debug("LevelDB usage is " + displaySize(returnedUsage));
+  startNewTransaction();
+}
+
+function displaySize(bytes) {
+  var k = bytes / 1024;
+  var m = k / 1024;
+  return bytes + " (" + k + "k) (" + m + "m)";
+}
+
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

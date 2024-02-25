@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
 
-/**
- * Interface for creating entries in TabRestoreService.
- */
+/** Interface for creating entries in TabRestoreService. */
 public interface HistoricalTabSaver {
     /**
      * Creates a Tab entry in TabRestoreService.

@@ -4,12 +4,15 @@
 
 #include "base/pickle.h"
 
-#include <algorithm>  // for max()
+#include <algorithm>
+#include <bit>
 #include <cstdlib>
 #include <limits>
 #include <ostream>
+#include <type_traits>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
@@ -28,13 +31,13 @@ PickleIterator::PickleIterator(const Pickle& pickle)
 
 template <typename Type>
 inline bool PickleIterator::ReadBuiltinType(Type* result) {
+  static_assert(
+      std::is_integral_v<Type> && !std::is_same_v<Type, bool>,
+      "This method is only safe with to use with types without padding bits.");
   const char* read_from = GetReadPointerAndAdvance<Type>();
   if (!read_from)
     return false;
-  if (sizeof(Type) > sizeof(uint32_t))
-    memcpy(result, read_from, sizeof(*result));
-  else
-    *result = *reinterpret_cast<const Type*>(read_from);
+  memcpy(result, read_from, sizeof(*result));
   return true;
 }
 
@@ -79,7 +82,14 @@ inline const char* PickleIterator::GetReadPointerAndAdvance(
 }
 
 bool PickleIterator::ReadBool(bool* result) {
-  return ReadBuiltinType(result);
+  // Not all bit patterns are valid bools. Avoid undefined behavior by reading a
+  // type with no padding bits, then converting to bool.
+  uint8_t v;
+  if (!ReadBuiltinType(&v)) {
+    return false;
+  }
+  *result = v != 0;
+  return true;
 }
 
 bool PickleIterator::ReadInt(int* result) {
@@ -196,12 +206,12 @@ bool PickleIterator::ReadData(const char** data, size_t* length) {
   return ReadBytes(data, *length);
 }
 
-absl::optional<base::span<const uint8_t>> PickleIterator::ReadData() {
+std::optional<base::span<const uint8_t>> PickleIterator::ReadData() {
   const char* ptr;
   size_t length;
 
   if (!ReadData(&ptr, &length))
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::as_bytes(base::make_span(ptr, length));
 }
@@ -225,7 +235,7 @@ Pickle::Pickle()
       header_size_(sizeof(Header)),
       capacity_after_header_(0),
       write_offset_(0) {
-  static_assert(base::bits::IsPowerOfTwo(Pickle::kPayloadUnit),
+  static_assert(std::has_single_bit(Pickle::kPayloadUnit),
                 "Pickle::kPayloadUnit must be a power of two");
   Resize(kPayloadUnit);
   header_->payload_size = 0;
@@ -241,6 +251,9 @@ Pickle::Pickle(size_t header_size)
   Resize(kPayloadUnit);
   header_->payload_size = 0;
 }
+
+Pickle::Pickle(span<const uint8_t> data)
+    : Pickle(reinterpret_cast<const char*>(data.data()), data.size()) {}
 
 Pickle::Pickle(const char* data, size_t data_len)
     : header_(reinterpret_cast<Header*>(const_cast<char*>(data))),
@@ -309,12 +322,24 @@ void Pickle::WriteString16(const StringPiece16& value) {
 }
 
 void Pickle::WriteData(const char* data, size_t length) {
-  WriteInt(checked_cast<int>(length));
-  WriteBytes(data, length);
+  WriteData(as_bytes(span(data, length)));
+}
+
+void Pickle::WriteData(std::string_view data) {
+  WriteData(as_byte_span(data));
+}
+
+void Pickle::WriteData(base::span<const uint8_t> data) {
+  WriteInt(checked_cast<int>(data.size()));
+  WriteBytes(data);
 }
 
 void Pickle::WriteBytes(const void* data, size_t length) {
-  WriteBytesCommon(data, length);
+  WriteBytesCommon(make_span(static_cast<const uint8_t*>(data), length));
+}
+
+void Pickle::WriteBytes(span<const uint8_t> data) {
+  WriteBytesCommon(data);
 }
 
 void Pickle::Reserve(size_t length) {
@@ -402,7 +427,7 @@ bool Pickle::PeekNext(size_t header_size,
 
 template <size_t length>
 void Pickle::WriteBytesStatic(const void* data) {
-  WriteBytesCommon(data, length);
+  WriteBytesCommon(make_span(static_cast<const uint8_t*>(data), length));
 }
 
 template void Pickle::WriteBytesStatic<2>(const void* data);
@@ -430,18 +455,18 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
   }
 
   char* write = mutable_payload() + write_offset_;
-  memset(write + length, 0, data_len - length);  // Always initialize padding
+  std::fill(write + length, write + data_len, 0);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);
   write_offset_ = new_size;
   return write;
 }
 
-inline void Pickle::WriteBytesCommon(const void* data, size_t length) {
+inline void Pickle::WriteBytesCommon(span<const uint8_t> data) {
   DCHECK_NE(kCapacityReadOnly, capacity_after_header_)
       << "oops: pickle is readonly";
-  MSAN_CHECK_MEM_IS_INITIALIZED(data, length);
-  void* write = ClaimUninitializedBytesInternal(length);
-  memcpy(write, data, length);
+  MSAN_CHECK_MEM_IS_INITIALIZED(data.data(), data.size());
+  void* write = ClaimUninitializedBytesInternal(data.size());
+  std::copy(data.data(), data.data() + data.size(), static_cast<char*>(write));
 }
 
 }  // namespace base

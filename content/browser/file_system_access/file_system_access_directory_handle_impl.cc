@@ -4,37 +4,36 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include <optional>
+
+#include "base/barrier_callback.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
-
-#if BUILDFLAG(IS_POSIX)
-#include "base/barrier_callback.h"
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/task/thread_pool.h"
-#include "content/public/browser/file_system_access_permission_context.h"
-#endif
 
 using blink::mojom::FileSystemAccessEntry;
 using blink::mojom::FileSystemAccessEntryPtr;
@@ -46,12 +45,10 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
-#if BUILDFLAG(IS_POSIX)
 using PathType = FileSystemAccessPermissionContext::PathType;
 using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
-#endif
 
 namespace {
 // Returns whether the specified extension receives special handling by the
@@ -79,19 +76,6 @@ bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
   }
   return false;
 }
-
-#if BUILDFLAG(IS_POSIX)
-base::FilePath ReadSymbolicLink(const base::FilePath& path) {
-  DCHECK(!path.empty());
-  base::FilePath resolved_file_path;
-  if (base::IsLink(path) && base::ReadSymbolicLink(path, &resolved_file_path)) {
-    return resolved_file_path;
-  }
-  // Returns an empty path if it is not a symbolic link, or fails to read the
-  // link.
-  return base::FilePath();
-}
-#endif
 
 }  // namespace
 
@@ -173,73 +157,38 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     return;
   }
 
-#if BUILDFLAG(IS_POSIX)
   if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck) &&
+      manager()->permission_context()) {
     // While this directory handle already has obtained the permission and
-    // checked for the blocklist, a child symlink file may be created, pointing
-    // to a blocklisted file or directory. Before returning a child file handle,
-    // check for the validity of the file path pointed by a symlink, if any.
-    // Currently, symlink checks are not available on Windows.
-    auto callback_after_access_check = base::BindOnce(
-        &FileSystemAccessDirectoryHandleImpl::DoGetFile,
-        weak_factory_.GetWeakPtr(), create, child_url, std::move(callback));
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&ReadSymbolicLink, child_url.path()),
-        base::BindOnce(
-            &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
-            weak_factory_.GetWeakPtr(), child_url,
-            std::move(callback_after_access_check)));
+    // checked for the blocklist, a child symlink file may have been created
+    // since then, pointing to a blocklisted file or directory.  Check for
+    // sensitive entry access, which is run on the resolved path.
+    manager()->permission_context()->ConfirmSensitiveEntryAccess(
+        context().storage_key.origin(),
+        child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
+            ? PathType::kLocal
+            : PathType::kExternal,
+        child_url.path(), HandleType::kFile, UserAction::kNone,
+        context().frame_id,
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetFile,
+                       weak_factory_.GetWeakPtr(), create, child_url,
+                       std::move(callback)));
     return;
   }
-#endif
 
-  DoGetFile(create, child_url, std::move(callback), /*allowed=*/true);
+  DoGetFile(create, child_url, std::move(callback),
+            SensitiveEntryResult::kAllowed);
 }
 
-#if BUILDFLAG(IS_POSIX)
-void FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess(
+void FileSystemAccessDirectoryHandleImpl::DoGetFile(
+    bool create,
     storage::FileSystemURL url,
-    base::OnceCallback<void(bool)> callback,
-    const base::FilePath& symbolic_link) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (symbolic_link.empty() || !manager()->permission_context()) {
-    // Not a symlink, or missing a permission context to check the path;
-    // no need to do an additional check for blocklist.
-    std::move(callback).Run(/*allowed=*/true);
-    return;
-  }
-
-  manager()->permission_context()->ConfirmSensitiveEntryAccess(
-      context().storage_key.origin(),
-      url.type() == storage::FileSystemType::kFileSystemTypeLocal
-          ? PathType::kLocal
-          : PathType::kExternal,
-      symbolic_link, HandleType::kFile, UserAction::kNone, context().frame_id,
-      base::BindOnce(
-          &FileSystemAccessDirectoryHandleImpl::DidCheckSymbolicLinkAccess,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void FileSystemAccessDirectoryHandleImpl::DidCheckSymbolicLinkAccess(
-    base::OnceCallback<void(bool)> callback,
+    GetFileCallback callback,
     SensitiveEntryResult sensitive_entry_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(sensitive_entry_result ==
-                          SensitiveEntryResult::kAllowed);
-}
-#endif
-
-void FileSystemAccessDirectoryHandleImpl::DoGetFile(bool create,
-                                                    storage::FileSystemURL url,
-                                                    GetFileCallback callback,
-                                                    bool allowed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!allowed) {
+  if (sensitive_entry_result != SensitiveEntryResult::kAllowed) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kSecurityError),
                             mojo::NullRemote());
@@ -420,7 +369,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kOperationFailed),
-        absl::nullopt);
+        std::nullopt);
     return;
   }
 
@@ -429,7 +378,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (parent_url.type() != child_url.type()) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 
@@ -442,7 +391,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // Since the types match, either both or neither URL will have bucket info.
   if (parent_url.bucket() != child_url.bucket()) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 
@@ -452,11 +401,10 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // Same path, so return empty array if child is also a directory.
   if (parent_path == child_path) {
-    std::move(callback).Run(
-        file_system_access_error::Ok(),
-        possible_child->type() == HandleType::kDirectory
-            ? absl::make_optional(std::vector<std::string>())
-            : absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(),
+                            possible_child->type() == HandleType::kDirectory
+                                ? std::make_optional(std::vector<std::string>())
+                                : std::nullopt);
     return;
   }
 
@@ -467,7 +415,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     // case the child path is already the relative path.
     relative_path = child_path;
   } else if (!parent_path.AppendRelativePath(child_path, &relative_path)) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 
@@ -578,25 +526,25 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     return;
   }
 
-#if BUILDFLAG(IS_POSIX)
   if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck) &&
+      manager()->permission_context()) {
     // While this directory handle already has obtained the permission and
-    // checked for the blocklist, a child symlink file may be created, pointing
-    // to a blocklisted file or directory. Before merging a child into a result
-    // vector, check for the validity of the file path pointed by a symlink, if
-    // any. Currently, symlink checks are not available on Windows.
+    // checked for the blocklist, a child symlink file may have been created
+    // since then, pointing to a blocklisted file or directory. Before merging
+    // a child into a result vector, check for sensitive entry access, which is
+    // run on the resolved path.
     auto final_callback =
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::AllEntriesReady,
                        weak_factory_.GetWeakPtr(), has_more_entries,
                        std::move(listener_holder));
 
     // Barrier callback is used to wait for checking each path in the
-    // `file_list` and creating a FileSystemAccessEntryPtr if the path is valid;
-    // otherwise, nullopt is returned for the callback. Since the barrier
+    // `file_list` and creating a `FileSystemAccessEntryPtr` if the path is
+    // valid; otherwise, nullptr is returned for the callback. Since the barrier
     // callback expects a fixed number of callbacks to be invoked before the
     // final callback is invoked, each item in `file_list` must trigger the
-    // barrier callback with a valid FileSystemAccessEntryPtr or nullopt.
+    // barrier callback with a valid `FileSystemAccessEntryPtr` or nullptr.
     auto barrier_callback = base::BarrierCallback<FileSystemAccessEntryPtr>(
         file_list.size(),
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::MergeAllEntries,
@@ -604,7 +552,6 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 
     for (const auto& entry : file_list) {
       std::string basename = storage::FilePathToString(entry.name);
-
       storage::FileSystemURL child_url;
       blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
           GetChildURL(basename, &child_url);
@@ -616,25 +563,29 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
         continue;
       }
 
-      auto callback_after_access_check = base::BindOnce(
-          &FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck,
-          weak_factory_.GetWeakPtr(), std::move(basename), child_url,
-          entry.type == filesystem::mojom::FsFileType::DIRECTORY
-              ? HandleType::kDirectory
-              : HandleType::kFile,
-          barrier_callback);
+      if (entry.type == filesystem::mojom::FsFileType::DIRECTORY) {
+        auto directory_result_entry =
+            CreateEntry(basename, child_url, HandleType::kDirectory);
+        barrier_callback.Run(std::move(directory_result_entry));
+        continue;
+      }
 
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(&ReadSymbolicLink, child_url.path()),
-          base::BindOnce(
-              &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
-              weak_factory_.GetWeakPtr(), child_url,
-              std::move(callback_after_access_check)));
+      // Only run sensitive entry check on a file, which could be a symbolic
+      // link.
+      manager()->permission_context()->ConfirmSensitiveEntryAccess(
+          context().storage_key.origin(),
+          child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
+              ? PathType::kLocal
+              : PathType::kExternal,
+          child_url.path(), HandleType::kFile, UserAction::kNone,
+          context().frame_id,
+          base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
+                             DidVerifySensitiveAccessForFileEntry,
+                         weak_factory_.GetWeakPtr(), std::move(basename),
+                         child_url, barrier_callback));
     }
     return;
   }
-#endif
 
   std::vector<FileSystemAccessEntryPtr> entries;
   for (const auto& entry : file_list) {
@@ -660,21 +611,20 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
                   std::move(entries));
 }
 
-#if BUILDFLAG(IS_POSIX)
-void FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck(
+void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
     std::string basename,
     storage::FileSystemURL child_url,
-    HandleType handle_type,
     base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
-    bool allowed) {
+    FileSystemAccessPermissionContext::SensitiveEntryResult
+        sensitive_entry_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!allowed) {
+  if (sensitive_entry_result != SensitiveEntryResult::kAllowed) {
     std::move(barrier_callback).Run(nullptr);
     return;
   }
 
-  auto entry = CreateEntry(basename, child_url, handle_type);
+  auto entry = CreateEntry(basename, child_url, HandleType::kFile);
   std::move(barrier_callback).Run(std::move(entry));
 }
 
@@ -693,7 +643,6 @@ void FileSystemAccessDirectoryHandleImpl::MergeAllEntries(
   }
   std::move(final_callback).Run(std::move(filtered_entries));
 }
-#endif
 
 void FileSystemAccessDirectoryHandleImpl::AllEntriesReady(
     bool has_more_entries,
@@ -712,10 +661,13 @@ void FileSystemAccessDirectoryHandleImpl::AllEntriesReady(
 
 // static
 bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+    storage::FileSystemType type,
     const std::string& name) {
   // This method is similar to net::IsSafePortablePathComponent, with a few
   // notable differences where the net version does not consider names safe
   // while here we do want to allow them. These cases are:
+  //  - Files in sandboxed file systems are subject to far fewer restrictions,
+  //    i.e. base::i18n::IsFilenameLegal is not called.
   //  - Names starting with a '.'. These would be hidden files in most file
   //    managers, but are something we explicitly want to support for the
   //    File System Access API, for names like .git.
@@ -732,7 +684,8 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
 
   const base::FilePath component = storage::StringToFilePath(name);
   // Empty names, or names that contain path separators are invalid.
-  if (component.empty() || component != component.BaseName() ||
+  if (component.empty() ||
+      component != storage::VirtualPath::BaseName(component) ||
       component != component.StripTrailingSeparators()) {
     return false;
   }
@@ -746,6 +699,20 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
     return false;
   }
 #endif
+
+  // The names of files in sandboxed file systems are obfuscated before they end
+  // up on disk (if they ever end up on disk). We don't need to worry about
+  // platform-specific restrictions. More restrictions would need to be added if
+  // we ever revisit allowing file moves across the local/sandboxed file system
+  // boundary. See https://crbug.com/1408211.
+  if (type == storage::kFileSystemTypeTemporary) {
+    // Check for both '/' and '\' as path separators, regardless of what OS
+    // we're running on.
+    return component16 != u"." && component16 != u".." &&
+           !base::Contains(component16, '/') &&
+           !base::Contains(component16, '\\');
+  }
+
   // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
   // a leading '.' before passing it to that method.
   // TODO(mek): Consider making IsFilenameLegal more flexible to support this
@@ -783,12 +750,12 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
     storage::FileSystemURL* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsSafePathComponent(basename)) {
+  const storage::FileSystemURL& parent = url();
+  if (!IsSafePathComponent(parent.type(), basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
 
-  const storage::FileSystemURL parent = url();
   *result = file_system_context()->CreateCrackedFileSystemURL(
       parent.storage_key(), parent.mount_type(),
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));

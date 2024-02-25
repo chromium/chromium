@@ -212,10 +212,10 @@ Error MapInitializeSecurityContextStatusToError(SECURITY_STATUS status) {
     case SEC_E_INSUFFICIENT_MEMORY:
       return ERR_OUT_OF_MEMORY;
     case SEC_E_UNSUPPORTED_FUNCTION:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return ERR_UNEXPECTED;
     case SEC_E_INVALID_HANDLE:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return ERR_INVALID_HANDLE;
     case SEC_E_INVALID_TOKEN:
       return ERR_INVALID_RESPONSE;
@@ -434,8 +434,7 @@ int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
 
   // Base64 encode data in output buffer and prepend the scheme.
   std::string encode_input(static_cast<char*>(out_buf), out_buf_len);
-  std::string encode_output;
-  base::Base64Encode(encode_input, &encode_output);
+  std::string encode_output = base::Base64Encode(encode_input);
   // OK, we are done with |out_buf|
   free(out_buf);
   if (scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE) {
@@ -500,7 +499,6 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
     // sequence.  If we have already initialized our security context, then
     // we're incorrectly reusing the auth handler for a new sequence.
     if (SecIsValidHandle(&ctxt_)) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return ERR_UNEXPECTED;
     }
   }

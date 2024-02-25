@@ -5,8 +5,6 @@
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 #include <zircon/rights.h>
 
 #include <utility>

@@ -64,7 +64,7 @@ class ElementAnimator {
  private:
   // The parent |AnimatedContainerView| owns both |view_| and |this| and will
   // delete |this| when |view_| is removed.
-  const raw_ptr<views::View, ExperimentalAsh> view_;
+  const raw_ptr<views::View> view_;
 };
 
 }  // namespace ash

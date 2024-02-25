@@ -66,7 +66,7 @@ void EmptyURLLoaderClient::OnReceiveEarlyHints(
 void EmptyURLLoaderClient::OnReceiveResponse(
     const mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!body)
     return;
 

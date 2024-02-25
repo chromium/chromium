@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "net/ssl/ssl_info.h"
@@ -21,8 +21,6 @@ class WebContents;
 namespace net {
 class SSLInfo;
 }
-
-class SSLCertReporter;
 
 // This class is responsible for showing/hiding the interstitial page that is
 // shown when a captive portal triggers an SSL error.
@@ -45,7 +43,6 @@ class CaptivePortalBlockingPage : public SSLBlockingPageBase {
       content::WebContents* web_contents,
       const GURL& request_url,
       const GURL& login_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool can_show_enhanced_protection_message,
       const net::SSLInfo& ssl_info,
       std::unique_ptr<

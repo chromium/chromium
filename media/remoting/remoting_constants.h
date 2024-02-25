@@ -11,9 +11,7 @@ namespace media::remoting {
 // The URL format is "media-remoting:<id>", e.g. "media-remoting:test".
 constexpr char kRemotingScheme[] = "media-remoting";
 
-// The minimum media element duration that is allowed for media remoting. Note
-// that RendererController needs at least `kPixelRateCalInSec` to calculate the
-// pixel rate before remoting can start.
+// The minimum media element duration that is allowed for media remoting.
 constexpr double kMinRemotingMediaDurationInSec = 15;
 
 // The minimum media element duration that is allowed for switching from
@@ -24,6 +22,8 @@ constexpr double kMinMediaDurationForSwitchingToRemotingInSec = 60;
 
 // The duration to wait and calculate the pixel rate of the media element and to
 // ensure that all preconditions are held stable before starting media remoting.
+// Note that RendererController needs at least `kPixelRateCalInSec` to calculate
+// the pixel rate before remoting can start.
 constexpr double kPixelRateCalInSec = 5;
 
 }  // namespace media::remoting

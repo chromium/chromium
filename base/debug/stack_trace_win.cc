@@ -17,8 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
@@ -201,8 +201,8 @@ bool InitializeSymbols() {
     return false;
   }
 
-  std::wstring new_path = StringPrintf(L"%ls;%ls", symbols_path,
-                                       GetExePath().DirName().value().c_str());
+  std::wstring new_path =
+      StrCat({symbols_path, L";", GetExePath().DirName().value()});
   if (!SymSetSearchPathW(GetCurrentProcess(), new_path.c_str())) {
     g_init_error = GetLastError();
     DLOG(WARNING) << "SymSetSearchPath failed." << g_init_error;
@@ -324,9 +324,9 @@ bool EnableInProcessStackDumping() {
   return InitializeSymbols();
 }
 
-NOINLINE size_t CollectStackTrace(void** trace, size_t count) {
+NOINLINE size_t CollectStackTrace(const void** trace, size_t count) {
   // When walking our own stack, use CaptureStackBackTrace().
-  return CaptureStackBackTrace(0, count, trace, NULL);
+  return CaptureStackBackTrace(0, count, const_cast<void**>(trace), NULL);
 }
 
 StackTrace::StackTrace(EXCEPTION_POINTERS* exception_pointers) {

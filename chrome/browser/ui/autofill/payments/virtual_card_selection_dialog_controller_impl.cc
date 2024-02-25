@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,7 +29,7 @@ VirtualCardSelectionDialogControllerImpl::
 }
 
 void VirtualCardSelectionDialogControllerImpl::ShowDialog(
-    const std::vector<CreditCard*>& candidates,
+    const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(!dialog_);
 
@@ -76,7 +77,7 @@ std::u16string VirtualCardSelectionDialogControllerImpl::GetCancelButtonLabel()
       IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CANCEL_BUTTON_LABEL);
 }
 
-const std::vector<CreditCard*>&
+const std::vector<raw_ptr<CreditCard, VectorExperimental>>&
 VirtualCardSelectionDialogControllerImpl::GetCardList() const {
   return candidates_;
 }

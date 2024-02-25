@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> ପୃଷ୍ଠାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1113173431709655881">କ୍ୟାମେରା ମୋଡ</translation>
 <translation id="1153190633558910465">ଗ୍ରିଡ ବନ୍ଦ ଅଛି</translation>
-<translation id="1175958423215084756">ଲିଙ୍କଟି ଚିହ୍ନଟ କରାଯାଇଛି। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> ପୃଷ୍ଠାଟି ଡିଲିଟ ହୋଇଯାଇଛି</translation>
 <translation id="1258009455399840361">ଘଣ୍ଟାକଣ୍ଟାର ଦିଗରେ 90 ଡିଗ୍ରୀ ଘୂରାନ୍ତୁ</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> ପୃଷ୍ଠାକୁ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">ଡାହାଣକୁ ପ୍ୟାନ୍ କରନ୍ତୁ</translation>
 <translation id="3081586908890909590">ଭିଡିଓ ରେକର୍ଡ ମୋଡ୍‍କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"ରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3240426699337459095">ଲିଙ୍କ୍ କପି ହୋଇଛି</translation>
 <translation id="3354465018370944241">ଫଟୋ ସେଟିଂସ</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">ଭିଡିଓ ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି…</translation>
 <translation id="3789724198583203151">ଘଣ୍ଟାକଣ୍ଟାର ବିପରୀତ ଦିଗରେ 90 ଡିଗ୍ରୀ ଘୂରାନ୍ତୁ</translation>
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
-<translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="4060608699153044055">ଡିଭାଇସର ଷ୍ଟୋରେଜ ସ୍ପେସ କମ୍ ଥିବା ଯୋଗୁଁ ଆପଣ ରେକର୍ଡିଂ କରିପାରିବେ ନାହିଁ। ରେକର୍ଡିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସର ସ୍ପେସ ଖାଲି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ରେକର୍ଡିଂ ବିରତ କରନ୍ତୁ</translation>
 <translation id="4121305183798804752">ଡକ୍ୟୁମେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="414641094616694804">ଏହି କ୍ୟାମେରା ରିଜୋଲ୍ୟୁସନ ବଦଳାଇପାରିବ ନାହିଁ</translation>
 <translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
-<translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="428234092390943511">ପୃଷ୍ଠା ଥମ୍ବନେଲ</translation>
 <translation id="4349714250734879769">Chrome ଦ୍ୱାରା ଫ୍ରେମଗୁଡ଼ିକୁ ସ୍କେଲ କରନ୍ତୁ</translation>
 <translation id="4383571725254449280">କାର୍ଯ୍ୟଦକ୍ଷତା ଲଗଗୁଡ଼ିକ ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">ପୂର୍ଣ୍ଣ ରିଜୋଲ୍ୟୁସନ</translation>
 <translation id="4864143361253542638">ସ୍କାନ କରାଯାଇଥିବା ପୃଷ୍ଠାର ତାଲିକା</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">ଲିଙ୍କ ଠିକଣା <ph name="URL" /> କପି କରନ୍ତୁ</translation>
 <translation id="491895758387112773">ମଲ୍ଟିଷ୍ଟ୍ରିମ୍ ଭିଡିଓ ରେକର୍ଡିଂ</translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4984613436295737187">କ୍ୱାଡ HD (1440p)</translation>
 <translation id="5034763830503483128">ଫଟୋର ଛବି ଅନୁପାତ</translation>
 <translation id="5057360777601936059">ସମ୍ପ୍ରତି, ଆପଣଙ୍କର କ୍ୟାମେରା ଉପଲବ୍ଧ ନାହିଁ।
         କ୍ୟାମେରା ଠିକ୍ ଭାବରେ ସଂଯୁକ୍ତ ଅଛି କି ନାହିଁ ଦୟାକରି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="5157591164390831335">URL ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="5163387177077603948">ଡାହାଣ ପଟକୁ ମୁଭ ହେଉଛି</translation>
-<translation id="5219374179772385066">ଟାଇମ ଲେପ୍ସ ମୋଡ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି!</translation>
 <translation id="5235304959032763950">16 ରୁ 9</translation>
 <translation id="5266635337630551423">ଡକ୍ୟୁମେଣ୍ଟର ଶୀର୍ଷ-ବାମ ପଟ କୋଣ</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
@@ -105,7 +104,7 @@
 <translation id="5869546221129391014">ଗ୍ରିଡ୍</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5975083100439434680">ଜୁମ୍ କମାନ୍ତୁ</translation>
-<translation id="5976160379964388480">ଅନ୍ୟାନ୍ୟ</translation>
+<translation id="5976160379964388480">ଅନ୍ଯ</translation>
 <translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6197807149213783179">ମେଟାଡାଟା ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="6233780560267770709">3 ଗୁଣନ 3</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">କ୍ୟାମେରା ଆପ୍ ସମ୍ବନ୍ଧରେ ମତାମତ ଦେଇଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ।
 
 ଯଦି ଆପଣଙ୍କ ମତାମତ ଛବି କିମ୍ବା ଭିଡିଓର ଗୁଣବତ୍ତା ବିଷୟରେ ହୋଇଥାଏ, ତେବେ ଦୟାକରି ଏକ ନମୁନା ଫଟୋ କିମ୍ବା ଭିଡିଓ ଆଟାଚ୍ କରନ୍ତୁ ଏବଂ କଣ ସମସ୍ୟା ହୋଇଛି ତାହା ବର୍ଣ୍ଣନା କରନ୍ତୁ। (ଉଦାହରଣ ସ୍ୱରୂପ, ଫଟୋଟି ଅତ୍ୟଧିକ ଗାଢ଼ା ଅଛି କିମ୍ବା ଫଟୋ ନିଆଯାଉଥିବା ବସ୍ତୁଟି ଉପରେ ଫୋକସ୍ କରାଯାଇ ନାହିଁ।)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />ରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6617916774429601017">ସମସ୍ତ ରିଜୋଲ୍ୟୁସନ ଦେଖାନ୍ତୁ</translation>
 <translation id="6631515515009660915">ମିରର ବନ୍ଦ ଅଛି</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
 <translation id="7488619942230388918">GIF ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7557677699350329807">ପରବର୍ତ୍ତୀ କ୍ୟାମେରାକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
+<translation id="7562584071994185503">ଟେକ୍ସଟ <ph name="TEXT" /> କପି କରନ୍ତୁ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7608223098072244877">4 ଗୁଣନ 4</translation>
 <translation id="761421184377987513">ନିମ୍ନ-ବାମ ପଟକୁ ମୁଭ ହେଉଛି</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Camera HAL ଦ୍ୱାରା ଫ୍ରେମଗୁଡ଼ିକୁ ସ୍କେଲ କରନ୍ତୁ</translation>
 <translation id="8425673304802773841">ତଳକୁ ଟିଲ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
+<translation id="8609951387004618906"><ph name="URL" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ କରିବା ବଟନକୁ ଟୋଗଲ କରନ୍ତୁ। ମ୍ୟୁଟ ଚାଲୁ ଅଛି</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8732462232047530626">ମେଟାଡାଟା ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
+<translation id="874854738381978209">ୱାଇ-ଫାଇ ନେଟୱାର୍କ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="8815966864175525708">ପୋଟ୍ରେଟ ଫଟୋ ଉଠାଇବା ପାଇଁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="8828441885228359828">ରେକର୍ଡିଂ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8870695351537079478">ରେକର୍ଡିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ଅକ୍ଷମ</translation>

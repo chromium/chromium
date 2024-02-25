@@ -93,9 +93,6 @@ class WebSocketStreamSocket final : public StreamSocket {
     return wrapped_socket_->NetLog();
   }
   bool WasEverUsed() const override { return wrapped_socket_->WasEverUsed(); }
-  bool WasAlpnNegotiated() const override {
-    return wrapped_socket_->WasAlpnNegotiated();
-  }
   NextProto GetNegotiatedProtocol() const override {
     return wrapped_socket_->GetNegotiatedProtocol();
   }
@@ -224,8 +221,7 @@ int TransportConnectSubJob::DoEndpointLockComplete() {
           net_log.source());
 
   net_log.AddEvent(NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT, [&] {
-    base::Value::Dict dict;
-    dict.Set("address", CurrentAddress().ToString());
+    auto dict = base::Value::Dict().Set("address", CurrentAddress().ToString());
     transport_socket_->NetLog().source().AddToEventParameters(dict);
     return dict;
   });

@@ -53,6 +53,8 @@ enum SetHotspotConfigResult {
   kFailedNotLogin,
   // Failed for invalid hotspot configuration.
   kFailedInvalidConfiguration,
+  // Failed due to Shill operation failure.
+  kFailedShillOperation,
 };
 
 // Status about whether Hotspot is allowed or not.
@@ -123,6 +125,12 @@ enum DisableReason {
   kSuspended,
   // Disabled because hotspot need to be restarted.
   kRestart,
+  // Disabled because the upstream network doesn't have Internet connectivity.
+  kUpstreamNoInternet,
+  // Disabled because the downstream link disconnected.
+  kDownstreamLinkDisconnect,
+  // Disabled because the downstream network disconnected.
+  kDownstreamNetworkDisconnect,
 };
 
 // Information about Hotspot feature including current state, active client
@@ -179,9 +187,8 @@ interface CrosHotspotConfigObserver {
 // HotspotEnabledStateObserver is implemented by any module that needs
 // to observe changes to the hotspot enabled state.
 interface HotspotEnabledStateObserver {
-  // Called when Hotspot is successfully turned on. `wifi_turned_off`
-  // indicates that WiFi was disabled in order to turn on Hotspot.
-  OnHotspotTurnedOn(bool wifi_turned_off);
+  // Called when Hotspot is successfully turned on.
+  OnHotspotTurnedOn();
 
   // Called when Hotspot is successfully turned off. `disable_reason`
   // indicates the reason why Hotspot was turned off.

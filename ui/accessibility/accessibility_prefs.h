@@ -6,6 +6,7 @@
 #ifndef UI_ACCESSIBILITY_ACCESSIBILITY_PREFS_H_
 #define UI_ACCESSIBILITY_ACCESSIBILITY_PREFS_H_
 
+#include "ui/accessibility/ax_base_export.h"
 #include "build/build_config.h"
 
 namespace prefs {
@@ -14,8 +15,7 @@ namespace prefs {
 #if BUILDFLAG(IS_ANDROID)
 // Whether different accessibility filtering modes for performance are allowed.
 // Exposed only to mobile Android.
-inline constexpr char kAccessibilityPerformanceFilteringAllowed[] =
-    "settings.a11y.allow_accessibility_performance_filtering";
+AX_BASE_EXPORT extern const char kAccessibilityPerformanceFilteringAllowed[];
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

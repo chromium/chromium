@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/cookie_store_factory.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -26,7 +27,6 @@ class Profile;
 
 namespace content {
 class BrowserContext;
-struct CookieStoreConfig;
 }  // namespace content
 
 namespace net {
@@ -79,7 +79,7 @@ class ChromeExtensionCookies
   // State lives on the IO thread, and operations performed there.
   class IOData {
    public:
-    IOData(std::unique_ptr<content::CookieStoreConfig> creation_config,
+    IOData(content::CookieStoreConfig creation_config,
            network::mojom::CookieManagerParamsPtr initial_mojo_cookie_settings);
 
     IOData(const IOData&) = delete;
@@ -119,7 +119,7 @@ class ChromeExtensionCookies
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
         net::FirstPartySetMetadata first_party_set_metadata);
 
-    std::unique_ptr<content::CookieStoreConfig> creation_config_;
+    content::CookieStoreConfig creation_config_;
 
     std::unique_ptr<net::CookieStore> cookie_store_;
     // Cookie blocking preferences in form RestrictedCookieManager needs.

@@ -115,12 +115,13 @@ TEST_F(LayoutObjectTest, CommonAncestor) {
 
 TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {
   SetBodyInnerHTML("<div id='div' style='position: fixed'>test</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   DCHECK(div);
   LayoutObject* obj = div->GetLayoutObject();
   DCHECK(obj);
-  EXPECT_THAT(obj->DecoratedName().Ascii(),
-              MatchesRegex("LayoutN?G?BlockFlow \\(positioned\\)"));
+  EXPECT_THAT(
+      obj->DecoratedName().Ascii(),
+      MatchesRegex("LayoutN?G?BlockFlow \\(positioned, children-inline\\)"));
 }
 
 // Some display checks.
@@ -270,7 +271,7 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
     </style>
     <div id=target class=cv></div>
   )HTML");
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainAllWithoutContentVisibility));
@@ -713,7 +714,7 @@ TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterPunctuations) {
       "<style>p:first-letter {color:red;}</style><p id=sample>(a)bc</p>";
   SetBodyInnerHTML(body_content);
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   const auto* layout_object0 =
@@ -742,7 +743,7 @@ TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterSplit) {
       "<style>p:first-letter {color:red;}</style><p id=sample>abc</p>";
   SetBodyInnerHTML(body_content);
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* first_letter = sample->firstChild();
   // Split "abc" into "a" "bc"
   To<Text>(first_letter)->splitText(1, ASSERT_NO_EXCEPTION);
@@ -771,7 +772,7 @@ TEST_F(LayoutObjectTest,
   )HTML";
   SetBodyInnerHTML(body_content);
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   const auto* layout_object0 =
@@ -825,7 +826,7 @@ TEST_F(LayoutObjectTest, VisualRect) {
 
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents;color:pink'>A</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   Node* text = div->firstChild();
   ASSERT_TRUE(text);
@@ -834,7 +835,7 @@ TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
 
 TEST_F(LayoutObjectTest, DisplayContentsNoInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents'>A</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   Node* text = div->firstChild();
   ASSERT_TRUE(text);
@@ -843,7 +844,7 @@ TEST_F(LayoutObjectTest, DisplayContentsNoInlineWrapper) {
 
 TEST_F(LayoutObjectTest, DisplayContentsAddInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents'>A</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   Node* text = div->firstChild();
   ASSERT_TRUE(text);
@@ -856,7 +857,7 @@ TEST_F(LayoutObjectTest, DisplayContentsAddInlineWrapper) {
 
 TEST_F(LayoutObjectTest, DisplayContentsRemoveInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents;color:pink'>A</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   Node* text = div->firstChild();
   ASSERT_TRUE(text);
@@ -874,7 +875,7 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperPerTextNode) {
   // and merge wrappers when text nodes become layout tree siblings.
   SetBodyInnerHTML(
       "<div id='div' style='display:contents;color:pink'>A<!-- -->B</div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   Node* text1 = div->firstChild();
   ASSERT_TRUE(text1);
@@ -897,8 +898,8 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTable) {
     </div>
   )HTML");
 
-  Element* none = GetDocument().getElementById(AtomicString("none"));
-  Element* contents = GetDocument().getElementById(AtomicString("contents"));
+  Element* none = GetElementById("none");
+  Element* contents = GetElementById("contents");
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
@@ -923,8 +924,8 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableSection) {
     </div>
   )HTML");
 
-  Element* none = GetDocument().getElementById(AtomicString("none"));
-  Element* contents = GetDocument().getElementById(AtomicString("contents"));
+  Element* none = GetElementById("none");
+  Element* contents = GetElementById("contents");
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
@@ -949,8 +950,8 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableRow) {
     </div>
   )HTML");
 
-  Element* none = GetDocument().getElementById(AtomicString("none"));
-  Element* contents = GetDocument().getElementById(AtomicString("contents"));
+  Element* none = GetElementById("none");
+  Element* contents = GetElementById("contents");
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
@@ -975,9 +976,9 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableCell) {
     </div>
   )HTML");
 
-  Element* cell = GetDocument().getElementById(AtomicString("cell"));
-  Element* none = GetDocument().getElementById(AtomicString("none"));
-  Element* contents = GetDocument().getElementById(AtomicString("contents"));
+  Element* cell = GetElementById("cell");
+  Element* none = GetElementById("none");
+  Element* contents = GetElementById("contents");
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
@@ -1006,8 +1007,9 @@ lime'>
   StringBuilder result;
   block->DumpLayoutObject(result, false, 0);
   EXPECT_THAT(result.ToString().Utf8(),
-              MatchesRegex("LayoutN?G?BlockFlow\tDIV id=\"block\" "
-                           "style=\"background:\\\\nlime\""));
+              MatchesRegex(
+                  "LayoutN?G?BlockFlow \\(children-inline\\)\tDIV id=\"block\" "
+                  "style=\"background:\\\\nlime\""));
 
   result.Clear();
   text->DumpLayoutObject(result, false, 0);
@@ -1025,7 +1027,7 @@ TEST_F(LayoutObjectTest, DisplayContentsSVGGElementInHTML) {
     <span id=span></span>
   )HTML");
 
-  Element* span = GetDocument().getElementById(AtomicString("span"));
+  Element* span = GetElementById("span");
   auto* svg_element = MakeGarbageCollected<SVGGElement>(GetDocument());
   Text* text = Text::Create(GetDocument(), "text");
   svg_element->appendChild(text);
@@ -1052,27 +1054,27 @@ TEST_F(LayoutObjectTest, HasDistortingVisualEffects) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* outer = GetDocument().getElementById(AtomicString("opaque"));
+  Element* outer = GetElementById("opaque");
   Element* inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_FALSE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
-  outer = GetDocument().getElementById(AtomicString("transparent"));
+  outer = GetElementById("transparent");
   inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
-  outer = GetDocument().getElementById(AtomicString("blurred"));
+  outer = GetElementById("blurred");
   inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
-  outer = GetDocument().getElementById(AtomicString("blended"));
+  outer = GetElementById("blended");
   inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
-  outer = GetDocument().getElementById(AtomicString("good-transform"));
+  outer = GetElementById("good-transform");
   inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_FALSE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
-  outer = GetDocument().getElementById(AtomicString("bad-transform"));
+  outer = GetElementById("bad-transform");
   inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 }
@@ -1087,7 +1089,7 @@ TEST_F(LayoutObjectTest, DistortingVisualEffectsUnaliases) {
     </div>
   )HTML");
 
-  const auto* child = GetDocument().getElementById(AtomicString("child"));
+  const auto* child = GetElementById("child");
   const auto* object = child->GetLayoutObject();
   // This should pass and not DCHECK if the nodes are unaliased correctly.
   EXPECT_TRUE(object->HasDistortingVisualEffects());
@@ -1110,11 +1112,11 @@ TEST_F(LayoutObjectTest, UpdateVisualRectAfterAncestorLayout) {
     </div>
   )HTML");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   target->setAttribute(html_names::kStyleAttr, AtomicString("height: 300px"));
   UpdateAllLifecyclePhasesForTest();
   const auto* container = GetLayoutBoxByElementId("ancestor");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 300), container->VisualOverflowRect());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 300), container->VisualOverflowRect());
 }
 
 class LayoutObjectSimTest : public SimTest {
@@ -1301,13 +1303,10 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageAddBlockBackgroundImageCrash) {
 
   // The following code should not crash due to incorrectly paired
   // StyleImage::AddClient() and RemoveClient().
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(
-          html_names::kStyleAttr,
-          AtomicString(
-              "background-image: url(data:image/gif;base64,"
-              "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"));
+  GetElementById("target")->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("background-image: url(data:image/gif;base64,"
+                   "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -1322,17 +1321,15 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageChangeStyleCrash) {
   )HTML");
 
   // These should not crash.
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("color: blue"));
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("color: blue"));
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("display: none"));
   UpdateAllLifecyclePhasesForTest();
 
-  auto* style_element = GetDocument().getElementById(AtomicString("style"));
+  auto* style_element = GetElementById("style");
   style_element->setTextContent(style_element->textContent() + "dummy");
   UpdateAllLifecyclePhasesForTest();
 }
@@ -1385,7 +1382,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImageDirtyStyleCrash) {
   EXPECT_TRUE(target_object->ShouldDoFullPaintInvalidation());
 }
 
-TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
+TEST_F(LayoutObjectTest, NeedsScrollableOverflowRecalc) {
   SetBodyInnerHTML(R"HTML(
     <div id='wrapper'>
       <div id='target'>foo</div>
@@ -1401,17 +1398,17 @@ TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
   DCHECK(target);
   DCHECK(other);
 
-  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(wrapper->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(target->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(other->NeedsScrollableOverflowRecalc());
 
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
   target_element->setInnerHTML("baz");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
-  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(wrapper->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(target->NeedsScrollableOverflowRecalc());
+  EXPECT_FALSE(other->NeedsScrollableOverflowRecalc());
 }
 
 TEST_F(LayoutObjectTest, ContainValueIsRelayoutBoundary) {
@@ -1448,7 +1445,7 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
 
   gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
   EXPECT_EQ(0, decomp->perspective[2]);
 }
@@ -1468,7 +1465,7 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
 
   gfx::Transform transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
   EXPECT_EQ(-0.01, decomp->perspective[2]);
 }
@@ -1591,7 +1588,7 @@ TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgText) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* text = GetLayoutObjectByElementId("text");
-  if (text->IsNGSVGText()) {
+  if (text->IsSVGText()) {
     text->SetNeedsCollectInlines();
     EXPECT_TRUE(GetLayoutObjectByElementId("ancestor")->NeedsCollectInlines());
   }
@@ -1619,13 +1616,13 @@ TEST_F(LayoutObjectTest, RemovePendingTransformUpdatesCorrectly) {
   </div>
       )HTML");
 
-  auto* div2 = GetDocument().getElementById(AtomicString("div2"));
+  auto* div2 = GetElementById("div2");
   div2->setAttribute(html_names::kStyleAttr,
                      AtomicString("transform: translateX(200px)"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
-  auto* div1 = GetDocument().getElementById(AtomicString("div1"));
+  auto* div1 = GetElementById("div1");
   div1->setAttribute(html_names::kStyleAttr,
                      AtomicString("transform: translateX(200px)"));
   div2->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
@@ -1647,7 +1644,7 @@ TEST_F(LayoutObjectTestWithCompositing,
     </div>
   )HTML");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
 
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformsWith3D[0]));
@@ -1676,7 +1673,7 @@ TEST_F(LayoutObjectTestWithCompositing,
     </div>
   )HTML");
 
-  target = GetDocument().getElementById(AtomicString("target"));
+  target = GetElementById("target");
 
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString(kTransformWithout3D));

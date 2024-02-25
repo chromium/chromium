@@ -1,7 +1,9 @@
 include_rules = [
+  "+components/affiliations/core/browser",
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/autofill/ios/browser",
+  "+components/autofill/ios/common",
   "+components/autofill/ios/form_util",
   "+components/bookmarks",
   "+components/breadcrumbs/core",
@@ -12,11 +14,11 @@ include_rules = [
   "+components/commerce/ios",
   "+components/component_updater",
   "+components/content_settings/core",
-  "+components/cookie_config",
   "+components/country_codes",
   "+components/crash/core/app",
   "+components/crash/core/browser",
   "+components/crash/core/common",
+  "+components/device_reauth",
   "+components/dom_distiller/core",
   "+components/download",
   "+components/dom_distiller/ios",
@@ -68,6 +70,7 @@ include_rules = [
   "+components/password_manager/ios",
   "+components/payments/core",
   "+components/payments/mojom",
+  "+components/plus_addresses",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/policy_constants.h",
@@ -165,7 +168,9 @@ include_rules = [
   "-ios/chrome/browser",
 
   # Shared dependencies.
+  "+ios/chrome/browser/shared/coordinator",
   "+ios/chrome/browser/shared/model",
+  "+ios/chrome/browser/shared/ui",
   "+ios/chrome/browser/shared/public",
 
   # ios/chrome/browser should not depend on ios/chrome/browser/ui except
@@ -177,6 +182,8 @@ include_rules = [
   # For tests.
   "+ios/chrome/test",
   "+ios/public/test",
+  ## Use ios/chrome/test/earl_grey/chrome_earl_grey.h instead
+  "-ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h",
 
   # Strings and resources.
   "+components/grit",
@@ -190,6 +197,8 @@ specific_include_rules = {
     # TODO(crbug.com/1294160): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
+    # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead
+    "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
     # Blanket exception for tests to be allowed to depend on everything.
     "+ios/chrome/browser",
   ],

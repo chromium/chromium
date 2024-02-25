@@ -14,11 +14,14 @@
 #include "base/callback_list.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/id_map.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
@@ -51,7 +54,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -97,7 +99,6 @@ class Origin;
 
 namespace content {
 class BrowserContext;
-class BrowserMessageFilter;
 class BucketContext;
 class IsolationContext;
 class ProcessLock;
@@ -110,6 +111,9 @@ struct GlobalRenderFrameHostId;
 #if BUILDFLAG(IS_ANDROID)
 enum class ChildProcessImportance;
 #endif
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+class BrowserMessageFilter;
+#endif
 
 namespace mojom {
 class Renderer;
@@ -121,6 +125,10 @@ class Renderer;
 class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                          public IPC::Listener,
                                          public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using iterator = base::IDMap<RenderProcessHost*>::iterator;
 
@@ -297,11 +305,19 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // still return an invalid process with a null handle.
   virtual bool IsInitializedAndNotDead() = 0;
 
+  // Returns true iff the decision has been made to delete `this`.
+  //
+  // If this returns true, then no new child processes will be associated
+  // with `this`.
+  virtual bool IsDeletingSoon() = 0;
+
   // Returns the renderer channel.
   virtual IPC::ChannelProxy* GetChannel() = 0;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Adds a message filter to the IPC channel.
   virtual void AddFilter(BrowserMessageFilter* filter) = 0;
+#endif
 
   // Sets whether this render process is blocked. This means that input events
   // should not be sent to it, nor other timely signs of life expected from it.
@@ -467,7 +483,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Calls |on_frame| for every RenderFrameHost whose frames live in this
   // process. Note that speculative RenderFrameHosts will be skipped.
   virtual void ForEachRenderFrameHost(
-      base::RepeatingCallback<void(RenderFrameHost*)> on_frame) = 0;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
   // Register/unregister a RenderFrameHost instance whose frame lives in this
   // process. RegisterRenderFrameHost and UnregisterRenderFrameHost are the
@@ -536,16 +552,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // MockRenderProcessHost usage in tests.
   virtual mojom::Renderer* GetRendererInterface() = 0;
 
-  // Create an URLLoaderFactory from |this| renderer process.
-  //
-  // This method will bind |receiver| with a new URLLoaderFactory created from
-  // the storage partition's Network Context. Note that the URLLoaderFactory
-  // returned by this method does NOT support auto-reconnect after a crash of
-  // Network Service.
-  virtual void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) = 0;
-
   // Whether this process is locked out from ever being reused for sites other
   // than the ones it currently has.
   virtual bool MayReuseHost() = 0;
@@ -571,6 +577,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // TODO(alexmos): can this be unified with IsUnused()? See also
   // crbug.com/738634.
   virtual bool HostHasNotBeenUsed() = 0;
+
+  // Returns true if this is a spare RenderProcessHost.
+  virtual bool IsSpare() const = 0;
 
   // Locks this RenderProcessHost to documents compatible with |process_lock|.
   // This method is public so that it can be called from within //content, and
@@ -696,6 +705,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // workers. Once Permissions Policy applies to workers, a worker-specific
   // API to access isolation capability may need to be introduced which should
   // be used instead of this.
+  //
+  // Note that this function doesn't account for API availability for certain
+  // documents and URLs that might be force-enabled by the embedder even if they
+  // lack the necessary privilege; in order for this matter to be taken into
+  // consideration, use content::IsIsolatedContext(RenderProcessHost*).
   WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready
@@ -732,12 +746,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
 
-  // Sets whether web or OS-level Attribution Reporting is supported. This may
-  // be called if the renderer process was created before the Measurement API
-  // state is returned from the underlying platform. See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport) = 0;
+  // Asks the renderer process to prioritize energy efficiency because the
+  // embedder is in battery saver mode. This signal is propagated to blink and
+  // v8. The default state is `false`, meaning the power/speed tuning is left up
+  // to the different components to figure out.
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
 
   // Static management functions -----------------------------------------------
 
@@ -762,6 +775,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Return the spare RenderProcessHost, if it exists. There is at most one
   // globally-used spare RenderProcessHost at any time.
+  // TODO(crbug.com/1519190): remove the non-test method once the performance
+  // investigation is finished.
+  static RenderProcessHost* GetSpareRenderProcessHost();
   static RenderProcessHost* GetSpareRenderProcessHostForTesting();
 
   // Registers a callback to be notified when the spare RenderProcessHost is

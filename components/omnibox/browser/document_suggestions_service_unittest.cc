@@ -4,13 +4,15 @@
 
 #include "components/omnibox/browser/document_suggestions_service.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,7 +29,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -88,6 +89,23 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
         std::string variation = variations::VariationsIdsProvider::GetInstance()
                                     ->GetVariationsString();
         EXPECT_EQ(variation, " " + base::NumberToString(kVariationID) + " ");
+      }));
+
+  document_suggestions_service_->CreateDocumentSuggestionsRequest(
+      u"", false, base::BindOnce(OnDocumentSuggestionsRequestAvailable),
+      base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
+      base::BindOnce(OnURLLoadComplete));
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([](const network::ResourceRequest& request) {
+        EXPECT_TRUE(
+            request.site_for_cookies.IsEquivalent(net::SiteForCookies::FromUrl(
+                GURL("https://cloudsearch.googleapis.com"))))
+            << request.site_for_cookies.ToDebugString();
       }));
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(

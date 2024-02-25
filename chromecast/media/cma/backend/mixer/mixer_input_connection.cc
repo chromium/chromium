@@ -11,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -35,7 +36,6 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/filters/audio_renderer_algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -327,7 +327,7 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
   const int num_channels_;
   const int sample_rate_;
 
-  absl::optional<int> pending_silence_;
+  std::optional<int> pending_silence_;
   FaderProvider fader_provider_;
   AudioFader fader_;
   bool after_silence_ = true;

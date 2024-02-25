@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -57,7 +58,7 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
   if (length.IsPercent()) {
     std::swap(unit_dimension, ref_dimension);
   }
-  return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
+  return FloatValueForLength(length, unit_dimension) * ref_dimension;
 }
 
 }  // namespace
@@ -161,12 +162,10 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   // If this is the 'active' resource (the first element with the specified 'id'
   // in tree order), notify any clients that they need to reevaluate the
   // resource's contents.
-  const LocalSVGResource* resource = ResourceForContainer(*this);
+  LocalSVGResource* resource = ResourceForContainer(*this);
   if (!resource || resource->Target() != GetElement())
     return;
-  // Pass all available flags. This may be performing unnecessary invalidations
-  // in some cases.
-  MarkAllClientsForInvalidation(kInvalidateAll);
+  GetDocument().ScheduleSVGResourceInvalidation(*resource);
 }
 
 void LayoutSVGResourceContainer::WillBeDestroyed() {
@@ -224,19 +223,35 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
     const LayoutObject& layout_object) {
   if (!layout_object.IsSVG() || layout_object.IsText())
     return false;
-  SVGResourceClient* client = SVGResources::GetClient(layout_object);
   // Without an associated client, we will not reference any resources.
-  if (!client)
-    return false;
-  // Fetch all the referenced resources.
-  HeapVector<Member<SVGResource>> resources = CollectResources(layout_object);
-  // This performs a depth-first search for a back-edge in all the
-  // (potentially disjoint) graphs formed by the referenced resources.
-  for (const auto& local_resource : resources) {
-    // The resource can be null if the reference is external but external
-    // references are not allowed.
-    if (local_resource && local_resource->FindCycle(*client))
-      return true;
+  if (SVGResourceClient* client = SVGResources::GetClient(layout_object)) {
+    // Fetch all the referenced resources.
+    HeapVector<Member<SVGResource>> resources = CollectResources(layout_object);
+    // This performs a depth-first search for a back-edge in all the
+    // (potentially disjoint) graphs formed by the referenced resources.
+    for (const auto& local_resource : resources) {
+      // The resource can be null if the reference is external but external
+      // references are not allowed.
+      if (local_resource && local_resource->FindCycle(*client)) {
+        return true;
+      }
+    }
+  }
+  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
+         layer = layer->Next()) {
+      const auto* mask_source =
+          DynamicTo<StyleMaskSourceImage>(layer->GetImage());
+      if (!mask_source) {
+        continue;
+      }
+      const SVGResource* svg_resource = mask_source->GetSVGResource();
+      SVGResourceClient* client =
+          mask_source->GetSVGResourceClient(layout_object);
+      if (svg_resource && svg_resource->FindCycle(*client)) {
+        return true;
+      }
+    }
   }
   return false;
 }

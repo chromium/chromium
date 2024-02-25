@@ -22,6 +22,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/search_engines/template_url.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 

@@ -19,7 +19,7 @@ TEST(LacrosUrlHandlingTest, IsURLAcceptedByAsh) {
   auto params = crosapi::mojom::BrowserInitParams::New();
   params->accepted_internal_ash_urls = std::vector<GURL>{
       GURL(chrome::kChromeUIFlagsURL), GURL(chrome::kChromeUIOSSettingsURL),
-      GURL("chrome://version"), GURL("chrome://settings/network")};
+      GURL("chrome://version"), GURL("chrome://settings")};
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
   EXPECT_TRUE(lacros_url_handling::IsUrlAcceptedByAsh(
       GURL(chrome::kChromeUIOSSettingsURL)));

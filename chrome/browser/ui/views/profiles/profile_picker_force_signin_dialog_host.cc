@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"

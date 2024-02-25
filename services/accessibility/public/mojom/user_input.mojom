@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "ui/events/mojom/event.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The mouse button being simulated.
+enum SyntheticMouseEventButton {
+  kLeft,
+  kMiddle,
+  kRight,
+  kBack,
+  kForward,
+};
+
+// Represents a synthetic key event.
+struct SyntheticKeyEvent {
+  // The type of key event, either key press or key release.
+  ui.mojom.EventType type;
+
+  // The key code for the key event.
+  ui.mojom.KeyData key_data;
+
+  // Any modifier keys that are held down.
+  int32 flags;
+};
+
+// Represents a synthetic mouse event.
+struct SyntheticMouseEvent {
+  // What type of event it is (drag, click, etc).
+  ui.mojom.EventType type;
+
+  // The point on-screen for the event, in global screen coordinates.
+  gfx.mojom.Point point;
+
+  // What mouse button is being pressed. Defaults to left.
+  SyntheticMouseEventButton? mouse_button;
+
+  // Whether touchAccessibility is enabled. Used when ChromeVox is in touch explore mode.
+  bool? touch_accessibility;
+};
+
+// Provides a means of synthetic user input. Implemented in the main OS browser
+// process and called from Accessibility Service javascript in V8.
+interface UserInput {
+  // Synthetic key events are only used for simulated keyboard navigation, and
+  // do not support internationalization. Any text entry should be done via IME.
+  SendSyntheticKeyEventForShortcutOrNavigation(SyntheticKeyEvent key_event);
+
+  // Sends a synthetic mouse event. Can be received by any surface, including native UI, webui,
+  // and web contents. Used for altnernative user input methods, needed to access the device
+  // system-wide.
+  SendSyntheticMouseEvent(SyntheticMouseEvent mouse_event);
+};

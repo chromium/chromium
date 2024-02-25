@@ -25,25 +25,18 @@ struct AnchorElementMetrics {
   // OOPIFs, this is not a concern at this point.
   uint32 anchor_id;
 
-  // The ratio between the absolute/visible clickable region area of an anchor
-  // element, and the viewport area. The values are capped at 1.
+  // The ratio between the absolute clickable region area of an anchor
+  // element, and the viewport area. The value is capped at 1.
   float ratio_area;
-  float ratio_visible_area;
 
-  // The distance between the top/center of the clickable region of an anchor
+  // The distance between the top of the clickable region of an anchor
   // element and the top edge of the visible region, divided by the viewport
   // height.
   float ratio_distance_top_to_visible_top;
-  float ratio_distance_center_to_visible_top;
 
   // The distance between the top of the clickable region of an anchor element
   // and the top edge of the root frame, divided by the viewport height.
   float ratio_distance_root_top;
-
-  // The distance between the bottom of the clickable region of an anchor
-  // element and the bottom edge of the root frame, divided by the viewport
-  // height.
-  float ratio_distance_root_bottom;
 
   // Whether the anchor element is within an iframe.
   bool is_in_iframe;
@@ -68,10 +61,9 @@ struct AnchorElementMetrics {
   // The font weight of the anchor element according to its computed style.
   uint32 font_weight;
 
-  // The source URL of the root document and the target URL (href) specified by
-  // the anchor element. URLs sent from a renderer process are not trusted,
-  // however it is intended here since it is only used for metrics calculation.
-  url.mojom.Url source_url;
+  // The target URL (href) specified by the anchor element. URLs sent from a
+  // renderer process are not trusted, however it is intended here since it
+  // is only used for metrics calculation.
   url.mojom.Url target_url;
 
   // The size of the viewport at the time the anchor element was created.
@@ -133,6 +125,27 @@ struct AnchorElementPointerOut {
   mojo_base.mojom.TimeDelta hover_dwell_time;
 };
 
+// Represents different user interaction types used for computing preloading ML
+// model inputs..
+enum AnchorElementUserInteractionEventForMLModelType {
+  kPointerOver,
+  kPointerOut,
+  kEnteredViewport,
+  kLeftViewport,
+  kUnknown,
+};
+
+struct AnchorElementPointerEventForMLModel {
+  // The ID of the anchor that pointer hovered over it.
+  uint32 anchor_id;
+
+  // Whether the point event triggered by mouse or not.
+  bool is_mouse;
+
+  // User interaction event type.
+  AnchorElementUserInteractionEventForMLModelType user_interaction_event_type;
+};
+
 struct AnchorElementPointerDown {
   // The ID of the anchor that pointer down event happened over it.
   uint32 anchor_id;
@@ -142,12 +155,17 @@ struct AnchorElementPointerDown {
   mojo_base.mojom.TimeDelta navigation_start_to_pointer_down;
 };
 
+// TODO(isaboori): It's better to move the methods that are called for all
+// anchor elements and not just the down-sampled ones to a new
+// `AnchorElementInteractionHost` interface.
+
 // An interface to pass descriptive information about anchor elements from
 // the renderer process to the implementation of this interface living in the
 // browser process.
 interface AnchorElementMetricsHost {
   // This is called when an anchor element is clicked. The renderer extracts and
   // sends |metrics| of the clicked anchor element.
+  // This is called for all anchor elements.
   ReportAnchorElementClick(AnchorElementClick clicked);
 
   // At each layout, HTMLAnchorElements that have been newly created (since the
@@ -157,6 +175,7 @@ interface AnchorElementMetricsHost {
   // element. New HTMLAnchorElements that are not visible after the first layout
   // since their creation will never be reported. This is not ideal, but allows
   // us to avoid keeping references to elements that may never become visible.
+  // This is called for all anchor elements.
   ReportNewAnchorElements(array<AnchorElementMetrics> metrics);
 
   // This is called regularly to report anchors that entered the viewport. This
@@ -166,6 +185,7 @@ interface AnchorElementMetricsHost {
   // previously been reported by ReportNewAnchorElements (e.g. because they were
   // not visible following the first layout after the HTMLAnchorElement was
   // created).
+  // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementsEnteredViewport(
     array<AnchorElementEnteredViewport> elements);
 
@@ -173,18 +193,34 @@ interface AnchorElementMetricsHost {
   // just reports the ID of each element leaving the viewport. These records
   // can be joined with the metrics reported by
   // |ReportAnchorElementsEnteredViewport|.
+  // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementsLeftViewport(array<AnchorElementLeftViewport> elements);
 
   // This is called whenever the pointer starts hovering over anchor element.
+  // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementPointerOver(AnchorElementPointerOver pointer_over_event);
 
   // This is called whenever pointer stops hovering over the anchor element.
+  // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementPointerOut(AnchorElementPointerOut hover_event);
 
   // This is called whenever pointer down event happens over the anchor element.
+  // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementPointerDown(AnchorElementPointerDown pointer_down_event);
 
   // This is called whenever the on-hover timer for the anchor element is fired.
+  // This is called for all anchor elements.
   ReportAnchorElementPointerDataOnHoverTimerFired(
     AnchorElementPointerDataOnHoverTimerFired pointer_data);
+
+  // This is called whenever a pointer event is triggered and intended to be
+  // used by the preloading heuristics ML model.
+  // This is called for all anchor elements.
+  ProcessPointerEventUsingMLModel(
+    AnchorElementPointerEventForMLModel pointer_event);
+
+  // Asks the browser whether to send subsequent updates immediately
+  // instead of rate limiting.
+  // Skipping the delays is only expected to be done for testing.
+  ShouldSkipUpdateDelays() => (bool should_skip_for_testing);
 };

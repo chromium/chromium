@@ -33,6 +33,8 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
+  const gfx::VectorIcon& GetIcon(bool on_icon) const override;
+  std::u16string GetPlaceholderFeatureName() const override;
 
   void set_is_enabled(bool enabled) { is_enabled_ = enabled; }
 

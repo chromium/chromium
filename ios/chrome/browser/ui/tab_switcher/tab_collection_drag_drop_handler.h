@@ -7,20 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabSwitcherItem;
+
 // A protocol for objects that handle drag and drop interactions for a
 // collection view involving the model layer.
 @protocol TabCollectionDragDropHandler
 
 // Returns a drag item encapsulating all necessary information to perform
-// valid drop operations. Note that this drag item may be dropped anywhere,
-// including within the same collection, another view, or other apps. `itemID`
-// uniquely identifies a single item in the model layer known to the object
-// conforming to this protocol.
-- (UIDragItem*)dragItemForItemWithID:(NSString*)itemID;
+// valid drop operations for the given `item`.
+// Note that this drag item may be dropped anywhere,
+// including within the same collection, another view, or other apps.
+- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item;
 
-// Tells the receiver that the drag session will begin for the item with
-// `itemID`.
-- (void)dragWillBeginForItemWithID:(NSString*)itemID;
+// Tells the receiver that the drag session will begin for the `item`.
+- (void)dragWillBeginForItem:(TabSwitcherItem*)item;
 
 // Tells the receiver that the drag session did end.
 - (void)dragSessionDidEnd;
@@ -46,6 +46,10 @@
                      toIndex:(NSUInteger)destinationIndex
           placeholderContext:
               (id<UICollectionViewDropPlaceholderContext>)placeholderContext;
+
+// Returns the drag items list of selected element in selection mode. Selection
+// mode is only supported for incognito and regular grids.
+- (NSArray<UIDragItem*>*)allSelectedDragItems;
 
 @end
 

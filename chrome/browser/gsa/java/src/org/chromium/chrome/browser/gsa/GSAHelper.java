@@ -13,24 +13,21 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-/**
- * Helper class that triggers integration methods with GSA.
- */
+/** Helper class that triggers integration methods with GSA. */
 public class GSAHelper {
     /**
      * Returns A {@link ContextReporter} instance that handles reporting context to GSA. Might
      * return null.
      */
     @SuppressWarnings("unused")
-    public @Nullable ContextReporter getContextReporter(Supplier<Tab> tabSupplier,
+    public @Nullable ContextReporter getContextReporter(
+            Supplier<Tab> tabSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             ContextReporter.SelectionReporter controller) {
         return null;
     }
 
-    /**
-     * Starts syncing with local indexing service.
-     */
+    /** Starts syncing with local indexing service. */
     public void startSync() {}
 
     /**

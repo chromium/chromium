@@ -49,7 +49,8 @@ class TestContinueSectionSearchResult : public ChromeSearchResult {
 
 TestContinueFilesSearchProvider::TestContinueFilesSearchProvider(
     bool for_drive_files)
-    : for_drive_files_(for_drive_files) {}
+    : SearchProvider(SearchCategory::kTest),
+      for_drive_files_(for_drive_files) {}
 
 TestContinueFilesSearchProvider::~TestContinueFilesSearchProvider() = default;
 

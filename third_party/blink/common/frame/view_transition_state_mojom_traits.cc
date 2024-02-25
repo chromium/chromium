@@ -21,14 +21,13 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
           &out->overflow_rect_in_layout_space) ||
       !data.ReadSnapshotId(&out->snapshot_id) ||
       !data.ReadCapturedRectInLayoutSpace(
-          &out->captured_rect_in_layout_space)) {
+          &out->captured_rect_in_layout_space) ||
+      !data.ReadCapturedCssProperties(&out->captured_css_properties) ||
+      !data.ReadClassList(&out->class_list)) {
     return false;
   }
 
   out->paint_order = data.paint_order();
-  out->container_writing_mode = data.container_writing_mode();
-  out->mix_blend_mode = data.mix_blend_mode();
-  out->text_orientation = data.text_orientation();
   return true;
 }
 

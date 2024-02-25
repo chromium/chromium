@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/shell.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -17,7 +19,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -26,7 +28,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -46,11 +48,17 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
+
+BASE_FEATURE(kExoDisableBeginFrameAcks,
+             "ExoDisableBeginFrameAcks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -93,7 +101,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  const raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
+  const raw_ptr<SurfaceTreeHost> surface_tree_host_;
 };
 
 }  // namespace
@@ -116,9 +124,10 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name,
   InitHostWindow(window_name);
   context_provider_ = aura::Env::GetInstance()
                           ->context_factory()
-                          ->SharedMainThreadContextProvider();
+                          ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
+  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
@@ -132,7 +141,8 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   if (frame_sink_id_.is_valid()) {
     auto* context_factory = aura::Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
-    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_);
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_,
+                                                   host_window());
   }
 }
 
@@ -148,6 +158,8 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   if (root_surface_) {
     root_surface_->window()->Hide();
     host_window_->RemoveChild(root_surface_->window());
+    viz::ScopedSurfaceIdAllocator scoped_suppression =
+        host_window()->GetSurfaceIdAllocator(base::NullCallback());
     host_window_->SetBounds(
         gfx::Rect(host_window_->bounds().origin(), gfx::Size()));
     AllocateLocalSurfaceId();
@@ -170,7 +182,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
       SetScaleFactorTransform(GetScaleFactor());
     }
     host_window_->AddChild(root_surface_->window());
-    UpdateHostWindowSizeAndRootSurfaceOrigin();
+    UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
   }
   set_bounds_is_dirty(true);
 }
@@ -235,7 +247,7 @@ void SurfaceTreeHost::SetLayerTreeFrameSinkHolderFactoryForTesting(
 
 void SurfaceTreeHost::OnSurfaceCommit() {
   root_surface_->CommitSurfaceHierarchy(false);
-  UpdateHostWindowSizeAndRootSurfaceOrigin();
+  UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
 }
 
 bool SurfaceTreeHost::IsSurfaceSynchronized() const {
@@ -258,12 +270,20 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// display::DisplayObserver:
-void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
-                                              uint32_t changed_metrics) {
+// display::DisplayManagerObserver:
+
+void SurfaceTreeHost::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_PRIMARY)
+  const bool primary_changed = base::ranges::any_of(
+      configuration_change.display_metrics_changes,
+      [](const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.changed_metrics &
+               display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
+      });
+  if (primary_changed) {
     UpdateDisplayOnTree();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,15 +303,15 @@ void SurfaceTreeHost::OnContextLost() {
 void SurfaceTreeHost::UpdateDisplayOnTree() {
   auto display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
-  if (display_id_ != display.id()) {
+  if (output_display_id_ != display.id()) {
     if (root_surface_) {
-      if (root_surface_->UpdateDisplay(display_id_, display.id())) {
-        display_id_ = display.id();
+      if (root_surface_->UpdateDisplay(output_display_id_, display.id())) {
+        output_display_id_ = display.id();
       } else {
         // The surface failed to update to the new display.
         // Invalidate cached display id, so the surface always gets updated
         // next time, even when it gets updated back to the previous display.
-        display_id_ = display::kInvalidDisplayId;
+        output_display_id_ = display::kInvalidDisplayId;
       }
     }
   }
@@ -319,6 +339,21 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
         << ", StartupId=" << (startup_id ? *startup_id : "''");
   }
 
+  const int64_t frame_trace_id = root_surface_->GetFrameTraceId();
+  if (frame_trace_id != -1) {
+    frame.metadata.begin_frame_ack.trace_id = frame_trace_id;
+    TRACE_EVENT_INSTANT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(frame_trace_id),
+        [frame_trace_id](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME);
+          data->set_display_trace_id(frame_trace_id);
+        });
+  }
+
   std::list<Surface::FrameCallback> current_frame_callbacks;
   PresentationCallbacks presentation_callbacks;
   root_surface_->AppendSurfaceHierarchyCallbacks(&current_frame_callbacks,
@@ -333,37 +368,43 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
       std::move(presentation_callbacks);
 
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
-      gfx::PointF(root_surface_origin_),
+      gfx::PointF(root_surface_origin_pixel_), /*to_parent_dp=*/gfx::PointF(),
       layer_tree_frame_sink_holder_->NeedsFullDamageForNextFrame(),
       layer_tree_frame_sink_holder_->resource_manager(),
       client_submits_surfaces_in_pixel_coordinates()
-          ? absl::nullopt
-          : absl::make_optional(GetScaleFactor()),
+          ? std::nullopt
+          : std::make_optional(GetScaleFactor()),
       &frame);
+
+  // Update after resource is updated.
+  UpdateHostLayerOpacity();
 
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid
   // the considerable overhead of flush verification in
   // 'VerifySyncTokensCHROMIUM'.
   for (auto& resource : frame.resource_list) {
-    if (prev_frame_verified_tokens_.find(resource.mailbox_holder.sync_token) !=
+    // Copy the token and set it as flush verified as the tokens, which
+    // |prev_frame_verified_tokens| has, have that flag set. If that is not done
+    // locally here, the comparison of the tokens fails as all fields of each
+    // tokens are compared during ::find().
+    auto tmp_sync_token = resource.mailbox_holder.sync_token;
+    tmp_sync_token.SetVerifyFlush();
+    if (prev_frame_verified_tokens_.find(tmp_sync_token) !=
         prev_frame_verified_tokens_.end()) {
       resource.mailbox_holder.sync_token.SetVerifyFlush();
     }
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
   }
-  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-  gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+  gpu::InterfaceBase* rii = context_provider_->RasterInterface();
+  rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
 
   prev_frame_verified_tokens_.clear();
+  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {
     if (resource.mailbox_holder.sync_token.verified_flush()) {
       prev_frame_verified_tokens_.insert(resource.mailbox_holder.sync_token);
     }
-  }
-
-  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
-  for (auto& resource : frame.resource_list) {
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,
                  resource.color_space.GetContentColorUsage());
@@ -385,9 +426,10 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   quad_state->SetAll(gfx::Transform(), /*layer_rect=*/quad_rect,
                      /*visible_layer_rect=*/quad_rect,
                      /*filter_info=*/gfx::MaskFilterInfo(),
-                     /*clip=*/absl::nullopt,
+                     /*clip=*/std::nullopt,
                      /*contents_opaque=*/true, /*opacity_f=*/1.f,
-                     /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+                     /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
+                     /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -403,11 +445,14 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
                                                        /*submit_now=*/true);
 }
 
-void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
+void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
   // This method applies multiple changes to the window tree. Use ScopedPause
   // to ensure that occlusion isn't recomputed before all changes have been
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
+  viz::ScopedSurfaceIdAllocator scoped_suppression =
+      host_window()->GetSurfaceIdAllocator(base::NullCallback());
+  ui::Layer* commit_target_layer = GetCommitTargetLayer();
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
   gfx::Size size = bounds.size();
@@ -415,9 +460,10 @@ void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
     size = gfx::ScaleToCeiledSize(size, 1.0f / GetScaleFactor());
   }
   gfx::Rect scaled_bounds(bounds.origin(), size);
-  if (scaled_bounds != host_window_->bounds()) {
+  if (commit_target_layer && scaled_bounds != commit_target_layer->bounds()) {
     // DP size has changed, set new bounds.
-    host_window_->SetBounds({host_window_->bounds().origin(), size});
+    commit_target_layer->SetBounds(
+        {commit_target_layer->bounds().origin(), size});
   }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
@@ -426,16 +472,37 @@ void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
   if (client_submits_surfaces_in_pixel_coordinates_) {
     SetScaleFactorTransform(GetScaleFactor());
   }
+
+  root_surface_origin_pixel_ = gfx::Point() - bounds.OffsetFromOrigin();
+  gfx::Point root_surface_origin_dp =
+      client_submits_surfaces_in_pixel_coordinates_
+          ? ToFlooredPoint(
+                gfx::PointF() +
+                ScaleVector2d(root_surface_origin_pixel_.OffsetFromOrigin(),
+                              1.f / GetScaleFactor()))
+          : root_surface_origin_pixel_;
+
+  const gfx::Rect& window_bounds = root_surface_->window()->bounds();
+  if (root_surface_origin_dp != window_bounds.origin()) {
+    // Set DP origin to root surface.
+    gfx::Rect updated_bounds(root_surface_origin_dp, window_bounds.size());
+    root_surface_->window()->SetBounds(updated_bounds);
+  }
+}
+
+void SurfaceTreeHost::UpdateHostLayerOpacity() {
+  ui::Layer* commit_target_layer = GetCommitTargetLayer();
+
+  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
+
   const bool fills_bounds_opaquely =
       gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
       root_surface_->FillsBoundsOpaquely();
-  host_window_->SetTransparent(!fills_bounds_opaquely);
 
-  root_surface_origin_ = gfx::Point() - bounds.OffsetFromOrigin();
-  const gfx::Rect& window_bounds = root_surface_->window()->bounds();
-  if (root_surface_origin_ != window_bounds.origin()) {
-    gfx::Rect updated_bounds(root_surface_origin_, window_bounds.size());
-    root_surface_->window()->SetBounds(updated_bounds);
+  if (commit_target_layer == host_window_->layer()) {
+    host_window_->SetTransparent(!fills_bounds_opaquely);
+  } else if (commit_target_layer) {
+    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
   }
 }
 
@@ -483,6 +550,25 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
       aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
+
+  if (base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame) &&
+      !base::FeatureList::IsEnabled(kExoReactiveFrameSubmission)) {
+    static bool logged_once = false;
+    LOG_IF(WARNING, !logged_once)
+        << "Feature ExoAutoNeedsBeginFrame is ignored because "
+           "ExoReactiveFrameSubmission is not enabled.";
+    logged_once = true;
+  }
+
+  // Disable merge of frame acks with begin frame so that clients of exo can
+  // get frame callbacks and resources reclaimed as soon as possible.
+  if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
+    params.wants_begin_frame_acks = false;
+  }
+
+  params.auto_needs_begin_frame =
+      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission) &&
+      base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame);
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           nullptr /* context_provider */, nullptr /* worker_context_provider */,
@@ -508,20 +594,21 @@ void SurfaceTreeHost::UpdateLocalSurfaceIdFromParent(
 }
 
 void SurfaceTreeHost::MaybeActivateSurface() {
-  DCHECK(!host_window_->layer()->GetSurfaceId() ||
-         GetCurrentLocalSurfaceId().IsSameOrNewerThan(
-             host_window_->layer()->GetSurfaceId()->local_surface_id()));
+  ui::Layer* commit_target_layer = GetCommitTargetLayer();
+  if (!commit_target_layer) {
+    return;
+  }
 
-  if (host_window_->layer()->GetSurfaceId() &&
+  if (commit_target_layer->GetSurfaceId() &&
       !GetCurrentLocalSurfaceId().IsNewerThan(
-          host_window_->layer()->GetSurfaceId()->local_surface_id())) {
+          commit_target_layer->GetSurfaceId()->local_surface_id())) {
     return;
   }
 
   host_window_->UpdateLocalSurfaceIdFromEmbeddedClient(
       GetCurrentLocalSurfaceId());
-  host_window_->layer()->SetShowSurface(
-      GetSurfaceId(), host_window_->bounds().size(), SK_ColorWHITE,
+  commit_target_layer->SetShowSurface(
+      GetSurfaceId(), commit_target_layer->bounds().size(), SK_ColorWHITE,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       false /* stretch_content_to_fill_bounds */);
 }
@@ -534,12 +621,15 @@ const viz::LocalSurfaceId& SurfaceTreeHost::GetCurrentLocalSurfaceId() const {
   return child_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
 }
 
-void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {
-  // TODO(crbug/1251778): Track the old layer copies that are kept and advance
-  // them to new local_surface_id in case the surface property changes, until
-  // the copies' corresponding parent local_surface_id is synchronized to the
-  // surface_tree_host.
+ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() {
+  return host_window_->layer();
 }
+
+const ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() const {
+  return host_window_->layer();
+}
+
+void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {}
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   DCHECK(root_surface_);
@@ -610,7 +700,7 @@ void SurfaceTreeHost::HandleContextLost() {
   // Get new context and start observing it.
   context_provider_ = aura::Env::GetInstance()
                           ->context_factory()
-                          ->SharedMainThreadContextProvider();
+                          ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
 
@@ -628,6 +718,10 @@ float SurfaceTreeHost::GetScaleFactor() const {
 
 float SurfaceTreeHost::GetPendingScaleFactor() const {
   return CalculateScaleFactor(pending_scale_factor_);
+}
+
+bool SurfaceTreeHost::HasDoubleBufferedPendingScaleFactor() const {
+  return pending_scale_factor_.has_value();
 }
 
 void SurfaceTreeHost::CleanUpCallbacks() {
@@ -655,7 +749,7 @@ SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
 }
 
 float SurfaceTreeHost::CalculateScaleFactor(
-    const absl::optional<float>& scale_factor) const {
+    const std::optional<float>& scale_factor) const {
   if (scale_factor) {
     // TODO(crbug.com/1412420): Remove this once the scale factor precision
     // issue is fixed for ARC.
@@ -667,6 +761,50 @@ float SurfaceTreeHost::CalculateScaleFactor(
     return scale_factor.value();
   }
   return host_window_->layer()->device_scale_factor();
+}
+
+void SurfaceTreeHost::ApplyRoundedCornersToSurfaceTree(
+    const gfx::RectF& bounds,
+    const gfx::RoundedCornersF& radii_in_dps) {
+  gfx::RoundedCornersF radii = radii_in_dps;
+  if (client_submits_surfaces_in_pixel_coordinates()) {
+    float scale_factor = GetScaleFactor();
+    radii = gfx::RoundedCornersF{
+        radii_in_dps.upper_left() * scale_factor,
+        radii_in_dps.upper_right() * scale_factor,
+        radii_in_dps.lower_right() * scale_factor,
+        radii_in_dps.lower_left() * scale_factor,
+    };
+  }
+
+  gfx::RRectF rounded_corners_bounds(bounds, radii);
+  ApplyAndPropagateRoundedCornersToSurfaceTree(root_surface(),
+                                               rounded_corners_bounds);
+}
+
+scoped_refptr<viz::RasterContextProvider>
+SurfaceTreeHost::SetRasterContextProviderForTesting(
+    scoped_refptr<viz::RasterContextProvider> context_provider_test) {
+  auto old_provider = context_provider_;
+  context_provider_ = context_provider_test;
+  return old_provider;
+}
+
+void SurfaceTreeHost::ApplyAndPropagateRoundedCornersToSurfaceTree(
+    Surface* surface,
+    const gfx::RRectF& rounded_corners_bounds) {
+  surface->SetRoundedCorners(rounded_corners_bounds,
+                             /*commit_override=*/true);
+  for (auto& sub_surface_entry : surface->sub_surfaces()) {
+    // Convert the rounded corners bounds to sub_surface local coordinates by
+    // subtracting the sub_surface origin. The origin is the offset of the
+    // subsurface from its parent's surface.
+    const gfx::RRectF rounded_bounds_in_sub_surface_coords =
+        rounded_corners_bounds - sub_surface_entry.second.OffsetFromOrigin();
+    ApplyAndPropagateRoundedCornersToSurfaceTree(
+        /*surface=*/sub_surface_entry.first,
+        rounded_bounds_in_sub_surface_coords);
+  }
 }
 
 void SurfaceTreeHost::SetScaleFactorTransform(float scale_factor) {

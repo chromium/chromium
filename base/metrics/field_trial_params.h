@@ -109,6 +109,15 @@ BASE_EXPORT bool GetFieldTrialParamByFeatureAsBool(
     const std::string& param_name,
     bool default_value);
 
+// Same as GetFieldTrialParamValueByFeature(). On top of that, it converts the
+// string value into a base::TimeDelta and returns it, if successful. Otherwise,
+// it returns `default_value`. If the string value is not empty and the
+// conversion does not succeed, it produces a warning to LOG.
+BASE_EXPORT base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
+    const Feature& feature,
+    const std::string& param_name,
+    base::TimeDelta default_value);
+
 // Shared declaration for various FeatureParam<T> types.
 //
 // This template is defined for the following types T:
@@ -124,12 +133,12 @@ BASE_EXPORT bool GetFieldTrialParamByFeatureAsBool(
 //
 // Getting a param value from a FeatureParam<T> will have the same semantics as
 // GetFieldTrialParamValueByFeature(), see that function's comments for details.
-template <typename T, bool IsEnum = std::is_enum<T>::value>
+template <typename T, bool IsEnum = std::is_enum_v<T>>
 struct FeatureParam {
   // Prevent use of FeatureParam<> with unsupported types (e.g. void*). Uses T
   // in its definition so that evaluation is deferred until the template is
   // instantiated.
-  static_assert(!std::is_same<T, T>::value, "unsupported FeatureParam<> type");
+  static_assert(!std::is_same_v<T, T>, "unsupported FeatureParam<> type");
 };
 
 // Declares a string-valued parameter. Example:

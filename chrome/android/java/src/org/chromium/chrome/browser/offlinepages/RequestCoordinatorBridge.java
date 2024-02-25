@@ -7,19 +7,18 @@ package org.chromium.chrome.browser.offlinepages;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Java access to the C++ offline_pages::RequestCoordinator.
- */
+/** Java access to the C++ offline_pages::RequestCoordinator. */
 @JNINamespace("offline_pages::android")
 public class RequestCoordinatorBridge {
     private final Profile mProfile;
@@ -38,9 +37,7 @@ public class RequestCoordinatorBridge {
         return new RequestCoordinatorBridge(profile);
     }
 
-    /**
-     * Creates a request coordinator bridge for a given profile.
-     */
+    /** Creates a request coordinator bridge for a given profile. */
     @VisibleForTesting
     RequestCoordinatorBridge(Profile profile) {
         mProfile = profile;
@@ -75,9 +72,7 @@ public class RequestCoordinatorBridge {
         }
     }
 
-    /**
-     * Contains a result for a remove page request.
-     */
+    /** Contains a result for a remove page request. */
     public static class RequestRemovedResult {
         private final long mRequestId;
         private final int mUpdateRequestResult;
@@ -114,8 +109,9 @@ public class RequestCoordinatorBridge {
         for (int i = 0; i < requestIdList.size(); i++) {
             requestIds[i] = requestIdList.get(i).longValue();
         }
-        RequestCoordinatorBridgeJni.get().removeRequestsFromQueue(
-                mProfile, requestIds, new RequestsRemovedCallback(callback));
+        RequestCoordinatorBridgeJni.get()
+                .removeRequestsFromQueue(
+                        mProfile, requestIds, new RequestsRemovedCallback(callback));
     }
 
     /**
@@ -155,7 +151,10 @@ public class RequestCoordinatorBridge {
      *                      requested it.
      * @param origin The app that initiated the request.
      */
-    public void savePageLater(final String url, final ClientId clientId, boolean userRequested,
+    public void savePageLater(
+            final String url,
+            final ClientId clientId,
+            boolean userRequested,
             OfflinePageOrigin origin) {
         savePageLater(url, clientId, userRequested, origin, null);
     }
@@ -173,19 +172,30 @@ public class RequestCoordinatorBridge {
      *                 represents a failure reason (See offline_pages::AddRequestResult enum). 0 is
      * success.
      */
-    public void savePageLater(final String url, final ClientId clientId, boolean userRequested,
-            OfflinePageOrigin origin, Callback<Integer> callback) {
-        Callback<Integer> wrapper = new Callback<Integer>() {
-            @Override
-            public void onResult(Integer i) {
-                if (callback != null) {
-                    callback.onResult(i);
-                }
-            }
-        };
-        RequestCoordinatorBridgeJni.get().savePageLater(mProfile, wrapper, url,
-                clientId.getNamespace(), clientId.getId(), origin.encodeAsJsonString(),
-                userRequested);
+    public void savePageLater(
+            final String url,
+            final ClientId clientId,
+            boolean userRequested,
+            OfflinePageOrigin origin,
+            Callback<Integer> callback) {
+        Callback<Integer> wrapper =
+                new Callback<Integer>() {
+                    @Override
+                    public void onResult(Integer i) {
+                        if (callback != null) {
+                            callback.onResult(i);
+                        }
+                    }
+                };
+        RequestCoordinatorBridgeJni.get()
+                .savePageLater(
+                        mProfile,
+                        wrapper,
+                        url,
+                        clientId.getNamespace(),
+                        clientId.getId(),
+                        origin.encodeAsJsonString(),
+                        userRequested);
     }
 
     /**
@@ -211,7 +221,10 @@ public class RequestCoordinatorBridge {
      *                      requested it.
      * @param origin The app that initiated the request.
      */
-    public void savePageLater(final String url, final String namespace, boolean userRequested,
+    public void savePageLater(
+            final String url,
+            final String namespace,
+            boolean userRequested,
             OfflinePageOrigin origin) {
         savePageLater(url, namespace, userRequested, origin, null);
     }
@@ -230,8 +243,12 @@ public class RequestCoordinatorBridge {
      *                 number represents failure reason (see offline_pages::AddRequestResult enum).
      * 0 is success.
      */
-    public void savePageLater(final String url, final String namespace, boolean userRequested,
-            OfflinePageOrigin origin, Callback<Integer> callback) {
+    public void savePageLater(
+            final String url,
+            final String namespace,
+            boolean userRequested,
+            OfflinePageOrigin origin,
+            Callback<Integer> callback) {
         ClientId clientId = ClientId.createGuidClientIdForNamespace(namespace);
         savePageLater(url, clientId, userRequested, origin, callback);
     }
@@ -239,9 +256,17 @@ public class RequestCoordinatorBridge {
     @NativeMethods
     public interface Natives {
         void getRequestsInQueue(Profile profile, Callback<SavePageRequest[]> callback);
+
         void removeRequestsFromQueue(
                 Profile profile, long[] requestIds, RequestsRemovedCallback callback);
-        void savePageLater(Profile profile, Callback<Integer> callback, String url,
-                String clientNamespace, String clientId, String origin, boolean userRequested);
+
+        void savePageLater(
+                Profile profile,
+                Callback<Integer> callback,
+                String url,
+                String clientNamespace,
+                String clientId,
+                String origin,
+                boolean userRequested);
     }
 }

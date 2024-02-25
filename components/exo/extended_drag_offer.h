@@ -43,11 +43,11 @@ class ExtendedDragOffer : public DataOfferObserver {
   // DataOfferObserver:
   void OnDataOfferDestroying(DataOffer* offer) override;
 
-  raw_ptr<DataOffer, ExperimentalAsh> offer_ = nullptr;
+  raw_ptr<DataOffer> offer_ = nullptr;
 
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace exo

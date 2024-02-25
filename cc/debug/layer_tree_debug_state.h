@@ -11,10 +11,6 @@
 
 namespace cc {
 
-namespace proto {
-class LayerTreeDebugState;
-}  // namespace proto
-
 enum DebugBorderType {
   RENDERPASS = 0,
   SURFACE,
@@ -29,6 +25,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   LayerTreeDebugState(const LayerTreeDebugState& other);
   ~LayerTreeDebugState();
 
+  bool debugger_paused = false;
   bool show_fps_counter = false;
   DebugBorderTypes show_debug_borders = false;
 

@@ -17,12 +17,11 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace base {
+class SingleThreadTaskRunner;
 class TickClock;
 }
 
 namespace blink {
-
-class SingleThreadTaskRunner;
 
 // WebSocketMessageChunkAccumulator stores chunks for one WebSocket message. A
 // user can call Append() to append bytes, and call GetView() to get a list of

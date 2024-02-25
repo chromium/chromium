@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL Slots: Directionality: dir=rtl on slot assert_true: expected true got false
-PASS Slots: Directionality: dir=rtl on host
-PASS Slots: Directionality: dir=auto on host with Arabic shadow tree content
-PASS Slots: Directionality: dir=auto in shadow tree with Arabic light tree content
-PASS Slots: Directionality: dir=auto in shadow tree with Arabic shadow tree content
-PASS Slots: Directionality: dir=auto on slot with Arabic light tree content
-Harness: the test ran to completion.
-

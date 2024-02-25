@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -186,7 +187,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   const std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
       report_queue_;
 
-  const raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  const raw_ptr<CrosSettings> cros_settings_;
 
   base::WeakPtrFactory<PrintJobReportingServiceImpl> weak_factory_{this};
 };

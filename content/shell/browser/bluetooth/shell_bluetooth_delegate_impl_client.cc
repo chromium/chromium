@@ -48,7 +48,7 @@ void ShellBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     const std::u16string& device_identifier,
     BluetoothDelegate::PairPromptCallback callback,
     BluetoothDelegate::PairingKind,
-    const absl::optional<std::u16string>& pin) {
+    const std::optional<std::u16string>& pin) {
   std::move(callback).Run(BluetoothDelegate::PairPromptResult(
       BluetoothDelegate::PairPromptStatus::kCancelled));
 }

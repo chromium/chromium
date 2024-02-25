@@ -38,8 +38,6 @@ class MenuModel;
 
 namespace views {
 class Button;
-class EditableComboboxMenuModel;
-class EditableComboboxPreTargetHandler;
 class MenuRunner;
 class Textfield;
 
@@ -53,9 +51,9 @@ class VIEWS_EXPORT EditableCombobox
       public TextfieldController,
       public ViewObserver,
       public views::AnimatingLayoutManager::Observer {
- public:
-  METADATA_HEADER(EditableCombobox);
+  METADATA_HEADER(EditableCombobox, View)
 
+ public:
   // A strategy that can be used to customize the display of the drop-down menu.
   // It is only intended to be used by classes that extend `EditableCombobox`.
   class MenuDecorationStrategy {
@@ -96,7 +94,7 @@ class VIEWS_EXPORT EditableCombobox
   const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
 
-  std::u16string GetPlaceholderText() const;
+  const std::u16string& GetPlaceholderText() const;
   void SetPlaceholderText(const std::u16string& text);
 
   const gfx::FontList& GetFontList() const;
@@ -167,7 +165,7 @@ class VIEWS_EXPORT EditableCombobox
   const ui::ComboboxModel* GetComboboxModel() const;
 
   // Overridden from View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;

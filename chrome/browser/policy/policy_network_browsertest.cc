@@ -27,11 +27,13 @@
 #include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/util.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -153,8 +155,7 @@ class ECHPolicyTest : public SSLPolicyTest {
   ECHPolicyTest() : ech_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{net::features::kEncryptedClientHello, {}},
-         {net::features::kUseDnsHttpsSvcb,
+        {{net::features::kUseDnsHttpsSvcb,
           {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}}}},
         /*disabled_features=*/{});
   }
@@ -249,27 +250,19 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
 }
 
-class SHA1DisabledPolicyTest : public SSLPolicyTest {
- public:
-  SHA1DisabledPolicyTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        net::features::kSHA1ServerSignature);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SHA1DisabledPolicyTest, InsecureHashPolicy) {
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, InsecureHashPolicy) {
   net::SSLServerConfig ssl_config;
-  // Apply 0x303 to force TLS 1.2 and make the server limited to sha1.
-  ssl_config.version_min = 0x0303;
-  ssl_config.version_max = 0x0303;
-  ssl_config.signature_algorithm_for_testing = 0x0201;
+  // Configure the server at TLS 1.2 and only signing SHA-1. Additionally
+  // require ECDHE to prevent the server from falling back to a non-signing
+  // cipher suite.
+  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config.require_ecdhe = true;
+  ssl_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PKCS1_SHA1;
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should be unable to load a page from the test server because the
-  // policy is unset, and the feature flag has disabled SHA1
+  // policy is unset, and SHA1 is disabled.
   EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
   LoadResult result = LoadPage("/title2.html");
   EXPECT_FALSE(result.success);
@@ -300,58 +293,6 @@ IN_PROC_BROWSER_TEST_F(SHA1DisabledPolicyTest, InsecureHashPolicy) {
   EXPECT_FALSE(result.success);
 }
 
-class SHA1EnabledPolicyTest : public SSLPolicyTest {
- public:
-  SHA1EnabledPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kSHA1ServerSignature);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SHA1EnabledPolicyTest, InsecureHashPolicy) {
-  net::SSLServerConfig ssl_config;
-  // Apply 0x303 to force TLS 1.2 and make the server limited to sha1.
-  ssl_config.version_min = 0x0303;
-  ssl_config.version_max = 0x0303;
-  ssl_config.signature_algorithm_for_testing = 0x0201;
-  ASSERT_TRUE(StartTestServer(ssl_config));
-
-  // With the policy unset, we should be able to load a page from the test
-  // server because SHA1 is allowed by feature flag.
-  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  LoadResult result = LoadPage("/title2.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  PolicyMap policies;
-  // Disable Insecure Handshake Hashes.
-  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
-            base::Value(false));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // We should no longer be able to load a page, as the policy has
-  // disabled insecure hashes..
-  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  result = LoadPage("/title3.html");
-  EXPECT_FALSE(result.success);
-
-  // Enable Insecure Handshake Hashes.
-  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // With the policy set, we should be able to load a page from the test server
-  EXPECT_TRUE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  result = LoadPage("/title3.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of More Awesomeness", result.title);
-}
-
 class RSAKeyUsageDisabledPolicyTest : public SSLPolicyTest {
  public:
   RSAKeyUsageDisabledPolicyTest() {
@@ -365,7 +306,7 @@ class RSAKeyUsageDisabledPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(RSAKeyUsageDisabledPolicyTest, RSAKeyUsagePolicy) {
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  cert_config.key_usages = {bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
   net::SSLServerConfig ssl_config;
   ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the
@@ -415,7 +356,7 @@ class RSAKeyUsageEnabledPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(RSAKeyUsageEnabledPolicyTest, RSAKeyUsagePolicy) {
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  cert_config.key_usages = {bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
   net::SSLServerConfig ssl_config;
   ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the

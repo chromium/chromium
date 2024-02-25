@@ -37,7 +37,9 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback) override;
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata =
+          nullptr) override;
 
  private:
   // Stored calls to these methods, for testing usage.

@@ -32,13 +32,13 @@ namespace blink {
 
 class CascadeInterpolations;
 class CascadeResolver;
-class CSSCustomPropertyDeclaration;
+class CSSUnparsedDeclarationValue;
 class CSSParserContext;
 class CSSParserTokenStream;
 class CSSProperty;
 class CSSValue;
 class CSSVariableData;
-class CSSVariableReferenceValue;
+class CSSUnparsedDeclarationValue;
 class CustomProperty;
 class MatchResult;
 class StyleResolverState;
@@ -66,6 +66,7 @@ class CORE_EXPORT StyleCascade {
   STACK_ALLOCATED();
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
+  using Signal = CSSSelector::Signal;
 
  public:
   StyleCascade(StyleResolverState& state) : state_(state) {}
@@ -150,6 +151,19 @@ class CORE_EXPORT StyleCascade {
   // [1] https://drafts.csswg.org/css-cascade/#cascaded
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> GetCascadedValues()
       const;
+
+  // Resolves a single CSSValue in the context of some StyleResolverState.
+  //
+  // This is intended for use by the Inspector Agent.
+  //
+  // The function is primarily useful for eliminating var()/env() references.
+  // It will also handle other kinds of resolution (e.g. eliminate 'revert'),
+  // but note that the specified declaration will appear alone and uncontested
+  // in a temporary StyleCascade, so e.g. 'revert' always becomes 'unset',
+  // as there is nothing else to revert to.
+  static const CSSValue* Resolve(StyleResolverState&,
+                                 const CSSPropertyName&,
+                                 const CSSValue&);
 
  private:
   friend class TestCascade;
@@ -238,7 +252,7 @@ class CORE_EXPORT StyleCascade {
   // However, actually building a CSSVariableData is optional; you can also
   // get a CSSParserTokenRange directly, which is useful when resolving a
   // CSSVariableData which won't ultimately end up in a CSSVariableData
-  // (i.e. CSSVariableReferenceValue or CSSPendingSubstitutionValue).
+  // (i.e. CSSUnparsedDeclarationValue or CSSPendingSubstitutionValue).
   class TokenSequence {
     STACK_ALLOCATED();
 
@@ -331,10 +345,10 @@ class CORE_EXPORT StyleCascade {
                                        const CSSValue&,
                                        CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
-                                        const CSSCustomPropertyDeclaration&,
+                                        const CSSUnparsedDeclarationValue&,
                                         CascadeResolver&);
   const CSSValue* ResolveVariableReference(const CSSProperty&,
-                                           const CSSVariableReferenceValue&,
+                                           const CSSUnparsedDeclarationValue&,
                                            CascadeResolver&);
   const CSSValue* ResolvePendingSubstitution(const CSSProperty&,
                                              const CSSPendingSubstitutionValue&,
@@ -350,7 +364,21 @@ class CORE_EXPORT StyleCascade {
                                      CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
+                                                     const CSSParserContext&,
                                                      CascadeResolver&);
+
+  // Certain parts of CSS function evaluation may need some local context
+  // supplied by the caller. Given the current scoping strategy, the only
+  // relevant context is the arguments given to the function in current
+  // scope. (If we are not currently evaluating a function, this will be
+  // empty.) If we get to the point of supporting more dynamic scope,
+  // there may be a call stack or similar here, and possibly also locals.
+  struct FunctionContext {
+    STACK_ALLOCATED();
+
+   public:
+    HeapHashMap<String, Member<const CSSValue>> arguments;
+  };
 
   // The Resolve*Into functions either resolve dependencies, append to the
   // TokenSequence accordingly, and return true; or it returns false when
@@ -366,22 +394,49 @@ class CORE_EXPORT StyleCascade {
   bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          CSSTokenizer*,
+                         const CSSParserContext&,
+                         const FunctionContext&,
                          TokenSequence&);
-  template <class ParserTokenStream>
-  bool ResolveVarInto(ParserTokenStream&,
+  bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
+                      const CSSParserContext&,
                       TokenSequence&);
-  template <class ParserTokenStream>
-  bool ResolveEnvInto(ParserTokenStream&,
+  bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
+                      const CSSParserContext&,
                       TokenSequence&);
+  bool ResolveArgInto(CSSParserTokenStream&,
+                      CascadeResolver&,
+                      CSSTokenizer*,
+                      const CSSParserContext&,
+                      const FunctionContext&,
+                      TokenSequence&);
+
+  // NOTE: The FunctionContext object must be the _caller's_ function context,
+  // not the one the function itself sets up. This is because it is used to
+  // resolve arguments given to this function. See comment within the
+  // definition.
+  bool ResolveFunctionInto(StringView function_name,
+                           CSSParserTokenStream& stream,
+                           CascadeResolver& resolver,
+                           CSSTokenizer* parent_tokenizer,
+                           const CSSParserContext& context,
+                           const FunctionContext& function_context,
+                           TokenSequence& out);
+
+  const CSSValue* ResolveFunctionExpression(
+      StringView expr,
+      const StyleRuleFunction::Type& type,
+      CascadeResolver& resolver,
+      const CSSParserContext& context,
+      const FunctionContext& function_context);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
                                           WTF::Vector<unsigned>) const;
-  const CSSParserContext* GetParserContext(const CSSVariableReferenceValue&);
+  const CSSParserContext* GetParserContext(const CSSUnparsedDeclarationValue&);
 
   // Detects if the given property/data depends on the font-size property
   // of the Element we're calculating the style for.
@@ -404,12 +459,38 @@ class CORE_EXPORT StyleCascade {
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
 
+  // Declarations originating from @try rules are treated as revert-layer
+  // if we're not out-of-flow positioned. Since such declarations exist
+  // in a separate layer, this has the effect of @try-originating rules
+  // applying *conditionally* based on the positioning.
+  //
+  // This behavior is needed because we speculatively add the the try set
+  // to the cascade, and rely on out-of-flow layout to correct us later.
+  // However, if we *stop* being out-of-flow positioned, that correction
+  // never happens.
+  bool TreatAsRevertLayer(CascadePriority) const;
+
   const Document& GetDocument() const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
 
   void CountUse(WebFeature);
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
+
+  // Expands the cascade for the incoming `MatchedProperties`, and adds
+  // pending signals (via `MaybeAddPendingSignal`) for the declarations
+  // that actually change the cascade map.
+  void ExpandSignals(const MatchedProperties&, int index, Signal);
+  void MaybeAddPendingSignal(const CSSPropertyName& name,
+                             CascadePriority priority,
+                             Signal signal);
+
+  // Looks at pending signals produced by `ExpandSignals`, and either triggers
+  // a real use-count for the signals (if the signaling declaration ended up
+  // winning the cascade), or ignores them.
+  void ProcessPendingSignals();
+  void ProcessPendingSignals(WebFeature,
+                             const HashMap<CSSPropertyName, CascadePriority>&);
 
   StyleResolverState& state_;
   MatchResult match_result_;
@@ -460,6 +541,26 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
+  // If true, invisible rules will be added to the cascade, setting
+  // `has_invisible_rules_` to true whenever such rules are actually seen.
+  // Otherwise, invisible rules are silently ignored.
+  //
+  // Invisible rules are not supposed to have an observable effect on the result
+  // of the cascade, and exist entirely for use-counting purposes.
+  //
+  // Invisible rules are handled as follows in StyleCascade:
+  //
+  // We first cascade while allowing invisible rules. If we didn't end up with
+  // any invisible rules (the common case), then the result is what it needs to
+  // be, and we're done. If we *do* end up with any invisible rules, we have
+  // declarations in our cascade that are not supposed to be there, and we
+  // reset and cascade again, this time without allowing invisible rules.
+  bool allow_invisible_rules_ = true;
+  bool has_invisible_rules_ = false;
+  // Properties that had a signal (see CSSSelector::Signal) which changed
+  // the value of the cascade map.
+  HashMap<CSSPropertyName, CascadePriority>
+      pending_signals_[static_cast<wtf_size_t>(Signal::kMax)];
 };
 
 }  // namespace blink

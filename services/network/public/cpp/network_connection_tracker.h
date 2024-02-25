@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
                                  ConnectionTypeCallback callback);
 
   // Returns true if the network is currently in an offline or unknown state.
-  bool IsOffline();
+  bool IsOffline() const;
 
   // Returns true if |type| is a cellular connection.
   // Returns false if |type| is CONNECTION_UNKNOWN, and thus, depending on the

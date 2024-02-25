@@ -44,6 +44,5 @@ float DownloadShelfStartedAnimationViews::GetOpacity() const {
       std::min(1.0 - pow(GetCurrentValue() - 0.5, 2) * 4.0, 1.0));
 }
 
-BEGIN_METADATA(DownloadShelfStartedAnimationViews,
-               DownloadStartedAnimationViews)
+BEGIN_METADATA(DownloadShelfStartedAnimationViews)
 END_METADATA

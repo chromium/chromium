@@ -6,6 +6,7 @@
 #define COMPONENTS_VALUE_STORE_LAZY_LEVELDB_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/value_store/value_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -62,7 +62,7 @@ class LazyLevelDb {
   // be returned and value will be unchanged. Caller must ensure the database is
   // open before calling this method.
   ValueStore::Status Read(const std::string& key,
-                          absl::optional<base::Value>* value);
+                          std::optional<base::Value>* value);
 
   // Opens the underlying database if not yet open. If the open fails due to
   // corruption will attempt to repair the database. Failing that, will attempt

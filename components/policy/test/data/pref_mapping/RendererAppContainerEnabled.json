@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RendererAppContainerEnabled": true
+        },
+        "prefs": {
+          "renderer_app_container_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

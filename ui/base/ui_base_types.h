@@ -7,9 +7,6 @@
 
 #include <cstdint>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
 namespace ui {
 
 // This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
@@ -32,7 +29,6 @@ enum WindowShowState {
   SHOW_STATE_END = 6  // The end of show state enum.
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Specifies which edges of the window are tiled.
 //
 // Wayland can notify the application if certain edge of the window is
@@ -54,7 +50,6 @@ struct WindowTiledEdges {
            bottom != other.bottom;
   }
 };
-#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
 // Dialog button identifiers used to specify which buttons to show the user.
 enum DialogButton {
@@ -143,19 +138,6 @@ enum MenuSourceType {
   MENU_SOURCE_ADJUST_SELECTION = 9,
   MENU_SOURCE_ADJUST_SELECTION_RESET = 10,
   MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
-};
-
-// Menu types that are used to position menu windows correctly.
-enum class MenuType {
-  // A context menu opened either via a right click or a long tap.
-  kRootContextMenu = 0,
-
-  // A root non-context menu. Example: The three dot menu.
-  kRootMenu,
-
-  // A child menu opened by clicking on a nested menu entry of either
-  // |kRootContextMenu| or |kRootParentMenu|.
-  kChildMenu,
 };
 
 // Where an owned anchored window should be anchored to. Used by such backends

@@ -1,5 +1,0 @@
-include_rules = [
-  # Chrome Cleanup itself should not depend on //net but tests can use it for
-  # test support.
-  "+net/test/embedded_test_server",
-]

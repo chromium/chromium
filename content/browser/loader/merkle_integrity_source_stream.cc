@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
 
@@ -26,7 +27,7 @@ constexpr size_t kMiSha256HeaderLength = sizeof(kMiSha256Header) - 1;
 // Copies as many bytes from |input| as will fit in |output| and advances both.
 size_t CopyClamped(base::span<const char>* input, base::span<char>* output) {
   size_t size = std::min(output->size(), input->size());
-  memcpy(output->data(), input->data(), size);
+  base::ranges::copy(input->first(size), output->data());
   *output = output->subspan(size);
   *input = input->subspan(size);
   return size;
@@ -223,7 +224,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
   if (!is_final) {
     // Split into data and a hash.
     base::span<const char> hash = record.subspan(record_size_);
-    record = record.subspan(0, record_size_);
+    record = record.first(record_size_);
 
     // Save the next proof.
     CHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), hash.size());

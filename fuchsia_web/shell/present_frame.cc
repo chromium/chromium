@@ -6,7 +6,6 @@
 
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
-#include <lib/ui/scenic/cpp/view_creation_tokens.h>
 #include <stdint.h>
 #include <zircon/rights.h>
 
@@ -47,10 +46,13 @@ fuchsia::element::GraphicalPresenterPtr PresentFrame(
   });
 
   // Generate Flatland tokens and frame->CreateView2().
-  scenic::ViewCreationTokenPair token_pair =
-      scenic::ViewCreationTokenPair::New();
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  ZX_CHECK(status == ZX_OK, status);
   fuchsia::element::ViewSpec view_spec;
-  view_spec.set_viewport_creation_token(std::move(token_pair.viewport_token));
+  view_spec.set_viewport_creation_token(std::move(viewport_token));
   view_spec.set_annotations({});
 
   fuchsia::element::ViewControllerPtr view_controller;
@@ -66,7 +68,7 @@ fuchsia::element::GraphicalPresenterPtr PresentFrame(
 
   // Present a fullscreen view of |frame|.
   fuchsia::web::CreateView2Args create_view_args;
-  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  create_view_args.set_view_creation_token(std::move(view_token));
   frame->CreateView2(std::move(create_view_args));
 
   return presenter;

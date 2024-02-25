@@ -1,8 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Paths to description XML files in this directory."""
+"""
+Paths to description XML files in this directory.
+
+When executed, updates the `histograms_xml_files.gni` file to correspond to the
+histograms.xml and enums.xml files that exist.
+"""
 
 import os
 import sys
@@ -37,8 +42,9 @@ PATH_TO_METADATA_DIR = path_util.GetInputFile(
 # file as well as the split up files.
 # TODO: Improve on the current design to avoid calling `os.walk()` at the time
 # of module import.
-HISTOGRAMS_XMLS_RELATIVE = (['tools/metrics/histograms/histograms.xml'] +
-                            _FindXmlFiles())
+HISTOGRAMS_XMLS_RELATIVE = ([
+    'tools/metrics/histograms/histograms.xml',
+] + _FindXmlFiles())
 ALL_XMLS_RELATIVE = [ENUMS_XML_RELATIVE] + HISTOGRAMS_XMLS_RELATIVE
 
 HISTOGRAMS_PREFIX_LIST = [
@@ -66,20 +72,39 @@ TEST_XML_WITH_COMPONENTS_RELATIVE = (
 TEST_XML_WITH_COMPONENTS = path_util.GetInputFile(
     TEST_XML_WITH_COMPONENTS_RELATIVE)
 
-# The path to the `histogram_index` file.
-HISTOGRAMS_INDEX = path_util.GetInputFile(
-    'tools/metrics/histograms/histograms_index.txt')
+# The path to the `histograms_xml_files.gni` file.
+_HISTOGRAMS_XML_FILES_GNI = path_util.GetInputFile(
+    'tools/metrics/histograms/histograms_xml_files.gni')
+
+_GNI_LINE_PREFIX = '  "//'
+_GNI_LINE_SUFFIX = '",\n'
+
+
+def _GenerateHistogramsXmlGniContent():
+  """Generates the contents for the _HISTOGRAMS_XML_FILES_GNI file."""
+  content = 'histograms_xml_files = [\n'
+  for path in ALL_XMLS_RELATIVE:
+    content += _GNI_LINE_PREFIX
+    content += path.replace(os.sep, '/')
+    content += _GNI_LINE_SUFFIX
+  content += ']\n'
+  return content
+
+
+def UpdateHistogramsXmlGniFile():
+  """Updates the _HISTOGRAMS_XML_FILES_GNI file."""
+  with open(_HISTOGRAMS_XML_FILES_GNI, 'w+') as f:
+    f.write(_GenerateHistogramsXmlGniContent())
+
+
+def ValidateHistogramsGniFile():
+  """Returns true if _HISTOGRAMS_XML_FILES_GNI file is up to date."""
+  with open(_HISTOGRAMS_XML_FILES_GNI, 'r') as f:
+    return _GenerateHistogramsXmlGniContent() == f.read()
 
 
 def main():
-  with open(HISTOGRAMS_INDEX, 'w+') as f:
-    # Force all OSes to use '/' as the separator.
-    f.write(''.join([
-        path.replace(os.sep, '/') + '\n' for path in HISTOGRAMS_XMLS_RELATIVE
-    ]))
-
+  UpdateHistogramsXmlGniFile()
 
 if __name__ == '__main__':
-  # Update the `histograms_index` file whenever histograms paths are updated.
-  # This file records all currently existing histograms.xml paths.
   main()

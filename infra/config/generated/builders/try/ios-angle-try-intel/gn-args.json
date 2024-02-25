@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "build_angle_deqp_tests": true,
+    "dcheck_always_on": true,
+    "enable_run_ios_unittests_with_xctest": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "symbol_level": 0,
+    "target_cpu": "x64",
+    "target_environment": "simulator",
+    "target_os": "ios",
+    "use_remoteexec": true
+  }
+}

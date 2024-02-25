@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -36,6 +36,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   static std::unique_ptr<FederatedAuthUserInfoRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
+      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
@@ -49,13 +50,13 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   // on having a pointer to this object, hence cannot be passed in the
   // constructor. Once the callback is set, start fetching.
   void SetCallbackAndStart(
-      blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback,
-      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
+      blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback);
 
  private:
   FederatedAuthUserInfoRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
+      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
       blink::mojom::IdentityProviderConfigPtr provider);
@@ -74,7 +75,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
 
   void Complete(
       blink::mojom::RequestUserInfoStatus status,
-      absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
+      std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
       FederatedAuthUserInfoRequestResult request_status);
 
   void CompleteWithError(FederatedAuthUserInfoRequestResult error);
@@ -82,11 +83,11 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   void AddDevToolsIssue(FederatedAuthUserInfoRequestResult error);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
-  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
-      api_permission_delegate_ = nullptr;
   // Owned by |BrowserContext|
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
+  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
+      api_permission_delegate_ = nullptr;
   // Owned by |FederatedAuthRequestImpl|
   raw_ptr<FedCmMetrics> metrics_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;

@@ -88,7 +88,7 @@ class FakeSpeechRecognitionService
 
   std::string device_id() { return device_id_; }
 
-  const absl::optional<::media::AudioParameters>& audio_parameters() {
+  const std::optional<::media::AudioParameters>& audio_parameters() {
     return audio_parameters_;
   }
 
@@ -110,7 +110,7 @@ class FakeSpeechRecognitionService
   // The device ID used to capture audio.
   std::string device_id_;
   // The audio parameters used to capture audio.
-  absl::optional<::media::AudioParameters> audio_parameters_;
+  std::optional<::media::AudioParameters> audio_parameters_;
 
   base::OnceClosure recognition_started_closure_;
 

@@ -28,8 +28,9 @@ class UserActionRecorder;
 
 class ASH_EXPORT CameraRollThumbnail : public views::MenuButton,
                                        public views::ContextMenuController {
+  METADATA_HEADER(CameraRollThumbnail, views::MenuButton)
+
  public:
-  METADATA_HEADER(CameraRollThumbnail);
   CameraRollThumbnail(const int index,
                       const phonehub::CameraRollItem& item,
                       phonehub::CameraRollManager* camera_roll_manager,
@@ -73,10 +74,8 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton,
   base::TimeTicks download_throttle_timestamp_ = base::TimeTicks();
   std::unique_ptr<CameraRollMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
-  raw_ptr<phonehub::CameraRollManager, ExperimentalAsh> camera_roll_manager_ =
-      nullptr;
-  raw_ptr<phonehub::UserActionRecorder, ExperimentalAsh> user_action_recorder_ =
-      nullptr;
+  raw_ptr<phonehub::CameraRollManager> camera_roll_manager_ = nullptr;
+  raw_ptr<phonehub::UserActionRecorder> user_action_recorder_ = nullptr;
 };
 
 }  // namespace ash

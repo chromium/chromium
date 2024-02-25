@@ -29,55 +29,62 @@ public class InsecureDownloadDialog {
      * @param callback Callback to run when confirming the download, true for accept the download,
      *         false otherwise.
      */
-    public void show(Context context, ModalDialogManager modalDialogManager, String fileName,
-            long totalBytes, Callback<Boolean> callback) {
-        String message = totalBytes > 0
-                ? fileName + " (" + DownloadUtils.getStringForBytes(context, totalBytes) + ")"
-                : fileName;
+    public void show(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            String fileName,
+            long totalBytes,
+            Callback<Boolean> callback) {
+        String message =
+                totalBytes > 0
+                        ? String.format(
+                                "%s (%s)",
+                                fileName, DownloadUtils.getStringForBytes(context, totalBytes))
+                        : fileName;
 
+        var controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        boolean acceptDownload =
+                                buttonType == ModalDialogProperties.ButtonType.POSITIVE;
+                        if (callback != null) {
+                            callback.onResult(acceptDownload);
+                        }
+                        modalDialogManager.dismissDialog(
+                                model,
+                                acceptDownload
+                                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                    }
+
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {
+                        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                            if (callback != null) callback.onResult(false);
+                        }
+                    }
+                };
+        var resources = context.getResources();
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER,
-                                new ModalDialogProperties.Controller() {
-                                    @Override
-                                    public void onClick(PropertyModel model, int buttonType) {
-                                        boolean acceptDownload = buttonType
-                                                == ModalDialogProperties.ButtonType.POSITIVE;
-                                        if (callback != null) {
-                                            callback.onResult(acceptDownload);
-                                        }
-                                        modalDialogManager.dismissDialog(model,
-                                                acceptDownload ? DialogDismissalCause
-                                                                         .POSITIVE_BUTTON_CLICKED
-                                                               : DialogDismissalCause
-                                                                         .NEGATIVE_BUTTON_CLICKED);
-                                    }
-
-                                    @Override
-                                    public void onDismiss(PropertyModel model, int dismissalCause) {
-                                        if (dismissalCause
-                                                        != DialogDismissalCause
-                                                                   .POSITIVE_BUTTON_CLICKED
-                                                && dismissalCause
-                                                        != DialogDismissalCause
-                                                                   .NEGATIVE_BUTTON_CLICKED) {
-                                            if (callback != null) callback.onResult(false);
-                                        }
-                                    }
-                                })
-                        .with(ModalDialogProperties.TITLE,
-                                context.getResources().getString(
-                                        R.string.insecure_download_dialog_title))
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources.getString(R.string.insecure_download_dialog_title))
                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getResources().getString(
-                                        R.string.insecure_download_dialog_confirm_text))
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                context.getResources().getString(
-                                        R.string.insecure_download_dialog_discard_text))
-                        .with(ModalDialogProperties.BUTTON_STYLES,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources.getString(R.string.insecure_download_dialog_confirm_text))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources.getString(R.string.insecure_download_dialog_discard_text))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
-                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
 

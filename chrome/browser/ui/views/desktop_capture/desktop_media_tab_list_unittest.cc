@@ -27,10 +27,12 @@
 using testing::Return;
 using testing::ReturnRef;
 
-const content::DesktopMediaID kDesktopMediaID0;
-const content::DesktopMediaID kDesktopMediaID1 =
-    content::DesktopMediaID(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS,
-                            1);
+const content::DesktopMediaID kDesktopMediaID0(
+    content::DesktopMediaID::Type::TYPE_WEB_CONTENTS,
+    0);
+const content::DesktopMediaID kDesktopMediaID1(
+    content::DesktopMediaID::Type::TYPE_WEB_CONTENTS,
+    1);
 const std::u16string kSourceName0 = u"source_0";
 const std::u16string kSourceName1 = u"source_1";
 const int kMaxPreviewTitleLength = 500;
@@ -41,7 +43,8 @@ class DesktopMediaTabListTest : public testing::Test {
     picker_views_ = std::make_unique<DesktopMediaPickerViews>();
 
     const std::u16string kAppName = u"foo";
-    DesktopMediaPicker::Params picker_params;
+    DesktopMediaPicker::Params picker_params{
+        DesktopMediaPicker::Params::RequestSource::kUnknown};
     picker_params.context = test_helper_.GetContext();
     picker_params.app_name = kAppName;
     picker_params.target_name = kAppName;

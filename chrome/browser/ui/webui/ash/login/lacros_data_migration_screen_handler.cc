@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -58,7 +58,7 @@ void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
 }
 
 void LacrosDataMigrationScreenHandler::SetFailureStatus(
-    const absl::optional<uint64_t>& required_size,
+    const std::optional<uint64_t>& required_size,
     bool show_goto_files) {
   CallExternalAPI(
       "setFailureStatus",

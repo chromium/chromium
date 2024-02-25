@@ -12,9 +12,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * For testing clients of OfflinePageBridge.
- */
+/** For testing clients of OfflinePageBridge. */
 public class FakeOfflinePageBridge extends OfflinePageBridge {
     private boolean mIsOfflinePageModelLoaded;
     private final List<OfflinePageItem> mItems = new ArrayList<>();

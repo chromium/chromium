@@ -48,8 +48,7 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
  private:
   bool set_management_settings_result_ = true;
   ManagementSettings last_settings_;
-  raw_ptr<StubCrosSettingsProvider, DanglingUntriaged | ExperimentalAsh>
-      settings_provider_;
+  raw_ptr<StubCrosSettingsProvider, DanglingUntriaged> settings_provider_;
 };
 
 }  // namespace ash

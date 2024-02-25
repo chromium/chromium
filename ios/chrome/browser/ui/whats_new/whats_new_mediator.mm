@@ -8,20 +8,23 @@
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/strcat.h"
-#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "url/gurl.h"
 
 @interface WhatsNewMediator ()
 
 @property(nonatomic, strong) NSMutableArray<WhatsNewItem*>* chromeTipEntries;
-@property(nonatomic, strong) WhatsNewItem* useChromeByDefaultEntry;
 
 @end
 
@@ -36,11 +39,6 @@
     // Serialize What's New Chrome Tips
     self.chromeTipEntries = [[NSMutableArray alloc] init];
     for (WhatsNewItem* item in WhatsNewChromeTipEntries(WhatsNewFilePath())) {
-      // Save use chrome by default entry separately.
-      if (item.type == WhatsNewType::kUseChromeByDefault) {
-        self.useChromeByDefaultEntry = item;
-        continue;
-      }
       [self.chromeTipEntries addObject:item];
     }
   }
@@ -49,7 +47,8 @@
 
 #pragma mark - WhatsNewDetailViewActionHandler
 
-- (void)didTapActionButton:(WhatsNewType)type {
+- (void)didTapActionButton:(WhatsNewType)type
+             primaryAction:(WhatsNewPrimaryAction)primaryAction {
   const char* type_str = WhatsNewTypeToString(type);
   if (!type_str) {
     return;
@@ -59,32 +58,33 @@
       base::StrCat({"WhatsNew.", type_str, ".PrimaryActionTapped"});
   base::RecordAction(base::UserMetricsAction(metric.c_str()));
 
-  switch (type) {
-    case WhatsNewType::kUseChromeByDefault:
+  switch (primaryAction) {
+    case WhatsNewPrimaryAction::kIOSSettings:
       // Handles actions that open iOS Settings.
       [self openSettingsURLString];
       break;
-    case WhatsNewType::kIncognitoTabsFromOtherApps:
-    case WhatsNewType::kIncognitoLock:
-      [self.handler
+    case WhatsNewPrimaryAction::kPrivacySettings:
+      // Handles actions that open privacy in Chrome settings.
+      [self.applicationHandler
           showPrivacySettingsFromViewController:self.baseViewController];
       break;
-    case WhatsNewType::kAddPasswordManually:
+    case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
-      [self.handler showSettingsFromViewController:self.baseViewController];
+      [self.applicationHandler
+          showSettingsFromViewController:self.baseViewController];
       break;
-    case WhatsNewType::kPasswordsInOtherApps:
+    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       // Handles actions that open Passwords in iOS Settings.
       ios::provider::PasswordsInOtherAppsOpensSettings();
       break;
-    case WhatsNewType::kSearchTabs:
-    case WhatsNewType::kNewOverflowMenu:
-    case WhatsNewType::kSharedHighlighting:
-    case WhatsNewType::kAutofill:
-    case WhatsNewType::kCalendarEvent:
-    case WhatsNewType::kMiniMaps:
-    case WhatsNewType::kChromeActions:
-    case WhatsNewType::kError:
+    case WhatsNewPrimaryAction::kLens:
+      // Handles actions that open Lens.
+      // TODO(crbug.com/1502927): Add the Lens promo that contains the
+      // button that triggers the Lens action.
+      [self openLens];
+      break;
+    case WhatsNewPrimaryAction::kNoAction:
+    case WhatsNewPrimaryAction::kError:
       NOTREACHED();
       break;
   };
@@ -99,7 +99,7 @@
 }
 
 - (void)didTapInstructions:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToStringM116(type);
+  const char* type_str = WhatsNewTypeToString(type);
   if (!type_str) {
     return;
   }
@@ -133,18 +133,11 @@
 
 #pragma mark Private
 
-// Returns a `WhatsNewItem` representing a highlighted chrome tip. By default,
-// it will be the `WhatsNewType::kUseChromeByDefault` otherwise it will choose a
-// random chrome tip.
+// Returns a `WhatsNewItem` representing a highlighted chrome tip.
 - (WhatsNewItem*)whatsNewChromeTipItem {
-  // Return a random chrome tip if chrome is already the default browser or if
-  // What's New M116 is enabled.
-  if (IsChromeLikelyDefaultBrowser() || IsWhatsNewM116Enabled()) {
-    int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
-    return self.chromeTipEntries[entryIndex];
-  }
-
-  return self.useChromeByDefaultEntry;
+  // Return a random chrome tip.
+  int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
+  return self.chromeTipEntries[entryIndex];
 }
 
 // Returns an Array of `WhatsNewItem` features.
@@ -158,6 +151,19 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
+}
+
+// Called to opens Lens.
+- (void)openLens {
+  // Dismiss the What's New modal since Lens must be displayed in a fullscreen
+  // modal.
+  [self.browserCoordinatorHandler dismissWhatsNew];
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::WhatsNewPromo
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.lensHandler openLensInputSelection:command];
 }
 
 // Update the consumer with What's New items.

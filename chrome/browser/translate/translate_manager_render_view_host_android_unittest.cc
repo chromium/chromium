@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/fake_translate_agent.h"
@@ -20,6 +21,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/translate/content/android/translate_message.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
@@ -74,9 +76,9 @@ class TranslateManagerRenderViewHostAndroidTest
   // Returns the translate infobar if there is 1 infobar and it is a translate
   // infobar.
   translate::TranslateInfoBarDelegate* GetTranslateInfoBar() {
-    return (infobar_manager()->infobar_count() == 1)
+    return (infobar_manager()->infobars().size() == 1)
                ? infobar_manager()
-                     ->infobar_at(0)
+                     ->infobars()[0]
                      ->delegate()
                      ->AsTranslateInfoBarDelegate()
                : NULL;
@@ -90,7 +92,7 @@ class TranslateManagerRenderViewHostAndroidTest
     if (!infobar)
       return false;
     infobar->InfoBarDismissed();  // Simulates closing the infobar.
-    infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+    infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
     return true;
   }
 #endif
@@ -123,7 +125,8 @@ class TranslateManagerRenderViewHostAndroidTest
  private:
   // The infobars that have been removed.
   // WARNING: the pointers point to deleted objects, use only for comparison.
-  std::set<infobars::InfoBarDelegate*> removed_infobars_;
+  std::set<raw_ptr<infobars::InfoBarDelegate, SetExperimental>>
+      removed_infobars_;
 
   FakeTranslateAgent fake_agent_;
 };
@@ -134,6 +137,12 @@ TEST_F(TranslateManagerRenderViewHostAndroidTest,
   // languages moved out of the Infobar into the TranslateManager.
   if (TranslateService::IsTranslateBubbleEnabled())
     return;
+
+  // TODO: https://crbug.com/40213244 - update this test to work with
+  // Translate Message UI when removing this feature flag.
+  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
+    return;
+  }
 
   GURL url("http://www.google.com");
   // We should not have a translate infobar.
@@ -154,6 +163,12 @@ TEST_F(TranslateManagerRenderViewHostAndroidTest,
   // languages moved out of the Infobar into the TranslateManager.
   if (TranslateService::IsTranslateBubbleEnabled())
     return;
+
+  // TODO: https://crbug.com/40213244 - update this test to work with
+  // Translate Message UI when removing this feature flag.
+  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
+    return;
+  }
 
   GURL url("http://www.google.com");
   // We should not have a translate infobar.

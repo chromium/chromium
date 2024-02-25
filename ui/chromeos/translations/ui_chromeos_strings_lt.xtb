@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1000498691615767391">Pasirinkite norimą atidaryti aplanką</translation>
+<translation id="1014208178561091457">Nepavyko nukopijuoti failo „<ph name="FILE_NAME" />“, nes jis šifruotas.</translation>
 <translation id="1047956942837015229">Ištrinama elementų: <ph name="COUNT" />...</translation>
 <translation id="1049926623896334335">Rašyklės dokumentas</translation>
 <translation id="1056775291175587022">Nėra tinklų</translation>
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1060368002126861100">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia perkelkite juos į „Windows“ failų aplanką.</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
+<translation id="1119383441774809183">Rodyti teksto pranešimus</translation>
 <translation id="1119447706177454957">Vidinė klaida</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Anglų k. (JAV) su programuotojų Dvorako klaviatūra</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439919885608649279">Žmogus su gėlėmis</translation>
 <translation id="1458457385801829801">Pašalinti <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Nepavyko nukopijuoti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="1471718551822868769">Slovakų k.</translation>
 <translation id="1482884275703521657">Suomių k.</translation>
 <translation id="148466539719134488">Šveicarų</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portugalų k. su JAV tarptautine klaviatūra</translation>
 <translation id="1629521517399325891">Naudotojo sertifikatas nepasiekiamas tinklo autentifikavimui.</translation>
 <translation id="1641780993263690097">Kinų k. „Pinyin“</translation>
-<translation id="1646019627374511909">Nustatoma, kad failai (<ph name="NUMBER_OF_ITEMS" />) būtų pasiekiami neprisijungus</translation>
 <translation id="164969095109328410">„Chrome“ įrenginys</translation>
 <translation id="1661207570040737402">Išnaudojote visą bendro disko „Google Workspace“ saugyklą.</translation>
 <translation id="1661867754829461514">Trūksta PIN kodo</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Nepasiekiama</translation>
 <translation id="3254434849914415189">Keisti numatytąją <ph name="FILE_TYPE" /> failų programą:</translation>
 <translation id="3255159654094949700">Arabų k.</translation>
+<translation id="326396468955264502">Nepavyko perkelti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="3264582393905923483">Kontekstas</translation>
 <translation id="3272909651715601089">Nepavyko atidaryti „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Ruošiama</translation>
+<translation id="3280719573299097127">Naudojate matuojamą tinklą. Failų sinchronizavimas pristabdytas.</translation>
 <translation id="3280987981688031357">Vinilo plokštelė</translation>
 <translation id="3290356915286466215">Neapsaugota</translation>
 <translation id="3291218047831493686">SIM užrakto nustatymus galite pakeisti prisijungę prie šio tinklo</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">„Google“ skaičiuoklė</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
-<translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3511705761158917664">Ruošiamasi sinchronizuoti <ph name="NUMBER_OF_ITEMS" /> elem...</translation>
 <translation id="3522708245912499433">Portugalų</translation>
 <translation id="3523225005467146490">Vienas aplankas bendrinamas su „<ph name="VM_NAME" />“</translation>
 <translation id="3524311639100184459">Perspėjimas: šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Aplankas</translation>
+<translation id="3529424493985988200">Jei reikia išsamios informacijos, susisiekite su administratoriumi.</translation>
 <translation id="3548125359243647069">Per daug kartų įvestas netinkamas PIN kodas.</translation>
 <translation id="3549797760399244642">Eiti į drive.google.com...</translation>
 <translation id="3553048479571901246">Jei norite atidaryti failus naudodami programą „<ph name="APP_NAME" />“, pirmiausia nukopijuokite juos į „Windows“ failų aplanką.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Kapučino kava</translation>
 <translation id="3619593063686672873">Nėra naujausių vaizdo įrašų</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, tvarko administratorius, išsami informacija</translation>
+<translation id="36451918667380448">Mobiliojo ryšio tinklo teikėjas užrakintas. Norėdami gauti pagalbos, susisiekite su teikėju.</translation>
 <translation id="3645233063072417428">Perkelta elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Pasirinkta failų: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">„Google“ disko sinchronizavimas pagal numatytuosius nustatymus yra išjungtas, kai naudojami mobiliojo ryšio duomenys.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Gėlė</translation>
 <translation id="4943368462779413526">Futbolas</translation>
 <translation id="4961158930123534723">Vienas aplankas bendrinamas su „Parallels Desktop“</translation>
+<translation id="4965874878399872778">Tikrinami failai pagal organizacijos saugos politiką...</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ atkurtas</translation>
 <translation id="4969785127455456148">Albumas</translation>
 <translation id="4972330214479971536">Nepavyko užbaigti failų sinchronizavimo sąrankos</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Atkurti failai iš „Google“ disko</translation>
 <translation id="5278111733643988471">Norėdami atkurti šį elementą, nuvilkite jį į naują aplanką, esantį už šiukšliadėžės ribų. Pradinis šio elemento aplankas „<ph name="PARENT_FOLDER_NAME" />“ buvo ištrintas.</translation>
 <translation id="5283101102242354279">Įjunkite plėtinį inkognito režimu.</translation>
-<translation id="5286194356314741248">Nuskaitoma</translation>
 <translation id="5288441970121584418">Mėsainis</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Šio failo perkėlimas užblokuotas pagal administratoriaus politiką</translation>
 <translation id="5305688511332277257">Nėra įdiegtų</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Pašalinti visi įrašai pasirinkimo srityje.</translation>
 <translation id="5838825566232597749">JAV „Workman“ tarptautinė</translation>
 <translation id="5845721951356578987">Slaugytojas</translation>
+<translation id="5858478190805449225">Akumuliatoriaus tausojimo režimas įjungtas. Bandykite dar kartą, kai Akumuliatoriaus tausojimo priemonės režimas bus išjungtas.</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5861477046012235702">Žaidėjas</translation>
 <translation id="5864471791310927901">DHCP paieška nepavyko</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">Šis failas atidarytas kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
 <translation id="6394388407447716302">Tik skaitoma</translation>
 <translation id="6395575651121294044">Elementų: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Nepavyko perkelti failo „<ph name="FILE_NAME" />“, nes jis šifruotas.</translation>
 <translation id="642282551015776456">Šio pavadinimo negalima naudoti kaip aplanko pavadinimo</translation>
 <translation id="6423031066725912715">Vietnamiečių k. su TCVN klaviatūra</translation>
 <translation id="6430271654280079150">Liko vienas bandymas.</translation>
 <translation id="643243556292470964">Ištrinti failai perkeliami į šiukšliadėžę</translation>
 <translation id="6438480100790416671">Tikrinama saugyklos vieta…</translation>
+<translation id="6451527188465304418">Tikrinamas failas pagal organizacijos saugos politiką...</translation>
 <translation id="6485131920355264772">Nepavyko nuskaityti vietos informacijos</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="649877868557234318">Failas <ph name="FILE_NAME" /> išarchyvuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">Pagal administratoriaus politiką neleidžiama kopijuoti tiek failų: <ph name="COUNT" /></translation>
 <translation id="6509122719576673235">Norvegų</translation>
 <translation id="6528513914570774834">Leisti kitiems šio įrenginio naudotojams naudoti šį tinklą</translation>
-<translation id="653019979737152879">Sinchronizuojamas failas „<ph name="FILE_NAME" />“...</translation>
 <translation id="6549689063733911810">Naujausi</translation>
 <translation id="6558280019477628686">Įvyko klaida. Kai kurie elementai galėjo nebūti ištrinti.</translation>
 <translation id="656398493051028875">Ištrinamas failas „<ph name="FILENAME" />“...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Suteikite „Linux“ programoms leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Šiuo metu esate neprisijungę. Sinchronizavimas bus atnaujintas, kai būsite prisijungę prie interneto</translation>
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
-<translation id="7592775719802218421">Nustatoma, kad failas „<ph name="FILE_NAME" />“ būtų pasiekiamas neprisijungus</translation>
 <translation id="7600126690270271294">Serbų k.</translation>
 <translation id="7603724359189955920">Tinkleliai</translation>
 <translation id="7627790789328695202">Oi, „<ph name="FILE_NAME" />“ jau yra. Pervardykite jį ir bandykite dar kartą.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Mano Diske esantys failai bus automatiškai sinchronizuojami su „Chromebook“, kad galėtumėte juos pasiekti be interneto ryšio.</translation>
 <translation id="7925247922861151263">AAA patikra nepavyko</translation>
-<translation id="7925686952655276919">Sinchronizuojant nenaudoti duomenų mobiliesiems</translation>
 <translation id="7928710562641958568">Išstumti įrenginį</translation>
 <translation id="7933875256234974853">Ruošiamasi sinchronizuoti Disko failus...</translation>
 <translation id="7943385054491506837">JAV „Colemak“</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Atsisiųsti „<ph name="PROFILE_NAME" />“</translation>
 <translation id="8106045200081704138">Bendrinama su manimi</translation>
 <translation id="8116072619078571545">Ledinis vanduo</translation>
+<translation id="8120392982188717723">Leisti sinchronizuoti matuojamuose tinkluose</translation>
 <translation id="8124093710070495550">Sinchronizavimo problema</translation>
 <translation id="8128733386027980860">Anglų k. (JK) su Dvorako klaviatūra</translation>
 <translation id="8137331602592933310">Su jumis buvo bendrintas failas „<ph name="FILENAME" />“. Negalite jo ištrinti, nes jis jums nepriklauso.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8147028810663464959">Simbolio plotis yra viso dydžio</translation>
 <translation id="8151638057146502721">Konfigūruoti</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{Viena klaida.}one{# klaida.}few{# klaidos.}many{# klaidos.}other{# klaidų.}}</translation>
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
 <translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>
 <translation id="8175731104491895765">Prancūzų k. (Belgija)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Suteikti „<ph name="VM_NAME" />“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Netinkamas WEP raktas</translation>
 <translation id="8372852072747894550">Graikų k.</translation>
+<translation id="8377269993083688872">El. pašto išdėstymai</translation>
 <translation id="8386903983509584791">Nuskaitymas baigtas</translation>
 <translation id="8387733224523483503">Failas „<ph name="FILE_NAME" />“ išskirtas.</translation>
 <translation id="8395901698320285466">Aspektai</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Pasirinkite norimą atidaryti failą</translation>
 <translation id="8577897833047451336">Kroatų k.</translation>
 <translation id="8578308463707544055">Indoneziečių k.</translation>
-<translation id="8579285237314169903">Sinchronizuojama elementų: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">Šis failas yra konfidencialus ir jam taikomi administratoriaus politikos apribojimai.</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8713112442029511308">Maltiečių k.</translation>
+<translation id="8714138378966541668">Užrakino teikėjas</translation>
 <translation id="8714406895390098252">Dviratis</translation>
 <translation id="8719721339511222681">Pasirinktas įrašas „<ph name="ENTRY_NAME" />“.</translation>
 <translation id="872537912056138402">Kroatų</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Leisti tarpinius serverius bendrai naudojamuose tinkluose</translation>
 <translation id="8790981080411996443">Augalus laistantis žmogus</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{Vienas perspėjimas.}one{# perspėjimas.}few{# perspėjimai.}many{# perspėjimo.}other{# perspėjimų.}}</translation>
 <translation id="8808686172382650546">Katė</translation>
 <translation id="8810671769985673465">Nepavyko suglaudinti, yra elementas: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Ispanų k. (Ispanija)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
-<translation id="9083722265619106011">{0,plural, =1{Vienas perspėjimas.}one{<ph name="COUNT" /> perspėjimas.}few{<ph name="COUNT" /> perspėjimai.}many{<ph name="COUNT" /> perspėjimo.}other{<ph name="COUNT" /> perspėjimų.}}</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

@@ -44,7 +44,7 @@ class MockResponseWebView : public StubWebView {
     account.Set("givenName", "Foo");
     account.Set("pictureUrl", "https://pics/pic.jpg");
     account.Set("idpConfigUrl", "https://idp.example/fedcm.json");
-    account.Set("idpSigninUrl", "https://idp.example/signin");
+    account.Set("idpLoginUrl", "https://idp.example/login");
     account.Set("loginState", "SignIn");
 
     base::Value::List accounts;
@@ -55,6 +55,17 @@ class MockResponseWebView : public StubWebView {
   }
 
   const std::string& GetLastCommand() const { return last_command_; }
+
+  bool IsDetached() const override { return false; }
+
+  Status CallFunctionWithTimeout(
+      const std::string& frame,
+      const std::string& function,
+      const base::Value::List& args,
+      const base::TimeDelta& timeout,
+      std::unique_ptr<base::Value>* result) override {
+    return Status{kOk};
+  }
 
  private:
   FedCmTracker tracker_;
@@ -145,9 +156,9 @@ TEST_F(FedCmCommandsTest, ExecuteGetAccounts) {
   std::string* idpConfigUrl = account->FindString("idpConfigUrl");
   ASSERT_TRUE(idpConfigUrl);
   EXPECT_EQ(*idpConfigUrl, "https://idp.example/fedcm.json");
-  std::string* idpSigninUrl = account->FindString("idpSigninUrl");
-  ASSERT_TRUE(idpSigninUrl);
-  EXPECT_EQ(*idpSigninUrl, "https://idp.example/signin");
+  std::string* idpLoginUrl = account->FindString("idpLoginUrl");
+  ASSERT_TRUE(idpLoginUrl);
+  EXPECT_EQ(*idpLoginUrl, "https://idp.example/login");
   std::string* loginState = account->FindString("loginState");
   ASSERT_TRUE(loginState);
   EXPECT_EQ(*loginState, "SignIn");

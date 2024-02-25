@@ -1,5 +1,6 @@
 Tests shared storage item deletion & clearing via devtools.
 Metadata: {
+    bytesUsed : 180
     creationTime : <number>
     length : 3
     remainingBudget : 12
@@ -21,6 +22,7 @@ Entries:[
 Delete an existing entry via devtools
 Delete a non-existing entry via devtools
 Metadata: {
+    bytesUsed : 124
     creationTime : <number>
     length : 2
     remainingBudget : 12

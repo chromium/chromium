@@ -153,7 +153,7 @@ class MediaClientImpl : public ash::MediaClient,
   void OnGetCameraSWPrivacySwitchState(
       cros::mojom::CameraPrivacySwitchState state);
 
-  raw_ptr<ash::MediaController, ExperimentalAsh> media_controller_ = nullptr;
+  raw_ptr<ash::MediaController> media_controller_ = nullptr;
 
   base::flat_map<content::BrowserContext*, ui::MediaKeysListener::Delegate*>
       media_key_delegates_;
@@ -162,8 +162,7 @@ class MediaClientImpl : public ash::MediaClient,
   // to handle them first.
   bool is_forcing_media_client_key_handling_ = false;
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      active_context_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> active_context_ = nullptr;
 
   ash::MediaCaptureState vm_media_capture_state_ =
       ash::MediaCaptureState::kNone;

@@ -1,0 +1,177 @@
+This is a testharness.js-based test.
+Found 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Presentation interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface object length
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface object name
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface: attribute defaultRequest
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation interface: attribute receiver
+  assert_own_property: self does not have own property "Presentation" expected property "Presentation" missing
+[FAIL] Presentation must be primary interface of navigator.presentation
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.presentation
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Presentation interface: navigator.presentation must inherit property "defaultRequest" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Presentation interface: navigator.presentation must inherit property "receiver" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PresentationRequest interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface object length
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface object name
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: operation start()
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: operation reconnect(USVString)
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: operation getAvailability()
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest interface: attribute onconnectionavailable
+  assert_own_property: self does not have own property "PresentationRequest" expected property "PresentationRequest" missing
+[FAIL] PresentationRequest must be primary interface of navigator.presentation.defaultRequest
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] Stringification of navigator.presentation.defaultRequest
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest interface: navigator.presentation.defaultRequest must inherit property "start()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest interface: navigator.presentation.defaultRequest must inherit property "reconnect(USVString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest interface: calling reconnect(USVString) on navigator.presentation.defaultRequest with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest interface: navigator.presentation.defaultRequest must inherit property "getAvailability()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest interface: navigator.presentation.defaultRequest must inherit property "onconnectionavailable" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading 'defaultRequest')"
+[FAIL] PresentationRequest must be primary interface of presentation_request
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] Stringification of presentation_request
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest interface: presentation_request must inherit property "start()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest interface: presentation_request must inherit property "reconnect(USVString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest interface: calling reconnect(USVString) on presentation_request with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest interface: presentation_request must inherit property "getAvailability()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest interface: presentation_request must inherit property "onconnectionavailable" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request is not defined"
+[FAIL] PresentationRequest must be primary interface of presentation_request_urls
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] Stringification of presentation_request_urls
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationRequest interface: presentation_request_urls must inherit property "start()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationRequest interface: presentation_request_urls must inherit property "reconnect(USVString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationRequest interface: calling reconnect(USVString) on presentation_request_urls with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationRequest interface: presentation_request_urls must inherit property "getAvailability()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationRequest interface: presentation_request_urls must inherit property "onconnectionavailable" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: presentation_request_urls is not defined"
+[FAIL] PresentationAvailability interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface object length
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface object name
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface: attribute value
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationAvailability interface: attribute onchange
+  assert_own_property: self does not have own property "PresentationAvailability" expected property "PresentationAvailability" missing
+[FAIL] PresentationConnectionAvailableEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface object length
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface object name
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnectionAvailableEvent interface: attribute connection
+  assert_own_property: self does not have own property "PresentationConnectionAvailableEvent" expected property "PresentationConnectionAvailableEvent" missing
+[FAIL] PresentationConnection interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface object length
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface object name
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute id
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute url
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute state
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation close()
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation terminate()
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute onconnect
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute onclose
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute onterminate
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute binaryType
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: attribute onmessage
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation send(DOMString)
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation send(Blob)
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation send(ArrayBuffer)
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnection interface: operation send(ArrayBufferView)
+  assert_own_property: self does not have own property "PresentationConnection" expected property "PresentationConnection" missing
+[FAIL] PresentationConnectionCloseEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface object length
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface object name
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface: attribute reason
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] PresentationConnectionCloseEvent interface: attribute message
+  assert_own_property: self does not have own property "PresentationConnectionCloseEvent" expected property "PresentationConnectionCloseEvent" missing
+[FAIL] Navigator interface: attribute presentation
+  assert_true: The prototype object must have a property "presentation" expected true got false
+Harness: the test ran to completion.

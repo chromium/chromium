@@ -42,22 +42,15 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   void StartObservingInteractionsForDelayedBlockingPageHelper(
       const security_interstitials::UnsafeResource& resource,
       bool is_main_frame) override;
-  void CheckLookupMechanismExperimentEligibility(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
-  void CheckExperimentEligibilityAndStartBlockingPage(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
   bool IsUrlAllowlisted(const GURL& url) override;
   void SetPolicyAllowlistDomains(
       const std::vector<std::string>& allowlist_domains) override;
-  bool ShouldSkipRequestCheck(const GURL& original_url,
-                              int frame_tree_node_id,
-                              int render_process_id,
-                              int render_frame_id,
-                              bool originated_from_service_worker) override;
+  bool ShouldSkipRequestCheck(
+      const GURL& original_url,
+      int frame_tree_node_id,
+      int render_process_id,
+      base::optional_ref<const base::UnguessableToken> render_frame_token,
+      bool originated_from_service_worker) override;
 
   // This function is unused on iOS, since iOS cannot use content/.
   // TODO(crbug.com/1069047): Refactor SafeBrowsingUrlCheckerImpl and

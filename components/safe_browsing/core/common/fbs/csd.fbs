@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 // If you want to change this flatbuffer definition or you have questions
-// regarding its format please contact chrome-anti-phishing@googlegroups.com.
+// regarding its format please contact safebrowsing@chromium.org.
 
 namespace safe_browsing.flat;
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -26,6 +27,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     // The aspect ratio of large images or video previews, computed based on 1280:720.
     private static final float FEED_IMAGE_OR_VIDEO_ASPECT_RATIO = 1.778f;
 
+    private final View mView;
     private final Activity mActivity;
 
     /**
@@ -36,9 +38,14 @@ public class FeedStreamViewResizer extends ViewResizer {
      * @param minWidePaddingPixels Minimum lateral padding to use in {@link
      *         HorizontalDisplayStyle#WIDE}.
      */
-    public FeedStreamViewResizer(Activity activity, View view, UiConfig config,
-            int defaultPaddingPixels, int minWidePaddingPixels) {
+    public FeedStreamViewResizer(
+            Activity activity,
+            View view,
+            UiConfig config,
+            int defaultPaddingPixels,
+            int minWidePaddingPixels) {
         super(view, config, defaultPaddingPixels, minWidePaddingPixels);
+        mView = view;
         mActivity = activity;
     }
 
@@ -53,13 +60,15 @@ public class FeedStreamViewResizer extends ViewResizer {
      */
     public static FeedStreamViewResizer createAndAttach(
             Activity activity, View view, UiConfig config) {
-        int defaultPaddingPixels = activity.getResources().getDimensionPixelSize(
-                R.dimen.content_suggestions_card_modern_margin);
-        int minWidePaddingPixels = activity.getResources().getDimensionPixelSize(
-                R.dimen.ntp_wide_card_lateral_margins);
+        Resources resources = activity.getResources();
+        int defaultPaddingPixels =
+                resources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_margin);
+        int minWidePaddingPixels =
+                resources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
 
-        FeedStreamViewResizer viewResizer = new FeedStreamViewResizer(
-                activity, view, config, defaultPaddingPixels, minWidePaddingPixels);
+        FeedStreamViewResizer viewResizer =
+                new FeedStreamViewResizer(
+                        activity, view, config, defaultPaddingPixels, minWidePaddingPixels);
         viewResizer.attach();
         return viewResizer;
     }
@@ -73,7 +82,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     @Override
     protected int computePadding() {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mUiConfig.getContext())
-                && isCurrentDisplayWide()) {
+                && mUiConfig.getCurrentDisplayStyle().isWide()) {
             return computePaddingWide();
         } else {
             return computePaddingNarrow();
@@ -82,12 +91,11 @@ public class FeedStreamViewResizer extends ViewResizer {
 
     private int computePaddingNarrow() {
         int padding = super.computePadding();
-        if (mUiConfig.getContext().getResources().getConfiguration().orientation
-                        != Configuration.ORIENTATION_LANDSCAPE
+        Resources resources = mUiConfig.getContext().getResources();
+        if (resources.getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
                 || ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
             return padding;
         }
-        Resources resources = mUiConfig.getContext().getResources();
         float dpToPx = resources.getDisplayMetrics().density;
         float screenWidth = getScreenWidth();
         float screenHeight = resources.getConfiguration().screenHeightDp * dpToPx;
@@ -101,29 +109,32 @@ public class FeedStreamViewResizer extends ViewResizer {
         float screenWidth = getScreenWidth();
         // (a) Once the width of the body reaches breakpoint,
         // adjust margin sizes while keeping the body width constant.
-        int customPadding = (int) ((screenWidth
-                                           - mActivity.getResources().getDimensionPixelSize(
-                                                   R.dimen.ntp_wide_card_width_breakpoint))
-                / 2);
+        Resources resources = mActivity.getResources();
+        int breakpointWidth =
+                resources.getDimensionPixelSize(R.dimen.ntp_wide_card_width_breakpoint);
+        int customPadding = (int) ((screenWidth - breakpointWidth) / 2);
         // (b) Once the margins reach max, adjust the body size while keeping margins constant.
-        customPadding = Math.min(customPadding,
-                mActivity.getResources().getDimensionPixelSize(
-                        R.dimen.ntp_wide_card_lateral_margins_max));
+        customPadding =
+                Math.min(
+                        customPadding,
+                        resources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins_max));
         // (c) Once the body reaches max width, adjust the margin widths while keeping the body
         // constant.
-        customPadding = Math.max(customPadding,
-                (int) (screenWidth
-                        - mActivity.getResources().getDimensionPixelSize(
-                                R.dimen.ntp_wide_card_width_max))
-                        / 2);
+        int maxWidth = resources.getDimensionPixelSize(R.dimen.ntp_wide_card_width_max);
+        customPadding = Math.max(customPadding, (int) (screenWidth - maxWidth) / 2);
         // (d) Return max of computed padding and min allowed margin.
         return Math.max(customPadding, getMinWidePaddingPixels());
     }
 
     private float getScreenWidth() {
         Resources resources = mUiConfig.getContext().getResources();
-        float dpToPx = resources.getDisplayMetrics().density;
-        float screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
+        float screenWidth;
+        if (BuildInfo.getInstance().isAutomotive && mView != null) {
+            screenWidth = mView.getMeasuredWidth();
+        } else {
+            float dpToPx = resources.getDisplayMetrics().density;
+            screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
+        }
         return screenWidth;
     }
 

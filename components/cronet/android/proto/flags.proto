@@ -1,0 +1,62 @@
+// Describes the proto schema for HTTP flags.
+//
+// IMPORTANT: a copy of the proto schema described here is used by the HTTP
+// flags producer, which is the responsibility of the host system. Be very
+// careful about backward compatibility implications of any changes made in this
+// file.
+
+syntax = "proto2";
+
+package org.chromium.net.httpflags;
+
+option java_package = "org.chromium.net.httpflags";
+option java_multiple_files = true;
+
+// Describes the value that an HTTP flag should have, based on various criteria
+// depending on the context in which the flag is used.
+message FlagValue {
+  // A possible value for this flag, along with a set of constraints that have
+  // to be met for that value to be used.
+  message ConstrainedValue {
+    // App selector: only apply this value to applications whose package ID
+    // matches the value of this field, e.g. "com.google.foo".
+    // If not set, matches all apps.
+    optional string app_id = 1;
+
+    // Only apply this value to client libraries running at least this version.
+    //
+    // Currently this refers to Cronet versions, which are in the form
+    // <MAJOR>.<MINOR>.<BUILD>.<PATCH>.
+    //
+    // The comparison is done in the usual way version numbers are compared,
+    // i.e. they are treated as numeric tuples and compared
+    // lexicographically. If the tuple dimensions differ, the smallest tuple is
+    // zero-extended to match. For example, a `min_version` of 4.5.6.0 (or
+    // just 4.5.6) will match 4.5.6.0, 4.5.6.1, 4.5.7.0, 4.5.10.0, 4.6.0.0,
+    // 5.0.0.0, etc. but will not match 4.5.5.99, 4.4.7.0, 3.6.7.1, etc.
+    //
+    // If not set, matches all versions. The empty string is not a valid value.
+    optional string min_version = 2;
+
+    // If none of these fields are set, the flag is deemed to be unset.
+    oneof value {
+      bool bool_value = 3;
+      int64 int_value = 4;
+      float float_value = 5;
+      string string_value = 6;
+      bytes bytes_value = 7;
+    }
+  }
+
+  // Each entry in this list is tried in turn, and the first entry to match
+  // determines the flag value. If no entries match, the flag is deemed to be
+  // unset.
+  repeated ConstrainedValue constrained_values = 8;
+}
+
+// The format of the HTTP flags file is defined as the binary representation of
+// an instance of this proto.
+message Flags {
+  // The key is the name of the flag. For example, "Cronet_log_me".
+  map<string, FlagValue> flags = 1;
+}

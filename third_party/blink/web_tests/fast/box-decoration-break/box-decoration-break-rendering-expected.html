@@ -13,12 +13,13 @@
     .shadowObscurer {
         display: inline;
         position: absolute;
-        width: 5px;
+        width: 7px;
         height: 40px;
         background: white;
     }
     #rightCutHighlight {
         display: inline;
+        padding-right: 3px;
         border-top: 2px solid red;
         border-right: 0px solid red;
         border-left: 2px solid red;
@@ -29,7 +30,9 @@
     #leftCutHighlight {
         display: inline;
         margin: 0px;
+        margin-left: -3px;
         padding: 0px;
+        padding-left: 3px;
         border-top: 2px solid red;
         border-right: 2px solid red;
         border-left: 0px solid red;
@@ -54,9 +57,9 @@
       <span>
         This long word should break in a new line :
         <span id="rightCutHighlight">veryveryveryveryveryveryvery-</span>
-        <div class="shadowObscurer" style="top:40px;"></div><br>
-        <div class="shadowObscurer" style="top:80px; margin-left:-5px;"></div>
-        <span id="leftCutHighlight">-longword</span>. box-decoration-break is set to cloned,
+        <div class="shadowObscurer" style="top:40px; margin-left:-3px;"></div><br>
+        <div class="shadowObscurer" style="top:80px; margin-left:-7px;"></div>
+        <span id="leftCutHighlight">-longword</span>. box-decoration-break is set to sliced,
         so the right edge of the previous line is cut, and the left edge of the highlight in this line is cut too.
       </span>
     </div>

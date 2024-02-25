@@ -12,15 +12,16 @@ import '../shared/animations.css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
-import {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
+import type {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
 import {getTemplate} from './nux_set_as_default.html.js';
-import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
+import type {NuxSetAsDefaultProxy} from './nux_set_as_default_proxy.js';
+import {NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
 export interface NuxSetAsDefaultElement {
   $: {

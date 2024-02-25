@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -20,7 +21,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -29,6 +29,8 @@ using UserState = SafeBrowsingMetricsCollector::UserState;
 
 class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
  public:
+  using ProtegoPingType = SafeBrowsingMetricsCollector::ProtegoPingType;
+
   SafeBrowsingMetricsCollectorTest() = default;
 
   void SetUp() override {
@@ -298,6 +300,10 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       EventType::ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS);
   run_test(/*expected_latest_event_type=*/EventType::
                ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Days(7),
+                         EventType::ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS);
+  run_test(/*expected_latest_event_type=*/EventType::
+               ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
@@ -575,6 +581,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   FastForwardAndAddEvent(
       base::Hours(1),
       EventType::ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::Hours(1),
+                         EventType::ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(
       base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   FastForwardAndAddEvent(
@@ -586,7 +594,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       /* expected_count */ 1);
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
-      /* sample */ 6,
+      /* sample */ 7,
       /* expected_count */ 1);
   histograms.ExpectTotalCount(
       "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
@@ -605,7 +613,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       /* expected_count */ 2);
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
-      /* sample */ 7,
+      /* sample */ 8,
       /* expected_count */ 1);
 
   task_environment_.FastForwardBy(base::Days(1));
@@ -614,7 +622,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       /* expected_count */ 3);
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
-      /* sample */ 7,
+      /* sample */ 8,
       /* expected_count */ 2);
 }
 
@@ -716,8 +724,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
-  EXPECT_EQ(absl::nullopt, metrics_collector_->GetLatestEventTimestamp(
-                               EventType::DATABASE_INTERSTITIAL_BYPASS));
+  EXPECT_EQ(std::nullopt, metrics_collector_->GetLatestEventTimestamp(
+                              EventType::DATABASE_INTERSTITIAL_BYPASS));
   // Timestamps are rounded to second when stored in prefs.
   base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Seconds(base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
@@ -734,7 +742,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
        GetLatestSecuritySensitiveEventTimestamp) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
   // Timestamps are rounded to second when stored in prefs.
   base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -781,7 +789,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -796,7 +804,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -812,7 +820,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -833,7 +841,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -854,7 +862,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
       /* expected_count */ 1);
 }
 
@@ -871,7 +879,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -889,7 +897,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kNone,
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 
@@ -905,7 +913,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithToken,
+      ProtegoPingType::kWithToken,
       /* expected_count */ 1);
 }
 
@@ -922,7 +930,125 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   histograms.ExpectUniqueSample(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
-      SafeBrowsingMetricsCollector::ProtegoPingType::kWithoutToken,
+      ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       NewProtegoRequestLogsWithTokenWhenWithTokenWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Minutes(30));
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      ProtegoPingType::kWithToken,
+      /* expected_count */ 1);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
+      ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(
+    SafeBrowsingMetricsCollectorTest,
+    NewProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(1) - base::Minutes(30));
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(1) - base::Minutes(40));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
+      ProtegoPingType::kNone,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsWithTokenWhenWithTokenWasSentWithinLast7Days) {
+  // This test shows that a ping within the last 7 days is logged to the
+  // histogram and that the logic records a ping with a token preferrentially
+  // over a ping without a token.
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(7) + base::Seconds(1));
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Minutes(10));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
+      ProtegoPingType::kWithToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSentWithinLast7Days) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(7) + base::Seconds(1));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
+      ProtegoPingType::kWithoutToken,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       ProtegoRequestLogsNoneWhenNoPingWasSentWithinLast7Days) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  pref_service_.SetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
+      base::Time::Now() - base::Days(7));
+  pref_service_.SetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+                        base::Time::Now() - base::Days(7));
+
+  metrics_collector_->StartLogging();
+
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
+      ProtegoPingType::kNone,
       /* expected_count */ 1);
 }
 

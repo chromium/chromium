@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
     AmbientProviderInterface {
-  public albums: AmbientModeAlbum[] = [
+  albums: AmbientModeAlbum[] = [
     {
       id: '0',
       checked: false,
@@ -65,9 +65,10 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     },
   ];
 
-  public shouldShowBanner: boolean = true;
+  shouldShowBanner: boolean = true;
+  geolocationEnabled: boolean = true;
 
-  public previews: Url[] = [
+  previews: Url[] = [
     {url: 'http://preview0'},
     {url: 'http://preview1'},
     {url: 'http://preview2'},
@@ -79,7 +80,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'isAmbientModeEnabled',
       'setAmbientObserver',
       'setAmbientModeEnabled',
-      'setAnimationTheme',
+      'setAmbientTheme',
       'setPageViewed',
       'setScreenSaverDuration',
       'setTopicSource',
@@ -89,6 +90,8 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'fetchSettingsAndAlbums',
       'shouldShowTimeOfDayBanner',
       'handleTimeOfDayBannerDismissed',
+      'isGeolocationEnabledForSystemServices',
+      'enableGeolocationForSystemServices',
     ]);
   }
 
@@ -110,8 +113,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
         /*ambientModeEnabled=*/ true);
 
     this.ambientObserverRemote!.onAlbumsChanged(this.albums);
-    this.ambientObserverRemote!.onAnimationThemeChanged(
-        AnimationTheme.kSlideshow);
+    this.ambientObserverRemote!.onAmbientThemeChanged(AmbientTheme.kSlideshow);
     this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     this.ambientObserverRemote!.onTemperatureUnitChanged(
         TemperatureUnit.kFahrenheit);
@@ -122,8 +124,8 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     this.methodCalled('setAmbientModeEnabled', ambientModeEnabled);
   }
 
-  setAnimationTheme(animationTheme: AnimationTheme) {
-    this.methodCalled('setAnimationTheme', animationTheme);
+  setAmbientTheme(ambientTheme: AmbientTheme) {
+    this.methodCalled('setAmbientTheme', ambientTheme);
   }
 
   setScreenSaverDuration(minutes: number): void {
@@ -161,5 +163,16 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   handleTimeOfDayBannerDismissed(): void {
     this.methodCalled('handleTimeOfDayBannerDismissed');
+  }
+
+  isGeolocationEnabledForSystemServices():
+      Promise<{geolocationEnabled: boolean}> {
+    this.methodCalled('isGeolocationEnabledForSystemServices');
+    return Promise.resolve({geolocationEnabled: this.geolocationEnabled});
+  }
+
+  enableGeolocationForSystemServices() {
+    this.geolocationEnabled = true;
+    this.methodCalled('enableGeolocationForSystemServices');
   }
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -18,6 +19,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -35,23 +37,33 @@
 namespace ash {
 namespace {
 
-constexpr int kSeeAllIconSize = 24;
-constexpr int kFooterVerticalSpacing = 7;
-constexpr int kFooterStartSpacing = 6;
+constexpr int kSeeAllIconLabelSpacing = 6;
 
 class SeeAllButton : public views::LabelButton {
+  METADATA_HEADER(SeeAllButton, views::LabelButton)
+
  public:
   SeeAllButton(const std::u16string& see_all_accessible_name,
                base::RepeatingClosure on_see_all_pressed) {
-    SetText(l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
+    const bool stable_launch =
+        features::AreAnyGlanceablesTimeManagementViewsEnabled();
+    SetText(stable_launch
+                ? u""
+                : l10n_util::GetStringUTF16(
+                      IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL));
     SetCallback(std::move(on_see_all_pressed));
     SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                                 cros_tokens::kCrosSysOnSurface,
-                                                 kSeeAllIconSize));
+    if (stable_launch) {
+      // Explicitly set an empty border to replace the border created by default
+      // in LabelButton.
+      SetBorder(views::CreateEmptyBorder(0));
+    }
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                       cros_tokens::kCrosSysOnSurface));
+    SetImageLabelSpacing(kSeeAllIconLabelSpacing);
     SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
@@ -63,6 +75,9 @@ class SeeAllButton : public views::LabelButton {
   SeeAllButton& operator=(const SeeAllButton&) = delete;
   ~SeeAllButton() override = default;
 };
+
+BEGIN_METADATA(SeeAllButton)
+END_METADATA
 
 }  // namespace
 
@@ -89,16 +104,19 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+    items_count_label_->SetText(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
+  }
+
   see_all_button_ = AddChildView(std::make_unique<SeeAllButton>(
       see_all_accessible_name, on_see_all_pressed));
-
-  SetProperty(views::kMarginsKey,
-              gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,
-                                kFooterVerticalSpacing, 0));
 }
 
 void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                                  size_t total_items_count) {
+  // Glanceable tasks in stable launch doesn't show the item count.
+  CHECK(!features::AreAnyGlanceablesTimeManagementViewsEnabled());
   CHECK_LE(visible_items_count, total_items_count);
   items_count_label_->SetText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL,
@@ -106,7 +124,7 @@ void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                  base::NumberToString16(total_items_count)));
 }
 
-BEGIN_METADATA(GlanceablesListFooterView, views::View)
+BEGIN_METADATA(GlanceablesListFooterView)
 END_METADATA
 
 }  // namespace ash

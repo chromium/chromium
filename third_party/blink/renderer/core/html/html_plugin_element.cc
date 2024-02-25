@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -172,8 +173,11 @@ void HTMLPlugInElement::SetFocused(bool focused,
 }
 
 bool HTMLPlugInElement::CanProcessDrag() const {
-  return PluginEmbeddedContentView() &&
-         PluginEmbeddedContentView()->CanProcessDrag();
+  // Be careful to call PluginEmbeddedContentView only once, because calling
+  // it can change things such that another call will return a different
+  // result.
+  WebPluginContainerImpl* plugin = PluginEmbeddedContentView();
+  return plugin && plugin->CanProcessDrag();
 }
 
 bool HTMLPlugInElement::CanStartSelection() const {
@@ -247,10 +251,8 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
     GetDocument().IncrementLoadEventDelayCount();
     GetDocument().LoadPluginsSoon();
   }
-  if (image_loader_ && layout_object->IsLayoutImage()) {
-    LayoutImageResource* image_resource =
-        To<LayoutImage>(layout_object)->ImageResource();
-    image_resource->SetImageResource(image_loader_->GetContent());
+  if (image_loader_ && IsA<LayoutImage>(*layout_object)) {
+    image_loader_->OnAttachLayoutTree();
   }
   if (layout_object->AffectsWhitespaceSiblings())
     context.previous_in_flow = layout_object;
@@ -385,10 +387,13 @@ v8::Local<v8::Object> HTMLPlugInElement::PluginWrapper() {
   // If the host dynamically turns off JavaScript (or Java) we will still
   // return the cached allocated Bindings::Instance. Not supporting this
   // edge-case is OK.
-  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
+  v8::Isolate* isolate = GetDocument().GetAgent().isolate();
   if (plugin_wrapper_.IsEmpty()) {
     WebPluginContainerImpl* plugin;
 
+    // Be careful to call PluginEmbeddedContentView only once, because calling
+    // it can change things such that another call will return a different
+    // result.
     if (persisted_plugin_)
       plugin = persisted_plugin_;
     else
@@ -481,7 +486,6 @@ NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
       V8AtomicString(script_state->GetIsolate(), name);
   v8::Local<v8::Object> this_wrapper =
       ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this)
-          .ToLocalChecked()
           .As<v8::Object>();
   bool instance_has_property;
   bool holder_has_property;
@@ -591,9 +595,11 @@ LayoutEmbeddedContent* HTMLPlugInElement::LayoutEmbeddedContentForJSBindings()
   return ExistingLayoutEmbeddedContent();
 }
 
-bool HTMLPlugInElement::IsKeyboardFocusable() const {
-  if (HTMLFrameOwnerElement::IsKeyboardFocusable())
+bool HTMLPlugInElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  if (HTMLFrameOwnerElement::IsKeyboardFocusable(update_behavior)) {
     return true;
+  }
 
   WebPluginContainerImpl* embedded_content_view = nullptr;
   if (LayoutEmbeddedContent* layout_embedded_content =
@@ -603,7 +609,7 @@ bool HTMLPlugInElement::IsKeyboardFocusable() const {
 
   return GetDocument().IsActive() && embedded_content_view &&
          embedded_content_view->SupportsKeyboardFocus() &&
-         IsBaseElementFocusable();
+         IsFocusable(update_behavior);
 }
 
 bool HTMLPlugInElement::HasCustomFocusLogic() const {
@@ -615,10 +621,11 @@ bool HTMLPlugInElement::IsPluginElement() const {
 }
 
 bool HTMLPlugInElement::IsErrorplaceholder() {
-  if (PluginEmbeddedContentView() &&
-      PluginEmbeddedContentView()->IsErrorplaceholder())
-    return true;
-  return false;
+  // Be careful to call PluginEmbeddedContentView only once, because calling
+  // it can change things such that another call will return a different
+  // result.
+  WebPluginContainerImpl* plugin = PluginEmbeddedContentView();
+  return plugin && plugin->IsErrorplaceholder();
 }
 
 void HTMLPlugInElement::DisconnectContentFrame() {
@@ -626,13 +633,16 @@ void HTMLPlugInElement::DisconnectContentFrame() {
   SetPersistedPlugin(nullptr);
 }
 
-bool HTMLPlugInElement::IsFocusableStyle() const {
-  if (HTMLFrameOwnerElement::SupportsFocus() &&
-      HTMLFrameOwnerElement::IsFocusableStyle())
+bool HTMLPlugInElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
+  if (HTMLFrameOwnerElement::SupportsFocus(update_behavior) &&
+      HTMLFrameOwnerElement::IsFocusableStyle(update_behavior)) {
     return true;
+  }
 
-  if (UseFallbackContent() || !HTMLFrameOwnerElement::IsFocusableStyle())
+  if (UseFallbackContent() ||
+      !HTMLFrameOwnerElement::IsFocusableStyle(update_behavior)) {
     return false;
+  }
   return plugin_is_available_;
 }
 
@@ -847,7 +857,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
              frame, mojom::blink::RequestContextType::OBJECT,
              network::mojom::blink::IPAddressSpace::kUnknown, url,
              ResourceRequest::RedirectStatus::kNoRedirect, url,
-             /* devtools_id= */ absl::nullopt, ReportingDisposition::kReport,
+             /* devtools_id= */ String(), ReportingDisposition::kReport,
              GetDocument().Loader()->GetContentSecurityNotifier());
 }
 

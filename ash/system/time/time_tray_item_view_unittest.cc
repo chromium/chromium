@@ -31,9 +31,8 @@ class TimeTrayItemViewTest : public AshTestBase {
   // Returns true if the time view is in horizontal layout, false if it is in
   // vertical layout.
   bool IsTimeViewInHorizontalLayout() {
-    // Time view is in horizontal layout if its subview is in use (it transfers
-    // the ownership to the views hierarchy and becomes nullptr),
-    return !time_tray_item_view_->time_view_->horizontal_view_;
+    return time_tray_item_view_->time_view_->horizontal_time_label_container_
+        ->GetVisible();
   }
 
  protected:

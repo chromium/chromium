@@ -15,12 +15,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 namespace {
 
-absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
+std::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     media::SampleFormat media_format) {
   using FormatEnum = V8AudioSampleFormat::Enum;
 
@@ -65,7 +66,7 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     case media::SampleFormat::kSampleFormatDtsxP2:
     case media::SampleFormat::kSampleFormatIECDts:
     case media::SampleFormat::kSampleFormatDtse:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -101,16 +102,37 @@ media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
   }
 }
 
+class ArrayBufferContentsAsAudioExternalMemory
+    : public media::AudioBuffer::ExternalMemory {
+ public:
+  explicit ArrayBufferContentsAsAudioExternalMemory(
+      ArrayBufferContents contents,
+      base::span<uint8_t> span)
+      : media::AudioBuffer::ExternalMemory(span),
+        contents_(std::move(contents)) {
+    // Check that `span` refers to the memory inside `contents`.
+    auto* contents_data = static_cast<uint8_t*>(contents_.Data());
+    CHECK_GE(span.data(), contents_data);
+    CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
+  }
+
+ private:
+  ArrayBufferContents contents_;
+};
+
 }  // namespace
 
 // static
-AudioData* AudioData::Create(AudioDataInit* init,
+AudioData* AudioData::Create(ScriptState* script_state,
+                             AudioDataInit* init,
                              ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioData>(init, exception_state);
+  return MakeGarbageCollected<AudioData>(script_state, init, exception_state);
 }
 
-AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
-    : format_(absl::nullopt), timestamp_(init->timestamp()) {
+AudioData::AudioData(ScriptState* script_state,
+                     AudioDataInit* init,
+                     ExceptionState& exception_state)
+    : format_(std::nullopt), timestamp_(init->timestamp()) {
   media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
 
   if (init->numberOfChannels() == 0) {
@@ -144,15 +166,27 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
-  auto data_wrapper = AsSpan<const uint8_t>(init->data());
-  if (!data_wrapper.data()) {
+  auto array_span = AsSpan<uint8_t>(init->data());
+  if (!array_span.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return;
   }
-  if (total_bytes > data_wrapper.size()) {
+  if (total_bytes > array_span.size()) {
     exception_state.ThrowTypeError(
         String::Format("data is too small: needs %u bytes, received %zu.",
-                       total_bytes, data_wrapper.size()));
+                       total_bytes, array_span.size()));
+    return;
+  }
+
+  // Try if we can transfer `init.data` into `buffer_contents`.
+  // We do to make the ctor behave in a spec compliant way regarding transfers,
+  // even though we copy the span contents later anyway.
+  // TODO(crbug.com/1446808) Modify `media::AudioBuffer` to allow moving
+  // `buffer_contents` into it without copying.
+  auto* isolate = script_state->GetIsolate();
+  auto buffer_contents = TransferArrayBufferForSpan(
+      init->transfer(), array_span, exception_state, isolate);
+  if (exception_state.HadException()) {
     return;
   }
 
@@ -168,37 +202,53 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
-  std::vector<const uint8_t*> wrapped_data;
-  if (media::IsInterleaved(media_format)) {
-    // Interleaved data can directly added.
-    wrapped_data.push_back(data_wrapper.data());
-  } else {
-    // Planar data needs one pointer per channel.
-    wrapped_data.resize(init->numberOfChannels());
-
-    uint32_t plane_size_in_bytes =
-        init->numberOfFrames() *
-        media::SampleFormatToBytesPerChannel(media_format);
-
-    const uint8_t* plane_start =
-        reinterpret_cast<const uint8_t*>(data_wrapper.data());
-
-    for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch)
-      wrapped_data[ch] = plane_start + ch * plane_size_in_bytes;
-  }
-
   format_ = init->format();
-
   auto channel_layout =
       init->numberOfChannels() > 8
           // GuesschannelLayout() doesn't know how to guess above 8 channels.
           ? media::CHANNEL_LAYOUT_DISCRETE
           : media::GuessChannelLayout(init->numberOfChannels());
 
+  bool sample_aligned = base::IsAligned(array_span.data(), bytes_per_sample);
+  if (buffer_contents.IsValid() && sample_aligned) {
+    // The buffer is properly aligned and allowed to be transferred,
+    // wrap it as external-memory object and move without a copy.
+    auto external_memory =
+        std::make_unique<ArrayBufferContentsAsAudioExternalMemory>(
+            std::move(buffer_contents), array_span);
+    data_ = media::AudioBuffer::CreateFromExternalMemory(
+        media_format, channel_layout, init->numberOfChannels(), sample_rate,
+        init->numberOfFrames(), base::Microseconds(timestamp_),
+        std::move(external_memory));
+    CHECK(data_);
+    return;
+  }
+
+  std::vector<const uint8_t*> channel_ptrs;
+  if (media::IsInterleaved(media_format)) {
+    // Interleaved data can directly added.
+    channel_ptrs.push_back(array_span.data());
+  } else {
+    // Planar data needs one pointer per channel.
+    channel_ptrs.resize(init->numberOfChannels());
+
+    uint32_t plane_size_in_bytes =
+        init->numberOfFrames() *
+        media::SampleFormatToBytesPerChannel(media_format);
+
+    const uint8_t* plane_start =
+        reinterpret_cast<const uint8_t*>(array_span.data());
+
+    for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch) {
+      channel_ptrs[ch] = plane_start + ch * plane_size_in_bytes;
+    }
+  }
+
   data_ = media::AudioBuffer::CopyFrom(
       media_format, channel_layout, init->numberOfChannels(), sample_rate,
-      init->numberOfFrames(), wrapped_data.data(),
+      init->numberOfFrames(), channel_ptrs.data(),
       base::Microseconds(timestamp_));
+  CHECK(data_);
 }
 
 AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)
@@ -229,14 +279,14 @@ AudioData* AudioData::clone(ExceptionState& exception_state) {
 void AudioData::close() {
   data_.reset();
   temp_bus_.reset();
-  format_ = absl::nullopt;
+  format_ = std::nullopt;
 }
 
 int64_t AudioData::timestamp() const {
   return timestamp_;
 }
 
-absl::optional<V8AudioSampleFormat> AudioData::format() const {
+std::optional<V8AudioSampleFormat> AudioData::format() const {
   return format_;
 }
 

@@ -34,16 +34,14 @@ public class LongScreenshotsTabServiceTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
+    @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
     private TestCaptureProcessor mProcessor;
 
     class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
-        @Status
-        private int mActualStatus;
+        @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;
 
@@ -74,28 +72,32 @@ public class LongScreenshotsTabServiceTest {
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mProcessor = new TestCaptureProcessor();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mLongScreenshotsTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
-            mLongScreenshotsTabService.setCaptureProcessor(mProcessor);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mLongScreenshotsTabService =
+                            LongScreenshotsTabServiceFactory.getServiceInstance();
+                    mLongScreenshotsTabService.setCaptureProcessor(mProcessor);
+                });
     }
 
-    /**
-     * Verifies that a Tab's contents are captured.
-     */
+    /** Verifies that a Tab's contents are captured. */
     @Test
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedFilesystem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mLongScreenshotsTabService.captureTab(
-                    mTab, new Rect(0, 0, 100, 100), /*inMemory=*/false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mLongScreenshotsTabService.captureTab(
+                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ false);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Callback was not called", mProcessor.getProcessCapturedTabCalled(),
-                    Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Callback was not called",
+                            mProcessor.getProcessCapturedTabCalled(),
+                            Matchers.is(true));
+                });
 
         Assert.assertEquals(Status.OK, mProcessor.getStatus());
         Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
@@ -104,22 +106,24 @@ public class LongScreenshotsTabServiceTest {
         mLongScreenshotsTabService.longScreenshotsClosed();
     }
 
-    /**
-     * Verifies that a Tab's contents are captured in-memory.
-     */
+    /** Verifies that a Tab's contents are captured in-memory. */
     @Test
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedMemory() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mLongScreenshotsTabService.captureTab(
-                    mTab, new Rect(0, 0, 100, 100), /*inMemory=*/true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mLongScreenshotsTabService.captureTab(
+                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ true);
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Callback was not called", mProcessor.getProcessCapturedTabCalled(),
-                    Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Callback was not called",
+                            mProcessor.getProcessCapturedTabCalled(),
+                            Matchers.is(true));
+                });
 
         Assert.assertEquals(Status.OK, mProcessor.getStatus());
         Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());

@@ -107,7 +107,7 @@ void PluginServiceImpl::Init() {
 PpapiPluginProcessHost* PluginServiceImpl::FindPpapiPluginProcess(
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
-    const absl::optional<url::Origin>& origin_lock) {
+    const std::optional<url::Origin>& origin_lock) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
@@ -124,7 +124,7 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
     int render_process_id,
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
-    const absl::optional<url::Origin>& origin_lock) {
+    const std::optional<url::Origin>& origin_lock) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (filter_ && !filter_->CanLoadPlugin(render_process_id, plugin_path)) {
@@ -167,7 +167,7 @@ void PluginServiceImpl::OpenChannelToPpapiPlugin(
     int render_process_id,
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
-    const absl::optional<url::Origin>& origin_lock,
+    const std::optional<url::Origin>& origin_lock,
     PpapiPluginProcessHost::PluginClient* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

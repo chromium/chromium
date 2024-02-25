@@ -23,6 +23,8 @@ source_set("profiler") {
     "unwind_util.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:branding_buildflags",

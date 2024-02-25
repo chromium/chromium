@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) MountPoint {
   void OnUmountDone(UnmountCallback callback, MountError unmount_error);
 
   base::FilePath mount_path_;
-  const raw_ptr<DiskMountManager, ExperimentalAsh> disk_mount_manager_;
+  const raw_ptr<DiskMountManager> disk_mount_manager_;
 
   base::WeakPtrFactory<MountPoint> weak_factory_{this};
 };

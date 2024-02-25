@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -18,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
@@ -70,10 +70,10 @@ class EcheNotificationClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchEcheAppFunction(
-      const absl::optional<int64_t>& notification_id,
+      const std::optional<int64_t>& notification_id,
       const std::string& package_name,
       const std::u16string& visible_name,
-      const absl::optional<int64_t>& user_id,
+      const std::optional<int64_t>& user_id,
       const gfx::Image& icon,
       const std::u16string& phone_name,
       AppsLaunchInfoProvider* apps_launch_info_provider) {
@@ -81,8 +81,8 @@ class EcheNotificationClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchNotificationFunction(
-      const absl::optional<std::u16string>& title,
-      const absl::optional<std::u16string>& message,
+      const std::optional<std::u16string>& title,
+      const std::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
     num_notifications_shown_++;
   }
@@ -170,7 +170,7 @@ TEST_F(EcheNotificationClickHandlerTest, HandleNotificationClick) {
       phonehub::Notification::AppMetadata(app_name, package_name,
                                           /*color_icon=*/gfx::Image(),
                                           /*monochrome_icon_mask=*/gfx::Image(),
-                                          /*icon_color=*/absl::nullopt,
+                                          /*icon_color=*/std::nullopt,
                                           /*icon_is_monochrome=*/true, user_id);
   HandleNotificationClick(notification_id, app_meta_data);
   EXPECT_EQ(num_app_launch(), 1u);

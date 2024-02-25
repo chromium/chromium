@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -38,7 +37,8 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
 bool FastCheckoutDelegateImpl::IntendsToShowFastCheckout(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
-    autofill::FieldGlobalId field_id) const {
+    autofill::FieldGlobalId field_id,
+    const autofill::FormData& form_data) const {
   if (const autofill::FormStructure* form =
           manager_->FindCachedFormById(form_id)) {
     if (const autofill::AutofillField* field = form->GetFieldById(field_id)) {

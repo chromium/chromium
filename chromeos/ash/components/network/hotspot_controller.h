@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
    public:
     ~Observer() override = default;
 
-    virtual void OnHotspotTurnedOn(bool wifi_turned_off) = 0;
+    virtual void OnHotspotTurnedOn() = 0;
 
     virtual void OnHotspotTurnedOff(
         hotspot_config::mojom::DisableReason disable_reason) = 0;
@@ -62,9 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   void DisableHotspot(HotspotControlCallback callback,
                       hotspot_config::mojom::DisableReason disable_reason);
 
-  // Restart hotspot if hotspot is active.
-  void RestartHotspotIfActive();
-
   // Set whether Hotspot should be allowed/disallowed by policy.
   void SetPolicyAllowHotspot(bool allow_hotspot);
 
@@ -81,7 +78,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   struct HotspotControlRequest {
     HotspotControlRequest(
         bool enabled,
-        absl::optional<hotspot_config::mojom::DisableReason> disable_reason,
+        std::optional<hotspot_config::mojom::DisableReason> disable_reason,
         HotspotControlCallback callback);
     HotspotControlRequest(const HotspotControlRequest&) = delete;
     HotspotControlRequest& operator=(const HotspotControlRequest&) = delete;
@@ -90,10 +87,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
     bool enabled;
     bool abort = false;
     // Set for disable requests and will be nullopt for enable requests.
-    absl::optional<hotspot_config::mojom::DisableReason> disable_reason;
+    std::optional<hotspot_config::mojom::DisableReason> disable_reason;
     // Tracks the latency of enable hotspot operation and will be nullopt for
     // disable requests.
-    absl::optional<base::ElapsedTimer> enable_latency_timer;
+    std::optional<base::ElapsedTimer> enable_latency_timer;
     HotspotControlCallback callback;
   };
 
@@ -118,8 +115,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   void OnPrepareEnableWifiCompleted(
       base::OnceCallback<void(bool success)> callback,
       hotspot_config::mojom::HotspotControlResult control_result);
-  void OnDisableHotspotCompleteForRestart(
-      hotspot_config::mojom::HotspotControlResult control_result);
   void CompleteCurrentRequest(
       const bool& enabled,
       hotspot_config::mojom::HotspotControlResult result);
@@ -127,7 +122,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
       hotspot_config::mojom::HotspotControlResult result);
   void CompleteDisableRequest(
       hotspot_config::mojom::HotspotControlResult result);
-  void NotifyHotspotTurnedOn(bool wifi_turned_off);
+  void NotifyHotspotTurnedOn();
   void NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason);
 
@@ -139,14 +134,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // restore the WiFi status once hotspot is turned off.
   bool wifi_turned_off_ = false;
 
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
-      hotspot_capabilities_provider_ = nullptr;
-  raw_ptr<HotspotFeatureUsageMetrics, ExperimentalAsh>
-      hotspot_feature_usage_metrics_ = nullptr;
-  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_ =
-      nullptr;
-  raw_ptr<TechnologyStateController, ExperimentalAsh>
-      technology_state_controller_ = nullptr;
+  raw_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_ = nullptr;
+  raw_ptr<HotspotStateHandler> hotspot_state_handler_ = nullptr;
+  raw_ptr<TechnologyStateController> technology_state_controller_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotController> weak_ptr_factory_{this};

@@ -32,7 +32,7 @@ bool EnumTraits<device_signals::mojom::PresenceValue,
                 device_signals::PresenceValue>::
     FromMojom(device_signals::mojom::PresenceValue input,
               device_signals::PresenceValue* output) {
-  absl::optional<device_signals::PresenceValue> parsed_value;
+  std::optional<device_signals::PresenceValue> parsed_value;
   switch (input) {
     case device_signals::mojom::PresenceValue::kUnspecified:
       parsed_value = device_signals::PresenceValue::kUnspecified;

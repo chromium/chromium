@@ -51,8 +51,9 @@ target_cpu = "arm64"
 # Not always necessary, see "Changing package name" below
 system_webview_package_name = "..."
 
-# Optional: speeds up fresh builds (Googlers-only)
-use_goma = true
+# Optional: speeds up build time. For instructions, refer to
+# https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#use-reclient
+use_remoteexec = true
 ```
 
 ### Figuring out target\_cpu

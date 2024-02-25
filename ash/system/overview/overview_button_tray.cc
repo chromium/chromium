@@ -74,8 +74,8 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
-  SetPressedCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
-                                         base::Unretained(this)));
+  SetCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
+                                  base::Unretained(this)));
 
   const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
@@ -123,11 +123,6 @@ void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void OverviewButtonTray::HandlePerformActionResult(bool action_performed,
-                                                   const ui::Event& event) {
-  // Do nothing, prevent the default ripple handling.
-}
-
 void OverviewButtonTray::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateIconVisibility();
@@ -149,7 +144,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
   SetIsActive(false);
 }
 
-void OverviewButtonTray::ClickedOutsideBubble() {}
+void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());
@@ -171,10 +166,11 @@ void OverviewButtonTray::OnThemeChanged() {
   icon_->SetImage(GetIconImage());
 }
 
-void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
-  DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
-         event.type() == ui::ET_GESTURE_TAP);
+void OverviewButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
+  // This class has no bubbles to hide.
+}
 
+void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   // Skip if the second tap happened outside of overview. This can happen if a
   // window gets activated in between, which cancels overview mode.
@@ -219,7 +215,7 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
       views::InkDrop::Get(this)->AnimateToState(
           views::InkDropState::DEACTIVATED, nullptr);
       wm::ActivateWindow(new_active_window);
-      last_press_event_time_ = absl::nullopt;
+      last_press_event_time_ = std::nullopt;
       return;
     }
   }
@@ -227,8 +223,8 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
   // If not in overview mode record the time of this tap. A subsequent tap will
   // be checked against this to see if we should quick switch.
   last_press_event_time_ = overview_controller->InOverviewSession()
-                               ? absl::nullopt
-                               : absl::make_optional(event.time_stamp());
+                               ? std::nullopt
+                               : std::make_optional(event.time_stamp());
 
   if (overview_controller->InOverviewSession())
     overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
@@ -254,7 +250,7 @@ gfx::ImageSkia OverviewButtonTray::GetIconImage() {
   return gfx::CreateVectorIcon(kShelfOverviewIcon, color);
 }
 
-BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)
+BEGIN_METADATA(OverviewButtonTray)
 END_METADATA
 
 }  // namespace ash

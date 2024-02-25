@@ -32,9 +32,9 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -130,7 +130,7 @@ class SimpleTestDragDropClient : public XDragDropClient,
 
  private:
   // XDragDropClient::Delegate:
-  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
@@ -309,9 +309,9 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
   return resulting_operation;
 }
 
-absl::optional<gfx::AcceleratedWidget>
+std::optional<gfx::AcceleratedWidget>
 SimpleTestDragDropClient::GetDragWidget() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int SimpleTestDragDropClient::UpdateDrag(const gfx::Point& screen_point) {
@@ -537,8 +537,8 @@ void BasicStep2(TestDragDropClient* client, x11::Window toplevel) {
             static_cast<x11::Window>(events[0].data.data32[0]));
   EXPECT_EQ(1u, events[0].data.data32[1] & 1);
   std::vector<x11::Atom> targets;
-  GetArrayProperty(client->source_xwindow(), x11::GetAtom("XdndTypeList"),
-                   &targets);
+  x11::Connection::Get()->GetArrayProperty(
+      client->source_xwindow(), x11::GetAtom("XdndTypeList"), &targets);
   EXPECT_FALSE(targets.empty());
 
   EXPECT_TRUE(client->MessageHasType(events[1], "XdndPosition"));

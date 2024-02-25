@@ -11,7 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
+#include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
 using PermissionStatus =
@@ -55,18 +57,6 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
           rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
     return PermissionStatus::BLOCKED_EMBARGO;
   }
-  // TODO(npm): FedCM is currently restricted to contexts where third party
-  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag or
-  // FedCmIdpSigninStatusEnabled flag is enabled. The IDP signin status API
-  // override is implemented in the caller because it can be enabled through
-  // origin trials. This block can be removed when the IDP Signin status API
-  // ships.
-  // See https://crbug.com/1451396
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url) &&
-      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
-    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
-  }
 
   return PermissionStatus::GRANTED;
 }
@@ -95,4 +85,16 @@ void FederatedIdentityApiPermissionContext::RemoveEmbargoAndResetCounts(
   permission_autoblocker_->RemoveEmbargoAndResetCounts(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_API);
+}
+
+bool FederatedIdentityApiPermissionContext::HasThirdPartyCookiesAccess(
+    content::RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& relying_party_embedder) const {
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      /*request_url=*/provider_url,
+      /*first_party_url=*/
+      net::SiteForCookies::FromOrigin(relying_party_embedder),
+      /*top_frame_origin=*/relying_party_embedder,
+      host.GetCookieSettingOverrides());
 }

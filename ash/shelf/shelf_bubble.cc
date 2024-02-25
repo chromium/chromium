@@ -15,9 +15,9 @@
 namespace {
 
 class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
- public:
-  METADATA_HEADER(ShelfTooltipBubbleFrameView);
+  METADATA_HEADER(ShelfTooltipBubbleFrameView, views::BubbleFrameView)
 
+ public:
   ShelfTooltipBubbleFrameView()
       : BubbleFrameView(gfx::Insets(), gfx::Insets()) {}
   ShelfTooltipBubbleFrameView(const ShelfTooltipBubbleFrameView&) = delete;
@@ -34,7 +34,7 @@ class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
   }
 };
 
-BEGIN_METADATA(ShelfTooltipBubbleFrameView, BubbleFrameView)
+BEGIN_METADATA(ShelfTooltipBubbleFrameView)
 END_METADATA
 
 views::BubbleBorder::Arrow GetArrow(ash::ShelfAlignment alignment) {
@@ -58,7 +58,7 @@ ShelfBubble::ShelfBubble(
     views::View* anchor,
     ShelfAlignment alignment,
     bool for_tooltip,
-    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    std::optional<views::BubbleBorder::Arrow> arrow_position)
     : views::BubbleDialogDelegateView(
           anchor,
           arrow_position.value_or(GetArrow(alignment))),
@@ -115,5 +115,8 @@ ShelfBubble::CreateNonClientFrameView(views::Widget* widget) {
 
   return frame;
 }
+
+BEGIN_METADATA(ShelfBubble)
+END_METADATA
 
 }  // namespace ash

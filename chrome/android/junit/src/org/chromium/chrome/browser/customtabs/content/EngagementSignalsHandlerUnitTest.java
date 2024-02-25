@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -28,36 +29,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager.Observer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Unit tests for {@link EngagementSignalsHandler}.
- */
+/** Unit tests for {@link EngagementSignalsHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
 public class EngagementSignalsHandlerUnitTest {
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private CustomTabsConnection mConnection;
-    @Mock
-    private CustomTabsSessionToken mSession;
-    @Mock
-    private EngagementSignalsCallback mCallback;
-    @Mock
-    private TabObserverRegistrar mTabObserverRegistrar;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private CustomTabsConnection mConnection;
+    @Mock private CustomTabsSessionToken mSession;
+    @Mock private EngagementSignalsCallback mCallback;
+    @Mock private TabObserverRegistrar mTabObserverRegistrar;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
 
@@ -126,12 +115,22 @@ public class EngagementSignalsHandlerUnitTest {
         tabObserver.getValue().onAllTabsClosed();
         // Verify observers are removed.
         verify(mPrivacyPreferencesManager).removeObserver(privacyObserver.getValue());
-        var tabObserverInHandler = tabObserver.getAllValues()
-                                           .stream()
-                                           .filter(o -> !o.equals(observer))
-                                           .findFirst()
-                                           .orElseThrow();
+        var tabObserverInHandler =
+                tabObserver.getAllValues().stream()
+                        .filter(o -> !o.equals(observer))
+                        .findFirst()
+                        .orElseThrow();
         verify(mTabObserverRegistrar).unregisterActivityTabObserver(tabObserverInHandler);
         assertNull(mEngagementSignalsHandler.getEngagementSignalsObserverForTesting());
+    }
+
+    @Test
+    public void testNotifyTabWillCloseAndReopenWithSessionReuse() {
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        mEngagementSignalsHandler.notifyTabWillCloseAndReopenWithSessionReuse();
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        // #notifyTabWillCloseAndReopenWithSessionReuse should suspend #onSessionEnded signals.
+        assertTrue(observer.getSuspendSessionEndedForTesting());
     }
 }

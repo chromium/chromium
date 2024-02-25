@@ -49,8 +49,7 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
   // Called when StoragePartition is being setup.
   void Init(
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
-      const scoped_refptr<DevToolsBackgroundServicesContextImpl>&
-          devtools_context);
+      DevToolsBackgroundServicesContextImpl& devtools_context);
 
   // Called when StoragePartition is being torn down. Must be called before
   // deleting `this`.
@@ -107,7 +106,7 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   virtual void CreateBackgroundSyncManager(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
+      DevToolsBackgroundServicesContextImpl& devtools_context);
 
   // The services are owned by this. They're either deleted during Shutdown()
   // or when the channel is closed via *ServiceHadConnectionError.

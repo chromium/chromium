@@ -18,6 +18,12 @@ class COMPONENT_EXPORT(SQL) SqlMemoryDumpProvider
  public:
   static SqlMemoryDumpProvider* GetInstance();
 
+  // Gets the memory used by SQLite, in bytes, and returns via return value. The
+  // high water usage (highest recorded usage) is returned via out-param if
+  // non-null. If `high_water` is non-null, the high water mark will also be
+  // reset afterwards.
+  static int64_t GetMemoryUse(int64_t* high_water = nullptr);
+
   SqlMemoryDumpProvider(const SqlMemoryDumpProvider&) = delete;
   SqlMemoryDumpProvider& operator=(const SqlMemoryDumpProvider&) = delete;
 

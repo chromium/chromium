@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     // Applies the runtime values.
     ChangeEffect ReapplyRuntimeValues();
 
-    raw_ptr<const ProfilePolicies, ExperimentalAsh> parent_;
+    raw_ptr<const ProfilePolicies> parent_;
 
     client_cert::ResolvedCert resolved_cert_ =
         client_cert::ResolvedCert::NotKnownYet();
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     // The ONC NetworkConfiguration with runtime values set.  If this is absent,
     // it means that setting runtime values didn't change anything compared to
     // |original_onc_policy_|.
-    absl::optional<base::Value::Dict> policy_with_runtime_values_;
+    std::optional<base::Value::Dict> policy_with_runtime_values_;
   };
 
   // Used to check whether an ONC NetworkConfiguration passed in

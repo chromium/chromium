@@ -24,7 +24,7 @@ source_set("screen_time") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/screen_time",
+    "//ios/chrome/browser/screen_time/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

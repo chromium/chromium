@@ -4,12 +4,13 @@
 
 #include "components/viz/common/quads/shared_quad_state.h"
 
+#include <optional>
+
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/traced_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace viz {
@@ -52,18 +53,20 @@ void SharedQuadState::SetAll(const SharedQuadState& other) {
   sorting_context_id = other.sorting_context_id;
   layer_id = other.layer_id;
   layer_namespace_id = other.layer_namespace_id;
+  is_fast_rounded_corner = other.is_fast_rounded_corner;
 }
 
 void SharedQuadState::SetAll(const gfx::Transform& transform,
                              const gfx::Rect& layer_rect,
                              const gfx::Rect& visible_layer_rect,
                              const gfx::MaskFilterInfo& filter_info,
-                             const absl::optional<gfx::Rect>& clip,
+                             const std::optional<gfx::Rect>& clip,
                              bool contents_opaque,
                              float opacity_f,
                              SkBlendMode blend,
                              int sorting_context,
-                             uint32_t layer) {
+                             uint32_t layer,
+                             bool fast_rounded_corner) {
   quad_to_target_transform = transform;
   quad_layer_rect = layer_rect;
   visible_quad_layer_rect = visible_layer_rect;
@@ -74,6 +77,7 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
   blend_mode = blend;
   sorting_context_id = sorting_context;
   layer_id = layer;
+  is_fast_rounded_corner = fast_rounded_corner;
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {

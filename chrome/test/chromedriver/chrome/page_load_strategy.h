@@ -7,10 +7,7 @@
 
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/chrome/web_view.h"
 
-class DevToolsClient;
-class JavaScriptDialogManager;
 class Status;
 class Timeout;
 
@@ -21,12 +18,6 @@ class PageLoadStrategy : public DevToolsEventListener {
     kLoading,
     kNotLoading,
   };
-
-  static PageLoadStrategy* Create(
-      std::string strategy,
-      DevToolsClient* client,
-      WebView* web_view,
-      const JavaScriptDialogManager* dialog_manager);
 
   virtual Status IsPendingNavigation(const Timeout* timeout,
                                      bool* is_pending) = 0;

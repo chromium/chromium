@@ -17,14 +17,15 @@ rust_static_library("test_aliased_deps") {
   sources = [ crate_root ]
   deps = [ ":real_name" ]
   aliased_deps = {
-    # Unfortunately we have to know the `__rlib` suffix which is attached to the
-    # actual rlib in `rust_static_library()`.
-    other_name = ":real_name__rlib"
+    other_name = ":real_name"
   }
   build_native_rust_unit_tests = true
 }
 
 rust_static_library("real_name") {
+  # Using a fixed crate_name here which does not work with `import!` because
+  # we're testing `aliased_deps` which also does not work with `import!`.
+  crate_name = "real_name"
   crate_root = "real_name.rs"
   sources = [ crate_root ]
 }

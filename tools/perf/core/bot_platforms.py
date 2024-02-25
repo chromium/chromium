@@ -142,6 +142,7 @@ class BenchmarkConfig(object):
     self.benchmark = benchmark
     self.abridged = abridged
     self._stories = None
+    self._exhaustive_stories = None
     self.is_telemetry = True
 
   @property
@@ -164,6 +165,20 @@ class BenchmarkConfig(object):
     stories = story_filter_obj.FilterStories(story_set)
     self._stories = [story.name for story in stories]
     return self._stories
+
+  @property
+  def exhaustive_stories(self):
+    if self._exhaustive_stories is not None:
+      return self._exhaustive_stories
+    story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark(),
+                                                     exhaustive=True)
+    abridged_story_set_tag = (story_set.GetAbridgedStorySetTagFilter()
+                              if self.abridged else None)
+    story_filter_obj = story_filter.StoryFilter(
+        abridged_story_set_tag=abridged_story_set_tag)
+    stories = story_filter_obj.FilterStories(story_set)
+    self._exhaustive_stories = [story.name for story in stories]
+    return self._exhaustive_stories
 
 
 class ExecutableConfig(object):
@@ -226,9 +241,16 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.sanitizer-api',
-    'jetstream2-minormc',
-    'octane-minormc',
-    'speedometer2-minormc',
+    'blink_perf.svg',
+    'blink_perf.paint',
+    'jetstream2-nominorms',
+    'octane-nominorms',
+    'speedometer2-nominorms',
+    'speedometer3-nominorms',
+    # TODO(crbug.com/1473955) Make speedometer3 and speedometer3-future part
+    # of OFFICIAL_BENCHMARK_CONFIGS after confirming that they are stable.
+    'speedometer3',
+    'speedometer3-future',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -379,12 +401,14 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ]).Add([
     'blink_perf.sanitizer-api',
+    'blink_perf.svg',
+    'blink_perf.paint',
 ])
-_LINUX_BENCHMARK_CONFIGS_WITH_MINORMC = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Add(
-    [
-        'jetstream2-minormc',
-        'octane-minormc',
-        'speedometer2-minormc',
+_LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS = PerfSuite(
+    _LINUX_BENCHMARK_CONFIGS).Add([
+        'jetstream2-nominorms',
+        'octane-nominorms',
+        'speedometer2-nominorms',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
@@ -415,15 +439,23 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
-    ]).Add(['jetstream2-minormc', 'speedometer2-minormc'])
+    ]).Add([
+        'jetstream2-nominorms',
+        'speedometer2-nominorms',
+        'speedometer3',
+        'speedometer3-future',
+        'speedometer3-nominorms',
+    ])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
@@ -455,6 +487,16 @@ _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('octane'),
     _GetBenchmarkConfig('speedometer2'),
+])
+_WIN_11_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+])
+_WIN_11_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(200),
+    _components_perftests(125),
+    _dawn_perf_tests(600),
+    _views_perftests(),
 ])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
@@ -490,17 +532,24 @@ _ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('system_health.scroll_jank_mobile')
     ]
 )
+_ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_mobile'),
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('rendering.mobile'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
+])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING)
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+        _GetBenchmarkConfig('jetstream2-nominorms'),
+        _GetBenchmarkConfig('speedometer2-nominorms'),
+    ])
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
 _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
-_ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('startup.mobile'),
-     _GetBenchmarkConfig('speedometer2')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -544,7 +593,7 @@ _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
 # Linux
 LINUX = PerfPlatform('linux-perf',
                      'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                     _LINUX_BENCHMARK_CONFIGS_WITH_MINORMC,
+                     _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS,
                      26,
                      'linux',
                      executables=_LINUX_EXECUTABLE_CONFIGS)
@@ -568,7 +617,7 @@ MAC_HIGH_END_LAPTOP = PerfPlatform(
     'mac-laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    26,
+    23,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_HIGH_END_LAPTOP_PGO = PerfPlatform(
@@ -583,7 +632,7 @@ MAC_LOW_END_LAPTOP = PerfPlatform(
     'mac-laptop_low_end-perf',
     'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
     _MAC_LOW_END_BENCHMARK_CONFIGS,
-    26,
+    23,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
@@ -628,7 +677,7 @@ WIN_10_LOW_END = PerfPlatform(
     'SSD, 4GB RAM.',
     _WIN_10_LOW_END_BENCHMARK_CONFIGS,
     # TODO(b/278947510): Increase the count when m.2 disks stop failing.
-    20,
+    48,
     'win')
 WIN_10_LOW_END_PGO = PerfPlatform(
     'win-10_laptop_low_end-perf-pgo',
@@ -658,27 +707,28 @@ WIN_10_PGO = PerfPlatform(
     pinpoint_only=True)
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
-                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 5, 'win')
+                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 3, 'win')
 WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      'Windows 10 Laptop with AMD chipset.',
                                      _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
-                                     5,
+                                     3,
                                      'win',
                                      pinpoint_only=True)
+WIN_11 = PerfPlatform('win-11-perf',
+                      'Windows Dell PowerEdge R350',
+                      _WIN_11_BENCHMARK_CONFIGS,
+                      20,
+                      'win',
+                      executables=_WIN_11_EXECUTABLE_CONFIGS)
+WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
+                          'Windows Dell PowerEdge R350',
+                          _WIN_11_BENCHMARK_CONFIGS,
+                          26,
+                          'win',
+                          executables=_WIN_11_EXECUTABLE_CONFIGS,
+                          pinpoint_only=True)
 
 # Android
-ANDROID_GO = PerfPlatform('android-go-perf', 'Android O (gobo)',
-                          _ANDROID_GO_BENCHMARK_CONFIGS, 13, 'android')
-ANDROID_GO_PGO = PerfPlatform('android-go-perf-pgo',
-                              'Android O (gobo)',
-                              _ANDROID_GO_BENCHMARK_CONFIGS,
-                              13,
-                              'android',
-                              pinpoint_only=True)
-ANDROID_GO_WEBVIEW = PerfPlatform('android-go_webview-perf',
-                                  'Android OPM1.171019.021 (gobo)',
-                                  _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 8,
-                                  'android')
 ANDROID_PIXEL2 = PerfPlatform('android-pixel2-perf',
                               'Android OPM1.171019.021',
                               _ANDROID_PIXEL2_BENCHMARK_CONFIGS,
@@ -726,14 +776,9 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               28,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS)
-ANDROID_PIXEL6_PGO = PerfPlatform(
-    'android-pixel6-perf-pgo',
-    'Android T',
-    _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
-    28,
-    'android',
-    executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
-    pinpoint_only=True)
+ANDROID_PIXEL6_PGO = PerfPlatform('android-pixel6-perf-pgo', 'Android T',
+                                  _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 4,
+                                  'android')
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
@@ -749,10 +794,11 @@ ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android',
     executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
-ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf',
-                                  'Android U',
-                                  _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS, 2,
-                                  'android')
+ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
+                                  _ANDROID_GO_BENCHMARK_CONFIGS, 20, 'android')
+ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
+    'android-go-wembley_webview-perf', 'Android U',
+    _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
 ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
                                  'Android T',
                                  PerfSuite([]),

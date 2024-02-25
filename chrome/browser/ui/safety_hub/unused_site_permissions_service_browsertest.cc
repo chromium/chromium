@@ -29,8 +29,7 @@ class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
   UnusedSitePermissionsServiceBrowserTest() {
     feature_list.InitWithFeatures(
         /*enabled_features=*/
-        {permissions::features::kRecordPermissionExpirationTimestamps,
-         content_settings::features::kSafetyCheckUnusedSitePermissions},
+        {content_settings::features::kSafetyCheckUnusedSitePermissions},
         /*disabled_features=*/{});
   }
 

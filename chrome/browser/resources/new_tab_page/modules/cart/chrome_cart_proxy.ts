@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CartHandler, CartHandlerRemote} from '../../chrome_cart.mojom-webui.js';
+import type {CartHandlerRemote} from '../../chrome_cart.mojom-webui.js';
+import {CartHandler} from '../../chrome_cart.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler

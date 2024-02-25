@@ -67,7 +67,7 @@ class ArcAppInstallEventLogUploader : public InstallEventLogUploaderBase {
       const enterprise_management::AppInstallReportRequest* report);
 
   // The delegate that provides serialized logs to be uploaded.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Weak pointer factory for invalidating callbacks passed to the delegate and
   // scheduled retries when the upload request is canceled or |this| is

@@ -19,8 +19,8 @@ limitations under the License.
 #include <cstddef>
 #include <cstdint>
 
-#include "leveldb/env.h"     // from @com_google_leveldb
-#include "leveldb/slice.h"   // from @com_google_leveldb
+#include "leveldb/env.h"  // from @com_google_leveldb
+#include "leveldb/slice.h"  // from @com_google_leveldb
 #include "leveldb/status.h"  // from @com_google_leveldb
 
 namespace tflite {
@@ -39,9 +39,7 @@ class MemRandomAccessFile : public leveldb::RandomAccessFile {
 
   // Override of the `Read` function. Note that `scratch` is unused in the
   // implementation.
-  leveldb::Status Read(uint64_t offset,
-                       size_t n,
-                       leveldb::Slice* result,
+  leveldb::Status Read(uint64_t offset, size_t n, leveldb::Slice* result,
                        char* scratch) const override;
 
   // Class is movable and non-copyable.

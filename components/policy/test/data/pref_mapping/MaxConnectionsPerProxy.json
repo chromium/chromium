@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "MaxConnectionsPerProxy": 16
+        },
+        "prefs": {
+          "net.max_connections_per_proxy": {
+            "location": "local_state",
+            "value": 16
+          }
+        }
+      }
+    ]
+  }
+]

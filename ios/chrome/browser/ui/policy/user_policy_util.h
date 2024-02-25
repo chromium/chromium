@@ -8,9 +8,16 @@
 class AuthenticationService;
 class PrefService;
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 // Returns true if a notification as to be shown for User Policy.
-bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
-                                    PrefService* prefService);
+// `user_policy_provider` can be null in which case false will be returned.
+bool IsUserPolicyNotificationNeeded(
+    AuthenticationService* authService,
+    PrefService* prefService,
+    const policy::UserCloudPolicyManager* user_policy_manager);
 
 // Returns true if user policies can be fetched.
 bool CanFetchUserPolicy(AuthenticationService* authService,

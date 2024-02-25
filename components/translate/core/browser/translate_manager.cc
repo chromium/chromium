@@ -223,17 +223,6 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   }
 #endif
 
-  bool unknown_source_supported = translate::IsForceTranslateEnabled();
-  if (!unknown_source_supported &&
-      source_language == translate::kUnknownLanguageCode) {
-    if (!menuLogging)
-      return false;
-    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-            kSourceLangUnknown);
-    can_translate = false;
-  }
-
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
   if (!translate_prefs->IsTranslateAllowedByPolicy()) {
@@ -262,6 +251,21 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
                           can_translate);
 
   return can_translate;
+}
+
+bool TranslateManager::CanPartiallyTranslateTargetLanguage() {
+  std::unique_ptr<TranslatePrefs> translate_prefs(
+      translate_client_->GetTranslatePrefs());
+  const std::string& source_language = language_state_.source_language();
+  const std::string target_lang = GetTargetLanguage(
+      translate_prefs.get(), language_model_,
+      TranslateDownloadManager::GetLanguageCode(source_language));
+
+  if (target_lang.empty()) {
+    return false;
+  }
+  return TranslateLanguageList::IsSupportedPartialTranslateLanguage(
+      target_lang);
 }
 
 bool TranslateManager::IsMimeTypeSupported(const std::string& mime_type) {
@@ -319,6 +323,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      bool triggered_from_menu,
                                      TranslationType translation_type) {
   const GURL& page_url = translate_driver_->GetVisibleURL();
+  language_state_.SetTranslationType(translation_type);
   // TODO(crbug.com/1424183): Very rarely, users can reach a state where this
   // Translate code is called on a page ineligible for translation. It is
   // unclear how this state is reached, but the crash rate is very low
@@ -366,15 +371,13 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
 
   if (source_lang == target_lang) {
     // If the languages are the same, try the translation using the unknown
-    // language code on Desktop and Android. The source and target languages
-    // should only be equal if the translation was manually triggered by the
-    // user. Rather than show them the error, we should attempt to send th
-    // page for translation. For page with multiple languages we often detect
-    // same language, but the Translation service is able to translate the
-    // various languages using it's own language detection.
-    if (translate::IsForceTranslateEnabled()) {
-      source_lang = translate::kUnknownLanguageCode;
-    }
+    // language code. The source and target languages should only be equal if
+    // the translation was manually triggered by the user. Rather than show
+    // them the error, we should attempt to send the page for translation. For
+    // page with multiple languages we often detect same language, but the
+    // Translation service is able to translate the various languages using it's
+    // own language detection.
+    source_lang = translate::kUnknownLanguageCode;
   }
 
   // Trigger the "translating now" UI.
@@ -403,6 +406,10 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
 }
 
 void TranslateManager::RevertTranslation() {
+  // Do nothing if the page is not translated.
+  if (!GetLanguageState()->IsPageTranslated()) {
+    return;
+  }
   // Capture the revert event in the translate metrics
   RecordTranslateEvent(metrics::TranslateEventProto::USER_REVERT);
 
@@ -486,11 +493,13 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
   // Note: NotifyTranslateError and ShowTranslateUI will not log the errors.
   if (error_type == TranslateErrors::INITIALIZATION_ERROR)
     RecordTranslateEvent(metrics::TranslateEventProto::INITIALIZATION_ERROR);
+
   translate_client_->ShowTranslateUI(translate::TRANSLATE_STEP_AFTER_TRANSLATE,
                                      source_lang, target_lang, error_type,
                                      false);
-  NotifyTranslateError(error_type);
 
+  language_state_.SetTranslationType(TranslationType::kUninitialized);
+  NotifyTranslateError(error_type);
   GetActiveTranslateMetricsLogger()->LogTranslationFinished(
       error_type == TranslateErrors::NONE, error_type);
 }

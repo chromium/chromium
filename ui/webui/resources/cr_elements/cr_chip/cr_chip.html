@@ -1,0 +1,139 @@
+<style>
+  button {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--cr-link-color);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 16px;
+    --cr-icon-size: contain;
+    --iron-icon-fill-color: var(--cr-link-color);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    align-items: center;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 4px;
+    color: var(--cr-secondary-text-color);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
+    gap: 4px;
+    height: 28px;
+    padding: 0 6px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button {
+      border-color: var(--google-grey-700);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) button {
+    --cr-icon-color: var(--color-chip-icon, var(--cr-fallback-color-primary));
+    --iron-icon-fill-color: var(--color-chip-icon,
+        var(--cr-fallback-color-primary));
+    border-color: var(--color-chip-border,
+        var(--cr-fallback-color-tonal-outline));
+    border-radius: 8px;
+    color: var(--color-chip-foreground, var(--cr-fallback-color-on-surface));
+    font-size: 12px;
+    font-weight: 500;
+    overflow: hidden;
+    padding: 0 8px;
+    position: relative;
+  }
+
+  button:not(:is([disabled], [selected])):hover {
+    background-color: rgba(var(--google-blue-500-rgb), .04);
+    border-color: var(--google-blue-100);
+  }
+
+  :host-context([chrome-refresh-2023]) button:not(:is([disabled], [selected])):hover {
+    background-color: transparent;
+    border-color: var(--color-chip-border,
+        var(--cr-fallback-color-tonal-outline));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button:not(:is([disabled], [selected])):hover {
+      background: linear-gradient(0deg,
+          rgba(var(--google-blue-300-rgb), .08),
+          rgba(var(--google-blue-300-rgb), .08)),
+          var(--google-grey-900);
+      border-color: rgba(var(--google-blue-300-rgb), .32);
+    }
+  }
+
+  button:focus-visible {
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+
+  :host-context([chrome-refresh-2023]) button:focus-visible {
+    outline-offset: 2px;
+  }
+
+  button[disabled] {
+    cursor: default;
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  button[selected] {
+    background-color: var(--google-blue-50);
+    border-color: var(--google-blue-50);
+    color: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button[selected] {
+      --cr-icon-color: var(--google-grey-900);
+      --iron-icon-fill-color: var(--google-grey-900);
+      background-color: var(--google-blue-300);
+      border-color: var(--google-blue-300);
+      color: var(--google-grey-900);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) button[selected] {
+    --cr-icon-color: var(--color-chip-icon-selected,
+        var(--cr-fallback-color-on-tonal-container));
+    --iron-icon-fill-color: var(--color-chip-icon-selected,
+        var(--cr-fallback-color-on-tonal-container));
+    background-color: var(--color-chip-background-selected,
+        var(--cr-fallback-color-tonal-container));
+    border-color: var(--color-chip-background-selected,
+        var(--cr-fallback-color-tonal-container));
+    color: var(--color-chip-foreground-selected,
+        var(--cr-fallback-color-on-tonal-container));
+    padding: 0 8px;
+  }
+
+  #hoverLayer {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) button:hover #hoverLayer {
+    background: var(--cr-hover-on-subtle-background-color);
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  paper-ripple {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) paper-ripple {
+    --paper-ripple-opacity: 1;
+    color: var(--cr-active-neutral-on-subtle-background-color);
+    display: block;
+  }
+</style>
+
+<button selected$="[[selected]]" disabled$="[[disabled]]"
+    aria-pressed="[[selected]]" role="[[chipRole]]">
+  <div id="hoverLayer"></div>
+  <slot></slot>
+</button>

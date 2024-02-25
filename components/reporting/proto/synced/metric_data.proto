@@ -407,6 +407,12 @@ message DisplayStatus {
   optional bool is_internal = 5;
 }
 
+// deliberately left empty as there is no payload for Heartbeat messages.
+// It just implicitly indicates that the sender is still alive.
+message KioskHeartbeatTelemetry {
+  // No payload
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 // IMPORTANT: Do not add additional non-message fields (bool, int, string,
@@ -438,8 +444,13 @@ message TelemetryData {
   optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
   // Website telemetry data.
   optional WebsiteTelemetry website_telemetry = 11;
+  // Kiosk Heartbeats as telemetry data
+  optional KioskHeartbeatTelemetry heartbeat_telemetry = 12;
 }
 
+// Type of event metric being reported.
+// This must be kept in sync with //tools/metrics/histograms/enums.xml's
+// EnterpriseCloudReportingMetricEventType in the Chromium repo.
 enum MetricEventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   NETWORK_HTTPS_LATENCY_CHANGE = 1;
@@ -453,9 +464,10 @@ enum MetricEventType {
   WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
   NETWORK_STATE_CHANGE = 15;
   VPN_CONNECTION_STATE_CHANGE = 16;
-  CRASH_FATALLY = 17;
+  FATAL_CRASH = 17;
   URL_OPENED = 18;
   URL_CLOSED = 19;
+  KIOSK_HEARTBEAT = 20;
 
   reserved 2, 3, 10, 11, 12;
 }
@@ -654,7 +666,7 @@ message FatalCrashTelemetry {
   // a crash report ID and (b) a crash is reported for the first time without a
   // crash report ID and only has a crash report ID when it is reported for the
   // second time.
-  optional bool was_reported_without_id = 7;
+  optional bool been_reported_without_crash_report_id = 7;
 }
 
 // Runtime counters retrieved from CPU. Currently the runtime counters telemetry
@@ -672,10 +684,13 @@ message RuntimeCountersTelemetry {
   // Total lifetime runtime. Currently always S0 runtime from Intel vPro PSR.
   optional int64 uptime_runtime_seconds = 1;
   // Number of times that the device has entered into the sleep state. Currently
-  // obtained via the PSR, count from S0->S3.
+  // obtained via the PSR, count from S0->S3. As of Oct 2023, this number is
+  // expected to be always zero as ChromeOS devices do not use this state.
   optional int64 counter_enter_sleep = 2;
   // Number of times that the device has entered into the hibernation state.
-  // Currently obtained via the PSR, count from S0->S4.
+  // Currently obtained via the PSR, count from S0->S4. As of Oct 2023, this
+  // number is expected to be always zero, unless the ChromeOS device is
+  // equipped with Intel KeyLocker.
   optional int64 counter_enter_hibernation = 3;
   // Number of times that the device has entered into the power-off state.
   // Currently obtained via the PSR, count from S0->S5.

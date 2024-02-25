@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_DOWNLOAD_HTTP_RESPONSE_H_
 #define CONTENT_PUBLIC_TEST_TEST_DOWNLOAD_HTTP_RESPONSE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,11 +14,10 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/http/http_byte_range.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpByteRange;
@@ -134,7 +134,7 @@ class TestDownloadHttpResponse {
     bool support_partial_response;
 
     // The connection type in the response.
-    net::HttpResponseInfo::ConnectionInfo connection_type;
+    net::HttpConnectionInfo connection_type = net::HttpConnectionInfo::kUNKNOWN;
 
     // If specified, return this as the http response to the client.
     // No error injection or range request will be handled for static response.
@@ -192,7 +192,7 @@ class TestDownloadHttpResponse {
 
     // Offset of body to pause the response sending. A -1 offset will pause
     // the response before header is sent.
-    absl::optional<int64_t> pause_offset;
+    std::optional<int64_t> pause_offset;
   };
 
   // Information about completed requests.

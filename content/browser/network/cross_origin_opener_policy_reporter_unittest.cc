@@ -5,6 +5,7 @@
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/test/task_environment.h"
@@ -15,7 +16,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -45,9 +45,9 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::string& type,
       const std::string& group,
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const absl::optional<std::string>& user_agent,
+      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/read_only_shared_memory_region.h"
@@ -18,7 +19,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
 
@@ -50,12 +50,12 @@ class CONTENT_EXPORT FontEnumerationCache {
   static base::SequenceBound<FontEnumerationCache> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<FontEnumerationDataSource> data_source,
-      absl::optional<std::string> locale_override);
+      std::optional<std::string> locale_override);
 
   // Exposed for base::SequenceBound. Instances must be obtained from one of
   // the Create*() factory methods.
   FontEnumerationCache(std::unique_ptr<FontEnumerationDataSource> data_source,
-                       absl::optional<std::string> locale_override,
+                       std::optional<std::string> locale_override,
                        base::PassKey<FontEnumerationCache>);
 
   FontEnumerationCache(const FontEnumerationCache&) = delete;
@@ -75,7 +75,7 @@ class CONTENT_EXPORT FontEnumerationCache {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // nullopt in production. Only set in testing.
-  const absl::optional<std::string> locale_override_;
+  const std::optional<std::string> locale_override_;
 
   bool initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

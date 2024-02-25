@@ -126,7 +126,7 @@ class ResourceRequestAllowedNotifier
   const char* disable_network_switch_;
 
   // The local state this class is observing.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Tracks whether or not the observer/service depending on this class actually
   // requested permission to make a request or not. If it did not, then this
@@ -143,8 +143,8 @@ class ResourceRequestAllowedNotifier
   raw_ptr<Observer> observer_;
 
   NetworkConnectionTrackerGetter network_connection_tracker_getter_;
-  raw_ptr<network::NetworkConnectionTracker, LeakedDanglingUntriaged>
-      network_connection_tracker_ = nullptr;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
+      nullptr;
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;

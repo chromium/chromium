@@ -26,6 +26,8 @@ source_set("proto_util") {
   deps = [
     "//base",
     "//ios/web/common:user_agent",
+    "//ios/web/public/navigation:referrer",
+    "//url",
   ]
 }
 

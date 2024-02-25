@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/logging.h",
     "+base/memory/scoped_refptr.h",
     "+base/process/process_metrics.h",
     "+gin/public",
@@ -14,7 +13,5 @@ specific_include_rules = {
     ".*_test(_.*)?\.(cc|h|mm)" : [
         # For base::RunLoop()
         "+base/run_loop.h",
-        # For base::SingleThreadTaskRunner::GetCurrentDefault()
-        "+base/task/single_thread_task_runner.h"
     ]
 }

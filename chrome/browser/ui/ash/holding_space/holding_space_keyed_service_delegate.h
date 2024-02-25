@@ -33,6 +33,9 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // space persistence has been restored.
   void NotifyPersistenceRestored();
 
+  // Returns if persistence is being restored.
+  bool is_restoring_persistence() const { return is_restoring_persistence_; }
+
  protected:
   HoldingSpaceKeyedServiceDelegate(HoldingSpaceKeyedService* service,
                                    HoldingSpaceModel* model);
@@ -46,9 +49,6 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // Returns the holding space model owned by `service_`.
   HoldingSpaceModel* model() { return model_; }
 
-  // Returns if persistence is being restored.
-  bool is_restoring_persistence() const { return is_restoring_persistence_; }
-
  private:
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemsAdded(
@@ -60,8 +60,8 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // Invoked when holding space persistence has been restored.
   virtual void OnPersistenceRestored();
 
-  const raw_ptr<HoldingSpaceKeyedService, ExperimentalAsh> service_;
-  const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
+  const raw_ptr<HoldingSpaceKeyedService> service_;
+  const raw_ptr<HoldingSpaceModel> model_;
 
   // If persistence is being restored.
   bool is_restoring_persistence_ = true;

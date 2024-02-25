@@ -478,6 +478,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestPermission
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method constructor
 [Worker]     method seek
 [Worker]     method truncate
@@ -1108,6 +1109,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter referrer
 [Worker]     getter referrerPolicy
 [Worker]     getter signal
+[Worker]     getter targetAddressSpace
 [Worker]     getter url
 [Worker]     method arrayBuffer
 [Worker]     method blob
@@ -1180,6 +1182,23 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute PERSISTENT
 [Worker]     attribute TEMPORARY
 [Worker]     method constructor
+[Worker] interface StorageBucket
+[Worker]     attribute @@toStringTag
+[Worker]     getter caches
+[Worker]     getter indexedDB
+[Worker]     getter name
+[Worker]     method constructor
+[Worker]     method estimate
+[Worker]     method expires
+[Worker]     method getDirectory
+[Worker]     method persisted
+[Worker]     method setExpires
+[Worker] interface StorageBucketManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method delete
+[Worker]     method keys
+[Worker]     method open
 [Worker] interface StorageManager : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1308,6 +1327,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method isScript
 [Worker]     method isScriptURL
 [Worker] interface URL
+[Worker]     static method canParse
 [Worker]     static method createObjectURL
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag
@@ -1338,6 +1358,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter username
 [Worker] interface URLPattern
 [Worker]     attribute @@toStringTag
+[Worker]     getter hasRegExpGroups
 [Worker]     getter hash
 [Worker]     getter hostname
 [Worker]     getter password
@@ -1934,6 +1955,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ZERO
 [Worker]     getter canvas
 [Worker]     getter drawingBufferColorSpace
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     getter unpackColorSpace
@@ -2014,6 +2036,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawElements
 [Worker]     method drawElementsInstanced
 [Worker]     method drawRangeElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method endQuery
@@ -2374,8 +2397,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RGB
 [Worker]     attribute RGB565
 [Worker]     attribute RGB5_A1
+[Worker]     attribute RGB8
 [Worker]     attribute RGBA
 [Worker]     attribute RGBA4
+[Worker]     attribute RGBA8
 [Worker]     attribute SAMPLER_2D
 [Worker]     attribute SAMPLER_CUBE
 [Worker]     attribute SAMPLES
@@ -2490,6 +2515,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ZERO
 [Worker]     getter canvas
 [Worker]     getter drawingBufferColorSpace
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     getter unpackColorSpace
@@ -2540,6 +2566,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method disableVertexAttribArray
 [Worker]     method drawArrays
 [Worker]     method drawElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method finish
@@ -2788,6 +2815,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter platform
 [Worker]     getter product
 [Worker]     getter storage
+[Worker]     getter storageBuckets
 [Worker]     getter userAgent
 [Worker]     getter userAgentData
 [Worker]     method constructor

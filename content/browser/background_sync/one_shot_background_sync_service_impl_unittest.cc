@@ -37,37 +37,33 @@ class OneShotBackgroundSyncServiceImplTest
         render_process_host_.get(), std::move(receiver));
     base::RunLoop().RunUntilIdle();
 
-    // Since |background_sync_context_| is deleted after
-    // OneShotBackgroundSyncServiceImplTest is, this is safe.
-    one_shot_sync_service_impl_ =
-        background_sync_context_->one_shot_sync_services_.begin()->get();
-    ASSERT_TRUE(one_shot_sync_service_impl_);
+    ASSERT_TRUE(GetOneShotBackgroundSyncServiceImpl());
   }
 
   // Helpers for testing *BackgroundSyncServiceImpl methods
   void RegisterOneShotSync(
       blink::mojom::SyncRegistrationOptionsPtr sync,
       blink::mojom::OneShotBackgroundSyncService::RegisterCallback callback) {
-    one_shot_sync_service_impl_->Register(std::move(sync), sw_registration_id_,
-                                          std::move(callback));
+    GetOneShotBackgroundSyncServiceImpl()->Register(
+        std::move(sync), sw_registration_id_, std::move(callback));
     base::RunLoop().RunUntilIdle();
   }
 
   void GetOneShotSyncRegistrations(
       blink::mojom::OneShotBackgroundSyncService::GetRegistrationsCallback
           callback) {
-    one_shot_sync_service_impl_->GetRegistrations(sw_registration_id_,
-                                                  std::move(callback));
+    GetOneShotBackgroundSyncServiceImpl()->GetRegistrations(
+        sw_registration_id_, std::move(callback));
     base::RunLoop().RunUntilIdle();
+  }
+
+  OneShotBackgroundSyncServiceImpl* GetOneShotBackgroundSyncServiceImpl() {
+    return background_sync_context_->one_shot_sync_services_.begin()->get();
   }
 
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   mojo::Remote<blink::mojom::OneShotBackgroundSyncService>
       one_shot_sync_service_remote_;
-
-  // Owned by |background_sync_context_|
-  raw_ptr<OneShotBackgroundSyncServiceImpl, DanglingUntriaged>
-      one_shot_sync_service_impl_;
 };
 
 // Tests

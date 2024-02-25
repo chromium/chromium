@@ -13,7 +13,7 @@ namespace shared_highlighting {
 namespace {
 
 base::Value TextFragmentToValue(const std::string& fragment) {
-  absl::optional<TextFragment> opt_frag =
+  std::optional<TextFragment> opt_frag =
       TextFragment::FromEscapedString(fragment);
   return opt_frag ? opt_frag->ToValue() : base::Value(base::Value::Type::NONE);
 }
@@ -165,7 +165,7 @@ TEST(TextFragmentTest, FromValue) {
   fragment_value.GetDict().Set(kFragmentPrefixKey, prefix);
   fragment_value.GetDict().Set(kFragmentSuffixKey, suffix);
 
-  absl::optional<TextFragment> opt_fragment =
+  std::optional<TextFragment> opt_fragment =
       TextFragment::FromValue(&fragment_value);
   EXPECT_TRUE(opt_fragment.has_value());
   TextFragment fragment = opt_fragment.value();

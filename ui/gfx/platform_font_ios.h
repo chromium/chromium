@@ -22,7 +22,7 @@ class PlatformFontIOS : public PlatformFont {
   // font; use the |SystemFontType| constructor for that.
   PlatformFontIOS(sk_sp<SkTypeface> typeface,
                   int font_size_pixels,
-                  const absl::optional<FontRenderParams>& params);
+                  const std::optional<FontRenderParams>& params);
 #endif
   PlatformFontIOS(const PlatformFontIOS&) = delete;
   PlatformFontIOS& operator=(const PlatformFontIOS&) = delete;

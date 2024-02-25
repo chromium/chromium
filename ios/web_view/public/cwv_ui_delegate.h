@@ -23,13 +23,13 @@ typedef NS_ENUM(NSInteger, CWVPermissionDecision) {
   CWVPermissionDecisionPrompt,
   CWVPermissionDecisionGrant,
   CWVPermissionDecisionDeny,
-} API_AVAILABLE(ios(15.0));
+};
 
 typedef NS_ENUM(NSInteger, CWVMediaCaptureType) {
   CWVMediaCaptureTypeCamera,
   CWVMediaCaptureTypeMicrophone,
   CWVMediaCaptureTypeCameraAndMicrophone,
-} API_AVAILABLE(ios(15.0));
+};
 
 // UI delegate interface for a CWVWebView.  Embedders can implement the
 // functions in order to customize library behavior.
@@ -56,7 +56,7 @@ CWV_EXPORT
     requestMediaCapturePermissionForType:(CWVMediaCaptureType)type
                          decisionHandler:
                              (void (^)(CWVPermissionDecision decision))
-                                 decisionHandler API_AVAILABLE(ios(15.0));
+                                 decisionHandler;
 
 // Instructs the delegate to show UI in response to window.alert JavaScript
 // call.

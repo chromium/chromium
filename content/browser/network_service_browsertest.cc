@@ -22,9 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "content/browser/network/network_service_util_internal.h"
-#include "content/browser/network_service_instance_impl.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -64,11 +62,16 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/test/udp_socket_test_util.h"
 #include "sql/database.h"
 #include "sql/sql_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -210,7 +213,7 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory, simple_loader_helper.GetCallback());
+        loader_factory, simple_loader_helper.GetCallbackDeprecated());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
   }
@@ -305,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->automatically_assign_isolation_info = true;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
   network_context->CreateURLLoaderFactory(
@@ -507,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
         response->headers->SetHeader("access-control-allow-methods", "*");
         client->OnReceiveResponse(std::move(response),
                                   mojo::ScopedDataPipeConsumerHandle(),
-                                  absl::nullopt);
+                                  std::nullopt);
       } else if (resource_request.method == "custom-method") {
         has_received_request_ = true;
         auto response = network::mojom::URLResponseHead::New();
@@ -517,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
                                      "https://www2.example.com");
         client->OnReceiveResponse(std::move(response),
                                   mojo::ScopedDataPipeConsumerHandle(),
-                                  absl::nullopt);
+                                  std::nullopt);
         client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       } else {
         client->OnComplete(
@@ -788,8 +791,7 @@ void SetCookie(
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
       base::Time(), base::Time(), /*secure=*/true, /*http-only=*/false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-      /*=same_party=*/false);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
@@ -1804,38 +1806,113 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest,
   // final checks are performed in TearDownInProcessBrowserTestFixture().
 }
 
-#if BUILDFLAG(IS_ANDROID)
-class EmptyNetworkServiceTest : public ContentBrowserTest {
+class TestCookieEncryptionProvider
+    : public network::mojom::CookieEncryptionProvider {
  public:
-  EmptyNetworkServiceTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kNetworkServiceEmptyOutOfProcess}, {});
-    ForceInProcessNetworkService();
+  TestCookieEncryptionProvider() = default;
+
+  mojo::PendingRemote<network::mojom::CookieEncryptionProvider> BindRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
-  EmptyNetworkServiceTest(const EmptyNetworkServiceTest&) = delete;
-  EmptyNetworkServiceTest& operator=(const EmptyNetworkServiceTest&) = delete;
+  MOCK_METHOD(void, GetEncryptor, (GetEncryptorCallback callback), (override));
+
+ private:
+  mojo::Receiver<network::mojom::CookieEncryptionProvider> receiver_{this};
+};
+
+class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
+ public:
+  NetworkServiceCookieEncryptionBrowserTest() {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, the network sandbox needs to be disabled. This is because the
+    // code that performs the migration on Windows DCHECKs if network sandbox is
+    // enabled and migration is not requested, but this is used in the tests to
+    // verify this behavior.
+    win_network_sandbox_feature_.InitAndDisableFeature(
+        sandbox::policy::features::kNetworkServiceSandbox);
+#endif
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+#if BUILDFLAG(IS_WIN)
+ private:
+  base::test::ScopedFeatureList win_network_sandbox_feature_;
+#endif
+};
+
+// This test verifies that when a cookie encryption provider is set when
+// creating a network context, then it results in a call to the GetEncryptor
+// method on the CookieEncryptionProvider.
+IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
+                       CookieEncryptionProvider) {
+  const auto data_path =
+      shell()->web_contents()->GetBrowserContext()->GetPath();
+  auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->data_directory =
+      data_path.Append(FILE_PATH_LITERAL("TestContext"));
+  context_params->file_paths->cookie_database_name =
+      base::FilePath(FILE_PATH_LITERAL("Cookies"));
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->enable_encrypted_cookies = true;
+
+  testing::StrictMock<TestCookieEncryptionProvider> provider;
+  context_params->cookie_encryption_provider = provider.BindRemote();
+
+  mojo::Remote<network::mojom::NetworkContext> network_context;
+  content::CreateNetworkContextInNetworkService(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  EXPECT_CALL(provider, GetEncryptor)
+      .WillOnce(
+          [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
+                 callback) {
+            std::move(callback).Run(
+                os_crypt_async::GetTestEncryptorForTesting());
+          });
+
+  // Cookie here needs to be non-session to be written to the Cookies file.
+  GURL test_url = embedded_test_server()->GetURL(
+      "foo.com", "/cookies/set_persistent_cookie.html");
+
+  // This artificial delay verifies https://crbug.com/1511730 is fixed.
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  network_context->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+  cookie_manager->SetPreCommitCallbackDelayForTesting(base::Seconds(3));
+
+  ASSERT_EQ(net::OK, LoadBasicRequest(network_context.get(), test_url));
+}
+
+#if BUILDFLAG(IS_WIN)
+class NetworkServiceCodeIntegrityTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceCodeIntegrityTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {sandbox::policy::features::kNetworkServiceCodeIntegrity,
+         sandbox::policy::features::kNetworkServiceSandbox},
+        {});
+    ForceOutOfProcessNetworkService();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
-  // Check if EmptyNetworkService is available.
-  network::mojom::EmptyNetworkService* empty_network_service =
-      GetEmptyNetworkServiceForTesting();
-  DCHECK(empty_network_service);
-  const int32_t kExpected = 42;
-  int32_t value = 0;
-  base::RunLoop loop;
-  empty_network_service->Ping(kExpected,
-                              base::BindLambdaForTesting([&](int32_t val) {
-                                value = val;
-                                loop.Quit();
-                              }));
-  loop.Run();
-  EXPECT_EQ(kExpected, value);
+// This test verifies that the NetworkServiceCodeIntegrity feature works when
+// used in conjunction with the network service sandbox on Windows.
+IN_PROC_BROWSER_TEST_F(NetworkServiceCodeIntegrityTest, Enabled) {
+  // Verify pages load.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 

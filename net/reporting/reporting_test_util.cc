@@ -5,6 +5,7 @@
 #include "net/reporting/reporting_test_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
@@ -28,7 +30,6 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -57,7 +58,7 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
   const url::Origin& report_origin() const override { return report_origin_; }
   const GURL& url() const override { return url_; }
   const std::string& json() const override { return json_; }
-  absl::optional<base::Value> GetValue() const override {
+  std::optional<base::Value> GetValue() const override {
     return base::JSONReader::Read(json_);
   }
 
@@ -335,7 +336,7 @@ TestReportingService::~TestReportingService() = default;
 
 void TestReportingService::QueueReport(
     const GURL& url,
-    const absl::optional<base::UnguessableToken>& reporting_source,
+    const std::optional<base::UnguessableToken>& reporting_source,
     const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& user_agent,
     const std::string& group,
@@ -376,9 +377,10 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
   return nullptr;
 }
 
-std::vector<const ReportingReport*> TestReportingService::GetReports() const {
+std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+TestReportingService::GetReports() const {
   NOTREACHED();
-  return std::vector<const ReportingReport*>();
+  return std::vector<raw_ptr<const ReportingReport, VectorExperimental>>();
 }
 
 base::flat_map<url::Origin, std::vector<ReportingEndpoint>>

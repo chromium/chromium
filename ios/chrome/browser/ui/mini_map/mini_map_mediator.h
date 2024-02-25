@@ -38,11 +38,23 @@ class WebState;
 // User did not consent in the interstitial.
 - (void)userDeclined;
 
-// User dismissed the window.
+// User dismissed the consent window.
 - (void)userDismissed;
 
-// User pressed the content settings.
-- (void)userOpenedSettings;
+// User pressed the content settings from consent screen.
+- (void)userOpenedSettingsInConsent;
+
+// User pressed the content settings from MiniMap screen.
+- (void)userOpenedSettingsFromMiniMap;
+
+// User pressed the "Report an issue" button from MiniMap screen.
+- (void)userReportedAnIssueFromMiniMap;
+
+// User closed the MiniMap.
+- (void)userClosedMiniMap;
+
+// User opened a URL from the MiniMap.
+- (void)userOpenedURLFromMiniMap;
 
 @end
 

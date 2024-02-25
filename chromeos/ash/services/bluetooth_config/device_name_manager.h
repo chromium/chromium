@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -28,14 +28,20 @@ class DeviceNameManager {
     // |device_id|.
     virtual void OnDeviceNicknameChanged(
         const std::string& device_id,
-        const absl::optional<std::string>& nickname) = 0;
+        const std::optional<std::string>& nickname) = 0;
   };
+
+  // The pref name used for the map of Bluetooth device IDs to nicknames.
+  static const char kDeviceIdToNicknameMapPrefName[];
+
+  // The pref name used for the legacy map of Bluetooth device IDs to nicknames.
+  static const char kDeviceIdToNicknameMapPrefNameLegacy[];
 
   virtual ~DeviceNameManager();
 
   // Retrieves the nickname of the Bluetooth device with ID |device_id| or
   // abs::nullopt if not found.
-  virtual absl::optional<std::string> GetDeviceNickname(
+  virtual std::optional<std::string> GetDeviceNickname(
       const std::string& device_id) = 0;
 
   // Sets the nickname of the Bluetooth device with ID |device_id| for all users
@@ -57,7 +63,7 @@ class DeviceNameManager {
   DeviceNameManager();
 
   void NotifyDeviceNicknameChanged(const std::string& device_id,
-                                   const absl::optional<std::string>& nickname);
+                                   const std::optional<std::string>& nickname);
 
   base::ObserverList<Observer> observers_;
 };

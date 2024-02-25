@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/observer_list.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -60,7 +60,7 @@ class CryptAuthV2DeviceManager {
   //               message.
   virtual void ForceDeviceSyncNow(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id) = 0;
+      const std::optional<std::string>& session_id) = 0;
 
   // Returns true if a v2 DeviceSync attempt is currently in progress.
   virtual bool IsDeviceSyncInProgress() const = 0;
@@ -81,11 +81,11 @@ class CryptAuthV2DeviceManager {
 
   // Returns the time of the last successful v2 DeviceSync. Returns null if no
   // successful v2 DeviceSync has ever occurred.
-  virtual absl::optional<base::Time> GetLastDeviceSyncTime() const = 0;
+  virtual std::optional<base::Time> GetLastDeviceSyncTime() const = 0;
 
   // Returns the time until the next scheduled v2 DeviceSync request. Returns
   // null if there is no request scheduled.
-  virtual absl::optional<base::TimeDelta> GetTimeToNextAttempt() const = 0;
+  virtual std::optional<base::TimeDelta> GetTimeToNextAttempt() const = 0;
 
  protected:
   CryptAuthV2DeviceManager();

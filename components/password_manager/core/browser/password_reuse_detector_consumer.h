@@ -5,19 +5,18 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_DETECTOR_CONSUMER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_DETECTOR_CONSUMER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
 struct MatchingReusedCredential;
 
 // Callback interface for receiving a password reuse event.
-class PasswordReuseDetectorConsumer
-    : public base::SupportsWeakPtr<PasswordReuseDetectorConsumer> {
+class PasswordReuseDetectorConsumer {
  public:
   PasswordReuseDetectorConsumer();
   virtual ~PasswordReuseDetectorConsumer();
@@ -38,11 +37,14 @@ class PasswordReuseDetectorConsumer
   virtual void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      absl::optional<PasswordHashData> reused_protected_password_hash,
+      std::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       int saved_passwords,
       const std::string& domain,
       uint64_t reused_password_hash) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PasswordReuseDetectorConsumer> AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

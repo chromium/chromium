@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
@@ -24,7 +26,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -94,7 +95,7 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
             mojom::WebNotificationType::INVALID_NOTIFICATION));
     eche_app_manager_factory_->CloseConnectionOrLaunchErrorNotifications();
 
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kEcheAppScreenLockNotifierId);
     ASSERT_TRUE(notification.has_value());
     notification =
@@ -118,14 +119,12 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
-  raw_ptr<PhoneHubTray, DanglingUntriaged | ExperimentalAsh> phone_hub_tray_ =
-      nullptr;
-  raw_ptr<EcheAppManagerFactory, ExperimentalAsh> eche_app_manager_factory_ =
-      nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
+  raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
+  raw_ptr<EcheAppManagerFactory> eche_app_manager_factory_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
@@ -173,10 +172,10 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
@@ -189,7 +188,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char16_t phone_name[] = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name_1,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name_1,
       visible_name_1, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
@@ -202,7 +201,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char16_t visible_name_2[] = u"Fake App 2";
   const char package_name_2[] = "com.fakeapp2";
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name_2,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name_2,
       visible_name_2, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
@@ -218,7 +217,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   const std::u16string phone_name = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name,
       visible_name, user_id, icon, phone_name, GetAppsLaunchInfoProvider());
 
   std::unique_ptr<LaunchedAppInfo> launched_app_info =
@@ -241,7 +240,7 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   const char16_t phone_name[] = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name,
       visible_name, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
@@ -255,7 +254,8 @@ TEST_F(EcheAppManagerFactoryTest, GetSystemInfo) {
   const char kLsbRelease[] =
       "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
       "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
   base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
   std::unique_ptr<SystemInfo> system_info =
       EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
@@ -273,7 +273,8 @@ TEST_F(EcheAppManagerFactoryTest, GetSystemInfo_flagDisabled) {
   const char kLsbRelease[] =
       "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
       "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
   base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
   std::unique_ptr<SystemInfo> system_info =
       EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());

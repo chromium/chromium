@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_host_authenticator.h"
 #include "remoting/protocol/validating_authenticator.h"
 
@@ -30,11 +31,11 @@ std::unique_ptr<Authenticator>
 It2MeHostAuthenticatorFactory::CreateAuthenticator(
     const std::string& local_jid,
     const std::string& remote_jid) {
-  std::unique_ptr<Authenticator> authenticator(
-      NegotiatingHostAuthenticator::CreateWithSharedSecret(
-          local_jid, remote_jid, local_cert_, key_pair_, access_code_hash_,
-          nullptr));
-
+  auto auth_config =
+      std::make_unique<HostAuthenticationConfig>(local_cert_, key_pair_);
+  auth_config->AddSharedSecretAuth(access_code_hash_);
+  auto authenticator = std::make_unique<NegotiatingHostAuthenticator>(
+      local_jid, remote_jid, std::move(auth_config));
   return std::make_unique<ValidatingAuthenticator>(
       remote_jid, std::move(validation_callback_), std::move(authenticator));
 }

@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 namespace updater {
 
 // Interface wrapper around MSI API calls to allow for mocking.

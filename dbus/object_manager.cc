@@ -50,11 +50,7 @@ scoped_refptr<ObjectManager> ObjectManager::Create(
 ObjectManager::ObjectManager(Bus* bus,
                              const std::string& service_name,
                              const ObjectPath& object_path)
-    : bus_(bus),
-      service_name_(service_name),
-      object_path_(object_path),
-      setup_success_(false),
-      cleanup_called_(false) {
+    : bus_(bus), service_name_(service_name), object_path_(object_path) {
   LOG_IF(FATAL, !object_path_.IsValid()) << object_path_.value();
   DVLOG(1) << "Creating ObjectManager for " << service_name_
            << " " << object_path_.value();
@@ -175,15 +171,20 @@ void ObjectManager::CleanUp() {
   }
 
   match_rule_.clear();
+  // After Cleanup(), the Bus doesn't own `this` anymore and might be deleted
+  // before `this`.
+  bus_ = nullptr;
 }
 
 bool ObjectManager::SetupMatchRuleAndFilter() {
-  DCHECK(bus_);
   DCHECK(!setup_success_);
-  bus_->AssertOnDBusThread();
 
-  if (cleanup_called_)
+  if (cleanup_called_) {
     return false;
+  }
+
+  DCHECK(bus_);
+  bus_->AssertOnDBusThread();
 
   if (!bus_->Connect() || !bus_->SetUpAsyncOperations())
     return false;
@@ -225,16 +226,17 @@ void ObjectManager::OnSetupMatchRuleAndFilterComplete(bool success) {
                  << ": Failed to set up match rule.";
     return;
   }
-
-  DCHECK(bus_);
   DCHECK(object_proxy_);
   DCHECK(setup_success_);
-  bus_->AssertOnOriginThread();
 
   // |object_proxy_| is no longer valid if the Bus was shut down before this
   // call. Don't initiate any other action from the origin thread.
-  if (cleanup_called_)
+  if (cleanup_called_) {
     return;
+  }
+
+  DCHECK(bus_);
+  bus_->AssertOnOriginThread();
 
   object_proxy_->ConnectToSignal(
       kObjectManagerInterface, kObjectManagerInterfacesAdded,

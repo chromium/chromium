@@ -5,14 +5,12 @@
 #ifndef CHROME_INSTALLER_UTIL_REGISTRY_TEST_DATA_H_
 #define CHROME_INSTALLER_UTIL_REGISTRY_TEST_DATA_H_
 
-#include <windows.h>
-
 #include <string>
 
+#include "base/test/test_reg_util_win.h"
+#include "base/win/windows_types.h"
+
 // A helper class for use by unit tests that need some registry space and data.
-// BEWARE: Instances of this class irrevocably and recursively delete keys and
-// values from the registry.  Carefully read the comments for Initialize and
-// Reset before use.
 class RegistryTestData {
  public:
   RegistryTestData();
@@ -30,9 +28,6 @@ class RegistryTestData {
   // \NonEmptyKey\Subkey ("SomeValue" = DWORD 1)
   bool Initialize(HKEY root_key, const wchar_t* base_path);
 
-  // Deletes the key rooted at base_path and clears all state.
-  void Reset();
-
   // Fires Google Test expectations in the hopes that |path| contains the same
   // data as originally placed in |non_empty_key| by Initialize().
   void ExpectMatchesNonEmptyKey(HKEY root_key, const wchar_t* path);
@@ -47,8 +42,7 @@ class RegistryTestData {
   static void ExpectEmptyKey(HKEY root_key, const wchar_t* path);
 
  private:
-  static bool DeleteKey(HKEY root_key, const wchar_t* path);
-
+  registry_util::RegistryOverrideManager registry_override_manager_;
   HKEY root_key_;
   std::wstring base_path_;
   std::wstring empty_key_path_;

@@ -7,18 +7,22 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -37,18 +41,28 @@ const base::RepeatingTimer& GameDashboardContextTestApi::GetRecordingTimer()
 
 const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
     const {
-  return context_->recording_duration_;
+  return context_->GetRecordingDuration();
 }
 
-GameDashboardWidget* GameDashboardContextTestApi::GetMainMenuButtonWidget() {
-  return context_->main_menu_button_widget();
+const GameDashboardMainMenuCursorHandler*
+GameDashboardContextTestApi::GetMainMenuCursorHandler() const {
+  return context_->main_menu_cursor_handler_.get();
 }
 
-PillButton* GameDashboardContextTestApi::GetMainMenuButton() {
-  auto* main_menu_button_widget = GetMainMenuButtonWidget();
-  CHECK(main_menu_button_widget);
-  return views::AsViewClass<PillButton>(
-      main_menu_button_widget->GetContentsView());
+views::Widget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
+    const {
+  return context_->game_dashboard_button_widget();
+}
+
+GameDashboardButton* GameDashboardContextTestApi::GetGameDashboardButton()
+    const {
+  return context_->game_dashboard_button_;
+}
+
+views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
+  auto* game_dashboard_button = GetGameDashboardButton();
+  CHECK(game_dashboard_button);
+  return game_dashboard_button->title_view_;
 }
 
 views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {
@@ -56,7 +70,7 @@ views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {
 }
 
 GameDashboardMainMenuView* GameDashboardContextTestApi::GetMainMenuView() {
-  return context_->main_menu_view_;
+  return context_->main_menu_view();
 }
 
 FeatureTile* GameDashboardContextTestApi::GetMainMenuGameControlsTile() {
@@ -97,13 +111,13 @@ GameDashboardContextTestApi::GetMainMenuGameControlsDetailsButton() {
 PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->game_controls_setup_button_;
+  return main_menu_view->GetGameControlsSetupButton();
 }
 
-Switch* GameDashboardContextTestApi::GetMainMenuGameControlsHintSwitch() {
+Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->game_controls_hint_switch_;
+  return main_menu_view->GetGameControlsFeatureSwith();
 }
 
 views::LabelButton* GameDashboardContextTestApi::GetMainMenuFeedbackButton() {
@@ -121,27 +135,50 @@ IconButton* GameDashboardContextTestApi::GetMainMenuSettingsButton() {
       GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
 }
 
+AnchoredNudge* GameDashboardContextTestApi::GetGameControlsSetupNudge() {
+  if (auto* main_menu = GetMainMenuView()) {
+    return main_menu->GetGameControlsSetupNudgeForTesting();
+  }
+  return nullptr;
+}
+
+views::Widget* GameDashboardContextTestApi::GetWelcomeDialogWidget() {
+  return context_->welcome_dialog_widget_.get();
+}
+
 void GameDashboardContextTestApi::OpenTheMainMenu() {
   ASSERT_FALSE(GetMainMenuView()) << "The main menu view is already open.";
   ASSERT_FALSE(GetMainMenuWidget()) << "The main menu widget is already open.";
-  auto* main_menu_button = GetMainMenuButton();
-  ASSERT_TRUE(main_menu_button);
-  ClickOnView(main_menu_button, event_generator_);
+  ASSERT_FALSE(GetMainMenuCursorHandler())
+      << "The cursor handler is already registered.";
+  auto* game_dashboard_button = GetGameDashboardButton();
+  ASSERT_TRUE(game_dashboard_button);
+  ClickOnView(game_dashboard_button, event_generator_);
+  // Pause to ensure any other open main menu views have had time to auto-close
+  // and notify the `GameDashboardContext` that it's been destroyed.
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetMainMenuView());
   ASSERT_TRUE(GetMainMenuWidget());
+  ASSERT_TRUE(GetMainMenuCursorHandler());
 }
 
 void GameDashboardContextTestApi::CloseTheMainMenu() {
   ASSERT_TRUE(GetMainMenuView()) << "The main menu view is already closed.";
   ASSERT_TRUE(GetMainMenuWidget()) << "The main menu widget is already closed.";
-  auto* main_menu_button = GetMainMenuButton();
-  ASSERT_TRUE(main_menu_button);
-  ClickOnView(main_menu_button, event_generator_);
+  ASSERT_TRUE(GetMainMenuCursorHandler())
+      << "The cursor handler is already registered.";
+  auto* game_dashboard_button = GetGameDashboardButton();
+  ASSERT_TRUE(game_dashboard_button);
+  ClickOnView(game_dashboard_button, event_generator_);
+  // Pause to ensure the main menu view has had time to auto-close itself and
+  // notify the `GameDashboardContext` that it's been destroyed.
+  base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(GetMainMenuView());
   ASSERT_FALSE(GetMainMenuWidget());
+  ASSERT_FALSE(GetMainMenuCursorHandler());
 }
 
-GameDashboardWidget* GameDashboardContextTestApi::GetToolbarWidget() {
+views::Widget* GameDashboardContextTestApi::GetToolbarWidget() {
   return context_->toolbar_widget_.get();
 }
 
@@ -198,6 +235,13 @@ void GameDashboardContextTestApi::OpenTheToolbar() {
   ClickOnView(main_menu_toolbar_tile, event_generator_);
   ASSERT_TRUE(GetToolbarView());
   ASSERT_TRUE(GetToolbarWidget());
+}
+
+void GameDashboardContextTestApi::SetFocusOnToolbar() {
+  views::Widget* toolbar_widget = GetToolbarWidget();
+  ASSERT_TRUE(toolbar_widget)
+      << "The toolbar view must be opened before trying to place focus on it.";
+  toolbar_widget->Activate();
 }
 
 void GameDashboardContextTestApi::CloseTheToolbar() {

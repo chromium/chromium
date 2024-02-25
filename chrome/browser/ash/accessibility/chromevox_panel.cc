@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -56,7 +56,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   }
 
  private:
-  raw_ptr<ChromeVoxPanel, ExperimentalAsh> panel_;
+  raw_ptr<ChromeVoxPanel> panel_;
 };
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)

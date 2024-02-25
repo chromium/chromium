@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -22,8 +21,8 @@
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
 #include "crypto/symmetric_key.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace chromeos::onc {
 namespace {
@@ -44,7 +43,7 @@ bool GetString(const base::Value::Dict& dict,
 }
 
 bool GetInt(const base::Value::Dict& dict, const char* key, int* result) {
-  const absl::optional<int> value = dict.FindInt(key);
+  const std::optional<int> value = dict.FindInt(key);
   if (!value) {
     return false;
   }
@@ -157,6 +156,79 @@ CertPEMsByGUIDMap GetServerAndCACertsByGUID(
   }
 
   return certs_by_guid;
+}
+
+// Set APN dictionary and associated recommended values to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// old APN UI.
+void SetAPNDictAndRecommendedIfNone(base::Value::Dict& cellular_fields) {
+  if (cellular_fields.Find(::onc::cellular::kAPN)) {
+    return;
+  }
+
+  auto apn_recommended_list = base::Value::List()
+                                  .Append(::onc::cellular_apn::kAccessPointName)
+                                  .Append(::onc::cellular_apn::kAttach)
+                                  .Append(::onc::cellular_apn::kAuthentication)
+                                  .Append(::onc::cellular_apn::kUsername)
+                                  .Append(::onc::cellular_apn::kPassword);
+
+  base::Value* apn_dict = cellular_fields.Set(
+      ::onc::cellular::kAPN, base::Value(base::Value::Type::DICT));
+  apn_dict->GetDict().Set(::onc::kRecommended, std::move(apn_recommended_list));
+}
+
+// Modify recommended list to include custom APN list field to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// revamp APN UI.
+void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
+  auto* recommended = cellular_fields.Find(::onc::kRecommended);
+  if (!recommended) {
+    recommended = cellular_fields.Set(::onc::kRecommended,
+                                      base::Value(base::Value::Type::LIST));
+  }
+  for (const auto& field : recommended->GetList()) {
+    if (field == ::onc::cellular::kCustomAPNList) {
+      return;
+    }
+  }
+  recommended->GetList().Append(::onc::cellular::kCustomAPNList);
+}
+
+void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
+                                       base::Value::Dict& onc_object) {
+  if (&signature == &kCellularSignature) {
+    SetAPNDictAndRecommendedIfNone(onc_object);
+    AddCustomAPNListToRecommended(onc_object);
+    return;
+  }
+
+  // The function takes any ONC object and recursively searches until it finds a
+  // Cellular dictionary to set the default values.
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    FillInCellularDefaultsInOncObject(*field_signature->value_signature,
+                                      it.second.GetDict());
+  }
+}
+
+// Adds "CustomAPNList" as a recommended field by default, and creates an APN
+// dict with nested recommended field in cellular entries lacking an APN dict in
+// |network_configs| list.
+void FillInCellularDefaultsInNetworks(base::Value::List& network_configs) {
+  for (auto& network : network_configs) {
+    FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
+                                      network.GetDict());
+  }
 }
 
 // Fills HexSSID fields in all entries in the |network_configs| list.
@@ -358,12 +430,12 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
 
 }  // namespace
 
-absl::optional<base::Value::Dict> ReadDictionaryFromJson(
+std::optional<base::Value::Dict> ReadDictionaryFromJson(
     const std::string& json) {
   if (json.empty()) {
     // Policy may contain empty values, just log a debug message.
     NET_LOG(DEBUG) << "Empty json string";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json,
@@ -371,17 +443,17 @@ absl::optional<base::Value::Dict> ReadDictionaryFromJson(
   if (!parsed_json.has_value()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: "
                    << parsed_json.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!parsed_json->is_dict()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*parsed_json).TakeDict();
 }
 
-absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
-                                          const base::Value::Dict& root) {
+std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
+                                         const base::Value::Dict& root) {
   const int kKeySizeInBits = 256;
   const int kMaxIterationCount = 500000;
   std::string onc_type;
@@ -405,32 +477,32 @@ absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
       !GetString(root, ::onc::toplevel_config::kType, &onc_type) ||
       onc_type != ::onc::toplevel_config::kEncryptedConfiguration) {
     NET_LOG(ERROR) << "Encrypted ONC malformed.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (hmac_method != ::onc::encrypted::kSHA1 ||
       cipher != ::onc::encrypted::kAES256 ||
       stretch_method != ::onc::encrypted::kPBKDF2) {
     NET_LOG(ERROR) << "Encrypted ONC unsupported encryption scheme.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Make sure iterations != 0, since that's not valid.
   if (iterations == 0) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Simply a sanity check to make sure we can't lock up the machine
   // for too long with a huge number (or a negative number).
   if (iterations < 0 || iterations > kMaxIterationCount) {
     NET_LOG(ERROR) << "Too many iterations in encrypted ONC";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::Base64Decode(salt, &salt)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unique_ptr<crypto::SymmetricKey> key(
@@ -440,38 +512,37 @@ absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
 
   if (!base::Base64Decode(initial_vector, &initial_vector)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::Base64Decode(ciphertext, &ciphertext)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::Base64Decode(hmac, &hmac)) {
     NET_LOG(ERROR) << kUnableToDecode;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   crypto::HMAC hmac_verifier(crypto::HMAC::SHA1);
   if (!hmac_verifier.Init(key.get()) ||
       !hmac_verifier.Verify(ciphertext, hmac)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   crypto::Encryptor decryptor;
   if (!decryptor.Init(key.get(), crypto::Encryptor::CBC, initial_vector)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string plaintext;
   if (!decryptor.Decrypt(ciphertext, &plaintext)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value::Dict> new_root =
-      ReadDictionaryFromJson(plaintext);
+  std::optional<base::Value::Dict> new_root = ReadDictionaryFromJson(plaintext);
   if (!new_root) {
     NET_LOG(ERROR) << "Property dictionary malformed.";
   }
@@ -561,8 +632,7 @@ void FillInHexSSIDField(base::Value::Dict& wifi_fields) {
     NET_LOG(ERROR) << "Found empty SSID field.";
     return;
   }
-  wifi_fields.Set(::onc::wifi::kHexSSID,
-                  base::HexEncode(ssid->c_str(), ssid->size()));
+  wifi_fields.Set(::onc::wifi::kHexSSID, base::HexEncode(*ssid));
 }
 
 void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
@@ -613,7 +683,7 @@ std::string DecodePEM(const std::string& pem_encoded) {
   pem_headers.push_back(kCertificateHeader);
   pem_headers.push_back(kX509CertificateHeader);
 
-  net::PEMTokenizer pem_tokenizer(pem_encoded, pem_headers);
+  bssl::PEMTokenizer pem_tokenizer(pem_encoded, pem_headers);
   std::string decoded;
   if (pem_tokenizer.GetNext()) {
     decoded = pem_tokenizer.data();
@@ -648,7 +718,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
     return true;
   }
 
-  absl::optional<base::Value::Dict> toplevel_onc =
+  std::optional<base::Value::Dict> toplevel_onc =
       ReadDictionaryFromJson(onc_blob);
   if (!toplevel_onc) {
     NET_LOG(ERROR) << "Not a valid ONC JSON dictionary: "
@@ -682,15 +752,10 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   validator.SetOncSource(onc_source);
 
   Validator::Result validation_result;
-  absl::optional<base::Value::Dict> validated_toplevel_onc =
+  std::optional<base::Value::Dict> validated_toplevel_onc =
       validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
                                         toplevel_onc.value(),
                                         &validation_result);
-
-  if (from_policy) {
-    UMA_HISTOGRAM_BOOLEAN("Enterprise.ONC.PolicyValidation",
-                          validation_result == Validator::VALID);
-  }
 
   bool success = true;
   if (validation_result == Validator::VALID_WITH_WARNINGS) {
@@ -719,6 +784,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
       ::onc::toplevel_config::kNetworkConfigurations);
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
+    FillInCellularDefaultsInNetworks(*validated_networks_list);
     // Set HiddenSSID to default value to solve the issue crbug.com/1171837
     SetHiddenSSIDFieldsInNetworks(*validated_networks_list);
 

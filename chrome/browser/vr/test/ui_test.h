@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/target_property.h"
-#include "chrome/browser/vr/test/mock_ui_browser_interface.h"
 #include "chrome/browser/vr/ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -56,7 +55,6 @@ class UiTest : public testing::Test {
 
   std::unique_ptr<Ui> ui_instance_;
   raw_ptr<UiInterface, DanglingUntriaged> ui_ = nullptr;
-  std::unique_ptr<MockUiBrowserInterface> browser_;
   raw_ptr<Model, DanglingUntriaged> model_ = nullptr;
   raw_ptr<UiScene, DanglingUntriaged> scene_ = nullptr;
 

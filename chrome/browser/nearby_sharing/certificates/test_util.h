@@ -12,11 +12,11 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/symmetric_key.h"
+#include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 extern const char kTestMetadataFullName[];
 extern const char kTestMetadataIconUrl[];
@@ -38,7 +38,7 @@ const NearbyShareEncryptedMetadataKey& GetNearbyShareTestEncryptedMetadataKey();
 base::Time GetNearbyShareTestNotBefore();
 base::TimeDelta GetNearbyShareTestValidityOffset();
 
-const nearbyshare::proto::EncryptedMetadata& GetNearbyShareTestMetadata();
+const nearby::sharing::proto::EncryptedMetadata& GetNearbyShareTestMetadata();
 const std::vector<uint8_t>& GetNearbyShareTestEncryptedMetadata();
 
 const std::vector<uint8_t>& GetNearbyShareTestPayloadToSign();
@@ -48,7 +48,7 @@ const std::vector<uint8_t>& GetNearbyShareTestPayloadHashUsingSecretKey();
 NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::Time not_before = GetNearbyShareTestNotBefore());
-nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
+nearby::sharing::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
     nearby_share::mojom::Visibility visibility,
     base::Time not_before = GetNearbyShareTestNotBefore());
 
@@ -57,7 +57,7 @@ nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
 std::vector<NearbySharePrivateCertificate>
 GetNearbyShareTestPrivateCertificateList(
     nearby_share::mojom::Visibility visibility);
-std::vector<nearbyshare::proto::PublicCertificate>
+std::vector<nearby::sharing::proto::PublicCertificate>
 GetNearbyShareTestPublicCertificateList(
     nearby_share::mojom::Visibility visibility);
 

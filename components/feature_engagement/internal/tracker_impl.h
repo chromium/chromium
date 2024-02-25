@@ -7,14 +7,16 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/feature_engagement/public/session_controller.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -38,7 +40,8 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider,
-              base::WeakPtr<TrackerEventExporter> event_exporter);
+              base::WeakPtr<TrackerEventExporter> event_exporter,
+              std::unique_ptr<SessionController> session_controller);
 
   TrackerImpl(const TrackerImpl&) = delete;
   TrackerImpl& operator=(const TrackerImpl&) = delete;
@@ -47,6 +50,11 @@ class TrackerImpl : public Tracker {
 
   // Tracker implementation.
   void NotifyEvent(const std::string& event) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void NotifyUsedEvent(const base::Feature& feature) override;
+  void ClearEventData(const base::Feature& feature) override;
+  EventList ListEvents(const base::Feature& feature) const override;
+#endif
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
   TriggerDetails ShouldTriggerHelpUIWithSnooze(
       const base::Feature& feature) override;
@@ -57,19 +65,19 @@ class TrackerImpl : public Tracker {
                         bool from_window) const override;
   void Dismissed(const base::Feature& feature) override;
   void DismissedWithSnooze(const base::Feature& feature,
-                           absl::optional<SnoozeAction> snooze_action) override;
+                           std::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
   void SetPriorityNotification(const base::Feature& feature) override;
-  absl::optional<std::string> GetPendingPriorityNotification() override;
+  std::optional<std::string> GetPendingPriorityNotification() override;
   void RegisterPriorityNotificationHandler(const base::Feature& feature,
                                            base::OnceClosure callback) override;
   void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) override;
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
-                          base::Time& initial_now) override;
+                          base::Time initial_now) override;
 
  private:
   // Invoked by the EventModel when it has been initialized.
@@ -127,6 +135,9 @@ class TrackerImpl : public Tracker {
 
   // The exporter for any new events to migrate into the tracker.
   base::WeakPtr<TrackerEventExporter> event_exporter_;
+
+  // The session controller that manages the life time of a session.
+  std::unique_ptr<SessionController> session_controller_;
 
   // Whether the initialization of the underlying EventModel has finished.
   bool event_model_initialization_finished_;

@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] "left=141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] " left = 141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "left==141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "\nleft= 141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] ",left=141,," should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "LEFT=141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "top=142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] " top = 142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "top==142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "\\ttop= 142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] ",top=142,," should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "TOP=142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "top=152,left=152" should set top and left position of opened window
+  assert_equals: expected 152 but got 0
+[FAIL] "top=152,,left=152," should set top and left position of opened window
+  assert_equals: expected 152 but got 0
+[FAIL] "top=152==left=152" should set top and left position of opened window
+  assert_equals: expected 152 but got 0
+[FAIL] ",,top= 152, left=152" should set top and left position of opened window
+  assert_equals: expected 152 but got 0
+Harness: the test ran to completion.
+

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_PARAMS_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_PARAMS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -31,7 +31,7 @@ struct PageActionIconParams {
 
   // Leaving these params unset will leave the icon default values untouched.
   // TODO(crbug.com/1061634): Make these fields non-optional.
-  absl::optional<SkColor> icon_color;
+  std::optional<SkColor> icon_color;
   raw_ptr<const gfx::FontList> font_list = nullptr;
 
   int between_icon_spacing = 0;

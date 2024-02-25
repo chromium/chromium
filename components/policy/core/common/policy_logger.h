@@ -54,6 +54,7 @@
 #define CBCM_ENROLLMENT ::policy::PolicyLogger::Log::Source::kCBCMEnrollment
 #define POLICY_FETCHING ::policy::PolicyLogger::Log::Source::kPolicyFetching
 #define PLATFORM_POLICY ::policy::PolicyLogger::Log::Source::kPlatformPolicy
+#define REMOTE_COMMANDS ::policy::PolicyLogger::Log::Source::kRemoteCommands
 
 namespace policy {
 
@@ -68,7 +69,8 @@ class POLICY_EXPORT PolicyLogger {
       kCBCMEnrollment,
       kPolicyFetching,
       kPlatformPolicy,
-      kAuthentication
+      kAuthentication,
+      kRemoteCommands,
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 

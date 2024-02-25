@@ -92,10 +92,11 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
             }
         }
 
-        mHandler.post(() -> {
-            if (mObserver != null) mObserver.onItemRemoved(id);
-            mDeleteItemCallback.notifyCalled();
-        });
+        mHandler.post(
+                () -> {
+                    if (mObserver != null) mObserver.onItemRemoved(id);
+                    mDeleteItemCallback.notifyCalled();
+                });
     }
 
     @Override
@@ -105,7 +106,7 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
     public void pauseDownload(ContentId id) {}
 
     @Override
-    public void resumeDownload(ContentId id, boolean hasUserGesture) {}
+    public void resumeDownload(ContentId id) {}
 
     @Override
     public void cancelDownload(ContentId id) {}

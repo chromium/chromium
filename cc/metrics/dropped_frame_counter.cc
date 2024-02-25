@@ -252,10 +252,9 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
       !frame_sorter_.IsAlreadyReportedDropped(args.frame_id)) {
     ++total_smoothness_dropped_;
 
-    if (report_for_ui_)
-      ReportFramesForUI();
-    else
+    if (!report_for_ui_) {
       ReportFrames();
+    }
   }
 
   if (fcp_received_)
@@ -368,22 +367,6 @@ void DroppedFrameCounter::ReportFrames() {
           sliding_window_max_percent_dropped_After_5_sec_.value();
     ukm_smoothness_data_->Write(smoothness_data);
   }
-}
-
-void DroppedFrameCounter::ReportFramesForUI() {
-  DCHECK(report_for_ui_);
-
-  if (!sliding_window_current_percent_dropped_) {
-    return;
-  }
-
-  auto* recorder = CustomMetricRecorder::Get();
-  if (!recorder) {
-    return;
-  }
-
-  recorder->ReportPercentDroppedFramesInOneSecondWindow(
-      *sliding_window_current_percent_dropped_);
 }
 
 void DroppedFrameCounter::ReportFramesOnEveryFrameForUI() {

@@ -22,7 +22,8 @@ Prefs:
 
 * *Are not* directly surfaced to the user
 * *Are not* localized into the user's language
-* *Are* configurable via enterprise policy
+* *Are* configurable via enterprise policy if a policy exists for the pref
+  (there is no catch-all policy that allows setting arbitrary prefs)
 * *Are not* reported via UMA when in use
 * *Are not* included in chrome://version
 * *Are* automatically persistent across restarts (usually)
@@ -142,7 +143,7 @@ someone who can't read or write code want to change this?"
 | :-                                           | :-          | :-             | :--:     | :--:                                | :-                                |
 | Directly surfaced to the user                | ❌          | ❌            | ❌       | ✅                                  | ✅                                |
 | Localized into the user's language           | ❌          | ❌            | ❌       | ❌                                  | ✅                                |
-| Configurable via enterprise policy           | ✅          | ❌            | ❌ except on ChromeOS | ❌                                  | ❌ but their backing prefs may be |
+| Configurable via enterprise policy           | ✅ if a policy<br>maps to the pref | ❌ | ❌ except on ChromeOS | ❌         | ❌ but their backing prefs may be |
 | Reported when in use                         | ❌          | via UMA/crash |  ❌      | via UMA<br> `Launch.FlagsAtStartup` | ❌                                |
 | Included in chrome://version                 | ❌          | ✅            | ✅       | ❌                                  | ❌                                |
 | Automatically persistent<br> across restarts | ✅ usually  | ❌            | ❌       | ✅                                  | ✅ via backing prefs              |

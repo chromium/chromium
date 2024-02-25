@@ -6,10 +6,12 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(
       `Verify that tabbed editor doesn't shuffle tabs when bindings are dropped and then re-added during reload.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(TestRunner.url('resources/persistence-tabbed-editor-tab-order.html'));
 
@@ -36,9 +38,9 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
     async function openNetworkFiles(next) {
       var uiSourceCodes = await Promise.all([
-        TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network),
-        TestRunner.waitForUISourceCode('bar.js', Workspace.projectTypes.Network),
-        TestRunner.waitForUISourceCode('baz.js', Workspace.projectTypes.Network)
+        TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network),
+        TestRunner.waitForUISourceCode('bar.js', Workspace.Workspace.projectTypes.Network),
+        TestRunner.waitForUISourceCode('baz.js', Workspace.Workspace.projectTypes.Network)
       ]);
 
       for (var uiSourceCode of uiSourceCodes)
@@ -60,7 +62,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   ]);
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabbedPane = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

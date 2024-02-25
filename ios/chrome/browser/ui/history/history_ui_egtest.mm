@@ -14,7 +14,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
@@ -27,7 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -307,19 +307,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Add a typed URL and wait for it to show up on the server.
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
-  if ([ChromeEarlGrey isSyncHistoryDataTypeEnabled]) {
     NSArray<NSURL*>* URLs = @[
       net::NSURLWithGURL(mockURL),
     ];
     [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
                                          timeout:kSyncOperationTimeout];
-  } else {
-    [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
-    [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
-                                                 name:mockURL.spec()
-                                                count:1
-                                              timeout:kSyncOperationTimeout];
-  }
 
   [self loadTestURLs];
   [self openHistoryPanel];

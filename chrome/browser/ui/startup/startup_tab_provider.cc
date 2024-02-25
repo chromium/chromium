@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -62,6 +61,10 @@
 #include "extensions/browser/extension_registry.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/headless/headless_mode_util.h"
+#endif
+
 namespace {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
@@ -79,6 +82,7 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 // checked in a different layer (such as the dbus UrlHandlerService and the
 // ArcIntentHelperBridge). Thus, chrome:// URLs are allowed on Lacros so that
 // trusted calls in Ash can open them.
+// Headless mode also allows chrome:// URLs if the user explicitly allowed it.
 bool ValidateUrl(const GURL& url) {
   if (!url.is_valid())
     return false;
@@ -95,22 +99,29 @@ bool ValidateUrl(const GURL& url) {
   const GURL reset_settings_url =
       settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
   url_points_to_an_approved_settings_page = url == reset_settings_url;
-#if BUILDFLAG(IS_WIN)
-  // On Windows, also allow a hash for the Chrome Cleanup Tool.
-  const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
-      std::string("#") + settings::ResetSettingsHandler::kCctResetSettingsHash);
-  url_points_to_an_approved_settings_page =
-      url_points_to_an_approved_settings_page ||
-      url == reset_settings_url_with_cct_hash;
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  bool url_scheme_is_chrome = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In ChromeOS, allow any URL pattern that matches chrome:// scheme.
+  url_scheme_is_chrome = url.SchemeIs(content::kChromeUIScheme);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // In Headless mode, allow any URL pattern that matches chrome:// scheme if
+  // the user explicitly allowed it.
+  if (headless::IsHeadlessMode() && url.SchemeIs(content::kChromeUIScheme)) {
+    if (headless::IsChromeSchemeUrlAllowed()) {
+      url_scheme_is_chrome = true;
+    } else {
+      LOG(WARNING) << "Headless mode requires the --allow-chrome-scheme-url "
+                      "command-line option to access "
+                   << url;
+    }
+  }
+#endif
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->IsWebSafeScheme(url.scheme()) ||
-         url.SchemeIs(url::kFileScheme) ||
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-         url.SchemeIs(content::kChromeUIScheme) ||
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+         url.SchemeIs(url::kFileScheme) || url_scheme_is_chrome ||
          url_points_to_an_approved_settings_page ||
          url.spec() == url::kAboutBlankURL;
 }
@@ -170,25 +181,6 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
   return GetStandardOnboardingTabsForState(standard_params);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-
-#if BUILDFLAG(IS_WIN)
-StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
-    Profile* profile,
-    StartupBrowserCreator* browser_creator,
-    chrome::startup::IsProcessStartup process_startup) const {
-  StartupTabs tabs;
-  if (process_startup == chrome::startup::IsProcessStartup::kNo ||
-      !browser_creator) {
-    return tabs;
-  }
-  if (browser_creator->welcome_back_page() &&
-      CanShowWelcome(SyncServiceFactory::IsSyncAllowed(profile),
-                     profile->IsChild(), signin_util::IsForceSigninEnabled())) {
-    tabs.emplace_back(GetWelcomePageUrl(false));
-  }
-  return tabs;
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
     StartupBrowserCreator* browser_creator) const {
@@ -474,7 +466,6 @@ GURL StartupTabProviderImpl::GetWelcomePageUrl(bool use_later_run_variant) {
 // static
 void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  UMA_HISTOGRAM_BOOLEAN("IncompatibleApplicationsPage.AddedPostCrash", true);
   GURL url(chrome::kChromeUISettingsURL);
   tabs->emplace_back(url.Resolve("incompatibleApplications"));
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

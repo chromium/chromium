@@ -164,6 +164,13 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
 
+  mixer[kColorTabDiscardRingFrameActive] = ui::PickGoogleColor(
+      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameActive,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorTabDiscardRingFrameInactive] = ui::PickGoogleColor(
+      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameInactive,
+      color_utils::kMinimumVisibleContrastRatio);
+
   mixer[kColorNewTabButtonForegroundFrameActive] = {
       kColorTabForegroundActiveFrameActive};
   mixer[kColorNewTabButtonForegroundFrameInactive] = {

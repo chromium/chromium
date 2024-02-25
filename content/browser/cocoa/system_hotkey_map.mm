@@ -8,37 +8,6 @@
 
 #include "base/apple/foundation_util.h"
 
-#pragma mark - NSDictionary Helper Functions
-
-namespace {
-
-// All 4 following functions return nil if the object doesn't exist, or isn't of
-// the right class.
-id ObjectForKey(NSDictionary* dict, NSString* key, Class aClass) {
-  id object = [dict objectForKey:key];
-  if (![object isKindOfClass:aClass])
-    return nil;
-  return object;
-}
-
-NSDictionary* DictionaryForKey(NSDictionary* dict, NSString* key) {
-  return ObjectForKey(dict, key, [NSDictionary class]);
-}
-
-NSArray* ArrayForKey(NSDictionary* dict, NSString* key) {
-  return ObjectForKey(dict, key, [NSArray class]);
-}
-
-NSNumber* NumberForKey(NSDictionary* dict, NSString* key) {
-  return ObjectForKey(dict, key, [NSNumber class]);
-}
-
-NSString* StringForKey(NSDictionary* dict, NSString* key) {
-  return ObjectForKey(dict, key, [NSString class]);
-}
-
-}  // namespace
-
 #pragma mark - SystemHotkey
 
 namespace content {
@@ -57,19 +26,21 @@ SystemHotkeyMap::~SystemHotkeyMap() = default;
 bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
   system_hotkeys_.clear();
 
-  if (!dictionary)
+  if (!dictionary) {
     return false;
+  }
 
   NSDictionary* user_hotkey_dictionaries =
-      DictionaryForKey(dictionary, @"AppleSymbolicHotKeys");
-  if (!user_hotkey_dictionaries)
+      base::apple::ObjCCast<NSDictionary>(dictionary[@"AppleSymbolicHotKeys"]);
+  if (!user_hotkey_dictionaries) {
     return false;
+  }
 
-  // Start with a dictionary of default OS X hotkeys that are not necessarily
+  // Start with a dictionary of default macOS hotkeys that are not necessarily
   // listed in com.apple.symbolichotkeys.plist, but should still be handled as
   // reserved.
   // If the user has overridden or disabled any of these hotkeys,
-  // -NSMutableDictionary addEntriesFromDictionary:] will ensure that the new
+  // [NSMutableDictionary addEntriesFromDictionary:] will ensure that the new
   // values are used.
   // See https://crbug.com/145062#c8
   NSMutableDictionary* hotkey_dictionaries = [@{
@@ -87,41 +58,86 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
   } mutableCopy];
   [hotkey_dictionaries addEntriesFromDictionary:user_hotkey_dictionaries];
 
-  for (NSString* hotkey_system_effect in [hotkey_dictionaries allKeys]) {
-    if (![hotkey_system_effect isKindOfClass:[NSString class]])
-      continue;
+  // The meanings of the keys in `user_hotkey_dictionaries` are listed here:
+  // https://web.archive.org/web/20141112224103/http://hintsforums.macworld.com/showthread.php?t=114785
+  // Of particular interest are the following:
+  //
+  // # Spaces Left - Control, Left
+  // 79 = { enabled = 1; ... };
+  //
+  // # Spaces Right - Control, Right
+  // 81 = { enabled = 1; ... };
+  //
+  // Apparently, when you change the shortcuts for Spaces Left/Right, macOS
+  // also inserts entries at slots 80 and 82 which differ from the previous
+  // entries by the addition of the Shift key. This is similar to entries 60
+  // and 61 as documented in the web page above where Command, Option, Space
+  // cycles to the previous input source and Command, Option, Space, Shift
+  // cycles to the next. This approach doesn't make sense for moving between
+  // Spaces using the arrow keys. Maybe there's legacy machinery in the AppKit
+  // that automatically creates the shifted versions and macOS knows to ignore
+  // them (not expecting any non-system applications to read this file).
+  //
+  // Treating these shortcuts as valid results in unexpected behavior. For
+  // example, in the case of "Spaces Left" being mapped to Option Left Arrow,
+  // Chrome would silently ignore Shift-Option Left Arrow, the shortcut which
+  // appends the current text selection by one word to the left. To avoid
+  // this, we'll ignore these two undocumented shortcuts.
+  // See https://crbug.com/874219 .
+  const NSString* kSpacesLeftShiftedHotkeyId = @"80";
+  const NSString* kSpacesRightShiftedHotkeyId = @"82";
+  [hotkey_dictionaries removeObjectForKey:kSpacesLeftShiftedHotkeyId];
+  [hotkey_dictionaries removeObjectForKey:kSpacesRightShiftedHotkeyId];
 
-    NSDictionary* hotkey_dictionary = hotkey_dictionaries[hotkey_system_effect];
-    if (![hotkey_dictionary isKindOfClass:[NSDictionary class]])
+  for (NSString* system_hotkey_identifier in [hotkey_dictionaries allKeys]) {
+    if (![system_hotkey_identifier isKindOfClass:[NSString class]]) {
       continue;
+    }
 
-    NSNumber* enabled = NumberForKey(hotkey_dictionary, @"enabled");
-    if (!enabled || enabled.boolValue == NO)
+    NSDictionary* hotkey_dictionary = base::apple::ObjCCast<NSDictionary>(
+        hotkey_dictionaries[system_hotkey_identifier]);
+    if (!hotkey_dictionary) {
       continue;
+    }
 
-    NSDictionary* value = DictionaryForKey(hotkey_dictionary, @"value");
-    if (!value)
+    NSNumber* enabled =
+        base::apple::ObjCCast<NSNumber>(hotkey_dictionary[@"enabled"]);
+    if (!enabled.boolValue) {
       continue;
+    }
 
-    NSString* type = StringForKey(value, @"type");
-    if (!type || ![type isEqualToString:@"standard"])
+    NSDictionary* value =
+        base::apple::ObjCCast<NSDictionary>(hotkey_dictionary[@"value"]);
+    if (!value) {
       continue;
+    }
 
-    NSArray* parameters = ArrayForKey(value, @"parameters");
-    if (!parameters || [parameters count] != 3)
+    NSString* type = base::apple::ObjCCast<NSString>(value[@"type"]);
+    if (![type isEqualToString:@"standard"]) {
       continue;
+    }
 
-    NSNumber* key_code = [parameters objectAtIndex:1];
-    if (![key_code isKindOfClass:[NSNumber class]])
+    NSArray* parameters = base::apple::ObjCCast<NSArray>(value[@"parameters"]);
+    if (parameters.count != 3) {
       continue;
+    }
 
-    NSNumber* modifiers = [parameters objectAtIndex:2];
-    if (![modifiers isKindOfClass:[NSNumber class]])
+    const int kKeyCodeIndex = 1;
+    NSNumber* key_code =
+        base::apple::ObjCCast<NSNumber>(parameters[kKeyCodeIndex]);
+    if (!key_code) {
       continue;
+    }
 
-    ReserveHotkey(key_code.unsignedShortValue,
-                  modifiers.unsignedIntegerValue,
-                  hotkey_system_effect);
+    const int kModifierIndex = 2;
+    NSNumber* modifiers =
+        base::apple::ObjCCast<NSNumber>(parameters[kModifierIndex]);
+    if (!modifiers) {
+      continue;
+    }
+
+    ReserveHotkey(key_code.unsignedShortValue, modifiers.unsignedIntegerValue,
+                  system_hotkey_identifier);
   }
 
   return true;
@@ -136,21 +152,27 @@ bool SystemHotkeyMap::IsHotkeyReserved(unsigned short key_code,
   modifiers &= NSEventModifierFlagDeviceIndependentFlagsMask;
   std::vector<SystemHotkey>::const_iterator it;
   for (it = system_hotkeys_.begin(); it != system_hotkeys_.end(); ++it) {
-    if (it->key_code == key_code && it->modifiers == modifiers)
+    if (it->key_code == key_code && it->modifiers == modifiers) {
       return true;
+    }
   }
   return false;
 }
 
 void SystemHotkeyMap::ReserveHotkey(unsigned short key_code,
                                     NSUInteger modifiers,
-                                    NSString* system_effect) {
+                                    NSString* system_hotkey_identifier) {
   ReserveHotkey(key_code, modifiers);
 
-  // If a hotkey exists for toggling through the windows of an application, then
-  // adding shift to that hotkey toggles through the windows backwards.
-  if ([system_effect isEqualToString:@"27"])
-    ReserveHotkey(key_code, modifiers | NSEventModifierFlagShift);
+  // If a hotkey exists for cycling through the windows of an application, then
+  // adding shift to that hotkey cycles through the windows backwards.
+  NSString* kCycleThroughWindowsHotkeyId = @"27";
+  const NSUInteger kCycleBackwardsModifier =
+      modifiers | NSEventModifierFlagShift;
+  if ([system_hotkey_identifier isEqualToString:kCycleThroughWindowsHotkeyId] &&
+      modifiers != kCycleBackwardsModifier) {
+    ReserveHotkey(key_code, kCycleBackwardsModifier);
+  }
 }
 
 void SystemHotkeyMap::ReserveHotkey(unsigned short key_code,
@@ -160,8 +182,9 @@ void SystemHotkeyMap::ReserveHotkey(unsigned short key_code,
   NSUInteger required_modifiers = NSEventModifierFlagControl |
                                   NSEventModifierFlagCommand |
                                   NSEventModifierFlagOption;
-  if ((modifiers & required_modifiers) == 0)
+  if ((modifiers & required_modifiers) == 0) {
     return;
+  }
 
   SystemHotkey hotkey;
   hotkey.key_code = key_code;

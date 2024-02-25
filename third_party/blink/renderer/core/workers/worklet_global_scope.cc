@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
+#include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -85,7 +86,9 @@ WorkletGlobalScope::WorkletGlobalScope(
           std::move(creation_params->content_settings_client),
           std::move(creation_params->web_worker_fetch_context),
           reporting_proxy,
-          /*is_worker_loaded_from_data_url=*/false),
+          /*is_worker_loaded_from_data_url=*/false,
+          /*is_default_world_of_isolate=*/
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
@@ -107,6 +110,12 @@ WorkletGlobalScope::WorkletGlobalScope(
       parent_is_isolated_context_(creation_params->parent_is_isolated_context) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
+
+  // Default world implies that we are at least off main thread. Off main
+  // thread may still have cases where threads are shared between multiple
+  // worklets (and thus the Isolate may not be owned by this world)..
+  CHECK(!creation_params->is_default_world_of_isolate ||
+        thread_type == ThreadType::kOffMainThread);
 
   // Worklet should be in the owner's agent cluster.
   // https://html.spec.whatwg.org/C/#obtain-a-worklet-agent
@@ -176,20 +185,10 @@ void WorkletGlobalScope::AddConsoleMessageImpl(ConsoleMessage* console_message,
     return;
   }
   worker_thread_->GetWorkerReportingProxy().ReportConsoleMessage(
-      console_message->Source(), console_message->Level(),
+      console_message->GetSource(), console_message->GetLevel(),
       console_message->Message(), console_message->Location());
   worker_thread_->GetConsoleMessageStorage()->AddConsoleMessage(
       worker_thread_->GlobalScope(), console_message, discard_duplicates);
-}
-
-void WorkletGlobalScope::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  if (IsMainThreadWorkletGlobalScope()) {
-    frame_->AddInspectorIssue(std::move(info));
-  } else {
-    worker_thread_->GetInspectorIssueStorage()->AddInspectorIssue(
-        this, std::move(info));
-  }
 }
 
 void WorkletGlobalScope::AddInspectorIssue(AuditsIssue issue) {
@@ -203,7 +202,8 @@ void WorkletGlobalScope::AddInspectorIssue(AuditsIssue issue) {
 
 void WorkletGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
   if (IsMainThreadWorkletGlobalScope()) {
-    MainThreadDebugger::Instance()->ExceptionThrown(this, error_event);
+    MainThreadDebugger::Instance(GetIsolate())
+        ->ExceptionThrown(this, error_event);
     return;
   }
   if (WorkerThreadDebugger* debugger =
@@ -239,9 +239,14 @@ CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
 }
 
 CoreProbeSink* WorkletGlobalScope::GetProbeSink() {
-  if (IsMainThreadWorkletGlobalScope())
-    return probe::ToCoreProbeSink(frame_);
-  return nullptr;
+  switch (thread_type_) {
+    case ThreadType::kMainThread:
+      DCHECK(frame_);
+      return probe::ToCoreProbeSink(frame_);
+    case ThreadType::kOffMainThread:
+      DCHECK(worker_thread_);
+      return worker_thread_->GetWorkerInspectorController()->GetProbeSink();
+  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> WorkletGlobalScope::GetTaskRunner(
@@ -260,7 +265,7 @@ FrameOrWorkerScheduler* WorkletGlobalScope::GetScheduler() {
 
 LocalFrame* WorkletGlobalScope::GetFrame() const {
   DCHECK(IsMainThreadWorkletGlobalScope());
-  return frame_;
+  return frame_.Get();
 }
 
 // Implementation of the first half of the "fetch and invoke a worklet script"
@@ -337,6 +342,10 @@ WorkletGlobalScope::TakeBlobUrlStorePendingRemote() {
 void WorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
+}
+
+bool WorkletGlobalScope::HasPendingActivity() const {
+  return !ExecutionContext::IsContextDestroyed();
 }
 
 }  // namespace blink

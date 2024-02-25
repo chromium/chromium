@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div id='node' style='background-color: red; height: 100px; transition: width 100ms; width: 100px'></div>
   `, 'Tests replaying css animation.');

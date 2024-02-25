@@ -28,8 +28,8 @@ GURL StripUsernameAndPassword(const GURL& url) {
 CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
     base::WeakPtr<StoragePartition> storage_partition,
     const GURL& context_url,
-    const absl::optional<std::string>& endpoint,
-    const absl::optional<std::string>& report_only_endpoint,
+    const std::optional<std::string>& endpoint,
+    const std::optional<std::string>& report_only_endpoint,
     const base::UnguessableToken& reporting_source,
     const net::NetworkAnonymizationKey& network_anonymization_key)
     : storage_partition_(std::move(storage_partition)),
@@ -95,7 +95,7 @@ void CrossOriginEmbedderPolicyReporter::Clone(
 void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     std::initializer_list<std::pair<base::StringPiece, base::StringPiece>> body,
     bool report_only) {
-  const absl::optional<std::string>& endpoint =
+  const std::optional<std::string>& endpoint =
       report_only ? report_only_endpoint_ : endpoint_;
   const char* const disposition = report_only ? "reporting" : "enforce";
   if (observer_) {
@@ -122,7 +122,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
       storage_partition->GetNetworkContext()->QueueReport(
           kType, *endpoint, context_url_, reporting_source_,
           network_anonymization_key_,
-          /*user_agent=*/absl::nullopt, std::move(body_to_pass));
+          /*user_agent=*/std::nullopt, std::move(body_to_pass));
     }
   }
 }

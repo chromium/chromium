@@ -24,12 +24,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerServiceTest.MockDownloadNotifier.MethodID;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
@@ -44,14 +43,13 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Test for DownloadManagerService.
- */
+/** Test for DownloadManagerService. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DownloadManagerServiceTest {
     @ClassRule
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
+
     private static final int UPDATE_DELAY_FOR_TEST = 1;
     private static final int DELAY_BETWEEN_CALLS = 10;
     private static final int LONG_UPDATE_DELAY_FOR_TEST = 500;
@@ -61,12 +59,16 @@ public class DownloadManagerServiceTest {
      * simple mock object that provides testing support for checking a sequence of calls.
      */
     static class MockDownloadNotifier extends SystemDownloadNotifier {
-        /**
-         * The Ids of different methods in this mock object.
-         */
-        @IntDef({MethodID.DOWNLOAD_SUCCESSFUL, MethodID.DOWNLOAD_FAILED, MethodID.DOWNLOAD_PROGRESS,
-                MethodID.DOWNLOAD_PAUSED, MethodID.DOWNLOAD_INTERRUPTED,
-                MethodID.CANCEL_DOWNLOAD_ID, MethodID.CLEAR_PENDING_DOWNLOADS})
+        /** The Ids of different methods in this mock object. */
+        @IntDef({
+            MethodID.DOWNLOAD_SUCCESSFUL,
+            MethodID.DOWNLOAD_FAILED,
+            MethodID.DOWNLOAD_PROGRESS,
+            MethodID.DOWNLOAD_PAUSED,
+            MethodID.DOWNLOAD_INTERRUPTED,
+            MethodID.CANCEL_DOWNLOAD_ID,
+            MethodID.CLEAR_PENDING_DOWNLOADS
+        })
         @Retention(RetentionPolicy.SOURCE)
         public @interface MethodID {
             int DOWNLOAD_SUCCESSFUL = 0;
@@ -86,7 +88,9 @@ public class DownloadManagerServiceTest {
             expect(MethodID.CLEAR_PENDING_DOWNLOADS, null);
         }
 
-        /** @deprecated Use constructor with no arguments instead. */
+        /**
+         * @deprecated Use constructor with no arguments instead.
+         */
         public MockDownloadNotifier(Context context) {
             this();
         }
@@ -98,9 +102,11 @@ public class DownloadManagerServiceTest {
         }
 
         public void waitTillExpectedCallsComplete() {
-            CriteriaHelper.pollInstrumentationThread(() -> {
-                return mExpectedCalls.isEmpty();
-            }, "Failed while waiting for all calls to complete.");
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        return mExpectedCalls.isEmpty();
+                    },
+                    "Failed while waiting for all calls to complete.");
         }
 
         public MockDownloadNotifier andThen(@MethodID int method, Object param) {
@@ -114,7 +120,8 @@ public class DownloadManagerServiceTest {
 
         void assertCorrectExpectedCall(@MethodID int methodId, Object param, boolean matchParams) {
             Log.w("MockDownloadNotifier", "Called: " + methodId);
-            Assert.assertFalse("Unexpected call:, no call expected, but got: " + methodId,
+            Assert.assertFalse(
+                    "Unexpected call:, no call expected, but got: " + methodId,
                     mExpectedCalls.isEmpty());
             Pair<Integer, Object> actual = getMethodSignature(methodId, param);
             Pair<Integer, Object> expected = mExpectedCalls.poll();
@@ -126,18 +133,20 @@ public class DownloadManagerServiceTest {
         }
 
         @Override
-        public void notifyDownloadSuccessful(DownloadInfo downloadInfo,
-                long systemDownloadId, boolean canResolve, boolean isSupportedMimeType) {
+        public void notifyDownloadSuccessful(
+                DownloadInfo downloadInfo,
+                long systemDownloadId,
+                boolean canResolve,
+                boolean isSupportedMimeType) {
             assertCorrectExpectedCall(MethodID.DOWNLOAD_SUCCESSFUL, downloadInfo, false);
             Assert.assertEquals("application/unknown", downloadInfo.getMimeType());
-            super.notifyDownloadSuccessful(downloadInfo, systemDownloadId, canResolve,
-                    isSupportedMimeType);
+            super.notifyDownloadSuccessful(
+                    downloadInfo, systemDownloadId, canResolve, isSupportedMimeType);
         }
 
         @Override
         public void notifyDownloadFailed(DownloadInfo downloadInfo) {
             assertCorrectExpectedCall(MethodID.DOWNLOAD_FAILED, downloadInfo, true);
-
         }
 
         @Override
@@ -152,7 +161,9 @@ public class DownloadManagerServiceTest {
         }
 
         @Override
-        public void notifyDownloadInterrupted(DownloadInfo downloadInfo, boolean isAutoResumable,
+        public void notifyDownloadInterrupted(
+                DownloadInfo downloadInfo,
+                boolean isAutoResumable,
                 @PendingState int pendingState) {
             assertCorrectExpectedCall(MethodID.DOWNLOAD_INTERRUPTED, downloadInfo, true);
         }
@@ -164,12 +175,11 @@ public class DownloadManagerServiceTest {
     }
 
     /**
-     * A set that each object can be matched ^only^ once. Once matched, the object
-     * will be removed from the set. This is useful to write expectations
-     * for a sequence of calls where order of calls is not defined. Client can
-     * do the following. OneTimeMatchSet matchSet = new OneTimeMatchSet(possibleValue1,
-     * possibleValue2, possibleValue3); mockObject.expect(method1, matchSet).andThen(method1,
-     * matchSet).andThen(method3, matchSet); .... Some work.
+     * A set that each object can be matched ^only^ once. Once matched, the object will be removed
+     * from the set. This is useful to write expectations for a sequence of calls where order of
+     * calls is not defined. Client can do the following. OneTimeMatchSet matchSet = new
+     * OneTimeMatchSet(possibleValue1, possibleValue2, possibleValue3); mockObject.expect(method1,
+     * matchSet).andThen(method1, matchSet).andThen(method3, matchSet); .... Some work.
      * mockObject.waitTillExpectedCallsComplete(); assertTrue(matchSet.mMatches.empty());
      */
     private static class OneTimeMatchSet {
@@ -191,9 +201,7 @@ public class DownloadManagerServiceTest {
         }
     }
 
-    /**
-     * Class that helps matching 2 objects with either of them may be a OneTimeMatchSet object.
-     */
+    /** Class that helps matching 2 objects with either of them may be a OneTimeMatchSet object. */
     private static class MatchHelper {
         public static boolean macthes(Object obj1, Object obj2) {
             if (obj1 == null) return obj2 == null;
@@ -216,10 +224,7 @@ public class DownloadManagerServiceTest {
         }
 
         @Override
-        protected void init() {}
-
-        @Override
-        public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
+        public void resumeDownload(ContentId id, DownloadItem item) {
             mResumed = true;
         }
 
@@ -230,18 +235,13 @@ public class DownloadManagerServiceTest {
         }
     }
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private DownloadManagerServiceForTest mService;
 
     @After
     public void tearDown() {
         mService = null;
-    }
-
-    private static boolean useDownloadOfflineContentProvider() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
     }
 
     private static Handler getTestHandler() {
@@ -256,14 +256,17 @@ public class DownloadManagerServiceTest {
                 .setDownloadGuid(UUID.randomUUID().toString())
                 .setFileName("test")
                 .setDescription("test")
-                .setFilePath(UrlUtils.getIsolatedTestFilePath(
-                        "chrome/test/data/android/download/download.txt"))
+                .setFilePath(
+                        UrlUtils.getIsolatedTestFilePath(
+                                "chrome/test/data/android/download/download.txt"))
                 .build();
     }
 
     private void createDownloadManagerService(MockDownloadNotifier notifier, int delayForTest) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mService = new DownloadManagerServiceForTest(notifier, delayForTest); });
+                () -> {
+                    mService = new DownloadManagerServiceForTest(notifier, delayForTest);
+                });
     }
 
     @Test
@@ -339,32 +342,6 @@ public class DownloadManagerServiceTest {
     @Test
     @MediumTest
     @Feature({"Download"})
-    public void testDownloadCompletedIsCalled() throws InterruptedException {
-        if (useDownloadOfflineContentProvider()) return;
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        // Try calling download completed directly.
-        DownloadInfo successful = getDownloadInfo();
-        notifier.expect(MethodID.DOWNLOAD_SUCCESSFUL, successful);
-
-        mService.onDownloadCompleted(successful);
-        notifier.waitTillExpectedCallsComplete();
-
-        // Now check that a successful notification appears after a download progress.
-        DownloadInfo progress = getDownloadInfo();
-        notifier.expect(MethodID.DOWNLOAD_PROGRESS, progress)
-                .andThen(MethodID.DOWNLOAD_SUCCESSFUL, progress);
-        mService.onDownloadUpdated(progress);
-        Thread.sleep(DELAY_BETWEEN_CALLS);
-        mService.onDownloadCompleted(progress);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
     public void testDownloadFailedIsCalled() {
         MockDownloadNotifier notifier = new MockDownloadNotifier();
         createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
@@ -372,9 +349,10 @@ public class DownloadManagerServiceTest {
                 (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
         // Check that if an interrupted download cannot be resumed, it will trigger a download
         // failure.
-        DownloadInfo failure = DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                                       .setIsResumable(false)
-                                       .build();
+        DownloadInfo failure =
+                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
+                        .setIsResumable(false)
+                        .build();
         notifier.expect(MethodID.DOWNLOAD_FAILED, failure);
         mService.onDownloadInterrupted(failure, false);
         notifier.waitTillExpectedCallsComplete();
@@ -387,9 +365,10 @@ public class DownloadManagerServiceTest {
         MockDownloadNotifier notifier = new MockDownloadNotifier();
         createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
         DownloadManagerService.disableNetworkListenerForTest();
-        DownloadInfo interrupted = DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                                           .setIsResumable(true)
-                                           .build();
+        DownloadInfo interrupted =
+                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
+                        .setIsResumable(true)
+                        .build();
         notifier.expect(MethodID.DOWNLOAD_INTERRUPTED, interrupted);
         mService.onDownloadInterrupted(interrupted, true);
         notifier.waitTillExpectedCallsComplete();

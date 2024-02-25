@@ -6,6 +6,8 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_RESOURCE_REQUEST_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -40,7 +42,6 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -133,11 +134,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
   // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please
   // consult the doc comment for |request_initiator| in url_request.mojom.
-  absl::optional<url::Origin> request_initiator;
+  std::optional<url::Origin> request_initiator;
 
   // TODO(https://crbug.com/1098410): Remove the `isolated_world_origin` field
   // once Chrome Platform Apps are gone.
-  absl::optional<url::Origin> isolated_world_origin;
+  std::optional<url::Origin> isolated_world_origin;
 
   // The chain of URLs seen during navigation redirects.  This should only
   // contain values if the mode is `RedirectMode::kNavigate`.
@@ -157,14 +158,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::CorsPreflightPolicy::kConsiderPreflight;
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
-  bool corb_detachable = false;
   // `kNoCors` mode is the default request mode for legacy reasons, however this
   // mode is highly discouraged for new requests made on the web platform;
   // please consider using another mode like `kCors` instead, and only use
   // `kNoCors` with strong rationale and approval from security experts. See
   // https://fetch.spec.whatwg.org/#concept-request-mode.
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
-  mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
+  mojom::IPAddressSpace required_ip_address_space =
+      mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   std::string fetch_integrity;
@@ -175,7 +176,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool keepalive = false;
   bool browsing_topics = false;
   bool ad_auction_headers = false;
-  bool shared_storage_writable = false;
+  bool shared_storage_writable_eligible = false;
   bool has_user_gesture = false;
   bool enable_load_timing = false;
   bool enable_upload_progress = false;
@@ -185,29 +186,29 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   int previews_state = 0;
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
-  absl::optional<base::UnguessableToken> throttling_profile_id;
+  std::optional<base::UnguessableToken> throttling_profile_id;
   net::HttpRequestHeaders custom_proxy_pre_cache_headers;
   net::HttpRequestHeaders custom_proxy_post_cache_headers;
-  absl::optional<base::UnguessableToken> fetch_window_id;
-  absl::optional<std::string> devtools_request_id;
-  absl::optional<std::string> devtools_stack_id;
+  std::optional<base::UnguessableToken> fetch_window_id;
+  std::optional<std::string> devtools_request_id;
+  std::optional<std::string> devtools_stack_id;
   bool is_fetch_like_api = false;
   bool is_fetch_later_api = false;
   bool is_favicon = false;
-  absl::optional<base::UnguessableToken> recursive_prefetch_token;
-  absl::optional<TrustedParams> trusted_params;
-  // |trust_token_params| uses a custom absl::optional-like type to make the
+  std::optional<base::UnguessableToken> recursive_prefetch_token;
+  std::optional<TrustedParams> trusted_params;
+  // |trust_token_params| uses a custom std::optional-like type to make the
   // field trivially copyable; see OptionalTrustTokenParams's definition for
   // more context.
   OptionalTrustTokenParams trust_token_params;
-  absl::optional<WebBundleTokenParams> web_bundle_token_params;
+  std::optional<WebBundleTokenParams> web_bundle_token_params;
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  absl::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
-  absl::optional<net::NetLogSource> net_log_create_info;
-  absl::optional<net::NetLogSource> net_log_reference_info;
+  std::optional<net::NetLogSource> net_log_create_info;
+  std::optional<net::NetLogSource> net_log_reference_info;
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
   bool has_storage_access = false;
@@ -218,7 +219,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
-  absl::optional<base::UnguessableToken> attribution_reporting_src_token;
+  std::optional<base::UnguessableToken> attribution_reporting_src_token;
+  bool is_ad_tagged = false;
 #if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
   std::string created_location;

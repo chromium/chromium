@@ -64,7 +64,7 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   // GPU IO task runner.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   base::Thread decoder_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;

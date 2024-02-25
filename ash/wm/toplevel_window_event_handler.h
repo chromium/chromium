@@ -102,7 +102,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // if successful.
   bool AttemptToStartPinch(aura::Window* window,
                            const gfx::PointF& point_in_parent,
-                           int window_component);
+                           int window_component,
+                           bool update_gesture_target);
 
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
@@ -125,6 +126,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // Returns true if there is a drag in progress.
   bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
+
+  bool in_pinch() const { return in_pinch_; }
 
   void CompleteDragForTesting(DragResult result) { CompleteDrag(result); }
 
@@ -203,9 +206,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // Is a window move/resize in progress because of gesture events?
   bool in_gesture_drag_ = false;
 
-  // Is a pinch in progress because of gesture events?
-  bool in_pinch_ = false;
-
   // True if the bounds need to be reinitialized in the next gesture update.
   // This is necessary because during the transition from pinch gesture to
   // drag gesture the ET_GESTURE_SCROLL_BEGIN event is never called, and
@@ -213,8 +213,15 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // ET_GESTURE_SCROLL_UPDATE event.
   bool requires_reinitialization_ = false;
 
-  raw_ptr<aura::Window, ExperimentalAsh> gesture_target_ = nullptr;
+  raw_ptr<aura::Window> gesture_target_ = nullptr;
   gfx::PointF event_location_in_gesture_target_;
+
+  // True if `this` is receiving pinch events. There is a delay from
+  // when `this` first receives a gesture begin event to when the client
+  // asks the gesture to be initiated, during which time the gesture type
+  // may have changed. To start the appropriate gesture, `this` keeps track
+  // of if the current gesture is a drag or a pinch.
+  bool in_pinch_ = false;
 
   std::unique_ptr<ScopedWindowResizer> window_resizer_;
 

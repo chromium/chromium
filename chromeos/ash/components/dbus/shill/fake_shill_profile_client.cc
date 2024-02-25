@@ -273,7 +273,7 @@ base::Value::Dict FakeShillProfileClient::GetProfileProperties(
   return profile->properties.Clone();
 }
 
-absl::optional<base::Value::Dict> FakeShillProfileClient::GetService(
+std::optional<base::Value::Dict> FakeShillProfileClient::GetService(
     const std::string& service_path,
     std::string* profile_path) {
   DCHECK(profile_path);
@@ -287,7 +287,7 @@ absl::optional<base::Value::Dict> FakeShillProfileClient::GetService(
     *profile_path = profile.profile_path;
     return entry->Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool FakeShillProfileClient::HasService(const std::string& service_path) {

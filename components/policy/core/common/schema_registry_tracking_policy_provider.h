@@ -72,7 +72,7 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
   void Init(SchemaRegistry* registry) override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
-  void RefreshPolicies() override;
+  void RefreshPolicies(PolicyFetchReason reason) override;
   void OnSchemaRegistryReady() override;
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 

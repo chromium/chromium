@@ -8,7 +8,9 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/favicon_base/favicon_types.h"
 
 namespace favicon {
 
@@ -28,11 +30,31 @@ class LargeIconBridge {
       jint min_source_size_px,
       jint desired_source_size_px,
       const base::android::JavaParamRef<jobject>& j_callback);
+  void GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_browser_context,
+      const base::android::JavaParamRef<jobject>& j_page_url,
+      jboolean may_page_url_be_private,
+      jboolean should_trim_page_url_path,
+      jint j_network_annotation_hash_code,
+      const base::android::JavaParamRef<jobject>& j_callback);
+  void TouchIconFromGoogleServer(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_browser_context,
+      const base::android::JavaParamRef<jobject>& j_page_url);
 
  private:
   virtual ~LargeIconBridge();
 
+  void OnGoogleFaviconServerResponse(
+      const base::android::JavaRef<jobject>& j_callback,
+      favicon_base::GoogleFaviconServerRequestStatus status) const;
+
+  // TODO(crbug.com/1513063): Remove this when LargeIconService no longer relies
+  //                          on CancelableTaskTracker.
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  base::WeakPtrFactory<LargeIconBridge> weak_factory_{this};
 };
 
 }  // namespace favicon

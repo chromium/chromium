@@ -18,6 +18,7 @@
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/heatmap_palm_rejection.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
@@ -192,6 +193,39 @@ TEST_F(ServiceConnectionTest, LoadImageAnnotator) {
                           base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
+class TestHeatmapClient : public mojom::HeatmapPalmRejectionClient {
+  void OnHeatmapProcessedEvent(mojom::HeatmapProcessedEventPtr event) override {
+  }
+};
+
+// Tests that LoadHeatmapPalmRejection runs OK (no crash) in a basic Mojo
+// environment.
+TEST_F(ServiceConnectionTest, LoadHeatmapPalmRejection) {
+  TestHeatmapClient test_client;
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  mojo::Receiver<mojom::HeatmapPalmRejectionClient> heatmap_client{
+      &test_client};
+  bool callback_done = false;
+  auto config = mojom::HeatmapPalmRejectionConfig::New();
+  base::RunLoop run_loop;
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadHeatmapPalmRejection(
+          std::move(config), heatmap_client.BindNewPipeAndPassRemote(),
+          base::BindLambdaForTesting(
+              [&](mojom::LoadHeatmapPalmRejectionResult result) {
+                callback_done = true;
+                EXPECT_EQ(result, mojom::LoadHeatmapPalmRejectionResult::OK);
+                run_loop.Quit();
+              }));
+  run_loop.Run();
+  ASSERT_TRUE(callback_done);
+}
+
 // Tests the fake ML service for binding ml_service receiver.
 TEST_F(ServiceConnectionTest, BindMachineLearningService) {
   FakeServiceConnectionImpl fake_service_connection;
@@ -320,7 +354,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
                  base::BindOnce(
                      [](bool* callback_done, double expected_value,
                         const mojom::ExecuteResult result,
-                        absl::optional<std::vector<mojom::TensorPtr>> outputs) {
+                        std::optional<std::vector<mojom::TensorPtr>> outputs) {
                        EXPECT_EQ(result, mojom::ExecuteResult::OK);
                        ASSERT_TRUE(outputs.has_value());
                        ASSERT_EQ(outputs->size(), 1LU);
@@ -390,7 +424,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForFlatBufferModel) {
                  base::BindOnce(
                      [](bool* callback_done, double expected_value,
                         const mojom::ExecuteResult result,
-                        absl::optional<std::vector<mojom::TensorPtr>> outputs) {
+                        std::optional<std::vector<mojom::TensorPtr>> outputs) {
                        EXPECT_EQ(result, mojom::ExecuteResult::OK);
                        ASSERT_TRUE(outputs.has_value());
                        ASSERT_EQ(outputs->size(), 1LU);
@@ -622,7 +656,7 @@ TEST_F(ServiceConnectionTest, FakeWebPlatformHandWritingRecognizer) {
       std::move(strokes), std::move(hints),
       base::BindOnce(
           [](bool* infer_callback_done,
-             absl::optional<std::vector<
+             std::optional<std::vector<
                  web_platform::mojom::HandwritingPredictionPtr>> predictions) {
             *infer_callback_done = true;
             ASSERT_TRUE(predictions.has_value());
@@ -1050,7 +1084,7 @@ TEST_F(ServiceConnectionTest,
       std::move(input_tensors),
       base::BindOnce(
           [](bool* callback_done, ml::model_loader::mojom::ComputeResult result,
-             const absl::optional<base::flat_map<
+             const std::optional<base::flat_map<
                  std::string, std::vector<uint8_t>>>& output_tensors) {
             ASSERT_TRUE(output_tensors.has_value());
             ASSERT_EQ(output_tensors->size(), 1u);

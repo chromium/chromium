@@ -28,6 +28,8 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -81,10 +83,11 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetAllowCharacterBreak(true)
-          .SetFontList(views::style::GetFont(
-                           views::style::TextContext::CONTEXT_DIALOG_TITLE,
+          .SetFontList(
+              views::TypographyProvider::Get()
+                  .GetFont(views::style::TextContext::CONTEXT_DIALOG_TITLE,
                            views::style::TextStyle::STYLE_PRIMARY)
-                           .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
+                  .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
           .Build());
   if (chromeos::features::IsJellyEnabled()) {
     ash::TypographyProvider::Get()->StyleLabel(
@@ -228,7 +231,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
                 base::Unretained(this), false,
                 views::Widget::ClosedReason::kAcceptButtonClicked))
             .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
-            .SetProminent(false)
+            .SetStyle(ui::ButtonStyle::kDefault)
             .SetIsDefault(false),
         views::Builder<views::MdTextButton>()  // Accept button.
             .CopyAddressTo(&accept_button_)
@@ -238,7 +241,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
                 views::Widget::ClosedReason::kAcceptButtonClicked))
             .SetText(l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
-            .SetProminent(true)
+            .SetStyle(ui::ButtonStyle::kProminent)
             .SetIsDefault(true));
   }
   return std::move(builder).Build();
@@ -277,7 +280,7 @@ void ResizeConfirmationDialogView::Show(views::Widget* parent,
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
-BEGIN_METADATA(ResizeConfirmationDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ResizeConfirmationDialogView)
 END_METADATA
 
 }  // namespace arc

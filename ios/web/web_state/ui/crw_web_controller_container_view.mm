@@ -10,7 +10,6 @@
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
 @interface CRWWebControllerContainerView () <CRWViewportAdjustmentContainer>
@@ -24,14 +23,13 @@
 
 @end
 
-@implementation CRWWebControllerContainerView {
-  NSMutableDictionary<NSString*, ProceduralBlock>* _currentMenuItems;
-}
+@implementation CRWWebControllerContainerView
+
 @synthesize webViewContentView = _webViewContentView;
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithDelegate:
-        (id<CRWWebControllerContainerViewDelegate>)delegate {
+    (id<CRWWebControllerContainerViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     DCHECK(delegate);
@@ -54,7 +52,7 @@
 }
 
 - (void)dealloc {
-  self.contentViewProxy.contentView = nil;
+  [self.contentViewProxy clearContentViewAndAddPlaceholder:NO];
 }
 
 #pragma mark Accessors
@@ -71,7 +69,7 @@
   if (![_webViewContentView isEqual:webViewContentView]) {
     [_webViewContentView removeFromSuperview];
     _webViewContentView = webViewContentView;
-    [_webViewContentView setFrame:self.bounds];
+    [self updateWebViewContentViewFrame];
     [self addSubview:_webViewContentView];
   }
 }
@@ -110,7 +108,7 @@
 
   // webViewContentView layout.  `-setNeedsLayout` is called in case any webview
   // layout updates need to occur despite the bounds size staying constant.
-  self.webViewContentView.frame = self.bounds;
+  [self updateWebViewContentViewFrame];
   [self.webViewContentView setNeedsLayout];
 }
 
@@ -135,7 +133,7 @@
   if (containerWindow ||
       ![_delegate shouldKeepRenderProcessAliveForContainerView:self]) {
     if (self.webViewContentView.superview != self) {
-      [_webViewContentView setFrame:self.bounds];
+      [self updateWebViewContentViewFrame];
       // Insert the content view on the back of the container view so any view
       // that was presented on top of the content view can still appear.
       [self insertSubview:_webViewContentView atIndex:0];
@@ -180,84 +178,27 @@
   [self.webViewContentView.webView drawRect:rect];
 }
 
-#pragma mark Custom Context Menu
+#pragma mark - UIView overrides
 
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect {
-  [self becomeFirstResponder];
-  // Remove observer, because showMenuFromView will call it when replacing an
-  // existing menu.
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIMenuControllerDidHideMenuNotification
-              object:nil];
-
-  _currentMenuItems = [[NSMutableDictionary alloc] init];
-  NSMutableArray* menuItems = [[NSMutableArray alloc] init];
-  for (CRWContextMenuItem* item in items) {
-    UIMenuItem* menuItem =
-        [[UIMenuItem alloc] initWithTitle:item.title
-                                   action:NSSelectorFromString(item.ID)];
-    [menuItems addObject:menuItem];
-
-    _currentMenuItems[item.ID] = item.action;
-  }
-
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  menu.menuItems = menuItems;
-
-  [menu showMenuFromView:self rect:rect];
-
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(didHideMenuNotification)
-             name:UIMenuControllerDidHideMenuNotification
-           object:nil];
+- (void)safeAreaInsetsDidChange {
+  // Update the frame to take into account the safe area inset as they are set
+  // fractionally later than the rest of the view loading.
+  [self updateWebViewContentViewFrame];
 }
 
-// Called when menu is dismissed for cleanup.
-- (void)didHideMenuNotification {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIMenuControllerDidHideMenuNotification
-              object:nil];
-  _currentMenuItems = nil;
-}
+#pragma mark - Private helpers
 
-// Checks is selector is one for an item of the custom menu and if so, tell objc
-// runtime that it exists, even if it doesn't.
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (_currentMenuItems[NSStringFromSelector(action)]) {
-    return YES;
-  }
-  return [super canPerformAction:action withSender:sender];
-}
-
-// Catches a menu item selector and replace with `selectedMenuItemWithID` so it
-// passes the test made to check is selector exists.
-- (NSMethodSignature*)methodSignatureForSelector:(SEL)sel {
-  if (_currentMenuItems[NSStringFromSelector(sel)]) {
-    return
-        [super methodSignatureForSelector:@selector(selectedMenuItemWithID:)];
-  }
-  return [super methodSignatureForSelector:sel];
-}
-
-// Catches invovation of a menu item selector and forward to
-// `selectedMenuItemWithID` tagging on the menu item id for recognition.
-- (void)forwardInvocation:(NSInvocation*)invocation {
-  NSString* sel = NSStringFromSelector(invocation.selector);
-  if (_currentMenuItems[sel]) {
-    [self selectedMenuItemWithID:sel];
-    return;
-  }
-  [super forwardInvocation:invocation];
-}
-
-// Triggers the action for the menu item with given `ID`.
-- (void)selectedMenuItemWithID:(NSString*)ID {
-  if (_currentMenuItems[ID]) {
-    _currentMenuItems[ID]();
+// Update the content view frame.
+- (void)updateWebViewContentViewFrame {
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [self.webViewContentView setFrame:self.bounds];
+  } else {
+    if (self.cover) {
+      [self.webViewContentView setFrame:self.bounds];
+    } else {
+      [self.webViewContentView
+          setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
+    }
   }
 }
 

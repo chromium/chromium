@@ -16,23 +16,6 @@ IN_PROC_BROWSER_TEST_F(TextDefaultsTest, All) {
   RunTest("css/text_defaults_test.js", "runMochaSuite('TextDefaults')");
 }
 
-#if !BUILDFLAG(IS_LINUX)
-class TextDefaultsNoSystemFontTest : public WebUIMochaBrowserTest {
- protected:
-  TextDefaultsNoSystemFontTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kWebUiSystemFont);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TextDefaultsNoSystemFontTest, All) {
-  RunTest("css/text_defaults_test.js",
-          "runMochaSuite('TextDefaultsNoSystemFont')");
-}
-#endif
-
 using ColorProviderCSSColorsTest = WebUIMochaBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ColorProviderCSSColorsTest, All) {

@@ -11,7 +11,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
     `Tests content is moved from cached resource to resource agent's data storage when cached resource is destroyed.\n`
   );
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`

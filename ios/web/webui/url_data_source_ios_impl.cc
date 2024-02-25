@@ -17,8 +17,7 @@ namespace web {
 
 URLDataSourceIOSImpl::URLDataSourceIOSImpl(const std::string& source_name,
                                            URLDataSourceIOS* source)
-    : source_name_(source_name), backend_(NULL), source_(source) {
-}
+    : source_name_(source_name), backend_(nullptr), source_(source) {}
 
 URLDataSourceIOSImpl::~URLDataSourceIOSImpl() {
 }

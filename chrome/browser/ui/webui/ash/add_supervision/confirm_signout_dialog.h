@@ -19,8 +19,9 @@ namespace ash {
 // become supervised, and the user only has the choice of finishing the flow, or
 // signing out.
 class ConfirmSignoutDialog : public views::DialogDelegateView {
+  METADATA_HEADER(ConfirmSignoutDialog, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ConfirmSignoutDialog);
   ConfirmSignoutDialog(const ConfirmSignoutDialog&) = delete;
   ConfirmSignoutDialog& operator=(const ConfirmSignoutDialog&) = delete;
   ~ConfirmSignoutDialog() override;

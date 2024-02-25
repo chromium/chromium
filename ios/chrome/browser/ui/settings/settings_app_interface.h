@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
-
 // Test specific helpers for settings_egtest.mm.
 @interface SettingsAppInterface : NSObject
 
@@ -41,21 +39,21 @@
 // Resets the default search engine to Google.
 + (void)resetSearchEngine;
 
-// Sets the parental control setting to filter websites for supervised users.
-+ (void)setSupervisedUserURLFilterBehavior:
-    (supervised_user::SupervisedUserURLFilter::FilteringBehavior)behavior;
-
-// Resets to default parental control settings for website filtering.
-+ (void)resetSupervisedUserURLFilterBehavior;
-
 // Adds a URL rewriter to replace all requests having their host containing a
 // string `host` from `hosts`. Those URL are rewritten to
 // 127.0.0.1:<port>/<host>.
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port;
 
-// Resets the address bar preference.
-+ (void)resetAddressBarPreference;
+// Returns the Yahoo search engine name for France.
+// TODO(b/326560103): Improve the APIs to get the search engine names.
++ (NSString*)frYahooSearchEngineName;
+
+// Returns the Yahoo search engine name for USA.
++ (NSString*)usYahooSearchEngineName;
+
+// Returns the Yahoo search engine name.
++ (NSString*)googleSearchEngineName;
 
 @end
 

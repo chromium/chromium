@@ -7,7 +7,7 @@
 
 bool WideToChar(const wchar *Src,char *Dest,size_t DestSize);
 bool CharToWide(const char *Src,wchar *Dest,size_t DestSize);
-byte* WideToRaw(const wchar *Src,byte *Dest,size_t SrcSize);
+byte* WideToRaw(const wchar *Src,size_t SrcSize,byte *Dest,size_t DestSize);
 wchar* RawToWide(const byte *Src,wchar *Dest,size_t DestSize);
 void WideToUtf(const wchar *Src,char *Dest,size_t DestSize);
 size_t WideToUtfSize(const wchar *Src);
@@ -33,33 +33,19 @@ class SupportDBCS
   public:
     SupportDBCS();
     void Init();
-    static SupportDBCS& GetInstance();
-
     char* charnext(const char *s);
-    size_t strlend(const char *s);
-    char *strchrd(const char *s, int c);
-    char *strrchrd(const char *s, int c);
-    void copychrd(char *dest,const char *src);
+    static SupportDBCS& GetInstance();
 
     bool IsLeadByte[256];
     bool DBCSMode;
 };
 
 inline char* charnext(const char *s) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().charnext(s):s+1);}
-inline size_t strlend(const char *s) {return (uint)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strlend(s):strlen(s));}
-inline char* strchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strchrd(s,c):strchr(s,c));}
-inline char* strrchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strrchrd(s,c):strrchr(s,c));}
-inline void copychrd(char *dest,const char *src) {if (SupportDBCS::GetInstance().DBCSMode) SupportDBCS::GetInstance().copychrd(dest,src); else *dest=*src;}
-inline bool IsDBCSMode() {return(SupportDBCS::GetInstance().DBCSMode);}
-inline void InitDBCS() {SupportDBCS::GetInstance().Init();}
+inline bool IsDBCSMode() {return SupportDBCS::GetInstance().DBCSMode;}
 
 #else
 #define charnext(s) ((s)+1)
-#define strlend strlen
-#define strchrd strchr
-#define strrchrd strrchr
-#define IsDBCSMode() (true)
-inline void copychrd(char *dest,const char *src) {*dest=*src;}
+#define IsDBCSMode() (false)
 #endif
 
 

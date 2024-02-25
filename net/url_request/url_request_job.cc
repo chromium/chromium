@@ -22,7 +22,7 @@
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -88,9 +88,9 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
 URLRequestJob::URLRequestJob(URLRequest* request)
     : request_(request),
       request_initiator_site_(request->initiator().has_value()
-                                  ? absl::make_optional(net::SchemefulSite(
+                                  ? std::make_optional(net::SchemefulSite(
                                         request->initiator().value()))
-                                  : absl::nullopt) {}
+                                  : std::nullopt) {}
 
 URLRequestJob::~URLRequestJob() = default;
 
@@ -236,14 +236,14 @@ void URLRequestJob::ContinueDespiteLastError() {
 }
 
 void URLRequestJob::FollowDeferredRedirect(
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   // OnReceivedRedirect must have been called.
   DCHECK(deferred_redirect_info_);
 
   // It is possible that FollowRedirect will delete |this|, so it is not safe to
   // pass along a reference to |deferred_redirect_info_|.
-  absl::optional<RedirectInfo> redirect_info =
+  std::optional<RedirectInfo> redirect_info =
       std::move(deferred_redirect_info_);
   FollowRedirect(*redirect_info, removed_headers, modified_headers);
 }
@@ -407,8 +407,10 @@ void URLRequestJob::NotifySSLCertificateError(int net_error,
 bool URLRequestJob::CanSetCookie(
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) const {
-  return request_->CanSetCookie(cookie, options, inclusion_status);
+  return request_->CanSetCookie(cookie, options, first_party_set_metadata,
+                                inclusion_status);
 }
 
 void URLRequestJob::NotifyHeadersComplete() {
@@ -467,8 +469,8 @@ void URLRequestJob::NotifyHeadersComplete() {
     if (defer_redirect) {
       deferred_redirect_info_ = std::move(redirect_info);
     } else {
-      FollowRedirect(redirect_info, absl::nullopt, /*  removed_headers */
-                     absl::nullopt /* modified_headers */);
+      FollowRedirect(redirect_info, std::nullopt, /*  removed_headers */
+                     std::nullopt /* modified_headers */);
     }
     return;
   }
@@ -650,8 +652,8 @@ std::unique_ptr<SourceStream> URLRequestJob::SetUpSourceStream() {
   return std::make_unique<URLRequestJobSourceStream>(this);
 }
 
-void URLRequestJob::SetProxyServer(const ProxyServer& proxy_server) {
-  request_->proxy_server_ = proxy_server;
+void URLRequestJob::SetProxyChain(const ProxyChain& proxy_chain) {
+  request_->proxy_chain_ = proxy_chain;
 }
 
 void URLRequestJob::SourceStreamReadComplete(bool synchronous, int result) {
@@ -726,8 +728,8 @@ int URLRequestJob::CanFollowRedirect(const GURL& new_url) {
 
 void URLRequestJob::FollowRedirect(
     const RedirectInfo& redirect_info,
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   request_->Redirect(redirect_info, removed_headers, modified_headers);
 }
 

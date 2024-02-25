@@ -501,4 +501,15 @@ TEST_F(WebSocketEncoderCompressionTest, CheckPongFrameNotCompressed) {
   EXPECT_EQ(kOriginalText, encoded.substr(2));
 }
 
+TEST_F(WebSocketEncoderCompressionTest, CheckCloseFrameNotCompressed) {
+  constexpr uint8_t kReserved1Bit = 0x40;
+  const std::string kOriginalText = "\x03\xe8";
+  constexpr int kMask = 0;
+  std::string encoded;
+
+  server_->EncodeCloseFrame(kOriginalText, kMask, &encoded);
+  EXPECT_FALSE(encoded[1] & kReserved1Bit);
+  EXPECT_EQ(kOriginalText, encoded.substr(2));
+}
+
 }  // namespace net

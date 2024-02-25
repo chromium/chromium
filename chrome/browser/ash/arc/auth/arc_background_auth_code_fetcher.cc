@@ -203,8 +203,8 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
-
-  bool mandatory_proxy_failed = simple_url_loader_->NetError() ==
+  int net_error = simple_url_loader_->NetError();
+  bool mandatory_proxy_failed = net_error ==
                                 net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
 
   // If the network request has failed because of an unreachable PAC script,
@@ -234,7 +234,10 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
             ? json_value->GetDict().FindString(kErrorDescription)
             : nullptr;
 
-    LOG(WARNING) << "Server returned wrong response code: " << response_code
+    LOG(WARNING) << "Server request failed."
+                 << " Net error: " << net_error
+                 << ": " << net::ErrorToString(net_error)
+                 << ", response code: " << response_code
                  << ": " << (error ? *error : "Unknown") << ".";
 
     OptInSilentAuthCode uma_status;

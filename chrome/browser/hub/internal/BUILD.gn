@@ -1,0 +1,165 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.hub"
+  visibility = [
+    ":*",
+    "//chrome/android:*",
+
+    # For access to resource IDs and view names for test code.
+    "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/browser/incognito:incognito_java_tests",
+    "//chrome/test/android:chrome_java_transit",
+  ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColors.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubManagerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostMediator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostProperties.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarProperties.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneBackStackHandler.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneTransitionHelper.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImpl.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "android/res/layout/hub_layout.xml",
+    "android/res/layout/hub_pane_host_layout.xml",
+    "android/res/layout/hub_toolbar_layout.xml",
+    "android/res/values/dimens.xml",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.hub"
+  testonly = true
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewRenderTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewRenderTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.hub"
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneBackStackHandlerUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneTransitionHelperUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProviderUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+  ]
+}

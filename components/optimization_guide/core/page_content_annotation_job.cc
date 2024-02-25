@@ -58,21 +58,13 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
   for (size_t i = 0; i < remaining; i++) {
     std::string input = *GetNextInput();
     switch (type()) {
-      case AnnotationType::kPageEntities:
-        PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
-                          input, absl::nullopt),
-                      i);
-        break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
-                          input, absl::nullopt),
+                          input, std::nullopt),
                       i);
         break;
-      case AnnotationType::kTextEmbedding:
-        PostNewResult(BatchAnnotationResult::CreateTextEmbeddingResult(
-                          input, absl::nullopt),
-                      i);
-        break;
+      case AnnotationType::kDeprecatedTextEmbedding:
+      case AnnotationType::kDeprecatedPageEntities:
       case AnnotationType::kUnknown:
         NOTREACHED();
         PostNewResult(
@@ -96,13 +88,13 @@ size_t PageContentAnnotationJob::CountOfRemainingNonNullInputs() const {
   return inputs_.size();
 }
 
-absl::optional<std::string> PageContentAnnotationJob::GetNextInput() {
+std::optional<std::string> PageContentAnnotationJob::GetNextInput() {
   if (!job_execution_start_time_) {
     job_execution_start_time_ = base::TimeTicks::Now();
   }
 
   if (inputs_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string next = inputs_.front();
   inputs_.erase(inputs_.begin());
@@ -117,15 +109,8 @@ void PageContentAnnotationJob::PostNewResult(
 
 bool PageContentAnnotationJob::HadAnySuccess() const {
   for (const BatchAnnotationResult& result : results_) {
-    if (result.type() == AnnotationType::kPageEntities && result.entities()) {
-      return true;
-    }
     if (result.type() == AnnotationType::kContentVisibility &&
         result.visibility_score()) {
-      return true;
-    }
-    if (result.type() == AnnotationType::kTextEmbedding &&
-        result.embeddings()) {
       return true;
     }
   }

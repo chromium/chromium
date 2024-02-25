@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -29,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
 
@@ -174,11 +177,9 @@ void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
 }
 
 base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
-  base::Time::Exploded exploded;
-  base::Time::Now().LocalExplode(&exploded);
   return file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-      base::StringPrintf("chromeos-linux-%04d-%02d-%02d.tini", exploded.year,
-                         exploded.month, exploded.day_of_month));
+      base::UnlocalizedTimeFormatWithPattern(
+          base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.tini'"));
 }
 
 void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
@@ -220,10 +221,10 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
       static_cast<void*>(operation_data));
 }
 
-void CrostiniExportImport::FileSelected(const base::FilePath& path,
+void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
                                         int index,
                                         void* params) {
-  Start(static_cast<OperationData*>(params), path,
+  Start(static_cast<OperationData*>(params), file.path(),
         /* create_new_container= */ false, base::DoNothing());
   select_folder_dialog_.reset();
 }
@@ -255,8 +256,7 @@ void CrostiniExportImport::ImportContainer(
     CrostiniManager::CrostiniResultCallback callback) {
   std::vector<guest_os::GuestId> existing_containers =
       guest_os::GetContainers(profile_, guest_os::VmType::TERMINA);
-  if (std::find(existing_containers.begin(), existing_containers.end(),
-                container_id) == existing_containers.end()) {
+  if (!base::Contains(existing_containers, container_id)) {
     LOG(ERROR) << "Attempting to import Crostini container backup into "
                   "non-existent container: "
                << container_id;

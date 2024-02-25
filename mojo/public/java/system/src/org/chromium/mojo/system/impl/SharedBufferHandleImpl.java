@@ -8,9 +8,7 @@ import org.chromium.mojo.system.SharedBufferHandle;
 
 import java.nio.ByteBuffer;
 
-/**
- * Implementation of {@link SharedBufferHandle}.
- */
+/** Implementation of {@link SharedBufferHandle}. */
 class SharedBufferHandleImpl extends HandleBase implements SharedBufferHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

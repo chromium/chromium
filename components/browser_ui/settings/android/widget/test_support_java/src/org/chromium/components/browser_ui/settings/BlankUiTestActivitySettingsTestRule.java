@@ -19,9 +19,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/**
- * Facilitates testing of Fragments/Settings using the BlankUiTestActivity
- */
+/** Facilitates testing of Fragments/Settings using the BlankUiTestActivity */
 public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<BlankUiTestActivity> {
     private PreferenceFragmentCompat mPreferenceFragment;
     private PreferenceScreen mPreferenceScreen;
@@ -45,7 +43,8 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
      * @param preferenceClass The preference type to be created.
      * @param fragmentArgs Optional arguments to be set on the fragment.
      */
-    public void launchPreference(Class<? extends PreferenceFragmentCompat> preferenceClass,
+    public void launchPreference(
+            Class<? extends PreferenceFragmentCompat> preferenceClass,
             @Nullable Bundle fragmentArgs) {
         launchPreference(preferenceClass, fragmentArgs, null);
     }
@@ -58,27 +57,31 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
      * @param fragmentInitCallback An initialization callback to be called after creating the
      *                             Fragment and before attaching it to the activity.
      */
-    public void launchPreference(Class<? extends PreferenceFragmentCompat> preferenceClass,
+    public void launchPreference(
+            Class<? extends PreferenceFragmentCompat> preferenceClass,
             @Nullable Bundle fragmentArgs,
             @Nullable Callback<PreferenceFragmentCompat> fragmentInitCallback) {
         if (getActivity() == null) launchActivity(null);
 
         PreferenceFragmentCompat preference =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    PreferenceFragmentCompat fragment =
-                            (PreferenceFragmentCompat) getActivity()
-                                    .getSupportFragmentManager()
-                                    .getFragmentFactory()
-                                    .instantiate(preferenceClass.getClassLoader(),
-                                            preferenceClass.getName());
-                    if (fragmentArgs != null) {
-                        fragment.setArguments(fragmentArgs);
-                    }
-                    if (fragmentInitCallback != null) {
-                        fragmentInitCallback.onResult(fragment);
-                    }
-                    return fragment;
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            PreferenceFragmentCompat fragment =
+                                    (PreferenceFragmentCompat)
+                                            getActivity()
+                                                    .getSupportFragmentManager()
+                                                    .getFragmentFactory()
+                                                    .instantiate(
+                                                            preferenceClass.getClassLoader(),
+                                                            preferenceClass.getName());
+                            if (fragmentArgs != null) {
+                                fragment.setArguments(fragmentArgs);
+                            }
+                            if (fragmentInitCallback != null) {
+                                fragmentInitCallback.onResult(fragment);
+                            }
+                            return fragment;
+                        });
         launchPreference(preference);
     }
 
@@ -89,32 +92,34 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
     public void launchPreference(PreferenceFragmentCompat preference) {
         if (getActivity() == null) launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPreferenceFragment = preference;
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(android.R.id.content, mPreferenceFragment)
-                    .commit();
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mPreferenceFragment.getPreferenceManager(), Matchers.notNullValue());
-            Criteria.checkThat(mPreferenceFragment.getPreferenceScreen(), Matchers.notNullValue());
-        });
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPreferenceScreen = mPreferenceFragment.getPreferenceScreen(); });
+                () -> {
+                    mPreferenceFragment = preference;
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(android.R.id.content, mPreferenceFragment)
+                            .commit();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mPreferenceFragment.getPreferenceManager(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            mPreferenceFragment.getPreferenceScreen(), Matchers.notNullValue());
+                });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPreferenceScreen = mPreferenceFragment.getPreferenceScreen();
+                });
     }
 
-    /**
-     * @return The preference fragment attached in {@link #launchPreference}.
-     */
+    /** @return The preference fragment attached in {@link #launchPreference}. */
     public PreferenceFragmentCompat getPreferenceFragment() {
         return mPreferenceFragment;
     }
 
-    /**
-     * @return The preference screen associated with the attached preference.
-     */
+    /** @return The preference screen associated with the attached preference. */
     public PreferenceScreen getPreferenceScreen() {
         return mPreferenceScreen;
     }

@@ -21,9 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Tests for the StrictModeContext class.
- */
+/** Tests for the StrictModeContext class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class StrictModeContextTest {
     private StrictMode.ThreadPolicy mOldThreadPolicy;
@@ -48,11 +46,12 @@ public class StrictModeContextTest {
     private void enableStrictMode() {
         mOldThreadPolicy = StrictMode.getThreadPolicy();
         mOldVmPolicy = StrictMode.getVmPolicy();
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                           .detectAll()
-                                           .penaltyLog()
-                                           .penaltyDeath()
-                                           .build());
+        StrictMode.setThreadPolicy(
+                new StrictMode.ThreadPolicy.Builder()
+                        .detectAll()
+                        .penaltyLog()
+                        .penaltyDeath()
+                        .build());
         StrictMode.setVmPolicy(
                 new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
     }

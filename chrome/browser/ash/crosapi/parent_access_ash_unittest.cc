@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,8 +58,7 @@ class FakeParentAccessDialogProvider : public ash::ParentAccessDialogProvider {
 namespace {
 constexpr char test_url[] = "http://example.com";
 const std::u16string test_child_display_name = u"child display name";
-const gfx::ImageSkia test_favicon =
-    gfx::ImageSkia::CreateFrom1xBitmap(gfx::test::CreateBitmap(1, 2));
+const gfx::ImageSkia test_favicon = gfx::test::CreateImageSkia(1, 2);
 const std::u16string test_extension_name = u"extension";
 }  // namespace
 
@@ -84,8 +83,7 @@ class ParentAccessAshTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<crosapi::mojom::ParentAccess> parent_access_remote_;
   std::unique_ptr<crosapi::ParentAccessAsh> parent_access_ash_;
-  raw_ptr<FakeParentAccessDialogProvider, DanglingUntriaged | ExperimentalAsh>
-      dialog_provider_;
+  raw_ptr<FakeParentAccessDialogProvider, DanglingUntriaged> dialog_provider_;
 };
 
 // Tests that the correct parameters were passed through to the dialog for
@@ -177,7 +175,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
             EXPECT_EQ(result->get_approved()->parent_access_token, "ABC123");
             EXPECT_EQ(
                 result->get_approved()->parent_access_token_expire_timestamp,
-                base::Time::FromDoubleT(123456UL));
+                base::Time::FromSecondsSinceUnixEpoch(123456UL));
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()));
@@ -186,7 +184,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
   dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
   dialog_result->parent_access_token = "ABC123";
   dialog_result->parent_access_token_expire_timestamp =
-      base::Time::FromDoubleT(123456UL);
+      base::Time::FromSecondsSinceUnixEpoch(123456UL);
   dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
   run_loop.Run();
 }

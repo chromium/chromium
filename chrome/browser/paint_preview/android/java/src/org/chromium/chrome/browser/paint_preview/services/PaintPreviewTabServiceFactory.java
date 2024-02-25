@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.paint_preview.services;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * The Java-side implementations of paint_preview_tab_service_factory.cc. Provides an instance of

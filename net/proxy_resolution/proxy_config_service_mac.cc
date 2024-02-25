@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/proxy_config_service_mac.h"
 
+#include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -17,8 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
-#include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -71,56 +71,52 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
 
   // proxies (for now ftp, http, https, and SOCKS)
 
-  if (GetBoolFromDictionary(config_dict.get(),
-                            kSCPropNetProxiesFTPEnable,
+  if (GetBoolFromDictionary(config_dict.get(), kSCPropNetProxiesFTPEnable,
                             false)) {
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesFTPProxy,
+    ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+        kCFProxyTypeHTTP, config_dict.get(), kSCPropNetProxiesFTPProxy,
         kSCPropNetProxiesFTPPort);
-    if (proxy_server.is_valid()) {
+    if (proxy_chain.IsValid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      proxy_config.proxy_rules().proxies_for_ftp.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().proxies_for_ftp.SetSingleProxyChain(
+          proxy_chain);
     }
   }
-  if (GetBoolFromDictionary(config_dict.get(),
-                            kSCPropNetProxiesHTTPEnable,
+  if (GetBoolFromDictionary(config_dict.get(), kSCPropNetProxiesHTTPEnable,
                             false)) {
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        ProxyServer::SCHEME_HTTP, config_dict.get(), kSCPropNetProxiesHTTPProxy,
+    ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+        kCFProxyTypeHTTP, config_dict.get(), kSCPropNetProxiesHTTPProxy,
         kSCPropNetProxiesHTTPPort);
-    if (proxy_server.is_valid()) {
+    if (proxy_chain.IsValid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      proxy_config.proxy_rules().proxies_for_http.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().proxies_for_http.SetSingleProxyChain(
+          proxy_chain);
     }
   }
-  if (GetBoolFromDictionary(config_dict.get(),
-                            kSCPropNetProxiesHTTPSEnable,
+  if (GetBoolFromDictionary(config_dict.get(), kSCPropNetProxiesHTTPSEnable,
                             false)) {
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        ProxyServer::SCHEME_HTTP, config_dict.get(),
-        kSCPropNetProxiesHTTPSProxy, kSCPropNetProxiesHTTPSPort);
-    if (proxy_server.is_valid()) {
+    ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+        kCFProxyTypeHTTPS, config_dict.get(), kSCPropNetProxiesHTTPSProxy,
+        kSCPropNetProxiesHTTPSPort);
+    if (proxy_chain.IsValid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      proxy_config.proxy_rules().proxies_for_https.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().proxies_for_https.SetSingleProxyChain(
+          proxy_chain);
     }
   }
-  if (GetBoolFromDictionary(config_dict.get(),
-                            kSCPropNetProxiesSOCKSEnable,
+  if (GetBoolFromDictionary(config_dict.get(), kSCPropNetProxiesSOCKSEnable,
                             false)) {
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        ProxyServer::SCHEME_SOCKS5, config_dict.get(),
-        kSCPropNetProxiesSOCKSProxy, kSCPropNetProxiesSOCKSPort);
-    if (proxy_server.is_valid()) {
+    ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+        kCFProxyTypeSOCKS, config_dict.get(), kSCPropNetProxiesSOCKSProxy,
+        kSCPropNetProxiesSOCKSPort);
+    if (proxy_chain.IsValid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      proxy_config.proxy_rules().fallback_proxies.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().fallback_proxies.SetSingleProxyChain(
+          proxy_chain);
     }
   }
 
@@ -202,7 +198,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
+  config_watcher_ = std::make_unique<NetworkConfigWatcherApple>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {
@@ -246,8 +242,8 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
   base::apple::ScopedCFTypeRef<CFArrayRef> key_array(CFArrayCreate(
       nullptr, (const void**)(&proxies_key), 1, &kCFTypeArrayCallBacks));
 
-  bool ret =
-      SCDynamicStoreSetNotificationKeys(store, key_array, /*patterns=*/nullptr);
+  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array.get(),
+                                               /*patterns=*/nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 }

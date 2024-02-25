@@ -281,11 +281,6 @@ void JourneyLogger::SetCompleted() {
 }
 
 void JourneyLogger::SetAborted(AbortReason reason) {
-  // Always record the first abort reason regardless of whether the
-  // PaymentRequest.show() was triggered or not.
-  base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel.Aborted", reason,
-                                ABORT_REASON_MAX);
-
   if (reason == ABORT_REASON_ABORTED_BY_USER ||
       reason == ABORT_REASON_USER_NAVIGATION)
     RecordJourneyStatsHistograms(COMPLETION_STATUS_USER_ABORTED);
@@ -295,11 +290,9 @@ void JourneyLogger::SetAborted(AbortReason reason) {
     RecordJourneyStatsHistograms(COMPLETION_STATUS_OTHER_ABORTED);
 }
 
-void JourneyLogger::SetNotShown(NotShownReason reason) {
+void JourneyLogger::SetNotShown() {
   DCHECK(!WasPaymentRequestTriggered());
   RecordJourneyStatsHistograms(COMPLETION_STATUS_COULD_NOT_SHOW);
-  base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel.NoShow", reason,
-                                NOT_SHOWN_REASON_MAX);
 }
 
 void JourneyLogger::SetNoMatchingCredentialsShown() {

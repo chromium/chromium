@@ -213,8 +213,9 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   // Start with the delegate's settings, but let Fontconfig have the final say.
   FontRenderParams params;
 #if BUILDFLAG(IS_LINUX)
-  if (const auto* linux_ui = ui::LinuxUi::instance())
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
     params = linux_ui->GetDefaultFontRenderParams();
+  }
 #endif
   QueryFontconfig(actual_query, &params, family_out);
   if (!params.antialiasing) {

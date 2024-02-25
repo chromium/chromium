@@ -24,6 +24,8 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
         *web_contents_);
   }
 
+  ~PaymentRequestWebContentsManagerTest() override { manager_ = nullptr; }
+
   content::WebContents* web_contents() { return web_contents_; }
 
   PaymentRequest* CreateAndReturnPaymentRequest(SPCTransactionMode mode) {
@@ -45,7 +47,7 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   }
 
   // The PaymentRequestWebContentsManager under test.
-  raw_ptr<PaymentRequestWebContentsManager, DanglingUntriaged> manager_;
+  raw_ptr<PaymentRequestWebContentsManager> manager_;
 
  private:
   // Necessary supporting members to create the testing environment.
@@ -108,6 +110,16 @@ TEST_F(PaymentRequestWebContentsManagerTest, HadActivationlessShow) {
 
   manager_->RecordActivationlessShow();
   ASSERT_TRUE(manager_->HadActivationlessShow());
+
+  // A browser reload should not reset the activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(
+            GURL("http://example2.test"), web_contents());
+    navigation_simulator->Start();
+    navigation_simulator->Commit();
+    ASSERT_TRUE(manager_->HadActivationlessShow());
+  }
 
   // A browser initiated navigation should reset the activationless show state.
   {

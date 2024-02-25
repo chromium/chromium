@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
-#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -20,8 +20,9 @@
 // the cookie controls (https://crbug.com/1446230).
 class CookieControlsIconView : public PageActionIconView,
                                public content_settings::CookieControlsObserver {
+  METADATA_HEADER(CookieControlsIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(CookieControlsIconView);
   CookieControlsIconView(
       Browser* browser,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -31,13 +32,11 @@ class CookieControlsIconView : public PageActionIconView,
   ~CookieControlsIconView() override;
 
   // CookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       CookieControlsEnforcement enforcement,
-                       base::Time expiration) override;
-  void OnSitesCountChanged(int allowed_third_party_sites_count,
-                           int blocked_third_party_sites_count) override;
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
+  void OnCookieControlsIconStatusChanged(
+      bool icon_visible,
+      bool protections_on,
+      CookieBlocking3pcdStatus blocking_status,
+      bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void ShowCookieControlsBubble();
@@ -53,23 +52,35 @@ class CookieControlsIconView : public PageActionIconView,
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  void UpdateTooltipForFocus() override;
 
  private:
   friend class CookieControlsIconViewUnitTest;
 
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
+  // Whether a managed IPH is currently active.
+  bool IsManagedIPHActive() const;
   void OnIPHClosed();
 
-  // Set confidence_changed = true to animate if the confidence level changed
-  // even if the icon is already visible.
-  void UpdateVisibilityAndAnimate(bool confidence_changed = false);
-  absl::optional<int> GetLabelForStatus() const;
+  // Attempts to show IPH for the cookie controls icon.
+  // Returns whether IPH was successfully shown.
+  bool MaybeShowIPH();
 
-  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  bool MaybeAnimateIcon();
+  void UpdateIcon();
 
-  CookieControlsBreakageConfidenceLevel confidence_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
+  int GetLabelForStatus() const;
+  void SetLabelAndTooltip();
+
+  bool icon_visible_ = false;
+  bool protections_on_ = false;
+  bool did_animate_ = false;
+  // Whether we should have a visual indicator highlighting the icon.
+  bool should_highlight_ = false;
+
+  CookieBlocking3pcdStatus blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   raw_ptr<Browser> browser_ = nullptr;
 

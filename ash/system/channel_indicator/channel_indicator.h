@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -28,6 +29,8 @@ class Shell;
 class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
                                         public SessionObserver,
                                         public ShellObserver {
+  METADATA_HEADER(ChannelIndicatorView, TrayItemView)
+
  public:
   ChannelIndicatorView(Shelf* shelf, version_info::Channel channel);
   ChannelIndicatorView(const ChannelIndicatorView&) = delete;
@@ -39,7 +42,6 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // TrayItemView:
@@ -75,7 +77,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   // replaced, owned by `views::View`. `FillLayout` wants to size child views to
   // fit the parent's bounds, but children of `ChannelIndicatorView` need to
   // have specific sizes and insets regardless of the parent's bounds.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_;
+  raw_ptr<views::BoxLayout> box_layout_;
 
   ScopedSessionObserver session_observer_;
 

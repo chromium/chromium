@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -245,6 +246,15 @@ class TestLauncher {
 
   std::vector<std::string> CollectTests();
 
+  // Helper to tell if the test runs in current shard.
+  // `prefix_stripped_name` is the test name excluding DISABLED_ and
+  // PRE_ prefixes.
+  bool ShouldRunInCurrentShard(std::string_view prefix_stripped_name) const;
+
+  // Helper to check whether only exact positive filter is passed via
+  // a filter file.
+  bool IsOnlyExactPositiveFilterFromFile(const CommandLine* command_line) const;
+
   // Make sure we don't accidentally call the wrong methods e.g. on the worker
   // pool thread.  Should be the first member so that it's destroyed last: when
   // destroying other members, especially the worker pool, we may check the code
@@ -263,6 +273,9 @@ class TestLauncher {
   bool has_at_least_one_positive_filter_;
   std::vector<std::string> positive_test_filter_;
   std::vector<std::string> negative_test_filter_;
+
+  // Enforce to run all test cases listed in exact positive filter.
+  bool enforce_exact_postive_filter_;
 
   // Class to encapsulate gtest information.
   class TestInfo;

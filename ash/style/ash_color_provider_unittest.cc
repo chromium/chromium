@@ -79,64 +79,8 @@ class AshColorProviderBase
   base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_;
   AshTestHelper ash_test_helper_;
-  raw_ptr<AshColorProvider, DanglingUntriaged | ExperimentalAsh>
-      color_provider_;
+  raw_ptr<AshColorProvider, DanglingUntriaged> color_provider_;
 };
-
-using AshColorProviderBaseLayerTest =
-    AshColorProviderBase<ColorProvider::BaseLayerType>;
-
-TEST_P(AshColorProviderBaseLayerTest, TestBaseColors) {
-  const auto& test_case = GetParam();
-  bool dark = test_case.color_mode == ColorMode::kDark;
-  DarkLightModeController::Get()->SetDarkModeEnabledForTest(dark);
-  EXPECT_EQ(test_case.expected_color,
-            color_provider_->GetBaseLayerColor(test_case.type))
-      << "Colors do not match. Expected " << test_case << " Actual: "
-      << ColorToString(color_provider_->GetBaseLayerColor(test_case.type));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AshColorProviderTests,
-    AshColorProviderBaseLayerTest,
-    testing::ValuesIn<ColorsTestCase<ColorProvider::BaseLayerType>>(
-        {// Light mode values
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent20,
-          SkColorSetARGB(0x33, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent40,
-          SkColorSetARGB(0x66, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent60,
-          SkColorSetARGB(0x99, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent80,
-          SkColorSetARGB(0xCC, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight,
-          ColorProvider::BaseLayerType::kInvertedTransparent80,
-          SkColorSetARGB(0xCC, 0x07, 0x07, 0x07)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent90,
-          SkColorSetARGB(0xE5, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kTransparent95,
-          SkColorSetARGB(0xF2, 0xF8, 0xF8, 0xF8)},
-         {ColorMode::kLight, ColorProvider::BaseLayerType::kOpaque,
-          SkColorSetARGB(0xFF, 0xF8, 0xF8, 0xF8)},
-
-         // Dark mode values
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent20,
-          SkColorSetARGB(0x33, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent40,
-          SkColorSetARGB(0x66, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent60,
-          SkColorSetARGB(0x99, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent80,
-          SkColorSetARGB(0xCC, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark,
-          ColorProvider::BaseLayerType::kInvertedTransparent80,
-          SkColorSetARGB(0xCC, 0xA5, 0xA5, 0xA5)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent90,
-          SkColorSetARGB(0xE5, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent95,
-          SkColorSetARGB(0xF2, 0x5A, 0x5A, 0x5A)},
-         {ColorMode::kDark, ColorProvider::BaseLayerType::kOpaque,
-          SkColorSetARGB(0xFF, 0x5A, 0x5A, 0x5A)}}));
 
 using AshColorProviderControlsLayerTest =
     AshColorProviderBase<ColorProvider::ControlsLayerType>;

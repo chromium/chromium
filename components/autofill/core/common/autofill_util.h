@@ -7,10 +7,13 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -21,26 +24,11 @@ namespace autofill {
 // the length used for server autofill data.
 constexpr int kLocalGuidSize = 36;
 
-// Returns true when command line switch |kEnableSuggestionsWithSubstringMatch|
-// is on.
-bool IsFeatureSubstringMatchEnabled();
-
 // Returns true if showing autofill signature as HTML attributes is enabled.
 bool IsShowAutofillSignaturesEnabled();
 
-// Returns true when keyboard accessory is enabled.
-bool IsKeyboardAccessoryEnabled();
-
 // A token is a sequences of contiguous characters separated by any of the
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.
-
-// Returns true if the |field_contents| is a substring of the |suggestion|
-// starting at token boundaries. |field_contents| can span multiple |suggestion|
-// tokens.
-bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
-    const std::u16string& suggestion,
-    const std::u16string& field_contents,
-    bool case_sensitive);
 
 // Currently, a token for the purposes of this method is defined as {'@'}.
 // Returns true if the |full_string| has a |prefix| as a prefix and the prefix
@@ -67,7 +55,10 @@ void SetCheckStatus(FormFieldData* form_field_data,
 // Considers any ASCII whitespace character as a possible separator.
 // Also ignores empty tokens, resulting in a collapsing of whitespace.
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    base::StringPiece attribute);
+    std::string_view attribute);
+
+// Returns `value` stripped from its whitespaces.
+std::u16string RemoveWhitespace(const std::u16string& value);
 
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
@@ -86,6 +77,26 @@ mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
+
+// Checks if the user triggered Autofill on a field manually through the Chrome
+// context menu.
+bool IsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered address Autofill on a field manually through the
+// Chrome context menu.
+bool IsAddressAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered payments Autofill on a field manually through
+// the Chrome context menu.
+bool IsPaymentsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered passwords Autofill on a field manually through
+// the Chrome context menu.
+bool IsPasswordsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
 
 }  // namespace autofill
 

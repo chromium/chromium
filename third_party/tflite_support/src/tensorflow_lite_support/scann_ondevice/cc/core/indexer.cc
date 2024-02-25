@@ -31,8 +31,7 @@ namespace core {
 namespace {
 
 float ComputeSquaredL2Distance(Span<const float> a, Span<const float> b) {
-  if (a.size() != b.size())
-    return 0;
+  if (a.size() != b.size()) return 0;
   float result = 0;
   for (int i = 0; i < a.size(); ++i) {
     result += (a[i] - b[i]) * (a[i] - b[i]);
@@ -41,8 +40,7 @@ float ComputeSquaredL2Distance(Span<const float> a, Span<const float> b) {
 }
 
 float ComputeDotProductDistance(Span<const float> a, Span<const float> b) {
-  if (a.size() != b.size())
-    return 0;
+  if (a.size() != b.size()) return 0;
   float result = 0;
   for (int i = 0; i < a.size(); ++i) {
     result += a[i] * b[i];
@@ -64,8 +62,7 @@ AsymmetricHashingIndexer::AsymmetricHashingIndexer(
   int subspace_index = 0;
   for (const AsymmetricHashingProto::SubspaceCodebook& codebook :
        ah_proto.subspace()) {
-    if (codebook.entry().empty())
-      return;
+    if (codebook.entry().empty()) return;
 
     const int dimension = codebook.entry(0).dimension_size();
     const int num_codes = codebook.entry_size();
@@ -84,17 +81,13 @@ AsymmetricHashingIndexer::AsymmetricHashingIndexer(
   }
 
   total_dimension_ = 0;
-  for (const uint8_t dim : dimensions_)
-    total_dimension_ += dim;
+  for (const uint8_t dim : dimensions_) total_dimension_ += dim;
 }
 
 void AsymmetricHashingIndexer::EncodeDatapoint(
-    absl::Span<const float> original,
-    absl::Span<uint8_t> encoded) const {
-  if (original.size() != total_dimension_)
-    return;
-  if (encoded.size() != dimensions_.size())
-    return;
+    absl::Span<const float> original, absl::Span<uint8_t> encoded) const {
+  if (original.size() != total_dimension_) return;
+  if (encoded.size() != dimensions_.size()) return;
 
   int start_index = 0;
   for (int i = 0; i < dimensions_.size(); ++i) {
@@ -125,8 +118,7 @@ void AsymmetricHashingIndexer::EncodeDatapoint(
 }
 
 absl::Status AsymmetricHashingIndexer::DecodeDatapoint(
-    absl::Span<const uint8_t> encoded,
-    absl::Span<float> reconstructed) const {
+    absl::Span<const uint8_t> encoded, absl::Span<float> reconstructed) const {
   if (encoded.size() < dimensions_.size()) {
     return absl::InvalidArgumentError("Mismatching dimensions");
   }

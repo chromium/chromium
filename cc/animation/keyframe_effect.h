@@ -151,7 +151,10 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
       KeyframeEffect* element_keyframe_effect_impl) const;
   void RemoveKeyframeModelsCompletedOnMainThread(
       KeyframeEffect* element_keyframe_effect_impl) const;
-  void PushPropertiesTo(KeyframeEffect* keyframe_effect_impl);
+  // If `replaced_start_time` is provided, it will be set as the start time on
+  // this' keyframe models prior to being pushed.
+  void PushPropertiesTo(KeyframeEffect* keyframe_effect_impl,
+                        std::optional<base::TimeTicks> replaced_start_time);
 
   std::string KeyframeModelsToString() const;
 
@@ -162,6 +165,10 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   base::TimeDelta MinimumTickInterval() const;
 
   bool awaiting_deletion() { return awaiting_deletion_; }
+
+  void set_replaced_group(int replaced_group) {
+    replaced_group_ = replaced_group;
+  }
 
  protected:
   // We override this because we have additional bookkeeping (eg, noting if
@@ -179,7 +186,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void MarkKeyframeModelsForDeletion(base::TimeTicks, AnimationEvents* events);
   void MarkFinishedKeyframeModels(base::TimeTicks monotonic_time);
 
-  absl::optional<gfx::PointF> ScrollOffsetForAnimation() const;
+  std::optional<gfx::PointF> ScrollOffsetForAnimation() const;
   void GenerateEvent(AnimationEvents* events,
                      const KeyframeModel& keyframe_model,
                      AnimationEvent::Type type,
@@ -196,6 +203,11 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   // element_animations_ is non-null if controller is attached to an element.
   scoped_refptr<ElementAnimations> element_animations_;
 
+  // When an animation is being replaced (see is_replaced_ in animation.h),
+  // this is set to the animation group being replaced. Set only on the
+  // impl-side KeyframeEffect.
+  std::optional<int> replaced_group_;
+
   // Only try to start KeyframeModels when new keyframe models are added or
   // when the previous attempt at starting KeyframeModels failed to start all
   // KeyframeModels.
@@ -205,7 +217,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   bool is_ticking_;
   bool awaiting_deletion_;
-  absl::optional<base::TimeTicks> last_tick_time_;
+  std::optional<base::TimeTicks> last_tick_time_;
 
   bool needs_push_properties_;
 };

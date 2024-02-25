@@ -138,26 +138,26 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
     return true;
   }
 
-  // Each policy in the map should be signed in the same way. If a policy
-  // in the map contains a public key, normally it means the server rotates the
-  // key. In this case, we persists the policy into the cached policy info file
-  // for future policy fetch.
-  const std::string policy_info_data = policy_map.cbegin()->second;
-  CachedPolicyInfo cached_info;
-  if (cached_info.Populate(policy_info_data) &&
-      !cached_info.public_key().empty() &&
-      !WriteContentToGlobalReadableFile(policy_info_file_, policy_info_data)) {
-    return false;
-  }
-
   // Persists individual policies.
   std::set<std::string> policy_types_base64;
+  bool policy_info_data_saved = false;
   for (const auto& policy_entry : policy_map) {
     const std::string& policy_type = policy_entry.first;
     const std::string& policy_value = policy_entry.second;
+    if (!policy_info_data_saved) {
+      // Policy info has a new public key when server rotates the key.
+      // In this case, persists the policy info as the cached policy info
+      // for future policy fetch.
+      CachedPolicyInfo cached_info;
+      if (cached_info.Populate(policy_value) &&
+          !cached_info.public_key().empty() &&
+          !WriteContentToGlobalReadableFile(policy_info_file_, policy_value)) {
+        return false;
+      }
+      policy_info_data_saved = true;
+    }
 
-    std::string encoded_policy_type;
-    base::Base64Encode(policy_type, &encoded_policy_type);
+    std::string encoded_policy_type = base::Base64Encode(policy_type);
     policy_types_base64.emplace(encoded_policy_type);
 
     const base::FilePath policy_dir =
@@ -196,8 +196,8 @@ DMStorage::GetOmahaPolicySettings() const {
     return nullptr;
   }
 
-  std::string encoded_omaha_policy_type;
-  base::Base64Encode(kGoogleUpdatePolicyType, &encoded_omaha_policy_type);
+  std::string encoded_omaha_policy_type =
+      base::Base64Encode(kGoogleUpdatePolicyType);
 
   base::FilePath omaha_policy_file =
       policy_cache_root_.AppendASCII(encoded_omaha_policy_type)

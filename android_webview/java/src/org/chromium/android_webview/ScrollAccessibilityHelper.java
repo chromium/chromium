@@ -31,7 +31,7 @@ class ScrollAccessibilityHelper {
 
         @Override
         public boolean handleMessage(Message msg) {
-            switch(msg.what) {
+            switch (msg.what) {
                 case MSG_VIEW_SCROLLED:
                     mMsgViewScrolledQueued = false;
                     mEventSender.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SCROLLED);

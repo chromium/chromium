@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -44,8 +45,7 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
     case mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
-  LOG(FATAL) << "Unreachable code.";
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<TracedValue> MessageTracedValue(ConsoleMessage* message) {
@@ -61,10 +61,10 @@ void TraceConsoleMessageEvent(ConsoleMessage* message) {
   // Change in this function requires adjustment of Catapult/Telemetry metric
   // tracing/tracing/metrics/console_error_metric.html.
   // See https://crbug.com/880432
-  if (message->Level() == mojom::ConsoleMessageLevel::kError) {
+  if (message->GetLevel() == ConsoleMessage::Level::kError) {
     TRACE_EVENT_INSTANT2("blink.console", "ConsoleMessage::Error",
                          TRACE_EVENT_SCOPE_THREAD, "source",
-                         MessageSourceToString(message->Source()), "message",
+                         MessageSourceToString(message->GetSource()), "message",
                          MessageTracedValue(message));
   }
 }

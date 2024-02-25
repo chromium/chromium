@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
@@ -36,19 +38,17 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test VariationsSeedLoader.
- */
-@RunWith(AwJUnit4ClassRunner.class)
+/** Test VariationsSeedLoader. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(SINGLE_PROCESS)
-public class VariationsSeedLoaderTest {
+public class VariationsSeedLoaderTest extends AwParameterizedTest {
     private static final long CURRENT_TIME_MILLIS = 1234567890;
     private static final long EXPIRED_TIMESTAMP = 0;
     private static final long TIMEOUT_MILLIS = 10000;
 
     // Needed for tests that test histograms, which rely on native code.
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     /**
      * Helper class to interact with {@link TestLoader}. This can be used to retrieve whether
@@ -130,23 +130,29 @@ public class VariationsSeedLoaderTest {
 
     private Handler mMainHandler;
 
+    public VariationsSeedLoaderTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     // Create a TestLoader, run it on the UI thread, and block until it's finished. The return value
     // indicates whether the loader decided to request a new seed.
     private boolean runTestLoaderBlocking() throws TimeoutException {
         final TestLoaderResult result = new TestLoaderResult();
-        Runnable run = () -> {
-            TestLoader loader = new TestLoader(result);
-            loader.startVariationsInit();
-            loader.finishVariationsInit();
-            result.onForegroundWorkFinished();
-        };
+        Runnable run =
+                () -> {
+                    TestLoader loader = new TestLoader(result);
+                    loader.startVariationsInit();
+                    loader.finishVariationsInit();
+                    result.onForegroundWorkFinished();
+                };
 
         CallbackHelper onRequestReceived = MockVariationsSeedServer.getRequestHelper();
         int requestsReceived = onRequestReceived.getCallCount();
         Assert.assertTrue("Failed to post seed loader Runnable", mMainHandler.post(run));
         result.waitForCallback("Timed out waiting for loader to finish.", 0);
         if (result.wasSeedRequested()) {
-            onRequestReceived.waitForCallback("Seed requested, but timed out waiting for request"
+            onRequestReceived.waitForCallback(
+                    "Seed requested, but timed out waiting for request"
                             + " to arrive in MockVariationsSeedServer",
                     requestsReceived);
             return true;
@@ -163,6 +169,31 @@ public class VariationsSeedLoaderTest {
     @After
     public void tearDown() throws IOException {
         VariationsTestUtils.deleteSeeds();
+    }
+
+    // Test that Seed and AppSeed Freshness diff is correct and recorded
+    @Test
+    @MediumTest
+    public void testRecordSeedDiff() throws Exception {
+        // The first line is needed to set the seed freshness to zero
+        // in order to calculate the diff correctly
+        VariationsSeedLoader.cacheSeedFreshness(0);
+        long seedFreshnessInMinutes = 100;
+        long appSeedFreshnessInMinutes = 40;
+        long diff = seedFreshnessInMinutes - appSeedFreshnessInMinutes;
+        var histogramWatcherOne =
+                HistogramWatcher.newSingleRecordWatcher(
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
+        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+        histogramWatcherOne.assertExpected();
+
+        var histogramWatcherTwo =
+                HistogramWatcher.newSingleRecordWatcher(
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
+        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+        histogramWatcherTwo.assertExpected();
     }
 
     // Test the case that:
@@ -195,8 +226,8 @@ public class VariationsSeedLoaderTest {
             boolean seedRequested = runTestLoaderBlocking();
 
             // Since there was a fresh seed, we should not request another seed.
-            Assert.assertFalse("New seed was requested when it should not have been",
-                    seedRequested);
+            Assert.assertFalse(
+                    "New seed was requested when it should not have been", seedRequested);
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
@@ -242,8 +273,8 @@ public class VariationsSeedLoaderTest {
             Assert.assertFalse("New seed still exists", newFile.exists());
 
             // Since the "new" seed was fresh, we should not request another seed.
-            Assert.assertFalse("New seed was requested when it should not have been",
-                    seedRequested);
+            Assert.assertFalse(
+                    "New seed was requested when it should not have been", seedRequested);
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
@@ -336,8 +367,8 @@ public class VariationsSeedLoaderTest {
 
     // Test loading twice. The first load should trigger a request, but the second should not,
     // because requests should be rate-limited.
-    // VariationsUtils.getSeedFile() - doesn't exist
-    // VariationsUtils.getNewSeedFile() - doesn't exist
+    // VariationsUtils.getSeedFile() - doesn't exist VariationsUtils.getNewSeedFile() - doesn't
+    // exist
     @Test
     @MediumTest
     public void testDoubleLoad() throws Exception {
@@ -346,8 +377,8 @@ public class VariationsSeedLoaderTest {
             Assert.assertTrue("No seed requested", seedRequested);
 
             seedRequested = runTestLoaderBlocking();
-            Assert.assertFalse("New seed was requested when it should not have been",
-                    seedRequested);
+            Assert.assertFalse(
+                    "New seed was requested when it should not have been", seedRequested);
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
@@ -403,13 +434,15 @@ public class VariationsSeedLoaderTest {
                     HistogramWatcher.newBuilder()
                             .expectIntRecordTimes(
                                     VariationsSeedLoader.DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
-                                    (int) TimeUnit.MILLISECONDS.toMinutes(threeWeeksMs), 1)
+                                    (int) TimeUnit.MILLISECONDS.toMinutes(threeWeeksMs),
+                                    1)
                             .build();
             HistogramWatcher histogramExpectationQueueTime =
                     HistogramWatcher.newBuilder()
                             .expectIntRecordTimes(
                                     VariationsSeedLoader.DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
-                                    (int) TimeUnit.MILLISECONDS.toMinutes(twoWeeksMs), 1)
+                                    (int) TimeUnit.MILLISECONDS.toMinutes(twoWeeksMs),
+                                    1)
                             .build();
 
             VariationsServiceMetricsHelper metrics =

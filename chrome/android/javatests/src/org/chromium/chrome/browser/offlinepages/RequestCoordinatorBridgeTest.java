@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -55,25 +56,30 @@ public class RequestCoordinatorBridgeTest {
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mRequestCoordinatorBridge = RequestCoordinatorBridge.getForProfile(mProfile);
-            semaphore.release();
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mRequestCoordinatorBridge = RequestCoordinatorBridge.getForProfile(mProfile);
+                    semaphore.release();
+                });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Ensure we start in an offline state.
-            NetworkChangeNotifier.forceConnectivityState(false);
-            if (!NetworkChangeNotifier.isInitialized()) {
-                NetworkChangeNotifier.init();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Ensure we start in an offline state.
+                    NetworkChangeNotifier.forceConnectivityState(false);
+                    if (!NetworkChangeNotifier.isInitialized()) {
+                        NetworkChangeNotifier.init();
+                    }
+                });
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
+                () -> {
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
+                });
 
         initializeBridgeForProfile();
 
@@ -120,10 +126,12 @@ public class RequestCoordinatorBridgeTest {
     @Test
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoTabbedActivity() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                    /*createIfNeeded=*/true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfile =
+                            ProfileManager.getLastUsedRegularProfile()
+                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);
     }
@@ -132,10 +140,13 @@ public class RequestCoordinatorBridgeTest {
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
         OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                    otrProfileID, /*createIfNeeded=*/true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfile =
+                            ProfileManager.getLastUsedRegularProfile()
+                                    .getOffTheRecordProfile(
+                                            otrProfileID, /* createIfNeeded= */ true);
+                });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);
     }
@@ -171,17 +182,25 @@ public class RequestCoordinatorBridgeTest {
     private void savePageLater(final String url, final String namespace)
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mRequestCoordinatorBridge.savePageLater(url, namespace, true /* userRequested */,
-                    new OfflinePageOrigin(), new Callback<Integer>() {
-                        @Override
-                        public void onResult(Integer i) {
-                            Assert.assertEquals("SavePageLater did not succeed", Integer.valueOf(0),
-                                    i); // 0 is SUCCESS
-                            semaphore.release();
-                        }
-                    });
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mRequestCoordinatorBridge.savePageLater(
+                            url,
+                            namespace,
+                            /* userRequested= */ true,
+                            new OfflinePageOrigin(),
+                            new Callback<Integer>() {
+                                @Override
+                                public void onResult(Integer i) {
+                                    Assert.assertEquals(
+                                            "SavePageLater did not succeed",
+                                            Integer.valueOf(0),
+                                            i); // 0 is SUCCESS
+                                    semaphore.release();
+                                }
+                            });
+                });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
@@ -190,17 +209,21 @@ public class RequestCoordinatorBridgeTest {
         final AtomicReference<List<RequestCoordinatorBridge.RequestRemovedResult>> ref =
                 new AtomicReference<>();
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mRequestCoordinatorBridge.removeRequestsFromQueue(requestsToRemove,
-                    new Callback<List<RequestCoordinatorBridge.RequestRemovedResult>>() {
-                        @Override
-                        public void onResult(List<RequestCoordinatorBridge.RequestRemovedResult>
-                                        removedRequests) {
-                            ref.set(removedRequests);
-                            semaphore.release();
-                        }
-                    });
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mRequestCoordinatorBridge.removeRequestsFromQueue(
+                            requestsToRemove,
+                            new Callback<List<RequestCoordinatorBridge.RequestRemovedResult>>() {
+                                @Override
+                                public void onResult(
+                                        List<RequestCoordinatorBridge.RequestRemovedResult>
+                                                removedRequests) {
+                                    ref.set(removedRequests);
+                                    semaphore.release();
+                                }
+                            });
+                });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         return ref.get();
     }

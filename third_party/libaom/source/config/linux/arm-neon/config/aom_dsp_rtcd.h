@@ -1823,7 +1823,12 @@ unsigned int aom_mse8x8_neon(const uint8_t *src_ptr, int  source_stride, const u
 #define aom_mse8x8 aom_mse8x8_neon
 
 uint64_t aom_mse_16xh_16bit_c(uint8_t *dst, int dstride,uint16_t *src, int w, int h);
-#define aom_mse_16xh_16bit aom_mse_16xh_16bit_c
+uint64_t aom_mse_16xh_16bit_neon(uint8_t* dst,
+                                 int dstride,
+                                 uint16_t* src,
+                                 int w,
+                                 int h);
+#define aom_mse_16xh_16bit aom_mse_16xh_16bit_neon
 
 uint64_t aom_mse_wxh_16bit_c(uint8_t *dst, int dstride,uint16_t *src, int sstride, int w, int h);
 uint64_t aom_mse_wxh_16bit_neon(uint8_t *dst, int dstride,uint16_t *src, int sstride, int w, int h);

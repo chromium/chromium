@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -38,9 +39,11 @@ const String& StorageBucket::name() {
   return name_;
 }
 
-ScriptPromise StorageBucket::persist(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> StorageBucket::persist(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -56,9 +59,11 @@ ScriptPromise StorageBucket::persist(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise StorageBucket::persisted(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> StorageBucket::persisted(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -124,15 +129,18 @@ ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
   }
 
   remote_->SetExpires(
-      base::Time::FromJsTime(expires),
+      base::Time::FromMillisecondsSinceUnixEpoch(expires),
       WTF::BindOnce(&StorageBucket::DidSetExpires, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise StorageBucket::expires(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> StorageBucket::expires(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -155,7 +163,7 @@ IDBFactory* StorageBucket::indexedDB() {
     remote_->GetIdbFactory(remote_factory.InitWithNewPipeAndPassReceiver());
     idb_factory_->SetRemote(std::move(remote_factory));
   }
-  return idb_factory_;
+  return idb_factory_.Get();
 }
 
 LockManager* StorageBucket::locks() {
@@ -165,7 +173,7 @@ LockManager* StorageBucket::locks() {
     lock_manager_ = MakeGarbageCollected<LockManager>(*navigator_base_);
     lock_manager_->SetManager(std::move(lock_manager), GetExecutionContext());
   }
-  return lock_manager_;
+  return lock_manager_.Get();
 }
 
 CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
@@ -179,7 +187,7 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
         std::move(cache_storage));
   }
 
-  return caches_;
+  return caches_.Get();
 }
 
 ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
@@ -187,7 +195,17 @@ ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
   return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
       script_state, exception_state,
       WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
-                    weak_factory_.GetWeakPtr()));
+                    WrapWeakPersistent(this)));
+}
+
+void StorageBucket::GetDirectoryForDevTools(
+    ExecutionContext* context,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                            FileSystemDirectoryHandle*)> callback) {
+  StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+      context, WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
+                             WrapWeakPersistent(this),
+                             WrapWeakPersistent(context), std::move(callback)));
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {
@@ -200,9 +218,10 @@ void StorageBucket::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
-                                      bool persisted,
-                                      bool success) {
+void StorageBucket::DidRequestPersist(
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    bool persisted,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -218,9 +237,10 @@ void StorageBucket::DidRequestPersist(ScriptPromiseResolver* resolver,
   resolver->Resolve(persisted);
 }
 
-void StorageBucket::DidGetPersisted(ScriptPromiseResolver* resolver,
-                                    bool persisted,
-                                    bool success) {
+void StorageBucket::DidGetPersisted(
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    bool persisted,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -297,9 +317,10 @@ void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
   }
 }
 
-void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
-                                  const absl::optional<base::Time> expires,
-                                  bool success) {
+void StorageBucket::DidGetExpires(
+    ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
+    const std::optional<base::Time> expires,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -309,11 +330,8 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "Unknown error occurred while getting expires."));
-  } else if (expires.has_value()) {
-    resolver->Resolve(base::Time::kMillisecondsPerSecond *
-                      expires.value().ToDoubleT());
   } else {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolver->Resolve(expires);
   }
 }
 
@@ -329,5 +347,28 @@ void StorageBucket::GetSandboxedFileSystem(ScriptPromiseResolver* resolver) {
   remote_->GetDirectory(
       WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
                     WrapPersistent(resolver)));
+}
+
+void StorageBucket::GetSandboxedFileSystemForDevtools(
+    ExecutionContext* context,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                            FileSystemDirectoryHandle*)> callback,
+    mojom::blink::FileSystemAccessErrorPtr result) {
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+    std::move(callback).Run(std::move(result), nullptr);
+    return;
+  }
+
+  if (!remote_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
+            base::File::Error::FILE_ERROR_FAILED, "Invalid state Error."), nullptr);
+    return;
+  }
+
+  remote_->GetDirectory(WTF::BindOnce(
+      &StorageManagerFileSystemAccess::DidGetSandboxedFileSystemForDevtools,
+      WrapWeakPersistent(context), std::move(callback)));
 }
 }  // namespace blink

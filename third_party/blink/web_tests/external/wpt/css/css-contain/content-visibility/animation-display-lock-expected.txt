@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Animation events do not fire for a CSS animation running in a display locked subtree
-PASS The finished promise does not resolve due to the normal passage of time  for a CSS animation in a display locked subtree
-PASS The finished promise does not resolve due to the normal passage of time  for a CSS transition in a display locked subtree
-FAIL Events and promises are handled normally for animations without an owning element assert_false: CSS animation events should not be dispatched if there is no owning element expected false got true
-Harness: the test ran to completion.
-

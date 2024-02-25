@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for evaluation of JavaScript.
- */
+/** Tests for evaluation of JavaScript. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class JavaScriptEvalChromeTest {
@@ -39,13 +37,14 @@ public class JavaScriptEvalChromeTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    private static final String JSTEST_URL = UrlUtils.encodeHtmlDataUri(
-            "<html><head><script>"
-            + "  var counter = 0;"
-            + "  function add2() { counter = counter + 2; return counter; }"
-            + "  function foobar() { return 'foobar'; }"
-            + "</script></head>"
-            + "<body><button id=\"test\">Test button</button></body></html>");
+    private static final String JSTEST_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head><script>"
+                            + "  var counter = 0;"
+                            + "  function add2() { counter = counter + 2; return counter; }"
+                            + "  function foobar() { return 'foobar'; }"
+                            + "</script></head>"
+                            + "<body><button id=\"test\">Test button</button></body></html>");
 
     @Before
     public void setUp() {
@@ -70,32 +69,38 @@ public class JavaScriptEvalChromeTest {
 
         Assert.assertFalse("Tab didn't open", tab1 == tab2);
 
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab1.getWebContents(), "counter = 0;");
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab2.getWebContents(), "counter = 1;");
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(tab1.getWebContents(), "counter = 0;");
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(tab2.getWebContents(), "counter = 1;");
 
         for (int i = 1; i <= 30; ++i) {
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                    tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                });
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                            tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                        });
             }
-            Assert.assertEquals("Incorrect JavaScript evaluation result on tab1", i * 2,
-                    Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                            tab1.getWebContents(), "add2()")));
+            Assert.assertEquals(
+                    "Incorrect JavaScript evaluation result on tab1",
+                    i * 2,
+                    Integer.parseInt(
+                            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                    tab1.getWebContents(), "add2()")));
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                    tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                });
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                            tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                        });
             }
-            Assert.assertEquals("Incorrect JavaScript evaluation result on tab2", i * 2 + 1,
-                    Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                            tab2.getWebContents(), "add2()")));
+            Assert.assertEquals(
+                    "Incorrect JavaScript evaluation result on tab2",
+                    i * 2 + 1,
+                    Integer.parseInt(
+                            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                    tab2.getWebContents(), "add2()")));
         }
     }
 }

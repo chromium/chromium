@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SuppressDifferentOriginSubframeDialogs": true
+        },
+        "prefs": {
+          "suppress_different_origin_subframe_js_dialogs": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

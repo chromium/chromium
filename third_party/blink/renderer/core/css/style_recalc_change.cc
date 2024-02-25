@@ -32,13 +32,18 @@ bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
   if (!RecalcContainerQueryDependent()) {
     return false;
   }
-  const ComputedStyle* old_style = node.GetComputedStyle();
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return false;
+  }
+  const ComputedStyle* old_style = element->GetComputedStyle();
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
   // subtree roots.
   return !old_style ||
          (RecalcSizeContainerQueryDependent() &&
-          old_style->DependsOnSizeContainerQueries()) ||
+          (old_style->DependsOnSizeContainerQueries() ||
+           old_style->HighlightPseudoElementStylesDependOnContainerUnits())) ||
          (RecalcStyleContainerQueryDependent() &&
           old_style->DependsOnStyleContainerQueries()) ||
          (RecalcStateContainerQueryDependent() &&
@@ -64,6 +69,9 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
     return true;
   }
   if (pseudo_element.NeedsStyleRecalc()) {
+    return true;
+  }
+  if (pseudo_element.ChildNeedsStyleRecalc()) {
     return true;
   }
   if (pseudo_element.NeedsLayoutSubtreeUpdate()) {

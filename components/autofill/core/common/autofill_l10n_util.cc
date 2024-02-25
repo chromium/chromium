@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/common/autofill_l10n_util.h"
 
-#include <string_view>
 #include <utility>
 
 #include "base/i18n/string_compare.h"
@@ -48,8 +47,7 @@ CaseInsensitiveCompare::CaseInsensitiveCompare(const icu::Locale& locale)
     collator_->setStrength(icu::Collator::PRIMARY);
 }
 
-CaseInsensitiveCompare::~CaseInsensitiveCompare() {
-}
+CaseInsensitiveCompare::~CaseInsensitiveCompare() = default;
 
 bool CaseInsensitiveCompare::StringsEqual(std::u16string_view lhs,
                                           std::u16string_view rhs) const {

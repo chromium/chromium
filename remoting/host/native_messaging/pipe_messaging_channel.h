@@ -49,7 +49,7 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
 
   // extensions::NativeMessagingChannel implementation.
   void Start(EventHandler* event_handler) override;
-  void SendMessage(absl::optional<base::ValueView> message) override;
+  void SendMessage(std::optional<base::ValueView> message) override;
 
  private:
   // Processes a message received from the client app.

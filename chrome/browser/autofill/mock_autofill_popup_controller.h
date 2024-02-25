@@ -17,16 +17,13 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
 
 namespace autofill {
 
-class MockAutofillPopupController
-    : public AutofillPopupController,
-      public base::SupportsWeakPtr<MockAutofillPopupController> {
+class MockAutofillPopupController : public AutofillPopupController {
  public:
   MockAutofillPopupController();
   ~MockAutofillPopupController() override;
@@ -57,8 +54,12 @@ class MockAutofillPopupController
 
   // AutofillPopupController:
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
-  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
-  MOCK_METHOD(void, AcceptSuggestionWithoutThreshold, (int), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int, base::TimeTicks), (override));
+  MOCK_METHOD(void, PerformButtonActionForSuggestion, (int), (override));
+  MOCK_METHOD(std::optional<AutofillClient::PopupScreenLocation>,
+              GetPopupScreenLocation,
+              (),
+              (const override));
   std::vector<Suggestion> GetSuggestions() const override {
     return suggestions_;
   }
@@ -90,10 +91,20 @@ class MockAutofillPopupController
               GetRemovalConfirmationText,
               (int, std::u16string*, std::u16string*),
               (override));
-  MOCK_METHOD(bool, RemoveSuggestion, (int), (override));
-  MOCK_METHOD(void, SelectSuggestion, (absl::optional<size_t>), (override));
-  MOCK_METHOD(PopupType, GetPopupType, (), (const override));
-
+  MOCK_METHOD(bool,
+              RemoveSuggestion,
+              (int, AutofillMetrics::SingleEntryRemovalMethod),
+              (override));
+  MOCK_METHOD(void, SelectSuggestion, (int), (override));
+  MOCK_METHOD(void, UnselectSuggestion, (), (override));
+  MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));
+  MOCK_METHOD(base::WeakPtr<AutofillPopupController>,
+              OpenSubPopup,
+              (const gfx::RectF& anchor_bounds,
+               std::vector<Suggestion> suggestions,
+               AutoselectFirstSuggestion autoselect_first_suggestion),
+              (override));
+  MOCK_METHOD(void, HideSubPopup, (), (override));
   void set_suggestions(const std::vector<PopupItemId>& ids) {
     suggestions_.clear();
 
@@ -101,7 +112,8 @@ class MockAutofillPopupController
       // Accessibility requires all focusable AutofillPopupItemView to have
       // ui::AXNodeData with non-empty names. We specify dummy values and labels
       // to satisfy this.
-      suggestions_.emplace_back("dummy_value", "dummy_label", "", id);
+      suggestions_.emplace_back("dummy_value", "dummy_label",
+                                Suggestion::Icon::kNoIcon, id);
     }
   }
 

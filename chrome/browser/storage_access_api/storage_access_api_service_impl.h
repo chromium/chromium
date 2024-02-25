@@ -35,8 +35,9 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   ~StorageAccessAPIServiceImpl() override;
 
   // StorageAccessAPIService:
-  bool RenewPermissionGrant(const url::Origin& embedded_origin,
-                            const url::Origin& top_frame_origin) override;
+  std::optional<base::TimeDelta> RenewPermissionGrant(
+      const url::Origin& embedded_origin,
+      const url::Origin& top_frame_origin) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -58,9 +59,6 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
 
   // Timer to periodically update state for the associated profile.
   base::RepeatingTimer periodic_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Whether grant refreshes are enabled.
-  const bool grant_refreshes_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

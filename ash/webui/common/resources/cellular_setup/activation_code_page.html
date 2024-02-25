@@ -1,10 +1,8 @@
 <style include="iron-positioning">
   :host([expanded_]) #pageBody {
-    height: 340px;
     transition-duration: 200ms;
   }
   :host(:not([expanded_])) #pageBody {
-    height: 282px;
     transition-duration: 150ms;
   }
 
@@ -163,7 +161,7 @@
     font-size: var(--cr-form-field-label-font-size);
     letter-spacing: .4px;
     line-height: var(--cr-form-field-label-line-height);
-    position: absolute;
+    margin-top: -16px;
   }
 
   #video {
@@ -181,12 +179,34 @@
     text-align: center;
     width: auto;
   }
+
+  #carrierLockWarningContainer {
+    color: var(--cros-text-color-alert);
+    display: flex;
+    margin-bottom: 24px;
+    margin-top: 20px;
+  }
+
+  #carrierLockWarningIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+    margin-inline-end: 4px;
+  }
 </style>
 <base-page>
   <div slot="page-body" id="pageBody" class="animate">
     <span id="description" aria-live="polite">
       [[getDescription_(cameraCount_, qrCodeDetector_, showNoProfilesFound)]]
     </span>
+    <template is="dom-if"
+        if="[[shouldShowCarrierLockWarning_(isDeviceCarrierLocked_)]]" restamp>
+      <div id="carrierLockWarningContainer" aria-live="polite" role="alert">
+        <iron-icon id="carrierLockWarningIcon" icon="cellular-setup:warning">
+        </iron-icon>
+        [[i18n('eSimCarrierLockedDevice')]]
+      </div>
+    </template>
     <template is="dom-if"
         if="[[isScanningAvailable_(cameraCount_, qrCodeDetector_.*)]]" restamp>
       <div id="esimQrCodeDetection" class="animate">

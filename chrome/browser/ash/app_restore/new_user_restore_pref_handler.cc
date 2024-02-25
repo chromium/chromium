@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -18,13 +19,14 @@ NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
 
   auto* pref_service = PrefServiceSyncableFromProfile(profile_);
   syncable_pref_observer_.Observe(pref_service);
-  pref_service->AddSyncedPrefObserver(kRestoreAppsAndPagesPrefName, this);
+  pref_service->AddSyncedPrefObserver(prefs::kRestoreAppsAndPagesPrefName,
+                                      this);
 
   local_restore_pref_ = std::make_unique<IntegerPrefMember>();
 
   // base::Unretained() is safe because this class owns |local_restore_pref_|.
   local_restore_pref_->Init(
-      kRestoreAppsAndPagesPrefName, profile_->GetPrefs(),
+      prefs::kRestoreAppsAndPagesPrefName, profile_->GetPrefs(),
       base::BindRepeating(&NewUserRestorePrefHandler::OnPreferenceChanged,
                           base::Unretained(this)));
 }
@@ -32,14 +34,14 @@ NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
 NewUserRestorePrefHandler::~NewUserRestorePrefHandler() {
   if (!is_restore_pref_synced_) {
     PrefServiceSyncableFromProfile(profile_)->RemoveSyncedPrefObserver(
-        kRestoreAppsAndPagesPrefName, this);
+        prefs::kRestoreAppsAndPagesPrefName, this);
   }
 }
 
 void NewUserRestorePrefHandler::OnStartedSyncing(const std::string& path) {
   is_restore_pref_synced_ = true;
   PrefServiceSyncableFromProfile(profile_)->RemoveSyncedPrefObserver(
-      kRestoreAppsAndPagesPrefName, this);
+      prefs::kRestoreAppsAndPagesPrefName, this);
 }
 
 void NewUserRestorePrefHandler::OnIsSyncingChanged() {
@@ -53,16 +55,16 @@ void NewUserRestorePrefHandler::OnIsSyncingChanged() {
   DCHECK(syncable_pref_observer_.IsObserving());
   syncable_pref_observer_.Reset();
 
-  // If |kRestoreAppsAndPagesPrefName| is modified before the first sync, that
-  // means |kRestoreAppsAndPagesPrefName| is modifyed from sync, or the user
-  // has set |kRestoreAppsAndPagesPrefName|. Then we should keep it, and not
-  // update it.
+  // If `prefs::kRestoreAppsAndPagesPrefName` is modified before the first
+  // sync, that means `prefs::kRestoreAppsAndPagesPrefName` is modified
+  // from sync, or the user has set `prefs::kRestoreAppsAndPagesPrefName`.
+  // Then we should keep it, and not update it.
   if (is_restore_pref_changed_ || is_restore_pref_synced_)
     return;
 
-  // If |kRestoreAppsAndPagesPrefName| is not modified and still the default
-  // setting done by SetDefaultRestorePrefIfNecessary, update based on the
-  // synced browser restore settings.
+  // If `prefs::kRestoreAppsAndPagesPrefName` is not modified and still the
+  // default setting done by SetDefaultRestorePrefIfNecessary, update based on
+  // the synced browser restore settings.
   UpdateRestorePrefIfNecessary(profile_->GetPrefs());
 }
 

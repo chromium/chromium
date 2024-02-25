@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -21,6 +22,11 @@
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
+
+// static
+int64_t Statement::TimeToSqlValue(base::Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
 
 // This empty constructor initializes our reference with an empty one so that
 // we don't have to null-check the ref_ to see if the statement is valid: we
@@ -72,11 +78,30 @@ SqliteResultCode Statement::StepInternal() {
   if (!CheckValid())
     return SqliteResultCode::kError;
 
-  absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
+  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
   return CheckSqliteResultCode(sqlite_result_code);
+}
+
+void Statement::ReportQueryExecutionMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Retrieve and reset to zero the count of VM steps required to execute the
+  // query. The reported UMA metric can be used to identify expensive database
+  // based on their SQLite queries cost in VM steps.
+  const int kResetVMStepsToZero = 1;
+  const int vm_steps = sqlite3_stmt_status(
+      ref_->stmt(), SQLITE_STMTSTATUS_VM_STEP, kResetVMStepsToZero);
+  if (vm_steps > 0) {
+    const Database* database = ref_->database();
+    if (!database->histogram_tag().empty()) {
+      const std::string histogram_name =
+          "Sql.Statement." + database->histogram_tag() + ".VMSteps";
+      base::UmaHistogramCounts10000(histogram_name, vm_steps);
+    }
+  }
 }
 
 bool Statement::Run() {
@@ -103,9 +128,12 @@ bool Statement::Step() {
 void Statement::Reset(bool clear_bound_vars) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
+  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
   if (is_valid()) {
+    // Reports the execution cost for this SQL statement.
+    ReportQueryExecutionMetrics();
+
     if (clear_bound_vars)
       sqlite3_clear_bindings(ref_->stmt());
 
@@ -228,7 +256,7 @@ void Statement::BindTime(int param_index, base::Time val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  int64_t int_value = TimeToSqlValue(val);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);

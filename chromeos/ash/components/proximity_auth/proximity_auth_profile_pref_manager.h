@@ -43,21 +43,22 @@ class ProximityAuthProfilePrefManager {
   // Registers the prefs used by this class to the given |pref_service|.
   static void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Returns true if EasyUnlock is allowed. Note: there is no corresponding
-  // setter because this pref is pushed through an enterprise policy. Note that
-  // this pref completely disables EasyUnlock, hiding even the UI. See
-  // IsEasyUnlockEnabled() for comparison.
+  // Returns true if SmartLock/EasyUnlock is allowed. Note: there is no
+  // corresponding setter because this pref is pushed through an enterprise
+  // policy. Note that this pref completely disables EasyUnlock, hiding even the
+  // UI. See IsEasyUnlockEnabled() for comparison.
   bool IsEasyUnlockAllowed() const;
 
-  // Returns true if EasyUnlock is enabled, i.e. the user has gone through the
-  // setup flow and has at least one phone as an unlock key. Compare to
-  // IsEasyUnlockAllowed(), which completely removes the feature from existence.
+  // Returns true if SmartLock/EasyUnlock is enabled, i.e. the user has gone
+  // through the setup flow and has at least one phone as an unlock key. Compare
+  // to IsEasyUnlockAllowed(), which completely removes the feature from
+  // existence.
   void SetIsEasyUnlockEnabled(bool is_easy_unlock_enabled) const;
   bool IsEasyUnlockEnabled() const;
 
-  // Returns true if EasyUnlock has ever been enabled, regardless of whether the
-  // feature is currently enabled or disabled. Compare to IsEasyUnlockEnabled(),
-  // which flags the latter case.
+  // Returns true if SmartLock/EasyUnlock has ever been enabled, regardless of
+  // whether the feature is currently enabled or disabled. Compare to
+  // IsEasyUnlockEnabled(), which flags the latter case.
   void SetEasyUnlockEnabledStateSet() const;
   bool IsEasyUnlockEnabledStateSet() const;
 
@@ -74,13 +75,13 @@ class ProximityAuthProfilePrefManager {
  private:
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // The account id of the current profile.
   AccountId account_id_;
 
   // Used to determine the FeatureState of Smart Lock.
-  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient>
       multidevice_setup_client_ = nullptr;
 
   base::WeakPtrFactory<ProximityAuthProfilePrefManager> weak_ptr_factory_{this};

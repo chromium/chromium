@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"little" textSize:13.3 style:0 htmlInfo:[{htmlTag="textarea"}, {display="inline-block"}, {cols="14"}, {rows="2"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]
+++++++++TextView text:"little" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++EditText text:"lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text" textSize:13.3 style:0 htmlInfo:[{htmlTag="textarea"}, {display="inline-block"}, {cols="14"}, {rows="2"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]
+++++++++TextView text:"lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

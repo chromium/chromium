@@ -46,6 +46,7 @@ static_library("browser") {
     "//ui/gfx",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [ "distillable_page_utils_android.cc" ]

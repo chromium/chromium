@@ -11,10 +11,6 @@ StackTrace::StackTrace() = default;
 StackTrace::StackTrace(size_t count) : StackTrace() {}
 StackTrace::StackTrace(const void* const* trace, size_t count) : StackTrace() {}
 
-const void* const* StackTrace::Addresses(size_t* count) const {
-  return nullptr;
-}
-
 void StackTrace::Print() const {}
 
 void StackTrace::OutputToStream(std::ostream* os) const {}

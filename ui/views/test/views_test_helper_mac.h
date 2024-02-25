@@ -6,8 +6,8 @@
 #define UI_VIEWS_TEST_VIEWS_TEST_HELPER_MAC_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_context_factories.h"
@@ -31,7 +31,7 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   // ViewsTestHelper:
   void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
-      absl::optional<ViewsDelegate::NativeWidgetFactory> factory) override;
+      std::optional<ViewsDelegate::NativeWidgetFactory> factory) override;
 
  private:
   ui::TestContextFactories context_factories_{false};

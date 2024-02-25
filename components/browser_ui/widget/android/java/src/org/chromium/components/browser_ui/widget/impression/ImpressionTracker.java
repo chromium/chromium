@@ -12,9 +12,7 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
-/**
- * A class that helps with tracking impressions.
- */
+/** A class that helps with tracking impressions. */
 public class ImpressionTracker
         implements ViewTreeObserver.OnPreDrawListener, View.OnAttachStateChangeListener {
     /**
@@ -25,14 +23,13 @@ public class ImpressionTracker
      * @see #setListener
      */
     public interface Listener {
-        /**
-         * The tracked view is being shown (a given part of its height is visible).
-         */
+        /** The tracked view is being shown (a given part of its height is visible). */
         void onImpression();
     }
 
     /** The currently tracked View. */
     private final View mView;
+
     private @Nullable Listener mListener;
     private int mImpressionThresholdPx;
     private double mImpressionThresholdRatio;
@@ -83,9 +80,7 @@ public class ImpressionTracker
         mImpressionThresholdRatio = ratio;
     }
 
-    /**
-     * Registers listeners for the current view.
-     */
+    /** Registers listeners for the current view. */
     private void attach() {
         // Listen to onPreDraw() only if the view is potentially visible (attached to the window).
         mView.addOnAttachStateChangeListener(this);
@@ -94,9 +89,7 @@ public class ImpressionTracker
         }
     }
 
-    /**
-     * Unregisters the listeners for the current view.
-     */
+    /** Unregisters the listeners for the current view. */
     private void detach() {
         mView.removeOnAttachStateChangeListener(this);
         if (ViewCompat.isAttachedToWindow(mView)) {

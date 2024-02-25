@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/intrusive_heap.h"
@@ -14,7 +16,6 @@
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {

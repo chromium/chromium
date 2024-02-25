@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
@@ -18,6 +19,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 
@@ -40,12 +42,12 @@ void ExecutionService::Initialize(
     SignalHandler* signal_handler,
     base::Clock* clock,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::flat_set<SegmentId>& all_segment_ids,
+    const base::flat_set<SegmentId>& legacy_output_segment_ids,
     ModelProviderFactory* model_provider_factory,
-    std::vector<ModelExecutionScheduler::Observer*>&& observers,
+    std::vector<raw_ptr<ModelExecutionScheduler::Observer,
+                        VectorExperimental>>&& observers,
     const PlatformOptions& platform_options,
     std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
-    const std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     CachedResultProvider* cached_result_provider) {
   storage_service_ = storage_service;
@@ -62,14 +64,16 @@ void ExecutionService::Initialize(
       profile_prefs, clock, cached_result_provider);
 
   model_executor_ = std::make_unique<ModelExecutorImpl>(
-      clock, feature_list_query_processor_.get());
+      clock, storage_service->segment_info_database(),
+      feature_list_query_processor_.get());
 
   model_manager_ = storage_service->model_manager();
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), storage_service->segment_info_database(),
       storage_service->signal_storage_config(), model_manager_,
-      model_executor_.get(), all_segment_ids, clock, platform_options);
+      model_executor_.get(), legacy_output_segment_ids, clock,
+      platform_options);
 }
 
 void ExecutionService::OnNewModelInfoReadyLegacy(
@@ -87,7 +91,8 @@ ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id,
 
 void ExecutionService::RequestModelExecution(
     std::unique_ptr<ExecutionRequest> request) {
-  DCHECK(request->segment_info);
+  DCHECK_NE(request->segment_id, SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
+  DCHECK_NE(request->model_source, proto::ModelSource::UNKNOWN_MODEL_SOURCE);
   DCHECK(!request->callback.is_null());
   model_executor_->ExecuteModel(std::move(request));
 }

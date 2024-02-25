@@ -19,12 +19,19 @@ ProgressRingAnimation::~ProgressRingAnimation() = default;
 // static
 std::unique_ptr<ProgressRingAnimation> ProgressRingAnimation::CreateOfType(
     Type type) {
+  std::unique_ptr<ProgressRingAnimation> animation;
+
   switch (type) {
     case Type::kIndeterminate:
-      return std::make_unique<ProgressRingIndeterminateAnimation>();
+      animation = std::make_unique<ProgressRingIndeterminateAnimation>();
+      break;
     case Type::kPulse:
-      return std::make_unique<ProgressRingPulseAnimation>();
+      animation = std::make_unique<ProgressRingPulseAnimation>();
+      break;
   }
+
+  animation->Init();
+  return animation;
 }
 
 void ProgressRingAnimation::UpdateAnimatableProperties(double fraction) {

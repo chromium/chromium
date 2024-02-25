@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -12,7 +14,6 @@
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotation_job_executor.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
@@ -26,7 +27,7 @@ class PageVisibilityModelHandler
   PageVisibilityModelHandler(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const absl::optional<proto::Any>& model_metadata);
+      const std::optional<proto::Any>& model_metadata);
   ~PageVisibilityModelHandler() override;
 
   // PageContentAnnotationJobExecutor:
@@ -42,11 +43,11 @@ class PageVisibilityModelHandler
       base::OnceCallback<void(const BatchAnnotationResult&)> callback,
       AnnotationType annotation_type,
       const std::string& input,
-      const absl::optional<std::vector<tflite::task::core::Category>>& output);
+      const std::optional<std::vector<tflite::task::core::Category>>& output);
 
   // Extracts the visibility score from the output of the model, 0 is less
   // visible, 1 is more visible. Public for testing.
-  absl::optional<double> ExtractContentVisibilityFromModelOutput(
+  std::optional<double> ExtractContentVisibilityFromModelOutput(
       const std::vector<tflite::task::core::Category>& model_output) const;
 
  private:

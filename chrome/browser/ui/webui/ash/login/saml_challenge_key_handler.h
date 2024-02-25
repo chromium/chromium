@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_SAML_CHALLENGE_KEY_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -51,14 +51,14 @@ class SamlChallengeKeyHandler final {
   // task.
   void ReturnResult(const attestation::TpmChallengeKeyResult& result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::string decoded_challenge_;
   // Callback to return a result of ChallengeKey.
   CallbackType callback_;
 
   // Timeout for `tpm_key_challenger_` to response.
   const base::TimeDelta default_tpm_response_timeout_ = base::Seconds(15);
-  absl::optional<base::TimeDelta> tpm_response_timeout_for_testing_;
+  std::optional<base::TimeDelta> tpm_response_timeout_for_testing_;
 
   // Performs attestation flow.
   std::unique_ptr<attestation::TpmChallengeKeyWithTimeout> tpm_key_challenger_;

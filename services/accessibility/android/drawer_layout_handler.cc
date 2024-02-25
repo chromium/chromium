@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
@@ -41,26 +42,27 @@ bool IsDrawerLayout(ax::android::mojom::AccessibilityNodeInfoData* node) {
 namespace ax::android {
 
 // static
-absl::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
+std::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
 DrawerLayoutHandler::CreateIfNecessary(
     AXTreeSourceAndroid* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type !=
       mojom::AccessibilityEventType::WINDOW_STATE_CHANGED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AccessibilityInfoDataWrapper* source_node =
       tree_source->GetFromId(event_data.source_id);
   if (!source_node || !IsDrawerLayout(source_node->GetNode())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Find a node with accessibility importance. That is a menu node opened now.
   // Extract the accessibility name of the drawer menu from the event text.
-  std::vector<AccessibilityInfoDataWrapper*> children;
+  std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>
+      children;
   source_node->GetChildren(&children);
-  for (auto* child : children) {
+  for (ax::android::AccessibilityInfoDataWrapper* child : children) {
     if (!child->IsNode() || !child->IsVisibleToUser() ||
         !GetBooleanProperty(child->GetNode(),
                             mojom::AccessibilityBooleanProperty::IMPORTANCE)) {
@@ -72,7 +74,7 @@ DrawerLayoutHandler::CreateIfNecessary(
             event_data.event_text.value_or<std::vector<std::string>>({}),
             " ")));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool DrawerLayoutHandler::PreDispatchEvent(

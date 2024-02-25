@@ -7,11 +7,8 @@
 
 namespace chrome_pdf {
 
-// Initializes a Linux-specific font mapper.
+// Initializes a Linux-specific font mapper that sends font requests to Blink.
 // This is necessary because font loading does not work in the sandbox on Linux.
-// Depending on how this process is initialized, it either:
-// a) sends font requests to Blink.
-// b) proxies font requests via PPAPI.
 void InitializeLinuxFontMapper();
 
 }  // namespace chrome_pdf

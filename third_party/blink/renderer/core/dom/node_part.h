@@ -31,19 +31,27 @@ class CORE_EXPORT NodePart : public Part {
                  node,
                  init && init->hasMetadata() ? init->metadata()
                                              : Vector<String>()) {}
-  NodePart(PartRoot& root, Node& node, const Vector<String> metadata);
-  NodePart(const NodePart&) = delete;
+  NodePart(PartRoot& root, Node& node, Vector<String> metadata)
+      : NodePart(root, node, /*add_to_parts_list*/ true, std::move(metadata)) {}
+  NodePart(PartRoot& root,
+           Node& node,
+           bool add_to_parts_list,
+           Vector<String> metadata);
   ~NodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
   void disconnect() override;
-  bool IsValid() const override;
+  bool IsValid() const override {
+    // A NodePart is valid if the base Part is valid (has a root), and if there
+    // is a node reference.
+    return Part::IsValid() && node_;
+  }
   Node* NodeToSortBy() const override;
-  Part* ClonePart(NodeCloningData&) const override;
+  Part* ClonePart(NodeCloningData&, Node&) const override;
   Document& GetDocument() const override;
 
   // NodePart API
-  Node* node() const { return node_; }
+  Node* node() const { return node_.Get(); }
 
  private:
   Member<Node> node_;

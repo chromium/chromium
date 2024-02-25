@@ -65,7 +65,7 @@ class CORE_EXPORT PendingInvalidations {
   DISALLOW_NEW();
 
  public:
-  PendingInvalidations();
+  PendingInvalidations() = default;
   PendingInvalidations(const PendingInvalidations&) = delete;
   PendingInvalidations& operator=(const PendingInvalidations&) = delete;
   ~PendingInvalidations() {}

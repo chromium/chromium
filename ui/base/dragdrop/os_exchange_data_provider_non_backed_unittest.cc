@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,9 +45,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   original.SetFileContents(base::FilePath(kFileContentsFileName),
                            std::string(kFileContents));
   original.SetHtml(kHtml, GURL(kBaseUrl));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  original.MarkOriginatedFromRenderer();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  original.MarkRendererTaintedFromOrigin(url::Origin());
   GURL url("www.example.com");
   original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
@@ -82,9 +80,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(kHtml, copy_html);
   EXPECT_EQ(GURL(kBaseUrl), copy_base_url);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(copy->DidOriginateFromRenderer());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(copy->IsRendererTainted());
 
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);
@@ -97,9 +93,9 @@ TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {
   original.SetFilename(base::FilePath(kFileName));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
-  base::FilePath copy_file_path;
-  EXPECT_TRUE(copy->GetFilename(&copy_file_path));
-  EXPECT_EQ(base::FilePath(kFileName), copy_file_path);
+  std::vector<FileInfo> filenames;
+  EXPECT_TRUE(copy->GetFilenames(&filenames));
+  EXPECT_EQ(base::FilePath(kFileName), filenames[0].path);
 }
 
 }  // namespace ui

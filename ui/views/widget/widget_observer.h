@@ -55,6 +55,13 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
 
   virtual void OnWidgetThemeChanged(Widget* widget) {}
 
+  virtual void OnWidgetSizeConstraintsChanged(Widget* widget) {}
+
+  // Invoked when a display-state affecting change happens. This can happen when
+  // either `ui::WindowShowState` or `ui::PlatformWindowState` changes depending
+  // on the platform in question.
+  virtual void OnWidgetShowStateChanged(Widget* widget) {}
+
  protected:
   ~WidgetObserver() override = default;
 };

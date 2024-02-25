@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+
+<script>
+test(function(t) {
+    var ctx = document.createElement("canvas").getContext("2d");
+    assert_equals(typeof ctx.createMesh2DVertexBuffer, 'function');
+    assert_equals(typeof ctx.createMesh2DIndexBuffer, 'function');
+    assert_equals(typeof ctx.createMesh2DUVBuffer, 'function');
+    assert_equals(typeof ctx.drawMesh, 'function');
+}, "Test that the Mesh2D buffer factories and drawing functions exist.");
+
+test(function(t) {
+    var ctx = document.createElement("canvas").getContext("2d");
+
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DVertexBuffer();
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DVertexBuffer(new Float32Array());
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DVertexBuffer(new Float32Array([0]));
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DVertexBuffer(new Uint16Array([0, 0]));
+    });
+
+    var buf = ctx.createMesh2DVertexBuffer(new Float32Array([0, 0]));
+    assert_true(buf instanceof Mesh2DVertexBuffer);
+}, "Test the Mesh2D vertex buffer factory behavior.");
+
+test(function(t) {
+    var ctx = document.createElement("canvas").getContext("2d");
+
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DUVBuffer();
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DUVBuffer(new Float32Array());
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DUVBuffer(new Float32Array([0]));
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DUVBuffer(new Uint16Array([0, 0]));
+    });
+
+    var buf = ctx.createMesh2DUVBuffer(new Float32Array([0, 0]));
+    assert_true(buf instanceof Mesh2DUVBuffer);
+}, "Test the Mesh2D UV buffer factory behavior.");
+
+test(function(t) {
+    var ctx = document.createElement("canvas").getContext("2d");
+
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DIndexBuffer();
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DIndexBuffer(new Uint16Array());
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DIndexBuffer(new Uint16Array([0]));
+    });
+    assert_throws_js(RangeError, () => {
+        ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1]));
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.createMesh2DIndexBuffer(new Float32Array([0, 1, 2]));
+    });
+
+    var buf = ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1, 2]));
+    assert_true(buf instanceof Mesh2DIndexBuffer);
+}, "Test the Mesh2D index buffer factory behavior.");
+
+test(function(t) {
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+
+    var vbuf = ctx.createMesh2DVertexBuffer(new Float32Array([0, 0, 0, 100, 100, 100]));
+    var uvbuf = ctx.createMesh2DUVBuffer(new Float32Array([0, 0, 0, 1, 1, 1]));
+    var ibuf = ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1, 2]));
+
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh();
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(vbuf);
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(vbuf, uvbuf);
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(vbuf, uvbuf, ibuf);
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(ibuf, uvbuf, ibuf, canvas);
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(vbuf, ibuf, ibuf, canvas);
+    });
+    assert_throws_js(TypeError, () => {
+        ctx.drawMesh(vbuf, uvbuf, vbuf, canvas);
+    });
+
+    ctx.drawMesh(vbuf, uvbuf, ibuf, canvas);
+}, "Test drawMesh() behavior.");
+
+test(function(t) {
+    var source_canvas = document.createElement("canvas");
+    var ctx = document.createElement("canvas").getContext("2d");
+
+    var vbuf = ctx.createMesh2DVertexBuffer(new Float32Array([0, 0, 0, 100, 100, 100]));
+    var uvbuf = ctx.createMesh2DUVBuffer(new Float32Array([0, 0, 0, 1, 1, 1]));
+    var ibuf = ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1, 2]));
+
+    ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+
+    source_canvas.getContext("2d").beginLayer();
+    assert_throws_dom("InvalidStateError", () => {
+        ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+    });
+
+    source_canvas.getContext("2d").endLayer();
+    ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+
+}, "Test drawMesh() layer behavior.");
+</script>
+</body>

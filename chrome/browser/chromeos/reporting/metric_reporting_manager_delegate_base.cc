@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -18,6 +19,7 @@
 #include "components/reporting/metrics/one_shot_collector.h"
 #include "components/reporting/metrics/periodic_collector.h"
 #include "components/reporting/util/rate_limiter_interface.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 
 namespace reporting::metrics {
 namespace {
@@ -26,7 +28,7 @@ std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
 CreateReportQueue(EventType event_type,
                   Destination destination,
                   std::unique_ptr<RateLimiterInterface> rate_limiter,
-                  absl::optional<SourceInfo> source_info) {
+                  std::optional<SourceInfo> source_info) {
   return ReportQueueFactory::CreateSpeculativeReportQueue(
       ReportQueueConfiguration::Create(
           {.event_type = event_type, .destination = destination})
@@ -42,7 +44,7 @@ MetricReportingManagerDelegateBase::CreateMetricReportQueue(
     Destination destination,
     Priority priority,
     std::unique_ptr<RateLimiterInterface> rate_limiter,
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
   auto report_queue = CreateReportQueue(
       event_type, destination, std::move(rate_limiter), std::move(source_info));
@@ -64,7 +66,7 @@ MetricReportingManagerDelegateBase::CreatePeriodicUploadReportQueue(
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms,
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
   auto report_queue =
       CreateReportQueue(event_type, destination, /*rate_limiter=*/nullptr,
@@ -135,6 +137,15 @@ MetricReportingManagerDelegateBase::CreateEventObserverManager(
       std::move(event_observer), metric_report_queue, reporting_settings,
       enable_setting_path, setting_enabled_default_value, collector_pool,
       init_delay);
+}
+
+std::unique_ptr<RateLimiterSlideWindow>
+MetricReportingManagerDelegateBase::CreateSlidingWindowRateLimiter(
+    size_t total_size,
+    base::TimeDelta time_window,
+    size_t bucket_count) {
+  return std::make_unique<RateLimiterSlideWindow>(total_size, time_window,
+                                                  bucket_count);
 }
 
 bool MetricReportingManagerDelegateBase::IsUserAffiliated(

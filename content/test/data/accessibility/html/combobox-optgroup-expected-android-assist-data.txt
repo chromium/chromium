@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View text:"Mercedes Label" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="select"}, {display="inline-block"}]
+++++++View textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++++View text:"Volvo Label" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {aria-label="Volvo Label"}, {value="volvo"}]
+++++++++View text:"Saab Label" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {aria-label="Saab Label"}, {value="saab"}]
+++++++++View text:"Mercedes Label" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {aria-label="Mercedes Label"}, {selected=""}, {value="mercedes"}]
+++++++++View text:"Audi Label" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {aria-label="Audi Label"}, {value="audi"}]

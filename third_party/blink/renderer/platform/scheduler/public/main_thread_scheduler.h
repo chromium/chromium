@@ -20,6 +20,10 @@ namespace scheduler {
 class WebThreadScheduler;
 }  // namespace scheduler
 
+namespace test {
+class TaskEnvironment;
+}  // namespace test
+
 class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
@@ -63,6 +67,10 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
 
   virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
 
+  // Calls the callback for each unique isolate that bound to the main thread.
+  virtual void ForEachMainThreadIsolate(
+      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) = 0;
+
   // Returns a list of all unique attributions that are marked for event
   // dispatch. If |include_continuous| is true, include event types from
   // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
@@ -86,6 +94,7 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
 
   // For `Isolate`.
   friend class ScopedMainThreadOverrider;
+  friend class test::TaskEnvironment;
 
   // Get the isolate previously set with `SetV8Isolate`. This method is scoped
   // private so only friends can use it. Other users should use

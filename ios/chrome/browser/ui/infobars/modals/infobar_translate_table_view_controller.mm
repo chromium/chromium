@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_modal_delegate.h"
@@ -242,10 +242,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // scenarios:
   // - if settings for translate is disabled
   // - if source language is unknown
-  // Without Force translate, keep the current behavior and have button enabled.
   BOOL buttonDisabled =
-      translate::IsForceTranslateEnabled() &&
-      (![self isTranslateEnabled] || self.sourceLanguageIsUnknown);
+      ![self isTranslateEnabled] || self.sourceLanguageIsUnknown;
   NSMutableArray* toReconfigure = [[NSMutableArray alloc] init];
 
   if (self.alwaysTranslateSourceItem) {
@@ -254,7 +252,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.alwaysTranslateSourceItem.buttonBackgroundColor = [UIColor clearColor];
     self.alwaysTranslateSourceItem.enabled = !self.sourceLanguageIsUnknown;
     if (buttonDisabled) {
-      DCHECK(translate::IsForceTranslateEnabled());
       self.alwaysTranslateSourceItem.dimBackgroundWhenDisabled = NO;
       self.alwaysTranslateSourceItem.buttonTextColor =
           [UIColor tertiaryLabelColor];
@@ -271,7 +268,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     self.neverTranslateSourceItem.enabled = !self.sourceLanguageIsUnknown;
     if (buttonDisabled) {
-      DCHECK(translate::IsForceTranslateEnabled());
       self.neverTranslateSourceItem.dimBackgroundWhenDisabled = NO;
 
       self.neverTranslateSourceItem.buttonTextColor =
@@ -286,14 +282,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.neverTranslateSiteItem.buttonTextColor =
         [UIColor colorNamed:kBlueColor];
     self.neverTranslateSiteItem.buttonBackgroundColor = [UIColor clearColor];
-    // With Force translate, button can be disabled in 1 scenario1:
-    // - if settings for translate is disabled
-    // Without Force translate, keep the current behavior and have button
-    // enabled.
-    BOOL neverTranslateSiteButtonDisabled =
-        translate::IsForceTranslateEnabled() && ![self isTranslateEnabled];
-    if (neverTranslateSiteButtonDisabled) {
-      DCHECK(translate::IsForceTranslateEnabled());
+    // Button can be disabled if settings for translate is disabled.
+    if (![self isTranslateEnabled]) {
       self.neverTranslateSiteItem.dimBackgroundWhenDisabled = NO;
       self.neverTranslateSiteItem.buttonTextColor =
           [UIColor tertiaryLabelColor];

@@ -53,6 +53,15 @@ class XcodePathNotFoundError(XcodeInstallError):
         'xcode_path is not specified or does not exist: "%s"' % xcode_path)
 
 
+class RuntimeBuildNotFoundError(Error):
+  """The desired runtime build is not found on cipd."""
+
+  def __init__(self, ios_version):
+    super(RuntimeBuildNotFoundError, self).__init__(
+        'the desired runtime build for iOS %s is not found on cipd' %
+        ios_version)
+
+
 class SimRuntimeDeleteTimeoutError(Error):
   """When deleting a simulator runtime exceeds timeout."""
 

@@ -29,7 +29,11 @@ namespace dom_distiller {
 SourcePageHandleWebContents::SourcePageHandleWebContents(
     content::WebContents* web_contents,
     bool owned)
-    : web_contents_(web_contents), owned_(owned) {}
+    : web_contents_(web_contents), owned_(owned) {
+  if (web_contents_ && owned) {
+    web_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
+}
 
 SourcePageHandleWebContents::~SourcePageHandleWebContents() {
   if (owned_) {

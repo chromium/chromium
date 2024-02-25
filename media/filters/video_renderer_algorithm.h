@@ -12,9 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/moving_window.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
-#include "media/base/moving_average.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_renderer.h"
 #include "media/filters/video_cadence_estimator.h"
@@ -306,7 +306,7 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
 
   // The average of the duration of all frames in |frame_queue_| as measured in
   // wall clock (not media) time at the time of the last Render().
-  MovingAverage frame_duration_calculator_;
+  base::MovingAverageDeviation<base::TimeDelta> frame_duration_calculator_;
   base::TimeDelta average_frame_duration_;
 
   // The length of the last deadline interval given to Render(), updated at the

@@ -43,24 +43,32 @@ android_library("java") {
 }
 
 robolectric_library("junit_test_support") {
-  sources = [ "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java" ]
+  sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java",
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowGlobalSettings.java",
+    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowSecureSettings.java",
+  ]
   deps = [ ":java" ]
 }
 
-robolectric_binary("components_stylus_handwriting_junit_tests") {
+robolectric_library("stylus_handwriting_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/AndroidStylusWritingHandlerTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinderTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",
+    "junit/src/org/chromium/components/stylus_handwriting/StylusWritingControllerTest.java",
   ]
   deps = [
     ":java",
     ":junit_test_support",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//content/public/android:content_full_java",
     "//mojo/public/mojom/base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/junit:junit",

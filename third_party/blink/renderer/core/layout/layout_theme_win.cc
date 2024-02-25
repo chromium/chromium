@@ -20,9 +20,12 @@ LayoutTheme& LayoutTheme::NativeTheme() {
   return *layout_theme;
 }
 
+// TODO(crbug.com/1231644): Use color_provider to get the system colors if
+// available.
 Color LayoutThemeWin::SystemColor(
     CSSValueID css_value_id,
-    mojom::blink::ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
   // Fall back to the default system colors if the color scheme is dark and
   // forced colors is not enabled.
   if (WebTestSupport::IsRunningWebTest() ||

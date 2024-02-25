@@ -7,5 +7,9 @@ import("//components/services/screen_ai/buildflags/features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_SCREEN_AI_SERVICE=$enable_screen_ai_service" ]
+  flags = [
+    "ENABLE_SCREEN_AI_BROWSERTESTS=$enable_screen_ai_browsertests",
+    "ENABLE_SCREEN_AI_SERVICE=$enable_screen_ai_service",
+    "USE_FAKE_SCREEN_AI=$use_fake_screen_ai",
+  ]
 }

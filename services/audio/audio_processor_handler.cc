@@ -104,7 +104,7 @@ void AudioProcessorHandler::StopAecdump() {
 void AudioProcessorHandler::DeliverProcessedAudio(
     const media::AudioBus& audio_bus,
     base::TimeTicks audio_capture_time,
-    absl::optional<double> new_volume) {
+    std::optional<double> new_volume) {
   deliver_processed_audio_callback_.Run(audio_bus, audio_capture_time,
                                         new_volume,
                                         glitch_info_accumulator_.GetAndReset());

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
 
-#include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
-
-class Profile;
 
 namespace ash {
 
@@ -29,29 +29,24 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 // The WebUI for chrome://mako
 class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
  public:
-  static void Show(Profile* profile);
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
 
   void BindInterface(
-      mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver);
+      mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
+  static constexpr std::string GetWebUIName() { return "MakoUntrusted"; }
+
+ private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-};
 
-// Used by consumers to control the lifecycle of MakoUntrustedUI.
-class MakoPageHandler {
- public:
-  // Constructing an instance of this class will trigger the construction,
-  // bootstrapping and showing of the MakoUntrustedUI WebUi bubble.
-  MakoPageHandler();
-  ~MakoPageHandler();
-
-  // Consumers can use this method to close any currently visible
-  // MakoUntrustedUI. Consumers cannot reshow the UI with this instance after
-  // calling this method, a new instance must be created to reshow the UI.
-  void CloseUI();
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 };
 
 }  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_

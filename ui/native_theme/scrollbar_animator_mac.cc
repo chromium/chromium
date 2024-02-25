@@ -25,7 +25,7 @@ ScrollbarAnimationTimerMac::ScrollbarAnimationTimerMac(
 ScrollbarAnimationTimerMac::~ScrollbarAnimationTimerMac() {}
 
 void ScrollbarAnimationTimerMac::Start() {
-  start_time_ = base::Time::Now().ToDoubleT();
+  start_time_ = base::Time::Now().InSecondsFSinceUnixEpoch();
   // Set the framerate of the animation. NSAnimation uses a default
   // framerate of 60 Hz, so use that here.
   timer_.Start(FROM_HERE, base::Seconds(1.0 / 60.0), this,
@@ -41,7 +41,7 @@ void ScrollbarAnimationTimerMac::SetDuration(double duration) {
 }
 
 void ScrollbarAnimationTimerMac::TimerFired() {
-  double current_time = base::Time::Now().ToDoubleT();
+  double current_time = base::Time::Now().InSecondsFSinceUnixEpoch();
   double delta = current_time - start_time_;
 
   if (delta >= duration_)

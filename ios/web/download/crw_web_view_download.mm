@@ -6,7 +6,12 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 
 @interface CRWWebViewDownload () <WKDownloadDelegate>
 
@@ -14,17 +19,18 @@
 @property(nonatomic, strong) NSURLRequest* request;
 
 // Download object of a web resource.
-@property(nonatomic, strong) WKDownload* download API_AVAILABLE(ios(14.5));
+@property(nonatomic, strong) WKDownload* download;
 
 @end
 
-@implementation CRWWebViewDownload
+@implementation CRWWebViewDownload {
+  BOOL _isLocalDownload;
+}
 
 - (instancetype)initWithPath:(NSString*)destination
                      request:(NSURLRequest*)request
                      webview:(WKWebView*)webview
-                    delegate:(id<CRWWebViewDownloadDelegate>)delegate
-    API_AVAILABLE(ios(14.5)) {
+                    delegate:(id<CRWWebViewDownloadDelegate>)delegate {
   self = [super init];
   if (self) {
     self.destinationPath = destination;
@@ -35,7 +41,11 @@
   return self;
 }
 
-- (void)startDownload API_AVAILABLE(ios(14.5)) {
+- (void)startDownload {
+  if ([self.request.URL isFileURL]) {
+    [self startLocalDownload];
+    return;
+  }
   [self.webView startDownloadUsingRequest:self.request
                         completionHandler:^(WKDownload* download) {
                           download.delegate = self;
@@ -43,7 +53,13 @@
                         }];
 }
 
-- (void)cancelDownload:(ProceduralBlock)completion API_AVAILABLE(ios(14.5)) {
+- (void)cancelDownload:(ProceduralBlock)completion {
+  if (_isLocalDownload) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
   [self.download cancel:^(NSData* resumeData) {
     if (completion) {
       completion();
@@ -57,20 +73,45 @@
     decideDestinationUsingResponse:(NSURLResponse*)response
                  suggestedFilename:(NSString*)suggestedFilename
                  completionHandler:
-                     (void (^)(NSURL* destination))completionHandler
-    API_AVAILABLE(ios(14.5)) {
+                     (void (^)(NSURL* destination))completionHandler {
   NSURL* destinationURL = [NSURL fileURLWithPath:self.destinationPath];
   completionHandler(destinationURL);
 }
 
-- (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(14.5)) {
+- (void)downloadDidFinish:(WKDownload*)download {
   [self.delegate downloadDidFinish];
 }
 
 - (void)download:(WKDownload*)download
     didFailWithError:(NSError*)error
-          resumeData:(NSData*)resumeData API_AVAILABLE(ios(14.5)) {
+          resumeData:(NSData*)resumeData {
   [self.delegate downloadDidFailWithError:error];
+}
+
+#pragma mark - Private
+
+// Start a `local download` which is really a copy from the request URL to the
+// destination path.
+- (void)startLocalDownload {
+  _isLocalDownload = YES;
+  __weak __typeof(self) weakSelf = self;
+  base::FilePath sourcePath(base::SysNSStringToUTF8(self.request.URL.path));
+  base::FilePath destPath(base::SysNSStringToUTF8(self.destinationPath));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::CopyFile, sourcePath, destPath),
+      base::BindOnce(^(bool result) {
+        if (result) {
+          [weakSelf.delegate downloadDidFinish];
+        } else {
+          NSError* error = [NSError errorWithDomain:NSCocoaErrorDomain
+                                               code:NSFileReadUnknownError
+                                           userInfo:nil];
+          [weakSelf.delegate downloadDidFailWithError:error];
+        }
+      }));
 }
 
 @end

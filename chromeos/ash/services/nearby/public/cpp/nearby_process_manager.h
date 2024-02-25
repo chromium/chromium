@@ -72,6 +72,9 @@ class NearbyProcessManager : public KeyedService {
   virtual std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
       NearbyProcessStoppedCallback on_process_stopped_callback) = 0;
 
+  // Immediately shut down the utility process, bypassing any debounce logic.
+  virtual void ShutDownProcess() = 0;
+
  private:
   using KeyedService::Shutdown;
 };

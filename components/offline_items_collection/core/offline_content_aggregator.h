@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -73,7 +74,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void RemoveItem(const ContentId& id) override;
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
-  void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
+  void ResumeDownload(const ContentId& id) override;
   void GetItemById(const ContentId& id, SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
   void GetVisualsForItem(const ContentId& id,
@@ -90,13 +91,13 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void OnItemsAdded(const OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const absl::optional<UpdateDelta>& update_delta) override;
+                     const std::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(OfflineContentProvider* provider,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
-                         const absl::optional<OfflineItem>& item);
+                         const std::optional<OfflineItem>& item);
 
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the
@@ -107,7 +108,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   // Used by GetAllItems and the corresponding callback.
   std::vector<MultipleItemCallback> multiple_item_get_callbacks_;
   OfflineItemList aggregated_items_;
-  std::set<OfflineContentProvider*> pending_providers_;
+  std::set<raw_ptr<OfflineContentProvider, SetExperimental>> pending_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

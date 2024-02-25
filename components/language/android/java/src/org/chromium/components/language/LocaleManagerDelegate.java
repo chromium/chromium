@@ -7,9 +7,7 @@ package org.chromium.components.language;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Interface for {@link LocaleManager} APIs.
- */
+/** Interface for {@link LocaleManager} APIs. */
 public interface LocaleManagerDelegate {
     /**
      * Gets the currently set system App locale. Returns null if no override
@@ -24,8 +22,6 @@ public interface LocaleManagerDelegate {
      */
     public void setApplicationLocale(String languageName);
 
-    /**
-     * @return The current system locales.
-     */
+    /** @return The current system locales. */
     public List<Locale> getSystemLocales();
 }

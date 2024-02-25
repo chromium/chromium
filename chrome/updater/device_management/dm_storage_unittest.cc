@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/device_management/dm_storage.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"

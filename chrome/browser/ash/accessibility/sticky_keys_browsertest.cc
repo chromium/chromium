@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <memory>
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
@@ -11,27 +12,33 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
+#include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 
-class StickyKeysBrowserTest : public InProcessBrowserTest {
+class StickyKeysBrowserTest : public AccessibilityFeatureBrowserTest {
  protected:
   StickyKeysBrowserTest() = default;
 
@@ -39,6 +46,21 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   StickyKeysBrowserTest& operator=(const StickyKeysBrowserTest&) = delete;
 
   ~StickyKeysBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+
+    AccessibilityFeatureBrowserTest::SetUpOnMainThread();
+    // Load Select to Speak so we have a Javascript context with access to the
+    // Automation API to inject AutomationTestUtils. Select to Speak doesn't do
+    // any work unless it is triggered, so this does not impact the test.
+    sts_test_utils::TurnOnSelectToSpeakForTest(profile);
+    utils_ = std::make_unique<AutomationTestUtils>(
+        extension_misc::kSelectToSpeakExtensionId);
+    utils_->SetUpTestSupport();
+  }
 
   void SetStickyKeysEnabled(bool enabled) {
     AccessibilityManager::Get()->EnableStickyKeys(enabled);
@@ -63,11 +85,13 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   }
 
   void SendKeyPress(ui::KeyboardCode key) {
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false, false,
-                                                false, false));
+    ui::test::EmulateFullKeyPressReleaseSequence(
+        generator_.get(), key,
+        /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false);
   }
 
-  content::NotificationRegistrar registrar_;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<AutomationTestUtils> utils_;
 };
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenTrayMenu) {
@@ -102,25 +126,26 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
   SendKeyPress(ui::VKEY_CONTROL);
 
   // In the locked state, pressing 't' should open a new tab each time.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  int tab_count = 1;
+  // Note Lacros starts with a "New Tab" tab, whereas Ash does not.
+  int tab_count = IsLacrosRunning() ? 2 : 1;
   for (; tab_count < 5; ++tab_count) {
-    EXPECT_EQ(tab_count, tab_strip_model->count());
     SendKeyPress(ui::VKEY_T);
+    utils_->WaitForNumTabsWithRegexName(tab_count, "/New Tab*/");
   }
 
   // Unlock the modifier key and shortcut should no longer activate.
+  // Instead, the omnibox is populated with the letter 't'.
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_T);
-  EXPECT_EQ(tab_count, tab_strip_model->count());
-  EXPECT_EQ(tab_count - 1, tab_strip_model->active_index());
+  utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "t");
 
   // Shortcut should not work after disabling sticky keys.
+  // Instead, another 't' is typed in the omnibox.
   SetStickyKeysEnabled(false);
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_T);
-  EXPECT_EQ(tab_count, tab_strip_model->count());
+  utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "tt");
 }
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
@@ -159,39 +184,30 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, SearchLeftOmnibox) {
   SetStickyKeysEnabled(true);
 
-  OmniboxView* omnibox =
-      browser()->window()->GetLocationBar()->GetOmniboxView();
+  // Give omnibox focus by opening a new tab with ctrl+t.
+  SendKeyPress(ui::VKEY_CONTROL);
+  SendKeyPress(ui::VKEY_T);
 
-  // Give the omnibox focus.
-  omnibox->SetFocus(/*is_user_initiated=*/true);
-
-  // Make sure that the AppList is not erroneously displayed and the omnibox
-  // doesn't lose focus.
-  EXPECT_TRUE(omnibox->GetNativeView()->HasFocus());
+  utils_->WaitForNumTabsWithRegexName(IsLacrosRunning() ? 2 : 1, "/New Tab*/");
 
   // Type 'foo'.
   SendKeyPress(ui::VKEY_F);
   SendKeyPress(ui::VKEY_O);
   SendKeyPress(ui::VKEY_O);
 
-  // Verify the location of the caret.
-  size_t start, end;
-  omnibox->GetSelectionBounds(&start, &end);
-  ASSERT_EQ(3U, start);
-  ASSERT_EQ(3U, end);
-
-  EXPECT_TRUE(omnibox->GetNativeView()->HasFocus());
+  utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "foo");
 
   // Hit Home by sequencing Search (left Windows) and Left (arrow).
   SendKeyPress(ui::VKEY_LWIN);
   SendKeyPress(ui::VKEY_LEFT);
 
-  EXPECT_TRUE(omnibox->GetNativeView()->HasFocus());
+  // Verify caret moved to the beginning by typing something else, this
+  // should appear before "foo" in the omnibox.
+  SendKeyPress(ui::VKEY_B);
+  SendKeyPress(ui::VKEY_A);
+  SendKeyPress(ui::VKEY_R);
 
-  // Verify caret moved to the beginning.
-  omnibox->GetSelectionBounds(&start, &end);
-  ASSERT_EQ(0U, start);
-  ASSERT_EQ(0U, end);
+  utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "barfoo");
 }
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
@@ -230,10 +246,6 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
 }
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenIncognitoWindow) {
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-
   SetStickyKeysEnabled(true);
   StickyKeysOverlay* overlay =
       Shell::Get()->sticky_keys_controller()->GetOverlayForTest();
@@ -246,24 +258,41 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenIncognitoWindow) {
   SendKeyPress(ui::VKEY_CONTROL);
   EXPECT_TRUE(overlay->is_visible());
   SendKeyPress(ui::VKEY_N);
+  EXPECT_FALSE(overlay->is_visible());
 
-  Browser* incognito_browser = browser_change_observer.Wait();
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  utils_->WaitForNumTabsWithRegexName(1, "/New Incognito Tab*/");
 }
 
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CyclesWindows) {
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  browser2->window()->Activate();
-  EXPECT_TRUE(browser2->window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
-
   SetStickyKeysEnabled(true);
 
+  // Ensure there is a normal browser window open with ctrl+t.
+  SendKeyPress(ui::VKEY_CONTROL);
+  SendKeyPress(ui::VKEY_T);
+  int expected_tabs = IsLacrosRunning() ? 2 : 1;
+  utils_->WaitForNumTabsWithRegexName(expected_tabs, "/New Tab*/");
+
+  // Open an incognito browser.
+  SendKeyPress(ui::VKEY_SHIFT);
+  SendKeyPress(ui::VKEY_CONTROL);
+  SendKeyPress(ui::VKEY_N);
+  utils_->WaitForNumTabsWithRegexName(1, "/New Incognito Tab*/");
+
+  // Ctrl+t opens another incognito tab because the incognito window is focused.
+  SendKeyPress(ui::VKEY_CONTROL);
+  SendKeyPress(ui::VKEY_T);
+  utils_->WaitForNumTabsWithRegexName(2, "/New Incognito Tab*/");
+
+  // Cycle between windows.
   SendKeyPress(ui::VKEY_MENU);  // alt key.
   SendKeyPress(ui::VKEY_TAB);
 
-  EXPECT_TRUE(browser()->window()->IsActive());
-  EXPECT_FALSE(browser2->window()->IsActive());
+  // Ctrl+t opens another non-incognito tab now, because the normal browser
+  // window is focused.
+  SendKeyPress(ui::VKEY_CONTROL);
+  SendKeyPress(ui::VKEY_T);
+  expected_tabs++;
+  utils_->WaitForNumTabsWithRegexName(expected_tabs, "/New Tab*/");
 }
 
 }  // namespace ash

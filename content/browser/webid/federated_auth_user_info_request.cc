@@ -73,6 +73,7 @@ std::unique_ptr<FederatedAuthUserInfoRequest>
 FederatedAuthUserInfoRequest::Create(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
     blink::mojom::IdentityProviderConfigPtr provider) {
@@ -80,7 +81,8 @@ FederatedAuthUserInfoRequest::Create(
       base::WrapUnique<FederatedAuthUserInfoRequest>(
           new FederatedAuthUserInfoRequest(
               std::move(network_manager), permission_delegate,
-              render_frame_host, metrics, std::move(provider)));
+              api_permission_delegate, render_frame_host, metrics,
+              std::move(provider)));
   return request;
 }
 
@@ -91,11 +93,13 @@ FederatedAuthUserInfoRequest::~FederatedAuthUserInfoRequest() {
 FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
     blink::mojom::IdentityProviderConfigPtr provider)
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
+      api_permission_delegate_(api_permission_delegate),
       metrics_(metrics),
       render_frame_host_(render_frame_host),
       client_id_(provider->client_id),
@@ -111,8 +115,7 @@ FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
 }
 
 void FederatedAuthUserInfoRequest::SetCallbackAndStart(
-    blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback,
-    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+    blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback) {
   callback_ = std::move(callback);
 
   request_start_time_ = base::TimeTicks::Now();
@@ -130,15 +133,15 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
     return;
   }
 
-  if (!network::IsOriginPotentiallyTrustworthy(
-          url::Origin::Create(idp_config_url_))) {
+  url::Origin idp_origin = url::Origin::Create(idp_config_url_);
+  if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
     CompleteWithError(
         FederatedAuthUserInfoRequestResult::kNotPotentiallyTrustworthy);
     return;
   }
 
   FederatedApiPermissionStatus permission_status =
-      api_permission_delegate->GetApiPermissionStatus(embedding_origin_);
+      api_permission_delegate_->GetApiPermissionStatus(embedding_origin_);
   if (permission_status != FederatedApiPermissionStatus::GRANTED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNoApiPermission);
     return;
@@ -146,17 +149,18 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
 
   if (webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
           *render_frame_host_, idp_config_url_, permission_delegate_) &&
-      webid::GetIdpSigninStatusMode(*render_frame_host_) ==
+      webid::GetIdpSigninStatusMode(*render_frame_host_, idp_origin) ==
           FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
 
-  if (!permission_delegate_->HasSharingPermission(
-          parent_frame_origin_, embedding_origin_,
-          url::Origin::Create(idp_config_url_), /*account_id=*/absl::nullopt)) {
-    // If there is no sharing permission, we can abort before performing any
-    // fetch.
+  if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+          *render_frame_host_, idp_config_url_, embedding_origin_,
+          parent_frame_origin_, /*account_id=*/std::nullopt,
+          permission_delegate_, api_permission_delegate_)) {
+    // If there is no sharing permission or the IdP does not have third party
+    // cookies access, we can abort before performing any fetch.
     CompleteWithError(
         FederatedAuthUserInfoRequestResult::kNoAccountSharingPermission);
     return;
@@ -165,10 +169,11 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   // FederatedProviderFetcher is stored as a member so that
   // FederatedProviderFetcher is destroyed when FederatedAuthRequestImpl is
   // destroyed.
-  provider_fetcher_ =
-      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
+  provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
+      *render_frame_host_, network_manager_.get());
   provider_fetcher_->Start(
-      {idp_config_url_}, /*icon_ideal_size=*/0, /*icon_minimum_size=*/0,
+      {idp_config_url_}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
+      /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched,
           weak_ptr_factory_.GetWeakPtr()));
@@ -198,7 +203,8 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
       webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
           *render_frame_host_, idp_config_url_, permission_delegate_);
   if (does_idp_have_failing_signin_status_ &&
-      webid::GetIdpSigninStatusMode(*render_frame_host_) ==
+      webid::GetIdpSigninStatusMode(*render_frame_host_,
+                                    url::Origin::Create(idp_config_url_)) ==
           FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
@@ -223,6 +229,27 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
         FederatedAuthUserInfoRequestResult::kInvalidAccountsResponse);
     return;
   }
+
+  // Populate the accounts login state.
+  for (auto& account : accounts) {
+    // We set the login state based on the IDP response if it sends
+    // back an approved_clients list. If it does not, we need to set
+    // it here based on browser state.
+    if (account.login_state) {
+      continue;
+    }
+
+    LoginState login_state = LoginState::kSignUp;
+    // Consider this a sign-in if we have seen a successful sign-up for
+    // this account before.
+    if (permission_delegate_->HasSharingPermission(
+            parent_frame_origin_, embedding_origin_,
+            url::Origin::Create(idp_config_url_), account.id)) {
+      login_state = LoginState::kSignIn;
+    }
+    account.login_state = login_state;
+  }
+
   MaybeReturnAccounts(std::move(accounts));
 }
 
@@ -287,14 +314,15 @@ bool FederatedAuthUserInfoRequest::IsReturningAccount(
     return false;
   }
 
-  return permission_delegate_->HasSharingPermission(
-      parent_frame_origin_, embedding_origin_,
-      url::Origin::Create(idp_config_url_), account.id);
+  return webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+      *render_frame_host_, idp_config_url_, embedding_origin_,
+      parent_frame_origin_, account.id, permission_delegate_,
+      api_permission_delegate_);
 }
 
 void FederatedAuthUserInfoRequest::Complete(
     blink::mojom::RequestUserInfoStatus status,
-    absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
+    std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
     FederatedAuthUserInfoRequestResult request_status) {
   if (!callback_) {
     return;
@@ -315,7 +343,7 @@ void FederatedAuthUserInfoRequest::CompleteWithError(
         GetConsoleErrorMessage(error));
     AddDevToolsIssue(error);
   }
-  Complete(blink::mojom::RequestUserInfoStatus::kError, absl::nullopt, error);
+  Complete(blink::mojom::RequestUserInfoStatus::kError, std::nullopt, error);
 }
 
 void FederatedAuthUserInfoRequest::AddDevToolsIssue(

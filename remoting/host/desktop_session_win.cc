@@ -17,6 +17,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -715,12 +716,10 @@ void DesktopSessionWin::ReportElapsedTime(const std::string& event) {
                                 (now - last_timestamp_).InSecondsF());
   }
 
-  base::Time::Exploded exploded;
-  now.LocalExplode(&exploded);
-  VLOG(1) << base::StringPrintf("session(%d): %s at %02d:%02d:%02d.%03d%s",
-                                id(), event.c_str(), exploded.hour,
-                                exploded.minute, exploded.second,
-                                exploded.millisecond, passed.c_str());
+  VLOG(1) << base::StringPrintf(
+      "session(%d): %s at %s%s", id(), event.c_str(),
+      base::UnlocalizedTimeFormatWithPattern(now, "HH:mm:ss.SSS").c_str(),
+      passed.c_str());
 
   last_timestamp_ = now;
 }

@@ -14,8 +14,13 @@
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_export.h"
+#include "net/cert/ct_log_verifier.h"
+#include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/ct_verifier.h"
 #include "net/net_buildflags.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
@@ -69,6 +74,96 @@ class NET_EXPORT CertVerifyProc
     VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
   };
 
+  // The set factory parameters that are variable over time, but are expected to
+  // be consistent between multiple verifiers that are created. For example,
+  // CertNetFetcher is not in this struct as it is expected that different
+  // verifiers will have different net fetchers. (There is no technical
+  // restriction against creating different verifiers with different ImplParams,
+  // structuring the parameters this way just makes some APIs more convenient
+  // for the common case.)
+  struct NET_EXPORT ImplParams {
+    ImplParams();
+    ~ImplParams();
+    ImplParams(const ImplParams&);
+    ImplParams& operator=(const ImplParams& other);
+    ImplParams(ImplParams&&);
+    ImplParams& operator=(ImplParams&& other);
+
+    scoped_refptr<CRLSet> crl_set;
+    std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+    scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    std::optional<net::ChromeRootStoreData> root_store_data;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+    bool use_chrome_root_store;
+#endif
+  };
+
+  // CIDR, consisting of an IP and a netmask.
+  struct NET_EXPORT CIDR {
+    net::IPAddress ip;
+    net::IPAddress mask;
+  };
+
+  // Single certificate, with constraints.
+  struct NET_EXPORT CertificateWithConstraints {
+    CertificateWithConstraints();
+    ~CertificateWithConstraints();
+    CertificateWithConstraints(const CertificateWithConstraints&);
+    CertificateWithConstraints& operator=(
+        const CertificateWithConstraints& other);
+    CertificateWithConstraints(CertificateWithConstraints&&);
+    CertificateWithConstraints& operator=(CertificateWithConstraints&& other);
+
+    std::shared_ptr<const bssl::ParsedCertificate> certificate;
+
+    std::vector<std::string> permitted_dns_names;
+
+    std::vector<CIDR> permitted_cidrs;
+  };
+
+  // The set of parameters that are variable over time and can differ between
+  // different verifiers created by a CertVerifierProcFactory.
+  struct NET_EXPORT InstanceParams {
+    InstanceParams();
+    ~InstanceParams();
+    InstanceParams(const InstanceParams&);
+    InstanceParams& operator=(const InstanceParams& other);
+    InstanceParams(InstanceParams&&);
+    InstanceParams& operator=(InstanceParams&& other);
+
+    // Additional trust anchors to consider during path validation. Ordinarily,
+    // implementations of CertVerifier use trust anchors from the configured
+    // system store. This is implementation-specific plumbing for passing
+    // additional anchors through.
+    bssl::ParsedCertificateList additional_trust_anchors;
+
+    // Same as additional_trust_anchors, but embedded anchor constraints and
+    // NotBefore/NotAfter are enforced.
+    bssl::ParsedCertificateList
+        additional_trust_anchors_with_enforced_constraints;
+
+    // Additional trust anchors to consider during path validation, but with
+    // name constraints specified outside of the certificate.
+    std::vector<CertificateWithConstraints>
+        additional_trust_anchors_with_constraints;
+
+    // Additional temporary certs to consider as intermediates during path
+    // validation. Ordinarily, implementations of CertVerifier use intermediate
+    // certs from the configured system store. This is implementation-specific
+    // plumbing for passing additional intermediates through.
+    bssl::ParsedCertificateList additional_untrusted_authorities;
+
+    //  Additional SPKIs to consider as distrusted during path validation.
+    std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
+
+    // If true, use the user-added certs in the system trust store for path
+    // validation.
+    // This only has an impact if the Chrome Root Store is being used.
+    bool include_system_trust_store = true;
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class NameNormalizationResult {
@@ -88,11 +183,14 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CRLSet> crl_set);
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(IS_FUCHSIA)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<CRLSet> crl_set);
+      scoped_refptr<CRLSet> crl_set,
+      std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
+      const InstanceParams instance_params);
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -102,7 +200,10 @@ class NET_EXPORT CertVerifyProc
   static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
-      const ChromeRootStoreData* root_store_data);
+      std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
+      const ChromeRootStoreData* root_store_data,
+      const InstanceParams instance_params);
 #endif
 
   CertVerifyProc(const CertVerifyProc&) = delete;
@@ -124,26 +225,20 @@ class NET_EXPORT CertVerifyProc
   //
   // |flags| is bitwise OR'd of VerifyFlags:
   //
+  // If |time_now| is set it will be used as the current time, otherwise the
+  // system time will be used.
+  //
   // If VERIFY_REV_CHECKING_ENABLED is set in |flags|, online certificate
   // revocation checking is performed (i.e. OCSP and downloading CRLs). CRLSet
   // based revocation checking is always enabled, regardless of this flag.
-  //
-  // |additional_trust_anchors| lists certificates that can be trusted when
-  // building a certificate chain, in addition to the anchors known to the
-  // implementation.
   int Verify(X509Certificate* cert,
              const std::string& hostname,
              const std::string& ocsp_response,
              const std::string& sct_list,
              int flags,
-             const CertificateList& additional_trust_anchors,
              CertVerifyResult* verify_result,
-             const NetLogWithSource& net_log);
-
-  // Returns true if the implementation supports passing additional trust
-  // anchors to the Verify() call. The |additional_trust_anchors| parameter
-  // passed to Verify() is ignored when this returns false.
-  virtual bool SupportsAdditionalTrustAnchors() const = 0;
+             const NetLogWithSource& net_log,
+             std::optional<base::Time> time_now = std::nullopt);
 
  protected:
   explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
@@ -184,6 +279,11 @@ class NET_EXPORT CertVerifyProc
   // |verify_result->cert_status| should be non-zero, indicating an
   // error occurred.
   //
+  // If |time_now| is not nullopt, it will be used as the current time for
+  // certificate verification, if it is nullopt, the system time will be used
+  // instead. If a certificate verification fails with a NotBefore/NotAfter
+  // error when |time_now| is set, it will be retried with the system time.
+  //
   // On success, net::OK should be returned, with |verify_result| updated to
   // reflect the successfully verified chain.
   virtual int VerifyInternal(X509Certificate* cert,
@@ -191,9 +291,9 @@ class NET_EXPORT CertVerifyProc
                              const std::string& ocsp_response,
                              const std::string& sct_list,
                              int flags,
-                             const CertificateList& additional_trust_anchors,
                              CertVerifyResult* verify_result,
-                             const NetLogWithSource& net_log) = 0;
+                             const NetLogWithSource& net_log,
+                             std::optional<base::Time> time_now) = 0;
 
   // HasNameConstraintsViolation returns true iff one of |public_key_hashes|
   // (which are hashes of SubjectPublicKeyInfo structures) has name constraints
@@ -204,17 +304,9 @@ class NET_EXPORT CertVerifyProc
       const std::vector<std::string>& dns_names,
       const std::vector<std::string>& ip_addrs);
 
-  // The CA/Browser Forum's Baseline Requirements specify maximum validity
-  // periods (https://cabforum.org/baseline-requirements-documents/).
-  //
-  // For certificates issued after 1 July 2012: 60 months.
-  // For certificates issued after 1 April 2015: 39 months.
-  // For certificates issued after 1 March 2018: 825 days.
-  //
-  // For certificates issued before the BRs took effect, there were no
-  // guidelines, but clamp them at a maximum of 10 year validity, with the
-  // requirement they expire within 7 years after the effective date of the BRs
-  // (i.e. by 1 July 2019).
+  // Checks the validity period of the certificate against the maximum
+  // allowable validity period for publicly trusted certificates. Returns true
+  // if the validity period is too long.
   static bool HasTooLongValidity(const X509Certificate& cert);
 
   const scoped_refptr<CRLSet> crl_set_;
@@ -224,35 +316,13 @@ class NET_EXPORT CertVerifyProc
 class NET_EXPORT CertVerifyProcFactory
     : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
  public:
-  // The set of factory parameters that are variable over time, but are
-  // expected to be consistent between multiple verifiers that are created. For
-  // example, CertNetFetcher is not in this struct as it is expected that
-  // different verifiers will have different net fetchers. (There is no
-  // technical restriction against creating different verifiers with different
-  // ImplParams, structuring the parameters this way just makes some APIs more
-  // convenient for the common case.)
-  struct NET_EXPORT ImplParams {
-    ImplParams();
-    ~ImplParams();
-    ImplParams(const ImplParams&);
-    ImplParams& operator=(const ImplParams& other);
-    ImplParams(ImplParams&&);
-    ImplParams& operator=(ImplParams&& other);
-
-    scoped_refptr<CRLSet> crl_set;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    absl::optional<net::ChromeRootStoreData> root_store_data;
-#endif
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    bool use_chrome_root_store;
-#endif
-  };
 
   // Create a new CertVerifyProc that uses the passed in CRLSet and
   // ChromeRootStoreData.
   virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const ImplParams& impl_params) = 0;
+      const CertVerifyProc::ImplParams& impl_params,
+      const CertVerifyProc::InstanceParams& instance_params) = 0;
 
  protected:
   virtual ~CertVerifyProcFactory() = default;

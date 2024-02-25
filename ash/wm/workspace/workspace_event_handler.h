@@ -54,7 +54,7 @@ class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
   void HandleResizeDoubleClick(WindowState* window_state,
                                ui::MouseEvent* event);
 
-  raw_ptr<aura::Window, ExperimentalAsh> workspace_window_;
+  raw_ptr<aura::Window> workspace_window_;
 
   // Handles moving two windows that are side by side together at once. Not
   // created for the float container.

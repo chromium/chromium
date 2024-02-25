@@ -10,12 +10,12 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/affiliation_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStoreBridge
@@ -28,18 +28,35 @@ class PasswordStoreBridge
   PasswordStoreBridge(const PasswordStoreBridge&) = delete;
   PasswordStoreBridge& operator=(const PasswordStoreBridge&) = delete;
 
-  // Called by Java to store a new credential into the password store.
-  void InsertPasswordCredentialForTesting(
+  // Called by Java to store a new credential into the profile password store.
+  void InsertPasswordCredentialInProfileStoreForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credential);
+
+  // Called by Java to store a new credential into the account password store.
+  void InsertPasswordCredentialInAccountStoreForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& credential);
+
+  void BlocklistForTesting(JNIEnv* env,
+                           const base::android::JavaParamRef<jstring>& jurl);
 
   // Called by Java to edit a credential.
   bool EditPassword(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& credential,
                     const base::android::JavaParamRef<jstring>& new_password);
 
-  // Called by Java to get the number of stored credentials.
-  jint GetPasswordStoreCredentialsCount(JNIEnv* env) const;
+  // Called by Java to get the number of stored credentials for both profile and
+  // account stores.
+  jint GetPasswordStoreCredentialsCountForAllStores(JNIEnv* env) const;
+
+  // Called by Java to get the number of stored credentials in the account
+  // storage.
+  jint GetPasswordStoreCredentialsCountForAccountStore(JNIEnv* env) const;
+
+  // Called by Java to get the number of stored credentials in the local
+  // storage.
+  jint GetPasswordStoreCredentialsCountForProfileStore(JNIEnv* env) const;
 
   // Called by Java to get all stored credentials.
   void GetAllCredentials(
@@ -62,19 +79,21 @@ class PasswordStoreBridge
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
-  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
-      PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
-                                          ServiceAccessType::EXPLICIT_ACCESS);
+  const scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
+      ProfilePasswordStoreFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
+  const scoped_refptr<password_manager::PasswordStoreInterface> account_store_ =
+      AccountPasswordStoreFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
 
   // Used to fetch and edit passwords.
   // TODO(crbug.com/1442826): Use PasswordStore directly.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       AffiliationServiceFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile()),
-      profile_store_,
-      AccountPasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS)};
+      profile_store_, account_store_};
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,

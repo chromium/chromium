@@ -231,13 +231,15 @@ TEST_F(GpuControlListEntryTest, GlRendererCaseInsensitive) {
 TEST_F(GpuControlListEntryTest, GlExtensionsEndWith) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_GlExtensionsEndWith);
   GPUInfo gpu_info;
-  gpu_info.gl_extensions = "GL_SGIS_generate_mipmap "
-                           "GL_SGIX_shadow "
-                           "GL_SUN_slice_accum";
+  gpu_info.gl_extensions =
+      "GL_SGIS_generate_mipmap "
+      "GL_SGIX_shadow "
+      "GL_SUN_slice_accum";
   EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
-  gpu_info.gl_extensions = "GL_SGIS_generate_mipmap "
-                           "GL_SUN_slice_accum "
-                           "GL_SGIX_shadow";
+  gpu_info.gl_extensions =
+      "GL_SGIS_generate_mipmap "
+      "GL_SUN_slice_accum "
+      "GL_SGIX_shadow";
   EXPECT_FALSE(entry.Contains(kOsMacosx, "10.9", gpu_info));
 }
 

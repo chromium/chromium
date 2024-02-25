@@ -9,6 +9,7 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace commerce {
 class AccountChecker;
@@ -75,7 +76,8 @@ void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
 
 // Record how a PDP was detected.
 void RecordPDPStateWithLocalMeta(bool detected_by_server,
-                                 bool detected_by_client);
+                                 bool detected_by_client,
+                                 ukm::SourceId source_id);
 
 // Record reasons why a user was ineligible for the shopping list feature.
 void RecordShoppingListIneligibilityReasons(PrefService* pref_service,

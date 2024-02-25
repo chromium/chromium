@@ -132,7 +132,7 @@ required for Network Error Logging, as those reports are not associated with
 any successful document load.
 
 All V0 reports destined for the same endpoint group may be bundled together for
-delivery, regardless of their source (subject to NIK isolation).
+delivery, regardless of their source (subject to NAK isolation).
 
 V1 reporting drops the `Report-To` header in favor of `Reporting-Endpoints`,
 which configures named endpoints (single URLs) which are only valid for the

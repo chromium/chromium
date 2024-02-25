@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace session_manager {
 enum class SessionState;
@@ -27,6 +28,8 @@ constexpr size_t kTrayNotificationMaxCount = 9;
 
 // A notification counter view in UnifiedSystemTray button.
 class ASH_EXPORT NotificationCounterView : public TrayItemView {
+  METADATA_HEADER(NotificationCounterView, TrayItemView)
+
  public:
   NotificationCounterView(Shelf* shelf,
                           NotificationIconsController* controller);
@@ -44,9 +47,6 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
 
-  // views::TrayItemView:
-  const char* GetClassName() const override;
-
   int count_for_display_for_testing() const { return count_for_display_; }
 
  private:
@@ -56,13 +56,13 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   // |kTrayNotificationMaxCount| + 1 indicates the plus icon.
   int count_for_display_ = 0;
 
-  const raw_ptr<NotificationIconsController,
-                DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.
 class QuietModeView : public TrayItemView {
+  METADATA_HEADER(QuietModeView, TrayItemView)
+
  public:
   explicit QuietModeView(Shelf* shelf);
   ~QuietModeView() override;
@@ -75,13 +75,12 @@ class QuietModeView : public TrayItemView {
   void HandleLocaleChange() override;
   void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
-
-  // views::TrayItemView:
-  const char* GetClassName() const override;
 };
 
 // Separator view in UnifiedSystemTray button.
 class SeparatorTrayItemView : public TrayItemView {
+  METADATA_HEADER(SeparatorTrayItemView, TrayItemView)
+
  public:
   explicit SeparatorTrayItemView(Shelf* shelf);
   ~SeparatorTrayItemView() override;
@@ -90,13 +89,12 @@ class SeparatorTrayItemView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
-  const char* GetClassName() const override;
 
   // Update the color of separator depending on the given state.
   void UpdateColor(session_manager::SessionState state);
 
  private:
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 };
 
 }  // namespace ash

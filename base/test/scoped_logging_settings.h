@@ -82,12 +82,10 @@ class BASE_EXPORT ScopedVmoduleSwitches {
   ~ScopedVmoduleSwitches();
 
  private:
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   // Creates a new instance of |VlogInfo| adding |vmodule_switch|.
   VlogInfo* CreateVlogInfoWithSwitches(const std::string& vmodule_switch);
   raw_ptr<VlogInfo> scoped_vlog_info_ = nullptr;
   raw_ptr<VlogInfo> previous_vlog_info_ = nullptr;
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 };
 }  // namespace logging
 

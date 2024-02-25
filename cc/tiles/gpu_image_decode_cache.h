@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
@@ -28,7 +29,6 @@
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/tiles/image_decode_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -39,8 +39,6 @@ class RasterContextProvider;
 }
 
 namespace cc {
-
-CC_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
 
 class ColorFilter;
 class RasterDarkModeFilter;
@@ -478,7 +476,7 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // If in transfer cache mode.
-    absl::optional<uint32_t> transfer_cache_id() const {
+    std::optional<uint32_t> transfer_cache_id() const {
       DCHECK(mode_ == Mode::kTransferCache || mode_ == Mode::kNone);
       return transfer_cache_id_;
     }
@@ -559,21 +557,21 @@ class CC_EXPORT GpuImageDecodeCache
     // Used if |mode_| == kSkImage.
     // May be null if image not yet uploaded / prepared.
     sk_sp<SkImage> image_;
-    absl::optional<YUVSkImages> image_yuv_planes_;
+    std::optional<YUVSkImages> image_yuv_planes_;
     // TODO(crbug/910276): Change after alpha support.
     bool is_alpha_ = false;
     GrGLuint gl_id_ = 0;
-    absl::optional<std::array<GrGLuint, kNumYUVPlanes>> gl_plane_ids_;
+    std::optional<std::array<GrGLuint, kNumYUVPlanes>> gl_plane_ids_;
 
     // Used if |mode_| == kTransferCache.
-    absl::optional<uint32_t> transfer_cache_id_;
+    std::optional<uint32_t> transfer_cache_id_;
 
     // The original un-mipped image, for RGBX, or the representative image
     // backed by three planes for YUV. It is retained until it can be safely
     // deleted.
     sk_sp<SkImage> unmipped_image_;
     // Used for YUV decoding and null otherwise.
-    absl::optional<YUVSkImages> unmipped_yuv_images_;
+    std::optional<YUVSkImages> unmipped_yuv_images_;
   };
 
   // A structure to represent either an RGBA or a YUVA image info.
@@ -587,8 +585,8 @@ class CC_EXPORT GpuImageDecodeCache
     ~ImageInfo();
 
     // At most one of `rgba` or `yuva` may be valid.
-    absl::optional<SkImageInfo> rgba;
-    absl::optional<SkYUVAPixmapInfo> yuva;
+    std::optional<SkImageInfo> rgba;
+    std::optional<SkYUVAPixmapInfo> yuva;
 
     // The number of bytes used by this image.
     size_t size = 0;
@@ -597,7 +595,7 @@ class CC_EXPORT GpuImageDecodeCache
   struct ImageData : public base::RefCountedThreadSafe<ImageData> {
     ImageData(PaintImage::Id paint_image_id,
               DecodedDataMode mode,
-              const TargetColorParams& target_color_params,
+              const gfx::ColorSpace& target_color_space,
               PaintFlags::FilterQuality quality,
               int upload_scale_mip_level,
               bool needs_mips,
@@ -628,7 +626,7 @@ class CC_EXPORT GpuImageDecodeCache
 
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
-    TargetColorParams target_color_params;
+    const gfx::ColorSpace target_color_space;
     PaintFlags::FilterQuality quality;
     int upload_scale_mip_level;
     bool needs_mips = false;
@@ -682,7 +680,7 @@ class CC_EXPORT GpuImageDecodeCache
     PaintImage::FrameKey frame_key;
     int upload_scale_mip_level;
     PaintFlags::FilterQuality filter_quality;
-    TargetColorParams target_color_params;
+    gfx::ColorSpace target_color_space;
   };
   struct InUseCacheKeyHash {
     size_t operator()(const InUseCacheKey&) const;
@@ -825,19 +823,19 @@ class CC_EXPORT GpuImageDecodeCache
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkColorSpace> decoded_target_colorspace,
-      absl::optional<TargetColorParams> target_color_params)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      const std::optional<gfx::HDRMetadata>& hdr_metadata,
+      sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,
       ImageData* image_data,
       sk_sp<SkImage> uploaded_image,
-      GrMipMapped image_needs_mips,
+      skgpu::Mipmapped image_needs_mips,
       sk_sp<SkColorSpace> decoded_target_colorspace,
       sk_sp<SkColorSpace> color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_GpuCpu_RGBA(const DrawImage& draw_image,
                                           ImageData* image_data,
                                           sk_sp<SkImage> uploaded_image,
-                                          GrMipMapped image_needs_mips,
+                                          skgpu::Mipmapped image_needs_mips,
                                           sk_sp<SkColorSpace> color_space)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -969,8 +967,9 @@ class CC_EXPORT GpuImageDecodeCache
 
   // We can't modify GPU backed SkImages without holding the context lock, so
   // we queue up operations to run the next time the lock is held.
-  std::vector<SkImage*> images_pending_complete_lock_;
-  std::vector<SkImage*> images_pending_unlock_;
+  std::vector<raw_ptr<SkImage, VectorExperimental>>
+      images_pending_complete_lock_;
+  std::vector<raw_ptr<SkImage, VectorExperimental>> images_pending_unlock_;
   std::vector<sk_sp<SkImage>> images_pending_deletion_;
   // Images that are backed by planar textures must be handled differently
   // to avoid inadvertently flattening to RGB and creating additional textures.

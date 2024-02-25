@@ -100,6 +100,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     extra_headers.emplace_back(
         network::shared_dictionary::kUseAsDictionaryHeaderName,
         "match=\"/path*\"");
+    extra_headers.emplace_back("cache-control", "max-age=2592000");
     NotifyLoaderClientOnReceiveResponse(extra_headers,
                                         std::move(consumer_handle_));
   }
@@ -116,7 +117,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
       bool expect_exists,
       const GURL& dictionary_url = GURL("https://origin.test/test")) {
     ASSERT_TRUE(isolation_info_.frame_origin());
-    absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+    std::optional<net::SharedDictionaryIsolationKey> isolation_key =
         net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info_);
     ASSERT_TRUE(isolation_key);
     scoped_refptr<SharedDictionaryStorage> storage =
@@ -133,13 +134,14 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
               dictionary_map.begin()->first);
 
     ASSERT_EQ(1u, dictionary_map.begin()->second.size());
-    EXPECT_EQ("/path*", dictionary_map.begin()->second.begin()->first);
+    EXPECT_EQ(std::make_tuple("/path*", std::set<mojom::RequestDestination>()),
+              dictionary_map.begin()->second.begin()->first);
     const auto& dictionary_info =
         dictionary_map.begin()->second.begin()->second;
     EXPECT_EQ(dictionary_url, dictionary_info.url());
     EXPECT_EQ(base::FeatureList::IsEnabled(
                   network::features::kCompressionDictionaryTransport)
-                  ? shared_dictionary::kDefaultExpiration
+                  ? base::Seconds(2592000)
                   : shared_dictionary::kMaxExpirationForOriginTrial,
               dictionary_info.expiration());
     EXPECT_EQ("/path*", dictionary_info.match());
@@ -150,7 +152,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
 
   const std::map<
       url::SchemeHostPort,
-      std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
         ->GetDictionaryMap();

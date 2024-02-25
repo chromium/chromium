@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="help" href="https://open-ui.org/components/invokers.explainer/">
+<link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev">
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<body>
+<select id="invokee">
+  <option>1</option>
+</select>
+<button id="invokerbutton" invoketarget="invokee" invokeaction="showPicker"></button>
+</body>
+<script>
+promise_test(async (t) => {
+  invokerbutton.click();
+  assert_false(internals.isSelectPopupVisible(invokee), "Picker is closed.");
+  invokee.remove();
+}, `invoking select with showPicker action (without user activation) shouldn\'t show picker`)
+</script>

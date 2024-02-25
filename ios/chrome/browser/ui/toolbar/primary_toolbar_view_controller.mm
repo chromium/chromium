@@ -17,9 +17,11 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -80,6 +82,26 @@
   [super setLocationBarViewController:locationBarViewController];
 
   self.view.separator.hidden = !self.hasOmnibox;
+  [self updateBackgroundColor];
+}
+
+- (void)updateBackgroundColor {
+  if (base::FeatureList::IsEnabled(kDynamicThemeColor) ||
+      base::FeatureList::IsEnabled(kDynamicBackgroundColor)) {
+    [super updateBackgroundColor];
+    return;
+  }
+  UIColor* backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) &&
+      !self.hasOmnibox) {
+    if (self.pageThemeColor) {
+      backgroundColor = self.pageThemeColor;
+    } else if (self.underPageBackgroundColor) {
+      backgroundColor = self.underPageBackgroundColor;
+    }
+  }
+  self.view.backgroundColor = backgroundColor;
 }
 
 #pragma mark - NewTabPageControllerDelegate
@@ -211,13 +233,25 @@
 
 #pragma mark - ToolbarAnimatee
 
-- (void)expandLocationBar {
+- (void)expandLocationBar:(BOOL)animated {
   [self deactivateViewLocationBarConstraints];
   [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
-  [self.view layoutIfNeeded];
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // No need to force the view to layout immediately when no animation is
+    // required, the pending layout updates can be calculated and rendered in
+    // the next runloop. Otherwise, this unnecessary layout will affect startup
+    // performance. And it is necessary to force the view to update its layout
+    // when it's animated. This is because there are following animations that
+    // need the final frame of the location bar.
+    if (animated) {
+      [self.view layoutIfNeeded];
+    }
+  } else {
+    [self.view layoutIfNeeded];
+  }
 }
 
-- (void)contractLocationBar {
+- (void)contractLocationBar:(BOOL)animated {
   [self deactivateViewLocationBarConstraints];
   if (IsSplitToolbarMode(self)) {
     [NSLayoutConstraint
@@ -225,7 +259,19 @@
   } else {
     [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
   }
-  [self.view layoutIfNeeded];
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // No need to force the view to layout immediately when no animation is
+    // required, the pending layout updates can be calculated and rendered in
+    // the next runloop. Otherwise, this unnecessary layout will affect startup
+    // performance. And it is necessary to force the view to update its layout
+    // when it's animated. This is because there are following animations that
+    // need the final frame of the location bar.
+    if (animated) {
+      [self.view layoutIfNeeded];
+    }
+  } else {
+    [self.view layoutIfNeeded];
+  }
 }
 
 - (void)showCancelButton {
@@ -246,6 +292,26 @@
   for (ToolbarButton* button in self.view.allButtons) {
     button.alpha = 0;
   }
+}
+
+- (void)setToolbarFaded:(BOOL)faded {
+  self.view.alpha = faded ? 0 : 1;
+}
+
+- (void)setLocationBarHeightToMatchFakeOmnibox {
+  if (!IsSplitToolbarMode(self)) {
+    return;
+  }
+  [self setLocationBarContainerHeight:content_suggestions::
+                                          PinnedFakeOmniboxHeight()];
+  self.view.matchNTPHeight = YES;
+}
+
+- (void)setLocationBarHeightExpanded {
+  [self setLocationBarContainerHeight:LocationBarHeight(
+                                          self.traitCollection
+                                              .preferredContentSizeCategory)];
+  self.view.matchNTPHeight = NO;
 }
 
 #pragma mark - Private
@@ -279,4 +345,10 @@
   [NSLayoutConstraint deactivateConstraints:self.view.expandedConstraints];
 }
 
+// Sets the height of the location bar container.
+- (void)setLocationBarContainerHeight:(CGFloat)height {
+  PrimaryToolbarView* view = self.view;
+  view.locationBarContainerHeight.constant = height;
+  view.locationBarContainer.layer.cornerRadius = height / 2;
+}
 @end

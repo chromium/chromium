@@ -5,36 +5,21 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_view_controller.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_action_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation FamilyPromoViewController
+@interface FamilyPromoViewController () <UITextViewDelegate>
+@end
 
-- (instancetype)init {
-  self = [super init];
-  if (!self) {
-    return nil;
-  }
-
-  self.modalPresentationStyle = UIModalPresentationPageSheet;
-  self.sheetPresentationController.preferredCornerRadius = 20;
-  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-
-  if (@available(iOS 16, *)) {
-    self.sheetPresentationController.detents = @[
-      self.preferredHeightDetent,
-      UISheetPresentationControllerDetent.largeDetent,
-    ];
-  } else {
-    self.sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
-
-  return self;
+@implementation FamilyPromoViewController {
+  // Range of the link in the `subtitleString`.
+  NSRange _subtitleLinkRange;
 }
+
+@dynamic actionHandler;
 
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"password_sharing_family_promo"];
@@ -43,11 +28,9 @@
   self.showDismissBarButton = NO;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE);
-  self.subtitleString = [self subtitleStringWithTag].string;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON);
+  self.view.accessibilityIdentifier = kFamilyPromoViewID;
 
   [super viewDidLoad];
 }
@@ -55,23 +38,38 @@
 #pragma mark - ConfirmationAlertViewController
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
+  subtitle.delegate = self;
+  subtitle.selectable = YES;
+
   // Inherits the default styling already applied to `subtitle`.
   NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
       initWithAttributedString:subtitle.attributedText];
-  // TODO(crbug.com/1463882): Add handling link clicks.
-  [newSubtitle addAttribute:NSLinkAttributeName
-                      value:@""
-                      range:[self subtitleStringWithTag].range];
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
+  [newSubtitle addAttributes:linkAttributes range:_subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
 }
 
-#pragma mark - Private
+#pragma mark - UITextViewDelegate
 
-- (StringWithTag)subtitleStringWithTag {
-  StringWithTags stringWithTags = ParseStringWithLinks(
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_SUBTITLE));
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self.actionHandler createFamilyGroupLinkWasTapped];
+  return NO;
+}
+
+#pragma mark - FamilyPromoConsumer
+
+- (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  self.titleString = title;
+  StringWithTags stringWithTags = ParseStringWithLinks(subtitle);
   CHECK_EQ(stringWithTags.ranges.size(), 1u);
-  return {stringWithTags.string, stringWithTags.ranges[0]};
+  self.subtitleString = stringWithTags.string;
+  _subtitleLinkRange = stringWithTags.ranges[0];
 }
 
 @end

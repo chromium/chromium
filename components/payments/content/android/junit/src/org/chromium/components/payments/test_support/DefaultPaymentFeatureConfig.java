@@ -12,9 +12,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 
 import java.util.Map;
 
-/**
- * Default flag configuration for payments features in unit tests.
- */
+/** Default flag configuration for payments features in unit tests. */
 public abstract class DefaultPaymentFeatureConfig {
     private static final Map<String, Boolean> DEFAULT_FEATURE_VALUES =
             ImmutableMap.<String, Boolean>builder()
@@ -22,14 +20,13 @@ public abstract class DefaultPaymentFeatureConfig {
                     .put(PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true)
                     .put(PaymentFeatureList.GPAY_APP_DYNAMIC_UPDATE, true)
                     .put(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, true)
-                    .put(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true)
                     .put(PaymentFeatureList.ADD_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT, false)
                     .put(PaymentFeatureList.OMIT_PARAMETERS_IN_READY_TO_PAY, false)
                     .buildOrThrow();
 
     /**
-     * Sets the default flag configuration for payments feature flags for unit tests.
-     * Does not override @EnableFeatures and @DisableFeatures annotations.
+     * Sets the default flag configuration for payments feature flags for unit tests. Does not
+     * override @EnableFeatures and @DisableFeatures annotations.
      */
     public static void setDefaultFlagConfigurationForTesting() {
         TestValues paymentsFeaturesOverrides = new TestValues();

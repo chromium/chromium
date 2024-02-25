@@ -58,7 +58,14 @@ class LazyBackgroundTaskQueue : public KeyedService,
   // extension has a lazy background page that is being suspended this method
   // cancels that suspension.
   bool ShouldEnqueueTask(content::BrowserContext* context,
-                         const Extension* extension) override;
+                         const Extension* extension) const override;
+
+  // Returns true if the lazy background is ready to run tasks. This currently
+  // means this and `ShouldEnqueueTask()` will return true at the same time. But
+  // because of experiments on service workers needs to be separated out into
+  // its own function.
+  bool IsReadyToRunTasks(content::BrowserContext* context,
+                         const Extension* extension) const override;
 
   // Adds a task to the queue for a given extension. If this is the first
   // task added for the extension, its lazy background page will be loaded.
@@ -74,12 +81,10 @@ class LazyBackgroundTaskQueue : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(LazyBackgroundTaskQueueTest, ProcessPendingTasks);
   FRIEND_TEST_ALL_PREFIXES(LazyBackgroundTaskQueueTest,
                            CreateLazyBackgroundPageOnExtensionLoaded);
+  using PendingTasksList = std::vector<PendingTask>;
   // A map between a LazyContextId and the queue of tasks pending the load of
   // its background page.
-  using PendingTasksKey = LazyContextId;
-  using PendingTasksList = std::vector<PendingTask>;
-  using PendingTasksMap =
-      std::map<PendingTasksKey, std::unique_ptr<PendingTasksList>>;
+  using PendingTasksMap = std::map<LazyContextId, PendingTasksList>;
 
   // ExtensionHostRegistry::Observer:
   void OnExtensionHostCompletedFirstLoad(

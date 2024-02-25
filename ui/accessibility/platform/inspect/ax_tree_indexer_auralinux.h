@@ -8,6 +8,7 @@
 #include <atspi/atspi.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer.h"

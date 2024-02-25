@@ -4,22 +4,33 @@
 
 #include "base/synchronization/waitable_event.h"
 
+#include <stddef.h>
 #include <windows.h>
 
-#include <stddef.h>
-
 #include <algorithm>
+#include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+
+namespace {
+NOINLINE void ReportInvalidWaitableEventResult(DWORD result) {
+  const auto last_error = ::GetLastError();
+  base::debug::Alias(&last_error);
+  base::debug::Alias(&result);
+  base::debug::DumpWithoutCrashing();  // https://crbug.com/1478972.
+}
+}  // namespace
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
@@ -49,8 +60,9 @@ void WaitableEvent::SignalImpl() {
 
 bool WaitableEvent::IsSignaled() {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
-  DCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
-      << "Unexpected WaitForSingleObject result " << result;
+  if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
+    ReportInvalidWaitableEventResult(result);
+  }
   return result == WAIT_OBJECT_0;
 }
 
@@ -72,17 +84,28 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
             ? INFINITE
             : saturated_cast<DWORD>(remaining.InMillisecondsRoundedUp());
     const DWORD result = WaitForSingleObject(handle_.get(), timeout_ms);
-    DPCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
-        << "Unexpected WaitForSingleObject result " << result;
-    switch (result) {
-      case WAIT_OBJECT_0:
-        return true;
-      case WAIT_TIMEOUT:
-        // TimedWait can time out earlier than the specified |timeout| on
-        // Windows. To make this consistent with the posix implementation we
-        // should guarantee that TimedWait doesn't return earlier than the
-        // specified |max_time| and wait again for the remaining time.
-        continue;
+    if (result == WAIT_OBJECT_0) {
+      // The object is signaled.
+      return true;
+    }
+
+    if (result == WAIT_TIMEOUT) {
+      // TimedWait can time out earlier than the specified |timeout| on
+      // Windows. To make this consistent with the posix implementation we
+      // should guarantee that TimedWait doesn't return earlier than the
+      // specified |max_time| and wait again for the remaining time.
+      continue;
+    }
+
+    // The only other documented result values are `WAIT_ABANDONED` and
+    // `WAIT_FAILED`. Neither of these nor any other result should ever be
+    // emitted unless there is a double free or another entity is tampering
+    // with this instance's event handle. Only fails if the timeout was
+    // INFINITE.
+    if (wait_delta.is_max()) {
+      ReportInvalidWaitableEventResult(result);
+      // The code may infinite loop and then hang if the returned value
+      // continues being `WAIT_FAILED`.
     }
   }
   return false;

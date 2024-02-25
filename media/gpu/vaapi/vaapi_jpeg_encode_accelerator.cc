@@ -45,10 +45,6 @@ enum VAJEAEncoderResult {
   kMaxValue = kError,
 };
 
-static void ReportToVAJEAEncodeResultUMA(VAJEAEncoderResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Media.VAJEA.EncoderResult", result);
-}
-
 }  // namespace
 
 VaapiJpegEncodeAccelerator::EncodeRequest::EncodeRequest(
@@ -530,7 +526,6 @@ void VaapiJpegEncodeAccelerator::VideoFrameReady(int32_t task_id,
                                                  size_t encoded_picture_size) {
   DVLOGF(4) << "task_id=" << task_id << ", size=" << encoded_picture_size;
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  ReportToVAJEAEncodeResultUMA(VAJEAEncoderResult::kSuccess);
 
   client_->VideoFrameReady(task_id, encoded_picture_size);
 }

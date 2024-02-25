@@ -26,9 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- * Tests parts of the ContextualSearchContext class.
- */
+/** Tests parts of the ContextualSearchContext class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchContextTest {
     private static final int INVALID = ContextualSearchContext.INVALID_OFFSET;
@@ -47,11 +45,9 @@ public class ContextualSearchContextTest {
         }
     }
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    private ContextualSearchContext.Natives mContextJniMock;
+    @Mock private ContextualSearchContext.Natives mContextJniMock;
 
     @Before
     public void setup() {
@@ -138,7 +134,8 @@ public class ContextualSearchContextTest {
         assertFalse(mDidSelectionChange);
 
         simulateSelectWordAroundCaret(-"Ba".length(), "rack".length());
-        assertEquals("Barack".length(),
+        assertEquals(
+                "Barack".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
         assertTrue(mDidSelectionChange);
         assertTrue(mContext.hasValidSelection());
@@ -154,7 +151,8 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.canResolve());
 
         simulateResolve(0, " Obama".length());
-        assertEquals("Barack Obama".length(),
+        assertEquals(
+                "Barack Obama".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
     }
 

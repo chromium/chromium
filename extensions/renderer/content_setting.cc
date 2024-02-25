@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/content_setting.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -38,14 +40,14 @@ const char* const kDeprecatedTypesToBlock[] = {
     "ppapi-broker",
 };
 
-const char* GetForcedValueForDeprecatedSetting(base::StringPiece type) {
+const char* GetForcedValueForDeprecatedSetting(std::string_view type) {
   if (base::Contains(kDeprecatedTypesToAllow, type))
     return "allow";
   DCHECK(base::Contains(kDeprecatedTypesToBlock, type));
   return "block";
 }
 
-bool IsDeprecated(base::StringPiece type) {
+bool IsDeprecated(std::string_view type) {
   return base::Contains(kDeprecatedTypesToAllow, type) ||
          base::Contains(kDeprecatedTypesToBlock, type);
 }
@@ -152,7 +154,7 @@ void ContentSetting::HandleFunction(const std::string& method_name,
   if (!binding::IsContextValidOrThrowError(context))
     return;
 
-  std::vector<v8::Local<v8::Value>> argument_list = arguments->GetAll();
+  v8::LocalVector<v8::Value> argument_list = arguments->GetAll();
 
   std::string full_name = "contentSettings.ContentSetting." + method_name;
 
@@ -175,7 +177,7 @@ void ContentSetting::HandleFunction(const std::string& method_name,
                                            pref_name_.c_str()));
     // If a callback was provided, call it immediately.
     if (!parse_result.callback.IsEmpty()) {
-      std::vector<v8::Local<v8::Value>> args;
+      v8::LocalVector<v8::Value> args(isolate);
       if (method_name == "get") {
         // Populate the result to avoid breaking extensions.
         v8::Local<v8::Object> object = v8::Object::New(isolate);

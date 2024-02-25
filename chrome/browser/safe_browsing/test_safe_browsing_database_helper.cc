@@ -41,7 +41,8 @@ class FakeSafeBrowsingUIManager
 
   void DisplayBlockingPage(const UnsafeResource& resource) override {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
-                              true /* showed_interstitial */);
+                              true /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
   }
 };
 

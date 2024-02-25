@@ -719,7 +719,7 @@
 "hsl"
 "hsla"
 "hwb"
-"-internal-light-dark"
+"light-dark"
 "matrix"
 "matrix3d"
 "perspective"
@@ -939,6 +939,12 @@
 "color-contrast"
 "accentcolor"
 "accentcolortext"
+
+# display-state
+# normal
+# fullscreen
+"minimized"
+"maximized"
 
 # at-rules
 "@charset"

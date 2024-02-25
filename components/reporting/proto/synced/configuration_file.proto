@@ -13,8 +13,10 @@ import "components/reporting/proto/synced/record_constants.proto";
 // Proto returned from the reporting server if requested by the client, this
 // proto tells the client if any destinations should be blocked at the moment.
 message ConfigFile {
+  // Version. Changed every time the GCL file is pushed, using autosnag for it.
+  optional int32 version = 3;
   // Blocked destinations.
-  repeated EventConfig event_configs = 1;
+  repeated EventConfig blocked_event_configs = 1;
   // Verified by the client to make sure that the response wasn't altered.
   optional bytes config_file_signature = 2;
 }

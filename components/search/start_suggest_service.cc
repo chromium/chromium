@@ -208,9 +208,10 @@ void StartSuggestService::SuggestionsParsed(
     if (result.has_value() && result.value().is_list()) {
       SearchSuggestionParser::Results results;
       AutocompleteInput input;
-      if (SearchSuggestionParser::ParseSuggestResults(result->GetList(), input,
-                                                      *scheme_classifier_, -1,
-                                                      false, &results)) {
+      if (SearchSuggestionParser::ParseSuggestResults(
+              result->GetList(), input, *scheme_classifier_,
+              /*default_result_relevance=*/-1, /*is_keyword_result=*/false,
+              &results)) {
         for (SearchSuggestionParser::SuggestResult suggest :
              results.suggest_results) {
           QuerySuggestion query;

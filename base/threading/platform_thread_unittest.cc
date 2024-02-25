@@ -425,8 +425,12 @@ TEST(PlatformThreadTest,
 TEST(PlatformThreadTest, CanChangeThreadType) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Ubuntu, RLIMIT_NICE and RLIMIT_RTPRIO are 0 by default, so we won't be
-  // able to increase priority to any level.
-  constexpr bool kCanIncreasePriority = false;
+  // able to increase priority to any level unless we are root (euid == 0).
+  bool kCanIncreasePriority = false;
+  if (geteuid() == 0) {
+    kCanIncreasePriority = true;
+  }
+
 #else
   constexpr bool kCanIncreasePriority = true;
 #endif
@@ -489,15 +493,22 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
                                       ThreadPriorityForTest::kBackground);
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
                                       ThreadPriorityForTest::kUtility);
+
 #if BUILDFLAG(IS_APPLE)
   TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
                                       ThreadPriorityForTest::kUtility);
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  TestPriorityResultingFromThreadType(
+      ThreadType::kResourceEfficient,
+      ThreadPriorityForTest::kResourceEfficient);
 #else
   TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
                                       ThreadPriorityForTest::kNormal);
 #endif  // BUILDFLAG(IS_APPLE)
+
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   TestPriorityResultingFromThreadType(ThreadType::kCompositing,
                                       ThreadPriorityForTest::kDisplay);

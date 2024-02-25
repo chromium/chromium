@@ -15,16 +15,18 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 std::unique_ptr<URLLoader>
 InternetDisconnectedURLLoaderFactory::CreateURLLoader(
-    const WebURLRequest&,
+    const network::ResourceRequest&,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles) {
   DCHECK(freezable_task_runner);
   return std::make_unique<InternetDisconnectedURLLoader>(
       std::move(freezable_task_runner));
@@ -38,13 +40,13 @@ InternetDisconnectedURLLoader::~InternetDisconnectedURLLoader() = default;
 
 void InternetDisconnectedURLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    bool pass_response_pipe_to_client,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
+    bool download_to_blob,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     URLLoaderClient*,
     WebURLResponse&,
-    absl::optional<WebURLError>&,
+    std::optional<WebURLError>&,
     scoped_refptr<SharedBuffer>&,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
@@ -56,10 +58,11 @@ void InternetDisconnectedURLLoader::LoadSynchronously(
 
 void InternetDisconnectedURLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+    scoped_refptr<const SecurityOrigin> top_frame_origin,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
+    CodeCacheHost* code_cache_host,
     URLLoaderClient* client) {
   DCHECK(task_runner_);
   task_runner_->PostTask(

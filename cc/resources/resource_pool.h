@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/color_space.h"
@@ -35,6 +36,10 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+}
+
+namespace gpu {
+class ClientSharedImage;
 }
 
 namespace viz {
@@ -55,9 +60,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // A base class to hold ownership of gpu backed PoolResources. Allows the
   // client to define destruction semantics.
-  class GpuBacking {
+  class CC_EXPORT GpuBacking {
    public:
-    virtual ~GpuBacking() = default;
+    GpuBacking();
+    virtual ~GpuBacking();
 
     // Dumps information about the memory backing the GpuBacking to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
@@ -71,7 +77,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         uint64_t tracing_process_id,
         int importance) const = 0;
 
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
     GLenum texture_target = 0;
     bool overlay_candidate = false;
@@ -93,9 +99,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // A base class to hold ownership of software backed PoolResources. Allows the
   // client to define destruction semantics.
-  class SoftwareBacking {
+  class CC_EXPORT SoftwareBacking {
    public:
-    virtual ~SoftwareBacking() = default;
+    SoftwareBacking();
+    virtual ~SoftwareBacking();
 
     // Dumps information about the memory backing the SoftwareBacking to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
@@ -109,7 +116,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         uint64_t tracing_process_id,
         int importance) const = 0;
 
+    // Mailbox
     viz::SharedBitmapId shared_bitmap_id;
+
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gpu::SyncToken mailbox_sync_token;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.
@@ -236,7 +247,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Returns false if the backing does not contain valid data, in particular
   // a zero mailbox for GpuBacking, in which case the resource is not exported,
   // and true otherwise.
-  bool PrepareForExport(const InUsePoolResource& resource);
+  bool PrepareForExport(
+      const InUsePoolResource& resource,
+      viz::TransferableResource::ResourceSource resource_source);
 
   // Marks any resources in the pool as invalid, preventing their reuse. Call if
   // previous resources were allocated in one way, but future resources should

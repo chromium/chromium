@@ -4,6 +4,8 @@
 
 #include "net/cert/ct_objects_extractor.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_serialization.h"
@@ -26,8 +28,8 @@ class CTObjectsExtractorTest : public ::testing::Test {
     ASSERT_EQ(2u, precert_chain_.size());
 
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
-    test_cert_ = X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(der_test_cert)));
+    test_cert_ =
+        X509Certificate::CreateFromBytes(base::as_byte_span(der_test_cert));
     ASSERT_TRUE(test_cert_);
 
     log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog");
@@ -39,7 +41,7 @@ class CTObjectsExtractorTest : public ::testing::Test {
     std::string sct_list;
     ASSERT_TRUE(ExtractEmbeddedSCTList(cert->cert_buffer(), &sct_list));
 
-    std::vector<base::StringPiece> parsed_scts;
+    std::vector<std::string_view> parsed_scts;
     // Make sure the SCT list can be decoded properly
     ASSERT_TRUE(DecodeSCTList(sct_list, &parsed_scts));
     ASSERT_EQ(1u, parsed_scts.size());
@@ -138,12 +140,11 @@ TEST_F(CTObjectsExtractorTest, ComplementarySCTVerifies) {
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponse) {
   std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
   scoped_refptr<X509Certificate> subject_cert =
-      X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(der_subject_cert)));
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_subject_cert));
   ASSERT_TRUE(subject_cert);
   std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
-  scoped_refptr<X509Certificate> issuer_cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_issuer_cert)));
+  scoped_refptr<X509Certificate> issuer_cert =
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_issuer_cert));
   ASSERT_TRUE(issuer_cert);
 
   std::string fake_sct_list = ct::GetFakeOCSPExtensionValue();
@@ -160,8 +161,8 @@ TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponse) {
 // Test that the extractor honours serial number.
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesSerial) {
   std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
-  scoped_refptr<X509Certificate> issuer_cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_issuer_cert)));
+  scoped_refptr<X509Certificate> issuer_cert =
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_issuer_cert));
   ASSERT_TRUE(issuer_cert);
 
   std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();
@@ -176,8 +177,7 @@ TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesSerial) {
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesIssuer) {
   std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
   scoped_refptr<X509Certificate> subject_cert =
-      X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(der_subject_cert)));
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_subject_cert));
   ASSERT_TRUE(subject_cert);
 
   std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();

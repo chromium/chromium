@@ -18,9 +18,9 @@ import "layout_key_function.proto";
 // If none of the fields (apart from screen_id) are present, restore the host
 // resolution instead.
 message ClientResolution {
-  // Width and height of the client in Density-Independent Pixels.
-  optional int32 dips_width = 1;
-  optional int32 dips_height = 2;
+  // Width and height of the client in device pixels.
+  optional int32 width_pixels = 1;
+  optional int32 height_pixels = 2;
 
   // Deprecated width and height of the client in device pixels.
   optional int32 width_deprecated = 3;

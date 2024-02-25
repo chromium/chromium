@@ -12,11 +12,6 @@
 
 namespace ash {
 
-class AmbientAnimationFrameRateController;
-class AmbientAnimationProgressTracker;
-class AmbientAnimationStaticResources;
-class AmbientSessionMetricsRecorder;
-class AmbientViewDelegateImpl;
 class AmbientUiSettings;
 
 namespace ambient {
@@ -26,29 +21,14 @@ class AmbientOrientationMetricsRecorder;
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
 class ASH_EXPORT AmbientContainerView : public views::View {
+  METADATA_HEADER(AmbientContainerView, views::View)
+
  public:
-  METADATA_HEADER(AmbientContainerView);
-
-  // TODO(b/274164306): Remove when slideshow and animation themes are
-  // migrated to AmbientUiLauncher. Prefer other overloaded constructor below.
-  //
-  // |animation_static_resources| contains the Lottie animation file to render
-  // along with its accompanying static image assets. If null, that means the
-  // slideshow UI should be rendered instead.
-  AmbientContainerView(
-      AmbientViewDelegateImpl* delegate,
-      AmbientAnimationProgressTracker* progress_tracker,
-      std::unique_ptr<AmbientAnimationStaticResources>
-          animation_static_resources,
-      AmbientSessionMetricsRecorder* session_metrics_recorder,
-      AmbientAnimationFrameRateController* frame_rate_controller);
-
   // |main_rendering_view| should contain the primary content; it becomes a
   // child of |AmbientContainerView|, and |AmbientContainerView| sets up some
   // parameters in the view hierarchy that are common to all ambient UIs.
   AmbientContainerView(AmbientUiSettings ui_settings,
-                       std::unique_ptr<views::View> main_rendering_view,
-                       AmbientSessionMetricsRecorder* session_metrics_recorder);
+                       std::unique_ptr<views::View> main_rendering_view);
   ~AmbientContainerView() override;
 
  private:

@@ -92,15 +92,17 @@ public class NativePostTaskTest {
         // This should not timeout.
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
-        PostTask.postTask(TaskTraits.USER_BLOCKING, new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    taskExecuted.set(true);
-                    lock.notify();
-                }
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (lock) {
+                            taskExecuted.set(true);
+                            lock.notify();
+                        }
+                    }
+                });
 
         synchronized (lock) {
             while (!taskExecuted.get()) {
@@ -114,12 +116,15 @@ public class NativePostTaskTest {
     public void testNativePostDelayedTask() throws Exception {
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
-        PostTask.postDelayedTask(TaskTraits.USER_BLOCKING, () -> {
-            synchronized (lock) {
-                taskExecuted.set(true);
-                lock.notify();
-            }
-        }, 1);
+        PostTask.postDelayedTask(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    synchronized (lock) {
+                        taskExecuted.set(true);
+                        lock.notify();
+                    }
+                },
+                1);
 
         // We verify that the task didn't get scheduled before the native scheduler is initialised
         Assert.assertFalse(taskExecuted.get());
@@ -174,17 +179,20 @@ public class NativePostTaskTest {
         testRunningTasksInSequence(taskQueue);
     }
 
-    private void performSequencedTestSchedulerMigration(TaskRunner taskQueue,
-            List<Integer> orderListImmediate, List<Integer> orderListDelayed) throws Exception {
+    private void performSequencedTestSchedulerMigration(
+            TaskRunner taskQueue, List<Integer> orderListImmediate, List<Integer> orderListDelayed)
+            throws Exception {
         SchedulerTestHelpers.postThreeTasksInOrder(taskQueue, orderListImmediate);
         SchedulerTestHelpers.postThreeDelayedTasksInOrder(taskQueue, orderListDelayed);
 
-        postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(taskQueue, new Runnable() {
-            @Override
-            public void run() {
-                orderListImmediate.add(4);
-            }
-        });
+        postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(
+                taskQueue,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        orderListImmediate.add(4);
+                    }
+                });
         // We wait until all the delayed tasks have been scheduled.
         SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
     }
@@ -197,15 +205,17 @@ public class NativePostTaskTest {
         final AtomicBoolean taskExecuted = new AtomicBoolean();
         TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
 
-        postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(taskQueue, new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    taskExecuted.set(true);
-                    lock.notify();
-                }
-            }
-        });
+        postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(
+                taskQueue,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (lock) {
+                            taskExecuted.set(true);
+                            lock.notify();
+                        }
+                    }
+                });
 
         // The task should run at some point after the migration, so the test shouldn't
         // time out.
@@ -248,20 +258,21 @@ public class NativePostTaskTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(new Runnable() {
-            @Override
-            public void run() {
-                if (nativeSchedulerStarted.compareAndSet(true, true)) {
-                    taskToRunAfterNativeSchedulerLoaded.run();
-                    synchronized (lock) {
-                        taskRun.set(true);
-                        lock.notify();
+        taskQueue.postTask(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (nativeSchedulerStarted.compareAndSet(true, true)) {
+                            taskToRunAfterNativeSchedulerLoaded.run();
+                            synchronized (lock) {
+                                taskRun.set(true);
+                                lock.notify();
+                            }
+                        } else {
+                            taskQueue.postTask(this);
+                        }
                     }
-                } else {
-                    taskQueue.postTask(this);
-                }
-            }
-        });
+                });
 
         startNativeScheduler();
         nativeSchedulerStarted.set(true);
@@ -308,7 +319,7 @@ public class NativePostTaskTest {
         task.blockUntilDoInBackgroundStarts();
         Assert.assertEquals(Status.RUNNING, task.getStatus());
 
-        Assert.assertTrue(task.cancel(/*mayInterruptIfRunning=*/true));
+        Assert.assertTrue(task.cancel(/* mayInterruptIfRunning= */ true));
 
         // get() will raise an exception although the task is started.
         try {
@@ -338,7 +349,7 @@ public class NativePostTaskTest {
     private void startNativeScheduler() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         PowerMonitor.createForTests();
-        ContentMain.start(/* startMinimalBrowser */ false);
+        ContentMain.start(/* startMinimalBrowser= */ false);
         ThreadPoolTestHelpers.enableThreadPoolExecutionForTesting();
     }
 }

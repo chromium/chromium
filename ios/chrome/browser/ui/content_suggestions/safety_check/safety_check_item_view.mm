@@ -16,24 +16,26 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 // The spacing between the title and description.
-constexpr CGFloat kTitleDescriptionSpacing = 5;
+constexpr CGFloat kTitleDescriptionSpacing = 2;
 
 // The spacing between elements within the item.
-constexpr CGFloat kContentStackSpacing = 16;
+constexpr CGFloat kContentStackSpacing = 14;
 
 // Constants related to the icon container view.
 constexpr CGFloat kIconContainerSize = 56;
 constexpr CGFloat kIconContainerCornerRadius = 12;
 
 // The size of the checkmark icon.
-constexpr CGFloat kCheckmarkSize = 16;
+constexpr CGFloat kCheckmarkSize = 19;
+constexpr CGFloat kCheckmarkTopOffset = -6;
+constexpr CGFloat kCheckmarkTrailingOffset = 6;
 
 // The checkmark icon used for a hero-cell complete item.
 UIImageView* CheckmarkIcon() {
@@ -135,6 +137,14 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   [self createSubviews];
 }
 
+- (NSString*)accessibilityLabel {
+  return
+      [NSString stringWithFormat:@"%@, %@", [self titleText],
+                                 _layoutType == SafetyCheckItemLayoutType::kHero
+                                     ? [self descriptionText]
+                                     : [self compactDescriptionText]];
+}
+
 #pragma mark - Private
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
@@ -143,6 +153,8 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   }
 }
 
+// Creates all views for an individual check row in the Safety Check (Magic
+// Stack) module.
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {
@@ -175,10 +187,10 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 
       [NSLayoutConstraint activateConstraints:@[
         [checkmark.topAnchor constraintEqualToAnchor:iconContainerView.topAnchor
-                                            constant:-(0.3 * kCheckmarkSize)],
+                                            constant:kCheckmarkTopOffset],
         [checkmark.trailingAnchor
             constraintEqualToAnchor:iconContainerView.trailingAnchor
-                           constant:(0.4 * kCheckmarkSize)],
+                           constant:kCheckmarkTrailingOffset],
       ]];
     }
 
@@ -188,7 +200,18 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   }
 
   UILabel* titleLabel = [self createTitleLabelForLayoutType:_layoutType];
+
+  [titleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
+
   UILabel* descriptionLabel = [self createDescriptionLabel];
+
+  [descriptionLabel
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@,%@", titleLabel, descriptionLabel];
 
   // Add a vertical stack for the title and description labels.
   UIStackView* textStack = [[UIStackView alloc]

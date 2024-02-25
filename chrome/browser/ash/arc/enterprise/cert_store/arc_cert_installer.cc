@@ -135,8 +135,7 @@ std::string ArcCertInstaller::InstallArcCert(
   command_proto.set_command_id(next_id_);
   command_proto.set_age_of_command(0);
 
-  std::string der_cert64;
-  base::Base64Encode(der_cert, &der_cert64);
+  std::string der_cert64 = base::Base64Encode(der_cert);
 
   crypto::RSAPrivateKey* rsa = certificate.placeholder_key.get();
   std::string pkcs12 = CreatePkcs12ForKey(name, rsa->key());

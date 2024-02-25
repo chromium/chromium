@@ -17,10 +17,10 @@ limitations under the License.
 
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/text/clu_lib/slot_repr.h"
 
@@ -29,9 +29,7 @@ namespace {
 
 absl::StatusOr<std::vector<SlotMentionStruct>>
 DecodeSlotChunksPredictOnFirstSubword(
-    int cur_turn_start,
-    int cur_turn_end,
-    int seq_len,
+    int cur_turn_start, int cur_turn_end, int seq_len,
     const absl::Span<const absl::string_view> tags_as_span,
     const absl::Span<const float> confidences_as_span,
     const absl::Span<const std::pair<int, int>> token_alignments_as_span,
@@ -66,7 +64,7 @@ DecodeSlotChunksPredictOnFirstSubword(
   const int last_exclusive_end = whole_word_token_alignments.back().second;
   whole_word_token_alignments.emplace_back(last_exclusive_end,
                                            last_exclusive_end);
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto slot_mentions,
       DecodeSlotChunks(first_subword_tag_names, first_subword_tag_probs,
                        whole_word_token_alignments));
@@ -76,12 +74,10 @@ DecodeSlotChunksPredictOnFirstSubword(
 }  // namespace
 
 absl::Status SlotModulePopulateResponse(
-    const std::vector<absl::string_view>& tags,
-    const float* confidences,
+    const std::vector<absl::string_view>& tags, const float* confidences,
     const std::vector<std::pair<int, int>>& token_alignments,
     const std::vector<int>& token_turn_ids,
-    const std::vector<int>& first_subword_indicators,
-    float threshold,
+    const std::vector<int>& first_subword_indicators, float threshold,
     const std::vector<absl::string_view>& reverse_utterance_list_to_encode,
     CluResponse* response) {
   if (token_alignments.size() != token_turn_ids.size()) {
@@ -108,8 +104,8 @@ absl::Status SlotModulePopulateResponse(
 
     // Prepare the data and decode slot chunks.
     std::vector<SlotMentionStruct> cur_turn_slot_mentions;
-    // Decode slot chunks based on first subword tokens in the turn.
-    ASSIGN_OR_RETURN(cur_turn_slot_mentions,
+      // Decode slot chunks based on first subword tokens in the turn.
+    TFLITE_ASSIGN_OR_RETURN(cur_turn_slot_mentions,
                      DecodeSlotChunksPredictOnFirstSubword(
                          cur_turn_start, cur_turn_end, seq_len, tags_as_span,
                          confidences_as_span, token_alignments_as_span,
@@ -117,10 +113,8 @@ absl::Status SlotModulePopulateResponse(
 
     // Populate the response.
     for (const auto& chunk : cur_turn_slot_mentions) {
-      if (chunk.start == -1 || cur_turn_idx != 0)
-        continue;
-      if (chunk.confidence < threshold)
-        continue;
+      if (chunk.start == -1 || cur_turn_idx != 0) continue;
+      if (chunk.confidence < threshold) continue;
       auto slot = response->mutable_mentioned_slots()->Add();
       slot->set_slot(chunk.repr.Name());
       auto mention = slot->mutable_mention();

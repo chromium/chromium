@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -52,6 +53,7 @@ static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
 }
 
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
+  test::TaskEnvironment task_environment;
   struct {
     bool expected;
     AtomicString str;
@@ -80,6 +82,7 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
 }
 
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameChar) {
+  test::TaskEnvironment task_environment;
   struct {
     UChar32 from, to;
   } ranges[] = {
@@ -112,6 +115,7 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameChar) {
 }
 
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName8BitChar) {
+  test::TaskEnvironment task_environment;
   // isPotentialCustomElementName8BitChar must match
   // isPotentialCustomElementNameChar, so we just test it returns
   // the same result throughout its range.
@@ -125,6 +129,7 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName8BitChar) {
 }
 
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameCharFalse) {
+  test::TaskEnvironment task_environment;
   struct {
     UChar32 from, to;
   } ranges[] = {
@@ -137,6 +142,7 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameCharFalse) {
 }
 
 TEST(CustomElementTest, TestIsValidNameHyphenContainingElementNames) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(CustomElement::IsValidName(AtomicString("valid-name")));
 
   EXPECT_FALSE(CustomElement::IsValidName(AtomicString("annotation-xml")));
@@ -150,6 +156,7 @@ TEST(CustomElementTest, TestIsValidNameHyphenContainingElementNames) {
 }
 
 TEST(CustomElementTest, TestIsValidNameEmbedderNames) {
+  test::TaskEnvironment task_environment;
   CustomElement::AddEmbedderCustomElementName(
       AtomicString("embeddercustomelement"));
 
@@ -160,6 +167,7 @@ TEST(CustomElementTest, TestIsValidNameEmbedderNames) {
 }
 
 TEST(CustomElementTest, StateByParser) {
+  test::TaskEnvironment task_environment;
   const char* body_content =
       "<div id=div></div>"
       "<a-a id=v1v0></a-a>"
@@ -183,6 +191,7 @@ TEST(CustomElementTest, StateByParser) {
 }
 
 TEST(CustomElementTest, StateByCreateElement) {
+  test::TaskEnvironment task_environment;
   struct {
     const char* name;
     CustomElementState state;
@@ -214,6 +223,7 @@ TEST(CustomElementTest, StateByCreateElement) {
 
 TEST(CustomElementTest,
      CreateElement_TagNameCaseHandlingCreatingCustomElement) {
+  test::TaskEnvironment task_environment;
   CustomElementTestingScope scope;
   // register a definition
   ScriptState* script_state = scope.GetScriptState();

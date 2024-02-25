@@ -89,6 +89,10 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
       const size_t provider_max_matches,
       std::unique_ptr<OnDeviceHeadProviderParams> params);
 
+  // Determines whether should fetch tail suggestions.
+  static bool ShouldFetchTailSuggestions(
+      const OnDeviceHeadProviderParams& params);
+
   raw_ptr<AutocompleteProviderClient> client_;
 
   // The task runner dedicated for on device model operations which is added to

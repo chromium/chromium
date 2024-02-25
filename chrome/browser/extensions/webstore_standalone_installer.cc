@@ -243,9 +243,9 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
     return;
   }
 
-  absl::optional<double> average_rating_setting =
+  std::optional<double> average_rating_setting =
       webstore_data.FindDouble(kAverageRatingKey);
-  absl::optional<int> rating_count_setting =
+  std::optional<int> rating_count_setting =
       webstore_data.FindInt(kRatingCountKey);
 
   // Manifest, number of users, average rating and rating count are required.
@@ -263,7 +263,7 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
   rating_count_ = *rating_count_setting;
 
   // Showing user count is optional.
-  absl::optional<bool> show_user_count_opt =
+  std::optional<bool> show_user_count_opt =
       webstore_data.FindBool(kShowUserCountKey);
   show_user_count_ = show_user_count_opt.value_or(true);
 

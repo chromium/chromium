@@ -3,23 +3,61 @@
 // (https://github.com/w3c/webref)
 // Source: Federated Credential Management API (https://fedidcg.github.io/FedCM/)
 
+enum LoginStatus {
+  "logged-in",
+  "logged-out",
+};
+
+[Exposed=Window, SecureContext]
+
+interface NavigatorLogin {
+  Promise<undefined> setStatus(LoginStatus status);
+};
+
+partial interface Navigator {
+  [SecureContext] readonly attribute NavigatorLogin login;
+};
+
+dictionary IdentityCredentialDisconnectOptions : IdentityProviderConfig {
+  required USVString accountHint;
+};
+
 [Exposed=Window, SecureContext]
 interface IdentityCredential : Credential {
+  static Promise<undefined> disconnect(optional IdentityCredentialDisconnectOptions options = {});
   readonly attribute USVString? token;
+  readonly attribute boolean isAutoSelected;
+};
+
+dictionary DisconnectedAccount {
+  required USVString account_id;
 };
 
 partial dictionary CredentialRequestOptions {
   IdentityCredentialRequestOptions identity;
 };
 
+enum IdentityCredentialRequestOptionsContext {
+  "signin",
+  "signup",
+  "use",
+  "continue"
+};
+
 dictionary IdentityCredentialRequestOptions {
-  sequence<IdentityProviderConfig> providers;
+  required sequence<IdentityProviderRequestOptions> providers;
+  IdentityCredentialRequestOptionsContext context = "signin";
 };
 
 dictionary IdentityProviderConfig {
   required USVString configURL;
   required USVString clientId;
+};
+
+dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
+  DOMString loginHint;
+  DOMString domainHint;
 };
 
 dictionary IdentityProviderWellKnown {
@@ -42,6 +80,8 @@ dictionary IdentityProviderAPIConfig {
   required USVString accounts_endpoint;
   required USVString client_metadata_endpoint;
   required USVString id_assertion_endpoint;
+  required USVString login_url;
+  USVString disconnect_endpoint;
   IdentityProviderBranding branding;
 };
 
@@ -52,6 +92,8 @@ dictionary IdentityProviderAccount {
   USVString given_name;
   USVString picture;
   sequence<USVString> approved_clients;
+  sequence<DOMString> login_hints;
+  sequence<DOMString> domain_hints;
 };
 dictionary IdentityProviderAccountList {
   sequence<IdentityProviderAccount> accounts;
@@ -64,4 +106,16 @@ dictionary IdentityProviderToken {
 dictionary IdentityProviderClientMetadata {
   USVString privacy_policy_url;
   USVString terms_of_service_url;
+};
+
+dictionary IdentityUserInfo {
+  USVString email;
+  USVString name;
+  USVString givenName;
+  USVString picture;
+};
+
+[Exposed=Window, SecureContext] interface IdentityProvider {
+    static undefined close();
+    static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 };

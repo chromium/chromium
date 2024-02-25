@@ -72,45 +72,21 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
   }
 
   std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>> intermediates;
-
-  // TODO(crbug.com/1418068): Remove available and compile guard after minimum
-  // version required is >= iOS 15.
-  if (@available(iOS 15.0, *)) {
-    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-        SecTrustCopyCertificateChain(trust));
-    for (CFIndex i = 1; i < cert_count; i++) {
-      SecCertificateRef secCertificate =
-          base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain, i));
-      intermediates.emplace_back(secCertificate, base::scoped_policy::RETAIN);
-    }
+  base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+      SecTrustCopyCertificateChain(trust));
+  for (CFIndex i = 1; i < cert_count; i++) {
     SecCertificateRef secCertificate =
         base::apple::CFCastStrict<SecCertificateRef>(
-            CFArrayGetValueAtIndex(certificateChain, 0));
-    return net::x509_util::CreateX509CertificateFromSecCertificate(
-        base::apple::ScopedCFTypeRef<SecCertificateRef>(
-            secCertificate, base::scoped_policy::RETAIN),
-        intermediates);
+            CFArrayGetValueAtIndex(certificateChain.get(), i));
+    intermediates.emplace_back(secCertificate, base::scoped_policy::RETAIN);
   }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    for (CFIndex i = 1; i < cert_count; i++) {
-      intermediates.emplace_back(SecTrustGetCertificateAtIndex(trust, i),
-                                 base::scoped_policy::RETAIN);
-    }
-    return net::x509_util::CreateX509CertificateFromSecCertificate(
-        base::apple::ScopedCFTypeRef<SecCertificateRef>(
-            SecTrustGetCertificateAtIndex(trust, 0),
-            base::scoped_policy::RETAIN),
-        intermediates);
-  }
-#else
-  // TODO(crbug.com/1418068): Added to make the compiler happy and should be
-  // removed when compile and available guards are cleaned up.
-  NOTREACHED();
+  SecCertificateRef secCertificate =
+      base::apple::CFCastStrict<SecCertificateRef>(
+          CFArrayGetValueAtIndex(certificateChain.get(), 0));
   return net::x509_util::CreateX509CertificateFromSecCertificate(
-      base::apple::ScopedCFTypeRef<SecCertificateRef>(nullptr), intermediates);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      base::apple::ScopedCFTypeRef<SecCertificateRef>(
+          secCertificate, base::scoped_policy::RETAIN),
+      intermediates);
 }
 
 base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
@@ -123,7 +99,7 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(
       SecPolicyCreateSSL(TRUE, static_cast<CFStringRef>(host)));
   SecTrustRef ref_result = nullptr;
-  if (SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy,
+  if (SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy.get(),
                                      &ref_result) == errSecSuccess) {
     scoped_result.reset(ref_result);
   }
@@ -133,7 +109,7 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
 void EnsureFutureTrustEvaluationSucceeds(SecTrustRef trust) {
   base::apple::ScopedCFTypeRef<CFDataRef> exceptions(
       SecTrustCopyExceptions(trust));
-  SecTrustSetExceptions(trust, exceptions);
+  SecTrustSetExceptions(trust, exceptions.get());
 }
 
 BOOL IsWKWebViewSSLCertError(NSError* error) {

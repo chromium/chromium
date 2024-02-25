@@ -22,22 +22,22 @@ AttestationObject::ResponseFields::~ResponseFields() = default;
 AttestationObject::ResponseFields::ResponseFields(ResponseFields&&) = default;
 
 // static
-absl::optional<AttestationObject> AttestationObject::Parse(
+std::optional<AttestationObject> AttestationObject::Parse(
     const cbor::Value& value) {
   if (!value.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::MapValue& map = value.GetMap();
 
   const auto& format_it = map.find(cbor::Value(kFormatKey));
   if (format_it == map.end() || !format_it->second.is_string()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string& fmt = format_it->second.GetString();
 
   const auto& att_stmt_it = map.find(cbor::Value(kAttestationStatementKey));
   if (att_stmt_it == map.end() || !att_stmt_it->second.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::unique_ptr<AttestationStatement> attestation_statement =
       std::make_unique<OpaqueAttestationStatement>(
@@ -45,39 +45,39 @@ absl::optional<AttestationObject> AttestationObject::Parse(
 
   const auto& auth_data_it = map.find(cbor::Value(kAuthDataKey));
   if (auth_data_it == map.end() || !auth_data_it->second.is_bytestring()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<AuthenticatorData> authenticator_data =
+  std::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
           auth_data_it->second.GetBytestring());
   if (!authenticator_data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AttestationObject(std::move(*authenticator_data),
                            std::move(attestation_statement));
 }
 
 // static
-absl::optional<AttestationObject::ResponseFields>
+std::optional<AttestationObject::ResponseFields>
 AttestationObject::ParseForResponseFields(
     std::vector<uint8_t> attestation_object_bytes,
     bool attestation_acceptable) {
-  absl::optional<cbor::Value> attestation_object_map =
+  std::optional<cbor::Value> attestation_object_map =
       cbor::Reader::Read(attestation_object_bytes);
   if (!attestation_object_map || !attestation_object_map->is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<device::AttestationObject> attestation_object =
+  std::optional<device::AttestationObject> attestation_object =
       device::AttestationObject::Parse(*attestation_object_map);
   if (!attestation_object) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<device::AttestedCredentialData>& att_cred_data(
+  const std::optional<device::AttestedCredentialData>& att_cred_data(
       attestation_object->authenticator_data().attested_data());
   if (!att_cred_data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const device::PublicKey* pub_key = att_cred_data->public_key();
@@ -93,9 +93,6 @@ AttestationObject::ParseForResponseFields(
     const bool did_modify = attestation_object->EraseAttestationStatement(
         device::AttestationObject::AAGUID::kInclude);
     if (did_modify) {
-      // The devicePubKey extension signs over the authenticator data so its
-      // signature is now invalid and we have to remove the extension.
-      attestation_object->EraseExtension(device::kExtensionDevicePublicKey);
       ret.attestation_object_bytes =
           *cbor::Writer::Write(AsCBOR(*attestation_object));
     } else {
@@ -151,7 +148,7 @@ bool AttestationObject::EraseAttestationStatement(
   return did_make_change;
 }
 
-bool AttestationObject::EraseExtension(base::StringPiece name) {
+bool AttestationObject::EraseExtension(std::string_view name) {
   return authenticator_data_.EraseExtension(name);
 }
 

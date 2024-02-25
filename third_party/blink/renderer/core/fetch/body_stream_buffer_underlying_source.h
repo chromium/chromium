@@ -24,8 +24,10 @@ class CORE_EXPORT BodyStreamBufferUnderlyingSource final
         script_state_(script_state),
         body_stream_buffer_(body_buffer) {}
 
-  ScriptPromise pull(ScriptState*) override;
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
+  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise Cancel(ScriptState*,
+                       ScriptValue reason,
+                       ExceptionState&) override;
 
   ReadableStreamDefaultControllerWithScriptScope* Controller() const {
     return UnderlyingSourceBase::Controller();

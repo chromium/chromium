@@ -9,20 +9,22 @@
 
 #include "base/containers/flat_set.h"
 #include "base/format_macros.h"
-#include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 namespace flat_rule = url_pattern_index::flat;
@@ -47,6 +49,18 @@ dnr_api::Rule CreateGenericParsedRule() {
   rule.condition.url_filter = "filter";
   rule.action.type = dnr_api::RuleActionType::kBlock;
   return rule;
+}
+
+dnr_api::HeaderInfo CreateHeaderInfo(
+    std::string header,
+    std::optional<std::vector<std::string>> values,
+    std::optional<std::vector<std::string>> excluded_values) {
+  dnr_api::HeaderInfo info;
+
+  info.header = std::move(header);
+  info.values = std::move(values);
+  info.excluded_values = std::move(excluded_values);
+  return info;
 }
 
 using IndexedRuleTest = ::testing::Test;
@@ -78,7 +92,7 @@ TEST_F(IndexedRuleTest, IDParsing) {
 TEST_F(IndexedRuleTest, PriorityParsing) {
   struct {
     dnr_api::RuleActionType action_type;
-    absl::optional<int> priority;
+    std::optional<int> priority;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
     const uint32_t expected_priority;
@@ -87,7 +101,7 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
       {dnr_api::RuleActionType::kRedirect, kMinValidPriority,
        ParseResult::SUCCESS, kMinValidPriority},
-      {dnr_api::RuleActionType::kRedirect, absl::nullopt, ParseResult::SUCCESS,
+      {dnr_api::RuleActionType::kRedirect, std::nullopt, ParseResult::SUCCESS,
        kDefaultPriority},
       {dnr_api::RuleActionType::kRedirect, kMinValidPriority + 1,
        ParseResult::SUCCESS, kMinValidPriority + 1},
@@ -127,13 +141,14 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
   struct {
     const dnr_api::DomainType domain_type;
     const dnr_api::RuleActionType action_type;
-    absl::optional<bool> is_url_filter_case_sensitive;
+    std::optional<bool> is_url_filter_case_sensitive;
     const uint8_t expected_options;
   } cases[] = {
       {dnr_api::DomainType::kNone, dnr_api::RuleActionType::kBlock,
-       absl::nullopt,
+       std::nullopt,
        flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY |
-           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
+           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
+           flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
       {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, true,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
@@ -164,27 +179,27 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
   using ResourceTypeVec = std::vector<dnr_api::ResourceType>;
 
   struct {
-    absl::optional<ResourceTypeVec> resource_types;
-    absl::optional<ResourceTypeVec> excluded_resource_types;
+    std::optional<ResourceTypeVec> resource_types;
+    std::optional<ResourceTypeVec> excluded_resource_types;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
     const uint16_t expected_element_types;
   } cases[] = {
-      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
+      {std::nullopt, std::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_MAIN_FRAME},
-      {absl::nullopt, ResourceTypeVec({dnr_api::ResourceType::kScript}),
+      {std::nullopt, ResourceTypeVec({dnr_api::ResourceType::kScript}),
        ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_SCRIPT},
       {ResourceTypeVec(
            {dnr_api::ResourceType::kScript, dnr_api::ResourceType::kImage}),
-       absl::nullopt, ParseResult::SUCCESS,
+       std::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_SCRIPT | flat_rule::ElementType_IMAGE},
       {ResourceTypeVec(
            {dnr_api::ResourceType::kScript, dnr_api::ResourceType::kImage}),
        ResourceTypeVec({dnr_api::ResourceType::kScript}),
        ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED,
        flat_rule::ElementType_NONE},
-      {absl::nullopt,
+      {std::nullopt,
        ResourceTypeVec(
            {dnr_api::ResourceType::kMainFrame, dnr_api::ResourceType::kSubFrame,
             dnr_api::ResourceType::kStylesheet, dnr_api::ResourceType::kScript,
@@ -224,7 +239,7 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
 
 TEST_F(IndexedRuleTest, UrlFilterParsing) {
   struct {
-    absl::optional<std::string> input_url_filter;
+    std::optional<std::string> input_url_filter;
 
     // Only valid if |expected_result| is SUCCESS.
     const flat_rule::UrlPatternType expected_url_pattern_type;
@@ -234,7 +249,7 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
 
     const ParseResult expected_result;
   } cases[] = {
-      {absl::nullopt, flat_rule::UrlPatternType_SUBSTRING,
+      {std::nullopt, flat_rule::UrlPatternType_SUBSTRING,
        flat_rule::AnchorType_NONE, flat_rule::AnchorType_NONE, "",
        ParseResult::SUCCESS},
       {"", flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_NONE,
@@ -302,12 +317,12 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
 TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
   const std::string kPattern = "/QUERY";
   struct {
-    absl::optional<bool> is_url_filter_case_sensitive;
+    std::optional<bool> is_url_filter_case_sensitive;
     std::string expected_pattern;
   } test_cases[] = {
       {false, "/query"},
       {true, "/QUERY"},
-      {absl::nullopt, "/QUERY"}  // By default patterns are case sensitive.
+      {std::nullopt, "/query"}  // By default patterns are case insensitive.
   };
 
   for (auto& test_case : test_cases) {
@@ -327,16 +342,16 @@ TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
 TEST_F(IndexedRuleTest, DomainsParsing) {
   using DomainVec = std::vector<std::string>;
   struct {
-    absl::optional<DomainVec> domains;
-    absl::optional<DomainVec> excluded_domains;
+    std::optional<DomainVec> domains;
+    std::optional<DomainVec> excluded_domains;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
     const DomainVec expected_domains;
     const DomainVec expected_excluded_domains;
   } cases[] = {
-      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS, {}, {}},
-      {{{}}, absl::nullopt, ParseResult::ERROR_EMPTY_DOMAINS_LIST, {}, {}},
-      {absl::nullopt, {{}}, ParseResult::SUCCESS, {}, {}},
+      {std::nullopt, std::nullopt, ParseResult::SUCCESS, {}, {}},
+      {{{}}, std::nullopt, ParseResult::ERROR_EMPTY_DOMAINS_LIST, {}, {}},
+      {std::nullopt, {{}}, ParseResult::SUCCESS, {}, {}},
       {DomainVec({"a.com", "b.com", "a.com"}),
        DomainVec({"g.com", "XY.COM", "zzz.com", "a.com", "google.com"}),
        ParseResult::SUCCESS,
@@ -344,19 +359,19 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
        {"google.com", "zzz.com", "xy.com", "a.com", "g.com"}},
       // Domain with non-ascii characters.
       {DomainVec({base::WideToUTF8(L"abc\x2010" /*hyphen*/ L"def.com")}),
-       absl::nullopt,
+       std::nullopt,
        ParseResult::ERROR_NON_ASCII_DOMAIN,
        {},
        {}},
       // Excluded domain with non-ascii characters.
-      {absl::nullopt,
+      {std::nullopt,
        DomainVec({base::WideToUTF8(L"36\x00b0c.com" /*36°c.com*/)}),
        ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN,
        {},
        {}},
       // Internationalized domain in punycode.
       {DomainVec({"xn--36c-tfa.com" /* punycode for 36°c.com*/}),
-       absl::nullopt,
+       std::nullopt,
        ParseResult::SUCCESS,
        {"xn--36c-tfa.com"},
        {}},
@@ -499,23 +514,23 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
   struct {
     std::string redirect_dictionary_json;
     ParseResult expected_result;
-    absl::optional<std::string> expected_redirect_url;
+    std::optional<std::string> expected_redirect_url;
   } cases[] = {
       // clang-format off
     {
       "{}",
       ParseResult::ERROR_INVALID_REDIRECT,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"url": "xyz"})",
       ParseResult::ERROR_INVALID_REDIRECT_URL,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"url": "javascript:window.alert(\"hello,world\");"})",
       ParseResult::ERROR_JAVASCRIPT_REDIRECT,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"url": "http://google.com"})",
@@ -525,7 +540,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     {
       R"({"extensionPath": "foo/xyz/"})",
       ParseResult::ERROR_INVALID_EXTENSION_PATH,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"extensionPath": "/foo/xyz?q=1"})",
@@ -539,7 +554,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
           "scheme": "",
           "host": "foo.com"
         }
-      })", ParseResult::ERROR_INVALID_TRANSFORM_SCHEME, absl::nullopt
+      })", ParseResult::ERROR_INVALID_TRANSFORM_SCHEME, std::nullopt
     },
     {
       R"(
@@ -548,7 +563,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
           "scheme": "javascript",
           "host": "foo.com"
         }
-      })", ParseResult::ERROR_INVALID_TRANSFORM_SCHEME, absl::nullopt
+      })", ParseResult::ERROR_INVALID_TRANSFORM_SCHEME, std::nullopt
     },
     {
       R"(
@@ -557,7 +572,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
           "scheme": "http",
           "port": "-1"
         }
-      })", ParseResult::ERROR_INVALID_TRANSFORM_PORT, absl::nullopt
+      })", ParseResult::ERROR_INVALID_TRANSFORM_PORT, std::nullopt
     },
     {
       R"(
@@ -566,22 +581,22 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
           "scheme": "http",
           "query": "abc"
         }
-      })", ParseResult::ERROR_INVALID_TRANSFORM_QUERY, absl::nullopt
+      })", ParseResult::ERROR_INVALID_TRANSFORM_QUERY, std::nullopt
     },
     {
       R"({"transform": {"path": "abc"}})",
       ParseResult::SUCCESS,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"transform": {"fragment": "abc"}})",
       ParseResult::ERROR_INVALID_TRANSFORM_FRAGMENT,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"({"transform": {"path": ""}})",
       ParseResult::SUCCESS,
-      absl::nullopt
+      std::nullopt
     },
     {
       R"(
@@ -593,7 +608,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
             "removeParams": ["abc"]
           }
         }
-      })", ParseResult::ERROR_QUERY_AND_TRANSFORM_BOTH_SPECIFIED, absl::nullopt
+      })", ParseResult::ERROR_QUERY_AND_TRANSFORM_BOTH_SPECIFIED, std::nullopt
     },
     {
       R"(
@@ -612,7 +627,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
           "fragment": "",
           "username": "user"
         }
-      })", ParseResult::SUCCESS, absl::nullopt
+      })", ParseResult::SUCCESS, std::nullopt
     }
   };
   // clang-format on
@@ -622,15 +637,10 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     dnr_api::Rule rule = CreateGenericParsedRule();
     rule.action.type = dnr_api::RuleActionType::kRedirect;
 
-    absl::optional<base::Value> redirect_val =
-        base::JSONReader::Read(cases[i].redirect_dictionary_json);
-    ASSERT_TRUE(redirect_val);
-
-    std::u16string error;
-    rule.action.redirect = std::move(
-        *dnr_api::Redirect::FromValueDeprecated(*redirect_val, &error));
-    ASSERT_TRUE(rule.action.redirect);
-    ASSERT_TRUE(error.empty());
+    auto redirect = dnr_api::Redirect::FromValue(
+        base::test::ParseJsonDict(cases[i].redirect_dictionary_json));
+    ASSERT_TRUE(redirect.has_value());
+    rule.action.redirect = std::move(redirect).value();
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
@@ -806,7 +816,7 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
     dnr_api::Rule rule = CreateGenericParsedRule();
 
     if (cases[i].resource_types.empty()) {
-      rule.condition.resource_types = absl::nullopt;
+      rule.condition.resource_types = std::nullopt;
     } else {
       rule.condition.resource_types = cases[i].resource_types;
     }
@@ -828,7 +838,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
   struct RawHeaderInfo {
     dnr_api::HeaderOperation operation;
     std::string header;
-    absl::optional<std::string> value;
+    std::optional<std::string> value;
   };
 
   using RawHeaderInfoList = std::vector<RawHeaderInfo>;
@@ -838,71 +848,72 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
   // specifying test cases because elements are copied when initializing a
   // vector from an array.
   struct {
-    absl::optional<RawHeaderInfoList> request_headers;
-    absl::optional<RawHeaderInfoList> response_headers;
+    std::optional<RawHeaderInfoList> request_headers;
+    std::optional<RawHeaderInfoList> response_headers;
     ParseResult expected_result;
   } cases[] = {
       // Raise an error if no headers are specified.
-      {absl::nullopt, absl::nullopt, ParseResult::ERROR_NO_HEADERS_SPECIFIED},
+      {std::nullopt, std::nullopt,
+       ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED},
 
       // Raise an error if the request or response headers list is specified,
       // but empty.
       {RawHeaderInfoList(),
        RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kRemove, "set-cookie", absl::nullopt}}),
-       ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST},
+           {{dnr_api::HeaderOperation::kRemove, "set-cookie", std::nullopt}}),
+       ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST},
 
-      {absl::nullopt, RawHeaderInfoList(),
-       ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST},
+      {std::nullopt, RawHeaderInfoList(),
+       ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST},
 
       // Raise an error if a header list contains an empty or invalid header
       // name.
-      {absl::nullopt,
+      {std::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kRemove, "", absl::nullopt}}),
-       ParseResult::ERROR_INVALID_HEADER_NAME},
+           {{dnr_api::HeaderOperation::kRemove, "", std::nullopt}}),
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME},
 
-      {absl::nullopt,
+      {std::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kRemove, "<<invalid>>", absl::nullopt}}),
-       ParseResult::ERROR_INVALID_HEADER_NAME},
+           {{dnr_api::HeaderOperation::kRemove, "<<invalid>>", std::nullopt}}),
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME},
 
       // Raise an error if a header list contains an invalid header value.
-      {absl::nullopt,
+      {std::nullopt,
        RawHeaderInfoList({{dnr_api::HeaderOperation::kAppend, "set-cookie",
                            "invalid\nvalue"}}),
-       ParseResult::ERROR_INVALID_HEADER_VALUE},
+       ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE},
 
       // Raise an error if a header value is specified for a remove rule.
       {RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kRemove, "cookie", "remove"}}),
-       absl::nullopt, ParseResult::ERROR_HEADER_VALUE_PRESENT},
+       std::nullopt, ParseResult::ERROR_HEADER_VALUE_PRESENT},
 
       // Raise an error if no header value is specified for an append or set
       // rule.
       {RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kSet, "cookie", absl::nullopt}}),
-       absl::nullopt, ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
+           {{dnr_api::HeaderOperation::kSet, "cookie", std::nullopt}}),
+       std::nullopt, ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
 
-      {absl::nullopt,
+      {std::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kAppend, "set-cookie", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kAppend, "set-cookie", std::nullopt}}),
        ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
 
       // Raise an error if a rule specifies an invalid request header to be
       // appended.
       {RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kAppend, "invalid-header", "value"}}),
-       absl::nullopt, ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER},
+       std::nullopt, ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER},
 
       {RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kRemove, "cookie", absl::nullopt},
+           {{dnr_api::HeaderOperation::kRemove, "cookie", std::nullopt},
             {dnr_api::HeaderOperation::kSet, "referer", ""},
             {dnr_api::HeaderOperation::kAppend, "accept-language", "en-US"}}),
-       absl::nullopt, ParseResult::SUCCESS},
+       std::nullopt, ParseResult::SUCCESS},
 
       {RawHeaderInfoList(
-           {{dnr_api::HeaderOperation::kRemove, "referer", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kRemove, "referer", std::nullopt}}),
        RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kAppend, "set-cookie", "abcd"}}),
        ParseResult::SUCCESS},
@@ -948,10 +959,10 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
               indexed_rule.action_type);
 
     EXPECT_TRUE(base::ranges::equal(expected_request_headers,
-                                    indexed_rule.request_headers,
+                                    indexed_rule.request_headers_to_modify,
                                     EqualsForTesting));
     EXPECT_TRUE(base::ranges::equal(expected_response_headers,
-                                    indexed_rule.response_headers,
+                                    indexed_rule.response_headers_to_modify,
                                     EqualsForTesting));
   }
 }
@@ -960,25 +971,25 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
   using RequestMethodVec = std::vector<dnr_api::RequestMethod>;
 
   struct {
-    absl::optional<RequestMethodVec> request_methods;
-    absl::optional<RequestMethodVec> excluded_request_methods;
+    std::optional<RequestMethodVec> request_methods;
+    std::optional<RequestMethodVec> excluded_request_methods;
     const ParseResult expected_result;
     // Only valid if `expected_result` is SUCCESS.
     const uint16_t expected_request_methods_mask;
   } cases[] = {
-      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
+      {std::nullopt, std::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_ANY},
-      {absl::nullopt, RequestMethodVec({dnr_api::RequestMethod::kPut}),
+      {std::nullopt, RequestMethodVec({dnr_api::RequestMethod::kPut}),
        ParseResult::SUCCESS,
        flat_rule::RequestMethod_ANY & ~flat_rule::RequestMethod_PUT},
       {RequestMethodVec(
            {dnr_api::RequestMethod::kDelete, dnr_api::RequestMethod::kGet}),
-       absl::nullopt, ParseResult::SUCCESS,
+       std::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_DELETE | flat_rule::RequestMethod_GET},
       {RequestMethodVec({dnr_api::RequestMethod::kHead,
                          dnr_api::RequestMethod::kOptions,
                          dnr_api::RequestMethod::kPatch}),
-       absl::nullopt, ParseResult::SUCCESS,
+       std::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_HEAD | flat_rule::RequestMethod_OPTIONS |
            flat_rule::RequestMethod_PATCH},
       {RequestMethodVec({dnr_api::RequestMethod::kPost}),
@@ -986,7 +997,7 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
        ParseResult::ERROR_REQUEST_METHOD_DUPLICATED,
        flat_rule::RequestMethod_NONE},
       {{{}},
-       absl::nullopt,
+       std::nullopt,
        ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST,
        flat_rule::RequestMethod_NONE}};
 
@@ -1011,8 +1022,8 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
 TEST_F(IndexedRuleTest, TabID) {
   using IntVec = std::vector<int>;
   struct {
-    absl::optional<IntVec> tab_ids;
-    absl::optional<IntVec> excluded_tab_ids;
+    std::optional<IntVec> tab_ids;
+    std::optional<IntVec> excluded_tab_ids;
     RulesetID ruleset_id;
     ParseResult expected_result;
 
@@ -1020,7 +1031,7 @@ TEST_F(IndexedRuleTest, TabID) {
     base::flat_set<int> expected_tab_ids;
     base::flat_set<int> expected_excluded_tab_ids;
   } cases[] = {
-      {absl::nullopt, absl::nullopt, kSessionRulesetID, ParseResult::SUCCESS},
+      {std::nullopt, std::nullopt, kSessionRulesetID, ParseResult::SUCCESS},
       {IntVec(), IntVec({3, 4, 4}), kSessionRulesetID,
        ParseResult::ERROR_EMPTY_TAB_IDS_LIST},
       {IntVec({1, 2}),
@@ -1029,7 +1040,7 @@ TEST_F(IndexedRuleTest, TabID) {
        ParseResult::SUCCESS,
        {1, 2},
        {}},
-      {absl::nullopt,
+      {std::nullopt,
        IntVec({3, 4, 3}),
        kSessionRulesetID,
        ParseResult::SUCCESS,
@@ -1037,7 +1048,7 @@ TEST_F(IndexedRuleTest, TabID) {
        {3, 4}},
       {IntVec({1, 2, 3}), IntVec({5, 2}), kSessionRulesetID,
        ParseResult::ERROR_TAB_ID_DUPLICATED},
-      {IntVec({1, 2}), absl::nullopt, kDynamicRulesetID,
+      {IntVec({1, 2}), std::nullopt, kDynamicRulesetID,
        ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE},
       {IntVec({1, 2}), IntVec({3}), kMinValidStaticRulesetID,
        ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE},
@@ -1066,6 +1077,218 @@ TEST_F(IndexedRuleTest, TabID) {
   }
 }
 
+class IndexedResponseHeaderRuleTest : public IndexedRuleTest {
+ public:
+  IndexedResponseHeaderRuleTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test the validation of rules that specify response header matching
+// conditions.
+TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
+  struct RawHeaderInfo {
+    explicit RawHeaderInfo(std::string header) : header(std::move(header)) {}
+    RawHeaderInfo(std::string header,
+                  std::optional<std::vector<std::string>> values,
+                  std::optional<std::vector<std::string>> excluded_values)
+        : header(std::move(header)),
+          values(std::move(values)),
+          excluded_values(std::move(excluded_values)) {}
+
+    std::string header;
+    std::optional<std::vector<std::string>> values;
+    std::optional<std::vector<std::string>> excluded_values;
+  };
+
+  using HeaderValues = std::vector<std::string>;
+  using HeaderInfoList = std::vector<RawHeaderInfo>;
+  struct {
+    std::optional<HeaderInfoList> response_headers;
+    std::optional<HeaderInfoList> excluded_response_headers;
+    ParseResult expected_result;
+  } cases[] = {
+      // No response headers included or excluded; should parse successfully.
+      {std::nullopt, std::nullopt, ParseResult::SUCCESS},
+
+      // only header1 specified, matching on name only should parse
+      // successfully.
+      {HeaderInfoList({RawHeaderInfo("header1")}), std::nullopt,
+       ParseResult::SUCCESS},
+
+      // Valid included and excluded response headers with values and excluded
+      // values should parse successfully.
+      {HeaderInfoList(
+           {{"header1", HeaderValues({"value-1", "value-2"}), std::nullopt},
+            {"header1", std::nullopt, HeaderValues({"excluded-value"})}}),
+       HeaderInfoList({RawHeaderInfo("excluded-header")}),
+       ParseResult::SUCCESS},
+
+      // An empty matching response header list should trigger an error.
+      {HeaderInfoList(), std::nullopt,
+       ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST},
+
+      // An empty matching excluded response header list should trigger an
+      // error.
+      {std::nullopt, HeaderInfoList(),
+       ParseResult::ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST},
+
+      // Test that a rule with an empty or invalid response header name will
+      // return an error.
+      {HeaderInfoList({{"", std::nullopt, std::nullopt}}), std::nullopt,
+       ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME},
+
+      {std::nullopt, HeaderInfoList({RawHeaderInfo("<<invalid_header>>")}),
+       ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME},
+
+      // Test that a rule with an empty or invalid response header value will
+      // return an error.
+      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
+       std::nullopt, ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
+
+      // Test that a rule with an empty response header value will return an
+      // error.
+      {std::nullopt,
+       HeaderInfoList({{"invalid-header-value",
+                        HeaderValues({"value\nwith\nnewline"}), std::nullopt}}),
+       ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
+
+      // Test that a rule cannot specify the same header in `response_headers`
+      // and `excluded_response_headers` if that header is to be matched based
+      // on name only in `excluded_response_headers`.
+      {HeaderInfoList({{"repeated-header", HeaderValues({"specific-value"}),
+                        std::nullopt}}),
+       HeaderInfoList({RawHeaderInfo("repeated-header")}),
+       ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED},
+
+      // Test that a rule CAN specify the same header in `response_headers` and
+      // `excluded_response_headers` if that header is matched on name AND value
+      // in `excluded_response_headers`. In practice, the below rule will match
+      // a request if its `excluded_response_headers` condition does not match
+      // and its `response_headers` condition matches.
+      {HeaderInfoList({{"repeated-header", HeaderValues({"specific-value"}),
+                        std::nullopt}}),
+       HeaderInfoList({{"repeated-header", HeaderValues({"excluded-value"}),
+                        std::nullopt}}),
+       ParseResult::SUCCESS},
+  };
+
+  auto get_header_info_matcher = [](const RawHeaderInfo& info) {
+    return testing::AllOf(
+        testing::Field(&dnr_api::HeaderInfo::header, info.header),
+        testing::Field(&dnr_api::HeaderInfo::values, info.values),
+        testing::Field(&dnr_api::HeaderInfo::excluded_values,
+                       info.excluded_values));
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule rule = CreateGenericParsedRule();
+
+    std::vector<testing::Matcher<dnr_api::HeaderInfo>> response_header_matchers;
+    if (cases[i].response_headers) {
+      rule.condition.response_headers.emplace();
+      for (const auto& header : *cases[i].response_headers) {
+        rule.condition.response_headers->push_back(CreateHeaderInfo(
+            header.header, header.values, header.excluded_values));
+        response_header_matchers.push_back(get_header_info_matcher(header));
+      }
+    }
+
+    std::vector<testing::Matcher<dnr_api::HeaderInfo>>
+        expected_excluded_response_headers;
+    if (cases[i].excluded_response_headers) {
+      rule.condition.excluded_response_headers.emplace();
+      for (const auto& header : *cases[i].excluded_response_headers) {
+        rule.condition.excluded_response_headers->push_back(CreateHeaderInfo(
+            header.header, header.values, header.excluded_values));
+        expected_excluded_response_headers.push_back(
+            get_header_info_matcher(header));
+      }
+    }
+
+    IndexedRule indexed_rule;
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+    EXPECT_EQ(cases[i].expected_result, result);
+    if (result != ParseResult::SUCCESS) {
+      continue;
+    }
+
+    // If parsing is successful, test that the `response_headers` and
+    // `excluded_response_headers` from `indexed_rule` are the same as what's
+    // specified in the test case.
+    EXPECT_THAT(indexed_rule.response_headers,
+                testing::UnorderedElementsAreArray(response_header_matchers));
+    EXPECT_THAT(
+        indexed_rule.excluded_response_headers,
+        testing::UnorderedElementsAreArray(expected_excluded_response_headers));
+  }
+}
+
+// Test that response header matching rules may only modify response headers.
+TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders_ModifyHeaders) {
+  struct RawModifyHeaderInfo {
+    dnr_api::HeaderOperation operation;
+    std::string header;
+    std::optional<std::string> value;
+  };
+
+  using ModifyHeaderInfoList = std::vector<RawModifyHeaderInfo>;
+  struct {
+    std::optional<ModifyHeaderInfoList> request_headers_to_modify;
+    std::optional<ModifyHeaderInfoList> response_headers_to_modify;
+    ParseResult expected_result;
+  } cases[] = {
+      // Two test cases here: one for a rule that tries to modify request
+      // headers, one for response headers. The first rule is disallowed since
+      // request headers cannot be further modified when it comes time to match
+      // on response headers.
+      {ModifyHeaderInfoList({{dnr_api::HeaderOperation::kRemove,
+                              "request-header", std::nullopt}}),
+       std::nullopt,
+       ParseResult::ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS},
+
+      {std::nullopt,
+       ModifyHeaderInfoList(
+           {{dnr_api::HeaderOperation::kSet, "response-header", "new-value"}}),
+       ParseResult::SUCCESS},
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule rule = CreateGenericParsedRule();
+    rule.condition.response_headers.emplace();
+    rule.condition.response_headers->push_back(
+        CreateHeaderInfo("header", std::nullopt, std::nullopt));
+
+    rule.action.type = dnr_api::RuleActionType::kModifyHeaders;
+    if (cases[i].request_headers_to_modify) {
+      rule.action.request_headers.emplace();
+      for (const auto& header : *cases[i].request_headers_to_modify) {
+        rule.action.request_headers->push_back(CreateModifyHeaderInfo(
+            header.operation, header.header, header.value));
+      }
+    }
+
+    if (cases[i].response_headers_to_modify) {
+      rule.action.response_headers.emplace();
+      for (const auto& header : *cases[i].response_headers_to_modify) {
+        rule.action.response_headers->push_back(CreateModifyHeaderInfo(
+            header.operation, header.header, header.value));
+      }
+    }
+
+    IndexedRule indexed_rule;
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+    EXPECT_EQ(cases[i].expected_result, result);
+  }
+}
+
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -18,12 +18,12 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/flags/flag.h"       // from @com_google_absl
-#include "absl/status/status.h"    // from @com_google_absl
-#include "absl/strings/cord.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -85,7 +85,7 @@ std::unique_ptr<tflite::OpResolver> GetOpResolver(
   if (is_universal_sentence_encoder) {
     return CreateTextOpResolver();
   } else {
-    return absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>();
+    return absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>();
   }
 }
 
@@ -218,8 +218,7 @@ TEST_P(CreateFromOptionsTest, FailsWithInvalidMaxResults) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CreateFromOptionsTest,
-    CreateFromOptionsTest,
+    CreateFromOptionsTest, CreateFromOptionsTest,
     Values(CreateFromOptionsParams{
                /* name= */ "Bert",
                /* embedder_model_name= */ kMobileBertEmbedder,
@@ -268,7 +267,7 @@ TEST_P(SearchTest, SucceedsWithStandaloneIndex) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search("The weather was excellent."));
+                       searcher->Search("The weather was excellent."));
 
   // Check results.
   ExpectApproximatelyEqual(
@@ -289,7 +288,7 @@ TEST_P(SearchTest, SucceedsWithMetadataIndex) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search("The weather was excellent."));
+                       searcher->Search("The weather was excellent."));
 
   // Check results.
   ExpectApproximatelyEqual(
@@ -314,7 +313,7 @@ TEST_P(SearchTest, SucceedsWithMaxResults) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search("The weather was excellent."));
+                       searcher->Search("The weather was excellent."));
 
   // Check results.
   SearchResult all_results =
@@ -328,8 +327,7 @@ TEST_P(SearchTest, SucceedsWithMaxResults) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    SearchTest,
-    SearchTest,
+    SearchTest, SearchTest,
     Values(SearchParams{
                /* name= */ "Bert",
                /* embedder_model_name= */ kMobileBertEmbedder,

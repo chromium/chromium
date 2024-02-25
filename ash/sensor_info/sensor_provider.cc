@@ -387,7 +387,7 @@ void SensorProvider::CreateSensorSamplesObserver(DeviceType device_type,
   DCHECK(!sensor.ignored);
   DCHECK(sensor.scale.has_value() && sensor.location.has_value());
   if (device_type == DeviceType::ACCEL || device_type == DeviceType::ANGLVEL) {
-    sensor.samples_observer = std::make_unique<AccelGryoSamplesObserver>(
+    sensor.samples_observer = std::make_unique<AccelGyroSamplesObserver>(
         id, std::move(sensor.remote), sensor.scale.value(),
         base::BindRepeating(&SensorProvider::OnSampleUpdatedCallback,
                             weak_ptr_factory_.GetWeakPtr(), device_type),
@@ -413,7 +413,7 @@ bool SensorProvider::CheckSensorSamplesObserver() {
 void SensorProvider::OnAttributes(
     DeviceType device_type,
     int32_t id,
-    const std::vector<absl::optional<std::string>>& values) {
+    const std::vector<std::optional<std::string>>& values) {
   auto& sensor = sensors_[id][device_type];
   DCHECK(sensor.remote.is_bound());
   auto val_it = values.begin();
@@ -539,7 +539,7 @@ void SensorProvider::OnSampleUpdatedCallback(DeviceType device_type,
 }
 
 void SensorProvider::OnLidAngleValue(
-    const std::vector<absl::optional<std::string>>& values) {
+    const std::vector<std::optional<std::string>>& values) {
   if (values[0].has_value()) {
     int angle;
     if (base::StringToInt(values[0].value(), &angle)) {
@@ -571,11 +571,11 @@ void SensorProvider::NotifySensorUpdated(SensorUpdate update) {
   GetLidAngleUpdate();
 }
 
-void SensorProvider::AddObserver(Observer* observer) {
+void SensorProvider::AddObserver(SensorObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void SensorProvider::RemoveObserver(Observer* observer) {
+void SensorProvider::RemoveObserver(SensorObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 }  // namespace ash

@@ -15,13 +15,4 @@ component("user_prefs") {
     "//base",
     "//components/prefs",
   ]
-
-  if (is_android) {
-    sources += [ "android/user_prefs_android.cc" ]
-    deps += [
-      "android:jni_headers",
-      "//components/prefs",
-      "//content/public/browser",
-    ]
-  }
 }

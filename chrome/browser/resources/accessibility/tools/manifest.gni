@@ -1,0 +1,95 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates a manifest.json with some arguments.
+template("manifest") {
+  version_file = "//chrome/VERSION"
+  version_script = "//build/util/version.py"
+  template_file = invoker.input_file
+  output_file = invoker.output_file
+  key = invoker.key
+  action(target_name) {
+    script =
+        "//chrome/browser/resources/accessibility/tools/generate_manifest.py"
+    inputs = [
+      version_file,
+      version_script,
+    ]
+    sources = [ template_file ]
+    outputs = [ output_file ]
+    data = [ output_file ]
+    args = [
+      "--key=$key",
+      "--version_file=" + rebase_path(version_file, root_build_dir),
+      "--output_manifest=" + rebase_path(output_file, root_build_dir),
+    ]
+    if (defined(invoker.is_guest_manifest) && invoker.is_guest_manifest) {
+      args += [ "--is_guest_manifest=1" ]
+    }
+    if (defined(invoker.is_manifest_v3) && invoker.is_manifest_v3) {
+      args += [ "--is_manifest_v3=1" ]
+    }
+    args += rebase_path(sources, root_build_dir)
+  }
+}
+
+template("manifest_variants") {
+  basic_manifest_target_name = "${target_name}__basic_manifest"
+  manifest_targets = [ ":$basic_manifest_target_name" ]
+  manifest(basic_manifest_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "input_file",
+                             "key",
+                           ])
+    output_file = invoker.output_dir + "/" + invoker.output_name + ".json"
+  }
+
+  if (invoker.make_guest) {
+    guest_manifest_target_name = "${target_name}__guest_manifest"
+    manifest_targets += [ ":$guest_manifest_target_name" ]
+    manifest(guest_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file =
+          invoker.output_dir + "/" + invoker.output_name + "_guest.json"
+      is_guest_manifest = true
+    }
+  }
+  if (invoker.make_v3) {
+    v3_manifest_target_name = "${target_name}__v3_manifest"
+    manifest_targets += [ ":$v3_manifest_target_name" ]
+    manifest(v3_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file = invoker.output_dir + "/" + invoker.output_name + "_v3.json"
+      is_manifest_v3 = true
+    }
+  }
+  if (invoker.make_guest && invoker.make_v3) {
+    guest_v3_manifest_target_name = "${target_name}__guest_v3_manifest"
+    manifest_targets += [ ":$guest_v3_manifest_target_name" ]
+    manifest(guest_v3_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file =
+          invoker.output_dir + "/" + invoker.output_name + "_guest_v3.json"
+      is_guest_manifest = true
+      is_manifest_v3 = true
+    }
+  }
+
+  group(target_name) {
+    deps = manifest_targets
+  }
+}

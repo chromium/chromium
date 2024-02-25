@@ -37,8 +37,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 namespace extensions {
@@ -47,9 +48,6 @@ class FullStreamUIPolicyTest : public testing::Test {
  public:
   FullStreamUIPolicyTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
-#endif
     base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);
     profile_ = std::make_unique<TestingProfile>();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -66,7 +64,7 @@ class FullStreamUIPolicyTest : public testing::Test {
 
   ~FullStreamUIPolicyTest() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.reset();
+    test_user_manager_.Reset();
 #endif
     base::RunLoop().RunUntilIdle();
     profile_.reset();
@@ -98,22 +96,23 @@ class FullStreamUIPolicyTest : public testing::Test {
     // Submit a request to the policy to read back some data, and call the
     // checker function when results are available.  This will happen on the
     // database thread.
+    base::RunLoop run_loop;
     policy->ReadFilteredData(
         extension_id, type, api_name, page_url, arg_url, days_ago,
         base::BindOnce(&FullStreamUIPolicyTest::CheckWrapper,
-                       std::move(checker),
-                       base::RunLoop::QuitCurrentWhenIdleClosureDeprecated()));
+                       std::move(checker), run_loop.QuitClosure()));
 
     // Set up a timeout for receiving results; if we haven't received anything
     // when the timeout triggers then assume that the test is broken.
     base::CancelableOnceClosure timeout(
-        base::BindOnce(&FullStreamUIPolicyTest::TimeoutCallback));
+        base::BindOnce(&FullStreamUIPolicyTest::TimeoutCallback,
+                       run_loop.QuitWhenIdleClosure()));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, timeout.callback(), TestTimeouts::action_timeout());
 
     // Wait for results; either the checker or the timeout callbacks should
     // cause the main loop to exit.
-    base::RunLoop().Run();
+    run_loop.Run();
 
     timeout.Cancel();
   }
@@ -126,8 +125,8 @@ class FullStreamUIPolicyTest : public testing::Test {
     std::move(done).Run();
   }
 
-  static void TimeoutCallback() {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  static void TimeoutCallback(base::OnceClosure quit_closure) {
+    std::move(quit_closure).Run();
     FAIL() << "Policy test timed out waiting for results";
   }
 
@@ -332,7 +331,8 @@ class FullStreamUIPolicyTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 };
 
@@ -750,10 +750,11 @@ TEST_F(FullStreamUIPolicyTest, CapReturns) {
   }
 
   policy->Flush();
-  GetActivityLogTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(),
-      base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-  base::RunLoop().Run();
+  base::RunLoop run_loop;
+  GetActivityLogTaskRunner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                               run_loop.QuitClosure());
+
+  run_loop.Run();
 
   CheckReadFilteredData(
       policy, "punky", Action::ACTION_ANY, "", "", "", -1,

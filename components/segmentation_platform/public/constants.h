@@ -18,17 +18,9 @@ namespace segmentation_platform {
 const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
 const char kAdaptiveToolbarUmaName[] = "AdaptiveToolbar";
 
-// The key is used to decide whether to show Chrome Start or not.
-const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
-const char kChromeStartAndroidUmaName[] = "ChromeStartAndroid";
-
 // The key is used to decide how long to wait before showing Chrome Start.
 const char kChromeStartAndroidV2SegmentationKey[] = "chrome_start_android_v2";
 const char kChromeStartAndroidV2UmaName[] = "ChromeStartAndroidV2";
-
-// The key is used to decide whether to show query tiles.
-const char kQueryTilesSegmentationKey[] = "query_tiles";
-const char kQueryTilesUmaName[] = "QueryTiles";
 
 // The key is used to decide whether a user has low user engagement with chrome.
 // This is a generic model that can be used by multiple features targeting
@@ -103,6 +95,9 @@ const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 const char kIosModuleRankerKey[] = "ios_module_ranker";
 const char kIosModuleRankerUmaName[] = "IosModuleRanker";
 
+const char kAndroidHomeModuleRankerKey[] = "android_home_module_ranker";
+const char kAndroidHomeModuleRankerUmaName[] = "AndroidHomeModuleRanker";
+
 // This key is used to decide what modules a user should see on their Desktop
 // New Tab Page.
 const char kDesktopNtpModuleKey[] = "desktop_ntp_module";
@@ -144,16 +139,32 @@ std::string GetSubsegmentKey(const std::string& segmentation_key);
 
 // TODO(shaktisahu): Move these to a nicer location.
 
+// Legacy label used for users not in the segment for binary user segment
+// classifier.
+const char kLegacyNegativeLabel[] = "Other";
+
 // Labels for adaptive toolbar model.
 const char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
 const char kAdaptiveToolbarModelLabelShare[] = "Share";
 const char kAdaptiveToolbarModelLabelVoice[] = "Voice";
 const char kAdaptiveToolbarModelLabelTranslate[] = "Translate";
 const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
+const char kAdaptiveToolbarModelLabelReadAloud[] = "ReadAloud";
 
 // Labels for contextual page actions model.
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
 const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
+
+// Labels for cross device segment.
+const char kNoCrossDeviceUsage[] = "NoCrossDeviceUsage";
+const char kCrossDeviceMobile[] = "CrossDeviceMobile";
+const char kCrossDeviceDesktop[] = "CrossDeviceDesktop";
+const char kCrossDeviceTablet[] = "CrossDeviceTablet";
+const char kCrossDeviceMobileAndDesktop[] = "CrossDeviceMobileAndDesktop";
+const char kCrossDeviceMobileAndTablet[] = "CrossDeviceMobileAndTablet";
+const char kCrossDeviceDesktopAndTablet[] = "CrossDeviceDesktopAndTablet";
+const char kCrossDeviceAllDeviceTypes[] = "CrossDeviceAllDeviceTypes";
+const char kCrossDeviceOther[] = "CrossDeviceOther";
 
 // Labels for search user model.
 // Any updates to these strings need to also update the field trials allowlist
@@ -162,6 +173,15 @@ const char kSearchUserModelLabelNone[] = "None";
 const char kSearchUserModelLabelLow[] = "Low";
 const char kSearchUserModelLabelMedium[] = "Medium";
 const char kSearchUserModelLabelHigh[] = "High";
+
+// Labels for  user ChromeStartAndroidV2 model.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
+const char kChromeStartAndroidV2Label1HourInMs[] = "3600";
+const char kChromeStartAndroidV2Label2HourInMs[] = "7200";
+const char kChromeStartAndroidV2Label4HourInMs[] = "14400";
+const char kChromeStartAndroidV2Label8HourInMs[] = "28800";
+const char kChromeStartAndroidV2LabelNone[] = "0";
 
 // Labels for device tier model.
 // Any updates to these strings need to also update the field trials allowlist
@@ -178,15 +198,24 @@ const char kTabletProductivityUserModelLabelNone[] = "None";
 const char kTabletProductivityUserModelLabelMedium[] = "Medium";
 const char kTabletProductivityUserModelLabelHigh[] = "High";
 
+// Labels for Android Home modules for ranking.
+const char kSingleTab[] = "SingleTab";
+const char kPriceChange[] = "PriceChange";
+const char kTabResumptionForAndroidHome[] = "TabResumption";
+
 // Labels for IOS modules for ranking.
 const char kMostVisitedTiles[] = "MostVisitedTiles";
 const char kShortcuts[] = "Shortcuts";
 const char kSafetyCheck[] = "SafetyCheck";
+const char kTabResumption[] = "TabResumption";
+const char kParcelTracking[] = "ParcelTracking";
 
 // Input Context keys for freshness for IOS modules.
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
 const char kShortcutsFreshness[] = "shortcuts_freshness";
 const char kSafetyCheckFreshness[] = "safety_check_freshness";
+const char kTabResumptionFreshness[] = "tab_resumption_freshness";
+const char kParcelTrackingFreshness[] = "parcel_tracking_freshness";
 
 // Labels for desktop new tab page drive module model.
 // Any updates to these strings need to also update the field trials allowlist
@@ -201,6 +230,11 @@ const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
 // Finch parameter key for sampling rate of the model execution results.
 constexpr char kModelExecutionSamplingRateKey[] =
     "model_execution_sampling_rate";
+
+// Finch parameter key for introducing delay(in ms) in model initialization at
+// startup.
+constexpr char kModelInitializationDelay[] = "model_initialization_delay";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

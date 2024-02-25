@@ -5,22 +5,28 @@
 /** @fileoverview Suite of tests for extensions-review-panel. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsReviewPanelElement, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {ExtensionsReviewPanelElement} from 'chrome://extensions/extensions.js';
+import {ExtensionsHatsBrowserProxyImpl, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestExtensionsHatsBrowserProxy} from './test_extension_hats_browser_proxy.js';
 import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
 suite('ExtensionsReviewPanel', function() {
   let element: ExtensionsReviewPanelElement;
   let pluralString: TestPluralStringProxy;
+  let browserProxy: TestExtensionsHatsBrowserProxy;
 
   setup(function() {
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
+    browserProxy = new TestExtensionsHatsBrowserProxy();
+    ExtensionsHatsBrowserProxyImpl.setInstance(browserProxy);
+    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('extensions-review-panel');
     const extensionItems = [
@@ -38,6 +44,7 @@ suite('ExtensionsReviewPanel', function() {
   });
 
   test('ReviewPanelTextExists', async function() {
+    await browserProxy.whenCalled('panelShown');
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
     assertTrue(!!reviewPanelContainer);
@@ -61,13 +68,11 @@ suite('ExtensionsReviewPanel', function() {
     assertEquals('safetyCheckDescription', descriptionArgs.messageName);
     assertEquals(1, descriptionArgs.itemCount);
 
-    // Verify that Remove All button exists.
-    const removeAllButton = element.$.removeAllButton;
-    assertTrue(!!removeAllButton);
-    assertEquals(removeAllButton.innerText, 'Remove all');
+    const safetyHubHeader = element.$.safetyHubTitleContainer;
+    assertTrue(isVisible(safetyHubHeader));
   });
 
-  test('CollapsibleList', function() {
+  test('CollapsibleList', async function() {
     const expandButton = element.$.expandButton;
     assertTrue(!!expandButton);
 
@@ -80,7 +85,7 @@ suite('ExtensionsReviewPanel', function() {
 
     // User collapses the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are collapsed.
     assertFalse(expandButton.expanded);
@@ -88,7 +93,7 @@ suite('ExtensionsReviewPanel', function() {
 
     // User expands the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are expanded.
     assertTrue(expandButton.expanded);
@@ -122,8 +127,12 @@ suite('ExtensionsReviewPanel', function() {
     element.delegate = new MockUninstallItemDelegate();
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
     await flushTasks();
+    await browserProxy.whenCalled('extensionRemovedAction');
+    const completionText = pluralString.getArgs('getPluralString')[2];
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
+    assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
+    assertEquals(completionText.itemCount, 1);
   });
 
   test(
@@ -163,8 +172,12 @@ suite('ExtensionsReviewPanel', function() {
         element.shadowRoot!.querySelector<HTMLElement>(
                                '#removeAllButton')!.click();
         await flushTasks();
+        await browserProxy.whenCalled('removeAllAction');
+        const completionText = pluralString.getArgs('getPluralString')[7];
         assertTrue(!!completionTextContainer);
         assertTrue(isVisible(completionTextContainer));
+        assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
+        assertEquals(completionText.itemCount, 3);
       });
 
   test('CompletionStateShouldBeShownAfterKeepingItems', async function() {
@@ -203,6 +216,7 @@ suite('ExtensionsReviewPanel', function() {
     // Click the Keep the Extension button.
     actionMenu.querySelector('button')!.click();
     await flushTasks();
+    await browserProxy.whenCalled('extensionKeptAction');
 
     // The extension row should be removed and the completion state should be
     // shown.

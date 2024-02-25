@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -33,7 +34,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -237,7 +237,7 @@ testing::AssertionResult SharedInfoEqual(
 AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    absl::optional<url::Origin> aggregation_coordinator_origin) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return CreateExampleRequestWithReportTime(
       /*report_time=*/base::Time::Now(), aggregation_mode, failed_send_attempts,
       std::move(aggregation_coordinator_origin));
@@ -247,14 +247,15 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
-    absl::optional<url::Origin> aggregation_coordinator_origin) {
+    std::optional<url::Origin> aggregation_coordinator_origin) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
                  {blink::mojom::AggregatableReportHistogramContribution(
                      /*bucket=*/123,
                      /*value=*/456)},
-                 aggregation_mode, std::move(aggregation_coordinator_origin)),
+                 aggregation_mode, std::move(aggregation_coordinator_origin),
+                 /*max_contributions_allowed=*/20),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/report_time,
                  /*report_id=*/
@@ -265,7 +266,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
              /*reporting_path=*/"example-path",
-             /*debug_key=*/absl::nullopt, /*additional_fields=*/{},
+             /*debug_key=*/std::nullopt, /*additional_fields=*/{},
              failed_send_attempts)
       .value();
 }
@@ -292,22 +293,27 @@ AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
                             report.aggregation_coordinator_origin());
 }
 
-TestHpkeKey GenerateKey(std::string key_id) {
-  bssl::ScopedEVP_HPKE_KEY key;
-  EXPECT_TRUE(EVP_HPKE_KEY_generate(key.get(), EVP_hpke_x25519_hkdf_sha256()));
+TestHpkeKey::TestHpkeKey(std::string key_id) : key_id_(std::move(key_id)) {
+  EXPECT_TRUE(EVP_HPKE_KEY_generate(full_hpke_key_.get(),
+                                    EVP_hpke_x25519_hkdf_sha256()));
+}
 
+TestHpkeKey::TestHpkeKey(TestHpkeKey&&) = default;
+TestHpkeKey& TestHpkeKey::operator=(TestHpkeKey&&) = default;
+TestHpkeKey::~TestHpkeKey() = default;
+
+PublicKey TestHpkeKey::GetPublicKey() const {
   std::vector<uint8_t> public_key(X25519_PUBLIC_VALUE_LEN);
   size_t public_key_len;
   EXPECT_TRUE(EVP_HPKE_KEY_public_key(
-      /*key=*/key.get(), /*out=*/public_key.data(),
+      /*key=*/full_hpke_key_.get(), /*out=*/public_key.data(),
       /*out_len=*/&public_key_len, /*max_out=*/public_key.size()));
   EXPECT_EQ(public_key.size(), public_key_len);
+  return PublicKey(key_id_, std::move(public_key));
+}
 
-  TestHpkeKey hpke_key{
-      {}, PublicKey(key_id, public_key), base::Base64Encode(public_key)};
-  EVP_HPKE_KEY_copy(&hpke_key.full_hpke_key, key.get());
-
-  return hpke_key;
+std::string TestHpkeKey::GetPublicKeyBase64() const {
+  return base::Base64Encode(GetPublicKey().key);
 }
 
 base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
@@ -344,7 +350,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info) {
-  base::span<const uint8_t> enc = payload.subspan(0, X25519_PUBLIC_VALUE_LEN);
+  base::span<const uint8_t> enc = payload.first<X25519_PUBLIC_VALUE_LEN>();
 
   std::string authenticated_info_str =
       base::StrCat({AggregatableReport::kDomainSeparationPrefix,
@@ -423,8 +429,8 @@ void MockAggregationService::NotifyRequestStorageModified() {
 
 void MockAggregationService::NotifyReportHandled(
     const AggregatableReportRequest& request,
-    absl::optional<AggregationServiceStorage::RequestId> id,
-    absl::optional<AggregatableReport> report,
+    std::optional<AggregationServiceStorage::RequestId> id,
+    std::optional<AggregatableReport> report,
     base::Time report_handled_time,
     AggregationServiceObserver::ReportStatus status) {
   for (auto& observer : observers_)

@@ -103,6 +103,7 @@ class ImageDocumentParser : public RawDataDocumentParser {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(image_resource_);
+    visitor->Trace(world_);
     RawDataDocumentParser::Trace(visitor);
   }
 
@@ -111,7 +112,7 @@ class ImageDocumentParser : public RawDataDocumentParser {
   void Finish() override;
 
   Member<ImageResource> image_resource_;
-  const scoped_refptr<const DOMWrapperWorld> world_;
+  const Member<const DOMWrapperWorld> world_;
 };
 
 // --------
@@ -137,12 +138,14 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
     return;
 
   LocalFrame* frame = GetDocument()->GetFrame();
-  Settings* settings = frame->GetSettings();
-  bool allow_image = !settings || settings->GetImagesEnabled();
-  if (auto* client = frame->GetContentSettingsClient())
-    allow_image = client->AllowImage(allow_image, GetDocument()->Url());
-  if (!allow_image)
+  bool allow_image = frame->ImagesEnabled();
+  if (!allow_image) {
+    auto* client = frame->GetContentSettingsClient();
+    if (client) {
+      client->DidNotAllowImage();
+    }
     return;
+  }
 
   if (!image_resource_) {
     ResourceRequest request(GetDocument()->Url());
@@ -220,8 +223,7 @@ gfx::Size ImageDocument::ImageSize() const {
   DCHECK(image_element_);
   DCHECK(image_element_->CachedImage());
   return image_element_->CachedImage()->IntrinsicSize(
-      LayoutObject::ShouldRespectImageOrientation(
-          image_element_->GetLayoutObject()));
+      LayoutObject::GetImageOrientation(image_element_->GetLayoutObject()));
 }
 
 void ImageDocument::CreateDocumentStructure(

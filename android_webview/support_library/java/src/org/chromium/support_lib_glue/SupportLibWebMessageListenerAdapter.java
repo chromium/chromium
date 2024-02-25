@@ -38,8 +38,9 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     public SupportLibWebMessageListenerAdapter(
             WebView webView, /* WebMessageListener */ InvocationHandler handler) {
         mWebView = webView;
-        mImpl = BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                WebMessageListenerBoundaryInterface.class, handler);
+        mImpl =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        WebMessageListenerBoundaryInterface.class, handler);
         mSupportedFeatures = mImpl.getSupportedFeatures();
     }
 
@@ -48,10 +49,15 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     }
 
     @Override
-    public void onPostMessage(final MessagePayload payload, final Uri sourceOrigin,
-            final boolean isMainFrame, final JsReplyProxy replyProxy, final MessagePort[] ports) {
+    public void onPostMessage(
+            final MessagePayload payload,
+            final Uri topLevelOrigin,
+            final Uri sourceOrigin,
+            final boolean isMainFrame,
+            final JsReplyProxy replyProxy,
+            final MessagePort[] ports) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
-                    mSupportedFeatures, Features.WEB_MESSAGE_LISTENER)) {
+                mSupportedFeatures, Features.WEB_MESSAGE_LISTENER)) {
             Log.e(TAG, "The AndroidX doesn't have feature: " + Features.WEB_MESSAGE_LISTENER);
             return;
         }
@@ -60,14 +66,17 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
                 || (payload.getType() == MessagePayloadType.ARRAY_BUFFER
                         && BoundaryInterfaceReflectionUtil.containsFeature(
                                 mSupportedFeatures, Features.WEB_MESSAGE_ARRAY_BUFFER))) {
-            mImpl.onPostMessage(mWebView,
+            mImpl.onPostMessage(
+                    mWebView,
                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                             new SupportLibWebMessageAdapter(payload, ports)),
-                    sourceOrigin, isMainFrame,
+                    sourceOrigin,
+                    isMainFrame,
                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                             new SupportLibJsReplyProxyAdapter(replyProxy)));
         } else {
-            Log.e(TAG,
+            Log.e(
+                    TAG,
                     "The AndroidX doesn't support payload type: "
                             + MessagePayload.typeToString(payload.getType()));
         }

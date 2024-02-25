@@ -117,7 +117,7 @@ class PermissionAuditingServiceTest : public testing::Test {
     base::Time last_usage_time;
     service().GetLastPermissionUsageTime(
         type, origin,
-        base::BindLambdaForTesting([&](absl::optional<base::Time> time) {
+        base::BindLambdaForTesting([&](std::optional<base::Time> time) {
           last_usage_time = time.value_or(base::Time());
           run_loop.QuitWhenIdle();
         }));

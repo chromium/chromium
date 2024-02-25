@@ -39,7 +39,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
   ~CustomScrollbarTheme() override = default;
 
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override {
+                         EScrollbarWidth scrollbar_width) const override {
     return GetTheme().ScrollbarThickness(scale_from_dip, scrollbar_width);
   }
 
@@ -51,7 +51,8 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
                          const Scrollbar* vertical_scrollbar,
                          const DisplayItemClient&,
                          const gfx::Rect& corner_rect,
-                         mojom::blink::ColorScheme color_scheme) override;
+                         mojom::blink::ColorScheme color_scheme,
+                         const ui::ColorProvider* color_provider) override;
 
   bool ShouldCenterOnThumb(const Scrollbar& scrollbar,
                            const WebMouseEvent& event) override {

@@ -94,13 +94,10 @@ class WebTestRunner(object):
         self._test_inputs = test_inputs
 
         # dynamically set exit_after_n_failures and exit_after_n_crashes_or_timeouts
-        self._exit_after_n_failures = (self._options.exit_after_n_failures
-                                       or max(5000,
-                                              len(test_inputs) // 2))
-        self._exit_after_n_crashes_or_timeouts = (
-            self._options.exit_after_n_crashes_or_timeouts
-            or max(100,
-                   len(test_inputs) // 33))
+        self._exit_after_n_failures = self._port.max_allowed_failures(
+            len(test_inputs))
+        self._exit_after_n_crashes_or_timeouts = self._port.max_allowed_crash_or_timeouts(
+            len(test_inputs))
 
         test_run_results = TestRunResults(
             self._expectations,

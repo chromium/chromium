@@ -67,24 +67,22 @@ BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
   if (accessibility_bridge_for_test_)
     return accessibility_bridge_for_test_;
 
+  gfx::NativeWindow top_level_native_window =
+      delegate_ ? delegate_->GetTopLevelNativeWindow() : gfx::NativeWindow();
+
+  aura::Window* accessibility_bridge_key =
+      top_level_native_window ? top_level_native_window->GetRootWindow()
+                              : nullptr;
+  if (!accessibility_bridge_key) {
+    return nullptr;
+  }
+
   ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
       ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
   DCHECK(accessibility_bridge_registry);
 
-  WebContents* web_contents = this->web_contents();
-  if (!web_contents)
-    return nullptr;
-
-  gfx::NativeWindow top_level_native_window =
-      web_contents->GetTopLevelNativeWindow();
-  if (!top_level_native_window)
-    return nullptr;
-
-  aura::Window* root_window = top_level_native_window->GetRootWindow();
-  if (!root_window)
-    return nullptr;
-
-  return accessibility_bridge_registry->GetAccessibilityBridge(root_window);
+  return accessibility_bridge_registry->GetAccessibilityBridge(
+      accessibility_bridge_key);
 }
 
 void BrowserAccessibilityManagerFuchsia::FireFocusEvent(ui::AXNode* node) {
@@ -137,7 +135,7 @@ void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
   if (!GetAccessibilityBridge())
     return;
 
-  absl::optional<uint32_t> hit_result_id;
+  std::optional<uint32_t> hit_result_id;
 
   if (node) {
     BrowserAccessibilityFuchsia* hit_result =

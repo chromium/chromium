@@ -16,21 +16,27 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "chromeos/dbus/missive/history_tracker.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
 #include "components/reporting/resources/resource_manager.h"
-#include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/missive/history_tracker.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ash {
 
@@ -51,6 +57,12 @@ void SendStatusAsResponse(
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(response_message);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Turn on/off the debug state flag (for Ash only).
+  response_message.set_health_data_logging_enabled(
+      ::reporting::HistoryTracker::Get()->debug_state());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Send `response`
   std::move(response_sender).Run(std::move(response));
 }
@@ -67,7 +79,7 @@ EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
       memory_resource_(base::MakeRefCounted<::reporting::ResourceManager>(
           kDefaultMemoryAllocation)),
       upload_provider_(std::move(upload_provider)) {
-  CHECK(upload_provider_.get());
+  CHECK(upload_provider_);
 }
 
 EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
@@ -165,12 +177,34 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   ::reporting::UploadEncryptedRecordResponse response_message;
 
   if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported
-    // when is_uploader_required() is true. Have this code only as
-    // in order to let `missive` daemon to log configuration inconsistency.
+    // We should never get to here, since the provider is only exported when
+    // is_uploader_required() is true. Have this code only as a door stopper in
+    // order to let `missive` daemon log configuration inconsistency.
     ::reporting::Status status{
         ::reporting::error::FAILED_PRECONDITION,
         "Uploads are not expected in this configuration"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
+    return;
+  }
+
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
+  if (!missive_client) {
+    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
+                               "No Missive client available"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
+    return;
+  }
+
+  if (!missive_client->has_valid_api_key()) {
+    response_message.set_disable(true);  // Signal `missived` to disable itself.
+    ::reporting::Status status{
+        ::reporting::error::FAILED_PRECONDITION,
+        "Cannot communicate with server, unsupported API Key"};
     LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
                          std::move(response_message), status);
@@ -233,33 +267,19 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   // Move events from |request| into a separate vector |records|, using more
   // or less the same amount of memory that has been reserved above.
   auto records{::reporting::EventUploadSizeController::BuildEncryptedRecords(
-      request.encrypted_record(),
+      std::move(*request.mutable_encrypted_record()),
       ::reporting::EventUploadSizeController(
           network_condition_service_, new_events_rate,
           remaining_storage_capacity,
           ::reporting::FileUploadDelegate::kMaxUploadBufferSize))};
 
-  CHECK(upload_provider_);
-  chromeos::MissiveClient* const missive_client =
-      chromeos::MissiveClient::Get();
-  if (!missive_client) {
-    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
-                               "No Missive client available"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
-    return;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Accept health data if present (ChromeOS only)
+  if (request.has_health_data()) {
+    ::reporting::HistoryTracker::Get()->set_data(
+        std::move(request.health_data()), base::DoNothing());
   }
-
-  if (missive_client->is_disabled()) {
-    response_message.set_disable(true);  // Signal `missived` to disable itself.
-    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
-                               "Reporting disabled, unsupported API Key"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
-    return;
-  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),

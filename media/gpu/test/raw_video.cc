@@ -296,7 +296,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext()) << "Failed to open AVFormatContext";
   // Find the first VP9 stream in the file.
-  absl::optional<size_t> vp9_stream_index;
+  std::optional<size_t> vp9_stream_index;
   VideoDecoderConfig config;
   for (size_t i = 0; i < glue.format_context()->nb_streams; ++i) {
     AVStream* stream = glue.format_context()->streams[i];
@@ -446,26 +446,26 @@ bool RawVideo::LoadMetadata(const base::FilePath& json_file_path,
   }
   is_vp9_data = !!profile;
 
-  absl::optional<int> frame_rate = metadata_dict.FindInt("frame_rate");
+  std::optional<int> frame_rate = metadata_dict.FindInt("frame_rate");
   if (!frame_rate.has_value()) {
     LOG(ERROR) << "Key \"frame_rate\" is not found in " << json_file_path;
     return false;
   }
   metadata.frame_rate = base::checked_cast<uint32_t>(*frame_rate);
 
-  absl::optional<int> num_frames = metadata_dict.FindInt("num_frames");
+  std::optional<int> num_frames = metadata_dict.FindInt("num_frames");
   if (!num_frames.has_value()) {
     LOG(ERROR) << "Key \"num_frames\" is not found in " << json_file_path;
     return false;
   }
   metadata.num_frames = base::checked_cast<size_t>(*num_frames);
 
-  absl::optional<int> width = metadata_dict.FindInt("width");
+  std::optional<int> width = metadata_dict.FindInt("width");
   if (!width.has_value()) {
     LOG(ERROR) << "Key \"width\" is not found in " << json_file_path;
     return false;
   }
-  absl::optional<int> height = metadata_dict.FindInt("height");
+  std::optional<int> height = metadata_dict.FindInt("height");
   if (!height) {
     LOG(ERROR) << "Key \"height\" is not found in " << json_file_path;
     return false;
@@ -610,7 +610,7 @@ std::unique_ptr<RawVideo> RawVideo::CreateExpandedVideo(
   LOG_ASSERT(visible_rect.x() % 2 == 0 && visible_rect.y() % 2 == 0)
       << "An odd origin point is not supported";
   LOG_ASSERT(!vp9_decoder_ && !!memory_mapped_file_);
-  const absl::optional<VideoFrameLayout> dst_layout =
+  const std::optional<VideoFrameLayout> dst_layout =
       CreateVideoFrameLayout(PIXEL_FORMAT_NV12, resolution, 1u /* alignment*/);
   LOG_ASSERT(dst_layout) << "Failed creating VideoFrameLayout";
   const auto& dst_planes = dst_layout->planes();

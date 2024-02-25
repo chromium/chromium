@@ -22,7 +22,6 @@
 #include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/ax_event_notification_details.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -101,8 +100,7 @@ struct BrowserAccessibilityFindInPageInfo {
 
 // Manages a tree of BrowserAccessibility objects.
 class CONTENT_EXPORT BrowserAccessibilityManager
-    : public ui::AXPlatformTreeManager,
-      public WebContentsObserver {
+    : public ui::AXPlatformTreeManager {
  public:
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
@@ -175,18 +173,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   virtual void OnWindowBlurred();
 
   // Notify the accessibility manager about page navigation.
-  // TODO(domfarolino, dmazzoni): Implement WebContentsObserver methods that
-  // correspond to the ones we provide today, so we can stop being manually
-  // notified of navigation events when they happen.
   void UserIsNavigatingAway();
   virtual void UserIsReloading();
   void NavigationSucceeded();
   void NavigationFailed();
-
-  // WebContentsObserver overrides
-  void DidStopLoading() override;
-  void DidActivatePortal(WebContents* predecessor_contents,
-                         base::TimeTicks activation_time) override;
+  void DidStopLoading();
 
   // For testing only, register a function to be called when
   // a generated event is fired from this BrowserAccessibilityManager.
@@ -247,9 +238,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void SetSelection(const BrowserAccessibility::AXRange& range);
   void ShowContextMenu(const BrowserAccessibility& node);
   void SignalEndOfTest();
+  void StitchChildTree(const BrowserAccessibility& node,
+                       const ui::AXTreeID& child_tree_id);
 
   // Retrieve the bounds of the parent View in screen coordinates.
-  gfx::Rect GetViewBoundsInScreenCoordinates() const;
+  virtual gfx::Rect GetViewBoundsInScreenCoordinates() const;
 
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy

@@ -121,7 +121,8 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
     entry2.launch_type = apps::FileHandler::LaunchType::kMultipleClients;
     web_app_info->file_handlers.push_back(std::move(entry2));
 
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     provider()->scheduler().InstallFromInfoWithParams(
         std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -130,13 +131,13 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      app_id_ = AppId();
+      app_id_ = webapps::AppId();
       return;
     }
 
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    app_id_ = result.Get<AppId>();
+    app_id_ = result.Get<webapps::AppId>();
 
     // Setting the user display mode is necessary because
     // `test::InstallWebApp()` forces a kBrowser display mode; see
@@ -204,7 +205,7 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
   }
 
  private:
-  AppId app_id_;
+  webapps::AppId app_id_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };

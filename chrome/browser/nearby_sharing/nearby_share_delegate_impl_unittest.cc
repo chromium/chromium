@@ -9,7 +9,10 @@
 #include "ash/public/cpp/nearby_share_controller.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/clock.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
@@ -18,6 +21,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace {
 
@@ -101,8 +105,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FakeNearbyShareLocalDeviceDataManager test_local_device_data_;
   std::unique_ptr<NearbyShareSettings> settings_;
-  raw_ptr<MockSettingsOpener, DanglingUntriaged | ExperimentalAsh>
-      settings_opener_;
+  raw_ptr<MockSettingsOpener, DanglingUntriaged> settings_opener_;
   MockNearbyShareController controller_;
   NearbyShareDelegateImpl delegate_;
   bool high_visibility_on_ = false;
@@ -187,3 +190,89 @@ TEST_F(NearbyShareDelegateImplTest, ShowNearbyShareSettings) {
 
   delegate_.ShowNearbyShareSettings();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(NearbyShareDelegateImplTest, GetIconFlagEnabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  EXPECT_FALSE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
+  EXPECT_FALSE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
+}
+
+TEST_F(NearbyShareDelegateImplTest, GetIconFlagDisabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagEnabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  // Just enforce non empty string for official branded builds..
+  EXPECT_NE(delegate_.GetPlaceholderFeatureName(), u"");
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagDisabledOfficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
+#else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(NearbyShareDelegateImplTest, GetIconFlagEnabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
+}
+
+TEST_F(NearbyShareDelegateImplTest, GetIconFlagDisabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/false).is_empty());
+  EXPECT_TRUE(delegate_.GetIcon(/*on_icon=*/true).is_empty());
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagEnabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kIsNameEnabled},
+      /*disabled_features=*/{});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       GetPlaceholderFeatureNameFlagDisabledUnofficialBuild) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kIsNameEnabled});
+
+  // Returns empty string when feature is disabled or on unofficial build.
+  EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
+}
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -8,28 +8,28 @@
  * chrome://settings and as a standalone dialog via chrome://nearby.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 // <if expr='chromeos_ash'>
-import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 // </if>
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
+import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_one_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
-import {NearbySettings} from './nearby_share_settings_mixin.js';
+import type {NearbySettings} from './nearby_share_settings_mixin.js';
 
 const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
     'nearby-images:nearby-onboarding-splash-light';
@@ -88,6 +88,15 @@ export class NearbyOnboardingOnePageElement extends
               loadTimeData.getBoolean('isJellyEnabled');
         },
       },
+
+      /**
+       * Onboarding page entry point
+       */
+      entryPoint_: {
+        type: NearbyShareOnboardingEntryPoint,
+        value: NearbyShareOnboardingEntryPoint.MAX,
+      },
+
     };
   }
 
@@ -95,6 +104,7 @@ export class NearbyOnboardingOnePageElement extends
   settings: NearbySettings|null;
   private isDarkModeActive_: boolean;
   private isJellyEnabled_: boolean;
+  private entryPoint_: NearbyShareOnboardingEntryPoint;
 
   override ready(): void {
     super.ready();
@@ -111,7 +121,7 @@ export class NearbyOnboardingOnePageElement extends
 
   private onClose_(): void {
     processOnePageOnboardingCancelledMetrics(
-        NearbyShareOnboardingFinalState.INITIAL_PAGE);
+        this.entryPoint_, NearbyShareOnboardingFinalState.INITIAL_PAGE);
 
     const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
       bubbles: true,
@@ -130,7 +140,9 @@ export class NearbyOnboardingOnePageElement extends
 
   private onViewEnterStart_(): void {
     this.$.deviceName.focus();
-    processOnePageOnboardingInitiatedMetrics(new URL(document.URL));
+    const url: URL = new URL(document.URL);
+    this.entryPoint_ = getOnboardingEntryPoint(url);
+    processOnePageOnboardingInitiatedMetrics(this.entryPoint_);
   }
 
   private async onDeviceNameInput_(): Promise<void> {
@@ -154,7 +166,7 @@ export class NearbyOnboardingOnePageElement extends
       this.set('settings.isOnboardingComplete', true);
       this.set('settings.enabled', true);
       processOnePageOnboardingCompleteMetrics(
-          NearbyShareOnboardingFinalState.INITIAL_PAGE,
+          this.entryPoint_, NearbyShareOnboardingFinalState.INITIAL_PAGE,
           this.getDefaultVisibility_());
       const onboardingCompleteEvent = new CustomEvent('onboarding-complete', {
         bubbles: true,

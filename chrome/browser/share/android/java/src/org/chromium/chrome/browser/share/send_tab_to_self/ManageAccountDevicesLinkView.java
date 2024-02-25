@@ -22,7 +22,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -33,41 +33,22 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View containing the sharing account's avatar, email and a link to manage its target devices. */
-public class ManageAccountDevicesLinkView extends LinearLayout {
+class ManageAccountDevicesLinkView extends LinearLayout {
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     private final boolean mShowLink;
 
     public ManageAccountDevicesLinkView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray attributes = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.ManageAccountDevicesLinkView, 0, 0);
+        TypedArray attributes =
+                context.getTheme()
+                        .obtainStyledAttributes(
+                                attrs, R.styleable.ManageAccountDevicesLinkView, 0, 0);
         try {
             mShowLink =
                     attributes.getBoolean(R.styleable.ManageAccountDevicesLinkView_showLink, false);
         } finally {
             attributes.recycle();
-        }
-        inflateIfVisible();
-    }
-
-    @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
-        inflateIfVisible();
-    }
-
-    // TODO(crbug.com/1219434): For now the account information is only filled once the view becomes
-    // visible, so it can still be declared in the XML if there is no account. After launch, fill
-    // the data immediately.
-    private void inflateIfVisible() {
-        if (getVisibility() != View.VISIBLE) {
-            return;
-        }
-
-        // The view was already inflated, nothing else to do.
-        if (getChildCount() > 0) {
-            return;
         }
 
         LayoutInflater.from(getContext())
@@ -81,22 +62,34 @@ public class ManageAccountDevicesLinkView extends LinearLayout {
             RoundedCornerImageView avatarView = findViewById(R.id.account_avatar);
             int accountAvatarSizePx =
                     Math.round(ACCOUNT_AVATAR_SIZE_DP * getResources().getDisplayMetrics().density);
-            avatarView.setImageBitmap(Bitmap.createScaledBitmap(
-                    account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
-            avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
-                    accountAvatarSizePx / 2, accountAvatarSizePx / 2);
+            avatarView.setImageBitmap(
+                    Bitmap.createScaledBitmap(
+                            account.getAccountImage(),
+                            accountAvatarSizePx,
+                            accountAvatarSizePx,
+                            false));
+            avatarView.setRoundedCorners(
+                    accountAvatarSizePx / 2,
+                    accountAvatarSizePx / 2,
+                    accountAvatarSizePx / 2,
+                    accountAvatarSizePx / 2);
         }
 
         TextView linkView = findViewById(R.id.manage_devices_link);
         final String accountFullNameOrEmail =
                 account.canHaveEmailAddressDisplayed() ? account.getEmail() : account.getFullName();
         if (mShowLink) {
-            SpannableString linkText = SpanApplier.applySpans(
-                    getResources().getString(
-                            R.string.send_tab_to_self_manage_devices_link, accountFullNameOrEmail),
-                    new SpanApplier.SpanInfo("<link>", "</link>",
-                            new NoUnderlineClickableSpan(
-                                    getContext(), this::openManageDevicesPageInNewTab)));
+            SpannableString linkText =
+                    SpanApplier.applySpans(
+                            getResources()
+                                    .getString(
+                                            R.string.send_tab_to_self_manage_devices_link,
+                                            accountFullNameOrEmail),
+                            new SpanApplier.SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::openManageDevicesPageInNewTab)));
             linkView.setText(linkText);
             linkView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
@@ -120,8 +113,9 @@ public class ManageAccountDevicesLinkView extends LinearLayout {
     }
 
     private static AccountInfo getSharingAccountInfo() {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
         return identityManager.findExtendedAccountInfoByEmailAddress(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail());
     }

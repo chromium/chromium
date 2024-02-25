@@ -8,12 +8,9 @@
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/udp_client_socket.h"
-#include "services/network/brokered_udp_client_socket.h"
-#include "services/network/tcp_client_socket_brokered.h"
-
-#if BUILDFLAG(IS_WIN)
 #include "services/network/broker_helper_win.h"
-#endif
+#include "services/network/brokered_tcp_client_socket.h"
+#include "services/network/brokered_udp_client_socket.h"
 
 namespace net {
 
@@ -52,7 +49,7 @@ BrokeredClientSocketFactory::CreateTransportClientSocket(
     net::NetLog* net_log,
     const net::NetLogSource& source) {
   if (ShouldBroker(addresses)) {
-    return std::make_unique<TCPClientSocketBrokered>(
+    return std::make_unique<BrokeredTcpClientSocket>(
         addresses, std::move(socket_performance_watcher),
         network_quality_estimator, net_log, source, this);
   }
@@ -87,15 +84,11 @@ void BrokeredClientSocketFactory::BrokerCreateUdpSocket(
 
 bool BrokeredClientSocketFactory::ShouldBroker(
     const net::AddressList& addresses) const {
-#if BUILDFLAG(IS_WIN)
   for (const auto& address : addresses) {
     if (broker_helper_.ShouldBroker(address.address()))
       return true;
   }
   return false;
-#else
-  return true;
-#endif
 }
 
 }  // namespace network

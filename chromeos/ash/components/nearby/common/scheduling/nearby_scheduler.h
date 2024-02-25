@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::nearby {
 
@@ -43,12 +44,12 @@ class NearbyScheduler {
   virtual void Reschedule() = 0;
 
   // Returns the time of the last known successful request. If no request has
-  // succeeded, absl::nullopt is returned.
-  virtual absl::optional<base::Time> GetLastSuccessTime() const = 0;
+  // succeeded, std::nullopt is returned.
+  virtual std::optional<base::Time> GetLastSuccessTime() const = 0;
 
-  // Returns the time until the next scheduled request. Returns absl::nullopt if
+  // Returns the time until the next scheduled request. Returns std::nullopt if
   // there is no request scheduled.
-  virtual absl::optional<base::TimeDelta> GetTimeUntilNextRequest() const = 0;
+  virtual std::optional<base::TimeDelta> GetTimeUntilNextRequest() const = 0;
 
   // Returns true after the |callback_| has been alerted of a request but before
   // HandleResult() is invoked.

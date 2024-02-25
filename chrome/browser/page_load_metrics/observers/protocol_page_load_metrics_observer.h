@@ -7,7 +7,6 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
-#include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
 class ProtocolPageLoadMetricsObserver

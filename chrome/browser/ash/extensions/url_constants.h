@@ -8,7 +8,7 @@
 namespace extensions {
 
 // IME extension's Japanese options page.
-constexpr char kIMEJPOptionsURL[] =
+inline constexpr char kIMEJPOptionsURL[] =
     "chrome-extension://jkghodnilhceideoidjikpgommlajknk/"
     "mozc_option.html";
 

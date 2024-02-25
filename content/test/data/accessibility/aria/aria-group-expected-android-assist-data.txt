@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="group"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="link"}]
+++++++TextView text:"Group Link1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="link"}]
+++++++TextView text:"Group Link2" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

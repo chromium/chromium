@@ -15,7 +15,8 @@ class GURL;
 
 // Invoked when a user interacts with the primary button for a specific
 // `WhatsNewEntryId`.
-- (void)didTapActionButton:(WhatsNewType)type;
+- (void)didTapActionButton:(WhatsNewType)type
+             primaryAction:(WhatsNewPrimaryAction)primaryAction;
 
 // Invoked when a user interacts with the learn more button for a specific
 // `WhatsNewEntryId`, which will open a new tab with the learn more url loaded.

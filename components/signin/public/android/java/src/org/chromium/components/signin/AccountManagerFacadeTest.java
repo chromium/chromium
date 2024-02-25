@@ -29,9 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}.
- */
+/** Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountManagerFacadeTest {
@@ -41,14 +39,14 @@ public class AccountManagerFacadeTest {
         private final CallbackHelper mBlockGetAccounts = new CallbackHelper();
 
         @Override
-        public Account[] getAccounts() {
+        public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
             // Blocks thread that's trying to get accounts from the delegate.
             try {
                 mBlockGetAccounts.waitForFirst();
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
-            return super.getAccounts();
+            return super.getAccountsSynchronous();
         }
 
         void unblockGetAccounts() {
@@ -61,10 +59,11 @@ public class AccountManagerFacadeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountManagerFacadeProvider.setInstanceForTests(
-                    new AccountManagerFacadeImpl(mDelegate));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountManagerFacadeProvider.setInstanceForTests(
+                            new AccountManagerFacadeImpl(mDelegate));
+                });
     }
 
     @After
@@ -76,33 +75,53 @@ public class AccountManagerFacadeTest {
     @SmallTest
     public void testIsCachePopulated() throws InterruptedException {
         // Cache shouldn't be populated until getAccountsSync is unblocked.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertFalse(AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(
+                            AccountManagerFacadeProvider.getInstance()
+                                    .getCoreAccountInfos()
+                                    .isFulfilled());
+                });
 
         mDelegate.unblockGetAccounts();
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountManagerFacadeProvider.getInstance().getAccounts().then(
-                    accounts -> { countDownLatch.countDown(); });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountManagerFacadeProvider.getInstance()
+                            .getCoreAccountInfos()
+                            .then(
+                                    coreAccountInfos -> {
+                                        countDownLatch.countDown();
+                                    });
+                });
         // Wait for cache population to finish.
         countDownLatch.await();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            AccountManagerFacadeProvider.getInstance()
+                                    .getCoreAccountInfos()
+                                    .isFulfilled());
+                });
     }
 
     @Test
     @SmallTest
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
         CountDownLatch firstCounter = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Add callback. This should be done on the main thread.
-            AccountManagerFacadeProvider.getInstance().getAccounts().then(
-                    accounts -> { firstCounter.countDown(); });
-        });
-        assertEquals("Callback shouldn't be invoked until cache is populated", 1,
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Add callback. This should be done on the main thread.
+                    AccountManagerFacadeProvider.getInstance()
+                            .getCoreAccountInfos()
+                            .then(
+                                    coreAccountInfos -> {
+                                        firstCounter.countDown();
+                                    });
+                });
+        assertEquals(
+                "Callback shouldn't be invoked until cache is populated",
+                1,
                 firstCounter.getCount());
 
         mDelegate.unblockGetAccounts();
@@ -110,12 +129,19 @@ public class AccountManagerFacadeTest {
         firstCounter.await();
 
         CountDownLatch secondCounter = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountManagerFacadeProvider.getInstance().getAccounts().then(
-                    accounts -> { secondCounter.countDown(); });
-            assertEquals("Callback should be posted on UI thread, not executed synchronously", 1,
-                    secondCounter.getCount());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountManagerFacadeProvider.getInstance()
+                            .getCoreAccountInfos()
+                            .then(
+                                    coreAccountInfos -> {
+                                        secondCounter.countDown();
+                                    });
+                    assertEquals(
+                            "Callback should be posted on UI thread, not executed synchronously",
+                            1,
+                            secondCounter.getCount());
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertEquals(
                 "Callback should be posted to UI thread right away", 0, secondCounter.getCount());

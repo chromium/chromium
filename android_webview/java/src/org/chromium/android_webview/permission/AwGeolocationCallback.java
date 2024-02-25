@@ -63,8 +63,10 @@ public class AwGeolocationCallback implements AwGeolocationPermissions.Callback 
     @Override
     public void invoke(String origin, boolean allow, boolean retain) {
         if (mCleanupRunable == null || mCleanupReference == null) {
-            Log.w(TAG, "Response for this geolocation request has been received."
-                    + " Ignoring subsequent responses");
+            Log.w(
+                    TAG,
+                    "Response for this geolocation request has been received."
+                            + " Ignoring subsequent responses");
             return;
         }
         mCleanupRunable.setResponse(origin, allow, retain);

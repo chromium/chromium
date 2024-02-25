@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -302,4 +302,7 @@ struct SpeechRecognitionOptions {
   // Set to false if accurate TimingInfo relative to the start of captioning is
   // needed.
   [MinVersion=4] bool skip_continuously_empty_audio = false;
+
+  // The optional experiment recognizer routing key for current request.
+  [MinVersion=5] string? experiment_recognizer_routing_key;
 };

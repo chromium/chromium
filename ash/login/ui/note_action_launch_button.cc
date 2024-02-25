@@ -16,6 +16,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -101,6 +103,8 @@ class BubbleLayerDelegate : public views::BasePaintedLayerDelegate {
 
 // The (background) view that paints and animates the note action bubble.
 class NoteActionLaunchButton::BackgroundView : public NonAccessibleView {
+  METADATA_HEADER(BackgroundView, NonAccessibleView)
+
  public:
   // NOTE: the background layer is set to the large bubble bounds and scaled
   // down when needed.
@@ -161,6 +165,9 @@ class NoteActionLaunchButton::BackgroundView : public NonAccessibleView {
   BubbleLayerDelegate background_layer_delegate_;
 };
 
+BEGIN_METADATA(NoteActionLaunchButton, BackgroundView)
+END_METADATA
+
 // The event target delegate used for the note action view. It matches the
 // shape of the bubble with the provided radius.
 class BubbleTargeterDelegate : public views::MaskedTargeterDelegate {
@@ -189,6 +196,8 @@ class BubbleTargeterDelegate : public views::MaskedTargeterDelegate {
 // the (small) bubble shape centered in the top right corner of the action
 // button bounds.
 class NoteActionLaunchButton::ActionButton : public views::ImageButton {
+  METADATA_HEADER(ActionButton, views::ImageButton)
+
  public:
   explicit ActionButton(NoteActionLaunchButton::BackgroundView* background)
       : views::ImageButton(base::BindRepeating(&ActionButton::ButtonPressed,
@@ -332,8 +341,7 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   }
 
   // The background view, which paints the note action bubble.
-  raw_ptr<NoteActionLaunchButton::BackgroundView,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NoteActionLaunchButton::BackgroundView, DanglingUntriaged>
       background_;
 
   BubbleTargeterDelegate event_targeter_delegate_;
@@ -342,6 +350,9 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   // scroll gesture (which could lead to a fling) is in progress.
   bool tracking_activation_gesture_ = false;
 };
+
+BEGIN_METADATA(NoteActionLaunchButton, ActionButton)
+END_METADATA
 
 NoteActionLaunchButton::TestApi::TestApi(NoteActionLaunchButton* launch_button)
     : launch_button_(launch_button) {}
@@ -375,5 +386,8 @@ void NoteActionLaunchButton::UpdateVisibility(
     mojom::TrayActionState action_state) {
   SetVisible(action_state == mojom::TrayActionState::kAvailable);
 }
+
+BEGIN_METADATA(NoteActionLaunchButton)
+END_METADATA
 
 }  // namespace ash

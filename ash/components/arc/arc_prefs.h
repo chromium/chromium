@@ -16,6 +16,7 @@ namespace prefs {
 ARC_EXPORT extern const char kAlwaysOnVpnLockdown[];
 ARC_EXPORT extern const char kAlwaysOnVpnPackage[];
 ARC_EXPORT extern const char kArcActiveDirectoryPlayUserId[];
+ARC_EXPORT extern const char kArcAppRequestedInSession[];
 ARC_EXPORT extern const char kArcApps[];
 ARC_EXPORT extern const char kArcBackupRestoreEnabled[];
 ARC_EXPORT extern const char kArcCompatibleFilesystemChosen[];
@@ -29,6 +30,7 @@ ARC_EXPORT extern const char kArcFrameworkVersion[];
 ARC_EXPORT extern const char kArcHasAccessToRemovableMedia[];
 ARC_EXPORT extern const char kArcInitialSettingsPending[];
 ARC_EXPORT extern const char kArcInitialLocationSettingSyncRequired[];
+ARC_EXPORT extern const char kArcLastSetAppLocale[];
 ARC_EXPORT extern const char kArcLocationServiceEnabled[];
 ARC_EXPORT extern const char kArcManagementTransition[];
 ARC_EXPORT extern const char kArcPackages[];
@@ -52,6 +54,7 @@ ARC_EXPORT extern const char kArcIsManaged[];
 ARC_EXPORT extern const char kEcryptfsMigrationStrategy[];
 ARC_EXPORT extern const char kEngagementPrefsPrefix[];
 ARC_EXPORT extern const char kArcVmDataMigrationStrategy[];
+ARC_EXPORT extern const char kUnaffiliatedDeviceArcAllowed[];
 
 // Local state prefs in lexicographical order.
 ARC_EXPORT extern const char kAnrPendingCount[];

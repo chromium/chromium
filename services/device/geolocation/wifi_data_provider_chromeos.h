@@ -6,13 +6,13 @@
 #define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_CHROMEOS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -30,7 +30,7 @@ class WifiDataProviderChromeOs : public WifiDataProvider {
   bool GetData(WifiData* data) override;
   void ForceRescan() override;
 
-  absl::optional<WifiData> GetWifiDataForTesting();
+  std::optional<WifiData> GetWifiDataForTesting();
 
  private:
   friend class GeolocationChromeOsWifiDataProviderTest;
@@ -40,7 +40,7 @@ class WifiDataProviderChromeOs : public WifiDataProvider {
   std::unique_ptr<WifiPollingPolicy> CreatePollingPolicy();
 
   void DoWifiScanTask();
-  void OnWifiScanTaskComplete(absl::optional<WifiData> wifi_data);
+  void OnWifiScanTaskComplete(std::optional<WifiData> wifi_data);
 
   // Will schedule a scan; i.e. enqueue DoWifiScanTask deferred task.
   void ScheduleNextScan(int interval);

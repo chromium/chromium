@@ -24,8 +24,11 @@ class Browser;
 class TabStripPageHandler;
 class TabStripUIEmbedder;
 
-extern const char kWebUITabIdDataType[];
-extern const char kWebUITabGroupIdDataType[];
+// These data types must be in all lowercase.
+constexpr char16_t kWebUITabIdDataType[] = u"application/vnd.chromium.tab";
+constexpr char16_t kWebUITabGroupIdDataType[] =
+    u"application/vnd.chromium.tabgroup";
+
 
 // The WebUI version of the tab strip in the browser. It is currently only
 // supported on ChromeOS in tablet mode.

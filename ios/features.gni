@@ -9,7 +9,7 @@ declare_args() {
 
   # Control whether iOS builds with PartitionAlloc.
   # Temporarily disable for rollout -- see crbug.com/1412190 for details.
-  ios_partition_alloc_enabled = false
+  ios_partition_alloc_enabled = true
 
   # Control whether //ios/chrome and //ios/web targets are build. This
   # is used by bots from projects based on top of Chromium that want to

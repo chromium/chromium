@@ -11,9 +11,13 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_resizer.h"
+#include "remoting/host/linux/gnome_display_config_dbus_client.h"
+#include "remoting/host/linux/scoped_glib.h"
 #include "remoting/host/linux/x11_util.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
 
 namespace remoting {
@@ -79,6 +83,9 @@ class DesktopResizerX11 : public DesktopResizer {
   // Gets a list of outputs that are not connected to any CRTCs.
   OutputInfoList GetDisabledOutputs();
 
+  void RequestGnomeDisplayConfig();
+  void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
+
   raw_ptr<x11::Connection> connection_;
   const raw_ptr<x11::RandR> randr_ = nullptr;
   const raw_ptr<const x11::Screen> screen_ = nullptr;
@@ -86,6 +93,18 @@ class DesktopResizerX11 : public DesktopResizer {
   ScreenResources resources_;
   bool has_randr_;
   bool is_virtual_session_;
+
+  // Used to fetch GNOME's current scale setting, so the correct
+  // text-scaling-factor can be calculated.
+  GnomeDisplayConfigDBusClient gnome_display_config_;
+
+  // Used to rate-limit requests to GNOME.
+  base::OneShotTimer gnome_delay_timer_;
+
+  int requested_dpi_;
+
+  // Used to set the text-scaling-factor.
+  ScopedGObject<GSettings> registry_;
 };
 
 }  // namespace remoting

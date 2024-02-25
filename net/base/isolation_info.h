@@ -5,6 +5,7 @@
 #ifndef NET_BASE_ISOLATION_INFO_H_
 #define NET_BASE_ISOLATION_INFO_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -13,7 +14,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network::mojom {
@@ -67,11 +67,8 @@ class NET_EXPORT IsolationInfo {
     kOther,
   };
 
-  // Bound the party_context size with a reasonable number.
-  static constexpr size_t kPartyContextMaxSize = 20;
-
   // Default constructor returns an IsolationInfo with empty origins, a null
-  // SiteForCookies(), null |party_context|, and a RequestType of kOther.
+  // SiteForCookies(), and a RequestType of kOther.
   IsolationInfo();
   IsolationInfo(const IsolationInfo&);
   IsolationInfo(IsolationInfo&&);
@@ -83,7 +80,7 @@ class NET_EXPORT IsolationInfo {
   // Simple constructor for internal requests. Sets |frame_origin| and
   // |site_for_cookies| match |top_frame_origin|. Sets |request_type| to
   // kOther. Will only send SameSite cookies to the site associated with
-  // the passed in origin. |party_context| is set to be an empty set.
+  // the passed in origin.
   static IsolationInfo CreateForInternalRequest(
       const url::Origin& top_frame_origin);
 
@@ -92,9 +89,16 @@ class NET_EXPORT IsolationInfo {
   // CreateForInternalRequest with a fresh opaque origin.
   static IsolationInfo CreateTransient();
 
+  // Same as CreateTransient, with a `nonce` used to identify requests tagged
+  // with this IsolationInfo in the network service. The `nonce` provides no
+  // additional resource isolation, because the opaque origin in the resulting
+  // IsolationInfo already represents a unique partition.
+  static IsolationInfo CreateTransientWithNonce(
+      const base::UnguessableToken& nonce);
+
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
-  static absl::optional<IsolationInfo> Deserialize(
+  static std::optional<IsolationInfo> Deserialize(
       const std::string& serialized);
 
   // Creates an IsolationInfo with the provided parameters. If the parameters
@@ -108,7 +112,6 @@ class NET_EXPORT IsolationInfo {
   // * If |request_type| is kOther, |top_frame_origin| and
   //   |frame_origin| must be first party with respect to |site_for_cookies|, or
   //   |site_for_cookies| must be null.
-  // * If |party_context| is not empty, |top_frame_origin| must not be null.
   // * If |nonce| is specified, then |top_frame_origin| must not be null.
   //
   // Note that the |site_for_cookies| consistency checks are skipped when
@@ -118,8 +121,7 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       const SiteForCookies& site_for_cookies,
-      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
-      const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
 
   // TODO(crbug/1372769): Remove this and create a safer way to ensure NIKs
   // created from NAKs aren't used by accident.
@@ -132,13 +134,12 @@ class NET_EXPORT IsolationInfo {
   // considered consistent.
   //
   // Intended for use by cross-process deserialization.
-  static absl::optional<IsolationInfo> CreateIfConsistent(
+  static std::optional<IsolationInfo> CreateIfConsistent(
       RequestType request_type,
-      const absl::optional<url::Origin>& top_frame_origin,
-      const absl::optional<url::Origin>& frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
-      absl::optional<std::set<SchemefulSite>> party_context = absl::nullopt,
-      const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
   // unmodified.
@@ -154,10 +155,10 @@ class NET_EXPORT IsolationInfo {
   // Note that these are the values the IsolationInfo was created with. In the
   // case an IsolationInfo was created from a NetworkIsolationKey, they may be
   // scheme + eTLD+1 instead of actual origins.
-  const absl::optional<url::Origin>& top_frame_origin() const {
+  const std::optional<url::Origin>& top_frame_origin() const {
     return top_frame_origin_;
   }
-  const absl::optional<url::Origin>& frame_origin() const;
+  const std::optional<url::Origin>& frame_origin() const;
 
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
@@ -167,7 +168,7 @@ class NET_EXPORT IsolationInfo {
     return network_anonymization_key_;
   }
 
-  const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+  const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
   // The value that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
@@ -178,23 +179,14 @@ class NET_EXPORT IsolationInfo {
   const SiteForCookies& site_for_cookies() const { return site_for_cookies_; }
 
   // Do not use outside of testing. Returns the `frame_origin_`.
-  const absl::optional<url::Origin>& frame_origin_for_testing() const;
-
-  // Return |party_context| which exclude the top frame origin and the frame
-  // origin.
-  // TODO(mmenke): Make this function PartyContextForTesting() after switching
-  // RenderFrameHostImpl to use the parent IsolationInfo to create the child
-  // IsolationInfo instead of walking through all parent frames.
-  const absl::optional<std::set<SchemefulSite>>& party_context() const {
-    return party_context_;
-  }
+  const std::optional<url::Origin>& frame_origin_for_testing() const;
 
   bool IsEqualForTesting(const IsolationInfo& other) const;
 
   NetworkAnonymizationKey CreateNetworkAnonymizationKeyForIsolationInfo(
-      const absl::optional<url::Origin>& top_frame_origin,
-      const absl::optional<url::Origin>& frame_origin,
-      const absl::optional<base::UnguessableToken>& nonce) const;
+      const std::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& frame_origin,
+      const std::optional<base::UnguessableToken>& nonce) const;
 
   // Serialize the `IsolationInfo` into a string. Fails if transient, returning
   // an empty string.
@@ -204,16 +196,15 @@ class NET_EXPORT IsolationInfo {
 
  private:
   IsolationInfo(RequestType request_type,
-                const absl::optional<url::Origin>& top_frame_origin,
-                const absl::optional<url::Origin>& frame_origin,
+                const std::optional<url::Origin>& top_frame_origin,
+                const std::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
-                const absl::optional<base::UnguessableToken>& nonce,
-                absl::optional<std::set<SchemefulSite>> party_context);
+                const std::optional<base::UnguessableToken>& nonce);
 
   RequestType request_type_;
 
-  absl::optional<url::Origin> top_frame_origin_;
-  absl::optional<url::Origin> frame_origin_;
+  std::optional<url::Origin> top_frame_origin_;
+  std::optional<url::Origin> frame_origin_;
 
   // This can be deduced from the two origins above, but keep a cached version
   // to avoid repeated eTLD+1 calculations, when this is using eTLD+1.
@@ -225,28 +216,9 @@ class NET_EXPORT IsolationInfo {
 
   // Having a nonce is a way to force a transient opaque `IsolationInfo`
   // for non-opaque origins.
-  absl::optional<base::UnguessableToken> nonce_;
+  std::optional<base::UnguessableToken> nonce_;
 
-  // This will hold the list of distinct sites in the form of SchemefulSite to
-  // be used for First-Party-Sets check.
-  //
-  // For |request_type_| being either RequestType::kMainFrame or
-  // RequestType::kSubFrame, |party_context| holds the set of the sites
-  // of the frames in between the current frame and the top frame (i.e. not
-  // considering the current frame or the top frame).
-  //
-  // For |request_type_| being RequestType::kOther, |party_context_| holds the
-  // above, and also the site of the current frame.
-  //
-  // Note that if an intermediate frame shares a site with the top frame, that
-  // frame's site is not reflected in the |party_context_|. Also note that if an
-  // intermediate frame shares a site with the current frame, that frame's site
-  // is still included in the set. The top frame's site is excluded because it
-  // is redundant with the |top_frame_origin_| field. The current frame is
-  // excluded to make it easier to update on subframe redirects.
-  absl::optional<std::set<SchemefulSite>> party_context_;
-
-  // Mojo serialization code needs to access internal party_context_ field.
+  // Mojo serialization code needs to access internal fields.
   friend struct mojo::StructTraits<network::mojom::IsolationInfoDataView,
                                    IsolationInfo>;
 };

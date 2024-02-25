@@ -6,30 +6,26 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
 // Pixel tests for the quick settings accessibility detailed view.
-class AccessibilityDetailedViewPixelTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class AccessibilityDetailedViewPixelTest : public AshTestBase {
  public:
   AccessibilityDetailedViewPixelTest() {
-    feature_list_.InitWithFeatureStates(
-        {{features::kQsRevamp, IsQsRevampEnabled()},
-         {chromeos::features::kJelly, IsQsRevampEnabled()}});
+    feature_list_.InitWithFeatures({::features::kChromeRefresh2023,
+                                    ::features::kChromeRefreshSecondary2023,
+                                    ::features::kChromeRefresh2023NTB},
+                                   {});
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
-
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -37,11 +33,7 @@ class AccessibilityDetailedViewPixelTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         AccessibilityDetailedViewPixelTest,
-                         testing::Bool());
-
-TEST_P(AccessibilityDetailedViewPixelTest, Basics) {
+TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());
@@ -50,18 +42,14 @@ TEST_P(AccessibilityDetailedViewPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowAccessibilityDetailedView();
   views::View* detailed_view_container;
-  if (IsQsRevampEnabled()) {
-    detailed_view_container =
-        system_tray->bubble()->quick_settings_view()->detailed_view_container();
-  } else {
-    detailed_view_container =
-        system_tray->bubble()->unified_view()->detailed_view_container();
-  }
+  detailed_view_container =
+      system_tray->bubble()->quick_settings_view()->detailed_view_container();
+
   ASSERT_TRUE(detailed_view_container);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/4, detailed_view_container));
+      /*revision_number=*/10, detailed_view_container));
 }
 
 }  // namespace ash

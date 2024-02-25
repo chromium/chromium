@@ -22,10 +22,16 @@ namespace base {
 //
 // ## Caveats
 //
-// - Must only be used as a function-local static variable. Declaring a global
-//   variable of type `base::NoDestructor<T>` will still generate a global
-//   constructor; declaring a local or member variable will lead to memory leaks
-//   or other surprising and undesirable behaviour.
+// - Must not be used for locals or fields; by definition, this does not run
+//   destructors, and this will likely lead to memory leaks and other
+//   surprising and undesirable behaviour.
+//
+// - If `T` is not constexpr constructible, must be a function-local static
+//   variable, since a global `NoDestructor<T>` will still generate a static
+//   initializer.
+//
+// - If `T` is constinit constructible, may be used as a global, but mark the
+//   global `constinit`.
 //
 // - If the data is rarely used, consider creating it on demand rather than
 //   caching it for the lifetime of the program. Though `base::NoDestructor<T>`
@@ -76,6 +82,11 @@ namespace base {
 template <typename T>
 class NoDestructor {
  public:
+  static_assert(!(std::is_trivially_constructible_v<T> &&
+                  std::is_trivially_destructible_v<T>),
+                "T is trivially constructible and destructible; please use a "
+                "constinit object of type T directly instead");
+
   static_assert(
       !std::is_trivially_destructible_v<T>,
       "T is trivially destructible; please use a function-local static "

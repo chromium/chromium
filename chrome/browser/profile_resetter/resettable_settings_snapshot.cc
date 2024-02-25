@@ -27,7 +27,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
@@ -175,8 +175,9 @@ std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
       new reset_report::ChromeResetReport());
 
   if (field_mask & ResettableSettingsSnapshot::STARTUP_MODE) {
-    for (const auto& url : snapshot.startup_urls())
-      report->add_startup_url_path(url.spec());
+    for (const auto& url : snapshot.startup_urls()) {
+      report->add_startup_url_path(url.is_valid() ? url.spec() : std::string());
+    }
     switch (snapshot.startup_type()) {
       case SessionStartupPref::DEFAULT:
         report->set_startup_type(

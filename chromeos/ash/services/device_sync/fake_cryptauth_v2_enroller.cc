@@ -22,7 +22,7 @@ void FakeCryptAuthV2Enroller::FinishAttempt(
 void FakeCryptAuthV2Enroller::OnAttemptStarted(
     const cryptauthv2::ClientMetadata& client_metadata,
     const cryptauthv2::ClientAppMetadata& client_app_metadata,
-    const absl::optional<cryptauthv2::PolicyReference>&
+    const std::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
   client_metadata_ = client_metadata;
   client_app_metadata_ = client_app_metadata;

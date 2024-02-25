@@ -25,17 +25,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- * Unit tests for {@link AddExceptionPreference}.
- */
+/** Unit tests for {@link AddExceptionPreference}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AddExceptionPreferenceUnitTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
     private boolean mIsPatternValid;
 
@@ -52,38 +48,42 @@ public class AddExceptionPreferenceUnitTest {
 
     @Test
     public void testIsPatternValid() {
-        assertTrue("Empty pattern should be valid.",
-                AddExceptionPreference.isPatternValid("", SiteSettingsCategory.Type.COOKIES));
-        mIsPatternValid = true;
-        assertFalse(
-                "Pattern is invalid when it has colon and the type is not REQUEST_DESKTOP_SITE.",
+        assertTrue(
+                "Empty pattern should be valid.",
                 AddExceptionPreference.isPatternValid(
-                        "https://www.google.com", SiteSettingsCategory.Type.COOKIES));
-        assertTrue("Pattern is valid when it has colon and the type is REQUEST_DESKTOP_SITE.",
+                        "", SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
+        mIsPatternValid = true;
+        assertTrue(
+                "Pattern is valid when it has colon and the type is REQUEST_DESKTOP_SITE.",
                 AddExceptionPreference.isPatternValid(
                         "https://www.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
-        assertFalse("Pattern is invalid when it has space.",
+        assertFalse(
+                "Pattern is invalid when it has space.",
                 AddExceptionPreference.isPatternValid(
                         "https:// google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
-        assertFalse("Pattern is invalid when it starts with dot.",
+        assertFalse(
+                "Pattern is invalid when it starts with dot.",
                 AddExceptionPreference.isPatternValid(
                         ".google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
         mIsPatternValid = false;
-        assertFalse("Pattern is invalid when its ContentSettingsPattern is invalid.",
+        assertFalse(
+                "Pattern is invalid when its ContentSettingsPattern is invalid.",
                 AddExceptionPreference.isPatternValid(
                         "https://", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
     }
 
     @Test
     public void testUpdatePatternIfNeeded() {
-        assertEquals("Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
+        assertEquals(
+                "Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
                 "maps.google.com",
                 AddExceptionPreference.updatePatternIfNeeded(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
-        assertEquals("Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
+                        "maps.google.com", SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, true));
+        assertEquals(
+                "Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
                 "maps.google.com",
                 AddExceptionPreference.updatePatternIfNeeded(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
+                        "maps.google.com", SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, false));
 
         AddExceptionPreference.updatePatternIfNeeded(
                 "https://maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true);
@@ -98,46 +98,40 @@ public class AddExceptionPreferenceUnitTest {
     @Test
     public void testGetPrimaryPattern() {
         assertEquals(
-                "Primary pattern should always be the original pattern except for COOKIES type.",
+                "Primary pattern should always be the original pattern except for"
+                        + " THIRD_PARTY_COOKIES type.",
                 "maps.google.com",
                 AddExceptionPreference.getPrimaryPattern(
                         "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true));
         assertEquals(
-                "Primary pattern should always be the original pattern except for COOKIES type.",
+                "Primary pattern should always be the original pattern except for"
+                        + " THIRD_PARTY_COOKIES type.",
                 "maps.google.com",
                 AddExceptionPreference.getPrimaryPattern(
                         "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, false));
         assertEquals(
-                "Primary pattern should be wildcard for COOKIES type if user clicks the third party checkbox.",
+                "Primary pattern should be wildcard for THIRD_PARTY_COOKIES.",
                 SITE_WILDCARD,
                 AddExceptionPreference.getPrimaryPattern(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
-        assertEquals(
-                "Primary pattern should be the original pattern for COOKIES type if user does not click the third party checkbox.",
-                "maps.google.com",
-                AddExceptionPreference.getPrimaryPattern(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
+                        "maps.google.com", SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, true));
     }
 
     @Test
     public void testGetSecondaryPattern() {
-        assertEquals("Secondary pattern should always be wildcard except for COOKIES type.",
+        assertEquals(
+                "Secondary pattern should always be wildcard except for THIRD_PARTY_COOKIES type.",
                 SITE_WILDCARD,
                 AddExceptionPreference.getSecondaryPattern(
                         "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true));
-        assertEquals("Secondary pattern should always be wildcard except for COOKIES type.",
+        assertEquals(
+                "Secondary pattern should always be wildcard except for THIRD_PARTY_COOKIES type.",
                 SITE_WILDCARD,
                 AddExceptionPreference.getSecondaryPattern(
                         "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, false));
         assertEquals(
-                "Secondary pattern should be the original pattern for COOKIES type if user clicks the third party checkbox.",
+                "Secondary pattern should be the original pattern for THIRD_PARTY_COOKIES",
                 "maps.google.com",
                 AddExceptionPreference.getSecondaryPattern(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
-        assertEquals(
-                "Secondary pattern should be wildcard for COOKIES type if user does not click the third party checkbox.",
-                SITE_WILDCARD,
-                AddExceptionPreference.getSecondaryPattern(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
+                        "maps.google.com", SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, true));
     }
 }

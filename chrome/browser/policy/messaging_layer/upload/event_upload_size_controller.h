@@ -43,8 +43,7 @@ class EventUploadSizeController {
   // Build the vector of encrypted records based on the records in the upload
   // request. Event upload size is adjusted.
   [[nodiscard]] static std::vector<EncryptedRecord> BuildEncryptedRecords(
-      const google::protobuf::RepeatedPtrField<EncryptedRecord>&
-          encrypted_records,
+      google::protobuf::RepeatedPtrField<EncryptedRecord> encrypted_records,
       EventUploadSizeController&& controller);
 
  private:

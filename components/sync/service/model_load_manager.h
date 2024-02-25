@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_MODEL_LOAD_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -40,7 +40,8 @@ class ModelLoadManagerDelegate {
   // Called when the ModelLoadManager has decided it must stop `type`, likely
   // because it is no longer a desired data type, sync is shutting down, or some
   // error occurred during loading. Can be called for types that are not
-  // connected or have already failed.
+  // connected or have already failed but should not be called for the same
+  // error multiple times.
   virtual void OnSingleDataTypeWillStop(ModelType type,
                                         const SyncError& error) = 0;
 
@@ -105,13 +106,17 @@ class ModelLoadManager {
   // error) to controllers for all types which have not started till now.
   void OnLoadModelsTimeout();
 
+  // Loads model for a type using `dtc`. Ensures that LoadModels is only
+  // called for types which are not in a FAILED state.
+  void LoadModelsForType(DataTypeController* dtc);
+
   // Set of all registered controllers.
   const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
   // The delegate in charge of handling model load results.
   const raw_ptr<ModelLoadManagerDelegate> delegate_;
 
-  absl::optional<ConfigureContext> configure_context_;
+  std::optional<ConfigureContext> configure_context_;
 
   // Data types that are enabled.
   ModelTypeSet preferred_types_without_errors_;

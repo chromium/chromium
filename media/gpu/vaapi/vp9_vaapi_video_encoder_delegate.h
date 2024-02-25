@@ -14,12 +14,7 @@
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
-
-namespace libvpx {
-class VP9RateControlRTC;
-struct VP9FrameParamsQpRTC;
-struct VP9RateControlRtcConfig;
-}  // namespace libvpx
+#include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
 class VaapiWrapper;
@@ -39,9 +34,9 @@ class VP9RateControlWrapper {
 
   virtual void UpdateRateControl(
       const libvpx::VP9RateControlRtcConfig& rate_control_config);
-  // libvpx::VP9FrameParamsQpRTC take 0-63 quantization parameter.
-  // ComputeQP() returns vp9 ac/dc table index. The range is 0-255.
-  virtual int ComputeQP(const libvpx::VP9FrameParamsQpRTC& frame_params);
+  virtual libvpx::FrameDropDecision ComputeQP(
+      const libvpx::VP9FrameParamsQpRTC& frame_params);
+  virtual int GetQP() const;
   // GetLoopfilterLevel() needs to be called after ComputeQP().
   virtual int GetLoopfilterLevel() const;
   virtual void PostEncodeUpdate(
@@ -71,6 +66,12 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint8_t min_qp;
     uint8_t max_qp;
 
+    // The rate controller drop frame threshold. 0-100 as this is percentage.
+    uint8_t drop_frame_thresh = 0;
+
+    // The encoding content is a screen content.
+    bool is_screen = false;
+
     bool error_resilident_mode = false;
   };
 
@@ -99,17 +100,19 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void set_rate_ctrl_for_testing(
       std::unique_ptr<VP9RateControlWrapper> rate_ctrl);
 
+  bool RecreateSVCLayersIfNeeded(VideoBitrateAllocation& bitrate_allocation);
   bool ApplyPendingUpdateRates();
 
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;
 
   Vp9FrameHeader GetDefaultFrameHeader(const bool keyframe) const;
-  void SetFrameHeader(bool keyframe,
-                      VP9Picture* picture,
-                      std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
+  PrepareEncodeJobResult SetFrameHeader(
+      bool keyframe,
+      VP9Picture* picture,
+      std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP9Picture> picture);
 
   bool SubmitFrameParameters(
@@ -131,10 +134,15 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   Vp9ReferenceFrameVector reference_frames_;
   std::unique_ptr<VP9SVCLayers> svc_layers_;
 
-  absl::optional<std::pair<VideoBitrateAllocation, uint32_t>>
+  std::optional<std::pair<VideoBitrateAllocation, uint32_t>>
       pending_update_rates_;
 
   std::unique_ptr<VP9RateControlWrapper> rate_ctrl_;
+
+  std::optional<base::TimeDelta> dropped_superframe_timestamp_;
+
+  // TODO(b/297226972): Remove the workaround once the iHD driver is fixed.
+  bool is_last_encoded_key_frame_ = false;
 };
 }  // namespace media
 

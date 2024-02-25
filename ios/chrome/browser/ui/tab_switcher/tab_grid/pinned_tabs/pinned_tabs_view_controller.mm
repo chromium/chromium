@@ -12,7 +12,6 @@
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_cell.h"
@@ -20,11 +19,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+#import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -55,16 +57,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   NSMutableArray<TabSwitcherItem*>* _items;
 
   // Identifier of the selected item.
-  NSString* _selectedItemID;
+  web::WebStateID _selectedItemID;
 
-  // Identifier of the lastest dragged item. This property is set when the item
+  // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
-  NSString* _draggedItemID;
+  TabSwitcherItem* _draggedItem;
 
   // Identifier of the last item to be inserted. This is used to track if the
   // active tab was newly created when building the animation layout for
   // transitions.
-  NSString* _lastInsertedItemID;
+  web::WebStateID _lastInsertedItemID;
 
   // Constraints used to update the view during drag and drop actions.
   NSLayoutConstraint* _dragEnabledConstraint;
@@ -134,7 +136,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
-  _lastInsertedItemID = nil;
+  _lastInsertedItemID = web::WebStateID();
   _contentAppeared = YES;
 }
 
@@ -216,8 +218,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.collectionView.indexPathsForSelectedItems.firstObject;
   PinnedCell* selectedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+  if (!selectedCell) {
+    return nil;
+  }
 
-  if ([selectedCell hasIdentifier:_selectedItemID]) {
+  if (selectedCell.itemIdentifier == _selectedItemID) {
     UICollectionViewLayoutAttributes* attributes = [self.collectionView
         layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
     // Normalize frame to window coordinates. The attributes class applies this
@@ -232,7 +237,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                                          size:attributes.size];
     // If the active item is the last inserted item, it needs to be animated
     // differently.
-    if ([selectedCell hasIdentifier:_lastInsertedItemID]) {
+    if (selectedCell.itemIdentifier == _lastInsertedItemID) {
       activeItem.isAppearing = YES;
     }
 
@@ -244,6 +249,32 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:@[]
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionItem*)transitionItemForActiveCell {
+  [self.collectionView layoutIfNeeded];
+
+  NSIndexPath* selectedItemIndexPath =
+      self.collectionView.indexPathsForSelectedItems.firstObject;
+
+  if (![self.collectionView.indexPathsForVisibleItems
+          containsObject:selectedItemIndexPath]) {
+    return nil;
+  }
+
+  PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>(
+      [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+
+  UICollectionViewLayoutAttributes* attributes = [self.collectionView
+      layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
+
+  // Normalize frame to window coordinates. The attributes class applies this
+  // change to the other properties such as center, bounds, etc.
+  attributes.frame = [self.collectionView convertRect:attributes.frame
+                                               toView:nil];
+
+  return [TabGridTransitionItem itemWithView:cell
+                               originalFrame:attributes.frame];
 }
 
 - (BOOL)isCollectionEmpty {
@@ -267,18 +298,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return self.selectedIndex != NSNotFound;
 }
 
-#pragma mark - TabCollectionConsumer
+#pragma mark - PinnedTabCollectionConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
-#if DCHECK_IS_ON()
-  // Consistency check: ensure no IDs are duplicated.
-  NSMutableSet<NSString*>* identifiers = [[NSMutableSet alloc] init];
-  for (TabSwitcherItem* item in items) {
-    [identifiers addObject:item.identifier];
-  }
-  DCHECK_EQ(identifiers.count, items.count);
-#endif
+       selectedItemID:(web::WebStateID)selectedItemID {
+  // Note: Keep as a DCHECK, as this can be costly.
+  DCHECK(!HasDuplicateIdentifiers(items));
 
   _items = [items mutableCopy];
   _selectedItemID = selectedItemID;
@@ -296,7 +321,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
-    selectedItemID:(NSString*)selectedItemID {
+    selectedItemID:(web::WebStateID)selectedItemID {
   // Consistency check: `item`'s ID is not in `_items`.
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
 
@@ -312,8 +337,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }];
 }
 
-- (void)removeItemWithID:(NSString*)removedItemID
-          selectedItemID:(NSString*)selectedItemID {
+- (void)removeItemWithID:(web::WebStateID)removedItemID
+          selectedItemID:(web::WebStateID)selectedItemID {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
   if (index == NSNotFound) {
     return;
@@ -332,8 +357,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }];
 }
 
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  if ([_selectedItemID isEqualToString:selectedItemID]) {
+- (void)selectItemWithID:(web::WebStateID)selectedItemID {
+  if (_selectedItemID == selectedItemID) {
     return;
   }
 
@@ -344,8 +369,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self scrollCollectionViewToSelectedItemAnimated:NO];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  DCHECK([item.identifier isEqualToString:itemID] ||
+- (void)replaceItemID:(web::WebStateID)itemID withItem:(TabSwitcherItem*)item {
+  DCHECK(item.identifier == itemID ||
          [self indexOfItemWithID:item.identifier] == NSNotFound);
 
   NSUInteger index = [self indexOfItemWithID:itemID];
@@ -358,7 +383,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
+- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
   NSUInteger fromIndex = [self indexOfItemWithID:itemID];
   if (fromIndex == toIndex || toIndex == NSNotFound ||
       fromIndex == NSNotFound) {
@@ -453,8 +478,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider
       contextMenuConfigurationForTabCell:cell
-                            menuScenario:MenuScenarioHistogram::
-                                             kPinnedTabsEntry];
+                            menuScenario:kMenuScenarioHistogramPinnedTabsEntry];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -473,12 +497,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForItemWithID:_draggedItemID];
+  [self.dragDropHandler dragWillBeginForItem:_draggedItem];
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
                                 DragDropTabs::kDragBegin);
-
+  [self.delegate pinnedViewControllerDragSessionWillBegin:self];
   [self dragSessionEnabled:YES];
 }
 
@@ -503,12 +527,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
-  TabSwitcherItem* item = _items[indexPath.item];
-  _draggedItemID = item.identifier;
-
-  UIDragItem* dragItem =
-      [self.dragDropHandler dragItemForItemWithID:_draggedItemID];
-  return [NSArray arrayWithObjects:dragItem, nil];
+  _draggedItem = _items[indexPath.item];
+  UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
+  if (!dragItem) {
+    return @[];
+  }
+  return @[ dragItem ];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
@@ -648,7 +672,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // - The pinned overlay is hidden.
 // - A scroll animation ends.
 - (void)popLastInsertedItem {
-  if (_dragSessionEnabled || !_lastInsertedItemID) {
+  if (_dragSessionEnabled || !_lastInsertedItemID.valid()) {
     return;
   }
 
@@ -672,7 +696,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                              kPinnedCellPopInitialScale);
 
   const BOOL isSelectedItem = _lastInsertedItemID == _selectedItemID;
-  _lastInsertedItemID = nil;
+  _lastInsertedItemID = web::WebStateID();
 
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kPinnedViewPopAnimationTime
@@ -683,11 +707,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }
       completion:^(BOOL finished) {
         if (isSelectedItem) {
-          PinnedTabsViewController* strongSelf = weakSelf;
-          [strongSelf selectCollectionViewItemWithID:strongSelf->_selectedItemID
-                                            animated:NO];
+          [weakSelf refreshSelectedItem];
         }
       }];
+}
+
+// Refreshes the selected item when the last popped item was selected.
+- (void)refreshSelectedItem {
+  [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 }
 
 // Updates the visibility of the pinned view.
@@ -700,10 +727,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // `selectedItemID` is saved to an instance variable.
 - (void)performBatchUpdateForInsertingItem:(TabSwitcherItem*)item
                                    atIndex:(NSUInteger)index
-                            selectedItemID:(NSString*)selectedItemID {
+                            selectedItemID:(web::WebStateID)selectedItemID {
   [_items insertObject:item atIndex:index];
-  _selectedItemID = [selectedItemID copy];
-  _lastInsertedItemID = [item.identifier copy];
+  _selectedItemID = selectedItemID;
+  _lastInsertedItemID = item.identifier;
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 
   [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
@@ -713,7 +740,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // specified `index` from the collection view and updates its appearance.
 // `selectedItemID` is saved to an instance variable.
 - (void)performBatchUpdateForRemovingItemAtIndex:(NSUInteger)index
-                                  selectedItemID:(NSString*)selectedItemID {
+                                  selectedItemID:
+                                      (web::WebStateID)selectedItemID {
   [_items removeObjectAtIndex:index];
   _selectedItemID = selectedItemID;
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
@@ -827,20 +855,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Configures `cell`'s identifier and title synchronously, and favicon and
 // snapshot asynchronously from `item`.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
+  CHECK(cell);
   if (item) {
     cell.itemIdentifier = item.identifier;
     cell.title = item.title;
     [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
       // Only update the icon if the cell is not already reused for another
       // item.
-      if ([cell hasIdentifier:innerItem.identifier]) {
+      if (cell.itemIdentifier == innerItem.identifier) {
         cell.icon = icon;
       }
     }];
     [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
       // Only update the icon if the cell is not already reused for another
       // item.
-      if ([cell hasIdentifier:innerItem.identifier]) {
+      if (cell.itemIdentifier == innerItem.identifier) {
         cell.snapshot = snapshot;
       }
     }];
@@ -862,15 +891,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // Returns the index in `_items` of the first item whose identifier is
 // `identifier`.
-- (NSUInteger)indexOfItemWithID:(NSString*)identifier {
-  // Check that identifier exists and not empty.
-  if (identifier.length == 0) {
+- (NSUInteger)indexOfItemWithID:(web::WebStateID)identifier {
+  // Check that identifier is valid.
+  if (!identifier.valid()) {
     return NSNotFound;
   }
 
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
-        return [item.identifier isEqualToString:identifier];
+        return item.identifier == identifier;
       };
   return [_items indexOfObjectPassingTest:selectedTest];
 }
@@ -954,7 +983,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, _items.count);
 
-  NSString* itemID = _items[index].identifier;
+  const web::WebStateID itemID = _items[index].identifier;
   [self.delegate pinnedTabsViewController:self didSelectItemWithID:itemID];
 }
 
@@ -967,7 +996,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Selects the collection view's item with `itemID`.
-- (void)selectCollectionViewItemWithID:(NSString*)itemID
+- (void)selectCollectionViewItemWithID:(web::WebStateID)itemID
                               animated:(BOOL)animated {
   NSUInteger itemIndex = [self indexOfItemWithID:itemID];
 

@@ -12,8 +12,9 @@ import traceback
 import warnings
 
 # Import all known tests
-from policy import *
 from connector import *
+from omaha import *
+from policy import *
 
 
 def ParseArgs():

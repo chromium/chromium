@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "url/url_util.h"
 
@@ -21,8 +22,8 @@ constexpr char kDeviceTypeQueryParamValue[] = "7";
 
 }  // namespace
 
-QRCode::QRCode(RandomSessionId random_session_id, SharedSecret shared_secret)
-    : random_session_id_(random_session_id), shared_secret_(shared_secret) {
+QRCode::QRCode(AdvertisingId advertising_id, SharedSecret shared_secret)
+    : advertising_id_(advertising_id), shared_secret_(shared_secret) {
   GeneratePixelData();
 }
 
@@ -34,9 +35,7 @@ QRCode::~QRCode() = default;
 
 void QRCode::GeneratePixelData() {
   std::vector<uint8_t> blob = GetQRCodeData();
-  qr_code_generator::QRCodeGenerator qr_generator;
-  auto generated_code = qr_generator.Generate(
-      base::as_bytes(base::make_span(blob.data(), blob.size())));
+  auto generated_code = qr_code_generator::GenerateCode(blob);
   CHECK(generated_code.has_value());
   auto res =
       PixelData{generated_code->data.begin(), generated_code->data.end()};
@@ -47,18 +46,15 @@ void QRCode::GeneratePixelData() {
 
 std::vector<uint8_t> QRCode::GetQRCodeData() {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
-  url::EncodeURIComponent(shared_secret_base64.data(),
-                          shared_secret_base64.size(),
+  url::EncodeURIComponent(shared_secret_base64,
                           &shared_secret_base64_uriencoded);
 
-  std::string url = "https://signin.google/qs/" +
-                    random_session_id_.ToString() + "?key=" +
-                    std::string(shared_secret_base64_uriencoded.data(),
-                                shared_secret_base64_uriencoded.length()) +
-                    "&t=" + std::string(kDeviceTypeQueryParamValue);
+  std::string url =
+      base::StrCat({"https://signin.google/qs/", advertising_id_.ToString(),
+                    "?key=", shared_secret_base64_uriencoded.view(),
+                    "&t=", kDeviceTypeQueryParamValue});
 
   return std::vector<uint8_t>(url.begin(), url.end());
 }

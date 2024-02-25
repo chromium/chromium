@@ -17,8 +17,8 @@ limitations under the License.
 
 #include <utility>
 
-#include "Eigen/Core"             // from @eigen
 #include "absl/types/optional.h"  // from @com_google_absl
+#include "Eigen/Core"  // from @eigen
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 
 namespace tflite {
@@ -45,8 +45,7 @@ class Partitioner : public PartitionerInterface {
   }
 
  private:
-  Partitioner(Eigen::MatrixXf leaves,
-              Eigen::VectorXf leaf_norms,
+  Partitioner(Eigen::MatrixXf leaves, Eigen::VectorXf leaf_norms,
               DistanceMeasure distance)
       : leaves_(std::move(leaves)),
         leaf_norms_(std::move(leaf_norms)),

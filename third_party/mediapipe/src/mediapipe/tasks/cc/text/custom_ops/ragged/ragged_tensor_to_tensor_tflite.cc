@@ -28,7 +28,6 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/model.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe::tflite_operations {
 namespace ragged::ragged_tensor_to_tensor {

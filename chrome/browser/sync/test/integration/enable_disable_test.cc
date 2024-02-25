@@ -102,13 +102,7 @@ class EnableDisableSingleClientTest : public SyncTest {
         })));
 
     registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypesForTest();
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-      // The "SyncEnableHistoryDataType" feature soft-disables TYPES_URLS: It'll
-      // still be technically registered, but will never actually become active
-      // (due to the controller's GetPreconditionState()). For the purposes of
-      // these tests, consider it not registered.
-      registered_data_types_.Remove(syncer::TYPED_URLS);
-    }
+
     multi_grouped_types_ = MultiGroupTypes(registered_data_types_);
     registered_selectable_types_ = GetRegisteredSelectableTypes(0);
   }
@@ -343,26 +337,32 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
   }
 }
 
-// This test makes sure that after a StopAndClear(), Sync data gets redownloaded
+// This test makes sure that after a signout, Sync data gets redownloaded
 // when Sync is started again. This does not actually verify that the data is
 // gone from disk (which seems infeasible); it's mostly here as a baseline for
 // the following tests.
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       RedownloadsAfterClearData) {
+//
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // Disable any LowPriorityUserTypes() (in practice, history, and incoming
+  // password sharing invitations controlled by Passwords data type): This test
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
+  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {
         UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
         types.Remove(syncer::UserSelectableType::kHistory);
+        types.Remove(syncer::UserSelectableType::kPasswords);
         settings->SetSelectedTypes(/*sync_everything=*/false, types);
       })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
@@ -378,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   ASSERT_GT(initial_updates_downloaded, 0);
 
   // Stop and restart Sync.
-  GetClient(0)->StopSyncServiceAndClearData();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Everything should have been redownloaded.
@@ -387,6 +387,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
       GURL(kSyncedBookmarkURL)));
   EXPECT_EQ(GetNumUpdatesDownloadedInLastCycle(), initial_updates_downloaded);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
                        DoesNotRedownloadAfterSyncUnpaused) {
@@ -396,14 +397,18 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // Disable any LowPriorityUserTypes() (in practice, history, and incoming
+  // password sharing invitations controlled by Passwords data type): This test
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
+  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {
         UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
         types.Remove(syncer::UserSelectableType::kHistory);
+        types.Remove(syncer::UserSelectableType::kPasswords);
         settings->SetSelectedTypes(/*sync_everything=*/false, types);
       })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
@@ -436,20 +441,6 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.BOOKMARK",
                    syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
-}
-
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, ResetsPrefsIfClearData) {
-  SetupTest(/*all_types_enabled=*/true);
-
-  syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
-  const std::string first_cache_guid = prefs.GetCacheGuid();
-  ASSERT_NE("", first_cache_guid);
-
-  GetClient(0)->StopSyncServiceAndClearData();
-  base::RunLoop().RunUntilIdle();
-  // Sync should have restarted in transport mode, creating a new cache GUID.
-  EXPECT_NE("", prefs.GetCacheGuid());
-  EXPECT_NE(first_cache_guid, prefs.GetCacheGuid());
 }
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,

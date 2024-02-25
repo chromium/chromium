@@ -6,9 +6,9 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,31 +19,15 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-namespace {
-
-// Jelly colors should only be considered enabled when jelly styling is
-// enabled for Feedback on ChromeOS.
-bool IsJellyColorsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsJellyEnabledForOsFeedback();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-}  // namespace
 
 void AddStringResources(content::WebUIDataSource* source,
                         const Profile* profile) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"additionalInfo", IDS_FEEDBACK_ADDITIONAL_INFO_LABEL},
       {"anonymousUser", IDS_FEEDBACK_ANONYMOUS_EMAIL_OPTION},
-      {"appTitle", IDS_FEEDBACK_REPORT_APP_TITLE},
       {"assistantInfo", IDS_FEEDBACK_INCLUDE_ASSISTANT_INFORMATION_CHKBOX},
       {"assistantLogsMessage", IDS_FEEDBACK_ASSISTANT_LOGS_MESSAGE},
       {"attachFileLabel", IDS_FEEDBACK_ATTACH_FILE_LABEL},
@@ -56,6 +40,9 @@ void AddStringResources(content::WebUIDataSource* source,
       {"cancel", IDS_CANCEL},
       {"consentCheckboxLabel", IDS_FEEDBACK_CONSENT_CHECKBOX_LABEL},
       {"freeFormText", IDS_FEEDBACK_FREE_TEXT_LABEL},
+      {"freeFormTextAi", IDS_FEEDBACK_FREE_TEXT_AI_LABEL},
+      {"appTitle", IDS_FEEDBACK_REPORT_APP_TITLE},
+      {"logIdCheckboxLabel", IDS_FEEDBACK_LOG_ID_CHECKBOX_LABEL},
       {"logsMapPageCollapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL},
       {"logsMapPageCollapseBtn", IDS_ABOUT_SYS_COLLAPSE},
       {"logsMapPageExpandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL},
@@ -64,6 +51,7 @@ void AddStringResources(content::WebUIDataSource* source,
       {"logsMapPageTableTitle", IDS_ABOUT_SYS_TABLE_TITLE},
       {"minimizeBtnLabel", IDS_FEEDBACK_MINIMIZE_BUTTON_LABEL},
       {"noDescription", IDS_FEEDBACK_NO_DESCRIPTION},
+      {"offensiveCheckboxLabel", IDS_FEEDBACK_OFFENSIVE_CHECKBOX_LABEL},
       {"pageTitle", IDS_FEEDBACK_REPORT_PAGE_TITLE},
       {"pageUrl", IDS_FEEDBACK_REPORT_URL_LABEL},
       {"performanceTrace", IDS_FEEDBACK_INCLUDE_PERFORMANCE_TRACE_CHECKBOX},
@@ -89,22 +77,14 @@ void AddStringResources(content::WebUIDataSource* source,
   source->AddLocalizedString("sysInfo",
                              IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  source->AddBoolean("isJellyEnabledForOsFeedback", IsJellyColorsEnabled());
 }
 
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFeedbackHost);
-  source->AddResourcePaths(
-      base::make_span(kFeedbackResources, kFeedbackResourcesSize));
-  source->AddResourcePath("", IDR_FEEDBACK_HTML_DEFAULT_HTML);
-
-  // Register the CSS file from chrome://system manually as that style is
-  // re-used by chrome://feedback/html/sys_info.html.
-  source->AddResourcePath("css/about_sys.css", IDR_ABOUT_SYS_CSS);
-
-  source->UseStringsJs();
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
+      IDR_FEEDBACK_FEEDBACK_HTML);
 
   AddStringResources(source, profile);
 }
@@ -122,7 +102,6 @@ bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
 void FeedbackUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(IsJellyColorsEnabled());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

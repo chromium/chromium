@@ -75,9 +75,6 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   // Returns true if the decoding of last frame is not finished yet.
   bool IsDecoding_Locked() const;
 
-  // Records |decoder_status_| to histogram.
-  void RecordInitDecodeUMA_Locked();
-
   void DestroyDecoderOnIOThread(base::WaitableEvent* event);
 
   MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_;

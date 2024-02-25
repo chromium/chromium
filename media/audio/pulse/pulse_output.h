@@ -26,7 +26,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -93,15 +92,9 @@ class PulseAudioOutputStream : public AudioOutputStream {
   AudioManager::LogCallback log_callback_;
 
   // PulseAudio API structs.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION pa_context* pa_context_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION pa_threaded_mainloop* pa_mainloop_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION pa_stream* pa_stream_;
+  raw_ptr<pa_context> pa_context_;
+  raw_ptr<pa_threaded_mainloop> pa_mainloop_;
+  raw_ptr<pa_stream> pa_stream_;
 
   // Float representation of volume from 0.0 to 1.0.
   float volume_;

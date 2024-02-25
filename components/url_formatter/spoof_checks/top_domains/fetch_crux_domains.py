@@ -57,7 +57,7 @@ def main():
       description="Fetch top domain list from CrUX.")
   parser.add_argument(
       "--table",
-      default="chrome-ux-report.all.202306",
+      default="chrome-ux-report.all.202309",
       help="Monthly table name",
   )
   args = parser.parse_args()

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -153,7 +153,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
@@ -179,7 +179,7 @@ TEST_F(AttestationFlowAdaptiveTest,
   ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
   profile_specific_data.set_id(kId);
   profile_specific_data.set_content_binding(kContentBinding);
-  auto optional_profile_specific_data = absl::make_optional(
+  auto optional_profile_specific_data = std::make_optional(
       AttestationFlow::CertProfileSpecificData(profile_specific_data));
   fake_decider->set_is_default_attestation_valid(true);
   EXPECT_CALL(*fake_decider, CheckType(_, _, _)).Times(1);
@@ -262,7 +262,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccessWithECC) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
@@ -320,7 +320,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
@@ -370,7 +370,7 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
@@ -421,7 +421,7 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
@@ -434,7 +434,7 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
       /*account_id=*/AccountId::FromUserEmail(kFakeUserEmail),
       /*request_origin=*/kFakeOrigin, /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(callback, &run_loop_again, &result_status, &result_cert));
   run_loop_again.Run();

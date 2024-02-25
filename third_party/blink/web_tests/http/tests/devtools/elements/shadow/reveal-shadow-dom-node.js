@@ -6,11 +6,11 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
       `This test verifies that the correct node is revealed in the DOM tree when asked to reveal a user-agent shadow DOM node.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>
@@ -25,7 +25,7 @@ import * as Common from 'devtools/core/common/common.js';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      Elements.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      Elements.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
 
   var nodeChangesRemaining = 2;
   function selectedNodeChanged(event) {
@@ -49,10 +49,10 @@ import * as Common from 'devtools/core/common/common.js';
     function childrenCallback(children) {
       var shadowDiv = children[0];
       TestRunner.addResult('User-agent shadow DOM hidden:');
-      UI.panels.elements.revealAndSelectNode(shadowDiv).then(() => {
-        Common.Settings.settingForTest('showUAShadowDOM').set(true);
+      Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv).then(() => {
+        Common.Settings.settingForTest('show-ua-shadow-dom').set(true);
         TestRunner.addResult('User-agent shadow DOM shown:');
-        UI.panels.elements.revealAndSelectNode(shadowDiv);
+        Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv);
       });
     }
   });

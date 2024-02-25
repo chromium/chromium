@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -104,6 +104,11 @@ LayoutObject* InputTypeView::CreateLayoutObject(
   return LayoutObject::CreateObject(&GetElement(), style);
 }
 
+const ComputedStyle* InputTypeView::CustomStyleForLayoutObject(
+    const ComputedStyle* original_style) const {
+  return original_style;
+}
+
 ControlPart InputTypeView::AutoAppearance() const {
   return kNoControlPart;
 }
@@ -136,20 +141,35 @@ bool InputTypeView::NeedsShadowSubtree() const {
   return true;
 }
 
-TextControlInnerEditorElement* InputTypeView::EnsureInnerEditorElement() {
-  CreateShadowSubtreeIfNeeded();
-  return GetElement().InnerEditorElement();
-}
-
 void InputTypeView::CreateShadowSubtree() {}
 
-void InputTypeView::CreateShadowSubtreeIfNeeded() {
+void InputTypeView::CreateShadowSubtreeIfNeeded(bool is_type_changing) {
   if (has_created_shadow_subtree_ || !NeedsShadowSubtree()) {
     return;
   }
   GetElement().EnsureUserAgentShadowRoot();
   has_created_shadow_subtree_ = true;
   CreateShadowSubtree();
+  // When called and the type is changing, HTMLInputElement's internal state may
+  // not fully be up to date, so that it's problematic to do the following.
+  // Additionally the following is not necessary when the type is changing,
+  // because HTMLInputElement effectively has similar logic.
+  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
+      !is_type_changing) {
+    if (needs_update_view_in_create_shadow_subtree_) {
+      UpdateView();
+    }
+    // When CreateInputShadowTreeDuringLayoutEnabled is true, placeholder
+    // updates are ignored. Update now if needed.
+    if (!GetElement().SuggestedValue().empty() ||
+        GetElement().FastHasAttribute(html_names::kPlaceholderAttr)) {
+      GetElement().UpdatePlaceholderVisibility();
+      if (auto* placeholder = GetElement().PlaceholderElement()) {
+        GetElement().UpdatePlaceholderShadowPseudoId(*placeholder);
+      }
+    }
+  }
+  needs_update_view_in_create_shadow_subtree_ = false;
 }
 
 void InputTypeView::DestroyShadowSubtree() {
@@ -207,7 +227,9 @@ bool InputTypeView::ShouldDrawCapsLockIndicator() const {
 
 void InputTypeView::UpdateClearButtonVisibility() {}
 
-void InputTypeView::UpdatePlaceholderText(bool) {}
+HTMLElement* InputTypeView::UpdatePlaceholderText(bool) {
+  return nullptr;
+}
 
 AXObject* InputTypeView::PopupRootAXObject() {
   return nullptr;

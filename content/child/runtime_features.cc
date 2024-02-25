@@ -18,8 +18,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
+#include "components/attribution_reporting/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
@@ -29,7 +32,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
-#include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -87,8 +89,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
       !command_line.HasSwitch(switches::kDisableWebGLImageChromium) &&
-      !command_line.HasSwitch(switches::kDisableGpu) &&
-      base::FeatureList::IsEnabled(features::kWebGLImageChromium);
+      !command_line.HasSwitch(switches::kDisableGpu);
 #else
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(switches::kEnableWebGLImageChromium);
@@ -181,155 +182,180 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // enabler function defined. Otherwise add the entry with string name
   // in the next list.
   const RuntimeFeatureToChromiumFeatureMap<void (*)(bool)>
-      blinkFeatureToBaseFeatureMapping[] =
-  { {wf::EnableAccessibilityAriaVirtualContent,
-     raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
-    {wf::EnableAccessibilityExposeHTMLElement,
-     raw_ref(features::kEnableAccessibilityExposeHTMLElement)},
-    {wf::EnableAccessibilityExposeIgnoredNodes,
-     raw_ref(features::kEnableAccessibilityExposeIgnoredNodes)},
+      blinkFeatureToBaseFeatureMapping[] = {
+          {wf::EnableAccessibilityAriaVirtualContent,
+           raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
+          {wf::EnableAccessibilityExposeHTMLElement,
+           raw_ref(features::kEnableAccessibilityExposeHTMLElement)},
 #if BUILDFLAG(IS_ANDROID)
-    {wf::EnableAccessibilityPageZoom,
-     raw_ref(features::kAccessibilityPageZoom)},
-    {wf::EnableAutoDisableAccessibilityV2,
-     raw_ref(features::kAutoDisableAccessibilityV2)},
+          {wf::EnableAccessibilityPageZoom,
+           raw_ref(features::kAccessibilityPageZoom)},
 #endif
-    {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
-     raw_ref(features::kUseAXPositionForDocumentMarkers)},
-    {wf::EnableAOMAriaRelationshipProperties,
-     raw_ref(features::kEnableAriaElementReflection)},
-    {wf::EnableAutoplayIgnoresWebAudio,
-     raw_ref(media::kAutoplayIgnoreWebAudio)},
-    {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
-    {wf::EnableBrowserVerifiedUserActivationKeyboard,
-     raw_ref(features::kBrowserVerifiedUserActivationKeyboard)},
-    {wf::EnableBrowserVerifiedUserActivationMouse,
-     raw_ref(features::kBrowserVerifiedUserActivationMouse)},
-    {wf::EnableCompositeBGColorAnimation,
-     raw_ref(features::kCompositeBGColorAnimation)},
-    {wf::EnableCompositeClipPathAnimation,
-     raw_ref(features::kCompositeClipPathAnimation)},
-    {wf::EnableConsolidatedMovementXY,
-     raw_ref(features::kConsolidatedMovementXY)},
-    {wf::EnableCooperativeScheduling,
-     raw_ref(features::kCooperativeScheduling)},
-    {wf::EnableDevicePosture, raw_ref(features::kDevicePosture)},
-    {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
-     kSetOnlyIfOverridden},
-    {wf::EnableDirectSockets, raw_ref(features::kIsolatedWebApps)},
-    {wf::EnableDocumentPolicy, raw_ref(features::kDocumentPolicy)},
-    {wf::EnableDocumentPolicyNegotiation,
-     raw_ref(features::kDocumentPolicyNegotiation)},
-    {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
-    {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz), kDefault},
-    {wf::EnableFedCmAutoReauthnFlag, raw_ref(features::kFedCmAutoReauthnFlag),
-     kSetOnlyIfOverridden},
-    {wf::EnableFedCmError, raw_ref(features::kFedCmError), kDefault},
-    {wf::EnableFedCmHostedDomain, raw_ref(features::kFedCmHostedDomain),
-     kSetOnlyIfOverridden},
-    {wf::EnableFedCmIdPRegistration, raw_ref(features::kFedCmIdPRegistration),
-     kDefault},
-    {wf::EnableFedCmIdpSigninStatus,
-     raw_ref(features::kFedCmIdpSigninStatusEnabled), kSetOnlyIfOverridden},
-    {wf::EnableGamepadMultitouch, raw_ref(features::kEnableGamepadMultitouch)},
-    {wf::EnableSharedStorageAPI,
-     raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
-    {wf::EnableSharedStorageAPI,
-     raw_ref(features::kPrivacySandboxAdsAPIsM1Override), kSetOnlyIfOverridden},
-    {wf::EnableSharedStorageAPIM118,
-     raw_ref(blink::features::kSharedStorageAPIM118), kSetOnlyIfOverridden},
-    {wf::EnableFedCmMultipleIdentityProviders,
-     raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
-    {wf::EnableFedCmSelectiveDisclosure,
-     raw_ref(features::kFedCmSelectiveDisclosure), kDefault},
-    {wf::EnableFencedFrames, raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {wf::EnableFencedFrames,
-     raw_ref(features::kPrivacySandboxAdsAPIsM1Override), kSetOnlyIfOverridden},
-    {wf::EnableForcedColors, raw_ref(features::kForcedColors)},
-    {wf::EnableFractionalScrollOffsets,
-     raw_ref(features::kFractionalScrollOffsets)},
-    {wf::EnableSensorExtraClasses,
-     raw_ref(features::kGenericSensorExtraClasses)},
+          {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
+           raw_ref(features::kUseAXPositionForDocumentMarkers)},
+          {wf::EnableAOMAriaRelationshipProperties,
+           raw_ref(features::kEnableAriaElementReflection)},
+          {wf::EnableAutoplayIgnoresWebAudio,
+           raw_ref(media::kAutoplayIgnoreWebAudio)},
+          {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
+          {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
+           raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
+          {wf::EnableBrowserVerifiedUserActivationKeyboard,
+           raw_ref(features::kBrowserVerifiedUserActivationKeyboard)},
+          {wf::EnableBrowserVerifiedUserActivationMouse,
+           raw_ref(features::kBrowserVerifiedUserActivationMouse)},
+          {wf::EnableCompositeBGColorAnimation,
+           raw_ref(features::kCompositeBGColorAnimation)},
+          {wf::EnableConsolidatedMovementXY,
+           raw_ref(features::kConsolidatedMovementXY)},
+          {wf::EnableCooperativeScheduling,
+           raw_ref(features::kCooperativeScheduling)},
+          {wf::EnableDevicePosture, raw_ref(features::kDevicePosture)},
+          {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
+           kSetOnlyIfOverridden},
+          {wf::EnableDocumentPolicyNegotiation,
+           raw_ref(features::kDocumentPolicyNegotiation)},
+          {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
+          {wf::EnableFedCmAutoSelectedFlag,
+           raw_ref(features::kFedCmAutoSelectedFlag), kSetOnlyIfOverridden},
+          {wf::EnableFedCmButtonMode, raw_ref(features::kFedCmButtonMode),
+           kSetOnlyIfOverridden},
+          {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz), kDefault},
+          {wf::EnableFedCmError, raw_ref(features::kFedCmError),
+           kSetOnlyIfOverridden},
+          {wf::EnableFedCmDomainHint, raw_ref(features::kFedCmDomainHint),
+           kSetOnlyIfOverridden},
+          {wf::EnableFedCmIdPRegistration,
+           raw_ref(features::kFedCmIdPRegistration), kDefault},
+          {wf::EnableFedCmIdpSigninStatus,
+           raw_ref(features::kFedCmIdpSigninStatusEnabled),
+           kSetOnlyIfOverridden},
+          {wf::EnableGamepadMultitouch,
+           raw_ref(features::kEnableGamepadMultitouch)},
+          {wf::EnableSharedStorageAPI,
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {wf::EnableSharedStorageAPI,
+           raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {wf::EnableSharedStorageAPIM118,
+           raw_ref(blink::features::kSharedStorageAPIM118),
+           kSetOnlyIfOverridden},
+          {wf::EnableSharedStorageAPIM123,
+           raw_ref(blink::features::kSharedStorageAPIM123),
+           kSetOnlyIfOverridden},
+          {wf::EnableFedCmMultipleIdentityProviders,
+           raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
+          {wf::EnableFedCmDisconnect, raw_ref(features::kFedCmDisconnect),
+           kSetOnlyIfOverridden},
+          {wf::EnableFedCmSelectiveDisclosure,
+           raw_ref(features::kFedCmSelectiveDisclosure), kDefault},
+          {wf::EnableFencedFrames,
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {wf::EnableFencedFrames,
+           raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {wf::EnableForcedColors, raw_ref(features::kForcedColors)},
+          {wf::EnableFractionalScrollOffsets,
+           raw_ref(features::kFractionalScrollOffsets)},
+          {wf::EnableSensorExtraClasses,
+           raw_ref(features::kGenericSensorExtraClasses)},
 #if BUILDFLAG(IS_ANDROID)
-    {wf::EnableGetDisplayMedia, raw_ref(features::kUserMediaScreenCapturing)},
+          {wf::EnableGetDisplayMedia,
+           raw_ref(features::kUserMediaScreenCapturing)},
 #endif
-    {wf::EnableIdleDetection, raw_ref(features::kIdleDetection),
-     kSetOnlyIfOverridden},
-    {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
-    {wf::EnableLazyInitializeMediaControls,
-     raw_ref(features::kLazyInitializeMediaControls)},
-    {wf::EnableLazyFrameLoading, raw_ref(features::kLazyFrameLoading)},
-    {wf::EnableMediaCastOverlayButton, raw_ref(media::kMediaCastOverlayButton)},
-    {wf::EnableMediaEngagementBypassAutoplayPolicies,
-     raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
-    {wf::EnableNotificationContentImage,
-     raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
-    {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
-    {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
-    {wf::EnablePercentBasedScrolling,
-     raw_ref(features::kWindowsScrollingPersonality)},
-    {wf::EnablePeriodicBackgroundSync,
-     raw_ref(features::kPeriodicBackgroundSync)},
-    {wf::EnablePushMessagingSubscriptionChange,
-     raw_ref(features::kPushSubscriptionChangeEvent)},
-    {wf::EnableRestrictGamepadAccess,
-     raw_ref(features::kRestrictGamepadAccess)},
-    {wf::EnableSecurePaymentConfirmation,
-     raw_ref(features::kSecurePaymentConfirmation)},
-    {wf::EnableSecurePaymentConfirmationDebug,
-     raw_ref(features::kSecurePaymentConfirmationDebug)},
-    {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
-     raw_ref(features::kSendBeaconThrowForBlobWithNonSimpleType)},
-    {wf::EnableSharedArrayBuffer, raw_ref(features::kSharedArrayBuffer)},
-    {wf::EnableSharedArrayBufferOnDesktop,
-     raw_ref(features::kSharedArrayBufferOnDesktop)},
+          {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
+          {wf::EnableLazyInitializeMediaControls,
+           raw_ref(features::kLazyInitializeMediaControls)},
+#if BUILDFLAG(IS_CHROMEOS)
+          {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
+#endif
+          {wf::EnableMachineLearningModelLoader,
+           raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
+           kSetOnlyIfOverridden},
+          {wf::EnableMediaCastOverlayButton,
+           raw_ref(media::kMediaCastOverlayButton)},
+          {wf::EnableMediaEngagementBypassAutoplayPolicies,
+           raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
+          {wf::EnableNotificationContentImage,
+           raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
+          {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
+          {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
+          {wf::EnablePercentBasedScrolling,
+           raw_ref(features::kWindowsScrollingPersonality)},
+          {wf::EnablePeriodicBackgroundSync,
+           raw_ref(features::kPeriodicBackgroundSync)},
+          {wf::EnablePushMessagingSubscriptionChange,
+           raw_ref(features::kPushSubscriptionChangeEvent)},
+          {wf::EnableRestrictGamepadAccess,
+           raw_ref(features::kRestrictGamepadAccess)},
+          {wf::EnableSecurePaymentConfirmation,
+           raw_ref(features::kSecurePaymentConfirmation)},
+          {wf::EnableSecurePaymentConfirmationDebug,
+           raw_ref(features::kSecurePaymentConfirmationDebug)},
+          {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
+           raw_ref(features::kSendBeaconThrowForBlobWithNonSimpleType)},
+          {wf::EnableSharedArrayBuffer, raw_ref(features::kSharedArrayBuffer)},
+          {wf::EnableSharedArrayBufferOnDesktop,
+           raw_ref(features::kSharedArrayBufferOnDesktop)},
 #if BUILDFLAG(IS_ANDROID)
-    {wf::EnableSmartZoom, raw_ref(features::kSmartZoom)},
+          {wf::EnableSmartZoom, raw_ref(features::kSmartZoom)},
 #endif
-    {wf::EnableTouchDragAndContextMenu,
-     raw_ref(features::kTouchDragAndContextMenu)},
-    {wf::EnableUserActivationSameOriginVisibility,
-     raw_ref(features::kUserActivationSameOriginVisibility)},
-    {wf::EnableVideoPlaybackQuality, raw_ref(features::kVideoPlaybackQuality)},
-    {wf::EnableViewportSegments, raw_ref(features::kViewportSegments)},
-    {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
-     kSetOnlyIfOverridden},
-    {wf::EnableWebBluetoothGetDevices,
-     raw_ref(features::kWebBluetoothNewPermissionsBackend),
-     kSetOnlyIfOverridden},
-    {wf::EnableWebBluetoothWatchAdvertisements,
-     raw_ref(features::kWebBluetoothNewPermissionsBackend),
-     kSetOnlyIfOverridden},
+          {wf::EnableTouchDragAndContextMenu,
+           raw_ref(features::kTouchDragAndContextMenu)},
+          {wf::EnableUserActivationSameOriginVisibility,
+           raw_ref(features::kUserActivationSameOriginVisibility)},
+          {wf::EnableVideoPlaybackQuality,
+           raw_ref(features::kVideoPlaybackQuality)},
+          {wf::EnableViewportSegments, raw_ref(features::kViewportSegments)},
+          {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
+           kSetOnlyIfOverridden},
+          {wf::EnableWebBluetoothGetDevices,
+           raw_ref(features::kWebBluetoothNewPermissionsBackend),
+           kSetOnlyIfOverridden},
+          {wf::EnableWebBluetoothWatchAdvertisements,
+           raw_ref(features::kWebBluetoothNewPermissionsBackend),
+           kSetOnlyIfOverridden},
 #if BUILDFLAG(IS_ANDROID)
-    {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
+          {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
 #endif
-    {wf::EnableWebIdentityMDocs, raw_ref(features::kWebIdentityMDocs),
-     kDefault},
-    {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
-    {wf::EnableWebOTPAssertionFeaturePolicy,
-     raw_ref(features::kWebOTPAssertionFeaturePolicy), kSetOnlyIfOverridden},
-    {wf::EnableWebUSB, raw_ref(features::kWebUsb)},
-    {wf::EnableWebXR, raw_ref(features::kWebXr)},
+          {wf::EnableWebIdentityDigitalCredentials,
+           raw_ref(features::kWebIdentityDigitalCredentials),
+           kSetOnlyIfOverridden},
+          {wf::EnableMachineLearningNeuralNetwork,
+           raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
+           kDefault},
+          {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
+          {wf::EnableWebOTPAssertionFeaturePolicy,
+           raw_ref(features::kWebOTPAssertionFeaturePolicy),
+           kSetOnlyIfOverridden},
+          {wf::EnableWebUSB, raw_ref(features::kWebUsb)},
+          {wf::EnableWebXR, raw_ref(features::kWebXr)},
 #if BUILDFLAG(ENABLE_VR)
-    {wf::EnableWebXRFrontFacing, raw_ref(device::features::kWebXrIncubations)},
-    {wf::EnableWebXRFrameRate, raw_ref(device::features::kWebXrIncubations)},
-    {wf::EnableWebXRHandInput, raw_ref(device::features::kWebXrHandInput)},
-    {wf::EnableWebXRImageTracking,
-     raw_ref(device::features::kWebXrIncubations)},
-    {wf::EnableWebXRLayers, raw_ref(device::features::kWebXrLayers)},
-    {wf::EnableWebXRPlaneDetection,
-     raw_ref(device::features::kWebXrIncubations)},
-    {wf::EnableWebXRPoseMotionData,
-     raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRFrontFacing,
+           raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRFrameRate,
+           raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRHandInput,
+           raw_ref(device::features::kWebXrHandInput)},
+          {wf::EnableWebXRImageTracking,
+           raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRLayers, raw_ref(device::features::kWebXrLayers)},
+          {wf::EnableWebXRPlaneDetection,
+           raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRPoseMotionData,
+           raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRSpecParity,
+           raw_ref(device::features::kWebXrIncubations)},
 #endif
-    {wf::EnableRemoveMobileViewportDoubleTap,
-     raw_ref(features::kRemoveMobileViewportDoubleTap)},
-    {wf::EnableServiceWorkerBypassFetchHandler,
-     raw_ref(features::kServiceWorkerBypassFetchHandler)},
-    {wf::EnableServiceWorkerStaticRouter,
-     raw_ref(features::kServiceWorkerStaticRouter)},
-  };
+          {wf::EnableRemoveMobileViewportDoubleTap,
+           raw_ref(features::kRemoveMobileViewportDoubleTap)},
+          {wf::EnableServiceWorkerBypassFetchHandler,
+           raw_ref(features::kServiceWorkerBypassFetchHandler)},
+          {wf::EnableServiceWorkerStaticRouter,
+           raw_ref(features::kServiceWorkerStaticRouter)},
+      };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, mapping.feature_enabler);
@@ -338,70 +364,80 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // TODO(crbug/832393): Cleanup the inconsistency between custom WRF enabler
   // function and using feature string name with EnableFeatureFromString.
   const RuntimeFeatureToChromiumFeatureMap<const char*>
-      runtimeFeatureNameToChromiumFeatureMapping[] =
-  { {"AllowContentInitiatedDataUrlNavigations",
-     raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
-    {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
-    {"AllowURNsInIframes", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"AllowURNsInIframes", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
-     kSetOnlyIfOverridden},
-    {"AttributionReporting", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"AttributionReporting",
-     raw_ref(features::kPrivacySandboxAdsAPIsM1Override), kSetOnlyIfOverridden},
-    {"AttributionReportingCrossAppWeb",
-     raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
-    {"AndroidDownloadableFontsMatching",
-     raw_ref(features::kAndroidDownloadableFontsMatching)},
+      runtimeFeatureNameToChromiumFeatureMapping[] = {
+          {"AllowContentInitiatedDataUrlNavigations",
+           raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
+          {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
+          {"AllowURNsInIframes",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"AllowURNsInIframes",
+           raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {"AttributionReporting",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"AttributionReporting",
+           raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {"AttributionReportingCrossAppWeb",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"AttributionReportingCrossAppWeb",
+           raw_ref(features::kAttributionReportingCrossAppWebOverride)},
+          {"AndroidDownloadableFontsMatching",
+           raw_ref(features::kAndroidDownloadableFontsMatching)},
 #if BUILDFLAG(IS_ANDROID)
-    {"CCTNewRFMPushBehavior", raw_ref(blink::features::kCCTNewRFMPushBehavior)},
+          {"CCTNewRFMPushBehavior",
+           raw_ref(blink::features::kCCTNewRFMPushBehavior)},
 #endif
-    {"CompressionDictionaryTransport",
-     raw_ref(network::features::kCompressionDictionaryTransport)},
-    {"CompressionDictionaryTransportBackend",
-     raw_ref(network::features::kCompressionDictionaryTransportBackend)},
-    {"Database", raw_ref(blink::features::kWebSQLAccess), kSetOnlyIfOverridden},
-    {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
-    {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
-     kSetOnlyIfOverridden},
-    {"FledgeBiddingAndAuctionServer",
-     raw_ref(blink::features::kFledgeBiddingAndAuctionServer),
-     kSetOnlyIfOverridden},
-    {"FledgeBiddingAndAuctionServer",
-     raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
+          {"CompressionDictionaryTransport",
+           raw_ref(network::features::kCompressionDictionaryTransport)},
+          {"CompressionDictionaryTransportBackend",
+           raw_ref(network::features::kCompressionDictionaryTransportBackend)},
+          {"CookieDeprecationFacilitatedTesting",
+           raw_ref(features::kCookieDeprecationFacilitatedTesting)},
+          {"Database", raw_ref(blink::features::kWebSQLAccess),
+           kSetOnlyIfOverridden},
+          {"FencedFramesLocalUnpartitionedDataAccess",
+           raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
+          {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
+          {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
 #if BUILDFLAG(USE_FONTATIONS_BACKEND)
-    {"FontationsFontBackend", raw_ref(blink::features::kFontationsFontBackend)},
+          {"FontationsFontBackend",
+           raw_ref(blink::features::kFontationsFontBackend)},
 #endif
-    {"FontSrcLocalMatching", raw_ref(features::kFontSrcLocalMatching)},
-    {"LegacyWindowsDWriteFontFallback",
-     raw_ref(features::kLegacyWindowsDWriteFontFallback)},
-    {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
-    {"PartitionedCookies", raw_ref(net::features::kPartitionedCookies)},
-    {"ReduceAcceptLanguage", raw_ref(network::features::kReduceAcceptLanguage)},
-    {"StorageAccessAPI", raw_ref(features::kFirstPartySets)},
-    {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
-     kSetOnlyIfOverridden},
-    {"TopicsXHR", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"TopicsDocumentAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-     kSetOnlyIfOverridden},
-    {"TopicsDocumentAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
-     kSetOnlyIfOverridden},
-    {"TouchTextEditingRedesign", raw_ref(features::kTouchTextEditingRedesign)},
-    {"TrustedTypesFromLiteral", raw_ref(features::kTrustedTypesFromLiteral)},
-    {"WebAppTabStrip", raw_ref(features::kDesktopPWAsTabStrip)},
-    {"WebAppTabStripCustomizations",
-     raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
-    {"WebSerialBluetooth",
-     raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
-    {"MediaStreamTrackTransfer", raw_ref(features::kMediaStreamTrackTransfer)},
-    {"PrivateNetworkAccessPermissionPrompt",
-     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)} };
+          {"FontSrcLocalMatching", raw_ref(features::kFontSrcLocalMatching)},
+          {"LegacyWindowsDWriteFontFallback",
+           raw_ref(features::kLegacyWindowsDWriteFontFallback)},
+          {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
+          {"ReduceAcceptLanguage",
+           raw_ref(network::features::kReduceAcceptLanguage)},
+          {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {"TopicsDocumentAPI",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
+          {"TopicsDocumentAPI",
+           raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
+           kSetOnlyIfOverridden},
+          {"TouchTextEditingRedesign",
+           raw_ref(features::kTouchTextEditingRedesign)},
+          {"TrustedTypesFromLiteral",
+           raw_ref(features::kTrustedTypesFromLiteral)},
+          {"WebSerialBluetooth",
+           raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
+          {"MediaStreamTrackTransfer",
+           raw_ref(features::kMediaStreamTrackTransfer)},
+          {"PrivateNetworkAccessPermissionPrompt",
+           raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt),
+           kSetOnlyIfOverridden},
+          {"PermissionElement", raw_ref(features::kPermissionElement)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
@@ -457,6 +493,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableScriptedSpeechSynthesis, switches::kDisableSpeechSynthesisAPI,
        false},
       {wrf::EnableSharedWorker, switches::kDisableSharedWorkers, false},
+      {wrf::EnableMutationEvents, blink::switches::kMutationEventsEnabled,
+       true},
       {wrf::EnableTextFragmentIdentifiers,
        switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,
@@ -467,6 +505,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        true},
       {wrf::EnableWebGPUDeveloperFeatures,
        switches::kEnableWebGPUDeveloperFeatures, true},
+      {wrf::EnableWebGPUExperimentalFeatures, switches::kEnableUnsafeWebGPU,
+       true},
       {wrf::EnableDirectSockets, switches::kEnableIsolatedWebAppsInRenderer,
        true},
   };
@@ -491,38 +531,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     int port;
     if (base::StringToInt(port_str, &port) && port == 0) {
       WebRuntimeFeatures::EnableAutomationControlled(true);
-    }
-  }
-
-  // Enable or disable OffsetParentNewSpecBehavior for Enterprise Policy. This
-  // overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kOffsetParentNewSpecBehaviorPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy);
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(true);
-    }
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(false);
-    }
-  }
-
-  // Enable or disable SendMouseEventsDisabledFormControls for Enterprise
-  // Policy. This overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kSendMouseEventsDisabledFormControlsPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kSendMouseEventsDisabledFormControlsPolicy);
-    if (value == blink::switches::
-                     kSendMouseEventsDisabledFormControlsPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(true);
-    }
-    if (value == blink::switches::
-                     kSendMouseEventsDisabledFormControlsPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(false);
     }
   }
 
@@ -555,21 +563,12 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // CAUTION: Only add custom enabling logic here if it cannot
   // be covered by the other functions.
 
-  if (!command_line.HasSwitch(switches::kDisableYUVImageDecoding) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kDecodeJpeg420ImagesToYUV)) {
-    WebRuntimeFeatures::EnableDecodeJpeg420ImagesToYUV(true);
-  }
-  if (!command_line.HasSwitch(switches::kDisableYUVImageDecoding) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kDecodeLossyWebPImagesToYUV)) {
-    WebRuntimeFeatures::EnableDecodeLossyWebPImagesToYUV(true);
-  }
-
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
   WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
+  WebRuntimeFeatures::EnableFluentOverlayScrollbars(
+      ui::IsFluentOverlayScrollbarEnabled());
 
   // TODO(rodneyding): This is a rare case for a stable feature
   // Need to investigate more to determine whether to refactor it.
@@ -613,15 +612,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
     }
   }
 
-  // Enables the Blink feature only when the base feature variation is enabled.
-  if (base::FeatureList::IsEnabled(features::kFedCm)) {
-    if (base::GetFieldTrialParamByFeatureAsBool(
-            features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
-            false)) {
-      WebRuntimeFeatures::EnableFedCmIdpSignout(true);
-    }
-  }
-
   if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI)) {
     // The Chromium flag `kPendingBeaconAPI` is true, which enables the
     // parts of the API's implementation in Chromium.
@@ -641,16 +631,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 // Ensures that the various ways of enabling/disabling features do not produce
 // an invalid configuration.
 void ResolveInvalidConfigurations() {
-  // Portals cannot be enabled without the support of the browser process.
-  if (!base::FeatureList::IsEnabled(blink::features::kPortals)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsPortalsEnabled())
-        << "Portals cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "=" << blink::features::kPortals.name
-        << " instead.";
-    WebRuntimeFeatures::EnablePortals(false);
-  }
-
-  // Fenced frames, like Portals, cannot be enabled without the support of the
+  // Fenced frames cannot be enabled without the support of the
   // browser process.
   if ((base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride) ||
        base::FeatureList::IsEnabled(
@@ -663,25 +644,31 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFencedFrames(false);
   }
 
+  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    LOG_IF(
+        WARNING,
+        WebRuntimeFeatures::IsFencedFramesLocalUnpartitionedDataAccessEnabled())
+        << "Fenced frames must be enabled in order to enable local "
+           "unpartitioned "
+        << "data access. Use --" << switches::kEnableFeatures << "="
+        << blink::features::kFencedFrames.name << " in addition.";
+    WebRuntimeFeatures::EnableFeatureFromString(
+        "FencedFramesLocalUnpartitionedDataAccess", false);
+  }
+
   // Topics API cannot be enabled without the support of the browser process.
-  // The XHR attribute should be additionally gated by the `kBrowsingTopicsXHR`
-  // feature and the Document API by the `kBrowsingTopicsDocumentAPI` feature.
+  // The Document API should be additionally gated by the
+  // `kBrowsingTopicsDocumentAPI` feature.
   if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsAPIEnabled())
         << "Topics cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="
         << blink::features::kBrowsingTopics.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsAPI(false);
-    WebRuntimeFeatures::EnableTopicsXHR(false);
     WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
   } else {
-    if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsXHR)) {
-      LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsXHREnabled())
-          << "Topics XHR cannot be enabled in this configuration. Use --"
-          << switches::kEnableFeatures << "="
-          << blink::features::kBrowsingTopicsXHR.name << " in addition.";
-      WebRuntimeFeatures::EnableTopicsXHR(false);
-    }
     if (!base::FeatureList::IsEnabled(
             blink::features::kBrowsingTopicsDocumentAPI)) {
       LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsDocumentAPIEnabled())
@@ -714,13 +701,41 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableSharedStorageAPIM118(false);
   }
 
-  if (!base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123) ||
+      !base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM123Enabled())
+        << "SharedStorage for M123+ cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kSharedStorageAPI.name << ","
+        << blink::features::kSharedStorageAPIM123.name << " in addition.";
+    WebRuntimeFeatures::EnableSharedStorageAPIM123(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsAttributionReportingEnabled())
         << "AttributionReporting cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
-        << blink::features::kConversionMeasurement.name << " in addition.";
+        << attribution_reporting::features::kConversionMeasurement.name
+        << " in addition.";
     WebRuntimeFeatures::EnableAttributionReporting(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement) ||
+      !base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingCrossAppWeb)) {
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsAttributionReportingCrossAppWebEnabled())
+        << "AttributionReportingCrossAppWeb cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << attribution_reporting::features::kConversionMeasurement.name << ","
+        << network::features::kAttributionReportingCrossAppWeb.name
+        << " in addition.";
+    WebRuntimeFeatures::EnableAttributionReportingCrossAppWeb(false);
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
@@ -731,16 +746,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kInterestGroupStorage.name << " in addition.";
     WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
     WebRuntimeFeatures::EnableFledge(false);
-  } else if (!base::FeatureList::IsEnabled(
-                 blink::features::kFledgeBiddingAndAuctionServer)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsFledgeBiddingAndAuctionServerEnabled())
-        << "FledgeBiddingAndAuctionServer cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kFledgeBiddingAndAuctionServer.name
-        << " in addition.";
-    WebRuntimeFeatures::EnableFledgeBiddingAndAuctionServer(false);
   }
 }
 

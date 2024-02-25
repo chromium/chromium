@@ -35,13 +35,28 @@ const zooms = [
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
 let zoomLevel = 5;
 
+// Graphics event types which are used in the model JSON data. These must match
+// the graphics event types in
+// chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h. To aid in
+// maintaining consistency, do not modify values once added - deprecation and
+// removal are allowed.
+const kExoSurfaceCommit = 206;
+const kExoSurfaceCommitJank = 207;
+const kChromeOSPresentationDone = 503;
+const kChromeOSSwapDone = 504;
+const kChromeOSPerceivedJank = 506;
+const kChromeOSSwapJank = 507;
+
 /**
- * Keep in sync with ArcTracingGraphicsModel::BufferEventType
+ * Keep in sync with ArcTracingGraphicsModel::EventType
  * See chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h.
  * Describes how events should be rendered. |color| specifies color of the
  * event, |name| is used in tooltips. |width| defines the width in case it is
  * rendered as a line and |radius| defines the radius in case it is rendered as
  * a circle.
+ *
+ * TODO(matvore): Only kIdleIn and kIdleOut are used in bands. Verify and clean
+ * up.
  */
 const eventAttributes = {
   // kIdleIn
@@ -64,28 +79,13 @@ const eventAttributes = {
   // kBufferFillJank
   106: {color: '#ff0000', name: 'buffer filling jank', width: 1.0, radius: 4.0},
 
-  // kExoSurfaceAttach.
-  200: {color: '#99ccff', name: 'surface attach'},
-  // kExoProduceResource
-  201: {color: '#cc66ff', name: 'produce resource'},
-  // kExoBound
-  202: {color: '#66ffff', name: 'buffer bound'},
-  // kExoPendingQuery
-  203: {color: '#00ff99', name: 'pending query'},
-  // kExoReleased
-  204: {color: unusedColor, name: 'released'},
-  // kExoJank
-  205: {color: '#ff0000', name: 'surface attach jank', width: 1.0, radius: 4.0},
-  // kExoCommit
-  206: {color: '#3d5afe', name: 'buffer committed'},
+  [kExoSurfaceCommitJank]: {name: 'commit jank', radius: 4.0},
 
   // kChromeBarrierOrder.
   300: {color: '#ff9933', name: 'barrier order'},
   // kChromeBarrierFlush
   301: {color: unusedColor, name: 'barrier flush'},
 
-  // kSurfaceFlingerVsyncHandler
-  400: {color: '#993300', name: 'vsync handler', width: 1.0},
   // kSurfaceFlingerInvalidationStart
   401: {color: '#ff9933', name: 'invalidation start'},
   // kSurfaceFlingerInvalidationDone
@@ -94,15 +94,6 @@ const eventAttributes = {
   403: {color: '#3399ff', name: 'composition start'},
   // kSurfaceFlingerCompositionDone
   404: {color: unusedColor, name: 'composition done'},
-  // kSurfaceFlingerCompositionJank
-  405: {
-    color: '#ff0000',
-    name: 'Android composition jank',
-    width: 1.0,
-    radius: 4.0,
-  },
-  // kVsyncTimestamp
-  406: {color: '#ff3300', name: 'vsync', width: 0.5},
 
   // kChromeOSDraw
   500: {color: '#3399ff', name: 'draw'},
@@ -121,18 +112,17 @@ const eventAttributes = {
     width: 1.0,
     radius: 4.0,
   },
+  [kChromeOSPerceivedJank]: {
+    name: 'perceived jank',
+    radius: 4.0,
+  },
+  [kChromeOSSwapJank]: {
+    name: 'swap jank',
+    radius: 4.0,
+  },
 
   // kCustomEvent
   600: {color: '#7cb342', name: 'Custom event', width: 1.0, radius: 4.0},
-
-  // kInputEventCreated
-  700: {color: '#ff6f00', name: 'create'},
-  // kInputEventWaylandDispatched
-  701: {color: '#f4ff81', name: 'dispatch'},
-  // kInputEventDeliverStart
-  702: {color: '#388e3c', name: 'deliver start'},
-  // kInputEventDeliverEnd
-  703: {color: unusedColor, name: 'deliver end'},
 
   // Service events.
   // kTimeMark
@@ -145,7 +135,7 @@ const eventAttributes = {
  * Defines the map of events that can be treated as the end of event sequence.
  * Time after such events is considered as idle time until the next event
  * starts. Key of |endSequenceEvents| is event type as defined in
- * ArcTracingGraphicsModel::BufferEventType and value is the list of event
+ * ArcTracingGraphicsModel::EventType and value is the list of event
  * types that should follow after the tested event to consider it as end of
  * sequence. Empty list means that tested event is certainly end of the
  * sequence.
@@ -157,8 +147,6 @@ const endSequenceEvents = {
   103: [],
   // kBufferQueueReleased
   105: [],
-  // kExoReleased
-  204: [],
   // kChromeBarrierFlush
   301: [],
   // kSurfaceFlingerInvalidationDone
@@ -173,8 +161,6 @@ const endSequenceEvents = {
   503: [500 /* kChromeOSDraw */],
   // kChromeOSSwapDone
   504: [500 /* kChromeOSDraw */],
-  // kInputEventDeliverEnd
-  703: [],
 };
 
 /**
@@ -546,7 +532,6 @@ class EventBands {
     this.charts = [];
     this.globalEvents = [];
     this.tooltips = [];
-    this.vsyncEvents = null;
     this.resolution = resolution;
     this.minTimestamp = minTimestamp;
     this.maxTimestamp = maxTimestamp;
@@ -725,8 +710,8 @@ class EventBands {
     let eventDetected = false;
     let attributes = opt_attributes;
     const autoDetectRange = !attributes ||
-        typeof attributes.minValue == 'undefined' ||
-        typeof attributes.maxValue == 'undefined';
+        typeof attributes.minValue === 'undefined' ||
+        typeof attributes.maxValue === 'undefined';
     for (let i = 0; i < sources.length; ++i) {
       const source = sources[i];
       let eventIndex = source.getFirstAfter(this.minTimestamp);
@@ -781,7 +766,7 @@ class EventBands {
     for (let i = 0; i < sources.length; ++i) {
       const source = sources[i];
       const eventIndices = eventIndicesForAll[i];
-      if (eventIndices.length == 0) {
+      if (eventIndices.length === 0) {
         continue;
       }
       // Determine type using first element.
@@ -793,7 +778,7 @@ class EventBands {
         const event = source.events[eventIndices[j]];
         const x = this.timestampToOffset(event[1]);
         const y = height * (maxValue - event[2]) * divider;
-        if (!smooth && j != 0) {
+        if (!smooth && j !== 0) {
           points.push([x, lastY]);
         }
         points.push([x, y]);
@@ -872,7 +857,7 @@ class EventBands {
     const input = document.createElement('input');
     input.onclick = handler;
     input.setAttribute('type', type);
-    if (type == 'button') {
+    if (type === 'button') {
       input.setAttribute('value', text);
     }
     if (checked) {
@@ -880,7 +865,7 @@ class EventBands {
     }
     this.title.addContolledItems(input);
     this.title.div.appendChild(input);
-    if (type == 'button') {
+    if (type === 'button') {
       return;
     }
     const label = document.createElement('label');
@@ -952,9 +937,18 @@ class EventBands {
    * @param {Events} events to add.
    * @param {string} renderType defines how to render events, can be underfined
    *                 for default or set to 'circle'.
+   * @param {string} color the color (fill color if rendered as a circle), or
+   *                 omitted to use the color defined in eventAttributes for
+   *                 each event type.
+   * @param {number} y for circles, the y position, as a fraction of this band's
+   *                 height, such as 0.5 for vertically-centered, or 0.95 for
+   *                 close to the bottom.
    */
-  addGlobal(events, renderType) {
+  addGlobal(events, renderType, color, y) {
     let eventIndex = -1;
+    if (typeof y === 'undefined') {
+      y = 0.5;
+    }
     while (true) {
       eventIndex = events.getNextEvent(eventIndex, 1 /* direction */);
       if (eventIndex < 0) {
@@ -963,26 +957,16 @@ class EventBands {
       const event = events.events[eventIndex];
       const attributes = events.getEventAttributes(eventIndex);
       const x = this.timestampToOffset(event[1]) + this.bandOffsetX;
-      if (renderType == 'circle') {
+      const evColor = color || attributes.color;
+      if (renderType === 'circle') {
         SVG.addCircle(
-            this.svg, x, this.height / 2, attributes.radius,
-            1 /* strokeWidth */, attributes.color, 'black' /* strokeColor */);
+            this.svg, x, this.height * y, attributes.radius,
+            1 /* strokeWidth */, evColor, 'black' /* strokeColor */);
       } else {
-        SVG.addLine(
-            this.svg, x, 0, x, this.height, attributes.color, attributes.width);
+        SVG.addLine(this.svg, x, 0, x, this.height, evColor, attributes.width);
       }
     }
     this.globalEvents.push(events);
-  }
-
-  /**
-   * Sets VSYNC events and adds them as a global events.
-   *
-   * @param {Events} VSYNC events to set.
-   */
-  setVSync(events) {
-    this.addGlobal(events);
-    this.vsyncEvents = events;
   }
 
   /** Initializes tooltip support by observing mouse events */
@@ -1084,7 +1068,7 @@ class EventBands {
     // chart.
     yOffset =
         this.updateToolTipForGlobalEvents_(event, svg, eventTimestamp, yOffset);
-    if (yOffset == this.verticalGap) {
+    if (yOffset === this.verticalGap) {
       // Find band for this mouse event.
       for (let i = 0; i < this.bands.length; ++i) {
         if (this.bands[i].top <= eventY && this.bands[i].bottom > eventY) {
@@ -1121,23 +1105,6 @@ class EventBands {
     }
   }
 
-  /**
-   * Returns timestamp of the last VSYNC event happened before or on given
-   * |eventTimestamp|.
-   *
-   * @param {number} eventTimestamp.
-   */
-  getVSyncTimestamp_(eventTimestamp) {
-    if (!this.vsyncEvents) {
-      return null;
-    }
-    const vsyncEventIndex = this.vsyncEvents.getLastBefore(eventTimestamp);
-    if (vsyncEventIndex < 0) {
-      return null;
-    }
-    return this.vsyncEvents.events[vsyncEventIndex][1];
-  }
-
 
   /**
    * Adds time information for |eventTimestamp| to the tooltip. Global time is
@@ -1150,13 +1117,7 @@ class EventBands {
    * @returns {number} vertical position of the next element.
    */
   addTimeInfoToTooltip_(svg, yOffset, eventTimestamp) {
-    const vsyncTimestamp = this.getVSyncTimestamp_(eventTimestamp);
-
-    let text = timestampToMsText(eventTimestamp) + ' ms';
-    if (vsyncTimestamp) {
-      text += ', +' + timestampToMsText(eventTimestamp - vsyncTimestamp) +
-          ' since last vsync';
-    }
+    const text = timestampToMsText(eventTimestamp) + ' ms';
 
     yOffset += this.lineHeight;
     SVG.addText(svg, this.horizontalGap, yOffset, this.fontSize, text);
@@ -1179,7 +1140,7 @@ class EventBands {
     // events may stick close each other so let diplay up to 3 closest events.
     const distanceMcs = 3 * this.resolution;
     const globalEvents = this.findGlobalEvents_(eventTimestamp, distanceMcs);
-    if (globalEvents.length == 0) {
+    if (globalEvents.length === 0) {
       return yOffset;
     }
 
@@ -1188,12 +1149,7 @@ class EventBands {
     for (let i = 0; i < globalEventCnt; ++i) {
       const globalEvent = globalEvents[i];
       const globalEventType = globalEvent[0];
-      let globalEventTimestamp = globalEvent[1];
-      if (globalEventType == 406 /* kVsyncTimestamp */) {
-        // -1 to prevent VSYNC detects itself. In last case, previous VSYNC
-        // would be chosen.
-        globalEventTimestamp -= 1;
-      }
+      const globalEventTimestamp = globalEvent[1];
 
       yOffset = this.addTimeInfoToTooltip_(svg, yOffset, globalEventTimestamp);
 
@@ -1569,7 +1525,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
       });
 
       // In case we have only one main thread add CPU info to process.
-      if (threads.length == 1 && threads[0].tid == pid) {
+      if (threads.length === 1 && threads[0].tid === pid) {
         bands.addBand(
             new Events(eventsPerTid[pid].events, 0, 1), cpuBandHeight, padding);
         bands.addBandSeparator(2 /* padding */);
@@ -1594,11 +1550,6 @@ class CpuDetailedInfoView extends DetailedInfoView {
       }
       bands.addBandSeparator(2 /* padding */);
     }
-
-    const vsyncEvents = new Events(
-        overviewBand.model.android.global_events, 406 /* kVsyncTimestamp */,
-        406 /* kVsyncTimestamp */);
-    bands.setVSync(vsyncEvents);
 
     // Add center and boundary lines.
     const kTimeMark = 10000;
@@ -1655,7 +1606,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
    * @param {number} timestampTo end time of thread activity.
    */
   addActivityTime_(eventsPerTid, tid, timestampFrom, timestampTo) {
-    if (tid == 0) {
+    if (tid === 0) {
       // Don't process idle thread.
       return;
     }
@@ -1771,7 +1722,7 @@ class Events {
     if (!nextEventTypes) {
       return false;
     }
-    if (nextEventTypes.length == 0) {
+    if (nextEventTypes.length === 0) {
       return true;
     }
     const nextIndex = this.getNextEvent(index, 1 /* direction */);
@@ -1788,7 +1739,7 @@ class Events {
    * @param {number} timestamp to search.
    */
   getClosest(timestamp) {
-    if (this.events.length == 0) {
+    if (this.events.length === 0) {
       return -1;
     }
     if (this.events[0][1] >= timestamp) {
@@ -1801,7 +1752,7 @@ class Events {
     // At this moment |firstBefore| and |firstAfter| points to any event.
     let firstBefore = 0;
     let firstAfter = this.events.length - 1;
-    while (firstBefore + 1 != firstAfter) {
+    while (firstBefore + 1 !== firstAfter) {
       const candidateIndex = Math.ceil((firstBefore + firstAfter) / 2);
       if (this.events[candidateIndex][1] < timestamp) {
         firstBefore = candidateIndex;

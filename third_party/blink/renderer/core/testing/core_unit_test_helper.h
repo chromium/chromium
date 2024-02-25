@@ -17,8 +17,9 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
@@ -88,12 +89,12 @@ class RenderingTestChromeClient : public EmptyChromeClient {
     return device_emulation_transform_;
   }
 
-  void InjectGestureScrollEvent(LocalFrame& local_frame,
-                                WebGestureDevice device,
-                                const gfx::Vector2dF& delta,
-                                ui::ScrollGranularity granularity,
-                                CompositorElementId scrollable_area_element_id,
-                                WebInputEvent::Type injected_type) override;
+  void InjectScrollbarGestureScroll(
+      LocalFrame& local_frame,
+      const gfx::Vector2dF& delta,
+      ui::ScrollGranularity granularity,
+      CompositorElementId scrollable_area_element_id,
+      WebInputEvent::Type injected_type) override;
 
   void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
     animation_scheduled_ = true;
@@ -111,6 +112,7 @@ class RenderingTest : public PageTestBase {
   USING_FAST_MALLOC(RenderingTest);
 
  public:
+  RenderingTest(base::test::TaskEnvironment::TimeSource time_source);
   virtual FrameSettingOverrideFunction SettingOverrider() const {
     return nullptr;
   }
@@ -155,8 +157,8 @@ class RenderingTest : public PageTestBase {
     return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
   }
 
-  NGInlineNode GetInlineNodeByElementId(const char* id) const {
-    return NGInlineNode(GetLayoutBlockFlowByElementId(id));
+  InlineNode GetInlineNodeByElementId(const char* id) const {
+    return InlineNode(GetLayoutBlockFlowByElementId(id));
   }
 
   PaintLayer* GetPaintLayerByElementId(const char* id) {
@@ -173,10 +175,9 @@ class RenderingTest : public PageTestBase {
     return GetDisplayItemClientFromLayoutObject(GetLayoutObjectByElementId(id));
   }
 
-  // Create a `NGConstraintSpace` for the given available inline size. The
+  // Create a `ConstraintSpace` for the given available inline size. The
   // available block sizes is `LayoutUnit::Max()`.
-  NGConstraintSpace ConstraintSpaceForAvailableSize(
-      LayoutUnit inline_size) const;
+  ConstraintSpace ConstraintSpaceForAvailableSize(LayoutUnit inline_size) const;
 
  private:
   Persistent<LocalFrameClient> local_frame_client_;

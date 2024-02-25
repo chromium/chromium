@@ -46,7 +46,7 @@ void CommonProcessInitialization(int argc, const char* const* argv) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDeferFeatureList)) {
-    base::FeatureList::InitializeInstance(
+    base::FeatureList::InitInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));
   }

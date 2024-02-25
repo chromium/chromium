@@ -41,21 +41,31 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
      * delegate starting the animations to the {@link WindowAndroid}.
      * @param windowAndroid The current window Android.
      */
-    public MessageDispatcherImpl(MessageContainer messageContainer,
-            Supplier<Integer> messageTopOffset, Supplier<Integer> messageMaxTranslation,
+    public MessageDispatcherImpl(
+            MessageContainer messageContainer,
+            Supplier<Integer> messageTopOffset,
+            Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationProvider,
-            Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
-        this(messageContainer, messageTopOffset, messageMaxTranslation, autodismissDurationProvider,
+            Callback<Animator> animatorStartCallback,
+            WindowAndroid windowAndroid) {
+        this(
+                messageContainer,
+                messageTopOffset,
+                messageMaxTranslation,
+                autodismissDurationProvider,
                 windowAndroid,
                 new MessageQueueManager(
                         new MessageAnimationCoordinator(messageContainer, animatorStartCallback)));
     }
 
     @VisibleForTesting
-    MessageDispatcherImpl(MessageContainer messageContainer, Supplier<Integer> messageTopOffset,
+    MessageDispatcherImpl(
+            MessageContainer messageContainer,
+            Supplier<Integer> messageTopOffset,
             Supplier<Integer> messageMaxTranslation,
             MessageAutodismissDurationProvider autodismissDurationProvider,
-            WindowAndroid windowAndroid, MessageQueueManager messageQueueManager) {
+            WindowAndroid windowAndroid,
+            MessageQueueManager messageQueueManager) {
         mMessageContainer = messageContainer;
         mMessageTopOffset = messageTopOffset;
         mMessageMaxTranslationSupplier = messageMaxTranslation;
@@ -73,15 +83,23 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
      * @param highPriority True if the message should be displayed ASAP.
      */
     @Override
-    public void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            @MessageScopeType int scopeType, boolean highPriority) {
-        MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
-                messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
-                mMessageTopOffset, mAutodismissDurationProvider, mSwipeAnimationHandler);
+    public void enqueueMessage(
+            PropertyModel messageProperties,
+            WebContents webContents,
+            @MessageScopeType int scopeType,
+            boolean highPriority) {
+        MessageStateHandler messageStateHandler =
+                new SingleActionMessage(
+                        mMessageContainer,
+                        messageProperties,
+                        this::dismissMessage,
+                        mMessageMaxTranslationSupplier,
+                        mMessageTopOffset,
+                        mAutodismissDurationProvider,
+                        mSwipeAnimationHandler);
         ScopeKey scopeKey;
-        assert scopeType
-                != MessageScopeType.WINDOW
-            : "Use #enqueueWindowScopedMessage to enqueue a window-scoped message.";
+        assert scopeType != MessageScopeType.WINDOW
+                : "Use #enqueueWindowScopedMessage to enqueue a window-scoped message.";
         scopeKey = new ScopeKey(scopeType, webContents);
         mMessageQueueManager.enqueueMessage(
                 messageStateHandler, messageProperties, scopeKey, highPriority);
@@ -89,9 +107,15 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
 
     @Override
     public void enqueueWindowScopedMessage(PropertyModel messageProperties, boolean highPriority) {
-        MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
-                messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
-                mMessageTopOffset, mAutodismissDurationProvider, mSwipeAnimationHandler);
+        MessageStateHandler messageStateHandler =
+                new SingleActionMessage(
+                        mMessageContainer,
+                        messageProperties,
+                        this::dismissMessage,
+                        mMessageMaxTranslationSupplier,
+                        mMessageTopOffset,
+                        mAutodismissDurationProvider,
+                        mSwipeAnimationHandler);
         ScopeKey scopeKey = new ScopeKey(mWindowAndroid);
         mMessageQueueManager.enqueueMessage(
                 messageStateHandler, messageProperties, scopeKey, highPriority);

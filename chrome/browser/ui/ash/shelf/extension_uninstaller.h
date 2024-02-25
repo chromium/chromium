@@ -38,7 +38,7 @@ class ExtensionUninstaller
 
   void CleanUp();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string app_id_;
   gfx::NativeWindow parent_window_ = gfx::NativeWindow();
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog_;

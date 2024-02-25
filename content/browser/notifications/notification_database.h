@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -146,7 +146,7 @@ class CONTENT_EXPORT NotificationDatabase {
   Status ReadAllNotificationDataForServiceWorkerRegistration(
       const GURL& origin,
       int64_t service_worker_registration_id,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       std::vector<NotificationDatabaseData>* notification_data_vector) const;
 
   // Writes the |notification_data| for a new notification belonging to |origin|
@@ -177,7 +177,7 @@ class CONTENT_EXPORT NotificationDatabase {
   Status DeleteAllNotificationDataForOrigin(
       const GURL& origin,
       const std::string& tag,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       std::set<std::string>* deleted_notification_ids);
 
   // Deletes all data associated with the |service_worker_registration_id|
@@ -211,7 +211,7 @@ class CONTENT_EXPORT NotificationDatabase {
   Status ReadAllNotificationDataInternal(
       const GURL& origin,
       int64_t service_worker_registration_id,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       std::vector<NotificationDatabaseData>* notification_data_vector) const;
 
   // Reads all notification data with the given constraints. |origin| may be
@@ -219,12 +219,12 @@ class CONTENT_EXPORT NotificationDatabase {
   // set, but |service_worker_registration_id| is invalid, then all notification
   // data for |origin| will be read. If both are set, then all notification data
   // for the given |service_worker_registration_id| will be read. If
-  // |is_shown_by_browser| is not absl::nullopt, only notification data with
+  // |is_shown_by_browser| is not std::nullopt, only notification data with
   // matching |is_shown_by_browser| flags will be read.
   Status ForEachNotificationDataInternal(
       const GURL& origin,
       int64_t service_worker_registration_id,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       ReadAllNotificationsCallback callback) const;
 
   // Deletes all notification data with the given constraints. |origin| must
@@ -236,7 +236,7 @@ class CONTENT_EXPORT NotificationDatabase {
   Status DeleteAllNotificationDataInternal(
       const GURL& origin,
       const std::string& tag,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       int64_t service_worker_registration_id,
       std::set<std::string>* deleted_notification_ids);
 

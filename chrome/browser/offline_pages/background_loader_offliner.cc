@@ -16,12 +16,15 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -42,24 +45,6 @@
 namespace offline_pages {
 
 namespace {
-
-std::string AddHistogramSuffix(const ClientId& client_id,
-                               const char* histogram_name) {
-  if (client_id.name_space.empty()) {
-    NOTREACHED();
-    return histogram_name;
-  }
-  std::string adjusted_histogram_name(histogram_name);
-  adjusted_histogram_name += "." + client_id.name_space;
-  return adjusted_histogram_name;
-}
-
-void RecordErrorCauseUMA(const ClientId& client_id, int error_code) {
-  base::UmaHistogramSparse(
-      AddHistogramSuffix(client_id,
-                         "OfflinePages.Background.LoadingErrorStatusCode"),
-      error_code);
-}
 
 void HandleLoadTerminationCancel(
     Offliner::CompletionCallback completion_callback,
@@ -294,8 +279,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
   // If there was an error of any kind (certificate, client, DNS, etc),
   // Mark as error page. Resetting here causes RecordNavigationMetrics to crash.
   if (navigation_handle->IsErrorPage()) {
-    RecordErrorCauseUMA(pending_request_->client_id(),
-                        static_cast<int>(navigation_handle->GetNetErrorCode()));
     page_load_state_ = RETRIABLE_NET_ERROR;
   } else {
     int status_code = 200;  // Default to OK.
@@ -308,7 +291,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
     // 400+ codes are client and server errors.
     // We skip 418 because it's a teapot.
     if (status_code == 301 || (status_code >= 400 && status_code != 418)) {
-      RecordErrorCauseUMA(pending_request_->client_id(), status_code);
       page_load_state_ = RETRIABLE_HTTP_ERROR;
     }
   }
@@ -480,6 +462,15 @@ void BackgroundLoaderOffliner::ResetLoader() {
   loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
       browser_context_);
   loader_->SetDelegate(this);
+
+  // Initialize web contents settings.
+  renderer_preferences_util::UpdateFromSystemSettings(
+      loader_->web_contents()->GetMutableRendererPrefs(),
+      Profile::FromBrowserContext(browser_context_));
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      loader_->web_contents(),
+      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+          loader_->web_contents()));
 }
 
 void BackgroundLoaderOffliner::AttachObservers() {

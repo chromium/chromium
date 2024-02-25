@@ -4,6 +4,8 @@
 
 #include "content/browser/scheduler/responsiveness/calculator.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -11,7 +13,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace responsiveness {
@@ -435,7 +436,7 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   constexpr int kStartTime = kQueueTime + 10 * kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
-  absl::optional<base::HistogramTester> histograms;
+  std::optional<base::HistogramTester> histograms;
 
   // Queue congestion event during the first kMeasurementInterval.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
@@ -572,7 +573,7 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
   constexpr int kStartTime = kQueueTime + 10 * kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
-  absl::optional<base::HistogramTester> histograms;
+  std::optional<base::HistogramTester> histograms;
 
   // OnFirstIdle() right away during the first kMeasurementInterval. Still
   // considered as kFirstInterval, but second interval will go straight

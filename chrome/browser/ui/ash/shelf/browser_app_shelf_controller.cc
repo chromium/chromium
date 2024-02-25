@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -15,7 +18,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
-#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
@@ -84,6 +86,9 @@ void BrowserAppShelfController::OnBrowserAppAdded(
     case apps::BrowserAppInstance::Type::kAppWindow: {
       shelf_spinner_controller_->CloseSpinner(instance.app_id);
       CreateOrUpdateShelfItem(id, ash::STATUS_RUNNING);
+      if (ash::features::IsStandaloneWindowMigrationUxEnabled()) {
+        MaybeShowStandaloneMigrationNudge(instance.app_id, profile_);
+      }
       break;
     }
     case apps::BrowserAppInstance::Type::kAppTab:
@@ -146,14 +151,12 @@ void BrowserAppShelfController::CreateOrUpdateShelfItem(
     return;
   }
 
-  ash::ShelfItem new_item;
-  std::unique_ptr<ash::ShelfItemDelegate> delegate;
-  shelf_item_factory_->CreateShelfItemForAppId(id.app_id, &new_item, &delegate);
-  new_item.type = ash::TYPE_APP;
-  new_item.status = status;
-  new_item.app_status =
-      ShelfControllerHelper::GetAppStatus(profile_, id.app_id);
-  model_->AddAt(model_->item_count(), new_item, std::move(delegate));
+  std::unique_ptr<ash::ShelfItemDelegate> delegate =
+      shelf_item_factory_->CreateShelfItemDelegateForAppId(id.app_id);
+  std::unique_ptr<ash::ShelfItem> new_item =
+      shelf_item_factory_->CreateShelfItemForApp(id, status, ash::TYPE_APP,
+                                                 /*title=*/std::u16string());
+  model_->AddAt(model_->item_count(), *new_item, std::move(delegate));
 }
 
 void BrowserAppShelfController::SetShelfItemClosed(const ash::ShelfID& id) {

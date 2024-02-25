@@ -50,7 +50,7 @@ BluetoothDisabledView::BluetoothDisabledView() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON),
-      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
+      PillButton::Type::kSecondaryWithoutIcon, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kBluetoothDisabledLearnMoreButton);
   content_view->AddButton(std::move(learn_more));
 
@@ -71,7 +71,7 @@ void BluetoothDisabledView::LearnMoreButtonPressed() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-BEGIN_METADATA(BluetoothDisabledView, views::View)
+BEGIN_METADATA(BluetoothDisabledView)
 END_METADATA
 
 }  // namespace ash

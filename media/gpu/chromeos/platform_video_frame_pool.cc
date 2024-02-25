@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,11 +15,15 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 namespace {
+
+// This needs to be synchronized with the frame type from DefaultCreateFrame().
+// There is a runtime CHECK() to validate this.
+constexpr VideoFrame::StorageType kDefaultFrameStorageType =
+    VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
 
 // The default method to create frames.
 CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
@@ -28,6 +33,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
     const gfx::Size& natural_size,
     bool use_protected,
     bool use_linear_buffers,
+    bool needs_detiling,
     base::TimeDelta timestamp) {
   if (use_protected && use_linear_buffers) {
     VLOGF(1) << "Linear buffers are unsupported when |use_protected| is true.";
@@ -48,13 +54,15 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
   frame->metadata().allow_overlay = true;
   frame->metadata().protected_video = use_protected;
   frame->metadata().hw_protected = use_protected;
+  frame->metadata().needs_detiling = needs_detiling;
   return frame;
 }
 
 }  // namespace
 
 PlatformVideoFramePool::PlatformVideoFramePool()
-    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)) {
+    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)),
+      frame_storage_type_(kDefaultFrameStorageType) {
   DVLOGF(4);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -68,15 +76,6 @@ PlatformVideoFramePool::~PlatformVideoFramePool() {
   frames_in_use_.clear();
   free_frames_.clear();
   weak_this_factory_.InvalidateWeakPtrs();
-}
-
-// static
-gfx::GpuMemoryBufferId PlatformVideoFramePool::GetGpuMemoryBufferId(
-    const VideoFrame& frame) {
-  DCHECK_EQ(frame.storage_type(),
-            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
-  DCHECK(frame.GetGpuMemoryBuffer());
-  return frame.GetGpuMemoryBuffer()->GetId();
 }
 
 scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
@@ -116,11 +115,22 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     CHECK(use_linear_buffers_.has_value());
     CroStatus::Or<scoped_refptr<VideoFrame>> new_frame = create_frame_cb_.Run(
         format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
-        coded_size, use_protected_, *use_linear_buffers_, base::TimeDelta());
+        coded_size, use_protected_, *use_linear_buffers_,
+        frame_layout_->fourcc() == Fourcc(Fourcc::MM21), base::TimeDelta());
     if (!new_frame.has_value()) {
       // TODO(crbug.com/c/1103510) Push the error up instead of dropping it.
       return nullptr;
     }
+
+    CHECK(*new_frame);
+    // This passes because |frame_storage_type_| is set to match the StorageType
+    // of frames produced by |create_frame_cb_|. When |create_frame_cb_| is set
+    // to DefaultCreateFrame(), then |frame_storage_type_| is set to
+    // |kDefaultFrameStorageType|, which is hardcoded to match the storage type
+    // used by DefaultCreateFrame(). When |create_frame_cb_| has been set by
+    // SetCustomAllocator(), then |frame_storage_type_| is expected to be
+    // correctly // set by the caller.
+    CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
 
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
@@ -134,8 +144,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       origin_frame, format, visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  frames_in_use_.emplace(GetGpuMemoryBufferId(*wrapped_frame),
-                         origin_frame.get());
+  frames_in_use_.emplace(GetSharedMemoryId(*wrapped_frame), origin_frame.get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -144,6 +153,11 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   DCHECK_EQ(wrapped_frame->metadata().hw_protected, use_protected_);
 
   return wrapped_frame;
+}
+
+VideoFrame::StorageType PlatformVideoFramePool::GetFrameStorageType() const {
+  base::AutoLock auto_lock(lock_);
+  return frame_storage_type_;
 }
 
 PlatformVideoFramePool* PlatformVideoFramePool::AsPlatformVideoFramePool() {
@@ -200,9 +214,10 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
     free_frames_.clear();
-    auto maybe_frame = create_frame_cb_.Run(
-        format, coded_size, visible_rect, natural_size, use_protected,
-        *use_linear_buffers_, base::TimeDelta());
+    auto maybe_frame =
+        create_frame_cb_.Run(format, coded_size, visible_rect, natural_size,
+                             use_protected, *use_linear_buffers_,
+                             fourcc == Fourcc(Fourcc::MM21), base::TimeDelta());
     if (!maybe_frame.has_value())
       return std::move(maybe_frame).error();
     auto frame = std::move(maybe_frame).value();
@@ -229,9 +244,11 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
 }
 
 void PlatformVideoFramePool::SetCustomFrameAllocator(
-    DmabufVideoFramePool::CreateFrameCB allocator) {
+    DmabufVideoFramePool::CreateFrameCB allocator,
+    VideoFrame::StorageType frame_storage_type) {
   base::AutoLock auto_lock(lock_);
   create_frame_cb_ = allocator;
+  frame_storage_type_ = frame_storage_type;
 }
 
 bool PlatformVideoFramePool::IsExhausted() {
@@ -248,12 +265,12 @@ bool PlatformVideoFramePool::IsExhausted_Locked() {
   return free_frames_.empty() && GetTotalNumFrames_Locked() >= max_num_frames_;
 }
 
-VideoFrame* PlatformVideoFramePool::UnwrapFrame(
-    const VideoFrame& wrapped_frame) {
+VideoFrame* PlatformVideoFramePool::GetOriginalFrame(
+    gfx::GenericSharedMemoryId frame_id) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  auto it = frames_in_use_.find(GetGpuMemoryBufferId(wrapped_frame));
+  auto it = frames_in_use_.find(frame_id);
   return (it == frames_in_use_.end()) ? nullptr : it->second;
 }
 
@@ -279,7 +296,7 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
-absl::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
+std::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
   return frame_layout_;
@@ -287,7 +304,7 @@ absl::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
 
 // static
 void PlatformVideoFramePool::OnFrameReleasedThunk(
-    absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
+    std::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleasedThunk",
@@ -310,7 +327,7 @@ void PlatformVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  gfx::GpuMemoryBufferId frame_id = GetGpuMemoryBufferId(*origin_frame);
+  gfx::GenericSharedMemoryId frame_id = GetSharedMemoryId(*origin_frame);
   auto it = frames_in_use_.find(frame_id);
   DCHECK(it != frames_in_use_.end());
   frames_in_use_.erase(it);

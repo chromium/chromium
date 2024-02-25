@@ -37,7 +37,8 @@ DEFINE_TEXT_PROTO_FUZZER(
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
@@ -90,7 +91,8 @@ DEFINE_TEXT_PROTO_FUZZER(
           }
           case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
             video_decoder->decode(
-                MakeEncodedVideoChunk(invocation.decode().chunk()),
+                MakeEncodedVideoChunk(script_state,
+                                      invocation.decode().chunk()),
                 IGNORE_EXCEPTION_FOR_TESTING);
             break;
           case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {

@@ -29,7 +29,7 @@ crosapi::mojom::ExtensionControllingProxyPtr GetExtensionPtr(
       !ash_proxy_monitor->GetLacrosExtensionControllingTheProxy()) {
     return nullptr;
   }
-  absl::optional<ash::AshProxyMonitor::ExtensionMetadata> extension_metadata =
+  std::optional<ash::AshProxyMonitor::ExtensionMetadata> extension_metadata =
       ash_proxy_monitor->GetLacrosExtensionControllingTheProxy();
   crosapi::mojom::ExtensionControllingProxyPtr extension =
       crosapi::mojom::ExtensionControllingProxy::New();
@@ -96,6 +96,20 @@ void NetworkSettingsServiceAsh::AddNetworkSettingsObserver(
     remote->OnProxyChanged(cached_proxy_config_.Clone());
   }
   observers_.Add(std::move(remote));
+}
+
+void NetworkSettingsServiceAsh::IsAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+    IsAlwaysOnVpnPreConnectUrlAllowlistEnforcedCallback callback) {
+  std::move(callback).Run(alwayson_vpn_pre_connect_url_allowlist_enforced_);
+}
+
+void NetworkSettingsServiceAsh::SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+    bool enforced) {
+  alwayson_vpn_pre_connect_url_allowlist_enforced_ = enforced;
+  for (const auto& obs : observers_) {
+    obs->OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(
+        alwayson_vpn_pre_connect_url_allowlist_enforced_);
+  }
 }
 
 void NetworkSettingsServiceAsh::OnProxyChanged() {

@@ -23,6 +23,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 using ::testing::ElementsAre;
@@ -50,25 +52,11 @@ class FakeEventListener final : public NativeEventListener {
 
 }  // namespace
 
-class WebFormControlElementTest
-    : public PageTestBase,
-      public testing::WithParamInterface<const char*> {
+class WebFormControlElementTest : public PageTestBase {
  public:
   WebFormControlElementTest() {
     feature_list_.InitAndEnableFeature(
         blink::features::kAutofillSendUnidentifiedKeyAfterFill);
-  }
-
- protected:
-  void InsertHTML() {
-    GetDocument().documentElement()->setInnerHTML(GetParam());
-  }
-
-  WebFormControlElement TestElement() {
-    HTMLFormControlElement* control_element = DynamicTo<HTMLFormControlElement>(
-        GetDocument().getElementById(AtomicString("testElement")));
-    DCHECK(control_element);
-    return WebFormControlElement(control_element);
   }
 
  private:
@@ -116,7 +104,23 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
   EXPECT_FALSE(selectlist.UserHasEditedTheField());
 }
 
-TEST_P(WebFormControlElementTest, SetAutofillValue) {
+class WebFormControlElementSetAutofillValueTest
+    : public WebFormControlElementTest,
+      public testing::WithParamInterface<const char*> {
+ protected:
+  void InsertHTML() {
+    GetDocument().documentElement()->setInnerHTML(GetParam());
+  }
+
+  WebFormControlElement TestElement() {
+    HTMLFormControlElement* control_element = DynamicTo<HTMLFormControlElement>(
+        GetDocument().getElementById(AtomicString("testElement")));
+    DCHECK(control_element);
+    return WebFormControlElement(control_element);
+  }
+};
+
+TEST_P(WebFormControlElementSetAutofillValueTest, SetAutofillValue) {
   InsertHTML();
   WebFormControlElement element = TestElement();
   auto* keypress_handler = MakeGarbageCollected<FakeEventListener>();
@@ -135,9 +139,25 @@ TEST_P(WebFormControlElementTest, SetAutofillValue) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
     WebFormControlElementTest,
+    WebFormControlElementSetAutofillValueTest,
     Values("<input type='text' id=testElement value='test value'>",
            "<textarea id=testElement>test value</textarea>"));
+
+// <button type=selectlist> should not be confused with <selectlist> for
+// autofill.
+TEST_F(WebFormControlElementTest, ButtonTypeSelectlist) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<button id=selectbutton type=selectlist>button</button>"
+      "<button id=normalbutton type=button>button</button>");
+  auto selectbutton = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("selectbutton"))));
+  auto normalbutton = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("normalbutton"))));
+  EXPECT_EQ(normalbutton.FormControlTypeForAutofill(),
+            FormControlType::kButtonButton);
+  EXPECT_EQ(selectbutton.FormControlTypeForAutofill(),
+            FormControlType::kButtonSelectList);
+}
 
 }  // namespace blink

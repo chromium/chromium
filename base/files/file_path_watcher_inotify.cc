@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path_watcher.h"
+#include "base/files/file_path_watcher_inotify.h"
 
 #include <errno.h>
 #include <poll.h>
@@ -18,6 +18,7 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -26,9 +27,10 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher_inotify.h"
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -70,6 +72,21 @@ class InotifyReader;
 
 // Used by test to override inotify watcher limit.
 size_t g_override_max_inotify_watches = 0u;
+
+FilePathWatcher::ChangeType ToChangeType(const inotify_event* const event) {
+  // Greedily select the most specific change type. It's possible that multiple
+  // types may apply, so this is ordered by specificity (e.g. "created" may also
+  // imply "modified", but the former is more useful).
+  if (event->mask & (IN_MOVED_FROM | IN_MOVED_TO)) {
+    return FilePathWatcher::ChangeType::kMoved;
+  } else if (event->mask & IN_CREATE) {
+    return FilePathWatcher::ChangeType::kCreated;
+  } else if (event->mask & IN_DELETE) {
+    return FilePathWatcher::ChangeType::kDeleted;
+  } else {
+    return FilePathWatcher::ChangeType::kModified;
+  }
+}
 
 class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
  public:
@@ -163,14 +180,14 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // |fired_watch| identifies the watch that fired, |child| indicates what has
   // changed, and is relative to the currently watched path for |fired_watch|.
   //
+  // |change_info| includes information about the change.
   // |created| is true if the object appears.
   // |deleted| is true if the object disappears.
-  // |is_dir| is true if the object is a directory.
   void OnFilePathChanged(InotifyReader::Watch fired_watch,
                          const FilePath::StringType& child,
+                         FilePathWatcher::ChangeInfo change_info,
                          bool created,
-                         bool deleted,
-                         bool is_dir);
+                         bool deleted);
 
   // Returns whether the number of inotify watches of this FilePathWatcherImpl
   // would exceed the limit if adding one more.
@@ -190,6 +207,11 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool WatchWithOptions(const FilePath& path,
                         const WatchOptions& flags,
                         const FilePathWatcher::Callback& callback) override;
+
+  bool WatchWithChangeInfo(
+      const FilePath& path,
+      const WatchOptions& options,
+      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
 
   // Cancel the watch. This unregisters the instance with InotifyReader.
   void Cancel() override;
@@ -246,7 +268,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool HasValidWatchVector() const;
 
   // Callback to notify upon changes.
-  FilePathWatcher::Callback callback_;
+  FilePathWatcher::CallbackWithChangeInfo callback_;
 
   // The file or directory we're supposed to watch.
   FilePath target_;
@@ -302,7 +324,7 @@ void InotifyReaderThreadDelegate::ThreadMain() {
     for (size_t i = 0; i < static_cast<size_t>(bytes_read);) {
       inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[i]);
       size_t event_size = sizeof(inotify_event) + event->len;
-      DCHECK(i + event_size <= static_cast<size_t>(bytes_read));
+      DUMP_WILL_BE_CHECK_LE(i + event_size, static_cast<size_t>(bytes_read));
       g_inotify_reader.Get().OnInotifyEvent(event);
       i += event_size;
     }
@@ -390,13 +412,22 @@ void InotifyReader::OnInotifyEvent(const inotify_event* event) {
   auto& watcher_map = watchers_it->second;
   for (const auto& entry : watcher_map) {
     auto& watcher_entry = entry.second;
+
+    FilePathWatcher::ChangeInfo change_info{
+        .file_path_type = event->mask & IN_ISDIR
+                              ? FilePathWatcher::FilePathType::kDirectory
+                              : FilePathWatcher::FilePathType::kFile,
+        .change_type = ToChangeType(event),
+        .cookie =
+            event->cookie ? std::make_optional(event->cookie) : std::nullopt,
+    };
+    bool created = event->mask & (IN_CREATE | IN_MOVED_TO);
+    bool deleted = event->mask & (IN_DELETE | IN_MOVED_FROM);
     watcher_entry.task_runner->PostTask(
         FROM_HERE,
         BindOnce(&FilePathWatcherImpl::OnFilePathChanged, watcher_entry.watcher,
-                 static_cast<Watch>(event->wd), child,
-                 event->mask & (IN_CREATE | IN_MOVED_TO),
-                 event->mask & (IN_DELETE | IN_MOVED_FROM),
-                 event->mask & IN_ISDIR));
+                 static_cast<Watch>(event->wd), child, std::move(change_info),
+                 created, deleted));
   }
 }
 
@@ -409,17 +440,19 @@ bool InotifyReader::HasWatches() {
 FilePathWatcherImpl::FilePathWatcherImpl() = default;
 
 FilePathWatcherImpl::~FilePathWatcherImpl() {
-  DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!task_runner() ||
+                     task_runner()->RunsTasksInCurrentSequence());
 }
 
-void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
-                                            const FilePath::StringType& child,
-                                            bool created,
-                                            bool deleted,
-                                            bool is_dir) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!watches_.empty());
-  DCHECK(HasValidWatchVector());
+void FilePathWatcherImpl::OnFilePathChanged(
+    InotifyReader::Watch fired_watch,
+    const FilePath::StringType& child,
+    FilePathWatcher::ChangeInfo change_info,
+    bool created,
+    bool deleted) {
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!watches_.empty());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   // Used below to avoid multiple recursive updates.
   bool did_update = false;
@@ -488,34 +521,38 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
     if (target_changed || (change_on_target_path && deleted) ||
         (change_on_target_path && created && PathExists(target_))) {
       if (!did_update) {
-        if (!UpdateRecursiveWatches(fired_watch, is_dir)) {
+        if (!UpdateRecursiveWatches(
+                fired_watch, change_info.file_path_type ==
+                                 FilePathWatcher::FilePathType::kDirectory)) {
           exceeded_limit = true;
           break;
         }
         did_update = true;
       }
-      if (report_modified_path_ && !change_on_target_path) {
-        callback_.Run(target_.Append(child),
-                      /*error=*/false);  // `this` may be deleted.
-      } else {
-        callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
-      }
+      FilePath modified_path = report_modified_path_ && !change_on_target_path
+                                   ? target_.Append(child)
+                                   : target_;
+      callback_.Run(std::move(change_info), modified_path,
+                    /*error=*/false);  // `this` may be deleted.
       return;
     }
   }
 
   if (!exceeded_limit && Contains(recursive_paths_by_watch_, fired_watch)) {
     if (!did_update) {
-      if (!UpdateRecursiveWatches(fired_watch, is_dir))
+      if (!UpdateRecursiveWatches(
+              fired_watch, change_info.file_path_type ==
+                               FilePathWatcher::FilePathType::kDirectory)) {
         exceeded_limit = true;
+      }
     }
     if (!exceeded_limit) {
-      if (report_modified_path_) {
-        callback_.Run(recursive_paths_by_watch_[fired_watch].Append(child),
-                      /*error=*/false);  // `this` may be deleted.
-      } else {
-        callback_.Run(target_, /*error=*/false);  // `this` may be deleted.
-      }
+      FilePath modified_path =
+          report_modified_path_
+              ? recursive_paths_by_watch_[fired_watch].Append(child)
+              : target_;
+      callback_.Run(std::move(change_info), modified_path,
+                    /*error=*/false);  // `this` may be deleted.
       return;
     }
   }
@@ -528,13 +565,13 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
     auto callback = callback_;
     Cancel();
 
-    // Fires the "error=true" callback.
-    callback.Run(target_, /*error=*/true);  // `this` may be deleted.
+    // Fires the error callback. `this` may be deleted as a result of this call.
+    callback.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
   }
 }
 
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
   // `watches_` contains inotify watches of all dir components of `target_`.
   // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
@@ -549,24 +586,46 @@ bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
 }
 
 InotifyReader::WatcherEntry FilePathWatcherImpl::GetWatcherEntry() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
   return {task_runner(), weak_factory_.GetWeakPtr()};
 }
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
                                 Type type,
                                 const FilePathWatcher::Callback& callback) {
-  DCHECK(target_.empty());
+  return WatchWithChangeInfo(
+      path, WatchOptions{.type = type},
+      base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
+          base::BindRepeating(std::move(callback))));
+}
+
+bool FilePathWatcherImpl::WatchWithOptions(
+    const FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::Callback& callback) {
+  return WatchWithChangeInfo(
+      path, options,
+      base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
+          base::BindRepeating(std::move(callback))));
+}
+
+bool FilePathWatcherImpl::WatchWithChangeInfo(
+    const FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::CallbackWithChangeInfo& callback) {
+  DUMP_WILL_BE_CHECK(target_.empty());
 
   set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
   target_ = path;
-  type_ = type;
+  type_ = options.type;
+  report_modified_path_ = options.report_modified_path;
 
   std::vector<FilePath::StringType> comps = target_.GetComponents();
-  DCHECK(!comps.empty());
-  for (size_t i = 1; i < comps.size(); ++i)
+  DUMP_WILL_BE_CHECK(!comps.empty());
+  for (size_t i = 1; i < comps.size(); ++i) {
     watches_.emplace_back(comps[i]);
+  }
   watches_.emplace_back(FilePath::StringType());
 
   if (!UpdateWatches()) {
@@ -578,14 +637,6 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
   return true;
 }
 
-bool FilePathWatcherImpl::WatchWithOptions(
-    const FilePath& path,
-    const WatchOptions& options,
-    const FilePathWatcher::Callback& callback) {
-  report_modified_path_ = options.report_modified_path;
-  return Watch(path, options.type, callback);
-}
-
 void FilePathWatcherImpl::Cancel() {
   if (!callback_) {
     // Watch() was never called.
@@ -593,8 +644,8 @@ void FilePathWatcherImpl::Cancel() {
     return;
   }
 
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!is_cancelled());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!is_cancelled());
 
   set_cancelled();
   callback_.Reset();
@@ -609,8 +660,8 @@ void FilePathWatcherImpl::Cancel() {
 bool FilePathWatcherImpl::UpdateWatches() {
   // Ensure this runs on the task_runner() exclusively in order to avoid
   // concurrency issues.
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(HasValidWatchVector());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   // Walk the list of watches and update them as we go.
   FilePath path(FILE_PATH_LITERAL("/"));
@@ -642,7 +693,7 @@ bool FilePathWatcherImpl::UpdateWatches() {
 bool FilePathWatcherImpl::UpdateRecursiveWatches(
     InotifyReader::Watch fired_watch,
     bool is_dir) {
-  DCHECK(HasValidWatchVector());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   if (type_ != Type::kRecursive)
     return true;
@@ -693,13 +744,20 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     recursive_paths_by_watch_.erase(end_it->second);
   }
   recursive_watches_by_path_.erase(start_it, end_it);
+
+  // If `changed_dir` does not exist anymore, then there is no need to call
+  // UpdateRecursiveWatchesForPath().
+  if (!DirectoryExists(changed_dir)) {
+    return true;
+  }
+
   return UpdateRecursiveWatchesForPath(changed_dir);
 }
 
 bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
-  DCHECK_EQ(type_, Type::kRecursive);
-  DCHECK(!path.empty());
-  DCHECK(DirectoryExists(path));
+  DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
+  DUMP_WILL_BE_CHECK(!path.empty());
+  DUMP_WILL_BE_CHECK(DirectoryExists(path));
 
   // Note: SHOW_SYM_LINKS exposes symlinks as symlinks, so they are ignored
   // rather than followed. Following symlinks can easily lead to the undesirable
@@ -709,19 +767,29 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
       FileEnumerator::DIRECTORIES | FileEnumerator::SHOW_SYM_LINKS);
   for (FilePath current = enumerator.Next(); !current.empty();
        current = enumerator.Next()) {
-    DCHECK(enumerator.GetInfo().IsDirectory());
+    DUMP_WILL_BE_CHECK(enumerator.GetInfo().IsDirectory());
 
+    // Check `recursive_watches_by_path_` as a heuristic to determine if this
+    // needs to be an add or update operation.
     if (!Contains(recursive_watches_by_path_, current)) {
-      // Add new watches.
+      // Try to add new watches.
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded)
         return false;
+
+      // The `watch` returned by inotify already exists. This is actually an
+      // update operation.
+      auto it = recursive_paths_by_watch_.find(watch);
+      if (it != recursive_paths_by_watch_.end()) {
+        recursive_watches_by_path_.erase(it->second);
+        recursive_paths_by_watch_.erase(it);
+      }
       TrackWatchForRecursion(watch, current);
     } else {
       // Update existing watches.
       InotifyReader::Watch old_watch = recursive_watches_by_path_[current];
-      DCHECK_NE(InotifyReader::kInvalidWatch, old_watch);
+      DUMP_WILL_BE_CHECK_NE(InotifyReader::kInvalidWatch, old_watch);
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded)
@@ -739,15 +807,15 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
 
 void FilePathWatcherImpl::TrackWatchForRecursion(InotifyReader::Watch watch,
                                                  const FilePath& path) {
-  DCHECK_EQ(type_, Type::kRecursive);
-  DCHECK(!path.empty());
-  DCHECK(target_.IsParent(path));
+  DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
+  DUMP_WILL_BE_CHECK(!path.empty());
+  DUMP_WILL_BE_CHECK(target_.IsParent(path));
 
   if (watch == InotifyReader::kInvalidWatch)
     return;
 
-  DCHECK(!Contains(recursive_paths_by_watch_, watch));
-  DCHECK(!Contains(recursive_watches_by_path_, path));
+  DUMP_WILL_BE_CHECK(!Contains(recursive_paths_by_watch_, watch));
+  DUMP_WILL_BE_CHECK(!Contains(recursive_watches_by_path_, path));
   recursive_paths_by_watch_[watch] = path;
   recursive_watches_by_path_[path] = watch;
 }
@@ -769,12 +837,12 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
   // Fuchsia does not support symbolic links.
   return false;
 #else   // BUILDFLAG(IS_FUCHSIA)
-  DCHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
-  absl::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
+  DUMP_WILL_BE_CHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
+  std::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
   if (!link) {
     return true;
   }
-  DCHECK(link->IsAbsolute());
+  DUMP_WILL_BE_CHECK(link->IsAbsolute());
 
   // Try watching symlink target directory. If the link target is "/", then we
   // shouldn't get here in normal situations and if we do, we'd watch "/" for
@@ -831,7 +899,7 @@ size_t GetMaxNumberOfInotifyWatches() {
 
 ScopedMaxNumberOfInotifyWatchesOverrideForTest::
     ScopedMaxNumberOfInotifyWatchesOverrideForTest(size_t override_max) {
-  DCHECK_EQ(g_override_max_inotify_watches, 0u);
+  DUMP_WILL_BE_CHECK_EQ(g_override_max_inotify_watches, 0u);
   g_override_max_inotify_watches = override_max;
 }
 

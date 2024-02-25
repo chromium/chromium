@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const pageURL = 'http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html';
   const {session, dp} = await testRunner.startURL(pageURL,
     'Tests basic functionality of tab target.');

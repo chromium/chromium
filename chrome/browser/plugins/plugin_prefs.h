@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -73,12 +74,12 @@ class PluginPrefs : public RefcountedKeyedService {
 
   bool always_open_pdf_externally_ = false;
 
-  raw_ptr<Profile, LeakedDanglingUntriaged> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Weak pointer, owned by the profile.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
-  PrefChangeRegistrar registrar_;
+  std::unique_ptr<PrefChangeRegistrar> registrar_;
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_

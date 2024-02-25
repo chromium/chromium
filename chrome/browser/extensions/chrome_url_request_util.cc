@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -21,6 +22,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,7 +57,7 @@ void DetermineCharset(const std::string& mime_type,
 
 scoped_refptr<base::RefCountedMemory> GetResource(
     int resource_id,
-    const std::string& extension_id) {
+    const extensions::ExtensionId& extension_id) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       rb.LoadDataResourceBytes(resource_id);
@@ -104,7 +106,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     NOTREACHED() << "No redirects for local file loads.";
   }
   // Current implementation reads all resource data at start of resource
@@ -178,7 +180,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                                head->mime_type.c_str());
     }
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     uint32_t write_size = data->size();
     MojoResult result = producer_handle->WriteData(data->front(), &write_size,

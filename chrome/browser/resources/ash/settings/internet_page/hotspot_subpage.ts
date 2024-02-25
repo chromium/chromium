@@ -9,19 +9,19 @@
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './hotspot_subpage.html.js';
@@ -84,7 +84,7 @@ export class SettingsHotspotSubpageElement extends
   private isHotspotToggleOn_: boolean;
   private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.HOTSPOT_DETAIL) {
       return;
@@ -116,11 +116,14 @@ export class SettingsHotspotSubpageElement extends
     if (!this.hotspotInfo) {
       return true;
     }
-    if (this.hotspotInfo.allowStatus !== HotspotAllowStatus.kAllowed) {
+    if (this.hotspotInfo.state === HotspotState.kDisabling) {
       return true;
     }
-    return this.hotspotInfo.state === HotspotState.kEnabling ||
-        this.hotspotInfo.state === HotspotState.kDisabling;
+    if (this.hotspotInfo.state === HotspotState.kEnabling ||
+        this.hotspotInfo.state === HotspotState.kEnabled) {
+      return false;
+    }
+    return this.hotspotInfo.allowStatus !== HotspotAllowStatus.kAllowed;
   }
 
   private getOnOffString_(): string {
@@ -159,6 +162,11 @@ export class SettingsHotspotSubpageElement extends
     return ssid || '';
   }
 
+  private hideConnectedDeviceCount_(): boolean {
+    return this.hotspotInfo?.state !== HotspotState.kEnabled &&
+        this.hotspotInfo?.state !== HotspotState.kDisabling;
+  }
+
   private getHotspotConnectedDeviceCount_(clientCount: number|
                                           undefined): number {
     return clientCount || 0;
@@ -169,7 +177,7 @@ export class SettingsHotspotSubpageElement extends
     return !!hotspotInfo?.config;
   }
 
-  private onHotspotConfigureClick_() {
+  private onHotspotConfigureClick_(): void {
     const event = new CustomEvent('show-hotspot-config-dialog', {
       bubbles: true,
       composed: true,

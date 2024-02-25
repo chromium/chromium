@@ -4,13 +4,14 @@
 
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 
+#include <optional>
+
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 BrandcodedDefaultSettings::BrandcodedDefaultSettings() {
 }
@@ -36,7 +37,7 @@ BrandcodedDefaultSettings::BrandcodedDefaultSettings(const std::string& prefs) {
 BrandcodedDefaultSettings::~BrandcodedDefaultSettings() {
 }
 
-absl::optional<base::Value::List>
+std::optional<base::Value::List>
 BrandcodedDefaultSettings::GetSearchProviderOverrides() const {
   return ExtractList(prefs::kSearchProviderOverrides);
 }
@@ -49,11 +50,11 @@ bool BrandcodedDefaultSettings::GetHomepage(std::string* homepage) const {
   return !homepage->empty();
 }
 
-absl::optional<bool> BrandcodedDefaultSettings::GetHomepageIsNewTab() const {
+std::optional<bool> BrandcodedDefaultSettings::GetHomepageIsNewTab() const {
   return master_dictionary_.FindBoolByDottedPath(prefs::kHomePageIsNewTabPage);
 }
 
-absl::optional<bool> BrandcodedDefaultSettings::GetShowHomeButton() const {
+std::optional<bool> BrandcodedDefaultSettings::GetShowHomeButton() const {
   return master_dictionary_.FindBoolByDottedPath(prefs::kShowHomeButton);
 }
 
@@ -74,7 +75,7 @@ bool BrandcodedDefaultSettings::GetExtensions(
 
 bool BrandcodedDefaultSettings::GetRestoreOnStartup(
     int* restore_on_startup) const {
-  absl::optional<int> maybe_restore_on_startup =
+  std::optional<int> maybe_restore_on_startup =
       master_dictionary_.FindIntByDottedPath(prefs::kRestoreOnStartup);
   if (!maybe_restore_on_startup)
     return false;
@@ -85,17 +86,17 @@ bool BrandcodedDefaultSettings::GetRestoreOnStartup(
   return true;
 }
 
-absl::optional<base::Value::List>
+std::optional<base::Value::List>
 BrandcodedDefaultSettings::GetUrlsToRestoreOnStartup() const {
   return ExtractList(prefs::kURLsToRestoreOnStartup);
 }
 
-absl::optional<base::Value::List> BrandcodedDefaultSettings::ExtractList(
+std::optional<base::Value::List> BrandcodedDefaultSettings::ExtractList(
     const char* pref_name) const {
   const base::Value::List* value =
       master_dictionary_.FindListByDottedPath(pref_name);
   if (value && !value->empty()) {
     return value->Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }

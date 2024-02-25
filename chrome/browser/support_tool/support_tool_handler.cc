@@ -8,12 +8,14 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -31,7 +33,6 @@
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "data_collector_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
 // Zip archieves the contents of `src_path` into `target_path`. Adds ".zip"
@@ -109,6 +110,12 @@ void SupportToolHandler::AddDataCollector(
   data_collectors_.emplace_back(std::move(collector));
 }
 
+const std::vector<std::unique_ptr<DataCollector>>&
+SupportToolHandler::GetDataCollectorsForTesting() {
+  CHECK_IS_TEST();
+  return data_collectors_;
+}
+
 void SupportToolHandler::CollectSupportData(
     SupportToolDataCollectedCallback on_data_collection_done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -142,7 +149,7 @@ void SupportToolHandler::CollectSupportData(
 
 void SupportToolHandler::OnDataCollected(
     base::RepeatingClosure barrier_closure,
-    absl::optional<SupportToolError> error) {
+    std::optional<SupportToolError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     collected_errors_.insert(error.value());
@@ -227,7 +234,7 @@ void SupportToolHandler::ExportIntoTempDir(
 
 void SupportToolHandler::OnDataCollectorDoneExporting(
     base::RepeatingClosure barrier_closure,
-    absl::optional<SupportToolError> error) {
+    std::optional<SupportToolError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     collected_errors_.insert(error.value());

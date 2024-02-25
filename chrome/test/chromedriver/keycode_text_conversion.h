@@ -8,11 +8,8 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/buildflags.h"
-#endif
 
 // These functions only support conversion of characters in the BMP
 // (Basic Multilingual Plane).
@@ -41,7 +38,10 @@ bool SwitchToUSKeyboardLayout();
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+void InitializeOzoneKeyboardEngineManager();
+#endif  // BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_OZONE_X11)
 // Uses X11 implementation if there is an X display.
 // TODO(crbug.com/987939): Support XKB.
 bool ConvertKeyCodeToTextOzone(ui::KeyboardCode key_code,
@@ -52,7 +52,6 @@ bool ConvertCharToKeyCodeOzone(char16_t key,
                                ui::KeyboardCode* key_code,
                                int* necessary_modifiers,
                                std::string* error_msg);
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_OZONE_X11)
 
 #endif  // CHROME_TEST_CHROMEDRIVER_KEYCODE_TEXT_CONVERSION_H_

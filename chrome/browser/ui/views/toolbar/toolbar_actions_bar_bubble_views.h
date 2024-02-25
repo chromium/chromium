@@ -22,8 +22,9 @@ class Label;
 
 class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
                                      public views::WidgetObserver {
+  METADATA_HEADER(ToolbarActionsBarBubbleViews, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ToolbarActionsBarBubbleViews);
   // Creates the bubble anchored to |anchor_view|, which may not be nullptr.
   ToolbarActionsBarBubbleViews(
       views::View* anchor_view,

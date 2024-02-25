@@ -73,7 +73,7 @@ void BluetoothSocketFloss::Connect(BluetoothDeviceFloss* device,
 void BluetoothSocketFloss::Listen(
     scoped_refptr<device::BluetoothAdapter> adapter,
     FlossSocketManager::SocketType socket_type,
-    const absl::optional<device::BluetoothUUID>& uuid,
+    const std::optional<device::BluetoothUUID>& uuid,
     const device::BluetoothAdapter::ServiceOptions& service_options,
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback) {
@@ -148,8 +148,16 @@ void BluetoothSocketFloss::Disconnect(base::OnceClosure callback) {
         listening_socket_info_->id,
         base::BindOnce(&BluetoothSocketFloss::CompleteClose,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    listening_socket_info_ = absl::nullopt;
+    listening_socket_info_ = std::nullopt;
     pending_accept_socket_.reset();
+  } else {
+    if (pending_listen_ready_callback_) {
+      LOG(WARNING) << "Disconnecting listening socket before it is ready, "
+                   << "which may cause leaking!";
+      pending_listen_ready_callback_.Reset();
+    } else {
+      LOG(WARNING) << "Disconnecting socket (" << this << ") with no info";
+    }
   }
 
   // If there is a pending accept, clear it.
@@ -193,7 +201,7 @@ void BluetoothSocketFloss::Accept(AcceptCompletionCallback success_callback,
   // to accepting.
   if (!is_accepting_) {
     FlossDBusManager::Get()->GetSocketManager()->Accept(
-        listening_socket_info_->id, absl::nullopt,
+        listening_socket_info_->id, std::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -208,6 +216,12 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
     listening_socket_info_ = socket;
   }
 
+  // Since we've received the socket info, we are ready for |Accept| and
+  // |Disconnect| now.
+  if (pending_listen_ready_callback_) {
+    std::move(pending_listen_ready_callback_).Run();
+  }
+
   // Every time we get a socket state update, the socket gets reset to a not
   // accepting state. Mark our internal state to match that.
   is_accepting_ = false;
@@ -217,9 +231,20 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
   if (state == FlossSocketManager::ServerSocketState::kReady &&
       status == FlossDBusClient::BtifStatus::kSuccess) {
     FlossDBusManager::Get()->GetSocketManager()->Accept(
-        listening_socket_info_->id, absl::nullopt,
+        listening_socket_info_->id, std::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (state == FlossSocketManager::ServerSocketState::kClosed) {
+    if (pending_listen_close_callback_) {
+      std::move(pending_listen_close_callback_).Run();
+    } else {
+      LOG(WARNING) << "Server socket with uuid "
+                   << listening_socket_info_->uuid.value()
+                   << " closed unexpectedly";
+    }
     return;
   }
 
@@ -256,15 +281,30 @@ void BluetoothSocketFloss::CompleteListen(
     return;
   }
 
-  std::move(success_callback).Run();
+  // On success, the callbacks will be invoked in DoConnectionStateChanged.
+  pending_listen_ready_callback_ = std::move(success_callback);
 }
 
 void BluetoothSocketFloss::CompleteConnect(
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback,
     FlossDBusClient::BtifStatus status,
-    absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+    std::optional<FlossSocketManager::FlossSocket>&& socket) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+
+  if (status == FlossDBusClient::BtifStatus::kSuccess && socket) {
+    device::BluetoothDevice* device = adapter_->GetDevice(device_address_);
+    if (device) {
+      // Set discovery completed here because a connected socket implies it.
+      // This is necessary for the Mojo Adapter implementation because it always
+      // waits for the discovery complete before requesting the next connection.
+      device->SetGattServicesDiscoveryComplete(true);
+    } else {
+      LOG(ERROR) << device_address_
+                 << ": Outgoing socket connected to an unknown device";
+    }
+  }
+
   socket_task_tracker_.PostTask(
       socket_thread()->task_runner().get(), FROM_HERE,
       base::BindOnce(&BluetoothSocketFloss::CompleteConnectionInSocketThread,
@@ -276,7 +316,7 @@ void BluetoothSocketFloss::CompleteConnectionInSocketThread(
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback,
     FlossDBusClient::BtifStatus status,
-    absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+    std::optional<FlossSocketManager::FlossSocket>&& socket) {
   DCHECK(socket_thread()->task_runner()->RunsTasksInCurrentSequence());
 
   if (status != FlossDBusClient::BtifStatus::kSuccess || !socket) {
@@ -351,6 +391,11 @@ void BluetoothSocketFloss::CompleteClose(
     DBusResult<FlossDBusClient::BtifStatus> result) {
   if (result.has_value()) {
     DVLOG(1) << "Result of closing socket = " << static_cast<uint32_t>(*result);
+    if (*result == FlossDBusClient::BtifStatus::kSuccess) {
+      // If |Close| succeeded, run the callback in DoConnectionStateChanged.
+      pending_listen_close_callback_ = std::move(callback);
+      return;
+    }
   }
 
   is_accepting_ = false;
@@ -378,12 +423,22 @@ void BluetoothSocketFloss::CompleteListeningConnect() {
   pending_accept_socket_ = BluetoothSocketFloss::CreateBluetoothSocket(
       ui_task_runner(), socket_thread());
 
-  absl::optional<FlossSocketManager::FlossSocket> sock(
+  std::optional<FlossSocketManager::FlossSocket> sock(
       std::move(connection_request_queue_.front()));
   connection_request_queue_.pop();
 
   device::BluetoothDevice* device =
       adapter_->GetDevice(sock->remote_device.address);
+
+  if (device) {
+    // Set discovery completed here because a connected socket implies it.
+    // This is necessary for the Mojo Adapter implementation because it always
+    // waits for the discovery complete before requesting the next connection.
+    device->SetGattServicesDiscoveryComplete(true);
+  } else {
+    LOG(ERROR) << device_address_
+               << ": Incoming socket connected to an unknown device";
+  }
 
   socket_task_tracker_.PostTask(
       socket_thread()->task_runner().get(), FROM_HERE,

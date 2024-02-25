@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -31,21 +31,20 @@ namespace {
 constexpr char kPageWithAnchorURL[] = "chrome://internals/user-education";
 constexpr char kPageWithoutAnchorURL[] = "chrome://settings";
 constexpr char16_t kBubbleBodyText[] = u"bubble body";
-constexpr ui::ElementIdentifier kHelpBubbleAnchorId =
-    kWebUIIPHDemoElementIdentifier;
 
 // This should be short enough that tests that *expect* the operation to time
 // out should fail. Standard test timeout will be used for tests expected to
 // succeed.
-constexpr base::TimeDelta kTimeoutForTesting = base::Seconds(3);
+constexpr base::TimeDelta kShortTimeoutForTesting = base::Seconds(3);
 
 // Gets a partially-filled params block with default values. You will still
 // need to specify `target_url` and `callback`.
 ShowPromoInPage::Params GetDefaultParams() {
   ShowPromoInPage::Params params;
-  params.bubble_anchor_id = kHelpBubbleAnchorId;
+  params.bubble_anchor_id = kWebUIIPHDemoElementIdentifier;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
   params.bubble_text = kBubbleBodyText;
+  params.timeout_override_for_testing = base::Seconds(90);
   return params;
 }
 
@@ -127,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSamePage) {
-  ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL)));
 
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
-  params.timeout_override_for_testing = kTimeoutForTesting;
+  params.timeout_override_for_testing = kShortTimeoutForTesting;
 
   base::WeakPtr<ShowPromoInPage> handle;
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
-  params.timeout_override_for_testing = kTimeoutForTesting;
+  params.timeout_override_for_testing = kShortTimeoutForTesting;
 
   base::WeakPtr<ShowPromoInPage> handle;
 

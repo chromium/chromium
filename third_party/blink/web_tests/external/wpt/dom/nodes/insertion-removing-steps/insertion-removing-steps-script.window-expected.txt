@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: script1 executes synchronously, and thus observes only itself and previous scripts expected 5 but got 6
+Harness: the test ran to completion.
+

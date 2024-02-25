@@ -433,4 +433,15 @@ blink::mojom::DisplayMode WebContentsDelegateAndroid::GetDisplayMode(
       Java_WebContentsDelegateAndroid_getDisplayModeChecked(env, obj));
 }
 
+void WebContentsDelegateAndroid::DidChangeCloseSignalInterceptStatus() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_WebContentsDelegateAndroid_didChangeCloseSignalInterceptStatus(env, obj);
+}
+
 }  // namespace web_contents_delegate_android

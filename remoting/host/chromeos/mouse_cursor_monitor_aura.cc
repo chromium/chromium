@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include <optional>
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/aura/client/cursor_shape_client.h"
@@ -74,7 +74,7 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
     return;
   }
 
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data) {
     LOG(ERROR) << "Failed to load bitmap for cursor type: " << cursor.type();

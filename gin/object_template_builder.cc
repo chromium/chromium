@@ -9,6 +9,8 @@
 #include "gin/interceptor.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/wrapper_info.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 
@@ -138,6 +140,11 @@ void IndexedPropertyEnumerator(
   info.GetReturnValue().Set(v8::Local<v8::Array>::Cast(properties));
 }
 
+void Constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  isolate->ThrowException(v8::Exception::Error(info.Data().As<v8::String>()));
+}
+
 }  // namespace
 
 ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate)
@@ -145,14 +152,19 @@ ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate)
 
 ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
                                              const char* type_name)
-    : ObjectTemplateBuilder(isolate,
-                            type_name,
-                            v8::ObjectTemplate::New(isolate)) {}
-
-ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
-                                             const char* type_name,
-                                             v8::Local<v8::ObjectTemplate> tmpl)
-    : isolate_(isolate), type_name_(type_name), template_(tmpl) {
+    : isolate_(isolate),
+      type_name_(type_name),
+      constructor_template_(v8::FunctionTemplate::New(
+          isolate,
+          &Constructor,
+          StringToV8(
+              isolate,
+              type_name
+                  ? base::StrCat({"Objects of type ", type_name,
+                                  " cannot be created using the constructor."})
+                  : "Objects of this type cannot be created using the "
+                    "constructor"))),
+      template_(constructor_template_->InstanceTemplate()) {
   template_->SetInternalFieldCount(kNumberOfInternalFields);
 }
 
@@ -210,6 +222,7 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::SetLazyDataPropertyImpl(
 v8::Local<v8::ObjectTemplate> ObjectTemplateBuilder::Build() {
   v8::Local<v8::ObjectTemplate> result = template_;
   template_.Clear();
+  constructor_template_.Clear();
   return result;
 }
 

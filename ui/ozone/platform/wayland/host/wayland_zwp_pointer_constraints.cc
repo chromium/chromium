@@ -63,13 +63,12 @@ void WaylandZwpPointerConstraints::LockPointer(WaylandSurface* surface) {
       connection_->seat()->pointer()->wl_object(), nullptr,
       ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_ONESHOT));
 
-  static constexpr zwp_locked_pointer_v1_listener
-      zwp_locked_pointer_v1_listener = {
-          &OnLock,
-          &OnUnlock,
-      };
+  static constexpr zwp_locked_pointer_v1_listener kLockedPointerListener = {
+      .locked = &OnLocked,
+      .unlocked = &OnUnlocked,
+  };
   zwp_locked_pointer_v1_add_listener(locked_pointer_.get(),
-                                     &zwp_locked_pointer_v1_listener, this);
+                                     &kLockedPointerListener, this);
 }
 
 void WaylandZwpPointerConstraints::UnlockPointer() {
@@ -78,20 +77,19 @@ void WaylandZwpPointerConstraints::UnlockPointer() {
 }
 
 // static
-void WaylandZwpPointerConstraints::OnLock(
+void WaylandZwpPointerConstraints::OnLocked(
     void* data,
-    struct zwp_locked_pointer_v1* zwp_locked_pointer_v1) {
-  auto* pointer_constraints = static_cast<WaylandZwpPointerConstraints*>(data);
-  pointer_constraints->connection_->zwp_relative_pointer_manager()
-      ->EnableRelativePointer();
+    struct zwp_locked_pointer_v1* locked_pointer) {
+  auto* self = static_cast<WaylandZwpPointerConstraints*>(data);
+  self->connection_->zwp_relative_pointer_manager()->EnableRelativePointer();
 }
 
 // static
-void WaylandZwpPointerConstraints::OnUnlock(
+void WaylandZwpPointerConstraints::OnUnlocked(
     void* data,
-    struct zwp_locked_pointer_v1* zwp_locked_pointer_v1) {
-  auto* pointer_constraints = static_cast<WaylandZwpPointerConstraints*>(data);
-  pointer_constraints->UnlockPointer();
+    struct zwp_locked_pointer_v1* locked_pointer) {
+  auto* self = static_cast<WaylandZwpPointerConstraints*>(data);
+  self->UnlockPointer();
 }
 
 }  // namespace ui

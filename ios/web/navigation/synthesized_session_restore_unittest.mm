@@ -7,8 +7,6 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -40,13 +38,7 @@ void CreateTestNavigationItems(
 
 class SynthesizedSessionRestoreTest : public web::WebTest {
  protected:
-  SynthesizedSessionRestoreTest() {
-    std::vector<base::test::FeatureRef> enabled;
-    enabled.push_back(features::kSynthesizedRestoreSession);
-
-    std::vector<base::test::FeatureRef> disabled;
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
-  }
+  SynthesizedSessionRestoreTest() {}
 
   void SetUp() override {
     web::WebTest::SetUp();
@@ -54,7 +46,6 @@ class SynthesizedSessionRestoreTest : public web::WebTest {
     web_state_ = std::make_unique<web::WebStateImpl>(params);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<WebStateImpl> web_state_;
 };
 

@@ -31,7 +31,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.util.Property;
 import android.view.ContextThemeWrapper;
@@ -61,8 +60,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -78,21 +80,23 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJ
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.content_public.common.ResourceRequestBodyJni;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -105,21 +109,27 @@ import java.util.List;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {LocationBarMediatorTest.ShadowUrlUtilities.class,
-                LocationBarMediatorTest.ShadowGeolocationHeader.class,
-                LocationBarMediatorTest.ObjectAnimatorShadow.class})
-@DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
-        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@Config(
+        shadows = {
+            LocationBarMediatorTest.ShadowUrlUtilities.class,
+            LocationBarMediatorTest.ShadowGeolocationHeader.class,
+            LocationBarMediatorTest.ObjectAnimatorShadow.class
+        })
+@DisableFeatures({
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+})
 public class LocationBarMediatorTest {
     @Implements(UrlUtilities.class)
     static class ShadowUrlUtilities {
         static boolean sIsNtp;
+
         @Implementation
-        public static boolean isNTPUrl(GURL url) {
+        public static boolean isNtpUrl(GURL url) {
             return sIsNtp;
         }
+
         @Implementation
-        public static boolean isNTPUrl(String url) {
+        public static boolean isNtpUrl(String url) {
             return sIsNtp;
         }
     }
@@ -136,6 +146,7 @@ public class LocationBarMediatorTest {
     @Implements(ObjectAnimator.class)
     static class ObjectAnimatorShadow {
         private static ObjectAnimator sUrlAnimator;
+
         @Implementation
         public static <T> ObjectAnimator ofFloat(
                 T target, Property<T, Float> property, float... values) {
@@ -151,81 +162,50 @@ public class LocationBarMediatorTest {
 
     private static int sGeoHeaderPrimeCount;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock
-    private LocationBarLayout mLocationBarLayout;
-    @Mock
-    private LocationBarTablet mLocationBarTablet;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private LocationBarDataProvider mLocationBarDataProvider;
-    @Mock
-    private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
-    @Mock
-    private LocaleManager mLocaleManager;
-    @Mock
-    private Profile.Natives mProfileNativesJniMock;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private AutocompleteCoordinator mAutocompleteCoordinator;
-    @Mock
-    private UrlBarCoordinator mUrlCoordinator;
-    @Mock
-    private StatusCoordinator mStatusCoordinator;
-    @Mock
-    private PrivacyPreferencesManager mPrivacyPreferencesManager;
-    @Mock
-    private OmniboxPrerender.Natives mPrerenderJni;
-    @Mock
-    private TextView mView;
-    @Mock
-    private KeyEvent mKeyEvent;
-    @Mock
-    private KeyEvent.DispatcherState mKeyDispatcherState;
-    @Mock
-    private BackKeyBehaviorDelegate mOverrideBackKeyBehaviorDelegate;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private ObjectAnimator mUrlAnimator;
-    @Mock
-    private View mRootView;
+    @Mock private LocationBarLayout mLocationBarLayout;
+    @Mock private LocationBarTablet mLocationBarTablet;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private LocationBarDataProvider mLocationBarDataProvider;
+    @Mock private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
+    @Mock private LocaleManager mLocaleManager;
+    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock private Tab mTab;
+    @Mock private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Mock private UrlBarCoordinator mUrlCoordinator;
+    @Mock private StatusCoordinator mStatusCoordinator;
+    @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
+    @Mock private OmniboxPrerender.Natives mPrerenderJni;
+    @Mock private TextView mView;
+    @Mock private KeyEvent mKeyEvent;
+    @Mock private KeyEvent.DispatcherState mKeyDispatcherState;
+    @Mock private BackKeyBehaviorDelegate mOverrideBackKeyBehaviorDelegate;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ObjectAnimator mUrlAnimator;
+    @Mock private View mRootView;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private AutocompleteLoadCallback mAutocompleteLoadCallback;
+    @Mock private LoadUrlParams mLoadUrlParams;
+    @Mock private LoadUrlResult mLoadUrlResult;
 
-    @Mock
-    private SearchEngineLogoUtils mSearchEngineLogoUtils;
-    @Mock
-    private LensController mLensController;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PreloadPagesSettingsBridge.Natives mPreloadPagesSettingsJni;
-    @Mock
-    private LocationBarMediator.OmniboxUma mOmniboxUma;
-    @Mock
-    private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
+    @Mock private LensController mLensController;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private Profile mProfile;
+    @Mock private PreloadPagesSettingsBridge.Natives mPreloadPagesSettingsJni;
+    @Mock private LocationBarMediator.OmniboxUma mOmniboxUma;
+    @Mock private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
+    @Mock private ResourceRequestBody.Natives mResourceRequestBodyJni;
 
-    @Captor
-    private ArgumentCaptor<Runnable> mRunnableCaptor;
-    @Captor
-    private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private Context mContext;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
@@ -236,45 +216,69 @@ public class LocationBarMediatorTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
+        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(mRootView).when(mLocationBarTablet).getRootView();
         doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
+        mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
-        SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        mJniMocker.mock(ResourceRequestBodyJni.TEST_HOOKS, mResourceRequestBodyJni);
+        doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         templateUrlServiceSupplier.set(mTemplateUrlService);
-        mMediator = new LocationBarMediator(mContext, mLocationBarLayout, mLocationBarDataProvider,
-                mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
-                mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
-                mWindowAndroid,
-                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController,
-                tab
-                -> true,
-                mOmniboxUma, () -> mIsToolbarMicEnabled, mEmbedderImpl, mTabModelSelectorSupplier);
+        mMediator =
+                new LocationBarMediator(
+                        mContext,
+                        mLocationBarLayout,
+                        mLocationBarDataProvider,
+                        mProfileSupplier,
+                        mPrivacyPreferencesManager,
+                        mOverrideUrlLoadingDelegate,
+                        mLocaleManager,
+                        templateUrlServiceSupplier,
+                        mOverrideBackKeyBehaviorDelegate,
+                        mWindowAndroid,
+                        /* isTablet= */ false,
+                        mLensController,
+                        tab -> true,
+                        mOmniboxUma,
+                        () -> mIsToolbarMicEnabled,
+                        mEmbedderImpl,
+                        mTabModelSelectorSupplier);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
 
-        mTabletMediator = new LocationBarMediator(mContext, mLocationBarTablet,
-                mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
-                mOverrideUrlLoadingDelegate, mLocaleManager, templateUrlServiceSupplier,
-                mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController,
-                tab
-                -> true,
-                (tab, transition, isNtp)
-                        -> {},
-                () -> mIsToolbarMicEnabled, mEmbedderImpl, mTabModelSelectorSupplier);
+        mTabletMediator =
+                new LocationBarMediator(
+                        mContext,
+                        mLocationBarTablet,
+                        mLocationBarDataProvider,
+                        mProfileSupplier,
+                        mPrivacyPreferencesManager,
+                        mOverrideUrlLoadingDelegate,
+                        mLocaleManager,
+                        templateUrlServiceSupplier,
+                        mOverrideBackKeyBehaviorDelegate,
+                        mWindowAndroid,
+                        /* isTablet= */ true,
+                        mLensController,
+                        tab -> true,
+                        (tab, transition, isNtp) -> {},
+                        () -> mIsToolbarMicEnabled,
+                        mEmbedderImpl,
+                        mTabModelSelectorSupplier);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -305,25 +309,25 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_focusedNativePage() {
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.onUrlFocusChange(true);
         mMediator.revertChanges();
         verify(mUrlCoordinator)
-                .setUrlBarData(UrlBarData.EMPTY, UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+                .setUrlBarData(
+                        UrlBarData.EMPTY,
+                        UrlBar.ScrollType.SCROLL_TO_BEGINNING,
                         SelectionState.SELECT_ALL);
     }
 
     @Test
     public void testRevertChanges_unFocused() {
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.revertChanges();
         verify(mUrlCoordinator)
-                .setUrlBarData(mLocationBarDataProvider.getUrlBarData(),
-                        UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
+                .setUrlBarData(
+                        mLocationBarDataProvider.getUrlBarData(),
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        SelectionState.SELECT_ALL);
     }
 
     @Test
@@ -344,7 +348,7 @@ public class LocationBarMediatorTest {
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        GURL url = JUnitTestGURLs.RED_1;
         mMediator.setUrl(url, null);
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
@@ -356,8 +360,14 @@ public class LocationBarMediatorTest {
 
         mMediator.onSuggestionsChanged("textWithAutocomplete", true);
         verify(mPrerenderJni)
-                .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text",
-                        JUnitTestGURLs.RED_1, 456L, profile, mTab);
+                .prerenderMaybe(
+                        123L,
+                        omniboxPrerenderCaptor.getValue(),
+                        "text",
+                        JUnitTestGURLs.RED_1.getSpec(),
+                        456L,
+                        profile,
+                        mTab);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
     }
 
@@ -366,23 +376,74 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
-        assertEquals(PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    public void testLoadUrlWithAutocompleteLoadCallback() {
+        mMediator.onFinishNativeInitialization();
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .setAutocompleteLoadCallback(mAutocompleteLoadCallback)
+                        .build());
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
+
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        mTabObserverCaptor.getValue().onLoadUrl(mTab, mLoadUrlParams, mLoadUrlResult);
+        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
+        verify(mAutocompleteLoadCallback).onLoadUrl(mLoadUrlParams, mLoadUrlResult);
+    }
+
+    @Test
+    public void testLoadUrlWithPostData() {
+        mMediator.onFinishNativeInitialization();
+        String text = "text";
+        byte[] data = new byte[] {0, 1, 2, 3, 4};
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(data).when(mResourceRequestBodyJni).createResourceRequestBodyFromBytes(any());
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setpostDataAndType(data, text)
+                        .build());
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getVerbatimHeaders().contains(text));
+        assertEquals(data, mLoadUrlParamsCaptor.getValue().getPostData().getEncodedNativeForm());
     }
 
     @Test
     public void testLoadUrl_NativeNotInitialized() {
         if (BuildConfig.ENABLE_ASSERTS) {
-            // clang-format off
             try {
-                mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+                mMediator.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                                .setOpenInNewTab(false)
+                                .build());
                 throw new Error("Expected an assert to be triggered.");
-            } catch (AssertionError e) {}
-            // clang-format on
+            } catch (AssertionError e) {
+            }
         }
     }
 
@@ -395,7 +456,10 @@ public class LocationBarMediatorTest {
                 .when(mOverrideUrlLoadingDelegate)
                 .willHandleLoadUrlWithPostData(
                         TEST_URL, PageTransition.TYPED, 0, null, null, false);
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
 
         verify(mOverrideUrlLoadingDelegate)
                 .willHandleLoadUrlWithPostData(
@@ -409,13 +473,20 @@ public class LocationBarMediatorTest {
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(false).when(mTab).isIncognito();
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, true);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(true)
+                        .build());
 
         verify(mTabModelSelector)
-                .openNewTab(mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_OMNIBOX),
-                        eq(mTab), eq(false));
+                .openNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_OMNIBOX),
+                        eq(mTab),
+                        eq(false));
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
-        assertEquals(PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
     }
 
@@ -449,8 +520,10 @@ public class LocationBarMediatorTest {
 
         verify(mUrlCoordinator).requestFocus();
         verify(mUrlCoordinator)
-                .setUrlBarData(argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery(query)),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(SelectionState.SELECT_ALL));
         verify(mAutocompleteCoordinator).startAutocompleteForQuery(query);
         verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
@@ -480,8 +553,10 @@ public class LocationBarMediatorTest {
 
         verify(mUrlCoordinator).requestFocus();
         verify(mUrlCoordinator)
-                .setUrlBarData(argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery(query)),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(SelectionState.SELECT_ALL));
         verify(mAutocompleteCoordinator).startAutocompleteForQuery(query);
         verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
@@ -499,7 +574,8 @@ public class LocationBarMediatorTest {
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals("http://www.search.com", mLoadUrlParamsCaptor.getValue().getUrl());
-        assertEquals(PageTransition.GENERATED | PageTransition.FROM_ADDRESS_BAR,
+        assertEquals(
+                PageTransition.GENERATED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
     }
 
@@ -527,8 +603,10 @@ public class LocationBarMediatorTest {
 
         verify(mUrlCoordinator).requestFocus();
         verify(mUrlCoordinator)
-                .setUrlBarData(argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL), eq(SelectionState.SELECT_ALL));
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery(query)),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(SelectionState.SELECT_ALL));
         verify(mAutocompleteCoordinator).startAutocompleteForQuery(query);
         verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
@@ -560,33 +638,37 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).clearFocus();
     }
 
-    // KEYCODE_BACK will not be sent from Android OS starting from T.
+    // KEYCODE_BACK will not be sent from Android OS starting from T. And no feature should
+    // rely on KEYCODE_BACK to intercept back press.
     @Test
-    @MaxAndroidSdkLevel(VERSION_CODES.S_V2)
     public void testOnKey_autocompleteHandles() {
-        doReturn(true)
+        doReturn(false)
                 .when(mAutocompleteCoordinator)
                 .handleKeyEvent(KeyEvent.KEYCODE_BACK, mKeyEvent);
         mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent);
+        // No-op.
         verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_BACK, mKeyEvent);
     }
 
     @Test
-    @MaxAndroidSdkLevel(VERSION_CODES.S_V2)
     public void testOnKey_back() {
         doReturn(mKeyDispatcherState).when(mLocationBarLayout).getKeyDispatcherState();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
+        assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
 
-        verify(mKeyDispatcherState).startTracking(mKeyEvent, mMediator);
+        verify(mKeyDispatcherState, never()).startTracking(mKeyEvent, mMediator);
 
-        doReturn(true).when(mKeyEvent).isTracking();
+        doReturn(false).when(mKeyEvent).isTracking();
         doReturn(KeyEvent.ACTION_UP).when(mKeyEvent).getAction();
 
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
+        assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
 
-        verify(mKeyDispatcherState).handleUpEvent(mKeyEvent);
-        verify(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+        verify(mKeyDispatcherState, never().description("Should not handle KEYCODE_BACK"))
+                .handleUpEvent(mKeyEvent);
+        verify(
+                        mOverrideBackKeyBehaviorDelegate,
+                        never().description("should not handle KEYCODE_BACK"))
+                .handleBackKeyPressed();
     }
 
     @Test
@@ -594,8 +676,10 @@ public class LocationBarMediatorTest {
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ESCAPE, mKeyEvent));
         verify(mUrlCoordinator)
-                .setUrlBarData(mLocationBarDataProvider.getUrlBarData(),
-                        UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
+                .setUrlBarData(
+                        mLocationBarDataProvider.getUrlBarData(),
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        SelectionState.SELECT_ALL);
     }
 
     @Test
@@ -643,6 +727,7 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_9, mKeyEvent));
+        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_9, mKeyEvent);
         verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
     }
 
@@ -702,10 +787,10 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_setColorScheme() {
-        String url = JUnitTestGURLs.BLUE_1;
+        var url = JUnitTestGURLs.BLUE_1;
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
-        doReturn(JUnitTestGURLs.getGURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn(url).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
@@ -720,14 +805,14 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testSetUrl() {
-        String url = JUnitTestGURLs.BLUE_1;
+        var url = JUnitTestGURLs.BLUE_1;
         UrlBarData urlBarData = UrlBarData.forUrl(url);
-        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
+        mMediator.setUrl(url, urlBarData);
 
         // Assume that the URL bar is now focused without focus animations.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
+        mMediator.setUrl(url, urlBarData);
 
         // Verify that setUrl() never clears focus when the URL bar is focused without animations.
         verify(mUrlCoordinator, never()).clearFocus();
@@ -758,7 +843,8 @@ public class LocationBarMediatorTest {
         doReturn("textWith").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.setUrlBarFocus(true, "pastedText", OmniboxFocusReason.OMNIBOX_TAP);
         verify(mUrlCoordinator)
-                .setUrlBarData(argThat(matchesUrlBarDataForQuery("pastedText")),
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery("pastedText")),
                         eq(UrlBar.ScrollType.NO_SCROLL),
                         eq(UrlBarCoordinator.SelectionState.SELECT_END));
         verify(mAutocompleteCoordinator).onTextChanged("text");
@@ -799,14 +885,25 @@ public class LocationBarMediatorTest {
         ShadowLooper looper = ShadowLooper.shadowMainLooper();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
-        mMediator = new LocationBarMediator(mContext, mLocationBarLayout, mLocationBarDataProvider,
-                mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
-                mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
-                mWindowAndroid,
-                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController,
-                tab
-                -> true,
-                mOmniboxUma, () -> mIsToolbarMicEnabled, mEmbedderImpl, mTabModelSelectorSupplier);
+        mMediator =
+                new LocationBarMediator(
+                        mContext,
+                        mLocationBarLayout,
+                        mLocationBarDataProvider,
+                        mProfileSupplier,
+                        mPrivacyPreferencesManager,
+                        mOverrideUrlLoadingDelegate,
+                        mLocaleManager,
+                        templateUrlServiceSupplier,
+                        mOverrideBackKeyBehaviorDelegate,
+                        mWindowAndroid,
+                        /* isTablet= */ false,
+                        mLensController,
+                        tab -> true,
+                        mOmniboxUma,
+                        () -> mIsToolbarMicEnabled,
+                        mEmbedderImpl,
+                        mTabModelSelectorSupplier);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -816,10 +913,11 @@ public class LocationBarMediatorTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        doAnswer(invocation -> {
-            ((Runnable) invocation.getArgument(0)).run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(0)).run();
+                            return null;
+                        })
                 .when(mLocationBarLayout)
                 .post(any());
         mMediator.onUrlFocusChange(true);
@@ -857,10 +955,11 @@ public class LocationBarMediatorTest {
     public void testHandleUrlFocusAnimation_tablet() {
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doAnswer(invocation -> {
-            ((Rect) invocation.getArgument(0)).set(0, 0, 10, 10);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            ((Rect) invocation.getArgument(0)).set(0, 0, 10, 10);
+                            return null;
+                        })
                 .when(mRootView)
                 .getLocalVisibleRect(any());
 
@@ -917,7 +1016,8 @@ public class LocationBarMediatorTest {
         // mUrlFocusedFromFakebox to true.
         verify(mUrlCoordinator, times(2)).requestFocus();
         verify(mUrlCoordinator)
-                .setUrlBarData(argThat(matchesUrlBarDataForQuery("text")),
+                .setUrlBarData(
+                        argThat(matchesUrlBarDataForQuery("text")),
                         eq(UrlBar.ScrollType.NO_SCROLL),
                         eq(UrlBarCoordinator.SelectionState.SELECT_END));
     }
@@ -1118,21 +1218,37 @@ public class LocationBarMediatorTest {
         // Test clicking omnibox on {@link NewTabPage}.
         doReturn(false)
                 .when(mOverrideUrlLoadingDelegate)
-                .willHandleLoadUrlWithPostData(eq(TEST_URL), eq(PageTransition.TYPED), eq(0),
-                        eq(null), eq(null), anyBoolean());
+                .willHandleLoadUrlWithPostData(
+                        eq(TEST_URL),
+                        eq(PageTransition.TYPED),
+                        eq(0),
+                        eq(null),
+                        eq(null),
+                        anyBoolean());
         doReturn(false)
                 .when(mOverrideUrlLoadingDelegate)
-                .willHandleLoadUrlWithPostData(eq(TEST_URL), eq(PageTransition.TYPED), eq(0),
-                        eq(null), eq(null), anyBoolean());
+                .willHandleLoadUrlWithPostData(
+                        eq(TEST_URL),
+                        eq(PageTransition.TYPED),
+                        eq(0),
+                        eq(null),
+                        eq(null),
+                        anyBoolean());
         doReturn(true).when(mTab).isNativePage();
         ShadowUrlUtilities.sIsNtp = true;
-        assertTrue(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertTrue(UrlUtilities.isNtpUrl(mTab.getUrl()));
         doReturn(false).when(mTab).isIncognito();
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         // The time to be checked for the calling of recordNavigationOnNtp is still 1 here
         // as we verify with the argument PageTransition.GENERATED instead.
         verify(mOmniboxUma, times(1))
@@ -1142,22 +1258,34 @@ public class LocationBarMediatorTest {
         // This will run the function recordNavigationOnNtp with isNtp equal to false
         // making it unable to record the histogram.
         ShadowUrlUtilities.sIsNtp = false;
-        assertFalse(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertFalse(UrlUtilities.isNtpUrl(mTab.getUrl()));
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
 
         // Test clicking omnibox on html/rendered web page.
         doReturn(false).when(mTab).isNativePage();
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
 
@@ -1171,16 +1299,22 @@ public class LocationBarMediatorTest {
                 .willHandleLoadUrlWithPostData(
                         TEST_URL, PageTransition.GENERATED, 0, null, null, false);
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
     }
 
     @Test
-    public void testNotifyNtpExitedWithHardwareKeyboardConnected() {
+    public void testClearUrlBarCursorWithoutFocusAnimations() {
         // Assume that the URL bar is focused without animations on the NTP.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
@@ -1188,6 +1322,29 @@ public class LocationBarMediatorTest {
         mMediator.clearUrlBarCursorWithoutFocusAnimations();
         // Verify that the omnibox focus is cleared on an exit from the NTP.
         verify(mUrlCoordinator).clearFocus();
+    }
+
+    @Test
+    public void testOnTouchAfterFocus_triggerUrlFocusChange() {
+        doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
+        mMediator.onUrlFocusChange(true);
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mMediator.onTouchAfterFocus();
+        verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
+    }
+
+    @Test
+    public void testOnTouchAfterFocus_notHandled() {
+        doReturn("", "hello").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        // URL bar is not focused without animations.
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(false);
+        mMediator.onTouchAfterFocus();
+
+        // URL bar text is not empty.
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mMediator.onTouchAfterFocus();
+        verify(mUrlCoordinator, never()).onUrlFocusChange(true);
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

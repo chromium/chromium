@@ -99,13 +99,14 @@ void RemoteDeviceV2LoaderImpl::OnPskDerived(const CryptAuthDevice& device,
 void RemoteDeviceV2LoaderImpl::AddRemoteDevice(const CryptAuthDevice& device,
                                                const std::string& user_email,
                                                const std::string& psk) {
-  const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+  const std::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
       beto_metadata = device.better_together_device_metadata;
   remote_devices_.emplace_back(
       user_email, device.instance_id(), device.device_name,
       beto_metadata ? beto_metadata->no_pii_device_name() : std::string(),
       beto_metadata ? beto_metadata->public_key() : std::string(), psk,
-      device.last_update_time.ToJavaTime(), device.feature_states,
+      device.last_update_time.InMillisecondsSinceUnixEpoch(),
+      device.feature_states,
       beto_metadata ? multidevice::FromCryptAuthV2SeedRepeatedPtrField(
                           beto_metadata->beacon_seeds())
                     : std::vector<multidevice::BeaconSeed>(),

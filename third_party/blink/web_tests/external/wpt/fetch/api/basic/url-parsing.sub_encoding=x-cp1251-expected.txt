@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Response.redirect() uses the UTF-8 URL parser
+  assert_equals: expected "%C3%BF" but got "%26%23255%3B"
+Harness: the test ran to completion.
+

@@ -254,6 +254,7 @@ declare global {
         showSafeBrowsingAllowlistWarning: boolean;
         showAccessRequestsInToolbar: boolean;
         acknowledgeSafetyCheckWarning: boolean;
+        pinnedToToolbar?: boolean;
       }
 
       export interface ProfileInfo {
@@ -272,6 +273,7 @@ declare global {
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
         acknowledgeSafetyCheckWarning?: boolean;
+        pinnedToToolbar?: boolean;
       }
 
       export interface ProfileConfigurationUpdate {
@@ -330,6 +332,7 @@ declare global {
         SERVICE_WORKER_STARTED = 'SERVICE_WORKER_STARTED',
         SERVICE_WORKER_STOPPED = 'SERVICE_WORKER_STOPPED',
         CONFIGURATION_CHANGED = 'CONFIGURATION_CHANGED',
+        PINNED_ACTIONS_CHANGED = 'PINNED_ACTIONS_CHANGED',
       }
 
       export enum SiteSet {
@@ -485,6 +488,7 @@ declare global {
           Promise<MatchingExtensionInfo[]>;
       export function updateSiteAccess(
           site: string, updates: ExtensionSiteAccessUpdate[]): Promise<void>;
+      export function dismissSafetyHubExtensionsMenuNotification(): void;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

@@ -11,21 +11,22 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_android_webview",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "foo_tests",
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "device_type": "bullhead",
             "os": "Linux"
           },
-          "idempotent": false
+          "idempotent": false,
+          "shards": 2
         },
+        "test": "telemetry_gpu_integration_test_android_webview",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_webview/"
       }
     ]

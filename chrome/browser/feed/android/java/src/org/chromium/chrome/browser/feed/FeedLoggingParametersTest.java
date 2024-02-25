@@ -25,9 +25,13 @@ public final class FeedLoggingParametersTest {
     @Test
     @SmallTest
     public void testFields() {
-        FeedLoggingParameters params = new FeedLoggingParameters(/*clientInstanceId=*/"instance-id",
-                /*accountName=*/"account", /*loggingEnabled=*/false,
-                /*viewActionsEnabled=*/true, /*rootEventId=*/new byte[] {5});
+        FeedLoggingParameters params =
+                new FeedLoggingParameters(
+                        /* clientInstanceId= */ "instance-id",
+                        /* accountName= */ "account",
+                        /* loggingEnabled= */ false,
+                        /* viewActionsEnabled= */ true,
+                        /* rootEventId= */ new byte[] {5});
 
         assertEquals(params.clientInstanceId(), "instance-id");
         assertEquals(params.accountName(), "account");
@@ -59,12 +63,13 @@ public final class FeedLoggingParametersTest {
     @Test
     @SmallTest
     public void testFromProto_noRootEventId() {
-        FeedUiProto.LoggingParameters proto = FeedUiProto.LoggingParameters.newBuilder()
-                                                      .setEmail("user@foo.com")
-                                                      .setClientInstanceId("cid")
-                                                      .setLoggingEnabled(true)
-                                                      .setViewActionsEnabled(false)
-                                                      .build();
+        FeedUiProto.LoggingParameters proto =
+                FeedUiProto.LoggingParameters.newBuilder()
+                        .setEmail("user@foo.com")
+                        .setClientInstanceId("cid")
+                        .setLoggingEnabled(true)
+                        .setViewActionsEnabled(false)
+                        .build();
         FeedLoggingParameters parsed = new FeedLoggingParameters(proto);
         assertArrayEquals(parsed.rootEventId(), new byte[] {});
         assertEquals(proto, FeedLoggingParameters.convertToProto(parsed));

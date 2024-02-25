@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1324575488877808473">Apri Chrome per vedere qui i siti che visiti più spesso.</translation>
 <translation id="2513892053093488070">Ricerca vocale</translation>
 <translation id="2535710892645968259">Apri il gioco Dino di Chrome dalla schermata di blocco.</translation>
 <translation id="2542770169955243077">Gioco Dino di Chrome</translation>
-<translation id="2803429804752388720">Cerca password</translation>
 <translation id="2922313168575194078">Cerca in sicurezza le tue password salvate in Gestore delle password di Google</translation>
 <translation id="302608144225178783">Apri il gioco Dino di Chrome dalla tua schermata Home.</translation>
 <translation id="3296938369177810197">Ricerca vocale</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Avvia una nuova ricerca o apri i siti che visiti più spesso dalla home page del tuo iPad.</translation>
 <translation id="6721566127904256183">Vedrai i siti che visiti di più qui.</translation>
 <translation id="6855322554930231468">Ricerca</translation>
+<translation id="6973491011026415905">Cerca password su Gestore delle password di Google</translation>
 <translation id="7010831364920321713">Ricerca in incognito</translation>
 <translation id="7048549665319929185">Cerca o
 digita un URL</translation>

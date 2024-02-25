@@ -49,13 +49,14 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   void HandleAccept(const base::Value::List& args);
   void HandleCancel(const base::Value::List& args);
-  void HandleGuest(const base::Value::List& args);
   void HandlePageLoaded(const base::Value::List& args);
   void HandleInitializedWithHeight(const base::Value::List& args);
+  void HandleChromeSigninPageLoaded(const base::Value::List& args);
 
   // Gets the values sent to javascript.
-  base::Value::Dict GetAccountInfoValue(const AccountInfo& info);
   base::Value::Dict GetInterceptionParametersValue();
+  // Get the values for ChromeSignin bubble sent to javascript.
+  base::Value::Dict GetInterceptionChromeSigninParametersValue();
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.
@@ -68,6 +69,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   std::string GetCancelButtonLabel();
   std::string GetManagedDisclaimerText();
   bool GetShouldUseV2Design();
+
+  void UpdateExtendedAccountsInfo();
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

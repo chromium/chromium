@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h"
 
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -15,10 +15,11 @@ ScriptValue DeprecationReportBody::anticipatedRemoval(
   v8::Isolate* isolate = script_state->GetIsolate();
   if (!anticipated_removal_)
     return ScriptValue::CreateNull(isolate);
-  return ScriptValue(isolate, ToV8(*anticipated_removal_, script_state));
+  return ScriptValue(isolate, ToV8Traits<IDLNullable<IDLDate>>::ToV8(
+                                  script_state, *anticipated_removal_));
 }
 
-absl::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
+std::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
   return anticipated_removal_;
 }
 
@@ -33,7 +34,7 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
     DateComponents anticipated_removal_date;
     bool is_valid =
         anticipated_removal_date.SetMillisecondsSinceEpochForDateTimeLocal(
-            anticipated_removal_->ToJsTimeIgnoringNull());
+            anticipated_removal_->InMillisecondsFSinceUnixEpochIgnoringNull());
     if (!is_valid) {
       builder.AddNull("anticipatedRemoval");
     } else {

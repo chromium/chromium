@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "components/download/public/background_service/background_download_service.h"
-#include "components/download/public/common/auto_resumption_handler.h"
+#include "components/download/public/common/android/auto_resumption_handler.h"
 #include "content/public/browser/browser_context.h"
 
 using base::android::JavaParamRef;
@@ -45,6 +45,8 @@ void JNI_DownloadBackgroundTask_StartBackgroundTask(
   auto type = static_cast<DownloadTaskType>(task_type);
   switch (type) {
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
       GetAutoResumptionHandler()->OnStartScheduledTask(
           type, std::move(finish_callback));
@@ -67,6 +69,8 @@ jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
   switch (type) {
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
       GetAutoResumptionHandler()->OnStopScheduledTask(type);
       break;
     case DownloadTaskType::DOWNLOAD_TASK:

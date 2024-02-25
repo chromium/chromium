@@ -6,21 +6,23 @@
 #define MEDIA_GPU_MAC_VIDEO_TOOLBOX_VP9_ACCELERATOR_H_
 
 #include <CoreMedia/CoreMedia.h>
-
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vp9_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -37,10 +39,12 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxVP9Accelerator(std::unique_ptr<MediaLog> media_log,
+                             std::optional<gfx::HDRMetadata> hdr_metadata,
                              DecodeCB decode_cb,
                              OutputCB output_cb);
   ~VideoToolboxVP9Accelerator() override;
@@ -50,12 +54,9 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   Status SubmitDecode(scoped_refptr<VP9Picture> pic,
                       const Vp9SegmentationParams& segm_params,
                       const Vp9LoopFilterParams& lf_params,
-                      const Vp9ReferenceFrameVector& reference_frames,
-                      const base::OnceClosure done_cb) override;
+                      const Vp9ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
   bool NeedsCompressedHeaderParsed() const override;
-  bool GetFrameContext(scoped_refptr<VP9Picture> pic,
-                       Vp9FrameContext* frame_ctx) override;
 
  private:
   // Grow the current superframe.
@@ -68,6 +69,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   bool AppendData(CMBlockBufferRef dest, const uint8_t* data, size_t data_size);
 
   std::unique_ptr<MediaLog> media_log_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
@@ -76,10 +78,11 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   // Parameters of the active format.
   VideoColorSpace active_color_space_;
   VideoCodecProfile active_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  absl::optional<gfx::HDRMetadata> active_hdr_metadata_;
+  std::optional<gfx::HDRMetadata> active_hdr_metadata_;
   gfx::Size active_coded_size_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+  VideoToolboxDecompressionSessionMetadata session_metadata_;
 
   // The superframe currently being built.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> frame_data_;

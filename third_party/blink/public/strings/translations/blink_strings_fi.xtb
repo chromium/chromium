@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1012241361789814178">Viankorjaus keskeytetty toisella välilehdellä, siirry kyseiselle välilehdelle klikkaamalla.</translation>
 <translation id="1088086359088493902">Sekuntia</translation>
 <translation id="1142001580032786438">Näytä viikon valitsin</translation>
 <translation id="1171774979989969504">Anna sähköpostiosoite.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
 <translation id="1758486001363313524">Muu...</translation>
 <translation id="1787192514241997742">kokonaisaika: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Salli kameran käyttö</translation>
 <translation id="1822429046913737220">AP/IP</translation>
 <translation id="1832974991323546415">toista etälaitteella</translation>
 <translation id="1921819250265091946">pp</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Peilaus käynnissä</translation>
 <translation id="2031987842108996681">Punainen kanava</translation>
 <translation id="2060505056492490888"><ph name="DOT" />-merkkiä on käytetty väärässä kohdassa osoitteessa <ph name="INVALIDDOMAIN" />.</translation>
+<translation id="2068711044993563745">Vähimmäisarvon (<ph name="MINIMUM" />) on oltava enimmäisarvoa (<ph name="MAXIMUM" />) pienempi.</translation>
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2226276347425096477">Lyhennä tämä teksti alle <ph name="MAX_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
 <translation id="2247351761944213033">Viikko <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Kappale <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera ja mikrofoni sallittu</translation>
 <translation id="2393030564806080191">Heksadesimaalinen väriarvo</translation>
 <translation id="2398813069815436052">ikkuna avattu</translation>
 <translation id="245932805758469625">videon jäljellä oleva aika sekunteina</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Valitse tämä ruutu jatkaaksesi.</translation>
 <translation id="2908441821576996758">Anna pilkuilla erotettu sähköpostiosoitteiden luettelo.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mt</translation>
+<translation id="3053226512517284904">näytä audiokuvausvalikko</translation>
 <translation id="3075154866155599887">Anna kelvollinen arvo. Kentän arvo on puutteellinen tai annettu päivä on virheellinen.</translation>
 <translation id="310520048233152454">Lisää URL-osoite.</translation>
 <translation id="3220661731597678625">nykyinen vaihe</translation>
 <translation id="3321030238473337787">Toistonopeus</translation>
 <translation id="3329013043687509092">Värikylläisyys</translation>
+<translation id="3377518164566272702">Salli mikrofonin ja kameran käyttö</translation>
 <translation id="3450233048674729344">Arvon tulee olla pienempi tai yhtä suuri kuin <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">kk</translation>
 <translation id="3754210790023674521">Sulje kuva kuvassa ‑tila</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Pidennä tämä teksti yli <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
 <translation id="383465348367842624"><ph name="ATSIGN" />-osaa ennen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Sulje koko näytön tila.</translation>
+<translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4103419683916926126">Millisekuntia</translation>
 <translation id="4201051445878709314">Näytä edellinen kuukausi</translation>
 <translation id="4360991593054037559">Syötä kelvollinen arvo. Kaksi lähintä kelvollista arvoa ovat <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Tiedot</translation>
+<translation id="4663373278480897665">Kamera sallittu</translation>
 <translation id="4664250907885839816"><ph name="ATSIGN" />-osan jälkeen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Toistetaan kuva kuvassa ‑tilassa</translation>
 <translation id="4748357248530471599">näyttölovi osana koko näytön tilaa päälle/pois</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Jaa sijainti</translation>
 <translation id="4812940957355064477">Anna numero.</translation>
 <translation id="4912200001568447310">tämä kohta</translation>
 <translation id="4915360478455618802">Näytä ajan valitsin</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valittu</translation>
 <translation id="4992066212339426712">Poista mykistys</translation>
 <translation id="49969490063480558">Kirjoita loppuun asti osoite, joka alkaa <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> on vielä kesken.</translation>
+<translation id="5037575921016181960">Vahva salasana</translation>
 <translation id="5090250355906949916">videon ajan liukusäädin</translation>
 <translation id="509897012892853729">Sininen kanava</translation>
 <translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
@@ -98,7 +108,7 @@
 <translation id="5786442179789148008">näytä toistonopeuden valikko</translation>
 <translation id="5787939484346677755">laajennettu, automaattisia täydennysehdotuksia saatavilla.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
-<translation id="588258955323874662">Koko ruutu</translation>
+<translation id="588258955323874662">Koko näyttö</translation>
 <translation id="5888666972993069672">Katsotaan TV:stä <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">lataa media</translation>
 <translation id="698788488269350478">laajennettu.</translation>
 <translation id="6989848892321993519">Pidennä tämä teksti vähintään <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä 1 merkki).</translation>
+<translation id="7080893216867146095">Sijainnin jakaminen sallittu</translation>
 <translation id="709897737746224366">Käytä pyydettyä muotoilua.</translation>
 <translation id="7102274145889307184">nykyinen sijainti</translation>
 <translation id="7263440858009898357">Valitse kohde luettelosta.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Muu...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, alkupäivä: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Kuva kuvassa</translation>
+<translation id="918430632320614861">Salli mikrofonin käyttö</translation>
 <translation id="945780513535800434">Osittain valittu</translation>
 <translation id="954003015749068518">avaa kuva kuvassa ‑tila</translation>
 </translationbundle>

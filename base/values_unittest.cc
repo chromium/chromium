@@ -27,7 +27,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
@@ -40,23 +41,15 @@ namespace base {
 // This test is limited to NDEBUG builds, since some containers may require
 // extra storage for supporting debug checks for things like iterators.
 TEST(ValuesTest, SizeOfValue) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, clang-cl does not support `[[no_unique_address]]` (see
-  // https://github.com/llvm/llvm-project/issues/49358). `base::Value::Dict` has
-  // a `base::flat_tree` which relies on this attribute to avoid wasting space
-  // when the comparator is stateless. Unfortunately, this means
-  // `base::Value::Dict` ends up taking 4 machine words instead of 3. An
-  // additional word is used by absl::variant for the type index.
-  constexpr size_t kExpectedSize = 5 * sizeof(void*);
-#elif defined(__GLIBCXX__)
+#if defined(__GLIBCXX__)
   // libstdc++ std::string takes already 4 machine words, so the absl::variant
   // takes 5
   constexpr size_t kExpectedSize = 5 * sizeof(void*);
-#else   // !BUILDFLAG(IS_WIN) && !defined(__GLIBCXX__)
+#else   // !defined(__GLIBCXX__)
   // libc++'s std::string and std::vector both take 3 machine words. An
   // additional word is used by absl::variant for the type index.
   constexpr size_t kExpectedSize = 4 * sizeof(void*);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // defined(__GLIBCXX__)
 
   // Use std::integral_constant so the compiler error message includes the
   // evaluated size. In future versions of clang, it should be possible to
@@ -69,25 +62,24 @@ TEST(ValuesTest, SizeOfValue) {
 #endif
 
 TEST(ValuesTest, TestNothrow) {
-  static_assert(std::is_nothrow_move_constructible<Value>::value,
+  static_assert(std::is_nothrow_move_constructible_v<Value>,
                 "IsNothrowMoveConstructible");
-  static_assert(std::is_nothrow_default_constructible<Value>::value,
+  static_assert(std::is_nothrow_default_constructible_v<Value>,
                 "IsNothrowDefaultConstructible");
-  static_assert(std::is_nothrow_constructible<Value, std::string&&>::value,
+  static_assert(std::is_nothrow_constructible_v<Value, std::string&&>,
                 "IsNothrowMoveConstructibleFromString");
-  static_assert(
-      std::is_nothrow_constructible<Value, Value::BlobStorage&&>::value,
-      "IsNothrowMoveConstructibleFromBlob");
-  static_assert(std::is_nothrow_move_assignable<Value>::value,
+  static_assert(std::is_nothrow_constructible_v<Value, Value::BlobStorage&&>,
+                "IsNothrowMoveConstructibleFromBlob");
+  static_assert(std::is_nothrow_move_assignable_v<Value>,
                 "IsNothrowMoveAssignable");
 }
 
 TEST(ValuesTest, EmptyValue) {
   Value value;
   EXPECT_EQ(Value::Type::NONE, value.type());
-  EXPECT_EQ(absl::nullopt, value.GetIfBool());
-  EXPECT_EQ(absl::nullopt, value.GetIfInt());
-  EXPECT_EQ(absl::nullopt, value.GetIfDouble());
+  EXPECT_EQ(std::nullopt, value.GetIfBool());
+  EXPECT_EQ(std::nullopt, value.GetIfInt());
+  EXPECT_EQ(std::nullopt, value.GetIfDouble());
   EXPECT_EQ(nullptr, value.GetIfString());
   EXPECT_EQ(nullptr, value.GetIfBlob());
 }
@@ -106,15 +98,15 @@ TEST(ValuesTest, ConstructBool) {
 }
 
 TEST(ValuesTest, ConstructFromPtrs) {
-  static_assert(!std::is_constructible<Value, int*>::value, "");
-  static_assert(!std::is_constructible<Value, const int*>::value, "");
-  static_assert(!std::is_constructible<Value, wchar_t*>::value, "");
-  static_assert(!std::is_constructible<Value, const wchar_t*>::value, "");
+  static_assert(!std::is_constructible_v<Value, int*>, "");
+  static_assert(!std::is_constructible_v<Value, const int*>, "");
+  static_assert(!std::is_constructible_v<Value, wchar_t*>, "");
+  static_assert(!std::is_constructible_v<Value, const wchar_t*>, "");
 
-  static_assert(std::is_constructible<Value, char*>::value, "");
-  static_assert(std::is_constructible<Value, const char*>::value, "");
-  static_assert(std::is_constructible<Value, char16_t*>::value, "");
-  static_assert(std::is_constructible<Value, const char16_t*>::value, "");
+  static_assert(std::is_constructible_v<Value, char*>, "");
+  static_assert(std::is_constructible_v<Value, const char*>, "");
+  static_assert(std::is_constructible_v<Value, char16_t*>, "");
+  static_assert(std::is_constructible_v<Value, const char16_t*>, "");
 }
 
 TEST(ValuesTest, ConstructInt) {
@@ -907,14 +899,14 @@ TEST(ValuesTest, FindBoolKey) {
   dict.Set("list", Value::List());
   dict.Set("dict", Value::Dict());
 
-  EXPECT_EQ(absl::nullopt, dict.FindBool("null"));
-  EXPECT_NE(absl::nullopt, dict.FindBool("bool"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("int"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindBool("dict"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("null"));
+  EXPECT_NE(std::nullopt, dict.FindBool("bool"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("int"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("double"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("string"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("blob"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("list"));
+  EXPECT_EQ(std::nullopt, dict.FindBool("dict"));
 }
 
 TEST(ValuesTest, FindIntKey) {
@@ -928,14 +920,14 @@ TEST(ValuesTest, FindIntKey) {
   dict.Set("list", Value::List());
   dict.Set("dict", Value::Dict());
 
-  EXPECT_EQ(absl::nullopt, dict.FindInt("null"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("bool"));
-  EXPECT_NE(absl::nullopt, dict.FindInt("int"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindInt("dict"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("null"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("bool"));
+  EXPECT_NE(std::nullopt, dict.FindInt("int"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("double"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("string"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("blob"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("list"));
+  EXPECT_EQ(std::nullopt, dict.FindInt("dict"));
 }
 
 TEST(ValuesTest, FindStringKey) {
@@ -1064,7 +1056,7 @@ TEST(ValuesTest, SetKey) {
 }
 
 TEST(ValuesTest, SetBoolKey) {
-  absl::optional<bool> value;
+  std::optional<bool> value;
 
   Value::Dict dict;
   dict.Set("true_key", true);
@@ -1083,7 +1075,7 @@ TEST(ValuesTest, SetBoolKey) {
 }
 
 TEST(ValuesTest, SetIntKey) {
-  absl::optional<int> value;
+  std::optional<int> value;
 
   Value::Dict dict;
   dict.Set("one_key", 1);
@@ -1335,13 +1327,13 @@ TEST(ValuesTest, Extract) {
   root.Set("one", Value(123));
 
   // Extraction of missing key should fail.
-  EXPECT_EQ(absl::nullopt, root.Extract("two"));
+  EXPECT_EQ(std::nullopt, root.Extract("two"));
 
   // Extraction of existing key should succeed.
   EXPECT_EQ(Value(123), root.Extract("one"));
 
   // Second extraction of previously existing key should fail.
-  EXPECT_EQ(absl::nullopt, root.Extract("one"));
+  EXPECT_EQ(std::nullopt, root.Extract("one"));
 }
 
 TEST(ValuesTest, RemoveByDottedPath) {
@@ -1375,13 +1367,13 @@ TEST(ValuesTest, ExtractByDottedPath) {
   root.SetByDottedPath("one.two.three", Value(123));
 
   // Extraction of missing key should fail.
-  EXPECT_EQ(absl::nullopt, root.ExtractByDottedPath("one.two.four"));
+  EXPECT_EQ(std::nullopt, root.ExtractByDottedPath("one.two.four"));
 
   // Extraction of existing key should succeed.
   EXPECT_EQ(Value(123), root.ExtractByDottedPath("one.two.three"));
 
   // Second extraction of previously existing key should fail.
-  EXPECT_EQ(absl::nullopt, root.ExtractByDottedPath("one.two.three"));
+  EXPECT_EQ(std::nullopt, root.ExtractByDottedPath("one.two.three"));
 
   // Intermediate empty dictionaries should be cleared.
   EXPECT_EQ(nullptr, root.Find("one"));

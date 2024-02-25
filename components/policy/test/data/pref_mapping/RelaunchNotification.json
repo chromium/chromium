@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RelaunchNotification": 1
+        },
+        "prefs": {
+          "browser.relaunch_notification": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

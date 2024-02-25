@@ -8,6 +8,7 @@
 #include "services/device/public/mojom/hid.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -27,7 +28,6 @@ class ExecutionContext;
 class HIDDeviceFilter;
 class HIDDeviceRequestOptions;
 class NavigatorBase;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT HID : public EventTarget,
@@ -59,10 +59,10 @@ class MODULES_EXPORT HID : public EventTarget,
   // Web-exposed interfaces on hid object:
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
-  ScriptPromise getDevices(ScriptState*, ExceptionState&);
-  ScriptPromise requestDevice(ScriptState*,
-                              const HIDDeviceRequestOptions*,
-                              ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<HIDDevice>> getDevices(ScriptState*,
+                                                        ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<HIDDevice>>
+  requestDevice(ScriptState*, const HIDDeviceRequestOptions*, ExceptionState&);
 
   // HIDDevice::ServiceInterface:
   void Connect(
@@ -101,18 +101,19 @@ class MODULES_EXPORT HID : public EventTarget,
   // Closes the connection to HidService and resolves any pending promises.
   void CloseServiceConnection();
 
-  void FinishGetDevices(ScriptPromiseResolver*,
+  using HIDDeviceResolver = ScriptPromiseResolverTyped<IDLSequence<HIDDevice>>;
+  void FinishGetDevices(HIDDeviceResolver*,
                         Vector<device::mojom::blink::HidDeviceInfoPtr>);
-  void FinishRequestDevice(ScriptPromiseResolver*,
+  void FinishRequestDevice(HIDDeviceResolver*,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
   HeapMojoRemote<mojom::blink::HidService> service_;
   HeapMojoAssociatedReceiver<device::mojom::blink::HidManagerClient, HID>
       receiver_;
-  HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;
-  HeapHashSet<Member<ScriptPromiseResolver>> request_device_promises_;
+  HeapHashSet<Member<HIDDeviceResolver>> get_devices_promises_;
+  HeapHashSet<Member<HIDDeviceResolver>> request_device_promises_;
   HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;
-  absl::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
+  std::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
       feature_handle_for_scheduler_;
 };
 

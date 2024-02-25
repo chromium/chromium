@@ -4,40 +4,6 @@
   "Fake Tester": {
     "gtest_tests": [
       {
-        "args": [
-          "--anarg"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "swarming_test args",
-        "swarming": {
-          "dimensions": {
-            "foo": "bar",
-            "os": "Linux"
-          },
-          "foo": "bar"
-        },
-        "test": "swarming_test",
-        "variant_id": "args"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "swarming_test mixins",
-        "swarming": {
-          "dimensions": {
-            "foo": "bar",
-            "iama": "mixin",
-            "os": "Linux"
-          },
-          "foo": "bar"
-        },
-        "test": "swarming_test",
-        "variant_id": "mixins"
-      },
-      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

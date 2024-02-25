@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -37,7 +37,6 @@
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -132,9 +131,9 @@ class MockHostResolverBase
       std::string hostname_pattern = "*";
 
       // `nullopt` represents wildcard and all queries will match.
-      absl::optional<uint16_t> port;
-      absl::optional<DnsQueryType> query_type;
-      absl::optional<HostResolverSource> query_source;
+      std::optional<uint16_t> port;
+      std::optional<DnsQueryType> query_type;
+      std::optional<HostResolverSource> query_source;
     };
 
     struct RuleResult {
@@ -159,7 +158,7 @@ class MockHostResolverBase
 
     // If `default_result` is nullopt, every resolve must match an added rule.
     explicit RuleResolver(
-        absl::optional<RuleResultOrError> default_result = absl::nullopt);
+        std::optional<RuleResultOrError> default_result = std::nullopt);
     ~RuleResolver();
 
     RuleResolver(const RuleResolver&);
@@ -205,7 +204,7 @@ class MockHostResolverBase
 
    private:
     std::map<RuleKey, RuleResultOrError> rules_;
-    absl::optional<RuleResultOrError> default_result_;
+    std::optional<RuleResultOrError> default_result_;
   };
 
   using RequestMap = std::map<size_t, RequestImpl*>;
@@ -282,13 +281,12 @@ class MockHostResolverBase
       url::SchemeHostPort host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters) override;
+      std::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
-      const absl::optional<ResolveHostParameters>& optional_parameters)
-      override;
+      const std::optional<ResolveHostParameters>& optional_parameters) override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   std::unique_ptr<MdnsListener> CreateMdnsListener(
       const HostPortPair& host,
@@ -301,11 +299,11 @@ class MockHostResolverBase
   int LoadIntoCache(
       absl::variant<url::SchemeHostPort, HostPortPair> endpoint,
       const NetworkAnonymizationKey& network_anonymization_key,
-      const absl::optional<ResolveHostParameters>& optional_parameters);
+      const std::optional<ResolveHostParameters>& optional_parameters);
   int LoadIntoCache(
       const Host& endpoint,
       const NetworkAnonymizationKey& network_anonymization_key,
-      const absl::optional<ResolveHostParameters>& optional_parameters);
+      const std::optional<ResolveHostParameters>& optional_parameters);
 
   // Returns true if there are pending requests that can be resolved by invoking
   // ResolveAllPending().
@@ -363,14 +361,14 @@ class MockHostResolverBase
   }
 
   // Returns the NetworkAnonymizationKey passed in to the last call to Resolve()
-  // (or absl::nullopt if Resolve() hasn't been called yet).
-  const absl::optional<NetworkAnonymizationKey>&
+  // (or std::nullopt if Resolve() hasn't been called yet).
+  const std::optional<NetworkAnonymizationKey>&
   last_request_network_anonymization_key() {
     return last_request_network_anonymization_key_;
   }
 
   // Returns the SecureDnsPolicy of the last call to Resolve() (or
-  // absl::nullopt if Resolve() hasn't been called yet).
+  // std::nullopt if Resolve() hasn't been called yet).
   SecureDnsPolicy last_secure_dns_policy() const {
     return last_secure_dns_policy_;
   }
@@ -427,14 +425,14 @@ class MockHostResolverBase
       HostResolver::ResolveHostParameters::CacheUsage cache_usage,
       std::vector<HostResolverEndpointResult>* out_endpoints,
       std::set<std::string>* out_aliases,
-      absl::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info);
   int DoSynchronousResolution(RequestImpl& request);
 
   void AddListener(MdnsListenerImpl* listener);
   void RemoveCancelledListener(MdnsListenerImpl* listener);
 
   RequestPriority last_request_priority_ = DEFAULT_PRIORITY;
-  absl::optional<NetworkAnonymizationKey>
+  std::optional<NetworkAnonymizationKey>
       last_request_network_anonymization_key_;
   SecureDnsPolicy last_secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool synchronous_mode_ = false;
@@ -445,7 +443,7 @@ class MockHostResolverBase
   const int initial_cache_invalidation_num_;
   std::map<HostCache::Key, int> cache_invalidation_nums_;
 
-  std::set<MdnsListenerImpl*> listeners_;
+  std::set<raw_ptr<MdnsListenerImpl, SetExperimental>> listeners_;
 
   size_t next_request_id_ = 1;
 
@@ -458,8 +456,8 @@ class MockHostResolverBase
 
 class MockHostResolver : public MockHostResolverBase {
  public:
-  explicit MockHostResolver(absl::optional<RuleResolver::RuleResultOrError>
-                                default_result = absl::nullopt)
+  explicit MockHostResolver(std::optional<RuleResolver::RuleResultOrError>
+                                default_result = std::nullopt)
       : MockHostResolverBase(/*use_caching=*/false,
                              /*cache_invalidation_num=*/0,
                              RuleResolver(std::move(default_result))) {}
@@ -478,8 +476,8 @@ class MockCachingHostResolver : public MockHostResolverBase {
   // scenarios.
   explicit MockCachingHostResolver(
       int cache_invalidation_num = 0,
-      absl::optional<RuleResolver::RuleResultOrError> default_result =
-          absl::nullopt)
+      std::optional<RuleResolver::RuleResultOrError> default_result =
+          std::nullopt)
       : MockHostResolverBase(/*use_caching=*/true,
                              cache_invalidation_num,
                              RuleResolver(std::move(default_result))) {}
@@ -693,13 +691,12 @@ class HangingHostResolver : public HostResolver {
       url::SchemeHostPort host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters) override;
+      std::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
-      const absl::optional<ResolveHostParameters>& optional_parameters)
-      override;
+      const std::optional<ResolveHostParameters>& optional_parameters) override;
 
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
 

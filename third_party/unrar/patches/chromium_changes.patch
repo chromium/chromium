@@ -1,8 +1,8 @@
 diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
-index 8c5a1da81d142..cac841747d867 100644
+index 50c591fd38f69..11158f6cc5a7b 100644
 --- a/third_party/unrar/src/archive.cpp
 +++ b/third_party/unrar/src/archive.cpp
-@@ -336,3 +336,12 @@ int64 Archive::Tell()
+@@ -330,3 +330,12 @@ int64 Archive::Tell()
  }
  #endif
  
@@ -16,7 +16,7 @@ index 8c5a1da81d142..cac841747d867 100644
 +}
 +#endif
 diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
-index d9518f1dc491a..08fef7b0e6c0e 100644
+index c0019aef57190..40ade491c4643 100644
 --- a/third_party/unrar/src/archive.hpp
 +++ b/third_party/unrar/src/archive.hpp
 @@ -57,6 +57,13 @@ class Archive:public File
@@ -29,9 +29,9 @@ index d9518f1dc491a..08fef7b0e6c0e 100644
 +    // archive. This is used to extract the contents while in a sandbox.
 +    FileHandle hTempFile;
 +#endif
-+
++  
    public:
-     Archive(RAROptions *InitCmd=NULL);
+     Archive(CommandData *InitCmd=NULL);
      ~Archive();
 @@ -96,6 +103,10 @@ class Archive:public File
      void QOpenUnload() {QOpen.Unload();}
@@ -44,31 +44,8 @@ index d9518f1dc491a..08fef7b0e6c0e 100644
  
      BaseBlock ShortBlock;
      MarkHeader MarkHead;
-diff --git a/third_party/unrar/src/arcread.cpp b/third_party/unrar/src/arcread.cpp
-index d1df6c04108cd..468d387a24721 100644
---- a/third_party/unrar/src/arcread.cpp
-+++ b/third_party/unrar/src/arcread.cpp
-@@ -142,7 +142,8 @@ size_t Archive::ReadHeader15()
- 
-   if (Decrypt)
-   {
--#ifdef RAR_NOCRYPT // For rarext.dll and unrar_nocrypt.dll.
-+#if defined(RAR_NOCRYPT) || \
-+    defined(CHROMIUM_UNRAR)  // For rarext.dll and unrar_nocrypt.dll.
-     return 0;
- #else
-     RequestArcPassword();
-@@ -554,7 +555,7 @@ size_t Archive::ReadHeader50()
- 
-   if (Decrypt)
-   {
--#if defined(RAR_NOCRYPT)
-+#if defined(RAR_NOCRYPT) || defined(CHROMIUM_UNRAR)
-     return 0;
- #else
- 
 diff --git a/third_party/unrar/src/blake2s.hpp b/third_party/unrar/src/blake2s.hpp
-index f88ef37802c44..d8b30f94d0518 100644
+index 06e396a77ba49..13969e1695a11 100644
 --- a/third_party/unrar/src/blake2s.hpp
 +++ b/third_party/unrar/src/blake2s.hpp
 @@ -5,11 +5,8 @@
@@ -85,36 +62,45 @@ index f88ef37802c44..d8b30f94d0518 100644
  
  
  // Alignment to 64 improves performance of both SSE and non-SSE versions.
-@@ -20,10 +17,10 @@ enum blake2s_constant
- // 'new' operator.
- struct blake2s_state
- {
--  enum { BLAKE_ALIGNMENT = 64 };
-+  static constexpr size_t BLAKE_ALIGNMENT = 64;
+diff --git a/third_party/unrar/src/consio.cpp b/third_party/unrar/src/consio.cpp
+index 8e5148e2ace96..be8a6a4affc2a 100644
+--- a/third_party/unrar/src/consio.cpp
++++ b/third_party/unrar/src/consio.cpp
+@@ -222,10 +222,11 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *
+   while (true)
+   {
+     //    if (!StdinRedirected)
+-    if (Type == UIPASSWORD_GLOBAL)
++    if (Type == UIPASSWORD_GLOBAL) {
+       eprintf(L"\n%s: ", St(MAskPsw));
+-    else
++    } else {
+       eprintf(St(MAskPswFor), FileName);
++    }
  
-   // buffer and uint32 h[8], t[2], f[2];
--  enum { BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES };
-+  static constexpr size_t BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES;
- 
-   byte ubuf[BLAKE_DATA_SIZE + BLAKE_ALIGNMENT];
- 
+     wchar PlainPsw[MAXPASSWORD + 1];
+     GetPasswordText(PlainPsw,ASIZE(PlainPsw));
 diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
-index cf23bbf4f2afa..4c86c09e3b4f2 100644
+index b28e313bdcb50..54a0f7877468f 100644
 --- a/third_party/unrar/src/crc.cpp
 +++ b/third_party/unrar/src/crc.cpp
-@@ -15,6 +15,7 @@
- #include "rar.hpp"
+@@ -20,7 +20,8 @@
+ #define USE_SLICING
+ #endif
  
- static uint crc_tables[8][256]; // Tables for Slicing-by-8.
+-static uint crc_tables[8][256]; // Tables for Slicing-by-8.
++static uint crc_tables[8][256];  // Tables for Slicing-by-8.
 +static bool is_initialized = false;
  
  
  // Build the classic CRC32 lookup table.
-@@ -49,10 +50,13 @@ static void InitTables()
+@@ -56,12 +57,13 @@ static void InitTables()
+ #endif
  }
  
- 
--struct CallInitCRC {CallInitCRC() {InitTables();}} static CallInit32;
+-struct CallInitCRC {
+-  CallInitCRC() { InitTables(); }
+-} static CallInit32;
 -
  uint CRC32(uint StartCRC,const void *Addr,size_t Size)
  {
@@ -125,31 +111,28 @@ index cf23bbf4f2afa..4c86c09e3b4f2 100644
 +
    byte *Data=(byte *)Addr;
  
-   // Align Data to 8 for better performance.
+ #ifdef USE_SLICING
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
-index 18e91973e61b7..ddbc751b57f86 100644
+index 0a4693c7ba700..0c3faa307b7a3 100644
 --- a/third_party/unrar/src/errhnd.cpp
 +++ b/third_party/unrar/src/errhnd.cpp
-@@ -1,10 +1,13 @@
--#include "rar.hpp"
+@@ -1,8 +1,12 @@
 +// NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
 +// defines certain macros that cause symbol redefinition errors
 +#if defined(UNRAR_NO_EXCEPTIONS)
 +#include "base/check.h"
 +#include "base/process/process.h"
 +#endif  // defined(UNRAR_NO_EXCEPTIONS)
+ #include "rar.hpp"
  
--ErrorHandler::ErrorHandler()
--{
+-ErrorHandler::ErrorHandler() {
 -  Clean();
 -}
-+#include "rar.hpp"
- 
 +#include <ostream>
  
  void ErrorHandler::Clean()
  {
-@@ -334,7 +337,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
+@@ -335,7 +339,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
      mprintf(L"\n%s\n",St(MProgAborted));
  #endif
    SetErrorCode(Code);
@@ -198,11 +181,11 @@ index 06f4f616fd96b..3c5c54c490f7a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index abcd3c3385c5d..2c264b1070401 100644
+index fda3750195e2f..271a8968d45a8 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
-@@ -524,6 +524,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
- #endif
+@@ -650,6 +650,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+     }
  
      File CurFile;
 +#if defined(CHROMIUM_UNRAR)
@@ -212,19 +195,32 @@ index abcd3c3385c5d..2c264b1070401 100644
 +#endif
  
      bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
-     if (LinkEntry && Arc.FileHead.RedirType!=FSREDIR_FILECOPY)
-@@ -1334,4 +1339,4 @@ void CmdExtract::GetFirstVolIfFullSet(const wchar *SrcName,bool NewNumbering,wch
-   wcsncpyz(DestName,ResultName,DestSize);
- }
+     if (LinkEntry && (Arc.FileHead.RedirType != FSREDIR_FILECOPY)) {
+@@ -665,8 +670,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+       }
+     } else if (Arc.IsArcDir()) {
+       if (!ExtrFile || Command == 'P' || Command == 'I' || Command == 'E' ||
+-          Cmd->ExclPath == EXCL_SKIPWHOLEPATH)
++          Cmd->ExclPath == EXCL_SKIPWHOLEPATH) {
+         return true;
++      }
+       TotalFileCount++;
+       ExtrCreateDir(Arc, ArcFileName);
+       // It is important to not increment MatchedArgs here, so we extract
+@@ -1113,7 +1119,7 @@ void CmdExtract::ExtrPrepareName(Archive &Arc,const wchar *ArcFileName,wchar *De
+        // Destination path can be without trailing slash if it come from GUI
+        // shell.
+        AddEndSlash(DestName, DestSize);
+-    }
++     }
+   }
  
--#endif
-\ No newline at end of file
-+#endif
+ #ifndef SFX_MODULE
 diff --git a/third_party/unrar/src/extract.hpp b/third_party/unrar/src/extract.hpp
-index 159759b563f5f..d38ff8658ecdd 100644
+index 18396c5b936c5..9e566b039864c 100644
 --- a/third_party/unrar/src/extract.hpp
 +++ b/third_party/unrar/src/extract.hpp
-@@ -37,8 +37,8 @@ class CmdExtract
+@@ -56,8 +56,8 @@ class CmdExtract
      unsigned long MatchedArgs;
      bool FirstFile;
      bool AllMatchesExact;
@@ -235,7 +231,7 @@ index 159759b563f5f..d38ff8658ecdd 100644
  
      // If any non-zero solid file was successfully unpacked before current.
      // If true and if current encrypted file is broken, obviously
-@@ -62,6 +62,11 @@ class CmdExtract
+@@ -90,6 +90,11 @@ class CmdExtract
      void ExtractArchiveInit(Archive &Arc);
      bool ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat);
      static void UnstoreFile(ComprDataIO &DataIO,int64 DestUnpSize);
@@ -248,13 +244,13 @@ index 159759b563f5f..d38ff8658ecdd 100644
  
  #endif
 diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index 5a8099ec5bd1c..cd6be338e486f 100644
+index eb798b8102b86..3c4552bd11ead 100644
 --- a/third_party/unrar/src/file.cpp
 +++ b/third_party/unrar/src/file.cpp
-@@ -19,6 +19,10 @@ File::File()
- #endif
+@@ -20,6 +20,10 @@ File::File()
    ReadErrorMode=FREM_ASK;
    TruncatedAfterReadError=false;
+   CurFilePos = 0;
 +
 +#ifdef CHROMIUM_UNRAR
 +  hOpenFile=FILE_BAD_HANDLE;
@@ -262,7 +258,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
  }
  
  
-@@ -52,6 +56,11 @@ bool File::Open(const wchar *Name,uint Mode)
+@@ -53,6 +57,11 @@ bool File::Open(const wchar *Name,uint Mode)
    bool UpdateMode=(Mode & FMF_UPDATE)!=0;
    bool WriteMode=(Mode & FMF_WRITE)!=0;
  #ifdef _WIN_ALL
@@ -274,7 +270,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
    uint Access=WriteMode ? GENERIC_WRITE:GENERIC_READ;
    if (UpdateMode)
      Access|=GENERIC_WRITE;
-@@ -97,7 +106,14 @@ bool File::Open(const wchar *Name,uint Mode)
+@@ -98,7 +107,14 @@ bool File::Open(const wchar *Name,uint Mode)
      FILETIME ft={0xffffffff,0xffffffff}; // This value prevents atime modification.
      SetFileTime(hNewFile,NULL,&ft,NULL);
    }
@@ -289,7 +285,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
  #else
    int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
  #ifdef O_BINARY
-@@ -115,6 +131,8 @@ bool File::Open(const wchar *Name,uint Mode)
+@@ -116,6 +132,8 @@ bool File::Open(const wchar *Name,uint Mode)
    WideToChar(Name,NameA,ASIZE(NameA));
  
    int handle=open(NameA,flags);
@@ -298,7 +294,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
  #ifdef LOCK_EX
  
  #ifdef _OSF_SOURCE
-@@ -174,6 +192,11 @@ bool File::WOpen(const wchar *Name)
+@@ -175,6 +193,11 @@ bool File::WOpen(const wchar *Name)
  
  bool File::Create(const wchar *Name,uint Mode)
  {
@@ -310,7 +306,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
    // OpenIndiana based NAS and CIFS shares fail to set the file time if file
    // was created in read+write mode and some data was written and not flushed
    // before SetFileTime call. So we should use the write only mode if we plan
-@@ -211,6 +234,7 @@ bool File::Create(const wchar *Name,uint Mode)
+@@ -212,6 +235,7 @@ bool File::Create(const wchar *Name,uint Mode)
    hFile=fopen(NameA,WriteMode ? WRITEBINARY:CREATEBINARY);
  #endif
  #endif
@@ -318,7 +314,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
    NewFile=true;
    HandleType=FILE_HANDLENORMAL;
    SkipClose=false;
-@@ -245,6 +269,8 @@ bool File::Close()
+@@ -246,6 +270,8 @@ bool File::Close()
    {
      if (!SkipClose)
      {
@@ -327,7 +323,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
  #ifdef _WIN_ALL
        // We use the standard system handle for stdout in Windows
        // and it must not be closed here.
-@@ -257,6 +283,7 @@ bool File::Close()
+@@ -258,6 +284,7 @@ bool File::Close()
        Success=fclose(hFile)!=EOF;
  #endif
  #endif
@@ -335,7 +331,7 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
      }
      hFile=FILE_BAD_HANDLE;
    }
-@@ -759,3 +786,9 @@ int64 File::Copy(File &Dest,int64 Length)
+@@ -866,3 +893,9 @@ int64 File::Copy(File &Dest,int64 Length)
    return CopySize;
  }
  #endif
@@ -346,22 +342,23 @@ index 5a8099ec5bd1c..cd6be338e486f 100644
 +}
 +#endif  // defined(CHROMIUM_UNRAR)
 diff --git a/third_party/unrar/src/file.hpp b/third_party/unrar/src/file.hpp
-index 1c436d4ef7bc0..baf366dfa4a34 100644
+index 5f55de960ebad..888c6ca3b9c38 100644
 --- a/third_party/unrar/src/file.hpp
 +++ b/third_party/unrar/src/file.hpp
-@@ -76,6 +76,10 @@ class File
-     wchar FileName[NM];
+@@ -87,6 +87,11 @@ class File
  
      FILE_ERRORTYPE ErrorType;
-+
+ 
 +#if defined(CHROMIUM_UNRAR)
 +    FileHandle hOpenFile;
 +#endif  // defined(CHROMIUM_UNRAR)
++
++
+     byte *SeekBuf; // To read instead of seek for stdin files.
+     static const size_t SeekBufSize=0x10000;
    public:
-     File();
-     virtual ~File();
-@@ -124,6 +128,14 @@ class File
- #endif
+@@ -139,6 +144,14 @@ class File
+     void SetExceptions(bool Allow) {AllowExceptions=Allow;}
      void SetPreserveAtime(bool Preserve) {PreserveAtime=Preserve;}
      bool IsTruncatedAfterReadError() {return TruncatedAfterReadError;}
 +
@@ -371,98 +368,34 @@ index 1c436d4ef7bc0..baf366dfa4a34 100644
 +    // the file handle to unrar. This handle is then used to read the file.
 +    void SetFileHandle(FileHandle file);
 +#endif  // defined(CHROMIUM_UNRAR)
-+
++  
  #ifdef _UNIX
      int GetFD()
      {
-diff --git a/third_party/unrar/src/hash.cpp b/third_party/unrar/src/hash.cpp
-index a4559e05c3cce..106cc6083333e 100644
---- a/third_party/unrar/src/hash.cpp
-+++ b/third_party/unrar/src/hash.cpp
-@@ -26,7 +26,7 @@ void HashValue::Init(HASH_TYPE Type)
- }
- 
- 
--bool HashValue::operator == (const HashValue &cmp)
-+bool HashValue::operator == (const HashValue &cmp) const
- {
-   if (Type==HASH_NONE || cmp.Type==HASH_NONE)
-     return true;
-diff --git a/third_party/unrar/src/hash.hpp b/third_party/unrar/src/hash.hpp
-index b7d879f66a280..923260064f894 100644
---- a/third_party/unrar/src/hash.hpp
-+++ b/third_party/unrar/src/hash.hpp
-@@ -6,8 +6,7 @@ enum HASH_TYPE {HASH_NONE,HASH_RAR14,HASH_CRC32,HASH_BLAKE2};
- struct HashValue
- {
-   void Init(HASH_TYPE Type);
--  bool operator == (const HashValue &cmp);
--  bool operator != (const HashValue &cmp) {return !(*this==cmp);}
-+  bool operator == (const HashValue &cmp) const;
- 
-   HASH_TYPE Type;
-   union
 diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
-index 6fadec049fe4c..d30adf550925f 100644
+index 6999236d72a8d..c914449e240d0 100644
 --- a/third_party/unrar/src/isnt.cpp
 +++ b/third_party/unrar/src/isnt.cpp
-@@ -1,24 +1,18 @@
+@@ -1,5 +1,11 @@
  #include "rar.hpp"
  
- #ifdef _WIN_ALL
-+#include "versionhelpers.h"
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wdeprecated-declarations"
++// GetVersionEx() is deprecated, and the suggested replacement are
++// the IsWindows*OrGreater() functions in VersionHelpers.h. We can't
++// use that because there is no IsWindows11OrGreater() function yet.
 +
  DWORD WinNT()
  {
--  static int dwPlatformId=-1;
--  static DWORD dwMajorVersion,dwMinorVersion;
--  if (dwPlatformId==-1)
--  {
--    OSVERSIONINFO WinVer;
--    WinVer.dwOSVersionInfoSize=sizeof(WinVer);
--    GetVersionEx(&WinVer);
--    dwPlatformId=WinVer.dwPlatformId;
--    dwMajorVersion=WinVer.dwMajorVersion;
--    dwMinorVersion=WinVer.dwMinorVersion;
--  }
--  DWORD Result=0;
--  if (dwPlatformId==VER_PLATFORM_WIN32_NT)
--    Result=dwMajorVersion*0x100+dwMinorVersion;
--
--
--  return Result;
-+  if (!IsWindowsXPOrGreater())
-+    return WNT_NONE;
-+  if (!IsWindowsVistaOrGreater())
-+    return WNT_WXP;
-+  if (!IsWindows7OrGreater()) return WNT_VISTA;
-+  if (!IsWindows8OrGreater()) return WNT_W7;
-+  if (!IsWindows8Point1OrGreater()) return WNT_W8;
-+  if (!IsWindows10OrGreater()) return WNT_W81;
-+  return WNT_W10;
+   static int dwPlatformId = -1;
+@@ -108,3 +114,5 @@ bool IsWindows11OrGreater() {
+   }
+   return IsWin11;
  }
- #endif
-diff --git a/third_party/unrar/src/isnt.hpp b/third_party/unrar/src/isnt.hpp
-index 85790da462902..a02174447e29f 100644
---- a/third_party/unrar/src/isnt.hpp
-+++ b/third_party/unrar/src/isnt.hpp
-@@ -1,6 +1,8 @@
- #ifndef _RAR_ISNT_
- #define _RAR_ISNT_
- 
-+#include "windows.h"
 +
- enum WINNT_VERSION {
-   WNT_NONE=0,WNT_NT351=0x0333,WNT_NT4=0x0400,WNT_W2000=0x0500,
-   WNT_WXP=0x0501,WNT_W2003=0x0502,WNT_VISTA=0x0600,WNT_W7=0x0601,
-@@ -9,5 +11,4 @@ enum WINNT_VERSION {
- 
- DWORD WinNT();
- 
--
- #endif
++#pragma clang diagnostic pop
 diff --git a/third_party/unrar/src/model.cpp b/third_party/unrar/src/model.cpp
-index 83391c5a45107..1ca9f03e9bcc5 100644
+index aad6f8ad4e467..7d4324b77a141 100644
 --- a/third_party/unrar/src/model.cpp
 +++ b/third_party/unrar/src/model.cpp
 @@ -43,13 +43,27 @@ void ModelPPM::RestartModelRare()
@@ -493,11 +426,20 @@ index 83391c5a45107..1ca9f03e9bcc5 100644
    for (RunLength=InitRL, PrevSuccess=i=0;i < 256;i++) 
    {
      MinContext->U.Stats[i].Symbol=i;      
+@@ -539,7 +553,7 @@ inline bool RARPPM_CONTEXT::decodeSymbol2(ModelPPM *Model)
+     { 
+       if (pps>=ps+ASIZE(ps)) // Extra safety check.
+         return false;
+-      Model->CharMask[(*pps)->Symbol]=Model->EscCount;
++      Model->CharMask[(*pps)->Symbol] = Model->EscCount;
+       pps++;
+     } while ( --i );
+     psee2c->Summ += Model->Coder.SubRange.scale;
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index b69f34878b3df..51d547b0f68ba 100644
+index 4b21e49d768e3..f6b4345ec2d21 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
-@@ -32,6 +32,7 @@
+@@ -34,6 +34,7 @@
  #define STRICT 1
  #endif
  
@@ -505,13 +447,14 @@ index b69f34878b3df..51d547b0f68ba 100644
  // 'ifndef' check here is needed for unrar.dll header to avoid macro
  // re-definition warnings in third party projects.
  #ifndef UNICODE
-@@ -42,12 +43,15 @@
- #undef _WIN32_WINNT
- #define WINVER 0x0501
- #define _WIN32_WINNT 0x0501
-+#endif  // CHROMIUM_UNRAR
+@@ -50,12 +51,16 @@
+ #define WINVER _WIN32_WINNT_WINXP
+ #define _WIN32_WINNT _WIN32_WINNT_WINXP
+ #endif
++#endif  // !defined(CHROMIUM_UNRAR)
  
 -#if !defined(ZIPSFX)
++
 +#if !defined(ZIPSFX) && !defined(CHROMIUM_UNRAR)
  #define RAR_SMP
  #endif
@@ -522,51 +465,70 @@ index b69f34878b3df..51d547b0f68ba 100644
  
  #include <windows.h>
  #include <prsht.h>
-@@ -79,8 +83,11 @@
+@@ -84,11 +89,13 @@
    #include <direct.h>
    #include <intrin.h>
  
 +#if !defined(CHROMIUM_UNRAR)
-   #define USE_SSE
-   #define SSE_ALIGNMENT 16
+   // Use SSE only for x86/x64, not ARM Windows.
+   #if defined(_M_IX86) || defined(_M_X64)
+     #define USE_SSE
+     #define SSE_ALIGNMENT 16
+   #endif
 +#endif  // CHROMIUM_UNRAR
-+
  #else
    #include <dirent.h>
  #endif // _MSC_VER
+@@ -269,9 +276,16 @@
+   #endif
+ #endif
+ 
++// Disable this optimization in Chromium. Although the underlying architecture
++// may allow unaligned access, C and C++ themselves do not allow this. Rather,
++// unaligned loads should be written with either memcpy, or by endian-agnostic
++// reassembling of values with shifts and ORs. Modern compilers recognize these
++// patterns and generate the unaligned load anyway.
++#if !defined(CHROMIUM_UNRAR)
+ #if !defined(BIG_ENDIAN) && defined(_WIN_ALL) || defined(__i386__) || defined(__x86_64__)
+ // Allow not aligned integer access, increases speed in some operations.
+ #define ALLOW_MISALIGNED
+ #endif
++#endif
+ 
+ #endif // _RAR_OS_
 diff --git a/third_party/unrar/src/pathfn.cpp b/third_party/unrar/src/pathfn.cpp
-index 41594bf955278..4c4d40626e8be 100644
+index 1f7ce76149a06..20a6bcc77d0cf 100644
 --- a/third_party/unrar/src/pathfn.cpp
 +++ b/third_party/unrar/src/pathfn.cpp
-@@ -761,16 +761,16 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
+@@ -787,16 +787,16 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
  
-   char Field[10][6];
+   char Field[10][11];
  
--  sprintf(Field[0],"%04u",rlt.Year);
--  sprintf(Field[1],"%02u",rlt.Month);
--  sprintf(Field[2],"%02u",rlt.Day);
--  sprintf(Field[3],"%02u",rlt.Hour);
--  sprintf(Field[4],"%02u",rlt.Minute);
--  sprintf(Field[5],"%02u",rlt.Second);
--  sprintf(Field[6],"%02u",(uint)CurWeek);
--  sprintf(Field[7],"%u",(uint)WeekDay+1);
--  sprintf(Field[8],"%03u",rlt.yDay+1);
--  sprintf(Field[9],"%05u",ArcNumber);
-+  snprintf(Field[0],sizeof(Field[0]),"%04u",rlt.Year);
-+  snprintf(Field[1],sizeof(Field[1]),"%02u",rlt.Month);
-+  snprintf(Field[2],sizeof(Field[2]),"%02u",rlt.Day);
-+  snprintf(Field[3],sizeof(Field[3]),"%02u",rlt.Hour);
-+  snprintf(Field[4],sizeof(Field[4]),"%02u",rlt.Minute);
-+  snprintf(Field[5],sizeof(Field[5]),"%02u",rlt.Second);
-+  snprintf(Field[6],sizeof(Field[6]),"%02u",(uint)CurWeek);
-+  snprintf(Field[7],sizeof(Field[7]),"%u",(uint)WeekDay+1);
-+  snprintf(Field[8],sizeof(Field[8]),"%03u",rlt.yDay+1);
-+  snprintf(Field[9],sizeof(Field[9]),"%05u",ArcNumber);
+-  sprintf(Field[0], "%04u", rlt.Year);
+-  sprintf(Field[1], "%02u", rlt.Month);
+-  sprintf(Field[2], "%02u", rlt.Day);
+-  sprintf(Field[3], "%02u", rlt.Hour);
+-  sprintf(Field[4], "%02u", rlt.Minute);
+-  sprintf(Field[5], "%02u", rlt.Second);
+-  sprintf(Field[6], "%02u", (uint)CurWeek);
+-  sprintf(Field[7], "%u", (uint)WeekDay + 1);
+-  sprintf(Field[8], "%03u", rlt.yDay + 1);
+-  sprintf(Field[9], "%05u", ArcNumber);
++  snprintf(Field[0], sizeof(Field[0]), "%04u", rlt.Year);
++  snprintf(Field[1], sizeof(Field[1]), "%02u", rlt.Month);
++  snprintf(Field[2], sizeof(Field[2]), "%02u", rlt.Day);
++  snprintf(Field[3], sizeof(Field[3]), "%02u", rlt.Hour);
++  snprintf(Field[4], sizeof(Field[4]), "%02u", rlt.Minute);
++  snprintf(Field[5], sizeof(Field[5]), "%02u", rlt.Second);
++  snprintf(Field[6], sizeof(Field[6]), "%02u", (uint)CurWeek);
++  snprintf(Field[7], sizeof(Field[7]), "%u", (uint)WeekDay + 1);
++  snprintf(Field[8], sizeof(Field[8]), "%03u", rlt.yDay + 1);
++  snprintf(Field[9], sizeof(Field[9]), "%05u", ArcNumber);
  
    const wchar *MaskChars=L"YMDHISWAEN";
  
 diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
-index 4865b3fd02e25..c292b0e002853 100644
+index 35270ba8659dc..53b65dd537628 100644
 --- a/third_party/unrar/src/secpassword.cpp
 +++ b/third_party/unrar/src/secpassword.cpp
 @@ -25,6 +25,7 @@ class CryptLoader
@@ -591,51 +553,64 @@ index 4865b3fd02e25..c292b0e002853 100644
  };
 -
 -// We need to call FreeLibrary when RAR is exiting.
--CryptLoader GlobalCryptLoader;
+-static CryptLoader GlobalCryptLoader;
  #endif
  
  SecPassword::SecPassword()
-@@ -169,16 +172,15 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
+@@ -170,15 +173,16 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
    // increases data size not allowing in place conversion.
  #if defined(_WIN_ALL)
    // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
--  if (GlobalCryptLoader.pCryptProtectMemory==NULL)
+-  if (GlobalCryptLoader.pCryptProtectMemory == NULL) {
 -    GlobalCryptLoader.Load();
-+  if (CryptLoader::GetInstance().pCryptProtectMemory == NULL)
++  if (CryptLoader::GetInstance().pCryptProtectMemory == NULL) {
 +    CryptLoader::GetInstance().Load();
+   }
    size_t Aligned=DataSize-DataSize%CRYPTPROTECTMEMORY_BLOCK_SIZE;
    DWORD Flags=CrossProcess ? CRYPTPROTECTMEMORY_CROSS_PROCESS : CRYPTPROTECTMEMORY_SAME_PROCESS;
    if (Encode)
    {
--    if (GlobalCryptLoader.pCryptProtectMemory!=NULL)
--    {
--      if (!GlobalCryptLoader.pCryptProtectMemory(Data,DWORD(Aligned),Flags))
--      {
+-    if (GlobalCryptLoader.pCryptProtectMemory != NULL) {
+-      if (!GlobalCryptLoader.pCryptProtectMemory(Data, DWORD(Aligned), Flags)) {
 +    if (CryptLoader::GetInstance().pCryptProtectMemory != NULL) {
 +      if (!CryptLoader::GetInstance().pCryptProtectMemory(Data, DWORD(Aligned),
 +                                                          Flags)) {
          ErrHandler.GeneralErrMsg(L"CryptProtectMemory failed");
          ErrHandler.SysErrMsg();
          ErrHandler.Exit(RARX_FATAL);
-@@ -188,10 +190,9 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
+@@ -188,9 +192,9 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
    }
    else
    {
--    if (GlobalCryptLoader.pCryptUnprotectMemory!=NULL)
--    {
--      if (!GlobalCryptLoader.pCryptUnprotectMemory(Data,DWORD(Aligned),Flags))
--      {
+-    if (GlobalCryptLoader.pCryptUnprotectMemory != NULL) {
+-      if (!GlobalCryptLoader.pCryptUnprotectMemory(Data, DWORD(Aligned),
+-                                                   Flags)) {
 +    if (CryptLoader::GetInstance().pCryptUnprotectMemory != NULL) {
 +      if (!CryptLoader::GetInstance().pCryptUnprotectMemory(
 +              Data, DWORD(Aligned), Flags)) {
          ErrHandler.GeneralErrMsg(L"CryptUnprotectMemory failed");
          ErrHandler.SysErrMsg();
          ErrHandler.Exit(RARX_FATAL);
+diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
+index fcccb45c43a1c..27340418c363d 100644
+--- a/third_party/unrar/src/strfn.cpp
++++ b/third_party/unrar/src/strfn.cpp
+@@ -356,8 +356,8 @@ void fmtitoa(int64 n, wchar* Str, size_t MaxSize) {
+   static wchar ThSep = 0;  // Thousands separator.
+ #ifdef _WIN_ALL
+   wchar Info[10];
+-  if (!ThSep != 0 && GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, Info,
+-                                   ASIZE(Info)) > 0) {
++  if ((!ThSep) != 0 && GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND,
++                                     Info, ASIZE(Info)) > 0) {
+     ThSep = *Info;
+   }
+ #elif defined(_UNIX)
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 641f6c892a3f3..48d7bb2fc44e7 100644
+index 9e1b9a2b9f13b..255fa742af4c1 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
-@@ -576,7 +576,6 @@ int64 atoilw(const wchar *s)
+@@ -573,7 +573,6 @@ int64 atoilw(const wchar *s)
  
  
  #ifdef DBCS_SUPPORTED
@@ -643,7 +618,7 @@ index 641f6c892a3f3..48d7bb2fc44e7 100644
  
  SupportDBCS::SupportDBCS()
  {
-@@ -593,6 +592,11 @@ void SupportDBCS::Init()
+@@ -590,6 +589,11 @@ void SupportDBCS::Init()
      IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
  }
  
@@ -656,42 +631,29 @@ index 641f6c892a3f3..48d7bb2fc44e7 100644
  char* SupportDBCS::charnext(const char *s)
  {
 diff --git a/third_party/unrar/src/unicode.hpp b/third_party/unrar/src/unicode.hpp
-index 031ac09ab94b6..c66cc95a34cc3 100644
+index 9bfd9c5dcd2b6..67689a7c6826c 100644
 --- a/third_party/unrar/src/unicode.hpp
 +++ b/third_party/unrar/src/unicode.hpp
-@@ -33,6 +33,7 @@ class SupportDBCS
-   public:
+@@ -34,14 +34,14 @@ class SupportDBCS
      SupportDBCS();
      void Init();
-+    static SupportDBCS& GetInstance();
- 
      char* charnext(const char *s);
-     size_t strlend(const char *s);
-@@ -44,15 +45,13 @@ class SupportDBCS
++  static SupportDBCS& GetInstance();
+ 
+     bool IsLeadByte[256];
      bool DBCSMode;
  };
- 
 -extern SupportDBCS gdbcs;
--
+ 
 -inline char* charnext(const char *s) {return (char *)(gdbcs.DBCSMode ? gdbcs.charnext(s):s+1);}
--inline size_t strlend(const char *s) {return (uint)(gdbcs.DBCSMode ? gdbcs.strlend(s):strlen(s));}
--inline char* strchrd(const char *s, int c) {return (char *)(gdbcs.DBCSMode ? gdbcs.strchrd(s,c):strchr(s,c));}
--inline char* strrchrd(const char *s, int c) {return (char *)(gdbcs.DBCSMode ? gdbcs.strrchrd(s,c):strrchr(s,c));}
--inline void copychrd(char *dest,const char *src) {if (gdbcs.DBCSMode) gdbcs.copychrd(dest,src); else *dest=*src;}
--inline bool IsDBCSMode() {return(gdbcs.DBCSMode);}
--inline void InitDBCS() {gdbcs.Init();}
+-inline bool IsDBCSMode() {return gdbcs.DBCSMode;}
 +inline char* charnext(const char *s) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().charnext(s):s+1);}
-+inline size_t strlend(const char *s) {return (uint)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strlend(s):strlen(s));}
-+inline char* strchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strchrd(s,c):strchr(s,c));}
-+inline char* strrchrd(const char *s, int c) {return (char *)(SupportDBCS::GetInstance().DBCSMode ? SupportDBCS::GetInstance().strrchrd(s,c):strrchr(s,c));}
-+inline void copychrd(char *dest,const char *src) {if (SupportDBCS::GetInstance().DBCSMode) SupportDBCS::GetInstance().copychrd(dest,src); else *dest=*src;}
-+inline bool IsDBCSMode() {return(SupportDBCS::GetInstance().DBCSMode);}
-+inline void InitDBCS() {SupportDBCS::GetInstance().Init();}
++inline bool IsDBCSMode() {return SupportDBCS::GetInstance().DBCSMode;}
  
  #else
  #define charnext(s) ((s)+1)
 diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index 037c35546a894..7f579ff06ab38 100644
+index 872b228faa3c8..985a3ea3a465c 100644
 --- a/third_party/unrar/src/unpack.cpp
 +++ b/third_party/unrar/src/unpack.cpp
 @@ -1,3 +1,9 @@
@@ -741,38 +703,35 @@ index 037c35546a894..7f579ff06ab38 100644
    if (!Fragmented)
    {
 diff --git a/third_party/unrar/src/unpack50frag.cpp b/third_party/unrar/src/unpack50frag.cpp
-index 3c008ff245390..16d5b1c3d5ef3 100644
+index 7430a643e402f..4353071577f3f 100644
 --- a/third_party/unrar/src/unpack50frag.cpp
 +++ b/third_party/unrar/src/unpack50frag.cpp
-@@ -46,8 +46,14 @@ void FragmentedWindow::Init(size_t WinSize)
-         break;
+@@ -1,3 +1,4 @@
++#include "base/process/memory.h"
+ FragmentedWindow::FragmentedWindow()
+ {
+   memset(Mem,0,sizeof(Mem));
+@@ -47,7 +48,11 @@ void FragmentedWindow::Init(size_t WinSize)
        Size-=Size/32;
      }
--    if (NewMem==NULL)
-+    if (NewMem == NULL)
-+    {
+     if (NewMem == NULL) {
 +#if defined(UNRAR_NO_EXCEPTIONS)
 +      base::TerminateBecauseOutOfMemory(Size);
 +#else
        throw std::bad_alloc();
 +#endif  // defined(UNRAR_NO_EXCEPTIONS)
-+    }
+     }
  
      // Clean the window to generate the same output when unpacking corrupt
-     // RAR files, which may access to unused areas of sliding dictionary.
-@@ -58,8 +64,14 @@ void FragmentedWindow::Init(size_t WinSize)
-     MemSize[BlockNum]=TotalSize;
+@@ -60,7 +65,11 @@ void FragmentedWindow::Init(size_t WinSize)
      BlockNum++;
    }
--  if (TotalSize<WinSize) // Not found enough free blocks.
-+  if (TotalSize < WinSize)  // Not found enough free blocks.
-+  {
+   if (TotalSize < WinSize) {  // Not found enough free blocks.
 +#if defined(UNRAR_NO_EXCEPTIONS)
 +    base::TerminateBecauseOutOfMemory(WinSize);
 +#else
      throw std::bad_alloc();
 +#endif  // defined(UNRAR_NO_EXCEPTIONS)
-+  }
+   }
  }
- 
  

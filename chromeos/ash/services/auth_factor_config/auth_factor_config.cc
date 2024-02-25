@@ -4,27 +4,40 @@
 
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/feature_list.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
 
 AuthFactorConfig::AuthFactorConfig(
-    QuickUnlockStorageDelegate* quick_unlock_storage)
+    QuickUnlockStorageDelegate* quick_unlock_storage,
+    PrefService* local_state)
     : quick_unlock_storage_(quick_unlock_storage),
+      local_state_(local_state),
       auth_factor_editor_(UserDataAuthClient::Get()) {
-  DCHECK(quick_unlock_storage_);
+  CHECK(quick_unlock_storage_);
+  CHECK(local_state_);
 }
 
 AuthFactorConfig::~AuthFactorConfig() = default;
 
 // static
 void AuthFactorConfig::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior, false);
+  const bool default_for_enterprise = base::FeatureList::IsEnabled(
+      ash::features::kCryptohomeRecoveryByDefaultForEnterprise);
+  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior,
+                                default_for_enterprise);
 }
 
 void AuthFactorConfig::BindReceiver(
@@ -71,36 +84,42 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
                      std::move(ignore_param_callback), auth_token));
 }
 
+void AuthFactorConfig::OnUserHasKnowledgeFactor(const UserContext& context) {
+  if (add_knowledge_factor_callback_) {
+    std::move(add_knowledge_factor_callback_).Run();
+  }
+  if (skip_user_integrity_notification_.value_or(false)) {
+    return;
+  }
+  user_manager::UserDirectoryIntegrityManager(local_state_).ClearPrefs();
+}
+
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
-  UserContext* user_context;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid or expired auth token";
-      std::move(callback).Run(false);
-      return;
-    }
-    user_context = ash::AuthSessionStorage::Get()->Peek(auth_token);
-  } else {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (!user_context) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(false);
-      return;
-    }
+  ObtainContext(auth_token,
+                base::BindOnce(&AuthFactorConfig::IsSupportedWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, factor,
+                               std::move(callback)));
+}
+void AuthFactorConfig::IsSupportedWithContext(
+    const std::string& auth_token,
+    mojom::AuthFactor factor,
+    base::OnceCallback<void(bool)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid or expired auth token";
+    std::move(callback).Run(false);
+    return;
   }
+
   const cryptohome::AuthFactorsSet cryptohome_supported_factors =
-      user_context->GetAuthFactorsConfiguration().get_supported_factors();
+      context->GetAuthFactorsConfiguration().get_supported_factors();
+
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      if (!features::IsCryptohomeRecoveryEnabled()) {
-        std::move(callback).Run(false);
-        return;
-      }
-
       std::move(callback).Run(cryptohome_supported_factors.Has(
           cryptohome::AuthFactorType::kRecovery));
       return;
@@ -115,8 +134,7 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
       return;
     }
     case mojom::AuthFactor::kLocalPassword: {
-      std::move(callback).Run(
-          features::IsPasswordlessGaiaEnabledForConsumers());
+      std::move(callback).Run(features::AreLocalPasswordsEnabledForConsumers());
       return;
     }
   }
@@ -127,29 +145,27 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                     mojom::AuthFactor factor,
                                     base::OnceCallback<void(bool)> callback) {
-  UserContext* user_context;
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+  ObtainContext(auth_token,
+                base::BindOnce(&AuthFactorConfig::IsConfiguredWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, factor,
+                               std::move(callback)));
+}
 
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid or expired auth token";
-      std::move(callback).Run(false);
-      return;
-    }
-    user_context = ash::AuthSessionStorage::Get()->Peek(auth_token);
-  } else {
-    user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (!user_context) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(false);
-      return;
-    }
+void AuthFactorConfig::IsConfiguredWithContext(
+    const std::string& auth_token,
+    mojom::AuthFactor factor,
+    base::OnceCallback<void(bool)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid or expired auth token";
+    std::move(callback).Run(false);
+    return;
   }
-  const auto& config = user_context->GetAuthFactorsConfiguration();
+  const auto& config = context->GetAuthFactorsConfiguration();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       std::move(callback).Run(
           config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
       return;
@@ -160,7 +176,11 @@ void AuthFactorConfig::IsConfigured(const std::string& auth_token,
         std::move(callback).Run(true);
         return;
       }
-
+      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      if (!user) {
+        LOG(ERROR) << "No logged in user";
+        std::move(callback).Run(false);
+      }
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       if (!prefs) {
         LOG(ERROR) << "No pref service for user";
@@ -208,7 +228,6 @@ void AuthFactorConfig::GetManagementType(
     base::OnceCallback<void(mojom::ManagementType)> callback) {
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
@@ -249,9 +268,27 @@ void AuthFactorConfig::GetManagementType(
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
                                   mojom::AuthFactor factor,
                                   base::OnceCallback<void(bool)> callback) {
+  ObtainContext(auth_token,
+                base::BindOnce(&AuthFactorConfig::IsEditableWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, factor,
+                               std::move(callback)));
+}
+void AuthFactorConfig::IsEditableWithContext(
+    const std::string& auth_token,
+    mojom::AuthFactor factor,
+    base::OnceCallback<void(bool)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid or expired auth token";
+    std::move(callback).Run(false);
+    return;
+  }
+  const auto& config = context->GetAuthFactorsConfiguration();
+
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
   switch (factor) {
     case mojom::AuthFactor::kRecovery: {
-      DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
 
@@ -263,23 +300,6 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
         return;
       }
 
-      UserContext* user_context;
-      if (ash::features::ShouldUseAuthSessionStorage()) {
-        if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-          LOG(ERROR) << "Invalid or expired auth token";
-          std::move(callback).Run(false);
-          return;
-        }
-        user_context = ash::AuthSessionStorage::Get()->Peek(auth_token);
-      } else {
-        user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
-        if (!user_context) {
-          LOG(ERROR) << "Invalid auth token";
-          std::move(callback).Run(false);
-          return;
-        }
-      }
-      const auto& config = user_context->GetAuthFactorsConfiguration();
       const bool is_configured =
           config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
 
@@ -337,24 +357,40 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
   NOTREACHED();
 }
 
+void AuthFactorConfig::ObtainContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  ash::AuthSessionStorage::Get()->BorrowAsync(FROM_HERE, auth_token,
+                                              std::move(callback));
+}
+
 void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     AuthFactorSet changed_factors,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-  }
+    std::optional<AuthenticationError> error) {
+  bool has_knowledge_factor =
+      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword) ||
+      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPin);
+
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
   if (error.has_value()) {
     LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
                << error->get_cryptohome_code();
     std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    quick_unlock_storage_->SetUserContext(user, std::move(context));
+
+  if (has_knowledge_factor) {
+    OnUserHasKnowledgeFactor(*context);
   }
 
   std::move(callback).Run(mojom::ConfigureResult::kSuccess);
@@ -364,6 +400,16 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
       observer->OnFactorChanged(changed_factor);
     }
   }
+}
+
+void AuthFactorConfig::SetAddKnowledgeFactorCallbackForTesting(
+    base::OnceClosure callback) {
+  add_knowledge_factor_callback_ = std::move(callback);
+}
+
+void AuthFactorConfig::SetSkipUserIntegrityNotificationForTesting(
+    bool skip_notification) {
+  skip_user_integrity_notification_ = skip_notification;
 }
 
 }  // namespace ash::auth

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "StartupBrowserWindowLaunchSuppressed": false
+        },
+        "prefs": {
+          "startup_browser_window_launch_suppressed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

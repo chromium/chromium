@@ -18,7 +18,6 @@ Storage
   IndexedDB
     Database1
   Web SQL
-    database-for-test
   Cookies
     http://127.0.0.1:8000
   Private state tokens
@@ -36,14 +35,14 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
-Preloading
-  Speculation rules
-  Preloads
+Speculative loads
+  Rules
+  Speculations
   This page
 Frames
   top
     inspected-page.html
-Visible view is a query view: true
+Visible view is a query view: false
 Page reloaded.
 After navigation:
 Application
@@ -80,9 +79,9 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
-Preloading
-  Speculation rules
-  Preloads
+Speculative loads
+  Rules
+  Speculations
   This page
 Frames
   top

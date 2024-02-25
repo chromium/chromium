@@ -16,9 +16,11 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
@@ -45,7 +47,6 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
@@ -69,7 +70,7 @@ struct HostResolverEndpointResult;
 class NetLog;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
-class QuicStreamFactory;
+class QuicSessionPool;
 class SSLConfigService;
 class SSLInfo;
 class TransportSecurityState;
@@ -150,6 +151,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate {
  public:
+  // Sets a callback that is called in the middle of a connection migration.
+  // Only for testing.
+  static void SetMidMigrationCallbackForTesting(base::OnceClosure callback);
+
   class StreamRequest;
 
   // An interface that when implemented and added via
@@ -265,7 +270,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     bool WasEverUsed() const;
 
     // Retrieves any DNS aliases for the given session key from the map stored
-    // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+    // in `session_pool_`. Includes all known aliases, e.g. from A, AAAA, or
     // HTTPS, not just from the address used for the connection, in no
     // particular order.
     const std::set<std::string>& GetDnsAliasesForSessionKey(
@@ -332,7 +337,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicServerId server_id_;
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
-    raw_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
     bool was_ever_used_ = false;
   };
@@ -425,7 +429,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
         const quic::QuicSocketAddress& self_address,
         const quic::QuicSocketAddress& peer_address,
         handles::NetworkHandle network,
-        std::unique_ptr<DatagramClientSocket> socket,
         std::unique_ptr<QuicChromiumPacketWriter> writer,
         std::unique_ptr<QuicChromiumPacketReader> reader);
     ~QuicChromiumPathValidationContext() override;
@@ -435,12 +438,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
     // Transfer the ownership from |this| to the caller.
     std::unique_ptr<QuicChromiumPacketWriter> ReleaseWriter();
-    std::unique_ptr<DatagramClientSocket> ReleaseSocket();
     std::unique_ptr<QuicChromiumPacketReader> ReleaseReader();
 
    private:
     handles::NetworkHandle network_handle_;
-    std::unique_ptr<DatagramClientSocket> socket_;
     std::unique_ptr<QuicChromiumPacketWriter> writer_;
     std::unique_ptr<QuicChromiumPacketReader> reader_;
   };
@@ -546,7 +547,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   };
 
   // Constructs a new session which will own |connection|, but not
-  // |stream_factory|, which must outlive this session.
+  // |session_pool|, which must outlive this session.
   // TODO(rch): decouple the factory from the session via a Delegate interface.
   //
   // If |require_confirmation| is true, the returned session will wait for a
@@ -557,7 +558,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   QuicChromiumClientSession(
       quic::QuicConnection* connection,
       std::unique_ptr<DatagramClientSocket> socket,
-      QuicStreamFactory* stream_factory,
+      QuicSessionPool* session_pool,
       QuicCryptoClientStreamFactory* crypto_client_stream_factory,
       const quic::QuicClock* clock,
       TransportSecurityState* transport_security_state,
@@ -572,6 +573,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool migrate_idle_session,
       bool allow_port_migration,
       base::TimeDelta idle_migration_period,
+      int multi_port_probing_interval,
       base::TimeDelta max_time_on_non_default_network,
       int max_migrations_to_non_default_network_on_write_error,
       int max_migrations_to_non_default_network_on_path_degrading,
@@ -582,7 +584,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
-      std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -640,7 +641,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<DatagramClientSocket> socket,
       std::unique_ptr<QuicChromiumPacketWriter> writer,
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
@@ -648,7 +648,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<DatagramClientSocket> socket,
       std::unique_ptr<QuicChromiumPacketWriter> writer,
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
@@ -656,7 +655,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<DatagramClientSocket> socket,
       std::unique_ptr<QuicChromiumPacketWriter> writer,
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
@@ -778,7 +776,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // (its own hostname and port fields are ignored). If this is a secure QUIC
   // session, then |hostname| must match the certificate presented during the
   // handshake.
-  bool CanPool(const std::string& hostname,
+  bool CanPool(std::string_view hostname,
                const QuicSessionKey& other_session_key) const;
 
   const quic::QuicServerId& server_id() const {
@@ -830,7 +828,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // and |writer|.
   bool MigrateToSocket(const quic::QuicSocketAddress& self_address,
                        const quic::QuicSocketAddress& peer_address,
-                       std::unique_ptr<DatagramClientSocket> socket,
                        std::unique_ptr<QuicChromiumPacketReader> reader,
                        std::unique_ptr<QuicChromiumPacketWriter> writer);
 
@@ -867,8 +864,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // handles::kInvalidNetworkHandle.
   handles::NetworkHandle GetCurrentNetwork() const;
 
-  bool IsAuthorized(const std::string& hostname) override;
-
   // Override to validate |server_preferred_address| on a different socket.
   // Migrates to this address on validation succeeds.
   void OnServerPreferredAddressAvailable(
@@ -881,7 +876,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool require_confirmation() const { return require_confirmation_; }
 
   // Retrieves any DNS aliases for the given session key from the map stored
-  // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+  // in `session_pool_`. Includes all known aliases, e.g. from A, AAAA, or
   // HTTPS, not just from the address used for the connection, in no particular
   // order.
   const std::set<std::string>& GetDnsAliasesForSessionKey(
@@ -901,7 +896,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
  private:
   friend class test::QuicChromiumClientSessionPeer;
 
-  typedef std::set<Handle*> HandleSet;
+  typedef std::set<raw_ptr<Handle, SetExperimental>> HandleSet;
   typedef std::list<StreamRequest*> StreamRequestQueue;
 
   bool WasConnectionEverUsed();
@@ -1058,14 +1053,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_;
 
   std::unique_ptr<quic::QuicCryptoClientStream> crypto_stream_;
-  raw_ptr<QuicStreamFactory> stream_factory_;
+  raw_ptr<QuicSessionPool> session_pool_;
   base::ObserverList<ConnectivityObserver> connectivity_observer_list_;
-  std::vector<std::unique_ptr<DatagramClientSocket>> sockets_;
+  std::vector<std::unique_ptr<QuicChromiumPacketReader>> packet_readers_;
   raw_ptr<TransportSecurityState> transport_security_state_;
   raw_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<QuicServerInfo> server_info_;
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
-  std::string pinning_failure_log_;
   bool pkp_bypassed_ = false;
   bool is_fatal_cert_error_ = false;
   HandleSet handles_;
@@ -1075,7 +1069,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   size_t num_total_streams_ = 0;
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   NetLogWithSource net_log_;
-  std::vector<std::unique_ptr<QuicChromiumPacketReader>> packet_readers_;
   LoadTimingInfo::ConnectTiming connect_timing_;
   std::unique_ptr<QuicConnectionLogger> logger_;
   std::unique_ptr<QuicHttp3Logger> http3_logger_;
@@ -1116,8 +1109,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   quic::KeyUpdateReason last_key_update_reason_ =
       quic::KeyUpdateReason::kInvalid;
 
-  std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
-
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
   // Map of origin to Accept-CH header field values received via ALPS.
@@ -1128,6 +1119,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
+
+namespace features {
+
+// When enabled, network disconnect signals don't trigger immediate migration
+// when there is an ongoing migration with probing.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kQuicMigrationIgnoreDisconnectSignalDuringProbing);
+
+}  // namespace features
 
 }  // namespace net
 

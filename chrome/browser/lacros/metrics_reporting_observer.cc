@@ -15,6 +15,30 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 
+namespace {
+
+// Called within Lacros after startup to delay the metrics enablement change as
+// turning off the metric might be a fluke, but disabling would cause the
+// entropy value to change, which will result in a metrics package loss.
+void ChangeMetricsReportingStateOnLacrosStart() {
+  // We should not call the function |ChangeMetricsReportingState| if nothing
+  // has changed.
+  const bool new_enabled =
+      chromeos::BrowserParamsProxy::Get()->AshMetricsEnabled();
+  const bool old_enabled = g_browser_process->local_state()->GetBoolean(
+      metrics::prefs::kMetricsReportingEnabled);
+
+  if (new_enabled == old_enabled) {
+    return;
+  }
+
+  ChangeMetricsReportingState(
+      new_enabled,
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsInitializedFromAsh);
+}
+
+}  // namespace
+
 class MetricsServiceProxyImpl
     : public MetricsReportingObserver::MetricsServiceProxy {
  public:
@@ -73,14 +97,12 @@ void MetricsReportingObserver::InitSettingsFromAsh() {
     return;
   }
 
-  // Set the initial state.
-  ChangeMetricsReportingState(
-      chromeos::BrowserParamsProxy::Get()->AshMetricsEnabled());
+  ChangeMetricsReportingStateOnLacrosStart();
 }
 
 void MetricsReportingObserver::OnMetricsReportingChanged(
     bool enabled,
-    const absl::optional<std::string>& client_id) {
+    const std::optional<std::string>& client_id) {
   if (enabled) {
     if (client_id) {
       metrics_service_->SetExternalClientId(client_id.value());

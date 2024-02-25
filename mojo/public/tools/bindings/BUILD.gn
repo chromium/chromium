@@ -11,13 +11,17 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/cpp_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/enum_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/enum_serialization_declaration.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/feature_declaration.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/feature_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_definition.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/interface_feature_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_proxy_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_request_validator_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_response_validator_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_stub_declaration.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/module-features.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-forward.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-import-headers.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-params-data.h.tmpl",
@@ -93,9 +97,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/struct_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/union_definition.tmpl",
-    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_impl.cc.tmpl",
-    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_impl.h.tmpl",
-    "$mojom_generator_root/generators/webui_js_bridge_templates/webui_js_bridge_macros.tmpl",
   ]
   script = mojom_generator_script
 
@@ -103,7 +104,6 @@ action("precompile_templates") {
   outputs = [
     "$target_gen_dir/cpp_templates.zip",
     "$target_gen_dir/java_templates.zip",
-    "$target_gen_dir/webui_js_bridge_templates.zip",
     "$target_gen_dir/js_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
     "$target_gen_dir/ts_templates.zip",
@@ -120,6 +120,7 @@ group("tests") {
   data = [
     mojom_generator_script,
     "checks/mojom_attributes_check_unittest.py",
+    "checks/mojom_interface_feature_check_unittest.py",
     "checks/mojom_restrictions_checks_unittest.py",
     "mojom_bindings_generator_unittest.py",
     "//tools/diagnosis/crbug_1001171.py",

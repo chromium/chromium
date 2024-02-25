@@ -259,4 +259,38 @@
      "Array iteration should respect new length");
  }, "Array to sequence<> conversions with length decrease during iteration");
 
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const elems = [
+     document.createElement('div'),
+     document.createElement('div'),
+     document.createElement('div'),
+     document.createElement('div'),
+   ];
+   sequenceTest.setElementSequence(elems);
+   assert_array_equals(sequenceTest.getElementSequence(), elems,
+                      "Sequence items are properly converted");
+ }, "Array to sequence<> conversions with homogenous ScriptWrappable types");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const elem1 = document.createElement('br');
+   elem1["my_property"] = "foo";
+   const elems = [
+     document.createElement('div'),
+     elem1,
+     document.createElement('div'),
+     document.createElement('span'),
+   ];
+   sequenceTest.setElementSequence(elems);
+   assert_array_equals(sequenceTest.getElementSequence(), elems,
+                      "Different types dervied from Element are properly converted");
+   const node = document.createTextNode("node");
+   assert_throws_js(TypeError, () => { sequenceTest.setElementSequence([...elems, node]) },
+                    "Invalid types cause exceptions");
+   assert_throws_js(TypeError, () => { sequenceTest.setElementSequence([...elems, 1]) },
+                    "Invalid types cause exceptions");
+ }, "Array to sequence<> conversions with heterogeneous ScriptWrappable types");
 </script>

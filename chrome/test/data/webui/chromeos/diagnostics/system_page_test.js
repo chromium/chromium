@@ -4,8 +4,8 @@
 
 import 'chrome://diagnostics/strings.m.js';
 import 'chrome://diagnostics/system_page.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';

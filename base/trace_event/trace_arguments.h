@@ -267,13 +267,6 @@ union BASE_EXPORT TraceValue {
  private:
   void Append(unsigned char type, bool as_json, std::string* out) const;
 
-  // InnerType<T>::type removes reference, cv-qualifications and decays
-  // function and arrays into pointers. Only used internally.
-  template <typename T>
-  struct InnerType {
-    using type = std::decay_t<T>;
-  };
-
  public:
   // TraceValue::Helper is used to provide information about initialization
   // value types and an initialization function. It is a struct that should
@@ -285,7 +278,7 @@ union BASE_EXPORT TraceValue {
   //        TraceValue value from a given T value. Second parameter type
   //        can also be const T& or T&& to restrict uses.
   //
-  // IMPORTANT: The type T must be InnerType<Q>, where Q is the real C++
+  // IMPORTANT: The type T must be std::decay_t<Q>, where Q is the real C++
   // argument type. I.e. you should not have to deal with reference types
   // in your specialization.
   //
@@ -316,21 +309,8 @@ union BASE_EXPORT TraceValue {
   struct Helper {};
 
   template <typename T>
-  struct HasHelperSupport {
-   private:
-    using Yes = char[1];
-    using No = char[2];
-
-    template <typename V>
-    static Yes& check_support(
-        decltype(TraceValue::Helper<typename InnerType<V>::type>::kType,
-                 int()));
-    template <typename V>
-    static No& check_support(...);
-
-   public:
-    static constexpr bool value = sizeof(Yes) == sizeof(check_support<T>(0));
-  };
+  static constexpr bool HasHelperSupport =
+      requires { TraceValue::Helper<std::decay_t<T>>::kType; };
 
   // TraceValue::TypeFor<T>::value returns the TRACE_VALUE_TYPE_XXX
   // corresponding to initialization values of type T.
@@ -338,18 +318,15 @@ union BASE_EXPORT TraceValue {
   struct TypeFor;
 
   template <typename T>
-  struct TypeFor<T,
-                 typename std::enable_if<HasHelperSupport<
-                     typename InnerType<T>::type>::value>::type> {
-    using ValueType = typename InnerType<T>::type;
+  struct TypeFor<T, std::enable_if_t<HasHelperSupport<T>>> {
+    using ValueType = std::decay_t<T>;
     static const unsigned char value = Helper<ValueType>::kType;
   };
   template <typename T>
   struct TypeFor<T,
-                 typename std::enable_if<
-                     !HasHelperSupport<typename InnerType<T>::type>::value &&
-                     perfetto::internal::has_traced_value_support<
-                         typename InnerType<T>::type>::value>::type> {
+                 std::enable_if_t<!HasHelperSupport<T> &&
+                                  perfetto::internal::has_traced_value_support<
+                                      std::decay_t<T>>::value>> {
     static const unsigned char value = TRACE_VALUE_TYPE_PROTO;
   };
 
@@ -357,11 +334,11 @@ union BASE_EXPORT TraceValue {
   // initialize a TraceValue instance. This is useful to restrict template
   // instantiation to only the appropriate type (see TraceArguments
   // constructors below).
-  template <typename T,
-            class = std::enable_if_t<
-                HasHelperSupport<typename InnerType<T>::type>::value ||
-                perfetto::internal::has_traced_value_support<
-                    typename InnerType<T>::type>::value>>
+  template <
+      typename T,
+      class = std::enable_if_t<
+          HasHelperSupport<T> ||
+          perfetto::internal::has_traced_value_support<std::decay_t<T>>::value>>
   struct TypeCheck {
     static const bool value = true;
   };
@@ -380,18 +357,15 @@ union BASE_EXPORT TraceValue {
   //
   // NOTE: For ConvertableToTraceFormat values, see the notes above.
   template <class T>
-  typename std::enable_if<
-      HasHelperSupport<typename InnerType<T>::type>::value>::type
-  Init(T&& value) {
-    using ValueType = typename InnerType<T>::type;
+  std::enable_if_t<HasHelperSupport<T>> Init(T&& value) {
+    using ValueType = std::decay_t<T>;
     Helper<ValueType>::SetValue(this, std::forward<T>(value));
   }
 
   template <class T>
-  typename std::enable_if<
-      !HasHelperSupport<typename InnerType<T>::type>::value &&
-      perfetto::internal::has_traced_value_support<
-          typename InnerType<T>::type>::value>::type
+  std::enable_if_t<
+      !HasHelperSupport<T> &&
+      perfetto::internal::has_traced_value_support<std::decay_t<T>>::value>
   Init(T&& value) {
     as_proto = new protozero::HeapBuffered<
         perfetto::protos::pbzero::DebugAnnotation>();
@@ -403,12 +377,10 @@ union BASE_EXPORT TraceValue {
 
 // TraceValue::Helper for integers and enums.
 template <typename T>
-struct TraceValue::Helper<
-    T,
-    typename std::enable_if<std::is_integral<T>::value ||
-                            std::is_enum<T>::value>::type> {
+struct TraceValue::
+    Helper<T, std::enable_if_t<std::is_integral_v<T> || std::is_enum_v<T>>> {
   static constexpr unsigned char kType =
-      std::is_signed<T>::value ? TRACE_VALUE_TYPE_INT : TRACE_VALUE_TYPE_UINT;
+      std::is_signed_v<T> ? TRACE_VALUE_TYPE_INT : TRACE_VALUE_TYPE_UINT;
   static inline void SetValue(TraceValue* v, T value) {
     v->as_uint = static_cast<unsigned long long>(value);
   }
@@ -416,8 +388,7 @@ struct TraceValue::Helper<
 
 // TraceValue::Helper for floating-point types
 template <typename T>
-struct TraceValue::
-    Helper<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
+struct TraceValue::Helper<T, std::enable_if_t<std::is_floating_point_v<T>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_DOUBLE;
   static inline void SetValue(TraceValue* v, T value) { v->as_double = value; }
 };
@@ -470,10 +441,10 @@ struct TraceValue::Helper<std::string> {
 // IMPORTANT: This takes an std::unique_ptr<CONVERTABLE_TYPE> value, and takes
 // ownership of the pointed object!
 template <typename CONVERTABLE_TYPE>
-struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
-                          typename std::enable_if<std::is_convertible<
-                              CONVERTABLE_TYPE*,
-                              ConvertableToTraceFormat*>::value>::type> {
+struct TraceValue::Helper<
+    std::unique_ptr<CONVERTABLE_TYPE>,
+    std::enable_if_t<
+        std::is_convertible_v<CONVERTABLE_TYPE*, ConvertableToTraceFormat*>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_CONVERTABLE;
   static inline void SetValue(TraceValue* v,
                               std::unique_ptr<CONVERTABLE_TYPE> value) {
@@ -486,9 +457,9 @@ struct TraceValue::Helper<std::unique_ptr<CONVERTABLE_TYPE>,
 template <typename T>
 struct TraceValue::Helper<
     T,
-    typename std::enable_if<std::is_same<T, base::Time>::value ||
-                            std::is_same<T, base::TimeTicks>::value ||
-                            std::is_same<T, base::ThreadTicks>::value>::type> {
+    std::enable_if_t<std::is_same_v<T, base::Time> ||
+                     std::is_same_v<T, base::TimeTicks> ||
+                     std::is_same_v<T, base::ThreadTicks>>> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_INT;
   static inline void SetValue(TraceValue* v, const T& value) {
     v->as_int = value.ToInternalValue();
@@ -605,8 +576,7 @@ class BASE_EXPORT StringStorage {
   // enough, but the compiler will then complaing about inlined constructors
   // and destructors being too complex (!), resulting in larger code for no
   // good reason.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
+  // RAW_PTR_EXCLUSION: As above, inlining bloats code for no good reason.
   RAW_PTR_EXCLUSION Data* data_ = nullptr;
 };
 

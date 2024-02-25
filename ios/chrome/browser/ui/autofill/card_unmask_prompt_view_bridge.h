@@ -5,22 +5,27 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
 @class CardUnmaskPromptViewController;
 @class UIViewController;
 @class UINavigationController;
+@class CreditCardData;
+@class UIImage;
 
 namespace autofill {
 
 class CardUnmaskPromptController;
+class PersonalDataManager;
 
 // iOS implementation of the unmask prompt UI.
 class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
   CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
-                             UIViewController* base_view_controller);
+                             UIViewController* base_view_controller,
+                             PersonalDataManager* personal_data_manager);
   CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
   CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
       delete;
@@ -43,6 +48,8 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // This call destroys `this`.
   void NavigationControllerDismissed();
 
+  CreditCardData* credit_card_data() { return credit_card_data_; }
+
  protected:
   // The presented UINavigationController containing `prompt_view_controller_`.
   UINavigationController* navigation_controller_;
@@ -51,15 +58,21 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   CardUnmaskPromptViewController* prompt_view_controller_;
 
   // The controller `this` queries for logic and state.
-  CardUnmaskPromptController* controller_;  // weak
+  raw_ptr<CardUnmaskPromptController> controller_;  // weak
 
  private:
   // Deletes self. Called after CardUnmaskPromptViewController finishes
   // dismissing its own UI elements.
   void DeleteSelf();
 
+  UIImage* GetCardIcon();
+
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;
+
+  raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  CreditCardData* credit_card_data_;
 
   base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
 };

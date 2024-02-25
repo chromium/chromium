@@ -235,8 +235,7 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
                                          true /*overwrite*/);
   }
   request->Start();
-
-  base::RunLoop().Run();
+  delegate_.RunUntilComplete();
 }
 
 // Helper function to make a character array filled with |size| bytes of
@@ -290,7 +289,7 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, DecodeSvgzFile) {
 
 TEST_F(URLRequestTestJobBackedByFileEventsTest, OpenNonExistentFile) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(
       FILE_PATH_LITERAL("net/data/url_request_unittest/non-existent.txt"));
 
@@ -308,7 +307,7 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, OpenNonExistentFile) {
 
 TEST_F(URLRequestTestJobBackedByFileEventsTest, MultiRangeRequestNotSupported) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(
       FILE_PATH_LITERAL("net/data/url_request_unittest/BullRunSpeech.txt"));
 
@@ -327,7 +326,7 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, MultiRangeRequestNotSupported) {
 
 TEST_F(URLRequestTestJobBackedByFileEventsTest, RangeExceedingFileSize) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(
       FILE_PATH_LITERAL("net/data/url_request_unittest/BullRunSpeech.txt"));
 
@@ -346,7 +345,7 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, RangeExceedingFileSize) {
 
 TEST_F(URLRequestTestJobBackedByFileEventsTest, IgnoreRangeParsingError) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(
       FILE_PATH_LITERAL("net/data/url_request_unittest/simple.html"));
 

@@ -54,11 +54,6 @@ class ProfileHelper {
       const std::string& user_id_hash);
 
   // DEPRECATED: Please use
-  // ash::BrowserContextHelper::GetSigninBrowserContextPath() instead.
-  // Returns the path that corresponds to the sign-in profile.
-  static base::FilePath GetSigninProfileDir();
-
-  // DEPRECATED: Please use
   // ash::BrowserContextHelper::GetSigninBrowserContext() instead.
   // Returns OffTheRecord profile for use during signing phase.
   static Profile* GetSigninProfile();
@@ -79,11 +74,6 @@ class ProfileHelper {
   // construction of the signin Profile to determine if that Profile is the
   // signin Profile.
   static bool IsSigninProfile(const Profile* profile);
-
-  // DEPRECATED. Please use ash::GetSigninBrowserContext() and see if it
-  // returns non-nullptr, instead.
-  // Returns true if the signin profile has been initialized.
-  static bool IsSigninProfileInitialized();
 
   // DEPRECATED. Please use
   // ash::BrowserContextHelper::GetLockScreenAppBrowserContextPath() instead.
@@ -176,17 +166,17 @@ class ProfileHelper {
   virtual void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                                  Profile* profile) = 0;
 
+  // Enables/disables testing code path in GetUserByProfile() like
+  // always return primary user (when always_return_primary_user_for_testing is
+  // set).
+  static void SetProfileToUserForTestingEnabled(bool enabled);
+
  protected:
   // TODO(nkostylev): Create a test API class that will be the only one allowed
   // to access private test methods.
   friend class FakeChromeUserManager;
   friend class ProfileHelperTest;
   friend class ::IndependentOTRProfileManagerTest;
-
-  // Enables/disables testing code path in GetUserByProfile() like
-  // always return primary user (when always_return_primary_user_for_testing is
-  // set).
-  static void SetProfileToUserForTestingEnabled(bool enabled);
 
   // If true testing code path is used in GetUserByProfile() even if
   // user_list_for_testing_ list is empty. In that case primary user will always

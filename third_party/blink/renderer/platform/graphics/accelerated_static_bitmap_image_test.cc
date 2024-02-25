@@ -65,7 +65,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
     auto gl = std::make_unique<MockGLES2InterfaceWithSyncTokenSupport>();
     gl_ = gl.get();
     context_provider_ = viz::TestContextProvider::Create(std::move(gl));
-    InitializeSharedGpuContext(context_provider_.get());
+    InitializeSharedGpuContextGLES2(context_provider_.get());
   }
   void TearDown() override {
     gl_ = nullptr;

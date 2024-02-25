@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -34,7 +33,9 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -89,13 +90,20 @@ bool IsMetricEventOfType(MetricEventType metric_event_type,
 // use of `AffiliationMixin` for setting up profile/device affiliation. Only
 // available in Ash.
 class AppEventsObserverBrowserTest
-    : public ::policy::DevicePolicyCrosBrowserTest {
+    : public ::policy::DevicePolicyCrosBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   AppEventsObserverBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     ::policy::SetDMTokenForTesting(
         ::policy::DMToken::CreateValidToken(kDMToken));
-    scoped_feature_list_.InitAndEnableFeature(kEnableAppEventsObserver);
+    if (IsAppStorageEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {kEnableAppEventsObserver, ::apps::kAppServiceStorage}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({kEnableAppEventsObserver},
+                                            {::apps::kAppServiceStorage});
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -105,7 +113,7 @@ class AppEventsObserverBrowserTest
   }
 
   // Helper that installs a standalone webapp with the specified start url.
-  ::web_app::AppId InstallStandaloneWebApp(const GURL& start_url) {
+  ::webapps::AppId InstallStandaloneWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -116,7 +124,7 @@ class AppEventsObserverBrowserTest
   }
 
   // Helper that uninstalls the standalone webapp with the specified app id.
-  void UninstallStandaloneWebApp(const ::web_app::AppId& app_id) {
+  void UninstallStandaloneWebApp(const ::webapps::AppId& app_id) {
     ::apps::AppServiceProxyFactory::GetForProfile(profile())->UninstallSilently(
         app_id, ::apps::UninstallSource::kAppList);
   }
@@ -130,6 +138,8 @@ class AppEventsObserverBrowserTest
                                    std::move(allowed_app_types));
   }
 
+  bool IsAppStorageEnabled() const { return GetParam(); }
+
   Profile* profile() const {
     return ash::ProfileHelper::Get()->GetProfileByAccountId(
         affiliation_mixin_.account_id());
@@ -141,13 +151,13 @@ class AppEventsObserverBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, PRE_ReportInstalledApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, PRE_ReportInstalledApp) {
   // Set up affiliated user.
   ::policy::AffiliationTestHelper::PreLoginUser(
       affiliation_mixin_.account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportInstalledApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, ReportInstalledApp) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
@@ -176,49 +186,61 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportInstalledApp) {
   EXPECT_THAT(
       app_install_data.app_install_time(),
       Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_RUNNING));
-  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              Contains(app_id).Times(1));
+  if (!IsAppStorageEnabled()) {
+    EXPECT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        Contains(app_id).Times(1));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest,
                        PRE_PRE_ReportPreinstalledApp) {
   // Set up affiliated user.
   ::policy::AffiliationTestHelper::PreLoginUser(
       affiliation_mixin_.account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest,
                        PRE_ReportPreinstalledApp) {
   // Login as affiliated user and install app before closing the session.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
-  ASSERT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              Contains(app_id).Times(1));
+  if (!IsAppStorageEnabled()) {
+    ASSERT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        Contains(app_id).Times(1));
+  }
   ::ash::Shell::Get()->session_controller()->RequestSignOut();
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportPreinstalledApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, ReportPreinstalledApp) {
   ::chromeos::MissiveClientTestObserver missive_observer(base::BindRepeating(
       &IsMetricEventOfType, MetricEventType::APP_INSTALLED));
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
-  ASSERT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              SizeIs(1));
+  if (!IsAppStorageEnabled()) {
+    ASSERT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        SizeIs(1));
+  }
 
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   ::content::RunAllTasksUntilIdle();
-  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
-  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              Contains(app_id).Times(1));
+  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
+  if (!IsAppStorageEnabled()) {
+    EXPECT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        Contains(app_id).Times(1));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, PRE_ReportLaunchedApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, PRE_ReportLaunchedApp) {
   // Set up affiliated user.
   ::policy::AffiliationTestHelper::PreLoginUser(
       affiliation_mixin_.account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
@@ -244,20 +266,24 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
               Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, PRE_ReportUninstalledApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, PRE_ReportUninstalledApp) {
   // Set up affiliated user.
   ::policy::AffiliationTestHelper::PreLoginUser(
       affiliation_mixin_.account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportUninstalledApp) {
+IN_PROC_BROWSER_TEST_P(AppEventsObserverBrowserTest, ReportUninstalledApp) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
 
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
-  ASSERT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              Contains(app_id).Times(1));
+
+  if (!IsAppStorageEnabled()) {
+    ASSERT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        Contains(app_id).Times(1));
+  }
 
   ::chromeos::MissiveClientTestObserver missive_observer(base::BindRepeating(
       &IsMetricEventOfType, MetricEventType::APP_UNINSTALLED));
@@ -277,9 +303,14 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportUninstalledApp) {
   EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kWebAppUrl));
   EXPECT_THAT(app_uninstall_data.app_type(),
               Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
-  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-              Contains(app_id).Times(0));
+  if (!IsAppStorageEnabled()) {
+    EXPECT_THAT(
+        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+        Contains(app_id).Times(0));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AppEventsObserverBrowserTest, ::testing::Bool());
 
 }  // namespace
 }  // namespace reporting

@@ -188,10 +188,6 @@ bool HeadlessBrowserContextImpl::IsOffTheRecord() {
   return context_options_->incognito_mode();
 }
 
-content::ResourceContext* HeadlessBrowserContextImpl::GetResourceContext() {
-  return request_context_manager_->GetResourceContext();
-}
-
 content::DownloadManagerDelegate*
 HeadlessBrowserContextImpl::GetDownloadManagerDelegate() {
   return nullptr;
@@ -376,6 +372,13 @@ HeadlessBrowserContext::Builder&
 HeadlessBrowserContext::Builder::SetUserDataDir(
     const base::FilePath& user_data_dir) {
   options_->user_data_dir_ = user_data_dir;
+  return *this;
+}
+
+HeadlessBrowserContext::Builder&
+HeadlessBrowserContext::Builder::SetDiskCacheDir(
+    const base::FilePath& disk_cache_dir) {
+  options_->disk_cache_dir_ = disk_cache_dir;
   return *this;
 }
 

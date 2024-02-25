@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -22,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -42,21 +42,6 @@ bool AvailableInCurrentTimezoneLocale(
     }
   }
   return false;
-}
-
-absl::optional<std::vector<std::u16string>> GetPlatforms(
-    const apps::proto::App& app) {
-  if (app.available_stores_size() == 0) {
-    return absl::nullopt;
-  }
-
-  std::vector<std::u16string> store_names;
-  for (const auto& store : app.available_stores()) {
-    if (!store.store_label().empty()) {
-      store_names.push_back(base::UTF8ToUTF16(store.store_label()));
-    }
-  }
-  return store_names;
 }
 
 std::string ReadFileToString(const base::FilePath& path) {
@@ -161,7 +146,7 @@ void GameFetcher::OnAppWithLocaleListUpdated(
   last_results_ = GetAppsForCurrentLocale(app_with_locale_list);
   std::map<std::string, Result*> map;
   for (auto& result : last_results_) {
-    map.emplace(result.GetAppId(), &result);
+    map.emplace(result.GetIconId(), &result);
   }
   app_id_to_result_ = map;
   result_callback_list_.Notify(last_results_);
@@ -176,9 +161,7 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     }
 
     auto extras = std::make_unique<GameExtras>(
-        GetPlatforms(app_with_locale.app()),
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
-        base::UTF8ToUTF16(app_with_locale.app().publisher_name()),
         base::FilePath(app_with_locale.app().icon_info().icon_path()),
         app_with_locale.app().icon_info().is_masking_allowed(),
         GURL(app_with_locale.app().deeplink()));

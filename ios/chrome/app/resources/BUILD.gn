@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/ios/asset_catalog.gni")
@@ -9,6 +10,7 @@ import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/app/resources/ios_chrome_repack.gni")
+import("//ios/chrome/features.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//tools/grit/grit_rule.gni")
@@ -30,8 +32,6 @@ grit("ios_resources") {
     "grit/ios_resources.h",
     "ios_resources.pak",
   ]
-
-  deps = [ "//components/ukm/debug:build_ts" ]
 }
 
 group("packed_resources") {
@@ -68,6 +68,7 @@ repack("repack_unscaled_resources") {
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
+    "$root_gen_dir/components/ukm_resources.pak",
     "$root_gen_dir/components/version_ui_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
@@ -83,6 +84,7 @@ repack("repack_unscaled_resources") {
     "//components/policy/resources/webui:resources",
     "//components/resources",
     "//components/sync/service/resources",
+    "//components/ukm/debug:resources",
     "//ios/web:resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
@@ -95,11 +97,11 @@ repack("repack_unscaled_resources") {
   if (use_blink) {
     sources += [
       "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
-      "$root_gen_dir/content/aggregation_service_internals_resources.pak",
       "$root_gen_dir/content/attribution_internals_resources.pak",
       "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
       "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
+      "$root_gen_dir/content/private_aggregation_internals_resources.pak",
       "$root_gen_dir/content/quota_internals_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
@@ -200,4 +202,38 @@ symbolset("quick_action_incognito") {
 
 group("quick_action_icons") {
   public_deps = [ ":quick_action_incognito" ]
+}
+
+tweak_info_plist("experimental_info_plist") {
+  info_plists = [ "Settings.bundle/Experimental.plist" ]
+  if (ios_enable_sandbox_dump) {
+    info_plists += [ "Settings.bundle/ExperimentalSandboxDump.plist" ]
+  }
+  info_plists += [ "Settings.bundle/ExperimentalFlags.plist" ]
+}
+
+bundle_data("settings_experimental_feed_refresh_plist") {
+  sources = [ "Settings.bundle/ExperimentalFeedRefresh.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
+bundle_data("settings_experimental_synctypeslist_plist") {
+  sources = [ "Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
+bundle_data("settings_resources_experimental_plist") {
+  public_deps = [
+    ":experimental_info_plist",
+    ":settings_experimental_feed_refresh_plist",
+    ":settings_experimental_synctypeslist_plist",
+  ]
+  sources = get_target_outputs(":experimental_info_plist")
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
+}
+
+bundle_data("settings_resources") {
+  public_deps = [ ":settings_resources_experimental_plist" ]
+  sources = [ "Settings.bundle/Root.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
 }

@@ -111,8 +111,7 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyWebView::GetSurfaceHandle() {
 
 scoped_refptr<gl::Presenter>
 SkiaOutputSurfaceDependencyWebView::CreatePresenter(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-    gl::GLSurfaceFormat format) {
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
   return nullptr;
 }
 scoped_refptr<gl::GLSurface>
@@ -139,12 +138,6 @@ void SkiaOutputSurfaceDependencyWebView::DidLoseContext(
     const GURL& active_url) {
   // No GpuChannelManagerDelegate here, so leave it no-op for now.
   LOG(ERROR) << "SkiaRenderer detected lost context.";
-}
-
-base::TimeDelta
-SkiaOutputSurfaceDependencyWebView::GetGpuBlockedTimeSinceLastSwap() {
-  // WebView doesn't track how long GPU thread was blocked
-  return base::TimeDelta();
 }
 
 void SkiaOutputSurfaceDependencyWebView::ScheduleDelayedGPUTaskFromGPUThread(

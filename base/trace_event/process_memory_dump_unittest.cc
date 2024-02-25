@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -19,7 +20,6 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -33,7 +33,7 @@ namespace trace_event {
 
 namespace {
 
-const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::DETAILED};
+const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::kDetailed};
 const char* const kTestDumpNameAllowlist[] = {
     "Allowlisted/TestName", "Allowlisted/TestName_0x?",
     "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
@@ -71,7 +71,7 @@ TEST(ProcessMemoryDumpTest, MoveConstructor) {
 
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad1"));
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad2"));
-  EXPECT_EQ(MemoryDumpLevelOfDetail::DETAILED,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed,
             pmd2.dump_args().level_of_detail);
   EXPECT_EQ(1u, pmd2.allocator_dumps_edges().size());
 
@@ -87,14 +87,14 @@ TEST(ProcessMemoryDumpTest, MoveAssignment) {
   pmd1.AddOwnershipEdge(MemoryAllocatorDumpGuid(42),
                         MemoryAllocatorDumpGuid(4242));
 
-  ProcessMemoryDump pmd2({MemoryDumpLevelOfDetail::BACKGROUND});
+  ProcessMemoryDump pmd2({MemoryDumpLevelOfDetail::kBackground});
   pmd2.CreateAllocatorDump("malloc");
 
   pmd2 = std::move(pmd1);
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad1"));
   EXPECT_EQ(1u, pmd2.allocator_dumps().count("mad2"));
   EXPECT_EQ(0u, pmd2.allocator_dumps().count("mad3"));
-  EXPECT_EQ(MemoryDumpLevelOfDetail::DETAILED,
+  EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed,
             pmd2.dump_args().level_of_detail);
   EXPECT_EQ(1u, pmd2.allocator_dumps_edges().size());
 
@@ -379,7 +379,7 @@ TEST(ProcessMemoryDumpTest, SharedMemoryOwnershipTest) {
 }
 
 TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
-  MemoryDumpArgs background_args = {MemoryDumpLevelOfDetail::BACKGROUND};
+  MemoryDumpArgs background_args = {MemoryDumpLevelOfDetail::kBackground};
   std::unique_ptr<ProcessMemoryDump> pmd(
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
@@ -443,7 +443,7 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
 }
 
 TEST(ProcessMemoryDumpTest, GuidsTest) {
-  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::DETAILED};
+  MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
 
   const auto process_token_one = UnguessableToken::Create();
   const auto process_token_two = UnguessableToken::Create();
@@ -489,7 +489,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   const size_t size1 = 5 * page_size;
   void* memory1 = Map(size1);
   memset(memory1, 0, size1);
-  absl::optional<size_t> res1 =
+  std::optional<size_t> res1 =
       ProcessMemoryDump::CountResidentBytes(memory1, size1);
   ASSERT_TRUE(res1.has_value());
   ASSERT_EQ(res1.value(), size1);
@@ -499,7 +499,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   const size_t kVeryLargeMemorySize = 15 * 1024 * 1024;
   void* memory2 = Map(kVeryLargeMemorySize);
   memset(memory2, 0, kVeryLargeMemorySize);
-  absl::optional<size_t> res2 =
+  std::optional<size_t> res2 =
       ProcessMemoryDump::CountResidentBytes(memory2, kVeryLargeMemorySize);
   ASSERT_TRUE(res2.has_value());
   ASSERT_EQ(res2.value(), kVeryLargeMemorySize);
@@ -522,7 +522,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kDirtyMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kDirtyMemorySize);
-    absl::optional<size_t> res1 =
+    std::optional<size_t> res1 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res1.has_value());
@@ -537,7 +537,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     base::WritableSharedMemoryMapping mapping =
         region.MapAt(page_size / 2, kDirtyMemorySize);
     memset(mapping.memory(), 0, kDirtyMemorySize);
-    absl::optional<size_t> res1 =
+    std::optional<size_t> res1 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res1.has_value());
@@ -551,7 +551,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
         base::WritableSharedMemoryRegion::Create(kVeryLargeMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kVeryLargeMemorySize);
-    absl::optional<size_t> res2 =
+    std::optional<size_t> res2 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res2.has_value());
@@ -564,7 +564,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kTouchedMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kTouchedMemorySize);
-    absl::optional<size_t> res3 =
+    std::optional<size_t> res3 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res3.has_value());

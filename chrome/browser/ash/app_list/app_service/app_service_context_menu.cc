@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
 
-#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/functional/bind.h"
@@ -16,9 +15,6 @@
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
-#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -33,7 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -45,15 +41,6 @@
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
-
-void RequestAppListSort(Profile* profile, ash::AppListSortOrder order) {
-  ChromeAppListModelUpdater* model_updater =
-      static_cast<ChromeAppListModelUpdater*>(
-          app_list::AppListSyncableServiceFactory::GetForProfile(profile)
-              ->GetModelUpdater());
-  model_updater->RequestAppListSort(order);
-}
-
 bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
   return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
 }
@@ -128,9 +115,8 @@ AppServiceContextMenu::AppServiceContextMenu(
     const std::string& app_id,
     AppListControllerDelegate* controller,
     ash::AppListItemContext item_context)
-    : AppContextMenu(delegate, profile, app_id, controller),
-      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
-      item_context_(item_context) {
+    : AppContextMenu(delegate, profile, app_id, controller, item_context),
+      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)) {
   proxy_->AppRegistryCache().ForOneApp(
       app_id, [this](const apps::AppUpdate& update) {
         app_type_ = apps_util::IsInstalled(update.Readiness())
@@ -255,20 +241,6 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
                    << " should not have a shutdown guest OS command.";
       }
       break;
-
-    case ash::REORDER_BY_NAME_ALPHABETICAL:
-      RequestAppListSort(profile(), ash::AppListSortOrder::kNameAlphabetical);
-      break;
-
-    case ash::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
-      RequestAppListSort(profile(),
-                         ash::AppListSortOrder::kNameReverseAlphabetical);
-      break;
-
-    case ash::REORDER_BY_COLOR:
-      RequestAppListSort(profile(), ash::AppListSortOrder::kColor);
-      break;
-
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
@@ -424,34 +396,7 @@ void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
     }
   }
 
-  const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
-  if (item_context_ == ash::AppListItemContext::kAppsGrid) {
-    reorder_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
-    // As all the options below are only for tests and are expected to change in
-    // the future, the strings are directly written as the parameters.
-    reorder_submenu_->AddItemWithIcon(
-        ash::REORDER_BY_NAME_ALPHABETICAL,
-        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME),
-        ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::REORDER_BY_NAME_ALPHABETICAL,
-                                  /*string_id=*/-1),
-            color_id));
-    reorder_submenu_->AddItemWithIcon(
-        ash::REORDER_BY_COLOR,
-        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR),
-        ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::REORDER_BY_COLOR, /*string_id=*/-1),
-            color_id));
-    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-
-    menu_model->AddSubMenuWithIcon(
-        ash::REORDER_SUBMENU,
-        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE),
-        reorder_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1),
-            color_id));
-  }
+  AddReorderMenuOption(menu_model.get());
 
   std::move(callback).Run(std::move(menu_model));
 }

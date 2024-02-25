@@ -62,6 +62,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   void SetSslEnd(base::TimeTicks);
   void SetPushStart(base::TimeTicks);
   void SetPushEnd(base::TimeTicks);
+  void SetDiscoveryTime(base::TimeTicks);
+  void SetResponseEnd(base::TimeTicks);
 
   base::TimeTicks DomainLookupStart() const { return domain_lookup_start_; }
   base::TimeTicks RequestTime() const { return request_time_; }
@@ -90,32 +92,13 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks SslEnd() const { return ssl_end_; }
   base::TimeTicks PushStart() const { return push_start_; }
   base::TimeTicks PushEnd() const { return push_end_; }
+  base::TimeTicks DiscoveryTime() const { return discovery_time_; }
+  base::TimeTicks ResponseEnd() const { return response_end_; }
 
   double CalculateMillisecondDelta(base::TimeTicks) const;
 
  private:
   ResourceLoadTiming();
-  ResourceLoadTiming(base::TimeTicks request_time,
-                     base::TimeTicks proxy_start,
-                     base::TimeTicks proxy_end,
-                     base::TimeTicks domain_lookup_start,
-                     base::TimeTicks domain_lookup_end,
-                     base::TimeTicks connect_start,
-                     base::TimeTicks connect_end,
-                     base::TimeTicks worker_start,
-                     base::TimeTicks worker_ready,
-                     base::TimeTicks worker_fetch_start,
-                     base::TimeTicks worker_respond_with_settled,
-                     base::TimeTicks send_start,
-                     base::TimeTicks send_end,
-                     base::TimeTicks receive_headers_start,
-                     base::TimeTicks receive_headers_end,
-                     base::TimeTicks receive_non_informational_headers_start,
-                     base::TimeTicks receive_early_hints_starts,
-                     base::TimeTicks ssl_start,
-                     base::TimeTicks ssl_end,
-                     base::TimeTicks push_start,
-                     base::TimeTicks push_end);
 
   // We want to present a unified timeline to Javascript. Using walltime is
   // problematic, because the clock may skew while resources load. To prevent
@@ -149,6 +132,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks ssl_end_;
   base::TimeTicks push_start_;
   base::TimeTicks push_end_;
+  base::TimeTicks discovery_time_;
+  base::TimeTicks response_end_;
 };
 
 }  // namespace blink

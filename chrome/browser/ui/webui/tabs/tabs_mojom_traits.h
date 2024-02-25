@@ -39,7 +39,11 @@ struct EnumTraits<tabs::mojom::TabAlertState, TabAlertState> {
              {TabAlertState::DESKTOP_CAPTURING,
               tabs::mojom::TabAlertState::kDesktopCapturing},
              {TabAlertState::VR_PRESENTING_IN_HEADSET,
-              tabs::mojom::TabAlertState::kVrPresentingInHeadset}});
+              tabs::mojom::TabAlertState::kVrPresentingInHeadset},
+             {TabAlertState::AUDIO_RECORDING,
+              tabs::mojom::TabAlertState::kAudioRecording},
+             {TabAlertState::VIDEO_RECORDING,
+              tabs::mojom::TabAlertState::kVideoRecording}});
     return alert_state_map.at(input);
   }
 
@@ -67,7 +71,11 @@ struct EnumTraits<tabs::mojom::TabAlertState, TabAlertState> {
              {tabs::mojom::TabAlertState::kDesktopCapturing,
               TabAlertState::DESKTOP_CAPTURING},
              {tabs::mojom::TabAlertState::kVrPresentingInHeadset,
-              TabAlertState::VR_PRESENTING_IN_HEADSET}});
+              TabAlertState::VR_PRESENTING_IN_HEADSET},
+             {tabs::mojom::TabAlertState::kAudioRecording,
+              TabAlertState::AUDIO_RECORDING},
+             {tabs::mojom::TabAlertState::kVideoRecording,
+              TabAlertState::VIDEO_RECORDING}});
     *out = alert_state_map.at(input);
     return true;
   }

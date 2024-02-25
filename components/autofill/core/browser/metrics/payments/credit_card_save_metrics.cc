@@ -95,14 +95,6 @@ void LogSaveCardPromptOfferMetric(
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".RequestingExpirationDate", metric);
   }
-  if (options.has_non_focusable_field) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromNonFocusableForm", metric);
-  }
-  if (options.from_dynamic_change_form) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromDynamicChangeForm", metric);
-  }
   if (options.has_multiple_legal_lines) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
@@ -111,6 +103,11 @@ void LogSaveCardPromptOfferMetric(
     base::UmaHistogramEnumeration(metric_with_destination_and_show +
                                       ".WithSameLastFourButDifferentExpiration",
                                   metric);
+  }
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".SavingWithCvc", metric);
   }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
@@ -150,14 +147,6 @@ void LogSaveCardPromptResultMetric(
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".RequestingExpirationDate", metric);
   }
-  if (options.has_non_focusable_field) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromNonFocusableForm", metric);
-  }
-  if (options.from_dynamic_change_form) {
-    base::UmaHistogramEnumeration(
-        metric_with_destination_and_show + ".FromDynamicChangeForm", metric);
-  }
   if (options.has_multiple_legal_lines) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".WithMultipleLegalLines", metric);
@@ -166,6 +155,11 @@ void LogSaveCardPromptResultMetric(
     base::UmaHistogramEnumeration(metric_with_destination_and_show +
                                       ".WithSameLastFourButDifferentExpiration",
                                   metric);
+  }
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".SavingWithCvc", metric);
   }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
@@ -200,11 +194,61 @@ void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
       base::StrCat({base_histogram_name, destination, show}), metric);
 }
 
+void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
+                         bool is_uploading) {
+  CHECK_LT(metric, AutofillMetrics::InfoBarMetric::NUM_INFO_BAR_METRICS);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.CvcInfoBar", is_uploading ? ".Upload" : ".Local"}),
+      metric, AutofillMetrics::InfoBarMetric::NUM_INFO_BAR_METRICS);
+}
+
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason reason) {
   DCHECK_LE(reason, SaveCardRequestExpirationDateReason::kMaxValue);
   UMA_HISTOGRAM_ENUMERATION("Autofill.SaveCardRequestExpirationDateReason",
                             reason);
+}
+
+void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added) {
+  base::UmaHistogramBoolean("Autofill.CreditCardUpload.RanLocalSaveFallback",
+                            new_local_card_added);
+}
+
+void LogCreditCardUploadLoadingViewShownMetric(bool is_shown) {
+  base::UmaHistogramBoolean("Autofill.CreditCardUpload.LoadingShown", is_shown);
+}
+
+void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
+                                                    bool is_card_uploaded) {
+  std::string_view base_histogram_name =
+      "Autofill.CreditCardUpload.ConfirmationShown.";
+  std::string_view is_card_uploaded_name =
+      is_card_uploaded ? "CardUploaded" : "CardNotUploaded";
+
+  base::UmaHistogramBoolean(
+      base::StrCat({base_histogram_name, is_card_uploaded_name}), is_shown);
+}
+
+void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric) {
+  CHECK_LE(metric, SaveCardPromptResult::kMaxValue);
+
+  base::UmaHistogramEnumeration("Autofill.CreditCardUpload.LoadingResult",
+                                metric);
+}
+
+void LogCreditCardUploadConfirmationViewResultMetric(
+    SaveCardPromptResult metric,
+    bool is_card_uploaded) {
+  CHECK_LE(metric, SaveCardPromptResult::kMaxValue);
+
+  std::string_view base_histogram_name =
+      "Autofill.CreditCardUpload.ConfirmationResult.";
+  std::string_view is_card_uploaded_name =
+      is_card_uploaded ? "CardUploaded" : "CardNotUploaded";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, is_card_uploaded_name}), metric);
 }
 
 // Clank-specific metrics.

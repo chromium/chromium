@@ -13,6 +13,7 @@
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -65,7 +66,7 @@ ThreadLocalData* GetThreadLocalData() {
   // Clang's implementation of thread_local.
   static base::NoDestructor<
       base::allocator::dispatcher::ThreadLocalStorage<ThreadLocalData>>
-      thread_local_data;
+      thread_local_data("poisson_allocation_sampler");
   return thread_local_data->GetThreadLocalData();
 #else
   // Notes on TLS usage:
@@ -296,7 +297,7 @@ void PoissonAllocationSampler::DoRecordAllocation(
   }
 
   ScopedMuteThreadSamples no_reentrancy_scope;
-  std::vector<SamplesObserver*> observers_copy;
+  std::vector<raw_ptr<SamplesObserver, VectorExperimental>> observers_copy;
   {
     AutoLock lock(mutex_);
 
@@ -311,7 +312,8 @@ void PoissonAllocationSampler::DoRecordAllocation(
   }
 
   size_t total_allocated = mean_interval * samples;
-  for (auto* observer : observers_copy) {
+  for (base::PoissonAllocationSampler::SamplesObserver* observer :
+       observers_copy) {
     observer->SampleAdded(address, size, total_allocated, type, context);
   }
 }
@@ -322,13 +324,14 @@ void PoissonAllocationSampler::DoRecordFree(void* address) {
   // thus reenter DoRecordAlloc. However the call chain won't build up further
   // as RecordAlloc accesses are guarded with pthread TLS-based ReentryGuard.
   ScopedMuteThreadSamples no_reentrancy_scope;
-  std::vector<SamplesObserver*> observers_copy;
+  std::vector<raw_ptr<SamplesObserver, VectorExperimental>> observers_copy;
   {
     AutoLock lock(mutex_);
     observers_copy = observers_;
     sampled_addresses_set().Remove(address);
   }
-  for (auto* observer : observers_copy) {
+  for (base::PoissonAllocationSampler::SamplesObserver* observer :
+       observers_copy) {
     observer->SampleRemoved(address);
   }
 }
@@ -422,7 +425,7 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   auto it = ranges::find(observers_, observer);
-  DCHECK(it != observers_.end());
+  CHECK(it != observers_.end(), base::NotFatalUntil::M125);
   observers_.erase(it);
 
   // Stop the profiler if there are no more observers. Setting/resetting

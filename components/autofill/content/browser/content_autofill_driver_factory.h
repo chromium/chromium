@@ -9,13 +9,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
+#include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -25,29 +23,15 @@ class RenderFrameHost;
 
 namespace autofill {
 
+class ContentAutofillClient;
 class ContentAutofillDriver;
 class ScopedAutofillManagersObservation;
-
-// Creates an BrowserAutofillManager and attaches it to the `driver`.
-//
-// This hook is to be passed to CreateForWebContentsAndDelegate().
-// It is the glue between ContentAutofillDriver[Factory] and
-// BrowserAutofillManager.
-//
-// Other embedders (which don't want to use BrowserAutofillManager) shall use
-// other implementations.
-void BrowserDriverInitHook(AutofillClient* client,
-                           const std::string& app_locale,
-                           ContentAutofillDriver* driver);
 
 // Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
 // therefore one Factory per WebContents. Creates one Driver per
 // RenderFrameHost.
 class ContentAutofillDriverFactory : public content::WebContentsObserver {
  public:
-  using DriverInitCallback =
-      base::RepeatingCallback<void(ContentAutofillDriver*)>;
-
   // Observer of ContentAutofillDriverFactory events.
   //
   // Using this observer is preferable over registering a WebContentsObserver
@@ -79,12 +63,11 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       content::WebContents* contents);
 
   static void BindAutofillDriver(
-      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
 
   ContentAutofillDriverFactory(content::WebContents* web_contents,
-                               AutofillClient* client,
-                               DriverInitCallback driver_init_hook);
+                               ContentAutofillClient* client);
   ContentAutofillDriverFactory(ContentAutofillDriverFactory&) = delete;
   ContentAutofillDriverFactory& operator=(ContentAutofillDriverFactory&) =
       delete;
@@ -98,15 +81,12 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
 
-  AutofillClient* client() { return client_; }
+  ContentAutofillClient& client() { return *client_; }
 
-  ContentAutofillRouter& autofill_router() { return router_; }
+  AutofillDriverRouter& router() { return router_; }
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
@@ -123,15 +103,11 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
-  std::unique_ptr<ContentAutofillDriver> CreateDriver(
-      content::RenderFrameHost* rfh);
+  const raw_ref<ContentAutofillClient> client_;
 
-  raw_ptr<AutofillClient> client_;
-  DriverInitCallback driver_init_hook_;
-
-  // Routes events between different drivers.
+  // Routes events between different ContentAutofillDrivers.
   // Must be destroyed after |driver_map_|'s elements.
-  ContentAutofillRouter router_;
+  AutofillDriverRouter router_;
 
   // Owns the drivers, one for each frame in the WebContents.
   // Should be empty at destruction time because its elements are erased in

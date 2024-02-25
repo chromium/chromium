@@ -225,9 +225,8 @@ void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
 }
 
 ScriptPromise MIDIPort::Accept(ScriptState* script_state) {
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<MIDIPort>::ToV8(script_state, this).ToLocalChecked());
+  return ScriptPromise::Cast(script_state,
+                             ToV8Traits<MIDIPort>::ToV8(script_state, this));
 }
 
 void MIDIPort::SetStates(PortState state, MIDIPortConnectionState connection) {

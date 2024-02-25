@@ -8,11 +8,11 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_chrome_feature_flags_instance.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,27 +54,15 @@ class ArcChromeFeatureFlagsBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  user_prefs::TestBrowserContextWithPrefs context_;
   FakeChromeFeatureFlagsInstance instance_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  const raw_ptr<ArcChromeFeatureFlagsBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcChromeFeatureFlagsBridge> bridge_;
 };
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, ConstructDestruct) {
   Connect();
   EXPECT_NE(nullptr, bridge());
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(ash::features::kQsRevamp);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->qs_revamp);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(ash::features::kQsRevamp);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->qs_revamp);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
@@ -99,24 +87,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(kTouchscreenEmulation);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyTrackpadScrollTouchscreenEmulation_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(
-      kTrackpadScrollTouchscreenEmulation);
-  Connect();
-  EXPECT_TRUE(
-      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyTrackpadScrollTouchscreenEmulation_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(
-      kTrackpadScrollTouchscreenEmulation);
-  Connect();
-  EXPECT_FALSE(
-      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
@@ -196,6 +166,30 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(ash::features::kGameDashboard);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->game_dashboard);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(ash::features::kGameDashboard);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->game_dashboard);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->resize_compat);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(arc::kResizeCompat);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->resize_compat);
 }
 
 }  // namespace

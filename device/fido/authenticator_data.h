@@ -8,17 +8,17 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
     kExtensionDataIncluded = 1u << 7,
   };
 
-  static absl::optional<AuthenticatorData> DecodeAuthenticatorData(
+  static std::optional<AuthenticatorData> DecodeAuthenticatorData(
       base::span<const uint8_t> auth_data);
 
   //  The attested credential |data| must be specified iff |flags| have
@@ -43,8 +43,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
                     uint8_t flags,
                     base::span<const uint8_t, kSignCounterLength> sign_counter,
-                    absl::optional<AttestedCredentialData> data,
-                    absl::optional<cbor::Value> extensions = absl::nullopt);
+                    std::optional<AttestedCredentialData> data,
+                    std::optional<cbor::Value> extensions = std::nullopt);
+
+  AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
+                    std::initializer_list<Flag> flags,
+                    uint32_t sign_counter,
+                    std::optional<AttestedCredentialData> data,
+                    std::optional<cbor::Value> extensions = std::nullopt);
 
   // Creates an AuthenticatorData with flags and signature counter encoded
   // according to the supplied arguments.
@@ -53,9 +59,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
       bool user_present,
       bool user_verified,
       bool backup_eligible,
+      bool backup_state,
       uint32_t sign_counter,
-      absl::optional<AttestedCredentialData> attested_credential_data,
-      absl::optional<cbor::Value> extensions);
+      std::optional<AttestedCredentialData> attested_credential_data,
+      std::optional<cbor::Value> extensions);
 
   AuthenticatorData(AuthenticatorData&& other);
   AuthenticatorData& operator=(AuthenticatorData&& other);
@@ -72,7 +79,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
 
   // EraseExtension deletes the named extension. It returns true iff the
   // extension was present.
-  bool EraseExtension(base::StringPiece name);
+  bool EraseExtension(std::string_view name);
 
   // Produces a byte array consisting of:
   // * hash(relying_party_id / appid)
@@ -85,17 +92,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   // authenticator data.
   std::vector<uint8_t> GetCredentialId() const;
 
-  const absl::optional<AttestedCredentialData>& attested_data() const {
+  const std::optional<AttestedCredentialData>& attested_data() const {
     return attested_data_;
   }
 
   // If a value is returned then the result of calling |is_map()| on it can be
   // assumed to be true.
-  const absl::optional<cbor::Value>& extensions() const { return extensions_; }
+  const std::optional<cbor::Value>& extensions() const { return extensions_; }
 
   const std::array<uint8_t, kRpIdHashLength>& application_parameter() const {
     return application_parameter_;
   }
+
+  uint8_t flags() const { return flags_; }
 
   bool obtained_user_presence() const {
     return flags_ & base::strict_cast<uint8_t>(Flag::kTestOfUserPresence);
@@ -117,28 +126,32 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
     return flags_ & base::strict_cast<uint8_t>(Flag::kBackupEligible);
   }
 
+  bool backup_state() const {
+    return flags_ & base::strict_cast<uint8_t>(Flag::kBackupState);
+  }
+
   base::span<const uint8_t, kSignCounterLength> counter() const {
     return counter_;
   }
 
  private:
+  void ValidateAuthenticatorDataStateOrCrash();
+
+  // See |AuthenticatorData::Flag| for the meaning of each bit.
+  // The value of |flags_| may depend on other move-only attributes declared
+  // below. Keep |flags_| before other attributes to guarantee it is initialized
+  // before them, preventing use-after-move during construction.
+  uint8_t flags_;
+
   // The application parameter: a SHA-256 hash of either the RP ID or the AppID
   // associated with the credential.
   std::array<uint8_t, kRpIdHashLength> application_parameter_;
 
-  // Flags (bit 0 is the least significant bit):
-  // [ED | AT | RFU | RFU | RFU | RFU | RFU | UP ]
-  //  * Bit 0: Test of User Presence (TUP) result.
-  //  * Bits 1-5: Reserved for future use (RFU).
-  //  * Bit 6: Attestation data included (AT).
-  //  * Bit 7: Extension data included (ED).
-  uint8_t flags_;
-
   // Signature counter, 32-bit unsigned big-endian integer.
   std::array<uint8_t, kSignCounterLength> counter_;
-  absl::optional<AttestedCredentialData> attested_data_;
+  std::optional<AttestedCredentialData> attested_data_;
   // If |extensions_| has a value, then it will be a CBOR map.
-  absl::optional<cbor::Value> extensions_;
+  std::optional<cbor::Value> extensions_;
 };
 
 }  // namespace device

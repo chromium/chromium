@@ -8,17 +8,18 @@
  * equivalent Browser Settings UI (in chrome://settings/captions).
  */
 
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '/shared/settings/controls/settings_slider.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import './live_caption_section.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {getTemplate} from './captions_subpage.html.js';
 
@@ -209,7 +210,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   private readonly textSizeOptions_: DropdownMenuOptionList;
   private enableLiveCaption_: boolean;
 
-  override ready() {
+  override ready(): void {
     super.ready();
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
         (response: FontsData) => this.setFontsData_(response));
@@ -228,7 +229,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   /**
    * @param response A list of fonts.
    */
-  private setFontsData_(response: FontsData) {
+  private setFontsData_(response: FontsData): void {
     const fontMenuOptions =
         [{value: '', name: loadTimeData.getString('captionsDefaultSetting')}];
     for (const fontData of response.fontList) {

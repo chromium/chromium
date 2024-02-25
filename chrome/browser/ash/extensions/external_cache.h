@@ -87,11 +87,11 @@ class ExternalCache {
                                     const std::string& version,
                                     PutExternalExtensionCallback callback) = 0;
 
-  // Sets backoff policy for extension downloader. Set `absl::nullopt` to
+  // Sets backoff policy for extension downloader. Set `std::nullopt` to
   // restore to the default backoff policy. Used in Kiosk launcher to reduce
   // retry backoff.
   virtual void SetBackoffPolicy(
-      absl::optional<net::BackoffEntry::Policy> backoff_policy) = 0;
+      std::optional<net::BackoffEntry::Policy> backoff_policy) = 0;
 };
 
 }  // namespace chromeos

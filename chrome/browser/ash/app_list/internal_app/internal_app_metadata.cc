@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -40,46 +39,15 @@
 
 namespace app_list {
 
-namespace {
-
-const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
-                                                       const Profile* profile) {
-  DCHECK(get_all || profile);
-  static base::NoDestructor<std::vector<InternalApp>> internal_app_list_static(
-      {{ash::kInternalAppIdContinueReading, IDS_INTERNAL_APP_CONTINUOUS_READING,
-        IDR_PRODUCT_LOGO_256,
-        /*recommendable=*/true,
-        /*searchable=*/false,
-        /*show_in_launcher=*/false, apps::BuiltInAppName::kContinueReading,
-        /*searchable_string_resource_id=*/0}});
-
-  if (!ash::features::ShouldOnlyShowNewShortcutApp()) {
-    internal_app_list_static->push_back(
-        {ash::kInternalAppIdKeyboardShortcutViewer,
-         IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER,
-         IDR_SHORTCUT_VIEWER_LOGO_192,
-         /*recommendable=*/false,
-         /*searchable=*/true,
-         /*show_in_launcher=*/false,
-         apps::BuiltInAppName::kKeyboardShortcutViewer,
-         IDS_LAUNCHER_SEARCHABLE_KEYBOARD_SHORTCUT_VIEWER});
-  }
+// TODO(longbowei): Remove InternalApp related code since it returns an empty
+// list.
+const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
+  static base::NoDestructor<std::vector<InternalApp>> internal_app_list_static;
   return *internal_app_list_static;
 }
 
-}  // namespace
-
-const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
-  return GetInternalAppListImpl(false, profile);
-}
-
-bool IsSuggestionChip(const std::string& app_id) {
-  return base::EqualsCaseInsensitiveASCII(app_id,
-                                          ash::kInternalAppIdContinueReading);
-}
-
 const InternalApp* FindInternalApp(const std::string& app_id) {
-  for (const auto& app : GetInternalAppListImpl(true, nullptr)) {
+  for (const auto& app : GetInternalAppList(nullptr)) {
     if (app_id == app.app_id) {
       return &app;
     }

@@ -16,7 +16,7 @@
  *   id="lockScreenPasswordPrompt"
  * </settings-lock-screen-password-prompt-dialog>
  */
-import '/shared/settings/controls/password_prompt_dialog.js';
+import '../common/password_prompt_dialog/password_prompt_dialog.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -42,7 +42,7 @@ class SettingsLockScreenPasswordPromptDialogElement extends
     return {};
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     recordLockScreenProgress(LockScreenProgress.START_SCREEN_LOCK);

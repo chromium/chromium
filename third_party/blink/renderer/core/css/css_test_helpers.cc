@@ -93,7 +93,7 @@ PropertyRegistration* CreateLengthRegistration(const String& name, int px) {
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited) {
   DummyExceptionStateForTesting exception_state;
   RegisterProperty(document, name, syntax, initial_value, is_inherited,
@@ -104,7 +104,7 @@ void RegisterProperty(Document& document,
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited,
                       ExceptionState& exception_state) {
   DCHECK(!initial_value || !initial_value.value().IsNull());
@@ -122,7 +122,7 @@ void RegisterProperty(Document& document,
 void DeclareProperty(Document& document,
                      const String& name,
                      const String& syntax,
-                     const absl::optional<String>& initial_value,
+                     const std::optional<String>& initial_value,
                      bool is_inherited) {
   StringBuilder builder;
   builder.Append("@property ");
@@ -221,12 +221,14 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
 
 CSSSelectorList* ParseSelectorList(const String& string) {
   return ParseSelectorList(string, CSSNestingType::kNone,
-                           /*parent_rule_for_nesting=*/nullptr);
+                           /*parent_rule_for_nesting=*/nullptr,
+                           /*is_within_scope=*/false);
 }
 
 CSSSelectorList* ParseSelectorList(const String& string,
                                    CSSNestingType nesting_type,
-                                   const StyleRule* parent_rule_for_nesting) {
+                                   const StyleRule* parent_rule_for_nesting,
+                                   bool is_within_scope) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
@@ -235,9 +237,58 @@ CSSSelectorList* ParseSelectorList(const String& string,
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, nesting_type, parent_rule_for_nesting,
+      range, context, nesting_type, parent_rule_for_nesting, is_within_scope,
       /* semicolon_aborts_nested_selector */ false, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
+}
+
+StyleRule* MakeSignalingRule(StyleRule&& style_rule,
+                             CSSSelector::Signal signal) {
+  HeapVector<CSSSelector> selectors;
+  const CSSSelector* selector = style_rule.FirstSelector();
+  CHECK(selector);
+  while (true) {
+    selectors.push_back(*selector);
+    selectors.back().SetSignal(signal);
+    if (selector->IsLastInSelectorList()) {
+      break;
+    }
+    ++selector;
+  }
+  return StyleRule::Create(selectors, std::move(style_rule));
+}
+
+StyleRule* MakeInvisibleRule(StyleRule&& style_rule) {
+  HeapVector<CSSSelector> selectors;
+  const CSSSelector* selector = style_rule.FirstSelector();
+  CHECK(selector);
+  while (true) {
+    selectors.push_back(*selector);
+    selectors.back().SetInvisible();
+    if (selector->IsLastInSelectorList()) {
+      break;
+    }
+    ++selector;
+  }
+  return StyleRule::Create(selectors, std::move(style_rule));
+}
+
+StyleRule* ParseSignalingRule(Document& document,
+                              String text,
+                              CSSSelector::Signal signal) {
+  auto* style_rule = DynamicTo<StyleRule>(ParseRule(document, text));
+  if (!style_rule) {
+    return nullptr;
+  }
+  return MakeSignalingRule(std::move(*style_rule), signal);
+}
+
+StyleRule* ParseInvisibleRule(Document& document, String text) {
+  auto* style_rule = DynamicTo<StyleRule>(ParseRule(document, text));
+  if (!style_rule) {
+    return nullptr;
+  }
+  return MakeInvisibleRule(std::move(*style_rule));
 }
 
 }  // namespace css_test_helpers

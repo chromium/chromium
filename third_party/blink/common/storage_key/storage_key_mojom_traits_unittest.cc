@@ -15,11 +15,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink {
+
 namespace mojom {
 class StorageKey;
 }  // namespace mojom
 
-namespace blink {
 namespace {
 
 TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {

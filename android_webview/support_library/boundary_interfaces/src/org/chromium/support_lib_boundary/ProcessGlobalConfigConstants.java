@@ -12,9 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Constants for ProcessGlobalConfig shared between chromium and AndroidX.
- */
+/** Constants for ProcessGlobalConfig shared between chromium and AndroidX. */
 public final class ProcessGlobalConfigConstants {
     private ProcessGlobalConfigConstants() {}
 

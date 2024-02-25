@@ -35,14 +35,15 @@ DomActivityLoggersForIsolatedWorld() {
   return map;
 }
 
-void V8DOMActivityLogger::LogMethod(const char* api_name,
+void V8DOMActivityLogger::LogMethod(ScriptState* script_state,
+                                    const char* api_name,
                                     v8::FunctionCallbackInfo<v8::Value> info) {
-  Vector<v8::Local<v8::Value>> loggerArgs;
-  loggerArgs.ReserveInitialCapacity(info.Length());
+  v8::LocalVector<v8::Value> loggerArgs(info.GetIsolate());
+  loggerArgs.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {
-    loggerArgs.UncheckedAppend(info[i]);
+    loggerArgs.push_back(info[i]);
   }
-  LogMethod(api_name, info.Length(), loggerArgs.data());
+  LogMethod(script_state, api_name, info.Length(), loggerArgs.data());
 }
 
 void V8DOMActivityLogger::SetActivityLogger(
@@ -88,8 +89,8 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(int world_id,
   return ActivityLogger(world_id, url.Host());
 }
 
-V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLogger() {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLogger(
+    v8::Isolate* isolate) {
   if (!isolate->InContext())
     return nullptr;
 
@@ -119,18 +120,9 @@ V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
   return context_data->ActivityLogger();
 }
 
-V8DOMActivityLogger*
-V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld() {
-  return CurrentActivityLoggerIfIsolatedWorld(v8::Isolate::GetCurrent());
-}
-
-V8DOMActivityLogger*
-V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread() {
+bool V8DOMActivityLogger::HasActivityLoggerInIsolatedWorlds() {
   DCHECK(IsMainThread());
-  if (DomActivityLoggersForIsolatedWorld().empty())
-    return nullptr;
-  return CurrentActivityLoggerIfIsolatedWorld(
-      V8PerIsolateData::MainThreadIsolate());
+  return !DomActivityLoggersForIsolatedWorld().empty();
 }
 
 }  // namespace blink

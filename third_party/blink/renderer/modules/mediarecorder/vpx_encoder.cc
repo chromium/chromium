@@ -40,11 +40,15 @@ VpxEncoder::VpxEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     bool use_vp9,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-    uint32_t bits_per_second)
+    uint32_t bits_per_second,
+    bool is_screencast,
+    const VideoTrackRecorder::OnErrorCB on_error_cb)
     : Encoder(std::move(encoding_task_runner),
               on_encoded_video_cb,
               bits_per_second),
-      use_vp9_(use_vp9) {
+      use_vp9_(use_vp9),
+      is_screencast_(is_screencast),
+      on_error_cb_(on_error_cb) {
   std::memset(&codec_config_, 0, sizeof(codec_config_));
   std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_));
   codec_config_.g_timebase.den = 0;        // Not initialized.
@@ -166,7 +170,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
 
   metrics_provider_->IncrementEncodedFrameCount();
   on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
-                           absl::nullopt, capture_timestamp, keyframe);
+                           std::nullopt, capture_timestamp, keyframe);
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
@@ -211,6 +215,8 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
          base::StrCat(
              {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
               vpx_codec_error_detail(encoder)})});
+    on_error_cb_.Run();
+    return;
   }
   *keyframe = false;
   vpx_codec_iter_t iter = nullptr;
@@ -256,6 +262,8 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
                                       codec_config->rc_target_bitrate /
                                       codec_config->g_w / codec_config->g_h;
   }
+  // Don't drop a frame.
+  DCHECK_EQ(codec_config->rc_dropframe_thresh, 0u);
   // Both VP8/VP9 configuration should be Variable BitRate by default.
   DCHECK_EQ(VPX_VBR, codec_config->rc_end_usage);
   if (use_vp9_) {
@@ -310,6 +318,7 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
     DLOG(WARNING) << "vpx_codec_enc_init failed: " << ret;
     // Require the encoder to be reinitialized next frame.
     codec_config->g_timebase.den = 0;
+    on_error_cb_.Run();
     return false;
   }
   encoder->reset(tmp_encoder.release());
@@ -324,6 +333,22 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
     result = vpx_codec_control(encoder->get(), VP8E_SET_CPUUSED, kCpuUsed);
     DLOG_IF(WARNING, VPX_CODEC_OK != result) << "VP8E_SET_CPUUSED failed";
   }
+
+  // Tune configs for screen sharing. The values are the same as WebRTC
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc
+  vpx_codec_control(encoder->get(), VP8E_SET_STATIC_THRESHOLD,
+                    (is_screencast_ && !use_vp9_) ? 100 : 1);
+  if (is_screencast_) {
+    if (use_vp9_) {
+      vpx_codec_control(encoder->get(), VP9E_SET_TUNE_CONTENT,
+                        VP9E_CONTENT_SCREEN);
+    } else {
+      // Setting 1, not 2, so the libvpx encoder doesn't drop a frame.
+      vpx_codec_control(encoder->get(), VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/);
+    }
+  }
+
   return true;
 }
 

@@ -44,17 +44,17 @@ bool KioskOemManifestParser::Load(const base::FilePath& kiosk_oem_file,
     manifest->device_requisition = *v;
   }
 
-  if (absl::optional<bool> v = value_dict.FindBool(kKeyboardDrivenOobe)) {
+  if (std::optional<bool> v = value_dict.FindBool(kKeyboardDrivenOobe)) {
     manifest->keyboard_driven_oobe = *v;
   }
 
-  if (absl::optional<bool> v = value_dict.FindBool(kEnterpriseManaged)) {
+  if (std::optional<bool> v = value_dict.FindBool(kEnterpriseManaged)) {
     manifest->enterprise_managed = *v;
   } else {
     return false;
   }
 
-  if (absl::optional<bool> v = value_dict.FindBool(kAllowReset)) {
+  if (std::optional<bool> v = value_dict.FindBool(kAllowReset)) {
     manifest->can_exit_enrollment = *v;
   } else {
     return false;

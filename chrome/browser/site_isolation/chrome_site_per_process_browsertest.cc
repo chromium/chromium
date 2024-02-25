@@ -37,7 +37,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -54,12 +53,18 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "pdf/pdf_features.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -266,15 +271,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(expected_url, new_contents->GetLastCommittedURL());
 }
 
-class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
+#if BUILDFLAG(ENABLE_PDF)
+class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessPDFTest() : test_guest_view_manager_(nullptr) {}
+  ChromeSitePerProcessGuestViewPDFTest() : test_guest_view_manager_(nullptr) {}
 
-  ChromeSitePerProcessPDFTest(const ChromeSitePerProcessPDFTest&) = delete;
-  ChromeSitePerProcessPDFTest& operator=(const ChromeSitePerProcessPDFTest&) =
-      delete;
+  ChromeSitePerProcessGuestViewPDFTest(
+      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
+  ChromeSitePerProcessGuestViewPDFTest& operator=(
+      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
 
-  ~ChromeSitePerProcessPDFTest() override {}
+  ~ChromeSitePerProcessGuestViewPDFTest() override = default;
 
   void SetUpOnMainThread() override {
     ChromeSitePerProcessTest::SetUpOnMainThread();
@@ -297,7 +304,7 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
 // PDF, the guest is properly created, and by removing the embedder frame, the
 // guest is properly destroyed (https://crbug.com/649856).
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessGuestViewPDFTest,
                        EmbeddedPDFInsideCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
@@ -331,6 +338,83 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
   EXPECT_EQ(0U, test_guest_view_manager()->GetCurrentGuestCount());
 }
 
+class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
+ public:
+  ChromeSitePerProcessOopifPDFTest() {
+    feature_list()->Reset();
+    feature_list()->InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+  ChromeSitePerProcessOopifPDFTest(const ChromeSitePerProcessOopifPDFTest&) =
+      delete;
+  ChromeSitePerProcessOopifPDFTest& operator=(
+      const ChromeSitePerProcessOopifPDFTest&) = delete;
+
+  ~ChromeSitePerProcessOopifPDFTest() override = default;
+
+  // Return value could be nullptr.
+  pdf::PdfViewerStreamManager* GetPdfViewerStreamManager() {
+    return pdf::PdfViewerStreamManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  // Return value is always non-nullptr. This should only be called after a PDF
+  // navigation occurs in the active `content::WebContents`.
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
+    return factory_.GetTestPdfViewerStreamManager(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+ private:
+  pdf::TestPdfViewerStreamManagerFactory factory_;
+};
+
+// This test verifies that when navigating an OOPIF to a page with <embed>-ed
+// PDF, the PDF viewer stream manager is properly created, and by removing the
+// embedder frame, the stream manager is properly destroyed.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       EmbeddedPDFInsideCrossOriginFrame) {
+  // Navigate to a page with an <iframe>.
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Initially, the stream manager shouldn't be created.
+  EXPECT_FALSE(GetPdfViewerStreamManager());
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate subframe to a cross-site page with an embedded PDF.
+  GURL frame_url =
+      embedded_test_server()->GetURL("b.com", "/page_with_embedded_pdf.html");
+
+  // Ensure the page finishes loading without crashing.
+  EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
+
+  // Wait until the PDF is fully loaded.
+  content::RenderFrameHost* subframe_main_host =
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe_main_host);
+  content::RenderFrameHost* embedder_host = ChildFrameAt(subframe_main_host, 0);
+  ASSERT_TRUE(embedder_host);
+  ASSERT_TRUE(
+      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
+
+  // The primary main frame shouldn't be the PDF embedder and shouldn't have a
+  // PDF stream.
+  auto* primary_main_frame = active_web_contents->GetPrimaryMainFrame();
+  ASSERT_FALSE(
+      GetTestPdfViewerStreamManager()->GetStreamContainer(primary_main_frame));
+
+  // Now detach the frame and observe that the stream manager is destroyed.
+  EXPECT_TRUE(
+      ExecJs(primary_main_frame,
+             "document.body.removeChild(document.querySelector('iframe'));"));
+
+  EXPECT_FALSE(GetPdfViewerStreamManager());
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 // A helper class to verify that a "mailto:" external protocol request succeeds.
 class MailtoExternalProtocolHandlerDelegate
     : public ExternalProtocolHandler::Delegate {
@@ -348,7 +432,7 @@ class MailtoExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {}
 
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(

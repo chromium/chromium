@@ -72,8 +72,7 @@ class AccessibilityLayer : public ui::LayerDelegate {
                            bool stack_at_top);
 
   // The current root window containing the focused object.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> root_window_ = nullptr;
 
   // The current layer.
   std::unique_ptr<ui::Layer> layer_;
@@ -88,7 +87,7 @@ class AccessibilityLayer : public ui::LayerDelegate {
                                   float new_device_scale_factor) override;
 
   // The object that owns this layer.
-  raw_ptr<AccessibilityLayerDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<AccessibilityLayerDelegate> delegate_;
 };
 
 }  // namespace ash

@@ -10,14 +10,17 @@
 #include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/android/channel_getter.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
+using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace local_password_migration {
 
@@ -77,6 +80,15 @@ void ShowWarningWithActivity(
 }
 
 bool ShouldShowWarning(Profile* profile) {
+  if (password_manager::UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
+    return false;
+  }
+  // The warning should not show up on stable builds.
+  version_info::Channel channel = version_info::android::GetChannel();
+  if (channel == version_info::Channel::STABLE) {
+    return false;
+  }
+
   if (profile->IsOffTheRecord()) {
     return false;
   }
@@ -94,7 +106,9 @@ bool ShouldShowWarning(Profile* profile) {
     return false;
   }
 
-  if (password_bubble_experiment::HasChosenToSyncPasswords(
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  if (password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
           SyncServiceFactory::GetForProfile(profile))) {
     return false;
   }

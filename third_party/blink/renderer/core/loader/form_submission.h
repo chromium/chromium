@@ -44,6 +44,7 @@
 
 namespace blink {
 
+class Element;
 class EncodedFormData;
 class Event;
 class Frame;
@@ -99,6 +100,11 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
     String accept_charset_;
   };
 
+  // Create FormSubmission
+  //
+  // This returns nullptr if form submission is not allowed for the given
+  // arguments. For example, if navigation policy for the event is
+  // `kNavigationPolicyLinkPreview`.
   static FormSubmission* Create(HTMLFormElement*,
                                 const Attributes&,
                                 const Event*,
@@ -109,7 +115,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       const KURL& action,
       const AtomicString& target,
       const AtomicString& content_type,
-      HTMLFormElement*,
+      Element* submitter,
       scoped_refptr<EncodedFormData>,
       const Event*,
       NavigationPolicy navigation_policy,
@@ -134,12 +140,11 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
 
   SubmitMethod Method() const { return method_; }
   const KURL& Action() const { return action_; }
-  HTMLFormElement* Form() const { return form_.Get(); }
   EncodedFormData* Data() const { return form_data_.get(); }
 
   const String& Result() const { return result_; }
 
-  Frame* TargetFrame() const { return target_frame_; }
+  Frame* TargetFrame() const { return target_frame_.Get(); }
 
  private:
   // FIXME: Hold an instance of Attributes instead of individual members.
@@ -147,7 +152,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   KURL action_;
   AtomicString target_;
   AtomicString content_type_;
-  Member<HTMLFormElement> form_;
+  Member<Element> submitter_;
   scoped_refptr<EncodedFormData> form_data_;
   NavigationPolicy navigation_policy_;
   mojom::blink::TriggeringEventInfo triggering_event_info_;

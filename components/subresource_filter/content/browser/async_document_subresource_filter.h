@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -189,7 +189,7 @@ class AsyncDocumentSubresourceFilter {
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
   base::OnceClosure first_disallowed_load_callback_;
 
-  absl::optional<mojom::ActivationState> activation_state_;
+  std::optional<mojom::ActivationState> activation_state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -234,7 +234,7 @@ class AsyncDocumentSubresourceFilter::Core {
                                 const url::Origin& document_origin,
                                 VerifiedRuleset* verified_ruleset);
 
-  absl::optional<DocumentSubresourceFilter> filter_;
+  std::optional<DocumentSubresourceFilter> filter_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

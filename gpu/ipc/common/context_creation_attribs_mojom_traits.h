@@ -16,39 +16,6 @@
 namespace mojo {
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::ContextColorSpace, gpu::ColorSpace> {
-  static gpu::mojom::ContextColorSpace ToMojom(gpu::ColorSpace color_space) {
-    switch (color_space) {
-      case gpu::COLOR_SPACE_UNSPECIFIED:
-        return gpu::mojom::ContextColorSpace::kUnspecified;
-      case gpu::COLOR_SPACE_SRGB:
-        return gpu::mojom::ContextColorSpace::kSRGB;
-      case gpu::COLOR_SPACE_DISPLAY_P3:
-        return gpu::mojom::ContextColorSpace::kDisplayP3;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  static bool FromMojom(gpu::mojom::ContextColorSpace color_space,
-                        gpu::ColorSpace* out) {
-    switch (color_space) {
-      case gpu::mojom::ContextColorSpace::kUnspecified:
-        *out = gpu::COLOR_SPACE_UNSPECIFIED;
-        return true;
-      case gpu::mojom::ContextColorSpace::kSRGB:
-        *out = gpu::COLOR_SPACE_SRGB;
-        return true;
-      case gpu::mojom::ContextColorSpace::kDisplayP3:
-        *out = gpu::COLOR_SPACE_DISPLAY_P3;
-        return true;
-      default:
-        return false;
-    }
-  }
-};
-
-template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
   static gpu::mojom::ContextType ToMojom(gpu::ContextType type) {
     switch (type) {
@@ -104,20 +71,8 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  static int32_t alpha_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.alpha_size;
-  }
-
-  static int32_t blue_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.blue_size;
-  }
-
-  static int32_t green_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.green_size;
-  }
-
-  static int32_t red_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.red_size;
+  static bool need_alpha(const gpu::ContextCreationAttribs& attribs) {
+    return attribs.need_alpha;
   }
 #endif
 
@@ -155,19 +110,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
     return attribs.enable_oop_rasterization;
   }
 
-  static bool enable_swap_timestamps_if_supported(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_swap_timestamps_if_supported;
-  }
-
   static gpu::ContextType context_type(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.context_type;
-  }
-
-  static gpu::ColorSpace color_space(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.color_space;
   }
 
   static bool Read(gpu::mojom::ContextCreationAttribsDataView data,

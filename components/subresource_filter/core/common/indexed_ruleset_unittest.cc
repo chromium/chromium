@@ -5,9 +5,9 @@
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -35,8 +35,8 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
       const SubresourceFilterIndexedRulesetTest&) = delete;
 
  protected:
-  LoadPolicy GetLoadPolicy(base::StringPiece url,
-                           base::StringPiece document_origin = "",
+  LoadPolicy GetLoadPolicy(std::string_view url,
+                           std::string_view document_origin = "",
                            proto::ElementType element_type = testing::kOther,
                            bool disable_generic_rules = false) const {
     DCHECK(matcher_);
@@ -45,8 +45,8 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
         element_type, disable_generic_rules);
   }
 
-  bool MatchingRule(base::StringPiece url,
-                    base::StringPiece document_origin = "",
+  bool MatchingRule(std::string_view url,
+                    std::string_view document_origin = "",
                     proto::ElementType element_type = testing::kOther,
                     bool disable_generic_rules = false) const {
     DCHECK(matcher_);
@@ -56,8 +56,8 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
   }
 
   bool ShouldDeactivate(
-      base::StringPiece document_url,
-      base::StringPiece parent_document_origin = "",
+      std::string_view document_url,
+      std::string_view parent_document_origin = "",
       proto::ActivationType activation_type = testing::kNoActivation) const {
     DCHECK(matcher_);
     return matcher_->ShouldDisableFilteringForDocument(
@@ -69,18 +69,18 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
     return indexer_->AddUrlRule(rule);
   }
 
-  bool AddSimpleRule(base::StringPiece url_pattern) {
+  bool AddSimpleRule(std::string_view url_pattern) {
     return AddUrlRule(
         MakeUrlRule(UrlPattern(url_pattern, testing::kSubstring)));
   }
 
-  bool AddSimpleAllowlistRule(base::StringPiece url_pattern) {
+  bool AddSimpleAllowlistRule(std::string_view url_pattern) {
     auto rule = MakeUrlRule(UrlPattern(url_pattern, testing::kSubstring));
     rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     return AddUrlRule(rule);
   }
 
-  bool AddSimpleAllowlistRule(base::StringPiece url_pattern,
+  bool AddSimpleAllowlistRule(std::string_view url_pattern,
                               int32_t activation_types) {
     auto rule = MakeUrlRule(UrlPattern(url_pattern, testing::kSubstring));
     rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
@@ -91,8 +91,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   void Finish() {
     indexer_->Finish();
-    matcher_ = std::make_unique<IndexedRulesetMatcher>(indexer_->data(),
-                                                       indexer_->size());
+    matcher_ = std::make_unique<IndexedRulesetMatcher>(indexer_->data());
   }
 
   void Reset() {
@@ -238,12 +237,17 @@ TEST_F(SubresourceFilterIndexedRulesetTest, NonAsciiDomain) {
 }
 
 // Ensure patterns with percent encoded hosts match correctly.
+//
+// Warning: This test depends on the standard non-compliant URL behavior in
+// Chrome. Currently, Chrome escapes '*' (%2A) character in URL host, but this
+// behavior is non-compliant. See https://crbug.com/1416013 for details. We
+// probably no longer need this test once https://crbug.com/1416013 is fixed.
 TEST_F(SubresourceFilterIndexedRulesetTest, PercentEncodedHostPattern) {
-  const char* kPercentEncodedHost = "http://%2C.com/";
+  const char* kPercentEncodedHost = "http://%2A.com/";
   ASSERT_TRUE(AddSimpleRule(kPercentEncodedHost));
   Finish();
 
-  EXPECT_EQ(LoadPolicy::DISALLOW, GetLoadPolicy("http://,.com/"));
+  EXPECT_EQ(LoadPolicy::DISALLOW, GetLoadPolicy("http://*.com/"));
   EXPECT_EQ(LoadPolicy::DISALLOW, GetLoadPolicy(kPercentEncodedHost));
 }
 

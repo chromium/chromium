@@ -5,12 +5,12 @@
 #include "device/vr/android/arcore/arcore_device.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/numerics/math_constants.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -22,7 +22,6 @@
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
 
@@ -481,7 +480,7 @@ void ArCoreDevice::OnArCoreGlInitializationComplete(
     return;
   } else {
     session_state_->enabled_features_ = {};
-    session_state_->depth_configuration_ = absl::nullopt;
+    session_state_->depth_configuration_ = std::nullopt;
   }
 
   // We only start GL initialization after the user has granted consent, so we

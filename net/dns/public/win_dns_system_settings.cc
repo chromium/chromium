@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -29,7 +30,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -73,12 +73,12 @@ class RegistryReader {
 
   // Returns `false` if any error occurs, but not if the value is unset.
   bool ReadString(const wchar_t name[],
-                  absl::optional<std::wstring>* output) const {
+                  std::optional<std::wstring>* output) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::wstring reg_string;
     if (!key_.Valid()) {
       // Assume that if the |key_| is invalid then the key is missing.
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
     LONG result = key_.ReadValue(name, &reg_string);
@@ -88,7 +88,7 @@ class RegistryReader {
     }
 
     if (result == ERROR_FILE_NOT_FOUND) {
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
 
@@ -96,13 +96,13 @@ class RegistryReader {
   }
 
   // Returns `false` if any error occurs, but not if the value is unset.
-  bool ReadDword(const wchar_t name[], absl::optional<DWORD>* output) const {
+  bool ReadDword(const wchar_t name[], std::optional<DWORD>* output) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DWORD reg_dword;
     if (!key_.Valid()) {
       // Assume that if the |key_| is invalid then the key is missing.
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
 
@@ -113,7 +113,7 @@ class RegistryReader {
     }
 
     if (result == ERROR_FILE_NOT_FOUND) {
-      *output = absl::nullopt;
+      *output = std::nullopt;
       return true;
     }
 
@@ -155,8 +155,8 @@ ReadAdapterDnsAddresses() {
 // Returns `false` if any error occurs, but not if the value is unset.
 bool ReadDevolutionSetting(const RegistryReader& reader,
                            WinDnsSystemSettings::DevolutionSetting* output) {
-  absl::optional<DWORD> enabled;
-  absl::optional<DWORD> level;
+  std::optional<DWORD> enabled;
+  std::optional<DWORD> level;
   if (!reader.ReadDword(L"UseDomainNameDevolution", &enabled) ||
       !reader.ReadDword(L"DomainNameDevolutionLevel", &level)) {
     return false;
@@ -173,8 +173,8 @@ WinDnsSystemSettings::~WinDnsSystemSettings() = default;
 
 WinDnsSystemSettings::DevolutionSetting::DevolutionSetting() = default;
 WinDnsSystemSettings::DevolutionSetting::DevolutionSetting(
-    absl::optional<DWORD> enabled,
-    absl::optional<DWORD> level)
+    std::optional<DWORD> enabled,
+    std::optional<DWORD> level)
     : enabled(enabled), level(level) {}
 WinDnsSystemSettings::DevolutionSetting::DevolutionSetting(
     const DevolutionSetting&) = default;
@@ -197,7 +197,7 @@ bool WinDnsSystemSettings::IsStatelessDiscoveryAddress(
   return IPAddressStartsWith(address, kPrefix) && (address.bytes().back() < 4);
 }
 
-absl::optional<std::vector<IPEndPoint>>
+std::optional<std::vector<IPEndPoint>>
 WinDnsSystemSettings::GetAllNameservers() {
   std::vector<IPEndPoint> nameservers;
   for (const IP_ADAPTER_ADDRESSES* adapter = addresses.get();
@@ -215,14 +215,14 @@ WinDnsSystemSettings::GetAllNameservers() {
           ipe = IPEndPoint(ipe.address(), dns_protocol::kDefaultPort);
         nameservers.push_back(ipe);
       } else {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
   }
   return nameservers;
 }
 
-absl::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
+std::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   WinDnsSystemSettings settings;
@@ -231,7 +231,7 @@ absl::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
   // GetNetworkParams does not include IPv6 addresses.
   settings.addresses = ReadAdapterDnsAddresses();
   if (!settings.addresses.get())
-    return absl::nullopt;
+    return std::nullopt;
 
   RegistryReader tcpip_reader(kTcpipPath);
   RegistryReader tcpip6_reader(kTcpip6Path);
@@ -239,39 +239,39 @@ absl::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
   RegistryReader policy_reader(kPolicyPath);
   RegistryReader primary_dns_suffix_reader(kPrimaryDnsSuffixPath);
 
-  absl::optional<std::wstring> reg_string;
+  std::optional<std::wstring> reg_string;
   if (!policy_reader.ReadString(L"SearchList", &reg_string))
-    return absl::nullopt;
+    return std::nullopt;
   settings.policy_search_list = std::move(reg_string);
 
   if (!tcpip_reader.ReadString(L"SearchList", &reg_string))
-    return absl::nullopt;
+    return std::nullopt;
   settings.tcpip_search_list = std::move(reg_string);
 
   if (!tcpip_reader.ReadString(L"Domain", &reg_string))
-    return absl::nullopt;
+    return std::nullopt;
   settings.tcpip_domain = std::move(reg_string);
 
   WinDnsSystemSettings::DevolutionSetting devolution_setting;
   if (!ReadDevolutionSetting(policy_reader, &devolution_setting))
-    return absl::nullopt;
+    return std::nullopt;
   settings.policy_devolution = devolution_setting;
 
   if (!ReadDevolutionSetting(dnscache_reader, &devolution_setting))
-    return absl::nullopt;
+    return std::nullopt;
   settings.dnscache_devolution = devolution_setting;
 
   if (!ReadDevolutionSetting(tcpip_reader, &devolution_setting))
-    return absl::nullopt;
+    return std::nullopt;
   settings.tcpip_devolution = devolution_setting;
 
-  absl::optional<DWORD> reg_dword;
+  std::optional<DWORD> reg_dword;
   if (!policy_reader.ReadDword(L"AppendToMultiLabelName", &reg_dword))
-    return absl::nullopt;
+    return std::nullopt;
   settings.append_to_multi_label_name = reg_dword;
 
   if (!primary_dns_suffix_reader.ReadString(L"PrimaryDnsSuffix", &reg_string))
-    return absl::nullopt;
+    return std::nullopt;
   settings.primary_dns_suffix = std::move(reg_string);
 
   base::win::RegistryKeyIterator nrpt_rules(HKEY_LOCAL_MACHINE, kNrptPath);

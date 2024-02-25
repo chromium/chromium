@@ -41,7 +41,7 @@ gfx::NativeViewId ScreenCaptureNotificationUILacros::OnStarted(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               [](base::WeakPtr<ScreenCaptureNotificationUILacros> controller,
-                 absl::optional<int> button_index) {
+                 std::optional<int> button_index) {
                 if (!button_index || !controller) {
                   return;
                 }
@@ -76,6 +76,8 @@ void ScreenCaptureNotificationUILacros::ProcessStopRequestFromNotification() {
 
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
-ScreenCaptureNotificationUI::Create(const std::u16string& text) {
+ScreenCaptureNotificationUI::Create(
+    const std::u16string& text,
+    content::WebContents* capturing_web_contents) {
   return std::make_unique<ScreenCaptureNotificationUILacros>(text);
 }

@@ -33,7 +33,7 @@ class OriginKeyedPermissionActionService : public KeyedService {
   OriginKeyedPermissionActionService& operator=(
       const OriginKeyedPermissionActionService&) = delete;
 
-  absl::optional<PermissionActionTime> GetLastActionEntry(
+  std::optional<PermissionActionTime> GetLastActionEntry(
       const GURL& origin,
       ContentSettingsType type);
 

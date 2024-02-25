@@ -7,17 +7,18 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_params.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/switches.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace {
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(CompositedScrollingBrowserTest,
   double scroll_distance =
       DoTouchScroll(gfx::Point(50, 150), gfx::Vector2d(0, 100));
   // The scroll distance is increased due to the rotation of the scroller.
-  EXPECT_NEAR(100 / std::cos(gfx::DegToRad(30.f)), scroll_distance, 1.f);
+  EXPECT_NEAR(100 / std::cos(base::DegToRad(30.0f)), scroll_distance, 1.0f);
 }
 
 class CompositedScrollingMetricTest : public CompositedScrollingBrowserTest,

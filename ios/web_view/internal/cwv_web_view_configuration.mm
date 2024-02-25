@@ -7,11 +7,13 @@
 #import <memory>
 
 #import "base/threading/thread_restrictions.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
-#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -21,7 +23,6 @@
 #import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
 #import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_affiliations_prefetcher_factory.h"
 #import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
@@ -181,7 +182,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 
 - (CWVReuseCheckService*)reuseCheckService {
   if (!_reuseCheckService && self.persistent) {
-    password_manager::AffiliationService* affiliation_service =
+    affiliations::AffiliationService* affiliation_service =
         ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
             static_cast<ios_web_view::WebViewBrowserState*>(self.browserState));
 

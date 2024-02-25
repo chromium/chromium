@@ -27,31 +27,6 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 
   /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      importModule('RectUtil', '/common/rect_util.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-  }
-
-  async getPref(name) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, ret => {
-        resolve(ret);
-      });
-    });
-  }
-
-  async setPref(name, value) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.setPref(name, value, undefined, () => {
-        resolve();
-      });
-    });
-  }
-
-  /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
@@ -346,9 +321,6 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     // Disable focus following for full screen magnifier, and verify prefs and
     // state.
     await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, false);
-    pref = await this.getPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING);
-    assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
-    assertFalse(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
     magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
@@ -357,9 +329,6 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     // Enable focus following for full screen magnifier, and verify prefs and
     // state.
     await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, true);
-    pref = await this.getPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING);
-    assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
-    assertTrue(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
     magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);

@@ -20,7 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
 import org.chromium.net.impl.CallbackExceptionImpl;
@@ -31,15 +32,14 @@ import java.net.HttpRetryException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Tests {@code getOutputStream} when {@code setFixedLengthStreamingMode} is enabled.
- */
+/** Tests {@code getOutputStream} when {@code setFixedLengthStreamingMode} is enabled. */
 @Batch(Batch.UNIT_TESTS)
-@OnlyRunNativeCronet
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetFixedModeOutputStreamTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private HttpURLConnection mConnection;
 
@@ -47,11 +47,14 @@ public class CronetFixedModeOutputStreamTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> mTestRule.getTestFramework().enableDiskCache(builder));
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> mTestRule.getTestFramework().enableDiskCache(builder));
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -107,10 +110,16 @@ public class CronetFixedModeOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(largeData, 0, 10);
         NativeTestServer.shutdownNativeTestServer();
-        NetworkException e = assertThrows(
-                NetworkException.class, () -> out.write(largeData, 10, largeData.length - 10));
-
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        IOException e =
+                assertThrows(
+                        IOException.class, () -> out.write(largeData, 10, largeData.length - 10));
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
     }
 
     @Test
@@ -126,15 +135,28 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(1);
         OutputStream out = mConnection.getOutputStream();
         // Forces OutputStream implementation to flush. crbug.com/653072
-        NetworkException e = assertThrows(NetworkException.class, () -> out.write(1));
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        IOException e = assertThrows(IOException.class, () -> out.write(1));
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
         // Make sure NetworkException is reported again when trying to read response
         // from the mConnection.
-        e = assertThrows(NetworkException.class, mConnection::getResponseCode);
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        e = assertThrows(IOException.class, mConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
         // Restarting server to run the test for a second time.
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -188,8 +210,13 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(TestUtil.UPLOAD_DATA.length - 1);
         OutputStream out = mConnection.getOutputStream();
         IOException e = assertThrows(IOException.class, () -> out.write(TestUtil.UPLOAD_DATA));
-        assertThat(e).hasMessageThat().isEqualTo("expected " + (TestUtil.UPLOAD_DATA.length - 1)
-                + " bytes but received " + TestUtil.UPLOAD_DATA.length);
+        assertThat(e)
+                .hasMessageThat()
+                .isEqualTo(
+                        "expected "
+                                + (TestUtil.UPLOAD_DATA.length - 1)
+                                + " bytes but received "
+                                + TestUtil.UPLOAD_DATA.length);
     }
 
     @Test
@@ -206,11 +233,16 @@ public class CronetFixedModeOutputStreamTest {
             out.write(TestUtil.UPLOAD_DATA[i]);
         }
         // Try upload an extra byte.
-        IOException e = assertThrows(IOException.class,
-                () -> out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]));
+        IOException e =
+                assertThrows(
+                        IOException.class,
+                        () -> out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]));
         String expectedVariant = "expected 0 bytes but received 1";
-        String expectedVariantOnLollipop = "expected " + (TestUtil.UPLOAD_DATA.length - 1)
-                + " bytes but received " + TestUtil.UPLOAD_DATA.length;
+        String expectedVariantOnLollipop =
+                "expected "
+                        + (TestUtil.UPLOAD_DATA.length - 1)
+                        + " bytes but received "
+                        + TestUtil.UPLOAD_DATA.length;
         assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
     }
 
@@ -348,8 +380,11 @@ public class CronetFixedModeOutputStreamTest {
 
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        CallbackExceptionImpl e =
-                assertThrows(CallbackExceptionImpl.class, mConnection::getResponseCode);
+        IOException e = assertThrows(IOException.class, mConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CallbackExceptionImpl.class);
+        }
 
         assertThat(e).hasMessageThat().isEqualTo("Exception received from UploadDataProvider");
         assertThat(e).hasCauseThat().isInstanceOf(HttpRetryException.class);

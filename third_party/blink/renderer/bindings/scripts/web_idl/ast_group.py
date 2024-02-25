@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from idl_parser import idl_node
+
 from . import file_io
 from .composition_parts import Component
 
@@ -29,6 +31,7 @@ class AstGroup(object):
         return file_io.write_pickle_file_if_changed(filepath, self)
 
     def add_ast_node(self, node):
+        assert isinstance(node, idl_node.IDLNode)
         assert node.GetClass() == 'File', (
             'Root node of an AST must be a File node, but is %s.' %
             node.GetClass())

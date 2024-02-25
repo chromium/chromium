@@ -61,21 +61,24 @@ class UIControlsAsh : public UIControlsAura {
                      int key_event_types,
                      int accelerator_state) override {
     return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
-                                       base::OnceClosure(), accelerator_state);
+                                       base::OnceClosure(), accelerator_state,
+                                       ui_controls::KeyEventType::kKeyRelease);
   }
 
-  bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
-                                   ui::KeyboardCode key,
-                                   int key_event_types,
-                                   base::OnceClosure closure,
-                                   int accelerator_state) override {
+  bool SendKeyEventsNotifyWhenDone(
+      gfx::NativeWindow window,
+      ui::KeyboardCode key,
+      int key_event_types,
+      base::OnceClosure closure,
+      int accelerator_state,
+      ui_controls::KeyEventType wait_for) override {
     aura::Window* root = window ? window->GetRootWindow()
                                 : ash::Shell::GetRootWindowForNewWindows();
     UIControlsAura* ui_controls = GetUIControlsForRootWindow(root);
 
     return ui_controls && ui_controls->SendKeyEventsNotifyWhenDone(
                               window, key, key_event_types, std::move(closure),
-                              accelerator_state);
+                              accelerator_state, wait_for);
   }
 
   bool SendMouseMove(int x, int y) override {

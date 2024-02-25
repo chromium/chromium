@@ -102,8 +102,6 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
 
   virtual void DispatchLoadEvent() = 0;
   virtual void DispatchErrorEvent() = 0;
-  virtual bool HasLoadEventHandler() = 0;
-  virtual bool HasErrorEventHandler() = 0;
 
   virtual Type GetScriptElementType() = 0;
 

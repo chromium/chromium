@@ -7,7 +7,6 @@
         "args": [
           "--gs-results-bucket=chromium-result-details"
         ],
-        "isolate_name": "foo_test",
         "merge": {
           "args": [
             "--bucket",
@@ -32,7 +31,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ]
-        }
+        },
+        "test": "foo_test"
       }
     ]
   }

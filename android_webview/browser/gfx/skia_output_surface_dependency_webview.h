@@ -54,8 +54,7 @@ class SkiaOutputSurfaceDependencyWebView
   bool IsOffscreen() override;
   gpu::SurfaceHandle GetSurfaceHandle() override;
   scoped_refptr<gl::Presenter> CreatePresenter(
-      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-      gl::GLSurfaceFormat format) override;
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) override;
   scoped_refptr<gl::GLSurface> CreateGLSurface(
       base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) override;
@@ -64,7 +63,6 @@ class SkiaOutputSurfaceDependencyWebView
   void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
 
-  base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
   bool NeedsSupportForExternalStencil() override;
   bool IsUsingCompositorGpuThread() override;
 

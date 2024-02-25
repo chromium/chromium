@@ -11,9 +11,7 @@ import android.view.inputmethod.CursorAnchorInfo;
 
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Wrapper around Android's InputMethodManager so that the implementation can be swapped out.
- */
+/** Wrapper around Android's InputMethodManager so that the implementation can be swapped out. */
 public interface InputMethodManagerWrapper {
     /** An embedder may implement this for multi-display support. */
     public interface Delegate {
@@ -66,8 +64,6 @@ public interface InputMethodManagerWrapper {
      */
     void onWindowAndroidChanged(WindowAndroid newWindowAndroid);
 
-    /**
-     * Call this when non-null InputConnection has been created.
-     */
+    /** Call this when non-null InputConnection has been created. */
     void onInputConnectionCreated();
 }

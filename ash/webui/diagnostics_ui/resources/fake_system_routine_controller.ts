@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
@@ -13,8 +13,18 @@ import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInter
  * Implements a fake version of the SystemRoutineController mojo interface.
  */
 
+/**
+ * Type for methods needed for the fake SystemRoutineController implementation.
+ */
+export type FakeSystemRoutineControllerInterface =
+    SystemRoutineControllerInterface&{
+      setDelayTimeInMillisecondsForTesting(delayMilliseconds: number): void,
+      getSupportedRoutines(): Promise<{routines: RoutineType[]}>,
+      getAllRoutines(): RoutineType[],
+    };
+
 export class FakeSystemRoutineController implements
-    SystemRoutineControllerInterface {
+    FakeSystemRoutineControllerInterface {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private routineResults: Map<RoutineType, RoutineResult> = new Map();
   /**

@@ -38,7 +38,8 @@
 #include <string.h>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "base/third_party/double_conversion/double-conversion/double-conversion.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -133,16 +134,25 @@ const char* NumberToFixedWidthString(double d,
   return builder.Finalize();
 }
 
+double ParseDouble(const LChar* string, size_t length, size_t& parsed_length) {
+  int int_parsed_length = 0;
+  double d = internal::GetDoubleConverter().StringToDouble(
+      reinterpret_cast<const char*>(string), base::saturated_cast<int>(length),
+      &int_parsed_length);
+  parsed_length = int_parsed_length;
+  return d;
+}
+
 namespace internal {
 
 double ParseDoubleFromLongString(const UChar* string,
                                  size_t length,
                                  size_t& parsed_length) {
   wtf_size_t conversion_length = base::checked_cast<wtf_size_t>(length);
-  Vector<LChar> conversion_buffer(conversion_length);
+  auto conversion_buffer = std::make_unique<LChar[]>(conversion_length);
   for (wtf_size_t i = 0; i < conversion_length; ++i)
     conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
-  return ParseDouble(conversion_buffer.data(), length, parsed_length);
+  return ParseDouble(conversion_buffer.get(), length, parsed_length);
 }
 
 const double_conversion::StringToDoubleConverter& GetDoubleConverter() {

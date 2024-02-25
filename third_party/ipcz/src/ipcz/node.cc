@@ -4,6 +4,7 @@
 
 #include "ipcz/node.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -168,9 +169,10 @@ bool Node::AddConnection(const NodeName& remote_node_name,
       // handling an incoming NodeConnector message, we can err on the side of
       // caution (i.e. less re-entrancy in event handlers) by treating every
       // case like an API call.
+      const Ref<NodeLink> link = it->second.link;
       mutex_.Unlock();
       const OperationContext context{OperationContext::kAPICall};
-      DropConnection(context, *it->second.link);
+      DropConnection(context, *link);
       mutex_.Lock();
     }
 
@@ -200,11 +202,11 @@ bool Node::AddConnection(const NodeName& remote_node_name,
   return true;
 }
 
-absl::optional<Node::Connection> Node::GetConnection(const NodeName& name) {
+std::optional<Node::Connection> Node::GetConnection(const NodeName& name) {
   absl::MutexLock lock(&mutex_);
   auto it = connections_.find(name);
   if (it == connections_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -304,7 +306,7 @@ void Node::HandleIntroductionRequest(NodeLink& from_node_link,
            << " received introduction request for " << for_node.ToString()
            << " from " << requestor.ToString();
 
-  const absl::optional<Connection> target_connection = GetConnection(for_node);
+  const std::optional<Connection> target_connection = GetConnection(for_node);
   if (!target_connection) {
     // We are not familiar with the requested node. Attempt to establish our own
     // link to it first, then try again.
@@ -548,7 +550,7 @@ bool Node::HandleIndirectIntroductionRequest(NodeLink& from_node_link,
   ABSL_ASSERT(from_node_link.remote_node_type() == Type::kBroker);
   ABSL_ASSERT(from_node_link.link_side().is_side_a());
 
-  absl::optional<Connection> connection_to_their_node =
+  std::optional<Connection> connection_to_their_node =
       GetConnection(their_node);
   if (!connection_to_their_node) {
     // We need to establish our own direct connection to `their_node` before we
@@ -560,7 +562,7 @@ bool Node::HandleIndirectIntroductionRequest(NodeLink& from_node_link,
         // If we could not get our own link to the identified node, then we
         // can't complete the introduction request. Notify our own node of the
         // failure in case they were awaiting such an introduction.
-        absl::optional<Connection> connection_to_our_node =
+        std::optional<Connection> connection_to_our_node =
             self->GetConnection(our_node);
         if (connection_to_our_node) {
           connection_to_our_node->link->RejectIntroduction(their_node);
@@ -573,7 +575,7 @@ bool Node::HandleIndirectIntroductionRequest(NodeLink& from_node_link,
     return true;
   }
 
-  absl::optional<Connection> connection_to_our_node = GetConnection(our_node);
+  std::optional<Connection> connection_to_our_node = GetConnection(our_node);
   if (!connection_to_our_node) {
     // We may have lost this connection for any number of reasons, but in any
     // case we can't fulfill the request.

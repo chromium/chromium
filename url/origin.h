@@ -9,32 +9,24 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "build/robolectric_buildflags.h"
 #include "url/scheme_host_port.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <jni.h>
-
-namespace base {
-namespace android {
-template <typename>
-class ScopedJavaLocalRef;
-template <typename>
-class JavaRef;
-}  // namespace android
-}  // namespace base
-#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/android/jni_android.h"
+#endif
 
 class GURL;
 
@@ -44,6 +36,10 @@ class SecurityOriginTest;
 class StorageKey;
 class StorageKeyTest;
 }  // namespace blink
+
+namespace content {
+class SiteInfo;
+}  // namespace content
 
 namespace IPC {
 template <class P>
@@ -198,9 +194,9 @@ class COMPONENT_EXPORT(URL) Origin {
   // forth over IPC (as transitioning through GURL would risk potentially
   // dangerous recanonicalization); other potential callers should prefer the
   // 'GURL'-based constructor.
-  static absl::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
-      base::StringPiece scheme,
-      base::StringPiece host,
+  static std::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
+      std::string_view scheme,
+      std::string_view host,
       uint16_t port);
 
   // Creates an origin without sanity checking that the host is canonicalized.
@@ -285,7 +281,7 @@ class COMPONENT_EXPORT(URL) Origin {
   GURL GetURL() const;
 
   // Same as GURL::DomainIs. If |this| origin is opaque, then returns false.
-  bool DomainIs(base::StringPiece canonical_domain) const;
+  bool DomainIs(std::string_view canonical_domain) const;
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
   // std::map).
@@ -309,13 +305,17 @@ class COMPONENT_EXPORT(URL) Origin {
   // |d|, and |d| is cross-origin to |a| and |c|.
   Origin DeriveNewOpaqueOrigin() const;
 
+  // Returns the nonce associated with the origin, if it is opaque, or nullptr
+  // otherwise. This is only for use in tests.
+  const base::UnguessableToken* GetNonceForTesting() const;
+
   // Creates a string representation of the object that can be used for logging
   // and debugging. It serializes the internal state, such as the nonce value
   // and precursor information.
   std::string GetDebugString(bool include_nonce = true) const;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
+  base::android::ScopedJavaLocalRef<jobject> ToJavaObject() const;
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
   static jlong CreateNative(JNIEnv* env,
@@ -334,9 +334,19 @@ class COMPONENT_EXPORT(URL) Origin {
   size_t EstimateMemoryUsage() const;
 
  private:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
+  friend Origin CreateOpaqueOriginForAndroid(
+      const std::string& scheme,
+      const std::string& host,
+      uint16_t port,
+      const base::UnguessableToken& nonce_token);
+#endif
   friend class blink::SecurityOrigin;
   friend class blink::SecurityOriginTest;
   friend class blink::StorageKey;
+  // SiteInfo needs the nonce to compute the site URL for some opaque origins,
+  // like data: URLs.
+  friend class content::SiteInfo;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;
@@ -418,9 +428,9 @@ class COMPONENT_EXPORT(URL) Origin {
   // This factory method should be used in order to pass opaque Origin objects
   // back and forth over IPC (as transitioning through GURL would risk
   // potentially dangerous recanonicalization).
-  static absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
-      base::StringPiece precursor_scheme,
-      base::StringPiece precursor_host,
+  static std::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
+      std::string_view precursor_scheme,
+      std::string_view precursor_host,
       uint16_t precursor_port,
       const Nonce& nonce);
 
@@ -440,17 +450,17 @@ class COMPONENT_EXPORT(URL) Origin {
   // origin's |tuple_| is invalid nullopt is returned. If the nonce is not
   // initialized, a nonce of 0 is used. Use of this method should be limited as
   // an opaque origin will never be matchable in future browser sessions.
-  absl::optional<std::string> SerializeWithNonce() const;
+  std::optional<std::string> SerializeWithNonce() const;
 
   // Like SerializeWithNonce(), but forces |nonce_| to be initialized prior to
   // serializing.
-  absl::optional<std::string> SerializeWithNonceAndInitIfNeeded();
+  std::optional<std::string> SerializeWithNonceAndInitIfNeeded();
 
-  absl::optional<std::string> SerializeWithNonceImpl() const;
+  std::optional<std::string> SerializeWithNonceImpl() const;
 
   // Deserializes an origin from |ToValueWithNonce|. Returns nullopt if the
   // value was invalid in any way.
-  static absl::optional<Origin> Deserialize(const std::string& value);
+  static std::optional<Origin> Deserialize(const std::string& value);
 
   // The tuple is used for both tuple origins (e.g. https://example.com:80), as
   // well as for opaque origins, where it tracks the tuple origin from which
@@ -461,7 +471,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // The nonce is used for maintaining identity of an opaque origin. This
   // nonce is preserved when an opaque origin is copied or moved. An Origin
   // is considered opaque if and only if |nonce_| holds a value.
-  absl::optional<Nonce> nonce_;
+  std::optional<Nonce> nonce_;
 };
 
 // Pretty-printers for logging. These expose the internal state of the nonce.

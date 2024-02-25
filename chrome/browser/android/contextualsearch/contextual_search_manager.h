@@ -13,6 +13,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate.h"
 
+class Profile;
+
 // Manages the native extraction and request logic for Contextual Search,
 // and interacts with the Java ContextualSearchManager for UX.
 // Most of the work is done by the associated |ContextualSearchDelegate|.
@@ -20,7 +22,8 @@ class ContextualSearchManager {
  public:
   // Constructs a native manager associated with the Java manager.
   ContextualSearchManager(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& obj);
+                          const base::android::JavaRef<jobject>& obj,
+                          Profile* profile);
 
   ContextualSearchManager(const ContextualSearchManager&) = delete;
   ContextualSearchManager& operator=(const ContextualSearchManager&) = delete;

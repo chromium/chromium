@@ -7,13 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 
 namespace chrome_browser_sharing {
 enum MessageType : int;
@@ -22,7 +23,6 @@ class SharingMessage;
 }  // namespace chrome_browser_sharing
 
 namespace syncer {
-class DeviceInfo;
 class LocalDeviceInfoProvider;
 }  // namespace syncer
 
@@ -42,12 +42,12 @@ class SharingMessageSender {
    public:
     using SendMessageCallback =
         base::OnceCallback<void(SharingSendMessageResult result,
-                                absl::optional<std::string> message_id,
+                                std::optional<std::string> message_id,
                                 SharingChannelType channel_type)>;
     virtual ~SendMessageDelegate() = default;
 
     virtual void DoSendMessageToDevice(
-        const syncer::DeviceInfo& device,
+        const SharingTargetDeviceInfo& device,
         base::TimeDelta time_to_live,
         chrome_browser_sharing::SharingMessage message,
         SendMessageCallback callback) = 0;
@@ -66,7 +66,7 @@ class SharingMessageSender {
   virtual ~SharingMessageSender();
 
   virtual base::OnceClosure SendMessageToDevice(
-      const syncer::DeviceInfo& device,
+      const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,
       DelegateType delegate_type,
@@ -108,7 +108,7 @@ class SharingMessageSender {
 
   void OnMessageSent(const std::string& message_guid,
                      SharingSendMessageResult result,
-                     absl::optional<std::string> message_id,
+                     std::optional<std::string> message_id,
                      SharingChannelType channel_type);
 
   void InvokeSendMessageCallback(

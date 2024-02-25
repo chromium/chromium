@@ -8,15 +8,12 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace gfx {
-class RoundedCornersF;
-}  // namespace gfx
 
 namespace views {
 class ImageView;
@@ -32,9 +29,9 @@ class WindowMiniView;
 // icon and a title label from the source window of the `window_mini_view_` and
 // has a stroke at the bottom of it.
 class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(WindowMiniViewHeaderView);
+  METADATA_HEADER(WindowMiniViewHeaderView, views::BoxLayoutView)
 
+ public:
   explicit WindowMiniViewHeaderView(WindowMiniView* window_mini_view);
   WindowMiniViewHeaderView(const WindowMiniViewHeaderView&) = delete;
   WindowMiniViewHeaderView& operator=(const WindowMiniViewHeaderView&) = delete;
@@ -53,20 +50,29 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   // (WmPixelDiffTest.WindowCycleBasic).
   void RefreshHeaderViewRoundedCorners();
 
+  void SetHeaderViewRoundedCornerRadius(
+      gfx::RoundedCornersF& header_view_rounded_corners);
+
+  // Resets the preset rounded corners values i.e.
+  // `header_view_rounded_corners_`.
+  void ResetRoundedCorners();
+
   gfx::RoundedCornersF GetHeaderRoundedCorners(aura::Window* window) const;
 
  private:
   // The parent view of `this`, which is guaranteed not null during the lifetime
   // of `this`.
-  raw_ptr<WindowMiniView, ExperimentalAsh> window_mini_view_;
+  raw_ptr<WindowMiniView> window_mini_view_;
 
   // A view that wraps up the icon and title label. Owned by the views
   // hierarchy.
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> icon_label_view_;
+  raw_ptr<views::BoxLayoutView> icon_label_view_;
 
   // Views for the icon and title. Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
+
+  std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
 };
 
 }  // namespace ash

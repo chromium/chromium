@@ -219,7 +219,7 @@ CastDialogSinkButton* MediaRouterCastUiForTest::GetSinkButton(
 
 void MediaRouterCastUiForTest::ObserveDialog(
     WatchType watch_type,
-    absl::optional<std::string> sink_name) {
+    std::optional<std::string> sink_name) {
   CHECK(!watch_sink_name_);
   CHECK(!watch_callback_);
   CHECK_EQ(watch_type_, WatchType::kNone);

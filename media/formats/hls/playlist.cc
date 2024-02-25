@@ -24,8 +24,8 @@ Playlist::~Playlist() = default;
 // static
 ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
     base::StringPiece source) {
-  absl::optional<Kind> playlist_kind;
-  absl::optional<XVersionTag> version_tag;
+  std::optional<Kind> playlist_kind;
+  std::optional<XVersionTag> version_tag;
 
   // Iterate through playlist lines until we can identify the version and the
   // playlist kind.

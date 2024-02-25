@@ -41,8 +41,8 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
 
   std::u16string last_query_;
   const int max_results_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;  // Owned by ProfileInfo.
+  const raw_ptr<AppListControllerDelegate>
       list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcAppShortcutsSearchProvider> weak_ptr_factory_{this};

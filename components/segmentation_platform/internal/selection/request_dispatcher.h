@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_REQUEST_DISPATCHER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 struct PredictionOptions;
@@ -77,6 +77,25 @@ class RequestDispatcher {
                       scoped_refptr<InputContext> input_context,
                       WrappedCallback callback);
 
+  void ExecuteOnDemand(const std::string& segmentation_key,
+                       const Config* config,
+                       const PredictionOptions& options,
+                       scoped_refptr<InputContext> input_context,
+                       WrappedCallback callback);
+
+  void OnFinishedOnDemandExecution(const std::string& segmentation_key,
+                                   const Config* config,
+                                   const PredictionOptions& options,
+                                   scoped_refptr<InputContext> input_context,
+                                   WrappedCallback callback,
+                                   const RawResult& raw_result);
+
+  void HandleCachedExecution(const std::string& segmentation_key,
+                             const Config* config,
+                             const PredictionOptions& options,
+                             scoped_refptr<InputContext> input_context,
+                             WrappedCallback callback);
+
   // Wrap the result callback for recording metrics and converting raw result to
   // necessary result type.
   template <typename ResultType>
@@ -99,7 +118,7 @@ class RequestDispatcher {
   const raw_ptr<StorageService> storage_service_;
 
   // Storage initialization status.
-  absl::optional<bool> storage_init_status_;
+  std::optional<bool> storage_init_status_;
 
   // For caching any method calls that were received before initialization.
   // Key is a segmentation key, value is a queue of actions that use that model.

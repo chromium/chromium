@@ -24,9 +24,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Helper functions used in various password settings test suites.
- */
+/** Helper functions used in various password settings test suites. */
 class PasswordSettingsTestHelper {
     static final SavedPasswordEntry ZEUS_ON_EARTH =
             new SavedPasswordEntry("http://www.phoenicia.gr", "Zeus", "Europa");
@@ -39,18 +37,16 @@ class PasswordSettingsTestHelper {
     static final SavedPasswordEntry HADES_AT_UNDERWORLD =
             new SavedPasswordEntry("https://underworld.gr", "", "C3rb3rus");
     static final SavedPasswordEntry[] GREEK_GODS = {
-            ZEUS_ON_EARTH,
-            ARES_AT_OLYMP,
-            PHOBOS_AT_OLYMP,
-            DEIMOS_AT_OLYMP,
-            HADES_AT_UNDERWORLD,
+        ZEUS_ON_EARTH, ARES_AT_OLYMP, PHOBOS_AT_OLYMP, DEIMOS_AT_OLYMP, HADES_AT_UNDERWORLD,
     };
 
     private SettingsActivity mActivityToCleanUp;
+
     /**
      * Used to provide fake lists of stored passwords. Tests which need it can use setPasswordSource
      */
     private FakePasswordManagerHandler mHandler;
+
     /**
      * Delayer controlling hiding the progress bar during exporting passwords. This replaces a time
      * delay used in production.
@@ -63,9 +59,11 @@ class PasswordSettingsTestHelper {
         } catch (Exception e) {
             // Activity was already finished by test framework. Any exception is not test-related.
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordManagerHandlerProvider.getInstance().resetPasswordManagerHandlerForTest();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordManagerHandlerProvider.getInstance()
+                            .resetPasswordManagerHandlerForTest();
+                });
         setPasswordSource(null);
     }
 
@@ -79,6 +77,7 @@ class PasswordSettingsTestHelper {
 
     /**
      * Helper to set up a fake source of displayed passwords.
+     *
      * @param entry An entry to be added to saved passwords. Can be null.
      */
     void setPasswordSource(SavedPasswordEntry entry) {
@@ -91,6 +90,7 @@ class PasswordSettingsTestHelper {
 
     /**
      * Helper to set up a fake source of displayed passwords with multiple initial passwords.
+     *
      * @param initialEntries All entries to be added to saved passwords. Can not be null.
      */
     void setPasswordSourceWithMultipleEntries(SavedPasswordEntry[] initialEntries) {
@@ -108,6 +108,7 @@ class PasswordSettingsTestHelper {
 
     /**
      * Helper to set up a fake source of displayed passwords without passwords but with exceptions.
+     *
      * @param exceptions All exceptions to be added to saved exceptions. Can not be null.
      */
     void setPasswordExceptions(String[] exceptions) {
@@ -125,7 +126,8 @@ class PasswordSettingsTestHelper {
     SettingsActivity startPasswordSettingsFromMainSettings(
             SettingsActivityTestRule<PasswordSettings> testRule) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER,
+        fragmentArgs.putInt(
+                PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER,
                 ManagePasswordsReferrer.CHROME_SETTINGS);
         mActivityToCleanUp = testRule.startSettingsActivity(fragmentArgs);
         return mActivityToCleanUp;
@@ -136,7 +138,8 @@ class PasswordSettingsTestHelper {
         Bundle fragmentArgs = new Bundle();
         // The passwords accessory sheet is one of the places that can launch password settings
         // directly (without passing through main settings).
-        fragmentArgs.putInt(PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER,
+        fragmentArgs.putInt(
+                PasswordManagerHelper.MANAGE_PASSWORDS_REFERRER,
                 ManagePasswordsReferrer.PASSWORDS_ACCESSORY_SHEET);
         mActivityToCleanUp = testRule.startSettingsActivity(fragmentArgs);
         return mActivityToCleanUp;
@@ -144,6 +147,7 @@ class PasswordSettingsTestHelper {
 
     /**
      * Returns a matcher that checks whether a given view contains another view with the given text.
+     *
      * @param text The text that the view holder has in its view hierarchy.
      * @return A Matcher to find a particular {@link ViewHolder} that contains certain text.
      */

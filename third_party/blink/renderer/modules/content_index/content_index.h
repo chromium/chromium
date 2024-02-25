@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -18,7 +19,6 @@ namespace blink {
 
 class ContentDescription;
 class ExceptionState;
-class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
 
@@ -37,8 +37,9 @@ class ContentIndex final : public ScriptWrappable {
   ScriptPromise deleteDescription(ScriptState* script_state,
                                   const String& id,
                                   ExceptionState& exception_state);
-  ScriptPromise getDescriptions(ScriptState* script_state,
-                                ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<ContentDescription>> getDescriptions(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 
@@ -63,7 +64,7 @@ class ContentIndex final : public ScriptWrappable {
   void DidDeleteDescription(ScriptPromiseResolver* resolver,
                             mojom::blink::ContentIndexError error);
   void DidGetDescriptions(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>* resolver,
       mojom::blink::ContentIndexError error,
       Vector<mojom::blink::ContentDescriptionPtr> descriptions);
 

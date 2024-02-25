@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -14,7 +15,7 @@
 #include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -26,6 +27,9 @@ class ReportingContextTest : public testing::Test {
  protected:
   ReportingContextTest() = default;
   ~ReportingContextTest() override = default;
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
@@ -45,7 +49,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
     broker_.SetBinderForTesting(ReportingServiceProxy::Name_, {});
   }
 
-  absl::optional<base::Time> DeprecationReportAnticipatedRemoval() const {
+  std::optional<base::Time> DeprecationReportAnticipatedRemoval() const {
     return deprecation_report_anticipated_removal_;
   }
 
@@ -59,7 +63,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
 
   void QueueDeprecationReport(const KURL& url,
                               const String& id,
-                              absl::optional<base::Time> anticipated_removal,
+                              std::optional<base::Time> anticipated_removal,
                               const String& message,
                               const String& source_file,
                               int32_t line_number,
@@ -98,6 +102,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   }
 
   void QueuePermissionsPolicyViolationReport(const KURL& url,
+                                             const String& endpoint,
                                              const String& policy_id,
                                              const String& disposition,
                                              const String& message,
@@ -127,20 +132,21 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   base::OnceClosure reached_callback_;
 
   // Last reported values
-  absl::optional<base::Time> deprecation_report_anticipated_removal_;
+  std::optional<base::Time> deprecation_report_anticipated_removal_;
 
   // Last reported report's message.
   String last_message_;
 };
 
 TEST_F(ReportingContextTest, CountQueuedReports) {
-  HistogramTester tester;
+  base::HistogramTester tester;
   auto dummy_page_holder = std::make_unique<DummyPageHolder>();
   tester.ExpectTotalCount("Blink.UseCounter.Features.DeprecationReport", 0);
   // Checking the feature state with reporting intent should record a potential
   // violation.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      "FeatureId", base::Time::FromJsTime(2e9), "Test report");
+      "FeatureId", base::Time::FromMillisecondsSinceUnixEpoch(2e9),
+      "Test report");
   Report* report = MakeGarbageCollected<Report>(
       "deprecation", dummy_page_holder->GetDocument().Url().GetString(), body);
 
@@ -161,7 +167,7 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
                                               run_loop.QuitClosure());
 
   auto* body = MakeGarbageCollected<DeprecationReportBody>(
-      "FeatureId", base::Time::FromJsTime(1000), "Test report");
+      "FeatureId", base::Time::FromSecondsSinceUnixEpoch(1), "Test report");
   auto* report = MakeGarbageCollected<Report>(
       "deprecation", win->document()->Url().GetString(), body);
   ReportingContext::From(win)->QueueReport(report);
@@ -170,7 +176,7 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
   EXPECT_TRUE(reporting_service.DeprecationReportAnticipatedRemoval());
   // We had a bug that anticipatedRemoval had a wrong value only in mojo method
   // calls.
-  EXPECT_EQ(base::Time::FromJsTime(1000),
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1),
             *reporting_service.DeprecationReportAnticipatedRemoval());
 }
 

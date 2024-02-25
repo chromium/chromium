@@ -14,6 +14,4 @@ import java.util.concurrent.TimeUnit;
 public class VariationsFastFetchModeUtils {
     public static final String URI_PATH = "/safe-mode-seed-fetch-results";
     public static final long MAX_ALLOWABLE_SEED_AGE_MS = TimeUnit.MINUTES.toMillis(15);
-    // The ID used for targeting the fast variations seed SafeMode action
-    public static final String SAFEMODE_ACTION_ID = "fast_variations_seed";
 }

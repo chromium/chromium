@@ -6,9 +6,12 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CHANGE_SOURCE_H_
 
 #include <list>
+#include <optional>
 
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -16,7 +19,9 @@
 #include "base/thread_annotations.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace content {
 
@@ -24,21 +29,31 @@ namespace content {
 // This class must constructed, used, and destroyed on the same sequence.
 class CONTENT_EXPORT FileSystemAccessChangeSource {
  public:
+  using ChangeInfo = base::FilePathWatcher::ChangeInfo;
+  using ChangeType = base::FilePathWatcher::ChangeType;
+  using FilePathType = base::FilePathWatcher::FilePathType;
+
   class RawChangeObserver : public base::CheckedObserver {
    public:
     // Naively notifies of all changes from the corresponding change source.
     // These events are _not_ safe to be consumed directly by components that
     // forward events to JavaScript.
-    virtual void OnRawChange(FileSystemAccessChangeSource* source,
-                             const base::FilePath& relative_path,
-                             bool error) = 0;
+    //
+    // `changed_url` must be valid and within the watch scope of the notifying
+    // change source.
+    virtual void OnRawChange(const storage::FileSystemURL& changed_url,
+                             bool error,
+                             const ChangeInfo& change_info) = 0;
+
     virtual void OnSourceBeingDestroyed(
         FileSystemAccessChangeSource* source) = 0;
   };
 
   // Constructs a change source which notifies of changes within the given
-  // `scope`, which must not be null.
-  explicit FileSystemAccessChangeSource(FileSystemAccessWatchScope scope);
+  // `scope`.
+  FileSystemAccessChangeSource(
+      FileSystemAccessWatchScope scope,
+      scoped_refptr<storage::FileSystemContext> file_system_context);
   virtual ~FileSystemAccessChangeSource();
 
   void AddObserver(RawChangeObserver* observer);
@@ -46,33 +61,51 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
 
   // Ensures that this change source is ready to watch for changes within its
   // `scope_`. This may fail if the scope cannot be watched.
-  // `on_source_initialized` is run with a bool indicating whether setting up
-  // this source succeeds.
+  // `on_source_initialized` is run with a error status indicating whether
+  // setting up this source succeeds.
   // TODO(https://crbug.com/1019297): Assert that this is called before
   // notifying of changes.
-  void EnsureInitialized(base::OnceCallback<void(bool)> on_source_initialized);
+  void EnsureInitialized(
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized);
 
   base::WeakPtr<FileSystemAccessChangeSource> AsWeakPtr();
 
   const FileSystemAccessWatchScope& scope() const { return scope_; }
+  storage::FileSystemContext* file_system_context() const {
+    return file_system_context_.get();
+  }
 
  protected:
   virtual void Initialize(
-      base::OnceCallback<void(bool)> on_source_initialized) = 0;
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized) = 0;
 
-  // Called by subclasses to record changes to watched paths.
-  void NotifyOfChange(const base::FilePath& relative_path, bool error);
+  // Called by subclasses to record changes to watched paths. It is illegal for
+  // a change source to pass a `changed_url` which is either invalid or not
+  // within its watch scope.
+  void NotifyOfChange(const storage::FileSystemURL& changed_url,
+                      bool error,
+                      const ChangeInfo& change_info);
+  // Same as above, but more convenient for subclasses that use file paths
+  // rather than FileSystemURLs. Requires that the change source's watch scope
+  // has a valid root url and `relative_path` is relative.
+  void NotifyOfChange(const base::FilePath& relative_path,
+                      bool error,
+                      const ChangeInfo& change_info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  void DidInitialize(bool result);
+  void DidInitialize(blink::mojom::FileSystemAccessErrorPtr result);
 
   const FileSystemAccessWatchScope scope_;
 
-  absl::optional<bool> initialization_result_;
-  std::list<base::OnceCallback<void(bool)>> initialization_callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+  std::optional<blink::mojom::FileSystemAccessErrorPtr> initialization_result_;
+  std::list<base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>>
+      initialization_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ObserverList<RawChangeObserver> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Anchor focusing is blocked on an element in a fenced frame without user activation.
-PASS Anchor focusing is allowed on an element in a fenced frame with user activation.
-Harness: the test ran to completion.
-

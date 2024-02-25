@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "components/sqlite_proto/key_value_data.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -41,6 +41,7 @@ namespace predictors {
 
 struct OriginRequestSummary;
 struct PageRequestSummary;
+struct LcppDataInputs;
 
 namespace internal {
 struct LastVisitTimeCompare {
@@ -120,7 +121,7 @@ struct OptimizationGuidePrediction {
   optimization_guide::OptimizationGuideDecision decision;
   PreconnectPrediction preconnect_prediction;
   std::vector<GURL> predicted_subresources;
-  absl::optional<base::TimeTicks> optimization_guide_prediction_arrived;
+  std::optional<base::TimeTicks> optimization_guide_prediction_arrived;
 };
 
 // Contains logic for learning what can be prefetched and for kicking off
@@ -195,11 +196,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   virtual bool PredictPreconnectOrigins(const GURL& url,
                                         PreconnectPrediction* prediction) const;
 
-  // Returns LCP element locators in the past loads for a given `url`.  The
-  // returned LCP element locators are ordered by descending frequency (the most
-  // frequent one comes first). If there is no data, it returns an empty vector.
-  std::vector<std::string> PredictLcpElementLocators(const GURL& url) const;
-
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
   virtual void RecordPageRequestSummary(
@@ -207,11 +203,13 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
-  void LearnLcpp(const std::string& host,
-                 const std::string& lcp_element_locator);
+  void LearnLcpp(const std::string& host, const LcppDataInputs& inputs);
 
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();
+
+  // Returns LcppData for the `url`, or std::nullopt on failure.
+  std::optional<LcppData> GetLcppData(const GURL& url) const;
 
  private:
   friend class LoadingPredictor;
@@ -258,6 +256,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
                            TestRecordFirstContentfulPaint);
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnLcpp);
+  FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnFontUrls);
+  FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest, LearnSubresourceUrls);
   FRIEND_TEST_ALL_PREFIXES(ResourcePrefetchPredictorTest,
                            WhenLcppDataIsCorrupted_ResetData);
 
@@ -325,6 +325,15 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   void set_mock_tables(scoped_refptr<ResourcePrefetchPredictorTables> tables) {
     tables_ = tables;
   }
+
+  // LCPP histogram recording functions.
+  bool RecordLcpElementLocatorHistogram(LcppData& data,
+                                        const std::string& host,
+                                        const std::string& lcp_element_locator);
+  bool RecordLcpInfluencerScriptUrlsHistogram(
+      LcppData& data,
+      const std::string& host,
+      const std::vector<GURL>& lcp_influencer_scripts);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<TestObserver> observer_;

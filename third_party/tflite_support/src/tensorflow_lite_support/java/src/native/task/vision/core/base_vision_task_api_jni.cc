@@ -31,13 +31,8 @@ using ::tflite::task::vision::FrameBuffer;
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFromByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject jimage_byte_buffer,
-    jint width,
-    jint height,
-    jint jorientation,
-    jint jcolor_space_type) {
+    JNIEnv* env, jclass thiz, jobject jimage_byte_buffer, jint width,
+    jint height, jint jorientation, jint jcolor_space_type) {
   auto frame_buffer_or = CreateFrameBufferFromByteBuffer(
       env, jimage_byte_buffer, width, height, jorientation, jcolor_space_type);
   if (frame_buffer_or.ok()) {
@@ -54,14 +49,8 @@ Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFro
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFromBytes(
-    JNIEnv* env,
-    jclass thiz,
-    jbyteArray jimage_bytes,
-    jint width,
-    jint height,
-    jint jorientation,
-    jint jcolor_space_type,
-    jlongArray jbyte_array_handle) {
+    JNIEnv* env, jclass thiz, jbyteArray jimage_bytes, jint width, jint height,
+    jint jorientation, jint jcolor_space_type, jlongArray jbyte_array_handle) {
   auto frame_buffer_or =
       CreateFrameBufferFromBytes(env, jimage_bytes, width, height, jorientation,
                                  jcolor_space_type, jbyte_array_handle);
@@ -79,17 +68,9 @@ Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFro
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFromPlanes(
-    JNIEnv* env,
-    jclass thiz,
-    jobject jy_plane,
-    jobject ju_plane,
-    jobject jv_plane,
-    jint width,
-    jint height,
-    jint row_stride_y,
-    jint row_stride_uv,
-    jint pixel_stride_uv,
-    jint orientation) {
+    JNIEnv* env, jclass thiz, jobject jy_plane, jobject ju_plane,
+    jobject jv_plane, jint width, jint height, jint row_stride_y,
+    jint row_stride_uv, jint pixel_stride_uv, jint orientation) {
   auto frame_buffer_or = CreateFrameBufferFromYuvPlanes(
       env, jy_plane, ju_plane, jv_plane, width, height, row_stride_y,
       row_stride_uv, pixel_stride_uv, orientation);
@@ -107,11 +88,8 @@ Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_createFrameBufferFro
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_core_BaseVisionTaskApi_deleteFrameBuffer(
-    JNIEnv* env,
-    jobject thiz,
-    jlong frame_buffer_handle,
-    jlong byte_array_handle,
-    jbyteArray jbyte_array) {
+    JNIEnv* env, jobject thiz, jlong frame_buffer_handle,
+    jlong byte_array_handle, jbyteArray jbyte_array) {
   delete reinterpret_cast<FrameBuffer*>(frame_buffer_handle);
   jbyte* bytes_ptr = reinterpret_cast<jbyte*>(byte_array_handle);
   if (bytes_ptr != NULL) {

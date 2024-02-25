@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script src="utils/MediaRecorder-error-oversize-frame.js"></script>
+<script>
+  genTest('video/webm; codecs="vp8"', 16383);
+  // VP9 frames can be 65535x65535, which is larger than the max canvas size.
+</script>

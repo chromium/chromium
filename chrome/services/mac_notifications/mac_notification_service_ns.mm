@@ -20,6 +20,13 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
+
+// This class implements the Chromium interface to a deprecated API. It is in
+// the process of being replaced, and warnings about its deprecation are not
+// helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @interface AlertNSNotificationCenterDelegate
     : NSObject <NSUserNotificationCenterDelegate>
@@ -108,7 +115,7 @@ void AddActionButtons(
   // A default close button label is provided by the platform but we explicitly
   // override it in case the user decides to not use the OS language in Chrome.
   // macOS 11 already shows a close button in the top-left corner.
-  if (!base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() < 11) {
     [notification setOtherButtonTitle:l10n_util::GetNSString(
                                           IDS_NOTIFICATION_BUTTON_CLOSE)];
   }
@@ -149,7 +156,7 @@ void AddActionButtons(
   // will always show "Options" via this API. Setting actionButtonTitle just
   // appends another button into the overflow menu. Only the new UNNotification
   // API allows overriding this title on macOS 11.
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     [notification setValue:@NO forKey:@"_hasActionButton"];
   } else {
     [notification setActionButtonTitle:l10n_util::GetNSString(
@@ -204,6 +211,7 @@ void MacNotificationServiceNS::DisplayNotification(
 
 void MacNotificationServiceNS::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
+    const std::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   std::vector<mojom::NotificationIdentifierPtr> notifications;
   // Note: |profile| might be null if we want all notifications.
@@ -220,10 +228,15 @@ void MacNotificationServiceNS::GetDisplayedNotifications(
 
     if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
                         incognito == toast_incognito)) {
-      auto profile_identifier = mojom::ProfileIdentifier::New(
-          base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
-      notifications.push_back(mojom::NotificationIdentifier::New(
-          base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+      NSString* toast_origin_url =
+          [toast.userInfo objectForKey:kNotificationOrigin];
+      GURL toast_origin = GURL(base::SysNSStringToUTF8(toast_origin_url));
+      if (!origin.has_value() || url::IsSameOriginWith(toast_origin, *origin)) {
+        auto profile_identifier = mojom::ProfileIdentifier::New(
+            base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
+        notifications.push_back(mojom::NotificationIdentifier::New(
+            base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+      }
     }
   }
 
@@ -279,10 +292,11 @@ void MacNotificationServiceNS::CloseAllNotifications() {
 void MacNotificationServiceNS::OkayToTerminateService(
     OkayToTerminateServiceCallback callback) {
   GetDisplayedNotifications(
-      nullptr, base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
-                                     notifications) {
-                 return notifications.empty();
-               }).Then(std::move(callback)));
+      /*profile=*/nullptr, /*origin=*/std::nullopt,
+      base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
+                            notifications) {
+        return notifications.empty();
+      }).Then(std::move(callback)));
 }
 
 }  // namespace mac_notifications
@@ -311,7 +325,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
       GetNotificationOperationFromNotification(notification);
   int buttonIndex = GetActionButtonIndexFromNotification(notification);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -328,7 +342,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
   auto operation = NotificationOperation::kClose;
   int buttonIndex = kNotificationInvalidButtonIndex;
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -345,7 +359,7 @@ void MacNotificationServiceNS::OkayToTerminateService(
     auto operation = NotificationOperation::kClose;
     int buttonIndex = kNotificationInvalidButtonIndex;
     auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-        std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+        std::move(meta), operation, buttonIndex, /*reply=*/std::nullopt);
     _handler->OnNotificationAction(std::move(actionInfo));
   }
 }
@@ -357,3 +371,5 @@ void MacNotificationServiceNS::OkayToTerminateService(
 }
 
 @end
+
+#pragma clang diagnostic pop

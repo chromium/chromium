@@ -5,59 +5,74 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
 #import <StoreKit/StoreKit.h>
-#import <memory>
 
+#import <memory>
+#import <optional>
+
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
+#import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/download/download_directory_util.h"
-#import "ios/chrome/browser/download/external_app_util.h"
-#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/feature_engagement/tracker_util.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/util.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/followed_web_site.h"
-#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_state.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
-#import "ios/chrome/browser/passwords/password_controller_delegate.h"
-#import "ios/chrome/browser/prerender/preload_controller_delegate.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
-#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
+#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/followed_web_site.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
+#import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
+#import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -69,48 +84,60 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/passwords_account_storage_notice_commands.h"
+#import "ios/chrome/browser/shared/public/commands/phone_number_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/features_utils.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/page_animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
-#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
-#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
-#import "ios/chrome/browser/sync/sync_error_browser_agent.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
+#import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
+#import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
+#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -135,6 +162,7 @@
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 #import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -148,6 +176,7 @@
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
+#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator_delegate.h"
@@ -155,19 +184,21 @@
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/ui/phone_number/add_contacts_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
-#import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -178,41 +209,41 @@
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
-#import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
-#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/print/print_tab_helper.h"
-#import "ios/chrome/browser/web/repost_form_tab_helper.h"
-#import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
-#import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
-#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/print/print_tab_helper.h"
+#import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
+#import "ios/chrome/browser/web/model/repost_form_tab_helper_delegate.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
+#import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
+#import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -235,6 +266,7 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <
+    AppLauncherTabHelperBrowserPresentationProvider,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
@@ -248,6 +280,7 @@ enum class ToolbarKind {
     OverscrollActionsControllerDelegate,
     PageInfoCommands,
     PageInfoPresentation,
+    ParcelTrackingOptInCommands,
     PasswordBreachCommands,
     PasswordControllerDelegate,
     PasswordProtectionCommands,
@@ -258,6 +291,7 @@ enum class ToolbarKind {
     PasswordSuggestionBottomSheetCoordinatorDelegate,
     PasswordsAccountStorageNoticeCommands,
     PriceNotificationsCommands,
+    PhoneNumberCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
@@ -265,15 +299,26 @@ enum class ToolbarKind {
     RecentTabsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
+    SaveToDriveCommands,
+    SaveToPhotosCommands,
     SigninPresenter,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
     ToolbarAccessoryCoordinatorDelegate,
+    UnitConversionCommands,
     URLLoadingDelegate,
     WebContentCommands,
-    WebNavigationNTPDelegate>
+    WebNavigationNTPDelegate,
+    WebUsageEnablerBrowserAgentObserving>
+
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+
+// Activates/deactivates the object. This will enable/disable the ability for
+// this object to browse, and to have live UIWebViews associated with it. While
+// not active, the UI will not react to changes in the tab model, so generally
+// an inactive BVC should not be visible.
+@property(nonatomic, assign, getter=isActive) BOOL active;
 
 // Whether web usage is enabled for the WebStates in `self.browser`.
 @property(nonatomic, assign, getter=isWebUsageEnabled) BOOL webUsageEnabled;
@@ -317,6 +362,12 @@ enum class ToolbarKind {
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
     paymentsSuggestionBottomSheetCoordinator;
+
+@property(nonatomic, strong)
+    PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
+
+@property(nonatomic, strong) VirtualCardEnrollmentBottomSheetCoordinator*
+    virtualCardEnrollmentBottomSheetCoordinator;
 
 // Coordinator for the choice screen.
 @property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
@@ -367,8 +418,15 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
+// Coordinator for new tab pages.
+@property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
+
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
+
+// Coordinator for parcel tracking opt-in UI presentation.
+@property(nonatomic, strong)
+    ParcelTrackingOptInCoordinator* parcelTrackingOptInCoordinator;
 
 // Coordinator for the PassKit UI presentation.
 @property(nonatomic, strong) PassKitCoordinator* passKitCoordinator;
@@ -432,6 +490,12 @@ enum class ToolbarKind {
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
 
+// Coordinator for displaying the Save to Drive UI.
+@property(nonatomic, strong) SaveToDriveCoordinator* saveToDriveCoordinator;
+
+// Coordinator for displaying the Save to Photos UI.
+@property(nonatomic, strong) SaveToPhotosCoordinator* saveToPhotosCoordinator;
+
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
@@ -450,6 +514,10 @@ enum class ToolbarKind {
 
 // Coordinator for Text Zoom.
 @property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
+
+// Coordinator in charge of presenting a unit converter.
+@property(nonatomic, strong)
+    UnitConversionCoordinator* unitConversionCoordinator;
 
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
@@ -476,20 +544,25 @@ enum class ToolbarKind {
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
   SideSwipeMediator* _sideSwipeMediator;
-  FullscreenController* _fullscreenController;
+  raw_ptr<FullscreenController> _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
-  absl::optional<ToolbarKind> _nextToolbarToPresent;
+  std::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
+  DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
-  UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> _urlLoadingNotifierBrowserAgent;
   id<LoadQueryCommands> _loadQueryCommandsHandler;
   id<OmniboxCommands> _omniboxCommandsHandler;
   LayoutGuideCenter* _layoutGuideCenter;
-  WebNavigationBrowserAgent* _webNavigationBrowserAgent;
-  UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
+  raw_ptr<WebNavigationBrowserAgent> _webNavigationBrowserAgent;
+  raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
+  AddContactsCoordinator* _addContactsCoordinator;
+  OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
+  std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
+      _webUsageEnablerObserver;
 }
 
 #pragma mark - ChromeCoordinator
@@ -499,6 +572,10 @@ enum class ToolbarKind {
     return;
 
   DCHECK(!self.viewController);
+
+  _webUsageEnablerObserver =
+      std::make_unique<WebUsageEnablerBrowserAgentObserverBridge>(
+          WebUsageEnablerBrowserAgent::FromBrowser(self.browser), self);
 
   // TabLifeCycleMediator should start before createViewController because it
   // needs to register itself as a WebStateListObserver before the rest of the
@@ -549,6 +626,7 @@ enum class ToolbarKind {
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+  _webUsageEnablerObserver.reset();
 }
 
 - (void)dealloc {
@@ -578,11 +656,6 @@ enum class ToolbarKind {
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (browserState) {
-    // TODO(crbug.com/1272520): Refactor ActiveStateManager for multiwindow.
-    ActiveStateManager* active_state_manager =
-        ActiveStateManager::FromBrowserState(browserState);
-    active_state_manager->SetActive(active);
-
     TextToSpeechPlaybackControllerFactory::GetInstance()
         ->GetForBrowserState(browserState)
         ->SetEnabled(active);
@@ -608,6 +681,9 @@ enum class ToolbarKind {
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
+  [self stopSaveToPhotos];
+  [self hideSaveToDrive];
+
   [self.passKitCoordinator stop];
 
   [self.printCoordinator dismissAnimated:YES];
@@ -636,6 +712,12 @@ enum class ToolbarKind {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
+
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
+
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
 
@@ -646,8 +728,18 @@ enum class ToolbarKind {
   [self.priceNotificationsViewCoordiantor stop];
   self.priceNotificationsViewCoordiantor = nil;
 
+  [self.unitConversionCoordinator stop];
+  self.unitConversionCoordinator = nil;
+
+  [self stopRepostFormCoordinator];
+
+  [_formInputAccessoryCoordinator clearPresentedState];
+
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
+
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -692,12 +784,17 @@ enum class ToolbarKind {
   self.storeKitCoordinator = nil;
 }
 
+// Stops the coordinator for password manager settings.
+- (void)stopPasswordSettingsCoordinator {
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
+}
+
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
   if (!self.browser->GetBrowserState() || !self.started) {
     return;
   }
-  WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
-      ->SetWebUsageEnabled(webUsageEnabled);
   _webUsageEnabled = webUsageEnabled;
   self.viewController.webUsageEnabled = webUsageEnabled;
 }
@@ -714,21 +811,6 @@ enum class ToolbarKind {
 - (void)hideActivityOverlay {
   [self.activityOverlayCoordinator stop];
   self.activityOverlayCoordinator = nil;
-}
-
-// Shows a default promo with the passed type or nothing if a tailored promo is
-// already present.
-- (void)showTailoredPromoWithType:(DefaultPromoType)type {
-  if (self.tailoredPromoCoordinator) {
-    // Another promo is being shown, return early.
-    return;
-  }
-  self.tailoredPromoCoordinator = [[TailoredPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            type:type];
-  self.tailoredPromoCoordinator.handler = self;
-  [self.tailoredPromoCoordinator start];
 }
 
 // Instantiates a BrowserViewController.
@@ -783,7 +865,6 @@ enum class ToolbarKind {
     @protocol(ActivityServiceCommands),
     @protocol(AutofillBottomSheetCommands),
     @protocol(BrowserCoordinatorCommands),
-    @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
@@ -796,10 +877,15 @@ enum class ToolbarKind {
     @protocol(PasswordsAccountStorageNoticeCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
+    @protocol(SaveToDriveCommands),
+    @protocol(SaveToPhotosCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserPromoCommands),
     @protocol(MiniMapCommands),
+    @protocol(ParcelTrackingOptInCommands),
+    @protocol(UnitConversionCommands),
+    @protocol(PhoneNumberCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -810,14 +896,21 @@ enum class ToolbarKind {
 
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
-  _keyCommandsProvider.dispatcher =
-      static_cast<id<ApplicationCommands, FindInPageCommands>>(_dispatcher);
-  _keyCommandsProvider.omniboxHandler =
-      static_cast<id<OmniboxCommands>>(_dispatcher);
-  _keyCommandsProvider.bookmarksCommandsHandler =
-      static_cast<id<BookmarksCommands>>(_dispatcher);
-  _keyCommandsProvider.browserCoordinatorCommandsHandler =
+  _keyCommandsProvider.applicationHandler =
+      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  _keyCommandsProvider.settingsHandler =
+      HandlerForProtocol(_dispatcher, SettingsCommands);
+  _keyCommandsProvider.findInPageHandler =
+      HandlerForProtocol(_dispatcher, FindInPageCommands);
+  _keyCommandsProvider.browserCoordinatorHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
+
+  // TODO(crbug.com/1494417): This can't use HandlerForProtocol because dispatch
+  // for BookmarksCommands is set up when the tab grid coordinator starts, which
+  // is after this is called, so for now use static_cast until that can be
+  // untangled.
+  _keyCommandsProvider.bookmarksHandler =
+      static_cast<id<BookmarksCommands>>(_dispatcher);
 
   PrerenderService* prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
@@ -834,9 +927,6 @@ enum class ToolbarKind {
   _urlLoadingNotifierBrowserAgent =
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
-  _toolbarCoordinator =
-      [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
-
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
   HostContentSettingsMap* settingsMap =
@@ -850,7 +940,7 @@ enum class ToolbarKind {
   }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+    if (IsModernTabStripOrRaccoonEnabled()) {
       _tabStripCoordinator =
           [[TabStripCoordinator alloc] initWithBrowser:self.browser];
     } else {
@@ -870,10 +960,7 @@ enum class ToolbarKind {
   _bubblePresenter = [[BubblePresenter alloc]
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
-                             loadingNotifier:_urlLoadingNotifierBrowserAgent
-                                  sceneState:SceneStateBrowserAgent::
-                                                 FromBrowser(self.browser)
-                                                     ->GetSceneState()
+                                 prefService:browserState->GetPrefs()
                      tabStripCommandsHandler:tabStripCommandsHandler
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];
@@ -881,6 +968,9 @@ enum class ToolbarKind {
   _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
+
+  _toolbarCoordinator =
+      [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:browserState->IsOffTheRecord()];
@@ -893,11 +983,11 @@ enum class ToolbarKind {
       initWithFullscreenController:_fullscreenController
               snapshotBrowserAgent:snapshotBrowserAgent
                       webStateList:self.browser->GetWebStateList()];
-  [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
+  _sideSwipeMediator.engagementTracker = engagementTracker;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      !base::FeatureList::IsEnabled(kModernTabStrip)) {
+      !IsModernTabStripOrRaccoonEnabled()) {
     [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
   }
 
@@ -964,8 +1054,6 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _viewControllerDependencies.isOffTheRecord = browserState->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
-  _viewControllerDependencies.urlLoadingNotifierBrowserAgent =
-      _urlLoadingNotifierBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
       TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.layoutGuideCenter = _layoutGuideCenter;
@@ -976,8 +1064,6 @@ enum class ToolbarKind {
       [[SafeAreaProvider alloc] initWithBrowser:self.browser];
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(self.browser);
-  _viewControllerDependencies.webStateUpdateBrowserAgent =
-      WebStateUpdateBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {
@@ -1008,9 +1094,11 @@ enum class ToolbarKind {
   _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
   _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
   _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
+  _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
   _legacyTabStripCoordinator.baseViewController = self.viewController;
+  _tabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
 
   _bubblePresenter.toolbarCommandsHandler =
@@ -1038,13 +1126,11 @@ enum class ToolbarKind {
   _viewControllerDependencies.applicationCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
   _viewControllerDependencies.urlLoadingBrowserAgent = nil;
-  _viewControllerDependencies.urlLoadingNotifierBrowserAgent = nil;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent = nil;
   _viewControllerDependencies.layoutGuideCenter = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
-  _viewControllerDependencies.webStateUpdateBrowserAgent = nil;
 
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];
@@ -1150,6 +1236,9 @@ enum class ToolbarKind {
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* virtualCardEnrollmentBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* PriceNotificationsViewCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1219,15 +1308,19 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.priceNotificationsIPHPresenter =
       self.priceNotificationsIPHCoordinator;
 
-  if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
-    _credentialProviderPromoCoordinator =
-        [[CredentialProviderPromoCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    _credentialProviderPromoCoordinator.promosUIHandler =
-        _promosManagerCoordinator;
-    [_credentialProviderPromoCoordinator start];
-  }
+  _credentialProviderPromoCoordinator =
+      [[CredentialProviderPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  _credentialProviderPromoCoordinator.promosUIHandler =
+      _promosManagerCoordinator;
+  [_credentialProviderPromoCoordinator start];
+
+  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
+  [_dockingPromoCoordinator start];
 }
 
 // Stops child coordinators.
@@ -1274,6 +1367,12 @@ enum class ToolbarKind {
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
+
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
   [self.printCoordinator stop];
   self.printCoordinator = nil;
@@ -1347,6 +1446,9 @@ enum class ToolbarKind {
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
 
+  [_dockingPromoCoordinator stop];
+  _dockingPromoCoordinator = nil;
+
   [self.defaultBrowserPromoManager stop];
   self.defaultBrowserPromoManager = nil;
 
@@ -1355,6 +1457,21 @@ enum class ToolbarKind {
 
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+
+  [self.saveToDriveCoordinator stop];
+  self.saveToDriveCoordinator = nil;
+
+  [self.saveToPhotosCoordinator stop];
+  self.saveToPhotosCoordinator = nil;
+
+  [self.parcelTrackingOptInCoordinator stop];
+  self.parcelTrackingOptInCoordinator = nil;
+
+  [self.unitConversionCoordinator stop];
+  self.unitConversionCoordinator = nil;
+
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1382,8 +1499,7 @@ enum class ToolbarKind {
   browserViewController.nonModalPromoPresentationDelegate = self;
 
   if (browserState->IsOffTheRecord()) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    SceneState* sceneState = self.browser->GetSceneState();
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
 
@@ -1409,6 +1525,7 @@ enum class ToolbarKind {
       TabInsertionBrowserAgent::FromBrowser(browser);
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
+  tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -1442,12 +1559,14 @@ enum class ToolbarKind {
                       originView:positioner.sourceView
                       originRect:positioner.sourceRect
                           anchor:anchor];
-  self.sharingCoordinator.activityHandler =
-      HandlerForProtocol(self.dispatcher, ActivityServiceCommands);
   [self.sharingCoordinator start];
 }
 
 - (void)sharePage {
+  // Defocus Find-In-Page before opening the share sheet. This will result in
+  // closing the Find-In-Page for some OS versions.
+  [self defocusFindInPage];
+
   if (!self.sharingCoordinator) {
     [self stopAndStartSharingCoordinator];
   } else {
@@ -1511,14 +1630,41 @@ enum class ToolbarKind {
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
+  if (self.paymentsSuggestionBottomSheetCoordinator) {
+    return;
+  }
   self.paymentsSuggestionBottomSheetCoordinator =
       [[PaymentsSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params];
-  self.paymentsSuggestionBottomSheetCoordinator.applicationCommandsHandler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  self.paymentsSuggestionBottomSheetCoordinator.settingsHandler =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
+  self.paymentsSuggestionBottomSheetCoordinator
+      .browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [self.paymentsSuggestionBottomSheetCoordinator start];
+}
+
+- (void)showPlusAddressesBottomSheet {
+  self.plusAddressBottomSheetCoordinator =
+      [[PlusAddressBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.plusAddressBottomSheetCoordinator start];
+}
+
+- (void)showVirtualCardEnrollmentBottomSheet:
+    (const autofill::VirtualCardEnrollUiModel&)model {
+  if (self.virtualCardEnrollmentBottomSheetCoordinator) {
+    [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  }
+  self.virtualCardEnrollmentBottomSheetCoordinator =
+      [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
+             initWithUIModel:model
+          baseViewController:self.viewController
+                     browser:self.browser];
+  [self.virtualCardEnrollmentBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -1552,6 +1698,7 @@ enum class ToolbarKind {
 }
 
 - (void)showBookmarksManager {
+  [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
   [_bookmarksCoordinator presentBookmarks];
 }
 
@@ -1578,6 +1725,8 @@ enum class ToolbarKind {
 }
 
 - (void)showRecentTabs {
+  [IntentDonationHelper donateIntent:IntentType::kOpenRecentTabs];
+
   // TODO(crbug.com/825431): If BVC's clearPresentedState is ever called (such
   // as in tearDown after a failed egtest), then this coordinator is left in a
   // started state even though its corresponding VC is no longer on screen.
@@ -1637,12 +1786,7 @@ enum class ToolbarKind {
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
-  // TODO(crbug.com/1347821): Make this DCHECK(!_sendTabToSelfCoordinator)
-  // once SendTabToSelfCoordinator is aware of sign-in being aborted.
-  if (_sendTabToSelfCoordinator) {
-    [_sendTabToSelfCoordinator stop];
-    _sendTabToSelfCoordinator = nil;
-  }
+  CHECK(!_sendTabToSelfCoordinator);
 
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1735,47 +1879,40 @@ enum class ToolbarKind {
   [_voiceSearchController prepareToAppear];
 }
 
-#pragma mark - DefaultPromoCommands
-
-- (void)showTailoredPromoStaySafe {
-  [self showTailoredPromoWithType:DefaultPromoTypeStaySafe];
+- (void)dismissPaymentSuggestions {
+  [self.paymentsSuggestionBottomSheetCoordinator stop];
+  self.paymentsSuggestionBottomSheetCoordinator = nil;
 }
 
-- (void)showTailoredPromoMadeForIOS {
-  [self showTailoredPromoWithType:DefaultPromoTypeMadeForIOS];
+- (void)dismissPlusAddressBottomSheet {
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
 }
 
-- (void)showTailoredPromoAllTabs {
-  [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
+- (void)dismissVirtualCardEnrollmentBottomSheet {
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 }
 
-- (void)showDefaultBrowserFullscreenPromo {
-  if (!self.defaultBrowserPromoCoordinator) {
-    self.defaultBrowserPromoCoordinator =
-        [[DefaultBrowserPromoCoordinator alloc]
+- (void)showOmniboxPositionChoice {
+  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+
+  if (!_omniboxPositionChoiceCoordinator) {
+    _omniboxPositionChoiceCoordinator =
+        [[OmniboxPositionChoiceCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser];
-    self.defaultBrowserPromoCoordinator.handler = self;
+    _omniboxPositionChoiceCoordinator.promosUIHandler =
+        self.promosManagerCoordinator;
+  } else {
+    [_omniboxPositionChoiceCoordinator stop];
   }
-  [self.defaultBrowserPromoCoordinator start];
+  [_omniboxPositionChoiceCoordinator start];
 }
 
-- (void)showChoice {
-  if (!ios::provider::IsChoiceEnabled()) {
-    return;
-  }
-
-  if (!self.choiceCoordinator) {
-    self.choiceCoordinator =
-        ios::provider::CreateChoiceCoordinatorWithViewController(
-            self.viewController, self.browser);
-  }
-  [self.choiceCoordinator start];
-}
-
-- (void)dismissChoice {
-  [self.choiceCoordinator stop];
-  self.choiceCoordinator = nil;
+- (void)dismissOmniboxPositionChoice {
+  [_omniboxPositionChoiceCoordinator stop];
+  _omniboxPositionChoiceCoordinator = nil;
 }
 
 #pragma mark - DefaultBrowserPromoCommands
@@ -1785,10 +1922,8 @@ enum class ToolbarKind {
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    [self.defaultBrowserPromoManager stop];
-    self.defaultBrowserPromoManager = nil;
-  }
+  [self.defaultBrowserPromoManager stop];
+  self.defaultBrowserPromoManager = nil;
 }
 
 #pragma mark - FeedCommands
@@ -1949,26 +2084,45 @@ enum class ToolbarKind {
   return findBarCoordinator;
 }
 
+#pragma mark - PhoneNumberCommands
+
+- (void)presentAddContactsForPhoneNumber:(NSString*)phoneNumber {
+  _addContactsCoordinator = [[AddContactsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     phoneNumber:phoneNumber];
+  [_addContactsCoordinator start];
+}
+
+- (void)hideAddContacts {
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
+}
+
 #pragma mark - PromosManagerCommands
 
 - (void)maybeDisplayPromo {
   if (!self.promosManagerCoordinator) {
-    id<CredentialProviderPromoCommands> credentialProviderPromoHandler = nil;
-    if (IsCredentialProviderExtensionPromoEnabled() ||
-        IsIOSSetUpListEnabled()) {
-      credentialProviderPromoHandler =
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             CredentialProviderPromoCommands);
-    }
+    id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           CredentialProviderPromoCommands);
+    id<DockingPromoCommands> dockingPromoHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), DockingPromoCommands);
+
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser
-        credentialProviderPromoHandler:credentialProviderPromoHandler];
+        credentialProviderPromoHandler:credentialProviderPromoHandler
+                   dockingPromoHandler:dockingPromoHandler];
 
     // CredentialProviderPromoCoordinator is initialized earlier than this, so
     // make sure to set its UI handler.
     _credentialProviderPromoCoordinator.promosUIHandler =
         self.promosManagerCoordinator;
+
+    // _dockingPromoCoordinator is initialized earlier than this, so
+    // make sure to set its UI handler.
+    _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
 
     [self.promosManagerCoordinator start];
   } else {
@@ -1978,9 +2132,7 @@ enum class ToolbarKind {
 
 - (void)requestAppStoreReview {
   if (IsAppStoreRatingEnabled()) {
-    UIWindowScene* scene =
-        [SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState()
-            scene];
+    UIWindowScene* scene = [self.browser->GetSceneState() scene];
     [SKStoreReviewController requestReviewInScene:scene];
 
     // Apple doesn't tell whether the app store review window will show or
@@ -1996,15 +2148,7 @@ enum class ToolbarKind {
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 
-- (void)showChoicePromo {
-  [self showChoice];
-}
-
 - (void)maybeDisplayDefaultBrowserPromo {
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    return;
-  }
-
   if (self.defaultBrowserPromoManager) {
     // The default browser promo manager is already being displayed. Early
     // return as this is expected if a default browser promo was open and the
@@ -2020,6 +2164,21 @@ enum class ToolbarKind {
   [self.defaultBrowserPromoManager start];
 }
 
+- (void)displayDefaultBrowserPromoAfterRemindMeLater {
+  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.defaultBrowserPromoManager.promosUIHandler =
+      self.promosManagerCoordinator;
+  self.defaultBrowserPromoManager.promoWasFromRemindMeLater = YES;
+  [self.defaultBrowserPromoManager start];
+}
+
+- (void)showOmniboxPositionChoicePromo {
+  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+  [self showOmniboxPositionChoice];
+}
+
 #pragma mark - PageInfoCommands
 
 - (void)showPageInfo {
@@ -2027,6 +2186,7 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   pageInfoCoordinator.presentationProvider = self;
+  [self.pageInfoCoordinator stop];
   self.pageInfoCoordinator = pageInfoCoordinator;
   [self.pageInfoCoordinator start];
 }
@@ -2036,28 +2196,21 @@ enum class ToolbarKind {
   self.pageInfoCoordinator = nil;
 }
 
-- (void)showSecurityHelpPage {
-  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kPageInfoHelpCenterURL));
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _urlLoadingBrowserAgent->Load(params);
-  [self hidePageInfo];
-}
-
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
 - (void)openPasswordManager {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showSavedPasswordsSettingsFromViewController:self.viewController
-                                  showCancelButton:YES
-                                startPasswordCheck:NO];
+                                  showCancelButton:YES];
 }
 
 - (void)openPasswordSettings {
-  CHECK(!self.passwordSettingsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.passwordSettingsCoordinator);
 
   // Use main browser to open the password settings.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:sceneState.browserProviderInterface
@@ -2067,12 +2220,12 @@ enum class ToolbarKind {
 }
 
 - (void)openAddressSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showProfileSettingsFromViewController:self.viewController];
 }
 
 - (void)openCreditCardSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showCreditCardSettings];
 }
 
@@ -2114,7 +2267,7 @@ enum class ToolbarKind {
   }
 
   const ToolbarKind nextToolbarToPresent = *_nextToolbarToPresent;
-  _nextToolbarToPresent = absl::nullopt;
+  _nextToolbarToPresent = std::nullopt;
 
   switch (nextToolbarToPresent) {
     case ToolbarKind::kTextZoom:
@@ -2198,6 +2351,25 @@ enum class ToolbarKind {
   return textZoomCoordinator;
 }
 
+#pragma mark - UnitConversionCommands
+
+- (void)presentUnitConversionForSourceUnit:(NSUnit*)sourceUnit
+                           sourceUnitValue:(double)sourceUnitValue
+                                  location:(CGPoint)location {
+  self.unitConversionCoordinator = [[UnitConversionCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      sourceUnit:sourceUnit
+                 sourceUnitValue:sourceUnitValue
+                        location:location];
+  [self.unitConversionCoordinator start];
+}
+
+- (void)hideUnitConversion {
+  [self.unitConversionCoordinator stop];
+  self.unitConversionCoordinator = nil;
+}
+
 #pragma mark - URLLoadingDelegate
 
 - (void)animateOpenBackgroundTabFromParams:(const UrlLoadParams&)params
@@ -2224,10 +2396,8 @@ enum class ToolbarKind {
     _urlLoadingBrowserAgent->SetDelegate(self);
   }
 
-  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  AccountConsistencyBrowserAgent::CreateForBrowser(
-      self.browser, self.viewController, applicationCommandHandler);
+  AccountConsistencyBrowserAgent::CreateForBrowser(self.browser,
+                                                   self.viewController);
 
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
     CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
@@ -2271,6 +2441,126 @@ enum class ToolbarKind {
 
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
     FollowBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+  }
+}
+
+#pragma mark - ParcelTrackingOptInCommands
+
+- (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  if (!shoppingService) {
+    return;
+  }
+  // Filter out parcels that are already being tracked and post
+  // `showParcelTrackingUIWithNewParcels` command for the new parcel list.
+  FilterParcelsAndShowParcelTrackingUI(
+      shoppingService, parcels,
+      HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
+}
+
+- (void)showTrackingForFilteredParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  if (!shoppingService) {
+    return;
+  }
+  if (IsUserEligibleParcelTrackingOptInPrompt(
+          self.browser->GetBrowserState()->GetPrefs(), shoppingService)) {
+    [self showParcelTrackingOptInPromptWithParcels:parcels];
+  } else {
+    [self maybeShowParcelTrackingInfobarWithParcels:parcels];
+  }
+}
+
+- (void)showParcelTrackingInfobarWithParcels:
+            (NSArray<CustomTextCheckingResult*>*)parcels
+                                     forStep:(ParcelTrackingStep)step {
+  web::WebState* activeWebState = self.activeWebState;
+  CHECK(activeWebState);
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!commerce::ShoppingServiceFactory::GetForBrowserState(browserState)
+           ->IsParcelTrackingEligible()) {
+    return;
+  }
+  if (step == ParcelTrackingStep::kNewPackageTracked) {
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+    engagementTracker->NotifyEvent(feature_engagement::events::kParcelTracked);
+  }
+  std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
+      std::make_unique<ParcelTrackingInfobarDelegate>(
+          activeWebState, step, parcels,
+          HandlerForProtocol(self.dispatcher, ApplicationCommands),
+          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(activeWebState);
+
+  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
+  infobar_manager->AddInfoBar(std::move(infobar),
+                              /*replace_existing=*/true);
+}
+
+- (void)showParcelTrackingIPH {
+  [_bubblePresenter presentParcelTrackingTipBubble];
+}
+
+#pragma mark - ParcelTrackingOptInCommands helpers
+
+- (void)maybeShowParcelTrackingInfobarWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  IOSParcelTrackingOptInStatus optInStatus =
+      static_cast<IOSParcelTrackingOptInStatus>(
+          self.browser->GetBrowserState()->GetPrefs()->GetInteger(
+              prefs::kIosParcelTrackingOptInStatus));
+  switch (optInStatus) {
+    case IOSParcelTrackingOptInStatus::kAlwaysTrack: {
+      web::WebState* activeWebState = self.activeWebState;
+      if (!activeWebState) {
+        return;
+      }
+      commerce::ShoppingService* shoppingService =
+          commerce::ShoppingServiceFactory::GetForBrowserState(
+              activeWebState->GetBrowserState());
+      // Track parcels and display infobar if successful.
+      TrackParcels(
+          shoppingService, parcels, std::string(),
+          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands),
+          /*display_infobar=*/true, TrackingSource::kAutoTrack);
+      break;
+    }
+    case IOSParcelTrackingOptInStatus::kAskToTrack:
+      [self showParcelTrackingInfobarWithParcels:parcels
+                                         forStep:ParcelTrackingStep::
+                                                     kAskedToTrackPackage];
+      break;
+    case IOSParcelTrackingOptInStatus::kNeverTrack:
+      // Do not display infobar.
+      break;
+  }
+}
+
+- (void)showParcelTrackingOptInPromptWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  web::WebState* activeWebState = self.activeWebState;
+  CHECK(activeWebState);
+  [self dismissParcelTrackingOptInPrompt];
+  self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        webState:activeWebState
+                         parcels:parcels];
+  [self.parcelTrackingOptInCoordinator start];
+}
+
+- (void)dismissParcelTrackingOptInPrompt {
+  if (self.parcelTrackingOptInCoordinator) {
+    [self.parcelTrackingOptInCoordinator stop];
+    self.parcelTrackingOptInCoordinator = nil;
   }
 }
 
@@ -2375,8 +2665,7 @@ enum class ToolbarKind {
 }
 
 - (void)showRestrictAccountSignedOutPrompt {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
     if (!self.enterprisePromptCoordinator) {
       self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
@@ -2397,6 +2686,49 @@ enum class ToolbarKind {
   }
 }
 
+#pragma mark - SaveToDriveCommands
+
+- (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
+  // If the Save to Drive coordinator is not nil, stop it.
+  [self hideSaveToDrive];
+
+  _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                    downloadTask:downloadTask];
+  [_saveToDriveCoordinator start];
+}
+
+- (void)hideSaveToDrive {
+  [_saveToDriveCoordinator stop];
+  _saveToDriveCoordinator = nil;
+}
+
+#pragma mark - SaveToPhotosCommands
+
+- (void)saveImageToPhotos:(SaveImageToPhotosCommand*)command {
+  if (!command.webState) {
+    // If the web state does not exist anymore, don't do anything.
+    return;
+  }
+
+  // If the Save to Photos coordinator is not nil, stop it.
+  [self stopSaveToPhotos];
+
+  self.saveToPhotosCoordinator = [[SaveToPhotosCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        imageURL:command.imageURL
+                        referrer:command.referrer
+                        webState:command.webState.get()];
+  [self.saveToPhotosCoordinator start];
+}
+
+- (void)stopSaveToPhotos {
+  [self.saveToPhotosCoordinator stop];
+  self.saveToPhotosCoordinator = nil;
+}
+
 #pragma mark - WebContentCommands
 
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
@@ -2408,8 +2740,8 @@ enum class ToolbarKind {
   [self.storeKitCoordinator start];
 }
 
-- (void)showDialogForPassKitPass:(PKPass*)pass {
-  if (self.passKitCoordinator.pass) {
+- (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
+  if (self.passKitCoordinator.passes) {
     // Another pass is being displayed -- early return (this is unexpected).
     return;
   }
@@ -2418,7 +2750,7 @@ enum class ToolbarKind {
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser];
 
-  self.passKitCoordinator.pass = pass;
+  self.passKitCoordinator.passes = passes;
   [self.passKitCoordinator start];
 }
 
@@ -2442,8 +2774,7 @@ enum class ToolbarKind {
 }
 
 - (void)defaultBrowserNonModalPromoWasDismissed {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
       logPromoWasDismissed];
   [self.nonModalPromoCoordinator stop];
@@ -2512,25 +2843,29 @@ enum class ToolbarKind {
 }
 
 - (void)showSyncPassphraseSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showSyncPassphraseSettingsFromViewController:self.viewController];
 }
 
 - (void)showGoogleServicesSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showGoogleServicesSettingsFromViewController:self.viewController];
 }
 
 - (void)showAccountSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showAccountsSettingsFromViewController:self.viewController];
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
+      showAccountsSettingsFromViewController:self.viewController
+                        skipIfUINotAvailable:NO];
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
-                                                   trigger:trigger];
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   signin_metrics::AccessPoint::
+                                                       ACCESS_POINT_SETTINGS];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
@@ -2538,8 +2873,11 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                signin_metrics::
+                                                                    AccessPoint::
+                                                                        ACCESS_POINT_SETTINGS];
 }
 
 #pragma mark - SigninPresenter
@@ -2551,22 +2889,42 @@ enum class ToolbarKind {
 }
 
 #pragma mark - SnapshotGeneratorDelegate methods
-// TODO(crbug.com/1272491): Refactor snapshot generation into (probably) a
+// TODO(crbug.com/1272491): Refactor SnapshotGenerator into (probably) a
 // mediator with a narrowly-defined API to get UI-layer information from the
 // BVC.
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    canTakeSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (BOOL)canTakeSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return NO;
+  }
   PagePlaceholderTabHelper* pagePlaceholderTabHelper =
       PagePlaceholderTabHelper::FromWebState(webState);
   return !pagePlaceholderTabHelper->displaying_placeholder() &&
          !pagePlaceholderTabHelper->will_add_placeholder_for_next_navigation();
 }
 
-- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    snapshotEdgeInsetsForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (void)willUpdateSnapshotWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return;
+  }
+
+  if ([self isNTPActiveForCurrentWebState]) {
+    [_NTPCoordinator willUpdateSnapshot];
+  }
+  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
+}
+
+- (UIEdgeInsets)snapshotEdgeInsetsWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return UIEdgeInsetsZero;
+  }
 
   UIEdgeInsets maxViewportInsets =
       _fullscreenController->GetMaxViewportInsets();
@@ -2598,9 +2956,14 @@ enum class ToolbarKind {
   }
 }
 
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
-  DCHECK(webState);
+- (NSArray<UIView*>*)snapshotOverlaysWithWebStateInfo:
+    (WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return @[];
+  }
+
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK_NE(webStateList->GetIndexOfWebState(webState),
             WebStateList::kInvalidIndex);
@@ -2658,35 +3021,24 @@ enum class ToolbarKind {
   return overlays;
 }
 
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    willUpdateSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-
-  if ([self isNTPActiveForCurrentWebState]) {
-    [_NTPCoordinator willUpdateSnapshot];
+- (UIView*)baseViewWithWebStateInfo:(WebStateSnapshotInfo*)webStateInfo {
+  DCHECK(webStateInfo);
+  web::WebState* webState = webStateInfo.webState;
+  if (!webState) {
+    return nil;
   }
-  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
-}
-
-- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-         baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    // NTPCoordinator should be started at this point. If for some reason it is
-    // not, the DCHECK will let us know and we will fall back to using the
-    // webState's view.
-    DCHECK(_NTPCoordinator.started);
+    // If NTPCoordinator is not started yet, fall back to using the
+    // webState's view. `_NTPCoordinator.started` should be true in most cases
+    // but it can be false when the app will be terminated or the browser data
+    // is removed. In particular, it can be false when this method is called as
+    // a delayed task while the app is being terminated.
     if (_NTPCoordinator.started) {
       return _NTPCoordinator.viewController.view;
     }
   }
   return webState->GetView();
-}
-
-- (UIViewTintAdjustmentMode)snapshotGenerator:
-                                (SnapshotGenerator*)snapshotGenerator
-         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
-  return UIViewTintAdjustmentModeAutomatic;
 }
 
 #pragma mark - NewTabPageCommands
@@ -2747,9 +3099,7 @@ enum class ToolbarKind {
 
 - (void)prepareForPageInfoPresentation {
   // Dismiss the omnibox (if open).
-  id<OmniboxCommands> omniboxHandler =
-      HandlerForProtocol(_dispatcher, OmniboxCommands);
-  [omniboxHandler cancelOmniboxEdit];
+  [_omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 - (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
@@ -2761,9 +3111,14 @@ enum class ToolbarKind {
 - (void)passwordSettingsCoordinatorDidRemove:
     (PasswordSettingsCoordinator*)coordinator {
   DCHECK_EQ(self.passwordSettingsCoordinator, coordinator);
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
+
+  [self stopPasswordSettingsCoordinator];
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [self stopPasswordSettingsCoordinator];
 }
 
 #pragma mark - ReadingListCoordinatorDelegate
@@ -2812,6 +3167,14 @@ enum class ToolbarKind {
   // occurring will cut the animation short.
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  if (engagementTracker) {
+    engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSPullToRefreshUsed);
+  }
+
   SnapshotTabHelper::FromWebState(activeWebState)->IgnoreNextLoad();
   _webNavigationBrowserAgent->Reload();
 }
@@ -2885,20 +3248,19 @@ enum class ToolbarKind {
 }
 
 - (void)displaySavedPasswordList {
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  [applicationCommandsHandler
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, SettingsCommands);
+  [settingsHandler
       showSavedPasswordsSettingsFromViewController:self.viewController
-                                  showCancelButton:YES
-                                startPasswordCheck:NO];
+                                  showCancelButton:YES];
 }
 
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  [applicationCommandsHandler showPasswordDetailsForCredential:credential
-                                              showCancelButton:YES];
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, SettingsCommands);
+  [settingsHandler showPasswordDetailsForCredential:credential
+                                   showCancelButton:YES];
 }
 
 #pragma mark - MiniMapCommands
@@ -2989,6 +3351,20 @@ enum class ToolbarKind {
     (AutofillAddCreditCardCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.addCreditCardCoordinator);
   [self stopAutofillAddCreditCardCoordinator];
+}
+
+#pragma mark - AppLauncherTabHelperBrowserPresentationProvider
+
+- (BOOL)isBrowserPresentingUI {
+  return self.viewController.presentedViewController != nil;
+}
+
+#pragma mark - WebUsageEnablerBrowserAgentObserving
+
+- (void)webUsageEnablerValueChanged:
+    (WebUsageEnablerBrowserAgent*)webUsageEnabler {
+  self.active = WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
+                    ->IsWebUsageEnabled();
 }
 
 @end

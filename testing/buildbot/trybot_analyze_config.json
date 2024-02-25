@@ -28,8 +28,7 @@
       "tools/clang/scripts/process_crashreports.py"
     ],
     "ignores": [
-      "infra/config/recipes.cfg",
-      "infra/recipes/.*"
+      "(.+/)?PRESUBMIT\\.py"
     ]
   },
   "chromeos": {
@@ -59,12 +58,10 @@
       "sql/test/data/.*",
       "third_party/accessibility-audit/axs_testing.js",
       "third_party/angle/DEPS",
-      "third_party/chaijs/.*(css|html|js)",
       "third_party/closure_compiler/.*(css|html|js)",
       "third_party/dawn/DEPS",
       "third_party/hunspell_dictionaries/.*",
       "third_party/jstemplate/.*(css|html|js)",
-      "third_party/mocha/.*(css|html|js)",
       "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
       "third_party/vulkan-deps/DEPS",

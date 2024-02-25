@@ -50,7 +50,6 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
                    ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);
   String toString() const;
-  RTCEncodedVideoFrame* clone(ExceptionState& exception_state) const;
 
   scoped_refptr<RTCEncodedVideoFrameDelegate> Delegate() const;
   void SyncDelegate() const;

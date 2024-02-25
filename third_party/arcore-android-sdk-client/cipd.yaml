@@ -1,4 +1,4 @@
 package: chromium/third_party/arcore-android-sdk-client
 description: ARCore SDK client binaries.
 data:
-  - file: core-1.32.0.aar
+  - file: core-1.39.0.aar

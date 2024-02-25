@@ -84,10 +84,10 @@ class PopupBlockedInfoBarDelegateTest
 TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
   EXPECT_TRUE(PopupBlockedInfoBarDelegate::Create(
       infobar_manager(), 1, settings_map(), base::NullCallback()));
-  EXPECT_EQ(infobar_manager()->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager()->infobars().size(), 1u);
   // First message should not contain "2";
   EXPECT_FALSE(base::Contains(infobar_manager()
-                                  ->infobar_at(0)
+                                  ->infobars()[0]
                                   ->delegate()
                                   ->AsConfirmInfoBarDelegate()
                                   ->GetMessageText(),
@@ -95,10 +95,10 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
 
   EXPECT_FALSE(PopupBlockedInfoBarDelegate::Create(
       infobar_manager(), 2, settings_map(), base::NullCallback()));
-  EXPECT_EQ(infobar_manager()->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager()->infobars().size(), 1u);
   // Second message blocks 2 popups, so should contain "2";
   EXPECT_TRUE(base::Contains(infobar_manager()
-                                 ->infobar_at(0)
+                                 ->infobars()[0]
                                  ->delegate()
                                  ->AsConfirmInfoBarDelegate()
                                  ->GetMessageText(),
@@ -118,7 +118,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ShowsBlockedPopups) {
   EXPECT_FALSE(on_accept_called);
 
   EXPECT_TRUE(infobar_manager()
-                  ->infobar_at(0)
+                  ->infobars()[0]
                   ->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->Accept());

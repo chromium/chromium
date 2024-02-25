@@ -44,14 +44,14 @@ class ScopedWidget {
 
   ~ScopedWidget() {
     if (widget_)
-      widget_->CloseNow();
+      widget_.ExtractAsDangling()->CloseNow();
   }
 
   views::Widget* operator->() const { return widget_; }
   views::Widget* get() const { return widget_; }
 
  private:
-  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 void SetURLAndDragImage(const GURL& url,
@@ -90,7 +90,7 @@ void SetDragImage(const GURL& url,
                        color_provider->GetColor(ui::kColorTextfieldForeground));
 
   SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
-  if (drag_widget->IsTranslucentWindowOpacitySupported()) {
+  if (views::Widget::IsWindowCompositingSupported()) {
     button->SetTextShadows(gfx::ShadowValues(
         10, gfx::ShadowValue(gfx::Vector2d(0, 0), 2.0f, bg_color)));
   } else {

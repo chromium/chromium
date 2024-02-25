@@ -15,6 +15,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -26,6 +27,9 @@ constexpr base::TimeDelta kMinimumTimedelta = base::Seconds(6);
 
 namespace ash {
 
+ScreenCaptureTrayItemView::ScreenCaptureTrayItemMetadata::
+    ScreenCaptureTrayItemMetadata()
+    : ScreenCaptureTrayItemMetadata(base::TimeTicks::Now()) {}
 ScreenCaptureTrayItemView::ScreenCaptureTrayItemMetadata::
     ScreenCaptureTrayItemMetadata(base::TimeTicks time_created)
     : time_created(std::move(time_created)) {}
@@ -58,10 +62,6 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
 
 ScreenCaptureTrayItemView::~ScreenCaptureTrayItemView() = default;
 
-const char* ScreenCaptureTrayItemView::GetClassName() const {
-  return "ScreenCaptureTrayItemView";
-}
-
 views::View* ScreenCaptureTrayItemView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return HitTestPoint(point) ? this : nullptr;
@@ -91,9 +91,15 @@ void ScreenCaptureTrayItemView::Refresh() {
 
 void ScreenCaptureTrayItemView::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
-  requests_.emplace(label,
-                    ScreenCaptureTrayItemMetadata(base::TimeTicks::Now()));
+  requests_.emplace(label, ScreenCaptureTrayItemMetadata());
   Refresh();
+}
+
+void ScreenCaptureTrayItemView::MultiCaptureStartedFromApp(
+    const std::string& label,
+    const std::string& app_id,
+    const std::string& app_short_name) {
+  MultiCaptureStarted(label, /*origin=*/{});
 }
 
 void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
@@ -118,4 +124,8 @@ void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
 void ScreenCaptureTrayItemView::MultiCaptureServiceClientDestroyed() {
   multi_capture_service_client_observation_.Reset();
 }
+
+BEGIN_METADATA(ScreenCaptureTrayItemView)
+END_METADATA
+
 }  // namespace ash

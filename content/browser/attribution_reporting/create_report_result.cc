@@ -23,13 +23,13 @@ CreateReportResult::CreateReportResult(
     base::Time trigger_time,
     EventLevelResult event_level_status,
     AggregatableResult aggregatable_status,
-    absl::optional<AttributionReport> replaced_event_level_report,
-    absl::optional<AttributionReport> new_event_level_report,
-    absl::optional<AttributionReport> new_aggregatable_report,
-    absl::optional<StoredSource> source,
+    std::optional<AttributionReport> replaced_event_level_report,
+    std::optional<AttributionReport> new_event_level_report,
+    std::optional<AttributionReport> new_aggregatable_report,
+    std::optional<StoredSource> source,
     Limits limits,
-    absl::optional<AttributionReport> dropped_event_level_report,
-    absl::optional<base::Time> min_null_aggregatable_report_time)
+    std::optional<AttributionReport> dropped_event_level_report,
+    std::optional<base::Time> min_null_aggregatable_report_time)
     : trigger_time_(trigger_time),
       event_level_status_(event_level_status),
       aggregatable_status_(aggregatable_status),
@@ -81,9 +81,6 @@ CreateReportResult::CreateReportResult(
       limits.rate_limits_max_attributions.has_value(),
       event_level_status_ == EventLevelResult::kExcessiveAttributions ||
           aggregatable_status_ == AggregatableResult::kExcessiveAttributions);
-
-  DCHECK_EQ(limits.aggregatable_budget_per_source.has_value(),
-            aggregatable_status_ == AggregatableResult::kInsufficientBudget);
 
   DCHECK_EQ(limits.max_aggregatable_reports_per_source.has_value(),
             aggregatable_status_ == AggregatableResult::kExcessiveReports);

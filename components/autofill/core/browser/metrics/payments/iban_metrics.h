@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -76,28 +77,78 @@ enum class IbanSuggestionBlockListStatus {
   kMaxValue = kBlocklistIsNotAvailable,
 };
 
-// Logs various metrics about the local IBANs associated with a profile. This
-// should be called each time a new Chrome profile is launched.
+// Log all the scenarios that contribute to the decision of whether IBAN
+// upload is enabled or not.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IbanUploadEnabledStatus {
+  kSyncServiceNull = 0,
+  kSyncServicePaused = 1,
+  kSyncServiceMissingAutofillWalletDataActiveType = 2,
+  kUsingExplicitSyncPassphrase = 3,
+  kLocalSyncEnabled = 4,
+  kEnabled = 5,
+  kMaxValue = kEnabled,
+};
+
+// Metric to measure if an IBAN for which an upload action was taken (offered,
+// accepted, declined, ignored) is already stored as a local IBAN on the device
+// or if it's a new IBAN.
+enum class UploadIbanOriginMetric {
+  // IBAN upload action happened for a local IBAN already on the device.
+  kLocalIban = 0,
+  // IBAN upload action happened for a new IBAN.
+  kNewIban = 1,
+  kMaxValue = kNewIban,
+};
+
+// Metric to track the metrics for an IBAN upload offer.
+enum class UploadIbanActionMetric {
+  kOffered = 0,
+  kAccepted = 1,
+  kDeclined = 2,
+  kIgnored = 3,
+  kMaxValue = kIgnored,
+};
+
+// Logs various metrics about the local/server IBANs associated with a profile.
+// This should be called each time a new Chrome profile is launched.
 // `disused_data_threshold` is the time threshold to mark an IBAN as disused.
-void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
-                          const base::TimeDelta& disused_data_threshold);
+void LogStoredIbanMetrics(
+    const std::vector<std::unique_ptr<Iban>>& local_ibans,
+    const std::vector<std::unique_ptr<Iban>>& server_ibans,
+    const base::TimeDelta& disused_data_threshold);
+
+// Logs the number of days since the given IBAN was last used.
+void LogDaysSinceLastIbanUse(const Iban& iban);
 
 // Logs the number of strikes that an IBAN had when save was accepted.
-void LogStrikesPresentWhenIbanSaved(const int num_strikes);
+void LogStrikesPresentWhenIbanSaved(const int num_strikes, bool is_upload_save);
 
 // Logs whenever IBAN save is not offered due to max strikes.
 void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
     AutofillMetrics::SaveTypeMetric metric);
 
+// When IBAN upload is offered/accepted/declined/ignored, logs whether the IBAN
+// being offered or accepted is already a local IBAN on the device or not, as
+// well as the user decision on the offer.
+void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
+                         UploadIbanActionMetric action_metric);
+
 // Logs when IBAN save bubble is offered to users.
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric, bool is_reshow);
+void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+                                  bool is_reshow,
+                                  bool is_upload_save);
 
 // Logs when the user makes a decision on the IBAN save bubble.
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric, bool is_reshow);
+void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+                                   bool is_reshow,
+                                   bool is_upload_save);
 
 // Logs when the user accepts the bubble to save an IBAN.
 // `save_with_nickname` donates the user has input a nickname.
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname);
+void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+                                                    bool is_upload_save);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.
 void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);
@@ -107,6 +158,22 @@ void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);
 // from being shown, or if the blocklist was not accessible at all.
 void LogIbanSuggestionBlockListStatusMetric(
     IbanSuggestionBlockListStatus event);
+
+// Records the fact that the server IBAN link was clicked with information
+// about the current sync state.
+void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state);
+
+// Records the reason for why (or why not) IBAN upload was enabled for the
+// user.
+void LogIbanUploadEnabledMetric(
+    IbanUploadEnabledStatus metric,
+    AutofillMetrics::PaymentsSigninState sync_state);
+
+// Logs the latency for fetching a server IBAN in IbanAccessManager.
+void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful);
+
+// Logs the status for fetching a server IBAN in IbanAccessManager.
+void LogServerIbanUnmaskStatus(bool is_successful);
 
 }  // namespace autofill::autofill_metrics
 

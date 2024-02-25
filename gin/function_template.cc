@@ -4,14 +4,34 @@
 
 #include "gin/function_template.h"
 
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 
 namespace gin {
 
 namespace internal {
 
+CallbackHolderBase::DisposeObserver::DisposeObserver(
+    gin::PerIsolateData* per_isolate_data,
+    CallbackHolderBase* holder)
+    : per_isolate_data_(*per_isolate_data), holder_(*holder) {
+  per_isolate_data_->AddDisposeObserver(this);
+}
+CallbackHolderBase::DisposeObserver::~DisposeObserver() {
+  per_isolate_data_->RemoveDisposeObserver(this);
+}
+void CallbackHolderBase::DisposeObserver::OnBeforeDispose(
+    v8::Isolate* isolate) {
+  holder_->v8_ref_.Reset();
+}
+void CallbackHolderBase::DisposeObserver::OnDisposed() {
+  // The holder contains the observer, so the observer is destroyed here also.
+  delete &holder_.get();
+}
+
 CallbackHolderBase::CallbackHolderBase(v8::Isolate* isolate)
-    : v8_ref_(isolate, v8::External::New(isolate, this)) {
+    : v8_ref_(isolate, v8::External::New(isolate, this)),
+      dispose_observer_(PerIsolateData::From(isolate), this) {
   v8_ref_.SetWeak(this, &CallbackHolderBase::FirstWeakCallback,
                   v8::WeakCallbackType::kParameter);
 }

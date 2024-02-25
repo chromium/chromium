@@ -21,7 +21,6 @@ bool FontCacheMemoryDumpProvider::OnMemoryDump(
   DCHECK(IsMainThread());
   if (auto* context = FontGlobalContext::TryGet()) {
     FontCache& cache = context->GetFontCache();
-    cache.DumpFontPlatformDataCache(memory_dump);
     cache.DumpShapeResultCache(memory_dump);
   }
   return true;

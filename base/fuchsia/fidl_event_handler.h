@@ -8,13 +8,13 @@
 #include <lib/fidl/cpp/wire/client_base.h>
 #include <lib/fidl/cpp/wire/status.h>
 
+#include <optional>
 #include <string>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace fidl {
 template <typename Protocol>

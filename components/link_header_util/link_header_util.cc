@@ -156,7 +156,7 @@ bool ParseLinkHeaderValue(
     std::string::const_iterator begin,
     std::string::const_iterator end,
     std::string* url,
-    std::unordered_map<std::string, absl::optional<std::string>>* params) {
+    std::unordered_map<std::string, std::optional<std::string>>* params) {
   // Can't parse an empty string.
   if (begin == end)
     return false;
@@ -185,7 +185,7 @@ bool ParseLinkHeaderValue(
     std::string name = base::ToLowerASCII(params_iterator.name_piece());
     if (!params_iterator.value_is_quoted() &&
         params_iterator.value_piece().empty())
-      params->insert(std::make_pair(name, absl::nullopt));
+      params->insert(std::make_pair(name, std::nullopt));
     else
       params->insert(std::make_pair(name, params_iterator.value()));
   }

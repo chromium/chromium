@@ -277,6 +277,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, SafetyCheckWarning) {
   RunTestCase("SafetyCheckWarning");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
+  RunTestCase("PinnedToToolbar");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 
@@ -374,6 +378,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ProfileSettings) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
   RunTestCase("Uninstall");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, UninstallFocus) {
+  RunTestCase("UninstallFocus");
 }
 
 // Flaky since r621915: https://crbug.com/922490

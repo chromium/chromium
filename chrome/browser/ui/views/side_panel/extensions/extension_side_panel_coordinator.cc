@@ -7,8 +7,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -22,8 +26,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
@@ -44,7 +52,7 @@ bool IsSidePanelEnabled(const api::side_panel::PanelOptions& options) {
 bool HasGlobalSidePanel(content::BrowserContext* context,
                         const Extension& extension) {
   auto options = SidePanelService::Get(context)->GetOptions(
-      extension, /*tab_id=*/absl::nullopt);
+      extension, /*tab_id=*/std::nullopt);
   return IsSidePanelEnabled(options);
 }
 
@@ -77,12 +85,15 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     scoped_service_observation_.Observe(service);
     LoadExtensionIcon();
     if (IsGlobalCoordinator()) {
+      if (features::IsSidePanelPinningEnabled()) {
+        UpdateActionItemIcon();
+      }
       browser_->tab_strip_model()->AddObserver(this);
     }
 
     auto options =
         IsGlobalCoordinator()
-            ? service->GetOptions(*extension, /*tab_id=*/absl::nullopt)
+            ? service->GetOptions(*extension, /*tab_id=*/std::nullopt)
             : service->GetSpecificOptionsForTab(
                   *extension, ExtensionTabUtil::GetTabId(web_contents));
     if (IsSidePanelEnabled(options)) {
@@ -169,10 +180,10 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
   }
 
   // Ignore changes that don't pertain to this tab id.
-  absl::optional<int> tab_id =
+  std::optional<int> tab_id =
       IsGlobalCoordinator()
-          ? absl::nullopt
-          : absl::make_optional(ExtensionTabUtil::GetTabId(web_contents_));
+          ? std::nullopt
+          : std::make_optional(ExtensionTabUtil::GetTabId(web_contents_));
   if (tab_id != updated_options.tab_id) {
     return;
   }
@@ -311,9 +322,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
     ExtensionHost* host) {
   DCHECK_EQ(host, host_.get());
-  Browser* browser = IsGlobalCoordinator()
-                         ? browser_.get()
-                         : chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = GetBrowser();
   DCHECK(browser);
 
   auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
@@ -366,9 +375,25 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
   // drop down menu currently do not automatically get an image's representation
   // when they are shown. Remove this when the aforementioend crbug has been
   // fixed.
-  for (const auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
-    extension_icon_->image_skia().GetRepresentation(scale_factor);
+  extension_icon_->image_skia().EnsureRepsForSupportedScales();
+}
+
+void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
+  CHECK(IsGlobalCoordinator());
+  std::optional<actions::ActionId> extension_action_id =
+      actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
+  CHECK(extension_action_id.has_value());
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      extension_action_id.value(), browser_actions->root_action_item());
+  if (action_item) {
+    action_item->SetImage(ui::ImageModel::FromImage(extension_icon_->image()));
   }
+}
+
+Browser* ExtensionSidePanelCoordinator::GetBrowser() {
+  return IsGlobalCoordinator() ? static_cast<Browser*>(browser_)
+                               : chrome::FindBrowserWithTab(web_contents_);
 }
 
 }  // namespace extensions

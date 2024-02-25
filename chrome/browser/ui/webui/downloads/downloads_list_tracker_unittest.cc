@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/downloads/mock_downloads_page.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_web_ui.h"
@@ -28,9 +29,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
 using download::DownloadItem;
 using download::MockDownloadItem;
-using DownloadVector = std::vector<DownloadItem*>;
+using downloads::mojom::SafeBrowsingState;
+using DownloadVector = std::vector<raw_ptr<DownloadItem, VectorExperimental>>;
 using testing::_;
 using testing::Return;
 using testing::ReturnRefOfCopy;
@@ -94,6 +102,10 @@ class DownloadsListTrackerTest : public testing::Test {
     ON_CALL(*new_item, GetTargetFilePath())
         .WillByDefault(
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo.txt"))));
+    ON_CALL(*new_item, GetURL())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://example.test")));
+    content::DownloadItemUtils::AttachInfoForTesting(new_item, profile(),
+                                                     nullptr);
 
     return new_item;
   }
@@ -348,10 +360,28 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Idn) {
   EXPECT_EQ(data->display_url, u"https://\u4f60\u597d\u4f60\u597d.test");
 }
 
+// URL longer than 16K but less than 2M.
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Long) {
+  std::string url = "https://" + std::string(16 * 1024, 'a') + ".test";
+  // The string should truncate the beginning to 16K.
+  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
+
+  MockDownloadItem* item = CreateNextItem();
+  ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_TRUE(data->url);
+  EXPECT_EQ(data->display_url, expected);
+}
+
+// URL longer than 2M.
 TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
   std::string url = "https://" + std::string(2 * 1024 * 1024, 'a') + ".test";
-  std::u16string expected =
-      u"https://" + std::u16string(2 * 1024 * 1024 - 8, 'a');
+  // The string should truncate the beginning to 16K.
+  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
 
   MockDownloadItem* item = CreateNextItem();
   ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));
@@ -363,3 +393,75 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
   EXPECT_FALSE(data->url);
   EXPECT_EQ(data->display_url, expected);
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_SafeBrowsing) {
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  // Enable Safe Browsing.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  {
+    MockDownloadItem* item = CreateNextItem();
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state,
+              SafeBrowsingState::kStandardProtection);
+    EXPECT_FALSE(data->has_safe_browsing_verdict);
+  }
+
+  // Add a Safe Browsing verdict.
+  {
+    MockDownloadItem* item = CreateNextItem();
+    safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+        item, "token", safe_browsing::ClientDownloadResponse::Verdict(),
+        safe_browsing::ClientDownloadResponse::TailoredVerdict());
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state,
+              SafeBrowsingState::kStandardProtection);
+    EXPECT_TRUE(data->has_safe_browsing_verdict);
+
+    // Now turn off Safe Browsing on the profile. The DownloadsListTracker
+    // should not assume that there's no verdict. (crbug.com/1499703)
+    profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+    data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state, SafeBrowsingState::kNoSafeBrowsing);
+    EXPECT_TRUE(data->has_safe_browsing_verdict);
+  }
+
+  // Enable Enhanced Safe Browsing.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  {
+    MockDownloadItem* item = CreateNextItem();
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state,
+              SafeBrowsingState::kStandardProtection);
+    EXPECT_FALSE(data->has_safe_browsing_verdict);
+  }
+
+  // Disable Safe Browsing.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  {
+    MockDownloadItem* item = CreateNextItem();
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state, SafeBrowsingState::kNoSafeBrowsing);
+    EXPECT_FALSE(data->has_safe_browsing_verdict);
+  }
+
+  // Make Safe Browsing disabled by policy.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled,
+      base::Value::ToUniquePtrValue(base::Value(false)));
+  {
+    MockDownloadItem* item = CreateNextItem();
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state, SafeBrowsingState::kNoSafeBrowsing);
+    EXPECT_FALSE(data->has_safe_browsing_verdict);
+  }
+}
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)

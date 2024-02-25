@@ -25,7 +25,7 @@ std::vector<uint8_t> BuildEncodedResponseData(
   cbor::Value::MapValue user_map;
   user_map[cbor::Value(kEntitiyIdMapKey)] = cbor::Value(user_id);
   cbor_map[cbor::Value(kCborTypeArray)] = cbor::Value(user_map);
-  absl::optional<std::vector<uint8_t>> cbor_bytes =
+  std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(cbor_map)));
   DCHECK(cbor_bytes);
   std::vector<uint8_t> response_bytes = std::move(*cbor_bytes);

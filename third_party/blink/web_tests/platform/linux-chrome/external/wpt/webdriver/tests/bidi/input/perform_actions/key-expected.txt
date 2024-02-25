@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_key_codepoint[\u0ba8\u0bbf]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid key value: நி)
+[FAIL] test_key_codepoint[\u1100\u1161\u11a8]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid key value: 각)
+Harness: the test ran to completion.

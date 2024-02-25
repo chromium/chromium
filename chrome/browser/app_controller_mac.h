@@ -201,6 +201,12 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
                         base::OnceCallback<void(Profile*)> callback,
                         ProfileLoadFailureBehavior on_failure);
 
+// Allows application to terminate when the last Browser is closed by releasing
+// the keep alive object held by the |AppController|. Note that all commands
+// received after this call will be ignored, which is OK since the application
+// is being terminated anyway.
+void AllowApplicationToTerminate();
+
 // Waits for the TabRestoreService to have loaded its entries, then calls
 // OpenWindowWithRestoredTabs().
 //
@@ -236,6 +242,15 @@ class TabRestorer : public sessions::TabRestoreServiceObserver {
   raw_ptr<Profile> profile_;
   SessionID session_id_;
 };
+
+// If the current chrome instance is running as a hidden application (with
+// activation policy set to NSApplicationActivationPolicyProhibited), after this
+// method is called the browser process will no longer keep itself alive as long
+// as that is the case.
+// This method should be called after chrome is launched as hidden application
+// as soon as any other keep-alives have been created to keep the browser
+// process alive.
+void ResetKeepAliveWhileHidden();
 
 }  // namespace app_controller_mac
 

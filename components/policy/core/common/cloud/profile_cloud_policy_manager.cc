@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -36,19 +37,23 @@ const base::FilePath::CharType kComponentPolicyCacheDir[] =
 // TODO (crbug/1421330): Replace policy type with
 // "google/chrome/profile-level-user" when ready.
 ProfileCloudPolicyManager::ProfileCloudPolicyManager(
-    std::unique_ptr<ProfileCloudPolicyStore> store,
+    std::unique_ptr<ProfileCloudPolicyStore> profile_store,
     const base::FilePath& component_policy_cache_path,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : CloudPolicyManager(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-                         /*settings_entity_id=*/std::string(),
-                         store.get(),
-                         task_runner,
-                         std::move(network_connection_tracker_getter)),
-      store_(std::move(store)),
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+    bool is_dasherless)
+    : CloudPolicyManager(
+          is_dasherless ? dm_protocol::kChromeUserPolicyType
+                        : dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+          /*settings_entity_id=*/std::string(),
+          std::move(profile_store),
+          task_runner,
+          std::move(network_connection_tracker_getter)),
+      profile_store_(static_cast<ProfileCloudPolicyStore*>(store())),
       external_data_manager_(std::move(external_data_manager)),
-      component_policy_cache_path_(component_policy_cache_path) {}
+      component_policy_cache_path_(component_policy_cache_path),
+      is_dasherless_(is_dasherless) {}
 
 ProfileCloudPolicyManager::~ProfileCloudPolicyManager() = default;
 
@@ -58,10 +63,11 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
     SchemaRegistry* schema_registry,
     bool force_immediate_load,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-    network::NetworkConnectionTrackerGetter network_connection_tracker_getter) {
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+    bool is_dasherless) {
   std::unique_ptr<policy::ProfileCloudPolicyStore> store =
-      policy::ProfileCloudPolicyStore::Create(profile_path,
-                                              background_task_runner);
+      policy::ProfileCloudPolicyStore::Create(
+          profile_path, background_task_runner, is_dasherless);
   if (force_immediate_load) {
     store->LoadImmediately();
   }
@@ -73,7 +79,7 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
       std::move(store), component_policy_cache_dir,
       std::unique_ptr<CloudExternalDataManager>(),
       base::SequencedTaskRunner::GetCurrentDefault(),
-      network_connection_tracker_getter);
+      network_connection_tracker_getter, is_dasherless);
   manager->Init(schema_registry);
   return manager;
 }
@@ -87,7 +93,8 @@ void ProfileCloudPolicyManager::Connect(
       client->GetURLLoaderFactory();
 
   CreateComponentCloudPolicyService(
-      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+      is_dasherless_ ? dm_protocol::kChromeExtensionPolicyType
+                     : dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       component_policy_cache_path_, client.get(), schema_registry());
   core()->Connect(std::move(client));
   core()->StartRefreshScheduler();
@@ -110,10 +117,10 @@ void ProfileCloudPolicyManager::DisconnectAndRemovePolicy() {
   // component policies are also empty at CheckAndPublishPolicy().
   ClearAndDestroyComponentCloudPolicyService();
 
-  // When the |store_| is cleared, it informs the |external_data_manager_| that
-  // all external data references have been removed, causing the
-  // |external_data_manager_| to clear its cache as well.
-  store_->Clear();
+  // When the |profile_store_| is cleared, it informs the
+  // |external_data_manager_| that all external data references have been
+  // removed, causing the |external_data_manager_| to clear its cache as well.
+  profile_store_->Clear();
 }
 
 void ProfileCloudPolicyManager::Shutdown() {

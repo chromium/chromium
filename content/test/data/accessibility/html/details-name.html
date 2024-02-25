@@ -1,0 +1,46 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:expand*
+@AURALINUX-ALLOW:focus*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@MAC-ALLOW:AXARIAPosInSet
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXExpanded=*
+@MAC-ALLOW:AXRoleDescription
+@UIA-WIN-ALLOW:LocalizedControlType='details'
+@UIA-WIN-ALLOW:PositionInSet*
+@UIA-WIN-ALLOW:SizeOfSet*
+@WIN-ALLOW:COLLAPSED
+@WIN-ALLOW:EXPANDED
+@WIN-ALLOW:localized_extended_role=*
+@WIN-ALLOW:posinset*
+@WIN-ALLOW:setsize*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <details>
+    <summary>the summary</summary>
+    <p>The details, shown when expanded.</p>
+  </details>
+
+  <section>
+    <details open name=properties>
+      <summary>materials</summary>
+      <p>Info about what it's made of.</p>
+    </details>
+
+    <details name=properties>
+      <summary>dimensions</summary>
+      <p>Info about how big it is.</p>
+    </details>
+
+    <details name=properties>
+      <summary>origin</summary>
+      <p>Info about where it was built.</p>
+    </details>
+  </section>
+</body>
+</html>

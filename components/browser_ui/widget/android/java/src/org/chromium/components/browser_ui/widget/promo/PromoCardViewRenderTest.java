@@ -38,9 +38,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
 
-/**
- * Render test for {@link PromoCardView}.
- */
+/** Render test for {@link PromoCardView}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
@@ -53,6 +51,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .setRevision(1)
                     .build();
 
     public PromoCardViewRenderTest(boolean nightModeEnabled) {
@@ -68,14 +67,17 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
         Activity activity = getActivity();
 
-        mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
-                         .with(PromoCardProperties.IMAGE, activity,
-                                 R.drawable.test_logo_avatar_anonymous)
-                         .with(PromoCardProperties.TITLE, "Title for Promo Card.")
-                         .with(PromoCardProperties.DESCRIPTION, "Description for Promo Card.")
-                         .with(PromoCardProperties.PRIMARY_BUTTON_TEXT, "Primary button")
-                         .with(PromoCardProperties.SECONDARY_BUTTON_TEXT, "Secondary button")
-                         .build();
+        mModel =
+                new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
+                        .with(
+                                PromoCardProperties.IMAGE,
+                                activity,
+                                R.drawable.test_logo_avatar_anonymous)
+                        .with(PromoCardProperties.TITLE, "Title for Promo Card.")
+                        .with(PromoCardProperties.DESCRIPTION, "Description for Promo Card.")
+                        .with(PromoCardProperties.PRIMARY_BUTTON_TEXT, "Primary button")
+                        .with(PromoCardProperties.SECONDARY_BUTTON_TEXT, "Secondary button")
+                        .build();
     }
 
     private void setPromoCard(@LayoutStyle int variance) {
@@ -83,14 +85,17 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
 
         mPromoCardCoordinator = new PromoCardCoordinator(activity, mModel, "render-test", variance);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Set the content and add the promo card into the window
-            LinearLayout content = new LinearLayout(activity);
-            activity.setContentView(content);
-            content.addView(mPromoCardCoordinator.getView(),
-                    new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Set the content and add the promo card into the window
+                    LinearLayout content = new LinearLayout(activity);
+                    activity.setContentView(content);
+                    content.addView(
+                            mPromoCardCoordinator.getView(),
+                            new LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                });
     }
 
     @Test
@@ -114,12 +119,15 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
         mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false);
         setPromoCard(LayoutStyle.LARGE);
 
-        CriteriaHelper.pollUiThread(() -> {
-            int visibility = mPromoCardCoordinator.getView()
-                                     .findViewById(R.id.promo_secondary_button)
-                                     .getVisibility();
-            Criteria.checkThat(visibility, Matchers.is(View.GONE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int visibility =
+                            mPromoCardCoordinator
+                                    .getView()
+                                    .findViewById(R.id.promo_secondary_button)
+                                    .getVisibility();
+                    Criteria.checkThat(visibility, Matchers.is(View.GONE));
+                });
 
         mRenderTestRule.render(mPromoCardCoordinator.getView(), "promo_card_secondary_hidden");
     }

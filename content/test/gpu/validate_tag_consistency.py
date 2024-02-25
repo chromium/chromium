@@ -35,6 +35,7 @@ TAG_SPECIALIZATIONS = {
             'android-r',
             'android-s',
             'android-t',
+            'android-u',
         ],
         'chromeos': [],
         'fuchsia': [],
@@ -52,6 +53,7 @@ TAG_SPECIALIZATIONS = {
         'win': [
             'win8',
             'win10',
+            'win11',
         ],
     },
     'BROWSER_TAGS': {
@@ -108,7 +110,9 @@ TAG_SPECIALIZATIONS = {
             'nvidia-0x1cb3',
             'nvidia-0x2184',
         ],
-        'qualcomm': [],
+        'qualcomm': [
+            'qualcomm-0x41333430',
+        ],
     },
 }
 
@@ -171,9 +175,10 @@ TAG_HEADER = """\
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
-#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus chromeos-board-volteer
+#         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
+#             fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
@@ -201,7 +206,8 @@ TAG_HEADER = """\
 #         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
-#         mesa_ge_21.0 ]
+#         mesa_ge_21.0
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -214,6 +220,8 @@ TAG_HEADER = """\
 # tags: [ webgpu-adapter-default webgpu-adapter-swiftshader ]
 # WebGPU Compat Mode
 # tags: [ webgpu-compat webgpu-not-compat ]
+# WebGPU DXC
+# tags: [ webgpu-dxc-enabled webgpu-dxc-disabled ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite

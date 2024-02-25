@@ -22,7 +22,7 @@ namespace device {
 
 namespace {
 
-mojom::SerialPortInfoPtr CreatePort(base::StringPiece device_address,
+mojom::SerialPortInfoPtr CreatePort(std::string_view device_address,
                                     base::StringPiece16 device_name,
                                     const BluetoothUUID& service_class_id) {
   auto port = mojom::SerialPortInfo::New();
@@ -50,6 +50,8 @@ class BluetoothSerialDeviceEnumerator::AdapterHelper
   // BluetoothAdapter::Observer methods:
   void DeviceAdded(BluetoothAdapter* adapter, BluetoothDevice* device) override;
   void DeviceRemoved(BluetoothAdapter* adapter,
+                     BluetoothDevice* device) override;
+  void DeviceChanged(BluetoothAdapter* adapter,
                      BluetoothDevice* device) override;
 
   void OpenPort(const std::string& address,
@@ -135,6 +137,17 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
                                 enumerator_, device->GetAddress()));
 }
 
+void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceChanged(
+    BluetoothAdapter* adapter,
+    BluetoothDevice* device) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enumerator_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAdded, enumerator_,
+                     device->GetAddress(), device->GetNameForDisplay(),
+                     device->GetUUIDs()));
+}
+
 void BluetoothSerialDeviceEnumerator::AdapterHelper::OpenPort(
     const std::string& address,
     const BluetoothUUID& service_class_id,
@@ -160,7 +173,7 @@ BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
 BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;
 
 void BluetoothSerialDeviceEnumerator::DeviceAdded(
-    base::StringPiece device_address,
+    std::string_view device_address,
     base::StringPiece16 device_name,
     BluetoothDevice::UUIDSet service_class_ids) {
   for (const auto& service_class_id : service_class_ids) {
@@ -169,7 +182,7 @@ void BluetoothSerialDeviceEnumerator::DeviceAdded(
 }
 
 void BluetoothSerialDeviceEnumerator::AddService(
-    base::StringPiece device_address,
+    std::string_view device_address,
     base::StringPiece16 device_name,
     const BluetoothUUID& service_class_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -208,15 +221,14 @@ void BluetoothSerialDeviceEnumerator::OpenPort(
                 std::move(client), std::move(watcher), std::move(callback));
 }
 
-absl::optional<std::string>
-BluetoothSerialDeviceEnumerator::GetAddressFromToken(
+std::optional<std::string> BluetoothSerialDeviceEnumerator::GetAddressFromToken(
     const base::UnguessableToken& token) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& entry : device_ports_) {
     if (entry.second == token)
       return entry.first.first;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 BluetoothUUID BluetoothSerialDeviceEnumerator::GetServiceClassIdFromToken(
@@ -240,6 +252,14 @@ void BluetoothSerialDeviceEnumerator::DeviceAddedForTesting(
     BluetoothDevice* device) {
   // Pass the device to our helper, which will in turn pass it back to me.
   helper_.AsyncCall(&AdapterHelper::DeviceAdded)
+      .WithArgs(base::Unretained(adapter), device);
+}
+
+void BluetoothSerialDeviceEnumerator::DeviceChangedForTesting(
+    BluetoothAdapter* adapter,
+    BluetoothDevice* device) {
+  // Pass the device to our helper, which will in turn pass it back to me.
+  helper_.AsyncCall(&AdapterHelper::DeviceChanged)
       .WithArgs(base::Unretained(adapter), device);
 }
 

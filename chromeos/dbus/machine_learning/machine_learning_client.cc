@@ -19,10 +19,10 @@ namespace chromeos {
 
 namespace {
 
-// TODO(crbug.com/1163656): the tast test platform.MLServiceBootstrap flakiness
-// shows ml-service bootstrap fails occasionally for timeout. Try to fix this
-// with a long period (2 minutes).
-constexpr base::TimeDelta kLongTimeout = base::Minutes(2);
+// Extend the timeout instead of using `dbus::ObjectProxy::TIMEOUT_USE_DEFAULT`
+// since bootstrap may require subsystem loading and takes time.
+constexpr base::TimeDelta kBootstrapMojoConnectionResponseTimeout =
+    base::Minutes(2);
 
 MachineLearningClient* g_instance = nullptr;
 
@@ -45,7 +45,7 @@ class MachineLearningClientImpl : public MachineLearningClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendFileDescriptor(fd.get());
     ml_service_proxy_->CallMethod(
-        &method_call, kLongTimeout.InMilliseconds(),
+        &method_call, kBootstrapMojoConnectionResponseTimeout.InMilliseconds(),
         base::BindOnce(
             &MachineLearningClientImpl::OnBootstrapMojoConnectionResponse,
             weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));

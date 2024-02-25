@@ -125,6 +125,12 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
     input_injector().InjectMouseEvent(MakeMouseMoveEvent(x, y));
   }
 
+  void EnableUnifiedDesktop() {
+    display_manager().SetUnifiedDesktopEnabled(true);
+    EXPECT_EQ(display_manager().GetNumDisplays(), 1ull);
+    EXPECT_EQ(ash::Shell::Get()->GetAllRootWindows().size(), 1ull);
+  }
+
   // Even if a display has origin (0,0) in our DPI screen coordinates,
   // its origin is likely not (0,0) in the Pixel screen coordinates.
   gfx::Point get_origin_in_pixel_coordinates(DisplayIndex display) {
@@ -353,6 +359,43 @@ TEST_F(InputInjectorChromeosTest, ShouldSupportScaleFactorWithRotation) {
   InjectMouseMoveEvent(left_display_width + 60, 123);
   EXPECT_EQ(delegate().NextCursorMove(),
             PointFInPixelIn(kSecondDisplay, (2000 - 123) * 2, 60 * 2));
+}
+
+TEST_F(InputInjectorChromeosTest, ShouldSupportUnifiedDesktop) {
+  CreateMultipleDisplays("3000x1500", "3000x1500");
+
+  // Collect display offsets now because the APIs we use lose access to the
+  // real displays once unified desktop is enabled.
+  gfx::Point first_display_pixel_offset =
+      get_origin_in_pixel_coordinates(kFirstDisplay);
+  gfx::Point second_display_pixel_offset =
+      get_origin_in_pixel_coordinates(kSecondDisplay);
+
+  EnableUnifiedDesktop();
+
+  InjectMouseMoveEvent(48, 127);
+  EXPECT_EQ(delegate().NextCursorMove(),
+            PointFWithOffset(48, 127, first_display_pixel_offset));
+
+  InjectMouseMoveEvent(3000 + 48, 127);
+  EXPECT_EQ(delegate().NextCursorMove(),
+            PointFWithOffset(48, 127, second_display_pixel_offset));
+}
+
+TEST_F(InputInjectorChromeosTest,
+       ShouldSupportUnifiedDesktopWithSingleDisplay) {
+  CreateSingleDisplay("3000x1500");
+
+  // Collect display offsets now because the APIs we use lose access to the
+  // real displays once unified desktop is enabled.
+  gfx::Point display_pixel_offset =
+      get_origin_in_pixel_coordinates(kFirstDisplay);
+
+  EnableUnifiedDesktop();
+
+  InjectMouseMoveEvent(48, 127);
+  EXPECT_EQ(delegate().NextCursorMove(),
+            PointFWithOffset(48, 127, display_pixel_offset));
 }
 
 }  // namespace remoting

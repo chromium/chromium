@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/gfx/image/image.h"
@@ -53,8 +54,10 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // InfobarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
 
   // ConfirmInfoBarDelegate implementation.
+  std::u16string GetTitleText() const override;
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
@@ -63,7 +66,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
 
  private:
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   gfx::Image icon_;
   id<SigninPresenter> presenter_;
 };

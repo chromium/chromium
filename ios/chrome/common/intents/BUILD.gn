@@ -7,8 +7,27 @@ import("//build/ios/intent_definition.gni")
 intent_definition("intents") {
   intent_file = "Intents.intentdefinition"
   intent_names = [
+    "AddBookmarkToChromeIntent",
+    "AddReadingListItemToChromeIntent",
     "OpenInChromeIncognitoIntent",
     "OpenInChromeIntent",
     "SearchInChromeIntent",
+    "OpenReadingListIntent",
+    "OpenBookmarksIntent",
+    "OpenRecentTabsIntent",
+    "OpenTabGridIntent",
+    "SearchWithVoiceIntent",
+    "OpenNewTabIntent",
+    "PlayDinoGameIntent",
+    "SetChromeDefaultBrowserIntent",
+    "ViewHistoryIntent",
+    "OpenNewIncognitoTabIntent",
+    "ManagePaymentMethodsIntent",
+    "RunSafetyCheckIntent",
+    "ManagePasswordsIntent",
+    "ManageSettingsIntent",
+    "OpenLatestTabIntent",
+    "OpenLensIntent",
+    "ClearBrowsingDataIntent",
   ]
 }

@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/session/serial_number_util.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -18,7 +20,7 @@ namespace {
 constexpr const size_t kArcSaltFileSize = 16;
 
 // Returns true if the hex-encoded salt in Local State is valid.
-bool IsValidHexSalt(base::StringPiece hex_salt) {
+bool IsValidHexSalt(std::string_view hex_salt) {
   std::string salt;
   if (!base::HexStringToString(hex_salt, &salt)) {
     LOG(WARNING) << "Not a hex string: " << hex_salt;
@@ -33,19 +35,18 @@ bool IsValidHexSalt(base::StringPiece hex_salt) {
 
 }  // namespace
 
-std::string GenerateFakeSerialNumber(base::StringPiece chromeos_user,
-                                     base::StringPiece salt) {
+std::string GenerateFakeSerialNumber(std::string_view chromeos_user,
+                                     std::string_view salt) {
   constexpr size_t kMaxHardwareIdLen = 20;
   std::string input(chromeos_user);
   input.append(salt.begin(), salt.end());
   const std::string hash(crypto::SHA256HashString(input));
-  return base::HexEncode(hash.data(), hash.length())
-      .substr(0, kMaxHardwareIdLen);
+  return base::HexEncode(hash).substr(0, kMaxHardwareIdLen);
 }
 
 std::string GetOrCreateSerialNumber(PrefService* local_state,
-                                    base::StringPiece chromeos_user,
-                                    base::StringPiece arc_salt_on_disk) {
+                                    std::string_view chromeos_user,
+                                    std::string_view arc_salt_on_disk) {
   DCHECK(local_state);
   DCHECK(!chromeos_user.empty());
 
@@ -57,14 +58,13 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
     if (arc_salt_on_disk.empty()) {
       // The device doesn't have the salt file for ARC container. Create it from
       // scratch in the same way as ARC container.
-      char rand_value[kArcSaltFileSize];
-      crypto::RandBytes(rand_value, kArcSaltFileSize);
-      hex_salt = base::HexEncode(rand_value, kArcSaltFileSize);
+      uint8_t rand_value[kArcSaltFileSize];
+      crypto::RandBytes(rand_value);
+      hex_salt = base::HexEncode(rand_value);
     } else {
       // The device has the one for container. Reuse it for ARCVM.
       DCHECK_EQ(kArcSaltFileSize, arc_salt_on_disk.size());
-      hex_salt =
-          base::HexEncode(arc_salt_on_disk.data(), arc_salt_on_disk.size());
+      hex_salt = base::HexEncode(arc_salt_on_disk);
     }
     local_state->SetString(prefs::kArcSerialNumberSalt, hex_salt);
   }
@@ -78,7 +78,7 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
   return GenerateFakeSerialNumber(chromeos_user, decoded_salt);
 }
 
-absl::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
+std::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
   if (!base::PathExists(salt_path)) {
     VLOG(2) << "ARC salt file doesn't exist: " << salt_path;
     return std::string();
@@ -86,7 +86,7 @@ absl::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
   std::string salt;
   if (!base::ReadFileToString(salt_path, &salt)) {
     PLOG(ERROR) << "Failed to read " << salt_path;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (salt.size() != kArcSaltFileSize) {
     LOG(WARNING) << "Ignoring invalid ARC salt on disk. size=" << salt.size();

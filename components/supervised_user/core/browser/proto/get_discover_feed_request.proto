@@ -1,0 +1,11 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package supervised_user;
+
+// Request for kid-friendly content feed.
+message GetDiscoverFeedRequest {}

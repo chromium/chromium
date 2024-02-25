@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
@@ -168,7 +169,7 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
 
 // static
 bool PermissionsData::AllUrlsIncludesChromeUrls(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   return extension_id == extension_misc::kChromeVoxExtensionId;
 }
 
@@ -334,6 +335,15 @@ void PermissionsData::ClearTabSpecificPermissions(int tab_id) const {
   tab_specific_permissions_.erase(tab_id);
 }
 
+bool PermissionsData::HasTabPermissionsForSecurityOrigin(
+    int tab_id,
+    const GURL& url) const {
+  base::AutoLock auto_lock(runtime_lock_);
+  const PermissionSet* tab_permissions = GetTabSpecificPermissions(tab_id);
+  return tab_permissions &&
+         tab_permissions->effective_hosts().MatchesSecurityOrigin(url);
+}
+
 bool PermissionsData::HasAPIPermission(APIPermissionID permission) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->HasAPIPermission(permission);
@@ -377,11 +387,6 @@ bool PermissionsData::HasHostPermission(const GURL& url) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->HasExplicitAccessToOrigin(url) &&
          !IsPolicyBlockedHostUnsafe(url);
-}
-
-bool PermissionsData::HasEffectiveAccessToAllHosts() const {
-  base::AutoLock auto_lock(runtime_lock_);
-  return active_permissions_unsafe_->HasEffectiveAccessToAllHosts();
 }
 
 PermissionMessages PermissionsData::GetPermissionMessages() const {

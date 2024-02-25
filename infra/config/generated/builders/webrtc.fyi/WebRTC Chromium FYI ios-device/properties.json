@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI ios-device/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -54,5 +57,5 @@
   },
   "builder_group": "chromium.webrtc.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "14c18"
+  "xcode_build_version": "15c500b"
 }

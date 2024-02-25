@@ -19,8 +19,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/local_file_util.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 void AllowCredentialsRequestOnUIThread(Profile* profile,
@@ -92,7 +91,7 @@ class DeleteRecursivelyOperation {
                                   base::BindOnce(std::move(callback_), error));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const base::FilePath path_;
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
@@ -142,5 +141,4 @@ void SmbFsAsyncFileUtil::DeleteRecursively(
                          base::SequencedTaskRunner::GetCurrentDefault()))));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

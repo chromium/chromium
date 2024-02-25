@@ -16,6 +16,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -94,9 +95,10 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
   void DidUpdateAudioMutingState(bool muted) override {
-    if (IsGuestInitialized()) {
-      guest_->web_contents()->SetAudioMuted(muted);
+    if (!IsGuestInitialized()) {
+      return;
     }
+    guest_->OnOwnerAudioMutedStateUpdated(muted);
   }
 
  private:
@@ -213,7 +215,7 @@ void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
   DidInitialize(create_params);
 }
 
-const absl::optional<
+const std::optional<
     std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
 GuestViewBase::GetCreateParams() const {
   return create_params_;
@@ -380,7 +382,7 @@ content::NavigationController& GuestViewBase::GetController() {
   return web_contents()->GetController();
 }
 
-GuestViewManager* GuestViewBase::GetGuestViewManager() {
+GuestViewManager* GuestViewBase::GetGuestViewManager() const {
   return GuestViewManager::FromBrowserContext(browser_context());
 }
 
@@ -415,6 +417,10 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
 content::RenderFrameHost* GuestViewBase::GetProspectiveOuterDocument() {
   DCHECK(!attached());
   return owner_rfh();
+}
+
+const GURL& GuestViewBase::GetOwnerLastCommittedURL() const {
+  return owner_rfh()->GetLastCommittedURL();
 }
 
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
@@ -476,6 +482,9 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
   std::unique_ptr<WebContents> owned_guest_contents =
       std::move(owned_guest_contents_);
   DCHECK_EQ(owned_guest_contents.get(), web_contents());
+  if (owned_guest_contents) {
+    owned_guest_contents->SetOwnerLocationForDebug(std::nullopt);
+  }
 
   // Since this inner WebContents is created from the browser side we do
   // not have RemoteFrame mojo channels so we pass in
@@ -498,6 +507,11 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
   // queued events.
   SignalWhenReady(base::BindOnce(&GuestViewBase::DidAttach,
                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GuestViewBase::OnOwnerAudioMutedStateUpdated(bool muted) {
+  CHECK(web_contents());
+  web_contents()->SetAudioMuted(muted);
 }
 
 void GuestViewBase::SignalWhenReady(base::OnceClosure callback) {
@@ -613,7 +627,7 @@ void GuestViewBase::RunFileChooser(
       render_frame_host, std::move(listener), params);
 }
 
-bool GuestViewBase::ShouldFocusPageAfterCrash() {
+bool GuestViewBase::ShouldFocusPageAfterCrash(content::WebContents* source) {
   // Focus is managed elsewhere.
   return false;
 }
@@ -645,13 +659,6 @@ void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {
 
   embedder_web_contents()->GetDelegate()->UpdateTargetURL(
       embedder_web_contents(), url);
-}
-
-bool GuestViewBase::ShouldResumeRequestsForCreatedWindow() {
-  // Delay so that the embedder page has a chance to call APIs such as
-  // webRequest in time to be applied to the initial navigation in the new guest
-  // contents. We resume during AttachToOuterWebContentsFrame.
-  return false;
 }
 
 void GuestViewBase::OnZoomControllerDestroyed(zoom::ZoomController* source) {
@@ -726,6 +733,9 @@ void GuestViewBase::TakeGuestContentsOwnership(
     std::unique_ptr<WebContents> guest_web_contents) {
   DCHECK(!owned_guest_contents_);
   owned_guest_contents_ = std::move(guest_web_contents);
+  if (owned_guest_contents_) {
+    owned_guest_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  }
 }
 
 void GuestViewBase::ClearOwnedGuestContents() {
@@ -760,7 +770,7 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
 
 void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
   // Read the autosize parameters passed in from the embedder.
-  absl::optional<bool> auto_size_enabled_opt =
+  std::optional<bool> auto_size_enabled_opt =
       params.FindBool(kAttributeAutoSize);
   bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
@@ -783,7 +793,7 @@ void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
   int normal_width = normal_size_.width();
   // If the element size was provided in logical units (versus physical), then
   // it will be converted to physical units.
-  absl::optional<bool> element_size_is_logical_opt =
+  std::optional<bool> element_size_is_logical_opt =
       params.FindBool(kElementSizeIsLogical);
   bool element_size_is_logical = element_size_is_logical_opt.value_or(false);
   if (element_size_is_logical) {
@@ -858,10 +868,29 @@ void GuestViewBase::UpdateGuestSize(const gfx::Size& new_size,
   guest_size_ = new_size;
 }
 
+bool GuestViewBase::IsOwnedByExtension() const {
+  return GetGuestViewManager()->IsOwnedByExtension(this);
+}
+
+bool GuestViewBase::IsOwnedByWebUI() const {
+  return owner_rfh()->GetMainFrame()->GetWebUI();
+}
+
+bool GuestViewBase::IsOwnedByControlledFrameEmbedder() const {
+  return GetGuestViewManager()->IsOwnedByControlledFrameEmbedder(this);
+}
+
 void GuestViewBase::SetOwnerHost() {
-  owner_host_ = GetGuestViewManager()->IsOwnedByExtension(this)
-                    ? owner_rfh()->GetLastCommittedURL().host()
-                    : std::string();
+  if (IsOwnedByExtension()) {
+    owner_host_ = GetOwnerLastCommittedURL().host();
+  } else if (IsOwnedByWebUI()) {
+    owner_host_ = std::string();
+  } else if (IsOwnedByControlledFrameEmbedder()) {
+    owner_host_ = owner_rfh()->GetLastCommittedOrigin().Serialize();
+  } else {
+    owner_host_ = std::string();
+  }
+  return;
 }
 
 bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() const {
@@ -870,6 +899,10 @@ bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() const {
 
 bool GuestViewBase::RequiresSslInterstitials() const {
   return false;
+}
+
+bool GuestViewBase::IsPermissionRequestable(ContentSettingsType type) const {
+  return true;
 }
 
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {

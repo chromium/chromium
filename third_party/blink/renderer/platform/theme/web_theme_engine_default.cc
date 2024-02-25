@@ -10,8 +10,11 @@
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {
@@ -143,6 +146,11 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           absl::get<WebThemeEngine::InnerSpinButtonExtraParams>(*extra_params);
       native_inner_spin.spin_up = inner_spin.spin_up;
       native_inner_spin.read_only = inner_spin.read_only;
+      //  Need to explicit cast so we can assign enum to enum.
+      ui::NativeTheme::SpinArrowsDirection dir =
+          ui::NativeTheme::SpinArrowsDirection(
+              inner_spin.spin_arrows_direction);
+      native_inner_spin.spin_arrows_direction = dir;
       return ui::NativeTheme::ExtraParams(native_inner_spin);
     }
     case WebThemeEngine::kPartProgressBar: {
@@ -167,6 +175,8 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           NativeThemeScrollbarOverlayColorTheme(
               scrollbar_thumb.scrollbar_theme);
       native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
+      native_scrollbar_thumb.is_thumb_minimal_mode =
+          scrollbar_thumb.is_thumb_minimal_mode;
       return ui::NativeTheme::ExtraParams(native_scrollbar_thumb);
     }
     case WebThemeEngine::kPartScrollbarDownArrow:
@@ -177,6 +187,8 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       const auto& scrollbar_button =
           absl::get<WebThemeEngine::ScrollbarButtonExtraParams>(*extra_params);
       native_scrollbar_arrow.zoom = scrollbar_button.zoom;
+      native_scrollbar_arrow.needs_rounded_corner =
+          scrollbar_button.needs_rounded_corner;
       native_scrollbar_arrow.right_to_left = scrollbar_button.right_to_left;
       native_scrollbar_arrow.thumb_color = scrollbar_button.thumb_color;
       native_scrollbar_arrow.track_color = scrollbar_button.track_color;
@@ -190,11 +202,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
   }
 }
 
-WebThemeEngineDefault::WebThemeEngineDefault() {
-  light_color_provider_.GenerateColorMap();
-  dark_color_provider_.GenerateColorMap();
-  emulated_forced_colors_provider_.GenerateColorMap();
-}
+WebThemeEngineDefault::WebThemeEngineDefault() = default;
 
 WebThemeEngineDefault::~WebThemeEngineDefault() = default;
 
@@ -232,18 +240,26 @@ void WebThemeEngineDefault::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     mojom::ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) {
+    const ui::ColorProvider* color_provider,
+    const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
+
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, GetColorProviderForPainting(color_scheme), NativeThemePart(part),
-      NativeThemeState(state), rect, native_theme_extra_params,
-      NativeColorScheme(color_scheme), accent_color);
+      canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
+      rect, native_theme_extra_params, NativeColorScheme(color_scheme),
+      accent_color);
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
-  style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
-  style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+  if (IsFluentOverlayScrollbarEnabled()) {
+    style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
+    style->fade_out_duration = ui::kFluentOverlayScrollbarFadeDuration;
+  } else {
+    style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
+    style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+  }
+  style->idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   // The other fields in this struct are used only on Android to draw solid
   // color scrollbars. On other platforms the scrollbars are painted in
   // NativeTheme so these fields are unused.
@@ -264,10 +280,22 @@ gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
       NativeThemePart(part));
 }
 
-absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
+bool WebThemeEngineDefault::IsFluentOverlayScrollbarEnabled() const {
+  return ui::IsFluentOverlayScrollbarEnabled();
+}
+
+int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
+  return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
+}
+
+std::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
     WebThemeEngine::SystemThemeColor system_theme_color) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
       NativeSystemThemeColor(system_theme_color));
+}
+
+std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
+  return ui::NativeTheme::GetInstanceForWeb()->user_color();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -290,6 +318,7 @@ ForcedColors WebThemeEngineDefault::GetForcedColors() const {
              : ForcedColors::kNone;
 }
 
+// TODO(samomekarajr): Remove this when fully migrated to the color pipeline.
 void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
   // Colors were chosen based on Windows 10 default light and dark high contrast
   // themes.
@@ -317,16 +346,10 @@ void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
       {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
       {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
   };
-  EmulateForcedColors(is_dark_theme);
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       false, true, is_dark_theme ? dark_theme : light_theme);
 }
 
-void WebThemeEngineDefault::EmulateForcedColors(bool is_dark_theme) {
-  SetEmulateForcedColors(true);
-  emulated_forced_colors_provider_ =
-      ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
-}
 
 void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
   ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
@@ -345,7 +368,6 @@ void WebThemeEngineDefault::ResetToSystemColors(
       system_color_info_state.is_dark_mode,
       system_color_info_state.forced_colors, colors);
 
-  SetEmulateForcedColors(false);
 }
 
 WebThemeEngine::SystemColorInfoState
@@ -365,32 +387,6 @@ WebThemeEngineDefault::GetSystemColorInfo() {
   state.colors = colors;
 
   return state;
-}
-
-bool WebThemeEngineDefault::UpdateColorProviders(
-    const ui::RendererColorMap& light_colors,
-    const ui::RendererColorMap& dark_colors) {
-  // Do not create new ColorProviders if the renderer color maps match the
-  // existing ColorProviders.
-  if (IsRendererColorMappingEquivalent(light_color_provider_, light_colors) &&
-      IsRendererColorMappingEquivalent(dark_color_provider_, dark_colors)) {
-    return false;
-  }
-
-  light_color_provider_ =
-      ui::CreateColorProviderFromRendererColorMap(light_colors);
-  dark_color_provider_ =
-      ui::CreateColorProviderFromRendererColorMap(dark_colors);
-  return true;
-}
-
-const ui::ColorProvider* WebThemeEngineDefault::GetColorProviderForPainting(
-    mojom::ColorScheme color_scheme) const {
-  if (emulate_forced_colors_ && GetForcedColors() == ForcedColors::kActive) {
-    return &emulated_forced_colors_provider_;
-  }
-  return color_scheme == mojom::ColorScheme::kLight ? &light_color_provider_
-                                                    : &dark_color_provider_;
 }
 
 }  // namespace blink

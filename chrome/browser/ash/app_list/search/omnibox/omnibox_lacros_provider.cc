@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/omnibox/open_tab_result.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
@@ -24,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -39,11 +43,14 @@ using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 
 }  // namespace
 
+// Control category is kept default intentionally as we always need to get
+// answer cards results from Omnibox.
 OmniboxLacrosProvider::OmniboxLacrosProvider(
     Profile* profile,
     AppListControllerDelegate* list_controller,
     crosapi::CrosapiManager* crosapi_manager)
-    : search_provider_(nullptr),
+    : SearchProvider(SearchCategory::kOmnibox),
+      search_provider_(nullptr),
       profile_(profile),
       list_controller_(list_controller) {
   DCHECK(profile_);
@@ -57,39 +64,49 @@ OmniboxLacrosProvider::OmniboxLacrosProvider(
 
 OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
 
+void OmniboxLacrosProvider::StartWithoutSearchProvider(
+    const std::u16string& query) {
+  // If Lacros is unexpectedly not available (e.g. mount failure), make sure
+  // that at least known system (Ash) URLs can be found. AppListClient will
+  // handle these directly (without involving Lacros), so that one can still
+  // open tools such as os://flags.
+  GURL url(query);
+  if (crosapi::gurl_os_handler_utils::HasOsScheme(url) &&
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+          crosapi::gurl_os_handler_utils::GetAshUrlFromLacrosUrl(url))) {
+    AutocompleteInput input;
+
+    SearchSuggestionParser::SuggestResult suggest_result(
+        query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
+        /*from_keyword=*/false,
+        /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
+        /*input_text=*/query);
+    AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),
+                            /*deletable=*/false, suggest_result.type());
+    match.destination_url = url;
+    match.allowed_to_be_default_match = true;
+    match.contents = suggest_result.match_contents();
+    match.contents_class = suggest_result.match_contents_class();
+    match.suggestion_group_id = suggest_result.suggestion_group_id();
+    match.answer = suggest_result.answer();
+    match.stripped_destination_url = url;
+
+    crosapi::mojom::SearchResultPtr result =
+        crosapi::CreateResult(match, /*controller=*/nullptr,
+                              /*favicon_cache=*/nullptr,
+                              /*bookmark_model=*/nullptr, input);
+
+    SearchProvider::Results new_results;
+    new_results.emplace_back(std::make_unique<OmniboxResult>(
+        profile_, list_controller_, std::move(result), query));
+    SwapResults(&new_results);
+  }
+}
+
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
   if (!search_provider_ || !search_provider_->IsSearchControllerConnected()) {
-    const bool is_system_url =
-        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(GURL(query));
-    if (is_system_url) {
-      AutocompleteInput input;
-
-      SearchSuggestionParser::SuggestResult suggest_result(
-          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-          /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-          /*from_keyword=*/false,
-          /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
-          /*input_text=*/query);
-      AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),
-                              /*deletable=*/false, suggest_result.type());
-      match.destination_url = GURL(query);
-      match.allowed_to_be_default_match = true;
-      match.contents = suggest_result.match_contents();
-      match.contents_class = suggest_result.match_contents_class();
-      match.suggestion_group_id = suggest_result.suggestion_group_id();
-      match.answer = suggest_result.answer();
-      match.stripped_destination_url = GURL(query);
-
-      crosapi::mojom::SearchResultPtr result =
-          crosapi::CreateResult(match, /*controller=*/nullptr,
-                                /*favicon_cache=*/nullptr,
-                                /*bookmark_model=*/nullptr, input);
-
-      SearchProvider::Results new_results;
-      new_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, std::move(result), query));
-      SwapResults(&new_results);
-    }
+    StartWithoutSearchProvider(query);
     return;
   }
 
@@ -144,12 +161,24 @@ void OmniboxLacrosProvider::OnResultsReceived(
 
     if (search_result->omnibox_type ==
         CrosApiSearchResult::OmniboxType::kOpenTab) {
+      // Filters out open tab results if web in disabled in launcher search
+      // controls.
+      if (ash::features::IsLauncherSearchControlEnabled() &&
+          !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
+        continue;
+      }
       // Open tab result.
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_, std::move(search_result),
           last_tokenized_query_.value()));
     } else if (!crosapi::OptionalBoolIsTrue(search_result->is_answer)) {
+      // Filters out omnibox results if web in disabled in launcher search
+      // controls.
+      if (ash::features::IsLauncherSearchControlEnabled() &&
+          !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
+        continue;
+      }
       // Omnibox result.
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, std::move(search_result), last_query_));

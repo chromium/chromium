@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/login/login_screen_controller.h"
@@ -54,10 +55,11 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -217,6 +219,8 @@ void AnimateOpacity(T* view, bool towards_visible, bool observe_completion) {
 
 // Consists of challenge-response icon view and a label.
 class LoginAuthUserView::ChallengeResponseView : public views::View {
+  METADATA_HEADER(ChallengeResponseView, views::View)
+
  public:
   enum class State { kInitial, kAuthenticating, kFailure };
 
@@ -290,7 +294,7 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
                                        /*send_native_event=*/true);
     }
 
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   // views::View:
@@ -335,12 +339,15 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
 
   base::RepeatingClosure on_start_tap_;
   State state_ = State::kInitial;
-  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_ = nullptr;
-  raw_ptr<NonAccessibleView, ExperimentalAsh> arrow_to_icon_spacer_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<ArrowButtonView> arrow_button_ = nullptr;
+  raw_ptr<NonAccessibleView> arrow_to_icon_spacer_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
 };
+
+BEGIN_METADATA(LoginAuthUserView, ChallengeResponseView)
+END_METADATA
 
 LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;
 LoginAuthUserView::AuthMethodsMetadata::~AuthMethodsMetadata() = default;
@@ -413,7 +420,7 @@ views::Button* LoginAuthUserView::TestApi::pin_password_toggle() const {
   return view_->pin_password_toggle_;
 }
 
-views::Button* LoginAuthUserView::TestApi::online_sign_in_message() const {
+views::LabelButton* LoginAuthUserView::TestApi::online_sign_in_message() const {
   return view_->online_sign_in_button_;
 }
 
@@ -483,7 +490,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
-  DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK_NE(user.basic_user_info.type, user_manager::UserType::kPublicAccount);
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
     // TODO(b/276246832): We should avoid re-layouting during Authentication.
     LOG(WARNING)
@@ -570,8 +577,6 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
                           base::Unretained(this)),
       button_message);
   online_sign_in_button_ = online_sign_in_button.get();
-  online_sign_in_button_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE));
 
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
   disabled_auth_message_ = disabled_auth_message.get();
@@ -880,9 +885,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
       pin_bounds.set_y(previous_state_->pin_start_in_screen.y() -
                        pin_end_in_screen.y());
 
-      // Since PIN is disabled, the previous Layout() hid the PIN keyboard.
-      // We need to redisplay it where it used to be.
-      // pin_view_->SetVisible(true);
+      // Since PIN is disabled, the previous layout hid the PIN keyboard. We
+      // need to redisplay it where it used to be.
       pin_view_->SetBoundsRect(pin_bounds);
     }
 
@@ -1073,7 +1077,8 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
 }
 
 void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
-                                       absl::optional<bool> auth_success) {
+                                       std::optional<bool> auth_success) {
+  AuthEventsRecorder::Get()->OnAuthComplete(auth_success);
   bool failed = !auth_success.value_or(false);
   LOG(WARNING) << "crbug.com/1339004 : OnAuthComplete " << failed;
 
@@ -1093,7 +1098,7 @@ void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
 }
 
 void LoginAuthUserView::OnChallengeResponseAuthComplete(
-    absl::optional<bool> auth_success) {
+    std::optional<bool> auth_success) {
   if (!auth_success.has_value() || !auth_success.value()) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);
@@ -1306,7 +1311,7 @@ void LoginAuthUserView::OnSwitchButtonClicked() {
                           : InputFieldMode::PIN_WITH_TOGGLE;
   SetAuthMethods(auth_methods_, auth_metadata_);
   // Layout and animate.
-  Layout();
+  DeprecatedLayoutImmediately();
   ApplyAnimationPostLayout(/*animate*/ true);
 }
 
@@ -1445,5 +1450,8 @@ std::u16string LoginAuthUserView::GetMultiUserSignInDisableAuthMessage() const {
   }
   return l10n_util::GetStringUTF16(message_id);
 }
+
+BEGIN_METADATA(LoginAuthUserView)
+END_METADATA
 
 }  // namespace ash

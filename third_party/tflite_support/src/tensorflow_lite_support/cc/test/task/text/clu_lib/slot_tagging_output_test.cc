@@ -33,7 +33,8 @@ using ::tflite::task::ParseTextProtoOrDie;
 // If the proto definition changes, please also change this function.
 void ExpectApproximatelyEqual(const CluResponse& actual,
                               const CluResponse& expected) {
-  ASSERT_EQ(actual.mentioned_slots_size(), expected.mentioned_slots_size());
+  ASSERT_EQ(actual.mentioned_slots_size(),
+            expected.mentioned_slots_size());
   for (int i = 0; i < actual.mentioned_slots_size(); ++i) {
     const auto& a = actual.mentioned_slots(i);
     const auto& b = expected.mentioned_slots(i);

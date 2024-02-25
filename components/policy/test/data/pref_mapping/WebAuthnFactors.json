@@ -1,0 +1,57 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebAuthnFactors": [
+            "PIN"
+          ]
+        },
+        "prefs": {
+          "authfactors.restrictions.webauthn": {
+            "value": [
+              "PIN"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "authfactors.restrictions.webauthn": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "Using QuickUnlockModeAllowlist's value when unset.",
+        "policies": {
+          "QuickUnlockModeAllowlist": [
+            "PIN"
+          ]
+        },
+        "prefs": {
+          "authfactors.restrictions.webauthn": {
+            "value": [
+              "PIN"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Default values when this and QuickUnlockModeAllowlist are both unset.",
+        "prefs": {
+          "authfactors.restrictions.webauthn": {
+            "value": []
+          },
+          "quick_unlock_mode_allowlist": {
+            "value": []
+          }
+        }
+      }
+    ]
+  }
+]

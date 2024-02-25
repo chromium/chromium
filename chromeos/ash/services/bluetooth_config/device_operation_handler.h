@@ -81,8 +81,8 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
 
   virtual void RecordUserInitiatedReconnectionMetrics(
       const device::BluetoothTransport transport,
-      absl::optional<base::Time> reconnection_attempt_start,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      std::optional<base::Time> reconnection_attempt_start,
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
       const = 0;
 
  private:
@@ -112,12 +112,12 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
 
   bool IsBluetoothEnabled() const;
 
-  absl::optional<PendingOperation> current_operation_;
+  std::optional<PendingOperation> current_operation_;
   base::OneShotTimer current_operation_timer_;
 
   base::queue<PendingOperation> queue_;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

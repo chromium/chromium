@@ -5,19 +5,28 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_BASIC_STREAM_H_
 #define NET_WEBSOCKETS_WEBSOCKET_BASIC_STREAM_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_frame_parser.h"
 #include "net/websockets/websocket_stream.h"
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace net {
 
@@ -28,6 +37,7 @@ class IOBuffer;
 class IOBufferWithSize;
 struct WebSocketFrame;
 struct WebSocketFrameChunk;
+struct NetworkTrafficAnnotationTag;
 
 // Implementation of WebSocketStream for non-multiplexed ws:// connections (or
 // the physical side of a multiplexed ws:// connection).

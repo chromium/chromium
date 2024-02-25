@@ -4,17 +4,23 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+
+namespace cros_healthd = ::ash::cros_healthd::mojom;
 
 namespace {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -31,6 +37,8 @@ enum class EnterpriseReportingPsrResult {
   kMaxValue = kUnknownPsrLogState
 };
 
+constexpr size_t kMaxRetries = 1u;
+
 // Records PSR result to UMA.
 void RecordPsrResult(EnterpriseReportingPsrResult result) {
   base::UmaHistogramEnumeration("Browser.ERP.PsrResult", result);
@@ -38,20 +46,56 @@ void RecordPsrResult(EnterpriseReportingPsrResult result) {
 
 }  // namespace
 
-namespace cros_healthd = ::ash::cros_healthd::mojom;
-
+CrosHealthdPsrSamplerHandler::CrosHealthdPsrSamplerHandler() = default;
 CrosHealthdPsrSamplerHandler::~CrosHealthdPsrSamplerHandler() = default;
 
 void CrosHealthdPsrSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HandleResultImpl(std::move(callback), /*num_retries_left=*/kMaxRetries,
+                   std::move(result));
+}
+
+void CrosHealthdPsrSamplerHandler::Retry(OptionalMetricCallback callback,
+                                         size_t num_retries_left) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto healthd_callback = base::BindOnce(
+      &CrosHealthdPsrSamplerHandler::HandleResultImpl,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), num_retries_left);
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          std::vector<cros_healthd::ProbeCategoryEnum>{
+              cros_healthd::ProbeCategoryEnum::kSystem},
+          std::move(healthd_callback));
+}
+
+void CrosHealthdPsrSamplerHandler::HandleResultImpl(
+    OptionalMetricCallback callback,
+    size_t num_retries_left,
+    cros_healthd::TelemetryInfoPtr result) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::optional<MetricData> metric_data;
   base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
-      [](OptionalMetricCallback callback,
-         absl::optional<MetricData>* metric_data) {
+      [](base::WeakPtr<const CrosHealthdPsrSamplerHandler> self,
+         OptionalMetricCallback callback,
+         std::optional<MetricData>* metric_data, size_t num_retries_left) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+        if (!metric_data->has_value() && num_retries_left > 0) {
+          // Failed to obtain PSR info, try again in 10 seconds. May be due to
+          // some race condition in healthd when reading PSR devices.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+              FROM_HERE,
+              base::BindOnce(&CrosHealthdPsrSamplerHandler::Retry, self,
+                             std::move(callback), num_retries_left - 1),
+              self->wait_time_);
+          return;
+        }
         std::move(callback).Run(std::move(*metric_data));
       },
-      std::move(callback), &metric_data));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), &metric_data,
+      num_retries_left));
 
   const auto& system_result = result->system_result;
   if (system_result.is_null()) {
@@ -104,7 +148,7 @@ void CrosHealthdPsrSamplerHandler::HandleResult(
   }
 
   // Gather PSR info.
-  metric_data = absl::make_optional<MetricData>();
+  metric_data = std::make_optional<MetricData>();
   auto* const runtime_counters_telemetry =
       metric_data->mutable_telemetry_data()
           ->mutable_runtime_counters_telemetry();

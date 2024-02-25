@@ -51,7 +51,7 @@ class ChromePasswordReuseDetectionManagerClient
   autofill::LogManager* GetLogManager() override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
-  bool IsSyncAccountEmail(const std::string& username) override;
+  bool IsHistorySyncAccountEmail(const std::string& username) override;
   bool IsPasswordFieldDetectedOnPage() override;
   void CheckProtectedPasswordEntry(
       password_manager::metrics_util::PasswordType reused_password_type,

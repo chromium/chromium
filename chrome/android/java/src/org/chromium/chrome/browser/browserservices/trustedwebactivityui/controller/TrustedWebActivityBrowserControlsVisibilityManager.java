@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.Custo
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 
@@ -44,23 +43,25 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
 
     private @BrowserControlsState int mBrowserControlsState = DEFAULT_BROWSER_CONTROLS_STATE;
 
-    private final CustomTabTabObserver mTabObserver = new CustomTabTabObserver() {
-        @Override
-        public void onSSLStateUpdated(Tab tab) {
-            updateBrowserControlsState();
-            updateCloseButtonVisibility();
-        }
+    private final CustomTabTabObserver mTabObserver =
+            new CustomTabTabObserver() {
+                @Override
+                public void onSSLStateUpdated(Tab tab) {
+                    updateBrowserControlsState();
+                    updateCloseButtonVisibility();
+                }
 
-        @Override
-        public void onObservingDifferentTab(@Nullable Tab tab) {
-            updateBrowserControlsState();
-            updateCloseButtonVisibility();
-        }
-    };
+                @Override
+                public void onObservingDifferentTab(@Nullable Tab tab) {
+                    updateBrowserControlsState();
+                    updateCloseButtonVisibility();
+                }
+            };
 
     @Inject
     public TrustedWebActivityBrowserControlsVisibilityManager(
-            TabObserverRegistrar tabObserverRegistrar, CustomTabActivityTabProvider tabProvider,
+            TabObserverRegistrar tabObserverRegistrar,
+            CustomTabActivityTabProvider tabProvider,
             CustomTabToolbarCoordinator toolbarCoordinator,
             CloseButtonVisibilityManager closeButtonVisibilityManager,
             BrowserServicesIntentDataProvider intentDataProvider) {
@@ -75,9 +76,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
                 (webappExtras != null && webappExtras.displayMode == DisplayMode.MINIMAL_UI);
     }
 
-    /**
-     * Should be called when the browser enters and exits TWA mode.
-     */
+    /** Should be called when the browser enters and exits TWA mode. */
     public void updateIsInAppMode(boolean inAppMode) {
         if (mInAppMode == inAppMode) return;
 
@@ -113,7 +112,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
         // transitions we avoid button flickering when toolbar is appearing/disappearing.
         boolean closeButtonVisibility =
                 shouldShowBrowserControlsAndCloseButton(mTabProvider.getTab())
-                || (mBrowserControlsState == BrowserControlsState.HIDDEN);
+                        || (mBrowserControlsState == BrowserControlsState.HIDDEN);
 
         mCloseButtonVisibilityManager.setVisibility(closeButtonVisibility);
     }
@@ -133,13 +132,13 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
             return BrowserControlsState.BOTH;
         }
 
-        return shouldShowBrowserControlsAndCloseButton(tab) ? BrowserControlsState.BOTH
-                                                            : BrowserControlsState.HIDDEN;
+        return shouldShowBrowserControlsAndCloseButton(tab)
+                ? BrowserControlsState.BOTH
+                : BrowserControlsState.HIDDEN;
     }
 
     private boolean isChildTab(@Nullable Tab tab) {
-        return tab != null
-                && CriticalPersistedTabData.from(tab).getParentId() != Tab.INVALID_TAB_ID;
+        return tab != null && tab.getParentId() != Tab.INVALID_TAB_ID;
     }
 
     @ConnectionSecurityLevel

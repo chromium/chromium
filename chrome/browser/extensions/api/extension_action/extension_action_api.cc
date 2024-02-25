@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,9 +41,11 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -245,8 +246,8 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
     // The action APIs (browserAction, pageAction, action) are only available
     // to blessed extension contexts. As such, we deterministically know that
     // the right context type here is blessed.
-    constexpr Feature::Context context_type =
-        Feature::BLESSED_EXTENSION_CONTEXT;
+    constexpr mojom::ContextType context_type =
+        mojom::ContextType::kPrivilegedExtension;
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                               web_contents);
@@ -292,7 +293,7 @@ ExtensionPrefs* ExtensionActionAPI::GetExtensionPrefs() {
 
 void ExtensionActionAPI::DispatchEventToExtension(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     base::Value::List event_args) {
@@ -460,9 +461,6 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
     gfx::Image icon_image(icon);
     const SkBitmap bitmap = icon_image.AsBitmap();
     const bool is_visible = image_util::IsIconSufficientlyVisible(bitmap);
-    UMA_HISTOGRAM_BOOLEAN("Extensions.DynamicExtensionActionIconWasVisible",
-                          is_visible);
-
     if (!is_visible && g_report_error_for_invisible_icon)
       return RespondNow(Error("Icon not sufficiently visible."));
 

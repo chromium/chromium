@@ -4,22 +4,17 @@
 
 package org.chromium.chrome.browser.historyreport;
 
-/**
- * Represents report about page visit.
- */
+/** Represents report about page visit. */
 public class UsageReport {
     public final String reportId;
-    /**
-     * Unique id of a url visited by user.
-     */
+
+    /** Unique id of a url visited by user. */
     public final String pageId;
-    /**
-     * Time of the page visit.
-     */
+
+    /** Time of the page visit. */
     public final long timestampMs;
-    /**
-     * Whether page visit was caused by user typing the page url in omnibox.
-     */
+
+    /** Whether page visit was caused by user typing the page url in omnibox. */
     public final boolean typedVisit;
 
     public UsageReport(String reportId, String pageId, long timestampMs, boolean typedVisit) {

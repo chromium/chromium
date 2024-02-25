@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
@@ -46,7 +47,7 @@ class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
       const AlternativeStateNameMapUpdater&) = delete;
 
   // PersonalDataManagerObserver:
-  void OnPersonalDataFinishedProfileTasks() override;
+  void OnPersonalDataChanged() override;
 
   // Extracts the country and state values from the profiles and adds them to
   // the AlternativeStateNameMap.
@@ -157,6 +158,9 @@ class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
       parsed_state_values_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      pdm_observer_{this};
 
   // base::WeakPtr ensures that the callback bound to the object is canceled
   // when that object is destroyed.

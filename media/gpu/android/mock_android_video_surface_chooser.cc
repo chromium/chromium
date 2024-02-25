@@ -18,7 +18,7 @@ void MockAndroidVideoSurfaceChooser::SetClientCallbacks(
 }
 
 void MockAndroidVideoSurfaceChooser::UpdateState(
-    absl::optional<AndroidOverlayFactoryCB> factory,
+    std::optional<AndroidOverlayFactoryCB> factory,
     const State& new_state) {
   MockUpdateState();
   if (factory) {

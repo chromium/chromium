@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -25,7 +26,6 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/prefs_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefFilter;
 
@@ -38,11 +38,10 @@ class WriteCallbacksObserver;
 }  // namespace base
 
 // A writable PrefStore implementation that is used for user preferences.
-class COMPONENTS_PREFS_EXPORT JsonPrefStore
+class COMPONENTS_PREFS_EXPORT JsonPrefStore final
     : public PersistentPrefStore,
       public base::ImportantFileWriter::DataSerializer,
-      public base::ImportantFileWriter::BackgroundDataSerializer,
-      public base::SupportsWeakPtr<JsonPrefStore> {
+      public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
   struct ReadResult;
 
@@ -124,6 +123,10 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
 
   void OnStoreDeletionFromDisk() override;
 
+  base::WeakPtr<JsonPrefStore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
 #if defined(UNIT_TEST)
   base::ImportantFileWriter& get_writer() { return writer_; }
 #endif
@@ -166,7 +169,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   void OnFileRead(std::unique_ptr<ReadResult> read_result);
 
   // ImportantFileWriter::DataSerializer overrides:
-  absl::optional<std::string> SerializeData() override;
+  std::optional<std::string> SerializeData() override;
   // ImportantFileWriter::BackgroundDataSerializer implementation.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
@@ -212,6 +215,8 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   base::OnceClosure on_next_successful_write_reply_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<JsonPrefStore> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_PREFS_JSON_PREF_STORE_H_

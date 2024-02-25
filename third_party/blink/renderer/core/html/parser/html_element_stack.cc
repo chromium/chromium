@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -506,21 +507,27 @@ Element* HTMLElementStack::HtmlElement() const {
 
 Element* HTMLElementStack::HeadElement() const {
   DCHECK(head_element_);
-  return head_element_;
+  return head_element_.Get();
 }
 
 Element* HTMLElementStack::BodyElement() const {
   DCHECK(body_element_);
-  return body_element_;
+  return body_element_.Get();
 }
 
 ContainerNode* HTMLElementStack::RootNode() const {
   DCHECK(root_node_);
-  return root_node_;
+  return root_node_.Get();
 }
 
 void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   DCHECK(root_node_);
+
+  if (dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts &&
+      item->HasParsePartsAttribute() && body_element_) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    ++parse_parts_count_;
+  }
 
   stack_depth_++;
   item->SetNextItemInStack(top_.Release());
@@ -532,6 +539,15 @@ void HTMLElementStack::PopCommon() {
   DCHECK(!TopStackItem()->HasTagName(html_names::kHeadTag) || !head_element_);
   DCHECK(!TopStackItem()->HasTagName(html_names::kBodyTag) || !body_element_);
   Top()->FinishParsingChildren();
+
+  DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_ ||
+         !body_element_ ||
+         dom_parts_allowed_state_ != DOMPartsAllowed::kInsideParseParts);
+  if (parse_parts_count_ && TopStackItem()->HasParsePartsAttribute() &&
+      dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts) {
+    --parse_parts_count_;
+  }
+
   top_ = top_->ReleaseNextItemInStack();
 
   stack_depth_--;
@@ -546,6 +562,14 @@ void HTMLElementStack::RemoveNonTopCommon(Element* element) {
       // FIXME: Is it OK to call finishParsingChildren()
       // when the children aren't actually finished?
       element->FinishParsingChildren();
+
+      DCHECK(!TopStackItem()->HasParsePartsAttribute() || parse_parts_count_);
+      if (parse_parts_count_ &&
+          item->NextItemInStack()->HasParsePartsAttribute() &&
+          dom_parts_allowed_state_ == DOMPartsAllowed::kInsideParseParts) {
+        --parse_parts_count_;
+      }
+
       item->SetNextItemInStack(
           item->ReleaseNextItemInStack()->ReleaseNextItemInStack());
       stack_depth_--;

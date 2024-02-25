@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -71,10 +71,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     ~IssueWithMetadata() = default;
     IssueWithMetadata(const IssueWithMetadata<T>&) = default;
 
-    bool operator==(const IssueWithMetadata<T>& other) const {
-      return std::tie(issue_type_, issue_path_) ==
-             std::tie(other.issue_type_, other.issue_path_);
-    }
+    bool operator==(const IssueWithMetadata<T>& other) const = default;
 
     // Inserts path_prefix at the beginning of the path stored for this issue.
     void PrependPath(
@@ -137,11 +134,13 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   //
   // Embedder should call this method as early as possible during browser
   // startup if First-Party Sets are enabled, since no First-Party Sets queries
-  // are answered until initialization is complete. Must not be called if
-  // `ContentBrowserClient::WillProvidePublicFirstPartySets` returns false or
-  // `ContentBrowserClient::IsFrstpartySetsEnabled` returns false.
+  // are answered until initialization is complete.
   //
-  // Must be called at most once.
+  // If this is called when First-Party Sets are enabled, or the embedder has
+  // not indicated it will provide the public First-Party Sets, the call is
+  // ignored.
+  //
+  // If this is called more than once, all but the first call are ignored.
   virtual void SetPublicFirstPartySets(const base::Version& version,
                                        base::File sets_file) = 0;
 
@@ -152,7 +151,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // - First-Party Sets is disabled or
   // - the list of First-Party Sets isn't initialized yet or
   // - `site` isn't in the global First-Party Sets or `config`
-  virtual absl::optional<net::FirstPartySetEntry> FindEntry(
+  virtual std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const = 0;
 
@@ -197,6 +196,22 @@ class CONTENT_EXPORT FirstPartySetsHandler {
       const net::SchemefulSite* top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) = 0;
+
+  // Synchronously iterates over all the effective entries (i.e. anything that
+  // could be returned by `FindEntry` given the global First-Party Sets and
+  // `config`, including the manual set, policy sets, and aliases), and invokes
+  // `f` on each entry formed as a net::SchemefulSite and a
+  // net::FirstPartySetEntry. If any of these invocations returns false, then
+  // ForEachEffectiveSetEntry stops iterating over the entries and returns false
+  // to its caller. Otherwise, if each call to `f` returns true, then
+  // ForEachEffectiveSetEntry returns true.
+  //
+  // Also returns false if First-Party Sets was not yet initialized. No
+  // guarantees are made re: iteration order.
+  virtual bool ForEachEffectiveSetEntry(
+      const net::FirstPartySetsContextConfig& config,
+      base::FunctionRef<bool(const net::SchemefulSite&,
+                             const net::FirstPartySetEntry&)> f) const = 0;
 };
 
 }  // namespace content

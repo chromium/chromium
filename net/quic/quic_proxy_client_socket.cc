@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_log_util.h"
@@ -25,7 +26,8 @@ namespace net {
 QuicProxyClientSocket::QuicProxyClientSocket(
     std::unique_ptr<QuicChromiumClientStream::Handle> stream,
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t proxy_chain_index,
     const std::string& user_agent,
     const HostPortPair& endpoint,
     const NetLogWithSource& net_log,
@@ -35,7 +37,8 @@ QuicProxyClientSocket::QuicProxyClientSocket(
       session_(std::move(session)),
       endpoint_(endpoint),
       auth_(std::move(auth_controller)),
-      proxy_server_(proxy_server),
+      proxy_chain_(proxy_chain),
+      proxy_chain_index_(proxy_chain_index),
       proxy_delegate_(proxy_delegate),
       user_agent_(user_agent),
       net_log_(net_log) {
@@ -126,12 +129,6 @@ const NetLogWithSource& QuicProxyClientSocket::NetLog() const {
 
 bool QuicProxyClientSocket::WasEverUsed() const {
   return session_->WasEverUsed();
-}
-
-bool QuicProxyClientSocket::WasAlpnNegotiated() const {
-  // Do not delegate to `session_`. While `session_` negotiates ALPN with the
-  // proxy, this object represents the tunneled TCP connection to the origin.
-  return false;
 }
 
 NextProto QuicProxyClientSocket::GetNegotiatedProtocol() const {
@@ -344,7 +341,7 @@ int QuicProxyClientSocket::DoSendRequest() {
 
   if (proxy_delegate_) {
     HttpRequestHeaders proxy_delegate_headers;
-    proxy_delegate_->OnBeforeTunnelRequest(proxy_server_,
+    proxy_delegate_->OnBeforeTunnelRequest(proxy_chain_, proxy_chain_index_,
                                            &proxy_delegate_headers);
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
@@ -358,7 +355,8 @@ int QuicProxyClientSocket::DoSendRequest() {
                        request_line, &request_.extra_headers);
 
   spdy::Http2HeaderBlock headers;
-  CreateSpdyHeadersFromHttpRequest(request_, request_.extra_headers, &headers);
+  CreateSpdyHeadersFromHttpRequest(request_, std::nullopt,
+                                   request_.extra_headers, &headers);
 
   return stream_->WriteHeaders(std::move(headers), false, nullptr);
 }
@@ -406,8 +404,8 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
       response_.headers.get());
 
   if (proxy_delegate_) {
-    int rv = proxy_delegate_->OnTunnelHeadersReceived(proxy_server_,
-                                                      *response_.headers);
+    int rv = proxy_delegate_->OnTunnelHeadersReceived(
+        proxy_chain_, proxy_chain_index_, *response_.headers);
     if (rv != OK) {
       DCHECK_NE(ERR_IO_PENDING, rv);
       return rv;

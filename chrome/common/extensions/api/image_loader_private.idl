@@ -15,12 +15,14 @@ namespace imageLoaderPrivate {
     // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is
     // true, returns a thumbnail appropriate for file list or grid views;
     // otherwise, returns a thumbnail appropriate for quickview.
+    [doesNotSupportPromises]
     static void getDriveThumbnail(DOMString url,
                                   boolean cropToSquare,
                                   GetThumbnailCallback callback);
 
     // For a local PDF file, retrieves its thumbnail with a given |width| and
     // |height|.
+    [doesNotSupportPromises]
     static void getPdfThumbnail(DOMString url,
                                 long width,
                                 long height,
@@ -33,6 +35,7 @@ namespace imageLoaderPrivate {
     // |callback| is called with an empty string.
     // Note: The thumbnail data may originate from third-party application code,
     // and is untrustworthy (Security).
+    [doesNotSupportPromises]
     static void getArcDocumentsProviderThumbnail(DOMString url,
                                                  long widthHint,
                                                  long heightHint,

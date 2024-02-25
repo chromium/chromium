@@ -25,6 +25,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.MockFido2CredentialRequest;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -32,10 +33,13 @@ import org.chromium.net.test.ServerCertificate;
 
 /** Test suite for navigator.credentials functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
-        "enable-experimental-web-platform-features", "enable-features=WebAuthentication",
-        "ignore-certificate-errors"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+    "enable-experimental-web-platform-features",
+    "enable-features=WebAuthentication",
+    "ignore-certificate-errors"
+})
 @Batch(Batch.PER_CLASS)
 public class AuthenticatorTest {
     @Rule
@@ -76,13 +80,16 @@ public class AuthenticatorTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
         mUrl = mTestServer.getURLWithHostName("subdomain.example.test", TEST_FILE);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
+        WebauthnModeProvider.getInstance()
+                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
         mMockCredentialRequest = new MockFido2CredentialRequest();
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
     }
@@ -94,9 +101,8 @@ public class AuthenticatorTest {
 
     /**
      * Verify that the Mojo bridge between Blink and Java is working for
-     * navigator.credentials.create. This test currently expects a
-     * "Not Implemented" response. Testing any real response would require
-     * setting up or mocking a real APK.
+     * navigator.credentials.create. This test currently expects a "Not Implemented" response.
+     * Testing any real response would require setting up or mocking a real APK.
      */
     @Test
     @MediumTest
@@ -108,10 +114,9 @@ public class AuthenticatorTest {
     }
 
     /**
-     * Verify that the Mojo bridge between Blink and Java is working for
-     * navigator.credentials.get. This test currently expects a
-     * "Not Implemented" response. Testing any real response would require
-     * setting up or mocking a real APK.
+     * Verify that the Mojo bridge between Blink and Java is working for navigator.credentials.get.
+     * This test currently expects a "Not Implemented" response. Testing any real response would
+     * require setting up or mocking a real APK.
      */
     @Test
     @MediumTest
@@ -124,8 +129,8 @@ public class AuthenticatorTest {
 
     /**
      * Verify that the Mojo bridge between Blink and Java is working for
-     * PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable.
-     * This test currently expects a "false" response.
+     * PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable. This test currently
+     * expects a "false" response.
      */
     @Test
     @MediumTest

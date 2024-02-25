@@ -1,0 +1,45 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/model_execution.proto";
+
+message TextSafetyModelMetadata {
+  // The number of categories the model is expected to output.
+  optional uint32 num_output_categories = 1;
+
+  // The set of feature configurations used to determine whether the text is
+  // safe.
+  repeated FeatureTextSafetyConfiguration feature_text_safety_configurations =
+      2;
+}
+
+message SafetyCategoryThreshold {
+  // Label for the category. E.g. 'TOXICITY', 'SEXUAL', 'HEALTH', etc.
+  optional string category_label = 1;
+
+  // Index of the category from the output (scores) of the text safety model.
+  optional uint32 output_index = 2;
+
+  // Threshold for the category, scores >= to the threshold will be filtered.
+  optional float threshold = 3;
+}
+
+message FeatureTextSafetyConfiguration {
+  // The feature this configuration pertains to.
+  optional ModelExecutionFeature feature = 1;
+
+  // The set of thresholds to apply per category.
+  repeated SafetyCategoryThreshold safety_category_thresholds = 2;
+
+  // The set of languages allowed for text safety evaluation. If empty, no
+  // language constraints are enforced.
+  repeated string allowed_languages = 3;
+}

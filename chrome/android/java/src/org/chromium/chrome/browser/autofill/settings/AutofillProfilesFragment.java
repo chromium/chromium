@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -29,17 +28,12 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
-;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
@@ -50,51 +44,47 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
-/**
- * Autofill profiles fragment, which allows the user to edit autofill profiles.
- */
-public class AutofillProfilesFragment extends PreferenceFragmentCompat
-        implements PersonalDataManager.PersonalDataManagerObserver, FragmentHelpAndFeedbackLauncher,
-                   ProfileDependentSetting {
-    private static Delegate sAddressEditorDelegate = new Delegate() {
-        // User has either created a new address, or edited an existing address.
-        // We should save changes in any case.
-        @Override
-        public void onDone(AutofillAddress address) {
-            PersonalDataManager.getInstance().setProfile(address.getProfile());
-            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressUpdated(address);
-            if (sObserverForTest != null) {
-                sObserverForTest.onEditorReadyToEdit();
-            }
-        }
+/** Autofill profiles fragment, which allows the user to edit autofill profiles. */
+public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
+        implements PersonalDataManager.PersonalDataManagerObserver {
+    private static Delegate sAddressEditorDelegate =
+            new Delegate() {
+                // User has either created a new address, or edited an existing address.
+                // We should save changes in any case.
+                @Override
+                public void onDone(AutofillAddress address) {
+                    PersonalDataManager.getInstance().setProfile(address.getProfile());
+                    SettingsAutofillAndPaymentsObserver.getInstance()
+                            .notifyOnAddressUpdated(address);
+                    if (sObserverForTest != null) {
+                        sObserverForTest.onEditorReadyToEdit();
+                    }
+                }
 
-        // User canceled edited meaning that |autofillAddress| has stayed intact.
-        @Override
-        public void onCancel() {
-            if (sObserverForTest != null) {
-                sObserverForTest.onEditorReadyToEdit();
-            }
-        }
+                // User canceled edited meaning that |autofillAddress| has stayed intact.
+                @Override
+                public void onCancel() {
+                    if (sObserverForTest != null) {
+                        sObserverForTest.onEditorReadyToEdit();
+                    }
+                }
 
-        @Override
-        public void onDelete(AutofillAddress address) {
-            String guid = address.getProfile().getGUID();
-            if (guid == null) {
-                return;
-            }
-            PersonalDataManager.getInstance().deleteProfile(guid);
-            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
-            if (sObserverForTest != null) {
-                sObserverForTest.onEditorReadyToEdit();
-            }
-        }
-    };
+                @Override
+                public void onDelete(AutofillAddress address) {
+                    String guid = address.getProfile().getGUID();
+                    if (guid == null) {
+                        return;
+                    }
+                    PersonalDataManager.getInstance().deleteProfile(guid);
+                    SettingsAutofillAndPaymentsObserver.getInstance().notifyOnAddressDeleted(guid);
+                    if (sObserverForTest != null) {
+                        sObserverForTest.onEditorReadyToEdit();
+                    }
+                }
+            };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
     private @Nullable AddressEditorCoordinator mAddressEditor;
-
-    private Profile mProfile;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -127,8 +117,11 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
-                    getActivity(), getActivity().getString(R.string.help_context_autofill), null);
+            getHelpAndFeedbackLauncher()
+                    .show(
+                            getActivity(),
+                            getActivity().getString(R.string.help_context_autofill),
+                            null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -153,26 +146,27 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         autofillSwitch.setTitle(R.string.autofill_enable_profiles_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
         autofillSwitch.setChecked(PersonalDataManager.isAutofillProfileEnabled());
-        autofillSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            PersonalDataManager.setAutofillProfileEnabled((boolean) newValue);
-            return true;
-        });
-        autofillSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return PersonalDataManager.isAutofillProfileManaged();
-            }
+        autofillSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    PersonalDataManager.setAutofillProfileEnabled((boolean) newValue);
+                    return true;
+                });
+        autofillSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return PersonalDataManager.isAutofillProfileManaged();
+                    }
 
-            @Override
-            public boolean isPreferenceClickDisabled(Preference preference) {
-                return PersonalDataManager.isAutofillProfileManaged()
-                        && !PersonalDataManager.isAutofillProfileEnabled();
-            }
-        });
+                    @Override
+                    public boolean isPreferenceClickDisabled(Preference preference) {
+                        return PersonalDataManager.isAutofillProfileManaged()
+                                && !PersonalDataManager.isAutofillProfileEnabled();
+                    }
+                });
         getPreferenceScreen().addPreference(autofillSwitch);
 
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
-            assert profile.getIsLocal();
             // Add a preference for the profile.
             Preference pref = new AutofillProfileEditorPreference(getStyledContext());
             pref.setTitle(profile.getFullName());
@@ -197,7 +191,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                     new AutofillProfileEditorPreference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
             plusIcon.mutate();
-            plusIcon.setColorFilter(SemanticColorUtils.getDefaultControlColorActive(getContext()),
+            plusIcon.setColorFilter(
+                    SemanticColorUtils.getDefaultControlColorActive(getContext()),
                     PorterDuff.Mode.SRC_IN);
             pref.setIcon(plusIcon);
             pref.setTitle(R.string.autofill_create_profile);
@@ -242,16 +237,24 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         AutofillAddress autofillAddress =
                 getAutofillAddress((AutofillProfileEditorPreference) preference);
         if (autofillAddress == null) {
-            mAddressEditor = new AddressEditorCoordinator(getActivity(),
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
-                    mProfile,
-                    /*saveToDisk=*/true);
+            mAddressEditor =
+                    new AddressEditorCoordinator(
+                            getActivity(),
+                            getHelpAndFeedbackLauncher(),
+                            sAddressEditorDelegate,
+                            getProfile(),
+                            /* saveToDisk= */ true);
             mAddressEditor.showEditorDialog();
         } else {
-            mAddressEditor = new AddressEditorCoordinator(getActivity(),
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
-                    mProfile, autofillAddress, UPDATE_EXISTING_ADDRESS_PROFILE,
-                    /*saveToDisk=*/true);
+            mAddressEditor =
+                    new AddressEditorCoordinator(
+                            getActivity(),
+                            getHelpAndFeedbackLauncher(),
+                            sAddressEditorDelegate,
+                            getProfile(),
+                            autofillAddress,
+                            UPDATE_EXISTING_ADDRESS_PROFILE,
+                            /* saveToDisk= */ true);
             mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
         }
@@ -271,20 +274,21 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     }
 
     private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
-        if (!IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
-                    ConsentLevel.SIGNIN)) {
+        if (!IdentityServicesProvider.get()
+                .getIdentityManager(getProfile())
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
         if (profile.getSource() == Source.ACCOUNT) {
             return false;
         }
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE)
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        return syncService == null || !syncService.isSyncFeatureEnabled()
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+        return syncService == null
+                || !syncService.isSyncFeatureEnabled()
                 || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
@@ -294,15 +298,5 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
 
     EditorDialogView getEditorDialogForTest() {
         return mAddressEditor.getEditorDialogForTesting();
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

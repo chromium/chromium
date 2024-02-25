@@ -277,7 +277,7 @@ TEST_F(DMResponseValidatorTests, OmahaPolicyWithBadValues) {
             "Value out of range(0 - 960): 1000");
   EXPECT_EQ(validation_result.issues[5].policy_name, "proxy_mode");
   EXPECT_EQ(validation_result.issues[5].severity,
-            PolicyValueValidationIssue::Severity::kError);
+            PolicyValueValidationIssue::Severity::kWarning);
   EXPECT_EQ(validation_result.issues[5].message,
             "Unrecognized proxy mode: weird_proxy_mode");
   EXPECT_EQ(validation_result.issues[6].policy_name, "proxy_server");

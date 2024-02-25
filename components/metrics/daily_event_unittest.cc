@@ -4,11 +4,12 @@
 
 #include "components/metrics/daily_event.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -33,7 +34,7 @@ class TestDailyObserver : public DailyEvent::Observer {
 
  private:
   // Last-received type, or unset if OnDailyEvent() hasn't been called.
-  absl::optional<DailyEvent::IntervalType> type_;
+  std::optional<DailyEvent::IntervalType> type_;
 };
 
 class DailyEventTest : public testing::Test {

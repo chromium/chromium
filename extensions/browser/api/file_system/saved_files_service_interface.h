@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -21,7 +22,7 @@ class SavedFilesServiceInterface {
   // Registers a file entry with the saved files service, making it eligible to
   // be put into the queue. File entries that are in the retained files queue at
   // object construction are automatically registered.
-  virtual void RegisterFileEntry(const std::string& extension_id,
+  virtual void RegisterFileEntry(const ExtensionId& extension_id,
                                  const std::string& id,
                                  const base::FilePath& file_path,
                                  bool is_directory) = 0;
@@ -31,16 +32,16 @@ class SavedFilesServiceInterface {
   // recently used entry at the front of the queue if it is full. If it is
   // already present, moves it to the back of the queue. The |id| must have been
   // registered.
-  virtual void EnqueueFileEntry(const std::string& extension_id,
+  virtual void EnqueueFileEntry(const ExtensionId& extension_id,
                                 const std::string& id) = 0;
 
   // Returns whether the file entry with the given |id| has been registered.
-  virtual bool IsRegistered(const std::string& extension_id,
+  virtual bool IsRegistered(const ExtensionId& extension_id,
                             const std::string& id) = 0;
 
   // Gets a borrowed pointer to the file entry with the specified |id|. Returns
   // nullptr if the file entry has not been registered.
-  virtual const SavedFileEntry* GetFileEntry(const std::string& extension_id,
+  virtual const SavedFileEntry* GetFileEntry(const ExtensionId& extension_id,
                                              const std::string& id) = 0;
 };
 

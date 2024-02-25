@@ -11,23 +11,20 @@ import android.graphics.Rect;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A utility class to take a feedback-formatted screenshot of an {@link Activity}.
- */
+/** A utility class to take a feedback-formatted screenshot of an {@link Activity}. */
 @JNINamespace("chrome::android")
 public final class ScreenshotTask implements ScreenshotSource {
     /**
@@ -84,12 +81,14 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If neither the compositor nor the Android view screenshot tasks were kicked off, admit
         // defeat and return a {@code null} screenshot.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                onBitmapReceived(null);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        onBitmapReceived(null);
+                    }
+                });
     }
 
     @Override
@@ -123,8 +122,12 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        ScreenshotTaskJni.get().grabWindowSnapshotAsync(
-                this, ((ChromeActivity) activity).getWindowAndroid(), rect.width(), rect.height());
+        ScreenshotTaskJni.get()
+                .grabWindowSnapshotAsync(
+                        this,
+                        ((ChromeActivity) activity).getWindowAndroid(),
+                        rect.width(),
+                        rect.height());
 
         return true;
     }
@@ -132,15 +135,19 @@ public final class ScreenshotTask implements ScreenshotSource {
     private boolean takeAndroidViewScreenshot(@Nullable final Activity activity) {
         if (activity == null) return false;
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = UiUtils.generateScaledScreenshot(
-                        activity.getWindow().getDecorView().getRootView(),
-                        MAX_FEEDBACK_SCREENSHOT_DIMENSION, Bitmap.Config.ARGB_8888);
-                onBitmapReceived(bitmap);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap =
+                                UiUtils.generateScaledScreenshot(
+                                        activity.getWindow().getDecorView().getRootView(),
+                                        MAX_FEEDBACK_SCREENSHOT_DIMENSION,
+                                        Bitmap.Config.ARGB_8888);
+                        onBitmapReceived(bitmap);
+                    }
+                });
 
         return true;
     }
@@ -162,9 +169,7 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If the start surface or the grid tab switcher are in use, do not use the compositor, it
         // will snapshot the last active tab instead of the current screen if we try to use it.
-        if (chromeActivity.isInOverviewMode()
-                && (ReturnToChromeUtil.isStartSurfaceEnabled(chromeActivity)
-                        || TabUiFeatureUtilities.isGridTabSwitcherEnabled(chromeActivity))) {
+        if (chromeActivity.isInOverviewMode()) {
             return false;
         }
 

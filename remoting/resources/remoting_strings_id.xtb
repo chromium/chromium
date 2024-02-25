@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Versi protokol yang tidak kompatibel terdeteksi. Pastikan Anda memasang software versi terbaru di kedua komputer dan coba lagi.</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
-<translation id="1296511125400541222">Hak Cipta 2023 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="1297009705180977556">Terjadi error saat menghubungkan ke <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Objek yang diminta tidak ada.</translation>
 <translation id="1480046233931937785">Kredit</translation>
@@ -89,7 +88,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4808503597364150972">Masukkan PIN Anda untuk <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Kirim PrtScn</translation>
-<translation id="4960795469833295568">Hak Cipta 2023 Google LLC. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="4974476491460646149">Sambungan terputus untuk <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Pertama, Anda perlu menyiapkan komputer untuk akses jarak jauh</translation>
 <translation id="4987330545941822761">Chrome Desktop Jarak Jauh tidak dapat menentukan browser untuk membuka URL secara lokal. Pilih dari daftar di bawah ini.</translation>
@@ -154,6 +152,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="7693372326588366043">Menyegarkan daftar host</translation>
 <translation id="7714222945760997814">Laporkan ini</translation>
 <translation id="7868137160098754906">Masukkan PIN komputer jarak jauh Anda.</translation>
+<translation id="7881455334687220899">Hak Cipta 2024 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="7895403300744144251">Kebijakan keamanan di komputer jarak jauh tidak mengizinkan sambungan dari akun Anda.</translation>
 <translation id="7936528439960309876">Pasang ke Dok Sebelah Kanan</translation>
 <translation id="7970576581263377361">Autentikasi gagal. Login ke Chromium lagi.</translation>
@@ -185,6 +184,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="8747048596626351634">Sesi error atau gagal dimulai. Jika ~/.chrome-remote-desktop-session terdapat di komputer jarak jauh, pastikan file tersebut memulai proses latar depan (foreground) yang berjalan lama seperti lingkungan desktop atau pengelola jendela.</translation>
 <translation id="8804164990146287819">Kebijakan Privasi</translation>
 <translation id="8906511416443321782">Perlu akses mikrofon untuk merekam audio dan mentransmisikannya ke klien Chrome Desktop Jarak Jauh.</translation>
+<translation id="9042277333359847053">Hak Cipta 2024 Google LLC. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="9111855907838866522">Anda terhubung dengan perangkat jarak jauh. Untuk membuka menu, ketuk layar dengan 4 jari.</translation>
 <translation id="9126115402994542723">Jangan minta PIN lagi saat menyambungkan ke hosting ini dari perangkat ini.</translation>
 <translation id="916856682307586697">Luncurkan XSession default</translation>

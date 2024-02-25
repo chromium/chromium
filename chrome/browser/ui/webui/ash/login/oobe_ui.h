@@ -182,6 +182,8 @@ class OobeUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver);
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
 
   static void AddOobeComponents(content::WebUIDataSource* source);
 
@@ -207,12 +209,15 @@ class OobeUI : public ui::MojoWebUIController {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
-  raw_ptr<CoreOobeHandler, ExperimentalAsh> core_handler_ = nullptr;
+  raw_ptr<CoreOobeHandler> core_handler_ = nullptr;
   std::unique_ptr<CoreOobe> core_oobe_;
 
-  std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
-  std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.
-  std::vector<BaseScreenHandler*> screen_handlers_;     // Non-owning pointers.
+  std::vector<raw_ptr<BaseWebUIHandler, VectorExperimental>>
+      webui_handlers_;  // Non-owning pointers.
+  std::vector<raw_ptr<BaseWebUIHandler, VectorExperimental>>
+      webui_only_handlers_;  // Non-owning pointers.
+  std::vector<raw_ptr<BaseScreenHandler, VectorExperimental>>
+      screen_handlers_;  // Non-owning pointers.
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 

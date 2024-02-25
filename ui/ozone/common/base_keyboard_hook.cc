@@ -12,7 +12,7 @@
 namespace ui {
 
 BaseKeyboardHook::BaseKeyboardHook(
-    absl::optional<base::flat_set<DomCode>> dom_codes,
+    std::optional<base::flat_set<DomCode>> dom_codes,
     KeyEventCallback callback)
     : key_event_callback_(std::move(callback)),
       dom_codes_(std::move(dom_codes)) {

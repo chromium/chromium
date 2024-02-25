@@ -51,8 +51,8 @@ class SVGSVGElement final : public SVGGraphicsElement,
   explicit SVGSVGElement(Document&);
   ~SVGSVGElement() override;
 
-  absl::optional<float> IntrinsicWidth() const;
-  absl::optional<float> IntrinsicHeight() const;
+  std::optional<float> IntrinsicWidth() const;
+  std::optional<float> IntrinsicHeight() const;
   const SVGRect& CurrentViewBox() const;
   // This method, as opposed to the one above, also includes the synthesized
   // viewBox if one is active. Because of that it shouldn't be used for sizing

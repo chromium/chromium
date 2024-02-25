@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -48,7 +49,8 @@ void CallInitiateOnSequence(
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>)>
         cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoInitiate(origin_path, upload_parameters, std::move(cb));
@@ -64,7 +66,8 @@ void CallNextStepOnSequence(
                                                std::string /*session_token*/>>)>
         cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoNextStep(total, uploaded, session_token,
@@ -76,7 +79,8 @@ void CallFinalizeOnSequence(
     std::string_view session_token,
     base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoFinalize(session_token, std::move(cb));
@@ -119,27 +123,28 @@ void FileUploadJob::Manager::Register(
     Priority priority,
     Record record_copy,
     ::ash::reporting::LogUploadEvent log_upload_event,
-    base::WeakPtr<Delegate> delegate,
+    Delegate::SmartPtr delegate,
     base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](Manager* self, Priority priority, Record record_copy,
              ::ash::reporting::LogUploadEvent log_upload_event,
-             base::WeakPtr<Delegate> delegate,
+             Delegate::SmartPtr delegate,
              base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
             // Retry count must allow the job to run.
             if (log_upload_event.upload_settings().retry_count() < 1) {
-              std::move(result_cb).Run(
-                  Status(error::INVALID_ARGUMENT, "Too many upload attempts"));
+              std::move(result_cb).Run(base::unexpected(
+                  Status(error::INVALID_ARGUMENT, "Too many upload attempts")));
               return;
             }
             // Serialize settings to get the map key.
             std::string serialized_settings;
             if (!log_upload_event.upload_settings().SerializeToString(
                     &serialized_settings)) {
-              std::move(result_cb).Run(Status(
-                  error::INVALID_ARGUMENT, "Job settings failed to serialize"));
+              std::move(result_cb).Run(
+                  base::unexpected(Status(error::INVALID_ARGUMENT,
+                                          "Job settings failed to serialize")));
               return;
             }
             // Now add the job to the map.
@@ -152,7 +157,7 @@ void FileUploadJob::Manager::Register(
                   serialized_settings,
                   std::make_unique<FileUploadJob>(
                       log_upload_event.upload_settings(),
-                      log_upload_event.upload_tracker(), delegate));
+                      log_upload_event.upload_tracker(), std::move(delegate)));
               CHECK(res.second);
               it = res.first;
               DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -187,8 +192,8 @@ void FileUploadJob::Manager::Register(
               // is likely the one that caused this, do not upload it
               // (otherwise we would lose track of the job if the device
               // restarts).
-              std::move(result_cb).Run(
-                  Status(error::ALREADY_EXISTS, "Duplicate event"));
+              std::move(result_cb).Run(base::unexpected(
+                  Status(error::ALREADY_EXISTS, "Duplicate event")));
               return;
             }
             // Attach the event to the job.
@@ -198,7 +203,8 @@ void FileUploadJob::Manager::Register(
             std::move(result_cb).Run(job);
           },
           base::Unretained(this), priority, std::move(record_copy),
-          std::move(log_upload_event), delegate, std::move(result_cb)));
+          std::move(log_upload_event), std::move(delegate),
+          std::move(result_cb)));
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -366,8 +372,8 @@ void FileUploadJob::EventHelper::PostRetry() const {
 
 FileUploadJob::FileUploadJob(const UploadSettings& settings,
                              const UploadTracker& tracker,
-                             base::WeakPtr<Delegate> delegate)
-    : delegate_(delegate), settings_(settings), tracker_(tracker) {}
+                             Delegate::SmartPtr delegate)
+    : delegate_(std::move(delegate)), settings_(settings), tracker_(tracker) {}
 
 FileUploadJob::~FileUploadJob() = default;
 
@@ -390,7 +396,8 @@ base::ScopedClosureRunner FileUploadJob::CompletionCb(
                 // and do not report the outcome.
                 Manager::GetInstance()->sequenced_task_runner()->PostTask(
                     FROM_HERE,
-                    base::BindOnce(&Delegate::DoDeleteFile, job->delegate_,
+                    base::BindOnce(&Delegate::DoDeleteFile,
+                                   job->delegate_->GetWeakPtr(),
                                    std::string(job->settings_.origin_path())));
               }
             }
@@ -425,7 +432,7 @@ void FileUploadJob::Initiate(base::OnceClosure done_cb) {
   }
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallInitiateOnSequence, delegate_,
+      base::BindOnce(&CallInitiateOnSequence, delegate_->GetWeakPtr(),
                      settings_.origin_path(), settings_.upload_parameters(),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneInitiate,
@@ -438,13 +445,13 @@ void FileUploadJob::DoneInitiate(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t total = 0L;
   std::string_view session_token;
-  std::tie(total, session_token) = result.ValueOrDie();
+  std::tie(total, session_token) = result.value();
   if (total <= 0L) {
     Status{error::FAILED_PRECONDITION, "Empty upload"}.SaveTo(
         tracker_.mutable_status());
@@ -491,8 +498,9 @@ void FileUploadJob::NextStep(const ScopedReservation& scoped_reservation,
   }
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallNextStepOnSequence, delegate_, tracker_.total(),
-                     tracker_.uploaded(), tracker_.session_token(),
+      base::BindOnce(&CallNextStepOnSequence, delegate_->GetWeakPtr(),
+                     tracker_.total(), tracker_.uploaded(),
+                     tracker_.session_token(),
                      ScopedReservation(0uL, scoped_reservation),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneNextStep,
@@ -505,13 +513,13 @@ void FileUploadJob::DoneNextStep(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t uploaded = 0L;
   std::string_view session_token;
-  std::tie(uploaded, session_token) = result.ValueOrDie();
+  std::tie(uploaded, session_token) = result.value();
   if (session_token.empty()) {
     Status{error::DATA_LOSS, "Job has lost session_token"}.SaveTo(
         tracker_.mutable_status());
@@ -557,7 +565,7 @@ void FileUploadJob::Finalize(base::OnceClosure done_cb) {
 
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallFinalizeOnSequence, delegate_,
+      base::BindOnce(&CallFinalizeOnSequence, delegate_->GetWeakPtr(),
                      tracker_.session_token(),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneFinalize,
@@ -569,11 +577,11 @@ void FileUploadJob::DoneFinalize(
     StatusOr<std::string /*access_parameters*/> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
-  std::string_view access_parameters = result.ValueOrDie();
+  std::string_view access_parameters = result.value();
   if (access_parameters.empty()) {
     Status{error::FAILED_PRECONDITION, "Access parameters not set"}.SaveTo(
         tracker_.mutable_status());
@@ -589,17 +597,18 @@ void FileUploadJob::AddRecordToStorage(
     Priority priority,
     Record record_copy,
     base::OnceCallback<void(Status)> done_cb) {
-  ReportingClient::GetInstance()->sequenced_task_runner()->PostTask(
+  ReportQueueProvider::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](Priority priority, Record record_copy,
                         base::OnceCallback<void(Status)> done_cb) {
                        // We can only get to here from upload, which originates
                        // from Storage Module, so `storage()` below cannot be
                        // null.
-                       CHECK(ReportingClient::GetInstance()->storage());
-                       ReportingClient::GetInstance()->storage()->AddRecord(
-                           priority, std::move(record_copy),
-                           std::move(done_cb));
+                       const auto storage =
+                           ReportQueueProvider::GetInstance()->storage();
+                       CHECK(storage);
+                       storage->AddRecord(priority, std::move(record_copy),
+                                          std::move(done_cb));
                      },
                      priority, std::move(record_copy), std::move(done_cb)));
 }

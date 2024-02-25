@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace arc {
@@ -26,10 +27,6 @@ class FakeIntentHelperHost;
 class FakeIntentHelperInstance;
 }  // namespace arc
 
-namespace ash {
-class FakeChromeUserManager;
-}
-
 namespace user_manager {
 class User;
 }
@@ -40,7 +37,12 @@ class Profile;
 // Helper class to initialize arc bridge to work with arc apps in unit tests.
 class ArcAppTest {
  public:
-  ArcAppTest();
+  enum UserManagerMode {
+    kDoNothing,
+    kCreate,
+  };
+  explicit ArcAppTest(
+      UserManagerMode user_manager_mode = UserManagerMode::kCreate);
 
   ArcAppTest(const ArcAppTest&) = delete;
   ArcAppTest& operator=(const ArcAppTest&) = delete;
@@ -95,8 +97,6 @@ class ArcAppTest {
     return fake_shortcuts_;
   }
 
-  ash::FakeChromeUserManager* GetUserManager();
-
   arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
 
   arc::FakeCompatibilityModeInstance* compatibility_mode_instance() {
@@ -146,10 +146,9 @@ class ArcAppTest {
   void CreateFakeAppsAndPackages();
 
   // Unowned pointer.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
-  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
-      arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_pref_ = nullptr;
 
   bool wait_default_apps_ = true;
 
@@ -180,7 +179,8 @@ class ArcAppTest {
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::vector<arc::mojom::AppInfoPtr> fake_apps_;
   std::vector<arc::mojom::AppInfoPtr> fake_default_apps_;
   std::vector<arc::mojom::ArcPackageInfoPtr> fake_packages_;

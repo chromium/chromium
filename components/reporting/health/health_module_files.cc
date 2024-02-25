@@ -12,10 +12,13 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace reporting {
@@ -46,10 +49,10 @@ std::unique_ptr<HealthModuleFiles> HealthModuleFiles::Create(
     files.emplace(header, path);
 
     auto size_result = FileSize(path);
-    if (!size_result.ok()) {
+    if (!size_result.has_value()) {
       continue;
     }
-    uint32_t file_size = size_result.ValueOrDie();
+    uint32_t file_size = size_result.value();
 
     if (file_size > 0) {
       storage_used += file_size;
@@ -110,14 +113,13 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& file : files_) {
     const auto read_result = MaybeReadFile(file.second, /*offset=*/0);
-    if (!read_result.status().ok()) {
+    if (!read_result.has_value()) {
       return;
     }
 
-    const auto records =
-        base::SplitString(read_result.ValueOrDie(), "\n",
-                          base::WhitespaceHandling::KEEP_WHITESPACE,
-                          base::SplitResult::SPLIT_WANT_NONEMPTY);
+    const auto records = base::SplitString(
+        read_result.value(), "\n", base::WhitespaceHandling::KEEP_WHITESPACE,
+        base::SplitResult::SPLIT_WANT_NONEMPTY);
     for (const auto& record : records) {
       std::string bytes;
       base::HexStringToString(record, &bytes);
@@ -129,7 +131,7 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
 Status HealthModuleFiles::Write(std::string_view data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status free_status = ReserveStorage(data.size());
-  RETURN_IF_ERROR(free_status);
+  RETURN_IF_ERROR_STATUS(free_status);
 
   if (files_.empty()) {
     CreateNewFile();
@@ -194,9 +196,9 @@ StatusOr<uint32_t> HealthModuleFiles::FileSize(
   base::File::Info file_info;
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid() || !file.GetInfo(&file_info)) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Failed to read health data file info ",
-                                file_path.MaybeAsASCII()}));
+    return base::unexpected(Status(
+        error::DATA_LOSS, base::StrCat({"Failed to read health data file info ",
+                                        file_path.MaybeAsASCII()})));
   }
   return file_info.size;
 }

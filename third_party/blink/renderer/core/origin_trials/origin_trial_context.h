@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ORIGIN_TRIALS_ORIGIN_TRIAL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ORIGIN_TRIALS_ORIGIN_TRIAL_CONTEXT_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -38,12 +39,12 @@ enum class OriginTrialStatus {
 struct OriginTrialTokenResult {
   OriginTrialTokenResult(const String& raw_token,
                          OriginTrialTokenStatus status,
-                         const absl::optional<TrialToken>& parsed_token);
+                         const std::optional<TrialToken>& parsed_token);
   ~OriginTrialTokenResult() = default;
 
   String raw_token;
   OriginTrialTokenStatus status;
-  absl::optional<TrialToken> parsed_token;
+  std::optional<TrialToken> parsed_token;
 };
 
 struct OriginTrialResult {
@@ -56,7 +57,7 @@ struct OriginTrialResult {
 // `features` is a Vector containing all of the enabled features.
 struct OriginTrialFeaturesEnabled {
   OriginTrialStatus status;
-  Vector<OriginTrialFeature> features;
+  Vector<mojom::blink::OriginTrialFeature> features;
 };
 
 // The Origin Trials Framework provides limited access to experimental features,
@@ -95,21 +96,21 @@ class CORE_EXPORT OriginTrialContext final
   static std::unique_ptr<Vector<String>> GetTokens(ExecutionContext*);
 
   // Returns the all enabled features to be inherited by worker.
-  static std::unique_ptr<Vector<OriginTrialFeature>> GetInheritedTrialFeatures(
-      ExecutionContext*);
+  static std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+  GetInheritedTrialFeatures(ExecutionContext*);
 
   // Returns the navigation trial features that are enabled in the specified
   // ExecutionContext, that should be forwarded to (and activated in)
   // ExecutionContexts navigated to from the given ExecutionContext. Returns
   // null if no such trials were added to the ExecutionContext.
-  static std::unique_ptr<Vector<OriginTrialFeature>>
+  static std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
   GetEnabledNavigationFeatures(ExecutionContext*);
 
   // Activates trial features for dedicated worker or worklet. The input trial
   // features are inherited from page loading the worker.
   static void ActivateWorkerInheritedFeatures(
       ExecutionContext*,
-      const Vector<OriginTrialFeature>*);
+      const Vector<mojom::blink::OriginTrialFeature>*);
 
   // Activates navigation trial features forwarded from the ExecutionContext
   // that navigated to the specified ExecutionContext. Only features for which
@@ -118,7 +119,7 @@ class CORE_EXPORT OriginTrialContext final
   // IsNavigationFeatureActivated, for the specified ExecutionContext.
   static void ActivateNavigationFeaturesFromInitiator(
       ExecutionContext*,
-      const Vector<OriginTrialFeature>*);
+      const Vector<mojom::blink::OriginTrialFeature>*);
 
   void AddToken(const String& token);
   // Add a token injected from external script. The token may be a third-party
@@ -131,14 +132,14 @@ class CORE_EXPORT OriginTrialContext final
   void AddTokens(const Vector<String>& tokens);
 
   void ActivateWorkerInheritedFeatures(
-      const Vector<OriginTrialFeature>& features);
+      const Vector<mojom::blink::OriginTrialFeature>& features);
 
   void ActivateNavigationFeaturesFromInitiator(
-      const Vector<OriginTrialFeature>& features);
+      const Vector<mojom::blink::OriginTrialFeature>& features);
 
   // Forces a given origin-trial-enabled feature to be enabled in this context
   // and immediately adds required bindings to already initialized JS contexts.
-  void AddFeature(OriginTrialFeature feature);
+  void AddFeature(mojom::blink::OriginTrialFeature feature);
 
   // Forces given trials to be enabled in this context and immediately adds
   // required bindings to already initialized JS contexts.
@@ -146,25 +147,27 @@ class CORE_EXPORT OriginTrialContext final
 
   // Returns true if the feature should be considered enabled for the current
   // execution context.
-  bool IsFeatureEnabled(OriginTrialFeature feature) const;
+  bool IsFeatureEnabled(mojom::blink::OriginTrialFeature feature) const;
 
   // Gets the latest expiry time of all valid tokens that enable |feature|. If
   // there are no valid tokens enabling the feature, this will return the null
   // time (base::Time()). Note: This will only find expiry times for features
   // backed by a token, so will not work for features enabled via |AddFeature|.
-  base::Time GetFeatureExpiry(OriginTrialFeature feature);
+  base::Time GetFeatureExpiry(mojom::blink::OriginTrialFeature feature);
 
-  std::unique_ptr<Vector<OriginTrialFeature>> GetInheritedTrialFeatures() const;
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+  GetInheritedTrialFeatures() const;
 
-  std::unique_ptr<Vector<OriginTrialFeature>> GetEnabledNavigationFeatures()
-      const;
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+  GetEnabledNavigationFeatures() const;
 
   // Returns true if the navigation feature is activated in the current
   // ExecutionContext. Navigation features are features that are enabled in one
   // ExecutionContext, but whose behavior is activated in ExecutionContexts that
   // are navigated to from that context. For example, if navigating from context
   // A to B, a navigation feature is enabled in A, and activated in B.
-  bool IsNavigationFeatureActivated(const OriginTrialFeature feature) const;
+  bool IsNavigationFeatureActivated(
+      const mojom::blink::OriginTrialFeature feature) const;
 
   // Installs JavaScript bindings on the relevant objects for any features which
   // should be enabled by the current set of trial tokens. This method is called
@@ -187,7 +190,7 @@ class CORE_EXPORT OriginTrialContext final
     return trial_results_;
   }
 
-  const HashMap<OriginTrialFeature, Vector<String>>
+  const HashMap<mojom::blink::OriginTrialFeature, Vector<String>>
   GetFeatureToTokensForTesting() const {
     return feature_to_tokens_;
   }
@@ -212,7 +215,7 @@ class CORE_EXPORT OriginTrialContext final
   // these features *will not* be enabled by the origin trial infrastructure if
   // the given trial is enabled. The corresponding runtime features may still be
   // enabled via command line flags, etc.
-  Vector<OriginTrialFeature> RestrictedFeaturesForTrial(
+  Vector<mojom::blink::OriginTrialFeature> RestrictedFeaturesForTrial(
       const String& trial_name);
 
   // Enable features by trial name. Returns a OriginTrialFeaturesEnabled struct
@@ -236,13 +239,14 @@ class CORE_EXPORT OriginTrialContext final
   // Installs a series of OriginTrialFeatures listed in a HashSet. The return
   // value indicates whether binding features were added, signalling that V8
   // has to proceed with installing the conditional features.
-  bool InstallFeatures(const HashSet<OriginTrialFeature>& features,
-                       Document&,
-                       ScriptState*);
+  bool InstallFeatures(
+      const HashSet<mojom::blink::OriginTrialFeature>& features,
+      Document&,
+      ScriptState*);
 
   // Installs a settings feature for the relevant Document instance. Returns
   // whether the given OriginTrialFeature describes a setting feature.
-  bool InstallSettingFeature(Document&, OriginTrialFeature);
+  bool InstallSettingFeature(Document&, mojom::blink::OriginTrialFeature);
 
   // Caches raw origin trial token along with the parse result to
   // `trial_results_`.
@@ -262,10 +266,11 @@ class CORE_EXPORT OriginTrialContext final
                           const String& raw_token,
                           const Vector<OriginInfo>* script_origin_info);
 
-  HashSet<OriginTrialFeature> enabled_features_;
-  HashSet<OriginTrialFeature> installed_features_;
-  HashSet<OriginTrialFeature> navigation_activated_features_;
-  WTF::HashMap<OriginTrialFeature, base::Time> feature_expiry_times_;
+  HashSet<mojom::blink::OriginTrialFeature> enabled_features_;
+  HashSet<mojom::blink::OriginTrialFeature> installed_features_;
+  HashSet<mojom::blink::OriginTrialFeature> navigation_activated_features_;
+  WTF::HashMap<mojom::blink::OriginTrialFeature, base::Time>
+      feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;
   // Stores raw origin trial token along with the parse result.
@@ -275,7 +280,8 @@ class CORE_EXPORT OriginTrialContext final
   // Stores the OriginTrialFeature enum value along with its corresponding
   // validated and parsed trial tokens. Used for security checks in the
   // browser's RuntimeFeatureChangeImpl.
-  HashMap<OriginTrialFeature, Vector</*Raw Token*/ String>> feature_to_tokens_;
+  HashMap<mojom::blink::OriginTrialFeature, Vector</*Raw Token*/ String>>
+      feature_to_tokens_;
 };
 
 }  // namespace blink

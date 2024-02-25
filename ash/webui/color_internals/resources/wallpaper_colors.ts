@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WallpaperCalculatedColors, WallpaperColorsHandler, WallpaperColorsObserverCallbackRouter} from '/ash/webui/color_internals/mojom/color_internals.mojom-webui.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
+import {WallpaperCalculatedColors, WallpaperColorsHandler, WallpaperColorsObserverCallbackRouter} from './color_internals.mojom-webui.js';
 import {getRGBAFromComputedStyle} from './utils.js';
 
 function rmChildren(node: HTMLElement) {
@@ -49,17 +49,17 @@ function writeRgbaText() {
 function handleWallpaperColorChanged(colors: WallpaperCalculatedColors) {
   document.getElementById('wallpaper-block')!.setAttribute('loading', '');
 
-  const prominentContainer =
-      document.getElementById('wallpaper-prominent-colors-container');
-  rmChildren(prominentContainer!);
-  colors.prominentColors.map(createRow).forEach(
-      row => prominentContainer!.appendChild(row));
-
   const kMeanContainer =
       document.getElementById('wallpaper-k-mean-color-container');
   rmChildren(kMeanContainer!);
 
   kMeanContainer!.appendChild(createRow(colors.kMeanColor));
+
+  const celebiContainer =
+      document.getElementById('wallpaper-celebi-color-container');
+  rmChildren(celebiContainer!);
+
+  celebiContainer!.appendChild(createRow(colors.celebiColor));
 
   writeRgbaText();
 

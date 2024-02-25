@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
@@ -41,7 +41,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -53,7 +55,8 @@ constexpr int kBrowserAppIndexOnShelf = 0;
 // item is selected. When |wait_for_tablet_mode_| is set, the delegate will wait
 // for tablet mode animation start to run the callback that activates the
 // window.
-class TestShelfItemDelegate : public ShelfItemDelegate, TabletModeObserver {
+class TestShelfItemDelegate : public ShelfItemDelegate,
+                              display::DisplayObserver {
  public:
   explicit TestShelfItemDelegate(const ShelfID& shelf_id)
       : ShelfItemDelegate(shelf_id) {}
@@ -62,8 +65,12 @@ class TestShelfItemDelegate : public ShelfItemDelegate, TabletModeObserver {
       : ShelfItemDelegate(shelf_id),
         wait_for_tablet_mode_(wait_for_tablet_mode) {
     if (wait_for_tablet_mode_) {
-      Shell::Get()->tablet_mode_controller()->AddObserver(this);
+      display::Screen::GetScreen()->AddObserver(this);
     }
+  }
+
+  ~TestShelfItemDelegate() override {
+    display::Screen::GetScreen()->RemoveObserver(this);
   }
 
   void ItemSelected(std::unique_ptr<ui::Event> event,
@@ -83,15 +90,11 @@ class TestShelfItemDelegate : public ShelfItemDelegate, TabletModeObserver {
                       int64_t display_id) override {}
   void Close() override {}
 
-  void OnTabletModeStarting() override {
-    if (!callback_) {
+  void OnDisplayTabletStateChanged(display::TabletState state) override {
+    if (!callback_ || state != display::TabletState::kEnteringTabletMode) {
       return;
     }
     std::move(callback_).Run(SHELF_ACTION_WINDOW_ACTIVATED, {});
-  }
-
-  void OnTabletControllerDestroyed() override {
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
 
  private:
@@ -171,8 +174,7 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SearchModel, DanglingUntriaged | ExperimentalAsh> search_model_ =
-      nullptr;
+  raw_ptr<SearchModel, DanglingUntriaged> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 

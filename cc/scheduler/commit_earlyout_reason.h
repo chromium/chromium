@@ -11,29 +11,29 @@
 namespace cc {
 
 enum class CommitEarlyOutReason {
-  ABORTED_NOT_VISIBLE,
-  ABORTED_DEFERRED_MAIN_FRAME_UPDATE,
-  ABORTED_DEFERRED_COMMIT,
-  FINISHED_NO_UPDATES,
+  kAbortedNotVisible,
+  kAbortedDeferredMainFrameUpdate,
+  kAbortedDeferredCommit,
+  kFinishedNoUpdates,
 };
 
 inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
   switch (reason) {
-    case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
-      return "CommitEarlyOutReason::ABORTED_NOT_VISIBLE";
-    case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
-      return "CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE";
-    case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
-      return "CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT";
-    case CommitEarlyOutReason::FINISHED_NO_UPDATES:
-      return "CommitEarlyOutReason::FINISHED_NO_UPDATES";
+    case CommitEarlyOutReason::kAbortedNotVisible:
+      return "CommitEarlyOutReason::kAbortedNotVisible";
+    case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
+      return "CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate";
+    case CommitEarlyOutReason::kAbortedDeferredCommit:
+      return "CommitEarlyOutReason::kAbortedDeferredCommit";
+    case CommitEarlyOutReason::kFinishedNoUpdates:
+      return "CommitEarlyOutReason::kFinishedNoUpdates";
   }
   NOTREACHED();
   return "???";
 }
 
 inline bool MainFrameAppliedDeltas(CommitEarlyOutReason reason) {
-  return reason == CommitEarlyOutReason::FINISHED_NO_UPDATES;
+  return reason == CommitEarlyOutReason::kFinishedNoUpdates;
 }
 
 }  // namespace cc

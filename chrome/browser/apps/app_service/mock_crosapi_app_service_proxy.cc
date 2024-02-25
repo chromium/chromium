@@ -35,7 +35,7 @@ void MockCrosapiAppServiceProxy::LaunchWithResult(
     LaunchWithResultCallback callback) {
   launched_apps_.push_back(std::move(launch_params));
   std::move(callback).Run(ConvertLaunchResultToMojomLaunchResult(
-      LaunchResult(LaunchResult::State::SUCCESS)));
+      LaunchResult(LaunchResult::State::kSuccess)));
   run_loop_->Quit();
 }
 
@@ -62,5 +62,12 @@ void MockCrosapiAppServiceProxy::SetSupportedLinksPreference(
 void MockCrosapiAppServiceProxy::UninstallSilently(
     const std::string& app_id,
     UninstallSource uninstall_source) {}
+
+void MockCrosapiAppServiceProxy::InstallApp(
+    crosapi::mojom::InstallAppParamsPtr params,
+    InstallAppCallback callback) {
+  // TODO(crbug.com/1309024): Implement this.
+  NOTIMPLEMENTED();
+}
 
 }  // namespace apps

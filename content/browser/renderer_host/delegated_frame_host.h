@@ -205,6 +205,15 @@ class CONTENT_EXPORT DelegatedFrameHost
     return GetPreNavigationSurfaceId();
   }
 
+  viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
+
+  void SetIsFrameSinkIdOwner(bool is_owner);
+
+  // This is used to evict also the UI compositor if native occlusion is
+  // enabled. This only makes sense on desktop platforms where the UI compositor
+  // corresponds to a browser window, and native occlusion is supported.
+  static bool ShouldIncludeUiCompositorForEviction();
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
@@ -285,6 +294,12 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<ui::Layer> stale_content_layer_;
 
   blink::ContentToVisibleTimeReporter tab_switch_time_recorder_;
+
+  // Speculative RenderWidgetHostViews can start with a FrameSinkId owned by the
+  // currently committed RenderWidgetHostView. Ownership is transferred when the
+  // navigation is committed. This bit tracks whether this DelegatedFrameHost
+  // owns its FrameSinkId.
+  bool owns_frame_sink_id_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

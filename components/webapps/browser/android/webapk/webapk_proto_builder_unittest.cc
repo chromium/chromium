@@ -49,12 +49,12 @@ class BuildProtoRunner {
                  const std::string& splash_icon_data,
                  const GURL& manifest_id,
                  const GURL& app_key,
-                 const absl::optional<SkColor>& dark_theme_color,
-                 const absl::optional<SkColor>& dark_background_color,
+                 const std::optional<SkColor>& dark_theme_color,
+                 const std::optional<SkColor>& dark_background_color,
                  bool is_manifest_stale,
                  bool is_app_identity_update_supported,
                  const std::vector<GURL>& best_shortcut_icon_urls) {
-    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info{GURL()};
     info.manifest_id = manifest_id;
     info.dark_theme_color = dark_theme_color;
     info.dark_background_color = dark_background_color;
@@ -91,7 +91,7 @@ class BuildProtoRunner {
       std::map<std::string, webapps::WebApkIconHasher::Icon>
           icon_url_to_murmur2_hash,
       const std::string& icon_data) {
-    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info{GURL()};
     info.best_primary_icon_url = icon_url;
     info.icon_urls = std::move(icon_urls);
     webapps::BuildProto(info, GURL() /*app_key*/, icon_data,
@@ -656,8 +656,8 @@ TEST_F(WebApkProtoBuilderTest, IconUrlInListAndHash) {
 }
 
 TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoDarkThemeAndBackground) {
-  absl::optional<SkColor> dark_theme_color = 0x000000;
-  absl::optional<SkColor> dark_background_color = 0x888888;
+  std::optional<SkColor> dark_theme_color = 0x000000;
+  std::optional<SkColor> dark_background_color = 0x888888;
   std::string dark_theme_color_expected = "rgba(0,0,0,0)";
   std::string dark_background_color_expected = "rgba(136,136,136,0)";
 

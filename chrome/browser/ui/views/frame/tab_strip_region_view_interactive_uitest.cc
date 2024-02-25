@@ -48,8 +48,12 @@ class TabStripRegionViewBrowserTest : public InProcessBrowserTest {
 
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
+  TabSearchContainer* tab_search_container() {
+    return tab_strip_region_view()->tab_search_container();
+  }
+
   TabSearchButton* tab_search_button() {
-    return tab_strip_region_view()->tab_search_button();
+    return tab_search_container()->tab_search_button();
   }
 
   views::View* new_tab_button() {
@@ -202,33 +206,33 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
-                       TestSearchButtonIsEndAligned) {
+                       TestSearchContainerIsEndAligned) {
   if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser())) {
-    EXPECT_EQ(tab_search_button(), nullptr);
+    EXPECT_EQ(tab_search_container(), nullptr);
   } else {
     if (TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()) {
-      // The TabSearchButton is calculated as controls padding away from the
+      // The TabSearchContainer is calculated as controls padding away from the
       // first tab (not including bottom corner radius)
-      const int tab_search_button_expected_end =
+      const int tab_search_container_expected_end =
           tab_strip_region_view()->GetTabStripContainerForTesting()->x() +
           TabStyle::Get()->GetBottomCornerRadius() -
           GetLayoutConstant(TAB_STRIP_PADDING);
 
-      EXPECT_EQ(tab_search_button()->bounds().right(),
-                tab_search_button_expected_end);
+      EXPECT_EQ(tab_search_container()->bounds().right(),
+                tab_search_container_expected_end);
     } else {
       if (features::IsChromeRefresh2023()) {
-        const int tab_search_button_expected_end =
+        const int tab_search_container_expected_end =
             tab_strip_region_view()->GetLocalBounds().right() -
             GetLayoutConstant(TAB_STRIP_PADDING);
-        EXPECT_EQ(tab_search_button()->bounds().right(),
-                  tab_search_button_expected_end);
+        EXPECT_EQ(tab_search_container()->bounds().right(),
+                  tab_search_container_expected_end);
       } else {
-        const int tab_search_button_expected_end =
+        const int tab_search_container_expected_end =
             tab_strip_region_view()->GetLocalBounds().right() -
             GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
-        EXPECT_EQ(tab_search_button()->bounds().right(),
-                  tab_search_button_expected_end);
+        EXPECT_EQ(tab_search_container()->bounds().right(),
+                  tab_search_container_expected_end);
       }
     }
   }

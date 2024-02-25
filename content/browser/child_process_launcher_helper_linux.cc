@@ -27,10 +27,10 @@
 namespace content {
 namespace internal {
 
-absl::optional<mojo::NamedPlatformChannel>
+std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
@@ -173,7 +173,8 @@ void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
     base::Process::Priority priority) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (process.CanSetPriority()) {
+  if (process.CanSetPriority() && priority_ != priority) {
+    priority_ = priority;
     process.SetPriority(priority);
   }
 }

@@ -10,9 +10,7 @@ import androidx.test.uiautomator.UiObject2;
 
 import java.util.List;
 
-/**
- * Locate the ith node in the nodes found by an IUi2Locator.
- */
+/** Locate the ith node in the nodes found by an IUi2Locator. */
 class IndexUi2Locator implements IUi2Locator {
     private final IUi2Locator mLocator;
     private final int mIndex;
@@ -52,7 +50,6 @@ class IndexUi2Locator implements IUi2Locator {
 
     @Override
     public String toString() {
-        return "IndexUi2Locator{"
-                + "mLocator=" + mLocator + ", index=" + mIndex + "}";
+        return "IndexUi2Locator{" + "mLocator=" + mLocator + ", index=" + mIndex + "}";
     }
 }

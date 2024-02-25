@@ -209,7 +209,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   }
 
   auto DiskImageCallback(
-      absl::optional<vm_tools::concierge::DiskImageStatus> value) {
+      std::optional<vm_tools::concierge::DiskImageStatus> value) {
     return [this, value]() {
       if (value.has_value()) {
         vm_tools::concierge::CreateDiskImageResponse response;
@@ -217,24 +217,24 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         FakeConciergeClient()->set_create_disk_image_response(
             std::move(response));
       } else {
-        FakeConciergeClient()->set_create_disk_image_response(absl::nullopt);
+        FakeConciergeClient()->set_create_disk_image_response(std::nullopt);
       }
     };
   }
 
-  auto InstallPflashCallback(absl::optional<bool> success) {
+  auto InstallPflashCallback(std::optional<bool> success) {
     return [this, success]() {
       if (success.has_value()) {
         vm_tools::concierge::InstallPflashResponse response;
         response.set_success(*success);
         FakeConciergeClient()->set_install_pflash_response(std::move(response));
       } else {
-        FakeConciergeClient()->set_install_pflash_response(absl::nullopt);
+        FakeConciergeClient()->set_install_pflash_response(std::nullopt);
       }
     };
   }
 
-  auto StartVmCallback(absl::optional<bool> success) {
+  auto StartVmCallback(std::optional<bool> success) {
     return [this, success]() {
       if (success.has_value()) {
         vm_tools::concierge::StartVmResponse response;
@@ -242,7 +242,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         FakeConciergeClient()->set_start_vm_response(std::move(response));
         this->expect_vm_registered_ = *success;
       } else {
-        FakeConciergeClient()->set_start_vm_response(absl::nullopt);
+        FakeConciergeClient()->set_start_vm_response(std::nullopt);
       }
     };
   }
@@ -458,7 +458,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return false;
       }
       if (!n--) {
-        MakeErrorPoint(expectation, seq, DiskImageCallback(absl::nullopt));
+        MakeErrorPoint(expectation, seq, DiskImageCallback(std::nullopt));
         return true;
       }
       if (!n--) {
@@ -490,8 +490,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
           return false;
         }
         if (!n--) {
-          MakeErrorPoint(expectation, seq,
-                         InstallPflashCallback(absl::nullopt));
+          MakeErrorPoint(expectation, seq, InstallPflashCallback(std::nullopt));
           return true;
         }
         if (!n--) {
@@ -526,7 +525,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         *out_result = BruschettaInstallResult::kStartVmFailed;
       }
       if (!n--) {
-        MakeErrorPoint(expectation, seq, StartVmCallback(absl::nullopt));
+        MakeErrorPoint(expectation, seq, StartVmCallback(std::nullopt));
         return true;
       }
       if (!n--) {
@@ -566,8 +565,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   MockObserver observer_;
   // Pointer owned by DiskMountManager
-  const raw_ref<ash::disks::MockDiskMountManager,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ref<ash::disks::MockDiskMountManager, DanglingUntriaged>
       disk_mount_manager_{*new ash::disks::MockDiskMountManager};
 
   bool destroy_installer_on_completion_ = true;
@@ -714,9 +712,9 @@ TEST_F(BruschettaInstallerTest, AllStepsTested) {
   // We generate a lot of gmock expectations just to ignore them, and taking
   // stack traces for all of them is really slow, so disable stack traces for
   // this test.
-  ::testing::FLAGS_gtest_stack_trace_depth = 0;
+  GTEST_FLAG_SET(stack_trace_depth, 0);
 
-  absl::optional<int> new_max_steps;
+  std::optional<int> new_max_steps;
 
   for (int i = 0; i < 1000; i++) {
     testing::TestPartResultArray failures;

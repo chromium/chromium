@@ -8,8 +8,8 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -39,10 +39,10 @@ class TestObserver : public web::WebStateObserver {
   std::vector<web::WebState*> invoker_web_states_;
 };
 
-class ActiveWebStateObservationForwarderTest : public PlatformTest,
-                                               public WebStateListDelegate {
+class ActiveWebStateObservationForwarderTest : public PlatformTest {
  public:
-  ActiveWebStateObservationForwarderTest() : web_state_list_(this) {
+  ActiveWebStateObservationForwarderTest()
+      : web_state_list_(&web_state_list_delegate_) {
     forwarder_ = std::make_unique<ActiveWebStateObservationForwarder>(
         &web_state_list_, &observer_);
   }
@@ -50,17 +50,14 @@ class ActiveWebStateObservationForwarderTest : public PlatformTest,
   web::FakeWebState* AddWebStateToList(bool activate) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* web_state_ptr = web_state.get();
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   activate ? WebStateList::INSERT_ACTIVATE
-                                            : WebStateList::INSERT_NO_FLAGS,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate(activate));
     return web_state_ptr;
   }
 
-  // WebStateListDelegate.
-  void WillAddWebState(web::WebState* web_state) override {}
-
  protected:
+  FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   TestObserver observer_;
   std::unique_ptr<ActiveWebStateObservationForwarder> forwarder_;

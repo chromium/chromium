@@ -74,7 +74,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
   return base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(size), size);
+      base::MakeRefCounted<net::IOBufferWithSize>(size), size);
 }
 
 }  // namespace
@@ -347,10 +347,6 @@ const net::NetLogWithSource& FakeSSLClientSocket::NetLog() const {
 
 bool FakeSSLClientSocket::WasEverUsed() const {
   return transport_socket_->WasEverUsed();
-}
-
-bool FakeSSLClientSocket::WasAlpnNegotiated() const {
-  return transport_socket_->WasAlpnNegotiated();
 }
 
 net::NextProto FakeSSLClientSocket::GetNegotiatedProtocol() const {

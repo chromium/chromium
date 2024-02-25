@@ -1,0 +1,131 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #include=
+ * #css_wrapper_metadata_end */
+
+:host {
+  /** Fonts */
+  --firmware-google-sans-font-family: "Google Sans", sans-serif;
+  --firmware-roboto-font-family: Roboto, sans-serif;
+  --firmware-default-font-size: 16px;
+
+  /** Font sizes */
+  --firmware-default-font-size: 14px;
+  --firmware-header-font-size: 22px;
+  --firmware-version-font-size: 13px;
+  --firmware-description-font-size: 13px;
+
+  /** Font weights */
+  --firmware-regular-font-weight: 400;
+  --firmware-medium-font-weight: 500;
+
+  /** Line heights */
+  --firmware-header-line-height: 28px;
+  --firmware-name-line-height: 20px;
+  --firmware-version-line-height: 20px;
+  --firmware-description-line-height: 20px;
+
+}
+
+:host-context(body.jelly-enabled) .firmware-default-font {
+  font: var(--cros-body-1-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-description-font {
+  font: var(--cros-body-2-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-dialog-body-font {
+  font: var(--cros-button-1-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-dialog-installing-font {
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-dialog-title-font {
+  font: var(--cros-title-1-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-header-font {
+  font: var(--cros-display-6-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-name-font {
+  font: var(--cros-body-1-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-version-font {
+  font: var(--cros-body-2-font);
+}
+
+:host-context(body.jelly-enabled) .firmware-description-font {
+  font: var(--cros-body-2-font);
+}
+
+.firmware-default-font {
+  font-family: var(--firmware-google-sans-font-family);
+  font-size: var(--firmware-default-font-size);
+  font-weight: var(--firmware-medium-font-weight);
+}
+
+.firmware-header-font {
+  color: var(--cros-text-color-primary);
+  font-family: var(--firmware-google-sans-font-family);
+  font-size: var(--firmware-header-font-size);
+  font-weight: var(--firmware-medium-font-weight);
+  line-height: var(--firmware-header-line-height);
+}
+
+.firmware-name-font {
+  color: var(--cros-text-color-primary);
+  font-family: var(--firmware-roboto-font-family);
+  font-size: var(--firmware-default-font-size);
+  font-weight: var(--firmware-medium-font-weight);
+  line-height: var(--firmware-name-line-height);
+}
+
+.firmware-version-font {
+  color: var(--cros-text-color-primary);
+  font-family: var(--firmware-roboto-font-family);
+  font-size: var(--firmware-version-font-size);
+  font-weight: var(--firmware-regular-font-weight);
+  line-height: var(--firmware-version-line-height);
+}
+
+.firmware-description-font {
+  color: var(--cros-text-color-secondary);
+  font-family: var(--firmware-roboto-font-family);
+  font-size: var(--firmware-description-font-size);
+  font-weight: var(--firmware-regular-font-weight);
+  line-height: var(--firmware-description-line-height);
+}
+
+.firmware-dialog-title-font {
+  color: var(--cros-text-color-primary);
+  font-family: var(--firmware-google-sans-font-family);
+  font-size: 16px;
+  font-weight: var(--firmware-medium-font-weight);
+  line-height: 24px;
+}
+
+.firmware-dialog-body-font {
+  color: var(--cros-text-color-secondary);
+  font-family: var(--firmware-roboto-font-family);
+  font-size: 14px;
+  font-weight: var(--firmware-medium-font-weight);
+  line-height: 20px;
+}
+
+.firmware-dialog-installing-font {
+  color: var(--cros-text-color-secondary);
+  font-family: var(--firmware-roboto-font-family);
+  font-size: 13px;
+  font-weight: var(--firmware-medium-font-weight);
+  line-height: 20px;
+}

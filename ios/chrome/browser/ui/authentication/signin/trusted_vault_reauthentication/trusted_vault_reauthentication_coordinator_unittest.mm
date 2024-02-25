@@ -9,12 +9,12 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -79,8 +79,12 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
           base_view_controller_
                                                             browser:browser()
                                                              intent:
-                                         SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                                 SigninTrustedVaultDialogIntentFetchKeys
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -134,8 +138,12 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
           base_view_controller_
                                                             browser:browser()
                                                              intent:
-                                         SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                                 SigninTrustedVaultDialogIntentFetchKeys
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -184,7 +192,11 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
-                                                            trigger:trigger];
+                                                            trigger:trigger
+                                                        accessPoint:
+                                                            signin_metrics::
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_START_PAGE];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =

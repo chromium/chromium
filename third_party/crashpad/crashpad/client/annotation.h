@@ -247,6 +247,14 @@ class Annotation {
 
   std::atomic<Annotation*>& link_node() { return link_node_; }
 
+  Annotation* GetLinkNode(std::memory_order order = std::memory_order_seq_cst) {
+    return link_node_.load(order);
+  }
+  const Annotation* GetLinkNode(
+      std::memory_order order = std::memory_order_seq_cst) const {
+    return link_node_.load(order);
+  }
+
  private:
   //! \brief Linked list next-node pointer. Accessed only by \sa AnnotationList.
   //!
@@ -324,9 +332,11 @@ class StringAnnotation : public Annotation {
   void Set(base::StringPiece string) {
     Annotation::ValueSizeType size =
         std::min(MaxSize, base::saturated_cast<ValueSizeType>(string.size()));
-    memcpy(value_, string.data(), size);
+    string = string.substr(0, size);
+    std::copy(string.begin(), string.end(), value_);
     // Check for no embedded `NUL` characters.
-    DCHECK(!memchr(value_, '\0', size)) << "embedded NUL";
+    DCHECK(string.find('\0', /*pos=*/0) == base::StringPiece::npos)
+        << "embedded NUL";
     SetSize(size);
   }
 

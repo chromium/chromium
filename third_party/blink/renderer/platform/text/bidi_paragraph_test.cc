@@ -16,14 +16,14 @@ using testing::ElementsAre;
 TEST(BidiParagraph, SetParagraphHeuristicLtr) {
   String text(u"abc");
   BidiParagraph bidi;
-  bidi.SetParagraph(text, absl::nullopt);
+  bidi.SetParagraph(text, std::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kLtr);
 }
 
 TEST(BidiParagraph, SetParagraphHeuristicRtl) {
   String text(u"\u05D0\u05D1\u05D2");
   BidiParagraph bidi;
-  bidi.SetParagraph(text, absl::nullopt);
+  bidi.SetParagraph(text, std::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kRtl);
 }
 
@@ -40,25 +40,25 @@ TEST(BidiParagraph, GetLogicalRuns) {
 
 static struct BaseDirectionData {
   const UChar* text;
-  absl::optional<TextDirection> direction_line_feed;
-  absl::optional<TextDirection> direction_no_stop;
+  std::optional<TextDirection> direction_line_feed;
+  std::optional<TextDirection> direction_no_stop;
 } base_direction_data[] = {
     {u"A", TextDirection::kLtr},
     {u"\u05D0", TextDirection::kRtl},
     // "!" is a neutral character in the ASCII range.
-    {u"!", absl::nullopt},
+    {u"!", std::nullopt},
     // Surrogate pair, Avestan is RTL. crbug.com/488904.
     {u"\U00010B15", TextDirection::kRtl},
     // Surrogate pair, Emoji is neutral. crbug.com/559932.
-    {u"\U0001F62D", absl::nullopt},
+    {u"\U0001F62D", std::nullopt},
     // Leading neutral characters should be ignored.
     {u"!A", TextDirection::kLtr},
     {u"!A\u05D0", TextDirection::kLtr},
     {u"!\u05D0Z", TextDirection::kRtl},
     // Strong characters after a segment break should be ignored.
-    {u"!\nA", absl::nullopt, TextDirection::kLtr},
-    {u"!\nA\u05D0", absl::nullopt, TextDirection::kLtr},
-    {u"!\n\u05D0Z", absl::nullopt, TextDirection::kRtl}};
+    {u"!\nA", std::nullopt, TextDirection::kLtr},
+    {u"!\nA\u05D0", std::nullopt, TextDirection::kLtr},
+    {u"!\n\u05D0Z", std::nullopt, TextDirection::kRtl}};
 class BaseDirectionTest : public testing::TestWithParam<BaseDirectionData> {};
 INSTANTIATE_TEST_SUITE_P(BidiParagraph,
                          BaseDirectionTest,

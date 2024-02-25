@@ -15,8 +15,8 @@
 // `productParameters`.
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters;
 
-// Opens the system PassKit dialog to add `pass`.
-- (void)showDialogForPassKitPass:(PKPass*)pass;
+// Opens the system PassKit dialog to add `passes`.
+- (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes;
 
 @end
 

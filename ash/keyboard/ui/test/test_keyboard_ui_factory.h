@@ -39,7 +39,7 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
    private:
     std::unique_ptr<aura::Window> window_;
     aura::test::TestWindowDelegate delegate_;
-    raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+    raw_ptr<ui::InputMethod> input_method_;
   };
 
   explicit TestKeyboardUIFactory(ui::InputMethod* input_method);
@@ -53,7 +53,7 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
   std::unique_ptr<KeyboardUI> CreateKeyboardUI() override;
 
  private:
-  raw_ptr<ui::InputMethod, DanglingUntriaged | ExperimentalAsh> input_method_;
+  raw_ptr<ui::InputMethod, DanglingUntriaged> input_method_;
 };
 
 }  // namespace keyboard

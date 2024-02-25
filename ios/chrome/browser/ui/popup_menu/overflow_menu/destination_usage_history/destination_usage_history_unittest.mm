@@ -214,7 +214,7 @@ TEST_F(DestinationUsageHistoryTest, HandlesNewDestinationClick) {
   ScopedDictPrefUpdate update(prefs_.get(),
                               prefs::kOverflowMenuDestinationUsageHistory);
 
-  absl::optional<int> expected = update->FindIntByDottedPath(
+  std::optional<int> expected = update->FindIntByDottedPath(
       DottedPath(TodaysDay().InDays(), overflow_menu::Destination::Bookmarks));
 
   // Verify bookmarks entry exists.
@@ -240,7 +240,7 @@ TEST_F(DestinationUsageHistoryTest,
     const std::string dotted_path =
         DottedPath(TodaysDay().InDays(), destination);
 
-    absl::optional<int> expected = update->FindIntByDottedPath(dotted_path);
+    std::optional<int> expected = update->FindIntByDottedPath(dotted_path);
 
     // Verify destination entry exists.
     EXPECT_TRUE(expected.has_value());
@@ -285,7 +285,7 @@ TEST_F(DestinationUsageHistoryTest,
   ScopedDictPrefUpdate update(prefs_.get(),
                               prefs::kOverflowMenuDestinationUsageHistory);
 
-  absl::optional<int> expected = update->FindIntByDottedPath(
+  std::optional<int> expected = update->FindIntByDottedPath(
       DottedPath(TodaysDay().InDays(), overflow_menu::Destination::Bookmarks));
 
   // Verify bookmarks entry exists.

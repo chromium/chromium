@@ -3,30 +3,13 @@
 // found in the LICENSE file.
 
 import {DomainSecurityPolicyView} from 'chrome://net-internals/domain_security_policy_view.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 import {assertEquals, assertLE, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {Task, TaskQueue} from './task_queue.js';
 import {switchToView} from './test_util.js';
 
-window.domain_security_policy_view_test = {};
-const domain_security_policy_view_test =
-    window.domain_security_policy_view_test;
-domain_security_policy_view_test.suiteName = 'DomainSecurityPolicyViewTest';
-/** @enum {string} */
-domain_security_policy_view_test.TestNames = {
-  QueryNotFound: 'query not found',
-  QueryError: 'query error',
-  DeleteNotFound: 'delete not found',
-  DeleteError: 'delete error',
-  AddDelete: 'add delete',
-  AddFail: 'add fail',
-  AddError: 'add error',
-  AddOverwrite: 'add overwrite',
-  AddTwice: 'add twice',
-};
-
-suite(domain_security_policy_view_test.suiteName, function() {
+suite('DomainSecurityPolicyViewTest', function() {
   /*
    * Possible results of an HSTS query.
    * @enum {number}
@@ -227,39 +210,9 @@ suite(domain_security_policy_view_test.suiteName, function() {
   }
 
   /**
-   * A Task to retrieve a test report-uri.
-   */
-  class GetTestReportURITask extends Task {
-    /**
-     * Sets |NetInternals.callback|, and sends the request to the browser
-     * process.
-     */
-    start() {
-      NetInternalsTest.setCallback(this.onReportURIReceived_.bind(this));
-      chrome.send('setUpTestReportURI');
-    }
-
-    /**
-     * Saves the received report-uri and completes the task.
-     * @param {string} reportURI Report URI received from the browser process.
-     */
-    onReportURIReceived_(reportURI) {
-      this.reportURI_ = reportURI;
-      this.onTaskDone();
-    }
-
-    /**
-     * Returns the saved report-uri received from the browser process.
-     */
-    reportURI() {
-      return this.reportURI_;
-    }
-  }
-
-  /**
    * Checks that querying a domain that was never added fails.
    */
-  test(domain_security_policy_view_test.TestNames.QueryNotFound, function() {
+  test('QueryNotFound', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
@@ -270,7 +223,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Checks that querying a domain with an invalid name returns an error.
    */
-  test(domain_security_policy_view_test.TestNames.QueryError, function() {
+  test('QueryError', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
@@ -281,7 +234,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Deletes a domain that was never added.
    */
-  test(domain_security_policy_view_test.TestNames.DeleteNotFound, function() {
+  test('DeleteNotFound', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
@@ -292,7 +245,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Deletes a domain that returns an error on lookup.
    */
-  test(domain_security_policy_view_test.TestNames.DeleteError, function() {
+  test('DeleteError', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new DeleteTask('\u3024', QueryResultType.ERROR));
@@ -302,7 +255,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Adds a domain and then deletes it.
    */
-  test(domain_security_policy_view_test.TestNames.AddDelete, function() {
+  test('AddDelete', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
@@ -315,7 +268,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Tries to add a domain with an invalid name.
    */
-  test(domain_security_policy_view_test.TestNames.AddFail, function() {
+  test('AddFail', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddHSTSTask(
@@ -329,7 +282,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Tries to add a domain with a name that errors out on lookup due to having
    * non-ASCII characters in it.
    */
-  test(domain_security_policy_view_test.TestNames.AddError, function() {
+  test('AddError', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddHSTSTask('\u3024', false, QueryResultType.ERROR));
@@ -339,7 +292,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Adds the same domain twice in a row, modifying some values the second time.
    */
-  test(domain_security_policy_view_test.TestNames.AddOverwrite, function() {
+  test('AddOverwrite', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
@@ -354,7 +307,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * Adds two different domains and then deletes them.
    */
-  test(domain_security_policy_view_test.TestNames.AddTwice, function() {
+  test('AddTwice', function() {
     switchToView('hsts');
     const taskQueue = new TaskQueue(true);
     taskQueue.addTask(

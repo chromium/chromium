@@ -21,9 +21,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests of {@link GSAState}.
- */
+/** Tests of {@link GSAState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class GSAStateUnitTest {

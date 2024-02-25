@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
@@ -196,17 +197,17 @@ TargetPolicy* TestRunner::GetPolicy() {
 }
 
 TestRunner::~TestRunner() {
-  if (target_process_.IsValid() && kill_on_destruction_)
-    ::TerminateProcess(target_process_.Get(), 0);
+  if (target_process_.is_valid() && kill_on_destruction_) {
+    ::TerminateProcess(target_process_.get(), 0);
+  }
 }
 
 bool TestRunner::WaitForAllTargets() {
   return WaitForAllTargetsInternal();
 }
 
-bool TestRunner::AddRule(SubSystem subsystem,
-                         Semantics semantics,
-                         const wchar_t* pattern) {
+bool TestRunner::AllowFileAccess(FileSemantics semantics,
+                                 const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
@@ -214,10 +215,10 @@ bool TestRunner::AddRule(SubSystem subsystem,
     return false;
 
   return (SBOX_ALL_OK ==
-          policy_->GetConfig()->AddRule(subsystem, semantics, pattern));
+          policy_->GetConfig()->AllowFileAccess(semantics, pattern));
 }
 
-bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
+bool TestRunner::AddRuleSys32(FileSemantics semantics, const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
@@ -225,8 +226,9 @@ bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
   if (win32_path.empty())
     return false;
 
-  if (!AddRule(SubSystem::kFiles, semantics, win32_path.c_str()))
+  if (!AllowFileAccess(semantics, win32_path.c_str())) {
     return false;
+  }
 
   if (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     return true;
@@ -235,14 +237,7 @@ bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
   if (win32_path.empty())
     return false;
 
-  return AddRule(SubSystem::kFiles, semantics, win32_path.c_str());
-}
-
-bool TestRunner::AddFsRule(Semantics semantics, const wchar_t* pattern) {
-  if (!is_init_)
-    return false;
-
-  return AddRule(SubSystem::kFiles, semantics, pattern);
+  return AllowFileAccess(semantics, win32_path.c_str());
 }
 
 int TestRunner::RunTest(const wchar_t* command) {
@@ -263,18 +258,16 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
 
   // For simplicity TestRunner supports only one process per instance.
-  if (target_process_.IsValid()) {
-    if (IsProcessRunning(target_process_.Get()))
+  if (target_process_.is_valid()) {
+    if (IsProcessRunning(target_process_.get())) {
       return SBOX_TEST_FAILED_TO_RUN_TEST;
+    }
     target_process_.Close();
     target_process_id_ = 0;
   }
 
-  ResultCode result = SBOX_ALL_OK;
   if (disable_csrss_) {
-    result = policy_->GetConfig()->SetDisconnectCsrss();
-    if (result != SBOX_ALL_OK)
-      return SBOX_TEST_FAILED_SETUP;
+    policy_->GetConfig()->SetDisconnectCsrss();
   }
 
   // Get the path to the sandboxed process.
@@ -291,6 +284,7 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   arguments += no_sandbox_ ? L"-no-sandbox " : L" ";
   arguments += command;
 
+  ResultCode result = SBOX_ALL_OK;
   if (no_sandbox_) {
     STARTUPINFO startup_info = {sizeof(STARTUPINFO)};
     if (!::CreateProcessW(prog_name, &arguments[0], NULL, NULL, FALSE, 0,
@@ -398,15 +392,16 @@ int DispatchCall(int argc, wchar_t **argv) {
   // in read only mode and sleep infinitely if we succeed.
   if (0 == _wcsicmp(argv[3], L"shared_memory_handle")) {
     HANDLE raw_handle = nullptr;
-    base::StringPiece test_contents = "Hello World";
+    std::string_view test_contents = "Hello World";
     base::StringToUint(base::AsStringPiece16(argv[4]),
                        reinterpret_cast<unsigned int*>(&raw_handle));
     if (raw_handle == nullptr)
       return SBOX_TEST_INVALID_PARAMETER;
     // First extract the handle to the platform-native ScopedHandle.
     base::win::ScopedHandle scoped_handle(raw_handle);
-    if (!scoped_handle.IsValid())
+    if (!scoped_handle.is_valid()) {
       return SBOX_TEST_INVALID_PARAMETER;
+    }
     // Then convert to the low-level chromium region.
     base::subtle::PlatformSharedMemoryRegion platform_region =
         base::subtle::PlatformSharedMemoryRegion::Take(

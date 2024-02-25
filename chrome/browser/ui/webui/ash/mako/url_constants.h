@@ -9,7 +9,16 @@ namespace ash {
 
 extern const char kChromeUIMakoHost[];
 extern const char kChromeUIMakoURL[];
-extern const char kChromeUIOrcaURL[];
+extern const char kChromeUIMakoOrcaURL[];
+extern const char kChromeUIMakoPrivacyURL[];
+
+extern const char kOrcaModeParamKey[];
+extern const char kOrcaWriteMode[];
+extern const char kOrcaRewriteMode[];
+
+extern const char kOrcaPresetParamKey[];
+extern const char kOrcaFreeformParamKey[];
 
 }  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_URL_CONSTANTS_H_

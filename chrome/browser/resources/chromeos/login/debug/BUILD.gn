@@ -2,27 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
-# TODO(crbug.com/1229130)
-# Uncomment once most screens are migrated.
-# js_type_check("closure_compile") {
-#   is_polymer3 = true
-#   deps = [ ":debug" ]
-# }
-
-# js_library("debug") {
-# }
+group("web_components") {
+  public_deps = [
+    ":copy_ts",
+    ":generate_web_component_html_wrapper_files",
+  ]
+}
 
 # Copy existing files to output directory.
-copy("copy_js") {
-  sources = [ "debug.js" ]
+copy("copy_ts") {
+  sources = [
+    "debug.js",
+    "no_debug.js",
+    "quick_start_debugger.ts",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "quick_start_debugger.js",
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = [
+    "quick_start_debugger.html",
   ]
 }

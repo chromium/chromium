@@ -15,7 +15,6 @@
     { "name": "example", "policy": "test", "mode": "force-https", "include_subdomains": true },
 
     { "name": "no-rejected-pins-pkp.preloaded.test", "policy": "test" },
-    { "name": "with-report-uri-pkp.preloaded.test", "policy": "test" },
 
     { "name": "hsts-hpkp-preloaded.test", "policy": "test", "mode": "force-https" },
 

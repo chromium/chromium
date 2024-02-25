@@ -1,3 +1,6 @@
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
+
 # This ignore list is the subset of ignorelist.txt that's needed in
 # is_ubsan_security builds. is_ubsan_security builds also use
 # vptr_ignorelist.txt. This file does not duplicate the contents of that file.
@@ -72,6 +75,17 @@ fun:*re2*RegexpD*
 #############################################################################
 # Harmless float division by zero.
 fun:*RendererFrameManager*CullUnlockedFrames*
+
+#############################################################################
+# Generic cleanup function pointer of wrong type.
+fun:sqlite3ParseObjectReset
+
+#############################################################################
+# Function pointer of wrong type.
+src:*/third_party/angle/src/libANGLE/renderer/vulkan/vk_wrapper.h
+src:*/third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
+fun:vmaFindMemoryTypeIndexForBufferInfo
+fun:*rx*vk*GarbageObject*destroy*
 
 #############################################################################
 # -fsanitize=vptr suppressions should go in vptr_ignorelist.txt, not here.

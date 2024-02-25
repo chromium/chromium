@@ -57,7 +57,7 @@ class FakeKeyboardLayoutObserver : public mojom::KeyboardLayoutObserver {
 
  private:
   size_t num_keyboard_layout_information_sent_ = 0;
-  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
+  raw_ptr<TaskRunner> task_runner_;
   mojo::Receiver<mojom::KeyboardLayoutObserver> receiver_;
 };
 

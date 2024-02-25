@@ -94,7 +94,7 @@ BrowserState::~BrowserState() {
   // they're going to have a bad time anyway.
   if (url_data_manager_ios_backend_) {
     bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, url_data_manager_ios_backend_);
+        FROM_HERE, url_data_manager_ios_backend_.get());
     if (!posted)
       delete url_data_manager_ios_backend_;
   }
@@ -106,7 +106,7 @@ network::mojom::URLLoaderFactory* BrowserState::GetURLLoaderFactory() {
     auto url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-    url_loader_factory_params->is_corb_enabled = false;
+    url_loader_factory_params->is_orb_enabled = false;
     url_loader_factory_params->is_trusted = true;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),
@@ -123,6 +123,11 @@ network::mojom::CookieManager* BrowserState::GetCookieManager() {
         cookie_manager_.BindNewPipeAndPassReceiver());
   }
   return cookie_manager_.get();
+}
+
+network::mojom::NetworkContext* BrowserState::GetNetworkContext() {
+  CreateNetworkContextIfNecessary();
+  return network_context_.get();
 }
 
 leveldb_proto::ProtoDatabaseProvider* BrowserState::GetProtoDatabaseProvider() {

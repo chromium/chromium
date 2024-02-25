@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Explicitely-defined consecutive columns spanned by the same set of cells are not merged
+  assert_equals: expected 75 but got 50
+[FAIL] Explicitely-defined consecutive columns spanned by the same set of cells are not merged, and cells span across border-spacing
+  assert_equals: expected 12.5 but got 50
+[FAIL] Explicitely-defined consecutive rows spanned by the same set of cells are not merged, and cells span across border-spacing
+  assert_equals: expected 12.5 but got 0
+Harness: the test ran to completion.
+

@@ -9,13 +9,13 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -71,7 +71,7 @@ class FakeAudioCapturer final
 
   zx::vmo buffer_vmo_;
   uint64_t buffer_size_ = 0;
-  absl::optional<fuchsia::media::AudioStreamType> stream_type_;
+  std::optional<fuchsia::media::AudioStreamType> stream_type_;
   bool is_active_ = false;
   size_t frames_per_packet_ = 0;
   std::vector<bool> packets_usage_;

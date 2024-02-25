@@ -136,7 +136,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
                               int target_property_id,
                               gfx::KeyframeModel* keyframe_model) override;
 
-  absl::optional<gfx::PointF> ScrollOffsetForAnimation() const;
+  std::optional<gfx::PointF> ScrollOffsetForAnimation() const;
 
   // Returns a map of target property to the ElementId for that property, for
   // KeyframeEffects associated with this ElementAnimations.

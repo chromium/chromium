@@ -32,7 +32,14 @@ CommonStartupMetricRecorder& GetCommon() {
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(
     base::Time time) {
-  RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  // In certain cases, getting the process creation can fail, and no metrics
+  // should be emitted in that case.
+  bool time_is_valid = time != base::Time();
+  if (time_is_valid) {
+    RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  }
+  base::UmaHistogramBoolean("Startup.LoadTime.RecordedProcessCreation",
+                            time_is_valid);
 }
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(
@@ -73,7 +80,7 @@ base::TimeTicks CommonStartupMetricRecorder::StartupTimeToTimeTicks(
   // takes to resolve these two calls affects the precision of this method and
   // bumping the priority reduces the likelihood of a context switch interfering
   // with this computation.
-  absl::optional<base::ScopedBoostPriority> scoped_boost_priority;
+  std::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
   // Enabling this logic on OS X causes a significant performance regression.
   // TODO(crbug.com/601270): Remove IS_APPLE ifdef once priority changes are

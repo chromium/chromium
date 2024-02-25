@@ -18,11 +18,11 @@ limitations under the License.
 #include <memory>
 #include <utility>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
-#include "absl/strings/str_join.h"     // from @com_google_absl
-#include "absl/strings/str_split.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/strings/str_join.h"  // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/string_util.h"
@@ -39,15 +39,11 @@ namespace tflite::task::text::clu {
 // tensors by concatenating the current utterance with history turns. It also
 // sets utterance_turn_id_seq for post-processing.
 absl::Status PopulateInputTextTensorForBERT(
-    const CluRequest& request,
-    int token_id_tensor_idx,
-    int token_mask_tensor_idx,
-    int token_type_id_tensor_idx,
+    const CluRequest& request, int token_id_tensor_idx,
+    int token_mask_tensor_idx, int token_type_id_tensor_idx,
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
-    size_t max_seq_len,
-    int max_history_turns,
-    core::TfLiteEngine::Interpreter* interpreter,
-    Artifacts* artifacts) {
+    size_t max_seq_len, int max_history_turns,
+    core::TfLiteEngine::Interpreter* interpreter, Artifacts* artifacts) {
   size_t seq_len;
   int64_t* tokens_tensor =
       interpreter->typed_input_tensor<int64_t>(token_id_tensor_idx);
@@ -69,7 +65,7 @@ absl::Status PopulateInputTextTensorForBERT(
   std::vector<std::pair<int, int>> alignments;
   std::vector<int> first_subword_indicators;
   std::vector<int> segment_id_list;
-  RETURN_IF_ERROR(BertPreprocessing(
+  TFLITE_RETURN_IF_ERROR(BertPreprocessing(
       tokenizer, artifacts->reverse_utterance_list_to_encode, max_seq_len,
       max_history_turns, &token_ids, &alignments, &first_subword_indicators,
       &segment_id_list, &(artifacts->token_turn_ids)));
@@ -150,9 +146,9 @@ absl::StatusOr<std::unique_ptr<AbstractModule>> UtteranceSeqModule::Create(
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer) {
   auto out = std::make_unique<UtteranceSeqModule>();
   out->tensor_index_map_ = tensor_index_map;
-  RETURN_IF_ERROR(out->Init(interpreter, options));
+  TFLITE_RETURN_IF_ERROR(out->Init(interpreter, options));
   out->tokenizer_ = tokenizer;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       out->max_seq_len_,
       GetInputSeqDimSize(tensor_index_map->token_id_idx, interpreter));
   out->max_history_turns_ = options->max_history_turns();
@@ -199,20 +195,19 @@ absl::StatusOr<std::unique_ptr<AbstractModule>> DomainModule::Create(
   auto out = std::make_unique<DomainModule>();
   out->tensor_index_map_ = tensor_index_map;
   out->domain_threshold_ = options->domain_threshold();
-  RETURN_IF_ERROR(out->Init(interpreter, options));
+  TFLITE_RETURN_IF_ERROR(out->Init(interpreter, options));
   return out;
 }
 
 absl::Status DomainModule::Postprocess(Artifacts* artifacts,
                                        CluResponse* response) const {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const auto t_output,
       NamesAndConfidencesFromOutput(tensor_index_map_->domain_names_idx,
                                     tensor_index_map_->domain_scores_idx));
   const auto& [names, confidences] = t_output;
   for (int i = 0; i < names.size(); ++i) {
-    if (confidences[i] < domain_threshold_)
-      continue;
+    if (confidences[i] < domain_threshold_) continue;
     auto domain = response->add_domains();
     // Conversion to string is needed due to portable_proto generated code
     const std::string names_i(names[i]);
@@ -230,26 +225,25 @@ absl::StatusOr<std::unique_ptr<AbstractModule>> IntentModule::Create(
   out->tensor_index_map_ = tensor_index_map;
   out->intent_threshold_ = options->intent_threshold();
   out->categorical_slot_threshold_ = options->categorical_slot_threshold();
-  RETURN_IF_ERROR(out->Init(interpreter, options));
+  TFLITE_RETURN_IF_ERROR(out->Init(interpreter, options));
   return out;
 }
 
 absl::Status IntentModule::Postprocess(Artifacts* artifacts,
                                        CluResponse* response) const {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const auto t_output,
       NamesAndConfidencesFromOutput(tensor_index_map_->intent_names_idx,
                                     tensor_index_map_->intent_scores_idx));
   const auto& [names, confidences] = t_output;
 
   for (int i = 0; i < names.size(); ++i) {
-    ASSIGN_OR_RETURN(const auto name, IntentRepr::CreateFromFullName(names[i]));
+    TFLITE_ASSIGN_OR_RETURN(const auto name, IntentRepr::CreateFromFullName(names[i]));
     // TODO(xysong): Differentiate categorical slots from intents.
     std::vector<absl::string_view> parts = absl::StrSplit(name.Name(), '=');
     if (parts.size() == 2) {
       // The name is like 'xxx=yyy'. It's a categorical slot.
-      if (confidences[i] < categorical_slot_threshold_)
-        continue;
+      if (confidences[i] < categorical_slot_threshold_) continue;
       auto new_categorical_slot = response->mutable_categorical_slots()->Add();
 
       const auto slot = std::string(parts[0]);
@@ -261,8 +255,7 @@ absl::Status IntentModule::Postprocess(Artifacts* artifacts,
       new_categorical_slot_prediction->set_score(confidences[i]);
     } else {
       // It's an intent.
-      if (confidences[i] < intent_threshold_)
-        continue;
+      if (confidences[i] < intent_threshold_) continue;
       auto new_intent = response->mutable_intents()->Add();
       new_intent->set_display_name(name.Name());
       new_intent->set_score(confidences[i]);
@@ -277,19 +270,20 @@ absl::StatusOr<std::unique_ptr<AbstractModule>> SlotModule::Create(
     const BertCluAnnotatorOptions* options) {
   auto out = std::make_unique<SlotModule>();
   out->tensor_index_map_ = tensor_index_map;
-  out->mentioned_slot_threshold_ = options->mentioned_slot_threshold();
-  RETURN_IF_ERROR(out->Init(interpreter, options));
+  out->mentioned_slot_threshold_ =
+      options->mentioned_slot_threshold();
+  TFLITE_RETURN_IF_ERROR(out->Init(interpreter, options));
   return out;
 }
 
 absl::Status SlotModule::Postprocess(Artifacts* artifacts,
                                      CluResponse* response) const {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const auto t_output,
       NamesAndConfidencesFromOutput(tensor_index_map_->slot_names_idx,
                                     tensor_index_map_->slot_scores_idx));
   const auto& [tags, confidences] = t_output;
-  RETURN_IF_ERROR(SlotModulePopulateResponse(
+  TFLITE_RETURN_IF_ERROR(SlotModulePopulateResponse(
       tags, confidences, artifacts->token_alignments, artifacts->token_turn_ids,
       artifacts->first_subword_indicators, mentioned_slot_threshold_,
       artifacts->reverse_utterance_list_to_encode, response));

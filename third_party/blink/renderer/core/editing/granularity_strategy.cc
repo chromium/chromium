@@ -76,11 +76,12 @@ SelectionInDOMTree CharacterGranularityStrategy::UpdateExtent(
       PositionForContentsPointRespectingEditingBoundary(extent_point, frame));
   const VisibleSelection& selection =
       frame->Selection().ComputeVisibleSelectionInDOMTree();
-  if (extent_position.IsNull() || selection.VisibleBase().DeepEquivalent() ==
-                                      extent_position.DeepEquivalent())
+  if (extent_position.IsNull() || selection.VisibleAnchor().DeepEquivalent() ==
+                                      extent_position.DeepEquivalent()) {
     return selection.AsSelection();
+  }
   return SelectionInDOMTree::Builder()
-      .Collapse(selection.Base())
+      .Collapse(selection.Anchor())
       .Extend(extent_position.DeepEquivalent())
       .SetAffinity(selection.Affinity())
       .Build();
@@ -113,50 +114,53 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
   if (state_ == StrategyState::kCleared)
     state_ = StrategyState::kExpanding;
 
-  const VisiblePosition& old_offset_extent_position = selection.VisibleExtent();
-  gfx::Point old_extent_location = PositionLocation(old_offset_extent_position);
+  const VisiblePosition& old_offset_focus_position = selection.VisibleFocus();
+  gfx::Point old_focus_location = PositionLocation(old_offset_focus_position);
 
-  gfx::Point old_offset_extent_point =
-      old_extent_location + diff_extent_point_from_extent_position_;
-  gfx::Point old_extent_point = gfx::Point(
-      old_offset_extent_point.x() - offset_, old_offset_extent_point.y());
+  gfx::Point old_offset_focus_point =
+      old_focus_location + diff_extent_point_from_extent_position_;
+  gfx::Point old_focus_point = gfx::Point(old_offset_focus_point.x() - offset_,
+                                          old_offset_focus_point.y());
 
   // Apply the offset.
-  gfx::Point new_offset_extent_point = extent_point;
-  int dx = extent_point.x() - old_extent_point.x();
+  gfx::Point new_offset_focus_point = extent_point;
+  int dx = extent_point.x() - old_focus_point.x();
   if (offset_ != 0) {
     if (offset_ > 0 && dx > 0)
       offset_ = std::max(0, offset_ - dx);
     else if (offset_ < 0 && dx < 0)
       offset_ = std::min(0, offset_ - dx);
-    new_offset_extent_point.Offset(offset_, 0);
+    new_offset_focus_point.Offset(offset_, 0);
   }
 
-  VisiblePosition new_offset_extent_position =
+  VisiblePosition new_offset_focus_position =
       CreateVisiblePosition(PositionForContentsPointRespectingEditingBoundary(
-          new_offset_extent_point, frame));
-  if (new_offset_extent_position.IsNull())
+          new_offset_focus_point, frame));
+  if (new_offset_focus_position.IsNull()) {
     return selection.AsSelection();
-  gfx::Point new_offset_location = PositionLocation(new_offset_extent_position);
+  }
+  gfx::Point new_offset_location = PositionLocation(new_offset_focus_position);
 
   // Reset the offset in case of a vertical change in the location (could be
   // due to a line change or due to an unusual layout, e.g. rotated text).
-  bool vertical_change = new_offset_location.y() != old_extent_location.y();
+  bool vertical_change = new_offset_location.y() != old_focus_location.y();
   if (vertical_change) {
     offset_ = 0;
     granularity_ = TextGranularity::kCharacter;
-    new_offset_extent_point = extent_point;
-    new_offset_extent_position = CreateVisiblePosition(
+    new_offset_focus_point = extent_point;
+    new_offset_focus_position = CreateVisiblePosition(
         PositionForContentsPointRespectingEditingBoundary(extent_point, frame));
-    if (new_offset_extent_position.IsNull())
+    if (new_offset_focus_position.IsNull()) {
       return selection.AsSelection();
+    }
   }
 
-  const VisiblePosition base = selection.VisibleBase();
+  const VisiblePosition anchor = selection.VisibleAnchor();
 
   // Do not allow empty selection.
-  if (new_offset_extent_position.DeepEquivalent() == base.DeepEquivalent())
+  if (new_offset_focus_position.DeepEquivalent() == anchor.DeepEquivalent()) {
     return selection.AsSelection();
+  }
 
   // The direction granularity strategy, particularly the "offset" feature
   // doesn't work with non-horizontal text (e.g. when the text is rotated).
@@ -164,20 +168,20 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
   // strategy if we detect that the text's baseline coordinate changed
   // without a line change.
   if (vertical_change &&
-      InSameLine(new_offset_extent_position, old_offset_extent_position)) {
+      InSameLine(new_offset_focus_position, old_offset_focus_position)) {
     return SelectionInDOMTree::Builder()
-        .Collapse(selection.Base())
-        .Extend(new_offset_extent_position.DeepEquivalent())
+        .Collapse(selection.Anchor())
+        .Extend(new_offset_focus_position.DeepEquivalent())
         .SetAffinity(selection.Affinity())
         .Build();
   }
 
-  int old_extent_base_order = selection.IsBaseFirst() ? 1 : -1;
+  int old_focus_anchor_order = selection.IsAnchorFirst() ? 1 : -1;
 
-  int new_extent_base_order;
+  int new_focus_anchor_order;
   bool this_move_shrunk_selection;
-  if (new_offset_extent_position.DeepEquivalent() ==
-      old_offset_extent_position.DeepEquivalent()) {
+  if (new_offset_focus_position.DeepEquivalent() ==
+      old_offset_focus_position.DeepEquivalent()) {
     if (granularity_ == TextGranularity::kCharacter)
       return selection.AsSelection();
 
@@ -185,18 +189,19 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
     // the middle of the word without changing the position (in which case
     // the selection needs to expand).
     this_move_shrunk_selection = false;
-    new_extent_base_order = old_extent_base_order;
+    new_focus_anchor_order = old_focus_anchor_order;
   } else {
     bool selection_expanded = ArePositionsInSpecifiedOrder(
-        new_offset_extent_position, old_offset_extent_position,
-        old_extent_base_order);
+        new_offset_focus_position, old_offset_focus_position,
+        old_focus_anchor_order);
     bool extent_base_order_switched =
         selection_expanded
             ? false
-            : !ArePositionsInSpecifiedOrder(new_offset_extent_position, base,
-                                            old_extent_base_order);
-    new_extent_base_order = extent_base_order_switched ? -old_extent_base_order
-                                                       : old_extent_base_order;
+            : !ArePositionsInSpecifiedOrder(new_offset_focus_position, anchor,
+                                            old_focus_anchor_order);
+    new_focus_anchor_order = extent_base_order_switched
+                                 ? -old_focus_anchor_order
+                                 : old_focus_anchor_order;
 
     // Determine the word boundary, i.e. the boundary extending beyond which
     // should change the granularity to WordGranularity.
@@ -208,9 +213,9 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
       // calculate the word boundary in this new direction and based on
       // the |base| position.
       word_boundary_position = NextWordBound(
-          base.DeepEquivalent(),
-          new_extent_base_order > 0 ? SearchDirection::kSearchForward
-                                    : SearchDirection::kSearchBackwards,
+          anchor.DeepEquivalent(),
+          new_focus_anchor_order > 0 ? SearchDirection::kSearchForward
+                                     : SearchDirection::kSearchBackwards,
           BoundAdjust::kNextBoundIfOnBound);
       granularity_ = TextGranularity::kCharacter;
     } else {
@@ -219,9 +224,9 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
       // exactly on the word boundary - we need to take the next bound as
       // the bound of the current word.
       word_boundary_position = NextWordBound(
-          old_offset_extent_position.DeepEquivalent(),
-          old_extent_base_order > 0 ? SearchDirection::kSearchForward
-                                    : SearchDirection::kSearchBackwards,
+          old_offset_focus_position.DeepEquivalent(),
+          old_focus_anchor_order > 0 ? SearchDirection::kSearchForward
+                                     : SearchDirection::kSearchBackwards,
           state_ == StrategyState::kShrinking
               ? BoundAdjust::kNextBoundIfOnBound
               : BoundAdjust::kCurrentPosIfOnBound);
@@ -230,14 +235,15 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
         CreateVisiblePosition(word_boundary_position);
 
     bool expanded_beyond_word_boundary;
-    if (selection_expanded)
+    if (selection_expanded) {
       expanded_beyond_word_boundary = ArePositionsInSpecifiedOrder(
-          new_offset_extent_position, word_boundary, new_extent_base_order);
-    else if (extent_base_order_switched)
+          new_offset_focus_position, word_boundary, new_focus_anchor_order);
+    } else if (extent_base_order_switched) {
       expanded_beyond_word_boundary = ArePositionsInSpecifiedOrder(
-          new_offset_extent_position, word_boundary, new_extent_base_order);
-    else
+          new_offset_focus_position, word_boundary, new_focus_anchor_order);
+    } else {
       expanded_beyond_word_boundary = false;
+    }
 
     // The selection is shrunk if the extent changes position to be closer to
     // the base, and the extent/base order wasn't switched.
@@ -250,18 +256,18 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
       granularity_ = TextGranularity::kCharacter;
   }
 
-  VisiblePosition new_selection_extent = new_offset_extent_position;
+  VisiblePosition new_selection_extent = new_offset_focus_position;
   if (granularity_ == TextGranularity::kWord) {
     // Determine the bounds of the word where the extent is located.
     // Set the selection extent to one of the two bounds depending on
     // whether the extent is passed the middle of the word.
     VisiblePosition bound_before_extent = CreateVisiblePosition(NextWordBound(
-        new_offset_extent_position.DeepEquivalent(),
+        new_offset_focus_position.DeepEquivalent(),
         SearchDirection::kSearchBackwards, BoundAdjust::kCurrentPosIfOnBound));
     if (bound_before_extent.IsNull())
       return selection.AsSelection();
     VisiblePosition bound_after_extent = CreateVisiblePosition(NextWordBound(
-        new_offset_extent_position.DeepEquivalent(),
+        new_offset_focus_position.DeepEquivalent(),
         SearchDirection::kSearchForward, BoundAdjust::kCurrentPosIfOnBound));
     if (bound_after_extent.IsNull())
       return selection.AsSelection();
@@ -269,14 +275,14 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
                                    PositionLocation(bound_before_extent).x()) /
                                   2;
     bool offset_extent_before_middle =
-        new_offset_extent_point.x() < x_middle_between_bounds;
+        new_offset_focus_point.x() < x_middle_between_bounds;
     new_selection_extent =
         offset_extent_before_middle ? bound_before_extent : bound_after_extent;
     // Update the offset if selection expanded in word granularity.
     if (new_selection_extent.DeepEquivalent() !=
-            old_offset_extent_position.DeepEquivalent() &&
-        ((new_extent_base_order > 0 && !offset_extent_before_middle) ||
-         (new_extent_base_order < 0 && offset_extent_before_middle))) {
+            old_offset_focus_position.DeepEquivalent() &&
+        ((new_focus_anchor_order > 0 && !offset_extent_before_middle) ||
+         (new_focus_anchor_order < 0 && offset_extent_before_middle))) {
       offset_ = PositionLocation(new_selection_extent).x() - extent_point.x();
     }
   }
@@ -284,15 +290,16 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
   // Only update the state if the selection actually changed as a result of
   // this move.
   if (new_selection_extent.DeepEquivalent() !=
-      old_offset_extent_position.DeepEquivalent())
+      old_offset_focus_position.DeepEquivalent()) {
     state_ = this_move_shrunk_selection ? StrategyState::kShrinking
                                         : StrategyState::kExpanding;
+  }
 
   diff_extent_point_from_extent_position_ =
       extent_point + gfx::Vector2d(offset_, 0) -
       PositionLocation(new_selection_extent);
   return SelectionInDOMTree::Builder(selection.AsSelection())
-      .Collapse(selection.Base())
+      .Collapse(selection.Anchor())
       .Extend(new_selection_extent.DeepEquivalent())
       .Build();
 }

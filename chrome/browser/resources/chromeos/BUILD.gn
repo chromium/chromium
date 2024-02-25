@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
+assert(is_chromeos_ash,
+       "Only ChromeOS Ash resources in //c/b/resources//chromeos.")
 
 group("resources") {
   public_deps = [
@@ -15,6 +16,7 @@ group("resources") {
     ":multidevice_setup_resources",
     "accessibility:build",
     "add_supervision:resources",
+    "app_install:resources",
     "arc_account_picker:resources",
     "assistant_optin:resources",
     "audio:resources",
@@ -22,6 +24,7 @@ group("resources") {
     "borealis_installer:resources",
     "cloud_upload:resources",
     "desk_api:resources",
+    "edu_coexistence:resources",
     "emoji_picker:resources",
     "enterprise_reporting:resources",
     "gaia_action_buttons:resources",
@@ -33,14 +36,17 @@ group("resources") {
     "lock_screen_reauth:resources",
     "login:conditional_resources",
     "login:unconditional_resources",
+    "mako:resources",
     "manage_mirrorsync:resources",
     "multidevice_internals:resources",
     "network_ui:resources",
     "notification_tester:resources",
+    "parent_access:resources",
     "password_change:resources",
     "remote_maintenance_curtain:resources",
+    "seal:resources",
     "sensor_info:resources",
-    "status_area_internals:resources",
+    "set_time_dialog:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
   ]
@@ -79,38 +85,21 @@ grit("multidevice_setup_resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "accessibility/accessibility_common:closure_compile",
-    "accessibility/braille_ime:closure_compile",
-    "accessibility/chromevox:closure_compile",
-    "accessibility/select_to_speak:closure_compile",
-    "accessibility/switch_access:closure_compile",
     "account_manager:closure_compile",
     "account_manager/components:closure_compile",
     "arc_account_picker:closure_compile",
     "assistant_optin:closure_compile",
-    "bluetooth_pairing_dialog:closure_compile",
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
-    "edu_coexistence:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
-    "internet_config_dialog:closure_compile",
-    "internet_detail_dialog:closure_compile",
-    "login:closure_compile",
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",
-    "network_ui:closure_compile",
-    "parent_access:closure_compile",
     "password_change:closure_compile",
-    "set_time_dialog:closure_compile",
     "smb_shares:closure_compile",
-    "supervision:closure_compile",
     "sys_internals:closure_compile",
     "vm:closure_compile",
   ]
-  if (is_cfm) {
-    deps += [ "chromebox_for_meetings:closure_compile" ]
-  }
 }
 
 js_type_check("closure_compile_local") {

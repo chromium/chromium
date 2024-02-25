@@ -11,37 +11,9 @@
     padding: 12px;
   }
 
-  /* TODO(b/281116317) Remove once Jelly is launched */
-  :host-context(body:not(.jelly-enabled)):host {
-    font-family: Roboto, sans-serif;
-    font-size: 13px;
-  }
-
-  #icon {
-    background: center / cover no-repeat;
-    background-image: url(chrome://os-settings/images/keyboard_shortcut.svg);
-    flex-shrink: 0;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #icon {
-      background-image:
-        url(chrome://os-settings/images/keyboard_shortcut_dark.svg);
-    }
-  }
-
-  #icon,
   #keyboardShortcutIcon {
     height: 48px;
     width: 48px;
-  }
-
-  :host-context(body.jelly-enabled) #icon {
-    display: none;
-  }
-
-  :host-context(body:not(.jelly-enabled)) #keyboardShortcutIcon {
-    display: none;
   }
 
   #text {
@@ -50,18 +22,8 @@
 
   h2 {
     color: var(--cr-primary-text-color);
-    margin: 0;
-  }
-
-  /* TODO(b/281116317) Remove once Jelly is launched */
-  :host-context(body:not(.jelly-enabled)) h2 {
-    font-family: 'Google Sans', Roboto, sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-  }
-
-  :host-context(body.jelly-enabled) h2 {
     font: var(--cros-headline-1-font);
+    margin: 0;
   }
 
   .reminder-message {
@@ -76,16 +38,15 @@
 
   /* Shortcut pods */
   kbd > kbd {
-    background-color: var(--cros-shortcut-background-color);
+    background-color: var(--cros-sys-surface_variant);
     background-image: linear-gradient(
       var(--cros-shortcut-background-gradient-color),
       var(--cros-shortcut-background-gradient-color));
-    border-radius: 18px;
-    box-shadow: var(--cr-elevation-1);
-    color: var(--cr-secondary-text-color);
+    border-radius: 12px;
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-button-2-font);
     display: inline-block;
     height: 20px;
-    line-height: 20px;
     margin: 0 4px;
     padding: 0 6px;
   }
@@ -94,15 +55,7 @@
   :not(kbd) > kbd {
     color: var(--cros-text-color-prominent);
   }
-
-  :host-context(body:not(.jelly-enabled)) cr-button {
-    --border-color: transparent;
-    --hover-border-color: transparent;
-    --disabled-border-color: transparent;
-  }
 </style>
-
-<div id="icon"></div>
 
 <iron-icon id="keyboardShortcutIcon" icon="os-settings:keyboard-shortcut">
 </iron-icon>

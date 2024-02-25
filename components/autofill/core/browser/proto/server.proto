@@ -12,8 +12,8 @@ package autofill;
 
 import "password_requirements.proto";
 
-// Request to query field suggestions for forms in a page from legacy Autofill
-// API.
+// NOT USED ANYMORE. Please use `AutofillPageQueryRequest` in api_v1.proto
+// instead.
 // Next available id: 15
 message AutofillQueryContents {
   reserved 11;  // Reserved for server use.
@@ -225,7 +225,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 46
+// Next available id: 48
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -357,16 +357,45 @@ message AutofillUploadContents {
     enum SingleUsernameVoteType {
       DEFAULT = 0;
       // Votes with low confidence (i.e. recorded if Save/Update prompt was
-      // accepted without username edits).
+      // accepted without username edits) for UFF classifier.
       WEAK = 1;
       // Votes with high confidence (i.e. recorded if Save/Update prompt was
-      // accepted after username edits).
+      // accepted after username edits) for UFF classifier.
       STRONG = 2;
+      // Votes with low confidence (i.e. recorded if Save/Update prompt was
+      // accepted without username edits) for forgot password form classifier.
+      WEAK_FORGOT_PASSWORD = 3;
+      // Votes with high confidence (i.e. recorded if Save/Update prompt was
+      // accepted after username edits) for forgot password form classifier.
+      STRONG_FORGOT_PASSWORD = 4;
+      // If positive (`autofill_type` is `SINGLE_USERNAME`), votes signal that
+      // user was prompted with a Save/Update bubble with a username value found
+      // inside the password form and edited it to one of the values that was
+      // found outside of the password form. If negative (`autofill_type` is
+      // `NOT_USERNAME`), user was prompted with a username value outside the
+      // password form and edited it to one of the values that is found inside
+      // the password form.
+      IN_FORM_OVERRULE = 5;
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|
     // is SINGLE_USERNAME, SINGLE_USERNAME_FORGOT_PASSWORD or NOT_USERNAME.
     optional SingleUsernameVoteType single_username_vote_type = 41;
+
+    // Only set for Username First Flow votes (`autofill_type` is
+    // `SINGLE_USERNAME` or `NOT_USERNAME`). Otherwise, set to `std::nullopt`.
+    // If set to true, the field is username candidate in Username First Flow
+    // and the field has no intermediate fields (like OTP/Captcha) between the
+    // candidate and the password form.
+    // If set to false, the field is username candidate in Username First Flow,
+    // but has intermediate fields between the candidate and the password
+    // form.
+    optional bool is_most_recent_single_username_candidate = 46;
+
+    // Set to `true` if the field had a value on page load and it was changed
+    // between then and form submission. Set to `false` if the pre-filled value
+    // wasn't changed. Not set if the field didn't have a pre-filled value.
+    optional bool initial_value_changed = 47;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
@@ -423,12 +452,14 @@ message AutofillUploadContents {
     XHR_SUCCEEDED = 3;
     FRAME_DETACHED = 4;
     DEPRECATED_MANUAL_SAVE = 5;  // obsolete
-    DOM_MUTATION_AFTER_XHR = 6;
-    PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD = 7;
+    DEPRECATED_DOM_MUTATION_AFTER_XHR = 6;  // obsolete
+    DEPRECATED_PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD =
+        7;                                                           // unused
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD = 8;            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD = 9;  // unused
     PROBABLE_FORM_SUBMISSION = 10;
     CHANGE_PASSWORD_FORM_CLEARED = 11;
+    DOM_MUTATION_AFTER_AUTOFILL = 12;
   }
 
   // The type of the event that was taken as an indication that the form has
@@ -489,9 +520,9 @@ message AutofillUploadContents {
     optional SingleUsernamePromptEdit prompt_edit = 4;
   }
   // This message is recorded on forms that do not have a username field.
-  // The message contains data on a preceding form with potential username
-  // field.
-  optional SingleUsernameData single_username_data = 42;
+  // The message contains data on preceding forms with potential username
+  // fields.
+  repeated SingleUsernameData single_username_data = 42;
 
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or
@@ -509,7 +540,7 @@ message AutofillUploadContents {
 message ProfileValidityMap {
   // Map from autofill type to the validity of its value in the profile.
   //
-  // Key should be one of the enum values from ServerFieldType. Values should be
+  // Key should be one of the enum values from FieldType. Values should be
   // from the AutofillProfile::ValidityState. Plain integers are used
   // instead of enums because proto2 treats unknown enum values as unknown
   // fields, which is confusing when the enums are in maps.

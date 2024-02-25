@@ -38,23 +38,8 @@ class Invoker(invoker.Base):
             'notarization tool and are intended to specify authentication '
             'parameters.')
 
-        # Legacy arguments that will be removed in the future.
-        legacy_help = ('This argument is deprecated. '
-                       'Please use --notary-arg instead.')
-        parser.add_argument('--notary-user', help=legacy_help)
-        parser.add_argument('--notary-password', help=legacy_help)
-        parser.add_argument('--notary-team-id', help=legacy_help)
-
     def __init__(self, args, config):
         self._notary_args = args.notary_arg
-
-        if any([
-                getattr(args, arg, None)
-                for arg in ('notary_user', 'notary_password', 'notary_team_id')
-        ]):
-            logger.warning(
-                'Explicit notarization authentication arguments are deprecated. Use --notary-arg instead.'
-            )
 
     @property
     def notary_args(self):
@@ -70,9 +55,6 @@ class Invoker(invoker.Base):
             '--output-format',
             'plist',
         ] + self.notary_args
-
-        # TODO(rsesek): As the reliability of notarytool is determined,
-        # potentially run the command through _notary_service_retry().
 
         output = commands.run_command_output(command)
         try:
@@ -233,48 +215,76 @@ def staple(path):
             notarization and is now ready for stapling.
     """
 
-    def staple_command():
-        commands.run_command(['xcrun', 'stapler', 'staple', '--verbose', path])
-
-    # Known bad codes:
-    # 65 - CloudKit query failed due to "(null)"
-    # 68 - A server with the specified hostname could not be found.
-    _notary_service_retry(
-        staple_command, (65, 68), 'staple', sleep_before_retry=True)
-
-
-def _notary_service_retry(func,
-                          known_bad_returncodes,
-                          short_command_name,
-                          sleep_before_retry=False):
-    """Calls the function |func| that runs a subprocess command, retrying it if
-    the command exits uncleanly and the returncode is known to be bad (e.g.
-    flaky).
-
-    Args:
-        func: The function to call within try block that wil catch
-            CalledProcessError.
-        known_bad_returncodes: An iterable of the returncodes that should be
-            ignored and |func| retried.
-        short_command_name: A short descriptive string of |func| that will be
-            logged when |func| is retried.
-        sleep_before_retry: If True, will wait before re-trying when a known
-            failure occurs.
-
-    Returns:
-        The result of |func|.
-    """
-    attempt = 0
-    while True:
+    retry = Retry('staple', sleep_before_retry=True)
+    while retry.keep_going():
         try:
-            return func()
+            commands.run_command(
+                ['xcrun', 'stapler', 'staple', '--verbose', path])
+            return
         except subprocess.CalledProcessError as e:
-            attempt += 1
-            if (attempt < _NOTARY_SERVICE_MAX_RETRIES and
-                    e.returncode in known_bad_returncodes):
-                logger.warning('Retrying %s, exited %d, output: %s',
-                               short_command_name, e.returncode, e.output)
-                if sleep_before_retry:
-                    time.sleep(30)
-            else:
+            # Known bad codes:
+            bad_codes = (
+                65,  # CloudKit query failed due to "(null)"
+                68,  # A server with the specified hostname could not be found.
+            )
+            if e.returncode in bad_codes and retry.failed_should_retry(
+                    f'Output: {e.output}'):
+                continue
+            raise e
+
+
+class Retry(object):
+    """Retry is a helper class that manages retrying notarization operations
+    that may fail due to transient issues. Usage:
+
+        retry = Retry('staple')
+        while retry.keep_going():
+            try:
+                return operation()
+            except Exception as e:
+                if is_transient(e) and retry.failed_should_retry():
+                    continue
                 raise e
+    """
+
+    def __init__(self, desc, sleep_before_retry=False):
+        """Creates a retry state object.
+
+        Args:
+            desc: A short description of the operation to retry.
+            sleep_before_retry: If True, will sleep before proceeding with
+                a retry.
+        """
+        self._attempt = 0
+        self._desc = desc
+        self._sleep_before_retry = sleep_before_retry
+
+    def keep_going(self):
+        """Used as the condition for a retry loop."""
+        if self._attempt < _NOTARY_SERVICE_MAX_RETRIES:
+            return True
+        raise RuntimeError(
+            'Loop should have terminated at failed_should_retry()')
+
+    def failed_should_retry(self, msg=''):
+        """If the operation failed and the caller wants to retry it, this
+        method increments the attempt count and determines if another
+        attempt should be made.
+
+        Args:
+            msg: An optional message to describe the failure.
+
+        Returns:
+            True if the retry loop should continue, and False if the loop
+            should terminate with an error.
+        """
+        self._attempt += 1
+        if self._attempt < _NOTARY_SERVICE_MAX_RETRIES:
+            retry_when_message = ('after 30 seconds' if self._sleep_before_retry
+                                  else 'immediately')
+            logger.warning(f'Error during notarization command {self._desc}. ' +
+                           f'Retrying {retry_when_message}. {msg}')
+            if self._sleep_before_retry:
+                time.sleep(30)
+            return True
+        return False

@@ -12,13 +12,13 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/model/syncable_service.h"
-#include "components/sync/service/sync_type_preference_provider.h"
 #include "url/gurl.h"
 
 class PersistentPrefStore;
@@ -56,7 +56,6 @@ namespace supervised_user {
 // and one with key "Moose:baz" and value "blurp".
 class SupervisedUserSettingsService : public KeyedService,
                                       public syncer::SyncableService,
-                                      public syncer::SyncTypePreferenceProvider,
                                       public PrefStore::Observer {
  public:
   // A callback whose first parameter is a dictionary containing all supervised
@@ -163,22 +162,22 @@ class SupervisedUserSettingsService : public KeyedService,
 
   // SyncableService implementation:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation:
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
-  // SyncTypePreferenceProvider implementation:
-  bool IsCustomPassphraseAllowed() const override;
+  bool IsCustomPassphraseAllowed() const;
 
   const base::Value::Dict& LocalSettingsForTest() const;
 
@@ -223,6 +222,8 @@ class SupervisedUserSettingsService : public KeyedService,
   ShutdownCallbackList shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
+
+  base::WeakPtrFactory<SupervisedUserSettingsService> weak_ptr_factory_{this};
 };
 
 }  // namespace supervised_user

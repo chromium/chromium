@@ -36,8 +36,8 @@ v8::Local<v8::Value> Arguments::PeekNext() const {
   return (*info_for_function_)[next_];
 }
 
-std::vector<v8::Local<v8::Value>> Arguments::GetAll() const {
-  std::vector<v8::Local<v8::Value>> result;
+v8::LocalVector<v8::Value> Arguments::GetAll() const {
+  v8::LocalVector<v8::Value> result(isolate_);
   if (is_for_property_)
     return result;
 

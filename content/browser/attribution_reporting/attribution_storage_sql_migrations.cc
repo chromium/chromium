@@ -7,12 +7,12 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -20,28 +20,11 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {
 
 namespace {
-
-const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "first_report_window_deadline",
-    base::Days(2)};
-
-const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "second_report_window_deadline",
-    base::Days(7)};
-
-const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
-    "first_event_report_window_deadline", base::Days(2)};
-
-const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
-    "second_event_report_window_deadline", base::Days(7)};
 
 // Ensure that both version numbers are updated together to prevent crashes on
 // downgrades as in crbug.com/1413728.
@@ -108,8 +91,8 @@ bool To53(sql::Database& db) {
       "source_id,source_event_id,source_origin,"
       "reporting_origin,source_time,"
       "expiry_time,event_report_window_time,aggregatable_report_window_time,"
-      "source_type,attribution_logic,priority,source_site,"
-      "num_attributions,event_level_active,aggregatable_active,debug_key,"
+      "num_attributions,event_level_active,aggregatable_active,"
+      "source_type,attribution_logic,priority,source_site,debug_key,"
       "aggregatable_budget_consumed,"
       "IIF(aggregatable_budget_consumed>0,1,0),"
       "aggregatable_source,filter_data FROM sources";
@@ -324,42 +307,20 @@ bool To56(sql::Database& db) {
       continue;
     }
 
-    int max_event_level_reports;
-    std::vector<base::TimeDelta> end_times;
-    switch (source_type.value()) {
-      case attribution_reporting::mojom::SourceType::kNavigation:
-        max_event_level_reports = 3;
-        end_times = {kFirstNavigationReportWindowDeadline.Get(),
-                     kSecondNavigationReportWindowDeadline.Get()};
-        break;
-      case attribution_reporting::mojom::SourceType::kEvent:
-        if (kVTCEarlyReportingWindows.Get()) {
-          base::TimeDelta first_window = kFirstEventReportWindowDeadline.Get();
-          base::TimeDelta second_window =
-              kSecondEventReportWindowDeadline.Get();
-          if (!first_window.is_negative() && first_window < second_window) {
-            end_times = {first_window, second_window};
-          }
-        }
-        max_event_level_reports = 1;
-        break;
-    }
-
-    absl::optional<attribution_reporting::EventReportWindows>
-        event_report_windows =
-            attribution_reporting::EventReportWindows::CreateAndTruncate(
-                /*start_time=*/base::Seconds(0), std::move(end_times),
-                /*expiry=*/event_report_window_time - source_time);
+    auto event_report_windows =
+        attribution_reporting::EventReportWindows::FromDefaults(
+            event_report_window_time - source_time, *source_type);
     if (!event_report_windows.has_value()) {
       continue;
     }
 
+    proto::AttributionReadOnlySourceData msg;
+    SetReadOnlySourceData(
+        &*event_report_windows,
+        attribution_reporting::MaxEventLevelReports(*source_type), msg);
+
     set_statement.Reset(/*clear_bound_vars=*/true);
-    // '-1' represents null for the randomized response rate field.
-    set_statement.BindString(
-        0, SerializeReadOnlySourceData(*event_report_windows,
-                                       max_event_level_reports,
-                                       /*randomized_response_rate=*/-1));
+    set_statement.BindBlob(0, msg.SerializeAsString());
     set_statement.BindInt64(1, id);
     if (!set_statement.Run()) {
       return false;
@@ -407,9 +368,44 @@ bool To56(sql::Database& db) {
   return true;
 }
 
+[[nodiscard]] bool MaybeMigrateTo57(AttributionStorageSql& storage,
+                                    sql::Database& db,
+                                    sql::MetaTable& meta_table,
+                                    int old_version) {
+  if (meta_table.GetVersionNumber() != old_version) {
+    return true;
+  }
+
+  AttributionStorageSql::DeletionCounts counts;
+  // Performs its own per item transaction when deleting.
+  storage.VerifyReports(&counts);
+  base::UmaHistogramCounts100000("Conversions.CorruptSourcesDeletedOnMigration",
+                                 counts.sources);
+  base::UmaHistogramCounts100000("Conversions.CorruptReportsDeletedOnMigration",
+                                 counts.reports);
+
+  sql::Transaction transaction(&db);
+
+  return transaction.Begin() &&                             //
+         SetVersionNumbers(meta_table, old_version + 1) &&  //
+         transaction.Commit();
+}
+
+// Version bump only: We avoid having to populate the new trigger_data proto
+// field for existing sources by treating absence of the field as equivalent to
+// specifying the default trigger-data cardinality for the source's source
+// type. We nonetheless bump the DB version to ensure that browser
+// downgrades do not result in this new field being ignored for sources
+// that *do* use non-default trigger data, because we raze the DB if the
+// version is too new.
+bool To58(sql::Database&) {
+  return true;
+}
+
 }  // namespace
 
-bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
+bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
+                                        sql::Database& db,
                                         sql::MetaTable& meta_table) {
   base::ThreadTicks start_timestamp;
   if (base::ThreadTicks::IsSupported()) {
@@ -422,12 +418,14 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
   bool ok = MaybeMigrate(db, meta_table, 52, &To53) &&  //
             MaybeMigrate(db, meta_table, 53, &To54) &&  //
             MaybeMigrate(db, meta_table, 54, &To55) &&  //
-            MaybeMigrate(db, meta_table, 55, &To56);
+            MaybeMigrate(db, meta_table, 55, &To56) &&  //
+            MaybeMigrateTo57(storage, db, meta_table, 56) &&
+            MaybeMigrate(db, meta_table, 57, &To58);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 56,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 58,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

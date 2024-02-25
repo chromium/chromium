@@ -33,6 +33,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.BrowserParts;
@@ -51,8 +52,10 @@ import java.util.List;
 
 /** JUnit tests for first run triggering code. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
+@Config(
+        manifest = Config.NONE,
         shadows = {FirstRunIntegrationUnitTest.MockChromeBrowserInitializer.class})
+@DisabledTest(message = "https://crbug.com/1477411")
 public final class FirstRunIntegrationUnitTest {
     /** Do nothing version of {@link ChromeBrowserInitializer}. */
     @Implements(ChromeBrowserInitializer.class)
@@ -64,8 +67,7 @@ public final class FirstRunIntegrationUnitTest {
         public void handlePreNativeStartupAndLoadLibraries(final BrowserParts parts) {}
     }
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final List<ActivityController> mActivityControllerList = new ArrayList<>();
 
@@ -219,7 +221,7 @@ public final class FirstRunIntegrationUnitTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, startUrl);
         WebApkTestHelper.registerWebApkWithMetaData(
-                webApkPackageName, bundle, null /* shareTargetMetaData */);
+                webApkPackageName, bundle, /* shareTargetMetaData= */ null);
         WebApkTestHelper.addIntentFilterForUrl(webApkPackageName, startUrl);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(webApkPackageName, startUrl);
@@ -229,10 +231,12 @@ public final class FirstRunIntegrationUnitTest {
 
         Intent launchedIntent = mShadowApplication.getNextStartedActivity();
         Assert.assertTrue(checkIntentIsForFre(launchedIntent));
-        PendingIntent freCompleteLaunchIntent = launchedIntent.getParcelableExtra(
-                FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
+        PendingIntent freCompleteLaunchIntent =
+                launchedIntent.getParcelableExtra(
+                        FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
         Assert.assertNotNull(freCompleteLaunchIntent);
-        Assert.assertEquals(webApkPackageName,
+        Assert.assertEquals(
+                webApkPackageName,
                 Shadows.shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
     }
 
@@ -250,7 +254,7 @@ public final class FirstRunIntegrationUnitTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, startUrl);
         WebApkTestHelper.registerWebApkWithMetaData(
-                webApkPackageName, bundle, null /* shareTargetMetaData */);
+                webApkPackageName, bundle, /* shareTargetMetaData= */ null);
         WebApkTestHelper.addIntentFilterForUrl(webApkPackageName, startUrl);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(webApkPackageName, startUrl);
@@ -265,9 +269,7 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertNull(mShadowApplication.getNextStartedActivity());
     }
 
-    /**
-     * Test that the lightweight first run experience is used for unbound WebAPKs.
-     */
+    /** Test that the lightweight first run experience is used for unbound WebAPKs. */
     @Test
     public void testLightweightFre() {
         String webApkPackageName = "unbound.webapk";
@@ -276,7 +278,7 @@ public final class FirstRunIntegrationUnitTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, startUrl);
         WebApkTestHelper.registerWebApkWithMetaData(
-                webApkPackageName, bundle, null /* shareTargetMetaData */);
+                webApkPackageName, bundle, /* shareTargetMetaData= */ null);
         WebApkTestHelper.addIntentFilterForUrl(webApkPackageName, startUrl);
 
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(webApkPackageName, startUrl);
@@ -302,7 +304,7 @@ public final class FirstRunIntegrationUnitTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, startUrl);
         WebApkTestHelper.registerWebApkWithMetaData(
-                webApkPackageName, bundle, null /* shareTargetMetaData */);
+                webApkPackageName, bundle, /* shareTargetMetaData= */ null);
         // Cause WebApkValidator#canWebApkHandleUrl() to fail (but not
         // WebApkIntentDataProviderFactory#create()) by not registering the intent handlers for the
         // WebAPK.
@@ -316,10 +318,12 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertTrue(checkIntentComponentClass(launchedIntent, FirstRunActivity.class));
 
         // WebappLauncherActivity (not the WebAPK) should be launched when the WebAPK completes.
-        PendingIntent freCompleteLaunchIntent = launchedIntent.getParcelableExtra(
-                FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
+        PendingIntent freCompleteLaunchIntent =
+                launchedIntent.getParcelableExtra(
+                        FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
         Assert.assertNotNull(freCompleteLaunchIntent);
-        Assert.assertEquals(mContext.getPackageName(),
+        Assert.assertEquals(
+                mContext.getPackageName(),
                 Shadows.shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
     }
 }

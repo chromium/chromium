@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: If you see this error we have a bug. Please report this bug to chromium.
+[FAIL] pointermove event received
+  assert_unreached: pointer lock request should not fail in document! Reached unreachable code
+[NOTRUN] pointermove event received inner frame
+Harness: the test ran to completion.

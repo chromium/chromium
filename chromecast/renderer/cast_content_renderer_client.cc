@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +33,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/key_system_info.h"
 #include "media/base/media.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/remoting_constants.h"
@@ -39,7 +41,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -50,6 +51,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/bundle_utils.h"
 #include "chromecast/media/audio/cast_audio_device_factory.h"
+#include "components/cdm/renderer/key_system_support_update.h"
 #include "media/base/android/media_codec_util.h"
 #else
 #include "chromecast/renderer/memory_pressure_observer_impl.h"
@@ -170,11 +172,16 @@ void CastContentRendererClient::RunScriptsAtDocumentEnd(
 
 void CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {
+#if BUILDFLAG(IS_ANDROID)
+  cdm::GetSupportedKeySystemsUpdates(
+      /*can_persist_data=*/true, std::move(cb));
+#else
   ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);
   std::move(cb).Run(std::move(key_systems));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CastContentRendererClient::IsSupportedAudioType(
@@ -331,7 +338,7 @@ CastContentRendererClient::CreateURLLoaderThrottleProvider(
       std::move(throttle_provider));
 }
 
-absl::optional<::media::AudioRendererAlgorithmParameters>
+std::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
 #if BUILDFLAG(IS_ANDROID)
@@ -340,9 +347,9 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
   parameters.starting_capacity = kAudioRendererStartingCapacity;
   parameters.starting_capacity_for_encrypted =
       kAudioRendererStartingCapacityEncrypted;
-  return absl::optional<::media::AudioRendererAlgorithmParameters>(parameters);
+  return std::optional<::media::AudioRendererAlgorithmParameters>(parameters);
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

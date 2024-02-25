@@ -341,23 +341,6 @@ void RecentTabHelper::WebContentsWasHidden() {
                      weak_ptr_factory_.GetWeakPtr(),
                      last_n_ongoing_snapshot_info_.get()));
 
-  IsSavingSamePageEnum saving_same_page_value = IsSavingSamePageEnum::kNewPage;
-  if (last_n_latest_saved_snapshot_info_) {
-    // If there was a previously saved snapshot for the current page we are
-    // saving a new one for the same page.
-    // Note: there might be a difference in page quality between here and when
-    // it's assessed again in ContinueSnapshotAfterPurge but this is not
-    // expected to happen often.
-    if (last_n_latest_saved_snapshot_info_->expected_page_quality ==
-        snapshot_controller_->current_page_quality()) {
-      saving_same_page_value = IsSavingSamePageEnum::kSamePageSameQuality;
-    } else {
-      saving_same_page_value = IsSavingSamePageEnum::kSamePageBetterQuality;
-    }
-  }
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.LastN.IsSavingSamePage",
-                            saving_same_page_value);
-
   last_n_latest_saved_snapshot_info_.reset();
 }
 

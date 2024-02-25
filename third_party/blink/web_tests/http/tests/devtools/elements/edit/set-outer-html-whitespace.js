@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that DOMAgent.setOuterHTML can handle whitespace-only text nodes.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container" style="display:none">
@@ -31,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     for (let i = 0; i < ElementsTestRunner.events.length; ++i)
       TestRunner.addResult(ElementsTestRunner.events[i]);
 
-    ElementsTestRunner.events = [];
+    ElementsTestRunner.events.length = 0; // 'events' is readonly.
     TestRunner.addResult("");
   }
 

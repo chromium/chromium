@@ -1,0 +1,84 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/channel.gni")
+import("//build/config/android/rules.gni")
+import("//build/util/process_version.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+_version_constants_java_file =
+    "$target_gen_dir/java/org/chromium/base/version_info/VersionConstants.java"
+
+# Depend on this on the Java side to get org.base.version_info.Channel and
+# org.base.version_info.VersionConstants.
+android_library("version_constants_java") {
+  sources = [
+    "java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+    "java/src/org/chromium/base/version_info/VersionInfo.java",
+    _version_constants_java_file,
+  ]
+  public_deps = [ ":channel_enum_java" ]
+  deps = [
+    ":generate_version_constants",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+# Depend on this on the native side to get version_info::GetChannel. It requires
+# version_constants_java for its JNI call.
+static_library("channel_getter") {
+  sources = [
+    "channel_getter.cc",
+    "channel_getter.h",
+  ]
+  deps = [
+    ":version_constants_bridge_jni",
+    "..:channel",
+    "//base",  # for jni_generator_helper.h
+  ]
+}
+
+android_library("channel_enum_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  srcjar_deps = [ ":channel_enum_srcjar" ]
+}
+
+java_cpp_enum("channel_enum_srcjar") {
+  sources = [ "../channel.h" ]
+}
+
+process_version("generate_version_constants") {
+  process_only = true
+  template_file = "java/VersionConstants.java.version"
+  output = _version_constants_java_file
+  extra_args = [
+    "-e",
+    "CHANNEL=str.upper('$android_channel')",
+  ]
+
+  # This dependency currently breaks webrtc which pulls in //base
+  # (but not //chrome). crbug.com/webrtc/13662 tracks removing webrtc's
+  # dependency on //base. For now we fake the check version far into the future.
+  if (build_with_chromium) {
+    sources = [ "//chrome/VERSION" ]
+  } else {
+    extra_args += [
+      "-e",
+      "MAJOR=\"9999\"",
+      "-e",
+      "MINOR=\"9999\"",
+      "-e",
+      "BUILD=\"9999\"",
+      "-e",
+      "PATCH=\"9999\"",
+    ]
+  }
+}
+
+generate_jni("version_constants_bridge_jni") {
+  sources =
+      [ "java/src/org/chromium/base/version_info/VersionConstantsBridge.java" ]
+}

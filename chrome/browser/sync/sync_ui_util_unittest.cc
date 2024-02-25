@@ -10,7 +10,7 @@
 
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/engine/sync_engine.h"
@@ -198,7 +198,7 @@ SyncStatusLabels SetUpDistinctCase(
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
-      service->SetSyncFeatureDisabledViaDashboard(true);
+      service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       service->SetInitialSyncFeatureSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
       service->SetPassphraseRequired(false);

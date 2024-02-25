@@ -17,7 +17,7 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
   if (!web_contents)
     return false;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return false;
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
@@ -44,7 +45,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/common/drop_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -249,7 +249,7 @@ void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
 }
 
 void TabStripPageHandler::TabGroupedStateChanged(
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabGroupedStateChanged");
@@ -258,7 +258,7 @@ void TabStripPageHandler::TabGroupedStateChanged(
   if (group.has_value()) {
     page_->TabGroupStateChanged(tab_id, index, group.value().ToString());
   } else {
-    page_->TabGroupStateChanged(tab_id, index, absl::optional<std::string>());
+    page_->TabGroupStateChanged(tab_id, index, std::optional<std::string>());
   }
 }
 
@@ -432,19 +432,17 @@ bool TabStripPageHandler::CanDragEnter(
     const content::DropData& data,
     blink::DragOperationsMask operations_allowed) {
   // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
-  if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabIdDataType)) !=
-      data.custom_data.end()) {
+  if (auto it = data.custom_data.find(kWebUITabIdDataType);
+      it != data.custom_data.end()) {
     int tab_id;
-    bool found_tab_id = base::StringToInt(
-        data.custom_data.at(base::ASCIIToUTF16(kWebUITabIdDataType)), &tab_id);
+    bool found_tab_id = base::StringToInt(it->second, &tab_id);
     return found_tab_id && extensions::ExtensionTabUtil::GetTabById(
                                tab_id, browser_->profile(), false, nullptr);
   }
 
-  if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabGroupIdDataType)) !=
-      data.custom_data.end()) {
-    std::string group_id = base::UTF16ToUTF8(
-        data.custom_data.at(base::ASCIIToUTF16(kWebUITabGroupIdDataType)));
+  if (auto it = data.custom_data.find(kWebUITabGroupIdDataType);
+      it != data.custom_data.end()) {
+    std::string group_id = base::UTF16ToUTF8(it->second);
     Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
         Profile::FromBrowserContext(browser_->profile()), group_id);
     return found_browser != nullptr;
@@ -472,7 +470,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   DCHECK(tab_data->id > 0);
   tab_data->index = index;
 
-  const absl::optional<tab_groups::TabGroupId> group_id =
+  const std::optional<tab_groups::TabGroupId> group_id =
       browser_->tab_strip_model()->GetTabGroupForTab(index);
   if (group_id.has_value()) {
     tab_data->group_id = group_id.value().ToString();
@@ -578,7 +576,7 @@ void TabStripPageHandler::GroupTab(int32_t tab_id,
     return;
   }
 
-  absl::optional<tab_groups::TabGroupId> group_id =
+  std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           browser_->tab_strip_model()->group_model(), group_id_string);
   if (group_id.has_value()) {
@@ -611,7 +609,7 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     return;
   }
 
-  absl::optional<tab_groups::TabGroupId> group_id =
+  std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           source_browser->tab_strip_model()->group_model(), group_id_string);
   TabGroup* group =
@@ -643,7 +641,7 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
 
   target_browser->tab_strip_model()->group_model()->AddTabGroup(
       group_id.value(),
-      absl::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
+      std::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
 
   gfx::Range source_tab_indices = group->ListTabs();
   const int tab_count = source_tab_indices.length();
@@ -722,7 +720,7 @@ void TabStripPageHandler::ShowEditDialogForGroup(
     int32_t location_y,
     int32_t width,
     int32_t height) {
-  absl::optional<tab_groups::TabGroupId> group_id =
+  std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           browser_->tab_strip_model()->group_model(), group_id_string);
   if (!group_id.has_value()) {

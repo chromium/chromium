@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++EditText textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-multiline="false"}, {role="textbox"}]
+++EditText textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-multiline="true"}, {role="textbox"}]

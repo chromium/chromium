@@ -6,7 +6,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/infobars/infobar_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -81,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebGLInfoBarTest, DISABLED_ContextLossRaisesInfoBar) {
                                    InfoBarObserver::Type::kInfoBarAdded);
   SimulateGPUCrash(browser());
   infobar_observer.Wait();
-  EXPECT_EQ(1u, infobar_manager->infobar_count());
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
 }
 
 // There isn't any point in adding a test which calls Accept() on the

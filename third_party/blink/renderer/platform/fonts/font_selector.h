@@ -53,8 +53,8 @@ class UseCounter;
 class PLATFORM_EXPORT FontSelector : public FontCacheClient {
  public:
   ~FontSelector() override = default;
-  virtual scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                              const FontFamily&) = 0;
+  virtual const FontData* GetFontData(const FontDescription&,
+                                      const FontFamily&) = 0;
 
   // TODO(crbug.com/542629): The String variant of this method should be
   // replaced with a better approach, now that we only have complex text.
@@ -92,7 +92,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      const SimpleFontData* resulting_font_data) = 0;
 
   // Called whenever a page attempts to find a local font based on a name. This
   // only includes lookups where the name is allowed to match PostScript names
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportFontLookupByUniqueNameOnly(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data,
+      const SimpleFontData* resulting_font_data,
       bool is_loading_fallback = false) = 0;
 
   // Called whenever a page attempts to find a local font based on a fallback
@@ -109,12 +109,12 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
       UChar32 fallback_character,
       FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      const SimpleFontData* resulting_font_data) = 0;
 
   // Called whenever a page attempts to find a last-resort font.
   virtual void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      const SimpleFontData* resulting_font_data) = 0;
 
   virtual void ReportNotDefGlyph() const = 0;
 

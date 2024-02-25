@@ -5,13 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
-#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
@@ -30,19 +33,6 @@ class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtilImpl : public ChapsUtil {
       uint16_t num_bits,
       crypto::ScopedSECKEYPublicKey* out_public_key,
       crypto::ScopedSECKEYPrivateKey* out_private_key) override;
-
-  bool ImportPkcs12Certificate(PK11SlotInfo* slot,
-                               const std::vector<uint8_t>& pkcs12_data,
-                               const std::string& password,
-                               bool is_software_backed) override;
-
-  // Public for testing, allows replacing ChapsPkcs12Helper.
-  bool ImportPkcs12CertificateImpl(
-      PK11SlotInfo* slot,
-      const std::vector<uint8_t>& pkcs12_data,
-      const std::string& password,
-      const bool is_software_backed,
-      const Pkcs12Reader& pkcs12_helper1 = Pkcs12Reader());
 
   // If called with true, every slot is assumed to be a chaps-provided slot.
   void SetIsChapsProvidedSlotForTesting(

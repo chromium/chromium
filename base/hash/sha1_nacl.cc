@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/sha1.h"
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
+#include <string_view>
+
+#include "base/hash/sha1.h"
 #include "base/sys_byteorder.h"
 
 namespace base {
@@ -167,7 +168,7 @@ void SHA1Init(SHA1Context& context) {
   context.Init();
 }
 
-void SHA1Update(const StringPiece data, SHA1Context& context) {
+void SHA1Update(const std::string_view data, SHA1Context& context) {
   context.Update(data.data(), data.size());
 }
 
@@ -182,7 +183,7 @@ SHA1Digest SHA1HashSpan(span<const uint8_t> data) {
   return hash;
 }
 
-std::string SHA1HashString(StringPiece str) {
+std::string SHA1HashString(std::string_view str) {
   char hash[kSHA1Length];
   SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.data()),
                 str.length(), reinterpret_cast<unsigned char*>(hash));

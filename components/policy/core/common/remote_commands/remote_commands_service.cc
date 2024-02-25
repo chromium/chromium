@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -161,26 +162,40 @@ const char* RemoteCommandsService::GetMetricNameReceivedRemoteCommand(
 std::string RemoteCommandsService::GetMetricNameExecutedRemoteCommand(
     PolicyInvalidationScope scope,
     em::RemoteCommand_Type command_type) {
-  const char* base_metric_name = nullptr;
+  const char* const command = RemoteCommandTypeToString(command_type);
   switch (scope) {
     case PolicyInvalidationScope::kUser:
-      base_metric_name = kMetricUserRemoteCommandExecutedTemplate;
-      break;
+      return base::StringPrintf(kMetricUserRemoteCommandExecutedTemplate,
+                                command);
     case PolicyInvalidationScope::kDevice:
-      base_metric_name = kMetricDeviceRemoteCommandExecutedTemplate;
-      break;
+      return base::StringPrintf(kMetricDeviceRemoteCommandExecutedTemplate,
+                                command);
     case PolicyInvalidationScope::kCBCM:
-      base_metric_name = kMetricCBCMRemoteCommandExecutedTemplate;
-      break;
+      return base::StringPrintf(kMetricCBCMRemoteCommandExecutedTemplate,
+                                command);
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED() << "Unexpected instance of remote commands service with "
-                      "device local account scope.";
-      return "";
+      NOTREACHED_NORETURN()
+          << "Unexpected instance of remote commands service with "
+             "device local account scope.";
   }
+}
 
-  DCHECK(base_metric_name);
-  return base::StringPrintf(base_metric_name,
-                            RemoteCommandTypeToString(command_type));
+// static
+std::string RemoteCommandsService::GetRequestType(
+    PolicyInvalidationScope scope) {
+  switch (scope) {
+    case PolicyInvalidationScope::kDevice:
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      return dm_protocol::kChromeDeviceRemoteCommandType;
+    case PolicyInvalidationScope::kCBCM:
+      return dm_protocol::kChromeBrowserRemoteCommandType;
+    case PolicyInvalidationScope::kUser:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      return dm_protocol::kChromeAshUserRemoteCommandType;
+#else
+      return dm_protocol::kChromeUserRemoteCommandType;
+#endif
+  }
 }
 
 RemoteCommandsService::RemoteCommandsService(
@@ -236,6 +251,7 @@ bool RemoteCommandsService::FetchRemoteCommands() {
 
   client_->FetchRemoteCommands(
       std::move(id_to_acknowledge), previous_results, GetSignatureType(),
+      GetRequestType(scope_),
       base::BindOnce(&RemoteCommandsService::OnRemoteCommandsFetched,
                      weak_factory_.GetWeakPtr()));
 
@@ -368,7 +384,8 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   if (command->GetResult()) {
     em::RemoteCommandResult result;
     result.set_command_id(command->unique_id());
-    result.set_timestamp(command->execution_started_time().ToJavaTime());
+    result.set_timestamp(
+        command->execution_started_time().InMillisecondsSinceUnixEpoch());
     result.set_result(command->GetResult().value());
 
     std::unique_ptr<std::string> result_payload = command->GetResultPayload();

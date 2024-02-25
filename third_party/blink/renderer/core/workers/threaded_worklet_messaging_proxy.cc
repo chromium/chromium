@@ -45,7 +45,7 @@ ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
     WorkletModuleResponsesMap* module_responses_map,
-    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     mojom::blink::WorkletGlobalScopeCreationParamsPtr
         client_provided_global_scope_creation_params) {
   DCHECK(IsMainThread());
@@ -69,23 +69,31 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // GlobalScopeCreationParams is reasonably filled in.
   if (!GetExecutionContext()) {
     CHECK(client_provided_global_scope_creation_params);
+
+    Vector<mojom::blink::OriginTrialFeature> inherited_trial_features =
+        std::move(client_provided_global_scope_creation_params
+                      ->origin_trial_features);
+
+    // Worklets can only be created in secure contexts.
+    // https://html.spec.whatwg.org/multipage/webappapis.html#secure-context
+    bool starter_secure_context = true;
+
     auto creation_params = std::make_unique<GlobalScopeCreationParams>(
         client_provided_global_scope_creation_params->script_url,
         /*script_type=*/mojom::blink::ScriptType::kModule, global_scope_name,
         /*user_agent=*/String(),
-        /*ua_metadata=*/absl::optional<UserAgentMetadata>(),
+        /*ua_metadata=*/std::optional<UserAgentMetadata>(),
         /*web_worker_fetch_context=*/nullptr,
         /*outside_content_security_policies=*/
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         /*response_content_security_policies=*/
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         /*referrer_policy=*/network::mojom::ReferrerPolicy::kDefault,
-        /*starter_origin=*/nullptr,
-        /*starter_secure_context=*/false,
+        client_provided_global_scope_creation_params->starter_origin.get(),
+        starter_secure_context,
         /*starter_https_state=*/HttpsState::kNone,
         /*worker_clients=*/nullptr,
-        /*content_settings_client=*/nullptr,
-        /*inherited_trial_features=*/nullptr,
+        /*content_settings_client=*/nullptr, &inherited_trial_features,
         /*parent_devtools_token=*/
         client_provided_global_scope_creation_params->devtools_token,
         /*worker_settings=*/nullptr,
@@ -95,6 +103,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
     auto devtools_params = std::make_unique<WorkerDevToolsParams>();
     devtools_params->devtools_worker_token =
         client_provided_global_scope_creation_params->devtools_token;
+    devtools_params->wait_for_debugger =
+        client_provided_global_scope_creation_params->wait_for_debugger;
     mojo::PendingRemote<mojom::blink::DevToolsAgent> devtools_agent_remote;
     devtools_params->agent_receiver =
         devtools_agent_remote.InitWithNewPipeAndPassReceiver();
@@ -103,7 +113,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
             devtools_params->agent_host_remote.InitWithNewPipeAndPassReceiver();
 
     InitializeWorkerThread(std::move(creation_params), thread_startup_data,
-                           /*token=*/absl::nullopt, std::move(devtools_params));
+                           /*token=*/std::nullopt, std::move(devtools_params));
 
     mojo::Remote<mojom::blink::WorkletDevToolsHost> devtools_host(
         std::move(client_provided_global_scope_creation_params->devtools_host));
@@ -145,7 +155,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
   InitializeWorkerThread(std::move(global_scope_creation_params),
-                         thread_startup_data, absl::nullopt);
+                         thread_startup_data, std::nullopt);
 }
 
 void ThreadedWorkletMessagingProxy::Trace(Visitor* visitor) const {

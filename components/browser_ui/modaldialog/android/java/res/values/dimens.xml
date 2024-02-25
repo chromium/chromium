@@ -14,4 +14,8 @@ found in the LICENSE file.
     <dimen name="modal_dialog_footer_horizontal_padding">24dp</dimen>
     <dimen name="modal_dialog_footer_top_margin">6dp</dimen>
     <dimen name="modal_dialog_footer_vertical_padding">16dp</dimen>
+    <dimen name="button_group_button_inset">2dp</dimen>
+    <dimen name="button_group_small_radius">8dp</dimen>
+    <dimen name="button_group_large_radius">16dp</dimen>
+
 </resources>

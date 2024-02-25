@@ -71,7 +71,6 @@ export declare namespace Unstable {
         type Entry = LitUnstable.DebugLog.Entry | ReactiveUnstable.DebugLog.Entry;
     }
 }
-export declare const UpdatingElement: typeof ReactiveElement;
 /**
  * Base element class that manages element properties and attributes, and
  * renders a lit-html template.
@@ -82,14 +81,6 @@ export declare const UpdatingElement: typeof ReactiveElement;
  * {@linkcode property} decorator.
  */
 export declare class LitElement extends ReactiveElement {
-    /**
-     * Ensure this class is marked as `finalized` as an optimization ensuring
-     * it will not needlessly try to `finalize`.
-     *
-     * Note this property name is a string to prevent breaking Closure JS Compiler
-     * optimizations. See @lit/reactive-element for more information.
-     */
-    protected static ['finalized']: boolean;
     static ['_$litElement$']: boolean;
     /**
      * @category rendering
@@ -99,7 +90,7 @@ export declare class LitElement extends ReactiveElement {
     /**
      * @category rendering
      */
-    protected createRenderRoot(): Element | ShadowRoot;
+    protected createRenderRoot(): HTMLElement | DocumentFragment;
     /**
      * Updates the element. This method reflects property values to attributes
      * and calls `render` to render DOM via lit-html. Setting properties inside

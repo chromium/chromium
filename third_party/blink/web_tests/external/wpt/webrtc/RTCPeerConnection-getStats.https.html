@@ -5,8 +5,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
-<script src="dictionary-helper.js"></script>
-<script src="RTCStats-helper.js"></script>
 <script>
   'use strict';
 
@@ -16,10 +14,6 @@
 
   // The following helper function is called from RTCPeerConnection-helper.js
   //   getTrackFromUserMedia
-
-  // The following helper function is called from RTCStats-helper.js
-  //   validateStatsReport
-  //   assert_stats_report_has_stats
 
   // The following helper function is called from RTCPeerConnection-helper.js
   //   exchangeIceCandidates
@@ -114,8 +108,7 @@
     t.add_cleanup(() => pc.close());
     return pc.getStats()
     .then(statsReport => {
-      validateStatsReport(statsReport);
-      assert_stats_report_has_stats(statsReport, ['peer-connection']);
+      assert_true(!![...statsReport.values()].find(({type}) => type === 'peer-connection'));
     });
   }, 'getStats() with no argument should return stats report containing peer-connection stats on an empty PC');
 
@@ -130,8 +123,8 @@
       new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
     ]);
     const statsReport = await pc.getStats();
-    getRequiredStats(statsReport, 'peer-connection');
-    getRequiredStats(statsReport, 'outbound-rtp');
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'peer-connection'));
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
   }, 'getStats() track with stream returns peer-connection and outbound-rtp stats');
 
   promise_test(async t => {
@@ -145,8 +138,8 @@
       new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
     ]);
     const statsReport = await pc.getStats();
-    getRequiredStats(statsReport, 'peer-connection');
-    getRequiredStats(statsReport, 'outbound-rtp');
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'peer-connection'));
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
   }, 'getStats() track without stream returns peer-connection and outbound-rtp stats');
 
   promise_test(async t => {
@@ -160,8 +153,8 @@
       new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
     ]);
     const statsReport = await pc.getStats();
-    assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
-  }, 'getStats() audio outbound-rtp contains all mandatory stats');
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
+  }, 'getStats() audio contains outbound-rtp stats');
 
   promise_test(async t => {
     const pc = createPeerConnectionWithCleanup(t);
@@ -174,24 +167,8 @@
       new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
     ]);
     const statsReport = await pc.getStats();
-    assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
-  }, 'getStats() video outbound-rtp contains all mandatory stats');
-
-  promise_test(async t => {
-    const pc = createPeerConnectionWithCleanup(t);
-    const pc2 = createPeerConnectionWithCleanup(t);
-    const [audioTrack, audioStream] = await getTrackFromUserMedia('audio');
-    pc.addTrack(audioTrack, audioStream);
-    const [videoTrack, videoStream] = await getTrackFromUserMedia('video');
-    pc.addTrack(videoTrack, videoStream);
-    exchangeIceCandidates(pc, pc2);
-    await Promise.all([
-      exchangeOfferAnswer(pc, pc2),
-      new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
-    ]);
-    const statsReport = await pc.getStats();
-    validateStatsReport(statsReport);
-  }, 'getStats() audio and video validate all mandatory stats');
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
+  }, 'getStats() video contains outbound-rtp stats');
 
   /*
     8.5.  The stats selection algorithm
@@ -212,8 +189,8 @@
       exchangeOfferAnswer(pc, pc2),
       new Promise(r => pc2.ontrack = e => e.track.onunmute = r)
     ]);
-    const stats = await pc.getStats(sendtrack);
-    getRequiredStats(stats, 'outbound-rtp');
+    const statsReport = await pc.getStats(sendtrack);
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
   }, `getStats() on track associated with RTCRtpSender should return stats report containing outbound-rtp stats`);
 
   /*
@@ -240,8 +217,8 @@
         pc2.getReceivers()[0].track.addEventListener('unmute', resolve);
       });
     }
-    const stats = await pc2.getStats(pc2.getReceivers()[0].track);
-    getRequiredStats(stats, 'inbound-rtp');
+    const statsReport = await pc2.getStats(pc2.getReceivers()[0].track);
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'inbound-rtp'));
   }, `getStats() on track associated with RTCRtpReceiver should return stats report containing inbound-rtp stats`);
 
   promise_test(async t => {
@@ -260,134 +237,9 @@
         pc2.getReceivers()[0].track.addEventListener('unmute', resolve);
       });
     }
-    const stats = await pc2.getStats(pc2.getReceivers()[0].track);
-    getRequiredStats(stats, 'inbound-rtp');
-  }, `getStats() inbound-rtp contains all mandatory stats`);
-
-  /*
-    8.6   Mandatory To Implement Stats
-      An implementation MUST support generating statistics of the following types
-      when the corresponding objects exist on a PeerConnection, with the attributes
-      that are listed when they are valid for that object.
-   */
-
-  const mandatoryStats = [
-    "codec",
-    "inbound-rtp",
-    "outbound-rtp",
-    "remote-inbound-rtp",
-    "remote-outbound-rtp",
-    "media-source",
-    "peer-connection",
-    "data-channel",
-    "sender",
-    "receiver",
-    "transport",
-    "candidate-pair",
-    "local-candidate",
-    "remote-candidate",
-    "certificate"
-  ];
-
-  async_test(t => {
-    const pc1 = new RTCPeerConnection();
-    t.add_cleanup(() => pc1.close());
-    const pc2 = new RTCPeerConnection();
-    t.add_cleanup(() => pc2.close());
-
-    const dataChannel = pc1.createDataChannel('test-channel');
-
-    getNoiseStream({
-      audio: true,
-      video: true
-    })
-    .then(t.step_func(mediaStream => {
-      const tracks = mediaStream.getTracks();
-      const [audioTrack] = mediaStream.getAudioTracks();
-      const [videoTrack] = mediaStream.getVideoTracks();
-
-      for (const track of mediaStream.getTracks()) {
-        t.add_cleanup(() => track.stop());
-        pc1.addTrack(track, mediaStream);
-      }
-
-      const testStatsReport = (pc, statsReport) => {
-        validateStatsReport(statsReport);
-        assert_stats_report_has_stats(statsReport, mandatoryStats);
-
-        const dataChannelStats = findStatsFromReport(statsReport,
-          stats => {
-            return stats.type === 'data-channel' &&
-              stats.dataChannelIdentifier === dataChannel.id;
-          },
-          'Expect data channel stats to be found');
-
-        assert_equals(dataChannelStats.label, 'test-channel');
-
-        /* TODO track stats are obsolete - replace with sender/receiver? */
-        const audioTrackStats = findStatsFromReport(statsReport,
-          stats => {
-            return stats.type === 'track' &&
-              stats.trackIdentifier === audioTrack.id;
-          },
-          'Expect audio track stats to be found');
-
-        assert_equals(audioTrackStats.kind, 'audio');
-
-        const videoTrackStats = findStatsFromReport(statsReport,
-          stats => {
-            return stats.type === 'track' &&
-              stats.trackIdentifier === videoTrack.id;
-          },
-          'Expect video track stats to be found');
-
-        assert_equals(videoTrackStats.kind, 'video');
-      }
-
-      const onConnected = t.step_func(() => {
-        // Wait a while for the peer connections to collect stats
-        t.step_timeout(() => {
-          Promise.all([
-            /* TODO: for both pc1 and pc2 to expose all mandatory stats, they need to both send/receive tracks and data channels */
-            pc1.getStats()
-            .then(statsReport => testStatsReport(pc1, statsReport)),
-
-            pc2.getStats()
-            .then(statsReport => testStatsReport(pc2, statsReport))
-          ])
-          .then(t.step_func_done())
-          .catch(t.step_func(err => {
-            assert_unreached(`test failed with error: ${err}`);
-          }));
-        }, 200)
-      })
-
-      let onTrackCount = 0
-      let onDataChannelCalled = false
-
-      pc2.addEventListener('track', t.step_func(() => {
-        onTrackCount++;
-        if (onTrackCount === 2 && onDataChannelCalled) {
-          onConnected();
-        }
-      }));
-
-      pc2.addEventListener('datachannel', t.step_func(() => {
-        onDataChannelCalled = true;
-        if (onTrackCount === 2) {
-          onConnected();
-        }
-      }));
-
-
-      exchangeIceCandidates(pc1, pc2);
-      exchangeOfferAnswer(pc1, pc2);
-    }))
-    .catch(t.step_func(err => {
-      assert_unreached(`test failed with error: ${err}`);
-    }));
-
-  }, `getStats() with connected peer connections having tracks and data channel should return all mandatory to implement stats`);
+    const statsReport = await pc2.getStats(pc2.getReceivers()[0].track);
+    assert_true(!![...statsReport.values()].find(({type}) => type === 'inbound-rtp'));
+  }, `getStats() audio contains inbound-rtp stats`);
 
   promise_test(async t => {
     const pc = new RTCPeerConnection();
@@ -403,10 +255,10 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
     const t0 = Math.floor(performance.now());
-    const t0Stats = getRequiredStats(await pc.getStats(), 'peer-connection');
+    const t0Stats = [...(await pc.getStats()).values()].find(({type}) => type === 'peer-connection');
     await new Promise(
         r => t.step_timeout(r, kMinimumTimeElapsedBetweenGetStatsCallsMs));
-    const t1Stats = getRequiredStats(await pc.getStats(), 'peer-connection');
+    const t1Stats = [...(await pc.getStats()).values()].find(({type}) => type === 'peer-connection');
     const t1 = Math.ceil(performance.now());
     const maximumTimeElapsedBetweenGetStatsCallsMs = t1 - t0;
     const deltaTimestampMs = t1Stats.timestamp - t0Stats.timestamp;

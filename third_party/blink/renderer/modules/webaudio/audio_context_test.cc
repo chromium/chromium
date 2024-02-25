@@ -57,6 +57,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
+      std::optional<float> sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
     double buffer_size = 0;
     const double interactive_size = AudioHardwareBufferSize();
@@ -103,7 +104,7 @@ class AudioContextTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp(gfx::Size());
     CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
-                                                        base::EmptyString());
+                                                        std::string());
   }
 
   void ResetAudioContextManagerForAudioContext(AudioContext* audio_context) {

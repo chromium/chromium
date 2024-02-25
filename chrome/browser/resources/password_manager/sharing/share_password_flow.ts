@@ -9,14 +9,16 @@
 import './share_password_family_picker_dialog.js';
 import './share_password_loading_dialog.js';
 import './share_password_error_dialog.js';
-import './share_password_no_members_dialog.js';
+import './share_password_no_other_family_members_dialog.js';
+import './share_password_not_family_member_dialog.js';
 import './share_password_confirmation_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordManagerProxy} from '../password_manager_proxy.js';
+import type {PasswordManagerProxy} from '../password_manager_proxy.js';
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getTemplate} from './share_password_flow.html.js';
 
@@ -24,7 +26,8 @@ export enum ShareFlowState {
   NO_DIALOG,
   FETCHING,
   ERROR,
-  NO_MEMBERS,
+  NO_OTHER_MEMBERS,
+  NOT_FAMILY_MEMBER,
   FAMILY_PICKER,
   CONFIRMATION,
 }
@@ -43,7 +46,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   static get properties() {
     return {
       passwordName: String,
-      passwordId: Number,
+      iconUrl: String,
+      password: Object,
 
       flowState: Number,
 
@@ -63,7 +67,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   }
 
   passwordName: string;
-  passwordId: number;
+  iconUrl: string;
+  password: chrome.passwordsPrivate.PasswordUiEntry;
   flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
   private recipients_: chrome.passwordsPrivate.RecipientInfo[];
   private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|null = null;
@@ -86,9 +91,15 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
         this.flowState = ShareFlowState.ERROR;
         break;
       case chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS:
-        this.flowState = ShareFlowState.NO_MEMBERS;
+        // TODO(crbug/1445526): Rename FamilyFetchStatus.NO_MEMBERS to
+        // NOT_FAMILY_MEMBER.
+        this.flowState = ShareFlowState.NOT_FAMILY_MEMBER;
         break;
       case chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS:
+        if (this.fetchResults_.familyMembers.length === 0) {
+          this.flowState = ShareFlowState.NO_OTHER_MEMBERS;
+          return;
+        }
         this.flowState = ShareFlowState.FAMILY_PICKER;
         break;
       default:

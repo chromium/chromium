@@ -30,6 +30,7 @@
 
 using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::IsNull;
@@ -396,12 +397,12 @@ class DecoderSelectorTest : public ::testing::Test {
       case DemuxerStream::AUDIO:
         EXPECT_CALL(*decryptor_, InitializeAudioDecoder(_, _))
             .WillRepeatedly(
-                RunOnceCallback<1>(capability == kDecryptAndDecode));
+                RunOnceCallbackRepeatedly<1>(capability == kDecryptAndDecode));
         break;
       case DemuxerStream::VIDEO:
         EXPECT_CALL(*decryptor_, InitializeVideoDecoder(_, _))
             .WillRepeatedly(
-                RunOnceCallback<1>(capability == kDecryptAndDecode));
+                RunOnceCallbackRepeatedly<1>(capability == kDecryptAndDecode));
         break;
       default:
         NOTREACHED();

@@ -57,7 +57,6 @@ std::vector<std::string> GetIdsFromCmdlineSwitch(
 base::span<const base::StringPiece>
 ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
   static const base::StringPiece kKeeplist[] = {
-      extension_misc::kGCSEExtensionId,
       extension_misc::kGnubbyV3ExtensionId,
       extension_misc::kPdfExtensionId,
   };
@@ -279,19 +278,14 @@ base::span<const base::StringPiece> GetExtensionsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
     return base::span<const base::StringPiece>();
   }
-
-  return base::make_span(ExtensionsRunInOSOnlyFromBrowserInitParams().data(),
-                         ExtensionsRunInOSOnlyFromBrowserInitParams().size());
+  return ExtensionsRunInOSOnlyFromBrowserInitParams();
 }
 
 base::span<const base::StringPiece> GetExtensionAppsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
     return base::span<const base::StringPiece>();
   }
-
-  return base::make_span(
-      ExtensionAppsRunInOSOnlyFromBrowserInitParams().data(),
-      ExtensionAppsRunInOSOnlyFromBrowserInitParams().size());
+  return ExtensionAppsRunInOSOnlyFromBrowserInitParams();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

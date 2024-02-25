@@ -26,17 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the TabModelSelectorTabModelObserver.
- */
+/** Tests for the TabModelSelectorTabModelObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelSelectorTabModelObserverUnitTest {
-    @Mock
-    private TabModelSelector mSelector;
+    @Mock private TabModelSelector mSelector;
 
-    @Mock
-    private TabModel mTabModel;
+    @Mock private TabModel mTabModel;
 
     private List<TabModel> mTabModels = new ArrayList<>();
 

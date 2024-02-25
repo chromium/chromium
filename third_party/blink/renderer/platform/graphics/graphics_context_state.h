@@ -93,6 +93,9 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetFillColor(const Color&);
 
+  void SetTextPaintOrder(TextPaintOrder order) { text_paint_order_ = order; }
+  TextPaintOrder GetTextPaintOrder() const { return text_paint_order_; }
+
   // Shadow. (This will need tweaking if we use draw loopers for other things.)
   SkDrawLooper* DrawLooper() const {
     DCHECK_EQ(fill_flags_.getLooper(), stroke_flags_.getLooper());
@@ -112,6 +115,11 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetInterpolationQuality(InterpolationQuality);
 
+  DynamicRangeLimit GetDynamicRangeLimit() const {
+    return dynamic_range_limit_;
+  }
+  void SetDynamicRangeLimit(DynamicRangeLimit limit);
+
   bool ShouldAntialias() const { return should_antialias_; }
   void SetShouldAntialias(bool);
 
@@ -123,16 +131,19 @@ class PLATFORM_EXPORT GraphicsContextState final {
   // fetched for use.
   mutable cc::PaintFlags stroke_flags_;
   cc::PaintFlags fill_flags_;
+  TextPaintOrder text_paint_order_ = kFillStroke;
 
   StrokeData stroke_data_;
 
-  TextDrawingModeFlags text_drawing_mode_;
+  TextDrawingModeFlags text_drawing_mode_ = kTextModeFill;
 
-  InterpolationQuality interpolation_quality_;
+  InterpolationQuality interpolation_quality_ = kInterpolationDefault;
+  DynamicRangeLimit dynamic_range_limit_{
+      cc::PaintFlags::DynamicRangeLimit::kHigh};
 
-  uint16_t save_count_;
+  uint16_t save_count_ = 0;
 
-  bool should_antialias_ : 1;
+  bool should_antialias_ : 1 = true;
 };
 
 }  // namespace blink

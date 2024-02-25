@@ -1,7 +1,9 @@
 Name: rustversion
 URL: https://crates.io/crates/rustversion
 Description: Conditional compilation according to rustc compiler version
-Version: 1.0.6
-Security Critical: no
+Version: 1.0.14
+Security Critical: yes
 Shipped: yes
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/rustversion-1.0.14/LICENSE-APACHE
+Revision: 7231250c8168f21103da4a99246ff485a109f8b4

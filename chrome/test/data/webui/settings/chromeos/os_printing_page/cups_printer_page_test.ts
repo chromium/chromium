@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 import {CupsPrintersBrowserProxyImpl, PrinterSettingsUserAction, PrinterType, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -29,12 +30,13 @@ suite('<settings-cups-printers>', () => {
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
+    await flushTasks();
 
     // Simulate internet connection.
     wifi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
     wifi.connectionState = ConnectionStateType.kOnline;
-
-    await flushTasks();
+    page.onActiveNetworksChanged([wifi]);
+    return Promise.resolve();
   }
 
   setup(async () => {
@@ -150,8 +152,7 @@ suite('<settings-cups-printers>', () => {
   // Verify clicking the add printer manually button is recorded to metrics.
   test('RecordUserActionMetric', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
 
     // Enable the add printer manually button.
     page.prefs = {
@@ -187,5 +188,41 @@ suite('<settings-cups-printers>', () => {
 
     assertTrue(isVisible(
         page.shadowRoot!.querySelector('#noConnectivityContentContainer')));
+  });
+});
+
+suite('with isRevampWayfindingEnabled set to true', () => {
+  let page: SettingsCupsPrintersElement;
+  setup(() => {
+    loadTimeData.overrideValues({
+      isRevampWayfindingEnabled: true,
+    });
+
+    page = document.createElement('settings-cups-printers');
+    document.body.appendChild(page);
+    assertTrue(!!page);
+
+    flush();
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+    page.remove();
+  });
+
+  test('Deep link to print jobs', async () => {
+    const params = new URLSearchParams();
+    const printJobsSettingId = settingMojom.Setting.kPrintJobs.toString();
+    params.append('settingId', printJobsSettingId);
+    Router.getInstance().navigateTo(routes.CUPS_PRINTERS, params);
+
+    const deepLinkElement =
+        page.shadowRoot!.querySelector<HTMLElement>('#printManagement');
+    assert(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, page.shadowRoot!.activeElement,
+        `Print jobs button should be focused for settingId=${
+            printJobsSettingId}.`);
   });
 });

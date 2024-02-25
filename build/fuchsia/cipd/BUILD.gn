@@ -8,9 +8,10 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/util/process_version.gni")
-import("//third_party/fuchsia-sdk/sdk/build/build_id_dir.gni")
-import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
+import("//third_party/fuchsia-gn-sdk/src/build_id_dir.gni")
+import("//third_party/fuchsia-gn-sdk/src/cipd.gni")
 
 visibility = [ ":*" ]
 
@@ -34,9 +35,6 @@ if (fuchsia_cipd_package_base_path == "") {
 
 # Archives related specifically to `fuchsia.web`
 _web_engine_directory = "web_engine"
-
-# Archives related specifically to Chrome browser.
-_chrome_directory = "chrome"
 
 # Archives of tools intended to be run on a Linux/Mac host rather than the
 # Fuchsia device.
@@ -363,38 +361,6 @@ fuchsia_cipd_package(_web_engine_debug_symbols_archive_name) {
   deps = [ ":${_web_engine_build_ids_target}" ]
 }
 
-cipd_archive("chrome") {
-  package_subdirectory = _chrome_directory
-  description = "Prebuilt Chrome browser package."
-
-  deps = [ "//chrome/app:chrome_pkg" ]
-  sources = [ "${root_gen_dir}/chrome/app/chrome/chrome.far" ]
-}
-
-_chrome_build_ids_target = "chrome_debug_symbol_directory"
-_chrome_debug_symbols_archive_name = "chrome_debug_symbols"
-_chrome_debug_symbols_outdir = "${target_gen_dir}/${_chrome_debug_symbols_archive_name}/${_chrome_build_ids_target}"
-
-build_id_dir(_chrome_build_ids_target) {
-  testonly = true  # Some of the archives contain test packages.
-  output_path = _chrome_debug_symbols_outdir
-  deps = [ ":chrome${_archive_suffix}" ]
-}
-
-fuchsia_cipd_package(_chrome_debug_symbols_archive_name) {
-  testonly = true
-  package =
-      "${package_base_path}/${_chrome_directory}/${targetarch}/debug-symbols"
-  package_root = _chrome_debug_symbols_outdir
-  package_definition_name = "${target_name}.yaml"
-  package_definition_dir = "${target_gen_dir}/${target_name}"
-  description = "Debugging symbols for prebuilt binaries from Chromium."
-  use_absolute_root_path = true
-
-  directories = [ "." ]
-  deps = [ ":${_chrome_build_ids_target}" ]
-}
-
 # A group for production archives to ensure nothing is testonly.
 group("web_engine_production_archives") {
   deps = [
@@ -421,8 +387,6 @@ group("web_engine_archives_with_tests") {
 group("cipd") {
   testonly = true  # Some archives are testonly.
   deps = [
-    ":chrome${_archive_suffix}",
-    ":chrome_debug_symbols",
     ":web_engine_archives_with_tests",
 
     # Symbols are not uploaded for the following.

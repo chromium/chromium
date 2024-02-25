@@ -48,7 +48,7 @@ void GotSaltAndOrigin(
 
   std::move(cb).Run(salt_and_origin,
                     MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
-                        MediaDeviceType::MEDIA_AUDIO_OUTPUT, render_process_id,
+                        MediaDeviceType::kMediaAudioOuput, render_process_id,
                         render_frame_id));
 }
 
@@ -272,8 +272,8 @@ void AudioOutputAuthorizationHandler::AccessChecked(
   }
 
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[static_cast<size_t>(
-      MediaDeviceType::MEDIA_AUDIO_OUTPUT)] = true;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+      true;
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
       devices_to_enumerate,
       base::BindOnce(&AudioOutputAuthorizationHandler::TranslateDeviceID,
@@ -291,7 +291,7 @@ void AudioOutputAuthorizationHandler::TranslateDeviceID(
   DCHECK(!media::AudioDeviceDescription::IsDefaultDevice(device_id));
 
   for (const blink::WebMediaDeviceInfo& device_info :
-       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
+       enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]) {
     if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, device_id,
                                       device_info.device_id)) {
       GetDeviceParameters(std::move(trace_scope), std::move(cb),
@@ -326,7 +326,7 @@ void AudioOutputAuthorizationHandler::DeviceParametersReceived(
     AuthorizationCompletedCallback cb,
     const std::string& id_for_renderer,
     const std::string& raw_device_id,
-    const absl::optional<media::AudioParameters>& params) const {
+    const std::optional<media::AudioParameters>& params) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!raw_device_id.empty());
   DCHECK(!params || params->IsValid());

@@ -22,9 +22,6 @@ per-file test_aggregation_service*=file://content/browser/aggregation_service/OW
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 
-# Cert Verifier Service
-per-file test_cert_verifier_service_factory.*=file://services/cert_verifier/OWNERS
-
 # DevTools-specific changes
 per-file *devtools*=file://content/browser/devtools/OWNERS
 
@@ -43,3 +40,10 @@ per-file fenced_frame*=file://third_party/blink/renderer/core/html/fenced_frame/
 
 # For Service Worker tests support review.
 per-file embedded_worker_instance_test_harness.*=file://content/browser/service_worker/OWNERS
+
+# For preloading changes.
+per-file preloading*=file://content/browser/preloading/OWNERS
+per-file prerender*=file://content/browser/preloading/OWNERS
+
+# For browsing data changes.
+per-file browsing_data_remover_test_util.*=file://content/browser/browsing_data/OWNERS

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_api.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"
 #include "net/base/ip_address.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -90,9 +91,9 @@ void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
     case Result::Tag::kNetworkDetails:
       api::enterprise_networking_attributes::NetworkDetails network_details;
 
-      absl::optional<net::IPAddress> ipv4_address =
+      std::optional<net::IPAddress> ipv4_address =
           result->get_network_details()->ipv4_address;
-      absl::optional<net::IPAddress> ipv6_address =
+      std::optional<net::IPAddress> ipv6_address =
           result->get_network_details()->ipv6_address;
 
       network_details.mac_address = result->get_network_details()->mac_address;

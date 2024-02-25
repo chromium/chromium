@@ -92,8 +92,9 @@ static const char kDummyToken[] = "dummytoken";
 
 base::FilePath GetTestFilePath(const std::string& relative_path) {
   base::FilePath path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path)) {
     return base::FilePath();
+  }
   return path.AppendASCII("google_apis")
       .AppendASCII("test")
       .AppendASCII("data")

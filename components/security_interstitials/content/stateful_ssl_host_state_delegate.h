@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "components/security_interstitials/core/https_only_mode_enforcelist.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
+#include "url/gurl.h"
 
 class HostContentSettingsMap;
 class PrefService;
@@ -92,12 +94,16 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       const std::string& host,
       bool enforced,
       content::StoragePartition* storage_partition) override;
-  bool IsHttpsEnforcedForHost(
-      const std::string& host,
+  bool IsHttpsEnforcedForUrl(
+      const GURL& url,
       content::StoragePartition* storage_partition) override;
+  std::set<GURL> GetHttpsEnforcedHosts(
+      content::StoragePartition* storage_partition) const;
 
   // Clears all entries from the HTTP allowlist.
   void ClearHttpsOnlyModeAllowlist();
+  // Clear all entries from the HTTPS enforcelist.
+  void ClearHttpsEnforcelist();
 
   // RevokeUserAllowExceptionsHard is the same as RevokeUserAllowExceptions but
   // additionally may close idle connections in the process. This should be used

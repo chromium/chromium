@@ -32,7 +32,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   ~AppLaunchHandler() override;
 
   // Returns true if there are some restore data. Otherwise, returns false.
-  bool HasRestoreData();
+  bool HasRestoreData() const;
 
   // Called when an app has launched. Overriders can use this to record
   // histograms based on `app_type_name`.
@@ -84,7 +84,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
       const std::string& app_id,
       const ::app_restore::RestoreData::LaunchList& launch_list);
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<::app_restore::RestoreData> restore_data_;
 
   base::ScopedObservation<apps::AppRegistryCache,

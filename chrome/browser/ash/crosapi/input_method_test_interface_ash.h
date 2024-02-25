@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
@@ -33,7 +34,6 @@ class FakeTextInputMethod : public ash::TextInputMethod {
 
   void Focus(const InputContext& input_context) override;
   void Blur() override {}
-  void OnTouch(ui::EventPointerType pointerType) override {}
   void Enable(const std::string& component_id) override {}
   void Disable() override {}
   void Reset() override {}
@@ -124,10 +124,10 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
     std::string GetInputMethodId() const;
 
    private:
-    std::string extension_id_;
+    extensions::ExtensionId extension_id_;
   };
 
-  raw_ptr<ash::InputMethodAsh, ExperimentalAsh> text_input_target_;
+  raw_ptr<ash::InputMethodAsh> text_input_target_;
   FakeTextInputMethod fake_text_input_method_;
   // For testing, only allow one input method to be installed.
   std::unique_ptr<ScopedInputMethodInstall> installed_input_method_;

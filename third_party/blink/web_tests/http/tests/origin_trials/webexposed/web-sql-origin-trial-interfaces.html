@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 WebSQL --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="A4YtiAqFvDnW1QhATT3jjqNdrihbKFJKNEx892TtxFDRvxWuA4Uu8E5gP1FobpeVifE0CkVd5bhcgnIcWtPR3AAAAABOeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViU1FMIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>WebSQL - interfaces exposed by deprecation trial</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  assert_true('openDatabase' in window, 'WebSQL exists on window scope');
+}, 'WebSQL entry point in Deprecation-Trial enabled document.');
+
+test(t => {
+  try {
+    window.openDatabase("test", "", "", 0);
+  } catch(e) {
+    assert_unreached('opening a database should not fail.')
+  }
+}, 'WebSQL database creation succeeds in Deprecation-Trial enabled document.');
+</script>

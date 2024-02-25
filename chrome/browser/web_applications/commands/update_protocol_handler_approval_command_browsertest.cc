@@ -82,7 +82,7 @@ class UpdateProtocolHandlerApprovalCommandTest
     WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
-  web_app::AppId InstallWebAppWithProtocolHandlers(
+  webapps::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -90,7 +90,8 @@ class UpdateProtocolHandlerApprovalCommandTest
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -100,15 +101,15 @@ class UpdateProtocolHandlerApprovalCommandTest
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success)
-      return AppId();
+      return webapps::AppId();
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
 #if BUILDFLAG(IS_MAC)
   std::vector<std::string> GetAppShimRegisteredProtocolHandlers(
-      const AppId& app_id) {
+      const webapps::AppId& app_id) {
     std::vector<std::string> protocol_schemes;
     for (const auto& [file_path, handler] :
          AppShimRegistry::Get()->GetHandlersForApp(app_id)) {
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest, Install) {
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   base::test::TestFuture<void> future;
   provider().scheduler().UpdateProtocolHandlerUserApproval(
@@ -207,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   base::test::TestFuture<void> future_first;
   base::test::TestFuture<void> future_second;
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   base::test::TestFuture<void> future;
   provider().scheduler().UpdateProtocolHandlerUserApproval(
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   base::test::TestFuture<void> future_first;
   base::test::TestFuture<void> future_second;
@@ -338,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     base::test::TestFuture<void> future;
@@ -388,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     base::test::TestFuture<void> future;
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     base::test::TestFuture<void> future;
@@ -533,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       std::string(kTestAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     base::test::TestFuture<void> future;

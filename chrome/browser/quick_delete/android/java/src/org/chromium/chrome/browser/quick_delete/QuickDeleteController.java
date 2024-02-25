@@ -16,10 +16,11 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -28,12 +29,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- *  A controller responsible for setting up quick delete MVC.
- */
+import java.util.List;
+
+/** A controller responsible for setting up quick delete MVC. */
 public class QuickDeleteController {
-    private static final MutableFlagWithSafeDefault sQuickDeleteForAndroidFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID, false);
 
     private final @NonNull Context mContext;
     private final @NonNull QuickDeleteDelegate mDelegate;
@@ -48,17 +47,20 @@ public class QuickDeleteController {
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
      *
-     * @param context            The associated {@link Context}.
-     * @param delegate           A {@link QuickDeleteDelegate} to perform the quick delete.
+     * @param context The associated {@link Context}.
+     * @param delegate A {@link QuickDeleteDelegate} to perform the quick delete.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
-     * @param snackbarManager    A {@link SnackbarManager} to show the quick delete snackbar.
-     * @param layoutManager      {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
-     *                           history disambiguation notice.
+     * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
+     * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
+     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
+     *     history disambiguation notice.
      */
-    public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
+    public QuickDeleteController(
+            @NonNull Context context,
+            @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull LayoutManager layoutManager,
             @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mDelegate = delegate;
@@ -66,24 +68,33 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
 
         mDeleteTabsFilter =
-                new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
+                new QuickDeleteTabsFilter(tabModelSelector.getModel(/* incognito= */ false));
         Profile profile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(profile);
 
         // MVC setup.
         View quickDeleteView =
                 LayoutInflater.from(context).inflate(R.layout.quick_delete_dialog, null);
-        mPropertyModel = new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
-                                 .with(QuickDeleteProperties.CONTEXT, mContext)
-                                 .build();
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel, quickDeleteView, QuickDeleteViewBinder::bind);
-        mQuickDeleteMediator = new QuickDeleteMediator(
-                mPropertyModel, profile, mQuickDeleteBridge, mDeleteTabsFilter);
+        mPropertyModel =
+                new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
+                        .with(QuickDeleteProperties.CONTEXT, mContext)
+                        .build();
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel, quickDeleteView, QuickDeleteViewBinder::bind);
+        mQuickDeleteMediator =
+                new QuickDeleteMediator(
+                        mPropertyModel, profile, mQuickDeleteBridge, mDeleteTabsFilter);
 
-        QuickDeleteDialogDelegate dialogDelegate = new QuickDeleteDialogDelegate(context,
-                quickDeleteView, modalDialogManager, this::onDialogDismissed, tabModelSelector,
-                mDelegate.getSettingsLauncher(), mQuickDeleteMediator);
+        QuickDeleteDialogDelegate dialogDelegate =
+                new QuickDeleteDialogDelegate(
+                        context,
+                        quickDeleteView,
+                        modalDialogManager,
+                        this::onDialogDismissed,
+                        tabModelSelector,
+                        mDelegate.getSettingsLauncher(),
+                        mQuickDeleteMediator);
         dialogDelegate.showDialog();
     }
 
@@ -95,21 +106,25 @@ public class QuickDeleteController {
      * @return True, if quick delete feature flag is enabled, false otherwise
      */
     public static boolean isQuickDeleteEnabled() {
-        return sQuickDeleteForAndroidFlag.isEnabled();
+        return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
     }
 
     /**
-     * A method called when the user confirms or cancels the dialog.
+     * @return True, if quick delete follow up is enabled, false otherwise
      */
+    public static boolean isQuickDeleteFollowupEnabled() {
+        return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
+    }
+
+    /** A method called when the user confirms or cancels the dialog. */
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
-                @TimePeriod
-                int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
-                mDeleteTabsFilter.closeTabsFilteredForQuickDelete(timePeriod);
-                mDelegate.performQuickDelete(() -> onQuickDeleteFinished(timePeriod), timePeriod);
+                @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
+                mDelegate.performQuickDelete(
+                        () -> onBrowsingDataDeletionFinished(timePeriod), timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -123,18 +138,45 @@ public class QuickDeleteController {
         destroy();
     }
 
-    private void onQuickDeleteFinished(@TimePeriod int timePeriod) {
-        navigateToTabSwitcher();
+    private void onBrowsingDataDeletionFinished(@TimePeriod int timePeriod) {
+        navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod));
+    }
+
+    private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
+        mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
+        if (isQuickDeleteFollowupEnabled()) {
+            List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
+            mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod), tabs);
+        } else {
+            showPostDeleteFeedback(timePeriod);
+        }
+    }
+
+    private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
+        mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         triggerHapticFeedback();
         showSnackbar(timePeriod);
     }
 
-    /**
-     * A method to navigate to tab switcher.
-     */
-    private void navigateToTabSwitcher() {
-        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) return;
-        mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/true);
+    /** A method to navigate to tab switcher. */
+    private void navigateToTabSwitcher(Runnable onNavigationFinished) {
+        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+            onNavigationFinished.run();
+            return;
+        }
+
+        mLayoutManager.addObserver(
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mLayoutManager.removeObserver(this);
+                            onNavigationFinished.run();
+                        }
+                    }
+                });
+
+        mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ true);
     }
 
     private void triggerHapticFeedback() {
@@ -148,19 +190,23 @@ public class QuickDeleteController {
         }
     }
 
-    /**
-     * A method to show the quick delete snack-bar.
-     */
+    /** A method to show the quick delete snack-bar. */
     private void showSnackbar(@TimePeriod int timePeriod) {
         String snackbarMessage;
         if (timePeriod == TimePeriod.ALL_TIME) {
             snackbarMessage = mContext.getString(R.string.quick_delete_snackbar_all_time_message);
         } else {
-            snackbarMessage = mContext.getString(R.string.quick_delete_snackbar_message,
-                    TimePeriodUtils.getTimePeriodString(mContext, timePeriod));
+            snackbarMessage =
+                    mContext.getString(
+                            R.string.quick_delete_snackbar_message,
+                            TimePeriodUtils.getTimePeriodString(mContext, timePeriod));
         }
-        Snackbar snackbar = Snackbar.make(snackbarMessage, /*controller= */ null,
-                Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
+        Snackbar snackbar =
+                Snackbar.make(
+                        snackbarMessage,
+                        /* controller= */ null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_QUICK_DELETE);
         mSnackbarManager.showSnackbar(snackbar);
     }
 }

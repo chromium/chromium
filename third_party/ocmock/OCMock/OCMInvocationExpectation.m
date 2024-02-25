@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2014-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,8 +14,8 @@
  *  under the License.
  */
 
-#import "OCMInvocationExpectation.h"
 #import "NSInvocation+OCMAdditions.h"
+#import "OCMInvocationExpectation.h"
 
 
 @implementation OCMInvocationExpectation
@@ -29,7 +29,7 @@
 
 - (BOOL)isMatchAndReject
 {
-  return matchAndReject;
+    return matchAndReject;
 }
 
 - (BOOL)isSatisfied
@@ -37,10 +37,18 @@
     return isSatisfied;
 }
 
+- (void)addInvocationAction:(id)anAction
+{
+    if(matchAndReject)
+    {
+        [NSException raise:NSInternalInconsistencyException format:@"%@: cannot add action to a reject stub; got %@",
+                [self description], anAction];
+    }
+    [super addInvocationAction:anAction];
+}
+
 - (void)handleInvocation:(NSInvocation *)anInvocation
 {
-   [super handleInvocation:anInvocation];
-
     if(matchAndReject)
     {
         isSatisfied = NO;
@@ -49,8 +57,10 @@
     }
     else
     {
+        [super handleInvocation:anInvocation];
         isSatisfied = YES;
     }
 }
+
 
 @end

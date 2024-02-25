@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+  <!-- package name must be unique so suffix with "test" so package loader
+       doesn't ignore this. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.jni_zero.test">
+  <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+  <!-- We add an application tag here just so that we can indicate that this
+       package needs to link against the android.test library, which is
+       needed when building test cases. -->
+  <application>
+      <uses-library android:name="android.test.runner" />
+  </application>
+  <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
+      android:targetPackage="org.jni_zero"
+      android:label="Tests for org.jni_zero"/>
+</manifest>

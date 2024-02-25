@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -22,7 +23,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "ui/base/page_transition_types.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -53,6 +54,13 @@ bool EqualsWithComparison(const GURL& a,
   return a.ReplaceComponents(replace) == b.ReplaceComponents(replace);
 }
 
+// TODO(b/302531937): Make this a utility that can be used through out the
+// web_applications/ system.
+bool WebContentsShuttingDown(content::WebContents* web_contents) {
+  return !web_contents || web_contents->IsBeingDestroyed() ||
+         web_contents->GetBrowserContext()->ShutdownStarted();
+}
+
 class LoaderTask : public content::WebContentsObserver {
  public:
   LoaderTask() = default;
@@ -71,6 +79,11 @@ class LoaderTask : public content::WebContentsObserver {
     callback_ = std::move(callback);
     Observe(web_contents);
 
+    if (WebContentsShuttingDown(web_contents)) {
+      PostResultTask(WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
+      return;
+    }
+
     web_contents->GetController().LoadURLWithParams(load_params);
 
     timer_.Start(FROM_HERE, WebAppUrlLoader::kSecondsToWaitForWebContentsLoad,
@@ -86,6 +99,11 @@ class LoaderTask : public content::WebContentsObserver {
   // TODO(ortuno): Use DidStopLoading instead.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
+    if (WebContentsShuttingDown(web_contents())) {
+      PostResultTask(WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
+      return;
+    }
+
     if (IsSubframeLoad(render_frame_host)) {
       return;
     }
@@ -105,9 +123,10 @@ class LoaderTask : public content::WebContentsObserver {
       return;
     }
 
-    const net::HttpResponseHeaders* headers =
-        render_frame_host->GetLastResponseHeaders();
-    if (headers && headers->response_code() != net::HTTP_OK) {
+    const network::mojom::URLResponseHead* response_head =
+        render_frame_host->GetLastResponseHead();
+    if (response_head && response_head->headers &&
+        response_head->headers->response_code() != net::HTTP_OK) {
       // Navigation loads content but is not successful. For example, HTTP-500
       // class of errors.
       PostResultTask(WebAppUrlLoader::Result::kFailedErrorPageLoaded);
@@ -130,6 +149,11 @@ class LoaderTask : public content::WebContentsObserver {
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override {
+    if (WebContentsShuttingDown(web_contents())) {
+      PostResultTask(WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
+      return;
+    }
+
     if (IsSubframeLoad(render_frame_host)) {
       return;
     }
@@ -186,19 +210,12 @@ void WebAppUrlLoader::LoadUrl(
     UrlComparison url_comparison,
     ResultCallback callback) {
   CHECK(web_contents);
-  bool bypass_prepare_for_load = false;
-  if (load_url_params.url == GURL(url::kAboutBlankURL)) {
-    bypass_prepare_for_load = true;
-  }
-  auto load_requested_url = base::BindOnce(
-      &WebAppUrlLoader::LoadUrlInternal, weak_factory_.GetWeakPtr(),
-      std::move(load_url_params), web_contents->GetWeakPtr(), url_comparison,
-      std::move(callback));
-  if (bypass_prepare_for_load) {
-    std::move(load_requested_url).Run();
-  } else {
-    PrepareForLoad(web_contents, std::move(load_requested_url));
-  }
+  PrepareForLoad(
+      web_contents,
+      base::BindOnce(&WebAppUrlLoader::LoadUrlInternal,
+                     weak_factory_.GetWeakPtr(), std::move(load_url_params),
+                     web_contents->GetWeakPtr(), url_comparison,
+                     std::move(callback)));
 }
 
 void WebAppUrlLoader::LoadUrl(const GURL& url,
@@ -213,8 +230,15 @@ void WebAppUrlLoader::LoadUrl(const GURL& url,
 
 void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,
                                      base::OnceClosure complete) {
-  const GURL kAboutBlankURL = GURL(url::kAboutBlankURL);
-  content::NavigationController::LoadURLParams load_params(kAboutBlankURL);
+  if (web_contents->GetLastCommittedURL().IsAboutBlank() &&
+      web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(complete));
+    return;
+  }
+
+  content::NavigationController::LoadURLParams load_params{
+      GURL(url::kAboutBlankURL)};
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   LoadUrlInternal(load_params, web_contents->GetWeakPtr(),
                   UrlComparison::kExact,
@@ -229,7 +253,7 @@ void WebAppUrlLoader::LoadUrlInternal(
     base::WeakPtr<content::WebContents> web_contents,
     UrlComparison url_comparison,
     ResultCallback callback) {
-  if (!web_contents) {
+  if (WebContentsShuttingDown(web_contents.get())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),

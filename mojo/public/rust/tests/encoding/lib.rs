@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-extern crate mojo_system_test_support as test_support;
-extern crate rust_gtest_interop;
-extern crate test_util as util;
+chromium::import! {
+    "//mojo/public/rust:mojo_system_test_support" as test_support;
+}
 
 /// Macro to produce a test which uses the stub Mojo backend. This is used
 /// instead of the macro from `test_util`, which initializes the full Mojo

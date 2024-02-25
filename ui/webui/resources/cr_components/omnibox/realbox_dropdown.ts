@@ -12,17 +12,24 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {RenderType, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
-import {RealboxMatchElement} from './realbox_match.js';
-import {decodeString16, sideTypeToClass} from './utils.js';
+import type {RealboxMatchElement} from './realbox_match.js';
+import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
 
 const CHAR_TYPED_TO_PAINT = 'Realbox.CharTypedToRepaintLatency.ToPaint';
 const RESULT_CHANGED_TO_PAINT = 'Realbox.ResultChangedToRepaintLatency.ToPaint';
+
+export interface RealboxDropdownElement {
+  $: {
+    content: HTMLElement,
+  };
+}
 
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <ntp-realbox>) to change the selection.
@@ -50,6 +57,18 @@ export class RealboxDropdownElement extends PolymerElement {
         value: false,
       },
 
+      chromeRefreshHoverShape: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23HoverFillShape'),
+        reflectToAttribute: true,
+      },
+
+      expandedStateLayoutChromeRefresh: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether the secondary side was at any point available to be shown.
        */
@@ -66,6 +85,7 @@ export class RealboxDropdownElement extends PolymerElement {
         type: Boolean,
         computed: `computeHasSecondarySide_(result)`,
         notify: true,
+        reflectToAttribute: true,
       },
 
       result: {
@@ -111,6 +131,8 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  chromeRefreshHoverShape: boolean;
+  expandedStateLayoutChromeRefresh: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   result: AutocompleteResult;
@@ -118,12 +140,30 @@ export class RealboxDropdownElement extends PolymerElement {
   private hiddenGroupIds_: number[];
   private selectableMatchElements_: RealboxMatchElement[];
   private showSecondarySide_: boolean;
-
+  private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
   constructor() {
     super();
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.resizeObserver_ = new ResizeObserver(
+        (entries: ResizeObserverEntry[]) =>
+            this.pageHandler_.popupElementSizeChanged({
+              width: entries[0].contentRect.width,
+              height: entries[0].contentRect.height,
+            }));
+    this.resizeObserver_.observe(this.$.content);
+  }
+
+  override disconnectedCallback() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
+    super.disconnectedCallback();
   }
 
   //============================================================================
@@ -157,13 +197,19 @@ export class RealboxDropdownElement extends PolymerElement {
     this.selectedMatchIndex = index;
   }
 
-  updateSelection(selection: OmniboxPopupSelection) {
+  updateSelection(
+      oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     if (selection.state === SelectionLineState.kFocusedButtonHeader) {
       // TODO: Focus group header.
       this.unselect();
       return;
     }
-
+    // If the updated selection is a new match, remove any remaining selection
+    // on the previously selected match.
+    if (oldSelection.line !== selection.line) {
+      this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
+          selection);
+    }
     this.selectIndex(selection.line);
     this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
         selection);
@@ -256,13 +302,19 @@ export class RealboxDropdownElement extends PolymerElement {
   // Helpers
   //============================================================================
 
-  private classForSide_(side: SideType): string {
+  private sideTypeClass_(side: SideType): string {
     return sideTypeToClass(side);
+  }
+
+  private renderTypeClassForGroup_(groupId: number): string {
+    return renderTypeToClass(
+        this.result?.suggestionGroupsMap[groupId]?.renderType ??
+        RenderType.kDefaultVertical);
   }
 
   private computeHasSecondarySide_(): boolean {
     const hasSecondarySide =
-        !!this.groupIdsForSide_(SideType.kSecondary).length;
+        !!this.groupIdsForSideType_(SideType.kSecondary).length;
     if (!this.hadSecondarySide) {
       this.hadSecondarySide = hasSecondarySide;
     }
@@ -283,7 +335,7 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns The unique suggestion group IDs that belong to the given side type
    *     while preserving the order in which they appear in the list of matches.
    */
-  private groupIdsForSide_(side: SideType): number[] {
+  private groupIdsForSideType_(side: SideType): number[] {
     return [...new Set<number>(
         this.result?.matches?.map(match => match.suggestionGroupId)
             .filter(groupId => this.sideTypeForGroup_(groupId) === side))];
@@ -368,6 +420,10 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns Icon name for suggestion group show/hide toggle button.
    */
   private toggleButtonIconForGroup_(groupId: number): string {
+    if (loadTimeData.getBoolean('realboxCr23ExpandedStateIcons')) {
+      return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
+                                            'icon-arrow-drop-up-cr23';
+    }
     return this.groupIsHidden_(groupId) ? 'icon-expand-more' :
                                           'icon-expand-less';
   }
@@ -393,7 +449,7 @@ export class RealboxDropdownElement extends PolymerElement {
     }
 
     // Only show secondary side if there are primary matches visible.
-    const primaryGroupIds = this.groupIdsForSide_(SideType.kDefaultPrimary);
+    const primaryGroupIds = this.groupIdsForSideType_(SideType.kDefaultPrimary);
     return primaryGroupIds.some((groupId) => {
       return this.matchesForGroup_(groupId).length > 0;
     });

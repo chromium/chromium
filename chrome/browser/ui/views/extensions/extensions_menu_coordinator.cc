@@ -73,7 +73,7 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_delegate->set_margins(gfx::Insets(0));
   bubble_delegate->set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+          ChromeDistanceMetric::DISTANCE_EXTENSIONS_MENU_WIDTH));
   // Let anchor view's MenuButtonController handle the highlight.
   bubble_delegate->set_highlight_button_when_shown(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);

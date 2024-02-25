@@ -58,7 +58,9 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
                "cpu%" PRIu32 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
                &pindex, &user, &nice, &sys, &idle);
     if (vals != 5 || pindex >= infos->size()) {
-      NOTREACHED();
+      // TODO(b/326303922): This fires in internal integration tests, reevaluate
+      // whether this should be (and can be made) unreachable or handle it.
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return false;
     }
 

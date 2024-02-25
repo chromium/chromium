@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 /**
- * A mock ContextualSearchPolicy class that excludes any business logic.
- * TODO(mdjones): Allow the return values of these function to be set.
+ * A mock ContextualSearchPolicy class that excludes any business logic. TODO(mdjones): Allow the
+ * return values of these function to be set.
  */
 public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     public MockContextualSearchPolicy(ContextualSearchSelectionController selectionController) {

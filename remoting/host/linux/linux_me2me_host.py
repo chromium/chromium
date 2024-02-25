@@ -461,24 +461,35 @@ class Config:
 
 
 class Authentication:
-  """Manage authentication tokens for Chromoting/xmpp"""
+  """Manage authentication tokens for the host service account"""
 
   def __init__(self):
     # Note: Initial values are never used.
-    self.login = None
+    self.service_account = None
     self.oauth_refresh_token = None
 
   def copy_from(self, config):
     """Loads the config and returns false if the config is invalid."""
-    try:
-      self.login = config["xmpp_login"]
-      self.oauth_refresh_token = config["oauth_refresh_token"]
-    except KeyError:
+    # service_account was added in M120 so hosts which were provisioned using
+    # that build (or later) will have the new config key. Hosts which were first
+    # configured with an older host version will only have xmpp_login so we need
+    # to fallback to it for backward compatibility.
+    self.service_account = config.get("service_account")
+    if self.service_account is None:
+      self.service_account = config.get("xmpp_login")
+    if self.service_account is None:
+      # Neither service_account nor xmpp_login exist so config is malformed.
       return False
+
+    self.oauth_refresh_token = config.get("oauth_refresh_token")
+    if self.oauth_refresh_token is None:
+      return False
+
     return True
 
   def copy_to(self, config):
-    config["xmpp_login"] = self.login
+    config["xmpp_login"] = self.service_account
+    config["service_account"] = self.service_account
     config["oauth_refresh_token"] = self.oauth_refresh_token
 
 
@@ -551,9 +562,11 @@ class SessionOutputFilterThread(threading.Thread):
 class Desktop(abc.ABC):
   """Manage a single virtual desktop"""
 
-  def __init__(self, sizes, server_inhibitor=None, pipewire_inhibitor=None,
-               session_inhibitor=None, host_inhibitor=None):
+  def __init__(self, sizes, host_config, server_inhibitor=None,
+               pipewire_inhibitor=None, session_inhibitor=None,
+               host_inhibitor=None):
     self.sizes = sizes
+    self.host_config = host_config
     self.server_proc = None
     self.pipewire_proc = None
     self.pipewire_pulse_proc = None
@@ -748,9 +761,10 @@ class Desktop(abc.ABC):
     """
     pass
 
-  def launch_host(self, host_config, extra_start_host_args, backoff_time):
+  def launch_host(self, extra_start_host_args, backoff_time):
     self._wait_for_setup_before_host_launch()
     logging.info("Launching host process")
+
     # Start remoting host
     args = [HOST_BINARY_PATH, "--host-config=-"]
     if self.audio_pipe:
@@ -777,7 +791,8 @@ class Desktop(abc.ABC):
       raise Exception("Could not start Chrome Remote Desktop host")
 
     try:
-      self.host_proc.stdin.write(json.dumps(host_config.data).encode('UTF-8'))
+      self.host_proc.stdin.write(
+          json.dumps(self.host_config.data).encode('UTF-8'))
       self.host_proc.stdin.flush()
     except IOError as e:
       # This can occur in rare situations, for example, if the machine is
@@ -837,7 +852,7 @@ class Desktop(abc.ABC):
     self.host_proc = None
     self.crash_uploader_proc = None
 
-  def report_offline_reason(self, host_config, reason):
+  def report_offline_reason(self, reason):
     """Attempt to report the specified offline reason to the registry. This
     is best effort, and requires a valid host config.
     """
@@ -845,7 +860,7 @@ class Desktop(abc.ABC):
     args = [HOST_BINARY_PATH, "--host-config=-",
             "--report-offline-reason=" + reason]
     proc = subprocess.Popen(args, env=self.child_env, stdin=subprocess.PIPE)
-    proc.communicate(json.dumps(host_config.data).encode('UTF-8'))
+    proc.communicate(json.dumps(self.host_config.data).encode('UTF-8'))
 
   def on_process_exit(self, pid, status):
     """Checks for which process has exited and whether or not the exit was
@@ -934,31 +949,33 @@ class Desktop(abc.ABC):
       if os.WIFEXITED(status):
         if os.WEXITSTATUS(status) == 100:
           logging.info("Host configuration is invalid - exiting.")
-          return 0
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 101:
           logging.info("Host ID has been deleted - exiting.")
-          host_config.clear()
-          host_config.save_and_log_errors()
-          return 0
+          self.host_config.clear()
+          self.host_config.save_and_log_errors()
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 102:
           logging.info("OAuth credentials are invalid - exiting.")
-          return 0
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 103:
           logging.info("Host domain is blocked by policy - exiting.")
-          return 0
+          sys.exit(0)
         # Nothing to do for Mac-only status 104 (login screen unsupported)
         elif os.WEXITSTATUS(status) == 105:
           logging.info("Username is blocked by policy - exiting.")
-          return 0
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 106:
           logging.info("Host has been deleted - exiting.")
-          return 0
+          self.host_config.clear()
+          self.host_config.save_and_log_errors()
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 107:
           logging.info("Remote access is disallowed by policy - exiting.")
-          return 0
+          sys.exit(0)
         elif os.WEXITSTATUS(status) == 108:
           logging.info("This CPU is not supported - exiting.")
-          return 0
+          sys.exit(0)
         else:
           logging.info("Host exited with status %s." % os.WEXITSTATUS(status))
       elif os.WIFSIGNALED(status):
@@ -1086,11 +1103,11 @@ class WaylandDesktop(Desktop):
   # socket leak and we don't want to keep retrying forever.
   MAX_WAYLAND_SOCKET_NUM = 100
 
-  def __init__(self, sizes):
+  def __init__(self, sizes, host_config):
     self.debug = False
     self._wayland_socket = None
     self._runtime_dir = None
-    super(WaylandDesktop, self).__init__(sizes)
+    super(WaylandDesktop, self).__init__(sizes, host_config)
     self.inhibitors[self.server_inhibitor] \
         = HOST_OFFLINE_REASON_WAYLAND_SERVER_RETRIES_EXCEEDED
     global g_desktop
@@ -1312,8 +1329,8 @@ class WaylandDesktop(Desktop):
 class XDesktop(Desktop):
   """Manage a single virtual X desktop"""
 
-  def __init__(self, sizes):
-    super(XDesktop, self).__init__(sizes)
+  def __init__(self, sizes, host_config):
+    super(XDesktop, self).__init__(sizes, host_config)
     self.xorg_conf = None
     self.audio_pipe = None
     self.server_supports_randr = False
@@ -2040,6 +2057,7 @@ class SignalHandler:
     self.host_config = host_config
 
   def __call__(self, signum, _stackframe):
+    logging.info("Caught signal: " + str(signum))
     if signum == signal.SIGHUP:
       logging.info("SIGHUP caught, restarting host.")
       try:
@@ -2508,9 +2526,9 @@ def main():
           re.split('\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
   is_wayland = any([opt == '--enable-wayland' for opt in extra_start_host_args])
   if is_wayland:
-    desktop = WaylandDesktop(sizes)
+    desktop = WaylandDesktop(sizes, host_config)
   else:
-    desktop = XDesktop(sizes)
+    desktop = XDesktop(sizes, host_config)
 
   if is_googler_owned(host_config):
     desktop.enable_crash_reporting()
@@ -2556,8 +2574,8 @@ def main():
         else:
           logging.error("Too many launch failures of '%s', exiting."
                         % inhibitor.label)
-          desktop.report_offline_reason(host_config, offline_reason)
-          return 1
+          desktop.report_offline_reason(offline_reason)
+          sys.exit(1)
       elif inhibitor.failures >= SHORT_BACKOFF_THRESHOLD:
         backoff_time = LONG_BACKOFF_TIME
 
@@ -2578,7 +2596,7 @@ def main():
           desktop.session_proc is None):
         desktop.launch_session(options.args, backoff_time)
       if desktop.host_proc is None:
-        desktop.launch_host(host_config, extra_start_host_args, backoff_time)
+        desktop.launch_host(extra_start_host_args, backoff_time)
       if desktop.crash_uploader_proc is None:
         desktop.launch_crash_uploader(backoff_time)
 

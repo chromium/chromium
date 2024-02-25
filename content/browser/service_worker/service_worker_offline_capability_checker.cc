@@ -116,6 +116,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
       blink::mojom::FetchAPIRequest::From(resource_request),
       resource_request.destination,
       base::Uuid::GenerateRandomV4().AsLowercaseString() /* client_id */,
+      base::Uuid::GenerateRandomV4()
+          .AsLowercaseString() /* resulting_client_id */,
       std::move(preferred_version), base::DoNothing() /* prepare callback */,
       base::BindOnce(&ServiceWorkerOfflineCapabilityChecker::OnFetchResult,
                      base::Unretained(this)),

@@ -121,11 +121,6 @@ interface Directory {
            FileWriteAccess write_access)
       => (mojo_base.mojom.FileError error, mojo_base.mojom.File? file);
 
-  // Writes a small file atomically using the ImportantFileWriter.
-  [Sync] WriteFileAtomically(StrictRelativePath path,
-                             mojo_base.mojom.BigString contents)
-      => (bool success);
-
   // Creates a new directory at |path|.
   [Sync]
   CreateDirectory(StrictRelativePath path) => (mojo_base.mojom.FileError error);
@@ -136,11 +131,6 @@ interface Directory {
   [Sync]
   DeleteFile(StrictRelativePath path) => (bool success);
 
-  // Recursively deletes the directory at |path| if it exists and returns true
-  // iff successful.  This will return true if |path| does not exist.
-  [Sync]
-  DeletePathRecursively(StrictRelativePath path) => (bool success);
-
   // Retrieves information about a specific filesystem entry at |path|. Returns
   // null on failure, or a populated |info| struct on success.
   [Sync]
@@ -150,12 +140,6 @@ interface Directory {
   // Returns null on failure or a populated |info| struct on success.
   [Sync]
   GetPathAccess(StrictRelativePath path) => (PathAccessInfo? info);
-
-  // Returns the maximum length of path component on the volume containing the
-  // directory |path|, in the number of FilePath::CharType on success.
-  [Sync]
-  GetMaximumPathComponentLength(StrictRelativePath path)
-      => (bool success, int32 length);
 
   // Renames a file from |old_path| to |new_path|. Note that if |new_path|
   // already exists, it will be overwritten by this call.

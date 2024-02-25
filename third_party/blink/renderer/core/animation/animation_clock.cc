@@ -70,6 +70,9 @@ base::TimeTicks AnimationClock::CurrentTime() {
   // comments on |SetAllowedToDynamicallyUpdateTime|.
   const base::TimeTicks current_time = clock_->NowTicks();
   base::TimeTicks new_time = time_;
+
+  // TODO(crbug.com/1497922) timestamps outside rendering updates should be
+  // coarsened.
   if (time_ < current_time) {
     // Attempt to predict what the most recent timestamp would have been. This
     // may not produce a result greater than |time_|, but it greatly reduces the

@@ -9,9 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
@@ -51,10 +51,15 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
   }
 }
 
-// Returns true iff the sequence has spatial or temporal scalability information
-// for the selected operating point.
-bool SequenceUsesScalability(int operating_point_idc) {
-  return operating_point_idc != 0;
+// Returns true iff the current decode sequence has multiple spatial layers.
+bool IsSpatialLayerDecoding(int operating_point_idc) {
+  // Spec 6.4.1.
+  constexpr int kTemporalLayerBitMaskBits = 8;
+  const int kUsedSpatialLayerBitMask =
+      (operating_point_idc >> kTemporalLayerBitMaskBits) & 0b1111;
+  // In case of an only temporal layer encoding e.g. L1T3, spatial layer#0 bit
+  // is 1. We allow this case.
+  return kUsedSpatialLayerBitMask > 1;
 }
 
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
@@ -116,6 +121,12 @@ gfx::HdrMetadataCta861_3 ToGfxCta861_3(const libgav1::ObuMetadataHdrCll& cll) {
 }
 }  // namespace
 
+scoped_refptr<AV1Picture> AV1Decoder::AV1Accelerator::CreateAV1PictureSecure(
+    bool apply_grain,
+    uint64_t secure_handle) {
+  return nullptr;
+}
+
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -164,6 +175,7 @@ void AV1Decoder::Reset() {
   ClearReferenceFrames();
   parser_.reset();
   decrypt_config_.reset();
+  secure_handle_ = 0;
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
       /*on_frame_buffer_size_changed=*/nullptr,
@@ -193,6 +205,12 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
   else
     decrypt_config_.reset();
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void AV1Decoder::ClearCurrentFrame() {
@@ -261,11 +279,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
               << "temporal_id=0";
           return kDecodeError;
         }
-        if (SequenceUsesScalability(
+        if (IsSpatialLayerDecoding(
                 parser_->sequence_header()
                     .operating_point_idc[kDefaultOperatingPoint])) {
-          DVLOG(3) << "Either temporal or spatial layer decoding is not "
-                   << "supported";
+          constexpr size_t kOperatingPointIdcBits = 12;
+          DVLOG(1) << "Spatial layer decoding is not supported: "
+                   << "operating_point_idc="
+                   << std::bitset<kOperatingPointIdcBits>(
+                          parser_->sequence_header()
+                              .operating_point_idc[kDefaultOperatingPoint]);
           return kDecodeError;
         }
 
@@ -274,8 +296,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             GetAV1ChromaSampling(current_sequence_header_->color_config);
         if (new_chroma_sampling != chroma_sampling_) {
           chroma_sampling_ = new_chroma_sampling;
-          base::UmaHistogramEnumeration(
-              "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
         }
 
         if (chroma_sampling_ != VideoChromaSampling::k420) {
@@ -298,8 +318,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             base::strict_cast<int>(current_sequence_header_->max_frame_width),
             base::strict_cast<int>(current_sequence_header_->max_frame_height));
         gfx::Rect new_visible_rect(
-            base::strict_cast<int>(current_frame_header_->render_width),
-            base::strict_cast<int>(current_frame_header_->render_height));
+            base::strict_cast<int>(current_frame_header_->width),
+            base::strict_cast<int>(current_frame_header_->height));
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
@@ -324,12 +344,24 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           new_color_space = container_color_space_;
         }
 
+        bool is_color_space_change = false;
+        if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+          is_color_space_change = new_color_space.IsSpecified() &&
+                                  new_color_space != picture_color_space_;
+        }
+
         ClearReferenceFrames();
         // Issues kConfigChange only if either the dimensions, profile or bit
         // depth is changed.
         if (frame_size_ != new_frame_size ||
             visible_rect_ != new_visible_rect || profile_ != new_profile ||
-            bit_depth_ != new_bit_depth) {
+            bit_depth_ != new_bit_depth || is_color_space_change) {
+          DVLOG(1) << "New profile: " << GetProfileName(new_profile)
+                   << ", new resolution: " << new_frame_size.ToString()
+                   << ", new visible rect: " << new_visible_rect.ToString()
+                   << ", new bit depth: "
+                   << base::strict_cast<int>(new_bit_depth)
+                   << ", new color space: " << new_color_space.ToString();
           frame_size_ = new_frame_size;
           visible_rect_ = new_visible_rect;
           profile_ = new_profile;
@@ -337,14 +369,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           picture_color_space_ = new_color_space;
           clear_current_frame.ReplaceClosure(base::DoNothing());
           return kConfigChange;
-        }
-
-        // Trigger color space change if the previous picture color space is
-        // different from new color space.
-        if (new_color_space.IsSpecified() &&
-            picture_color_space_ != new_color_space) {
-          picture_color_space_ = new_color_space;
-          return kColorSpaceChange;
         }
       }
     }
@@ -449,8 +473,11 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     DCHECK(current_sequence_header_->film_grain_params_present ||
            !frame_header.film_grain_params.apply_grain);
-    auto pic = accelerator_->CreateAV1Picture(
-        frame_header.film_grain_params.apply_grain);
+    auto pic = secure_handle_ ? accelerator_->CreateAV1PictureSecure(
+                                    frame_header.film_grain_params.apply_grain,
+                                    secure_handle_)
+                              : accelerator_->CreateAV1Picture(
+                                    frame_header.film_grain_params.apply_grain);
     if (!pic) {
       clear_current_frame.ReplaceClosure(base::DoNothing());
       return kRanOutOfSurfaces;
@@ -576,7 +603,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   return AV1Accelerator::Status::kOk;
 }
 
-absl::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hdr_metadata_;
 }

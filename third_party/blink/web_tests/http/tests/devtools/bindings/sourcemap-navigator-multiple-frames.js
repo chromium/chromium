@@ -6,6 +6,9 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 const GC = async () => {
   await TestRunner.evaluateInPageAsync(`new Promise(resolve =>
     GCController.asyncCollectAll(resolve))`);
@@ -13,10 +16,9 @@ const GC = async () => {
 
 (async function () {
   TestRunner.addResult(`Verify that SourceMap sources are correctly displayed in navigator.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
-  var sourcesNavigator = new Sources.NetworkNavigatorView();
-  sourcesNavigator.show(UI.inspectorView.element);
+  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
+  sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('initialWorkspace');
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);

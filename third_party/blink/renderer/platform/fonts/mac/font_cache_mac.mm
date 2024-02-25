@@ -32,9 +32,12 @@
 #include <memory>
 
 #import <AppKit/AppKit.h>
+#import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
@@ -53,6 +56,11 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::GetValueFromDictionary;
+using base::apple::NSToCFOwnershipCast;
+using base::apple::ScopedCFTypeRef;
+
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
 @interface NSFont (WebKitSPI)
@@ -66,6 +74,182 @@
 @end
 
 namespace blink {
+
+namespace {
+
+const float kCTNormalWeightValue = 0.0;
+CTFontSymbolicTraits TraitsMask = kCTFontTraitItalic | kCTFontTraitBold |
+                                  kCTFontTraitCondensed | kCTFontTraitExpanded;
+
+ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
+    CTFontRef font,
+    CTFontSymbolicTraits traits,
+    float weight,
+    float size) {
+  ScopedCFTypeRef<CFNumberRef> traits_num(
+      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &traits));
+  ScopedCFTypeRef<CFNumberRef> weight_num(
+      CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &weight));
+
+  const CFStringRef traits_keys[] = {kCTFontSymbolicTrait, kCTFontWeightTrait};
+  const CFTypeRef traits_values[] = {traits_num.get(), weight_num.get()};
+  ScopedCFTypeRef<CFDictionaryRef> traits_dict(CFDictionaryCreate(
+      kCFAllocatorDefault, (const void**)traits_keys,
+      (const void**)traits_values, 2, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
+
+  ScopedCFTypeRef<CFStringRef> family_name(CTFontCopyFamilyName(font));
+  // Some broken fonts may lack a postscript name (nameID="6"), full font
+  // name (nameId="4") or family name (nameID="1") in the 'name' font table, see
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/name.
+  // For these fonts `family_name` will be null, compare
+  // https://crbug.com/1521364
+  if (!family_name) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
+  }
+  const CFStringRef attribute_keys[] = {kCTFontFamilyNameAttribute,
+                                        kCTFontTraitsAttribute};
+  const CFTypeRef attribute_values[] = {family_name.get(), traits_dict.get()};
+  ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
+      kCFAllocatorDefault, (const void**)attribute_keys,
+      (const void**)attribute_values, 2, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
+
+  ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
+      CTFontDescriptorCreateWithAttributes(attributes.get()));
+  // When we try to find the substitute font of "Menlo Regular" with italic
+  // traits attribute for the selected code point using
+  // `CTFontCreateCopyWithAttributes`, it gives us the same "Menlo Regular" font
+  // rather than "Menlo Italic". So we are using
+  // `CTFontCreateWithFontDescriptor` to find the better style match within the
+  // family.
+  return ScopedCFTypeRef<CTFontRef>(
+      CTFontCreateWithFontDescriptor(descriptor.get(), size, nullptr));
+}
+
+bool IsLastResortFont(CTFontRef font) {
+  ScopedCFTypeRef<CFStringRef> font_name(CTFontCopyPostScriptName(font));
+  return font_name && CFStringCompare(font_name.get(), CFSTR("LastResort"),
+                                      0) == kCFCompareEqualTo;
+}
+
+ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
+                                             UChar32 character) {
+  DCHECK(RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled());
+
+  auto bytes = base::bit_cast<std::array<UInt8, 4>>(character);
+  ScopedCFTypeRef<CFStringRef> string(CFStringCreateWithBytes(
+      kCFAllocatorDefault, std::data(bytes), std::size(bytes),
+      kCFStringEncodingUTF32LE, false));
+  CFRange range = CFRangeMake(0, CFStringGetLength(string.get()));
+  ScopedCFTypeRef<CTFontRef> substitute_font(
+      CTFontCreateForString(ct_font, string.get(), range));
+
+  if (!substitute_font || IsLastResortFont(substitute_font.get())) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
+  }
+  return substitute_font;
+}
+
+// Some fonts may have appearance information in the upper 16 bits,
+// for example for "Times Roman" traits = (1 << 28) and for "Helvetica"
+// traits = (1 << 30).
+// We only need to care about typeface information in the lower 16 bits and
+// need to check only whether the traits we care about mismatch (i.e.
+// font-stretch, font-style and font-weight corresponding traits). So that
+// later we can try to find a font within the same family with the desired
+// typeface.
+bool TraitsMismatch(CTFontSymbolicTraits desired_traits,
+                    CTFontSymbolicTraits found_traits) {
+  return (desired_traits & TraitsMask) != (found_traits & TraitsMask);
+}
+
+const FontPlatformData* GetAlternateFontPlatformData(
+    const FontDescription& font_description,
+    UChar32 character,
+    const FontPlatformData& platform_data) {
+  DCHECK(RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled());
+  CTFontRef ct_font = platform_data.CtFont();
+
+  ScopedCFTypeRef<CTFontRef> substitute_font(
+      GetSubstituteFont(ct_font, character));
+  if (!substitute_font) {
+    return nullptr;
+  }
+
+  auto get_ct_font_weight = [](CTFontRef font) -> float {
+    ScopedCFTypeRef<CFDictionaryRef> font_traits(CTFontCopyTraits(font));
+    float weight = kCTNormalWeightValue;
+    if (font_traits) {
+      CFNumberRef weight_num = GetValueFromDictionary<CFNumberRef>(
+          font_traits.get(), kCTFontWeightTrait);
+      if (weight_num) {
+        CFNumberGetValue(weight_num, kCFNumberFloatType, &weight);
+      }
+    }
+    return weight;
+  };
+
+  CTFontSymbolicTraits traits;
+  float weight = ToCTFontWeight(font_description.Weight());
+  float size = font_description.ComputedPixelSize();
+  if (ct_font) {
+    traits = CTFontGetSymbolicTraits(ct_font);
+    if (platform_data.synthetic_bold_) {
+      traits |= kCTFontTraitBold;
+    }
+    if (platform_data.synthetic_italic_) {
+      traits |= kCTFontTraitItalic;
+    }
+  } else {
+    traits = font_description.Style() ? kCTFontTraitItalic : 0;
+  }
+
+  CTFontSymbolicTraits substitute_font_traits =
+      CTFontGetSymbolicTraits(substitute_font.get());
+  float substitute_font_weight = get_ct_font_weight(substitute_font.get());
+
+  if (TraitsMismatch(traits, substitute_font_traits) ||
+      (weight != substitute_font_weight) || !ct_font) {
+    ScopedCFTypeRef<CTFontRef> best_variation =
+        CreateCopyWithTraitsAndWeightFromFont(substitute_font.get(), traits,
+                                              weight, size);
+
+    if (best_variation) {
+      CTFontSymbolicTraits best_variation_font_traits =
+          CTFontGetSymbolicTraits(best_variation.get());
+      float best_variation_font_weight =
+          get_ct_font_weight(best_variation.get());
+      ScopedCFTypeRef<CFCharacterSetRef> char_set(
+          CTFontCopyCharacterSet(substitute_font.get()));
+      if ((!ct_font || best_variation_font_traits != substitute_font_traits ||
+           best_variation_font_weight != substitute_font_weight) &&
+          char_set &&
+          CFCharacterSetIsLongCharacterMember(char_set.get(), character)) {
+        substitute_font = best_variation;
+        substitute_font_traits = CTFontGetSymbolicTraits(substitute_font.get());
+      }
+    }
+  }
+
+  bool synthetic_bold = (traits & kCTFontTraitBold) &&
+                        !(substitute_font_traits & kCTFontTraitBold);
+  bool synthetic_italic = (traits & kCTFontTraitItalic) &&
+                          !(substitute_font_traits & kCTFontTraitItalic);
+
+  return FontPlatformDataFromCTFont(
+      substitute_font, font_description.EffectiveFontSize(),
+      font_description.SpecifiedSize(), synthetic_bold, synthetic_italic,
+      font_description.TextRendering(), ResolvedFontFeatures(),
+      platform_data.Orientation(), font_description.FontOpticalSizing(),
+      nullptr);
+}
+
+bool IsSystemFontName(const AtomicString& font_name) {
+  return !font_name.empty() && font_name[0] == '.';
+}
+
+}  // namespace
 
 const char kColorEmojiFontMac[] = "Apple Color Emoji";
 
@@ -97,12 +281,6 @@ static void FontCacheRegisteredFontsChangedNotificationCallback(
   FontCache::InvalidateFromAnyThread();
 }
 
-static bool UseHinting() {
-  // Enable hinting only when antialiasing is disabled in web tests.
-  return (WebTestSupport::IsRunningWebTest() &&
-          !WebTestSupport::IsFontAntialiasingEnabledForTest());
-}
-
 void FontCache::PlatformInit() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetLocalCenter(), this,
@@ -115,134 +293,145 @@ static inline bool IsAppKitFontWeightBold(NSInteger app_kit_font_weight) {
   return app_kit_font_weight >= 7;
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
-    scoped_refptr<SimpleFontData> emoji_font =
-        GetFontData(font_description, AtomicString(kColorEmojiFontMac));
-    if (emoji_font)
+    if (const SimpleFontData* emoji_font =
+            GetFontData(font_description, AtomicString(kColorEmojiFontMac))) {
       return emoji_font;
-  }
-
-  // FIXME: We should fix getFallbackFamily to take a UChar32
-  // and remove this split-to-UChar16 code.
-  UChar code_units[2];
-  int code_units_length;
-  if (character <= 0xFFFF) {
-    code_units[0] = character;
-    code_units_length = 1;
-  } else {
-    code_units[0] = U16_LEAD(character);
-    code_units[1] = U16_TRAIL(character);
-    code_units_length = 2;
+    }
   }
 
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
-  NSFont* ns_font = base::apple::CFToNSPtrCast(platform_data.CtFont());
 
-  NSString* string = [[NSString alloc]
-      initWithCharacters:reinterpret_cast<UniChar*>(code_units)
-                  length:code_units_length];
-  NSFont* substitute_font =
-      [NSFont findFontLike:ns_font
-                 forString:string
-                 withRange:NSMakeRange(0, code_units_length)
-                inLanguage:nil];
-
-  // FIXME: Remove this SPI usage: http://crbug.com/255122
-  if (!substitute_font && code_units_length == 1)
-    substitute_font =
-        [NSFont findFontLike:ns_font forCharacter:code_units[0] inLanguage:nil];
-  if (!substitute_font)
-    return nullptr;
-
-  // Use the family name from the AppKit-supplied substitute font, requesting
-  // the traits, weight, and size we want. One way this does better than the
-  // original AppKit request is that it takes synthetic bold and oblique into
-  // account.  But it does create the possibility that we could end up with a
-  // font that doesn't actually cover the characters we need.
-
-  NSFontManager* font_manager = NSFontManager.sharedFontManager;
-
-  NSFontTraitMask traits;
-  NSInteger weight;
-  CGFloat size;
-
-  if (ns_font) {
-    traits = [font_manager traitsOfFont:ns_font];
-    if (platform_data.synthetic_bold_)
-      traits |= NSBoldFontMask;
-    if (platform_data.synthetic_italic_)
-      traits |= NSFontItalicTrait;
-    weight = [font_manager weightOfFont:ns_font];
-    size = [ns_font pointSize];
+  const FontPlatformData* alternate_font = nullptr;
+  if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    alternate_font = GetAlternateFontPlatformData(font_description, character,
+                                                  platform_data);
   } else {
-    // For custom fonts nsFont is nil.
-    traits = font_description.Style() ? NSFontItalicTrait : 0;
-    weight = ToAppKitFontWeight(font_description.Weight());
-    size = font_description.ComputedPixelSize();
-  }
-
-  NSFontTraitMask substitute_font_traits =
-      [font_manager traitsOfFont:substitute_font];
-  NSInteger substitute_font_weight =
-      [font_manager weightOfFont:substitute_font];
-
-  if (traits != substitute_font_traits || weight != substitute_font_weight ||
-      !ns_font) {
-    if (NSFont* best_variation =
-            [font_manager fontWithFamily:substitute_font.familyName
-                                  traits:traits
-                                  weight:weight
-                                    size:size]) {
-      if ((!ns_font ||
-           [font_manager traitsOfFont:best_variation] !=
-               substitute_font_traits ||
-           [font_manager weightOfFont:best_variation] !=
-               substitute_font_weight) &&
-          [[best_variation coveredCharacterSet]
-              longCharacterIsMember:character])
-        substitute_font = best_variation;
+    // FIXME: We should fix getFallbackFamily to take a UChar32
+    // and remove this split-to-UChar16 code.
+    UChar code_units[2];
+    int code_units_length;
+    if (character <= 0xFFFF) {
+      code_units[0] = character;
+      code_units_length = 1;
+    } else {
+      code_units[0] = U16_LEAD(character);
+      code_units[1] = U16_TRAIL(character);
+      code_units_length = 2;
     }
+
+    NSFont* ns_font = base::apple::CFToNSPtrCast(platform_data.CtFont());
+
+    NSString* string = [[NSString alloc]
+        initWithCharacters:reinterpret_cast<UniChar*>(code_units)
+                    length:code_units_length];
+    NSFont* substitute_font =
+        [NSFont findFontLike:ns_font
+                   forString:string
+                   withRange:NSMakeRange(0, code_units_length)
+                  inLanguage:nil];
+
+    // FIXME: Remove this SPI usage: http://crbug.com/255122
+    if (!substitute_font && code_units_length == 1) {
+      substitute_font = [NSFont findFontLike:ns_font
+                                forCharacter:code_units[0]
+                                  inLanguage:nil];
+    }
+    if (!substitute_font) {
+      return nullptr;
+    }
+
+    // Use the family name from the AppKit-supplied substitute font, requesting
+    // the traits, weight, and size we want. One way this does better than the
+    // original AppKit request is that it takes synthetic bold and oblique into
+    // account.  But it does create the possibility that we could end up with a
+    // font that doesn't actually cover the characters we need.
+
+    NSFontManager* font_manager = NSFontManager.sharedFontManager;
+
+    NSFontTraitMask traits;
+    NSInteger weight;
+    CGFloat size;
+
+    if (ns_font) {
+      traits = [font_manager traitsOfFont:ns_font];
+      if (platform_data.synthetic_bold_) {
+        traits |= NSBoldFontMask;
+      }
+      if (platform_data.synthetic_italic_) {
+        traits |= NSFontItalicTrait;
+      }
+      weight = [font_manager weightOfFont:ns_font];
+      size = [ns_font pointSize];
+    } else {
+      // For custom fonts nsFont is nil.
+      traits = font_description.Style() ? NSFontItalicTrait : 0;
+      weight = ToAppKitFontWeight(font_description.Weight());
+      size = font_description.ComputedPixelSize();
+    }
+
+    NSFontTraitMask substitute_font_traits =
+        [font_manager traitsOfFont:substitute_font];
+    NSInteger substitute_font_weight =
+        [font_manager weightOfFont:substitute_font];
+
+    if (traits != substitute_font_traits || weight != substitute_font_weight ||
+        !ns_font) {
+      if (NSFont* best_variation =
+              [font_manager fontWithFamily:substitute_font.familyName
+                                    traits:traits
+                                    weight:weight
+                                      size:size]) {
+        if ((!ns_font ||
+             [font_manager traitsOfFont:best_variation] !=
+                 substitute_font_traits ||
+             [font_manager weightOfFont:best_variation] !=
+                 substitute_font_weight) &&
+            [[best_variation coveredCharacterSet]
+                longCharacterIsMember:character]) {
+          substitute_font = best_variation;
+        }
+      }
+    }
+
+    substitute_font_traits = [font_manager traitsOfFont:substitute_font];
+    substitute_font_weight = [font_manager weightOfFont:substitute_font];
+
+    bool synthetic_bold = IsAppKitFontWeightBold(weight) &&
+                          !IsAppKitFontWeightBold(substitute_font_weight);
+
+    alternate_font = FontPlatformDataFromCTFont(
+        ScopedCFTypeRef<CTFontRef>(base::apple::NSToCFOwnershipCast(
+            substitute_font)),  // Ownership -> Ptr
+        font_description.EffectiveFontSize(), font_description.SpecifiedSize(),
+        synthetic_bold,
+        (traits & NSFontItalicTrait) &&
+            !(substitute_font_traits & NSFontItalicTrait),
+        font_description.TextRendering(), ResolvedFontFeatures(),
+        platform_data.Orientation(), font_description.FontOpticalSizing(),
+        /*variation_settings=*/nullptr);
   }
-
-  substitute_font =
-      UseHinting() ? substitute_font.screenFont : substitute_font.printerFont;
-
-  substitute_font_traits = [font_manager traitsOfFont:substitute_font];
-  substitute_font_weight = [font_manager weightOfFont:substitute_font];
-
-  bool synthetic_bold = IsAppKitFontWeightBold(weight) &&
-                        !IsAppKitFontWeightBold(substitute_font_weight);
-
-  std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
-      substitute_font, platform_data.size(), font_description.SpecifiedSize(),
-      synthetic_bold,
-      (traits & NSFontItalicTrait) &&
-          !(substitute_font_traits & NSFontItalicTrait),
-      font_description.TextRendering(), ResolvedFontFeatures(),
-      platform_data.Orientation(), font_description.FontOpticalSizing(),
-      /*variation_settings=*/nullptr);
 
   if (!alternate_font)
     return nullptr;
 
-  return FontDataFromFontPlatformData(alternate_font.get(), kDoNotRetain);
+  return FontDataFromFontPlatformData(alternate_font);
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
-    const FontDescription& font_description,
-    ShouldRetain should_retain) {
+const SimpleFontData* FontCache::GetLastResortFallbackFont(
+    const FontDescription& font_description) {
   // FIXME: Would be even better to somehow get the user's default font here.
   // For now we'll pick the default that the user would get without changing
   // any prefs.
-  scoped_refptr<SimpleFontData> simple_font_data =
+  const SimpleFontData* simple_font_data =
       GetFontData(font_description, font_family_names::kTimes,
-                  AlternateFontName::kAllowAlternate, should_retain);
+                  AlternateFontName::kAllowAlternate);
   if (simple_font_data)
     return simple_font_data;
 
@@ -251,56 +440,92 @@ scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
   // that's guaranteed to be there, according to Nathan Taylor. This is good
   // enough to avoid a crash at least.
   return GetFontData(font_description, font_family_names::kLucidaGrande,
-                     AlternateFontName::kAllowAlternate, should_retain);
+                     AlternateFontName::kAllowAlternate);
 }
 
-std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
+const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
-    float font_size,
+    float size,
     AlternateFontName alternate_name) {
-  NSFontTraitMask traits = font_description.Style() ? NSFontItalicTrait : 0;
-  float size = font_size;
+  // CoreText restricts the access to the system dot prefixed fonts, so return
+  // nullptr to use fallback font instead.
+  if (IsSystemFontName(creation_params.Family())) {
+    return nullptr;
+  }
 
-  NSFont* matched_font = nullptr;
+  NSFontTraitMask traits = font_description.Style() ? NSFontItalicTrait : 0;
+
+  ScopedCFTypeRef<CTFontRef> matched_font;
   if (alternate_name == AlternateFontName::kLocalUniqueFace &&
       RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
     matched_font = MatchUniqueFont(creation_params.Family(), size);
+  } else if (creation_params.Family() == font_family_names::kSystemUi) {
+    matched_font =
+        MatchSystemUIFont(font_description.Weight(), font_description.Style(),
+                          font_description.Stretch(), size);
+  } else if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    matched_font = MatchFontFamily(
+        creation_params.Family(), font_description.Weight(),
+        font_description.Style(), font_description.Stretch(), size);
   } else {
-    matched_font = MatchNSFontFamily(creation_params.Family(), traits,
-                                     font_description.Weight(), size);
+    matched_font = ScopedCFTypeRef<CTFontRef>(NSToCFOwnershipCast(
+        MatchNSFontFamily(creation_params.Family(), traits,
+                          font_description.Weight(), size)));
   }
   if (!matched_font)
     return nullptr;
 
-  NSFontManager* font_manager = NSFontManager.sharedFontManager;
-  NSFontTraitMask actual_traits = 0;
-  if (font_description.Style())
-    actual_traits = [font_manager traitsOfFont:matched_font];
-  NSInteger actual_weight = [font_manager weightOfFont:matched_font];
+  bool synthetic_bold, synthetic_italic;
+  if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
+    CTFontSymbolicTraits matched_font_traits =
+        CTFontGetSymbolicTraits(matched_font.get());
 
-  NSFont* platform_font =
-      UseHinting() ? matched_font.screenFont : matched_font.printerFont;
-  NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
+    bool desired_bold = font_description.Weight() > FontSelectionValue(500);
+    bool matched_font_bold = matched_font_traits & kCTFontTraitBold;
+    bool synthetic_bold_requested = (desired_bold && !matched_font_bold) ||
+                                    font_description.IsSyntheticBold();
+    synthetic_bold =
+        synthetic_bold_requested && font_description.SyntheticBoldAllowed();
 
-  bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
-                                   !IsAppKitFontWeightBold(actual_weight)) ||
-                                  font_description.IsSyntheticBold();
-  bool synthetic_bold =
-      synthetic_bold_requested && font_description.SyntheticBoldAllowed();
+    bool desired_italic = font_description.Style();
+    bool matched_font_italic = matched_font_traits & kCTFontTraitItalic;
+    bool synthetic_italic_requested =
+        (desired_italic && !matched_font_italic) ||
+        font_description.IsSyntheticItalic();
+    synthetic_italic =
+        synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+  } else {
+    NSFontManager* font_manager = NSFontManager.sharedFontManager;
+    NSFontTraitMask actual_traits = 0;
+    if (font_description.Style()) {
+      actual_traits =
+          [font_manager traitsOfFont:CFToNSPtrCast(matched_font.get())];
+    }
+    NSInteger actual_weight =
+        [font_manager weightOfFont:CFToNSPtrCast(matched_font.get())];
 
-  bool synthetic_italic_requested =
-      ((traits & NSFontItalicTrait) && !(actual_traits & NSFontItalicTrait)) ||
-      font_description.IsSyntheticItalic();
-  bool synthetic_italic =
-      synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+    NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
+
+    bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
+                                     !IsAppKitFontWeightBold(actual_weight)) ||
+                                    font_description.IsSyntheticBold();
+    synthetic_bold =
+        synthetic_bold_requested && font_description.SyntheticBoldAllowed();
+
+    bool synthetic_italic_requested = ((traits & NSFontItalicTrait) &&
+                                       !(actual_traits & NSFontItalicTrait)) ||
+                                      font_description.IsSyntheticItalic();
+    synthetic_italic =
+        synthetic_italic_requested && font_description.SyntheticItalicAllowed();
+  }
 
   // FontPlatformData::typeface() is null in the case of Chromium out-of-process
   // font loading failing.  Out-of-process loading occurs for registered fonts
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
-  std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromNSFont(
-      platform_font, size, font_description.SpecifiedSize(), synthetic_bold,
+  const FontPlatformData* platform_data = FontPlatformDataFromCTFont(
+      matched_font, size, font_description.SpecifiedSize(), synthetic_bold,
       synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation(),
       font_description.FontOpticalSizing(),

@@ -30,6 +30,11 @@ class LayoutSVGInlineText final : public LayoutText {
  public:
   LayoutSVGInlineText(Node*, String);
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(scaled_font_);
+    LayoutText::Trace(visitor);
+  }
+
   float ScalingFactor() const {
     NOT_DESTROYED();
     return scaling_factor_;
@@ -57,10 +62,13 @@ class LayoutSVGInlineText final : public LayoutText {
 
   gfx::RectF ObjectBoundingBox() const override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || type == kLayoutObjectSVGInlineText ||
-           LayoutText::IsOfType(type);
+    return true;
+  }
+  bool IsSVGInlineText() const final {
+    NOT_DESTROYED();
+    return true;
   }
 
   PhysicalRect PhysicalLinesBoundingBox() const override;

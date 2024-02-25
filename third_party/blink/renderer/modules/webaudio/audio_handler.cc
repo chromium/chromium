@@ -94,7 +94,7 @@ AudioNode* AudioHandler::GetNode() const {
 }
 
 BaseAudioContext* AudioHandler::Context() const {
-  return context_;
+  return context_.Get();
 }
 
 String AudioHandler::NodeTypeName() const {

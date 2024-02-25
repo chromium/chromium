@@ -10,8 +10,8 @@
 #include <set>
 #include <string>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -23,7 +23,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -63,10 +62,10 @@ class SamplingPartitionAllocShimsTest : public base::MultiProcessTest {
   static void multiprocessTestSetup() {
     crash_reporter::InitializeCrashKeys();
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    InstallPartitionAllocHooks(
-        AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
-        AllocatorState::kMaxRequestedSlots, kSamplingFrequency,
-        base::DoNothing(), LightweightDetector::State::kDisabled, 0);
+    InstallPartitionAllocHooks(AllocatorState::kMaxMetadata,
+                               AllocatorState::kMaxMetadata,
+                               AllocatorState::kMaxRequestedSlots,
+                               kSamplingFrequency, base::DoNothing());
   }
 
  protected:

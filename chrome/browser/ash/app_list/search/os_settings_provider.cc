@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -196,7 +196,8 @@ OsSettingsProvider::OsSettingsProvider(
     Profile* profile,
     ash::settings::SearchHandler* search_handler,
     const ash::settings::Hierarchy* hierarchy)
-    : profile_(profile),
+    : SearchProvider(SearchCategory::kSettings),
+      profile_(profile),
       search_handler_(search_handler),
       hierarchy_(hierarchy) {
   DCHECK(profile_);
@@ -309,8 +310,8 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // changed.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    proxy->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
-                    apps::IconType::kStandard, kAppIconDimension,
+    proxy->LoadIcon(web_app::kOsSettingsAppId, apps::IconType::kStandard,
+                    kAppIconDimension,
                     /*allow_placeholder_icon=*/false,
                     base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                                    weak_factory_.GetWeakPtr(),

@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
-#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
@@ -46,12 +45,12 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -62,7 +61,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -233,7 +231,9 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ExtensionIframe) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_iframe")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionProcess) {
+// TODO(crbug.com/1488987): Very flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       DISABLED_ContentScriptExtensionProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_process"))
       << message_;
@@ -1268,8 +1268,17 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, Messaging) {
       "content_scripts/other_extensions/message_echoer_allows_by_default")));
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "content_scripts/other_extensions/message_echoer_allows")));
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
-      "content_scripts/other_extensions/message_echoer_denies")));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII(
+          "content_scripts/other_extensions/message_echoer_denies"),
+      {.ignore_manifest_warnings = true});
+  ASSERT_TRUE(extension);
+  std::vector<InstallWarning> expected_warnings;
+  expected_warnings.emplace_back(
+      manifest_errors::kManifestV2IsDeprecatedWarning);
+  expected_warnings.emplace_back(
+      externally_connectable_errors::kErrorNothingSpecified);
+  EXPECT_EQ(extension->install_warnings(), expected_warnings);
   ASSERT_TRUE(RunExtensionTest("content_scripts/messaging")) << message_;
 }
 
@@ -1384,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
       {
-        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "name": "ScriptInjectionTrackerBrowserTest - Declarative",
         "version": "1.0",
         "manifest_version": 3,
         "host_permissions": ["http://foo.com/*", "file://*"],
@@ -1636,7 +1645,7 @@ bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
     //   EXPECT_EQ(did_run, DidProcessRunContentScriptFromExtension(...))
     // because even if the given frame didn't have the script run, another frame
     // in the process may have.
-    EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+    EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
         *host->GetProcess(), extension_id_));
   }
 
@@ -1901,16 +1910,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 class ContentScriptMatchOriginAsFallbackTest
     : public ContentScriptRelatedFrameTest {
  public:
-  ContentScriptMatchOriginAsFallbackTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kContentScriptsMatchOriginAsFallback);
-  }
+  ContentScriptMatchOriginAsFallbackTest() = default;
   ~ContentScriptMatchOriginAsFallbackTest() override = default;
 
   bool IncludeMatchOriginAsFallback() override { return true; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Inject a content script on an iframe to a data: URL on an allowed site.
@@ -2179,73 +2182,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   ASSERT_EQ(kPassed, watcher.WaitAndGetTitle());
 }
 
-class ContentScriptApiIdentifiabilityTest : public ContentScriptApiTest {
- public:
-  void SetUpOnMainThread() override {
-    identifiability_metrics_test_helper_.SetUpOnMainThread();
-    ContentScriptApiTest::SetUpOnMainThread();
-  }
-
- protected:
-  IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
-};
-
-// TODO(crbug.com/1305273): Fix this flaky test.
-// Test that identifiability study of content script injection produces the
-// expected UKM events.
-// TODO(crbug.com/1093066): When this test is fixed, convert it to run with
-// a service worker-based extension.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
-                       DISABLED_InjectionRecorded) {
-  base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("content_scripts/all_frames")) << message_;
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          web_contents, &run_loop);
-
-  // Right now the instrumentation infra doesn't track all of the sources that
-  // reported a particular surface, so we merely look for if one had it.
-  // Eventually both frames should report it.
-  //
-  // Further, we can't actually check the UKM source ID since those events
-  // are renderer-side, so use Document-generated IDs that are different than
-  // the navigation IDs provided by RenderFrameHost.
-  std::set<ukm::SourceId> source_ids =
-      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
-          merged_entries,
-          blink::IdentifiableSurface::Type::kExtensionContentScript,
-          GetSingleLoadedExtension()->id());
-  EXPECT_FALSE(source_ids.empty());
-}
-
-// Test that where a page doesn't get a content script injected, no
-// such event is recorded.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
-                       NoInjectionRecorded) {
-  base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  identifiability_metrics_test_helper_.EnsureIdentifiabilityEventGenerated(
-      web_contents);
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          web_contents, &run_loop);
-  EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
-      merged_entries,
-      blink::IdentifiableSurface::Type::kExtensionContentScript));
-}
-
 class ContentScriptApiPrerenderingTest
     : public ContentScriptApiTestWithContextType {
  private:
@@ -2379,6 +2315,35 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("done", listener.message());
+}
+
+class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    ContentScriptApiTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests Activity Log for content script executions.
+// Regression test for https://crbug.com/1519380.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
+                       ActivityLogRecorded) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that injects content scripts.
+  base::FilePath data_dir = test_data_dir_.AppendASCII("content_scripts");
+  const Extension* extension =
+      LoadExtension(data_dir.AppendASCII("script_a_com"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page where content scripts would be executed.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("a.com", "/extensions/test_file.html")));
+
+  // Execute the test which passes when it sees exactly 1 content_script entry
+  // in the activity log.
+  ASSERT_TRUE(RunExtensionTest("content_scripts/activity_log/"));
 }
 
 }  // namespace extensions

@@ -51,15 +51,26 @@
 #ifndef ABSL_STATUS_STATUS_H_
 #define ABSL_STATUS_STATUS_H_
 
+#include <cassert>
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <utility>
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/macros.h"
+#include "absl/base/nullability.h"
+#include "absl/base/optimization.h"
 #include "absl/functional/function_ref.h"
 #include "absl/status/internal/status_internal.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
+
+// TODO: crbug.com/1491724 - Remove include below when other third_party
+// libraries stop silently rely on it.
+#include "absl/strings/str_cat.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -421,7 +432,7 @@ inline StatusToStringMode& operator^=(StatusToStringMode& lhs,
 // Returned Status objects may not be ignored. status_internal.h has a forward
 // declaration of the form
 // class ABSL_MUST_USE_RESULT Status;
-class Status final {
+class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
  public:
   // Constructors
 
@@ -516,6 +527,12 @@ class Status final {
   std::string ToString(
       StatusToStringMode mode = StatusToStringMode::kDefault) const;
 
+  // Support `absl::StrCat`, `absl::StrFormat`, etc.
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Status& status) {
+    sink.Append(status.ToString(StatusToStringMode::kWithEverything));
+  }
+
   // Status::IgnoreError()
   //
   // Ignores any errors. This method does nothing except potentially suppress
@@ -602,56 +619,57 @@ class Status final {
   // code, and an empty error message.
   explicit Status(absl::StatusCode code);
 
-  static void UnrefNonInlined(uintptr_t rep);
+  // Underlying constructor for status from a rep_.
+  explicit Status(uintptr_t rep) : rep_(rep) {}
+
   static void Ref(uintptr_t rep);
   static void Unref(uintptr_t rep);
 
   // REQUIRES: !ok()
-  // Ensures rep_ is not shared with any other Status.
-  void PrepareToModify();
-
-  const status_internal::Payloads* GetPayloads() const;
-  status_internal::Payloads* GetPayloads();
-
-  static bool EqualsSlow(const absl::Status& a, const absl::Status& b);
+  // Ensures rep is not inlined or shared with any other Status.
+  static absl::Nonnull<status_internal::StatusRep*> PrepareToModify(
+      uintptr_t rep);
 
   // MSVC 14.0 limitation requires the const.
   static constexpr const char kMovedFromString[] =
       "Status accessed after move.";
 
-  static const std::string* EmptyString();
-  static const std::string* MovedFromString();
+  static absl::Nonnull<const std::string*> EmptyString();
+  static absl::Nonnull<const std::string*> MovedFromString();
 
   // Returns whether rep contains an inlined representation.
   // See rep_ for details.
-  static bool IsInlined(uintptr_t rep);
+  static constexpr bool IsInlined(uintptr_t rep);
 
   // Indicates whether this Status was the rhs of a move operation. See rep_
   // for details.
-  static bool IsMovedFrom(uintptr_t rep);
-  static uintptr_t MovedFromRep();
+  static constexpr bool IsMovedFrom(uintptr_t rep);
+  static constexpr uintptr_t MovedFromRep();
 
   // Convert between error::Code and the inlined uintptr_t representation used
   // by rep_. See rep_ for details.
-  static uintptr_t CodeToInlinedRep(absl::StatusCode code);
-  static absl::StatusCode InlinedRepToCode(uintptr_t rep);
+  static constexpr uintptr_t CodeToInlinedRep(absl::StatusCode code);
+  static constexpr absl::StatusCode InlinedRepToCode(uintptr_t rep);
 
   // Converts between StatusRep* and the external uintptr_t representation used
   // by rep_. See rep_ for details.
   static uintptr_t PointerToRep(status_internal::StatusRep* r);
-  static status_internal::StatusRep* RepToPointer(uintptr_t r);
+  static absl::Nonnull<const status_internal::StatusRep*> RepToPointer(
+      uintptr_t r);
 
-  std::string ToStringSlow(StatusToStringMode mode) const;
+  static std::string ToStringSlow(uintptr_t rep, StatusToStringMode mode);
 
   // Status supports two different representations.
-  //  - When the low bit is off it is an inlined representation.
+  //  - When the low bit is set it is an inlined representation.
   //    It uses the canonical error space, no message or payload.
   //    The error code is (rep_ >> 2).
   //    The (rep_ & 2) bit is the "moved from" indicator, used in IsMovedFrom().
-  //  - When the low bit is on it is an external representation.
+  //  - When the low bit is off it is an external representation.
   //    In this case all the data comes from a heap allocated Rep object.
-  //    (rep_ - 1) is a status_internal::StatusRep* pointer to that structure.
+  //    rep_ is a status_internal::StatusRep* pointer to that structure.
   uintptr_t rep_;
+
+  friend class status_internal::StatusRep;
 };
 
 // OkStatus()
@@ -755,11 +773,11 @@ Status ErrnoToStatus(int error_number, absl::string_view message);
 // Implementation details follow
 //------------------------------------------------------------------------------
 
-inline Status::Status() : rep_(CodeToInlinedRep(absl::StatusCode::kOk)) {}
+inline Status::Status() : Status(absl::StatusCode::kOk) {}
 
-inline Status::Status(absl::StatusCode code) : rep_(CodeToInlinedRep(code)) {}
+inline Status::Status(absl::StatusCode code) : Status(CodeToInlinedRep(code)) {}
 
-inline Status::Status(const Status& x) : rep_(x.rep_) { Ref(rep_); }
+inline Status::Status(const Status& x) : Status(x.rep_) { Ref(rep_); }
 
 inline Status& Status::operator=(const Status& x) {
   uintptr_t old_rep = rep_;
@@ -771,7 +789,7 @@ inline Status& Status::operator=(const Status& x) {
   return *this;
 }
 
-inline Status::Status(Status&& x) noexcept : rep_(x.rep_) {
+inline Status::Status(Status&& x) noexcept : Status(x.rep_) {
   x.rep_ = MovedFromRep();
 }
 
@@ -803,15 +821,27 @@ inline bool Status::ok() const {
   return rep_ == CodeToInlinedRep(absl::StatusCode::kOk);
 }
 
+inline absl::StatusCode Status::code() const {
+  return status_internal::MapToLocalCode(raw_code());
+}
+
+inline int Status::raw_code() const {
+  if (IsInlined(rep_)) return static_cast<int>(InlinedRepToCode(rep_));
+  return static_cast<int>(RepToPointer(rep_)->code());
+}
+
 inline absl::string_view Status::message() const {
   return !IsInlined(rep_)
-             ? RepToPointer(rep_)->message
+             ? RepToPointer(rep_)->message()
              : (IsMovedFrom(rep_) ? absl::string_view(kMovedFromString)
                                   : absl::string_view());
 }
 
 inline bool operator==(const Status& lhs, const Status& rhs) {
-  return lhs.rep_ == rhs.rep_ || Status::EqualsSlow(lhs, rhs);
+  if (lhs.rep_ == rhs.rep_) return true;
+  if (Status::IsInlined(lhs.rep_)) return false;
+  if (Status::IsInlined(rhs.rep_)) return false;
+  return *Status::RepToPointer(lhs.rep_) == *Status::RepToPointer(rhs.rep_);
 }
 
 inline bool operator!=(const Status& lhs, const Status& rhs) {
@@ -819,7 +849,7 @@ inline bool operator!=(const Status& lhs, const Status& rhs) {
 }
 
 inline std::string Status::ToString(StatusToStringMode mode) const {
-  return ok() ? "OK" : ToStringSlow(mode);
+  return ok() ? "OK" : ToStringSlow(rep_, mode);
 }
 
 inline void Status::IgnoreError() const {
@@ -831,52 +861,68 @@ inline void swap(absl::Status& a, absl::Status& b) {
   swap(a.rep_, b.rep_);
 }
 
-inline const status_internal::Payloads* Status::GetPayloads() const {
-  return IsInlined(rep_) ? nullptr : RepToPointer(rep_)->payloads.get();
+inline absl::optional<absl::Cord> Status::GetPayload(
+    absl::string_view type_url) const {
+  if (IsInlined(rep_)) return absl::nullopt;
+  return RepToPointer(rep_)->GetPayload(type_url);
 }
 
-inline status_internal::Payloads* Status::GetPayloads() {
-  return IsInlined(rep_) ? nullptr : RepToPointer(rep_)->payloads.get();
+inline void Status::SetPayload(absl::string_view type_url, absl::Cord payload) {
+  if (ok()) return;
+  status_internal::StatusRep* rep = PrepareToModify(rep_);
+  rep->SetPayload(type_url, std::move(payload));
+  rep_ = PointerToRep(rep);
 }
 
-inline bool Status::IsInlined(uintptr_t rep) { return (rep & 1) == 0; }
-
-inline bool Status::IsMovedFrom(uintptr_t rep) {
-  return IsInlined(rep) && (rep & 2) != 0;
+inline bool Status::ErasePayload(absl::string_view type_url) {
+  if (IsInlined(rep_)) return false;
+  status_internal::StatusRep* rep = PrepareToModify(rep_);
+  auto res = rep->ErasePayload(type_url);
+  rep_ = res.new_rep;
+  return res.erased;
 }
 
-inline uintptr_t Status::MovedFromRep() {
-  return CodeToInlinedRep(absl::StatusCode::kInternal) | 2;
+inline void Status::ForEachPayload(
+    absl::FunctionRef<void(absl::string_view, const absl::Cord&)> visitor)
+    const {
+  if (IsInlined(rep_)) return;
+  RepToPointer(rep_)->ForEachPayload(visitor);
 }
 
-inline uintptr_t Status::CodeToInlinedRep(absl::StatusCode code) {
-  return static_cast<uintptr_t>(code) << 2;
+constexpr bool Status::IsInlined(uintptr_t rep) { return (rep & 1) != 0; }
+
+constexpr bool Status::IsMovedFrom(uintptr_t rep) { return (rep & 2) != 0; }
+
+constexpr uintptr_t Status::CodeToInlinedRep(absl::StatusCode code) {
+  return (static_cast<uintptr_t>(code) << 2) + 1;
 }
 
-inline absl::StatusCode Status::InlinedRepToCode(uintptr_t rep) {
-  assert(IsInlined(rep));
+constexpr absl::StatusCode Status::InlinedRepToCode(uintptr_t rep) {
+  ABSL_ASSERT(IsInlined(rep));
   return static_cast<absl::StatusCode>(rep >> 2);
 }
 
-inline status_internal::StatusRep* Status::RepToPointer(uintptr_t rep) {
-  assert(!IsInlined(rep));
-  return reinterpret_cast<status_internal::StatusRep*>(rep - 1);
+constexpr uintptr_t Status::MovedFromRep() {
+  return CodeToInlinedRep(absl::StatusCode::kInternal) | 2;
 }
 
-inline uintptr_t Status::PointerToRep(status_internal::StatusRep* rep) {
-  return reinterpret_cast<uintptr_t>(rep) + 1;
+inline absl::Nonnull<const status_internal::StatusRep*> Status::RepToPointer(
+    uintptr_t rep) {
+  assert(!IsInlined(rep));
+  return reinterpret_cast<const status_internal::StatusRep*>(rep);
+}
+
+inline uintptr_t Status::PointerToRep(
+    absl::Nonnull<status_internal::StatusRep*> rep) {
+  return reinterpret_cast<uintptr_t>(rep);
 }
 
 inline void Status::Ref(uintptr_t rep) {
-  if (!IsInlined(rep)) {
-    RepToPointer(rep)->ref.fetch_add(1, std::memory_order_relaxed);
-  }
+  if (!IsInlined(rep)) RepToPointer(rep)->Ref();
 }
 
 inline void Status::Unref(uintptr_t rep) {
-  if (!IsInlined(rep)) {
-    UnrefNonInlined(rep);
-  }
+  if (!IsInlined(rep)) RepToPointer(rep)->Unref();
 }
 
 inline Status OkStatus() { return Status(); }
@@ -892,7 +938,7 @@ inline Status CancelledError() { return Status(absl::StatusCode::kCancelled); }
 // If the status's message is empty, the empty string is returned.
 //
 // StatusMessageAsCStr exists for C support. Use `status.message()` in C++.
-const char* StatusMessageAsCStr(
+absl::Nonnull<const char*> StatusMessageAsCStr(
     const Status& status ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 ABSL_NAMESPACE_END

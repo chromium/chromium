@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_task.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "url/gurl.h"
@@ -95,7 +96,7 @@ class ManifestFetchData {
   }
 
   // Returns true if the given id is included in this manifest fetch.
-  bool Includes(const std::string& extension_id) const;
+  bool Includes(const ExtensionId& extension_id) const;
 
   // Resets the full url to base url and removes |id_to_remove| from
   // the ManifestFetchData.
@@ -104,7 +105,7 @@ class ManifestFetchData {
 
   // Returns true if a ping parameter for |type| was added to full_url for this
   // extension id.
-  bool DidPing(const std::string& extension_id, PingType type) const;
+  bool DidPing(const ExtensionId& extension_id, PingType type) const;
 
   // Assuming that both this ManifestFetchData and |other| have the same
   // full_url, this method merges the other information associated with the

@@ -19,9 +19,9 @@ static_library("shimless_rma") {
     "//ash/public/cpp:cpp",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
-    "//ash/webui/resources:shimless_rma_resources",
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shimless_rma/mojom",
+    "//ash/webui/shimless_rma/resources:resources",
     "//build:branding_buildflags",
     "//chromeos/strings/",
     "//content/public/browser",
@@ -31,8 +31,4 @@ static_library("shimless_rma") {
     "//ui/resources",
     "//ui/web_dialogs",
   ]
-}
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
 }

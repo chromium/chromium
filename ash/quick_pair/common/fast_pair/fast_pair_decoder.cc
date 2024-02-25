@@ -4,9 +4,10 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 
+#include <optional>
 #include <vector>
+
 #include "base/strings/string_number_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -54,33 +55,35 @@ bool HasModelId(const std::vector<uint8_t>* service_data) {
            GetVersion(service_data) == 0 && IsIdLengthValid(service_data)));
 }
 
-absl::optional<std::string> GetHexModelIdFromServiceData(
+std::optional<std::string> GetHexModelIdFromServiceData(
     const std::vector<uint8_t>* service_data) {
-  if (service_data == nullptr || service_data->size() < kMinModelIdLength)
-    return absl::nullopt;
-  else if (service_data->size() == kMinModelIdLength)
-    // If the size is 3, all the bytes are the ID,
-    return base::HexEncode(service_data->data(), kMinModelIdLength);
-  else {
-    // Otherwise, the first byte is a header which contains the length of the
-    // big-endian model ID that follows. The model ID will be trimmed if it
-    // contains leading zeros.
-    int id_index = 1;
-    int end = id_index + GetIdLength(service_data);
-
-    // Ignore leading zeros.
-    while ((*service_data)[id_index] == 0 && end - id_index > kMinModelIdLength)
-      id_index++;
-
-    // Copy appropriate bytes to new array.
-    int bytes_size = end - id_index;
-    uint8_t bytes[bytes_size];
-
-    for (int i = 0; i < bytes_size; i++)
-      bytes[i] = (*service_data)[i + id_index];
-
-    return base::HexEncode(bytes, bytes_size);
+  if (service_data == nullptr || service_data->size() < kMinModelIdLength) {
+    return std::nullopt;
   }
+  if (service_data->size() == kMinModelIdLength) {
+    // If the size is 3, all the bytes are the ID,
+    return base::HexEncode(*service_data);
+  }
+  // Otherwise, the first byte is a header which contains the length of the
+  // big-endian model ID that follows. The model ID will be trimmed if it
+  // contains leading zeros.
+  int id_index = 1;
+  int end = id_index + GetIdLength(service_data);
+
+  // Ignore leading zeros.
+  while ((*service_data)[id_index] == 0 && end - id_index > kMinModelIdLength) {
+    id_index++;
+  }
+
+  // Copy appropriate bytes to new array.
+  int bytes_size = end - id_index;
+  uint8_t bytes[bytes_size];
+
+  for (int i = 0; i < bytes_size; i++) {
+    bytes[i] = (*service_data)[i + id_index];
+  }
+
+  return base::HexEncode(bytes, bytes_size);
 }
 
 }  // namespace fast_pair_decoder

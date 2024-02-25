@@ -89,10 +89,16 @@ inline constexpr bool IsNonLayoutFullPaintInvalidationReason(
          reason <= PaintInvalidationReason::kNonLayoutMax;
 }
 
-inline constexpr bool IsLayoutPaintInvalidationReason(
+inline constexpr bool IsLayoutFullPaintInvalidationReason(
     PaintInvalidationReason reason) {
   return reason > PaintInvalidationReason::kNonLayoutMax &&
          reason <= PaintInvalidationReason::kLayoutMax;
+}
+
+inline constexpr bool IsLayoutPaintInvalidationReason(
+    PaintInvalidationReason reason) {
+  return reason == PaintInvalidationReason::kIncremental ||
+         IsLayoutFullPaintInvalidationReason(reason);
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

@@ -13,7 +13,7 @@ desc: |-
 
         If this policy is left not set, Safe Browsing will operate in Standard Protection mode but users can change this setting.
 
-        See https://developers.google.com/safe-browsing for more info on Safe Browsing.
+        See https://support.google.com/chrome?p=safe_browsing_preferences for more info on Safe Browsing.
 example_value: 2
 features:
   can_be_recommended: true

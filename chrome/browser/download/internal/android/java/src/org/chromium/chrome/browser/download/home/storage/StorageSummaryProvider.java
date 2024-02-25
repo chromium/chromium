@@ -84,10 +84,13 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
                 File defaultDownloadDir = DownloadDirectoryProvider.getPrimaryDownloadDirectory();
                 if (defaultDownloadDir == null) return null;
 
-                DirectoryOption directoryOption = new DirectoryOption("",
-                        defaultDownloadDir.getAbsolutePath(), defaultDownloadDir.getUsableSpace(),
-                        defaultDownloadDir.getTotalSpace(),
-                        DirectoryOption.DownloadLocationDirectoryType.DEFAULT);
+                DirectoryOption directoryOption =
+                        new DirectoryOption(
+                                "",
+                                defaultDownloadDir.getAbsolutePath(),
+                                defaultDownloadDir.getUsableSpace(),
+                                defaultDownloadDir.getTotalSpace(),
+                                DirectoryOption.DownloadLocationDirectoryType.DEFAULT);
                 return directoryOption;
             }
 
@@ -110,9 +113,11 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
 
         // Build the storage summary string.
         assert (mTotalDownloadSize >= 0);
-        String storageSummary = mContext.getString(R.string.download_manager_ui_space_using,
-                DownloadUtils.getStringForBytes(mContext, mTotalDownloadSize),
-                DownloadUtils.getStringForBytes(mContext, mDirectoryOption.totalSpace));
+        String storageSummary =
+                mContext.getString(
+                        R.string.download_manager_ui_space_using,
+                        DownloadUtils.getStringForBytes(mContext, mTotalDownloadSize),
+                        DownloadUtils.getStringForBytes(mContext, mDirectoryOption.totalSpace));
         mDelegate.onStorageInfoChanged(storageSummary);
     }
 }

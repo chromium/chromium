@@ -7,6 +7,7 @@
 
 #include "remoting/host/curtain_mode.h"
 
+#include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -29,6 +30,8 @@ class CurtainModeChromeOs : public CurtainMode {
   CurtainModeChromeOs(const CurtainModeChromeOs&) = delete;
   CurtainModeChromeOs& operator=(const CurtainModeChromeOs&) = delete;
   ~CurtainModeChromeOs() override;
+
+  static ash::curtain::SecurityCurtainController::InitParams CreateInitParams();
 
   // CurtainMode implementation:
   bool Activate() override;

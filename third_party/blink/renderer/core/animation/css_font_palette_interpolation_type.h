@@ -24,7 +24,7 @@ class CORE_EXPORT CSSFontPaletteInterpolationType
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
   static InterpolationValue ConvertFontPalette(
-      scoped_refptr<FontPalette> font_palette);
+      scoped_refptr<const FontPalette> font_palette);
   InterpolationValue MaybeConvertValue(const CSSValue&,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "base/version.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
@@ -132,8 +133,6 @@ void ChromeOSSystemProfileProvider::WriteLinkedAndroidPhoneProto(
   linked_android_phone_data->set_is_instant_tethering_enabled(IsFeatureEnabled(
       feature_states_map,
       ash::multidevice_setup::mojom::Feature::kInstantTethering));
-  linked_android_phone_data->set_is_messages_enabled(IsFeatureEnabled(
-      feature_states_map, ash::multidevice_setup::mojom::Feature::kMessages));
 }
 
 void ChromeOSSystemProfileProvider::UpdateMultiProfileUserCount(
@@ -176,6 +175,11 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
         metrics::
             SystemProfileProto_DemoModeDimensions_CustomizationFacet_FEATURE_AWARE_DEVICE);
   }
+
+  demo_mode_dimensions->set_app_version(
+      ash::demo_mode::AppVersion().GetString());
+  demo_mode_dimensions->set_resources_version(
+      ash::demo_mode::ResourcesVersion().GetString());
 }
 
 void ChromeOSSystemProfileProvider::InitTaskGetFullHardwareClass(
@@ -218,7 +222,7 @@ void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
 
 void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
-  if (const absl::optional<base::StringPiece> full_hardware_class =
+  if (const std::optional<base::StringPiece> full_hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               "hardware_class")) {
     full_hardware_class_ = std::string(full_hardware_class.value());
@@ -228,13 +232,13 @@ void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
 
 void ChromeOSSystemProfileProvider::OnArcFeaturesParsed(
     base::OnceClosure callback,
-    absl::optional<arc::ArcFeatures> features) {
+    std::optional<arc::ArcFeatures> features) {
   base::ScopedClosureRunner runner(std::move(callback));
   if (!features) {
     LOG(WARNING) << "ArcFeatures not available on this build";
     return;
   }
-  arc_release_ = features->build_props.at("ro.build.version.release");
+  arc_release_ = features->build_props.release_version;
 }
 
 void ChromeOSSystemProfileProvider::OnTpmManagerGetRwVersionInfo(

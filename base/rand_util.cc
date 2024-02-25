@@ -9,16 +9,22 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <atomic>
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/strings/string_util.h"
+#include "base/time/time.h"
 
 namespace base {
 
 namespace {
 
-bool g_subsampling_enabled = true;
+// A MetricSubsampler instance is not thread-safe. However, the global
+// sampling state may be read concurrently with writing it via testing
+// scopers, hence the need to use atomics. All operations use
+// memory_order_relaxed because there are no dependent memory accesses.
+std::atomic<bool> g_subsampling_always_sample = false;
+std::atomic<bool> g_subsampling_never_sample = false;
 
 }  // namespace
 
@@ -47,6 +53,23 @@ double RandDouble() {
 
 float RandFloat() {
   return BitsToOpenEndedUnitIntervalF(base::RandUint64());
+}
+
+TimeDelta RandTimeDelta(TimeDelta start, TimeDelta limit) {
+  // We must have a finite, non-empty, non-reversed interval.
+  CHECK_LT(start, limit);
+  CHECK(!start.is_min());
+  CHECK(!limit.is_max());
+
+  const int64_t range = (limit - start).InMicroseconds();
+  // Because of the `CHECK_LT()` above, range > 0, so this cast is safe.
+  const uint64_t delta_us = base::RandGenerator(static_cast<uint64_t>(range));
+  // ...and because `range` fit in an `int64_t`, so will `delta_us`.
+  return start + Microseconds(static_cast<int64_t>(delta_us));
+}
+
+TimeDelta RandTimeDeltaUpTo(TimeDelta limit) {
+  return RandTimeDelta(TimeDelta(), limit);
 }
 
 double BitsToOpenEndedUnitInterval(uint64_t bits) {
@@ -89,8 +112,16 @@ uint64_t RandGenerator(uint64_t range) {
 
 std::string RandBytesAsString(size_t length) {
   DCHECK_GT(length, 0u);
-  std::string result;
-  RandBytes(WriteInto(&result, length + 1), length);
+  std::string result(length, '\0');
+  RandBytes(result.data(), length);
+  return result;
+}
+
+std::vector<uint8_t> RandBytesAsVector(size_t length) {
+  std::vector<uint8_t> result(length);
+  if (result.size()) {
+    RandBytes(result);
+  }
   return result;
 }
 
@@ -137,17 +168,40 @@ double InsecureRandomGenerator::RandDouble() {
 
 MetricsSubSampler::MetricsSubSampler() = default;
 bool MetricsSubSampler::ShouldSample(double probability) {
-  return !g_subsampling_enabled || generator_.RandDouble() < probability;
+  if (g_subsampling_always_sample.load(std::memory_order_relaxed)) {
+    return true;
+  }
+  if (g_subsampling_never_sample.load(std::memory_order_relaxed)) {
+    return false;
+  }
+
+  return generator_.RandDouble() < probability;
 }
 
-MetricsSubSampler::ScopedDisableForTesting::ScopedDisableForTesting() {
-  DCHECK(g_subsampling_enabled);
-  g_subsampling_enabled = false;
+MetricsSubSampler::ScopedAlwaysSampleForTesting::
+    ScopedAlwaysSampleForTesting() {
+  DCHECK(!g_subsampling_always_sample.load(std::memory_order_relaxed));
+  DCHECK(!g_subsampling_never_sample.load(std::memory_order_relaxed));
+  g_subsampling_always_sample.store(true, std::memory_order_relaxed);
 }
 
-MetricsSubSampler::ScopedDisableForTesting::~ScopedDisableForTesting() {
-  DCHECK(!g_subsampling_enabled);
-  g_subsampling_enabled = true;
+MetricsSubSampler::ScopedAlwaysSampleForTesting::
+    ~ScopedAlwaysSampleForTesting() {
+  DCHECK(g_subsampling_always_sample.load(std::memory_order_relaxed));
+  DCHECK(!g_subsampling_never_sample.load(std::memory_order_relaxed));
+  g_subsampling_always_sample.store(false, std::memory_order_relaxed);
+}
+
+MetricsSubSampler::ScopedNeverSampleForTesting::ScopedNeverSampleForTesting() {
+  DCHECK(!g_subsampling_always_sample.load(std::memory_order_relaxed));
+  DCHECK(!g_subsampling_never_sample.load(std::memory_order_relaxed));
+  g_subsampling_never_sample.store(true, std::memory_order_relaxed);
+}
+
+MetricsSubSampler::ScopedNeverSampleForTesting::~ScopedNeverSampleForTesting() {
+  DCHECK(!g_subsampling_always_sample);
+  DCHECK(g_subsampling_never_sample);
+  g_subsampling_never_sample.store(false, std::memory_order_relaxed);
 }
 
 }  // namespace base

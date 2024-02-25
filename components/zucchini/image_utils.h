@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/format_macros.h"
@@ -15,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/typed_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -93,7 +93,7 @@ class ReferenceReader {
 
   // Returns the next available Reference, or nullopt_t if exhausted.
   // Extracted References must be ordered by their location in the image.
-  virtual absl::optional<Reference> GetNext() = 0;
+  virtual std::optional<Reference> GetNext() = 0;
 };
 
 // Interface for writing References through member function

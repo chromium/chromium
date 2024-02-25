@@ -26,13 +26,14 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -42,7 +43,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache.LastSearchTermProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -55,46 +55,30 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for {@link TabAttributeCache}.
- */
+/** Unit tests for {@link TabAttributeCache}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabAttributeCacheUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
 
-    @Mock
-    TabModelSelectorImpl mTabModelSelector;
-    @Mock
-    TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    TabModelFilter mTabModelFilter;
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData1;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData2;
-    @Captor
-    ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
-    @Captor
-    ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
-    @Mock
-    Profile.Natives mProfileJniMock;
+    @Mock TabModelSelectorImpl mTabModelSelector;
+    @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Mock TabModelFilter mTabModelFilter;
+    @Mock TabModel mTabModel;
+    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Captor ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
+    @Mock Profile.Natives mProfileJniMock;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
+    private Tab mTab1;
+    private Tab mTab2;
     private TabAttributeCache mCache;
 
     @Before
@@ -102,8 +86,8 @@ public class TabAttributeCacheUnitTest {
         MockitoAnnotations.initMocks(this);
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
 
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, mCriticalPersistedTabData1);
-        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, mCriticalPersistedTabData2);
+        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID);
+        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID);
 
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
@@ -136,7 +120,7 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl() {
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(url).when(mTab1).getUrl();
 
         Assert.assertNotEquals(url, TabAttributeCache.getUrl(TAB1_ID));
@@ -151,12 +135,12 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl_incognito() {
-        String url = JUnitTestGURLs.EXAMPLE_URL;
-        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(url).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
-        Assert.assertNotEquals(url, TabAttributeCache.getUrl(TAB1_ID));
+        Assert.assertNotEquals(url.getSpec(), TabAttributeCache.getUrl(TAB1_ID));
     }
 
     @Test
@@ -187,7 +171,7 @@ public class TabAttributeCacheUnitTest {
     @Test
     public void updateRootId() {
         int rootId = 1337;
-        doReturn(rootId).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId).when(mTab1).getRootId();
 
         Assert.assertNotEquals(rootId, TabAttributeCache.getRootId(TAB1_ID));
 
@@ -202,7 +186,7 @@ public class TabAttributeCacheUnitTest {
     @Test
     public void updateRootId_incognito() {
         int rootId = 1337;
-        doReturn(rootId).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId).when(mTab1).getRootId();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onRootIdChanged(mTab1, rootId);
@@ -210,9 +194,46 @@ public class TabAttributeCacheUnitTest {
     }
 
     @Test
+    public void updateTabGroupId() {
+        Token tabGroupId = new Token(0x1337L, 0xBADL);
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 1. Set token.
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertEquals(tabGroupId, TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 2. Null token.
+        doReturn(null).when(mTab1).getTabGroupId();
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, null);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 3. Set token.
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertEquals(tabGroupId, TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 4. Delete on close tab.
+        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+    }
+
+    @Test
+    public void updateTabGroupId_incognito() {
+        Token tabGroupId = new Token(0x1337L, 0xBADL);
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+        doReturn(true).when(mTab1).isIncognito();
+
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+    }
+
+    @Test
     public void updateTimestamp() {
         long timestamp = 1337;
-        doReturn(timestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
+        doReturn(timestamp).when(mTab1).getTimestampMillis();
 
         Assert.assertNotEquals(timestamp, TabAttributeCache.getTimestampMillis(TAB1_ID));
 
@@ -227,7 +248,7 @@ public class TabAttributeCacheUnitTest {
     @Test
     public void updateTimestamp_incognito() {
         long timestamp = 1337;
-        doReturn(timestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
+        doReturn(timestamp).when(mTab1).getTimestampMillis();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onTimestampChanged(mTab1, timestamp);
@@ -248,20 +269,23 @@ public class TabAttributeCacheUnitTest {
         WebContents webContents = mock(WebContents.class);
         doReturn(webContents).when(mTab1).getWebContents();
 
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertEquals(searchTerm, TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         // Empty strings should propagate.
         doReturn("").when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertEquals("", TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         // Null should also propagate.
         doReturn(null).when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
@@ -284,10 +308,10 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void findLastSearchTerm() {
-        GURL otherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+        GURL otherUrl = JUnitTestGURLs.EXAMPLE_URL;
+        GURL searchUrl = JUnitTestGURLs.SEARCH_URL;
         String searchTerm = "test";
-        GURL searchUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
+        GURL searchUrl2 = JUnitTestGURLs.SEARCH_2_URL;
         String searchTerm2 = "query";
 
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
@@ -361,21 +385,21 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void onTabStateInitialized() {
-        GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url1 = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(url1).when(mTab1).getUrl();
         String title1 = "title 1";
         doReturn(title1).when(mTab1).getTitle();
         int rootId1 = 1337;
-        doReturn(rootId1).when(mCriticalPersistedTabData1).getRootId();
+        doReturn(rootId1).when(mTab1).getRootId();
         long timestamp1 = 123456;
-        doReturn(timestamp1).when(mCriticalPersistedTabData1).getTimestampMillis();
+        doReturn(timestamp1).when(mTab1).getTimestampMillis();
 
-        GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+        GURL url2 = JUnitTestGURLs.URL_2;
         doReturn(url2).when(mTab2).getUrl();
         String title2 = "title 2";
         doReturn(title2).when(mTab2).getTitle();
         int rootId2 = 42;
-        doReturn(rootId2).when(mCriticalPersistedTabData2).getRootId();
+        doReturn(rootId2).when(mTab2).getRootId();
 
         String searchTerm = "chromium";
         LastSearchTermProvider lastSearchTermProvider = mock(LastSearchTermProvider.class);
@@ -411,5 +435,4 @@ public class TabAttributeCacheUnitTest {
         Assert.assertEquals(title2, TabAttributeCache.getTitle(TAB2_ID));
         Assert.assertEquals(rootId2, TabAttributeCache.getRootId(TAB2_ID));
     }
-
 }

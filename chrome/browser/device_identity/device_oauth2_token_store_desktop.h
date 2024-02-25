@@ -53,7 +53,7 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   // |refresh_token_|.
   void DecryptToken() const;
 
-  const raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // This and the |token_decrypted_| field are mutable because they are modified
   // on the first call to |GetRefreshToken()|, which is const.

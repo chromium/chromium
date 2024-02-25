@@ -3,7 +3,9 @@ URL: https://crates.io/crates/unicode-width
 Description: Determine displayed width of `char` and `str` types
 according to Unicode Standard Annex #11 rules.
 
-Version: 0.1.9
-Security Critical: no
-Shipped: yes
+Version: 0.1.11
+Security Critical: yes
+Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.11/LICENSE-APACHE
+Revision: 89424871950f91033de79cd06318d8c06d94df84

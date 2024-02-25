@@ -42,7 +42,9 @@ source_set("testing") {
     "//third_party/blink/renderer:inside_blink",
   ]
 
-  sources = generated_interface_sources_for_testing_in_modules +
+  sources = generated_dictionary_sources_for_testing_in_modules +
+            generated_enumeration_sources_for_testing_in_modules +
+            generated_interface_sources_for_testing_in_modules +
             generated_interface_extra_sources_for_testing_in_modules
 
   deps = [

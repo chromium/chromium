@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
-import {DialogType} from '../../../../common/js/dialog_type.js';
-import {str} from '../../../../common/js/util.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {str} from '../../../../common/js/translations.js';
+import {RootType} from '../../../../common/js/volume_manager_types.js';
+import {DialogType} from '../../../../state/state.js';
 
 import {getTemplate} from './dlp_restricted_banner.html.js';
 import {StateBanner} from './state_banner.js';
@@ -45,7 +39,7 @@ export class DlpRestrictedBanner extends StateBanner {
    * them.
    */
   override allowedVolumes() {
-    return Object.values(VolumeManagerCommon.RootType).map(x => ({root: x}));
+    return Object.values(RootType).map(x => ({root: x}));
   }
 
   /**
@@ -61,7 +55,7 @@ export class DlpRestrictedBanner extends StateBanner {
    * determines the text used in the banner.
    */
   override onFilteredContext(context: {type: DialogType}) {
-    if (!context || context.type == null) {
+    if (!context || context.type === null) {
       console.warn('Context not supplied or dialog type key missing.');
       return;
     }

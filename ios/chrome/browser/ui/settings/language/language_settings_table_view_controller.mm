@@ -13,8 +13,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
@@ -38,7 +37,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -123,7 +122,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.toolbarHidden = NO;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -187,12 +186,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)updateUIForEditState {
   [super updateUIForEditState];
-
-  // The following two lines cause the table view to refresh the cell heights
-  // with animation without reloading the cells. This is needed for language
-  // cells that can be significantly taller in edit mode.
-  [self.tableView beginUpdates];
-  [self.tableView endUpdates];
 
   [self setAddLanguageItemEnabled:!self.isEditing];
   if (_translateSwitchItem) {

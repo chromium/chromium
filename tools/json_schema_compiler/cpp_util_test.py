@@ -6,7 +6,12 @@
 import unittest
 
 from cpp_util import (
-    Classname, CloseNamespace, GenerateIfndefName, OpenNamespace)
+    Classname,
+    CloseNamespace,
+    GetCppNamespace,
+    GenerateIfndefName,
+    OpenNamespace
+)
 
 class CppUtilTest(unittest.TestCase):
   def testClassname(self):
@@ -57,6 +62,12 @@ class CppUtilTest(unittest.TestCase):
   def testGenerateIfndefName(self):
     self.assertEqual('FOO_BAR_BAZ_H__', GenerateIfndefName('foo\\bar\\baz.h'))
     self.assertEqual('FOO_BAR_BAZ_H__', GenerateIfndefName('foo/bar/baz.h'))
+
+  def testGetCppNamespace(self):
+    namespace_pattern = "test::api::%(namespace)s"
+    unix_name = "SimpleApi"
+    self.assertEqual("test::api::SimpleApi",
+                     GetCppNamespace(namespace_pattern, unix_name))
 
 
 if __name__ == '__main__':

@@ -16,7 +16,7 @@ namespace {
 using ::google::protobuf::RepeatedPtrField;
 
 template <typename ReplyType>
-bool IsEmpty(const absl::optional<ReplyType>& reply) {
+bool IsEmpty(const std::optional<ReplyType>& reply) {
   if (!reply.has_value()) {
     LOGIN_LOG(ERROR) << "Cryptohome call failed with empty reply.";
     return true;
@@ -28,7 +28,7 @@ bool IsEmpty(const absl::optional<ReplyType>& reply) {
 
 template <typename ReplyType>
 cryptohome::MountError ReplyToMountError(
-    const absl::optional<ReplyType>& reply) {
+    const std::optional<ReplyType>& reply) {
   if (IsEmpty(reply)) {
     return cryptohome::MOUNT_ERROR_FATAL;
   }
@@ -37,81 +37,91 @@ cryptohome::MountError ReplyToMountError(
 }
 
 template <typename ReplyType>
-CryptohomeErrorCode ReplyToCryptohomeError(
-    const absl::optional<ReplyType>& reply) {
+cryptohome::ErrorWrapper ReplyToCryptohomeError(
+    const std::optional<ReplyType>& reply) {
   if (IsEmpty(reply)) {
-    return CRYPTOHOME_ERROR_MOUNT_FATAL;
+    return cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+        CRYPTOHOME_ERROR_MOUNT_FATAL);
   }
-  return reply->error();
+  return cryptohome::ErrorWrapper::CreateFrom(reply->error(),
+                                              reply->error_info());
 }
 
 // Instantiate ReplyToMountError and export them for types actually used.
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    cryptohome::MountError
-    ReplyToMountError(const absl::optional<RemoveReply>&);
+    cryptohome::MountError ReplyToMountError(const std::optional<RemoveReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     cryptohome::MountError
-    ReplyToMountError(const absl::optional<UnmountReply>&);
+    ReplyToMountError(const std::optional<UnmountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<StartAuthSessionReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<StartAuthSessionReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<AuthenticateAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<AuthenticateAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<AddAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<AddAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<UnmountReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<UnmountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<RemoveReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<RemoveReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<CreatePersistentUserReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<CreatePersistentUserReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<PrepareGuestVaultReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<RestoreDeviceKeyReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<PrepareEphemeralVaultReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<PrepareGuestVaultReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<PreparePersistentVaultReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<PrepareEphemeralVaultReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode ReplyToCryptohomeError(
-        const absl::optional<PrepareVaultForMigrationReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<PreparePersistentVaultReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<ListAuthFactorsReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<PrepareVaultForMigrationReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<RemoveAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<ListAuthFactorsReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<UpdateAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<RemoveAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<GetAuthSessionStatusReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<UpdateAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<InvalidateAuthSessionReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<UpdateAuthFactorMetadataReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<PrepareAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<GetAuthSessionStatusReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<TerminateAuthFactorReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<ExtendAuthSessionReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<GetRecoveryRequestReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<InvalidateAuthSessionReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    CryptohomeErrorCode
-    ReplyToCryptohomeError(const absl::optional<StartMigrateToDircryptoReply>&);
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<PrepareAuthFactorReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<TerminateAuthFactorReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<GetRecoveryRequestReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<StartMigrateToDircryptoReply>&);
 
 int64_t AccountDiskUsageReplyToUsageSize(
-    const absl::optional<GetAccountDiskUsageReply>& reply) {
+    const std::optional<GetAccountDiskUsageReply>& reply) {
   if (IsEmpty(reply)) {
     return -1;
   }

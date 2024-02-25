@@ -70,7 +70,7 @@ H264SPS::H264SPS() {
 
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
-absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
+std::optional<gfx::Size> H264SPS::GetCodedSize() const {
   // Interlaced frames are twice the height of each field.
   const int mb_unit = 16;
   int map_unit = frame_mbs_only_flag ? 16 : 32;
@@ -84,7 +84,7 @@ absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
   if (pic_width_in_mbs_minus1 > max_mb_minus1 ||
       pic_height_in_map_units_minus1 > max_map_units_minus1) {
     DVLOG(1) << "Coded size is too large.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Size(mb_unit * (pic_width_in_mbs_minus1 + 1),
@@ -92,10 +92,10 @@ absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
 }
 
 // Also based on section 7.4.2.1.1.
-absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
-  absl::optional<gfx::Size> coded_size = GetCodedSize();
+std::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
+  std::optional<gfx::Size> coded_size = GetCodedSize();
   if (!coded_size)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!frame_cropping_flag)
     return gfx::Rect(coded_size.value());
@@ -124,7 +124,7 @@ absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
       coded_size->height() / crop_unit_y < frame_crop_top_offset ||
       coded_size->height() / crop_unit_y < frame_crop_bottom_offset) {
     DVLOG(1) << "Frame cropping exceeds coded size.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int crop_left = crop_unit_x * frame_crop_left_offset;
   int crop_right = crop_unit_x * frame_crop_right_offset;
@@ -137,7 +137,7 @@ absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
   if (coded_size->width() - crop_left <= crop_right ||
       coded_size->height() - crop_top <= crop_bottom) {
     DVLOG(1) << "Frame cropping excludes entire frame.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Rect(crop_left, crop_top,
@@ -1109,17 +1109,23 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
         (encrypted_ranges_.IntersectionWith(pps_range).size() == 0);
   }
   if (pps_remainder_unencrypted && br_.HasMoreRBSPData()) {
-    READ_BOOL_OR_RETURN(&pps->transform_8x8_mode_flag);
-    READ_BOOL_OR_RETURN(&pps->pic_scaling_matrix_present_flag);
+    if (sps->profile_idc == H264SPS::kProfileIDCBaseline ||
+        sps->profile_idc == H264SPS::kProfileIDCConstrainedBaseline ||
+        sps->profile_idc == H264SPS::kProfileIDCMain) {
+      DVLOG(1) << "Invalid stream, ignored unexpected RBSB data in PPS frame";
+    } else {
+      READ_BOOL_OR_RETURN(&pps->transform_8x8_mode_flag);
+      READ_BOOL_OR_RETURN(&pps->pic_scaling_matrix_present_flag);
 
-    if (pps->pic_scaling_matrix_present_flag) {
-      DVLOG(4) << "Picture scaling matrix present";
-      res = ParsePPSScalingLists(*sps, pps.get());
-      if (res != kOk)
-        return res;
+      if (pps->pic_scaling_matrix_present_flag) {
+        DVLOG(4) << "Picture scaling matrix present";
+        res = ParsePPSScalingLists(*sps, pps.get());
+        if (res != kOk)
+          return res;
+      }
+
+      READ_SE_OR_RETURN(&pps->second_chroma_qp_index_offset);
     }
-
-    READ_SE_OR_RETURN(&pps->second_chroma_qp_index_offset);
   }
 
   // If a PPS with the same id already exists, replace it.

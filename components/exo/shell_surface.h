@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_EXO_SHELL_SURFACE_H_
 #define COMPONENTS_EXO_SHELL_SURFACE_H_
 
+#include <optional>
+
 #include "ash/focus_cycler.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_observer.h"
@@ -21,6 +24,7 @@ class ScopedAnimationDisabler;
 
 namespace ui {
 class CompositorLock;
+class Layer;
 }  // namespace ui
 
 namespace exo {
@@ -47,15 +51,22 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // The size is a hint, in the sense that the client is free to ignore it if
   // it doesn't resize, pick a smaller size (to satisfy aspect ratio or resize
   // in steps of NxM pixels).
-  using ConfigureCallback =
-      base::RepeatingCallback<uint32_t(const gfx::Rect& bounds,
-                                       chromeos::WindowStateType state_type,
-                                       bool resizing,
-                                       bool activated,
-                                       const gfx::Vector2d& origin_offset,
-                                       float raster_scale)>;
+  using ConfigureCallback = base::RepeatingCallback<uint32_t(
+      const gfx::Rect& bounds,
+      chromeos::WindowStateType state_type,
+      bool resizing,
+      bool activated,
+      const gfx::Vector2d& origin_offset,
+      float raster_scale,
+      aura::Window::OcclusionState occlusion_state,
+      std::optional<chromeos::WindowStateType> restore_state_type)>;
   using OriginChangeCallback =
       base::RepeatingCallback<void(const gfx::Point& origin)>;
+  using RotateFocusCallback =
+      base::RepeatingCallback<uint32_t(ash::FocusCycler::Direction direction,
+                                       bool restart)>;
+  using OverviewChangeCallback =
+      base::RepeatingCallback<void(bool in_overview)>;
 
   void set_configure_callback(const ConfigureCallback& configure_callback) {
     configure_callback_ = configure_callback;
@@ -66,11 +77,12 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     origin_change_callback_ = origin_change_callback;
   }
 
-  using RotateFocusCallback =
-      base::RepeatingCallback<uint32_t(ash::FocusCycler::Direction direction,
-                                       bool restart)>;
   void set_rotate_focus_callback(const RotateFocusCallback callback) {
     rotate_focus_callback_ = callback;
+  }
+
+  void set_overview_change_callback(const OverviewChangeCallback callback) {
+    overview_change_callback_ = callback;
   }
 
   // When the client is asked to configure the surface, it should acknowledge
@@ -93,8 +105,11 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Restore the shell surface.
   void Restore();
 
-  // Set fullscreen state for shell surface.
-  void SetFullscreen(bool fullscreen);
+  // Set fullscreen state for shell surface. When `fullscreen` is true,
+  // `display_id` indicates the id of the display where the surface should be
+  // shown on, otherwise it gets ignored. When `display::kInvalidDisplayId` is
+  // specified the current display will be used.
+  void SetFullscreen(bool fullscreen, int64_t display_id);
 
   // Make the shell surface popup type.
   void SetPopup();
@@ -109,10 +124,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Start an interactive resize of surface. |component| is one of the windows
   // HT constants (see ui/base/hit_test.h) and describes in what direction the
   // surface should be resized.
-  void StartResize(int component);
+  bool StartResize(int component);
 
   // Start an interactive move of surface.
-  void StartMove();
+  bool StartMove();
 
   // Sends a wayland request to the surface to rotate focus within itself. If
   // the client was able to rotate, it will return a "handled" response,
@@ -130,15 +145,24 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   void AddObserver(ShellSurfaceObserver* observer);
   void RemoveObserver(ShellSurfaceObserver* observer);
 
+  void MaybeSetCompositorLockForNextConfigure(int milliseconds);
+
   // Overridden from SurfaceDelegate:
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetParent(Surface* parent, const gfx::Point& position) override;
 
+  // Overridden from SurfaceTreeHost:
+  void MaybeActivateSurface() override;
+  ui::Layer* GetCommitTargetLayer() override;
+  const ui::Layer* GetCommitTargetLayer() const override;
+
   // Overridden from ShellSurfaceBase:
   void InitializeWindowState(ash::WindowState* window_state) override;
-  absl::optional<gfx::Rect> GetWidgetBounds() const override;
+  std::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   void SetUseImmersiveForFullscreen(bool value) override;
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
   // Overridden from aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -168,6 +192,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   bool OnPreWidgetCommit() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
+  void SetRootSurface(Surface* root_surface) override;
+
+  // Overridden from ui::LayerOwner::Observer:
+  void OnLayerRecreated(ui::Layer* old_layer) override;
 
   void EndDrag();
 
@@ -194,9 +222,36 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     void set_needs_configure() { needs_configure_ = true; }
 
    private:
-    const raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_;
+    const raw_ptr<ShellSurface> shell_surface_;
     const bool force_configure_;
     bool needs_configure_ = false;
+  };
+
+  class OcclusionObserver : public aura::WindowObserver {
+   public:
+    explicit OcclusionObserver(ShellSurface* shell_surface,
+                               aura::Window* window);
+    ~OcclusionObserver() override;
+
+    aura::Window::OcclusionState state() const { return state_; }
+
+    aura::Window::OcclusionState GetInitialStateForConfigure(
+        chromeos::WindowStateType state_type);
+
+    // aura::WindowObserver:
+    void OnWindowDestroying(aura::Window* window) override;
+    void OnWindowOcclusionChanged(aura::Window* window) override;
+
+   private:
+    void MaybeConfigure(aura::Window* window);
+
+    // Keeps track of what the current state should be. During initialization,
+    // we want to defer sending occlusion messages until everything is ready,
+    // so this may be different to the current occlusion state.
+    aura::Window::OcclusionState state_;
+    const raw_ptr<ShellSurface> shell_surface_;
+    base::ScopedObservation<aura::Window, aura::WindowObserver>
+        window_observation_{this};
   };
 
   // Set the parent window of this surface.
@@ -212,20 +267,38 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   bool GetCanResizeFromSizeConstraints() const override;
 
-  void AttemptToStartDrag(int component);
+  bool AttemptToStartDrag(int component);
 
   // Utility methods to resolve the initial bounds for the first commit.
   gfx::Rect GetInitialBoundsForState(
       const chromeos::WindowStateType state) const;
   display::Display GetDisplayForInitialBounds() const;
 
+  void UpdateLayerSurfaceRange(ui::Layer* layer,
+                               const viz::LocalSurfaceId& current_lsi);
+
+  // Called when the widget window's position in screen coordinates may have
+  // changed.
+  // TODO(tluk): Screen position changes should be merged into Configure().
+  void OnWidgetScreenPositionChanged();
+
   std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
+  std::optional<OcclusionObserver> occlusion_observer_;
+
+  // Temporarily stores the `host_window()`'s layer when it's recreated for
+  // animation. Client-side commits may be directed towards the `old_layer_`
+  // instead of `host_window()->layer()` due to the asynchronous config/ack
+  // flow.
+  base::WeakPtr<ui::Layer> old_layer_;
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
+
   ConfigureCallback configure_callback_;
   OriginChangeCallback origin_change_callback_;
   RotateFocusCallback rotate_focus_callback_;
-  raw_ptr<ScopedConfigure, ExperimentalAsh> scoped_configure_ = nullptr;
+  OverviewChangeCallback overview_change_callback_;
+
+  raw_ptr<ScopedConfigure> scoped_configure_ = nullptr;
   base::circular_deque<std::unique_ptr<Config>> pending_configs_;
   // Stores the config which is acked but not yet committed. This will keep the
   // compositor locked until reset after Commit() is called.

@@ -13,8 +13,7 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 const char* kFlatbufferSchemaExpected = R"(
@@ -61,6 +60,8 @@ table UrlRuleMetadata {
 table EmbedderConditions {
   tab_ids_included : [int];
   tab_ids_excluded : [int];
+  response_headers: [HeaderCondition];
+  excluded_response_headers: [HeaderCondition];
 }
 enum IndexType : ubyte {
   before_request_except_allow_all_requests = 0,
@@ -78,14 +79,21 @@ table ModifyHeaderInfo {
   header: string;
   value: string;
 }
+table HeaderCondition {
+  header: string;
+  values: [string];
+  excluded_values: [string];
+}
 table RegexRule {
   url_rule: url_pattern_index.flat.UrlRule;
   action_type: ActionType;
   regex_substitution: string;
 }
 table ExtensionIndexedRuleset {
-  index_list : [url_pattern_index.flat.UrlPatternIndex];
-  regex_rules: [RegexRule];
+  before_request_index_list : [url_pattern_index.flat.UrlPatternIndex];
+  headers_received_index_list : [url_pattern_index.flat.UrlPatternIndex];
+  before_request_regex_rules: [RegexRule];
+  headers_received_regex_rules: [RegexRule];
   extension_metadata : [UrlRuleMetadata];
 }
 root_type ExtensionIndexedRuleset;
@@ -140,7 +148,8 @@ using IndexedRulesetFormatVersionTest = ::testing::Test;
 // schema is modified.
 TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   base::FilePath source_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
   base::FilePath flatbuffer_schema_path = source_root.AppendASCII(
       "extensions/browser/api/declarative_net_request/flat/"
@@ -154,7 +163,7 @@ TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   EXPECT_EQ(StripCommentsAndWhitespace(kFlatbufferSchemaExpected),
             StripCommentsAndWhitespace(flatbuffer_schema))
       << "Schema change detected; update this test and the schema version.";
-  EXPECT_EQ(28, GetIndexedRulesetFormatVersionForTesting())
+  EXPECT_EQ(31, GetIndexedRulesetFormatVersionForTesting())
       << "Update this test if you update the schema version.";
 }
 
@@ -174,5 +183,4 @@ TEST_F(IndexedRulesetFormatVersionTest, StripCommentsAndWhitespace) {
 }
 
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

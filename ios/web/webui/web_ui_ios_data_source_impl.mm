@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
@@ -57,7 +58,7 @@ class WebUIIOSDataSourceImpl::InternalDataSource : public URLDataSourceIOS {
   }
 
  private:
-  WebUIIOSDataSourceImpl* parent_;
+  raw_ptr<WebUIIOSDataSourceImpl> parent_;
 };
 
 WebUIIOSDataSourceImpl::WebUIIOSDataSourceImpl(const std::string& source_name)

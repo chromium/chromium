@@ -25,4 +25,8 @@ export class WindowProxy {
   now(): number {
     return Date.now();
   }
+
+  get onLine(): boolean {
+    return window.navigator.onLine;
+  }
 }

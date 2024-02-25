@@ -1,6 +1,0 @@
-Verify that CSS variables are resolved properly for DOM inheritance
-compute "var(--color)" for element.style: blue
-compute "var(--color)" for span: blue
-compute "var(--color)" for div: red
-compute "var(--color)" for body: red
-

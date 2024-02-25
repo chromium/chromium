@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
+#include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
@@ -1274,8 +1274,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                 "modelId": 16,
                 "refreshRate": 15,
                 "resolutionHorizontal": 13,
-                "resolutionVertical": 14,
-                "serialNumber": 17
+                "resolutionVertical": 14
               },
               {
                 "inputType": "unknown"
@@ -1295,8 +1294,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               "privacyScreenSupported": true,
               "refreshRate": 5,
               "resolutionHorizontal": 3,
-              "resolutionVertical": 4,
-              "serialNumber": 7
+              "resolutionVertical": 4
             }
           }, result);
         chrome.test.succeed();
@@ -1545,6 +1543,121 @@ IN_PROC_BROWSER_TEST_F(
         chrome.test.assertEq("COOL-LAPTOP-CHROME", result.modelName);
         chrome.test.assertEq(null, result.serialNumber);
         chrome.test.assertEq("sku15", result.skuNumber);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetThermalInfo_NoFeatureFlagEnabledError) {
+  // If the permission is not enabled, the method isn't defined
+  // on `chrome.os.telemetry`.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+        function getThermalInfo() {
+            chrome.test.assertThrows(() => {
+                    chrome.os.telemetry.getThermalInfo();
+                }, [],
+                "chrome.os.telemetry.getThermalInfo is not a function");
+            chrome.test.succeed();
+        }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
+    : public TelemetryExtensionTelemetryApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetThermalInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::ProbeCategoryEnum::kThermal});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getThermalInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getThermalInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetThermalInfo_Success) {
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
+    {
+      auto thermal_sensor_1 = crosapi::ProbeThermalSensorInfo::New();
+      thermal_sensor_1->name = "thermal_sensor_1";
+      thermal_sensor_1->temperature_celsius = 100;
+      thermal_sensor_1->source = crosapi::ProbeThermalSensorSource::kEc;
+
+      auto thermal_sensor_2 = crosapi::ProbeThermalSensorInfo::New();
+      thermal_sensor_2->name = "thermal_sensor_2";
+      thermal_sensor_2->temperature_celsius = 50;
+      thermal_sensor_2->source = crosapi::ProbeThermalSensorSource::kSysFs;
+
+      std::vector<crosapi::ProbeThermalSensorInfoPtr> thermal_sensors;
+      thermal_sensors.push_back(std::move(thermal_sensor_1));
+      thermal_sensors.push_back(std::move(thermal_sensor_2));
+
+      auto Thermal_info =
+          crosapi::ProbeThermalInfo::New(std::move(thermal_sensors));
+
+      telemetry_info->thermal_result =
+          crosapi::ProbeThermalResult::NewThermalInfo(std::move(Thermal_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::ProbeCategoryEnum::kThermal});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getThermalInfo() {
+        const result = await chrome.os.telemetry.getThermalInfo();
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            "thermalSensors": [
+              {
+                "name": "thermal_sensor_1",
+                "temperatureCelsius": 100,
+                "source": "ec",
+              },
+              {
+                "name": "thermal_sensor_2",
+                "temperatureCelsius": 50,
+                "source": "sysFs",
+              }
+            ]
+          }, result);
         chrome.test.succeed();
       }
     ]);

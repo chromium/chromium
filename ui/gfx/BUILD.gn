@@ -17,6 +17,7 @@ if (is_ios) {
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 # Several targets want to include this header file, and some of them are
@@ -55,6 +56,17 @@ component("gfx_skia") {
     "//skia",
   ]
   defines = [ "GFX_SKIA_IMPLEMENTATION" ]
+}
+
+if (is_win) {
+  config("gfx_win_linker_flags") {
+    # This is in a separate config so the flags can be applied to dependents.
+    # ldflags in GN aren't automatically inherited.
+    ldflags = [
+      # Linking with OneCore.lib causes the following dlls to load.
+      "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
+    ]
+  }
 }
 
 component("gfx") {
@@ -113,8 +125,6 @@ component("gfx") {
     "image/image_util.h",
     "interpolated_transform.cc",
     "interpolated_transform.h",
-    "nine_image_painter.cc",
-    "nine_image_painter.h",
     "overlay_plane_data.cc",
     "overlay_plane_data.h",
     "overlay_transform_utils.cc",
@@ -200,12 +210,16 @@ component("gfx") {
       "font_fallback_win.cc",
       "font_fallback_win.h",
       "font_render_params_win.cc",
+      "font_util_win.cc",
+      "font_util_win.h",
       "path_win.cc",
       "path_win.h",
       "system_fonts_win.cc",
       "system_fonts_win.h",
       "win/crash_id_helper.cc",
       "win/crash_id_helper.h",
+      "win/d3d_shared_fence.cc",
+      "win/d3d_shared_fence.h",
       "win/direct_write.cc",
       "win/direct_write.h",
       "win/hwnd_util.cc",
@@ -316,6 +330,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:ozone_buildflags",
     "//ui/base:ui_data_pack",
   ]
 
@@ -383,11 +398,15 @@ component("gfx") {
 
   # Windows.
   if (is_win) {
+    deps += [ "//ui/base:features" ]
     libs = [
       "setupapi.lib",
       "dwmapi.lib",
       "dwrite.lib",
+      "onecore.lib",
     ]
+
+    all_dependent_configs = [ ":gfx_win_linker_flags" ]
     public_deps += [ "//components/crash/core/common" ]
   } else {
     sources -= [
@@ -421,15 +440,11 @@ component("gfx") {
     ]
   }
 
-  if ((!use_aura && !toolkit_views) || is_ios) {
-    sources -= [
+  if (use_aura || toolkit_views) {
+    sources += [
       "nine_image_painter.cc",
       "nine_image_painter.h",
     ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone:buildflags" ]
   }
 }
 
@@ -474,10 +489,14 @@ component("color_space") {
     sources += [
       "hdr_metadata_mac.h",
       "hdr_metadata_mac.mm",
+      "mac/color_space_util.h",
+      "mac/color_space_util.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
+      "CoreMedia.framework",
+      "CoreVideo.framework",
     ]
     if (is_mac) {
       sources += [
@@ -743,7 +762,6 @@ test("gfx_unittests") {
   sources = [
     "animation/keyframe/keyframe_animation_unittest.cc",
     "animation/keyframe/keyframed_animation_curve_unittest.cc",
-    "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
     "geometry/linear_gradient_unittest.cc",
@@ -798,7 +816,7 @@ test("gfx_unittests") {
 
   data = [ "test/data/" ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "animation/animation_container_unittest.cc",
       "animation/animation_runner_unittest.cc",
@@ -806,6 +824,7 @@ test("gfx_unittests") {
       "animation/multi_animation_unittest.cc",
       "animation/slide_animation_unittest.cc",
       "animation/tween_unittest.cc",
+      "bidi_line_iterator_unittest.cc",
       "blit_unittest.cc",
       "break_list_unittest.cc",
       "canvas_unittest.cc",
@@ -848,10 +867,10 @@ test("gfx_unittests") {
       "image/image_skia_operations_unittest.cc",
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
-      "nine_image_painter_unittest.cc",
       "overlay_transform_utils_unittest.cc",
       "paint_vector_icon_unittest.cc",
       "range/range_unittest.cc",
+      "render_text_unittest.cc",
       "selection_bound_unittest.cc",
       "selection_model_unittest.cc",
       "sequential_id_generator_unittest.cc",
@@ -891,11 +910,6 @@ test("gfx_unittests") {
   ]
 
   if (use_blink) {
-    sources += [
-      "bidi_line_iterator_unittest.cc",
-      "render_text_unittest.cc",
-    ]
-
     deps += [ "//third_party:freetype_harfbuzz" ]
   }
 
@@ -909,16 +923,22 @@ test("gfx_unittests") {
     deps += [ "//ui/android:ui_java" ]
   }
 
+  if (is_ios) {
+    deps += [ "//ui/gfx:codec_tests_bundle_data" ]
+  }
+
   if (is_android || is_fuchsia) {
     sources += [ "font_fallback_skia_unittest.cc" ]
   }
 
-  if (!use_aura && !is_ios) {
-    sources -= [ "nine_image_painter_unittest.cc" ]
+  if (use_aura || toolkit_views) {
+    sources += [ "nine_image_painter_unittest.cc" ]
   }
 
   if (is_win) {
     sources += [
+      "font_render_params_win_unittest.cc",
+      "font_util_win.cc",
       "icon_util_unittest.cc",
       "icon_util_unittests.rc",
       "icon_util_unittests_resource.h",
@@ -1026,8 +1046,12 @@ fuzzer_test("render_text_api_fuzzer") {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
+  bundle_data_from_filelist("codec_tests_bundle_data") {
     testonly = true
-    filelist_name = "test/data/unit_tests_bundle_data.filelist"
+    filelist_name = "test/data/codec/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("compositor_tests_bundle_data") {
+    testonly = true
+    filelist_name = "test/data/compositor/unit_tests_bundle_data.filelist"
   }
 }

@@ -84,18 +84,12 @@ bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
     for (int i = 0; i < size; ++i)
       date_in_nanoseconds = (date_in_nanoseconds << 8) | data[i];
 
-    base::Time::Exploded exploded_epoch;
-    exploded_epoch.year = 2001;
-    exploded_epoch.month = 1;
-    exploded_epoch.day_of_month = 1;
-    exploded_epoch.day_of_week = 1;
-    exploded_epoch.hour = 0;
-    exploded_epoch.minute = 0;
-    exploded_epoch.second = 0;
-    exploded_epoch.millisecond = 0;
+    static constexpr base::Time::Exploded kExplodedEpoch = {
+        .year = 2001, .month = 1, .day_of_week = 1, .day_of_month = 1};
     base::Time out_time;
-    if (!base::Time::FromUTCExploded(exploded_epoch, &out_time))
+    if (!base::Time::FromUTCExploded(kExplodedEpoch, &out_time)) {
       return false;
+    }
     date_utc_ = out_time + base::Microseconds(date_in_nanoseconds / 1000);
   }
   return true;

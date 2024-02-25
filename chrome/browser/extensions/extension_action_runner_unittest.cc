@@ -28,6 +28,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -72,17 +73,17 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
                         mojom::RunLocation run_location);
 
   // Returns the number of times a given extension has had a script execute.
-  size_t GetExecutionCountForExtension(const std::string& extension_id) const;
+  size_t GetExecutionCountForExtension(const ExtensionId& extension_id) const;
 
   ExtensionActionRunner* runner() const { return extension_action_runner_; }
 
  private:
   // Returns a closure to use as a script execution for a given extension.
   ExtensionActionRunner::ScriptInjectionCallback
-  GetExecutionCallbackForExtension(const std::string& extension_id);
+  GetExecutionCallbackForExtension(const ExtensionId& extension_id);
 
   // Increment the number of executions for the given |extension_id|.
-  void IncrementExecutionCount(const std::string& extension_id, bool granted);
+  void IncrementExecutionCount(const ExtensionId& extension_id, bool granted);
 
   void SetUp() override;
 
@@ -91,7 +92,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
       nullptr;
 
   // The map of observed executions, keyed by extension id.
-  std::map<std::string, int> extension_executions_;
+  std::map<ExtensionId, int> extension_executions_;
 
   scoped_refptr<const Extension> extension_;
 };
@@ -100,7 +101,7 @@ ExtensionActionRunnerUnitTest::ExtensionActionRunnerUnitTest() = default;
 ExtensionActionRunnerUnitTest::~ExtensionActionRunnerUnitTest() = default;
 
 const Extension* ExtensionActionRunnerUnitTest::AddExtension() {
-  const std::string kId = crx_file::id_util::GenerateId("all_hosts_extension");
+  const ExtensionId kId = crx_file::id_util::GenerateId("all_hosts_extension");
   extension_ =
       ExtensionBuilder()
           .SetManifest(base::Value::Dict()
@@ -151,7 +152,7 @@ void ExtensionActionRunnerUnitTest::RequestInjection(
 }
 
 size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   auto iter = extension_executions_.find(extension_id);
   if (iter != extension_executions_.end())
     return iter->second;
@@ -160,7 +161,7 @@ size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
 
 ExtensionActionRunner::ScriptInjectionCallback
 ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   // We use base unretained here, but if this ever gets executed outside of
   // this test's lifetime, we have a major problem anyway.
   return base::BindOnce(&ExtensionActionRunnerUnitTest::IncrementExecutionCount,
@@ -168,7 +169,7 @@ ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
 }
 
 void ExtensionActionRunnerUnitTest::IncrementExecutionCount(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool granted) {
   if (!granted)
     return;

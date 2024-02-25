@@ -12,13 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 
 class Profile;
 
 namespace web_app {
 
-class AllAppsLock;
-class AllAppsLockDescription;
 class ExtensionInstallGate;
 
 // Starts a transaction to:
@@ -29,39 +28,33 @@ class ExtensionInstallGate;
 // 2. Call BrowserContext::GarbageCollectStoragePartitions with the list as a
 // parameter to delete any Storage Partition domain level paths that is invalid
 // and currently inactive.
-class GarbageCollectStoragePartititonsCommand
-    : public WebAppCommandTemplate<AllAppsLock> {
+class GarbageCollectStoragePartitionsCommand
+    : public WebAppCommand<AllAppsLock> {
  public:
-  explicit GarbageCollectStoragePartititonsCommand(Profile* profile,
-                                                   base::OnceClosure done);
-  ~GarbageCollectStoragePartititonsCommand() override;
+  explicit GarbageCollectStoragePartitionsCommand(Profile* profile,
+                                                  base::OnceClosure done);
+  ~GarbageCollectStoragePartitionsCommand() override;
 
-  // WebAppCommandTemplate<AllAppsLock>:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
-  void OnShutdown() override;
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
 
  private:
-  void Run();
+  void ResetStorageGarbageCollectPref();
+
+  void OnPrefReset();
+
+  void DoGarbageCollection();
 
   void OnSuccess();
 
-  std::unique_ptr<AllAppsLockDescription> lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
-
-  raw_ptr<Profile> profile_;
-
-  base::OnceClosure done_closure_;
-
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ExtensionInstallGate> install_gate_;
 
-  base::Value::Dict debug_info_;
-
-  base::WeakPtrFactory<GarbageCollectStoragePartititonsCommand> weak_factory_{
+  base::WeakPtrFactory<GarbageCollectStoragePartitionsCommand> weak_factory_{
       this};
 };
 
 }  // namespace web_app
 
-#endif
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_GARBAGE_COLLECT_STORAGE_PARTITIONS_COMMAND_H_

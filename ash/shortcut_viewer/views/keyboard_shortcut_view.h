@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -35,8 +35,9 @@ class KSVSearchBoxView;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
 class KeyboardShortcutView : public views::WidgetDelegateView {
+  METADATA_HEADER(KeyboardShortcutView, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(KeyboardShortcutView);
   KeyboardShortcutView(const KeyboardShortcutView&) = delete;
   KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
 
@@ -52,7 +53,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   // views::View:
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -72,7 +73,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   // If |initial_category| has value, we will initialize the specified category,
   // otherwise all the categories will be intialized.
   void InitCategoriesTabbedPane(
-      absl::optional<ash::ShortcutCategory> initial_category);
+      std::optional<ash::ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
   void UpdateViewsLayout();
@@ -88,7 +89,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   const std::vector<std::unique_ptr<KeyboardShortcutItemView>>&
   GetShortcutViewsForTesting() const;
   KSVSearchBoxView* GetSearchBoxViewForTesting();
-  const std::vector<KeyboardShortcutItemView*>&
+  const std::vector<raw_ptr<KeyboardShortcutItemView, VectorExperimental>>&
   GetFoundShortcutItemsForTesting() const;
 
   // Determine correct color based on dark mode flag and preference.
@@ -97,12 +98,12 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
 
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.
-  raw_ptr<views::TabbedPane, ExperimentalAsh> categories_tabbed_pane_ = nullptr;
+  raw_ptr<views::TabbedPane> categories_tabbed_pane_ = nullptr;
   // The container for KeyboardShortcutItemViews matching a user's query.
-  raw_ptr<views::View, ExperimentalAsh> search_results_container_ = nullptr;
+  raw_ptr<views::View> search_results_container_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<KSVSearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
+  raw_ptr<KSVSearchBoxView> search_box_view_ = nullptr;
 
   // Contains all the shortcut item views from all categories. This list is also
   // used for searching. The views are not owned by the Views hierarchy to avoid
@@ -110,7 +111,8 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   std::vector<std::unique_ptr<KeyboardShortcutItemView>> shortcut_views_;
 
   // Contains all the found shortcut items.
-  std::vector<KeyboardShortcutItemView*> found_shortcut_items_;
+  std::vector<raw_ptr<KeyboardShortcutItemView, VectorExperimental>>
+      found_shortcut_items_;
 
   // An illustration to indicate no search results found. Since this view need
   // to be added and removed frequently from the |search_results_container_|, it

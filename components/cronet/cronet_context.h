@@ -153,6 +153,8 @@ class CronetContext {
   // flush any remaining writes to disk.
   void StopNetLog();
 
+  void FlushWritePropertiesForTesting();
+
   // Destroys the URLRequestContext associated to `network` if `network` has
   // disconnected and it has no pending URLRequests. This must be called on
   // the network thread while destroying a CronetURLRequest as that might
@@ -182,8 +184,6 @@ class CronetContext {
     return bidi_stream_detect_broken_connection_;
   }
   base::TimeDelta heartbeat_interval() const { return heartbeat_interval_; }
-
-  bool enable_telemetry() const { return enable_telemetry_; }
 
   // NetworkTasks performs tasks on the network thread and owns objects that
   // live on the network thread.
@@ -373,9 +373,6 @@ class CronetContext {
   // If |bidi_stream_detect_broken_connection_| is true, this suggests the
   // period of the heartbeat signal.
   base::TimeDelta heartbeat_interval_;
-
-  // Whether Cronet Telemetry should be enabled or not.
-  bool enable_telemetry_;
 
   const int default_load_flags_;
 

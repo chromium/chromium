@@ -19,13 +19,14 @@ import java.util.List;
 
 /** API to answer questions based on context. */
 public interface QuestionAnswerer {
-    /**
-     * Answers question based on context, and returns a list of possible {@link QaAnswer}s. Could be
-     * empty if no answer was found from the given context.
-     *
-     * @param context context the question bases on
-     * @param question question to ask
-     * @return a list of possible answers in {@link QaAnswer}
-     */
-    List<QaAnswer> answer(String context, String question);
+
+  /**
+   * Answers question based on context, and returns a list of possible {@link QaAnswer}s. Could be
+   * empty if no answer was found from the given context.
+   *
+   * @param context context the question bases on
+   * @param question question to ask
+   * @return a list of possible answers in {@link QaAnswer}
+   */
+  List<QaAnswer> answer(String context, String question);
 }

@@ -174,7 +174,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
 
   void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
 
-  raw_ptr<DrmDevice::PageFlipManager, ExperimentalAsh> page_flip_manager_;
+  raw_ptr<DrmDevice::PageFlipManager> page_flip_manager_;
 
   base::MessagePumpLibevent::FdWatchController controller_;
 

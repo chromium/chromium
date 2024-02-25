@@ -2,6 +2,8 @@ source_set("cpp") {
   sources = [
     "auction_downloader.cc",
     "auction_downloader.h",
+    "auction_network_events_delegate.cc",
+    "auction_network_events_delegate.h",
   ]
 
   configs += [
@@ -13,6 +15,7 @@ source_set("cpp") {
     "//base",
     "//content:export",
     "//content/common",
+    "//content/services/auction_worklet/public/mojom",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",

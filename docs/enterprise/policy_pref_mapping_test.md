@@ -29,18 +29,38 @@ such a test is missing (see `reason_for_missing_test`).
 
 ## Running the tests
 
-To run the preference mapping tests, use `browser_tests` command with a
-`--gtest_filter` for one of the following
+The simplest way to run preference mapping tests is to use `tools/autotest.py`
+and list the files you want to test. For example:
+
+```bash
+$ testing/xvfb.py tools/autotest.py -C out/Default \
+    components/policy/test/data/pref_mapping/CrostiniAllowed.json \
+    components/policy/test/data/pref_mapping/CrostiniPortForwardingAllowed.json
+```
+
+To do the same manually, build and run `browser_tests` with `--gtest_filter`
+set to one of the following:
 
 - `PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase`
-- `PolicyPrefsTest.PolicyToPrefsMapping`
+- `*ChunkedPolicyPrefsTest.PolicyToPrefsMapping*`
 - `SigninPolicyPrefsTest.PolicyToPrefsMapping` (CrOS only)
-- `PolicyTest.AllPoliciesHaveATestCase` (iOS only)
-- `PolicyTest.PolicyToPrefMappings` (iOS only)
 
-Individual policies for PolicyPrefsTest.PolicyToPrefsMapping could be filtered
-by `--test_policy_to_pref_mappings_filter` flag. The flag accepts policy names
+Individual policies in `ChunkedPolicyPrefsTest` can be filtered with the
+`--test_policy_to_pref_mappings_filter` flag. The flag accepts policy names
 (with the .optionalTestNameSuffix) separated by colon.
+
+```bash
+$ autoninja -C out/Default browser_tests
+$ testing/xvfb.py out/Default/browser_tests \
+    --gtest_filter="*ChunkedPolicyPrefsTest.PolicyToPrefsMapping*" \
+    --test_policy_to_pref_mappings_filter="CrostiniAllowed:CrostiniPortForwardingAllowed"
+```
+
+There are also iOS only policy pref mapping `unit_tests`. To run them, execute
+the test binary with the `--gtest_filter` set to one of:
+
+- `PolicyTest.AllPoliciesHaveATestCase`
+- `PolicyTest.PolicyToPrefMappings`
 
 ## Example
 
@@ -112,9 +132,9 @@ separate preferences, their default values, and that either `IdleActionAC` or
 ### policy_test_cases.json
 
 The test cases per policy are defined in
-[//components/policy/test/data/policy_test_cases.json](https://cs.chromium.org/chromium/src/components/policy/test/data/policy_test_cases.json)
+[//components/policy/test/data/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/components/policy/test/data/)
 (for iOS, see separate
-[//ios/chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json)).
+[//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping)).
 
 These files are JSON files with the policy name as key and a `PolicyTestCase`
 (see below) as value). Each policy must have at least one meaningful test case
@@ -135,8 +155,7 @@ anywhere to add further documentation.
 
 The `os` field should be a list of strings representing the operating systems
 the test case should be run on. Each supported operating system (indicated by
-`supported_on` in
-[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json))
+`supported_on` in PolicyName.yaml)
 needs to have at least one test case. Valid values are:
 
 - `win`
@@ -146,7 +165,7 @@ needs to have at least one test case. Valid values are:
 - `chromeos_lacros`
 - `android`
 - `fuchsia`
-- `ios` (tested via separate [policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json))
+- `ios` (tested via separate [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping))
 
 The boolean `official_only` field indicates whether this policy is only
 supported in official builds. Defaults to `false` if not specified.
@@ -196,8 +215,8 @@ field's value is a dictionary, where the key is a policy name (should be one of
 the policies set in `policies`) and the value is a dictionary with `scope`
 (possible values are [`user`, `machine`], defaults to `user`) and `source`
 (possible values are [`enterprise_default`, `command_line`, `cloud`,
-`active_directory`, `local_account_override`, `platform`, `merged`,
-`cloud_from_ash`], defaults to `cloud`).
+`active_directory`, `platform`, `merged`, `cloud_from_ash`], defaults to
+`cloud`).
 
 Each `PolicyPrefMappingTest` can also have a `required_buildflags`,
 which defines a list of required buildflags for the test to run.
@@ -225,7 +244,7 @@ Policies that map into CrosSettings can not be tested at the moment (see
 #### Expected value
 
 Each preference is also checked for its expected value. The expected value the
-preference should take on can be defined by exactly one of three ways:
+preference should take on can be defined by exactly one of two ways:
 
 - A `value` field. Use this to specify an explicit value the preference should
   take on when the `policies` are set. This also checks that the preference is
@@ -233,12 +252,6 @@ preference should take on can be defined by exactly one of three ways:
 - A `default_value` field. Use this to specify an explicit value the preference
   should take on when either no policies are set or to indicate that the
   preference should be unaffected by the `policies`.
-- Neither specifying a `value` or `default_value` field. This only works if the
-  `policies` field sets exactly one policy, in which case that policy's value is
-  used as expected preference value. This behavior is mostly for backwards
-  compatibility to ensure that existing tests with missing `value` /
-  `default_value` also perform a value check, prefer to explicitly specify the
-  expected `value`.
 
 For each preference, you can also specify `check_for_mandatory` and
 `check_for_recommended` (in combination with `can_be_recommended` from above)
@@ -274,8 +287,8 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
         "prefs": {
           ${pref_name_1}: {
             "location": string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"
-            "value": ${expected_pref_value_1}, // This or |default_value| should be set
-            "default_value": ${expected_pref_value_1}, // This or |value| should be set
+            "value": ${expected_pref_value_1}, // This or |default_value| must be set
+            "default_value": ${expected_pref_value_1}, // This or |value| must be set
             "check_for_mandatory": boolean, // optional, defaults to true
             "check_for_recommended": boolean // optional, defaults to true
           },

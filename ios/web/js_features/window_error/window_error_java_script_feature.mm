@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
 const char kScriptName[] = "error";
@@ -41,7 +41,7 @@ WindowErrorJavaScriptFeature::WindowErrorJavaScriptFeature(
 }
 WindowErrorJavaScriptFeature::~WindowErrorJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 WindowErrorJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWindowErrorResultHandlerName;
 }

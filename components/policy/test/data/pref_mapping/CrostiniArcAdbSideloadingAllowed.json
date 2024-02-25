@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Checking default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "crostini.arc_adb_sideloading.user_pref": {
+            "default_value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniArcAdbSideloadingAllowed": 0
+        },
+        "prefs": {
+          "crostini.arc_adb_sideloading.user_pref": {
+            "location": "user_profile",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniArcAdbSideloadingAllowed": 1
+        },
+        "prefs": {
+          "crostini.arc_adb_sideloading.user_pref": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//ios/build/chrome_build.gni")
+
+source_set("model") {
+  sources = [
+    "window_activity_helpers.h",
+    "window_activity_helpers.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    ":ios_move_tab_activity_type_buildflags",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//net",
+    "//url",
+  ]
+}
+
+buildflag_header("ios_move_tab_activity_type_buildflags") {
+  header = "move_tab_activity_type_buildflags.h"
+  flags = [ "IOS_MOVE_TAB_ACTIVITY_TYPE=\"$ios_move_tab_activity_type\"" ]
+}

@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 
 #include "base/check.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -85,13 +85,17 @@ class DomKey {
   enum InvalidKey : Base { NONE = 0 };
 // |dom_key_data.inc| describes the non-printable DomKey values, and is
 // included here to create constants for them in the DomKey:: scope.
-#define DOM_KEY_MAP_DECLARATION enum Key : Base
-#define DOM_KEY_UNI(key, id, value) id = (TYPE_UNICODE | (value))
-#define DOM_KEY_MAP(key, id, value) id = (TYPE_NON_UNICODE | (value))
+#define DOM_KEY_MAP_DECLARATION_START enum Key : Base {
+#define DOM_KEY_UNI(key, id, value) id = (TYPE_UNICODE | (value)),
+#define DOM_KEY_MAP(key, id, value) id = (TYPE_NON_UNICODE | (value)),
+#define DOM_KEY_MAP_DECLARATION_END \
+  }                                 \
+  ;
 #include "ui/events/keycodes/dom/dom_key_data.inc"
-#undef DOM_KEY_MAP_DECLARATION
+#undef DOM_KEY_MAP_DECLARATION_START
 #undef DOM_KEY_MAP
 #undef DOM_KEY_UNI
+#undef DOM_KEY_MAP_DECLARATION_END
 
   // Create a DomKey, with the undefined-value sentinel DomKey::NONE.
   constexpr DomKey() = default;
@@ -105,9 +109,9 @@ class DomKey {
 
   // Factory that returns a DomKey for the specified value. Returns nullopt if
   // |value| is not a valid value (or NONE).
-  static absl::optional<DomKey> FromBase(Base value) {
+  static std::optional<DomKey> FromBase(Base value) {
     if (value != 0 && !IsValidValue(value))
-      return absl::nullopt;
+      return std::nullopt;
     return Base(value);
   }
 

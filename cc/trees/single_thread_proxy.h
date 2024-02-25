@@ -57,9 +57,11 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) override;
+  void DetachInputDelegateAndRenderFrameObserver() override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
   void SetPauseRendering(bool pause_rendering) override;
+  void SetInputResponsePending() override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
@@ -155,6 +157,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void RequestNewLayerTreeFrameSink();
 
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
 
@@ -178,7 +181,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DoPostCommit();
   DrawResult DoComposite(LayerTreeHostImpl::FrameData* frame);
   void DoSwap();
-  void DidCommitAndDrawFrame();
+  void DidCommitAndDrawFrame(int source_frame_number);
   void CommitComplete();
 
   bool ShouldComposite() const;
@@ -211,7 +214,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool inside_draw_;
   bool defer_main_frame_update_;
   bool pause_rendering_;
-  absl::optional<PaintHoldingReason> paint_holding_reason_;
+  std::optional<PaintHoldingReason> paint_holding_reason_;
   bool did_apply_compositor_deltas_ = false;
   bool animate_requested_;
   bool update_layers_requested_;
@@ -229,6 +232,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   // A number that kept incrementing in CompositeImmediately, which indicates a
   // new impl frame.
   uint64_t begin_frame_sequence_number_ = 1u;
+
+  int source_frame_number_for_next_commit_ = kInvalidSourceFrameNumber;
 
   // This is the callback for the scheduled RequestNewLayerTreeFrameSink.
   base::CancelableOnceClosure layer_tree_frame_sink_creation_callback_;

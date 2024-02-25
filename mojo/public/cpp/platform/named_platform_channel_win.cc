@@ -12,7 +12,8 @@
 
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -30,17 +31,21 @@ namespace {
 constexpr wchar_t kDefaultSecurityDescriptor[] =
     L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;OW)";
 
-NamedPlatformChannel::ServerName GenerateRandomServerName() {
-  return base::StringPrintf(L"%lu.%lu.%I64u", ::GetCurrentProcessId(),
-                            ::GetCurrentThreadId(), base::RandUint64());
+}  // namespace
+
+// static
+NamedPlatformChannel::ServerName
+NamedPlatformChannel::GenerateRandomServerName() {
+  return base::StrCat({base::NumberToWString(::GetCurrentProcessId()), L".",
+                       base::NumberToWString(::GetCurrentThreadId()), L".",
+                       base::NumberToWString(base::RandUint64())});
 }
 
-std::wstring GetPipeNameFromServerName(
+// static
+std::wstring NamedPlatformChannel::GetPipeNameFromServerName(
     const NamedPlatformChannel::ServerName& server_name) {
   return L"\\\\.\\pipe\\mojo." + server_name;
 }
-
-}  // namespace
 
 // static
 PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(

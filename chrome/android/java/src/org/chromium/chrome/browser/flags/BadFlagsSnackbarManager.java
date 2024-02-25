@@ -6,16 +6,15 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * This class provides for native code to manage a Bad Flags {@link Snackbar}.
- */
+/** This class provides for native code to manage a Bad Flags {@link Snackbar}. */
 @JNINamespace("chrome")
 public class BadFlagsSnackbarManager {
     /**

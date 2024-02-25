@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -115,7 +114,7 @@ class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  const raw_ptr<views::View, LeakedDanglingUntriaged | ExperimentalAsh> view_;
+  const raw_ptr<views::View, LeakedDanglingUntriaged> view_;
 };
 
 // Tracks the animation smoothness of a view's bounds animation using
@@ -237,7 +236,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
   metrics_util::ReportCallback GetReportCallback(
       HotseatState target_hotseat_state) {
     DCHECK_NE(target_hotseat_state, HotseatState::kNone);
-    return metrics_util::ForSmoothness(base::BindRepeating(
+    return metrics_util::ForSmoothnessV3(base::BindRepeating(
         &NavigationButtonAnimationMetricsReporter::ReportSmoothness,
         weak_ptr_factory_.GetWeakPtr(), target_hotseat_state));
   }
@@ -282,13 +281,13 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
  private:
   void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
 
-  raw_ptr<BackButton, ExperimentalAsh> back_button_ = nullptr;
-  raw_ptr<HomeButton, ExperimentalAsh> home_button_ = nullptr;
+  raw_ptr<BackButton> back_button_ = nullptr;
+  raw_ptr<HomeButton> home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
   // focusable child.
   bool default_last_focusable_child_ = false;
 
-  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
+  raw_ptr<Shelf> shelf_ = nullptr;
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
@@ -485,7 +484,8 @@ void ShelfNavigationWidget::CalculateTargetBounds() {
   gfx::Size nav_size = CalculateIdealSize(/*only_visible_area=*/false);
 
   if (shelf_->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    nav_origin.set_x(shelf_->shelf_widget()->GetTargetBounds().size().width() -
+    nav_origin.set_x(shelf_origin.x() +
+                     shelf_->shelf_widget()->GetTargetBounds().size().width() -
                      nav_size.width());
   }
   target_bounds_ = gfx::Rect(nav_origin, nav_size);
@@ -544,7 +544,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
     nav_animation_setter.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-    absl::optional<ui::AnimationThroughputReporter> reporter;
+    std::optional<ui::AnimationThroughputReporter> reporter;
     if (animate) {
       reporter.emplace(nav_animation_setter.GetAnimator(),
                        shelf_->GetNavigationWidgetAnimationReportCallback(
@@ -663,7 +663,7 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
   opacity_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  absl::optional<ui::AnimationThroughputReporter> reporter;
+  std::optional<ui::AnimationThroughputReporter> reporter;
   if (animate) {
     reporter.emplace(opacity_settings.GetAnimator(),
                      metrics_reporter->GetReportCallback(target_hotseat_state));

@@ -126,22 +126,6 @@ class PolicyGenerationTest(unittest.TestCase):
           "desc":
           "CloudManagementEnrollmentToken desc"
       }, {
-          "name":
-          "DeprecatedButGenerated",
-          "type":
-          "string",
-          "schema": {
-              "type": "string"
-          },
-          "supported_on": ["chrome_os:1-93", "android:1-93", "chrome.*:1-93"],
-          "id":
-          7,
-          "tags": [],
-          "caption":
-          "DeprecatedButGenerated caption",
-          "desc":
-          "DeprecatedButGenerated desc"
-      }, {
           "name": "DeprecatedNotGenerated",
           "type": "string",
           "schema": {
@@ -225,12 +209,10 @@ class PolicyGenerationTest(unittest.TestCase):
   def setUp(self):
     self.chrome_major_version = 94
     self.target_platform = 'chrome_os'
-    self.deprecation_milestone_buffer = 1
     self.all_target_platforms = ['win', 'mac', 'linux', 'chromeos', 'fuchsia']
     self.risk_tags = generate_policy_source.RiskTags(self.TEMPLATES_JSON)
     self.policies = [
         generate_policy_source.PolicyDetails(policy, self.chrome_major_version,
-                                             self.deprecation_milestone_buffer,
                                              self.target_platform,
                                              self.risk_tags.GetValidTags())
         for policy in self.TEMPLATES_JSON['policy_definitions']
@@ -267,18 +249,17 @@ class PolicyGenerationTest(unittest.TestCase):
 
     # Empty list
     stmts, expr = generate_policy_source._GenerateDefaultValue([])
-    self.assertListEqual(
-        ['base::Value default_value(base::Value::Type::LIST);'], stmts)
-    self.assertEqual('std::move(default_value)', expr)
+    self.assertListEqual(['base::Value::List default_value;'], stmts)
+    self.assertEqual('base::Value(std::move(default_value))', expr)
 
     # List with values
     stmts, expr = generate_policy_source._GenerateDefaultValue([1, '2'])
     self.assertListEqual([
-        'base::Value default_value(base::Value::Type::LIST);',
+        'base::Value::List default_value;',
         'default_value.Append(base::Value(1));',
         'default_value.Append(base::Value("2"));'
     ], stmts)
-    self.assertEqual('std::move(default_value)', expr)
+    self.assertEqual('base::Value(std::move(default_value))', expr)
 
     # Recursive lists are not supported.
     stmts, expr = generate_policy_source._GenerateDefaultValue([1, []])
@@ -459,38 +440,6 @@ class PolicyGenerationTest(unittest.TestCase):
 
         self._assertCallsEqual(expected_formatted,
                                mocked_file().write.call_args_list)
-
-  def testWriteChromeOSPolicyConstantsHeader(self):
-    output_path = 'mock_policy_constants_h'
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
-        generate_policy_source._WriteChromeOSPolicyConstantsHeader(
-            self.policies,
-            self.policy_atomic_groups,
-            self.target_platform,
-            f,
-            self.risk_tags,
-            chunking=True,
-        )
-    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-    self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_HEADER,
-                           mocked_file().write.call_args_list)
-
-  def testWriteChromeOSPolicyConstantsSource(self):
-    output_path = 'mock_policy_constants_cc'
-    with patch('codecs.open', mock_open()) as mocked_file:
-      with codecs.open(output_path, 'w', encoding='utf-8') as f:
-        generate_policy_source._WriteChromeOSPolicyConstantsSource(
-            self.policies,
-            self.policy_atomic_groups,
-            self.target_platform,
-            f,
-            self.risk_tags,
-            chunking=True,
-        )
-    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
-    self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_SOURCE,
-                           mocked_file().write.call_args_list)
 
 
   def testWriteAppRestrictions(self):

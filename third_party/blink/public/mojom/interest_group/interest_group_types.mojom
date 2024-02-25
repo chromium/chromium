@@ -16,7 +16,10 @@ import "url/mojom/url.mojom";
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
 struct InterestGroupAd {
   // Must use https.
-  url.mojom.Url render_url;
+  // string is used instead of url.mojom.Url to improve performance, since the
+  // browser process only needs to pass this value as-is to worklet processes.
+  // Vaildated by InterestGroup::IsValid(), which is called by typemapping.
+  string render_url;
   // Optional size groups assigned to this Ad.
   string? size_group;
   // Optional identifiers that may be passed to reporting functions, if
@@ -63,6 +66,13 @@ struct AuctionServerRequestFlags {
   bool include_full_ads = false;
 };
 
+// A container used for making changes to ad render URLs. 'match' is what we use
+// to find a match within the url, and 'replacement' is what we replace it with.
+struct AdKeywordReplacement {
+  string match;
+  string replacement;
+};
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
@@ -76,23 +86,39 @@ struct AuctionServerRequestFlags {
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct InterestGroup {
   [Stable, Extensible]
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ExecutionMode {
     // kCompatibilityMode creates a new context for every execution. This is
     // potentially slow as it is only able to reuse the compilation cache from
     // other interest groups with the same bidding script.
-    [Default] kCompatibilityMode,
+    [Default] kCompatibilityMode = 0,
     // kGroupedByOriginMode, mode uses the same JavaScript context for groups
     // with the same joining origin. This can be much faster, but to mitigate
     // any privacy leaks FLEDGE will clear all of the interest groups for a
     // joining origin if another origin joins or leaves one of the interest
     // groups.
-    kGroupedByOriginMode,
+    kGroupedByOriginMode = 1,
     // kFrozenContext mode uses a "frozen" JavaScript context to execute the
     // bidding scripts for all interest groups that share a common biddnig
     // script. After the script is loaded, the script context is frozen and
     // checked for any state that may persist between function execution. If any
     // potentially persistent state is identified, execution is abandoned.
-    kFrozenContext,
+    kFrozenContext = 2
+  };
+
+  [Stable, Extensible]
+  enum TrustedBiddingSignalsSlotSizeMode {
+    // No information about ad slot sizes is added as a query param of
+    // trustedBiddingSignalsURL fetches.
+    [Default] kNone,
+    // Only the ad slot size of the current ad slot is added to the query param
+    // of trustedBiddingSignalsURL fetches. It is called "slotSize".
+    kSlotSize,
+    // All add slot sizes specified in the top-level AuctionConfig is added to
+    // the query param of trustedBiddingSignalsURL fetches. They are provided as
+    // a single parameter called "slotSizes".
+    kAllSlotsRequestedSizes,
   };
 
   mojo_base.mojom.Time expiry;
@@ -122,6 +148,9 @@ struct InterestGroup {
   SellerCapabilities all_sellers_capabilities;
   // `execution_mode` of the interest group.
   ExecutionMode execution_mode = kCompatibilityMode;
+  // `trusted_bidding_signals_slot_size_mode` of the interest group.
+  TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
+      kNone;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
   // `bidding_wasm_helper_url` must match the current frame URL's origin.
@@ -131,13 +160,23 @@ struct InterestGroup {
   // `trusted_bidding_signals_url` must match the current frame URL's origin.
   url.mojom.Url? trusted_bidding_signals_url;
   array<string>? trusted_bidding_signals_keys;
+  // Must not be a negative value.
+  int32 max_trusted_bidding_signals_url_length = 0;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
-  string?        user_bidding_signals;
+  string? user_bidding_signals;
   array<InterestGroupAd>? ads;
   array<InterestGroupAd>? ad_components;
   map<string, AdSize>? ad_sizes;
   map<string, array<string>>? size_groups;
   AuctionServerRequestFlags auction_server_request_flags;
+
+  // The Ed25519 public key (a 256-bit EdDSA public key) used to guarantee that
+  // this InterestGroup, if used by an additional bid for a negative targeting,
+  // can only be used by its owner.
+  array<uint8, 32>? additional_bid_key;
+
+  // Origin for the Coordinator to be used for Private Aggregation.
+  url.mojom.Origin? aggregation_coordinator_origin;
 };
 
 // Packages the details necessary for the browser process to retrieve a
@@ -182,9 +221,10 @@ struct DirectFromSellerSignalsSubresource {
 // origin of the prefix and the URL of each source bundle must have a scheme of
 // https (uuid-in-package isn't supported since it doesn't support CORS), and
 // each origin must match `seller` in AuctionAdConfig. The response must be
-// served with the headers `X-FLEDGE-Auction-Only: true` and `X-Allow-Fledge:
-// true`. The request is made with CORS, using the caller of runAdAuction()'s
-// frame as the initiator.
+// served with the legacy headers `X-FLEDGE-Auction-Only: true` and
+// `X-Allow-Fledge: true` or the new headers `Ad-Auction-Only: true` and
+// `Ad-Auction-Allowed: true`. The request is made with CORS, using the caller
+// of runAdAuction()'s frame as the initiator.
 //
 // The worklet process will parse the signals object and deliver it to worklet
 // functions (generateBid(), scoreAd(), reportWin(), reportResult()).
@@ -285,9 +325,23 @@ union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
   DirectFromSellerSignals? value;
 };
 
+// See blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements
+union AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements {
+  uint32 promise;  // value unused
+  array<AdKeywordReplacement> value;
+};
+
 struct AuctionAdServerResponseConfig {
   // The response will be filled in later when a promise resolves.
   mojo_base.mojom.Uuid request_id;
+};
+
+// TODO(alexmt): Consider merging with DebugModeDetails.
+struct AuctionReportBuyerDebugModeConfig {
+  bool is_enabled = false;
+
+  // Must be null if `is_enabled` is false. Otherwise, optional.
+  uint64? debug_key;
 };
 
 // For each report type, provides the bucket offset and scalar multiplier for
@@ -402,6 +456,10 @@ struct AuctionAdConfigNonSharedParams {
   // provides the bucket offset and scalar multiplier for that event.
   map<BuyerReportType, AuctionReportBuyersConfig>? auction_report_buyers;
 
+  // Whether debug mode has been enabled for the auction report buyer extended
+  // private aggregation reporting and, if so, any debug key that has been set.
+  AuctionReportBuyerDebugModeConfig? auction_report_buyer_debug_mode_config;
+
   // The set of capabilities that each interest group must declare to
   // participate in the auction. Interest groups that don't declare all these
   // capabilities will not participate in the auction.
@@ -413,18 +471,32 @@ struct AuctionAdConfigNonSharedParams {
   // fenced frame config as its container size.
   AdSize? requested_size;
 
+  // All ad slot sizes on a page. Each AdSize must be unique. Interest
+  // groups can request this be included in trusted seller signals fetches.
+  array<AdSize>? all_slots_requested_sizes;
+
+  // Limits on how many bids generateBid() can return at once.
+  // Every entry should be at least 1.
+  map<url.mojom.Origin, uint16> per_buyer_multi_bid_limits;
+  uint16 all_buyers_multi_bid_limit;
+
   // A unique identifier associated with this and only this invocation of
   // runAdAuction. This must come from a prior call to createAuctionNonce.
   // This is only required for auctions that provide additional bids, and each
   // of those additional bids must use the same auction nonce to ensure that
   // each of those additional bids was intended for this and only this auction.
-  // In multi-seller auctions, this field is only meaningful for the top-level
-  // auction config; it's ignored in component auction configs.
+  // In multi-seller auctions, it must be component auction configs providing
+  // this for their auctions.
   mojo_base.mojom.Uuid? auction_nonce;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.
   array<AuctionAdConfig> component_auctions;
+
+  // The maximum length limit for the trusted scoring signal fetch URL. Can
+  // only be set as either 0 or a positive number. A value of 0 indicates
+  // that there is no limit.
+  int32 max_trusted_scoring_signals_url_length = 0;
 };
 
 // Configuration to pass to RunAdAuction().
@@ -463,6 +535,10 @@ struct AuctionAdConfig {
   // renderer process. See details in the DirectFromSellerSignals comment.
   AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
+  // The ad render url replacements for their respective ad URL. If promise is
+  // never given, this will resolve to an empty vector.
+  AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
+
   // Like `direct_from_seller_signals`, but passed from the page via a different
   // mechanism. `direct_from_seller_signals` searches for the contents of
   // subresource bundles to find signals, whereas
@@ -481,14 +557,15 @@ struct AuctionAdConfig {
 
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
-  // TODO(https://crbug.com/657632): Update when optional integers supported.
-  bool has_seller_experiment_group_id = false;
-  uint16 seller_experiment_group_id;
-  bool has_all_buyer_experiment_group_id = false;
-  int16 all_buyer_experiment_group_id;
+  uint16? seller_experiment_group_id;
+  uint16? all_buyer_experiment_group_id;
   map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
 
   // Optionally specifies that some bids will be provided as signed exchanges,
   // via `AbortableAdAuction.ResolvedAdditionalBids()`.
   bool expects_additional_bids = false;
+
+  // Origin for the Coordinator to be used for the seller's Private Aggregation
+  // requests.
+  url.mojom.Origin? aggregation_coordinator_origin;
 };

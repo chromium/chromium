@@ -7,39 +7,30 @@
 
 #include <lib/zx/clock.h>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/message_loop/message_pump_for_io.h"
 #include "chromecast/net/time_sync_tracker.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace chromecast {
 
-class TimeSyncTrackerFuchsia : public TimeSyncTracker {
+class TimeSyncTrackerFuchsia : public TimeSyncTracker,
+                               public base::MessagePumpForIO::ZxHandleWatcher {
  public:
-  explicit TimeSyncTrackerFuchsia(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit TimeSyncTrackerFuchsia();
   TimeSyncTrackerFuchsia(const TimeSyncTrackerFuchsia&) = delete;
   TimeSyncTrackerFuchsia& operator=(const TimeSyncTrackerFuchsia&) = delete;
   ~TimeSyncTrackerFuchsia() override;
 
   // TimeSyncTracker implementation:
-  void OnNetworkConnected() final;
   bool IsTimeSynced() const final;
 
  private:
-  void Poll();
+  // ZxHandleWatcher implementation:
+  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) final;
 
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   zx::unowned_clock utc_clock_;
-
-  bool is_polling_ = false;
   bool is_time_synced_ = false;
 
-  base::WeakPtr<TimeSyncTrackerFuchsia> weak_this_;
-  base::WeakPtrFactory<TimeSyncTrackerFuchsia> weak_factory_;
+  base::MessagePumpForIO::ZxHandleWatchController time_watch_;
 };
 
 }  // namespace chromecast

@@ -54,14 +54,6 @@ const cryptauthv2::FeatureMetadata& GenerateFeatureMetadata() {
             cryptauthv2::
                 BetterTogetherFeatureMetadata_FeatureName_BETTER_TOGETHER_CLIENT);
 
-        // Disable Messages integration when pre-installing app on all devices.
-        if (!base::FeatureList::IsEnabled(
-                features::kDisableMessagesCrossDeviceIntegration)) {
-          inner_metadata.add_supported_features(
-              cryptauthv2::
-                  BetterTogetherFeatureMetadata_FeatureName_SMS_CONNECT_CLIENT);
-        }
-
         // Instant Tethering is only supported if the associated flag enabled.
         if (base::FeatureList::IsEnabled(features::kInstantTethering)) {
           inner_metadata.add_supported_features(

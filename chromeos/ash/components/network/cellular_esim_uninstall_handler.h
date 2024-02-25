@@ -128,15 +128,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   // for stale eSIM service removal requests. These requests skip directly to
   // Shill configuration removal.
   struct UninstallRequest {
-    UninstallRequest(const absl::optional<std::string>& iccid,
-                     const absl::optional<dbus::ObjectPath>& esim_profile_path,
-                     const absl::optional<dbus::ObjectPath>& euicc_path,
+    UninstallRequest(const std::optional<std::string>& iccid,
+                     const std::optional<dbus::ObjectPath>& esim_profile_path,
+                     const std::optional<dbus::ObjectPath>& euicc_path,
                      bool reset_euicc,
                      UninstallRequestCallback callback);
     ~UninstallRequest();
-    absl::optional<std::string> iccid;
-    absl::optional<dbus::ObjectPath> esim_profile_path;
-    absl::optional<dbus::ObjectPath> euicc_path;
+    std::optional<std::string> iccid;
+    std::optional<dbus::ObjectPath> esim_profile_path;
+    std::optional<dbus::ObjectPath> euicc_path;
     bool reset_euicc;
     base::flat_set<std::string> removed_service_paths;
     UninstallRequestCallback callback;
@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnRemoveServiceFailure(const std::string& error_name);
   void OnNetworkListWaitTimeout();
 
-  absl::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
+  std::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
   NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
   const NetworkState* GetNextResetServiceToRemove() const;
   base::flat_set<std::string> GetAllIccidsOnEuicc(
@@ -189,17 +189,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   base::OneShotTimer network_list_wait_timer_;
 
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
-      cellular_esim_profile_handler_ = nullptr;
-  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CellularInhibitor> cellular_inhibitor_ = nullptr;
+  raw_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged>
       managed_cellular_pref_handler_ = nullptr;
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
-      network_configuration_handler_ = nullptr;
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkConfigurationHandler> network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   size_t last_service_count_removal_for_testing_ = 0;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

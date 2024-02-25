@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1012241361789814178">โปรแกรมแก้ไขข้อบกพร่องหยุดชั่วคราวในแท็บอื่น คลิกเพื่อเปลี่ยนไปยังแท็บนั้น</translation>
 <translation id="1088086359088493902">วินาที</translation>
 <translation id="1142001580032786438">แสดงเครื่องมือเลือกสัปดาห์</translation>
 <translation id="1171774979989969504">โปรดป้อนที่อยู่อีเมล</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
 <translation id="1758486001363313524">อื่นๆ...</translation>
 <translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">เล่นในอุปกรณ์ระยะไกล</translation>
 <translation id="1921819250265091946">วว</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">เปลี่ยนเป็นการมิเรอร์</translation>
 <translation id="2031987842108996681">ช่องสีแดง</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" ถูกใช้งานในตำแหน่งที่ไม่ถูกต้องใน "<ph name="INVALIDDOMAIN" />"</translation>
+<translation id="2068711044993563745">ค่าต่ำสุด (<ph name="MINIMUM" />) ต้องน้อยกว่าค่าสูงสุด (<ph name="MAXIMUM" />)</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">อนุญาตให้ใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="2393030564806080191">ค่าสีแบบฐานสิบหก</translation>
 <translation id="2398813069815436052">กล่องโต้ตอบเปิดอยู่</translation>
 <translation id="245932805758469625">จำนวนวินาทีที่เหลือของวิดีโอ</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
 <translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">แสดงเมนูเสียงบรรยาย</translation>
 <translation id="3075154866155599887">โปรดป้อนค่าที่ถูกต้อง ฟิลด์นี้ไม่สมบูรณ์หรือมีวันที่ที่ไม่ถูกต้อง</translation>
 <translation id="310520048233152454">โปรดป้อน URL</translation>
 <translation id="3220661731597678625">ขั้นตอนปัจจุบัน</translation>
 <translation id="3321030238473337787">ความเร็วในการเล่น</translation>
 <translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
+<translation id="3377518164566272702">อนุญาตให้เข้าถึงไมโครโฟนและกล้อง</translation>
 <translation id="3450233048674729344">ค่าต้องน้อยกว่าหรือเท่ากับ <ph name="MAXIMUM" /></translation>
 <translation id="3732799496749320381">ดด</translation>
 <translation id="3754210790023674521">ออกจากการแสดงภาพซ้อนภาพ</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี <ph name="CURRENT_LENGTH" /> ตัว)</translation>
 <translation id="383465348367842624">ส่วนที่ตามด้วย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="3846214748874656680">ออกจากการแสดงเต็มหน้าจอ</translation>
+<translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4103419683916926126">มิลลิวินาที</translation>
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
+<translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="4664250907885839816">ส่วนที่ต่อท้าย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="4718048029184481307">กำลังเล่นแบบการแสดงภาพซ้อนภาพ</translation>
 <translation id="4748357248530471599">สลับเป็นแบบเต็มหน้าจอสำหรับหน้าจอรอยบาก</translation>
 <translation id="4763480195061959176">วิดีโอ</translation>
+<translation id="4792862212177489858">แชร์สถานที่ตั้ง</translation>
 <translation id="4812940957355064477">โปรดป้อนตัวเลข</translation>
 <translation id="4912200001568447310">รายการปัจจุบัน</translation>
 <translation id="4915360478455618802">แสดงเครื่องมือเลือกเวลา</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">เลือกไว้ <ph name="SELECTED_COUNT" /> รายการ</translation>
 <translation id="4992066212339426712">เปิดเสียง</translation>
 <translation id="49969490063480558">โปรดป้อนส่วนที่ต่อท้าย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
+<translation id="5037575921016181960">รหัสผ่านที่รัดกุม</translation>
 <translation id="5090250355906949916">ตัวควบคุมเวลาของวิดีโอ</translation>
 <translation id="509897012892853729">ช่องสีน้ำเงิน</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
 <translation id="698788488269350478">ขยายอยู่</translation>
 <translation id="6989848892321993519">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี 1 ตัว)</translation>
+<translation id="7080893216867146095">อนุญาตให้แชร์ตำแหน่ง</translation>
 <translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>
 <translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
 <translation id="7263440858009898357">โปรดเลือกรายการจากหน้ารายการ</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">อื่นๆ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> เริ่มวันที่ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
+<translation id="918430632320614861">อนุญาตให้เข้าถึงไมโครโฟน</translation>
 <translation id="945780513535800434">เลือกบางรายการ</translation>
 <translation id="954003015749068518">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
 </translationbundle>

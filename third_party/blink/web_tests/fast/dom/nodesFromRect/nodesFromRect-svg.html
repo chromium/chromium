@@ -56,22 +56,19 @@
 
             window.scrollTo(0, 0);
 
-            debug('\nSome of following tests will likely FAIL and will need to be updated once rect-based')
-            debug('hit tests are supported inside SVG elements:\n');
-
             debug('Check area hits fully inside SVG element');
             check(16, 16, 9, 9, [e.red, e.svg1]);
             check(16, 48, 9, 9, [e.yellow, e.svg2]);
             check(14, 76, 9, 9, [e.green, e.svg3]);
-            check(12, 12, 5, 5, [e.svg1]);
+            check(12, 12, 5, 5, [e.red, e.svg1]);
             check(11, 11, 19, 19, [e.red, e.svg1, e.div1]);
 
             debug('Check area hits overlapping SVG element');
             check(10, 10, 5, 5, [e.svg1, e.div1]);
-            check(1, 45, 26, 11, [e.svg2, e.div2, e.sandbox]);
+            check(1, 45, 26, 11, [e.yellow, e.svg2, e.div2, e.sandbox]);
 
             debug('Check area hits across SVG elements');
-            check(10, 10, 21, 51, [e.svg2, e.div2, e.svg1, e.div1, e.sandbox]);
+            check(10, 10, 21, 51, [e.yellow, e.svg2, e.div2, e.red, e.svg1, e.div1, e.sandbox]);
 
             debug('');
         }

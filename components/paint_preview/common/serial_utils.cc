@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/subset_font.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkBmpDecoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
@@ -16,12 +17,15 @@
 #include "third_party/skia/include/codec/SkWebpDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkString.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/private/chromium/Slug.h"
 
 namespace paint_preview {
 
@@ -51,8 +55,9 @@ sk_sp<SkData> SerializePictureAsRectData(SkPicture* picture, void* ctx) {
 
   auto it = context->content_id_to_transformed_clip.find(picture->uniqueID());
   // Defers picture serialization behavior to Skia.
-  if (it == context->content_id_to_transformed_clip.end())
+  if (it == context->content_id_to_transformed_clip.end()) {
     return nullptr;
+  }
 
   // This data originates from |PaintPreviewTracker|.
   const SkRect& transformed_cull_rect = it->second;
@@ -90,7 +95,7 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
     // an alternative font if a system font doesn't match. As such, we can use
     // this to check if the SkTypeface is for a system font. If it is a system
     // font we don't need to subset/serialize it.
-    if (SkTypeface::MakeFromName(familyName.c_str(), typeface->fontStyle())) {
+    if (skia::MakeTypefaceFromName(familyName.c_str(), typeface->fontStyle())) {
       return typeface->serialize(
           SkTypeface::SerializeBehavior::kIncludeDataIfLocal);
     }
@@ -103,6 +108,23 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
         SkTypeface::SerializeBehavior::kIncludeDataIfLocal);
   }
   return subset_data;
+}
+
+static sk_sp<SkTypeface> DeserializeTypeface(const void* data,
+                                             size_t length,
+                                             void* ctx) {
+  // TODO(bungeman,kjlubick) This should not be how the Skia deserial proc
+  // works.
+  SkStream* stream = *(reinterpret_cast<SkStream**>(const_cast<void*>(data)));
+  if (length < sizeof(stream)) {
+    return nullptr;
+  }
+  // The default implementation of SkPicture deserialization of SkTypeface
+  // does not use a fallback (system) font manager, but this is necessary
+  // on Android due to the above behavior w/r to system fonts. Thus, we
+  // call the underlying SkTypeface::MakeDeserialize and pass in the
+  // system font manager ourselves.
+  return SkTypeface::MakeDeserialize(stream, skia::DefaultFontMgr());
 }
 
 static bool is_supported_codec(sk_sp<SkData> data) {
@@ -199,8 +221,9 @@ sk_sp<SkPicture> DeserializePictureAsRectData(const void* data,
                                               size_t length,
                                               void* ctx) {
   SerializedRectData rect_data;
-  if (length < sizeof(rect_data))
+  if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
+  }
   memcpy(&rect_data, data, sizeof(rect_data));
   auto* context = reinterpret_cast<DeserializationContext*>(ctx);
   context->insert(
@@ -220,14 +243,16 @@ sk_sp<SkPicture> GetPictureFromDeserialContext(const void* data,
                                                size_t length,
                                                void* ctx) {
   SerializedRectData rect_data;
-  if (length < sizeof(rect_data))
+  if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
+  }
   memcpy(&rect_data, data, sizeof(rect_data));
   auto* context = reinterpret_cast<LoadedFramesDeserialContext*>(ctx);
 
   auto it = context->find(rect_data.content_id);
-  if (it == context->end())
+  if (it == context->end()) {
     return MakeEmptyPicture();
+  }
 
   // Scroll and clip the subframe manually since the picture in |ctx| does not
   // encode this information.
@@ -280,21 +305,9 @@ SkSerialProcs MakeSerialProcs(PictureSerializationContext* picture_ctx,
   procs.fTypefaceProc = SerializeTypeface;
   procs.fTypefaceCtx = typeface_ctx;
 
-  // TODO(crbug/1008875): find a consistently smaller and low-memory overhead
-  // image downsampling method to use as fImageProc.
-  //
-  // At present this uses the native representation, but skips serializing if
-  // loading to a bitmap for encoding might cause an OOM.
-  if (image_ctx) {
-    image_ctx->memory_budget_exceeded = false;
-    if (image_ctx->max_decoded_image_size_bytes !=
-            std::numeric_limits<uint64_t>::max() ||
-        image_ctx->remaining_image_size !=
-            std::numeric_limits<uint64_t>::max()) {
-      procs.fImageProc = SerializeImage;
-      procs.fImageCtx = image_ctx;
-    }
-  }
+  image_ctx->memory_budget_exceeded = false;
+  procs.fImageProc = SerializeImage;
+  procs.fImageCtx = image_ctx;
   return procs;
 }
 
@@ -303,6 +316,8 @@ SkDeserialProcs MakeDeserialProcs(DeserializationContext* ctx) {
   procs.fPictureProc = DeserializePictureAsRectData;
   procs.fPictureCtx = ctx;
   procs.fImageProc = DeserializeImage;
+  procs.fTypefaceProc = DeserializeTypeface;
+  sktext::gpu::Slug::AddDeserialProcs(&procs, nullptr);
   return procs;
 }
 
@@ -311,6 +326,7 @@ SkDeserialProcs MakeDeserialProcs(LoadedFramesDeserialContext* ctx) {
   procs.fPictureProc = GetPictureFromDeserialContext;
   procs.fPictureCtx = ctx;
   procs.fImageProc = DeserializeImage;
+  procs.fTypefaceProc = DeserializeTypeface;
   return procs;
 }
 

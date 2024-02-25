@@ -32,7 +32,7 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   void Trace(Visitor*) const override;
 
   MediaControlInputElement* OverflowElementForTests() const {
-    return overflow_element_;
+    return overflow_element_.Get();
   }
 
   // Get the size of the element in pixels or the default if we cannot get the
@@ -83,7 +83,6 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   friend class MediaControlInputElementTest;
   friend class MediaControlPopupMenuElementTest;
 
-  bool IsMouseFocusable() const override;
   bool IsMediaControlElement() const final;
 
   // Returns a string representation of the media control element. Used for

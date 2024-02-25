@@ -8,8 +8,11 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/window_button_order_provider.h"
 
@@ -55,30 +58,19 @@ gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues(bool active) {
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
 }
 
-void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
-  auto* provider = views::WindowButtonOrderProvider::GetInstance();
-  layout_->SetButtonOrdering(provider->leading_buttons(),
-                             provider->trailing_buttons());
-
-  // We can receive OnWindowButtonOrderingChange events before we've been added
-  // to a Widget. We need a Widget because layout crashes due to dependencies
-  // on a ui::ThemeProvider().
-  if (auto* widget = GetWidget()) {
-    // A relayout on |view_| is insufficient because it would neglect
-    // a relayout of the tabstrip.  Do a full relayout to handle the
-    // frame buttons as well as open tabs.
-    views::View* root_view = widget->GetRootView();
-    root_view->Layout();
-    root_view->SchedulePaint();
-  }
-}
-
 void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = frame()->tiled();
+#else
+  const bool tiled = false;
+#endif
+  auto shadow_values =
+      tiled ? gfx::ShadowValues() : GetShadowValues(ShouldPaintAsActive());
   PaintRestoredFrameBorderLinux(
       *canvas, *this, frame_background(), GetRestoredClipRegion(),
-      ShouldDrawRestoredFrameShadow(), layout_->MirroredFrameBorderInsets(),
-      GetShadowValues(ShouldPaintAsActive()));
+      ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
+      layout_->MirroredFrameBorderInsets(), shadow_values, tiled);
 }
 
 void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
@@ -93,9 +85,34 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
       ->ShouldDrawRestoredFrameShadow();
 }
 
+void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
+  auto* provider = views::WindowButtonOrderProvider::GetInstance();
+  layout_->SetButtonOrdering(provider->leading_buttons(),
+                             provider->trailing_buttons());
+
+  // We can receive OnWindowButtonOrderingChange events before we've been added
+  // to a Widget. We need a Widget because layout crashes due to dependencies
+  // on a ui::ThemeProvider().
+  if (auto* widget = GetWidget()) {
+    // A relayout on |view_| is insufficient because it would neglect
+    // a relayout of the tabstrip.  Do a full relayout to handle the
+    // frame buttons as well as open tabs.
+    views::View* root_view = widget->GetRootView();
+    root_view->DeprecatedLayoutImmediately();
+    root_view->SchedulePaint();
+  }
+}
+
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
-  if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported())
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = frame()->tiled();
+#else
+  const bool tiled = false;
+#endif
+  if (tiled || !UseCustomFrame() ||
+      !views::Widget::IsWindowCompositingSupported()) {
     return 0;
+  }
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 }
@@ -103,3 +120,6 @@ float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
   return 0;
 }
+
+BEGIN_METADATA(BrowserFrameViewLinux)
+END_METADATA

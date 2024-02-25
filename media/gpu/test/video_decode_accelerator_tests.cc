@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <memory>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -54,9 +55,7 @@ constexpr const char* usage_msg =
            [--output_frames=(all|corrupt)] [--output_format=(png|yuv)]
            [--output_limit=<number>] [--output_folder=<folder>]
            [--linear_output] ([--use-legacy]|[--use_vd_vda])
-           [--use-gl=<backend>] [--ozone-platform=<platform>]
-           [--disable_vaapi_lock]
-           [--gtest_help] [--help]
+           [--use-gl=<backend>] [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
 
@@ -99,16 +98,7 @@ The following arguments are supported:
                         "<testname>".
   --use-gl              specify which GPU backend to use, possible values
                         include desktop (GLX), egl (GLES w/ ANGLE), and
-                        swiftshader (software rendering)
-  --ozone-platform      specify which Ozone platform to use, possible values
-                        depend on build configuration but normally include
-                        x11, drm, wayland, and headless
-  --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                        i.e., only on devices that use the VA-API with a libva
-                        backend that's known to be thread-safe and only in
-                        portions of the Chrome stack that should be able to
-                        deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).)""") +
+                        swiftshader (software rendering)""") +
 #if defined(ARCH_CPU_ARM_FAMILY)
     R"""(
   --disable-libyuv      use hw format conversion instead of libYUV.
@@ -227,7 +217,8 @@ class VideoDecoderTest : public ::testing::Test {
         /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{});
+        /*oop_video_decoder=*/{},
+        /*in_video_decoder_process=*/true);
 
     bool init_result = false;
     VideoDecoder::InitCB init_cb = base::BindLambdaForTesting(
@@ -264,7 +255,7 @@ class VideoDecoderTest : public ::testing::Test {
     }
 
     Dav1dVideoDecoder decoder(
-        /*media_log=*/nullptr,
+        std::make_unique<NullMediaLog>(),
         OffloadableVideoDecoder::OffloadState::kOffloaded);
     VideoDecoderConfig decoder_config(
         video->Codec(), video->Profile(),
@@ -435,14 +426,14 @@ TEST_F(VideoDecoderTest, Decode) {
                                 /*times=*/kNumDecodeBuffers));
 }
 
-// This test case sends all the frames and expects them to be fully decoded
-// (as in, VideoDecoder::OutputCB should be called). Most of them should be
-// decoded as well, but since this test doesn't exercise an End-of-Stream
-// (a.k.a. "a flush"), some will likely be held onto by the VideoDecoder/driver
-// as part of its decoding pipeline. We don't know how many (it depends also on
-// the ImageProcessor, if any), so it's not a good idea to set expectations on
-// the number of kFrameDecoded events.
-TEST_F(VideoDecoderTest, DecodeAndOutputAllFrames) {
+// This test case sends all the frames and expects them to be accepted for
+// decoding (as in, VideoDecoder::OutputCB should be called). Most of them
+// should be decoded as well, but since this test doesn't exercise an
+// End-of-Stream (a.k.a. "a flush"), some will likely be held onto by the
+// VideoDecoder/driver as part of its decoding pipeline. We don't know how
+// many (it depends also on the ImageProcessor, if any), so it's not a good
+// idea to set expectations on the number of kFrameDecoded events.
+TEST_F(VideoDecoderTest, AllDecoderBuffersAcceptedForDecoding) {
   auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Play();
@@ -484,7 +475,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
 #if BUILDFLAG(USE_V4L2_CODEC)
 // Flush the decoder somewhere mid-stream, then continue as normal. This is a
 // contrived use case to exercise important V4L2 stateful areas.
-TEST_F(VideoDecoderTest, FlushMidStream) {
+TEST_F(VideoDecoderTest, DISABLED_FlushMidStream) {
   if (!base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
     GTEST_SKIP();
   }
@@ -620,6 +611,10 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
       g_env->Video()->Codec() != media::VideoCodec::kHEVC)
     GTEST_SKIP();
 
+  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    GTEST_SKIP() << "Temporarily disabled due to b/298073737";
+  }
+
   auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->PlayUntil(DecoderListener::Event::kConfigInfo);
@@ -692,9 +687,10 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
 
   for (size_t i = 0; i < kMinSupportedConcurrentDecoders; ++i) {
     EXPECT_TRUE(tvps[i]->WaitForFlushDone());
-    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u);
-    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames());
-    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors());
+    EXPECT_EQ(tvps[i]->GetFlushDoneCount(), 1u) << "Decoder #" << i;
+    EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames())
+        << "Decoder #" << i;
+    EXPECT_TRUE(tvps[i]->WaitForFrameProcessors()) << "Decoder #" << i;
   }
 }
 
@@ -752,9 +748,11 @@ int main(int argc, char** argv) {
        it != switches.end(); ++it) {
     if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
                                           // Options below are handled by Chrome
-        it->first == "ozone-platform" || it->first == "use-gl" ||
-        it->first == "v" || it->first == "vmodule" ||
-        it->first == "enable-features" || it->first == "disable-features") {
+        it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
+        it->first == "enable-features" || it->first == "disable-features" ||
+        it->first == "test-launcher-shard-index" ||
+        it->first == "test-launcher-summary-output" ||
+        it->first == "test-launcher-total-shards") {
       continue;
     }
 
@@ -812,8 +810,6 @@ int main(int argc, char** argv) {
       implementation = media::test::DecoderImplementation::kVDVDA;
     } else if (it->first == "linear_output") {
       linear_output = true;
-    } else if (it->first == "disable_vaapi_lock") {
-      disabled_features.push_back(media::kGlobalVaapiLock);
 #if defined(ARCH_CPU_ARM_FAMILY)
     } else if (it->first == "disable-libyuv") {
       enabled_features.clear();
@@ -824,6 +820,8 @@ int main(int argc, char** argv) {
       return EXIT_FAILURE;
     }
   }
+
+  disabled_features.push_back(media::kGlobalVaapiLock);
 
   if (use_legacy && use_vd_vda) {
     std::cout << "--use-legacy and --use_vd_vda cannot be enabled together.\n"
@@ -843,23 +841,29 @@ int main(int argc, char** argv) {
   // video decoder to allow clear HEVC decoding.
   cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
 
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // On some platforms bandwidth compression is fully opaque and can not be
-  // read by the cpu.  This prevents MD5 computation as that is done by the
-  // cpu.
-  cmd_line->AppendSwitch("disable-buffer-bw-compression");
+#if defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  // On some platforms bandwidth compression is fully opaque and can not be read
+  // by the cpu. This prevents MD5 computation as that is done by the CPU. This
+  // is currently only needed for Trogdor/Strongbad to disable UBWC compression.
+  setenv("MINIGBM_DEBUG", "nocompression", 1);
 #endif
 
 #if BUILDFLAG(USE_V4L2_CODEC)
+  // For V4L2 testing with VISL, dumb driver is used with vkms for minigbm
+  // backend. In this case, the primary node needs to be used instead of the
+  // render node.
+  cmd_line->AppendSwitch(switches::kEnablePrimaryNodeAccessForVkmsTesting);
+
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
-  if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatelessVideoDecoder);
-  }
   if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
+  }
+  if (feature_list->IsFeatureOverridden("V4L2FlatVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatVideoDecoder);
     enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
   }
 #endif

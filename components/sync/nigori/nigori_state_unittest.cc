@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/nigori_state.h"
 
+#include <utility>
 #include <vector>
 
 #include "components/sync/base/time.h"
@@ -151,14 +152,14 @@ TEST(NigoriStateTest, ShouldClonePublicKey) {
 }
 
 TEST(
-    NigoriTestTest,
+    NigoriStateTest,
     ShouldSetCrossUserPublicKeyVersionInCreateFromLocalProtoAndBeAbleToEncrypt) {
   sync_pb::NigoriModel nigori_model;
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  cryptographer->EmplaceKeyPair(
+  cryptographer->SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 5);
-  cryptographer->EmplaceKeyPair(
+  cryptographer->SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 6);
   ASSERT_TRUE(cryptographer->HasKeyPair(5));
   ASSERT_TRUE(cryptographer->HasKeyPair(6));
@@ -167,7 +168,7 @@ TEST(
 
   NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span("should encrypt this message")),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
@@ -176,14 +177,14 @@ TEST(
   EXPECT_TRUE(encrypted_message.has_value());
 }
 
-TEST(NigoriTestTest,
+TEST(NigoriStateTest,
      ShouldReturnEmptyOnEncryptIfCrossUserPublicKeyVersionIsNotSet) {
   sync_pb::NigoriModel nigori_model;
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  cryptographer->EmplaceKeyPair(
+  cryptographer->SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 5);
-  cryptographer->EmplaceKeyPair(
+  cryptographer->SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 6);
   ASSERT_TRUE(cryptographer->HasKeyPair(5));
   ASSERT_TRUE(cryptographer->HasKeyPair(6));
@@ -191,13 +192,44 @@ TEST(NigoriTestTest,
 
   NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span("should encrypt this message")),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
   EXPECT_FALSE(encrypted_message.has_value());
+}
+
+TEST(NigoriStateTest, ShouldReturnNeedsGenerateCrossUserSharingKeyPair) {
+  NigoriState state;
+  const std::string key_name = state.cryptographer->EmplaceKey(
+      "key1", KeyDerivationParams::CreateForPbkdf2());
+  ASSERT_THAT(key_name, Ne(""));
+  state.cryptographer->SelectDefaultEncryptionKey(key_name);
+
+  // There is no public key, so the key pair needs to be generated.
+  EXPECT_TRUE(state.NeedsGenerateCrossUserSharingKeyPair());
+
+  // Initialize the correct key pair.
+  CrossUserSharingPublicPrivateKeyPair key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  state.cross_user_sharing_public_key =
+      CrossUserSharingPublicKey::CreateByImport(key_pair.GetRawPublicKey());
+  state.cross_user_sharing_key_pair_version = 0;
+  state.cryptographer->SetKeyPair(std::move(key_pair), 0);
+  EXPECT_FALSE(state.NeedsGenerateCrossUserSharingKeyPair());
+
+  // Corrupt the key pair.
+  state.cross_user_sharing_public_key =
+      CrossUserSharingPublicKey::CreateByImport(
+          CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
+              .GetRawPublicKey());
+  EXPECT_TRUE(state.NeedsGenerateCrossUserSharingKeyPair());
+
+  // Set pending keys which should prevent generating key pair.
+  state.pending_keys = sync_pb::EncryptedData();
+  EXPECT_FALSE(state.NeedsGenerateCrossUserSharingKeyPair());
 }
 
 }  // namespace

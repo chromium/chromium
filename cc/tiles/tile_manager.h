@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -38,6 +39,7 @@
 #include "cc/tiles/tile_draw_info.h"
 #include "cc/tiles/tile_manager_settings.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "url/gurl.h"
 
@@ -235,12 +237,13 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
       // The raster here never really happened, cuz tests. So just add an
       // arbitrary sync token.
       if (resource.gpu_backing()) {
-        resource.gpu_backing()->mailbox =
-            gpu::Mailbox::GenerateForSharedImage();
+        resource.gpu_backing()->shared_image =
+            gpu::ClientSharedImage::CreateForTesting();
         resource.gpu_backing()->mailbox_sync_token.Set(
             gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       }
-      bool exported = resource_pool_->PrepareForExport(resource);
+      bool exported = resource_pool_->PrepareForExport(
+          resource, viz::TransferableResource::ResourceSource::kTest);
       DCHECK(exported);
       draw_info.SetResource(std::move(resource), false, false);
       draw_info.set_resource_ready_for_draw();
@@ -527,6 +530,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   bool has_pending_tile_trimming_task_ = false;
   scoped_refptr<base::TaskRunner> task_runner_for_testing_ = nullptr;
   raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
+
+  base::MetricsSubSampler metrics_sub_sampler_;
 
   // The callback scheduled to poll whether the GPU side work for pending tiles
   // has completed.

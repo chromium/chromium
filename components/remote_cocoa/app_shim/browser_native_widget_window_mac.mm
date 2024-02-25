@@ -6,7 +6,6 @@
 
 #import <AppKit/AppKit.h>
 
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 
@@ -44,11 +43,7 @@
   // In short the titlebar will be the same size during non-fullscreen and
   // kImmersiveFullscreenTabs fullscreen. During content fullscreen the toolbar
   // is hidden and the titlebar will be smaller default height.
-  if (!_inFullScreen ||
-      (bridge->ImmersiveFullscreenIsEnabled() &&
-       bridge->ImmersiveFullscreenIsTabbed() &&
-       bridge->ImmersiveFullscreenLastUsedStyle() !=
-           remote_cocoa::mojom::ToolbarVisibilityStyle::kNone)) {
+  if (!_inFullScreen || bridge->ShouldUseCustomTitlebarHeightForFullscreen()) {
     bridge->host()->GetWindowFrameTitlebarHeight(&overrideTitlebarHeight,
                                                  &titlebarHeight);
   }
@@ -106,10 +101,10 @@
   // NSToolbarFullScreenWindow should never become the key window, otherwise
   // the browser window will appear inactive. Activate the browser window
   // when this happens.
-  if (remote_cocoa::IsNSToolbarFullScreenWindow(notify.object)) {
-    if ([self isOnActiveSpace]) {
-      [self makeKeyAndOrderFront:nil];
-    }
+  NSWindow* toolbarWindow = notify.object;
+  if (toolbarWindow.parentWindow == self &&
+      remote_cocoa::IsNSToolbarFullScreenWindow(toolbarWindow)) {
+    [self makeKeyAndOrderFront:nil];
   }
 }
 

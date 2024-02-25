@@ -20,6 +20,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -353,6 +354,11 @@ std::vector<base::StringPiece> KeyEventFlagsNames(int event_flags) {
     names.push_back("IS_EXTENDED_KEY");
   if (event_flags & EF_IS_STYLUS_BUTTON)
     names.push_back("IS_STYLUS_BUTTON");
+#if BUILDFLAG(IS_CHROMEOS)
+  if (event_flags & EF_IS_CUSTOMIZED_FROM_BUTTON) {
+    names.push_back("IS_CUSTOMIZED_FROM_BUTTON");
+  }
+#endif
 
   return names;
 }

@@ -5,10 +5,12 @@
 #include "media/audio/audio_manager_base.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,16 +22,13 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_input_stream_data_interceptor.h"
 #include "media/audio/audio_output_dispatcher_impl.h"
 #include "media/audio/audio_output_proxy.h"
 #include "media/audio/audio_output_resampler.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "base/logging.h"
-#include "media/audio/audio_input_stream_data_interceptor.h"
 
 namespace media {
 
@@ -178,14 +177,17 @@ void AudioManagerBase::GetAudioDeviceDescriptions(
   }
 
   for (auto& name : device_names) {
-    if (AudioDeviceDescription::IsDefaultDevice(name.unique_id))
+    bool is_system_default = name.unique_id == real_default_device_id;
+    if (AudioDeviceDescription::IsDefaultDevice(name.unique_id)) {
       name.device_name = real_default_name;
-    else if (AudioDeviceDescription::IsCommunicationsDevice(name.unique_id))
+      is_system_default = true;
+    } else if (AudioDeviceDescription::IsCommunicationsDevice(name.unique_id)) {
       name.device_name = real_communications_name;
+    }
     std::string group_id = (this->*get_group_id)(name.unique_id);
     device_descriptions->emplace_back(std::move(name.device_name),
                                       std::move(name.unique_id),
-                                      std::move(group_id));
+                                      std::move(group_id), is_system_default);
   }
 }
 
@@ -352,7 +354,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     const std::string& device_id) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(params.IsValid());
-  absl::optional<StreamFormat> uma_stream_format;
+  std::optional<StreamFormat> uma_stream_format;
 
   // If the caller supplied an empty device id to select the default device,
   // we fetch the actual device id of the default device so that the lookup

@@ -11,7 +11,6 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/resource_context.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/public/switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -217,13 +216,13 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
               switches::kDisableCookieEncryption)),
 #endif
       user_data_path_(std::move(user_data_path)),
+      disk_cache_dir_(options->disk_cache_dir()),
       accept_language_(options->accept_language()),
       user_agent_(options->user_agent()),
       proxy_config_(
           options->proxy_config()
               ? std::make_unique<net::ProxyConfig>(*options->proxy_config())
-              : nullptr),
-      resource_context_(std::make_unique<content::ResourceContext>()) {
+              : nullptr) {
   if (!proxy_config_) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kNoSystemProxyConfigService)) {
@@ -306,10 +305,13 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
     context_params->file_paths->trigger_migration = false;
 #endif  // BUILDFLAG(IS_WIN)
   }
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDiskCacheDir)) {
-    context_params->file_paths->http_cache_directory =
-        command_line->GetSwitchValuePath(switches::kDiskCacheDir);
+
+  if (!disk_cache_dir_.empty()) {
+    if (!context_params->file_paths) {
+      context_params->file_paths =
+          ::network::mojom::NetworkContextFilePaths::New();
+    }
+    context_params->file_paths->http_cache_directory = disk_cache_dir_;
   } else if (!user_data_path_.empty()) {
     context_params->file_paths->http_cache_directory =
         user_data_path_.Append(FILE_PATH_LITERAL("Cache"));

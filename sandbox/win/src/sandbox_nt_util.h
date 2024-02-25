@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <memory>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Placement new and delete to be used from ntdll interception code.
 void* __cdecl operator new(size_t size,
@@ -105,7 +105,7 @@ void* GetGlobalIPCMemory();
 void* GetGlobalPolicyMemoryForTesting();
 
 // Returns a view of the shared delegate data, or nullopt if none was provided.
-absl::optional<base::span<const uint8_t>> GetGlobalDelegateData();
+std::optional<base::span<const uint8_t>> GetGlobalDelegateData();
 
 // Returns a reference to imported NT functions.
 const NtExports* GetNtExports();
@@ -184,10 +184,6 @@ bool IsValidImageSection(HANDLE section,
 // Converts an ansi string to an UNICODE_STRING.
 UNICODE_STRING* AnsiToUnicode(const char* string);
 
-// Resolves a handle to an nt path. Returns true if the handle can be resolved.
-bool NtGetPathFromHandle(HANDLE handle,
-                         std::unique_ptr<wchar_t, NtAllocDeleter>* path);
-
 // Provides a simple way to temporarily change the protection of a memory page.
 class AutoProtectMemory {
  public:
@@ -222,6 +218,14 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
 
 // Get the CLIENT_ID from the current TEB.
 CLIENT_ID GetCurrentClientId();
+
+// Version of memset that can be called before the CRT is initialized.
+__forceinline void Memset(void* ptr, int value, size_t num_bytes) {
+  unsigned char* byte_ptr = static_cast<unsigned char*>(ptr);
+  while (num_bytes--) {
+    *byte_ptr++ = static_cast<unsigned char>(value);
+  }
+}
 
 }  // namespace sandbox
 

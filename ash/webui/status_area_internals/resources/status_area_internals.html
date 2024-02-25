@@ -1,0 +1,148 @@
+<!-- Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+  app-header {
+    background-color: royalblue;
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .input-field {
+    margin: 2.5% 5%;
+  }
+
+  .input-field ol {
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+  }
+
+  .input-field ol>li {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    padding: 0 0 8px 0;
+  }
+
+  .padded-text {
+    margin-inline-start: 5px;
+  }
+
+  .row {
+    display: flex;
+    flex: 0 1 100%;
+  }
+</style>
+
+<app-header>
+  <app-toolbar>ChromeOS Status Area Tester</app-toolbar>
+</app-header>
+
+<div class="input-field">
+  <ol>
+    <h2>Shelf Pod</h2>
+    <p>Toggle to show or hide the pod in the shelf</p>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="ime-tray" on-change="onImeToggled"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          IME Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="palette-tray" on-change="onPaletteToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Palette Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onLogoutToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Logout Button
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onVirtualKeyboardToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Virtual Keyboard Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onDictationToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Dictation Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onVideoConferenceToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Video Conference Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="projector-annotation-tray" on-change="onProjectorToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Projector Annotation Tray
+        </span>
+      </div>
+    </li>
+  </ol>
+  <ol>
+    <h2>Quick Settings</h2>
+    <h3>Enterprise Managed/Supervised User UI</h3>
+    <p>
+      Note that an user cannot be a child user and managed at the same time,
+      so we should not trigger the 2 toggles below both on.
+    </p>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="active-directory-managed" on-change="onActiveDirectoryManagedToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Active Directory Managed
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="child-user" on-change="onChildUserToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Child User
+        </span>
+      </div>
+    </li>
+  </ol>
+  <ol>
+    <h2>Privacy Indicators</h2>
+    <privacy-indicator-app-manager></privacy-indicator-app-manager>
+  </ol>
+</div>

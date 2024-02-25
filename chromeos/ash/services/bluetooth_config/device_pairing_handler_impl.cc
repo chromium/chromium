@@ -114,7 +114,7 @@ void DevicePairingHandlerImpl::PerformPairDevice(const std::string& device_id) {
 }
 
 void DevicePairingHandlerImpl::PerformFinishCurrentPairingRequest(
-    absl::optional<device::ConnectionFailureReason> failure_reason,
+    std::optional<device::ConnectionFailureReason> failure_reason,
     base::TimeDelta duration) {
   // Reset state.
   is_canceling_pairing_ = false;
@@ -246,11 +246,11 @@ void DevicePairingHandlerImpl::AuthorizePairing(
 }
 
 void DevicePairingHandlerImpl::OnDeviceConnect(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (!error_code.has_value()) {
     BLUETOOTH_LOG(EVENT) << "Device " << current_pairing_device_id()
                          << " successfully paired";
-    FinishCurrentPairingRequest(absl::nullopt);
+    FinishCurrentPairingRequest(std::nullopt);
     return;
   }
 
@@ -295,7 +295,7 @@ void DevicePairingHandlerImpl::HandlePairingFailed(
         << ": Pairing finished with an error code, but device "
         << "is connected. Handling like pairing succeeded. Error code: "
         << error_code;
-    FinishCurrentPairingRequest(absl::nullopt);
+    FinishCurrentPairingRequest(std::nullopt);
     return;
   }
 

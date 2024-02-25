@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -130,7 +131,7 @@ void MultiProfileSupport::AddUser(content::BrowserContext* context) {
     account_id_to_app_observer_[account_id]->OnAppWindowAdded(*it);
 
   // Account all existing browser windows of this user accordingly.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->IsSameOrParent(profile))
       OnBrowserAdded(browser);
   }
@@ -172,10 +173,15 @@ void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   full_restore::SetActiveProfilePath(profile->GetPath());
 
-  auto* full_restore_service =
-      ash::full_restore::FullRestoreService::GetForProfile(profile);
-  if (full_restore_service)
-    full_restore_service->OnTransitionedToNewActiveUser(profile);
+  // Only init full restore when floating workspace is disabled or in safe mode.
+  // TODO(b/312233508): Add fws test coverage for this case.
+  if (!ash::floating_workspace_util::ShouldHandleRestartRestore()) {
+    auto* full_restore_service =
+        ash::full_restore::FullRestoreService::GetForProfile(profile);
+    if (full_restore_service) {
+      full_restore_service->OnTransitionedToNewActiveUser(profile);
+    }
+  }
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();

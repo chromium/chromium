@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
@@ -80,8 +81,7 @@ class NET_EXPORT HttpStreamFactory {
   std::unique_ptr<HttpStreamRequest> RequestStream(
       const HttpRequestInfo& info,
       RequestPriority priority,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       HttpStreamRequest::Delegate* delegate,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
@@ -93,8 +93,7 @@ class NET_EXPORT HttpStreamFactory {
   std::unique_ptr<HttpStreamRequest> RequestWebSocketHandshakeStream(
       const HttpRequestInfo& info,
       RequestPriority priority,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       HttpStreamRequest::Delegate* delegate,
       WebSocketHandshakeStreamBase::CreateHelper* create_helper,
       bool enable_ip_based_pooling,
@@ -109,8 +108,7 @@ class NET_EXPORT HttpStreamFactory {
   virtual std::unique_ptr<HttpStreamRequest> RequestBidirectionalStreamImpl(
       const HttpRequestInfo& info,
       RequestPriority priority,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       HttpStreamRequest::Delegate* delegate,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
@@ -145,8 +143,7 @@ class NET_EXPORT HttpStreamFactory {
   std::unique_ptr<HttpStreamRequest> RequestStreamInternal(
       const HttpRequestInfo& info,
       RequestPriority priority,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       HttpStreamRequest::Delegate* delegate,
       WebSocketHandshakeStreamBase::CreateHelper* create_helper,
       HttpStreamRequest::StreamType stream_type,

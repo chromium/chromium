@@ -1,0 +1,7 @@
+monorail: {
+  component: "Internals>Network>Cookies"
+}
+team_email: "dc-komics@google.com"
+buganizer_public: {
+  component_id: 1456343
+}

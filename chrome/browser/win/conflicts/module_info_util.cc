@@ -12,12 +12,15 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -207,7 +210,9 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
 
 }  // namespace
 
-const wchar_t kClassIdRegistryKeyFormat[] = L"CLSID\\%ls\\InProcServer32";
+std::wstring GuidToClsid(std::wstring_view guid) {
+  return base::StrCat({L"CLSID\\", guid, L"\\InProcServer32"});
+}
 
 // ModuleDatabase::CertificateInfo ---------------------------------------------
 
@@ -304,8 +309,10 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
     return false;
 
   base::win::PeImageReader pe_image_reader;
-  if (!pe_image_reader.Initialize(buffer.get(), bytes_read))
+  if (!pe_image_reader.Initialize(base::make_span(
+          buffer.get(), base::checked_cast<size_t>(bytes_read)))) {
     return false;
+  }
 
   *size_of_image = pe_image_reader.GetSizeOfImage();
   *time_date_stamp = pe_image_reader.GetCoffFileHeader()->TimeDateStamp;

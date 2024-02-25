@@ -38,6 +38,8 @@ source_set("database") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/mojom",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

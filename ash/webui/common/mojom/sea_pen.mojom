@@ -1,0 +1,146 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.personalization_app.mojom;
+
+import "ash/webui/common/mojom/sea_pen_generated.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+
+// Encapsulates metadata for a thumbnail image, which can be displayed as an
+// image tile in the SeaPen search result page.
+struct SeaPenThumbnail {
+    // Data url to display the image.
+    url.mojom.Url image;
+
+    // An id that uniquely identifies the image.
+    uint32 id;
+};
+
+// The query information that was recently used to search for Sea Pen
+// images including the visible prompt text and template title from the UI.
+// The strings were translated based on the localization that the user was in
+// when they ran the query.
+struct SeaPenUserVisibleQuery {
+  // The user visible prompt used to search for images.
+  string text;
+
+  // The visible title of the selected template used to search for images.
+  string template_title;
+};
+
+// The information needed to query template wallpapers. The possible `id` and
+// `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
+// are not controlled by the renderer. The browser is responsible for validating
+// the values.
+struct SeaPenTemplateQuery {
+  // A unique template ID.
+  SeaPenTemplateId id;
+
+  // The chips and their selected options.
+  map<SeaPenTemplateChip, SeaPenTemplateOption> options;
+
+  // The visible template query information including the prompt and template
+  // title that the user selected, saved in the localization that the user
+  // was in when they ran the query.
+  SeaPenUserVisibleQuery user_visible_query;
+};
+
+// The metadata for the feedback dialog
+struct SeaPenFeedbackMetadata {
+  bool is_positive;
+  string log_id;
+};
+
+// A text or template query for constructing a Manta request.
+union SeaPenQuery {
+  // Set if the query is from text input.
+  string text_query;
+
+  // Set if the query is from template input.
+  SeaPenTemplateQuery template_query;
+};
+
+// The information of a recent Sea Pen image including the query information
+// and its creation time.
+struct RecentSeaPenImageInfo {
+  // The visible query information that the user used to generate the recent
+  // image, including the prompt text and the template title.
+  // If the image was generated from a freeform query, `user_visible_query`
+  // includes the freeform text and an empty template title.
+  // TODO(b/304581483): update SeaPenUserVisibleQuery to SeaPenQuery.
+  SeaPenUserVisibleQuery user_visible_query;
+
+  // Human-readable string representation of the date the image was
+  // created, e.g., "Dec 30, 2023", translated into the user's current
+  // locale. `creation_time` is null on failure.
+  mojo_base.mojom.String16? creation_time;
+};
+
+// Maximum allowable search text length, in bytes.
+// When validating length in Javascript, be careful of the difference between
+// UTF-16 (Javascript) length and UTF-8 length.
+const uint32 kMaximumSearchWallpaperTextBytes = 3000;
+
+// Should match the associated enum in components/manta/manta_status.h
+enum MantaStatusCode {
+  kOk = 0,
+  kGenericError = 1,
+  kInvalidInput = 2,
+  kResourceExhausted = 3,
+  kBackendFailure = 4,
+  kMalformedResponse = 5,
+  kNoInternetConnection = 6,
+  kUnsupportedLanguage = 7,
+  kBlockedOutputs = 8,
+  kRestrictedCountry = 9,
+  kNoIdentityManager = 10,
+  kPerUserQuotaExceeded = 11,
+  kMax = kPerUserQuotaExceeded,
+};
+
+// Provides APIs to perform wallpaper searches. Uses APIs in
+// `manta.proto` to send search requests to a server.
+// Implemented in the browser process, and called by the ChromeOS
+// Personalization App (chrome://personalization) in a renderer process.
+interface SeaPenProvider {
+
+    // Given a user text input, return a set of matching images.
+    // `images` will be null in case of an unrecoverable error, such as network
+    // failure.
+    // `images` will be empty array when the request succeeded, but no matching
+    // images were returned.
+    // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
+    SearchWallpaper(SeaPenQuery query) =>
+        (array<SeaPenThumbnail>? images, MantaStatusCode statusCode);
+
+    // Select a thumbnail and set as the system wallpaper for the current user.
+    SelectSeaPenThumbnail(uint32 id) => (bool success);
+
+    // Sets the given Sea Pen image as the user's background.
+    SelectRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+
+    // Gets the recently used sea pen wallpapers. `images` will be empty
+    // on failure.
+    GetRecentSeaPenImages() => (array<mojo_base.mojom.FilePath> images);
+
+    // Fetch a thumbnail data url for the given recent sea pen image path.
+    // `url` will be empty on failure.
+    GetRecentSeaPenImageThumbnail(mojo_base.mojom.FilePath path) =>
+        (url.mojom.Url url);
+
+    // Deletes the selected Sea Pen image from Sea Pen directory.
+    DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+
+    // Pops up a feedback dialog when user clicks feedback buttons.
+    OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
+
+    // Determines whether to show the reviewing Sea Pen terms of service dialog.
+    ShouldShowSeaPenTermsOfServiceDialog() => (bool should_show_dialog);
+
+    // Called when the user accepts the terms of service for Sea Pen wallpaper.
+    HandleSeaPenTermsOfServiceAccepted();
+};

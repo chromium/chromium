@@ -216,8 +216,7 @@ void InitializeFeatureList(const base::Value::Dict& dcs_features,
 
   // Initialize the FeatureList from the command line.
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(all_enable_features,
-                                          all_disable_features);
+  feature_list->InitFromCommandLine(all_enable_features, all_disable_features);
 
   // Override defaults from the DCS config.
   for (const auto kv : dcs_features) {

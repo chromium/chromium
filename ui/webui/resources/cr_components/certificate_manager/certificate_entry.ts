@@ -16,7 +16,7 @@ import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_po
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_entry.html.js';
-import {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';
+import type {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';
 
 const CertificateEntryElementBase = I18nMixin(PolymerElement);
 

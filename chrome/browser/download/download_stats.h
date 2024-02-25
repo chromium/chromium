@@ -101,21 +101,15 @@ enum class DownloadCancelReason {
 // Record initiation of a download from a specific source.
 void RecordDownloadSource(ChromeDownloadSource source);
 
-// Record that a download warning was shown.
-void RecordDangerousDownloadWarningShown(
-    download::DownloadDangerType danger_type,
-    const base::FilePath& file_path,
-    bool is_https,
-    bool has_user_gesture);
+// Record that a download warning was shown, if the download was dangerous. To
+// avoid double-logging, it checks DownloadItemModel::WasUIWarningShown() first.
+// Also records the warning shown by setting WasUIWarningShown to true on the
+// model.
+void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model);
 
 // Record that a download was opened.
 void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
                         const std::string& mime_type_string);
-
-// TODO(crbug.com/1372476): Remove this function after debugging.
-// Record that a download open button was pressed, either on download shelf or
-// download bubble.
-void RecordDownloadOpenButtonPressed(bool is_download_completed);
 
 // Record if the database is available to provide the next download id before
 // starting all downloads.

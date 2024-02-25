@@ -5,9 +5,11 @@
 #include "chromeos/ash/components/phonehub/connection_scheduler_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
@@ -25,9 +27,11 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 
 ConnectionSchedulerImpl::ConnectionSchedulerImpl(
     secure_channel::ConnectionManager* connection_manager,
-    FeatureStatusProvider* feature_status_provider)
+    FeatureStatusProvider* feature_status_provider,
+    PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger)
     : connection_manager_(connection_manager),
       feature_status_provider_(feature_status_provider),
+      phone_hub_structured_metrics_logger_(phone_hub_structured_metrics_logger),
       retry_backoff_(&kRetryBackoffPolicy) {
   DCHECK(connection_manager_);
   DCHECK(feature_status_provider_);
@@ -41,7 +45,8 @@ ConnectionSchedulerImpl::~ConnectionSchedulerImpl() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void ConnectionSchedulerImpl::ScheduleConnectionNow() {
+void ConnectionSchedulerImpl::ScheduleConnectionNow(
+    DiscoveryEntryPoint entry_point) {
   if (feature_status_provider_->GetStatus() !=
       FeatureStatus::kEnabledButDisconnected) {
     PA_LOG(WARNING) << "ScheduleConnectionNow() could not request a connection "
@@ -50,7 +55,10 @@ void ConnectionSchedulerImpl::ScheduleConnectionNow() {
     return;
   }
 
-  connection_manager_->AttemptNearbyConnection();
+  if (connection_manager_->AttemptNearbyConnection()) {
+    phone_hub_structured_metrics_logger_->LogPhoneHubDiscoveryStarted(
+        entry_point);
+  }
 }
 
 void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
@@ -91,23 +99,53 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
       break;
   }
 
-  if (previous_feature_status == FeatureStatus::kEnabledAndConnecting) {
-    PA_LOG(WARNING) << "Scheduling connection to retry in: "
-                    << retry_backoff_.GetTimeUntilRelease().InSeconds()
-                    << " seconds.";
+  DiscoveryEntryPoint entry_point = DiscoveryEntryPoint::kUserSignIn;
 
-    retry_backoff_.InformOfRequest(/*succeeded=*/false);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ConnectionSchedulerImpl::ScheduleConnectionNow,
-                       weak_ptr_factory_.GetWeakPtr()),
-        retry_backoff_.GetTimeUntilRelease());
-  } else {
-    PA_LOG(VERBOSE) << "Feature status has been updated to "
-                    << "kEnabledButDisconnected, scheduling connection now.";
-    // Schedule connection now without a delay.
-    ScheduleConnectionNow();
+  switch (previous_feature_status) {
+    case FeatureStatus::kEnabledAndConnecting:
+      PA_LOG(WARNING) << "Scheduling connection to retry in: "
+                      << retry_backoff_.GetTimeUntilRelease().InSeconds()
+                      << " seconds.";
+
+      retry_backoff_.InformOfRequest(/*succeeded=*/false);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ConnectionSchedulerImpl::ScheduleConnectionNow,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         DiscoveryEntryPoint::kAutomaticConnectionRetry),
+          retry_backoff_.GetTimeUntilRelease());
+      return;
+    case FeatureStatus::kUnavailableBluetoothOff:
+      entry_point = DiscoveryEntryPoint::kBluetoothEnabled;
+      break;
+    case FeatureStatus::kLockOrSuspended:
+      entry_point = DiscoveryEntryPoint::kChromebookUnlock;
+      break;
+    case FeatureStatus::kDisabled:
+      entry_point = DiscoveryEntryPoint::kUserEnabledFeature;
+      break;
+    case FeatureStatus::kEnabledAndConnected:
+      entry_point = DiscoveryEntryPoint::kConnectionRetryAfterConnected;
+      break;
+
+    // When status transferred from kNotEligibleForFeature directly to
+    // kEnabledButDisconnected usually means user just sign in. Break to keep
+    // entry_point value to default.
+    case FeatureStatus::kNotEligibleForFeature:
+      break;
+    case FeatureStatus::kEligiblePhoneButNotSetUp:
+      [[fallthrough]];
+    case FeatureStatus::kPhoneSelectedAndPendingSetup:
+      entry_point = DiscoveryEntryPoint::kUserOnboardedToFeature;
+      break;
+
+    // Status should not transition from same status.
+    case FeatureStatus::kEnabledButDisconnected:
+      NOTREACHED();
+      return;
   }
+
+  ScheduleConnectionNow(entry_point);
 }
 
 void ConnectionSchedulerImpl::ClearBackoffAttempts() {

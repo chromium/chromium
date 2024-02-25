@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 
+#include <optional>
+
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -137,7 +138,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
 
   HeapMojoRemote<device::mojom::blink::ScreenOrientationListener> monitor_;
 
-  absl::optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
+  std::optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
 
   // `video_element_` owns MediaControlsImpl that owns |this|.
   Member<HTMLVideoElement> video_element_;

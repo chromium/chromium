@@ -14,8 +14,8 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-forward.h"
 #include "url/origin.h"
 
 namespace net {
@@ -128,7 +128,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // Return the set of features enabled by the given `trial_name`.
   // TODO(crbug.com/1227440): Refactor this to be a part of more general
   //                          validation flows instead of a stand-alone.
-  std::vector<OriginTrialFeature> FeaturesEnabledByTrial(
+  std::vector<mojom::OriginTrialFeature> FeaturesEnabledByTrial(
       base::StringPiece trial_name);
 
   // Return true if the trial in question enables at least one feature on the

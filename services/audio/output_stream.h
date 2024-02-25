@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/sync_socket.h"
 #include "base/timer/timer.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -79,14 +79,35 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   void OnControllerPlaying() final;
   void OnControllerPaused() final;
   void OnControllerError() final;
-  void OnLog(base::StringPiece message) final;
+  void OnLog(std::string_view message) final;
 
  private:
+  friend class AudibilityHelperImpl;
+  friend class OutputStreamAudibilityHelperTest;
+
+  class AudibilityHelper {
+   public:
+    using GetPowerLevelCB = base::RepeatingCallback<float()>;
+    using OnAudibleStateChangedCB =
+        base::RepeatingCallback<void(bool is_audible)>;
+
+    AudibilityHelper() = default;
+    virtual ~AudibilityHelper() = default;
+
+    virtual void StartPolling(
+        GetPowerLevelCB get_power_level_cb,
+        OnAudibleStateChangedCB on_audible_state_changed_cb) = 0;
+    virtual void StopPolling() = 0;
+
+    virtual bool IsAudible() = 0;
+  };
+
+  static std::unique_ptr<AudibilityHelper> MakeAudibilityHelperForTest();
+
   void CreateAudioPipe(CreatedCallback created_callback);
   void OnError();
   void CallDeleter();
-  void PollAudioLevel();
-  bool IsAudible();
+  void OnAudibleStateChanged(bool is_audible);
 
   // Internal helper method for sending logs related  to this class to clients
   // registered to receive these logs. Prepends each log with "audio::OS" to
@@ -113,9 +134,9 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   // and (de)register with the stream monitor when the state actually changes.
   bool playing_ = false;
 
-  // Calls PollAudioLevel() at regular intervals while |playing_| is true.
-  base::RepeatingTimer poll_timer_;
-  bool is_audible_ = false;
+  // Polls for changes in the OutputStream's silence/audibility state, and
+  // reports changes to OnAudibleStateChanged().
+  std::unique_ptr<AudibilityHelper> audibility_helper_;
 
   base::WeakPtrFactory<OutputStream> weak_factory_{this};
 };

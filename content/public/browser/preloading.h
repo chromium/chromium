@@ -52,6 +52,12 @@ enum class PreloadingType {
   // NoState prefetch only supports the GET HTTP method and doesn't cache
   // resources with the no-store cache-control header.
   kNoStatePrefetch = 5,
+
+  // Link-Preview loads a page with prerendering infrastructures in a dedicated
+  // mini tab so that users can take a look at the content before visiting it.
+  // TODO(b:291867362): This is not used by the current implementation,
+  // but might be reused in the future.
+  kLinkPreview = 6,
 };
 
 // Defines various triggering mechanisms which triggers different preloading
@@ -64,6 +70,12 @@ class CONTENT_EXPORT PreloadingPredictor {
       : ukm_value_(ukm_value), name_(name) {}
   int64_t ukm_value() const { return ukm_value_; }
   base::StringPiece name() const { return name_; }
+
+  bool operator==(const PreloadingPredictor& other) const {
+    // There's no need to compare name_ since every PreloadingPredictor has a
+    // distinct ukm_value_.
+    return other.ukm_value_ == ukm_value_;
+  }
 
  private:
   int64_t ukm_value_;
@@ -193,17 +205,30 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because it was triggered under memory pressure.
   kMemoryPressure = 16,
 
-  // Prerendering was ineligible because some DevTools client temporarily
+  // Preloading was ineligible because some DevTools client temporarily
   // disabled.
   kPreloadingDisabledByDevTools = 17,
 
-  // Prerendering was ineligible because some triggers only allows https.
+  // Preloading was ineligible because some triggers only allows https.
   kHttpsOnly = 18,
 
-  // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
-  // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
-  // defined under `//content`, namely `PrefetchStatus`.
-  kPreloadingEligibilityCommonEnd = 50,
+  // Preloading was ineligible for non-http(s).
+  kHttpOrHttpsOnly = 19,
+
+  // See corresponding values in PrefetchStatus for documentation.
+  kUserHasCookies = 55,
+  kUserHasServiceWorker = 56,
+  // This is similar to `kHttpsOnly`, but separately defined here to keep
+  // existing metrics values, for cases corresponding to
+  // `PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps`.
+  kSchemeIsNotHttps = 57,
+  kNonDefaultStoragePartition = 59,
+  kRetryAfter = 77,
+  kPrefetchProxyNotAvailable = 78,
+  kHostIsNonUnique = 86,
+  kExistingProxy = 88,
+  kBrowserContextOffTheRecord = 89,
+  kSameSiteCrossOriginPrefetchRequiredProxy = 96,
 
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation

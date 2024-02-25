@@ -26,14 +26,14 @@ ProxyLookupClientImpl::ProxyLookupClientImpl(
                                      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,
-                     base::Unretained(this), net::ERR_ABORTED, absl::nullopt));
+                     base::Unretained(this), net::ERR_ABORTED, std::nullopt));
 }
 
 ProxyLookupClientImpl::~ProxyLookupClientImpl() = default;
 
 void ProxyLookupClientImpl::OnProxyLookupComplete(
     int32_t net_error,
-    const absl::optional<net::ProxyInfo>& proxy_info) {
+    const std::optional<net::ProxyInfo>& proxy_info) {
   bool has_proxy = proxy_info.has_value() && !proxy_info->is_direct();
   std::move(callback_).Run(has_proxy);
 }

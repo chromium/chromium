@@ -30,9 +30,10 @@ namespace views {
 
 // Base class for the window caption buttons (minimize, maximize, restore,
 // close).
-class VIEWS_EXPORT FrameCaptionButton : public views::Button {
+class VIEWS_EXPORT FrameCaptionButton : public Button {
+  METADATA_HEADER(FrameCaptionButton, Button)
+
  public:
-  METADATA_HEADER(FrameCaptionButton);
   enum class Animate { kYes, kNo };
 
   FrameCaptionButton(PressedCallback callback,

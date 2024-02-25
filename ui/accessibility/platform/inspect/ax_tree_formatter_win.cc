@@ -13,11 +13,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
@@ -94,8 +94,16 @@ Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
                                                 LONG& root_x,
                                                 LONG& root_y) {
   DCHECK(node);
-  AXTreeManager* root_manager = node->GetTreeManager()->GetRootManager();
-  DCHECK(root_manager);
+  // If dumping when the page or iframe is reloading, the
+  // tree manager may have been removed.
+  AXTreeManager* manager = node->GetTreeManager();
+  if (!manager) {
+    return nullptr;
+  }
+  AXTreeManager* root_manager = manager->GetRootManager();
+  if (!root_manager) {
+    return nullptr;
+  }
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
@@ -115,8 +123,10 @@ base::Value::Dict AXTreeFormatterWin::BuildNode(
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> node_ia =
       GetIAObject(node, root_x, root_y);
-
   base::Value::Dict dict;
+  if (!node_ia) {
+    return dict;
+  }
   AddProperties(node_ia, &dict, root_x, root_y);
   return dict;
 }
@@ -126,8 +136,10 @@ base::Value::Dict AXTreeFormatterWin::BuildTree(
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
       GetIAObject(start, root_x, root_y);
-
   base::Value::Dict dict;
+  if (!start_ia) {
+    return dict;
+  }
   RecursiveBuildTree(start_ia, &dict, root_x, root_y);
   return dict;
 }
@@ -622,12 +634,11 @@ void AXTreeFormatterWin::AddIA2HypertextProperties(
         DCHECK(SUCCEEDED(hr));
       }
 
-      std::wstring child_index_str(L"<obj");
-      if (child_index >= 0) {
-        base::StringAppendF(&child_index_str, L"%d>", child_index);
-      } else {
-        base::StringAppendF(&child_index_str, L">");
-      }
+      std::wstring child_index_str =
+          (child_index >= 0)
+              ? base::StrCat(
+                    {L"<obj", base::NumberToWString(child_index), L">"})
+              : std::wstring(L"<obj>");
       base::ReplaceFirstSubstringAfterOffset(
           &ia2_hypertext, hypertext_index, embedded_character, child_index_str);
       ++character_index;
@@ -917,10 +928,9 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
         break;
       }
       default:
-        WriteAttribute(false,
-                       base::StringPrintf("%s=%s", attribute_name,
-                                          AXFormatValue(*value).c_str()),
-                       &line);
+        WriteAttribute(
+            false, base::StrCat({attribute_name, "=", AXFormatValue(*value)}),
+            &line);
         break;
     }
   }

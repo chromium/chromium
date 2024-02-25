@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -12,18 +13,17 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -43,7 +43,7 @@ const char kDataCollectorProtoEnum[] = "protoEnum";
 const char kDataCollectorIncluded[] = "isIncluded";
 
 const char kSupportTokenGenerationResultSuccess[] = "success";
-const char kSupportTokenGenerationResultToken[] = "result";
+const char kSupportTokenGenerationResultToken[] = "token";
 const char kSupportTokenGenerationResultErrorMessage[] = "errorMessage";
 
 }  // namespace support_tool_ui
@@ -110,6 +110,8 @@ std::string GetDataCollectorName(
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_SIGN_IN);
     case support_tool::PERFORMANCE:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_PERFORMANCE);
+    case support_tool::CHROMEOS_APP_SERVICE:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROMEOS_APP_SERVICE);
     default:
       return "Error: Undefined";
   }
@@ -170,7 +172,7 @@ std::string GetDataCollectionModuleQuery(
 // Returns a URL generation result in the type Support Tool UI expects.
 // type SupportTokenGenerationResult = {
 //   success: boolean,
-//   result: string,
+//   token: string,
 //   errorMessage: string,
 // }
 base::Value::Dict GetSupportTokenGenerationResult(bool success,
@@ -266,7 +268,7 @@ std::set<redaction::PIIType> GetPIITypesToKeep(
   for (const auto& item : *pii_items) {
     const base::Value::Dict* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
-    absl::optional<bool> keep =
+    std::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
     if (keep && keep.value()) {
       pii_to_keep.insert(static_cast<redaction::PIIType>(
@@ -317,7 +319,7 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   for (const auto& item : *data_collector_items) {
     const base::Value::Dict* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
-    absl::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
+    std::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
     if (isIncluded && isIncluded.value()) {
       included_data_collectors.insert(
           static_cast<support_tool::DataCollectorType>(

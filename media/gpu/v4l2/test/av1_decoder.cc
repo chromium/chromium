@@ -93,7 +93,7 @@ const gfx::Size GetResolutionFromBitstream(
 // https://aomediacodec.github.io/av1-spec/av1-spec.pdf
 void FillSequenceParams(
     struct v4l2_ctrl_av1_sequence* v4l2_seq_params,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header) {
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header) {
   conditionally_set_u32_flags(&v4l2_seq_params->flags,
                               seq_header->still_picture,
                               V4L2_AV1_SEQUENCE_FLAG_STILL_PICTURE);
@@ -233,7 +233,7 @@ void FillQuantizationParams(struct v4l2_av1_quantization* v4l2_quant,
 // Section 5.9.17. Quantizer index delta parameters syntax
 void FillQuantizerIndexDeltaParams(
     struct v4l2_av1_quantization* v4l2_quant,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
   // |diff_uv_delta| in the spec doesn't exist in libgav1,
   // because libgav1 infers it using the following logic.
@@ -291,9 +291,7 @@ void FillSegmentationParams(struct v4l2_av1_segmentation* v4l2_seg,
 void FillCdefParams(struct v4l2_av1_cdef* v4l2_cdef,
                     const libgav1::Cdef& cdef,
                     uint8_t color_bitdepth) {
-  // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
-  // All the strength values parsed in libgav1 are from the spec and left
-  // shifted by (bitdepth - 8).
+  // Damping value parsed in libgav1 is from the spec + (|color_bitdepth| - 8).
   CHECK_GE(color_bitdepth, 8u);
   const uint8_t coeff_shift = color_bitdepth - 8u;
 
@@ -322,6 +320,16 @@ void FillCdefParams(struct v4l2_av1_cdef* v4l2_cdef,
   SafeArrayMemcpy(v4l2_cdef->y_sec_strength, cdef.y_secondary_strength);
   SafeArrayMemcpy(v4l2_cdef->uv_pri_strength, cdef.uv_primary_strength);
   SafeArrayMemcpy(v4l2_cdef->uv_sec_strength, cdef.uv_secondary_strength);
+
+  // All the strength values parsed in libgav1 are from the AV1 spec and left
+  // shifted by (|color_bitdepth| - 8). So these values need to be right shifted
+  // by (|color_bitdepth| - 8) before passing to a driver.
+  for (size_t i = 0; i < libgav1::kMaxCdefStrengths; i++) {
+    v4l2_cdef->y_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef->y_sec_strength[i] >>= coeff_shift;
+    v4l2_cdef->uv_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef->uv_sec_strength[i] >>= coeff_shift;
+  }
 }
 
 // 5.9.20. Loop restoration params syntax
@@ -576,12 +584,6 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
-
   const gfx::Size bitstream_coded_size = GetResolutionFromBitstream(stream);
 
   return base::WrapUnique(new Av1Decoder(
@@ -631,7 +633,7 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
 // 5.9.2. Uncompressed header syntax
 void Av1Decoder::SetupFrameParams(
     struct v4l2_ctrl_av1_frame* v4l2_frame_params,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const std::optional<libgav1::ObuSequenceHeader>& seq_header,
     const libgav1::ObuFrameHeader& frm_header) {
   FillLoopFilterParams(&v4l2_frame_params->loop_filter, frm_header.loop_filter);
 
@@ -983,8 +985,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
 
   for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
     if (state_->reference_frame[i] != nullptr && ref_frames_[i] == nullptr) {
-      LOG_ASSERT(false) << "The state of the reference frames are different "
-                           "between |ref_frames_| and |state_|";
+      LOG(FATAL) << "The state of the reference frames are different "
+                    "between |ref_frames_| and |state_|";
     }
     if (state_->reference_frame[i] == nullptr && ref_frames_[i] != nullptr)
       ref_frames_[i].reset();

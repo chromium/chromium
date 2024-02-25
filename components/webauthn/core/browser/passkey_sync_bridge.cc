@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -16,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/features.h"
@@ -28,8 +30,8 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webauthn {
 namespace {
@@ -58,10 +60,11 @@ bool WebauthnCredentialSpecificsValid(
   return specifics.sync_id().size() == kSyncIdLength &&
          specifics.credential_id().size() == kCredentialIdLength &&
          !specifics.rp_id().empty() &&
-         specifics.user_id().length() <= kUserIdMaxLength;
+         specifics.user_id().length() <= kUserIdMaxLength &&
+         (specifics.has_private_key() || specifics.has_encrypted());
 }
 
-absl::optional<std::string> FindHeadOfShadowChain(
+std::optional<std::string> FindHeadOfShadowChain(
     const std::map<std::string, sync_pb::WebauthnCredentialSpecifics>& passkeys,
     const std::string& rp_id,
     const std::string& user_id) {
@@ -77,8 +80,20 @@ absl::optional<std::string> FindHeadOfShadowChain(
   std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
       passkey_model_utils::FilterShadowedCredentials(rpid_passkeys);
   CHECK_LE(filtered.size(), 1u);
-  return filtered.empty() ? absl::nullopt
-                          : absl::make_optional(filtered.at(0).sync_id());
+  return filtered.empty() ? std::nullopt
+                          : std::make_optional(filtered.at(0).sync_id());
+}
+
+PasskeyModelChange::ChangeType ToPasskeyModelChangeType(
+    syncer::EntityChange::ChangeType entity_change) {
+  switch (entity_change) {
+    case syncer::EntityChange::ACTION_ADD:
+      return PasskeyModelChange::ChangeType::ADD;
+    case syncer::EntityChange::ACTION_UPDATE:
+      return PasskeyModelChange::ChangeType::UPDATE;
+    case syncer::EntityChange::ACTION_DELETE:
+      return PasskeyModelChange::ChangeType::REMOVE;
+  }
 }
 
 }  // namespace
@@ -96,7 +111,11 @@ PasskeySyncBridge::PasskeySyncBridge(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-PasskeySyncBridge::~PasskeySyncBridge() = default;
+PasskeySyncBridge::~PasskeySyncBridge() {
+  for (auto& observer : observers_) {
+    observer.OnPasskeyModelShuttingDown();
+  }
+}
 
 void PasskeySyncBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -111,7 +130,7 @@ PasskeySyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes,
     syncer::EntityChangeList entity_changes) {
   // Passkeys should be deleted when sync is turned off. Therefore, there should
@@ -124,12 +143,15 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
   // Merge sync to local data. Since there should be no local-only passkeys for
   // now, we don't actually need to merge anything yet. If we do merge, we need
   // to feed the changes back to `change_processor()`.
+  std::vector<PasskeyModelChange> changes;
   for (const auto& entity_change : entity_changes) {
+    CHECK_EQ(entity_change->type(), syncer::EntityChange::ACTION_ADD);
     const sync_pb::WebauthnCredentialSpecifics& specifics =
         entity_change->data().specifics.webauthn_credential();
     data_[entity_change->storage_key()] = specifics;
     write_batch->WriteData(entity_change->storage_key(),
                            specifics.SerializeAsString());
+    changes.emplace_back(PasskeyModelChange::ChangeType::ADD, specifics);
   }
 
   // No data is local-only for now. No need to write local entries back to sync.
@@ -138,21 +160,30 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
-  NotifyPasskeysChanged();
-  return absl::nullopt;
+  NotifyPasskeysChanged(std::move(changes));
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PasskeySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
+  std::vector<PasskeyModelChange> changes;
   for (const auto& entity_change : entity_changes) {
+    PasskeyModelChange::ChangeType change_type =
+        ToPasskeyModelChangeType(entity_change->type());
     switch (entity_change->type()) {
       case syncer::EntityChange::ACTION_DELETE: {
-        data_.erase(entity_change->storage_key());
+        const auto passkey_it = data_.find(entity_change->storage_key());
+        if (passkey_it != data_.end()) {
+          changes.emplace_back(change_type, passkey_it->second);
+          data_.erase(passkey_it);
+        } else {
+          DVLOG(1) << "Downloaded deletion for passkey not present locally";
+        }
         write_batch->DeleteData(entity_change->storage_key());
         break;
       }
@@ -160,6 +191,7 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         const sync_pb::WebauthnCredentialSpecifics& specifics =
             entity_change->data().specifics.webauthn_credential();
+        changes.emplace_back(change_type, specifics);
         data_[entity_change->storage_key()] = specifics;
         write_batch->WriteData(entity_change->storage_key(),
                                specifics.SerializeAsString());
@@ -174,9 +206,9 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
   if (!entity_changes.empty()) {
-    NotifyPasskeysChanged();
+    NotifyPasskeysChanged(std::move(changes));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasskeySyncBridge::GetData(StorageKeyList storage_keys,
@@ -219,8 +251,13 @@ void PasskeySyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(base::DoNothing());
+  std::vector<PasskeyModelChange> changes;
+  for (const auto& passkey : data_) {
+    changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
+                         passkey.second);
+  }
   data_.clear();
-  NotifyPasskeysChanged();
+  NotifyPasskeysChanged(std::move(changes));
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -230,17 +267,40 @@ PasskeySyncBridge::GetModelTypeControllerDelegate() {
 
 base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   std::vector<std::string> sync_ids;
-  std::transform(data_.begin(), data_.end(), std::back_inserter(sync_ids),
-                 [](const auto& pair) { return pair.first; });
+  base::ranges::transform(data_, std::back_inserter(sync_ids),
+                          [](const auto& pair) { return pair.first; });
   return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetAllPasskeys() const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  std::transform(data_.begin(), data_.end(), std::back_inserter(passkeys),
-                 [](const auto& pair) { return pair.second; });
+  base::ranges::transform(data_, std::back_inserter(passkeys),
+                          [](const auto& pair) { return pair.second; });
   return passkeys;
+}
+
+std::optional<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetPasskeyByCredentialId(
+    const std::string& rp_id,
+    const std::string& credential_id) const {
+  // Even if a passkey with a credential ID exists, we must not return it if it
+  // has been shadowed. To do that, first collect all passkeys for the RP ID,
+  // then filter shadowed ones, and see if one with the matching credential ID
+  // remains.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+  for (const auto& passkey : data_) {
+    if (passkey.second.rp_id() == rp_id) {
+      passkeys.emplace_back(passkey.second);
+    }
+  }
+  passkeys = passkey_model_utils::FilterShadowedCredentials(passkeys);
+  for (const auto& passkey : passkeys) {
+    if (passkey.credential_id() == credential_id) {
+      return passkey;
+    }
+  }
+  return std::nullopt;
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>
@@ -258,7 +318,7 @@ PasskeySyncBridge::GetPasskeysForRelyingPartyId(
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
-      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+      base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {
@@ -267,7 +327,7 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   }
   std::string rp_id = passkey_it->second.rp_id();
   std::string user_id = passkey_it->second.user_id();
-  absl::optional<std::string> shadow_head_sync_id =
+  std::optional<std::string> shadow_head_sync_id =
       FindHeadOfShadowChain(data_, rp_id, user_id);
 
   // There must be a head of the shadow chain. Otherwise, something is wrong
@@ -292,7 +352,10 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   }
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
+  std::vector<PasskeyModelChange> changes;
   for (const std::string& sync_id : sync_ids_to_delete) {
+    changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
+                         data_.at(sync_id));
     data_.erase(sync_id);
     change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
     write_batch->DeleteData(sync_id);
@@ -301,15 +364,15 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
-  NotifyPasskeysChanged();
+  NotifyPasskeysChanged(std::move(changes));
   return true;
 }
 
 bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
-                                      PasskeyChange change) {
+                                      PasskeyUpdate change) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
-      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+      base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {
@@ -329,15 +392,54 @@ bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
-  NotifyPasskeysChanged();
+  NotifyPasskeysChanged({PasskeyModelChange(
+      PasskeyModelChange::ChangeType::UPDATE, passkey_it->second)});
   return true;
+}
+
+sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
+    std::string_view rp_id,
+    const UserEntity& user_entity,
+    base::span<const uint8_t> trusted_vault_key,
+    int32_t trusted_vault_key_version,
+    std::vector<uint8_t>* public_key_spki_der_out) {
+  auto [specifics, public_key_spki_der] =
+      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+          rp_id, user_entity, trusted_vault_key, trusted_vault_key_version);
+
+  AddShadowedCredentialIdsToNewPasskey(specifics);
+
+  AddPasskeyInternal(specifics);
+
+  if (public_key_spki_der_out != nullptr) {
+    *public_key_spki_der_out = std::move(public_key_spki_der);
+  }
+  return specifics;
+}
+
+void PasskeySyncBridge::CreatePasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  CHECK(WebauthnCredentialSpecificsValid(passkey));
+
+  std::string sync_id = passkey.sync_id();
+  CHECK(!base::Contains(data_, sync_id));
+
+  AddShadowedCredentialIdsToNewPasskey(passkey);
+  AddPasskeyInternal(passkey);
 }
 
 std::string PasskeySyncBridge::AddNewPasskeyForTesting(
     sync_pb::WebauthnCredentialSpecifics specifics) {
+  const std::string sync_id = specifics.sync_id();
+  AddPasskeyInternal(std::move(specifics));
+  return sync_id;
+}
+
+void PasskeySyncBridge::AddPasskeyInternal(
+    sync_pb::WebauthnCredentialSpecifics specifics) {
   CHECK(WebauthnCredentialSpecificsValid(specifics));
 
-  const std::string& sync_id = specifics.sync_id();
+  std::string sync_id = specifics.sync_id();
   CHECK(!base::Contains(data_, sync_id));
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
@@ -349,13 +451,13 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
-  data_[sync_id] = std::move(specifics);
-  NotifyPasskeysChanged();
-  return sync_id;
+  data_[sync_id] = specifics;
+  NotifyPasskeysChanged({PasskeyModelChange(PasskeyModelChange::ChangeType::ADD,
+                                            std::move(specifics))});
 }
 
 void PasskeySyncBridge::OnCreateStore(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -368,7 +470,7 @@ void PasskeySyncBridge::OnCreateStore(
 }
 
 void PasskeySyncBridge::OnStoreReadAllData(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -381,15 +483,15 @@ void PasskeySyncBridge::OnStoreReadAllData(
 
 void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "PasskeySyncBridge::OnStoreReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
-  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
+  std::vector<PasskeyModelChange> changes;
   for (const syncer::ModelTypeStore::Record& r : *entries) {
     sync_pb::WebauthnCredentialSpecifics specifics;
     if (!specifics.ParseFromString(r.value) || !specifics.has_sync_id()) {
@@ -397,23 +499,37 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
       continue;
     }
     std::string storage_key = specifics.sync_id();
+    changes.emplace_back(PasskeyModelChange::ChangeType::ADD, specifics);
     data_[std::move(storage_key)] = std::move(specifics);
   }
-  NotifyPasskeysChanged();
+  NotifyPasskeysChanged(std::move(changes));
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
 }
 
-void PasskeySyncBridge::NotifyPasskeysChanged() {
+void PasskeySyncBridge::NotifyPasskeysChanged(
+    const std::vector<PasskeyModelChange>& changes) {
   TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeysChanged");
   for (auto& observer : observers_) {
-    observer.OnPasskeysChanged();
+    observer.OnPasskeysChanged(changes);
+  }
+}
+
+void PasskeySyncBridge::AddShadowedCredentialIdsToNewPasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  for (const auto& [sync_id, existing_passkey] : data_) {
+    if (passkey.rp_id() == existing_passkey.rp_id() &&
+        passkey.user_id() == existing_passkey.user_id()) {
+      passkey.add_newly_shadowed_credential_ids(
+          existing_passkey.credential_id());
+    }
   }
 }
 

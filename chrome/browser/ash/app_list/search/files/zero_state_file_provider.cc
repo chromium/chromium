@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/files/zero_state_file_provider.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using file_manager::file_tasks::FileTasksObserver;
 
@@ -54,7 +54,8 @@ bool IsDriveDisabled(Profile* profile) {
 }  // namespace
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
-    : profile_(profile),
+    : SearchProvider(SearchCategory::kFiles),
+      profile_(profile),
       thumbnail_loader_(profile),
       file_suggest_service_(
           ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
@@ -92,7 +93,7 @@ void ZeroStateFileProvider::StopZeroState() {
 }
 
 void ZeroStateFileProvider::OnSuggestFileDataFetched(
-    const absl::optional<std::vector<ash::FileSuggestData>>& suggest_results) {
+    const std::optional<std::vector<ash::FileSuggestData>>& suggest_results) {
   if (suggest_results)
     SetSearchResults(*suggest_results);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_ACTIVITY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,7 @@
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace cast_channel {
 class CastMessageHandler;
@@ -59,7 +60,7 @@ class CastActivity {
 
   const MediaRoute& route() const { return route_; }
   const std::string& app_id() const { return app_id_; }
-  const absl::optional<std::string>& session_id() const { return session_id_; }
+  const std::optional<std::string>& session_id() const { return session_id_; }
   const MediaSinkInternal sink() const { return sink_; }
 
   void SetRouteIsConnecting(bool is_connecting);
@@ -93,7 +94,7 @@ class CastActivity {
       blink::mojom::PresentationConnectionMessagePtr message);
 
   virtual void SendMediaStatusToClients(const base::Value::Dict& media_status,
-                                        absl::optional<int> request_id);
+                                        std::optional<int> request_id);
 
   // Handles a message forwarded by CastActivityManager.
   virtual void OnAppMessage(const cast::channel::CastMessage& message) = 0;
@@ -106,14 +107,16 @@ class CastActivity {
       blink::mojom::PresentationConnectionCloseReason close_reason);
   virtual void TerminatePresentationConnections();
 
-  virtual void CreateMediaController(
+  // Binds the given |media_controller| and |observer| to the activity to
+  // receive media commands and notify observers.
+  virtual void BindMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) = 0;
 
   // Sends media command |cast_message|, which came from the SDK client, to the
   // receiver hosting this session. Returns the locally-assigned request ID of
   // the message sent to the receiver.
-  virtual absl::optional<int> SendMediaRequestToReceiver(
+  virtual std::optional<int> SendMediaRequestToReceiver(
       const CastInternalMessage& cast_message);
 
   // Sends app message |cast_message|, which came from the SDK client, to the
@@ -135,7 +138,9 @@ class CastActivity {
 
   // Closes any virtual connection between |client_id| and this session on the
   // receiver.
-  virtual void CloseConnectionOnReceiver(const std::string& client_id);
+  virtual void CloseConnectionOnReceiver(
+      const std::string& client_id,
+      blink::mojom::PresentationConnectionCloseReason reason);
 
   // Called when the client given by |client_id| requests to leave the session.
   // This will also cause all clients within the session with matching origin
@@ -187,7 +192,7 @@ class CastActivity {
   const raw_ptr<CastSessionTracker> session_tracker_;
 
   // Set by CastActivityManager after the session is launched successfully.
-  absl::optional<std::string> session_id_;
+  std::optional<std::string> session_id_;
 
   MediaSinkInternal sink_;
   ClientMap connected_clients_;

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
+#include <unordered_set>
+
 #include "base/base64.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
@@ -25,14 +28,13 @@ const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
 const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
-const re2::LazyRE2 kURLAllowlistRegex[] = {{"//store/[0-9]{1,32}"},
-                                           {"//run/[0-9]{1,32}"}};
+const re2::LazyRE2 kURLAllowlistRegex[] = {
+    {"//store/[0-9]{1,32}"},
+    {"//run/[0-9]{1,32}"},
+    {"//subscriptioninstall/[0-9]{1,32}"},
+    {"//launch/[0-9]{1,32}/Dialog"}};
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
-const re2::LazyRE2 kSpuriousGameBlocklist[] = {
-    {"Proton [0-9.]+"},
-    {"Steam Linux Runtime - [a-zA-Z]*"},
-    {"Steam Linux Runtime"}};
 
 namespace {
 // Windows with these app IDs are not games. Don't prompt for feedback for them.
@@ -59,45 +61,87 @@ const re2::LazyRE2 kSteamGameIdFromWindowRegex = {
 
 // Works for window-data either in the exo_id form, or the anonymous app_id
 // form.
-absl::optional<int> ParseGameIdFromWindowData(const std::string& data) {
+std::optional<int> ParseGameIdFromWindowData(const std::string& data) {
   int app_id;
   if (RE2::PartialMatch(data, *kSteamGameIdFromWindowRegex, &app_id)) {
     return app_id;
   }
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+// Regexes attempting to match known and potential future Proton/SLR versions,
+// used to prevent these tools showing up in the launcher.
+// These are intended to be as future-proof as practical without matching too
+// broadly. In particular, there are actual games named "Proton <Word>".
+const re2::LazyRE2 kSpuriousGameBlocklist[] = {
+    {"Proton [0-9.]+"},
+    {"Proton BattlEye Runtime"},
+    {"Proton EasyAntiCheat Runtime"},
+    {"Proton Experimental"},
+    {"Proton Hotfix"},
+    {"Proton Next"},
+    {"Steam Linux Runtime.*"},
+};
+
+// Additionally block non-games by Steam App ID, in case the tool names are
+// changed. This is not future-proof, but provides an additional layer of
+// defence for known tools.
+bool IsSteamTool(int id) {
+  static const base::NoDestructor<std::unordered_set<int>> kSteamToolIds({
+      1070560,  // Steam Linux Runtime 1.0 (scout)
+      1391110,  // Steam Linux Runtime 2.0 (soldier)
+      1628350,  // Steam Linux Runtime 3.0 (sniper)
+      858280,   // Proton 3.7
+      930400,   // Proton 3.7 Beta
+      961940,   // Proton 3.16
+      996510,   // Proton 3.16 Beta
+      1054830,  // Proton 4.2
+      1113280,  // Proton 4.11
+      1161040,  // Proton BattlEye Runtime
+      1245040,  // Proton 5.0
+      1420170,  // Proton 5.13
+      1493710,  // Proton Experimental
+      1580130,  // Proton 6.3
+      1826330,  // Proton EasyAntiCheat Runtime
+      1887720,  // Proton 7.0
+      2180100,  // Proton Hotfix
+      2230260,  // Proton Next
+      2348590,  // Proton 8.0
+  });
+  return kSteamToolIds->contains(id);
 }
 
 }  // namespace
 
-absl::optional<int> ParseSteamGameId(std::string exec) {
+std::optional<int> ParseSteamGameId(std::string exec) {
   int app_id;
   if (RE2::PartialMatch(exec, *kSteamGameIdFromExecRegex, &app_id)) {
     return app_id;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> SteamGameId(const aura::Window* window) {
+std::optional<int> SteamGameId(const aura::Window* window) {
   const std::string* id = exo::GetShellApplicationId(window);
   if (!id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ParseGameIdFromWindowData(*id);
 }
 
-absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id) {
+std::optional<int> SteamGameId(Profile* profile, const std::string& app_id) {
   if (BorealisWindowManager::IsAnonymousAppId(app_id)) {
     return ParseGameIdFromWindowData(app_id);
   }
   guest_os::GuestOsRegistryService* registry =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   if (!registry) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<guest_os::GuestOsRegistryService::Registration> reg =
+  std::optional<guest_os::GuestOsRegistryService::Registration> reg =
       registry->GetRegistration(app_id);
   if (!reg) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ParseSteamGameId(reg->Exec());
 }
@@ -115,9 +159,14 @@ bool IsNonGameBorealisApp(const std::string& app_id) {
   return false;
 }
 
-bool ShouldHideIrrelevantApp(const std::string& desktop_name) {
+bool ShouldHideIrrelevantApp(
+    const guest_os::GuestOsRegistryService::Registration& registration) {
+  std::optional<int> id = ParseSteamGameId(registration.Exec());
+  if (id && IsSteamTool(id.value())) {
+    return true;
+  }
   for (auto& blocklist_regex : kSpuriousGameBlocklist) {
-    if (re2::RE2::FullMatch(desktop_name, *blocklist_regex)) {
+    if (re2::RE2::FullMatch(registration.Name(), *blocklist_regex)) {
       return true;
     }
   }
@@ -143,7 +192,7 @@ bool GetCompatToolInfo(const std::string& owner_id, std::string* output) {
   return base::GetAppOutputAndError(command, output);
 }
 
-CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
+CompatToolInfo ParseCompatToolInfo(std::optional<int> game_id,
                                    const std::string& output) {
   // Expected stdout of get_compat_tool_versions.py:
   // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>

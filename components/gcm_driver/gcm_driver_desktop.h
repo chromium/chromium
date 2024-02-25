@@ -74,8 +74,6 @@ class GCMDriverDesktop : public GCMDriver,
                             const std::string& registration_id,
                             ValidateRegistrationCallback callback) override;
   void Shutdown() override;
-  void OnSignedIn() override;
-  void OnSignedOut() override;
   void AddAppHandler(const std::string& app_id,
                      GCMAppHandler* handler) override;
   void RemoveAppHandler(const std::string& app_id) override;
@@ -196,9 +194,6 @@ class GCMDriverDesktop : public GCMDriver,
                            const std::string& authorized_entity,
                            const std::string& scope,
                            GCMClient::Result result);
-
-  // Flag to indicate whether the user is signed in to a GAIA account.
-  bool signed_in_;
 
   // Flag to indicate if GCM is started.
   bool gcm_started_;

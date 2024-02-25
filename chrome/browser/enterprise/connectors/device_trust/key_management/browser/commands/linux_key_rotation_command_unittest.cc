@@ -158,11 +158,8 @@ MULTIPROCESS_TEST_MAIN(MojoInvitation) {
     return 6;
 
   // Validate command line arguments.
-  std::string token_base64;
-  base::Base64Encode(kFakeDMToken, &token_base64);
-  std::string nonce_base64;
-  base::Base64Encode(kFakeDMToken, &token_base64);
-  base::Base64Encode(kNonce, &nonce_base64);
+  std::string token_base64 = base::Base64Encode(kFakeDMToken);
+  std::string nonce_base64 = base::Base64Encode(kNonce);
 
   EXPECT_EQ(token_base64,
             command_line.GetSwitchValueNative(switches::kRotateDTKey));

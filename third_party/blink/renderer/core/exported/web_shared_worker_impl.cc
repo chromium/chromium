@@ -207,7 +207,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
         worker_main_script_load_params,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    bool require_cross_site_request_for_cookies) {
   DCHECK(IsMainThread());
   DCHECK(web_worker_fetch_context);
   CHECK(constructor_origin.Get()->CanAccessSharedWorkers());
@@ -258,7 +259,15 @@ void WebSharedWorkerImpl::StartWorkerContext(
       mojo::NullRemote() /* code_cache_host_interface */,
       mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
       nullptr /* parent_permissions_policy */, base::UnguessableToken(),
-      ukm_source_id);
+      ukm_source_id,
+      /*parent_context_token=*/std::nullopt,
+      /*parent_cross_origin_isolated_capability=*/false,
+      /*parent_is_isolated_context=*/false,
+      /*interface_registry=*/nullptr,
+      /*agent_group_scheduler_compositor_task_runner=*/nullptr,
+      /*top_level_frame_security_origin=*/nullptr,
+      /*parent_has_storage_access=*/false,
+      require_cross_site_request_for_cookies);
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =
@@ -338,7 +347,8 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase> host,
     WebSharedWorkerClient* client,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    bool require_cross_site_request_for_cookies) {
   auto worker =
       base::WrapUnique(new WebSharedWorkerImpl(token, std::move(host), client));
   worker->StartWorkerContext(
@@ -349,7 +359,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       std::move(content_settings), std::move(browser_interface_broker),
       pause_worker_context_on_start, std::move(worker_main_script_load_params),
       std::move(policy_container), std::move(web_worker_fetch_context),
-      ukm_source_id);
+      ukm_source_id, require_cross_site_request_for_cookies);
   return worker;
 }
 

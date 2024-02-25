@@ -12,6 +12,7 @@
 #include <queue>
 #include <string>
 
+#include "base/atomic_sequence_num.h"
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/containers/circular_deque.h"
@@ -33,6 +34,8 @@ namespace base {
 class ConditionVariable;
 
 namespace internal {
+
+class JobTaskSource;
 
 // Determines which tasks are allowed to run.
 enum class CanRunPolicy {
@@ -112,6 +115,9 @@ class BASE_EXPORT TaskTracker {
   // true.
   RegisteredTaskSource RegisterTaskSource(
       scoped_refptr<TaskSource> task_source);
+
+  // Informs this TaskTracker that |task_source| is about to be queued.
+  void WillEnqueueJob(JobTaskSource* task_source);
 
   // Returns true if a task with |priority| can run under to the current policy.
   bool CanRunPriority(TaskPriority priority) const;
@@ -267,6 +273,9 @@ class BASE_EXPORT TaskTracker {
   // Event instantiated when shutdown starts and signaled when shutdown
   // completes.
   std::unique_ptr<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
+
+  // Used to generate unique |PendingTask::sequence_num| when posting tasks.
+  AtomicSequenceNumber sequence_nums_;
 
   // Ensures all state (e.g. dangling cleaned up workers) is coalesced before
   // destroying the TaskTracker (e.g. in test environments).

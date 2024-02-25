@@ -11,7 +11,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class OptimizationGuideLogger;
 class TemplateURLService;
 
 namespace prerender {
@@ -54,18 +53,12 @@ class PageContentAnnotationsWebContentsObserver
   void DidStopLoading() override;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<PageContentAnnotationsService, DanglingUntriaged>
-      page_content_annotations_service_;
-
-  SalientImageRetriever salient_image_retriever_;
-
-  // The logger that plumbs the debug logs to the optimization guide
-  // internals page. Not owned. Guaranteed to outlive |this|, since the logger
-  // and |this| are owned by the optimization guide keyed service.
-  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
+
+  SalientImageRetriever salient_image_retriever_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;

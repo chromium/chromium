@@ -1,0 +1,32 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos && is_chromeos_device)
+
+copy("helper") {
+  sources = [
+    "reset_dut.py",
+    "test_sudo_helper.py",
+  ]
+  outputs = [ "$root_out_dir/{{source_file_part}}" ]
+}
+
+source_set("common") {
+  testonly = true
+
+  sources = [
+    "switches.h",
+    "test_sudo_helper_client.cc",
+    "test_sudo_helper_client.h",
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}

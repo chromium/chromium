@@ -9,7 +9,7 @@ namespace blink {
 String CSSLightDarkValuePair::CustomCSSText() const {
   String first = First().CssText();
   String second = Second().CssText();
-  return "-internal-light-dark(" + first + ", " + second + ")";
+  return "light-dark(" + first + ", " + second + ")";
 }
 
 }  // namespace blink

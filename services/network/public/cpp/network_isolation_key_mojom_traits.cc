@@ -25,7 +25,7 @@ bool StructTraits<network::mojom::NonEmptyNetworkIsolationKeyDataView,
          net::NetworkIsolationKey* out) {
   net::SchemefulSite top_frame_site;
   net::SchemefulSite frame_site;
-  absl::optional<base::UnguessableToken> nonce;
+  std::optional<base::UnguessableToken> nonce;
 
   if (!data.ReadTopFrameSite(&top_frame_site) ||
       !data.ReadFrameSite(&frame_site) || !data.ReadNonce(&nonce)) {

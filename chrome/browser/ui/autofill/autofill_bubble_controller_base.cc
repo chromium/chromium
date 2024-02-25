@@ -41,7 +41,7 @@ void AutofillBubbleControllerBase::WebContentsDestroyed() {
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser)
     browser->window()->UpdatePageActionIcon(GetPageActionIconType());
 #endif  // !BUILDFLAG(IS_ANDROID)

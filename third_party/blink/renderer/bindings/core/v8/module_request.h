@@ -39,6 +39,8 @@ struct CORE_EXPORT ModuleRequest {
         import_assertions(import_assertions) {}
 
   String GetModuleTypeString() const;
+
+  bool HasInvalidImportAttributeKey(String* invalid_key) const;
 };
 
 }  // namespace blink

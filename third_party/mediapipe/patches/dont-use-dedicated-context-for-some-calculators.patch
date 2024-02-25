@@ -1,0 +1,27 @@
+From b50be3ef2ad96122ac6c3fb3a54f8a58c7d1c459 Mon Sep 17 00:00:00 2001
+From: Piotr Bialecki <bialpio@chromium.org>
+Date: Wed, 11 Oct 2023 13:38:42 -0700
+Subject: [PATCH] MediaPipe: don't use dedicated context for some calculators
+
+---
+ .../mediapipe/src/mediapipe/gpu/gpu_shared_data_internal.cc   | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gpu_shared_data_internal.cc b/third_party/mediapipe/src/mediapipe/gpu/gpu_shared_data_internal.cc
+index b9b9c26f05dfa..1fa8135cc02a0 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gpu_shared_data_internal.cc
++++ b/third_party/mediapipe/src/mediapipe/gpu/gpu_shared_data_internal.cc
+@@ -129,9 +129,7 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
+ #ifndef __EMSCRIPTEN__
+   // TODO Allow calculators to request a separate context.
+   // For now, allow a few calculators to run in their own context.
+-  bool gets_own_context = (node_type == "ImageFrameToGpuBufferCalculator") ||
+-                          (node_type == "GpuBufferToImageFrameCalculator") ||
+-                          (node_type == "GlSurfaceSinkCalculator");
++  bool gets_own_context = false;
+ 
+   const auto& options =
+       node->GetCalculatorState().Options<mediapipe::GlContextOptions>();
+-- 
+2.42.0.609.gbb76f46606-goog
+

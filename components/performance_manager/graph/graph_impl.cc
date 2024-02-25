@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -386,25 +387,17 @@ bool GraphImpl::NodeInGraph(const NodeBase* node) {
   return it != nodes_.end();
 }
 
-ProcessNodeImpl* GraphImpl::GetProcessNodeByPid(base::ProcessId pid) const {
+ProcessNodeImpl* GraphImpl::GetProcessNodeByPid(base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = processes_by_pid_.find(pid);
-  if (it == processes_by_pid_.end())
-    return nullptr;
-
-  return it->second;
+  return base::FindPtrOrNull(processes_by_pid_, pid);
 }
 
 FrameNodeImpl* GraphImpl::GetFrameNodeById(
     RenderProcessHostId render_process_id,
-    int render_frame_id) const {
+    int render_frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it =
-      frames_by_id_.find(ProcessAndFrameId(render_process_id, render_frame_id));
-  if (it == frames_by_id_.end())
-    return nullptr;
-
-  return it->second;
+  return base::FindPtrOrNull(
+      frames_by_id_, ProcessAndFrameId(render_process_id, render_frame_id));
 }
 
 std::vector<ProcessNodeImpl*> GraphImpl::GetAllProcessNodeImpls() const {
@@ -662,8 +655,8 @@ void GraphImpl::BeforeProcessPidChange(ProcessNodeImpl* process,
   // one process node to have the same PID. To handle this, the second and
   // subsequent registration override earlier registrations, while
   // unregistration will only unregister the current holder of the PID.
-  if (process->process_id() != base::kNullProcessId) {
-    auto it = processes_by_pid_.find(process->process_id());
+  if (process->GetProcessId() != base::kNullProcessId) {
+    auto it = processes_by_pid_.find(process->GetProcessId());
     if (it != processes_by_pid_.end() && it->second == process)
       processes_by_pid_.erase(it);
   }

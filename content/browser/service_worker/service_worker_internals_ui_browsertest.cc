@@ -132,7 +132,7 @@ class SWOnStoppedObserver
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     const ServiceWorkerVersion* version =
         parent::context_->GetLiveVersion(version_id);
-    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+    ASSERT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
     parent::Quit();
   }
 
@@ -164,7 +164,7 @@ class SWOnStartedObserver
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     const ServiceWorkerVersion* version =
         parent::context_->GetLiveVersion(version_id);
-    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    ASSERT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     parent::Quit();
   }
 
@@ -510,13 +510,13 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         }
       case RUNNING_STATUS:
         switch (registration.active_version.running_status) {
-          case EmbeddedWorkerStatus::STOPPED:
+          case blink::EmbeddedWorkerStatus::kStopped:
             return "STOPPED";
-          case EmbeddedWorkerStatus::STARTING:
+          case blink::EmbeddedWorkerStatus::kStarting:
             return "STARTING";
-          case EmbeddedWorkerStatus::RUNNING:
+          case blink::EmbeddedWorkerStatus::kRunning:
             return "RUNNING";
-          case EmbeddedWorkerStatus::STOPPING:
+          case blink::EmbeddedWorkerStatus::kStopping:
             return "STOPPING";
         }
       case PROCESS_ID:
@@ -568,6 +568,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
 
   EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
 
+  GURL top_level_page(embedded_test_server()->GetURL(kServiceWorkerUrl));
+  GURL scope(embedded_test_server()->GetURL(kServiceWorkerScope));
+
   // Assert populated service worker info.
   SetActiveWindow(sw_internal_ui_window);
   ASSERT_EQ(base::NumberToString(version_id),
@@ -581,6 +584,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
       GetServiceWorkerInfoFromInternalUI(registration_id, "running_status"));
   ASSERT_EQ(GetServiceWorkerInfo(PROCESS_ID),
             GetServiceWorkerInfoFromInternalUI(registration_id, "process_id"));
+  ASSERT_EQ(url::Origin::Create(scope).GetDebugString(),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "origin"));
+  ASSERT_EQ(
+      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize(),
+      GetServiceWorkerInfoFromInternalUI(registration_id, "top_level_site"));
+  ASSERT_EQ("SameSite", GetServiceWorkerInfoFromInternalUI(
+                            registration_id, "ancestor_chain_bit"));
+  ASSERT_EQ("missed",
+            GetServiceWorkerInfoFromInternalUI(registration_id, "nonce"));
 
   // Leave a clean state.
   UnRegisterServiceWorker();
@@ -784,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(
       GetServiceWorkerInfoFromInternalUI(registration_id, "top_level_site"));
   ASSERT_EQ("CrossSite", GetServiceWorkerInfoFromInternalUI(
                              registration_id, "ancestor_chain_bit"));
-  ASSERT_EQ("<null>",
+  ASSERT_EQ("missed",
             GetServiceWorkerInfoFromInternalUI(registration_id, "nonce"));
 }
 

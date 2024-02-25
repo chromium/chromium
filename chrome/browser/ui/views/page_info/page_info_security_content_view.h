@@ -10,12 +10,15 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // The view that contains `SecurityInformationView` and a certificate button.
 // It is used as a content of the security subpage or is directly integrated in
 // the main page if connection isn't secure.
 class PageInfoSecurityContentView : public views::View, public PageInfoUI {
+  METADATA_HEADER(PageInfoSecurityContentView, views::View)
+
  public:
   // `is_standalone_page` is true, when this view is used as a content view of
   // a subpage and this view becomes current UI for `PageInfo` by calling

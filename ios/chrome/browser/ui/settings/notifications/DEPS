@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/content_suggestions",
+  "+ios/chrome/browser/ui/push_notification",
+]

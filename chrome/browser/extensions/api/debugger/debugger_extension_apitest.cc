@@ -29,6 +29,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, ExtensionDebugger) {
   ASSERT_TRUE(RunExtensionTest("debugger_extension")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, ExtensionTracing) {
+// TODO(crbug.com/1512504) Flaky on various platforms
+IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, DISABLED_ExtensionTracing) {
   ASSERT_TRUE(RunExtensionTest("tracing_extension")) << message_;
 }

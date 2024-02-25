@@ -10,9 +10,7 @@ import org.chromium.mojo.bindings.InterfaceRequest;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.services.service_manager.InterfaceFactory;
 
-/**
- * Android implementation of the NfcProvider Mojo interface.
- */
+/** Android implementation of the NfcProvider Mojo interface. */
 public class NfcProviderImpl implements NfcProvider {
     private static final String TAG = "NfcProviderImpl";
     private NfcDelegate mDelegate;
@@ -51,9 +49,7 @@ public class NfcProviderImpl implements NfcProvider {
         mNfcImpl = new NfcImpl(hostId, mDelegate, request);
     }
 
-    /**
-     * Suspends the NFC usage. Should be called when web page visibility is lost.
-     */
+    /** Suspends the NFC usage. Should be called when web page visibility is lost. */
     @Override
     public void suspendNfcOperations() {
         if (mNfcImpl != null) {
@@ -61,9 +57,7 @@ public class NfcProviderImpl implements NfcProvider {
         }
     }
 
-    /**
-     * Resumes the NFC usage. Should be called when web page becomes visible.
-     */
+    /** Resumes the NFC usage. Should be called when web page becomes visible. */
     @Override
     public void resumeNfcOperations() {
         if (mNfcImpl != null) {
@@ -71,9 +65,7 @@ public class NfcProviderImpl implements NfcProvider {
         }
     }
 
-    /**
-     * A factory for implementations of the NfcProvider interface.
-     */
+    /** A factory for implementations of the NfcProvider interface. */
     public static class Factory implements InterfaceFactory<NfcProvider> {
         private NfcDelegate mDelegate;
 

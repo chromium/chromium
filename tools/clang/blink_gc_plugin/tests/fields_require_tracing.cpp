@@ -20,6 +20,18 @@ void PartBObject::Trace(Visitor* visitor) const {
 
 void HeapObject::Trace(Visitor* visitor) const {
   // Missing visitor->Trace(m_part);
+  for (auto& member : m_traced_array1) {
+    visitor->Trace(member);
+  }
+  for (int i = 0; i < array_size; ++i) {
+    visitor->Trace(m_traced_array2[i]);
+  }
+  for (auto& member : m_traced_array3) {
+    visitor->Trace(member);
+  }
+  for (int i = 0; i < array_size; ++i) {
+    visitor->Trace(m_traced_array4[i]);
+  }
   visitor->Trace(m_obj);
 }
 }

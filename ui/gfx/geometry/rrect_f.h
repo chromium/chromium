@@ -169,8 +169,12 @@ class GEOMETRY_SKIA_EXPORT RRectF {
 
   explicit operator SkRRect() const { return skrrect_; }
 
+  static RRectF ToEnclosingRRectF(const RRectF& rrect);
+
  private:
   void GetAllRadii(SkVector radii[4]) const;
+
+  gfx::RoundedCornersF GetRoundedCorners() const;
 
   SkRRect skrrect_;
 };

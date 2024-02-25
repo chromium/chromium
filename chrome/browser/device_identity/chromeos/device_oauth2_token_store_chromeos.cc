@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -34,7 +35,9 @@ DeviceOAuth2TokenStoreChromeOS::~DeviceOAuth2TokenStoreChromeOS() {
 // static
 void DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kDeviceRobotAnyApiRefreshToken,
+  registry->RegisterStringPref(prefs::kDeviceRobotAnyApiRefreshTokenV1,
+                               std::string());
+  registry->RegisterStringPref(prefs::kDeviceRobotAnyApiRefreshTokenV2,
                                std::string());
 }
 
@@ -63,15 +66,17 @@ void DeviceOAuth2TokenStoreChromeOS::SetAndSaveRefreshToken(
   // If the robot account ID is not available yet, do not announce the token. It
   // will be done from OnServiceAccountIdentityChanged() once the robot account
   // ID becomes available as well.
-  if (observer() && !GetAccountId().empty())
+  if (observer() && !GetAccountId().empty()) {
     observer()->OnRefreshTokenAvailable();
+  }
 
   token_save_callbacks_.push_back(std::move(callback));
   if (state_ == State::READY) {
-    if (system_salt_.empty())
+    if (system_salt_.empty()) {
       FlushTokenSaveCallbacks(false);
-    else
+    } else {
       EncryptAndSaveToken();
+    }
   }
 }
 
@@ -104,8 +109,9 @@ void DeviceOAuth2TokenStoreChromeOS::FlushTokenSaveCallbacks(bool result) {
   for (std::vector<DeviceOAuth2TokenStore::StatusCallback>::iterator callback(
            callbacks.begin());
        callback != callbacks.end(); ++callback) {
-    if (!callback->is_null())
+    if (!callback->is_null()) {
       std::move(*callback).Run(result);
+    }
   }
 }
 
@@ -118,11 +124,38 @@ void DeviceOAuth2TokenStoreChromeOS::EncryptAndSaveToken() {
     LOG(ERROR) << "Failed to encrypt refresh token; save aborted.";
     result = false;
   } else {
-    local_state_->SetString(prefs::kDeviceRobotAnyApiRefreshToken,
+    local_state_->SetString(prefs::kDeviceRobotAnyApiRefreshTokenV2,
                             encrypted_refresh_token);
   }
 
   FlushTokenSaveCallbacks(result);
+}
+
+std::optional<std::string>
+DeviceOAuth2TokenStoreChromeOS::LoadAndDecryptToken() {
+  // Try to load a more strongly encrypted v2 token if it exists, but if it does
+  // not it will fall back to trying to load a weaker v1 token. If neither
+  // exists we return an empty string.
+  ash::CryptohomeTokenEncryptor encryptor(system_salt_);
+  std::string encrypted_token, decrypted_token;
+  if (encrypted_token =
+          local_state_->GetString(prefs::kDeviceRobotAnyApiRefreshTokenV2);
+      !encrypted_token.empty()) {
+    decrypted_token = encryptor.DecryptWithSystemSalt(encrypted_token);
+    if (decrypted_token.empty()) {
+      LOG(ERROR) << "Failed to decrypt v2 refresh token.";
+      return std::nullopt;
+    }
+  } else if (encrypted_token = local_state_->GetString(
+                 prefs::kDeviceRobotAnyApiRefreshTokenV1);
+             !encrypted_token.empty()) {
+    decrypted_token = encryptor.WeakDecryptWithSystemSalt(encrypted_token);
+    if (decrypted_token.empty()) {
+      LOG(ERROR) << "Failed to decrypt v1 refresh token.";
+      return std::nullopt;
+    }
+  }
+  return decrypted_token;
 }
 
 void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
@@ -147,24 +180,19 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
   }
 
   // Otherwise, load the refresh token from |local_state_|.
-  std::string encrypted_refresh_token =
-      local_state_->GetString(prefs::kDeviceRobotAnyApiRefreshToken);
-  if (!encrypted_refresh_token.empty()) {
-    ash::CryptohomeTokenEncryptor encryptor(system_salt_);
-    refresh_token_ = encryptor.DecryptWithSystemSalt(encrypted_refresh_token);
-    if (refresh_token_.empty()) {
-      LOG(ERROR) << "Failed to decrypt refresh token.";
-      std::move(callback).Run(false, false);
-      return;
-    }
+  std::optional<std::string> token = LoadAndDecryptToken();
+  if (token.has_value()) {
+    refresh_token_ = std::move(*token);
+    std::move(callback).Run(true, true);
+    return;
   }
-
-  std::move(callback).Run(true, true);
+  std::move(callback).Run(false, false);
 }
 
 void DeviceOAuth2TokenStoreChromeOS::OnServiceAccountIdentityChanged() {
-  if (observer() && !GetAccountId().empty() && !refresh_token_.empty())
+  if (observer() && !GetAccountId().empty() && !refresh_token_.empty()) {
     observer()->OnRefreshTokenAvailable();
+  }
 }
 
 }  // namespace chromeos

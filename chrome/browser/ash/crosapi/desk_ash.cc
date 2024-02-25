@@ -106,7 +106,7 @@ void DeskAsh::LaunchEmptyDesk(const std::string& desk_name,
 
 void DeskAsh::RemoveDesk(const base::Uuid& desk_uuid,
                          bool combine_desk,
-                         absl::optional<bool> allow_undo,
+                         std::optional<bool> allow_undo,
                          RemoveDeskCallback callback) {
   bool undo_value = allow_undo.value_or(false);
   ash::DeskCloseType close_type =
@@ -129,7 +129,7 @@ void DeskAsh::GetTemplateJson(const base::Uuid& uuid,
       uuid, ProfileManager::GetActiveUserProfile(),
       base::BindOnce(
           [](GetTemplateJsonCallback callback,
-             absl::optional<DesksClient::DeskActionError> error,
+             std::optional<DesksClient::DeskActionError> error,
              const base::Value& template_json) {
             if (error) {
               std::move(callback).Run(
@@ -164,7 +164,7 @@ void DeskAsh::SaveActiveDesk(SaveActiveDeskCallback callback) {
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(
           [](SaveActiveDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error,
+             std::optional<DesksClient::DeskActionError> error,
              std::unique_ptr<ash::DeskTemplate> desk_template) {
             if (error) {
               std::move(callback).Run(
@@ -191,7 +191,7 @@ void DeskAsh::DeleteSavedDesk(const base::Uuid& uuid,
   DesksClient::Get()->DeleteDeskTemplate(
       uuid, base::BindOnce(
                 [](DeleteSavedDeskCallback callback,
-                   absl::optional<DesksClient::DeskActionError> error) {
+                   std::optional<DesksClient::DeskActionError> error) {
                   if (error) {
                     std::move(callback).Run(
                         crosapi::mojom::DeleteSavedDeskResult::NewError(
@@ -211,7 +211,7 @@ void DeskAsh::RecallSavedDesk(const base::Uuid& uuid,
       uuid,
       base::BindOnce(
           [](RecallSavedDeskCallback callback,
-             absl::optional<DesksClient::DeskActionError> error,
+             std::optional<DesksClient::DeskActionError> error,
              const base::Uuid& desk_uuid) {
             if (error) {
               std::move(callback).Run(
@@ -253,15 +253,16 @@ void DeskAsh::SetAllDesksProperty(int32_t app_restore_window_id,
 void DeskAsh::GetSavedDesks(GetSavedDesksCallback callback) {
   DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       [](GetSavedDesksCallback callback,
-         absl::optional<DesksClient::DeskActionError> error,
-         const std::vector<const ash::DeskTemplate*>& desk_templates) {
+         std::optional<DesksClient::DeskActionError> error,
+         const std::vector<raw_ptr<const ash::DeskTemplate,
+                                   VectorExperimental>>& desk_templates) {
         if (error) {
           std::move(callback).Run(crosapi::mojom::GetSavedDesksResult::NewError(
               ToCrosApiError(error.value())));
           return;
         }
         std::vector<crosapi::mojom::SavedDeskModelPtr> saved_desks;
-        for (auto* desk_template : desk_templates) {
+        for (const ash::DeskTemplate* desk_template : desk_templates) {
           crosapi::mojom::SavedDeskModelPtr saved_desk =
               ToSavedDeskModel(desk_template);
           saved_desks.push_back(std::move(saved_desk));

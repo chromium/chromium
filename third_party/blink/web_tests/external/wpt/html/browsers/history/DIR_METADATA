@@ -1,7 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>History"
 }
 team_email: "navigation-dev@chromium.org, dom-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
+}
+buganizer_public: {
+  component_id: 1456642
 }

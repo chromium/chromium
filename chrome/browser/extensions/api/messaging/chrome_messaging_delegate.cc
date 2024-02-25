@@ -24,6 +24,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -74,7 +75,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
+std::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   // Add info about the opener's tab (if it was a tab).
   if (web_contents && ExtensionTabUtil::GetTabId(web_contents) >= 0) {
@@ -94,7 +95,7 @@ absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
                                              nullptr)
         .ToValue();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 content::WebContents* ChromeMessagingDelegate::GetWebContentsByTabId(
@@ -110,7 +111,7 @@ content::WebContents* ChromeMessagingDelegate::GetWebContentsByTabId(
 
 std::unique_ptr<MessagePort> ChromeMessagingDelegate::CreateReceiverForTab(
     base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const PortId& receiver_port_id,
     content::WebContents* receiver_contents,
     int receiver_frame_id,
@@ -162,7 +163,7 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
     content::BrowserContext* browser_context,
     base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
     content::RenderFrameHost* source,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const PortId& receiver_port_id,
     const std::string& native_app_name,
     bool allow_user_level,

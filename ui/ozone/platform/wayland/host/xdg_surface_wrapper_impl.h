@@ -40,10 +40,10 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   struct xdg_surface* xdg_surface() const;
 
  private:
-  // xdg_surface_listener
-  static void Configure(void* data,
-                        struct xdg_surface* xdg_surface,
-                        uint32_t serial);
+  // xdg_surface_listener callbacks:
+  static void OnConfigure(void* data,
+                          struct xdg_surface* xdg_surface,
+                          uint32_t serial);
 
   // Non-owing WaylandWindow that uses this surface wrapper.
   const raw_ptr<WaylandWindow> wayland_window_;

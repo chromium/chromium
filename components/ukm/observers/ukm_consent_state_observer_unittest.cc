@@ -16,7 +16,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_test_utils.h"  // nogncheck
+#include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ukm {
 
@@ -71,10 +77,11 @@ class MockSyncService : public syncer::TestSyncService {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto selected_os_types = GetUserSettings()->GetSelectedOsTypes();
 
-    if (enabled)
+    if (enabled) {
       selected_os_types.Put(syncer::UserSelectableOsType::kOsApps);
-    else
+    } else {
       selected_os_types.Remove(syncer::UserSelectableOsType::kOsApps);
+    }
 
     GetUserSettings()->SetSelectedOsTypes(false, selected_os_types);
 #else
@@ -270,17 +277,7 @@ TEST_F(UkmConsentStateObserverTest, PurgeOnDisable) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests for when AppSync is not dependent on MSBB.
-class MsbbAppOptInUkmConsentStateObserverTest
-    : public UkmConsentStateObserverTest {
- public:
-  MsbbAppOptInUkmConsentStateObserverTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ukm::kAppMetricsOnlyRelyOnAppSync);
-  }
-};
-
-TEST_F(MsbbAppOptInUkmConsentStateObserverTest, VerifyConsentStates) {
+TEST_F(UkmConsentStateObserverTest, VerifyConsentStates) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
   TestUkmConsentStateObserver observer;
@@ -350,8 +347,7 @@ TEST_F(MsbbAppOptInUkmConsentStateObserverTest, VerifyConsentStates) {
   EXPECT_TRUE(observer.ResetPurged());
 }
 
-TEST_F(MsbbAppOptInUkmConsentStateObserverTest,
-       VerifyConflictingProfilesRevokesConsent) {
+TEST_F(UkmConsentStateObserverTest, VerifyConflictingProfilesRevokesConsent) {
   sync_preferences::TestingPrefServiceSyncable prefs1;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs1);
   sync_preferences::TestingPrefServiceSyncable prefs2;
@@ -396,13 +392,16 @@ TEST_F(MsbbAppOptInUkmConsentStateObserverTest,
 class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
  public:
   bool is_ukm_collection_enabled() const { return GetParam(); }
-
-  void SetUp() override { chromeos::SetUpFakeKioskSession(); }
-
-  void TearDown() override { chromeos::TearDownFakeKioskSession(); }
 };
 
 TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
+  // Enter Kiosk session.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::SetUpFakeKioskSession();
+
   sync_preferences::TestingPrefServiceSyncable prefs;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
   TestUkmConsentStateObserver observer;
@@ -425,6 +424,38 @@ TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
 
 INSTANTIATE_TEST_SUITE_P(KioskUkmConsentStateObserverTest,
                          KioskUkmConsentStateObserverTest,
+                         ::testing::Bool());
+
+// Test consent state for managed guest session (MGS).
+class MgsUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
+ public:
+  bool is_ukm_collection_enabled() const { return GetParam(); }
+
+ private:
+  chromeos::FakeManagedGuestSession managed_guest_session;
+};
+
+TEST_P(MgsUkmConsentStateObserverTest, VerifyAppsOnlyConsent) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
+  TestUkmConsentStateObserver observer;
+  MockSyncService sync;
+  // Disable app sync consent.
+  sync.SetAppSync(false);
+
+  SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs,
+                                             is_ukm_collection_enabled());
+  observer.StartObserving(&sync, &prefs);
+
+  UkmConsentState state = observer.GetUkmConsentState();
+
+  // MGS should report AppKM if policy is enabled.
+  EXPECT_EQ(is_ukm_collection_enabled(), state.Has(APPS));
+  EXPECT_EQ(false, state.Has(MSBB));
+}
+
+INSTANTIATE_TEST_SUITE_P(MgsUkmConsentStateObserverTest,
+                         MgsUkmConsentStateObserverTest,
                          ::testing::Bool());
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

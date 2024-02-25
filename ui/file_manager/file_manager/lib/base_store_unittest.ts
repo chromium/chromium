@@ -5,22 +5,14 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
+import type {GetActionFactoryPayload} from '../common/js/util.js';
 
-import {ActionsProducerGen} from './actions_producer.js';
-import {BaseStore} from './base_store.js';
-import {actionsProducerSuccess, TestAction, TestState, TestStore} from './for_tests.js';
-
-/** ActionsProducer that yields an empty/undefined action. */
-async function* producesEmpty(payload: string): ActionsProducerGen<TestAction> {
-  yield {type: 'step#0', payload};
-
-  yield;
-
-  yield {type: 'final-step', payload};
-}
+import type {ActionsProducerGen} from './actions_producer.js';
+import {BaseStore, Slice} from './base_store.js';
+import {setupTestStore, type TestState, type TestStore} from './for_tests.js';
 
 /** ActionsProducer that raises an error */
-async function* producesError(): ActionsProducerGen<TestAction> {
+async function* producesError(): ActionsProducerGen {
   throw new Error('This error is intentional for tests');
 }
 
@@ -29,49 +21,12 @@ function getNumVisitors(store: TestStore): number|undefined {
   return store.getState().numVisitors;
 }
 
-/** Counts how many times `onStateChanged()` was called. */
-class TestSubscriber {
-  calledCounter: number = 0;
-
-  onStateChanged(_state: TestState) {
-    this.calledCounter += 1;
-  }
-}
-
-/**
- * Creates new Store, subscriber and dispatchedActions.
- * These can be called multiple times for each test, which create new
- * independent instances of those.
- */
-function setupStore() {
-  // All actions dispatched via the store and processed by the reducer.
-  const dispatchedActions = Array<TestAction>(0);
-
-  /** Test reducer. It's the root and only reducer in these tests. */
-  function testReducer(state: TestState, action: TestAction): TestState {
-    dispatchedActions.push(action);
-    return {
-      numVisitors: (state.numVisitors || 0) + 1,
-      latestPayload: action.payload,
-    };
-  }
-
-  const store = new BaseStore({}, testReducer);
-  const subscriber = new TestSubscriber();
-
-  return {
-    store,
-    subscriber,
-    dispatchedActions,
-  };
-}
-
 /**
  * Checks that the subscribers receive the initial state when the store is
  * initialized.
  */
 export function testStoreInitEmptyState() {
-  const {store, subscriber} = setupStore();
+  const {store, subscriber} = setupTestStore();
   store.subscribe(subscriber);
   // It starts un-initialized.
   assertEquals(false, store.isInitialized(), `shouldn't be initialized yet`);
@@ -87,7 +42,7 @@ export function testStoreInitEmptyState() {
  * initialized.
  */
 export function testStoreInitBatched() {
-  const {store, subscriber} = setupStore();
+  const {store, subscriber, createTestAction} = setupTestStore();
   store.subscribe(subscriber);
 
   // It starts un-initialized.
@@ -98,8 +53,8 @@ export function testStoreInitBatched() {
   assertEquals(0, subscriber.calledCounter, 'no subscriber called yet');
 
   // The action here doesn't matter, since the reducer always increment by 1.
-  store.dispatch({type: 'test'});
-  store.dispatch({type: 'test'});
+  store.dispatch(createTestAction());
+  store.dispatch(createTestAction());
 
   // Since the Store is still un-initialized, the subscriber isn't called.
   assertEquals(undefined, getNumVisitors(store), 'should still be undefined');
@@ -119,16 +74,16 @@ export function testStoreInitBatched() {
  * dispatch() is only propagated to the subscribers at the end of the batch.
  */
 export function testBatchDispatch() {
-  const {store, subscriber} = setupStore();
+  const {store, subscriber, createTestAction} = setupTestStore();
   store.subscribe(subscriber);
 
   store.init({numVisitors: 2});
   store.beginBatchUpdate();
 
   // The action here doesn't matter, since the reducer always increment by 1.
-  store.dispatch({type: 'test'});
-  store.dispatch({type: 'test'});
-  store.dispatch({type: 'test'});
+  store.dispatch(createTestAction());
+  store.dispatch(createTestAction());
+  store.dispatch(createTestAction());
 
   // The subscriber isn't called for the 3 dispatches.
   assertEquals(
@@ -148,13 +103,14 @@ export function testBatchDispatch() {
  * Checks that the reducer is called for every action.
  */
 export function testDispatch() {
-  const {store, subscriber, dispatchedActions} = setupStore();
+  const {store, subscriber, dispatchedActions, createTestAction} =
+      setupTestStore();
   assertEquals(0, dispatchedActions.length, 'starts with 0 actions');
   store.subscribe(subscriber);
 
   // Add some actions before the init().
-  store.dispatch({type: 'test', payload: 'msg 1'});
-  store.dispatch({type: 'test', payload: 'msg 2'});
+  store.dispatch(createTestAction('msg 1'));
+  store.dispatch(createTestAction('msg 2'));
 
   // Dispatches don't happen before the init().
   assertEquals(0, dispatchedActions.length, '0 before the init');
@@ -169,7 +125,7 @@ export function testDispatch() {
   assertEquals(
       'msg 1, msg 2', dispatchedActions.map(a => a.payload!).join(', '));
 
-  store.dispatch({type: 'test', payload: 'msg 3'});
+  store.dispatch(createTestAction('msg 3'));
 
   // Both actions are processed after the init.
   assertEquals(
@@ -181,17 +137,17 @@ export function testDispatch() {
 
 /** Checks that subscriber can unsubscribe and stops receiving updates. */
 export function testObserverUnsubscribe() {
-  const {store, subscriber} = setupStore();
+  const {store, subscriber, createTestAction} = setupTestStore();
   const unsubscribe = store.subscribe(subscriber);
   store.init({numVisitors: 2});
 
   assertEquals(1, subscriber.calledCounter, 'subscriber called by init()');
 
-  store.dispatch({type: 'test', payload: 'msg 1'});
+  store.dispatch(createTestAction('msg 1'));
   assertEquals(2, subscriber.calledCounter, 'subscriber called by dispatch()');
 
   unsubscribe();
-  store.dispatch({type: 'test', payload: 'msg 2'});
+  store.dispatch(createTestAction('msg 2'));
   assertEquals(2, subscriber.calledCounter, 'subscriber not called anymore');
 }
 
@@ -200,7 +156,8 @@ export function testObserverUnsubscribe() {
  * subscribers.
  */
 export function testObserverException() {
-  const {store, subscriber: successSubscriber} = setupStore();
+  const {store, subscriber: successSubscriber, createTestAction} =
+      setupTestStore();
   store.init({numVisitors: 2});
 
   // NOTE: Subscribers are called in the order of subscription.
@@ -219,7 +176,7 @@ export function testObserverException() {
       0, successSubscriber.calledCounter, 'successSubscriber not called yet');
   assertEquals(0, errorCounter, 'errorSubscriber not called yet');
 
-  store.dispatch({type: 'test', payload: 'msg 1'});
+  store.dispatch(createTestAction('msg 1'));
   assertEquals(
       1, successSubscriber.calledCounter,
       'successSubscriber called by dispatch()');
@@ -231,13 +188,14 @@ export function testObserverException() {
  * produced actions being dispatched.
  */
 export async function testStoreActionsProducer(done: () => void) {
-  const {store, subscriber, dispatchedActions} = setupStore();
+  const {store, subscriber, dispatchedActions, actionsProducerSuccess} =
+      setupTestStore();
   store.init({numVisitors: 2});
   store.subscribe(subscriber);
 
   store.dispatch(actionsProducerSuccess('attempt 1'));
 
-  await waitUntil(() => dispatchedActions.length == 4);
+  await waitUntil(() => dispatchedActions.length === 4);
 
   done();
 }
@@ -247,14 +205,15 @@ export async function testStoreActionsProducer(done: () => void) {
  * is ignored.
  */
 export async function testStoreActionsProducerEmpty(done: () => void) {
-  const {store, subscriber, dispatchedActions} = setupStore();
+  const {store, subscriber, dispatchedActions, producesEmpty} =
+      setupTestStore();
   store.init({numVisitors: 2});
   store.subscribe(subscriber);
 
   store.dispatch(producesEmpty('trying empty #1'));
 
   // The AP issues 2 non-empty actions and 1 empty between those.
-  await waitUntil(() => dispatchedActions.length == 2);
+  await waitUntil(() => dispatchedActions.length === 2);
 
   done();
 }
@@ -264,7 +223,8 @@ export async function testStoreActionsProducerEmpty(done: () => void) {
  * actions.
  */
 export async function testStoreActionsProducerError(done: () => void) {
-  const {store, subscriber, dispatchedActions} = setupStore();
+  const {store, subscriber, dispatchedActions, actionsProducerSuccess} =
+      setupTestStore();
   store.init({numVisitors: 2});
   store.subscribe(subscriber);
 
@@ -274,7 +234,70 @@ export async function testStoreActionsProducerError(done: () => void) {
   store.dispatch(actionsProducerSuccess('attempt 2'));
 
   // 4 actions from each Success producer.
-  await waitUntil(() => dispatchedActions.length == 8);
+  await waitUntil(() => dispatchedActions.length === 8);
 
   done();
+}
+
+/**
+ * Tests that the Store throws when passed slices with colliding names.
+ */
+export function testStoreErrorsOnSliceNameCollision() {
+  const slice1 = new Slice<TestState, any>('name');
+  const slice2 = new Slice<TestState, any>('name');
+
+  let didError = false;
+
+  try {
+    new BaseStore<TestState>({}, [slice1, slice2]);
+  } catch (error) {
+    didError = true;
+  }
+
+  assertEquals(didError, true);
+}
+
+/**
+ * Tests that Slice::addReducer throws when trying to register actions with
+ * the same name.
+ */
+export function testSliceErrorsOnActionNameCollision() {
+  const slice = new Slice<TestState, any>('name');
+
+  let didError = false;
+
+  try {
+    slice.addReducer('name', () => ({}));
+    slice.addReducer('name', () => ({}));
+  } catch (error) {
+    didError = true;
+  }
+
+  assertEquals(didError, true);
+}
+
+/**
+ * Tests that Slice::addReducer produces action factories that can be shared
+ * across slices to register other reducers.
+ */
+export function testSliceReducerSplitting() {
+  const slice1 = new Slice<TestState, any>('name1');
+  const slice2 = new Slice<TestState, any>('name2');
+
+  const doThing = slice1.addReducer(
+      'do-thing',
+      (state: TestState, payload: number) =>
+          ({...state, numVisitors: state.numVisitors! + payload}));
+
+  slice2.addReducer(
+      doThing.type,
+      (state: TestState, payload: GetActionFactoryPayload<typeof doThing>) =>
+          ({...state, numVisitors: state.numVisitors! + payload * 2}));
+
+  const store = new BaseStore<TestState>({}, [slice1, slice2]);
+  store.init({numVisitors: 0});
+  store.dispatch(doThing(2));
+
+  assertEquals(store.getState().numVisitors, 6 /* =2+2*2 */);
+  assertEquals(doThing.type, '[name1] do-thing');
 }

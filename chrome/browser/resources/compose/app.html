@@ -1,0 +1,659 @@
+<style include="md-select">
+  :host {
+    --compose-loading-body-and-footer-height: 136px;
+    --gap-between-sections_: 16px;
+    --padding_: 20px;
+    display: grid;
+    grid-template-areas: "dialog";
+    grid-auto-columns: 100%;
+    align-items: start;
+    user-select: none;
+  }
+
+  a {
+    color: var(--cr-link-color);
+  }
+
+  :host-context([chrome-refresh-2023]) a {
+    color: var(--color-compose-dialog-link);
+  }
+
+  .dialog {
+    width: 448px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-between-sections_);
+    grid-area: dialog;
+    padding: var(--padding_) 0;
+  }
+
+  .close-button {
+    position: fixed;
+    --close-button-distance-from-edge: calc(20px -
+        ((var(--cr-icon-button-size) - var(--cr-icon-button-icon-size)) / 2));
+    inset-block-start: var(--close-button-distance-from-edge);
+    inset-inline-end: var(--close-button-distance-from-edge);
+  }
+
+  #firstRunHeading {
+    display: flex;
+    height: 48px;
+    align-items: start;
+    padding: 0 var(--padding_);
+  }
+
+  #freMsbbHeading {
+    display: flex;
+    height: 48px;
+    align-items: start;
+    padding: 0 var(--padding_);
+  }
+
+  #firstRunIconContainer {
+    margin-inline-end: var(--gap-between-sections_);
+    min-width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(
+        136deg,  rgb(211, 227, 253) 1.59%, rgb(231, 248, 237) 100%);
+    color: rgb(4, 30, 73);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: top left;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #firstRunIconContainer {
+      background: linear-gradient(
+          136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
+      color: rgb(194, 231, 255);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #firstRunIconContainer {
+    background: linear-gradient(136deg,
+        var(--color-sys-gradient-primary) 1.59%,
+        var(--color-sys-gradient-tertiary) 100%);
+    color: var(--color-compose-dialog-logo);
+  }
+
+  #firstRunHeading iron-icon {
+    --iron-icon-width: 20px;
+    --iron-icon-height: 20px;
+  }
+
+  #firstRunContainer {
+    color: var(--cr-secondary-text-color);
+    font: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 0 20px;
+  }
+
+  #freMsbbContainer {
+    color: var(--cr-secondary-text-color);
+    font: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  #savedStateDialog {
+    display: flex;
+    align-items: center;
+    min-width: 180px;
+    padding: 10px var(--padding_);
+  }
+
+  #savedStateIconContainer {
+    color: var(--cr-secondary-text-color);
+    margin-inline-end: var(--gap-between-sections_);
+    min-width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: top left;
+  }
+
+  #savedStateIconContainer iron-icon {
+    --iron-icon-width: 20px;
+    --iron-icon-height: 20px;
+  }
+
+  #savedStateTextContainer {
+    color: var(--cr-primary-text-color);
+    font: inherit;
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  #savedStateLabel {
+    color: var(--cr-secondary-text-color);
+  }
+
+  #heading {
+    display: flex;
+    height: 24px;
+    align-items: center;
+    padding: 0 var(--padding_);
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    margin-inline-end: auto;
+    padding-inline-end: 36px; /* From --cr-icon-button-size */
+  }
+
+  :host-context([chrome-refresh-2023]) h1 {
+    color: var(--color-compose-dialog-title);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    padding-inline-end: 32px; /* From --cr-icon-button-size */
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    margin: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-compose-dialog-foreground-subtle);
+  }
+
+  #bodyAndFooter {
+    display: grid;
+    grid-template-areas: "body" "footer";
+    grid-auto-columns: 100%;
+    gap: var(--gap-between-sections_);
+    position: relative;
+  }
+
+  #body {
+    --results-background_: rgb(234, 240, 249);
+    --scrollbar-width_: 4px;
+    box-sizing: border-box;
+    grid-area: body;
+    display: grid;
+    grid-template-areas: "textarea" "bodyContent";
+    grid-auto-columns: 100%;
+    gap: 8px;
+    max-height: 220px;
+    overflow: auto;
+    padding: 0 20px;
+    padding-inline-end: calc(20px - var(--scrollbar-width_));
+    scrollbar-gutter: stable;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #body {
+      --results-background_: rgb(60, 64, 67);
+    }
+  }
+
+  :host(:not([submitted_])) #body {
+    /* Non-submitted dialog has no bodyContent. */
+    grid-template-areas: "textarea";
+  }
+
+  :host-context([chrome-refresh-2023]) #body {
+    --results-background_: var(--color-compose-dialog-result-background);
+  }
+
+  #body.is-scrolled {
+    border-top: var(--cr-hairline);
+  }
+
+  :host-context([chrome-refresh-2023]) #body.is-scrolled {
+    border-top: solid 1px var(--color-compose-dialog-divider);
+  }
+
+  #body.can-scroll:not(.scrolled-to-bottom) {
+    border-bottom: var(--cr-hairline);
+  }
+
+  :host-context([chrome-refresh-2023])
+      #body.can-scroll:not(.scrolled-to-bottom) {
+    border-bottom: solid 1px var(--color-compose-dialog-divider);
+  }
+
+  #body::-webkit-scrollbar {
+    background: transparent;
+    width: var(--scrollbar-width_);
+  }
+
+  #body::-webkit-scrollbar-thumb {
+    background: var(--google-grey-300);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #body::-webkit-scrollbar-thumb {
+      background: var(--google-grey-500);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #body::-webkit-scrollbar-thumb {
+    background: var(--color-compose-dialog-scrollbar-thumb);
+  }
+
+  :host([loading-indicator-shown_]) #bodyAndFooter {
+    /* There is no footer in the loading screen. */
+    grid-template-areas: "body";
+    height: var(--compose-loading-body-and-footer-height);
+  }
+
+  :host([loading-indicator-shown_]) #body {
+    /* When loading, the heights of contents within #body are in flux due to
+     * animations. Force the entire #body to be visible to prevent scrollbars
+     * from flickering, and remove scrollbar width from padding. */
+    overflow: visible;
+    padding-inline-end: 20px;
+  }
+
+  #textarea {
+    grid-area: textarea;
+  }
+
+  #loading,
+  .result-container {
+    grid-area: bodyContent;
+  }
+
+  #loading {
+    display: flex;
+    border: solid 1px var(--results-background_);
+    border-radius: 8px;
+    padding: 15px;
+    box-sizing: border-box;
+    height: 80px;
+  }
+
+  .result-container {
+    --compose-result-text-color-while-loading: var(--cr-primary-text-color);
+    --compose-result-text-color: var(--cr-primary-text-color);
+    border-radius: 8px;
+    display: flex;
+    box-sizing: border-box;
+    background: var(--results-background_);
+    color: var(--cr-primary-text-color);
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) .result-container {
+    --compose-result-text-color-while-loading: var(
+        --color-compose-dialog-result-foreground-while-loading);
+    --compose-result-text-color: var(--color-compose-dialog-result-foreground);
+    line-height: 16px;
+  }
+
+  #resultContainerInner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+  }
+
+  #resultOptions {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-block-start: 16px;
+  }
+
+  #resultFooter[inert], #resultOptions[inert] {
+    opacity: 0;
+  }
+
+  #resultOptions .md-select {
+    --md-select-bg-color: transparent;
+    min-height: 36px;
+    min-width: 96px;
+    height: auto;
+    width: auto;
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) #resultOptions .md-select {
+    border: solid 1px var(--google-grey-400);
+  }
+
+  .icon-buttons-row {
+    display: grid;
+    grid-auto-columns: var(--cr-icon-size);
+    grid-auto-rows: var(--cr-icon-size);
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: center;
+    justify-items: center;
+    margin-inline-start: auto;
+  }
+
+  .icon-buttons-row cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-icon-size: var(--cr-icon-size);
+    margin: 0;
+  }
+
+  :host-context([chrome-refresh-2023]) .icon-buttons-row cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
+  }
+
+  .footer {
+    grid-area: footer;
+    align-items: center;
+    display: flex;
+    padding: 0 var(--padding_);
+    justify-content: flex-end;
+  }
+
+  #submitFooter {
+    gap:35px;
+  }
+
+  #resultFooter {
+    gap:45px;
+  }
+
+  .footer-text {
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    margin-inline-end: auto;
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) .footer-text {
+    color: var(--color-compose-dialog-foreground-subtle);
+    line-height: 16px;
+  }
+
+  .footer-text .icon-buttons-row {
+    --cr-icon-size: 16px;
+    margin-inline-end: 8px;
+  }
+
+  .footer cr-button {
+    margin-inline-start: 8px;
+  }
+
+  #errorFooter {
+    user-select: text;
+  }
+
+  :host-context([is-editing-submitted-input_]) #body,
+  :host-context([is-editing-submitted-input_]) .footer {
+    visibility: hidden;
+  }
+
+  :host-context([is-editing-submitted-input_]) #bodyAndFooter {
+    /* Ensure there's always enough height to show the edit flow. The edit flow
+    * overlays over the existing content, and sometimes, the existing content
+    * is not tall enough to show the textarea and buttons (eg. the error
+    * state). */
+    min-height: 153px;
+  }
+
+  :host-context([chrome-refresh-2023], [is-editing-submitted-input_])
+      #bodyAndFooter {
+    min-height: 141px;
+  }
+
+  #editContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    gap: var(--gap-between-sections_);
+    inset: 0;
+    padding: 0 var(--padding_);
+  }
+
+  #editContainer compose-textarea {
+    --compose-textarea-input-height: 100%;
+    flex: 1;
+  }
+
+  #editContainer .footer {
+    padding: 0;
+    visibility: visible;
+  }
+
+  /**
+   * cr-hidden-style stamps an !important on [hidden] elements, which prevents
+   * any animations/transitions from applying. Instead of using cr-hidden-style,
+   * list all the [hidden] elements below. Not all elements need this, just
+   * the ones that override the default 'display' property.
+   */
+  .dialog[hidden],
+  .footer[hidden],
+  .result-container[hidden],
+  #loading[hidden],
+  #savedStateDialog[hidden],
+  #editContainer[hidden] {
+    display: none;
+  }
+</style>
+
+<div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
+  <div id="firstRunHeading">
+    <div id="firstRunIconContainer">
+      <iron-icon icon="compose:compose"></iron-icon>
+    </div>
+    <h1>$i18n{firstRunTitle}</h1>
+    <cr-icon-button id="firstRunCloseButton" class="close-button"
+      iron-icon="cr:close" on-click="onClose_" aria-label="$i18n{close}">
+    </cr-icon-button>
+  </div>
+
+  <div id="firstRunContainer">
+    <div id="firstRunTopText">$i18n{firstRunMainTop}</div>
+    <div id="firstRunMidText">$i18n{firstRunMainMid}</div>
+    <div id="firstRunBottomText" on-click="onFirstRunBottomTextClick_">
+      $i18nRaw{firstRunMainBottom}
+    </div>
+  </div>
+
+  <div id="firstRunFooter" class="footer">
+    <cr-button id="firstRunOkButton" class="action-button"
+      on-click="onFirstRunOkButtonClick_">
+      $i18n{firstRunOkButton}
+    </cr-button>
+  </div>
+</div>
+
+
+<div id="freMsbbDialog" class="dialog" hidden="[[!showMSBBDialog_]]">
+  <div id="freMsbbHeading">
+    <h1>$i18n{freMsbbTitle}</h1>
+    <cr-icon-button id="closeButtonMSBB" class="close-button"
+      iron-icon="cr:close" on-click="onClose_">
+    </cr-icon-button>
+  </div>
+
+  <div id="freMsbbContainer">
+    <div id="freMsbbText">
+      $i18nRaw{freMsbbMain}
+    </div>
+  </div>
+
+  <div id="freMsbbFooter" class="footer">
+    <cr-button id="SettingsButton" class="action-button"
+      on-click="onMsbbSettingsClick_">
+      $i18n{freMsbbSettingsButton}
+    </cr-button>
+  </div>
+</div>
+
+
+<div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
+  <div id="heading">
+    <h1>$i18n{dialogTitle}</h1>
+    <cr-icon-button id="closeButton" class="close-button" iron-icon="cr:close"
+      on-click="onClose_" aria-label="$i18n{close}">
+    </cr-icon-button>
+  </div>
+
+  <div id="bodyAndFooter">
+    <div id="body" scrollable>
+      <compose-textarea id="textarea" value="{{input_}}"
+        readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
+        on-edit-click="onEditClick_" input-params="[[inputParams_]]">
+      </compose-textarea>
+
+      <div id="loading"
+          hidden="[[!loadingIndicatorShown_]]">
+        <cr-loading-gradient>
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="51">
+            <clipPath>
+              <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
+              <rect x="0" y="20" width="100%" height="10.8333" rx="4"></rect>
+              <rect x="0" y="40" width="75%" height="11" rx="4"></rect>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      </div>
+      <div id="resultContainer" class="result-container"
+          hidden="[[!hasOutput_]]">
+        <div id="resultContainerInner">
+          <compose-result-text id="resultText" text-input="[[responseText_]]"
+              is-output-complete="{{outputComplete_}}"
+              has-output="{{hasOutput_}}"
+              has-partial-output="{{hasPartialOutput_}}">
+          </compose-result-text>
+          <div id="resultOptions"
+              inert$="[[!outputComplete_]]">
+            <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
+              <template is="dom-repeat" items="[[lengthOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
+            <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
+              <template is="dom-repeat" items="[[toneOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
+
+            <div class="icon-buttons-row">
+              <cr-icon-button id="undoButton" iron-icon="compose:undo"
+                title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
+                on-click="onUndoClick_">
+              </cr-icon-button>
+              <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+                title="$i18n{resubmit}" on-click="onRefresh_">
+              </cr-icon-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
+      <div class="footer-text">
+        <div on-click="onFooterClick_">
+          $i18nRaw{inputFooter}
+        </div>
+      </div>
+      <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
+        disabled="[[!isSubmitEnabled_]]">
+        <iron-icon slot="prefix-icon" icon="compose:compose"></iron-icon>
+        $i18n{submitButton}
+      </cr-button>
+    </div>
+
+    <div id="resultFooter" class="footer"
+        hidden$="[[!outputComplete_]]"
+        inert$="[[hasPartialOutput_]]">
+      <div class="footer-text">
+        <div on-click="onFooterClick_">
+          <b id="onDeviceUsedFooter"
+              hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{onDeviceUsedFooter}
+
+          </b>
+          <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{dogfoodFooter}</span>
+          <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{resultFooter}</span>
+        </div>
+        <cr-feedback-buttons id="feedbackButtons"
+            on-selected-option-changed="onFeedbackSelectedOptionChanged_"
+            selected-option="[[feedbackState_]]">
+        </cr-feedback-buttons>
+      </div>
+      <cr-button id="acceptButton" class="action-button" on-click="onAccept_">
+        [[acceptButtonText_(textSelected_)]]
+      </cr-button>
+    </div>
+
+    <div id="errorFooter" class="footer"
+        hidden="[[!hasFailedResponse_(response_)]]">
+      <div on-click="onFooterClick_" class="footer-text">
+        <span hidden="[[hasErrorWithLink_(response_)]]"
+          >[[failedResponseErrorText_(response_)]]</span>
+        <span hidden="[[!hasUnsupportedLanguageResponse_(response_)]]"
+          >$i18nRaw{errorUnsupportedLanguage}</span>
+        <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
+          >$i18nRaw{errorPermissionDenied}</span>
+      </div>
+    </div>
+
+    <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
+      <compose-textarea id="editTextarea" value="{{editedInput_}}"
+        input-params="[[inputParams_]]">
+      </compose-textarea>
+      <div class="footer">
+        <if expr="not(is_win)">
+          <cr-button id="cancelEditButton" class="tonal-button"
+            on-click="onCancelEditClick_">
+            $i18n{editCancelButton}
+          </cr-button>
+        </if>
+        <cr-button id="submitEditButton" class="action-button"
+          on-click="onSubmitEdit_"
+          disabled$="[[!isEditSubmitEnabled_]]">
+          $i18n{editUpdateButton}
+        </cr-button>
+        <if expr="is_win">
+          <cr-button id="cancelEditButton" class="tonal-button"
+            on-click="onCancelEditClick_">
+            $i18n{editCancelButton}
+          </cr-button>
+        </if>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="savedStateDialog" hidden="[[!showSavedStateDialog_]]"
+  on-click="onSavedStateDialogClick_">
+  <div id="savedStateIconContainer">
+    <iron-icon icon="compose:compose"></iron-icon>
+  </div>
+  <div id="savedStateTextContainer">
+    <div id="savedStateText">$i18n{savedText}</div>
+    <div id="savedStateLabel">$i18n{savedLabel}</div>
+  </div>
+</div>

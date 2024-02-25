@@ -79,14 +79,6 @@ void CreateRestoreSessionUrl(
 bool IsRestoreSessionUrl(const GURL& url);
 bool IsRestoreSessionUrl(NSURL* url);
 
-// Creates a restore_session.html URL that encodes the specified `target_url` in
-// the URL fragment with a "targetUrl=" prefix. When this URL is loaded in the
-// web view, it executes a client-side redirect to `target_url`. This results in
-// a new navigation entry and prunes forward navigation history. This URL is
-// used by NavigationManagerImpl to reload a page with user agent override,
-// as reloading `target_url` directly doesn't create a new navigation entry.
-GURL CreateRedirectUrl(const GURL& target_url);
-
 // Extracts the URL encoded in the URL fragment of `restore_session_url` to
 // `target_url` and returns true. If the URL fragment does not have a
 // "targetUrl=" prefix, returns false.

@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 {%- if contains_only_enums %}
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -37,6 +37,7 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+#include "{{module.path}}-features.h"
 #include "{{module.path}}-shared.h"
 #include "{{variant_path(module.path, variant)}}-forward.h"
 
@@ -87,16 +88,6 @@
 {%- for forward_declaration in typemap_forward_declarations %}
 {{forward_declaration}}
 {%- endfor %}
-
-{#--- WTF enum hashing #}
-{%- from "enum_macros.tmpl" import enum_hash_blink%}
-{%- if for_blink %}
-{%-   for enum in all_enums %}
-{%-     if not enum|is_native_only_kind %}
-{{enum_hash_blink(enum)}}
-{%-     endif %}
-{%-   endfor %}
-{%- endif %}
 
 {#--- Constants that need headers (enum types) (basic types go in forward.h) #}
 {%- for constant in module.constants %}
@@ -185,6 +176,15 @@ namespace mojo {
 {%-   for union in unions %}
 {%      include "union_traits_declaration.tmpl" %}
 {%-   endfor %}
+{%- endif %}
+
+{#--- Feature helper template overrides -#}
+{%- if interfaces|selectattr('runtime_feature')|list|length %}
+namespace internal {
+{%-   for interface in interfaces if interface.runtime_feature -%}
+{%      include "interface_feature_declaration.tmpl" %}
+{%-   endfor %}
+}  // namespace internal
 {%- endif %}
 
 }  // namespace mojo

@@ -81,15 +81,18 @@ class OmniboxView {
   // closed, there is no input in progress, and there's a URL displayed) (e.g.
   // the secure page lock). `color_vectors` is used for vector icons e.g. the
   // history clock or bookmark star. `color_bright_vectors` is used for special
-  // vector icons e.g. the history cluster squiggle. Favicons aren't
-  // custom-colored. `dark_mode` returns the dark_mode version of an icon. This
-  // should usually be handled by `color_current_page_icon` but in cases where
-  // the icon has hardcoded colors this can be used to return a different icon.
-  // E.g., the SuperGIcon will return different icons in dark and light modes.
+  // vector icons e.g. the history cluster squiggle.
+  // `color_vectors_with_background` is used for vector icons that are drawn
+  // atop a background e.g. action suggestions. Favicons aren't custom-colored.
+  // `dark_mode` returns the dark_mode version of an icon. This should usually
+  // be handled by `color_current_page_icon` but in cases where the icon has
+  // hardcoded colors this can be used to return a different icon. E.g., the
+  // SuperGIcon will return different icons in dark and light modes.
   ui::ImageModel GetIcon(int dip_size,
                          SkColor color_current_page_icon,
                          SkColor color_vectors,
                          SkColor color_bright_vectors,
+                         SkColor color_vectors_with_background,
                          IconFetchedCallback on_icon_fetched,
                          bool dark_mode) const;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "url/gurl.h"
 
 MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)

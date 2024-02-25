@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void ScrubTo(base::TimeDelta seek_time) override {}
   void EnterPictureInPicture() override {}
   void ExitPictureInPicture() override {}
-  void SetAudioSinkId(const absl::optional<std::string>& sink_id) override {}
+  void SetAudioSinkId(const std::optional<std::string>& sink_id) override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   // The current metadata associated with the current media session.
   media_session::MediaMetadata metadata_;
 
-  const raw_ptr<MediaHost, ExperimentalAsh> host_;
+  const raw_ptr<MediaHost> host_;
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   // Binding for Mojo pointer to |this| held by AudioFocusManager.

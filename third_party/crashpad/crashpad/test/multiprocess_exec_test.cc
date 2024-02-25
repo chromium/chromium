@@ -14,7 +14,7 @@
 
 #include "test/multiprocess_exec.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -55,9 +55,9 @@ class TestMultiprocessExec final : public MultiprocessExec {
 // keep /dev/urandom open.
 // PartitionAllocator opens /dev/urandom because of address randomization.
 // (c.f. //base/rand_util_posix.cc and
-// //base/allocator/partition_allocator/random.cc) So when making
-// PartitionAllocator default, multiprocess_exec_test_child will crash because
-// of LOG(FATAL) << "close". https://crbug.com/1153544
+// //base/allocator/partition_allocator/src/partition_alloc/random.cc) So when
+// making PartitionAllocator default, multiprocess_exec_test_child will crash
+// because of LOG(FATAL) << "close". https://crbug.com/1153544
 #if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     defined(OS_MAC)
 #define MAYBE_MultiprocessExec DISABLED_MultiprocessExec

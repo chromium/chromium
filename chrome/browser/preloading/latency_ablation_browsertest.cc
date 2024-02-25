@@ -25,6 +25,10 @@
 
 namespace {
 
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
+
 constexpr static char kSearchDomain[] = "a.test";
 constexpr static char kSuggestionDomain[] = "a.test";
 constexpr static char16_t kSearchDomain16[] = u"a.test";
@@ -33,6 +37,16 @@ constexpr static char16_t kSearchDomain16[] = u"a.test";
 BASE_FEATURE(kNavigationLatencyAblation,
              "NavigationLatencyAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+std::unique_ptr<HttpResponse> ReturnOKResponseForAllRequests(
+    const HttpRequest& request) {
+  auto http_response = std::make_unique<BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("text/plain");
+  http_response->set_content(request.GetURL().spec());
+  return http_response;
+}
+
 }  // namespace
 
 class LatencyAblationBrowserTest : public InProcessBrowserTest {
@@ -50,6 +64,8 @@ class LatencyAblationBrowserTest : public InProcessBrowserTest {
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     prerender_helper_->RegisterServerRequestMonitor(https_server_.get());
+    https_server_->RegisterRequestHandler(
+        base::BindRepeating(&ReturnOKResponseForAllRequests));
     ASSERT_TRUE(https_server_->Start());
 
     TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(
@@ -439,4 +455,48 @@ IN_PROC_BROWSER_TEST_F(LatencyAblationEnabledNonSearchDisabledBrowserTest,
 
   histogram_tester.ExpectTotalCount("Navigation.LatencyAblation.ExcessWaitTime",
                                     1u);
+}
+
+// Test Latency Ablation based on pattern.
+class LatencyAblationEnabledPatternBrowserTest
+    : public LatencyAblationBrowserTest {
+ public:
+  LatencyAblationEnabledPatternBrowserTest() = default;
+
+ private:
+  void SetUpFieldTrial() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kNavigationLatencyAblation,
+          {{"duration", "5ms"},
+           {"pattern", "*foo.test*/maps*"},  // we need * after .test to match
+                                             // `foo.test:[port_num]/maps/...`
+           {"ablate_default_search_queries", "false"},
+           {"ablate_default_search_host", "false"},
+           {"ablate_non_default_search_host", "false"}}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LatencyAblationEnabledPatternBrowserTest,
+                       AblatePattern) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(https_server_->GetURL("www.foo.test", "/maps/places/12345"));
+
+  EXPECT_TRUE(content::NavigateToURL(GetWebContents(), url));
+
+  histogram_tester.ExpectTotalCount("Navigation.LatencyAblation.ExcessWaitTime",
+                                    1u);
+}
+
+IN_PROC_BROWSER_TEST_F(LatencyAblationEnabledPatternBrowserTest,
+                       DoNotAblateIfNotMatch) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(https_server_->GetURL("anysite.com", "/title1.html"));
+
+  EXPECT_TRUE(content::NavigateToURL(GetWebContents(), url));
+
+  histogram_tester.ExpectTotalCount("Navigation.LatencyAblation.ExcessWaitTime",
+                                    0u);
 }

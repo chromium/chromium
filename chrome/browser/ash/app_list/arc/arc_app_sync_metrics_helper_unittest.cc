@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_sync_metrics_helper.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -24,8 +25,8 @@ constexpr char kInstalledAppSizeHistogramName[] =
 
 constexpr uint64_t kTestAppSizeInBytes = 2048000;
 constexpr uint64_t kTestAppSizeInMB = kTestAppSizeInBytes / (1000 * 1000);
-constexpr absl::optional<uint64_t> kTestAppSizeOptional =
-    absl::optional<uint64_t>{kTestAppSizeInBytes};
+constexpr std::optional<uint64_t> kTestAppSizeOptional =
+    std::optional<uint64_t>{kTestAppSizeInBytes};
 
 }  // namespace
 
@@ -109,7 +110,7 @@ TEST_F(ArcAppSyncMetricsHelperTest,
 }
 
 TEST_F(ArcAppSyncMetricsHelperTest, DoNotRecordInstalledAppSize) {
-  metrics_helper_.OnAppInstalled(absl::optional<uint64_t>());
+  metrics_helper_.OnAppInstalled(std::optional<uint64_t>());
   tester_.ExpectTotalCount(kInstalledAppSizeHistogramName, 0);
 }
 
@@ -125,7 +126,7 @@ TEST_F(ArcAppSyncMetricsHelperTest, RecordInstalledAppSizeForTwoApps) {
   tester_.ExpectUniqueSample(kInstalledAppSizeHistogramName, kTestAppSizeInMB,
                              1);
 
-  metrics_helper_.OnAppInstalled(absl::optional<uint64_t>{test_app_size_bytes});
+  metrics_helper_.OnAppInstalled(std::optional<uint64_t>{test_app_size_bytes});
   tester_.ExpectBucketCount(kInstalledAppSizeHistogramName,
                             test_app_size_bytes / (1000 * 1000), 1);
   tester_.ExpectTotalCount(kInstalledAppSizeHistogramName, 2);

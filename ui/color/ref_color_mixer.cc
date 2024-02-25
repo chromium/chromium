@@ -16,7 +16,6 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/dynamic_color/palette.h"
 #include "ui/color/dynamic_color/palette_factory.h"
-#include "ui/color/temp_palette.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
@@ -244,7 +243,14 @@ void AddGeneratedPalette(ColorProvider* provider,
 }
 
 void AddRefColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
-  if (!key.user_color.has_value()) {
+  // Typically user_color should always be set when the source has been set to
+  // kAccent, however there may still be cases when this can occur (e.g. failing
+  // to retrieve the system accent color on Windows).
+  // TODO(tluk): Investigate guaranteeing the user_color is defined when kAccent
+  // is set.
+  if (!key.user_color.has_value() ||
+      key.user_color_source == ColorProviderKey::UserColorSource::kBaseline ||
+      key.user_color_source == ColorProviderKey::UserColorSource::kGrayscale) {
     AddBaselinePalette(provider);
   } else {
     // The default value for schemes is Tonal Spot.

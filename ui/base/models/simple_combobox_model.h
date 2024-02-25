@@ -43,16 +43,19 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
 
   ~SimpleComboboxModel() override;
 
+  // Updates the list of items stored at `items_`.
+  void UpdateItemList(std::vector<Item> items);
+
   // ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   std::u16string GetDropDownSecondaryTextAt(size_t index) const override;
   ui::ImageModel GetIconAt(size_t index) const override;
   bool IsItemSeparatorAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
  private:
-  const std::vector<Item> items_;
+  std::vector<Item> items_;
 };
 
 }  // namespace ui

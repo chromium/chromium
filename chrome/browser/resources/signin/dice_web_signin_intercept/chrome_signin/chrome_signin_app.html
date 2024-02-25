@@ -1,0 +1,126 @@
+<style include="signin-shared">
+
+#interceptDialog {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  overflow-wrap: break-word;  /* For very long names/emails/strings*/
+}
+
+#product-logo {
+  width: 24px;
+  height: 24px;
+}
+
+#title,
+#name {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 8px;
+}
+
+#title {
+  font-size: 1.125rem;
+}
+
+#subtitle,
+#email {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+#subtitle {
+  margin-top: 8px;
+}
+
+#account-icon {
+  flex-shrink: 0;
+  height: 60px;
+  width: 60px;
+  border-radius: 30px;
+}
+
+#contents-container {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: var(--color-chrome-signin-bubble-info-background);
+}
+
+#name {
+  font-size: 1rem;
+}
+
+#button-container {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+#accept-button,
+#cancel-button {
+  width: 100%;
+}
+
+#acceppt-button-content {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host-context([chrome-refresh-2023]) cr-button {
+  color: --color-button-background-tonal;
+}
+
+#cancel-button {
+  border: none;
+}
+
+</style>
+
+<div role="dialog" id="interceptDialog" aria-labelledby="title"
+aria-describedby="contents">
+
+  <div id="header-container">
+    <img id="product-logo"
+      srcset="chrome://theme/current-channel-logo@1x 1x,
+              chrome://theme/current-channel-logo@2x 2x"
+      role="presentation">
+
+    <div id="title">$i18n{chromeSigninTitle}</div>
+    <div id="subtitle">$i18n{chromeSigninSubtitle}</div>
+
+  </div>
+
+  <div id="contents-container">
+    <div id="contents">
+
+      <img id="account-icon" alt=""
+          src="[[interceptionParameters_.pictureUrl]]">
+
+      <div id="name">[[interceptionParameters_.fullName]]</div>
+      <div id="email">[[interceptionParameters_.email]]</div>
+
+      <div id="button-container">
+        <cr-button id="accept-button" class="action-button"
+            on-click="onAccept_">
+            <div id="acceppt-button-content">
+              [[i18n('chromeSigninAcceptText',
+                 interceptionParameters_.givenName)]]
+            </div>
+        </cr-button>
+        <cr-button id="cancel-button" on-click="onCancel_">
+          $i18n{chromeSigninDeclineText}
+        </cr-button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

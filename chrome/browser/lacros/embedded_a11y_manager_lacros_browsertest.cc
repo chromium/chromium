@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -10,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -28,9 +30,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -42,7 +42,7 @@
 // NOTE: Tests in this file modify Ash accessibility features. That is
 // potentially a lasting side effect that can affect other tests.
 // * To prevent interference with tests that are run in parallel, these tests
-// are a part of lacros_chrome_browsertests_run_in_series test suite.
+// are a part of lacros_chrome_browsertests test suite.
 // * To prevent interference with following tests, they try to clean up all the
 // side effects themselves, e.g. if a test sets a pref, it is also responsible
 // for unsetting it.
@@ -58,11 +58,13 @@ gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
   // Use var instead of const or let so that this can be executed many
   // times within a context on different elements without Javascript
   // variable redeclaration errors.
-  content::ExecJs(web_contents, base::StringPrintf(R"(
+  // TODO: handle return value.
+  std::ignore =
+      content::ExecJs(web_contents, base::StringPrintf(R"(
       var element = document.getElementById('%s');
       var bounds = element.getBoundingClientRect();
     )",
-                                                   field_id.c_str()));
+                                                       field_id.c_str()));
   int top = content::EvalJs(web_contents, "bounds.top").ExtractInt();
   int left = content::EvalJs(web_contents, "bounds.left").ExtractInt();
   int width = content::EvalJs(web_contents, "bounds.width").ExtractInt();
@@ -114,28 +116,26 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   EmbeddedA11yManagerLacrosTest& operator=(
       const EmbeddedA11yManagerLacrosTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiAccessibilityServicePrivate);
-  }
-
   void SetUp() override {
-    // Start unique Ash instance for AccessibilityServicePrivate enabled.
+    // This test has conflicts with some other tests(crbug/1501236).
     StartUniqueAshChrome(
-        /*enabled_features=*/{"ApiAccessibilityServicePrivate"},
+        /*enabled_features=*/{},
         /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
-        "crbug/1459275 Switch to shared ash when the "
-        "AccessibilityServicePrivate API is enabled by default.");
+        "crbug/1501236 Switch to shared ash once the bug is fixed.");
+
     InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    EmbeddedA11yManagerLacros::GetInstance()
-        ->AddExtensionChangedCallbackForTest(base::BindRepeating(
-            &EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
-            base::Unretained(this)));
+    auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
+    embedded_a11y_manager->AddExtensionChangedCallbackForTest(
+        base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
+                            base::Unretained(this)));
+    embedded_a11y_manager->AddFocusChangedCallbackForTest(
+        base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnFocusChanged,
+                            base::Unretained(this)));
     auto* lacros_service = chromeos::LacrosService::Get();
     if (!lacros_service ||
         !lacros_service->IsAvailable<crosapi::mojom::TestController>() ||
@@ -144,6 +144,11 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
                                  kSetAssistiveTechnologyEnabledMinVersion)) {
       GTEST_SKIP() << "Ash version doesn't have required test API";
     }
+  }
+
+  void TearDownOnMainThread() override {
+    CloseAllAshBrowserWindows();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetFeatureEnabled(AssistiveTechnologyType at_type, bool enabled) {
@@ -195,6 +200,13 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     WaitForExtensionUnloaded(profile, extension_id);
   }
 
+  void WaitForFocusRingsChangedTo(gfx::Point center_point) {
+    while (center_point != last_focus_bounds_.CenterPoint()) {
+      focus_waiter_ = std::make_unique<base::RunLoop>();
+      focus_waiter_->Run();
+    }
+  }
+
   RenderViewContextMenu* LoadTestPageAndSelectTextAndRightClick() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -238,9 +250,17 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
     }
   }
 
+  void OnFocusChanged(gfx::Rect bounds) {
+    last_focus_bounds_ = bounds;
+    if (focus_waiter_ && focus_waiter_->running()) {
+      focus_waiter_->Quit();
+    }
+  }
+
   std::unique_ptr<base::RunLoop> waiter_;
+  std::unique_ptr<base::RunLoop> focus_waiter_;
   int num_context_clicks_ = 0;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::Rect last_focus_bounds_;
 };
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
@@ -284,6 +304,23 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   SetDisabledAndWaitForExtensionUnloaded(
       profile, AssistiveTechnologyType::kSwitchAccess,
       extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       AddsAndRemovesHelperForReadingMode) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
+  embedded_a11y_manager->SetReadingModeEnabled(true);
+  WaitForExtensionLoaded(profile,
+                         extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  embedded_a11y_manager->SetReadingModeEnabled(false);
+  WaitForExtensionUnloaded(profile,
+                           extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
@@ -477,4 +514,51 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   SetDisabledAndWaitForExtensionUnloaded(
       profile, AssistiveTechnologyType::kSelectToSpeak,
       extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest, FocusHighlightSent) {
+  SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                    true);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL(("data:text/html;charset=utf-8,<input type='button' value='first' "
+            "id='first' autofocus><input type='submit' id='second'>"))));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->GetInterfaceVersion<
+          crosapi::mojom::EmbeddedAccessibilityHelperClient>() <
+      static_cast<int>(crosapi::mojom::EmbeddedAccessibilityHelperClient::
+                           MethodMinVersions::kFocusChangedMinVersion)) {
+    LOG(ERROR) << "Ash version doesn't have required API, skipping test.";
+    // Nothing should explode when the page loads, we just aren't passing
+    // focus changes along to Ash because we never listened to them.
+    // Clean up.
+    SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                      false);
+    return;
+  }
+
+  gfx::Rect first_button_bounds = GetControlBoundsInRoot(web_contents, "first");
+  gfx::Rect second_button_bounds =
+      GetControlBoundsInRoot(web_contents, "second");
+
+  WaitForFocusRingsChangedTo(first_button_bounds.CenterPoint());
+
+  // Focus the second button with tab.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  ui::test::EventGenerator generator(window->GetRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_TAB);
+
+  WaitForFocusRingsChangedTo(second_button_bounds.CenterPoint());
+
+  // Clean up.
+  SetFeatureEnabled(crosapi::mojom::AssistiveTechnologyType::kFocusHighlight,
+                    false);
 }

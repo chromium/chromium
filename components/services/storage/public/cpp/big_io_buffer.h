@@ -13,7 +13,7 @@ namespace storage {
 // A net::IOBufferWithSize backed by a mojo_base::BigBuffer. Avoids having to
 // copy an IOBuffer to a BigBuffer to return the results of an IO operation.
 class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) BigIOBuffer
-    : public net::IOBufferWithSize {
+    : public net::IOBuffer {
  public:
   BigIOBuffer(const BigIOBuffer&) = delete;
   BigIOBuffer& operator=(const BigIOBuffer&) = delete;

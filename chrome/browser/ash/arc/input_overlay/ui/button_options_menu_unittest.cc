@@ -6,17 +6,28 @@
 
 #include <memory>
 
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/style/icon_button.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -25,25 +36,26 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   ButtonOptionsMenuTest() = default;
   ~ButtonOptionsMenuTest() override = default;
 
-  size_t GetActionListItemsSize() {
-    DCHECK(editing_list_);
+  // Return -1 if there is no list item for `action`. Otherwise, return the
+  // index of list item in `EditingList` for `action`.
+  int GetIndexInEditingList(Action* action) {
+    if (IsEditingListInZeroState()) {
+      return -1;
+    }
 
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
-    if (editing_list_->HasControls()) {
-      return scroll_content->children().size();
+    for (size_t i = 0; i < scroll_content->children().size(); i++) {
+      const auto* list_item =
+          views::AsViewClass<ActionViewListItem>(scroll_content->children()[i]);
+      if (list_item->action() == action) {
+        return i;
+      }
     }
-    return 0;
+    return -1;
   }
-
-  size_t GetActionViewSize() { return input_mapping_view_->children().size(); }
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
-
-  void PressTrashButton(ButtonOptionsMenu* menu) {
-    DCHECK(menu);
-    menu->OnTrashButtonPressed();
-  }
 
   ActionType GetActionType(ButtonOptionsMenu* menu) {
     DCHECK(menu);
@@ -64,6 +76,24 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     button_group->OnActionTapButtonPressed();
   }
 
+  void PressActionEdit(ButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    ActionEditView* action_edit = menu->action_edit_;
+    DCHECK(action_edit);
+    action_edit->OnClicked();
+  }
+
+  void MouseDragActionBy(Action* action, int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    auto* touch_point = action->action_view()->touch_point();
+    DCHECK(touch_point);
+    event_generator->MoveMouseTo(
+        touch_point->GetBoundsInScreen().CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
+    event_generator->ReleaseLeftButton();
+  }
+
   bool IsActionInTouchInjector(Action* action) {
     const auto& actions = touch_injector_->actions();
     return std::find_if(actions.begin(), actions.end(),
@@ -75,8 +105,8 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   bool IsActionInEditingList(Action* action) {
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
-    for (auto* child : scroll_content->children()) {
-      auto* list_item = static_cast<ActionViewListItem*>(child);
+    for (views::View* child : scroll_content->children()) {
+      auto* list_item = views::AsViewClass<ActionViewListItem>(child);
       DCHECK(list_item);
       if (list_item->action() == action) {
         return true;
@@ -85,6 +115,14 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     return false;
   }
 
+  bool IsEditLabelFocused(ButtonOptionsMenu* menu, int index) {
+    DCHECK(menu);
+    ActionEditView* action_edit = menu->action_edit_;
+    DCHECK(action_edit);
+    EditLabels* edit_labels = action_edit->labels_view_;
+    DCHECK(edit_labels);
+    return edit_labels->labels_[index]->HasFocus();
+  }
 };
 
 TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
@@ -98,8 +136,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_FALSE(move_action_->IsDeleted());
 
   // Remove Action Tap.
-  auto* menu = ShowButtonOptionsMenu(tap_action_);
-  PressTrashButton(menu);
+  ShowButtonOptionsMenu(tap_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -112,8 +150,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(2u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(move_action_);
-  PressTrashButton(menu);
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -126,8 +164,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(1u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(tap_action_two_);
-  PressTrashButton(menu);
+  ShowButtonOptionsMenu(tap_action_two_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -143,18 +181,105 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
 TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   // Change Action Tap.
   auto* menu = ShowButtonOptionsMenu(tap_action_);
+  int list_index = GetIndexInEditingList(tap_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
+
+  // Left click on `ButtonOptionsMenu::labels_view_` will focus on one of the
+  // `labels_` which is tested in `TestClickActionEdit`. This is to test
+  // `EditLabel::OnBlur()` doesn't crash when changing action type.
+  PressActionEdit(menu);
+
   PressActionMoveButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
   EXPECT_TRUE(IsActionInEditingList(menu->action()));
+  EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
   // Change Action Move.
   menu = ShowButtonOptionsMenu(move_action_);
+  list_index = GetIndexInEditingList(move_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
+
+  // Press Action Edit twice to focus on the second label.
+  PressActionEdit(menu);
+  PressActionEdit(menu);
+
   PressTapButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
   EXPECT_TRUE(IsActionInEditingList(menu->action()));
+  EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
+}
+
+TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
+  // Originally there is an `ActionMove` with WASD as default bindings. Add
+  // another new `ActionMove` and the new `ActionMove` will not assign default
+  // WASD bindings.
+  AddNewActionInCenter();
+  auto* menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  auto* new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_TRUE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::NONE, ui::DomCode::NONE,
+                                      ui::DomCode::NONE, ui::DomCode::NONE});
+  VerifyUIDisplay(new_action, {u"", u"", u"", u""},
+                  GetControlName(ActionType::MOVE, u""));
+
+  // Delete the original action move and add another `ActionMove`. The new
+  // `ActionMove` will assign default WASD bindings.
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
+  AddNewActionInCenter();
+  menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_FALSE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::US_W, ui::DomCode::US_A,
+                                      ui::DomCode::US_S, ui::DomCode::US_D});
+  VerifyUIDisplay(new_action, {u"w", u"a", u"s", u"d"},
+                  GetControlName(ActionType::MOVE, u"wasd"));
+}
+
+TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
+  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  PressActionEdit(menu);
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
+  menu = ShowButtonOptionsMenu(move_action_);
+  PressActionEdit(menu);
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
+  PressActionEdit(menu);
+  EXPECT_FALSE(IsEditLabelFocused(menu, /*index=*/0));
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/1));
+}
+
+TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
+  // Display is 1000*800. Set window position to lower part.
+  auto* game_window = widget_->GetNativeWindow();
+  game_window->SetBounds(gfx::Rect(310, 200, 300, 500));
+
+  auto* root_window = game_window->GetRootWindow();
+  auto* shelf = ash::RootWindowController::ForWindow(root_window)->shelf();
+  DCHECK(shelf);
+  shelf->SetAlignment(ash::ShelfAlignment::kBottom);
+  // Drag action to bottom.
+  MouseDragActionBy(tap_action_two_, /*x=*/0, /*y=*/500);
+  auto* menu = ShowButtonOptionsMenu(tap_action_two_);
+  // Menu should show right on top of the shelf.
+  EXPECT_EQ(
+      root_window->bounds().bottom() - ash::ShelfConfig::Get()->shelf_size(),
+      menu->GetWidget()->GetNativeWindow()->bounds().bottom());
+  // Close menu.
+  PressDoneButtonOnButtonOptionsMenu();
+  // Set shelf to auto hide.
+  shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
+  EXPECT_FALSE(shelf->IsVisible());
+  menu = ShowButtonOptionsMenu(tap_action_two_);
+  // Menu should align to the bottom of the root window if the shelf is hidden.
+  EXPECT_EQ(root_window->bounds().bottom(),
+            menu->GetWidget()->GetNativeWindow()->bounds().bottom());
 }
 
 }  // namespace arc::input_overlay

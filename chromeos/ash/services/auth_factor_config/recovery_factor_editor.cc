@@ -14,14 +14,10 @@
 
 namespace ash::auth {
 
-RecoveryFactorEditor::RecoveryFactorEditor(
-    AuthFactorConfig* auth_factor_config,
-    QuickUnlockStorageDelegate* quick_unlock_storage)
+RecoveryFactorEditor::RecoveryFactorEditor(AuthFactorConfig* auth_factor_config)
     : auth_factor_config_(auth_factor_config),
-      quick_unlock_storage_(quick_unlock_storage),
       auth_factor_editor_(UserDataAuthClient::Get()) {
   DCHECK(auth_factor_config_);
-  DCHECK(quick_unlock_storage_);
 }
 RecoveryFactorEditor::~RecoveryFactorEditor() = default;
 
@@ -34,8 +30,6 @@ void RecoveryFactorEditor::Configure(
     const std::string& auth_token,
     bool enabled,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  CHECK(features::IsCryptohomeRecoveryEnabled());
-
   auth_factor_config_->IsEditable(
       auth_token, mojom::AuthFactor::kRecovery,
       base::BindOnce(&RecoveryFactorEditor::OnGetEditable,
@@ -54,39 +48,32 @@ void RecoveryFactorEditor::OnGetEditable(
     return;
   }
 
-  UserContext* user_context_ptr;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    user_context_ptr = ash::AuthSessionStorage::Get()->Peek(auth_token);
-  } else {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    user_context_ptr = quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (user_context_ptr == nullptr) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
   }
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&RecoveryFactorEditor::ConfigureWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, should_enable,
+                     std::move(callback), is_editable));
+}
 
+void RecoveryFactorEditor::ConfigureWithContext(
+    const std::string& auth_token,
+    bool should_enable,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool is_editable,
+    std::unique_ptr<UserContext> user_context) {
   const bool currently_enabled =
-      user_context_ptr->GetAuthFactorsConfiguration().HasConfiguredFactor(
+      user_context->GetAuthFactorsConfiguration().HasConfiguredFactor(
           cryptohome::AuthFactorType::kRecovery);
 
   if (should_enable == currently_enabled) {
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
     std::move(callback).Run(mojom::ConfigureResult::kSuccess);
     return;
-  }
-
-  std::unique_ptr<UserContext> user_context;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    user_context =
-        ash::AuthSessionStorage::Get()->Borrow(FROM_HERE, auth_token);
-  } else {
-    user_context = std::make_unique<UserContext>(*user_context_ptr);
   }
 
   auto on_configured_callback = base::BindOnce(
@@ -106,11 +93,13 @@ void RecoveryFactorEditor::OnRecoveryFactorConfigured(
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     if (error->get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
       // Handle expired auth session gracefully.
+      ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+      ash::AuthSessionStorage::Get()->Invalidate(auth_token, base::DoNothing());
       std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
       return;
     }

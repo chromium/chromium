@@ -5,7 +5,7 @@
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -24,6 +24,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -37,11 +38,6 @@ namespace {
 SelectToSpeakTray* GetTray() {
   return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
       ->select_to_speak_tray();
-}
-
-ui::GestureEvent CreateTapEvent() {
-  return ui::GestureEvent(0, 0, 0, base::TimeTicks(),
-                          ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 }
 
 }  // namespace
@@ -116,17 +112,17 @@ TEST_F(SelectToSpeakTrayTest, ButtonRequestsSelectToSpeakStateChange) {
   TestAccessibilityControllerClient client;
   EXPECT_EQ(0, client.select_to_speak_change_change_requests());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_EQ(1, client.select_to_speak_change_change_requests());
 
-  GetTray()->PerformAction(CreateTapEvent());
+  GestureTapOn(GetTray());
   EXPECT_EQ(2, client.select_to_speak_change_change_requests());
 }
 
 // Test that changing the SelectToSpeakState in the AccessibilityController
 // results in a change of icon and activation in the tray.
 TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsImageAndActivation) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
@@ -166,7 +162,7 @@ TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsTooltipText) {
   feature_list.InitAndEnableFeature(
       ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
@@ -199,7 +195,7 @@ TEST_F(SelectToSpeakTrayTest,
   feature_list.InitAndDisableFeature(
       ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
@@ -228,7 +224,10 @@ TEST_F(SelectToSpeakTrayTest,
 // Without this test, coverage of select_to_speak_tray.h is 0%.
 TEST_F(SelectToSpeakTrayTest, OverriddenFunctionsDoNothing) {
   GetTray()->HideBubbleWithView(nullptr);
-  GetTray()->ClickedOutsideBubble();
+
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  GetTray()->ClickedOutsideBubble(event);
 }
 
 }  // namespace ash

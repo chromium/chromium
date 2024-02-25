@@ -9,18 +9,6 @@ SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js'),
-      importModule(
-          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js'),
-      importModule('SACache', '/switch_access/cache.js'),
-      importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
-      importModule('Navigator', '/switch_access/navigator.js'),
-      importModule('SwitchAccess', '/switch_access/switch_access.js'),
-      importModule('Mode', '/switch_access/switch_access_constants.js'),
-    ]);
     globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
   }
 };
@@ -52,9 +40,8 @@ AX_TEST_F(
       await new Promise(verifyChecked(false));
     });
 
-// TODO(crbug.com/1284450): Flaky.
 AX_TEST_F(
-    'SwitchAccessPointScanManagerTest', 'DISABLED_PointScanRightClick',
+    'SwitchAccessPointScanManagerTest', 'PointScanRightClick',
     async function() {
       const website = '<p>Kittens r cute</p>';
       const rootWebArea = await this.runWithLoadedTree(website);

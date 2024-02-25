@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -30,7 +31,6 @@
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -47,7 +47,7 @@ constexpr const char* usage_msg =
            [--disable_validator] [--psnr_threshold=<number>]
            [--output_bitstream] [--output_images=(all|corrupt)]
            [--output_format=(png|yuv)] [--output_folder=<filepath>]
-           [--output_limit=<number>] [--disable_vaapi_lock]
+           [--output_limit=<number>]
            [-v=<level>] [--vmodule=<config>]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -79,7 +79,8 @@ The following arguments are supported:
                         supported with --codec=vp9 and only runs in NV12Dmabuf
                         test cases. The valid svc mode is "L1T1", "L1T2",
                         "L1T3", "L2T1_KEY", "L2T2_KEY", "L2T3_KEY", "L3T1_KEY",
-                        "L3T2_KEY", "L3T3_KEY". The default value is "L1T1".
+                        "L3T2_KEY", "L3T3_KEY", "S2T1", "S2T2", "S2T3", "S3T1",
+                        "S3T2", "S3T3". The default value is "L1T1".
   --bitrate             bitrate (bits in second) of a produced bitstram.
                         If not specified, a proper value for the video
                         resolution is selected by the test.
@@ -102,12 +103,6 @@ The following arguments are supported:
   --output_limit        limit the number of images saved to disk.
   --output_folder       set the basic folder used to store test
                         artifacts. The default is the current directory.
-  --disable_vaapi_lock  disable the global VA-API lock if applicable,
-                        i.e., only on devices that use the VA-API with a libva
-                        backend that's known to be thread-safe and only in
-                        portions of the Chrome stack that should be able to
-                        deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -145,10 +140,10 @@ class VideoEncoderTest : public ::testing::Test {
     const auto& spatial_layers = g_env->SpatialLayers();
     CHECK_LE(spatial_layers.size(), 1u);
 
-    return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    spatial_layers, g_env->InterLayerPredMode(),
-                                    g_env->BitrateAllocation(),
-                                    g_env->Reverse());
+    return VideoEncoderClientConfig(
+        g_env->Video(), g_env->Profile(), spatial_layers,
+        g_env->InterLayerPredMode(), g_env->ContentType(),
+        g_env->BitrateAllocation(), g_env->Reverse());
   }
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
@@ -174,8 +169,9 @@ class VideoEncoderTest : public ::testing::Test {
       const size_t last_frame_index,
       const double validator_threshold,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
-      absl::optional<size_t> spatial_layer_index_to_decode,
-      absl::optional<size_t> temporal_layer_index_to_decode,
+      std::optional<size_t> spatial_layer_index_to_decode,
+      std::optional<size_t> temporal_layer_index_to_decode,
+      SVCInterLayerPredMode inter_layer_pred_mode,
       const std::vector<gfx::Size>& spatial_layer_resolutions) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
 
@@ -189,12 +185,15 @@ class VideoEncoderTest : public ::testing::Test {
       base::FilePath::StringType output_file_prefix;
       if (spatial_layer_index_to_decode) {
         output_file_prefix +=
-            FILE_PATH_LITERAL("SL") +
+            (inter_layer_pred_mode == SVCInterLayerPredMode::kOff &&
+                     spatial_layer_resolutions.size() > 1
+                 ? FILE_PATH_LITERAL("S")
+                 : FILE_PATH_LITERAL("L")) +
             base::NumberToString(*spatial_layer_index_to_decode);
       }
       if (temporal_layer_index_to_decode) {
         output_file_prefix +=
-            FILE_PATH_LITERAL("TL") +
+            FILE_PATH_LITERAL("T") +
             base::NumberToString(*temporal_layer_index_to_decode);
       }
 
@@ -266,7 +265,7 @@ class VideoEncoderTest : public ::testing::Test {
 
     bitstream_processors.emplace_back(DecoderBufferValidator::Create(
         config.output_profile, visible_rect, config.num_spatial_layers,
-        config.num_temporal_layers));
+        config.num_temporal_layers, config.inter_layer_pred_mode));
 
     raw_data_helper_ = std::make_unique<RawDataHelper>(video, g_env->Reverse());
     if (!spatial_layer_resolutions.empty()) {
@@ -292,7 +291,7 @@ class VideoEncoderTest : public ::testing::Test {
               video, decoder_config, config.num_frames_to_encode - 1,
               validator_threshold, get_model_frame_cb,
               spatial_layer_index_to_decode, temporal_layer_index_to_decode,
-              spatial_layer_resolutions));
+              config.inter_layer_pred_mode, spatial_layer_resolutions));
           LOG_ASSERT(bitstream_processors.back());
         }
       }
@@ -312,8 +311,8 @@ class VideoEncoderTest : public ::testing::Test {
                               base::Unretained(this), visible_rect);
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
-          validator_threshold, get_model_frame_cb, absl::nullopt, absl::nullopt,
-          /*spatial_layer_resolutions=*/{}));
+          validator_threshold, get_model_frame_cb, std::nullopt, std::nullopt,
+          config.inter_layer_pred_mode, /*spatial_layer_resolutions=*/{}));
       LOG_ASSERT(bitstream_processors.back());
     }
     return bitstream_processors;
@@ -403,6 +402,38 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
   EXPECT_TRUE(encoder->WaitForFlushDone());
   // Check if there are two key frames, first frame and one on ForceKeyFrame().
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
+// Test forcing key frame to the first and second frames.
+TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto config = GetDefaultConfig();
+  CHECK_GT(config.num_frames_to_encode, 1u);
+
+  // The two keyframes impairs the video quality. We use the default tolerance
+  // in order to keep the psnr threshold high that is specified by
+  // --psnr_threshold in video.EncodeAccel tast tests.
+  auto encoder = CreateVideoEncoder(g_env->Video(), config,
+                                    PSNRVideoFrameValidator::kDefaultTolerance);
+
+  // Encode until the first frame and request force_keyframe.
+  encoder->EncodeUntil(VideoEncoder::kFrameReleased, 1u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  encoder->ForceKeyFrame();
+  // Check if the first and second frames are key frames.
+  encoder->EncodeUntil(VideoEncoder::kBitstreamReady, 2u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
+
+  // Encode until the end of stream.
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
@@ -530,10 +561,10 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
 
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   RawVideo* nv12_video = g_env->GenerateNV12Video();
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
@@ -587,6 +618,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   }
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers, SVCInterLayerPredMode::kOff,
+      g_env->ContentType(),
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
                                        num_temporal_layers, new_bitrate),
       g_env->Reverse());
@@ -632,10 +664,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
   auto nv12_expanded_video = g_env->GenerateNV12Video()->CreateExpandedVideo(
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_expanded_video.get(), g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -673,10 +705,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   auto nv12_expanded_video = g_env->GenerateNV12Video()->CreateExpandedVideo(
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_expanded_video.get(), g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -732,10 +764,10 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
     bitrate_allocation = deactivate_spatial_layer(bitrate_allocation, i);
   bitrate_allocations.emplace_back(bitrate_allocation);
 
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(),
-                                  g_env->InterLayerPredMode(),
-                                  g_env->BitrateAllocation(), g_env->Reverse());
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());
@@ -758,6 +790,41 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
+
+#if BUILDFLAG(USE_VAAPI)
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf_EnableDropFrame) {
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(g_env->Profile());
+  if (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
+      codec != media::VideoCodec::kAV1) {
+    GTEST_SKIP() << "VideoEncodeAccelerator on this device doesn't support drop"
+                 << "frame with codec=" << GetCodecName(codec);
+  }
+  if (g_env->BitrateAllocation().GetMode() == Bitrate::Mode::kVariable) {
+    GTEST_SKIP() << "Drop frame doesn't support in VBR encoding";
+  }
+
+  RawVideo* nv12_video = g_env->GenerateNV12Video();
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->InterLayerPredMode(), g_env->ContentType(),
+      g_env->BitrateAllocation(), g_env->Reverse());
+  config.input_storage_type =
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
+  constexpr uint8_t kDropFrameThreshold = 80;
+  config.drop_frame_thresh = kDropFrameThreshold;
+  auto encoder = CreateVideoEncoder(nv12_video, config);
+
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+
+  auto stats = encoder->GetStats();
+  VLOG(0) << "Dropped frames: " << stats.num_dropped_frames << " / "
+          << stats.total_num_encoded_frames;
+}
+#endif  // BUILDFLAG(USE_VAAPI)
 
 }  // namespace test
 }  // namespace media
@@ -786,7 +853,7 @@ int main(int argc, char** argv) {
   std::string codec = "h264";
   std::string svc_mode = "L1T1";
   bool output_bitstream = false;
-  absl::optional<uint32_t> output_bitrate;
+  std::optional<uint32_t> output_bitrate;
   bool reverse = false;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   media::test::FrameOutputConfig frame_output_config;
@@ -873,14 +940,14 @@ int main(int argc, char** argv) {
       }
     } else if (it->first == "output_folder") {
       output_folder = base::FilePath(it->second);
-    } else if (it->first == "disable_vaapi_lock") {
-      disabled_features.push_back(media::kGlobalVaapiLock);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
       return EXIT_FAILURE;
     }
   }
+
+  disabled_features.push_back(media::kGlobalVaapiLock);
 
   testing::InitGoogleTest(&argc, argv);
 
@@ -889,6 +956,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           media::test::VideoEncoderTestEnvironment::TestType::kValidation,
           video_path, video_metadata_path, output_folder, codec, svc_mode,
+          media::VideoEncodeAccelerator::Config::ContentType::kCamera,
           output_bitstream, output_bitrate, bitrate_mode, reverse,
           frame_output_config, /*enabled_features=*/{}, disabled_features);
 

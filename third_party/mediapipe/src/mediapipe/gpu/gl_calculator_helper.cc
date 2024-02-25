@@ -14,6 +14,9 @@
 
 #include "mediapipe/gpu/gl_calculator_helper.h"
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/status/statusor.h"
 #include "mediapipe/framework/formats/image.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/legacy_calculator_support.h"
@@ -22,7 +25,6 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/gpu/gpu_service.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -55,8 +57,13 @@ void GlCalculatorHelper::InitializeForTest(GpuResources* gpu_resources) {
 }
 
 // static
-absl::Status GlCalculatorHelper::UpdateContract(CalculatorContract* cc) {
-  cc->UseService(kGpuService);
+absl::Status GlCalculatorHelper::UpdateContract(CalculatorContract* cc,
+                                                bool request_gpu_as_optional) {
+  if (request_gpu_as_optional) {
+    cc->UseService(kGpuService).Optional();
+  } else {
+    cc->UseService(kGpuService);
+  }
   // Allow the legacy side packet to be provided, too, for backwards
   // compatibility with existing graphs. It will just be ignored.
   auto& input_side_packets = cc->InputSidePackets();
@@ -77,7 +84,7 @@ absl::Status GlCalculatorHelper::SetupInputSidePackets(
   }
 
   // TODO: remove when we can.
-  LOG(WARNING)
+  ABSL_LOG(WARNING)
       << "CalculatorContract not available. If you're calling this "
          "from a GetContract method, call GlCalculatorHelper::UpdateContract "
          "instead.";
@@ -184,9 +191,9 @@ GpuBuffer GlCalculatorHelper::GpuBufferCopyingImageFrame(
     const ImageFrame& image_frame) {
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
   auto maybe_buffer = CreateCVPixelBufferCopyingImageFrame(image_frame);
-  // Converts absl::StatusOr to absl::Status since CHECK_OK() currently only
-  // deals with absl::Status in MediaPipe OSS.
-  CHECK_OK(maybe_buffer.status());
+  // Converts absl::StatusOr to absl::Status since ABSL_CHECK_OK() currently
+  // only deals with absl::Status in MediaPipe OSS.
+  ABSL_CHECK_OK(maybe_buffer);
   return GpuBuffer(std::move(maybe_buffer).value());
 #else
   return GpuBuffer(GlTextureBuffer::Create(image_frame));
@@ -207,9 +214,10 @@ GlTexture GlCalculatorHelper::CreateDestinationTexture(int width, int height,
     CreateFramebuffer();
   }
 
-  GpuBuffer gpu_buffer =
+  auto gpu_buffer =
       gpu_resources_->gpu_buffer_pool().GetBuffer(width, height, format);
-  return MapGpuBuffer(gpu_buffer, gpu_buffer.GetWriteView<GlTextureView>(0));
+  ABSL_CHECK_OK(gpu_buffer);
+  return MapGpuBuffer(*gpu_buffer, gpu_buffer->GetWriteView<GlTextureView>(0));
 }
 
 GlTexture GlCalculatorHelper::CreateDestinationTexture(
@@ -217,6 +225,10 @@ GlTexture GlCalculatorHelper::CreateDestinationTexture(
   // TODO: ensure buffer pool is used when creating textures out of
   // ImageFrame.
   GpuBuffer gpu_buffer = GpuBufferCopyingImageFrame(image_frame);
+  return MapGpuBuffer(gpu_buffer, gpu_buffer.GetWriteView<GlTextureView>(0));
+}
+
+GlTexture GlCalculatorHelper::CreateDestinationTexture(GpuBuffer& gpu_buffer) {
   return MapGpuBuffer(gpu_buffer, gpu_buffer.GetWriteView<GlTextureView>(0));
 }
 

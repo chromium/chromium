@@ -13,27 +13,20 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A preference that displays Personalized Sync Promo when the user is not syncing.
- */
+/** A preference that displays Personalized Sync Promo when the user is not syncing. */
 public class SyncPromoPreference extends Preference
         implements SignInStateObserver, ProfileDataCache.Observer, AccountsChangeObserver {
     @Retention(RetentionPolicy.SOURCE)
@@ -44,37 +37,50 @@ public class SyncPromoPreference extends Preference
         int PERSONALIZED_SYNC_PROMO = 2;
     }
 
-    private final ProfileDataCache mProfileDataCache;
-    private final AccountManagerFacade mAccountManagerFacade;
+    private ProfileDataCache mProfileDataCache;
+    private AccountManagerFacade mAccountManagerFacade;
+    private SigninManager mSigninManager;
+    private IdentityManager mIdentityManager;
+
     private @State int mState;
     private @Nullable SyncPromoController mSyncPromoController;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SyncPromoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.sync_promo_view_settings);
-
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         // State will be updated in onAttached.
         mState = State.PROMO_HIDDEN;
         setVisible(false);
     }
 
+    /**
+     * Initialize the dependencies for the SyncPromoPreference.
+     *
+     * <p>Must be called before the preference is attached, which is called from the containing
+     * settings screen's onViewCreated method.
+     */
+    public void initialize(
+            ProfileDataCache profileDataCache,
+            AccountManagerFacade accountManagerFacade,
+            SigninManager signinManager,
+            IdentityManager identityManager,
+            SyncPromoController syncPromoController) {
+        mProfileDataCache = profileDataCache;
+        mAccountManagerFacade = accountManagerFacade;
+        mSigninManager = signinManager;
+        mIdentityManager = identityManager;
+        mSyncPromoController = syncPromoController;
+    }
+
     @Override
     public void onAttached() {
         super.onAttached();
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
         mAccountManagerFacade.addObserver(this);
-        signinManager.addSignInStateObserver(this);
+        mSigninManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        mSyncPromoController = new SyncPromoController(
-                SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
         update();
     }
@@ -83,10 +89,8 @@ public class SyncPromoPreference extends Preference
     public void onDetached() {
         super.onDetached();
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
         mAccountManagerFacade.removeObserver(this);
-        signinManager.removeSignInStateObserver(this);
+        mSigninManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
         mSyncPromoController = null;
     }
@@ -99,9 +103,10 @@ public class SyncPromoPreference extends Preference
     private void setState(@State int state) {
         if (mState == state) return;
 
-        final boolean hasStateChangedFromHiddenToShown = mState == State.PROMO_HIDDEN
-                && (state == State.PERSONALIZED_SIGNIN_PROMO
-                        || state == State.PERSONALIZED_SYNC_PROMO);
+        final boolean hasStateChangedFromHiddenToShown =
+                mState == State.PROMO_HIDDEN
+                        && (state == State.PERSONALIZED_SIGNIN_PROMO
+                                || state == State.PERSONALIZED_SYNC_PROMO);
         if (hasStateChangedFromHiddenToShown) {
             mSyncPromoController.increasePromoShowCount();
         }
@@ -111,22 +116,18 @@ public class SyncPromoPreference extends Preference
 
     /** Updates the title, summary, and image based on the current sign-in state. */
     private void update() {
-        if (IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .isSigninDisabledByPolicy()) {
+        if (mSigninManager.isSigninDisabledByPolicy()) {
             setupPromoHidden();
             return;
         }
 
-        if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
-            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                    Profile.getLastUsedRegularProfile());
-            if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (mSyncPromoController.canShowSyncPromo()) {
+            if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
                 setupPersonalizedPromo(State.PERSONALIZED_SIGNIN_PROMO);
                 return;
             }
 
-            if (!identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+            if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
                 setupPersonalizedPromo(State.PERSONALIZED_SYNC_PROMO);
                 return;
             }

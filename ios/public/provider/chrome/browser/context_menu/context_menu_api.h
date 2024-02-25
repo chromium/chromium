@@ -7,15 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/files/file_path.h"
 #import "base/values.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/public/ui/context_menu_params.h"
-#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
-class ChromeBrowserState;
 @protocol MiniMapCommands;
+@protocol UnitConversionCommands;
 
 // Wraps information to add/show to/in a context menu
 @interface ElementsToAddToContextMenu : NSObject
@@ -38,11 +39,11 @@ namespace provider {
 // Returns the elements to add to the context menu, with their title. If no
 // elements needs to be added, returns nil.
 ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler);
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler);
 
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
@@ -55,26 +56,20 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
 
 // Executes 1-tap action for the given `match`'s type and returns YES. Returns
 // NO if no direct 1-tap action is defined.
-BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
-                                NSTextCheckingResult* match,
-                                NSString* text,
-                                UIViewController* presenting_view_controller,
-                                id<MiniMapCommands> mini_map_handler);
-
-// Returns `CRWContextMenuItem` items for the given `match`, for the given
-// `web_state`.
-NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+BOOL HandleIntentTypesForOneTap(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
     CGPoint location,
     UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler);
+    id<MiniMapCommands> mini_map_handler,
+    id<UnitConversionCommands> unit_conversion_handler);
 
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by
 // model is required. (Note that some flags might still not allow it.)
-absl::optional<base::Value> ExtractDataElementsFromText(
+std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
+    const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,

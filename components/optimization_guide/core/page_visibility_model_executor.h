@@ -24,13 +24,12 @@ class PageVisibilityModelExecutor
                                       const std::string&>;
 
   // ModelExecutor:
-  absl::optional<std::vector<tflite::task::core::Category>> Execute(
+  std::optional<std::vector<tflite::task::core::Category>> Execute(
       ModelExecutionTask* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;
-  std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(
-      base::MemoryMappedFile* model_file,
-      ExecutionStatus* out_status) override;
+  base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
+  BuildModelExecutionTask(base::MemoryMappedFile* model_file) override;
 
  private:
   // -1 tells TFLite to use its own default number of threads.

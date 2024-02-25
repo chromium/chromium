@@ -45,7 +45,7 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
         "Invalid vocab_file from input process unit.",
         TfLiteSupportStatus::kMetadataInvalidTokenizerError);
   }
-  ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
+  TFLITE_ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
                    metadata_extractor->GetAssociatedFile(
                        associated_files->Get(0)->name()->str()));
   return vocab_buffer;
@@ -55,13 +55,12 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
 
 /* static */
 StatusOr<std::unique_ptr<RegexPreprocessor>> RegexPreprocessor::Create(
-    tflite::task::core::TfLiteEngine* engine,
-    int input_tensor_index) {
-  ASSIGN_OR_RETURN(auto processor, Processor::Create<RegexPreprocessor>(
+    tflite::task::core::TfLiteEngine* engine, int input_tensor_index) {
+  TFLITE_ASSIGN_OR_RETURN(auto processor, Processor::Create<RegexPreprocessor>(
                                        /* num_expected_tensors = */ 1, engine,
                                        {input_tensor_index},
                                        /* requires_metadata = */ false));
-  RETURN_IF_ERROR(processor->Init());
+  TFLITE_RETURN_IF_ERROR(processor->Init());
   return processor;
 }
 
@@ -71,10 +70,10 @@ absl::Status RegexPreprocessor::Init() {
     return absl::OkStatus();
   }
   // Try if RegexTokenzier metadata can be found.
-  ASSIGN_OR_RETURN(const auto tokenzier_metadata,
+  TFLITE_ASSIGN_OR_RETURN(const auto tokenzier_metadata,
                    TryFindRegexTokenizerMetadata());
 
-  ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromMetadata(
+  TFLITE_ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromMetadata(
                                    tokenzier_metadata, GetMetadataExtractor()));
   return absl::OkStatus();
 }
@@ -87,7 +86,7 @@ RegexPreprocessor::TryFindRegexTokenizerMetadata() {
     return nullptr;
   }
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto tokenizer_metadata,
       GetMetadataExtractor()->FindFirstProcessUnit(
           *tensor_metadata, ProcessUnitOptions_RegexTokenizerOptions));
@@ -121,7 +120,7 @@ RegexPreprocessor::CreateTokenizerFromMetadata(
       ProcessUnitOptions_RegexTokenizerOptions) {
     const tflite::RegexTokenizerOptions* options =
         tokenizer_metadata->options_as<RegexTokenizerOptions>();
-    ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
+    TFLITE_ASSIGN_OR_RETURN(absl::string_view vocab_buffer,
                      CheckAndLoadFirstAssociatedFile(options->vocab_file(),
                                                      metadata_extractor));
     if (options->delim_regex_pattern() == nullptr) {

@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
+#include "ash/system/video_conference/effects/fake_video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -33,7 +34,7 @@ namespace ash::video_conference {
 
 namespace {
 
-const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
+const char kMeetTestUrl[] = "https://meet.google.com/abc-xyz/ab-123";
 
 crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
     bool is_capturing_camera,
@@ -53,7 +54,9 @@ crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
 
 }  // namespace
 
-class BubbleViewPixelTest : public AshTestBase {
+class BubbleViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*IsVcDlcUiEnabled*/ bool> {
  public:
   BubbleViewPixelTest() = default;
   BubbleViewPixelTest(const BubbleViewPixelTest&) = delete;
@@ -62,16 +65,15 @@ class BubbleViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware,
-         chromeos::features::kJelly},
-        {});
-
-    // Instantiates a fake controller (the real one is created in
-    // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
-    // ash unit tests).
-    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+    std::vector<base::test::FeatureRef> enabled_features{
+        features::kVideoConference, features::kCameraEffectsSupportedByHardware,
+        ::features::kChromeRefresh2023, ::features::kChromeRefreshSecondary2023,
+        ::features::kChromeRefresh2023NTB};
+    std::vector<base::test::FeatureRef> disabled_features{};
+    if (IsVcDlcUiEnabled()) {
+      enabled_features.push_back(features::kVcDlcUi);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     office_bunny_ =
         std::make_unique<fake_video_conference::OfficeBunnyEffect>();
@@ -79,6 +81,22 @@ class BubbleViewPixelTest : public AshTestBase {
     long_text_effect_ = std::make_unique<
         fake_video_conference::FakeLongTextLabelToggleEffect>();
     shaggy_fur_ = std::make_unique<fake_video_conference::ShaggyFurEffect>();
+
+    // Instantiates a fake controller (the real one is created in
+    // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
+    // ash unit tests).
+    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+    if (IsVcDlcUiEnabled()) {
+      // When `VcDlcUi` is enabled we also need to use a fake effects manager,
+      // since the toggle effects tiles in these tests all use the same
+      // `VcEffectId::kTestEffect` id; the real effects manager would only be
+      // able to return a unique tile UI controller for a given effect id, which
+      // would result in all the test tiles being identical (same icon, title,
+      // etc.).
+      fake_effects_manager_ =
+          std::make_unique<FakeVideoConferenceTrayEffectsManager>();
+      controller_->SetEffectsManager(fake_effects_manager_.get());
+    }
 
     AshTestBase::SetUp();
 
@@ -88,17 +106,22 @@ class BubbleViewPixelTest : public AshTestBase {
 
   void TearDown() override {
     AshTestBase::TearDown();
+    controller_.reset();
+    if (IsVcDlcUiEnabled()) {
+      fake_effects_manager_.reset();
+    }
     shaggy_fur_.reset();
     long_text_effect_.reset();
     cat_ears_.reset();
     office_bunny_.reset();
-    controller_.reset();
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
+
+  bool IsVcDlcUiEnabled() { return GetParam(); }
 
   VideoConferenceTray* video_conference_tray() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
@@ -163,6 +186,7 @@ class BubbleViewPixelTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
+  std::unique_ptr<FakeVideoConferenceTrayEffectsManager> fake_effects_manager_;
   std::unique_ptr<fake_video_conference::OfficeBunnyEffect> office_bunny_;
   std::unique_ptr<fake_video_conference::CatEarsEffect> cat_ears_;
   std::unique_ptr<fake_video_conference::FakeLongTextLabelToggleEffect>
@@ -170,9 +194,13 @@ class BubbleViewPixelTest : public AshTestBase {
   std::unique_ptr<fake_video_conference::ShaggyFurEffect> shaggy_fur_;
 };
 
+INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled,
+                         BubbleViewPixelTest,
+                         testing::Bool());
+
 // Captures the basic bubble view with one media app, 2 toggle effects and 1 set
 // value effects.
-TEST_F(BubbleViewPixelTest, Basic) {
+TEST_P(BubbleViewPixelTest, Basic) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
@@ -180,25 +208,25 @@ TEST_F(BubbleViewPixelTest, Basic) {
       /*url=*/kMeetTestUrl));
 
   // Add 2 toggle effects.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
-  controller()->effects_manager().RegisterDelegate(long_text_effect());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(long_text_effect());
 
   // Add one set-value effect.
-  controller()->effects_manager().RegisterDelegate(shaggy_fur());
+  controller()->GetEffectsManager().RegisterDelegate(shaggy_fur());
 
   LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
   ASSERT_TRUE(bubble_view());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_basic",
-      /*revision_number=*/1, bubble_view()));
+      /*revision_number=*/9, bubble_view()));
 }
 
 // Pixel test that tests toggled on/off and focused/not focused for the toggle
 // effect button.
-TEST_F(BubbleViewPixelTest, ToggleButton) {
+TEST_P(BubbleViewPixelTest, ToggleButton) {
   // Add one toggle effect.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 
   // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
@@ -215,14 +243,14 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_not_toggled",
-      /*revision_number=*/4, toggle_effect_button_container));
+      /*revision_number=*/11, toggle_effect_button_container));
 
   // Toggle the first button, the UI should change.
   LeftClickOn(first_toggle_effect_button);
   ASSERT_EQ(1, office_bunny()->num_activations_for_testing());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_toggled",
-      /*revision_number=*/4, toggle_effect_button_container));
+      /*revision_number=*/8, toggle_effect_button_container));
 
   // Un-toggle the button, then keyboard focus it.
   LeftClickOn(first_toggle_effect_button);
@@ -234,7 +262,7 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_not_toggled",
-      /*revision_number=*/4, toggle_effect_button_container));
+      /*revision_number=*/11, toggle_effect_button_container));
 
   // Re-toggle the button.
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -243,12 +271,12 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_toggled",
-      /*revision_number=*/4, toggle_effect_button_container));
+      /*revision_number=*/10, toggle_effect_button_container));
 }
 
 // Pixel test that tests the expanded/collapsed state of the return to app panel
 // when there's one and two running media app.
-TEST_F(BubbleViewPixelTest, ReturnToApp) {
+TEST_P(BubbleViewPixelTest, ReturnToApp) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
@@ -293,7 +321,7 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
       /*revision_number=*/3, return_to_app_panel));
 }
 
-TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
+TEST_P(BubbleViewPixelTest, ReturnToAppLinux) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
@@ -310,7 +338,7 @@ TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_linux_bubble_one_app",
-      /*revision_number=*/4, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/8, video_conference_tray()->GetBubbleView()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
@@ -325,12 +353,12 @@ TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_linux_bubble_two_app",
-      /*revision_number=*/4, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/8, video_conference_tray()->GetBubbleView()));
 }
 
-TEST_F(BubbleViewPixelTest, OneToggleEffects) {
+TEST_P(BubbleViewPixelTest, OneToggleEffects) {
   // Add 1 toggle effects.
-  controller()->effects_manager().RegisterDelegate(long_text_effect());
+  controller()->GetEffectsManager().RegisterDelegate(long_text_effect());
 
   // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
@@ -339,13 +367,13 @@ TEST_F(BubbleViewPixelTest, OneToggleEffects) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_one_toggle_effect",
-      /*revision_number=*/2, GetToggleEffectsView()));
+      /*revision_number=*/5, GetToggleEffectsView()));
 }
 
-TEST_F(BubbleViewPixelTest, TwoToggleEffects) {
+TEST_P(BubbleViewPixelTest, TwoToggleEffects) {
   // Add 2 toggle effects.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
-  controller()->effects_manager().RegisterDelegate(long_text_effect());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(long_text_effect());
 
   // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
@@ -354,18 +382,18 @@ TEST_F(BubbleViewPixelTest, TwoToggleEffects) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_two_toggle_effects",
-      /*revision_number=*/2, GetToggleEffectsView()));
+      /*revision_number=*/5, GetToggleEffectsView()));
 }
 
-TEST_F(BubbleViewPixelTest, ThreeToggleEffects) {
+TEST_P(BubbleViewPixelTest, ThreeToggleEffects) {
   // Add 3 toggle effects.
   // To test multi-line label in the toggle button, we test with 3 strings with
   // different length: (1) small string that fits into 1 line ("Cat Ears"), (2)
   // relatively small string that is just a bit more than 1 line ("Office
   // Bunny"), and (3) long string that is definitely not fit into 1 line.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
-  controller()->effects_manager().RegisterDelegate(cat_ears());
-  controller()->effects_manager().RegisterDelegate(long_text_effect());
+  controller()->GetEffectsManager().RegisterDelegate(office_bunny());
+  controller()->GetEffectsManager().RegisterDelegate(cat_ears());
+  controller()->GetEffectsManager().RegisterDelegate(long_text_effect());
 
   // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
@@ -374,7 +402,7 @@ TEST_F(BubbleViewPixelTest, ThreeToggleEffects) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_three_toggle_effects",
-      /*revision_number=*/2, GetToggleEffectsView()));
+      /*revision_number=*/5, GetToggleEffectsView()));
 }
 
 }  // namespace ash::video_conference

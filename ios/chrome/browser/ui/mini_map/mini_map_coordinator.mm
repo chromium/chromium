@@ -11,14 +11,20 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_action_handler.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
-#import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface MiniMapCoordinator () <MiniMapActionHandler, MiniMapMediatorDelegate>
 
@@ -111,53 +117,16 @@
   self.consentViewController = nil;
 }
 
-- (void)showMap {
+- (void)showMapWithIPH:(BOOL)showIPH {
   _showingMap = YES;
   if (!self.consentViewController) {
-    [self actualShowMap];
+    [self doShowMapWithIPH:showIPH];
     return;
   }
   __weak __typeof(self) weakSelf = self;
   [self dismissConsentInterstitialWithCompletion:^{
-    [weakSelf actualShowMap];
+    [weakSelf doShowMapWithIPH:showIPH];
   }];
-}
-
-- (void)mapDismissedRequestingURL:(NSURL*)url {
-  _showingMap = NO;
-  if (url) {
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
-  }
-  [self workFlowEnded];
-}
-
-- (void)actualShowMap {
-  __weak __typeof(self) weakSelf = self;
-  self.miniMapController =
-      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
-        [weakSelf mapDismissedRequestingURL:url];
-      });
-  if (self.mode == MiniMapMode::kDirections) {
-    [self.miniMapController
-        presentDirectionsWithPresentingViewController:self.baseViewController];
-  } else {
-    [self.miniMapController
-        presentMapsWithPresentingViewController:self.baseViewController];
-  }
-}
-
-- (void)workFlowEnded {
-  if (!_stopCalled) {
-    id<MiniMapCommands> miniMapHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), MiniMapCommands);
-    [miniMapHandler hideMiniMap];
-  }
 }
 
 #pragma mark - MiniMapActionHandler
@@ -174,19 +143,71 @@
 - (void)dismissed {
   if (!_showingMap) {
     [self.mediator userDismissed];
-    [self workFlowEnded];
+    [self workflowEnded];
   }
 }
 
 - (void)userPressedContentSettings {
-  [self.mediator userOpenedSettings];
-  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
-  [settings_command_handler
+  [self.mediator userOpenedSettingsInConsent];
+  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsCommandHandler
       showContentsSettingsFromViewController:self.consentViewController];
 }
 
 #pragma mark - Private methods
+
+- (void)doShowMapWithIPH:(BOOL)showIPH {
+  __weak __typeof(self) weakSelf = self;
+  self.miniMapController =
+      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
+        [weakSelf mapDismissedRequestingURL:url];
+      });
+  [self.miniMapController
+      configureFooterWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_MINI_MAP_FOOTER_STRING)
+      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
+      trailingButtonTitle:l10n_util::GetNSString(
+                              IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
+      leadingButtonAction:^(UIViewController* viewController) {
+        [weakSelf
+            showContentSettingsFromMiniMapInViewController:viewController];
+      }
+      trailingButtonAction:^(UIViewController* viewController) {
+        [weakSelf reportAnIssueFromMiniMapInViewController:viewController];
+      }];
+
+  if (showIPH) {
+    NSString* iphTitle = l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_TITLE);
+    NSString* iphSubtitle =
+        l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_SUBTITLE);
+
+    NSDictionary* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings")),
+    };
+    NSAttributedString* attrSubtitle =
+        AttributedStringFromStringWithLink(iphSubtitle, nil, linkAttributes);
+
+    [self.miniMapController
+        configureDisclaimerWithTitle:[[NSAttributedString alloc]
+                                         initWithString:iphTitle]
+                            subtitle:attrSubtitle
+                       actionHandler:^(NSURL*,
+                                       UIViewController* viewController) {
+                         [weakSelf
+                             showContentSettingsFromMiniMapInViewController:
+                                 viewController];
+                       }];
+  }
+  if (self.mode == MiniMapMode::kDirections) {
+    [self.miniMapController
+        presentDirectionsWithPresentingViewController:self.baseViewController];
+  } else {
+    [self.miniMapController
+        presentMapsWithPresentingViewController:self.baseViewController];
+  }
+}
 
 // Called at the end of the minimap workflow.
 - (void)workflowEnded {
@@ -195,6 +216,42 @@
         self.browser->GetCommandDispatcher(), MiniMapCommands);
     [miniMapHandler hideMiniMap];
   }
+}
+
+- (void)showContentSettingsFromMiniMapInViewController:
+    (UIViewController*)viewController {
+  [self.mediator userOpenedSettingsFromMiniMap];
+  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsCommandHandler
+      showContentsSettingsFromViewController:viewController];
+}
+
+- (void)reportAnIssueFromMiniMapInViewController:
+    (UIViewController*)viewController {
+  [self.mediator userReportedAnIssueFromMiniMap];
+  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandHandler
+      showReportAnIssueFromViewController:viewController
+                                   sender:UserFeedbackSender::MiniMap];
+}
+
+- (void)mapDismissedRequestingURL:(NSURL*)url {
+  _showingMap = NO;
+  if (url) {
+    [self.mediator userOpenedURLFromMiniMap];
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:net::GURLWithNSURL(url)
+                     inIncognito:self.browser->GetBrowserState()
+                                     ->IsOffTheRecord()];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+  } else {
+    [self.mediator userClosedMiniMap];
+  }
+  [self workflowEnded];
 }
 
 @end

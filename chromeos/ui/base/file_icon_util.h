@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_UI_BASE_FILE_ICON_UTIL_H_
 #define CHROMEOS_UI_BASE_FILE_ICON_UTIL_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
@@ -33,6 +34,7 @@ enum class IconType {
   kGmap,
   kGsheet,
   kGsite,
+  kGmaillayout,
   kGslide,
   kGtable,
   kLinux,
@@ -66,7 +68,7 @@ const gfx::VectorIcon& GetIconForPath(const base::FilePath& file_path);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 gfx::ImageSkia GetIconForPath(const base::FilePath& file_path,
                               bool dark_background,
-                              absl::optional<int> dip_size = {});
+                              std::optional<int> dip_size = {});
 
 // Returns the file type chip icon for the specified `filepath`.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

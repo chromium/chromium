@@ -7,26 +7,31 @@
 
 #include <memory>
 
+#include "base/check.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
+#include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
@@ -158,26 +163,16 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-  source->AddBoolean(
-      "loggingEnabled",
-      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+  std::string variations_json_value;
+  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
 
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    std::string variations_json_value;
-    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-
-    source->AddString("versionInfo", variations_json_value);
-  }
+  source->AddString("versionInfo", variations_json_value);
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
 
-  // Test page should only load if testing is enabled and the profile is not
-  // managed by cloud.
-  if (policy::utils::IsPolicyTestingEnabled(profile->GetPrefs()) &&
-      !policy::ManagementServiceFactory::GetForProfile(profile)
-           ->HasManagementAuthority(
-               policy::EnterpriseManagementAuthority::CLOUD)) {
+  const bool allow_policy_test_page = PolicyUI::ShouldLoadTestPage(profile);
+  if (allow_policy_test_page) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
         {"testTitle", IDS_POLICY_TEST_TITLE},
@@ -187,6 +182,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         {"testDesc", IDS_POLICY_TEST_DESC},
         {"testRevertAppliedPolicies", IDS_POLICY_TEST_REVERT},
         {"testClearPolicies", IDS_CLEAR},
+        {"testTableNamespace", IDS_POLICY_HEADER_NAMESPACE},
         {"testTableName", IDS_POLICY_HEADER_NAME},
         {"testTableSource", IDS_POLICY_HEADER_SOURCE},
         {"testTableScope", IDS_POLICY_TEST_TABLE_SCOPE},
@@ -206,50 +202,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddResourcePath("test/", IDR_POLICY_TEST_POLICY_TEST_HTML);
     source->AddResourcePath("test", IDR_POLICY_TEST_POLICY_TEST_HTML);
 
-    // Create a string policy_names_to_types_str mapping policy names to their
-    // input types.
-    policy::Schema chrome_schema =
-        policy::Schema::Wrap(policy::GetChromeSchemaData());
-    ChromePoliciesValueProvider value_provider(profile);
-    base::Value::List policy_names =
-        (*value_provider.GetNames().FindDict("chrome"))
-            .FindList("policyNames")
-            ->Clone();
-
-    policy_names.EraseIf([&](auto& policy) {
-      return policy::IsPolicyNameSensitive(policy.GetString());
-    });
-
-    std::string policy_names_to_types_str = "{";
-    for (auto& policy_name : policy_names) {
-      base::Value::Type policy_type =
-          chrome_schema.GetKnownProperty(policy_name.GetString()).type();
-      std::string policy_type_string;
-      switch (policy_type) {
-        case base::Value::Type::BOOLEAN:
-          policy_type_string = "boolean";
-          break;
-        case base::Value::Type::DICT:
-          policy_type_string = "dictionary";
-          break;
-        case base::Value::Type::INTEGER:
-          policy_type_string = "integer";
-          break;
-        case base::Value::Type::LIST:
-          policy_type_string = "list";
-          break;
-        case base::Value::Type::STRING:
-          policy_type_string = "string";
-          break;
-        default:
-          break;
-      }
-      policy_names_to_types_str +=
-          "\"" + policy_name.GetString() + "\":\"" + policy_type_string + "\",";
-    }
-    policy_names_to_types_str.pop_back();  // remove last divider
-    policy_names_to_types_str += "}";
-    source->AddString("policyNamesToTypes", policy_names_to_types_str);
+    std::string schema;
+    JSONStringValueSerializer serializer(&schema);
+    serializer.Serialize(PolicyUI::GetSchema(profile));
+    source->AddString("initialSchema", schema);
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {
@@ -271,6 +227,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
+  source->AddString("acceptedPaths",
+                    allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
   webui::SetupWebUIDataSource(
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),
       IDR_POLICY_POLICY_HTML);
@@ -291,4 +249,63 @@ PolicyUI::~PolicyUI() = default;
 void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
+}
+
+// static
+bool PolicyUI::ShouldLoadTestPage(Profile* profile) {
+  // Test page should only load if testing is enabled and the profile is not
+  // managed by cloud.
+  return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
+                                               chrome::GetChannel()) &&
+         !policy::ManagementServiceFactory::GetForProfile(profile)
+              ->HasManagementAuthority(
+                  policy::EnterpriseManagementAuthority::CLOUD);
+}
+
+// static
+base::Value PolicyUI::GetSchema(Profile* profile) {
+  policy::SchemaRegistry* registry =
+      profile->GetPolicySchemaRegistryService()->registry();
+  static const policy::PolicyDomain kDomains[] = {
+      policy::POLICY_DOMAIN_CHROME,
+      policy::POLICY_DOMAIN_EXTENSIONS,
+  };
+  // Build a dictionary like this:
+  // {
+  //   "chrome": {
+  //     "PolicyOne": "number",
+  //     "PolicyTwo": "string",
+  //     ...
+  //   },
+  //   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+  //     "PolicyOne": "number",
+  //     ...
+  //   },
+  //   ...
+  // }
+  base::Value::Dict dict;
+  for (const auto domain : kDomains) {
+    const policy::ComponentMap* components =
+        registry->schema_map()->GetComponents(domain);
+    if (!components) {
+      continue;
+    }
+    for (const auto& [component_id, schema] : *components) {
+      DCHECK_EQ(schema.type(), base::Value::Type::DICT);
+      base::Value::List policy_names;
+      auto it = schema.GetPropertiesIterator();
+      for (; !it.IsAtEnd(); it.Advance()) {
+        if (it.schema().IsSensitiveValue() ||
+            policy::IsPolicyNameSensitive(it.key())) {
+          continue;
+        }
+        policy_names.Append(it.key());
+      }
+      // Use "chrome" instead of the empty string for the Chrome namespace,
+      // for better debuggability. Use the extension ID for other namespaces.
+      dict.Set(domain == policy::POLICY_DOMAIN_CHROME ? "chrome" : component_id,
+               policy::utils::GetPolicyNameToTypeMapping(policy_names, schema));
+    }
+  }
+  return base::Value(std::move(dict));
 }

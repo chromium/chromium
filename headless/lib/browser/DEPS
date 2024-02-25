@@ -27,14 +27,17 @@ include_rules = [
 specific_include_rules = {
   "headless_browser_main_parts.*": [
     "+components/origin_trials/browser",
+  ],
+  "headless_browser_main_parts_posix.cc": [
+    "+device/bluetooth",
+  ],
+  "headless_browser_impl.*": [
+    "+services/device/public/cpp/geolocation/system_geolocation_source_mac.h",
+    "+services/device/public/cpp/geolocation/geolocation_manager.h",
     "+components/policy",
     "+components/prefs",
     "+components/pref_registry",
     "+components/keyed_service/content",
-    "+services/device/public/cpp/geolocation/system_geolocation_source_mac.h",
-  ],
-  "headless_browser_main_parts_posix.cc": [
-    "+device/bluetooth",
   ],
   "headless_browser_impl_unittest.cc": [
     "+third_party/blink/public/common/features.h",

@@ -18,6 +18,7 @@ import java.util.List;
 public class TabImportanceManager {
     // Typically no more than 2 visible tabs at once (multi-window).
     private static final List<Tab> sImportantTabs = new ArrayList<>(2);
+
     public static void tabShown(Tab shownTab) {
         ThreadUtils.assertOnUiThread();
         ((TabImpl) shownTab).setImportance(ChildProcessImportance.MODERATE);

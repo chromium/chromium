@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
@@ -211,8 +211,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
     return auth_zone;
   }
 
-  raw_ptr<testing::NiceMock<MockClientIdsDatabase>,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<testing::NiceMock<MockClientIdsDatabase>, DanglingUntriaged>
       client_ids_database_;
   std::map<GURL, AuthZoneMock*> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
@@ -331,9 +330,8 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
   syncer::ModelTypeSyncBridge* bridge =
       auth_zones_manager_->GetModelTypeSyncBridge();
 
-  absl::optional<syncer::ModelError> error =
-      bridge->ApplyIncrementalSyncChanges(bridge->CreateMetadataChangeList(),
-                                          std::move(data_change_list));
+  std::optional<syncer::ModelError> error = bridge->ApplyIncrementalSyncChanges(
+      bridge->CreateMetadataChangeList(), std::move(data_change_list));
   EXPECT_FALSE(error);
 
   // Check if |url_1| is gone.

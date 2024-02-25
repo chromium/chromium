@@ -66,7 +66,7 @@ void MockModelTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
 void MockModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList response_list,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   pending_tasks_.push_back(base::BindOnce(
       &MockModelTypeProcessor::OnUpdateReceivedImpl, base::Unretained(this),
       type_state, std::move(response_list), std::move(gc_directive)));
@@ -118,8 +118,15 @@ std::unique_ptr<CommitRequestData> MockModelTypeProcessor::CommitRequest(
   request_data->entity = std::move(data);
   request_data->sequence_number = GetNextSequenceNumber(tag_hash);
   request_data->base_version = base_version;
-  base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()),
-                     &request_data->specifics_hash);
+  request_data->specifics_hash =
+      base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
+
+  if (specifics.has_bookmark()) {
+    request_data->deprecated_bookmark_folder =
+        (specifics.bookmark().type() == sync_pb::BookmarkSpecifics::FOLDER);
+    request_data->deprecated_bookmark_unique_position =
+        UniquePosition::FromProto(specifics.bookmark().unique_position());
+  }
 
   return request_data;
 }
@@ -289,7 +296,7 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
 void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList response_list,
-    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   type_states_received_on_update_.push_back(type_state);
   for (const UpdateResponseData& response : response_list) {
     const ClientTagHash& client_tag_hash = response.entity.client_tag_hash;

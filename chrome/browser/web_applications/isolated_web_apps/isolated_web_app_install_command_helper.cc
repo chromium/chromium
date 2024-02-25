@@ -4,18 +4,22 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 
-#include <array>
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,16 +31,20 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/base32/base32.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "crypto/random.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -48,11 +56,152 @@ namespace {
 constexpr static char kGeneratedInstallPagePath[] =
     "/.well-known/_generated_install_page.html";
 
+constexpr unsigned kRandomDirNameOctetsLength = 10;
+
+// Returns a base32 representation of 80 random bits. This leads
+// to the 16 characters long directory name. 80 bits should be long
+// enough not to care about collisions.
+std::string GenerateRandomDirName() {
+  std::array<uint8_t, kRandomDirNameOctetsLength> random_array;
+  crypto::RandBytes(random_array);
+  return base::ToLowerASCII(base32::Base32Encode(
+      random_array, base32::Base32EncodePolicy::OMIT_PADDING));
+}
+
+base::expected<base::FilePath, std::string> CopySwbnToIwaDir(
+    const base::FilePath& swbn_path,
+    const base::FilePath& profile_dir) {
+  const base::FilePath iwa_dir_path = profile_dir.Append(kIwaDirName);
+  if (!base::DirectoryExists(iwa_dir_path)) {
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(iwa_dir_path, &error)) {
+      return base::unexpected("Failed to create a root IWA directory: " +
+                              base::File::ErrorToString(error));
+    }
+  }
+
+  const base::FilePath destination_dir =
+      iwa_dir_path.AppendASCII(GenerateRandomDirName());
+  if (base::DirectoryExists(destination_dir)) {
+    base::unexpected("The unique destination directory exists: " +
+                     destination_dir.AsUTF8Unsafe());
+  }
+
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(destination_dir, &error)) {
+    return base::unexpected(
+        "Failed to create a directory " + destination_dir.AsUTF8Unsafe() +
+        " for the IWA: " + base::File::ErrorToString(error));
+  }
+
+  const base::FilePath destination_swbn_path =
+      destination_dir.Append(kMainSwbnFileName);
+  if (!base::CopyFile(swbn_path, destination_swbn_path)) {
+    base::DeletePathRecursively(destination_dir);
+    return base::unexpected(
+        "Failed to copy the " + swbn_path.AsUTF8Unsafe() + " file to the " +
+        destination_swbn_path.AsUTF8Unsafe() + " IWA directory");
+  }
+
+  return destination_swbn_path;
+}
+
+void RemoveParentDirectory(const base::FilePath& path) {
+  base::FilePath dir_path = path.DirName();
+  if (!base::DeletePathRecursively(dir_path)) {
+    LOG(ERROR) << "Could not delete " << dir_path;
+  }
+}
+
+bool IsSwbnPathOwnedByChrome(const base::FilePath& profile_dir,
+                             const base::FilePath& swbn_path) {
+  const base::FilePath iwa_directory = profile_dir.Append(kIwaDirName);
+  return iwa_directory.IsParent(swbn_path);
+}
+
 bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
   return result == WebAppUrlLoader::Result::kUrlLoaded;
 }
 
+base::expected<IsolatedWebAppLocation, std::string>
+CreateUpdatedInstalledBundleLocation(
+    base::expected<base::FilePath, std::string> new_path) {
+  return new_path.transform(
+      [](const base::FilePath& path) -> IsolatedWebAppLocation {
+        return InstalledBundle{.path = path};
+      });
+}
+
 }  // namespace
+
+void CleanupLocationIfOwned(const base::FilePath& profile_dir,
+                            const IsolatedWebAppLocation& location,
+                            base::OnceClosure closure) {
+  absl::visit(base::Overloaded{
+                  [&](const InstalledBundle& location) {
+                    if (IsSwbnPathOwnedByChrome(profile_dir, location.path)) {
+                      base::ThreadPool::PostTaskAndReply(
+                          FROM_HERE,
+                          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+                           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                          base::BindOnce(RemoveParentDirectory, location.path),
+                          std::move(closure));
+                    } else {
+                      std::move(closure).Run();
+                    }
+                  },
+                  [&](const DevModeProxy& location) {
+                    // Nothing to delete for IWA proxy mode.
+                    std::move(closure).Run();
+                  },
+                  [&](const DevModeBundle& location) {
+                    // So far we don't relocate dev mode web bundle to the IWA
+                    // directory. So there is nothing to delete.
+                    std::move(closure).Run();
+                  }},
+              location);
+}
+
+void CopyLocationToProfileDirectory(
+    const base::FilePath& profile_dir,
+    const IsolatedWebAppLocation& location,
+    base::OnceCallback<
+        void(base::expected<IsolatedWebAppLocation, std::string>)> callback) {
+  absl::visit(
+      base::Overloaded{
+          [&](const InstalledBundle& location) {
+            base::ThreadPool::PostTaskAndReplyWithResult(
+                FROM_HERE,
+                {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+                 base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                base::BindOnce(CopySwbnToIwaDir, location.path, profile_dir),
+                base::BindOnce(&CreateUpdatedInstalledBundleLocation)
+                    .Then(std::move(callback)));
+          },
+          [&](const DevModeBundle&) {
+            // As soon as uninstallation/update is implemented, here we should
+            // copy the .swbn file to the profile dir.
+            std::move(callback).Run(location);
+          },
+          [&](const DevModeProxy&) {
+            // Nothing to relocate for IWA proxy mode.
+            std::move(callback).Run(location);
+          }},
+      location);
+}
+
+// static
+std::unique_ptr<content::WebContents>
+IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+    Profile& profile) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          /*context=*/&profile));
+
+  webapps::InstallableManager::CreateForWebContents(web_contents.get());
+
+  return web_contents;
+}
 
 // static
 std::unique_ptr<IsolatedWebAppResponseReaderFactory>
@@ -138,15 +287,34 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
 void IsolatedWebAppInstallCommandHelper::OnTrustAndSignaturesOfBundleChecked(
     base::OnceCallback<void(base::expected<void, std::string>)> callback,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                   UnusableSwbnFileError> status) {
-  std::move(callback).Run(
-      status
+                   UnusableSwbnFileError> result) {
+  auto status =
+      result
           .transform(
               [](const std::unique_ptr<IsolatedWebAppResponseReader>& reader)
                   -> void {})
           .transform_error([](const UnusableSwbnFileError& error) {
             return IsolatedWebAppResponseReaderFactory::ErrorToString(error);
-          }));
+          });
+  std::unique_ptr<IsolatedWebAppResponseReader> reader;
+  IsolatedWebAppResponseReader* raw_reader = nullptr;
+  if (result.has_value()) {
+    reader = std::move(result.value());
+    raw_reader = reader.get();
+  }
+
+  base::OnceClosure run_result_callback = base::BindOnce(
+      [](base::OnceCallback<void(base::expected<void, std::string>)> cb,
+         base::expected<void, std::string> status,
+         std::unique_ptr<IsolatedWebAppResponseReader>) {
+        std::move(cb).Run(std::move(status));
+      },
+      std::move(callback), std::move(status), std::move(reader));
+  if (raw_reader) {
+    raw_reader->Close(std::move(run_result_callback));
+  } else {
+    std::move(run_result_callback).Run();
+  }
 }
 
 void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(
@@ -169,8 +337,21 @@ void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
 
   GURL install_page_url =
       url_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
+
+  content::NavigationController::LoadURLParams load_params(install_page_url);
+  load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
+  // It is important to bypass a potentially registered Service Worker for two
+  // reasons:
+  // 1. `IsolatedWebAppPendingInstallInfo` is attached to a `WebContents` and
+  //    retrieved inside `IsolatedWebAppURLLoaderFactory` based on a frame tree
+  //    node id. There is no frame tree node id for requests that are
+  //    intercepted by Service Workers.
+  // 2. We want to make sure that a Service Worker cannot tamper with the
+  //    install page.
+  load_params.reload_type = content::ReloadType::BYPASSING_CACHE;
+
   url_loader.LoadUrl(
-      install_page_url, &web_contents,
+      std::move(load_params), &web_contents,
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::OnLoadInstallUrl,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -195,7 +376,6 @@ void IsolatedWebAppInstallCommandHelper::CheckInstallabilityAndRetrieveManifest(
         callback) {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &web_contents,
-      /*bypass_service_worker_check=*/true,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::
                          OnCheckInstallabilityAndRetrieveManifest,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -242,7 +422,7 @@ void IsolatedWebAppInstallCommandHelper::
 
 base::expected<WebAppInstallInfo, std::string>
 IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
-    const absl::optional<base::Version>& expected_version,
+    const std::optional<base::Version>& expected_version,
     const ManifestAndUrl& manifest_and_url) {
   const blink::mojom::Manifest& manifest = *manifest_and_url.manifest;
   const GURL& manifest_url = manifest_and_url.url;
@@ -268,7 +448,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
         "Failed to convert manifest `version` from UTF16 to UTF8.");
   }
 
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+  base::expected<std::vector<uint32_t>, IwaVersionParseError>
       version_components = ParseIwaVersionIntoComponents(version_string);
   if (!version_components.has_value()) {
     return base::unexpected(base::StrCat(
@@ -329,7 +509,7 @@ void IsolatedWebAppInstallCommandHelper::RetrieveIconsAndPopulateInstallInfo(
     content::WebContents& web_contents,
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback) {
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(install_info);
   data_retriever_->GetIcons(
       &web_contents, std::move(icon_urls),
       /*skip_page_favicons=*/true,
@@ -345,8 +525,8 @@ void IsolatedWebAppInstallCommandHelper::OnRetrieveIcons(
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback,
     IconsDownloadedResult result,
-    std::map<GURL, std::vector<SkBitmap>> icons_map,
-    std::map<GURL, int /*http_status_code*/> unused_icons_http_results) {
+    IconsMap icons_map,
+    DownloadedIconsHttpResults unused_icons_http_results) {
   if (result != IconsDownloadedResult::kCompleted) {
     std::move(callback).Run(base::unexpected(
         base::StrCat({"Error during icon downloading: ",

@@ -105,7 +105,7 @@ mojom::AudioOutputCapability ComputeAudioOutputCapability(
 mojom::BatteryPropertiesPtr ComputeBatteryInfoForBatteryType(
     const device::BluetoothDevice* device,
     device::BluetoothDevice::BatteryType battery_type) {
-  const absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+  const std::optional<device::BluetoothDevice::BatteryInfo> battery_info =
       device->GetBatteryInfo(battery_type);
 
   if (!battery_info || !battery_info->percentage.has_value())
@@ -167,7 +167,7 @@ mojom::DeviceConnectionState ComputeConnectionState(
 }
 
 std::u16string ComputeDeviceName(const device::BluetoothDevice* device) {
-  absl::optional<std::string> name = device->GetName();
+  std::optional<std::string> name = device->GetName();
   if (name && device::HasGraphicCharacter(name.value()))
     return device->GetNameForDisplay();
 
@@ -177,7 +177,7 @@ std::u16string ComputeDeviceName(const device::BluetoothDevice* device) {
 mojom::DeviceImageInfoPtr ComputeImageInfo(
     const device::BluetoothDevice* device,
     FastPairDelegate* fast_pair_delegate) {
-  absl::optional<DeviceImageInfo> images =
+  std::optional<DeviceImageInfo> images =
       fast_pair_delegate->GetDeviceImageInfo(device->GetAddress());
   if (!images) {
     return nullptr;

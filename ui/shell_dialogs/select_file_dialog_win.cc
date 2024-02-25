@@ -27,6 +27,7 @@
 #include "ui/shell_dialogs/execute_select_file_win.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/select_file_utils_win.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -302,10 +303,11 @@ void SelectFileDialogImpl::OnSelectFileExecuted(
         case SELECT_SAVEAS_FILE:
         case SELECT_OPEN_FILE:
           DCHECK_EQ(paths.size(), 1u);
-          listener_->FileSelected(paths[0], index, params);
+          listener_->FileSelected(SelectedFileInfo(paths[0]), index, params);
           break;
         case SELECT_OPEN_MULTI_FILE:
-          listener_->MultiFilesSelected(paths, params);
+          listener_->MultiFilesSelected(
+              FilePathListToSelectedFileInfoList(paths), params);
           break;
         case SELECT_NONE:
           NOTREACHED();

@@ -4,46 +4,54 @@
 
 #include "components/autofill/core/browser/form_autofill_history.h"
 
-#include "base/containers/flat_map.h"
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "url/origin.h"
 
 namespace autofill {
 
-FormAutofillHistory::AutofillHistoryEntry::AutofillHistoryEntry() = default;
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
+    std::u16string field_value,
+    bool field_is_autofilled,
+    std::optional<std::string> field_autofill_source_profile_guid,
+    std::optional<FieldType> field_autofilled_type)
+    : value(field_value),
+      is_autofilled(field_is_autofilled),
+      autofill_source_profile_guid(
+          std::move(field_autofill_source_profile_guid)),
+      autofilled_type(std::move(field_autofilled_type)) {}
 
-FormAutofillHistory::AutofillHistoryEntry::~AutofillHistoryEntry() = default;
+FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;
 
-base::flat_map<FieldGlobalId, ServerFieldType>
-FormAutofillHistory::FillOperation::GetFieldTypeMap() const {
-  return base::MakeFlatMap<FieldGlobalId, ServerFieldType>(
-      iterator_->field_history_, {}, [](const auto& field_fill_entry) {
-        const auto& [field_id, field_info] = field_fill_entry;
-        return std::make_pair(field_id, field_info.type);
-      });
-}
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
+    const FieldFillingEntry&) = default;
 
-std::pair<std::u16string, bool>
-FormAutofillHistory::FillOperation::GetAutofillValue(
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(FieldFillingEntry&&) =
+    default;
+
+const FormAutofillHistory::FieldFillingEntry&
+FormAutofillHistory::FillOperation::GetFieldFillingEntry(
     FieldGlobalId field_id) const {
-  auto it = iterator_->field_history_.find(field_id);
-  CHECK(it != iterator_->field_history_.end());
-  return {it->second.value, it->second.is_autofilled};
+  auto it = iterator_->field_filling_entries.find(field_id);
+  CHECK(it != iterator_->field_filling_entries.end());
+  return it->second;
 }
+
+FormAutofillHistory::FormFillingEntry::FormFillingEntry() = default;
+
+FormAutofillHistory::FormFillingEntry::~FormFillingEntry() = default;
 
 FormAutofillHistory::FormAutofillHistory() = default;
 
 FormAutofillHistory::~FormAutofillHistory() = default;
 
 void FormAutofillHistory::AddFormFillEntry(
-    base::span<std::pair<const FormFieldData*, const AutofillField*>>
-        filled_fields,
-    url::Origin filling_origin,
+    base::span<const FormFieldData* const> filled_fields,
+    base::span<const AutofillField* const> filled_autofill_fields,
+    FillingProduct filling_product,
     bool is_refill) {
   // Intuitively, `if (!is_refill) history_.emplace_front()` suffices, but it
   // does not handle these corner cases correctly:
@@ -51,23 +59,27 @@ void FormAutofillHistory::AddFormFillEntry(
   //   kMaxStorableFieldFillHistory`, then `history_` might be empty.
   // - If a previous fill had `filled_fields.empty()`, we could save memory.
   if (history_.empty() ||
-      (!is_refill && !history_.front().field_history_.empty())) {
+      (!is_refill && !history_.front().field_filling_entries.empty())) {
     history_.emplace_front();
   }
-  history_.front().filling_origin_ = filling_origin;
-  for (const auto& [field, autofill_field] : filled_fields) {
+
+  history_.front().filling_product = filling_product;
+  CHECK_EQ(filled_fields.size(), filled_autofill_fields.size());
+  for (size_t i = 0; i < filled_fields.size(); ++i) {
+    const FormFieldData* const field = filled_fields[i];
+    const AutofillField* const autofill_field = filled_autofill_fields[i];
     // During refills, a field that was previously filled in the original
     // fill operation, with initial value `A` and filled value `B`, might be
     // refilled with a newer value `C`. We do not store this so that upon
     // undoing Autofill, the field's value reverts from `C` to `A` directly as
     // this is what happened from a user's perspective.
     size_ += history_.front()
-                 .field_history_
+                 .field_filling_entries
                  .emplace(field->global_id(),
-                          FieldTypeAndValue{
-                              .type = autofill_field->Type().GetStorableType(),
-                              .value = field->value,
-                              .is_autofilled = field->is_autofilled})
+                          FieldFillingEntry(
+                              field->value, field->is_autofilled,
+                              autofill_field->autofill_source_profile_guid(),
+                              autofill_field->autofilled_type()))
                  .second;
   }
   // Drop the last history entry while the history size exceeds the limit.
@@ -77,7 +89,7 @@ void FormAutofillHistory::AddFormFillEntry(
 }
 
 void FormAutofillHistory::EraseFormFillEntry(FillOperation fill_operation) {
-  size_ -= fill_operation.iterator_->field_history_.size();
+  size_ -= fill_operation.iterator_->field_filling_entries.size();
   history_.erase(fill_operation.iterator_);
 }
 
@@ -85,8 +97,8 @@ FormAutofillHistory::FillOperation
 FormAutofillHistory::GetLastFillingOperationForField(
     FieldGlobalId field_id) const {
   return FillOperation(base::ranges::find_if(
-      history_, [&field_id](const AutofillHistoryEntry& operation) {
-        return operation.field_history_.contains(field_id);
+      history_, [&field_id](const FormFillingEntry& operation) {
+        return operation.field_filling_entries.contains(field_id);
       }));
 }
 

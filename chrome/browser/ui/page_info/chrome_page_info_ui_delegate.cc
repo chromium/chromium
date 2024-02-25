@@ -7,12 +7,15 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -21,6 +24,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -39,6 +43,15 @@
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
@@ -105,21 +118,22 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-absl::optional<page_info::proto::SiteInfo>
+std::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser || !browser->is_type_normal()) {
     // TODO(crbug.com/1435450): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
-        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
+        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+        AboutThisSiteTabHelper::FromWebContents(web_contents_));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl(
@@ -174,13 +188,12 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   return count > 1;
 }
 
-void ChromePageInfoUiDelegate::ShowPrivacySandboxAdPersonalization() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  chrome::ShowPrivacySandboxAdPersonalization(browser);
+void ChromePageInfoUiDelegate::OpenSiteSettingsFileSystem() {
+  chrome::ShowSiteSettingsFileSystem(GetProfile(), site_url_);
 }
 
 void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowPrivacySandboxSettings(browser);
 }
 
@@ -193,6 +206,76 @@ std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
     default:
       return {};
   }
+}
+
+bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
+    ContentSettingsType type,
+    int* text_id,
+    int* link_id) {
+#if BUILDFLAG(IS_MAC)
+  switch (type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      if (base::FeatureList::IsEnabled(
+              features::kAppShimNotificationAttribution)) {
+        // If this notification permission is associated with a locally
+        // installed web app, the corresponding app shim needs to have system
+        // level notification permission for notifications to work. If system
+        // permissions are missing, guide the user to system settings to fix
+        // this.
+        const webapps::AppId* app_id =
+            web_app::WebAppTabHelper::GetAppId(web_contents_);
+        if (!app_id) {
+          return false;
+        }
+        web_app::WebAppProvider* web_app_provider =
+            web_app::WebAppProvider::GetForLocalAppsUnchecked(GetProfile());
+        if (!web_app_provider ||
+            !web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+          return false;
+        }
+
+        // If the system permission is already granted linking to system
+        // settings doesn't really add anything. If system permissions is
+        // "not determined", there won't be a page in system settings to link
+        // to for this app, and Chrome will still be able to display a system
+        // permission prompt, so there is no reason to guide the user to system
+        // settings yet.
+        auto system_permission_status =
+            AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
+                *app_id);
+        if (system_permission_status ==
+                mac_notifications::mojom::PermissionStatus::kGranted ||
+            system_permission_status ==
+                mac_notifications::mojom::PermissionStatus::kNotDetermined) {
+          return false;
+        }
+        *text_id = IDS_PAGE_INFO_NOTIFICATIONS_SYSTEM_SETTINGS_DESCRIPTION;
+        *link_id = IDS_PAGE_INFO_SYSTEM_SETTINGS_LINK;
+        return true;
+      }
+      return false;
+    default:
+      return false;
+  }
+#else
+  return false;
+#endif
+}
+
+void ChromePageInfoUiDelegate::SettingsLinkClicked(ContentSettingsType type) {
+  CHECK_EQ(type, ContentSettingsType::NOTIFICATIONS);
+#if BUILDFLAG(IS_MAC)
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents_);
+  if (!app_id) {
+    return;
+  }
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNotifications,
+      web_app::GetBundleIdentifierForShim(*app_id));
+#else
+  NOTREACHED();
+#endif
 }
 
 bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
@@ -208,7 +291,12 @@ content::PermissionResult ChromePageInfoUiDelegate::GetPermissionResult(
           permission, url::Origin::Create(site_url_));
 }
 
-absl::optional<content::PermissionResult>
+bool ChromePageInfoUiDelegate::IsTrackingProtection3pcdEnabled() {
+  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
+      ->IsTrackingProtection3pcdEnabled();
+}
+
+std::optional<content::PermissionResult>
 ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())

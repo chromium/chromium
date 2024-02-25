@@ -1,0 +1,9 @@
+monorail: {
+  component: "Blink>Paint"
+}
+wpt: {
+  notify: YES
+}
+buganizer_public: {
+  component_id: 1456440
+}

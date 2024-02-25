@@ -13,10 +13,12 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial.h"
@@ -25,6 +27,7 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -141,6 +144,52 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  auto CheckWebUIHelpBubbleIsShowing(bool showing) {
+    return InAnyContext(CheckElement(
+        NewTabPageUI::kCustomizeChromeButtonElementId,
+        [](ui::TrackedElement* el) {
+          return el->AsA<user_education::TrackedElementWebUI>()
+              ->handler()
+              ->IsHelpBubbleShowingForTesting(el->identifier());
+        },
+        showing));
+  }
+
+  auto StartTutorial(ui::ElementIdentifier page_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
+    StateChange help_bubble_shown;
+    help_bubble_shown.where = {"ntp-app", "help-bubble"};
+    help_bubble_shown.type = StateChange::Type::kExists;
+    help_bubble_shown.event = kHelpBubbleShownEvent;
+
+    auto steps =
+        Steps(Do([this]() {
+                auto* const service = GetTutorialService();
+                service->StartTutorial(
+                    kTestTutorialId, browser()->window()->GetElementContext());
+              }),
+              WaitForStateChange(page_id, help_bubble_shown), FlushEvents());
+    AddDescription(steps, "StartTutorial( %s )");
+    return steps;
+  }
+
+  auto CancelTutorial(ui::ElementIdentifier page_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
+    StateChange help_bubble_hidden;
+    help_bubble_hidden.type = StateChange::Type::kDoesNotExist;
+    help_bubble_hidden.where = {"ntp-app", "help-bubble"};
+    help_bubble_hidden.event = kHelpBubbleHiddenEvent;
+
+    auto steps =
+        Steps(Do([this]() {
+                auto* const service = GetTutorialService();
+                service->CancelTutorialIfRunning(kTestTutorialId);
+              }),
+              WaitForStateChange(page_id, help_bubble_hidden), FlushEvents());
+    AddDescription(steps, "CancelTutorial( %s )");
+    return steps;
+  }
+
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
@@ -168,24 +217,38 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 // Regression test for crbug.com/1425161.
 IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
                        CloseTabWithTutorialBubble) {
-  constexpr char kTabCloseButtonId[] = "Tab Close Button";
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
-  StateChange help_bubble_shown;
-  help_bubble_shown.where = {"ntp-app", "help-bubble"};
-  help_bubble_shown.type = StateChange::Type::kExists;
-  help_bubble_shown.event = kHelpBubbleShownEvent;
+  constexpr char kTabCloseButtonId[] = "Tab Close Button";
   RunTestSequence(
-      AddInstrumentedTab(kNewTabPageId, GURL("chrome://new-tab-page")),
-      Do([this]() {
-        auto* const service = GetTutorialService();
-        service->StartTutorial(kTestTutorialId,
-                               browser()->window()->GetElementContext());
-      }),
-      WaitForStateChange(kNewTabPageId, help_bubble_shown), FlushEvents(),
+      AddInstrumentedTab(kNewTabPageId, GURL(chrome::kChromeUINewTabPageURL)),
+      StartTutorial(kNewTabPageId),
       NameViewRelative(kTabStripElementId, kTabCloseButtonId,
                        [](TabStrip* tab_strip) {
                          return tab_strip->tab_at(1)->close_button().get();
                        }),
       PressButton(kTabCloseButtonId), WaitForHide(kNewTabPageId));
+}
+
+// Regression test for a possible cause of crbug.com/1474307.
+IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
+                       CancelTutorialClosesBubble) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
+
+  RunTestSequence(
+      AddInstrumentedTab(kNewTabPageId, GURL("chrome://new-tab-page")),
+      StartTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(true),
+      CancelTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(false),
+      StartTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(true));
+}
+
+// Regression test for a possible cause of crbug.com/1474307.
+IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
+                       StartTutorialTwiceInARow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
+  RunTestSequence(
+      AddInstrumentedTab(kNewTabPageId, GURL("chrome://new-tab-page")),
+      StartTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(true),
+      // This should cancel the previous tutorial and close the help bubble so
+      // that the new tutorial can start immediately.
+      StartTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(true));
 }

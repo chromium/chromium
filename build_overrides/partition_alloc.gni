@@ -12,7 +12,6 @@
 # - use_allocator_shim
 # - use_partition_alloc_as_malloc
 # - enable_backup_ref_ptr_support
-# - put_ref_count_in_previous_slot
 # - enable_backup_ref_ptr_slow_checks
 # - enable_dangling_raw_ptr_checks
 # - backup_ref_ptr_poison_oob_ptr
@@ -24,10 +23,9 @@
 #
 # {variable}_default works as the default value of {variable}.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
   import("//ios/features.gni")
 }
 
@@ -73,13 +71,16 @@ if (_default_use_allocator_shim && _is_partition_alloc_everywhere_platform &&
 use_partition_alloc_as_malloc_default = _default_allocator == "partition"
 use_allocator_shim_default = _default_use_allocator_shim
 
-_is_brp_supported = (is_win || is_android || is_linux || is_mac ||
+_is_brp_supported = (is_win || is_android || is_linux || is_mac || is_ios ||
                      is_chromeos) && use_partition_alloc_as_malloc_default
 
 enable_backup_ref_ptr_support_default = _is_brp_supported
 
-put_ref_count_in_previous_slot_default = true
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default =
     enable_backup_ref_ptr_support_default && is_linux && !is_official_build &&
     (is_debug || dcheck_always_on)
+
+raw_ptr_zero_on_construct_default = true
+raw_ptr_zero_on_move_default = true
+raw_ptr_zero_on_destruct_default = false

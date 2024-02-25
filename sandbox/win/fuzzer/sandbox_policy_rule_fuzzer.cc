@@ -18,34 +18,27 @@
 // We only use the first two params so don't need more.
 constexpr size_t maxParams = 2;
 
-// This fills policies with rules based on the current
-// renderer sandbox in Chrome.
+// This fills policies with rules based on the current renderer sandbox in
+// Chrome - the point isn't to test the /sandbox/ but to fuzz the rule matching.
 std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   auto policy = std::make_unique<sandbox::PolicyBase>("");
   auto* config = policy->GetConfig();
+  CHECK(config);
 
-  auto result = config->AddRule(sandbox::SubSystem::kWin32kLockdown,
-                                sandbox::Semantics::kFakeGdiInit, nullptr);
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  auto result = config->SetFakeGdiInit();
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
-  result = config->AddRule(sandbox::SubSystem::kFiles,
-                           sandbox::Semantics::kFilesAllowAny,
-                           L"\\??\\pipe\\chrome.*");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny,
+                                   L"\\??\\pipe\\chrome.*");
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
-  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
-                           sandbox::Semantics::kNamedPipesAllowAny,
-                           L"\\\\.\\pipe\\chrome.nacl.*");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\pipe\\chrome.unused.*");
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
-  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
-                           sandbox::Semantics::kNamedPipesAllowAny,
-                           L"\\\\.\\pipe\\chrome.sync.*");
-  if (result != sandbox::SBOX_ALL_OK)
-    return nullptr;
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowAny,
+                                   L"\\??\\*.log");
+  CHECK_EQ(result, sandbox::SBOX_ALL_OK);
 
   sandbox::BrokerServicesBase::FreezeTargetConfigForTesting(
       policy->GetConfig());

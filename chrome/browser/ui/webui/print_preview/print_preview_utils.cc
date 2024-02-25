@@ -97,10 +97,10 @@ bool DpiCapabilityInvalid(const base::Value& val) {
   if (!val.is_dict())
     return true;
   const auto& dict = val.GetDict();
-  absl::optional<int> horizontal_dpi = dict.FindInt(kHorizontalDpi);
+  std::optional<int> horizontal_dpi = dict.FindInt(kHorizontalDpi);
   if (horizontal_dpi.value_or(0) <= 0)
     return true;
-  absl::optional<int> vertical_dpi = dict.FindInt(kVerticalDpi);
+  std::optional<int> vertical_dpi = dict.FindInt(kVerticalDpi);
   if (vertical_dpi.value_or(0) <= 0)
     return true;
   return false;
@@ -186,7 +186,7 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
     if (value.is_dict()) {
       base::Value::Dict option_dict;
       option_dict.Set(kOptionKey, std::move(*list_value));
-      absl::optional<bool> reset_to_default =
+      std::optional<bool> reset_to_default =
           value.GetDict().FindBool(kResetToDefaultKey);
       if (reset_to_default.has_value())
         option_dict.Set(kResetToDefaultKey, reset_to_default.value());
@@ -243,7 +243,7 @@ void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd) {
     if (!item_dict) {
       return false;
     }
-    absl::optional<bool> is_continuous = item_dict->FindBool(kIsContinuousFeed);
+    std::optional<bool> is_continuous = item_dict->FindBool(kIsContinuousFeed);
     return is_continuous.value_or(false);
   });
 }

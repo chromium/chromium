@@ -374,7 +374,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Attribute(
   CHECK_ARGS_1(property_node)
 
   std::string attribute = property_node.arguments[0].name_or_value;
-  absl::optional<std::string> value =
+  std::optional<std::string> value =
       GetIAccessible2Attribute(target, attribute);
   if (value)
     return AXOptionalObject(Target(*value));
@@ -446,43 +446,43 @@ bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(
          target.As<IAccessibleComPtr>().Get() != nullptr;
 }
 
-absl::optional<IA2TextSelection>
+std::optional<IA2TextSelection>
 AXCallStatementInvokerWin::PropertyNodeToIA2TextSelection(
     const AXPropertyNode& node) const {
   if (!node.IsDict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const AXPropertyNode* start_obj_node = node.FindKey("startObj");
   if (!start_obj_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   IA2TextComPtr start_obj =
       PropertyNodeToIAccessible<IAccessibleText>(*start_obj_node);
   if (!start_obj) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> start_offset = node.FindIntKey("startOffset");
+  std::optional<int> start_offset = node.FindIntKey("startOffset");
   if (!start_offset) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const AXPropertyNode* end_obj_node = node.FindKey("endObj");
   if (!end_obj_node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   IA2TextComPtr end_obj =
       PropertyNodeToIAccessible<IAccessibleText>(*end_obj_node);
   if (!end_obj) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> end_offset = node.FindIntKey("endOffset");
+  std::optional<int> end_offset = node.FindIntKey("endOffset");
   if (!end_offset) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   IA2TextSelection text_selection{
@@ -503,7 +503,7 @@ AXCallStatementInvokerWin::PropertyNodeToIA2TextSelectionArray(
 
   std::vector<IA2TextSelection> array;
   for (const auto& item_node : node.arguments) {
-    absl::optional<IA2TextSelection> item =
+    std::optional<IA2TextSelection> item =
         PropertyNodeToIA2TextSelection(item_node);
     if (!item) {
       return {};

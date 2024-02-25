@@ -394,8 +394,8 @@ class FencedAllocatorWrapperTest : public BaseFencedAllocatorTest {
     BaseFencedAllocatorTest::TearDown();
   }
 
-  std::unique_ptr<FencedAllocatorWrapper> allocator_;
   std::unique_ptr<char, base::AlignedFreeDeleter> buffer_;
+  std::unique_ptr<FencedAllocatorWrapper> allocator_;
 };
 
 // Checks basic alloc and free.

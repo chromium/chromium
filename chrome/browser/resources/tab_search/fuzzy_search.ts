@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {quoteString} from 'chrome://resources/js/util_ts.js';
+import {quoteString} from 'chrome://resources/js/util.js';
 import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import Fuse from './fuse.js';
-import {ItemData} from './tab_data.js';
+import type {ItemData} from './tab_data.js';
 
 export type FuzzySearchOptions<T extends ItemData> =
     Fuse.IFuseOptions<T>&{useFuzzySearch: boolean};

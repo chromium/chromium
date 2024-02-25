@@ -1,8 +1,6 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Next MinVersion: 21
 
 module crosapi.mojom;
 
@@ -12,6 +10,8 @@ import "chromeos/crosapi/mojom/ui_constants.mojom";
 // Interacts with the app service. Implemented in ash-chrome.
 // This is a generic app-publisher interface that is used by the implementation
 // for both Web Apps and Chrome Apps in Lacros.
+// Next version: 3
+// Next method id: 3
 [Stable, Uuid="238dd8e0-480e-49f4-a3a0-28e610ef7119"]
 interface AppPublisher {
   // Publish a stream of apps from lacros-chrome.
@@ -32,6 +32,8 @@ interface AppPublisher {
 
 // Interacts with the app service. Implemented in lacros-chrome and called in
 // ash-chrome.
+// Next version: 22
+// Next method id: 22
 [Stable, Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
 interface AppController {
   // Directly uninstalls |app_id| without prompting the user.
@@ -139,11 +141,17 @@ interface AppController {
   SetPermission@11(
       string app_id,
       Permission permission);
+
+  // Requests the size of an app with |app_id|. Publishers are expected to
+  // calculate and update the size of the app and publish this to App Service
+  [MinVersion=21]UpdateAppSize@21(string app_id);
 };
 
 // Interacts with the app service. Implemented in ash-chrome and called in
 // lacros-chrome. This interface will allow the browser to interact with
 // all types of apps installed in Chrome OS.
+// Next version: 21
+// Next method id: 9
 [Stable, Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
 interface AppServiceProxy {
   // Lacros exposes an AppServiceSubscriber interface to Ash. This allows Ash
@@ -203,12 +211,21 @@ interface AppServiceProxy {
   // Uninstalls |app_id| without prompting the user to confirm.
   [MinVersion=18]
   UninstallSilently@6(string app_id, UninstallSource uninstall_source);
+
+  // Requests to install an app.
+  // Doc: go/cros-app-install-sketch
+  // If InstallAppParams::Surface::kUnknown is received then a version mismatch
+  // is assumed and the request will be cancelled.
+  [MinVersion=20]
+  InstallApp@8(InstallAppParams params) => (AppInstallResult result);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in
 // ash-chrome. This interface will allow the app service to push updates to
 // the lacros-chrome so that the browser can access the app service info
 // in the same process.
+// Next version: 16
+// Next method id: 3
 [Stable, Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
 interface AppServiceSubscriber {
   // Receives a stream of apps from ash-chrome from a publisher, and save to
@@ -229,4 +246,67 @@ interface AppServiceSubscriber {
   // representation of the user's preferred apps.
   [MinVersion=15]
   InitializePreferredApps@2(array<PreferredApp> preferred_apps);
+};
+
+// Interacts with the app service. Implemented in ash-chrome.
+// This is a generic app-shortcut-publisher interface that is used by the
+// implementation for browser shortcuts and other future lacros based shortcut
+// (e.g. shortcut to a web app).
+[Stable, Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
+interface AppShortcutPublisher {
+  // Publish a stream of app shortcuts from lacros-chrome.
+  // |deltas| holds a sparse data structure that includes the update
+  // AppShortcut data from the existing shortcut state in app service.
+  PublishShortcuts@0(array<AppShortcut> deltas) => ();
+
+  // Lacros exposes an AppShortcutController interface to Ash. This allows
+  // Ash to launch, or otherwise interact with shortcuts that run in Lacros.
+  [MinVersion=1]
+  RegisterAppShortcutController@1(
+    pending_remote<AppShortcutController> controller) =>
+      (ControllerRegistrationResult result);
+
+  // Notify ash-chrome that a shortcut identified by 'shortcut_id' has been
+  // removed.
+  [MinVersion=2]
+  ShortcutRemoved@2(string shortcut_id) => ();
+};
+
+// Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome
+// and called in ash-chrome.
+[Stable, Uuid="aa20b7ea-e177-4e14-b30e-cf54d9cde94c"]
+interface AppShortcutController {
+
+  // Launches a shortcut identified by `local_shortcut_id` in the app identified
+  // by 'host_app_id`. `display_id` contains the id of the display from which
+  // the shortcut is targeted to launch. If the display id is not valid, it is
+  // expected to fallback to launch the shortcut in the primary display.
+  // Currently it is only expected to notify the caller on launch completion,
+  // regardless whether the launch is success, and we might add launch result
+  // in the callback if needed in the future.
+  [MinVersion=1]
+  LaunchShortcut@0(
+    string host_app_id, string local_shortcut_id, int64 display_id) => ();
+
+  // Requests a compressed icon data for a shortcut identified by
+  // `local_shortcut_id` in the app identified by 'host_app_id` from
+  // lacros-chrome. The icon is identified by `size_in_dip` and `scale_factor`.
+  // Calls `callback` with the result.
+  [MinVersion=2]
+  GetCompressedIcon@1(
+    string host_app_id,
+    string local_shortcut_id,
+    int32 size_in_dip,
+    ResourceScaleFactor scale_factor) => (IconValue icon_value);
+
+  // Removes a shortcut identified by `local_shortcut_id` in the app
+  // identified by 'host_app_id` without prompting the user to confirm.
+  // Currently it is only expected to notify the caller on removal completion,
+  // regardless whether the removal is success, and we might add removal result
+  // in the callback if needed in the future.
+  [MinVersion=3]
+  RemoveShortcut@2(
+    string host_app_id,
+    string local_shortcut_id,
+    UninstallSource uninstall_source) => ();
 };

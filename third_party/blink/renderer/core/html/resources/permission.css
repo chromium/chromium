@@ -1,0 +1,41 @@
+/*
+ * Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render <permission> elements
+ * (require PermissionElement enabled).
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+permission {
+  background-color:#efefef;
+  border-radius: 3px;
+  color: #000000;
+  display: inline-block;
+  height: 1.2em;
+  opacity: 1 !important;
+  outline: solid 1px #767676;
+  width: 188px;
+ }
+
+permission:granted {
+  background-color: white;
+}
+
+permission::-internal-permission-text {
+  display: inherit;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: inherit;
+  font-style: normal;
+  font-weight: 400;
+  height: 100%;
+  line-height: inherit;
+  opacity: 1 !important;
+  outline: none;
+  user-select:none !important;
+  vertical-align: inherit;
+  white-space:nowrap !important;
+  width: 100%;
+}

@@ -10,7 +10,7 @@
 namespace net {
 
 // static
-absl::optional<SharedDictionaryIsolationKey>
+std::optional<SharedDictionaryIsolationKey>
 SharedDictionaryIsolationKey::MaybeCreate(
     const net::IsolationInfo& isolation_info) {
   if (!isolation_info.frame_origin() ||
@@ -18,7 +18,7 @@ SharedDictionaryIsolationKey::MaybeCreate(
       !isolation_info.top_frame_origin() ||
       isolation_info.top_frame_origin()->opaque() ||
       isolation_info.nonce().has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return SharedDictionaryIsolationKey(
       *isolation_info.frame_origin(),
@@ -26,15 +26,15 @@ SharedDictionaryIsolationKey::MaybeCreate(
 }
 
 // static
-absl::optional<SharedDictionaryIsolationKey>
+std::optional<SharedDictionaryIsolationKey>
 SharedDictionaryIsolationKey::MaybeCreate(
     const NetworkIsolationKey& network_isolation_key,
-    const absl::optional<url::Origin>& frame_origin) {
+    const std::optional<url::Origin>& frame_origin) {
   if (!frame_origin || frame_origin->opaque() ||
       !network_isolation_key.GetTopFrameSite() ||
       network_isolation_key.GetTopFrameSite()->opaque() ||
       network_isolation_key.GetNonce().has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return SharedDictionaryIsolationKey(*frame_origin,
                                       *network_isolation_key.GetTopFrameSite());

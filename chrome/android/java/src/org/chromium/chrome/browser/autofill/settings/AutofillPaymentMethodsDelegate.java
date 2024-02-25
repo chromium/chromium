@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -38,15 +39,18 @@ class AutofillPaymentMethodsDelegate {
      * @throws IllegalStateException when called after the native delegate has been cleaned up, or
      *         if an error occurred during initialization.
      */
-    public void initVirtualCardEnrollment(long instrumentId,
+    public void initVirtualCardEnrollment(
+            long instrumentId,
             Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsLoadedCallback) {
         if (mNativeAutofillPaymentMethodsDelegate == 0) {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
-        AutofillPaymentMethodsDelegateJni.get().initVirtualCardEnrollment(
-                mNativeAutofillPaymentMethodsDelegate, instrumentId,
-                virtualCardEnrollmentFieldsLoadedCallback);
+        AutofillPaymentMethodsDelegateJni.get()
+                .initVirtualCardEnrollment(
+                        mNativeAutofillPaymentMethodsDelegate,
+                        instrumentId,
+                        virtualCardEnrollmentFieldsLoadedCallback);
     }
 
     /**
@@ -63,8 +67,10 @@ class AutofillPaymentMethodsDelegate {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
-        AutofillPaymentMethodsDelegateJni.get().enrollOfferedVirtualCard(
-                mNativeAutofillPaymentMethodsDelegate, virtualCardEnrollmentUpdateResponseCallback);
+        AutofillPaymentMethodsDelegateJni.get()
+                .enrollOfferedVirtualCard(
+                        mNativeAutofillPaymentMethodsDelegate,
+                        virtualCardEnrollmentUpdateResponseCallback);
     }
 
     /**
@@ -83,9 +89,26 @@ class AutofillPaymentMethodsDelegate {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
-        AutofillPaymentMethodsDelegateJni.get().unenrollVirtualCard(
-                mNativeAutofillPaymentMethodsDelegate, instrumentId,
-                virtualCardEnrollmentUpdateResponseCallback);
+        AutofillPaymentMethodsDelegateJni.get()
+                .unenrollVirtualCard(
+                        mNativeAutofillPaymentMethodsDelegate,
+                        instrumentId,
+                        virtualCardEnrollmentUpdateResponseCallback);
+    }
+
+    /**
+     * Calls the native deleteSavedCvcs to delete saved CVCs.
+     *
+     * @throws IllegalStateException when called after the native delegate has been cleaned up, or
+     *     if an error occurred during initialization.
+     */
+    public void deleteSavedCvcs() {
+        if (mNativeAutofillPaymentMethodsDelegate == 0) {
+            throw new IllegalStateException(
+                    "The native delegate was cleaned up or not initialized.");
+        }
+        AutofillPaymentMethodsDelegateJni.get()
+                .deleteSavedCvcs(mNativeAutofillPaymentMethodsDelegate);
     }
 
     /**
@@ -102,12 +125,23 @@ class AutofillPaymentMethodsDelegate {
     @NativeMethods
     interface Natives {
         long init(Profile profile);
+
         void cleanup(long nativeAutofillPaymentMethodsDelegate);
-        void initVirtualCardEnrollment(long nativeAutofillPaymentMethodsDelegate, long instrumentId,
+
+        void initVirtualCardEnrollment(
+                long nativeAutofillPaymentMethodsDelegate,
+                long instrumentId,
                 Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback);
-        void enrollOfferedVirtualCard(long nativeAutofillPaymentMethodsDelegate,
+
+        void enrollOfferedVirtualCard(
+                long nativeAutofillPaymentMethodsDelegate,
                 Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
-        void unenrollVirtualCard(long nativeAutofillPaymentMethodsDelegate, long instrumentId,
+
+        void unenrollVirtualCard(
+                long nativeAutofillPaymentMethodsDelegate,
+                long instrumentId,
                 Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
+
+        void deleteSavedCvcs(long nativeAutofillPaymentMethodsDelegate);
     }
 }

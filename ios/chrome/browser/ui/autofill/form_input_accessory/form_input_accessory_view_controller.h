@@ -12,8 +12,7 @@
 @class BrandingViewController;
 @protocol FormSuggestionClient;
 @class LayoutGuideCenter;
-@class ManualFillAccessoryViewController;
-@protocol ManualFillAccessoryViewControllerDelegate;
+@protocol FormInputAccessoryViewControllerDelegate;
 
 // Creates and manages a custom input accessory view while the user is
 // interacting with a form.
@@ -39,12 +38,12 @@
 
 // Instances an object with the desired delegate.
 //
-// @param manualFillAccessoryViewControllerDelegate the delegate for the actions
+// @param FormInputAccessoryViewControllerDelegate the delegate for the actions
 // in the manual fallback icons.
 // @return A fresh object with the passed delegate.
-- (instancetype)initWithManualFillAccessoryViewControllerDelegate:
-    (id<ManualFillAccessoryViewControllerDelegate>)
-        manualFillAccessoryViewControllerDelegate;
+- (instancetype)initWithFormInputAccessoryViewControllerDelegate:
+    (id<FormInputAccessoryViewControllerDelegate>)
+        formInputAccessoryViewControllerDelegate;
 
 // Unavailable
 - (instancetype)init NS_UNAVAILABLE;

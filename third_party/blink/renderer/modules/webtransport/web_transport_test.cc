@@ -6,16 +6,17 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -137,6 +139,7 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
                     void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>));
 
   MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
+  MOCK_METHOD1(GetStats, void(GetStatsCallback));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD2(Close, void(uint32_t, String));
 
@@ -245,7 +248,8 @@ class WebTransportTest : public ::testing::Test {
     handshake_client->OnConnectionEstablished(
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
-        network::mojom::blink::HttpResponseHeaders::New());
+        network::mojom::blink::HttpResponseHeaders::New(),
+        network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
   }
 
@@ -324,11 +328,13 @@ class WebTransportTest : public ::testing::Test {
         mojom::blink::WebTransportConnector::Name_, {});
   }
 
-  const BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
+  raw_ptr<const BrowserInterfaceBrokerProxy, DanglingUntriaged>
+      interface_broker_ = nullptr;
   WTF::Deque<AcceptUnidirectionalStreamCallback>
       pending_unidirectional_accept_callbacks_;
   WTF::Deque<AcceptBidirectionalStreamCallback>
       pending_bidirectional_accept_callbacks_;
+  test::TaskEnvironment task_environment_;
   WebTransportConnector connector_;
   std::unique_ptr<MockWebTransport> mock_web_transport_;
   mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
@@ -1032,7 +1038,8 @@ bool IsRangeError(ScriptState* script_state,
                ->Get(script_state->GetContext(),
                      V8AtomicString(script_state->GetIsolate(), key))
                .ToLocal(&actual) &&
-           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
+           ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
+                                                actual) == value;
   };
 
   return Has("name", "RangeError") && Has("message", message);
@@ -1605,7 +1612,7 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
 
   // Eagerly destroy the ScriptPromise as this test is using manual GC without
   // stack which is incompatible with ScriptValue.
-  absl::optional<ScriptPromise> cancel_promise;
+  std::optional<ScriptPromise> cancel_promise;
   {
     // Cancelling also creates v8 handles, so we need a new handle scope as
     // above.
@@ -1803,7 +1810,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
   EXPECT_EQ(exception->source(), "session");
-  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
+  EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
 TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
@@ -1831,7 +1838,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
   EXPECT_EQ(exception->source(), "session");
-  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
+  EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
 // BidirectionalStreams are thoroughly tested in bidirectional_stream_test.cc.
@@ -1934,7 +1941,8 @@ TEST_F(WebTransportTest, OnClosed) {
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
   web_transport->OnClosed(
-      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"));
+      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"),
+      network::mojom::blink::WebTransportStats::New());
 
   tester.WaitUntilSettled();
 
@@ -1960,7 +1968,8 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   auto* script_state = scope.GetScriptState();
   ScriptPromiseTester tester(script_state, web_transport->closed());
 
-  web_transport->OnClosed(nullptr);
+  web_transport->OnClosed(nullptr,
+                          network::mojom::blink::WebTransportStats::New());
 
   tester.WaitUntilSettled();
 

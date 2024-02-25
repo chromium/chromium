@@ -343,6 +343,11 @@ NSMenuItem* BookmarkMenuBridge::MenuItemForNode(const BookmarkNode* node) {
   return it->second;
 }
 
+NSMenuItem* BookmarkMenuBridge::MenuItemForNodeForTest(
+    const bookmarks::BookmarkNode* node) {
+  return MenuItemForNode(node);
+}
+
 void BookmarkMenuBridge::OnProfileWillBeDestroyed() {
   BuildRootMenu(/*recurse=*/true);
   profile_ = nullptr;

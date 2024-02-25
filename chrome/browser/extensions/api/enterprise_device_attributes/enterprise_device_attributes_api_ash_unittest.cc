@@ -115,7 +115,7 @@ class EnterpriseDeviceAttributesApiAshTest
   void AddUser(bool is_affiliated = true) {
     AccountId account_id = AccountId::FromUserEmail(kAccountId);
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, is_affiliated, user_manager::USER_TYPE_REGULAR,
+        account_id, is_affiliated, user_manager::UserType::kRegular,
         testing_profile_);
     user_manager_->LoginUser(account_id);
   }
@@ -141,7 +141,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDirectoryDeviceIdFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", testing_profile_);
   ASSERT_TRUE(result->is_string());
@@ -154,7 +154,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceSerialNumberFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceSerialNumberFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", testing_profile_);
   ASSERT_TRUE(result->is_string());
@@ -166,7 +166,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceAssetIdFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceAssetIdFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", testing_profile_);
   ASSERT_TRUE(result->is_string());
@@ -179,7 +179,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest,
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", testing_profile_);
   ASSERT_TRUE(result->is_string());
@@ -192,7 +192,7 @@ TEST_P(EnterpriseDeviceAttributesApiAshTest, GetDeviceHostnameFunction) {
   auto function = base::MakeRefCounted<
       EnterpriseDeviceAttributesGetDeviceHostnameFunction>();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", testing_profile_);
   ASSERT_TRUE(result->is_string());

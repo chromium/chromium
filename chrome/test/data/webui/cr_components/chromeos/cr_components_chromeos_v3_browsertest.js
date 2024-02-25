@@ -5,7 +5,7 @@
 /** @fileoverview Tests for shared Polymer 3 cr_components. */
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -16,9 +16,9 @@ GEN('#include "content/public/test/browser_test.h"');
   ['BluetoothIcon', 'bluetooth/bluetooth_icon_test.js'],
   [
     'BatteryIconPercentage',
-    'bluetooth/bluetooth_battery_icon_percentage_tests.js',
+    'bluetooth/bluetooth_battery_icon_percentage_test.js',
   ],
-  ['DeviceBatteryInfo', 'bluetooth/bluetooth_device_battery_info_tests.js'],
+  ['DeviceBatteryInfo', 'bluetooth/bluetooth_device_battery_info_test.js'],
   [
     'DeviceSelectionPage',
     'bluetooth/bluetooth_pairing_device_selection_page_test.js',
@@ -38,7 +38,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
   ['SpinnerPage', 'bluetooth/bluetooth_spinner_page_test.js'],
- ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
+ ].forEach(test => registerWebUiTest('Bluetooth', 'bluetooth-pairing', ...test));
 
 [['ApnList', 'network/apn_list_test.js'],
  ['ApnListItem', 'network/apn_list_item_test.js'],
@@ -51,6 +51,8 @@ GEN('#include "content/public/test/browser_test.h"');
  ['NetworkConfigInput', 'network/network_config_input_test.js'],
  ['NetworkConfigSelect', 'network/network_config_select_test.js'],
  ['NetworkConfigToggle', 'network/network_config_toggle_test.js'],
+ ['NetworkConfigVpnTest', 'network/network_config_vpn_test.js'],
+ ['NetworkConfigWifi', 'network/network_config_wifi_test.js'],
  ['NetworkIcon', 'network/network_icon_test.js'],
  ['NetworkIpConfig', 'network/network_ip_config_test.js'],
  ['NetworkList', 'network/network_list_test.js'],
@@ -64,14 +66,14 @@ GEN('#include "content/public/test/browser_test.h"');
  ['NetworkSelect', 'network/network_select_test.js'],
  ['NetworkSiminfo', 'network/network_siminfo_test.js'],
  ['SimLockDialogs', 'network/sim_lock_dialogs_test.js'],
-].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
+].forEach(test => registerWebUiTest('NetworkComponents', 'os-settings', ...test));
 
 [['NetworkDiagnostics', 'network_health/network_diagnostics_test.js'],
  ['RoutineGroup', 'network_health/routine_group_test.js'],
-].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
+].forEach(test => registerWebUiTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
 [['TrafficCounters', 'traffic_counters/traffic_counters_test.js'],
-].forEach(test => registerTest('TrafficCounters', 'network', ...test));
+].forEach(test => registerWebUiTest('TrafficCounters', 'network', ...test));
 
 [
  ['Integration', 'multidevice_setup/integration_test.js'],
@@ -92,26 +94,8 @@ GEN('#include "content/public/test/browser_test.h"');
  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js'],
  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js'],
  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js'],
-].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
+].forEach(test => registerWebUiTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
-
-// Prefer registerWebUiTest, which uses the non-deprecated chrome://webui-test
-// data source, for new tests.
-function registerTest(componentName, webuiHost, testName, module) {
-  const className = `${componentName}${testName}TestV3`;
-  this[className] = class extends PolymerTest {
-    /** @override */
-    get browsePreload() {
-      // TODO(jhawkins): Set up test_loader.html for internet-config-dialog
-      // and use it here instead of os-settings.
-      return `chrome://${
-          webuiHost}/test_loader.html?module=cr_components/chromeos/${
-          module}&host=test`;
-    }
-  };
-
-  TEST_F(className, 'All', () => mocha.run());
-}
 
 function registerWebUiTest(componentName, webuiHost, testName, module) {
   const className = `${componentName}${testName}TestV3`;

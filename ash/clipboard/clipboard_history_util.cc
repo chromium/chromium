@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 
 #include <array>
+#include <string_view>
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
@@ -99,14 +100,14 @@ class UnrenderedHtmlPlaceholderImage : public gfx::CanvasImageSource {
 
 }  // namespace
 
-absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+std::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data) {
   for (const auto& format : kPrioritizedFormats) {
     if (ContainsFormat(data, format)) {
       return format;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ContainsFormat(const ui::ClipboardData& data,
@@ -131,7 +132,7 @@ bool ContainsFileSystemData(const ui::ClipboardData& data) {
 }
 
 void GetSplitFileSystemData(const ui::ClipboardData& data,
-                            std::vector<base::StringPiece16>* source_list,
+                            std::vector<std::u16string_view>* source_list,
                             std::u16string* sources) {
   DCHECK(sources);
   DCHECK(sources->empty());
@@ -151,7 +152,7 @@ void GetSplitFileSystemData(const ui::ClipboardData& data,
 
 size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
   std::u16string sources;
-  std::vector<base::StringPiece16> source_list;
+  std::vector<std::u16string_view> source_list;
   GetSplitFileSystemData(data, &source_list, &sources);
 
   if (sources.empty()) {
@@ -177,12 +178,14 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
     return std::u16string();
 
   // Attempt to read file system sources in the custom data.
-  std::u16string sources;
-  ui::ReadCustomDataForType(data.custom_data_data().c_str(),
-                            data.custom_data_data().size(),
-                            kFileSystemSourcesType, &sources);
+  if (std::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
+          base::as_bytes(base::span(data.GetWebCustomData())),
+          kFileSystemSourcesType);
+      maybe_sources) {
+    return std::move(*maybe_sources);
+  }
 
-  return sources;
+  return std::u16string();
 }
 
 const gfx::VectorIcon& GetShortcutKeyIcon() {
@@ -209,7 +212,7 @@ std::u16string GetShortcutKeyName() {
 }
 
 bool IsSupported(const ui::ClipboardData& data) {
-  const absl::optional<ui::ClipboardInternalFormat> format =
+  const std::optional<ui::ClipboardInternalFormat> format =
       CalculateMainFormat(data);
 
   // Empty `data` is not supported.

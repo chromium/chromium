@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_ITEM_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_ITEM_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/text_constants.h"
@@ -61,24 +61,23 @@ class ASH_EXPORT ClipboardHistoryItem {
   crosapi::mojom::ClipboardHistoryDisplayFormat display_format() const {
     return display_format_;
   }
-  const absl::optional<ui::ImageModel>& display_image() const {
+  const std::optional<ui::ImageModel>& display_image() const {
     return display_image_;
   }
   const std::u16string& display_text() const { return display_text_; }
-  const absl::optional<gfx::ElideBehavior>& display_text_elide_behavior()
-      const {
+  const std::optional<gfx::ElideBehavior>& display_text_elide_behavior() const {
     return display_text_elide_behavior_;
   }
-  const absl::optional<size_t>& display_text_max_lines() const {
+  const std::optional<size_t>& display_text_max_lines() const {
     return display_text_max_lines_;
   }
   size_t file_count() const { return file_count_; }
-  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
-  const absl::optional<std::u16string>& secondary_display_text() const {
+  const std::optional<ui::ImageModel>& icon() const { return icon_; }
+  const std::optional<std::u16string>& secondary_display_text() const {
     return secondary_display_text_;
   }
   void set_secondary_display_text(
-      const absl::optional<std::u16string>& secondary_display_text) {
+      const std::optional<std::u16string>& secondary_display_text) {
     secondary_display_text_ = secondary_display_text;
   }
 
@@ -104,7 +103,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   // For HTML items, this will be a placeholder image until the real preview is
   // ready, at which point it will be updated. For other items, there will be no
   // value.
-  absl::optional<ui::ImageModel> display_image_;
+  std::optional<ui::ImageModel> display_image_;
 
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;
@@ -112,23 +111,23 @@ class ASH_EXPORT ClipboardHistoryItem {
   // TODO(http://b/275629173): Consider a new display format for URLs instead.
   // If present, overrides elide behavior for the text that should be displayed
   // on this item's menu entry.
-  const absl::optional<gfx::ElideBehavior> display_text_elide_behavior_;
+  const std::optional<gfx::ElideBehavior> display_text_elide_behavior_;
 
   // TODO(http://b/275629173): Consider a new display format for URLs instead.
   // If present, overrides max lines for the text that should be displayed on
   // this item's menu entry.
-  const absl::optional<size_t> display_text_max_lines_;
+  const std::optional<size_t> display_text_max_lines_;
 
   // Indicates the count of copied files in the underlying clipboard data.
   const size_t file_count_;
 
   // Cached image model for the item's icon. Currently, there will be no value
   // for non-file items.
-  const absl::optional<ui::ImageModel> icon_;
+  const std::optional<ui::ImageModel> icon_;
 
   // The text, if any, that should be displayed underneath `display_text_` on
   // this item's menu entry.
-  absl::optional<std::u16string> secondary_display_text_;
+  std::optional<std::u16string> secondary_display_text_;
 
   // Mutable to allow const access from `AddDisplayImageUpdatedCallback()`.
   mutable base::RepeatingClosureList display_image_updated_callbacks_;

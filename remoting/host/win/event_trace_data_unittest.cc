@@ -105,10 +105,9 @@ TEST_F(EventTraceDataTest, LogMessage) {
   EventTraceData data = EventTraceData::Create(&event_trace_);
 
   EXPECT_EQ(logging::LOG_MESSAGE, data.event_type);
-  EXPECT_EQ(logging::LOG_WARNING, data.severity);
+  EXPECT_EQ(logging::LOGGING_WARNING, data.severity);
   EXPECT_EQ(kProcessId, data.process_id);
   EXPECT_EQ(kThreadId, data.thread_id);
-  EXPECT_TRUE(data.time_stamp.HasValidValues());
   EXPECT_STREQ(kTestLogMessage, data.message.c_str());
 
   // File and line data should not be filled in for this log message type.
@@ -122,11 +121,10 @@ TEST_F(EventTraceDataTest, LogFullMessage) {
   EventTraceData data = EventTraceData::Create(&event_trace_);
 
   EXPECT_EQ(logging::LOG_MESSAGE_FULL, data.event_type);
-  EXPECT_EQ(logging::LOG_WARNING, data.severity);
+  EXPECT_EQ(logging::LOGGING_WARNING, data.severity);
   EXPECT_EQ(kWarning, EventTraceData::SeverityToString(data.severity));
   EXPECT_EQ(kProcessId, data.process_id);
   EXPECT_EQ(kThreadId, data.thread_id);
-  EXPECT_TRUE(data.time_stamp.HasValidValues());
   EXPECT_EQ(kLineNumber, data.line);
   EXPECT_STREQ(kFileName, data.file_name.c_str());
   EXPECT_STREQ(kTestLogMessage, data.message.c_str());

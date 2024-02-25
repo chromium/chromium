@@ -27,6 +27,12 @@ SessionRestorationWebStateObserver::~SessionRestorationWebStateObserver() {
 
 #pragma mark - web::WebStateObserver
 
+void SessionRestorationWebStateObserver::WasShown(web::WebState* web_state) {
+  // The last active time stamp is updated when a WebState is presented, so
+  // mark it as dirty so that the change is reflected in the session storage.
+  MarkDirty();
+}
+
 void SessionRestorationWebStateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -112,7 +118,7 @@ void SessionRestorationWebStateObserver::MarkDirty() {
   item_count_ = navigation_manager->GetItemCount();
   last_committed_item_index_ = navigation_manager->GetLastCommittedItemIndex();
 
-  callback_.Run(web_state_);
+  callback_.Run(web_state_.get());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SessionRestorationWebStateObserver)

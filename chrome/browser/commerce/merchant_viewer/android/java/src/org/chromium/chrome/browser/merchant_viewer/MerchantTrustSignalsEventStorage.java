@@ -7,25 +7,24 @@ package org.chromium.chrome.browser.merchant_viewer;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 
-/**
- * Provides storage for merchant trust signals events.
- */
+/** Provides storage for merchant trust signals events. */
 public class MerchantTrustSignalsEventStorage {
     private long mNativeMerchantSignalDB;
     private static boolean sSkipNativeAssertionsForTesting;
 
     MerchantTrustSignalsEventStorage(Profile profile) {
         assert !profile.isOffTheRecord()
-            : "MerchantTrustSignalsEventStorage is not supported for incognito profiles";
+                : "MerchantTrustSignalsEventStorage is not supported for incognito profiles";
         MerchantTrustSignalsEventStorageJni.get().init(this, profile);
         makeNativeAssertion();
     }
@@ -42,8 +41,8 @@ public class MerchantTrustSignalsEventStorage {
     @VisibleForTesting
     public void saveWithCallback(MerchantTrustSignalsEvent event, Runnable onComplete) {
         makeNativeAssertion();
-        MerchantTrustSignalsEventStorageJni.get().save(
-                mNativeMerchantSignalDB, event.getKey(), event.getTimestamp(), onComplete);
+        MerchantTrustSignalsEventStorageJni.get()
+                .save(mNativeMerchantSignalDB, event.getKey(), event.getTimestamp(), onComplete);
     }
 
     /**
@@ -63,8 +62,8 @@ public class MerchantTrustSignalsEventStorage {
      */
     public void loadWithPrefix(String prefix, Callback<List<MerchantTrustSignalsEvent>> callback) {
         makeNativeAssertion();
-        MerchantTrustSignalsEventStorageJni.get().loadWithPrefix(
-                mNativeMerchantSignalDB, prefix, callback);
+        MerchantTrustSignalsEventStorageJni.get()
+                .loadWithPrefix(mNativeMerchantSignalDB, prefix, callback);
     }
 
     /**
@@ -73,20 +72,18 @@ public class MerchantTrustSignalsEventStorage {
      */
     public void delete(MerchantTrustSignalsEvent event) {
         makeNativeAssertion();
-        MerchantTrustSignalsEventStorageJni.get().delete(
-                mNativeMerchantSignalDB, event.getKey(), null);
+        MerchantTrustSignalsEventStorageJni.get()
+                .delete(mNativeMerchantSignalDB, event.getKey(), null);
     }
 
     @MainThread
     public void deleteForTesting(MerchantTrustSignalsEvent event, Runnable onComplete) {
         makeNativeAssertion();
-        MerchantTrustSignalsEventStorageJni.get().delete(
-                mNativeMerchantSignalDB, event.getKey(), onComplete);
+        MerchantTrustSignalsEventStorageJni.get()
+                .delete(mNativeMerchantSignalDB, event.getKey(), onComplete);
     }
 
-    /**
-     * Delete all events from the database.
-     */
+    /** Delete all events from the database. */
     public void deleteAll() {
         makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().deleteAll(mNativeMerchantSignalDB, null);
@@ -121,12 +118,21 @@ public class MerchantTrustSignalsEventStorage {
     @NativeMethods
     interface Natives {
         void init(MerchantTrustSignalsEventStorage caller, BrowserContextHandle handle);
+
         void save(long nativeMerchantSignalDB, String key, long timestamp, Runnable onComplete);
-        void load(long nativeMerchantSignalDB, String key,
+
+        void load(
+                long nativeMerchantSignalDB,
+                String key,
                 Callback<MerchantTrustSignalsEvent> callback);
-        void loadWithPrefix(long nativeMerchantSignalDB, String prefix,
+
+        void loadWithPrefix(
+                long nativeMerchantSignalDB,
+                String prefix,
                 Callback<List<MerchantTrustSignalsEvent>> callback);
+
         void delete(long nativeMerchantSignalDB, String key, Runnable onComplete);
+
         void deleteAll(long nativeMerchantSignalDB, Runnable onComplete);
     }
 }

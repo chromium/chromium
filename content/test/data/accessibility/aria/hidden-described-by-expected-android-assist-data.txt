@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]
+++++View text:"span-A3 span-A4" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="a4"}, {aria-label="span-A3"}, {class="visible"}]
+++++View text:"span-B span-A2" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="a2"}, {aria-label="span-B"}]
+++++View text:"span-C" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-label="span-C"}]

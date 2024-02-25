@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -36,7 +37,6 @@
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
-#include "chrome/installer/setup/user_experiment.h"
 #include "chrome/installer/util/beacons.h"
 #include "chrome/installer/util/create_reg_key_work_item.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
@@ -256,28 +256,26 @@ std::string GenerateVisualElementsManifest(const base::Version& version) {
       "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
       "  <VisualElements\r\n"
       "      ShowNameOnSquare150x150Logo='on'\r\n"
-      "      Square150x150Logo='%ls\\Logo%ls.png'\r\n"
-      "      Square70x70Logo='%ls\\SmallLogo%ls.png'\r\n"
-      "      Square44x44Logo='%ls\\SmallLogo%ls.png'\r\n"
+      "      Square150x150Logo='%s\\Logo%s.png'\r\n"
+      "      Square70x70Logo='%s\\SmallLogo%s.png'\r\n"
+      "      Square44x44Logo='%s\\SmallLogo%s.png'\r\n"
       "      ForegroundText='light'\r\n"
       "      BackgroundColor='#5F6368'/>\r\n"
       "</Application>\r\n";
 
   // Construct the relative path to the versioned VisualElements directory.
-  std::wstring elements_dir(base::ASCIIToWide(version.GetString()));
-  elements_dir.push_back(base::FilePath::kSeparators[0]);
+  std::string elements_dir = version.GetString();
+  elements_dir.push_back(
+      base::checked_cast<char>(base::FilePath::kSeparators[0]));
   elements_dir.append(kVisualElements);
 
-  const std::wstring manifest_template(base::ASCIIToWide(kManifestTemplate));
-
   // Fill the manifest with the desired values.
-  const wchar_t* logo_suffix =
-      install_static::InstallDetails::Get().logo_suffix();
-  std::wstring manifest(base::StringPrintf(
-      manifest_template.c_str(), elements_dir.c_str(), logo_suffix,
-      elements_dir.c_str(), logo_suffix, elements_dir.c_str(), logo_suffix));
-
-  return base::WideToUTF8(manifest);
+  const std::string logo_suffix =
+      base::WideToUTF8(install_static::InstallDetails::Get().logo_suffix());
+  return base::StringPrintf(kManifestTemplate, elements_dir.c_str(),
+                            logo_suffix.c_str(), elements_dir.c_str(),
+                            logo_suffix.c_str(), elements_dir.c_str(),
+                            logo_suffix.c_str());
 }
 
 // Whether VisualElements assets exist for this brand and mode.
@@ -285,16 +283,16 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
                             const base::Version& version) {
   // There are no assets at all if there's no VisualElements directory.
   base::FilePath visual_elements_dir =
-      base_path.AppendASCII(version.GetString()).Append(kVisualElements);
-  if (!base::DirectoryExists(visual_elements_dir))
+      base_path.AppendASCII(version.GetString()).AppendASCII(kVisualElements);
+  if (!base::DirectoryExists(visual_elements_dir)) {
     return false;
+  }
 
 // Assets are unconditionally required if there is a VisualElements directory.
 #if DCHECK_IS_ON()
-  const wchar_t* const logo_suffix =
-      install_static::InstallDetails::Get().logo_suffix();
-  DCHECK(base::PathExists(visual_elements_dir.Append(
-      base::StringPrintf(L"Logo%ls.png", logo_suffix))));
+  DCHECK(base::PathExists(visual_elements_dir.Append(base::StrCat(
+      {L"Logo", install_static::InstallDetails::Get().logo_suffix(),
+       L".png"}))));
 #endif
 
   return true;
@@ -460,7 +458,7 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
 void RunShortcutCreationInChildProc(
     const InstallerState& installer_state,
     const base::FilePath& setup_path,
-    const absl::optional<const base::FilePath>& prefs_path,
+    const std::optional<const base::FilePath>& prefs_path,
     InstallShortcutLevel install_level,
     InstallShortcutOperation install_operation) {
   base::CommandLine command_line(setup_path);
@@ -548,8 +546,8 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
         installer_state.system_install() ? ALL_USERS : CURRENT_USER;
     RunShortcutCreationInChildProc(
         installer_state, setup_path,
-        use_initial_prefs ? absl::optional<base::FilePath>(prefs_path)
-                          : absl::nullopt,
+        use_initial_prefs ? std::optional<base::FilePath>(prefs_path)
+                          : std::nullopt,
         install_level, install_operation);
 
     // Register Chrome and, if requested, make Chrome the default browser.
@@ -711,14 +709,6 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
                                  CURRENT_USER, install_operation);
 
   UpdateDefaultBrowserBeaconForPath(installation_root.Append(kChromeExe));
-
-  // This install may have been selected into a study for a retention
-  // experiment following a successful update. In case the experiment was not
-  // able to run immediately after the update (e.g., no user was logged on at
-  // the time), try to run it now that the installer is running in the context
-  // of a user.
-  if (ShouldRunUserExperiment(installer_state))
-    BeginUserExperiment(installer_state, setup_path, true /* user_context */);
 }
 
 }  // namespace installer

@@ -1,0 +1,88 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "browser_agent_util.h",
+    "browser_agent_util.mm",
+    "browser_impl.h",
+    "browser_impl.mm",
+    "browser_util.h",
+    "browser_util.mm",
+    "browser_web_state_list_delegate.h",
+    "browser_web_state_list_delegate.mm",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/shared/model/browser" ]
+
+  deps = [
+    "//base",
+    "//components/breadcrumbs/core:status",
+    "//ios/chrome/browser/app_launcher/model",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/device_sharing/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/follow/model:browser_agent",
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
+    "//ios/chrome/browser/intents:user_activity_browser_agent",
+    "//ios/chrome/browser/iph_for_new_chrome_user/model",
+    "//ios/chrome/browser/lens/model",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/send_tab_to_self/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/sync/model:sync_error_browser_agent",
+    "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tabs/model/tab_pickup",
+    "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/view_source/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:delegate",
+    "//ios/chrome/browser/web/model:page_placeholder",
+    "//ios/chrome/browser/web_state_list/model:session_metrics",
+    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser_impl_unittest.mm",
+    "browser_util_unittest.mm",
+    "browser_web_state_list_delegate_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//ui/base:test_support",
+  ]
+}

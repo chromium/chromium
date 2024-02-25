@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
@@ -61,11 +61,11 @@ class SiteSettingsHandler
 
     // Returns the eTLD+1 that this GroupingKey represents, or nullopt if it
     // doesn't represent an eTLD+1.
-    absl::optional<std::string> GetEtldPlusOne() const;
+    std::optional<std::string> GetEtldPlusOne() const;
 
     // Returns the origin that this GroupingKey represents, or nullopt if it
     // doesn't represent an origin.
-    absl::optional<url::Origin> GetOrigin() const;
+    std::optional<url::Origin> GetOrigin() const;
 
     bool operator<(const GroupingKey& other) const;
 
@@ -102,15 +102,6 @@ class SiteSettingsHandler
   // CookiesTreeModel::Observer:
   // TODO(https://crbug.com/835712): Listen for backend data changes and notify
   // WebUI
-  void TreeNodesAdded(ui::TreeModel* model,
-                      ui::TreeModelNode* parent,
-                      size_t start,
-                      size_t count) override;
-  void TreeNodesRemoved(ui::TreeModel* model,
-                        ui::TreeModelNode* parent,
-                        size_t start,
-                        size_t count) override;
-  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override;
   void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override;
 
   // content_settings::Observer:
@@ -124,7 +115,7 @@ class SiteSettingsHandler
 
   // ObjectPermissionContextBase::PermissionObserver implementation:
   void OnObjectPermissionChanged(
-      absl::optional<ContentSettingsType> guard_content_settings_type,
+      std::optional<ContentSettingsType> guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
@@ -152,9 +143,6 @@ class SiteSettingsHandler
   // data, which will send the list of sites with cookies or usage data to
   // the front end when fetching finished.
   void HandleGetAllSites(const base::Value::List& args);
-
-  // Returns a string for display describing the current cookie settings.
-  void HandleGetCookieSettingDescription(const base::Value::List& args);
 
   // Returns a list containing the most recent permission changes for the
   // content types that are visiblein settings, grouped by origin/profile
@@ -200,7 +188,6 @@ class SiteSettingsHandler
 
   // Handles setting and resetting an origin permission.
   void HandleResetCategoryPermissionForPattern(const base::Value::List& args);
-  // TODO(1466127): Add tests for HandleSetCategoryPermissionForPattern.
   void HandleSetCategoryPermissionForPattern(const base::Value::List& args);
 
   // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
@@ -242,8 +229,8 @@ class SiteSettingsHandler
  private:
   friend class SiteSettingsHandlerBaseTest;
   friend class SiteSettingsHandlerInfobarTest;
-  // TODO(crbug.com/1373962): Remove this friend class when
-  // Persistent Permissions is launched.
+  // TODO(crbug.com/1011533): Remove this friend class when the Persistent
+  // Permissions feature flag is removed.
   friend class PersistentPermissionsSiteSettingsHandlerTest;
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
@@ -265,7 +252,7 @@ class SiteSettingsHandler
   // stores the information in the |all_sites_map| and |host_cookie_map|.
   void GetHostCookies(
       AllSitesMap* all_sites_map,
-      std::map<std::pair<std::string, absl::optional<std::string>>, int>*
+      std::map<std::pair<std::string, std::optional<std::string>>, int>*
           host_cookie_map);
 
   // Returns a list of content settings types that are controlled via a standard
@@ -297,15 +284,11 @@ class SiteSettingsHandler
   // Gets a plural string for the given number of cookies.
   void HandleGetNumCookiesString(const base::Value::List& args);
 
-  // Provides an opportunity for site data which is not integrated into the
-  // tree model to be removed when entries for |origins| are removed.
+  // Provides an opportunity for site data which is not integrated into a model
+  // to be removed when entries for |origins| are removed.
   // TODO(crbug.com/1271155): This function is a temporary hack while the
   // CookiesTreeModel is deprecated.
-  void RemoveNonTreeModelData(const std::vector<url::Origin>& origins);
-
-  // Notifies the JS side the effective cookies setting has changed and
-  // provides the updated description label for display.
-  void SendCookieSettingDescription();
+  void RemoveNonModelData(const std::vector<url::Origin>& origins);
 
   // Returns a dictionary containing the lists of the allowed permission
   // grant objects granted via the File System Access API, per origin.

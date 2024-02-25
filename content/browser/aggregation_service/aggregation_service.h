@@ -56,7 +56,7 @@ class CONTENT_EXPORT AggregationService {
 
   // Constructs an AggregatableReport from the information in `report_request`.
   // `callback` will be run once completed which returns the assembled report
-  // if successful, otherwise `absl::nullopt` will be returned.
+  // if successful, otherwise `std::nullopt` will be returned.
   virtual void AssembleReport(AggregatableReportRequest report_request,
                               AssemblyCallback callback) = 0;
 

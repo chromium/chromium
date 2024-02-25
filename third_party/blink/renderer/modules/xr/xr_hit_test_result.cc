@@ -22,8 +22,8 @@ XRHitTestResult::XRHitTestResult(
     : session_(session),
       mojo_from_this_(hit_result.mojo_from_result),
       plane_id_(hit_result.plane_id != 0
-                    ? absl::optional<uint64_t>(hit_result.plane_id)
-                    : absl::nullopt) {}
+                    ? std::optional<uint64_t>(hit_result.plane_id)
+                    : std::nullopt) {}
 
 XRPose* XRHitTestResult::getPose(XRSpace* other,
                                  ExceptionState& exception_state) {
@@ -70,7 +70,7 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
   // (their poses may change dramatically on a frame-by-frame basis). Grab an
   // information about reference space that is well-suited for anchor creation
   // from session:
-  absl::optional<XRSession::ReferenceSpaceInformation>
+  std::optional<XRSession::ReferenceSpaceInformation>
       reference_space_information = session_->GetStationaryReferenceSpace();
 
   if (!reference_space_information) {

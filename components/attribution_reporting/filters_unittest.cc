@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 namespace {
@@ -82,13 +82,13 @@ const base::Time kTriggerTime = kSourceTime + base::Seconds(5);
 
 const struct {
   const char* description;
-  absl::optional<base::Value> json;
+  std::optional<base::Value> json;
   base::expected<FilterData, SourceRegistrationError> expected_filter_data;
   base::expected<FiltersDisjunction, TriggerRegistrationError> expected_filters;
 } kParseTestCases[] = {
     {
         "Null",
-        absl::nullopt,
+        std::nullopt,
         FilterData(),
         FiltersDisjunction(),
     },
@@ -135,6 +135,14 @@ const struct {
             {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
     },
     {
+        "reserved_key",
+        base::test::ParseJson(R"json({
+          "_some_key": ["a"]
+        })json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        base::unexpected(TriggerRegistrationError::kFiltersUsingReservedKey),
+    },
+    {
         "lookback_window_list",
         base::test::ParseJson(R"json({"_lookback_window": ["a"]})json"),
         base::unexpected(
@@ -170,7 +178,7 @@ const struct {
 
 const struct {
   const char* description;
-  absl::optional<base::Value> json;
+  std::optional<base::Value> json;
   SourceRegistrationError expected_filter_data_error;
 } kSizeTestCases[] = {
     {
@@ -214,18 +222,18 @@ TEST(FilterDataTest, Create_LimitsFilterCount) {
 
 TEST(FilterDataTest, FromJSON) {
   for (auto& test_case : kParseTestCases) {
-    absl::optional<base::Value> json_copy =
-        test_case.json ? absl::make_optional(test_case.json->Clone())
-                       : absl::nullopt;
+    std::optional<base::Value> json_copy =
+        test_case.json ? std::make_optional(test_case.json->Clone())
+                       : std::nullopt;
     EXPECT_EQ(FilterData::FromJSON(base::OptionalToPtr(json_copy)),
               test_case.expected_filter_data)
         << test_case.description;
   }
 
   for (auto& test_case : kSizeTestCases) {
-    absl::optional<base::Value> json_copy =
-        test_case.json ? absl::make_optional(test_case.json->Clone())
-                       : absl::nullopt;
+    std::optional<base::Value> json_copy =
+        test_case.json ? std::make_optional(test_case.json->Clone())
+                       : std::nullopt;
     EXPECT_THAT(FilterData::FromJSON(base::OptionalToPtr(json_copy)),
                 base::test::ErrorIs(test_case.expected_filter_data_error))
         << test_case.description;
@@ -256,7 +264,7 @@ TEST(FilterDataTest, FromJSON_RecordsMetrics) {
   using ::base::Bucket;
   using ::testing::ElementsAre;
 
-  absl::optional<base::Value> json = base::test::ParseJson(R"json({
+  std::optional<base::Value> json = base::test::ParseJson(R"json({
       "a": ["1", "2", "3"],
       "b": [],
       "c": ["4"],
@@ -276,22 +284,24 @@ TEST(FilterDataTest, FromJSON_RecordsMetrics) {
 
 TEST(FiltersTest, FromJSON) {
   for (auto& test_case : kParseTestCases) {
-    absl::optional<base::Value> json_copy =
-        test_case.json ? absl::make_optional(test_case.json->Clone())
-                       : absl::nullopt;
+    SCOPED_TRACE(test_case.description);
+
+    std::optional<base::Value> json_copy =
+        test_case.json ? std::make_optional(test_case.json->Clone())
+                       : std::nullopt;
     EXPECT_EQ(FiltersFromJSONForTesting(base::OptionalToPtr(json_copy)),
-              test_case.expected_filters)
-        << test_case.description;
+              test_case.expected_filters);
   }
 
   for (auto& test_case : kSizeTestCases) {
-    absl::optional<base::Value> json_copy =
-        test_case.json ? absl::make_optional(test_case.json->Clone())
-                       : absl::nullopt;
+    SCOPED_TRACE(test_case.description);
+
+    std::optional<base::Value> json_copy =
+        test_case.json ? std::make_optional(test_case.json->Clone())
+                       : std::nullopt;
 
     auto result = FiltersFromJSONForTesting(base::OptionalToPtr(json_copy));
-    EXPECT_TRUE(result.has_value())
-        << test_case.description << ": " << result.error();
+    EXPECT_TRUE(result.has_value()) << result.error();
   }
 
   {
@@ -428,7 +438,7 @@ TEST(FilterDataTest, EmptyOrMissingAttributionFilters) {
   // Behavior should match for negated and non-negated filters as it
   // requires a value on each side.
   for (const auto& test_case : kTestCases) {
-    absl::optional<FilterData> filter_data =
+    std::optional<FilterData> filter_data =
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
@@ -491,7 +501,7 @@ TEST(FilterDataTest, AttributionFilterDataMatch) {
        false},
   };
   for (const auto& test_case : kTestCases) {
-    absl::optional<FilterData> filter_data =
+    std::optional<FilterData> filter_data =
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
@@ -635,7 +645,7 @@ TEST(FilterDataTest, NegatedAttributionFilterDataMatch) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<FilterData> filter_data =
+    std::optional<FilterData> filter_data =
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
@@ -878,6 +888,21 @@ TEST(FilterDataTest, AttributionFilterDataMatch_LookbackWindow) {
                                test_case.filters, test_case.negated))
         << test_case.description;
   }
+}
+
+// TODO(https://crbug.com/1486496): remove this test once CHECK is used in the
+// implementation.
+TEST(FilterDataTest,
+     AttributionFilterDataMatch_SourceTimeGreaterThanTriggerTime) {
+  const auto one_filter = FilterValues({{"filter1", {"value1"}}});
+  const auto filter_data = *FilterData::Create(one_filter);
+  const auto filters = FiltersDisjunction({*FilterConfig::Create(
+      {one_filter}, /*lookback_window=*/kTriggerTime - kSourceTime)});
+  EXPECT_TRUE(FilterData(filter_data)
+                  .MatchesForTesting(
+                      SourceType::kEvent, kSourceTime,
+                      /*trigger_time=*/kSourceTime - base::Microseconds(1),
+                      filters, /*negated=*/false));
 }
 
 }  // namespace

@@ -44,12 +44,12 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Width/Height are used by container relative units (qi, qb, etc).
   //
-  // A return value of absl::nullopt normally means that the relevant axis
+  // A return value of std::nullopt normally means that the relevant axis
   // doesn't have effective containment (e.g. elements with display:table).
   //
   // https://drafts.csswg.org/css-contain-2/#containment-size
-  absl::optional<double> Width() const;
-  absl::optional<double> Height() const;
+  std::optional<double> Width() const;
+  std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
   bool DependsOnStyle() const { return depends_on_style_; }
 

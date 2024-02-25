@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/models/menu_model.h"
@@ -77,6 +78,10 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
   ASSERT_TRUE(RunExtensionTest("context_menus/event_page")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType, Count) {
+  ASSERT_TRUE(RunExtensionTest("context_menus/count")) << message_;
 }
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
@@ -217,7 +222,7 @@ class ExtensionContextMenuVisibilityApiTest
   RAW_PTR_EXCLUSION ui::MenuModel* top_level_model_ = nullptr;
 
  private:
-  content::WebContents* GetBackgroundPage(const std::string& extension_id) {
+  content::WebContents* GetBackgroundPage(const ExtensionId& extension_id) {
     return process_manager()
         ->GetBackgroundHostForExtension(extension_id)
         ->host_contents();

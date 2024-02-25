@@ -16,7 +16,8 @@ namespace gpu::webgpu {
 class DawnPlatform : public dawn::platform::Platform {
  public:
   explicit DawnPlatform(
-      std::unique_ptr<DawnCachingInterface> dawn_caching_interface = nullptr);
+      std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
+      const char* uma_prefix);
   ~DawnPlatform() override;
 
   const unsigned char* GetTraceCategoryEnabledFlag(
@@ -60,7 +61,11 @@ class DawnPlatform : public dawn::platform::Platform {
   std::unique_ptr<dawn::platform::WorkerTaskPool> CreateWorkerTaskPool()
       override;
 
+  bool IsFeatureEnabled(dawn::platform::Features feature) override;
+
+ private:
   std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
+  std::string uma_prefix_;
 };
 
 }  // namespace gpu::webgpu

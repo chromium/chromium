@@ -5,7 +5,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_OUTLINEITEM name='Checked illegal' CHECKED IA2_STATE_CHECKABLE checkable:true
 ++ROLE_SYSTEM_GROUPING name='Current illegal' current:true
 ++ROLE_SYSTEM_GROUPING name='Disabled illegal' UNAVAILABLE
-++ROLE_SYSTEM_GROUPING name='Dropeffect illegal' dropeffect:none
 ++ROLE_SYSTEM_OUTLINEITEM name='Expanded illegal' EXPANDED
 ++ROLE_SYSTEM_GROUPING name='Grabbed illegal'
 ++ROLE_SYSTEM_PUSHBUTTON name='Haspopup illegal'

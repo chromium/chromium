@@ -16,6 +16,32 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+// Test SettingsRootTableViewController subclass that conformfs to
+// SettingsControllerProtocol. Used to test that 'settingsWillBeDismissed' is
+// called at the right time.
+@interface FakeSettingsRootTableViewController
+    : SettingsRootTableViewController <SettingsControllerProtocol>
+
+@property(nonatomic, assign) BOOL settingsWillBeDismissedCalled;
+
+@end
+
+@implementation FakeSettingsRootTableViewController
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+}
+
+- (void)reportBackUserAction {
+}
+
+- (void)settingsWillBeDismissed {
+  _settingsWillBeDismissedCalled = YES;
+}
+
+@end
+
 class SettingsRootTableViewControllerTest : public PlatformTest {
  public:
   SettingsRootTableViewController* Controller() {
@@ -132,4 +158,25 @@ TEST_F(SettingsRootTableViewControllerTest, TestDeleteToolbar) {
       didDeselectRowAtIndexPath:testIndexPath];
   EXPECT_TRUE(navigationController.toolbarHidden);
   [navigationController cleanUpSettings];
+}
+
+// Tests that a subclass of SettingsRootViewController that implements the
+// SettingsControllerProtocol does not have its implementation of
+// 'settingsWillBeDismissed' called when 'willMoveToParentViewController' is
+// triggered. 'settingsWillBeDismissed' should only be called when
+// 'didMoveToParentViewController' is triggered. Otherwise, a crash may occur as
+// some of the subclass objects can be reset before the subclass is deallocated.
+// A call to 'willMoveToParentViewController' does not necessarily mean that the
+// view controller will be removed from the navigation stack.
+TEST_F(SettingsRootTableViewControllerTest,
+       TestSettingsWillBeDismissedCallTiming) {
+  FakeSettingsRootTableViewController* controller =
+      [[FakeSettingsRootTableViewController alloc]
+          initWithStyle:UITableViewStylePlain];
+
+  [controller willMoveToParentViewController:nil];
+  EXPECT_FALSE(controller.settingsWillBeDismissedCalled);
+
+  [controller didMoveToParentViewController:nil];
+  EXPECT_TRUE(controller.settingsWillBeDismissedCalled);
 }

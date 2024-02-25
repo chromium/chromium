@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/settings/about_flags.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/account_id/account_id.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -178,9 +180,8 @@ bool FeatureFlagsUpdate::DiffersFromCommandLine(
   auto lookup = [](const std::map<std::string, std::string>& origin_list_flags,
                    const std::string& key) {
     const auto entry = origin_list_flags.find(key);
-    return entry == origin_list_flags.end()
-               ? absl::nullopt
-               : absl::make_optional(entry->second);
+    return entry == origin_list_flags.end() ? std::nullopt
+                                            : std::make_optional(entry->second);
   };
   const auto cmdline_origin_list_flags =
       ParseOriginListFlagsFromCommmandLine(cmdline);
@@ -216,7 +217,7 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
           ::prefs::kLacrosLaunchSwitch);
   if (lacros_launch_switch_pref->IsManaged()) {
     // If there's the value, convert it into the feature name.
-    base::StringPiece value =
+    std::string_view value =
         ash::standalone_browser::GetLacrosAvailabilityPolicyName(
             static_cast<ash::standalone_browser::LacrosAvailability>(
                 lacros_launch_switch_pref->GetValue()->GetInt()));
@@ -224,7 +225,7 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
         << "The unexpect value is set to LacrosAvailability: "
         << lacros_launch_switch_pref->GetValue()->GetInt();
     auto* entry = ::about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
-        crosapi::browser_util::kLacrosAvailabilityPolicyInternalName);
+        ash::standalone_browser::kLacrosAvailabilityPolicyInternalName);
     DCHECK(entry);
     int index;
     for (index = 0; index < entry->NumOptions(); ++index) {

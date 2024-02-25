@@ -5,6 +5,7 @@
 #include "device/fido/fido_device_authenticator.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +26,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -36,7 +36,7 @@ using GetAssertionCallback = device::test::StatusAndValueCallbackReceiver<
     std::vector<AuthenticatorGetAssertionResponse>>;
 using PinCallback = device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    absl::optional<pin::TokenResponse>>;
+    std::optional<pin::TokenResponse>>;
 using GarbageCollectionCallback =
     device::test::ValueCallbackReceiver<CtapDeviceResponseCode>;
 using TouchCallback = device::test::TestCallbackReceiver<>;
@@ -313,7 +313,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
 // key set.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobNoLargeBlobKey) {
   for (auto& registration : virtual_device_->mutable_state()->registrations) {
-    registration.second.large_blob_key = absl::nullopt;
+    registration.second.large_blob_key = std::nullopt;
   }
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);
   EXPECT_FALSE(write.large_blob_written);

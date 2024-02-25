@@ -1,0 +1,73 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<enum name="FederatedClientEvent">
+  <int value="0" label="kExampleReceived"/>
+  <int value="1" label="kGetExampleIteratorError"/>
+  <int value="2" label="kGetNextExampleError"/>
+  <int value="3" label="kUnsatisfiedConditionAbort"/>
+  <int value="4" label="kContributed"/>
+  <int value="5" label="kRejected"/>
+  <int value="6" label="kTaskFailedUnknownError"/>
+  <int value="7" label="kTaskTimeoutAbort"/>
+  <int value="8" label="kExampleSelectorCriteriaParsingError"/>
+  <int value="9" label="kTaskNameEmptyError"/>
+  <int value="10" label="kGetNextExampleInvalidArgumentError"/>
+</enum>
+
+<enum name="FederatedServiceEvent">
+  <int value="0" label="kLibraryLoadingSuccess"/>
+  <int value="1" label="kDlcAlreadyInstalled"/>
+  <int value="2" label="kDlcInstallTriggered"/>
+  <int value="3" label="kDlcNewlyInstalled"/>
+  <int value="4" label="kDlcKnownError"/>
+  <int value="5" label="kDlcUnknownError"/>
+  <int value="6" label="kInvalidLibraryError"/>
+  <int value="7" label="kFunctionMissingError"/>
+  <int value="8" label="kTaskSkipped"/>
+</enum>
+
+<enum name="FederatedStorageEvent">
+  <int value="0" label="kConnected"/>
+  <int value="1" label="kDisconnected"/>
+  <int value="2" label="kEmptyUsernameError"/>
+  <int value="3" label="kDbInitError"/>
+  <int value="4" label="kDbIntegrityCheckError"/>
+  <int value="5" label="kDbCleanOutdatedDataError"/>
+</enum>
+
+<enum name="FederatedTrainingConditionResult">
+  <int value="0" label="kPass"/>
+  <int value="1" label="kFailed"/>
+  <int value="2" label="kLowBattery"/>
+  <int value="3" label="kBatterySaverMode"/>
+  <int value="4" label="kMeteredNetwork"/>
+  <int value="5" label="kMemoryPressureHigh"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

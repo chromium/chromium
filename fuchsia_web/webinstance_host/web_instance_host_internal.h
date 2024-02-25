@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 class CommandLine;

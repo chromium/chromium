@@ -8,10 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("heatmap") {
   sources = [
-    "heatmap_ml_agent.cc",
-    "heatmap_ml_agent.h",
-    "heatmap_palm_detector.cc",
-    "heatmap_palm_detector.h",
+    "heatmap_palm_detector_impl.cc",
+    "heatmap_palm_detector_impl.h",
   ]
 
   deps = [
@@ -19,17 +17,14 @@ source_set("heatmap") {
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//mojo/public/cpp/bindings",
-    "//ui/ozone",
+    "//ui/events/ozone/evdev",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "heatmap_ml_agent_unittest.cc",
-    "heatmap_palm_detector_unittest.cc",
-  ]
+  sources = [ "heatmap_palm_detector_impl_unittest.cc" ]
 
   deps = [
     ":heatmap",

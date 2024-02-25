@@ -32,9 +32,8 @@ class View;
 // `SkiaGoldPixelDiff::Init()` for more details.
 class ViewSkiaGoldPixelDiff {
  public:
-  explicit ViewSkiaGoldPixelDiff(
-      const std::string& screenshot_prefix,
-      const absl::optional<std::string>& corpus = {});
+  explicit ViewSkiaGoldPixelDiff(const std::string& screenshot_prefix,
+                                 const std::optional<std::string>& corpus = {});
 
   ViewSkiaGoldPixelDiff(const ViewSkiaGoldPixelDiff&) = delete;
   ViewSkiaGoldPixelDiff& operator=(const ViewSkiaGoldPixelDiff&) = delete;

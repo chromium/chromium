@@ -36,8 +36,8 @@ class WebGPURecyclableResourceCacheTest : public testing::Test {
 void WebGPURecyclableResourceCacheTest::SetUp() {
   Platform::SetMainThreadTaskRunnerForTesting();
   test_context_provider_ = viz::TestContextProvider::Create();
-  InitializeSharedGpuContext(test_context_provider_.get(),
-                             &image_decode_cache_);
+  InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                  &image_decode_cache_);
 
   recyclable_resource_cache_ = std::make_unique<WebGPURecyclableResourceCache>(
       SharedGpuContext::ContextProviderWrapper(),

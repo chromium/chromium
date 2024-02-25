@@ -25,7 +25,7 @@ namespace views {
 ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
     : ui::AXTreeManager(std::make_unique<ui::AXTree>()),
       widget_(widget),
-      tree_source_(cache_.GetOrCreate(widget),
+      tree_source_(cache_.GetOrCreate(widget)->GetUniqueId(),
                    ui::AXTreeID::CreateNewAXTreeID(),
                    &cache_),
       tree_serializer_(&tree_source_) {
@@ -159,7 +159,7 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
   for (const ui::AXEventGenerator::TargetedEvent& targeted_event :
        event_generator_) {
     if (ui::AXNode* node = ax_tree_->GetFromId(targeted_event.node_id))
-      FireGeneratedEvent(targeted_event.event_params.event, node);
+      FireGeneratedEvent(targeted_event.event_params->event, node);
   }
   event_generator_.ClearEvents();
 }

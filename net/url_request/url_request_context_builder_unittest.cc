@@ -101,8 +101,12 @@ class URLRequestContextBuilderTest : public PlatformTest,
   URLRequestContextBuilderTest() {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("net/data/url_request_unittest")));
+    SetUpURLRequestContextBuilder(builder_);
+  }
+
+  void SetUpURLRequestContextBuilder(URLRequestContextBuilder& builder) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    builder_.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
+    builder.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
         ProxyConfigWithAnnotation::CreateDirect()));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
@@ -125,7 +129,7 @@ TEST_F(URLRequestContextBuilderTest, DefaultSettings) {
   request->set_method("GET");
   request->SetExtraRequestHeaderByName("Foo", "Bar", false);
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
@@ -140,7 +144,7 @@ TEST_F(URLRequestContextBuilderTest, UserAgent) {
       &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->set_method("GET");
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
@@ -289,9 +293,9 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   std::unique_ptr<URLRequestContext> context(builder_.Build());
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      context->host_resolver()->CreateRequest(
-          HostPortPair("example.com", 1234), NetworkAnonymizationKey(),
-          NetLogWithSource(), absl::nullopt);
+      context->host_resolver()->CreateRequest(HostPortPair("example.com", 1234),
+                                              NetworkAnonymizationKey(),
+                                              NetLogWithSource(), std::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
   ASSERT_TRUE(state->has_pending_requests());
@@ -311,8 +315,12 @@ TEST_F(URLRequestContextBuilderTest, DefaultHostResolver) {
       HostResolver::ManagerOptions(), nullptr /* system_dns_config_notifier */,
       nullptr /* net_log */);
 
-  builder_.set_host_resolver_manager(manager.get());
-  std::unique_ptr<URLRequestContext> context = builder_.Build();
+  // Use a stack allocated builder instead of `builder_` to avoid dangling
+  // pointer of `manager`.
+  URLRequestContextBuilder builder;
+  SetUpURLRequestContextBuilder(builder);
+  builder.set_host_resolver_manager(manager.get());
+  std::unique_ptr<URLRequestContext> context = builder.Build();
 
   EXPECT_EQ(context.get(), context->host_resolver()->GetContextForTesting());
   EXPECT_EQ(manager.get(), context->host_resolver()->GetManagerForTesting());

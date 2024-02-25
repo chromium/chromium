@@ -58,31 +58,48 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
         int forceDarkMode = awSettings.getForceDarkMode();
         int forceDarkBehavior = awSettings.getForceDarkBehavior();
         int textLuminance = DarkModeHelper.getPrimaryTextLuminace(context);
-        recordDarkModeMetrics(nightMode, lightTheme, isForceDarkApplied, forceDarkMode,
-                forceDarkBehavior, textLuminance);
+        recordDarkModeMetrics(
+                nightMode,
+                lightTheme,
+                isForceDarkApplied,
+                forceDarkMode,
+                forceDarkBehavior,
+                textLuminance);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void recordDarkModeMetrics(int nightMode, int lightTheme,
-            boolean isForceDarkApplied, int forceDarkMode, int forceDarkBehavior,
+    public static void recordDarkModeMetrics(
+            int nightMode,
+            int lightTheme,
+            boolean isForceDarkApplied,
+            int forceDarkMode,
+            int forceDarkBehavior,
             int textLuminance) {
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.ForceDarkBehavior",
-                forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.ForceDarkMode",
-                forceDarkMode, AwSettings.FORCE_DARK_MODES_COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.ForceDarkBehavior",
+                forceDarkBehavior,
+                AwSettings.FORCE_DARK_STRATEGY_COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.ForceDarkMode",
+                forceDarkMode,
+                AwSettings.FORCE_DARK_MODES_COUNT);
         RecordHistogram.recordBooleanHistogram(
                 "Android.WebView.DarkMode.InDarkMode", isForceDarkApplied);
         // Refer to WebViewInDarkModeVsLightTheme in enums.xml.
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.InDarkModeVsLightTheme",
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.InDarkModeVsLightTheme",
                 (isForceDarkApplied ? 0 : 1) * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT
                         + lightTheme,
                 2 * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
         // Refer to WebViewInDarkModeVsNightMode in enums.xml.
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.InDarkModeVsNightMode",
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.InDarkModeVsNightMode",
                 (isForceDarkApplied ? 0 : 1) * DarkModeHelper.NightMode.NIGHT_MODE_COUNT
                         + nightMode,
                 2 * DarkModeHelper.NightMode.NIGHT_MODE_COUNT);
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.LightTheme", lightTheme,
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.LightTheme",
+                lightTheme,
                 DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme",
@@ -94,9 +111,12 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 textLuminance * DarkModeHelper.NightMode.NIGHT_MODE_COUNT + nightMode,
                 DarkModeHelper.TextLuminance.TEXT_LUMINACE_COUNT
                         * DarkModeHelper.NightMode.NIGHT_MODE_COUNT);
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.NightMode", nightMode,
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.NightMode",
+                nightMode,
                 DarkModeHelper.NightMode.NIGHT_MODE_COUNT);
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.NightModeVsLightTheme",
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DarkMode.NightModeVsLightTheme",
                 nightMode * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT + lightTheme,
                 DarkModeHelper.NightMode.NIGHT_MODE_COUNT
                         * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
@@ -112,16 +132,21 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
     }
 
     public static void recordForceDarkModeAPIUsage(Context context, int forceDarkMode) {
-        int value = DarkModeHelper.getNightMode(context) * AwSettings.FORCE_DARK_MODES_COUNT
-                + forceDarkMode;
+        int value =
+                DarkModeHelper.getNightMode(context) * AwSettings.FORCE_DARK_MODES_COUNT
+                        + forceDarkMode;
         System.out.println("recordForce value " + value);
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ForceDarkMode", value,
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.ForceDarkMode",
+                value,
                 DarkModeHelper.NightMode.NIGHT_MODE_COUNT * AwSettings.FORCE_DARK_MODES_COUNT);
     }
 
     public static void recordForceDarkBehaviorAPIUsage(@ForceDarkBehavior int forceDarkBehavior) {
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ForceDarkBehavior",
-                forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.ForceDarkBehavior",
+                forceDarkBehavior,
+                AwSettings.FORCE_DARK_STRATEGY_COUNT);
     }
 
     public static void recordRequestedWithHeaderModeAPIUsage(@NonNull Set<String> originAllowList) {
@@ -132,7 +157,8 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
 
     public static void recordRequestedWithHeaderModeServiceWorkerAPIUsage(
             @NonNull Set<String> originAllowList) {
-        RecordHistogram.recordCount1000Histogram("Android.WebView.RequestedWithHeader."
+        RecordHistogram.recordCount1000Histogram(
+                "Android.WebView.RequestedWithHeader."
                         + "SetServiceWorkerRequestedWithHeaderModeAllowListSize",
                 originAllowList.size());
     }

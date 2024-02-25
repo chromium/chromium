@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/capture_mode/base_capture_mode_session.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
@@ -117,13 +117,9 @@ gfx::Rect BaseCaptureModeSession::GetCaptureSurfaceConfineBounds() const {
           .work_area();
     }
     case CaptureModeSource::kWindow: {
-      // When the surface being captured is a window, on-capture-surface UI
-      // elements, such as the selfie camera or the demo tools key combo widget,
-      // need to be confined within the *local* bounds of this window, since
-      // they are added as direct children of the window so that they can get
-      // captured.
       auto* selected_window = GetSelectedWindow();
-      return selected_window ? gfx::Rect(selected_window->bounds().size())
+      return selected_window ? capture_mode_util::GetCaptureWindowConfineBounds(
+                                   selected_window)
                              : gfx::Rect();
     }
     case CaptureModeSource::kRegion: {
@@ -163,6 +159,10 @@ void BaseCaptureModeSession::MaybeUpdateSelfieCamInSessionVisibility() {
   if (!controller_->is_recording_in_progress()) {
     camera_controller->SetShouldShowPreview(controller_->type() ==
                                             CaptureModeType::kVideo);
+    // The selfie camera may have already been visible from before, but had the
+    // wrong parent and now needs to be updated (e.g. due to a change in the
+    // capture type).
+    camera_controller->MaybeReparentPreviewWidget();
   }
 }
 

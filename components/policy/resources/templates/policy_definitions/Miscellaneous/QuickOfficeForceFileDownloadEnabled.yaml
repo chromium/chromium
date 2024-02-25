@@ -1,0 +1,27 @@
+caption: Force downloading of Office documents (e.g. .docx) instead of opening them in the <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>
+default: true
+default_for_enterprise_users: false
+desc: |-
+  When enabled, this policy forces navigations to any Office documents with a MIME type normally handled by the <ph name="BASIC_EDITOR_NAME">Basic Editor</ph> to download the file.
+
+  If the policy is disabled then these documents will instead be automatically opened in the <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>.
+
+  Leaving this policy unset for regular users is functionally equivalent to it being enabled (i.e. files will be downloaded); leaving the policy unset for enterprise users is functionally equivalent to it being disabled (i.e. files will be opened in the <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>).
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: When navigating to Office documents handled by <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>, force them to be downloaded
+  value: true
+- caption: When navigating to Office documents handled by <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>, open them in <ph name="BASIC_EDITOR_NAME">Basic Editor</ph>
+  value: false
+owners:
+- simmonsjosh@google.com
+- file://ui/file_manager/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:118-
+tags: []
+type: main

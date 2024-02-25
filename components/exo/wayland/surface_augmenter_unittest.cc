@@ -4,6 +4,7 @@
 
 #include <surface-augmenter-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
+#include "build/build_config.h"
 
 #include "base/memory/raw_ptr.h"
 #include "components/exo/shell_surface_util.h"
@@ -35,10 +36,9 @@ class ClientData : public test::TestClient::CustomData {
   std::unique_ptr<wl_surface> child_wl_surface;
   std::unique_ptr<wl_subsurface> child_wl_subsurface;
 
-  raw_ptr<augmented_surface, DanglingUntriaged | ExperimentalAsh>
-      augmented_surface = nullptr;
-  raw_ptr<augmented_sub_surface, DanglingUntriaged | ExperimentalAsh>
-      augmented_sub_surface = nullptr;
+  raw_ptr<augmented_surface, DanglingUntriaged> augmented_surface = nullptr;
+  raw_ptr<augmented_sub_surface, DanglingUntriaged> augmented_sub_surface =
+      nullptr;
 };
 
 using SurfaceAugmenterTest = test::WaylandServerTest;
@@ -135,7 +135,6 @@ class ShellClientData : public ClientData {
   std::unique_ptr<test::TestBuffer> parent_buffer;
   std::unique_ptr<test::TestBuffer> child_buffer;
 
-  std::unique_ptr<test::TestBuffer> child2_buffer;
   std::unique_ptr<wl_surface> child2_wl_surface;
   std::unique_ptr<wl_subsurface> child2_wl_subsurface;
 
@@ -244,12 +243,8 @@ TEST_F(SurfaceAugmenterTest,
   test::ResourceKey child2_surface_key;
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ShellClientData>();
-
-    data->child2_buffer =
-        client->shm_buffer_factory()->CreateBuffer(0, 256, 256);
     data->child2_wl_surface.reset(
         wl_compositor_create_surface(client->compositor()));
-
     child2_surface_key =
         test::client_util::GetResourceKey(data->child2_wl_surface.get());
   });

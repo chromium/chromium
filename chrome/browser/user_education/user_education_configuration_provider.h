@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_
 #define CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_
 
+#include <optional>
+
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -38,6 +40,7 @@ class UserEducationConfigurationProvider
 
  private:
   user_education::FeaturePromoRegistry registry_;
+  const bool use_v2_behavior_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_

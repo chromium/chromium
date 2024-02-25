@@ -41,9 +41,9 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 #endif
 
 namespace site_engagement {
@@ -106,15 +106,16 @@ enum CrossedReason {
 void RecordIgnore(base::Value::Dict& dict) {
   int times_ignored = dict.FindInt(kNumTimesIgnoredName).value_or(0);
   dict.Set(kNumTimesIgnoredName, ++times_ignored);
-  dict.Set(kTimeLastIgnored, base::Time::Now().ToDoubleT());
+  dict.Set(kTimeLastIgnored, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
 // If we should suppress the item with the given dictionary ignored record.
 bool ShouldSuppressItem(base::Value::Dict& dict) {
-  absl::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
+  std::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
-        base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
+        base::Time::Now() -
+        base::Time::FromSecondsSinceUnixEpoch(*last_ignored_time);
     if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
       dict.Set(kNumTimesIgnoredName, 0);
       dict.Remove(kTimeLastIgnored);
@@ -122,7 +123,7 @@ bool ShouldSuppressItem(base::Value::Dict& dict) {
     }
   }
 
-  absl::optional<int> times_ignored = dict.FindInt(kNumTimesIgnoredName);
+  std::optional<int> times_ignored = dict.FindInt(kNumTimesIgnoredName);
   return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
@@ -152,12 +153,16 @@ void MaybePopulateImportantInfoForReason(
     const GURL& origin,
     std::set<GURL>* visited_origins,
     ImportantReason reason,
-    absl::optional<std::string> app_name,
+    std::optional<std::string> app_name,
     std::map<std::string, ImportantDomainInfo>* output) {
   if (!origin.is_valid() || !visited_origins->insert(origin).second)
     return;
   std::string registerable_domain =
       ImportantSitesUtil::GetRegisterableDomainOrIP(origin);
+  if (registerable_domain.empty()) {
+    return;
+  }
+
   ImportantDomainInfo& info = (*output)[registerable_domain];
   info.reason_bitfield |= 1 << reason;
   if (info.example_origin.is_empty()) {
@@ -251,7 +256,7 @@ void PopulateInfoMapWithEngagement(
     if (detail.installed_bonus > 0) {
       MaybePopulateImportantInfoForReason(detail.origin, &content_origins,
                                           ImportantReason::HOME_SCREEN,
-                                          absl::nullopt, output);
+                                          std::nullopt, output);
     }
 
     (*engagement_map)[detail.origin] = detail.total_score;
@@ -263,6 +268,11 @@ void PopulateInfoMapWithEngagement(
 
     std::string registerable_domain =
         ImportantSitesUtil::GetRegisterableDomainOrIP(detail.origin);
+
+    if (registerable_domain.empty()) {
+      continue;
+    }
+
     ImportantDomainInfo& info = (*output)[registerable_domain];
     if (detail.total_score > info.engagement_score) {
       info.registerable_domain = registerable_domain;
@@ -289,7 +299,7 @@ void PopulateInfoMapWithContentTypeAllowed(
     GURL url(site.primary_pattern.ToString());
 
     MaybePopulateImportantInfoForReason(url, &content_origins, reason,
-                                        absl::nullopt, output);
+                                        std::nullopt, output);
   }
 }
 
@@ -301,8 +311,7 @@ void PopulateInfoMapWithBookmarks(
       BookmarkModelFactory::GetForBrowserContextIfExists(profile);
   if (!model)
     return;
-  std::vector<UrlAndTitle> untrimmed_bookmarks;
-  model->GetBookmarks(&untrimmed_bookmarks);
+  std::vector<UrlAndTitle> untrimmed_bookmarks = model->GetUniqueUrls();
 
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;
@@ -337,7 +346,7 @@ void PopulateInfoMapWithBookmarks(
   for (const UrlAndTitle& bookmark : result_bookmarks) {
     MaybePopulateImportantInfoForReason(bookmark.url, &content_origins,
                                         ImportantReason::BOOKMARKS,
-                                        absl::nullopt, output);
+                                        std::nullopt, output);
   }
 }
 

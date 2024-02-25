@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1000498691615767391">Sélectionner le dossier à ouvrir</translation>
+<translation id="1014208178561091457">Le fichier <ph name="FILE_NAME" /> n'a pas pu être copié, car il est chiffré.</translation>
 <translation id="1047956942837015229">Suppression de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1060368002126861100">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, déplacez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="1062407476771304334">Remplacer</translation>
+<translation id="1119383441774809183">Afficher les messages texte</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1120073797882051782">Hangûl romaja</translation>
 <translation id="112387589102719461">Anglais (É.-U.) avec clavier Dvorak pour développeurs</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1458457385801829801">Exclure <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fichiers n'ont pas pu être copiés, car ils sont chiffrés.</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1482884275703521657">Finnois</translation>
 <translation id="148466539719134488">Suisse</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portugais avec clavier international américain</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas accessible pour l'authentification réseau.</translation>
 <translation id="1641780993263690097">Pinyin chinois</translation>
-<translation id="1646019627374511909">Mise à disposition hors ligne de <ph name="NUMBER_OF_ITEMS" /> fichiers en cours…</translation>
 <translation id="164969095109328410">Appareil Google Chrome</translation>
 <translation id="1661207570040737402">Vous avez utilisé tout l'espace de stockage Google Workspace de votre espace de stockage Disque partagé.</translation>
 <translation id="1661867754829461514">NIP manquant</translation>
@@ -95,6 +97,7 @@
 <translation id="174937106936716857">Nombre total de fichiers</translation>
 <translation id="1755345808328621801">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique en ligne Chrome Web Store.</translation>
 <translation id="1757915090001272240">Latin pleine chasse</translation>
+<translation id="1761091787730831947">Partager avec <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificat d'authentification rejeté localement.</translation>
 <translation id="1775381402323441512">Renseignements sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
@@ -212,6 +215,7 @@
 <translation id="2718540689505416944">Installer l'application avec Linux</translation>
 <translation id="2719020180254996569">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, détails</translation>
 <translation id="2724954091494693138">Turc avec clavier F</translation>
+<translation id="2732288874651063549">Gérer le partage avec <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamien (VNI)</translation>
 <translation id="2735623501230989521">Autoriser Parallels Desktop à accéder aux fichiers dans le dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Vous avez utilisé tout votre espace de stockage individuel Google Workspace.</translation>
@@ -273,9 +277,11 @@
 <translation id="3253225298092156258">Non accessible</translation>
 <translation id="3254434849914415189">Choisissez l'application par défaut pour les fichiers <ph name="FILE_TYPE" /> :</translation>
 <translation id="3255159654094949700">Arabe</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> fichiers n'ont pas pu être déplacés, car ils sont chiffrés.</translation>
 <translation id="3264582393905923483">Contexte</translation>
 <translation id="3272909651715601089">Impossible d'ouvrir « <ph name="PATH" /> »</translation>
 <translation id="3280431534455935878">Préparation en cours...</translation>
+<translation id="3280719573299097127">Vous êtes sur un réseau à connexion mesurée. La Synchronisation de fichiers a été suspendue.</translation>
 <translation id="3280987981688031357">Disque de vinyle</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3291218047831493686">Connectez-vous à ce réseau pour modifier le paramètre de verrouillage de la carte SIM</translation>
@@ -302,12 +308,13 @@
 <translation id="3475447146579922140">Feuilles de calcul Google</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erreurs.</translation>
 <translation id="3509680540198371098">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3511705761158917664">Préparation de la synchronisation de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="3522708245912499433">Portugais</translation>
+<translation id="3523225005467146490">1 dossier partagé avec <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
+<translation id="3529424493985988200">Communiquez avec votre administrateur pour en savoir plus.</translation>
 <translation id="3548125359243647069">Un NIP incorrect a été entré un trop grand nombre de fois.</translation>
 <translation id="3549797760399244642">Accéder à drive.google.com...</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier des fichiers Windows.</translation>
@@ -324,6 +331,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Aucune vidéo récente</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
+<translation id="36451918667380448">Le fournisseur de réseau cellulaire est verrouillé. Communiquez avec votre fournisseur pour obtenir de l'aide.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fichiers sélectionnés.</translation>
 <translation id="3685122418104378273">La synchronisation Google Disque est désactivée par défaut, lors de l'utilisation de données mobiles.</translation>
@@ -495,6 +503,7 @@
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
+<translation id="4965874878399872778">Vérification des fichiers par rapport aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restauré</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossible de terminer la configuration de la synchronisation des fichiers</translation>
@@ -552,7 +561,6 @@
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
 <translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier en dehors de la corbeille. Le dossier d'origine « <ph name="PARENT_FOLDER_NAME" /> » de cet élément a été supprimé.</translation>
 <translation id="5283101102242354279">Activer une extension en mode navigation privée :</translation>
-<translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">La politique de l'administrateur bloque le transfert de ce fichier</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
@@ -630,6 +638,7 @@
 <translation id="5838451609423551646">Toutes les entrées ont été supprimées de la sélection.</translation>
 <translation id="5838825566232597749">Workman international américain</translation>
 <translation id="5845721951356578987">Infirmière</translation>
+<translation id="5858478190805449225">Le mode Économiseur de pile est activé. Réessayez lorsque le mode Économiseur de pile est désactivé.</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5861477046012235702">Joueur</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
@@ -665,6 +674,7 @@
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6177854567773392726">Vérification de l'espace de stockage en cours… <ph name="ITEMS_FOUND" /> éléments trouvés</translation>
+<translation id="6181912134988520389">Autoriser <ph name="VM_NAME" /> à accéder à vos fichiers sur Google Disque. Les modifications seront synchronisées sur vos autres appareils.</translation>
 <translation id="6187719147498869044">Hongrois</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6199801702437275229">En attente d'information sur l'espace disponible…</translation>
@@ -695,11 +705,13 @@
 <translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">En lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
+<translation id="6407769893376380348">Le fichier <ph name="FILE_NAME" /> n'a pas pu être déplacé, car il est chiffré.</translation>
 <translation id="642282551015776456">Ce nom ne peut être utilisé comme nom de fichier ou de dossier</translation>
 <translation id="6423031066725912715">Vietnamien avec clavier TCVN</translation>
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
 <translation id="643243556292470964">Les fichiers supprimés sont maintenant déplacés vers la corbeille</translation>
 <translation id="6438480100790416671">Vérification de l'espace de stockage en cours…</translation>
+<translation id="6451527188465304418">Vérification du fichier par rapport aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="6485131920355264772">Échec de récupération de l'information sur l'espace</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>
@@ -707,7 +719,6 @@
 <translation id="6503285896705205014">La politique de l'administrateur bloque la copie de <ph name="COUNT" /> fichiers</translation>
 <translation id="6509122719576673235">Norvégien</translation>
 <translation id="6528513914570774834">Autoriser d'autres utilisateurs de cet appareil à utiliser ce réseau</translation>
-<translation id="653019979737152879">Synchronisation de <ph name="FILE_NAME" /> en cours...</translation>
 <translation id="6549689063733911810">Récent</translation>
 <translation id="6558280019477628686">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été supprimés.</translation>
 <translation id="656398493051028875">Suppression de « <ph name="FILENAME" /> » en cours...</translation>
@@ -768,6 +779,7 @@
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
 <translation id="6993826899923627728">Ces éléments se trouvent dans la corbeille</translation>
+<translation id="6996593023542748157">Partager le dossier avec <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Votre organisation a besoin de plus d'espace de stockage pour terminer le téléversement.</translation>
 <translation id="7009985720488544166">La politique de l'administrateur bloque le transfert de <ph name="COUNT" /> fichiers</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -840,7 +852,6 @@
 <translation id="7553492409867692754">Autoriser les applications Linux à accéder aux fichiers du dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Vous êtes actuellement hors ligne. La synchronisation des fichiers reprendra lorsque vous serez connecté à Internet.</translation>
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
-<translation id="7592775719802218421">Mise à disposition hors ligne du fichier <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="7600126690270271294">Serbe</translation>
 <translation id="7603724359189955920">Grilles</translation>
 <translation id="7627790789328695202">Le fichier <ph name="FILE_NAME" /> existe déjà. Veuillez le renommer, puis réessayer.</translation>
@@ -894,7 +905,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Vos fichiers dans Mon Disque seront automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
-<translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter l'appareil</translation>
 <translation id="7933875256234974853">Préparation de la synchronisation des fichiers Disque en cours…</translation>
 <translation id="7943385054491506837">Colemak américain</translation>
@@ -917,6 +927,7 @@
 <translation id="8087576439476816834">Téléchargement : <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>
 <translation id="8116072619078571545">Eau glacée</translation>
+<translation id="8120392982188717723">Autoriser la synchronisation sur les réseaux mesurés</translation>
 <translation id="8124093710070495550">Problème de synchronisation</translation>
 <translation id="8128733386027980860">Anglais (R.-U.) avec clavier Dvorak</translation>
 <translation id="8137331602592933310">Le fichier « <ph name="FILENAME" /> » a été partagé avec vous. Vous ne pouvez pas le supprimer, car vous n'en êtes pas le propriétaire.</translation>
@@ -924,6 +935,7 @@
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8147028810663464959">Largeur de caractères : pleine</translation>
 <translation id="8151638057146502721">Configurer</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erreur.}one{# erreur.}other{# erreurs.}}</translation>
 <translation id="8154842056504218462">Vous avez sélectionné toutes les entrées.</translation>
 <translation id="8157684860301034423">Échec de récupération des informations sur l'application.</translation>
 <translation id="8175731104491895765">Français (Belgique)</translation>
@@ -954,8 +966,10 @@
 <translation id="8335837413233998004">Biélorusse</translation>
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
+<translation id="83651606385705612">Autoriser <ph name="VM_NAME" /> à accéder aux fichiers du dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
+<translation id="8377269993083688872">Mises en page de courriel</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extrait.</translation>
 <translation id="8395901698320285466">Dimensions</translation>
@@ -963,6 +977,7 @@
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" />; connexion en cours…</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Modifier le NIP de la carte SIM</translation>
 <translation id="8437209419043462667">Américain</translation>
 <translation id="8452135315243592079">Carte SIM manquante</translation>
@@ -993,7 +1008,6 @@
 <translation id="8569764466147087991">Sélectionner le fichier à ouvrir</translation>
 <translation id="8577897833047451336">Croate</translation>
 <translation id="8578308463707544055">Indonésien</translation>
-<translation id="8579285237314169903">Synchronisation de <ph name="NUMBER_OF_FILES" /> éléments en cours...</translation>
 <translation id="8600173386174225982">La liste de fichiers utilise maintenant l'affichage en miniatures.</translation>
 <translation id="8601932370724196034">Fichier d'image Crostini</translation>
 <translation id="8609695766746872526">Islandais</translation>
@@ -1006,6 +1020,7 @@
 <translation id="8698877009525468705">Ce fichier est confidentiel et soumis à des restrictions aux termes de la politique de l'administrateur.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Maltais</translation>
+<translation id="8714138378966541668">Verrouillé par le fournisseur</translation>
 <translation id="8714406895390098252">Vélo</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> sélectionné.</translation>
 <translation id="872537912056138402">Croate</translation>
@@ -1013,6 +1028,7 @@
 <translation id="8787254343425541995">Autoriser les mandataires pour les réseaux partagés</translation>
 <translation id="8790981080411996443">Personne arrosant des plantes</translation>
 <translation id="8798099450830957504">Par défaut</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 avertissement.}one{# avertissement.}other{# avertissements.}}</translation>
 <translation id="8808686172382650546">Chat</translation>
 <translation id="8810671769985673465">Échec de la compression au format .zip, car l'élément existe déjà : « <ph name="FILE_NAME" /> »</translation>
 <translation id="8813284582615685103">Espagnol (Espagne)</translation>
@@ -1043,7 +1059,6 @@
 <translation id="9038620279323455325">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Veuillez choisir un autre nom.</translation>
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">Si vous n'effectuez pas la vérification, votre accès réseau sera désactivé.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 mise en garde.}one{<ph name="COUNT" /> mise en garde.}other{<ph name="COUNT" /> mises en garde.}}</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9086302186042011942">Synchronisation en cours...</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>

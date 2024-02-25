@@ -44,12 +44,12 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // The abstract interface implemented by any view controlled by this
   // controller.
   class ListView : public views::View {
-   public:
-    METADATA_HEADER(ListView);
+    METADATA_HEADER(ListView, views::View)
 
+   public:
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
-    virtual absl::optional<content::DesktopMediaID> GetSelection() = 0;
+    virtual std::optional<content::DesktopMediaID> GetSelection() = 0;
 
     // Returns the SourceListListener to use to notify this ListView of changes
     // to the backing DesktopMediaList.
@@ -98,7 +98,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
-  absl::optional<content::DesktopMediaID> GetSelection() const;
+  std::optional<content::DesktopMediaID> GetSelection() const;
 
   void ClearSelection();
 
@@ -115,7 +115,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   size_t GetSourceCount() const;
   const DesktopMediaList::Source& GetSource(size_t index) const;
   void SetThumbnailSize(const gfx::Size& size);
-  void SetPreviewedSource(const absl::optional<content::DesktopMediaID>& id);
+  void SetPreviewedSource(const std::optional<content::DesktopMediaID>& id);
 
   // Returns a WeakPtr to the current DesktopMediaListController. Note that the
   // weak pointer must only be used on the UI thread.
@@ -167,6 +167,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_window_;     // Only windows, by title.
   const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.

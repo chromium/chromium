@@ -16,9 +16,10 @@ class FileSelectHelperContactsAndroid : public FileSelectHelper {
 
   // A SelectFileDialog::Listener override. |file| and |index| are unused in
   // this override, since the file contents are passed in as string to |params|.
-  void FileSelectedWithExtraInfo(const ui::SelectedFileInfo& file,
-                                 int index,
-                                 void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file,
+                    int index,
+                    void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
  private:
   friend class FileSelectHelper;

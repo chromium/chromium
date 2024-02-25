@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -31,19 +31,19 @@ bool PathOwnedByRoot(const base::FilePath& path) {
 
 }  // namespace
 
-absl::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
+std::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
     const std::string& /*app_id*/,
     const base::FilePath& ecp) const {
   if (ecp.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::PathExists(ecp)) {
-    return absl::make_optional(kUninstallPingReasonUninstalled);
+    return std::make_optional(kUninstallPingReasonUninstalled);
   }
   if (scope_ == UpdaterScope::kUser && PathOwnedByRoot(ecp)) {
-    return absl::make_optional(kUninstallPingReasonUserNotAnOwner);
+    return std::make_optional(kUninstallPingReasonUserNotAnOwner);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace updater

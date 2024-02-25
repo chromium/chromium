@@ -19,11 +19,18 @@ class PasswordManagerErrorMessageHelperBridge {
   virtual void StartUpdateAccountCredentialsFlow(
       content::WebContents* web_contents) = 0;
 
+  // An implementation of this method should call the Java method that starts
+  // the Android process to retrieve key for on-device encryption. This method
+  // will only work for users that are currently syncing.
+  virtual void StartTrustedVaultKeyRetrievalFlow(
+      content::WebContents* web_contents) = 0;
+
   // Checks if enough time has passed since the last error UI was shown.
-  virtual bool ShouldShowErrorUI() = 0;
+  virtual bool ShouldShowErrorUI(content::WebContents* web_contents) = 0;
 
   // Saves the timestam at which the error UI was shown.
-  virtual void SaveErrorUIShownTimestamp() = 0;
+  virtual void SaveErrorUIShownTimestamp(
+      content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_

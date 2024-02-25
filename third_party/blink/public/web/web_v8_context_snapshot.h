@@ -15,7 +15,7 @@ namespace blink {
 // Chromium's build step.
 class BLINK_EXPORT WebV8ContextSnapshot {
  public:
-  static v8::StartupData TakeSnapshot();
+  static v8::StartupData TakeSnapshot(v8::Isolate* isolate);
 };
 
 }  // namespace blink

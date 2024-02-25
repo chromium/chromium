@@ -15,7 +15,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
   static const base::NoDestructor<std::vector<MediaCodecEncoderInfo>> infos([] {
     // Sadly the NDK doesn't provide a mechanism for accessing the equivalent of
     // the SDK's MediaCodecList, so we must call into Java to enumerate support.
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
         Java_VideoAcceleratorUtil_getSupportedEncoderProfiles(env);
@@ -57,7 +57,10 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
           Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);
     }
-    std::sort(
+
+    // Use a stable sort since codec information is returned in a rank order
+    // specified by the OEM.
+    std::stable_sort(
         cpp_infos.begin(), cpp_infos.end(),
         [](const MediaCodecEncoderInfo& a, const MediaCodecEncoderInfo& b) {
           return a.profile.profile < b.profile.profile;
@@ -69,7 +72,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
 
 const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
   static const base::NoDestructor<std::vector<MediaCodecDecoderInfo>> infos([] {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     CHECK(env);
     auto java_profiles =
         Java_VideoAcceleratorUtil_getSupportedDecoderProfiles(env);
@@ -111,7 +114,10 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
           Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);
     }
-    std::sort(
+
+    // Use a stable sort since codec information is returned in a rank order
+    // specified by the OEM.
+    std::stable_sort(
         cpp_infos.begin(), cpp_infos.end(),
         [](const MediaCodecDecoderInfo& a, const MediaCodecDecoderInfo& b) {
           return a.profile < b.profile;

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,12 +16,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -34,17 +35,13 @@ class ExtensionsMenuCoordinator;
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-class ExtensionsToolbarContainer
-    : public ToolbarIconContainerView,
-      public ExtensionsContainer,
-      public TabStripModelObserver,
-      public ToolbarActionsModel::Observer,
-      public ToolbarActionView::Delegate,
-      public views::WidgetObserver,
-      public extensions::PermissionsManager::Observer {
- public:
-  METADATA_HEADER(ExtensionsToolbarContainer);
+class ExtensionsToolbarContainer : public ToolbarIconContainerView,
+                                   public ExtensionsContainer,
+                                   public ToolbarActionView::Delegate,
+                                   public views::WidgetObserver {
+  METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
 
+ public:
   using ToolbarIcons =
       std::map<ToolbarActionsModel::ActionId, ToolbarActionView*>;
 
@@ -83,17 +80,59 @@ class ExtensionsToolbarContainer
       delete;
   ~ExtensionsToolbarContainer() override;
 
+  // Creates toolbar actions and icons corresponding to the model. This is only
+  // called in the constructor or when the model initializes and should not be
+  // called for subsequent changes to the model.
+  void CreateActions();
+
+  // Adds the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void AddAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Removes the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void RemoveAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Updates the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void UpdateAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Adds the visible action views the toolbar and updates the container
+  // visibility, reordering views if necessary.
+  void UpdatePinnedActions();
+
+  // Updates `extensions_button_` icon given user `site_setting` and whether
+  // `is_restricted_url` in `web_contents`.
+  void UpdateExtensionsButton(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      content::WebContents* web_contents,
+      bool is_restricted_url);
+
+  // Updates the `request_access_button_` given user `site_setting` for the
+  // current `web_contents`.
+  void UpdateRequestAccessButton(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      content::WebContents* web_contents);
+
+  // Updates the container visibility and animation as needed.
+  void UpdateContainerVisibility();
+
+  // Updates the controls visibility.
+  void UpdateControlsVisibility();
+
   const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
     return popup_owner_;
   }
 
   // Gets the extension menu button for the toolbar.
-  ExtensionsToolbarButton* GetExtensionsButton() const;
+  ExtensionsToolbarButton* GetExtensionsButton() const {
+    return extensions_button_;
+  }
 
-  // Gets the extensions toolbar controls.
-  ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
-    return extensions_controls_;
+  // Get the request access button for the toolbar.
+  ExtensionsRequestAccessButton* GetRequestAccessButton() const {
+    return request_access_button_;
   }
 
   // Get the view corresponding to the extension |id|, if any.
@@ -116,19 +155,20 @@ class ExtensionsToolbarContainer
   views::Widget* GetAnchoredWidgetForExtensionForTesting(
       const std::string& extension_id);
 
-  absl::optional<extensions::ExtensionId>
+  std::optional<extensions::ExtensionId>
   GetExtensionWithOpenContextMenuForTesting() {
     return extension_with_open_context_menu_id_;
   }
 
   int GetNumberOfActionsForTesting() { return actions_.size(); }
 
-  // Updates the flex layout rules for the extension toolbar container to have
-  // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
-  // toggled on for PWAs. Otherwise the extensions icon does not stay visible as
-  // it is not considered for during the calculation of the preferred size of
-  // it's parent (in the case of WCO PWAs, WebAppFrameToolbarView).
-  void WindowControlsOverlayEnabledChanged(bool enabled);
+  ToolbarButton* GetCloseSidePanelButtonForTesting() {
+    return close_side_panel_button_;
+  }
+
+  // Called when the side panel state has changed for an extensions side panel
+  // to pop out button reflecting the side panel being open.
+  void UpdateSidePanelState(bool is_active);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
@@ -147,15 +187,15 @@ class ExtensionsToolbarContainer
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
-  ToolbarActionViewController* GetPoppedOutAction() const override;
-  void OnContextMenuShown(const std::string& action_id) override;
-  void OnContextMenuClosed() override;
+  std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
+  void OnContextMenuShownFromToolbar(const std::string& action_id) override;
+  void OnContextMenuClosedFromToolbar() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
   void HideActivePopup() override;
   bool CloseOverflowMenuIfOpen() override;
-  void PopOutAction(ToolbarActionViewController* action,
+  void PopOutAction(const extensions::ExtensionId& action_id,
                     base::OnceClosure closure) override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
@@ -221,11 +261,6 @@ class ExtensionsToolbarContainer
   // Posted from |ShowWidgetForExtension|.
   void AnchorAndShowWidgetImmediately(MayBeDangling<views::Widget> widget);
 
-  // Creates toolbar actions and icons corresponding to the model. This is only
-  // called in the constructor or when the model initializes and should not be
-  // called for subsequent changes to the model.
-  void CreateActions();
-
   // Creates an action and toolbar button for the corresponding ID.
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
 
@@ -242,9 +277,6 @@ class ExtensionsToolbarContainer
   void SetExtensionIconVisibility(ToolbarActionsModel::ActionId id,
                                   bool visible);
 
-  // Calls SetVisible() with ShouldContainerBeVisible().
-  void UpdateContainerVisibility();
-
   // Returns whether the contianer should be showing, e.g. not if there are no
   // extensions installed, nor if the container is inactive in kAutoHide mode.
   bool ShouldContainerBeVisible() const;
@@ -253,40 +285,8 @@ class ExtensionsToolbarContainer
   // animation ends.
   void UpdateContainerVisibilityAfterAnimation();
 
-  // Updates the controls visibility.
-  void UpdateControlsVisibility();
-
-  // Maybe displays the In-Product-Help with a specific priority order.
-  void MaybeShowIPH();
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-
-  // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarModelInitialized() override;
-  void OnToolbarPinnedActionsChanged() override;
-
-  // PermissionsManager::Observer:
-  void OnUserPermissionsSettingsChanged(
-      const extensions::PermissionsManager::UserPermissionsSettings& settings)
-      override;
-  void OnShowAccessRequestsInToolbarChanged(
-      const extensions::ExtensionId& extension_id,
-      bool can_show_requests) override;
-  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
-                                    const url::Origin& origin) override;
+  // Triggers the side panel to close.
+  void CloseSidePanelButtonPressed();
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -304,26 +304,23 @@ class ExtensionsToolbarContainer
   void DragDropCleanup(
       const ToolbarActionsModel::ActionId& dragged_extension_id);
 
+  // Updates the vector icon used when the PrefChangeRegistrar listens to a
+  // change. When the side panel should open to the right side of the browser
+  // the default vector icon is used. When the side panel should open to the
+  // left side of the browser the flipped vector icon is used.
+  void UpdateCloseSidePanelButtonIcon();
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;
-
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observation_{this};
-  base::ScopedObservation<extensions::PermissionsManager,
-                          extensions::PermissionsManager::Observer>
-      permissions_manager_observation_{this};
 
   // Coordinator to show and hide the ExtensionsMenuView.
   const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 
-  // TODO(emiliapaz): Remove `extensions_button_` once
-  // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
-  // Exactly one of `extensions_button_ and `extensions_controls_` is created;
-  // the other is null.
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
-  const raw_ptr<ExtensionsToolbarControls, DanglingUntriaged>
-      extensions_controls_;
+  raw_ptr<ExtensionsRequestAccessButton, DanglingUntriaged>
+      request_access_button_ = nullptr;
+
   DisplayMode display_mode_;
 
   // Controller for showing the toolbar action hover card.
@@ -338,11 +335,16 @@ class ExtensionsToolbarContainer
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  raw_ptr<ToolbarActionViewController> popped_out_action_ = nullptr;
+  std::optional<extensions::ExtensionId> popped_out_action_;
   // The action that triggered the current popup, if any.
   raw_ptr<ToolbarActionViewController> popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
-  absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  std::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  // View for closing the extension side panel.
+  raw_ptr<ToolbarButton> close_side_panel_button_ = nullptr;
+  // Used to ensure the button remains highlighted while active.
+  std::optional<views::Button::ScopedAnchorHighlight>
+      close_side_panel_button_anchor_higlight_;
 
   // The widgets currently popped out and, for each, the extension it is
   // associated with. See AnchoredWidget.
@@ -351,6 +353,9 @@ class ExtensionsToolbarContainer
   // The DropInfo for the current drag-and-drop operation, or a null pointer if
   // there is none.
   std::unique_ptr<DropInfo> drop_info_;
+
+  // Observes and listens to side panel alignment changes.
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<ExtensionsToolbarContainer> weak_ptr_factory_{this};
 

@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+# Broken out into a separate BUILD.gn (from //components) in order to avoid
+# defining other targets in the robolectric_toolchain.
+shared_library_with_jni("libcomponents_junit_tests") {
+  testonly = true
+  enable_target = is_robolectric
+  deps = [
+    "//components/url_formatter($robolectric_toolchain)",
+    "//url:robolectric_jni_onload($robolectric_toolchain)",
+  ]
+  java_targets = [ "//components:components_junit_tests" ]
+
+  # Ensure all users of this library include themselves in java_targets.
+  visibility = []
+  foreach(t, java_targets) {
+    visibility += [ get_label_info(t, "dir") + ":*" ]
+  }
+}

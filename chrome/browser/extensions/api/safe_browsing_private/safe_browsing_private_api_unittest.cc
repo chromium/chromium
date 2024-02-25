@@ -16,15 +16,15 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -38,12 +38,12 @@ namespace {
 
 using testing::NiceMock;
 
-absl::optional<base::Value> RunGetReferrerChainFunction(
+std::optional<base::Value> RunGetReferrerChainFunction(
     content::BrowserContext* browser_context,
     int tab_id) {
   scoped_refptr<SafeBrowsingPrivateGetReferrerChainFunction> function(
       base::MakeRefCounted<SafeBrowsingPrivateGetReferrerChainFunction>());
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), "[" + base::NumberToString(tab_id) + "]",
           browser_context);
@@ -103,7 +103,7 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
-  PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(
           &password_manager::BuildPasswordStoreInterface<
@@ -160,7 +160,7 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChain) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  absl::optional<base::Value> referrer_chain =
+  std::optional<base::Value> referrer_chain =
       RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_TRUE(referrer_chain);
 }
@@ -182,7 +182,7 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChainForNonSafeBrowsingUser) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  absl::optional<base::Value> referrer_chain =
+  std::optional<base::Value> referrer_chain =
       RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_FALSE(referrer_chain);
 }

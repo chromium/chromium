@@ -25,9 +25,9 @@ class OSExchangeData;
 // dropping above the tabstrip BrowserRootView forwards drop events to the
 // TabStrip.
 class BrowserRootView : public views::internal::RootView {
- public:
-  METADATA_HEADER(BrowserRootView);
+  METADATA_HEADER(BrowserRootView, views::internal::RootView)
 
+ public:
   struct DropIndex {
     // The index within the tabstrip to drop on/before (see
     // |insert_before_index| below).
@@ -57,7 +57,7 @@ class BrowserRootView : public views::internal::RootView {
     virtual DropTarget* GetDropTarget(gfx::Point loc_in_local_coords) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
-    virtual void HandleDragUpdate(const absl::optional<DropIndex>& index) {}
+    virtual void HandleDragUpdate(const std::optional<DropIndex>& index) {}
     virtual void HandleDragExited() {}
 
    protected:
@@ -82,6 +82,7 @@ class BrowserRootView : public views::internal::RootView {
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  gfx::Size CalculatePreferredSize() const override;
 
  protected:
   // views::View:
@@ -98,7 +99,7 @@ class BrowserRootView : public views::internal::RootView {
     raw_ptr<DropTarget, DanglingUntriaged> target = nullptr;
 
     // Where to drop the url.
-    absl::optional<DropIndex> index;
+    std::optional<DropIndex> index;
 
     // The URL for the drop event.
     GURL url;
@@ -107,9 +108,6 @@ class BrowserRootView : public views::internal::RootView {
     // TODO(sangwoo108) Try removing this memeber.
     bool file_supported = true;
   };
-
-  // ui::EventProcessor:
-  void OnEventProcessingStarted(ui::Event* event) override;
 
   // Converts the event from the hosts coordinate system to the view's
   // coordinate system.

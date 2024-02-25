@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App, OptionalBool, PageCallbackRouter, PageHandlerInterface, PageRemote, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {App, PageHandlerInterface, PageRemote, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 export class FakePageHandler implements PageHandlerInterface {
@@ -82,7 +83,7 @@ export class FakePageHandler implements PageHandlerInterface {
     return Promise.resolve({messages: []});
   }
 
-  setPinned(_appId: string, _pinned: OptionalBool) {}
+  setPinned(_appId: string, _pinned: boolean) { }
 
   setPermission(_appId: string, permission: Permission) {
     this.app_.permissions[permission.permissionType] = permission;
@@ -93,12 +94,16 @@ export class FakePageHandler implements PageHandlerInterface {
 
   uninstall(_appId: string) {}
 
+  updateAppSize(_appId: string) {}
+
   openNativeSettings(_appId: string) {}
 
   setWindowMode(_appId: string, windowMode: WindowMode) {
     this.app_.windowMode = windowMode;
     this.page_.onAppChanged(this.app_);
   }
+
+  setAppLocale(_appId: string, _localeTag: string): void {}
 
   setRunOnOsLoginMode(_appId: string, loginMode: RunOnOsLoginMode) {
     this.app_.runOnOsLogin!.loginMode = loginMode;

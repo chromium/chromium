@@ -7,7 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
 
@@ -63,7 +63,7 @@ void FilteredGestureProvider::OnTouchEventAck(
     uint32_t unique_event_id,
     bool event_consumed,
     bool is_source_touch_event_set_blocking,
-    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
+    const std::optional<EventLatencyMetadata>& event_latency_metadata) {
   gesture_filter_.OnTouchEventAck(unique_event_id, event_consumed,
                                   is_source_touch_event_set_blocking,
                                   event_latency_metadata);

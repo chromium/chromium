@@ -237,7 +237,7 @@ class DropdownItemSelector {
   // Searches in-order, depth-first. It is assumed that menu items will appear
   // in search order in the same order they appear visually.
   static MenuItemView* FindMenuItem(View* from, size_t& index) {
-    for (auto* child : from->children()) {
+    for (views::View* child : from->children()) {
       auto* const item = AsViewClass<MenuItemView>(child);
       if (item) {
         if (index == 0U)
@@ -255,7 +255,7 @@ class DropdownItemSelector {
   const size_t item_index_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   AnyWidgetObserver observer_{views::test::AnyWidgetTestPasskey()};  // IN-TEST
-  absl::optional<ui::test::ActionResult> result_;
+  std::optional<ui::test::ActionResult> result_;
   raw_ptr<Widget> widget_ = nullptr;
   base::WeakPtrFactory<DropdownItemSelector> weak_ptr_factory_{this};
 };
@@ -606,24 +606,12 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
     return ui::test::ActionResult::kNotAttempted;
 
   auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
-#if HANDLE_WAYLAND_FAILURE
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
-    WidgetActivationWaiterWayland waiter(widget);
-    widget->Activate();
-    if (!waiter.Wait()) {
-      LOG(WARNING)
-          << "Unable to activate widget due to lack of Wayland support for "
-             "widget activation; test is not meaningful on this platform.";
-      return ui::test::ActionResult::kKnownIncompatible;
-    }
-    return ui::test::ActionResult::kSucceeded;
+  if (!widget) {
+    LOG(WARNING) << "View not assocaited with a widget.";
+    return ui::test::ActionResult::kFailed;
   }
-#endif  // HANDLE_WAYLAND_FAILURE
 
-  views::test::WidgetActivationWaiter waiter(widget, true);
-  widget->Activate();
-  waiter.Wait();
-  return ui::test::ActionResult::kSucceeded;
+  return ActivateWidget(widget);
 }
 
 ui::test::ActionResult InteractionTestUtilSimulatorViews::SendAccelerator(
@@ -666,6 +654,30 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
   return ui::test::ActionResult::kSucceeded;
 }
 
+// static
+ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateWidget(
+    Widget* widget) {
+#if HANDLE_WAYLAND_FAILURE
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    WidgetActivationWaiterWayland waiter(widget);
+    widget->Activate();
+    if (!waiter.Wait()) {
+      LOG(WARNING)
+          << "Unable to activate widget due to lack of Wayland support for "
+             "widget activation; test is not meaningful on this platform.";
+      return ui::test::ActionResult::kKnownIncompatible;
+    }
+    return ui::test::ActionResult::kSucceeded;
+  }
+#endif  // HANDLE_WAYLAND_FAILURE
+
+  views::test::WidgetActivationWaiter waiter(widget, true);
+  widget->Activate();
+  waiter.Wait();
+  return ui::test::ActionResult::kSucceeded;
+}
+
+// static
 bool InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,
                                                         InputType input_type) {
   switch (input_type) {

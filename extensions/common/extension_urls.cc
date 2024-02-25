@@ -4,11 +4,15 @@
 
 #include "extensions/common/extension_urls.h"
 
+#include <string_view>
+
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -49,8 +53,7 @@ GURL GetNewWebstoreLaunchURL() {
   return GURL(kNewChromeWebstoreBaseURL);
 }
 
-GURL AppendUtmSource(const GURL& url,
-                     const base::StringPiece& utm_source_value) {
+GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value) {
   return net::AppendQueryParameter(url, "utm_source", utm_source_value);
 }
 
@@ -59,6 +62,11 @@ GURL AppendUtmSource(const GURL& url,
 // TODO(devlin): Try to use GURL methods like Resolve instead of string
 // concatenation.
 std::string GetWebstoreExtensionsCategoryURL() {
+  // TODO(crbug.com/1488136): Refactor this check into
+  // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
+  if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
+    return GetNewWebstoreLaunchURL().spec() + "category/extensions";
+  }
   return GetWebstoreLaunchURL().spec() + "/category/extensions";
 }
 
@@ -66,7 +74,7 @@ std::string GetWebstoreItemDetailURLPrefix() {
   return GetWebstoreLaunchURL().spec() + "/detail/";
 }
 
-GURL GetWebstoreItemJsonDataURL(const std::string& extension_id) {
+GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
   return GURL(GetWebstoreLaunchURL().spec() + "/inlineinstall/detail/" +
               extension_id);
 }
@@ -82,7 +90,7 @@ GURL GetWebstoreUpdateUrl() {
   return GetDefaultWebstoreUpdateUrl();
 }
 
-GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
+GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id) {
   return GURL(base::StringPrintf("%s/report/%s?utm_source=%s",
                                  GetWebstoreLaunchURL().spec().c_str(),
@@ -112,7 +120,7 @@ bool IsBlocklistUpdateUrl(const GURL& url) {
   return false;
 }
 
-bool IsSafeBrowsingUrl(const url::Origin& origin, base::StringPiece path) {
+bool IsSafeBrowsingUrl(const url::Origin& origin, std::string_view path) {
   return origin.DomainIs("sb-ssl.google.com") ||
          origin.DomainIs("safebrowsing.googleapis.com") ||
          (origin.DomainIs("safebrowsing.google.com") &&

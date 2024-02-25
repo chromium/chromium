@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_WEB_APP_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_WEB_APP_JOB_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -19,21 +20,21 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// See public API WebAppCommandScheduler::UninstallWebApp() for docs.
+// This should VERY rarely be used directly, and instead just used from other
+// jobs once all install managements are removed.
 class RemoveWebAppJob : public UninstallJob {
  public:
-  // `is_initial_request` indicates that this operation is not a byproduct of
-  // removing the last install source from a web app via external management and
-  // will be treated as a user uninstall.
+  // `webapps::IsUserUninstall(uninstall_source)` indicates that this operation
+  // is not a byproduct of removing the last install source from a web app via
+  // external management and will be treated as a user uninstall.
   RemoveWebAppJob(webapps::WebappUninstallSource uninstall_source,
                   Profile& profile,
-                  AppId app_id,
-                  bool is_initial_request = true);
+                  base::Value::Dict& debug_value,
+                  webapps::AppId app_id);
   ~RemoveWebAppJob() override;
 
   // UninstallJob:
   void Start(AllAppsLock& lock, Callback callback) override;
-  base::Value ToDebugValue() const override;
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
@@ -45,30 +46,31 @@ class RemoveWebAppJob : public UninstallJob {
   void MaybeFinishPrimaryRemoval();
   void ProcessSubAppsPendingRemovalOrComplete();
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
+  void OnIsolatedWebAppOwnedLocationDeleted();
 
-  webapps::WebappUninstallSource uninstall_source_;
+  const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
-  raw_ref<Profile> profile_;
-  AppId app_id_;
-  bool is_initial_request_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
+  const webapps::AppId app_id_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
-  raw_ptr<AllAppsLock> lock_;
+  raw_ptr<AllAppsLock> lock_ = nullptr;
   Callback callback_;
 
   bool app_data_deleted_ = false;
   bool translation_data_deleted_ = false;
   bool isolated_web_app_browsing_data_cleared_ = false;
+  bool isolated_web_app_owned_location_deleted_ = false;
   bool hooks_uninstalled_ = false;
-  bool pending_app_profile_deletion_ = false;
   bool errors_ = false;
   bool has_isolated_storage_ = false;
-  absl::optional<webapps::UninstallResultCode> primary_removal_result_;
+  std::optional<webapps::UninstallResultCode> primary_removal_result_;
+  std::optional<IsolatedWebAppLocation> location_;
 
-  std::vector<AppId> sub_apps_pending_removal_;
+  std::vector<webapps::AppId> sub_apps_pending_removal_;
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;
-  base::Value::Dict completed_sub_job_debug_dict_;
 
   base::WeakPtrFactory<RemoveWebAppJob> weak_ptr_factory_{this};
 };

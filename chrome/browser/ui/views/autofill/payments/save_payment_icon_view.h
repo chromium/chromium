@@ -18,8 +18,9 @@ class SavePaymentIconController;
 // choose to save the credit card info to use again later without re-entering
 // it.
 class SavePaymentIconView : public PageActionIconView {
+  METADATA_HEADER(SavePaymentIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(SavePaymentIconView);
   SavePaymentIconView(CommandUpdater* command_updater,
                       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                       PageActionIconView::Delegate* page_action_icon_delegate,
@@ -39,7 +40,6 @@ class SavePaymentIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  const gfx::VectorIcon& GetVectorIconBadge() const override;
 
  private:
   SavePaymentIconController* GetController() const;

@@ -28,7 +28,6 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
-#include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
@@ -54,14 +53,14 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
   }
 }
 
-absl::optional<base::Value> ReadPreferenceSpecifics(
+std::optional<base::Value> ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
   base::JSONReader::Result parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(preference.value());
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Failed to deserialize preference value: "
                << parsed_json.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*parsed_json);
 }
@@ -69,7 +68,7 @@ absl::optional<base::Value> ReadPreferenceSpecifics(
 }  // namespace
 
 PrefModelAssociator::PrefModelAssociator(
-    const PrefModelAssociatorClient* client,
+    scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<WriteablePrefStore> user_prefs,
     syncer::ModelType type)
     : type_(type),
@@ -89,7 +88,7 @@ PrefModelAssociator::PrefModelAssociator(
 }
 
 PrefModelAssociator::PrefModelAssociator(
-    const PrefModelAssociatorClient* client,
+    scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
     syncer::ModelType type)
     : PrefModelAssociator(client,
@@ -158,7 +157,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
       // TODO(crbug.com/1434943): Consider the case where a value is set before
       // initial merge. This would overwrite the value the user just set.
       base::Value new_value(helper::MergePreference(
-          client_, pref_name, *user_pref_value, sync_value));
+          client_.get(), pref_name, *user_pref_value, sync_value));
       // Update the local preference based on what we got from the sync
       // server.
       if (new_value.is_none()) {
@@ -210,8 +209,7 @@ void PrefModelAssociator::WaitUntilReadyToSync(base::OnceClosure done) {
   std::move(done).Run();
 }
 
-absl::optional<syncer::ModelError>
-PrefModelAssociator::MergeDataAndStartSyncing(
+std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
@@ -222,7 +220,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   DCHECK(sync_processor.get());
   sync_processor_ = std::move(sync_processor);
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (dual_layer_user_prefs_) {
     // Inform the pref store to enable account storage for `type_`.
     dual_layer_user_prefs_->EnableType(type_);
   }
@@ -255,7 +253,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   // Push updates to sync.
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
   if (!error.has_value()) {
     models_associated_ = true;
@@ -277,8 +275,7 @@ void PrefModelAssociator::OnBrowserShutdown(syncer::ModelType type) {
 void PrefModelAssociator::Stop(bool is_browser_shutdown) {
   models_associated_ = false;
   sync_processor_.reset();
-  if (!is_browser_shutdown &&
-      base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (!is_browser_shutdown && dual_layer_user_prefs_) {
     // Avoid clearing account store in case of browser shutdown, since it
     // tries to notify the observers which may or may not exist by this time
     // during browser shutdown (crbug.com/1434902).
@@ -314,7 +311,7 @@ bool PrefModelAssociator::CreatePrefSyncData(
   return true;
 }
 
-absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
+std::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
@@ -342,7 +339,7 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       continue;
     }
 
-    absl::optional<base::Value> new_value(
+    std::optional<base::Value> new_value(
         ReadPreferenceSpecifics(pref_specifics));
     if (!new_value) {
       // Skip values we can't deserialize.
@@ -364,7 +361,11 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       synced_preferences_.insert(pref_specifics.name());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+base::WeakPtr<syncer::SyncableService> PrefModelAssociator::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void PrefModelAssociator::AddSyncedPrefObserver(const std::string& name,
@@ -393,7 +394,7 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 }
 
 void PrefModelAssociator::RegisterPref(const std::string& name) {
-  DCHECK(!base::Contains(registered_preferences_, name));
+  DCHECK(!registered_preferences_.contains(name));
   DCHECK(
       !client_ ||
       (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&
@@ -403,6 +404,7 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";
+
   registered_preferences_.insert(name);
 }
 
@@ -496,8 +498,7 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
                   << "pref type: " << registered_type;
     return false;
   }
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    CHECK(dual_layer_user_prefs_);
+  if (dual_layer_user_prefs_) {
     // `dual_layer_user_prefs_->SetValueInAccountStoreOnly()` is almost
     // equivalent to `user_prefs_->SetValue()` except that if the effective
     // value of the pref for the `dual_layer_user_prefs_` is unchanged, no

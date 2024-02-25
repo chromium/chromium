@@ -5,6 +5,7 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -13,7 +14,6 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
@@ -24,6 +24,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
@@ -49,7 +50,6 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
@@ -127,10 +127,9 @@ class FakeBluetoothDevice
   FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;
   FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
 
-  void Pair(
-      BluetoothDevice::PairingDelegate* pairing_delegate,
-      base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>
-          callback) override {
+  void Pair(BluetoothDevice::PairingDelegate* pairing_delegate,
+            base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
+                callback) override {
     if (pair_failure_) {
       std::move(callback).Run(ConnectErrorCode::ERROR_FAILED);
       return;
@@ -145,12 +144,12 @@ class FakeBluetoothDevice
 
   void TriggerPairCallback() {
     ASSERT_TRUE(pair_callback_);
-    std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
+    std::move(pair_callback_).Run(/*error_code=*/std::nullopt);
   }
 
   void Connect(
       BluetoothDevice::PairingDelegate* pairing_delegate,
-      base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>
+      base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
           callback) override {
     if (connect_failure_) {
       std::move(callback).Run(ConnectErrorCode::ERROR_FAILED);
@@ -161,7 +160,7 @@ class FakeBluetoothDevice
       return;
     }
 
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 
   // This method is called in DevicePairedChanged to ensure we are setting the
@@ -183,9 +182,9 @@ class FakeBluetoothDevice
   bool IsDevicePaired() { return is_device_paired_; }
 
  protected:
-  base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>
+  base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
       pair_callback_;
-  raw_ptr<ash::quick_pair::FakeBluetoothAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<ash::quick_pair::FakeBluetoothAdapter> fake_adapter_;
   bool pair_failure_ = false;
   bool pair_timeout_ = false;
   bool connect_failure_ = false;
@@ -208,7 +207,7 @@ class FakeFastPairGattServiceClientImplFactory
   std::unique_ptr<ash::quick_pair::FastPairGattServiceClient> CreateInstance(
       device::BluetoothDevice* device,
       scoped_refptr<device::BluetoothAdapter> adapter,
-      base::OnceCallback<void(absl::optional<ash::quick_pair::PairFailure>)>
+      base::OnceCallback<void(std::optional<ash::quick_pair::PairFailure>)>
           on_initialized_callback) override {
     auto fake_fast_pair_gatt_service_client =
         std::make_unique<ash::quick_pair::FakeFastPairGattServiceClient>(
@@ -218,8 +217,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, DanglingUntriaged>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -285,8 +283,13 @@ class FastPairPairerImplTest : public AshTestBase {
 
   void AddConnectedHandshake() {
     FakeFastPairHandshakeLookup::GetFakeInstance()->CreateForTesting(
-        adapter_, device_, base::DoNothing(), std::move(gatt_service_client_),
+        adapter_, device_, base::DoNothing(), nullptr,
         std::move(data_encryptor_unique_));
+
+    // Add fake GATT service client to the lookup class. In normal
+    // flow this is usually done when handshake is created.
+    FastPairGattServiceClientLookup::GetInstance()->InsertFakeForTesting(
+        fake_bluetooth_device_ptr_, std::move(gatt_service_client_));
   }
 
   void EraseHandshake() {
@@ -314,7 +317,7 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void SetDecryptPasskeyForNoPasskey() {
-    data_encryptor_->passkey(absl::nullopt);
+    data_encryptor_->passkey(std::nullopt);
   }
 
   void SetDecryptPasskeyForSuccess() {
@@ -325,13 +328,13 @@ class FastPairPairerImplTest : public AshTestBase {
 
   void RunWritePasskeyCallback(
       std::vector<uint8_t> data,
-      absl::optional<PairFailure> failure = absl::nullopt) {
+      std::optional<PairFailure> failure = std::nullopt) {
     fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
         ->RunWritePasskeyCallback(data, failure);
   }
 
   void RunWriteAccountKeyCallback(
-      absl::optional<AccountKeyFailure> failure = absl::nullopt) {
+      std::optional<AccountKeyFailure> failure = std::nullopt) {
     fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
         ->RunWriteAccountKeyCallback(failure);
   }
@@ -344,7 +347,7 @@ class FastPairPairerImplTest : public AshTestBase {
     adapter_->NotifyConfirmPasskey(kValidPasskey, fake_bluetooth_device_ptr_);
   }
 
-  absl::optional<PairFailure> GetPairFailure() { return failure_; }
+  std::optional<PairFailure> GetPairFailure() { return failure_; }
 
   void SetPairFailure() { fake_bluetooth_device_ptr_->SetPairFailure(); }
 
@@ -433,7 +436,7 @@ class FastPairPairerImplTest : public AshTestBase {
     CreatePairer();
     if (version == DeviceFastPairVersion::kHigherThanV1) {
       SetPublicKey();
-      EXPECT_EQ(GetPairFailure(), absl::nullopt);
+      EXPECT_EQ(GetPairFailure(), std::nullopt);
       EXPECT_CALL(paired_callback_, Run);
       SetDecryptPasskeyForSuccess();
       NotifyConfirmPasskey();
@@ -454,10 +457,10 @@ class FastPairPairerImplTest : public AshTestBase {
 
   bool set_handshake_completed_successfully_ = false;
   bool on_ble_rotation_callback_called_ = false;
-  absl::optional<PairFailure> failure_ = absl::nullopt;
+  std::optional<PairFailure> failure_ = std::nullopt;
   std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
-  raw_ptr<FakeBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      fake_bluetooth_device_ptr_ = nullptr;
+  raw_ptr<FakeBluetoothDevice, DanglingUntriaged> fake_bluetooth_device_ptr_ =
+      nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
@@ -474,48 +477,48 @@ class FastPairPairerImplTest : public AshTestBase {
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   std::unique_ptr<FakeFastPairDataEncryptor> data_encryptor_unique_;
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged | ExperimentalAsh>
-      data_encryptor_ = nullptr;
-  raw_ptr<FakeFastPairHandshake, DanglingUntriaged | ExperimentalAsh>
-      fake_fast_pair_handshake_ = nullptr;
+  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
+      nullptr;
+  raw_ptr<FakeFastPairHandshake, DanglingUntriaged> fake_fast_pair_handshake_ =
+      nullptr;
   std::unique_ptr<FastPairPairer> pairer_;
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };
 
 TEST_F(FastPairPairerImplTest, NoCallbackIsInvokedOnGattSuccess_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
 }
 
 TEST_F(FastPairPairerImplTest, NoCallbackIsInvokedOnGattSuccess_Retroactive) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
 }
 
 TEST_F(FastPairPairerImplTest, NoCallbackIsInvokedOnGattSuccess_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
 }
 
 // PairByDevice refers to the fact that we aren't pairing by address, unlike
 // most other tests in this file.
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectFailure_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
@@ -533,7 +536,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectFailure_Initial) {
 // PairByDevice refers to the fact that we aren't pairing by address, unlike
 // most other tests in this file.
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectFailure_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
@@ -551,7 +554,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectFailure_Subsequent) {
 // PairByDevice refers to the fact that we aren't pairing by address, unlike
 // most other tests in this file.
 TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
@@ -566,7 +569,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial_CancelsPairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -582,7 +585,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial_CancelsPairing) {
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
@@ -600,14 +603,14 @@ TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   AddConnectedHandshake();
   CreatePairer();
   fake_bluetooth_device_ptr_->TriggerPairCallback();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepInitial,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -623,14 +626,14 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
       {floss::features::kFlossEnabled},
       /*disabled_features=*/{});
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   AddConnectedHandshake();
   CreatePairer();
   fake_bluetooth_device_ptr_->TriggerPairCallback();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepInitial,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -641,7 +644,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
 
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Initial_AlreadyClassicPaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -654,7 +657,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(paired_callback_, Run);
   CreatePairer();
 
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
 
   // For an already classic paired device, we skip right to Account Key writing.
   EXPECT_CALL(pairing_procedure_complete_, Run);
@@ -670,7 +673,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Initial_AlreadyClassicPaired_FailureToConnect) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -703,7 +706,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Initial_AlreadyClassicPaired_Disconnected) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -716,7 +719,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(paired_callback_, Run);
   CreatePairer();
 
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
 
   // For an already classic paired device, we skip right to Account Key writing.
   EXPECT_CALL(pairing_procedure_complete_, Run);
@@ -731,7 +734,7 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -747,7 +750,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
   EXPECT_CALL(pairing_procedure_complete_, Run);
   CreatePairer();
 
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_EQ(
       histogram_tester().GetBucketCount(
           kInitialSuccessFunnelMetric,
@@ -763,7 +766,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
 
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Subsequent_AlreadyClassicPaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -774,7 +777,7 @@ TEST_F(FastPairPairerImplTest,
 
   EXPECT_CALL(paired_callback_, Run);
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepSubsequent,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -785,7 +788,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Subsequent_AlreadyFastPaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -800,7 +803,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(paired_callback_, Run);
   EXPECT_CALL(pairing_procedure_complete_, Run);
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepSubsequent,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -810,14 +813,14 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
   AddConnectedHandshake();
   CreatePairer();
   fake_bluetooth_device_ptr_->TriggerPairCallback();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
       kProtocolPairingStepSubsequent,
       {FastPairProtocolPairingSteps::kPairingStarted,
@@ -826,7 +829,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, ConnectFailure_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kConnectDeviceResult, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -848,7 +851,7 @@ TEST_F(FastPairPairerImplTest, ConnectFailure_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, ConnectFailure_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kConnectDeviceResult, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -869,7 +872,7 @@ TEST_F(FastPairPairerImplTest, ConnectFailure_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, ConnectSuccess_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
@@ -884,7 +887,7 @@ TEST_F(FastPairPairerImplTest, ConnectSuccess_Initial) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -896,7 +899,7 @@ TEST_F(FastPairPairerImplTest, ConnectSuccess_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, ConnectSuccess_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
@@ -911,7 +914,7 @@ TEST_F(FastPairPairerImplTest, ConnectSuccess_Subsequent) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -923,7 +926,7 @@ TEST_F(FastPairPairerImplTest, ConnectSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
@@ -938,7 +941,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Initial) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   NotifyConfirmPasskey();
 
   RunWritePasskeyCallback({}, PairFailure::kPasskeyPairingCharacteristicWrite);
@@ -956,7 +959,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
@@ -971,7 +974,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Subsequent) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   NotifyConfirmPasskey();
   RunWritePasskeyCallback({}, PairFailure::kPasskeyPairingCharacteristicWrite);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPasskeyPairingCharacteristicWrite);
@@ -989,7 +992,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyFailure_Subsequent) {
 
 TEST_F(FastPairPairerImplTest,
        ParseDecryptedPasskeyIncorrectMessageType_Initial_SeekersPasskey) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1000,7 +1003,7 @@ TEST_F(FastPairPairerImplTest,
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForIncorrectMessageType(
       FastPairMessageType::kSeekersPasskey);
   NotifyConfirmPasskey();
@@ -1018,7 +1021,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(
     FastPairPairerImplTest,
     ParseDecryptedPasskeyIncorrectMessageType_Initial_KeyBasedPairingRequest) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1029,7 +1032,7 @@ TEST_F(
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForIncorrectMessageType(
       FastPairMessageType::kKeyBasedPairingRequest);
   NotifyConfirmPasskey();
@@ -1047,7 +1050,7 @@ TEST_F(
 TEST_F(
     FastPairPairerImplTest,
     ParseDecryptedPasskeyIncorrectMessageType_Initial_KeyBasedPairingResponse) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1058,7 +1061,7 @@ TEST_F(
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForIncorrectMessageType(
       FastPairMessageType::kKeyBasedPairingResponse);
   NotifyConfirmPasskey();
@@ -1074,7 +1077,7 @@ TEST_F(
 }
 
 TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyNoPasskey) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1085,7 +1088,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyNoPasskey) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForNoPasskey();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
@@ -1101,7 +1104,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyNoPasskey) {
 
 TEST_F(FastPairPairerImplTest,
        ParseDecryptedPasskeyIncorrectMessageType_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -1112,7 +1115,7 @@ TEST_F(FastPairPairerImplTest,
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForIncorrectMessageType(
       FastPairMessageType::kKeyBasedPairingResponse);
   NotifyConfirmPasskey();
@@ -1128,7 +1131,7 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1139,7 +1142,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Initial) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForPasskeyMismatch();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
@@ -1155,7 +1158,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -1166,7 +1169,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Subsequent) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForPasskeyMismatch();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
@@ -1182,7 +1185,7 @@ TEST_F(FastPairPairerImplTest, ParseDecryptedPasskeyMismatch_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, PairedDeviceLost_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1193,13 +1196,13 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Initial) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForSuccess();
 
   // This time, this helper function is used to make the device lost during
   // Passkey exchange.
-  SetGetDeviceNullptr();
   NotifyConfirmPasskey();
+  SetGetDeviceNullptr();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
@@ -1213,7 +1216,7 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Initial) {
 }
 
 TEST_F(FastPairPairerImplTest, PairedDeviceLost_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -1224,13 +1227,13 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Subsequent) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForSuccess();
 
   // This time, this helper function is used to make the device lost during
   // Passkey exchange.
-  SetGetDeviceNullptr();
   NotifyConfirmPasskey();
+  SetGetDeviceNullptr();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
   ExpectStepMetrics<FastPairProtocolPairingSteps>(
@@ -1244,7 +1247,7 @@ TEST_F(FastPairPairerImplTest, PairedDeviceLost_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1255,12 +1258,12 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1282,7 +1285,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_Floss) {
       {floss::features::kFlossEnabled},
       /*disabled_features=*/{});
 
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1293,14 +1296,14 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_Floss) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
   // Floss calls Pair instead of finishing after ConnectDevice.
   fake_bluetooth_device_ptr_->TriggerPairCallback();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1316,7 +1319,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_Floss) {
 }
 
 TEST_F(FastPairPairerImplTest, BleDeviceLostMidPair) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1327,7 +1330,7 @@ TEST_F(FastPairPairerImplTest, BleDeviceLostMidPair) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   SetDecryptPasskeyForSuccess();
 
   // Simulate BLE device being lost in the middle of pairing flow.
@@ -1340,7 +1343,7 @@ TEST_F(FastPairPairerImplTest, BleDeviceLostMidPair) {
 }
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -1351,19 +1354,19 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairerAsFactory();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 }
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -1381,13 +1384,13 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1403,7 +1406,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -1421,20 +1424,20 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 }
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -1451,20 +1454,20 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -1485,12 +1488,12 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
@@ -1507,7 +1510,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -1528,12 +1531,12 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
@@ -1550,7 +1553,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -1570,12 +1573,12 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
@@ -1592,7 +1595,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_GUEST);
+  Login(user_manager::UserType::kGuest);
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -1606,13 +1609,13 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1625,7 +1628,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_KioskAppLoggedIn) {
-  Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  Login(user_manager::UserType::kKioskApp);
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -1639,13 +1642,13 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_KioskAppLoggedIn) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1666,12 +1669,12 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_NotLoggedIn) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1693,12 +1696,12 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1707,7 +1710,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -1725,13 +1728,13 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
 
@@ -1751,7 +1754,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1769,13 +1772,13 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
 
@@ -1795,7 +1798,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1812,13 +1815,13 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
 
@@ -1838,7 +1841,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
@@ -1866,7 +1869,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1893,7 +1896,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1919,7 +1922,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1932,7 +1935,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1945,7 +1948,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorUnknown) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1958,7 +1961,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1971,7 +1974,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInProgress) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -1984,7 +1987,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -1997,7 +2000,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInvalidLength) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2010,7 +2013,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2023,7 +2026,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPermitted) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2036,7 +2039,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2049,7 +2052,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotAuthorized) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2062,7 +2065,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2075,7 +2078,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2088,7 +2091,7 @@ TEST_F(FastPairPairerImplTest,
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2108,13 +2111,13 @@ TEST_F(FastPairPairerImplTest,
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kFastPairSavedDevices,
                              features::kFastPairSavedDevicesStrictOptIn});
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2126,7 +2129,7 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2137,7 +2140,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
 
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
 
@@ -2152,7 +2155,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
 }
 
 TEST_F(FastPairPairerImplTest, FastPairVersionOne_DevicePaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateDevice(DeviceFastPairVersion::kV1);
   EXPECT_EQ(GetSystemTrayClient()->show_bluetooth_pairing_dialog_count(), 1);
@@ -2168,10 +2171,10 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DevicePaired) {
 
 TEST_F(FastPairPairerImplTest,
        FastPairVersionOne_SetsClassicAddressAfterPairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   CreateDevice(DeviceFastPairVersion::kV1);
   // V1 devices don't have classic addresses set during handshake.
-  device_->set_classic_address(absl::nullopt);
+  device_->set_classic_address(std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kV1, device_->version().value());
@@ -2183,7 +2186,7 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateDevice(DeviceFastPairVersion::kV1);
   EXPECT_EQ(GetSystemTrayClient()->show_bluetooth_pairing_dialog_count(), 1);
@@ -2198,7 +2201,7 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2219,7 +2222,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
@@ -2249,7 +2252,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
@@ -2274,7 +2277,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2300,7 +2303,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2325,7 +2328,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -2347,7 +2350,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -2373,7 +2376,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -2393,7 +2396,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
@@ -2415,7 +2418,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -2444,12 +2447,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
@@ -2468,7 +2471,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   // Start opted out
   fast_pair_repository_->SetOptInStatus(
@@ -2512,7 +2515,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -2539,13 +2542,13 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   SetGetDeviceNullptr();
   AddConnectedHandshake();
   CreatePairer();
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_CALL(paired_callback_, Run);
   SetDecryptPasskeyForSuccess();
   NotifyConfirmPasskey();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
@@ -2565,7 +2568,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
 // FastPairPairerImpl object in |fake_fast_pair_handshake_| will attempt and
 // fail to pair with it directly using FastPairPairerImpl::Pair.
 TEST_F(FastPairPairerImplTest, CreateBondTimeout_AdapterHasDeviceAddress) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2578,7 +2581,7 @@ TEST_F(FastPairPairerImplTest, CreateBondTimeout_AdapterHasDeviceAddress) {
 
 TEST_F(FastPairPairerImplTest,
        CreateBondTimeout_AdapterDoesNotHaveDeviceAddress) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2596,7 +2599,7 @@ TEST_F(FastPairPairerImplTest,
 // PairByDevice refers to the fact that we aren't pairing by address, unlike
 // most other tests in this file.
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectTimeout_Initial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2612,7 +2615,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectTimeout_Initial) {
 // PairByDevice refers to the fact that we aren't pairing by address, unlike
 // most other tests in this file.
 TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectTimeout_Subsequent) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2626,7 +2629,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectTimeout_Subsequent) {
 }
 
 TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
@@ -2659,7 +2662,7 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
 TEST_F(FastPairPairerImplTest, BleAddressRotatedCallsCallback) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairBleRotation};
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
 
@@ -2679,7 +2682,7 @@ TEST_F(FastPairPairerImplTest, BleAddressRotatedCallsCallback) {
 // fire.
 TEST_F(FastPairPairerImplTest,
        CreateBondTimeout_ConfirmPasskey_AdapterHasDeviceAddress) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2691,7 +2694,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        CreateBondTimeout_ConfirmPasskey_AdapterDoesNotHaveDeviceAddress) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -2707,7 +2710,7 @@ TEST_F(FastPairPairerImplTest,
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
-  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;

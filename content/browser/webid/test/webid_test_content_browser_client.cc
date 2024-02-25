@@ -4,7 +4,7 @@
 
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 
-#include "content/browser/webid/mdocs/mdoc_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 
 namespace content {
@@ -24,22 +24,22 @@ void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
   test_dialog_controller_ = std::move(controller);
 }
 
-std::unique_ptr<MDocProvider>
-WebIdTestContentBrowserClient::CreateMDocProvider() {
-  DCHECK(test_mdoc_provider_);
-  return std::move(test_mdoc_provider_);
+std::unique_ptr<DigitalIdentityProvider>
+WebIdTestContentBrowserClient::CreateDigitalIdentityProvider() {
+  DCHECK(test_digital_identity_provider_);
+  return std::move(test_digital_identity_provider_);
 }
 
-void WebIdTestContentBrowserClient::SetMDocProvider(
-    std::unique_ptr<MDocProvider> provider) {
-  test_mdoc_provider_ = std::move(provider);
+void WebIdTestContentBrowserClient::SetDigitalIdentityProvider(
+    std::unique_ptr<DigitalIdentityProvider> provider) {
+  test_digital_identity_provider_ = std::move(provider);
 }
 
 void WebIdTestContentBrowserClient::SetIdentityRegistry(
     WebContents* web_contents,
     base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-    const url::Origin& url) {
-  IdentityRegistry::CreateForWebContents(web_contents, delegate, url);
+    const GURL& config_url) {
+  IdentityRegistry::CreateForWebContents(web_contents, delegate, config_url);
 }
 
 }  // namespace content

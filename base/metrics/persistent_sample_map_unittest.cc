@@ -25,7 +25,8 @@ std::unique_ptr<PersistentHistogramAllocator> DuplicateHistogramAllocator(
   return std::make_unique<PersistentHistogramAllocator>(
       std::make_unique<PersistentMemoryAllocator>(
           const_cast<void*>(original->data()), original->length(), 0,
-          original->Id(), original->Name(), false));
+          original->Id(), original->Name(),
+          PersistentMemoryAllocator::kReadWrite));
 }
 
 TEST(PersistentSampleMapTest, AccumulateTest) {

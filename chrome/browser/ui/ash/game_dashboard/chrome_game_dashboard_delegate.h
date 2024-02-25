@@ -5,18 +5,46 @@
 #ifndef CHROME_BROWSER_UI_ASH_GAME_DASHBOARD_CHROME_GAME_DASHBOARD_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_GAME_DASHBOARD_CHROME_GAME_DASHBOARD_DELEGATE_H_
 
+#include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
+#include "base/memory/weak_ptr.h"
+
+namespace arc {
+class CompatModeButtonController;
+}  // namespace arc
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 class ChromeGameDashboardDelegate : public ash::GameDashboardDelegate {
  public:
-  ChromeGameDashboardDelegate() = default;
+  ChromeGameDashboardDelegate();
   ChromeGameDashboardDelegate(const ChromeGameDashboardDelegate&) = delete;
   ChromeGameDashboardDelegate& operator=(const ChromeGameDashboardDelegate&) =
       delete;
-  ~ChromeGameDashboardDelegate() override = default;
+  ~ChromeGameDashboardDelegate() override;
 
   // ash::GameDashboardDelegate:
-  bool IsGame(const std::string& app_id) const override;
+  void GetIsGame(const std::string& app_id, IsGameCallback callback) override;
+  std::string GetArcAppName(const std::string& app_id) const override;
+  void RecordGameWindowOpenedEvent(aura::Window* window) override;
+  void ShowResizeToggleMenu(aura::Window* window) override;
+
+ private:
+  arc::CompatModeButtonController* GetCompatModeButtonController();
+
+  // Callback when `IsGame` queries ARC to get the app category.
+  void OnReceiveAppCategory(IsGameCallback callback,
+                            arc::mojom::AppCategory category);
+
+  // A cached reference of the `arc::CompatModeButtonController` that shouldn't
+  // be referenced directly when trying to use the controller. Instead, utilize
+  // `GetCompatModeButtonController()` to ensure the value returned is not null.
+  base::WeakPtr<arc::CompatModeButtonController>
+      compat_mode_button_controller_ = nullptr;
+
+  base::WeakPtrFactory<ChromeGameDashboardDelegate> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GAME_DASHBOARD_CHROME_GAME_DASHBOARD_DELEGATE_H_

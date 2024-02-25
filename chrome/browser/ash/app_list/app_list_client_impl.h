@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace app_list {
@@ -76,6 +76,8 @@ class AppListClientImpl
 
   // ash::AppListClient:
   void OnAppListControllerDestroyed() override;
+  std::vector<ash::AppListSearchControlCategory> GetToggleableCategories()
+      const override;
   void StartZeroStateSearch(base::OnceClosure on_done,
                             base::TimeDelta timeout) override;
   void StartSearch(const std::u16string& trimmed_query) override;
@@ -107,7 +109,6 @@ class AppListClientImpl
   void RecalculateWouldTriggerLauncherSearchIph() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
-  void OpenSearchBoxIphUrl() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
@@ -129,7 +130,6 @@ class AppListClientImpl
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition disposition) override;
-  void CommitTemporarySortOrder() override;
 
   // Associates this client with the current active user, called when this
   // client is accessed or active user is changed.
@@ -206,12 +206,11 @@ class AppListClientImpl
 
   // Unowned pointer to the associated profile. May change if SetProfile is
   // called.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Unowned pointer to the model updater owned by AppListSyncableService. Will
   // change if |profile_| changes.
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> current_model_updater_ =
-      nullptr;
+  raw_ptr<AppListModelUpdater> current_model_updater_ = nullptr;
 
   // Store the mappings between profiles and AppListModelUpdater instances.
   // In multi-profile mode, mojo callings from the Ash process to access the app
@@ -228,8 +227,7 @@ class AppListClientImpl
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
 
-  raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_ =
-      nullptr;
+  raw_ptr<ash::AppListController> app_list_controller_ = nullptr;
 
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
 
@@ -238,11 +236,11 @@ class AppListClientImpl
   // (1) the active user changes, or
   // (2) the user signs out all accounts. `AppListClientImpl` is destructed in
   // this scenario.
-  absl::optional<StateForNewUser> state_for_new_user_;
+  std::optional<StateForNewUser> state_for_new_user_;
 
   // Indicates when the session of a new user becomes active. If there is no new
   // users logged in, `new_user_session_activation_time_` is null.
-  absl::optional<base::Time> new_user_session_activation_time_;
+  std::optional<base::Time> new_user_session_activation_time_;
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;

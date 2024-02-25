@@ -17,7 +17,7 @@ namespace screen_ai {
 std::string SnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot);
 
 // Returns a map of MainContentExtractor role strings to Chrome roles.
-const std::map<std::string, ax::mojom::Role>&
+std::map<std::string, ax::mojom::Role>
 GetMainContentExtractorToChromeRoleConversionMapForTesting();
 
 }  // namespace screen_ai

@@ -42,7 +42,7 @@ UrlInfo::~UrlInfo() = default;
 // static
 UrlInfo UrlInfo::CreateForTesting(
     const GURL& url_in,
-    absl::optional<StoragePartitionConfig> storage_partition_config) {
+    std::optional<StoragePartitionConfig> storage_partition_config) {
   return UrlInfo(
       UrlInfoInit(url_in).WithStoragePartitionConfig(storage_partition_config));
 }
@@ -109,13 +109,13 @@ UrlInfoInit& UrlInfoInit::WithUniqueSandboxId(int unique_sandbox_id) {
 }
 
 UrlInfoInit& UrlInfoInit::WithStoragePartitionConfig(
-    absl::optional<StoragePartitionConfig> storage_partition_config) {
+    std::optional<StoragePartitionConfig> storage_partition_config) {
   storage_partition_config_ = storage_partition_config;
   return *this;
 }
 
 UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
-    absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info) {
+    std::optional<WebExposedIsolationInfo> web_exposed_isolation_info) {
   web_exposed_isolation_info_ = web_exposed_isolation_info;
   return *this;
 }

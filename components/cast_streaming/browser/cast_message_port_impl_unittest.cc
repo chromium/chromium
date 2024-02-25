@@ -173,7 +173,7 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   EXPECT_EQ(sender_id, kSenderId);
   EXPECT_EQ(message_namespace, kInjectNamespace);
 
-  absl::optional<base::Value> return_value = base::JSONReader::Read(message);
+  std::optional<base::Value> return_value = base::JSONReader::Read(message);
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
@@ -181,7 +181,7 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   ASSERT_TRUE(type_value);
   EXPECT_EQ(*type_value, kValueError);
 
-  absl::optional<int> request_id_value =
+  std::optional<int> request_id_value =
       return_value->GetDict().FindInt(kKeyRequestId);
   ASSERT_TRUE(request_id_value);
   EXPECT_EQ(request_id_value.value(), kRequestId);
@@ -234,7 +234,7 @@ TEST_F(CastMessagePortImplTest, MediaStatus) {
   EXPECT_EQ(sender_id, kSenderId);
   EXPECT_EQ(message_namespace, kMediaNamespace);
 
-  absl::optional<base::Value> return_value = base::JSONReader::Read(message);
+  std::optional<base::Value> return_value = base::JSONReader::Read(message);
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
@@ -242,7 +242,7 @@ TEST_F(CastMessagePortImplTest, MediaStatus) {
   ASSERT_TRUE(type_value);
   EXPECT_EQ(*type_value, kValueMediaStatus);
 
-  absl::optional<int> request_id_value =
+  std::optional<int> request_id_value =
       return_value->GetDict().FindInt(kKeyRequestId);
   ASSERT_TRUE(request_id_value);
   EXPECT_EQ(request_id_value.value(), kRequestId);

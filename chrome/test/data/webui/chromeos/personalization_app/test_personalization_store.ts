@@ -8,7 +8,7 @@
  */
 
 import {Actions, emptyState, PersonalizationState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
-import {TestStore} from 'chrome://webui-test/test_store_ts.js';
+import {TestStore} from 'chrome://webui-test/test_store.js';
 
 /**
  * Records actions and states observed during a test run. A Personalization App

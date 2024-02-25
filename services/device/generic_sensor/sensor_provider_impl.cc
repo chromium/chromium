@@ -4,15 +4,21 @@
 
 #include "services/device/generic_sensor/sensor_provider_impl.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_impl.h"
+#include "services/device/generic_sensor/virtual_platform_sensor.h"
+#include "services/device/generic_sensor/virtual_platform_sensor_provider.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 namespace device {
@@ -41,6 +47,13 @@ SensorProviderImpl::SensorProviderImpl(
     std::unique_ptr<PlatformSensorProvider> provider)
     : provider_(std::move(provider)) {
   DCHECK(provider_);
+
+  // This is used to clean up VirtualSensorProvider instances if they do not
+  // have any pending requests or connected sensors, as this class has
+  // DeviceService's lifetime but VirtualSensorProviders are per
+  // content::WebContents.
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &SensorProviderImpl::OnReceiverDisconnected, base::Unretained(this)));
 }
 
 SensorProviderImpl::~SensorProviderImpl() = default;
@@ -48,6 +61,24 @@ SensorProviderImpl::~SensorProviderImpl() = default;
 void SensorProviderImpl::Bind(
     mojo::PendingReceiver<mojom::SensorProvider> receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+void SensorProviderImpl::OnReceiverDisconnected() {
+  // If the other side of the pipe has been disconnected, the corresponding
+  // VirtualPlatformSensorProvider can be destroyed if it has no connected
+  // sensors or pending requests, as it is never going to be referenced again.
+  // This is the case in most workflows, as the Blink connections to SensorImpl
+  // are shut down before WebContentsSensorProviderProxy in content terminates
+  // its Mojo connection, but if a VirtualPlatformSensorProvider cannot be
+  // removed it is not a big problem, as the data structure is not big.
+  const mojo::ReceiverId receiver_id = receivers_.current_receiver();
+  auto it = virtual_providers_.find(receiver_id);
+  if (it != virtual_providers_.end()) {
+    const auto& provider = it->second;
+    if (!provider->has_pending_requests() && !provider->has_sensors()) {
+      virtual_providers_.erase(it);
+    }
+  }
 }
 
 void SensorProviderImpl::GetSensor(mojom::SensorType type,
@@ -58,16 +89,27 @@ void SensorProviderImpl::GetSensor(mojom::SensorType type,
                             nullptr);
     return;
   }
-  auto cloned_region = provider_->CloneSharedMemoryRegion();
+
+  PlatformSensorProvider* provider = provider_.get();
+  auto it_virtual_provider =
+      virtual_providers_.find(receivers_.current_receiver());
+  if (it_virtual_provider != virtual_providers_.end() &&
+      it_virtual_provider->second->IsOverridingSensor(type)) {
+    provider = it_virtual_provider->second.get();
+  }
+
+  auto cloned_region = provider->CloneSharedMemoryRegion();
   if (!cloned_region.IsValid()) {
     std::move(callback).Run(mojom::SensorCreationResult::ERROR_NOT_AVAILABLE,
                             nullptr);
     return;
   }
 
-  scoped_refptr<PlatformSensor> sensor = provider_->GetSensor(type);
+  scoped_refptr<PlatformSensor> sensor = provider->GetSensor(type);
   if (!sensor) {
-    provider_->CreateSensor(
+    // If we are here, it means there is no virtual sensor of this type,
+    // otherwise the GetSensor() call above would have returned it.
+    provider->CreateSensor(
         type, base::BindOnce(&SensorProviderImpl::SensorCreated,
                              weak_ptr_factory_.GetWeakPtr(),
                              std::move(cloned_region), std::move(callback)));
@@ -134,6 +176,114 @@ void SensorProviderImpl::SensorCreated(
 
   std::move(callback).Run(mojom::SensorCreationResult::SUCCESS,
                           std::move(init_params));
+}
+
+void SensorProviderImpl::CreateVirtualSensor(
+    mojom::SensorType type,
+    mojom::VirtualSensorMetadataPtr metadata,
+    CreateVirtualSensorCallback callback) {
+  const mojo::ReceiverId receiver_id = receivers_.current_receiver();
+  auto& virtual_provider = virtual_providers_[receiver_id];
+
+  if (!virtual_provider) {
+    virtual_provider = std::make_unique<VirtualPlatformSensorProvider>();
+  }
+
+  mojom::CreateVirtualSensorResult result =
+      virtual_provider->AddSensorOverride(type, std::move(metadata))
+          ? mojom::CreateVirtualSensorResult::kSuccess
+          : mojom::CreateVirtualSensorResult::kSensorTypeAlreadyOverridden;
+  std::move(callback).Run(result);
+}
+
+void SensorProviderImpl::UpdateVirtualSensor(
+    mojom::SensorType type,
+    const SensorReading& reading,
+    UpdateVirtualSensorCallback callback) {
+  auto virtual_provider_it =
+      virtual_providers_.find(receivers_.current_receiver());
+
+  if (virtual_provider_it == virtual_providers_.end()) {
+    std::move(callback).Run(
+        mojom::UpdateVirtualSensorResult::kSensorTypeNotOverridden);
+    return;
+  }
+
+  auto* virtual_provider = virtual_provider_it->second.get();
+
+  if (!virtual_provider->IsOverridingSensor(type)) {
+    std::move(callback).Run(
+        mojom::UpdateVirtualSensorResult::kSensorTypeNotOverridden);
+    return;
+  }
+
+  virtual_provider->AddReading(type, reading);
+  std::move(callback).Run(mojom::UpdateVirtualSensorResult::kSuccess);
+}
+
+void SensorProviderImpl::RemoveVirtualSensor(
+    mojom::SensorType type,
+    RemoveVirtualSensorCallback callback) {
+  auto virtual_provider_it =
+      virtual_providers_.find(receivers_.current_receiver());
+
+  if (virtual_provider_it == virtual_providers_.end()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  virtual_provider_it->second->RemoveSensorOverride(type);
+  std::move(callback).Run();
+}
+
+void SensorProviderImpl::GetVirtualSensorInformation(
+    mojom::SensorType type,
+    GetVirtualSensorInformationCallback callback) {
+  auto virtual_provider_it =
+      virtual_providers_.find(receivers_.current_receiver());
+
+  if (virtual_provider_it == virtual_providers_.end()) {
+    std::move(callback).Run(mojom::GetVirtualSensorInformationResult::NewError(
+        mojom::GetVirtualSensorInformationError::kSensorTypeNotOverridden));
+    return;
+  }
+
+  auto* virtual_provider = virtual_provider_it->second.get();
+
+  if (!virtual_provider->IsOverridingSensor(type)) {
+    std::move(callback).Run(mojom::GetVirtualSensorInformationResult::NewError(
+        mojom::GetVirtualSensorInformationError::kSensorTypeNotOverridden));
+    return;
+  }
+
+  auto platform_sensor = virtual_provider->GetSensor(type);
+  if (!platform_sensor) {
+    // The sensor has not been created yet.
+    std::move(callback).Run(mojom::GetVirtualSensorInformationResult::NewInfo(
+        mojom::VirtualSensorInformation::New(/*sampling_frequency=*/0.0)));
+    return;
+  }
+
+  auto* virtual_sensor =
+      static_cast<VirtualPlatformSensor*>(platform_sensor.get());
+  auto sensor_information = mojom::VirtualSensorInformation::New();
+  sensor_information->sampling_frequency =
+      virtual_sensor->optimal_configuration().has_value()
+          ? virtual_sensor->optimal_configuration().value().frequency()
+          : 0.0;
+
+  std::move(callback).Run(mojom::GetVirtualSensorInformationResult::NewInfo(
+      std::move(sensor_information)));
+}
+
+size_t SensorProviderImpl::GetVirtualProviderCountForTesting() const {
+  return virtual_providers_.size();
+}
+
+const VirtualPlatformSensorProvider*
+SensorProviderImpl::GetLastVirtualSensorProviderForTesting() const {
+  CHECK_EQ(virtual_providers_.size(), 1U);
+  return virtual_providers_.begin()->second.get();
 }
 
 }  // namespace device

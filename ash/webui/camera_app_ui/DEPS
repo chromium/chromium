@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/utils/pdf_conversion.h",
   "+components/arc/intent_helper",
   "+components/content_settings/core/common",
@@ -6,6 +7,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/media_device_salt",
-  "+third_party/blink/public/common/storage_key",
+  "+components/onc",
   "+services/video_capture/public/mojom/video_capture_service.mojom.h",
+  "+third_party/blink/public/common/storage_key",
 ]

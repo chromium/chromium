@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -18,22 +19,24 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -41,6 +44,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -48,17 +52,14 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-/**
- * A coordinator for the top toolbar component.
- */
+/** A coordinator for the top toolbar component. */
 public class TopToolbarCoordinator implements Toolbar {
-    /**
-     * Observes toolbar URL expansion progress change.
-     */
+    /** Observes toolbar URL expansion progress change. */
     public interface UrlExpansionObserver {
         /**
          * Notified when toolbar URL expansion progress fraction changes.
@@ -70,20 +71,23 @@ public class TopToolbarCoordinator implements Toolbar {
         void onUrlExpansionProgressChanged(float fraction);
     }
 
-    /**
-     * Observes toolbar color change.
-     */
+    /** Observes toolbar color change. */
     public interface ToolbarColorObserver {
-        /** @param color The toolbar color value. */
-        void onToolbarColorChanged(int color);
+        /**
+         * @param color The toolbar color.
+         */
+        void onToolbarColorChanged(@ColorInt int color);
     }
 
     /**
-     * Observes toolbar alpha value change during overview mode fading animation.
+     * Observes alpha of the overview during a fade animation. The partially transparent overview is
+     * drawn over top of the toolbar during this time.
      */
     public interface ToolbarAlphaInOverviewObserver {
-        /** @param fraction The toolbar alpha value. */
-        void onToolbarAlphaInOverviewChanged(float fraction);
+        /**
+         * @param fraction The overview's alpha value.
+         */
+        void onOverviewAlphaChanged(float fraction);
     }
 
     public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
@@ -98,6 +102,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * after ToolbarLayout is inflated.
      */
     private @Nullable TabSwitcherModeTTCoordinator mTabSwitcherModeCoordinator;
+
     /**
      * The coordinator for the start surface mode toolbar (phones only) if the StartSurface is
      * enabled. This will be lazily created after ToolbarLayout is inflated.
@@ -110,6 +115,9 @@ public class TopToolbarCoordinator implements Toolbar {
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
+    /** Null until {@link #initializeWithNative} is called. * */
+    private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+
     private ToolbarControlContainer mControlContainer;
     private Supplier<ResourceManager> mResourceManagerSupplier;
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
@@ -121,8 +129,14 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     private ToolbarColorObserverManager mToolbarColorObserverManager;
 
+    private TabObscuringHandler mTabObscuringHandler;
+
+    /** Token used to block the tab strip transition when find in page toolbar is showing. */
+    private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
+
     /**
      * Creates a new {@link TopToolbarCoordinator}.
+     *
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarStub The stub for the tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
@@ -130,7 +144,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabController The controller that handles interactions with the tab.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param buttonDataProviders List of classes that wish to display an optional button in the
-     *        browsing mode toolbar.
+     *     browsing mode toolbar.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
@@ -140,40 +154,38 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
      * @param identityDiscController The controller of the identity disc button.
-     * @param invalidatorCallback Callback that will be invoked when the toolbar attempts to
-     *        invalidate the drawing surface. This will give the object that registers as the host
-     *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
-     * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
-     * @param isTabGroupsAndroidContinuationEnabled Whether flag TabGroupsContinuationAndroid is
-     *        enabled.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
-     *        homepage is enabled.
+     *     homepage is enabled.
      * @param offlineDownloader Triggers downloading an offline page.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
-     *        colors.
+     *     colors.
      * @param startSurfaceLogoClickedCallback The callback to be notified when the logo is clicked
-     *        on Start surface. On NTP, the logo is in the new tab page layout instead of the
-     *        toolbar and the logo click events are processed in NewTabPageLayout. So this callback
-     *        will only be called on Start surface.
+     *     on Start surface. On NTP, the logo is in the new tab page layout instead of the toolbar
+     *     and the logo click events are processed in NewTabPageLayout. So this callback will only
+     *     be called on Start surface.
      * @param isStartSurfaceRefactorEnabled Whether Start surface refactoring is enabled.
      * @param constraintsSupplier Supplier for browser controls constraints.
      * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
      * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
-     *        captures are stale and not able to be taken.
+     *     captures are stale and not able to be taken.
      * @param shouldCreateLogoInStartToolbar Whether logo should be created in Start surface
-     *        toolbar. True if the logo should be created in the Start surface toolbar; False if
-     *        the logo should be shown in Start surface content.
+     *     toolbar. True if the logo should be created in the Start surface toolbar; False if the
+     *     logo should be shown in Start surface content.
      * @param fullscreenManager Used to check whether in fullscreen.
      */
-    public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
-            ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, UserEducationHelper userEducationHelper,
+    public TopToolbarCoordinator(
+            ToolbarControlContainer controlContainer,
+            ViewStub toolbarStub,
+            ToolbarLayout toolbarLayout,
+            ToolbarDataProvider toolbarDataProvider,
+            ToolbarTabController tabController,
+            UserEducationHelper userEducationHelper,
             List<ButtonDataProvider> buttonDataProviders,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
@@ -183,59 +195,90 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
-            ButtonDataProvider identityDiscController, Callback<Runnable> invalidatorCallback,
+            ButtonDataProvider identityDiscController,
             Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
-            BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled, HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
+            boolean isTabToGtsAnimationEnabled,
+            boolean isStartSurfaceEnabled,
+            HistoryDelegate historyDelegate,
+            BooleanSupplier partnerHomepageEnabledSupplier,
+            OfflineDownloader offlineDownloader,
             boolean initializeWithIncognitoColors,
             Callback<LoadUrlParams> startSurfaceLogoClickedCallback,
-            boolean isStartSurfaceRefactorEnabled, ObservableSupplier<Integer> constraintsSupplier,
+            boolean isStartSurfaceRefactorEnabled,
+            ObservableSupplier<Integer> constraintsSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
-            boolean shouldCreateLogoInStartToolbar, FullscreenManager fullscreenManager) {
+            boolean shouldCreateLogoInStartToolbar,
+            FullscreenManager fullscreenManager,
+            TabObscuringHandler tabObscuringHandler) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
-        mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
-                userEducationHelper, mToolbarLayout, () -> toolbarDataProvider.getTab());
+        mOptionalButtonController =
+                new OptionalBrowsingModeButtonController(
+                        buttonDataProviders,
+                        userEducationHelper,
+                        mToolbarLayout,
+                        () -> toolbarDataProvider.getTab());
         mResourceManagerSupplier = resourceManagerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
-        mToolbarColorObserverManager =
-                new ToolbarColorObserverManager(mToolbarLayout.getContext(), mToolbarLayout);
+        mToolbarColorObserverManager = new ToolbarColorObserverManager(mToolbarLayout.getContext());
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
+        mTabObscuringHandler = tabObscuringHandler;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
-            mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
-                    userEducationHelper, identityDiscController, overviewThemeColorProvider,
-                    overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                    isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                    isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
-                    startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled,
-                    shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished,
-                    mToolbarColorObserverManager);
+            mStartSurfaceToolbarCoordinator =
+                    new StartSurfaceToolbarCoordinator(
+                            toolbarStub,
+                            userEducationHelper,
+                            identityDiscController,
+                            overviewThemeColorProvider,
+                            overviewModeMenuButtonCoordinator,
+                            identityDiscButtonSupplier,
+                            isTabToGtsAnimationEnabled,
+                            isIncognitoModeEnabledSupplier,
+                            startSurfaceLogoClickedCallback,
+                            mIsStartSurfaceRefactorEnabled,
+                            shouldCreateLogoInStartToolbar,
+                            this::onStartSurfaceToolbarTransitionFinished,
+                            mToolbarColorObserverManager);
+        } else if (HubFieldTrial.isHubEnabled()) {
+            // Hub has an entirely separate toolbar.
+            mTabSwitcherModeCoordinator = null;
         } else if (mToolbarLayout instanceof ToolbarPhone
                 || mToolbarLayout instanceof ToolbarTablet) {
             mTabSwitcherModeCoordinator =
-                    new TabSwitcherModeTTCoordinator(toolbarStub, overviewModeMenuButtonCoordinator,
-                            isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                            isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
+                    new TabSwitcherModeTTCoordinator(
+                            toolbarStub,
+                            overviewModeMenuButtonCoordinator,
+                            isTabToGtsAnimationEnabled,
+                            isIncognitoModeEnabledSupplier,
+                            mToolbarColorObserverManager);
         }
-        controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
-                constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
-                browserStateBrowserControlsVisibilityDelegate, layoutStateProviderSupplier,
+        controlContainer.setPostInitializationDependencies(
+                this,
+                initializeWithIncognitoColors,
+                constraintsSupplier,
+                toolbarDataProvider::getTab,
+                compositorInMotionSupplier,
+                browserStateBrowserControlsVisibilityDelegate,
+                layoutStateProviderSupplier,
                 fullscreenManager);
-        mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
-                historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
+        mToolbarLayout.initialize(
+                toolbarDataProvider,
+                tabController,
+                mMenuButtonCoordinator,
+                historyDelegate,
+                partnerHomepageEnabledSupplier,
+                offlineDownloader);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
-        mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
     }
 
     /**
@@ -257,8 +300,8 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * Initialize the coordinator with the components that have native initialization dependencies.
-     * <p>
-     * Calling this must occur after the native library have completely loaded.
+     *
+     * <p>Calling this must occur after the native library have completely loaded.
      *
      * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
      * @param tabSwitcherClickHandler The click handler for the tab switcher button.
@@ -268,16 +311,20 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param appMenuDelegate Allows interacting with the app menu.
      * @param layoutManager A {@link LayoutManager} used to watch for scene changes.
      * @param tabSupplier Supplier of the activity tab.
-     * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to access browser
-     *                                     controls offsets.
+     * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to access
+     *     browser controls offsets and visibility.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
-    public void initializeWithNative(Runnable layoutUpdater,
-            OnClickListener tabSwitcherClickHandler, OnClickListener newTabClickHandler,
-            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
-            AppMenuDelegate appMenuDelegate, LayoutManager layoutManager,
+    public void initializeWithNative(
+            Runnable layoutUpdater,
+            OnClickListener tabSwitcherClickHandler,
+            OnClickListener newTabClickHandler,
+            OnClickListener bookmarkClickHandler,
+            OnClickListener customTabsBackClickHandler,
+            AppMenuDelegate appMenuDelegate,
+            LayoutManager layoutManager,
             ObservableSupplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         Callback<Integer> tabSwitcherLongClickCallback =
@@ -295,7 +342,8 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator.initLogoWithNative();
         }
 
-        mToolbarLayout.setTabModelSelector(mTabModelSelectorSupplier.get());
+        mToolbarLayout.setTabCountSupplier(
+                mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
         getLocationBar().updateVisualsForState();
         mToolbarLayout.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
         mToolbarLayout.setOnTabSwitcherLongClickHandler(
@@ -310,13 +358,34 @@ public class TopToolbarCoordinator implements Toolbar {
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.
         if (DeviceClassManager.enableFullscreen()) {
-            mOverlayCoordinator = new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(),
-                    layoutManager, mControlContainer::getProgressBarDrawingInfo, tabSupplier,
-                    browserControlsStateProvider, mResourceManagerSupplier, topUiThemeColorProvider,
-                    LayoutType.BROWSING | LayoutType.SIMPLE_ANIMATION | LayoutType.TAB_SWITCHER,
-                    false);
+            mOverlayCoordinator =
+                    new TopToolbarOverlayCoordinator(
+                            mToolbarLayout.getContext(),
+                            layoutManager,
+                            mControlContainer::getProgressBarDrawingInfo,
+                            tabSupplier,
+                            browserControlsVisibilityManager,
+                            mResourceManagerSupplier,
+                            topUiThemeColorProvider,
+                            LayoutType.BROWSING
+                                    | LayoutType.SIMPLE_ANIMATION
+                                    | LayoutType.TAB_SWITCHER,
+                            false);
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
+        }
+
+        int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled() && tabStripHeightResource > 0) {
+            mTabStripTransitionCoordinator =
+                    new TabStripTransitionCoordinator(
+                            browserControlsVisibilityManager,
+                            mControlContainer,
+                            mToolbarLayout,
+                            tabStripHeightResource,
+                            mTabObscuringHandler);
+            mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
+            mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         }
     }
 
@@ -342,6 +411,14 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Overviews that are not owned by this class need to update this observer when they update
+     * their alpha during animations.
+     */
+    public ToolbarAlphaInOverviewObserver getToolbarAlphaInOverviewObserver() {
+        return mToolbarColorObserverManager;
+    }
+
+    /**
      * @see View#addOnAttachStateChangeListener(View.OnAttachStateChangeListener)
      */
     public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
@@ -355,9 +432,19 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.removeOnAttachStateChangeListener(listener);
     }
 
-    /**
-     * Cleans up any code as necessary.
-     */
+    /** Add an observer that listens to tab strip height update. */
+    public void addTabStripHeightObserver(TabStripHeightObserver observer) {
+        if (mTabStripTransitionCoordinator == null) return;
+        mTabStripTransitionCoordinator.addObserver(observer);
+    }
+
+    /** Remove the observer that listens to tab strip height update. */
+    public void removeTabStripHeightObserver(TabStripHeightObserver observer) {
+        if (mTabStripTransitionCoordinator == null) return;
+        mTabStripTransitionCoordinator.removeObserver(observer);
+    }
+
+    /** Cleans up any code as necessary. */
     public void destroy() {
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.destroy();
@@ -383,6 +470,13 @@ public class TopToolbarCoordinator implements Toolbar {
         }
         if (mControlContainer != null) {
             mControlContainer = null;
+        }
+        if (mTabStripTransitionCoordinator != null) {
+            mToolbarLayout
+                    .getContext()
+                    .unregisterComponentCallbacks(mTabStripTransitionCoordinator);
+            mTabStripTransitionCoordinator.destroy();
+            mTabStripTransitionCoordinator = null;
         }
     }
 
@@ -416,34 +510,29 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Sets the {@link Invalidator} that will be called when the toolbar attempts to invalidate the
-     * drawing surface.  This will give the object that registers as the host for the
-     * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
-     * @param invalidator An {@link Invalidator} instance.
-     */
-    public void setInvalidatorCallback(Callback<Runnable> callback) {
-        mToolbarLayout.setInvalidatorCallback(callback);
-    }
-
-    /**
      * Gives inheriting classes the chance to respond to
      * {@link FindToolbar} state changes.
      * @param showing Whether or not the {@code FindToolbar} will be showing.
      */
     public void handleFindLocationBarStateChange(boolean showing) {
         mToolbarLayout.handleFindLocationBarStateChange(showing);
+        if (mTabStripTransitionCoordinator != null) {
+            if (showing) {
+                mFindToolbarToken =
+                        mTabStripTransitionCoordinator.requestDeferTabStripTransitionToken();
+            } else {
+                mTabStripTransitionCoordinator.releaseTabStripToken(mFindToolbarToken);
+                mFindToolbarToken = TokenHolder.INVALID_TOKEN;
+            }
+        }
     }
 
-    /**
-     * Sets whether the urlbar should be hidden on first page load.
-     */
+    /** Sets whether the urlbar should be hidden on first page load. */
     public void setUrlBarHidden(boolean hidden) {
         mToolbarLayout.setUrlBarHidden(hidden);
     }
 
-    /**
-     * Tells the Toolbar to update what buttons it is currently displaying.
-     */
+    /** Tells the Toolbar to update what buttons it is currently displaying. */
     public void updateButtonVisibility() {
         mToolbarLayout.updateButtonVisibility();
         mOptionalButtonController.updateButtonVisibility();
@@ -571,12 +660,14 @@ public class TopToolbarCoordinator implements Toolbar {
 
     @Override
     public int getTabStripHeight() {
-        return mToolbarLayout.getTabStripHeight();
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()
+                && mTabStripTransitionCoordinator != null) {
+            return mTabStripTransitionCoordinator.getTabStripHeight();
+        }
+        return mToolbarLayout.getTabStripHeightFromResource();
     }
 
-    /**
-     * Triggered when the content view for the specified tab has changed.
-     */
+    /** Triggered when the content view for the specified tab has changed. */
     public void onTabContentViewChanged() {
         mToolbarLayout.onTabContentViewChanged();
     }
@@ -620,29 +711,23 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Gives inheriting classes the chance to observe tab count changes.
-     * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
-     */
-    public void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mToolbarLayout.setTabCountProvider(tabCountProvider);
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setTabCountProvider(tabCountProvider);
-        }
-        if (mStartSurfaceToolbarCoordinator != null) {
-            mStartSurfaceToolbarCoordinator.setTabCountProvider(tabCountProvider);
-        }
-    }
-
-    /**
      * @param provider The provider used to determine incognito state.
+     * @param overviewIncognitoSupplier Optional override for whether the overview is showing
+     *     incognito UI.
      */
-    public void setIncognitoStateProvider(IncognitoStateProvider provider) {
+    public void setIncognitoStateProvider(
+            IncognitoStateProvider provider, @Nullable BooleanSupplier overviewIncognitoSupplier) {
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.setIncognitoStateProvider(provider);
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.setIncognitoStateProvider(provider);
         }
-        mToolbarColorObserverManager.setIncognitoStateProvider(provider);
+
+        BooleanSupplier nonNullSupplier =
+                overviewIncognitoSupplier == null
+                        ? provider::isIncognitoSelected
+                        : overviewIncognitoSupplier;
+        mToolbarColorObserverManager.setIncognitoStateProvider(nonNullSupplier);
     }
 
     /**
@@ -674,35 +759,23 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbarLayout.onUrlFocusChange(hasFocus);
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlFocusChange(hasFocus);
+        }
     }
 
-    /**
-     * Returns the elapsed realtime in ms of the time at which first draw for the toolbar occurred.
-     */
-    public long getFirstDrawTime() {
-        return mToolbarLayout.getFirstDrawTime();
+    public void onUrlAnimationFinished(boolean hasFocus) {
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlAnimationFinished(hasFocus);
+        }
     }
 
-    /**
-     * Notified when a navigation to a different page has occurred.
-     */
+    /** Notified when a navigation to a different page has occurred. */
     public void onNavigatedToDifferentPage() {
         mToolbarLayout.onNavigatedToDifferentPage();
     }
 
-    /**
-     * Force to hide toolbar shadow.
-     * @param forceHideShadow Whether toolbar shadow should be hidden.
-     *
-     * TODO(crbug.com/1202994): change to token-based access
-     */
-    public void setForceHideShadow(boolean forceHideShadow) {
-        mToolbarLayout.setForceHideShadow(forceHideShadow);
-    }
-
-    /**
-     * Finish any toolbar animations.
-     */
+    /** Finish any toolbar animations. */
     public void finishAnimations() {
         mToolbarLayout.finishAnimations();
     }
@@ -719,8 +792,10 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param newState New Start Surface State.
      * @param requestToShow Whether or not request showing the start surface toolbar.
      */
-    public void updateStartSurfaceToolbarState(@Nullable @StartSurfaceState Integer newState,
-            boolean requestToShow, @Nullable @LayoutType Integer newLayoutType) {
+    public void updateStartSurfaceToolbarState(
+            @Nullable @StartSurfaceState Integer newState,
+            boolean requestToShow,
+            @Nullable @LayoutType Integer newLayoutType) {
         if (mStartSurfaceToolbarCoordinator == null
                 || mToolbarLayout.getToolbarDataProvider() == null) {
             return;
@@ -749,10 +824,13 @@ public class TopToolbarCoordinator implements Toolbar {
         // We continue to show the browsing mode toolbar while the tab switcher is fading in or out.
         // Once this transition finishes, onStartSurfaceToolbarFinishedShowing() will reset the
         // browsing mode toolbar's visibility to the correct value.
-        boolean showToolbar = mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox()
-                || (isShowingStartSurfaceTabSwitcher() && !mStartSurfaceToolbarVisible);
-        mToolbarLayout.onStartSurfaceStateChanged(showToolbar,
-                mStartSurfaceToolbarCoordinator.isOnHomepage(), isShowingStartSurfaceTabSwitcher());
+        boolean showToolbar =
+                mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox()
+                        || (isShowingStartSurfaceTabSwitcher() && !mStartSurfaceToolbarVisible);
+        mToolbarLayout.onStartSurfaceStateChanged(
+                showToolbar,
+                mStartSurfaceToolbarCoordinator.isOnHomepage(),
+                isShowingStartSurfaceTabSwitcher());
     }
 
     private boolean isShowingStartSurfaceTabSwitcher() {
@@ -805,6 +883,11 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Returns the {@link StartSurfaceToolbarCoordinator}. */
     public StartSurfaceToolbarCoordinator getStartSurfaceToolbarForTesting() {
         return mStartSurfaceToolbarCoordinator;
+    }
+
+    /** Returns the {@link TabStripTransitionCoordinator}. */
+    public TabStripTransitionCoordinator getTabStripTransitionCoordinatorForTesting() {
+        return mTabStripTransitionCoordinator;
     }
 
     @Override

@@ -8,7 +8,6 @@ mojom("mojom") {
   sources = [ "printing_manager.mojom" ]
 
   webui_module_path = "/chromeos/components/print_management"
-  use_typescript_sources = true
 
   public_deps = [
     "//mojo/public/mojom/base",

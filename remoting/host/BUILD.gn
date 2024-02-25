@@ -114,7 +114,6 @@ source_set("common_headers") {
     "input_injector.h",
     "input_injector_metadata.h",
     "sas_injector.h",
-    "session_terminator.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
   ]
@@ -374,6 +373,8 @@ static_library("common") {
     "mouse_shape_pump.h",
     "pairing_registry_delegate.cc",
     "pairing_registry_delegate.h",
+    "passthrough_register_support_host_request.cc",
+    "passthrough_register_support_host_request.h",
     "pin_hash.cc",
     "pin_hash.h",
     "policy_watcher.cc",
@@ -483,6 +484,10 @@ static_library("common") {
       "posix/signal_handler.cc",
       "posix/signal_handler.h",
     ]
+
+    if (!is_android) {
+      deps += [ "//components/policy/core/common:policy_path_constants" ]
+    }
   }
 
   if (!is_ios) {
@@ -554,12 +559,18 @@ static_library("common") {
       "linux/desktop_resizer_wayland.h",
       "linux/ei_event_watcher_glib.cc",
       "linux/ei_event_watcher_glib.h",
+      "linux/gnome_display_config.cc",
+      "linux/gnome_display_config.h",
+      "linux/gnome_display_config_dbus_client.cc",
+      "linux/gnome_display_config_dbus_client.h",
       "linux/input_injector_wayland.cc",
       "linux/input_injector_wayland.h",
       "linux/remote_desktop_portal.cc",
       "linux/remote_desktop_portal.h",
       "linux/remote_desktop_portal_injector.cc",
       "linux/remote_desktop_portal_injector.h",
+      "linux/scoped_glib.cc",
+      "linux/scoped_glib.h",
       "linux/wayland_connection.cc",
       "linux/wayland_connection.h",
       "linux/wayland_desktop_capturer.cc",
@@ -633,7 +644,6 @@ static_library("common") {
       "input_injector_chromeos.cc",
       "input_injector_chromeos.h",
       "keyboard_layout_monitor_chromeos.cc",
-      "session_terminator_chromeos.cc",
     ]
     deps += [
       "//ash",

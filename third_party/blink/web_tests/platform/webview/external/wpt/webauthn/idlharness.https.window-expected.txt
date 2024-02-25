@@ -1,0 +1,89 @@
+This is a testharness.js-based test.
+Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PublicKeyCredential interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface object length
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface object name
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: attribute rawId
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: attribute response
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: attribute authenticatorAttachment
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation getClientExtensionResults()
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation isConditionalMediationAvailable()
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation toJSON()
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation isUserVerifyingPlatformAuthenticatorAvailable()
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation getClientCapabilities()
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON)
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON)
+  assert_own_property: self does not have own property "PublicKeyCredential" expected property "PublicKeyCredential" missing
+[FAIL] AuthenticatorResponse interface: existence and properties of interface object
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface object length
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface object name
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorResponse interface: attribute clientDataJSON
+  assert_own_property: self does not have own property "AuthenticatorResponse" expected property "AuthenticatorResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: existence and properties of interface object
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface object length
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface object name
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: attribute attestationObject
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: operation getTransports()
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: operation getAuthenticatorData()
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: operation getPublicKey()
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAttestationResponse interface: operation getPublicKeyAlgorithm()
+  assert_own_property: self does not have own property "AuthenticatorAttestationResponse" expected property "AuthenticatorAttestationResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: existence and properties of interface object
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface object length
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface object name
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: attribute authenticatorData
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: attribute signature
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+[FAIL] AuthenticatorAssertionResponse interface: attribute userHandle
+  assert_own_property: self does not have own property "AuthenticatorAssertionResponse" expected property "AuthenticatorAssertionResponse" missing
+Harness: the test ran to completion.

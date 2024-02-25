@@ -16,9 +16,9 @@ class ClipboardHistoryItemView;
 // The button to delete the menu item and its corresponding clipboard data.
 class ClipboardHistoryDeleteButton : public views::ImageButton,
                                      public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(ClipboardHistoryDeleteButton);
+  METADATA_HEADER(ClipboardHistoryDeleteButton, views::ImageButton)
 
+ public:
   ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener,
                                const std::u16string& item_text);
   ClipboardHistoryDeleteButton(const ClipboardHistoryDeleteButton& rhs) =
@@ -40,10 +40,10 @@ class ClipboardHistoryDeleteButton : public views::ImageButton,
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.
-  raw_ptr<views::View, ExperimentalAsh> ink_drop_container_ = nullptr;
+  raw_ptr<views::View> ink_drop_container_ = nullptr;
 
   // The listener of button events.
-  const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> listener_;
+  const raw_ptr<ClipboardHistoryItemView> listener_;
 };
 
 }  // namespace ash

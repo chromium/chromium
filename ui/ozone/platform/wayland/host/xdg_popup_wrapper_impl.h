@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_POPUP_WRAPPER_IMPL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_POPUP_WRAPPER_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,8 @@ class WaylandConnection;
 class WaylandWindow;
 
 // Popup wrapper for xdg-shell stable
+// Note that XDG does not allow {0, 0} geometries in its protocol, but this is
+// allowed in Chrome. All {0, 0} bounds will be resized to {1, 1}.
 class XDGPopupWrapperImpl : public ShellPopupWrapper {
  public:
   XDGPopupWrapperImpl(std::unique_ptr<XDGSurfaceWrapperImpl> surface,
@@ -40,22 +43,20 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   void SetScaleFactor(float scale_factor) override;
   XDGPopupWrapperImpl* AsXDGPopupWrapper() override;
 
+  XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
+
  private:
   wl::Object<xdg_positioner> CreatePositioner();
 
-  // xdg_popup_listener
-  static void Configure(void* data,
-                              struct xdg_popup* xdg_popup,
-                              int32_t x,
-                              int32_t y,
-                              int32_t width,
-                              int32_t height);
-  static void PopupDone(void* data, struct xdg_popup* xdg_popup);
-  static void Repositioned(void* data,
-                           struct xdg_popup* xdg_popup,
-                           uint32_t token);
-
-  XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
+  // xdg_popup_listener callbacks:
+  static void OnConfigure(void* data,
+                          xdg_popup* popup,
+                          int32_t x,
+                          int32_t y,
+                          int32_t width,
+                          int32_t height);
+  static void OnPopupDone(void* data, xdg_popup* popup);
+  static void OnRepositioned(void* data, xdg_popup* popup, uint32_t token);
 
   // Non-owned WaylandWindow that uses this popup.
   const raw_ptr<WaylandWindow> wayland_window_;

@@ -30,8 +30,9 @@ android_library("gms_stub_preconditions_java") {
   ]
 }
 
-android_library("guava_stub_preconditions_java") {
+java_library("guava_stub_preconditions_java") {
   sources = [
     "java/com/google/common/base/Preconditions.java",
   ]
+  supports_android = true
 }

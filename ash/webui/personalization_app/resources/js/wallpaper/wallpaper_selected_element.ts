@@ -7,32 +7,33 @@
  * wallpaper.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../common/icons.html.js';
-import '../../css/wallpaper.css.js';
-import '../../css/cros_button_style.css.js';
-import './info_svg_element.js';
 import './google_photos_shared_album_dialog_element.js';
+import './info_svg_element.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCheckmarkIcon, isNonEmptyArray} from '../utils.js';
+import {getCheckmarkIcon} from '../utils.js';
 
 import {getLocalStorageAttribution, getWallpaperAriaLabel, getWallpaperLayoutEnum, getWallpaperSrc} from './utils.js';
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
-export class WallpaperSelected extends WithPersonalizationStore {
+export class WallpaperSelectedElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-selected';
   }
@@ -200,7 +201,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('error_', state => state.error);
     this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);
@@ -209,7 +209,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
         state => state.wallpaper.loading.setImage > 0 ||
             state.wallpaper.loading.selected.image ||
             state.wallpaper.loading.selected.attribution ||
-            state.wallpaper.loading.refreshWallpaper);
+            state.wallpaper.loading.refreshWallpaper ||
+            state.wallpaper.seaPen.loading.currentSelected ||
+            state.wallpaper.seaPen.loading.setImage > 0);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
     this.watch(
         'imagesByCollectionId_', state => state.wallpaper.backdrop.images);
@@ -530,4 +532,4 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperSelected.is, WallpaperSelected);
+customElements.define(WallpaperSelectedElement.is, WallpaperSelectedElement);

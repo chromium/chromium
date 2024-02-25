@@ -43,8 +43,7 @@ void CopyDecodedImageToClipboard(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-  clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string(),
-                             ui::ClipboardContentType::kSanitized);
+  clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string());
   clipboard_writer.WriteImage(decoded_image);
 }
 

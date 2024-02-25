@@ -5,15 +5,18 @@
 #include "chromeos/ash/components/chaps_util/test_util.h"
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 #include "crypto/nss_key_util.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
 
@@ -34,15 +37,6 @@ bool FakeChapsUtil::GenerateSoftwareBackedRSAKey(
       SECKEY_EncodeDERSubjectPublicKeyInfo(out_public_key->get()));
   on_key_generated_.Run(std::string(
       reinterpret_cast<const char*>(spki_der->data), spki_der->len));
-  return true;
-}
-
-// TODO(olsa): Extend this initial implementation with more logic.
-bool FakeChapsUtil::ImportPkcs12Certificate(
-    PK11SlotInfo* slot,
-    const std::vector<uint8_t>& pkcs12_data,
-    const std::string& password,
-    bool is_software_backed) {
   return true;
 }
 

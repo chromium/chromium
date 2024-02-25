@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests that when a frame casues another frame to navigate, frameId is that of target frame');
 
   await dp.Page.enable();

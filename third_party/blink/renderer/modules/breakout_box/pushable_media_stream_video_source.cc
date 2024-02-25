@@ -80,7 +80,6 @@ void PushableMediaStreamVideoSource::Broker::PushFrame(
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(frame_callback_, std::move(video_frame),
-                          std::vector<scoped_refptr<media::VideoFrame>>(),
                           estimated_capture_time));
 }
 
@@ -162,7 +161,9 @@ void PushableMediaStreamVideoSource::PushFrame(
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback) {
+    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
+    // The pushable media stream does not report frame drops.
+    VideoCaptureNotifyFrameDroppedCB) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(frame_callback);
   broker_->OnSourceStarted(std::move(frame_callback));

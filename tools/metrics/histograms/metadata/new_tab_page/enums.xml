@@ -1,0 +1,542 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanFromHTTPCache">
+  <int value="0" label="Downloaded from network"/>
+  <int value="1" label="HTTP cache hit"/>
+</enum>
+
+<enum name="BooleanHasDiscount">
+  <int value="0" label="No discount"/>
+  <int value="1" label="has discount"/>
+</enum>
+
+<enum name="BooleanPhotosOptedIn">
+  <int value="0" label="Opted-in"/>
+  <int value="1" label="Not opted-in"/>
+</enum>
+
+<enum name="CartDiscountConsentStatus">
+  <summary>ChromeCart discount consent status.</summary>
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Ignored"/>
+  <int value="3" label="No show"/>
+  <int value="4" label="Never shown"/>
+</enum>
+
+<enum name="CartDiscountConsentVariation">
+  <summary>Discount consent variation.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="StringChange"/>
+  <int value="2" label="Inline"/>
+  <int value="3" label="Dialog"/>
+</enum>
+
+<enum name="CartDiscountDataType">
+  <summary>Discount related data associated with the cart module.</summary>
+  <int value="0" label="cart_discount_info"/>
+  <int value="1" label="cart_discount_link"/>
+</enum>
+
+<enum name="FailToShowHomeSurfaceReason">
+  <int value="0" label="Fail to create a NTP Tab"/>
+  <int value="1" label="Fail to find a NTP Tab"/>
+  <int value="2" label="Not a native page"/>
+  <int value="3" label="Not a NTP native page"/>
+  <int value="4" label="The native page is frozen"/>
+</enum>
+
+<enum name="FeedPositionSegmentationResult">
+  <int value="0" label="Uninitialized."/>
+  <int value="1" label="Is a Feed active user."/>
+  <int value="2" label="Is a non-Feed user."/>
+</enum>
+
+<enum name="ItemSuggestRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="JSON parse error"/>
+  <int value="3" label="Content error"/>
+</enum>
+
+<enum name="NewTabPageActionAndroid2">
+  <int value="0" label="Searched using the omnibox"/>
+  <int value="1" label="Navigated to Google search homepage using the omnibox"/>
+  <int value="2" label="Navigated to any other page using the omnibox"/>
+  <int value="3" label="Opened a most visited tile"/>
+  <int value="4" label="Opened the recent tabs manager"/>
+  <int value="5" label="Opened the history manager"/>
+  <int value="6" label="Opened the bookmarks manager"/>
+  <int value="7" label="Opened the downloads manager"/>
+  <int value="8" label="Navigated to the webpage for a snippet"/>
+  <int value="9" label="Clicked on Learn More"/>
+  <int value="10"
+      label="Clicked on the Refresh button in the all dismissed state
+             (obsolete)"/>
+  <int value="11" label="Opened an explore sites tile (obsolete)"/>
+  <int value="12"
+      label="Opened the manage interests page from the feed (obsolete)"/>
+  <int value="13"
+      label="Triggered a block content action, which typically results in the
+             content being removed from the feed, and a setting written
+             server side to avoid serving that content again. (obsolete)"/>
+  <int value="14" label="Clicked on Manage activity (obsolete)"/>
+  <int value="15" label="Clicked on the feed header menu button (obsolete)"/>
+  <int value="16" label="Clicked to play a video (obsolete)"/>
+</enum>
+
+<enum name="NewTabPageActioniOS">
+  <int value="0" label="Searched using the omnibox"/>
+  <int value="1" label="Navigated to Google search homepage using the omnibox"/>
+  <int value="2" label="Navigated to any other page using the omnibox"/>
+  <int value="3" label="Opened a most visited tile"/>
+  <int value="4" label="Opened a recent tab"/>
+  <int value="5" label="Opened a bookmark"/>
+  <int value="6" label="Opened a foreign session"/>
+  <int value="7" label="Opened the doodle"/>
+  <int value="8" label="Opened a Reading List entry"/>
+  <int value="9" label="Opened a suggestion"/>
+  <int value="10" label="Opened the Learn More link"/>
+  <int value="11"
+      label="(Obsolete) Opened the Promo. Deprecated as of 09/2022."/>
+  <int value="12" label="Opened a history entry"/>
+  <int value="13" label="Searched using voice"/>
+</enum>
+
+<enum name="NewTabPageConcretePage">
+  <int value="0" label="Other"/>
+  <int value="1" label="1P WebUI NTP"/>
+  <int value="2" label="3P WebUI NTP"/>
+  <int value="3" label="3P Remote NTP"/>
+  <int value="4" label="Extension NTP"/>
+  <int value="5" label="Off the record NTP"/>
+</enum>
+
+<enum name="NewTabPageLensUploadDialogActions">
+  <int value="0" label="URL submitted"/>
+  <int value="1" label="File submitted"/>
+  <int value="2" label="Image dropped"/>
+  <int value="3" label="Dialog opened"/>
+  <int value="4" label="Dialog closed"/>
+  <int value="5" label="Error shown"/>
+</enum>
+
+<enum name="NewTabPageLensUploadDialogErrors">
+  <int value="0" label="Excessive file size"/>
+  <int value="1" label="Invalid file type"/>
+  <int value="2" label="Too many files"/>
+  <int value="3" label="Too many URLs"/>
+  <int value="4" label="Too many characters"/>
+  <int value="5" label="Invalid URI scheme"/>
+  <int value="6" label="Invalid characters"/>
+  <int value="7" label="Network error"/>
+</enum>
+
+<enum name="NewTabPageLogoClick">
+  <int value="0" label="Static logo clicked"/>
+  <int value="1" label="CTA image clicked"/>
+  <int value="2" label="Animated logo clicked"/>
+</enum>
+
+<enum name="NewTabPageLogoDownloadOutcome">
+  <summary>
+    These values are defined in LogoDownloadOutcome enum in
+    components/search_provider_logos/logo_service_impl.h.
+  </summary>
+  <int value="0" label="New logo success"/>
+  <int value="1" label="No logo today"/>
+  <int value="2" label="Download failed"/>
+  <int value="3" label="Parsing failed"/>
+  <int value="4" label="Decoding failed"/>
+  <int value="5" label="Logo revalidated"/>
+  <int value="6" label="Missing image"/>
+</enum>
+
+<enum name="NewTabPageLogoShown">
+  <int value="0" label="Static logo shown"/>
+  <int value="1" label="CTA image shown"/>
+</enum>
+
+<enum name="NewTabPageVoiceAction">
+  <int value="0" label="Activated by clicking on the fakebox icon"/>
+  <int value="1" label="Activated by keyboard shortcut"/>
+  <int value="2" label="Closed overlay by a user's explicit action"/>
+  <int value="3" label="Submitted voice query"/>
+  <int value="4" label="Clicked on support link in error message"/>
+  <int value="5" label="Retried by clicking Try Again link"/>
+  <int value="6"
+      label="(Obsolete) Retried by clicking microphone button. Deprecated as
+             of 09/2022."/>
+</enum>
+
+<enum name="NewTabPageVoiceError">
+  <int value="0" label="&quot;aborted&quot; error"/>
+  <int value="1" label="&quot;audio-capture&quot; error"/>
+  <int value="2" label="&quot;bad-grammar&quot; error"/>
+  <int value="3" label="&quot;language-not-supported&quot; error"/>
+  <int value="4" label="&quot;network&quot; error"/>
+  <int value="5" label="&quot;no-match&quot; error"/>
+  <int value="6" label="&quot;no-speech&quot; error"/>
+  <int value="7" label="&quot;not-allowed&quot; error"/>
+  <int value="8" label="&quot;other&quot; error"/>
+  <int value="9" label="&quot;service-not-allowed&quot; error"/>
+</enum>
+
+<enum name="NewTabURLState">
+  <int value="0" label="Valid URL was used"/>
+  <int value="1" label="Corrupt state"/>
+  <int value="2" label="Incognito window"/>
+  <int value="3" label="No URL for default provider"/>
+  <int value="4" label="Insecure URL"/>
+  <int value="5" label="Suggest is disabled"/>
+  <int value="6" label="URL blocked for supervised user"/>
+</enum>
+
+<enum name="NTPBackgroundImageSource">
+  <int value="0" label="No image"/>
+  <int value="1" label="First party (NTP) theme without refresh daily enabled"/>
+  <int value="2" label="First party (NTP) theme with refresh daily enabled"/>
+  <int value="3" label="Third party theme"/>
+  <int value="4" label="Uploaded image"/>
+  <int value="5" label="Wallpaper search image"/>
+  <int value="6" label="Wallpaper search inspiration image"/>
+</enum>
+
+<enum name="NTPChromeWebStoreOpen">
+  <int value="0" label="Appearance section"/>
+  <int value="1" label="Theme collections page"/>
+  <int value="2" label="'Writing essentials' collection page"/>
+  <int value="3" label="'Workflow and Planning' category page"/>
+  <int value="4" label="'Shopping' category page"/>
+  <int value="5" label="Home page"/>
+</enum>
+
+<enum name="NTPCollectionId">
+  <summary>
+    Hash values for the IDs of NTP background image collections. Each of these
+    values is computed by casting the output of
+    base::PersistentHash(collection_id) to base::HistogramBase::Sample.
+  </summary>
+  <int value="-2050365685" label="geometric_shapes">Geometric shapes</int>
+  <int value="-2012565742" label="nahm_collection">
+    Native American Artists Collection
+  </int>
+  <int value="-1854628278" label="landscape">Landscapes</int>
+  <int value="-1343974988" label="lgbtq_artists_collection">
+    LGBTQ Artists Collection
+  </int>
+  <int value="-1108481773" label="art">Art</int>
+  <int value="-1059944606" label="satellite">Earth</int>
+  <int value="-67630116" label="abstract">Life</int>
+  <int value="-55617381" label="solidcolors">Colors</int>
+  <int value="0" label="">Unknown collection ID</int>
+  <int value="324372171" label="material-texture">Textures</int>
+  <int value="325491925" label="black_artists_collection">
+    Black Artists Collection
+  </int>
+  <int value="596779358" label="city">Cityscapes</int>
+  <int value="1223583762" label="latinx_artists_collection">
+    Latino Artists Collection
+  </int>
+  <int value="1395980614" label="underwater">Seascapes</int>
+</enum>
+
+<enum name="NTPCustomizeChromeBackgroundAction">
+  <int value="0"
+      label="Collection selected in the 'Chrome backgrounds' dialog."/>
+  <int value="1" label="Image selected in the 'Chrome backgrounds' dialog."/>
+  <int value="2" label="'Cancel' clicked in the 'Chrome backgrounds' dialog."/>
+  <int value="3"
+      label="Image set as background (through double-click or 'Done')."/>
+</enum>
+
+<enum name="NTPCustomizeChromeEntryPoint">
+  <int value="0" label="Customize Chrome button clicked."/>
+  <int value="1" label="Customize module clicked."/>
+  <int value="2" label="NTP URL has customize chrome parameters."/>
+  <int value="3" label="Wallpaper search button clicked."/>
+</enum>
+
+<enum name="NTPCustomizeChromeSidePanelAction">
+  <int value="0" label="Button to edit theme selected."/>
+  <int value="1" label="Default chrome selected in categories."/>
+  <int value="2" label="Upload image selected in categories."/>
+  <int value="3" label="Wallpaper search selected in categories."/>
+  <int value="4" label="Wallpaper search prompt submitted."/>
+  <int value="5" label="Wallpaper search result selected."/>
+  <int value="6" label="Wallpaper search recent theme selected as background."/>
+  <int value="7" label="First party collection selected in categories."/>
+  <int value="8" label="First party collection theme selected."/>
+  <int value="9" label="Wallpaper search thumbs up selected."/>
+  <int value="10" label="Wallpaper search thumbs down selected."/>
+  <int value="11" label="Wallpaper search subject value changed."/>
+  <int value="12" label="Wallpaper search style value changed."/>
+  <int value="13" label="Wallpaper search mood value changed."/>
+  <int value="14" label="Wallpaper search color value changed."/>
+  <int value="15" label="Wallpaper search inspiration theme selected."/>
+  <int value="16" label="Set classic Chrome theme clicked"/>
+  <int value="17" label="Show shortcuts toggle clicked"/>
+  <int value="18" label="Show cards toggle clicked"/>
+  <int value="19" label="Wallpaper search opened from Appearance page."/>
+</enum>
+
+<enum name="NTPCustomizedFeatures">
+  <int value="0" label="Background customized"/>
+  <int value="1" label="Shortcut customized"/>
+</enum>
+
+<enum name="NTPCustomizedShortcutSettings">
+  <int value="0" label="Most Visited is enabled"/>
+  <int value="1" label="Custom links is enabled"/>
+  <int value="2" label="Shortcuts are hidden"/>
+</enum>
+
+<enum name="NTPCustomizeLocalImageBackgroundAction">
+  <int value="0" label="'Cancel' clicked in the 'Upload an image' dialog"/>
+  <int value="1" label="'Done' clicked in the 'Upload an image' dialog"/>
+</enum>
+
+<enum name="NTPCustomizeShortcutAction">
+  <int value="0" label="A custom shortcut was removed."/>
+  <int value="1" label="'Cancel' was clicked in the 'Edit shortcut' dialog."/>
+  <int value="2" label="'Done' was clicked in the 'Edit shortcut' dialog."/>
+  <int value="3" label="A custom shortcut action was undone."/>
+  <int value="4"
+      label="All custom shortcuts were restored (via menu or message pop-up)."/>
+  <int value="5" label="A custom shortcut was added."/>
+  <int value="6" label="A custom shortcut was updated."/>
+  <int value="7" label="The type of shortcuts displayed was changed."/>
+  <int value="8" label="The visibility of shortcuts was changed."/>
+</enum>
+
+<enum name="NTPElement">
+  <int value="0" label="Other Element"/>
+  <int value="1" label="Background"/>
+  <int value="2" label="OneGoogleBar"/>
+  <int value="3" label="Logo / Doodle"/>
+  <int value="4" label="Realbox"/>
+  <int value="5" label="Most Visited Tiles"/>
+  <int value="6" label="Middle Slot Promo"/>
+  <int value="7" label="Module"/>
+  <int value="8" label="Obsolete: Customize Dialog / Button"/>
+  <int value="9" label="Customize Chrome Button"/>
+  <int value="10" label="Customize Chrome Dialog"/>
+  <int value="11" label="Wallpaper Search Button"/>
+</enum>
+
+<enum name="NTPHistoryClustersDismissReason">
+  <int value="0" label="Not interested"/>
+  <int value="1" label="Done"/>
+</enum>
+
+<enum name="NTPHistoryClustersElementType">
+  <int value="0" label="Visit"/>
+  <int value="1" label="Suggest"/>
+  <int value="2" label="ShowAll"/>
+  <int value="3" label="Cart"/>
+  <int value="4" label="OpenAll"/>
+</enum>
+
+<enum name="NTPHistoryClustersImageDisplayState">
+  <int value="0" label="No images"/>
+  <int value="1" label="Some images"/>
+  <int value="2" label="All images"/>
+</enum>
+
+<enum name="NTPHistoryClustersIneligibleReason">
+  <int value="0" label="None"/>
+  <int value="1" label="No available clusters"/>
+  <int value="2" label="Non prominent"/>
+  <int value="3" label="No SRP visit"/>
+  <int value="4" label="Insufficient visits"/>
+  <int value="5" label="Insufficient images"/>
+  <int value="6" label="Insufficient related searches"/>
+</enum>
+
+<enum name="NTPHistoryClustersModuleCartAssociationStatus">
+  <int value="0" label="Associate with top cluster"/>
+  <int value="1" label="Associate with non-top cluster"/>
+  <int value="2" label="Not associate with any cluster"/>
+</enum>
+
+<enum name="NTPImageType">
+  <int value="0" label="A user's selected NTP background image"/>
+  <int value="1"
+      label="Preview images for NTP collections shown on the 'Themes' page"/>
+  <int value="2" label="Images in a specific NTP collection"/>
+</enum>
+
+<enum name="NtpModules">
+  <summary>
+    Hash values for the IDs of NTP modules. Each of these values is computed by
+    casting the output of base::PersistentHash(module_id) to
+    base::HistogramBase::Sample.
+  </summary>
+  <int value="-1996945391" label="chrome_cart"/>
+  <int value="-1985729288" label="recipe_tasks"/>
+  <int value="-1870686922" label="drive"/>
+  <int value="-1810591528" label="shopping_tasks"/>
+  <int value="-1690248410" label="photos"/>
+  <int value="-1057474133" label="tab_resumption"/>
+  <int value="-505117227" label="dummy2"/>
+  <int value="86617696" label="history_clusters"/>
+  <int value="301684683" label="kaleidoscope (deprecated)"/>
+  <int value="1976054971" label="dummy"/>
+</enum>
+
+<enum name="NtpPhotosModuleOptInStatus">
+  <int value="0" label="hard opt-out"/>
+  <int value="1" label="opt-in"/>
+  <int value="2" label="soft opt-out"/>
+</enum>
+
+<enum name="NtpPromoDismissAction">
+  <int value="0" label="NTP Promo dismissed"/>
+  <int value="1" label="NTP Promo restored"/>
+</enum>
+
+<enum name="NTPTileTitleSource">
+  <summary>
+    The source where the displayed title of an NTP tile originates from.
+  </summary>
+  <int value="0" label="Unknown">
+    The title might be invalid, aggregated, user-set, extracted from history,
+    not loaded or simply not known.
+  </int>
+  <int value="1" label="Manifest">
+    The site's manifest contained a usable &quot;(short_)name&quot; attribute.
+  </int>
+  <int value="2" label="MetaTag">
+    The site provided a meta tag (e.g. OpenGraph's site_name).
+  </int>
+  <int value="3" label="TitleTag">
+    The site's title is used as tile title, extracted from the title tag.
+  </int>
+  <int value="4" label="InferredTitle">
+    The title was inferred from multiple signals (e.g. meta tags, url, title).
+  </int>
+</enum>
+
+<enum name="NTPTileVisualType">
+  <summary>The visual type of a most visited tile on the new tab page.</summary>
+  <int value="0" label="None">The icon or thumbnail hasn't loaded yet.</int>
+  <int value="1" label="IconReal">
+    The item displays a site's actual favicon or touch icon.
+  </int>
+  <int value="2" label="IconColor">
+    The item displays a color derived from the site's favicon or touch icon.
+  </int>
+  <int value="3" label="IconDefault">
+    The item displays a default gray box in place of an icon.
+  </int>
+  <int value="4" label="DeprecatedThumbnailLocal">
+    Deprecated: The item displays a locally-captured thumbnail of the site
+    content.
+  </int>
+  <int value="5" label="DeprecatedThumbnailServer">
+    Deprecated: The item displays a server-provided thumbnail of the site
+    content.
+  </int>
+  <int value="6" label="DeprecatedThumbnailDefault">
+    Deprecated: The item displays a default graphic in place of a thumbnail.
+  </int>
+  <int value="7" label="Obsolete: Thumbnail">
+    The item displays a thumbnail of the page. Removed 9/2019.
+  </int>
+  <int value="8" label="Obsolete: ThumbnailFailed">
+    The item displays a default gray box in place of a thumbnail. Removed
+    9/2019.
+  </int>
+</enum>
+
+<enum name="NtpWallpaperSearchStatus">
+  <int value="0" label="Okay"/>
+  <int value="1" label="Generic error"/>
+  <int value="2" label="Request throttled"/>
+  <int value="3" label="Offline"/>
+  <int value="4" label="Signed out user"/>
+</enum>
+
+<enum name="NtpWallpaperSearchThemeType">
+  <int value="0" label="Result"/>
+  <int value="1" label="Inspiration"/>
+  <int value="2" label="History"/>
+</enum>
+
+<enum name="PhotosModuleRequestResult">
+  <int value="0" label="kError"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kCached"/>
+</enum>
+
+<enum name="PromoBrowserCommandEnum">
+  <int value="0" label="Unknown Command"/>
+  <int value="1" label="Open Safety Check"/>
+  <int value="2" label="Open SafeBrowsing Enhanced Protection"/>
+  <int value="3" label="Open Chrome feedback form"/>
+  <int value="4" label="Open Privacy Guide"/>
+  <int value="5" label="Start Tab Group Tutorial"/>
+  <int value="6" label="Open Password Manager"/>
+  <int value="7" label="NoOp Command"/>
+  <int value="8" label="Open Performance Settings"/>
+  <int value="9" label="Open New Tab Page and Start Customize Chrome Tutorial"/>
+  <int value="10" label="Start Password Manager Tutorial"/>
+  <int value="11" label="Start Saved Tab Group Tutorial"/>
+  <int value="12" label="Open AI Settings"/>
+</enum>
+
+<enum name="SearchResumptionModule.ModuleNotShownReason">
+  <int value="0" label="Not enough suggestions available"/>
+  <int value="1" label="Feature flags aren't enabled"/>
+  <int value="2" label="The user doesn't sign in"/>
+  <int value="3" label="The user doesn't turn on sync"/>
+  <int value="4" label="The default search engine isn't google"/>
+  <int value="5" label="There isn't a tab to track"/>
+  <int value="6" label="The tracking tab isn't valid"/>
+  <int value="7" label="The tracking tab is expired"/>
+  <int value="8" label="The tracking tab has changed"/>
+</enum>
+
+<enum name="SearchResumptionModule.ModuleShowStatus">
+  <int value="0" label="Module is shown and expanded"/>
+  <int value="1" label="Module is shown and collapsed"/>
+</enum>
+
+<enum name="TypeOfDeletedMostVisitedApp">
+  <summary>
+    This enum denotes the type of app on the deleted ntp_tile as part of bug fix
+    for crbug.com/1250463
+  </summary>
+  <int value="0" label="Default App from most visited links"/>
+  <int value="1" label="Default App with custom links"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

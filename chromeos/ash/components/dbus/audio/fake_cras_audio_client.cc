@@ -193,11 +193,6 @@ void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
   std::move(callback).Run(active_input_streams_);
 }
 
-void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
-    chromeos::DBusMethodCallback<bool> callback) {
-  std::move(callback).Run(false);
-}
-
 void FakeCrasAudioClient::GetSpeakOnMuteDetectionEnabled(
     chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);
@@ -449,6 +444,13 @@ void FakeCrasAudioClient::SetActiveInputStreamsWithPermission(
   }
 }
 
+void FakeCrasAudioClient::NotifySurveyTriggered(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {
+  for (auto& observer : observers_) {
+    observer.SurveyTriggered(survey_specific_data);
+  }
+}
+
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
   return base::ranges::find(node_list_, node_id, &AudioNode::id);
 }
@@ -478,6 +480,18 @@ uint32_t FakeCrasAudioClient::GetHfpMicSrEnabled() {
 
 void FakeCrasAudioClient::SetHfpMicSrEnabled(bool hfp_mic_sr_on) {
   hfp_mic_sr_enabled_ = hfp_mic_sr_on;
+}
+
+void FakeCrasAudioClient::SetNumberOfArcStreams(int32_t streams) {
+  number_arc_streams_ = streams;
+  for (auto& observer : observers_) {
+    observer.NumberOfArcStreamsChanged();
+  }
+}
+
+void FakeCrasAudioClient::GetNumberOfArcStreams(
+    chromeos::DBusMethodCallback<int32_t> callback) {
+  std::move(callback).Run(number_arc_streams_);
 }
 
 }  // namespace ash

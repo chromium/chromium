@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -39,6 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -59,10 +61,11 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -164,6 +167,9 @@ class BackendDatabaseWithMockedClose
   mojo::AssociatedReceiver<mojom::blink::IDBDatabase> receiver_;
 };
 
+// TODO(crbug.com/1510052): Many of these tests depend on a microtask running
+// to satisfy the expected mock behavior, which we wait for with
+// RunPendingTasks. We should make this less hacky.
 class IDBRequestTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -181,14 +187,12 @@ class IDBRequestTest : public testing::Test {
   void BuildTransaction(V8TestingScope& scope,
                         MockIDBDatabase& mock_database,
                         MockIDBTransaction& mock_transaction_remote) {
-    auto database_backend = std::make_unique<WebIDBDatabase>(
-        mock_database.BindNewEndpointAndPassDedicatedRemote(),
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
-    db_ = MakeGarbageCollected<IDBDatabase>(
-        scope.GetExecutionContext(), std::move(database_backend),
-        mojo::NullAssociatedReceiver(), mojo::NullRemote());
-
     auto* execution_context = scope.GetExecutionContext();
+
+    db_ = MakeGarbageCollected<IDBDatabase>(
+        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
+        mock_database.BindNewEndpointAndPassDedicatedRemote());
+
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
     mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
         transaction_remote.BindNewEndpointAndPassReceiver(
@@ -232,7 +236,8 @@ class IDBRequestTest : public testing::Test {
     request->queue_item_->OnResultLoadComplete();
   }
 
-  URLLoaderMockFactory* url_loader_mock_factory_;
+  test::TaskEnvironment task_environment_;
+  raw_ptr<URLLoaderMockFactory> url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;
@@ -248,7 +253,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -267,13 +272,16 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   transaction_->FlushForTesting();
   database_backend.Flush();
+
+  scope.PerformMicrotaskCheckpoint();
+  test::RunPendingTasks();
 }
 
 TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -300,7 +308,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -321,6 +329,9 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   transaction_->FlushForTesting();
   database_backend.Flush();
+
+  scope.PerformMicrotaskCheckpoint();
+  test::RunPendingTasks();
 }
 
 // This test is flaky on Marshmallow 64 bit Tester because the test is
@@ -337,7 +348,7 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   V8TestingScope scope;
   MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
-  EXPECT_CALL(database_backend, Close()).Times(1);
+  EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
@@ -366,6 +377,9 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   transaction_->FlushForTesting();
   database_backend.Flush();
+
+  scope.PerformMicrotaskCheckpoint();
+  test::RunPendingTasks();
 }
 
 // Regression test for crbug.com/1470485
@@ -437,7 +451,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(mock_database, Close()).Times(1);
+    EXPECT_CALL(mock_database, OnDisconnect()).Times(1);
 
     auto* execution_context = scope.GetExecutionContext();
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -465,7 +479,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(mock_database, Close()).Times(1);
+    EXPECT_CALL(mock_database, OnDisconnect()).Times(1);
 
     auto* execution_context = scope.GetExecutionContext();
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -502,7 +516,7 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
     return *this;
   }
 
-  absl::optional<IDBRequest::TypeForMetrics> type() const {
+  std::optional<IDBRequest::TypeForMetrics> type() const {
     return IDBRequest::AsyncTraceState::type();
   }
   const base::TimeTicks& start_time() const {

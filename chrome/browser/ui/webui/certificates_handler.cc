@@ -42,9 +42,10 @@
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
-#include "net/der/input.h"
-#include "net/der/parser.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/span.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using base::UTF8ToUTF16;
 
@@ -80,6 +81,21 @@ enum {
   IMPORT_SERVER_FILE_SELECTED,
   IMPORT_CA_FILE_SELECTED,
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Before this experiment on ChromeOS it was possible to import a PKCS#12 file
+// (a client certificate with a key pair for it) on the
+// chrome://settings/certificates using the "Import" button and then export it
+// as a new PKCS#12 file. All the other certificates (imported using the "Import
+// and Bind" button, imported from extensions and policies) could not be
+// exported as PKCS#12 (primarily to protect their private keys). This
+// experiment, when enabled, prevents export of certificates with their private
+// keys for all certificates. Just the certificates without private keys can
+// still be exported on the "View > Details" dialog.
+BASE_FEATURE(kDeprecatePrivateKeyExport,
+             "DeprecatePrivateKeyExport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 std::string OrgNameToId(const std::string& org) {
   return "org-" + org;
@@ -164,13 +180,10 @@ bool CouldBePFX(std::string_view data) {
 
   // If the SEQUENCE is definite length, it can be parsed through the version
   // tag using DER parser, since INTEGER must be definite length, even in BER.
-  net::der::Parser parser((net::der::Input(data)));
-  net::der::Parser sequence_parser;
-  if (!parser.ReadSequence(&sequence_parser))
-    return false;
-  if (!sequence_parser.SkipTag(net::der::kInteger))
-    return false;
-  return true;
+  CBS cbs = bssl::StringAsBytes(data);
+  CBS sequence, version;
+  return CBS_get_asn1(&cbs, &sequence, CBS_ASN1_SEQUENCE) &&
+         CBS_get_asn1(&sequence, &version, CBS_ASN1_INTEGER);
 }
 
 }  // namespace
@@ -365,21 +378,21 @@ void CertificatesHandler::CertificatesRefreshed() {
   PopulateTree("otherCerts", net::OTHER_CERT);
 }
 
-void CertificatesHandler::FileSelected(const base::FilePath& path,
+void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
                                        int index,
                                        void* params) {
   switch (reinterpret_cast<intptr_t>(params)) {
     case EXPORT_PERSONAL_FILE_SELECTED:
-      ExportPersonalFileSelected(path);
+      ExportPersonalFileSelected(file.path());
       break;
     case IMPORT_PERSONAL_FILE_SELECTED:
-      ImportPersonalFileSelected(path);
+      ImportPersonalFileSelected(file.path());
       break;
     case IMPORT_SERVER_FILE_SELECTED:
-      ImportServerFileSelected(path);
+      ImportServerFileSelected(file.path());
       break;
     case IMPORT_CA_FILE_SELECTED:
-      ImportCAFileSelected(path);
+      ImportCAFileSelected(file.path());
       break;
     default:
       NOTREACHED();
@@ -438,17 +451,18 @@ void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
   net::NSSCertDatabase::TrustBits trust_bits =
       certificate_manager_model_->cert_db()->GetCertTrust(cert_info->cert(),
                                                           net::CA_CERT);
-  base::Value::Dict ca_trust_info;
-  ca_trust_info.Set(
-      kCertificatesHandlerSslField,
-      static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_SSL));
-  ca_trust_info.Set(
-      kCertificatesHandlerEmailField,
-      static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_EMAIL));
-  ca_trust_info.Set(
-      kCertificatesHandlerObjSignField,
-      static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_OBJ_SIGN));
-  ResolveCallback(ca_trust_info);
+
+  ResolveCallback(
+      base::Value::Dict()
+          .Set(
+              kCertificatesHandlerSslField,
+              static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_SSL))
+          .Set(kCertificatesHandlerEmailField,
+               static_cast<bool>(trust_bits &
+                                 net::NSSCertDatabase::TRUSTED_EMAIL))
+          .Set(kCertificatesHandlerObjSignField,
+               static_cast<bool>(trust_bits &
+                                 net::NSSCertDatabase::TRUSTED_OBJ_SIGN)));
 }
 
 void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
@@ -1066,12 +1080,6 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
 
   base::Value::List nodes;
   for (auto& org_grouping_map_entry : org_grouping_map) {
-    // Populate first level (org name).
-    base::Value::Dict org_dict;
-    org_dict.Set(kCertificatesHandlerKeyField,
-                 OrgNameToId(org_grouping_map_entry.first));
-    org_dict.Set(kCertificatesHandlerNameField, org_grouping_map_entry.first);
-
     // Populate second level (certs).
     base::Value::List subnodes;
     bool contains_policy_certs = false;
@@ -1081,24 +1089,31 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
       std::string id =
           base::NumberToString(cert_info_id_map_.Add(std::move(org_cert)));
 
-      base::Value::Dict cert_dict;
-      cert_dict.Set(kCertificatesHandlerKeyField, id);
-      cert_dict.Set(kCertificatesHandlerNameField, cert_info->name());
-      cert_dict.Set(kCertificatesHandlerCanBeDeletedField,
-                    CanDeleteCertificate(cert_info));
-      cert_dict.Set(kCertificatesHandlerCanBeEditedField,
-                    CanEditCertificate(cert_info));
-      cert_dict.Set(kCertificatesHandlerUntrustedField, cert_info->untrusted());
-      cert_dict.Set(kCertificatesHandlerPolicyInstalledField,
-                    cert_info->source() ==
-                        CertificateManagerModel::CertInfo::Source::kPolicy);
-      cert_dict.Set(kCertificatesHandlerWebTrustAnchorField,
-                    cert_info->web_trust_anchor());
-      // TODO(hshi): This should be determined by testing for PKCS #11
-      // CKA_EXTRACTABLE attribute. We may need to use the NSS function
-      // PK11_ReadRawAttribute to do that.
-      cert_dict.Set(kCertificatesHandlerExtractableField,
-                    !cert_info->hardware_backed());
+      bool is_extractable = !cert_info->hardware_backed();
+#if BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(kDeprecatePrivateKeyExport)) {
+        is_extractable = false;
+      }
+#endif
+
+      auto cert_dict =
+          base::Value::Dict()
+              .Set(kCertificatesHandlerKeyField, id)
+              .Set(kCertificatesHandlerNameField, cert_info->name())
+              .Set(kCertificatesHandlerCanBeDeletedField,
+                   CanDeleteCertificate(cert_info))
+              .Set(kCertificatesHandlerCanBeEditedField,
+                   CanEditCertificate(cert_info))
+              .Set(kCertificatesHandlerUntrustedField, cert_info->untrusted())
+              .Set(kCertificatesHandlerPolicyInstalledField,
+                   cert_info->source() ==
+                       CertificateManagerModel::CertInfo::Source::kPolicy)
+              .Set(kCertificatesHandlerWebTrustAnchorField,
+                   cert_info->web_trust_anchor())
+              // TODO(hshi): This should be determined by testing for PKCS #11
+              // CKA_EXTRACTABLE attribute. We may need to use the NSS function
+              // PK11_ReadRawAttribute to do that.
+              .Set(kCertificatesHandlerExtractableField, is_extractable);
       // TODO(mattm): Other columns.
       subnodes.Append(std::move(cert_dict));
 
@@ -1108,9 +1123,15 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
     }
     std::sort(subnodes.begin(), subnodes.end(), comparator);
 
-    org_dict.Set(kCertificatesHandlerContainsPolicyCertsField,
-                 contains_policy_certs);
-    org_dict.Set(kCertificatesHandlerSubnodesField, std::move(subnodes));
+    // Populate first level (org name).
+    auto org_dict =
+        base::Value::Dict()
+            .Set(kCertificatesHandlerKeyField,
+                 OrgNameToId(org_grouping_map_entry.first))
+            .Set(kCertificatesHandlerNameField, org_grouping_map_entry.first)
+            .Set(kCertificatesHandlerContainsPolicyCertsField,
+                 contains_policy_certs)
+            .Set(kCertificatesHandlerSubnodesField, std::move(subnodes));
     nodes.Append(std::move(org_dict));
   }
   std::sort(nodes.begin(), nodes.end(), comparator);
@@ -1134,10 +1155,9 @@ void CertificatesHandler::RejectCallback(const base::ValueView response) {
 
 void CertificatesHandler::RejectCallbackWithError(const std::string& title,
                                                   const std::string& error) {
-  base::Value::Dict error_info;
-  error_info.Set(kCertificatesHandlerErrorTitle, title);
-  error_info.Set(kCertificatesHandlerErrorDescription, error);
-  RejectCallback(error_info);
+  RejectCallback(base::Value::Dict()
+                     .Set(kCertificatesHandlerErrorTitle, title)
+                     .Set(kCertificatesHandlerErrorDescription, error));
 }
 
 void CertificatesHandler::RejectCallbackWithImportError(
@@ -1156,21 +1176,20 @@ void CertificatesHandler::RejectCallbackWithImportError(
 
   base::Value::List cert_error_list;
   for (const auto& failure : not_imported) {
-    base::Value::Dict dict;
-    dict.Set(kCertificatesHandlerNameField,
-             x509_certificate_model::GetSubjectDisplayName(
-                 failure.certificate.get()));
-    dict.Set(kCertificatesHandlerErrorField,
-             NetErrorToString(failure.net_error));
-    cert_error_list.Append(std::move(dict));
+    cert_error_list.Append(
+        base::Value::Dict()
+            .Set(kCertificatesHandlerNameField,
+                 x509_certificate_model::GetSubjectDisplayName(
+                     failure.certificate.get()))
+            .Set(kCertificatesHandlerErrorField,
+                 NetErrorToString(failure.net_error)));
   }
 
-  base::Value::Dict error_info;
-  error_info.Set(kCertificatesHandlerErrorTitle, title);
-  error_info.Set(kCertificatesHandlerErrorDescription, error);
-  error_info.Set(kCertificatesHandlerCertificateErrors,
-                 std::move(cert_error_list));
-  RejectCallback(error_info);
+  RejectCallback(base::Value::Dict()
+                     .Set(kCertificatesHandlerErrorTitle, title)
+                     .Set(kCertificatesHandlerErrorDescription, error)
+                     .Set(kCertificatesHandlerCertificateErrors,
+                          std::move(cert_error_list)));
 }
 
 gfx::NativeWindow CertificatesHandler::GetParentWindow() {

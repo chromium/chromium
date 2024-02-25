@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "url/gurl.h"
@@ -48,6 +49,8 @@ void WebKioskInstallerLacros::GetWebKioskInstallState(
       std::make_unique<chromeos::WebKioskAppInstaller>(profile_.get(), url);
   web_installer->GetInstallState(std::move(callback).Then(
       GetDeletePointerCallback(std::move(web_installer))));
+
+  KioskSessionServiceLacros::Get()->SetInstallUrl(url);
 }
 
 void WebKioskInstallerLacros::InstallWebKiosk(

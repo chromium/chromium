@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -15,7 +16,6 @@
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Replicate these from Windows headers to avoid pulling net/sys_addrinfo.h.
 // Doing that transitively brings in windows.h. Including windows.h pollutes the
@@ -39,7 +39,7 @@ namespace net {
 class NET_EXPORT IPEndPoint {
  public:
   // Nullopt if `value` is malformed to be serialized to IPEndPoint.
-  static absl::optional<IPEndPoint> FromValue(const base::Value& value);
+  static std::optional<IPEndPoint> FromValue(const base::Value& value);
 
   IPEndPoint();
   ~IPEndPoint();

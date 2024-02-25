@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "filebrowser.office.microsoft_one_drive_mount": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOneDriveMount": "allowed"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_one_drive_mount": {
+            "value": "allowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOneDriveMount": "disallowed"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_one_drive_mount": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOneDriveMount": "automated"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_one_drive_mount": {
+            "value": "automated"
+          }
+        }
+      }
+    ]
+  }
+]

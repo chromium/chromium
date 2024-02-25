@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -25,7 +27,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -47,8 +48,9 @@ std::string GetHexSSID(const base::Value::Dict& service_properties) {
   if (hex_ssid)
     return *hex_ssid;
   const std::string* ssid = service_properties.FindString(shill::kSSIDProperty);
-  if (ssid)
-    return base::HexEncode(ssid->c_str(), ssid->size());
+  if (ssid) {
+    return base::HexEncode(*ssid);
+  }
   return std::string();
 }
 
@@ -89,7 +91,7 @@ std::string GetSecurityClass(const base::Value::Dict& service_properties) {
 // have the key |key| and both have the same value for it.
 bool HaveSameValueForKey(const base::Value::Dict& template_service_properties,
                          const base::Value::Dict& service_properties,
-                         base::StringPiece key) {
+                         std::string_view key) {
   const base::Value* template_service_value =
       template_service_properties.Find(key);
   const base::Value* service_value = service_properties.Find(key);
@@ -170,7 +172,7 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
 void FakeShillServiceClient::GetProperties(
     const dbus::ObjectPath& service_path,
     chromeos::DBusMethodCallback<base::Value::Dict> callback) {
-  absl::optional<base::Value::Dict> result_properties;
+  std::optional<base::Value::Dict> result_properties;
   const base::Value::Dict* nested_dict =
       GetServiceProperties(service_path.value());
   if (nested_dict) {
@@ -216,7 +218,7 @@ void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
     std::move(error_callback)
         .Run(set_properties_error_name_.value(),
              /*error_message=*/std::string());
-    set_properties_error_name_ = absl::nullopt;
+    set_properties_error_name_ = std::nullopt;
     return;
   }
   for (auto iter : properties) {
@@ -284,7 +286,7 @@ void FakeShillServiceClient::Connect(const dbus::ObjectPath& service_path,
         FROM_HERE,
         base::BindOnce(std::move(error_callback), *connect_error_name_,
                        /*error_message=*/std::string()));
-    connect_error_name_ = absl::nullopt;
+    connect_error_name_ = std::nullopt;
     return;
   }
 
@@ -408,7 +410,7 @@ void FakeShillServiceClient::RequestPortalDetection(
   if (request_portal_state_) {
     SetServiceProperty(service_path.value(), shill::kStateProperty,
                        base::Value(*request_portal_state_));
-    request_portal_state_ = absl::nullopt;
+    request_portal_state_ = std::nullopt;
   }
   std::move(callback).Run(/*success=*/true);
 }
@@ -484,7 +486,7 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
   std::string guid_to_set = guid;
   if (guid_to_set.empty()) {
     std::string profile_path;
-    absl::optional<base::Value::Dict> profile_properties =
+    std::optional<base::Value::Dict> profile_properties =
         ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     if (profile_properties) {
@@ -500,8 +502,7 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
   }
   if (type == shill::kTypeWifi) {
     properties->Set(shill::kSSIDProperty, name);
-    properties->Set(shill::kWifiHexSsid,
-                    base::HexEncode(name.c_str(), name.size()));
+    properties->Set(shill::kWifiHexSsid, base::HexEncode(name));
   }
   properties->Set(shill::kNameProperty, name);
   std::string device_path =
@@ -635,7 +636,7 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
   if (!service_dict)
     return false;
 
-  const absl::optional<bool> visible_property =
+  const std::optional<bool> visible_property =
       service_dict->FindBool(shill::kVisibleProperty);
   const std::string* service_type =
       service_dict->FindString(shill::kTypeProperty);

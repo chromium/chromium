@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -33,8 +34,8 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
           blink::features::kSharedStorageSelectURLLimit)) {
     select_url_overall_budget_ = static_cast<double>(
         blink::features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get());
-    select_url_max_bits_per_origin_ = static_cast<double>(
-        blink::features::kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad
+    select_url_max_bits_per_site_ = static_cast<double>(
+        blink::features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad
             .Get());
   }
 }
@@ -46,9 +47,14 @@ PageImpl::~PageImpl() {
   // explicitly here to ensure that the PageUserData destructors can access
   // associated Page object.
   ClearAllUserData();
+
+  // If we still have a PeakGpuMemoryTracker, then the loading it was observing
+  // never completed. Cancel its callback so that we don't report partial
+  // loads to UMA.
+  CancelLoadingMemoryTracker();
 }
 
-const absl::optional<GURL>& PageImpl::GetManifestUrl() const {
+const std::optional<GURL>& PageImpl::GetManifestUrl() const {
   return manifest_url_;
 }
 
@@ -99,12 +105,25 @@ const std::string& PageImpl::GetContentsMimeType() const {
   return contents_mime_type_;
 }
 
+void PageImpl::SetResizableForTesting(std::optional<bool> resizable) {
+  SetResizable(resizable);
+}
+
+void PageImpl::SetResizable(std::optional<bool> resizable) {
+  resizable_ = resizable;
+  delegate_->OnCanResizeFromWebAPIChanged();
+}
+
+std::optional<bool> PageImpl::GetResizable() {
+  return resizable_;
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_->OnFirstVisuallyNonEmptyPaint(*this);
 }
 
-void PageImpl::OnThemeColorChanged(const absl::optional<SkColor>& theme_color) {
+void PageImpl::OnThemeColorChanged(const std::optional<SkColor>& theme_color) {
   main_document_theme_color_ = theme_color;
   delegate_->OnThemeColorChanged(*this);
 }
@@ -174,40 +193,60 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
-  DCHECK(!activation_start_time_for_prerendering_);
-  activation_start_time_for_prerendering_ = activation_start;
+  CHECK(!activation_start_time_);
+  activation_start_time_ = activation_start;
 }
 
-void PageImpl::ActivateForPrerendering(
+void PageImpl::Activate(
+    ActivationType type,
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
-    absl::optional<blink::ViewTransitionState> view_transition_state) {
-  TRACE_EVENT0("navigation", "PageImpl::ActivateForPrerendering");
+    std::optional<blink::ViewTransitionState> view_transition_state,
+    base::OnceCallback<void(base::TimeTicks)> completion_callback) {
+  TRACE_EVENT1("navigation", "PageImpl::Activate", "activation_type", type);
 
-  base::OnceClosure did_activate_render_views =
-      base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
-                     weak_factory_.GetWeakPtr());
+  // SetActivationStartTime() should be called first as the value is used in
+  // the callback below.
+  CHECK(activation_start_time_.has_value());
+
+  base::OnceClosure did_activate_render_views = base::BindOnce(
+      &PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview,
+      weak_factory_.GetWeakPtr(), std::move(completion_callback));
 
   base::RepeatingClosure barrier = base::BarrierClosure(
       render_view_hosts.size(), std::move(did_activate_render_views));
+  bool view_transition_state_consumed = false;
   for (const auto& rvh : render_view_hosts) {
     auto params = blink::mojom::PrerenderPageActivationParams::New();
 
-    // Only send navigation_start to the RenderViewHost for the main frame to
-    // avoid sending the info cross-origin. Only this RenderViewHost needs the
-    // info, as we expect the other RenderViewHosts are made for cross-origin
-    // iframes which have not yet loaded their document. To the renderer, it
-    // just looks like an ongoing navigation is happening in the frame and has
-    // not yet committed. These RenderViews still need to know about activation
-    // so their documents are created in the non-prerendered state once their
-    // navigation is committed.
     if (main_document_->GetRenderViewHost() == &*rvh) {
-      params->activation_start = *activation_start_time_for_prerendering_;
+      // For prerendering activation, send activation_start only to the
+      // RenderViewHost for the main frame to avoid sending the info
+      // cross-origin. Only this RenderViewHost needs the info, as we expect the
+      // other RenderViewHosts are made for cross-origin iframes which have not
+      // yet loaded their document. To the renderer, it just looks like an
+      // ongoing navigation is happening in the frame and has not yet committed.
+      // These RenderViews still need to know about activation so their
+      // documents are created in the non-prerendered state once their
+      // navigation is committed.
+      params->activation_start = *activation_start_time_;
+      // Note that there cannot be a use-after-move since the if condition
+      // should be true at most once.
+      CHECK(!view_transition_state_consumed);
       params->view_transition_state = std::move(view_transition_state);
+      view_transition_state_consumed = true;
+    } else if (type == ActivationType::kPreview) {
+      // For preview activation, send activation_start to all RenderViewHosts
+      // as preview loads cross-origin subframes under the capability control,
+      // and activation_start time is meaningful there.
+      params->activation_start = *activation_start_time_;
     }
 
+    // For preview activation, there is no way to activate the previewed page
+    // other than with a user action, or testing only methods.
     params->was_user_activated =
-        main_document_->frame_tree_node()
-                ->has_received_user_gesture_before_nav()
+        (main_document_->frame_tree_node()
+             ->has_received_user_gesture_before_nav() ||
+         type == ActivationType::kPreview)
             ? blink::mojom::WasActivatedOption::kYes
             : blink::mojom::WasActivatedOption::kNo;
     rvh->ActivatePrerenderedPage(std::move(params), barrier);
@@ -223,7 +262,7 @@ void PageImpl::ActivateForPrerendering(
       [this](RenderFrameHostImpl* rfh) {
         if (&rfh->GetPage() != this)
           return;
-        rfh->RendererWillActivateForPrerendering();
+        rfh->RendererWillActivateForPrerenderingOrPreview();
       });
 }
 
@@ -252,7 +291,8 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }
 
-void PageImpl::DidActivateAllRenderViewsForPrerendering() {
+void PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview(
+    base::OnceCallback<void(base::TimeTicks)> completion_callback) {
   TRACE_EVENT0("navigation",
                "PageImpl::DidActivateAllRenderViewsForPrerendering");
 
@@ -264,6 +304,8 @@ void PageImpl::DidActivateAllRenderViewsForPrerendering() {
         }
         rfh->RendererDidActivateForPrerendering();
       });
+  CHECK(activation_start_time_.has_value());
+  std::move(completion_callback).Run(*activation_start_time_);
 }
 
 RenderFrameHost& PageImpl::GetMainDocumentHelper() {
@@ -328,8 +370,9 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
-bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
-                                                  double bits_to_charge) {
+bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(
+    const net::SchemefulSite& site,
+    double bits_to_charge) {
   if (!select_url_overall_budget_) {
     // The limits are not enabled.
     return true;
@@ -340,21 +383,21 @@ bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
     return false;
   }
 
-  DCHECK(select_url_max_bits_per_origin_);
+  DCHECK(select_url_max_bits_per_site_);
 
-  // Return false if the max bits per origin is set to a value smaller than the
+  // Return false if the max bits per site is set to a value smaller than the
   // current bits to charge.
-  if (bits_to_charge > select_url_max_bits_per_origin_.value()) {
+  if (bits_to_charge > select_url_max_bits_per_site_.value()) {
     return false;
   }
 
-  // Charge the per-origin budget or return false if there is not enough.
-  auto it = select_url_per_origin_budget_.find(origin);
-  if (it == select_url_per_origin_budget_.end()) {
-    select_url_per_origin_budget_[origin] =
-        select_url_max_bits_per_origin_.value() - bits_to_charge;
+  // Charge the per-site budget or return false if there is not enough.
+  auto it = select_url_per_site_budget_.find(site);
+  if (it == select_url_per_site_budget_.end()) {
+    select_url_per_site_budget_[site] =
+        select_url_max_bits_per_site_.value() - bits_to_charge;
   } else if (bits_to_charge > it->second) {
-    // There is insufficient per-origin budget remaining.
+    // There is insufficient per-site budget remaining.
     return false;
   } else {
     it->second -= bits_to_charge;
@@ -363,6 +406,36 @@ bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
   // Charge the overall budget.
   select_url_overall_budget_.value() -= bits_to_charge;
   return true;
+}
+
+void PageImpl::TakeLoadingMemoryTracker(NavigationRequest* request) {
+  CHECK(IsPrimary());
+  loading_memory_tracker_ = request->TakePeakGpuMemoryTracker();
+}
+
+void PageImpl::ResetLoadingMemoryTracker() {
+  CHECK(IsPrimary());
+  if (loading_memory_tracker_) {
+    loading_memory_tracker_.reset();
+  }
+}
+
+void PageImpl::CancelLoadingMemoryTracker() {
+  if (loading_memory_tracker_) {
+    loading_memory_tracker_->Cancel();
+    loading_memory_tracker_.reset();
+  }
+}
+
+void PageImpl::SetLastCommitParams(
+    mojom::DidCommitProvisionalLoadParamsPtr commit_params) {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  last_commit_params_ = std::move(commit_params);
+}
+
+mojom::DidCommitProvisionalLoadParamsPtr PageImpl::TakeLastCommitParams() {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  return std::move(last_commit_params_);
 }
 
 }  // namespace content

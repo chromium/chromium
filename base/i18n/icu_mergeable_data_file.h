@@ -15,7 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace base::i18n {
 
@@ -106,10 +106,13 @@ class BASE_I18N_EXPORT IcuMergeableDataFile {
 
   File lacros_file_;
   size_t lacros_length_ = 0;
-  raw_ptr<uint8_t, AllowPtrArithmetic> lacros_data_ = nullptr;
+
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
+  // there is no benefit to using a raw_ptr, only cost.
+  RAW_PTR_EXCLUSION uint8_t* lacros_data_ = nullptr;
   bool used_cached_hashes_ = false;
 };
 
 }  // namespace base::i18n
 
-#endif  // BASE_I18N_MERGEABLE_ICU_DATA_FILE_H_
+#endif  // BASE_I18N_ICU_MERGEABLE_DATA_FILE_H_

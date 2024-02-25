@@ -7,7 +7,6 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
@@ -34,14 +33,12 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
         CHECK(v);
-        return v->IsViewHighlighted();
+        return v->is_focused();
       }));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kSaveDeskCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2));
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   SetEnableBackgroundBlur(true);
 }
@@ -52,35 +49,35 @@ views::View* SavedDeskSaveDeskButton::GetView() {
   return this;
 }
 
-void SavedDeskSaveDeskButton::MaybeActivateHighlightedView() {
+void SavedDeskSaveDeskButton::MaybeActivateFocusedView() {
   if (GetEnabled())
     callback_.Run();
 }
 
-void SavedDeskSaveDeskButton::MaybeCloseHighlightedView(bool primary_action) {}
+void SavedDeskSaveDeskButton::MaybeCloseFocusedView(bool primary_action) {}
 
-void SavedDeskSaveDeskButton::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskSaveDeskButton::MaybeSwapFocusedView(bool right) {}
 
-void SavedDeskSaveDeskButton::OnViewHighlighted() {
+void SavedDeskSaveDeskButton::OnFocusableViewFocused() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void SavedDeskSaveDeskButton::OnViewUnhighlighted() {
+void SavedDeskSaveDeskButton::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void SavedDeskSaveDeskButton::OnFocus() {
-  UpdateOverviewHighlightForFocus(this);
-  OnViewHighlighted();
+  MoveFocusToView(this);
+  OnFocusableViewFocused();
   View::OnFocus();
 }
 
 void SavedDeskSaveDeskButton::OnBlur() {
-  OnViewUnhighlighted();
+  OnFocusableViewBlurred();
   View::OnBlur();
 }
 
-BEGIN_METADATA(SavedDeskSaveDeskButton, PillButton)
+BEGIN_METADATA(SavedDeskSaveDeskButton)
 END_METADATA
 
 }  // namespace ash

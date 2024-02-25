@@ -85,6 +85,11 @@ ASH_EXPORT gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
     const ui::ColorProvider* color_provider,
     IconType icon_type);
 
+// Returns an image for an carrier locked cellular network.
+ASH_EXPORT gfx::ImageSkia GetImageForCarrierLockedNetwork(
+    const ui::ColorProvider* color_provider,
+    IconType icon_type);
+
 // Returns an image for a Wi-Fi network, either full strength or strike-through
 // based on |enabled|.
 ASH_EXPORT gfx::ImageSkia GetImageForWiFiEnabledState(

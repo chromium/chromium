@@ -5,15 +5,15 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONNECTION_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONNECTION_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -23,18 +23,18 @@ namespace content {
 class IndexedDBDatabaseCallbacks;
 class IndexedDBDatabaseError;
 class IndexedDBTransaction;
-class IndexedDBBucketStateHandle;
+class IndexedDBBucketContext;
 
 class CONTENT_EXPORT IndexedDBConnection {
  public:
-  IndexedDBConnection(
-      IndexedDBBucketStateHandle bucket_state_handle,
-      IndexedDBClassFactory* indexed_db_class_factory,
-      base::WeakPtr<IndexedDBDatabase> database,
-      base::RepeatingClosure on_version_change_ignored,
-      base::OnceCallback<void(IndexedDBConnection*)> on_close,
-      scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
+  IndexedDBConnection(IndexedDBBucketContext& bucket_context,
+                      base::WeakPtr<IndexedDBDatabase> database,
+                      base::RepeatingClosure on_version_change_ignored,
+                      base::OnceCallback<void(IndexedDBConnection*)> on_close,
+                      std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
+                      mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+                          client_state_checker,
+                      base::UnguessableToken client_token);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
   IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
@@ -49,9 +49,11 @@ class CONTENT_EXPORT IndexedDBConnection {
     kAbortAllReturnLastError,
   };
 
-  leveldb::Status AbortTransactionsAndClose(CloseErrorHandling error_handling);
+  // The return value is `callbacks_`, passing ownership.
+  std::unique_ptr<IndexedDBDatabaseCallbacks> AbortTransactionsAndClose(
+      CloseErrorHandling error_handling);
 
-  leveldb::Status CloseAndReportForceClose();
+  void CloseAndReportForceClose();
   bool IsConnected();
 
   void VersionChangeIgnored();
@@ -64,8 +66,14 @@ class CONTENT_EXPORT IndexedDBConnection {
     return weak_factory_.GetWeakPtr();
   }
 
-  // Creates a transaction for this connection.
+  IndexedDBTransaction* CreateVersionChangeTransaction(
+      int64_t id,
+      const std::set<int64_t>& scope,
+      IndexedDBBackingStore::Transaction* backing_store_transaction);
+
   IndexedDBTransaction* CreateTransaction(
+      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+          transaction_receiver,
       int64_t id,
       const std::set<int64_t>& scope,
       blink::mojom::IDBTransactionMode mode,
@@ -94,36 +102,47 @@ class CONTENT_EXPORT IndexedDBConnection {
       storage::mojom::DisallowInactiveClientReason reason,
       base::OnceCallback<void(bool)> callback);
 
-  const base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>>&
-  transactions() const {
+  const base::UnguessableToken& client_token() const { return client_token_; }
+
+  const std::map<int64_t, std::unique_ptr<IndexedDBTransaction>>& transactions()
+      const {
     return transactions_;
+  }
+
+  IndexedDBBucketContext* bucket_context() {
+    return bucket_context_handle_.bucket_context();
   }
 
  private:
   const int32_t id_;
 
   // Keeps the factory for this bucket alive.
-  IndexedDBBucketStateHandle bucket_state_handle_;
-  const raw_ptr<IndexedDBClassFactory> indexed_db_class_factory_;
+  IndexedDBBucketContextHandle bucket_context_handle_;
 
   base::WeakPtr<IndexedDBDatabase> database_;
   base::RepeatingClosure on_version_change_ignored_;
   base::OnceCallback<void(IndexedDBConnection*)> on_close_;
 
-  // The connection owns transactions created on this connection.
-  // This is `flat_map` to preserve ordering, and because the vast majority of
-  // users have less than 200 transactions.
-  base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
+  // The connection owns transactions created on this connection. It's important
+  // to preserve ordering.
+  std::map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
 
   // The callbacks_ member is cleared when the connection is closed.
   // May be nullptr in unit tests.
-  scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
+  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker_;
+  mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+      client_state_checker_;
   mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
       client_keep_active_remotes_;
+  // Uniquely identifies the RFH that owns the other side of this connection,
+  // i.e. the "client" of `client_state_checker_`. Since multiple
+  // transactions/connections associated with a single client should never cause
+  // that client to be ineligible for BFCache, this token is used to avoid
+  // unnecessary calls to `DisallowInactiveClient()`.
+  base::UnguessableToken client_token_;
 
   base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
 };

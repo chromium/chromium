@@ -209,7 +209,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     } else if (key_string == "persistent") {
       window_features.persistent = true;
     } else if (key_string == "fullscreen" &&
-               RuntimeEnabledFeatures::FullscreenPopupWindowsEnabled()) {
+               RuntimeEnabledFeatures::FullscreenPopupWindowsEnabled(
+                   dom_window)) {
       // TODO(crbug.com/1142516): Add permission check to give earlier
       // feedback / console warning if permission isn't granted, and/or just
       // silently drop the flag. Currently the browser will block the popup
@@ -295,7 +296,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   const KURL& url = request.GetResourceRequest().Url();
   if (url.ProtocolIsJavaScript()) {
     if (opener_window
-            .CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
+            .CheckAndGetJavascriptUrl(request.JavascriptWorld(), url,
                                       nullptr /* element */)
             .empty()) {
       return nullptr;

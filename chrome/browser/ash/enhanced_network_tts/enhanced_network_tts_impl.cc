@@ -197,9 +197,10 @@ void EnhancedNetworkTtsImpl::ProcessNextServerRequest() {
   }
 
   const ServerRequestList::iterator first_request_it = server_requests_.begin();
-  network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
-      base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
-                     weak_factory_.GetWeakPtr(), first_request_it);
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated
+      body_as_string_callback =
+          base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
+                         weak_factory_.GetWeakPtr(), first_request_it);
   server_requests_.front().url_loader->DownloadToString(
       url_loader_factory_.get(), std::move(body_as_string_callback),
       kEnhancedNetworkTtsMaxResponseSize);

@@ -5,8 +5,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 
 #include "base/containers/span.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -20,19 +19,27 @@ ScriptValue WebGLAny(ScriptState* script_state,
                      const bool* value,
                      uint32_t size) {
   auto span = base::make_span(value, size);
-  return ScriptValue(script_state->GetIsolate(), ToV8(span, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLSequence<IDLBoolean>>::ToV8(script_state, span));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<bool>& value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLSequence<IDLBoolean>>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<unsigned>& value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLSequence<IDLUnsignedShort>>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<int>& value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLSequence<IDLLong>>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, int value) {
@@ -70,23 +77,29 @@ ScriptValue WebGLAny(ScriptState* script_state, String value) {
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, WebGLObject* value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLNullable<WebGLObject>>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMFloat32Array* value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<DOMFloat32Array>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMInt32Array* value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<DOMInt32Array>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMUint8Array* value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<DOMUint8Array>::ToV8(script_state, value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMUint32Array* value) {
-  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8Traits<DOMUint32Array>::ToV8(script_state, value));
 }
 
 }  // namespace blink

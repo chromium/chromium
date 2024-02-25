@@ -37,9 +37,9 @@ class ASH_EXPORT AppListAssistantMainStage
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver {
- public:
-  METADATA_HEADER(AppListAssistantMainStage);
+  METADATA_HEADER(AppListAssistantMainStage, views::View)
 
+ public:
   explicit AppListAssistantMainStage(AssistantViewDelegate* delegate);
   AppListAssistantMainStage(const AppListAssistantMainStage&) = delete;
   AppListAssistantMainStage& operator=(const AppListAssistantMainStage&) =
@@ -67,13 +67,14 @@ class ASH_EXPORT AppListAssistantMainStage
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   void InitializeUIForBubbleView();
 
  private:
   void InitLayout();
+  void InitLayoutWithIph();
   std::unique_ptr<views::View> CreateContentLayoutContainer();
   std::unique_ptr<views::View> CreateMainContentLayoutContainer();
   std::unique_ptr<views::View> CreateDividerLayoutContainer();
@@ -82,19 +83,18 @@ class ASH_EXPORT AppListAssistantMainStage
   void AnimateInZeroState();
   void AnimateInFooter();
 
-  void MaybeHideZeroState();
+  void MaybeHideZeroStateAndShowFooter();
   void InitializeUIForStartingSession(bool from_search);
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
-      delegate_;  // Owned by Shell.
+  const raw_ptr<AssistantViewDelegate> delegate_;  // Owned by Shell.
 
   // Owned by view hierarchy.
-  raw_ptr<AssistantProgressIndicator, ExperimentalAsh> progress_indicator_;
-  raw_ptr<views::Separator, ExperimentalAsh> horizontal_separator_;
-  raw_ptr<AssistantQueryView, ExperimentalAsh> query_view_;
-  raw_ptr<UiElementContainerView, ExperimentalAsh> ui_element_container_;
-  raw_ptr<AssistantZeroStateView, ExperimentalAsh> zero_state_view_;
-  raw_ptr<AssistantFooterView, ExperimentalAsh> footer_;
+  raw_ptr<AssistantProgressIndicator> progress_indicator_;
+  raw_ptr<views::Separator> horizontal_separator_;
+  raw_ptr<AssistantQueryView> query_view_;
+  raw_ptr<UiElementContainerView> ui_element_container_;
+  raw_ptr<AssistantZeroStateView> zero_state_view_;
+  raw_ptr<AssistantFooterView> footer_;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

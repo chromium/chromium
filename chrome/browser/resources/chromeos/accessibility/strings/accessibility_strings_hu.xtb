@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Navigálás visszafelé</translation>
 <translation id="1565432156062359693">Nincs következő lista</translation>
 <translation id="1571643229714746283">A ChromeVox készen áll</translation>
+<translation id="1588252353131492116">Az átjárás billentyűparancsa nem áll rendelkezésre, ha be van kapcsolva a beragadó mód</translation>
 <translation id="1594072653727561613">mnü</translation>
 <translation id="1610130962244179598">Váltás 6 pontos braille-táblázatra</translation>
 <translation id="161042844686301425">Cián</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Fő</translation>
 <translation id="2329324941084714723">Lappanel</translation>
 <translation id="2347456970887948350">Link</translation>
+<translation id="2363753371702255035">listajel</translation>
 <translation id="2365384324219615024">Az elemek aktiválása az Enter lenyomásával is lehetséges. Az Enter gombbal például beküldhet szöveget az űrlapokon. A folytatáshoz nyomja le az Entert.</translation>
 <translation id="2381733276052567791">Szövegfelolvasás be- és kikapcsolása</translation>
 <translation id="2390264819538553347">Továbblépéshez nyomja le az Enter, visszalépéshez a Backspace billentyűt.</translation>

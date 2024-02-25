@@ -57,6 +57,7 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
+  CHECK(alpha_type == kOpaque_SkAlphaType || alpha_type == kPremul_SkAlphaType);
 
   // DXGI only supports a handful of formats for scan-out, so we map the
   // requested format to a supported compatible DXGI format.
@@ -64,13 +65,14 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
 
   if (usage & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE) {
     DCHECK_NE(internal_format, DXGI_FORMAT_R10G10B10A2_UNORM);
-    return DCompSurfaceImageBacking::Create(mailbox, format, internal_format,
-                                            size, color_space, surface_origin,
-                                            alpha_type, usage);
+    return DCompSurfaceImageBacking::Create(
+        mailbox, format, internal_format, size, color_space, surface_origin,
+        alpha_type, usage, std::move(debug_label));
   } else {
     return DXGISwapChainImageBacking::Create(
         context_state_->GetD3D11Device(), mailbox, format, internal_format,
-        size, color_space, surface_origin, alpha_type, usage);
+        size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label));
   }
 }
 
@@ -160,6 +162,10 @@ bool DCompImageBackingFactory::IsSupported(
   }
 
   return true;
+}
+
+SharedImageBackingType DCompImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kDCompSurface;
 }
 
 }  // namespace gpu

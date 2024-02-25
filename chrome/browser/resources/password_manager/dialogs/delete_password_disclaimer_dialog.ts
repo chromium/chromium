@@ -6,12 +6,13 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../shared_style.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from '../password_manager_proxy.js';
+import type {PasswordManagerProxy} from '../password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getTemplate} from './delete_password_disclaimer_dialog.html.js';
 

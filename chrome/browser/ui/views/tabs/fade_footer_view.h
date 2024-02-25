@@ -9,58 +9,72 @@
 
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 
 struct AlertFooterRowData {
-  absl::optional<TabAlertState> alert_state;
-  int footer_row_width = 0;
+  std::optional<TabAlertState> alert_state;
+  bool should_show_discard_status = false;
+  uint64_t memory_savings_in_bytes = 0;
 };
 
 struct PerformanceRowData {
-  bool should_show_discard_status = false;
-  uint64_t memory_savings_in_bytes = 0;
+  bool show_memory_usage = false;
+  bool is_high_memory_usage = false;
   uint64_t memory_usage_in_bytes = 0;
-  int footer_row_width = 0;
 };
 
 template <typename T>
 class FooterRow : public FadeWrapper<views::View, T> {
+  using FadeWrapper_View_T = FadeWrapper<views::View, T>;
+  METADATA_TEMPLATE_HEADER(FooterRow, FadeWrapper_View_T)
+
  public:
   explicit FooterRow(bool is_fade_out_view);
   ~FooterRow() override = default;
 
   virtual void SetContent(const ui::ImageModel& icon_image_model,
-                          std::u16string label_text,
-                          int max_footer_width);
+                          std::u16string label_text);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Size GetMinimumSize() const override;
+  int GetHeightForWidth(int width) const override;
 
   // FadeWrapper:
   void SetFade(double percent) override;
 
- protected:
   views::Label* footer_label() { return footer_label_; }
 
   views::ImageView* icon() { return icon_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdatesTabAlertStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardShowsMemoryOnMemoryRefresh);
   const bool is_fade_out_view_ = false;
   raw_ptr<views::Label> footer_label_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
+using FadeWrapper_View_AlertFooterRowData =
+    FadeWrapper<views::View, AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper);
+
+using FadeWrapper_View_PerformanceRowData =
+    FadeWrapper<views::View, PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
+
+using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
+
+using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
+
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
+  using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;
+  METADATA_HEADER(FadeAlertFooterRow, FooterRowAlertFooterRowData)
+
  public:
   explicit FadeAlertFooterRow(bool is_fade_out_view)
       : FooterRow<AlertFooterRowData>(is_fade_out_view) {}
@@ -71,6 +85,9 @@ class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
 };
 
 class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
+  using FooterRowPerformanceRowData = FooterRow<PerformanceRowData>;
+  METADATA_HEADER(FadePerformanceFooterRow, FooterRowPerformanceRowData)
+
  public:
   explicit FadePerformanceFooterRow(bool is_fade_out_view)
       : FooterRow<PerformanceRowData>(is_fade_out_view) {}
@@ -81,6 +98,8 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
 };
 
 class FooterView : public views::View {
+  METADATA_HEADER(FooterView, views::View)
+
  public:
   using AlertFadeView =
       FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>;
@@ -102,8 +121,7 @@ class FooterView : public views::View {
     return performance_row_;
   }
 
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
+  views::FlexLayout* flex_layout() { return flex_layout_; }
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;

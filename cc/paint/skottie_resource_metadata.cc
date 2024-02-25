@@ -15,7 +15,7 @@ namespace cc {
 
 SkottieResourceMetadataMap::ImageAssetMetadata::ImageAssetMetadata(
     base::FilePath resource_path_in,
-    absl::optional<gfx::Size> size_in)
+    std::optional<gfx::Size> size_in)
     : resource_path(std::move(resource_path_in)), size(std::move(size_in)) {}
 
 SkottieResourceMetadataMap::SkottieResourceMetadataMap() = default;
@@ -28,10 +28,10 @@ SkottieResourceMetadataMap& SkottieResourceMetadataMap::operator=(
 
 SkottieResourceMetadataMap::~SkottieResourceMetadataMap() = default;
 
-bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
-                                               base::StringPiece resource_name,
-                                               base::StringPiece resource_id,
-                                               absl::optional<gfx::Size> size) {
+bool SkottieResourceMetadataMap::RegisterAsset(std::string_view resource_path,
+                                               std::string_view resource_name,
+                                               std::string_view resource_id,
+                                               std::optional<gfx::Size> size) {
   DCHECK(!size || !size->IsEmpty());
   if (resource_id.empty()) {
     LOG(ERROR) << "Skottie animation has asset with empty resource_id";
@@ -61,9 +61,9 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
   return inserted;
 }
 
-SkottieResourceIdHash HashSkottieResourceId(base::StringPiece resource_id) {
+SkottieResourceIdHash HashSkottieResourceId(std::string_view resource_id) {
   return SkottieResourceIdHash::FromUnsafeValue(
-      base::PersistentHash(resource_id.data(), resource_id.length()));
+      base::PersistentHash(resource_id));
 }
 
 }  // namespace cc

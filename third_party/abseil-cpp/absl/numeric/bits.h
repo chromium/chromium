@@ -54,11 +54,8 @@ ABSL_NAMESPACE_BEGIN
 // libc++ had the wrong signature for std::rotl and std::rotr
 // prior to libc++ 18.0.
 //
-// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
-#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L) && \
-    (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION >= 180000) &&   \
-    !defined(_LIBCPP_GOOGLE3)
-
+#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L) &&     \
+    (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION >= 180000)
 using std::rotl;
 using std::rotr;
 
@@ -81,9 +78,11 @@ ABSL_MUST_USE_RESULT constexpr
 
 #endif
 
-// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
-#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L) && \
-    !defined(_LIBCPP_GOOGLE3)
+// https://github.com/llvm/llvm-project/issues/64544
+// libc++ had the wrong signature for std::rotl and std::rotr
+// prior to libc++ 18.0.
+//
+#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L)
 
 using std::countl_one;
 using std::countl_zero;
@@ -137,9 +136,7 @@ ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline
 
 #endif
 
-// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
-#if (defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L) && \
-    !defined(_LIBCPP_GOOGLE3)
+#if (defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L)
 
 using std::bit_ceil;
 using std::bit_floor;

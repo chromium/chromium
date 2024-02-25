@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
@@ -155,9 +157,12 @@ void FtlSignalingPlayground::AcceptIncoming(base::OnceClosure on_done) {
                                ? cmd->GetSwitchValueASCII(kSwitchNameHostOwner)
                                : user_email;
   HOST_LOG << "Using host owner: " << host_owner;
-  auto factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-      host_owner, cert, key_pair,
-      /* domain_list */ {}, pin_hash, /* pairing_registry */ {});
+  auto auth_config =
+      std::make_unique<protocol::HostAuthenticationConfig>(cert, key_pair);
+  auth_config->AddSharedSecretAuth(pin_hash);
+  auto factory = std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+      host_owner,
+      /* domain_list */ std::vector<std::string>(), std::move(auth_config));
   session_manager_->set_authenticator_factory(std::move(factory));
   HOST_LOG << "Waiting for incoming session...";
   session_manager_->AcceptIncoming(base::BindRepeating(

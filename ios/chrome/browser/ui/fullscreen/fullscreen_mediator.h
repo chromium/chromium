@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
@@ -88,9 +89,9 @@ class FullscreenMediator : public FullscreenModelObserver {
   void StopAnimating(bool update_model);
 
   // The controller.
-  FullscreenController* controller_ = nullptr;
+  raw_ptr<FullscreenController> controller_ = nullptr;
   // The model.
-  FullscreenModel* model_ = nullptr;
+  raw_ptr<FullscreenModel> model_ = nullptr;
   // The active animator.
   __strong FullscreenAnimator* animator_ = nil;
   // Fullscreen resizer, used to resize the WebView based on the fullscreen

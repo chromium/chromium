@@ -143,14 +143,8 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
 
   sync_service.SetLocalSyncEnabled(false);
 
-  // The user didn't turn sync-the-feature on.
-  ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
-  sync_service.SetHasSyncConsent(false);
-  EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
-
-  sync_service.SetHasSyncConsent(true);
-
-  // The sync feature is disabled for some reason (e.g. via enterprise policy).
+  // The sync machinery is disabled for some reason (e.g. via enterprise
+  // policy).
   ASSERT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
   sync_service.SetDisableReasons(
       {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});

@@ -18,8 +18,13 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kGoogleIconSymbol;
 extern NSString* const kGoogleShieldSymbol;
-extern NSString* const kChromeSymbol;
+extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kGoogleMapsSymbol;
+extern NSString* const kGooglePhotosSymbol;
+extern NSString* const kPageInsightsSymbol;
+extern NSString* const kFedexCarrierImage;
+extern NSString* const kUPSCarrierImage;
+extern NSString* const kUSPSCarrierImage;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;
@@ -38,13 +43,13 @@ extern NSString* const kReadingListSymbol;
 extern NSString* const kRecentTabsSymbol;
 extern NSString* const kLanguageSymbol;
 extern NSString* const kLocationSymbol;
-extern NSString* const kLocationFillSymbol;
 extern NSString* const kPasswordSymbol;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kMulticolorPasswordSymbol;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
+extern NSString* const kUpTrendSymbol;
 extern NSString* const kShieldSymbol;
 extern NSString* const kCloudSlashSymbol;
 extern NSString* const kCloudAndArrowUpSymbol;
@@ -54,6 +59,9 @@ extern NSString* const kTunerSymbol;
 extern NSString* const kMoveFolderSymbol;
 extern NSString* const kTopOmniboxOptionSymbol;
 extern NSString* const kBottomOmniboxOptionSymbol;
+extern NSString* const kDangerousOmniboxSymbol;
+extern NSString* const kArrowDownSymbol;
+extern NSString* const kArrowUpSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
@@ -79,6 +87,7 @@ extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDefaultBrowseriOS14Symbol;
 extern NSString* const kDiscoverSymbol;
 extern NSString* const kBellSymbol;
+extern NSString* const kBellBadgeSymbol;
 extern NSString* const kCachedDataSymbol;
 extern NSString* const kAutofillDataSymbol;
 extern NSString* const kSecureLocationBarSymbol;
@@ -124,6 +133,7 @@ extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;
 extern NSString* const kDownloadSymbol;
+extern NSString* const kSecureSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpSymbol;
@@ -141,20 +151,21 @@ extern NSString* const kBookmarksSymbol;
 extern NSString* const kSyncErrorSymbol;
 extern NSString* const kMenuSymbol;
 extern NSString* const kSortSymbol;
+extern NSString* const kExpandSymbol;
 extern NSString* const kBackSymbol;
 extern NSString* const kForwardSymbol;
 extern NSString* const kPersonFillSymbol;
 extern NSString* const kMailFillSymbol;
 extern NSString* const kPhoneFillSymbol;
 extern NSString* const kDownloadPromptFillSymbol;
-extern NSString* const kDownloadPromptFilliOS14Symbol;
 extern NSString* const kDownloadDocFillSymbol;
 extern NSString* const kDocSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
-extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronDownSymbol;
 extern NSString* const kChevronForwardSymbol;
+extern NSString* const kChevronUpDown;
+extern NSString* const kChevronDownCircleFill;
 extern NSString* const kGlobeAmericasSymbol;
 extern NSString* const kGlobeSymbol;
 extern NSString* const kPersonCropCircleSymbol;
@@ -166,13 +177,36 @@ extern NSString* const kTabsSymbol;
 extern NSString* const kHighlighterSymbol;
 extern NSString* const kSealFillSymbol;
 extern NSString* const kSquareOnSquareDashedSymbol;
-extern NSString* const kDocPlaintext;
+extern NSString* const kDocPlaintextSymbol;
 extern NSString* const kFlagSymbol;
 extern NSString* const kKeyboardSymbol;
+extern NSString* const kKeyboardDownSymbol;
 extern NSString* const kSpeedometerSymbol;
 extern NSString* const kMovePlatterToTopPhoneSymbol;
 extern NSString* const kMovePlatterToBottomPhoneSymbol;
 extern NSString* const kMapSymbol;
+extern NSString* const kShippingBoxSymbol;
+extern NSString* const kSliderHorizontalSymbol;
+extern NSString* const kMacbookAndIPhoneSymbol;
+extern NSString* const kCheckmarkShieldSymbol;
+extern NSString* const kListBulletClipboardSymbol;
+extern NSString* const kListBulletRectangleSymbol;
+extern NSString* const kBoxTruckFillSymbol;
+extern NSString* const kExclamationMarkBubbleSymbol;
+extern NSString* const kShippingBoxFillSymbol;
+extern NSString* const kButtonProgrammableSymbol;
+extern NSString* const kCircleCircleFillSymbol;
+extern NSString* const kLockSymbol;
+extern NSString* const kRulerSymbol;
+extern NSString* const kLaptopAndIphoneSymbol;
+extern NSString* const kBoltSymbol;
+extern NSString* const kLightBulbSymbol;
+extern NSString* const kNewTabGroupActionSymbol;
+extern NSString* const kRemoveTabFromGroupActionSymbol;
+extern NSString* const kMoveTabToGroupActionSymbol;
+extern NSString* const kClockSymbol;
+extern NSString* const kUngroupTabGroupSymbol;
+extern NSString* const kPlusInSquareSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

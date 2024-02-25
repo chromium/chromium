@@ -16,6 +16,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
+
 namespace {
 
 // Returns |true| if |frame| contains (or should be assumed to contain)
@@ -124,7 +127,7 @@ String SavableResources::GetSubResourceLinkFromElement(Element* element) {
     attribute_name = &html_names::kSrcAttr;
   } else if (element->HasTagName(html_names::kInputTag)) {
     HTMLInputElement* input = To<HTMLInputElement>(element);
-    if (input->type() == input_type_names::kImage) {
+    if (input->FormControlType() == FormControlType::kInputImage) {
       attribute_name = &html_names::kSrcAttr;
     }
   } else if (element->HasTagName(html_names::kBodyTag) ||

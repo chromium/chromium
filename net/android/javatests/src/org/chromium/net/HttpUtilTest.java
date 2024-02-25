@@ -24,21 +24,20 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class HttpUtilTest {
-    private static final List<String> UNALLOWED_HEADER_NAMES = Arrays.asList(
-            "accept-encoding",  // Unsafe header.
-            "ACCEPT-ENCODING",  // Unsafe header.
-            "referer ",  // Unsafe header.
-            "referer",  // Unsafe header.
-            " referer",  // Unsafe header.
-            "",  // Badly formed header.
-            "ref(erer",  // Badly formed header.
-            "ref\nerer"  // Badly formed header.
-    );
+    private static final List<String> UNALLOWED_HEADER_NAMES =
+            Arrays.asList(
+                    "accept-encoding", // Unsafe header.
+                    "ACCEPT-ENCODING", // Unsafe header.
+                    "referer ", // Unsafe header.
+                    "referer", // Unsafe header.
+                    " referer", // Unsafe header.
+                    "", // Badly formed header.
+                    "ref(erer", // Badly formed header.
+                    "ref\nerer" // Badly formed header.
+                    );
 
-    private static final List<String> ALLOWED_HEADER_NAMES = Arrays.asList(
-            "accept-language",
-            "Cache-Control"
-    );
+    private static final List<String> ALLOWED_HEADER_NAMES =
+            Arrays.asList("accept-language", "Cache-Control");
 
     private static final String UNALLOWED_HEADER_VALUE = "value\nAccept-Encoding: br";
     private static final String ALLOWED_HEADER_VALUE = "value";
@@ -52,37 +51,36 @@ public class HttpUtilTest {
     @Test
     @MediumTest
     public void testAllowedHeaders() {
-        for (String headerName: ALLOWED_HEADER_NAMES) {
-            Assert.assertTrue(headerName,
-                    HttpUtil.isAllowedHeader(headerName, ALLOWED_HEADER_VALUE));
+        for (String headerName : ALLOWED_HEADER_NAMES) {
+            Assert.assertTrue(
+                    headerName, HttpUtil.isAllowedHeader(headerName, ALLOWED_HEADER_VALUE));
         }
     }
 
     @Test
     @MediumTest
     public void testUnallowedHeaders() {
-        for (String headerName: UNALLOWED_HEADER_NAMES) {
-            Assert.assertFalse(headerName,
-                    HttpUtil.isAllowedHeader(headerName, UNALLOWED_HEADER_VALUE));
+        for (String headerName : UNALLOWED_HEADER_NAMES) {
+            Assert.assertFalse(
+                    headerName, HttpUtil.isAllowedHeader(headerName, UNALLOWED_HEADER_VALUE));
         }
     }
 
     @Test
     @MediumTest
     public void testUnallowedHeaderNames() {
-        for (String headerName: UNALLOWED_HEADER_NAMES) {
-            Assert.assertFalse(headerName,
-                    HttpUtil.isAllowedHeader(headerName, ALLOWED_HEADER_VALUE));
+        for (String headerName : UNALLOWED_HEADER_NAMES) {
+            Assert.assertFalse(
+                    headerName, HttpUtil.isAllowedHeader(headerName, ALLOWED_HEADER_VALUE));
         }
     }
-
 
     @Test
     @MediumTest
     public void testUnallowedHeaderValue() {
-        for (String headerName: ALLOWED_HEADER_NAMES) {
-            Assert.assertFalse(headerName,
-                    HttpUtil.isAllowedHeader(headerName, UNALLOWED_HEADER_VALUE));
+        for (String headerName : ALLOWED_HEADER_NAMES) {
+            Assert.assertFalse(
+                    headerName, HttpUtil.isAllowedHeader(headerName, UNALLOWED_HEADER_VALUE));
         }
     }
 }

@@ -70,7 +70,7 @@ class LogEventDispatcher {
 
     ~Impl();
 
-    std::vector<RawEventSubscriber*> subscribers_;
+    std::vector<raw_ptr<RawEventSubscriber, VectorExperimental>> subscribers_;
   };
 
   const raw_ptr<CastEnvironment> env_;  // Owner of this instance.

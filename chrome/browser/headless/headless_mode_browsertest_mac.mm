@@ -6,12 +6,47 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace headless {
+
+namespace test {
+
+bool IsPlatformWindowVisible(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+  CHECK(ns_window);
+
+  return ns_window.visible;
+}
+
+gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+  CHECK(ns_window);
+
+  gfx::Rect bounds = gfx::ScreenRectFromNSRect([ns_window frame]);
+
+  return bounds;
+}
+
+}  // namespace test
 
 namespace {
 
@@ -44,13 +79,13 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(ns_window.visible);
 
   // Verify fullscreen state.
-  ToggleFullscreenModeSync(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);
 
   // Verify back to normal state.
-  ToggleFullscreenModeSync(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);

@@ -65,14 +65,15 @@ class RemoteObjectImpl implements RemoteObject {
      */
     interface ObjectIdAllocator {
         int getObjectId(Object object, Class<? extends Annotation> safeAnnotationClass);
+
         Object getObjectById(int id);
+
         void unrefObjectByObject(Object object);
     }
 
-    /**
-     * Method which may not be called.
-     */
+    /** Method which may not be called. */
     private static final Method sGetClassMethod;
+
     static {
         try {
             sGetClassMethod = Object.class.getMethod("getClass");
@@ -105,19 +106,13 @@ class RemoteObjectImpl implements RemoteObject {
      */
     private final WeakReference<ObjectIdAllocator> mObjectIdAllocator;
 
-    /**
-     * Receives notification about events for auditing.
-     */
+    /** Receives notification about events for auditing. */
     private final Auditor mAuditor;
 
-    /**
-     * Callable methods, indexed by name.
-     */
+    /** Callable methods, indexed by name. */
     private final SortedMap<String, List<Method>> mMethods = new TreeMap<>();
 
-    /**
-     * If true, allows an object context's inspection when {@link #getMethods} is called.
-     */
+    /** If true, allows an object context's inspection when {@link #getMethods} is called. */
     private final boolean mAllowInspection;
 
     private boolean mNotifiedReleasedObject;
@@ -126,11 +121,17 @@ class RemoteObjectImpl implements RemoteObject {
     public static final int UNSIGNED_SHORT_MASK = 0xffff;
     public static final long UNSIGNED_INT_MASK = 0xffffffffL;
 
-    private static final Pattern sDoubleNumberPattern = Pattern.compile(
-            "^(-?[0-9]+)(\\.0+)? ( ( (?:\\.[0-9]*[1-9])? )0* ) ((?:e.*)?)$", Pattern.COMMENTS);
+    private static final Pattern sDoubleNumberPattern =
+            Pattern.compile(
+                    "^(-?[0-9]+)(\\.0+)? ( ( (?:\\.[0-9]*[1-9])? )0* ) ((?:e.*)?)$",
+                    Pattern.COMMENTS);
 
-    public RemoteObjectImpl(Object target, Class<? extends Annotation> safeAnnotationClass,
-            Auditor auditor, ObjectIdAllocator objectIdAllocator, boolean allowInspection) {
+    public RemoteObjectImpl(
+            Object target,
+            Class<? extends Annotation> safeAnnotationClass,
+            Auditor auditor,
+            ObjectIdAllocator objectIdAllocator,
+            boolean allowInspection) {
         mTarget = new WeakReference<>(target);
         mSafeAnnotationClass = safeAnnotationClass;
         mAuditor = auditor;
@@ -206,8 +207,12 @@ class RemoteObjectImpl implements RemoteObject {
         Object[] args = new Object[numArguments];
         for (int i = 0; i < numArguments; i++) {
             try {
-                args[i] = convertArgument(arguments[i], parameterTypes[i],
-                        StringCoercionMode.COERCE, objectIdAllocator);
+                args[i] =
+                        convertArgument(
+                                arguments[i],
+                                parameterTypes[i],
+                                StringCoercionMode.COERCE,
+                                objectIdAllocator);
             } catch (IllegalArgumentException e) {
                 callback.call(makeErrorResult(RemoteInvocationError.NON_ASSIGNABLE_TYPES));
                 return;
@@ -237,8 +242,9 @@ class RemoteObjectImpl implements RemoteObject {
             return;
         }
 
-        RemoteInvocationResult mojoResult = convertResult(
-                result, method.getReturnType(), objectIdAllocator, mSafeAnnotationClass);
+        RemoteInvocationResult mojoResult =
+                convertResult(
+                        result, method.getReturnType(), objectIdAllocator, mSafeAnnotationClass);
         callback.call(mojoResult);
     }
 
@@ -347,6 +353,7 @@ class RemoteObjectImpl implements RemoteObject {
         }
 
         protected abstract Number get(int index);
+
         protected boolean isFloatType() {
             return false;
         }
@@ -355,6 +362,7 @@ class RemoteObjectImpl implements RemoteObject {
     private static class WrapByteBuffer extends WrapBuffer {
         ByteBuffer mBuffer;
         boolean mUnsigned;
+
         WrapByteBuffer(ByteBuffer buffer, Class<?> parameterType, boolean unsigned) {
             super(parameterType);
             mBuffer = buffer;
@@ -382,6 +390,7 @@ class RemoteObjectImpl implements RemoteObject {
     private static class WrapShortBuffer extends WrapBuffer {
         ShortBuffer mBuffer;
         boolean mUnsigned;
+
         WrapShortBuffer(ShortBuffer buffer, Class<?> parameterType, boolean unsigned) {
             super(parameterType);
             mBuffer = buffer;
@@ -409,6 +418,7 @@ class RemoteObjectImpl implements RemoteObject {
     private static class WrapIntBuffer extends WrapBuffer {
         IntBuffer mBuffer;
         boolean mUnsigned;
+
         WrapIntBuffer(IntBuffer buffer, Class<?> parameterType, boolean unsigned) {
             super(parameterType);
             mBuffer = buffer;
@@ -435,6 +445,7 @@ class RemoteObjectImpl implements RemoteObject {
 
     private static class WrapFloatBuffer extends WrapBuffer {
         FloatBuffer mBuffer;
+
         WrapFloatBuffer(FloatBuffer buffer, Class<?> parameterType) {
             super(parameterType);
             mBuffer = buffer;
@@ -464,6 +475,7 @@ class RemoteObjectImpl implements RemoteObject {
 
     private static class WrapDoubleBuffer extends WrapBuffer {
         DoubleBuffer mBuffer;
+
         WrapDoubleBuffer(DoubleBuffer buffer, Class<?> parameterType) {
             super(parameterType);
             mBuffer = buffer;
@@ -491,8 +503,11 @@ class RemoteObjectImpl implements RemoteObject {
         }
     }
 
-    private static Object convertArgument(RemoteInvocationArgument argument, Class<?> parameterType,
-            @StringCoercionMode int stringCoercionMode, ObjectIdAllocator objectIdAllocator) {
+    private static Object convertArgument(
+            RemoteInvocationArgument argument,
+            Class<?> parameterType,
+            @StringCoercionMode int stringCoercionMode,
+            ObjectIdAllocator objectIdAllocator) {
         switch (argument.which()) {
             case RemoteInvocationArgument.Tag.NumberValue:
                 // See http://jdk6.java.net/plugin2/liveconnect/#JS_NUMBER_VALUES.
@@ -584,7 +599,7 @@ class RemoteObjectImpl implements RemoteObject {
                     // LIVECONNECT_COMPLIANCE: Existing behavior is to convert undefined to
                     // "undefined". Spec requires converting undefined to NULL.
                     return (argument.getSingletonValue() == SingletonJavaScriptValue.UNDEFINED
-                                   && stringCoercionMode == StringCoercionMode.COERCE)
+                                    && stringCoercionMode == StringCoercionMode.COERCE)
                             ? "undefined"
                             : null;
                 } else if (parameterType.isPrimitive()) {
@@ -609,8 +624,12 @@ class RemoteObjectImpl implements RemoteObject {
 
                     Object result = Array.newInstance(componentType, arrayValue.length);
                     for (int i = 0; i < arrayValue.length; i++) {
-                        Object element = convertArgument(arrayValue[i], componentType,
-                                StringCoercionMode.DO_NOT_COERCE, objectIdAllocator);
+                        Object element =
+                                convertArgument(
+                                        arrayValue[i],
+                                        componentType,
+                                        StringCoercionMode.DO_NOT_COERCE,
+                                        objectIdAllocator);
                         Array.set(result, i, element);
                     }
                     return result;
@@ -640,8 +659,9 @@ class RemoteObjectImpl implements RemoteObject {
                     }
 
                     // TODO(crbug.com/794320): Remove unnecessary copy for the performance.
-                    ByteBuffer typedBuffer = ByteBuffer.wrap(
-                            BigBufferUtil.getBytesFromBigBuffer(typedArrayValue.buffer));
+                    ByteBuffer typedBuffer =
+                            ByteBuffer.wrap(
+                                    BigBufferUtil.getBytesFromBigBuffer(typedArrayValue.buffer));
                     typedBuffer.order(ByteOrder.nativeOrder());
 
                     if (typedArrayValue.type == RemoteArrayType.INT8_ARRAY) {
@@ -650,7 +670,7 @@ class RemoteObjectImpl implements RemoteObject {
                         return new WrapByteBuffer(typedBuffer, componentType, true).copyArray();
                     } else if (typedArrayValue.type == RemoteArrayType.INT16_ARRAY) {
                         return new WrapShortBuffer(
-                                typedBuffer.asShortBuffer(), componentType, false)
+                                        typedBuffer.asShortBuffer(), componentType, false)
                                 .copyArray();
                     } else if (typedArrayValue.type == RemoteArrayType.UINT16_ARRAY) {
                         return new WrapShortBuffer(typedBuffer.asShortBuffer(), componentType, true)
@@ -707,8 +727,11 @@ class RemoteObjectImpl implements RemoteObject {
         }
     }
 
-    private static RemoteInvocationResult convertResult(Object result, Class<?> returnType,
-            ObjectIdAllocator objectIdAllocator, Class<? extends Annotation> safeAnnotationClass) {
+    private static RemoteInvocationResult convertResult(
+            Object result,
+            Class<?> returnType,
+            ObjectIdAllocator objectIdAllocator,
+            Class<? extends Annotation> safeAnnotationClass) {
         // Methods returning arrays should not be called (for legacy reasons).
         assert !returnType.isArray();
 
@@ -757,7 +780,8 @@ class RemoteObjectImpl implements RemoteObject {
      * That is, it has an integer value in [-2^31, 2^31) and is not negative zero.
      */
     private static boolean isInt32(double doubleValue) {
-        return doubleValue % 1.0 == 0.0 && doubleValue >= Integer.MIN_VALUE
+        return doubleValue % 1.0 == 0.0
+                && doubleValue >= Integer.MIN_VALUE
                 && doubleValue <= Integer.MAX_VALUE
                 && (doubleValue != 0.0 || (1.0 / doubleValue) > 0.0);
     }
@@ -778,7 +802,8 @@ class RemoteObjectImpl implements RemoteObject {
             return "-0";
         }
         // All other 32-bit signed integers are formatted without abbreviation.
-        if (doubleValue % 1.0 == 0.0 && doubleValue >= Integer.MIN_VALUE
+        if (doubleValue % 1.0 == 0.0
+                && doubleValue >= Integer.MIN_VALUE
                 && doubleValue <= Integer.MAX_VALUE) {
             return Integer.toString((int) doubleValue);
         }
@@ -787,7 +812,8 @@ class RemoteObjectImpl implements RemoteObject {
         // group 2 will match (and so the decimal will be stripped along with zeroes), or group 3
         // will match (and the decimal will be left), but not both (since there cannot be more than
         // one decimal point). Group 5 will match an exponential part.
-        return sDoubleNumberPattern.matcher(String.format((Locale) null, "%.6g", doubleValue))
+        return sDoubleNumberPattern
+                .matcher(String.format((Locale) null, "%.6g", doubleValue))
                 .replaceAll("$1$4$5");
     }
 

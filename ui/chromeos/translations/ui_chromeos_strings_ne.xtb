@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1000498691615767391">खोल्नको लागि एउटा फोल्डर चयन गर्नुहोस्</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> इन्क्रिप्ट गरिएकाले यसलाई कपी गर्न सकिएन।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> वस्तुहरू मेटाउँदै...</translation>
 <translation id="1049926623896334335">शब्द कागजात</translation>
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू सारेर 'Windows फाइलहरू' फोल्डरमा लैजानुहोस्।</translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
+<translation id="1119383441774809183">टेक्स्ट म्यासेजहरू देखाइयोस्</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1120073797882051782">हंगुल रोमाजा</translation>
 <translation id="112387589102719461">अङ्ग्रेजी (सं. रा. अमेरिकी) प्रोग्रामर ड्भोराक किबोर्ड</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439919885608649279">फूल बोकिरहेका व्यक्ति</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> हटाउनुहोस्</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई कपी गर्न सकिएन।</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1482884275703521657">फिनिस</translation>
 <translation id="148466539719134488">स्विस</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">सं. रा. अमेरिकी अन्तर्राष्ट्रिय ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="1629521517399325891">नेटवर्क प्रमाणित गर्नका लागि प्रयोगकर्ताको प्रमाणपत्र उपलब्ध छैन।</translation>
 <translation id="1641780993263690097">चिनियाँ पिनयिन</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल अफलाइन उपलब्ध गराइँदै छन्</translation>
 <translation id="164969095109328410">Chrome यन्त्र</translation>
 <translation id="1661207570040737402">तपाईंले आफ्नो Google Workspace को साझा ड्राइभमा भएको भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
 <translation id="1661867754829461514">पिन छुटिरहेको छ</translation>
@@ -95,6 +97,7 @@
 <translation id="174937106936716857">फाइलको कुल संख्या</translation>
 <translation id="1755345808328621801">यो फाइल Windows सफ्टवेयर प्रयोग गर्ने PC का लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। कृपया Chrome वेब स्टोरमा कुनै मिल्दो एप खोज्नुहोस् र उक्त एप इन्स्टल गर्नुहोस्।</translation>
 <translation id="1757915090001272240">वाइड ल्याटिन</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> मार्फत सेयर गर्नुहोस्</translation>
 <translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र स्थायी रूपमा अस्विकार गरियो</translation>
 <translation id="1775381402323441512">भिडियोको जानकारी</translation>
 <translation id="180035236176489073">यी फाइलहरू पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -212,6 +215,7 @@
 <translation id="2718540689505416944">Linux प्रयोग गरी एप इन्स्टल गर्नुहोस्</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, विवरणहरू</translation>
 <translation id="2724954091494693138">तुर्किस F-किबोर्ड</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> सँग सेयर गरिने फाइल तथा फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2732839045120506979">भियतनामी VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop लाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="2764206540577097904">तपाईंले आफ्नो Google Workspace को व्यक्तिगत भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
@@ -273,9 +277,11 @@
 <translation id="3253225298092156258">उपलब्ध छैन</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> फाइलहरूको लागि डिफल्ट एप छान्नुहोस्:</translation>
 <translation id="3255159654094949700">अरबी</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई सार्न सकिएन।</translation>
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" खोल्न सकिएन</translation>
 <translation id="3280431534455935878">तैयार गर्दै</translation>
+<translation id="3280719573299097127">तपाईं सीमा तोकिएको नेटवर्कमा कनेक्ट हुनुहुन्छ। फाइल सिंक गर्ने सुविधा पज गरिएको छ।</translation>
 <translation id="3280987981688031357">भाइनल रेकर्ड</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291218047831493686">SIM लकसम्बन्धी सेटिङ बदल्न यो नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
@@ -302,12 +308,13 @@
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री सिंक गर्ने तयारी गरिँदै छ…</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
+<translation id="3523225005467146490">एउटा फोल्डर <ph name="VM_NAME" /> सँग सेयर गरिएको छ</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
+<translation id="3529424493985988200">विवरणहरू हेर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="3548125359243647069">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो।</translation>
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
@@ -324,6 +331,7 @@
 <translation id="3619115746895587757">कापाचिनो</translation>
 <translation id="3619593063686672873">हालसालै कुनै पनि भिडियो हेरिएको छैन</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
+<translation id="36451918667380448">यो मोबाइल सेवा प्रदायकको SIM कार्ड लक गरिएको छ। सहायता प्राप्त गर्न आफ्नो प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> वटा फाइलहरू चयन गरिएका छन्</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
@@ -495,6 +503,7 @@
 <translation id="4935975195727477204">गाजानिया फुल</translation>
 <translation id="4943368462779413526">फुटबल</translation>
 <translation id="4961158930123534723">Parallels Desktop सँग एउटा फोल्डर सेयर गरियो</translation>
+<translation id="4965874878399872778">यी फाइलहरू तपाईंको सङ्गठनले लागू गरेका सुरक्षासम्बन्धी नीतिहरू अनुरूप छन् कि छैनन् भन्ने कुरा जाँचिदै छ...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> रिस्टोर गरियो</translation>
 <translation id="4969785127455456148">एल्बम</translation>
 <translation id="4972330214479971536">फाइल सिंक गर्ने सुविधा सेटअप गर्ने कार्य पूरा सकिएन</translation>
@@ -550,7 +559,6 @@
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5278111733643988471">तपाईं यो फाइल रिस्टोर गर्न चाहनुहुन्छ भने यो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यो फाइलको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
 <translation id="5283101102242354279">इन्कोग्निटो मोडमा एक्स्टेन्सन अन गर्ने तरिका:</translation>
-<translation id="5286194356314741248">स्क्यान गर्दै</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल सार्न पाइँदैन</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
@@ -628,6 +636,7 @@
 <translation id="5838451609423551646">चयनबाट सबै प्रविष्टिहरू हटाइए।</translation>
 <translation id="5838825566232597749">US Workman अन्तर्राष्ट्रिय</translation>
 <translation id="5845721951356578987">नर्स</translation>
+<translation id="5858478190805449225">ब्याट्री सेभर मोड अन छ। ब्याट्री सेभर मोड अफ गरिएका बेला फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP खोज्ने असफल भयो</translation>
@@ -663,6 +672,7 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6177854567773392726">भण्डारणमा रहेको खाली ठाउँ जाँच गरिँदै छ… <ph name="ITEMS_FOUND" /> वटा सामग्री भेटिएका छन्</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> लाई तपाईंको Google Drive मा भएका फाइलहरू एक्सेस गर्ने अनुमति दिनुहोस्। तपाईंले गरेका परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="6187719147498869044">हङ्गेरियाली</translation>
 <translation id="6198252989419008588">PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6199801702437275229">ठाउँ जानकारी प्रतिक्षा गर्दै...</translation>
@@ -693,11 +703,13 @@
 <translation id="637062427944097960">यो फाइल अर्को डेस्कटपमा खोलियो। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) सार्नुहोस्।</translation>
 <translation id="6394388407447716302">रिड गर्न मात्र मिल्छ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> इन्क्रिप्ट गरिएकाले यसलाई सार्न सकिएन।</translation>
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
 <translation id="6430271654280079150">तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="643243556292470964">मेटाइएका फाइलहरू अहिले ट्र्यासमा सारिएका छन्</translation>
 <translation id="6438480100790416671">भण्डारणमा रहेको खाली ठाउँमा जाँच गरिँदै छ…</translation>
+<translation id="6451527188465304418">यो फाइल तपाईंको सङ्गठनले लागू गरेका सुरक्षासम्बन्धी नीतिहरू अनुरूप छ कि छैन भन्ने कुरा जाँचिदै छ...</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
@@ -705,7 +717,6 @@
 <translation id="6503285896705205014">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल कपी गर्न पाइँदैन</translation>
 <translation id="6509122719576673235">नर्वेयन</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> लाई समक्रमण गर्दै...</translation>
 <translation id="6549689063733911810">हालै</translation>
 <translation id="6558280019477628686">एउटा त्रुटि भयो। केही वस्तुहरू नमेटिएका हुनसक्छन्।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" लाई मेटाउँदै...</translation>
@@ -766,6 +777,7 @@
 <translation id="6989942356279143254">स्विडिस</translation>
 <translation id="6990081529015358884">तपाईंको खाली स्थान समाप्त भएको छ</translation>
 <translation id="6993826899923627728">यी फाइलहरू ट्र्यासमा छन्</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="7008426324576352165">अपलोड गर्ने कार्य पूरा गर्न तपाईंको सङ्गठनले भण्डारणमा थप ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="7009985720488544166">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल सार्न पाइँदैन</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -838,7 +850,6 @@
 <translation id="7553492409867692754">Linux का एपलाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="7555339735447658365">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि फाइल सिंक गर्ने सुविधा सुचारु गरिने छ</translation>
 <translation id="7589661784326793847">केवल एक सेकेन्ड प्रतिक्षा गर्नुहोस्</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> अफलाइनमा उपलब्ध गराइँदै छ</translation>
 <translation id="7600126690270271294">सर्बियाली</translation>
 <translation id="7603724359189955920">ग्रिडहरू</translation>
 <translation id="7627790789328695202">ओहो, <ph name="FILE_NAME" /> पहिले नै विद्यमान छ। यसलाई अर्को नाम दिनुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
@@ -892,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">तपाईं "मेरो ड्राइभ" मा रहेका फाइलहरू इन्टरनेटविनै प्रयोग गर्न सक्नुहोस् भन्नाका लागि ती फाइलहरू तपाईंको Chromebook मा स्वतः सिंक हुने छन्।</translation>
 <translation id="7925247922861151263">AAA जाँच असफल भयो</translation>
-<translation id="7925686952655276919">समक्रमणको लागि मोबाइल डाटा प्रयोग नगर्नुहोस्</translation>
 <translation id="7928710562641958568">यन्त्र निकाल्नुहोस्</translation>
 <translation id="7933875256234974853">Drive मा भएका फाइलहरू सिंक गर्ने तयारी गरिँदै छन्…</translation>
 <translation id="7943385054491506837">युएस कोलमाक</translation>
@@ -915,6 +925,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="8106045200081704138">मसँग साझा गरिएको</translation>
 <translation id="8116072619078571545">बरफजस्तो चिसो पानी</translation>
+<translation id="8120392982188717723">सीमा तोकिएका नेटवर्कहरूमा सिंक गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8124093710070495550">सिंकसम्बन्धी समस्या</translation>
 <translation id="8128733386027980860">अङ्ग्रेजी (संयुक्त अधिराज्य) ड्भोराक किबोर्ड</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" तपाईंसँग साझा गरिएको छ। तपाईंले यसलाई मेटाउन सक्नुहुन्न किनकी यसमा तपाईंको स्वामित्व छैन।</translation>
@@ -922,6 +933,7 @@
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8147028810663464959">वर्णको चौडाइ पूर्ण छ</translation>
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{एउटा त्रुटि।}other{# वटा त्रुटि।}}</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
 <translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
 <translation id="8175731104491895765">फ्रान्सेली (बेल्जियम)</translation>
@@ -952,8 +964,10 @@
 <translation id="8335837413233998004">बेलारुसी</translation>
 <translation id="8336153091935557858">हिजो <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">यही नामको फाइल वा एक निर्देशिका पहिले नै अस्तित्वमा छ ।</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> लाई <ph name="FOLDER_NAME" /> फोल्डरमा भएका फाइलहरू एक्सेस गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
+<translation id="8377269993083688872">इमेलका लेआउटहरू</translation>
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> एक्स्ट्रयाक्ट गरियो।</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
@@ -961,6 +975,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> वटा फोल्डर <ph name="VM_NAME" /> सँग सेयर गरिएका छन्</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>
@@ -991,7 +1006,6 @@
 <translation id="8569764466147087991">खोल्नको लागि फाइल चयन गर्नुहोस्</translation>
 <translation id="8577897833047451336">क्रोएसियाली</translation>
 <translation id="8578308463707544055">इन्डोनेसियाली</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> वस्तुहरू समक्रमण गर्दै...</translation>
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
 <translation id="8601932370724196034">Crostini छवि फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
@@ -1004,6 +1018,7 @@
 <translation id="8698877009525468705">यो गोप्य फाइल हो र एड्मिनले तोकेको नीतिअनुसार यसमाथि प्रतिबन्ध लगाइन सक्छ।</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8713112442029511308">माल्टिज</translation>
+<translation id="8714138378966541668">प्रदायकले लक गरेको छ</translation>
 <translation id="8714406895390098252">साइकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> चयन गरियो।</translation>
 <translation id="872537912056138402">क्रोएसियाली</translation>
@@ -1011,6 +1026,7 @@
 <translation id="8787254343425541995">साझा नेटवर्क को लागि प्रोक्सीहरू अनुमति दिनुहोस्</translation>
 <translation id="8790981080411996443">बोटबिरुवामा पानी हालिरहेका व्यक्ति</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{एउटा चेतावनी।}other{# वटा चेतावनी।}}</translation>
 <translation id="8808686172382650546">बिरालो</translation>
 <translation id="8810671769985673465">जिप गर्न सकिएन, विद्यमान वस्तु: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पेनी (स्पेन)</translation>
@@ -1041,7 +1057,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
-<translation id="9083722265619106011">{0,plural, =1{एउटा चेतावनी।}other{<ph name="COUNT" /> वटा चेतावनी।}}</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

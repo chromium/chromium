@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccess {
   // Object identifying allowed access.
   static ScopedFileAccess Allowed();
 
+  // Object identifying denied access.
+  static ScopedFileAccess Denied();
+
  private:
   bool allowed_;
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

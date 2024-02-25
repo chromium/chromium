@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MOCK_PEER_CONNECTION_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
@@ -91,7 +92,7 @@ class FakeRtpReceiver : public webrtc::RtpReceiverInterface {
   bool SetParameters(const webrtc::RtpParameters& parameters) override;
   void SetObserver(webrtc::RtpReceiverObserverInterface* observer) override;
   void SetJitterBufferMinimumDelay(
-      absl::optional<double> delay_seconds) override;
+      std::optional<double> delay_seconds) override;
   std::vector<webrtc::RtpSource> GetSources() const override;
   void SetTransport(
       rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport) {
@@ -112,22 +113,22 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
       cricket::MediaType media_type,
       rtc::scoped_refptr<FakeRtpSender> sender,
       rtc::scoped_refptr<FakeRtpReceiver> receiver,
-      absl::optional<std::string> mid,
+      std::optional<std::string> mid,
       bool stopped,
       webrtc::RtpTransceiverDirection direction,
-      absl::optional<webrtc::RtpTransceiverDirection> current_direction);
+      std::optional<webrtc::RtpTransceiverDirection> current_direction);
   ~FakeRtpTransceiver() override;
 
   void ReplaceWith(const FakeRtpTransceiver& other);
 
   cricket::MediaType media_type() const override;
-  absl::optional<std::string> mid() const override;
+  std::optional<std::string> mid() const override;
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender() const override;
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver() const override;
   bool stopped() const override;
   bool stopping() const override;
   webrtc::RtpTransceiverDirection direction() const override;
-  absl::optional<webrtc::RtpTransceiverDirection> current_direction()
+  std::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
   void SetTransport(
       rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport);
@@ -158,10 +159,10 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   cricket::MediaType media_type_;
   rtc::scoped_refptr<FakeRtpSender> sender_;
   rtc::scoped_refptr<FakeRtpReceiver> receiver_;
-  absl::optional<std::string> mid_;
+  std::optional<std::string> mid_;
   bool stopped_;
   webrtc::RtpTransceiverDirection direction_;
-  absl::optional<webrtc::RtpTransceiverDirection> current_direction_;
+  std::optional<webrtc::RtpTransceiverDirection> current_direction_;
 };
 
 class FakeDtlsTransport : public webrtc::DtlsTransportInterface {
@@ -343,7 +344,7 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   std::string sdp_mid_;
   int sdp_mline_index_;
   std::string ice_sdp_;
-  webrtc::PeerConnectionObserver* observer_;
+  raw_ptr<webrtc::PeerConnectionObserver> observer_;
   webrtc::RTCErrorType setconfiguration_error_type_ =
       webrtc::RTCErrorType::NONE;
   rtc::scoped_refptr<webrtc::RTCStatsReport> stats_report_;

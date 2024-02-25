@@ -9,12 +9,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/ssl/ssl_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -73,7 +73,7 @@ struct HttpRequest {
   HeaderMap headers;
   std::string content;
   bool has_content = false;
-  absl::optional<SSLInfo> ssl_info;
+  std::optional<SSLInfo> ssl_info;
 };
 
 // Parses the input data and produces a valid HttpRequest object. If there is

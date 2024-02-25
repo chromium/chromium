@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests basic functionality of Tatget.autoAttachRelated.');
   const bp = testRunner.browserP();
 

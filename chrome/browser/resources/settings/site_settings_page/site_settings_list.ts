@@ -11,16 +11,19 @@ import '../i18n_setup.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {FocusConfig} from '../focus_config.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {Route, Router} from '../router.js';
-import {ContentSetting, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
-import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import type {Route} from '../router.js';
+import {Router} from '../router.js';
+import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
+import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './site_settings_list.html.js';
 
@@ -76,6 +79,7 @@ class SettingsSiteSettingsListElement extends
   static get observers() {
     return [
       'updateNotificationsLabel_(prefs.generated.notification.*)',
+      'updateLocationLabel_(prefs.generated.geolocation.*)',
       'updateSiteDataLabel_(prefs.generated.cookie_default_content_setting.*)',
       'updateThirdPartyCookiesLabel_(prefs.profile.cookie_controls_mode.*)',
     ];
@@ -132,19 +136,6 @@ class SettingsSiteSettingsListElement extends
       });
       this.browserProxy_.observeProtocolHandlersEnabledState();
     }
-
-    // TODO(crbug.com/1378703): Remove this after the feature is launched.
-    const hasCookies = this.categoryList.some(item => {
-      return item.id === ContentSettingsTypes.COOKIES;
-    });
-    if (hasCookies && !loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
-      // The cookies sub-label is provided by an update from C++.
-      this.browserProxy_.getCookieSettingDescription().then(
-          (label: string) => this.updateCookiesLabel_(label));
-      this.addWebUiListener(
-          'cookieSettingDescriptionChanged',
-          (label: string) => this.updateCookiesLabel_(label));
-    }
   }
 
   /**
@@ -163,6 +154,13 @@ class SettingsSiteSettingsListElement extends
     }
 
     if (category === ContentSettingsTypes.COOKIES) {
+      if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+        const index = this.categoryList.map(e => e.id).indexOf(
+            ContentSettingsTypes.COOKIES);
+        this.set(
+            `categoryList.${index}.subLabel`,
+            this.i18n('trackingProtectionLinkRowSubLabel'));
+      }
       // Updates to the cookies label are handled by the
       // cookieSettingDescriptionChanged event listener.
       return Promise.resolve();
@@ -171,6 +169,15 @@ class SettingsSiteSettingsListElement extends
     if (category === ContentSettingsTypes.NOTIFICATIONS) {
       // Updates to the notifications label are handled by a preference
       // observer.
+      return Promise.resolve();
+    }
+
+    if (category === ContentSettingsTypes.PERFORMANCE) {
+      const index = this.categoryList.map(e => e.id).indexOf(
+          ContentSettingsTypes.PERFORMANCE);
+      this.set(
+          `categoryList.${index}.subLabel`,
+          this.i18n('siteSettingsPerformanceSublabel'));
       return Promise.resolve();
     }
 
@@ -215,6 +222,36 @@ class SettingsSiteSettingsListElement extends
   }
 
   /**
+   * Update the geolocation link row label when the geolocation setting
+   * description changes.
+   */
+  private updateLocationLabel_() {
+    if (!loadTimeData.getBoolean('permissionDedicatedCpssSettings')) {
+      return;
+    }
+    const state = this.getPref('generated.geolocation').value;
+    const index = this.categoryList.map(e => e.id).indexOf(
+        ContentSettingsTypes.GEOLOCATION);
+
+    // The location row might not be part of the current site-settings-list
+    // but the class always observes the preference.
+    if (index === -1) {
+      return;
+    }
+
+    let label = 'siteSettingsLocationBlocked';
+    if (state === SettingsState.LOUD) {
+      label = 'siteSettingsLocationAskLoud';
+    } else if (state === SettingsState.QUIET) {
+      label = 'siteSettingsLocationAskQuiet';
+    } else if (state === SettingsState.CPSS) {
+      label = 'siteSettingsLocationAskCPSS';
+    }
+    this.set(`categoryList.${index}.subLabel`, this.i18n(label));
+  }
+
+
+  /**
    * Update the notifications link row label when the notifications setting
    * description changes.
    */
@@ -230,10 +267,12 @@ class SettingsSiteSettingsListElement extends
     }
 
     let label = 'siteSettingsNotificationsBlocked';
-    if (state === NotificationSetting.ASK) {
-      label = 'siteSettingsNotificationsAllowed';
-    } else if (state === NotificationSetting.QUIETER_MESSAGING) {
-      label = 'siteSettingsNotificationsPartial';
+    if (state === SettingsState.LOUD) {
+      label = 'siteSettingsNotificationsAskLoud';
+    } else if (state === SettingsState.QUIET) {
+      label = 'siteSettingsNotificationsAskQuiet';
+    } else if (state === SettingsState.CPSS) {
+      label = 'siteSettingsNotificationsAskCPSS';
     }
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
@@ -270,7 +309,7 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (!loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return;
     }
 

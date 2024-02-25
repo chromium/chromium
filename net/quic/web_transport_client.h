@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_WEB_TRANSPORT_CLIENT_H_
 #define NET_QUIC_WEB_TRANSPORT_CLIENT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +15,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,7 +81,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnConnectionFailed(const WebTransportError& error) = 0;
   // CONNECTED -> CLOSED
   virtual void OnClosed(
-      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
+      const std::optional<WebTransportCloseInfo>& close_info) = 0;
   // CONNECTED -> FAILED
   virtual void OnError(const WebTransportError& error) = 0;
 
@@ -91,7 +91,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(
-      absl::optional<quic::MessageStatus> status) = 0;
+      std::optional<quic::MessageStatus> status) = 0;
 };
 
 // Parameters that determine the way WebTransport session is established.
@@ -126,7 +126,7 @@ class NET_EXPORT WebTransportClient {
   // when the state is CONNECTED. The associated visitor is still waiting for
   // OnClosed or OnError to be called.
   virtual void Close(
-      const absl::optional<WebTransportCloseInfo>& close_info) = 0;
+      const std::optional<WebTransportCloseInfo>& close_info) = 0;
 
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;

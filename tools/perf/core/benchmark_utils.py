@@ -3,16 +3,16 @@
 # found in the LICENSE file.
 
 import collections
-import optparse  # pylint: disable=deprecated-module
 
 from telemetry import benchmark as b_module
+from telemetry.core import optparse_argparse_migration as oam
 from telemetry.internal.browser import browser_options
 
 
 StoryInfo = collections.namedtuple('StoryInfo', ['name', 'description', 'tags'])
 
 
-def GetBenchmarkStorySet(benchmark):
+def GetBenchmarkStorySet(benchmark, exhaustive=False):
   if not isinstance(benchmark, b_module.Benchmark):
     raise ValueError(
       '|benchmark| must be an instace of telemetry.benchmark.Benchmark class. '
@@ -20,13 +20,15 @@ def GetBenchmarkStorySet(benchmark):
   options = browser_options.BrowserFinderOptions()
   # Add default values for any extra commandline options
   # provided by the benchmark.
-  parser = optparse.OptionParser()
+  parser = oam.CreateFromOptparseInputs()
   before, _ = parser.parse_args([])
   benchmark.AddBenchmarkCommandLineArgs(parser)
   after, _ = parser.parse_args([])
   for extra_option in dir(after):
     if extra_option not in dir(before):
       setattr(options, extra_option, getattr(after, extra_option))
+  if exhaustive:
+    setattr(options, 'story_set_should_be_exhaustive_for_test', True)
   return benchmark.CreateStorySet(options)
 
 

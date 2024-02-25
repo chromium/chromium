@@ -34,6 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -105,7 +106,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   }
 
   // spellcheck::mojom::SpellCheckHost:
-  void RequestDictionary() override {}
   void NotifyChecked(const std::u16string& word, bool misspelled) override {}
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
@@ -119,7 +119,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void RequestTextCheck(const std::u16string& text,
-                        int route_id,
                         RequestTextCheckCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::move(callback).Run(std::vector<SpellCheckResult>());
@@ -127,7 +126,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   }
 
   void CheckSpelling(const std::u16string& word,
-                     int,
                      CheckSpellingCallback) override {}
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback) override {}

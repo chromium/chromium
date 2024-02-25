@@ -68,14 +68,14 @@ DriverTransport::Pair DriverTransport::CreatePair(
   IpczDriverHandle target_transport0 = IPCZ_INVALID_DRIVER_HANDLE;
   IpczDriverHandle target_transport1 = IPCZ_INVALID_DRIVER_HANDLE;
   if (transport0) {
-    ABSL_ASSERT(transport1);
+    ABSL_HARDENING_ASSERT(transport1);
     target_transport0 = transport0->driver_object().handle();
     target_transport1 = transport1->driver_object().handle();
   }
   IpczResult result = driver.CreateTransports(
       target_transport0, target_transport1, IPCZ_NO_FLAGS, nullptr,
       &new_transport0, &new_transport1);
-  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  ABSL_HARDENING_ASSERT(result == IPCZ_RESULT_OK);
   auto first =
       MakeRefCounted<DriverTransport>(DriverObject(driver, new_transport0));
   auto second =
@@ -96,6 +96,10 @@ IpczResult DriverTransport::Activate() {
 }
 
 IpczResult DriverTransport::Deactivate() {
+  if (!transport_.is_valid()) {
+    // The transport is already deactivated. Avoids a null dereference.
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
   return transport_.driver()->DeactivateTransport(transport_.handle(),
                                                   IPCZ_NO_FLAGS, nullptr);
 }

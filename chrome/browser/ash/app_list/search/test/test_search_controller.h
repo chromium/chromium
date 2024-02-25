@@ -31,7 +31,8 @@ class TestSearchController : public SearchController {
   void ClearSearch() override;
   void StartZeroState(base::OnceClosure on_done,
                       base::TimeDelta timeout) override;
-  void SetResults(const SearchProvider* provider, Results results) override;
+  void SetResults(ash::AppListSearchResultType result_type,
+                  Results results) override;
   void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;

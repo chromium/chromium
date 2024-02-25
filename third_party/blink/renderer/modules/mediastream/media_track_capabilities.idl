@@ -12,6 +12,7 @@ dictionary MediaTrackCapabilities {
     sequence<boolean> echoCancellation;
     sequence<boolean> autoGainControl;
     sequence<boolean> noiseSuppression;
+    sequence<boolean> voiceIsolation;
     LongRange sampleSize;
     LongRange channelCount;
     LongRange sampleRate;
@@ -40,6 +41,8 @@ dictionary MediaTrackCapabilities {
     boolean              torch;
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] sequence<boolean> backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] sequence<boolean> eyeGazeCorrection;
+    [RuntimeEnabled=MediaCaptureCameraControls] sequence<boolean> faceFraming;
     // Screen Capture API
     // https://w3c.github.io/mediacapture-screen-share
     [RuntimeEnabled=GetDisplayMedia] DOMString displaySurface;

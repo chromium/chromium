@@ -139,7 +139,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     // true, to call the browser session restore to restore apps for the next
     // system startup.
     if (window->GetProperty(app_restore::kAppTypeBrowser)) {
-      app_launch_info->app_type_browser = true;
+      app_launch_info->browser_extra_info.app_type_browser = true;
 
       std::string* browser_app_name =
           window->GetProperty(app_restore::kBrowserAppNameKey);
@@ -368,7 +368,6 @@ void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
     return;
 
   save_running_.insert(profile_path);
-
   BackendTaskRunner(profile_path)
       ->PostTaskAndReply(
           FROM_HERE,

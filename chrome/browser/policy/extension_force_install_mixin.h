@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "extensions/common/extension_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -161,7 +161,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // version.
   [[nodiscard]] bool ForceInstallFromSourceDir(
       const base::FilePath& extension_dir_path,
-      const absl::optional<base::FilePath>& pem_path,
+      const std::optional<base::FilePath>& pem_path,
       WaitMode wait_mode,
       extensions::ExtensionId* extension_id = nullptr,
       base::Version* extension_version = nullptr);
@@ -218,7 +218,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // random key otherwise) and makes the produced CRX file served by the
   // embedded test server.
   bool CreateAndServeCrx(const base::FilePath& extension_dir_path,
-                         const absl::optional<base::FilePath>& pem_path,
+                         const std::optional<base::FilePath>& pem_path,
                          const base::Version& extension_version,
                          extensions::ExtensionId* extension_id);
   // Force-installs the CRX file served by the embedded test server.
@@ -247,13 +247,12 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   raw_ptr<policy::MockConfigurationPolicyProvider> mock_policy_provider_ =
       nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::DeviceStateMixin, ExperimentalAsh> device_state_mixin_ = nullptr;
-  raw_ptr<policy::DevicePolicyCrosTestHelper, ExperimentalAsh>
-      device_policy_cros_test_helper_ = nullptr;
-  raw_ptr<ash::EmbeddedPolicyTestServerMixin, ExperimentalAsh>
-      policy_test_server_mixin_ = nullptr;
-  raw_ptr<policy::UserPolicyBuilder, ExperimentalAsh> user_policy_builder_ =
+  raw_ptr<ash::DeviceStateMixin> device_state_mixin_ = nullptr;
+  raw_ptr<policy::DevicePolicyCrosTestHelper> device_policy_cros_test_helper_ =
       nullptr;
+  raw_ptr<ash::EmbeddedPolicyTestServerMixin> policy_test_server_mixin_ =
+      nullptr;
+  raw_ptr<policy::UserPolicyBuilder> user_policy_builder_ = nullptr;
   // |account_id_| and |policy_type_| are only used with
   // |policy_test_server_mixin_|.
   std::string account_id_;

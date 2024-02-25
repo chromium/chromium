@@ -18,7 +18,7 @@ limitations under the License.
 
 #include <utility>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
@@ -123,7 +123,7 @@ class BaseTaskApi : public BaseUntypedTaskApi {
         GetTfLiteEngine()->interpreter_wrapper();
     // Note: AllocateTensors() is already performed by the interpreter wrapper
     // at InitInterpreter time (see TfLiteEngine).
-    RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));
+    TFLITE_RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));
     absl::Status status = interpreter_wrapper->InvokeWithoutFallback();
     if (!status.ok()) {
       return status.GetPayload(tflite::support::kTfLiteSupportPayload)
@@ -143,7 +143,7 @@ class BaseTaskApi : public BaseUntypedTaskApi {
         GetTfLiteEngine()->interpreter_wrapper();
     // Note: AllocateTensors() is already performed by the interpreter wrapper
     // at InitInterpreter time (see TfLiteEngine).
-    RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));
+    TFLITE_RETURN_IF_ERROR(Preprocess(GetInputTensors(), args...));
     auto set_inputs_nop =
         [](tflite::task::core::TfLiteEngine::Interpreter* interpreter)
         -> absl::Status {

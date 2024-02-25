@@ -24,7 +24,7 @@ global_variables_test::MyStruct::ptr2  # global-scope
 global_variables_test::MyStruct::ref  # global-scope
 global_variables_test::MyStruct::ref2  # global-scope
 nested_in_array_test::MyStruct::ptr  # global-scope
-nested_in_array_test::MyStruct::ref  # constexpr-ctor-field-initializer, global-scope
+nested_in_array_test::MyStruct::ref  # global-scope
 nested_struct_test::MyStruct::ptr  # global-scope
 nested_struct_test::MyStruct::ref  # global-scope
 nested_template_test::MyStruct::ptr  # global-scope

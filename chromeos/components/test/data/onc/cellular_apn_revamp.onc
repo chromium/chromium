@@ -39,7 +39,7 @@
       },
       {
         "AccessPointName": "test-apn-4",
-        "ApnTypes": ["Default", "Attach"],
+        "ApnTypes": ["Default", "Attach", "Tether"],
         "Authentication": "CHAP",
         "IpType": "IPv4orIPv6",
         "Username": "test-username",

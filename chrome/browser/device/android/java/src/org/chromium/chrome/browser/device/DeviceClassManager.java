@@ -9,9 +9,6 @@ import android.content.Context;
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -23,10 +20,6 @@ public class DeviceClassManager {
 
     // Set of features that can be enabled/disabled
     private boolean mEnableLayerDecorationCache;
-
-    // TODO(crbug/1466158): Remove this.
-    private boolean mEnableAccessibilityLayout;
-
     private boolean mEnableAnimations;
     private boolean mEnablePrerendering;
     private boolean mEnableToolbarSwipe;
@@ -48,32 +41,19 @@ public class DeviceClassManager {
         // Device based configurations.
         if (SysUtils.isLowEndDevice()) {
             mEnableLayerDecorationCache = true;
-            mEnableAccessibilityLayout = true;
             mEnableAnimations = false;
             mEnablePrerendering = false;
             mEnableToolbarSwipe = false;
         } else {
             mEnableLayerDecorationCache = true;
-            mEnableAccessibilityLayout = false;
             mEnableAnimations = true;
             mEnablePrerendering = true;
             mEnableToolbarSwipe = true;
         }
 
-        if (DeviceFormFactor.isTablet()) {
-            mEnableAccessibilityLayout = false;
-        }
-
         // Flag based configurations.
         CommandLine commandLine = CommandLine.getInstance();
-        mEnableAccessibilityLayout |=
-                commandLine.hasSwitch(ChromeSwitches.ENABLE_ACCESSIBILITY_TAB_SWITCHER);
         mEnableFullscreen = !commandLine.hasSwitch(ChromeSwitches.DISABLE_FULLSCREEN);
-
-        // Related features.
-        if (mEnableAccessibilityLayout) {
-            mEnableAnimations = false;
-        }
     }
 
     /**
@@ -81,15 +61,6 @@ public class DeviceClassManager {
      */
     public static boolean enableLayerDecorationCache() {
         return getInstance().mEnableLayerDecorationCache;
-    }
-
-    /**
-     * @return Whether or not should use the accessibility tab switcher.
-     * @param context The activity context.
-     */
-    public static boolean enableAccessibilityLayout(Context context) {
-        // TODO(crbug/1466158): Remove this.
-        return false;
     }
 
     /**
@@ -103,10 +74,7 @@ public class DeviceClassManager {
      * @return Whether or not we are showing animations.
      */
     public static boolean enableAnimations() {
-        if (!getInstance().mEnableAnimations) return false;
-        if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) return true;
-        return !SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
+        return getInstance().mEnableAnimations;
     }
 
     /**
@@ -127,9 +95,7 @@ public class DeviceClassManager {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    /**
-     * Reset the instance for testing.
-     */
+    /** Reset the instance for testing. */
     public static void resetForTesting() {
         sInstance = null;
     }

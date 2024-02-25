@@ -57,7 +57,7 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                               : kColorRefPrimary90};
   mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutralVariant15
                                                 : kColorRefNeutral94};
-  mixer[kColorSysDivider] = {dark_mode ? kColorRefSecondary25
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefSecondary35
                                        : kColorRefPrimary90};
 
   // Chrome surfaces.
@@ -67,8 +67,6 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                              : kColorSysSurface4};
   mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefSecondary25
                                                      : kColorRefNeutral98};
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefSecondary35
-                                             : kColorRefPrimary90};
 
   mixer[kColorSysHeader] = {dark_mode ? kColorRefSecondary12
                                       : kColorRefSecondary90};
@@ -97,10 +95,12 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
                                    const ColorProviderKey& key) {
   const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
+  // General
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral40
+                                       : kColorRefNeutral90};
+
   // Chrome surfaces.
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
-                                             : kColorRefNeutral90};
-  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefNeutral90};
   mixer[kColorSysHeaderInactive] = {
       dark_mode ? GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x99),
@@ -143,6 +143,9 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                                 : kColorRefPrimary90};
   mixer[kColorSysOnPrimaryContainer] = {dark_mode ? kColorRefPrimary90
                                                   : kColorRefPrimary10};
+  mixer[kColorSysGradientPrimary] = {dark_mode ? kColorRefPrimary30
+                                               : kColorRefPrimary90};
+
   // Secondary.
   mixer[kColorSysSecondary] = {dark_mode ? kColorRefSecondary80
                                          : kColorRefSecondary40};
@@ -161,6 +164,9 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                                  : kColorRefTertiary90};
   mixer[kColorSysOnTertiaryContainer] = {dark_mode ? kColorRefTertiary90
                                                    : kColorRefTertiary10};
+  mixer[kColorSysGradientTertiary] = {dark_mode ? kColorRefTertiary30
+                                                : kColorRefTertiary95};
+
   // Error.
   mixer[kColorSysError] = {dark_mode ? kColorRefError80 : kColorRefError40};
   mixer[kColorSysOnError] = {dark_mode ? kColorRefError20 : kColorRefError100};
@@ -249,7 +255,7 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                               : kColorRefNeutral80};
   mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorRefNeutral95};
-  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral30
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral40
                                        : kColorRefPrimary90};
 
   // Chrome surfaces.
@@ -258,8 +264,6 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                              : kColorSysSurface4};
   mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefNeutral25
                                                      : kColorRefNeutral100};
-  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
-                                             : kColorRefPrimary90};
 
   mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefPrimary90};
@@ -302,6 +306,10 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorSysStateFocusHighlight] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
                 : SetAlpha({kColorRefNeutral10}, 0x0F)};
+  mixer[kColorSysStateTextHighlight] = {dark_mode ? kColorRefPrimary80
+                                                  : kColorRefPrimary40};
+  mixer[kColorSysStateOnTextHighlight] = {dark_mode ? kColorRefNeutral0
+                                                    : kColorRefNeutral100};
   mixer[kColorSysStateDisabled] = dark_mode
                                       ? SetAlpha({kColorRefNeutral90}, 0x60)
                                       : SetAlpha({kColorRefNeutral10}, 0x60);
@@ -323,6 +331,16 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
 
   // Effects.
   mixer[kColorSysShadow] = {kColorRefNeutral0};
+
+  // AI.
+  mixer[kColorSysAiIllustrationShapeSurface1] = {
+      dark_mode ? ui::kColorRefPrimary40 : ui::kColorRefPrimary70};
+  mixer[kColorSysAiIllustrationShapeSurface2] = {
+      dark_mode ? ui::kColorRefPrimary50 : ui::kColorRefPrimary95};
+  mixer[kColorSysAiIllustrationShapeSurfaceGradientStart] = {
+      dark_mode ? ui::kColorRefPrimary30 : ui::kColorRefSecondary90};
+  mixer[kColorSysAiIllustrationShapeSurfaceGradientEnd] = {
+      dark_mode ? ui::kColorRefPrimary40 : ui::kColorRefPrimary80};
 
   // Experimentation.
   mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefNeutral15
@@ -353,12 +371,11 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
 
   // If grayscale is specified the design intention is to apply the grayscale
   // overrides over the baseline palette.
-  if (key.is_grayscale) {
+  if (key.user_color_source == ColorProviderKey::UserColorSource::kGrayscale) {
     AddGrayscaleSysColorOverrides(mixer, key);
-    return;
-  }
-
-  if (key.user_color.has_value()) {
+  } else if (key.user_color_source ==
+                 ColorProviderKey::UserColorSource::kAccent &&
+             key.user_color.has_value()) {
     AddThemedSysColorOverrides(mixer, key);
   }
 }

@@ -47,14 +47,14 @@ constexpr int kU2FShortTimeout = 3000;
 constexpr int kU2FMediumTimeout = 10000;
 
 template <typename ResponseProto>
-absl::optional<ResponseProto> ConvertResponse(dbus::Response* dbus_response) {
+std::optional<ResponseProto> ConvertResponse(dbus::Response* dbus_response) {
   if (!dbus_response) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   dbus::MessageReader reader(dbus_response);
   ResponseProto response_proto;
   if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return response_proto;
 }
@@ -133,7 +133,7 @@ void U2FClientImpl::IsUvpaa(const u2f::IsUvpaaRequest& request,
       base::BindOnce(
           [](DBusMethodCallback<u2f::IsUvpaaResponse> callback,
              dbus::Response* dbus_response) {
-            absl::optional<u2f::IsUvpaaResponse> response =
+            std::optional<u2f::IsUvpaaResponse> response =
                 ConvertResponse<u2f::IsUvpaaResponse>(dbus_response);
             std::move(callback).Run(std::move(response));
           },
@@ -151,7 +151,7 @@ void U2FClientImpl::IsU2FEnabled(
       base::BindOnce(
           [](DBusMethodCallback<u2f::IsU2fEnabledResponse> callback,
              dbus::Response* dbus_response) {
-            absl::optional<u2f::IsU2fEnabledResponse> response =
+            std::optional<u2f::IsU2fEnabledResponse> response =
                 ConvertResponse<u2f::IsU2fEnabledResponse>(dbus_response);
             std::move(callback).Run(std::move(response));
           },
@@ -169,7 +169,7 @@ void U2FClientImpl::MakeCredential(
       base::BindOnce(
           [](DBusMethodCallback<u2f::MakeCredentialResponse> callback,
              dbus::Response* dbus_response) {
-            absl::optional<u2f::MakeCredentialResponse> response =
+            std::optional<u2f::MakeCredentialResponse> response =
                 ConvertResponse<u2f::MakeCredentialResponse>(dbus_response);
             if (response) {
               base::UmaHistogramEnumeration(
@@ -192,7 +192,7 @@ void U2FClientImpl::GetAssertion(
   writer.AppendProtoAsArrayOfBytes(request);
   auto uma_callback_wrapper = base::BindOnce(
       [](DBusMethodCallback<u2f::GetAssertionResponse> callback,
-         absl::optional<u2f::GetAssertionResponse> response) {
+         std::optional<u2f::GetAssertionResponse> response) {
         if (response) {
           base::UmaHistogramEnumeration(
               kGetAssertionStatusHistogram, response->status(),

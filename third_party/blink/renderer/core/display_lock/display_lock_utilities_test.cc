@@ -71,7 +71,7 @@ TEST_F(DisplayLockUtilitiesTest, DISABLED_ActivatableLockedInclusiveAncestors) {
   Element& inner_b = *GetDocument().getElementById(AtomicString("innerB"));
   Element& innermost = *GetDocument().getElementById(AtomicString("innermost"));
   ShadowRoot& shadow_root =
-      inner_b.AttachShadowRootInternal(ShadowRootType::kOpen);
+      inner_b.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div id='shadowDiv'>shadow!</div>");
   Element& shadow_div = *shadow_root.getElementById(AtomicString("shadowDiv"));
 
@@ -300,9 +300,9 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_FALSE(observer_delegate->LastEntry()->GetGeometry().IsIntersecting());
   EXPECT_EQ(observer_delegate->LastEntry()->GetGeometry().TargetRect(),
-            PhysicalRect());
+            gfx::RectF());
   EXPECT_EQ(observer_delegate->LastEntry()->GetGeometry().RootRect(),
-            PhysicalRect());
+            gfx::RectF());
 
   CommitElement(*container);
   test::RunPendingTasks();
@@ -321,11 +321,11 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
   EXPECT_EQ(observer_delegate->EntryCount(), 2);
   EXPECT_TRUE(observer_delegate->LastEntry()->GetGeometry().IsIntersecting());
   EXPECT_NE(observer_delegate->LastEntry()->GetGeometry().TargetRect(),
-            PhysicalRect());
+            gfx::RectF());
   EXPECT_EQ(observer_delegate->LastEntry()->GetGeometry().IntersectionRect(),
             observer_delegate->LastEntry()->GetGeometry().TargetRect());
   EXPECT_NE(observer_delegate->LastEntry()->GetGeometry().RootRect(),
-            PhysicalRect());
+            gfx::RectF());
 }
 
 TEST_F(DisplayLockUtilitiesTest, ContainerQueryCrash) {

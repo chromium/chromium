@@ -4,7 +4,9 @@
 
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -22,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -42,7 +43,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/mac/mach_port_rendezvous.h"
@@ -80,15 +80,14 @@ class MAYBE_InvitationTest : public test::MojoTestBase {
       base::CommandLine* custom_command_line = nullptr,
       base::LaunchOptions* custom_launch_options = nullptr);
 
-  static void SendInvitationToClient(
-      PlatformHandle endpoint_handle,
-      base::ProcessHandle process,
-      MojoHandle* primordial_pipes,
-      size_t num_primordial_pipes,
-      MojoSendInvitationFlags flags,
-      MojoProcessErrorHandler error_handler,
-      uintptr_t error_handler_context,
-      base::StringPiece isolated_invitation_name);
+  static void SendInvitationToClient(PlatformHandle endpoint_handle,
+                                     base::ProcessHandle process,
+                                     MojoHandle* primordial_pipes,
+                                     size_t num_primordial_pipes,
+                                     MojoSendInvitationFlags flags,
+                                     MojoProcessErrorHandler error_handler,
+                                     uintptr_t error_handler_context,
+                                     std::string_view isolated_invitation_name);
 
   static void WaitForProcessToTerminate(base::Process& process) {
     int wait_result = -1;
@@ -105,7 +104,7 @@ class MAYBE_InvitationTest : public test::MojoTestBase {
 void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
                                  base::LaunchOptions* options,
                                  base::CommandLine* command_line,
-                                 base::StringPiece switch_name = {}) {
+                                 std::string_view switch_name = {}) {
   std::string value;
 #if BUILDFLAG(IS_FUCHSIA)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
@@ -379,7 +378,7 @@ void MAYBE_InvitationTest::SendInvitationToClient(
     MojoSendInvitationFlags flags,
     MojoProcessErrorHandler error_handler,
     uintptr_t error_handler_context,
-    base::StringPiece isolated_invitation_name) {
+    std::string_view isolated_invitation_name) {
   MojoPlatformHandle handle;
   PlatformHandle::ToMojoPlatformHandle(std::move(endpoint_handle), &handle);
   CHECK_NE(handle.type, MOJO_PLATFORM_HANDLE_TYPE_INVALID);
@@ -426,7 +425,7 @@ class TestClientBase : public MAYBE_InvitationTest {
   TestClientBase& operator=(const TestClientBase&) = delete;
 
   static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags,
-                                     base::StringPiece switch_name = {}) {
+                                     std::string_view switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
     PlatformChannelEndpoint channel_endpoint;
     if (switch_name.empty()) {
@@ -1031,7 +1030,7 @@ TEST_F(MAYBE_InvitationTest, MultiBrokerNetwork) {
   MojoClose(client);
 }
 
-MojoHandle CreateMemory(base::StringPiece contents) {
+MojoHandle CreateMemory(std::string_view contents) {
   auto region = base::WritableSharedMemoryRegion::Create(contents.size());
   auto mapping = region.Map();
   memcpy(mapping.memory(), contents.data(), contents.size());
@@ -1044,8 +1043,8 @@ std::string ReadMemory(MojoHandle handle) {
   auto region = UnwrapReadOnlySharedMemoryRegion(
       ScopedSharedBufferHandle{SharedBufferHandle{handle}});
   auto mapping = region.Map();
-  base::StringPiece contents{reinterpret_cast<const char*>(mapping.memory()),
-                             region.GetSize()};
+  std::string_view contents{reinterpret_cast<const char*>(mapping.memory()),
+                            region.GetSize()};
   return std::string{contents};
 }
 

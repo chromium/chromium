@@ -17,6 +17,8 @@ enum LocationBarSecurityIconType {
   SECURE,
   // Show a "not secure" warning.
   NOT_SECURE_WARNING,
+  // Show a "dangerous" warning.
+  DANGEROUS,
   LOCATION_BAR_SECURITY_ICON_TYPE_COUNT,
 };
 

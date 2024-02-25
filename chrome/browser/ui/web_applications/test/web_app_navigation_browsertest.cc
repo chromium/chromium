@@ -40,6 +40,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
@@ -127,7 +128,6 @@ WebAppNavigationBrowserTest::GetTestNavigationObserver(const GURL& target_url) {
 void WebAppNavigationBrowserTest::ClickLink(
     content::WebContents* web_contents,
     const GURL& link_url,
-    const GURL& target_url,
     WebAppNavigationBrowserTest::LinkTarget target,
     const std::string& rel,
     int modifiers,
@@ -165,7 +165,7 @@ void WebAppNavigationBrowserTest::ClickLinkWithModifiersAndWaitForURL(
     int modifiers,
     blink::WebMouseEvent::Button button) {
   auto observer = GetTestNavigationObserver(target_url);
-  ClickLink(web_contents, link_url, target_url, target, rel, modifiers, button);
+  ClickLink(web_contents, link_url, target, rel, modifiers, button);
   observer->Wait();
 }
 
@@ -248,7 +248,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* const provider = WebAppProvider::GetForWebApps(profile());
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
-  std::vector<AppId> app_ids = registrar.GetAppIds();
+  std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
     if (!registrar.IsInstalled(app_id)) {
       continue;
@@ -258,7 +258,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     apps::AppReadinessWaiter app_readiness_waiter(
         profile(), app_id, apps::Readiness::kUninstalledByUser);
     base::RunLoop run_loop;
-    provider->scheduler().UninstallWebApp(
+    provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
@@ -280,7 +280,7 @@ void WebAppNavigationBrowserTest::InstallTestWebApp() {
   test_web_app_ = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
 }
 
-AppId WebAppNavigationBrowserTest::InstallTestWebApp(
+webapps::AppId WebAppNavigationBrowserTest::InstallTestWebApp(
     const std::string& app_host,
     const std::string& app_scope) {
   if (!https_server_.Started()) {
@@ -295,7 +295,8 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(web_app_info));
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info));
   DCHECK(!app_id.empty());
   apps::AppReadinessWaiter(profile(), app_id).Await();
   return app_id;
@@ -316,16 +317,17 @@ void WebAppNavigationBrowserTest::NavigateToLaunchingPage(Browser* browser) {
       https_server_.GetURL(GetLaunchingPageHost(), GetLaunchingPagePath())));
 }
 
-bool WebAppNavigationBrowserTest::TestActionDoesNotOpenAppWindow(
+bool WebAppNavigationBrowserTest::ExpectLinkClickNotCapturedIntoAppBrowser(
     Browser* browser,
     const GURL& target_url,
-    base::OnceClosure action) {
+    const std::string& rel) {
   content::WebContents* initial_tab =
       browser->tab_strip_model()->GetActiveWebContents();
   int num_tabs = browser->tab_strip_model()->count();
   size_t num_browsers = chrome::GetBrowserCount(browser->profile());
 
-  std::move(action).Run();
+  ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(),
+                   target_url, LinkTarget::SELF, rel);
 
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
   EXPECT_EQ(num_browsers, chrome::GetBrowserCount(browser->profile()));
@@ -334,13 +336,6 @@ bool WebAppNavigationBrowserTest::TestActionDoesNotOpenAppWindow(
   EXPECT_EQ(target_url, initial_tab->GetLastCommittedURL());
 
   return !HasFailure();
-}
-
-bool WebAppNavigationBrowserTest::TestTabActionDoesNotOpenAppWindow(
-    const GURL& target_url,
-    base::OnceClosure action) {
-  return TestActionDoesNotOpenAppWindow(browser(), target_url,
-                                        std::move(action));
 }
 
 const GURL& WebAppNavigationBrowserTest::test_web_app_start_url() {

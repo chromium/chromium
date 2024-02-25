@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <!-- The test scans for which source to share according to the title. -->
+    <title>Region/Element Capture Test - Page 1 (Main)</title>
+    <link rel="icon" href="data:," />
+    <script src="sub_capture_helpers.js"></script>
+    <script>
+      "use strict";
+
+      setRole("top-level");
+
+      async function startCaptureFromEmbeddedFrame() {
+        const waiter = waitForMessage("start-capture-complete");
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage({messageType: "start-capture"}, "*");
+        const message = await waiter;
+        return message.result;
+      }
+
+      async function applySubCaptureByIndex(targetIndex, targetType,
+                                            targetFrame, targetTrack) {
+        return applySubCapture(getSubCaptureTarget(targetIndex), targetType,
+                                                   targetFrame, targetTrack);
+      }
+
+      // Clones |track| into |trackClone|.
+      function clone() {
+        if (!track || !!trackClone) {
+          return "clone-track-failure";
+        }
+        trackClone = track.clone();
+        return "clone-track-success";
+      }
+
+      function deallocate(targetTrack) {
+        if (targetTrack == "original") {
+          track = undefined;
+          gc();
+          return "deallocate-success";
+        } else if (targetTrack == "clone") {
+          trackClone = undefined;
+          gc();
+          return "deallocate-success";
+        } else {
+          return "deallocate-failure";
+        }
+      }
+
+      function hideElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          return "hide-element-failure";
+        }
+        element.hidden = true;
+        return "hide-element-success";
+      }
+    </script>
+  </head>
+  <body onload="onLoad();">
+    <div id="div">
+      <!-- This DIV is just a convenient target. -->
+      <p id="p_id">0</p>
+    </div>
+    <br />
+    <iframe id="embedded_frame" allow="display-capture *"></iframe>
+    <iframe id="mailman_frame" hidden></iframe>
+    <script>
+      function onLoad() {
+        animate(document.getElementById('p_id'));
+      }
+    </script>
+  </body>
+</html>

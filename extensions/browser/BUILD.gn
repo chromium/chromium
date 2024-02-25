@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions)
@@ -27,6 +28,12 @@ group("browser") {
     # it can be cleanly disabled with enable_extensions=false.
     "//extensions/browser/api",
   ]
+}
+
+source_set("url_fetcher") {
+  visibility = [ "./*" ]
+
+  sources = [ "url_fetcher.h" ]
 }
 
 # A group of helpers to instantiate the set of all browser context keyed service
@@ -60,6 +67,7 @@ source_set("core_keyed_service_factories") {
   deps = [
     "//extensions/browser:browser_sources",
     "//extensions/browser/updater",
+    "//extensions/buildflags",
   ]
 }
 
@@ -132,8 +140,8 @@ source_set("browser_sources") {
     "api/declarative_net_request/request_action.h",
     "api/declarative_net_request/request_params.cc",
     "api/declarative_net_request/request_params.h",
-    "api/declarative_net_request/rules_count_pair.cc",
-    "api/declarative_net_request/rules_count_pair.h",
+    "api/declarative_net_request/rule_counts.cc",
+    "api/declarative_net_request/rule_counts.h",
     "api/declarative_net_request/rules_monitor_service.cc",
     "api/declarative_net_request/rules_monitor_service.h",
     "api/declarative_net_request/ruleset_install_pref.cc",
@@ -214,6 +222,8 @@ source_set("browser_sources") {
     "api/web_request/web_request_api_helpers.h",
     "api/web_request/web_request_event_details.cc",
     "api/web_request/web_request_event_details.h",
+    "api/web_request/web_request_event_router_factory.cc",
+    "api/web_request/web_request_event_router_factory.h",
     "api/web_request/web_request_info.cc",
     "api/web_request/web_request_info.h",
     "api/web_request/web_request_permissions.cc",
@@ -269,25 +279,25 @@ source_set("browser_sources") {
     "content_hash_reader.h",
     "content_hash_tree.cc",
     "content_hash_tree.h",
-    "content_script_tracker.cc",
-    "content_script_tracker.h",
-    "content_verifier.cc",
-    "content_verifier.h",
     "content_verifier/content_hash.cc",
     "content_verifier/content_hash.h",
+    "content_verifier/content_verifier.cc",
+    "content_verifier/content_verifier.h",
+    "content_verifier/content_verifier_delegate.h",
+    "content_verifier/content_verifier_io_data.cc",
+    "content_verifier/content_verifier_io_data.h",
     "content_verifier/content_verifier_key.h",
     "content_verifier/content_verifier_utils.cc",
     "content_verifier/content_verifier_utils.h",
+    "content_verifier/content_verify_job.cc",
+    "content_verifier/content_verify_job.h",
     "content_verifier/scoped_uma_recorder.h",
-    "content_verifier_delegate.h",
-    "content_verifier_io_data.cc",
-    "content_verifier_io_data.h",
-    "content_verify_job.cc",
-    "content_verify_job.h",
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
     "disable_reason.h",
+    "embedder_user_script_loader.cc",
+    "embedder_user_script_loader.h",
     "error_map.cc",
     "error_map.h",
     "event_listener_map.cc",
@@ -343,8 +353,6 @@ source_set("browser_sources") {
     "extension_icon_image.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
-    "extension_message_filter.cc",
-    "extension_message_filter.h",
     "extension_navigation_throttle.cc",
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",
@@ -373,8 +381,6 @@ source_set("browser_sources") {
     "extension_registry_factory.cc",
     "extension_registry_factory.h",
     "extension_registry_observer.h",
-    "extension_service_worker_message_filter.cc",
-    "extension_service_worker_message_filter.h",
     "extension_system.cc",
     "extension_system.h",
     "extension_system_provider.cc",
@@ -436,6 +442,8 @@ source_set("browser_sources") {
 
     # TODO(crbug.com/730220): Ideally web_view should be a separate target on
     # which the extension system depends.
+    "guest_view/web_view/controlled_frame_embedder_url_fetcher.cc",
+    "guest_view/web_view/controlled_frame_embedder_url_fetcher.h",
     "guest_view/web_view/javascript_dialog_helper.cc",
     "guest_view/web_view/javascript_dialog_helper.h",
     "guest_view/web_view/web_view_constants.cc",
@@ -480,6 +488,8 @@ source_set("browser_sources") {
     "management_policy.h",
     "media_capture_util.cc",
     "media_capture_util.h",
+    "message_service_api.cc",
+    "message_service_api.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
     "network_permissions_updater.cc",
@@ -524,8 +534,12 @@ source_set("browser_sources") {
     "sandboxed_unpacker.h",
     "script_executor.cc",
     "script_executor.h",
+    "script_injection_tracker.cc",
+    "script_injection_tracker.h",
     "service_worker/service_worker_host.cc",
     "service_worker/service_worker_host.h",
+    "service_worker/service_worker_keepalive.cc",
+    "service_worker/service_worker_keepalive.h",
     "service_worker/worker_id.cc",
     "service_worker/worker_id.h",
     "service_worker/worker_id_set.cc",
@@ -538,6 +552,8 @@ source_set("browser_sources") {
     "service_worker_task_queue_factory.h",
     "state_store.cc",
     "state_store.h",
+    "state_store_test_observer.cc",
+    "state_store_test_observer.h",
     "suggest_permission_util.cc",
     "suggest_permission_util.h",
     "supervised_user_extensions_delegate.h",
@@ -548,6 +564,7 @@ source_set("browser_sources") {
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
     "update_observer.h",
+    "url_fetcher.h",
     "url_loader_factory_manager.cc",
     "url_loader_factory_manager.h",
     "url_request_util.cc",
@@ -566,8 +583,6 @@ source_set("browser_sources") {
     "warning_service_factory.h",
     "warning_set.cc",
     "warning_set.h",
-    "web_ui_user_script_loader.cc",
-    "web_ui_user_script_loader.h",
     "zipfile_installer.cc",
     "zipfile_installer.h",
   ]
@@ -586,9 +601,11 @@ source_set("browser_sources") {
     "//components/keyed_service/content",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
-    "//components/permissions:permissions_common",
+    "//components/pdf/common:constants",
+    "//components/permissions",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
@@ -619,6 +636,7 @@ source_set("browser_sources") {
     "//google_apis",
     "//net",
     "//pdf:buildflags",
+    "//pdf:features",
     "//ppapi/buildflags",
     "//services/data_decoder/public/cpp:cpp",
     "//services/device/public/cpp/hid",
@@ -673,6 +691,7 @@ source_set("browser_sources") {
       "api/clipboard/clipboard_api.h",
     ]
     deps += [
+      "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",
@@ -684,6 +703,10 @@ source_set("browser_sources") {
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
     ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//components/resources:components_resources_grit" ]
   }
 
   configs += [
@@ -823,6 +846,7 @@ source_set("test_support") {
     "//extensions/common",
     "//extensions/common:test_support",
     "//extensions/common/api:api",
+    "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -895,8 +919,8 @@ source_set("unit_tests") {
     "content_hash_fetcher_unittest.cc",
     "content_hash_tree_unittest.cc",
     "content_verifier/content_hash_unittest.cc",
-    "content_verifier_unittest.cc",
-    "content_verify_job_unittest.cc",
+    "content_verifier/content_verifier_unittest.cc",
+    "content_verifier/content_verify_job_unittest.cc",
     "error_map_unittest.cc",
     "event_listener_map_unittest.cc",
     "event_router_unittest.cc",
@@ -955,6 +979,8 @@ source_set("unit_tests") {
     "//components/permissions:permissions_common",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
+    "//components/safe_browsing/core/common",
     "//components/services/unzip:in_process",
     "//components/services/unzip/content",
     "//components/storage_monitor:test_support",
@@ -988,6 +1014,10 @@ source_set("unit_tests") {
     "//third_party/leveldatabase",
     "//third_party/zlib/google:zip",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [
@@ -1037,7 +1067,7 @@ source_set("unit_tests") {
   data = [
     "//extensions/browser/extension_event_histogram_value.h",
     "//extensions/browser/extension_function_histogram_value.h",
-    "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
     "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
   ]
 }
@@ -1069,4 +1099,7 @@ fuzzer_test("extension_declarative_net_request_indexed_rule_fuzzer") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }

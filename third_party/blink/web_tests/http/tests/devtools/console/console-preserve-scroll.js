@@ -5,13 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console preserves scroll position when switching away.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   // Do not use ConsoleTestRunner.fixConsoleViewportDimensions because fixing the height will affect
   // tests that may cause scrolling while the console moves into/out of the drawer.
-  UI.inspectorView.element.style.maxHeight = '600px';
+  UI.InspectorView.InspectorView.instance().element.style.maxHeight = '600px';
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
   await TestRunner.evaluateInPagePromise(`
     for (var i = 0; i < 100; i++)
@@ -19,7 +21,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(100);
 
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewport = consoleView.viewport;
   viewport.setStickToBottom(false);
   // Avoid flakiness by ensuring that messages in visibleViewMessages are in DOM.
@@ -27,8 +29,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
   viewport.element.scrollTop = 10;
   dumpScrollTop();
 
-  UI.inspectorView._tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, () => {
-    TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened.');
+  UI.InspectorView.InspectorView.instance()._tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, () => {
+    TestRunner.addResult('Panel ' + UI.InspectorView.InspectorView.instance()._tabbedPane._currentTab.id + ' was opened.');
   });
 
   TestRunner.runTestSuite([
@@ -45,7 +47,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       const element = consoleView.visibleViewMessages[0]._element;
       await TestRunner.waitForPendingLiveLocationUpdates();
       element.querySelector('.devtools-link').click();
-      await UI.inspectorView._tabbedPane.once(UI.TabbedPane.Events.TabSelected);
+      await UI.InspectorView.InspectorView.instance()._tabbedPane.once(UI.TabbedPane.Events.TabSelected);
       await TestRunner.showPanel('console');
       dumpScrollTop();
       next();
@@ -54,7 +56,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     async function testConsolePanelToDrawer(next) {
       await TestRunner.showPanel('console');
       await showDrawerPromise();
-      TestRunner.addResult('Drawer panel set to ' + UI.inspectorView._drawerTabbedPane._currentTab.id);
+      TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance()._drawerTabbedPane._currentTab.id);
       await TestRunner.showPanel('sources');
       dumpScrollTop();
       await TestRunner.showPanel('console');
@@ -64,15 +66,15 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
     async function testCloseDrawerFromConsolePanelAndOpenFromAnotherPanel(next) {
       await TestRunner.showPanel('console');
-      TestRunner.addSniffer(UI.SplitWidget.prototype, '_showFinishedForTest', async () => {
+      TestRunner.addSniffer(UI.SplitWidget.SplitWidget.prototype, '_showFinishedForTest', async () => {
         await TestRunner.showPanel('sources');
         await showDrawerPromise();
-        TestRunner.addResult('Drawer panel set to ' + UI.inspectorView._drawerTabbedPane._currentTab.id);
+        TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance()._drawerTabbedPane._currentTab.id);
         dumpScrollTop();
         next();
       });
       // Close the drawer with animation.
-      UI.inspectorView._drawerSplitWidget.hideSidebar(true /* animate */);
+      UI.InspectorView.InspectorView.instance()._drawerSplitWidget.hideSidebar(true /* animate */);
     }
   ]);
 
@@ -84,8 +86,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
     // Restoring scroll positions may occur during materialization, which is
     // done asynchronously for TabbedPane contents.
     return new Promise((resolve, reject) => {
-      UI.inspectorView._showDrawer(true);
-      TestRunner.addSniffer(UI.ViewManager._ContainerWidget.prototype, '_wasShownForTest', resolve);
+      UI.InspectorView.InspectorView.instance()._showDrawer(true);
+      TestRunner.addSniffer(UI.ViewManager.ContainerWidget.prototype, '_wasShownForTest', resolve);
     });
   }
 })();

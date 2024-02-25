@@ -31,7 +31,7 @@ QuotaOverrideHandle::~QuotaOverrideHandle() {
 
 void QuotaOverrideHandle::OverrideQuotaForStorageKey(
     const blink::StorageKey& storage_key,
-    absl::optional<int64_t> quota_size,
+    std::optional<int64_t> quota_size,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!id_.has_value()) {
@@ -51,7 +51,7 @@ void QuotaOverrideHandle::OverrideQuotaForStorageKey(
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!id_.has_value());
-  id_ = absl::make_optional(id);
+  id_ = std::make_optional(id);
 
   for (auto& callback : override_callback_queue_) {
     std::move(callback).Run();

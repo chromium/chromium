@@ -11,5 +11,6 @@ source_set("test_support") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
   ]
 }

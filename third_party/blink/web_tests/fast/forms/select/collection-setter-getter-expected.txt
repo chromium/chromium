@@ -12,7 +12,7 @@ PASS set_options.length is 3
 4) trying to set an element to a non-Option value: null
 PASS set_options.length is 3
 5) trying to set an element to a non-Option value: form (object of incorrect type)
-PASS set_options[10] = my_form threw exception TypeError: Failed to set an indexed property on 'HTMLOptionsCollection': parameter 2 is not of type 'HTMLOptionElement'..
+PASS set_options[10] = my_form threw exception TypeError: Failed to set an indexed property [10] on 'HTMLOptionsCollection': parameter 2 is not of type 'HTMLOptionElement'..
 PASS set_options.length is 3
 PASS successfullyParsed is true
 

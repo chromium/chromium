@@ -2,15 +2,17 @@
   :host {
     --error-info-text-color: var(--cros-color-alert);
     --edit-border-error-color: var(--cros-color-alert);
+    --button-fill-color: var(--cros-button-icon-color-secondary);
   }
 
   :host-context(body.jelly-enabled) {
     --error-info-text-color: var(--cros-sys-error);
     --edit-border-error-color: var(--cros-sys-error);
+    --button-fill-color: var(--cros-sys-on_surface);
   }
 
-  :host(:not([is-add-view_])) #container {
-    border-bottom: var(--cr-separator-line);
+  #container {
+    padding-block: 8px;
   }
 
   hr {
@@ -48,8 +50,7 @@
   }
 
   #cancelButtonContainer {
-    margin-block: 10px;
-    margin-inline-end: 8px;
+    align-self: center;
     margin-inline-start: 10px;
   }
 
@@ -61,21 +62,26 @@
     flex: 1;
   }
 
-  #acceleratorInfoText {
-    padding-block-start: 8px
-  }
-
-  :host([has-error]) #acceleratorInfoText {
+  :host([has-error]:not([has-warning])) #acceleratorInfoText {
     color: var(--error-info-text-color);
   }
 
-  #editButton {
-    --cr-icon-button-icon-start-offset: 3px;
-    padding-top: 3px;
+  .clickable-button {
+    --cr-icon-button-fill-color: var(--button-fill-color);
+    --cr-icon-button-size: 40px;
+    border-radius: 12px;
   }
 
-  .clickable-button {
-    --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
+  :host-context(body.jelly-enabled) .clickable-button {
+    background-color: var(--cros-sys-surface_variant);
+  }
+
+  :host-context(body.jelly-enabled) .clickable-button:hover {
+    background-color: var(--cros-sys-ripple_neutral_on_subtle);
+  }
+
+  #cancelButton, #deleteButton {
+    --cr-icon-button-icon-start-offset: 0.5px;
   }
 
   :host([is-edit-view]) #acceleratorView {
@@ -89,7 +95,7 @@
     padding-inline: 10px;
   }
 
-  :host([is-edit-view][has-error]) #acceleratorView {
+  :host([is-edit-view][has-error]:not([has-warning])) #acceleratorView {
     border-color: var(--edit-border-error-color);
   }
 </style>
@@ -99,27 +105,29 @@
     <accelerator-view id="acceleratorItem"
         accelerator-info="[[acceleratorInfo]]" view-state="{{viewState}}"
         status-message="{{statusMessage}}" has-error="{{hasError}}"
+        recorded-error="{{recordedError}}"
         action="[[action]]" source="[[source]]">
     </accelerator-view>
   </div>
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden="[[showEditView(viewState)]]">
       <cr-icon-button id="editButton"
+          aria-label="[[getEditAriaLabel(acceleratorInfo)]]"
           class="clickable-button"
           iron-icon="shortcut-customization:edit"
-          aria-hidden="true"
           on-click="onEditButtonClicked">
       </cr-icon-button>
-      <hr>
+      <hr aria-hidden="true">
       <cr-icon-button id="deleteButton"
+          aria-label="[[getDeleteAriaLabel(acceleratorInfo)]]"
           class="clickable-button"
           iron-icon="shortcut-customization:delete"
-          aria-hidden="true"
           on-click="onDeleteButtonClicked">
       </cr-icon-button>
     </div>
     <div id="cancelButtonContainer" hidden="[[!showEditView(viewState)]]">
       <cr-icon-button id="cancelButton" class="clickable-button"
+          aria-label="[[i18n('cancelButtonAriaLabel')]]"
           iron-icon="shortcut-customization:cancel" aria-hidden="true"
           on-click="onCancelButtonClicked">
       </cr-icon-button>
@@ -129,5 +137,7 @@
 
 <div id="acceleratorInfoText"
     hidden="[[!showStatusMessage(viewState, acceleratorInfo)]]">
-  [[statusMessage]]
+    <localized-link id="status" localized-string="[[statusMessage]]"
+        link-url="[[i18n('shortcutCustomizationLearnMoreUrl')]]">
+    </localized-link>
 </div>

@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -58,7 +59,7 @@ GFX_EXPORT void PaintThrobberSpinning(
     const Rect& bounds,
     SkColor color,
     const base::TimeDelta& elapsed_time,
-    absl::optional<SkScalar> stroke_width = absl::nullopt);
+    std::optional<SkScalar> stroke_width = std::nullopt);
 
 // Paints a throbber in the "waiting" state. Used when waiting on a network
 // response, for example.
@@ -67,7 +68,7 @@ GFX_EXPORT void PaintThrobberWaiting(
     const Rect& bounds,
     SkColor color,
     const base::TimeDelta& elapsed_time,
-    absl::optional<SkScalar> stroke_width = absl::nullopt);
+    std::optional<SkScalar> stroke_width = std::nullopt);
 
 // Paint a throbber in the "spinning" state, smoothly transitioning from a
 // previous "waiting" state described by |waiting_state|, which is an in-out
@@ -78,7 +79,7 @@ GFX_EXPORT void PaintThrobberSpinningAfterWaiting(
     SkColor color,
     const base::TimeDelta& elapsed_time,
     ThrobberWaitingState* waiting_state,
-    absl::optional<SkScalar> stroke_width = absl::nullopt);
+    std::optional<SkScalar> stroke_width = std::nullopt);
 
 // Paints a throbber in the "waiting" state (bouncing back and forth). Used when
 // waiting on a network response, for example.

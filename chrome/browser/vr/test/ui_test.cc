@@ -63,13 +63,7 @@ UiTest::UiTest() {}
 UiTest::~UiTest() {}
 
 void UiTest::SetUp() {
-  browser_ = std::make_unique<testing::NiceMock<MockUiBrowserInterface>>();
-
-  // Now create the initial scene.
-  UiInitialState state;
-  state.gvr_input_support = true;
-
-  ui_instance_ = std::make_unique<Ui>(std::move(browser_.get()), state);
+  ui_instance_ = std::make_unique<Ui>();
   ui_ = ui_instance_.get();
   scene_ = ui_instance_->scene();
   model_ = ui_instance_->model_for_test();
@@ -105,7 +99,7 @@ void UiTest::VerifyOnlyElementsVisible(
     const std::set<UiElementName>& names) const {
   OnBeginFrame();
   SCOPED_TRACE(trace_context);
-  for (auto* element : scene_->GetAllElements()) {
+  for (vr::UiElement* element : scene_->GetAllElements()) {
     SCOPED_TRACE(element->DebugName());
     UiElementName name = element->name();
     UiElementName owner_name = element->owner_name_for_test();

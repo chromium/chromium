@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -48,8 +49,8 @@ namespace {
 
 bool SkipUrlMatch(const std::vector<std::string>& skip_urls,
                   const std::string& url) {
-  for (auto& skip_url : skip_urls) {
-    if (url.find(skip_url) != std::string::npos) {
+  for (const auto& skip_url : skip_urls) {
+    if (base::Contains(url, skip_url)) {
       return true;
     }
   }
@@ -67,13 +68,13 @@ bool ShouldHaveChildTree(const ui::AXNode& node,
   if (node.IsInvisibleOrIgnored())
     return false;
 
-  // If has a child tree owner role or a child tree id, then expect some
-  // child tree content. In some cases IsChildTreeOwner(role) will be false,
+  // If it has an embedding element role or a child tree id, then expect some
+  // child tree content. In some cases IsEmbeddingElement(role) will be false,
   // if an ARIA role was used, e.g. <iframe role="region">.
   if (data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     return true;
   }
-  if (!ui::IsChildTreeOwner(node.GetRole())) {
+  if (!ui::IsEmbeddingElement(node.GetRole())) {
     return false;
   }
   std::string url = node.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
@@ -178,8 +179,7 @@ using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
-    : enable_accessibility_after_navigating_(false),
-      test_helper_(GetParam().first) {}
+    : enable_accessibility_after_navigating_(false), test_helper_(GetParam()) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
 
@@ -231,11 +231,6 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   // corresponding code in AXPosition on the browser that collects those
   // markers.
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
-
-  enabled_features->emplace_back(blink::features::kPortals);
-
-  auto* vec = GetParam().second ? enabled_features : disabled_features;
-  vec->emplace_back(blink::features::kSerializeAccessibilityPostLifecycle);
 }
 
 std::string DumpAccessibilityTestBase::DumpTreeAsString() const {
@@ -254,16 +249,6 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   formatter->SetPropertyFilters({{"*", AXPropertyFilter::ALLOW}});
   formatter->set_show_ids(true);
   return formatter->Format(GetRootAccessibilityNode(GetWebContents()));
-}
-
-DumpAccessibilityTestBase::ParamVector DumpAccessibilityTestBase::TestParams(
-    const ApiTypeVector& api_types) {
-  return std::accumulate(api_types.begin(), api_types.end(), ParamVector(),
-                         [](ParamVector&& v, ui::AXApiType::Type api_type) {
-                           v.push_back({api_type, true});
-                           v.push_back({api_type, false});
-                           return v;
-                         });
 }
 
 void DumpAccessibilityTestBase::RunTest(
@@ -353,7 +338,7 @@ void DumpAccessibilityTestBase::WaitForExpectedText(ui::AXMode mode) {
     bool all_wait_for_strings_found = true;
     std::string tree_dump = DumpTreeAsString();
     for (const auto& str : scenario_.wait_for) {
-      if (tree_dump.find(str) == std::string::npos) {
+      if (!base::Contains(tree_dump, str)) {
         VLOG(1) << "Still waiting on this text to be found: " << str;
         all_wait_for_strings_found = false;
         break;
@@ -412,7 +397,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  absl::optional<ui::AXInspectScenario> scenario =
+  std::optional<ui::AXInspectScenario> scenario =
       test_helper_.ParseScenario(file_path, DefaultFilters());
   if (!scenario) {
     ADD_FAILURE()
@@ -422,7 +407,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
   scenario_ = std::move(*scenario);
 
-  absl::optional<std::vector<std::string>> expected_lines;
+  std::optional<std::vector<std::string>> expected_lines;
 
   // Get expectation lines from expectation file if any.
   base::FilePath expected_file =
@@ -473,7 +458,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     while (wait_for_string) {
       // Loop until specified string is found.
       std::string tree_dump = DumpUnfilteredAccessibilityTreeAsString();
-      if (tree_dump.find(str) != std::string::npos) {
+      if (base::Contains(tree_dump, str)) {
         wait_for_string = false;
         // Append an additional dump if the specified string was found.
         std::vector<std::string> additional_dump = Dump(mode);
@@ -520,15 +505,10 @@ std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
     //
     // In this scenario, B's contentWindow.location.href matches A's url,
     // but B's url in the browser frame tree is still "about:blank".
-    //
-    // We also ignore frame tree nodes created for portals in the outer
-    // WebContents as the node doesn't have a url set.
 
     std::string url = node->current_url().spec();
     if (url != url::kAboutBlankURL && url != url::kAboutSrcdocURL &&
-        !url.empty() && !SkipUrlMatch(skip_urls, url) &&
-        node->frame_owner_element_type() !=
-            blink::FrameOwnerElementType::kPortal) {
+        !url.empty() && !SkipUrlMatch(skip_urls, url)) {
       all_frame_urls[url] += 1;
     }
   }
@@ -603,7 +583,7 @@ WebContentsImpl* DumpAccessibilityTestBase::GetWebContents() const {
 
 std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
     const {
-  return AXInspectFactory::CreateFormatter(GetParam().first);
+  return AXInspectFactory::CreateFormatter(GetParam());
 }
 
 std::pair<EvalJsResult, std::vector<std::string>>
@@ -614,7 +594,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   ui::AXTreeSelector selector(manager->GetBrowserAccessibilityRoot()
                                   ->GetTargetForNativeAccessibilityEvent());
   std::unique_ptr<ui::AXEventRecorder> event_recorder =
-      AXInspectFactory::CreateRecorder(GetParam().first, manager,
+      AXInspectFactory::CreateRecorder(GetParam(), manager,
                                        base::GetCurrentProcId(), selector);
   event_recorder->SetOnlyWebEvents(true);
 

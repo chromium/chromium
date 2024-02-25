@@ -73,7 +73,7 @@ class ArcAppWindowInfo : public aura::WindowObserver {
   // Keeps overridden window icon.
   gfx::ImageSkia icon_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // Scoped list of observed windows (for removal on destruction)
   // TODO(crbug.com/1323913, crbug.com/1316374): When the window is destroyed,

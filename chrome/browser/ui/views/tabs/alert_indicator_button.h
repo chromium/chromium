@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -33,8 +33,9 @@ class AnimationDelegate;
 // Tab (its parent View).
 class AlertIndicatorButton : public views::ImageButton,
                              public views::ViewTargeterDelegate {
+  METADATA_HEADER(AlertIndicatorButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(AlertIndicatorButton);
   explicit AlertIndicatorButton(Tab* parent_tab);
   AlertIndicatorButton(const AlertIndicatorButton&) = delete;
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
@@ -48,13 +49,13 @@ class AlertIndicatorButton : public views::ImageButton,
 
   // Returns the current TabAlertState except, while the indicator image is
   // fading out, returns the prior TabAlertState.
-  absl::optional<TabAlertState> showing_alert_state() const {
+  std::optional<TabAlertState> showing_alert_state() const {
     return showing_alert_state_;
   }
 
   // Calls ResetImages(), starts fade animations, and activates/deactivates
   // button functionality as appropriate.
-  void TransitionToAlertState(absl::optional<TabAlertState> next_state);
+  void TransitionToAlertState(std::optional<TabAlertState> next_state);
 
   // Determines whether the AlertIndicatorButton will be clickable for toggling
   // muting.  This should be called whenever the active/inactive state of a tab
@@ -96,7 +97,7 @@ class AlertIndicatorButton : public views::ImageButton,
   // indicator to alert the user that recording, tab capture, or audio playback
   // has started/stopped.
   std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
-      absl::optional<TabAlertState> alert_state);
+      std::optional<TabAlertState> alert_state);
 
   // Returns the tab (parent view) of this AlertIndicatorButton.
   Tab* GetTab();
@@ -107,13 +108,13 @@ class AlertIndicatorButton : public views::ImageButton,
 
   const raw_ptr<Tab> parent_tab_;
 
-  absl::optional<TabAlertState> alert_state_;
+  std::optional<TabAlertState> alert_state_;
 
   // Alert indicator fade-in/out animation (i.e., only on show/hide, not a
   // continuous animation).
   std::unique_ptr<gfx::AnimationDelegate> fade_animation_delegate_;
   std::unique_ptr<gfx::Animation> fade_animation_;
-  absl::optional<TabAlertState> showing_alert_state_;
+  std::optional<TabAlertState> showing_alert_state_;
 
   // The time when the alert indicator is displayed when a camera and/or a
   // microphone are captured.

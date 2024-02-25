@@ -51,7 +51,7 @@ class LockScreenNetworkUI : public ui::MojoWebDialogUI {
 
  private:
   // The main message handler owned by the corresponding WebUI.
-  raw_ptr<NetworkConfigMessageHandler, ExperimentalAsh> main_handler_;
+  raw_ptr<NetworkConfigMessageHandler> main_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

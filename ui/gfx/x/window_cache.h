@@ -6,6 +6,7 @@
 #define UI_GFX_X_WINDOW_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -14,12 +15,12 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/shape.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -29,7 +30,6 @@ Window GetWindowAtPoint(const gfx::Point& point_px,
                         const base::flat_set<Window>* ignore = nullptr);
 
 class Connection;
-class XScopedEventSelector;
 
 class ScopedShapeEventSelector {
  public:
@@ -66,10 +66,10 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
     // so we store children in a vector instead of a node-based structure.
     std::vector<Window> children;
 
-    absl::optional<std::vector<Rectangle>> bounding_rects_px;
-    absl::optional<std::vector<Rectangle>> input_rects_px;
+    std::optional<std::vector<Rectangle>> bounding_rects_px;
+    std::optional<std::vector<Rectangle>> input_rects_px;
 
-    std::unique_ptr<XScopedEventSelector> events;
+    ScopedEventSelector events;
     std::unique_ptr<ScopedShapeEventSelector> shape_events;
   };
 
@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   const raw_ptr<Connection> connection_;
   const Window root_;
   const Atom gtk_frame_extents_;
-  std::unique_ptr<XScopedEventSelector> root_events_;
+  ScopedEventSelector root_events_;
 
   std::unordered_map<Window, WindowInfo> windows_;
 
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   // The latest event processed out-of-order, or nullopt if the latest event was
   // processed in order.
-  absl::optional<uint32_t> last_processed_event_;
+  std::optional<uint32_t> last_processed_event_;
 
   // True iff GetWindowAtPoint() was called since the last timer interval.
   bool delete_when_destroy_timer_fires_ = false;

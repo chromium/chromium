@@ -6,13 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "ash/webui/help_app_ui/url_constants.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -70,8 +67,7 @@ class MockSearchHandler : public ash::help_app::SearchHandler {
     results_ = std::move(results);
   }
 
-  raw_ptr<ash::help_app::SearchTagRegistry, ExperimentalAsh>
-      search_tag_registry_;
+  raw_ptr<ash::help_app::SearchTagRegistry> search_tag_registry_;
   std::vector<SearchResultPtr> results_;
 };
 }  // namespace
@@ -85,11 +81,7 @@ class HelpAppProviderTest : public AppListTestBase {
                 /*for_testing=*/true)),
         search_tag_registry_(local_search_service_proxy_.get()),
         mock_handler_(&search_tag_registry_,
-                      local_search_service_proxy_.get()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{});
-  }
+                      local_search_service_proxy_.get()) {}
   ~HelpAppProviderTest() override = default;
 
   void SetUp() override {
@@ -100,7 +92,7 @@ class HelpAppProviderTest : public AppListTestBase {
     proxy_->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
 
     // Insert dummy map values so that the stub_icon_loader knows of the app.
-    stub_icon_loader.timelines_by_app_id_[web_app::kHelpAppId] = 1;
+    stub_icon_loader.update_version_by_app_id_[web_app::kHelpAppId] = 1;
 
     auto provider =
         std::make_unique<HelpAppProvider>(profile(), &mock_handler_);
@@ -110,7 +102,7 @@ class HelpAppProviderTest : public AppListTestBase {
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_.StartSearch(query);
     task_environment()->RunUntilIdle();
   }
 
@@ -125,9 +117,8 @@ class HelpAppProviderTest : public AppListTestBase {
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::help_app::SearchTagRegistry search_tag_registry_;
-  raw_ptr<HelpAppProvider, ExperimentalAsh> provider_ = nullptr;
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<HelpAppProvider> provider_ = nullptr;
+  raw_ptr<apps::AppServiceProxy> proxy_;
   MockSearchHandler mock_handler_;
 };
 

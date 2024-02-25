@@ -2,7 +2,7 @@ Tests that evaluating 'console.log()' in the console will have access to its out
 
 
 Running: testSnippet1
-console-eval-scoped.js:72 with: Object property value
+console-eval-scoped.js:73 with: Object property value
 VM:1 eval in with: Object property value
 
 Running: testSnippet2

@@ -72,7 +72,7 @@ class FamilyUserChromeActivityMetrics
   // prefs or report to UMA.
   void UpdateUserEngagement(bool is_user_active);
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   app_time::AppServiceWrapper app_service_wrapper_;
 
   // The time when the user becomes active.

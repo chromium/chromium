@@ -45,7 +45,7 @@ struct AllocationSite {
   };
 
  private:
-  const uint32_t hash_;
+  const size_t hash_;
 };
 
 inline bool operator==(const AllocationSite& a, const AllocationSite& b) {

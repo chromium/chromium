@@ -7,7 +7,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_util.h"
 
@@ -36,7 +36,6 @@ void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
 void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     const gfx::Rect& visible_rect,
     uint32_t texture_target) {
@@ -59,11 +58,11 @@ void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
     // is because we want the texture to include the non-visible area to the
     // left and on the top of the visible rectangle so that the compositor can
     // calculate the UV coordinates to omit the non-visible area.
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
+    ProvidePictureBuffers(requested_num_of_buffers, format,
                           GetRectSizeFromOrigin(visible_rect), texture_target);
   } else {
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
-                          dimensions, texture_target);
+    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
+                          texture_target);
   }
 }
 
@@ -88,8 +87,8 @@ bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
     const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   // Implementations in the process that VDA runs in must override this.
-  LOG(FATAL) << "This may only be called in the same process as VDA impl.";
-  return false;
+  NOTREACHED_NORETURN()
+      << "This may only be called in the same process as VDA impl.";
 }
 
 void VideoDecodeAccelerator::ImportBufferForPicture(

@@ -7,66 +7,88 @@
 
 #include <string>
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/ash_export.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/view_factory.h"
+
+namespace views {
+class ImageButton;
+}  // namespace views
 
 namespace ash {
 
+namespace api {
+struct Task;
+}  // namespace api
+
 // GlanceablesTaskView uses `views::FlexLayout` to show tasks metadata within
-// the TasksBubbleView.
+// the `GlanceablesTasksView` or `TasksBubbleView`.
 // +---------------------------------------------------------------+
 // |`GlanceablesTaskView`                                          |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
 // | |'button_'        | |'contents_view_'                       | |
-// | |                 | | +---------------------------------  + | |
+// | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_title_view_'                | | |
 // | |                 | | +-----------------------------------+ | |
-// | |                 | | +---------------------------------  + | |
+// | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_details_view_'              | | |
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
 class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GlanceablesTaskView);
+  METADATA_HEADER(GlanceablesTaskView, views::FlexLayoutView)
 
-  GlanceablesTaskView(const std::string& task_list_id,
-                      const GlanceablesTask* task);
+ public:
+  using MarkAsCompletedCallback =
+      base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
+
+  // Modes of `tasks_title_view_` (simple label or text field).
+  // TODO(b/315188389): Remove this as editing functions is replaced by
+  // GlanceablesTaskViewV2 when the stable launch is enabled.
+  enum class TaskTitleViewState { kView, kEdit };
+
+  GlanceablesTaskView(const api::Task* task,
+                      MarkAsCompletedCallback mark_as_completed_callback);
   GlanceablesTaskView(const GlanceablesTaskView&) = delete;
   GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
   ~GlanceablesTaskView() override;
 
-  void ButtonPressed();
-  void MarkedAsCompleted(bool success);
-
   const views::ImageButton* GetButtonForTest() const;
   bool GetCompletedForTest() const;
 
+  // Updates `tasks_title_view_` according to `state`.
+  void UpdateTaskTitleViewForState(TaskTitleViewState state);
+
  private:
   class CheckButton;
+  class TaskTitleButton;
 
-  void SetupTasksLabel(bool completed);
+  // Handles press events on `button_`.
+  void CheckButtonPressed();
+
+  // Handles press events on `task_title_button_`.
+  void TaskTitleButtonPressed();
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> button_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> tasks_label_ = nullptr;
+  raw_ptr<views::FlexLayoutView> contents_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_title_view_ = nullptr;
+  raw_ptr<TaskTitleButton> task_title_button_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_details_view_ = nullptr;
 
-  // ID for the task list that owns this task.
-  const std::string task_list_id_;
   // ID for the task represented by this view.
-  const std::string task_id_;
+  std::string task_id_;
+
+  // Title of the task.
+  std::u16string task_title_;
+
+  // Marks the task as completed.
+  MarkAsCompletedCallback mark_as_completed_callback_;
 
   base::WeakPtrFactory<GlanceablesTaskView> weak_ptr_factory_{this};
 };

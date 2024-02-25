@@ -91,6 +91,8 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToCreateMediaEngine);
     STRINGIFY(kFailedToCreateDCompTextureWrapper);
     STRINGIFY(kFailedToInitDCompTextureWrapper);
+    STRINGIFY(kFailedToSetPlaybackRate);
+    STRINGIFY(kFailedToGetMediaEngineEx);
   }
 #undef STRINGIFY
 }
@@ -249,6 +251,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnWaiting, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaFoundationRenderer::OnFrameStepCompleted, weak_this)),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnTimeUpdate, weak_this))));
 
   ComPtr<IMFAttributes> creation_attributes;
@@ -275,7 +279,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
       bool has_video = false;
-      for (auto* stream : media_resource->GetAllStreams()) {
+      for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
         if (stream->type() == media::DemuxerStream::VIDEO) {
           has_video = true;
           gfx::Size video_size = stream->video_decoder_config().natural_size();
@@ -308,6 +312,13 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   // instead of 0.
   RETURN_IF_FAILED(class_factory->CreateInstance(0, creation_attributes.Get(),
                                                  &mf_media_engine_));
+
+  // The Media Foundation Media Engine has an initial playback rate of 1.0, but
+  // chromium uses an initial playback rate of 0.0. The Media Engine's topology
+  // may not be completely loaded at this point - so we use
+  // SetDefaultPlaybackRate as using SetPlaybackRate may be overwritten while
+  // the topology is loading.
+  RETURN_IF_FAILED(mf_media_engine_->SetDefaultPlaybackRate(0.0));
 
   auto media_resource_type_ = media_resource->GetType();
   if (media_resource_type_ != MediaResource::Type::kStream) {
@@ -478,7 +489,7 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> /*latency_hint*/) {
+    std::optional<base::TimeDelta> /*latency_hint*/) {
   // TODO(frankli): Ensure MFMediaEngine rendering pipeine is in real time mode.
   NOTIMPLEMENTED() << "We do not use the latency hint today";
 }
@@ -590,9 +601,27 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
 void MediaFoundationRenderer::SetPlaybackRate(double playback_rate) {
   DVLOG_FUNC(2) << "playback_rate=" << playback_rate;
 
-  HRESULT hr = mf_media_engine_->SetPlaybackRate(playback_rate);
-  // Ignore error so that the media continues to play rather than stopped.
-  DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
+  // If the Media Engine's topology has not finished loading then
+  // the call to SetPlaybackRate may be overwritten. To work around this
+  // we call SetDefaultPlaybackRate which would be picked up when transitioning
+  // to the Play state.
+  HRESULT hr = mf_media_engine_->SetDefaultPlaybackRate(playback_rate);
+  if (FAILED(hr)) {
+    DVLOG(1) << "Failed to set default playback rate: " << PrintHr(hr);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetPlaybackRate, hr);
+    return;
+  }
+
+  hr = mf_media_engine_->SetPlaybackRate(playback_rate);
+
+  if (SUCCEEDED(hr)) {
+    playback_rate_ = playback_rate;
+  } else {
+    DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetPlaybackRate, hr);
+  }
 }
 
 void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
@@ -882,6 +911,22 @@ void MediaFoundationRenderer::OnLoadedData() {
 void MediaFoundationRenderer::OnCanPlayThrough() {
   DVLOG_FUNC(2);
 
+  // If the playback rate in Media Foundations is 0, the video renderer would
+  // not pre-roll and request frames. Use Frame Step function to force
+  // pre-rolling
+  if (playback_rate_ == 0) {
+    ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
+
+    HRESULT hr = mf_media_engine_.As(&mf_media_engine_ex);
+    if (SUCCEEDED(hr)) {
+      mf_media_engine_ex->FrameStep(/*Forward=*/true);
+    } else {
+      OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+              ErrorReason::kFailedToGetMediaEngineEx, hr);
+      return;
+    }
+  }
+
   // According to HTML5 <video> spec, on "canplaythrough", the video could be
   // rendered at the current playback rate all the way to its end, and it's
   // the time to report BUFFERING_HAVE_ENOUGH.
@@ -920,6 +965,27 @@ void MediaFoundationRenderer::OnWaiting() {
 void MediaFoundationRenderer::OnTimeUpdate() {
   DVLOG_FUNC(3);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
+
+void MediaFoundationRenderer::OnFrameStepCompleted() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // Frame-Stepping causes Media engine to be in a paused state after finishing.
+  // Thus play and set playback rate is needed to change the state to be
+  // playing.
+
+  // Set playback rate is call again because on start, if SetPlaybackRate of 0
+  // is called before pipeline topology is setup, the playback rate of Media
+  // Engine will be defaulted to 1 as setting playback rate is ignored until
+  // topology is set. Thus, when frame step is finished, setting the playback
+  // rate again ensures consistency.
+  HRESULT hr = mf_media_engine_->Play();
+  if (FAILED(hr)) {
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER, ErrorReason::kFailedToPlay, hr);
+    return;
+  }
+  SetPlaybackRate(playback_rate_);
 }
 
 void MediaFoundationRenderer::OnProtectionManagerWaiting(WaitingReason reason) {
@@ -1057,6 +1123,12 @@ void MediaFoundationRenderer::RequestNextFrame() {
   if (dxgi_device_manager_ == nullptr ||
       mf_media_engine_->OnVideoStreamTick(&presentation_timestamp_in_hns) !=
           S_OK) {
+    return;
+  }
+
+  if (native_video_size_.IsEmpty()) {
+    MEDIA_LOG(WARNING, media_log_)
+        << "RequestNextFrame ignores empty native_video_size_";
     return;
   }
 

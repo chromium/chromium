@@ -8,6 +8,7 @@
 #include "base/test/scoped_command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -74,11 +75,11 @@ TEST(DisplayTest, ForcedDeviceScaleFactor) {
 TEST(DisplayTest, DisplayFrequency) {
   Display display(0, gfx::Rect(0, 0, 100, 100));
 
-  display.set_display_frequency(60);
-  EXPECT_EQ(60, display.display_frequency());
+  display.set_display_frequency(60.0f);
+  EXPECT_EQ(60.0f, display.display_frequency());
 
-  display.set_display_frequency(120);
-  EXPECT_EQ(120, display.display_frequency());
+  display.set_display_frequency(120.0f);
+  EXPECT_EQ(120.0f, display.display_frequency());
 }
 
 TEST(DisplayTest, DisplayLabel) {
@@ -89,6 +90,102 @@ TEST(DisplayTest, DisplayLabel) {
 
   display.set_label("Display 2");
   EXPECT_EQ("Display 2", display.label());
+}
+
+TEST(DisplayTest, GammaCurve) {
+  std::vector<GammaRampRGBEntry> lut({
+      {0, 1, 1},
+      {32768, 2, 5},
+      {65535, 3, 9},
+  });
+  GammaCurve curve(lut);
+  uint16_t r, g, b;
+
+  // Evaluate at the control points.
+  curve.Evaluate(0 / 2.f, r, g, b);
+  EXPECT_EQ(0, r);
+  EXPECT_EQ(1, g);
+  EXPECT_EQ(1, b);
+
+  curve.Evaluate(1 / 2.f, r, g, b);
+  EXPECT_EQ(32768, r);
+  EXPECT_EQ(2, g);
+  EXPECT_EQ(5, b);
+
+  curve.Evaluate(2 / 2.f, r, g, b);
+  EXPECT_EQ(65535, r);
+  EXPECT_EQ(3, g);
+  EXPECT_EQ(9, b);
+
+  // Evaluate between points.
+  curve.Evaluate(0.25f / 2.f, r, g, b);
+  EXPECT_EQ(2, b);
+  curve.Evaluate(0.50f / 2.f, r, g, b);
+  EXPECT_EQ(3, b);
+  curve.Evaluate(0.75f / 2.f, r, g, b);
+  EXPECT_EQ(4, b);
+  curve.Evaluate(1.00f / 2.f, r, g, b);
+  EXPECT_EQ(5, b);
+  curve.Evaluate(1.25f / 2.f, r, g, b);
+  EXPECT_EQ(6, b);
+  curve.Evaluate(1.50f / 2.f, r, g, b);
+  EXPECT_EQ(7, b);
+  curve.Evaluate(1.75f / 2.f, r, g, b);
+  EXPECT_EQ(8, b);
+}
+
+TEST(DisplayTest, GammaCurveMakeConcat) {
+  std::vector<GammaRampRGBEntry> lut_f;
+  std::vector<GammaRampRGBEntry> lut_g;
+  lut_f.resize(1024);
+  for (size_t i = 0; i < lut_f.size(); ++i) {
+    float x = i / (lut_f.size() - 1.f);
+    float r = x * x;
+    float g = x * x * x;
+    float b = x * x * x * x;
+    lut_f[i].r = static_cast<uint16_t>(std::round(65535.f * r));
+    lut_f[i].g = static_cast<uint16_t>(std::round(65535.f * g));
+    lut_f[i].b = static_cast<uint16_t>(std::round(65535.f * b));
+  }
+
+  lut_g.resize(512);
+  for (size_t i = 0; i < lut_g.size(); ++i) {
+    float x = i / (lut_g.size() - 1.f);
+    float r = 0.5f * x;
+    float g = 0.5f + 0.5f * x;
+    float b = x;
+    lut_g[i].r = static_cast<uint16_t>(std::round(65535.f * r));
+    lut_g[i].g = static_cast<uint16_t>(std::round(65535.f * g));
+    lut_g[i].b = static_cast<uint16_t>(std::round(65535.f * b));
+  }
+
+  GammaCurve curve_f(lut_f);
+  GammaCurve curve_g(lut_g);
+  GammaCurve curve = GammaCurve::MakeConcat(curve_f, curve_g);
+
+  for (size_t i = 0; i < 256; ++i) {
+    float x = i / 255.f;
+
+    // Apply g.
+    float r = 0.5f * x;
+    float g = 0.5f + 0.5f * x;
+    float b = x;
+
+    // Apply f.
+    r = r * r;
+    g = g * g * g;
+    b = b * b * b * b;
+
+    // Compare.
+    uint16_t actual_r;
+    uint16_t actual_g;
+    uint16_t actual_b;
+    curve.Evaluate(x, actual_r, actual_g, actual_b);
+
+    EXPECT_LT(std::abs(r - actual_r / 65535.f), 0.01);
+    EXPECT_LT(std::abs(g - actual_g / 65535.f), 0.01);
+    EXPECT_LT(std::abs(b - actual_b / 65535.f), 0.01);
+  }
 }
 
 }  // namespace display

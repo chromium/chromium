@@ -20,9 +20,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     private static Boolean sHasPermanentMenuKeyForTesting;
 
-    /**
-     * Factory which creates the AppMenuHandlerImpl.
-     */
+    /** Factory which creates the AppMenuHandlerImpl. */
     @VisibleForTesting
     interface AppMenuHandlerFactory {
         /**
@@ -36,8 +34,11 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
          *         containing activity.
          * @return AppMenuHandlerImpl for the given activity and menu resource id.
          */
-        AppMenuHandlerImpl get(AppMenuPropertiesDelegate delegate, AppMenuDelegate appMenuDelegate,
-                int menuResourceId, View decorView,
+        AppMenuHandlerImpl get(
+                AppMenuPropertiesDelegate delegate,
+                AppMenuDelegate appMenuDelegate,
+                int menuResourceId,
+                View decorView,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher);
     }
 
@@ -61,18 +62,28 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      *            displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      */
-    public AppMenuCoordinatorImpl(Context context,
+    public AppMenuCoordinatorImpl(
+            Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            MenuButtonDelegate buttonDelegate, AppMenuDelegate appMenuDelegate, View decorView,
-            View hardwareButtonAnchorView, Supplier<Rect> appRect) {
+            MenuButtonDelegate buttonDelegate,
+            AppMenuDelegate appMenuDelegate,
+            View decorView,
+            View hardwareButtonAnchorView,
+            Supplier<Rect> appRect) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
         mAppMenuPropertiesDelegate = mAppMenuDelegate.createAppMenuPropertiesDelegate();
 
         mAppMenuHandler =
-                new AppMenuHandlerImpl(mContext, mAppMenuPropertiesDelegate, mAppMenuDelegate,
-                        decorView, activityLifecycleDispatcher, hardwareButtonAnchorView, appRect);
+                new AppMenuHandlerImpl(
+                        mContext,
+                        mAppMenuPropertiesDelegate,
+                        mAppMenuDelegate,
+                        decorView,
+                        activityLifecycleDispatcher,
+                        hardwareButtonAnchorView,
+                        appRect);
     }
 
     @Override
@@ -87,9 +98,10 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     public void showAppMenuForKeyboardEvent() {
         if (mAppMenuHandler == null || !mAppMenuHandler.shouldShowAppMenu()) return;
 
-        boolean hasPermanentMenuKey = sHasPermanentMenuKeyForTesting != null
-                ? sHasPermanentMenuKeyForTesting.booleanValue()
-                : ViewConfiguration.get(mContext).hasPermanentMenuKey();
+        boolean hasPermanentMenuKey =
+                sHasPermanentMenuKeyForTesting != null
+                        ? sHasPermanentMenuKeyForTesting.booleanValue()
+                        : ViewConfiguration.get(mContext).hasPermanentMenuKey();
         mAppMenuHandler.showAppMenu(
                 hasPermanentMenuKey ? null : mButtonDelegate.getMenuButtonView(), false);
     }

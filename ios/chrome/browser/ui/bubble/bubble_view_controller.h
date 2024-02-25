@@ -5,7 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
+#import <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSInteger, BubbleAlignment);
+typedef NS_ENUM(NSInteger, BubbleArrowDirection);
+typedef NS_ENUM(NSInteger, BubbleViewType);
+
+@protocol BubbleViewDelegate;
 
 // View controller that manages a BubbleView, which points to a UI element of
 // interest.
@@ -35,6 +41,13 @@
 // The caller is responsible for adding the bubble view controller to the
 // view hierarchy.
 - (void)animateContentIn;
+
+// If `hidden`, the arrow hides behind the bubble; otherwise, it is visible and
+// pointing to the anchor point. If `animated`, the arrow will be slid out of /
+// back in the bubble.
+//
+// NOTE: This should only be called when the view is in the view hierarchy.
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated;
 
 // Dismisses the bubble. If `animated` is true, the bubble fades out.
 //

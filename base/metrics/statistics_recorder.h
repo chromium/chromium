@@ -12,11 +12,10 @@
 
 #include <stdint.h>
 
-#include <atomic>
+#include <atomic>  // For std::memory_order_*.
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/base_export.h"
@@ -33,7 +32,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 
 namespace base {
 
@@ -324,23 +322,16 @@ class BASE_EXPORT StatisticsRecorder {
   }
 
  private:
-  // Most platforms should use a Read/Write lock to access the internal
-  // histogram map, but on iOS, we have seen hangs when using Absl's
-  // implementation. So, use a "normal" fully exclusive lock instead.
-  // TODO(crbug.com/1123627): Consider using std::shared_mutex.
-#if !BUILDFLAG(IS_IOS)
-  using SrLock = absl::Mutex;
-  using SrAutoReaderLock = absl::ReaderMutexLock;
-  using SrAutoWriterLock = absl::MutexLock;
-  static SrLock* GetLock() { return lock_.Pointer(); }
-  static void AssertLockHeld() { lock_.Get().AssertHeld(); }
-#else
-  using SrLock = Lock;
-  using SrAutoReaderLock = AutoLock;
-  using SrAutoWriterLock = AutoLock;
-  static SrLock& GetLock() { return lock_.Get(); }
+  static Lock& GetLock() { return lock_.Get(); }
   static void AssertLockHeld() { lock_.Get().AssertAcquired(); }
-#endif  // !BUILDFLAG(IS_IOS)
+
+  // Returns the histogram registered with |hash|, if there is one. Returns
+  // nullptr otherwise.
+  // Note: |name| is only used in DCHECK builds to assert that there was no
+  // collision (i.e. different histograms with the same hash).
+  HistogramBase* FindHistogramByHashInternal(uint64_t hash,
+                                             StringPiece name) const
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   // Adds an observer to be notified when a new sample is recorded on the
   // histogram referred to by |histogram_name|. Can be called before or after
@@ -361,14 +352,15 @@ class BASE_EXPORT StatisticsRecorder {
 
   typedef std::vector<WeakPtr<HistogramProvider>> HistogramProviders;
 
-  typedef std::unordered_map<StringPiece, HistogramBase*, StringPieceHash>
-      HistogramMap;
+  // A map of histogram name hash (see HashMetricName()) to histogram object.
+  typedef std::unordered_map<uint64_t, HistogramBase*> HistogramMap;
 
-  // A map of histogram name to registered observers. If the histogram isn't
-  // created yet, the observers will be added after creation.
+  // A map of histogram name hash (see HashMetricName()) to registered observers
+  // If the histogram isn't created yet, the observers will be added after
+  // creation.
   using HistogramSampleObserverList =
       base::ObserverListThreadSafe<ScopedHistogramSampleObserver>;
-  typedef std::unordered_map<std::string,
+  typedef std::unordered_map<uint64_t,
                              scoped_refptr<HistogramSampleObserverList>>
       ObserverMap;
 
@@ -411,7 +403,9 @@ class BASE_EXPORT StatisticsRecorder {
   raw_ptr<StatisticsRecorder> previous_ = nullptr;
 
   // Global lock for internal synchronization.
-  static LazyInstance<SrLock>::Leaky lock_;
+  // Note: Care must be taken to not read or write anything to persistent memory
+  // while holding this lock, as that could cause a file I/O stall.
+  static LazyInstance<Lock>::Leaky lock_;
 
   // Global lock for internal synchronization of histogram snapshots.
   static LazyInstance<base::Lock>::Leaky snapshot_lock_;

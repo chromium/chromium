@@ -6,9 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests that database names are correctly loaded and saved in IndexedDBModel.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -16,7 +17,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
   var databaseName = 'testDatabase1';
   var storageKey = 'http://127.0.0.1:8000/';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId({storageKey}, databaseName);
+  var databaseId = new Application.IndexedDBModel.DatabaseId({storageKey}, databaseName);
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
@@ -54,19 +55,19 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step4, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
   function step4() {
     dumpDatabase();
 
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step5);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step5);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step5() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step5);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step5);
     dumpDatabase();
 
     ApplicationTestRunner.createObjectStore(
@@ -74,24 +75,24 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step6() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step7);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step7);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step7() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step7);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step7);
     dumpDatabase();
 
     ApplicationTestRunner.createObjectStore(mainFrameId, databaseName, 'testObjectStore2', null, false, step8);
   }
 
   function step8() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step9);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step9);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step9() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step9);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step9);
     dumpDatabase();
 
     ApplicationTestRunner.createObjectStoreIndex(
@@ -99,12 +100,12 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step10() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step11);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step11);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step11() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step11);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step11);
     dumpDatabase();
 
     ApplicationTestRunner.createObjectStoreIndex(
@@ -113,12 +114,12 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step12() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step13);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step13);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step13() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step13);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step13);
     dumpDatabase();
 
     ApplicationTestRunner.deleteObjectStoreIndex(
@@ -126,12 +127,12 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step14() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step15);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step15);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step15() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step15);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step15);
     dumpDatabase();
 
     ApplicationTestRunner.deleteObjectStoreIndex(
@@ -139,36 +140,36 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step16() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step17);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step17);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step17() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step17);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step17);
     dumpDatabase();
 
     ApplicationTestRunner.deleteObjectStore(mainFrameId, databaseName, 'testObjectStore2', step18);
   }
 
   function step18() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step19);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step19);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step19() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step19);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step19);
     dumpDatabase();
 
     ApplicationTestRunner.deleteObjectStore(mainFrameId, databaseName, 'testObjectStore1', step20);
   }
 
   function step20() {
-    indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step21);
+    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step21);
     indexedDBModel.refreshDatabase(databaseId);
   }
 
   function step21() {
-    indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, step21);
+    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, step21);
     dumpDatabase();
     ApplicationTestRunner.deleteDatabase(mainFrameId, databaseName, step22);
   }

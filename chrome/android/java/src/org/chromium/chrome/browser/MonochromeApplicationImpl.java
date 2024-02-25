@@ -7,8 +7,8 @@ package org.chromium.chrome.browser;
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
-import org.chromium.components.version_info.VersionInfo;
 
 /**
  * This is Application class for Monochrome.
@@ -40,11 +40,12 @@ public class MonochromeApplicationImpl extends ChromeApplicationImpl {
                 // Frequently check current system webview provider and show/hide the icon
                 // accordingly by listening to Monochrome browser Activities status (whenever a
                 // browser activity comes to the foreground).
-                ApplicationStatus.registerStateListenerForAllActivities((activity, state) -> {
-                    if (state == ActivityState.STARTED) {
-                        WebViewApkApplication.postDeveloperUiLauncherIconTask();
-                    }
-                });
+                ApplicationStatus.registerStateListenerForAllActivities(
+                        (activity, state) -> {
+                            if (state == ActivityState.STARTED) {
+                                WebViewApkApplication.postDeveloperUiLauncherIconTask();
+                            }
+                        });
             }
         }
     }

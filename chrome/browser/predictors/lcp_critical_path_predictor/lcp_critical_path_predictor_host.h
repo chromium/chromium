@@ -39,9 +39,18 @@ class LCPCriticalPathPredictorHost
   ~LCPCriticalPathPredictorHost() override;
 
   // Implements blink::mojom::LCPCriticalPathPredictorHost.
-  void SetLcpElementLocator(const std::string& lcp_element_locator) override;
+  void SetLcpElementLocator(
+      const std::string& lcp_element_locator,
+      std::optional<uint32_t> predicted_lcp_index) override;
+  void SetLcpInfluencerScriptUrls(
+      const std::vector<GURL>& lcp_influencer_scripts) override;
+  void SetPreconnectOrigins(const std::vector<GURL>& origins) override;
+  void NotifyFetchedFont(const GURL& font_url) override;
+  void NotifyFetchedSubresource(
+      const GURL& subresource_url,
+      base::TimeDelta subresource_load_start) override;
 };
 
 }  // namespace predictors
 
-#endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_IMPL_H_
+#endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_

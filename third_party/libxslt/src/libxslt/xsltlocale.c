@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <libxml/xmlmemory.h>
+#include <libxml/threads.h>
 
 #include "xsltlocale.h"
 #include "xsltutils.h"

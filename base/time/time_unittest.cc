@@ -8,19 +8,21 @@
 #include <time.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/build_time.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -50,9 +52,9 @@ const char kThaiLocale[] = "th-TH";
 const char kBangkokTimeZoneId[] = "Asia/Bangkok";
 
 // Returns the total offset (including Daylight Saving Time) of the timezone
-// with |timezone_id| at |time|, or absl::nullopt in case of failure.
-absl::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
-                                                        Time time) {
+// with |timezone_id| at |time|, or std::nullopt in case of failure.
+std::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
+                                                       Time time) {
   std::unique_ptr<icu::TimeZone> tz(icu::TimeZone::createTimeZone(timezone_id));
   if (*tz == icu::TimeZone::getUnknown()) {
     return {};
@@ -60,7 +62,8 @@ absl::optional<base::TimeDelta> GetTimeZoneOffsetAtTime(const char* timezone_id,
   int32_t raw_offset = 0;
   int32_t dst_offset = 0;
   UErrorCode ec = U_ZERO_ERROR;
-  tz->getOffset(time.ToDoubleT(), false, raw_offset, dst_offset, ec);
+  tz->getOffset(time.InSecondsFSinceUnixEpoch(), false, raw_offset, dst_offset,
+                ec);
   if (!U_SUCCESS(ec)) {
     return {};
   }
@@ -106,7 +109,7 @@ class ScopedLibcTZ {
   static constexpr char kTZ[] = "TZ";
 
   bool success_ = true;
-  absl::optional<std::string> old_timezone_;
+  std::optional<std::string> old_timezone_;
 };
 
 constexpr char ScopedLibcTZ::kTZ[];
@@ -243,7 +246,7 @@ TEST_F(TimeTest, DeltaSinceWindowsEpoch) {
 // Test conversion to/from time_t.
 TEST_F(TimeTest, TimeT) {
   EXPECT_EQ(10, Time().FromTimeT(10).ToTimeT());
-  EXPECT_EQ(10.0, Time().FromTimeT(10).ToDoubleT());
+  EXPECT_EQ(10.0, Time().FromTimeT(10).InSecondsFSinceUnixEpoch());
 
   // Conversions of 0 should stay 0.
   EXPECT_EQ(0, Time().ToTimeT());
@@ -325,19 +328,19 @@ TEST_F(TimeTest, LocalTimeT) {
 
 // Test conversions to/from javascript time.
 TEST_F(TimeTest, JsTime) {
-  Time epoch = Time::FromJsTime(0.0);
+  Time epoch = Time::FromMillisecondsSinceUnixEpoch(0.0);
   EXPECT_EQ(epoch, Time::UnixEpoch());
-  Time t = Time::FromJsTime(700000.3);
-  EXPECT_EQ(700.0003, t.ToDoubleT());
-  t = Time::FromDoubleT(800.73);
-  EXPECT_EQ(800730.0, t.ToJsTime());
+  Time t = Time::FromMillisecondsSinceUnixEpoch(700000.3);
+  EXPECT_EQ(700.0003, t.InSecondsFSinceUnixEpoch());
+  t = Time::FromSecondsSinceUnixEpoch(800.73);
+  EXPECT_EQ(800730.0, t.InMillisecondsFSinceUnixEpoch());
 
-  // 1601-01-01 isn't round-trip with ToJsTime().
+  // 1601-01-01 isn't round-trip with InMillisecondsFSinceUnixEpoch().
   const double kWindowsEpoch = -11644473600000.0;
-  Time time = Time::FromJsTime(kWindowsEpoch);
+  Time time = Time::FromMillisecondsSinceUnixEpoch(kWindowsEpoch);
   EXPECT_TRUE(time.is_null());
-  EXPECT_NE(kWindowsEpoch, time.ToJsTime());
-  EXPECT_EQ(kWindowsEpoch, time.ToJsTimeIgnoringNull());
+  EXPECT_NE(kWindowsEpoch, time.InMillisecondsFSinceUnixEpoch());
+  EXPECT_EQ(kWindowsEpoch, time.InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -366,7 +369,7 @@ TEST_F(TimeTest, ZeroIsSymmetric) {
   Time zero_time(Time::FromTimeT(0));
   EXPECT_EQ(0, zero_time.ToTimeT());
 
-  EXPECT_EQ(0.0, zero_time.ToDoubleT());
+  EXPECT_EQ(0.0, zero_time.InSecondsFSinceUnixEpoch());
 }
 
 // Note that this test does not check whether the implementation correctly
@@ -600,6 +603,12 @@ TEST_F(TimeTest, ParseTimeTest9) {
 TEST_F(TimeTest, ParseTimeTest10) {
   Time parsed_time;
   EXPECT_TRUE(Time::FromString("15/10/07 12:45", &parsed_time));
+  EXPECT_EQ(parsed_time, comparison_time_local_);
+}
+
+TEST_F(TimeTest, ParseTimeTest11) {
+  Time parsed_time;
+  EXPECT_TRUE(Time::FromString("2007-10-15 12:45:00", &parsed_time));
   EXPECT_EQ(parsed_time, comparison_time_local_);
 }
 
@@ -866,13 +875,17 @@ TEST_F(TimeTest, MaxConversions) {
   static_assert(std::numeric_limits<int64_t>::max() == kMax.ToInternalValue(),
                 "");
 
-  Time t = Time::FromDoubleT(std::numeric_limits<double>::infinity());
+  Time t =
+      Time::FromSecondsSinceUnixEpoch(std::numeric_limits<double>::infinity());
   EXPECT_TRUE(t.is_max());
-  EXPECT_EQ(std::numeric_limits<double>::infinity(), t.ToDoubleT());
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            t.InSecondsFSinceUnixEpoch());
 
-  t = Time::FromJsTime(std::numeric_limits<double>::infinity());
+  t = Time::FromMillisecondsSinceUnixEpoch(
+      std::numeric_limits<double>::infinity());
   EXPECT_TRUE(t.is_max());
-  EXPECT_EQ(std::numeric_limits<double>::infinity(), t.ToJsTime());
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            t.InMillisecondsFSinceUnixEpoch());
 
   t = Time::FromTimeT(std::numeric_limits<time_t>::max());
   EXPECT_TRUE(t.is_max());
@@ -1195,7 +1208,7 @@ TEST_F(TimeTest, LocalExplodedIsLocaleIndependent) {
   Time time;
   ASSERT_TRUE(base::Time::FromUTCExploded(utc_exploded_orig, &time));
 
-  absl::optional<TimeDelta> expected_delta =
+  std::optional<TimeDelta> expected_delta =
       GetTimeZoneOffsetAtTime(kBangkokTimeZoneId, time);
 
   ASSERT_TRUE(expected_delta.has_value());
@@ -1330,12 +1343,6 @@ TEST_F(TimeTest, MAYBE_NowOverride) {
 }
 
 #undef MAYBE_NowOverride
-
-TEST_F(TimeTest, TimeFormatHTTP) {
-  base::Time time;
-  ASSERT_TRUE(base::Time::FromString("1994-11-06T08:49:37Z", &time));
-  EXPECT_EQ("Sun, 06 Nov 1994 08:49:37 GMT", TimeFormatHTTP(time));
-}
 
 #if BUILDFLAG(IS_FUCHSIA)
 TEST(ZxTimeTest, ToFromConversions) {
@@ -1869,15 +1876,6 @@ TEST(TimeDelta, Hz) {
   static_assert(Hertz(60) * 60 != Seconds(1));
   static_assert(Hertz(60).ToHz() != 60);
   EXPECT_EQ(base::ClampRound(Hertz(60).ToHz()), 60);
-}
-
-// We could define this separately for Time, TimeTicks and TimeDelta but the
-// definitions would be identical anyway.
-template <class Any>
-std::string AnyToString(Any any) {
-  std::ostringstream oss;
-  oss << any;
-  return oss.str();
 }
 
 TEST(TimeDelta, Magnitude) {
@@ -2451,17 +2449,17 @@ TEST(TimeDeltaLogging, DCheckEqCompiles) {
 
 TEST(TimeDeltaLogging, EmptyIsZero) {
   constexpr TimeDelta kZero;
-  EXPECT_EQ("0 s", AnyToString(kZero));
+  EXPECT_EQ("0 s", ToString(kZero));
 }
 
 TEST(TimeDeltaLogging, FiveHundredMs) {
   constexpr TimeDelta kFiveHundredMs = Milliseconds(500);
-  EXPECT_EQ("0.5 s", AnyToString(kFiveHundredMs));
+  EXPECT_EQ("0.5 s", ToString(kFiveHundredMs));
 }
 
 TEST(TimeDeltaLogging, MinusTenSeconds) {
   constexpr TimeDelta kMinusTenSeconds = Seconds(-10);
-  EXPECT_EQ("-10 s", AnyToString(kMinusTenSeconds));
+  EXPECT_EQ("-10 s", ToString(kMinusTenSeconds));
 }
 
 TEST(TimeDeltaLogging, DoesNotMessUpFormattingFlags) {
@@ -2484,7 +2482,31 @@ TEST(TimeLogging, DCheckEqCompiles) {
 TEST(TimeLogging, ChromeBirthdate) {
   Time birthdate;
   ASSERT_TRUE(Time::FromString("Tue, 02 Sep 2008 09:42:18 GMT", &birthdate));
-  EXPECT_EQ("2008-09-02 09:42:18.000 UTC", AnyToString(birthdate));
+  EXPECT_EQ("2008-09-02 09:42:18.000000 UTC", ToString(birthdate));
+}
+
+TEST(TimeLogging, Microseconds) {
+  // Some Time with a non-zero number of microseconds.
+  Time now = Time::Now();
+  if (now.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+          Time::kMicrosecondsPerMillisecond ==
+      0) {
+    now += Microseconds(1);
+  }
+
+  // Crudely parse the microseconds portion out of the stringified Time. Use
+  // find() and ASSERTs to try to give an accurate test result, without
+  // crashing, even if the logging format changes in the future (e.g. someone
+  // removes microseconds, adds nanoseconds, changes the timezone format, etc.).
+  const std::string now_str = ToString(now);
+  ASSERT_GT(now_str.length(), 6u);
+  const size_t period = now_str.find('.');
+  ASSERT_LT(period, now_str.length() - 6);
+  int microseconds = 0;
+  EXPECT_TRUE(StringToInt(now_str.substr(period + 4, 3), &microseconds));
+
+  // The stringified microseconds should also be nonzero.
+  EXPECT_NE(0, microseconds);
 }
 
 TEST(TimeLogging, DoesNotMessUpFormattingFlags) {
@@ -2506,13 +2528,12 @@ TEST(TimeTicksLogging, DCheckEqCompiles) {
 
 TEST(TimeTicksLogging, ZeroTime) {
   TimeTicks zero;
-  EXPECT_EQ("0 bogo-microseconds", AnyToString(zero));
+  EXPECT_EQ("0 bogo-microseconds", ToString(zero));
 }
 
 TEST(TimeTicksLogging, FortyYearsLater) {
   TimeTicks forty_years_later = TimeTicks() + Days(365.25 * 40);
-  EXPECT_EQ("1262304000000000 bogo-microseconds",
-            AnyToString(forty_years_later));
+  EXPECT_EQ("1262304000000000 bogo-microseconds", ToString(forty_years_later));
 }
 
 TEST(TimeTicksLogging, DoesNotMessUpFormattingFlags) {

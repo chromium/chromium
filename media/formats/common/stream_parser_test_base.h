@@ -14,7 +14,6 @@
 #include "media/base/media_util.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 
 namespace media {
@@ -62,8 +61,7 @@ class StreamParserTestBase {
                                       size_t length,
                                       size_t piece_size);
   void OnInitDone(const StreamParser::InitParameters& params);
-  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks,
-                   const StreamParser::TextTrackConfigMap& text_config);
+  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks);
   bool OnNewBuffers(const StreamParser::BufferQueueMap& buffer_queue_map);
   void OnKeyNeeded(EmeInitDataType type, const std::vector<uint8_t>& init_data);
   void OnNewSegment();

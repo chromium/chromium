@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTHENTICATION_ERROR_H_
 
 #include "base/component_export.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/recovery_types.h"
 
@@ -23,8 +23,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
     // The error represents some erroneous state detected by the chrome.
     kChrome,
   };
-  explicit AuthenticationError(
-      user_data_auth::CryptohomeErrorCode cryptohome_code);
+  // explicit AuthenticationError(::user_data_auth::CryptohomeErrorCode
+  // cryptohome_code);
+  explicit AuthenticationError(cryptohome::ErrorWrapper wrapper);
   explicit AuthenticationError(AuthFailure::FailureReason auth_failure_reason);
   explicit AuthenticationError(AuthFailure auth_failure);
 
@@ -43,8 +44,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
 
   void ResolveToFailure(AuthFailure::FailureReason auth_failure_reason);
 
-  user_data_auth::CryptohomeErrorCode get_cryptohome_code() const {
-    return cryptohome_code_;
+  // CryptohomeErrorCode is the legacy error code and will be removed in the
+  // future. This function is kept here for compatibility during migration.
+  ::user_data_auth::CryptohomeErrorCode get_cryptohome_code() const {
+    return cryptohome_error_.code();
+  }
+
+  // ErrorWrapper holds the new CryptohomeErrorInfo structure for representing
+  // error. New code should use this instead.
+  cryptohome::ErrorWrapper get_cryptohome_error() const {
+    return cryptohome_error_;
   }
 
   std::string ToDebugString() const;
@@ -52,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
  private:
   Origin origin_;
   // Cryptohome-specific fields:
-  user_data_auth::CryptohomeErrorCode cryptohome_code_;
+  cryptohome::ErrorWrapper cryptohome_error_;
 
   // Mapping of the `error_code` to auth flow failure reason.
   AuthFailure auth_failure_{AuthFailure::NONE};

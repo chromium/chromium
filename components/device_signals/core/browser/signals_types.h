@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_TYPES_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_TYPES_H_
 
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/device_signals/core/common/win/win_types.h"
@@ -69,7 +69,7 @@ struct BaseSignalResponse {
 
   // If set, represents a collection error that occurred while getting the
   // signal.
-  absl::optional<SignalCollectionError> collection_error = absl::nullopt;
+  std::optional<SignalCollectionError> collection_error = std::nullopt;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -135,7 +135,7 @@ struct GetSettingsOptions {
 
   // Windows registry hive containing the desired value. This values is required
   // on Windows, but will be ignored on Mac.
-  absl::optional<RegistryHive> hive = absl::nullopt;
+  std::optional<RegistryHive> hive = std::nullopt;
 
   bool operator==(const GetSettingsOptions& other) const;
 };
@@ -152,7 +152,7 @@ struct SettingsItem {
 
   std::string key{};
 
-  absl::optional<RegistryHive> hive = absl::nullopt;
+  std::optional<RegistryHive> hive = std::nullopt;
 
   // Value indicating whether the specific resource could be found or not.
   PresenceValue presence = PresenceValue::kUnspecified;
@@ -160,7 +160,7 @@ struct SettingsItem {
   // JSON string representing the value of the setting. Only set when the
   // setting was found and `get_value` was true on the corresponding request
   // options.
-  absl::optional<std::string> setting_json_value = absl::nullopt;
+  std::optional<std::string> setting_json_value = std::nullopt;
 
   bool operator==(const SettingsItem& other) const;
 };
@@ -195,7 +195,7 @@ struct AgentSignalsResponse : BaseSignalResponse {
 
   ~AgentSignalsResponse() override;
 
-  absl::optional<CrowdStrikeSignals> crowdstrike_signals = absl::nullopt;
+  std::optional<CrowdStrikeSignals> crowdstrike_signals = std::nullopt;
 };
 
 // Request struct containing properties that will be used by the
@@ -235,18 +235,18 @@ struct SignalsAggregationResponse {
 
   // If set, represents an error that occurred before any signal could be
   // collected.
-  absl::optional<SignalCollectionError> top_level_error = absl::nullopt;
+  std::optional<SignalCollectionError> top_level_error = std::nullopt;
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<AntiVirusSignalResponse> av_signal_response = absl::nullopt;
-  absl::optional<HotfixSignalResponse> hotfix_signal_response = absl::nullopt;
+  std::optional<AntiVirusSignalResponse> av_signal_response = std::nullopt;
+  std::optional<HotfixSignalResponse> hotfix_signal_response = std::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
-  absl::optional<SettingsResponse> settings_response = absl::nullopt;
+  std::optional<SettingsResponse> settings_response = std::nullopt;
 
-  absl::optional<FileSystemInfoResponse> file_system_info_response =
-      absl::nullopt;
+  std::optional<FileSystemInfoResponse> file_system_info_response =
+      std::nullopt;
 
-  absl::optional<AgentSignalsResponse> agent_signals_response = absl::nullopt;
+  std::optional<AgentSignalsResponse> agent_signals_response = std::nullopt;
 };
 
 }  // namespace device_signals

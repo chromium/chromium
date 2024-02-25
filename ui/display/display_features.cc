@@ -90,5 +90,13 @@ bool IsPanelSelfRefresh2Enabled() {
   return base::FeatureList::IsEnabled(kPanelSelfRefresh2);
 }
 
+BASE_FEATURE(kTiledDisplaySupport,
+             "TiledDisplaySupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTiledDisplaySupportEnabled() {
+  return base::FeatureList::IsEnabled(kTiledDisplaySupport);
+}
+
 }  // namespace features
 }  // namespace display

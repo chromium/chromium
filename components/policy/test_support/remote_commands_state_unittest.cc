@@ -30,6 +30,22 @@ TEST(RemoteCommandsStateTest, AddPendingRemoteCommand) {
             em::RemoteCommand::DEVICE_REMOTE_POWERWASH);
 }
 
+TEST(RemoteCommandsStateTest, IsRemoteCommandAcked) {
+  const int64_t command_id = 1;
+  RemoteCommandsState state;
+
+  state.AddRemoteCommandAcked(command_id);
+
+  EXPECT_TRUE(state.IsRemoteCommandAcked(command_id));
+}
+
+TEST(RemoteCommandsStateTest, IsRemoteCommandNotAcked) {
+  const int64_t command_id = 1;
+  RemoteCommandsState state;
+
+  EXPECT_FALSE(state.IsRemoteCommandAcked(command_id));
+}
+
 TEST(RemoteCommandsStateTest, GetUnavailableCommandResult) {
   RemoteCommandsState state;
 

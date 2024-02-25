@@ -18,12 +18,12 @@ limitations under the License.
 #include <dlfcn.h>
 #include <string.h>
 
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
+#include "tensorflow/lite/acceleration/configuration/c/delegate_plugin.h"
 #include "tensorflow/lite/acceleration/configuration/delegate_plugin_converter.h"
-#include "tensorflow/lite/core/shims/c/acceleration/configuration/delegate_plugin.h"
-#include "tensorflow/lite/core/shims/cc/acceleration/configuration/delegate_registry.h"
+#include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 
@@ -35,7 +35,7 @@ namespace {
 using ::absl::StatusCode;
 using ::tflite::proto::Delegate;
 using ::tflite::support::CreateStatusWithPayload;
-using ::tflite_shims::delegates::DelegatePluginRegistry;
+using ::tflite::delegates::DelegatePluginRegistry;
 
 // delegate_name should be one of the following:
 // gpu / hexagon
@@ -99,7 +99,7 @@ tflite::support::StatusOr<Delegate> ConvertToProtoDelegate(jint delegate) {
     case 1:
       return Delegate::NNAPI;
     case 2:
-      RETURN_IF_ERROR(loadDelegatePluginLibrary("gpu"));
+      TFLITE_RETURN_IF_ERROR(loadDelegatePluginLibrary("gpu"));
       return Delegate::GPU;
     default:
       break;
@@ -168,8 +168,7 @@ void ThrowException(JNIEnv* env, const char* clazz, const char* fmt, ...) {
   va_end(args);
 }
 
-void ThrowExceptionWithMessage(JNIEnv* env,
-                               const char* clazz,
+void ThrowExceptionWithMessage(JNIEnv* env, const char* clazz,
                                const char* message) {
   jclass e_class = env->FindClass(clazz);
   if (strcmp(clazz, kAssertionError) == 0) {

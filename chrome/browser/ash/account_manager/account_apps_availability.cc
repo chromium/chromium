@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -18,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Structure of `account_manager::prefs::kAccountAppsAvailability`.
 // `kAccountAppsAvailability` is a dictionary of dictionaries of the following
@@ -58,7 +59,7 @@ bool IsPrefInitialized(PrefService* prefs) {
 
 void CompleteFindAccountByGaiaId(
     const std::string& gaia_id,
-    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+    base::OnceCallback<void(const std::optional<account_manager::Account>&)>
         callback,
     const std::vector<account_manager::Account>& accounts) {
   for (const auto& account : accounts) {
@@ -69,7 +70,7 @@ void CompleteFindAccountByGaiaId(
     }
   }
   LOG(ERROR) << "Couldn't find account by gaia id in AccountManager";
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void CompleteGetAccountsAvailableInArc(
@@ -102,7 +103,7 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 
   // See structure of `accounts` at the top of the file.
   for (const auto dict : accounts) {
-    absl::optional<bool> is_available = dict.second.GetDict().FindBool(
+    std::optional<bool> is_available = dict.second.GetDict().FindBool(
         account_manager::prefs::kIsAvailableInArcKey);
     if (!is_available.has_value() || !is_available.value())
       continue;
@@ -117,17 +118,17 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 // Return `false` if account with `gaia_id` should not be available in ARC.
 // Return `nullopt` if account with `gaia_id` is not in prefs (it can happen if
 // `SetIsAccountAvailableInArc` wasn't called for this account yet).
-absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
-                                             const std::string& gaia_id) {
+std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
+                                            const std::string& gaia_id) {
   const base::Value::Dict& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
   const base::Value::Dict* account_entry = accounts.FindDict(gaia_id);
   if (!account_entry)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<bool> is_available_in_arc =
+  std::optional<bool> is_available_in_arc =
       account_entry->FindBool(account_manager::prefs::kIsAvailableInArcKey);
   DCHECK(is_available_in_arc);
   // If there is no `is_available_in_arc` key, assume that account is available
@@ -247,7 +248,7 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
     return;
   }
 
-  absl::optional<bool> current_status =
+  std::optional<bool> current_status =
       IsAccountAvailableInArc(prefs_, account.key.id());
   if (!current_status.has_value()) {
     // Account is not in prefs yet - add a new entry.
@@ -302,7 +303,7 @@ void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
     return;
   }
 
-  absl::optional<bool> current_status =
+  std::optional<bool> current_status =
       IsAccountAvailableInArc(prefs_, account_info.gaia);
   // - If `current_status.has_value()` is `false` - this account is not in prefs
   // yet. This happens when account is just added and
@@ -346,7 +347,7 @@ void AccountAppsAvailability::OnAccountRemoved(
     return;
   }
 
-  absl::optional<bool> current_status =
+  std::optional<bool> current_status =
       IsAccountAvailableInArc(prefs_, account.key.id());
   RemoveAccountFromPrefs(prefs_, account.key.id());
   if (!current_status.has_value() || !current_status.value())
@@ -426,7 +427,7 @@ void AccountAppsAvailability::ReportMetrics(
 
 void AccountAppsAvailability::FindAccountByGaiaId(
     const std::string& gaia_id,
-    base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+    base::OnceCallback<void(const std::optional<account_manager::Account>&)>
         callback) {
   account_manager_facade_->GetAccounts(base::BindOnce(
       &CompleteFindAccountByGaiaId, gaia_id, std::move(callback)));
@@ -434,7 +435,7 @@ void AccountAppsAvailability::FindAccountByGaiaId(
 
 void AccountAppsAvailability::MaybeNotifyObservers(
     bool is_available_in_arc,
-    const absl::optional<account_manager::Account>& account) {
+    const std::optional<account_manager::Account>& account) {
   if (!account)
     return;
 

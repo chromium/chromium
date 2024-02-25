@@ -94,7 +94,7 @@ void ExtensionSyncEventObserver::OnFileSynced(
     ::sync_file_system::SyncDirection direction) {
   base::Value::List params;
 
-  absl::optional<base::Value::Dict> entry =
+  std::optional<base::Value::Dict> entry =
       CreateDictionaryValueForFileSystemEntry(url, file_type);
   if (!entry)
     return;

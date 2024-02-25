@@ -16,11 +16,12 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/input.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -114,8 +115,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<int> click_count,
       Maybe<double> force,
       Maybe<double> tangential_pressure,
-      Maybe<int> tilt_x,
-      Maybe<int> tilt_y,
+      Maybe<double> tilt_x,
+      Maybe<double> tilt_y,
       Maybe<int> twist,
       Maybe<double> delta_x,
       Maybe<double> delta_y,
@@ -211,6 +212,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
    private:
     struct DragState;
+    struct InitialState;
 
     friend void InputHandler::StartDragging(
         const DropData& drop_data,
@@ -236,7 +238,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
     void DragUpdated(
         std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
-        ui::mojom::DragOperation operation);
+        ui::mojom::DragOperation operation,
+        bool document_is_handling_drag);
 
     // Ends the drag with the given event and host.
     //
@@ -256,13 +259,12 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
         std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
         base::WeakPtr<RenderWidgetHostViewBase> view,
-        absl::optional<gfx::PointF> maybe_point);
+        std::optional<gfx::PointF> maybe_point);
 
     InputHandler& handler_;
 
     // These get used for starting a drag.
-    std::unique_ptr<blink::WebMouseEvent> last_mouse_move_ = nullptr;
-    base::WeakPtr<RenderWidgetHostImpl> last_widget_host_ = nullptr;
+    std::unique_ptr<InitialState> initial_state_;
 
     std::unique_ptr<DragState> drag_state_;
 
@@ -287,7 +289,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       std::unique_ptr<DispatchMouseEventCallback> callback,
       std::unique_ptr<blink::WebMouseEvent> mouse_event,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchDragEvent(
       const std::string& event_type,
@@ -297,13 +299,13 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<int> modifiers,
       std::unique_ptr<DispatchDragEventCallback> callback,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchWebTouchEvent(
       std::unique_ptr<DispatchTouchEventCallback> callback,
       std::vector<blink::WebTouchEvent> events,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   SyntheticPointerActionParams PrepareSyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType pointer_action_type,
@@ -352,6 +354,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       injectors_;
   int last_id_ = 0;
   bool ignore_input_events_ = false;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
   bool intercept_drags_ = false;
   DragController drag_controller_;
   const bool allow_file_access_;

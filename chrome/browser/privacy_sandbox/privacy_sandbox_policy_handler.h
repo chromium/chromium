@@ -9,8 +9,10 @@
 
 class PrefValueMap;
 
+namespace policy {
 class PolicyErrorMap;
 class PolicyMap;
+}  // namespace policy
 
 // ConfigurationPolicyHandler for the privacy sandbox policies.
 class PrivacySandboxPolicyHandler : public policy::ConfigurationPolicyHandler {

@@ -1,5 +1,4 @@
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:private",
     ],
@@ -13,7 +12,7 @@ cc_test(
         "//tensorflow_lite_support/cc/port:gtest_main",
         "//tensorflow_lite_support/scann_ondevice/cc:mem_random_access_file",
         "@com_google_leveldb//:util",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
 )
 
@@ -34,7 +33,7 @@ cc_test(
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
 )
 

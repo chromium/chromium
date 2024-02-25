@@ -79,9 +79,8 @@ scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
   return nullptr;
 }
 
-absl::optional<CursorData> CursorFactory::GetCursorData(
-    mojom::CursorType type) {
-  return absl::nullopt;
+std::optional<CursorData> CursorFactory::GetCursorData(mojom::CursorType type) {
+  return std::nullopt;
 }
 
 scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(

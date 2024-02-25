@@ -14,9 +14,9 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -44,35 +44,35 @@ base::RepeatingCallback<void(Result)> CreateBarrierForSynchronizeWithResult(
 // static
 std::unique_ptr<UpdateFileHandlerCommand>
 UpdateFileHandlerCommand::CreateForPersistUserChoice(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     bool allowed,
     base::OnceClosure callback) {
   return base::WrapUnique(
       new UpdateFileHandlerCommand(app_id, allowed, std::move(callback)));
 }
 
-UpdateFileHandlerCommand::UpdateFileHandlerCommand(const AppId& app_id,
+UpdateFileHandlerCommand::UpdateFileHandlerCommand(const webapps::AppId& app_id,
                                                    bool user_choice_to_remember,
                                                    base::OnceClosure callback)
-    : WebAppCommandTemplate<AppLock>("UpdateFileHandlerCommand"),
-      lock_description_(std::make_unique<AppLockDescription>(app_id)),
+    : WebAppCommand<AppLock>("UpdateFileHandlerCommand",
+                             AppLockDescription(app_id),
+                             std::move(callback)),
       app_id_(app_id),
-      user_choice_to_remember_(user_choice_to_remember),
-      callback_(std::move(callback)) {
-  debug_info_.Set("app_id", app_id_);
-  debug_info_.Set("user_choice_to_remember",
-                  user_choice_to_remember_ ? "allow" : "disallow");
+      user_choice_to_remember_(user_choice_to_remember) {
+  GetMutableDebugValue().Set("app_id", app_id_);
+  GetMutableDebugValue().Set("user_choice_to_remember",
+                             user_choice_to_remember_ ? "allow" : "disallow");
 }
 
 UpdateFileHandlerCommand::~UpdateFileHandlerCommand() = default;
 
 void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
-  debug_info_.Set("was_update_required", false);
+  GetMutableDebugValue().Set("was_update_required", false);
 
   lock_ = std::move(lock);
 
   if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
-    ReportResultAndDestroy(CommandResult::kFailure);
+    CompleteAndSelfDestruct(CommandResult::kFailure);
     return;
   }
 
@@ -89,7 +89,7 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   // to be registered with the OS. If so, no need to do any update.
   if (file_handling_enabled ==
       lock_->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id_)) {
-    ReportResultAndDestroy(CommandResult::kSuccess);
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 
@@ -97,7 +97,7 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
                                        ? FileHandlerUpdateAction::kUpdate
                                        : FileHandlerUpdateAction::kRemove;
 
-  debug_info_.Set("was_update_required", true);
+  GetMutableDebugValue().Set("was_update_required", true);
 
   auto callback_for_synchronize = CreateBarrierForSynchronizeWithResult(
       base::BindOnce(&UpdateFileHandlerCommand::OnFileHandlerUpdated,
@@ -141,30 +141,13 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 #endif
 }
 
-const LockDescription& UpdateFileHandlerCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value UpdateFileHandlerCommand::ToDebugValue() const {
-  return base::Value(debug_info_.Clone());
-}
-
 void UpdateFileHandlerCommand::OnFileHandlerUpdated(bool file_handling_enabled,
                                                     Result result) {
   DCHECK_EQ(
       file_handling_enabled,
       lock_->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id_));
-  ReportResultAndDestroy(result == Result::kOk ? CommandResult::kSuccess
-                                               : CommandResult::kFailure);
-}
-
-void UpdateFileHandlerCommand::ReportResultAndDestroy(CommandResult result) {
-  DCHECK(!callback_.is_null());
-  SignalCompletionAndSelfDestruct(result, base::BindOnce(std::move(callback_)));
-}
-
-void UpdateFileHandlerCommand::OnShutdown() {
-  ReportResultAndDestroy(CommandResult::kShutdown);
+  CompleteAndSelfDestruct(result == Result::kOk ? CommandResult::kSuccess
+                                                : CommandResult::kFailure);
 }
 
 }  // namespace web_app

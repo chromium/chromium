@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -19,7 +20,6 @@
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // static
 OneGoogleBarService* OneGoogleBarServiceFactory::GetForProfile(

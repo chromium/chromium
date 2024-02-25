@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -38,6 +39,8 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // when the mouse is pressed over the view. These Textfields allow the user to
   // interactively set each margin and the "flex" for the given view.
   class ChildPanel : public View, public TextfieldController {
+    METADATA_HEADER(ChildPanel, View)
+
    public:
     explicit ChildPanel(LayoutExampleBase* example);
     ChildPanel(const ChildPanel&) = delete;
@@ -45,7 +48,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
     ~ChildPanel() override;
 
     // View:
-    void Layout() override;
+    void Layout(PassKey) override;
     bool OnMousePressed(const ui::MouseEvent& event) override;
 
     void SetSelected(bool value);

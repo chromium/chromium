@@ -5,7 +5,7 @@ include_rules = [
   # everywhere.
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/lacros/lacros_service.h",
-  "+chromeos/lacros/lacros_test_helper.h",
+  "+chromeos/startup/browser_params_proxy.h",
   "+chromeos/startup/startup_switches.h",
 
   # Tests can use all content/public headers.
@@ -46,6 +46,7 @@ include_rules = [
   "+ui/platform_window/common/platform_window_defaults.h",
   "+ui/views",
   "+v8/include/v8.h",
+  "+v8/include/v8-forward.h",
 ]
 
 specific_include_rules = {
@@ -73,6 +74,18 @@ specific_include_rules = {
   ],
   "browser_test_utils.cc": [
     "+ash/webui/grit/ash_webui_common_resources.h"
+  ],
+  "fenced_frame_reporter_observer.cc": [
+    "+content/browser/fenced_frame/fenced_frame_reporter.h"
+  ],
+  "fenced_frame_reporter_observer.h": [
+    "+content/browser/fenced_frame/fenced_frame_reporter.h"
+  ],
+  "mock_captured_surface_controller.h": [
+    "+content/browser/media/captured_surface_controller.h"
+  ],
+  "mock_video_picture_in_picture_window_controller_impl.h": [
+    "+content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"  
   ],
   "test_shared_storage_header_observer.h": [
     "+content/browser/shared_storage/shared_storage_header_observer.h"

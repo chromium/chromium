@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("handshake") {
+  crate_name = "handshake"
+  sources = [
+    "src/error.rs",
+    "src/lib.rs",
+    "src/noise.rs",
+  ]
+  deps = [
+    "//third_party/cloud_authenticator/crypto",
+    "//third_party/rust/static_assertions/v1:lib",
+  ]
+  no_chromium_prelude = true
+  testonly = true
+}

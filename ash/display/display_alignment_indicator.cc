@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_palette.h"
@@ -160,6 +162,7 @@ views::Widget::InitParams CreateInitParams(int64_t display_id,
 // View for the indicator highlight that renders on a shared edge of a given
 // display.
 class IndicatorHighlightView : public views::View {
+  METADATA_HEADER(IndicatorHighlightView, views::View)
  public:
   explicit IndicatorHighlightView(const display::Display& display)
       // Corner radius is the same as edge thickness.
@@ -198,20 +201,21 @@ class IndicatorHighlightView : public views::View {
     layer()->SetRoundedCornerRadius(corners);
   }
 
-  // views::View:
-  const char* GetClassName() const override { return "IndicatorHighlightView"; }
-
  private:
   // Radius for the rounded rectangle highlight. Determined by display
   // resolution.
   float corner_radius_;
 };
 
+BEGIN_METADATA(IndicatorHighlightView)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // IndicatorPillView:
 // View for the pill with an arrow pointing to an indicator highlight and name
 // of the target display.
 class IndicatorPillView : public views::View {
+  METADATA_HEADER(IndicatorPillView, views::View)
  public:
   explicit IndicatorPillView(const std::u16string& text)
       :  // TODO(1070352): Replace current placeholder arrow in
@@ -258,7 +262,7 @@ class IndicatorPillView : public views::View {
   }
 
   // views::View:
-  void Layout() override {
+  void Layout(PassKey) override {
     icon_->SetImageSize(gfx::Size(kArrowSize, kArrowSize));
 
     // IndicatorPosition::kRight is a special case for layout as it is the only
@@ -289,9 +293,6 @@ class IndicatorPillView : public views::View {
         gfx::Rect(text_label_x, 0, text_label_width, kPillHeight));
   }
 
-  // views::View:
-  const char* GetClassName() const override { return "IndicatorPillView"; }
-
   // Rotates the arrow depending on indicator highlight's position on-screen.
   void SetPosition(IndicatorPosition position) {
     if (position_ == position)
@@ -321,14 +322,17 @@ class IndicatorPillView : public views::View {
 
  private:
   // Possibly rotated image of an arrow based on |vector_icon_|.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;  // NOT OWNED
+  raw_ptr<views::ImageView> icon_ = nullptr;  // NOT OWNED
   // Label containing name of target display in the pill.
-  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;  // NOT OWNED
+  raw_ptr<views::Label> text_label_ = nullptr;  // NOT OWNED
   gfx::ImageSkia arrow_image_;
   // The side of the display indicator is postioned on. Used to determine arrow
   // direction and placement.
   IndicatorPosition position_ = IndicatorPosition::kRight;
 };
+
+BEGIN_METADATA(IndicatorPillView)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // DisplayAlignmentIndicator:

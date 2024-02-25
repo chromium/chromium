@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL direct sockets (TCP) do not get blocked on permissions policy direct-sockets=(self) promise_test: Unhandled rejection with value: object "ReferenceError: TCPSocket is not defined"
-FAIL direct sockets (UDP) do not get blocked on permissions policy direct-sockets=(self) promise_test: Unhandled rejection with value: object "ReferenceError: UDPSocket is not defined"
+[FAIL] direct sockets (TCP) do not get blocked on permissions policy direct-sockets=(self)
+  promise_test: Unhandled rejection with value: object "ReferenceError: TCPSocket is not defined"
+[FAIL] direct sockets (UDP) do not get blocked on permissions policy direct-sockets=(self)
+  promise_test: Unhandled rejection with value: object "ReferenceError: UDPSocket is not defined"
 Harness: the test ran to completion.
 

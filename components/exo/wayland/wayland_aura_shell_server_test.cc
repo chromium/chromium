@@ -16,6 +16,7 @@
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace exo::wayland {
@@ -100,8 +101,8 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
 
   struct ShellObserver {
     // For focus.
-    raw_ptr<wl_surface, ExperimentalAsh> gained_active;
-    raw_ptr<wl_surface, ExperimentalAsh> lost_active;
+    raw_ptr<wl_surface> gained_active;
+    raw_ptr<wl_surface> lost_active;
     int32_t activated_call_count = 0;
 
     // For overview.
@@ -150,7 +151,7 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
                                                               surface_key);
   }
 
-  raw_ptr<Display, DanglingUntriaged | ExperimentalAsh> display_;
+  raw_ptr<Display, DanglingUntriaged> display_;
 };
 
 // Home screen -> any window
@@ -487,6 +488,155 @@ TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
     zaura_toplevel_unset_can_fullscreen(zaura_toplevel.get());
   });
   EXPECT_FALSE(widget->widget_delegate()->CanFullscreen());
+}
+
+// TODO(crbug.com/1490404): Re-enable this when flakiness is resolved.
+TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
+  UpdateDisplay("800x600");
+
+  auto keys = SetupClientSurfaces();
+  AttachBufferToSurfaces();
+
+  std::unique_ptr<zaura_toplevel> zaura_toplevel;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    zaura_toplevel.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client->globals().aura_shell.get(),
+        data->test_surfaces_list[0].xdg_toplevel.get()));
+  });
+
+  WaylandXdgSurface* xdg_surface =
+      test::server_util::GetUserDataForResource<WaylandXdgSurface>(
+          server_.get(), keys[0].shell_surface_key);
+  ASSERT_TRUE(xdg_surface);
+
+  views::Widget* widget = xdg_surface->shell_surface->GetWidget();
+  auto* window_state = ash::WindowState::Get(widget->GetNativeWindow());
+  window_state->window()->SetProperty(aura::client::kAppType,
+                                      static_cast<int>(ash::AppType::LACROS));
+  ASSERT_FALSE(window_state->IsFloated());
+
+  // Location 0 is bottom right. Test that the window is floated and in the
+  // bottom right quadrant of the display.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_float_to_location(zaura_toplevel.get(), /*location=*/0u);
+  });
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(gfx::Rect(400, 300, 400, 300)
+                  .Contains(widget->GetWindowBoundsInScreen()));
+
+  // Unfloat the window.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_unset_float(zaura_toplevel.get());
+  });
+  EXPECT_FALSE(window_state->IsFloated());
+
+  // Location 1 is bottom left. Test that the window is floated and in the
+  // bottom left quadrant of the display.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_float_to_location(zaura_toplevel.get(), /*location=*/1u);
+  });
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(
+      gfx::Rect(0, 300, 400, 300).Contains(widget->GetWindowBoundsInScreen()));
+}
+
+class WaylandAuraOutputServerTest : public test::WaylandServerTest {
+ public:
+  struct AuraOutputObserver {
+    void Reset() { is_active = false; }
+    bool is_active = false;
+  };
+
+  WaylandAuraOutputServerTest() = default;
+  WaylandAuraOutputServerTest(const WaylandAuraOutputServerTest&) = delete;
+  WaylandAuraOutputServerTest& operator=(const WaylandAuraOutputServerTest&) =
+      delete;
+  ~WaylandAuraOutputServerTest() override = default;
+
+  std::unique_ptr<AuraOutputObserver> SetupAuraOutput(wl_output* output) {
+    static constexpr zaura_output_listener kAuraOutputListener = {
+        [](void*, struct zaura_output*, uint32_t, uint32_t) {},
+        [](void*, struct zaura_output*, uint32_t) {},
+        [](void*, struct zaura_output*, uint32_t) {},
+        [](void*, struct zaura_output*, int32_t, int32_t, int32_t, int32_t) {},
+        [](void*, struct zaura_output*, int32_t) {},
+        [](void*, struct zaura_output*, uint32_t, uint32_t) {},
+        [](void* data, struct zaura_output* zaura_output) {
+          auto* observer = static_cast<AuraOutputObserver*>(data);
+          observer->is_active = true;
+        }};
+    auto observer = std::make_unique<AuraOutputObserver>();
+    PostToClientAndWait([&](test::TestClient* client) {
+      std::unique_ptr<zaura_output> aura_output(
+          zaura_shell_get_aura_output(client->aura_shell(), output));
+      zaura_output_add_listener(aura_output.get(), &kAuraOutputListener,
+                                observer.get());
+      client->globals().aura_outputs.emplace_back(std::move(aura_output));
+    });
+    return observer;
+  }
+};
+
+TEST_F(WaylandAuraOutputServerTest, ActiveDisplay) {
+  UpdateDisplay("800x600,800x600");
+  const auto* screen = display::Screen::GetScreen();
+  ASSERT_EQ(2u, screen->GetAllDisplays().size());
+  const int64_t primary_id = screen->GetAllDisplays()[0].id();
+  const int64_t secondary_id = screen->GetAllDisplays()[1].id();
+
+  wl_output* primary_output = nullptr;
+  wl_output* secondary_output = nullptr;
+  PostToClientAndWait([&](test::TestClient* client) {
+    primary_output = client->globals().outputs[0].get();
+    secondary_output = client->globals().outputs[1].get();
+  });
+
+  // Create two widgets, one on the primary and the other on the secondary
+  // display.
+  auto* primary_widget = ash::TestWidgetBuilder()
+                             .SetBounds({{100, 100}, {200, 200}})
+                             .BuildOwnedByNativeWidget();
+  auto* secondary_widget = ash::TestWidgetBuilder()
+                               .SetBounds({{900, 100}, {200, 200}})
+                               .BuildOwnedByNativeWidget();
+  ASSERT_EQ(
+      screen->GetDisplayNearestWindow(primary_widget->GetNativeWindow()).id(),
+      primary_id);
+  ASSERT_EQ(
+      screen->GetDisplayNearestWindow(secondary_widget->GetNativeWindow()).id(),
+      secondary_id);
+
+  // Initialize the aura output extensions and register observers.
+  auto primary_observer = SetupAuraOutput(primary_output);
+  auto secondary_observer = SetupAuraOutput(secondary_output);
+  EXPECT_FALSE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
+
+  // Activate the widget on the primary display.
+  primary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_TRUE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
+
+  primary_observer->Reset();
+  secondary_observer->Reset();
+
+  // Activate the widget on the secondary display.
+  secondary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_FALSE(primary_observer->is_active);
+  EXPECT_TRUE(secondary_observer->is_active);
+
+  primary_observer->Reset();
+  secondary_observer->Reset();
+
+  // Ensure activating the widget on the primary display again correctly
+  // re-emits the activate event for the primary output.
+  primary_widget->Activate();
+  PostToClientAndWait([]() {});
+  EXPECT_TRUE(primary_observer->is_active);
+  EXPECT_FALSE(secondary_observer->is_active);
 }
 
 }  // namespace

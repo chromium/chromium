@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -63,8 +64,8 @@ class Header : public views::Button {
             holding_space_ui::CreateSuggestionsSectionHeaderLabel(
                 IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                .SetProperty(views::kFlexBehaviorKey,
-                             views::FlexSpecification().WithWeight(1)),
+                .SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification()),
             views::Builder<views::ImageView>().CopyAddressTo(&chevron_).SetID(
                 kHoldingSpaceSuggestionsChevronIconId))
         .BuildChildren();
@@ -138,7 +139,7 @@ class Header : public views::Button {
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
+  raw_ptr<views::ImageView> chevron_ = nullptr;
 
   // The user can expand and collapse the suggestions section by activating the
   // section header. This registrar is associated with the active user pref
@@ -170,10 +171,6 @@ SuggestionsSection::SuggestionsSection(HoldingSpaceViewDelegate* delegate)
 
 SuggestionsSection::~SuggestionsSection() = default;
 
-const char* SuggestionsSection::GetClassName() const {
-  return "SuggestionsSection";
-}
-
 std::unique_ptr<views::View> SuggestionsSection::CreateHeader() {
   return std::make_unique<Header>();
 }
@@ -197,5 +194,8 @@ bool SuggestionsSection::IsExpanded() {
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   return holding_space_prefs::IsSuggestionsExpanded(prefs);
 }
+
+BEGIN_METADATA(SuggestionsSection)
+END_METADATA
 
 }  // namespace ash

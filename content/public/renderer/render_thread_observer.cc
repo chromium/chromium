@@ -6,9 +6,11 @@
 
 namespace content {
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool RenderThreadObserver::OnControlMessageReceived(
     const IPC::Message& message) {
   return false;
 }
+#endif
 
 }  // namespace content

@@ -8,20 +8,18 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.url.GURL;
 
-/**
- * Wrapper for the dom_distiller::url_utils.
- */
+/** Wrapper for the dom_distiller::url_utils. */
 @JNINamespace("dom_distiller::url_utils::android")
 public final class DomDistillerUrlUtils {
     // Keep in sync with components/dom_distiller/core/url_constants.cc
     private static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
 
-    private DomDistillerUrlUtils() {
-    }
+    private DomDistillerUrlUtils() {}
 
     /**
      * Returns the URL for viewing distilled content for a URL.
@@ -82,8 +80,11 @@ public final class DomDistillerUrlUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         String getDistillerViewUrlFromUrl(String scheme, String url, String title);
+
         GURL getOriginalUrlFromDistillerUrl(String viewerUrl);
+
         boolean isDistilledPage(String url);
+
         String getValueForKeyInUrl(String url, String key);
     }
 }

@@ -10,7 +10,7 @@
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import type {ContentSettingsTypes} from '../site_settings/constants.js';
 // clang-format on
 
 /**
@@ -24,6 +24,7 @@ export enum SafetyHubEvent {
       'unused-permission-review-list-maybe-changed',
   NOTIFICATION_PERMISSIONS_MAYBE_CHANGED =
       'notification-permission-review-list-maybe-changed',
+  EXTENSIONS_CHANGED = 'extensions-review-list-maybe-changed',
 }
 
 // The notification permission information passed from safety_hub_handler.cc.
@@ -49,6 +50,8 @@ export interface CardInfo {
 /**
  * A Safety Hub card has 4 different states as represented below. Depending on
  * the card state, the card will be updated.
+ * Should be kept in sync with the corresponding enum in
+ * chrome/browser/ui/safety_hub/safety_hub_constants.h.
  */
 export enum CardState {
   WARNING,
@@ -111,6 +114,30 @@ export interface SafetyHubBrowserProxy {
 
   /** Resets the notification permission for the origins. */
   resetNotificationPermissionForOrigins(origin: string[]): void;
+
+  /**
+   * When Safety Hub is visited, the active three-dot menu notification is
+   * dismissed, if there is any.
+   */
+  dismissActiveMenuNotification(): void;
+
+  /** Gets data for the password top card. */
+  getPasswordCardData(): Promise<CardInfo>;
+
+  /** Gets data for the Safe Browsing top card. */
+  getSafeBrowsingCardData(): Promise<CardInfo>;
+
+  /** Gets data for the version top card. */
+  getVersionCardData(): Promise<CardInfo>;
+
+  /** Get the number of extensions that should be reviewed by the user. */
+  getNumberOfExtensionsThatNeedReview(): Promise<number>;
+
+  /** Returns true if Safety Hub has recommendations for the user. */
+  getSafetyHubHasRecommendations(): Promise<boolean>;
+
+  /** Get the subheader for Safety Hub entry point in settings. */
+  getSafetyHubEntryPointSubheader(): Promise<string>;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -161,6 +188,34 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
 
   resetNotificationPermissionForOrigins(origins: string[]) {
     chrome.send('resetNotificationPermissionForOrigins', [origins]);
+  }
+
+  dismissActiveMenuNotification() {
+    chrome.send('dismissActiveMenuNotification');
+  }
+
+  getPasswordCardData() {
+    return sendWithPromise('getPasswordCardData');
+  }
+
+  getSafeBrowsingCardData() {
+    return sendWithPromise('getSafeBrowsingCardData');
+  }
+
+  getVersionCardData() {
+    return sendWithPromise('getVersionCardData');
+  }
+
+  getNumberOfExtensionsThatNeedReview() {
+    return sendWithPromise('getNumberOfExtensionsThatNeedReview');
+  }
+
+  getSafetyHubHasRecommendations() {
+    return sendWithPromise('getSafetyHubHasRecommendations');
+  }
+
+  getSafetyHubEntryPointSubheader() {
+    return sendWithPromise('getSafetyHubEntryPointSubheader');
   }
 
   static getInstance(): SafetyHubBrowserProxy {

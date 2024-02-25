@@ -9,6 +9,9 @@
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/linux-lacros-archive-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -26,7 +29,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -44,7 +48,8 @@
           "builder": "linux-lacros-archive-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-lacros-archive-rel/targets"
     }
   },
   "$build/reclient": {

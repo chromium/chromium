@@ -5,11 +5,12 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_BROWSER_FRAME_WINDOW_TREE_HOST_H_
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_FRAME_WINDOW_TREE_HOST_H_
 
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <fuchsia/ui/views/cpp/fidl.h>
 
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/fuchsia/scenic_window_delegate.h"
+#include "ui/platform_window/fuchsia/view_ref_pair.h"
 
 namespace content {
 class WebContents;
@@ -24,11 +25,11 @@ class WEB_ENGINE_EXPORT FrameWindowTreeHost final
   using OnPixelScaleUpdateCallback = base::RepeatingCallback<void(float)>;
 
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                      scenic::ViewRefPair view_ref_pair,
+                      ui::ViewRefPair view_ref_pair,
                       content::WebContents* web_contents,
                       OnPixelScaleUpdateCallback on_pixel_scale_update);
   FrameWindowTreeHost(fuchsia::ui::views::ViewCreationToken view_creation_token,
-                      scenic::ViewRefPair view_ref_pair,
+                      ui::ViewRefPair view_ref_pair,
                       content::WebContents* web_contents,
                       OnPixelScaleUpdateCallback on_pixel_scale_update);
   ~FrameWindowTreeHost() override;

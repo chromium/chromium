@@ -39,23 +39,8 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
     "PageLoad.LayoutInstability.CumulativeShiftScore."
     "AfterBackForwardCacheRestore";
 
-const char
-    kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
-        [] = "PageLoad.InteractiveTiming."
-             "AverageUserInteractionLatencyOverBudget."
-             "MaxEventDuration.AfterBackForwardCacheRestore";
 const char kNumInteractions_AfterBackForwardCacheRestore[] =
     "PageLoad.InteractiveTiming.NumInteractions.AfterBackForwardCacheRestore";
-const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
-        [] = "PageLoad.InteractiveTiming."
-             "SlowUserInteractionLatencyOverBudget."
-             "HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore";
-const char
-    kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
-        [] = "PageLoad.InteractiveTiming."
-             "SumOfUserInteractionLatencyOverBudget."
-             "MaxEventDuration.AfterBackForwardCacheRestore";
 const char
     kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [] = "PageLoad.InteractiveTiming."
@@ -279,7 +264,7 @@ void BackForwardCachePageLoadMetricsObserver::
   if (page_load_metrics::
           WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
               first_input_delay, GetDelegate(), index)) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    base::UmaHistogramCustomTimes(
         internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore,
         *first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
 
@@ -350,72 +335,42 @@ void BackForwardCachePageLoadMetricsObserver::
   if (!has_ever_entered_back_forward_cache_)
     return;
   // Normalized Responsiveness Metrics.
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
 
-  if (!normalized_responsiveness_metrics.num_user_interactions)
+  if (!responsiveness_metrics_normalization.num_user_interactions()) {
     return;
+  }
 
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder
       .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
-          max_event_durations.worst_latency.InMilliseconds());
+          responsiveness_metrics_normalization.worst_latency()
+              .value()
+              .interaction_latency.InMilliseconds());
   UmaHistogramCustomTimes(
       internal::
           kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      max_event_durations.worst_latency, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
+      base::Milliseconds(1), base::Seconds(60), 50);
 
-  builder
-      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
-          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
-
-  builder
-      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
-          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-          normalized_responsiveness_metrics.num_user_interactions);
-
-  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
-      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
-          normalized_responsiveness_metrics.num_user_interactions,
-          max_event_durations.worst_ten_latencies);
-  base::TimeDelta high_percentile2_max_event_duration_over_budget =
-      page_load_metrics::ResponsivenessMetricsNormalization::
-          ApproximateHighPercentile(
-              normalized_responsiveness_metrics.num_user_interactions,
-              max_event_durations.worst_ten_latencies_over_budget);
-  builder
-      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration2(
-          high_percentile2_max_event_duration_over_budget.InMilliseconds());
+  base::TimeDelta high_percentile2_max_event_duration =
+      responsiveness_metrics_normalization.ApproximateHighPercentile()
+          .value()
+          .interaction_latency;
   builder
       .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder.SetNumInteractionsAfterBackForwardCacheRestore(
       ukm::GetExponentialBucketMinForCounts1000(
-          normalized_responsiveness_metrics.num_user_interactions));
+          responsiveness_metrics_normalization.num_user_interactions()));
 
-  UmaHistogramCustomTimes(
-      internal::
-          kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
-      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
-      base::Seconds(60), 50);
-  UmaHistogramCustomTimes(
-      internal::
-          kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
-      max_event_durations.sum_of_latency_over_budget /
-          normalized_responsiveness_metrics.num_user_interactions,
-      base::Milliseconds(1), base::Seconds(60), 50);
-  UmaHistogramCustomTimes(
-      internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
-      high_percentile2_max_event_duration_over_budget, base::Milliseconds(1),
-      base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::
           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
@@ -423,7 +378,7 @@ void BackForwardCachePageLoadMetricsObserver::
       base::Seconds(60), 50);
   base::UmaHistogramCounts1000(
       internal::kNumInteractions_AfterBackForwardCacheRestore,
-      normalized_responsiveness_metrics.num_user_interactions);
+      responsiveness_metrics_normalization.num_user_interactions());
 
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -445,11 +400,11 @@ void BackForwardCachePageLoadMetricsObserver::
       restored_layout_shift_score_.value();
   DCHECK_GE(layout_shift_score, 0);
 
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       internal::
           kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore,
       page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       internal::kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore,
       page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
 
@@ -486,10 +441,10 @@ void BackForwardCachePageLoadMetricsObserver::
 
   if (base::FeatureList::IsEnabled(
           internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-    UMA_HISTOGRAM_COUNTS_100(
+    base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
         page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
-    UMA_HISTOGRAM_COUNTS_100(
+    base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.CumulativeShiftScore",
         page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
   }
@@ -523,7 +478,7 @@ void BackForwardCachePageLoadMetricsObserver::
     // This logic for finding the foreground duration is intended to mimic
     // page_load_metrics::GetInitialForegroundDuration, but adjusted to
     // take into account the back forward cache.
-    absl::optional<base::TimeDelta> foreground_duration;
+    std::optional<base::TimeDelta> foreground_duration;
     DCHECK(back_forward_cache_navigation_ids_.size() >= 1);
     auto back_forward_state = GetDelegate().GetBackForwardCacheRestore(
         back_forward_cache_navigation_ids_.size() - 1);
@@ -533,9 +488,9 @@ void BackForwardCachePageLoadMetricsObserver::
     if (!back_forward_state.was_in_foreground)
       return;
 
-    absl::optional<base::TimeDelta> time_to_page_end =
+    std::optional<base::TimeDelta> time_to_page_end =
         GetDelegate().GetPageEndReason() == page_load_metrics::END_NONE
-            ? absl::optional<base::TimeDelta>()
+            ? std::optional<base::TimeDelta>()
             : GetDelegate().GetPageEndTime() -
                   back_forward_state.navigation_start_time;
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -40,14 +41,14 @@ class PluginVmLicenseChecker {
 
  private:
   std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
-      base::StringPiece access_token);
+      std::string_view access_token);
 
   void FetchAccessToken();
   void HandleStringResponse(std::unique_ptr<std::string> response_body);
   void CallEndpointWithAccessToken(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   GURL validation_url_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -23,6 +24,8 @@ namespace {
 
 constexpr char kDataUrlPrefix[] = "data:image/png;base64,";
 constexpr uint64_t kTimeOfDayStartingAssetId = 88;
+constexpr int kMaxImageNum = 5;
+constexpr char kDarklightCollectionId[] = "dark_light_collection";
 
 // Images used in test must have a unique `asset_id` for Personalization App to
 // function correctly. Make sure that the fake `collection_id` values used in
@@ -37,6 +40,8 @@ int GetStartingAssetId(const std::string& collection_id) {
     return 30;
   } else if (collection_id == "fake_collection_id_2") {
     return 40;
+  } else if (collection_id == kDarklightCollectionId) {
+    return 50;
   } else {
     return 100;
   }
@@ -91,6 +96,43 @@ backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
   return image;
 }
 
+std::vector<backdrop::Image> GenerateDarkLightBackdropImagePair(
+    const std::string& collection_id,
+    int asset_id) {
+  std::vector<backdrop::Image> pairs;
+  const int unit_id = asset_id;
+  {
+    // Generates Light variant.
+    backdrop::Image image;
+    image.set_asset_id(asset_id);
+    image.set_image_url(kDataUrlPrefix + base::NumberToString(asset_id));
+    for (auto line = 0; line < 2; line++) {
+      image.add_attribution()->set_text(
+          base::StringPrintf("fake_attribution_%s_asset_id_%i_line_%i",
+                             collection_id.c_str(), asset_id, line));
+    }
+    image.set_unit_id(unit_id);
+    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
+    pairs.push_back(image);
+  }
+  {
+    // Generates Dark variant.
+    backdrop::Image image;
+    const auto dark_asset_id = asset_id + 1;
+    image.set_asset_id(dark_asset_id);
+    image.set_image_url(kDataUrlPrefix + base::NumberToString(dark_asset_id));
+    for (auto line = 0; line < 2; line++) {
+      image.add_attribution()->set_text(
+          base::StringPrintf("fake_attribution_%s_asset_id_%i_line_%i",
+                             collection_id.c_str(), dark_asset_id, line));
+    }
+    image.set_unit_id(unit_id);
+    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_DARK_MODE);
+    pairs.push_back(image);
+  }
+  return pairs;
+}
+
 ash::personalization_app::mojom::GooglePhotosPhotoPtr
 CreateFakeGooglePhotosPhoto(const std::string& id) {
   auto photo = ash::personalization_app::mojom::GooglePhotosPhoto::New();
@@ -103,7 +145,7 @@ CreateFakeGooglePhotosPhoto(const std::string& id) {
 
 ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
 CreateFakeGooglePhotosPhotosResponse(
-    const absl::optional<std::string>& item_id) {
+    const std::optional<std::string>& item_id) {
   auto response =
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
   std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr> photos;
@@ -124,7 +166,7 @@ CreateFakeGooglePhotosPhotosResponse(
   }
 
   response->photos = std::move(photos);
-  response->resume_token = absl::nullopt;
+  response->resume_token = std::nullopt;
   return response;
 }
 
@@ -146,7 +188,7 @@ CreateFakeGooglePhotosSharedAlbumsResponse() {
     result.push_back(std::move(album));
   }
   return ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
-      std::move(result), absl::nullopt);
+      std::move(result), std::nullopt);
 }
 
 }  // namespace
@@ -155,17 +197,31 @@ MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
   ON_CALL(*this, Start).WillByDefault([](OnCollectionsInfoFetched callback) {
     std::vector<backdrop::Collection> collections;
     {
-      // Generate a fake time of day collection.
-      backdrop::Collection time_of_day_collection;
-      time_of_day_collection.set_collection_id(
-          ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
-      time_of_day_collection.set_collection_name("Dawn to dark");
-      time_of_day_collection.set_description_content(
-          "Dawn to dark collection description");
-      backdrop::Image* image = time_of_day_collection.add_preview();
+      if (ash::features::IsTimeOfDayWallpaperEnabled()) {
+        // Generate a fake time of day collection.
+        backdrop::Collection time_of_day_collection;
+        time_of_day_collection.set_collection_id(
+            ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
+        time_of_day_collection.set_collection_name("Dawn to dark");
+        time_of_day_collection.set_description_content(
+            "Dawn to dark collection description");
+        backdrop::Image* image = time_of_day_collection.add_preview();
+        // Needs a data url so that it loads.
+        image->set_image_url(kDataUrlPrefix);
+        collections.push_back(std::move(time_of_day_collection));
+      }
+    }
+    {
+      // Generate a dark light collection.
+      backdrop::Collection dark_light_collection;
+      dark_light_collection.set_collection_id(kDarklightCollectionId);
+      dark_light_collection.set_collection_name("Dark Light collection");
+      dark_light_collection.set_description_content(
+          "Dark Light collection description");
+      backdrop::Image* image = dark_light_collection.add_preview();
       // Needs a data url so that it loads.
       image->set_image_url(kDataUrlPrefix);
-      collections.push_back(std::move(time_of_day_collection));
+      collections.push_back(std::move(dark_light_collection));
     }
     for (auto i = 0; i < 3; i++) {
       collections.push_back(GenerateFakeBackdropCollection(i));
@@ -181,16 +237,27 @@ MockBackdropCollectionInfoFetcher::~MockBackdropCollectionInfoFetcher() =
 
 MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
     const std::string& collection_id)
-    : BackdropImageInfoFetcher(collection_id) {
+    : BackdropImageInfoFetcher(collection_id), collection_id_(collection_id) {
   ON_CALL(*this, Start)
-      .WillByDefault([&collection_id](OnImagesInfoFetched callback) {
+      .WillByDefault([&collection_id =
+                          collection_id_](OnImagesInfoFetched callback) {
         std::vector<backdrop::Image> images;
         const auto starting_asset_id = GetStartingAssetId(collection_id);
-        for (auto asset_id = starting_asset_id;
-             asset_id < starting_asset_id + 5; asset_id++) {
-          images.push_back(GenerateFakeBackdropImage(collection_id, asset_id));
+        if (collection_id == kDarklightCollectionId) {
+          for (auto asset_id = starting_asset_id;
+               asset_id < starting_asset_id + kMaxImageNum * 2; asset_id += 2) {
+            std::vector<backdrop::Image> pairs =
+                GenerateDarkLightBackdropImagePair(collection_id, asset_id);
+            images.push_back(pairs[0]);
+            images.push_back(pairs[1]);
+          }
+        } else {
+          for (auto asset_id = starting_asset_id;
+               asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
+            images.push_back(
+                GenerateFakeBackdropImage(collection_id, asset_id));
+          }
         }
-
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
                                       collection_id, images));
@@ -199,6 +266,38 @@ MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
 
 MockBackdropImageInfoFetcher::~MockBackdropImageInfoFetcher() = default;
 
+MockBackdropSurpriseMeImageFetcher::MockBackdropSurpriseMeImageFetcher(
+    const std::string& collection_id)
+    : BackdropSurpriseMeImageFetcher(collection_id, /*resume_token=*/""),
+      collection_id_(collection_id) {
+  ON_CALL(*this, Start)
+      .WillByDefault([&collection_id = collection_id_,
+                      &id_incrementer =
+                          id_incrementer_](OnSurpriseMeImageFetched callback) {
+        const auto starting_asset_id = GetStartingAssetId(collection_id);
+        if (collection_id == kDarklightCollectionId) {
+          id_incrementer = (id_incrementer + 2) % (2 * kMaxImageNum);
+          const auto asset_id = starting_asset_id + id_incrementer;
+          std::vector<backdrop::Image> pairs =
+              GenerateDarkLightBackdropImagePair(collection_id, asset_id);
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                        pairs[0], /*new_resume_token=*/""));
+        } else {
+          id_incrementer = (id_incrementer + 1) % kMaxImageNum;
+          const auto asset_id = starting_asset_id + id_incrementer;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(callback), /*success=*/true,
+                             GenerateFakeBackdropImage(collection_id, asset_id),
+                             /*new_resume_token=*/""));
+        }
+      });
+}
+
+MockBackdropSurpriseMeImageFetcher::~MockBackdropSurpriseMeImageFetcher() =
+    default;
+
 MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
     : GooglePhotosAlbumsFetcher(profile) {
   using ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse;
@@ -206,10 +305,10 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& resume_token,
+          [](const std::optional<std::string>& resume_token,
              base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
             auto response = FetchGooglePhotosAlbumsResponse::New(
-                std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
+                std::vector<GooglePhotosAlbumPtr>(), std::nullopt);
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
@@ -223,7 +322,7 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return GooglePhotosAlbumsFetcher::GetResultCount(result);
 }
@@ -236,7 +335,7 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& resume_token,
+          [](const std::optional<std::string>& resume_token,
              base::OnceCallback<void(ash::personalization_app::mojom::
                                          FetchGooglePhotosAlbumsResponsePtr)>
                  callback) {
@@ -255,7 +354,7 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 MockGooglePhotosSharedAlbumsFetcher::~MockGooglePhotosSharedAlbumsFetcher() =
     default;
 
-absl::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return GooglePhotosSharedAlbumsFetcher::GetResultCount(result);
 }
@@ -279,7 +378,7 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
 
 MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
     const GooglePhotosEnablementState& result) {
   return GooglePhotosEnabledFetcher::GetResultCount(result);
 }
@@ -291,9 +390,9 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& item_id,
-             const absl::optional<std::string>& album_id,
-             const absl::optional<std::string>& resume_token, bool shuffle,
+          [](const std::optional<std::string>& item_id,
+             const std::optional<std::string>& album_id,
+             const std::optional<std::string>& resume_token, bool shuffle,
              base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -309,7 +408,7 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
 MockGooglePhotosPhotosFetcher::~MockGooglePhotosPhotosFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
     const GooglePhotosPhotosCbkArgs& result) {
   return GooglePhotosPhotosFetcher::GetResultCount(result);
 }

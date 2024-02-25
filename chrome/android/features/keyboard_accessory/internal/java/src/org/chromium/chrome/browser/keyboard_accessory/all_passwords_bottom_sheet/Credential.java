@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-
 /**
  * This class holds the data used to represent a selectable credential in the
  * AllPasswordsBottomSheet.
@@ -25,8 +24,13 @@ class Credential {
      * @param appDisplayName The display name (e.g. Play Store name) of the Android application if
      *         it is an Android credential or app package name if app name is not available.
      */
-    Credential(String username, String password, String formattedUsername, String originUrl,
-            boolean isAndroidCredential, String appDisplayName) {
+    Credential(
+            String username,
+            String password,
+            String formattedUsername,
+            String originUrl,
+            boolean isAndroidCredential,
+            String appDisplayName) {
         assert originUrl != null : "Credential origin is null! Pass an empty one instead.";
         mUsername = username;
         mPassword = password;

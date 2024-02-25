@@ -313,7 +313,7 @@ void TabSharingUIViews::WebContentsDestroyed() {
 }
 
 void TabSharingUIViews::OnRegionCaptureRectChanged(
-    const absl::optional<gfx::Rect>& region_capture_rect) {
+    const std::optional<gfx::Rect>& region_capture_rect) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!shared_tab_) {
@@ -352,7 +352,7 @@ void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto* browser : *browser_list) {
+  for (Browser* browser : *browser_list) {
     CHECK(browser);
 
     if (!IsCapturableByCapturer(browser->profile())) {
@@ -383,7 +383,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 
   // Don't show the info bar in a Picture in Picture window, since it doesn't
   // typically fit anyway.
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   if (browser && browser->is_type_picture_in_picture()) {
     return;
   }
@@ -417,7 +417,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                             base::Unretained(this)));
   }
 
-  absl::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
+  std::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
   if (can_focus_capturer_) {
     // Self-capture -> no switch-to button.
     // Capturer -> switch-to-captured.
@@ -533,7 +533,7 @@ void TabSharingUIViews::RefreshFavicons() {
 
 void TabSharingUIViews::MaybeUpdateFavicon(
     WebContents* focus_target,
-    absl::optional<uint32_t>* current_hash,
+    std::optional<uint32_t>* current_hash,
     WebContents* infobar_owner) {
   const ui::ImageModel favicon = TabFavicon(focus_target);
   const uint32_t hash = GetHash(favicon);

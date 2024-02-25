@@ -130,6 +130,24 @@ class ByString {
   const std::string delimiter_;
 };
 
+// ByAsciiWhitespace
+//
+// A sub-string delimiter that splits by ASCII whitespace
+// (space, tab, vertical tab, formfeed, linefeed, or carriage return).
+// Note: you probably want to use absl::SkipEmpty() as well!
+//
+// This class is equivalent to ByAnyChar with ASCII whitespace chars.
+//
+// Example:
+//
+//   std::vector<std::string> v = absl::StrSplit(
+//       "a b\tc\n  d  \n", absl::ByAsciiWhitespace(), absl::SkipEmpty());
+//   // v[0] == "a", v[1] == "b", v[2] == "c", v[3] == "d"
+class ByAsciiWhitespace {
+ public:
+  absl::string_view Find(absl::string_view text, size_t pos) const;
+};
+
 // ByChar
 //
 // A single character delimiter. `ByChar` is functionally equivalent to a
@@ -438,7 +456,7 @@ using EnableSplitIfString =
 //   // Stores results in a std::set<std::string>, which also performs
 //   // de-duplication and orders the elements in ascending order.
 //   std::set<std::string> a = absl::StrSplit("b,a,c,a,b", ',');
-//   // v[0] == "a", v[1] == "b", v[2] = "c"
+//   // a[0] == "a", a[1] == "b", a[2] == "c"
 //
 //   // `StrSplit()` can be used within a range-based for loop, in which case
 //   // each element will be of type `absl::string_view`.

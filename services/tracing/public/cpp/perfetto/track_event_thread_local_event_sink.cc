@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
@@ -493,11 +494,9 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
               .InMicroseconds());
       track_event->add_extra_counter_track_uuids(track_uuid);
     } else {
-      // Thread timestamps for the current thread are never user-provided, and
-      // since we split COMPLETE events into BEGIN+END event pairs, they should
-      // not appear out of order.
-      DCHECK(trace_event->thread_timestamp() >= last_thread_time_);
-
+      // Thread timestamps for the current thread are never user-provided.
+      // While OSes don't guarantee they are monotonic, the discrepancies are
+      // usually quite rare and quite small.
       track_event->add_extra_counter_values(
           (trace_event->thread_timestamp() - last_thread_time_)
               .InMicroseconds());
@@ -721,7 +720,7 @@ void TrackEventThreadLocalEventSink::EmitThreadTrackDescriptor(
         base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
   }
   if (maybe_new_name && *maybe_new_name &&
-      base::StringPiece(thread_name_) != maybe_new_name) {
+      std::string_view(thread_name_) != maybe_new_name) {
     thread_name_ = maybe_new_name;
     thread_type_ = GetThreadType(maybe_new_name);
   }

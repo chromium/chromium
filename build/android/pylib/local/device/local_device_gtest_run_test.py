@@ -13,7 +13,6 @@ import unittest
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_gtest_run
-from py_utils import tempfile_ext
 
 import mock  # pylint: disable=import-error
 
@@ -55,21 +54,7 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
   def testGetLLVMProfilePath(self):
     path = local_device_gtest_run._GetLLVMProfilePath('test_dir', 'sr71', '5')
-    self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m.profraw'))
-
-
-  @mock.patch('pylib.utils.google_storage_helper.upload')
-  def testUploadTestArtifacts(self, mock_gsh):
-    link = self._obj._UploadTestArtifacts(mock.MagicMock(), None)
-    self.assertFalse(mock_gsh.called)
-    self.assertIsNone(link)
-
-    result = 'A/10/warthog/path'
-    mock_gsh.return_value = result
-    with tempfile_ext.NamedTemporaryFile() as temp_f:
-      link = self._obj._UploadTestArtifacts(mock.MagicMock(), temp_f)
-    self.assertTrue(mock_gsh.called)
-    self.assertEqual(result, link)
+    self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m%c.profraw'))
 
   def testGroupTests(self):
     test = [
@@ -99,6 +84,46 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
     self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
     self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
 
+  def testAppendPreTests(self):
+    failed_tests = [
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.abc_testcase2",
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.otherTestCase",
+    ]
+    tests = [
+        "TestClass1.testcase1",
+        "TestClass1.otherTestCase",
+        "TestClass1.def_testcase3",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.abc_testcase2",
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.PRE_PRE_abc_testcase2",
+    ]
+    expectedTestcase1 = [
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.testcase1",
+    ]
+    expectedTestcase2 = [
+        "TestClass1.PRE_PRE_abc_testcase2",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.abc_testcase2",
+    ]
+    expectedTestcase3 = [
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.def_testcase3",
+    ]
+    expectedOtherTestcase = [
+        "TestClass1.otherTestCase",
+    ]
+    actualTestCase = self._obj._AppendPreTestsForRetry(failed_tests, tests)
+    self.assertTrue(isSliceInList(expectedTestcase1, actualTestCase))
+    self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
+    self.assertTrue(isSliceInList(expectedTestcase3, actualTestCase))
+    self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

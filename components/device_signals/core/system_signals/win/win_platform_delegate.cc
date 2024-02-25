@@ -4,13 +4,16 @@
 
 #include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 
-#include <windows.h>
+// clang-format off
+#include <windows.h> // Must be in front of other Windows header files.
+// clang-format on
 
 #include <softpub.h>
 #include <wincrypt.h>
 #include <wintrust.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,18 +28,17 @@
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
 
 namespace {
 
 // Returns the SHA-256 hash for the DER-encoded SPKI and subject from the first
-// signer cert chain's leaf cert. Return absl::nullopt if unable to get to that
+// signer cert chain's leaf cert. Return std::nullopt if unable to get to that
 // certificate.
-std::pair<absl::optional<std::string>, absl::optional<std::string>> GetSPKIHash(
+std::pair<std::optional<std::string>, std::optional<std::string>> GetSPKIHash(
     HANDLE verify_trust_state_data) {
-  std::pair<absl::optional<std::string>, absl::optional<std::string>> ret;
+  std::pair<std::optional<std::string>, std::optional<std::string>> ret;
 
   CRYPT_PROVIDER_DATA* crypt_provider_data =
       WTHelperProvDataFromStateData(verify_trust_state_data);
@@ -106,7 +108,7 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   return ResolvePath(file_path, resolved_file_path);
 }
 
-absl::optional<PlatformDelegate::SigningCertificatesPublicKeys>
+std::optional<PlatformDelegate::SigningCertificatesPublicKeys>
 WinPlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
   SigningCertificatesPublicKeys public_keys;

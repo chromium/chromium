@@ -84,19 +84,21 @@ public class MetricsBridgeServiceUnitTest {
     @MediumTest
     // Test that the service saves metrics records to file
     public void testSaveToFile() throws Throwable {
-        HistogramRecord recordBooleanProto = HistogramRecord.newBuilder()
-                                                     .setRecordType(RecordType.HISTOGRAM_BOOLEAN)
-                                                     .setHistogramName("testSaveToFile.boolean")
-                                                     .setSample(1)
-                                                     .build();
-        HistogramRecord recordLinearProto = HistogramRecord.newBuilder()
-                                                    .setRecordType(RecordType.HISTOGRAM_LINEAR)
-                                                    .setHistogramName("testSaveToFile.linear")
-                                                    .setSample(123)
-                                                    .setMin(1)
-                                                    .setMax(1000)
-                                                    .setNumBuckets(50)
-                                                    .build();
+        HistogramRecord recordBooleanProto =
+                HistogramRecord.newBuilder()
+                        .setRecordType(RecordType.HISTOGRAM_BOOLEAN)
+                        .setHistogramName("testSaveToFile.boolean")
+                        .setSample(1)
+                        .build();
+        HistogramRecord recordLinearProto =
+                HistogramRecord.newBuilder()
+                        .setRecordType(RecordType.HISTOGRAM_LINEAR)
+                        .setHistogramName("testSaveToFile.linear")
+                        .setSample(123)
+                        .setMin(1)
+                        .setMax(1000)
+                        .setNumBuckets(50)
+                        .build();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         writeRecordsToStream(out, recordBooleanProto, recordLinearProto, recordBooleanProto);
         byte[] expectedData = out.toByteArray();
@@ -118,7 +120,8 @@ public class MetricsBridgeServiceUnitTest {
 
         byte[] resultData = FileUtils.readStream(new FileInputStream(mTempFile));
         Assert.assertArrayEquals(
-                "byte data from file is different from the expected proto byte data", expectedData,
+                "byte data from file is different from the expected proto byte data",
+                expectedData,
                 resultData);
     }
 
@@ -133,16 +136,20 @@ public class MetricsBridgeServiceUnitTest {
                         .setHistogramName("testRecoverFromFile.boolean")
                         .setSample(1)
                         .build();
-        HistogramRecord recordLinearProto = HistogramRecord.newBuilder()
-                                                    .setRecordType(RecordType.HISTOGRAM_LINEAR)
-                                                    .setHistogramName("testRecoverFromFile.linear")
-                                                    .setSample(123)
-                                                    .setMin(1)
-                                                    .setMax(1000)
-                                                    .setNumBuckets(50)
-                                                    .build();
+        HistogramRecord recordLinearProto =
+                HistogramRecord.newBuilder()
+                        .setRecordType(RecordType.HISTOGRAM_LINEAR)
+                        .setHistogramName("testRecoverFromFile.linear")
+                        .setSample(123)
+                        .setMin(1)
+                        .setMax(1000)
+                        .setNumBuckets(50)
+                        .build();
         // write Initial proto data To File
-        writeRecordsToStream(new FileOutputStream(mTempFile), recordBooleanProto, recordLinearProto,
+        writeRecordsToStream(
+                new FileOutputStream(mTempFile),
+                recordBooleanProto,
+                recordLinearProto,
                 recordBooleanProto);
 
         // Cannot bind to service using real connection since we need to inject test file name.
@@ -155,17 +162,24 @@ public class MetricsBridgeServiceUnitTest {
         stub.recordMetrics(recordBooleanProto.toByteArray());
         List<byte[]> retrievedDataList = stub.retrieveNonembeddedMetrics();
 
-        byte[][] expectedData = new byte[][] {recordBooleanProto.toByteArray(),
-                recordLinearProto.toByteArray(), recordBooleanProto.toByteArray(),
-                PARSING_LOG_RESULT_SUCCESS_RECORD, recordBooleanProto.toByteArray(),
-                RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD};
+        byte[][] expectedData =
+                new byte[][] {
+                    recordBooleanProto.toByteArray(),
+                    recordLinearProto.toByteArray(),
+                    recordBooleanProto.toByteArray(),
+                    PARSING_LOG_RESULT_SUCCESS_RECORD,
+                    recordBooleanProto.toByteArray(),
+                    RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
+                };
 
         // Assert file is deleted after the retrieve call
         Assert.assertFalse(
                 "file should be deleted after retrieve metrics call", mTempFile.exists());
         Assert.assertNotNull("retrieved byte data from the service is null", retrievedDataList);
-        Assert.assertArrayEquals("retrieved byte data is different from the expected data",
-                expectedData, retrievedDataList.toArray());
+        Assert.assertArrayEquals(
+                "retrieved byte data is different from the expected data",
+                expectedData,
+                retrievedDataList.toArray());
     }
 
     private static void writeRecordsToStream(OutputStream os, HistogramRecord... records)

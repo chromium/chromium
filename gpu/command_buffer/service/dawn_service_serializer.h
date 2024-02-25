@@ -7,9 +7,11 @@
 
 #include <dawn/wire/WireClient.h>
 
+#include <atomic>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
 
 namespace gpu {
 
@@ -27,9 +29,12 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
   bool NeedsFlush() const;
 
  private:
+  void FlushInternal();
+
+  base::Lock lock_;
   raw_ptr<DecoderClient, DanglingUntriaged> client_;
   std::vector<uint8_t> buffer_;
-  size_t put_offset_;
+  std::atomic<size_t> put_offset_;
 };
 
 }  // namespace webgpu

@@ -10,11 +10,11 @@
 
 import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
 import 'chrome://resources/ash/common/network/sim_lock_dialogs.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
@@ -40,21 +40,20 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrosNetworkConfigInterface, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
-import {recordSettingChange} from '../metrics_recorder.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {ApnSubpageElement} from './apn_subpage.js';
@@ -180,6 +179,19 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
+      /**
+       * True if VPN is prohibited by policy, or an always-on Android VPN is
+       * enforced by policy and users are prohibited by policy from manually
+       * disconnecting from it.
+       */
+      disableVpnUi_: {
+        type: Boolean,
+        computed: 'shouldDisableVpnUi_(vpnIsProhibited_,' +
+            'prefs.vpn_config_allowed.*' +
+            'prefs.arc.vpn.*,' +
+            'prefs.arc.vpn.always_on.*)',
+      },
+
       globalPolicy_: Object,
 
       /**
@@ -212,6 +224,26 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
               loadTimeData.getBoolean('isApnRevampEnabled');
         },
       },
+
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
+
+      /**
+       * Return true if instant hotspot rebrand feature flag is enabled
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
+        },
+      },
+
 
       /**
        * Page name, if defined, indicating that the next deviceStates update
@@ -272,6 +304,11 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
+      isProviderLocked_: {
+        type: Boolean,
+        computed: 'showProviderLocked_(subpageType_, deviceStates)',
+      },
+
       /**
        * eSIM network used in internet detail menu.
        */
@@ -288,6 +325,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: () => new Set<Setting>([
           Setting.kWifiOnOff,
           Setting.kMobileOnOff,
+          Setting.kCellularAddApn,
         ]),
       },
 
@@ -337,9 +375,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
   private isApnRevampEnabled_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isCreateCustomApnButtonDisabled_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
+  private disableVpnUi_: boolean;
   private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
   private passpointSubscription_: PasspointSubscription|undefined;
@@ -353,6 +394,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private showHotspotConfigDialog_: boolean;
   private showInternetConfig_: boolean;
   private showSimLockDialog_: boolean;
+  private isProviderLocked_: boolean;
   private showSpinner_: boolean;
   private subpageType_: NetworkType;
   private vpnIsProhibited_: boolean;
@@ -461,6 +503,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       networkType = NetworkType.kWiFi;
     } else if (settingId === Setting.kMobileOnOff) {
       networkType = NetworkType.kCellular;
+    } else {
+      return true;
     }
 
     afterNextRender(this, () => {
@@ -486,7 +530,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
-    if (newRoute === this.route) {
+    if (newRoute === this.route || newRoute === routes.APN) {
       // Show deep links for the internet page.
       this.attemptDeepLink();
     } else if (newRoute === routes.INTERNET_NETWORKS) {
@@ -562,7 +606,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       event: CustomEvent<{enabled: boolean, type: NetworkType}>): void {
     this.networkConfig_.setNetworkTypeEnabledState(
         event.detail.type, event.detail.enabled);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for enabling/disabling device.
   }
 
   private onShowConfig_(
@@ -698,7 +742,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     this.showESimRemoveProfileDialog_ = false;
   }
 
-  private onShowHotspotConfigDialog_() {
+  private onShowHotspotConfigDialog_(): void {
     this.showHotspotConfigDialog_ = true;
   }
 
@@ -715,11 +759,28 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
     if (this.subpageType_ === NetworkType.kCellular ||
-        this.subpageType_ === NetworkType.kTether) {
+        (this.subpageType_ === NetworkType.kTether &&
+         !this.isInstantHotspotRebrandEnabled_)) {
       return this.i18n('OncTypeMobile');
     }
     return this.i18n(
         'OncType' + OncMojo.getNetworkTypeString(this.subpageType_));
+  }
+
+  private showProviderLocked_(): boolean {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+    if (this.subpageType_ !== NetworkType.kCellular) {
+      return false;
+    }
+    // Check carrier lock status reported by carrier lock manager.
+    const cellularDeviceState =
+        this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
+    if (!cellularDeviceState || !cellularDeviceState.isCarrierLocked) {
+      return false;
+    }
+    return true;
   }
 
   private getDeviceState_(
@@ -732,7 +793,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // If both Tether and Cellular are enabled, use the Cellular device state
     // when directly navigating to the Tether page.
     if (subpageType === NetworkType.kTether &&
-        this.deviceStates![NetworkType.kCellular]) {
+        this.deviceStates![NetworkType.kCellular] &&
+        !this.isInstantHotspotRebrandEnabled_) {
       subpageType = NetworkType.kCellular;
     }
     return deviceStates![subpageType];
@@ -801,7 +863,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   private onAddVpnClick_(): void {
-    if (!this.vpnIsProhibited_) {
+    if (!this.disableVpnUi_) {
       this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
@@ -809,7 +871,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for adding third party VPN.
   }
 
   private showNetworksSubpage_(type: NetworkType): void {
@@ -872,6 +934,23 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       return true;
     }
     return this.allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable);
+  }
+
+  private shouldDisableVpnUi_(): boolean {
+    if (this.vpnIsProhibited_) {
+      return true;
+    }
+
+    if (!this.prefs) {
+      return false;
+    }
+
+    const isVpnConfigProhibited =
+        this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value;
+    const hasAlwaysOnVpnWithLockdown = this.prefs.arc && this.prefs.arc.vpn &&
+        this.prefs.arc.vpn.always_on && this.prefs.arc.vpn.always_on.lockdown &&
+        this.prefs.arc.vpn.always_on.lockdown.value;
+    return isVpnConfigProhibited && hasAlwaysOnVpnWithLockdown;
   }
 
   private getAddThirdPartyVpnLabel_(provider: VpnProvider): string {

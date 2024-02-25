@@ -89,7 +89,7 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler,
       scoped_refptr<device::BluetoothAdapter> adapter);
 
   const std::string primary_user_email_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   mojo::ReceiverSet<mojom::DebugLogsChangeHandler> receivers_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   bool debug_logs_enabled_ = false;

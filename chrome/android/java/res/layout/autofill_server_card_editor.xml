@@ -101,7 +101,7 @@ found in the LICENSE file.
             android:paddingTop="@dimen/pref_autofill_touch_target_padding"
             android:paddingBottom="@dimen/pref_autofill_touch_target_padding"
             android:textAppearance="@style/TextAppearance.TextMedium.Link"
-            android:text="@string/autofill_clear_local_copy_button" />
+            android:text="@string/autofill_remove_local_copy_button" />
 
         <TextView
             android:id="@+id/local_copy_label"

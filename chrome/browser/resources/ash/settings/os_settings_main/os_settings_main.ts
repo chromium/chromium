@@ -6,12 +6,12 @@
  * @fileoverview
  * 'os-settings-main' displays the selected settings page.
  */
-import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/js/search_highlight_utils.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './managed_footnote.js';
 import '../main_page_container/main_page_container.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
@@ -20,8 +20,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {OsPageAvailability} from '../os_page_availability.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {isAboutRoute, Route} from '../router.js';
 
 import {getTemplate} from './os_settings_main.html.js';
@@ -111,7 +111,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
     this.boundScroll_ = null;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('showing-main-page', this.onShowingMainPage);
@@ -119,7 +119,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
     this.addEventListener('showing-section', this.onShowingSection);
   }
 
-  private overscrollChanged_() {
+  private overscrollChanged_(): void {
     assertExists(this.offsetParent);
 
     if (!this.overscroll_ && this.boundScroll_) {
@@ -143,7 +143,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * any currently visible overflow as-is.
    * @param minHeight The minimum overscroll height needed.
    */
-  private setOverscroll_(minHeight?: number) {
+  private setOverscroll_(minHeight?: number): void {
     const scroller = this.offsetParent;
     if (!scroller) {
       return;
@@ -161,7 +161,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * Updates the hidden state of the about and settings pages based on the
    * current route.
    */
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route): void {
     const inAbout = isAboutRoute(newRoute);
     this.isShowingAboutPage_ = inAbout;
 

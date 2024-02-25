@@ -44,6 +44,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser:client_side_detection",
+    "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser",
@@ -52,6 +53,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
@@ -68,45 +70,14 @@ static_library("safe_browsing") {
     "//services/preferences/public/cpp",
   ]
 
-  if (enable_extensions) {
-    sources += [
-      "settings_reset_prompt/default_settings_fetcher.cc",
-      "settings_reset_prompt/default_settings_fetcher.h",
-      "settings_reset_prompt/settings_reset_prompt_config.cc",
-      "settings_reset_prompt/settings_reset_prompt_config.h",
-      "settings_reset_prompt/settings_reset_prompt_controller.cc",
-      "settings_reset_prompt/settings_reset_prompt_controller.h",
-      "settings_reset_prompt/settings_reset_prompt_model.cc",
-      "settings_reset_prompt/settings_reset_prompt_model.h",
-      "settings_reset_prompt/settings_reset_prompt_prefs_manager.cc",
-      "settings_reset_prompt/settings_reset_prompt_prefs_manager.h",
-    ]
-    if (is_win) {
-      sources += [
-        "settings_reset_prompt/settings_reset_prompt_util_win.cc",
-        "settings_reset_prompt/settings_reset_prompt_util_win.h",
-      ]
-    }
-    deps += [
-      # TODO(crbug.com/1216213): Adding ":ntp_background_proto" is a band-aid
-      # fix, figure out a better solution.
-      "//chrome/browser:ntp_background_proto",
-      "//chrome/browser/profiles:profile",
-      "//components/paint_preview/buildflags",
-      "//extensions/browser",
-    ]
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:utils" ]
   }
 
   if (safe_browsing_mode != 0) {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
     sources += [
-      "certificate_reporting_metrics_provider.cc",
-      "certificate_reporting_metrics_provider.h",
-      "certificate_reporting_service.cc",
-      "certificate_reporting_service.h",
-      "certificate_reporting_service_factory.cc",
-      "certificate_reporting_service_factory.h",
       "chrome_client_side_detection_host_delegate.cc",
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.cc",
@@ -180,6 +151,7 @@ static_library("safe_browsing") {
       "//components/permissions",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/browser:client_side_detection",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/browser/download:download_stats",
@@ -232,16 +204,20 @@ static_library("safe_browsing") {
         "cloud_content_scanning/cloud_binary_upload_service.h",
         "cloud_content_scanning/cloud_binary_upload_service_factory.cc",
         "cloud_content_scanning/cloud_binary_upload_service_factory.h",
+        "cloud_content_scanning/connector_data_pipe_getter.cc",
+        "cloud_content_scanning/connector_data_pipe_getter.h",
+        "cloud_content_scanning/connector_upload_request.cc",
+        "cloud_content_scanning/connector_upload_request.h",
         "cloud_content_scanning/deep_scanning_utils.cc",
         "cloud_content_scanning/deep_scanning_utils.h",
         "cloud_content_scanning/file_analysis_request.cc",
         "cloud_content_scanning/file_analysis_request.h",
         "cloud_content_scanning/file_opening_job.cc",
         "cloud_content_scanning/file_opening_job.h",
-        "cloud_content_scanning/multipart_data_pipe_getter.cc",
-        "cloud_content_scanning/multipart_data_pipe_getter.h",
         "cloud_content_scanning/multipart_uploader.cc",
         "cloud_content_scanning/multipart_uploader.h",
+        "cloud_content_scanning/resumable_uploader.cc",
+        "cloud_content_scanning/resumable_uploader.h",
         "download_protection/check_client_download_request.cc",
         "download_protection/check_client_download_request.h",
         "download_protection/check_client_download_request_base.cc",
@@ -268,8 +244,6 @@ static_library("safe_browsing") {
         "download_protection/path_sanitizer.h",
         "download_protection/ppapi_download_request.cc",
         "download_protection/ppapi_download_request.h",
-        "download_protection/two_phase_uploader.cc",
-        "download_protection/two_phase_uploader.h",
         "extension_telemetry/cookies_get_all_signal.cc",
         "extension_telemetry/cookies_get_all_signal.h",
         "extension_telemetry/cookies_get_all_signal_processor.cc",
@@ -298,6 +272,8 @@ static_library("safe_browsing") {
         "extension_telemetry/extension_telemetry_service_factory.h",
         "extension_telemetry/extension_telemetry_uploader.cc",
         "extension_telemetry/extension_telemetry_uploader.h",
+        "extension_telemetry/extension_web_request_reporter_impl.cc",
+        "extension_telemetry/extension_web_request_reporter_impl.h",
         "extension_telemetry/password_reuse_signal.cc",
         "extension_telemetry/password_reuse_signal.h",
         "extension_telemetry/potential_password_theft_signal_processor.cc",
@@ -404,6 +380,7 @@ static_library("safe_browsing") {
         "//components/language/core/common",
         "//components/policy/core/browser",
         "//components/prefs",
+        "//components/safe_browsing/content/common:interfaces",
         "//components/safe_browsing/core/browser:verdict_cache_manager",
         "//components/safe_browsing/core/browser/db",
         "//components/safe_browsing/core/browser/db:v4_store",
@@ -418,8 +395,10 @@ static_library("safe_browsing") {
         "//components/security_interstitials/core:unsafe_resource",
         "//components/sync",
         "//content/public/browser",
+        "//extensions/browser",
         "//net",
         "//services/network/public/cpp:cpp",
+        "//third_party/abseil-cpp:absl",
       ]
       if (is_mac) {
         deps += [ "//chrome/common/safe_browsing:disk_image_type_sniffer_mac" ]
@@ -436,13 +415,19 @@ static_library("safe_browsing") {
         ]
       }
       if (is_chromeos_ash) {
-        deps += [ "//ash/constants:constants" ]
+        deps += [
+          "//ash/constants:constants",
+          "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+        ]
       }
       if (is_chromeos_lacros) {
         deps += [ "//chromeos/lacros:lacros" ]
       }
       if (is_chromeos) {
-        deps += [ "//chromeos/crosapi/cpp:cpp" ]
+        deps += [
+          "//chromeos/components/mgs:mgs",
+          "//chromeos/crosapi/cpp:cpp",
+        ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

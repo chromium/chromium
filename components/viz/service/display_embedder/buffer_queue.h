@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -17,7 +18,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -78,6 +78,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // Called when SwapBuffers is skipped this frame. Damages allocated buffers,
   // but does not advance |in_flight_buffers_| or |current_buffer_|. We don't
   // clear the damage on |current_buffer_| because it hasn't been displayed yet.
+  // SwapBuffersComplete() must not be called for skipped swap.
   void SwapBuffersSkipped(const gfx::Rect& damage);
 
   // If |size| or |color_space| correspond to a change of state, frees all
@@ -109,6 +110,15 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // buffers.
   void DestroyBuffers();
 
+  // Indicates buffer contents can be purged, aka their contents deleted if
+  // memory is needed. For each completed swap one buffer will be marked
+  // purgeable.
+  //
+  // NOTE: This should only be used when buffers are not currently needed, eg.
+  // when delegating to system compositor, and if the platform support purgeable
+  // shared images.
+  void SetBuffersPurgeable();
+
  private:
   friend class BufferQueueTest;
   friend class BufferQueueMockedSharedImageInterfaceTest;
@@ -120,6 +130,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
     AllocatedBuffer(const gpu::Mailbox& mailbox, const gfx::Rect& rect);
     ~AllocatedBuffer();
 
+    bool purgeable = false;
     gpu::Mailbox mailbox;
     gfx::Rect damage;  // This is the damage for this frame from the previous.
   };
@@ -130,6 +141,10 @@ class VIZ_SERVICE_EXPORT BufferQueue {
 
   // Free |buffer| and destroy its shared image.
   void FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer);
+
+  // Sets `buffer`s shared image as `purgeable` and returns true if the value
+  // changed.
+  bool SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable);
 
   // Unions |damage| to all allocated buffers except |current_buffer_| which
   // hasn't been displayed yet.
@@ -158,7 +173,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   gfx::ColorSpace color_space_;
   // The format of all allocated buffers. The |format_| is optional to prevent
   // use of uninitialized values.
-  absl::optional<gfx::BufferFormat> format_;
+  std::optional<gfx::BufferFormat> format_;
 
   // This buffer is currently bound. This may be nullptr if no buffer has
   // been bound.
@@ -172,6 +187,9 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // frames where SwapBuffers() was called without calling GetCurrentBuffer().
   base::circular_deque<std::unique_ptr<AllocatedBuffer>> in_flight_buffers_;
 
+  // When the buffers are not being used due to delegated compositing.
+  bool buffers_can_be_purged_ = false;
+
   // Whether the buffers have been destroyed and are not yet recreated. If true,
   // don't allocate buffers when you normally would. They will be recreated on
   // demand the next time GetNextBuffer() is called.
@@ -181,7 +199,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // reporting.
   // Used to see how often we destroy buffers and recreate them very soon, which
   // we want to be rare.
-  absl::optional<base::ElapsedTimer> destroyed_timer_;
+  std::optional<base::ElapsedTimer> destroyed_timer_;
 };
 
 }  // namespace viz

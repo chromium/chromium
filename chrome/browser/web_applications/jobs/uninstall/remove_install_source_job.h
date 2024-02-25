@@ -5,43 +5,47 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_SOURCE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_SOURCE_JOB_H_
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
 class RemoveWebAppJob;
 
-// See public API WebAppCommandScheduler::RemoveInstallSource() for docs.
+// See public API
+// WebAppCommandScheduler::RemoveInstallManagementMaybeUninstall() for docs.
+// Note: This can remove the whole app if no managements are left.
 class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
-                         AppId app_id,
-                         WebAppManagement::Type install_source);
+                         base::Value::Dict& debug_value,
+                         webapps::AppId app_id,
+                         WebAppManagementTypes install_managements_to_remove);
   ~RemoveInstallSourceJob() override;
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
   // UninstallJob:
   void Start(AllAppsLock& lock, Callback callback) override;
-  base::Value ToDebugValue() const override;
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
   void RemoveInstallSourceFromDatabase(OsHooksErrors os_hooks_errors);
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
 
-  webapps::WebappUninstallSource uninstall_source_;
+  const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
-  raw_ref<Profile> profile_;
-  AppId app_id_;
-  WebAppManagement::Type install_source_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
+  const webapps::AppId app_id_;
+  const WebAppManagementTypes install_managements_to_remove_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
@@ -49,7 +53,6 @@ class RemoveInstallSourceJob : public UninstallJob {
   Callback callback_;
 
   std::unique_ptr<RemoveWebAppJob> sub_job_;
-  base::Value completed_sub_job_debug_value_;
 
   base::WeakPtrFactory<RemoveInstallSourceJob> weak_ptr_factory_{this};
 };

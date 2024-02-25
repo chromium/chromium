@@ -96,7 +96,6 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
   separator_ = AddChildView(std::make_unique<views::Separator>());
-
   SetContentAndNewTabButtonVisible(/* visible= */ false,
                                    /* enable_new_tab_button= */ false);
 
@@ -287,7 +286,8 @@ content::WebContents* LensUnifiedSidePanelView::OpenURLFromTab(
   if (lens::features::GetEnableContextMenuInLensSidePanel()) {
     // Use |OpenURL| so that we create a new tab rather than trying to open
     // this link in the side panel.
-    return browser_view_->browser()->OpenURL(params);
+    browser_view_->browser()->OpenURL(params);
+    return nullptr;
   } else {
     return content::WebContentsDelegate::OpenURLFromTab(source, params);
   }
@@ -311,12 +311,6 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
     bool renderer_initiated) {
   content::OpenURLParams params(url, referrer, disposition, transition,
                                 renderer_initiated);
-  if (lens::features::GetEnableContextMenuInLensSidePanel() &&
-      started_from_context_menu) {
-    // Link clicks initiated from the context menu will be handled by
-    // |OpenURLFromTab|.
-    return;
-  }
 
   // If the navigation is initiated by the renderer process, we must set an
   // initiator origin.
@@ -335,7 +329,6 @@ void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
   // don't rerender the same page on a unrelated resize event.
   if (width() == 0 || !side_panel_url_params_)
     return;
-
   // Manually set web contents to the size of side panel view on initial load.
   // This prevents a bug in Lens Web that renders the page as if it was 0px
   // wide. Also, set the viewport width and height param of the request url.

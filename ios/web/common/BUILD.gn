@@ -25,7 +25,6 @@ source_set("common") {
   deps = [
     "//base",
     "//ios/third_party/webkit",
-    "//ios/web/public/annotations:custom_text_check_result",
     "//ios/web/public/navigation",
     "//net",
     "//services/network/public/cpp",

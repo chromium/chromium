@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_WEB_SCHEDULER_TRACKED_FEATURE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
+
 #include "base/containers/enum_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -45,7 +47,9 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kContainsPlugins = 12,
   kDocumentLoaded = 13,
-  kDedicatedWorkerOrWorklet = 14,
+
+  // Removed in https://crbug.com/1146955
+  // kDedicatedWorkerOrWorklet = 14,
 
   // There are some other values defined for specific request context types
   // (e.g., XHR). This value corresponds to a network requests not covered by
@@ -147,11 +151,21 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // See comments for `kWebTransportSticky`.
   kWebSocketSticky = 63,
   kWebRTCSticky = 64,
+  kSmartCard = 65,
+  // There is a "live" MediaStreamTrack.
+  kLiveMediaStreamTrack = 66,
+
+  // Originally kUnloadHandlerExistsInMain/SubFrame were not recorded in the
+  // renderer side, but recorded in the browser side, making it impossible to
+  // track the source location. Here we make them a WebSchedulerTrackedFeature,
+  // so that the source location can be tracked. See https://crbug.com/1513120
+  // for details.
+  kUnloadHandler = 67,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kWebRTCSticky,
+  kMaxValue = kUnloadHandler,
 };
 
 using WebSchedulerTrackedFeatures =
@@ -164,7 +178,7 @@ BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
 BLINK_COMMON_EXPORT std::string FeatureToShortString(
     WebSchedulerTrackedFeature feature);
 
-BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
+BLINK_COMMON_EXPORT std::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
 // Returns true if there was previously a feature by this name.
 // It is not comprehensive, just enough to cover what was used in finch,
@@ -183,6 +197,11 @@ BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
 // [<bit mask for 0-63>, <bit mask for 64-127>, ...]
 BLINK_COMMON_EXPORT std::vector<uint64_t> ToEnumBitMasks(
     WebSchedulerTrackedFeatures features);
+
+// Disables wake up alignment permanently for the process. This is called when a
+// feature that is incompatible with wake up alignment is used. Thread-safe.
+BLINK_COMMON_EXPORT void DisableAlignWakeUpsForProcess();
+BLINK_COMMON_EXPORT bool IsAlignWakeUpsDisabledForProcess();
 
 }  // namespace scheduler
 }  // namespace blink

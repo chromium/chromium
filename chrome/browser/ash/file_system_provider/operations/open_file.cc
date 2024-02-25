@@ -7,9 +7,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 OpenFile::OpenFile(RequestDispatcher* dispatcher,
                    const ProvidedFileSystemInfo& file_system_info,
@@ -21,8 +19,7 @@ OpenFile::OpenFile(RequestDispatcher* dispatcher,
       mode_(mode),
       callback_(std::move(callback)) {}
 
-OpenFile::~OpenFile() {
-}
+OpenFile::~OpenFile() = default;
 
 bool OpenFile::Execute(int request_id) {
   using extensions::api::file_system_provider::OpenFileRequestedOptions;
@@ -38,11 +35,11 @@ bool OpenFile::Execute(int request_id) {
 
   switch (mode_) {
     case OPEN_FILE_MODE_READ:
-      options.mode = extensions::api::file_system_provider::OPEN_FILE_MODE_READ;
+      options.mode = extensions::api::file_system_provider::OpenFileMode::kRead;
       break;
     case OPEN_FILE_MODE_WRITE:
       options.mode =
-          extensions::api::file_system_provider::OPEN_FILE_MODE_WRITE;
+          extensions::api::file_system_provider::OpenFileMode::kWrite;
       break;
   }
 
@@ -69,6 +66,4 @@ void OpenFile::OnError(int /* request_id */,
   std::move(callback_).Run(0 /* file_handle */, error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

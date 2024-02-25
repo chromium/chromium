@@ -4,12 +4,14 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl, SettingsPaymentsSectionElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPaymentsSectionElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
+import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 // <if expr="is_win or is_macosx">
 import {loadTimeData} from 'chrome://settings/settings.js';
+
 // </if>
 
 import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
@@ -22,13 +24,12 @@ import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_
  */
 export async function createPaymentsSection(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
-    ibans: chrome.autofillPrivate.IbanEntry[], upiIds: string[],
+    ibans: chrome.autofillPrivate.IbanEntry[],
     prefValues: any): Promise<SettingsPaymentsSectionElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
-  paymentsManager.data.upiIds = upiIds;
   // <if expr="is_win or is_macosx">
   paymentsManager.setIsDeviceAuthAvailable(
       loadTimeData.getBoolean('deviceAuthAvailable'));
@@ -60,7 +61,8 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.removedIbans = 0;
   expected.isValidIban = 0;
   expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
-  expected.authenticateUserToEditLocalCard = 0;
+  expected.getLocalCard = 0;
+  expected.bulkDeleteAllCvcs = 0;
   return expected;
 }
 
@@ -70,7 +72,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
 export function getLocalAndServerCreditCardListItems() {
   return document.body.querySelector('settings-payments-section')!.shadowRoot!
       .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
-          'settings-credit-card-list-entry')!;
+          'settings-credit-card-list-entry');
 }
 
 /**

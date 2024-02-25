@@ -1,8 +1,8 @@
 Name: Speech Dispatcher
-URL: http://devel.freebsoft.org/speechd
-Version: 0.7.1
-License: GPL (v2 or later)
-License File: COPYING
+URL: https://github.com/brailcom/speechd
+Version: 0.11.5
+License: GNU Lesser Public License
+License File: COPYING.LGPL
 Security Critical: yes
 Shipped: yes
 
@@ -12,10 +12,14 @@ access to speech synthesis through a simple, stable and well documented
 interface.
 
 Local Modifications:
-Merged http://git.freebsoft.org/?p=speechd.git;a=commitdiff;h=c73bfee2b6ef683874b3fe7463239073f703c8b7
-Only the libspeechd.h file is imported, as the client library (libspeechd.so.2)
-is dynamically loaded (where present).
+Merged
+http://git.freebsoft.org/?p=speechd.git;a=commitdiff;h=c73bfee2b6ef683874b3fe7463239073f703c8b7
+Only the libspeechd.h (and dependent) files are imported, as the client library
+(libspeechd.so.2) is dynamically loaded (where present).
 
-This header is imported because later versions of Speech Dispatcher (>= 0.8)
-install it into a different location (${includedir}/speech-dispatcher instead
-of ${includedir}) and we still need to support older versions.
+These headers are imported because later versions of Speech Dispatcher (>= 0.8)
+install it into a different location (${includedir}/speech-dispatcher instead of
+${includedir}) and we still need to support older versions.
+
+libspeechd_version is not imported as it is generated upstream
+(libspeechd_version.h.in) and does not appear necessary for library loading.

@@ -7,6 +7,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -14,10 +15,11 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
+using cast_channel::CastDeviceCapabilitySet;
 using cast_channel::ReceiverAppType;
 
 namespace media_router {
@@ -35,47 +37,10 @@ static const constexpr char* const kMultizoneMemberAppIds[] = {
 
 static constexpr base::TimeDelta kDefaultLaunchTimeout = base::Seconds(60);
 
-// Class for storing a bitwise OR of enum values.
-//
-// TODO(crbug.com/1291715): Make values of cast_channel::CastDeviceCapability
-// consecutive and store sets of values using a class like v8::base::EnumSet
-// instead of this monstrosity.
-template <typename E, typename T = std::underlying_type_t<E>>
-class BitwiseOr {
- public:
-  constexpr BitwiseOr() : bits_(0) {}
-  constexpr BitwiseOr(std::initializer_list<E> values) : bits_(0) {
-    for (E e : values)
-      Add(e);
-  }
-  static constexpr BitwiseOr FromBits(T bits) { return BitwiseOr(bits); }
-  bool empty() const { return bits_ == 0; }
-  T bits() const { return bits_; }
-  void Add(E value) { bits_ |= Mask(value); }
-  void Remove(E value) { bits_ &= ~Mask(value); }
-  bool Has(E value) const { return (bits_ & Mask(value)) != 0; }
-  bool HasAll(const BitwiseOr& other) const {
-    return (bits_ & other.bits_) == other.bits_;
-  }
-  bool operator==(const BitwiseOr& other) const { return bits_ == other.bits_; }
-  bool operator!=(const BitwiseOr& other) const { return !(*this == other); }
-
- private:
-  explicit constexpr BitwiseOr(T bits) : bits_(bits) {}
-
-  static T Mask(E value) {
-    const T result = static_cast<T>(value);
-    DCHECK(static_cast<E>(result) == value);
-    return result;
-  }
-  T bits_;
-};
-
 // Represents a Cast app and its capabilitity requirements.
 struct CastAppInfo {
-  explicit CastAppInfo(
-      const std::string& app_id,
-      BitwiseOr<cast_channel::CastDeviceCapability> required_capabilities);
+  explicit CastAppInfo(const std::string& app_id,
+                       CastDeviceCapabilitySet required_capabilities);
   ~CastAppInfo();
 
   CastAppInfo(const CastAppInfo& other);
@@ -86,7 +51,7 @@ struct CastAppInfo {
   std::string app_id;
 
   // A bitset of capabilities required by the app.
-  BitwiseOr<cast_channel::CastDeviceCapability> required_capabilities;
+  CastDeviceCapabilitySet required_capabilities;
 };
 
 // Auto-join policy determines when the SDK will automatically connect a sender
@@ -181,22 +146,15 @@ class CastMediaSource {
   void set_launch_timeout(base::TimeDelta launch_timeout) {
     launch_timeout_ = launch_timeout;
   }
-  const absl::optional<cast_channel::BroadcastRequest>& broadcast_request()
-      const {
-    return broadcast_request_;
-  }
-  void set_broadcast_request(const cast_channel::BroadcastRequest& request) {
-    broadcast_request_ = request;
-  }
   AutoJoinPolicy auto_join_policy() const { return auto_join_policy_; }
   DefaultActionPolicy default_action_policy() const {
     return default_action_policy_;
   }
-  absl::optional<base::TimeDelta> target_playout_delay() const {
+  std::optional<base::TimeDelta> target_playout_delay() const {
     return target_playout_delay_;
   }
   void set_target_playout_delay(
-      const absl::optional<base::TimeDelta>& target_playout_delay) {
+      const std::optional<base::TimeDelta>& target_playout_delay) {
     target_playout_delay_ = target_playout_delay;
   }
   // See also: ProvidesStreamingAudioCapture().
@@ -230,8 +188,7 @@ class CastMediaSource {
   base::TimeDelta launch_timeout_ = kDefaultLaunchTimeout;
   // Optional parameters.
   std::string client_id_;
-  absl::optional<cast_channel::BroadcastRequest> broadcast_request_;
-  absl::optional<base::TimeDelta> target_playout_delay_;
+  std::optional<base::TimeDelta> target_playout_delay_;
   bool site_requested_audio_capture_ = true;
   std::vector<ReceiverAppType> supported_app_types_ = {ReceiverAppType::kWeb};
   std::string app_params_;

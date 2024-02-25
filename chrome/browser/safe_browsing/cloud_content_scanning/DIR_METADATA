@@ -1,0 +1,18 @@
+monorail: {
+  component: "Services>Safebrowsing"
+}
+buganizer_public: {
+  component_id: 1456950
+}
+overrides: {
+  file_patterns: "deep_scan*.*"
+  metadata: {
+    monorail: {
+      component: "Enterprise>Connectors"
+    }
+    team_email: "dpr-eng@google.com"
+    buganizer: {
+      component_id: 1208119
+    }
+  }
+}

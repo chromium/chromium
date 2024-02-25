@@ -82,7 +82,7 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
   // time metrics.
   base::TimeTicks start_get_feature_statuses_timestamp_;
 
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

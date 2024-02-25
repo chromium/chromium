@@ -100,15 +100,12 @@ class ModuleBlocklistCacheUtilTest : public testing::Test {
 };
 
 TEST_F(ModuleBlocklistCacheUtilTest, CalculateTimeDateStamp) {
-  base::Time::Exploded chrome_birthday = {};
-  chrome_birthday.year = 2008;
-  chrome_birthday.month = 9;        // September.
-  chrome_birthday.day_of_week = 2;  // Tuesday.
-  chrome_birthday.day_of_month = 2;
+  static constexpr base::Time::Exploded kChromeBirthday = {
+      .year = 2008, .month = 9, .day_of_week = 2, .day_of_month = 2};
 
   base::Time time;
-  ASSERT_TRUE(chrome_birthday.HasValidValues());
-  ASSERT_TRUE(base::Time::FromUTCExploded(chrome_birthday, &time));
+  ASSERT_TRUE(kChromeBirthday.HasValidValues());
+  ASSERT_TRUE(base::Time::FromUTCExploded(kChromeBirthday, &time));
 
   // Ensure that CalculateTimeDateStamp() will always return the number of
   // hours between |time| and the Windows epoch.

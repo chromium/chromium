@@ -6,14 +6,15 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -27,11 +28,15 @@ suite('SiteSettingsPage', function() {
       generated: {
         notification: {
           type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: NotificationSetting.ASK,
+          value: SettingsState.LOUD,
         },
         cookie_default_content_setting: {
           type: chrome.settingsPrivate.PrefType.STRING,
           value: ContentSetting.ALLOW,
+        },
+        geolocation: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SettingsState.LOUD,
         },
       },
       profile: {
@@ -83,18 +88,11 @@ suite('SiteSettingsPage', function() {
         page.$.advancedContentList, `#${ContentSettingsTypes.ANTI_ABUSE}`));
   });
 
-  // TODO(crbug.com/1378703): Remove the test once PrivacySandboxSettings4
-  // has been rolled out.
-  test('CookiesLinkRowLabel', function() {
-    const labelExpected =
-        loadTimeData.getString('thirdPartyCookiesLinkRowLabel');
-    const labelActual =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!.label;
-    assertEquals(labelExpected, labelActual);
-  });
-
   test('CookiesLinkRowSublabel', async function() {
+    // This test verifies the pre-3PCD label.
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
     setupPage();
     const cookiesLinkRow =
         page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
@@ -125,46 +123,79 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
+  test('TrackingProtectionLinkRowSubLabel', async function() {
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: true,
+    });
+    setupPage();
+    const cookiesLinkRow =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!;
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+
+    // Even if cookie controls mode changes, sub-label stays the same.
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+  });
+
   test('NotificationsLinkRowSublabel', async function() {
     const notificationsLinkRow =
         page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
             .querySelector<CrLinkRowElement>('#notifications')!;
 
-    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    page.set('prefs.generated.notification.value', SettingsState.BLOCK);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsBlocked'),
         notificationsLinkRow.subLabel);
 
-    page.set(
-        'prefs.generated.notification.value',
-        NotificationSetting.QUIETER_MESSAGING);
+    page.set('prefs.generated.notification.value', SettingsState.QUIET);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsPartial'),
+        loadTimeData.getString('siteSettingsNotificationsAskQuiet'),
         notificationsLinkRow.subLabel);
 
-    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
+    page.set('prefs.generated.notification.value', SettingsState.LOUD);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsAllowed'),
+        loadTimeData.getString('siteSettingsNotificationsAskLoud'),
         notificationsLinkRow.subLabel);
   });
 
-  test('ProtectedContentRow', function() {
+  test('ProtectedContentRow', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!,
         '#protected-content'));
   });
 
   // TODO(crbug/1378703): Remove after crbug/1378703 launched.
-  test('SiteDataLinkRow', function() {
+  test('SiteDataLinkRow', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
@@ -210,6 +241,17 @@ suite('SiteSettingsPage', function() {
         '#storage-access'));
   });
 
+  test('AutomaticFullscreenRow', async function() {
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
+    assertTrue(isChildVisible(
+      page.shadowRoot!.querySelector('#advancedContentList')!,
+      '#automatic-fullscreen'));
+  });
+
   // TODO(crbug/1443466): Remove after SafetyHub is launched.
   test('UnusedSitePermissionsControlToggleExists', function() {
     assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
@@ -233,63 +275,6 @@ suite('SiteSettingsPage', function() {
 
 });
 
-// TODO(crbug/1378703): Remove after crbug/1378703 launched.
-suite('PrivacySandboxSettings4Disabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
-
-  const testLabels: string[] = ['test label 1', 'test label 2'];
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxSettings4: false,
-    });
-  });
-
-  setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('SiteDataLinkRow', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
-
-    assertFalse(isChildVisible(
-        page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
-  });
-
-  test('CookiesLinkRowLabel', function() {
-    const labelExpected = loadTimeData.getString('siteSettingsCookies');
-    const labelActual =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!.label;
-    assertEquals(labelExpected, labelActual);
-  });
-
-  test('CookiesLinkRowSublabel', async function() {
-    await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
-    flush();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
-    assertEquals(testLabels[0], cookiesLinkRow.subLabel);
-
-    webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
-    assertEquals(testLabels[1], cookiesLinkRow.subLabel);
-  });
-});
-
 const unusedSitePermissionMockData = [{
   origin: 'www.example.com',
   permissions: [ContentSettingsTypes.CAMERA],
@@ -300,18 +285,92 @@ suite('UnusedSitePermissionsReview', function() {
   let page: SettingsSiteSettingsPageElement;
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
     // The element is not visible when there is nothing to review.
-    safetyHubBrowserProxy.setUnusedSitePermissions([]);
+    assertFalse(isChildVisible(page, '#safetyHubModule'));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+  });
+
+  test('Button Click', async function() {
+    // The element becomes visible if the list of permissions isn't empty.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+
+    page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton')!.click();
+    // Ensure the safety hub page is shown.
+    assertEquals(routes.SAFETY_HUB, Router.getInstance().getCurrentRoute());
+  });
+
+  test('InvisibleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+    });
+
+    // The element is not visible since it is guest mode.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertFalse(isChildVisible(page, '#safetyHubModule'));
+
+    // Reset loadTimeData values.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
+  });
+});
+
+// TODO(crbug/1443466): Remove after crbug/1443466 launched.
+suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSafetyHub: false,
+    });
+  });
+
+  setup(async function() {
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
     await flushTasks();
+  });
+
+  test('VisibilityWithChangingPermissionList', async function() {
+    // The element is not visible when there is nothing to review.
     assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
 
     // The element becomes visible if the list of permissions is no longer
@@ -332,6 +391,24 @@ suite('UnusedSitePermissionsReview', function() {
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+  });
+
+  test('InvisibleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+    });
+
+    // The element is not visible since it is guest mode.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    // Reset loadTimeData values.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
   });
 });
 

@@ -4,6 +4,8 @@
 
 #include "mojo/core/ipcz_driver/invitation.h"
 
+#include <string.h>
+
 #include <algorithm>
 #include <cstdint>
 
@@ -56,7 +58,8 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
   }
 
   // Otherwise interpret the first 4 bytes as an integer.
-  uint32_t index = *reinterpret_cast<const uint32_t*>(name.data());
+  uint32_t index;
+  memcpy(&index, name.data(), sizeof(uint32_t));
   if (index < Invitation::kMaxAttachments) {
     // The resulting index is small enough to fit within the normal index range,
     // so assume case (b) above:

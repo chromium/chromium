@@ -69,9 +69,6 @@ PLATFORM_EXPORT bool IsValidAudioBufferSampleRate(float sample_rate);
 PLATFORM_EXPORT float MinAudioBufferSampleRate();
 PLATFORM_EXPORT float MaxAudioBufferSampleRate();
 
-// Check to see if x is a power of two.  If x == 0, returns false.
-PLATFORM_EXPORT bool IsPowerOfTwo(size_t x);
-
 PLATFORM_EXPORT const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor);
 

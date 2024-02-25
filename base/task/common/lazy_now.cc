@@ -4,15 +4,16 @@
 
 #include "base/task/common/lazy_now.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 LazyNow::LazyNow(TimeTicks now) : now_(now), tick_clock_(nullptr) {}
 
-LazyNow::LazyNow(absl::optional<TimeTicks> now, const TickClock* tick_clock)
+LazyNow::LazyNow(std::optional<TimeTicks> now, const TickClock* tick_clock)
     : now_(now), tick_clock_(tick_clock) {
   DCHECK(tick_clock);
 }
@@ -24,7 +25,7 @@ LazyNow::LazyNow(const TickClock* tick_clock) : tick_clock_(tick_clock) {
 LazyNow::LazyNow(LazyNow&& move_from) noexcept
     : now_(move_from.now_), tick_clock_(move_from.tick_clock_) {
   move_from.tick_clock_ = nullptr;
-  move_from.now_ = absl::nullopt;
+  move_from.now_ = std::nullopt;
 }
 
 TimeTicks LazyNow::Now() {

@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
@@ -28,6 +29,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -47,7 +49,7 @@ SharingHubAction::SharingHubAction(int command_id,
                                    int announcement_id)
     : command_id(command_id),
       title(title),
-      icon(icon),
+      icon(CHECK_DEREF(icon)),
       feature_name_for_metrics(feature_name_for_metrics),
       announcement_id(announcement_id) {}
 
@@ -89,8 +91,7 @@ std::vector<SharingHubAction> SharingHubModel::GetFirstPartyActionList(
       if (follow_state == TabWebFeedFollowState::kFollowed)
         results.push_back(action);
     } else if (action.command_id == IDC_SAVE_PAGE) {
-      if (chrome::CanSavePage(
-              chrome::FindBrowserWithWebContents(web_contents))) {
+      if (chrome::CanSavePage(chrome::FindBrowserWithTab(web_contents))) {
         results.push_back(action);
       }
     } else {

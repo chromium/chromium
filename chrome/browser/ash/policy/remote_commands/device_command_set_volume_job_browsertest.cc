@@ -15,12 +15,24 @@ namespace policy {
 
 namespace {
 
+// Use a number larger than int32 to catch truncation errors.
+const int64_t kInitialCommandId = (1LL << 35) + 1;
+
 // Tests sending remote commands and verifying the results.
 class DeviceCommandSetVolumeBrowserTest : public DevicePolicyCrosBrowserTest {
  protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
+    remote_commands_service_mixin_.SetCurrentIdForTesting(kInitialCommandId);
+  }
+
   em::RemoteCommandResult SendRemoteCommand(
       const enterprise_management::RemoteCommand& command) {
     return remote_commands_service_mixin_.SendRemoteCommand(command);
+  }
+
+  void SetInitialCommandId(int64_t id) {
+    remote_commands_service_mixin_.SetCurrentIdForTesting(id);
   }
 
  private:
@@ -43,6 +55,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandSetVolumeBrowserTest, DeviceSetVolume) {
 
 IN_PROC_BROWSER_TEST_F(DeviceCommandSetVolumeBrowserTest,
                        ShouldWorkWith64BitCommandIds) {
+  SetInitialCommandId(112233445566778899LL);
   em::RemoteCommandResult result =
       SendRemoteCommand(RemoteCommandBuilder()
                             .SetType(em::RemoteCommand::DEVICE_SET_VOLUME)

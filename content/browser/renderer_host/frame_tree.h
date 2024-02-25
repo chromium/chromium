@@ -95,7 +95,8 @@ class CONTENT_EXPORT FrameTree {
     friend class FrameTreeTest;
     friend class NodeRange;
 
-    NodeIterator(const std::vector<FrameTreeNode*>& starting_nodes,
+    NodeIterator(const std::vector<raw_ptr<FrameTreeNode, VectorExperimental>>&
+                     starting_nodes,
                  const FrameTreeNode* root_of_subtree_to_skip,
                  bool should_descend_into_inner_trees,
                  bool include_delegate_nodes_for_inner_frame_trees);
@@ -124,12 +125,14 @@ class CONTENT_EXPORT FrameTree {
    private:
     friend class FrameTree;
 
-    NodeRange(const std::vector<FrameTreeNode*>& starting_nodes,
+    NodeRange(const std::vector<raw_ptr<FrameTreeNode, VectorExperimental>>&
+                  starting_nodes,
               const FrameTreeNode* root_of_subtree_to_skip,
               bool should_descend_into_inner_trees,
               bool include_delegate_nodes_for_inner_frame_trees);
 
-    const std::vector<FrameTreeNode*> starting_nodes_;
+    const std::vector<raw_ptr<FrameTreeNode, VectorExperimental>>
+        starting_nodes_;
     const raw_ptr<const FrameTreeNode> root_of_subtree_to_skip_;
     const bool should_descend_into_inner_trees_;
     const bool include_delegate_nodes_for_inner_frame_trees_;
@@ -162,8 +165,7 @@ class CONTENT_EXPORT FrameTree {
     // directed.
     //
     // TODO(crbug.com/1261928): Remove this method and directly rely on
-    // GetOutermostMainFrame() once portals and guest views are migrated to
-    // MPArch.
+    // GetOutermostMainFrame() once guest views are migrated to MPArch.
     virtual FrameTree* LoadingTree() = 0;
 
     // Returns true when the active RenderWidgetHostView should be hidden.
@@ -187,9 +189,6 @@ class CONTENT_EXPORT FrameTree {
     // `testNewWindowAttachInSubFrame` webview test for an example of this).
     // Otherwise, returns null.
     virtual RenderFrameHostImpl* GetProspectiveOuterDocument() = 0;
-
-    // Returns if this FrameTree represents a portal.
-    virtual bool IsPortal() = 0;
 
     // Set the `node` frame as focused in its own FrameTree as well as possibly
     // changing the focused frame tree in the case of inner/outer FrameTrees.
@@ -261,13 +260,9 @@ class CONTENT_EXPORT FrameTree {
   FrameTreeNode* root() { return &root_; }
   const FrameTreeNode* root() const { return &root_; }
 
-  bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
-
-  // Returns true if this frame tree is a portal.
-  //
-  // TODO(crbug.com/1254770): Once portals are migrated to MPArch, portals will
-  // have their own FrameTree::Type.
-  bool IsPortal();
+  bool is_primary() const { return type_ == Type::kPrimary; }
+  bool is_prerendering() const { return type_ == Type::kPrerender; }
+  bool is_fenced_frame() const { return type_ == Type::kFencedFrame; }
 
   Delegate* delegate() { return delegate_; }
 
@@ -357,7 +352,7 @@ class CONTENT_EXPORT FrameTree {
   // CreateChildFrame mojo call, which also delivers the
   // |policy_container_bind_params|. |is_dummy_frame_for_inner_tree| is true if
   // the added frame is only to serve as a placeholder for an inner frame tree
-  // (e.g. fenced frames, portals) and will not have a live RenderFrame of its
+  // (e.g. fenced frames) and will not have a live RenderFrame of its
   // own.
   FrameTreeNode* AddFrame(
       RenderFrameHostImpl* parent,
@@ -422,12 +417,16 @@ class CONTENT_EXPORT FrameTree {
   // `create_case` indicates whether or not the RenderViewHost being created is
   // speculative or not. It should only be registered with the FrameTree if it
   // is not speculative.
+  // `frame_sink_id` is optionally set only if we're creating a speculative
+  // RenderViewHost. If set, it implies we're reusing the compositor from the
+  // previous RenderViewHost.
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
-      SiteInstanceImpl* site_instance,
+      SiteInstanceGroup* site_instance_group,
       int32_t main_frame_routing_id,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
-      CreateRenderViewHostCase create_case);
+      CreateRenderViewHostCase create_case,
+      std::optional<viz::FrameSinkId> frame_sink_id);
 
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame
@@ -529,7 +528,7 @@ class CONTENT_EXPORT FrameTree {
   // loading related events. Please see FrameTree::Delegate::LoadingTree for
   // more comments.
   // - For prerender frame tree -> returns the frame tree itself.
-  // - For fenced frame and primary frame tree (including portal) -> returns
+  // - For fenced frame and primary frame tree -> returns
   // the delegate's primary frame tree.
   FrameTree* LoadingTree();
 
@@ -573,7 +572,6 @@ class CONTENT_EXPORT FrameTree {
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
-  FRIEND_TEST_ALL_PREFIXES(PortalBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameMPArchBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
                            CreateRenderViewAfterProcessKillAndClosedProxy);
@@ -590,7 +588,7 @@ class CONTENT_EXPORT FrameTree {
   //
   // TODO(crbug.com/1261928, crbug.com/1261928): Remove this method and directly
   // rely on GetOutermostMainFrame() and NodesIncludingInnerTreeNodes() once
-  // portals and guest views are migrated to MPArch.
+  // guest views are migrated to MPArch.
   std::vector<FrameTreeNode*> CollectNodesForIsLoading();
 
   const raw_ptr<Delegate> delegate_;

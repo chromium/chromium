@@ -8,6 +8,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -385,7 +385,7 @@ bool AddLocale(const std::set<std::string>& chrome_locales,
   // locales.
   if (base::StartsWith(locale_name, ".", base::CompareCase::SENSITIVE))
     return true;
-  if (chrome_locales.find(locale_name) == chrome_locales.end()) {
+  if (!base::Contains(chrome_locales, locale_name)) {
     // Warn if there is an extension locale that's not in the Chrome list,
     // but don't fail.
     DLOG(WARNING) << base::StringPrintf("Supplied locale %s is not supported.",
@@ -572,11 +572,11 @@ ScopedLocaleForTest::ScopedLocaleForTest()
     : process_locale_(GetProcessLocale()),
       preferred_locale_(GetPreferredLocale()) {}
 
-ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece locale)
+ScopedLocaleForTest::ScopedLocaleForTest(std::string_view locale)
     : ScopedLocaleForTest(locale, locale) {}
 
-ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece process_locale,
-                                         base::StringPiece preferred_locale)
+ScopedLocaleForTest::ScopedLocaleForTest(std::string_view process_locale,
+                                         std::string_view preferred_locale)
     : ScopedLocaleForTest() {
   SetProcessLocale(std::string(process_locale));
   SetPreferredLocale(std::string(preferred_locale));

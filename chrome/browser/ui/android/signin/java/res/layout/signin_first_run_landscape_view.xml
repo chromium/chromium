@@ -57,6 +57,7 @@ found in the LICENSE file.
                     android:paddingBottom="8dp"
                     android:paddingStart="24dp"
                     android:paddingTop="8dp"
+                    android:text="@string/signin_fre_subtitle"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                     android:visibility="gone"
                     app:leading="@dimen/text_size_medium_leading" />

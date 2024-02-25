@@ -9,7 +9,7 @@ function getByDateSuccess()
   debug('Data retrieved by date key');
 
   shouldBe("event.target.result", "'foo'");
-  done();
+  transaction.oncomplete = done;
 }
 
 function recordNotFound()

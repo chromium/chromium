@@ -7,8 +7,8 @@
 
 namespace installer {
 
-// Updates Chrome's "did run" state, returning true if the update succeeds.
-bool UpdateDidRunState(bool did_run);
+// Updates Chrome's "did run" state to "true".
+void UpdateDidRunState();
 
 }  // namespace installer
 

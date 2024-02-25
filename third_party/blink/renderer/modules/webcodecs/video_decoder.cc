@@ -30,7 +30,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/decrypt_config_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
@@ -98,23 +99,19 @@ bool ParseCodecString(const String& codec_string,
     return false;
   }
 
-  bool is_codec_ambiguous = true;
-  media::VideoCodec codec = media::VideoCodec::kUnknown;
-  media::VideoCodecProfile profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
-  uint8_t level = 0;
-  bool parse_succeeded =
-      media::ParseVideoCodecString("", codec_string.Utf8(), &is_codec_ambiguous,
-                                   &codec, &profile, &level, &color_space);
+  auto result = media::ParseVideoCodecString("", codec_string.Utf8(),
+                                             /*allow_ambiguous_matches=*/false);
 
-  if (!parse_succeeded || is_codec_ambiguous) {
+  if (!result) {
     js_error_message = "Unknown or ambiguous codec name.";
     out_video_type = {media::VideoCodec::kUnknown,
-                      media::VIDEO_CODEC_PROFILE_UNKNOWN, level, color_space};
+                      media::VIDEO_CODEC_PROFILE_UNKNOWN,
+                      media::kNoVideoCodecLevel, media::VideoColorSpace()};
     return true;
   }
 
-  out_video_type = {codec, profile, level, color_space};
+  out_video_type = {result->codec, result->profile, result->level,
+                    result->color_space};
   return true;
 }
 
@@ -276,7 +273,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   // Run the "check if a config is a valid VideoDecoderConfig" algorithm.
   String js_error_message;
-  absl::optional<media::VideoType> video_type =
+  std::optional<media::VideoType> video_type =
       IsValidVideoDecoderConfig(*config, &js_error_message /* out */);
   if (!video_type) {
     exception_state.ThrowTypeError(js_error_message);
@@ -297,20 +294,18 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     support->setSupported(false);
     return ScriptPromise::Cast(
         script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-            .ToLocalChecked());
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
   }
 
   // Check that we can make a media::VideoDecoderConfig. The |js_error_message|
   // is ignored, we report only via |support.supported|.
-  absl::optional<MediaConfigType> media_config;
+  std::optional<MediaConfigType> media_config;
   media_config = MakeMediaVideoDecoderConfig(*config_copy, &js_error_message);
   if (!media_config) {
     support->setSupported(false);
     return ScriptPromise::Cast(
         script_state,
-        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-            .ToLocalChecked());
+        ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
   }
 
   // If hardware is preferred, asynchronously check for a hardware decoder.
@@ -328,8 +323,8 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   // Otherwise, the config is supported.
   support->setSupported(true);
   return ScriptPromise::Cast(
-      script_state, ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
-                        .ToLocalChecked());
+      script_state,
+      ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support));
 }
 
 HardwarePreference VideoDecoder::GetHardwarePreference(
@@ -348,18 +343,18 @@ void VideoDecoder::SetHardwarePreference(HardwarePreference preference) {
 
 // static
 // TODO(crbug.com/1198324): Merge shared logic with VideoFramePlaneInit.
-absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
+std::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     const VideoDecoderConfig& config,
     String* js_error_message) {
   media::VideoType video_type;
   if (!ParseCodecString(config.codec(), video_type, *js_error_message))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
     if (!desc_wrapper.data()) {
       *js_error_message = "description is detached.";
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -367,12 +362,12 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     if (!config.hasCodedWidth()) {
       *js_error_message =
           "Invalid config, codedHeight specified without codedWidth.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!config.hasCodedHeight()) {
       *js_error_message =
           "Invalid config, codedWidth specified without codedHeight.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const uint32_t coded_width = config.codedWidth();
@@ -380,7 +375,7 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     if (!coded_width || !coded_height) {
       *js_error_message = String::Format("Invalid coded size (%u, %u).",
                                          coded_width, coded_height);
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -389,13 +384,13 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
       *js_error_message =
           "Invalid config, displayAspectHeight specified without "
           "displayAspectWidth.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!config.hasDisplayAspectHeight()) {
       *js_error_message =
           "Invalid config, displayAspectWidth specified without "
           "displayAspectHeight.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     uint32_t display_aspect_width = config.displayAspectWidth();
@@ -404,7 +399,7 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
       *js_error_message =
           String::Format("Invalid display aspect (%u, %u).",
                          display_aspect_width, display_aspect_height);
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -412,7 +407,7 @@ absl::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
 }
 
 // static
-absl::optional<media::VideoDecoderConfig>
+std::optional<media::VideoDecoderConfig>
 VideoDecoder::MakeMediaVideoDecoderConfig(const ConfigType& config,
                                           String* js_error_message,
                                           bool* needs_converter_out) {
@@ -422,7 +417,7 @@ VideoDecoder::MakeMediaVideoDecoderConfig(const ConfigType& config,
 }
 
 // static
-absl::optional<media::VideoDecoderConfig>
+std::optional<media::VideoDecoderConfig>
 VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     const ConfigType& config,
     std::unique_ptr<VideoDecoderHelper>& decoder_helper,
@@ -432,10 +427,10 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
   if (!ParseCodecString(config.codec(), video_type, *js_error_message)) {
     // Checked by IsValidVideoDecoderConfig().
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (video_type.codec == media::VideoCodec::kUnknown) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> extra_data;
@@ -444,7 +439,7 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     if (!desc_wrapper.data()) {
       // Checked by IsValidVideoDecoderConfig().
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!desc_wrapper.empty()) {
       const uint8_t* start = desc_wrapper.data();
@@ -477,7 +472,7 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
           *js_error_message = "HEVC decoding is not supported.";
         }
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -510,16 +505,26 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     media_color_space = color_space->ToMediaColorSpace();
   }
 
+  auto encryption_scheme = media::EncryptionScheme::kUnencrypted;
+  if (config.hasEncryptionScheme()) {
+    auto scheme = ToMediaEncryptionScheme(config.encryptionScheme());
+    if (!scheme) {
+      *js_error_message = "Unsupported encryption scheme";
+      return std::nullopt;
+    }
+    encryption_scheme = scheme.value();
+  }
+
   media::VideoDecoderConfig media_config;
   media_config.Initialize(video_type.codec, video_type.profile,
                           media::VideoDecoderConfig::AlphaMode::kIsOpaque,
                           media_color_space, media::kNoTransformation,
                           coded_size, visible_rect, natural_size, extra_data,
-                          media::EncryptionScheme::kUnencrypted);
+                          encryption_scheme);
   media_config.set_aspect_ratio(aspect_ratio);
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return media_config;
@@ -539,11 +544,11 @@ bool VideoDecoder::IsValidConfig(const ConfigType& config,
       .has_value();
 }
 
-absl::optional<media::VideoDecoderConfig> VideoDecoder::MakeMediaConfig(
+std::optional<media::VideoDecoderConfig> VideoDecoder::MakeMediaConfig(
     const ConfigType& config,
     String* js_error_message) {
   DCHECK(js_error_message);
-  absl::optional<media::VideoDecoderConfig> media_config =
+  std::optional<media::VideoDecoderConfig> media_config =
       MakeMediaVideoDecoderConfigInternal(config, decoder_helper_ /* out */,
                                           js_error_message /* out */);
   if (media_config)

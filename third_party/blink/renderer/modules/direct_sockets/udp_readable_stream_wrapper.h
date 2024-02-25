@@ -40,8 +40,8 @@ class MODULES_EXPORT UDPReadableStreamWrapper
 
   // network::mojom::blink::UDPSocketListener:
   void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_addr,
-                  absl::optional<base::span<const uint8_t>> data) override;
+                  const std::optional<net::IPEndPoint>& src_addr,
+                  std::optional<base::span<const uint8_t>> data) override;
 
  private:
   CloseOnceCallback on_close_;

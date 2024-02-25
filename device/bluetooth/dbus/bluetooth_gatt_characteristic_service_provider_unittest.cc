@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_delegate_wrapper.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -49,7 +49,7 @@ TEST(BluetoothGattCharacteristicServiceProviderTest, ReadValueSuccess) {
         EXPECT_EQ(length, read_value.size());
         callback_called = true;
       }),
-      /*error_code=*/absl::nullopt, read_value);
+      /*error_code=*/std::nullopt, read_value);
 
   EXPECT_TRUE(callback_called);
 }

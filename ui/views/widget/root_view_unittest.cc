@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/context_menu_controller.h"
@@ -63,6 +65,8 @@ class RootViewTestState {
 };
 
 class DeleteOnKeyEventView : public View {
+  METADATA_HEADER(DeleteOnKeyEventView, View)
+
  public:
   explicit DeleteOnKeyEventView(bool* set_on_key) : set_on_key_(set_on_key) {}
 
@@ -81,6 +85,9 @@ class DeleteOnKeyEventView : public View {
   // Set to true in OnKeyPressed().
   raw_ptr<bool> set_on_key_;
 };
+
+BEGIN_METADATA(DeleteOnKeyEventView)
+END_METADATA
 
 }  // namespace
 
@@ -197,6 +204,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
 
 // View which handles all gesture events.
 class GestureHandlingView : public View {
+  METADATA_HEADER(GestureHandlingView, View)
+
  public:
   GestureHandlingView() = default;
 
@@ -208,8 +217,13 @@ class GestureHandlingView : public View {
   void OnGestureEvent(ui::GestureEvent* event) override { event->SetHandled(); }
 };
 
+BEGIN_METADATA(GestureHandlingView)
+END_METADATA
+
 // View which handles all mouse events.
 class MouseHandlingView : public View {
+  METADATA_HEADER(MouseHandlingView, View)
+
  public:
   MouseHandlingView() = default;
   MouseHandlingView(const MouseHandlingView&) = delete;
@@ -219,6 +233,9 @@ class MouseHandlingView : public View {
   // View:
   void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
 };
+
+BEGIN_METADATA(MouseHandlingView)
+END_METADATA
 
 TEST_F(RootViewTest, EventHandlersResetWhenDeleted) {
   RootViewTestState state(this, {.bounds = {100, 100}});
@@ -449,6 +466,8 @@ namespace {
 // View class which destroys itself when it gets an event of type
 // |delete_event_type|.
 class DeleteViewOnEvent : public View {
+  METADATA_HEADER(DeleteViewOnEvent, View)
+
  public:
   DeleteViewOnEvent(ui::EventType delete_event_type, bool* was_destroyed)
       : delete_event_type_(delete_event_type), was_destroyed_(was_destroyed) {}
@@ -471,9 +490,14 @@ class DeleteViewOnEvent : public View {
   raw_ptr<bool> was_destroyed_;
 };
 
+BEGIN_METADATA(DeleteViewOnEvent)
+END_METADATA
+
 // View class which remove itself when it gets an event of type
 // |remove_event_type|.
 class RemoveViewOnEvent : public View {
+  METADATA_HEADER(RemoveViewOnEvent, View)
+
  public:
   explicit RemoveViewOnEvent(ui::EventType remove_event_type)
       : remove_event_type_(remove_event_type) {}
@@ -491,10 +515,15 @@ class RemoveViewOnEvent : public View {
   ui::EventType remove_event_type_;
 };
 
+BEGIN_METADATA(RemoveViewOnEvent)
+END_METADATA
+
 // View class which generates a nested event the first time it gets an event of
 // type |nested_event_type|. This is used to simulate nested event loops which
 // can cause |RootView::mouse_event_handler_| to get reset.
 class NestedEventOnEvent : public View {
+  METADATA_HEADER(NestedEventOnEvent, View)
+
  public:
   NestedEventOnEvent(ui::EventType nested_event_type, View* root_view)
       : nested_event_type_(nested_event_type), root_view_(root_view) {}
@@ -519,6 +548,9 @@ class NestedEventOnEvent : public View {
   // root view of this view; owned by widget.
   raw_ptr<View> root_view_;
 };
+
+BEGIN_METADATA(NestedEventOnEvent)
+END_METADATA
 
 }  // namespace
 
@@ -705,6 +737,8 @@ namespace {
 
 // View class which deletes its owning Widget when it gets a mouse exit event.
 class DeleteWidgetOnMouseExit : public View {
+  METADATA_HEADER(DeleteWidgetOnMouseExit, View)
+
  public:
   explicit DeleteWidgetOnMouseExit(Widget* widget) : widget_(widget) {}
 
@@ -718,6 +752,9 @@ class DeleteWidgetOnMouseExit : public View {
  private:
   raw_ptr<Widget> widget_;
 };
+
+BEGIN_METADATA(DeleteWidgetOnMouseExit)
+END_METADATA
 
 }  // namespace
 
@@ -817,7 +854,7 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
 
   // DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override { return preferred_size_; }
-  void Layout() override {
+  void Layout(PassKey) override {
     EXPECT_EQ(size(), preferred_size_);
     ++layout_count_;
   }
@@ -829,8 +866,8 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
 };
 }  // namespace
 
-// Ensure only one call to Layout() happens during Widget initialization, and
-// ensure it happens at the ContentView's preferred size.
+// Ensure only one layout happens during Widget initialization, and ensure it
+// happens at the ContentView's preferred size.
 TEST_F(RootViewTest, SingleLayoutDuringInit) {
   RootViewTestDialogDelegate* delegate = new RootViewTestDialogDelegate();
   Widget* widget =
@@ -852,23 +889,32 @@ TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
 
 #if !BUILDFLAG(IS_MAC)
 
-// Tests that AnnounceText sets up the correct text value on the hidden view,
-// and that the resulting hidden view actually stays hidden.
-TEST_F(RootViewTest, AnnounceTextTest) {
+// Tests that AnnounceAlert sets up the correct text value on the hidden
+// view, and that the resulting hidden view actually stays hidden.
+TEST_F(RootViewTest, AnnounceTextAsTest) {
   RootViewTestState state(this, {.bounds = {100, 100, 100, 100}});
   internal::RootView* root_view = state.GetRootView();
 
   EXPECT_EQ(1U, root_view->children().size());
-  const std::u16string kText = u"Text";
-  root_view->AnnounceText(kText);
+  const std::u16string kAlertText = u"Alert";
+  root_view->AnnounceTextAs(kAlertText,
+                            ui::AXPlatformNode::AnnouncementType::kAlert);
   EXPECT_EQ(2U, root_view->children().size());
   views::test::RunScheduledLayout(root_view);
   EXPECT_FALSE(root_view->children()[0]->size().IsEmpty());
   EXPECT_TRUE(root_view->children()[1]->size().IsEmpty());
-  View* const hidden_view = root_view->children()[1];
+  View* const hidden_alert_view = root_view->children()[1];
   ui::AXNodeData node_data;
-  hidden_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(kText,
+  hidden_alert_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(kAlertText,
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  const std::u16string kPoliteText = u"Something polite";
+  root_view->AnnounceTextAs(kPoliteText,
+                            ui::AXPlatformNode::AnnouncementType::kPolite);
+  View* const hidden_polite_view = root_view->children()[1];
+  hidden_polite_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 

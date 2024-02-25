@@ -59,7 +59,7 @@ PASS mySelect.selectedIndex is 0
 PASS mySelect.options.length is 10
 PASS mySelect.selectedIndex is 0
 19) trying to set an element that's not an option: select element
-PASS mySelect.options[10] = mySelect; threw exception TypeError: Failed to set an indexed property on 'HTMLOptionsCollection': parameter 2 is not of type 'HTMLOptionElement'..
+PASS mySelect.options[10] = mySelect; threw exception TypeError: Failed to set an indexed property [10] on 'HTMLOptionsCollection': parameter 2 is not of type 'HTMLOptionElement'..
 PASS mySelect.options.length is 10
 PASS mySelect.selectedIndex is 0
 20) trying to set a option element using an invalid index: negative infinity

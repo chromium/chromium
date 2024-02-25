@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -69,6 +70,9 @@ class BrowserState : public base::SupportsUserData {
   // Returns a CookieManager that is backed by GetRequestContext.
   network::mojom::CookieManager* GetCookieManager();
 
+  // Returns a NetworkContext that is backed by GetRequestContext.
+  network::mojom::NetworkContext* GetNetworkContext();
+
   // Returns an provider to create ProtoDatabase tied to the profile directory.
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider();
 
@@ -122,7 +126,7 @@ class BrowserState : public base::SupportsUserData {
   // The URLDataManagerIOSBackend instance associated with this BrowserState.
   // Created and destroyed on the IO thread, and should be accessed only from
   // the IO thread.
-  URLDataManagerIOSBackend* url_data_manager_ios_backend_;
+  raw_ptr<URLDataManagerIOSBackend> url_data_manager_ios_backend_;
 };
 
 }  // namespace web

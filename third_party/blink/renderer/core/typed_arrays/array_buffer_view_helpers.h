@@ -67,7 +67,7 @@ class NotShared {
   void Trace(Visitor* visitor) const { visitor->Trace(typed_array_); }
 
  private:
-  T* GetRaw() const { return typed_array_; }
+  T* GetRaw() const { return typed_array_.Get(); }
 
   Member<T> typed_array_;
 };
@@ -123,7 +123,7 @@ class MaybeShared {
   void Trace(Visitor* visitor) const { visitor->Trace(typed_array_); }
 
  private:
-  T* GetRaw() const { return typed_array_; }
+  T* GetRaw() const { return typed_array_.Get(); }
 
   Member<T> typed_array_;
 };

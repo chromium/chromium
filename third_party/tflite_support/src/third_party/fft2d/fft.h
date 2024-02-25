@@ -22,12 +22,12 @@ limitations under the License.
 extern "C" {
 #endif
 
-extern void cdft(int, int, double*, int*, double*);
-extern void rdft(int, int, double*, int*, double*);
-extern void ddct(int, int, double*, int*, double*);
-extern void ddst(int, int, double*, int*, double*);
-extern void dfct(int, double*, double*, int*, double*);
-extern void dfst(int, double*, double*, int*, double*);
+extern void cdft(int, int, double *, int *, double *);
+extern void rdft(int, int, double *, int *, double *);
+extern void ddct(int, int, double *, int *, double *);
+extern void ddst(int, int, double *, int *, double *);
+extern void dfct(int, double *, double *, int *, double *);
+extern void dfst(int, double *, double *, int *, double *);
 
 #ifdef __cplusplus
 }

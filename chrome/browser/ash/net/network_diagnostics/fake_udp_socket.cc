@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/fake_udp_socket.h"
 
+#include <optional>
 #include <utility>
 
 #include "net/base/ip_endpoint.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace network_diagnostics {

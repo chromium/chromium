@@ -23,6 +23,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace network {
+struct ResourceRequest;
 class SharedURLLoaderFactory;
 }
 
@@ -30,7 +31,7 @@ namespace blink {
 
 class BackForwardCacheLoaderHelper;
 class URLLoader;
-class WebURLRequest;
+class URLLoaderThrottle;
 
 // An abstract interface to create a URLLoader. It is expected that each
 // loading context holds its own per-context URLLoaderFactory.
@@ -51,16 +52,17 @@ class BLINK_PLATFORM_EXPORT URLLoaderFactory {
   // URLLoaderClientImpl and ResponseBodyLoader use unfreezable task runner.
   // This currently takes two task runners: freezable and unfreezable one.
   virtual std::unique_ptr<URLLoader> CreateURLLoader(
-      const WebURLRequest& webreq,
+      const network::ResourceRequest& request,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
 
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   Vector<String> cors_exempt_header_list_;
-  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the

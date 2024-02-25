@@ -13,7 +13,6 @@
 #include "ash/display/cros_display_config.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -31,6 +30,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
 #include "ui/display/manager/touch_transform_setter.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -43,7 +43,7 @@ using DisplayLayoutList = DisplayInfoProvider::DisplayLayoutList;
 
 void ErrorCallback(std::string* result,
                    base::OnceClosure callback,
-                   absl::optional<std::string> error) {
+                   std::optional<std::string> error) {
   *result = error ? *error : "";
   std::move(callback).Run();
 }
@@ -85,7 +85,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     // Wait for TabletModeController to take its initial state from the power
     // manager.
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(ash::TabletMode::Get()->InTabletMode());
+    EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   }
 
   void TearDown() override {
@@ -198,7 +198,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
 
  protected:
-  raw_ptr<DisplayInfoProvider, ExperimentalAsh> provider_;
+  raw_ptr<DisplayInfoProvider> provider_;
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
@@ -649,7 +649,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
   EXPECT_TRUE(result[1].mirroring_source_id.empty());
 
   GetDisplayManager()->SetMirrorMode(display::MirrorMode::kNormal,
-                                     absl::nullopt);
+                                     std::nullopt);
   ASSERT_TRUE(GetDisplayManager()->IsInMirrorMode());
 
   result = GetAllDisplaysInfo();
@@ -659,7 +659,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
   EXPECT_EQ(base::NumberToString(display_id_primary),
             result[0].mirroring_source_id);
 
-  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   ASSERT_FALSE(GetDisplayManager()->IsInMirrorMode());
 
   result = GetAllDisplaysInfo();
@@ -904,7 +904,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   UpdateDisplay("500x400,500x400");
 
   GetDisplayManager()->SetMirrorMode(display::MirrorMode::kNormal,
-                                     absl::nullopt);
+                                     std::nullopt);
   EXPECT_TRUE(GetDisplayManager()->IsInMirrorMode());
 
   EXPECT_FALSE(GetDisplayManager()->unified_desktop_enabled());
@@ -919,7 +919,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
 
   // Turning off mirroring should set unified mode.
-  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.

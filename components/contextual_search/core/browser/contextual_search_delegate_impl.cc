@@ -96,8 +96,7 @@ const net::HttpRequestHeaders GetDiscourseContext(
   std::string serialized;
   proto.SerializeToString(&serialized);
 
-  std::string encoded_context;
-  base::Base64Encode(serialized, &encoded_context);
+  std::string encoded_context = base::Base64Encode(serialized);
   // The server memoizer expects a web-safe encoding.
   std::replace(encoded_context.begin(), encoded_context.end(), '+', '-');
   std::replace(encoded_context.begin(), encoded_context.end(), '/', '_');
@@ -127,7 +126,7 @@ void ContextualSearchDelegateImpl::GatherAndSaveSurroundingText(
   blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback
       get_text_callback = base::BindOnce(
           &ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable,
-          AsWeakPtr(), context, callback);
+          weak_ptr_factory_.GetWeakPtr(), context, callback);
   if (!context)
     return;
 
@@ -181,7 +180,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
 
   // Populates the discourse context and adds it to the HTTP header of the
   // search term resolution request.
-  resource_request->headers.CopyFrom(GetDiscourseContext(*context));
+  resource_request->headers = GetDiscourseContext(*context);
 
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -401,10 +400,11 @@ void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
 
   // Pin the start and end offsets to ensure they point within the string.
   uint32_t surrounding_length = surrounding_text.length();
-  // TODO(crbug.com/1343955): The case where end_offset < start_offset should be
-  // handled here as well.
   start_offset = std::min(surrounding_length, start_offset);
   end_offset = std::min(surrounding_length, end_offset);
+  if (end_offset < start_offset) {
+    return;
+  }
 
   context->SetSelectionSurroundings(start_offset, end_offset, surrounding_text);
 
@@ -412,7 +412,6 @@ void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
   // surroundings to use as a sample of the surrounding text.
   int sample_surrounding_size = field_trial_->GetSampleSurroundingSize();
   DCHECK(sample_surrounding_size >= 0);
-  DCHECK(start_offset <= end_offset);
   size_t selection_start = start_offset;
   size_t selection_end = end_offset;
   int sample_padding_each_side = sample_surrounding_size / 2;
@@ -449,7 +448,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   const std::string& proper_json =
       contains_xssi_escape ? response.substr(sizeof(kXssiEscape) - 1)
                            : response;
-  absl::optional<base::Value> root = base::JSONReader::Read(proper_json);
+  std::optional<base::Value> root = base::JSONReader::Read(proper_json);
   if (!root) {
     return;
   }
@@ -536,7 +535,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // Contextual Cards V5+ integration can provide the primary card tag, so
   // clients can tell what kind of card they have received.
   // TODO(donnd): make sure this works with a non-integer or missing value!
-  absl::optional<int> maybe_coca_card_tag =
+  std::optional<int> maybe_coca_card_tag =
       dict->FindInt(kContextualSearchCardTag);
   if (coca_card_tag && maybe_coca_card_tag)
     *coca_card_tag = *maybe_coca_card_tag;

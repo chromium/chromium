@@ -50,12 +50,12 @@ class RpcCallMessageHandlerTest : public testing::Test {
 
     MOCK_METHOD3(OnRpcInitializeCallback,
                  void(int,
-                      absl::optional<media::AudioDecoderConfig>,
-                      absl::optional<media::VideoDecoderConfig>));
+                      std::optional<media::AudioDecoderConfig>,
+                      std::optional<media::VideoDecoderConfig>));
     MOCK_METHOD4(OnRpcReadUntilCallback,
                  void(int,
-                      absl::optional<media::AudioDecoderConfig>,
-                      absl::optional<media::VideoDecoderConfig>,
+                      std::optional<media::AudioDecoderConfig>,
+                      std::optional<media::VideoDecoderConfig>,
                       uint32_t));
     MOCK_METHOD2(OnRpcEnableBitstreamConverterCallback, void(int, bool));
   };
@@ -173,8 +173,8 @@ TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamInitializeCallbackValid) {
   ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
   EXPECT_CALL(demuxer_stream_client_, OnRpcInitializeCallback(kHandle, _, _))
       .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
-                       absl::optional<media::AudioDecoderConfig> audio_config,
-                       absl::optional<media::VideoDecoderConfig> video_config) {
+                       std::optional<media::AudioDecoderConfig> audio_config,
+                       std::optional<media::VideoDecoderConfig> video_config) {
         EXPECT_TRUE(audio_config.has_value());
         EXPECT_TRUE(test_audio_config_.Matches(audio_config.value()));
         EXPECT_TRUE(video_config.has_value());
@@ -194,8 +194,8 @@ TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamInitializeCallbackOneConfig) {
   ConvertVideoDecoderConfigToProto(test_video_config_, video_config);
   EXPECT_CALL(demuxer_stream_client_, OnRpcInitializeCallback(kHandle, _, _))
       .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
-                       absl::optional<media::AudioDecoderConfig> audio_config,
-                       absl::optional<media::VideoDecoderConfig> video_config) {
+                       std::optional<media::AudioDecoderConfig> audio_config,
+                       std::optional<media::VideoDecoderConfig> video_config) {
         EXPECT_FALSE(audio_config.has_value());
         EXPECT_TRUE(video_config.has_value());
         EXPECT_TRUE(test_video_config_.Matches(video_config.value()));
@@ -230,8 +230,8 @@ TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackValid) {
   EXPECT_CALL(demuxer_stream_client_,
               OnRpcReadUntilCallback(kHandle, _, _, kCount))
       .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
-                       absl::optional<media::AudioDecoderConfig> audio_config,
-                       absl::optional<media::VideoDecoderConfig> video_config,
+                       std::optional<media::AudioDecoderConfig> audio_config,
+                       std::optional<media::VideoDecoderConfig> video_config,
                        uint32_t count) {
         EXPECT_TRUE(audio_config.has_value());
         EXPECT_TRUE(test_audio_config_.Matches(audio_config.value()));
@@ -257,8 +257,8 @@ TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackOneConfig) {
   EXPECT_CALL(demuxer_stream_client_,
               OnRpcReadUntilCallback(kHandle, _, _, kCount))
       .WillOnce([this](openscreen::cast::RpcMessenger::Handle handle,
-                       absl::optional<media::AudioDecoderConfig> audio_config,
-                       absl::optional<media::VideoDecoderConfig> video_config,
+                       std::optional<media::AudioDecoderConfig> audio_config,
+                       std::optional<media::VideoDecoderConfig> video_config,
                        uint32_t count) {
         EXPECT_FALSE(audio_config.has_value());
         EXPECT_TRUE(video_config.has_value());
@@ -293,8 +293,8 @@ TEST_F(RpcCallMessageHandlerTest, OnDemuxerStreamReadUntilCallbackNonConfig) {
   EXPECT_CALL(demuxer_stream_client_,
               OnRpcReadUntilCallback(kHandle, _, _, kCount))
       .WillOnce([](openscreen::cast::RpcMessenger::Handle handle,
-                   absl::optional<media::AudioDecoderConfig> audio_config,
-                   absl::optional<media::VideoDecoderConfig> video_config,
+                   std::optional<media::AudioDecoderConfig> audio_config,
+                   std::optional<media::VideoDecoderConfig> video_config,
                    uint32_t count) {
         EXPECT_FALSE(audio_config.has_value());
         EXPECT_FALSE(video_config.has_value());

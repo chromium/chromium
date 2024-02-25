@@ -25,7 +25,7 @@ class CompatModeButton : public chromeos::FrameCenterButton {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
-  const raw_ptr<CompatModeButtonController, ExperimentalAsh> controller_;
+  const raw_ptr<CompatModeButtonController> controller_;
 };
 
 }  // namespace arc

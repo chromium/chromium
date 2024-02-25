@@ -95,7 +95,8 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
 void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
     password_manager::ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {
-  EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI()).WillOnce(Return(true));
+  EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI(web_contents()))
+      .WillOnce(Return(true));
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   delegate_->MaybeDisplayErrorMessage(web_contents(), pref_service(), flow_type,
                                       error_type,
@@ -107,7 +108,8 @@ void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
   EXPECT_CALL(mock_dismissal_callback_, Run);
   // In production code this method is called as a result of a java action.
   // Since that is not possible in a unit test, the method is invoked directly.
-  delegate_->HandleMessageDismissed(dismiss_reason);
+  GetMessageWrapper()->HandleDismissCallback(
+      base::android::AttachCurrentThread(), static_cast<int>(dismiss_reason));
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -126,11 +128,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_SAVE_PASSWORDS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_VERIFY_IT_IS_YOU),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_UP),
             GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
@@ -150,11 +152,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::ErrorMessageFlowType::kFillFlow,
       password_manager::PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_USE_PASSWORDS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_VERIFY_IT_IS_YOU),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_IN),
             GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
@@ -205,7 +207,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
 
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        NotDisplayedWhenCondiditonNotMet) {
-  EXPECT_CALL(*helper_bridge(), ShouldShowErrorUI()).WillOnce(Return(false));
+  EXPECT_CALL(*helper_bridge(), ShouldShowErrorUI(web_contents()))
+      .WillOnce(Return(false));
   EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
   EXPECT_CALL(*mock_dismissal_callback(), Run);
   delegate()->MaybeDisplayErrorMessage(
@@ -216,7 +219,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 }
 
 TEST_F(PasswordManagerErrorMessageDelegateTest, DisplaySavesTimestamp) {
-  EXPECT_CALL(*helper_bridge(), SaveErrorUIShownTimestamp());
+  EXPECT_CALL(*helper_bridge(), SaveErrorUIShownTimestamp(web_contents()));
   DisplayMessageAndExpectEnqueued(
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
@@ -234,4 +237,27 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
                              messages::DismissReason::UNKNOWN));
   delegate()->DismissPasswordManagerErrorMessage(
       messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the key retrieval flow starts when the user clicks the action
+// button and that the metrics are recorded correctly.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       StartTrustedVaultKeyRetrievalFlow) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::PRIMARY_ACTION,
+                                      1);
 }

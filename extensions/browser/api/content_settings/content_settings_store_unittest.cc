@@ -18,6 +18,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/features.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -35,7 +36,7 @@ void CheckRule(std::unique_ptr<content_settings::Rule> rule,
                ContentSetting setting) {
   EXPECT_EQ(primary_pattern.ToString(), rule->primary_pattern.ToString());
   EXPECT_EQ(secondary_pattern.ToString(), rule->secondary_pattern.ToString());
-  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(setting, content_settings::ValueToContentSetting(rule->value));
 }
 
 // Helper class which returns monotonically-increasing base::Time objects.
@@ -55,7 +56,7 @@ class MockContentSettingsStoreObserver
     : public ContentSettingsStore::Observer {
  public:
   MOCK_METHOD2(OnContentSettingChanged,
-               void(const std::string& extension_id, bool incognito));
+               void(const ExtensionId& extension_id, bool incognito));
 };
 
 ContentSetting GetContentSettingFromStore(
@@ -63,11 +64,22 @@ ContentSetting GetContentSettingFromStore(
     const GURL& primary_url, const GURL& secondary_url,
     ContentSettingsType content_type,
     bool incognito) {
+  auto rule =
+      store->GetRule(primary_url, secondary_url, content_type, incognito);
+
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       store->GetRuleIterator(content_type, incognito));
   const base::Value setting =
       content_settings::TestUtils::GetContentSettingValueAndPatterns(
           rule_iterator.get(), primary_url, secondary_url, nullptr, nullptr);
+
+  // Compare iterator lookup with direct lookup.
+  if (rule) {
+    EXPECT_EQ(setting, rule->value);
+  } else {
+    EXPECT_TRUE(setting.is_none());
+  }
+
   return content_settings::ValueToContentSetting(setting);
 }
 

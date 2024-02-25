@@ -6,7 +6,9 @@
 
 namespace ppapi {
 
-PP_Time TimeToPPTime(base::Time t) { return t.ToDoubleT(); }
+PP_Time TimeToPPTime(base::Time t) {
+  return t.InSecondsFSinceUnixEpoch();
+}
 
 base::Time PPTimeToTime(PP_Time t) {
   // The time code handles exact "0" values as special, and produces
@@ -15,7 +17,7 @@ base::Time PPTimeToTime(PP_Time t) {
   // epoch in this case.
   if (t == 0.0)
     return base::Time::UnixEpoch();
-  return base::Time::FromDoubleT(t);
+  return base::Time::FromSecondsSinceUnixEpoch(t);
 }
 
 PP_TimeTicks TimeTicksToPPTimeTicks(base::TimeTicks t) {

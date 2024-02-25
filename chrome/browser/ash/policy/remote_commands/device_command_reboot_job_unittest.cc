@@ -8,14 +8,15 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job_test_util.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace em = enterprise_management;
 
 namespace policy {
 
@@ -24,21 +25,24 @@ namespace {
 constexpr base::TimeDelta kCommandAge = base::Minutes(5);
 constexpr base::TimeDelta kAlmostExpiredCommandAge = base::Minutes(10);
 
-constexpr base::TimeDelta kUserSessionRebootDelay = base::Minutes(5);
+constexpr base::TimeDelta kUserSessionRebootDelay = base::Minutes(3);
+constexpr base::TimeDelta kDefaultUserSessionRebootDelay = base::Minutes(5);
 
 }  // namespace
 
 class DeviceCommandRebootJobTest : public DeviceCommandRebootJobTestBase,
                                    public testing::Test {
  protected:
-  DeviceCommandRebootJobTest() {
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting,
-        base::NumberToString(kUserSessionRebootDelay.InSeconds()));
+  std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand(
+      base::TimeDelta age_of_command) {
+    return DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
+        age_of_command, kUserSessionRebootDelay);
   }
 
- private:
-  base::test::ScopedCommandLine scoped_command_line_;
+  std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand() {
+    return DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
+        /*age_of_command=*/base::TimeDelta(), kUserSessionRebootDelay);
+  }
 };
 
 // Test that the command expires after default expiration time.
@@ -232,7 +236,7 @@ TEST_F(DeviceCommandRebootJobTest, RebootsWhenPowerManagerIsAvailable) {
   auto scoped_login_state = ScopedLoginState::CreateKiosk();
 
   chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
-      /*availability=*/absl::nullopt);
+      /*availability=*/std::nullopt);
 
   auto command = CreateAndInitializeCommand();
   base::test::TestFuture<void> future;
@@ -287,5 +291,161 @@ TEST_F(DeviceCommandRebootJobTest,
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
 }
+
+class DeviceCommandRebootJobPayloadTest : public DeviceCommandRebootJobTestBase,
+                                          public testing::Test {
+ private:
+  ScopedLoginState scoped_login_state_{ScopedLoginState::CreateRegularUser()};
+};
+
+TEST_F(DeviceCommandRebootJobPayloadTest, RebootsAfterPayloadDelay) {
+  constexpr base::TimeDelta kUserSessionPayloadDelay = base::Minutes(10);
+  auto command = CreateAndInitializeCommand(
+      /*age_of_command=*/base::TimeDelta(), kUserSessionPayloadDelay);
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check the command does not reboot up until timeout.
+  task_environment_.FastForwardBy(kUserSessionPayloadDelay - base::Seconds(1));
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+TEST_F(DeviceCommandRebootJobPayloadTest, RebootsInstantlyWithZeroDelay) {
+  auto command = CreateAndInitializeCommand(
+      /*age_of_command=*/base::TimeDelta(),
+      /*user_session_reboot_delay=*/base::TimeDelta());
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+
+  // Check that notification is not shown but postreboot notification is
+  // scheduled.
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 0);
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
+  EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 0);
+}
+
+TEST_F(DeviceCommandRebootJobPayloadTest, RebootsAfterCommandLineDelay) {
+  constexpr base::TimeDelta user_session_reboot_delay = base::Minutes(20);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kRemoteRebootCommandDelayInSecondsForTesting,
+      base::NumberToString(user_session_reboot_delay.InSeconds()));
+  // Use smaller delay in payload so we can check that reboot happens only
+  // after commandline delay.
+  auto command = CreateAndInitializeCommand(
+      /*age_of_command=*/base::TimeDelta(), user_session_reboot_delay / 2);
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check that reboot does not happen after payload delay and before
+  // commandline delay.
+  task_environment_.FastForwardBy(user_session_reboot_delay / 2);
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  task_environment_.FastForwardBy(user_session_reboot_delay / 2);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+TEST_F(DeviceCommandRebootJobPayloadTest, RebootsAfterDefaultDelay) {
+  em::RemoteCommand command_proto;
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_REBOOT);
+  command_proto.set_command_id(123);
+  command_proto.set_age_of_command(0);
+  ASSERT_FALSE(command_proto.has_payload());
+
+  auto command = CreateAndInitializeCommand(std::move(command_proto));
+
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check that reboot does not happen immediately after the command is
+  // received.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  task_environment_.FastForwardBy(kDefaultUserSessionRebootDelay);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+class DeviceCommandRebootJobInvalidPayloadTest
+    : public DeviceCommandRebootJobPayloadTest,
+      public testing::WithParamInterface<std::string> {
+ public:
+  std::string payload() const { return GetParam(); }
+};
+
+TEST_P(DeviceCommandRebootJobInvalidPayloadTest, RebootsWithInvalidPayload) {
+  em::RemoteCommand command_proto;
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_REBOOT);
+  command_proto.set_command_id(123);
+  command_proto.set_age_of_command(0);
+  command_proto.set_payload(std::string(payload()));
+
+  auto command = CreateAndInitializeCommand(std::move(command_proto));
+
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check that reboot does not happen immediately after the command is
+  // received.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  task_environment_.FastForwardBy(kDefaultUserSessionRebootDelay);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidPayloads,
+    DeviceCommandRebootJobInvalidPayloadTest,
+    testing::Values("not_a_json",
+                    "{}",
+                    R"({"not_delay_field": 10})",
+                    R"({"user_session_delay_seconds": false})",
+                    R"({"user_session_delay_seconds": -1})",
+                    R"({"user_session_delay_seconds": 1.0})",
+                    R"({"user_session_delay_seconds": 1.10})",
+                    R"({"user_session_delay_seconds": -1.0})",
+                    R"({"user_session_delay_seconds": -1.10})",
+                    base::StringPrintf(R"({"user_session_delay_seconds": %ld})",
+                                       base::TimeDelta::Max().InSeconds()),
+                    base::StringPrintf(R"({"user_session_delay_seconds": %ld})",
+                                       base::TimeDelta::Min().InSeconds())));
 
 }  // namespace policy

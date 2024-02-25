@@ -103,19 +103,21 @@
               <template is="dom-repeat"
                   items="[[getStandardAcceleratorModifiers(acceleratorInfo)]]"
                   as="modifierKey">
-                <input-key key="[[modifierKey]]" key-state="modifier-selected"
-                    narrow highlighted="[[selected]]">
-                </input-key>
+                <shortcut-input-key key="[[modifierKey]]" key-state="modifier-selected"
+                    narrow highlighted="[[selected]]"
+                    has-launcher-button="[[hasLauncherButton]]">
+                </shortcut-input-key>
               </template>
-              <input-key
+              <shortcut-input-key
                   key="[[getStandardAcceleratorKey(acceleratorInfo)]]"
                   key-state="alpha-numeric-selected" narrow
-                  highlighted="[[selected]]">
-              </input-key>
+                  highlighted="[[selected]]"
+                  has-launcher-button="[[hasLauncherButton]]">
+              </shortcut-input-key>
               <template is="dom-if"
                   if="[[shouldShowTextDivider(index, searchResult)]]">
                 <div class="accelerator-text-divider">
-                  [[i18n('searchAcceleratorTextDivider')]]
+                  [[i18n('acceleratorTextDivider')]]
                 </div>
               </template>
             </div>
@@ -123,8 +125,13 @@
         </template>
         <template is="dom-if" if="[[isTextLayout(searchResult)]]">
           <text-accelerator parts="[[getTextAcceleratorParts(searchResult)]]"
-              highlighted="[[selected]]" narrow>
+              highlighted="[[selected]]" narrow display-lock-icon>
           </text-accelerator>
+        </template>
+        <template is="dom-if" if="[[isNoShortcutAssigned(searchResult)]]">
+          <div id="noShortcutAssignedMessage">
+            [[i18n('noShortcutAssigned')]]
+          </div>
         </template>
       </div>
       <iron-icon id="actionIcon" icon="cr:arrow-forward"></iron-icon>

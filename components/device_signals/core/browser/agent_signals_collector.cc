@@ -43,8 +43,8 @@ void AgentSignalsCollector::OnCrowdStrikeSignalCollected(
     base::TimeTicks start_time,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure,
-    absl::optional<CrowdStrikeSignals> agent_signals,
-    absl::optional<SignalCollectionError> error) {
+    std::optional<CrowdStrikeSignals> agent_signals,
+    std::optional<SignalCollectionError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (agent_signals || error) {
     AgentSignalsResponse signal_response;
@@ -58,7 +58,7 @@ void AgentSignalsCollector::OnCrowdStrikeSignalCollected(
       signal_response.collection_error = error.value();
     } else {
       LogSignalCollectionSucceeded(SignalName::kAgent, start_time,
-                                   /*signal_collection_size=*/absl::nullopt);
+                                   /*signal_collection_size=*/std::nullopt);
     }
 
     response.agent_signals_response = std::move(signal_response);

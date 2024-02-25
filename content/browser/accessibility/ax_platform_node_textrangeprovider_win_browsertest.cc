@@ -585,6 +585,137 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelRangeAnchoredInSpans) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <span>before</span>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nmiddle\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nmiddle\nafter",
+      /*expected_count*/ 6);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 7,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 7);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"middle");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 3,
+      /*expected_text*/ L"dle",
+      /*expected_count*/ 3);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelStartAnchoredInSpan) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <span>before</span>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nmiddle");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 8,
+      /*expected_text*/ L"iddle",
+      /*expected_count*/ 8);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelButtonEndAnchoredInSpan) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"middle\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyTextfieldWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <input type="text" aria-label="before">
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextNonEmptyTextfieldWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <input type="text" aria-label="before" value="go blue">
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"go blue\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"e\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        GetAttributeValue) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
@@ -637,14 +768,16 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <input readonly type="text" aria-label="input_text">
-          <input type="search" aria-label="input_search">
+          <input readonly type="text">
+          <input type="search">
         </body>
       </html>
   )HTML");
 
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
   BrowserAccessibility* input_text_node =
-      FindNode(ax::mojom::Role::kTextField, "input_text");
+      root->InternalGetFirstChild()->InternalGetFirstChild();
   ASSERT_NE(nullptr, input_text_node);
   EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
@@ -664,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   value.Reset();
 
   BrowserAccessibility* input_search_node =
-      FindNode(ax::mojom::Role::kSearchBox, "input_search");
+      input_text_node->InternalGetNextSibling();
   ASSERT_NE(nullptr, input_search_node);
   EXPECT_TRUE(input_search_node->IsLeaf());
   EXPECT_EQ(0u, input_search_node->PlatformChildCount());
@@ -948,6 +1081,61 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       TextPatternRangeEndpoint_End, text_range_provider_clone.Get(),
       TextPatternRangeEndpoint_Start, &result));
   ASSERT_EQ(1, result);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       CompareAriaInvalidTextRange) {
+  // This test is needed since there was a bug with this scenario, and it
+  // differs from others since the "aria-invalid" attribute causes the tree to
+  // be different, with an extra generic container that we do not have in the
+  // case without aria-invalid="spelling".
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <div contentEditable="true">x <span aria-invalid="spelling">He</span></div>
+      </html>
+  )HTML"));
+
+  BrowserAccessibility* static_text_node_1 =
+      FindNode(ax::mojom::Role::kStaticText, "He");
+  ASSERT_NE(nullptr, static_text_node_1);
+  BrowserAccessibility* static_text_node_2 =
+      FindNode(ax::mojom::Role::kStaticText, "x ");
+  ASSERT_NE(nullptr, static_text_node_2);
+
+  ComPtr<ITextRangeProvider> text_range_provider_1;
+  GetTextRangeProviderFromTextNode(*static_text_node_1, &text_range_provider_1);
+
+  // We are moving the endpoints to replicate a bug where the text ranges looked
+  // like:
+  // 1. H<e>
+  // 2. x <>
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_1, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 1,
+      /*expected_text*/ L"e",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_1, TextPatternRangeEndpoint_End, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ -1);
+  ASSERT_NE(nullptr, text_range_provider_1.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_1, L"");
+
+  ComPtr<ITextRangeProvider> text_range_provider_2;
+  GetTextRangeProviderFromTextNode(*static_text_node_2, &text_range_provider_2);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_2, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 2,
+      /*expected_text*/ L"",
+      /*expected_count*/ 2);
+  ASSERT_NE(nullptr, text_range_provider_2.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_2, L"");
+
+  BOOL are_same;
+  text_range_provider_1->Compare(text_range_provider_2.Get(), &are_same);
+  EXPECT_FALSE(are_same);
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -1398,6 +1586,81 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/ L"plain 1\nplain 2",
+      /*expected_count*/ 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByLineInlineBlockSpan) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <div contenteditable="true" style="outline: 1px solid;" aria-label="canvas">
+        <div>first line</div>
+        <div><span>this line </span><span style="display: inline-block" id="IB"><span style="display: block;">is</span></span><span> broken.</span></div>
+        <div>last line</div>
+      </div>
+      </html>)HTML");
+  auto* node = FindNode(ax::mojom::Role::kStaticText, "first line");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"first line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"first line\nthis line \nis\n broken.",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/
+      L"this line \nis\n broken.",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/
+                                   L"this line \nis\n broken.\nlast line",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"last line",
+      /*expected_count*/ 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByLineLinkInTwoLines) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <div contenteditable style="width: 70px">
+        Hello
+        <a href="#">this is a</a>
+        test.
+      </div>
+      )HTML");
+  auto* node = FindNode(ax::mojom::Role::kStaticText, "Hello ");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello ");
+  text_range_provider->ExpandToEnclosingUnit(TextUnit_Line);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello this ");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"Hello this is a test.",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/
+      L"is a test.",
       /*expected_count*/ 1);
 }
 
@@ -2370,8 +2633,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        MoveByUnitParagraphWithAriaHiddenNodes) {
   const std::string html_markup = R"HTML(<!DOCTYPE html>
-  <html>
-    <body>
+  <html>   <!-- aria=describedby on #body causes hidden nodes to be included -->
+    <body id="body" aria-describedby="body">
       <div>start</div>
       <div>
         1. Paragraph with hidden <span aria-hidden="true">
@@ -2544,6 +2807,60 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*count*/ -2,
       /*expected_text*/ L"",
       /*expected_count*/ -1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByUnitLineInertSpan) {
+  // Spans need to be in the same line: see https://crbug.com/1511390.
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <div>
+        <div>first line</div>
+        <span id="span1">go </span><span inert>inert1</span><span inert>inert2</span><span>blue</span>
+        <div>last line</div>
+      </div>)HTML");
+  BrowserAccessibility* start_node =
+      FindNode(ax::mojom::Role::kStaticText, "first line");
+  ASSERT_NE(nullptr, start_node);
+
+  BrowserAccessibility* end_node =
+      FindNode(ax::mojom::Role::kStaticText, "last line");
+  ASSERT_NE(nullptr, start_node);
+
+  // Navigating forward to the next line.
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"first line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"first line\ngo blue",
+                                   /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"go blue",
+      /*expected_count*/ 1);
+
+  // Navigating to the previous line.
+  GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"last line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ -1,
+      /*expected_text*/ L"go blue\nlast line",
+      /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ -1,
+                                   /*expected_text*/ L"go blue",
+                                   /*expected_count*/ -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -2983,12 +3300,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   AssertMoveByUnitForMarkup(
       TextUnit_Line, "<div style='display:inline-block'>a</div>", {L"a"});
 
-  // This tests a weird edge-case; TextUnit_Line breaks at the beginning of an
-  // "inline-block", but not at the end. Consequently, a line break should not
-  // be added after an "inline-block", in contrast to a "block".
-  AssertMoveByUnitForMarkup(TextUnit_Line,
-                            "a<div style='display:inline-block'>b</div>c",
-                            {L"a", L"bc"});
+  // This makes sure that inline block is not adding a line break
+  AssertMoveByUnitForMarkup(
+      TextUnit_Line, "a<div style='display:inline-block'>b</div>c", {L"abc"});
   AssertMoveByUnitForMarkup(TextUnit_Line,
                             "a<div style='display:block'>b</div>c",
                             {L"a", L"b", L"c"});

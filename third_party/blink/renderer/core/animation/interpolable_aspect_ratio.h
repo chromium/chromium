@@ -19,11 +19,9 @@ namespace blink {
 class CORE_EXPORT InterpolableAspectRatio final : public InterpolableValue {
  public:
   explicit InterpolableAspectRatio(const gfx::SizeF& ratio);
-  explicit InterpolableAspectRatio(std::unique_ptr<InterpolableValue> value)
-      : value_(std::move(value)) {}
+  explicit InterpolableAspectRatio(InterpolableValue* value) : value_(value) {}
 
-  static std::unique_ptr<InterpolableAspectRatio> MaybeCreate(
-      const StyleAspectRatio&);
+  static InterpolableAspectRatio* MaybeCreate(const StyleAspectRatio&);
 
   gfx::SizeF GetRatio() const;
 
@@ -40,17 +38,23 @@ class CORE_EXPORT InterpolableAspectRatio final : public InterpolableValue {
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(value_);
+  }
+
  private:
   InterpolableAspectRatio* RawClone() const final {
-    return new InterpolableAspectRatio(value_->Clone());
+    return MakeGarbageCollected<InterpolableAspectRatio>(value_->Clone());
   }
   InterpolableAspectRatio* RawCloneAndZero() const final {
-    return new InterpolableAspectRatio(value_->CloneAndZero());
+    return MakeGarbageCollected<InterpolableAspectRatio>(
+        value_->CloneAndZero());
   }
 
   // Interpolable aspect ratio value is stored and interpolated as the log of
   // the real aspect ratio.
-  std::unique_ptr<InterpolableValue> value_;
+  Member<InterpolableValue> value_;
 };
 
 template <>

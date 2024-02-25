@@ -47,23 +47,23 @@ PYBIND11_MODULE(_pywrap_image_segmenter, m) {
 
             if (segmentation_options.has_display_names_locale()) {
               options.set_display_names_locale(
-                  segmentation_options.display_names_locale());
+            segmentation_options.display_names_locale());
             }
             if (segmentation_options.has_output_type()) {
               options.set_output_type(
                   static_cast<ImageSegmenterOptions::OutputType>(
-                      segmentation_options.output_type()));
+                          segmentation_options.output_type()));
             }
 
             auto segmenter = ImageSegmenter::CreateFromOptions(options);
             return core::get_value(segmenter);
           })
       .def("segment",
-           [](ImageSegmenter& self,
-              const ImageData& image_data) -> SegmentationResult {
+           [](ImageSegmenter& self, const ImageData& image_data)
+               -> SegmentationResult {
              auto frame_buffer = CreateFrameBufferFromImageData(image_data);
-             auto vision_segmentation_result =
-                 self.Segment(*core::get_value(frame_buffer));
+             auto vision_segmentation_result = self.Segment(
+                     *core::get_value(frame_buffer));
              return core::get_value(vision_segmentation_result);
            });
 }

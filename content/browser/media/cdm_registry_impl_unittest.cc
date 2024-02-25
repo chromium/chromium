@@ -57,6 +57,13 @@ const char kOtherKeySystem[] = "com.example.othersystem";
 const int kObserver1 = 1;
 const int kObserver2 = 2;
 
+#if BUILDFLAG(IS_WIN)
+// 0x1234 is randomly picked as a non-software emulated vendor ID.
+constexpr uint32_t kNonSoftwareEmulatedVendorId = 0x1234;
+// 0x0000 is one of the software emulated vendor IDs.
+constexpr uint32_t kSoftwareEmulatedVendorId = 0x0000;
+#endif  // BUILDFLAG(IS_WIN)
+
 // Helper function to convert a VideoCodecMap to a list of VideoCodec values
 // so that they can be compared. VideoCodecProfiles are ignored.
 std::vector<media::VideoCodec> VideoCodecMapToList(
@@ -102,13 +109,17 @@ class CdmRegistryImplTest : public testing::Test {
     // Simulate GPU process initialization completing with GL unavailable.
     gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
         gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
-    gpu_data_manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+    gpu_data_manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
 #if BUILDFLAG(IS_WIN)
     // Simulate enabling direct composition.
     gpu::GPUInfo gpu_info;
     gpu_info.overlay_info.direct_composition = true;
-    gpu_data_manager->UpdateGpuInfo(gpu_info, absl::nullopt);
+
+    // Simulate non-software emulated GPU. Check out `gpu/config/gpu_info.cc` to
+    // see which vendor IDs are for the software emulated GPU.
+    gpu_info.gpu.vendor_id = kNonSoftwareEmulatedVendorId;
+    gpu_data_manager->UpdateGpuInfo(gpu_info, std::nullopt);
 #endif  // BUILDFLAG(IS_WIN)
 
     cdm_registry_.SetCapabilityCBForTesting(capability_cb_.Get());
@@ -151,7 +162,7 @@ class CdmRegistryImplTest : public testing::Test {
   }
 
   void Register(const std::string& key_system,
-                absl::optional<media::CdmCapability> capability,
+                std::optional<media::CdmCapability> capability,
                 Robustness robustness = Robustness::kSoftwareSecure) {
     Register(CdmInfo(key_system, robustness, std::move(capability),
                      /*supports_sub_key_systems=*/true, kTestCdmName,
@@ -162,7 +173,7 @@ class CdmRegistryImplTest : public testing::Test {
   void RegisterForLazySoftwareSecureInitialization() {
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-                     absl::nullopt, kTestCdmType));
+                     std::nullopt, kTestCdmType));
     auto cdm_info = cdm_registry_.GetCdmInfo(
         kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
     ASSERT_TRUE(cdm_info);
@@ -172,7 +183,7 @@ class CdmRegistryImplTest : public testing::Test {
   void RegisterForLazyHardwareSecureInitialization() {
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
-                     absl::nullopt, kTestCdmType));
+                     std::nullopt, kTestCdmType));
     auto cdm_info = cdm_registry_.GetCdmInfo(
         kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
     ASSERT_TRUE(cdm_info);
@@ -458,7 +469,7 @@ TEST_F(CdmRegistryImplTest,
 
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
-      .WillOnce(RunOnceCallback<2>(absl::nullopt));
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -479,7 +490,7 @@ TEST_F(CdmRegistryImplTest,
 
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
-      .WillOnce(RunOnceCallback<2>(absl::nullopt));
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -712,7 +723,7 @@ TEST_F(CdmRegistryImplTest,
   SelectHardwareSecureDecryption(true);
 
   // Save the callbacks so we can control when and how they are fired.
-  base::OnceCallback<void(absl::optional<media::CdmCapability>)> callback_1,
+  base::OnceCallback<void(std::optional<media::CdmCapability>)> callback_1,
       callback_2, callback_3;
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
@@ -726,7 +737,7 @@ TEST_F(CdmRegistryImplTest,
   {
     base::RunLoop run_loop;
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
-                     absl::nullopt, kTestCdmType));
+                     std::nullopt, kTestCdmType));
     cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
         &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
         base::Unretained(this), kObserver1, base::DoNothing()));
@@ -741,7 +752,7 @@ TEST_F(CdmRegistryImplTest,
     base::RunLoop run_loop;
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kOtherKeySystem, CdmInfo::Robustness::kHardwareSecure,
-                     absl::nullopt, kTestCdmType));
+                     std::nullopt, kTestCdmType));
     std::move(callback_1).Run(GetTestCdmCapability());
     std::move(callback_2).Run(GetTestCdmCapability());
     std::move(callback_3).Run(GetOtherCdmCapability());
@@ -806,7 +817,7 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DirectCompositionDisabled) {
   // Simulate disabling direct composition.
   gpu::GPUInfo gpu_info;
   gpu_info.overlay_info.direct_composition = false;
-  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, absl::nullopt);
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, std::nullopt);
 
   RegisterForLazyHardwareSecureInitialization();
   SelectHardwareSecureDecryption(true);
@@ -820,6 +831,29 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DirectCompositionDisabled) {
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
   ASSERT_EQ(cdm_info->status, CdmInfo::Status::kGpuCompositionDisabled);
+  ASSERT_FALSE(cdm_info->capability);
+}
+
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_DisabledBySoftwareEmulatedGpu) {
+  // Simulate enabling direct composition and software emulated GPU.
+  gpu::GPUInfo gpu_info;
+  gpu_info.overlay_info.direct_composition = true;
+  gpu_info.gpu.vendor_id = kSoftwareEmulatedVendorId;
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, std::nullopt);
+
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+  GetKeySystemCapabilities();
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(key_system_capabilities.empty());
+
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  ASSERT_EQ(cdm_info->status, CdmInfo::Status::kDisabledBySoftwareEmulatedGpu);
   ASSERT_FALSE(cdm_info->capability);
 }
 #endif  // BUILDFLAG(IS_WIN)

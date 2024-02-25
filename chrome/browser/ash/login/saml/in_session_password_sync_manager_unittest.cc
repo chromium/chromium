@@ -50,7 +50,7 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   void CreateInSessionSyncManager();
   void DestroyInSessionSyncManager();
 
-  InSessionPasswordSyncManager::ReauthenticationReason InSessionReauthReason();
+  InSessionPasswordSyncManager::LockScreenReauthReason InSessionReauthReason();
   bool IsTokenFetcherCreated();
   void LockScreen();
   void UnlockScreen();
@@ -64,13 +64,12 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_ = nullptr;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile> secondary_profile_ = nullptr;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<MockLockHandler> lock_handler_;
   std::unique_ptr<InSessionPasswordSyncManager> manager_;
   base::test::ScopedFeatureList feature_list_;
@@ -81,13 +80,6 @@ InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
     : manager_(nullptr) {
   UserDataAuthClient::InitializeFake();
 
-  std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeChromeUserManager>();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  user_manager_ =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
   known_user_ = std::make_unique<user_manager::KnownUser>(
       g_browser_process->local_state());
 }
@@ -102,17 +94,17 @@ void InSessionPasswordSyncManagerTest::SetUp() {
   primary_profile_ = profile_manager_.CreateTestingProfile("test1");
   secondary_profile_ = profile_manager_.CreateTestingProfile("test2");
 
-  user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+  fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id1_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
-  user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+      user_manager::UserType::kRegular, primary_profile_);
+  fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id2_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, secondary_profile_);
-  user_manager_->AddUser(saml_login_account_id2_);
-  user_manager_->LoginUser(saml_login_account_id1_);
+      user_manager::UserType::kRegular, secondary_profile_);
+  fake_user_manager_->AddUser(saml_login_account_id2_);
+  fake_user_manager_->LoginUser(saml_login_account_id1_);
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
-  user_manager_->SwitchActiveUser(saml_login_account_id1_);
-  ASSERT_TRUE(user_manager_->GetActiveUser());
+  fake_user_manager_->SwitchActiveUser(saml_login_account_id1_);
+  ASSERT_TRUE(fake_user_manager_->GetActiveUser());
 }
 
 void InSessionPasswordSyncManagerTest::TearDown() {
@@ -141,7 +133,7 @@ void InSessionPasswordSyncManagerTest::UnlockScreen() {
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
 }
 
-InSessionPasswordSyncManager::ReauthenticationReason
+InSessionPasswordSyncManager::LockScreenReauthReason
 InSessionPasswordSyncManagerTest::InSessionReauthReason() {
   return manager_->lock_screen_reauth_reason_;
 }
@@ -155,11 +147,11 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetInSession) {
       prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   UnlockScreen();
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+            InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
 }
 
 TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateResetByToken) {
@@ -167,14 +159,14 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateResetByToken) {
       prefs::kLockScreenReauthenticationEnabled, true);
   CreateInSessionSyncManager();
   UnlockScreen();
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
   EXPECT_EQ(
       InSessionReauthReason(),
-      InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
 }
 
 TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetOnLock) {
@@ -187,11 +179,11 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetOnLock) {
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+            InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
 }
 
 // User tries to unlock the screen using valid SAML credentials but not for the
@@ -208,16 +200,16 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
                           std::u16string()))
       .Times(1);
   EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(0);
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+            InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id2_);
   manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+            InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
 }
 
@@ -238,17 +230,17 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
                           std::u16string()))
       .Times(1);
   EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   test_environment_.FastForwardBy(kSamlOnlineShortDelay);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+            InSessionPasswordSyncManager::LockScreenReauthReason::kPolicy);
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
   manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kNone);
+            InSessionPasswordSyncManager::LockScreenReauthReason::kNone);
   now = known_user_->GetLastOnlineSignin(saml_login_account_id1_);
   EXPECT_EQ(now, expected_signin_time);
 }
@@ -264,20 +256,20 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateTokenNotInitialized) {
                           std::u16string()))
       .Times(1);
   EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
-  user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
-      InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
+      InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
   EXPECT_EQ(
       InSessionReauthReason(),
-      InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
-  UserContext user_context(user_manager::USER_TYPE_REGULAR,
+      InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
+  UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
   manager_->OnAuthSuccess(user_context);
   manager_->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kGetNoList);
   EXPECT_TRUE(IsTokenFetcherCreated());
   manager_->OnTokenCreated(kFakeToken);
   EXPECT_EQ(InSessionReauthReason(),
-            InSessionPasswordSyncManager::ReauthenticationReason::kNone);
+            InSessionPasswordSyncManager::LockScreenReauthReason::kNone);
   EXPECT_FALSE(IsTokenFetcherCreated());
   const std::string* sync_token =
       known_user_->GetPasswordSyncToken(saml_login_account_id1_);

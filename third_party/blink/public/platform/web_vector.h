@@ -71,6 +71,11 @@ template <typename T>
 class WebVector {
  public:
   using value_type = typename std::vector<T>::value_type;
+  using size_type = size_t;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using pointer = value_type*;
+  using const_pointer = const value_type*;
   using iterator = typename std::vector<T>::iterator;
   using const_iterator = typename std::vector<T>::const_iterator;
 
@@ -100,7 +105,7 @@ class WebVector {
             typename = decltype(std::declval<C>().end())>
   WebVector(const C& other) : data_(other.begin(), other.end()) {}
 
-  WebVector(WebVector<T>&& other) noexcept { Swap(other); }
+  WebVector(WebVector<T>&& other) noexcept { swap(other); }
 
   WebVector(std::vector<T>&& other) noexcept : data_(std::move(other)) {}
 
@@ -114,7 +119,7 @@ class WebVector {
 
   WebVector& operator=(WebVector&& other) noexcept {
     if (this != &other)
-      Swap(other);
+      swap(other);
     return *this;
   }
 
@@ -176,8 +181,8 @@ class WebVector {
   void push_back(const T& value) { data_.push_back(value); }
   void push_back(T&& value) { data_.push_back(std::move(value)); }
 
-  void Swap(WebVector<T>& other) { data_.swap(other.data_); }
-  void Clear() { data_.clear(); }
+  void swap(WebVector<T>& other) { data_.swap(other.data_); }
+  void clear() { data_.clear(); }
 
   T& front() { return data_.front(); }
   const T& front() const { return data_.front(); }

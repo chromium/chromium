@@ -1,0 +1,30 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SavingBrowserHistoryDisabled": false
+        },
+        "prefs": {
+          "history.saving_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SavingBrowserHistoryDisabled": true
+        },
+        "prefs": {
+          "history.saving_disabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

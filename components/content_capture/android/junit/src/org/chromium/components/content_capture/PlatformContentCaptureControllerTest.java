@@ -28,9 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.HashSet;
 
-/**
- * Unit test for PlatformContentCaptureController.
- */
+/** Unit test for PlatformContentCaptureController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -78,8 +76,9 @@ public class PlatformContentCaptureControllerTest {
     @Test
     public void testContentCaptureConditions() throws Throwable {
         HashSet<ContentCaptureCondition> conditions = new HashSet<ContentCaptureCondition>();
-        conditions.add(new ContentCaptureCondition(
-                new LocusId(".*chromium.org"), ContentCaptureCondition.FLAG_IS_REGEX));
+        conditions.add(
+                new ContentCaptureCondition(
+                        new LocusId(".*chromium.org"), ContentCaptureCondition.FLAG_IS_REGEX));
         conditions.add(new ContentCaptureCondition(new LocusId("www.abc.org"), 0));
         doReturn(conditions).when(mContentCaptureManager).getContentCaptureConditions();
         PlatformContentCaptureController controller =

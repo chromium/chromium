@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/util.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -69,11 +70,14 @@ bool AreConfigVersionsCompatible(int preexisting, int current) {
     return true;
   }
 
-  // Currently only version 1 is supported. Update this logic when more versions
-  // are introduced.
-  CHECK_EQ(preexisting, 1);
-  CHECK_EQ(current, 1);
-  return true;
+  if ((preexisting == ConfigVersion::kInitial &&
+       current == ConfigVersion::kUsePrioritizedTopicsList) ||
+      (preexisting == ConfigVersion::kUsePrioritizedTopicsList &&
+       current == ConfigVersion::kInitial)) {
+    // Versions 1 and 2 are forward and backward compatible.
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -139,14 +143,14 @@ void BrowsingTopicsState::ClearContextDomain(
   ScheduleSave();
 }
 
-absl::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
+std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
     EpochTopics epoch_topics) {
   DCHECK(loaded_);
 
   epochs_.push_back(std::move(epoch_topics));
 
   // Remove the epoch data that is no longer useful.
-  absl::optional<EpochTopics> removed_epoch_topics;
+  std::optional<EpochTopics> removed_epoch_topics;
   if (epochs_.size() >
       static_cast<size_t>(
           blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get()) +
@@ -260,12 +264,12 @@ BrowsingTopicsState::GetSerializedDataProducerForBackgroundSequence() {
   DCHECK(loaded_);
 
   return base::BindOnce(
-      [](base::Value value) -> absl::optional<std::string> {
+      [](base::Value value) -> std::optional<std::string> {
         // This runs on the background sequence.
         std::string output;
         if (!base::JSONWriter::WriteWithOptions(
                 value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         return output;
       },

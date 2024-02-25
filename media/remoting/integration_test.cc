@@ -29,7 +29,7 @@ class MediaRemotingIntegrationTest : public testing::Test,
 
  private:
   std::unique_ptr<Renderer> CreateEnd2EndTestRenderer(
-      absl::optional<RendererType> renderer_type) {
+      std::optional<RendererType> renderer_type) {
     return std::make_unique<End2EndTestRenderer>(
         this->CreateRendererImpl(renderer_type));
   }

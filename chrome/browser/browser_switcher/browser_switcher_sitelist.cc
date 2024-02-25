@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_fixer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -36,8 +36,8 @@ namespace {
 //
 // If |token| is not in |input|, return a pointer to the null-byte at the end
 // of |input|.
-const char* StringFindInsensitiveASCII(base::StringPiece input,
-                                       base::StringPiece token) {
+auto StringFindInsensitiveASCII(base::StringPiece input,
+                                base::StringPiece token) {
   return base::ranges::search(input, token, std::equal_to<>(),
                               &base::ToLowerASCII<char>,
                               &base::ToLowerASCII<char>);
@@ -176,7 +176,7 @@ class DefaultModeRule : public Rule {
     }
 
     // Compare hosts and ports, case-insensitive.
-    const char* it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
+    auto it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
     return it != url.host_and_port().end();
   }
 
@@ -283,7 +283,7 @@ class IESiteListModeRule : public Rule {
       return false;
 
     // Compare paths, case-insensitively. They must match at the beginning.
-    const char* pos = StringFindInsensitiveASCII(url.path_piece(), path_);
+    auto pos = StringFindInsensitiveASCII(url.path_piece(), path_);
     if (pos != url.path_piece().begin())
       return false;
 
@@ -320,9 +320,9 @@ class IESiteListModeRule : public Rule {
   }
 
  private:
-  absl::optional<std::string> scheme_;
+  std::optional<std::string> scheme_;
   std::string host_;
-  absl::optional<int> port_;
+  std::optional<int> port_;
   // Always at least a "/".
   std::string path_;
 

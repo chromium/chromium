@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -58,15 +59,16 @@ class NavigateEvent final : public Event,
   }
 
   String navigationType() { return navigation_type_; }
-  NavigationDestination* destination() { return destination_; }
+  NavigationDestination* destination() { return destination_.Get(); }
   bool canIntercept() const { return can_intercept_; }
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
-  AbortSignal* signal() { return signal_; }
-  FormData* formData() const { return form_data_; }
+  AbortSignal* signal() { return signal_.Get(); }
+  FormData* formData() const { return form_data_.Get(); }
   String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
   bool hasUAVisualTransition() const { return has_ua_visual_transition_; }
+  Element* sourceElement() const { return source_element_.Get(); }
   void intercept(NavigationInterceptOptions*, ExceptionState&);
   void commit(ExceptionState&);
 
@@ -117,9 +119,10 @@ class NavigateEvent final : public Event,
   String download_request_;
   ScriptValue info_;
   bool has_ua_visual_transition_ = false;
-  absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
-  absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
-  absl::optional<V8NavigationCommitBehavior> commit_behavior_ = absl::nullopt;
+  Member<Element> source_element_;
+  std::optional<V8NavigationFocusReset> focus_reset_behavior_ = std::nullopt;
+  std::optional<V8NavigationScrollBehavior> scroll_behavior_ = std::nullopt;
+  std::optional<V8NavigationCommitBehavior> commit_behavior_ = std::nullopt;
 
   Member<NavigateEventDispatchParams> dispatch_params_;
 

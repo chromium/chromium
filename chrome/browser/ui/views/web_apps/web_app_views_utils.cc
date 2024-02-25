@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/url_formatter/elide_url.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -18,11 +19,12 @@ std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
   return name_label;
 }
 
-std::unique_ptr<views::Label> CreateOriginLabel(const url::Origin& origin,
-                                                bool is_primary_text) {
+std::unique_ptr<views::Label> CreateOriginLabelFromStartUrl(
+    const GURL& start_url,
+    bool is_primary_text) {
   auto origin_label = std::make_unique<views::Label>(
-      FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          start_url),
       CONTEXT_DIALOG_BODY_TEXT_SMALL,
       is_primary_text ? views::style::STYLE_PRIMARY
                       : views::style::STYLE_SECONDARY);

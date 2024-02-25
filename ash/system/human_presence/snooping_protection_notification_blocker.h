@@ -77,8 +77,8 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   // Starts or stops blocking and showing the info notification based on the
@@ -100,8 +100,8 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
   // currently-blocked notifications.
   std::unique_ptr<message_center::Notification> CreateInfoNotification() const;
 
-  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
-  const raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_;
+  const raw_ptr<message_center::MessageCenter> message_center_;
+  const raw_ptr<SnoopingProtectionController> controller_;
 
   bool info_popup_exists_ = false;
 

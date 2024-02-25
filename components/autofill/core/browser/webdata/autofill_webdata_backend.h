@@ -50,23 +50,16 @@ class AutofillWebDataBackend {
   // sequence notifications are asynchronous.
   virtual void NotifyOfCreditCardChanged(const CreditCardChange& change) = 0;
 
-  // Notifies listeners on both DB and UI sequences that multiple changes have
-  // been made to to Autofill records of the database.
+  // Notifies listeners on the DB sequence that an IBAN has been
+  // added/removed/updated in the WebDatabase.
   // NOTE: This method is intended to be called from the DB sequence. The UI
   // sequence notifications are asynchronous.
-  virtual void NotifyOfMultipleAutofillChanges() = 0;
+  virtual void NotifyOfIbanChanged(const IbanChange& change) = 0;
 
-  // Notifies listeners on the UI sequence that conversion of server profiles
-  // into local profiles is completed.
-  // NOTE: This method is intended to be called from the DB sequence. The UI
-  // sequence notifications are asynchronous.
-  virtual void NotifyOfAddressConversionCompleted() = 0;
-
-  // Notifies listeners on the UI sequence that sync has started for
-  // |model_type|.
-  // NOTE: This method is intended to be called from the DB sequence. The UI
-  // sequence notifications are asynchronous.
-  virtual void NotifyThatSyncHasStarted(syncer::ModelType model_type) = 0;
+  // Notifies listeners on UI sequences that changes have been made to
+  // Autofill records of the database by the sync.
+  // NOTE: The UI sequence notifications are asynchronous.
+  virtual void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) = 0;
 };
 
 } // namespace autofill

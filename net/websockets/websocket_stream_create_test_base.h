@@ -6,27 +6,39 @@
 #define NET_WEBSOCKETS_WEBSOCKET_STREAM_CREATE_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
+#include "net/base/auth.h"
+#include "net/base/net_errors.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
+
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace net {
 
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IsolationInfo;
+class SiteForCookies;
 class URLRequest;
 class WebSocketStream;
 class WebSocketStreamRequest;
@@ -51,6 +63,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
                               const std::vector<std::string>& sub_protocols,
                               const url::Origin& origin,
                               const SiteForCookies& site_for_cookies,
+                              bool has_storage_access,
                               const IsolationInfo& isolation_info,
                               const HttpRequestHeaders& additional_headers,
                               std::unique_ptr<base::OneShotTimer> timer);
@@ -95,7 +108,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 
   // This value will be copied to |*credentials| on OnAuthRequired.
-  absl::optional<AuthCredentials> auth_credentials_;
+  std::optional<AuthCredentials> auth_credentials_;
   // OnAuthRequired returns this value.
   int on_auth_required_rv_ = OK;
 

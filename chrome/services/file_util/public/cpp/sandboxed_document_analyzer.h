@@ -28,6 +28,7 @@ class SandboxedDocumentAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::DocumentAnalyzerResults&)>;
+  using WrappedFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
   // Factory function for creating SandboxedDocumentAnalyzers with the
   // appropriate deleter.
@@ -58,7 +59,7 @@ class SandboxedDocumentAnalyzer {
   void ReportFileFailure(const std::string msg);
 
   // Starts the utility process and sends it a document analysis request.
-  void AnalyzeDocument(base::File file);
+  void AnalyzeDocument(WrappedFilePtr file);
 
   // The response containing the document analysis results.
   void AnalyzeDocumentDone(
@@ -80,6 +81,9 @@ class SandboxedDocumentAnalyzer {
   // thread.
   mojo::Remote<chrome::mojom::DocumentAnalysisService> service_;
   mojo::Remote<chrome::mojom::SafeDocumentAnalyzer> remote_analyzer_;
+
+  // Task runner for blocking file operations
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   base::WeakPtrFactory<SandboxedDocumentAnalyzer> weak_ptr_factory_{this};
 };

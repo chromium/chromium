@@ -54,6 +54,10 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebox);
   }
   {
+    command_line->InitFromArgv({"", "--form-factor=OTHER"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kUnknown);
+  }
+  {
     command_line->InitFromArgv({"", ""});
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kUnknown);
   }
@@ -63,7 +67,6 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST(DeviceTypeTest, GetDeviceTypeLacros) {
   base::test::TaskEnvironment task_environment;
-  chromeos::ScopedDisableCrosapiForTesting disable_crosapi;
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =

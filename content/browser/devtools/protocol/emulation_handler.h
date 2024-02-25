@@ -5,8 +5,14 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
+#include <memory>
+
+#include "base/containers/flat_map.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/emulation.h"
+#include "content/browser/devtools/protocol/protocol.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
+#include "services/device/public/mojom/sensor_provider.mojom-shared.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 
@@ -23,6 +29,7 @@ namespace content {
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
+class ScopedVirtualSensorForDevTools;
 class WebContentsImpl;
 
 namespace protocol {
@@ -45,6 +52,19 @@ class EmulationHandler : public DevToolsDomainHandler,
                    RenderFrameHostImpl* frame_host) override;
 
   Response Disable() override;
+
+  void GetOverriddenSensorInformation(
+      const Emulation::SensorType& type,
+      std::unique_ptr<GetOverriddenSensorInformationCallback>) override;
+  void SetSensorOverrideEnabled(
+      bool enabled,
+      const Emulation::SensorType& type,
+      Maybe<Emulation::SensorMetadata> metadata,
+      std::unique_ptr<SetSensorOverrideEnabledCallback>) override;
+  void SetSensorOverrideReadings(
+      const Emulation::SensorType& type,
+      std::unique_ptr<Emulation::SensorReading> reading,
+      std::unique_ptr<SetSensorOverrideReadingsCallback>) override;
 
   Response SetIdleOverride(bool is_user_active,
                            bool is_screen_unlocked) override;
@@ -79,7 +99,8 @@ class EmulationHandler : public DevToolsDomainHandler,
       Maybe<bool> dont_set_visible_size,
       Maybe<Emulation::ScreenOrientation> screen_orientation,
       Maybe<protocol::Page::Viewport> viewport,
-      Maybe<protocol::Emulation::DisplayFeature> displayFeature) override;
+      Maybe<protocol::Emulation::DisplayFeature> display_feature,
+      Maybe<protocol::Emulation::DevicePosture> device_posture) override;
   Response ClearDeviceMetricsOverride() override;
 
   Response SetVisibleSize(int width, int height) override;
@@ -104,12 +125,13 @@ class EmulationHandler : public DevToolsDomainHandler,
                       bool* user_agent_overridden,
                       bool* accept_language_overridden);
   bool ApplyUserAgentMetadataOverrides(
-      absl::optional<blink::UserAgentMetadata>* override_out);
+      std::optional<blink::UserAgentMetadata>* override_out);
   void ApplyNetworkOverridesForDownload(
       download::DownloadUrlParameters* parameters);
 
  private:
   WebContentsImpl* GetWebContents();
+
   void UpdateTouchEventEmulationState();
   void UpdateDeviceEmulationState();
   void UpdateDeviceEmulationStateForHost(
@@ -125,7 +147,7 @@ class EmulationHandler : public DevToolsDomainHandler,
   // |user_agent_metadata_| is meaningful if |user_agent_| is non-empty.
   // In that case nullopt will disable sending of client hints, and a
   // non-nullopt value will be sent.
-  absl::optional<blink::UserAgentMetadata> user_agent_metadata_;
+  std::optional<blink::UserAgentMetadata> user_agent_metadata_;
   std::string accept_language_;
   // If |prefers_color_scheme_| is either "light" or "dark", it is used to
   // override the "prefers-color-scheme" client hint header, when present.
@@ -136,6 +158,10 @@ class EmulationHandler : public DevToolsDomainHandler,
   // If |prefers_reduced_transparency_| is "reduce", it is used to override the
   // "prefers-reduced-transparency" client hint header, when present.
   std::string prefers_reduced_transparency_;
+
+  base::flat_map<device::mojom::SensorType,
+                 std::unique_ptr<ScopedVirtualSensorForDevTools>>
+      sensor_overrides_;
 
   RenderFrameHostImpl* host_;
 

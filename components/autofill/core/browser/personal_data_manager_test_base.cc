@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/gmock_callback_support.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -17,25 +17,6 @@ const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char kSyncTransportAccountEmail[] = "transport@example.com";
 
 }  // anonymous namespace
-
-PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
-PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
-
-PersonalDataProfileTaskWaiter::PersonalDataProfileTaskWaiter(
-    PersonalDataManager& pdm) {
-  scoped_observation_.Observe(&pdm);
-  ON_CALL(mock_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillByDefault(base::test::RunClosure(run_loop_.QuitClosure()));
-}
-
-PersonalDataProfileTaskWaiter::~PersonalDataProfileTaskWaiter() = default;
-
-void PersonalDataProfileTaskWaiter::Wait() {
-  CHECK(!was_wait_called_)
-      << "PersonalDataProfileTaskWaiter should not be reused.";
-  was_wait_called_ = true;
-  run_loop_.Run();
-}
 
 PersonalDataManagerTestBase::PersonalDataManagerTestBase() = default;
 
@@ -49,8 +30,9 @@ void PersonalDataManagerTestBase::SetUpTest() {
       path, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
+  profile_web_database_->AddTable(std::make_unique<AddressAutofillTable>());
   // Hacky: hold onto a pointer but pass ownership.
-  profile_autofill_table_ = new AutofillTable;
+  profile_autofill_table_ = new PaymentsAutofillTable;
   profile_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(profile_autofill_table_));
   profile_web_database_->LoadDatabase();
@@ -63,7 +45,7 @@ void PersonalDataManagerTestBase::SetUpTest() {
       new WebDatabaseService(base::FilePath(WebDatabase::kInMemoryPath),
                              base::SingleThreadTaskRunner::GetCurrentDefault(),
                              base::SingleThreadTaskRunner::GetCurrentDefault());
-  account_autofill_table_ = new AutofillTable;
+  account_autofill_table_ = new PaymentsAutofillTable;
   account_web_database_->AddTable(
       std::unique_ptr<WebDatabaseTable>(account_autofill_table_));
   account_web_database_->LoadDatabase();
@@ -113,26 +95,15 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
   sync_service_.SetAccountInfo(account_info);
   sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
 
+  PersonalDataChangedWaiter waiter(*personal_data);
   personal_data->Init(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
-      /*image_fetcher=*/nullptr);
-
+      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
   personal_data->AddObserver(&personal_data_observer_);
   personal_data->OnStateChanged(&sync_service_);
-
-  // TODO(crbug.com/1007974): `WaitForOnPersonalDataChanged()` can't be used
-  // here, because the first time the `PersonalDataManager` is initialized,
-  // the `PersonalDataManagerCleaner` might trigger additional
-  // `OnPersonalDataFinishedProfileTasks()` calls. See
-  // `PersonalDataManagerCleaner:::CleanupDataAndNotifyPersonalDataObservers()`.
-  base::RunLoop run_loop;
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-      .Times(testing::AnyNumber());
-  run_loop.Run();
+  std::move(waiter).Wait();
 }
 
 [[nodiscard]] bool PersonalDataManagerTestBase::TurnOnSyncFeature(

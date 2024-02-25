@@ -1,27 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- The basic appearance of composited Fluent non-overlay scrollbar. The root
-     scroller is always composited, and the fixed sub-scroller covers
-     the left-side scrollbar case. -->
+     scroller is always composited, and the fixed sub-scroller covers the
+     left-side scrollbar case. -->
+<meta charset="utf-8">
+<meta name="fuzzy" content="0-10;0-10">
 <style>
   body {
     background-color: green;
-    width: 2000px;
     height: 2000px;
+    width: 2000px;
   }
-  #scrollable {
-    width: 200px;
+
+  .scrollable {
+    direction: rtl;
     height: 200px;
     overflow: scroll;
     position: fixed;
-    direction: rtl;
+    width: 200px;
   }
-  #content {
+
+  .content {
     background-color: lightgreen;
     height: 400px;
     width: 400px;
   }
 </style>
-<div id="scrollable">
-  <div id="content">
-  </div>
+<div class="scrollable">
+  <div class="content"></div>
 </div>

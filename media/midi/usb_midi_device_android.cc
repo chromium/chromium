@@ -22,7 +22,7 @@ UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
     const base::android::JavaRef<jobject>& raw_device,
     UsbMidiDeviceDelegate* delegate)
     : raw_device_(raw_device), delegate_(delegate) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_UsbMidiDeviceAndroid_registerSelf(env, raw_device_,
                                          reinterpret_cast<jlong>(this));
 
@@ -31,7 +31,7 @@ UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
 }
 
 UsbMidiDeviceAndroid::~UsbMidiDeviceAndroid() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_UsbMidiDeviceAndroid_close(env, raw_device_);
 }
 
@@ -53,7 +53,7 @@ std::string UsbMidiDeviceAndroid::GetDeviceVersion() {
 
 void UsbMidiDeviceAndroid::Send(int endpoint_number,
                                 const std::vector<uint8_t>& data) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   const uint8_t* head = data.size() ? &data[0] : NULL;
   ScopedJavaLocalRef<jbyteArray> data_to_pass =
       base::android::ToJavaByteArray(env, head, data.size());
@@ -74,7 +74,7 @@ void UsbMidiDeviceAndroid::OnData(JNIEnv* env,
 }
 
 void UsbMidiDeviceAndroid::GetDescriptorsInternal() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jbyteArray> descriptors =
       Java_UsbMidiDeviceAndroid_getDescriptors(env, raw_device_);
 
@@ -106,7 +106,7 @@ void UsbMidiDeviceAndroid::InitDeviceInfo() {
 }
 
 std::vector<uint8_t> UsbMidiDeviceAndroid::GetStringDescriptor(int index) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jbyteArray> descriptors =
       Java_UsbMidiDeviceAndroid_getStringDescriptor(env, raw_device_, index);
 

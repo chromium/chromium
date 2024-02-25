@@ -79,10 +79,22 @@ message LcpElementLocatorStat {
   optional double other_bucket_frequency = 2;
 }
 
+// A string-keyed data structure for applying the algorithm explained in:
+// https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
+// Explanation can be found in resource_prefetch_predictor.cc.
+message LcppStringFrequencyStatData {
+  map<string, double> main_buckets = 1;
+  optional double other_bucket_frequency = 2;
+}
+
 // `LcppStat` contains all LCP predictor related statistics
 // accessed from a host.
 message LcppStat {
   optional LcpElementLocatorStat lcp_element_locator_stat = 1;
+  optional LcppStringFrequencyStatData lcp_script_url_stat = 2;
+  optional LcppStringFrequencyStatData fetched_font_url_stat = 3;
+  optional LcppStringFrequencyStatData fetched_subresource_url_stat = 4;
+  optional LcppStringFrequencyStatData preconnect_origin_stat = 5;
 }
 
 // [LCP Critical Path Predictor (LCPP)]

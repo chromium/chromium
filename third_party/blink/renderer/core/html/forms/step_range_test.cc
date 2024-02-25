@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(StepRangeTest, ClampValueWithOutStepMatchedValue) {
+  test::TaskEnvironment task_environment;
   // <input type=range value=200 min=0 max=100 step=1000>
   StepRange step_range(Decimal(200), Decimal(0), Decimal(100), true,
                        /*supports_reversed_range=*/false, Decimal(1000),
@@ -19,6 +21,7 @@ TEST(StepRangeTest, ClampValueWithOutStepMatchedValue) {
 }
 
 TEST(StepRangeTest, StepSnappedMaximum) {
+  test::TaskEnvironment task_environment;
   // <input type=number value="1110" max=100 step="20">
   StepRange step_range(Decimal::FromDouble(1110), Decimal(0), Decimal(100),
                        true, /*supports_reversed_range=*/false, Decimal(20),
@@ -42,6 +45,7 @@ TEST(StepRangeTest, StepSnappedMaximum) {
 }
 
 TEST(StepRangeTest, ReversedRange) {
+  test::TaskEnvironment task_environment;
   // <input type=time min="23:00" max="01:00">
   StepRange reversed_time_range(
       /*step_base=*/Decimal::FromDouble(82800000),

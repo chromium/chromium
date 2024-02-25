@@ -82,10 +82,11 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   void OnUnmaskPromptAccepted(const std::u16string& cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
-                              bool enable_fido_auth) override {
+                              bool enable_fido_auth,
+                              bool was_checkbox_visible) override {
     // Call the original implementation.
     CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
-        cvc, exp_month, exp_year, enable_fido_auth);
+        cvc, exp_month, exp_year, enable_fido_auth, was_checkbox_visible);
 
     // Wait some time and show verification result. An empty message means
     // success is shown.
@@ -175,7 +176,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(
             /*challenge_option=*/
-            absl::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
+            std::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
     controller()->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
                                             base::Unretained(controller()),
                                             base::Unretained(contents())),
@@ -240,7 +241,8 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
   ShowUi(kExpiryExpired);
   controller()->OnUnmaskPromptAccepted(u"123", u"10",
                                        base::ASCIIToUTF16(test::NextYear()),
-                                       /*enable_fido_auth=*/false);
+                                       /*enable_fido_auth=*/false,
+                                       /*was_checkbox_visible=*/false);
   EXPECT_EQ(u"123", delegate()->details().cvc);
   controller()->OnVerificationResult(
       AutofillClient::PaymentsRpcResult::kSuccess);

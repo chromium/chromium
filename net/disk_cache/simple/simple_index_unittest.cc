@@ -156,9 +156,9 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
   void InsertIntoIndexFileReturn(uint64_t hash_key,
                                  base::Time last_used_time,
                                  int entry_size) {
-    index_file_->load_result()->entries.insert(std::make_pair(
+    index_file_->load_result()->entries.emplace(
         hash_key, EntryMetadata(last_used_time,
-                                base::checked_cast<uint32_t>(entry_size))));
+                                base::checked_cast<uint32_t>(entry_size)));
   }
 
   void ReturnIndexFile() {
@@ -275,12 +275,12 @@ TEST_F(SimpleIndexTest, IndexSizeCorrectOnMerge) {
     auto result = std::make_unique<SimpleIndexLoadResult>();
     result->did_load = true;
     const uint64_t new_hash_key = hashes_.at<11>();
-    result->entries.insert(std::make_pair(
-        new_hash_key, EntryMetadata(base::Time::Now(), 11u * kSizeResolution)));
+    result->entries.emplace(
+        new_hash_key, EntryMetadata(base::Time::Now(), 11u * kSizeResolution));
     const uint64_t redundant_hash_key = hashes_.at<4>();
-    result->entries.insert(
-        std::make_pair(redundant_hash_key,
-                       EntryMetadata(base::Time::Now(), 4u * kSizeResolution)));
+    result->entries.emplace(
+        redundant_hash_key,
+        EntryMetadata(base::Time::Now(), 4u * kSizeResolution));
     index()->MergeInitializingSet(std::move(result));
   }
   EXPECT_EQ((2u + 3u + 4u + 11u) * kSizeResolution, index()->cache_size_);

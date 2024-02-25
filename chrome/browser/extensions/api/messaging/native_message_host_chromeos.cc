@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host_ash.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host_origins.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
@@ -37,9 +36,6 @@ const NativeMessageBuiltInHost kBuiltInHosts[] = {
     {arc::ArcSupportMessageHost::kHostName,
      arc::ArcSupportMessageHost::kHostOrigin, 1,
      &arc::ArcSupportMessageHost::Create},
-    {ash::kWilcoDtcSupportdUiMessageHost, ash::kWilcoDtcSupportdHostOrigins,
-     ash::kWilcoDtcSupportdHostOriginsSize,
-     &ash::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
     {drive::kDriveFsNativeMessageHostName,
      drive::kDriveFsNativeMessageHostOrigins.data(),
      drive::kDriveFsNativeMessageHostOrigins.size(),

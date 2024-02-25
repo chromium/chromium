@@ -83,6 +83,19 @@ struct CORE_EXPORT MinMaxSizes {
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const MinMaxSizes&);
 
+// The output of the min/max inline size calculation algorithm. Contains the
+// min/max sizes, and if this calculation will change if the block constraints
+// change.
+struct MinMaxSizesResult {
+  MinMaxSizesResult() = default;
+  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_block_constraints)
+      : sizes(sizes),
+        depends_on_block_constraints(depends_on_block_constraints) {}
+
+  MinMaxSizes sizes;
+  bool depends_on_block_constraints = false;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MIN_MAX_SIZES_H_

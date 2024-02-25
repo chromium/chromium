@@ -12,4 +12,6 @@ dictionary GPUStorageTextureBindingLayout {
 
 enum GPUStorageTextureAccess {
     "write-only",
+    "read-only",
+    "read-write",
 };

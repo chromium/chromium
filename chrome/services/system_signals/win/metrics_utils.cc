@@ -5,12 +5,12 @@
 #include "chrome/services/system_signals/win/metrics_utils.h"
 
 #include <cmath>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/win/wmi.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_signals {
 
@@ -31,7 +31,7 @@ int CalculateErrorRate(size_t items_count, size_t errors_count) {
 template <typename T, typename U>
 void LogResponse(const base::StringPiece& histogram_variant,
                  size_t items_count,
-                 const absl::optional<T>& query_error,
+                 const std::optional<T>& query_error,
                  const std::vector<U>& parsing_errors) {
   static constexpr char kCollectionHistogramPrefix[] =
       "Enterprise.SystemSignals.Collection";

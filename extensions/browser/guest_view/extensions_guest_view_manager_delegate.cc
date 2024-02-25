@@ -32,12 +32,43 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
 using guest_view::GuestViewBase;
 using guest_view::GuestViewManager;
 
 namespace extensions {
+
+// static
+bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
+    const GuestViewBase* guest,
+    const std::string& feature_name) {
+  const Feature* feature = FeatureProvider::GetAPIFeature(feature_name);
+  if (!feature) {
+    return false;
+  }
+
+  content::BrowserContext* context = guest->browser_context();
+  ProcessMap* process_map = ProcessMap::Get(context);
+  CHECK(process_map);
+
+  const Extension* owner_extension =
+      ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
+          guest->owner_rfh());
+
+  const GURL& owner_site_url = guest->GetOwnerSiteURL();
+  // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
+  Feature::Availability availability = feature->IsAvailableToContext(
+      owner_extension,
+      process_map->GetMostLikelyContextType(
+          owner_extension, guest->owner_rfh()->GetProcess()->GetID(),
+          &owner_site_url),
+      owner_site_url, util::GetBrowserContextId(context),
+      BrowserFrameContextData(guest->owner_rfh()));
+
+  return availability.is_available();
+}
 
 ExtensionsGuestViewManagerDelegate::ExtensionsGuestViewManagerDelegate() =
     default;
@@ -56,6 +87,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     base::Value::Dict args,
     GuestViewBase* guest,
     int instance_id) {
+  CHECK(guest);
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
   info->has_instance_id = true;
   info->instance_id = instance_id;
@@ -79,45 +111,28 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
 
   EventRouter::Get(guest->browser_context())
       ->DispatchEventToSender(owner->GetProcess(), guest->browser_context(),
-                              guest->owner_host(), histogram_value, event_name,
+                              util::GenerateHostIdFromGuestView(*guest),
+                              histogram_value, event_name,
                               extensions::kMainThreadId,
                               blink::mojom::kInvalidServiceWorkerVersionId,
                               std::move(event_args), std::move(info));
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
-    GuestViewBase* guest) {
-  const Feature* feature =
-      FeatureProvider::GetAPIFeature(guest->GetAPINamespace());
-  if (!feature)
-    return false;
-
-  content::BrowserContext* context = guest->browser_context();
-  ProcessMap* process_map = ProcessMap::Get(context);
-  CHECK(process_map);
-
-  const Extension* owner_extension =
-      ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
-          guest->owner_rfh());
-
-  const GURL& owner_site_url = guest->GetOwnerSiteURL();
-  // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
-  Feature::Availability availability = feature->IsAvailableToContext(
-      owner_extension,
-      process_map->GetMostLikelyContextType(
-          owner_extension, guest->owner_rfh()->GetProcess()->GetID(),
-          &owner_site_url),
-      owner_site_url, util::GetBrowserContextId(context),
-      BrowserFrameContextData(guest->owner_rfh()));
-
-  return availability.is_available();
+    const GuestViewBase* guest) const {
+  return IsGuestAvailableToContextWithFeature(guest, guest->GetAPINamespace());
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsOwnedByExtension(
-    GuestViewBase* guest) {
+    const GuestViewBase* guest) {
   content::BrowserContext* context = guest->browser_context();
   return !!ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
       guest->owner_rfh());
+}
+
+bool ExtensionsGuestViewManagerDelegate::IsOwnedByControlledFrameEmbedder(
+    const GuestViewBase* guest) {
+  return false;
 }
 
 void ExtensionsGuestViewManagerDelegate::RegisterAdditionalGuestViewTypes(

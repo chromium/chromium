@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Checking default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.enable_negotiate_port": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnableAuthNegotiatePort": true
+        },
+        "prefs": {
+          "auth.enable_negotiate_port": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnableAuthNegotiatePort": false
+        },
+        "prefs": {
+          "auth.enable_negotiate_port": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

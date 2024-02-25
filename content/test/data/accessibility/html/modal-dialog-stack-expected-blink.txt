@@ -1,17 +1,10 @@
 rootWebArea
 ++genericContainer ignored invisible
-++++genericContainer ignored invisible
-++++++section ignored invisible
-++++++++dialog ignored invisible
-++++++++++staticText ignored invisible name='<newline>    This was the top dialog and should be marked ignored in the tree.<newline>  '
-++++++++menuListPopup ignored invisible
-++++++++++menuListOption ignored
-++++++dialog ignored invisible
-++++++++staticText ignored invisible name='<newline>  This was the middle dialog and should be marked ignored in the tree.<newline>'
-++++++dialog
-++++++++staticText name='This is the now active dialog. Of course it should be in the tree. '
-++++++++++inlineTextBox name='This is the now active dialog. Of course it should be in the tree. '
-++++++++button name='This is in the active dialog and should be in the tree.'
-++++++++++staticText name='This is in the active dialog and should be in the tree.'
-++++++++++++inlineTextBox name='This is in the active dialog and should be in the tree.'
-++++++dialog ignored invisible
+++++menuListPopup ignored invisible
+++++++menuListOption ignored
+++++dialog
+++++++staticText name='This is the now active dialog. Of course it should be in the tree. '
+++++++++inlineTextBox name='This is the now active dialog. Of course it should be in the tree. '
+++++++button name='This is in the active dialog and should be in the tree.'
+++++++++staticText name='This is in the active dialog and should be in the tree.'
+++++++++++inlineTextBox name='This is in the active dialog and should be in the tree.'

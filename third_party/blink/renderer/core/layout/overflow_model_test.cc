@@ -31,96 +31,99 @@
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
 
-LayoutRect InitialLayoutOverflow() {
-  return LayoutRect(10, 10, 80, 80);
+PhysicalRect InitialScrollableOverflow() {
+  return PhysicalRect(10, 10, 80, 80);
 }
 
-LayoutRect InitialVisualOverflow() {
-  return LayoutRect(0, 0, 100, 100);
+PhysicalRect InitialVisualOverflow() {
+  return PhysicalRect(0, 0, 100, 100);
 }
 
 class BoxOverflowModelTest : public testing::Test {
  protected:
   BoxOverflowModelTest()
-      : layout_overflow_(InitialLayoutOverflow()),
+      : scrollable_overflow_(InitialScrollableOverflow()),
         visual_overflow_(InitialVisualOverflow()) {}
-  BoxLayoutOverflowModel layout_overflow_;
+  test::TaskEnvironment task_environment_;
+  BoxScrollableOverflowModel scrollable_overflow_;
   BoxVisualOverflowModel visual_overflow_;
 };
 
 TEST_F(BoxOverflowModelTest, InitialOverflowRects) {
-  EXPECT_EQ(InitialLayoutOverflow(), layout_overflow_.LayoutOverflowRect());
+  EXPECT_EQ(InitialScrollableOverflow(),
+            scrollable_overflow_.ScrollableOverflowRect());
   EXPECT_EQ(InitialVisualOverflow(), visual_overflow_.SelfVisualOverflowRect());
   EXPECT_TRUE(visual_overflow_.ContentsVisualOverflowRect().IsEmpty());
 }
 
 TEST_F(BoxOverflowModelTest, AddSelfVisualOverflowOutsideExpandsRect) {
-  visual_overflow_.AddSelfVisualOverflow(LayoutRect(150, -50, 10, 10));
-  EXPECT_EQ(LayoutRect(0, -50, 160, 150),
+  visual_overflow_.AddSelfVisualOverflow(PhysicalRect(150, -50, 10, 10));
+  EXPECT_EQ(PhysicalRect(0, -50, 160, 150),
             visual_overflow_.SelfVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, AddSelfVisualOverflowInsideDoesNotAffectRect) {
-  visual_overflow_.AddSelfVisualOverflow(LayoutRect(0, 10, 90, 90));
+  visual_overflow_.AddSelfVisualOverflow(PhysicalRect(0, 10, 90, 90));
   EXPECT_EQ(InitialVisualOverflow(), visual_overflow_.SelfVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, AddSelfVisualOverflowEmpty) {
-  BoxVisualOverflowModel visual_overflow(LayoutRect(0, 0, 600, 0));
-  visual_overflow.AddSelfVisualOverflow(LayoutRect(100, -50, 100, 100));
-  visual_overflow.AddSelfVisualOverflow(LayoutRect(300, 300, 0, 10000));
-  EXPECT_EQ(LayoutRect(100, -50, 100, 100),
+  BoxVisualOverflowModel visual_overflow(PhysicalRect(0, 0, 600, 0));
+  visual_overflow.AddSelfVisualOverflow(PhysicalRect(100, -50, 100, 100));
+  visual_overflow.AddSelfVisualOverflow(PhysicalRect(300, 300, 0, 10000));
+  EXPECT_EQ(PhysicalRect(100, -50, 100, 100),
             visual_overflow.SelfVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest,
        AddSelfVisualOverflowDoesNotAffectContentsVisualOverflow) {
-  visual_overflow_.AddSelfVisualOverflow(LayoutRect(300, 300, 300, 300));
+  visual_overflow_.AddSelfVisualOverflow(PhysicalRect(300, 300, 300, 300));
   EXPECT_TRUE(visual_overflow_.ContentsVisualOverflowRect().IsEmpty());
 }
 
 TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowFirstCall) {
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(0, 0, 10, 10));
-  EXPECT_EQ(LayoutRect(0, 0, 10, 10),
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10),
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowUnitesRects) {
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(0, 0, 10, 10));
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(80, 80, 10, 10));
-  EXPECT_EQ(LayoutRect(0, 0, 90, 90),
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(80, 80, 10, 10));
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 90),
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowRectWithinRect) {
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(0, 0, 10, 10));
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(2, 2, 5, 5));
-  EXPECT_EQ(LayoutRect(0, 0, 10, 10),
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(2, 2, 5, 5));
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10),
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowEmpty) {
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(0, 0, 10, 10));
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(20, 20, 0, 0));
-  EXPECT_EQ(LayoutRect(0, 0, 10, 10),
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(20, 20, 0, 0));
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10),
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, MoveAffectsSelfVisualOverflow) {
   visual_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(LayoutRect(500, 100, 100, 100),
+  EXPECT_EQ(PhysicalRect(500, 100, 100, 100),
             visual_overflow_.SelfVisualOverflowRect());
 }
 
 TEST_F(BoxOverflowModelTest, MoveAffectsContentsVisualOverflow) {
-  visual_overflow_.AddContentsVisualOverflow(LayoutRect(0, 0, 10, 10));
+  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
   visual_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(LayoutRect(500, 100, 10, 10),
+  EXPECT_EQ(PhysicalRect(500, 100, 10, 10),
             visual_overflow_.ContentsVisualOverflowRect());
 }
 

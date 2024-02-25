@@ -6,9 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/normalized_geometry.h"
@@ -16,12 +17,12 @@
 
 namespace {
 
-absl::optional<gfx::Size> GetSizeFromFlexRule(const views::View* view,
-                                              const views::SizeBounds& bounds) {
+std::optional<gfx::Size> GetSizeFromFlexRule(const views::View* view,
+                                             const views::SizeBounds& bounds) {
   const views::FlexSpecification* const spec =
       view->GetProperty(views::kFlexBehaviorKey);
-  return spec ? absl::make_optional(spec->rule().Run(view, bounds))
-              : absl::nullopt;
+  return spec ? std::make_optional(spec->rule().Run(view, bounds))
+              : std::nullopt;
 }
 
 gfx::Size GetSizeFromFlexRuleOrDefault(const views::View* view,
@@ -47,31 +48,35 @@ OverflowView::OverflowView(
     std::unique_ptr<views::View> primary_view,
     std::unique_ptr<views::View> prefix_indicator_view,
     std::unique_ptr<views::View> postfix_indicator_view) {
-  if (prefix_indicator_view)
+  if (prefix_indicator_view) {
     prefix_indicator_view_ = AddChildView(std::move(prefix_indicator_view));
+  }
   primary_view_ = AddChildView(std::move(primary_view));
-  if (postfix_indicator_view)
+  if (postfix_indicator_view) {
     postfix_indicator_view_ = AddChildView(std::move(postfix_indicator_view));
+  }
 }
 
 OverflowView::~OverflowView() = default;
 
 void OverflowView::SetOrientation(views::LayoutOrientation orientation) {
-  if (orientation == orientation_)
+  if (orientation == orientation_) {
     return;
+  }
   orientation_ = orientation;
   InvalidateLayout();
 }
 
 void OverflowView::SetCrossAxisAlignment(
     views::LayoutAlignment cross_axis_alignment) {
-  if (cross_axis_alignment == cross_axis_alignment_)
+  if (cross_axis_alignment == cross_axis_alignment_) {
     return;
+  }
   cross_axis_alignment_ = cross_axis_alignment;
   InvalidateLayout();
 }
 
-void OverflowView::Layout() {
+void OverflowView::Layout(PassKey) {
   const gfx::Size available_size = size();
   const gfx::Size primary_size =
       GetSizeFromFlexRuleOrDefault(primary_view_, available_size);
@@ -113,10 +118,12 @@ void OverflowView::Layout() {
   // Determine if overflow is occurring and show/size and position the
   // overflow indicator if it is.
   if (primary_bounds.size_main() <= normalized_size.main()) {
-    if (prefix_indicator_view_)
+    if (prefix_indicator_view_) {
       prefix_indicator_view_->SetVisible(false);
-    if (postfix_indicator_view_)
+    }
+    if (postfix_indicator_view_) {
       postfix_indicator_view_->SetVisible(false);
+    }
   } else {
     if (prefix_indicator_view_) {
       prefix_indicator_view_->SetVisible(true);
@@ -158,8 +165,9 @@ views::SizeBounds OverflowView::GetAvailableSize(
     const views::View* child) const {
   DCHECK_EQ(this, child->parent());
 
-  if (!parent())
+  if (!parent()) {
     return views::SizeBounds();
+  }
 
   const views::SizeBounds available = parent()->GetAvailableSize(this);
   if (child != primary_view_ ||
@@ -176,16 +184,18 @@ views::SizeBounds OverflowView::GetAvailableSize(
       GetSizeFromFlexRule(child, available).value_or(child->GetMinimumSize());
 
   gfx::Size prefix_indicator_size;
-  if (prefix_indicator_view_)
+  if (prefix_indicator_view_) {
     prefix_indicator_size =
         GetSizeFromFlexRule(prefix_indicator_view_, views::SizeBounds())
             .value_or(prefix_indicator_view_->GetPreferredSize());
+  }
 
   gfx::Size postfix_indicator_size;
-  if (postfix_indicator_view_)
+  if (postfix_indicator_view_) {
     postfix_indicator_size =
         GetSizeFromFlexRule(postfix_indicator_view_, views::SizeBounds())
             .value_or(postfix_indicator_view_->GetPreferredSize());
+  }
 
   switch (orientation_) {
     case views::LayoutOrientation::kHorizontal:
@@ -215,15 +225,17 @@ gfx::Size OverflowView::GetMinimumSize() const {
       GetSizeFromFlexRule(primary_view_, views::SizeBounds(0, 0))
           .value_or(primary_view_->GetMinimumSize());
   gfx::Size prefix_indicator_minimum;
-  if (prefix_indicator_view_)
+  if (prefix_indicator_view_) {
     prefix_indicator_minimum =
         GetSizeFromFlexRule(prefix_indicator_view_, views::SizeBounds(0, 0))
             .value_or(prefix_indicator_view_->GetMinimumSize());
+  }
   gfx::Size postfix_indicator_minimum;
-  if (postfix_indicator_view_)
+  if (postfix_indicator_view_) {
     postfix_indicator_minimum =
         GetSizeFromFlexRule(postfix_indicator_view_, views::SizeBounds(0, 0))
             .value_or(postfix_indicator_view_->GetMinimumSize());
+  }
 
   // Minimum width on the main axis and the Minimum height on the cross axis
   // is the minimum of the indicator's minimum size and primary's minimum size.
@@ -285,3 +297,6 @@ int OverflowView::GetHeightForWidth(int width) const {
   return std::max(
       {primary_height, prefix_indicator_height, postfix_indicator_height});
 }
+
+BEGIN_METADATA(OverflowView)
+END_METADATA

@@ -261,7 +261,7 @@ TEST_F(PageTestBase, CSPForWorld) {
   v8::Isolate* isolate = main_world_script_state->GetIsolate();
 
   constexpr int kIsolatedWorldWithoutCSPId = 1;
-  scoped_refptr<DOMWrapperWorld> world_without_csp =
+  DOMWrapperWorld* world_without_csp =
       DOMWrapperWorld::EnsureIsolatedWorld(isolate, kIsolatedWorldWithoutCSPId);
   ASSERT_TRUE(world_without_csp->IsIsolatedWorld());
   ScriptState* isolated_world_without_csp_script_state =
@@ -269,7 +269,7 @@ TEST_F(PageTestBase, CSPForWorld) {
 
   const char* kIsolatedWorldCSP = "script-src 'none';";
   constexpr int kIsolatedWorldWithCSPId = 2;
-  scoped_refptr<DOMWrapperWorld> world_with_csp =
+  DOMWrapperWorld* world_with_csp =
       DOMWrapperWorld::EnsureIsolatedWorld(isolate, kIsolatedWorldWithCSPId);
   ASSERT_TRUE(world_with_csp->IsIsolatedWorld());
   ScriptState* isolated_world_with_csp_script_state =

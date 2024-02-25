@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/strings/strcat.h"
 #include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -96,6 +97,32 @@ ExternalMountPoints* ExternalMountPoints::GetSystemInstance() {
 // static
 scoped_refptr<ExternalMountPoints> ExternalMountPoints::CreateRefCounted() {
   return new ExternalMountPoints();
+}
+
+// static
+void ExternalMountPoints::GetDebugJSONForKey(
+    std::string_view key,
+    base::OnceCallback<void(std::pair<std::string_view, base::Value>)>
+        callback) {
+  const ExternalMountPoints* system_instance =
+      ExternalMountPoints::GetSystemInstance();
+  if (!system_instance) {
+    std::move(callback).Run(std::make_pair(key, base::Value()));
+    return;
+  }
+
+  base::Value::Dict dict;
+  {
+    base::AutoLock locker(system_instance->lock_);
+    for (const auto& pair : system_instance->instance_map_) {
+      const Instance* instance = pair.second.get();
+      dict.Set(
+          pair.first,
+          base::Value(base::StrCat({GetFileSystemTypeString(instance->type()),
+                                    " ", instance->path().AsUTF8Unsafe()})));
+    }
+  }
+  std::move(callback).Run(std::make_pair(key, base::Value(std::move(dict))));
 }
 
 bool ExternalMountPoints::RegisterFileSystem(

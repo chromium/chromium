@@ -4,6 +4,7 @@
 
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,8 +26,8 @@
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -66,12 +67,12 @@ std::vector<AppInfo> GetRegisteredApps(
 
 std::vector<PingInfo> GetAppIDsToRemove(
     const std::vector<AppInfo>& apps,
-    base::RepeatingCallback<absl::optional<int>(const std::string&,
-                                                const base::FilePath&)>
+    base::RepeatingCallback<std::optional<int>(const std::string&,
+                                               const base::FilePath&)>
         predicate) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
-    absl::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
+    std::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
     if (remove_reason) {
       app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
                                      *remove_reason);
@@ -82,8 +83,9 @@ std::vector<PingInfo> GetAppIDsToRemove(
 
 void UninstallPingSent(base::RepeatingClosure callback,
                        update_client::Error error) {
-  if (error != update_client::Error::NONE)
+  if (error != update_client::Error::NONE) {
     VLOG(0) << __func__ << ": Error: " << error;
+  }
   callback.Run();
 }
 
@@ -116,8 +118,12 @@ void RemoveAppIDsAndSendUninstallPings(
       crx_component.brand = brand;
       crx_component.version = app_version;
       crx_component.requires_network_encryption = false;
-      update_client->SendUninstallPing(
-          crx_component, ping_reason,
+      update_client->SendPing(
+          crx_component,
+          {.event_type = update_client::protocol_request::kEventUninstall,
+           .result = 1,
+           .error_code = 0,
+           .extra_code1 = ping_reason},
           base::BindOnce(&UninstallPingSent, barrier_closure));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;
@@ -131,9 +137,6 @@ RemoveUninstalledAppsTask::RemoveUninstalledAppsTask(
     scoped_refptr<Configurator> config,
     UpdaterScope scope)
     : config_(config),
-      persisted_data_(
-          base::MakeRefCounted<PersistedData>(scope,
-                                              config_->GetPrefService())),
       update_client_(update_client::UpdateClientFactory(config_)),
       scope_(scope) {}
 
@@ -144,11 +147,12 @@ void RemoveUninstalledAppsTask::Run(base::OnceClosure callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          GetAppIDsToRemove, GetRegisteredApps(persisted_data_),
+          GetAppIDsToRemove,
+          GetRegisteredApps(config_->GetUpdaterPersistedData()),
           base::BindRepeating(&RemoveUninstalledAppsTask::GetUnregisterReason,
                               this)),
       base::BindOnce(&RemoveAppIDsAndSendUninstallPings, std::move(callback),
-                     persisted_data_, update_client_));
+                     config_->GetUpdaterPersistedData(), update_client_));
 }
 
 }  // namespace updater

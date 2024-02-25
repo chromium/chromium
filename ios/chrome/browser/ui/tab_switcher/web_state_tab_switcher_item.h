@@ -17,7 +17,7 @@ class WebState;
 
 - (instancetype)initWithWebState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithIdentifier:(NSString*)identifier NS_UNAVAILABLE;
+- (instancetype)initWithIdentifier:(web::WebStateID)identifier NS_UNAVAILABLE;
 
 #pragma mark - Favicons
 

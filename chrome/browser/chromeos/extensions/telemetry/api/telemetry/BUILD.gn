@@ -36,17 +36,14 @@ source_set("telemetry") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
-    "telemetry_api_browsertest.cc",
-  ]
+  sources = [ "telemetry_api_browsertest.cc" ]
 
   deps = [
     ":telemetry",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/browser/chromeos/telemetry:test_support",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_config/public/mojom:network_types",
     "//chromeos/services/network_health/public/mojom:types",

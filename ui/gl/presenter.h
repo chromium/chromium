@@ -5,11 +5,12 @@
 #ifndef UI_GL_PRESENTER_H_
 #define UI_GL_PRESENTER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/size.h"
@@ -80,8 +81,6 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual bool SupportsViewporter() const;
   virtual bool SupportsPlaneGpuFences() const;
 
-  virtual bool SupportsGpuVSync() const;
-  virtual void SetGpuVSyncEnabled(bool enabled) {}
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
   // Resizes the presenter, returning success.
@@ -131,7 +130,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
 
   // Android specific. Sets vsync_id of the corresponding Choreographer frame.
   virtual void SetChoreographerVsyncIdForNextFrame(
-      absl::optional<int64_t> choreographer_vsync_id) {}
+      std::optional<int64_t> choreographer_vsync_id) {}
 
   // Android specific. Request to not clean-up surface control tree, relying on
   // Android to do so after app switching animation is done.

@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -27,9 +28,9 @@ class RoundedContainer;
 // The implementation of BluetoothDetailedView.
 class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
                                              public TrayDetailedView {
- public:
-  METADATA_HEADER(BluetoothDetailedViewImpl);
+  METADATA_HEADER(BluetoothDetailedViewImpl, TrayDetailedView)
 
+ public:
   BluetoothDetailedViewImpl(DetailedViewDelegate* detailed_view_delegate,
                             BluetoothDetailedView::Delegate* delegate);
   BluetoothDetailedViewImpl(const BluetoothDetailedViewImpl&) = delete;
@@ -39,7 +40,9 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
 
   // BluetoothDetailedView:
   views::View* GetAsView() override;
-  void UpdateBluetoothEnabledState(bool enabled) override;
+  void UpdateBluetoothEnabledState(
+      const bluetooth_config::mojom::BluetoothSystemState system_state)
+      override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   views::View* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
                                       int text_id) override;
@@ -70,15 +73,15 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   void ToggleBluetoothState(bool new_state);
 
   // Owned by views hierarchy.
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
-  raw_ptr<RoundedContainer, ExperimentalAsh> top_container_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> toggle_row_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> toggle_icon_ = nullptr;
-  raw_ptr<Switch, ExperimentalAsh> toggle_button_ = nullptr;
-  raw_ptr<RoundedContainer, ExperimentalAsh> main_container_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> pair_new_device_view_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> pair_new_device_icon_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> device_list_ = nullptr;
+  raw_ptr<views::Button> settings_button_ = nullptr;
+  raw_ptr<RoundedContainer> top_container_ = nullptr;
+  raw_ptr<HoverHighlightView> toggle_row_ = nullptr;
+  raw_ptr<views::ImageView> toggle_icon_ = nullptr;
+  raw_ptr<Switch> toggle_button_ = nullptr;
+  raw_ptr<RoundedContainer> main_container_ = nullptr;
+  raw_ptr<HoverHighlightView> pair_new_device_view_ = nullptr;
+  raw_ptr<views::ImageView> pair_new_device_icon_ = nullptr;
+  raw_ptr<views::View> device_list_ = nullptr;
 
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };

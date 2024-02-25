@@ -17,11 +17,12 @@
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile_statistics_aggregator.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
-#include "chrome/browser/sync/bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -29,9 +30,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,17 +44,16 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModelWithoutLoad(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<ChromeBookmarkClient>(
+  return std::make_unique<bookmarks::BookmarkModel>(
+      std::make_unique<ChromeBookmarkClient>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
-          BookmarkSyncServiceFactory::GetForProfile(profile),
-          BookmarkUndoServiceFactory::GetForProfile(profile))));
-  return std::move(bookmark_model);
+          LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
+          AccountBookmarkSyncServiceFactory::GetForProfile(profile),
+          BookmarkUndoServiceFactory::GetForProfile(profile)));
 }
 
 void LoadBookmarkModel(Profile* profile) {
-  BookmarkModelFactory::GetForBrowserContext(profile)->Load(
-      profile->GetPath(), bookmarks::StorageType::kLocalOrSyncable);
+  BookmarkModelFactory::GetForBrowserContext(profile)->Load(profile->GetPath());
 }
 
 class BookmarkStatHelper {
@@ -101,14 +100,13 @@ TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
        {HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory()},
        {WebDataServiceFactory::GetInstance(),
-        WebDataServiceFactory::GetDefaultFactory()}});
+        WebDataServiceFactory::GetDefaultFactory()},
+       {ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStore<
+                            content::BrowserContext,
+                            password_manager::TestPasswordStore>)}});
 
   ASSERT_TRUE(profile);
-  PasswordStoreFactory::GetInstance()->SetTestingFactory(
-      profile,
-      base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext, password_manager::TestPasswordStore>));
 
   // Run ProfileStatisticsAggregator::WaitOrCountBookmarks.
   BookmarkStatHelper bookmark_stat_helper;

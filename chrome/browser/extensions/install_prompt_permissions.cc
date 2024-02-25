@@ -20,12 +20,12 @@ InstallPromptPermissions::InstallPromptPermissions() = default;
 InstallPromptPermissions::~InstallPromptPermissions() = default;
 
 void InstallPromptPermissions::LoadFromPermissionSet(
-    const extensions::PermissionSet* permissions_set,
-    const extensions::Manifest::Type type) {
-  const extensions::PermissionMessageProvider* message_provider =
-      extensions::PermissionMessageProvider::Get();
+    const PermissionSet* permissions_set,
+    const Manifest::Type type) {
+  const PermissionMessageProvider* message_provider =
+      PermissionMessageProvider::Get();
 
-  const extensions::PermissionMessages& permissions_messages =
+  const PermissionMessages& permissions_messages =
       message_provider->GetPermissionMessages(
           message_provider->GetAllPermissionIDs(*permissions_set, type));
 
@@ -33,8 +33,8 @@ void InstallPromptPermissions::LoadFromPermissionSet(
 }
 
 void InstallPromptPermissions::AddPermissionMessages(
-    const extensions::PermissionMessages& permissions_messages) {
-  for (const extensions::PermissionMessage& msg : permissions_messages) {
+    const PermissionMessages& permissions_messages) {
+  for (const PermissionMessage& msg : permissions_messages) {
     permissions.push_back(msg.message());
     // Add a dash to the front of each permission detail.
     std::u16string details_str;

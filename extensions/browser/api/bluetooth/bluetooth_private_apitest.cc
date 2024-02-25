@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Connect) {
       .WillOnce(Return(false))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_device_, Connect(_, _))
-      .WillOnce(RunOnceCallback<1>(/*error_code=*/absl::nullopt));
+      .WillOnce(RunOnceCallback<1>(/*error_code=*/std::nullopt));
   ASSERT_TRUE(RunExtensionTest("bluetooth_private/connect", {},
                                {.load_as_component = true}))
       << message_;
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Pair) {
           WithoutArgs(Invoke(
               this,
               &BluetoothPrivateApiTest::DispatchConfirmPasskeyPairingEvent)),
-          RunOnceCallback<1>(/*error_code=*/absl::nullopt)));
+          RunOnceCallback<1>(/*error_code=*/std::nullopt)));
   ASSERT_TRUE(RunExtensionTest("bluetooth_private/pair", {},
                                {.load_as_component = true}))
       << message_;

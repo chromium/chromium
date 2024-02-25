@@ -45,7 +45,7 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
 
   mutable_args().erase(args().begin());
 
-  absl::optional<Params> params = Params::Create(args());
+  std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::RenderFrameHost* render_frame_host =

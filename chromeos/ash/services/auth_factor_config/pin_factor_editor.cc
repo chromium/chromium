@@ -14,15 +14,12 @@
 namespace ash::auth {
 
 PinFactorEditor::PinFactorEditor(AuthFactorConfig* auth_factor_config,
-                                 PinBackendDelegate* pin_backend,
-                                 QuickUnlockStorageDelegate* storage)
+                                 PinBackendDelegate* pin_backend)
     : auth_factor_config_(auth_factor_config),
       pin_backend_(pin_backend),
-      quick_unlock_storage_(storage),
       auth_factor_editor_(UserDataAuthClient::Get()) {
   CHECK(auth_factor_config_);
   CHECK(pin_backend_);
-  CHECK(quick_unlock_storage_);
 }
 
 PinFactorEditor::~PinFactorEditor() = default;
@@ -31,57 +28,64 @@ void PinFactorEditor::SetPin(
     const std::string& auth_token,
     const std::string& pin,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  AccountId account_id;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    account_id =
-        ash::AuthSessionStorage::Get()->Peek(auth_token)->GetAccountId();
-  } else {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    CHECK(user);
-    auto* user_context_ptr =
-        quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (!user_context_ptr) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    account_id = user_context_ptr->GetAccountId();
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::SetPinWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, pin,
+                               std::move(callback)));
+}
+
+void PinFactorEditor::RemovePin(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::RemovePinWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token,
+                               std::move(callback)));
+}
+
+void PinFactorEditor::ObtainContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
+
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    std::move(callback).Run(nullptr);
+    return;
   }
+  ash::AuthSessionStorage::Get()->BorrowAsync(FROM_HERE, auth_token,
+                                              std::move(callback));
+}
+
+void PinFactorEditor::SetPinWithContext(
+    const std::string& auth_token,
+    const std::string& pin,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+  AccountId account_id = context->GetAccountId();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   pin_backend_->Set(account_id, auth_token, pin,
                     base::BindOnce(&PinFactorEditor::OnPinConfigured,
                                    weak_factory_.GetWeakPtr(), auth_token,
                                    std::move(callback)));
 }
 
-void PinFactorEditor::RemovePin(
+void PinFactorEditor::RemovePinWithContext(
     const std::string& auth_token,
-    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  AccountId account_id;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    account_id =
-        ash::AuthSessionStorage::Get()->Peek(auth_token)->GetAccountId();
-  } else {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    CHECK(user);
-    auto* user_context_ptr =
-        quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (user_context_ptr == nullptr) {
-      LOG(ERROR) << "Invalid auth token";
-      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-      return;
-    }
-    account_id = user_context_ptr->GetAccountId();
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
   }
+
+  AccountId account_id = context->GetAccountId();
+
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   auth_factor_config_->IsConfigured(
       auth_token, mojom::AuthFactor::kPin,
       base::BindOnce(&PinFactorEditor::OnIsPinConfiguredForRemove,
@@ -97,20 +101,6 @@ void PinFactorEditor::OnIsPinConfiguredForRemove(
   if (!is_pin_configured) {
     LOG(WARNING)
         << "No PIN configured, ignoring PinFactorEditor::RemovePin call";
-    std::unique_ptr<UserContext> context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      context = ash::AuthSessionStorage::Get()->Borrow(FROM_HERE, auth_token);
-    } else {
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-      CHECK(user);
-      auto* user_context_ptr =
-          quick_unlock_storage_->GetUserContext(user, auth_token);
-      CHECK(user_context_ptr);
-      context = std::make_unique<UserContext>(*user_context_ptr);
-    }
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-    }
     std::move(callback).Run(mojom::ConfigureResult::kSuccess);
     return;
   }
@@ -124,18 +114,22 @@ void PinFactorEditor::OnPinConfigured(
     const std::string& auth_token,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     bool success) {
-  std::unique_ptr<UserContext> context;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    context = ash::AuthSessionStorage::Get()->Borrow(FROM_HERE, auth_token);
-  } else {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    CHECK(user);
-    auto* user_context_ptr =
-        quick_unlock_storage_->GetUserContext(user, auth_token);
-    CHECK(user_context_ptr);
-    context = std::make_unique<UserContext>(*user_context_ptr);
-  }
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::OnPinConfiguredWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token,
+                               std::move(callback), success));
+}
 
+void PinFactorEditor::OnPinConfiguredWithContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool success,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
   if (!success) {
     auth_factor_config_->NotifyFactorObserversAfterFailure(
         auth_token, std::move(context),

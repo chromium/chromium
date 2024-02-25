@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 android_resources("java_resources") {
@@ -24,7 +25,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [ "android/java/src/org/chromium/chrome/browser/test_dummy/TestDummyImpl.java" ]
 
-  deps += [ "//base:jni_java" ]
+  deps += [ "//third_party/jni_zero:jni_zero_java" ]
   resources_package = "org.chromium.chrome.browser.test_dummy"
 }
 

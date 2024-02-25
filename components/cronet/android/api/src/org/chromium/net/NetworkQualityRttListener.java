@@ -18,9 +18,7 @@ public abstract class NetworkQualityRttListener {
      */
     private final Executor mExecutor;
 
-    /**
-     * @param executor The executor on which the observations are reported.
-     */
+    /** @param executor The executor on which the observations are reported. */
     public NetworkQualityRttListener(Executor executor) {
         if (executor == null) {
             throw new IllegalStateException("Executor must not be null");

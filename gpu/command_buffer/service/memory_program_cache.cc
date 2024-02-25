@@ -201,8 +201,7 @@ void RunShaderCallback(DecoderClient* client,
   std::string shader;
   proto->SerializeToString(&shader);
 
-  std::string key;
-  base::Base64Encode(sha_string, &key);
+  std::string key = base::Base64Encode(sha_string);
   client->CacheBlob(gpu::GpuDiskCacheType::kGlShaders, key, shader);
 }
 

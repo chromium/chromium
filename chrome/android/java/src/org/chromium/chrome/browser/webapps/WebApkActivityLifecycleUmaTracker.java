@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import dagger.Lazy;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
@@ -21,7 +23,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.WebApkUserTheme;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -30,16 +31,11 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
-import org.chromium.ui.util.ColorUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import dagger.Lazy;
-
-/**
- * Handles recording user metrics for WebAPK activities.
- */
+/** Handles recording user metrics for WebAPK activities. */
 @ActivityScope
 public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
@@ -53,8 +49,10 @@ public class WebApkActivityLifecycleUmaTracker
     private long mStartTime;
 
     @Inject
-    public WebApkActivityLifecycleUmaTracker(Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider, SplashController splashController,
+    public WebApkActivityLifecycleUmaTracker(
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            SplashController splashController,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             Lazy<ActivityTabStartupMetricsTracker> startupMetricsTracker,
@@ -70,13 +68,14 @@ public class WebApkActivityLifecycleUmaTracker
 
         // Add UMA recording task at the front of the deferred startup queue as it has a higher
         // priority than other deferred startup tasks like checking for a WebAPK update.
-        deferredStartupWithStorageHandler.addTaskToFront((storage, didCreateStorage) -> {
-            if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+        deferredStartupWithStorageHandler.addTaskToFront(
+                (storage, didCreateStorage) -> {
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 
-            WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
-            WebApkUmaRecorder.recordShellApkVersion(
-                    webApkExtras.shellApkVersion, webApkExtras.distributor);
-        });
+                    WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+                    WebApkUmaRecorder.recordShellApkVersion(
+                            webApkExtras.shellApkVersion, webApkExtras.distributor);
+                });
     }
 
     @Override
@@ -97,9 +96,10 @@ public class WebApkActivityLifecycleUmaTracker
             if (mSavedInstanceStateSupplier.get() == null) {
                 Intent intent = mActivity.getIntent();
                 // Splash observers are removed once the splash screen is hidden.
-                mSplashController.addObserver(new WebApkSplashscreenMetrics(
-                        WebappIntentUtils.getWebApkShellLaunchTime(intent),
-                        WebappIntentUtils.getNewStyleWebApkSplashShownTime(intent)));
+                mSplashController.addObserver(
+                        new WebApkSplashscreenMetrics(
+                                WebappIntentUtils.getWebApkShellLaunchTime(intent),
+                                WebappIntentUtils.getNewStyleWebApkSplashShownTime(intent)));
             }
         }
     }
@@ -109,10 +109,6 @@ public class WebApkActivityLifecycleUmaTracker
 
     @Override
     public void onResumeWithNative() {
-        @WebApkUserTheme
-        int themeSetting = (ColorUtils.inNightMode(mActivity)) ? WebApkUserTheme.DARK_THEME
-                                                               : WebApkUserTheme.LIGHT_THEME;
-        WebApkUmaRecorder.recordUserThemeWhenLaunch(themeSetting);
     }
 
     @Override
@@ -120,7 +116,10 @@ public class WebApkActivityLifecycleUmaTracker
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
         long sessionDuration = SystemClock.elapsedRealtime() - mStartTime;
         WebApkUmaRecorder.recordWebApkSessionDuration(webApkExtras.distributor, sessionDuration);
-        WebApkUkmRecorder.recordWebApkSessionDuration(webApkExtras.manifestUrl,
-                webApkExtras.distributor, webApkExtras.webApkVersionCode, sessionDuration);
+        WebApkUkmRecorder.recordWebApkSessionDuration(
+                webApkExtras.manifestId,
+                webApkExtras.distributor,
+                webApkExtras.webApkVersionCode,
+                sessionDuration);
     }
 }

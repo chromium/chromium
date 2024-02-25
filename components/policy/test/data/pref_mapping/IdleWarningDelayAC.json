@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleWarningDelayAC": 1800000
+        },
+        "prefs": {
+          "power.ac_idle_warning_delay_ms": {
+            "value": 1800000
+          }
+        }
+      }
+    ]
+  }
+]

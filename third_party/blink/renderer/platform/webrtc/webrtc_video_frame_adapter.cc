@@ -9,9 +9,11 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -67,48 +69,54 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
         size, format, usage, gpu::kNullSurfaceHandle, nullptr);
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         const viz::SharedImageFormat& si_format,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      const viz::SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
-      return;
+      return nullptr;
     }
-    mailbox = sii->CreateSharedImage(si_format, gpu_memory_buffer->GetSize(),
-                                     color_space, surface_origin, alpha_type,
-                                     usage, "WebRTCVideoFramePool",
-                                     gpu_memory_buffer->CloneHandle());
+    auto client_shared_image = sii->CreateSharedImage(
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "WebRTCVideoFramePool"},
+        gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         gfx::BufferPlane plane,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gfx::BufferPlane plane,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
+    auto* sii = SharedImageInterface();
+    if (!sii)
+      return nullptr;
+    auto client_shared_image = sii->CreateSharedImage(
+        gpu_memory_buffer, GpuMemoryBufferManager(), plane,
+        {color_space, surface_origin, alpha_type, usage,
+         "WebRTCVideoFramePool"});
+    CHECK(client_shared_image);
+    sync_token = sii->GenVerifiedSyncToken();
+    return client_shared_image;
+  }
+
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     auto* sii = SharedImageInterface();
     if (!sii)
       return;
-    mailbox = sii->CreateSharedImage(
-        gpu_memory_buffer, GpuMemoryBufferManager(), plane, color_space,
-        surface_origin, alpha_type, usage, "WebRTCVideoFramePool");
-    sync_token = sii->GenVerifiedSyncToken();
-  }
-
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          const gpu::Mailbox& mailbox) override {
-    auto* sii = SharedImageInterface();
-    if (!sii)
-      return;
-    sii->DestroySharedImage(sync_token, mailbox);
+    sii->DestroySharedImage(sync_token, std::move(shared_image));
   }
 
  private:
@@ -122,48 +130,11 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return manager;
   }
 
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
 
 }  // namespace
-
-WebRtcVideoFrameAdapter::VectorBufferPool::VectorBufferPool()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
-
-std::unique_ptr<std::vector<uint8_t>>
-WebRtcVideoFrameAdapter::VectorBufferPool::Allocate() {
-  base::AutoLock autolock(buffer_lock_);
-  if (!free_buffers_.empty()) {
-    auto buffer = std::move(free_buffers_.back().buffer);
-    free_buffers_.pop_back();
-    return buffer;
-  }
-
-  return std::make_unique<std::vector<uint8_t>>();
-}
-
-void WebRtcVideoFrameAdapter::VectorBufferPool::Return(
-    std::unique_ptr<std::vector<uint8_t>> buffer) {
-  base::AutoLock autolock(buffer_lock_);
-  const base::TimeTicks now = tick_clock_->NowTicks();
-  free_buffers_.push_back(BufferEntry{now, std::move(buffer)});
-
-  // After this loop, |stale_index| is pointing to the first non-stale buffer.
-  // Such an index must exist because |buffer| is never stale.
-  constexpr base::TimeDelta kStaleBufferLimit = base::Seconds(10);
-  for (wtf_size_t stale_index = 0; stale_index < free_buffers_.size();
-       ++stale_index) {
-    if (now - free_buffers_[stale_index].last_use_time < kStaleBufferLimit) {
-      DCHECK_LT(stale_index, free_buffers_.size());
-      if (stale_index > 0) {
-        free_buffers_.erase(free_buffers_.begin(),
-                            free_buffers_.begin() + stale_index);
-      }
-      break;
-    }
-  }
-}
 
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
@@ -176,14 +147,12 @@ WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
                            timestamp);
 }
 
-std::unique_ptr<std::vector<uint8_t>>
-WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryVectorBuffer() {
-  return pool_for_tmp_vectors_.Allocate();
-}
-
-void WebRtcVideoFrameAdapter::SharedResources::ReleaseTemporaryVectorBuffer(
-    std::unique_ptr<std::vector<uint8_t>> buffer) {
-  pool_for_tmp_vectors_.Return(std::move(buffer));
+media::EncoderStatus WebRtcVideoFrameAdapter::SharedResources::ConvertAndScale(
+    const media::VideoFrame& src_frame,
+    media::VideoFrame& dest_frame) {
+  // The converter is thread safe so multiple threads may convert frames at
+  // once.
+  return frame_converter_.ConvertAndScale(src_frame, dest_frame);
 }
 
 scoped_refptr<viz::RasterContextProvider>
@@ -435,31 +404,14 @@ WebRtcVideoFrameAdapter::ScaledBuffer::CropAndScale(int offset_x,
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame)
-    : WebRtcVideoFrameAdapter(std::move(frame), {}, nullptr) {}
+    : WebRtcVideoFrameAdapter(std::move(frame), nullptr) {}
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
     scoped_refptr<SharedResources> shared_resources)
     : frame_(std::move(frame)),
-      scaled_frames_(std::move(scaled_frames)),
       shared_resources_(std::move(shared_resources)),
-      full_size_(frame_->visible_rect(), frame_->natural_size()) {
-#if DCHECK_IS_ON()
-  double frame_aspect_ratio =
-      static_cast<double>(frame_->coded_size().width()) /
-      frame_->coded_size().height();
-  for (const auto& scaled_frame : scaled_frames_) {
-    DCHECK_LT(scaled_frame->coded_size().width(), frame_->coded_size().width());
-    DCHECK_LT(scaled_frame->coded_size().height(),
-              frame_->coded_size().height());
-    double scaled_frame_aspect_ratio =
-        static_cast<double>(scaled_frame->coded_size().width()) /
-        scaled_frame->coded_size().height();
-    DCHECK_LE(std::abs(scaled_frame_aspect_ratio - frame_aspect_ratio), 0.05);
-  }
-#endif
-}
+      full_size_(frame_->visible_rect(), frame_->natural_size()) {}
 
 WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
   // Mapping is always required when WebRTC uses software encoding.  If hardware
@@ -518,32 +470,12 @@ WebRtcVideoFrameAdapter::AdaptedFrame WebRtcVideoFrameAdapter::AdaptBestFrame(
   double requested_scale_factor =
       static_cast<double>(size.natural_size.width()) /
       size.visible_rect.width();
-  // Ideally we have a frame that is in the same scale as |size|. Otherwise, the
-  // best frame is the smallest frame that is greater than |size|.
-  //
-  // Search for the "best frame" amongst media::VideoFrames (pre-scaled frames).
-  // The "best frame" can either be a media::VideoFrame (a pre-scaled frame) or
-  // a webrtc::VideoFrameBuffer (a previously hard-applied frame).
-  scoped_refptr<media::VideoFrame> best_media_frame = frame_;
-  double best_frame_scale_factor = 1.0;
-  for (const auto& scaled_frame : scaled_frames_) {
-    double scale_factor =
-        static_cast<double>(scaled_frame->coded_size().width()) /
-        frame_->coded_size().width();
-    if (scale_factor >= requested_scale_factor &&
-        scale_factor < best_frame_scale_factor) {
-      best_media_frame = scaled_frame;
-      best_frame_scale_factor = scale_factor;
-      if (scale_factor == requested_scale_factor) {
-        break;
-      }
-    }
-  }
-  if (best_frame_scale_factor != requested_scale_factor) {
-    // Scaling is needed. Consider if the "best frame" is in fact a previously
-    // adapted frame. Search amongst webrtc::VideoFrameBuffers (previously
-    // hard-applied frames).
+  if (requested_scale_factor != 1.0) {
+    // Scaling is needed. Consider if there is a previously adapted frame we can
+    // scale from. This would be a smaller scaling operation than scaling from
+    // the full resolution `frame_`.
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> best_webrtc_frame;
+    double best_frame_scale_factor = 1.0;
     for (const auto& adapted_frame : adapted_frames_) {
       // For simplicity, ignore frames where the cropping is not identical to a
       // previous mapping.
@@ -568,30 +500,28 @@ WebRtcVideoFrameAdapter::AdaptedFrame WebRtcVideoFrameAdapter::AdaptBestFrame(
   }
   // Because |size| is expressed relative to the full size'd frame, we need to
   // adjust the visible rect for the scale of the best frame.
-  gfx::Rect visible_rect(size.visible_rect.x() * best_frame_scale_factor,
-                         size.visible_rect.y() * best_frame_scale_factor,
-                         size.visible_rect.width() * best_frame_scale_factor,
-                         size.visible_rect.height() * best_frame_scale_factor);
-  if (IsApproxEquals(visible_rect, best_media_frame->visible_rect())) {
+  gfx::Rect visible_rect(size.visible_rect.x(), size.visible_rect.y(),
+                         size.visible_rect.width(), size.visible_rect.height());
+  if (IsApproxEquals(visible_rect, frame_->visible_rect())) {
     // Due to rounding errors it is possible for |visible_rect| to be slightly
     // off, which could either cause unnecessary cropping/scaling or cause
     // crashes if |visible_rect| is not contained within
-    // |best_media_frame->visible_rect()|, so we adjust it.
-    visible_rect = best_media_frame->visible_rect();
+    // |frame_->visible_rect()|, so we adjust it.
+    visible_rect = frame_->visible_rect();
   }
-  CHECK(best_media_frame->visible_rect().Contains(visible_rect))
+  CHECK(frame_->visible_rect().Contains(visible_rect))
       << visible_rect.ToString() << " is not contained within "
-      << best_media_frame->visible_rect().ToString();
+      << frame_->visible_rect().ToString();
   // Wrapping is only needed if we need to crop or scale the best frame.
-  if (best_media_frame->visible_rect() != visible_rect ||
-      best_media_frame->natural_size() != size.natural_size) {
-    best_media_frame = media::VideoFrame::WrapVideoFrame(
-        best_media_frame, best_media_frame->format(), visible_rect,
-        size.natural_size);
+  scoped_refptr<media::VideoFrame> media_frame = frame_;
+  if (frame_->visible_rect() != visible_rect ||
+      frame_->natural_size() != size.natural_size) {
+    media_frame = media::VideoFrame::WrapVideoFrame(
+        frame_, frame_->format(), visible_rect, size.natural_size);
   }
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> adapted_webrtc_frame =
-      ConvertToWebRtcVideoFrameBuffer(best_media_frame, shared_resources_);
-  return AdaptedFrame(size, best_media_frame, adapted_webrtc_frame);
+      ConvertToWebRtcVideoFrameBuffer(media_frame, shared_resources_);
+  return AdaptedFrame(size, media_frame, adapted_webrtc_frame);
 }
 
 scoped_refptr<media::VideoFrame>

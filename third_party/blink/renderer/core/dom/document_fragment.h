@@ -47,7 +47,8 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
                  ParserContentPolicy = kAllowScriptingContent);
   bool ParseXML(const String&,
                 Element* context_element,
-                ParserContentPolicy = kAllowScriptingContent);
+                ParserContentPolicy = kAllowScriptingContent,
+                ExceptionState* exception_state = nullptr);
 
   bool CanContainRangeEndPoint() const final { return true; }
   virtual bool IsTemplateContent() const { return false; }
@@ -56,7 +57,8 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   bool IsDocumentFragment() const = delete;
 
   // https://crbug.com/1453291
-  // The DOM Parts API: https://github.com/tbondwilkinson/dom-parts.
+  // The DOM Parts API:
+  // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
   DocumentPartRoot& getPartRoot();
 
   void Trace(Visitor* visitor) const override;

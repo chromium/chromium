@@ -37,38 +37,45 @@ public class SiteDataCleaner {
         final AtomicInteger callbacksReceived = new AtomicInteger(0);
         List<Website> sites = group.getWebsites();
         final int websitesCount = sites.size();
-        final Runnable singleWebsiteCallback = () -> {
-            if (callbacksReceived.incrementAndGet() >= websitesCount) {
-                finishCallback.run();
-            }
-        };
+        final Runnable singleWebsiteCallback =
+                () -> {
+                    if (callbacksReceived.incrementAndGet() >= websitesCount) {
+                        finishCallback.run();
+                    }
+                };
         for (Website site : sites) {
             clearData(contextHandle, site, singleWebsiteCallback);
         }
     }
 
-    /**
-     * Resets the permissions of the specified site.
-     */
+    /** Resets the permissions of the specified site. */
     public static void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
         // Clear the permissions.
         for (ContentSettingException exception : site.getContentSettingExceptions()) {
-            site.setContentSetting(browserContextHandle, exception.getContentSettingType(),
+            site.setContentSetting(
+                    browserContextHandle,
+                    exception.getContentSettingType(),
                     ContentSettingValues.DEFAULT);
         }
         for (PermissionInfo info : site.getPermissionInfos()) {
-            site.setContentSetting(browserContextHandle, info.getContentSettingsType(),
+            site.setContentSetting(
+                    browserContextHandle,
+                    info.getContentSettingsType(),
                     ContentSettingValues.DEFAULT);
         }
 
         for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
             info.revoke(browserContextHandle);
         }
+
+        for (var exceptions : site.getEmbeddedPermissions().values()) {
+            for (var exception : exceptions) {
+                exception.setContentSetting(browserContextHandle, ContentSettingValues.DEFAULT);
+            }
+        }
     }
 
-    /**
-     * Resets the permissions for each of the sites in a given group.
-     */
+    /** Resets the permissions for each of the sites in a given group. */
     public static void resetPermissions(
             BrowserContextHandle browserContextHandle, WebsiteGroup group) {
         for (Website site : group.getWebsites()) {

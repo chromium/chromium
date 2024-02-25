@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
@@ -46,17 +47,20 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class UpdateMenuItemHelper {
     private static final String TAG = "UpdateMenuItemHelper";
 
-    private static UpdateMenuItemHelper sInstance;
+    private static UpdateMenuItemHelper sInstanceForTesting;
+    private static ProfileKeyedMap<UpdateMenuItemHelper> sProfileMap;
 
     private static Object sGetInstanceLock = new Object();
 
+    private final Profile mProfile;
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
 
-    private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback = status -> {
-        mStatus = status;
-        handleStateChanged();
-        pingObservers();
-    };
+    private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
+            status -> {
+                mStatus = status;
+                handleStateChanged();
+                pingObservers();
+            };
 
     /**
      * The current state of updates for Chrome.  This can change during runtime and may be {@code
@@ -75,19 +79,24 @@ public class UpdateMenuItemHelper {
      */
     private boolean mMenuDismissedRunnableExecuted;
 
-    /** @return The {@link UpdateMenuItemHelper} instance. */
-    public static UpdateMenuItemHelper getInstance() {
+    /** Return the {@link UpdateMenuItemHelper} for the given {@link Profile}. */
+    public static UpdateMenuItemHelper getInstance(Profile profile) {
         synchronized (UpdateMenuItemHelper.sGetInstanceLock) {
-            if (sInstance == null) {
-                sInstance = new UpdateMenuItemHelper();
+            if (sInstanceForTesting != null) return sInstanceForTesting;
+            if (sProfileMap == null) {
+                sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
             }
-            return sInstance;
+            return sProfileMap.getForProfile(profile, () -> new UpdateMenuItemHelper(profile));
         }
     }
 
     public static void setInstanceForTesting(UpdateMenuItemHelper testingInstance) {
-        sInstance = testingInstance;
-        ResettersForTesting.register(() -> sInstance = null);
+        sInstanceForTesting = testingInstance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    private UpdateMenuItemHelper(Profile profile) {
+        mProfile = profile;
     }
 
     /**
@@ -98,9 +107,11 @@ public class UpdateMenuItemHelper {
         if (!mObservers.addObserver(observer)) return;
 
         if (mStatus != null) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                if (mObservers.hasObserver(observer)) observer.run();
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (mObservers.hasObserver(observer)) observer.run();
+                    });
             return;
         }
 
@@ -129,14 +140,14 @@ public class UpdateMenuItemHelper {
                 if (TextUtils.isEmpty(mStatus.updateUrl)) return;
 
                 try {
-                    UpdateStatusProvider.getInstance().startIntentUpdate(
-                            activity, false /* newTask */);
+                    UpdateStatusProvider.getInstance()
+                            .startIntentUpdate(activity, /* newTask= */ false);
                 } catch (ActivityNotFoundException e) {
                     Log.e(TAG, "Failed to launch Activity for: %s", mStatus.updateUrl);
                 }
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
-            // Intentional fall through.
+                // Intentional fall through.
             default:
                 return;
         }
@@ -144,22 +155,25 @@ public class UpdateMenuItemHelper {
         // If the update menu item is showing because it was forced on through about://flags
         // then mLatestVersion may be null.
         if (mStatus.latestVersion != null) {
-            getPrefService().setString(
-                    Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM, mStatus.latestVersion);
+            getPrefService()
+                    .setString(
+                            Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM,
+                            mStatus.latestVersion);
         }
 
         handleStateChanged();
     }
 
-    /**
-     * Called when the menu containing the update menu item is dismissed.
-     */
+    /** Called when the menu containing the update menu item is dismissed. */
     public void onMenuDismissed() {
         mMenuDismissedRunnableExecuted = false;
         // Post a task to record the item clicked histogram. Post task is used so that the runnable
         // executes after #onMenuItemClicked is called (if it's going to be called).
-        Choreographer.getInstance().postFrameCallback(
-                (long frameTimeNanos) -> { mMenuDismissedRunnableExecuted = true; });
+        Choreographer.getInstance()
+                .postFrameCallback(
+                        (long frameTimeNanos) -> {
+                            mMenuDismissedRunnableExecuted = true;
+                        });
     }
 
     /**
@@ -185,10 +199,12 @@ public class UpdateMenuItemHelper {
             case UpdateState.UPDATE_AVAILABLE:
                 // The badge is hidden if the update menu item has been clicked until there is an
                 // even newer version of Chrome available.
-                showBadge |= !TextUtils.equals(
-                        getPrefService().getString(
-                                Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM),
-                        mStatus.latestUnsupportedVersion);
+                showBadge |=
+                        !TextUtils.equals(
+                                getPrefService()
+                                        .getString(
+                                                Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM),
+                                mStatus.latestUnsupportedVersion);
 
                 if (showBadge) {
                     mMenuUiState.buttonState = new MenuButtonState();
@@ -216,8 +232,10 @@ public class UpdateMenuItemHelper {
 
                 // In case the user has been upgraded since last time they tapped the toolbar badge
                 // we should show the badge again.
-                showBadge |= !TextUtils.equals(
-                        BuildInfo.getInstance().versionName, mStatus.latestUnsupportedVersion);
+                showBadge |=
+                        !TextUtils.equals(
+                                BuildInfo.getInstance().versionName,
+                                mStatus.latestUnsupportedVersion);
 
                 if (showBadge) {
                     mMenuUiState.buttonState = new MenuButtonState();
@@ -238,7 +256,7 @@ public class UpdateMenuItemHelper {
                 mMenuUiState.itemState.enabled = false;
                 break;
             case UpdateState.NONE:
-            // Intentional fall through.
+                // Intentional fall through.
             default:
                 break;
         }
@@ -248,8 +266,8 @@ public class UpdateMenuItemHelper {
         for (Runnable observer : mObservers) observer.run();
     }
 
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    private PrefService getPrefService() {
+        return UserPrefs.get(mProfile);
     }
 
     boolean getMenuDismissedRunnableExecutedForTests() {

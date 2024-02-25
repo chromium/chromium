@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,14 +14,12 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +45,7 @@ constexpr char16_t kWeakPassword216[] =
 constexpr int kDelay = 2;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+using affiliations::FacetURI;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -131,7 +130,7 @@ class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   InsecureCredentialsManager provider_{&presenter_, store_,
@@ -568,7 +567,8 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPassword) {
 
   password_form.password_issues[InsecureType::kLeaked].create_time =
       base::Time::Now();
-  provider().SaveInsecureCredential(credential);
+  provider().SaveInsecureCredential(credential,
+                                    TriggerBackendNotification(true));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
@@ -591,7 +591,8 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
   store().AddLogin(password_form);
   RunUntilIdle();
 
-  provider().SaveInsecureCredential(credential);
+  provider().SaveInsecureCredential(credential,
+                                    TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(insecurity_metadata,
@@ -1089,10 +1090,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
 // Test verifies that editing a weak credential to another weak credential
 // continues to be treated weak.
 TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
 
@@ -1116,10 +1113,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
 // Test verifies that editing a weak credential to another weak credential
 // continues to be treated weak.
 TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
 
@@ -1206,11 +1199,6 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsReused) {
 }
 
 TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
-
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   PasswordForm form2 =
       MakeSavedPassword("https://example2.com/", kUsername2, kPassword1);
@@ -1234,11 +1222,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
 }
 
 TEST_F(InsecureCredentialsManagerTest, IrrelevantUpdatesDontCauseReuseCheck) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
-
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername2, kPassword216);
 
@@ -1273,7 +1256,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   if (!IsGroupingEnabled()) {
     return;
   }
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr};
   InsecureCredentialsManager provider{&presenter, &store(), nullptr};
@@ -1286,13 +1269,14 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword1);
 
   // Setup affiliated groups.
-  std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
+  std::vector<affiliations::GroupedFacets> grouped_facets(1);
+  affiliations::Facet facet(
+      FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
   grouped_facets[0].facets.push_back(facet);
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
 
   store().AddLogin(form1);
   store().AddLogin(form2);
@@ -1377,7 +1361,7 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
   InsecureCredentialsManager provider_{&presenter_, profile_store_,
@@ -1406,7 +1390,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
 
   // Mark `kUsername1`, `kPassword1` as compromised, a new entry should be
   // added to both stores.
-  provider().SaveInsecureCredential(MakeLeakCredential(kUsername1, kPassword1));
+  provider().SaveInsecureCredential(MakeLeakCredential(kUsername1, kPassword1),
+                                    TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(2U, provider().GetInsecureCredentialEntries().size());
@@ -1429,7 +1414,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
   // Now, mark `kUsername1`, `kPassword216` as compromised, a new entry should
   // be added only to the account store.
   provider().SaveInsecureCredential(
-      MakeLeakCredential(kUsername1, kPassword216));
+      MakeLeakCredential(kUsername1, kPassword216),
+      TriggerBackendNotification(false));
   RunUntilIdle();
 
   EXPECT_EQ(3U, provider().GetInsecureCredentialEntries().size());

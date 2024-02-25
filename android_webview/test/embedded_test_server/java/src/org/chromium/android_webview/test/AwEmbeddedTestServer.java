@@ -32,7 +32,8 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
      */
     @Override
     protected void setIntentClassName(Intent intent) {
-        intent.setClassName("org.chromium.android_webview.test.support",
+        intent.setClassName(
+                "org.chromium.android_webview.test.support",
                 "org.chromium.android_webview.test.AwEmbeddedTestServerService");
     }
 
@@ -45,7 +46,7 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
      *  @return The created server.
      */
     public static AwEmbeddedTestServer createAndStartServer(Context context) {
-        return initializeAndStartServer(new AwEmbeddedTestServer(), context, 0 /* port */);
+        return initializeAndStartServer(new AwEmbeddedTestServer(), context, /* port= */ 0);
     }
 
     /**
@@ -61,6 +62,6 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
     public static AwEmbeddedTestServer createAndStartHTTPSServer(
             Context context, @ServerCertificate int serverCertificate) {
         return initializeAndStartHTTPSServer(
-                new AwEmbeddedTestServer(), context, serverCertificate, 0 /* port */);
+                new AwEmbeddedTestServer(), context, serverCertificate, /* port= */ 0);
     }
 }

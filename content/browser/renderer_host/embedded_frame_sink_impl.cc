@@ -34,13 +34,13 @@ EmbeddedFrameSinkImpl::~EmbeddedFrameSinkImpl() {
     host_frame_sink_manager_->UnregisterFrameSinkHierarchy(
         parent_frame_sink_id_, frame_sink_id_);
   }
-  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_);
+  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 void EmbeddedFrameSinkImpl::CreateCompositorFrameSink(
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
-  CreateFrameSink(/*bundle_id=*/absl::nullopt, std::move(client),
+  CreateFrameSink(/*bundle_id=*/std::nullopt, std::move(client),
                   std::move(receiver));
 }
 
@@ -52,7 +52,7 @@ void EmbeddedFrameSinkImpl::CreateBundledCompositorFrameSink(
 }
 
 void EmbeddedFrameSinkImpl::CreateFrameSink(
-    const absl::optional<viz::FrameSinkBundleId>& bundle_id,
+    const std::optional<viz::FrameSinkBundleId>& bundle_id,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
   // We might recreate the CompositorFrameSink on context loss or GPU crash.

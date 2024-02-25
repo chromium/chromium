@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       'Tests that Runtime.installBinding is preserved on navigations and ' +
       'injected before the addScriptOnNewDocument is run.');

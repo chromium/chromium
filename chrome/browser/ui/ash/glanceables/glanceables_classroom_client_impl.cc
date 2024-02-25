@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <numeric>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,10 +26,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "chrome/browser/ui/singleton_tabs.h"
-#include "content/public/browser/browser_thread.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
 #include "google_apis/classroom/classroom_api_list_course_work_request.h"
@@ -38,8 +37,6 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -120,8 +117,7 @@ struct TentativeTeacherAssignment {
   std::string course_id;
   std::string course_work_id;
   std::string course_name;
-  raw_ptr<const GlanceablesClassroomCourseWorkItem, ExperimentalAsh>
-      course_work_item;
+  raw_ptr<const GlanceablesClassroomCourseWorkItem> course_work_item;
 };
 
 }  // namespace
@@ -221,27 +217,12 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 }
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
-    Profile* profile,
     base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
-        create_request_sender_callback,
-    bool use_best_effort_prefetch_task_runner)
-    : profile_(profile),
-      clock_(clock),
+        create_request_sender_callback)
+    : clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
-      number_of_assignments_prioritized_for_display_(3) {
-  if (features::IsGlanceablesV2ClassroomTeacherViewEnabled()) {
-    if (use_best_effort_prefetch_task_runner) {
-      teacher_data_prefetch_timer_.SetTaskRunner(
-          content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
-    }
-
-    teacher_data_prefetch_timer_.Start(
-        FROM_HERE, base::Seconds(20),
-        base::BindOnce(&GlanceablesClassroomClientImpl::PrefetchTeacherData,
-                       base::Unretained(this)));
-  }
-}
+      number_of_assignments_prioritized_for_display_(3) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 
@@ -252,7 +233,11 @@ void GlanceablesClassroomClientImpl::IsStudentRoleActive(
   FetchStudentCourses(base::BindOnce(
       [](IsRoleEnabledCallback callback, bool success,
          const CourseList& courses) {
-        std::move(callback).Run(!courses.empty());
+        const bool is_active = !courses.empty();
+        base::UmaHistogramBoolean(
+            "Ash.Glanceables.Api.Classroom.IsStudentRoleActiveResult",
+            is_active);
+        std::move(callback).Run(is_active);
       },
       std::move(callback)));
 }
@@ -262,7 +247,7 @@ void GlanceablesClassroomClientImpl::GetCompletedStudentAssignments(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return true; });
+      [](const std::optional<base::Time>& due) { return true; });
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kTurnedIn ||
@@ -288,7 +273,7 @@ void GlanceablesClassroomClientImpl::
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         return due.has_value() && now < due.value();
       },
       clock_->Now());
@@ -318,7 +303,7 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithMissedDueDate(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         return due.has_value() && now > due.value();
       },
       clock_->Now());
@@ -348,7 +333,7 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return !due.has_value(); });
+      [](const std::optional<base::Time>& due) { return !due.has_value(); });
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
@@ -366,149 +351,6 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
       std::move(callback)));
 }
 
-void GlanceablesClassroomClientImpl::IsTeacherRoleActive(
-    IsRoleEnabledCallback callback) {
-  CHECK(callback);
-
-  FetchTeacherCourses(base::BindOnce(
-      [](IsRoleEnabledCallback callback, bool success,
-         const CourseList& courses) {
-        std::move(callback).Run(!courses.empty());
-      },
-      std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::
-    GetTeacherAssignmentsWithApproachingDueDate(
-        GetAssignmentsCallback callback) {
-  CHECK(callback);
-
-  auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
-        // Only include items which an approaching due date.
-        return due.has_value() && now < due.value();
-      },
-      clock_->Now());
-
-  auto submissions_state_predicate =
-      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
-        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
-      });
-
-  auto sort_comparator =
-      base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
-                             const GlanceablesClassroomCourseWorkItem* rhs) {
-        // `due_predicate` should have filtered out items with no due date.
-        CHECK(lhs->due());
-        CHECK(rhs->due());
-
-        // Order by due date in ascending order.
-        return *lhs->due() < *rhs->due();
-      });
-
-  InvokeOnceTeacherDataFetched(base::BindOnce(
-      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      base::Unretained(this), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(sort_comparator),
-      /*allow_submissions_refresh=*/true, std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
-    GetAssignmentsCallback callback) {
-  CHECK(callback);
-
-  auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
-        //  Only include items with a due date in the past.
-        return due.has_value() && now > due.value();
-      },
-      clock_->Now());
-
-  auto submissions_state_predicate =
-      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
-        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
-      });
-
-  auto sort_comparator =
-      base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
-                             const GlanceablesClassroomCourseWorkItem* rhs) {
-        // `due_predicate` should have filtered out items with no due date.
-        CHECK(lhs->due());
-        CHECK(rhs->due());
-
-        // Order by due date in descending order.
-        return *lhs->due() > *rhs->due();
-      });
-
-  InvokeOnceTeacherDataFetched(base::BindOnce(
-      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      base::Unretained(this), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(sort_comparator),
-      /*allow_submissions_refresh=*/true, std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
-    GetAssignmentsCallback callback) {
-  CHECK(callback);
-
-  auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return !due.has_value(); });
-
-  auto submissions_state_predicate =
-      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
-        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
-      });
-
-  auto sort_comparator =
-      base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
-                             const GlanceablesClassroomCourseWorkItem* rhs) {
-        // Order by last update time in descending order.
-        return lhs->last_update() > rhs->last_update();
-      });
-
-  InvokeOnceTeacherDataFetched(base::BindOnce(
-      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      base::Unretained(this), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(sort_comparator),
-      /*allow_submissions_refresh=*/true, std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
-    GetAssignmentsCallback callback) {
-  auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return true; });
-
-  auto submissions_state_predicate =
-      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
-        return state == GlanceablesClassroomStudentSubmissionState::kGraded;
-      });
-
-  auto sort_comparator =
-      base::BindRepeating([](const GlanceablesClassroomCourseWorkItem* lhs,
-                             const GlanceablesClassroomCourseWorkItem* rhs) {
-        // TODO(b/291609743): Order by when last student submission was graded,
-        // in descending order.
-        // For now, order by the assignment's last update time in descending
-        // order.
-        return lhs->last_update() > rhs->last_update();
-      });
-
-  InvokeOnceTeacherDataFetched(base::BindOnce(
-      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      base::Unretained(this), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(sort_comparator),
-      /*allow_submissions_refresh=*/true, std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
-  if (!url.is_valid()) {
-    return;
-  }
-
-  // TODO(b/283370862): consider opening PWA if installed.
-  ShowSingletonTabOverwritingNTP(profile_, url);
-}
-
 void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
   for (FetchStatus* fetch_status :
        {&student_data_fetch_status_, &teacher_data_fetch_status_}) {
@@ -516,17 +358,6 @@ void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
   }
   student_courses_.InvalidateFetchStatus();
   teacher_courses_.InvalidateFetchStatus();
-}
-
-bool GlanceablesClassroomClientImpl::
-    FireTeacherDataPrefetchTimerIfRunningForTesting(
-        base::OnceClosure prefetch_callback) {
-  if (!teacher_data_prefetch_timer_.IsRunning()) {
-    return false;
-  }
-  prefetch_callback_ = std::move(prefetch_callback);
-  teacher_data_prefetch_timer_.FireNow();
-  return true;
 }
 
 // static
@@ -677,8 +508,6 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
 void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
     DataFetchCallback callback) {
   CHECK(callback);
-
-  teacher_data_prefetch_timer_.Stop();
 
   if (teacher_data_fetch_status_ == FetchStatus::kFetched) {
     std::move(callback).Run();
@@ -1021,6 +850,26 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched(
 
   PruneInvalidCourseWork(student_courses_.courses(), student_course_work_);
 
+  if (!student_data_fetch_had_failure_) {
+    for (const auto& course : student_courses_.courses()) {
+      const auto iter = student_course_work_.find(course->id);
+      if (iter == student_course_work_.end()) {
+        continue;
+      }
+
+      base::UmaHistogramCounts1000(
+          "Ash.Glanceables.Api.Classroom.CourseWorkItemsPerStudentCourseCount",
+          iter->second.size());
+      base::UmaHistogramCounts1000(
+          "Ash.Glanceables.Api.Classroom."
+          "StudentSubmissionsPerStudentCourseCount",
+          std::accumulate(iter->second.begin(), iter->second.end(), 0,
+                          [](int count, const auto& x) {
+                            return count + x.second.total_submissions();
+                          }));
+    }
+  }
+
   std::list<DataFetchCallback> callbacks;
   callbacks_waiting_for_student_data_.swap(callbacks);
 
@@ -1073,7 +922,7 @@ void GlanceablesClassroomClientImpl::OnTeacherDataFetched(
 }
 
 bool GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
-    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+    base::RepeatingCallback<bool(const std::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,
@@ -1125,7 +974,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
 }
 
 bool GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
-    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+    base::RepeatingCallback<bool(const std::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,
@@ -1231,39 +1080,6 @@ void GlanceablesClassroomClientImpl::PruneInvalidCourseWork(
         return !course_work_item.second.IsValid();
       });
     }
-  }
-}
-
-void GlanceablesClassroomClientImpl::PrefetchTeacherData() {
-  CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
-  CHECK_EQ(teacher_data_fetch_status_, FetchStatus::kNotFetched);
-
-  callbacks_waiting_for_teacher_data_.push_back(base::BindOnce(
-      [](base::OnceClosure callback) {
-        if (callback) {
-          std::move(callback).Run();
-        }
-        return true;
-      },
-      std::move(prefetch_callback_)));
-
-  // Start in kFetchingInvalidated state so more recent data gets refetched when
-  // requested from UI.
-  teacher_data_fetch_status_ = FetchStatus::kFetchingInvalidated;
-
-  const bool needs_refetch =
-      teacher_courses_.RunOrEnqueueCallbackAndUpdateFetchStatus(base::BindOnce(
-          &GlanceablesClassroomClientImpl::OnCoursesFetched,
-          weak_factory_.GetWeakPtr(), CourseWorkType::kTeacher,
-          base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
-                         weak_factory_.GetWeakPtr(), clock_->Now())));
-
-  if (needs_refetch) {
-    teacher_courses_.InvalidateFetchStatus();
-    auto courses = std::make_unique<CourseList>();
-    FetchCoursesPage(
-        /*student_id=*/"", /*teacher_id=*/kOwnCoursesFilterValue,
-        /*page_token=*/"", teacher_courses_, std::move(courses));
   }
 }
 

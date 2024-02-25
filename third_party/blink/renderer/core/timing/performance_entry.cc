@@ -93,7 +93,7 @@ String PerformanceEntry::navigationId() const {
 }
 
 DOMWindow* PerformanceEntry::source() const {
-  return source_;
+  return source_.Get();
 }
 
 mojom::blink::PerformanceMarkOrMeasurePtr

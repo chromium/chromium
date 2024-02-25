@@ -5,14 +5,16 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
 #import "base/check.h"
+#import "ios/web/public/web_state_id.h"
+#import "url/gurl.h"
 
 @implementation TabSwitcherItem
 
-- (instancetype)initWithIdentifier:(NSString*)identifier {
-  DCHECK(identifier);
+- (instancetype)initWithIdentifier:(web::WebStateID)identifier {
   self = [super init];
   if (self) {
-    _identifier = [identifier copy];
+    CHECK(identifier.valid());
+    _identifier = identifier;
   }
   return self;
 }

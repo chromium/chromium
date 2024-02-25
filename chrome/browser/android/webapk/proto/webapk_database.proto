@@ -6,6 +6,9 @@ syntax = "proto2";
 
 import "components/sync/protocol/web_apk_specifics.proto";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.webapk";
+
 option optimize_for = LITE_RUNTIME;
 
 package webapk;

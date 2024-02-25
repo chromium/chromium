@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 
 #include "device_management_backend.pb.h"
+#include "private_membership_rlwe.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -20,6 +21,7 @@ TEST_P(RlweTestSupportTest, CaseMatchesFactory) {
   const bool is_member = GetParam();
   const auto test_case = psm::testing::LoadTestCase(is_member);
   auto rlwe_client = psm::testing::CreateClientFactory(is_member).Run(
+      private_membership::rlwe::CROS_DEVICE_STATE,
       private_membership::rlwe::RlwePlaintextId());
 
   // Verify that the expected membership matches the test parameter.

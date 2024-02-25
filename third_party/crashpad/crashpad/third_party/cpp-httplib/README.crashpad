@@ -5,6 +5,8 @@ Revision: 5b3187e2f9e77c672063d49a1167bbb563da023e
 License: MIT
 License File: cpp-httplib/LICENSE
 Security Critical: no (test only)
+Shipped: no
+CPEPrefix: cpe:/a:cpp-httplib_project:cpp-httplib
 
 Description:
 A C++11 header-only HTTP library.

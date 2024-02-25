@@ -5,11 +5,11 @@
 import 'chrome://user-notes-side-panel.top-chrome/user_note_overviews_list.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {UserNoteOverviewRowElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overview_row.js';
-import {UserNoteOverviewsListElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overviews_list.js';
-import {NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
+import type {UserNoteOverviewRowElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overview_row.js';
+import type {UserNoteOverviewsListElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overviews_list.js';
+import type {NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
 import {UserNotesApiProxyImpl} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestUserNotesApiProxy} from './test_user_notes_api_proxy.js';
@@ -75,8 +75,10 @@ suite('UserNoteOverviewsListTest', () => {
       const overviewElement = noteOverviewElements[0]!;
       const contextMenuElement = overviewElement.shadowRoot!.querySelector(
           'user-note-overview-row-menu')!;
-      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
-                                     '#menuButton') as HTMLButtonElement;
+      const overviewMenuButton =
+          contextMenuElement.shadowRoot!.querySelector<HTMLElement>(
+              '#menuButton');
+      assertTrue(!!overviewMenuButton);
       overviewMenuButton.click();
       const overviewMenu = contextMenuElement.$.menu;
       // Click add a note button.
@@ -94,13 +96,16 @@ suite('UserNoteOverviewsListTest', () => {
       const overviewElement = noteOverviewElements[0]!;
       const contextMenuElement = overviewElement.shadowRoot!.querySelector(
           'user-note-overview-row-menu')!;
-      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
-                                     '#menuButton') as HTMLButtonElement;
+      const overviewMenuButton =
+          contextMenuElement.shadowRoot!.querySelector<HTMLElement>(
+              '#menuButton');
+      assertTrue(!!overviewMenuButton);
       overviewMenuButton.click();
       const overviewMenu = contextMenuElement.$.menu;
       // Click open in new tab button.
-      const openInNewTabButton = overviewMenu.querySelectorAll(
-                                     '.dropdown-item')[1]! as HTMLButtonElement;
+      const openInNewTabButton =
+          overviewMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item')[1]!
+          ;
       openInNewTabButton.click();
       const url = await testProxy.whenCalled('openInNewTab');
       assertEquals(url, overviewElement.overview.url);
@@ -112,8 +117,10 @@ suite('UserNoteOverviewsListTest', () => {
       const overviewElement = noteOverviewElements[0]!;
       const contextMenuElement = overviewElement.shadowRoot!.querySelector(
           'user-note-overview-row-menu')!;
-      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
-                                     '#menuButton') as HTMLButtonElement;
+      const overviewMenuButton =
+          contextMenuElement.shadowRoot!.querySelector<HTMLElement>(
+              '#menuButton');
+      assertTrue(!!overviewMenuButton);
       overviewMenuButton.click();
       const overviewMenu = contextMenuElement.$.menu;
       // Click delete button.

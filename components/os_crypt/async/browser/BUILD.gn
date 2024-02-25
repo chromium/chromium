@@ -37,6 +37,25 @@ source_set("key_provider_interface") {
   ]
 }
 
+if (is_win) {
+  source_set("dpapi_key_provider") {
+    sources = [
+      "dpapi_key_provider.cc",
+      "dpapi_key_provider.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/sync",
+      "//components/prefs",
+    ]
+
+    libs = [ "crypt32.lib" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_async_unittest.cc" ]
@@ -52,4 +71,12 @@ source_set("unit_tests") {
     "//crypto",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources += [ "dpapi_key_provider_unittest.cc" ]
+    deps += [
+      ":dpapi_key_provider",
+      "//components/prefs:test_support",
+    ]
+  }
 }

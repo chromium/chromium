@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -149,7 +150,7 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
 }
 
 std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
-  base::StringPiece spki_bytes;
+  std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer()),
           &spki_bytes)) {

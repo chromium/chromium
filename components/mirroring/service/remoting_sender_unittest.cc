@@ -46,8 +46,7 @@ void AreEqualExceptKeyframeImpl(const media::cast::SenderEncodedFrame& frame,
 
   scoped_refptr<media::DecoderBuffer> received_buffer =
       media::cast::ByteArrayToDecoderBuffer(
-          reinterpret_cast<const uint8_t*>(frame.data.data()),
-          frame.data.size());
+          base::as_bytes(base::make_span(frame.data)));
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(buffer.data()),
                         buffer.data_size()),
             std::string(reinterpret_cast<const char*>(received_buffer->data()),

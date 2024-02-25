@@ -28,16 +28,16 @@ TEST_F(PseudoElementTest, AttachLayoutTree) {
 
   EXPECT_TRUE(GetLayoutObjectByElementId("marker1")
                   ->SlowFirstChild()
-                  ->IsLayoutNGOutsideListMarker());
+                  ->IsLayoutOutsideListMarker());
   EXPECT_TRUE(GetLayoutObjectByElementId("marker2")
                   ->SlowFirstChild()
-                  ->IsLayoutNGOutsideListMarker());
+                  ->IsLayoutOutsideListMarker());
   EXPECT_TRUE(GetLayoutObjectByElementId("marker3")
                   ->SlowFirstChild()
-                  ->IsLayoutNGInsideListMarker());
+                  ->IsLayoutInsideListMarker());
   EXPECT_TRUE(GetLayoutObjectByElementId("marker4")
                   ->SlowFirstChild()
-                  ->IsLayoutNGOutsideListMarker());
+                  ->IsLayoutOutsideListMarker());
 }
 
 }  // namespace blink

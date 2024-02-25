@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
@@ -79,8 +84,19 @@ content::WebContents* WithProfilePickerTestHelpers::web_contents() {
 }
 
 GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
+  signin::Flow signin_flow = signin_util::IsForceSigninEnabled()
+                                 ? signin::Flow::EMBEDDED_PROMO
+                                 : signin::Flow::PROMO;
+
   return signin::GetChromeSyncURLForDice({
       .request_dark_scheme = view()->ShouldUseDarkColors(),
-      .for_promo_flow = true,
+      .flow = signin_flow,
   });
+}
+
+GURL WithProfilePickerTestHelpers::GetChromeReauthURL(
+    const std::string& email) {
+  return signin::GetChromeReauthURL(
+      {.email = email,
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url()});
 }

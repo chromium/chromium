@@ -7,7 +7,6 @@
 
 import argparse
 import json
-import optparse  # pylint: disable=deprecated-module
 import os
 import sys
 import logging
@@ -17,6 +16,8 @@ from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
 from py_utils import cloud_storage
+
+from telemetry.core import optparse_argparse_migration as oam
 
 def _FetchDependenciesIfNeeded(story_set):
   """ Download files needed by a user story set. """
@@ -62,7 +63,7 @@ def _EnumerateDependencies(story_set):
 def _FetchDepsForBenchmark(benchmark):
   # Create a dummy options object which hold default values that are expected
   # by Benchmark.CreateStorySet(options) method.
-  parser = optparse.OptionParser()
+  parser = oam.CreateFromOptparseInputs()
   benchmark.AddBenchmarkCommandLineArgs(parser)
   options, _ = parser.parse_args([])
   story_set = benchmark().CreateStorySet(options)

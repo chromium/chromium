@@ -66,30 +66,33 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                       const V8RequestInfo* request,
                       const CacheQueryOptions* options,
                       ExceptionState& exception_state);
-  ScriptPromise matchAll(ScriptState*, ExceptionState&);
-  ScriptPromise matchAll(ScriptState* script_state,
-                         const V8RequestInfo* request,
-                         const CacheQueryOptions* options,
-                         ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<Response>> matchAll(ScriptState*,
+                                                     ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<Response>> matchAll(
+      ScriptState* script_state,
+      const V8RequestInfo* request,
+      const CacheQueryOptions* options,
+      ExceptionState& exception_state);
   ScriptPromise add(ScriptState* script_state,
                     const V8RequestInfo* request,
                     ExceptionState& exception_state);
   ScriptPromise addAll(ScriptState* script_state,
                        const HeapVector<Member<V8RequestInfo>>& requests,
                        ExceptionState& exception_state);
-  ScriptPromise Delete(ScriptState* script_state,
-                       const V8RequestInfo* request,
-                       const CacheQueryOptions* options,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> Delete(ScriptState* script_state,
+                                        const V8RequestInfo* request,
+                                        const CacheQueryOptions* options,
+                                        ExceptionState& exception_state);
   ScriptPromise put(ScriptState* script_state,
                     const V8RequestInfo* request,
                     Response* response,
                     ExceptionState& exception_state);
-  ScriptPromise keys(ScriptState*, ExceptionState&);
-  ScriptPromise keys(ScriptState* script_state,
-                     const V8RequestInfo* request,
-                     const CacheQueryOptions* options,
-                     ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<Request>> keys(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<Request>> keys(
+      ScriptState* script_state,
+      const V8RequestInfo* request,
+      const CacheQueryOptions* options,
+      ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -108,18 +111,19 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                           const Request*,
                           const CacheQueryOptions*,
                           ExceptionState&);
-  ScriptPromise MatchAllImpl(ScriptState*,
-                             const Request*,
-                             const CacheQueryOptions*,
-                             ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<Response>> MatchAllImpl(
+      ScriptState*,
+      const Request*,
+      const CacheQueryOptions*,
+      ExceptionState&);
   ScriptPromise AddAllImpl(ScriptState*,
                            const String& method_name,
                            const HeapVector<Member<Request>>&,
                            ExceptionState&);
-  ScriptPromise DeleteImpl(ScriptState*,
-                           const Request*,
-                           const CacheQueryOptions*,
-                           ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> DeleteImpl(ScriptState*,
+                                            const Request*,
+                                            const CacheQueryOptions*,
+                                            ExceptionState&);
   void PutImpl(ScriptPromiseResolver*,
                const String& method_name,
                const HeapVector<Member<Request>>&,
@@ -127,10 +131,10 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                const WTF::Vector<scoped_refptr<BlobDataHandle>>& blob_list,
                ExceptionState&,
                int64_t trace_id);
-  ScriptPromise KeysImpl(ScriptState*,
-                         const Request*,
-                         const CacheQueryOptions*,
-                         ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<Request>> KeysImpl(ScriptState*,
+                                                    const Request*,
+                                                    const CacheQueryOptions*,
+                                                    ExceptionState&);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;

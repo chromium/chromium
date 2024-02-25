@@ -137,8 +137,11 @@ public class StateListDrawableBuilder {
         for (int i = 0; i < transitionsSize; ++i) {
             Transition transition = mTransitions.get(i);
             Drawable drawable = AppCompatResources.getDrawable(mContext, transition.getDrawable());
-            result.addTransition(transition.getFromId(), transition.getToId(),
-                    (Drawable & Animatable) (drawable), false);
+            result.addTransition(
+                    transition.getFromId(),
+                    transition.getToId(),
+                    (Drawable & Animatable) (drawable),
+                    false);
         }
         return result;
     }

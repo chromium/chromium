@@ -22,11 +22,21 @@ ZxLogMessage::ZxLogMessage(const char* file_path,
     : LogMessage(file_path, line, severity), zx_status_(zx_status) {}
 
 ZxLogMessage::~ZxLogMessage() {
+  AppendError();
+}
+
+void ZxLogMessage::AppendError() {
   // zx_status_t error values are negative, so log the numeric version as
   // decimal rather than hex. This is also useful to match zircon/errors.h for
   // grepping.
   stream() << ": " << zx_status_get_string(zx_status_) << " (" << zx_status_
            << ")";
+}
+
+ZxLogMessageFatal::~ZxLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
 }
 
 }  // namespace logging

@@ -6,14 +6,43 @@
 #define ASH_COMPONENTS_ARC_ARC_FEATURES_PARSER_H_
 
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
+
+// Build properties that have been extracted from the ARC feature file.
+struct BuildPropsMapping {
+  BuildPropsMapping();
+
+  BuildPropsMapping(const BuildPropsMapping&);
+  BuildPropsMapping& operator=(const BuildPropsMapping&);
+
+  BuildPropsMapping(BuildPropsMapping&& other);
+  BuildPropsMapping& operator=(BuildPropsMapping&& other);
+
+  ~BuildPropsMapping();
+
+  // Build fingerprint from the "ro.build.fingerprint" property. e.g.
+  // "google/hatch/hatch_cheets:13/R118-15602.0.0/10753998:userdebug/dev-keys".
+  std::string fingerprint;
+
+  // SDK version from the "ro.build.version.sdk" property. e.g. "33".
+  std::string sdk_version;
+
+  // Human-readable release version number from the "ro.build.version.release"
+  // property. e.g. "13".
+  std::string release_version;
+
+  // ABI list from the "ro.product.cpu.abilist" property. e.g.
+  // "x86_64,arm64-v8a,x86,armeabi-v7a,armeabi"
+  std::string abi_list;
+};
 
 // This struct contains an ARC available feature map, unavailable feature set
 // and ARC build property map.
@@ -23,10 +52,6 @@ struct ArcFeatures {
 
   // Each item in the vector is the feature name.
   using FeatureList = std::vector<std::string>;
-
-  // Key is the property key, such as "ro.build.version.sdk". Value is the
-  // corresponding property value.
-  using BuildPropsMapping = std::map<std::string, std::string>;
 
   ArcFeatures();
 
@@ -46,7 +71,7 @@ struct ArcFeatures {
   // This list contains all ARC unavailable feature names.
   FeatureList unavailable_features;
 
-  // This map contains all ARC build properties.
+  // Struct for build properties that are referenced in Ash.
   BuildPropsMapping build_props;
 
   std::string play_store_version;
@@ -83,18 +108,18 @@ class ArcFeaturesParser {
 
   // Get ARC system available features.
   static void GetArcFeatures(
-      base::OnceCallback<void(absl::optional<ArcFeatures>)> callback);
+      base::OnceCallback<void(std::optional<ArcFeatures>)> callback);
 
   // Given an input feature JSON, return ARC features. This method is for
   // testing only.
-  static absl::optional<ArcFeatures> ParseFeaturesJsonForTesting(
-      base::StringPiece input_json);
+  static std::optional<ArcFeatures> ParseFeaturesJsonForTesting(
+      std::string_view input_json);
 
   // Overrides the ArcFeatures returned by GetArcFeatures, for testing only.
   // Does not take ownership of |getter|, it must be alive when GetArcFeatures
   // is called.
   static void SetArcFeaturesGetterForTesting(
-      base::RepeatingCallback<absl::optional<ArcFeatures>()>* getter);
+      base::RepeatingCallback<std::optional<ArcFeatures>()>* getter);
 };
 
 }  // namespace arc

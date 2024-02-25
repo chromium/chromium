@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, CreateIntentFilters) {
   apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
-    const web_app::AppId app_id =
+    const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         provider, *provider.registrar_unsafe().GetAppById(app_id));
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, PartialWild) {
   apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
-    const web_app::AppId app_id =
+    const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         provider, *provider.registrar_unsafe().GetAppById(app_id));
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest,
   apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
-    const web_app::AppId app_id =
+    const webapps::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         provider, *provider.registrar_unsafe().GetAppById(app_id));

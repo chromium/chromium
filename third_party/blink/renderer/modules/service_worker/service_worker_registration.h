@@ -40,6 +40,7 @@ class ServiceWorkerRegistration final
 
  public:
   // Called from CallbackPromiseAdapter.
+  using IDLType = ServiceWorkerRegistration;
   using WebType = WebServiceWorkerRegistrationObjectInfo;
   static ServiceWorkerRegistration* Take(
       ScriptPromiseResolver*,
@@ -69,9 +70,9 @@ class ServiceWorkerRegistration final
     return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
-  ServiceWorker* installing() { return installing_; }
-  ServiceWorker* waiting() { return waiting_; }
-  ServiceWorker* active() { return active_; }
+  ServiceWorker* installing() { return installing_.Get(); }
+  ServiceWorker* waiting() { return waiting_.Get(); }
+  ServiceWorker* active() { return active_.Get(); }
   NavigationPreloadManager* navigationPreload();
 
   String scope() const;
@@ -85,7 +86,7 @@ class ServiceWorkerRegistration final
                                   ScriptPromiseResolver* resolver);
 
   ScriptPromise update(ScriptState*, ExceptionState&);
-  ScriptPromise unregister(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLBoolean> unregister(ScriptState*, ExceptionState&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(updatefound, kUpdatefound)
 
@@ -112,7 +113,7 @@ class ServiceWorkerRegistration final
   void UpdateInternal(
       mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
       ScriptPromiseResolver* resolver);
-  void UnregisterInternal(ScriptPromiseResolver* resolver);
+  void UnregisterInternal(ScriptPromiseResolverTyped<IDLBoolean>* resolver);
 
   Member<ServiceWorker> installing_;
   Member<ServiceWorker> waiting_;
@@ -149,6 +150,7 @@ class ServiceWorkerRegistrationArray {
 
  public:
   // Called from CallbackPromiseAdapter.
+  using IDLType = IDLSequence<ServiceWorkerRegistration>;
   using WebType = WebVector<WebServiceWorkerRegistrationObjectInfo>;
   static HeapVector<Member<ServiceWorkerRegistration>> Take(
       ScriptPromiseResolver* resolver,

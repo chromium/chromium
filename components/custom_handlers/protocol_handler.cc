@@ -119,12 +119,12 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     protocol = *protocol_in;
   if (const std::string* url_in = value.FindString("url"))
     url = *url_in;
-  absl::optional<base::Time> time_value =
+  std::optional<base::Time> time_value =
       base::ValueToTime(value.Find("last_modified"));
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
-  absl::optional<int> security_level_value = value.FindInt("security_level");
+  std::optional<int> security_level_value = value.FindInt("security_level");
   if (security_level_value) {
     security_level =
         blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);

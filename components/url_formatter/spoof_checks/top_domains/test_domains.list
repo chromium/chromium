@@ -1,44 +1,20 @@
 #
-# List of top domains. Only used in unit tests.
+# List of top domains. Only used in browser tests.
 #
-d4000.com
-###END_TOP_BUCKET###
-digklmo68.com
-digklmo68.co.uk
-islkpx123.com
-isikpx123.com
-os345.com
-woder.com
-wmhtb.com
-phktb.com
-pkawx.com
-wmnr.com
-rf.com
-cyxe.com
-ldg.com
-idg.com
-ig.com
-ld.com
-1gd.com
-cegjo.com
-wsws.com
-wsu.com
-wsou.com
-1234567890.com
-aece.com
-aen.com
-n11.com
-o2.com
-28.com
-39.com
-89.com
-43.com
-oo.com
-qq.com
-nn.com
-# A domain with the same skeleton as itself:
-test.net
-# Unicode domain:
-fóó.com
-# Test domain for ß (deviation character)
+google.com
+blogspot.com
+apple.com
+ask.com
 youtube.com
+# For character swap test, matched by google.sr:
+google.rs
+# For edit distance test, matched by google.com.tw:
+google.com.tr
+# For edit distance test:
+academia.edu
+academic.ru
+# For target embedding test:
+google.co.uk
+office.com
+###END_TOP_BUCKET###
+google.sk

@@ -5,8 +5,6 @@
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/webui/eche_app_ui/mojom/types_mojom_traits.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/json/json_reader.h"
@@ -15,6 +13,8 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "crypto/sha2.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash::eche_app {
 
@@ -34,6 +34,7 @@ const char kJsonMeasureLatencyKey[] = "measure_latency";
 const char kJsonSendStartSignalingKey[] = "send_start_signaling";
 const char kJsonDisableStunServerKey[] = "disable_stun_server";
 const char kJsonCheckAndroidNetworkInfoKey[] = "check_android_network_info";
+const char kJsonProcessAndroidAccessibilityTreeKey[] = "process_android_accessibility_tree";
 
 const std::map<ConnectionStateType, const char*> CONNECTION_STATE_TYPE{
     {ConnectionStateType::kOnline, "online"},
@@ -53,9 +54,6 @@ SystemInfoProvider::SystemInfoProvider(
   if (ScreenBacklight::Get()) {
     ScreenBacklight::Get()->AddObserver(this);
   }
-  if (TabletMode::Get()) {
-    TabletMode::Get()->AddObserver(this);
-  }
   cros_network_config_->AddObserver(
       cros_network_config_receiver_.BindNewPipeAndPassRemote());
   FetchWifiNetworkList();
@@ -73,9 +71,6 @@ SystemInfoProvider::~SystemInfoProvider() {
   if (ScreenBacklight::Get()) {
     ScreenBacklight::Get()->RemoveObserver(this);
   }
-  if (TabletMode::Get()) {
-    TabletMode::Get()->RemoveObserver(this);
-  }
 }
 
 std::string SystemInfoProvider::GetHashedWiFiSsid() {
@@ -88,7 +83,8 @@ void SystemInfoProvider::GetSystemInfo(
   base::Value::Dict json_dictionary;
   json_dictionary.Set(kJsonDeviceNameKey, system_info_->GetDeviceName());
   json_dictionary.Set(kJsonBoardNameKey, system_info_->GetBoardName());
-  json_dictionary.Set(kJsonTabletModeKey, TabletMode::Get()->InTabletMode());
+  json_dictionary.Set(kJsonTabletModeKey,
+                      display::Screen::GetScreen()->InTabletMode());
   json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId());
   json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
   if (features::IsEcheMetricsRevampEnabled()) {
@@ -113,6 +109,9 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(
       kJsonCheckAndroidNetworkInfoKey,
       base::FeatureList::IsEnabled(features::kEcheSWACheckAndroidNetworkInfo));
+  json_dictionary.Set(
+      kJsonProcessAndroidAccessibilityTreeKey,
+      base::FeatureList::IsEnabled(features::kEcheSWAProcessAndroidAccessibilityTree));
 
   std::string json_message;
   base::JSONWriter::Write(json_dictionary, &json_message);
@@ -140,6 +139,21 @@ void SystemInfoProvider::OnScreenBacklightStateChanged(
   }
 
   observer_remote_->OnScreenBacklightStateChanged(screen_state);
+}
+
+void SystemInfoProvider::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      SetTabletModeChanged(true);
+      break;
+    case display::TabletState::kInClamshellMode:
+      SetTabletModeChanged(false);
+      break;
+  }
 }
 
 void SystemInfoProvider::SetTabletModeChanged(bool enabled) {
@@ -172,15 +186,6 @@ void SystemInfoProvider::SetAndroidDeviceNetworkInfoChanged(
   PA_LOG(VERBOSE) << "OnAndroidDeviceNetworkInfoChanged";
   observer_remote_->OnAndroidDeviceNetworkInfoChanged(
       is_different_network, android_device_on_cellular);
-}
-
-// TabletModeObserver implementation:
-void SystemInfoProvider::OnTabletModeStarted() {
-  SetTabletModeChanged(true);
-}
-
-void SystemInfoProvider::OnTabletModeEnded() {
-  SetTabletModeChanged(false);
 }
 
 // network_config::mojom::CrosNetworkConfigObserver implementation:

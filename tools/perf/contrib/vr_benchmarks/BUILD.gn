@@ -26,12 +26,6 @@ group("vr_perf_tests_base") {
   data_deps = [ "//testing:run_perf_test" ]
 
   if (is_android) {
-    data += [
-      "//chrome/android/shared_preference_files/test/",
-      "//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-      "//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-    ]
-
     data_deps += [ "//chrome/android:monochrome_public_bundle" ]
   }
 

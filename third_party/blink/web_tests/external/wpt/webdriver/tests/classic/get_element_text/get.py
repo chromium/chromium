@@ -1,6 +1,6 @@
 import pytest
 
-from webdriver import Element
+from webdriver import WebElement
 
 from tests.support.asserts import assert_error, assert_success
 
@@ -30,7 +30,7 @@ def test_no_browsing_context(session, closed_frame):
 
 
 def test_no_such_element_with_invalid_value(session):
-    element = Element(session, "foo")
+    element = WebElement(session, "foo")
 
     response = get_element_text(session, element.id)
     assert_error(response, "no such element")
@@ -100,6 +100,42 @@ def test_read_element_text(session, inline):
 
     result = get_element_text(session, element.id)
     assert_success(result, "oo")
+
+
+@pytest.mark.parametrize("text, inner_html, expected", [
+    ("cheese", "<slot><span>foo</span>bar</slot>", "cheese"),
+    ("cheese", "<slot><span>foo</span></slot>bar", "cheesebar"),
+    ("cheese", "<slot><span style=\"display: none\">foo</span>bar</slot>", "cheese"),
+    ("", "<slot><span>foo</span>bar</slot>", "foobar"),
+    ("", "<slot><span>foo</span></slot>bar", "foobar"),
+    ("", "<slot><span style='display: none'>foo</span>bar</slot>", "bar"),
+], ids=[
+    "custom visible",
+    "custom outside",
+    "custom hidden",
+    "default visible",
+    "default outside",
+    "default hidden",
+])
+def test_shadow_root_slot(session, inline, text, inner_html, expected):
+    session.url = inline(f"""
+        <test-container>{text}</test-container>
+        <script>
+            class TestContainer extends HTMLElement {{
+                connectedCallback() {{
+                    const shadow = this.attachShadow({{ mode: "open" }});
+                    shadow.innerHTML = "{inner_html}";
+                }}
+            }}
+
+            customElements.define("test-container", TestContainer);
+        </script>
+        """)
+
+    element = session.find.css("test-container", all=False)
+
+    result = get_element_text(session, element.id)
+    assert_success(result, expected)
 
 
 def test_pretty_print_xml(session, inline):

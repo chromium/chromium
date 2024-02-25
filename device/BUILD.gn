@@ -9,7 +9,8 @@ import("//testing/test.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
-  import("//build/config/android/rules.gni")  # For generate_jni().
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (is_mac) {
@@ -29,7 +30,6 @@ test("device_unittests") {
     "bluetooth/bluetooth_discovery_filter_unittest.cc",
     "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-    "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
@@ -120,6 +120,7 @@ test("device_unittests") {
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
+    "//crypto:test_support",
     "//device/base",
     "//device/base/synchronization",
     "//device/bluetooth",
@@ -173,6 +174,7 @@ test("device_unittests") {
       "fido/credential_management_handler_unittest.cc",
       "fido/ctap_request_unittest.cc",
       "fido/ctap_response_unittest.cc",
+      "fido/enclave/enclave_protocol_utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
       "fido/fido_device_discovery_unittest.cc",
@@ -196,6 +198,7 @@ test("device_unittests") {
     ]
 
     deps += [
+      "//components/sync/protocol:protocol",
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]
@@ -305,10 +308,12 @@ test("device_unittests") {
       "bluetooth/floss/floss_battery_manager_client_unittest.cc",
       "bluetooth/floss/floss_bluetooth_telephony_client_unittest.cc",
       "bluetooth/floss/floss_dbus_client_unittest.cc",
+      "bluetooth/floss/floss_dbus_manager_unittest.cc",
       "bluetooth/floss/floss_gatt_manager_client_unittest.cc",
       "bluetooth/floss/floss_lescan_client_unittest.cc",
       "bluetooth/floss/floss_manager_client_unittest.cc",
       "bluetooth/floss/floss_socket_manager_unittest.cc",
+      "bluetooth/floss/floss_version_unittest.cc",
       "bluetooth/test/bluetooth_test_bluez.cc",
       "bluetooth/test/bluetooth_test_bluez.h",
     ]
@@ -332,7 +337,6 @@ test("device_unittests") {
     sources -= [
       "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
       "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     ]
 
     sources += [
@@ -485,11 +489,11 @@ if (is_android) {
     sources = bluetooth_java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [
@@ -519,32 +523,5 @@ if (is_android) {
 
   java_cpp_enum("bluetooth_test_javagen") {
     sources = [ "bluetooth/test/bluetooth_test.h" ]
-  }
-}
-
-if (is_win || is_linux || is_mac) {
-  test("passkey_enclave") {
-    testonly = true
-    sources = [ "fido/enclave/test/passkey_enclave.cc" ]
-
-    deps = [
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//device/fido:enclave_service",
-      "//device/fido:fido",
-    ]
-  }
-
-  test("passkey_enclave_client") {
-    testonly = true
-    sources = [ "fido/enclave/test/passkey_enclave_client.cc" ]
-
-    deps = [
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//components/sync/protocol:protocol",
-      "//device/fido",
-      "//net",
-    ]
   }
 }

@@ -18,11 +18,10 @@
 #import "tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h"
 #import "tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+Utils.h"
 
-#define VerifyColoredLabel(coloredLabel, expectedR, expectedG, expectedB, \
-                           expectedLabel)                                 \
-  XCTAssertEqual(coloredLabel.r, expectedR);                              \
-  XCTAssertEqual(coloredLabel.g, expectedG);                              \
-  XCTAssertEqual(coloredLabel.b, expectedB);                              \
+#define VerifyColoredLabel(coloredLabel, expectedR, expectedG, expectedB, expectedLabel) \
+  XCTAssertEqual(coloredLabel.r, expectedR);                                             \
+  XCTAssertEqual(coloredLabel.g, expectedG);                                             \
+  XCTAssertEqual(coloredLabel.b, expectedB);                                             \
   XCTAssertEqualObjects(coloredLabel.label, expectedLabel)
 
 // The maximum fraction of pixels in the candidate mask that can have a
@@ -41,24 +40,22 @@ NSInteger const deepLabV3SegmentationHeight = 257;
 
 @interface TFLImageSegmenterTests : XCTestCase
 
-@property(nonatomic, nullable) NSString* modelPath;
+@property(nonatomic, nullable) NSString *modelPath;
 
 @end
 
 @implementation TFLImageSegmenterTests
 
 - (void)setUp {
-  // Put setup code here. This method is called before the invocation of each
-  // test method in the class.
+  // Put setup code here. This method is called before the invocation of each test method in the
+  // class.
   [super setUp];
-  self.modelPath =
-      [[NSBundle bundleForClass:self.class] pathForResource:@"deeplabv3"
-                                                     ofType:@"tflite"];
+  self.modelPath = [[NSBundle bundleForClass:self.class] pathForResource:@"deeplabv3"
+                                                                  ofType:@"tflite"];
   XCTAssertNotNil(self.modelPath);
 }
 
-- (void)compareWithDeepLabV3PartialColoredLabels:
-    (NSArray<TFLColoredLabel*>*)coloredLabels {
+- (void)compareWithDeepLabV3PartialColoredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels {
   VerifyColoredLabel(coloredLabels[0],
                      0,               // expectedR
                      0,               // expectedG
@@ -207,67 +204,58 @@ NSInteger const deepLabV3SegmentationHeight = 257;
 }
 
 - (void)testSuccessfulImageSegmentationWithCategoryMask {
-  TFLImageSegmenterOptions* imageSegmenterOptions =
+  TFLImageSegmenterOptions *imageSegmenterOptions =
       [[TFLImageSegmenterOptions alloc] initWithModelPath:self.modelPath];
 
-  TFLImageSegmenter* imageSegmenter =
-      [TFLImageSegmenter imageSegmenterWithOptions:imageSegmenterOptions
-                                             error:nil];
+  TFLImageSegmenter *imageSegmenter =
+      [TFLImageSegmenter imageSegmenterWithOptions:imageSegmenterOptions error:nil];
   XCTAssertNotNil(imageSegmenter);
 
-  GMLImage* gmlImage =
-      [GMLImage imageFromBundleWithClass:self.class
-                                fileName:@"segmentation_input_rotation0"
-                                  ofType:@"jpg"];
+  GMLImage *gmlImage = [GMLImage imageFromBundleWithClass:self.class
+                                                 fileName:@"segmentation_input_rotation0"
+                                                   ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
 
-  TFLSegmentationResult* segmentationResult =
-      [imageSegmenter segmentWithGMLImage:gmlImage error:nil];
+  TFLSegmentationResult *segmentationResult = [imageSegmenter segmentWithGMLImage:gmlImage
+                                                                            error:nil];
 
   XCTAssertNotNil(segmentationResult);
   XCTAssertEqual(segmentationResult.segmentations.count, 1);
 
   XCTAssertNotNil(segmentationResult.segmentations[0].coloredLabels);
-  [self compareWithDeepLabV3PartialColoredLabels:segmentationResult
-                                                     .segmentations[0]
-                                                     .coloredLabels];
+  [self compareWithDeepLabV3PartialColoredLabels:segmentationResult.segmentations[0].coloredLabels];
 
   XCTAssertNotNil(segmentationResult.segmentations[0].categoryMask);
   XCTAssertTrue(segmentationResult.segmentations[0].categoryMask.mask != nil);
 
-  GMLImage* goldenImage =
-      [GMLImage imageFromBundleWithClass:self.class
-                                fileName:@"segmentation_golden_rotation0"
-                                  ofType:@"png"];
+  GMLImage *goldenImage = [GMLImage imageFromBundleWithClass:self.class
+                                                    fileName:@"segmentation_golden_rotation0"
+                                                      ofType:@"png"];
 
   XCTAssertNotNil(goldenImage);
   CVPixelBufferRef pixelBuffer = [goldenImage grayScalePixelBuffer];
 
   CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
-  UInt8* pixelBufferBaseAddress =
-      (UInt8*)CVPixelBufferGetBaseAddress(pixelBuffer);
+  UInt8 *pixelBufferBaseAddress = (UInt8 *)CVPixelBufferGetBaseAddress(pixelBuffer);
 
   XCTAssertEqual(deepLabV3SegmentationWidth,
                  segmentationResult.segmentations[0].categoryMask.width);
   XCTAssertEqual(deepLabV3SegmentationHeight,
                  segmentationResult.segmentations[0].categoryMask.height);
 
-  NSInteger numPixels =
-      deepLabV3SegmentationWidth * deepLabV3SegmentationHeight;
+  NSInteger numPixels = deepLabV3SegmentationWidth * deepLabV3SegmentationHeight;
 
   float inconsistentPixels = 0;
 
   for (int i = 0; i < numPixels; i++)
-    if (segmentationResult.segmentations[0].categoryMask.mask[i] *
-            kGoldenMaskMagnificationFactor !=
+    if (segmentationResult.segmentations[0].categoryMask.mask[i] * kGoldenMaskMagnificationFactor !=
         pixelBufferBaseAddress[i])
       inconsistentPixels += 1;
 
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
-  XCTAssertLessThan(inconsistentPixels / (float)numPixels,
-                    kGoldenMaskTolerance);
+  XCTAssertLessThan(inconsistentPixels / (float)numPixels, kGoldenMaskTolerance);
 }
 
 @end

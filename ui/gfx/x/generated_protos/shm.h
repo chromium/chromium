@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_SHM_H_
 #define UI_GFX_X_GENERATED_PROTOS_SHM_H_
@@ -45,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -83,7 +66,7 @@ class COMPONENT_EXPORT(X11) Shm {
   enum class Seg : uint32_t {};
 
   struct CompletionEvent {
-    static constexpr int type_id = 15;
+    static constexpr uint8_t type_id = 7;
     static constexpr uint8_t opcode = 0;
     uint16_t sequence{};
     Drawable drawable{};
@@ -91,10 +74,6 @@ class COMPONENT_EXPORT(X11) Shm {
     uint8_t major_event{};
     Seg shmseg{};
     uint32_t offset{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct BadSegError : public x11::Error {

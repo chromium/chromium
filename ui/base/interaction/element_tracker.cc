@@ -179,7 +179,7 @@ class ElementTracker::GarbageCollector {
   }
 
   const raw_ptr<ElementTracker> tracker_;
-  std::set<ElementData*> candidates_;
+  std::set<raw_ptr<ElementData, SetExperimental>> candidates_;
   int frame_count_ = 0;
 };
 
@@ -273,7 +273,7 @@ ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
 }
 
 ElementTracker::ElementList ElementTracker::GetAllElementsForTesting(
-    absl::optional<ElementContext> in_context) {
+    std::optional<ElementContext> in_context) {
   ElementList result;
   for (const auto& [key, data] : element_data_) {
     if (!in_context.has_value() || in_context.value() == key.second) {

@@ -25,7 +25,7 @@ class ProtocolPageLoadMetricsObserverTest
   void InitializeTestPageLoadTiming(
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
-    timing->navigation_start = base::Time::FromDoubleT(1);
+    timing->navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing->parse_timing->parse_start = base::Milliseconds(100);
     timing->paint_timing->first_paint = base::Milliseconds(200);
     timing->paint_timing->first_contentful_paint = base::Milliseconds(300);
@@ -36,8 +36,7 @@ class ProtocolPageLoadMetricsObserverTest
     PopulateRequiredTimingFields(timing);
   }
 
-  void SimulateNavigation(
-      net::HttpResponseInfo::ConnectionInfo connection_info) {
+  void SimulateNavigation(net::HttpConnectionInfo connection_info) {
     NavigateAndCommit(GURL("http://google.com"));
 
     // Force the ConnectionInfo that the observer received from the
@@ -92,31 +91,31 @@ class ProtocolPageLoadMetricsObserverTest
 };
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H11Navigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
+  SimulateNavigation(net::HttpConnectionInfo::kHTTP1_1);
   CheckHistograms(6, "H11");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H10Navigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0);
+  SimulateNavigation(net::HttpConnectionInfo::kHTTP1_0);
   CheckHistograms(0, "");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H09Navigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9);
+  SimulateNavigation(net::HttpConnectionInfo::kHTTP0_9);
   CheckHistograms(0, "");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H2Navigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  SimulateNavigation(net::HttpConnectionInfo::kHTTP2);
   CheckHistograms(6, "H2");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, QuicNavigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  SimulateNavigation(net::HttpConnectionInfo::kQUIC_35);
   CheckHistograms(6, "QUIC");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, UnknownNavigation) {
-  SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN);
+  SimulateNavigation(net::HttpConnectionInfo::kUNKNOWN);
   CheckHistograms(0, "");
 }

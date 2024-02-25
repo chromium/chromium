@@ -36,7 +36,6 @@ const char16_t kBodyText[] = u"Body";
 const char16_t kActionButtonText[] = u"Action";
 const char16_t kDismissButtonText[] = u"Dismiss";
 const char16_t kExtraViewText[] = u"Learn";
-const char16_t kItemListText[] = u"Item 1\nItem2";
 
 }  // namespace
 
@@ -170,22 +169,6 @@ TEST_F(ToolbarActionsBarBubbleViewsTest,
   CloseBubble();
 }
 
-TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutListView) {
-  TestToolbarActionsBarBubbleDelegate delegate(kHeadingText, kBodyText,
-                                               kActionButtonText);
-  delegate.set_item_list_text(kItemListText);
-  ShowBubble(&delegate);
-
-  EXPECT_TRUE(bubble()->GetOkButton());
-  EXPECT_EQ(bubble()->GetOkButton()->GetText(), kActionButtonText);
-  EXPECT_FALSE(bubble()->GetCancelButton());
-  EXPECT_FALSE(bubble()->learn_more_button());
-  EXPECT_TRUE(bubble()->item_list());
-  EXPECT_EQ(bubble()->item_list()->GetText(), kItemListText);
-
-  CloseBubble();
-}
-
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoBodyText) {
   TestToolbarActionsBarBubbleDelegate delegate(kHeadingText, std::u16string(),
                                                kActionButtonText);
@@ -301,21 +284,6 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestCloseOnDeactivation) {
   EXPECT_EQ(ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION,
             *delegate.close_action());
   EXPECT_TRUE(bubble_observer.widget_closed());
-}
-
-TEST_F(ToolbarActionsBarBubbleViewsTest, TestDontCloseOnDeactivation) {
-  TestToolbarActionsBarBubbleDelegate delegate(kHeadingText, kBodyText,
-                                               kActionButtonText);
-  delegate.set_close_on_deactivate(false);
-  ShowBubble(&delegate);
-  views::test::TestWidgetObserver bubble_observer(bubble_widget());
-
-  EXPECT_FALSE(delegate.close_action());
-  // Activate another widget. The bubble shouldn't close.
-  anchor_widget()->Activate();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(delegate.close_action());
-  CloseBubble();
 }
 
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestNullExtraView) {

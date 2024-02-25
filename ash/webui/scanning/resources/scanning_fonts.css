@@ -1,0 +1,110 @@
+/* Copyright 2020 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/*
+ * #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --scanning-action-toolbar-font-family: Roboto;
+  --scanning-app-title-font-family: "Google Sans", Roboto, sans-serif;
+  --scanning-done-section-option-font-family: Roboto;
+  --scanning-helper-text-font-family: Roboto;
+  --scanning-more-settings-font-family: Roboto;
+  --scanning-multi-page-checkbox-font-family: Roboto;
+  --scanning-no-scanners-subtext-font-family: Roboto;
+  --scanning-progress-text-font-family: "Google Sans", Roboto, sans-serif;
+  --scanning-scan-setting-font-family: Roboto;
+  --scanning-scanners-loading-font-family: "Google Sans", Roboto, sans-serif;
+
+  --scanning-action-toolbar-font-size: 13px;
+  --scanning-app-title-font-size: 22px;
+  --scanning-done-section-option-font-size: 13px;
+  --scanning-helper-text-font-size: 13px;
+  --scanning-more-settings-font-size: 12px;
+  --scanning-multi-page-checkbox-font-size: 12px;
+  --scanning-no-scanners-subtext-font-size: 14px;
+  --scanning-progress-text-font-size: 16px;
+  --scanning-scan-setting-font-size: 13px;
+  --scanning-scanners-loading-font-size: 22px;
+
+  --scanning-action-toolbar-line-height: 20px;
+  --scanning-app-title-line-height: 28px;
+  --scanning-done-section-option-line-height: 20px;
+  --scanning-helper-text-line-height: 20px;
+  --scanning-more-settings-line-height: 18px;
+  --scanning-multi-page-checkbox-line-height: 18px;
+  --scanning-no-scanners-subtext-line-height: 20px;
+  --scanning-progress-text-line-height: 24px;
+  --scanning-scan-setting-line-height: 20px;
+  --scanning-scanners-loading-line-height: 28px;
+
+  --scanning-regular-font-weight: 400;
+  --scanning-medium-font-weight: 500;
+
+  --scanning-action-toolbar-text-color: var(--google-grey-200);
+  --scanning-app-title-text-color: var(--cros-text-color-primary);
+  --scanning-done-section-option-text-color: var(--cros-text-color-primary);
+  --scanning-helper-text-color: var(--cros-text-color-secondary);
+  --scanning-more-settings-text-color: var(--cros-text-color-secondary);
+  --scanning-multi-page-checkbox-text-color: var(--cros-text-color-primary);
+  --scanning-no-scanners-subtext-color: var(--cros-text-color-secondary);
+  --scanning-progress-text-color: var(--cros-text-color-primary);
+  --scanning-scan-setting-text-color: var(--cros-text-color-primary);
+  --scanning-scanners-loading-text-color: var(--cros-text-color-primary);
+}
+
+:host-context(body.jelly-enabled) {
+  --scanning-action-toolbar-font-family: var(--cros-body-0-font-family);
+  --scanning-app-title-font-family: var(--cros-body-0-font-family);
+  --scanning-done-section-option-font-family: var(--cros-body-0-font-family);
+  --scanning-helper-text-font-family: var(--cros-body-0-font-family);
+  --scanning-more-settings-font-family: var(--cros-body-0-font-family);
+  --scanning-multi-page-checkbox-font-family: var(--cros-body-0-font-family);
+  --scanning-no-scanners-subtext-font-family: var(--cros-body-0-font-family);
+  --scanning-progress-text-font-family: var(--cros-body-0-font-family);
+  --scanning-scan-setting-font-family: var(--cros-body-0-font-family);
+  --scanning-scanners-loading-font-family: var(--cros-body-0-font-family);
+
+  --scanning-action-toolbar-font-size: var(--cros-body-2-font-size);
+  --scanning-app-title-font-size: var(--cros-display-6-font-size);
+  --scanning-done-section-option-font-size: var(--cros-body-2-font-size);
+  --scanning-helper-text-font-size: var(--cros-body-2-font-size);
+  --scanning-more-settings-font-size: var(--cros-annotation-1-font-size);
+  --scanning-multi-page-checkbox-font-size: var(--cros-annotation-1-font-size);
+  --scanning-no-scanners-subtext-font-size: var(--cros-body-1-font-size);
+  --scanning-progress-text-font-size: var(--cros-body-0-font-size);
+  --scanning-scan-setting-font-size: var(--cros-body-2-font-size);
+  --scanning-scanners-loading-font-size: var(--cros-display-6-font-size);
+
+  --scanning-action-toolbar-line-height: var(--cros-body-2-font-line-height);
+  --scanning-app-title-line-height: var(--cros-display-6-font-line-height);
+  --scanning-done-section-option-line-height: var(--cros-body-2-font-line-height);
+  --scanning-helper-text-line-height: var(--cros-body-2-font-line-height);
+  --scanning-more-settings-line-height: var(--cros-display-7-font-line-height);
+  --scanning-multi-page-checkbox-line-height: var(--cros-display-7-font-line-height);
+  --scanning-no-scanners-subtext-line-height: var(--cros-body-2-font-line-height);
+  --scanning-progress-text-line-height: var(--cros-title-1-font-line-height);
+  --scanning-scan-setting-line-height: var(--cros-body-2-font-line-height);
+  --scanning-scanners-loading-line-height: var(--cros-display-6-font-line-height);
+
+  --scanning-regular-font-weight: var(--cros-body-2-font-weight);
+  --scanning-medium-font-weight: var(--cros-display-6-font-font-weight);
+
+  --scanning-action-toolbar-text-color: var(--cros-sys-on_disabled_container);
+}
+
+:host-context(body.jelly-enabled) cr-button {
+  font: var(--cros-button-2-font);
+}
+
+:host-context(body.jelly-enabled) cr-button.action-button {
+  font: var(--cros-button-1-font);
+}
+
+:host-context(body.jelly-enabled) cr-toast {
+  font: var(--cros-body-2-font);
+}

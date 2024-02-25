@@ -8,8 +8,7 @@
 
 namespace extensions {
 
-class UIManifestTest : public ChromeManifestTest {
-};
+using UIManifestTest = ChromeManifestTest;
 
 TEST_F(UIManifestTest, DisallowMultipleUISurfaces) {
   LoadAndExpectError("multiple_ui_surfaces.json",

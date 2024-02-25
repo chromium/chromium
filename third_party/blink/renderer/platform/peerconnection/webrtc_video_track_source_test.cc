@@ -45,7 +45,7 @@ TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
   scoped_refptr<WebRtcVideoTrackSource> track_source =
       new rtc::RefCountedObject<WebRtcVideoTrackSource>(
           /*is_screencast=*/false,
-          /*needs_denoising=*/absl::nullopt,
+          /*needs_denoising=*/std::nullopt,
           base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
           base::BindLambdaForTesting([&called] { called = true; }),
           /*gpu_factories=*/nullptr);
@@ -60,7 +60,7 @@ class WebRtcVideoTrackSourceTest
   WebRtcVideoTrackSourceTest()
       : track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
-            /*needs_denoising=*/absl::nullopt,
+            /*needs_denoising=*/std::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
                                 base::Unretained(this)),
             base::BindLambdaForTesting([] {}),
@@ -90,7 +90,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, timestamp);
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   void SendTestFrameAndVerifyFeedback(const FrameParameters& frame_parameters,
@@ -100,7 +100,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, base::TimeDelta());
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
     EXPECT_EQ(feedback_.max_pixels, max_pixels);
     EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
   }
@@ -114,7 +114,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.pixel_format, base::TimeDelta());
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   void SendTestFrameWithColorSpace(const FrameParameters& frame_parameters,
@@ -124,7 +124,7 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, base::TimeDelta());
     frame->set_color_space(color_space);
-    track_source_->OnFrameCaptured(frame, {});
+    track_source_->OnFrameCaptured(frame);
   }
 
   WebRtcVideoTrackSource::FrameAdaptationParams FrameAdaptation_KeepAsIs(
@@ -279,14 +279,29 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
                   webrtc::ColorSpace::RangeID::kFull);
       }));
 
+  // For default REC709{BT709,BT709,BT709,Limited}, we will not set color space
+  // and transmit it by RTP since decoder side would guess it if color space is
+  // invalid.
+  EXPECT_CALL(mock_sink_, OnFrame(_))
+      .InSequence(s)
+      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+        ASSERT_FALSE(frame.color_space().has_value());
+      }));
+
   gfx::ColorSpace color_range_limited(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
   SendTestFrameWithColorSpace(frame_parameters, color_range_limited);
+
   gfx::ColorSpace color_range_full(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
   SendTestFrameWithColorSpace(frame_parameters, color_range_full);
+
+  gfx::ColorSpace default_bt709_color_space(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
+  SendTestFrameWithColorSpace(frame_parameters, default_bt709_color_space);
 }
 
 TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {

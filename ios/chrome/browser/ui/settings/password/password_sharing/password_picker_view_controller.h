@@ -5,13 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_PICKER_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_PICKER_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_consumer.h"
+
+@protocol PasswordPickerViewControllerPresentationDelegate;
+@protocol TableViewFaviconDataSource;
 
 // Screen that presents a list of password credential groups for passwords that
 // have more than 1 affiliated group.
-@interface PasswordPickerViewController : TableViewBottomSheetViewController
+@interface PasswordPickerViewController
+    : LegacyChromeTableViewController <PasswordPickerConsumer>
 
-- (instancetype)init;
+// Delegate for handling dismissal of the view.
+@property(nonatomic, weak) id<PasswordPickerViewControllerPresentationDelegate>
+    delegate;
+
+// Data source for favicon images.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 @end
 

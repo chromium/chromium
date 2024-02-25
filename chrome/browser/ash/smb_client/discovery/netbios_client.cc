@@ -72,33 +72,36 @@ void NetBiosClient::ExecuteNameRequest(const net::IPAddress& broadcast_address,
 }
 
 void NetBiosClient::BindSocket() {
-  server_socket_->Bind(
-      bind_address_, nullptr /* socket_options */,
-      base::BindOnce(&NetBiosClient::OnBindComplete, AsWeakPtr()));
+  server_socket_->Bind(bind_address_, nullptr /* socket_options */,
+                       base::BindOnce(&NetBiosClient::OnBindComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NetBiosClient::OpenPort(uint16_t port) {
   chromeos::FirewallHole::Open(
       chromeos::FirewallHole::PortType::kUdp, port, "" /* all interfaces */,
-      base::BindOnce(&NetBiosClient::OnOpenPortComplete, AsWeakPtr()));
+      base::BindOnce(&NetBiosClient::OnOpenPortComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NetBiosClient::SetBroadcast() {
   server_socket_->SetBroadcast(
       true /* broadcast */,
-      base::BindOnce(&NetBiosClient::OnSetBroadcastCompleted, AsWeakPtr()));
+      base::BindOnce(&NetBiosClient::OnSetBroadcastCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NetBiosClient::SendPacket() {
   server_socket_->SendTo(
       broadcast_address_, GenerateBroadcastPacket(),
       net::MutableNetworkTrafficAnnotationTag(GetNetworkTrafficAnnotationTag()),
-      base::BindOnce(&NetBiosClient::OnSendCompleted, AsWeakPtr()));
+      base::BindOnce(&NetBiosClient::OnSendCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NetBiosClient::OnBindComplete(
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_ip) {
+    const std::optional<net::IPEndPoint>& local_ip) {
   if (result != net::OK) {
     LOG(ERROR) << "NetBiosClient: Binding socket failed: " << result;
     return;
@@ -136,8 +139,8 @@ void NetBiosClient::OnSendCompleted(int32_t result) {
 }
 
 void NetBiosClient::OnReceived(int32_t result,
-                               const absl::optional<net::IPEndPoint>& src_ip,
-                               absl::optional<base::span<const uint8_t>> data) {
+                               const std::optional<net::IPEndPoint>& src_ip,
+                               std::optional<base::span<const uint8_t>> data) {
   if (result != net::OK) {
     LOG(ERROR) << "NetBiosClient: Receive failed: " << result;
     return;

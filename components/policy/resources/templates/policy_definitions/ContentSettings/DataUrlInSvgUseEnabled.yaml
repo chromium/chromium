@@ -19,6 +19,11 @@ owners:
 - chrome-security-owp-team@google.com
 schema:
   type: boolean
-future_on: ["android", "chrome.*", "chrome_os", "fuchsia"]
+future_on:
+- fuchsia
+supported_on:
+- chrome.*:120-
+- chrome_os:120-
+- android:120-
 tags: []
 type: main

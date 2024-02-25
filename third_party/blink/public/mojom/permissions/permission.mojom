@@ -33,6 +33,8 @@ enum PermissionName {
   LOCAL_FONTS,
   DISPLAY_CAPTURE,
   TOP_LEVEL_STORAGE_ACCESS,
+  CAPTURED_SURFACE_CONTROL,
+  SPEAKER_SELECTION,
 };
 
 struct MidiPermissionDescriptor {
@@ -78,6 +80,18 @@ interface PermissionObserver {
   OnPermissionStatusChange(PermissionStatus status);
 };
 
+// Interface that receives change events related to PEPC from the browser
+// process.
+interface EmbeddedPermissionControlClient {
+  // Callback triggered when <permission> element is registered from browser
+  // process, to indicate if PEPC is allowed to be created or not. If PEPC is
+  // allowed to be created, the callback will be invoked with the status of the
+  // respective permissions. If PEPC is NOT allowed (i.e. in fenced frames) the
+  // PEPC object will clean up itself.
+  OnEmbeddedPermissionControlRegistered(bool allow,
+                                        array<PermissionStatus>? statuses);
+};
+
 // Result code of embedded permission control operations.
 enum EmbeddedPermissionControlResult {
   // Indicates user clicked on `X` button or closed the permission dialog
@@ -111,6 +125,15 @@ struct EmbeddedPermissionRequestDescriptor {
 // start listening to permission changes.
 interface PermissionService {
   HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+  // Calling this method is only possible when the type attribute of
+  // <permission> element is set. Provide a pending remote
+  // `EmbeddedPermissionControlClient` so that it can receive notifications
+  // registered later by the browser process. The browser process should be able
+  // to observe the lifetime of the mojo pipe and be aware when a PEPC remote
+  // object has been destroyed.
+  RegisterPageEmbeddedPermissionControl(
+    array<PermissionDescriptor> permissions,
+    pending_remote<EmbeddedPermissionControlClient> client);
   // Calling this method indicates the user has explicitly requested the
   // permission by clicking on the `HTMLPermissionElement`. Asks for a list of
   // permissions and returns `EmbeddedPermissionControlResult` defined above

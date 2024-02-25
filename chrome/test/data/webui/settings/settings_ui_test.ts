@@ -4,7 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsUiElement} from 'chrome://settings/settings.js';
+import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -26,12 +27,14 @@ suite('SettingsUIToolbarAndDrawer', function() {
     });
   });
 
-  test('showing menu in toolbar is dependent on narrow mode', function() {
+  test('showing menu in toolbar is dependent on narrow mode', async function() {
     assertTrue(!!toolbar);
     toolbar.narrow = true;
+    await toolbar.updateComplete;
     assertTrue(toolbar.showMenu);
 
     toolbar.narrow = false;
+    await toolbar.updateComplete;
     assertFalse(toolbar.showMenu);
   });
 
@@ -41,17 +44,16 @@ suite('SettingsUIToolbarAndDrawer', function() {
 
     const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
     drawer.openDrawer();
-    flush();
+    await drawerOpened;
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
     assertTrue(!!ui.shadowRoot!.querySelector('cr-drawer settings-menu'));
 
-    await drawerOpened;
     const drawerClosed = eventToPromise('close', drawer);
     drawer.cancel();
-
     await drawerClosed;
+
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
@@ -137,18 +139,18 @@ suite('SettingsUISearch', function() {
   test('MaintainsFocusOnMenus', async () => {
     // Start in non-narrow mode with focus in the left menu.
     toolbar.narrow = false;
+    await toolbar.updateComplete;
     ui.$.leftMenu.focusFirstItem();
     assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
 
     // Switch to narrow mode and test that focus moves to menu button.
     toolbar.narrow = true;
-    flush();
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    assertTrue(ui.$.toolbar.isMenuFocused());
+    await eventToPromise('focusin', toolbar);
+    assertTrue(toolbar.isMenuFocused());
 
     // Switch back to non-narrow mode and test that focus moves to left menu.
     toolbar.narrow = false;
-    flush();
+    await toolbar.updateComplete;
     assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
   });
 });

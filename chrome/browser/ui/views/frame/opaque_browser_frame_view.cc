@@ -254,13 +254,9 @@ void OpaqueBrowserFrameView::LayoutWebAppWindowTitle(
 }
 
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
-  return browser_view()->GetTabStripVisible()
+  return browser_view()->ShouldDrawTabStrip()
              ? layout_->GetTabStripInsetsTop(restored)
              : layout_->NonClientTopHeight(restored);
-}
-
-int OpaqueBrowserFrameView::GetThemeBackgroundXInset() const {
-  return 0;
 }
 
 void OpaqueBrowserFrameView::UpdateThrobber(bool running) {
@@ -415,14 +411,12 @@ void OpaqueBrowserFrameView::UpdateWindowIcon() {
 
 void OpaqueBrowserFrameView::UpdateWindowTitle() {
   if (!frame()->IsFullscreen() && ShouldShowWindowTitle()) {
-    Layout();
+    DeprecatedLayoutImmediately();
     if (window_title_) {
       window_title_->SchedulePaint();
     }
   }
 }
-
-void OpaqueBrowserFrameView::SizeConstraintsChanged() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, views::View overrides:
@@ -541,7 +535,7 @@ gfx::Size OpaqueBrowserFrameView::GetTabstripMinimumSize() const {
 
 int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   int top_height = layout_->NonClientTopHeight(false);
-  if (browser_view()->GetTabStripVisible()) {
+  if (browser_view()->ShouldDrawTabStrip()) {
     top_height =
         std::max(top_height,
                  GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
@@ -587,17 +581,13 @@ void OpaqueBrowserFrameView::UpdateWindowControlsOverlay(
   }
 }
 
-bool OpaqueBrowserFrameView::IsTranslucentWindowOpacitySupported() const {
-  return frame()->IsTranslucentWindowOpacitySupported();
-}
-
 bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
   return false;
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-ui::WindowTiledEdges OpaqueBrowserFrameView::GetTiledEdges() const {
-  return frame()->tiled_edges();
+#if BUILDFLAG(IS_LINUX)
+bool OpaqueBrowserFrameView::IsTiled() const {
+  return frame()->tiled();
 }
 #endif
 
@@ -848,7 +838,7 @@ void OpaqueBrowserFrameView::PaintMaximizedFrameBorder(
 }
 
 void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
-  const bool tabstrip_visible = browser_view()->GetTabStripVisible();
+  const bool tabstrip_visible = browser_view()->ShouldDrawTabStrip();
   const gfx::Rect client_bounds =
       layout_->CalculateClientAreaBounds(width(), height());
 
@@ -901,7 +891,7 @@ void OpaqueBrowserFrameView::
 }
 #endif
 
-BEGIN_METADATA(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+BEGIN_METADATA(OpaqueBrowserFrameView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, IconBounds)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowWindowTitleBar)
 END_METADATA

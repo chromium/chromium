@@ -2,13 +2,13 @@ Initial
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 626],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -61,13 +61,13 @@ After step 1
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1558],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -135,13 +135,13 @@ After step 2
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 2729],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited container'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -152,7 +152,7 @@ After step 2
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited hidden container'",
       "position": [-4, -4],
       "bounds": [757, 153],
       "transform": 3

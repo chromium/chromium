@@ -342,9 +342,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // Fills SSL info in |ssl_info| and returns true when SSL is in use.
   bool GetSSLInfo(SSLInfo* ssl_info) const;
 
-  // Returns true if ALPN was negotiated for the underlying socket.
-  bool WasAlpnNegotiated() const;
-
   // Returns the protocol negotiated via ALPN for the underlying socket.
   NextProto GetNegotiatedProtocol() const;
 

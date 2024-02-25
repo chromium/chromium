@@ -44,7 +44,7 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   if (bubble_shown_)
     return;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   if (!browser || !browser->window())
     return;
 
@@ -91,7 +91,7 @@ void QRCodeGeneratorBubbleController::OnBackButtonPressed() {
 }
 
 void QRCodeGeneratorBubbleController::UpdateIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   // UpdateIcon() can be called during browser teardown.
   if (!browser)
     return;

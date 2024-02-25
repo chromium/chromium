@@ -10,17 +10,21 @@
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
+import '../controls/settings_toggle_button.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
-import {Mouse} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {ActionChoice, InputDeviceSettingsProviderInterface, Mouse, MousePolicies} from './input_device_settings_types.js';
+import {getPrefPolicyFields} from './input_device_settings_utils.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement));
@@ -37,45 +41,125 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      mouse: {
+      selectedMouse: {
         type: Object,
       },
 
-      mice: {
+      mouseList: {
         type: Array,
+      },
+
+      buttonActionList_: {
+        type: Array,
+      },
+
+      mousePolicies: {
+        type: Object,
+      },
+
+      primaryRightPref_: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakePrimaryRightPref',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          };
+        },
+      },
+
+      /**
+       * Use hasLauncherButton to decide which meta key icon to display.
+       */
+      hasLauncherButton_: {
+        type: Boolean,
       },
     };
   }
 
   static get observers(): string[] {
     return [
-      'onMouseListUpdated(mice.*)',
+      'onMouseListUpdated(mouseList.*)',
+      'onPoliciesChanged(mousePolicies)',
+      'onSettingsChanged(primaryRightPref_.value)',
     ];
   }
 
-  mouse: Mouse;
-  mice: Mouse[];
+  selectedMouse: Mouse;
+  mouseList: Mouse[];
+  mousePolicies: MousePolicies;
+  private buttonActionList_: ActionChoice[];
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+  private previousRoute_: Route|null = null;
+  private primaryRightPref_: chrome.settingsPrivate.PrefObject;
+  private isInitialized_: boolean = false;
+  private hasLauncherButton_: boolean;
 
-  override currentRouteChanged(route: Route): void {
+  override async connectedCallback(): Promise<void> {
+    super.connectedCallback();
+
+    this.addEventListener('button-remapping-changed', this.onSettingsChanged);
+    this.hasLauncherButton_ =
+        (await this.inputDeviceSettingsProvider_.hasLauncherButton())
+            ?.hasLauncherButton;
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.removeEventListener(
+        'button-remapping-changed', this.onSettingsChanged);
+  }
+
+  override async currentRouteChanged(route: Route): Promise<void> {
     // Does not apply to this page.
     if (route !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
+      if (this.previousRoute_ === routes.CUSTOMIZE_MOUSE_BUTTONS) {
+        this.inputDeviceSettingsProvider_.stopObserving();
+      }
+      this.previousRoute_ = route;
       return;
     }
-    if (this.hasMice() &&
-        (!this.mouse || this.mouse.id !== this.getMouseIdFromUrl())) {
-      this.initializeMouse();
+    this.previousRoute_ = route;
+
+    if (!this.hasMice()) {
+      return;
     }
+
+    if (!this.selectedMouse ||
+        this.selectedMouse.id !== this.getMouseIdFromUrl()) {
+      await this.initializeMouse();
+    }
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
+    getAnnouncerInstance().announce(
+        this.i18n('customizeMouseButtonsNudgeHeader') + ' ' +
+        this.getDescription_());
   }
 
   /**
    * Get the mouse to display according to the mouseId in the url query,
    * initializing the page and pref with the mouse data.
    */
-  private initializeMouse(): void {
+  private async initializeMouse(): Promise<void> {
+    this.isInitialized_ = false;
+
     const mouseId = this.getMouseIdFromUrl();
     const searchedMouse =
-        this.mice.find((mouse: Mouse) => mouse.id === mouseId);
-    this.mouse = castExists(searchedMouse);
+        this.mouseList.find((mouse: Mouse) => mouse.id === mouseId);
+    this.selectedMouse = castExists(searchedMouse);
+    this.set('primaryRightPref_.value', this.selectedMouse.settings.swapRight);
+    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
+                                  .getActionsForMouseButtonCustomization())
+                                 ?.options;
+    this.isInitialized_ = true;
+  }
+
+  private onPoliciesChanged(): void {
+    this.primaryRightPref_ = {
+      ...this.primaryRightPref_,
+      ...getPrefPolicyFields(this.mousePolicies.swapRightPolicy),
+    };
   }
 
   private getMouseIdFromUrl(): number {
@@ -83,23 +167,47 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   }
 
   private hasMice(): boolean {
-    return this.mice?.length > 0;
+    return this.mouseList?.length > 0;
   }
 
   private isMouseConnected(id: number): boolean {
-    return !!this.mice.find(mouse => mouse.id === id);
+    return !!this.mouseList.find(mouse => mouse.id === id);
   }
 
-  onMouseListUpdated(): void {
+  async onMouseListUpdated(): Promise<void> {
     if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
       return;
     }
 
-    if (!this.hasMice() || !this.isMouseConnected(this.getMouseIdFromUrl())) {
+    if (!this.hasMice()) {
       Router.getInstance().navigateTo(routes.DEVICE);
       return;
     }
-    this.initializeMouse();
+
+    if (!this.isMouseConnected(this.getMouseIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
+      return;
+    }
+    await this.initializeMouse();
+    this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
+  }
+
+  onSettingsChanged(): void {
+    if (!this.isInitialized_) {
+      return;
+    }
+
+    this.selectedMouse!.settings!.swapRight = this.primaryRightPref_.value;
+    this.inputDeviceSettingsProvider_.setMouseSettings(
+        this.selectedMouse!.id, this.selectedMouse!.settings);
+  }
+
+  private getDescription_(): string {
+    if (!this.selectedMouse?.name) {
+      return '';
+    }
+    return this.i18n(
+        'customizeButtonSubpageDescription', this.selectedMouse!.name);
   }
 }
 

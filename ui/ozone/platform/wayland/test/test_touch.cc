@@ -6,8 +6,7 @@
 
 namespace wl {
 
-const struct wl_pointer_interface kTestTouchImpl = {
-    nullptr,           // set_cursor
+const struct wl_touch_interface kTestTouchImpl = {
     &DestroyResource,  // release
 };
 

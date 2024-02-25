@@ -5,16 +5,17 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER_H_
 
-#include <memory>
-
 #include <jni.h>
+
+#include <memory>
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class IdentityManager;
@@ -92,7 +93,7 @@ class SaveUpdateAddressProfilePromptController {
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
-  absl::optional<AutofillProfile> original_profile_;
+  std::optional<AutofillProfile> original_profile_;
   // The option which specifies whether the autofill profile is going to be
   // migrated to user's Google Account.
   bool is_migration_to_account_;

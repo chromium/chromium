@@ -22,6 +22,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gl/buildflags.h"
 
 namespace gpu {
 
@@ -42,7 +43,8 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage);
+      uint32_t usage,
+      std::string debug_label);
 
   DXGISwapChainImageBacking(const DXGISwapChainImageBacking&) = delete;
   DXGISwapChainImageBacking& operator=(const DXGISwapChainImageBacking&) =
@@ -78,28 +80,31 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
       int buffers_need_alpha_initialization_count);
 
   friend class DXGISwapChainOverlayImageRepresentation;
   bool Present(bool should_synchronize_present_with_vblank);
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
-    return absl::make_optional<gl::DCLayerOverlayImage>(size(),
-                                                        dxgi_swap_chain_);
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
+    return std::make_optional<gl::DCLayerOverlayImage>(size(),
+                                                       dxgi_swap_chain_);
   }
 
   friend class SkiaGLImageRepresentationDXGISwapChain;
   // Called by the Skia representation to indicate where it intends to draw.
   bool DidBeginWriteAccess(const gfx::Rect& swap_rect);
 
+#if BUILDFLAG(USE_DAWN)
   friend class DawnRepresentationDXGISwapChain;
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::TextureUsage usage,
                                 const gfx::Rect& update_rect);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
+#endif
 
-  absl::optional<gfx::Rect> pending_swap_rect_;
+  std::optional<gfx::Rect> pending_swap_rect_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain_;
@@ -107,10 +112,12 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
 
+#if BUILDFLAG(USE_DAWN)
   // ExternalImageDXGI is created from DXGISwapChain's backbuffer texture. This
   // |external_image_| wraps the ComPtr<ID3D11Texture> instead of creating from
   // a share HANDLE.
   std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
+#endif
 
   // Count of buffers in |dxgi_swap_chain_| that need to have their alpha
   // channels be cleared to opaque before use. If positive at the start of write

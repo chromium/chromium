@@ -55,4 +55,12 @@ TEST_F(PromoHandlerTest, ExpsPromo) {
   EXPECT_EQ(1, pref_service_.GetInteger(kExpsPromoDeclinedCountPref));
 }
 
+TEST_F(PromoHandlerTest, PcoPromo) {
+  promo_handler_->OnPromoAction(PromoType::kPco, PromoAction::kShown);
+  EXPECT_EQ(1, pref_service_.GetInteger(kPcoPromoShownCountPref));
+
+  promo_handler_->OnPromoAction(PromoType::kPco, PromoAction::kRejected);
+  EXPECT_EQ(1, pref_service_.GetInteger(kPcoPromoDeclinedCountPref));
+}
+
 }  // namespace companion

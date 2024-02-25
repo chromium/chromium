@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   // On MacOS, calling omnibox->SetFocus function doesn't invoke
   // RWHI::SetActive. Hence there is no IPC call to renderer and
   // FakeFrameWidget's 'active' state remains uninitialised.
-  EXPECT_EQ(fake_frame_widget.GetActive(), absl::nullopt);
+  EXPECT_EQ(fake_frame_widget.GetActive(), std::nullopt);
 #else
   EXPECT_EQ(fake_frame_widget.GetActive(), false);
 #endif

@@ -13,8 +13,7 @@
 
 using ::testing::MatchesRegex;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 // gmock "regex" support is very basic and doesn't support [] or + operations.
@@ -97,7 +96,7 @@ TEST_F(SmbFileSystemIdTest, GetUserFromFileSystemId) {
   const std::string file_system_id_2 = base::StrCat(
       {"EFAFF3864D0FE389@@smb://192.168.0.1/test@@user=", user_workgroup});
 
-  absl::optional<std::string> actual_user =
+  std::optional<std::string> actual_user =
       GetUserFromFileSystemId(file_system_id_1);
   ASSERT_TRUE(actual_user);
   EXPECT_EQ(kTestUsername, *actual_user);
@@ -120,5 +119,4 @@ TEST_F(SmbFileSystemIdTest, GetUserFromFileSystemId_NoUser) {
   EXPECT_FALSE(GetUserFromFileSystemId(file_system_id_3));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

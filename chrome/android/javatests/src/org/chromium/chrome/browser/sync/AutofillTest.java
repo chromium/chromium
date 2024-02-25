@@ -33,14 +33,11 @@ import org.chromium.components.sync.protocol.EntitySpecifics;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Test suite for the autofill profile sync data type.
- */
+/** Test suite for the autofill profile sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillTest {
-    @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private static final String AUTOFILL_TYPE = "Autofill Profiles";
 
@@ -61,7 +58,12 @@ public class AutofillTest {
         public final String state;
         public final String zip;
 
-        public Autofill(String id, String clientTagHash, String street, String city, String state,
+        public Autofill(
+                String id,
+                String clientTagHash,
+                String street,
+                String city,
+                String state,
                 String zip) {
             this.id = id;
             this.clientTagHash = clientTagHash;
@@ -112,17 +114,20 @@ public class AutofillTest {
 
         // Modify on server, sync, and verify modification locally.
         Autofill autofill = getClientAutofillProfiles().get(0);
-        mSyncTestRule.getFakeServerHelper().modifyEntitySpecifics(
-                autofill.id, getServerAutofillProfile(STREET, MODIFIED_CITY, STATE, ZIP));
+        mSyncTestRule
+                .getFakeServerHelper()
+                .modifyEntitySpecifics(
+                        autofill.id, getServerAutofillProfile(STREET, MODIFIED_CITY, STATE, ZIP));
         SyncTestUtil.triggerSync();
-        mSyncTestRule.pollInstrumentationThread(() -> {
-            try {
-                Autofill modifiedAutofill = getClientAutofillProfiles().get(0);
-                Criteria.checkThat(modifiedAutofill.city, Matchers.is(MODIFIED_CITY));
-            } catch (JSONException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        mSyncTestRule.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Autofill modifiedAutofill = getClientAutofillProfiles().get(0);
+                        Criteria.checkThat(modifiedAutofill.city, Matchers.is(MODIFIED_CITY));
+                    } catch (JSONException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
     }
 
     // Test syncing an autofill profile deletion from server to client.
@@ -156,20 +161,26 @@ public class AutofillTest {
 
     private EntitySpecifics getServerAutofillProfile(
             String street, String city, String state, String zip) {
-        AutofillProfileSpecifics profile = AutofillProfileSpecifics.newBuilder()
-                                                   .setGuid(GUID)
-                                                   .setAddressHomeLine1(street)
-                                                   .setAddressHomeCity(city)
-                                                   .setAddressHomeState(state)
-                                                   .setAddressHomeZip(zip)
-                                                   .build();
+        AutofillProfileSpecifics profile =
+                AutofillProfileSpecifics.newBuilder()
+                        .setGuid(GUID)
+                        .setAddressHomeLine1(street)
+                        .setAddressHomeCity(city)
+                        .setAddressHomeState(state)
+                        .setAddressHomeZip(zip)
+                        .build();
         return EntitySpecifics.newBuilder().setAutofillProfile(profile).build();
     }
 
     private void addServerAutofillProfile(EntitySpecifics specifics) {
-        mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
-                specifics.getAutofillProfile().getGuid() /* nonUniqueName */,
-                specifics.getAutofillProfile().getGuid() /* clientTag */, specifics);
+        mSyncTestRule
+                .getFakeServerHelper()
+                .injectUniqueClientEntity(
+                        specifics.getAutofillProfile().getGuid()
+                        /* nonUniqueName= */ ,
+                        specifics.getAutofillProfile().getGuid()
+                        /* clientTag= */ ,
+                        specifics);
     }
 
     private List<Autofill> getClientAutofillProfiles() throws JSONException {
@@ -196,26 +207,34 @@ public class AutofillTest {
     }
 
     private void assertClientAutofillProfileCount(int count) throws JSONException {
-        Assert.assertEquals("There should be " + count + " local autofill profiles.", count,
+        Assert.assertEquals(
+                "There should be " + count + " local autofill profiles.",
+                count,
                 SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), AUTOFILL_TYPE).size());
     }
 
     private void assertServerAutofillProfileCountWithName(int count, String name) {
-        Assert.assertTrue("Expected " + count + " server autofill profiles with name " + name + ".",
-                mSyncTestRule.getFakeServerHelper().verifyEntityCountByTypeAndName(
-                        count, ModelType.AUTOFILL_PROFILE, name));
+        Assert.assertTrue(
+                "Expected " + count + " server autofill profiles with name " + name + ".",
+                mSyncTestRule
+                        .getFakeServerHelper()
+                        .verifyEntityCountByTypeAndName(count, ModelType.AUTOFILL_PROFILE, name));
     }
 
     private void waitForClientAutofillProfileCount(int count) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(
-                        SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), AUTOFILL_TYPE)
-                                .size(),
-                        Matchers.is(count));
-            } catch (JSONException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                SyncTestUtil.getLocalData(
+                                                mSyncTestRule.getTargetContext(), AUTOFILL_TYPE)
+                                        .size(),
+                                Matchers.is(count));
+                    } catch (JSONException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                },
+                SyncTestUtil.TIMEOUT_MS,
+                SyncTestUtil.INTERVAL_MS);
     }
 }

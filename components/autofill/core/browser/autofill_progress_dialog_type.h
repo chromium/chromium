@@ -17,7 +17,9 @@ enum class AutofillProgressDialogType {
   // Used when unmasking virtual cards.
   kVirtualCardUnmaskProgressDialog = 2,
   // Used when conducting a risk-based check for masked server card.
-  kServerCardUnmaskProgressDialog = 3
+  kServerCardUnmaskProgressDialog = 3,
+  // Used when unmasking server IBANs.
+  kServerIbanUnmaskProgressDialog = 4
 };
 
 }  // namespace autofill

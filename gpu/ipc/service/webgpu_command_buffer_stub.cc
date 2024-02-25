@@ -33,7 +33,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -85,12 +84,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
   if (share_command_buffer_stub) {
     LOG(ERROR) << "Using a share group is not supported with WebGPUDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
-  if (surface_handle_ != kNullSurfaceHandle) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "WebGPUInterface clients must render offscreen.";
     return ContextResult::kFatalFailure;
   }
 

@@ -109,7 +109,7 @@ TEST_F(DeviceEventRouterTest, AddAndRemoveDevice) {
   device_event_router->OnDiskRemoved(disk1_unmounted);
   device_event_router->OnDeviceRemoved("/device/test");
   ASSERT_EQ(1u, device_event_router->events.size());
-  EXPECT_EQ(file_manager_private::DEVICE_EVENT_TYPE_REMOVED,
+  EXPECT_EQ(file_manager_private::DeviceEventType::kRemoved,
             device_event_router->events[0].type);
   EXPECT_EQ("/device/test", device_event_router->events[0].device_path);
 }
@@ -127,10 +127,10 @@ TEST_F(DeviceEventRouterTest, HardUnplugged) {
   device_event_router->OnDeviceRemoved(kTestDevicePath);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, device_event_router->events.size());
-  EXPECT_EQ(file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED,
+  EXPECT_EQ(file_manager_private::DeviceEventType::kHardUnplugged,
             device_event_router->events[0].type);
   EXPECT_EQ("/device/test", device_event_router->events[0].device_path);
-  EXPECT_EQ(file_manager_private::DEVICE_EVENT_TYPE_REMOVED,
+  EXPECT_EQ(file_manager_private::DeviceEventType::kRemoved,
             device_event_router->events[1].type);
   EXPECT_EQ("/device/test", device_event_router->events[1].device_path);
 }
@@ -146,7 +146,7 @@ TEST_F(DeviceEventRouterTest, HardUnplugReadOnlyVolume) {
   device_event_router->OnDeviceRemoved(kTestDevicePath);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, device_event_router->events.size());
-  EXPECT_EQ(file_manager_private::DEVICE_EVENT_TYPE_REMOVED,
+  EXPECT_EQ(file_manager_private::DeviceEventType::kRemoved,
             device_event_router->events[0].type);
   EXPECT_EQ("/device/test", device_event_router->events[0].device_path);
   // Should not warn hard unplug because the volumes are read-only.
@@ -164,7 +164,7 @@ TEST_F(DeviceEventRouterTest, HardUnpluggedNotMounted) {
   device_event_router->OnDeviceRemoved(kTestDevicePath);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, device_event_router->events.size());
-  EXPECT_EQ(file_manager_private::DEVICE_EVENT_TYPE_REMOVED,
+  EXPECT_EQ(file_manager_private::DeviceEventType::kRemoved,
             device_event_router->events[0].type);
   EXPECT_EQ("/device/test", device_event_router->events[0].device_path);
   // Should not warn hard unplug because the volumes are not mounted.

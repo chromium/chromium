@@ -77,10 +77,10 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         MakeGarbageCollected<CSSParserContext>(
-            *document, NullURL(), true /* origin_clean */, Referrer(),
-            WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+            *document, NullURL(), true /* origin_clean */, Referrer()),
         CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr, nullptr, selector_text, arena);
+        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false, nullptr,
+        selector_text, arena);
     CSSSelectorList* selector_list =
         CSSSelectorList::AdoptSelectorVector(selector_vector);
     const CSSSelector* selector = nullptr;

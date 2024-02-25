@@ -192,10 +192,6 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   void AttachToSession() override {
     cached_configs_ = GetCaptureModeSessionConfigs();
 
-    // Overwrite the current capture mode session with the game dashboard
-    // configurations.
-    // TODO(b/280660443): Restore the previous game dashboard session configs
-    // instead of overwriting the session with fixed configs.
     SetCaptureModeSessionConfigs(capture_mode_configs_);
 
     CaptureModeController* controller = CaptureModeController::Get();
@@ -290,7 +286,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> pre_selected_window_ = nullptr;
+  raw_ptr<aura::Window> pre_selected_window_ = nullptr;
   base::WeakPtrFactory<GameDashboardBehavior> weak_ptr_factory_{this};
 };
 

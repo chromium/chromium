@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
@@ -189,8 +190,7 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
                                           const LayoutBoxModelObject* ancestor,
                                           TransformState& transform_state,
                                           MapCoordinatesFlags flags) {
-  if (RuntimeEnabledFeatures::SvgMapLocalToAncestorFixEnabled() &&
-      object == ancestor) {
+  if (object == ancestor) {
     return;
   }
   transform_state.ApplyTransform(object->LocalToSVGParentTransform());
@@ -292,7 +292,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
 gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const LayoutObject& layout_object,
     const gfx::RectF& text_bounds) {
-  DCHECK(layout_object.IsNGSVGText() || layout_object.IsSVGInline());
+  DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   gfx::RectF bounds = text_bounds;
   const ComputedStyle& style = layout_object.StyleRef();
   if (style.HasStroke()) {
@@ -308,7 +308,7 @@ gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
 gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const LayoutObject& layout_object,
     const gfx::RectF& text_bounds) {
-  DCHECK(layout_object.IsNGSVGText() || layout_object.IsSVGInline());
+  DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
@@ -363,8 +363,7 @@ bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
     const ComputedStyle& style) {
-  return style.HasGroupingProperty(style.BoxReflect()) ||
-         style.MaskerResource();
+  return style.HasGroupingProperty(style.BoxReflect()) || style.HasMaskForSVG();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
@@ -377,8 +376,9 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
-  if (object->StyleRef().MaskerResource())
+  if (object->StyleRef().HasMaskForSVG()) {
     return true;
+  }
   return WillIsolateBlendingDescendantsForObject(object) &&
          object->HasNonIsolatedBlendingDescendants();
 }
@@ -439,7 +439,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
   // containers that could contain LayoutSVGTexts that are closer.
   for (LayoutObject* child = layout_object->SlowLastChild(); child;
        child = child->PreviousSibling()) {
-    if (child->IsNGSVGText()) {
+    if (child->IsSVGText()) {
       double distance = DistanceToChildLayoutObject(child, point);
       if (distance >= closest_text.distance)
         continue;

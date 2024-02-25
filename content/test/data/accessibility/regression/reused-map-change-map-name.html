@@ -3,24 +3,26 @@
 @AURALINUX-ALLOW:focus*
 @WAIT-FOR:done
 -->
-<!-- Only the first image that uses a given map gets its area children. -->
-<img id="img1" alt="star1" usemap="#map1"
-     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
-<img id="img2" alt="star2" usemap="#map1"
-     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
-<img id="img3" alt="star3" usemap="#map2"
-     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
-<img id="img4" alt="star4" usemap="#map2"
-     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Image Maps</h2>
+<p>After map1 is renamed map2, the third picture should have only the coffee mapped</p>
+
+<img src="workplace.jpg" alt="Workplace pic 1" usemap="#map1" width="400" height="379">
+<img src="workplace.jpg" alt="Workplace pic 2" usemap="#map1" width="400" height="379">
+<img src="workplace.jpg" alt="Workplace pic 3" usemap="#map2" width="400" height="379">
+<img src="workplace.jpg" alt="Workplace pic 4" usemap="#map2" width="400" height="379">
+
 <map name="map1">
-  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+  <area shape="circle" coords="337,300,44" alt="Coffee only (origin map1)" href="coffee.htm">
 </map>
 <map name="map2">
-  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
-  <area shape="rect" coords="3,3,8,8" href="about:blank" alt="Area2" autofocus>
+  <area shape="rect" coords="34,44,270,350" alt="Computer" href="computer.htm">
+  <area shape="rect" coords="290,172,333,250" alt="Phone" href="phone.htm">
+  <area shape="circle" coords="337,300,44" alt="Cup of coffee" href="coffee.htm">
 </map>
-<div id="container">
-</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -33,3 +35,6 @@
     }, 250);
   });
 </script>
+
+</body>
+</html>

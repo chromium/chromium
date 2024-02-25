@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cookie_controls_card"
+    style="@style/CardTransparentForDark"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/cookie_controls_card_managed_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="ContentDescription"
+        android:layout_marginEnd="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        app:tint="@color/default_icon_color_light" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/cookie_controls_card_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/new_tab_otr_third_party_cookie"
+        style="@style/Widget.BrowserUI.Switch.Incognito"
+        app:showText="false" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/cookie_controls_card_title"
+        android:text="@string/new_tab_otr_third_party_cookie"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline.Light"
+        android:layout_toStartOf="@id/cookie_controls_card_toggle"
+        android:layout_toEndOf="@id/cookie_controls_card_managed_icon"
+        android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/cookie_controls_card_subtitle"
+        android:text="@string/new_tab_otr_third_party_cookie_sublabel"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
+        android:layout_toStartOf="@id/cookie_controls_card_toggle"
+        android:layout_toEndOf="@id/cookie_controls_card_managed_icon"
+        android:layout_below="@id/cookie_controls_card_title"
+        app:leading="@dimen/text_size_medium_leading"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+</RelativeLayout>

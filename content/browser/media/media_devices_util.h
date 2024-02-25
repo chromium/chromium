@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_DEVICES_UTIL_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_DEVICES_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/common/features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
@@ -20,13 +21,6 @@
 namespace content {
 
 using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
-// Returns the ID of the user-default device ID via `callback`.
-// If no such device ID can be found, `callback` receives an empty string.
-CONTENT_EXPORT void GetDefaultMediaDeviceID(
-    blink::mojom::MediaDeviceType device_type,
-    int render_process_id,
-    int render_frame_id,
-    DeviceIdCallback callback);
 
 class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
  public:
@@ -36,7 +30,7 @@ class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
       std::string group_id_salt = std::string(),
       bool has_focus = false,
       bool is_background = false,
-      absl::optional<ukm::SourceId> ukm_source_id = absl::nullopt);
+      std::optional<ukm::SourceId> ukm_source_id = std::nullopt);
 
   MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
   MediaDeviceSaltAndOrigin& operator=(const MediaDeviceSaltAndOrigin& other);
@@ -51,7 +45,7 @@ class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   const std::string& device_id_salt() const { return device_id_salt_; }
   const std::string& group_id_salt() const { return group_id_salt_; }
   const url::Origin& origin() const { return origin_; }
-  const absl::optional<ukm::SourceId>& ukm_source_id() const {
+  const std::optional<ukm::SourceId>& ukm_source_id() const {
     return ukm_source_id_;
   }
   bool has_focus() const { return has_focus_; }
@@ -61,7 +55,7 @@ class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
     device_id_salt_ = std::move(salt);
   }
   void set_group_id_salt(std::string salt) { group_id_salt_ = std::move(salt); }
-  void set_ukm_source_id(absl::optional<ukm::SourceId> ukm_source_id) {
+  void set_ukm_source_id(std::optional<ukm::SourceId> ukm_source_id) {
     ukm_source_id_ = std::move(ukm_source_id);
   }
   void set_origin(url::Origin origin) { origin_ = std::move(origin); }
@@ -74,7 +68,7 @@ class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   // Last committed origin of the frame making a media device request.
   url::Origin origin_;
   // ukm::SourceId of the main frame making the media device request.
-  absl::optional<ukm::SourceId> ukm_source_id_;
+  std::optional<ukm::SourceId> ukm_source_id_;
   bool has_focus_;
   bool is_background_;
 };
@@ -102,20 +96,17 @@ using GetMediaDeviceSaltAndOriginCallback =
 // `salt_and_origin`.
 // The `group_id` field is hashed using the `group_id_salt` and `origin` in
 // `salt_and_origin`.
-// If `has_permission` is false:
-//   If `features::kEnumerateDevicesHideDeviceIDs` is enabled, all fields in the
-//   returned value are empty.
-//   Otherwise, only the label field is empty.
+// If `has_permission` is false all fields in the returned value are empty.
 CONTENT_EXPORT blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info);
 
 // Returns a translated (HMAC) version of raw `device_infos`, with each element
-// translated using TranslateMediaDeviceInfo(). If `has_permission` is false and
-// `features::kEnumerateDevicesHideDeviceIDs` is enabled, the output will
-// contain at most one element per device type with empty values for all fields,
-// as per https://w3c.github.io/mediacapture-main/#access-control-model
+// translated using TranslateMediaDeviceInfo(). If `has_permission` is false,
+// the output will contain at most one element per device type with empty values
+// for all fields, as per
+// https://w3c.github.io/mediacapture-main/#access-control-model
 CONTENT_EXPORT blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
@@ -133,12 +124,12 @@ CONTENT_EXPORT void GetHMACFromRawDeviceId(
     DeviceIdCallback hmac_device_id_callback);
 
 using OptionalDeviceIdCallback =
-    base::OnceCallback<void(const absl::optional<std::string>&)>;
+    base::OnceCallback<void(const std::optional<std::string>&)>;
 // Returns via `raw_device_id_callback` the raw version of `hmac_device_id`.
 // The salt for the given `render_frame_host_id` is used to translate
 // `hmac_device_id`. If no device of type `media_device_type` which corresponds
 // to the given `hmac_device_id` is found in the system, this function returns
-// `absl::nullopt`.
+// `std::nullopt`.
 CONTENT_EXPORT void GetRawDeviceIdFromHMAC(
     GlobalRenderFrameHostId render_frame_host_id,
     const std::string& hmac_device_id,

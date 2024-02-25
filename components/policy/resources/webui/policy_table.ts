@@ -7,9 +7,9 @@ import './policy_precedence_row.js';
 import './policy_row.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {Policy, PolicyRowElement} from './policy_row.js';
+import type {Policy, PolicyRowElement} from './policy_row.js';
 import {getTemplate} from './policy_table.html.js';
 
 export interface PolicyTableModel {
@@ -29,13 +29,12 @@ export class PolicyTableElement extends CustomElement {
 
   update(dataModel: PolicyTableModel) {
     // Clear policies
-    const mainContent = this.shadowRoot!.querySelector('.main');
+    const mainContent = this.getRequiredElement('.main');
     const policies = this.shadowRoot!.querySelectorAll('.policy-data');
-    this.shadowRoot!.querySelector('.header')!.textContent = dataModel.name;
-    this.shadowRoot!.querySelector('.id')!.textContent = dataModel.id || null;
-    (this.shadowRoot!.querySelector('.id') as HTMLElement)!.hidden =
-        !dataModel.id;
-    policies.forEach(row => mainContent!.removeChild(row));
+    this.getRequiredElement('.header').textContent = dataModel.name;
+    this.getRequiredElement('.id').textContent = dataModel.id || null;
+    this.getRequiredElement('.id').hidden = !dataModel.id;
+    policies.forEach(row => mainContent.removeChild(row));
 
     dataModel.policies
         .sort((a, b) => {
@@ -57,7 +56,7 @@ export class PolicyTableElement extends CustomElement {
           const policyRow: PolicyRowElement =
               document.createElement('policy-row');
           policyRow.initialize(policy);
-          mainContent!.appendChild(policyRow);
+          mainContent.appendChild(policyRow);
         });
     this.filter();
 
@@ -66,11 +65,11 @@ export class PolicyTableElement extends CustomElement {
       // Clear previous precedence row.
       const precedenceRowOld =
           this.shadowRoot!.querySelectorAll('.policy-precedence-data');
-      precedenceRowOld.forEach(row => mainContent!.removeChild(row));
+      precedenceRowOld.forEach(row => mainContent.removeChild(row));
       if (dataModel.precedenceOrder != undefined) {
         const precedenceRow = document.createElement('policy-precedence-row');
         precedenceRow.initialize(dataModel.precedenceOrder);
-        mainContent!.appendChild(precedenceRow);
+        mainContent.appendChild(precedenceRow);
       }
     }
   }
@@ -101,7 +100,7 @@ export class PolicyTableElement extends CustomElement {
           policyDisplay!.policy!.name.toLowerCase().indexOf(
               this.filterPattern) === -1;
     }
-    this.shadowRoot!.querySelector<HTMLElement>('.no-policy')!.hidden =
+    this.getRequiredElement<HTMLElement>('.no-policy').hidden =
         !!this.shadowRoot!.querySelector('.policy-data:not([hidden])');
   }
 }

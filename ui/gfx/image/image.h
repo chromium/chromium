@@ -159,13 +159,6 @@ class GFX_EXPORT Image {
   int Height() const;
   gfx::Size Size() const;
 
-#if BUILDFLAG(IS_MAC)
-  // Set the default representation's color space. This is used for converting
-  // to NSImage. This is used to compensate for PNGCodec not writing or reading
-  // colorspace ancillary chunks. (sRGB, iCCP).
-  void SetSourceColorSpace(CGColorSpaceRef color_space);
-#endif  // BUILDFLAG(IS_MAC)
-
  private:
   // Returns the type of the default representation.
   RepresentationType DefaultRepresentationType() const;

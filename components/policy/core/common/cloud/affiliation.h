@@ -6,12 +6,14 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_AFFILIATION_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
+
+class CloudPolicyCore;
 
 // Returns true if the user and browser are managed by the same customer
 // (affiliated). This is determined by comparing affiliation IDs obtained in the
@@ -28,7 +30,13 @@ POLICY_EXPORT bool IsAffiliated(const base::flat_set<std::string>& user_ids,
 POLICY_EXPORT bool IsUserAffiliated(
     const base::flat_set<std::string>& user_affiliation_ids,
     const base::flat_set<std::string>& device_affiliation_ids,
-    base::StringPiece email);
+    std::string_view email);
+
+// Get affiliations ids from the core's store if possible. Returns an empty set
+// if not possible.
+POLICY_EXPORT base::flat_set<std::string> GetAffiliationIdsFromCore(
+    const policy::CloudPolicyCore& core,
+    bool for_device);
 
 }  // namespace policy
 

@@ -52,12 +52,12 @@ namespace alarms {
     // replaced by this alarm.
     //
     // In order to reduce the load on the user's machine, Chrome limits alarms
-    // to at most once every 1 minute but may delay them an arbitrary amount
+    // to at most once every 30 seconds but may delay them an arbitrary amount
     // more.  That is, setting <code>delayInMinutes</code> or
-    // <code>periodInMinutes</code> to less than <code>1</code> will not be
+    // <code>periodInMinutes</code> to less than <code>0.5</code> will not be
     // honored and will cause a warning.  <code>when</code> can be set to less
-    // than 1 minute after "now" without warning but won't actually cause the
-    // alarm to fire for at least 1 minute.
+    // than 30 seconds after "now" without warning but won't actually cause the
+    // alarm to fire for at least 30 seconds.
     //
     // To help you debug your app or extension, when you've loaded it unpacked,
     // there's no limit to how often the alarm can fire.
@@ -72,26 +72,28 @@ namespace alarms {
     // repeating alarm, <var>periodInMinutes</var> is used as the default for
     // <var>delayInMinutes</var>.
     // |callback|: Invoked when the alarm has been created.
-    [supportsPromises] static void create(
+    static void create(
         optional DOMString name,
         AlarmCreateInfo alarmInfo,
         optional VoidCallback callback);
 
     // Retrieves details about the specified alarm.
     // |name|: The name of the alarm to get. Defaults to the empty string.
-    [supportsPromises] static void get(optional DOMString name,
-                                       AlarmCallback callback);
+    static void get(
+        optional DOMString name,
+        AlarmCallback callback);
 
     // Gets an array of all the alarms.
-    [supportsPromises] static void getAll(AlarmListCallback callback);
+    static void getAll(AlarmListCallback callback);
 
     // Clears the alarm with the given name.
     // |name|: The name of the alarm to clear. Defaults to the empty string.
-    [supportsPromises] static void clear(optional DOMString name,
-                                         optional ClearCallback callback);
+    static void clear(
+        optional DOMString name,
+        optional ClearCallback callback);
 
     // Clears all alarms.
-    [supportsPromises] static void clearAll(optional ClearCallback callback);
+    static void clearAll(optional ClearCallback callback);
   };
 
   interface Events {

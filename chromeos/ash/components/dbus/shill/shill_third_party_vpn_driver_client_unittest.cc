@@ -62,8 +62,8 @@ class ShillThirdPartyVpnDriverClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillThirdPartyVpnDriverClient, DanglingUntriaged | ExperimentalAsh>
-      client_ = nullptr;  // Unowned
+  raw_ptr<ShillThirdPartyVpnDriverClient, DanglingUntriaged> client_ =
+      nullptr;  // Unowned
 };
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
@@ -81,9 +81,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {
                                 shill::kOnPacketReceivedFunction);
   {
     dbus::MessageWriter writer(&preceived_signal);
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(data_packet.data()),
-        data_packet.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(data_packet));
   }
 
   // Expect each signal to be triggered once.

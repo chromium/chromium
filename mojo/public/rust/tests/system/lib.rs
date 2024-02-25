@@ -11,6 +11,11 @@
 #![feature(assert_matches)]
 #![feature(maybe_uninit_write_slice)]
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+    "//mojo/public/rust/tests:test_util";
+}
+
 mod run_loop;
 
 use mojo::system::shared_buffer::{self, SharedBuffer};
@@ -173,7 +178,7 @@ fn test() {
     let goodbye = "goodbye".to_string().into_bytes();
     let mut write_buf = producer.begin().expect("error on write begin");
     expect_ge!(write_buf.len(), goodbye.len());
-    std::mem::MaybeUninit::write_slice(&mut write_buf[0..goodbye.len()], &goodbye);
+    std::mem::MaybeUninit::copy_from_slice(&mut write_buf[0..goodbye.len()], &goodbye);
     // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
     // so they are initialized.
     unsafe {

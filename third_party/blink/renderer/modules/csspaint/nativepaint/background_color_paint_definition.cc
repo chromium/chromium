@@ -72,7 +72,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
       int worklet_id,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
-      const absl::optional<double>& progress,
+      const std::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(container_size, worklet_id, std::move(property_keys)),
         animated_colors_(animated_colors),
@@ -84,7 +84,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
 
   const Vector<Color>& AnimatedColors() const { return animated_colors_; }
   const Vector<double>& Offsets() const { return offsets_; }
-  const absl::optional<double>& MainThreadProgress() const { return progress_; }
+  const std::optional<double>& MainThreadProgress() const { return progress_; }
   bool KnownToBeOpaque() const override { return is_opaque_; }
 
   PaintWorkletInputType GetType() const override {
@@ -98,7 +98,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   // progress_: the progress obtained from the main thread animation.
   Vector<Color> animated_colors_;
   Vector<double> offsets_;
-  absl::optional<double> progress_;
+  std::optional<double> progress_;
   const bool is_opaque_;
 };
 
@@ -120,7 +120,7 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
     const auto* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
-        keyframe->GetValue()->Value().interpolable_value.get();
+        keyframe->GetValue()->Value().interpolable_value.Get();
 
     const auto& list = To<InterpolableList>(*value);
     DCHECK(CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0))));
@@ -135,7 +135,7 @@ bool GetBGColorPaintWorkletParamsInternal(
     Element* element,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
-    absl::optional<double>* progress,
+    std::optional<double>* progress,
     const Animation* compositable_animation) {
   element->GetLayoutObject()->GetMutableForPainting().EnsureId();
   const AnimationEffect* effect = compositable_animation->effect();
@@ -260,17 +260,15 @@ PaintRecord BackgroundColorPaintDefinition::Paint(
   // Because the progress is a global one, we need to adjust it with offsets.
   float adjusted_progress = (progress - offsets[result_index]) /
                             (offsets[result_index + 1] - offsets[result_index]);
-  std::unique_ptr<InterpolableValue> from =
-      CSSColorInterpolationType::CreateInterpolableColor(
-          animated_colors[result_index]);
-  std::unique_ptr<InterpolableValue> to =
-      CSSColorInterpolationType::CreateInterpolableColor(
-          animated_colors[result_index + 1]);
-  std::unique_ptr<InterpolableValue> result =
+  InterpolableValue* from = CSSColorInterpolationType::CreateInterpolableColor(
+      animated_colors[result_index]);
+  InterpolableValue* to = CSSColorInterpolationType::CreateInterpolableColor(
+      animated_colors[result_index + 1]);
+  InterpolableValue* result =
       CSSColorInterpolationType::CreateInterpolableColor(
           animated_colors[result_index + 1]);
   from->Interpolate(*to, adjusted_progress, *result);
-  Color color = CSSColorInterpolationType::GetColor(*(result.get()));
+  Color color = CSSColorInterpolationType::GetColor(*result);
   // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
   SkColor4f current_color = color.toSkColor4f();
 
@@ -288,7 +286,7 @@ scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
-    const absl::optional<double>& progress) {
+    const std::optional<double>& progress) {
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
       CompositorAnimations::CompositorElementNamespaceForProperty(
@@ -308,7 +306,7 @@ bool BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
     Node* node,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
-    absl::optional<double>* progress) {
+    std::optional<double>* progress) {
   Element* element = To<Element>(node);
   Animation* compositable_animation = GetAnimationIfCompositable(element);
   if (!compositable_animation)
@@ -323,7 +321,7 @@ PaintRecord BackgroundColorPaintDefinition::PaintForTest(
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   gfx::SizeF container_size(100, 100);
-  absl::optional<double> progress = 0;
+  std::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(

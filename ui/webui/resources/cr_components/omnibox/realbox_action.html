@@ -11,6 +11,14 @@
     padding-inline-start: 12px;
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]) {
+    --action-height: 28px;
+    border: solid 1px var(--color-realbox-results-action-chip);
+    border-radius: 8px;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+  }
+
   .contents {
     align-items: center;
     display: flex;
@@ -23,6 +31,17 @@
     width: var(--cr-icon-size);
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]) #action-icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 15px;
+    background-color: var(--color-realbox-results-action-chip-icon);
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
+  }
+
   #text {
     overflow: hidden;
     padding-inline-start: 8px;
@@ -31,8 +50,7 @@
   }
 
   :host(:hover) {
-    background-color: var(--action-bg-hovered,
-                          rgba(var(--google-grey-900-rgb), .1));
+    background-color: var(--color-realbox-results-button-hover);
   }
 
   :host-context(.focus-outline-visible):host(:focus) {
@@ -40,10 +58,19 @@
     box-shadow: inset 0 0 0 2px var(--google-blue-600);
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]):host(:focus) {
+    margin: 2px;
+    margin-inline-end: 2px;
+    border: solid 1px var(--color-realbox-results-action-chip);
+    box-shadow: none;
+  }
+
 </style>
-<div class="contents" title="[[tooltip_]]" on-click="onActionClick_"
-                     on-keydown="onActionKeyDown_">
-  <img id="action-icon" src$="[[action.iconUrl]]">
+<div class="contents" title="[[tooltip_]]">
+  <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"
+      hidden="[[!showCr23ActionIcon_()]]"></div>
+  <img id="action-icon" src$="[[action.iconUrl]]"
+      hidden="[[showCr23ActionIcon_()]]">
   <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
 </div>
 

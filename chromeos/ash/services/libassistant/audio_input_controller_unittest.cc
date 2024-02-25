@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/libassistant/audio_input_controller.h"
 
+#include <optional>
+
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -22,7 +24,6 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::libassistant {
 
@@ -193,7 +194,7 @@ class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
                    callback) {
               // Invoke the callback as it becomes error if the callback never
               // gets invoked.
-              std::move(callback).Run(nullptr, false, absl::nullopt);
+              std::move(callback).Run(nullptr, false, std::nullopt);
             }));
 
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> pending_receiver =
@@ -214,12 +215,12 @@ class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
     client().FlushForTesting();
   }
 
-  void SetDeviceId(const absl::optional<std::string>& value) {
+  void SetDeviceId(const std::optional<std::string>& value) {
     client()->SetDeviceId(value);
     client().FlushForTesting();
   }
 
-  void SetHotwordDeviceId(const absl::optional<std::string>& value) {
+  void SetHotwordDeviceId(const std::optional<std::string>& value) {
     client()->SetHotwordDeviceId(value);
     client().FlushForTesting();
   }
@@ -291,7 +292,7 @@ TEST_P(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenDeviceIdIsSet) {
   AssertHotwordAvailableState();
   EXPECT_TRUE(IsRecordingHotword());
 
-  SetDeviceId(absl::nullopt);
+  SetDeviceId(std::nullopt);
   EXPECT_FALSE(IsRecordingAudio());
 }
 
@@ -388,8 +389,8 @@ TEST_P(AssistantAudioInputControllerTest,
   // Mic must be open, otherwise we will not start recording audio if the
   // device id is not set.
   SetMicOpen(true);
-  SetDeviceId(absl::nullopt);
-  SetHotwordDeviceId(absl::nullopt);
+  SetDeviceId(std::nullopt);
+  SetHotwordDeviceId(std::nullopt);
 
   EXPECT_TRUE(IsRecordingAudio());
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId, GetOpenDeviceId());
@@ -405,7 +406,7 @@ TEST_P(AssistantAudioInputControllerTest,
 
   InitializeForTestOfType(kHotwordDeviceIdTest);
 
-  SetHotwordDeviceId(absl::nullopt);
+  SetHotwordDeviceId(std::nullopt);
   EXPECT_TRUE(IsUsingDeadStreamDetection());
 
   SetHotwordDeviceId(kHotwordDeviceId);

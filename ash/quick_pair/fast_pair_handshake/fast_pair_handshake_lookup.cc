@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
+#include "ash/constants/ash_features.h"
+#include "ash/quick_pair/fast_pair_handshake/async_fast_pair_handshake_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup_impl.h"
 
@@ -20,7 +22,11 @@ FastPairHandshakeLookup* FastPairHandshakeLookup::GetInstance() {
     return FakeFastPairHandshakeLookup::GetFakeInstance();
   }
 
-  return FastPairHandshakeLookupImpl::GetImplInstance();
+  if (!ash::features::IsFastPairHandshakeLongTermRefactorEnabled()) {
+    return FastPairHandshakeLookupImpl::GetImplInstance();
+  } else {
+    return AsyncFastPairHandshakeLookupImpl::GetAsyncInstance();
+  }
 }
 
 // static

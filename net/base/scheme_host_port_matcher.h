@@ -74,6 +74,16 @@ class NET_EXPORT SchemeHostPortMatcher {
   // Removes all the rules.
   void Clear();
 
+#if !BUILDFLAG(CRONET_BUILD)
+  // Cronet disables tracing and doesn't provide an implementation of
+  // base::trace_event::EstimateMemoryUsage. Having this conditional is
+  // preferred over a fake implementation to avoid reporting fake metrics.
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+#endif  // !BUILDFLAG(CRONET_BUILD)
+
  private:
   RuleList rules_;
 };

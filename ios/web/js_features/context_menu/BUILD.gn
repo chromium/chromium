@@ -12,7 +12,6 @@ source_set("context_menu") {
     "//base",
     "//components/url_formatter",
     "//ios/web/common",
-    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]

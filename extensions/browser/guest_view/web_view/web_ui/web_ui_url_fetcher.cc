@@ -14,6 +14,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace extensions {
+
 WebUIURLFetcher::WebUIURLFetcher(int render_process_id,
                                  int render_frame_id,
                                  const GURL& url,
@@ -64,7 +66,7 @@ void WebUIURLFetcher::Start() {
                                               traffic_annotation);
   fetcher_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       factory.get(), base::BindOnce(&WebUIURLFetcher::OnURLLoaderComplete,
-                                    base::Unretained(this)));
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebUIURLFetcher::OnURLLoaderComplete(
@@ -74,8 +76,13 @@ void WebUIURLFetcher::OnURLLoaderComplete(
     response_code = fetcher_->ResponseInfo()->headers->response_code();
 
   fetcher_.reset();
-  std::unique_ptr<std::string> data(new std::string());
-  if (response_body)
+  std::unique_ptr<std::string> data;
+  if (response_body) {
     data = std::move(response_body);
+  } else {
+    data = std::make_unique<std::string>();
+  }
   std::move(callback_).Run(response_code == 200, std::move(data));
 }
+
+}  // namespace extensions

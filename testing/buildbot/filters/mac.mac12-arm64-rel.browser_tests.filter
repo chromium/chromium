@@ -10,7 +10,6 @@
 -All/NavigationPageLoadMetricsBrowserTest.FirstInputDelay/0
 -All/NavigationPageLoadMetricsBrowserTest.FirstInputDelay/1
 -All/NavigationPageLoadMetricsBrowserTest.FirstInputDelay/2
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsBasicPageForegroundDuration/BFCacheEnabled
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsPageEndReasons/BFCacheEnabled
 -All/SearchPrefetchServiceEnabledBrowserTest.HungRequestCanBeServed/0

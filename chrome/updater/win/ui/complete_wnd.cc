@@ -41,7 +41,6 @@ LRESULT CompleteWnd::OnInitDialog(UINT message,
                                   WPARAM w_param,
                                   LPARAM l_param,
                                   BOOL& handled) {
-  // TODO(crbug.com/1010653): remove when the bug is fixed.
   HideWindowChildren(*this);
   InitializeDialog();
 

@@ -109,9 +109,9 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
         NSColor.alternatingContentBackgroundColors[1])};
     if (!key.user_color.has_value()) {
-      mixer[kColorSysStateFocusRing] = {SkColorSetA(
+      mixer[kColorSysStateFocusRing] = PickGoogleColor(
           skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
-          0x66)};
+          kColorSysBase, color_utils::kMinimumVisibleContrastRatio);
     }
     if (!features::IsChromeRefresh2023()) {
       SkColor menu_separator_color =
@@ -121,8 +121,14 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     }
 
     if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
-      mixer[kColorTextSelectionBackground] = {
-          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
+      const SkColor system_highlight_color =
+          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
+      mixer[kColorTextSelectionBackground] = {system_highlight_color};
+
+      // TODO(crbug.com/1491308): Address accessibility for mac highlight
+      // colors.
+      mixer[kColorSysStateTextHighlight] = {system_highlight_color};
+      mixer[kColorSysStateOnTextHighlight] = {kColorSysOnSurface};
     }
 
     if (!properties.high_contrast) {
@@ -147,6 +153,14 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
 void AddNativePostprocessingMixer(ColorProvider* provider,
                                   const ColorProviderKey& key) {
+  // Ensure the system tint is applied by default for pre-refresh browsers. For
+  // post-refresh only apply the tint if running old design system themes or the
+  // color source is explicitly configured for grayscale.
+  if (features::IsChromeRefresh2023() && !key.custom_theme &&
+      key.user_color_source != ColorProviderKey::UserColorSource::kGrayscale) {
+    return;
+  }
+
   ColorMixer& mixer = provider->AddPostprocessingMixer();
 
   for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {

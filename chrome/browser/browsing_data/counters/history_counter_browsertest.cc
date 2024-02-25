@@ -47,13 +47,16 @@ class HistoryCounterTest : public InProcessBrowserTest {
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   }
 
+  void TearDownOnMainThread() override {
+    fake_web_history_service_.reset();
+    history_service_ = nullptr;
+  }
+
   void AddVisit(const std::string url) {
     history_service_->AddPage(GURL(url), time_, history::SOURCE_BROWSED);
   }
 
-  const base::Time& GetCurrentTime() {
-    return time_;
-  }
+  const base::Time& GetCurrentTime() { return time_; }
 
   void SetTime(base::Time time) { time_ = time; }
 
@@ -95,8 +98,9 @@ class HistoryCounterTest : public InProcessBrowserTest {
       has_synced_visits_ = history_result->has_synced_visits();
     }
 
-    if (run_loop_ && finished_)
+    if (run_loop_ && finished_) {
       run_loop_->Quit();
+    }
   }
 
   history::WebHistoryService* GetFakeWebHistoryService(Profile* profile,
@@ -118,7 +122,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
+  raw_ptr<history::HistoryService> history_service_ = nullptr;
   std::unique_ptr<history::FakeWebHistoryService> fake_web_history_service_;
   base::Time time_;
 
@@ -135,9 +139,9 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
   ASSERT_TRUE(base::Time::FromUTCString("1 Jul 2020 10:00 GMT", &time));
   SetTime(time);
 
-  AddVisit("https://www.google.com");   // 1 item
+  AddVisit("https://www.google.com");  // 1 item
   AddVisit("https://www.google.com");
-  AddVisit("https://www.chrome.com");   // 2 items
+  AddVisit("https://www.chrome.com");  // 2 items
   AddVisit("https://www.chrome.com");
   AddVisit("https://www.chrome.com");
   AddVisit("https://www.example.com");  // 3 items
@@ -148,9 +152,9 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
   AddVisit("https://www.example.com");
 
   RevertTimeInDays(1);
-  AddVisit("https://www.chrome.com");   // 6 items
+  AddVisit("https://www.chrome.com");  // 6 items
   AddVisit("https://www.chrome.com");
-  AddVisit("https://www.google.com");   // 7 items
+  AddVisit("https://www.google.com");  // 7 items
   AddVisit("https://www.chrome.com");
   AddVisit("https://www.google.com");
   AddVisit("https://www.google.com");
@@ -308,8 +312,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
                                    base::Unretained(this)));
 
   history::FakeWebHistoryService* service =
-    static_cast<history::FakeWebHistoryService*>(GetFakeWebHistoryService(
-        profile, false));
+      static_cast<history::FakeWebHistoryService*>(
+          GetFakeWebHistoryService(profile, false));
 
   // No entries locally and no entries in Sync.
   service->SetupFakeResponse(true /* success */, net::HTTP_OK);
@@ -340,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   // To err on the safe side, if the server request fails, we assume that there
   // might be some items on the server.
   service->SetupFakeResponse(true /* success */,
-                                              net::HTTP_INTERNAL_SERVER_ERROR);
+                             net::HTTP_INTERNAL_SERVER_ERROR);
   counter.Restart();
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());
@@ -348,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
 
   // Same when the entire query fails.
   service->SetupFakeResponse(false /* success */,
-                                              net::HTTP_INTERNAL_SERVER_ERROR);
+                             net::HTTP_INTERNAL_SERVER_ERROR);
   counter.Restart();
   WaitForCounting();
   EXPECT_EQ(0u, GetLocalResult());

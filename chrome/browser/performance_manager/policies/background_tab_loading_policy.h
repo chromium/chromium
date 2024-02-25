@@ -98,7 +98,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     raw_ptr<const PageNode> page_node;
 
     // A higher value here means the tab has higher priority for restoring.
-    absl::optional<float> score;
+    std::optional<float> score;
 
     // Whether the tab has the notification permission.
     const bool has_notification_permission;
@@ -106,7 +106,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     // Whether the tab updates its title or favicon when backgrounded.
     // Initialized to nullopt and set asynchronously with the proper value from
     // the sites database.
-    absl::optional<bool> updates_title_or_favicon_in_bg;
+    std::optional<bool> updates_title_or_favicon_in_bg;
   };
 
   // Comparator used to sort PageNodeToLoadData.
@@ -211,7 +211,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // The set of PageNodes that BackgroundTabLoadingPolicy has initiated loading,
   // and for which we are waiting for the loading to actually start. This signal
   // will be received from |OnIsLoadingChanged|.
-  std::vector<const PageNode*> page_nodes_load_initiated_;
+  std::vector<raw_ptr<const PageNode, VectorExperimental>>
+      page_nodes_load_initiated_;
 
   // PageNodes that are currently loading, mapped to a boolean indicating
   // whether this policy was responsible for scheduling the load.

@@ -11,8 +11,9 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -38,6 +39,11 @@ class BASE_EXPORT MemoryMappedFile {
     // the OS to pause the thread while it writes them out. The pause can
     // be as much as 1s on some systems.
     READ_WRITE,
+
+    // This provides read/write access to the mapped file contents as above, but
+    // applies a copy-on-write policy such that no writes are carried through to
+    // the underlying file.
+    READ_WRITE_COPY,
 
     // This provides read/write access but with the ability to write beyond
     // the end of the existing file up to a maximum size specified as the
@@ -66,8 +72,7 @@ class BASE_EXPORT MemoryMappedFile {
   struct BASE_EXPORT Region {
     static const Region kWholeFile;
 
-    bool operator==(const Region& other) const;
-    bool operator!=(const Region& other) const;
+    friend bool operator==(const Region&, const Region&) = default;
 
     // Start of the region (measured in bytes from the beginning of the file).
     int64_t offset;
@@ -109,6 +114,10 @@ class BASE_EXPORT MemoryMappedFile {
   uint8_t* data() { return data_; }
   size_t length() const { return length_; }
 
+  span<const uint8_t> bytes() const { return make_span(data_, length_); }
+
+  span<uint8_t> mutable_bytes() const { return make_span(data_, length_); }
+
   // Is file_ a valid file handle that points to an open, memory mapped file?
   bool IsValid() const;
 
@@ -140,7 +149,9 @@ class BASE_EXPORT MemoryMappedFile {
 
   File file_;
 
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> data_ = nullptr;
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
+  // there is no benefit to using a raw_ptr, only cost.
+  RAW_PTR_EXCLUSION uint8_t* data_ = nullptr;
   size_t length_ = 0;
 
 #if BUILDFLAG(IS_WIN)

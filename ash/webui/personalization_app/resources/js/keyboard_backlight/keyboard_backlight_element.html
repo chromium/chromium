@@ -67,7 +67,10 @@
       <cr-button id="zoneCustomizationButton" on-click="showZoneCustomizationDialog_"
           class="secondary"
           aria-pressed$="[[getZoneCustomizationButtonAriaPressed_(currentBacklightState_)]]">
-        <iron-icon class="customized-checkmark" icon="personalization:circle_checkmark"></iron-icon>
+        <iron-icon
+            class="customized-checkmark"
+            icon="personalization-shared:circle-checkmark">
+        </iron-icon>
         <div class="text">$i18n{zoneCustomize}</div>
       </cr-button>
     </div>

@@ -17,12 +17,5 @@ BASE_FEATURE(kReadLaterBackendMigration,
              "ReadLaterBackendMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsReadingListAccountStorageUIEnabled() {
-  return base::FeatureList::IsEnabled(
-             syncer::kReadingListEnableDualReadingListModel) &&
-         base::FeatureList::IsEnabled(
-             syncer::kReadingListEnableSyncTransportModeUponSignIn);
-}
-
 }  // namespace switches
 }  // namespace reading_list

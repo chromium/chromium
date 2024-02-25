@@ -206,7 +206,7 @@ class CC_EXPORT ImageAnimationController {
     void ResetAnimation();
     size_t NextFrameIndex(size_t pending_index) const;
     bool is_complete() const {
-      return completion_state_ == PaintImage::CompletionState::DONE;
+      return completion_state_ == PaintImage::CompletionState::kDone;
     }
     bool needs_invalidation() const {
       return current_state_.pending_index != active_index_;
@@ -248,7 +248,7 @@ class CC_EXPORT ImageAnimationController {
     // Whether the image is known to be completely loaded in the most recent
     // recording received.
     PaintImage::CompletionState completion_state_ =
-        PaintImage::CompletionState::PARTIALLY_DONE;
+        PaintImage::CompletionState::kPartiallyDone;
 
     // The number of frames skipped during catch-up the last time this animation
     // was advanced.

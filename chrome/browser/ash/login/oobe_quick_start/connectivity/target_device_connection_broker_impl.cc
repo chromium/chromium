@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
@@ -14,8 +15,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
@@ -70,9 +70,9 @@ constexpr base::TimeDelta kNearbyConnectionsAdvertisementAfterUpdateTimeout =
 // - Be at most 18 bytes
 // - If less than 18 bytes, must be null-terminated
 std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
-    const RandomSessionId& session_id) {
+    const AdvertisingId& advertising_id) {
   std::string display_name = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
-  std::string suffix = " (" + session_id.GetDisplayCode() + ")";
+  std::string suffix = " (" + advertising_id.GetDisplayCode() + ")";
 
   base::TruncateUTF8ToByteSize(
       display_name, kMaxEndpointInfoDisplayNameLength - suffix.size(),
@@ -91,8 +91,7 @@ std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
 std::vector<uint8_t> Base64EncodeOmitPadding(
     const std::vector<uint8_t>& bytes) {
   std::string input(bytes.begin(), bytes.end());
-  std::string output;
-  base::Base64Encode(input, &output);
+  std::string output = base::Base64Encode(input);
 
   // Strip padding characters from end.
   const size_t last_non_padding_pos =
@@ -128,13 +127,13 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
-    SessionContext session_context,
+    SessionContext* session_context,
     QuickStartConnectivityService* quick_start_connectivity_service,
     std::unique_ptr<Connection::Factory> connection_factory)
     : session_context_(session_context),
       quick_start_connectivity_service_(quick_start_connectivity_service),
       connection_factory_(std::move(connection_factory)) {
-  is_resume_after_update_ = session_context_.is_resume_after_update();
+  is_resume_after_update_ = session_context_->is_resume_after_update();
   GetBluetoothAdapter();
 }
 
@@ -220,9 +219,9 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
 
 void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
     ResultCallback callback) {
-  QS_LOG(INFO) << "Starting Fast Pair advertising with session id "
-               << session_context_.random_session_id() << " ("
-               << session_context_.random_session_id().GetDisplayCode() << ")";
+  QS_LOG(INFO) << "Starting Fast Pair advertising with advertising id "
+               << session_context_->advertising_id() << " ("
+               << session_context_->advertising_id().GetDisplayCode() << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
@@ -236,7 +235,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      session_context_.random_session_id(), use_pin_authentication_);
+      session_context_->advertising_id(), use_pin_authentication_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
@@ -269,8 +268,8 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
       weak_ptr_factory_.GetWeakPtr(), std::move(on_stop_advertising_callback)));
 }
 
-std::string TargetDeviceConnectionBrokerImpl::GetSessionIdDisplayCode() {
-  return session_context_.random_session_id().GetDisplayCode();
+std::string TargetDeviceConnectionBrokerImpl::GetAdvertisingIdDisplayCode() {
+  return session_context_->advertising_id().GetDisplayCode();
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
@@ -286,15 +285,15 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 // - Advertisement data, 60 bytes, base64 encoded:
 //   - Verification Style, byte[0]
 //   - Device Type, byte[1]
-//   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See RandomSessionId)
+//   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See AdvertisingId)
 //   - isQuickStart, byte[12], =1 for Quick Start.
 //   - preferTargetUserVerification, byte[13], =0 for ChromeOS.
 //   - Pad with zeros to 60 bytes. Extra space reserved for futureproofing.
 std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
     const {
-  std::string session_id = session_context_.random_session_id().ToString();
+  std::string advertising_id = session_context_->advertising_id().ToString();
   std::vector<uint8_t> display_name_bytes =
-      GetEndpointInfoDisplayNameBytes(session_context_.random_session_id());
+      GetEndpointInfoDisplayNameBytes(session_context_->advertising_id());
   uint8_t verification_style = use_pin_authentication_
                                    ? kEndpointInfoVerificationStyleDigits
                                    : kEndpointInfoVerificationStyleOutOfBand;
@@ -303,10 +302,10 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
   advertisement_data.reserve(60);
   advertisement_data.push_back(verification_style);
   advertisement_data.push_back(kEndpointInfoDeviceType);
-  advertisement_data.insert(advertisement_data.end(), session_id.begin(),
-                            session_id.end());
-  for (size_t i = 0; i < kEndpointInfoAdvertisingIdLength - session_id.size();
-       i++) {
+  advertisement_data.insert(advertisement_data.end(), advertising_id.begin(),
+                            advertising_id.end());
+  for (size_t i = 0;
+       i < kEndpointInfoAdvertisingIdLength - advertising_id.size(); i++) {
     // Pad out the advertising id to the correct field length using null
     // terminators.
     advertisement_data.push_back(0);
@@ -402,7 +401,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
 
   CHECK(connection_lifecycle_listener_);
   if (use_pin_authentication_) {
-    absl::optional<std::string> auth_token =
+    std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
@@ -438,15 +437,14 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   if (use_pin_authentication_ && !is_resume_after_update_) {
     QS_LOG(INFO) << "Pin authentication completed!";
-    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/false);
-    connection_->MarkConnectionAuthenticated();
+    connection_->MarkConnectionAuthenticated(
+        Connection::AuthenticationMethod::kPin);
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
-    absl::optional<std::string> auth_token =
+    std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
-    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/true);
     connection_->InitiateHandshake(
         *auth_token,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted,
@@ -463,7 +461,10 @@ void TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted(bool success) {
   }
 
   QS_LOG(INFO) << "Handshake succeeded!";
-  connection_->MarkConnectionAuthenticated();
+  connection_->MarkConnectionAuthenticated(
+      is_resume_after_update_
+          ? Connection::AuthenticationMethod::kResumeAfterUpdate
+          : Connection::AuthenticationMethod::kQR);
 }
 
 void TargetDeviceConnectionBrokerImpl::

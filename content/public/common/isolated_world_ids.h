@@ -7,6 +7,8 @@
 
 namespace content {
 
+// Please keep this enum in sync with IsolatedWordIds.java
+// LINT.IfChange
 enum IsolatedWorldIDs : int32_t {
   // The main world. Chrome cannot use ID 0 for an isolated world because 0
   // represents the main world.
@@ -17,7 +19,6 @@ enum IsolatedWorldIDs : int32_t {
   // via RenderFrameImpl::OnJavaScriptExecuteRequestInIsolatedWorld update this.
   ISOLATED_WORLD_ID_MAX = ISOLATED_WORLD_ID_CONTENT_END + 10,
 };
-
+// LINT.ThenChange(//content/public/android/java/src/org/chromium/content_public/common/IsolatedWorldIds.java)
 }  // namespace content
-
 #endif  // CONTENT_PUBLIC_COMMON_ISOLATED_WORLD_IDS_H_

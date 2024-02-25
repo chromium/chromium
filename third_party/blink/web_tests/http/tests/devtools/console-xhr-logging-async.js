@@ -7,11 +7,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
   TestRunner.addResult(
       `Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled for asynchronous XHRs.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   step1();
 
@@ -20,21 +20,21 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function step1() {
-    Common.Settings.settingForTest('monitoringXHREnabled').set(true);
+    Common.Settings.settingForTest('monitoring-xhr-enabled').set(true);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging enabled: ');
         // Sorting console messages to prevent flakiness.
         await ConsoleTestRunner.waitForPendingViewportUpdates();
         TestRunner.addResults((await ConsoleTestRunner.dumpConsoleMessagesIntoArray()).sort());
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         step2();
       });
     });
   }
 
   function step2() {
-    Common.Settings.settingForTest('monitoringXHREnabled').set(false);
+    Common.Settings.settingForTest('monitoring-xhr-enabled').set(false);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging disabled: ');

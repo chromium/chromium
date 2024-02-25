@@ -1,0 +1,53 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("chaps") {
+  defines = [ "IS_ASH_DBUS_CHAPS_IMPL" ]
+
+  sources = [
+    "chaps_client.cc",
+    "chaps_client.h",
+    "fake_chaps_client.cc",
+    "fake_chaps_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/constants",
+    "//dbus",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_chaps_client.cc",
+    "mock_chaps_client.h",
+  ]
+  deps = [
+    ":chaps",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chaps_client_unittest.cc" ]
+  deps = [
+    ":chaps",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/constants",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

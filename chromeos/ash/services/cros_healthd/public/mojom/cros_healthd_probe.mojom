@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 3, NextIndex: 22
+// NextMinVersion: 4, NextIndex: 23
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -51,6 +51,7 @@ enum ProbeCategoryEnum {
   kInput = 19,
   [MinVersion=1] kAudioHardware = 20,
   [MinVersion=2] kSensor = 21,
+  [MinVersion=3] kThermal = 22,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -368,7 +369,7 @@ union BlockDeviceInfo {
 
 // Information related to a specific non-removable block device.
 //
-// NextMinVersion: 2, NextIndex: 18
+// NextMinVersion: 3, NextIndex: 19
 [Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
@@ -422,6 +423,8 @@ struct NonRemovableBlockDeviceInfo {
   uint8 manufacturer_id@15;
   // PSN: Product serial number, 32 bits
   uint32 serial@16;
+  // String representatil of the device FW version
+  [MinVersion=2] string? firmware_string@18;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
@@ -802,14 +805,14 @@ struct BluetoothAdapterInfo {
   [MinVersion=1] string? modalias@8;
   // List of allowed system devices.
   [MinVersion=2] array<string>? service_allow_list@9;
-  // A dictionary of supported capabilities.
-  [MinVersion=2] SupportedCapabilities? supported_capabilities@10;
+  // A dictionary of supported capabilities. DEPRECATED.
+  [MinVersion=2] DEPRECATED_SupportedCapabilities? deprecated_capabilities@10;
 };
 
 
 // Information related to one of a adapter's Bluetooth connected devices.
 //
-// NextMinVersion: 2, NextIndex: 9
+// NextMinVersion: 3, NextIndex: 10
 [Stable]
 struct BluetoothDeviceInfo {
   // The MAC address of the device.
@@ -824,12 +827,14 @@ struct BluetoothDeviceInfo {
   string? modalias@4;
   // Received Signal Strength Indicator.
   NullableInt16? rssi@5;
-  // The Maximum Transmission Unit used in ATT communication.
-  NullableUint16? mtu@6;
+  // The Maximum Transmission Unit used in ATT communication. DEPRECATED.
+  NullableUint16? deprecated_mtu@6;
   // The list of the available remote services.
   array<string>? uuids@7;
   // The battery percentage of the device.
   [MinVersion=1] NullableUint8? battery_percentage@8;
+  // The Bluetooth class of device (CoD) of the device.
+  [MinVersion=2] NullableUint32? bluetooth_class@9;
 };
 
 // An enumeration of type in Bluetooth device info.
@@ -839,8 +844,8 @@ struct BluetoothDeviceInfo {
 enum BluetoothDeviceType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
-  // Unfound type.
-  kUnfound = 1,
+  // Unknown type.
+  kUnknown = 1,
   // BR/EDR.
   kBrEdr = 2,
   // LE.
@@ -849,24 +854,13 @@ enum BluetoothDeviceType {
   kDual = 4,
 };
 
-// Supported Capabilities related information.
-//
-// NextMinVersion: 1, NextIndex: 4
+// Supported Capabilities related information. DEPRECATED.
 [Stable]
-struct SupportedCapabilities {
-  // Max advertising data length.
-  uint8 max_adv_len@0;
-  // Max advertising scan response length.
-  uint8 max_scn_rsp_len@1;
-  // Min advertising tx power (dBm).
-  int16 min_tx_power@2;
-  // Max advertising tx power (dBm).
-  int16 max_tx_power@3;
-};
+struct DEPRECATED_SupportedCapabilities {};
 
 // System probe result. DEPRECATED.
 [Stable]
-union DEPRECATE_SystemResult { ProbeError error; };
+union DEPRECATED_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
@@ -1376,7 +1370,7 @@ union BusInfo {
 
 // The info related to pci.
 //
-// NextMinVersion: 1, NextIndex: 6
+// NextMinVersion: 2, NextIndex: 8
 [Stable]
 struct PciBusInfo {
   // These fields can be used to classify / identify the pci devices. See the
@@ -1390,6 +1384,11 @@ struct PciBusInfo {
   // is registered in the kernel. See "{kernel root}/drivers/". for the list of
   // the built in drivers.
   string? driver@5;
+  // These fields can be used to classify / identify the pci subsystem devices.
+  // See the pci.ids database for the values. (https://github.com/gentoo/hwids)
+  // Note that not every device has these fields.
+  [MinVersion=1] NullableUint16? sub_vendor_id@6;
+  [MinVersion=1] NullableUint16? sub_device_id@7;
 };
 
 // The info related to usb.
@@ -1501,9 +1500,9 @@ enum UsbSpecSpeed {
   k1_5Mbps = 2,
   // Full speed.
   k12Mbps = 3,
-  // Deprecate. Should be a typo in
+  // Deprecated. Should be a typo in
   // https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb.
-  kDeprecateSpeed = 4,
+  kDeprecatedSpeed = 4,
   // High Speed.
   k480Mbps = 5,
   // Super Speed.
@@ -1855,13 +1854,15 @@ union InputResult {
 
 // Input software and hardware information.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 [Stable]
 struct InputInfo {
   // The touchpad library name used by the input stack.
   string touchpad_library_name@0;
   // The touchscreen devices.
   array<TouchscreenDevice> touchscreen_devices@1;
+  // The touchpad devices.
+  [MinVersion=1] array<TouchpadDevice>? touchpad_devices@2;
 };
 
 // Data of a touch screen device.
@@ -1877,6 +1878,17 @@ struct TouchscreenDevice {
   bool has_stylus@2;
   // True if there is a garage/dock switch associated with the stylus.
   bool has_stylus_garage_switch@3;
+};
+
+// Data of a touchpad device.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TouchpadDevice {
+  // The input device of this touchpad.
+  InputDevice input_device@0;
+  // The kernel driver in use.
+  string driver_name@1;
 };
 
 // Data of a input device.
@@ -1980,6 +1992,50 @@ struct Sensor {
   Location location@3;
 };
 
+// Thermal result.
+[Stable]
+union ThermalResult {
+  // Valid ThermalInfo.
+  ThermalInfo thermal_info;
+  // The error that occurred attempting to retrieve the ThermalInfo.
+  ProbeError error;
+};
+
+// Information about the various thermal sensors.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct ThermalInfo {
+  // An array containing all the information retrieved for thermal sensors.
+  array<ThermalSensorInfo> thermal_sensors@0;
+};
+
+// Information about various thermal sensors.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct ThermalSensorInfo {
+  // The location of sensor.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum ThermalSensorSource {
+    // For mojo backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Thermal sensor is located in the EC.
+    kEc = 1,
+    // Thermal sensor is located in SysFs.
+    kSysFs = 2,
+  };
+
+  // Name of the thermal sensor.
+  string name@0;
+  // Temperature detected by the thermal sensor in celsius.
+  double temperature_celsius@1;
+  // Where the thermal sensor is detected from.
+  ThermalSensorSource source@2;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -1988,7 +2044,7 @@ struct Sensor {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 6, NextIndex: 22
+// NextMinVersion: 7, NextIndex: 23
 [Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -2021,7 +2077,7 @@ struct TelemetryInfo {
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
   BluetoothResult? bluetooth_result@8;
   // Information about the system. DEPRECATED.
-  DEPRECATE_SystemResult? deprecate_system_result@9;
+  DEPRECATED_SystemResult? deprecated_system_result@9;
   // Information about the networking devices and associated networks of the
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.
@@ -2059,4 +2115,6 @@ struct TelemetryInfo {
   [MinVersion=4] AudioHardwareResult? audio_hardware_result@20;
   // Information about sensor. Only present when kSensor was included.
   [MinVersion=5] SensorResult? sensor_result@21;
+  // Information about thermal. Only present when kThermal was included.
+  [MinVersion=6] ThermalResult? thermal_result@22;
 };

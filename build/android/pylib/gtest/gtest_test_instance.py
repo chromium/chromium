@@ -110,6 +110,10 @@ _RE_TEST_DCHECK_FATAL = re.compile(r'\[.*:FATAL:.*\] (.*)')
 _RE_DISABLED = re.compile(r'DISABLED_')
 _RE_FLAKY = re.compile(r'FLAKY_')
 
+# Regex that matches the printout when there are test failures.
+# matches "[  FAILED  ] 1 test, listed below:"
+_RE_ANY_TESTS_FAILED = re.compile(r'\[ +FAILED +\].*listed below')
+
 # Detect stack line in stdout.
 _STACK_LINE_RE = re.compile(r'\s*#\d+')
 
@@ -229,6 +233,9 @@ def ParseGTestOutput(output, symbolizer, device_abi):
       else:
         log.append(l)
 
+    if _RE_ANY_TESTS_FAILED.match(l):
+      break
+
     if result_type and test_name:
       # Don't bother symbolizing output if the test passed.
       if result_type == base_test_result.ResultType.PASS:
@@ -238,7 +245,10 @@ def ParseGTestOutput(output, symbolizer, device_abi):
           log=symbolize_stack_and_merge_with_log()))
       test_name = None
 
-  handle_possibly_unknown_test()
+  else:
+    # Executing this after tests have finished with a failure causes a
+    # duplicate test entry to be added to results. crbug/1380825
+    handle_possibly_unknown_test()
 
   return results
 
@@ -388,6 +398,7 @@ class GtestTestInstance(test_instance.TestInstance):
     self._data_deps = []
     self._gtest_filters = test_filter.InitializeFiltersFromArgs(args)
     self._run_disabled = args.run_disabled
+    self._run_pre_tests = args.run_pre_tests
 
     self._data_deps_delegate = data_deps_delegate
     self._runtime_deps_path = args.runtime_deps_path
@@ -538,6 +549,10 @@ class GtestTestInstance(test_instance.TestInstance):
   def use_existing_test_data(self):
     return self._use_existing_test_data
 
+  @property
+  def run_pre_tests(self):
+    return self._run_pre_tests
+
   #override
   def TestType(self):
     return 'gtest'
@@ -604,11 +619,13 @@ class GtestTestInstance(test_instance.TestInstance):
     disabled_filter_items = []
 
     if disabled_prefixes is None:
-      disabled_prefixes = ['FAILS_', 'PRE_']
+      disabled_prefixes = ['FAILS_']
       if '--run-manual' not in self._flags:
         disabled_prefixes += ['MANUAL_']
       if not self._run_disabled:
         disabled_prefixes += ['DISABLED_', 'FLAKY_']
+      if not self._run_pre_tests:
+        disabled_prefixes += ['PRE_']
 
     disabled_filter_items += ['%s*' % dp for dp in disabled_prefixes]
     disabled_filter_items += ['*.%s*' % dp for dp in disabled_prefixes]

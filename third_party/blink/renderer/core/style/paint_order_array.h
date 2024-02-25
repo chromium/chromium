@@ -34,6 +34,14 @@ class PaintOrderArray {
  public:
   explicit PaintOrderArray(EPaintOrder paint_order)
       : data_(Explode(paint_order)) {}
+  enum Type { kNoMarkers };
+  // Construct a paint-order array where the 'markers' paint type has been
+  // moved to the last position, allowing it to be trivially skipped where it
+  // will not have an effect.
+  PaintOrderArray(EPaintOrder paint_order, Type)
+      : PaintOrderArray(ReorderMarkerPaintType(paint_order)) {
+    DCHECK_EQ((*this)[2], PT_MARKERS);
+  }
 
   static constexpr unsigned kMaxItems = 3;
 
@@ -90,6 +98,18 @@ class PaintOrderArray {
       case kPaintOrderMarkersStrokeFill:
         return EncodeFields(PT_MARKERS, PT_STROKE, PT_FILL);
     }
+  }
+  static constexpr EPaintOrder ReorderMarkerPaintType(EPaintOrder paint_order) {
+    // Move 'markers' to the last position.
+    if (paint_order == kPaintOrderFillMarkersStroke ||
+        paint_order == kPaintOrderMarkersFillStroke) {
+      return kPaintOrderFillStrokeMarkers;
+    }
+    if (paint_order == kPaintOrderStrokeMarkersFill ||
+        paint_order == kPaintOrderMarkersStrokeFill) {
+      return kPaintOrderStrokeFillMarkers;
+    }
+    return paint_order;
   }
 
   const unsigned data_;

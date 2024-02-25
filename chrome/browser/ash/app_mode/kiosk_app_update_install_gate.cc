@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_update_install_gate.h"
 
 #include "base/logging.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -25,7 +25,7 @@ extensions::InstallGate::Action KioskAppUpdateInstallGate::ShouldDelay(
   // compliant with the current platform version.
   const bool first_install = !registry_->GetInstalledExtension(extension->id());
   const bool platform_compliant =
-      KioskAppManager::Get()->IsPlatformCompliantWithApp(extension);
+      KioskChromeAppManager::Get()->IsPlatformCompliantWithApp(extension);
   if (first_install || platform_compliant) {
     LOG_IF(WARNING, first_install && !platform_compliant)
         << "Install on an incompliant platform for the first install.";
@@ -34,8 +34,8 @@ extensions::InstallGate::Action KioskAppUpdateInstallGate::ShouldDelay(
 
   // Otherwise, delay install but update the required platform version meta data
   // to allow update engine to move on to the new platform version.
-  KioskAppManager::Get()->UpdateAppDataFromProfile(extension->id(), profile_,
-                                                   extension);
+  KioskChromeAppManager::Get()->UpdateAppDataFromProfile(extension->id(),
+                                                         profile_, extension);
   return DELAY;
 }
 

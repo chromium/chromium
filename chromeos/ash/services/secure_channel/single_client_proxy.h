@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 
@@ -52,6 +53,10 @@ class SingleClientProxy {
   virtual void HandleReceivedMessage(const std::string& feature,
                                      const std::string& payload) = 0;
 
+  virtual void HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) = 0;
+
   // Should be called when the underlying connection to the remote device has
   // been disconnected (e.g., because the other device closed the connection or
   // because of instability on the communication channel).
@@ -75,7 +80,7 @@ class SingleClientProxy {
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash::secure_channel

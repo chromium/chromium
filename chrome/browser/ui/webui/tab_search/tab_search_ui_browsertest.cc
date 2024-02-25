@@ -15,6 +15,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
@@ -64,6 +65,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
       "new Promise((resolve) => {"
       "  const interval = setInterval(() => {"
       "    const tabItems = document.querySelector('tab-search-app').shadowRoot"
+      "        .querySelector('tab-search-page').shadowRoot"
       "        .getElementById('tabsList')"
       "        .querySelectorAll('tab-search-item');"
       "    if (tabItems && tabItems.length === %d) {"
@@ -80,7 +82,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
   ASSERT_EQ(expected_tab_item_count, tab_item_count);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, SwitchToTabAction) {
+// Flaky on ChromeOS. See https://crbug.com/1484897
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SwitchToTabAction DISABLED_SwitchToTabAction
+#else
+#define MAYBE_SwitchToTabAction SwitchToTabAction
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, MAYBE_SwitchToTabAction) {
   int tab_count = browser()->tab_strip_model()->GetTabCount();
   int tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1));
@@ -91,6 +99,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, SwitchToTabAction) {
 
   const std::string tab_item_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
+      "    .querySelector('tab-search-page').shadowRoot"
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')",
       base::NumberToString(tab_id).c_str());
@@ -108,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
 
   const std::string tab_item_button_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
+      "    .querySelector('tab-search-page').shadowRoot"
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')"
       "    .shadowRoot.getElementById('closeButton')",

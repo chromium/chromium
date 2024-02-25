@@ -281,16 +281,28 @@
         Microphone
       </message>
       <message desc="Label for the copy button of the barcode url chip." name="IDS_BARCODE_COPY_LINK_BUTTON">
-        Copy link address
+        Copy link address <ph name="url">$1<ex>https://www.google.com</ex></ph>
       </message>
       <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_COPY_TEXT_BUTTON">
-        Copy text
+        Copy text <ph name="text">$1<ex>example text</ex></ph>
       </message>
-      <message desc="Label for detected link on the barcode chip." name="IDS_BARCODE_LINK_DETECTED">
-        Link detected. <ph name="hostname">$1<ex>www.google.com</ex></ph>
-      </message>
-      <message desc="Label for detected text on the barcode chip." name="IDS_BARCODE_TEXT_DETECTED">
+      <message desc="Label for the barcode container when text is detected under scan mode." name="IDS_LABEL_BARCODE_TEXT">
         Text detected.
+      </message>
+      <message desc="Text showing on the barcode chip when link is detected under scan mode." name="IDS_BARCODE_LINK_CHIPTEXT">
+        Open <ph name="url">$1<ex>https://www.google.com</ex></ph>
+      </message>
+      <message desc="Label for the barcode container when url is detected under scan mode." name="IDS_LABEL_BARCODE_URL">
+        URL detected.
+      </message>
+      <message desc="Text showing on the barcode chip when wifi is detected under scan mode." name="IDS_BARCODE_WIFI_CHIPTEXT">
+        Join "<ph name="wifiname">$1<ex>wifi network name</ex></ph>"
+      </message>
+      <message desc="Label for the barcode chip when wifi is detected under scan mode." name="IDS_LABEL_BARCODE_WIFI">
+        Wi-Fi network detected.
+      </message>
+      <message desc="Label for the barcode chip when wifi is detected under scan mode." name="IDS_LABEL_BARCODE_WIFI_CHIP">
+        Join <ph name="wifiname">$1<ex>wifi network name</ex></ph>
       </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode
@@ -464,9 +476,6 @@
       </message>
       <message desc="Label for spoken feedback to read out for recording time lapse video." name="IDS_RECORD_TIME_LAPSE_VIDEO_OPTION">
         Record time lapse video
-      </message>
-      <message desc="Toast message notifying user about new time lapse mode is available." name="IDS_NEW_TIME_LAPSE_TOAST">
-        Time Lapse mode is now available!
       </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm

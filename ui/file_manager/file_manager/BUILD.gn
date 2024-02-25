@@ -16,22 +16,15 @@ generate_grd("build_static_grdp") {
 
   input_files = [
     "main.html",
-
-    # For File Manager unittests:
-    "common/js/lru_cache.js",
+    "init_globals.js",
 
     # CSS:
     "foreground/css/combobutton.css",
-    "foreground/css/combobutton_gm3.css",
     "foreground/css/common.css",
-    "foreground/css/common_gm3.css",
     "foreground/css/file_manager.css",
-    "foreground/css/file_manager_gm3.css",
     "foreground/css/file_types.css",
-    "foreground/css/file_types_gm3.css",
     "foreground/css/list.css",
     "foreground/css/menu.css",
-    "foreground/css/menu_gm3.css",
     "foreground/css/table.css",
     "foreground/css/tree.css",
 
@@ -50,6 +43,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/cloud_error.svg",
     "foreground/images/files/ui/cloud_offline.svg",
     "foreground/images/files/ui/cloud.svg",
+    "foreground/images/files/ui/cloud_paused.svg",
     "foreground/images/files/ui/cloud_sync.svg",
     "foreground/images/files/ui/delete_ng.svg",
     "foreground/images/files/ui/delete.svg",
@@ -104,6 +98,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_gmap.svg",
     "foreground/images/filetype/filetype_gsheet.svg",
     "foreground/images/filetype/filetype_gsite.svg",
+    "foreground/images/filetype/filetype_gmaillayout.svg",
     "foreground/images/filetype/filetype_gslides.svg",
     "foreground/images/filetype/filetype_gtable.svg",
     "foreground/images/filetype/filetype_image.svg",

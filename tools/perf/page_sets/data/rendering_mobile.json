@@ -375,125 +375,56 @@
         "motion_mark_focus": {
             "DEFAULT": "rendering_mobile_002.wprgo"
         },
-        "motionmark_anim_design_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_focus_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_leaves_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_multiply_175": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_anim_suits_125": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
         "motionmark_fixed_2_seconds_canvas_arcs": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_canvas_lines": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_fixed_2_seconds_composite": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_design": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_images": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_leaves": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_multiply": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_paths": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_fixed_2_seconds_suits": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_html_composited_transforms_125": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_blend_circles_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_clipped_rects_100": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_filter_circles_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_gradient_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_svg_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_css_bouncing_tagged_images_225": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_dom_particles_svg_masks_25": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_focus_20_15": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_html_leaves_20_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_canvas_arcs": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_canvas_lines": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_composite": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_94b75f7e96.wprgo"
         },
         "motionmark_ramp_design": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_images": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_leaves": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_multiply": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_paths": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "motionmark_ramp_suits": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_svg_bouncing_circles_250": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_clipped_rects_100": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_gradient_circles_200": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_png_images_200": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
-        },
-        "motionmark_svg_bouncing_svg_images_50": {
-            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+            "DEFAULT": "rendering_mobile_3938b58aee.wprgo"
         },
         "new_tilings": {
             "DEFAULT": "rendering_mobile_010.wprgo"

@@ -251,6 +251,85 @@ TEST(FileTest, ReadWrite) {
     EXPECT_EQ(data_to_write[i - kOffsetBeyondEndOfFile], data_read_2[i]);
 }
 
+TEST(FileTest, ReadWriteSpans) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path = temp_dir.GetPath().AppendASCII("read_write_file");
+  File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                           base::File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  // Write 0 bytes to the file.
+  std::optional<size_t> bytes_written = file.Write(0, base::span<uint8_t>());
+  ASSERT_TRUE(bytes_written.has_value());
+  EXPECT_EQ(0u, bytes_written.value());
+
+  // Write "test" to the file.
+  std::string data_to_write("test");
+  bytes_written = file.Write(0, base::as_byte_span(data_to_write));
+  ASSERT_TRUE(bytes_written.has_value());
+  EXPECT_EQ(data_to_write.size(), bytes_written.value());
+
+  // Read from EOF.
+  uint8_t data_read_1[32];
+  std::optional<size_t> bytes_read =
+      file.Read(bytes_written.value(), data_read_1);
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(0u, bytes_read.value());
+
+  // Read from somewhere in the middle of the file.
+  const int kPartialReadOffset = 1;
+  bytes_read = file.Read(kPartialReadOffset, data_read_1);
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(bytes_written.value() - kPartialReadOffset, bytes_read.value());
+  for (size_t i = 0; i < bytes_read.value(); i++) {
+    EXPECT_EQ(data_to_write[i + kPartialReadOffset], data_read_1[i]);
+  }
+
+  // Read 0 bytes.
+  bytes_read = file.Read(0, base::span<uint8_t>());
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(0u, bytes_read.value());
+
+  // Read the entire file.
+  bytes_read = file.Read(0, data_read_1);
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(data_to_write.size(), bytes_read.value());
+  for (int i = 0; i < bytes_read; i++) {
+    EXPECT_EQ(data_to_write[i], data_read_1[i]);
+  }
+
+  // Write past the end of the file.
+  const size_t kOffsetBeyondEndOfFile = 10;
+  const size_t kPartialWriteLength = 2;
+  bytes_written =
+      file.Write(kOffsetBeyondEndOfFile,
+                 base::as_byte_span(data_to_write).first(kPartialWriteLength));
+  ASSERT_TRUE(bytes_written.has_value());
+  EXPECT_EQ(kPartialWriteLength, bytes_written.value());
+
+  // Make sure the file was extended.
+  int64_t file_size = 0;
+  EXPECT_TRUE(GetFileSize(file_path, &file_size));
+  EXPECT_EQ(static_cast<int64_t>(kOffsetBeyondEndOfFile + kPartialWriteLength),
+            file_size);
+
+  // Make sure the file was zero-padded.
+  uint8_t data_read_2[32];
+  bytes_read = file.Read(0, data_read_2);
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(file_size, static_cast<int64_t>(bytes_read.value()));
+  for (size_t i = 0; i < data_to_write.size(); i++) {
+    EXPECT_EQ(data_to_write[i], data_read_2[i]);
+  }
+  for (size_t i = data_to_write.size(); i < kOffsetBeyondEndOfFile; i++) {
+    EXPECT_EQ(0, data_read_2[i]);
+  }
+  for (size_t i = 0; i < kPartialWriteLength; i++) {
+    EXPECT_EQ(data_to_write[i], data_read_2[i + kOffsetBeyondEndOfFile]);
+  }
+}
+
 TEST(FileTest, GetLastFileError) {
 #if BUILDFLAG(IS_WIN)
   ::SetLastError(ERROR_ACCESS_DENIED);
@@ -499,6 +578,38 @@ TEST(FileTest, ReadAtCurrentPosition) {
   EXPECT_EQ(std::string(buffer, buffer + kDataSize), std::string(kData));
 }
 
+TEST(FileTest, ReadAtCurrentPositionSpans) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path =
+      temp_dir.GetPath().AppendASCII("read_at_current_position");
+  File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                           base::File::FLAG_WRITE);
+  EXPECT_TRUE(file.IsValid());
+
+  std::string data("test");
+  std::optional<size_t> result = file.Write(0, base::as_byte_span(data));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(data.size(), result.value());
+
+  EXPECT_EQ(0, file.Seek(base::File::FROM_BEGIN, 0));
+
+  uint8_t buffer[4];
+  size_t first_chunk_size = 2;
+  result =
+      file.ReadAtCurrentPos(base::make_span(buffer).first(first_chunk_size));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(first_chunk_size, result.value());
+
+  result =
+      file.ReadAtCurrentPos(base::make_span(buffer).subspan(first_chunk_size));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(first_chunk_size, result.value());
+  for (size_t i = 0; i < data.size(); i++) {
+    EXPECT_EQ(data[i], static_cast<char>(buffer[i]));
+  }
+}
+
 TEST(FileTest, WriteAtCurrentPosition) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -521,6 +632,33 @@ TEST(FileTest, WriteAtCurrentPosition) {
   char buffer[kDataSize];
   EXPECT_EQ(kDataSize, file.Read(0, buffer, kDataSize));
   EXPECT_EQ(std::string(buffer, buffer + kDataSize), std::string(kData));
+}
+
+TEST(FileTest, WriteAtCurrentPositionSpans) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path =
+      temp_dir.GetPath().AppendASCII("write_at_current_position");
+  File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                           base::File::FLAG_WRITE);
+  EXPECT_TRUE(file.IsValid());
+
+  std::string data("test");
+  size_t first_chunk_size = data.size() / 2;
+  std::optional<size_t> result =
+      file.WriteAtCurrentPos(base::as_byte_span(data).first(first_chunk_size));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(first_chunk_size, result.value());
+
+  result = file.WriteAtCurrentPos(
+      base::as_byte_span(data).subspan(first_chunk_size));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(first_chunk_size, result.value());
+
+  const int kDataSize = 4;
+  char buffer[kDataSize];
+  EXPECT_EQ(kDataSize, file.Read(0, buffer, kDataSize));
+  EXPECT_EQ(std::string(buffer, buffer + kDataSize), data);
 }
 
 TEST(FileTest, Seek) {

@@ -27,9 +27,9 @@ std::unique_ptr<uint8_t[]> CreateTestBuffer(size_t size, size_t offset) {
 }
 
 // Check that the watermark sequence is consistent with the |offset| provided.
-bool CheckBufferContents(const uint8_t* data, size_t size, size_t offset) {
-  std::unique_ptr<uint8_t[]> test_data(CreateTestBuffer(size, offset));
-  return memcmp(test_data.get(), data, size) == 0;
+bool CheckBufferContents(span<const uint8_t> bytes, size_t offset) {
+  std::unique_ptr<uint8_t[]> test_data(CreateTestBuffer(bytes.size(), offset));
+  return memcmp(test_data.get(), bytes.data(), bytes.size()) == 0;
 }
 
 class MemoryMappedFileTest : public PlatformTest {
@@ -67,7 +67,7 @@ TEST_F(MemoryMappedFileTest, MapWholeFileByPath) {
   ASSERT_EQ(kFileSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapWholeFileByFD) {
@@ -79,7 +79,7 @@ TEST_F(MemoryMappedFileTest, MapWholeFileByFD) {
   ASSERT_EQ(kFileSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapSmallFile) {
@@ -90,7 +90,7 @@ TEST_F(MemoryMappedFileTest, MapSmallFile) {
   ASSERT_EQ(kFileSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapWholeFileUsingRegion) {
@@ -104,7 +104,7 @@ TEST_F(MemoryMappedFileTest, MapWholeFileUsingRegion) {
   ASSERT_EQ(kFileSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapPartialRegionAtBeginning) {
@@ -119,7 +119,7 @@ TEST_F(MemoryMappedFileTest, MapPartialRegionAtBeginning) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kPartialSize, 0));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), 0));
 }
 
 TEST_F(MemoryMappedFileTest, MapPartialRegionAtEnd) {
@@ -135,7 +135,7 @@ TEST_F(MemoryMappedFileTest, MapPartialRegionAtEnd) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kPartialSize, kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, MapSmallPartialRegionInTheMiddle) {
@@ -152,7 +152,7 @@ TEST_F(MemoryMappedFileTest, MapSmallPartialRegionInTheMiddle) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kPartialSize, kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, MapLargePartialRegionInTheMiddle) {
@@ -169,7 +169,7 @@ TEST_F(MemoryMappedFileTest, MapLargePartialRegionInTheMiddle) {
   ASSERT_EQ(kPartialSize, map.length());
   ASSERT_TRUE(map.data() != nullptr);
   EXPECT_TRUE(map.IsValid());
-  ASSERT_TRUE(CheckBufferContents(map.data(), kPartialSize, kOffset));
+  ASSERT_TRUE(CheckBufferContents(map.bytes().first(kPartialSize), kOffset));
 }
 
 TEST_F(MemoryMappedFileTest, WriteableFile) {
@@ -182,15 +182,16 @@ TEST_F(MemoryMappedFileTest, WriteableFile) {
     ASSERT_EQ(kFileSize, map.length());
     ASSERT_TRUE(map.data() != nullptr);
     EXPECT_TRUE(map.IsValid());
-    ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+    ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
 
-    uint8_t* bytes = map.data();
+    span<uint8_t> bytes = map.mutable_bytes();
     bytes[0] = 'B';
     bytes[1] = 'a';
     bytes[2] = 'r';
     bytes[kFileSize - 1] = '!';
-    EXPECT_FALSE(CheckBufferContents(map.data(), kFileSize, 0));
-    EXPECT_TRUE(CheckBufferContents(map.data() + 3, kFileSize - 4, 3));
+    EXPECT_FALSE(CheckBufferContents(map.bytes(), 0));
+    EXPECT_TRUE(
+        CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
   }
 
   int64_t file_size;
@@ -201,6 +202,39 @@ TEST_F(MemoryMappedFileTest, WriteableFile) {
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));
   EXPECT_EQ("Bar", contents.substr(0, 3));
   EXPECT_EQ("!", contents.substr(kFileSize - 1, 1));
+}
+
+TEST_F(MemoryMappedFileTest, CopyOnWrite) {
+  const size_t kFileSize = 127;
+  CreateTemporaryTestFile(kFileSize);
+
+  {
+    MemoryMappedFile map;
+    ASSERT_TRUE(
+        map.Initialize(temp_file_path(), MemoryMappedFile::READ_WRITE_COPY));
+    ASSERT_EQ(kFileSize, map.length());
+    ASSERT_TRUE(map.data() != nullptr);
+    EXPECT_TRUE(map.IsValid());
+    ASSERT_TRUE(CheckBufferContents(map.bytes(), 0));
+
+    span<uint8_t> bytes = map.mutable_bytes();
+    bytes[0] = 'B';
+    bytes[1] = 'a';
+    bytes[2] = 'r';
+    bytes[kFileSize - 1] = '!';
+    EXPECT_FALSE(CheckBufferContents(map.bytes(), 0));
+    EXPECT_TRUE(
+        CheckBufferContents(map.bytes().first(kFileSize - 1).subspan(3), 3));
+  }
+
+  int64_t file_size;
+  ASSERT_TRUE(GetFileSize(temp_file_path(), &file_size));
+  EXPECT_EQ(static_cast<int64_t>(kFileSize), file_size);
+
+  // Although the buffer has been modified in memory, the file is unchanged.
+  std::string contents;
+  ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));
+  EXPECT_TRUE(CheckBufferContents(as_bytes(span(contents)), 0));
 }
 
 TEST_F(MemoryMappedFileTest, ExtendableFile) {
@@ -218,16 +252,16 @@ TEST_F(MemoryMappedFileTest, ExtendableFile) {
     EXPECT_EQ(kFileSize + kFileExtend, map.length());
     ASSERT_TRUE(map.data() != nullptr);
     EXPECT_TRUE(map.IsValid());
-    ASSERT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+    ASSERT_TRUE(CheckBufferContents(map.bytes().first(kFileSize), 0));
 
-    uint8_t* bytes = map.data();
+    span<uint8_t> bytes = map.mutable_bytes();
     EXPECT_EQ(0, bytes[kFileSize + 0]);
     EXPECT_EQ(0, bytes[kFileSize + 1]);
     EXPECT_EQ(0, bytes[kFileSize + 2]);
     bytes[kFileSize + 0] = 'B';
     bytes[kFileSize + 1] = 'A';
     bytes[kFileSize + 2] = 'Z';
-    EXPECT_TRUE(CheckBufferContents(map.data(), kFileSize, 0));
+    EXPECT_TRUE(CheckBufferContents(map.bytes().first(kFileSize), 0));
   }
 
   int64_t file_size;

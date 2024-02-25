@@ -29,6 +29,7 @@ namespace blink {
 class CanvasContextCreationAttributesCore;
 class CanvasResourceProvider;
 class ImageBitmap;
+class ImageEncodeOptions;
 class
     OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext;
 typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext
@@ -46,14 +47,14 @@ class CORE_EXPORT OffscreenCanvas final
  public:
   static OffscreenCanvas* Create(ScriptState*, unsigned width, unsigned height);
 
-  OffscreenCanvas(ExecutionContext*, const gfx::Size&);
+  OffscreenCanvas(ExecutionContext*, gfx::Size);
   ~OffscreenCanvas() override;
   void Dispose();
 
   bool IsOffscreenCanvas() const override { return true; }
   // IDL attributes
-  unsigned width() const { return size_.width(); }
-  unsigned height() const { return size_.height(); }
+  unsigned width() const { return Size().width(); }
+  unsigned height() const { return Size().height(); }
   void setWidth(unsigned);
   void setHeight(unsigned);
 
@@ -65,12 +66,13 @@ class CORE_EXPORT OffscreenCanvas final
   // API Methods
   ImageBitmap* transferToImageBitmap(ScriptState*, ExceptionState&);
 
-  ScriptPromise convertToBlob(ScriptState* script_state,
-                              const ImageEncodeOptions* options,
-                              ExceptionState& exception_state);
+  // For deferred canvases this will have the side effect of drawing recorded
+  // commands in order to finalize the frame.
+  ScriptPromiseTyped<Blob> convertToBlob(ScriptState* script_state,
+                                         const ImageEncodeOptions* options,
+                                         ExceptionState& exception_state);
 
-  const gfx::Size& Size() const override { return size_; }
-  void SetSize(const gfx::Size&);
+  void SetSize(gfx::Size) override;
   void RecordTransfer();
 
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
@@ -112,9 +114,11 @@ class CORE_EXPORT OffscreenCanvas final
 
   // CanvasRenderingContextHost implementation.
   void PreFinalizeFrame() override {}
-  void PostFinalizeFrame(CanvasResourceProvider::FlushReason) override {}
+  void PostFinalizeFrame(FlushReason) override {}
   void DetachContext() override { context_ = nullptr; }
-  CanvasRenderingContext* RenderingContext() const override { return context_; }
+  CanvasRenderingContext* RenderingContext() const override {
+    return context_.Get();
+  }
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame,
@@ -133,6 +137,10 @@ class CORE_EXPORT OffscreenCanvas final
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;
   size_t GetMemoryUsage() const override;
+  // Because OffscreenCanvas is not tied to a DOM, it's visibility cannot be
+  // determined synchronously.
+  // TODO(junov): Propagate changes in visibility from the placeholder canvas.
+  bool IsPageVisible() override { return true; }
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {
@@ -153,13 +161,13 @@ class CORE_EXPORT OffscreenCanvas final
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const final;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect>,
+                                  std::optional<gfx::Rect>,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) final;
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;
@@ -169,6 +177,8 @@ class CORE_EXPORT OffscreenCanvas final
     return gfx::SizeF(width(), height());
   }
   bool IsOpaque() const final;
+
+  // overrides CanvasImageSource::IsAccelerated()
   bool IsAccelerated() const final;
 
   DispatchEventResult HostDispatchEvent(Event* event) override {
@@ -178,6 +188,11 @@ class CORE_EXPORT OffscreenCanvas final
   bool IsWebGL1Enabled() const override { return true; }
   bool IsWebGL2Enabled() const override { return true; }
   bool IsWebGLBlocked() const override { return false; }
+
+  void CheckForGpuContextLost();
+  void SetRestoringGpuContext(bool restoring_gpu_context) {
+    restoring_gpu_context_ = restoring_gpu_context;
+  }
 
   FontSelector* GetFontSelector() override;
 
@@ -245,7 +260,6 @@ class CORE_EXPORT OffscreenCanvas final
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
 
-  gfx::Size size_;
   bool disposing_ = false;
   bool is_neutered_ = false;
   bool origin_clean_ = true;
@@ -270,6 +284,8 @@ class CORE_EXPORT OffscreenCanvas final
   // then the following members would remain as initialized zero values.
   uint32_t client_id_ = 0;
   uint32_t sink_id_ = 0;
+
+  bool restoring_gpu_context_ = false;
 };
 
 }  // namespace blink

@@ -26,16 +26,20 @@ class FakeQuickStartConnectivityService : public QuickStartConnectivityService {
       const FakeQuickStartConnectivityService&) = delete;
   ~FakeQuickStartConnectivityService() override;
 
+  // QuickStartConnectivityService:
   raw_ptr<NearbyConnectionsManager> GetNearbyConnectionsManager() override;
-
   mojo::SharedRemote<mojom::QuickStartDecoder> GetQuickStartDecoder() override;
+  void Cleanup() override;
 
   raw_ptr<FakeNearbyConnectionsManager> GetFakeNearbyConnectionsManager();
+
+  bool get_is_cleanup_called() { return is_cleanup_called_; }
 
  private:
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
       std::make_unique<FakeQuickStartDecoder>();
+  bool is_cleanup_called_ = false;
 };
 
 }  // namespace ash::quick_start

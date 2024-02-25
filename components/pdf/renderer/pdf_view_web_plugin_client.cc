@@ -11,15 +11,16 @@
 #include "base/check_op.h"
 #include "base/values.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "net/cookies/site_for_cookies.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
@@ -49,7 +50,8 @@ PdfViewWebPluginClient::PdfViewWebPluginClient(
     content::RenderFrame* render_frame)
     : render_frame_(render_frame),
       v8_value_converter_(content::V8ValueConverter::Create()),
-      isolate_(blink::MainThreadIsolate()) {
+      isolate_(
+          render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate()) {
   DCHECK(render_frame_);
 }
 
@@ -73,6 +75,10 @@ void PdfViewWebPluginClient::SetPluginContainer(
 
 blink::WebPluginContainer* PdfViewWebPluginClient::PluginContainer() {
   return plugin_container_;
+}
+
+v8::Isolate* PdfViewWebPluginClient::GetIsolate() {
+  return GetFrame()->GetAgentGroupScheduler()->Isolate();
 }
 
 net::SiteForCookies PdfViewWebPluginClient::SiteForCookies() const {
@@ -256,9 +262,10 @@ void PdfViewWebPluginClient::RecordComputedAction(const std::string& action) {
 std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
 PdfViewWebPluginClient::CreateAccessibilityDataHandler(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher) {
-  return std::make_unique<PdfAccessibilityTree>(render_frame_, action_handler,
-                                                image_fetcher);
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
+    blink::WebPluginContainer* plugin_container) {
+  return std::make_unique<PdfAccessibilityTree>(
+      render_frame_, action_handler, image_fetcher, plugin_container);
 }
 
 }  // namespace pdf

@@ -90,7 +90,7 @@ class TestEncodedAudioFrameReceiver {
 };
 
 struct TestScenario {
-  raw_ptr<const int64_t> durations_in_ms;
+  raw_ptr<const int64_t, AllowPtrArithmetic> durations_in_ms;
   size_t num_durations;
 
   TestScenario(const int64_t* d, size_t n)

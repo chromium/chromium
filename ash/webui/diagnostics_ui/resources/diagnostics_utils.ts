@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {NavigationView, RoutineProperties} from './diagnostics_types.js';
 import {LockType, Network, NetworkState, NetworkType} from './network_health_provider.mojom-webui.js';
@@ -88,6 +88,8 @@ export function getLockType(lockType: LockType): string {
       return 'sim-puk';
     case LockType.kSimPin:
       return 'sim-pin';
+    case LockType.kNetworkPin:
+      return 'network-pin';
     case LockType.kNone:
       return '';
   }

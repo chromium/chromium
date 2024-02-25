@@ -41,9 +41,10 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -213,8 +214,9 @@ void EnrollmentScreen::SetConfig() {
                << " config_.mode = " << static_cast<int>(config_.mode)
                << ", config_.auth_mechanism = "
                << static_cast<int>(config_.auth_mechanism);
-  if (view_)
+  if (view_) {
     view_->SetEnrollmentConfig(config_);
+  }
   enrollment_launcher_ = nullptr;
 }
 
@@ -277,8 +279,9 @@ bool EnrollmentScreen::MaybeSkip(WizardContext& context) {
 }
 
 void EnrollmentScreen::UpdateFlowType() {
-  if (!view_)
+  if (!view_) {
     return;
+  }
   if (features::IsLicensePackagedOobeFlowEnabled() &&
       config_.license_type == policy::LicenseType::kEnterprise &&
       config_.is_license_packaged_with_device) {
@@ -299,7 +302,11 @@ void EnrollmentScreen::UpdateFlowType() {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
   } else {
-    view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    if (features::IsOobeSoftwareUpdateEnabled()) {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kDeviceEnrollment);
+    } else {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    }
     if (!features::IsKioskEnrollmentInOobeEnabled()) {
       view_->SetGaiaButtonsType(
           EnrollmentScreenView::GaiaButtonsType::kDefault);
@@ -336,15 +343,17 @@ void EnrollmentScreen::ShowImpl() {
   // Block enrollment on liveboot (OS isn't installed yet and this is trial
   // flow).
   if (switches::IsOsInstallAllowed()) {
-    if (view_)
+    if (view_) {
       view_->ShowEnrollmentDuringTrialNotAllowedError();
+    }
     return;
   }
   // If TPM can be dynamically configured: show spinner and try taking
   // ownership.
   if (!tpm_checked_ && switches::IsTpmDynamic()) {
-    if (view_)
+    if (view_) {
       view_->ShowEnrollmentTPMCheckingScreen();
+    }
     TakeTpmOwnership();
     return;
   }
@@ -380,8 +389,9 @@ void EnrollmentScreen::TakeTpmOwnership() {
 
 void EnrollmentScreen::OnTpmStatusResponse(
     const ::tpm_manager::TakeOwnershipReply& reply) {
-  if (is_hidden() || tpm_checked_)
+  if (is_hidden() || tpm_checked_) {
     return;
+  }
   if (reply.status() == ::tpm_manager::STATUS_SUCCESS) {
     CheckInstallAttributesState();
     return;
@@ -412,13 +422,13 @@ void EnrollmentScreen::CheckInstallAttributesState() {
     ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
     return;
   }
-  user_data_auth::InstallAttributesState state =
+  device_management::InstallAttributesState state =
       install_attributes_util::InstallAttributesGetStatus();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "InstallAttributesState: state = " << static_cast<int>(state);
-  if (state == user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+  if (state == device_management::InstallAttributesState::TPM_NOT_OWNED) {
     // There may be some processes running in the background, we need to try
     // again and set a reasonable timeout here to show an error if nothing
     // changes.
@@ -428,18 +438,18 @@ void EnrollmentScreen::CheckInstallAttributesState() {
   }
   tpm_checked_ = true;
   switch (state) {
-    case user_data_auth::InstallAttributesState::UNKNOWN:
+    case device_management::InstallAttributesState::UNKNOWN:
       // This means that some interprocess communication error may occur and we
       // suggest a reboot.
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
       break;
-    case user_data_auth::InstallAttributesState::FIRST_INSTALL:
+    case device_management::InstallAttributesState::FIRST_INSTALL:
       // This means that TPM is ready to write and we are good to go.
       ShowImpl();
       break;
-    case user_data_auth::InstallAttributesState::VALID:
+    case device_management::InstallAttributesState::VALID:
       // Valid to read, but can't rewrite. Need to clear the TPM.
-    case user_data_auth::InstallAttributesState::INVALID:
+    case device_management::InstallAttributesState::INVALID:
       // Invalid to read. Need to clear the TPM.
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;
@@ -455,8 +465,9 @@ void EnrollmentScreen::ShowInteractiveScreen() {
 
 void EnrollmentScreen::HideImpl() {
   scoped_network_observation_.Reset();
-  if (view_)
+  if (view_) {
     view_->Hide();
+  }
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -469,8 +480,9 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
     license_type_to_use_ = config_.license_type;
   }
 
-  if (view_)
+  if (view_) {
     view_->Show();
+  }
   CreateEnrollmentLauncher();
   enrollment_launcher_->EnrollUsingAttestation();
 }
@@ -486,8 +498,9 @@ void EnrollmentScreen::OnLoginDone(const std::string& user,
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);
 
-  if (view_)
+  if (view_) {
     view_->ShowEnrollmentWorkingScreen();
+  }
   CreateEnrollmentLauncher();
   enrollment_launcher_->EnrollUsingAuthCode(auth_code);
 }
@@ -497,7 +510,11 @@ void EnrollmentScreen::OnRetry() {
   ProcessRetry();
 }
 
-void EnrollmentScreen::AutomaticRetry() {
+void EnrollmentScreen::MaybeAutomaticRetry() {
+  if (!ShouldAutoRetryOnError()) {
+    return;
+  }
+
   retry_backoff_->InformOfRequest(false);
   retry_task_.Reset(base::BindOnce(&EnrollmentScreen::ProcessRetry,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -552,8 +569,9 @@ void EnrollmentScreen::OnCancel() {
   }
 
   // Record the total time for all auth attempts until final cancellation.
-  if (elapsed_timer_)
+  if (elapsed_timer_) {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeCancel, elapsed_timer_);
+  }
 
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
@@ -579,16 +597,18 @@ void EnrollmentScreen::OnConfirmationClosed() {
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Auth error: " << error.state();
   RecordEnrollmentErrorMetrics();
-  if (view_)
+  if (view_) {
     view_->ShowAuthError(error);
+  }
 }
 
 void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
-  LOG(ERROR) << "Enrollment error: " << status.status();
+  LOG(ERROR) << "Enrollment error: " << status.enrollment_code();
   RecordEnrollmentErrorMetrics();
   // If the DM server does not have a device pre-provisioned for attestation-
   // based enrollment and we have a fallback authentication, show it.
-  if (status.status() == policy::EnrollmentStatus::REGISTRATION_FAILED &&
+  if (status.enrollment_code() ==
+          policy::EnrollmentStatus::Code::kRegistrationFailed &&
       status.client_status() == policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND &&
       current_auth_ == AUTH_ATTESTATION) {
     UMA(policy::kMetricEnrollmentDeviceNotPreProvisioned);
@@ -598,19 +618,21 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
     }
   }
 
-  if (view_)
+  if (view_) {
     view_->ShowEnrollmentStatus(status);
-  if (IsAutomaticEnrollmentFlow())
-    AutomaticRetry();
+  }
+
+  return MaybeAutomaticRetry();
 }
 
 void EnrollmentScreen::OnOtherError(EnrollmentLauncher::OtherError error) {
   LOG(ERROR) << "Other enrollment error: " << error;
   RecordEnrollmentErrorMetrics();
-  if (view_)
+  if (view_) {
     view_->ShowOtherError(error);
-  if (IsAutomaticEnrollmentFlow())
-    AutomaticRetry();
+  }
+
+  return MaybeAutomaticRetry();
 }
 
 void EnrollmentScreen::OnDeviceEnrolled() {
@@ -619,9 +641,10 @@ void EnrollmentScreen::OnDeviceEnrolled() {
   LOG(WARNING) << "Device enrolled.";
   enrollment_succeeded_ = true;
   // Some info to be shown on the success screen.
-  if (view_)
+  if (view_) {
     view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
                                    ui::GetChromeOSDeviceName());
+  }
 
   enrollment_launcher_->GetDeviceAttributeUpdatePermission();
 
@@ -639,7 +662,7 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   status_checker_.reset();
   status_checker_ = std::make_unique<AccountStatusCheckFetcher>(email);
   status_checker_->Fetch(std::move(callback),
-                         /*fetch_entollment_nudge_policy=*/false);
+                         /*fetch_enrollment_nudge_policy=*/false);
 }
 
 void EnrollmentScreen::OnFirstShow() {
@@ -656,8 +679,9 @@ void EnrollmentScreen::OnFrameLoadingCompleted() {
 void EnrollmentScreen::OnAccountStatusFetched(const std::string& email,
                                               bool fetch_succeeded,
                                               AccountStatus status) {
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   if (status.type == AccountStatus::Type::kDasher ||
       status.type == AccountStatus::Type::kUnknown || !fetch_succeeded) {
@@ -699,14 +723,15 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
     // If the device attributes have been successfully uploaded, fetch policy.
     policy::BrowserPolicyConnectorAsh* connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon();
+    connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon(
+        policy::PolicyFetchReason::kDeviceEnrollment);
     if (view_) {
-      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-          policy::EnrollmentStatus::SUCCESS));
+      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+          policy::EnrollmentStatus::Code::kSuccess));
     }
   } else if (view_) {
-    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-        policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kAttributeUpdateFailed));
   }
 }
 
@@ -757,20 +782,23 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     }
   }
 
-  if (view_)
+  if (view_) {
     view_->ShowAttributePromptScreen(asset_id, location);
+  }
 }
 
 void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   retry_backoff_->InformOfRequest(true);
-  if (elapsed_timer_)
+  if (elapsed_timer_) {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeSuccess, elapsed_timer_);
-  if (IsAutomaticEnrollmentFlow() ||
+  }
+
+  if (AutoCloseEnrollmentConfirmationOnSuccess() ||
       WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
-    view_->ShowEnrollmentStatus(
-        policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kSuccess));
   }
 }
 
@@ -779,22 +807,25 @@ void EnrollmentScreen::UMA(policy::MetricEnrollment sample) {
 }
 
 void EnrollmentScreen::ShowSigninScreen() {
-  if (view_)
+  if (view_) {
     view_->Show();
+  }
 }
 
 void EnrollmentScreen::RecordEnrollmentErrorMetrics() {
   enrollment_failed_once_ = true;
   //  TODO(crbug.com/896793): Have other metrics for each auth mechanism.
-  if (elapsed_timer_ && current_auth_ == next_auth_)
+  if (elapsed_timer_ && current_auth_ == next_auth_) {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeFailure, elapsed_timer_);
+  }
 }
 
 void EnrollmentScreen::OnBrowserRestart() {
   // When the browser is restarted, renderers are shutdown and the `view_`
   // wants to know in order to stop trying to use the soon-invalid renderers.
-  if (view_)
+  if (view_) {
     view_->Shutdown();
+  }
 }
 
 void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
@@ -810,8 +841,15 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
-  return WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
+bool EnrollmentScreen::ShouldAutoRetryOnError() const {
+  // Currently there is no use-case for the retry logic. But error
+  // classification may bring one. If not, the whole retry stack can be removed.
+  // TODO(b/314130124): Remove if retry logic is not needed.
+  return false;
+}
+
+bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
+  return is_rollback_flow_;
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
@@ -895,7 +933,9 @@ void EnrollmentScreen::SetupAndShowOfflineMessage(
     error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
                                  network_name);
   } else if (is_frame_error) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT,
+    // TODO(b/249996052): Clean up dead code, this method is never called with
+    // `NetworkError::ERROR_REASON_FRAME_ERROR`.
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_LOADING_TIMEOUT,
                                  std::string());
   } else {
     error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,

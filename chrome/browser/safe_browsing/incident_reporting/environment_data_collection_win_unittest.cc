@@ -61,6 +61,7 @@ bool DllEntryContainsLspFeature(
 
 }  // namespace
 
+// TODO(crbug.com/1471177) Disabled due to flakiness on Win10 dbg builders.
 #ifndef NDEBUG
 #define MAYBE_CollectDlls DISABLED_CollectDlls
 #else
@@ -89,7 +90,13 @@ TEST(SafeBrowsingEnvironmentDataCollectionWinTest, MAYBE_CollectDlls) {
   ASSERT_TRUE(dll.has_image_headers());
 }
 
-TEST(SafeBrowsingEnvironmentDataCollectionWinTest, RecordLspFeature) {
+// TODO(crbug.com/1471177) Disabled due to flakiness on Win10 dbg builders.
+#ifndef NDEBUG
+#define MAYBE_RecordLspFeature DISABLED_RecordLspFeature
+#else
+#define MAYBE_RecordLspFeature RecordLspFeature
+#endif
+TEST(SafeBrowsingEnvironmentDataCollectionWinTest, MAYBE_RecordLspFeature) {
   net::EnsureWinsockInit();
 
   // Populate our incident report with loaded modules.

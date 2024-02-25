@@ -77,7 +77,7 @@ class XSLTProcessor final : public ScriptWrappable {
 
   void reset();
 
-  static void ParseErrorFunc(void* user_data, xmlError*);
+  static void ParseErrorFunc(void* user_data, const xmlError*);
   static void GenericErrorFunc(void* user_data, const char* msg, ...);
 
   // Only for libXSLT callbacks

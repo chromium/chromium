@@ -12,6 +12,7 @@
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -29,20 +30,13 @@ net::DohProviderEntry::List ProvidersForCountry(
 net::DohProviderEntry::List SelectEnabledProviders(
     const net::DohProviderEntry::List& providers);
 
-// When the selected DoH provider changes, call this function to update the
-// Selected, Unselected, and Ignored histograms for all the included providers,
-// and also for the custom provider option.  If the old or new selection is the
-// custom provider option, pass an empty string as the config.
-void UpdateDropdownHistograms(const net::DohProviderEntry::List& providers,
-                              base::StringPiece old_config,
-                              base::StringPiece new_config);
 void UpdateValidationHistogram(bool valid);
 void UpdateProbeHistogram(bool success);
 
 // Returns a DNS prober configured for testing DoH servers
 std::unique_ptr<DnsProbeRunner> MakeProbeRunner(
     net::DnsOverHttpsConfig doh_config,
-    const DnsProbeRunner::NetworkContextGetter& network_context_getter);
+    const network::NetworkContextGetter& network_context_getter);
 
 // Registers the backup preference required for the DNS probes setting reset.
 // TODO(crbug.com/1062698): Remove this once the privacy settings redesign

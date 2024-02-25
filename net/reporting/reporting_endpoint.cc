@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/time/time.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -20,13 +21,13 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const url::Origin& origin,
     const std::string& group_name)
     : ReportingEndpointGroupKey(network_anonymization_key,
-                                absl::nullopt,
+                                std::nullopt,
                                 origin,
                                 group_name) {}
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const NetworkAnonymizationKey& network_anonymization_key,
-    absl::optional<base::UnguessableToken> reporting_source,
+    std::optional<base::UnguessableToken> reporting_source,
     const url::Origin& origin,
     const std::string& group_name)
     : network_anonymization_key(network_anonymization_key),
@@ -40,7 +41,7 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const ReportingEndpointGroupKey& other,
-    const absl::optional<base::UnguessableToken>& reporting_source)
+    const std::optional<base::UnguessableToken>& reporting_source)
     : ReportingEndpointGroupKey(other.network_anonymization_key,
                                 reporting_source,
                                 other.origin,
@@ -90,7 +91,7 @@ bool operator>(const ReportingEndpointGroupKey& lhs,
 std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
          (reporting_source ? reporting_source->ToString() : "null") +
-         "; NIK: " + network_anonymization_key.ToDebugString() +
+         "; NAK: " + network_anonymization_key.ToDebugString() +
          "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
 

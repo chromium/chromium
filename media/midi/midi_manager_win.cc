@@ -4,7 +4,9 @@
 
 #include "media/midi/midi_manager_win.h"
 
-#include <windows.h>
+// clang-format off
+#include <windows.h> // Must be in front of other Windows header files.
+// clang-format on
 
 #include <ks.h>
 #include <ksmedia.h>
@@ -14,6 +16,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -36,7 +39,6 @@
 #include "media/midi/midi_service.mojom.h"
 #include "media/midi/midi_switches.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace midi {
 
@@ -121,7 +123,7 @@ base::Lock* GetInstanceIdLock() {
 }
 
 // Issues unique MidiManager instance ID.
-int64_t IssueNextInstanceId(absl::optional<int64_t> override_id) {
+int64_t IssueNextInstanceId(std::optional<int64_t> override_id) {
   static int64_t id = kInvalidInstanceId;
   if (override_id) {
     int64_t result = ++id;
@@ -705,7 +707,7 @@ void MidiManagerWin::OverflowInstanceIdForTesting() {
 
 MidiManagerWin::MidiManagerWin(MidiService* service)
     : MidiManager(service),
-      instance_id_(IssueNextInstanceId(absl::nullopt)),
+      instance_id_(IssueNextInstanceId(std::nullopt)),
       port_manager_(std::make_unique<PortManager>()) {
   base::AutoLock lock(*GetInstanceIdLock());
   CHECK_EQ(kInvalidInstanceId, g_active_instance_id);

@@ -46,7 +46,7 @@ class MEDIA_EXPORT AudioFifo {
   void Clear();
 
   // Number of actual audio frames in the FIFO.
-  int frames() const;
+  int frames() const { return frames_; }
 
   int max_frames() const { return max_frames_; }
 
@@ -59,8 +59,7 @@ class MEDIA_EXPORT AudioFifo {
   const int max_frames_;
 
   // Number of actual elements in the FIFO.
-  int frames_pushed_;
-  int frames_consumed_;
+  int frames_;
 
   // Current read position.
   int read_pos_;

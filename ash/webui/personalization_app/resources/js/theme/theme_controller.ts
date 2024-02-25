@@ -4,10 +4,11 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import {ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setGeolocationPermissionEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -18,13 +19,20 @@ import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkMode
 export async function initializeData(
     provider: ThemeProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const [{enabled}, {darkModeEnabled}] = await Promise.all([
+  const [
+    { enabled },
+    { darkModeEnabled },
+    { geolocationEnabled },
+  ] = await Promise.all([
     provider.isColorModeAutoScheduleEnabled(),
     provider.isDarkModeEnabled(),
+    provider.isGeolocationEnabledForSystemServices(),
   ]);
+
   store.beginBatchUpdate();
   store.dispatch(setDarkModeEnabledAction(darkModeEnabled));
   store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
+  store.dispatch(setGeolocationPermissionEnabledAction(geolocationEnabled));
   store.endBatchUpdate();
 }
 
@@ -75,4 +83,10 @@ export function setStaticColorPref(
   provider.setStaticColor(staticColor);
   store.dispatch(setStaticColorAction(staticColor));
   store.dispatch(setColorSchemeAction(ColorScheme.kStatic));
+}
+
+export function enableGeolocationForSystemServices(
+    provider: ThemeProviderInterface, store: PersonalizationStore) {
+  provider.enableGeolocationForSystemServices();
+  store.dispatch(setGeolocationPermissionEnabledAction(true));
 }

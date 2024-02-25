@@ -226,7 +226,7 @@ TEST_F(MAYBE_DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
 
 TEST_F(MAYBE_DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
   DrmOverlayPlaneList planes;
-  planes.emplace_back(CreateBuffer(), nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
 
   // Window was re-sized, so the expectation is to re-create the buffers first.
   DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
@@ -260,7 +260,7 @@ TEST_F(MAYBE_DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
 
 TEST_F(MAYBE_DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
   DrmOverlayPlaneList planes;
-  planes.emplace_back(CreateBuffer(), nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
 
   // Window was re-sized, so the expectation is to re-create the buffers first.
   DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);

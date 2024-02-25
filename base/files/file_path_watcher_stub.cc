@@ -10,7 +10,8 @@
 
 #include <memory>
 
-#include "base/notreached.h"
+#include "base/check.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace base {

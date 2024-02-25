@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -25,7 +26,7 @@
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_id_name_manager.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -43,7 +44,6 @@
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/clock_snapshot.pb.h"
@@ -101,9 +101,8 @@ class TraceEventDataSourceTest
     perfetto::internal::TrackRegistry::InitializeInstance();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-    old_thread_name_ =
-        base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
-    base::ThreadIdNameManager::GetInstance()->SetName(kTestThread);
+    old_thread_name_ = base::PlatformThread::GetName();
+    base::PlatformThread::SetName(kTestThread);
     old_process_name_ = base::test::CurrentProcessForTest::GetName();
     old_process_type_ = base::test::CurrentProcessForTest::GetType();
     base::CurrentProcess::GetInstance().SetProcessNameAndType(kTestProcess,
@@ -146,7 +145,7 @@ class TraceEventDataSourceTest
     producer_client_.reset();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-    base::ThreadIdNameManager::GetInstance()->SetName(old_thread_name_);
+    base::PlatformThread::SetName(kTestThread);
     base::CurrentProcess::GetInstance().SetProcessNameAndType(
         old_process_name_, old_process_type_);
 
@@ -902,7 +901,7 @@ void HasMetadataValue(const perfetto::protos::ChromeMetadata& entry,
                       const base::Value::Dict& value) {
   EXPECT_TRUE(entry.has_json_value());
 
-  absl::optional<base::Value::Dict> child_dict =
+  std::optional<base::Value::Dict> child_dict =
       base::JSONReader::ReadDict(entry.json_value());
   EXPECT_EQ(*child_dict, value);
 }
@@ -922,7 +921,7 @@ void MetadataHasNamedValue(const google::protobuf::RepeatedPtrField<
   NOTREACHED();
 }
 
-absl::optional<base::Value::Dict> AddJsonMetadataGenerator() {
+std::optional<base::Value::Dict> AddJsonMetadataGenerator() {
   base::Value::Dict metadata;
   metadata.Set("foo_int", 42);
   metadata.Set("foo_str", "bar");
@@ -975,7 +974,7 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
     base::Value::Dict metadata;
     metadata.Set("before_int", 42);
-    return absl::optional<base::Value::Dict>(std::move(metadata));
+    return std::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource();
@@ -1142,7 +1141,15 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEvent) {
   ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
-TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_InstantTraceEventOnOtherThread \
+  DISABLED_InstantTraceEventOnOtherThread
+#else
+#define MAYBE_InstantTraceEventOnOtherThread InstantTraceEventOnOtherThread
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_InstantTraceEventOnOtherThread) {
   StartTraceEventDataSource();
 
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(
@@ -1566,7 +1573,15 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEventWithoutFunction) {
   EXPECT_FALSE(locations[0].has_function_name());
 }
 
-TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_UpdateDurationOfCompleteEvent \
+  DISABLED_UpdateDurationOfCompleteEvent
+#else
+#define MAYBE_UpdateDurationOfCompleteEvent UpdateDurationOfCompleteEvent
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_UpdateDurationOfCompleteEvent) {
   StartTraceEventDataSource();
 
   static const char kEventName[] = "bar";
@@ -2057,7 +2072,7 @@ TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
     base::Value::Dict child_dict;
     child_dict.Set("child_str", "child_val");
     metadata.Set("child_dict", std::move(child_dict));
-    return absl::optional<base::Value::Dict>(std::move(metadata));
+    return std::optional<base::Value::Dict>(std::move(metadata));
   }));
 
   StartMetaDataSource(/*privacy_filtering_enabled=*/true);

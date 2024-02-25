@@ -5,14 +5,12 @@
 #ifndef ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_CONTROLLER_H_
 #define ASH_USER_EDUCATION_WELCOME_TOUR_WELCOME_TOUR_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/weak_ptr.h"
@@ -20,11 +18,24 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+class Screen;
+enum class TabletState;
+}  // namespace display
+
+namespace user_education {
+struct TutorialDescription;
+}  // namespace user_education
 
 namespace ash {
 
-class AccessibilityControllerImpl;
+class AccessibilityController;
+class ScopedNudgePause;
+class ScopedToastPause;
 class SessionController;
+class Shell;
 class WelcomeTourAcceleratorHandler;
 class WelcomeTourControllerObserver;
 class WelcomeTourNotificationBlocker;
@@ -37,7 +48,8 @@ class WelcomeTourWindowMinimizer;
 class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
                                          public AccessibilityObserver,
                                          public SessionObserver,
-                                         public TabletModeObserver {
+                                         public ShellObserver,
+                                         public display::DisplayObserver {
  public:
   WelcomeTourController();
   WelcomeTourController(const WelcomeTourController&) = delete;
@@ -55,11 +67,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // Returns the initial element context to be used to start the Welcome Tour.
   ui::ElementContext GetInitialElementContext() const;
 
- private:
-  // UserEducationFeatureController:
-  std::map<TutorialId, user_education::TutorialDescription>
-  GetTutorialDescriptions() override;
+  // Returns the tutorial description for the Welcome Tour.
+  user_education::TutorialDescription GetTutorialDescription() const;
 
+ private:
   // AccessibilityObserver:
   void OnAccessibilityControllerShutdown() override;
   void OnAccessibilityStatusChanged() override;
@@ -69,9 +80,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnChromeTerminating() override;
   void OnSessionStateChanged(session_manager::SessionState) override;
 
-  // TabletModeObserver:
-  void OnTabletControllerDestroyed() override;
-  void OnTabletModeStarting() override;
+  // ShellObserver:
+  void OnShellDestroying() override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Starts the Welcome Tour if and only if the primary user session is active.
   void MaybeStartWelcomeTour();
@@ -86,7 +99,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // Sets the current step of the tutorial, since that information is not
   // directly available.
-  void SetCurrentStep(absl::optional<welcome_tour_metrics::Step> step);
+  void SetCurrentStep(std::optional<welcome_tour_metrics::Step> step);
 
   // The reason the tour was aborted.
   welcome_tour_metrics::AbortedReason aborted_reason_ =
@@ -94,24 +107,32 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // The current step of the Welcome Tour, if it is active. Tracked here because
   // it is not directly available from the tutorial.
-  absl::optional<welcome_tour_metrics::Step> current_step_;
+  std::optional<welcome_tour_metrics::Step> current_step_;
 
   // The elapsed time since the beginning of the `current_step_`.
   base::ElapsedTimer current_step_timer_;
+
+  // Handles accelerator actions during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
 
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification
   // Center after the tour is over.
   std::unique_ptr<WelcomeTourNotificationBlocker> notification_blocker_;
 
+  // Suppresses all nudges during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<ScopedNudgePause> nudge_pause_;
+
   // Used to apply a scrim to the help bubble container on all root windows
   // while the Welcome Tour is in progress. Exists only while the Welcome Tour
   // is in progress.
   std::unique_ptr<WelcomeTourScrim> scrim_;
 
-  // Handles accelerator actions during the Welcome Tour. Created/destroyed when
-  // the Welcome Tour starts/ends.
-  std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
+  // Suppresses all toasts during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<ScopedToastPause> toast_pause_;
 
   // Minimizes any app windows that are visible at the start of the Welcome
   // Tour, and any that attempt to become visible during the tour. Exists only
@@ -123,7 +144,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // The accessibility controller is observed only while the Welcome Tour is in
   // progress, and will trigger an abort of the tour if ChromeVox is enabled.
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       accessibility_observation_{this};
 
   // Sessions are observed only until the primary user session is activated for
@@ -131,10 +152,15 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
 
-  // Tablet mode is observed only while the Welcome Tour is in progress, and
-  // will trigger an abort of the tour if the device switches to tablet mode.
-  base::ScopedObservation<TabletMode, TabletModeObserver>
-      tablet_mode_observation_{this};
+  // Shell is observed only while the Welcome Tour is in progress. The Welcome
+  // Tour is aborted when Shell is destroying to ensure the Welcome Tour does
+  // not outlive its dependencies.
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
+
+  // Display is observed only while the Welcome Tour is in progress, and will
+  // trigger an abort of the tour if the device switches to tablet mode.
+  base::ScopedObservation<display::Screen, display::DisplayObserver>
+      display_observation_{this};
 
   // It is theoretically possible for the Welcome Tour tutorial to outlive
   // `this` controller during the destruction sequence.

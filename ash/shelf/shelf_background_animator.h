@@ -166,10 +166,10 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
   void NotifyObservers();
 
   // The shelf to observe for changes to the shelf background type, can be null.
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 
   // The wallpaper controller to observe for changes and to extract colors from.
-  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> wallpaper_controller_;
+  raw_ptr<WallpaperControllerImpl> wallpaper_controller_;
 
   // The background type that this is animating towards or has reached.
   ShelfBackgroundType target_background_type_ = ShelfBackgroundType::kDefaultBg;

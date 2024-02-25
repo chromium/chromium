@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsOptionProvider {
 
   // Returns supported attribute values for `option_name` where the value can be
   // converted to a string.
-  virtual std::vector<base::StringPiece> GetSupportedOptionValueStrings(
+  virtual std::vector<std::string_view> GetSupportedOptionValueStrings(
       const char* option_name) const = 0;
 
   // Returns the default ipp attributes for the given `option_name`.

@@ -49,9 +49,11 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void RequestPermission(bool writable,
                          RequestPermissionCallback callback) override;
   void AsBlob(AsBlobCallback callback) override;
-  void CreateFileWriter(bool keep_existing_data,
-                        bool auto_close,
-                        CreateFileWriterCallback callback) override;
+  void CreateFileWriter(
+      bool keep_existing_data,
+      bool auto_close,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
+      CreateFileWriterCallback callback) override;
   void Move(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
                 destination_directory,
             const std::string& new_entry_name,
@@ -75,7 +77,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void set_swap_file_cloning_will_fail_for_testing() {
     swap_file_cloning_will_fail_for_testing_ = true;
   }
-  const absl::optional<base::File::Error>&
+  const std::optional<base::File::Error>&
   get_swap_file_clone_result_for_testing() const {
     return swap_file_clone_result_for_testing_;
   }
@@ -93,35 +95,47 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                              base::File::Error result,
                              const base::File::Info& info);
 
-  void CreateFileWriterImpl(bool keep_existing_data,
-                            bool auto_close,
-                            CreateFileWriterCallback callback);
-  void DidVerifyHasWritePermissions(bool keep_existing_data,
-                                    bool auto_close,
-                                    CreateFileWriterCallback callback,
-                                    bool can_write);
+  void CreateFileWriterImpl(
+      bool keep_existing_data,
+      bool auto_close,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
+      CreateFileWriterCallback callback);
+  void DidVerifyHasWritePermissions(
+      bool keep_existing_data,
+      bool auto_close,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
+      CreateFileWriterCallback callback,
+      bool can_write);
   // Find an unused swap file. We cannot use a swap file which is locked or
   // which already exists on disk.
   void StartCreateSwapFile(
-      int count,
+      int start_count,
       bool keep_existing_data,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      CreateFileWriterCallback callback);
+      CreateFileWriterCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
+  void DidTakeSwapLock(
+      int count,
+      const storage::FileSystemURL& swap_url,
+      bool keep_existing_data,
+      bool auto_close,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      CreateFileWriterCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock);
   void DidCheckSwapFileExists(
       int count,
       const storage::FileSystemURL& swap_url,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void CreateSwapFileFromCopy(
       int count,
       const storage::FileSystemURL& swap_url,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback);
 #if BUILDFLAG(IS_MAC)
   // Attempts to create a swap file using the underlying platform's support for
@@ -131,15 +145,15 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       int count,
       const storage::FileSystemURL& swap_url,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback);
   void DidCloneSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
 #endif  // BUILDFLAG(IS_MAC)
@@ -148,23 +162,26 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       const storage::FileSystemURL& swap_url,
       bool keep_existing_data,
       bool auto_close,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
-      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
+  void DidTakeAccessHandleLock(
+      OpenAccessHandleCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
   void DoOpenIncognitoFile(
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       OpenAccessHandleCallback callback);
-  void DoOpenFile(scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+  void DoOpenFile(scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
                   OpenAccessHandleCallback callback);
   void DoGetLengthAfterOpenFile(
       OpenAccessHandleCallback callback,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       base::File file,
       base::ScopedClosureRunner on_close_callback);
   void DidOpenFileAndGetLength(
       OpenAccessHandleCallback callback,
-      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       base::ScopedClosureRunner on_close_callback,
       std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length);
 
@@ -181,21 +198,9 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   // Used to test that swap file creation attempts to use file cloning in some
   // circumstances, and gracefully handles file cloning errors.
   bool swap_file_cloning_will_fail_for_testing_ = false;
-  absl::optional<base::File::Error> swap_file_clone_result_for_testing_ =
-      absl::nullopt;
+  std::optional<base::File::Error> swap_file_clone_result_for_testing_ =
+      std::nullopt;
 #endif  // BUILDFLAG(IS_MAC)
-
-  // The shared lock type for SyncAccessHandle's `readonly` mode.
-  FileSystemAccessLockManager::LockType sah_read_only_lock_type_ =
-      manager()->CreateSharedLockType();
-
-  // The shared lock type for SyncAccessHandle's `readwrite-unsafe` mode.
-  FileSystemAccessLockManager::LockType sah_readwrite_unsafe_lock_type_ =
-      manager()->CreateSharedLockType();
-
-  // The shared lock type for WritableFileStream's default `siloed` mode.
-  FileSystemAccessLockManager::LockType wfs_siloed_lock_type_ =
-      manager()->CreateSharedLockType();
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 

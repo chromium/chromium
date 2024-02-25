@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_SHILL_LOG_PII_IDENTIFIERS_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_SHILL_LOG_PII_IDENTIFIERS_H_
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
 namespace system_logs {
@@ -16,7 +17,7 @@ namespace system_logs {
 // replacements for IP and MAC addresses and BSSID in
 // components/feedback/anonymizer_tool.cc.
 extern const base::
-    fixed_flat_map<base::StringPiece, redaction::PIIType, 19, std::less<>>
+    fixed_flat_map<std::string_view, redaction::PIIType, 19, std::less<>>
         kShillPIIMaskedMap;
 
 }  // namespace system_logs

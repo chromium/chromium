@@ -12,19 +12,26 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "crypto/nss_key_util.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -37,6 +44,9 @@ namespace {
 
 const char kUserAllowlist[] = "*@allowlist-domain.com";
 const char kOther[] = "other";
+
+const char kListStr1[] = "abcdef1234";
+const char kListStr2[] = "xyz,.[];'";
 
 void OnPrefChanged(const std::string& /* setting */) {}
 
@@ -79,8 +89,8 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   void Wait() { loop_.Run(); }
 
  private:
-  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_;
-  raw_ptr<DeviceSettingsProvider, ExperimentalAsh> provider_;
+  raw_ptr<OwnerSettingsServiceAsh> service_;
+  raw_ptr<DeviceSettingsProvider> provider_;
   base::RunLoop loop_;
 
   using SetRequest = std::pair<std::string, base::Value>;
@@ -107,6 +117,13 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // By default disable the migration, so the imported key doesn't get
+    // replaced.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
+
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -153,9 +170,14 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     return *settings;
   }
 
+  void AddObserverForSetting(const std::string& setting) const {
+    service_->AddObserver(static_cast<DeviceSettingsProvider*>(
+        CrosSettings::Get()->GetProvider(setting)));
+  }
+
  protected:
-  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged> service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
@@ -316,6 +338,147 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
+// Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
+// signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("username0");
+
+  base::test::TestFuture<
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>>
+      result_waiter;
+  EXPECT_TRUE(service_->AssembleAndSignPolicyAsync(
+      base::SequencedTaskRunner::GetCurrentDefault().get(), std::move(policy),
+      result_waiter.GetCallback()));
+
+  scoped_refptr<ownership::PublicKey> pub_key = result_waiter.Get<0>();
+  const std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+      signed_policy = result_waiter.Get<1>();
+  EXPECT_TRUE(signed_policy);
+
+  crypto::SignatureVerifier signature_verifier;
+  EXPECT_TRUE(signature_verifier.VerifyInit(
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
+      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      pub_key->data()));
+}
+
+// Test that OwnerSettingsServiceAsh correctly fails when it cannot sign
+// policies.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicyFailure) {
+  // Generate a new key and set it. 256 bits is not enough to perform SHA-1, so
+  // it will cause a failure.
+  crypto::ScopedSECKEYPublicKey public_key_nss;
+  crypto::ScopedSECKEYPrivateKey private_key_nss;
+  crypto::GenerateRSAKeyPairNSS(PK11_GetInternalSlot(), 256,
+                                /*permanent=*/false, &public_key_nss,
+                                &private_key_nss);
+  scoped_refptr<ownership::PrivateKey> private_key =
+      base::MakeRefCounted<ownership::PrivateKey>(std::move(private_key_nss));
+  service_->SetPrivateKeyForTesting(private_key);
+
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("username0");
+
+  base::test::TestFuture<
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>>
+      result_waiter;
+  EXPECT_TRUE(service_->AssembleAndSignPolicyAsync(
+      base::SequencedTaskRunner::GetCurrentDefault().get(), std::move(policy),
+      result_waiter.GetCallback()));
+
+  const std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+      signed_policy = result_waiter.Get<1>();
+  EXPECT_FALSE(signed_policy);
+}
+
+// Testing list operations.
+
+TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+}
+
+// Append 1 item to an empty list.
+TEST_F(OwnerSettingsServiceAshTest, AppendList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to a list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append the same item two times.
+TEST_F(OwnerSettingsServiceAshTest, AppendSameItemTwiceToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Remove and append 1 item to an empty list.
+TEST_F(OwnerSettingsServiceAshTest, RemoveAndAppendList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append and remove the same item.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove1) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+}
+
+// Append and remove different items.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove2) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to and remove the first from the list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
   OwnerSettingsServiceAshNoOwnerTest() {}
@@ -329,6 +492,13 @@ class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // By default disable the migration, so the imported key doesn't get
+    // replaced.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
+
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -338,6 +508,9 @@ class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
     ASSERT_TRUE(service_);
     ASSERT_FALSE(service_->IsOwner());
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that a non-owner cannot set owner settings.
@@ -409,6 +582,45 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysBothKeys) {
 
   EXPECT_TRUE(service_->IsReady());
   EXPECT_EQ(service_->IsOwner(), is_owner.Get());
+}
+
+// Test that the old owner key gets cleaned up after the new one is installed by
+// session manager.
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, CleanUpOldOwnerKey) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                            kMigrateOwnerKeyToPrivateSlot},
+      /*disabled_features=*/{});
+
+  FakeNssService* nss_service = FakeNssService::InitializeForBrowserContext(
+      profile_.get(), /*enable_system_slot=*/false);
+  owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
+      device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
+
+  EXPECT_FALSE(service_->IsReady());
+  service_->OnTPMTokenReady();  // Trigger key load.
+
+  base::test::TestFuture<bool> is_owner;
+  service_->IsOwnerAsync(is_owner.GetCallback());
+  EXPECT_TRUE(is_owner.Get());
+
+  // Check that the old key is not deleted too early.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      BucketsInclude(Bucket(OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted, 0)));
+
+  service_->OwnerKeySet(/*success=*/true);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+              BucketsInclude(
+                  Bucket(OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted, 1),
+                  Bucket(OwnerKeyUmaEvent::kOwnerKeySetSuccess, 1),
+                  Bucket(OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted, 1)));
 }
 
 }  // namespace ash

@@ -50,6 +50,10 @@
     height: 72px;
   }
 
+  #navigationPanel::part(nav-body) {
+    overflow: hidden;
+  }
+
   #bottomNavContentDrawer,
   #bottomNavContentPanel {
     margin-inline-start: 12px;
@@ -60,7 +64,19 @@
     font-size: var(--shortcuts-font-size-default);
     justify-content: center;
     padding-inline: var(--container-padding-nav);
-    padding-top: 8px;
+  }
+
+  #policyIndicator {
+    align-items: center;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+
+  #policyIcon {
+    padding-inline-end: 8px;
   }
 
   #restoreDialog::part(dialog) {
@@ -68,10 +84,10 @@
   }
 
   #restoreTitle {
+    --cr-dialog-title-slot-padding-top: 32px;
     color: var(--cros-text-color-secondary);
     display: flex;
     font: var(--cros-body-1-font);
-    margin-block-end: 32px;
     padding-inline: 32px;
   }
 
@@ -90,9 +106,18 @@
   }
 </style>
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
-    show-tool-bar has-search="[[!shouldHideSearchBox()]]">
+    show-tool-bar has-search>
   <div slot="toolbar-main" id="searchBoxWrapper">
-    <search-box hidden="[[shouldHideSearchBox()]]"></search-box>
+    <search-box></search-box>
+  </div>
+  <div slot="top-navigation-body" id="topNavigationBody">
+    <template is="dom-if" if="[[!isCustomizationAllowedByPolicy]]">
+      <div id="policyIndicator">
+        <cr-policy-indicator id="policyIcon" indicator-type="userPolicy">
+        </cr-policy-indicator>
+        <div>[[i18n('customizationDisabledByPolicyMessage')]]</div>
+      </div>
+    </template>
   </div>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
     <shortcuts-bottom-nav-content
@@ -122,7 +147,7 @@
 <template is="dom-if" if="[[showRestoreAllDialog]]" restamp>
   <cr-dialog id="restoreDialog" show-on-attach
       on-close="closeRestoreAllDialog">
-    <div id="restoreTitle" slot="body">
+    <div id="restoreTitle" slot="title">
       [[i18n('confirmResetAllShortcutsTitle')]]
     </div>
     <div id="buttonContainer" slot="button-container">

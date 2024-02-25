@@ -26,9 +26,9 @@ NearbyPeriodicScheduler::NearbyPeriodicScheduler(base::TimeDelta request_period,
 
 NearbyPeriodicScheduler::~NearbyPeriodicScheduler() = default;
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 NearbyPeriodicScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  absl::optional<base::Time> last_success_time = GetLastSuccessTime();
+  std::optional<base::Time> last_success_time = GetLastSuccessTime();
 
   // Immediately run a first-time request.
   if (!last_success_time) {

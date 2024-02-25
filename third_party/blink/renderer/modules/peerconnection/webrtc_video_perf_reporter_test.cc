@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
 
@@ -45,14 +46,15 @@ class WebrtcVideoPerfReporterTest : public ::testing::Test {
  public:
   WebrtcVideoPerfReporterTest() {
     mock_recorder_ = std::make_unique<MockWebrtcVideoPerfRecorder>();
-    reporter_.Initialize(
+    reporter_ = MakeGarbageCollected<WebrtcVideoPerfReporter>(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-        mock_recorder_->CreatePendingRemote());
+        /* notifier */ nullptr, mock_recorder_->CreatePendingRemote());
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockWebrtcVideoPerfRecorder> mock_recorder_;
-  WebrtcVideoPerfReporter reporter_;
+  Persistent<WebrtcVideoPerfReporter> reporter_;
 };
 
 TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
@@ -76,7 +78,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
         EXPECT_EQ(kExpectedFeaturesA, *features);
         EXPECT_EQ(kExpectedVideoStats, *video_stats);
       });
-  reporter_.StoreWebrtcVideoStats(kStatsKeyA, kVideoStats);
+  reporter_->StoreWebrtcVideoStats(kStatsKeyA, kVideoStats);
   base::RunLoop().RunUntilIdle();
 
   // Toggle the booleans.
@@ -95,7 +97,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
         EXPECT_EQ(kExpectedFeaturesB, *features);
         EXPECT_EQ(kExpectedVideoStats, *video_stats);
       });
-  reporter_.StoreWebrtcVideoStats(kStatsKeyB, kVideoStats);
+  reporter_->StoreWebrtcVideoStats(kStatsKeyB, kVideoStats);
   base::RunLoop().RunUntilIdle();
 }
 

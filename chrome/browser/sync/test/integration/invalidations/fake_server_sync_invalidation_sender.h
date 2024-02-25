@@ -46,8 +46,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
 
   // FakeServer::Observer implementation.
   void OnWillCommit() override;
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
 
   // gcm::GCMConnectionObserver implementation.
   void OnConnected(const net::IPEndPoint& ip_endpoint) override;

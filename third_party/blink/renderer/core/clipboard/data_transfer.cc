@@ -26,9 +26,9 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 
 #include <memory>
+#include <optional>
 
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
@@ -162,7 +162,7 @@ class DraggedNodeImageBuilder {
 #endif
 };
 
-absl::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
+std::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
     const AtomicString& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
@@ -190,7 +190,7 @@ absl::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   }
   if (op == "all")
     return kDragOperationEvery;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
@@ -284,13 +284,21 @@ void DataTransfer::setEffectAllowed(const AtomicString& effect) {
 }
 
 void DataTransfer::clearData(const String& type) {
-  if (!CanWriteData())
+  if (!CanWriteData()) {
     return;
-
-  if (type.IsNull())
-    data_object_->ClearAll();
-  else
+  }
+  if (type.IsNull()) {
+    if (RuntimeEnabledFeatures::DataTransferClearStringItemsEnabled()) {
+      // As per spec
+      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata,
+      // `clearData()` doesn't remove `kFileKind` objects from `item_list_`.
+      data_object_->ClearStringItems();
+    } else {
+      data_object_->ClearAll();
+    }
+  } else {
     data_object_->ClearData(NormalizeType(type));
+  }
 }
 
 String DataTransfer::getData(const String& type) const {
@@ -331,11 +339,11 @@ Vector<String> DataTransfer::types() {
 FileList* DataTransfer::files() const {
   if (!CanReadData()) {
     files_->clear();
-    return files_;
+    return files_.Get();
   }
 
   if (!files_->IsEmpty())
-    return files_;
+    return files_.Get();
 
   for (uint32_t i = 0; i < data_object_->length(); ++i) {
     if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
@@ -345,7 +353,7 @@ FileList* DataTransfer::files() const {
     }
   }
 
-  return files_;
+  return files_.Get();
 }
 
 void DataTransfer::setDragImage(Element* image, int x, int y) {
@@ -413,7 +421,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
 
   // Rasterize upfront, since DragImage::create() is going to do it anyway
   // (SkImage::asLegacyBitmap).
-  SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
+  SkSurfaceProps surface_props;
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(device_size.width(), device_size.height()),
       &surface_props);
@@ -567,7 +575,7 @@ bool DataTransfer::CanSetDragImage() const {
 }
 
 DragOperationsMask DataTransfer::SourceOperation() const {
-  absl::optional<DragOperationsMask> op =
+  std::optional<DragOperationsMask> op =
       ConvertEffectAllowedToDragOperationsMask(effect_allowed_);
   DCHECK(op);
   return *op;
@@ -575,7 +583,7 @@ DragOperationsMask DataTransfer::SourceOperation() const {
 
 ui::mojom::blink::DragOperation DataTransfer::DestinationOperation() const {
   DCHECK(DropEffectIsInitialized());
-  absl::optional<DragOperationsMask> op =
+  std::optional<DragOperationsMask> op =
       ConvertEffectAllowedToDragOperationsMask(drop_effect_);
   return static_cast<ui::mojom::blink::DragOperation>(*op);
 }
@@ -598,7 +606,7 @@ DataTransferItemList* DataTransfer::items() {
 }
 
 DataObject* DataTransfer::GetDataObject() const {
-  return data_object_;
+  return data_object_.Get();
 }
 
 DataTransfer::DataTransfer(DataTransferType type,

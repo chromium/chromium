@@ -7,8 +7,7 @@
 #include "extensions/common/constants.h"
 #include "url/url_constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 const char* const kAllowedTransformSchemes[4] = {
     url::kHttpScheme, url::kHttpsScheme, url::kFtpScheme,
@@ -57,15 +56,17 @@ const char kErrorInvalidAllowAllRequestsResourceType[] =
     "\"resourceTypes\" key. It may only include the \"main_frame\" and "
     "\"sub_frame\" resource types.";
 const char kErrorRegexTooLarge[] =
-    "Rule with id * specified a more complex regex than allowed as part of the "
-    "\"*\" key.";
+    "Rule with id * was skipped as the \"*\" value exceeded the 2KB memory "
+    "limit when compiled. Learn more: "
+    "https://developer.chrome.com/docs/extensions/reference/api/"
+    "declarativeNetRequest#regex-rules";
 const char kErrorNoHeaderListsSpecified[] =
     "Rule with id * does not specify a value for \"*\" or \"*\" key. At least "
     "one of these keys must be specified with a non-empty list.";
-const char kErrorInvalidHeaderName[] =
+const char kErrorInvalidModifyHeaderName[] =
     "Rule with id * must specify a valid header name to be modified.";
-const char kErrorInvalidHeaderValue[] =
-    "Rule with id * specifies an invalid header value.";
+const char kErrorInvalidModifyHeaderValue[] =
+    "Rule with id * must provide a valid header value to be appended/set.";
 const char kErrorNoHeaderValueSpecified[] =
     "Rule with id * must provide a value for a header to be appended/set.";
 const char kErrorHeaderValuePresent[] =
@@ -80,6 +81,15 @@ const char kErrorTabIdsOnNonSessionRule[] =
     "supported for session-scoped rules.";
 const char kErrorTabIdDuplicated[] =
     "Rule with id * includes and excludes the same tab ID.";
+const char kErrorInvalidMatchingHeaderName[] =
+    "Rule with id * must specify a valid header name for \"*\" key";
+const char kErrorInvalidMatchingHeaderValue[] =
+    "Rule with id * must specify a valid header value for \"*\" key";
+const char kErrorResponseHeaderDuplicated[] =
+    "Rule with id * includes and excludes the same response header.";
+const char kErrorResponseHeaderRuleCannotModifyRequestHeaders[] =
+    "Rule with id * which matches on response headers cannot modify request "
+    "headers.";
 
 const char kErrorListNotPassed[] = "Rules file must contain a list.";
 
@@ -104,10 +114,20 @@ const char kInternalErrorUpdatingDynamicRules[] =
 const char kInternalErrorGettingDynamicRules[] =
     "Internal error while getting dynamic rules.";
 const char kDynamicRuleCountExceeded[] = "Dynamic rule count exceeded.";
+
+// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
+// page detailing what safe/unsafe rules are.
+const char kDynamicUnsafeRuleCountExceeded[] =
+    "Dynamic unsafe rule count exceeded.";
 const char kDynamicRegexRuleCountExceeded[] =
     "Dynamic rule count for regex rules exceeded.";
 
 const char kSessionRuleCountExceeded[] = "Session rule count exceeded.";
+
+// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
+// page detailing what safe/unsafe rules are.
+const char kSessionUnsafeRuleCountExceeded[] =
+    "Session unsafe rule count exceeded.";
 const char kSessionRegexRuleCountExceeded[] =
     "Session rule count for regex rules exceeded.";
 
@@ -160,5 +180,4 @@ const char kErrorGetMatchedRulesMissingPermissions[] =
 
 const char kEmbedderConditionsBufferIdentifier[] = "EMBR";
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

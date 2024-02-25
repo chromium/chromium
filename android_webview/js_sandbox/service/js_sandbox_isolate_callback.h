@@ -19,6 +19,7 @@ class JsSandboxIsolateCallback final
   enum class ErrorType {
     kJsEvaluationError = 0,
     kMemoryLimitExceeded = 1,
+    kFileDescriptorIOFailedError = 2,
   };
 
   explicit JsSandboxIsolateCallback(
@@ -28,7 +29,9 @@ class JsSandboxIsolateCallback final
   JsSandboxIsolateCallback& operator=(const JsSandboxIsolateCallback&) = delete;
 
   void ReportResult(const std::string& result);
+  void ReportError(ErrorType error_type, const std::string& error);
   void ReportJsEvaluationError(const std::string& error);
+  void ReportFileDescriptorIOFailedError(const std::string& error);
   // Report that the isolate has exceeded its memory limit, with various stats.
   //
   // memory_limit == 0 indicates that no explicit limit was configured.
@@ -43,8 +46,6 @@ class JsSandboxIsolateCallback final
  private:
   friend class base::RefCounted<JsSandboxIsolateCallback>;
   ~JsSandboxIsolateCallback();
-
-  void ReportError(ErrorType error_type, const std::string& error);
 
   base::android::ScopedJavaGlobalRef<jobject> UseCallback();
 

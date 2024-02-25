@@ -23,23 +23,25 @@ import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './site_details_permission.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {ChooserType, ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_details.html.js';
-import {SiteDetailsPermissionElement} from './site_details_permission.js';
+import type {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
+import type {WebsiteUsageBrowserProxy} from './website_usage_browser_proxy.js';
+import {WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
 
 export interface SiteDetailsElement {
   $: {
@@ -133,11 +135,10 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
       },
 
-      isPrivacySandboxSettings4_: {
+      enableAutomaticFullscreenContentSetting_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPrivacySandboxSettings4');
-        },
+        value: () =>
+            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
       },
 
       contentSettingsTypesEnum_: {
@@ -162,6 +163,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private autoPictureInPictureEnabled_: boolean;
+  private enableAutomaticFullscreenContentSetting_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
 

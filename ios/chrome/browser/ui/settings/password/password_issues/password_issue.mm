@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -30,7 +30,7 @@
     _username = base::SysUTF16ToNSString(credential.username);
     _URL = [[CrURL alloc] initWithGURL:credential.GetURL()];
     _compromisedDescriptionEnabled = enableCompromisedDescription;
-    absl::optional<GURL> changePasswordURL = credential.GetChangePasswordURL();
+    std::optional<GURL> changePasswordURL = credential.GetChangePasswordURL();
     if (changePasswordURL.has_value()) {
       _changePasswordURL =
           [[CrURL alloc] initWithGURL:changePasswordURL.value()];

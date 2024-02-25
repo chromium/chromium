@@ -11,20 +11,23 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/features.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "net/base/network_change_notifier.h"
@@ -89,6 +92,7 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
 }
 
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
+                                    PrefService* local_state,
                                     const base::Version& current_version) {
   DCHECK(browser_state);
   DCHECK(current_version.IsValid());
@@ -119,12 +123,35 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  // Do not show the SSO promo if the user is already signed-in.
-  signin::ConsentLevel upgradeLevel =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  if (auth_service->HasPrimaryIdentity(upgradeLevel)) {
+  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForBrowserState(browser_state);
+    HistorySyncSkipReason skip_reason = [HistorySyncCoordinator
+        getHistorySyncOptInSkipReason:sync_service
+                authenticationService:auth_service
+                          prefService:browser_state->GetPrefs()
+                isHistorySyncOptional:YES];
+    switch (skip_reason) {
+      case HistorySyncSkipReason::kNone:
+        // Need to show the upgrade promo, to show the history sync opt-in.
+        break;
+      case HistorySyncSkipReason::kNotSignedIn:
+        NOTREACHED_NORETURN();
+      case HistorySyncSkipReason::kAlreadyOptedIn:
+      case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+      case HistorySyncSkipReason::kDeclinedTooOften:
+        return false;
+    }
+  }
+
+  // Avoid showing the upgrade sign-in promo when the device restore sign-in
+  // promo should be shown instead.
+  if (GetPreRestoreIdentity(local_state).has_value()) {
     return false;
   }
 
@@ -246,18 +273,30 @@ IdentitySigninState GetPrimaryIdentitySigninState(
     ChromeBrowserState* browser_state) {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state);
-  // TODO(crbug.com/1462552): After phase 3 migration of kSync users, Remove
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browser_state);
+  // TODO(crbug.com/40066949): After phase 3 migration of kSync users, Remove
   // this usage.
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
-      syncSetupService->IsInitialSyncFeatureSetupComplete()) {
+      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return IdentitySigninStateSignedInWithSyncEnabled;
   } else if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return IdentitySigninStateSignedInWithSyncDisabled;
   } else {
     return IdentitySigninStateSignedOut;
   }
+}
+
+Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
+  switch (result) {
+    case SystemIdentityCapabilityResult::kTrue:
+      return Tribool::kTrue;
+    case SystemIdentityCapabilityResult::kFalse:
+      return Tribool::kFalse;
+    case SystemIdentityCapabilityResult::kUnknown:
+      return Tribool::kUnknown;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace signin

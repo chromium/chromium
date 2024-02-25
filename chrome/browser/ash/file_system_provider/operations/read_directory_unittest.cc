@@ -25,9 +25,7 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -51,7 +49,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     base::File::Error result() { return result_; }
     const storage::AsyncFileUtil::EntryList& entry_list() {
@@ -65,12 +63,12 @@ class CallbackLogger {
     bool has_more_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnReadDirectory(base::File::Error result,
                        storage::AsyncFileUtil::EntryList entry_list,
@@ -94,7 +92,7 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  std::optional<Params> params = Params::Create(parsed_json->GetList());
   ASSERT_TRUE(params.has_value());
   *result = RequestValue::CreateForReadDirectorySuccess(std::move(*params));
   ASSERT_TRUE(result->is_valid());
@@ -104,8 +102,8 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
 
 class FileSystemProviderOperationsReadDirectoryTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsReadDirectoryTest() {}
-  ~FileSystemProviderOperationsReadDirectoryTest() override {}
+  FileSystemProviderOperationsReadDirectoryTest() = default;
+  ~FileSystemProviderOperationsReadDirectoryTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
@@ -141,12 +139,12 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ReadDirectoryRequestedOptions options;
-  ASSERT_TRUE(ReadDirectoryRequestedOptions::Populate(
-      options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kDirectoryPath, options.directory_path);
+  auto options =
+      ReadDirectoryRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kDirectoryPath, options->directory_path);
 }
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {
@@ -265,6 +263,4 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnError) {
   ASSERT_EQ(0u, event->entry_list().size());
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user_manager.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
@@ -18,8 +19,19 @@
 namespace ash {
 namespace power {
 namespace ml {
+namespace {
+UserActivityController* g_instance = nullptr;
+}  // namespace
+
+// static
+UserActivityController* UserActivityController::Get() {
+  return g_instance;
+}
 
 UserActivityController::UserActivityController() {
+  CHECK(!g_instance);
+  g_instance = this;
+
   if (!base::FeatureList::IsEnabled(features::kSmartDim))
     return;
 
@@ -51,14 +63,17 @@ UserActivityController::UserActivityController() {
       &user_activity_ukm_logger_, detector, power_manager_client,
       session_manager,
       video_observer_user_logger.InitWithNewPipeAndPassReceiver(),
-      ChromeUserManager::Get());
+      user_manager::UserManager::Get());
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
       ->AddVideoDetectorObserver(std::move(video_observer_user_logger));
 }
 
-UserActivityController::~UserActivityController() = default;
+UserActivityController::~UserActivityController() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void UserActivityController::ShouldDeferScreenDim(
     base::OnceCallback<void(bool)> callback) {

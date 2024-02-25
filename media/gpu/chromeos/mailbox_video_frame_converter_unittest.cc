@@ -4,15 +4,19 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_switches.h"
 #include "media/base/simple_sync_token_client.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +42,7 @@ namespace {
 class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
+  MOCK_METHOD0(GetCapabilities, std::optional<gpu::SharedImageCapabilities>());
   MOCK_METHOD9(CreateSharedImage,
                gpu::SharedImageStub::SharedImageDestructionCallback(
                    const gpu::Mailbox& mailbox,
@@ -63,7 +68,7 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
                bool(const gpu::Mailbox& mailbox,
                     gfx::GpuFenceHandle in_fence_handle));
   MOCK_METHOD2(WaitOnSyncTokenAndReleaseFrame,
-               bool(scoped_refptr<VideoFrame> frame,
+               bool(scoped_refptr<FrameResource> frame,
                     const gpu::SyncToken& sync_token));
 };
 
@@ -121,12 +126,12 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   // fixture instead of limiting their lifetime to each test. The reason is that
   // we don't want to crash if there are pending tasks at the end of a test that
   // use these callbacks.
-  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>
+  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<FrameResource>)>>
       mock_output_cb_;
   // |mock_destroy_shared_image_cbs_| are the SharedImage destruction callbacks
   // provided by the GpuDelegate to the MailboxVideoFrameConverter in order to
-  // destroy the SharedImage when the corresponding GpuMemoryBuffer VideoFrame
-  // gets destroyed.
+  // destroy the SharedImage when the corresponding GpuMemoryBuffer
+  // FrameResource gets destroyed.
   std::vector<std::unique_ptr<
       StrictMock<base::MockOnceCallback<void(const gpu::SyncToken&)>>>>
       mock_destroy_shared_image_cbs_;
@@ -166,7 +171,7 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
 // frames, we verify that the MailboxVideoFrameConverter can handle those frames
 // being released by the client. Note that in this mode, SharedImages are not
 // expected to be re-used because in out-of-process video decoding, we always
-// create a new VideoFrame with a unique ID for every GpuMemoryBuffer we receive
+// create a new frame with a unique ID for every GpuMemoryBuffer we receive
 // from the video decoder process.
 TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
        CanConvertMultipleFramesAndThenHandleTheirRelease) {
@@ -183,7 +188,7 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // OOPVideoDecoder transfers ownership of these frames to the
   // MailboxVideoFrameConverter, but we keep raw pointers around in order to use
   // them in test assertions.
-  VideoFrame* gmb_frames[2];
+  FrameResource* gmb_frames[2];
 
   // |mailboxes_seen_by_gpu_delegate| are the Mailboxes generated for each of
   // the |gmb_frames|. These Mailboxes are generated in the
@@ -200,18 +205,18 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   }
 
   // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
-  scoped_refptr<VideoFrame> converted_frames[std::size(gmb_frames)];
+  scoped_refptr<FrameResource> converted_frames[std::size(gmb_frames)];
 
   // Let's now feed each of the |gmb_frames| to the MailboxVideoFrameConverter
   // and verify that the GpuDelegate gets used correctly.
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
     gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
-    scoped_refptr<VideoFrame> gmb_frame =
-        VideoFrame::WrapExternalGpuMemoryBuffer(
+    scoped_refptr<FrameResource> gmb_frame =
+        VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
             kVisibleRect, kNaturalSize,
             std::make_unique<FakeGpuMemoryBuffer>(kCodedSize, kBufferFormat),
             empty_mailboxes, base::NullCallback(),
-            /*timestamp=*/base::TimeDelta());
+            /*timestamp=*/base::TimeDelta()));
     ASSERT_TRUE(gmb_frame);
     gmb_frame->AddDestructionObserver(mock_frame_destruction_cbs_[i]->Get());
     gmb_frames[i] = gmb_frame.get();
@@ -248,22 +253,25 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }
 
+    EXPECT_CALL(*mock_gpu_delegate_, GetCapabilities())
+        .WillRepeatedly(Return(gpu::SharedImageCapabilities()));
     // Note: after this, the MailboxVideoFrameConverter should have full
     // ownership of the *|gmb_frame|.
     converter_->ConvertFrame(std::move(gmb_frame));
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
     ASSERT_TRUE(converted_frames[i]);
-    EXPECT_EQ(converted_frames[i]->storage_type(), VideoFrame::STORAGE_OPAQUE);
-    EXPECT_EQ(converted_frames[i]->format(), gmb_frames[i]->format());
-    EXPECT_EQ(converted_frames[i]->coded_size(),
+    ASSERT_TRUE(!!converted_frames[i]->AsVideoFrameResource());
+    scoped_refptr<const VideoFrame> converted_frame =
+        converted_frames[i]->AsVideoFrameResource()->GetVideoFrame();
+    EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
+    EXPECT_EQ(converted_frame->format(), gmb_frames[i]->format());
+    EXPECT_EQ(converted_frame->coded_size(),
               gmb_frames[i]->visible_rect().size());
-    EXPECT_EQ(converted_frames[i]->visible_rect(),
-              gmb_frames[i]->visible_rect());
-    EXPECT_EQ(converted_frames[i]->natural_size(),
-              gmb_frames[i]->natural_size());
-    ASSERT_TRUE(converted_frames[i]->HasTextures());
-    ASSERT_EQ(converted_frames[i]->NumTextures(), 1u);
-    EXPECT_EQ(converted_frames[i]->mailbox_holder(0).mailbox,
+    EXPECT_EQ(converted_frame->visible_rect(), gmb_frames[i]->visible_rect());
+    EXPECT_EQ(converted_frame->natural_size(), gmb_frames[i]->natural_size());
+    ASSERT_TRUE(converted_frame->HasTextures());
+    ASSERT_EQ(converted_frame->NumTextures(), 1u);
+    EXPECT_EQ(converted_frame->mailbox_holder(0).mailbox,
               mailboxes_seen_by_gpu_delegate[i]);
   }
 
@@ -273,7 +281,7 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // Now let's simulate that the client releases each of the |converted_frames|.
   // The GpuDelegate should be invoked to wait on the right SyncToken. Then,
   // since the MailboxVideoFrameConverter should be the sole owner of the
-  // corresponding GpuMemoryBuffer VideoFrame, the SharedImage for that frame
+  // corresponding GpuMemoryBuffer FrameResource, the SharedImage for that frame
   // should be destroyed and the destruction observer registered above for that
   // frame should be invoked.
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
@@ -284,7 +292,7 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
         EXPECT_CALL(
             *mock_gpu_delegate_,
             WaitOnSyncTokenAndReleaseFrame(
-                Property(&scoped_refptr<VideoFrame>::get, gmb_frames[i]),
+                Property(&scoped_refptr<FrameResource>::get, gmb_frames[i]),
                 release_sync_token))
             .WillOnce(Return(true));
     EXPECT_CALL(*mock_destroy_shared_image_cbs_[i], Run(gpu::SyncToken()))
@@ -292,7 +300,11 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run())
         .After(wait_on_sync_token_and_release);
     SimpleSyncTokenClient sync_token_client(release_sync_token);
-    converted_frames[i]->UpdateReleaseSyncToken(&sync_token_client);
+    ASSERT_TRUE(!!converted_frames[i]->AsVideoFrameResource());
+    converted_frames[i]
+        ->AsVideoFrameResource()
+        ->GetMutableVideoFrame()
+        ->UpdateReleaseSyncToken(&sync_token_client);
     converted_frames[i].reset();
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
   }

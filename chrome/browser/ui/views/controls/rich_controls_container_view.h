@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -15,6 +16,7 @@
 namespace views {
 class ImageView;
 class Label;
+class StyledLabel;
 }  // namespace views
 
 // A view that contains basic layout for a container with controls.
@@ -24,6 +26,8 @@ class Label;
 // |      | Secondary label(s)                   |                           |
 // *-------------------------------------------------------------------------*
 class RichControlsContainerView : public views::FlexLayoutView {
+  METADATA_HEADER(RichControlsContainerView, views::FlexLayoutView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIcon);
 
@@ -32,6 +36,7 @@ class RichControlsContainerView : public views::FlexLayoutView {
   void SetIcon(const ui::ImageModel image);
   void SetTitle(std::u16string title);
   views::Label* AddSecondaryLabel(std::u16string text);
+  views::StyledLabel* AddSecondaryStyledLabel(std::u16string text);
   template <typename T>
   T* AddControl(std::unique_ptr<T> control_view) {
     control_view->SetProperty(views::kInternalPaddingKey,
@@ -48,6 +53,7 @@ class RichControlsContainerView : public views::FlexLayoutView {
   gfx::Size CalculatePreferredSize() const override;
 
   const std::u16string& GetTitleForTesting();
+  const ui::ImageModel GetIconImageModelForTesting();
 
  private:
   virtual int GetMinBubbleWidth() const;

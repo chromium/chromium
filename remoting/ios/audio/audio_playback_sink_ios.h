@@ -7,6 +7,7 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/audio/audio_playback_sink.h"
@@ -78,7 +79,7 @@ class AudioPlaybackSinkIos : public AudioPlaybackSink {
 
   THREAD_CHECKER(thread_checker_);
 
-  AsyncAudioDataSupplier* supplier_ = nullptr;
+  raw_ptr<AsyncAudioDataSupplier> supplier_ = nullptr;
 
   // Number of buffers that are currently transferred to |supplier_| for
   // priming.

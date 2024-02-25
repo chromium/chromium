@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
+
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_notification/push_notification_service.h"
 
 namespace {
 
@@ -29,6 +32,11 @@ const char kFinderAction[] = "Finder";
 const char kFastPairSassAction[] = "Fast Pair Sass";
 const char kTapToTransferAction[] = "Tap To Transfer";
 const char kLastAction[] = "Invalid Action";
+
+// `PushNotificationMessage` key value pairs
+const char kNotificationTypeIdKey[] = "type_id";
+const char kNotificationClientIdKey[] = "client_id";
+const char kNotificationClientIdValue[] = "nearby";
 
 std::string PresenceActionToString(
     ash::nearby::presence::NearbyPresenceService::Action action_enum) {
@@ -58,7 +66,7 @@ std::string PresenceActionToString(
 // Converts |presence_device| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
 base::Value::Dict PresenceDeviceToDictionary(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   base::Value::Dict dictionary;
   dictionary.Set(kDeviceNameKey, presence_device.GetName());
@@ -124,6 +132,11 @@ void NearbyInternalsPresenceHandler::RegisterMessages() {
       base::BindRepeating(
           &NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SendUpdateCredentialsMessage",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleSendUpdateCredentialsMessage,
+          base::Unretained(this)));
 }
 
 void NearbyInternalsPresenceHandler::OnJavascriptAllowed() {}
@@ -140,8 +153,8 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
         ash::nearby::presence::NearbyPresenceService::IdentityType::kPublic,
         /*actions=*/{});
@@ -163,8 +176,8 @@ void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     service->UpdateCredentials();
   }
 }
@@ -175,8 +188,8 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     auto* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
 
     // Reset the state that indicates that first time registration was
@@ -200,8 +213,8 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
   if (status ==
       ash::nearby::presence::NearbyPresenceService::StatusCode::kAbslOk) {
     scan_session_ = std::move(scan_session);
-    NS_LOG(VERBOSE) << __func__
-                    << ": ScanSession remote successfully returned and bound.";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": ScanSession remote successfully returned and bound.";
   } else {
     // TODO(b/276307539): Pass error status back to WebUI.
     return;
@@ -210,25 +223,25 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
 
 void NearbyInternalsPresenceHandler::
     OnNearbyPresenceCredentialManagerInitialized() {
-  NS_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::NP) << __func__;
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-found",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-changed",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice
         presence_device) {
   FireWebUIListener("presence-device-lost",
                     PresenceDeviceToDictionary(presence_device));
@@ -242,7 +255,24 @@ void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
 void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
     const base::Value::List& args) {
   // TODO(b/276642472): Add connect functionality.
-  NS_LOG(VERBOSE) << __func__
-                  << ": Connection attempt for device with endpoint id: "
-                  << args[0].GetString();
+  CD_LOG(VERBOSE, Feature::NP)
+      << __func__ << ": Connection attempt for device with endpoint id: "
+      << args[0].GetString();
+}
+
+void NearbyInternalsPresenceHandler::HandleSendUpdateCredentialsMessage(
+    const base::Value::List& args) {
+  push_notification::PushNotificationService* service =
+      push_notification::PushNotificationServiceFactory::GetForBrowserContext(
+          context_);
+  CHECK(service);
+  push_notification::PushNotificationClientManager::PushNotificationMessage
+      message;
+  message.data.insert_or_assign(kNotificationTypeIdKey,
+                                push_notification::kNearbyPresenceClientId);
+  message.data.insert_or_assign(kNotificationClientIdKey,
+                                kNotificationClientIdValue);
+
+  service->GetPushNotificationClientManager()
+      ->NotifyPushNotificationClientOfMessage(std::move(message));
 }

@@ -147,8 +147,9 @@ export class DataSeries {
    * @param {number} count
    */
   updateCacheValues_(startTime, stepSize, count) {
-    if (this.cacheStartTime_ == startTime && this.cacheStepSize_ == stepSize &&
-        this.cacheValues_.length == count) {
+    if (this.cacheStartTime_ === startTime &&
+        this.cacheStepSize_ === stepSize &&
+        this.cacheValues_.length === count) {
       return;
     }
 
@@ -289,7 +290,7 @@ export class DataSeries {
    * @return {number}
    */
   static linearInterpolation(x1, y1, x2, y2, x) {
-    if (x1 == x2) {
+    if (x1 === x2) {
       return (y1 + y2) / 2;
     }
     const /** number */ ratio = (x - x1) / (x2 - x1);

@@ -6,10 +6,10 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult('Check that return value can be changed.');
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
     function testFunction() {
@@ -20,7 +20,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   await SourcesTestRunner.startDebuggerTestPromise();
   await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 15, url: 'test.js', columnNumber: 37});
   let sidebarUpdated = TestRunner.addSnifferPromise(
-        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
+        SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
   let localScope = SourcesTestRunner.scopeChainSections()[0];
 

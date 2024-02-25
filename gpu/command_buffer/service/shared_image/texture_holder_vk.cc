@@ -7,15 +7,18 @@
 #include "base/check.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 
 namespace gpu {
 
-TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image)
+TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image,
+                                 const gfx::ColorSpace& color_space)
     : vulkan_image(std::move(image)) {
   gfx::Size size = vulkan_image->size();
-  GrVkImageInfo vk_image_info = CreateGrVkImageInfo(vulkan_image.get());
+  GrVkImageInfo vk_image_info =
+      CreateGrVkImageInfo(vulkan_image.get(), color_space);
   backend_texture =
-      GrBackendTexture(size.width(), size.height(), vk_image_info);
+      GrBackendTextures::MakeVk(size.width(), size.height(), vk_image_info);
   promise_texture = GrPromiseImageTexture::Make(backend_texture);
 }
 
@@ -25,7 +28,7 @@ TextureHolderVk::~TextureHolderVk() = default;
 
 GrVkImageInfo TextureHolderVk::GetGrVkImageInfo() const {
   GrVkImageInfo info;
-  bool result = backend_texture.getVkImageInfo(&info);
+  bool result = GrBackendTextures::GetVkImageInfo(backend_texture, &info);
   CHECK(result);
   return info;
 }

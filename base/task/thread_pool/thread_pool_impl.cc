@@ -5,35 +5,35 @@
 #include "base/task/thread_pool/thread_pool_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
-#include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/task/thread_pool/thread_group_impl.h"
+#include "base/task/thread_pool/thread_group_semaphore.h"
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -76,6 +76,7 @@ ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
                                bool use_background_threads)
     : histogram_label_(histogram_label),
       task_tracker_(std::move(task_tracker)),
+      use_background_threads_(use_background_threads),
       single_thread_task_runner_manager_(task_tracker_->GetTrackedRef(),
                                          &delayed_task_manager_),
       has_disable_best_effort_switch_(HasDisableBestEffortTasksSwitch()),
@@ -140,21 +141,72 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-  if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
-      CanUseUtilityThreadTypeForWorkerThread()) {
-    utility_thread_group_ = std::make_unique<ThreadGroupImpl>(
+  if (FeatureList::IsEnabled(kThreadGroupSemaphore)) {
+    auto old_foreground_group = std::move(foreground_thread_group_);
+
+    foreground_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
         histogram_label_.empty()
             ? std::string()
-            : JoinString(
-                  {histogram_label_, kUtilityPoolEnvironmentParams.name_suffix},
-                  "."),
-        kUtilityPoolEnvironmentParams.name_suffix,
-        kUtilityPoolEnvironmentParams.thread_type_hint,
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
+            : JoinString({histogram_label_,
+                          kForegroundPoolEnvironmentParams.name_suffix},
+                         "."),
+        kForegroundPoolEnvironmentParams.name_suffix,
+        kForegroundPoolEnvironmentParams.thread_type_hint,
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+
+    old_foreground_group->HandoffAllTaskSourcesToOtherThreadGroup(
         foreground_thread_group_.get());
-    foreground_thread_group_
-        ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
-            utility_thread_group_.get());
+
+    if (background_thread_group_) {
+      auto old_background_group = std::move(background_thread_group_);
+
+      background_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kBackgroundPoolEnvironmentParams.name_suffix},
+                           "."),
+          kBackgroundPoolEnvironmentParams.name_suffix,
+          use_background_threads_
+              ? kBackgroundPoolEnvironmentParams.thread_type_hint
+              : kForegroundPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+
+      old_background_group->HandoffAllTaskSourcesToOtherThreadGroup(
+          background_thread_group_.get());
+    }
+
+    if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
+        CanUseUtilityThreadTypeForWorkerThread()) {
+      utility_thread_group_ = std::make_unique<ThreadGroupSemaphore>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kUtilityPoolEnvironmentParams.name_suffix},
+                           "."),
+          kUtilityPoolEnvironmentParams.name_suffix,
+          kUtilityPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+      foreground_thread_group_
+          ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+              utility_thread_group_.get());
+    }
+  } else {
+    if (FeatureList::IsEnabled(kUseUtilityThreadGroup) &&
+        CanUseUtilityThreadTypeForWorkerThread()) {
+      utility_thread_group_ = std::make_unique<ThreadGroupImpl>(
+          histogram_label_.empty()
+              ? std::string()
+              : JoinString({histogram_label_,
+                            kUtilityPoolEnvironmentParams.name_suffix},
+                           "."),
+          kUtilityPoolEnvironmentParams.name_suffix,
+          kUtilityPoolEnvironmentParams.thread_type_hint,
+          task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+      foreground_thread_group_
+          ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+              utility_thread_group_.get());
+    }
   }
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
@@ -181,53 +233,32 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   size_t foreground_threads = init_params.max_num_foreground_threads;
   size_t utility_threads = init_params.max_num_utility_threads;
-  // Set the size of each ThreadGroup such that N cores are left available
-  // for other threads. N is the number of threads that the application is
-  // expected to need to be responsive (currently configurable via field trial).
-  // The size of each ThreadGroup can grow beyond the value set here when tasks
-  // enter ScopedBlockingCall.
-  if (base::FeatureList::IsEnabled(kThreadPoolCap)) {
-    int restricted_threads = kThreadPoolCapRestrictedCount.Get();
-    int max_allowed_workers_per_pool =
-        (base::SysInfo::NumberOfProcessors() - restricted_threads);
-    // Set a positive minimum amount of workers per pool.
-    max_allowed_workers_per_pool = std::max(2, max_allowed_workers_per_pool);
-    foreground_threads =
-        std::min(init_params.max_num_foreground_threads,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-    utility_threads =
-        std::min(init_params.max_num_utility_threads,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-    max_best_effort_tasks =
-        std::min(max_best_effort_tasks,
-                 static_cast<size_t>(max_allowed_workers_per_pool));
-  }
 
   // On platforms that can't use the background thread priority, best-effort
   // tasks run in foreground pools. A cap is set on the number of best-effort
   // tasks that can run in foreground pools to ensure that there is always
   // room for incoming foreground tasks and to minimize the performance impact
   // of best-effort tasks.
-  static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
-      ->Start(foreground_threads, max_best_effort_tasks,
-              init_params.suggested_reclaim_time, service_thread_task_runner,
-              worker_thread_observer, worker_environment,
-              g_synchronous_thread_start_for_testing);
+  foreground_thread_group_.get()->Start(
+      foreground_threads, max_best_effort_tasks,
+      init_params.suggested_reclaim_time, service_thread_task_runner,
+      worker_thread_observer, worker_environment,
+      g_synchronous_thread_start_for_testing);
 
   if (utility_thread_group_) {
-    static_cast<ThreadGroupImpl*>(utility_thread_group_.get())
-        ->Start(utility_threads, max_best_effort_tasks,
-                init_params.suggested_reclaim_time, service_thread_task_runner,
-                worker_thread_observer, worker_environment,
-                g_synchronous_thread_start_for_testing);
+    utility_thread_group_.get()->Start(
+        utility_threads, max_best_effort_tasks,
+        init_params.suggested_reclaim_time, service_thread_task_runner,
+        worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing);
   }
 
   if (background_thread_group_) {
-    static_cast<ThreadGroupImpl*>(background_thread_group_.get())
-        ->Start(max_best_effort_tasks, max_best_effort_tasks,
-                init_params.suggested_reclaim_time, service_thread_task_runner,
-                worker_thread_observer, worker_environment,
-                g_synchronous_thread_start_for_testing);
+    background_thread_group_.get()->Start(
+        max_best_effort_tasks, max_best_effort_tasks,
+        init_params.suggested_reclaim_time, service_thread_task_runner,
+        worker_thread_observer, worker_environment,
+        g_synchronous_thread_start_for_testing);
   }
 
   started_ = true;
@@ -249,7 +280,7 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
   // Post |task| as part of a one-off single-task Sequence.
   return PostTaskWithSequence(
       Task(from_here, std::move(task), TimeTicks::Now(), delay,
-           GetDefaultTaskLeeway()),
+           MessagePump::GetLeewayIgnoringThreadOverride()),
       MakeRefCounted<Sequence>(traits, nullptr,
                                TaskSourceExecutionMode::kParallel));
 }
@@ -286,7 +317,7 @@ ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
   return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
 }
 
-absl::optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting()
+std::optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting()
     const {
   if (task_tracker_->HasIncompleteTaskSourcesForTesting())
     return TimeTicks::Now();
@@ -439,15 +470,6 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
   CHECK(task.task);
   DCHECK(sequence);
 
-#if BUILDFLAG(IS_WIN)
-  // Force reading |task.posted_from.file_name()| to produce a useful crash
-  // report if the address is invalid. A crash report generated later when the
-  // task is executed would not contain the PostTask stack.
-  //
-  // TODO(crbug.com/1224432): Remove after resolving the crash.
-  DEBUG_ALIAS_FOR_CSTR(task_posted_from, task.posted_from.file_name(), 32);
-#endif
-
   if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior())) {
     // `task`'s destructor may run sequence-affine code, so it must be leaked
     // when `WillPostTask` returns false.
@@ -467,12 +489,12 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
         std::move(task),
         BindOnce(
             [](scoped_refptr<Sequence> sequence,
-               ThreadPoolImpl* thread_pool_impl, Task task) {
+               ThreadPoolImpl* thread_pool_impl, scoped_refptr<TaskRunner>,
+               Task task) {
               thread_pool_impl->PostTaskWithSequenceNow(std::move(task),
                                                         std::move(sequence));
             },
-            std::move(sequence), Unretained(this)),
-        std::move(task_runner));
+            std::move(sequence), Unretained(this), std::move(task_runner)));
   }
 
   return true;
@@ -496,6 +518,8 @@ bool ThreadPoolImpl::EnqueueJobTaskSource(
       task_tracker_->RegisterTaskSource(std::move(task_source));
   if (!registered_task_source)
     return false;
+  task_tracker_->WillEnqueueJob(
+      static_cast<JobTaskSource*>(registered_task_source.get()));
   auto transaction = registered_task_source->BeginTransaction();
   const TaskTraits traits = transaction.traits();
   GetThreadGroupForTraits(traits)->PushTaskSourceAndWakeUpWorkers(

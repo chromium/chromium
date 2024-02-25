@@ -572,7 +572,7 @@ class LayerTreeHostProxyTestDelayedCommitDueToVisibility
       LayerTreeHostImpl*,
       CommitEarlyOutReason reason,
       bool /* did_sync_scroll_and_viewport */) override {
-    EXPECT_EQ(CommitEarlyOutReason::ABORTED_NOT_VISIBLE, reason);
+    EXPECT_EQ(CommitEarlyOutReason::kAbortedNotVisible, reason);
     PostSetVisibleToMainThread(true);
   }
 

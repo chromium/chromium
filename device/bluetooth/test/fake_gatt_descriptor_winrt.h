@@ -11,11 +11,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
 namespace device {
@@ -32,7 +32,7 @@ class FakeGattDescriptorWinrt
               IGattDescriptor2> {
  public:
   FakeGattDescriptorWinrt(BluetoothTestWinrt* bluetooth_test_winrt,
-                          base::StringPiece uuid,
+                          std::string_view uuid,
                           uint16_t attribute_handle);
 
   FakeGattDescriptorWinrt(const FakeGattDescriptorWinrt&) = delete;

@@ -50,7 +50,7 @@ class NetworkHealthDataCollector : public SystemLogSourceDataCollectorAdaptor {
  private:
   void OnSystemLogSourceDataCollectorAdaptorCollectedData(
       DataCollectorDoneCallback on_data_collected_callback,
-      absl::optional<SupportToolError> error);
+      std::optional<SupportToolError> error);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NetworkHealthDataCollector> weak_ptr_factory_{this};

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -42,6 +43,8 @@ class ImageModel;
 // clicking the avatar button.
 class ProfileMenuViewBase : public content::WebContentsDelegate,
                             public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ProfileMenuViewBase, views::BubbleDialogDelegateView)
+
  public:
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -68,7 +71,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kSyncSettingsButton = 16,
     kEditProfileButton = 17,
     // DEPRECATED: kCreateIncognitoShortcutButton = 18,
-    kMaxValue = kEditProfileButton,
+    kEnableSyncForWebOnlyAccountButton = 19,
+    kMaxValue = kEnableSyncForWebOnlyAccountButton,
   };
 
   struct EditButtonParams {
@@ -78,8 +82,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     EditButtonParams(const EditButtonParams&);
     ~EditButtonParams();
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
+    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+    // global), so there is no benefit to using a raw_ptr, only cost.
     RAW_PTR_EXCLUSION const gfx::VectorIcon* edit_icon;
     std::u16string edit_tooltip_text;
     base::RepeatingClosure edit_action;
@@ -105,10 +109,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void SetProfileIdentityInfo(
       const std::u16string& profile_name,
       SkColor profile_background_color,
-      absl::optional<EditButtonParams> edit_button_params,
+      std::optional<EditButtonParams> edit_button_params,
       const ui::ImageModel& image_model,
+      const ui::ImageModel& management_badge,
       const std::u16string& title,
       const std::u16string& subtitle = std::u16string(),
+      const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
   // a button on the bottom. Clicking the button triggers |action|.
@@ -139,6 +145,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                                  base::RepeatingClosure action);
   void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
                                        const std::u16string& text);
+  void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure action);
@@ -212,6 +219,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   raw_ptr<views::View> profile_mgmt_heading_container_ = nullptr;
   raw_ptr<views::View> selectable_profiles_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_shortcut_features_container_ = nullptr;
+  raw_ptr<views::View> profile_mgmt_features_separator_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_features_container_ = nullptr;
 
   // Child components of `identity_info_container_`.

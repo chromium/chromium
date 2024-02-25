@@ -260,19 +260,14 @@ NotificationDatabase::ReadNotificationDataAndRecordInteraction(
       break;
   }
 
-  // Write the changed values to the database.
-  status = WriteNotificationData(origin, *notification_database_data);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Notifications.Database.ReadResultRecordInteraction", status,
-      NotificationDatabase::STATUS_COUNT);
-  return status;
+  return WriteNotificationData(origin, *notification_database_data);
 }
 
 NotificationDatabase::Status NotificationDatabase::ForEachNotificationData(
     ReadAllNotificationsCallback callback) const {
   return ForEachNotificationDataInternal(
       GURL() /* origin */, blink::mojom::kInvalidServiceWorkerRegistrationId,
-      absl::nullopt /* is_shown_by_browser */, std::move(callback));
+      std::nullopt /* is_shown_by_browser */, std::move(callback));
 }
 
 NotificationDatabase::Status
@@ -280,9 +275,9 @@ NotificationDatabase::ForEachNotificationDataForServiceWorkerRegistration(
     const GURL& origin,
     int64_t service_worker_registration_id,
     ReadAllNotificationsCallback callback) const {
-  return ForEachNotificationDataInternal(
-      origin, service_worker_registration_id,
-      absl::nullopt /* is_shown_by_browser */, std::move(callback));
+  return ForEachNotificationDataInternal(origin, service_worker_registration_id,
+                                         std::nullopt /* is_shown_by_browser */,
+                                         std::move(callback));
 }
 
 NotificationDatabase::Status
@@ -291,14 +286,14 @@ NotificationDatabase::ReadAllNotificationDataForOrigin(
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   return ReadAllNotificationDataInternal(
       origin, blink::mojom::kInvalidServiceWorkerRegistrationId,
-      absl::nullopt /* is_shown_by_browser */, notification_data_vector);
+      std::nullopt /* is_shown_by_browser */, notification_data_vector);
 }
 
 NotificationDatabase::Status
 NotificationDatabase::ReadAllNotificationDataForServiceWorkerRegistration(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   return ReadAllNotificationDataInternal(origin, service_worker_registration_id,
                                          is_shown_by_browser,
@@ -383,7 +378,7 @@ NotificationDatabase::Status
 NotificationDatabase::DeleteAllNotificationDataForOrigin(
     const GURL& origin,
     const std::string& tag,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     std::set<std::string>* deleted_notification_ids) {
   return DeleteAllNotificationDataInternal(
       origin, tag, is_shown_by_browser,
@@ -397,7 +392,7 @@ NotificationDatabase::DeleteAllNotificationDataForServiceWorkerRegistration(
     int64_t service_worker_registration_id,
     std::set<std::string>* deleted_notification_ids) {
   return DeleteAllNotificationDataInternal(
-      origin, "" /* tag */, absl::nullopt /* is_shown_by_browser */,
+      origin, "" /* tag */, std::nullopt /* is_shown_by_browser */,
       service_worker_registration_id, deleted_notification_ids);
 }
 
@@ -423,7 +418,7 @@ NotificationDatabase::Status
 NotificationDatabase::ReadAllNotificationDataInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(notification_data_vector);
@@ -440,7 +435,7 @@ NotificationDatabase::Status
 NotificationDatabase::ForEachNotificationDataInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     ReadAllNotificationsCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -482,7 +477,7 @@ NotificationDatabase::Status
 NotificationDatabase::DeleteAllNotificationDataInternal(
     const GURL& origin,
     const std::string& tag,
-    absl::optional<bool> is_shown_by_browser,
+    std::optional<bool> is_shown_by_browser,
     int64_t service_worker_registration_id,
     std::set<std::string>* deleted_notification_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

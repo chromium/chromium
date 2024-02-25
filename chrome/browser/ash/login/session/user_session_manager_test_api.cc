@@ -20,7 +20,7 @@ void UserSessionManagerTestApi::InjectStubUserContext(
 }
 
 void UserSessionManagerTestApi::InjectAuthenticatorBuilder(
-    std::unique_ptr<StubAuthenticatorBuilder> builder) {
+    std::unique_ptr<AuthenticatorBuilder> builder) {
   session_manager_->InjectAuthenticatorBuilder(std::move(builder));
 }
 
@@ -32,6 +32,14 @@ void UserSessionManagerTestApi::SetShouldLaunchBrowserInTests(
 void UserSessionManagerTestApi::SetShouldObtainTokenHandleInTests(
     bool should_obtain_handle) {
   session_manager_->SetShouldObtainHandleInTests(should_obtain_handle);
+}
+
+void UserSessionManagerTestApi::InitializeDeviceId(
+    bool is_ephemeral_user,
+    user_manager::KnownUser& known_user) {
+  session_manager_->InitializeDeviceId(
+      is_ephemeral_user, *session_manager_->mutable_user_context_for_testing(),
+      known_user);
 }
 
 void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/common/extension_id.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -144,7 +146,7 @@ bool ManifestFetchData::AddExtension(const std::string& id,
                                      DownloadFetchPriority fetch_priority) {
   DCHECK(!is_all_external_policy_download_ ||
          extension_location == ManifestLocation::kExternalPolicyDownload);
-  if (extensions_data_.find(id) != extensions_data_.end()) {
+  if (base::Contains(extensions_data_, id)) {
     NOTREACHED() << "Duplicate extension id " << id;
     return false;
   }
@@ -263,11 +265,11 @@ ExtensionIdSet ManifestFetchData::GetExtensionIds() const {
   return extension_ids;
 }
 
-bool ManifestFetchData::Includes(const std::string& extension_id) const {
-  return extensions_data_.find(extension_id) != extensions_data_.end();
+bool ManifestFetchData::Includes(const ExtensionId& extension_id) const {
+  return base::Contains(extensions_data_, extension_id);
 }
 
-bool ManifestFetchData::DidPing(const std::string& extension_id,
+bool ManifestFetchData::DidPing(const ExtensionId& extension_id,
                                 PingType type) const {
   auto i = pings_.find(extension_id);
   if (i == pings_.end())

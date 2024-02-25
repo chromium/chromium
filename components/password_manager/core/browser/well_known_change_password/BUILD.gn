@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("well_known_change_password") {
+  sources = [
+    "well_known_change_password_state.cc",
+    "well_known_change_password_state.h",
+    "well_known_change_password_util.cc",
+    "well_known_change_password_util.h",
+  ]
+  deps = [
+    "//components/affiliations/core/browser:affiliations",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "well_known_change_password_state_unittest.cc",
+    "well_known_change_password_util_unittest.cc",
+  ]
+  deps = [
+    ":well_known_change_password",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -8,6 +8,8 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -28,7 +30,6 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -78,7 +79,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
  private:
   // Overridden from views::View:
-  void Layout() override {
+  void Layout(PassKey) override {
     // Right align the caption button container.
     gfx::Size preferred_size = caption_button_container_->GetPreferredSize();
     caption_button_container_->SetBounds(width() - preferred_size.width(), 0,
@@ -119,13 +120,17 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 
   // Not owned.
-  raw_ptr<FrameCaptionButtonContainerView, ExperimentalAsh>
-      caption_button_container_;
+  raw_ptr<FrameCaptionButtonContainerView> caption_button_container_;
 };
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
-  FrameSizeButtonTest() = default;
+  FrameSizeButtonTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
 
   FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
@@ -185,7 +190,7 @@ class FrameSizeButtonTest : public AshTestBase {
 
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
-  views::Widget* GetWidget() const { return widget_; }
+  views::Widget* GetWidget() { return widget_; }
 
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
@@ -193,17 +198,15 @@ class FrameSizeButtonTest : public AshTestBase {
   TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // Not owned.
-  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      minimize_button_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      size_button_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      close_button_;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged | ExperimentalAsh>
-      widget_delegate_;
+  raw_ptr<WindowState, DanglingUntriaged> window_state_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> minimize_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> size_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> close_button_;
+  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_;
   bool resizable_ = true;
 };
 
@@ -663,12 +666,9 @@ TEST_F(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
 }
 
-// Test multitask menu requires kWindowLayoutMenu feature to be enabled during
-// setup.
 class MultitaskMenuTest : public FrameSizeButtonTest {
  public:
-  MultitaskMenuTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  MultitaskMenuTest() = default;
   MultitaskMenuTest(const MultitaskMenuTest&) = delete;
   MultitaskMenuTest& operator=(const MultitaskMenuTest&) = delete;
   ~MultitaskMenuTest() override = default;
@@ -683,20 +683,12 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
   void ShowMultitaskMenu(MultitaskMenuEntryType entry_type =
                              MultitaskMenuEntryType::kFrameSizeButtonHover) {
-    DCHECK(size_button());
-
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        std::string(kMultitaskMenuBubbleWidgetName));
-    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu(entry_type);
-    waiter.WaitIfNeededAndGet();
+    ShowAndWaitMultitaskMenuForWindow(
+        static_cast<FrameSizeButton*>(size_button()), entry_type);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test Float Button Functionality.
+// Test float button functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
@@ -741,6 +733,14 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
           ->GetLeftTopButton());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(gfx::Rect(400, 552), GetWidget()->GetWindowBoundsInScreen());
+
+  // Overview may start due to faster split screen when the window is snapped.
+  // Escape overview if it is active, otherwise the key event will be handled in
+  // `OverviewSession` to exit overview, see `OverviewSession::OnKeyEvent()` for
+  // more details. Pressing the Alt key below won't reverse the multi-task menu.
+  if (IsInOverviewSession()) {
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  }
 
   // Reverse the menu. Test that the left button still snaps to primary.
   ShowMultitaskMenu();
@@ -1022,6 +1022,15 @@ TEST_F(MultitaskMenuTest, ReversePartialButton) {
                        chromeos::kOneThirdSnapRatio),
             GetWidget()->GetWindowBoundsInScreen().width());
 
+  // Overview may start due to faster split screen when the window is
+  // snapped. Escape overview if it is active, otherwise the key event will be
+  // handled in `OverviewSession` to exit overview, see
+  // `OverviewSession::OnKeyEvent()` for more details. Pressing the Alt key
+  // below won't reverse the multi-task menu.
+  if (IsInOverviewSession()) {
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  }
+
   // Reverse the menu. Test that the right button snaps to 2/3.
   ShowMultitaskMenu();
   PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
@@ -1145,6 +1154,35 @@ TEST_F(MultitaskMenuTest, PressOnSizeButtonReleaseOnMultitaskMenu) {
     release(touch);
     EXPECT_TRUE(window_state()->IsFloated());
   }
+}
+
+// Tests that if the window is right snapped, and we try to fullscreen the
+// window via touch-dragging the multitask menu, the window is properly
+// fullscreened. Regression test for http://b/304437185.
+TEST_F(MultitaskMenuTest, FullscreenFromTouchMultitaskMenu) {
+  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  window_state()->OnWMEvent(&snap_secondary);
+  ASSERT_TRUE(window_state()->IsSnapped());
+
+  // Long press on the size button until the multitask menu is shown.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kMultitaskMenuBubbleWidgetName));
+  event_generator->PressTouch(size_button()->GetBoundsInScreen().CenterPoint());
+  waiter.WaitIfNeededAndGet();
+
+  // Without releasing, drag to the full button and release. Test that we are
+  // in fullscreen state.
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  event_generator->MoveTouch(
+      MultitaskMenuViewTestApi(multitask_menu->multitask_menu_view())
+          .GetFullButton()
+          ->GetBoundsInScreen()
+          .CenterPoint());
+  event_generator->ReleaseTouch();
+  EXPECT_TRUE(window_state()->IsFullscreen());
 }
 
 // Tests that focus traversal with the tab and arrow keys works as expected.

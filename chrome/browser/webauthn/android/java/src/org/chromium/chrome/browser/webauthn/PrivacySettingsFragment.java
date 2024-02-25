@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -37,9 +38,10 @@ public class PrivacySettingsFragment extends Fragment implements OnClickListener
     public void onClick(View v) {
         // The "revoke all" button was tapped.
         PrivacySettingsFragmentJni.get().revokeAllLinkedDevices();
-        Toast.makeText(getActivity(),
-                     getResources().getString(R.string.cablev2_unlink_confirmation),
-                     Toast.LENGTH_SHORT)
+        Toast.makeText(
+                        getActivity(),
+                        getResources().getString(R.string.cablev2_unlink_confirmation),
+                        Toast.LENGTH_SHORT)
                 .show();
     }
 

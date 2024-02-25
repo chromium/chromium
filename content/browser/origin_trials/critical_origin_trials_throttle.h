@@ -1,15 +1,16 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ORIGIN_TRIALS_CRITICAL_ORIGIN_TRIALS_THROTTLE_H_
 #define CONTENT_BROWSER_ORIGIN_TRIALS_CRITICAL_ORIGIN_TRIALS_THROTTLE_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
@@ -28,7 +29,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   // partitioning.
   CriticalOriginTrialsThrottle(
       OriginTrialsControllerDelegate& origin_trials_delegate,
-      absl::optional<url::Origin> top_frame_origin);
+      std::optional<url::Origin> top_frame_origin);
 
   ~CriticalOriginTrialsThrottle() override;
 
@@ -38,11 +39,11 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer) override;
+      RestartWithURLReset* restart_with_url_reset) override;
   void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
@@ -58,7 +59,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   raw_ref<OriginTrialsControllerDelegate, DanglingUntriaged>
       origin_trials_delegate_;
 
-  absl::optional<url::Origin> top_frame_origin_;
+  std::optional<url::Origin> top_frame_origin_;
 
   bool is_navigation_request_ = false;
 
@@ -74,7 +75,8 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   // Determine if critical origin trials have been enabled by the server
   // response and a restart is required.
   void MaybeRestartWithTrials(
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      RestartWithURLReset* restart_with_url_reset);
 
   // Stores the pre-request information, so it can be compared with the received
   // response headers.

@@ -39,7 +39,7 @@ namespace {
 class TestDialogController : public SettingsOverriddenDialogController {
  public:
   TestDialogController(ShowParams show_params,
-                       absl::optional<DialogResult>* dialog_result_out)
+                       std::optional<DialogResult>* dialog_result_out)
       : show_params_(std::move(show_params)),
         dialog_result_out_(dialog_result_out) {
     DCHECK(dialog_result_out_);
@@ -60,7 +60,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
   const ShowParams show_params_;
 
   // The result to populate. Must outlive this object.
-  const raw_ptr<absl::optional<DialogResult>> dialog_result_out_;
+  const raw_ptr<std::optional<DialogResult>> dialog_result_out_;
 };
 
 }  // namespace
@@ -159,7 +159,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     return true;
   }
 
-  absl::optional<DialogResult> dialog_result() const { return dialog_result_; }
+  std::optional<DialogResult> dialog_result() const { return dialog_result_; }
 
  private:
   void LoadExtensionOverridingNewTab() {
@@ -230,7 +230,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   std::string test_name_;
-  absl::optional<DialogResult> dialog_result_;
+  std::optional<DialogResult> dialog_result_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

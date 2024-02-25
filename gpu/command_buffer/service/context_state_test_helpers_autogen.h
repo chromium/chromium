@@ -72,11 +72,6 @@ void ContextStateTestHelpers::SetupInitStateExpectations(
         .Times(1)
         .RetiresOnSaturation();
   }
-  if (feature_info->feature_flags().chromium_texture_filtering_hint) {
-    EXPECT_CALL(*gl, Hint(GL_TEXTURE_FILTERING_HINT_CHROMIUM, GL_NICEST))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
   SetupInitStateManualExpectationsForDoLineWidth(gl, 1.0f);
   EXPECT_CALL(*gl, PixelStorei(GL_PACK_ALIGNMENT, 4))
       .Times(1)

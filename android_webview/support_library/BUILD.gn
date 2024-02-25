@@ -10,6 +10,8 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/IsomorphicAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibProfile.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibProfileStore.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
     "java/src/org/chromium/support_lib_glue/SupportLibScriptHandlerAdapter.java",
@@ -35,6 +37,7 @@ android_library("support_lib_glue_java") {
   deps = [
     "//android_webview:browser_java",
     "//android_webview:common_java",
+    "//android_webview:common_platform_services_java",
     "//android_webview/glue:glue_java",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",

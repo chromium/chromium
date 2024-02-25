@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -23,28 +22,26 @@ namespace {
 constexpr uint32_t kMaxVersion = 1;
 }
 
-using ActivationDoneCallback = base::OnceCallback<void(std::string token)>;
-
 // Wraps the actual activation token.
 class XdgActivation::Token {
  public:
   Token(wl::Object<xdg_activation_token_v1> token,
         wl_surface* surface,
         wl_seat* seat,
-        absl::optional<wl::Serial> serial,
-        ActivationDoneCallback callback);
+        std::optional<wl::Serial> serial,
+        RequestNewTokenCallback callback);
   Token(const Token&) = delete;
   Token& operator=(const Token&) = delete;
   ~Token();
 
  private:
-  static void Done(void* data,
-                   struct xdg_activation_token_v1* xdg_activation_token_v1,
-                   const char* token);
+  static void OnDone(void* data,
+                     xdg_activation_token_v1* activation_token,
+                     const char* token);
 
   wl::Object<xdg_activation_token_v1> token_;
 
-  ActivationDoneCallback callback_;
+  RequestNewTokenCallback callback_;
 };
 
 // static
@@ -79,7 +76,12 @@ XdgActivation::XdgActivation(wl::Object<xdg_activation_v1> xdg_activation_v1,
 
 XdgActivation::~XdgActivation() = default;
 
-void XdgActivation::Activate(wl_surface* surface) const {
+void XdgActivation::Activate(wl_surface* surface,
+                             const std::string& token) const {
+  xdg_activation_v1_activate(xdg_activation_v1_.get(), token.c_str(), surface);
+}
+
+void XdgActivation::RequestNewToken(RequestNewTokenCallback callback) const {
   // The spec isn't clear about what types of surfaces should be used as
   // the requestor surface, but all implementations of xdg_activation_v1
   // known to date accept the currently keyboard focused surface for
@@ -90,7 +92,7 @@ void XdgActivation::Activate(wl_surface* surface) const {
   if (token_.get() != nullptr) {
     // If the earlier activation request is still being served, store the
     // incoming request and try to serve it after the current one is done.
-    activation_queue_.emplace(surface);
+    request_token_queue_.emplace(std::move(callback));
     return;
   }
 
@@ -112,27 +114,30 @@ void XdgActivation::Activate(wl_surface* surface) const {
       connection_->serial_tracker().GetSerial(
           {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
            wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress}),
-      base::BindOnce(&XdgActivation::OnActivateDone,
-                     weak_factory_.GetMutableWeakPtr(), surface));
+      base::BindOnce(&XdgActivation::OnTokenReceived,
+                     weak_factory_.GetMutableWeakPtr(), std::move(callback)));
 }
 
-void XdgActivation::OnActivateDone(wl_surface* surface, std::string token) {
-  xdg_activation_v1_activate(xdg_activation_v1_.get(), token.c_str(), surface);
+void XdgActivation::OnTokenReceived(RequestNewTokenCallback callback,
+                                    std::string token) {
+  std::move(callback).Run(token);
   token_.reset();
-  if (!activation_queue_.empty()) {
-    Activate(activation_queue_.front());
-    activation_queue_.pop();
+  if (!request_token_queue_.empty()) {
+    RequestNewToken(std::move(request_token_queue_.front()));
+    request_token_queue_.pop();
   }
 }
 
 XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
                             wl_surface* surface,
                             wl_seat* seat,
-                            absl::optional<wl::Serial> serial,
-                            ActivationDoneCallback callback)
+                            std::optional<wl::Serial> serial,
+                            RequestNewTokenCallback callback)
     : token_(std::move(token)), callback_(std::move(callback)) {
-  static constexpr xdg_activation_token_v1_listener kListener = {&Done};
-  xdg_activation_token_v1_add_listener(token_.get(), &kListener, this);
+  static constexpr xdg_activation_token_v1_listener kXdgActivationListener = {
+      .done = &OnDone};
+  xdg_activation_token_v1_add_listener(token_.get(), &kXdgActivationListener,
+                                       this);
   if (surface) {
     xdg_activation_token_v1_set_surface(token_.get(), surface);
   }
@@ -145,12 +150,13 @@ XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
 XdgActivation::Token::~Token() = default;
 
 // static
-void XdgActivation::Token::Done(
-    void* data,
-    struct xdg_activation_token_v1* xdg_activation_token_v1,
-    const char* token) {
-  auto* const self = static_cast<XdgActivation::Token*>(data);
-  std::move(self->callback_).Run(token);
+void XdgActivation::Token::OnDone(void* data,
+                                  xdg_activation_token_v1* activation_token,
+                                  const char* token) {
+  if (auto* const self = static_cast<XdgActivation::Token*>(data)) {
+    DCHECK(!self->callback_.is_null());
+    std::move(self->callback_).Run(token);
+  }
 }
 
 }  // namespace ui

@@ -85,24 +85,6 @@ const HatsConfig kHatsOnboardingSurvey = {
     prefs::kHatsOnboardingSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
-// Unlock Experience Survey -- shown after successfully unlocking with Smart
-// Lock
-const HatsConfig kHatsSmartLockSurvey = {
-    ::features::kHappinessTrackingSystemSmartLock,  // feature
-    base::Days(7),                                  // hatsNewDeviceThreshold
-    prefs::kHatsSmartLockDeviceIsSelected,          // hatsIsSelectedPrefName
-    prefs::kHatsSmartLockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
-};
-
-// Unlock Experience Survey -- shown after successfully unlocking with any auth
-// method execpt Smart Lock
-const HatsConfig kHatsUnlockSurvey = {
-    ::features::kHappinessTrackingSystemUnlock,  // feature
-    base::Days(7),                               // hatsNewDeviceThreshold
-    prefs::kHatsUnlockDeviceIsSelected,          // hatsIsSelectedPrefName
-    prefs::kHatsUnlockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
-};
-
 // ARC++ Games Survey -- shown after a user played a top XX ARC++ game
 const HatsConfig kHatsArcGamesSurvey = {
     ::features::kHappinessTrackingSystemArcGames,  // feature
@@ -120,6 +102,15 @@ const HatsConfig kHatsAudioSurvey = {
     prefs::kHatsAudioSurveyCycleEndTs,          // cycle_end_timestamp_pref_name
 };
 
+// Bluetooth Audio Survey -- shown after the user closed an audio stream
+// sent to a Bluetooth device after listening for more than one minute.
+const HatsConfig kHatsBluetoothAudioSurvey = {
+    ::features::kHappinessTrackingSystemBluetoothAudio,  // feature
+    base::Days(90),                                      // new_device_threshold
+    prefs::kHatsBluetoothAudioDeviceIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsBluetoothAudioSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
 // Personalization Avatar Survey -- shown 60 seconds after a user closes the
 // Avatar selection page of either OS Settings or Personalization Hub, depending
 // on whether PersonalizationHub feature is enabled.

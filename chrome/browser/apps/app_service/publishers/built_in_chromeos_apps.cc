@@ -44,8 +44,7 @@ apps::AppPtr CreateApp(const app_list::InternalApp& internal_app) {
   }
 
   app->icon_key =
-      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                    internal_app.icon_resource_id, apps::IconEffects::kNone);
+      apps::IconKey(internal_app.icon_resource_id, apps::IconEffects::kNone);
 
   app->recommendable = internal_app.recommendable;
   app->searchable = internal_app.searchable;

@@ -35,7 +35,8 @@ BrowserLauncher* BrowserLauncher::GetForProfile(Profile* profile) {
       profile->GetUserData(kBrowserLauncherKey));
 }
 
-bool BrowserLauncher::LaunchForLastOpenedProfiles(bool skip_crash_restore) {
+bool BrowserLauncher::LaunchForLastOpenedProfiles(bool skip_crash_restore,
+                                                  bool restore_tabbed_browser) {
   DCHECK(!is_launching_for_last_opened_profiles_);
 
   // Launching for last opened profiles can only complete successfully if
@@ -83,7 +84,7 @@ bool BrowserLauncher::LaunchForLastOpenedProfiles(bool skip_crash_restore) {
   browser_creator.LaunchBrowserForLastProfiles(
       *lacros_command_line, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, chrome::startup::IsFirstRun::kNo,
-      profile_info, last_opened_profiles);
+      profile_info, last_opened_profiles, restore_tabbed_browser);
 
   return true;
 }

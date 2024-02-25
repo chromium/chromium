@@ -438,6 +438,26 @@ TEST_F(HistoryTabHelperTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsPopulatesAppId) {
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+
+  std::string raw_response_headers = "HTTP/1.1 234 OK\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  DCHECK(response_headers);
+  navigation_handle.set_response_headers(response_headers);
+
+  history_tab_helper()->SetAppId("org.chromium.testapp");
+
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // Make sure the `app_id` is populated.
+  ASSERT_EQ(*args.app_id, "org.chromium.testapp");
+}
+
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
   GURL new_url("http://newurl.com");
 

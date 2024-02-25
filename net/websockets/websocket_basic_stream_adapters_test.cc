@@ -4,9 +4,16 @@
 
 #include "net/websockets/websocket_basic_stream_adapters.h"
 
-#include <utility>
+#include <stdint.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,35 +21,50 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
-#include "net/dns/mock_host_resolver.h"
+#include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
+#include "net/http/transport_security_state.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
+#include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_session_peer.h"
 #include "net/quic/quic_chromium_connection_helper.h"
+#include "net/quic/quic_chromium_packet_reader.h"
+#include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_key.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/socket/connect_job.h"
+#include "net/socket/client_socket_pool.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
-#include "net/socket/transport_client_socket_pool.h"
-#include "net/socket/websocket_endpoint_lock_manager.h"
-#include "net/spdy/spdy_session.h"
+#include "net/socket/stream_socket.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config.h"
@@ -52,19 +74,43 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/quiche/quic/core/quic_stream_id_manager.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
+#include "net/third_party/quiche/src/quiche/common/quiche_buffer_allocator.h"
+#include "net/third_party/quiche/src/quiche/common/simple_buffer_allocator.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/http_encoder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_decoder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/websockets/websocket_http3_handshake_stream.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
+
+namespace net {
+class QuicChromiumClientStream;
+class SpdySession;
+class WebSocketEndpointLockManager;
+class X509Certificate;
+}  // namespace net
 
 using testing::_;
 using testing::AnyNumber;
@@ -86,23 +132,20 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
   ~WebSocketClientSocketHandleAdapterTest() override = default;
 
   bool InitClientSocketHandle(ClientSocketHandle* connection) {
-    auto ssl_config_for_origin = std::make_unique<SSLConfig>();
-    ssl_config_for_origin->alpn_protos = {kProtoHTTP11};
     scoped_refptr<ClientSocketPool::SocketParams> socks_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
-            std::move(ssl_config_for_origin),
-            /*ssl_config_for_proxy=*/nullptr);
+            /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     TestCompletionCallback callback;
     int rv = connection->Init(
         ClientSocketPool::GroupId(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-            SecureDnsPolicy::kAllow),
-        socks_params, TRAFFIC_ANNOTATION_FOR_TESTS /* proxy_annotation_tag */,
+            SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+        socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
         network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                        ProxyServer::Direct()),
+                                        ProxyChain::Direct()),
         NetLogWithSource());
     rv = callback.GetResult(rv);
     return rv == OK;
@@ -170,7 +213,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Read) {
 
   // Buffer larger than each MockRead.
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
   EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
@@ -201,7 +244,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, ReadIntoSmallBuffer) {
 
   // Buffer smaller than each MockRead.
   const int kReadBufSize = 2;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(2, rv);
   EXPECT_EQ("fo", base::StringPiece(read_buf->data(), rv));
@@ -273,7 +316,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
   EXPECT_TRUE(adapter.is_initialized());
 
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   int rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -311,12 +354,13 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
   WebSocketSpdyStreamAdapterTest()
       : url_("wss://www.example.org/"),
         key_(HostPortPair::FromURL(url_),
-             ProxyServer::Direct(),
              PRIVACY_MODE_DISABLED,
-             SpdySessionKey::IsProxySession::kFalse,
+             ProxyChain::Direct(),
+             SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
-             SecureDnsPolicy::kAllow),
+             SecureDnsPolicy::kAllow,
+             /*disable_cert_verification_network_fetches=*/false),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}
 
@@ -638,7 +682,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   constexpr int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -727,7 +771,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   const int kReadBufSize = 3;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -797,7 +841,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, CallDelegateOnCloseShouldNotCrash) {
 
   // Buffer larger than each MockRead.
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -899,7 +943,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, AsyncReadAndWrite) {
   base::RunLoop().RunUntilIdle();
 
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -977,7 +1021,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ReadCallbackDestroysAdapter) {
   KillerCallback callback(std::move(adapter));
 
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   rv = adapter_raw->Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -1075,7 +1119,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1151,7 +1195,6 @@ class WebSocketQuicStreamAdapterTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
       base::StringPiece data) {
-    DCHECK(version_.HasIetfQuicFrames());
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         data.size(), quiche::SimpleBufferAllocator::Get());
     return server_maker_.MakeDataPacket(
@@ -1225,6 +1268,7 @@ class WebSocketQuicStreamAdapterTest
         &transport_security_state_, &ssl_config_service_,
         /*server_info=*/nullptr,
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
@@ -1235,7 +1279,8 @@ class WebSocketQuicStreamAdapterTest
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
         /*migrate_idle_session=*/true, /*allow_port_migration=*/false,
-        kDefaultIdleSessionMigrationPeriod, kMaxTimeOnNonDefaultNetwork,
+        kDefaultIdleSessionMigrationPeriod, /*multi_port_probing_interval=*/0,
+        kMaxTimeOnNonDefaultNetwork,
         kMaxMigrationsToNonDefaultNetworkOnWriteError,
         kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
         kQuicYieldAfterPacketsRead,
@@ -1243,9 +1288,7 @@ class WebSocketQuicStreamAdapterTest
             kQuicYieldAfterDurationMilliseconds),
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
-        dns_start, dns_end,
-        std::make_unique<quic::QuicClientPushPromiseIndex>(),
-        base::DefaultTickClock::GetInstance(),
+        dns_start, dns_end, base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
         NetLog::Get());
@@ -1552,7 +1595,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
 
   // Buffer larger than each MockRead.
   const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 
   int rv =
@@ -1560,7 +1603,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();
@@ -1634,7 +1677,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
   run_loop.Run();
 
   const int kReadBufSize = 3;
-  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 
   int rv =
@@ -1642,7 +1685,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();

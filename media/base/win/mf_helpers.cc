@@ -19,7 +19,11 @@
 #include "base/win/windows_version.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/channel_layout.h"
 #include "media/base/win/mf_helpers.h"
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#include "media/formats/mp4/ac4.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #include "media/media_buildflags.h"
 
 namespace media {
@@ -92,6 +96,10 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
     case AudioCodec::kDTSXP2:
       return MFAudioFormat_DTS_UHD;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    case AudioCodec::kAC4:
+      return MFAudioFormat_Dolby_AC4;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
     default:
       return GUID_NULL;
   }
@@ -295,16 +303,26 @@ ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {
       return CHANNEL_LAYOUT_MONO;
     case KSAUDIO_SPEAKER_STEREO:
       return CHANNEL_LAYOUT_STEREO;
+    case KSAUDIO_SPEAKER_2POINT1:
+      return CHANNEL_LAYOUT_2POINT1;
+    case KSAUDIO_SPEAKER_3POINT0:
+      return CHANNEL_LAYOUT_SURROUND;
+    case KSAUDIO_SPEAKER_3POINT1:
+      return CHANNEL_LAYOUT_3_1;
     case KSAUDIO_SPEAKER_QUAD:
       return CHANNEL_LAYOUT_QUAD;
     case KSAUDIO_SPEAKER_SURROUND:
       return CHANNEL_LAYOUT_4_0;
+    case KSAUDIO_SPEAKER_5POINT0:
+      return CHANNEL_LAYOUT_5_0;
     case KSAUDIO_SPEAKER_5POINT1:
       return CHANNEL_LAYOUT_5_1_BACK;
     case KSAUDIO_SPEAKER_5POINT1_SURROUND:
       return CHANNEL_LAYOUT_5_1;
+    case KSAUDIO_SPEAKER_7POINT0:
+      return CHANNEL_LAYOUT_7_0;
     case KSAUDIO_SPEAKER_7POINT1:
-      return CHANNEL_LAYOUT_7_1_WIDE;
+      return CHANNEL_LAYOUT_7_1_WIDE_BACK;
     case KSAUDIO_SPEAKER_7POINT1_SURROUND:
       return CHANNEL_LAYOUT_7_1;
     case KSAUDIO_SPEAKER_DIRECTOUT:
@@ -396,19 +414,19 @@ HRESULT GetDefaultAudioType(const AudioDecoderConfig decoder_config,
                                            samples_per_second));
   }
 
-  int bits_per_sample = decoder_config.bytes_per_frame() * 8;
+  int bits_per_sample = decoder_config.bytes_per_channel() * 8;
   if (bits_per_sample > 0) {
     RETURN_IF_FAILED(
         media_type->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, bits_per_sample));
   }
 
   if (uncompressed) {
-    unsigned long block_alignment = channels * (bits_per_sample / 8);
+    unsigned long block_alignment = decoder_config.bytes_per_frame();
     if (block_alignment > 0) {
       RETURN_IF_FAILED(
           media_type->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, block_alignment));
     }
-    unsigned long average_bps = samples_per_second * (bits_per_sample / 8);
+    unsigned long average_bps = samples_per_second * block_alignment;
     if (average_bps > 0) {
       RETURN_IF_FAILED(
           media_type->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, average_bps));
@@ -419,7 +437,7 @@ HRESULT GetDefaultAudioType(const AudioDecoderConfig decoder_config,
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
+HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
                         IMFMediaType** media_type_out) {
   DVLOG(1) << __func__;
 
@@ -464,6 +482,45 @@ HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
   return S_OK;
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+// An attribute defined to indicate if the input audio is already
+// previrtualized. Now it is used to indicate if the input stream is a Dolby AC4
+// IMS stream. That infomation will be used by Dolby AC4 MFT to create correct
+// output media types.
+// GUID: {4EACAB51-FFE5-421A-A2A7-8B7409A1CAC4}
+// Type: UINT32(BOOL)
+DEFINE_GUID(MF_MT_SPATIAL_AUDIO_IS_PREVIRTUALIZED,
+            0x4eacab51,
+            0xffe5,
+            0x421a,
+            0xa2,
+            0xa7,
+            0x8b,
+            0x74,
+            0x09,
+            0xa1,
+            0xca,
+            0xc4);
+
+HRESULT GetAC4AudioType(const AudioDecoderConfig& decoder_config,
+                        IMFMediaType** media_type_out) {
+  RETURN_IF_FAILED(GetDefaultAudioType(decoder_config, media_type_out));
+  if (decoder_config.extra_data().size() != sizeof(media::mp4::AC4StreamInfo)) {
+    return MF_E_INVALIDMEDIATYPE;
+  }
+  auto* media_type = *media_type_out;
+  auto stream_info = *reinterpret_cast<const media::mp4::AC4StreamInfo*>(
+      decoder_config.extra_data().data());
+  RETURN_IF_FAILED(
+      media_type->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, stream_info.channels));
+  RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_SPATIAL_AUDIO_IS_PREVIRTUALIZED,
+                                         stream_info.is_ims));
+  RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_SPATIAL_AUDIO_DATA_PRESENT,
+                                         stream_info.is_ajoc));
+  return S_OK;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 // MFTIME defines units of 100 nanoseconds.
 MFTIME TimeDeltaToMfTime(base::TimeDelta time) {

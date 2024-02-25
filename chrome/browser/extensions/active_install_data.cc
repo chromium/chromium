@@ -4,9 +4,11 @@
 
 #include "chrome/browser/extensions/active_install_data.h"
 
+#include "extensions/common/extension_id.h"
+
 namespace extensions {
 
-ActiveInstallData::ActiveInstallData(const std::string& extension_id)
+ActiveInstallData::ActiveInstallData(const ExtensionId& extension_id)
     : extension_id(extension_id) {}
 
 }  // namespace extensions

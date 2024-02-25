@@ -17,8 +17,8 @@ class CORE_EXPORT CSSViewValue : public CSSValue {
  public:
   CSSViewValue(const CSSValue* axis, const CSSValue* inset);
 
-  const CSSValue* Axis() const { return axis_; }
-  const CSSValue* Inset() const { return inset_; }
+  const CSSValue* Axis() const { return axis_.Get(); }
+  const CSSValue* Inset() const { return inset_.Get(); }
 
   String CustomCSSText() const;
   bool Equals(const CSSViewValue&) const;

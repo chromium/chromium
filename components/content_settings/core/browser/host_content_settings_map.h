@@ -183,11 +183,22 @@ class HostContentSettingsMap : public content_settings::Observer,
   // used immediately the validity of each entry should be checked using
   // IsExpired().
   //
+  // The intended purpose of this method is to display a list of settings in the
+  // settings UI. It should not be used to evaluate whether settings are
+  // enabled. Use GetWebsiteSetting for that.
+  //
   // This may be called on any thread.
   ContentSettingsForOneType GetSettingsForOneType(
       ContentSettingsType content_type,
-      absl::optional<content_settings::SessionModel> session_model =
-          absl::nullopt) const;
+      std::optional<content_settings::mojom::SessionModel> session_model =
+          std::nullopt) const;
+
+  // Returns the correct patterns for the scoping of the particular content
+  // type.
+  static content_settings::PatternPair GetPatternsForContentSettingsType(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type);
 
   // Sets the default setting for a particular content type. This method must
   // not be invoked on an incognito map.
@@ -303,12 +314,14 @@ class HostContentSettingsMap : public content_settings::Observer,
                              ContentSettingsType type);
 
   // Updates the expiration to `lifetime + now()`, if `setting_to_match` is
-  // nullopt or if it matches the rule's value. Returns true if any setting was
-  // matched and updated.
-  bool RenewContentSetting(const GURL& primary_url,
-                           const GURL& secondary_url,
-                           ContentSettingsType type,
-                           absl::optional<ContentSetting> setting_to_match);
+  // nullopt or if it matches the rule's value. Returns the TimeDelta between
+  // now and the setting's old expiration time if any setting was matched and
+  // updated; nullopt otherwise.
+  std::optional<base::TimeDelta> RenewContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type,
+      std::optional<ContentSetting> setting_to_match);
 
   // Clears all host-specific settings for one content type.
   //
@@ -389,10 +402,10 @@ class HostContentSettingsMap : public content_settings::Observer,
   FRIEND_TEST_ALL_PREFIXES(
       OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
       TestExpiryEnforcement);
-  FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
+  FRIEND_TEST_ALL_PREFIXES(IndexedHostContentSettingsMapTest,
                            MigrateRequestingAndTopLevelOriginSettings);
   FRIEND_TEST_ALL_PREFIXES(
-      HostContentSettingsMapTest,
+      IndexedHostContentSettingsMapTest,
       MigrateRequestingAndTopLevelOriginSettingsResetsEmbeddedSetting);
 
   ~HostContentSettingsMap() override;
@@ -409,6 +422,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Collect UMA data of exceptions.
   void RecordExceptionMetrics();
+  // Collect UMA data for 3PC exceptions.
+  void RecordThirdPartyCookieMetrics(const ContentSettingsForOneType& settings);
 
   // Adds content settings for |content_type| provided by |provider|, into
   // |settings|. If |incognito| is true, adds only the content settings which
@@ -421,7 +436,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ContentSettingsForOneType* settings,
       bool incognito,
-      absl::optional<content_settings::SessionModel> session_model) const;
+      std::optional<content_settings::mojom::SessionModel> session_model) const;
 
   // Call UsedContentSettingsProviders() whenever you access
   // content_settings_providers_ (apart from initialization and
@@ -462,6 +477,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsPattern* secondary_pattern,
       content_settings::RuleMetaData* metadata,
       base::Clock* clock);
+
+  static base::Value GetContentSettingValueAndPatterns(
+      content_settings::Rule* rule,
+      ContentSettingsPattern* primary_pattern,
+      ContentSettingsPattern* secondary_pattern,
+      content_settings::RuleMetaData* metadata);
 
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for
@@ -536,7 +557,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // List of content settings providers containing settings which can be
   // modified by the user. Members are owned by the
   // |content_settings_providers_| map above.
-  std::vector<content_settings::UserModifiableProvider*>
+  std::vector<
+      raw_ptr<content_settings::UserModifiableProvider, VectorExperimental>>
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.

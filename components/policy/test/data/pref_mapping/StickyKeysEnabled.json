@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "StickyKeysEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.sticky_keys_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

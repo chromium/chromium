@@ -4,10 +4,11 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java
@@ -29,14 +30,30 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     @Override
     public void getSelectedSegment(
             String segmentationKey, Callback<SegmentSelectionResult> callback) {
-        SegmentationPlatformServiceImplJni.get().getSelectedSegment(
-                mNativePtr, this, segmentationKey, callback);
+        SegmentationPlatformServiceImplJni.get()
+                .getSelectedSegment(mNativePtr, this, segmentationKey, callback);
+    }
+
+    @Override
+    public void getClassificationResult(
+            String segmentationKey,
+            PredictionOptions predictionOptions,
+            InputContext inputContext,
+            Callback<ClassificationResult> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .getClassificationResult(
+                        mNativePtr,
+                        this,
+                        segmentationKey,
+                        predictionOptions,
+                        inputContext,
+                        callback);
     }
 
     @Override
     public SegmentSelectionResult getCachedSegmentResult(String segmentationKey) {
-        return SegmentationPlatformServiceImplJni.get().getCachedSegmentResult(
-                mNativePtr, this, segmentationKey);
+        return SegmentationPlatformServiceImplJni.get()
+                .getCachedSegmentResult(mNativePtr, this, segmentationKey);
     }
 
     @CalledByNative
@@ -46,11 +63,23 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
 
     @NativeMethods
     interface Natives {
-        void getSelectedSegment(long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller, String segmentationKey,
+        void getSelectedSegment(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey,
                 Callback<SegmentSelectionResult> callback);
 
-        SegmentSelectionResult getCachedSegmentResult(long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller, String segmentationKey);
+        void getClassificationResult(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey,
+                PredictionOptions predictionOptions,
+                InputContext inputContext,
+                Callback<ClassificationResult> callback);
+
+        SegmentSelectionResult getCachedSegmentResult(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller,
+                String segmentationKey);
     }
 }

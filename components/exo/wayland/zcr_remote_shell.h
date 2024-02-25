@@ -5,13 +5,12 @@
 #ifndef COMPONENTS_EXO_WAYLAND_ZCR_REMOTE_SHELL_H_
 #define COMPONENTS_EXO_WAYLAND_ZCR_REMOTE_SHELL_H_
 
+#include <remote-shell-unstable-v1-server-protocol.h>
+
 #include <stdint.h>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-
-struct wl_client;
-struct wl_resource;
 
 namespace gfx {
 class Rect;
@@ -29,6 +28,9 @@ class Display;
 
 namespace wayland {
 
+constexpr uint32_t kZcrRemoteShellVersion =
+    ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGED_IN_OUTPUT_SINCE_VERSION;
+
 struct WaylandRemoteShellData {
   using OutputResourceProvider =
       base::RepeatingCallback<wl_resource*(wl_client*, int64_t)>;
@@ -38,7 +40,7 @@ struct WaylandRemoteShellData {
   ~WaylandRemoteShellData();
 
   // Owned by WaylandServerController, which always outlives this.
-  const raw_ptr<Display, ExperimentalAsh> display;
+  const raw_ptr<Display> display;
 
   OutputResourceProvider const output_provider;
 

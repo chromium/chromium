@@ -7,6 +7,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +20,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
+#include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -46,7 +49,9 @@ NetworkLocationProvider::NetworkLocationProvider(
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
     PositionCache* position_cache,
-    base::RepeatingClosure internals_updated_closure)
+    base::RepeatingClosure internals_updated_closure,
+    NetworkRequestCallback network_request_callback,
+    NetworkResponseCallback network_response_callback)
     : wifi_data_update_callback_(
           base::BindRepeating(&NetworkLocationProvider::OnWifiDataUpdate,
                               base::Unretained(this))),
@@ -59,10 +64,14 @@ NetworkLocationProvider::NetworkLocationProvider(
           api_key,
           base::BindRepeating(&NetworkLocationProvider::OnLocationResponse,
                               base::Unretained(this)))),
-      internals_updated_closure_(std::move(internals_updated_closure)) {
+      internals_updated_closure_(std::move(internals_updated_closure)),
+      network_request_callback_(std::move(network_request_callback)),
+      network_response_callback_(std::move(network_response_callback)) {
   DCHECK(position_cache_);
   CHECK(internals_updated_closure_);
-#if BUILDFLAG(IS_APPLE)
+  CHECK(network_request_callback_);
+  CHECK(network_response_callback_);
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(geolocation_manager);
   geolocation_manager_ = geolocation_manager;
   permission_observers_ = geolocation_manager->GetObserverList();
@@ -78,7 +87,7 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   permission_observers_->RemoveObserver(this);
 #endif
   if (IsStarted())
@@ -95,12 +104,12 @@ void NetworkLocationProvider::FillDiagnostics(
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
     }
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
     if (!is_system_permission_granted_) {
       diagnostics.provider_state = mojom::GeolocationDiagnostics::
           ProviderState::kBlockedBySystemPermission;
     }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   } else {
     diagnostics.provider_state =
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
@@ -132,7 +141,7 @@ void NetworkLocationProvider::OnPermissionGranted() {
   }
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
 void NetworkLocationProvider::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   is_awaiting_initial_permission_status_ = false;
@@ -157,7 +166,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
       location_provider_update_callback_.Run(
@@ -200,7 +209,8 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
 void NetworkLocationProvider::OnLocationResponse(
     mojom::GeopositionResultPtr result,
     bool server_error,
-    const WifiData& wifi_data) {
+    const WifiData& wifi_data,
+    mojom::NetworkLocationResponsePtr response_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
   GEOLOCATION_LOG(DEBUG) << "Got new position";
   // Record the position and update our cache.
@@ -214,6 +224,10 @@ void NetworkLocationProvider::OnLocationResponse(
     location_provider_update_callback_.Run(this, std::move(result));
   }
   internals_updated_closure_.Run();
+
+  if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
+    network_response_callback_.Run(std::move(response_data));
+  }
 }
 
 void NetworkLocationProvider::StartProvider(bool high_accuracy) {
@@ -257,7 +271,7 @@ void NetworkLocationProvider::RequestPosition() {
                          << is_new_data_available_ << " is_wifi_data_complete_="
                          << is_wifi_data_complete_;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   if (!is_system_permission_granted_) {
     return;
   }
@@ -351,6 +365,10 @@ void NetworkLocationProvider::RequestPosition() {
       })");
   request_->MakeRequest(wifi_data_, wifi_timestamp_,
                         partial_traffic_annotation);
+
+  if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
+    network_request_callback_.Run(request_->GetRequestDataForDiagnostics());
+  }
 }
 
 bool NetworkLocationProvider::IsStarted() const {

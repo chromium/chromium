@@ -5,6 +5,7 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
@@ -36,7 +39,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace account_manager {
@@ -49,9 +51,6 @@ constexpr int kTokensFileMaxSizeInBytes = 100000;  // ~100 KB.
 
 constexpr char kNumAccountsMetricName[] = "AccountManager.NumAccounts";
 constexpr int kMaxNumAccountsMetric = 10;
-
-// The value `all` means that all usages of managed accounts are allowed.
-constexpr char kDefaultSecondaryGoogleAccountUsage[] = "all";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -82,11 +81,11 @@ void RecordInitializationTime(
 }
 
 // Returns `nullopt` if `account_type` is `ACCOUNT_TYPE_UNSPECIFIED`.
-absl::optional<::account_manager::AccountType> FromProtoAccountType(
+std::optional<::account_manager::AccountType> FromProtoAccountType(
     const internal::AccountType& account_type) {
   switch (account_type) {
     case internal::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
-      return absl::nullopt;
+      return std::nullopt;
     case internal::AccountType::ACCOUNT_TYPE_GAIA:
       static_assert(
           static_cast<int>(internal::AccountType::ACCOUNT_TYPE_GAIA) ==
@@ -111,6 +110,13 @@ internal::AccountType ToProtoAccountType(
     case ::account_manager::AccountType::kActiveDirectory:
       return internal::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
   }
+}
+
+// Returns a Base16 encoded SHA1 digest of `data`.
+std::string Sha1Digest(const std::string& data) {
+  const base::SHA1Digest hash =
+      base::SHA1HashSpan(base::as_bytes(base::make_span(data)));
+  return base::HexEncode(hash);
 }
 
 }  // namespace
@@ -237,7 +243,7 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
       return;
     }
 
-    absl::optional<std::string> maybe_token =
+    std::optional<std::string> maybe_token =
         account_manager_->GetRefreshToken(account_key_);
     if (!maybe_token.has_value()) {
       FireOnGetTokenFailure(GoogleServiceAuthError(
@@ -278,8 +284,6 @@ void AccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
       /*default_value=*/true);
-  registry->RegisterStringPref(prefs::kSecondaryGoogleAccountUsage,
-                               kDefaultSecondaryGoogleAccountUsage);
 }
 
 void AccountManager::SetPrefService(PrefService* pref_service) {
@@ -409,7 +413,7 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
 
   bool is_any_account_corrupt = false;
   for (const auto& account : accounts_proto.accounts()) {
-    const absl::optional<::account_manager::AccountType> account_type =
+    const std::optional<::account_manager::AccountType> account_type =
         FromProtoAccountType(account.account_type());
     if (!account_type.has_value()) {
       LOG(WARNING) << "Ignoring invalid account_type load from disk";
@@ -773,6 +777,30 @@ void AccountManager::CheckDummyGaiaTokenForAllAccounts(
   std::move(callback).Run(accounts_list);
 }
 
+void AccountManager::GetTokenHash(
+    const ::account_manager::AccountKey& account_key,
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(init_state_, InitializationState::kNotStarted);
+
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::GetTokenHash, weak_factory_.GetWeakPtr(), account_key,
+        std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
+
+  DCHECK_EQ(init_state_, InitializationState::kInitialized);
+  auto it = accounts_.find(account_key);
+  if (it == accounts_.end()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::move(callback).Run(Sha1Digest(it->second.token));
+}
+
 void AccountManager::MaybeRevokeTokenOnServer(
     const ::account_manager::AccountKey& account_key,
     const std::string& old_token) {
@@ -808,7 +836,7 @@ bool AccountManager::IsEphemeralMode() const {
   return home_dir_.empty();
 }
 
-absl::optional<std::string> AccountManager::GetRefreshToken(
+std::optional<std::string> AccountManager::GetRefreshToken(
     const ::account_manager::AccountKey& account_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
@@ -816,10 +844,10 @@ absl::optional<std::string> AccountManager::GetRefreshToken(
 
   auto it = accounts_.find(account_key);
   if (it == accounts_.end() || it->second.token.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional<std::string>(it->second.token);
+  return std::make_optional<std::string>(it->second.token);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -828,6 +856,10 @@ AccountManager::GetUrlLoaderFactory() {
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
 
   return url_loader_factory_;
+}
+
+base::WeakPtr<AccountManager> AccountManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace account_manager

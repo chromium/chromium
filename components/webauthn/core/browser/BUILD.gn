@@ -2,9 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 source_set("browser") {
-  sources = []
-  deps = []
+  sources = [
+    "passkey_model_type_controller.cc",
+    "passkey_model_type_controller.h",
+  ]
+  deps = [ "//components/sync" ]
 
   if (!is_ios) {
     sources += [ "internal_authenticator.h" ]
@@ -17,33 +22,51 @@ source_set("browser") {
 
   if (!is_ios && !is_android) {
     sources += [
+      "passkey_model.cc",
       "passkey_model.h",
+      "passkey_model_change.cc",
+      "passkey_model_change.h",
       "passkey_model_utils.cc",
       "passkey_model_utils.h",
       "passkey_sync_bridge.cc",
       "passkey_sync_bridge.h",
     ]
+    deps += [ "//base" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_ios && !is_android) {
+    sources += [ "passkey_model_utils_unittest.cc" ]
     deps += [
-      "//base",
-      "//components/sync",
+      ":browser",
+      "//base/test:test_support",
+      "//components/sync/protocol",
+      "//crypto",
     ]
   }
 }
 
 static_library("test_support") {
   testonly = true
-  sources = [
-    "mock_internal_authenticator.cc",
-    "mock_internal_authenticator.h",
-  ]
-  deps = [
-    ":browser",
-    "//base/test:test_support",
-    "//components/sync",
-    "//content/public/browser",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+  if (use_blink) {
+    sources = [
+      "mock_internal_authenticator.cc",
+      "mock_internal_authenticator.h",
+    ]
+    deps = [
+      ":browser",
+      "//base/test:test_support",
+      "//components/sync",
+      "//content/public/browser",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
   if (!is_ios && !is_android) {
     sources += [
       "test_passkey_model.cc",

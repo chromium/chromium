@@ -48,10 +48,21 @@ constexpr char kDisplayTemplateIdentifiers[] =
     "dns-query{?dns}";
 constexpr char kDisplayTemplateIdentifiersUnaffiliated[] =
     "https://dns.google.alternativeuri/"
-    "${test-user@testdomain.com}-${testdomain.com}-${test-user}-${DEVICE_"
-    "DIRECTORY_ID}-${DEVICE_ASSET_ID}-${"
-    "DEVICE_SERIAL_NUMBER}-${DEVICE_ANNOTATED_LOCATION}/"
+    "${test-user@testdomain.com}-${testdomain.com}-${test-user}-${VALUE_NOT_"
+    "AVAILABLE}-${VALUE_NOT_AVAILABLE}-${VALUE_NOT_AVAILABLE}-${VALUE_NOT_"
+    "AVAILABLE}/dns-query{?dns}";
+
+constexpr char kEffectiveTemplateIdentifiersUnaffiliated[] =
+    "https://dns.google.alternativeuri/"
+    "EAE2DCB2164EB64B695BC555C4EC45D01C8F0DF73CCD3321E45E5B49F22A22DF-"
+    "0641BDB5149AF8B202F8EC96D8C256774CDFE9456CB12663DDF5897AFD91BC78-"
+    "F3BA0BDE2D6E8DBE626D0B9ECF7862B18256C4D1807621F9F01AF06A3F603137-"
+    "9AB270C9961EBBDF728F43396B0A25A1F198EA5F1F31719758C64E78839B928B-"
+    "9AB270C9961EBBDF728F43396B0A25A1F198EA5F1F31719758C64E78839B928B-"
+    "9AB270C9961EBBDF728F43396B0A25A1F198EA5F1F31719758C64E78839B928B-"
+    "9AB270C9961EBBDF728F43396B0A25A1F198EA5F1F31719758C64E78839B928B/"
     "dns-query{?dns}";
+
 constexpr char kEffectiveTemplateIdentifiers[] =
     "https://dns.google.alternativeuri/"
     "EAE2DCB2164EB64B695BC555C4EC45D01C8F0DF73CCD3321E45E5B49F22A22DF-"
@@ -71,6 +82,16 @@ constexpr char kEffectiveTemplateIdentifiersWithTestSalt[] =
     "69D97D906733DFAD7B7AEE5B7632DDD65838EAACEF2C35682C022CE121FB7E67-"
     "F8F33F2554E3E2223391375D12FC6CC8744CE1EBD02F4E73941FEB66FFC3A4CE-"
     "752F92CB761746F2ACE4DB56D7CCD332E2737A2921B154E280E528532CDA3E1B/"
+    "dns-query{?dns}";
+constexpr char kEffectiveTemplateIdentifiersNoSalt[] =
+    "https://dns.google.alternativeuri/"
+    "B07D2C5D119EB1881671C3B8D84CBE4FE3595C0C9ECBBF7670B18DDFDA072F66-"
+    "E5E8A65918F11869E27483F8FB2014EF91D3E3C27DE3959FFFF365E59A8D3A4F-"
+    "F85AC825D102B9F2D546AA1679EA991AE845994C1343730D564F3FCD0A2168C3-"
+    "519F1980774A18DFCFC2003B4DC27E3497BF9B586E5901D7F2F6EDD1845613A9-"
+    "505CBC62B85263246EE6FC89264D4039E5B55FD353885EC86C2DAF5CAA05399E-"
+    "87278CD685B7191BB97AA713083522D99DBA30FD6F1DEC3C898E8745FB97E3E3-"
+    "9CBE0CF3CA986C6BD8241B5A7030FBB807B7340AEFE0C53541B54545A888B551/"
     "dns-query{?dns}";
 
 constexpr char kTestDeviceDirectoryId[] = "85729104-ef7a-5718d62e72ca";
@@ -137,8 +158,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
@@ -184,6 +204,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersUnaffiliated) {
 
   EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(),
             kDisplayTemplateIdentifiersUnaffiliated);
+  EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
+            kEffectiveTemplateIdentifiersUnaffiliated);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
@@ -262,7 +284,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
   EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(),
             kDisplayTemplateIdentifiers);
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
-            kDisplayTemplateIdentifiers);
+            kEffectiveTemplateIdentifiersNoSalt);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when

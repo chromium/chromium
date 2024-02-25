@@ -65,11 +65,6 @@ if (ozone_platform_x11) {
   ozone_platform_ui_test_support_deps += [ "platform/x11:test_support" ]
 }
 
-if (ozone_platform_scenic) {
-  ozone_platforms += [ "scenic" ]
-  ozone_platform_deps += [ "platform/scenic" ]
-}
-
 if (ozone_platform_flatland) {
   ozone_platforms += [ "flatland" ]
   ozone_platform_deps += [ "platform/flatland" ]
@@ -124,13 +119,6 @@ component("ozone_base") {
     "public/swap_completion_callback.h",
     "public/system_input_injector.h",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "public/palm_detector.cc",
-      "public/palm_detector.h",
-    ]
-  }
 
   defines = [ "IS_OZONE_BASE_IMPL" ]
 
@@ -236,8 +224,11 @@ source_set("platform") {
   # Platforms are always linked into //ui/ozone and can include our headers.
   allow_circular_includes_from = ozone_platform_deps
 
-  # This is used for platform tests.
-  visibility += [ "//ui/ozone/platform/*" ]
+  # This is used for platform and clipboard tests.
+  visibility += [
+    "//ui/base/clipboard:clipboard_test",
+    "//ui/ozone/platform/*",
+  ]
 
   # This can be used for out of tree platforms tests.
   visibility += ozone_external_platform_visibility
@@ -256,6 +247,7 @@ source_set("ozone_switches") {
   visibility += [
     "//chrome/test:browser_tests_runner",
     "//media/mojo/services",
+    "//ui/base/clipboard:clipboard_test",
     "//ui/display:display_unittests",
   ]
 }
@@ -263,10 +255,7 @@ source_set("ozone_switches") {
 component("ozone") {
   visibility = []
   visibility = [ "*" ]
-  public_deps = [
-    ":buildflags",
-    ":platform",
-  ]
+  public_deps = [ ":platform" ]
 }
 
 source_set("drm_modifiers_filter") {
@@ -482,15 +471,6 @@ test("ozone_integration_tests") {
   ]
 
   deps += ozone_platform_integration_test_deps
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [
-    "OZONE_PLATFORM_WAYLAND=$ozone_platform_wayland",
-    "OZONE_PLATFORM_X11=$ozone_platform_x11",
-  ]
-  visibility += [ "*" ]
 }
 
 group("unittests") {

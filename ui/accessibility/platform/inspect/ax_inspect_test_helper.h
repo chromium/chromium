@@ -5,10 +5,11 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_TEST_HELPER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
@@ -55,7 +56,7 @@ class AXInspectTestHelper {
   // Parses a given testing scenario from a file. Prepends default property
   // filters if any so the test file filters will take precedence over default
   // filters in case of conflict.
-  absl::optional<AXInspectScenario> ParseScenario(
+  std::optional<AXInspectScenario> ParseScenario(
       const base::FilePath& scenario_path,
       const std::vector<AXPropertyFilter>& default_filters = {});
 
@@ -70,7 +71,7 @@ class AXInspectTestHelper {
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.
   // Returns nullopt if the file contains a skip marker.
-  static absl::optional<std::vector<std::string>> LoadExpectationFile(
+  static std::optional<std::vector<std::string>> LoadExpectationFile(
       const base::FilePath& expected_file);
 
   // Compares the given actual dump against the given expectation and generates

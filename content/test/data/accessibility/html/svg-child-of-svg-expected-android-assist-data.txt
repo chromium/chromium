@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"Has two simple children" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-label="Has two simple children"}]
+++++Image text:"Has two focusable children" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-label="Has two focusable children"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {tabindex="0"}, {x="10"}]
+++++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {tabindex="0"}, {x="100"}]

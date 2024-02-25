@@ -8,12 +8,14 @@
 #ifndef SERVICES_TRACING_PUBLIC_MOJOM_DATA_SOURCE_CONFIG_MOJOM_TRAITS_H_
 #define SERVICES_TRACING_PUBLIC_MOJOM_DATA_SOURCE_CONFIG_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_config.h"
+#include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"
 
 namespace mojo {
 template <>
@@ -43,6 +45,18 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
   static const std::string& track_event_config_raw(
       const perfetto::DataSourceConfig& src) {
     return src.track_event_config_raw();
+  }
+  static const std::string& etw_config_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.etw_config_raw();
+  }
+
+  static std::optional<perfetto::protos::gen::InterceptorConfig>
+  interceptor_config(const perfetto::DataSourceConfig& src) {
+    if (src.has_interceptor_config()) {
+      return src.interceptor_config();
+    }
+    return std::nullopt;
   }
 
   static bool Read(tracing::mojom::DataSourceConfigDataView data,

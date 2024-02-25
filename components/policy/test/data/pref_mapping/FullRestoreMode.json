@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FullRestoreMode": 1
+        },
+        "prefs": {
+          "settings.restore_apps_and_pages": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "FullRestoreMode": 2
+        },
+        "prefs": {
+          "settings.restore_apps_and_pages": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "FullRestoreMode": 3
+        },
+        "prefs": {
+          "settings.restore_apps_and_pages": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

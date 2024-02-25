@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -90,30 +91,25 @@ void MediaCustomControlsFullscreenDetector::Attach() {
   VideoElement().GetDocument().addEventListener(
       event_type_names::kFullscreenchange, this, true);
 
-  // Ideally we'd like to monitor all minute intersection changes here,
-  // because any change can potentially affect the fullscreen heuristics,
-  // but it's not practical from perf point of view. Given that the heuristics
-  // are more of a guess that exact science, it wouldn't be well spent CPU
-  // cycles anyway. That's why the observer only triggers on 10% steps in
-  // viewport area occupation.
-  const WTF::Vector<float> thresholds{
-      kMinPossibleFullscreenIntersectionThreshold,
-      0.2,
-      0.3,
-      0.4,
-      0.5,
-      0.6,
-      0.7,
-      0.8,
-      kMostlyFillViewportIntersectionThreshold};
   viewport_intersection_observer_ = IntersectionObserver::Create(
-      {}, thresholds, &(video_element_->GetDocument()),
+      video_element_->GetDocument(),
       WTF::BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
-      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      IntersectionObserver::kFractionOfRoot, 0, false, true);
+      IntersectionObserver::Params{
+          // Ideally we'd like to monitor all minute intersection changes
+          // here, because any change can potentially affect the fullscreen
+          // heuristics, but it's not practical from perf point of view.
+          // Given that the heuristics are more of a guess that exact science,
+          // it wouldn't be well spent CPU cycles anyway. That's why the
+          // observer only triggers on 10% steps in viewport area occupation.
+          .thresholds = {kMinPossibleFullscreenIntersectionThreshold, 0.2, 0.3,
+                         0.4, 0.5, 0.6, 0.7, 0.8,
+                         kMostlyFillViewportIntersectionThreshold},
+          .semantics = IntersectionObserver::kFractionOfRoot,
+          .always_report_root_bounds = true,
+      });
   viewport_intersection_observer_->observe(&VideoElement());
 }
 
@@ -227,9 +223,10 @@ void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
   }
 
   const IntersectionGeometry& geometry = entries.back()->GetGeometry();
-  gfx::Size target_size = ToRoundedSize(geometry.TargetRect().size);
-  gfx::Size intersection_size = ToRoundedSize(geometry.IntersectionRect().size);
-  gfx::Size root_size = ToRoundedSize(geometry.RootRect().size);
+  gfx::Size target_size = gfx::ToRoundedSize(geometry.TargetRect().size());
+  gfx::Size intersection_size =
+      gfx::ToRoundedSize(geometry.IntersectionRect().size());
+  gfx::Size root_size = gfx::ToRoundedSize(geometry.RootRect().size());
 
   UpdateDominantAndFullscreenStatus(
       false, IsFullscreenVideoOfDifferentRatio(target_size, root_size,

@@ -55,12 +55,12 @@ struct BLINK_COMMON_EXPORT
     return input.delegated_capability;
   }
 
-  static absl::optional<blink::scheduler::TaskAttributionId> parent_task_id(
+  static std::optional<blink::scheduler::TaskAttributionId> parent_task_id(
       blink::TransferableMessage& input) {
     return input.parent_task_id
-               ? absl::make_optional(blink::scheduler::TaskAttributionId(
+               ? std::make_optional(blink::scheduler::TaskAttributionId(
                      input.parent_task_id.value()))
-               : absl::nullopt;
+               : std::nullopt;
   }
 
   static bool Read(blink::mojom::TransferableMessage::DataView data,

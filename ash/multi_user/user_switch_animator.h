@@ -102,7 +102,7 @@ class ASH_EXPORT UserSwitchAnimator {
   void BuildUserToWindowsListMap();
 
   // The owning window manager.
-  raw_ptr<MultiUserWindowManagerImpl, ExperimentalAsh> owner_;
+  raw_ptr<MultiUserWindowManagerImpl> owner_;
 
   // The new user to set.
   AccountId new_account_id_;

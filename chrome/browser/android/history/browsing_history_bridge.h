@@ -33,6 +33,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
                     const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj,
                     jstring j_query,
+                    const JavaParamRef<jstring>& j_app_id,
                     jboolean j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,
@@ -51,6 +52,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   void MarkItemForRemoval(JNIEnv* env,
                           const JavaParamRef<jobject>& obj,
                           const JavaParamRef<jobject>& j_url,
+                          const JavaParamRef<jstring>& j_app_id,
                           const JavaParamRef<jlongArray>& j_native_timestamps);
 
   // Removes all items that have been marked for removal through

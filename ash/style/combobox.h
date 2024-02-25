@@ -27,10 +27,11 @@ namespace ash {
 
 // A stylized non-editable combobox driven by `ui::ComboboxModel`.
 class ASH_EXPORT Combobox : public views::Button,
-                            public ui::ComboboxModelObserver {
- public:
-  METADATA_HEADER(Combobox);
+                            public ui::ComboboxModelObserver,
+                            public views::WidgetObserver {
+  METADATA_HEADER(Combobox, views::Button)
 
+ public:
   // `model` is owned by the combobox when using this constructor.
   explicit Combobox(std::unique_ptr<ui::ComboboxModel> model);
   // `model` is not owned by the combobox when using this constructor.
@@ -44,8 +45,8 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetSelectionChangedCallback(base::RepeatingClosure callback);
 
   // Gets/Sets the selected index.
-  absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
-  void SetSelectedIndex(absl::optional<size_t> index);
+  std::optional<size_t> GetSelectedIndex() const { return selected_index_; }
+  void SetSelectedIndex(std::optional<size_t> index);
 
   // Looks for the first occurrence of `value` in `model_`. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.
@@ -53,11 +54,23 @@ class ASH_EXPORT Combobox : public views::Button,
 
   // Returns whether or not the menu is currently running.
   bool IsMenuRunning() const;
+  gfx::Size GetMenuViewSize() const;
+
+  views::View* MenuItemAtIndex(int index) const;
+  views::View* MenuView() const;
 
   // views::Button:
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnBlur() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+  void Layout(PassKey) override;
+
+  // WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& bounds) override;
 
   std::u16string GetTextForRow(size_t row) const;
 
@@ -106,10 +119,10 @@ class ASH_EXPORT Combobox : public views::Button,
   base::RepeatingClosure callback_;
 
   // The current selected index; nullopt means no selection.
-  absl::optional<size_t> selected_index_ = absl::nullopt;
+  std::optional<size_t> selected_index_ = std::nullopt;
 
   // The selection that committed by performing selection changed action.
-  absl::optional<size_t> last_commit_selection_ = absl::nullopt;
+  std::optional<size_t> last_commit_selection_ = std::nullopt;
 
   // A handler handles mouse and touch event happening outside combobox and drop
   // down menu. This is mainly used to decide if we should close the drop down
@@ -132,6 +145,9 @@ class ASH_EXPORT Combobox : public views::Button,
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observer_{this};
 
   base::WeakPtrFactory<Combobox> weak_ptr_factory_{this};
 };

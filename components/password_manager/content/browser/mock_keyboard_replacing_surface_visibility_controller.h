@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_MOCK_KEYBOARD_REPLACING_SURFACE_VISIBILITY_CONTROLLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_MOCK_KEYBOARD_REPLACING_SURFACE_VISIBILITY_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
 
-class MockKeyboardReplacingSurfaceVisibilityController
+class MockKeyboardReplacingSurfaceVisibilityController final
     : public KeyboardReplacingSurfaceVisibilityController {
  public:
   MockKeyboardReplacingSurfaceVisibilityController();
@@ -25,6 +26,13 @@ class MockKeyboardReplacingSurfaceVisibilityController
               (override));
   MOCK_METHOD(void, SetShown, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
+
+  base::WeakPtr<KeyboardReplacingSurfaceVisibilityController> AsWeakPtr()
+      override;
+
+ private:
+  base::WeakPtrFactory<MockKeyboardReplacingSurfaceVisibilityController>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

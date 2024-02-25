@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
-#include "base/command_line.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/multidevice_setup_screen_handler.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -27,14 +28,6 @@
 namespace ash {
 
 namespace {
-
-// Passing "--quick-start-phone-instance-id" on the command line will implement
-// the Unified Setup UI enhancements with the ID provided in the switch. This is
-// for testing only and in the future this ID will be retrieved and saved to the
-// OOBE WizardContext on the QuickStartScreen, not the MultideviceSetupScreen.
-// TODO(b/234655072): Delete this once quick start flow is implemented.
-constexpr char kQuickStartPhoneInstanceIDSwitch[] =
-    "quick-start-phone-instance-id";
 
 constexpr const char kAcceptedSetupUserAction[] = "setup-accepted";
 constexpr const char kDeclinedSetupUserAction[] = "setup-declined";
@@ -78,6 +71,12 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
 }
 
 bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
+  // Skip multidevice setup screen during oobe.SmokeEndToEnd test.
+  if (switches::ShouldMultideviceScreenBeSkippedForTesting()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   // Only attempt the setup flow for non-guest users.
   if (context.skip_post_login_screens_for_tests ||
       chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
@@ -99,21 +98,14 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  // TODO(b/234655072): Delete this once quick start flow is implemented. This
-  // is for testing only and context.quick_start_phone_instance_id should be set
-  // from the QuickStartScreen.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kQuickStartPhoneInstanceIDSwitch)) {
-    context.quick_start_phone_instance_id =
-        command_line->GetSwitchValueASCII(kQuickStartPhoneInstanceIDSwitch);
-  }
-
   // Use WizardContext here to check if user already connected phone during
   // Quick Start. If so, the multidevice setup screen will display UI
   // enhancements.
   const std::string& phone_instance_id = context.quick_start_phone_instance_id;
   if (!phone_instance_id.empty()) {
     setup_client_->SetQuickStartPhoneInstanceID(phone_instance_id);
+    quick_start::QuickStartMetrics::RecordScreenOpened(
+        quick_start::QuickStartMetrics::ScreenName::kUnifiedSetup);
   }
 
   // Do not skip if potential host exists but none is set yet.

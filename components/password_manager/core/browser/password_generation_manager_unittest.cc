@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_generation_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -11,9 +12,9 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -148,8 +149,7 @@ class PasswordGenerationManagerTest : public testing::Test {
 PasswordGenerationManagerTest::PasswordGenerationManagerTest()
     : mock_store_(new testing::StrictMock<MockPasswordStoreInterface>()),
       form_saver_(mock_store_.get()),
-      generation_manager_(&client_) {
-}
+      generation_manager_(&client_) {}
 
 PasswordGenerationManagerTest::~PasswordGenerationManagerTest() {
   mock_store_->ShutdownOnUIThread();
@@ -219,7 +219,7 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_UpdateUI) {
   ASSERT_TRUE(ui_form);
   EXPECT_EQ(GURL(kURL), ui_form->GetURL());
   EXPECT_THAT(ui_form->GetBestMatches(),
-              ElementsAre(Field(&PasswordForm::username_value, u"")));
+              ElementsAre(Pointee(Field(&PasswordForm::username_value, u""))));
   EXPECT_THAT(ui_form->GetFederatedMatches(),
               ElementsAre(Pointee(CreateSavedFederated())));
   EXPECT_EQ(u"", ui_form->GetPendingCredentials().username_value);
@@ -424,7 +424,7 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   unrelated_psl_password.match_type = PasswordForm::MatchType::kPSL;
 
   EXPECT_CALL(store(), AddLogin);
-  const std::vector<const PasswordForm*> matches = {
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &related_password, &related_psl_password, &unrelated_password,
       &unrelated_psl_password};
   manager().PresaveGeneratedPassword(generated, matches, &form_saver());
@@ -631,6 +631,35 @@ TEST_F(PasswordGenerationManagerTest,
       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordGeneration.EditsInGeneratedPassword.AttributesMask", 1, 1);
+}
+
+// Check that committing a password for the second time results in updating it.
+// This may happen when the user submits the form with empty username and the
+// crediential with no username gets committed and then the dialog with the
+// proposition to add username is displayed. If the user adds a username the
+// credential will be committed for the second time.
+TEST_F(PasswordGenerationManagerTest, CommitGeneratedPassword_Replace) {
+  PasswordForm generated = CreateGenerated();
+  generated.date_created = base::Time::Now();
+  generated.date_password_modified = base::Time::Now();
+  generated.date_last_used = base::Time::Now();
+
+  EXPECT_CALL(store(), AddLogin);
+  manager().PresaveGeneratedPassword(generated, {}, &form_saver());
+
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated, FormHasUniqueKey(generated), _));
+  manager().CommitGeneratedPassword(generated, {}, u"", &form_saver());
+
+  ForwardByMinute();
+  PasswordForm generated_updated = generated;
+  generated_updated.username_value = u"NewUsername";
+  generated_updated.date_created = base::Time::Now();
+  generated_updated.date_password_modified = base::Time::Now();
+  generated_updated.date_last_used = base::Time::Now();
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
+                           generated_updated, FormHasUniqueKey(generated), _));
+  manager().CommitGeneratedPassword(generated_updated, {}, u"", &form_saver());
 }
 
 }  // namespace

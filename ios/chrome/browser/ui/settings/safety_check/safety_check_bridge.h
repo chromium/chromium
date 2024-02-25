@@ -15,7 +15,7 @@
 
 // These are all just #defines so they can be imported w/out any problem.
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 
 // Explicitly import the bridging header of the Swift dependencies, as the

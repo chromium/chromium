@@ -35,6 +35,7 @@ namespace blink {
 
 class DateTimeChooserClient;
 class LocalFrame;
+class Element;
 
 class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
  public:
@@ -55,7 +56,7 @@ class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
 
   // DateTimeChooser function:
   void EndChooser() override;
-  AXObject* RootAXObject() override;
+  AXObject* RootAXObject(Element* popup_owner) override;
 
   mojom::blink::DateTimeChooser& GetDateTimeChooser(LocalFrame* frame);
 

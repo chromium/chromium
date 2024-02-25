@@ -5,7 +5,6 @@
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/commands.h>
 
 #include <map>
 #include <memory>

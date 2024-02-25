@@ -1824,16 +1824,16 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   const std::string metadata_value1 = "BLOB1";
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time, from_visit, transition, segment_id, "
-      "visit_duration) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-  // Add an entry to "visits" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time, from_visit, transition, segment_id, "
+        "visit_duration) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    // Add an entry to "visits" table.
     sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
     s.BindInt64(0, visit_id1);
     s.BindInt64(1, url_id1);
@@ -1847,21 +1847,27 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
 
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
+  DeleteBackend();
 
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
 
-  // content_annotations should exist.
-  EXPECT_TRUE(db.DoesTableExist("content_annotations"));
-
-  // Confirm that content_annotations table has a annotation_flags column,
-  // but has 0 entry in it because the publicly_routable field in the entry in
-  // the visits table is "false" so is not migrated to the content_annotations
-  // table.
   {
-    sql::Statement s(db.GetUniqueStatement(
-        "SELECT annotation_flags FROM content_annotations"));
-    EXPECT_FALSE(s.Step());
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    // content_annotations should exist.
+    EXPECT_TRUE(db.DoesTableExist("content_annotations"));
+
+    // Confirm that content_annotations table has a annotation_flags column,
+    // but has 0 entry in it because the publicly_routable field in the entry in
+    // the visits table is "false" so is not migrated to the content_annotations
+    // table.
+    {
+      sql::Statement s(db.GetUniqueStatement(
+          "SELECT annotation_flags FROM content_annotations"));
+      EXPECT_FALSE(s.Step());
+    }
   }
 }
 
@@ -1887,76 +1893,80 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   const bool publicly_routable3 = true;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time, publicly_routable) VALUES (?, ?, ?, ?)";
-
-  const char kInsertAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version) "
-      "VALUES (?, ?, ?, ?)";
-
-  // Add the three entries to "visits" table.
   {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id1);
-    s.BindInt64(1, url_id1);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable1);
-    ASSERT_TRUE(s.Run());
-  }
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id2);
-    s.BindInt64(1, url_id2);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable2);
-    ASSERT_TRUE(s.Run());
-  }
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time, publicly_routable) VALUES (?, ?, ?, ?)";
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id3);
-    s.BindInt64(1, url_id3);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable3);
-    ASSERT_TRUE(s.Run());
-  }
+    const char kInsertAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version) "
+        "VALUES (?, ?, ?, ?)";
 
-  // Add the two entries to "content_annotations" table
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
-    s.BindInt64(0, visit_id1);
-    s.BindDouble(1, -1);
-    s.BindString(2, "");
-    s.BindInt64(3, -1);
-    ASSERT_TRUE(s.Run());
-  }
+    // Add the three entries to "visits" table.
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id1);
+      s.BindInt64(1, url_id1);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable1);
+      ASSERT_TRUE(s.Run());
+    }
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
-    s.BindInt64(0, visit_id2);
-    s.BindDouble(1, 0.5f);
-    s.BindString(2, "1:1");
-    s.BindInt64(3, 123);
-    ASSERT_TRUE(s.Run());
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id2);
+      s.BindInt64(1, url_id2);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable2);
+      ASSERT_TRUE(s.Run());
+    }
+
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id3);
+      s.BindInt64(1, url_id3);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable3);
+      ASSERT_TRUE(s.Run());
+    }
+
+    // Add the two entries to "content_annotations" table
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+      s.BindInt64(0, visit_id1);
+      s.BindDouble(1, -1);
+      s.BindString(2, "");
+      s.BindInt64(3, -1);
+      ASSERT_TRUE(s.Run());
+    }
+
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+      s.BindInt64(0, visit_id2);
+      s.BindDouble(1, 0.5f);
+      s.BindString(2, "1:1");
+      s.BindInt64(3, 123);
+      ASSERT_TRUE(s.Run());
+    }
   }
 
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
+  DeleteBackend();
 
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
 
-  // Confirm that publicly_routable column still exists.
-  ASSERT_TRUE(db.DoesColumnExist("visits", "publicly_routable"));
-
-  // Check the entries in the content_annotations table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    // Check the entries in the content_annotations table.
     sql::Statement s(db.GetUniqueStatement(
         "SELECT visit_id,visibility_score,"
         "categories,page_topics_model_version,annotation_flags "
@@ -1994,60 +2004,68 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
 TEST_F(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(44));
 
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time) VALUES (?, ?, ?)";
-
-  const char kInsertAnnotationsStatement[] =
-      "INSERT INTO cluster_visits "
-      "(cluster_visit_id, url_id, visit_id, "
-      "cluster_visit_context_signal_bitmask, duration_since_last_visit, "
-      "page_end_reason) "
-      "VALUES (?, ?, ?, ?, ?, ?)";
-
-  // Add a row to `visits` table.
   {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, 1);
-    s.BindInt64(1, 1);
-    s.BindTime(2, base::Time::Now());
-    ASSERT_TRUE(s.Run());
-  }
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  // Add a row to the `cluster_visits` table.
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
-    s.BindInt64(0, 1);
-    s.BindInt64(1, 1);
-    s.BindInt64(2, 1);
-    s.BindInt64(3, 0);
-    s.BindInt64(4, 0);
-    s.BindInt(5, 0);
-    ASSERT_TRUE(s.Run());
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time) VALUES (?, ?, ?)";
+
+    const char kInsertAnnotationsStatement[] =
+        "INSERT INTO cluster_visits "
+        "(cluster_visit_id, url_id, visit_id, "
+        "cluster_visit_context_signal_bitmask, duration_since_last_visit, "
+        "page_end_reason) "
+        "VALUES (?, ?, ?, ?, ?, ?)";
+
+    // Add a row to `visits` table.
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, 1);
+      s.BindInt64(1, 1);
+      s.BindTime(2, base::Time::Now());
+      ASSERT_TRUE(s.Run());
+    }
+
+    // Add a row to the `cluster_visits` table.
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+      s.BindInt64(0, 1);
+      s.BindInt64(1, 1);
+      s.BindInt64(2, 1);
+      s.BindInt64(3, 0);
+      s.BindInt64(4, 0);
+      s.BindInt(5, 0);
+      ASSERT_TRUE(s.Run());
+    }
   }
 
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
+  DeleteBackend();
 
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 45);
 
-  // Confirm the old `cluster_visits` table no longer exists.
-  ASSERT_FALSE(db.DoesTableExist("cluster_visits"));
-
-  // Confirm the new `context_annotations` exists.
-  ASSERT_TRUE(db.DoesTableExist("context_annotations"));
-
-  // Check `context_annotations` is empty.
   {
-    sql::Statement s(
-        db.GetUniqueStatement("SELECT COUNT(*) FROM content_annotations"));
-    EXPECT_TRUE(s.Step());
-    EXPECT_EQ(s.ColumnInt64(0), 0u);
-    EXPECT_FALSE(s.Step());
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    // Confirm the old `cluster_visits` table no longer exists.
+    ASSERT_FALSE(db.DoesTableExist("cluster_visits"));
+
+    // Confirm the new `context_annotations` exists.
+    ASSERT_TRUE(db.DoesTableExist("context_annotations"));
+
+    // Check `context_annotations` is empty.
+    {
+      sql::Statement s(
+          db.GetUniqueStatement("SELECT COUNT(*) FROM content_annotations"));
+      EXPECT_TRUE(s.Step());
+      EXPECT_EQ(s.ColumnInt64(0), 0u);
+      EXPECT_FALSE(s.Step());
+    }
   }
 }
 
@@ -2064,17 +2082,18 @@ TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
   const std::u16string normalized_term =
       base::CollapseWhitespace(lower_term, false);
 
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-  sql::Statement insert_statement(
-      db.GetUniqueStatement("INSERT INTO keyword_search_terms (keyword_id, "
-                            "url_id, lower_term, term) VALUES (?,?,?,?)"));
-  insert_statement.BindInt64(0, keyword_id);
-  insert_statement.BindInt64(1, url_id);
-  insert_statement.BindString16(2, lower_term);
-  insert_statement.BindString16(3, term);
-  ASSERT_TRUE(insert_statement.Run());
-
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    sql::Statement insert_statement(
+        db.GetUniqueStatement("INSERT INTO keyword_search_terms (keyword_id, "
+                              "url_id, lower_term, term) VALUES (?,?,?,?)"));
+    insert_statement.BindInt64(0, keyword_id);
+    insert_statement.BindInt64(1, url_id);
+    insert_statement.BindString16(2, lower_term);
+    insert_statement.BindString16(3, term);
+    ASSERT_TRUE(insert_statement.Run());
+  }
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
 
@@ -2089,135 +2108,24 @@ TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
   EXPECT_EQ(normalized_term, keyword_search_term_row.normalized_term);
 }
 
-// Test to verify the left-over typed_url sync metadata gets cleared correctly
-// during migration to version 41.
-TEST_F(HistoryBackendDBTest, MigrateTypedURLLeftoverMetadata) {
-  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(40));
-
-  // Define common uninteresting data for visits.
-  const VisitID referring_visit = 0;
-  const ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
-  const base::Time visit_time(base::Time::Now());
-  const base::TimeDelta visit_duration(base::Seconds(30));
-
-  // The first visit has both a DB entry and a metadata entry.
-  const VisitID visit_id1 = 1;
-  const URLID url_id1 = 10;
-  const SegmentID segment_id1 = 20;
-  const std::string metadata_value1 = "BLOB1";
-
-  // The second one as well has both a DB entry and a metadata entry.
-  const VisitID visit_id2 = 2;
-  const URLID url_id2 = 11;
-  const SegmentID segment_id2 = 21;
-  const std::string metadata_value2 = "BLOB2";
-
-  // The second visit has only a left-over metadata entry.
-  const URLID url_id3 = 12;
-  const std::string metadata_value3 = "BLOB3";
-
-  {
-    // Open the db for manual manipulation.
-    sql::Database db;
-    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-    const char kInsertVisitStatement[] =
-        "INSERT INTO visits "
-        "(id, url, visit_time, from_visit, transition, segment_id, "
-        "visit_duration) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    {
-      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-      s.BindInt64(0, visit_id1);
-      s.BindInt64(1, url_id1);
-      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-      s.BindInt64(3, referring_visit);
-      s.BindInt64(4, transition);
-      s.BindInt64(5, segment_id1);
-      s.BindInt64(6, visit_duration.InMicroseconds());
-      ASSERT_TRUE(s.Run());
-    }
-    {
-      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-      s.BindInt64(0, visit_id2);
-      s.BindInt64(1, url_id2);
-      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-      s.BindInt64(3, referring_visit);
-      s.BindInt64(4, transition);
-      s.BindInt64(5, segment_id2);
-      s.BindInt64(6, visit_duration.InMicroseconds());
-      ASSERT_TRUE(s.Run());
-    }
-
-    const char kInsertMetadataStatement[] =
-        "INSERT INTO typed_url_sync_metadata (storage_key, value) VALUES (?, "
-        "?)";
-    {
-      sql::Statement s(db.GetUniqueStatement(kInsertMetadataStatement));
-      s.BindInt64(0, url_id3);
-      s.BindString(1, metadata_value3);
-      ASSERT_TRUE(s.Run());
-    }
-    {
-      sql::Statement s(db.GetUniqueStatement(kInsertMetadataStatement));
-      s.BindInt64(0, url_id2);
-      s.BindString(1, metadata_value2);
-      ASSERT_TRUE(s.Run());
-    }
-    {
-      sql::Statement s(db.GetUniqueStatement(kInsertMetadataStatement));
-      s.BindInt64(0, url_id1);
-      s.BindString(1, metadata_value1);
-      ASSERT_TRUE(s.Run());
-    }
-  }
-
-  // Re-open the db, triggering migration.
-  CreateBackendAndDatabase();
-  DeleteBackend();
-  {
-    // Re-open the db for manual manipulation.
-    sql::Database db;
-    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    {
-      // The version should have been updated.
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 41);
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(HistoryDatabase::GetCurrentVersion(), s.ColumnInt(0));
-    }
-    {
-      // Check that the left-over metadata entry is deleted.
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT storage_key FROM typed_url_sync_metadata"));
-      std::set<URLID> remaining_metadata;
-      while (s.Step()) {
-        remaining_metadata.insert(s.ColumnInt64(0));
-      }
-      EXPECT_EQ(remaining_metadata.count(url_id3), 0u);
-      EXPECT_EQ(remaining_metadata.count(url_id2), 1u);
-      EXPECT_EQ(remaining_metadata.count(url_id1), 1u);
-    }
-  }
-}
-
 TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(46));
 
   const VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContentAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version, "
-      "annotation_flags) "
-      "VALUES (?, ?, ?, ?, ?)";
-
-  // Add an entry to "content_annotations" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContentAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version, "
+        "annotation_flags) "
+        "VALUES (?, ?, ?, ?, ?)";
+
+    // Add an entry to "content_annotations" table.
     sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
     s.BindInt64(0, visit_id1);
     s.BindDouble(1, -1);
@@ -2248,25 +2156,29 @@ TEST_F(HistoryBackendDBTest,
   const VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContentAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version, "
-      "annotation_flags, entities) "
-      "VALUES (?, ?, ?, ?, ?, ?)";
-
-  // Add an entry to "content_annotations" table.
   {
-    sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
-    s.BindInt64(0, visit_id1);
-    s.BindDouble(1, -1);
-    s.BindString(2, "");
-    s.BindInt64(3, -1);
-    s.BindInt64(4, 0);
-    s.BindString(5, "");
-    ASSERT_TRUE(s.Run());
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContentAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version, "
+        "annotation_flags, entities) "
+        "VALUES (?, ?, ?, ?, ?, ?)";
+
+    // Add an entry to "content_annotations" table.
+    {
+      sql::Statement s(
+          db.GetUniqueStatement(kInsertContentAnnotationsStatement));
+      s.BindInt64(0, visit_id1);
+      s.BindDouble(1, -1);
+      s.BindString(2, "");
+      s.BindInt64(3, -1);
+      s.BindInt64(4, 0);
+      s.BindString(5, "");
+      ASSERT_TRUE(s.Run());
+    }
   }
 
   // Re-open the db, triggering migration.
@@ -2290,15 +2202,15 @@ TEST_F(HistoryBackendDBTest,
   const VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time) VALUES (?, ?, ?)";
-
-  // Add a row to `visits` table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time) VALUES (?, ?, ?)";
+
+    // Add a row to `visits` table.
     sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
     s.BindInt64(0, 1);
     s.BindInt64(1, 1);
@@ -2327,17 +2239,17 @@ TEST_F(HistoryBackendDBTest,
   const VisitID visit_id = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContextAnnotationsStatement[] =
-      "INSERT INTO context_annotations "
-      "(visit_id,context_annotation_flags,duration_since_last_visit,"
-      "page_end_reason) "
-      "VALUES (?, ?, ?, ?)";
-
-  // Add an entry to "context_annotations" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContextAnnotationsStatement[] =
+        "INSERT INTO context_annotations "
+        "(visit_id,context_annotation_flags,duration_since_last_visit,"
+        "page_end_reason) "
+        "VALUES (?, ?, ?, ?)";
+
+    // Add an entry to "context_annotations" table.
     sql::Statement s(db.GetUniqueStatement(kInsertContextAnnotationsStatement));
     s.BindInt64(0, visit_id);
     s.BindInt64(1, 1);
@@ -2369,17 +2281,18 @@ TEST_F(HistoryBackendDBTest,
   const VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContentAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version, "
-      "annotation_flags, entities, related_searches) "
-      "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-  // Add an entry to "content_annotations" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContentAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version, "
+        "annotation_flags, entities, related_searches) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    // Add an entry to "content_annotations" table.
     sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
     s.BindInt64(0, visit_id1);
     s.BindDouble(1, -1);
@@ -2412,18 +2325,19 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
   const VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContentAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version, "
-      "annotation_flags, entities, related_searches, search_normalized_url, "
-      "search_terms) "
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-  // Add an entry to "content_annotations" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContentAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version, "
+        "annotation_flags, entities, related_searches, search_normalized_url, "
+        "search_terms) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    // Add an entry to "content_annotations" table.
     sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
     s.BindInt64(0, visit_id1);
     s.BindDouble(1, -1);
@@ -2458,15 +2372,15 @@ TEST_F(HistoryBackendDBTest,
   constexpr VisitID visit_id1 = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time) VALUES (?, ?, ?)";
-
-  // Add a row to `visits` table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time) VALUES (?, ?, ?)";
+
+    // Add a row to `visits` table.
     sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
     s.BindInt64(0, 1);
     s.BindInt64(1, 1);
@@ -2543,58 +2457,66 @@ TEST_F(HistoryBackendDBTest,
 TEST_F(HistoryBackendDBTest, MigrateClustersAddColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(56));
 
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  // Confirm the old 'clusters' columns exist.
-  ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters", "score"));
+    // Confirm the old 'clusters' columns exist.
+    ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters", "score"));
 
-  // Confirm the new 'clusters' columns don't exist.
-  ASSERT_FALSE(
-      db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
-  ASSERT_FALSE(db.DoesColumnExist("clusters", "label"));
-  ASSERT_FALSE(db.DoesColumnExist("clusters", "raw_label"));
+    // Confirm the new 'clusters' columns don't exist.
+    ASSERT_FALSE(
+        db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
+    ASSERT_FALSE(db.DoesColumnExist("clusters", "label"));
+    ASSERT_FALSE(db.DoesColumnExist("clusters", "raw_label"));
 
-  // Confirm the old 'clusters_and_visits' columns exist.
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
+    // Confirm the old 'clusters_and_visits' columns exist.
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
 
-  // Confirm the new 'clusters_and_visits' columns don't exist.
-  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
-  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
-  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
-  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+    // Confirm the new 'clusters_and_visits' columns don't exist.
+    ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
+    ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
+    ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
+    ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+  }
 
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
+  DeleteBackend();
 
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 57);
 
-  // Confirm the tables still exist.
-  ASSERT_TRUE(db.DoesTableExist("clusters"));
-  ASSERT_TRUE(db.DoesTableExist("clusters_and_visits"));
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  // Confirm the new 'clusters' columns exist.
-  ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
-  ASSERT_TRUE(
-      db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters", "label"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters", "raw_label"));
+    // Confirm the tables still exist.
+    ASSERT_TRUE(db.DoesTableExist("clusters"));
+    ASSERT_TRUE(db.DoesTableExist("clusters_and_visits"));
 
-  // Confirm 'score' column was removed from 'clusters'.
-  ASSERT_FALSE(db.DoesColumnExist("clusters", "score"));
+    // Confirm the new 'clusters' columns exist.
+    ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
+    ASSERT_TRUE(
+        db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters", "label"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters", "raw_label"));
 
-  // Confirm the new 'clusters_and_visits' columns exist.
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
-  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+    // Confirm 'score' column was removed from 'clusters'.
+    ASSERT_FALSE(db.DoesColumnExist("clusters", "score"));
+
+    // Confirm the new 'clusters_and_visits' columns exist.
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
+    ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+  }
 }
 
 TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
@@ -2725,17 +2647,17 @@ TEST_F(HistoryBackendDBTest,
   int64_t cluster_id = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertClustersStatement[] =
-      "INSERT INTO clusters"
-      "(cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
-      "triggerability_calculated)"
-      "VALUES(?,?,?,?,?)";
-
-  // Add a row to `clusters` table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertClustersStatement[] =
+        "INSERT INTO clusters"
+        "(cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
+        "triggerability_calculated)"
+        "VALUES(?,?,?,?,?)";
+
+    // Add a row to `clusters` table.
     sql::Statement s(db.GetUniqueStatement(kInsertClustersStatement));
     s.BindInt64(0, cluster_id);
     s.BindBool(1, true);
@@ -2763,19 +2685,19 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
   const VisitID visit_id = 1;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertContentAnnotationsStatement[] =
-      "INSERT INTO "
-      "content_annotations(visit_id,visibility_score,categories,"
-      "page_topics_model_version,annotation_flags,entities,related_searches,"
-      "search_normalized_url,search_terms,alternative_title,page_language,"
-      "password_state)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
-
-  // Add an entry to "content_annotations" table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    const char kInsertContentAnnotationsStatement[] =
+        "INSERT INTO "
+        "content_annotations(visit_id,visibility_score,categories,"
+        "page_topics_model_version,annotation_flags,entities,related_searches,"
+        "search_normalized_url,search_terms,alternative_title,page_language,"
+        "password_state)"
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    // Add an entry to "content_annotations" table.
     sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
     s.BindInt64(0, visit_id);
     s.BindDouble(1, -1);
@@ -3042,6 +2964,137 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddExternalReferrerUrlColumn) {
   }
 }
 
+TEST_F(HistoryBackendDBTest, MigrateVisitsAddVisitedLinkIdColumn) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(66));
+
+  const VisitID visit_id = 1;
+  const URLID url_id = 2;
+  const base::Time visit_time(base::Time::Now());
+  const ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
+  const base::TimeDelta visit_duration(base::Seconds(45));
+
+  const char kInsertStatement[] =
+      "INSERT INTO visits "
+      "(id, url, visit_time, transition, visit_duration) "
+      "VALUES (?, ?, ?, ?, ?)";
+
+  // Open the old version of the DB and make sure the new column doesn't exist
+  // yet.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(db.DoesColumnExist("visits", "visited_link_id"));
+
+    // Add entry to visits.
+    sql::Statement s(db.GetUniqueStatement(kInsertStatement));
+    s.BindInt64(0, visit_id);
+    s.BindInt64(1, url_id);
+    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s.BindInt64(3, transition);
+    s.BindInt64(4, visit_duration.InMicroseconds());
+
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 67);
+
+  VisitRow visit_row;
+  db_->GetRowForVisit(visit_id, &visit_row);
+  EXPECT_EQ(visit_row.visited_link_id, 0);
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_TRUE(db.DoesColumnExist("visits", "visited_link_id"));
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateRemoveTypedUrlMetadataTable) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(67));
+
+  // Open the old version of the DB and make sure the "typed_url_sync_metadata"
+  // table exists.
+  const char kTypedUrlMetadataTable[] = "typed_url_sync_metadata";
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_TRUE(db.DoesTableExist(kTypedUrlMetadataTable));
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 68);
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the table does not exist anymore.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_FALSE(db.DoesTableExist(kTypedUrlMetadataTable));
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateVisitsAddAppId) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(68));
+
+  const VisitID visit_id = 1;
+  const URLID url_id = 2;
+  const base::Time visit_time(base::Time::Now());
+  const ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
+  const base::TimeDelta visit_duration(base::Seconds(45));
+
+  const char kInsertStatement[] =
+      "INSERT INTO visits "
+      "(id, url, visit_time, transition, visit_duration) "
+      "VALUES (?, ?, ?, ?, ?)";
+
+  // Open the old version of the DB and make sure the new column doesn't exist
+  // yet.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(db.DoesColumnExist("visits", "app_id"));
+
+    // Add entry to visits.
+    sql::Statement s(db.GetUniqueStatement(kInsertStatement));
+    s.BindInt64(0, visit_id);
+    s.BindInt64(1, url_id);
+    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s.BindInt64(3, transition);
+    s.BindInt64(4, visit_duration.InMicroseconds());
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 69);
+
+  VisitRow visit_row;
+  db_->GetRowForVisit(visit_id, &visit_row);
+  EXPECT_FALSE(visit_row.app_id);
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_TRUE(db.DoesColumnExist("visits", "app_id"));
+  }
+}
+
 // ^^^ NEW MIGRATION TESTS GO HERE ^^^
 
 // Preparation for the next DB migration: This test verifies that the test DB
@@ -3079,7 +3132,6 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   const GURL url2("http://www.foo.com");
   const int visit_count1 = 10;
   const int visit_count2 = 5;
-  const base::Time time(base::Time::Now());
 
   URLID url_id1 = db_->AddURL(URLRow(url1));
   ASSERT_NE(0, url_id1);
@@ -3093,8 +3145,14 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
       url_id2, VisitSegmentDatabase::ComputeSegmentName(url2));
   ASSERT_NE(0, segment_id2);
 
-  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id1, time, visit_count1));
-  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id2, time, visit_count2));
+  const base::Time now(base::Time::Now());
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id1, now, visit_count1));
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id2, now, visit_count2));
+  const base::Time two_days_ago = now - base::Days(2);
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id1, two_days_ago, visit_count1));
+  ASSERT_TRUE(
+      db_->UpdateSegmentVisitCount(segment_id2, two_days_ago, visit_count2));
 
   // Without a filter, the "file://" URL should win.
   std::vector<std::unique_ptr<PageUsageData>> results =
@@ -3102,6 +3160,8 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(url1, results[0]->GetURL());
   EXPECT_EQ(segment_id1, results[0]->GetID());
+  EXPECT_EQ(now.LocalMidnight(), results[0]->GetLastVisitTimeslot());
+  EXPECT_EQ(visit_count1 * 2, results[0]->GetVisitCount());
 
   // With the filter, the "file://" URL should be filtered out, so the "http://"
   // URL should win instead.
@@ -3110,6 +3170,8 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   ASSERT_EQ(1u, results2.size());
   EXPECT_EQ(url2, results2[0]->GetURL());
   EXPECT_EQ(segment_id2, results2[0]->GetID());
+  EXPECT_EQ(now.LocalMidnight(), results2[0]->GetLastVisitTimeslot());
+  EXPECT_EQ(visit_count2 * 2, results2[0]->GetVisitCount());
 }
 
 TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {

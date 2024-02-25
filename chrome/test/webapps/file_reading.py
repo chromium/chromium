@@ -22,8 +22,9 @@ from models import CoverageTest
 from models import CoverageTestsByPlatformSet
 from models import EnumsByType
 from models import PartialAndFullCoverageByBaseName
-from models import TestIdsByPlatform
-from models import TestIdsByPlatformSet
+from models import TestIdsTestNamesByPlatform
+from models import TestIdsTestNamesByPlatformSet
+from models import TestIdTestNameTuple
 from models import TestPartitionDescription
 from models import TestPlatform
 
@@ -291,22 +292,18 @@ def read_actions_file(
     actions_by_name: Dict[str, Action] = {}
     action_base_name_to_default_args: Dict[str, str] = {}
     action_base_names: Set[str] = set()
-    all_ids: Set[str] = set()
     for i, row in enumerate_markdown_file_lines_to_table_rows(
             actions_file_lines):
         if len(row) < MIN_COLUMNS_ACTIONS_FILE:
             raise ValueError(f"Row {i!r} does not contain enough entries. "
                              f"Got {row}.")
 
+        shortened_base_name = row[7].strip() if len(row) > 7 else None
         action_base_name = row[0].strip()
         action_base_names.add(action_base_name)
         if not re.fullmatch(r'[a-z_]+', action_base_name):
             raise ValueError(f"Invald action base name {action_base_name} on "
                              f"row {i!r}. Please use snake_case.")
-        id_base = row[3].strip()
-        if not id_base or id_base in all_ids:
-            raise ValueError(f"Action id '{id_base}' on line {i!r} is "
-                             f"not populated or already used.")
 
         type = ActionType.STATE_CHANGE
         if action_base_name.startswith("check_"):
@@ -358,7 +355,6 @@ def read_actions_file(
 
         for arg_combination in all_arg_value_combinations:
             name = "_".join([action_base_name] + arg_combination)
-            identifier = "".join([id_base] + arg_combination)
 
             # If the action has arguments, then modify the output actions,
             # and cpp method.
@@ -397,10 +393,9 @@ def read_actions_file(
                 raise ValueError(f"Cannot add duplicate action {name} on row "
                                  f"{i!r}")
 
-            action = Action(name, action_base_name, identifier, cpp_method,
-                            type, fully_supported_platforms,
+            action = Action(name, action_base_name, shortened_base_name,
+                            cpp_method, type, fully_supported_platforms,
                             partially_supported_platforms)
-            all_ids.add(identifier)
             action._output_canonical_action_names = (
                 output_canonical_action_names)
             actions_by_name[action.name] = action
@@ -498,12 +493,13 @@ def read_unprocessed_coverage_tests_file(
 
 
 def get_and_maybe_delete_tests_in_browsertest(
-        filename: str,
-        required_tests: Set[TestId] = {},
-        delete_in_place: bool = False) -> Dict[str, Set[TestPlatform]]:
+    filename: str,
+    required_tests: Set[TestIdTestNameTuple] = {},
+    delete_in_place: bool = False
+) -> Dict[TestIdTestNameTuple, Set[TestPlatform]]:
     """
-    Returns a dictionary of all test ids found to the set of detected platforms
-    the test is enabled on.
+    Returns a dictionary of all test ids and test names found to
+    the set of detected platforms the test is enabled on.
 
     When delete_in_place is set to True, overwrite the file to remove tests not
     in required_tests.
@@ -532,30 +528,42 @@ def get_and_maybe_delete_tests_in_browsertest(
     `TestPlatform.WINDOWS` and thus enabled on {`TestPlatform.MAC`,
     `TestPlatform.CHROME_OS`, and `TestPlatform.LINUX`}.
     """
-    tests: Dict[str, Set[TestPlatform]] = {}
+    tests: Dict[TestIdTestNameTuple, Set[TestPlatform]] = {}
 
     with open(filename, 'r') as fp:
         file = fp.read()
         result_file = file
         # Attempts to match a full test case, where the name contains the test
         # id prefix. Purposefully allows any prefixes on the test name (like
-        # MAYBE_ or DISABLED_).
+        # MAYBE_ or DISABLED_). Examples can be found here.
+        # https://regex101.com/r/l1xnAJ/2
         for match in re.finditer(
-                fr'IN_PROC_BROWSER_TEST_F.+((?:\n.+)*)'
-                fr'{CoverageTest.TEST_ID_PREFIX}(\w+)\).+((?:\n.+)+)\n}}\n*',
-                file):
-            test_id = match.group(2)
-            tests[test_id] = set(TestPlatform)
-            test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_id}"
-            if f"DISABLED_{test_name}" not in file:
-                if delete_in_place and test_id not in required_tests:
-                    del tests[test_id]
+                'IN_PROC_BROWSER_TEST_F[\\(\\w\\s,]+'
+                fr'{CoverageTest.TEST_ID_PREFIX}([a-zA-Z0-9._-]+)\)'
+                '\\s*{\n(?:\\s*\\/\\/.*\n)+((?:[^;^}}]+;\n)+)}', file):
+            test_steps: List[str] = []
+            if match.group(2):
+                test_body = match.group(2).split(";")
+                for line in test_body:
+                    assert not line.strip().startswith("//")
+                    test_steps.append(line.strip())
+            test_id = generate_test_id_from_test_steps(test_steps)
+            test_name = match.group(1)
+            tests[TestIdTestNameTuple(test_id, test_name)] = set(TestPlatform)
+            browser_test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_name}"
+            required_tests_ids = []
+            for t in required_tests:
+                required_tests_ids.append(t[0])
+            if f"DISABLED_{browser_test_name}" not in file:
+                if delete_in_place and test_id not in required_tests_ids:
+                    del tests[TestIdTestNameTuple(test_id, test_name)]
                     # Remove the matching test code block when the test is not
                     # in required_tests
                     regex_to_remove = re.escape(match.group(0))
                     result_file = re.sub(regex_to_remove, '', result_file)
                 continue
-            enabled_platforms: Set[TestPlatform] = tests[test_id]
+            enabled_platforms: Set[TestPlatform] = tests[TestIdTestNameTuple(
+                test_id, test_name)]
             for platform in TestPlatform:
                 # Search for macro that specifies the given platform before
                 # the string "DISABLED_<test_name>".
@@ -563,29 +571,29 @@ def get_and_maybe_delete_tests_in_browsertest(
                 # This pattern ensures that there aren't any '{' or '}'
                 # characters between the macro and the disabled test name, which
                 #  ensures that the macro is applying to the correct test.
-                if re.search(fr"{macro_for_regex}[^{{}}]+DISABLED_{test_name}",
-                             file):
+                if re.search(
+                        fr"{macro_for_regex}[^{{}}]+DISABLED_{browser_test_name}",
+                        file):
                     enabled_platforms.remove(platform)
             if len(enabled_platforms) == len(TestPlatform):
                 enabled_platforms.clear()
     if delete_in_place:
         with open(filename, 'w') as fp:
             fp.write(result_file)
-
     return tests
 
 
 def find_existing_and_disabled_tests(
-        test_partitions: List[TestPartitionDescription],
-        required_coverage_by_platform_set: CoverageTestsByPlatformSet,
-        delete_in_place: bool = False
-) -> Tuple[TestIdsByPlatformSet, TestIdsByPlatform]:
+    test_partitions: List[TestPartitionDescription],
+    required_coverage_by_platform_set: CoverageTestsByPlatformSet,
+    delete_in_place: bool = False
+) -> Tuple[TestIdsTestNamesByPlatformSet, TestIdsTestNamesByPlatform]:
     """
     Returns a dictionary of platform set to test id, and a dictionary of
     platform to disabled test ids.
     """
-    existing_tests: TestIdsByPlatformSet = defaultdict(lambda: set())
-    disabled_tests: TestIdsByPlatform = defaultdict(lambda: set())
+    existing_tests: TestIdsNamesByPlatformSet = defaultdict(lambda: set())
+    disabled_tests: TestIdsNamesByPlatform = defaultdict(lambda: set())
     for partition in test_partitions:
         for file in os.listdir(partition.browsertest_dir):
             if not file.startswith(partition.test_file_prefix):
@@ -594,18 +602,41 @@ def find_existing_and_disabled_tests(
                 TestPlatform.get_platforms_from_browsertest_filename(file))
             filename = os.path.join(partition.browsertest_dir, file)
             required_tests = set(
-                i.id
+                TestIdTestNameTuple(i.id, i.generate_test_name())
                 for i in required_coverage_by_platform_set.get(platforms, []))
             tests = get_and_maybe_delete_tests_in_browsertest(
                 filename, required_tests, delete_in_place)
-            for test_id in tests.keys():
+            for test_id, test_name in tests.keys():
                 if test_id in existing_tests[platforms]:
-                    raise ValueError(f"Already found test {test_id}. "
+                    raise ValueError(f"Already found test {test_name}. "
                                      f"Duplicate test in {filename}")
-                existing_tests[platforms].add(test_id)
+                existing_tests[platforms].add(
+                    TestIdTestNameTuple(test_id, test_name))
             for platform in platforms:
-                for test_id, enabled_platforms in tests.items():
+                for (test_id, test_name), enabled_platforms in tests.items():
                     if platform not in enabled_platforms:
-                        disabled_tests[platform].add(test_id)
-            logging.info(f"Found tests in {filename}:\n{tests.keys()}")
+                        disabled_tests[platform].add(
+                            TestIdTestNameTuple(test_id, test_name))
+            test_names = [test_name for (test_id, test_name) in tests.keys()]
+            logging.info(f"Found tests in {filename}:\n{test_names}")
     return (existing_tests, disabled_tests)
+
+
+def generate_test_id_from_test_steps(test_steps: List[str]) -> str:
+    test_id = []
+    for test_step in test_steps:
+        # Examples of the matching regex.
+        # https://regex101.com/r/UYlzkK/1
+        match_test_step = re.search(r"helper_.(\w+)\(([\w,\s:]*)\)", test_step)
+        if match_test_step:
+            actions = re.findall('[A-Z][^A-Z]*', match_test_step.group(1))
+            test_id += [a.lower() for a in actions]
+            if match_test_step.group(2):
+                parameters = [
+                    m.strip() for m in match_test_step.group(2).split(',')
+                ]
+                for p in parameters:
+                    match_param_value = re.match(r".*::k(.*)", p)
+                    if match_param_value.group(1):
+                        test_id.append(match_param_value.group(1))
+    return "_".join(test_id)

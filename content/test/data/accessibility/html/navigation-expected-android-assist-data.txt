@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="nav"}, {display="block"}]
+++++View textSize:16.0 style:4 fgColor:-16776978 htmlInfo:[{htmlTag="a"}, {display="inline"}, {href="/fake/"}]
+++++++TextView text:"Don't click on me" textSize:16.0 style:4 fgColor:-16776978 htmlInfo:[{htmlTag=""}, {display=""}]

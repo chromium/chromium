@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
-#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -42,6 +41,7 @@
 namespace blink {
 
 class Element;
+class ElementResolveContext;
 class ElementRuleCollector;
 class HTMLSlotElement;
 class PartNames;
@@ -55,9 +55,11 @@ class MatchedRule {
   // Everything in this class is private to ElementRuleCollector, since it
   // contains non-owned references to RuleData (see the constructor), but we
   // cannot make the class itself private, since
-  // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() needs it to be visible from
-  // the outside.
- private:
+  // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() and Vector::emplace_back()
+  // need it to be visible from the outside.
+  static const unsigned kBitsForPositionInRuleData = 18;
+
+ public:
   // Does not take overship of rule_data (it is owned by the appropriate
   // bucket in RuleSet), so the RuleData must live for at least as long as
   // the MatchedRule, ie., those buckets must not be modified (which would
@@ -71,14 +73,12 @@ class MatchedRule {
               unsigned style_sheet_index)
       : rule_data_(rule_data),
         layer_order_(layer_order),
-        proximity_(proximity) {
-    DCHECK(rule_data_);
-    static const unsigned kBitsForPositionInRuleData = 18;
-    position_ = (static_cast<uint64_t>(style_sheet_index)
-                 << kBitsForPositionInRuleData) +
-                rule_data_->GetPosition();
-  }
+        proximity_(proximity),
+        position_((static_cast<uint64_t>(style_sheet_index)
+                   << kBitsForPositionInRuleData) +
+                  rule_data->GetPosition()) {}
 
+ private:
   const RuleData* GetRuleData() const { return rule_data_; }
   uint64_t GetPosition() const { return position_; }
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
@@ -163,10 +163,27 @@ class CORE_EXPORT ElementRuleCollector {
                                    bool is_vtt_embedded_style,
                                    StyleRuleUsageTracker* tracker);
   void ClearMatchedRules();
+
+  // Cheaper versions of CollectMatchingRules and CollectMatchingShadowHostRules
+  // respectively, that only return true/false instead of actually collecting
+  // the rules.
+  bool CheckIfAnyRuleMatches(const MatchRequest&);
+  bool CheckIfAnyShadowHostRuleMatches(const MatchRequest&);
+
+  // True if an entire StyleScope can be rejected, i.e. all style rules
+  // within the StyleScope are guaranteed to not match due to the given
+  // StyleScope not being in scope [1].
+  //
+  // Return 'false' when we don't know if a StyleScope is in scope or not.
+  //
+  // [1] https://drafts.csswg.org/css-cascade-6/#in-scope
+  bool CanRejectScope(const StyleScope&);
+
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  CascadeOrigin,
                                  bool is_cacheable = true,
                                  bool is_inline_style = false);
+  void AddTryStyleProperties(const CSSPropertyValueSet*);
   void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     current_matching_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
@@ -178,6 +195,9 @@ class CORE_EXPORT ElementRuleCollector {
   // Return the pseudo id if the style request is for rules associated with a
   // pseudo element, or kPseudoNone if not.
   PseudoId GetPseudoId() const { return pseudo_style_request_.pseudo_id; }
+  const AtomicString& GetPseudoArgument() const {
+    return pseudo_style_request_.pseudo_argument;
+  }
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
 
@@ -227,15 +247,31 @@ class CORE_EXPORT ElementRuleCollector {
     bool for_shadow_pseudo = false;
   };
 
-  template <bool perf_trace_enabled>
-  void CollectMatchingRulesForListInternal(base::span<const RuleData>,
+  // If stop_at_first_match = true, CollectMatchingRules*() will stop
+  // whenever any rule matches, return true, and not store the result
+  // anywhere nor update the match counters. Otherwise, these functions
+  // will return false (even if one or more rules matched).
+  //
+  // Note in the context of stop_at_first_match, a match against any
+  // pseudo rule in the element counts as a match (e.g., “div::before”
+  // will match the <div> element, not just its ::before pseudo-element).
+  // This is convenient because this mode is used for invalidation on
+  // changed rulesets only, where such a match causes us to have to
+  // invalidate style on the element anyway.
+
+  template <bool stop_at_first_match>
+  bool CollectMatchingRulesInternal(const MatchRequest&);
+
+  template <bool stop_at_first_match, bool perf_trace_enabled>
+  bool CollectMatchingRulesForListInternal(base::span<const RuleData>,
                                            const MatchRequest&,
                                            const RuleSet*,
                                            int,
                                            const SelectorChecker&,
                                            PartRequest* = nullptr);
 
-  void CollectMatchingRulesForList(base::span<const RuleData>,
+  template <bool stop_at_first_match>
+  bool CollectMatchingRulesForList(base::span<const RuleData>,
                                    const MatchRequest&,
                                    const RuleSet*,
                                    int,

@@ -4,6 +4,7 @@
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -42,8 +43,8 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
         WizardController::default_controller()->screen_manager()->GetScreen(
             FamilyLinkNoticeView::kScreenId));
     original_callback_ = screen->get_exit_callback_for_testing();
-    screen->set_exit_callback_for_testing(base::BindRepeating(
-        &FamilyLinkNoticeScreenTest::HandleScreenExit, base::Unretained(this)));
+    screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
     OobeBaseTest::SetUpOnMainThread();
   }
 
@@ -63,25 +64,8 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
     test::OobeJS().TapOnPath(kContinueButton);
   }
 
-  void WaitForScreenExit() {
-    if (screen_result_.has_value())
-      return;
-    base::RunLoop run_loop;
-    screen_exit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  absl::optional<FamilyLinkNoticeScreen::Result> screen_result_;
-
- protected:
-  LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
-
- private:
-  void HandleScreenExit(FamilyLinkNoticeScreen::Result result) {
-    ASSERT_FALSE(screen_exited_);
-    screen_exited_ = true;
-    screen_result_ = result;
-
+  FamilyLinkNoticeScreen::Result WaitForScreenExitResult() {
+    auto result = screen_result_waiter_.Take();
     // Fetch the values before OOBE is eventually destroyed after the exit
     // callback.
     WizardController::default_controller()->PrepareFirstRunPrefs();
@@ -90,13 +74,15 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
             prefs::kHelpAppShouldShowParentalControl);
 
     original_callback_.Run(result);
-    if (screen_exit_callback_)
-      std::move(screen_exit_callback_).Run();
+    return result;
   }
 
-  bool screen_exited_ = false;
-  absl::optional<bool> help_app_pref_fal_;
-  base::RepeatingClosure screen_exit_callback_;
+ protected:
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
+
+ private:
+  std::optional<bool> help_app_pref_fal_;
+  base::test::TestFuture<FamilyLinkNoticeScreen::Result> screen_result_waiter_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -111,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
       ->GetWizardContextForTesting()
       ->sign_in_as_child = false;
   LoginAsRegularUser();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(WaitForScreenExitResult(),
+            FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -125,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, NonSupervisedChildAccount) {
   LoginAsRegularUser();
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();
   ClickContinueButtonOnFamilyLinkScreen();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::DONE);
+  EXPECT_EQ(WaitForScreenExitResult(), FamilyLinkNoticeScreen::Result::kDone);
   ExpectHelpAppPrefValue(true);
 }
 
@@ -159,8 +144,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
       ->GetWizardContextForTesting()
       ->sign_in_as_child = true;
   LoginAsChildUser();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(WaitForScreenExitResult(),
+            FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -172,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest,
       ->GetWizardContextForTesting()
       ->sign_in_as_child = false;
   LoginAsChildUser();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(WaitForScreenExitResult(),
+            FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -198,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest, ManagedAccount) {
   LoginAsManagedUser();
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();
   ClickContinueButtonOnFamilyLinkScreen();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::DONE);
+  EXPECT_EQ(WaitForScreenExitResult(), FamilyLinkNoticeScreen::Result::kDone);
   ExpectHelpAppPrefValue(false);
 }
 

@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/signin/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-
-assert(enable_search_engine_choice)
 
 build_webui("build") {
   grd_prefix = "search_engine_choice"
 
-  static_files = [ "search_engine_choice.html" ]
+  static_files = [
+    "search_engine_choice.html",
+    "images/arrow_downward.svg",
+  ]
 
   web_component_files = [ "app.ts" ]
 
@@ -26,5 +26,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_composite = true
 }

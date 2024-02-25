@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/mac-rust-x64-dbg/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -22,9 +25,6 @@
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "checkout_rust"
-                ],
                 "config": "chromium"
               }
             }

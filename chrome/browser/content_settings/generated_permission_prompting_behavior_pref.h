@@ -17,6 +17,8 @@
 
 namespace content_settings {
 
+// Must be kept in sync with the enum of the same name in
+// chrome/browser/resources/settings/site_settings/constants.js
 enum class SettingsState {
   kCanPromptWithAlwaysLoudUI = 0,
   kCanPromptWithAlwaysQuietUI = 1,
@@ -24,6 +26,7 @@ enum class SettingsState {
   kBlocked = 3,
 };
 
+extern const char kGeneratedNotificationPref[];
 extern const char kGeneratedGeolocationPref[];
 
 // A generated preference which represents the effective Notification or

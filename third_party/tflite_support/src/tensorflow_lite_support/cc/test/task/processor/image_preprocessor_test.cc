@@ -18,7 +18,7 @@ limitations under the License.
 #include <memory>
 
 #include "absl/status/status.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -46,11 +46,11 @@ constexpr char kTestDataDirectory[] =
 constexpr char kDilatedConvolutionModelWithMetaData[] = "dilated_conv.tflite";
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
-class DynamicInputTest : public tflite_shims::testing::Test {
+class DynamicInputTest : public tflite::testing::Test {
  protected:
   void PreprocessImage() {
     engine_ = absl::make_unique<TfLiteEngine>();
@@ -60,7 +60,7 @@ class DynamicInputTest : public tflite_shims::testing::Test {
     SUPPORT_ASSERT_OK(engine_->InitInterpreter());
 
     SUPPORT_ASSERT_OK_AND_ASSIGN(auto preprocessor,
-                                 ImagePreprocessor::Create(engine_.get(), {0}));
+                         ImagePreprocessor::Create(engine_.get(), {0}));
 
     SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
     std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
@@ -94,10 +94,9 @@ TEST_F(DynamicInputTest, GoldenImageComparison) {
   PreprocessImage();
 
   // Get the processed input image.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      float* processed_input_data,
-      tflite::task::core::AssertAndReturnTypedTensor<float>(
-          engine_->GetInputs()[0]));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(float* processed_input_data,
+                       tflite::task::core::AssertAndReturnTypedTensor<float>(
+                           engine_->GetInputs()[0]));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   const uint8* image_data = image.pixel_data;

@@ -10,8 +10,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/constants.h"
 
 namespace switches {
@@ -37,14 +35,6 @@ const char kDoubleBufferCompositing[] = "double-buffer-compositing";
 // fullscreen overlay and use it as main framebuffer where possible.
 const char kEnableHardwareOverlays[] = "enable-hardware-overlays";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// ChromeOS uses one of two VideoDecoder implementations based on SoC/board
-// specific configurations that are signalled via this command line flag.
-// TODO(b/159825227): remove when the "old" video decoder is fully launched.
-const char kPlatformDisallowsChromeOSDirectVideoDecoder[] =
-    "platform-disallows-chromeos-direct-video-decoder";
-#endif
-
 // Effectively disables pipelining of compositor frame production stages by
 // waiting for each stage to finish before completing a frame.
 const char kRunAllCompositorStagesBeforeDraw[] =
@@ -67,11 +57,11 @@ const char kTintCompositedContentModulate[] =
 // The debug borders are offset from the layer rect by a few pixels for clarity.
 const char kShowDCLayerDebugBorders[] = "show-dc-layer-debug-borders";
 
-absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
+std::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw)) {
     // In full-pipeline mode, surface deadlines should always be unlimited.
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string deadline_to_synchronize_surfaces_string =
       command_line->GetSwitchValueASCII(
@@ -82,7 +72,7 @@ absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
   uint32_t activation_deadline_in_frames;
   if (!base::StringToUint(deadline_to_synchronize_surfaces_string,
                           &activation_deadline_in_frames)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return activation_deadline_in_frames;
 }

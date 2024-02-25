@@ -36,17 +36,18 @@ import org.chromium.url.GURL;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Mock class for {@link WebContents}.
- */
+/** Mock class for {@link WebContents}. */
 @SuppressLint("ParcelCreator")
 public class MockWebContents implements WebContents {
     public RenderFrameHost renderFrameHost;
     private GURL mLastCommittedUrl;
 
     @Override
-    public void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
-            ViewEventSink.InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
+    public void initialize(
+            String productVersion,
+            ViewAndroidDelegate viewDelegate,
+            ViewEventSink.InternalAccessDelegate accessDelegate,
+            WindowAndroid windowAndroid,
             WebContents.InternalsHolder internalsHolder) {}
 
     @Override
@@ -181,6 +182,9 @@ public class MockWebContents implements WebContents {
     public void setAudioMuted(boolean mute) {}
 
     @Override
+    public boolean isAudioMuted() { return false; }
+
+    @Override
     public boolean focusLocationBarByDefault() {
         return false;
     }
@@ -200,8 +204,13 @@ public class MockWebContents implements WebContents {
     public void scrollFocusedEditableNodeIntoView() {}
 
     @Override
-    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
-            boolean shouldShowContextMenu) {}
+    public void selectAroundCaret(
+            @SelectionGranularity int granularity,
+            boolean shouldShowHandle,
+            boolean shouldShowContextMenu,
+            int startOffset,
+            int endOffset,
+            int surroundingTextLength) {}
 
     @Override
     public void adjustSelectionByCharacterOffset(
@@ -234,8 +243,11 @@ public class MockWebContents implements WebContents {
     public void addMessageToDevToolsConsole(int level, String message) {}
 
     @Override
-    public void postMessageToMainFrame(MessagePayload messagePayload, String sourceOrigin,
-            String targetOrigin, MessagePort[] ports) {}
+    public void postMessageToMainFrame(
+            MessagePayload messagePayload,
+            String sourceOrigin,
+            String targetOrigin,
+            MessagePort[] ports) {}
 
     @Override
     public MessagePort[] createMessageChannel() {
@@ -289,7 +301,11 @@ public class MockWebContents implements WebContents {
     public void setSpatialNavigationDisabled(boolean disabled) {}
 
     @Override
-    public int downloadImage(GURL url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
+    public int downloadImage(
+            GURL url,
+            boolean isFavicon,
+            int maxBitmapSize,
+            boolean bypassCache,
             ImageDownloadCallback callback) {
         return 0;
     }

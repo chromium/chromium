@@ -27,15 +27,8 @@ inline size_t StoreU32(uint8_t* dst, size_t offset, uint32_t x) {
 }
 
 inline size_t Store16(uint8_t* dst, size_t offset, int x) {
-#if defined(WOFF_LITTLE_ENDIAN)
-  *reinterpret_cast<uint16_t*>(dst + offset) =
-      ((x & 0xFF) << 8) | ((x & 0xFF00) >> 8);
-#elif defined(WOFF_BIG_ENDIAN)
-  *reinterpret_cast<uint16_t*>(dst + offset) = static_cast<uint16_t>(x);
-#else
   dst[offset] = x >> 8;
   dst[offset + 1] = x;
-#endif
   return offset + 2;
 }
 
@@ -47,17 +40,8 @@ inline void StoreU32(uint32_t val, size_t* offset, uint8_t* dst) {
 }
 
 inline void Store16(int val, size_t* offset, uint8_t* dst) {
-#if defined(WOFF_LITTLE_ENDIAN)
-  *reinterpret_cast<uint16_t*>(dst + *offset) =
-      ((val & 0xFF) << 8) | ((val & 0xFF00) >> 8);
-  *offset += 2;
-#elif defined(WOFF_BIG_ENDIAN)
-  *reinterpret_cast<uint16_t*>(dst + *offset) = static_cast<uint16_t>(val);
-  *offset += 2;
-#else
   dst[(*offset)++] = val >> 8;
   dst[(*offset)++] = val;
-#endif
 }
 
 inline void StoreBytes(const uint8_t* data, size_t len,

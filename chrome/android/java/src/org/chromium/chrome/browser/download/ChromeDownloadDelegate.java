@@ -45,8 +45,9 @@ public class ChromeDownloadDelegate implements UserData {
     public static ChromeDownloadDelegate from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
         ChromeDownloadDelegate controller = host.getUserData(USER_DATA_KEY);
-        return controller == null ? host.setUserData(USER_DATA_KEY, new ChromeDownloadDelegate(tab))
-                                  : controller;
+        return controller == null
+                ? host.setUserData(USER_DATA_KEY, new ChromeDownloadDelegate(tab))
+                : controller;
     }
 
     /**
@@ -72,8 +73,9 @@ public class ChromeDownloadDelegate implements UserData {
     protected void onDownloadStartNoStream(final DownloadInfo downloadInfo) {
         final String fileName = downloadInfo.getFileName();
         assert !TextUtils.isEmpty(fileName);
-        final String newMimeType = MimeUtils.remapGenericMimeType(
-                downloadInfo.getMimeType(), downloadInfo.getUrl().getSpec(), fileName);
+        final String newMimeType =
+                MimeUtils.remapGenericMimeType(
+                        downloadInfo.getMimeType(), downloadInfo.getUrl().getSpec(), fileName);
         new AsyncTask<Pair<String, File>>() {
             @Override
             protected Pair<String, File> doInBackground() {
@@ -88,23 +90,23 @@ public class ChromeDownloadDelegate implements UserData {
                 String externalStorageState = result.first;
                 File fullDirPath = result.second;
                 if (!checkExternalStorageAndNotify(
-                            downloadInfo, fullDirPath, externalStorageState)) {
+                        downloadInfo, fullDirPath, externalStorageState)) {
                     return;
                 }
                 GURL url = sanitizeDownloadUrl(downloadInfo);
                 if (url == null) return;
-                DownloadInfo newInfo = DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
-                                               .setUrl(url)
-                                               .setMimeType(newMimeType)
-                                               .setDescription(url.getSpec())
-                                               .setFileName(fileName)
-                                               .setIsGETRequest(true)
-                                               .build();
+                DownloadInfo newInfo =
+                        DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
+                                .setUrl(url)
+                                .setMimeType(newMimeType)
+                                .setDescription(url.getSpec())
+                                .setFileName(fileName)
+                                .setIsGETRequest(true)
+                                .build();
                 DownloadController.enqueueDownloadManagerRequest(newInfo);
                 // TODO(shaktisahu): Verify if we still need to close an empty tab for OMA download.
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -204,12 +206,13 @@ public class ChromeDownloadDelegate implements UserData {
         if (window.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             onDownloadStartNoStream(downloadInfo);
         } else if (window.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
-            PermissionCallback permissionCallback = (permissions, grantResults) -> {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    onDownloadStartNoStream(downloadInfo);
-                }
-            };
+            PermissionCallback permissionCallback =
+                    (permissions, grantResults) -> {
+                        if (grantResults.length > 0
+                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            onDownloadStartNoStream(downloadInfo);
+                        }
+                    };
             window.requestPermissions(
                     new String[] {permission.WRITE_EXTERNAL_STORAGE}, permissionCallback);
         }

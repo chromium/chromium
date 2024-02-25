@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -70,7 +71,7 @@ class ScopedTestingCookieStoreIOSClient {
 
  private:
   std::unique_ptr<CookieStoreIOSClient> cookie_store_client_;
-  CookieStoreIOSClient* original_client_;
+  raw_ptr<CookieStoreIOSClient> original_client_;
 };
 
 void RecordCookieChanges(std::vector<net::CanonicalCookie>* out_cookies,

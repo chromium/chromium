@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Records UMA stats for the actions that the user takes on the feed in the NTP.
- */
+/** Records UMA stats for the actions that the user takes on the feed in the NTP. */
 public class FeedUma {
     // Possible actions taken by the user to control the feed. These values are also defined in
     // enums.xml as FeedControlsActions.
@@ -29,16 +27,18 @@ public class FeedUma {
                 "ContentSuggestions.Feed.Controls.Actions", action, NUM_CONTROLS_ACTIONS);
     }
 
-    static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
-            "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
-            "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.TotalCards",
-            "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.TotalCards",
+    public static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
+        "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
+        "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.TotalCards",
+        "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.TotalCards",
+        "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.TotalCards",
     };
 
-    static final String[] OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES = {
-            "ContentSuggestions.Feed.LoadMoreTrigger.OffsetFromEndOfStream",
-            "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
-            "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
+    public static final String[] OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES = {
+        "ContentSuggestions.Feed.LoadMoreTrigger.OffsetFromEndOfStream",
+        "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
+        "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
+        "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.OffsetFromEndOfStream",
     };
 
     /**

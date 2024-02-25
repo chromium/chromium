@@ -7,9 +7,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
@@ -91,6 +93,33 @@ views::Label* RichControlsContainerView::AddSecondaryLabel(
           .WithWeight(1));
   secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kStart);
+  // TODO(https://crbug.com/326376201): Consider using
+  // views::style::STYLE_BODY_5 when CR2023 is enabled to
+  // be consistent with AddSecondaryStyledLabel, as most uses of this method
+  // already change the text style to that anyway.
+  return labels_wrapper_->AddChildView(std::move(secondary_label));
+}
+
+views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
+    std::u16string text) {
+  auto secondary_label = std::make_unique<views::StyledLabel>();
+  secondary_label->SetText(text);
+  secondary_label->SetTextContext(views::style::CONTEXT_LABEL);
+  secondary_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  secondary_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
+          .WithWeight(1));
+  secondary_label->SetProperty(views::kCrossAxisAlignmentKey,
+                               views::LayoutAlignment::kStart);
+  if (features::IsChromeRefresh2023()) {
+    secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+    secondary_label->SetDefaultEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
+  }
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
@@ -129,7 +158,14 @@ const std::u16string& RichControlsContainerView::GetTitleForTesting() {
   return title_->GetText();
 }
 
+const ui::ImageModel RichControlsContainerView::GetIconImageModelForTesting() {
+  return icon_->GetImageModel();
+}
+
 int RichControlsContainerView::GetMinBubbleWidth() const {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 }
+
+BEGIN_METADATA(RichControlsContainerView)
+END_METADATA

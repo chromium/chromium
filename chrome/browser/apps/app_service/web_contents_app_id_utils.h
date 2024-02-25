@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEB_CONTENTS_APP_ID_UTILS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEB_CONTENTS_APP_ID_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -40,7 +40,7 @@ namespace apps {
 // For an app running in a tab, non-empty ID will only be returned if the app is
 // configured to run in a tab. For an app running in a window, non-empty ID will
 // be returned regardless of how the app is confiured to launch.
-absl::optional<std::string> GetInstanceAppIdForWebContents(
+std::optional<std::string> GetInstanceAppIdForWebContents(
     content::WebContents* tab);
 #endif
 

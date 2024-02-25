@@ -12,15 +12,19 @@
 #include <stddef.h>
 
 #include <iosfwd>
+#include <optional>
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/process/process_handle.h"
+#include "base/sequence_checker_impl.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -39,7 +43,7 @@ namespace base {
 #if BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
 #elif BUILDFLAG(IS_FUCHSIA)
-typedef zx_handle_t PlatformThreadId;
+typedef zx_koid_t PlatformThreadId;
 #elif BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
 #elif BUILDFLAG(IS_POSIX)
@@ -124,9 +128,9 @@ enum class ThreadType : int {
 enum class ThreadPriorityForTest : int {
   kBackground,
   kUtility,
+  kResourceEfficient,
   kNormal,
-  // The priority obtained via ThreadType::kDisplayCritical (and potentially
-  // other ThreadTypes).
+  kCompositing,
   kDisplay,
   kRealtimeAudio,
   kMaxValue = kRealtimeAudio,
@@ -262,7 +266,7 @@ class BASE_EXPORT PlatformThreadBase {
   static TimeDelta GetRealtimePeriod(Delegate* delegate);
 
   // Returns the override of task leeway if any.
-  static absl::optional<TimeDelta> GetThreadLeewayOverride();
+  static std::optional<TimeDelta> GetThreadLeewayOverride();
 
   // Returns the default thread stack size set by chrome. If we do not
   // explicitly set default size then returns 0.
@@ -290,10 +294,12 @@ class BASE_EXPORT PlatformThreadApple : public PlatformThreadBase {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 class ThreadTypeDelegate;
+using IsViaIPC = base::StrongAlias<class IsViaIPCTag, bool>;
 
 class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
  public:
-  static constexpr struct sched_param kRealTimePrio = {8};
+  static constexpr struct sched_param kRealTimeAudioPrio = {8};
+  static constexpr struct sched_param kRealTimeDisplayPrio = {6};
 
   // Sets a delegate which handles thread type changes for this process. This
   // must be externally synchronized with any call to SetCurrentThreadType.
@@ -310,16 +316,23 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   // whole thread group's (i.e. process) priority.
   static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
-                            ThreadType thread_type);
+                            ThreadType thread_type,
+                            IsViaIPC via_ipc);
 
   // For a given thread id and thread type, setup the cpuset and schedtune
   // CGroups for the thread.
   static void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
                                             ThreadType thread_type);
+
+  // Determine if thread_id is a background thread by looking up whether
+  // it is in the urgent or non-urgent cpuset
+  static bool IsThreadBackgroundedForTest(PlatformThreadId thread_id);
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+BASE_EXPORT BASE_DECLARE_FEATURE(kSetRtForDisplayThreads);
+
 class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
  public:
   // Signals that the feature list has been initialized. Used for preventing
@@ -331,7 +344,30 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   // PlatformThreadLinux's SetThreadType() header comment for Linux details.
   static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
-                            ThreadType thread_type);
+                            ThreadType thread_type,
+                            IsViaIPC via_ipc);
+
+  // Returns true if the feature for backgrounding of threads is enabled.
+  static bool IsThreadsBgFeatureEnabled();
+
+  // Returns true if the feature for setting display threads to RT is enabled.
+  static bool IsDisplayThreadsRtFeatureEnabled();
+
+  // Set a specific thread as backgrounded. This is called when the process
+  // moves to and from the background and changes have to be made to each of its
+  // thread's scheduling attributes.
+  static void SetThreadBackgrounded(ProcessId process_id,
+                                    PlatformThreadId thread_id,
+                                    bool backgrounded);
+
+  // Returns the thread type of a thread given its thread id.
+  static std::optional<ThreadType> GetThreadTypeFromThreadId(
+      ProcessId process_id,
+      PlatformThreadId thread_id);
+
+  // Returns a SequenceChecker which should be used to verify that all
+  // cross-process priority changes are performed without races.
+  static SequenceCheckerImpl& GetCrossProcessThreadPrioritySequenceChecker();
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

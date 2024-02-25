@@ -479,7 +479,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
   }
 
   // Start the URLRequest.
-  read_buffer_ = base::MakeRefCounted<IOBuffer>(kReadBufferSizeInBytes);
+  read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSizeInBytes);
   NetworkTrafficAnnotationTag traffic_annotation =
       DefineNetworkTrafficAnnotation("certificate_verifier_url_request",
                                      R"(
@@ -533,6 +533,12 @@ void Job::StartURLRequest(URLRequestContext* context) {
   url_request_->set_isolation_info(IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, origin /* top_frame_origin */,
       origin /* frame_origin */, SiteForCookies()));
+
+  // Ensure that we bypass HSTS for all requests sent through
+  // CertNetFetcherURLRequest, since AIA/CRL/OCSP requests must be in HTTP to
+  // avoid circular dependencies.
+  url_request_->SetLoadFlags(url_request_->load_flags() |
+                             net::LOAD_SHOULD_BYPASS_HSTS);
 
   url_request_->Start();
 

@@ -26,6 +26,13 @@ bool StructTraits<gfx::mojom::HdrMetadataSmpteSt2086DataView,
   return true;
 }
 
+bool StructTraits<gfx::mojom::HdrMetadataNdwlDataView, gfx::HdrMetadataNdwl>::
+    Read(gfx::mojom::HdrMetadataNdwlDataView data,
+         gfx::HdrMetadataNdwl* output) {
+  output->nits = data.nits();
+  return true;
+}
+
 bool StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
                   gfx::HdrMetadataExtendedRange>::
     Read(gfx::mojom::HdrMetadataExtendedRangeDataView data,
@@ -42,6 +49,9 @@ bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
     return false;
   }
   if (!data.ReadSmpteSt2086(&output->smpte_st_2086)) {
+    return false;
+  }
+  if (!data.ReadNdwl(&output->ndwl)) {
     return false;
   }
   if (!data.ReadExtendedRange(&output->extended_range)) {

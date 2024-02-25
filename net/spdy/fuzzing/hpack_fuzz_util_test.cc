@@ -69,7 +69,7 @@ TEST(HpackFuzzUtilTest, ParsesSequenceOfHeaderBlocks) {
   HpackFuzzUtil::Input input;
   input.input.assign(fixture, std::size(fixture) - 1);
 
-  absl::string_view block;
+  std::string_view block;
 
   EXPECT_TRUE(HpackFuzzUtil::NextHeaderBlock(&input, &block));
   EXPECT_EQ("aaaaa", block);
@@ -111,12 +111,13 @@ TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   expect[":scheme"] = "http";
   expect[":path"] = "/";
   expect[":authority"] = "www.example.com";
-  EXPECT_EQ(expect, context.third_stage->decoded_block());
+  EXPECT_EQ(expect, context.third_stage_handler->decoded_block());
 }
 
 TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
   base::FilePath source_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
   // Load the example fixtures versioned with the source tree.
   HpackFuzzUtil::Input input;
@@ -130,7 +131,7 @@ TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
   HpackFuzzUtil::FuzzerContext context;
   HpackFuzzUtil::InitializeFuzzerContext(&context);
 
-  absl::string_view block;
+  std::string_view block;
   while (HpackFuzzUtil::NextHeaderBlock(&input, &block)) {
     // As these are valid examples, all fuzz stages should succeed.
     EXPECT_TRUE(

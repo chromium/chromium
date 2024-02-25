@@ -7,6 +7,8 @@ package org.chromium.components.webxr;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.content_public.browser.WebContents;
+
 /**
  * This is the "stub" version of ArClassProvider and is only compiled in if |enable_arcore| is
  * false. As such, none of the concrete implementations for the exposed interfaces are present, and
@@ -15,7 +17,9 @@ import androidx.annotation.Nullable;
  */
 /*package*/ class ArClassProvider {
     /*package*/ static @Nullable XrImmersiveOverlay.Delegate getOverlayDelegate(
-            @NonNull ArCompositorDelegate compositorDelegate, boolean useOverlay,
+            @NonNull ArCompositorDelegate compositorDelegate,
+            @NonNull final WebContents webContents,
+            boolean useOverlay,
             boolean canRenderDomContent) {
         return null;
     }

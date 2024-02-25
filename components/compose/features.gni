@@ -1,0 +1,8 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Whether Compose is enabled in the build.
+  enable_compose = is_mac || is_win || is_linux
+}

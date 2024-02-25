@@ -23,8 +23,9 @@ void TabGroupHighlight::UpdateBounds(views::View* leading_view,
                                      views::View* trailing_view) {
   // If there are no views to highlight, do nothing. Our visibility is
   // controlled by our parent TabDragContext.
-  if (!leading_view)
+  if (!leading_view) {
     return;
+  }
   gfx::Rect bounds = leading_view->bounds();
   bounds.UnionEvenIfEmpty(trailing_view->bounds());
   SetBoundsRect(bounds);
@@ -78,5 +79,5 @@ SkPath TabGroupHighlight::GetPath() const {
   return path;
 }
 
-BEGIN_METADATA(TabGroupHighlight, views::View)
+BEGIN_METADATA(TabGroupHighlight)
 END_METADATA

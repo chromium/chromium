@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,13 +42,11 @@ void OnNotificationManagerDone(
 
 CloudUploadNotificationManager::CloudUploadNotificationManager(
     Profile* profile,
-    const std::string& file_name,
     const std::string& cloud_provider_name,
     const std::string& target_app_name,
     int num_files,
     UploadType upload_type)
     : profile_(profile),
-      file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name),
       num_files_(num_files),
@@ -271,15 +268,6 @@ void CloudUploadNotificationManager::ShowUploadError(
                                            /*metadata=*/nullptr);
 }
 
-void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
-  if (state_ == State::kInProgress) {
-    state_ = State::kInProgressTimedOut;
-  } else if (state_ == State::kWaitingForInProgressTimeout) {
-    state_ = State::kComplete;
-    ShowCompleteNotification();
-  }
-}
-
 void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          notification_id_);
@@ -290,8 +278,17 @@ void CloudUploadNotificationManager::CloseNotification() {
   }
 }
 
+void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
+  if (state_ == State::kInProgress) {
+    state_ = State::kInProgressTimedOut;
+  } else if (state_ == State::kWaitingForInProgressTimeout) {
+    state_ = State::kComplete;
+    ShowCompleteNotification();
+  }
+}
+
 void CloudUploadNotificationManager::HandleProgressNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Cancel" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index && cancel_callback_ && CanCancel()) {
@@ -303,19 +300,19 @@ void CloudUploadNotificationManager::HandleProgressNotificationClick(
 }
 
 void CloudUploadNotificationManager::HandleErrorNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
     // Request an ODFS mount which will trigger reauthentication.
-    CloudUploadDialog::RequestODFSMount(profile_, base::DoNothing());
+    RequestODFSMount(profile_, base::DoNothing());
   }
 
   CloseNotification();
 }
 
 void CloudUploadNotificationManager::HandleCompleteNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (callback_for_testing_) {
     std::move(callback_for_testing_).Run(destination_path_);
   } else if (button_index) {
@@ -330,10 +327,6 @@ void CloudUploadNotificationManager::HandleCompleteNotificationClick(
 bool CloudUploadNotificationManager::CanCancel() {
   return state_ == State::kUninitialized || state_ == State::kInProgress ||
          state_ == State::kInProgressTimedOut;
-}
-
-void CloudUploadNotificationManager::CloseForTest() {
-  CloseNotification();
 }
 
 }  // namespace ash::cloud_upload

@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -30,12 +29,11 @@
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -43,6 +41,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -76,7 +75,7 @@ DOMWindow::~DOMWindow() {
   DCHECK(!frame_);
 }
 
-v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
+v8::Local<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   // TODO(yukishiino): Get understanding of why it's possible to initialize
   // the context after the frame is detached.  And then, remove the following
   // lines.  See also https://crbug.com/712638 .
@@ -87,6 +86,9 @@ v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   // TODO(yukishiino): Make this function always return the non-empty handle
   // even if the frame is detached because the global proxy must always exist
   // per spec.
+  //
+  // Getting the proxy also results in initializing it and eventually yields in
+  // `SetupWindowPrototypeChain()` calls for the window proxy.
   return frame->GetWindowProxy(script_state->World())
       ->GlobalProxyIfNotDetached();
 }
@@ -95,8 +97,22 @@ v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
     v8::Isolate*,
     const WrapperTypeInfo*,
     v8::Local<v8::Object> wrapper) {
-  NOTREACHED();
-  return v8::Local<v8::Object>();
+  NOTREACHED_NORETURN();
+}
+
+v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
+    v8::Isolate* isolate,
+    DOMWrapperWorld* world,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object> wrapper) {
+  // Using the world directly avoids fetching it from a potentially
+  // half-initialized context.
+  if (world->DomDataStore().Set</*entered_context=*/false>(
+          isolate, this, wrapper_type_info, wrapper)) {
+    V8DOMWrapper::SetNativeInfo(isolate, wrapper, wrapper_type_info, this);
+    DCHECK(V8DOMWrapper::HasInternalFieldsSet(wrapper));
+  }
+  return wrapper;
 }
 
 const AtomicString& DOMWindow::InterfaceName() const {
@@ -214,7 +230,6 @@ void DOMWindow::setOpenerForBindings(v8::Isolate* isolate,
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> this_wrapper =
       ToV8Traits<DOMWindow>::ToV8(ScriptState::From(context), this)
-          .ToLocalChecked()
           .As<v8::Object>();
   v8::PropertyDescriptor desc(opener.V8Value(), /*writable=*/true);
   desc.set_enumerable(true);
@@ -301,125 +316,6 @@ DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
 
   Frame* child = GetFrame()->Tree().ScopedChild(index);
   return child ? child->DomWindow() : nullptr;
-}
-
-v8::Local<v8::Value> DOMWindow::AnonymousNamedGetter(const AtomicString& name) {
-  if (!GetFrame()) {
-    return v8::Local<v8::Value>();
-  }
-
-  // Verify that COOP: restrict-properties does not prevent this access.
-  // TODO(https://crbug.com/1467216): This will block all same-origin only
-  // properties accesses with a "Named property" access failure, because the
-  // properties will be tried here as part of the algorithm. See if we need to
-  // have a custom message in that case, possibly by actually printing the
-  // passed name.
-  v8::Isolate* isolate = window_proxy_manager_->GetIsolate();
-  if (UNLIKELY(IsAccessBlockedByCoopRestrictProperties(isolate))) {
-    // We need to not throw an exception if we're dealing with the special
-    // "then" property but return undefined instead. See
-    // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
-    // makes sure WindowProxy is thenable, see the original discussion here:
-    // https://github.com/whatwg/dom/issues/536.
-    if (name == "then") {
-      return v8::Local<v8::Value>();
-    }
-    ExceptionState exception_state(isolate, ExceptionState::kNamedGetterContext,
-                                   "Window", name.Utf8().c_str());
-    exception_state.ThrowSecurityError(
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
-        "access.");
-    return v8::Null(isolate);
-  }
-
-  // Note that named access on WindowProxy is allowed in the cross-origin case.
-  // 7.4.5 [[GetOwnProperty]] (P), step 6.
-  // https://html.spec.whatwg.org/C/#windowproxy-getownproperty
-  //
-  // 7.3.3 Named access on the Window object
-  // The document-tree child browsing context name property set
-  // https://html.spec.whatwg.org/C/#document-tree-child-browsing-context-name-property-set
-  Frame* child = GetFrame()->Tree().ScopedChild(name);
-  if (child) {
-    ReportCoopAccess("named");
-    RecordWindowProxyAccessMetrics(
-        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
-    UseCounter::Count(CurrentExecutionContext(isolate),
-                      WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
-
-    // step 3. Remove each browsing context from childBrowsingContexts whose
-    // active document's origin is not same origin with activeDocument's origin
-    // and whose browsing context name does not match the name of its browsing
-    // context container's name content attribute value.
-    if (GetFrame()->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            child->GetSecurityContext()->GetSecurityOrigin()) ||
-        name == child->Owner()->BrowsingContextContainerName()) {
-      return ToV8Traits<DOMWindow>::ToV8(
-                 ScriptState::From(isolate->GetCurrentContext()),
-                 child->DomWindow())
-          .ToLocalChecked();
-    }
-
-    UseCounter::Count(
-        CurrentExecutionContext(isolate),
-        WebFeature::
-            kNamedAccessOnWindow_ChildBrowsingContext_CrossOriginNameMismatch);
-  }
-
-  // This is a cross-origin interceptor. Check that the caller has access to the
-  // named results.
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          blink::ToLocalDOMWindow(isolate->GetCurrentContext()), this)) {
-    return v8::Local<v8::Value>();
-  }
-
-  // Search named items in the document.
-  auto* doc = DynamicTo<HTMLDocument>(To<LocalDOMWindow>(this)->document());
-  if (!doc) {
-    return v8::Local<v8::Value>();
-  }
-
-  bool has_named_item = doc->HasNamedItem(name);
-  bool has_id_item = doc->HasElementWithId(name);
-
-  if (!has_named_item && !has_id_item) {
-    return v8::Local<v8::Value>();
-  }
-  ReportCoopAccess("named");
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
-
-  // If we've reached this point, we know that we're accessing an element (or
-  // collection of elements) in this window, and that this window is local. Wrap
-  // the return value in this window's relevant context, with the current
-  // wrapper world.
-  ScriptState* script_state = ToScriptState(To<LocalDOMWindow>(this),
-                                            DOMWrapperWorld::Current(isolate));
-  if (!has_named_item && has_id_item &&
-      !doc->ContainsMultipleElementsWithId(name)) {
-    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-    return ToV8Traits<Element>::ToV8(script_state, doc->getElementById(name))
-        .ToLocalChecked();
-  }
-
-  HTMLCollection* items = doc->WindowNamedItems(name);
-  if (!items->IsEmpty()) {
-    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
-
-    // TODO(esprehn): Firefox doesn't return an HTMLCollection here if there's
-    // multiple with the same name, but Chrome and Safari does. What's the
-    // right behavior?
-    if (items->HasExactlyOneItem()) {
-      return ToV8Traits<Element>::ToV8(script_state, items->item(0))
-          .ToLocalChecked();
-    }
-    return ToV8Traits<HTMLCollection>::ToV8(script_state, items)
-        .ToLocalChecked();
-  }
-  return v8::Local<v8::Value>();
 }
 
 bool DOMWindow::IsCurrentlyDisplayedInFrame() const {
@@ -573,9 +469,6 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
   if (!page)
     return;
 
-  if (page->InsidePortal())
-    return;
-
   Document* active_document = incumbent_window->document();
   if (!(active_document && active_document->GetFrame() &&
         active_document->GetFrame()->CanNavigate(*GetFrame()))) {
@@ -657,20 +550,46 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   // https://html.spec.whatwg.org/C/#dom-window-focus
   // https://html.spec.whatwg.org/C/#focusing-steps
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
+  LocalFrame* originating_frame = incumbent_window->GetFrame();
 
   // TODO(mustaq): Use of |allow_focus| and consuming the activation here seems
   // suspicious (https://crbug.com/959815).
   bool allow_focus = incumbent_window->IsWindowInteractionAllowed();
+  bool is_focused_from_pip_window = false;
   if (allow_focus) {
     incumbent_window->ConsumeWindowInteraction();
   } else {
     DCHECK(IsMainThread());
+
+    // Allow focus if the request is coming from our opener window.
     allow_focus = opener() && opener() != this && incumbent_window == opener();
+
+    // Also allow focus from a user activation on a document picture-in-picture
+    // window opened by this window. In this case, we determine the originating
+    // frame to be the picture-in-picture window regardless of whether or not
+    // it's also the incumbent frame. `frame` will also always be an outermost
+    // main frame in this case since only outermost main frames can open a
+    // document picture-in-picture window.
+    auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
+    if (local_dom_window) {
+      Document* document = local_dom_window->document();
+      LocalDOMWindow* pip_window =
+          document
+              ? PictureInPictureController::GetDocumentPictureInPictureWindow(
+                    *document)
+              : nullptr;
+      if (pip_window &&
+          LocalFrame::HasTransientUserActivation(pip_window->GetFrame())) {
+        allow_focus = true;
+        is_focused_from_pip_window = true;
+        originating_frame = pip_window->GetFrame();
+      }
+    }
   }
 
   // If we're a top level window, bring the window to the front.
   if (frame->IsOutermostMainFrame() && allow_focus) {
-    frame->FocusPage(incumbent_window->GetFrame());
+    frame->FocusPage(originating_frame);
   } else if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
@@ -691,6 +610,12 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     // focus across a fenced boundary into itself.
     LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
   }
+
+  // When the focus comes from the document picture-in-picture frame, we consume
+  // a user gesture from the picture-in-picture frame.
+  if (is_focused_from_pip_window) {
+    LocalFrame::ConsumeTransientUserActivation(originating_frame);
+  }
 }
 
 void DOMWindow::blur() {
@@ -704,7 +629,7 @@ InputDeviceCapabilitiesConstants* DOMWindow::GetInputDeviceCapabilities() {
     input_capabilities_ =
         MakeGarbageCollected<InputDeviceCapabilitiesConstants>();
   }
-  return input_capabilities_;
+  return input_capabilities_.Get();
 }
 
 void DOMWindow::PostMessageForTesting(
@@ -723,27 +648,35 @@ void DOMWindow::InstallCoopAccessMonitor(
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
         coop_reporter_params,
     bool is_in_same_virtual_coop_related_group) {
-  CoopAccessMonitor monitor;
+  ExecutionContext* execution_context =
+      accessing_frame->DomWindow()->GetExecutionContext();
+  CoopAccessMonitor* monitor =
+      MakeGarbageCollected<CoopAccessMonitor>(execution_context);
 
   DCHECK(accessing_frame->IsMainFrame());
   DCHECK(!accessing_frame->IsInFencedFrameTree());
-  monitor.report_type = coop_reporter_params->report_type;
-  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
-  monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
-  monitor.reported_window_url =
+  monitor->report_type = coop_reporter_params->report_type;
+  monitor->accessing_main_frame = accessing_frame->GetLocalFrameToken();
+  monitor->endpoint_defined = coop_reporter_params->endpoint_defined;
+  monitor->reported_window_url =
       std::move(coop_reporter_params->reported_window_url);
-  monitor.is_in_same_virtual_coop_related_group =
+  monitor->is_in_same_virtual_coop_related_group =
       is_in_same_virtual_coop_related_group;
 
-  monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
+  // `task_runner` is used for handling disconnect, and it uses
+  // `TaskType::kInternalDefault` to match the main frame receiver.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
+  monitor->reporter.Bind(std::move(coop_reporter_params->reporter),
+                         std::move(task_runner));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
   // accumulation. However it would have been interesting continuing reporting
   // accesses past this point, at least for the ReportingObserver and Devtool.
   // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
   // instead.
-  monitor.reporter.set_disconnect_handler(
+  monitor->reporter.set_disconnect_handler(
       WTF::BindOnce(&DOMWindow::DisconnectCoopAccessMonitor,
-                    WrapWeakPersistent(this), monitor.accessing_main_frame));
+                    WrapWeakPersistent(this), monitor->accessing_main_frame));
 
   // As long as RenderDocument isn't shipped, it can exist a CoopAccessMonitor
   // for the same |accessing_main_frame|, because it might now host a different
@@ -755,15 +688,18 @@ void DOMWindow::InstallCoopAccessMonitor(
   //
   // There are up to 2 CoopAccessMonitor for the same access, because it can be
   // reported to the accessing and the accessed window at the same time.
-  for (CoopAccessMonitor& old : coop_access_monitor_) {
-    if (old.accessing_main_frame == monitor.accessing_main_frame &&
-        network::IsAccessFromCoopPage(old.report_type) ==
-            network::IsAccessFromCoopPage(monitor.report_type)) {
-      old = std::move(monitor);
+  for (Member<CoopAccessMonitor>& old : coop_access_monitor_) {
+    if (old->accessing_main_frame == monitor->accessing_main_frame &&
+        network::IsAccessFromCoopPage(old->report_type) ==
+            network::IsAccessFromCoopPage(monitor->report_type)) {
+      // Eagerly reset the connection to prevent the disconnect handler from
+      // running, which could remove this new entry.
+      old->reporter.reset();
+      old = monitor;
       return;
     }
   }
-  coop_access_monitor_.push_back(std::move(monitor));
+  coop_access_monitor_.push_back(monitor);
   // Any attempts to access |this| window from |accessing_main_frame| will now
   // trigger reports (network, ReportingObserver, Devtool).
 }
@@ -808,13 +744,13 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
-    if (it->accessing_main_frame != accessing_main_frame_token) {
+    if ((*it)->accessing_main_frame != accessing_main_frame_token) {
       ++it;
       continue;
     }
 
     String property_name_as_string = property_name;
-    if (it->is_in_same_virtual_coop_related_group &&
+    if ((*it)->is_in_same_virtual_coop_related_group &&
         (property_name_as_string == "postMessage" ||
          property_name_as_string == "closed")) {
       ++it;
@@ -837,30 +773,35 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
             mojom::blink::ConsoleMessageLevel::kError,
             CoopReportOnlyErrorMessage(property_name), location->Clone()));
 
+    CoopAccessMonitor* monitor = *it;
+
     // If the reporting document hasn't specified any network report
     // endpoint(s), then it is likely not interested in receiving
     // ReportingObserver's reports.
     //
     // TODO(arthursonzogni): Reconsider this decision later, developers might be
     // interested.
-    if (it->endpoint_defined) {
-      it->reporter->QueueAccessReport(it->report_type, property_name,
-                                      std::move(source_location),
-                                      std::move(it->reported_window_url));
+    if (monitor->endpoint_defined) {
+      if (monitor->reporter.is_bound()) {
+        monitor->reporter->QueueAccessReport(
+            monitor->report_type, property_name, std::move(source_location),
+            std::move(monitor->reported_window_url));
+      }
       // Send a coop-access-violation report.
-      if (network::IsAccessFromCoopPage(it->report_type)) {
+      if (network::IsAccessFromCoopPage(monitor->report_type)) {
         ReportingContext::From(accessing_main_frame.DomWindow())
             ->QueueReport(MakeGarbageCollected<Report>(
                 ReportType::kCoopAccessViolation,
                 accessing_main_frame.GetDocument()->Url().GetString(),
                 MakeGarbageCollected<CoopAccessViolationReportBody>(
-                    std::move(location), it->report_type, String(property_name),
-                    it->reported_window_url)));
+                    std::move(location), monitor->report_type,
+                    String(property_name), monitor->reported_window_url)));
       }
     }
 
     // CoopAccessMonitor are used once and destroyed. This avoids sending
     // multiple reports for the same access.
+    (*it)->reporter.reset();
     it = coop_access_monitor_.erase(it);
   }
 }
@@ -1123,6 +1064,7 @@ void DOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(window_proxy_manager_);
   visitor->Trace(input_capabilities_);
   visitor->Trace(location_);
+  visitor->Trace(coop_access_monitor_);
   EventTarget::Trace(visitor);
 }
 
@@ -1130,7 +1072,7 @@ void DOMWindow::DisconnectCoopAccessMonitor(
     const LocalFrameToken& accessing_main_frame) {
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
-    if (it->accessing_main_frame == accessing_main_frame) {
+    if ((*it)->accessing_main_frame == accessing_main_frame) {
       it = coop_access_monitor_.erase(it);
     } else {
       ++it;

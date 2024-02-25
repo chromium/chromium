@@ -11,8 +11,6 @@
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "net/base/network_anonymization_key.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
@@ -21,7 +19,7 @@ namespace content {
 PrefetchURLLoaderServiceContext::PrefetchURLLoaderServiceContext(
     BrowserContext* browser_context,
     mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                      std::unique_ptr<BindContext>>& loader_factory_receivers)
+                      scoped_refptr<BindContext>>& loader_factory_receivers)
     : browser_context_(browser_context),
       loader_factory_receivers_(loader_factory_receivers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -282,7 +280,8 @@ PrefetchURLLoaderServiceContext::CreateURLLoaderThrottles(
       request, browser_context_,
       base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                           frame_tree_node_id),
-      nullptr /* navigation_ui_data */, frame_tree_node_id);
+      nullptr /* navigation_ui_data */, frame_tree_node_id,
+      /*navigation_id=*/std::nullopt);
 }
 
 }  // namespace content

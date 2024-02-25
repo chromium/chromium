@@ -8,10 +8,9 @@
  * individually and for forgetting a host.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import './multidevice_combined_setup_item.js';
@@ -21,25 +20,20 @@ import './multidevice_task_continuation_item.js';
 import './multidevice_task_continuation_item_lacros.js';
 import './multidevice_tether_item.js';
 import './multidevice_wifi_sync_item.js';
+import './multidevice_forget_device_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_subpage.html.js';
-
-export interface SettingsMultideviceSubpageElement {
-  $: {
-    forgetDeviceDialog: CrDialogElement,
-  };
-}
 
 const SettingsMultideviceSubpageElementBase = MultiDeviceFeatureMixin(
     DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
@@ -65,8 +59,6 @@ export class SettingsMultideviceSubpageElement extends
           Setting.kInstantTetheringOnOff,
           Setting.kMultiDeviceOnOff,
           Setting.kSmartLockOnOff,
-          Setting.kMessagesSetUp,
-          Setting.kMessagesOnOff,
           Setting.kForgetPhone,
           Setting.kPhoneHubOnOff,
           Setting.kPhoneHubCameraRollOnOff,
@@ -76,10 +68,24 @@ export class SettingsMultideviceSubpageElement extends
           Setting.kPhoneHubAppsOnOff,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
+
+      shouldShowForgetDeviceDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private browserProxy_: MultiDeviceBrowserProxy;
+  private isRevampWayfindingEnabled_: boolean;
+  private shouldShowForgetDeviceDialog_: boolean;
 
   constructor() {
     super();
@@ -100,10 +106,6 @@ export class SettingsMultideviceSubpageElement extends
     this.browserProxy_.retryPendingHostSetup();
   }
 
-  private handleAndroidMessagesButtonClick_(): void {
-    this.browserProxy_.setUpAndroidSms();
-  }
-
   private shouldShowIndividualFeatures_(): boolean {
     return this.pageContentData.mode ===
         MultiDeviceSettingsMode.HOST_SET_VERIFIED;
@@ -122,21 +124,11 @@ export class SettingsMultideviceSubpageElement extends
   }
 
   private handleForgetDeviceClick_(): void {
-    this.$.forgetDeviceDialog.showModal();
+    this.shouldShowForgetDeviceDialog_ = true;
   }
 
-  private onForgetDeviceDialogCancelClick_(): void {
-    this.$.forgetDeviceDialog.close();
-  }
-
-  private onForgetDeviceDialogConfirmClick_(): void {
-    const forgetDeviceRequestedEvent =
-        new CustomEvent('forget-device-requested', {
-          bubbles: true,
-          composed: true,
-        });
-    this.dispatchEvent(forgetDeviceRequestedEvent);
-    this.$.forgetDeviceDialog.close();
+  private onCloseForgetDeviceDialog_(): void {
+    this.shouldShowForgetDeviceDialog_ = false;
   }
 
   private getStatusInnerHtml_(): TrustedHTML {
@@ -146,20 +138,11 @@ export class SettingsMultideviceSubpageElement extends
         ].includes(this.pageContentData.mode)) {
       return this.i18nAdvanced('multideviceVerificationText');
     }
-    return this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
-                              this.i18nAdvanced('multideviceDisabled');
-  }
 
-  private doesAndroidMessagesRequireSetUp_(): boolean {
-    return this.getFeatureState(MultiDeviceFeature.MESSAGES) ===
-        MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED;
-  }
-
-  private isAndroidMessagesSetupButtonDisabled_(): boolean {
-    const messagesFeatureState =
-        this.getFeatureState(MultiDeviceFeature.MESSAGES);
-    return !this.isSuiteOn() ||
-        messagesFeatureState === MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18nAdvanced(`multideviceSuiteToggleLabel`) :
+        (this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
+                            this.i18nAdvanced('multideviceDisabled'));
   }
 
   private getPhoneHubNotificationsTooltip_(): string {

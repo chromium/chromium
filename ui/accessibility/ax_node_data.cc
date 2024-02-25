@@ -173,8 +173,10 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kAriaCellRowIndex:
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
-    case ax::mojom::IntAttribute::kDropeffect:
+    case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+    case ax::mojom::IntAttribute::kAriaNotificationPriority:
       return false;
   }
 
@@ -752,7 +754,8 @@ bool AXNodeData::HasTextStyle(ax::mojom::TextStyle text_style_enum) const {
 }
 
 bool AXNodeData::HasDropeffect(ax::mojom::Dropeffect dropeffect_enum) const {
-  int32_t dropeffect = GetIntAttribute(ax::mojom::IntAttribute::kDropeffect);
+  int32_t dropeffect =
+      GetIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated);
   return IsFlagSet(static_cast<uint32_t>(dropeffect),
                    static_cast<uint32_t>(dropeffect_enum));
 }
@@ -824,6 +827,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kSignalEndOfTest:
     case ax::mojom::Action::kHideTooltip:
     case ax::mojom::Action::kShowTooltip:
+    case ax::mojom::Action::kStitchChildTree:
     case ax::mojom::Action::kResumeMedia:
     case ax::mojom::Action::kStartDuckingMedia:
     case ax::mojom::Action::kStopDuckingMedia:
@@ -845,18 +849,6 @@ void AXNodeData::AddTextStyle(ax::mojom::TextStyle text_style_enum) {
                      static_cast<uint32_t>(text_style_enum), true);
   RemoveIntAttribute(ax::mojom::IntAttribute::kTextStyle);
   AddIntAttribute(ax::mojom::IntAttribute::kTextStyle, style);
-}
-
-void AXNodeData::AddDropeffect(ax::mojom::Dropeffect dropeffect_enum) {
-  DCHECK_GE(static_cast<int>(dropeffect_enum),
-            static_cast<int>(ax::mojom::Dropeffect::kMinValue));
-  DCHECK_LE(static_cast<int>(dropeffect_enum),
-            static_cast<int>(ax::mojom::Dropeffect::kMaxValue));
-  int32_t dropeffect = GetIntAttribute(ax::mojom::IntAttribute::kDropeffect);
-  dropeffect = ModifyFlag(static_cast<uint32_t>(dropeffect),
-                          static_cast<uint32_t>(dropeffect_enum), true);
-  RemoveIntAttribute(ax::mojom::IntAttribute::kDropeffect);
-  AddIntAttribute(ax::mojom::IntAttribute::kDropeffect, dropeffect);
 }
 
 ax::mojom::CheckedState AXNodeData::GetCheckedState() const {
@@ -1651,11 +1643,36 @@ std::string AXNodeData::ToString(bool verbose) const {
                   ui::ToString(static_cast<ax::mojom::ImageAnnotationStatus>(
                       int_attribute.second));
         break;
-      case ax::mojom::IntAttribute::kDropeffect:
+      case ax::mojom::IntAttribute::kDropeffectDeprecated:
         result += " dropeffect=" + value;
         break;
       case ax::mojom::IntAttribute::kDOMNodeId:
         result += " dom_node_id=" + value;
+        break;
+      case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+        switch (static_cast<ax::mojom::AriaNotificationInterrupt>(
+            int_attribute.second)) {
+          case ax::mojom::AriaNotificationInterrupt::kNone:
+            result += " aria_notification_interrupt=none";
+            break;
+          case ax::mojom::AriaNotificationInterrupt::kAll:
+            result += " aria_notification_interrupt=all";
+            break;
+          case ax::mojom::AriaNotificationInterrupt::kPending:
+            result += " aria_notification_interrupt=pending";
+            break;
+        }
+        break;
+      case ax::mojom::IntAttribute::kAriaNotificationPriority:
+        switch (static_cast<ax::mojom::AriaNotificationPriority>(
+            int_attribute.second)) {
+          case ax::mojom::AriaNotificationPriority::kNone:
+            result += " aria_notification_priority=none";
+            break;
+          case ax::mojom::AriaNotificationPriority::kImportant:
+            result += " aria_notification_priority=important";
+            break;
+        }
         break;
       case ax::mojom::IntAttribute::kNone:
         break;
@@ -1669,7 +1686,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kAccessKey:
         result += " access_key=" + value;
         break;
-      case ax::mojom::StringAttribute::kAriaInvalidValue:
+      case ax::mojom::StringAttribute::kAriaInvalidValueDeprecated:
         result += " aria_invalid_value=" + value;
         break;
       case ax::mojom::StringAttribute::kAriaBrailleLabel:
@@ -1677,6 +1694,12 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
         result += " aria_braille_role_description=" + value;
+        break;
+      case ax::mojom::StringAttribute::kAriaNotificationId:
+        result += " aria_notification_id=" + value;
+        break;
+      case ax::mojom::StringAttribute::kAriaNotificationMessage:
+        result += " aria_notification_message=" + value;
         break;
       case ax::mojom::StringAttribute::kCheckedStateDescription:
         result += " checked_state_description=" + value;
@@ -1851,7 +1874,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::BoolAttribute::kSupportsTextLocation:
         result += " supports_text_location=" + value;
         break;
-      case ax::mojom::BoolAttribute::kGrabbed:
+      case ax::mojom::BoolAttribute::kGrabbedDeprecated:
         result += " grabbed=" + value;
         break;
       case ax::mojom::BoolAttribute::kIsLineBreakingObject:
@@ -1863,7 +1886,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::BoolAttribute::kHasAriaAttribute:
         result += " has_aria_attribute=" + value;
         break;
-      case ax::mojom::BoolAttribute::OBSOLETE_kTouchPassthrough:
+      case ax::mojom::BoolAttribute::kTouchPassthroughDeprecated:
         result += " touch_passthrough=" + value;
         break;
       case ax::mojom::BoolAttribute::kLongClickable:
@@ -2033,44 +2056,60 @@ size_t AXNodeData::ByteSize() const {
   size_t total_size = sizeof(id) + sizeof(role) + sizeof(state) +
                       sizeof(actions) + sizeof(relative_bounds);
 
-  // Less simple collections.
-  total_size += int_attributes.size() *
-                    (sizeof(ax::mojom::IntAttribute) + sizeof(int32_t)) +
-                float_attributes.size() *
-                    (sizeof(ax::mojom::FloatAttribute) + sizeof(float)) +
-                bool_attributes.size() *
-                    (sizeof(ax::mojom::BoolAttribute) + sizeof(bool)) +
-                child_ids.size() * sizeof(int32_t);
+  AXNodeDataSize node_data_size;
+  AccumulateSize(node_data_size);
+  total_size += node_data_size.ByteSize();
+  return total_size;
+}
 
-  // Complex collections.
+void AXNodeData::AccumulateSize(
+    AXNodeData::AXNodeDataSize& node_data_size) const {
+  node_data_size.int_attribute_size +=
+      int_attributes.size() *
+      (sizeof(ax::mojom::IntAttribute) + sizeof(int32_t));
+  node_data_size.float_attribute_size +=
+      float_attributes.size() *
+      (sizeof(ax::mojom::FloatAttribute) + sizeof(float));
+  node_data_size.bool_attribute_size +=
+      bool_attributes.size() *
+      (sizeof(ax::mojom::BoolAttribute) + sizeof(bool));
+  node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
+
   for (const auto& pair : string_attributes) {
-    total_size +=
+    node_data_size.string_attribute_size +=
         sizeof(ax::mojom::StringAttribute) + pair.second.size() * sizeof(char);
   }
 
   for (const auto& pair : intlist_attributes) {
-    total_size += sizeof(ax::mojom::IntListAttribute) +
-                  pair.second.size() * sizeof(int32_t);
+    node_data_size.int_list_attribhute_size +=
+        sizeof(ax::mojom::IntListAttribute) +
+        pair.second.size() * sizeof(int32_t);
   }
 
   for (const auto& pair : stringlist_attributes) {
-    total_size += sizeof(ax::mojom::StringListAttribute);
+    node_data_size.string_list_attribute_size +=
+        sizeof(ax::mojom::StringListAttribute);
     for (const auto& value : pair.second) {
-      total_size += value.size() * sizeof(char);
+      node_data_size.string_list_attribute_size += value.size() * sizeof(char);
     }
   }
 
   for (const auto& pair : html_attributes) {
-    total_size +=
+    node_data_size.html_attribute_size +=
         pair.first.size() * sizeof(char) + pair.second.size() * sizeof(char);
   }
+}
 
-  return total_size;
+size_t AXNodeData::AXNodeDataSize::ByteSize() const {
+  return int_attribute_size + float_attribute_size + bool_attribute_size +
+         string_attribute_size + int_list_attribhute_size +
+         string_list_attribute_size + html_attribute_size + child_ids_size;
 }
 
 std::string AXNodeData::DropeffectBitfieldToString() const {
-  if (!HasIntAttribute(ax::mojom::IntAttribute::kDropeffect))
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated)) {
     return "";
+  }
 
   std::string str;
   for (int dropeffect_idx = static_cast<int>(ax::mojom::Dropeffect::kMinValue);

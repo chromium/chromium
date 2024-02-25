@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -175,7 +176,7 @@ void FullscreenControlHost::OnMouseEvent(const ui::MouseEvent& event) {
   // button may still appear even though the mouse cursor is invisible and its
   // position is technically undefined. This mitigation will become unnecessary
   // when pointer lock is re-implemented using relative motion events.
-  if (IsMouseLocked()) {
+  if (IsPointerLocked()) {
     return;
   }
 
@@ -239,8 +240,9 @@ FullscreenControlPopup* FullscreenControlHost::GetPopup() {
   if (!IsPopupCreated()) {
     fullscreen_control_popup_ = std::make_unique<FullscreenControlPopup>(
         browser_view_->GetBubbleParentView(),
-        base::BindRepeating(&BrowserView::ExitFullscreen,
-                            base::Unretained(browser_view_)),
+        base::BindRepeating(
+            &FullscreenControlHost::OnExitFullscreenPopupClicked,
+            base::Unretained(this)),
         base::BindRepeating(&FullscreenControlHost::OnVisibilityChanged,
                             base::Unretained(this)));
   }
@@ -306,7 +308,7 @@ bool FullscreenControlHost::IsExitUiNeeded() {
          browser_view_->ShouldHideUIForFullscreen();
 }
 
-bool FullscreenControlHost::IsMouseLocked() {
+bool FullscreenControlHost::IsPointerLocked() {
   if (!browser_view_) {
     return false;
   }
@@ -321,10 +323,16 @@ bool FullscreenControlHost::IsMouseLocked() {
     return false;
   }
 
-  return rwhv->IsMouseLocked();
+  return rwhv->IsPointerLocked();
 }
 
 float FullscreenControlHost::CalculateCursorBufferHeight() const {
   float control_bottom = FullscreenControlPopup::GetButtonBottomOffset();
   return control_bottom * kExitHeightScaleFactor;
+}
+
+void FullscreenControlHost::OnExitFullscreenPopupClicked() {
+  base::RecordAction(
+      base::UserMetricsAction("ExitFullscreen_PopupCloseButton"));
+  browser_view_->ExitFullscreen();
 }

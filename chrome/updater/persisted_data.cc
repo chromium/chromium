@@ -4,6 +4,7 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,8 +25,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -37,17 +38,15 @@
 
 namespace {
 
-constexpr char kPV[] = "pv";      // Key for storing product version.
-constexpr char kFP[] = "fp";      // Key for storing fingerprint.
-constexpr char kECP[] = "ecp";    // Key for storing existence checker path.
-constexpr char kBC[] = "bc";      // Key for storing brand code.
-constexpr char kBP[] = "bp";      // Key for storing brand path.
-constexpr char kAP[] = "ap";      // Key for storing ap.
-constexpr char kDLA[] = "dla";    // Key for storing date-last-active.
-constexpr char kDLRC[] = "dlrc";  // Key for storing date-last-rollcall.
-constexpr char kCohort[] = "cohort";
-constexpr char kCohortName[] = "cohortname";
-constexpr char kCohortHint[] = "cohorthint";
+// PersistedData keys.
+constexpr char kVersionPath[] = "pv_path";
+constexpr char kVersionKey[] = "pv_key";
+constexpr char kECP[] = "ecp";
+constexpr char kBC[] = "bc";
+constexpr char kBP[] = "bp";
+constexpr char kAP[] = "ap";
+constexpr char kAPPath[] = "ap_path";
+constexpr char kAPKey[] = "ap_key";
 
 constexpr char kHadApps[] = "had_apps";
 constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
@@ -60,10 +59,16 @@ constexpr char kLastOSVersion[] = "last_os_version";
 
 namespace updater {
 
-PersistedData::PersistedData(UpdaterScope scope, PrefService* pref_service)
-    : scope_(scope), pref_service_(pref_service) {
+PersistedData::PersistedData(
+    UpdaterScope scope,
+    PrefService* pref_service,
+    std::unique_ptr<update_client::ActivityDataService> activity_service)
+    : scope_(scope),
+      pref_service_(pref_service),
+      delegate_(
+          update_client::CreatePersistedData(pref_service,
+                                             std::move(activity_service))) {
   CHECK(pref_service_);
-  CHECK(pref_service_->FindPreference(update_client::kPersistedDataPreference));
 }
 
 PersistedData::~PersistedData() {
@@ -72,25 +77,72 @@ PersistedData::~PersistedData() {
 
 base::Version PersistedData::GetProductVersion(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Version(GetString(id, kPV));
+  return delegate_->GetProductVersion(id);
 }
 
 void PersistedData::SetProductVersion(const std::string& id,
                                       const base::Version& pv) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pv.IsValid());
-  SetString(id, kPV, pv.GetString());
+  delegate_->SetProductVersion(id, pv);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the PV in ClientState as well.
+  // (Some applications read it from there.) This has the side effect of
+  // creating the ClientState key, which is read to sense for application
+  // uninstallation.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"pv",
+                 base::SysUTF8ToWide(pv.GetString()));
+#endif
+}
+
+base::Version PersistedData::GetMaxPreviousProductVersion(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetMaxPreviousProductVersion(id);
+}
+
+void PersistedData::SetMaxPreviousProductVersion(
+    const std::string& id,
+    const base::Version& max_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(max_version.IsValid());
+  delegate_->SetMaxPreviousProductVersion(id, max_version);
+}
+
+base::FilePath PersistedData::GetProductVersionPath(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kVersionPath));
+}
+
+void PersistedData::SetProductVersionPath(const std::string& id,
+                                          const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kVersionPath, path.AsUTF8Unsafe());
+}
+
+std::string PersistedData::GetProductVersionKey(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetString(id, kVersionKey);
+}
+
+void PersistedData::SetProductVersionKey(const std::string& id,
+                                         const std::string& key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kVersionKey, key);
 }
 
 std::string PersistedData::GetFingerprint(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kFP);
+  return delegate_->GetFingerprint(id);
 }
 
 void PersistedData::SetFingerprint(const std::string& id,
                                    const std::string& fingerprint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetString(id, kFP, fingerprint);
+  delegate_->SetFingerprint(id, fingerprint);
 }
 
 base::FilePath PersistedData::GetExistenceCheckerPath(
@@ -162,37 +214,66 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 #endif
 }
 
-absl::optional<int> PersistedData::GetDateLastActive(
-    const std::string& id) const {
+base::FilePath PersistedData::GetAPPath(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetInteger(id, kDLA);
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kAPPath));
+}
+
+void PersistedData::SetAPPath(const std::string& id,
+                              const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kAPPath, path.AsUTF8Unsafe());
+}
+
+std::string PersistedData::GetAPKey(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetString(id, kAPKey);
+}
+
+void PersistedData::SetAPKey(const std::string& id, const std::string& key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kAPKey, key);
+}
+
+int PersistedData::GetDateLastActive(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetDateLastActive(id);
+}
+
+int PersistedData::GetDaysSinceLastActive(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetDaysSinceLastActive(id);
 }
 
 void PersistedData::SetDateLastActive(const std::string& id, int dla) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetInteger(id, kDLA, dla);
+  delegate_->SetDateLastActive(id, dla);
 }
 
-absl::optional<int> PersistedData::GetDateLastRollcall(
-    const std::string& id) const {
+int PersistedData::GetDateLastRollCall(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetInteger(id, kDLRC);
+  return delegate_->GetDateLastRollCall(id);
 }
 
-void PersistedData::SetDateLastRollcall(const std::string& id, int dlrc) {
+int PersistedData::GetDaysSinceLastRollCall(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetInteger(id, kDLRC, dlrc);
+  return delegate_->GetDaysSinceLastRollCall(id);
+}
+
+void PersistedData::SetDateLastRollCall(const std::string& id, int dlrc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetDateLastRollCall(id, dlrc);
 }
 
 std::string PersistedData::GetCohort(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kCohort);
+  return delegate_->GetCohort(id);
 }
 
 void PersistedData::SetCohort(const std::string& id,
                               const std::string& cohort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetString(id, kCohort, cohort);
+  delegate_->SetCohort(id, cohort);
 
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, we record the Cohort in ClientState as well.
@@ -205,13 +286,13 @@ void PersistedData::SetCohort(const std::string& id,
 
 std::string PersistedData::GetCohortName(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kCohortName);
+  return delegate_->GetCohortName(id);
 }
 
 void PersistedData::SetCohortName(const std::string& id,
                                   const std::string& cohort_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetString(id, kCohortName, cohort_name);
+  delegate_->SetCohortName(id, cohort_name);
 
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, we record the Cohort in ClientState as well.
@@ -224,13 +305,47 @@ void PersistedData::SetCohortName(const std::string& id,
 
 std::string PersistedData::GetCohortHint(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kCohortHint);
+  return delegate_->GetCohortHint(id);
 }
 
 void PersistedData::SetCohortHint(const std::string& id,
                                   const std::string& cohort_hint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetString(id, kCohortHint, cohort_hint);
+  delegate_->SetCohortHint(id, cohort_hint);
+}
+
+std::string PersistedData::GetPingFreshness(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetPingFreshness(id);
+}
+
+void PersistedData::SetDateLastData(const std::vector<std::string>& ids,
+                                    int datenum,
+                                    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetDateLastData(ids, datenum, std::move(callback));
+}
+
+int PersistedData::GetInstallDate(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetInstallDate(id);
+}
+
+void PersistedData::GetActiveBits(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::set<std::string>&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetActiveBits(ids, std::move(callback));
+}
+
+base::Time PersistedData::GetThrottleUpdatesUntil() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetThrottleUpdatesUntil();
+}
+
+void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetThrottleUpdatesUntil(time);
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
@@ -238,6 +353,12 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
           << rq.version;
   if (rq.version.IsValid()) {
     SetProductVersion(rq.app_id, rq.version);
+  }
+  if (!rq.version_path.empty()) {
+    SetProductVersionPath(rq.app_id, rq.version_path);
+  }
+  if (!rq.version_key.empty()) {
+    SetProductVersionKey(rq.app_id, rq.version_key);
   }
   if (!rq.existence_checker_path.empty()) {
     SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
@@ -251,11 +372,21 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   if (!rq.ap.empty()) {
     SetAP(rq.app_id, rq.ap);
   }
+  if (!rq.ap_path.empty()) {
+    SetAPPath(rq.app_id, rq.ap_path);
+  }
+  if (!rq.ap_key.empty()) {
+    SetAPKey(rq.app_id, rq.ap_key);
+  }
   if (rq.dla) {
     SetDateLastActive(rq.app_id, rq.dla.value());
+  } else if (GetDateLastActive(rq.app_id) == update_client::kDateUnknown) {
+    SetDateLastActive(rq.app_id, update_client::kDateFirstTime);
   }
   if (rq.dlrc) {
-    SetDateLastRollcall(rq.app_id, rq.dlrc.value());
+    SetDateLastRollCall(rq.app_id, rq.dlrc.value());
+  } else if (GetDateLastRollCall(rq.app_id) == update_client::kDateUnknown) {
+    SetDateLastRollCall(rq.app_id, update_client::kDateFirstTime);
   }
   if (!rq.cohort.empty()) {
     SetCohort(rq.app_id, rq.cohort);
@@ -270,8 +401,9 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
 
 bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return false;
+  }
 
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
@@ -289,27 +421,31 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   const base::Value::Dict& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
-  if (!apps)
+  if (!apps) {
     return {};
+  }
   std::vector<std::string> app_ids;
   for (auto it = apps->begin(); it != apps->end(); ++it) {
     const auto& app_id = it->first;
     const auto pv = GetProductVersion(app_id);
-    if (pv.IsValid())
+    if (pv.IsValid()) {
       app_ids.push_back(app_id);
+    }
   }
   return app_ids;
 }
 
 const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return nullptr;
+  }
   const base::Value::Dict& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
-  if (!apps)
+  if (!apps) {
     return nullptr;
+  }
   return apps->FindDict(base::ToLowerASCII(id));
 }
 
@@ -317,11 +453,13 @@ std::string PersistedData::GetString(const std::string& id,
                                      const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::Dict* app_key = GetAppKey(id);
-  if (!app_key)
+  if (!app_key) {
     return {};
+  }
   const std::string* value = app_key->FindString(key);
-  if (!value)
+  if (!value) {
     return {};
+  }
   return *value;
 }
 
@@ -333,21 +471,21 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
   return app;
 }
 
-absl::optional<int> PersistedData::GetInteger(const std::string& id,
-                                              const std::string& key) const {
+std::optional<int> PersistedData::GetInteger(const std::string& id,
+                                             const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
   base::Value::Dict* apps = update->FindDict("apps");
   if (!apps) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
   if (!app) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return app->FindInt(key);
 }
@@ -368,8 +506,9 @@ void PersistedData::SetString(const std::string& id,
                               const std::string& key,
                               const std::string& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_)
+  if (!pref_service_) {
     return;
+  }
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->Set(key, value);
@@ -382,8 +521,9 @@ bool PersistedData::GetHadApps() const {
 
 void PersistedData::SetHadApps() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetBoolean(kHadApps, true);
+  }
 }
 
 bool PersistedData::GetUsageStatsEnabled() const {
@@ -405,8 +545,9 @@ base::Time PersistedData::GetLastChecked() const {
 
 void PersistedData::SetLastChecked(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetTime(kLastChecked, time);
+  }
 }
 
 base::Time PersistedData::GetLastStarted() const {
@@ -416,26 +557,28 @@ base::Time PersistedData::GetLastStarted() const {
 
 void PersistedData::SetLastStarted(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_)
+  if (pref_service_) {
     pref_service_->SetTime(kLastStarted, time);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
-absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
+std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Unpacks the os version from a base-64-encoded string internally.
   const std::string encoded_os_version =
       pref_service_->GetString(kLastOSVersion);
 
-  if (encoded_os_version.empty())
-    return absl::nullopt;
+  if (encoded_os_version.empty()) {
+    return std::nullopt;
+  }
 
-  const absl::optional<std::vector<uint8_t>> decoded_os_version =
+  const std::optional<std::vector<uint8_t>> decoded_os_version =
       base::Base64Decode(encoded_os_version);
   if (!decoded_os_version ||
       decoded_os_version->size() != sizeof(OSVERSIONINFOEX)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *reinterpret_cast<const OSVERSIONINFOEX*>(decoded_os_version->data());
@@ -444,20 +587,20 @@ absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
 void PersistedData::SetLastOSVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!pref_service_)
+  if (!pref_service_) {
     return;
+  }
 
   // Get and set the current OS version.
-  absl::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
-  if (!os_version)
+  std::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
+  if (!os_version) {
     return;
+  }
 
   // The os version is internally stored as a base-64-encoded string.
-  std::string encoded_os_version;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&os_version.value()),
-                        sizeof(OSVERSIONINFOEX)),
-      &encoded_os_version);
+  std::string encoded_os_version =
+      base::Base64Encode(base::byte_span_from_ref(os_version.value()));
+
   return pref_service_->SetString(kLastOSVersion, encoded_os_version);
 }
 #endif

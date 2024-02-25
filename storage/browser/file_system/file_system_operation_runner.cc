@@ -194,7 +194,7 @@ OperationID FileSystemOperationRunner::FileExists(const FileSystemURL& url,
 
 OperationID FileSystemOperationRunner::GetMetadata(
     const FileSystemURL& url,
-    int fields,
+    GetMetadataFieldSet fields,
     GetMetadataCallback callback) {
   base::File::Error error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =

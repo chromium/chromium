@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "test_util\.cc": [
+      "+ash",
+      "+chrome/browser/ui/views",
+  ],
+}

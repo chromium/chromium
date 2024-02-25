@@ -52,7 +52,9 @@ void SupervisedUserProviderTest::TearDown() {
 
 TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+      provider_->GetRuleIterator(
+          ContentSettingsType::GEOLOCATION, false,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 
   // Disable the default geolocation setting.
@@ -60,8 +62,9 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
@@ -69,21 +72,24 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule->value()));
+            content_settings::ValueToContentSetting(rule->value));
 
   // Re-enable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(false));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 }
 
 TEST_F(SupervisedUserProviderTest, CookiesTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
+      provider_->GetRuleIterator(
+          ContentSettingsType::COOKIES, false,
+          content_settings::PartitionKey::GetDefaultForTesting());
 
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
@@ -92,25 +98,28 @@ TEST_F(SupervisedUserProviderTest, CookiesTest) {
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            content_settings::ValueToContentSetting(rule->value()));
+            content_settings::ValueToContentSetting(rule->value));
 
   // Re-enable the default cookie setting.
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::COOKIES));
   service_.SetLocalSetting(kCookiesAlwaysAllowed, base::Value(false));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::COOKIES, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 }
 
 TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                 false);
+      provider_->GetRuleIterator(
+          ContentSettingsType::MEDIASTREAM_CAMERA, false,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_MIC, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::MEDIASTREAM_MIC, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 
   // Disable the default camera and microphone setting.
@@ -122,7 +131,8 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   service_.SetLocalSetting(kCameraMicDisabled, base::Value(true));
 
   rule_iterator = provider_->GetRuleIterator(
-      ContentSettingsType::MEDIASTREAM_CAMERA, false);
+      ContentSettingsType::MEDIASTREAM_CAMERA, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
@@ -130,10 +140,11 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule->value()));
+            content_settings::ValueToContentSetting(rule->value));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_MIC, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::MEDIASTREAM_MIC, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   ASSERT_TRUE(rule_iterator->HasNext());
   rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
@@ -141,7 +152,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule->value()));
+            content_settings::ValueToContentSetting(rule->value));
 
   // Re-enable the default camera and microphone setting.
   EXPECT_CALL(
@@ -152,11 +163,13 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   service_.SetLocalSetting(kCameraMicDisabled, base::Value(false));
 
   rule_iterator = provider_->GetRuleIterator(
-      ContentSettingsType::MEDIASTREAM_CAMERA, false);
+      ContentSettingsType::MEDIASTREAM_CAMERA, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::MEDIASTREAM_MIC, false);
+  rule_iterator = provider_->GetRuleIterator(
+      ContentSettingsType::MEDIASTREAM_MIC, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(rule_iterator);
 }
 

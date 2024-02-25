@@ -1,37 +1,16 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover!<newline>' nameFrom=contents
-++++++button name=' Test popover! ' nameFrom=popoverAttribute
-++++++genericContainer ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='<newline>    Test popover with image!<newline>    ' nameFrom=contents
-++++++++++image ignored invisible
-++++++button name=' Test popover with image! test 123' nameFrom=popoverAttribute
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with rich content like a datatable.<newline>  ' nameFrom=contents
-++++++++table ignored invisible
-++++++++++rowGroup ignored invisible
-++++++++++++row ignored invisible
-++++++++++++++cell ignored invisible
-++++++++++++++++staticText ignored invisible name='1' nameFrom=contents
-++++++++++++++cell ignored invisible
-++++++++++++++++staticText ignored invisible name='2' nameFrom=contents
-++++++++++++row ignored invisible
-++++++++++++++cell ignored invisible
-++++++++++++++++staticText ignored invisible name='3' nameFrom=contents
-++++++++++++++cell ignored invisible
-++++++++++++++++staticText ignored invisible name='4' nameFrom=contents
 ++++++button
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with a textinput!<newline>  ' nameFrom=contents
-++++++++genericContainer ignored invisible
-++++++++++genericContainer ignored invisible
-++++++++++++textField ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++staticText ignored invisible name='test' nameFrom=contents
 ++++++button
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with title in button to test description.<newline>' nameFrom=contents
-++++++button description='Test popover with title in button to test description.' name='the title' nameFrom=title descriptionFrom=popoverAttribute
+++++++table ignored invisible
+++++++++rowGroup ignored invisible
+++++++++++row ignored invisible
+++++++++++++cell ignored invisible
+++++++++++++cell ignored invisible
+++++++++++row ignored invisible
+++++++++++++cell ignored invisible
+++++++++++++cell ignored invisible
+++++++button
+++++++button
+++++++button name='the title' nameFrom=title

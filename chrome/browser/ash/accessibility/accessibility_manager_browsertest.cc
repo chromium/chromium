@@ -5,6 +5,8 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -15,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -52,8 +55,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -120,7 +123,7 @@ class MockAccessibilityObserver {
 
   bool observed() const { return observed_; }
   bool observed_enabled() const { return observed_enabled_; }
-  absl::optional<AccessibilityNotificationType> observed_type() const {
+  std::optional<AccessibilityNotificationType> observed_type() const {
     return observed_type_;
   }
 
@@ -139,7 +142,7 @@ class MockAccessibilityObserver {
 
   bool observed_ = false;
   bool observed_enabled_ = false;
-  absl::optional<AccessibilityNotificationType> observed_type_;
+  std::optional<AccessibilityNotificationType> observed_type_;
 
   base::CallbackListSubscription accessibility_subscription_;
 };
@@ -351,7 +354,7 @@ void ClearDictationOfflineNudgePref(const std::string& locale) {
   update->RemoveByDottedPath(locale);
 }
 
-absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
+std::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
   const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBool(locale);
@@ -449,9 +452,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOnDeviceSpeechRecognition,
-         ::features::kExperimentalAccessibilityColorEnhancementSettings},
-        {});
+        {features::kOnDeviceSpeechRecognition}, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -500,10 +501,6 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   ChromeVoxPanel* GetChromeVoxPanel() {
     return AccessibilityManager::Get()->chromevox_panel_;
-  }
-
-  base::FilePath TtsDlcTypeToPath(DlcType dlc) {
-    return AccessibilityManager::Get()->TtsDlcTypeToPath(dlc);
   }
 
  protected:
@@ -950,36 +947,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
       panel->GetWidget()->GetWindowBoundsInScreen()));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
-  auto get_full_path = [](const std::string& locale) -> std::string {
-    return base::StringPrintf(
-        "/run/imageloader/tts-%s/package/root/voice.zvoice", locale.c_str());
-  };
-
-  EXPECT_EQ(base::FilePath(get_full_path("de-de")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSDEDE));
-  EXPECT_EQ(base::FilePath(get_full_path("en-us")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSENUS));
-  EXPECT_EQ(base::FilePath(get_full_path("es-es")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
-  EXPECT_EQ(base::FilePath(get_full_path("es-us")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESUS));
-  EXPECT_EQ(base::FilePath(get_full_path("fr-fr")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSFRFR));
-  EXPECT_EQ(base::FilePath(get_full_path("hi-in")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
-  EXPECT_EQ(base::FilePath(get_full_path("it-it")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSITIT));
-  EXPECT_EQ(base::FilePath(get_full_path("ja-jp")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSJAJP));
-  EXPECT_EQ(base::FilePath(get_full_path("nl-nl")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));
-  EXPECT_EQ(base::FilePath(get_full_path("pt-br")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSPTBR));
-  EXPECT_EQ(base::FilePath(get_full_path("sv-se")),
-            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
-}
-
 class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
  public:
   AccessibilityManagerDlcTest()
@@ -1025,13 +992,12 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
     AccessibilityManager::Get()->OnPumpkinError("Error");
   }
 
-  void OnPumpkinInstalled(bool success) {
-    AccessibilityManager::Get()->OnPumpkinInstalled(success);
+  void OnPumpkinInstalled(bool success, const std::string& root_path) {
+    AccessibilityManager::Get()->OnPumpkinInstalled(success, root_path);
   }
 
   void OnPumpkinDataCreated(
-      absl::optional<extensions::api::accessibility_private::PumpkinData>
-          data) {
+      std::optional<extensions::api::accessibility_private::PumpkinData> data) {
     AccessibilityManager::Get()->OnPumpkinDataCreated(std::move(data));
   }
 
@@ -1521,7 +1487,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
-  OnPumpkinInstalled(true);
+  OnPumpkinInstalled(true, "fake/pumpkin/root/path");
 }
 
 // Ensures that AccessibilityManager can handle when OnPumpkinDataCreated is
@@ -1531,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
-  OnPumpkinDataCreated(absl::nullopt);
+  OnPumpkinDataCreated(std::nullopt);
 }
 
 enum DictationDialogTestVariant {
@@ -1839,9 +1805,9 @@ class AccessibilityManagerUserTypeTest
       public WithParamInterface<user_manager::UserType> {
  protected:
   AccessibilityManagerUserTypeTest() {
-    if (GetParam() == user_manager::USER_TYPE_GUEST) {
+    if (GetParam() == user_manager::UserType::kGuest) {
       guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
-    } else if (GetParam() == user_manager::USER_TYPE_CHILD) {
+    } else if (GetParam() == user_manager::UserType::kChild) {
       logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
           &mixin_host_, LoggedInUserMixin::LogInType::kChild,
           embedded_test_server(), this);
@@ -1880,13 +1846,14 @@ class AccessibilityManagerUserTypeTest
 
 INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,
                          AccessibilityManagerUserTypeTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_GUEST,
-                                           user_manager::USER_TYPE_CHILD));
+                         ::testing::Values(user_manager::UserType::kRegular,
+                                           user_manager::UserType::kGuest,
+                                           user_manager::UserType::kChild));
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
-  if (GetParam() == user_manager::USER_TYPE_CHILD)
+  if (GetParam() == user_manager::UserType::kChild) {
     logged_in_user_mixin_->LogInUser();
+  }
 
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.
@@ -1992,6 +1959,37 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceOOBETest,
   // when a subset of features are enabled. This simple test ensures that there
   // are no crashes when setting up the service and toggling features
   // in the login profile.
+  SetSpokenFeedbackEnabled(true);
+  SetSelectToSpeakEnabled(true);
+  SetSwitchAccessEnabled(true);
+  SetAutoclickEnabled(true);
+  SetDictationEnabled(true);
+  SetMagnifierEnabled(true);
+
+  SetSpokenFeedbackEnabled(false);
+  SetSelectToSpeakEnabled(false);
+  SetSwitchAccessEnabled(false);
+  SetAutoclickEnabled(false);
+  SetDictationEnabled(false);
+  SetMagnifierEnabled(false);
+}
+
+class AccessibilityManagerWithManifestV3Test : public AccessibilityManagerTest {
+ public:
+  AccessibilityManagerWithManifestV3Test() = default;
+  AccessibilityManagerWithManifestV3Test(
+      const AccessibilityManagerWithManifestV3Test&) = delete;
+  AccessibilityManagerWithManifestV3Test& operator=(
+      const AccessibilityManagerWithManifestV3Test&) = delete;
+  ~AccessibilityManagerWithManifestV3Test() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::switches::kEnableExperimentalAccessibilityManifestV3);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithManifestV3Test, DoesNotCrash) {
   SetSpokenFeedbackEnabled(true);
   SetSelectToSpeakEnabled(true);
   SetSwitchAccessEnabled(true);
@@ -2125,7 +2123,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
   DictationTestUtils utils =
       DictationTestUtils(speech::SpeechRecognitionType::kNetwork,
                          DictationTestUtils::EditableType::kInput);
-  utils.EnableDictation(browser());
+  utils.EnableDictation(
+      /*profile=*/AccessibilityManager::Get()->profile(),
+      /*navigate_to_url=*/base::BindLambdaForTesting([this](const GURL& url) {
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+      }));
 
   // If Dictation is already enabled, then pressing the Dictation key should
   // toggle Dictation on/off normally.

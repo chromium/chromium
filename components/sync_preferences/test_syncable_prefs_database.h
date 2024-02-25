@@ -20,8 +20,8 @@ class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
           syncable_prefs_map);
   ~TestSyncablePrefsDatabase() override;
 
-  absl::optional<sync_preferences::SyncablePrefMetadata>
-  GetSyncablePrefMetadata(const std::string& pref_name) const override;
+  std::optional<sync_preferences::SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override;
 
  private:
   std::unordered_map<std::string, sync_preferences::SyncablePrefMetadata>

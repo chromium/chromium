@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -498,7 +498,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
-  [self setBackgroundImage:[UIImage new]
+  [self setBackgroundImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny
                 barMetrics:UIBarMetricsDefault];
 }
@@ -532,6 +532,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
   }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return _doneButton.enabled || _mode == TabGridModeSearch;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_find))) {
+    return _searchButton.enabled;
+  }
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -547,26 +553,50 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [self closeAllButtonTapped:nil];
 }
 
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  if (_mode == TabGridModeSearch) {
+    [self cancelSearchButtonTapped:nil];
+  } else {
+    [self doneButtonTapped:nil];
+  }
+}
+
+- (void)keyCommand_find {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
+  [self searchButtonTapped:nil];
+}
+
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  [self.buttonsDelegate closeAllButtonTapped:sender];
+  if (_closeAllOrUndoButton.enabled) {
+    [self.buttonsDelegate closeAllButtonTapped:sender];
+  }
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.buttonsDelegate doneButtonTapped:sender];
+  if (_doneButton.enabled) {
+    [self.buttonsDelegate doneButtonTapped:sender];
+  }
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  [self.buttonsDelegate selectAllButtonTapped:sender];
+  if (_selectAllButton.enabled) {
+    [self.buttonsDelegate selectAllButtonTapped:sender];
+  }
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.buttonsDelegate searchButtonTapped:sender];
+  if (_searchButton.enabled) {
+    [self.buttonsDelegate searchButtonTapped:sender];
+  }
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  if (_cancelSearchButton.enabled) {
+    [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  }
 }
 
 @end

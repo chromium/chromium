@@ -15,7 +15,7 @@ namespace blink {
 
 ScriptPromise BodyStreamBufferUnderlyingByteSource::Pull(
     ReadableByteStreamController* controller,
-    ExceptionState&) {
+    ExceptionState& exception_state) {
   if (!body_stream_buffer_->consumer_) {
     // This is a speculative workaround for a crash. See
     // https://crbug.com/773525.
@@ -28,7 +28,7 @@ ScriptPromise BodyStreamBufferUnderlyingByteSource::Pull(
   }
   body_stream_buffer_->stream_needs_more_ = true;
   if (!body_stream_buffer_->in_process_data_) {
-    body_stream_buffer_->ProcessData();
+    body_stream_buffer_->ProcessData(exception_state);
   }
   return ScriptPromise::CastUndefined(GetScriptState());
 }
@@ -53,7 +53,7 @@ ScriptPromise BodyStreamBufferUnderlyingByteSource::Cancel(
 }
 
 ScriptState* BodyStreamBufferUnderlyingByteSource::GetScriptState() {
-  return script_state_;
+  return script_state_.Get();
 }
 
 void BodyStreamBufferUnderlyingByteSource::Trace(Visitor* visitor) const {

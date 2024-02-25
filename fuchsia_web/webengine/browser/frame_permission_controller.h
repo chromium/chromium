@@ -61,7 +61,6 @@ class FramePermissionController {
   void RequestPermissions(
       const std::vector<blink::PermissionType>& permissions,
       const url::Origin& requesting_origin,
-      bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 

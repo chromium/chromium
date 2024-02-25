@@ -211,9 +211,16 @@ input.selectable-button:hover + label.selectable-button {
 }
 
 label.audio-focus-session,
-label.cdm,
-label.destructed-player {
+label.cdm {
   background-color: #EEE;
+}
+
+label.errored-player {
+  background-color: rgb(255, 187, 187);
+}
+
+label.ended-player {
+  background-color: rgb(207, 255, 187);
 }
 
 .player-name {

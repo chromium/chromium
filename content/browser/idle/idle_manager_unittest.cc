@@ -100,6 +100,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    permission_manager_ = nullptr;
+    idle_time_provider_ = nullptr;
     scoped_idle_time_provider_.reset();
     idle_manager_.reset();
     RenderViewHostTestHarness::TearDown();
@@ -171,10 +173,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-  raw_ptr<MockPermissionManager, AcrossTasksDanglingUntriaged>
-      permission_manager_;
-  raw_ptr<MockIdleTimeProvider, AcrossTasksDanglingUntriaged>
-      idle_time_provider_;
+  raw_ptr<MockPermissionManager> permission_manager_;
+  raw_ptr<MockIdleTimeProvider> idle_time_provider_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest>
       scoped_idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;

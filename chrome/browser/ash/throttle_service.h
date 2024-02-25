@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/throttle_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -92,15 +92,15 @@ class ThrottleService {
   content::BrowserContext* context() const { return context_; }
 
  private:
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   std::vector<std::unique_ptr<ThrottleObserver>> observers_;
 
   // True when the target should be throttled. Use optional<> to make sure this
   // service always calls ThrottleInstance() when one of the observers has
   // changed for the first time.
-  absl::optional<bool> should_throttle_;
+  std::optional<bool> should_throttle_;
 
-  raw_ptr<ThrottleObserver, ExperimentalAsh> last_effective_observer_{nullptr};
+  raw_ptr<ThrottleObserver> last_effective_observer_{nullptr};
   base::TimeTicks last_throttle_transition_;
   base::ObserverList<ServiceObserver> service_observers_;
   base::WeakPtrFactory<ThrottleService> weak_ptr_factory_{this};

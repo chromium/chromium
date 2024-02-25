@@ -1,0 +1,158 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.signin.history_sync;
+
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
+
+import android.content.res.Configuration;
+import android.view.LayoutInflater;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.test.filters.MediumTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
+
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.sync.SyncService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+/** Tests for the standalone history sync consent dialog */
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "This test relies on native initialization")
+public class HistorySyncRenderTest {
+    /** Parameter provider for night mode state and device orientation. */
+    public static class NightModeAndOrientationParameterProvider implements ParameterProvider {
+        private static List<ParameterSet> sParams =
+                Arrays.asList(
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ false,
+                                        Configuration.ORIENTATION_PORTRAIT)
+                                .name("NightModeDisabled_Portrait"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ false,
+                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .name("NightModeDisabled_Landscape"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ true,
+                                        Configuration.ORIENTATION_PORTRAIT)
+                                .name("NightModeEnabled_Portrait"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ true,
+                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .name("NightModeEnabled_Landscape"));
+
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            return sParams;
+        }
+    }
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Rule
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule(BlankUiTestActivity.class);
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
+
+    @Mock private SyncService mSyncServiceMock;
+
+    private HistorySyncCoordinator mHistorySyncCoordinator;
+
+    @ParameterAnnotations.UseMethodParameterBefore(
+            HistorySyncRenderTest.NightModeAndOrientationParameterProvider.class)
+    public void setupNightModeAndDeviceOrientation(boolean nightModeEnabled, int orientation) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                            nightModeEnabled
+                                    ? AppCompatDelegate.MODE_NIGHT_YES
+                                    : AppCompatDelegate.MODE_NIGHT_NO);
+                });
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+        mRenderTestRule.setVariantPrefix(
+                orientation == Configuration.ORIENTATION_PORTRAIT ? "Portrait" : "Landscape");
+    }
+
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+        mActivityTestRule.launchActivity(null);
+        mSigninTestRule.addTestAccountThenSignin();
+        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(
+            HistorySyncRenderTest.NightModeAndOrientationParameterProvider.class)
+    public void testHistorySyncView(boolean nightModeEnabled, int orientation) throws IOException {
+        buildHistorySyncCoordinator(orientation);
+
+        mRenderTestRule.render(mHistorySyncCoordinator.getView(), "history_sync");
+    }
+
+    private void buildHistorySyncCoordinator(int orientation) {
+        ActivityTestUtils.rotateActivityToOrientation(mActivityTestRule.getActivity(), orientation);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHistorySyncCoordinator =
+                            new HistorySyncCoordinator(
+                                    LayoutInflater.from(mActivityTestRule.getActivity()),
+                                    () -> {},
+                                    Profile.getLastUsedRegularProfile());
+                    mActivityTestRule
+                            .getActivity()
+                            .setContentView(mHistorySyncCoordinator.getView());
+                });
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
+    }
+}

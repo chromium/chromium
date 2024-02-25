@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tflite/tflite_tensors_to_landmarks_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "tensorflow/lite/interpreter.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -158,7 +158,7 @@ absl::Status TfLiteTensorsToLandmarksCalculator::Open(CalculatorContext* cc) {
     RET_CHECK(options_.has_input_image_height() &&
               options_.has_input_image_width())
         << "Must provide input width/height for using flip_vertically option "
-           "when outputing landmarks in absolute coordinates.";
+           "when outputting landmarks in absolute coordinates.";
   }
 
   flip_horizontally_ =

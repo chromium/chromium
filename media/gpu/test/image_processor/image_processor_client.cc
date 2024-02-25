@@ -37,11 +37,11 @@ namespace {
     }                                            \
   } while (0)
 
-absl::optional<VideoFrameLayout> CreateLayout(
+std::optional<VideoFrameLayout> CreateLayout(
     const ImageProcessor::PortConfig& config) {
   const VideoPixelFormat pixel_format = config.fourcc.ToVideoPixelFormat();
   if (config.planes.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (config.fourcc.IsMultiPlanar()) {
     return VideoFrameLayout::CreateWithPlanes(pixel_format, config.size,
@@ -55,14 +55,15 @@ absl::optional<VideoFrameLayout> CreateLayout(
 
 // static
 std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto ip_client =
       base::WrapUnique(new ImageProcessorClient(std::move(frame_processors)));
-  if (!ip_client->CreateImageProcessor(input_config, output_config,
-                                       num_buffers)) {
+  if (!ip_client->CreateImageProcessor(create_backend_cb, input_config,
+                                       output_config, num_buffers)) {
     LOG(ERROR) << "Failed to create ImageProcessor";
     return nullptr;
   }
@@ -92,6 +93,7 @@ ImageProcessorClient::~ImageProcessorClient() {
 }
 
 bool ImageProcessorClient::CreateImageProcessor(
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers) {
@@ -103,7 +105,8 @@ bool ImageProcessorClient::CreateImageProcessor(
   // blocking.
   image_processor_client_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ImageProcessorClient::CreateImageProcessorTask,
-                                base::Unretained(this), std::cref(input_config),
+                                base::Unretained(this), create_backend_cb,
+                                std::cref(input_config),
                                 std::cref(output_config), num_buffers, &done));
   done.Wait();
   if (!image_processor_) {
@@ -114,6 +117,7 @@ bool ImageProcessorClient::CreateImageProcessor(
 }
 
 void ImageProcessorClient::CreateImageProcessorTask(
+    std::optional<ImageProcessor::CreateBackendCB> create_backend_cb,
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
@@ -121,11 +125,20 @@ void ImageProcessorClient::CreateImageProcessorTask(
   DCHECK_CALLED_ON_VALID_THREAD(image_processor_client_thread_checker_);
   // base::Unretained(this) for ErrorCB is safe here because the callback is
   // executed on |image_processor_client_thread_| which is owned by this class.
-  image_processor_ = ImageProcessorFactory::Create(
-      input_config, output_config, ImageProcessor::OutputMode::IMPORT,
-      num_buffers, image_processor_client_thread_.task_runner(),
-      base::BindRepeating(&ImageProcessorClient::NotifyError,
-                          base::Unretained(this)));
+  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
+      &ImageProcessorClient::NotifyError, base::Unretained(this));
+
+  if (create_backend_cb) {
+    image_processor_ =
+        ImageProcessor::Create(*create_backend_cb, input_config, output_config,
+                               ImageProcessor::OutputMode::IMPORT, error_cb,
+                               image_processor_client_thread_.task_runner());
+  } else {
+    image_processor_ = ImageProcessorFactory::Create(
+        input_config, output_config, num_buffers, error_cb,
+        image_processor_client_thread_.task_runner());
+  }
+
   done->Signal();
 }
 
@@ -139,7 +152,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
       image_processor_->input_config();
   const VideoFrame::StorageType input_storage_type =
       input_config.storage_type();
-  absl::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
+  std::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(input_layout);
 
   if (VideoFrame::IsStorageTypeMappable(input_storage_type)) {
@@ -171,7 +184,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
       image_processor_->output_config();
   const VideoFrame::StorageType output_storage_type =
       output_config.storage_type();
-  absl::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
+  std::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(output_layout);
   if (VideoFrame::IsStorageTypeMappable(output_storage_type)) {
     return VideoFrame::CreateFrameWithLayout(

@@ -46,7 +46,6 @@ std::string ToString(PasswordForm::Scheme scheme) {
       return "UsernameOnly";
   }
 
-  NOTREACHED();
   return std::string();
 }
 
@@ -154,9 +153,10 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("all_alternative_passwords",
              AlternativeElementVectorToString(form.all_alternative_passwords));
   target.Set("blocked_by_user", form.blocked_by_user);
-  target.Set("date_last_used", form.date_last_used.ToDoubleT());
-  target.Set("date_password_modified", form.date_password_modified.ToDoubleT());
-  target.Set("date_created", form.date_created.ToDoubleT());
+  target.Set("date_last_used", form.date_last_used.InSecondsFSinceUnixEpoch());
+  target.Set("date_password_modified",
+             form.date_password_modified.InSecondsFSinceUnixEpoch());
+  target.Set("date_created", form.date_created.InSecondsFSinceUnixEpoch());
   target.Set("type", ToString(form.type));
   target.Set("times_used_in_html_form", form.times_used_in_html_form);
   target.Set("form_data", ToString(form.form_data));
@@ -215,6 +215,8 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
   target.Set("sender_email", form.sender_email);
   target.Set("sender_name", form.sender_name);
+  target.Set("sender_profile_image_url",
+             form.sender_profile_image_url.possibly_invalid_spec());
   target.Set("date_received", base::TimeToValue(form.date_received));
   target.Set("sharing_notification_displayed",
              form.sharing_notification_displayed);
@@ -242,13 +244,6 @@ AlternativeElement& AlternativeElement::operator=(AlternativeElement&& rhs) =
 
 AlternativeElement::~AlternativeElement() = default;
 
-bool AlternativeElement::operator==(const AlternativeElement&) const = default;
-
-bool AlternativeElement::operator<(const AlternativeElement& other) const {
-  return std::tie(value, field_renderer_id, name) <
-         std::tie(other.value, other.field_renderer_id, other.name);
-}
-
 std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
   base::Value::Dict element_json;
   element_json.Set("value", element.value);
@@ -275,12 +270,6 @@ InsecurityMetadata::InsecurityMetadata(
 InsecurityMetadata::InsecurityMetadata(const InsecurityMetadata& rhs) = default;
 InsecurityMetadata::~InsecurityMetadata() = default;
 
-bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs) {
-  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted &&
-         *lhs.trigger_notification_from_backend ==
-             *rhs.trigger_notification_from_backend;
-}
-
 PasswordNote::PasswordNote() = default;
 
 PasswordNote::PasswordNote(std::u16string value, base::Time date_created)
@@ -304,16 +293,6 @@ PasswordNote& PasswordNote::operator=(const PasswordNote& rhs) = default;
 PasswordNote& PasswordNote::operator=(PasswordNote&& rhs) = default;
 
 PasswordNote::~PasswordNote() = default;
-
-bool operator==(const PasswordNote& lhs, const PasswordNote& rhs) {
-  return lhs.unique_display_name == rhs.unique_display_name &&
-         lhs.value == rhs.value && lhs.date_created == rhs.date_created &&
-         lhs.hide_by_default == rhs.hide_by_default;
-}
-
-bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs) {
-  return !(lhs == rhs);
-}
 
 PasswordForm::PasswordForm() = default;
 
@@ -459,13 +438,10 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
              rhs.previously_associated_sync_account_email &&
          lhs.sender_email == rhs.sender_email &&
          lhs.sender_name == rhs.sender_name &&
+         lhs.sender_profile_image_url == rhs.sender_profile_image_url &&
          lhs.date_received == rhs.date_received &&
          lhs.sharing_notification_displayed ==
              rhs.sharing_notification_displayed;
-}
-
-bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {
-  return !(lhs == rhs);
 }
 
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {

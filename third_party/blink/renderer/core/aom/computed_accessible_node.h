@@ -51,36 +51,36 @@ class ComputedAccessibleNode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ComputedAccessibleNode(AXID, Document*);
+  CORE_EXPORT ComputedAccessibleNode(AXID, Document*);
   ~ComputedAccessibleNode() override;
 
   void Trace(Visitor*) const override;
 
   // TODO(meredithl): add accessors for state properties.
-  absl::optional<bool> atomic() const;
-  absl::optional<bool> busy() const;
-  absl::optional<bool> disabled() const;
-  absl::optional<bool> readOnly() const;
-  absl::optional<bool> expanded() const;
-  absl::optional<bool> modal() const;
-  absl::optional<bool> multiline() const;
-  absl::optional<bool> multiselectable() const;
-  absl::optional<bool> required() const;
-  absl::optional<bool> selected() const;
+  std::optional<bool> atomic() const;
+  std::optional<bool> busy() const;
+  std::optional<bool> disabled() const;
+  std::optional<bool> readOnly() const;
+  std::optional<bool> expanded() const;
+  std::optional<bool> modal() const;
+  std::optional<bool> multiline() const;
+  std::optional<bool> multiselectable() const;
+  std::optional<bool> required() const;
+  std::optional<bool> selected() const;
 
-  absl::optional<int32_t> colCount() const;
-  absl::optional<int32_t> colIndex() const;
-  absl::optional<int32_t> colSpan() const;
-  absl::optional<int32_t> level() const;
-  absl::optional<int32_t> posInSet() const;
-  absl::optional<int32_t> rowCount() const;
-  absl::optional<int32_t> rowIndex() const;
-  absl::optional<int32_t> rowSpan() const;
-  absl::optional<int32_t> setSize() const;
+  std::optional<int32_t> colCount() const;
+  std::optional<int32_t> colIndex() const;
+  std::optional<int32_t> colSpan() const;
+  std::optional<int32_t> level() const;
+  std::optional<int32_t> posInSet() const;
+  std::optional<int32_t> rowCount() const;
+  std::optional<int32_t> rowIndex() const;
+  std::optional<int32_t> rowSpan() const;
+  std::optional<int32_t> setSize() const;
 
-  absl::optional<float> valueMax() const;
-  absl::optional<float> valueMin() const;
-  absl::optional<float> valueNow() const;
+  std::optional<float> valueMax() const;
+  std::optional<float> valueMin() const;
+  std::optional<float> valueNow() const;
 
   const String autocomplete() const;
   const String checked() const;
@@ -102,9 +102,9 @@ class ComputedAccessibleNode : public ScriptWrappable {
  private:
   Document* GetDocument() const;
   WebComputedAXTree* GetTree() const;
-  absl::optional<bool> GetBoolAttribute(WebAOMBoolAttribute) const;
-  absl::optional<int32_t> GetIntAttribute(WebAOMIntAttribute) const;
-  absl::optional<float> GetFloatAttribute(WebAOMFloatAttribute) const;
+  std::optional<bool> GetBoolAttribute(WebAOMBoolAttribute) const;
+  std::optional<int32_t> GetIntAttribute(WebAOMIntAttribute) const;
+  std::optional<float> GetFloatAttribute(WebAOMFloatAttribute) const;
   const String GetStringAttribute(WebAOMStringAttribute) const;
 
   AXID ax_id_;

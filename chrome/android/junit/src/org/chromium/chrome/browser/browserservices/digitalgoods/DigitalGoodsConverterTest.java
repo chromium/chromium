@@ -40,9 +40,7 @@ import org.chromium.payments.mojom.PurchaseReference;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Tests for {@link DigitalGoodsConverterTest}.
- */
+/** Tests for {@link DigitalGoodsConverterTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DigitalGoodsConverterTest {
@@ -50,7 +48,7 @@ public class DigitalGoodsConverterTest {
 
     @Test
     public void convertGetDetailsParams() {
-        String[] itemIds = { "id1", "id2" };
+        String[] itemIds = {"id1", "id2"};
 
         Bundle b = GetDetailsConverter.convertParams(itemIds);
 
@@ -84,18 +82,36 @@ public class DigitalGoodsConverterTest {
         String introPricePeriod = "1 month";
         int introPriceCycles = 4;
 
-        Bundle bundle = GetDetailsConverter.createItemDetailsBundle("id", "Title", "desc", "GBP",
-                "10.0", "subs", iconUrl, subsPeriod, freeTrialPeriod, introPriceCurrency,
-                introPriceValue, introPricePeriod, introPriceCycles);
+        Bundle bundle =
+                GetDetailsConverter.createItemDetailsBundle(
+                        "id",
+                        "Title",
+                        "desc",
+                        "GBP",
+                        "10.0",
+                        "subs",
+                        iconUrl,
+                        subsPeriod,
+                        freeTrialPeriod,
+                        introPriceCurrency,
+                        introPriceValue,
+                        introPricePeriod,
+                        introPriceCycles);
 
         ItemDetails item = GetDetailsConverter.convertItemDetails(bundle);
-        assertOptionalItemDetails(item, "subs", iconUrl, subsPeriod, freeTrialPeriod,
-                introPriceCurrency, introPriceValue, introPricePeriod, introPriceCycles);
+        assertOptionalItemDetails(
+                item,
+                "subs",
+                iconUrl,
+                subsPeriod,
+                freeTrialPeriod,
+                introPriceCurrency,
+                introPriceValue,
+                introPricePeriod,
+                introPriceCycles);
     }
 
-    /**
-     * A class to allow passing values out of callbacks.
-     */
+    /** A class to allow passing values out of callbacks. */
     private static class TestState<T> {
         public int responseCode;
         public T[] results;
@@ -104,24 +120,29 @@ public class DigitalGoodsConverterTest {
     @Test
     public void convertGetDetailsCallback() {
         TestState<ItemDetails> state = new TestState<>();
-        GetDetails_Response callback = (responseCode, itemDetails) -> {
-            state.responseCode = responseCode;
-            state.results = itemDetails;
-        };
+        GetDetails_Response callback =
+                (responseCode, itemDetails) -> {
+                    state.responseCode = responseCode;
+                    state.results = itemDetails;
+                };
 
         TrustedWebActivityCallback convertedCallback =
                 GetDetailsConverter.convertCallback(callback);
 
         String iconUrl = "https://www.example.com/image.png";
         int responseCode = 0;
-        Bundle args = GetDetailsConverter.createResponseBundle(responseCode,
-                GetDetailsConverter.createItemDetailsBundle("1", "t1", "d1", "c1", "v1"),
-                GetDetailsConverter.createItemDetailsBundle("2", "t2", "d2", "c2", "v2", "inapp",
-                        iconUrl, "sp2", "ftp2", "ipc2", "ipv2", "ipp2", 4));
+        Bundle args =
+                GetDetailsConverter.createResponseBundle(
+                        responseCode,
+                        GetDetailsConverter.createItemDetailsBundle("1", "t1", "d1", "c1", "v1"),
+                        GetDetailsConverter.createItemDetailsBundle(
+                                "2", "t2", "d2", "c2", "v2", "inapp", iconUrl, "sp2", "ftp2",
+                                "ipc2", "ipv2", "ipp2", 4));
 
         convertedCallback.onExtraCallback(GetDetailsConverter.RESPONSE_COMMAND, args);
 
-        assertEquals(DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
+        assertEquals(
+                DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
                 state.responseCode);
         assertItemDetails(state.results[0], "1", "t1", "d1", "c1", "v1");
         assertOptionalItemDetails(state.results[0], null, null, null, null, null, null, null, 0);
@@ -130,8 +151,8 @@ public class DigitalGoodsConverterTest {
                 state.results[1], "inapp", iconUrl, "sp2", "ftp2", "ipc2", "ipv2", "ipp2", 4);
     }
 
-    private static void assertItemDetails(ItemDetails item, String id, String title, String desc,
-            String currency, String value) {
+    private static void assertItemDetails(
+            ItemDetails item, String id, String title, String desc, String currency, String value) {
         assertEquals(id, item.itemId);
         assertEquals(title, item.title);
         assertEquals(desc, item.description);
@@ -139,10 +160,16 @@ public class DigitalGoodsConverterTest {
         assertEquals(value, item.price.value);
     }
 
-    private static void assertOptionalItemDetails(ItemDetails item, @Nullable String type,
-            @Nullable String iconUrl, @Nullable String subsPeriod, @Nullable String freeTrialPeriod,
-            @Nullable String introPriceCurrency, @Nullable String introPriceValue,
-            @Nullable String intoPricePeriod, int introPriceCycles) {
+    private static void assertOptionalItemDetails(
+            ItemDetails item,
+            @Nullable String type,
+            @Nullable String iconUrl,
+            @Nullable String subsPeriod,
+            @Nullable String freeTrialPeriod,
+            @Nullable String introPriceCurrency,
+            @Nullable String introPriceValue,
+            @Nullable String intoPricePeriod,
+            int introPriceCycles) {
         if (type == null) {
             assertEquals(ItemType.UNKNOWN, item.type);
         } else if ("subs".equals(type)) {
@@ -211,22 +238,26 @@ public class DigitalGoodsConverterTest {
     @Test
     public void convertListPurchasesCallback() {
         TestState<PurchaseReference> state = new TestState<>();
-        ListPurchases_Response callback = (responseCode, purchaseDetails) -> {
-            state.responseCode = responseCode;
-            state.results = purchaseDetails;
-        };
+        ListPurchases_Response callback =
+                (responseCode, purchaseDetails) -> {
+                    state.responseCode = responseCode;
+                    state.results = purchaseDetails;
+                };
 
         TrustedWebActivityCallback convertedCallback =
                 ListPurchasesConverter.convertCallback(callback);
 
         int responseCode = 0;
-        Bundle args = ListPurchasesConverter.createResponseBundle(responseCode,
-                ListPurchasesConverter.createPurchaseReferenceBundle("1", "t1"),
-                ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
+        Bundle args =
+                ListPurchasesConverter.createResponseBundle(
+                        responseCode,
+                        ListPurchasesConverter.createPurchaseReferenceBundle("1", "t1"),
+                        ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
 
         convertedCallback.onExtraCallback(ListPurchasesConverter.RESPONSE_COMMAND, args);
 
-        assertEquals(DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
+        assertEquals(
+                DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
                 state.responseCode);
         assertPurchaseReference(state.results[0], "1", "t1");
         assertPurchaseReference(state.results[1], "2", "t2");
@@ -235,22 +266,26 @@ public class DigitalGoodsConverterTest {
     @Test
     public void convertListPurchaseHistoryCallback() {
         TestState<PurchaseReference> state = new TestState<>();
-        ListPurchaseHistory_Response callback = (responseCode, purchaseDetails) -> {
-            state.responseCode = responseCode;
-            state.results = purchaseDetails;
-        };
+        ListPurchaseHistory_Response callback =
+                (responseCode, purchaseDetails) -> {
+                    state.responseCode = responseCode;
+                    state.results = purchaseDetails;
+                };
 
         TrustedWebActivityCallback convertedCallback =
                 ListPurchaseHistoryConverter.convertCallback(callback);
 
         int responseCode = 0;
-        Bundle args = ListPurchaseHistoryConverter.createResponseBundle(responseCode,
-                ListPurchasesConverter.createPurchaseReferenceBundle("1", "t1"),
-                ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
+        Bundle args =
+                ListPurchaseHistoryConverter.createResponseBundle(
+                        responseCode,
+                        ListPurchasesConverter.createPurchaseReferenceBundle("1", "t1"),
+                        ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
 
         convertedCallback.onExtraCallback(ListPurchaseHistoryConverter.RESPONSE_COMMAND, args);
 
-        assertEquals(DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
+        assertEquals(
+                DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
                 state.responseCode);
         assertPurchaseReference(state.results[0], "1", "t1");
         assertPurchaseReference(state.results[1], "2", "t2");
@@ -290,13 +325,17 @@ public class DigitalGoodsConverterTest {
     public void convertResponseCodes_v0() {
         Bundle args = Bundle.EMPTY;
 
-        assertEquals(BillingResponseCode.OK,
+        assertEquals(
+                BillingResponseCode.OK,
                 DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_OK, args));
-        assertEquals(BillingResponseCode.ITEM_ALREADY_OWNED,
+        assertEquals(
+                BillingResponseCode.ITEM_ALREADY_OWNED,
                 DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_ALREADY_OWNED, args));
-        assertEquals(BillingResponseCode.ITEM_NOT_OWNED,
+        assertEquals(
+                BillingResponseCode.ITEM_NOT_OWNED,
                 DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_NOT_OWNED, args));
-        assertEquals(BillingResponseCode.ITEM_UNAVAILABLE,
+        assertEquals(
+                BillingResponseCode.ITEM_UNAVAILABLE,
                 DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_UNAVAILABLE, args));
 
         // Check that other numbers get set to ERROR.
@@ -313,11 +352,14 @@ public class DigitalGoodsConverterTest {
         args.putInt(DigitalGoodsConverter.KEY_VERSION, 1);
 
         assertEquals(BillingResponseCode.OK, convertResponseCode(BillingResponseCode.OK, args));
-        assertEquals(BillingResponseCode.ITEM_ALREADY_OWNED,
+        assertEquals(
+                BillingResponseCode.ITEM_ALREADY_OWNED,
                 convertResponseCode(BillingResponseCode.ITEM_ALREADY_OWNED, args));
-        assertEquals(BillingResponseCode.ITEM_NOT_OWNED,
+        assertEquals(
+                BillingResponseCode.ITEM_NOT_OWNED,
                 convertResponseCode(BillingResponseCode.ITEM_NOT_OWNED, args));
-        assertEquals(BillingResponseCode.ITEM_UNAVAILABLE,
+        assertEquals(
+                BillingResponseCode.ITEM_UNAVAILABLE,
                 convertResponseCode(BillingResponseCode.ITEM_UNAVAILABLE, args));
 
         assertEquals(BillingResponseCode.ERROR, convertResponseCode(123, args));

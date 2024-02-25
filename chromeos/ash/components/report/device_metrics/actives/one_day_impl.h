@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) OneDayImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<OneDayImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;
@@ -42,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) OneDayImpl
   void SetLastPingTimestamp(base::Time ts) override;
   std::vector<private_membership::rlwe::RlwePlaintextId>
   GetPsmIdentifiersToQuery() override;
-  absl::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.

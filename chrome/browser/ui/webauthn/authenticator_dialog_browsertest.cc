@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -84,7 +85,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     if (name == "mechanisms") {
       // A phone is configured so that the "Manage devices" button is shown.
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt, std::move(phones),
+          /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMechanismSelection);
@@ -123,12 +124,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model_->ContactPhoneForTesting(kPhoneName);
     } else if (name == "cable_v2_activate") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt, std::move(phones),
+          /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->ContactPhoneForTesting(kPhoneName);
     } else if (name == "cable_v2_pair") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
+          /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
@@ -225,10 +226,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         static const uint8_t kAppParam[32] = {0};
         static const uint8_t kSignatureCounter[4] = {0};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
-                                            kSignatureCounter, absl::nullopt);
+                                            kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(
             std::move(auth_data), {10, 11, 12, 13} /* signature */,
-            /*transport_used=*/absl::nullopt);
+            /*transport_used=*/std::nullopt);
         device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
         user.name = info.first;
         user.display_name = info.second;
@@ -290,10 +291,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         static const uint8_t kAppParam[32] = {0};
         static const uint8_t kSignatureCounter[4] = {0};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
-                                            kSignatureCounter, absl::nullopt);
+                                            kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(
             std::move(auth_data), {10, 11, 12, 13} /* signature */,
-            /*transport_used=*/absl::nullopt);
+            /*transport_used=*/std::nullopt);
         device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
         user.name = info.first;
         user.display_name = info.second;
@@ -558,7 +559,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
   GPMPasskeysAuthenticatorDialogTest() {
     scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnListSyncedPasskeys, device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
         /*disabled_features=*/{});
   }
 
@@ -611,10 +612,12 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     phone->name = kPhoneName;
     phones.emplace_back(std::move(phone));
     model_->set_cable_transport_info(
-        /*extension_is_v2=*/absl::nullopt, std::move(phones),
+        /*extension_is_v2=*/std::nullopt, std::move(phones),
         /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
 
-    if (name == "local_and_phone") {
+    if (name == "no_passkeys_discovered") {
+      transport_availability.recognized_credentials = {};
+    } else if (name == "local_and_phone") {
       transport_availability.recognized_credentials = {
           std::move(local_cred1),
           std::move(local_cred2),
@@ -626,6 +629,13 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           std::move(local_cred1),
           std::move(local_cred2),
       };
+    } else if (name == "local_no_other_devices") {
+      transport_availability.recognized_credentials = {
+          std::move(local_cred1),
+          std::move(local_cred2),
+      };
+      transport_availability.available_transports = {
+          device::FidoTransportProtocol::kInternal};
     } else if (name == "phone_only") {
       transport_availability.recognized_credentials = {
           std::move(phone_cred1),
@@ -641,7 +651,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       };
     } else if (name == "get_assertion_qr_with_usb") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
+          /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.is_ble_powered = true;
@@ -651,7 +661,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       };
     } else if (name == "get_assertion_qr_without_usb") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
+          /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.is_ble_powered = true;
@@ -660,7 +670,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       };
     } else if (name == "make_credential_qr_with_usb") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
+          /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
@@ -672,7 +682,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       };
     } else if (name == "make_credential_qr_without_usb") {
       model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt,
+          /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
@@ -681,6 +691,29 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
       };
+    } else if (name == "recover_security_domain") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+    } else if (name == "trust_this_computer") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kTrustThisComputer);
+    } else if (name == "gpm_create_passkey") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+    } else if (name == "touchid") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+    } else if (name == "gpm_onboarding") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+    } else if (name == "gpm_create_pin") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+    } else if (name == "gpm_enter_pin") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+    } else {
+      NOTREACHED();
     }
     model_->StartFlow(std::move(transport_availability),
                       /*is_conditional_mediation=*/false);
@@ -692,12 +725,22 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_no_passkeys_discovered) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_local_and_phone) {
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_local_only) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_local_no_other_devices) {
   ShowAndVerifyUi();
 }
 
@@ -735,3 +778,39 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_make_credential_qr_without_usb) {
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_recover_security_domain) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_trust_this_computer) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_create_passkey) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_onboarding) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_create_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_enter_pin) {
+  ShowAndVerifyUi();
+}
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
+  ShowAndVerifyUi();
+}
+#endif  // BUILDFLAG(IS_MAC)

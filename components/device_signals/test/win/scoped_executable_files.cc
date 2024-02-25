@@ -66,7 +66,7 @@ base::FilePath ScopedExecutableFiles::LazilyCreateFile(
 
 bool ScopedExecutableFiles::CreateTempFile(const base::FilePath& file_path,
                                            const base::StringPiece& file_data) {
-  absl::optional<std::vector<uint8_t>> decoded_file_data =
+  std::optional<std::vector<uint8_t>> decoded_file_data =
       base::Base64Decode(file_data);
   if (!decoded_file_data) {
     return false;

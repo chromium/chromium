@@ -184,40 +184,32 @@ void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
                      const DWORD cookie_info_count,
                      net::HttpRequestHeaders& auth_headers) {
   net::cookie_util::ParsedRequestCookies parsed_cookies;
-  if (base::FeatureList::IsEnabled(
-          enterprise_auth::kCloudApAuthAttachAsHeader)) {
-    // If the auth cookie name begins with 'x-ms-', attach the cookie as a
-    // new header. Otherwise, append it to the existing list of cookies.
-    static constexpr base::StringPiece kHeaderPrefix("x-ms-");
-    for (DWORD i = 0; i < cookie_info_count; ++i) {
-      const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-      auto ascii_cookie_name = base::WideToASCII(cookie.name);
-      if (base::StartsWith(ascii_cookie_name, kHeaderPrefix,
-                           base::CompareCase::INSENSITIVE_ASCII)) {
-        // Removing cookie attributes from the value before setting it as a
-        // header.
-        std::string ascii_cookie_value = base::WideToASCII(cookie.data);
-        std::string::size_type cookie_attributes_position =
-            ascii_cookie_value.find(";");
-        if (cookie_attributes_position != std::string::npos) {
-          ascii_cookie_value =
-              ascii_cookie_value.substr(0, cookie_attributes_position);
-        }
-        auth_headers.SetHeader(std::move(ascii_cookie_name),
-                               std::move(ascii_cookie_value));
-      } else {
-        parsed_cookies.emplace_back(std::move(ascii_cookie_name),
-                                    base::WideToASCII(cookie.data));
+
+  // If the auth cookie name begins with 'x-ms-', attach the cookie as a
+  // new header. Otherwise, append it to the existing list of cookies.
+  static constexpr base::StringPiece kHeaderPrefix("x-ms-");
+  for (DWORD i = 0; i < cookie_info_count; ++i) {
+    const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+    auto ascii_cookie_name = base::WideToASCII(cookie.name);
+    if (base::StartsWith(ascii_cookie_name, kHeaderPrefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      // Removing cookie attributes from the value before setting it as a
+      // header.
+      std::string ascii_cookie_value = base::WideToASCII(cookie.data);
+      std::string::size_type cookie_attributes_position =
+          ascii_cookie_value.find(";");
+      if (cookie_attributes_position != std::string::npos) {
+        ascii_cookie_value =
+            ascii_cookie_value.substr(0, cookie_attributes_position);
       }
-    }
-  } else {
-    // Append all auth cookies to the existing set of cookies.
-    for (DWORD i = 0; i < cookie_info_count; ++i) {
-      const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-      parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
+      auth_headers.SetHeader(std::move(ascii_cookie_name),
+                             std::move(ascii_cookie_value));
+    } else {
+      parsed_cookies.emplace_back(std::move(ascii_cookie_name),
                                   base::WideToASCII(cookie.data));
     }
   }
+
   if (parsed_cookies.size() > 0) {
     auth_headers.SetHeader(
         net::HttpRequestHeaders::kCookie,
@@ -443,7 +435,7 @@ void CloudApProviderWin::OnGetDataCallback(
 
 // static
 void CloudApProviderWin::SetSupportLevelForTesting(
-    absl::optional<SupportLevel> level) {
+    std::optional<SupportLevel> level) {
   delete std::exchange(support_level_for_testing_, nullptr);
   if (!level)
     return;

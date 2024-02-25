@@ -14,11 +14,11 @@ export class PersonalizationHubBrowserProxyImpl implements
     return instance || (instance = new PersonalizationHubBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: PersonalizationHubBrowserProxy) {
+  static setInstanceForTesting(obj: PersonalizationHubBrowserProxy): void {
     instance = obj;
   }
 
-  openPersonalizationHub() {
+  openPersonalizationHub(): void {
     chrome.send('openPersonalizationHub');
   }
 }

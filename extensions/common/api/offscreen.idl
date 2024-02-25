@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Use the <code>offscreen</code> API to create and manage offscreen documents.
-[modernised_enums]
 namespace offscreen {
   enum Reason {
     // A reason used for testing purposes only.
@@ -20,7 +19,7 @@ namespace offscreen {
     // objects (including <code>URL.createObjectURL()</code>).
     BLOBS,
     // Specifies that the offscreen document needs to use the
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser>DOMParser API</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser">DOMParser API</a>.
     DOM_PARSER,
     // Specifies that the offscreen document needs to interact with
     // media streams from user media (e.g. <code>getUserMedia()</code>).
@@ -29,10 +28,10 @@ namespace offscreen {
     // media streams from display media (e.g. <code>getDisplayMedia()</code>).
     DISPLAY_MEDIA,
     // Specifies that the offscreen document needs to use
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API>WebRTC APIs</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC APIs</a>.
     WEB_RTC,
     // Specifies that the offscreen document needs to interact with the
-    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API>Clipboard API</a>.
+    // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API">Clipboard API</a>.
     CLIPBOARD,
     // Specifies that the offscreen document needs access to
     // <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.
@@ -69,13 +68,13 @@ namespace offscreen {
     // |parameters|: The parameters describing the offscreen document to create.
     // |callback|: Invoked when the offscreen document is created and has
     // completed its initial page load.
-    [supportsPromises] static void createDocument(
+    static void createDocument(
         CreateParameters parameters,
         VoidCallback callback);
 
     // Closes the currently-open offscreen document for the extension.
     // |callback|: Invoked when the offscreen document has been closed.
-    [supportsPromises] static void closeDocument(VoidCallback callback);
+    static void closeDocument(VoidCallback callback);
 
     // Determines whether the extension has an active document.
     // TODO(https://crbug.com/1339382): This probably isn't something we want to
@@ -84,6 +83,6 @@ namespace offscreen {
     // alternative. But this is pretty useful in testing environments.
     // |callback|: Invoked with the result of whether the extension has an
     // active offscreen document.
-    [supportsPromises, nodoc] static void hasDocument(BooleanCallback callback);
+    [nodoc] static void hasDocument(BooleanCallback callback);
   };
 };

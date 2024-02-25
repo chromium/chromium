@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -23,34 +24,38 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
 #import "components/sync_user_events/global_id_mapper.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -77,8 +82,6 @@ class SessionSyncServiceMockForRecentTabsTableCoordinator
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());
-  MOCK_METHOD1(ProxyTabsStateChanged,
-               void(syncer::DataTypeController::State state));
 };
 
 std::unique_ptr<KeyedService>
@@ -99,17 +102,17 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
   OpenTabsUIDelegateMock() {}
   ~OpenTabsUIDelegateMock() override {}
 
-  MOCK_METHOD1(
-      GetAllForeignSessions,
-      bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
+  MOCK_METHOD1(GetAllForeignSessions,
+               bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions));
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,
                     const SessionID tab_id,
                     const sessions::SessionTab** tab));
   MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-  MOCK_METHOD2(GetForeignSession,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows));
+  MOCK_METHOD1(
+      GetForeignSession,
+      std::vector<const sessions::SessionWindow*>(const std::string& tag));
   MOCK_METHOD2(GetForeignSessionTabs,
                bool(const std::string& tag,
                     std::vector<const sessions::SessionTab*>* tabs));
@@ -138,9 +141,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     BlockCleanupTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
@@ -174,7 +174,13 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    FakeStartupInformation* startup_information_ =
+        [[FakeStartupInformation alloc] init];
+    app_state_ =
+        [[AppState alloc] initWithStartupInformation:startup_information_];
+    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             scene_state_);
   }
 
   void TearDown() override {
@@ -193,12 +199,10 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             SessionSyncServiceFactory::GetForBrowserState(
                 chrome_browser_state_.get()));
 
-    syncer::TestSyncService* sync_service =
-        static_cast<syncer::TestSyncService*>(
-            SyncServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
-    sync_service->SetSetupInProgress(!sync_enabled);
-    sync_service->SetHasSyncConsent(sync_completed);
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+    sync_service_->SetSetupInProgress(!sync_enabled);
+    sync_service_->SetHasSyncConsent(sync_completed);
 
     // Needed by SyncService's initialization, triggered during initialization
     // of SyncSetupServiceMock.
@@ -206,13 +210,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         .WillByDefault(Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(*session_sync_service, GetGlobalIdMapper())
         .WillByDefault(Return(&global_id_mapper_));
-
-    SyncSetupServiceMock* syncSetupService = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
-    ON_CALL(*syncSetupService,
-            IsDataTypePreferred(syncer::UserSelectableType::kTabs))
-        .WillByDefault(Return(true));
 
     if (signed_in) {
       AuthenticationService* authentication_service =
@@ -259,8 +256,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                            browser:browser_.get()];
     mock_application_commands_handler_ =
         [OCMockObject mockForProtocol:@protocol(ApplicationCommands)];
-    mock_application_settings_commands_handler_ =
-        [OCMockObject mockForProtocol:@protocol(ApplicationSettingsCommands)];
+    mock_settings_commands_handler_ =
+        [OCMockObject mockForProtocol:@protocol(SettingsCommands)];
     mock_browsing_data_commands_handler_ =
         [OCMockObject mockForProtocol:@protocol(BrowsingDataCommands)];
 
@@ -268,8 +265,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_browsing_data_commands_handler_
                      forProtocol:@protocol(BrowsingDataCommands)];
@@ -293,12 +290,16 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   testing::NiceMock<GlobalIdMapperMock> global_id_mapper_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
+  AppState* app_state_;
+  SceneState* scene_state_;
 
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
 
+  raw_ptr<syncer::TestSyncService> sync_service_;
   sync_sessions::SyncedSession sync_session_;
-  std::vector<const sync_sessions::SyncedSession*> sessions_;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions_;
 
   sessions::SessionTab open_tab_;
   std::vector<const sessions::SessionTab*> open_tabs_;
@@ -306,7 +307,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   // Must be declared *after* `chrome_browser_state_` so it can outlive it.
   RecentTabsCoordinator* coordinator_;
   id<ApplicationCommands> mock_application_commands_handler_;
-  id<ApplicationSettingsCommands> mock_application_settings_commands_handler_;
+  id<SettingsCommands> mock_settings_commands_handler_;
   id<BrowsingDataCommands> mock_browsing_data_commands_handler_;
 };
 
@@ -374,6 +375,25 @@ TEST_F(RecentTabsTableCoordinatorTest, TestLoadFaviconAfterDisconnect) {
                                                     inSection:section_index]];
     }
   }
+}
+
+// It's possible to tap on the history sync promo action button to show a new
+// history sync screen, while the dismiss animation is being played for the
+// previous History Sync screen.
+// This test verifies that there's no crash in this case.
+// See https://crbug.com/1470860.
+TEST_F(RecentTabsTableCoordinatorTest, TestReopenHistorySyncWhenPreviousShown) {
+  SetupSyncState(YES, NO, NO, NO);
+  // Disable history and tabs settings to ensure that the History Sync
+  // coordinator.
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /* sync_everything */ false, {});
+  CreateController();
+
+  id<RecentTabsPresentationDelegate> delegate =
+      static_cast<id<RecentTabsPresentationDelegate>>(coordinator_);
+  [delegate showHistorySyncOptInAfterDedicatedSignIn:NO];
+  [delegate showHistorySyncOptInAfterDedicatedSignIn:NO];
 }
 
 }  // namespace

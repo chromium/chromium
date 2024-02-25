@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++EditText text:"\n    TextBox1\n  " textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {contenteditable="plaintext-only"}, {role="textbox"}]
+++++TextView text:"\n    TextBox1\n  " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++EditText text:"\n    TextBox2\n  " textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-multiline="true"}, {contenteditable="plaintext-only"}, {role="textbox"}]
+++++TextView text:"\n    TextBox2\n  " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -27,6 +26,87 @@ class JSONValueConverter;
 namespace google_apis {
 
 namespace calendar {
+
+// Parses a calendar list item from the response.
+class SingleCalendar {
+ public:
+  SingleCalendar();
+  SingleCalendar(const SingleCalendar&);
+  SingleCalendar& operator=(const SingleCalendar&);
+  ~SingleCalendar();
+
+  // Registers the mapping between JSON field names and the members in this
+  // class.
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<SingleCalendar>* converter);
+
+  // The Calendar ID
+  const std::string& id() const { return id_; }
+  void set_id(const std::string& id) { id_ = id; }
+
+  // The color ID of the calendar
+  const std::string& color_id() const { return color_id_; }
+  void set_color_id(const std::string& color_id) { color_id_ = color_id; }
+
+  // Indicates whether or not the calendar is selected.
+  bool selected() const { return selected_; }
+  void set_selected(bool selected) { selected_ = selected; }
+
+  // Indicates whether or not the calendar is the primary calendar.
+  bool primary() const { return primary_; }
+  void set_primary(bool primary) { primary_ = primary; }
+
+  // Return the approximate size of this calendar list item in bytes.
+  int GetApproximateSizeInBytes() const;
+
+ private:
+  std::string id_;
+  std::string color_id_;
+  bool selected_ = false;
+  bool primary_ = false;
+};
+
+// Parses a list of calendars.
+class CalendarList {
+ public:
+  CalendarList();
+  CalendarList(const CalendarList&) = delete;
+  CalendarList& operator=(const CalendarList&) = delete;
+  ~CalendarList();
+
+  // Registers the mapping between JSON field names and the members in this
+  // class.
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<CalendarList>* converter);
+
+  // Creates CalendarList from parsed JSON.
+  static std::unique_ptr<CalendarList> CreateFrom(const base::Value& value);
+
+  // Returns ETag for this calendar list.
+  const std::string& etag() const { return etag_; }
+
+  // Returns the kind.
+  const std::string& kind() const { return kind_; }
+
+  void set_etag(const std::string& etag) { etag_ = etag; }
+  void set_kind(const std::string& kind) { kind_ = kind; }
+
+  // Returns a set of calendars.
+  const std::vector<std::unique_ptr<SingleCalendar>>& items() const {
+    return items_;
+  }
+  std::vector<std::unique_ptr<SingleCalendar>>* mutable_items() {
+    return &items_;
+  }
+
+  void InjectItemForTesting(std::unique_ptr<SingleCalendar> item);
+
+ private:
+  std::string etag_;
+  std::string kind_;
+
+  std::vector<std::unique_ptr<SingleCalendar>> items_;
+};
 
 // Parses the time field in the calendar Events.list response.
 class DateTime {
@@ -49,6 +129,34 @@ class DateTime {
 
  private:
   base::Time date_time_;
+};
+
+// Parses the attachment field in the `CalendarEvent` response.
+class Attachment {
+ public:
+  Attachment();
+  Attachment(const Attachment&);
+  Attachment& operator=(const Attachment&);
+  Attachment(Attachment&&) noexcept;
+  Attachment& operator=(Attachment&&) noexcept;
+  ~Attachment();
+
+  // The title of the attachment (file name).
+  const std::string& title() const { return title_; }
+  void set_title(const std::string& title) { title_ = title; }
+
+  // The URL of the attachment.
+  const GURL& file_url() const { return file_url_; }
+  void set_file_url(const GURL& file_url) { file_url_ = file_url; }
+
+  // The URL of the attachment icon.
+  const GURL& icon_link() const { return icon_link_; }
+  void set_icon_link(const GURL& icon_link) { icon_link_ = icon_link; }
+
+ private:
+  std::string title_;
+  GURL file_url_;
+  GURL icon_link_;
 };
 
 // Parses the event item from the response. Not every field is parsed. If you
@@ -125,6 +233,12 @@ class CalendarEvent {
   GURL conference_data_uri() const { return conference_data_uri_; }
   void set_conference_data_uri(const GURL& uri) { conference_data_uri_ = uri; }
 
+  // The attachments of each event, if any.
+  const std::vector<Attachment>& attachments() const { return attachments_; }
+  void set_attachments(std::vector<Attachment> attachments) {
+    attachments_ = std::move(attachments);
+  }
+
   // Return the approximate size of this event, in bytes.
   int GetApproximateSizeInBytes() const;
 
@@ -139,6 +253,7 @@ class CalendarEvent {
   DateTime end_time_;
   bool all_day_event_ = false;
   GURL conference_data_uri_;
+  std::vector<Attachment> attachments_;
 };
 
 // Parses a list of calendar events.

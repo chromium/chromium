@@ -144,7 +144,7 @@ void ResizingHostObserver::RegisterForDisplayChanges(
 
 void ResizingHostObserver::SetScreenResolution(
     const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> opt_screen_id) {
+    std::optional<webrtc::ScreenId> opt_screen_id) {
   // Get the current time. This function is called exactly once for each call
   // to SetScreenResolution to simplify the implementation of unit-tests.
   base::TimeTicks now = clock_->NowTicks();
@@ -211,6 +211,10 @@ void ResizingHostObserver::SetScreenResolution(
                << host_resolution.dimensions().height();
     }
   }
+  HOST_LOG << "Choosing best candidate for client resolution: "
+           << resolution.dimensions().width() << "x"
+           << resolution.dimensions().height() << " [" << resolution.dpi().x()
+           << ", " << resolution.dpi().y() << "]";
   CandidateResolution best_candidate(resolutions.front(), resolution);
   for (std::list<ScreenResolution>::const_iterator i = ++resolutions.begin();
        i != resolutions.end(); ++i) {
@@ -221,18 +225,23 @@ void ResizingHostObserver::SetScreenResolution(
   }
   ScreenResolution current_resolution =
       desktop_resizer_->GetCurrentResolution(screen_id);
+  ScreenResolution best_resolution = best_candidate.resolution();
 
-  if (!best_candidate.resolution().Equals(current_resolution)) {
+  if (!best_resolution.Equals(current_resolution)) {
     RecordOriginalResolution(current_resolution, screen_id);
     HOST_LOG << "Resizing monitor ID " << screen_id << " to "
-             << best_candidate.resolution().dimensions().width() << "x"
-             << best_candidate.resolution().dimensions().height() << ".";
-    desktop_resizer_->SetResolution(best_candidate.resolution(), screen_id);
+             << best_resolution.dimensions().width() << "x"
+             << best_resolution.dimensions().height() << " ["
+             << best_resolution.dpi().x() << ", " << best_resolution.dpi().y()
+             << "].";
+    desktop_resizer_->SetResolution(best_resolution, screen_id);
   } else {
     HOST_LOG << "Not resizing monitor ID " << screen_id
              << "; desktop dimensions already "
-             << best_candidate.resolution().dimensions().width() << "x"
-             << best_candidate.resolution().dimensions().height() << ".";
+             << best_resolution.dimensions().width() << "x"
+             << best_resolution.dimensions().height() << " ["
+             << best_resolution.dpi().x() << ", " << best_resolution.dpi().y()
+             << "].";
   }
 
   // Update the time of last resize to allow it to be rate-limited.
@@ -293,7 +302,7 @@ void ResizingHostObserver::OnDisplayInfoChanged(
   // If there was a pending resolution request for an unspecifed monitor, apply
   // it now.
   if (!pending_resolution_request_.IsEmpty()) {
-    SetScreenResolution(pending_resolution_request_, absl::nullopt);
+    SetScreenResolution(pending_resolution_request_, std::nullopt);
     pending_resolution_request_ = {};
   }
 }

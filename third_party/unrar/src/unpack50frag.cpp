@@ -1,3 +1,4 @@
+#include "base/process/memory.h"
 FragmentedWindow::FragmentedWindow()
 {
   memset(Mem,0,sizeof(Mem));
@@ -46,8 +47,7 @@ void FragmentedWindow::Init(size_t WinSize)
         break;
       Size-=Size/32;
     }
-    if (NewMem == NULL)
-    {
+    if (NewMem == NULL) {
 #if defined(UNRAR_NO_EXCEPTIONS)
       base::TerminateBecauseOutOfMemory(Size);
 #else
@@ -64,8 +64,7 @@ void FragmentedWindow::Init(size_t WinSize)
     MemSize[BlockNum]=TotalSize;
     BlockNum++;
   }
-  if (TotalSize < WinSize)  // Not found enough free blocks.
-  {
+  if (TotalSize < WinSize) {  // Not found enough free blocks.
 #if defined(UNRAR_NO_EXCEPTIONS)
     base::TerminateBecauseOutOfMemory(WinSize);
 #else

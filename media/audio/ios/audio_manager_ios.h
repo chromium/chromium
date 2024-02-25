@@ -14,22 +14,18 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "media/audio/apple/audio_auhal.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_manager.h"
-#include "media/audio/ios/audio_private_api.h"
-#include "media/audio/mac/audio_auhal_mac.h"
 
 namespace media {
-
-class AUHALStream;
-class AudioSessionManagerIOS;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
 // TODO(crbug.com/1413450): Fill this implementation out.
-class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
-                                     public AudioIOStreamClient {
+class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
  public:
   AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
@@ -70,26 +66,58 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
 
-  // Implementation of AudioIOStreamClient.
-  void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
-                                          AudioDeviceID device_id) override;
-  void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) override;
+  // Used to track destruction of input and output streams.
   bool MaybeChangeBufferSize(AudioDeviceID device_id,
                              AudioUnit audio_unit,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
 
+  // Implementation of AudioManagerApple
+  // Handle device capability ambient noise reduction. Currently, iOS is not
+  // supported.
+  bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id) override;
+  bool SuppressNoiseReduction(AudioDeviceID device_id) override;
+  void UnsuppressNoiseReduction(AudioDeviceID device_id) override;
+
+  // Returns the maximum microphone analog volume or 0.0 if device does not
+  // have volume control.
+  double GetMaxInputVolume(AudioDeviceID device_id) override;
+
+  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  double GetInputVolume(AudioDeviceID device_id) override;
+
+  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
+  void SetInputVolume(AudioDeviceID device_id, double volume) override;
+
+  // Returns the current muting state for the microphone.
+  bool IsInputMuted(AudioDeviceID device_id) override;
+
+  // Check if delayed start for stream is needed.
+  bool ShouldDeferStreamStart() const override;
+
+  // Retrieves the current hardware sample rate associated with a specified
+  // device.
+  int HardwareSampleRateForDevice(AudioDeviceID device_id) override;
+
+  // If successful, this function returns no error and populates the out
+  // parameter `input_format` with a valid ASBD. Otherwise, an error status code
+  // will be returned.
+  OSStatus GetInputDeviceStreamFormat(
+      AudioUnit audio_unit,
+      AudioStreamBasicDescription* input_format) override;
+
+  // Hardware information
+  double HardwareIOBufferDuration();
+  double HardwareLatency(bool is_input);
+  long GetDeviceChannels(bool is_input);
+
+  // Gain
+  bool IsInputGainSettable();
+
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
-
- private:
-  std::unique_ptr<AudioSessionManagerIOS> audio_session_manager_;
-
-  // Tracks all constructed input and output streams.
-  std::list<AUHALStream*> output_streams_;
-  std::list<AudioInputStream*> basic_input_streams_;
 };
 
 }  // namespace media

@@ -9,7 +9,8 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 /**
  * Provides access to the stack unwinder native code functions within the dynamic feature module.
  */
-@ModuleInterface(module = "stack_unwinder",
+@ModuleInterface(
+        module = "stack_unwinder",
         impl = "org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl")
 public interface StackUnwinderModuleContents {
     /**

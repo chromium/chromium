@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -45,23 +45,24 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Tests that WebappActivities are launched correctly.
  *
- * This test seems a little wonky because WebappActivities launched differently, depending on what
- * OS the user is on.  Pre-L, WebappActivities were manually instanced and assigned by the
- * WebappManager.  On L and above, WebappActivities are automatically instanced by Android and the
- * FLAG_ACTIVITY_NEW_DOCUMENT mechanism.  Moreover, we don't have access to the task list pre-L so
- * we have to assume that any non-running WebappActivities are not listed in Android's Overview.
+ * <p>This test seems a little wonky because WebappActivities launched differently, depending on
+ * what OS the user is on. Pre-L, WebappActivities were manually instanced and assigned by the
+ * WebappManager. On L and above, WebappActivities are automatically instanced by Android and the
+ * FLAG_ACTIVITY_NEW_DOCUMENT mechanism. Moreover, we don't have access to the task list pre-L so we
+ * have to assume that any non-running WebappActivities are not listed in Android's Overview.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappModeTest {
-    @Rule
-    public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
+    @Rule public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
     private static final String WEBAPP_1_ID = "webapp_id_1";
-    private static final String WEBAPP_1_URL = UrlUtils.encodeHtmlDataUri(
-            "<html><head><title>Web app #1</title><meta name='viewport' "
-            + "content='width=device-width initial-scale=0.5, maximum-scale=0.5'></head>"
-            + "<body bgcolor='#011684'>Webapp 1</body></html>");
+    private static final String WEBAPP_1_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head><title>Web app #1</title><meta name='viewport'"
+                            + " content='width=device-width initial-scale=0.5,"
+                            + " maximum-scale=0.5'></head><body bgcolor='#011684'>Webapp"
+                            + " 1</body></html>");
     private static final String WEBAPP_1_TITLE = "Web app #1";
 
     private static final String WEBAPP_2_ID = "webapp_id_2";
@@ -69,9 +70,10 @@ public class WebappModeTest {
             UrlUtils.encodeHtmlDataUri("<html><body bgcolor='#840116'>Webapp 2</body></html>");
     private static final String WEBAPP_2_TITLE = "Web app #2";
 
-    private static final String WEBAPP_ICON = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXB"
-            + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
-            + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
+    private static final String WEBAPP_ICON =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXB"
+                    + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
+                    + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
 
     private Intent createIntent(String id, String url, String title, String icon, boolean addMac) {
         Intent intent = WebappTestHelper.createMinimalWebappIntent(id, url);
@@ -90,8 +92,8 @@ public class WebappModeTest {
         return intent;
     }
 
-    private void fireWebappIntent(String id, String url, String title, String icon,
-            boolean addMac) {
+    private void fireWebappIntent(
+            String id, String url, String title, String icon, boolean addMac) {
         Intent intent = createIntent(id, url, title, icon, addMac);
 
         ApplicationProvider.getApplicationContext().startActivity(intent);
@@ -101,38 +103,53 @@ public class WebappModeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebappRegistry.refreshSharedPrefsForTesting();
-
-            // Register the webapps so when the data storage is opened, the test doesn't crash.
-            // There is no race condition with the retrieval as AsyncTasks are run sequentially on
-            // the background thread.
-            WebappRegistry.getInstance().register(
-                    WEBAPP_1_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
-                        @Override
-                        public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
-                            BrowserServicesIntentDataProvider intentDataProvider =
-                                    WebappIntentDataProviderFactory.create(createIntent(WEBAPP_1_ID,
-                                            WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
-                            storage.updateFromWebappIntentDataProvider(intentDataProvider);
-                        }
-                    });
-            WebappRegistry.getInstance().register(
-                    WEBAPP_2_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
-                        @Override
-                        public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
-                            BrowserServicesIntentDataProvider intentDataProvider =
-                                    WebappIntentDataProviderFactory.create(createIntent(WEBAPP_1_ID,
-                                            WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
-                            storage.updateFromWebappIntentDataProvider(intentDataProvider);
-                        }
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
     }
 
-    /**
-     * Tests that WebappActivities are started properly.
-     */
+    private void setUpOnUiThread() {
+        WebappRegistry.refreshSharedPrefsForTesting();
+
+        // Register the webapps so when the data storage is opened, the test doesn't
+        // crash.
+        // There is no race condition with the retrieval as AsyncTasks are run
+        // sequentially on the background thread.
+        WebappRegistry.getInstance()
+                .register(
+                        WEBAPP_1_ID,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                BrowserServicesIntentDataProvider intentDataProvider =
+                                        WebappIntentDataProviderFactory.create(
+                                                createIntent(
+                                                        WEBAPP_1_ID,
+                                                        WEBAPP_1_URL,
+                                                        WEBAPP_1_TITLE,
+                                                        WEBAPP_ICON,
+                                                        true));
+                                storage.updateFromWebappIntentDataProvider(intentDataProvider);
+                            }
+                        });
+        WebappRegistry.getInstance()
+                .register(
+                        WEBAPP_2_ID,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                BrowserServicesIntentDataProvider intentDataProvider =
+                                        WebappIntentDataProviderFactory.create(
+                                                createIntent(
+                                                        WEBAPP_1_ID,
+                                                        WEBAPP_1_URL,
+                                                        WEBAPP_1_TITLE,
+                                                        WEBAPP_ICON,
+                                                        true));
+                                storage.updateFromWebappIntentDataProvider(intentDataProvider);
+                            }
+                        });
+    }
+
+    /** Tests that WebappActivities are started properly. */
     @Test
     @MediumTest
     @Feature({"Webapps"})
@@ -143,37 +160,37 @@ public class WebappModeTest {
 
         // Firing a different Intent should start a new WebappActivity instance.
         fireWebappIntent(WEBAPP_2_ID, WEBAPP_2_URL, WEBAPP_2_TITLE, WEBAPP_ICON, true);
-        CriteriaHelper.pollUiThread(() -> {
-            Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
 
-            WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
-            Criteria.checkThat(
-                    lastWebappActivity.getActivityTab().getId(), Matchers.not(firstTabId));
-        });
+                    WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
+                    Criteria.checkThat(
+                            lastWebappActivity.getActivityTab().getId(), Matchers.not(firstTabId));
+                });
 
         // Firing the first Intent should bring back the first WebappActivity instance, or at least
         // a WebappActivity with the same tab if the other one was killed by Android mid-test.
         fireWebappIntent(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true);
-        CriteriaHelper.pollUiThread(() -> {
-            Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
 
-            WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
-            Criteria.checkThat(
-                    lastWebappActivity.getActivityTab().getId(), Matchers.is(firstTabId));
-        });
+                    WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
+                    Criteria.checkThat(
+                            lastWebappActivity.getActivityTab().getId(), Matchers.is(firstTabId));
+                });
     }
 
-    /**
-     * Tests that the WebappActivity gets the next available Tab ID instead of 0.
-     */
+    /** Tests that the WebappActivity gets the next available Tab ID instead of 0. */
     @Test
     @MediumTest
     @Feature({"Webapps"})
     public void testWebappTabIdsProperlyAssigned() {
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
 
         final WebappActivity webappActivity =
                 startWebappActivity(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON);
@@ -200,8 +217,9 @@ public class WebappModeTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Bring the WebappActivity back via an Intent.
-        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
-                webappTabId, IntentHandler.BringToFrontSource.NOTIFICATION);
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        webappTabId, IntentHandler.BringToFrontSource.NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
@@ -210,19 +228,18 @@ public class WebappModeTest {
         // it should have the same Tab ID.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ChromeApplicationTestUtils.waitUntilChromeInForeground();
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    Criteria.checkThat(isWebappActivityReady(lastActivity), Matchers.is(true));
 
-            WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
-            Criteria.checkThat(
-                    lastWebappActivity.getActivityTab().getId(), Matchers.is(webappTabId));
-        });
+                    WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
+                    Criteria.checkThat(
+                            lastWebappActivity.getActivityTab().getId(), Matchers.is(webappTabId));
+                });
     }
 
-    /**
-     * Ensure WebappActivities can't be launched without proper security checks.
-     */
+    /** Ensure WebappActivities can't be launched without proper security checks. */
     @Test
     @MediumTest
     @Feature({"Webapps"})
@@ -230,36 +247,42 @@ public class WebappModeTest {
     public void testWebappRequiresValidMac() throws Exception {
         // Try to start a WebappActivity.  Fail because the Intent is insecure.
         fireWebappIntent(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, false);
-        CriteriaHelper.pollUiThread(() -> {
-            Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            Criteria.checkThat(lastActivity, Matchers.instanceOf(ChromeTabbedActivity.class));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    Criteria.checkThat(
+                            lastActivity, Matchers.instanceOf(ChromeTabbedActivity.class));
+                });
         ChromeActivity chromeActivity =
                 (ChromeActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         mTestRule.waitForFullLoad(chromeActivity, WEBAPP_1_TITLE);
 
         // Firing a correct Intent should start a WebappActivity instance instead of the browser.
         fireWebappIntent(WEBAPP_2_ID, WEBAPP_2_URL, WEBAPP_2_TITLE, WEBAPP_ICON, true);
-        CriteriaHelper.pollUiThread(() -> {
-            return isWebappActivityReady(ApplicationStatus.getLastTrackedFocusedActivity());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return isWebappActivityReady(ApplicationStatus.getLastTrackedFocusedActivity());
+                });
     }
 
     /**
-     * Starts a WebappActivity for the given data and waits for it to be initialized.  We can't use
+     * Starts a WebappActivity for the given data and waits for it to be initialized. We can't use
      * ActivityTestUtils.waitForActivity() because of the way WebappActivity is instanced on pre-L
      * devices.
      */
     private WebappActivity startWebappActivity(String id, String url, String title, String icon) {
         fireWebappIntent(id, url, title, icon, true);
-        CriteriaHelper.pollUiThread(() -> {
-            Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            return isWebappActivityReady(lastActivity);
-        }, 10000, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    return isWebappActivityReady(lastActivity);
+                },
+                10000,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (WebappActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 
-    /** Returns true when the last Activity is a WebappActivity and is ready for testing .*/
+    /** Returns true when the last Activity is a WebappActivity and is ready for testing . */
     private boolean isWebappActivityReady(Activity lastActivity) {
         if (!(lastActivity instanceof WebappActivity)) return false;
 

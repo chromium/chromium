@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,7 +41,6 @@
 #include "media/filters/audio_renderer_algorithm.h"
 #include "media/filters/decoder_stream.h"
 #include "media/renderers/renderer_impl_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -106,7 +106,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void Flush(base::OnceClosure callback) override;
   void StartPlaying() override;
   void SetVolume(float volume) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
   void SetWasPlayedWithUserActivation(
       bool was_played_with_user_activation) override;
@@ -328,7 +328,7 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Stored value from last call to SetLatencyHint(). Passed to |algorithm_|
   // during Initialize().
-  absl::optional<base::TimeDelta> latency_hint_;
+  std::optional<base::TimeDelta> latency_hint_;
 
   // Passed to |algorithm_|. Indicates whether |algorithm_| should or should not
   // make pitch adjustments at playbacks other than 1.0.
@@ -394,7 +394,8 @@ class MEDIA_EXPORT AudioRendererImpl
   // End variables which must be accessed under |lock_|. ----------------------
 
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<SpeechRecognitionClient> speech_recognition_client_;
+  raw_ptr<SpeechRecognitionClient, DanglingUntriaged>
+      speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
 #endif
 

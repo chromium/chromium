@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/it2me/it2me_confirmation_dialog.h"
+
 #include <windows.h>
 #include <commctrl.h>
 
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/host/win/simple_task_dialog.h"
 
@@ -90,13 +92,13 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
   std::wstring message_text =
       base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
           base::AsStringPiece16(
-              base::WStringPiece(message_stringw, string_length)),
+              std::wstring_view(message_stringw, string_length)),
           base::UTF8ToUTF16(remote_user_email)));
 
   task_dialog.set_message_text(message_text);
   task_dialog.set_default_button(IDNO);
   task_dialog.set_dialog_timeout(kDialogTimeout);
-  absl::optional<int> button_result = task_dialog.Show();
+  std::optional<int> button_result = task_dialog.Show();
 
   if (!button_result.has_value()) {
     std::move(callback).Run(result);

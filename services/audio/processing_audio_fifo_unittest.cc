@@ -147,6 +147,22 @@ class ProcessingAudioFifoTest : public testing::Test {
     }
   }
 
+  void GenerateTestCaptureData(std::vector<TestCaptureData>* dest,
+                               int count,
+                               bool key_pressed,
+                               double volume) {
+    base::TimeTicks capture_time = base::TimeTicks::Now();
+    base::TimeTicks timestamp = base::TimeTicks();
+
+    for (int i = 0; i < count; ++i) {
+      dest->emplace_back(CreateAudioData(timestamp), capture_time, volume,
+                         key_pressed, media::AudioGlitchInfo());
+
+      timestamp += params_.GetBufferDuration();
+      capture_time += base::Milliseconds(5);
+    }
+  }
+
   void SignalFakeNewCaptureEvent() {
     DCHECK(using_fake_event_);
     fake_new_capture_event_.Signal();
@@ -362,70 +378,109 @@ TEST_F(ProcessingAudioFifoTest, DontProcessPendingDataDuringStop) {
   EXPECT_FALSE(processing_callback_called.TimedWait(base::Milliseconds(10)));
 }
 
-TEST_F(ProcessingAudioFifoTest, FifoFull_DroppedFrames) {
-  // Make sure push enough buffers to overwrite old ones.
-  const int kNumberOfBatches = 3;
-  const int kBatchSize = kTestFifoSize;
-  const int kNumberOfBuffers = kBatchSize * kNumberOfBatches;
+TEST_F(ProcessingAudioFifoTest, FifoFull_DroppedFrames_SavesGlitchInfo) {
+  const int kNumberOfBuffers = kTestFifoSize;
 
-  std::vector<TestCaptureData> capture_buffers;
-  GenerateTestCaptureData(&capture_buffers, kNumberOfBuffers);
+  constexpr double kMaxVolume = 1.0;
+  constexpr double kMinVolume = 0.0;
 
-  // Get the buffer idx in |capture_buffers| from the batch and buffer number.
-  auto get_idx = [](int buffer_number, int batch_number) {
-    return buffer_number + batch_number * kBatchSize;
-  };
+  // Generate two sets of audio data, one with and one without the key pressed.
+  constexpr bool kGoodKeypressValue = true;
+  constexpr bool kBadKeypressValue = false;
+  std::vector<TestCaptureData> initial_buffers;
+  std::vector<TestCaptureData> dropped_buffers;
+  GenerateTestCaptureData(&initial_buffers, kNumberOfBuffers,
+                          kGoodKeypressValue, kMaxVolume);
+  GenerateTestCaptureData(&dropped_buffers, kNumberOfBuffers, kBadKeypressValue,
+                          kMaxVolume);
 
-  // We intend to drop batch 1. This means that errors will be propagated on the
-  // first buffer of batch 2.
-  capture_buffers[get_idx(0, 2)].audio_glitch_info = {
-      .duration = params_.GetBufferDuration() * kBatchSize,
-      .count = kBatchSize};
+  // Set the last buffer's volume to kMinVolume, to help the test's control
+  // flow. We'll use it to identify when we are done processing all buffers.
+  initial_buffers.back().volume = kMinVolume;
+  dropped_buffers.back().volume = kMinVolume;
 
   base::WaitableEvent buffer_batch_processed(
       base::WaitableEvent::ResetPolicy::AUTOMATIC);
 
-  // This test pushes 3 batches of buffers of size kBatchSize into the FIFO.
-  // The first batch will be queued, the second will be dropped; the third
-  // batch will be queued, after the first batch is done processing.
-  int buffer_number = 0;
-  int batch_number = 0;
+  // Keep track of how many buffers we have processed. The first one after
+  // dropped buffers should have glitch info.
+  int total_buffers_processed = 0;
+  const int kExpectedBufferWithGlitchInfo = initial_buffers.size() + 1;
+  media::AudioGlitchInfo expected_glitch_info;
+  expected_glitch_info.count = dropped_buffers.size();
+  expected_glitch_info.duration =
+      dropped_buffers.size() * params_.GetBufferDuration();
+  bool glitch_info_was_verified = false;
+
+  // This makes sure that none of the buffers have the kBadKeypressValue which
+  // marks dropped buffers, and unblocks the main test thread when it encounters
+  // a buffer with kMinVolume.
   auto verify_dropped_data =
       [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
           double volume, bool key_pressed,
           const media::AudioGlitchInfo& audio_glitch_info) {
-        // Verify we don't get any buffers from the 2nd batch.
-        VerifyProcessingData(
-            capture_buffers[get_idx(buffer_number, batch_number)], process_data,
-            capture_time, volume, key_pressed, audio_glitch_info);
+        // We shouldn't get any buffer from the dropped batch.
+        EXPECT_NE(key_pressed, kBadKeypressValue);
 
-        if (++buffer_number == kBatchSize) {
-          buffer_number = 0;
-          batch_number = 2;  // Skip from 1st to 3rd batch of buffers.
+        const bool should_have_glitch_info =
+            ++total_buffers_processed == kExpectedBufferWithGlitchInfo;
+
+        if (should_have_glitch_info) {
+          EXPECT_EQ(audio_glitch_info.count, expected_glitch_info.count);
+          EXPECT_EQ(audio_glitch_info.duration, expected_glitch_info.duration);
+          glitch_info_was_verified = true;
+        } else {
+          EXPECT_EQ(audio_glitch_info.count, 0u);
+          EXPECT_EQ(audio_glitch_info.duration, base::TimeDelta());
+        }
+
+        // We're using kMinVolume as a special value to signal the batch is done
+        // processing.
+        if (volume == kMinVolume) {
           buffer_batch_processed.Signal();
         }
       };
 
   SetupFifoWithFakeEvent(base::BindLambdaForTesting(verify_dropped_data));
 
-  // Send 3 batches.
-  for (int batch = 0; batch < kNumberOfBatches; ++batch) {
-    // Queue a batch of buffers.
-    for (int buffer = 0; buffer < kBatchSize; ++buffer) {
-      TestCaptureData& data = capture_buffers[get_idx(buffer, batch)];
-      fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                       data.key_pressed, {});
-    }
+  // Now we can actually start testing.
 
-    // Skip processing the first batch, ensuring the second batch will be
-    // dropped.
-    if (batch == 0)
-      continue;
-
-    // Process queued buffers.
-    SignalFakeNewCaptureEvent();
-    buffer_batch_processed.Wait();
+  // Push all the initial buffers, filling up the fifo completely. We don't
+  // allow the FIFO to process the data as it comes in, by not calling
+  // SignalFakeNewCaptureEvent();
+  for (const auto& buffer : initial_buffers) {
+    fifo()->PushData(buffer.audio_bus.get(), buffer.capture_time, buffer.volume,
+                     buffer.key_pressed, {});
   }
+
+  // Push in more buffers, which should all be dropped.
+  for (const auto& buffer : initial_buffers) {
+    fifo()->PushData(buffer.audio_bus.get(), buffer.capture_time, buffer.volume,
+                     buffer.key_pressed, {});
+  }
+
+  // Allow the FIFO to process data, and wait until it's done processing all the
+  // data from `initial_buffers`.
+  SignalFakeNewCaptureEvent();
+  buffer_batch_processed.Wait();
+
+  // Send in two extra buffers with kGoodKeypressValue. When this first one it
+  // processed, it will have glitch info, which we will compare against
+  // `expected_glitch_info`.
+  const auto& exta_buffer = initial_buffers.front();
+  fifo()->PushData(exta_buffer.audio_bus.get(), exta_buffer.capture_time,
+                   kMaxVolume, kGoodKeypressValue, {});
+
+  SignalFakeNewCaptureEvent();
+
+  // This second buffer uses kMinVolume, to unblock `buffer_batch_processed`.
+  // It will also make sure we don't get additional glitch info.
+  fifo()->PushData(exta_buffer.audio_bus.get(), exta_buffer.capture_time,
+                   kMinVolume, kGoodKeypressValue, {});
+  SignalFakeNewCaptureEvent();
+  buffer_batch_processed.Wait();
+
+  EXPECT_TRUE(glitch_info_was_verified);
 }
 
 TEST_F(ProcessingAudioFifoTest, StopDuringBatchProcess) {

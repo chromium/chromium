@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +43,6 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -114,8 +113,8 @@ struct SitesAndQueriesRequest
     return sites.has_value() && queries.has_value();
   }
 
-  absl::optional<MostVisitedURLList> sites;
-  absl::optional<KeywordSearchTermVisitList> queries;
+  std::optional<MostVisitedURLList> sites;
+  std::optional<KeywordSearchTermVisitList> queries;
   base::TimeTicks begin_time{base::TimeTicks::Now()};
 
  private:
@@ -125,8 +124,6 @@ struct SitesAndQueriesRequest
 };
 
 // Initially, histogram is not recorded.
-bool TopSitesImpl::histogram_recorded_ = false;
-
 TopSitesImpl::TopSitesImpl(PrefService* pref_service,
                            HistoryService* history_service,
                            TemplateURLService* template_url_service,
@@ -376,27 +373,10 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
   TopSitesDelta delta;
   DiffMostVisited(top_sites_, top_sites, &delta);
 
-  TopSitesBackend::RecordHistogram record_or_not =
-      TopSitesBackend::RECORD_HISTOGRAM_NO;
-
-  // Record the delta size into a histogram if this function is called from
-  // function OnGotMostVisitedURLs and no histogram value has been recorded
-  // before.
-  if (location == CALL_LOCATION_FROM_ON_GOT_MOST_VISITED_URLS &&
-      !histogram_recorded_) {
-    size_t delta_size =
-        delta.deleted.size() + delta.added.size() + delta.moved.size();
-    UMA_HISTOGRAM_COUNTS_100("History.FirstSetTopSitesDeltaSize", delta_size);
-    // Will be passed to TopSitesBackend to let it record the histogram too.
-    record_or_not = TopSitesBackend::RECORD_HISTOGRAM_YES;
-    // Change it to true so that the histogram will not be recorded any more.
-    histogram_recorded_ = true;
-  }
-
   bool should_notify_observers = false;
   // If there is a change in urls, update the db and notify observers.
   if (!delta.deleted.empty() || !delta.added.empty() || !delta.moved.empty()) {
-    backend_->UpdateTopSites(delta, record_or_not);
+    backend_->UpdateTopSites(delta);
     should_notify_observers = true;
   }
   // If there is no url change in top sites, check if the titles have changes.
@@ -517,30 +497,32 @@ void TopSitesImpl::SetTopSitesFromHistory(
     if (!url.is_valid() || IsBlocked(url)) {
       continue;
     }
-    most_repeated_queries.emplace_back(url, query->normalized_term,
-                                       *query->score);
+    most_repeated_queries.emplace_back(url, query->normalized_term);
+    most_repeated_queries.back().visit_count = query->visit_count;
+    most_repeated_queries.back().last_visit_time = query->last_visit_time;
+    most_repeated_queries.back().score = *query->score;
     if (most_repeated_queries.size() >= most_repeated_queries_limit) {
       break;
     }
   }
 
-  auto most_visited_sites = std::move(*request->sites);
+  // Generate the final list of the most visited sites arranged in descending
+  // order of their scores. Exclude any site that is the search results page.
+  MostVisitedURLList most_visited_sites = std::move(*request->sites);
+  base::EraseIf(most_visited_sites, [&](const auto& site) {
+    return (template_url_service_ &&
+            template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
+                site.url)) ||
+           IsBlocked(site.url);
+  });
+  if (most_visited_sites.size() > kTopSitesNumber) {
+    most_visited_sites.resize(kTopSitesNumber);
+  }
 
   // If there are no more queries left, there is nothing left to do.
   if (most_repeated_queries.empty()) {
     SetTopSites(std::move(most_visited_sites), CALL_LOCATION_FROM_OTHER_PLACES);
     return;
-  }
-
-  // Generate the final list of the most visited sites arranged in descending
-  // order of their scores. Exclude any site that is the search results page.
-  base::EraseIf(most_visited_sites, [&](const auto& site) {
-    return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
-               site.url) ||
-           IsBlocked(site.url);
-  });
-  if (most_visited_sites.size() > kTopSitesNumber) {
-    most_visited_sites.resize(kTopSitesNumber);
   }
 
   // If there are no more sites left, there is nothing left to do.

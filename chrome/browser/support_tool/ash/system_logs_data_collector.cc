@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -17,7 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -29,7 +30,6 @@
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace {
@@ -168,7 +168,7 @@ void SystemLogsDataCollector::CollectDataAndDetectPII(
 
   // `debugd_client` will run the callback on original thread (see
   // dbus/object_proxy.h for more details).
-  debugd_client->GetFeedbackLogsV2(
+  debugd_client->GetFeedbackLogs(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user ? user->GetAccountId() : EmptyAccountId()),
       included_log_types,
@@ -200,9 +200,9 @@ void SystemLogsDataCollector::OnGetFeedbackLogs(
 
   // There might be some logs missing if `success` is not true. Document it in
   // error message even though some of the logs could be retrieved successfully.
-  absl::optional<SupportToolError> error =
-      success ? absl::nullopt
-              : absl::make_optional(
+  std::optional<SupportToolError> error =
+      success ? std::nullopt
+              : std::make_optional(
                     SupportToolError(SupportToolErrorCode::kDataCollectorError,
                                      "SystemLogsDataCollector got error from "
                                      "debugd when requesting logs."));
@@ -217,7 +217,7 @@ void SystemLogsDataCollector::OnGetFeedbackLogs(
 
 void SystemLogsDataCollector::OnPIIDetected(
     DataCollectorDoneCallback on_data_collected_callback,
-    absl::optional<SupportToolError> error,
+    std::optional<SupportToolError> error,
     PIIMap detected_pii) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pii_map_ = detected_pii;
@@ -263,5 +263,5 @@ void SystemLogsDataCollector::OnFilesWritten(
     std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }

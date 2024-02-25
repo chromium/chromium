@@ -5,15 +5,17 @@
 #ifndef SERVICES_WEBNN_WEBNN_CONTEXT_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_CONTEXT_IMPL_H_
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/webnn/public/mojom/webnn_service.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
 namespace webnn {
 
 class WebNNContextProviderImpl;
 
-class WebNNContextImpl : public mojom::WebNNContext {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
+    : public mojom::WebNNContext {
  public:
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider);

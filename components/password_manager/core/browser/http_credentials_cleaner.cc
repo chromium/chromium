@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -28,7 +29,7 @@ HttpCredentialCleaner::HttpCredentialCleaner(
 HttpCredentialCleaner::~HttpCredentialCleaner() = default;
 
 bool HttpCredentialCleaner::NeedsCleaning() {
-  auto last = base::Time::FromDoubleT(prefs_->GetDouble(
+  auto last = base::Time::FromSecondsSinceUnixEpoch(prefs_->GetDouble(
       password_manager::prefs::kLastTimeObsoleteHttpCredentialsRemoved));
   return ((base::Time::Now() - last).InDays() >= kCleanUpDelayInDays);
 }
@@ -119,7 +120,7 @@ void HttpCredentialCleaner::SetPrefIfDone() {
     return;
 
   prefs_->SetDouble(prefs::kLastTimeObsoleteHttpCredentialsRemoved,
-                    base::Time::Now().ToDoubleT());
+                    base::Time::Now().InSecondsFSinceUnixEpoch());
   observer_->CleaningCompleted();
 }
 

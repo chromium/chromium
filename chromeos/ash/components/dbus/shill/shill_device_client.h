@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_DEVICE_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_DEVICE_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
     // Adds a delay before a SetProperty call will result in property value
     // change.
     virtual void SetPropertyChangeDelay(
-        absl::optional<base::TimeDelta> time_delay) = 0;
+        std::optional<base::TimeDelta> time_delay) = 0;
     // Sets a SetProperty error. If set, the next SetProperty call will
     // fail with the given |error_name|
     virtual void SetErrorForNextSetPropertyAttempt(

@@ -6,7 +6,6 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
-import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
@@ -54,8 +53,8 @@ ios_web_view_public_headers = [
   "public/cwv_credit_card.h",
   "public/cwv_credit_card_saver.h",
   "public/cwv_credit_card_verifier.h",
-  "public/cwv_download_task.h",
   "public/cwv_defines.h",
+  "public/cwv_download_task.h",
   "public/cwv_export.h",
   "public/cwv_favicon.h",
   "public/cwv_find_in_page_controller.h",
@@ -99,6 +98,8 @@ ios_web_view_public_headers = [
 ]
 
 ios_web_view_sources = [
+  "internal/affiliations/web_view_affiliation_service_factory.h",
+  "internal/affiliations/web_view_affiliation_service_factory.mm",
   "internal/app/application_context.h",
   "internal/app/application_context.mm",
   "internal/app/web_view_io_thread.h",
@@ -120,6 +121,8 @@ ios_web_view_sources = [
   "internal/autofill/cwv_credit_card_saver_internal.h",
   "internal/autofill/cwv_credit_card_verifier.mm",
   "internal/autofill/cwv_credit_card_verifier_internal.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.mm",
   "internal/autofill/web_view_autocomplete_history_manager_factory.h",
   "internal/autofill/web_view_autocomplete_history_manager_factory.mm",
   "internal/autofill/web_view_autofill_client_ios.h",
@@ -174,6 +177,8 @@ ios_web_view_sources = [
   "internal/cwv_x509_certificate.mm",
   "internal/cwv_x509_certificate_internal.h",
   "internal/ios_global_state_web_view_configuration.mm",
+  "internal/js_messaging/web_view_scripts_java_script_feature.h",
+  "internal/js_messaging/web_view_scripts_java_script_feature.mm",
   "internal/language/web_view_accept_languages_service_factory.h",
   "internal/language/web_view_accept_languages_service_factory.mm",
   "internal/language/web_view_language_model_manager_factory.h",
@@ -195,14 +200,10 @@ ios_web_view_sources = [
   "internal/passwords/cwv_weak_check_utils_internal.h",
   "internal/passwords/web_view_account_password_store_factory.h",
   "internal/passwords/web_view_account_password_store_factory.mm",
-  "internal/passwords/web_view_affiliation_service_factory.h",
-  "internal/passwords/web_view_affiliation_service_factory.mm",
   "internal/passwords/web_view_affiliations_prefetcher_factory.h",
   "internal/passwords/web_view_affiliations_prefetcher_factory.mm",
   "internal/passwords/web_view_bulk_leak_check_service_factory.h",
   "internal/passwords/web_view_bulk_leak_check_service_factory.mm",
-  "internal/passwords/web_view_password_change_success_tracker_factory.h",
-  "internal/passwords/web_view_password_change_success_tracker_factory.mm",
   "internal/passwords/web_view_password_feature_manager.h",
   "internal/passwords/web_view_password_feature_manager.mm",
   "internal/passwords/web_view_password_manager_client.h",
@@ -213,8 +214,8 @@ ios_web_view_sources = [
   "internal/passwords/web_view_password_requirements_service_factory.mm",
   "internal/passwords/web_view_password_reuse_manager_factory.h",
   "internal/passwords/web_view_password_reuse_manager_factory.mm",
-  "internal/passwords/web_view_password_store_factory.h",
-  "internal/passwords/web_view_password_store_factory.mm",
+  "internal/passwords/web_view_profile_password_store_factory.h",
+  "internal/passwords/web_view_profile_password_store_factory.mm",
   "internal/safe_browsing/cwv_unsafe_url_handler.mm",
   "internal/safe_browsing/cwv_unsafe_url_handler_internal.h",
   "internal/safe_browsing/web_view_safe_browsing_client.h",
@@ -272,8 +273,6 @@ ios_web_view_sources = [
   "internal/web_view_browser_state.mm",
   "internal/web_view_download_manager.h",
   "internal/web_view_download_manager.mm",
-  "internal/web_view_early_page_script_provider.h",
-  "internal/web_view_early_page_script_provider.mm",
   "internal/web_view_global_state_util.h",
   "internal/web_view_java_script_dialog_presenter.h",
   "internal/web_view_java_script_dialog_presenter.mm",
@@ -301,6 +300,7 @@ ios_web_view_sources = [
 ios_web_view_deps = [
   ":web_view_resources",
   "//base",
+  "//components/affiliations/core/browser:affiliations",
   "//components/autofill/core/browser",
   "//components/autofill/core/common",
   "//components/autofill/ios/browser",
@@ -328,10 +328,11 @@ ios_web_view_deps = [
   "//components/metrics:library_support",
   "//components/metrics/demographics",
   "//components/password_manager/core/browser",
-  "//components/password_manager/core/browser:affiliation",
-  "//components/password_manager/core/browser:password_generator",
+  "//components/password_manager/core/browser/affiliation:affiliation_fetching",
   "//components/password_manager/core/browser/features:password_features",
+  "//components/password_manager/core/browser/generation:core",
   "//components/password_manager/core/browser/leak_detection:leak_detection",
+  "//components/password_manager/core/browser/sharing",
   "//components/password_manager/core/common",
   "//components/password_manager/ios",
   "//components/pref_registry",
@@ -408,7 +409,6 @@ ios_web_view_deps = [
   "//net:extras",
   "//services/metrics/public/cpp:metrics_cpp",
   "//services/network:network_service",
-  "//third_party/abseil-cpp:absl",
   "//ui/base",
   "//ui/display",
   "//url",
@@ -419,7 +419,7 @@ source_set("web_view_sources") {
   sources += ios_web_view_sources
 
   public_deps = ios_web_view_deps
-
+  deps = [ "//components/version_info:channel" ]
   configs += [ ":config" ]
 }
 
@@ -449,17 +449,9 @@ ios_framework_bundle("web_view") {
 
   public_headers = get_target_outputs(":web_view_umbrella_header")
   public_headers += ios_web_view_public_headers
-  if (ios_web_view_include_cronet) {
-    public_headers += [ "//components/cronet/ios/Cronet.h" ]
-    public_headers += grpc_public_headers
-    public_headers += cronet_native_public_headers
-  }
 
   sources = ios_web_view_public_headers
   sources += [ "internal/web_view_global_state_util.mm" ]
-  if (ios_web_view_include_cronet) {
-    sources += [ "//components/cronet/ios/Cronet.h" ]
-  }
 
   deps = [
     ":web_view_sources",
@@ -468,15 +460,8 @@ ios_framework_bundle("web_view") {
     "//testing/gtest:ios_coverage_utils",
   ]
   deps += [ ":web_view_umbrella_header" ]
-  if (ios_web_view_include_cronet) {
-    deps += [ "//components/cronet/ios:cronet_sources" ]
-  }
 
   configs += [ ":config" ]
-  if (ios_web_view_include_cronet) {
-    configs -= [ "//build/config/compiler:default_symbols" ]
-    configs += [ "//build/config/compiler:symbols" ]
-  }
 }
 
 source_set("run_all_unittests") {
@@ -517,6 +502,7 @@ test("ios_web_view_unittests") {
     "internal/passwords/cwv_leak_check_credential_unittest.mm",
     "internal/passwords/cwv_leak_check_service_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
+    "internal/passwords/cwv_reuse_check_service_unittest.mm",
     "internal/passwords/cwv_weak_check_utils_unittest.mm",
     "internal/passwords/web_view_password_manager_client_unittest.mm",
     "internal/safe_browsing/cwv_unsafe_url_handler_unittest.mm",
@@ -529,7 +515,6 @@ test("ios_web_view_unittests") {
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",
-    "internal/web_view_early_page_script_provider_unittest.mm",
     "internal/web_view_global_state_util_stub.mm",
     "internal/web_view_web_client_unittest.mm",
   ]
@@ -539,6 +524,7 @@ test("ios_web_view_unittests") {
     ":web_view_sources",
     "test:test_support",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util:test_support",

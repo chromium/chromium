@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -48,8 +49,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
         display::ContentProtectionManager::ClientId client_id) = 0;
 
     // Delegate to display::DisplayConfigurator.
-    virtual const std::vector<display::DisplaySnapshot*>& cached_displays()
-        const = 0;
+    virtual const std::vector<
+        raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+    cached_displays() const = 0;
   };
 
   static void Create(
@@ -109,7 +111,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
   std::unique_ptr<DisplaySystemDelegate> delegate_;
   display::ContentProtectionManager::ClientId client_id_;
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   std::vector<int64_t> display_id_list_;
 

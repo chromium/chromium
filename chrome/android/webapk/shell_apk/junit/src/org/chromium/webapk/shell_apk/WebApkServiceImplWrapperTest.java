@@ -99,14 +99,15 @@ public class WebApkServiceImplWrapperTest {
         ShadowBinder.setCallingUid(HOST_BROWSER_UID);
     }
 
-    /**
-     * Tests that {@link WebApkServiceImplWrapper#notifyNotification()} is called.
-     */
+    /** Tests that {@link WebApkServiceImplWrapper#notifyNotification()} is called. */
     @Test
     public void testNotifyNotificationMethodIsCalledOnWrapper() {
         try {
-            mWrapper.onTransact(getApiCodeHelper(FUNCTION_NAME_NOTIFY_NOTIFICATION),
-                    Mockito.mock(Parcel.class), Mockito.mock(Parcel.class), 0);
+            mWrapper.onTransact(
+                    getApiCodeHelper(FUNCTION_NAME_NOTIFY_NOTIFICATION),
+                    Mockito.mock(Parcel.class),
+                    Mockito.mock(Parcel.class),
+                    0);
             Assert.assertTrue(mWrapper.mIsCalled);
             Assert.assertFalse(mMockWebApkServiceImpl.mIsCalled);
         } catch (Exception e) {
@@ -122,8 +123,11 @@ public class WebApkServiceImplWrapperTest {
     @Test
     public void testCancelNotificationMethodIsNotCalledOnWrapper() {
         try {
-            mWrapper.onTransact(getApiCodeHelper(FUNCTION_NAME_CANCEL_NOTIFICATION),
-                    Mockito.mock(Parcel.class), Mockito.mock(Parcel.class), 0);
+            mWrapper.onTransact(
+                    getApiCodeHelper(FUNCTION_NAME_CANCEL_NOTIFICATION),
+                    Mockito.mock(Parcel.class),
+                    Mockito.mock(Parcel.class),
+                    0);
             Assert.assertFalse(mWrapper.mIsCalled);
             Assert.assertTrue(mMockWebApkServiceImpl.mIsCalled);
         } catch (Exception e) {

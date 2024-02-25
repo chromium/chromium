@@ -13,7 +13,7 @@
 
 namespace net {
 
-base::StringPiece TransportTypeToString(TransportType type) {
+std::string_view TransportTypeToString(TransportType type) {
   switch (type) {
     case TransportType::kDirect:
       return "TransportType::kDirect";
@@ -36,10 +36,14 @@ TransportInfo::TransportInfo() = default;
 
 TransportInfo::TransportInfo(TransportType type_arg,
                              IPEndPoint endpoint_arg,
-                             std::string accept_ch_frame_arg)
+                             std::string accept_ch_frame_arg,
+                             bool cert_is_issued_by_known_root,
+                             NextProto negotiated_protocol)
     : type(type_arg),
       endpoint(std::move(endpoint_arg)),
-      accept_ch_frame(std::move(accept_ch_frame_arg)) {
+      accept_ch_frame(std::move(accept_ch_frame_arg)),
+      cert_is_issued_by_known_root(cert_is_issued_by_known_root),
+      negotiated_protocol(negotiated_protocol) {
   switch (type) {
     case TransportType::kCached:
     case TransportType::kCachedFromProxy:
@@ -58,14 +62,7 @@ TransportInfo::TransportInfo(const TransportInfo&) = default;
 
 TransportInfo::~TransportInfo() = default;
 
-bool TransportInfo::operator==(const TransportInfo& other) const {
-  return type == other.type && endpoint == other.endpoint &&
-         accept_ch_frame == other.accept_ch_frame;
-}
-
-bool TransportInfo::operator!=(const TransportInfo& other) const {
-  return !(*this == other);
-}
+bool TransportInfo::operator==(const TransportInfo& other) const = default;
 
 std::string TransportInfo::ToString() const {
   return base::StrCat({
@@ -75,6 +72,10 @@ std::string TransportInfo::ToString() const {
       endpoint.ToString(),
       ", accept_ch_frame = ",
       accept_ch_frame,
+      ", cert_is_issued_by_known_root = ",
+      cert_is_issued_by_known_root ? "true" : "false",
+      ", negotiated_protocol = ",
+      NextProtoToString(negotiated_protocol),
       " }",
   });
 }

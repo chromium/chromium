@@ -56,6 +56,7 @@ MediaStreamSource* CreateMediaStreamSource(
   capabilities.echo_cancellation = Vector<bool>({false});
   capabilities.auto_gain_control = Vector<bool>({false});
   capabilities.noise_suppression = Vector<bool>({false});
+  capabilities.voice_isolation = Vector<bool>({false});
   capabilities.sample_size = {
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),  // min
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)   // max
@@ -75,7 +76,7 @@ MediaStreamSource* CreateMediaStreamSource(
 MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     AudioContext& context,
     uint32_t number_of_channels)
-    : AudioBasicInspectorNode(context),
+    : AudioNode(context),
       source_(CreateMediaStreamSource(context.GetExecutionContext())),
       stream_(MediaStream::Create(
           context.GetExecutionContext(),
@@ -140,7 +141,7 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
 void MediaStreamAudioDestinationNode::Trace(Visitor* visitor) const {
   visitor->Trace(stream_);
   visitor->Trace(source_);
-  AudioBasicInspectorNode::Trace(visitor);
+  AudioNode::Trace(visitor);
 }
 
 void MediaStreamAudioDestinationNode::ReportDidCreate() {

@@ -50,6 +50,10 @@ ui::ImageModel GetDefaultFaviconModel(
 // database.
 void SaveFaviconEvenIfInIncognito(content::WebContents* contents);
 
+// Return true if the favicon for |entry| should be themified, based on URL as
+// some chrome pages shouldn't be themified like apps or Password Manager.
+bool ShouldThemifyFavicon(GURL url);
+
 // Return true if the favicon for |entry| should be themified, based on both
 // its visible and actual URL.
 bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry);

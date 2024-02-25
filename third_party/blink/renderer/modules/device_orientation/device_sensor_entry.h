@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 
-#include "services/device/public/mojom/sensor.mojom-blink-forward.h"
-#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
+#include "services/device/public/mojom/sensor.mojom-blink.h"
+#include "services/device/public/mojom/sensor_provider.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -47,7 +48,7 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
                     device::mojom::blink::SensorType sensor_type);
   ~DeviceSensorEntry() override;
 
-  void Start(device::mojom::blink::SensorProvider* sensor_provider);
+  void Start(mojom::blink::WebSensorProvider* sensor_provider);
   void Stop();
   bool IsConnected() const;
   bool ReadyOrErrored() const;

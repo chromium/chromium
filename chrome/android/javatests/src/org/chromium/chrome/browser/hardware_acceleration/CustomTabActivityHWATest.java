@@ -17,9 +17,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-/**
- * Tests that CustomTabActivity is hardware accelerated only high-end devices.
- */
+/** Tests that CustomTabActivity is hardware accelerated only high-end devices. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityHWATest {

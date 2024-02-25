@@ -5,12 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 
+#include <optional>
+#include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -83,13 +87,27 @@ class ScalableIph : public KeyedService,
     kUnlocked,
     kAppListShown,
     kAppListItemActivationYouTube,
-    kAppListItemActivationGoogleDocs
+    kAppListItemActivationGoogleDocs,
+    kAppListItemActivationGooglePhotosWeb,
+    kOpenPersonalizationApp,
+    kShelfItemActivationYouTube,
+    kShelfItemActivationGoogleDocs,
+    kShelfItemActivationGooglePhotosWeb,
+    kShelfItemActivationGooglePhotosAndroid,
+    kShelfItemActivationGooglePlay,
+    kAppListItemActivationGooglePlayStore,
+    kAppListItemActivationGooglePhotosAndroid,
+    kPrintJobCreated,
+    kGameWindowOpened,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,
-              std::unique_ptr<ScalableIphDelegate> delegate);
+              std::unique_ptr<ScalableIphDelegate> delegate,
+              std::unique_ptr<Logger> logger);
 
   void RecordEvent(Event event);
+
+  Logger* GetLogger();
 
   ScalableIphDelegate* delegate_for_testing() { return delegate_.get(); }
 
@@ -103,12 +121,15 @@ class ScalableIph : public KeyedService,
   void OnSuspendDoneWithoutLockScreen() override;
   void OnAppListVisibilityChanged(bool shown) override;
   void OnHasSavedPrintersChanged(bool has_saved_printers) override;
+  void OnPhoneHubOnboardingEligibleChanged(
+      bool phonehub_onboarding_eligible) override;
 
   // IphSession::Delegate:
   void PerformActionForIphSession(ActionType action_type) override;
 
   void OverrideFeatureListForTesting(
-      const std::vector<const base::Feature*> features);
+      const std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+          features);
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -135,8 +156,12 @@ class ScalableIph : public KeyedService,
   void SetHasSavedPrintersChangedClosureForTesting(
       base::RepeatingClosure has_saved_printers_closure);
 
-  // Maybe record an app list item activation of `id`.
+  // Maybe record an app list item or a shelf item activation of `id`.
   void MaybeRecordAppListItemActivation(const std::string& id);
+  void MaybeRecordShelfItemActivationById(const std::string& id);
+
+  // Returns true if the help app should be pinned to the bottom shelf.
+  bool ShouldPinHelpAppToShelf();
 
  private:
   void EnsureTimerStarted();
@@ -144,17 +169,23 @@ class ScalableIph : public KeyedService,
   void RecordUnlockedEvent();
   void RecordEventInternal(Event event, bool init_success);
   void CheckTriggerConditionsOnInitSuccess(bool init_success);
-  void CheckTriggerConditions();
+  void CheckTriggerConditions(
+      const std::optional<ScalableIph::Event>& trigger_event);
 
   // Check all custom conditions assigned to `feature`. Returns true if all
   // conditions are valid and satisfied. Otherwise false including an invalid
   // config case.
-  bool CheckCustomConditions(const base::Feature& feature);
+  bool CheckCustomConditions(const base::Feature& feature,
+                             const std::optional<Event>& trigger_event);
+  bool CheckTriggerEvent(const base::Feature& feature,
+                         const std::optional<Event>& trigger_event);
   bool CheckNetworkConnection(const base::Feature& feature);
   bool CheckClientAge(const base::Feature& feature);
   bool CheckHasSavedPrinters(const base::Feature& feature);
+  bool CheckPhoneHubOnboardingEligible(const base::Feature& feature);
 
-  const std::vector<const base::Feature*>& GetFeatureList() const;
+  const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+  GetFeatureList() const;
 
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
@@ -163,15 +194,20 @@ class ScalableIph : public KeyedService,
   ScalableIphDelegate::SessionState session_state_ =
       ScalableIphDelegate::SessionState::kUnknownInitialValue;
   bool has_saved_printers_ = false;
+  bool phonehub_onboarding_eligible_ = false;
+  std::unique_ptr<Logger> logger_;
 
   base::RepeatingClosure has_saved_printers_closure_for_testing_;
-  std::vector<const base::Feature*> feature_list_for_testing_;
+  std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+      feature_list_for_testing_;
 
   base::ScopedObservation<ScalableIphDelegate, ScalableIph>
       delegate_observation_{this};
 
   base::WeakPtrFactory<ScalableIph> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& out, ScalableIph::Event event);
 
 }  // namespace scalable_iph
 

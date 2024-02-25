@@ -710,35 +710,6 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysValidAttributesSucceeds) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-// Same as DrawArraysValidAttributesSucceeds, but with workaround
-// |init_vertex_attributes|.
-TEST_P(GLES2DecoderManualInitTest, InitVertexAttributes) {
-  gpu::GpuDriverBugWorkarounds workarounds;
-  workarounds.init_vertex_attributes = true;
-  InitState init;
-  init.has_alpha = true;
-  init.has_depth = true;
-  init.request_alpha = true;
-  init.request_depth = true;
-  init.bind_generates_resource = true;
-  InitDecoderWithWorkarounds(init, workarounds);
-  SetupDefaultProgram();
-  SetupTexture();
-  SetupVertexBuffer();
-  DoEnableVertexAttribArray(1);
-  DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
-  AddExpectationsForSimulatedAttrib0(kNumVertices, kServiceBufferId);
-  SetupExpectationsForApplyingDefaultDirtyState();
-
-  EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
-      .Times(1)
-      .RetiresOnSaturation();
-  cmds::DrawArrays cmd;
-  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
 TEST_P(GLES2DecoderWithShaderTest, DrawArraysDeletedBufferFails) {
   const GLuint kNewServiceBufferId = 1897u;
   SetupVertexBuffer();

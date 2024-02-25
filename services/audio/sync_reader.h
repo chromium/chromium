@@ -65,7 +65,7 @@ class SyncReader : public OutputController::SyncReader {
   void RequestMoreData(base::TimeDelta delay,
                        base::TimeTicks delay_timestamp,
                        const media::AudioGlitchInfo& glitch_info) override;
-  void Read(media::AudioBus* dest, bool is_mixing) override;
+  bool Read(media::AudioBus* dest, bool is_mixing) override;
   void Close() override;
 
  private:

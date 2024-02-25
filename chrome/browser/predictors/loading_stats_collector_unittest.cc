@@ -98,7 +98,7 @@ void LoadingStatsCollectorTest::TestRedirectStatusHistogram(
   PageRequestSummary summary =
       CreatePageRequestSummary(navigation_url, initial_url, resources);
 
-  stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
+  stats_collector_->RecordPageRequestSummary(summary, std::nullopt);
 
   // Histogram check.
   histogram_tester_->ExpectUniqueSample(
@@ -142,7 +142,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectPrecisionRecallMetrics) {
       url::Origin::Create(GURL(gen(3))),
   };
 
-  stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
+  stats_collector_->RecordPageRequestSummary(summary, std::nullopt);
 
   histogram_tester_->ExpectUniqueSample(
       "LoadingPredictor.PreconnectLearningRecall.Navigation", 66, 1);
@@ -160,7 +160,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectPrecisionRecallMetrics) {
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::LoadingPredictor::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ukm_recorder_->ExpectEntryMetric(
       entry, ukm::builders::LoadingPredictor::kLocalPredictionOriginsName, 4);
   ukm_recorder_->ExpectEntryMetric(
@@ -225,7 +225,7 @@ TEST_F(LoadingStatsCollectorTest,
       .WillOnce(DoAll(SetArgPointee<1>(local_prediction), Return(false)));
 
   // Optimization Guide predicts 4 origins: 2 useful, 2 useless.
-  absl::optional<OptimizationGuidePrediction> optimization_guide_prediction =
+  std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kTrue;
@@ -279,7 +279,7 @@ TEST_F(LoadingStatsCollectorTest,
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::LoadingPredictor::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ukm_recorder_->ExpectEntryMetric(
       entry,
       ukm::builders::LoadingPredictor::kSubresourcePrefetchesInitiatedName, 3);
@@ -403,7 +403,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectHistograms) {
     PageRequestSummary summary =
         CreatePageRequestSummary(main_frame_url, main_frame_url, resources);
 
-    stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
+    stats_collector_->RecordPageRequestSummary(summary, std::nullopt);
   }
 
   histogram_tester_->ExpectUniqueSample(
@@ -436,7 +436,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectHistogramsEmpty) {
   PageRequestSummary summary =
       CreatePageRequestSummary(main_frame_url, main_frame_url, resources, now);
   summary.navigation_committed = now + base::Milliseconds(3);
-  stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
+  stats_collector_->RecordPageRequestSummary(summary, std::nullopt);
 
   // No histograms should be recorded.
   histogram_tester_->ExpectTotalCount(
@@ -494,7 +494,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectHistogramsPreresolvesOnly) {
     PageRequestSummary summary =
         CreatePageRequestSummary(main_frame_url, main_frame_url, resources);
 
-    stats_collector_->RecordPageRequestSummary(summary, absl::nullopt);
+    stats_collector_->RecordPageRequestSummary(summary, std::nullopt);
   }
 
   histogram_tester_->ExpectUniqueSample(

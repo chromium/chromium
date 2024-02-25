@@ -5,12 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests how table names are escaped in database table view.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   var tableName = 'table-name-with-dashes-and-"quotes"';
-  var escapedTableName = Resources.DatabaseTableView.prototype.escapeTableName(tableName, '', true);
+  var escapedTableName = Application.DatabaseTableView.DatabaseTableView.prototype.escapeTableName(tableName, '', true);
   TestRunner.addResult('Original value: ' + tableName);
   TestRunner.addResult('Escaped value: ' + escapedTableName);
   TestRunner.completeTest();

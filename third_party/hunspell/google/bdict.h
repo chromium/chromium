@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 
 // BDict (binary dictionary) format. All offsets are little endian.
@@ -203,7 +204,7 @@ class BDict {
 
   // Verifies the specified BDICT is sane. This function checks the BDICT header
   // and compares the MD5 digest of the data with the one in the header.
-  static bool Verify(const char* bdict_data, size_t bdict_length);
+  static bool Verify(base::span<const uint8_t> bdict_data);
 };
 
 #pragma pack(pop)

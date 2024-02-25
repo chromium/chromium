@@ -63,22 +63,6 @@ const char AudioRendererSinkCache::WindowObserver::kSupplementName[] =
 
 namespace {
 
-enum GetOutputDeviceInfoCacheUtilization {
-  // No cached sink found.
-  SINK_CACHE_MISS_NO_SINK = 0,
-
-  // If session id is used to specify a device, we always have to create and
-  // cache a new sink.
-  // DEPRECATED: Do not edit, to preserve UMAs.
-  // SINK_CACHE_MISS_CANNOT_LOOKUP_BY_SESSION_ID = 1,
-
-  // Output parmeters for an already-cached sink are requested.
-  SINK_CACHE_HIT = 2,
-
-  // For UMA.
-  SINK_CACHE_LAST_ENTRY
-};
-
 bool SinkIsHealthy(media::AudioRendererSink* sink) {
   return sink->GetOutputDeviceInfo().device_status() ==
          media::OUTPUT_DEVICE_STATUS_OK;
@@ -135,9 +119,6 @@ media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
     auto* cache_iter = FindCacheEntry_Locked(source_frame_token, device_id);
     if (cache_iter != cache_.end()) {
       // A matching cached sink is found.
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization",
-          SINK_CACHE_HIT, SINK_CACHE_LAST_ENTRY);
       TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
                        "Cache hit");
       return cache_iter->sink->GetOutputDeviceInfo();
@@ -149,10 +130,6 @@ media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
       create_sink_cb_.Run(source_frame_token, device_id);
 
   MaybeCacheSink(source_frame_token, device_id, sink);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization",
-      SINK_CACHE_MISS_NO_SINK, SINK_CACHE_LAST_ENTRY);
 
   TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
                    "Cache miss");

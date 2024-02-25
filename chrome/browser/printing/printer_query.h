@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINTER_QUERY_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -139,12 +139,12 @@ class PrinterQuery {
 
   // Virtual so that tests can override.
   virtual void GetSettingsDone(base::OnceClosure callback,
-                               absl::optional<bool> maybe_is_modifiable,
+                               std::optional<bool> maybe_is_modifiable,
                                std::unique_ptr<PrintSettings> new_settings,
                                mojom::ResultCode result);
 
   void PostSettingsDone(base::OnceClosure callback,
-                        absl::optional<bool> maybe_is_modifiable,
+                        std::optional<bool> maybe_is_modifiable,
                         std::unique_ptr<PrintSettings> new_settings,
                         mojom::ResultCode result);
 
@@ -176,6 +176,10 @@ class PrinterQuery {
       std::unique_ptr<printing::PrintSettings> new_settings,
       SettingsCallback callback);
 #endif
+
+  // Used by `TransferContextToNewWorker()`.  Virtual to support testing.
+  virtual std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
+      PrintJob* print_job);
 
   PrintingContext* printing_context() { return printing_context_.get(); }
 

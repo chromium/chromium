@@ -25,9 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Sets up the view and the logic behind it for a Paint Preview frame.
- */
+/** Sets up the view and the logic behind it for a Paint Preview frame. */
 public class PlayerFrameCoordinator {
     private PlayerFrameMediator mMediator;
     private PlayerFrameScaleController mScaleController;
@@ -39,10 +37,18 @@ public class PlayerFrameCoordinator {
      * Creates a {@link PlayerFrameMediator} and {@link PlayerFrameView} for this component and
      * binds them together.
      */
-    public PlayerFrameCoordinator(Context context, PlayerCompositorDelegate compositorDelegate,
-            UnguessableToken frameGuid, int contentWidth, int contentHeight, int initialScrollX,
-            int initialScrollY, float initialScaleFactor, boolean canDetectZoom,
-            @Nullable OverscrollHandler overscrollHandler, PlayerGestureListener gestureHandler,
+    public PlayerFrameCoordinator(
+            Context context,
+            PlayerCompositorDelegate compositorDelegate,
+            UnguessableToken frameGuid,
+            int contentWidth,
+            int contentHeight,
+            int initialScrollX,
+            int initialScrollY,
+            float initialScaleFactor,
+            boolean canDetectZoom,
+            @Nullable OverscrollHandler overscrollHandler,
+            PlayerGestureListener gestureHandler,
             @Nullable Runnable firstPaintListener,
             @Nullable Supplier<Boolean> isAccessibilityEnabled,
             @Nullable Runnable initialViewportSizeAvailable) {
@@ -50,22 +56,36 @@ public class PlayerFrameCoordinator {
         OverScroller scroller = new OverScroller(context);
         scroller.setFriction(ViewConfiguration.getScrollFriction() / 2);
 
-        mMediator = new PlayerFrameMediator(model, compositorDelegate, gestureHandler, frameGuid,
-                new Size(contentWidth, contentHeight), initialScrollX, initialScrollY,
-                initialScaleFactor, initialViewportSizeAvailable);
+        mMediator =
+                new PlayerFrameMediator(
+                        model,
+                        compositorDelegate,
+                        gestureHandler,
+                        frameGuid,
+                        new Size(contentWidth, contentHeight),
+                        initialScrollX,
+                        initialScrollY,
+                        initialScaleFactor,
+                        initialViewportSizeAvailable);
 
         if (canDetectZoom) {
             mScaleController =
-                    new PlayerFrameScaleController(model.get(PlayerFrameProperties.SCALE_MATRIX),
-                            mMediator, isAccessibilityEnabled, gestureHandler::onScale);
+                    new PlayerFrameScaleController(
+                            model.get(PlayerFrameProperties.SCALE_MATRIX),
+                            mMediator,
+                            isAccessibilityEnabled,
+                            gestureHandler::onScale);
         }
-        mScrollController = new PlayerFrameScrollController(
-                scroller, mMediator, gestureHandler::onScroll, gestureHandler::onFling);
-        PlayerFrameGestureDetectorDelegate gestureDelegate = new PlayerFrameGestureDetectorDelegate(
-                mScaleController, mScrollController, mMediator);
+        mScrollController =
+                new PlayerFrameScrollController(
+                        scroller, mMediator, gestureHandler::onScroll, gestureHandler::onFling);
+        PlayerFrameGestureDetectorDelegate gestureDelegate =
+                new PlayerFrameGestureDetectorDelegate(
+                        mScaleController, mScrollController, mMediator);
 
-        mView = new PlayerFrameView(
-                context, canDetectZoom, mMediator, gestureDelegate, firstPaintListener);
+        mView =
+                new PlayerFrameView(
+                        context, canDetectZoom, mMediator, gestureDelegate, firstPaintListener);
 
         if (overscrollHandler != null) {
             mScrollController.setOverscrollHandler(overscrollHandler);
@@ -138,17 +158,13 @@ public class PlayerFrameCoordinator {
         mScrollController.setOnScrollCallbackForAccessibility(onScrollCallback);
     }
 
-    /**
-     * @return The mediator associated with this component.
-     */
+    /** @return The mediator associated with this component. */
     @VisibleForTesting
     PlayerFrameMediator getMediator() {
         return mMediator;
     }
 
-    /**
-     * @return The view associated with this component.
-     */
+    /** @return The view associated with this component. */
     public PlayerFrameView getView() {
         return mView;
     }

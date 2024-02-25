@@ -17,7 +17,7 @@ class FtlDeviceIdProvider {
   // Gets a device ID to use for signing into FTL. It's the subclass'
   // responsibility to store and reuse stored device ID.
   //
-  // Subclass should consider adding prefix to the device ID, like
+  // Subclasses should consider adding a prefix to the device ID, like
   // "crd-win-host-".
   virtual ftl::DeviceId GetDeviceId() = 0;
 };

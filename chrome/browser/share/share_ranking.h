@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SHARE_SHARE_RANKING_H_
 #define CHROME_BROWSER_SHARE_SHARE_RANKING_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/share/proto/share_ranking_message.pb.h"
 #include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -27,7 +28,7 @@ class ShareRanking : public base::SupportsUserData::Data {
 
   using BackingDb = leveldb_proto::ProtoDatabase<proto::ShareRanking>;
   using GetRankingCallback =
-      base::OnceCallback<void(absl::optional<Ranking> result)>;
+      base::OnceCallback<void(std::optional<Ranking> result)>;
 
   static ShareRanking* Get(Profile* profile);
 
@@ -124,7 +125,7 @@ class ShareRanking : public base::SupportsUserData::Data {
   void OnRankGetRecentDone(std::unique_ptr<PendingRankCall> pending,
                            std::vector<ShareHistory::Target> history);
   void OnRankGetOldRankingDone(std::unique_ptr<PendingRankCall> pending,
-                               absl::optional<Ranking> ranking);
+                               std::optional<Ranking> ranking);
 
   // Return the default initial ranking, which depends on the current locale.
   Ranking GetDefaultInitialRankingForType(const std::string& type);
@@ -141,7 +142,7 @@ class ShareRanking : public base::SupportsUserData::Data {
   // backing database by FlushToBackingDb().
   base::flat_map<std::string, Ranking> ranking_;
 
-  absl::optional<Ranking> initial_ranking_for_test_;
+  std::optional<Ranking> initial_ranking_for_test_;
 
   base::WeakPtrFactory<ShareRanking> weak_factory_{this};
 };

@@ -10,10 +10,13 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "skia/ext/skia_utils_ios.h"
@@ -21,16 +24,8 @@
 #import "ui/gfx/image/image.h"
 
 namespace {
-// Size of the leading image view.
-const CGFloat kLeadingImageSize = 30;
-// Offset from the leading edge to the image view (used when the image is
-// shown).
-const CGFloat kleadingImageViewEdgeOffset = 7;
-// Offset from the leading edge to the textfield when no image is shown.
-const CGFloat kTextFieldLeadingOffsetNoImage = 16;
-// Space between the leading button and the textfield when a button is shown.
-const CGFloat kTextFieldLeadingOffsetImage = 14;
-// Space between the clear button and the edge of the omnibox.
+
+/// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 
 }  // namespace
@@ -38,21 +33,18 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 #pragma mark - OmniboxContainerView
 
 @interface OmniboxContainerView ()
-// Constraints the leading textfield side to the leading of `self`.
-// Active when the `leadingView` is nil or hidden.
-@property(nonatomic, strong) NSLayoutConstraint* leadingTextfieldConstraint;
-// The leading image view. Used for autocomplete icons.
-@property(nonatomic, strong) UIImageView* leadingImageView;
-// Redefined as readwrite.
+
+/// Redefined as readwrite.
 @property(nonatomic, strong) OmniboxTextFieldIOS* textField;
 
 @end
 
-@implementation OmniboxContainerView
-@synthesize textField = _textField;
-@synthesize leadingImageView = _leadingImageView;
-@synthesize leadingTextfieldConstraint = _leadingTextfieldConstraint;
-@synthesize incognito = _incognito;
+@implementation OmniboxContainerView {
+  /// The leading image view. Used for autocomplete icons.
+  UIImageView* _leadingImageView;
+  /// Horizontal stack view containing the `_leadingImageView` and `textField`.
+  UIStackView* _stackView;
+}
 
 #pragma mark - Public
 
@@ -62,6 +54,7 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
                      iconTint:(UIColor*)iconTint {
   self = [super initWithFrame:frame];
   if (self) {
+    // Text field.
     if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
       _textField =
           [[OmniboxTextFieldExperimental alloc] initWithFrame:frame
@@ -72,36 +65,53 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
                                                        textColor:textColor
                                                        tintColor:textFieldTint];
     }
-    [self addSubview:_textField];
+    _textField.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _leadingTextfieldConstraint = [_textField.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
-                       constant:kTextFieldLeadingOffsetNoImage];
-
+    // Leading image view.
+    _leadingImageView = [[UIImageView alloc] init];
+    _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _leadingImageView.contentMode = UIViewContentModeCenter;
+    _leadingImageView.tintColor = iconTint;
     [NSLayoutConstraint activateConstraints:@[
-      [_textField.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kTextFieldClearButtonTrailingOffset],
-      [_textField.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_textField.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-      _leadingTextfieldConstraint,
+      [_leadingImageView.widthAnchor
+          constraintEqualToConstant:kOmniboxLeadingImageSize],
+      [_leadingImageView.heightAnchor
+          constraintEqualToConstant:kOmniboxLeadingImageSize],
     ]];
 
-    _textField.translatesAutoresizingMaskIntoConstraints = NO;
+    // Stack view.
+    _stackView = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ _leadingImageView, _textField ]];
+    _stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _stackView.axis = UILayoutConstraintAxisHorizontal;
+    _stackView.alignment = UIStackViewAlignmentCenter;
+    _stackView.spacing = 0;
+    _stackView.distribution = UIStackViewDistributionFill;
+    [self addSubview:_stackView];
+    AddSameConstraintsWithInsets(
+        _stackView, self,
+        NSDirectionalEdgeInsetsMake(0, kOmniboxLeadingImageViewEdgeOffset, 0,
+                                    kTextFieldClearButtonTrailingOffset));
+
+    // Spacing between image and text field.
+    [_stackView setCustomSpacing:kOmniboxTextFieldLeadingOffsetImage
+                       afterView:_leadingImageView];
+
+    // Constraints.
+    AddSameConstraintsToSides(_textField, _stackView,
+                              LayoutSides::kTop | LayoutSides::kBottom);
     [_textField
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-
-    [self setupLeadingImageViewWithTint:iconTint];
   }
   return self;
 }
 
 - (void)setLeadingImage:(UIImage*)image
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  [self.leadingImageView setImage:image];
-  [self.leadingImageView setAccessibilityIdentifier:accessibilityIdentifier];
+  _leadingImageView.image = image;
+  _leadingImageView.accessibilityIdentifier = accessibilityIdentifier;
 }
 
 - (void)setIncognito:(BOOL)incognito {
@@ -109,12 +119,8 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
   self.textField.incognito = incognito;
 }
 
-- (void)setLeadingImageAlpha:(CGFloat)alpha {
-  self.leadingImageView.alpha = alpha;
-}
-
 - (void)setLeadingImageScale:(CGFloat)scaleValue {
-  self.leadingImageView.transform =
+  _leadingImageView.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);
 }
 
@@ -126,37 +132,16 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
                           underName:kOmniboxTextFieldGuide];
 }
 
-#pragma mark - Private
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute {
+  [super setSemanticContentAttribute:semanticContentAttribute];
+  _stackView.semanticContentAttribute = semanticContentAttribute;
+}
 
-- (void)setupLeadingImageViewWithTint:(UIColor*)iconTint {
-  _leadingImageView = [[UIImageView alloc] init];
-  _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _leadingImageView.contentMode = UIViewContentModeCenter;
+#pragma mark - TextFieldViewContaining
 
-  // The image view is always shown. Its width should be constant.
-  [NSLayoutConstraint activateConstraints:@[
-    [_leadingImageView.widthAnchor constraintEqualToConstant:kLeadingImageSize],
-    [_leadingImageView.heightAnchor
-        constraintEqualToAnchor:_leadingImageView.widthAnchor],
-  ]];
-
-  _leadingImageView.tintColor = iconTint;
-  [self addSubview:_leadingImageView];
-  self.leadingTextfieldConstraint.active = NO;
-
-  NSLayoutConstraint* leadingImageViewToTextField =
-      [self.leadingImageView.trailingAnchor
-          constraintEqualToAnchor:self.textField.leadingAnchor
-                         constant:-kTextFieldLeadingOffsetImage];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_leadingImageView.centerYAnchor
-        constraintEqualToAnchor:self.centerYAnchor],
-    [self.leadingAnchor
-        constraintEqualToAnchor:self.leadingImageView.leadingAnchor
-                       constant:-kleadingImageViewEdgeOffset],
-    leadingImageViewToTextField,
-  ]];
+- (UIView*)textFieldView {
+  return self.textField;
 }
 
 @end

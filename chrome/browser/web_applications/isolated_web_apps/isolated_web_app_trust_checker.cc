@@ -131,4 +131,13 @@ void SetTrustedWebBundleIdsForTesting(  // IN-TEST
       std::move(trusted_web_bundle_ids);
 }
 
+void AddTrustedWebBundleIdForTesting(  // IN-TEST
+    const web_package::SignedWebBundleId& trusted_web_bundle_id) {
+  DCHECK(trusted_web_bundle_id.type() ==
+         web_package::SignedWebBundleId::Type::kEd25519PublicKey)
+      << "Can only trust Web Bundle IDs of type Ed25519PublicKey";
+
+  GetTrustedWebBundleIdsForTesting().insert(trusted_web_bundle_id);  // IN-TEST
+}
+
 }  // namespace web_app

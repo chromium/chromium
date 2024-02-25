@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_SCHEDULER_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATABLE_REPORT_SCHEDULER_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -15,9 +16,9 @@
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class ElapsedTimer;
 class Time;
 }  // namespace base
 
@@ -110,13 +111,15 @@ class CONTENT_EXPORT AggregatableReportScheduler {
 
    private:
     // ReportSchedulerTimer::Delegate:
-    void GetNextReportTime(base::OnceCallback<void(absl::optional<base::Time>)>,
+    void GetNextReportTime(base::OnceCallback<void(std::optional<base::Time>)>,
                            base::Time now) override;
-    void OnReportingTimeReached(base::Time now) override;
+    void OnReportingTimeReached(base::Time now,
+                                base::Time timer_desired_run_time) override;
     void AdjustOfflineReportTimes(
-        base::OnceCallback<void(absl::optional<base::Time>)>) override;
+        base::OnceCallback<void(std::optional<base::Time>)>) override;
 
     void OnRequestsReturnedFromStorage(
+        base::ElapsedTimer task_timer,
         std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids);
 
     // Using a raw reference is safe because `storage_context_` is guaranteed to
@@ -146,10 +149,10 @@ class CONTENT_EXPORT AggregatableReportScheduler {
 
   // Returns how long to wait before attempting to send a report that has
   // previously failed to be sent failed_send_attempts times. Returns
-  // `absl::nullopt` to indicate that no more attempts should be made.
+  // `std::nullopt` to indicate that no more attempts should be made.
   // Otherwise, the return value must be positive. `failed_send_attempts`
   // must be positive.
-  static absl::optional<base::TimeDelta> GetFailedReportDelay(
+  static std::optional<base::TimeDelta> GetFailedReportDelay(
       int failed_send_attempts);
 
   // Using a raw reference is safe because `storage_context_` is guaranteed to

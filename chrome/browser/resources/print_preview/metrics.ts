@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayer, NativeLayerImpl} from './native_layer.js';
+import type {NativeLayer} from './native_layer.js';
+import {NativeLayerImpl} from './native_layer.js';
 
 /**
  * Enumeration of buckets that a user can enter while using the destination

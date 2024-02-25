@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SEGMENT_INFO_CACHE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -13,7 +14,6 @@
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -26,7 +26,8 @@ using proto::SegmentInfo;
 // the time to read from DB in consecutive calls
 class SegmentInfoCache {
  public:
-  using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
+  using SegmentInfoList =
+      std::vector<std::pair<SegmentId, const proto::SegmentInfo*>>;
 
   SegmentInfoCache();
   ~SegmentInfoCache();
@@ -36,8 +37,8 @@ class SegmentInfoCache {
   SegmentInfoCache& operator=(const SegmentInfoCache&) = delete;
 
   // Returns an optional SegmentInfo for a `segment_id` based on `model_source`.
-  absl::optional<SegmentInfo> GetSegmentInfo(SegmentId segment_id,
-                                             ModelSource model_source) const;
+  const SegmentInfo* GetSegmentInfo(SegmentId segment_id,
+                                    ModelSource model_source) const;
 
   // Returns list of segment info for list of `segment_ids` found in the cache
   // based on `model_source`. If segment info is not found for a segment id,
@@ -56,7 +57,7 @@ class SegmentInfoCache {
   // `model_source`. It deletes the entry in cache if `segment_info` is nullopt.
   void UpdateSegmentInfo(SegmentId segment_id,
                          ModelSource model_source,
-                         absl::optional<SegmentInfo> segment_info);
+                         std::optional<SegmentInfo> segment_info);
 
  private:
   // Map storing SegmentInfo for a SegmentId and ModelSource.

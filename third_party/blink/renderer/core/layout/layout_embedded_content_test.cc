@@ -24,13 +24,13 @@ class LayoutFreezableIFrame : public LayoutIFrame {
   }
 
  protected:
-  const absl::optional<PhysicalSize> FrozenFrameSize() const override {
+  const std::optional<PhysicalSize> FrozenFrameSize() const override {
     NOT_DESTROYED();
     return frozen_size_;
   }
 
  private:
-  absl::optional<PhysicalSize> frozen_size_;
+  std::optional<PhysicalSize> frozen_size_;
 };
 
 class HTMLFreezableIFrameElement : public HTMLIFrameElement {

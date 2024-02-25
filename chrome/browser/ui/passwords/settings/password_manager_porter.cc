@@ -24,6 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_WIN)
 #endif
@@ -70,11 +71,18 @@ PasswordManagerPorter::PasswordManagerPorter(
       presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
-PasswordManagerPorter::~PasswordManagerPorter() = default;
+PasswordManagerPorter::~PasswordManagerPorter() {
+  // There may be open file selection dialogs. We need to let them know that we
+  // have gone away so that they do not attempt to call us back.
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
-bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
+bool PasswordManagerPorter::Export(
+    base::WeakPtr<content::WebContents> web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
-                       password_manager::ExportProgressStatus::IN_PROGRESS) {
+                       password_manager::ExportProgressStatus::kInProgress) {
     return false;
   }
 
@@ -102,7 +110,7 @@ void PasswordManagerPorter::CancelExport() {
 password_manager::ExportProgressStatus
 PasswordManagerPorter::GetExportProgressStatus() {
   return exporter_ ? exporter_->GetProgressStatus()
-                   : password_manager::ExportProgressStatus::NOT_STARTED;
+                   : password_manager::ExportProgressStatus::kNotStarted;
 }
 
 void PasswordManagerPorter::SetExporterForTesting(
@@ -134,7 +142,7 @@ void PasswordManagerPorter::Import(
   import_results_callback_ = std::move(results_callback);
   to_store_ = to_store;
 
-  PresentFileSelector(web_contents,
+  PresentFileSelector(web_contents->GetWeakPtr(),
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
 }
 
@@ -189,7 +197,7 @@ void PasswordManagerPorter::SetImporterForTesting(
 }
 
 void PasswordManagerPorter::PresentFileSelector(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     Type type) {
 // This method should never be called on Android (as there is no file selector),
 // and the relevant IDS constants are not present for Android.
@@ -198,7 +206,7 @@ void PasswordManagerPorter::PresentFileSelector(
   if (select_file_dialog_)
     return;
 
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   // Get the default file extension for password files.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
@@ -209,7 +217,7 @@ void PasswordManagerPorter::PresentFileSelector(
 
   // Present the file selector dialogue.
   select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents.get()));
 
   ui::SelectFileDialog::Type file_selector_mode =
       ui::SelectFileDialog::SELECT_NONE;
@@ -236,15 +244,15 @@ void PasswordManagerPorter::PresentFileSelector(
 #endif
 }
 
-void PasswordManagerPorter::FileSelected(const base::FilePath& path,
+void PasswordManagerPorter::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* params) {
   switch (reinterpret_cast<uintptr_t>(params)) {
     case PASSWORD_IMPORT:
-      ImportPasswordsFromPath(path);
+      ImportPasswordsFromPath(file.path());
       break;
     case PASSWORD_EXPORT:
-      ExportPasswordsToPath(path);
+      ExportPasswordsToPath(file.path());
       break;
   }
 

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
+#include <optional>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -18,11 +19,12 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -34,7 +36,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/model_type_state_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -165,10 +166,8 @@ bool AreLocalAndRemotePasswordsEqualExcludingIssues(
              remote_password_specifics.avatar_url() &&
          local_password_specifics.federation_url() ==
              remote_password_specifics.federation_url() &&
-         (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)
-              ? PasswordNotesFromProto(local_password_specifics.notes()) ==
-                    PasswordNotesFromProto(remote_password_specifics.notes())
-              : true);
+         PasswordNotesFromProto(local_password_specifics.notes()) ==
+             PasswordNotesFromProto(remote_password_specifics.notes());
 }
 
 // Returns true iff |remote_password_specifics| and |local_password_specifics|
@@ -190,12 +189,9 @@ bool IsCredentialPhished(const sync_pb::PasswordSpecificsData& specifics) {
 // the local copy, to be replaced by the remote version coming from Sync during
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
-  // Delete the local undecryptable copy when this is MacOS or Linux only.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return true;
-#else
-  return false;
-#endif
+  // Delete the local undecryptable copy. Launched on MacOS or Linux only.
+  return base::FeatureList::IsEnabled(
+      features::kClearUndecryptablePasswordsOnSync);
 }
 
 bool ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() {
@@ -366,8 +362,7 @@ PasswordSyncBridge::PasswordSyncBridge(
     } else if (syncer::IsInitialSyncDone(
                    batch->GetModelTypeState().initial_sync_state()) &&
                !batch->GetModelTypeState()
-                    .notes_enabled_before_initial_sync_for_passwords() &&
-               base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+                    .notes_enabled_before_initial_sync_for_passwords()) {
       // The browser has just been upgraded to a version that supports password
       // notes. Therefore, the metadata are cleared to enforce the initial sync
       // flow and download any potential passwords notes on the server. The
@@ -378,18 +373,6 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
-    } else if (syncer::IsInitialSyncDone(
-                   batch->GetModelTypeState().initial_sync_state()) &&
-               batch->GetModelTypeState()
-                   .notes_enabled_before_initial_sync_for_passwords() &&
-               !base::FeatureList::IsEnabled(
-                   syncer::kPasswordNotesWithBackup)) {
-      // The feature was enabled before, but not anymore (e.g. due to experiment
-      // ramp-down). Clear the flag to enforce the initial sync flow when the
-      // feature is enabled again.
-      sync_pb::ModelTypeState model_state = batch->GetModelTypeState();
-      model_state.set_notes_enabled_before_initial_sync_for_passwords(false);
-      batch->SetModelTypeState(model_state);
     } else if (DoesPasswordStoreContainAccidentalBatchDeletions(
                    password_store_sync_->IsAccountStore(),
                    batch->GetAllMetadata())) {
@@ -475,7 +458,7 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     }
   }
 
-  if (absl::optional<syncer::ModelError> error =
+  if (std::optional<syncer::ModelError> error =
           metadata_change_list.TakeError()) {
     change_processor()->ReportError(*error);
   }
@@ -486,7 +469,7 @@ PasswordSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This method merges the local and remote passwords based on their client
@@ -522,7 +505,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
                                 "Failed to load entries from password store. "
                                 "Encryption service failure.");
     }
-    absl::optional<syncer::ModelError> cleanup_result_error =
+    std::optional<syncer::ModelError> cleanup_result_error =
         CleanupPasswordStore();
     if (cleanup_result_error) {
       return cleanup_result_error;
@@ -716,7 +699,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         sync_metadata_store_change_list.TakeError();
     if (error) {
       metrics_util::LogPasswordSyncState(
@@ -758,10 +741,10 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
   }
 
   sync_enabled_or_disabled_cb_.Run();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PasswordSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -903,7 +886,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         sync_metadata_store_change_list.TakeError();
     if (error) {
       metrics_util::LogApplySyncChangesState(
@@ -921,7 +904,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
   }
   metrics_util::LogApplySyncChangesState(
       metrics_util::ApplySyncChangesState::kApplyOK);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
@@ -1157,7 +1140,7 @@ std::string PasswordSyncBridge::ComputeClientTagForTesting(
   return ComputeClientTag(password_data);
 }
 
-absl::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
+std::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
   DatabaseCleanupResult cleanup_result =
       password_store_sync_->DeleteUndecryptableCredentials();
   switch (cleanup_result) {
@@ -1174,7 +1157,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::CleanupPasswordStore() {
           metrics_util::PasswordSyncState::kNotSyncingFailedCleanup);
       return syncer::ModelError(FROM_HERE, "Failed to cleanup database.");
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace password_manager

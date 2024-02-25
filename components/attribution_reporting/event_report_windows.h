@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_EVENT_REPORT_WINDOWS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_EVENT_REPORT_WINDOWS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -13,10 +14,13 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 
 namespace attribution_reporting {
+
+// Calculates the last trigger time that could have produced `report_time`.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Time LastTriggerTimeForReportTime(base::Time report_time);
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
  public:
@@ -29,21 +33,29 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
     kMaxValue = kNotStarted,
   };
 
-  static absl::optional<EventReportWindows> Create(
+  static std::optional<EventReportWindows> Create(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times);
 
-  // Creates and sets `report_window` as the last reporting window end time in
-  // `end_times`, removing every existing end time greater than it.
-  static absl::optional<EventReportWindows> CreateAndTruncate(
-      base::TimeDelta start_time,
-      std::vector<base::TimeDelta> end_times,
-      base::TimeDelta report_window);
+  // Uses default windows based on the source type, but truncated at
+  // `report_window`.
+  static std::optional<EventReportWindows> FromDefaults(
+      base::TimeDelta report_window,
+      mojom::SourceType);
 
   static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  FromJSON(const base::Value&);
+  FromJSON(const base::Value::Dict& registration,
+           base::TimeDelta expiry,
+           mojom::SourceType);
 
-  explicit EventReportWindows(mojo::DefaultConstruct::Tag);
+  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
+  ParseWindows(const base::Value::Dict&,
+               base::TimeDelta expiry,
+               const EventReportWindows& default_if_absent);
+
+  // Creates a single report window at `kMaxSourceExpiry`.
+  EventReportWindows();
+
   ~EventReportWindows();
 
   EventReportWindows(const EventReportWindows&);
@@ -58,11 +70,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
     return end_times_;
   }
 
-  // Sets `report_window` as the last reporting window end time in `end_times_`,
-  // removing every existing end time greater than it.
-  // Returns whether the report window is greater than the start time, i.e.
-  // returns false for invalid configurations which have no effective windows.
-  bool MaybeTruncate(base::TimeDelta report_window);
+  bool IsValidForExpiry(base::TimeDelta expiry) const;
 
   // Calculates the report time for a conversion associated with a given
   // source.
@@ -73,11 +81,19 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
 
   WindowResult FallsWithin(base::TimeDelta trigger_moment) const;
 
-  base::Value::Dict ToJson() const;
+  void Serialize(base::Value::Dict& dict) const;
+
+  friend bool operator==(const EventReportWindows&,
+                         const EventReportWindows&) = default;
 
  private:
   EventReportWindows(base::TimeDelta start_time,
                      base::flat_set<base::TimeDelta> end_times);
+
+  EventReportWindows(base::TimeDelta report_window, mojom::SourceType);
+
+  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
+  ParseWindowsJSON(const base::Value&, base::TimeDelta expiry);
 
   base::TimeDelta start_time_;
   base::flat_set<base::TimeDelta> end_times_;

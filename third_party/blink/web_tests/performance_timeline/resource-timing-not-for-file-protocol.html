@@ -1,0 +1,43 @@
+<!doctype html>
+
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="resources/style.css">
+<link rel="stylesheet" href="resources/non_exist.css">
+
+<p id="test">text</p>
+<script>
+  promise_test(async () => {
+    // Wait until styles are applied so that the text should have color green
+    // as specified in the style.css file.
+    const checkStyle = async () => {
+      const element = document.getElementById('test');
+      return new Promise(resolve => {
+        const interval = setInterval(() => {
+          if (getComputedStyle(element).getPropertyValue('color')
+            == 'rgb(0, 128, 0)') {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 10);
+      });
+    };
+
+    await checkStyle();
+
+    // At this point, we know the style.css file has been loaded as the styles are
+    // already applied. We then verify that no resource timing entries corresponding
+    // css files are emitted.
+    new PerformanceObserver((list) => {
+      if (list.getEntries().filter(e => e.name.includes('css')).length > 0) {
+        assert_unreached();
+      }
+    }).observe({ type: 'resource', buffered: true });
+
+    assert_equals(
+      performance.getEntriesByType('resource').filter(e => e.name.includes('css')).length, 0);
+
+  }, 'Resources fetched via file protocol should have no resource timing entries,\
+  regardless fetching success or failure');
+</script>

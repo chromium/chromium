@@ -51,8 +51,8 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment;
   TestingProfileManager profile_manager_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager enabler_;
   AccountId account_id_;
 };
@@ -61,10 +61,10 @@ TEST_F(NearbyShareProfileInfoProviderImplTest, GivenName) {
   Profile* profile = CreateProfile(kFakeProfileUserName);
   NearbyShareProfileInfoProviderImpl profile_info_provider(profile);
 
-  // If no user, return absl::nullopt.
+  // If no user, return std::nullopt.
   EXPECT_FALSE(profile_info_provider.GetGivenName());
 
-  // If given name is empty, return absl::nullopt.
+  // If given name is empty, return std::nullopt.
   AddUser();
   SetUserGivenName(std::u16string());
   EXPECT_FALSE(profile_info_provider.GetGivenName());
@@ -75,7 +75,7 @@ TEST_F(NearbyShareProfileInfoProviderImplTest, GivenName) {
 
 TEST_F(NearbyShareProfileInfoProviderImplTest, ProfileUserName) {
   {
-    // If profile user name is empty, return absl::nullopt.
+    // If profile user name is empty, return std::nullopt.
     Profile* profile = CreateProfile(std::string());
     NearbyShareProfileInfoProviderImpl profile_info_provider(profile);
     EXPECT_FALSE(profile_info_provider.GetProfileUserName());

@@ -4,6 +4,7 @@
 
 #include "base/metrics/field_trial_params.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_delta_from_string.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -31,7 +31,7 @@ void LogInvalidValue(const Feature& feature,
                      const std::string& value_as_string,
                      const std::string& default_value_as_string) {
   UmaHistogramSparse("Variations.FieldTriamParamsLogInvalidValue",
-                     static_cast<int>(base::HashName(
+                     static_cast<int>(base::HashFieldTrialName(
                          FeatureList::GetFieldTrial(feature)->trial_name())));
   // To anyone noticing these crash dumps in the wild, these parameters come
   // from server-side experiment configuration. If you're seeing an increase it
@@ -214,7 +214,7 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   if (value_as_string.empty())
     return default_value;
 
-  absl::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
+  std::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
     LogInvalidValue(feature, "a base::TimeDelta", param_name, value_as_string,
                     base::NumberToString(default_value.InSecondsF()) + " s");
@@ -225,8 +225,16 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 }
 
 std::string FeatureParam<std::string>::Get() const {
-  const std::string value = GetFieldTrialParamValueByFeature(*feature, name);
-  return value.empty() ? default_value : value;
+  // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
+  // the map.
+  FieldTrialParams params;
+  if (GetFieldTrialParamsByFeature(*feature, &params)) {
+    auto it = params.find(name);
+    if (it != params.end()) {
+      return it->second;
+    }
+  }
+  return default_value;
 }
 
 double FeatureParam<double>::Get() const {

@@ -9,9 +9,7 @@ import org.chromium.base.ThreadUtils;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-/**
- * Helper methods to deal with threading related tasks in tests.
- */
+/** Helper methods to deal with threading related tasks in tests. */
 public class TestThreadUtils {
     /**
      * Since PostTask goes through c++, and order is not guaranteed between c++ and Java Handler

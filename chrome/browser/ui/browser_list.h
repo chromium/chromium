@@ -12,10 +12,12 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
@@ -34,7 +36,7 @@ class BrowserListObserver;
 class BrowserList {
  public:
   using BrowserSet = base::flat_set<Browser*>;
-  using BrowserVector = std::vector<Browser*>;
+  using BrowserVector = std::vector<raw_ptr<Browser, VectorExperimental>>;
   using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
@@ -119,6 +121,11 @@ class BrowserList {
 
   // Notifies the observers when the current active browser becomes not active.
   static void NotifyBrowserNoLongerActive(Browser* browser);
+
+  // Notifies the observers that the attempted closure of `browser` was
+  // cancelled for a certain `reason`.
+  static void NotifyBrowserCloseCancelled(Browser* browser,
+                                          BrowserClosingStatus reason);
 
   // Notifies the observers when browser close was started. This may be called
   // more than once for a particular browser.

@@ -8,12 +8,11 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 
 namespace gfx {
 class Image;
@@ -63,6 +62,11 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       const base::android::JavaParamRef<jobject>& obj,
       jint tab_type,
       const base::android::JavaParamRef<jobject>& j_user_info_field);
+  void OnPasskeySelected(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint tab_type,
+      const base::android::JavaParamRef<jbyteArray>& j_passkey_id);
   void OnOptionSelected(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jint selected_action);

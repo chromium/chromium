@@ -6,11 +6,13 @@
 #define CONTENT_PUBLIC_COMMON_MAIN_FUNCTION_PARAMS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -19,9 +21,8 @@ namespace sandbox {
 struct SandboxInterfaceInfo;
 }
 #elif BUILDFLAG(IS_MAC)
-namespace base::apple {
-class ScopedNSAutoreleasePool;
-}
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
 #endif
 
 namespace content {
@@ -48,10 +49,8 @@ struct CONTENT_EXPORT MainFunctionParams {
 #if BUILDFLAG(IS_WIN)
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #elif BUILDFLAG(IS_MAC)
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #union
-  RAW_PTR_EXCLUSION base::apple::ScopedNSAutoreleasePool* autorelease_pool =
-      nullptr;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  base::apple::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   bool zygote_child = false;
 #endif
@@ -59,6 +58,10 @@ struct CONTENT_EXPORT MainFunctionParams {
   // Set to true if this content process's main function should enable startup
   // tracing after initializing Mojo.
   bool needs_startup_tracing_after_mojo_init = false;
+
+  // If non-null, this is the time the HangWatcher would have started if not
+  // delayed until after sandbox initialization.
+  std::optional<base::TimeTicks> hang_watcher_not_started_time;
 
   // Used by BrowserTestBase. If set, BrowserMainLoop runs this task instead of
   // the main message loop.

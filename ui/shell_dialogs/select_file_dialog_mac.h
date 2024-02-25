@@ -81,7 +81,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
                        bool is_multi,
                        bool was_cancelled,
                        const std::vector<base::FilePath>& files,
-                       int index);
+                       int index,
+                       const std::vector<std::string>& file_tags);
 
   bool HasMultipleFileTypeChoicesImpl() override;
 

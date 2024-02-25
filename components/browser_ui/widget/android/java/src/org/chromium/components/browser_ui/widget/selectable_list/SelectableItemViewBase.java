@@ -32,8 +32,11 @@ import java.util.List;
  * @param <E> The type of the item associated with this SelectableItemViewBase.
  */
 public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLayout
-        implements Checkable, OnClickListener, OnLongClickListener, OnTouchListener,
-                   SelectionObserver<E> {
+        implements Checkable,
+                OnClickListener,
+                OnLongClickListener,
+                OnTouchListener,
+                SelectionObserver<E> {
     // Heuristic value used to rule out long clicks preceded by long horizontal move. A long click
     // is ignored if finger was moved horizontally more than this threshold.
     private static final float LONG_CLICK_SLIDE_THRESHOLD_PX = 100.f;
@@ -50,33 +53,33 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     private float mAnchorX;
     private float mCurrentX;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SelectableItemViewBase(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setOnTouchListener(this);
         setOnClickListener(this);
         setOnLongClickListener(this);
-        setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
+        setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
 
-                // Announce checked state if selection mode is on. The actual read out from talkback
-                // is "checked/unchecked, {content description of this view.}"
-                boolean checkable = mSelectionDelegate != null
-                        && mSelectionDelegate.isSelectionEnabled() && mItem != null;
-                info.setCheckable(checkable);
-                info.setChecked(isChecked());
-            }
-        });
+                        // Announce checked state if selection mode is on. The actual read out from
+                        // talkback is "checked/unchecked, {content description of this view.}"
+                        boolean checkable =
+                                mSelectionDelegate != null
+                                        && mSelectionDelegate.isSelectionEnabled()
+                                        && mItem != null;
+                        info.setCheckable(checkable);
+                        info.setChecked(isChecked());
+                    }
+                });
     }
 
-    /**
-     * Destroys and cleans up itself.
-     */
+    /** Destroys and cleans up itself. */
     public void destroy() {
         if (mSelectionDelegate != null) {
             mSelectionDelegate.removeObserver(this);
@@ -105,17 +108,13 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         mSelectOnLongClick = selectOnLongClick;
     }
 
-    /**
-     * @param item The item associated with this SelectableItemViewBase.
-     */
+    /** @param item The item associated with this SelectableItemViewBase. */
     public void setItem(E item) {
         mItem = item;
         setChecked(mSelectionDelegate.isItemSelected(item));
     }
 
-    /**
-     * @return The item associated with this SelectableItemViewBase.
-     */
+    /** @return The item associated with this SelectableItemViewBase. */
     public E getItem() {
         return mItem;
     }
@@ -179,9 +178,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         setChecked(checked);
     }
 
-    /**
-     * @return Whether we are currently in selection mode.
-     */
+    /** @return Whether we are currently in selection mode. */
     protected boolean isSelectionModeActive() {
         return mSelectionDelegate.isSelectionEnabled();
     }
@@ -222,9 +219,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         updateView(animate);
     }
 
-    /**
-     * Resets the checked state to be uninitialized.
-     */
+    /** Resets the checked state to be uninitialized. */
     private void resetCheckedState() {
         setChecked(false);
         mIsChecked = null;

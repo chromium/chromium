@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/country_codes/country_codes.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
@@ -25,7 +26,6 @@
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
-#include "components/feed/core/v2/resource_fetcher.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -147,6 +147,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
                "feed-screenshot-mode");
   }
   bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
+
+  std::string GetCountry() override {
+    return country_codes::GetCurrentCountryCode();
+  }
+
   DisplayMetrics GetDisplayMetrics() override {
     return service_delegate_->GetDisplayMetrics();
   }
@@ -168,9 +173,6 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   // behavior is unchanged there.
   bool IsSigninAllowed() override {
     return profile_prefs_->GetBoolean(::prefs::kSigninAllowed);
-  }
-  bool IsSyncOn() override {
-    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);
@@ -258,7 +260,6 @@ FeedService::FeedService(
       network_delegate_.get(), identity_manager, api_key, url_loader_factory,
       profile_prefs);
   image_fetcher_ = std::make_unique<ImageFetcher>(url_loader_factory);
-  resource_fetcher_ = std::make_unique<ResourceFetcher>(url_loader_factory);
   store_ = std::make_unique<FeedStore>(std::move(database));
   persistent_key_value_store_ = std::make_unique<PersistentKeyValueStoreImpl>(
       std::move(key_value_store_database));
@@ -266,8 +267,8 @@ FeedService::FeedService(
   stream_ = std::make_unique<FeedStream>(
       refresh_task_scheduler_.get(), metrics_reporter_.get(),
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
-      image_fetcher_.get(), resource_fetcher_.get(), store_.get(),
-      persistent_key_value_store_.get(), template_url_service, chrome_info);
+      image_fetcher_.get(), store_.get(), persistent_key_value_store_.get(),
+      template_url_service, chrome_info);
   api_ = stream_.get();
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(

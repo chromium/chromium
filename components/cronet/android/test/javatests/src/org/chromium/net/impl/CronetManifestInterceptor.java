@@ -20,7 +20,7 @@ import org.chromium.net.ContextInterceptor;
  *
  * @see org.chromium.net.impl.CronetManifest
  */
-final class CronetManifestInterceptor implements ContextInterceptor {
+public final class CronetManifestInterceptor implements ContextInterceptor {
     private final Bundle mMetaData;
 
     /**
@@ -40,8 +40,10 @@ final class CronetManifestInterceptor implements ContextInterceptor {
                     @Override
                     public ServiceInfo getServiceInfo(ComponentName componentName, int flags)
                             throws NameNotFoundException {
-                        if (!componentName.equals(new ComponentName(getBaseContext(),
-                                    CronetManifest.META_DATA_HOLDER_SERVICE_NAME))) {
+                        if (!componentName.equals(
+                                new ComponentName(
+                                        getBaseContext(),
+                                        CronetManifest.META_DATA_HOLDER_SERVICE_NAME))) {
                             return super.getServiceInfo(componentName, flags);
                         }
 

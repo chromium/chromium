@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -17,7 +18,6 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 
@@ -51,7 +51,7 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 // property of the window.
 sync_pb::SessionTab SessionTabToSyncData(
     const sessions::SessionTab& tab,
-    absl::optional<sync_pb::SyncEnums::BrowserType> browser_type);
+    std::optional<sync_pb::SyncEnums::BrowserType> browser_type);
 
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {

@@ -10,5 +10,9 @@
       "css": ["color.css"],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
 }

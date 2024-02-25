@@ -7,13 +7,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_event_listener_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
+#include "third_party/blink/renderer/core/dom/observable.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 
 namespace blink {
 
@@ -136,6 +140,33 @@ TEST_F(EventTargetTest, EventTargetWithAbortSignalDestroyed) {
   }
   ThreadState::Current()->CollectAllGarbageForTesting();
   controller->abort(scope.GetScriptState());
+}
+
+// EventTarget-constructed Observables add an event listener for each
+// subscription. Ensure that when a subscription becomes inactive, the event
+// listener is removed.
+TEST_F(EventTargetTest,
+       ObservableSubscriptionBecomingInactiveRemovesEventListener) {
+  V8TestingScope scope;
+  EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
+  Observable* observable =
+      event_target->on(AtomicString("test"),
+                       MakeGarbageCollected<ObservableEventListenerOptions>());
+  EXPECT_FALSE(event_target->HasEventListeners());
+
+  AbortController* controller = AbortController::Create(scope.GetScriptState());
+
+  Observer* observer = MakeGarbageCollected<Observer>();
+  V8UnionObserverOrObserverCallback* observer_union =
+      MakeGarbageCollected<V8UnionObserverOrObserverCallback>(observer);
+  SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+  options->setSignal(controller->signal());
+  observable->subscribe(scope.GetScriptState(), observer_union,
+                        /*options=*/options);
+  EXPECT_TRUE(event_target->HasEventListeners());
+
+  controller->abort(scope.GetScriptState());
+  EXPECT_FALSE(event_target->HasEventListeners());
 }
 
 }  // namespace blink

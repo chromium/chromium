@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="article"}, {display="block"}]
+++++TextView text:"This is an article element." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

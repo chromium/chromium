@@ -7,11 +7,15 @@
 #include <stdint.h>
 #include <ui-controls-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
+#include <variant>
 
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
+#include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server.h"
@@ -19,7 +23,12 @@
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/wayland/wayland_display_util.h"
+#include "ui/display/manager/managed_display_info.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -31,20 +40,28 @@ struct UiControls::UiControlsState {
   UiControlsState(const UiControlsState&) = delete;
   UiControlsState& operator=(const UiControlsState&) = delete;
 
-  raw_ptr<Server, ExperimentalAsh> server_;
-  const raw_ptr<const Seat, ExperimentalAsh> seat_;
+  raw_ptr<Server> server_;
+  const raw_ptr<const Seat> seat_;
 
   // Keeps track of the IDs of pending requests for that we still need to emit
   // request_processed events. This is per wl_resource so that we can drop
   // pending requests for a resource when the resource is destroyed.
   std::map<wl_resource*, std::set<uint32_t>> pending_request_ids_;
+
+  // Keeps track of the original display spec to be restored on destroy.
+  std::vector<display::ManagedDisplayInfo> original_displays_;
+  // Pending display info to be added with display_info_done.
+  std::optional<display::ManagedDisplayInfo> pending_display_;
+  // Pending display info lists to be committed with display_info_list_done.
+  std::vector<display::ManagedDisplayInfo> pending_display_info_list_;
 };
 
 namespace {
 
 using UiControlsState = UiControls::UiControlsState;
 
-constexpr uint32_t kUiControlsVersion = 2;
+constexpr uint32_t kUiControlsVersion =
+    ZCR_UI_CONTROLS_V1_DISPLAY_INFO_LIST_DONE_SINCE_VERSION;
 
 base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
                                                   uint32_t id) {
@@ -75,7 +92,11 @@ void ResetInputs(UiControlsState* state) {
   auto* window = ash::Shell::GetPrimaryRootWindow();
   auto pressed_keys = state->seat_->pressed_keys();
   for (auto key : pressed_keys) {
-    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(key.first);
+    const ui::DomCode* physical_key = std::get_if<ui::DomCode>(&key.first);
+    if (!physical_key) {
+      continue;
+    }
+    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(*physical_key);
     ui_controls::SendKeyEvents(window, key_code, ui_controls::kKeyRelease);
   }
 
@@ -105,6 +126,18 @@ void ResetInputs(UiControlsState* state) {
   // TODO(crbug.com/1431512): Fix this issue and the code below should not be
   // necessary.
   ui_controls::SendMouseMove(0, 0);
+}
+
+// Ensure that the display is returned to the default setting.
+void ResetDisplay(UiControlsState* state) {
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplayWithDisplayInfoList(state->original_displays_);
+  ash::ScreenOrientationControllerTestApi(
+      ash::Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  state->original_displays_.clear();
+  state->pending_display_.reset();
+  state->pending_display_info_list_.clear();
 }
 
 void ui_controls_send_key_events(struct wl_client* client,
@@ -170,27 +203,98 @@ void ui_controls_send_touch(struct wl_client* client,
                                              std::move(emit_processed));
 }
 
-void ui_controls_set_toplevel_bounds(struct wl_client* client,
+void ui_controls_set_display_info_id(struct wl_client* client,
                                      struct wl_resource* resource,
-                                     struct wl_resource* toplevel,
-                                     int32_t x,
-                                     int32_t y,
-                                     uint32_t width,
-                                     uint32_t height) {
-  // Exo supports aura_shell, which already has an equivalent request. This
-  // request only needs to be implemented by Weston.
-  NOTIMPLEMENTED();
+                                     uint32_t display_id_hi,
+                                     uint32_t display_id_lo) {
+  auto* state = GetUserDataAs<UiControlsState>(resource);
+
+  int64_t display_id =
+      ui::wayland::FromWaylandDisplayIdPair({display_id_hi, display_id_lo});
+  if (!state->pending_display_) {
+    state->pending_display_ =
+        display::ManagedDisplayInfo::CreateFromSpecWithID({}, display_id);
+  } else {
+    state->pending_display_->set_display_id(display_id);
+  }
+}
+
+void ui_controls_set_display_info_size(struct wl_client* client,
+                                       struct wl_resource* resource,
+                                       uint32_t width,
+                                       uint32_t height) {
+  auto* state = GetUserDataAs<UiControlsState>(resource);
+
+  if (!state->pending_display_) {
+    state->pending_display_ = display::ManagedDisplayInfo::CreateFromSpec(
+        base::StringPrintf("%dx%d", width, height));
+  } else {
+    state->pending_display_->SetBounds(gfx::Rect(width, height));
+  }
+}
+
+void ui_controls_set_display_info_device_scale_factor(
+    struct wl_client* client,
+    struct wl_resource* resource,
+    uint32_t scale_factor) {
+  auto* state = GetUserDataAs<UiControlsState>(resource);
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes much match for reinterpret cast to be meaningful");
+  // bit_cast is needed here because wayland doesn't support
+  // float as primitive type and we are using 32 bits as storage.
+  // static_cast won't work because the original value is integer.
+  float device_scale_factor = base::bit_cast<float>(scale_factor);
+
+  if (!state->pending_display_) {
+    state->pending_display_ = display::ManagedDisplayInfo::CreateFromSpec({});
+  }
+  state->pending_display_->set_device_scale_factor(device_scale_factor);
+}
+
+void ui_controls_display_info_done(struct wl_client* client,
+                                   struct wl_resource* resource) {
+  auto* state = GetUserDataAs<UiControlsState>(resource);
+
+  // Push info to pending display info list.
+  state->pending_display_info_list_.push_back(*state->pending_display_);
+
+  // Reset the state to default values.
+  state->pending_display_.reset();
+}
+
+void ui_controls_display_info_list_done(struct wl_client* client,
+                                        struct wl_resource* resource,
+                                        uint32_t id) {
+  auto emit_processed = UpdateStateAndBindEmitProcessed(resource, id);
+  auto* state = GetUserDataAs<UiControlsState>(resource);
+
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplayWithDisplayInfoList(state->pending_display_info_list_);
+  ash::ScreenOrientationControllerTestApi(
+      ash::Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  state->pending_display_info_list_.clear();
+  state->pending_display_.reset();
+
+  std::move(emit_processed).Run();
 }
 
 const struct zcr_ui_controls_v1_interface ui_controls_implementation = {
-    ui_controls_send_key_events, ui_controls_send_mouse_move,
-    ui_controls_send_mouse_button, ui_controls_send_touch,
-    ui_controls_set_toplevel_bounds};
+    ui_controls_send_key_events,
+    ui_controls_send_mouse_move,
+    ui_controls_send_mouse_button,
+    ui_controls_send_touch,
+    ui_controls_set_display_info_id,
+    ui_controls_set_display_info_size,
+    ui_controls_set_display_info_device_scale_factor,
+    ui_controls_display_info_done,
+    ui_controls_display_info_list_done};
 
 void destroy_ui_controls_resource(struct wl_resource* resource) {
   auto* state = GetUserDataAs<UiControlsState>(resource);
   state->pending_request_ids_.erase(resource);
   ResetInputs(state);
+  ResetDisplay(state);
 }
 
 void bind_ui_controls(wl_client* client,
@@ -198,7 +302,8 @@ void bind_ui_controls(wl_client* client,
                       uint32_t version,
                       uint32_t id) {
   wl_resource* resource =
-      wl_resource_create(client, &zcr_ui_controls_v1_interface, version, id);
+      wl_resource_create(client, &zcr_ui_controls_v1_interface,
+                         std::min(version, kUiControlsVersion), id);
 
   wl_resource_set_implementation(resource, &ui_controls_implementation, data,
                                  destroy_ui_controls_resource);
@@ -211,6 +316,13 @@ UiControls::UiControls(Server* server)
                                                server->GetDisplay()->seat())) {
   wl_global_create(server->GetWaylandDisplay(), &zcr_ui_controls_v1_interface,
                    kUiControlsVersion, state_.get(), bind_ui_controls);
+
+  auto* const display_manager = ash::Shell::Get()->display_manager();
+  auto& display_list = display_manager->active_display_list();
+  for (const display::Display& display : display_list) {
+    state_->original_displays_.push_back(
+        display_manager->GetDisplayInfo(display.id()));
+  }
 }
 
 UiControls::~UiControls() = default;

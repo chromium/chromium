@@ -28,6 +28,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/bottom_sheet.xml",
+    "java/res/layout/bottom_sheet_handlebar.xml",
     "java/res/values/dimens.xml",
   ]
 

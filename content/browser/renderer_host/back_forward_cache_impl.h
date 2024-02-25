@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -57,6 +56,11 @@ BASE_FEATURE(kRecordBackForwardCacheMetricsWithoutEnabling,
 // accidentally passing tests.
 BASE_FEATURE(kBackForwardCacheNoTimeEviction,
              "BackForwardCacheNoTimeEviction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature to allow exposing cross-origin subframes' NotRestoredReasons.
+BASE_FEATURE(kAllowCrossOriginNotRestoredReasons,
+             "AllowCrossOriginNotRestoredReasons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
@@ -171,7 +175,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     }
 
     void SetViewTransitionState(
-        absl::optional<blink::ViewTransitionState> view_transition_state) {
+        std::optional<blink::ViewTransitionState> view_transition_state) {
       stored_page_->SetViewTransitionState(std::move(view_transition_state));
     }
 
@@ -574,17 +578,13 @@ class CONTENT_EXPORT BackForwardCacheImpl
       EvictionInfo(RenderFrameHostImpl& rfh,
                    BackForwardCacheCanStoreDocumentResult* reasons)
           : rfh_to_be_evicted(&rfh), reasons(reasons) {}
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #union
-      RAW_PTR_EXCLUSION RenderFrameHostImpl* const rfh_to_be_evicted;
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #union
-      RAW_PTR_EXCLUSION const BackForwardCacheCanStoreDocumentResult* reasons;
+      const raw_ptr<RenderFrameHostImpl> rfh_to_be_evicted;
+      raw_ptr<const BackForwardCacheCanStoreDocumentResult> reasons;
     };
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
                              RequestedFeatures requested_features,
-                             absl::optional<EvictionInfo> eviction_info);
+                             std::optional<EvictionInfo> eviction_info);
 
     ~NotRestoredReasonBuilder();
 
@@ -642,7 +642,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // applicable. If set, the result returned by the builder will only contain
     // the NotRestoredReason for the RenderFrameHost that causes eviction
     // (instead of the reasons for the whole tree).
-    absl::optional<EvictionInfo> eviction_info_;
+    std::optional<EvictionInfo> eviction_info_;
   };
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
@@ -740,8 +740,10 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   friend class BackForwardCacheImplTest;
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
                            CrossOriginReachableFrameCount);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, FirstCrossOriginReachable);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, CrossOriginAllMasked);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTestExposeCrossOrigin,
+                           FirstCrossOriginReachable);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTestExposeCrossOrigin,
                            SecondCrossOriginReachable);
   // This constructor is for creating a tree for |rfh| as the subtree's root
   // document's frame.
@@ -759,8 +761,17 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // from all the reachable cross-origin iframes. We decrement this count
   // every time we call this function, and report only when |index| is 0 so
   // that reporting happens only for randomly picked one of such iframes.
+  // TODO(crbug.com/1518408): Add "masked" when UA internal reasons such as
+  // memory pressure and browsing instance not swapped are blocking as well.
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasonsInternal(int& index);
+
+  // Returns if any cross-origin iframe in the tree is blocking and is not
+  // a randomly selected iframe (i.e. does not have "masked" as its reason).
+  // If this is true, we need to add "masked" to main frame's reasons.
+  // |index| is the random index of the cross-origin iframe that we decided to
+  // report from all the reachable cross-origin iframes.
+  bool HasUnexposedCrossOriginBlockingIframe(int& index);
 
   // Count the number of cross-origin frames that are direct children of
   // same-origin frames, including the main frame, in the tree.
@@ -784,9 +795,9 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   const bool is_root_outermost_main_frame_;
   // The id, name and src attribute of the frame owner of this subtree's root
   // document.
-  const absl::optional<std::string> id_;
-  const absl::optional<std::string> name_;
-  const absl::optional<std::string> src_;
+  const std::optional<std::string> id_;
+  const std::optional<std::string> name_;
+  const std::optional<std::string> src_;
   // See |GetUrl|
   const GURL url_;
 };

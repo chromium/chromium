@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] enumerateDevices rotates deviceId after clearing site data
+  assert_false: deviceIds are not kept after clearing site data expected false got true
+Harness: the test ran to completion.

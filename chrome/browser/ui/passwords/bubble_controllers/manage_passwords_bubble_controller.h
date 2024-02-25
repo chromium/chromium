@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -24,12 +25,17 @@ struct FaviconImageResult;
 
 namespace password_manager {
 class PasswordStoreInterface;
-enum class SyncState;
 }  // namespace password_manager
 
 // This controller provides data and actions for the ManagePasswordsView.
 class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
  public:
+  enum class SyncState {
+    kNotActive,
+    kActiveWithSyncFeatureEnabled,
+    kActiveWithAccountPasswords,
+  };
+
   explicit ManagePasswordsBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~ManagePasswordsBubbleController() override;
@@ -46,7 +52,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   void RequestFavicon(
       base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
 
-  password_manager::SyncState GetPasswordSyncState();
+  SyncState GetPasswordSyncState() const;
 
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.
@@ -56,8 +62,12 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // bubble footer in clicked by the user.
   void OnGooglePasswordManagerLinkClicked();
 
+  // Called by the view code when the "Save it in Google Account" link in the
+  // buuble footer is clicked by the user.
+  void OnMovePasswordLinkClicked();
+
   // Returns the available credentials which match the current site.
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  base::span<std::unique_ptr<password_manager::PasswordForm> const>
   GetCredentials() const;
 
   // Calls the password store backend to update the currently selected password
@@ -76,12 +86,15 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // has the same username value as `username`.
   bool UsernameExists(const std::u16string& username);
 
+  // Returns whether user can currently use account storage.
+  bool IsOptedInForAccountStorage() const;
+
   void set_currently_selected_password(
-      const absl::optional<password_manager::PasswordForm>& password) {
+      const std::optional<password_manager::PasswordForm>& password) {
     currently_selected_password_ = password;
   }
 
-  absl::optional<password_manager::PasswordForm>
+  std::optional<password_manager::PasswordForm>
   get_currently_selected_password() {
     return currently_selected_password_;
   }
@@ -118,7 +131,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // If not set, the bubble displays the list of all credentials stored for the
   // current domain. When set, the bubble displays the password details of the
   // currently selected password.
-  absl::optional<password_manager::PasswordForm> currently_selected_password_;
+  std::optional<password_manager::PasswordForm> currently_selected_password_;
 
   base::WeakPtrFactory<ManagePasswordsBubbleController> weak_ptr_factory_{this};
 };

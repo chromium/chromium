@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) We want users to read this screen and understand that they can use any search engine with Chrome.">
+      Choose Your Search Engine
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) We want users to read this screen and understand that they can use any search engine with Chrome.">
+      Choose your search engine
+    </message>
+  </if>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE" desc="This is the body text of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user opens Chrome after updating or installing. The headline for this screen is “Choose your search engine” (new users) or “Confirm your search engine” (existing users). The text is immediately followed by a “Learn More” link. Below that one, users will see a list of search engines to choose from. The screen's goal is to help users understand that they can use any search engine with Chrome, that the search engines order includes randomization, and that the user can change their mind at any time.">
+    These search engines are shown in random order. You can change your default anytime in settings.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK" desc="This text is linkified and follows a paragraph of text. Clicking the “Learn more” link opens a card that in this case explains more why users are being prompted and what a search engine does in Chrome.">
+    Learn more
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL" desc="Accessibility label for the “Learn more” link in the search engine choice screen. Clicking the link will open a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome.">
+    Learn more about your search engine in Chrome
+  </message>
+
+  <if expr="use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. It is on a screen that appears when the user opens Chrome after updating or installing it. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for search queries“.">
+      Set as Default
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. It is on a screen that appears when the user opens Chrome after updating or installing it. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for search queries“.">
+      Set as default
+    </message>
+  </if>
+
+  <if expr="use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. This string is before the “Based on a law in your region...” string. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
+      Your Search Engine in Chrome
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. This string is before the “Based on a law in your region...” string. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
+      Your search engine in Chrome
+    </message>
+  </if>
+
+  <if expr="is_ios">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE_IOS" desc="This string is the heading of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
+        Learn More
+    </message>
+
+    <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_INTRO_IOS" desc="This string is the beginning of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This screen appears when the user taps or clicks “Learn more” on the search engine choice screen. We want users to read this screen and understand that they can use any search engine with Chrome and what the impact of their choice might be.">
+        Your Search Engine in Chrome
+    </message>
+  </if>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH" desc="This is the first paragraph of the body text of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. This screen provides the following details: 1. the list includes search engines that are popular in the user’s region and the order includes randomization (not in order of recommendation); 2. features may be unavailable if the chosen default search engine doesn’t support them; 3. the user can change their mind at any time. This card appears when the user taps or clicks “Learn more” on the search engine choice screen. The headline for this card is “Your search engine in Chrome”.">
+    Based on a law in your region, Chrome asks you to choose your default search engine. These search engines are popular in your region and are shown in random order.
+  </message>
+  <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_SECOND_PARAGRAPH" desc="This is the second paragraph of the body text of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. This screen provides the following details: 1. the list includes search engines that are popular in the user’s region and the order includes randomization (not in order of recommendation); 2. features may be unavailable if the chosen default search engine doesn’t support them; 3. the user can change their mind at any time. This card appears when the user taps or clicks “Learn more” on the search engine choice screen. The headline for this card is “Your search engine in Chrome”.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Your default search engine lets you search the web and powers Chrome features<ph name="END_BOLD">&lt;/b&gt;</ph> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn’t support it.
+  </message>
+  <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH" desc="This is the third paragraph of the body text of a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome. This screen provides the following details: 1. the list includes search engines that are popular in the user’s region and the order includes randomization (not in order of recommendation); 2. features may be unavailable if the chosen default search engine doesn’t support them; 3. the user can change their mind at any time. This card appears when the user taps or clicks “Learn more” on the search engine choice screen. The headline for this card is “Your search engine in Chrome”.">
+    You can change your search engine anytime in Chrome’s settings.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT" desc="Text to display in an Omnibox illustration on the search engine choice screen that shows that the box would make web searches using the given search engine provider. [Length: 25em]">
+    Search with <ph name="PRODUCT_NAME">$1<ex>Google</ex></ph>
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome." formatter_data="android_java">
+    These search engines are popular in your region and are shown in random order
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE" desc="This string is body text of a Chrome setting that lets a user select the search engine that they want to use. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) The string explains how a search engine will impact their experience in Chrome. The “Learn more” link opens a help center article about the default search engine.">
+    The search engine you choose will be used for features like searching from the address bar and from images on web pages.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CHANGE_DEFAULT_ENGINE" desc="This string is found on a button next to a Chrome setting that lets a user select the search engine that they want to use. The screen displays the user’s current search engine, and the button opens a new dialog where the user can change their chosen default search engine. This text is a verb, and is short for the longer phrase “Change my chosen search engine.“">
+    Change
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET" desc="This string describes what a search engine can do. The string is only shown if a search engine does not provide their own marketing snippet. The string is ambiguous and has a neutral, unopinionated tone.">
+    You can use <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> to search the web.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
+    More
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL" desc="Accessibility action to expand the search engine description.">
+    Search engine details
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL" desc="This confirmation message is intended to help users understand that their choice is now saved. It appears after the user changes their default search engine in Chrome settings. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.)">
+    <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> is now your default search engine
+  </message>
+</grit-part>

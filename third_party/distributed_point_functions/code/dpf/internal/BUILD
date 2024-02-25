@@ -1,3 +1,17 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 load("@com_github_google_iree//build_tools/embed_data:build_defs.bzl", "cc_embed_data")
 
@@ -17,12 +31,16 @@ cc_library(
         "//dpf:status_macros",
         "//dpf:tuple",
         "//dpf:xor_wrapper",
-        "@com_github_google_glog//:glog",
-        "@com_google_absl//absl/base",
+        "@com_google_absl//absl/base:config",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/meta:type_traits",
         "@com_google_absl//absl/numeric:int128",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/utility",
+        "@com_google_protobuf//:protobuf_lite",
     ],
 )
 
@@ -32,7 +50,15 @@ cc_test(
     deps = [
         ":status_matchers",
         ":value_type_helpers",
+        "//dpf:distributed_point_function_cc_proto",
+        "//dpf:int_mod_n",
+        "//dpf:tuple",
         "@com_github_google_googletest//:gtest_main",
+        "@com_google_absl//absl/base:config",
+        "@com_google_absl//absl/numeric:int128",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ],
 )
 
@@ -65,9 +91,15 @@ cc_library(
         "//dpf:distributed_point_function_cc_proto",
         "//dpf:status_macros",
         "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/log:absl_check",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/numeric:int128",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/types:span",
+        "@com_google_protobuf//:protobuf_lite",
     ],
 )
 
@@ -93,8 +125,12 @@ cc_test(
         ":proto_validator",
         ":proto_validator_test_textproto_embed",
         ":status_matchers",
+        "//dpf:distributed_point_function_cc_proto",
         "//dpf:tuple",
         "@com_github_google_googletest//:gtest_main",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_protobuf//:protobuf",
     ],
@@ -109,10 +145,11 @@ cc_library(
         "//dpf:aes_128_fixed_key_hash",
         "//dpf:status_macros",
         "@boringssl//:crypto",
-        "@com_github_google_glog//:glog",
         "@com_github_google_highway//:hwy",
         "@com_google_absl//absl/base:config",
         "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/container:inlined_vector",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/numeric:int128",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/types:span",
@@ -132,6 +169,8 @@ cc_test(
         "@com_github_google_highway//:hwy",
         "@com_github_google_highway//:hwy_test_util",
         "@com_google_absl//absl/numeric:int128",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -156,6 +195,16 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "maybe_deref_span",
+    hdrs = ["maybe_deref_span.h"],
+    deps = [
+        "@com_google_absl//absl/meta:type_traits",
+        "@com_google_absl//absl/types:span",
+        "@com_google_absl//absl/types:variant",
+    ],
+)
+
 cc_test(
     name = "aes_128_fixed_key_hash_hwy_test",
     srcs = [
@@ -167,11 +216,23 @@ cc_test(
         ":status_matchers",
         "//dpf:aes_128_fixed_key_hash",
         "@boringssl//:crypto",
-        "@com_github_google_glog//:glog",
         "@com_github_google_googletest//:gtest_main",
         "@com_github_google_highway//:hwy",
         "@com_github_google_highway//:hwy_test_util",
         "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/numeric:int128",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/types:span",
+    ],
+)
+
+cc_test(
+    name = "maybe_deref_span_test",
+    srcs = ["maybe_deref_span_test.cc"],
+    deps = [
+        ":maybe_deref_span",
+        "@com_github_google_googletest//:gtest_main",
     ],
 )

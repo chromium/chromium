@@ -45,8 +45,7 @@ void ReceiverMediaToMojoAdapter::OnFrameAccessHandlerReady(
 }
 
 void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
-    mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    mojom::ReadyFrameInBufferPtr buffer) {
   DCHECK(frame_access_handler_);
 
   media::ReadyFrameInBuffer media_buffer(
@@ -56,18 +55,7 @@ void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
                          buffer->buffer_id)),
       std::move(buffer->frame_info));
 
-  std::vector<media::ReadyFrameInBuffer> media_scaled_buffers;
-  media_scaled_buffers.reserve(scaled_buffers.size());
-  for (auto& scaled_buffer : scaled_buffers) {
-    media_scaled_buffers.emplace_back(
-        scaled_buffer->buffer_id, scaled_buffer->frame_feedback_id,
-        std::make_unique<media::ScopedFrameDoneHelper>(
-            base::BindOnce(&OnFramePropagationComplete, frame_access_handler_,
-                           scaled_buffer->buffer_id)),
-        std::move(scaled_buffer->frame_info));
-  }
-  receiver_->OnFrameReadyInBuffer(std::move(media_buffer),
-                                  std::move(media_scaled_buffers));
+  receiver_->OnFrameReadyInBuffer(std::move(media_buffer));
 }
 
 void ReceiverMediaToMojoAdapter::OnBufferRetired(int32_t buffer_id) {
@@ -83,8 +71,9 @@ void ReceiverMediaToMojoAdapter::OnFrameDropped(
   receiver_->OnFrameDropped(reason);
 }
 
-void ReceiverMediaToMojoAdapter::OnNewCropVersion(uint32_t crop_version) {
-  receiver_->OnNewCropVersion(crop_version);
+void ReceiverMediaToMojoAdapter::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
+  receiver_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
 }
 
 void ReceiverMediaToMojoAdapter::OnFrameWithEmptyRegionCapture() {

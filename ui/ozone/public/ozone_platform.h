@@ -26,7 +26,7 @@ class NativeDisplayDelegate;
 }
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 enum class PlatformKeyboardHookTypes;
 
 class CursorFactory;
@@ -36,9 +36,6 @@ class InputMethod;
 class InputController;
 class KeyEvent;
 class OverlayManagerOzone;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class PalmDetector;
-#endif
 class PlatformClipboard;
 class PlatformGLEGLUtility;
 class PlatformGlobalShortcutListener;
@@ -143,15 +140,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // back via gpu extra info.
     bool fetch_buffer_formats_for_gmb_on_gpu = false;
 
-#if BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
-    // Linux. At the moment, VA-API Linux implementation supports only X11
-    // backend. This implementation must be refactored to support Ozone
-    // properly. As a temporary solution, VA-API on Linux checks if vaapi is
-    // supported (which implicitly means that it is Ozone/X11).
-    bool supports_vaapi = false;
-#endif
-
     // Indicates that the platform allows client applications to manipulate
     // global screen coordinates. Wayland, for example, disallow it by design.
     bool supports_global_screen_coordinates = true;
@@ -215,6 +203,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // there is a bug. Set this flag to enabled in GPU process when the
     // remaining issues are resolved.
     bool supports_out_of_window_clip_rect = false;
+
+    // Whether wayland server has the fix that applies transformations in the
+    // correct order.
+    bool has_transformation_fix = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
@@ -304,12 +296,15 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget);
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) const;
+
+  // Whether the platform supports compositing windows with transparency.
+  virtual bool IsWindowCompositingSupported() const;
 
   // Returns whether a custom frame should be used for windows.
   // The default behaviour is returning what is suggested by the
@@ -361,17 +356,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   virtual void DumpState(std::ostream& out) const {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sets the proper PalmDetector implementation from outside Ozone. This is
-  // used for touch screen palm rejection on ChromeOS, so this interface should
-  // be only used from ChromeOS. We use this interface instead of directly
-  // creating the implementation because we don't want Ozone code to depend on
-  // ChromeOS code to avoid circular dependency.
-  void SetPalmDetector(std::unique_ptr<PalmDetector> params);
-
-  PalmDetector* GetPalmDetector();
-#endif
-
  protected:
   bool has_initialized_ui() const { return initialized_ui_; }
   bool has_initialized_gpu() const { return initialized_gpu_; }
@@ -408,10 +392,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<PalmDetector> palm_detector_;
-#endif
 };
 
 }  // namespace ui

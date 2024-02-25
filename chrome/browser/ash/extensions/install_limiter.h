@@ -76,7 +76,7 @@ class InstallLimiter : public KeyedService {
                   const CRXFileInfo& file_info);
 
   // Called when CrxInstaller::InstallCrx() finishes.
-  void OnInstallerDone(const absl::optional<CrxInstallError>& error);
+  void OnInstallerDone(const std::optional<CrxInstallError>& error);
 
   // Checks that OnAllExternalProvidersReady() has been called and all file
   // sizes for added installations are determined. If this method returns true,

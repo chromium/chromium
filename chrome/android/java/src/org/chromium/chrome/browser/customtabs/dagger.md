@@ -83,6 +83,11 @@ Dagger will complain if the life cycles don’t match up (for example, you’re 
 If there’s a circular dependency, take `Lazy<Foo>` instead of `Foo`.
 A `Lazy<T>` will be resolved the first time it is accessed.
 
+`Lazy` can also be used when you want Dagger to provide a class that won't be ready at the time it
+needs to be injected. For example,`ChromeActivityCommonsModule` contains a bunch of
+`Supplier<Foo>`s that will only return non-null once some stage of startup has been completed.
+To use `Foo` in a class that's created earlier than it, take a `Lazy<Foo>` in the constructor.
+
 ### access a non-Dagger class from a Dagger class
 
 There are quite a few non-Dagger classes already provided to Dagger, so see if the class you want is provided in any of the Modules:

@@ -6,80 +6,145 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
-#include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::Property;
 
 TEST(AggregatableValuesTest, Parse) {
+  EXPECT_THAT(AggregatableValues::FromJSON(nullptr), ValueIs(IsEmpty()));
+
   const struct {
     const char* description;
-    absl::optional<base::Value> json;
-    base::expected<AggregatableValues, TriggerRegistrationError> expected;
+    const char* json;
+    ::testing::Matcher<base::expected<std::vector<AggregatableValues>,
+                                      TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
-          "null",
-          absl::nullopt,
-          AggregatableValues(),
-      },
-      {
           "empty",
-          base::Value(base::Value::Dict()),
-          AggregatableValues(),
+          R"json({})json",
+          ValueIs(IsEmpty()),
       },
       {
-          "not_dictionary",
-          base::Value(base::Value::List()),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesWrongType),
+          "empty_list",
+          R"json([])json",
+          ValueIs(IsEmpty()),
+      },
+      {
+          "not_dictionary_or_list",
+          R"json(0)json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
           "value_not_int",
-          base::test::ParseJson(R"json({"a": true})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueWrongType),
+          R"json({"a": true})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueWrongType),
       },
       {
           "value_below_range",
-          base::test::ParseJson(R"json({"a": 0})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          R"json({"a": 0})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
       },
       {
           "value_above_range",
-          base::test::ParseJson(R"json({"a": 65537})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          R"json({"a": 65537})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
       },
       {
           "valid",
-          base::test::ParseJson(R"json({"a": 1, "b": 65536})json"),
-          *AggregatableValues::Create({
-              {"a", 1},
-              {"b", 65536},
-          }),
+          R"json({"a": 1, "b": 65536})json",
+          ValueIs(ElementsAre(
+              AllOf(Property(&AggregatableValues::values,
+                             ElementsAre(Pair("a", 1), Pair("b", 65536))),
+                    Property(&AggregatableValues::filters, FilterPair())))),
       },
-  };
+      {
+          "list_element_wrong_type",
+          R"json([123])json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesListWrongType),
+      },
+      {
+          "list_values_field_missing",
+          R"json([
+                {
+                  "a": 1,
+                  "b": 65536,
+                }
+          ])json",
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableValuesListValuesFieldMissing),
+      },
+      {
+          "list_filters_field_wrong_type",
+          R"json([
+                {
+                  "values": {"a": 1,"b": 65536},
+                  "filters": 123,
+                }
+          ])json",
+          ErrorIs(TriggerRegistrationError::kFiltersWrongType),
+      },
+      {
+          "valid_list",
+          R"json([
+                {
+                  "values": {"a": 1,"b": 65536},
+                }
+          ])json",
+          ValueIs(ElementsAre(
+              AllOf(Property(&AggregatableValues::values,
+                             ElementsAre(Pair("a", 1), Pair("b", 65536))),
+                    Property(&AggregatableValues::filters, FilterPair())))),
+      },
+      {
+          "valid_list_with_filters",
+          R"json([
+                {
+                  "values":{"a": 1, "b": 65536},
+                  "filters": [{
+                    "c": ["1"]
+                  }],
+                  "not_filters": [{
+                    "d": ["2"]
+                  }]
+                }
+          ])json",
+          ValueIs(ElementsAre(AllOf(
+              Property(&AggregatableValues::values,
+                       ElementsAre(Pair("a", 1), Pair("b", 65536))),
+              Property(
+                  &AggregatableValues::filters,
+                  FilterPair(
+                      /*positive=*/{*FilterConfig::Create({{"c", {"1"}}})},
+                      /*negative=*/{*FilterConfig::Create({{"d", {"2"}}})}))))),
+      }};
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(AggregatableValues::FromJSON(base::OptionalToPtr(test_case.json)),
-              test_case.expected)
-        << test_case.description;
+    SCOPED_TRACE(test_case.description);
+    base::Value value = base::test::ParseJson(test_case.json);
+    EXPECT_THAT(AggregatableValues::FromJSON(&value), test_case.matches);
   }
 }
 
@@ -92,33 +157,11 @@ TEST(AggregatableValuesTest, Parse_KeyLength) {
   };
 
   for (size_t length = 0; length < 26; length++) {
-    EXPECT_TRUE(parse_dict_with_key_length(length).has_value());
+    EXPECT_THAT(parse_dict_with_key_length(length), ValueIs(_));
   }
 
   EXPECT_THAT(parse_dict_with_key_length(26),
-              base::test::ErrorIs(
-                  TriggerRegistrationError::kAggregatableValuesKeyTooLong));
-}
-
-TEST(AggregatableValuesTest, Parse_KeyCount) {
-  auto parse_dict_with_key_count = [](size_t count) {
-    base::Value::Dict dict;
-    for (size_t i = 0; i < count; i++) {
-      dict.Set(base::NumberToString(i), 1);
-    }
-    base::Value value(std::move(dict));
-    return AggregatableValues::FromJSON(&value);
-  };
-
-  for (size_t count = 0; count <= kMaxAggregationKeysPerSourceOrTrigger;
-       count++) {
-    EXPECT_TRUE(parse_dict_with_key_count(count).has_value());
-  }
-
-  EXPECT_THAT(
-      parse_dict_with_key_count(kMaxAggregationKeysPerSourceOrTrigger + 1),
-      base::test::ErrorIs(
-          TriggerRegistrationError::kAggregatableValuesTooManyKeys));
+              ErrorIs(TriggerRegistrationError::kAggregatableValuesKeyTooLong));
 }
 
 TEST(AggregatableValuesTest, ToJson) {
@@ -128,11 +171,23 @@ TEST(AggregatableValuesTest, ToJson) {
   } kTestCases[] = {
       {
           AggregatableValues(),
-          R"json({})json",
+          R"json({"values": {}})json",
       },
       {
-          *AggregatableValues::Create({{"a", 1}, {"b", 2}}),
-          R"json({"a":1,"b":2})json",
+          *AggregatableValues::Create(/*values=*/{{"a", 1}, {"b", 2}},
+                                      FilterPair()),
+          R"json({"values":{"a": 1,"b": 2}})json",
+      },
+      {
+          *AggregatableValues::Create(
+              /*values=*/{{"a", 1}, {"b", 2}},
+              FilterPair(/*positive=*/{*FilterConfig::Create({{"c", {}}})},
+                         /*negative=*/{*FilterConfig::Create({{"d", {}}})})),
+          R"json({
+            "filters": [{"c": []}],
+            "not_filters": [{"d": []}],
+            "values":{"a": 1,"b": 2}
+          })json",
       },
   };
 

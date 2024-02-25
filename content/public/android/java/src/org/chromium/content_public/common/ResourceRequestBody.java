@@ -4,13 +4,13 @@
 
 package org.chromium.content_public.common;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import androidx.annotation.VisibleForTesting;
 
-/**
- * Wrapper around the native content::ResourceRequestBody.
- */
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
+/** Wrapper around the native content::ResourceRequestBody. */
 @JNINamespace("content")
 public final class ResourceRequestBody {
     /**
@@ -42,8 +42,9 @@ public final class ResourceRequestBody {
         return new ResourceRequestBody(encodedNativeForm);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    private byte[] getEncodedNativeForm() {
+    public byte[] getEncodedNativeForm() {
         return mEncodedNativeForm;
     }
 
@@ -59,8 +60,9 @@ public final class ResourceRequestBody {
         return createFromEncodedNativeForm(encodedNativeForm);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         /**
          * Equivalent of the native content::ResourceRequestBody::CreateFromBytes.
          *

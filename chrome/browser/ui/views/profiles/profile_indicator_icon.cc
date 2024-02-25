@@ -54,5 +54,5 @@ void ProfileIndicatorIcon::SetIcon(const gfx::Image& icon) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(ProfileIndicatorIcon, views::View)
+BEGIN_METADATA(ProfileIndicatorIcon)
 END_METADATA

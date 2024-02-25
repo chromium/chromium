@@ -5,6 +5,8 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxState} from '../chromevox_state.js';
@@ -130,3 +132,5 @@ export class BrailleBackground {
 
 /** @type {BrailleBackground} */
 BrailleBackground.instance;
+
+TestImportManager.exportForTesting(BrailleBackground);

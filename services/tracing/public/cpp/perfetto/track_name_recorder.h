@@ -14,7 +14,7 @@
 
 namespace tracing {
 
-absl::optional<uint64_t> GetTraceCrashId();
+std::optional<uint64_t> GetTraceCrashId();
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // A class that emits track descriptors for Chrome processes and threads.

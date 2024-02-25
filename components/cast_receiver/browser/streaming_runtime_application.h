@@ -8,8 +8,8 @@
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace cast_receiver {
 
@@ -46,7 +46,7 @@ class StreamingRuntimeApplication final
       const media::VideoTransformation& transformation) override;
 
   // Returns the network context used by |receiver_session_client_|.
-  const cast_streaming::NetworkContextGetter network_context_getter_;
+  const network::NetworkContextGetter network_context_getter_;
 
   // Handles communication with other MessagePort endpoints.
   std::unique_ptr<MessagePortService> message_port_service_;

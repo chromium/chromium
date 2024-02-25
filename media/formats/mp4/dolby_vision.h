@@ -20,6 +20,7 @@ struct MEDIA_EXPORT DOVIDecoderConfigurationRecord {
   uint8_t rpu_present_flag = 0;
   uint8_t el_present_flag = 0;
   uint8_t bl_present_flag = 0;
+  uint8_t dv_bl_signal_compatibility_id = 0;
 
   VideoCodecProfile codec_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
 

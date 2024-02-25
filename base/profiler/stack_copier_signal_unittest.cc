@@ -82,9 +82,6 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(THREAD_SANITIZER)
 #define MAYBE_CopyStack DISABLED_CopyStack
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-// https://crbug.com/1042974
-#define MAYBE_CopyStack DISABLED_CopyStack
 #elif BUILDFLAG(IS_LINUX)
 // We don't support getting the stack base address on Linux, and thus can't
 // copy the stack. // https://crbug.com/1394278

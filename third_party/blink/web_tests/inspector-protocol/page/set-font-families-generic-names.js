@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // TODO(crbug.com/122303): Support generic font families added to CSS Fonts
   // Module Level 4.
   const genericFamilyNames = [

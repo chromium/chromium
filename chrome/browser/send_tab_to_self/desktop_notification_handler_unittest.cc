@@ -104,6 +104,8 @@ class NotificationDisplayServiceMock : public NotificationDisplayService {
 
   MOCK_METHOD2(Close, void(NotificationHandler::Type, const std::string&));
   MOCK_METHOD1(GetDisplayed, void(DisplayedNotificationsCallback));
+  MOCK_METHOD2(GetDisplayedForOrigin,
+               void(const GURL& origin, DisplayedNotificationsCallback));
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
 };
@@ -207,7 +209,7 @@ TEST_F(DesktopNotificationHandlerTest, ClickHandler) {
 
   handler.OnClick(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*action_index=*/1,
-                  /*reply=*/absl::nullopt, base::DoNothing());
+                  /*reply=*/std::nullopt, base::DoNothing());
 }
 
 }  // namespace

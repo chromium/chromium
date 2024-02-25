@@ -34,18 +34,28 @@ class WebGL2ConformanceIntegrationTest(
   @classmethod
   def _GetExtensionList(cls) -> List[str]:
     return [
+        'EXT_clip_control',
         'EXT_color_buffer_float',
         'EXT_color_buffer_half_float',
+        'EXT_conservative_depth',
+        'EXT_depth_clamp',
         'EXT_disjoint_timer_query_webgl2',
         'EXT_float_blend',
+        'EXT_polygon_offset_clamp',
+        'EXT_render_snorm',
         'EXT_texture_compression_bptc',
         'EXT_texture_compression_rgtc',
         'EXT_texture_filter_anisotropic',
+        'EXT_texture_mirror_clamp_to_edge',
         'EXT_texture_norm16',
         'KHR_parallel_shader_compile',
+        'NV_shader_noperspective_interpolation',
         'OES_draw_buffers_indexed',
+        'OES_sample_variables',
+        'OES_shader_multisample_interpolation',
         'OES_texture_float_linear',
         'OVR_multiview2',
+        'WEBGL_blend_func_extended',
         'WEBGL_clip_cull_distance',
         'WEBGL_compressed_texture_astc',
         'WEBGL_compressed_texture_etc',
@@ -59,9 +69,11 @@ class WebGL2ConformanceIntegrationTest(
         'WEBGL_lose_context',
         'WEBGL_multi_draw',
         'WEBGL_multi_draw_instanced_base_vertex_base_instance',
+        'WEBGL_polygon_mode',
         'WEBGL_provoking_vertex',
+        'WEBGL_render_shared_exponent',
         'WEBGL_shader_pixel_local_storage',
-        'WEBGL_video_texture',
+        'WEBGL_stencil_texturing',
     ]
 
   @classmethod

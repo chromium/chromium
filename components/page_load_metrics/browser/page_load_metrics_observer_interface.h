@@ -219,12 +219,15 @@ class PageLoadMetricsObserverInterface {
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) = 0;
 
-  // For prerendered pages, OnPrerenderStart is called instead of OnStart. The
-  // default implementation returns STOP_OBSERVING, so that observers that are
-  // not aware of prerender will not see prerendered page loads.
-  // TODO(crbug.com/1190112): Prerender support is still in progress. Observers
-  // may not receive some signals.
+  // For prerendered pages, OnPrerenderStart is called instead of OnStart.
   virtual ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) = 0;
+
+  // For primary pages in the preview mode, OnPreviewStart is called instead of
+  // OnStart. The default implementation in PageLoadMetricsObserver returns
+  // STOP_OBSERVING. See b:291867362 to track the project progress.
+  virtual ObservePolicy OnPreviewStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) = 0;
 
@@ -348,8 +351,7 @@ class PageLoadMetricsObserverInterface {
 
   // OnPageInputTimingUpdate is triggered when an updated InputTiming is
   // available at the page level.
-  virtual void OnPageInputTimingUpdate(uint64_t num_interactions,
-                                       uint64_t num_input_events) = 0;
+  virtual void OnPageInputTimingUpdate(uint64_t num_interactions) = 0;
 
   // OnPageRenderDataChanged is triggered when an updated PageRenderData is
   // available at the page level. This method may be called multiple times over
@@ -548,16 +550,23 @@ class PageLoadMetricsObserverInterface {
   virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;
 
   // Called when a cookie is read for a resource request or by document.cookie.
-  virtual void OnCookiesRead(const GURL& url,
-                             const GURL& first_party_url,
-                             const net::CookieList& cookie_list,
-                             bool blocked_by_policy) = 0;
+  virtual void OnCookiesRead(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) = 0;
 
   // Called when a cookie is set by a header or via document.cookie.
-  virtual void OnCookieChange(const GURL& url,
-                              const GURL& first_party_url,
-                              const net::CanonicalCookie& cookie,
-                              bool blocked_by_policy) = 0;
+  virtual void OnCookieChange(
+      const GURL& url,
+      const GURL& first_party_url,
+      const net::CanonicalCookie& cookie,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) = 0;
 
   // Called when a storage access attempt by the origin |url| to |storage_type|
   // is checked by the content settings manager. |blocked_by_policy| is false
@@ -570,14 +579,13 @@ class PageLoadMetricsObserverInterface {
   // Called when prefetch is likely to occur in this page load.
   virtual void OnPrefetchLikely() = 0;
 
-  // Called when the page tracked was just activated after being loaded inside a
-  // portal.
-  virtual void DidActivatePortal(base::TimeTicks activation_time) = 0;
-
   // Called when the page tracked was just activated after being prerendered.
   // |navigation_handle| is for the activation navigation.
   virtual void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) = 0;
+
+  // Called when the previewed page is activated for the tab promotion.
+  virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) = 0;
 
   // Called when V8 per-frame memory usage updates are available. Each
   // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero int64_t

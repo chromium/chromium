@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -37,6 +38,40 @@ bool IsDisallowedByPlatformCapabilities(
          allow_status == HotspotAllowStatus::kDisallowedNoWiFiSecurityModes;
 }
 
+HotspotCapabilitiesProvider::CheckTetheringReadinessResult
+ShillResultToReadinessResult(const std::string& result) {
+  if (result == shill::kTetheringReadinessReady) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady;
+  }
+  if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kUpstreamNetworkNotAvailable;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedByCarrier) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedByCarrier;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedOnFw) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedOnFW;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedOnVariant) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedOnVariant;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedUserNotEntitled) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedUserNotEntitled;
+  }
+  if (result == shill::kTetheringReadinessNotAllowed) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowed;
+  }
+  NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
+  return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+      kUnknownResult;
+}
+
 }  // namespace
 
 HotspotCapabilitiesProvider::HotspotCapabilities::HotspotCapabilities(
@@ -57,9 +92,12 @@ HotspotCapabilitiesProvider::~HotspotCapabilitiesProvider() {
 }
 
 void HotspotCapabilitiesProvider::Init(
-    NetworkStateHandler* network_state_handler) {
+    NetworkStateHandler* network_state_handler,
+    HotspotAllowedFlagHandler* hotspot_allowed_flag_handler) {
   network_state_handler_ = network_state_handler;
   network_state_handler_observer_.Observe(network_state_handler_.get());
+
+  hotspot_allowed_flag_handler_ = hotspot_allowed_flag_handler;
 
   // Add as an observer here so that new hotspot state updated after this call
   // are recognized.
@@ -108,19 +146,17 @@ void HotspotCapabilitiesProvider::NetworkConnectionStateChanged(
     return;
   }
 
-  if (!network->IsConnectingOrConnected()) {
-    // The cellular network got disconnected.
-    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
+  if (!policy_allow_hotspot_) {
+    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedByPolicy);
     return;
   }
 
-  if (network->IsConnectedState()) {
-    ShillManagerClient::Get()->CheckTetheringReadiness(
-        base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()),
-        base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessFailure,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+  if (network->IsOnline()) {
+    CheckTetheringReadiness(base::DoNothing());
+    return;
   }
+
+  SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
 }
 
 void HotspotCapabilitiesProvider::OnShuttingDown() {
@@ -136,7 +172,7 @@ void HotspotCapabilitiesProvider::ResetNetworkStateHandler() {
 }
 
 void HotspotCapabilitiesProvider::OnManagerProperties(
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR)
         << "HotspotCapabilitiesProvider: Failed to get manager properties.";
@@ -205,6 +241,11 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
     return;
   }
 
+  if (!policy_allow_hotspot_) {
+    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedByPolicy);
+    return;
+  }
+
   // Check if there's a connected cellular network
   const NetworkState* connected_cellular_network =
       network_state_handler_->ConnectedNetworkByType(
@@ -219,6 +260,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
 
 void HotspotCapabilitiesProvider::CheckTetheringReadiness(
     CheckTetheringReadinessCallback callback) {
+  hotspot_allowed_flag_handler_->UpdateFlags();
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->CheckTetheringReadiness(
       base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessSuccess,
@@ -233,35 +275,19 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     CheckTetheringReadinessCallback callback,
     const std::string& result) {
   using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
-
+  NET_LOG(EVENT) << "Check tethering readiness result: " << result;
+  CheckTetheringReadinessResult readiness_result =
+      ShillResultToReadinessResult(result);
   if (result == shill::kTetheringReadinessReady) {
-    SetHotspotAllowStatus(policy_allow_hotspot_
-                              ? HotspotAllowStatus::kAllowed
-                              : HotspotAllowStatus::kDisallowedByPolicy);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kReady);
-    std::move(callback).Run(CheckTetheringReadinessResult::kReady);
-    return;
-  }
-  if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
+    SetHotspotAllowStatus(HotspotAllowStatus::kAllowed);
+  } else if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
+    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
+  } else {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
-    std::move(callback).Run(
-        CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
-    return;
   }
-  if (result == shill::kTetheringReadinessNotAllowed) {
-    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kNotAllowed);
-    std::move(callback).Run(CheckTetheringReadinessResult::kNotAllowed);
-    return;
-  }
-  NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
-  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-      CheckTetheringReadinessResult::kUnknownResult);
-  std::move(callback).Run(CheckTetheringReadinessResult::kUnknownResult);
+
+  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(readiness_result);
+  std::move(callback).Run(readiness_result);
 }
 
 void HotspotCapabilitiesProvider::OnCheckReadinessFailure(
@@ -296,8 +322,7 @@ void HotspotCapabilitiesProvider::NotifyHotspotCapabilitiesChanged() {
 void HotspotCapabilitiesProvider::SetPolicyAllowed(bool allowed) {
   policy_allow_hotspot_ = allowed;
   if (!policy_allow_hotspot_ &&
-      hotspot_capabilities_.allow_status ==
-          hotspot_config::mojom::HotspotAllowStatus::kAllowed) {
+      !IsDisallowedByPlatformCapabilities(hotspot_capabilities_.allow_status)) {
     SetHotspotAllowStatus(
         hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy);
     return;
@@ -305,7 +330,7 @@ void HotspotCapabilitiesProvider::SetPolicyAllowed(bool allowed) {
   if (policy_allow_hotspot_ &&
       hotspot_capabilities_.allow_status ==
           hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy) {
-    SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+    CheckTetheringReadiness(base::DoNothing());
   }
 }
 

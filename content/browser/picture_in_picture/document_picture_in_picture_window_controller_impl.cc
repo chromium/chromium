@@ -107,8 +107,8 @@ void DocumentPictureInPictureWindowControllerImpl::Close(
 }
 
 void DocumentPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
-  Close(false /* should_pause_video */);
   FocusInitiator();
+  Close(false /* should_pause_video */);
 }
 
 void DocumentPictureInPictureWindowControllerImpl::OnWindowDestroyed(
@@ -121,6 +121,11 @@ WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
+std::optional<url::Origin>
+DocumentPictureInPictureWindowControllerImpl::GetOrigin() {
+  return std::nullopt;
+}
+
 void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   // The opener web contents are being destroyed. Stop observing, and forget
   // `opener_web_contents_`. This will also prevent `NotifyAndStopObserving`
@@ -131,10 +136,10 @@ void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   Close(/*should_pause_video=*/true);
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 DocumentPictureInPictureWindowControllerImpl::GetWindowBounds() {
   if (!child_contents_)
-    return absl::nullopt;
+    return std::nullopt;
   return child_contents_->GetContainerBounds();
 }
 

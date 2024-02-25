@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
@@ -99,10 +100,6 @@ InputType::ValueMode ColorInputType::GetValueMode() const {
 
 void ColorInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeColor);
-}
-
-const AtomicString& ColorInputType::FormControlType() const {
-  return input_type_names::kColor;
 }
 
 bool ColorInputType::SupportsRequired() const {
@@ -194,7 +191,7 @@ void ColorInputType::ClosePopupView() {
 }
 
 bool ColorInputType::HasOpenedPopup() const {
-  return chooser_;
+  return chooser_ != nullptr;
 }
 
 bool ColorInputType::ShouldRespectListAttribute() {
@@ -296,7 +293,7 @@ Vector<mojom::blink::ColorSuggestionPtr> ColorInputType::Suggestions() const {
 }
 
 AXObject* ColorInputType::PopupRootAXObject() {
-  return chooser_ ? chooser_->RootAXObject() : nullptr;
+  return chooser_ ? chooser_->RootAXObject(&GetElement()) : nullptr;
 }
 
 ColorChooserClient* ColorInputType::GetColorChooserClient() {

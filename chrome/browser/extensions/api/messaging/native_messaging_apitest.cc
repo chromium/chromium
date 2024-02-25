@@ -26,11 +26,15 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #endif
 
 namespace extensions {
@@ -94,7 +98,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_host.exe", /*user_level=*/true));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 
 // The Host's filename deliberately contains the character '&' which causes the
@@ -106,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 
 // Make sure that a filename with a space is supported.
@@ -115,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
       "native_messaging_test_echo_ _host.exe", /*user_level=*/false));
 
-  ASSERT(RunExtensionTest("native_messaging_send_native_message_exe"));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
 }
 #endif
 
@@ -173,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
 
 base::CommandLine CreateNativeMessagingConnectCommandLine(
     const std::string& connect_id,
-    const std::string& extension_id =
+    const ExtensionId& extension_id =
         ScopedTestNativeMessagingHost::kExtensionId) {
   base::CommandLine command_line(*base::CommandLine::ForCurrentProcess());
   command_line.AppendSwitchASCII(switches::kNativeMessagingConnectExtension,
@@ -230,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
     FAIL() << catcher.message();
   }
   size_t tabs = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     tabs += browser->tab_strip_model()->count();
   }
   EXPECT_EQ(1u, tabs);
@@ -267,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
     FAIL() << catcher.message();
   }
   size_t tabs = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     tabs += browser->tab_strip_model()->count();
   }
   EXPECT_EQ(1u, tabs);
@@ -484,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
     FAIL() << catcher_->message();
   }
   size_t tabs = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     tabs += browser->tab_strip_model()->count();
   }
   EXPECT_EQ(0u, tabs);
@@ -493,6 +497,64 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+class NativeHostExecutablesLaunchDirectlyPolicyTest
+    : public extensions::NativeMessagingApiTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  NativeHostExecutablesLaunchDirectlyPolicyTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kLaunchWindowsNativeHostsDirectly,
+        IsDirectLaunchEnabled());
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void TearDownOnMainThread() override {
+    profile_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  bool IsDirectLaunchEnabled() const { return GetParam(); }
+
+ protected:
+  extensions::ScopedTestNativeMessagingHost test_host_;
+  std::unique_ptr<TestingProfile> profile_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NativeHostExecutablesLaunchDirectlyPolicyTest,
+                       PolicyDisabledTest) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kNativeHostsExecutablesLaunchDirectly, true);
+
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
+
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+IN_PROC_BROWSER_TEST_P(NativeHostExecutablesLaunchDirectlyPolicyTest,
+                       PolicyEnabledTest) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kNativeHostsExecutablesLaunchDirectly, false);
+
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
+
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+INSTANTIATE_TEST_SUITE_P(NativeHostExecutablesLaunchDirectlyPolicyTestP,
+                         NativeHostExecutablesLaunchDirectlyPolicyTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace extensions

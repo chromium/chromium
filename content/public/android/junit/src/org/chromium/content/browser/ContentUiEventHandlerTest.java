@@ -38,14 +38,10 @@ public class ContentUiEventHandlerTest {
     private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final int NATIVE_CONTENT_UI_EVENT_HANDLER = 2;
 
-    @Mock
-    private NavigationController mNavigationController;
-    @Mock
-    private WebContentsImpl.Natives mWebContentsJniMock;
-    @Mock
-    private ContentUiEventHandler.Natives mContentUiEventHandlerJniMock;
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Mock private NavigationController mNavigationController;
+    @Mock private WebContentsImpl.Natives mWebContentsJniMock;
+    @Mock private ContentUiEventHandler.Natives mContentUiEventHandlerJniMock;
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private ContentUiEventHandler mContentUiEventHandler;
 
@@ -70,14 +66,17 @@ public class ContentUiEventHandlerTest {
         EventForwarder eventForwarder = mock(EventForwarder.class);
         when(eventForwarder.isTrackpadToMouseEventConversionEnabled()).thenReturn(true);
         when(eventForwarder.createOffsetMotionEventIfNeeded(any()))
-                .thenAnswer((Answer<MotionEvent>) invocation -> {
-                    Object[] args = invocation.getArguments();
-                    return (MotionEvent) args[0];
-                });
+                .thenAnswer(
+                        (Answer<MotionEvent>)
+                                invocation -> {
+                                    Object[] args = invocation.getArguments();
+                                    return (MotionEvent) args[0];
+                                });
         doReturn(eventForwarder).when(webContentsImpl).getEventForwarder();
 
-        mContentUiEventHandler = ContentUiEventHandler.createForTesting(
-                webContentsImpl, NATIVE_CONTENT_UI_EVENT_HANDLER);
+        mContentUiEventHandler =
+                ContentUiEventHandler.createForTesting(
+                        webContentsImpl, NATIVE_CONTENT_UI_EVENT_HANDLER);
     }
 
     @Test
@@ -93,12 +92,21 @@ public class ContentUiEventHandlerTest {
 
     private void verifySendMouseEvent(MotionEvent event) {
         verify(mContentUiEventHandlerJniMock)
-                .sendMouseEvent(NATIVE_CONTENT_UI_EVENT_HANDLER, mContentUiEventHandler,
-                        MotionEventUtils.getEventTimeNanos(event), event.getActionMasked(),
-                        event.getX(), event.getY(), event.getPointerId(0), event.getPressure(0),
-                        event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
-                        EventForwarder.getMouseEventActionButton(event), event.getButtonState(),
-                        event.getMetaState(), MotionEvent.TOOL_TYPE_MOUSE);
+                .sendMouseEvent(
+                        NATIVE_CONTENT_UI_EVENT_HANDLER,
+                        mContentUiEventHandler,
+                        MotionEventUtils.getEventTimeNanos(event),
+                        event.getActionMasked(),
+                        event.getX(),
+                        event.getY(),
+                        event.getPointerId(0),
+                        event.getPressure(0),
+                        event.getOrientation(0),
+                        event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                        EventForwarder.getMouseEventActionButton(event),
+                        event.getButtonState(),
+                        event.getMetaState(),
+                        MotionEvent.TOOL_TYPE_MOUSE);
     }
 
     private static MotionEvent getTrackpadLeftClickEvent() {
@@ -110,8 +118,21 @@ public class ContentUiEventHandlerTest {
     }
 
     private static MotionEvent getTrackpadEvent(int action, int buttonState) {
-        return MotionEvent.obtain(0, 1, action, 1, getToolTypeFingerProperties(),
-                getPointerCoords(), 0, buttonState, 0, 0, 0, 0, getTrackpadSource(), 0);
+        return MotionEvent.obtain(
+                0,
+                1,
+                action,
+                1,
+                getToolTypeFingerProperties(),
+                getPointerCoords(),
+                0,
+                buttonState,
+                0,
+                0,
+                0,
+                0,
+                getTrackpadSource(),
+                0);
     }
 
     private static MotionEvent.PointerProperties[] getToolTypeFingerProperties() {

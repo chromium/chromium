@@ -5,16 +5,15 @@
 #ifndef EXTENSIONS_BROWSER_UPDATER_EXTENSION_DOWNLOADER_DELEGATE_H_
 #define EXTENSIONS_BROWSER_UPDATER_EXTENSION_DOWNLOADER_DELEGATE_H_
 
+#include <optional>
 #include <set>
 #include <string>
-
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -144,6 +143,17 @@ class ExtensionDownloaderDelegate {
     kMaxValue = CACHE_HIT_ON_MANIFEST_FETCH_FAILURE,
   };
 
+  // Enum that holds possible result values of RequestRollback().
+  enum class RequestRollbackResult {
+    // Rollback is not allowed.
+    kDisallowed,
+    // Can not rollback immediately, but cache invalidation is scheduled for the
+    // next run and rollback will be possible after cache invalidation.
+    kScheduledForNextRun,
+    // Cache was successfully invalidated and rollback is allowed now.
+    kAllowed,
+  };
+
   // Passed as an argument to the completion callbacks to signal whether
   // the extension update sent a ping.
   struct PingResult {
@@ -169,7 +179,7 @@ class ExtensionDownloaderDelegate {
                                                  int failure_count);
     FailureData(const int net_error_code, const int fetch_attempts);
     FailureData(const int net_error_code,
-                const absl::optional<int> response,
+                const std::optional<int> response,
                 const int fetch_attempts);
     explicit FailureData(ManifestInvalidError manifest_invalid_error);
     FailureData(ManifestInvalidError manifest_invalid_error,
@@ -178,23 +188,23 @@ class ExtensionDownloaderDelegate {
     ~FailureData();
 
     // Network error code in case of CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED.
-    const absl::optional<int> network_error_code;
+    const std::optional<int> network_error_code;
     // Response code in case of CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED.
-    const absl::optional<int> response_code;
+    const std::optional<int> response_code;
     // Number of fetch attempts made in case of CRX_FETCH_FAILED or
     // MANIFEST_FETCH_FAILED.
-    const absl::optional<int> fetch_tries;
+    const std::optional<int> fetch_tries;
     // Type of error occurred when fetched manifest was invalid. This includes
     // errors occurred while parsing the update manifest and the errors in the
     // internal details of the parsed manifest.
-    const absl::optional<ManifestInvalidError> manifest_invalid_error;
+    const std::optional<ManifestInvalidError> manifest_invalid_error;
     // Info field in the update manifest returned by the server. Currently it is
     // only set when no update is available and install fails with the error
     // CRX_FETCH_URL_EMPTY.
-    const absl::optional<std::string> additional_info;
+    const std::optional<std::string> additional_info;
     // Type of app status error returned by update server on fetching the update
     // manifest.
-    const absl::optional<std::string> app_status_error;
+    const std::optional<std::string> app_status_error;
   };
 
   // A callback that is called to indicate if ExtensionDownloader should ignore
@@ -288,6 +298,12 @@ class ExtensionDownloaderDelegate {
   // that extension is not installed.
   virtual bool GetExtensionExistingVersion(const ExtensionId& id,
                                            std::string* version) = 0;
+
+  // Invoked if update manifest specifies a lower version than existing.
+  // Returns RequestRollbackResult value that indicates whether higher version
+  // cache was successfully invalidated and rollback is allowed. Default
+  // implementation always disallows rollback.
+  virtual RequestRollbackResult RequestRollback(const ExtensionId& id);
 };
 
 }  // namespace extensions

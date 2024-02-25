@@ -33,8 +33,8 @@ def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_cr
             raise CrashError()
         if raise_crash_leak and line.startswith(b"#LEAK"):
             raise LeakError()
-    except Empty:
-        raise TimeoutError()
+    except Empty as e:
+        raise TimeoutError() from e
 
     return line.decode(encoding, errors) if encoding else line
 
@@ -213,15 +213,21 @@ def _convert_exception(test, exception, errors):
     """Converts our TimeoutError and CrashError exceptions into test results.
     """
     if isinstance(exception, TimeoutError):
-        return (test.result_cls("EXTERNAL-TIMEOUT", errors), [])
+        return (test.make_result("EXTERNAL-TIMEOUT", errors), [])
     if isinstance(exception, CrashError):
-        return (test.result_cls("CRASH", errors), [])
+        return (test.make_result("CRASH", errors), [])
     if isinstance(exception, LeakError):
         # TODO: the internal error is to force a restart, but it doesn't correctly
         # describe what the issue is. Need to find a way to return a "FAIL",
         # and restart the content_shell after the test run.
-        return (test.result_cls("INTERNAL-ERROR", errors), [])
+        return (test.make_result("INTERNAL-ERROR", errors), [])
     raise exception
+
+
+def timeout_for_test(executor, test):
+    if executor.debug_info and executor.debug_info.interactive:
+        return None
+    return test.timeout * executor.timeout_multiplier
 
 
 class ContentShellCrashtestExecutor(CrashtestExecutor):
@@ -232,7 +238,8 @@ class ContentShellCrashtestExecutor(CrashtestExecutor):
 
     def do_test(self, test):
         try:
-            _ = self.protocol.content_shell_test.do_test(self.test_url(test), test.timeout * self.timeout_multiplier)
+            _ = self.protocol.content_shell_test.do_test(self.test_url(test),
+                                                         timeout_for_test(self, test))
             self.protocol.content_shell_errors.read_errors()
             return self.convert_result(test, {"status": "PASS", "message": None})
         except BaseException as exception:
@@ -275,12 +282,11 @@ class ContentShellRefTestExecutor(RefTestExecutor, _SanitizerMixin):  # type: ig
             # source tree (i.e., without looking at a reference). This is not
             # possible in `wpt`, so pass an empty hash here to force a dump.
             command += "''print"
-        _, image = self.protocol.content_shell_test.do_test(
-            command, test.timeout * self.timeout_multiplier)
 
+        _, image = self.protocol.content_shell_test.do_test(command,
+                                                            timeout_for_test(self, test))
         if not image:
             return False, ("ERROR", self.protocol.content_shell_errors.read_errors())
-
         return True, b64encode(image).decode()
 
 
@@ -303,11 +309,10 @@ class ContentShellTestharnessExecutor(TestharnessExecutor, _SanitizerMixin):  # 
     def do_test(self, test):
         try:
             text, _ = self.protocol.content_shell_test.do_test(self.test_url(test),
-                    test.timeout * self.timeout_multiplier)
-
+                                                               timeout_for_test(self, test))
             errors = self.protocol.content_shell_errors.read_errors()
             if not text:
-                return (test.result_cls("ERROR", errors), [])
+                return (test.make_result("ERROR", errors), [])
 
             result_url, status, message, stack, subtest_results = json.loads(text)
             if result_url != test.url:

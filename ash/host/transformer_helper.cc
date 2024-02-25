@@ -66,7 +66,7 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
  private:
   ~SimpleRootWindowTransformer() override = default;
 
-  raw_ptr<const aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<const aura::Window> root_window_;
   const gfx::Transform transform_;
 };
 

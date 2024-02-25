@@ -74,11 +74,11 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
   TransformStream(ReadableStream*, WritableStream*);
 
   // IDL attributes
-  ReadableStream* readable() const { return readable_; }
-  WritableStream* writable() const { return writable_; }
+  ReadableStream* readable() const { return readable_.Get(); }
+  WritableStream* writable() const { return writable_.Get(); }
 
-  ReadableStream* Readable() const { return readable_; }
-  WritableStream* Writable() const { return writable_; }
+  ReadableStream* Readable() const { return readable_.Get(); }
+  WritableStream* Writable() const { return writable_.Get(); }
 
   void Trace(Visitor*) const override;
 
@@ -110,7 +110,8 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
                          double writable_high_water_mark,
                          StrategySizeAlgorithm* writable_size_algorithm,
                          double readable_high_water_mark,
-                         StrategySizeAlgorithm* readable_size_algorithm);
+                         StrategySizeAlgorithm* readable_size_algorithm,
+                         ExceptionState&);
 
   // https://streams.spec.whatwg.org/#transform-stream-error
   static void Error(ScriptState*, TransformStream*, v8::Local<v8::Value> e);

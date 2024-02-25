@@ -65,7 +65,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
  private:
   // WebFrameWidgetImpl overrides.
   void BindLocalRoot(WebLocalFrame&) override;
-  void StartDragging(const WebDragData& drag_data,
+  void StartDragging(LocalFrame* source_frame,
+                     const WebDragData& drag_data,
                      DragOperationsMask operations_allowed,
                      const SkBitmap& drag_image,
                      const gfx::Vector2d& cursor_offset,
@@ -77,6 +78,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void WillBeginMainFrame() override;
   void ScheduleAnimationForWebTests() override;
   bool AllowsScrollResampling() override { return false; }
+  void WasShown(bool was_evicted) override;
 
   content::TestRunner* GetTestRunner();
 
@@ -101,6 +103,12 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
 
   // For collapsing multiple simulated ScheduleAnimation() calls.
   bool animation_scheduled_ = false;
+  // When using the single thread compositor, scheduling an animation will
+  // silently drop the BeginMainFrame if the widget isn't visible. This can
+  // lead to test waits racing with a visibility change event so this flag is
+  // used to defer requested animation frames to run after the widget comes out
+  // of being hidden.
+  bool animation_deferred_while_hidden_ = false;
   // When true, an AnimateNow() is scheduled that will perform a full composite.
   // Otherwise, any scheduled AnimateNow() calls will only perform the animation
   // step, which calls out to blink but doesn't composite for performance

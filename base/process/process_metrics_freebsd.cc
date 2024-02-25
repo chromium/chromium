@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/process/process_metrics_iocounters.h"
 
 namespace base {
 
@@ -38,10 +37,6 @@ double ProcessMetrics::GetPlatformIndependentCPUUsage() {
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
   return TimeDelta();
-}
-
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  return false;
 }
 
 size_t GetSystemCommitCharge() {

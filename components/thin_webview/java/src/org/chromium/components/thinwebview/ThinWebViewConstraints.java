@@ -8,14 +8,10 @@ import android.graphics.Color;
 
 /** Various constraints associated with the thin webview based on the usage. */
 public class ThinWebViewConstraints implements Cloneable {
-    /**
-     * Whether this view will support opacity.
-     */
+    /** Whether this view will support opacity. */
     public boolean supportsOpacity;
 
-    /**
-     * Background color of this view.
-     */
+    /** Background color of this view. */
     public int backgroundColor = Color.WHITE;
 
     @Override

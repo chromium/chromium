@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/json/json_writer.h"
+#import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -48,7 +49,7 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
 FakeWebFrameImpl::FakeWebFrameImpl(const std::string& frame_id,
                                    bool is_main_frame,
                                    GURL security_origin)
-    : frame_id_(frame_id),
+    : frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin) {}
 

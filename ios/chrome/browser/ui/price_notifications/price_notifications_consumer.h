@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class PriceNotificationsTableViewItem;
 
 // Consumer for the PriceNotifications UI.
-@protocol PriceNotificationsConsumer <ChromeTableViewConsumer>
+@protocol PriceNotificationsConsumer <LegacyChromeTableViewConsumer>
 
 // Displays the item that is available to be tracked on the current site.
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem

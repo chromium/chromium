@@ -103,6 +103,20 @@ void AppListModel::SetItemMetadata(const std::string& id,
     SetItemName(item, data->name);
   }
 
+  if (data->accessible_name != item->accessible_name()) {
+    SetItemAccessibleName(item, data->accessible_name);
+  }
+
+  if (data->progress > item->progress() ||
+      data->app_status != item->app_status()) {
+    item->SetProgress(data->progress);
+    item->SetAppStatus(data->app_status);
+    DVLOG(2) << "AppListModel::SetProgress: " << item->ToDebugString();
+    for (auto& observer : observers_) {
+      observer.OnAppListItemUpdated(item);
+    }
+  }
+
   if (data->icon.isNull()) {
     // Folder icons are generated on ash side so the icon of the metadata passed
     // from chrome side is null. Do not alter `item` default icon in this case.
@@ -232,6 +246,14 @@ void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
     observer.OnAppListItemUpdated(item);
 }
 
+void AppListModel::SetItemAccessibleName(AppListItem* item,
+                                         const std::string& name) {
+  item->SetAccessibleName(name);
+  for (auto& observer : observers_) {
+    observer.OnAppListItemUpdated(item);
+  }
+}
+
 void AppListModel::DeleteItem(const std::string& id) {
   AppListItem* item = FindItem(id);
   if (!item)
@@ -253,7 +275,7 @@ void AppListModel::DeleteItem(const std::string& id) {
 
   // Destroy `item`.
   ReparentOrDeleteItemInFolder(item,
-                               /*destination_folder_id=*/absl::nullopt);
+                               /*destination_folder_id=*/std::nullopt);
 }
 
 // Private methods
@@ -322,7 +344,7 @@ std::unique_ptr<AppListItem> AppListModel::RemoveFromTopList(
 
 void AppListModel::ReparentOrDeleteItemInFolder(
     AppListItem* item,
-    absl::optional<std::string> destination_folder_id) {
+    std::optional<std::string> destination_folder_id) {
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   DCHECK(folder) << "Folder not found for item: " << item->ToDebugString();
 

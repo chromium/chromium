@@ -4,16 +4,16 @@
 
 import './accelerator_subsection.js';
 import '../css/shortcut_customization_shared.css.js';
-import './shortcut_input.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from './accelerator_row.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
 import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
 import {getTemplate} from './shortcuts_page.html.js';
@@ -109,9 +109,16 @@ export class ShortcutsPageElement extends PolymerElement implements
   onNavigationPageChanged({isActive}: {isActive: boolean}): void {
     if (isActive) {
       afterNextRender(this, () => {
-        // Scroll to the top of the page after the active page changes.
-        strictQuery('#container', this.shadowRoot, HTMLDivElement)
-            .scrollIntoView();
+        if (this.initialData) {
+          getShortcutProvider().recordMainCategoryNavigation(
+              this.initialData.category);
+        }
+        // Dispatch a custom event to inform the parent to scroll to the top
+        // after active page changes.
+        this.dispatchEvent(new CustomEvent('scroll-to-top', {
+          bubbles: true,
+          composed: true,
+        }));
 
         // Scroll to the specific accelerator if this page change was caused by
         // clicking on a search result. If the page change was manual, the
@@ -196,6 +203,13 @@ export class ShortcutsPageElement extends PolymerElement implements
             }, this.scrollTimeout);
           }
         });
+
+        // Focus on the matching accelerator row.
+        strictQuery(
+            '#container', matchingAcceleratorRow.shadowRoot,
+            HTMLTableRowElement)
+            .focus();
+        this.lookupManager.setSearchResultRowFocused(true);
 
         // The scroll event did happen, so return true.
         return true;

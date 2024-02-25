@@ -44,6 +44,13 @@ enum class CrxDownloaderError {
   // The Windows BITS queue contains to many update client jobs. The value is
   // chosen so that it can be reported as a custom COM error on this platform.
   BITS_TOO_MANY_JOBS = 0x0200,
+  // Errors 11XX are reserved for Mac background downloader errors.
+  MAC_BG_CANNOT_CREATE_DOWNLOAD_CACHE = 1101,
+  MAC_BG_MOVE_TO_CACHE_FAIL = 1102,
+  MAC_BG_MISSING_COMPLETION_DATA = 1103,
+  MAC_BG_DUPLICATE_DOWNLOAD = 1104,
+  MAC_BG_SESSION_INVALIDATED = 1105,
+  MAC_BG_SESSION_TOO_MANY_TASKS = 1106,
   GENERIC_ERROR = -1
 };
 
@@ -124,6 +131,11 @@ enum class ProtocolError : int {
   UNKNOWN_APPLICATION = -10006,
   RESTRICTED_APPLICATION = -10007,
   INVALID_APPID = -10008,
+  OS_NOT_SUPPORTED = -10009,
+  HW_NOT_SUPPORTED = -10010,
+  NO_HASH = -10011,
+  UNSUPPORTED_PROTOCOL = -10012,
+  INTERNAL = -10013,
 };
 
 }  // namespace update_client

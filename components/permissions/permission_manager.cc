@@ -23,6 +23,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
@@ -189,7 +190,9 @@ void PermissionManager::Shutdown() {
       if (type_to_count.second > 0) {
         PermissionContextBase* context =
             GetPermissionContext(type_to_count.first);
-        context->RemoveObserver(this);
+        if (context != nullptr) {
+          context->RemoveObserver(this);
+        }
       }
     }
     subscription_type_counts_.clear();
@@ -222,39 +225,24 @@ PermissionContextBase* PermissionManager::GetPermissionContext(
   return it == permission_contexts_.end() ? nullptr : it->second.get();
 }
 
-// TODO(crbug.com/1271543): Remove
-// PermissionControllerDelegate::RequestPermission.
-void PermissionManager::RequestPermission(
-    PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(PermissionStatus)> callback) {
-  NOTIMPLEMENTED();
-}
-
 void PermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions_types,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>
         permission_status_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RequestPermissionsInternal(permissions_types, render_frame_host,
-                             requesting_origin, user_gesture,
+  RequestPermissionsInternal(render_frame_host, request_description,
                              std::move(permission_status_callback));
 }
 
 void PermissionManager::RequestPermissionsInternal(
-    const std::vector<blink::PermissionType>& permissions_types,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>
         permission_status_callback) {
   std::vector<ContentSettingsType> permissions;
-  base::ranges::transform(permissions_types, back_inserter(permissions),
+  base::ranges::transform(request_description.permissions,
+                          back_inserter(permissions),
                           PermissionUtil::PermissionTypeToContentSettingType);
 
   base::OnceCallback<void(const std::vector<ContentSetting>&)> callback =
@@ -273,28 +261,28 @@ void PermissionManager::RequestPermissionsInternal(
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  const GURL embedding_origin =
-      GetEmbeddingOrigin(render_frame_host, requesting_origin);
-
+  const GURL embedding_origin = GetEmbeddingOrigin(
+      render_frame_host, request_description.requesting_origin);
   for (size_t i = 0; i < permissions.size(); ++i) {
     const ContentSettingsType permission = permissions[i];
     const GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
-        permission, requesting_origin, embedding_origin);
+        permission, request_description.requesting_origin, embedding_origin);
 
     auto response_callback =
         std::make_unique<PermissionResponseCallback>(this, request_local_id, i);
-    if (PermissionUtil::IsPermissionBlockedInPartition(
-            permission, requesting_origin, render_frame_host->GetProcess())) {
+    PermissionContextBase* context = GetPermissionContext(permission);
+    if (!context || PermissionUtil::IsPermissionBlockedInPartition(
+                        permission, request_description.requesting_origin,
+                        render_frame_host->GetProcess())) {
       response_callback->OnPermissionsRequestResponseStatus(
           CONTENT_SETTING_BLOCK);
       continue;
     }
 
-    PermissionContextBase* context = GetPermissionContext(permission);
-    DCHECK(context);
-
     context->RequestPermission(
-        request_id, canonical_requesting_origin, user_gesture,
+        PermissionRequestData(
+            context, request_id, request_description,
+            canonical_requesting_origin.DeprecatedGetOriginAsURL()),
         base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,
             std::move(response_callback)));
@@ -316,16 +304,12 @@ void PermissionManager::ResetPermission(PermissionType permission,
 }
 
 void PermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions_types,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>
         permission_status_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const GURL requesting_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
-  RequestPermissionsInternal(permissions_types, render_frame_host,
-                             requesting_origin, user_gesture,
+  RequestPermissionsInternal(render_frame_host, request_description,
                              std::move(permission_status_callback));
 }
 
@@ -415,7 +399,7 @@ PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
 
 bool PermissionManager::IsPermissionOverridable(
     PermissionType permission,
-    const absl::optional<url::Origin>& origin) {
+    const std::optional<url::Origin>& origin) {
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingTypeSafe(permission);
   PermissionContextBase* context = GetPermissionContext(type);
@@ -428,7 +412,7 @@ bool PermissionManager::IsPermissionOverridable(
 }
 
 PermissionManager::SubscriptionId
-PermissionManager::SubscribePermissionStatusChange(
+PermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -444,6 +428,9 @@ PermissionManager::SubscribePermissionStatusChange(
   auto& type_count = subscription_type_counts_[content_type];
   if (type_count == 0) {
     PermissionContextBase* context = GetPermissionContext(content_type);
+    if (context == nullptr) {
+      return SubscriptionId();
+    }
     context->AddObserver(this);
   }
   ++type_count;
@@ -491,7 +478,7 @@ PermissionManager::SubscribePermissionStatusChange(
   return id;
 }
 
-void PermissionManager::UnsubscribePermissionStatusChange(
+void PermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_)
@@ -509,15 +496,17 @@ void PermissionManager::UnsubscribePermissionStatusChange(
   type_count->second--;
   if (type_count->second == 0) {
     PermissionContextBase* context = GetPermissionContext(type);
-    context->RemoveObserver(this);
+    if (context != nullptr) {
+      context->RemoveObserver(this);
+    }
   }
 }
 
-absl::optional<gfx::Rect> PermissionManager::GetExclusionAreaBoundsInScreen(
+std::optional<gfx::Rect> PermissionManager::GetExclusionAreaBoundsInScreen(
     content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* manager = PermissionRequestManager::FromWebContents(web_contents);
-  return manager ? manager->GetPromptBubbleViewBoundsInScreen() : absl::nullopt;
+  return manager ? manager->GetPromptBubbleViewBoundsInScreen() : std::nullopt;
 }
 
 void PermissionManager::OnPermissionsRequestResponseStatus(
@@ -606,15 +595,16 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   // TODO(crbug.com/1307044): Move this to PermissionContextBase.
   content::RenderProcessHost* rph =
       render_frame_host ? render_frame_host->GetProcess() : render_process_host;
-  if (rph && PermissionUtil::IsPermissionBlockedInPartition(
-                 permission, requesting_origin, rph)) {
+  PermissionContextBase* context = GetPermissionContext(permission);
+
+  if (!context || (rph && PermissionUtil::IsPermissionBlockedInPartition(
+                              permission, requesting_origin, rph))) {
     return content::PermissionResult(
         PermissionStatus::DENIED, content::PermissionStatusSource::UNSPECIFIED);
   }
 
   GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
       permission, requesting_origin, embedding_origin);
-  PermissionContextBase* context = GetPermissionContext(permission);
   content::PermissionResult result = context->GetPermissionStatus(
       render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
       embedding_origin.DeprecatedGetOriginAsURL());

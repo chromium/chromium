@@ -167,8 +167,7 @@ class DirectCompositionSurfaceTest : public testing::Test,
     DirectCompositionSurfaceWin::Settings settings;
     scoped_refptr<DirectCompositionSurfaceWin> surface =
         base::MakeRefCounted<DirectCompositionSurfaceWin>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(),
-            DirectCompositionSurfaceWin::VSyncCallback(), settings);
+            gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
     EXPECT_TRUE(surface->Initialize(GLSurfaceFormat()));
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in

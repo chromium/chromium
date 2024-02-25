@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_BROWSING_DATA_UTILS_H_
 #define COMPONENTS_BROWSING_DATA_CORE_BROWSING_DATA_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -12,7 +13,6 @@
 #include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "net/cookies/cookie_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_data {
 
@@ -105,7 +105,7 @@ bool GetDeletionPreferenceFromDataType(
     std::string* out_pref);
 
 // Returns a BrowsingDataType if a type matching |pref_name| is found.
-absl::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
+std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
     const std::string& pref_name);
 
 bool IsHttpsCookieSourceScheme(net::CookieSourceScheme cookie_source_scheme);

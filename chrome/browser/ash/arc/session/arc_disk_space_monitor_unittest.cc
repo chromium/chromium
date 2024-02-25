@@ -119,7 +119,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
 TEST_F(ArcDiskSpaceMonitorTest, GetFreeDiskSpaceFailed) {
   // spaced::GetFreeDiskSpace fails.
-  ash::FakeSpacedClient::Get()->set_free_disk_space(absl::nullopt);
+  ash::FakeSpacedClient::Get()->set_free_disk_space(std::nullopt);
 
   arc_session_manager()->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -141,7 +141,7 @@ TEST_F(ArcDiskSpaceMonitorTest, GetFreeDiskSpaceFailed) {
 TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsHigherThanPreStopNotification) {
   // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
   arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -168,7 +168,7 @@ TEST_F(ArcDiskSpaceMonitorTest,
        FreeSpaceIsLowerThanThresholdForPreStopNotification) {
   // ThresholdForStoppingArc < free_disk_space < ThresholdForPreStopNotification
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreStopNotification - 1));
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification - 1));
 
   arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -207,7 +207,7 @@ TEST_F(ArcDiskSpaceMonitorTest,
 TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
   // free_disk_space < ThresholdForStoppingArc < ThresholdForPreStopNotification
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForStoppingArc - 1));
+      std::make_optional(kDiskSpaceThresholdForStoppingArc - 1));
 
   arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -229,7 +229,7 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
 TEST_F(ArcDiskSpaceMonitorTest, VirtioBlkNotEnabled) {
   // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
   base::test::ScopedFeatureList override_scoped_feature_list;
   override_scoped_feature_list.InitAndDisableFeature(kEnableVirtioBlkForData);
@@ -253,7 +253,7 @@ TEST_F(ArcDiskSpaceMonitorTest, VirtioBlkNotEnabled) {
 TEST_F(ArcDiskSpaceMonitorTest, ArcVmDataMigrationNotFinished) {
   // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
   base::test::ScopedFeatureList override_scoped_feature_list;
   override_scoped_feature_list.InitWithFeatures({kEnableArcVmDataMigration},
@@ -278,7 +278,7 @@ TEST_F(ArcDiskSpaceMonitorTest, ArcVmDataMigrationNotFinished) {
 TEST_F(ArcDiskSpaceMonitorTest, ArcVmDataMigrationFinished) {
   // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
   ash::FakeSpacedClient::Get()->set_free_disk_space(
-      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
   base::test::ScopedFeatureList override_scoped_feature_list;
   override_scoped_feature_list.InitWithFeatures({kEnableArcVmDataMigration},

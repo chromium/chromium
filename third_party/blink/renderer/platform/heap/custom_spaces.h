@@ -19,15 +19,15 @@ namespace blink {
 // indices of all custom spaces form a sequence starting at 0. See
 // `cppgc::CustomSpace` for details.
 
-class PLATFORM_EXPORT HeapVectorBackingSpace
-    : public cppgc::CustomSpace<HeapVectorBackingSpace> {
+class PLATFORM_EXPORT CompactableHeapVectorBackingSpace
+    : public cppgc::CustomSpace<CompactableHeapVectorBackingSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 0;
   static constexpr bool kSupportsCompaction = true;
 };
 
-class PLATFORM_EXPORT HeapHashTableBackingSpace
-    : public cppgc::CustomSpace<HeapHashTableBackingSpace> {
+class PLATFORM_EXPORT CompactableHeapHashTableBackingSpace
+    : public cppgc::CustomSpace<CompactableHeapHashTableBackingSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 1;
   static constexpr bool kSupportsCompaction = true;
@@ -49,17 +49,9 @@ class PLATFORM_EXPORT LayoutObjectSpace
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 4;
 };
 
-struct CustomSpaces {
+struct PLATFORM_EXPORT CustomSpaces final {
   static std::vector<std::unique_ptr<cppgc::CustomSpaceBase>>
-  CreateCustomSpaces() {
-    std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> spaces;
-    spaces.emplace_back(std::make_unique<HeapVectorBackingSpace>());
-    spaces.emplace_back(std::make_unique<HeapHashTableBackingSpace>());
-    spaces.emplace_back(std::make_unique<NodeSpace>());
-    spaces.emplace_back(std::make_unique<CSSValueSpace>());
-    spaces.emplace_back(std::make_unique<LayoutObjectSpace>());
-    return spaces;
-  }
+  CreateCustomSpaces();
 };
 
 }  // namespace blink

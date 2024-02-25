@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -205,6 +206,46 @@ AtomicString StringView::ToAtomicString() const {
   return AtomicString(Characters16(), length_);
 }
 
+String StringView::EncodeForDebugging() const {
+  if (IsNull()) {
+    return "<null>";
+  }
+
+  StringBuilder builder;
+  builder.Append('"');
+  for (unsigned index = 0; index < length(); ++index) {
+    // Print shorthands for select cases.
+    UChar character = (*this)[index];
+    switch (character) {
+      case '\t':
+        builder.Append("\\t");
+        break;
+      case '\n':
+        builder.Append("\\n");
+        break;
+      case '\r':
+        builder.Append("\\r");
+        break;
+      case '"':
+        builder.Append("\\\"");
+        break;
+      case '\\':
+        builder.Append("\\\\");
+        break;
+      default:
+        if (IsASCIIPrintable(character)) {
+          builder.Append(static_cast<char>(character));
+        } else {
+          // Print "\uXXXX" for control or non-ASCII characters.
+          builder.AppendFormat("\\u%04X", character);
+        }
+        break;
+    }
+  }
+  builder.Append('"');
+  return builder.ToString();
+}
+
 bool EqualStringView(const StringView& a, const StringView& b) {
   if (a.IsNull() || b.IsNull())
     return a.IsNull() == b.IsNull();
@@ -300,6 +341,10 @@ CodePointIterator StringView::begin() const {
 
 CodePointIterator StringView::end() const {
   return CodePointIterator::End(*this);
+}
+
+std::ostream& operator<<(std::ostream& out, const StringView& string) {
+  return out << string.EncodeForDebugging().Utf8();
 }
 
 }  // namespace WTF

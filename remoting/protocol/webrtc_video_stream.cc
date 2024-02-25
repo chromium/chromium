@@ -30,6 +30,9 @@
 
 namespace remoting::protocol {
 
+class ScopedAllowSyncPrimitivesForWebRtcVideoStream
+    : public base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {};
+
 FrameStatsMessage::VideoCodec VideoCodecToProtoEnum(
     webrtc::VideoCodecType codec) {
   switch (codec) {
@@ -429,6 +432,7 @@ void WebrtcVideoStream::SetTargetFramerate(int framerate) {
     encoding.max_framerate = framerate;
   }
 
+  ScopedAllowSyncPrimitivesForWebRtcVideoStream allow_wait;
   webrtc::RTCError result = transceiver_->sender()->SetParameters(parameters);
   DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
 }

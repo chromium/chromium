@@ -6,20 +6,20 @@
 #define CC_TEST_SKIA_COMMON_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "cc/base/region.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -59,7 +59,7 @@ PaintImage CreateDiscardablePaintImage(
     bool allocate_encoded_memory = true,
     PaintImage::Id id = PaintImage::kInvalidId,
     SkColorType color_type = kN32_SkColorType,
-    absl::optional<YUVSubsampling> yuv_format = absl::nullopt,
+    std::optional<YUVSubsampling> yuv_format = std::nullopt,
     SkYUVAPixmapInfo::DataType yuv_data_type =
         SkYUVAPixmapInfo::DataType::kUnorm8);
 
@@ -80,7 +80,7 @@ PaintImage CreateBitmapImage(const gfx::Size& size,
 
 scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
-scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json);
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json);
 std::string LoadSkottieFileFromTestData(
     base::FilePath::StringPieceType animation_file_name);
 scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(

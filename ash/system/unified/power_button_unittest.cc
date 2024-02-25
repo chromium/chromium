@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/power_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/shell.h"
@@ -21,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -45,7 +43,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
   ~PowerButtonTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
 
     // Test with the real system tray bubble so that the power button has a real
@@ -143,9 +140,8 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
 
   // Owned by view hierarchy.
-  raw_ptr<PowerButton, DanglingUntriaged | ExperimentalAsh> button_ = nullptr;
+  raw_ptr<PowerButton, DanglingUntriaged> button_ = nullptr;
 
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -375,7 +371,7 @@ TEST_F(PowerButtonTest, ButtonStatesGuestMode) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
-  SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   EXPECT_TRUE(GetEmailButton()->GetEnabled());
@@ -383,7 +379,7 @@ TEST_F(PowerButtonTest, EmailIsShownForRegularAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
-  SimulateUserLogin("child@gmail.com", user_manager::USER_TYPE_CHILD);
+  SimulateUserLogin("child@gmail.com", user_manager::UserType::kChild);
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetEmailButton()->GetVisible());
   // The multi-profile user chooser is disabled for child accounts.
@@ -392,7 +388,7 @@ TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
 }
 
 TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
-  SimulateUserLogin("test@test.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  SimulateUserLogin("test@test.com", user_manager::UserType::kPublicAccount);
   SimulatePowerButtonPress();
   EXPECT_EQ(nullptr, GetEmailButton());
 }
@@ -401,15 +397,14 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 // accessed in kiosk mode.
 
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
-  SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
   SimulatePowerButtonPress();
   LeftClickOn(GetEmailButton());
 
   QuickSettingsView* quick_settings_view =
       GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
   EXPECT_TRUE(quick_settings_view->IsDetailedViewShown());
-  EXPECT_TRUE(views::IsViewClass<UserChooserView>(
-      quick_settings_view->GetDetailedViewForTest()));
+  EXPECT_TRUE(quick_settings_view->GetDetailedViewForTest<UserChooserView>());
 }
 
 // Power button's rounded radii should change correctly when switching between

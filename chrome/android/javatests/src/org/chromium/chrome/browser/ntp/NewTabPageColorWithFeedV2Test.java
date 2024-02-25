@@ -18,10 +18,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -29,20 +31,19 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests for colors used in UI components in the native android New Tab Page.
- */
-// clang-format off
+/** Tests for colors used in UI components in the native android New Tab Page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-                       "disable-features=IPH_FeedHeaderMenu"})
-// clang-format on
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=IPH_FeedHeaderMenu"
+})
 public class NewTabPageColorWithFeedV2Test {
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
 
@@ -62,10 +63,11 @@ public class NewTabPageColorWithFeedV2Test {
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(true);
-            FirstRunUtils.setEulaAccepted();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(true);
+                    FirstRunUtils.setEulaAccepted();
+                });
 
         mFeedServer = new TestFeedServer();
 
@@ -77,21 +79,22 @@ public class NewTabPageColorWithFeedV2Test {
         mNtp = (NewTabPage) mTab.getNativePage();
     }
 
-    // clang-format off
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testTextBoxBackgroundColor() throws Exception {
-        // clang-format on
+    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testTextBoxBackgroundColorWithSurfacePolishDisabled() throws Exception {
         RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
         Context context = mActivityTestRule.getActivity();
-        Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(context, false),
+        Assert.assertEquals(
+                ChromeColors.getPrimaryBackgroundColor(context, false),
                 mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
 
         // Wait for the test feed items to be available in the feed.
-        FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD,
+        FeedV2TestHelper.waitForRecyclerItems(
+                MIN_ITEMS_AFTER_LOAD,
                 (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
 
         // Scroll to the bottom.
@@ -101,6 +104,77 @@ public class NewTabPageColorWithFeedV2Test {
         Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
         final int expectedTextBoxBackground =
                 ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+        Assert.assertEquals(
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:polish_omnibox_color/false"
+    })
+    public void testTextBoxBackgroundColor_SurfacePolishOmniboxColorDisabled() throws Exception {
+        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
+
+        Context context = mActivityTestRule.getActivity();
+        int expectedTextBoxBackground =
+                ChromeColors.getSurfaceColor(
+                        context, R.dimen.home_surface_background_color_elevation);
+        Assert.assertEquals(
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+
+        // Wait for the test feed items to be available in the feed.
+        FeedV2TestHelper.waitForRecyclerItems(
+                MIN_ITEMS_AFTER_LOAD,
+                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
+
+        // Scroll to the bottom.
+        RecyclerViewTestUtils.scrollToBottom(recycleView);
+        RecyclerViewTestUtils.waitForStableRecyclerView(recycleView);
+
+        Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
+        expectedTextBoxBackground =
+                ChromeColors.getSurfaceColor(
+                        context,
+                        R.dimen.home_surface_search_box_background_neutral_color_elevation);
+        Assert.assertEquals(
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:polish_omnibox_color/true"
+    })
+    public void testTextBoxBackgroundColor_SurfacePolishOmniboxColorEnabled() throws Exception {
+        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
+
+        Context context = mActivityTestRule.getActivity();
+        int expectedTextBoxBackground =
+                ChromeColors.getSurfaceColor(
+                        context, R.dimen.home_surface_background_color_elevation);
+        Assert.assertEquals(
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+
+        // Wait for the test feed items to be available in the feed.
+        FeedV2TestHelper.waitForRecyclerItems(
+                MIN_ITEMS_AFTER_LOAD,
+                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
+
+        // Scroll to the bottom.
+        RecyclerViewTestUtils.scrollToBottom(recycleView);
+        RecyclerViewTestUtils.waitForStableRecyclerView(recycleView);
+
+        Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
+        expectedTextBoxBackground = SemanticColorUtils.getColorPrimaryContainer(context);
         Assert.assertEquals(
                 expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
     }

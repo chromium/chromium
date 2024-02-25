@@ -4,6 +4,7 @@
 
 #include "net/filter/mock_source_stream.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
@@ -42,7 +43,7 @@ int MockSourceStream::Read(IOBuffer* dest_buffer,
   }
 
   results_.pop();
-  memcpy(dest_buffer->data(), r.data, r.len);
+  std::copy(r.data, r.data + r.len, dest_buffer->data());
   return r.error == OK ? r.len : r.error;
 }
 
@@ -96,7 +97,7 @@ void MockSourceStream::CompleteNextRead() {
   DCHECK_EQ(ASYNC, r.mode);
   results_.pop();
   DCHECK_GE(dest_buffer_size_, r.len);
-  memcpy(dest_buffer_->data(), r.data, r.len);
+  std::copy(r.data, r.data + r.len, dest_buffer_->data());
   dest_buffer_ = nullptr;
   std::move(callback_).Run(r.error == OK ? r.len : r.error);
 }

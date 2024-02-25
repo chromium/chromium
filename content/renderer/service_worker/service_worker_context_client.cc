@@ -39,6 +39,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -83,7 +84,7 @@ std::string ComposeAlreadyInstalledString(bool is_starting_installed_worker) {
 // worker thread.
 struct ServiceWorkerContextClient::WorkerContextData {
   explicit WorkerContextData(ServiceWorkerContextClient* owner)
-      : weak_factory(owner), proxy_weak_factory(owner->proxy_) {}
+      : weak_factory(owner), proxy_weak_factory(owner->proxy_.get()) {}
 
   ~WorkerContextData() { DCHECK(thread_checker.CalledOnValidThread()); }
 
@@ -120,7 +121,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
     const GURL& script_url_to_skip_throttling,
     scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
     int32_t service_worker_route_id,
-    const std::vector<std::string>& cors_exempt_header_list)
+    const std::vector<std::string>& cors_exempt_header_list,
+    const blink::StorageKey& storage_key)
     : service_worker_version_id_(service_worker_version_id),
       service_worker_scope_(service_worker_scope),
       script_url_(script_url),
@@ -139,7 +141,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       owner_(owner),
       start_timing_(std::move(start_timing)),
       service_worker_route_id_(service_worker_route_id),
-      cors_exempt_header_list_(cors_exempt_header_list) {
+      cors_exempt_header_list_(cors_exempt_header_list),
+      storage_key_(storage_key) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(owner_);
   DCHECK(subresource_loaders);
@@ -447,7 +450,7 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
           ->CreateWebSocketHandshakeThrottleProvider(),
       std::move(preference_watcher_receiver_),
       std::move(pending_subresource_loader_updater_),
-      web_cors_exempt_header_list);
+      web_cors_exempt_header_list, storage_key_.IsThirdPartyContext());
 }
 
 void ServiceWorkerContextClient::OnNavigationPreloadResponse(

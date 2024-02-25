@@ -5,12 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
 #define ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_restore {
 struct AppLaunchInfo;
@@ -75,19 +75,24 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // identifier. I.e. NTP or incognito window. If `icon_identifier` is not a
   // special identifier, return `asbl::nullopt`. `color_provider` should be the
   // ui::ColorProvider corresponding to an incognito window or nullptr.
-  virtual absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
+  virtual std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& icon_identifier,
       const ui::ColorProvider* color_provider) const = 0;
 
   // Fetches the favicon for `page_url` and returns it via the provided
-  // `callback`. `callback` may be called synchronously.
+  // `callback`. When lacros is active, the profile identified by
+  // `lacros_profile_id` is used to get the favicon. `callback` may be called
+  // synchronously.
   virtual void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const = 0;
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
+  // TODO(sammiequon): This is used for other features, migrate to shell
+  // delegate.
   virtual void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,

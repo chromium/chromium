@@ -15,9 +15,8 @@ from telemetry.web_perf import timeline_based_measurement
 @benchmark.Info(emails=['brucedawson@chromium.org'],
                 documentation_url='https://bit.ly/power-benchmarks')
 class PowerDesktop(perf_benchmark.PerfBenchmark):
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
   SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 

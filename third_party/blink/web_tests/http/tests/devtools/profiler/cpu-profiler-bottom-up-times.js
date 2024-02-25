@@ -5,11 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests bottom-up view self and total time calculation in CPU profiler.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var profileAndExpectations = {
     'title': 'profile1',
@@ -76,7 +76,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       'endTime': 1e6
     })
   };
-  var view = new Profiler.CPUProfileView(profileAndExpectations);
+  var view = new ProfilerModule.CPUProfileView.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
   view.changeView();
   var tree = view.profileDataGridTree;

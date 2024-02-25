@@ -6,9 +6,10 @@ package org.chromium.components.payments;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -30,9 +31,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
                 PaymentRequestWebContentsData::new;
     }
 
-    /**
-     * Set the instance directly for testing this class.
-     */
+    /** Set the instance directly for testing this class. */
     public static void setInstanceForTesting(PaymentRequestWebContentsData instance) {
         sInstanceForTesting = instance;
     }
@@ -47,21 +46,18 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
         return sInstanceForTesting != null
                 ? sInstanceForTesting
                 : ((WebContentsImpl) webContents)
-                          .getOrSetUserData(PaymentRequestWebContentsData.class,
-                                  UserDataFactoryLazyHolder.INSTANCE);
+                        .getOrSetUserData(
+                                PaymentRequestWebContentsData.class,
+                                UserDataFactoryLazyHolder.INSTANCE);
     }
 
-    /**
-     * Constructor used for creating a test instance.
-     */
+    /** Constructor used for creating a test instance. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public PaymentRequestWebContentsData(WebContents webContents) {
         super(webContents);
     }
 
-    /**
-     * @return Whether there has been an activationless PaymentRequest.show() for this WebContents.
-     */
+    /** @return Whether there has been an activationless PaymentRequest.show() for this WebContents. */
     public boolean hadActivationlessShow() {
         return PaymentRequestWebContentsDataJni.get().hadActivationlessShow(mWebContents.get());
     }
@@ -78,6 +74,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
     @NativeMethods
     public interface Natives {
         boolean hadActivationlessShow(WebContents webContents);
+
         void recordActivationlessShow(WebContents webContents);
     }
 }

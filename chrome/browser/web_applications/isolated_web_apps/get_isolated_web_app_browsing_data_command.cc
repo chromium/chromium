@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,9 +19,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/browsing_data/content/browsing_data_model.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "ui/base/models/tree_model.h"
 #include "url/origin.h"
@@ -115,17 +116,6 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
     model_loaded_closure_.Run();
   }
 
-  void TreeNodesAdded(ui::TreeModel* model,
-                      ui::TreeModelNode* parent,
-                      size_t start,
-                      size_t count) override {}
-  void TreeNodesRemoved(ui::TreeModel* model,
-                        ui::TreeModelNode* parent,
-                        size_t start,
-                        size_t count) override {}
-  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override {
-  }
-
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override {
     // Abort if the Profile is being deleted. |complete_callback_| owns the
@@ -133,7 +123,7 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
     complete_callback_.Reset();
   }
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   base::OnceCallback<void(int64_t)> complete_callback_;
   base::RepeatingClosure model_loaded_closure_;
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;
@@ -146,26 +136,18 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
 GetIsolatedWebAppBrowsingDataCommand::GetIsolatedWebAppBrowsingDataCommand(
     Profile* profile,
     BrowsingDataCallback callback)
-    : WebAppCommandTemplate<AllAppsLock>(
-          "GetIsolatedWebAppBrowsingDataCommand"),
+    : WebAppCommand<AllAppsLock, base::flat_map<url::Origin, int64_t>>(
+          "GetIsolatedWebAppBrowsingDataCommand",
+          AllAppsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/{}),
       profile_(profile),
-      callback_(std::move(callback)),
-      lock_description_(std::make_unique<AllAppsLockDescription>()),
       browsing_data_({}) {
-  debug_data_.Set("profile", profile_->GetDebugName());
+  GetMutableDebugValue().Set("profile", profile_->GetDebugName());
 }
 
 GetIsolatedWebAppBrowsingDataCommand::~GetIsolatedWebAppBrowsingDataCommand() =
     default;
-
-const LockDescription& GetIsolatedWebAppBrowsingDataCommand::lock_description()
-    const {
-  return *lock_description_;
-}
-
-base::Value GetIsolatedWebAppBrowsingDataCommand::ToDebugValue() const {
-  return base::Value(debug_data_.Clone());
-}
 
 void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
@@ -174,7 +156,7 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
   pending_task_count_++;
   const WebAppRegistrar& web_app_registrar = lock_->registrar();
   for (const WebApp& web_app : web_app_registrar.GetApps()) {
-    const AppId& app_id = web_app.app_id();
+    const webapps::AppId& app_id = web_app.app_id();
     if (!web_app_registrar.IsIsolated(app_id)) {
       continue;
     }
@@ -185,7 +167,9 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
         continue;
       }
       pending_task_count_++;
-      debug_data_.EnsureDict(kDebugOriginKey)->Set(iwa_origin.Serialize(), -1);
+      GetMutableDebugValue()
+          .EnsureDict(kDebugOriginKey)
+          ->Set(iwa_origin.Serialize(), -1);
       StoragePartitionSizeEstimator::EstimateSize(
           profile_, storage_partition_config,
           base::BindOnce(&GetIsolatedWebAppBrowsingDataCommand::
@@ -207,7 +191,8 @@ void GetIsolatedWebAppBrowsingDataCommand::StoragePartitionSizeFetched(
   browsing_data_[iwa_origin] += size;
   // Store the size as a double because Value::Dict doesn't support 64-bit
   // integers. This should only lead to data loss when size is >2^54.
-  debug_data_.EnsureDict(kDebugOriginKey)
+  GetMutableDebugValue()
+      .EnsureDict(kDebugOriginKey)
       ->Set(iwa_origin.Serialize(), static_cast<double>(size));
 
   MaybeCompleteCommand();
@@ -215,17 +200,8 @@ void GetIsolatedWebAppBrowsingDataCommand::StoragePartitionSizeFetched(
 
 void GetIsolatedWebAppBrowsingDataCommand::MaybeCompleteCommand() {
   if (pending_task_count_ == 0) {
-    SignalCompletionAndSelfDestruct(
-        CommandResult::kSuccess,
-        base::BindOnce(std::move(callback_), browsing_data_));
+    CompleteAndSelfDestruct(CommandResult::kSuccess, browsing_data_);
   }
-}
-
-void GetIsolatedWebAppBrowsingDataCommand::OnShutdown() {
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kShutdown,
-      base::BindOnce(std::move(callback_),
-                     base::flat_map<url::Origin, int64_t>()));
 }
 
 }  // namespace web_app

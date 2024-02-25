@@ -1,4 +1,0 @@
-include_rules = [
-  # Allow the unit test to set up a mojo embedder.
-  "+mojo/core/embedder",
-]

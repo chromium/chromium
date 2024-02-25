@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_H_
 
 #include <iosfwd>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
@@ -108,7 +108,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
       scoped_refptr<const SecurityOrigin> origin,
       const BlinkSchemefulSite& top_level_site,
       const BlinkSchemefulSite& top_level_site_if_third_party_enabled,
-      const absl::optional<base::UnguessableToken>& nonce,
+      const std::optional<base::UnguessableToken>& nonce,
       mojom::blink::AncestorChainBit ancestor_chain_bit,
       mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled,
       BlinkStorageKey& out);
@@ -127,7 +127,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   const BlinkSchemefulSite& GetTopLevelSite() const { return top_level_site_; }
 
-  const absl::optional<base::UnguessableToken>& GetNonce() const {
+  const std::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
 
@@ -217,7 +217,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   // Optional, forcing partitioned storage and used by anonymous iframes:
   // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
-  absl::optional<base::UnguessableToken> nonce_;
+  std::optional<base::UnguessableToken> nonce_;
 
   // kSameSite if the entire ancestor chain is same-site with the current frame.
   // kCrossSite otherwise. Used by service workers.

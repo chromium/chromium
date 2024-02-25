@@ -1,9 +1,0 @@
-Name: toml
-URL: https://crates.io/crates/toml
-Description: A native Rust encoder and decoder of TOML-formatted files and streams. Provides
-implementations of the standard Serialize/Deserialize traits for TOML data to
-facilitate deserializing and serializing Rust structures.
-Version: 0.5.9
-Security Critical: no
-Shipped: no
-License: Apache 2.0

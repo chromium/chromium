@@ -384,6 +384,18 @@ class ChunkDemuxerTest : public ::testing::Test {
     return status;
   }
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  void AddAutoDetectedCodecsId_Checked(const std::string& id,
+                                       RelaxedParserSupportedType mime_type) {
+    CHECK_EQ(demuxer_->AddAutoDetectedCodecsId(id, mime_type),
+             ChunkDemuxer::kOk);
+    demuxer_->SetTracksWatcher(id, init_segment_received_cb_);
+    demuxer_->SetParseWarningCallback(
+        id, base::BindRepeating(&ChunkDemuxerTest::OnParseWarningMock,
+                                base::Unretained(this)));
+  }
+#endif
+
   bool AppendData(const uint8_t* data, size_t length) {
     return AppendData(kSourceId, data, length);
   }
@@ -1002,8 +1014,9 @@ class ChunkDemuxerTest : public ::testing::Test {
   }
 
   DemuxerStream* GetStream(DemuxerStream::Type type) {
-    std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
-    for (auto* stream : streams) {
+    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
+        demuxer_->GetAllStreams();
+    for (media::DemuxerStream* stream : streams) {
       if (stream->type() == type)
         return stream;
     }
@@ -1372,7 +1385,7 @@ TEST_F(ChunkDemuxerTest, Init) {
 
       const AudioDecoderConfig& config = audio_stream->audio_decoder_config();
       EXPECT_EQ(AudioCodec::kVorbis, config.codec());
-      EXPECT_EQ(32, config.bits_per_channel());
+      EXPECT_EQ(4, config.bytes_per_channel());
       EXPECT_EQ(CHANNEL_LAYOUT_STEREO, config.channel_layout());
       EXPECT_EQ(44100, config.samples_per_second());
       EXPECT_GT(config.extra_data().size(), 0u);
@@ -1392,8 +1405,9 @@ TEST_F(ChunkDemuxerTest, Init) {
       EXPECT_FALSE(video_stream);
     }
 
-    for (auto* stream : demuxer_->GetAllStreams())
+    for (media::DemuxerStream* stream : demuxer_->GetAllStreams()) {
       EXPECT_TRUE(stream->SupportsConfigChanges());
+    }
 
     ShutdownDemuxer();
     demuxer_.reset();
@@ -4881,6 +4895,33 @@ TEST_F(ChunkDemuxerTest, ZeroLengthFramesDropped) {
     ExpectEndOfStream(c.stream_type);
   }
 }
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+TEST_F(ChunkDemuxerTest, AddAutoDetectIDFindsCodecs) {
+  CreateNewDemuxer();
+
+  EXPECT_CALL(*this, DemuxerOpened());
+  EXPECT_CALL(host_, SetDuration(_));
+  demuxer_->Initialize(&host_,
+                       CreateInitDoneCallback(kNoTimestamp, PIPELINE_OK));
+
+  const char* kPrimary = "primary";
+  AddAutoDetectedCodecsId_Checked(kPrimary, RelaxedParserSupportedType::kMP2T);
+  scoped_refptr<DecoderBuffer> data = ReadTestDataFile("hls/bear0.ts");
+
+  EXPECT_FOUND_CODEC_NAME(Video, "h264");
+  EXPECT_FOUND_CODEC_NAME(Audio, "aac");
+  EXPECT_CALL(*this, InitSegmentReceivedMock(_));
+
+  EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(1791811, 5));
+  EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(2116888, 6));
+  EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(2441966, 6));
+
+  EXPECT_TRUE(AppendData(kPrimary, data->data(), data->data_size()));
+
+  CheckExpectedRanges(kPrimary, "{ [1466,2267) }");
+}
+#endif
 
 // TODO(servolk): Add a unit test with multiple audio/video tracks using the
 // same codec type in a single SourceBufferState, when WebM parser supports

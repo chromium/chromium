@@ -47,6 +47,8 @@ class GPU_EXPORT GpuControl {
 
   virtual const Capabilities& GetCapabilities() const = 0;
 
+  virtual const GLCapabilities& GetGLCapabilities() const = 0;
+
   // Runs |callback| when a query created via glCreateQueryEXT() has cleared
   // passed the glEndQueryEXT() point.
   virtual void SignalQuery(uint32_t query, base::OnceClosure callback) = 0;

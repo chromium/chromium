@@ -7,10 +7,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
@@ -64,7 +64,7 @@ class ApplicationObject {
 
  private:
   // Null iff this ApplicationObject has been moved-from.
-  absl::optional<uintptr_t> object_;
+  std::optional<uintptr_t> object_;
   const IpczApplicationObjectSerializer serializer_;
   const IpczApplicationObjectDestructor destructor_;
 };

@@ -112,6 +112,8 @@ To fix the error:
   more sources to the GN rules than is necessary in this case. It's best to
   point to the directory of the module root (where the `lib.rs` or `mod.rs`
   is located).
+* Download the roll CL (on Gerrit, click on the 3 dots in the upper right
+  corner and click on "Download patch").
 * Find the failing build target crate's rules in
   `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
   is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
@@ -122,10 +124,42 @@ To fix the error:
   * For `inputs`, add the path to a `extra_input_roots` list in the crate's
     rules. For the above example, we could add
     `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
+* With the roll CL checked out, run `gclient sync`.
+*** note
+NOTE: `gclient sync` will download the version of the rust toolchain from the
+roll CL. In order for this to work, the upload_rust bots should've completed and
+`copy_staging_to_prod_and_goma.sh should've been run.
+***
 * Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
   using the updated config.
 
-### Local development
+### Generating `BUILD.gn` files for stdlib crates
+
+If the build structure changes in any way during a roll, the GN files need
+to be regenerated.
+
+#### Simple way:
+
+Run `tools/rust/gnrt_stdlib.py`.
+
+#### Longer way
+
+This requires Rust to be installed and available in your system, typically
+through [https://rustup.rs](https://rustup.rs).
+
+To generate `BUILD.gn` files for the crates with the `gnrt` tool:
+1. Change directory to the root `src/` dir of Chromium.
+1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
+   tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
+1. Ensure you have a checkout of the Rust source tree in `third_party/rust-src`
+   which can be done with `tools/rust/build_rust.py --sync-for-gnrt`.
+1. Run `gnrt` with the `gen` action:
+   `out/gnrt/release/gnrt gen --for-std third_party/rust-src`.
+
+This will generate the `//build/rust/std/rules/BUILD.gn` file, with the changes
+visible in `git status` and can be added with `git add`.
+
+## Local development
 
 To build the Rust toolchain locally, run `//tools/rust/build_rust.py`. It
 has additional flags to skip steps if you're making local changes and want

@@ -34,7 +34,6 @@ void AddExtensionsActivityToMessage(
 
 void AddClientConfigParamsToMessage(
     ModelTypeSet enabled_types,
-    bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,
@@ -49,7 +48,6 @@ void AddClientConfigParamsToMessage(
     int field_number = GetSpecificsFieldNumberFromModelType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);
   }
-  config_params->set_tabs_datatype_enabled(proxy_tabs_datatype_enabled);
   config_params->set_cookie_jar_mismatch(cookie_jar_mismatch);
   config_params->set_single_client(single_client);
   config_params->set_single_client_with_standalone_invalidations(

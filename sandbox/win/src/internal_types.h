@@ -14,7 +14,6 @@ namespace sandbox {
 
 const wchar_t kNtdllName[] = L"ntdll.dll";
 const wchar_t kKerneldllName[] = L"kernel32.dll";
-const wchar_t kKernelBasedllName[] = L"kernelbase.dll";
 
 // Defines the supported C++ types encoding to numeric id. Like a simplified
 // RTTI. Note that true C++ RTTI will not work because the types are not
@@ -23,9 +22,7 @@ enum ArgType {
   INVALID_TYPE = 0,
   WCHAR_TYPE,
   UINT32_TYPE,
-  UNISTR_TYPE,
   VOIDPTR_TYPE,
-  INPTR_TYPE,
   INOUTPTR_TYPE,
   LAST_TYPE
 };

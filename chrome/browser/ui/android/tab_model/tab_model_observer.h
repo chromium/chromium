@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
 class TabAndroid;
@@ -34,7 +35,7 @@ class TabModelObserver {
 
   // Called right before all |tabs| are destroyed.
   virtual void OnFinishingMultipleTabClosure(
-      const std::vector<TabAndroid*>& tabs);
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
 
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);
@@ -58,7 +59,8 @@ class TabModelObserver {
   virtual void TabClosureCommitted(TabAndroid* tab);
 
   // Called when all |tabs| are pending closure.
-  virtual void AllTabsPendingClosure(const std::vector<TabAndroid*>& tabs);
+  virtual void AllTabsPendingClosure(
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
 
   // Called when an all tabs closure has been committed and can't be undone
   // anymore.

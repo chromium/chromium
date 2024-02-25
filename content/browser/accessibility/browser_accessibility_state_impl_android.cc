@@ -417,6 +417,19 @@ void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
+void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
+    bool highContrastEnabled) {
+  // We need to call into GetInstanceForWeb on the UI thread,
+  // so ensure that we setup the notification on the correct thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  native_theme->SetPreferredContrast(
+      highContrastEnabled ? ui::NativeTheme::PreferredContrast::kMore
+                          : ui::NativeTheme::PreferredContrast::kNoPreference);
+  native_theme->set_prefers_reduced_transparency(highContrastEnabled);
+  native_theme->NotifyOnNativeThemeUpdated();
+}
+
 void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
   BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 
@@ -438,22 +451,6 @@ void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
-}
-
-void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
-    bool enabled,
-    BrowserContext* profile) {
-  std::vector<WebContentsImpl*> web_contents_vector =
-      WebContentsImpl::GetAllWebContents();
-  for (auto*& web_contents : web_contents_vector) {
-    if (web_contents->GetBrowserContext() != profile) {
-      continue;
-    }
-
-    ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-    ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
-    web_contents->SetAccessibilityMode(ax_mode);
-  }
 }
 
 // static

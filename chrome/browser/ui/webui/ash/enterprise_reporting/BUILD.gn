@@ -1,0 +1,12 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Enterprise Reporting WebUI is ChromeOS Ash only.")
+
+mojom("mojo_bindings") {
+  sources = [ "enterprise_reporting.mojom" ]
+  webui_module_path = "/"
+}

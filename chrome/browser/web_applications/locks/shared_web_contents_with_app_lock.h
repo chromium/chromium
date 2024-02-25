@@ -14,7 +14,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace content {
 class WebContents;
@@ -34,7 +34,9 @@ class WebAppLockManager;
 class SharedWebContentsWithAppLockDescription : public LockDescription {
  public:
   explicit SharedWebContentsWithAppLockDescription(
-      base::flat_set<AppId> app_ids);
+      base::flat_set<webapps::AppId> app_ids);
+  SharedWebContentsWithAppLockDescription(
+      SharedWebContentsWithAppLockDescription&&);
   ~SharedWebContentsWithAppLockDescription();
 };
 
@@ -42,6 +44,8 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
 // and the background web contents in use by the WebAppProvider system. This
 // does not ensure that the app/s are installed when the lock is granted. Checks
 // for that will need to be handled by the user of the lock.
+// The web contents will be prepared for use via
+// WebAppUrlLoader::PrepareForLoad() prior to being granted access.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.

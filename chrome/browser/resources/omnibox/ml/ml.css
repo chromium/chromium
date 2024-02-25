@@ -1,0 +1,39 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  --start-lightness: 100%;
+  --dir-lightness: -1%;
+
+  --theme: hsl(0, 0%, var(--start-lightness));
+  --text: hsl(0, 0%, calc(100% - var(--start-lightness)));
+
+  --light-background: hsl(0, 0%, calc(var(--start-lightness) + 4 * var(--dir-lightness)));
+  --dark-background: hsl(0, 0%, calc(var(--start-lightness) + 8 * var(--dir-lightness)));
+
+  --hover-background: hsl(120, 20%, calc(var(--start-lightness) + 10 * var(--dir-lightness)));
+  --active-background: hsl(120, 27%, calc(var(--start-lightness) + 20 * var(--dir-lightness)));
+
+  --light-border: hsl(0, 0%, calc(var(--start-lightness) + 26 * var(--dir-lightness)));
+  --dark-border: hsl(0, 0%, calc(var(--start-lightness) + 40 * var(--dir-lightness)));
+
+  --active-border: hsl(120, 34%, calc(var(--start-lightness) + 50 * var(--dir-lightness)));
+
+  --color-lightness: calc(var(--start-lightness) + 60 * var(--dir-lightness));
+  --red-text: hsl(0, 50%, var(--color-lightness));
+  --green-text: hsl(120, 50%, var(--color-lightness));
+  --blue-text: hsl(240, 50%, var(--color-lightness));
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --start-lightness: 0%;
+    --dir-lightness: 1%;
+  }
+}
+
+body {
+  color: var(--text);
+  background-color: var(--light-background);
+}

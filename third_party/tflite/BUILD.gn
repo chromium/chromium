@@ -11,28 +11,28 @@ import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
 
-proto_library("tflite-config-proto") {
+proto_library("tflite_proto") {
   proto_in_dir = "src"
-  sources =
-      [ "src/tensorflow/lite/acceleration/configuration/configuration.proto" ]
+  sources = [
+    "src/tensorflow/lite/acceleration/configuration/configuration.proto",
+    "src/third_party/xla/third_party/tsl/tsl/protobuf/coordination_config.proto",
+  ]
   cc_generator_options = "lite=true:"
 }
 
-if (build_with_mediapipe_lib) {
-  proto_library("tflite_op_resolver_proto") {
-    proto_in_dir = "src"
-    sources = [
-      "src/tensorflow/tsl/protobuf/coordination_config.proto",
-      "src/tensorflow/tsl/protobuf/error_codes.proto",
-      "src/tensorflow/tsl/protobuf/rpc_options.proto",
-    ]
-    cc_generator_options = "lite=true:"
-  }
+proto_library("tflite_op_resolver_proto") {
+  proto_in_dir = "src"
+  sources = [
+    "src/third_party/xla/third_party/tsl/tsl/protobuf/error_codes.proto",
+    "src/third_party/xla/third_party/tsl/tsl/protobuf/rpc_options.proto",
+  ]
+  cc_generator_options = "lite=true:"
 }
 
 config("tflite_config") {
   include_dirs = [
     "src",
+    "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
   if (is_android) {
@@ -49,6 +49,7 @@ config("tflite_flags") {
     "-Wno-loop-analysis",
     "-Wno-shadow",
     "-Wno-deprecated-anon-enum-enum-conversion",
+    "-Wno-unused-function",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -86,6 +87,8 @@ config("tflite_flags") {
       "/DTFL_COMPILE_LIBRARY",
       "/wd4018",
     ]
+
+    defines += [ "TFLITE_MMAP_DISABLED" ]
   }
 
   if (build_tflite_with_ruy) {
@@ -95,88 +98,92 @@ config("tflite_flags") {
   }
 }
 
-if (build_with_mediapipe_lib) {
-  static_library("tflite_builtin_op_resolver_internals") {
-    sources = [
-      "src/tensorflow/lite/kernels/internal/mfcc.cc",
-      "src/tensorflow/lite/kernels/internal/mfcc_dct.cc",
-      "src/tensorflow/lite/kernels/internal/mfcc_mel_filterbank.cc",
-    ]
+static_library("tflite_builtin_op_resolver_internals") {
+  sources = [
+    "src/tensorflow/lite/kernels/internal/mfcc.cc",
+    "src/tensorflow/lite/kernels/internal/mfcc_dct.cc",
+    "src/tensorflow/lite/kernels/internal/mfcc_mel_filterbank.cc",
+  ]
 
-    deps = [
-      "//third_party/abseil-cpp:absl",
-      "//third_party/gemmlowp",
-      "//third_party/neon_2_sse",
-    ]
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+  ]
 
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-      "//third_party/eigen3:eigen_includes",
-      ":tflite_flags",
-    ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
+  ]
 
-    public_configs = [ ":tflite_config" ]
-  }
+  public_configs = [ ":tflite_config" ]
+}
 
-  tflite_static_library("tflite_builtin_op_resolver") {
-    sources = [
-      "src/tensorflow/lite/core/kernels/register.cc",
-      "src/tensorflow/lite/core/kernels/register.h",
-      "src/tensorflow/lite/kernels/atan2.cc",
-      "src/tensorflow/lite/kernels/atan2_custom.cc",
-      "src/tensorflow/lite/kernels/audio_spectrogram.cc",
-      "src/tensorflow/lite/kernels/bitcast.cc",
-      "src/tensorflow/lite/kernels/bitwise_xor.cc",
-      "src/tensorflow/lite/kernels/broadcast_args.cc",
-      "src/tensorflow/lite/kernels/broadcast_to.cc",
-      "src/tensorflow/lite/kernels/bucketize.cc",
-      "src/tensorflow/lite/kernels/call_once.cc",
-      "src/tensorflow/lite/kernels/complex_support.cc",
-      "src/tensorflow/lite/kernels/conv3d.cc",
-      "src/tensorflow/lite/kernels/conv3d_transpose.cc",
-      "src/tensorflow/lite/kernels/detection_postprocess.cc",
-      "src/tensorflow/lite/kernels/dynamic_update_slice.cc",
-      "src/tensorflow/lite/kernels/hashtable.cc",
-      "src/tensorflow/lite/kernels/hashtable_find.cc",
-      "src/tensorflow/lite/kernels/hashtable_import.cc",
-      "src/tensorflow/lite/kernels/hashtable_size.cc",
-      "src/tensorflow/lite/kernels/kernel_util.h",
-      "src/tensorflow/lite/kernels/mfcc.cc",
-      "src/tensorflow/lite/kernels/multinomial.cc",
-      "src/tensorflow/lite/kernels/random_ops.cc",
-      "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
-      "src/tensorflow/lite/kernels/random_uniform_custom.cc",
-      "src/tensorflow/lite/kernels/right_shift.cc",
-      "src/tensorflow/lite/kernels/sign.cc",
-      "src/tensorflow/lite/kernels/sign_custom.cc",
-      "src/tensorflow/lite/kernels/unsorted_segment.cc",
-      "src/tensorflow/lite/kernels/var_handle.cc",
-    ]
+tflite_static_library("tflite_builtin_op_resolver") {
+  sources = [
+    "src/tensorflow/lite/core/kernels/register.cc",
+    "src/tensorflow/lite/core/kernels/register.h",
+    "src/tensorflow/lite/kernels/atan2.cc",
+    "src/tensorflow/lite/kernels/atan2_custom.cc",
+    "src/tensorflow/lite/kernels/audio_spectrogram.cc",
+    "src/tensorflow/lite/kernels/bitcast.cc",
+    "src/tensorflow/lite/kernels/bitwise_xor.cc",
+    "src/tensorflow/lite/kernels/broadcast_args.cc",
+    "src/tensorflow/lite/kernels/broadcast_to.cc",
+    "src/tensorflow/lite/kernels/bucketize.cc",
+    "src/tensorflow/lite/kernels/call_once.cc",
+    "src/tensorflow/lite/kernels/complex_support.cc",
+    "src/tensorflow/lite/kernels/conv3d.cc",
+    "src/tensorflow/lite/kernels/conv3d_transpose.cc",
+    "src/tensorflow/lite/kernels/detection_postprocess.cc",
+    "src/tensorflow/lite/kernels/dilate.cc",
+    "src/tensorflow/lite/kernels/dynamic_update_slice.cc",
+    "src/tensorflow/lite/kernels/hashtable.cc",
+    "src/tensorflow/lite/kernels/hashtable_find.cc",
+    "src/tensorflow/lite/kernels/hashtable_import.cc",
+    "src/tensorflow/lite/kernels/hashtable_size.cc",
+    "src/tensorflow/lite/kernels/kernel_util.h",
+    "src/tensorflow/lite/kernels/mfcc.cc",
+    "src/tensorflow/lite/kernels/multinomial.cc",
+    "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
+    "src/tensorflow/lite/kernels/random_uniform_custom.cc",
+    "src/tensorflow/lite/kernels/right_shift.cc",
+    "src/tensorflow/lite/kernels/sign.cc",
+    "src/tensorflow/lite/kernels/sign_custom.cc",
+    "src/tensorflow/lite/kernels/stablehlo_add.cc",
+    "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
+    "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
+    "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
+    "src/tensorflow/lite/kernels/stablehlo_pad.cc",
+    "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
+    "src/tensorflow/lite/kernels/unsorted_segment.cc",
+    "src/tensorflow/lite/kernels/var_handle.cc",
+  ]
 
-    deps = [
-      ":tflite_builtin_op_resolver_internals",
-      ":tflite_op_resolver_proto",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/flatbuffers",
-      "//third_party/gemmlowp",
-      "//third_party/neon_2_sse",
-      "//third_party/ruy",
-    ]
+  deps = [
+    ":tflite_builtin_op_resolver_internals",
+    ":tflite_op_resolver_proto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+  ]
 
-    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
-    configs_to_add = [
-      "//build/config/compiler:no_chromium_code",
-      "//third_party/eigen3:eigen_includes",
-      ":tflite_flags",
-    ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
+  ]
 
-    public_configs = [ ":tflite_config" ]
+  public_configs = [ ":tflite_config" ]
 
-    visibility = [ "//third_party/mediapipe/*" ]
+  visibility = [ "//third_party/mediapipe/*" ]
 
-    conditional_deps = [ ":tflite" ]
-  }
+  conditional_deps = [ ":tflite" ]
 }
 
 source_set("tflite_public_headers") {
@@ -184,6 +191,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/allocation.h",
     "src/tensorflow/lite/arena_planner.h",
     "src/tensorflow/lite/array.h",
+    "src/tensorflow/lite/builtin_ops.h",
     "src/tensorflow/lite/c/builtin_op_data.h",
     "src/tensorflow/lite/context.h",
     "src/tensorflow/lite/context_util.h",
@@ -371,7 +379,7 @@ source_set("tflite_kernel_internals") {
     ":tflite_flags",
   ]
 
-  public_configs = [ "//third_party/eigen3:eigen_includes" ]
+  public_configs = [ "//third_party/eigen3:eigen_public_includes" ]
   visibility = [ ":*" ]
 }
 
@@ -461,6 +469,8 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/reverse.cc",
     "src/tensorflow/lite/kernels/reverse_sequence.cc",
     "src/tensorflow/lite/kernels/rfft2d.cc",
+    "src/tensorflow/lite/kernels/rng_bit_generator.cc",
+    "src/tensorflow/lite/kernels/rng_util.cc",
     "src/tensorflow/lite/kernels/round.cc",
     "src/tensorflow/lite/kernels/scatter_nd.cc",
     "src/tensorflow/lite/kernels/segment_sum.cc",
@@ -475,9 +485,13 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/split_v.cc",
     "src/tensorflow/lite/kernels/squared_difference.cc",
     "src/tensorflow/lite/kernels/squeeze.cc",
+    "src/tensorflow/lite/kernels/stablehlo_gather.cc",
+    "src/tensorflow/lite/kernels/stablehlo_scatter.cc",
     "src/tensorflow/lite/kernels/strided_slice.cc",
     "src/tensorflow/lite/kernels/sub.cc",
     "src/tensorflow/lite/kernels/svdf.cc",
+    "src/tensorflow/lite/kernels/tensor_slice_util.cc",
+    "src/tensorflow/lite/kernels/tensor_slice_util.h",
     "src/tensorflow/lite/kernels/tile.cc",
     "src/tensorflow/lite/kernels/topk_v2.cc",
     "src/tensorflow/lite/kernels/transpose.cc",
@@ -601,6 +615,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/optional_debug_tools.cc",
     "src/tensorflow/lite/profiling/memory_info.cc",
     "src/tensorflow/lite/profiling/memory_info.h",
+    "src/tensorflow/lite/profiling/memory_usage_monitor.cc",
+    "src/tensorflow/lite/profiling/memory_usage_monitor.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
     "src/tensorflow/lite/profiling/root_profiler.cc",
@@ -679,9 +695,9 @@ tflite_static_library("tflite") {
   conditional_public_deps = [ ":tflite_kernels" ]
 
   public_deps = [
-    ":tflite-config-proto",
     ":tflite_kernel_common_headers",
     ":tflite_kernel_internals",
+    ":tflite_proto",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
     "//third_party/gemmlowp",
@@ -701,4 +717,14 @@ tflite_static_library("tflite") {
   }
 
   public_configs = [ ":tflite_config" ]
+
+  # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
+  # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
+  # that adds to the "include_dirs". This means any file including
+  # "neon_check.h" needs the config, so that neon_2_sse should be in
+  # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
+  # not want propagated. For the time being, allow this in the standalone
+  # target (which is assumed to be for third-party code that is OK to have
+  # these switches).
+  public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
 }

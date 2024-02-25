@@ -7,10 +7,10 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 
-UIButton* GetCloseButtonFromBubbleView(BubbleView* bubbleView);
-UILabel* GetTitleLabelFromBubbleView(BubbleView* bubbleView);
-UIImageView* GetImageViewFromBubbleView(BubbleView* bubbleView);
-UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubbleView);
-UIView* GetArrowViewFromBubbleView(BubbleView* bubbleView);
+UIButton* GetCloseButtonFromBubbleView(BubbleView* bubble_view);
+UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view);
+UIImageView* GetImageViewFromBubbleView(BubbleView* bubble_view);
+UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view);
+UIView* GetArrowViewFromBubbleView(BubbleView* bubble_view);
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_UNITTEST_UTIL_H_

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_INPUT_DEVICE_SETTINGS_H_
 #define CHROME_BROWSER_ASH_SYSTEM_INPUT_DEVICE_SETTINGS_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace system {
@@ -85,16 +86,16 @@ class TouchpadSettings {
                     InputDeviceSettings* input_device_settings);
 
  private:
-  absl::optional<bool> acceleration_;
-  absl::optional<bool> haptic_feedback_;
-  absl::optional<int> haptic_click_sensitivity_;
-  absl::optional<bool> natural_scroll_;
-  absl::optional<int> sensitivity_;
-  absl::optional<bool> scroll_acceleration_;
-  absl::optional<int> scroll_sensitivity_;
-  absl::optional<bool> tap_dragging_;
-  absl::optional<bool> tap_to_click_;
-  absl::optional<bool> three_finger_click_;
+  std::optional<bool> acceleration_;
+  std::optional<bool> haptic_feedback_;
+  std::optional<int> haptic_click_sensitivity_;
+  std::optional<bool> natural_scroll_;
+  std::optional<int> sensitivity_;
+  std::optional<bool> scroll_acceleration_;
+  std::optional<int> scroll_sensitivity_;
+  std::optional<bool> tap_dragging_;
+  std::optional<bool> tap_to_click_;
+  std::optional<bool> three_finger_click_;
 };
 
 // Auxiliary class used to update several mouse settings at a time. User
@@ -142,12 +143,12 @@ class MouseSettings {
                     InputDeviceSettings* input_device_settings);
 
  private:
-  absl::optional<bool> acceleration_;
-  absl::optional<bool> primary_button_right_;
-  absl::optional<bool> reverse_scroll_;
-  absl::optional<bool> scroll_acceleration_;
-  absl::optional<int> scroll_sensitivity_;
-  absl::optional<int> sensitivity_;
+  std::optional<bool> acceleration_;
+  std::optional<bool> primary_button_right_;
+  std::optional<bool> reverse_scroll_;
+  std::optional<bool> scroll_acceleration_;
+  std::optional<int> scroll_sensitivity_;
+  std::optional<int> sensitivity_;
 };
 
 // Auxiliary class used to update several pointing stick settings at a time.
@@ -183,9 +184,9 @@ class PointingStickSettings {
                     InputDeviceSettings* input_device_settings);
 
  private:
-  absl::optional<bool> acceleration_;
-  absl::optional<bool> primary_button_right_;
-  absl::optional<int> sensitivity_;
+  std::optional<bool> acceleration_;
+  std::optional<bool> primary_button_right_;
+  std::optional<int> sensitivity_;
 };
 
 // Interface for configuring input device settings.

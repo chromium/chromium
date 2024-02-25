@@ -4,8 +4,9 @@
 
 #include "ash/wm/resize_shadow.h"
 
+#include <map>
+
 #include "ash/root_window_controller.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -111,7 +112,7 @@ const gfx::ImageSkia& MakeShadowImageOnce(
   // If requiring a new shadow texture, evict unused textures and create a new
   // one with given shadow features.
   if (iter == shadow_image_cache->end()) {
-    base::EraseIf(*shadow_image_cache, [](auto& key_and_image_source) {
+    std::erase_if(*shadow_image_cache, [](auto& key_and_image_source) {
       return key_and_image_source.second.IsUniquelyOwned();
     });
 

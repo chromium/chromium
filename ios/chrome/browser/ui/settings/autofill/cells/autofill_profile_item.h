@@ -33,6 +33,9 @@
 // profile to Account.
 @property(nonatomic, assign) BOOL showMigrateToAccountButton;
 
+// YES, if the cloud off icon representing local profile is shown.
+@property(nonatomic, assign) BOOL localProfileIconShown;
+
 @end
 
 @interface AutofillProfileCell : TableViewCell
@@ -43,6 +46,8 @@
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 // The cell detail text.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
+// YES, if the cloud off icon representing local profile is shown.
+@property(nonatomic, assign) BOOL localProfileIconShown;
 
 @end
 

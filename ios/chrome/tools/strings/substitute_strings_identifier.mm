@@ -187,7 +187,7 @@ int RealMain(int argc, char* const argv[]) {
     return 1;
   }
 
-  absl::optional<ResourceMap> resource_map =
+  std::optional<ResourceMap> resource_map =
       LoadResourcesFromGritHeaders(headers);
 
   if (!resource_map) {

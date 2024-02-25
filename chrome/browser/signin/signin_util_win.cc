@@ -88,15 +88,13 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
   if (GetTurnSyncOnHelperDelegateForTestingStorage()->get()) {
     new TurnSyncOnHelper(
         profile, kCredentialsProviderAccessPointWin,
-        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
+        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, account_id,
         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
         std::move(*GetTurnSyncOnHelperDelegateForTestingStorage()),
         base::DoNothing());
   } else {
     new TurnSyncOnHelper(profile, browser, kCredentialsProviderAccessPointWin,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                         signin_metrics::Reason::kSigninPrimaryAccount,
                          account_id,
                          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   }

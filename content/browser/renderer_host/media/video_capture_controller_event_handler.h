@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_CONTROLLER_EVENT_HANDLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_CONTROLLER_EVENT_HANDLER_H_
 
-#include <memory>
-
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -61,15 +59,19 @@ class VideoCaptureControllerEventHandler {
 
   // A buffer (and optionally scaled versions of it) has been filled with a
   // captured VideoFrame.
-  virtual void OnBufferReady(
-      const VideoCaptureControllerID& id,
-      const ReadyBuffer& buffer,
-      const std::vector<ReadyBuffer>& scaled_buffers) = 0;
+  virtual void OnBufferReady(const VideoCaptureControllerID& id,
+                             const ReadyBuffer& buffer) = 0;
 
-  // All subsequent buffers are guaranteed to have a crop version whose value
-  // is at least |crop_version|.
-  virtual void OnNewCropVersion(const VideoCaptureControllerID& id,
-                                uint32_t crop_version) = 0;
+  // A frame was dropped - OnBufferReady() was never called for this frame. In
+  // other words the frame was dropped before it reached the renderer process.
+  virtual void OnFrameDropped(const VideoCaptureControllerID& id,
+                              media::VideoCaptureFrameDropReason reason) = 0;
+
+  // All subsequent buffers are guaranteed to have a sub-capture-target version
+  // whose value is at least |sub_capture_target_version|.
+  virtual void OnNewSubCaptureTargetVersion(
+      const VideoCaptureControllerID& id,
+      uint32_t sub_capture_target_version) = 0;
 
   virtual void OnFrameWithEmptyRegionCapture(
       const VideoCaptureControllerID& id) = 0;

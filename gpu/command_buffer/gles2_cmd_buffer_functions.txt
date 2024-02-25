@@ -379,7 +379,8 @@ GL_APICALL void         GL_APIENTRY glCreateAndTexStorage2DSharedImageINTERNAL (
 GL_APICALL void         GL_APIENTRY glBeginSharedImageAccessDirectCHROMIUM (GLuint texture, GLenumSharedImageAccessMode mode);
 GL_APICALL void         GL_APIENTRY glEndSharedImageAccessDirectCHROMIUM (GLuint texture);
 GL_APICALL void         GL_APIENTRY glConvertRGBAToYUVAMailboxesINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
-GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
+GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
+GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToTextureINTERNAL (GLuint texture, GLenum target, GLuint internal_format, GLenum type, GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLboolean flip_y, GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
 GL_APICALL void         GL_APIENTRY glCopySharedImageINTERNAL (GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, GLboolean unpack_flip_y, const GLbyte* mailboxes);
 GL_APICALL void         GL_APIENTRY glCopySharedImageToTextureINTERNAL (GLuint texture, GLenum target, GLuint internal_format, GLenum type, GLint src_x, GLint src_y, GLsizei width, GLsizei height, GLboolean flip_y, const GLbyte* src_mailbox);
 GL_APICALL void         GL_APIENTRY glReadbackARGBImagePixelsINTERNAL (const GLbyte* mailbox, const void* dst_color_space, GLuint dst_color_space_size, GLuint dst_size, GLuint dst_width, GLuint dst_height, GLuint dst_color_type, GLuint dst_alpha_type, GLuint dst_row_bytes, GLint src_x, GLint src_y, GLint plane_index, void* pixels);
@@ -411,3 +412,12 @@ GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE
 GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE (void);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenum pname, GLfloat* params);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenum pname, GLint* params);
+
+// Extension EXT_clip_control
+GL_APICALL void         GL_APIENTRY glClipControlEXT (GLenum origin, GLenum depth);
+
+// Extension ANGLE_polygon_mode
+GL_APICALL void         GL_APIENTRY glPolygonModeANGLE (GLenum face, GLenum mode);
+
+// Extension EXT_polygon_offset_clamp
+GL_APICALL void         GL_APIENTRY glPolygonOffsetClampEXT (GLfloat factor, GLfloat units, GLfloat clamp);

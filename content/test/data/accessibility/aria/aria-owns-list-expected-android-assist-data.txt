@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ListView textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-owns="one two"}, {role="list"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="one"}, {role="listitem"}]
+++++++TextView text:"One" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="two"}, {role="listitem"}]
+++++++TextView text:"Two" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

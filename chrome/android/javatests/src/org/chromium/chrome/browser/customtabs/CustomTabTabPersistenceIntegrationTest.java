@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,9 +26,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.io.File;
 
-/**
- * Integration testing for the CustomTab Tab persistence logic.
- */
+/** Integration testing for the CustomTab Tab persistence logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabTabPersistenceIntegrationTest {
@@ -44,21 +43,30 @@ public class CustomTabTabPersistenceIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1477814")
     public void testTabFilesDeletedOnClose() {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        String expectedTabFileName = TabStateFileManager.getTabStateFilename(tab.getId(), false);
+        String expectedTabFileName =
+                TabStateFileManager.getTabStateFilename(
+                        tab.getId(), false, /* isFlatBuffer= */ false);
 
-        CustomTabTabPersistencePolicy tabPersistencePolicy = mCustomTabActivityTestRule
-                .getActivity().getComponent().resolveTabPersistencePolicy();
+        CustomTabTabPersistencePolicy tabPersistencePolicy =
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .getComponent()
+                        .resolveTabPersistencePolicy();
 
-        String expectedMetadataFileName = tabPersistencePolicy.getStateFileName();
+        String expectedMetadataFileName = tabPersistencePolicy.getMetadataFileName();
         File stateDir = tabPersistencePolicy.getOrCreateStateDirectory();
 
         waitForFileExistState(true, expectedTabFileName, stateDir);
         waitForFileExistState(true, expectedMetadataFileName, stateDir);
 
-        mCustomTabActivityTestRule.getActivity().getComponent()
-                .resolveNavigationController().finish(FinishReason.OTHER);
+        mCustomTabActivityTestRule
+                .getActivity()
+                .getComponent()
+                .resolveNavigationController()
+                .finish(FinishReason.OTHER);
 
         waitForFileExistState(false, expectedTabFileName, stateDir);
         waitForFileExistState(false, expectedMetadataFileName, stateDir);
@@ -66,11 +74,13 @@ public class CustomTabTabPersistenceIntegrationTest {
 
     private void waitForFileExistState(
             final boolean exists, final String fileName, final File filePath) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            File file = new File(filePath, fileName);
-            Criteria.checkThat("Invalid file existence state for: " + fileName, file.exists(),
-                    Matchers.is(exists));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File file = new File(filePath, fileName);
+                    Criteria.checkThat(
+                            "Invalid file existence state for: " + fileName,
+                            file.exists(),
+                            Matchers.is(exists));
+                });
     }
-
 }

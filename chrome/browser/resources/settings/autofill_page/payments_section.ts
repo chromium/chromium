@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
 import '../simple_confirmation_dialog.js';
@@ -23,25 +23,36 @@ import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
+import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
-import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
-import {DotsIbanMenuClickEvent} from './iban_list_entry.js';
-import {SettingsPaymentsListElement} from './payments_list.js';
-import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
+import type {PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import type {DotsIbanMenuClickEvent} from './iban_list_entry.js';
+import type {SettingsPaymentsListElement} from './payments_list.js';
+import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
+import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
+export const GOOGLE_PAY_HELP_URL =
+    'https://support.google.com/googlepay?p=card_benefits_chrome';
+
 type DotsCardMenuiClickEvent = CustomEvent<{
+  creditCard: chrome.autofillPrivate.CreditCardEntry,
+  anchorElement: HTMLElement,
+}>;
+
+type RemoteCardMenuClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
 }>;
@@ -49,6 +60,7 @@ type DotsCardMenuiClickEvent = CustomEvent<{
 declare global {
   interface HTMLElementEventMap {
     'dots-card-menu-click': DotsCardMenuiClickEvent;
+    'remote-card-menu-click': RemoteCardMenuClickEvent;
   }
 }
 
@@ -102,14 +114,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * An array of all saved UPI IDs.
-       */
-      upiIds: {
-        type: Array,
-        value: () => [],
-      },
-
-      /**
        * Set to true if user can be verified through FIDO authentication.
        */
       userIsFidoVerifiable_: {
@@ -127,6 +131,19 @@ export class SettingsPaymentsSectionElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showIbansSettings');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * GPay-related links direct to the newer GPay Web site instead of
+       * the legacy Payments Center.
+       */
+      updateChromeSettingsLinkToGPayWebEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'updateChromeSettingsLinkToGPayWebEnabled');
         },
         readOnly: true,
       },
@@ -156,17 +173,6 @@ export class SettingsPaymentsSectionElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('migrationEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
-       * Whether virtual card enroll management on settings page is enabled.
-       */
-      virtualCardEnrollmentEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
         },
         readOnly: true,
       },
@@ -203,15 +209,36 @@ export class SettingsPaymentsSectionElement extends
           return loadTimeData.getBoolean('cvcStorageAvailable');
         },
       },
+
+      /**
+       * Checks if card benefits feature flag is enabled.
+       */
+      cardBenefitsFlagEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillCardBenefitsAvailable');
+        },
+      },
+
+      /**
+       * Sublabel for the card benefits toggle. The sublabel text also includes
+       * a link to learn about the card benefits.
+       */
+      cardBenefitsSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('cardBenefitsToggleSublabel');
+        },
+      },
     };
   }
 
   prefs: {[key: string]: any};
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
-  upiIds: string[];
   private showIbanSettingsEnabled_: boolean;
   private userIsFidoVerifiable_: boolean;
+  private updateChromeSettingsLinkToGPayWebEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
   private showCreditCardDialog_: boolean;
@@ -221,7 +248,6 @@ export class SettingsPaymentsSectionElement extends
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
-  private virtualCardEnrollmentEnabled_: boolean;
   // <if expr="is_win or is_macosx">
   private deviceAuthAvailable_: boolean;
   // </if>
@@ -231,6 +257,8 @@ export class SettingsPaymentsSectionElement extends
       PaymentsManagerImpl.getInstance();
   private mandatoryReauthFeatureEnabled_: boolean;
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
+  private cardBenefitsFlagEnabled_: boolean;
+  private cardBenefitsSublabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -262,17 +290,12 @@ export class SettingsPaymentsSectionElement extends
       this.ibans = ibanList;
     };
 
-    const setUpiIdsListener = (upiIdList: string[]) => {
-      this.upiIds = upiIdList;
-    };
-
     // Remember the bound reference in order to detach.
     this.setPersonalDataListener_ = setPersonalDataListener;
 
     // Request initial data.
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
-    this.paymentsManager_.getUpiIdList().then(setUpiIdsListener);
 
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(
@@ -389,20 +412,40 @@ export class SettingsPaymentsSectionElement extends
    */
   private async onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
-
-    if (this.activeCreditCard_!.metadata!.isLocal) {
-      this.showCreditCardDialog_ =
-          await this.paymentsManager_.authenticateUserToEditLocalCard();
+    assert(this.activeCreditCard_);
+    if (this.activeCreditCard_.metadata!.isLocal) {
+      const unmaskedCreditCard = await this.paymentsManager_.getLocalCard(
+          this.activeCreditCard_.guid!);
+      assert(unmaskedCreditCard);
+      this.activeCreditCard_ = unmaskedCreditCard;
+      this.showCreditCardDialog_ = true;
     } else {
-      this.onRemoteEditCreditCardClick_();
+      this.onRemoteCreditCardUrlClick_();
     }
 
     this.$.creditCardSharedMenu.close();
   }
 
-  private onRemoteEditCreditCardClick_() {
+  private onRemoteEditCreditCardClick_(e: RemoteCardMenuClickEvent) {
+    this.activeCreditCard_ = e.detail.creditCard;
+    this.onRemoteCreditCardUrlClick_();
+  }
+
+  private onRemoteCreditCardUrlClick_() {
     this.paymentsManager_.logServerCardLinkClicked();
-    window.open(loadTimeData.getString('manageCreditCardsUrl'));
+    const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
+    assert(this.activeCreditCard_);
+    if (this.updateChromeSettingsLinkToGPayWebEnabled_ &&
+        this.activeCreditCard_.instrumentId) {
+      url.searchParams.append('id', this.activeCreditCard_.instrumentId);
+    }
+    OpenWindowProxyImpl.getInstance().openUrl(url.toString());
+  }
+
+  private onRemoteEditIbanMenuClick_() {
+    this.paymentsManager_.logServerIbanLinkClicked();
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('managePaymentMethodsUrl'));
   }
 
   private onLocalCreditCardRemoveConfirmationDialogClose_() {
@@ -585,8 +628,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowAddVirtualCardButton_(): boolean {
-    if (!this.virtualCardEnrollmentEnabled_ ||
-        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
       return false;
     }
     return !!this.activeCreditCard_!.metadata!
@@ -595,8 +637,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowRemoveVirtualCardButton_(): boolean {
-    if (!this.virtualCardEnrollmentEnabled_ ||
-        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
       return false;
     }
     return !!this.activeCreditCard_!.metadata!
@@ -650,16 +691,54 @@ export class SettingsPaymentsSectionElement extends
    */
   private onBulkRemoveCvcClick_() {
     assert(this.cvcStorageAvailable_);
+    // Log the metric for user clicking on the bulk delete hyperlink which
+    // triggers the dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        CvcDeletionUserAction.HYPERLINK_CLICKED);
     this.showBulkRemoveCvcConfirmationDialog_ = true;
   }
 
   /**
    * Method to bulk delete all the CVCs present on the local DB.
-   * TODO(crbug/1464441): Add the code to delete all the CVCs from the local DB.
    */
   private onShowBulkRemoveCvcConfirmationDialogClose_() {
     assert(this.cvcStorageAvailable_);
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#bulkDeleteCvcConfirmDialog');
+    assert(confirmationDialog);
+
+    // Log the metric for user either clicking on "Delete" or "Cancel" on the
+    // bulk delete dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        confirmationDialog.wasConfirmed() ?
+            CvcDeletionUserAction.DIALOG_ACCEPTED :
+            CvcDeletionUserAction.DIALOG_CANCELLED);
+    if (confirmationDialog.wasConfirmed()) {
+      this.paymentsManager_.bulkDeleteAllCvcs();
+    }
     this.showBulkRemoveCvcConfirmationDialog_ = false;
+  }
+
+  /**
+   * Method to return the correct sublabel for the cvc storage toggle.
+   * If any card from the list has a cvc, the sublabel with bulk delete
+   * hyperlink is returned else return the regular sublabel.
+   * @returns Cvc storage toggle sublabel string.
+   */
+  private getCvcStorageSublabel_(): TrustedHTML {
+    const card = this.creditCards.find(cc => !!cc.cvc);
+    return this.i18nAdvanced(
+        card === undefined ? 'enableCvcStorageSublabel' :
+                             'enableCvcStorageDeleteDataSublabel');
+  }
+
+  /**
+   * Opens an article to learn about card benefits when the card benefits toggle
+   * sublabel link is clicked.
+   */
+  private onCardBenefitsSublabelLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
   }
 }
 

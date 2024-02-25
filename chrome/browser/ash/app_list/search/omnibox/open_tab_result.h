@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OPEN_TAB_RESULT_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OPEN_TAB_RESULT_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/style/color_mode_observer.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class Profile;
@@ -40,7 +40,7 @@ class OpenTabResult : public ChromeSearchResult,
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  absl::optional<std::string> DriveId() const override;
+  std::optional<std::string> DriveId() const override;
 
  private:
   // ash::ColorModeObserver:
@@ -57,10 +57,10 @@ class OpenTabResult : public ChromeSearchResult,
   // Handle used to receive a fetched favicon over mojo.
   const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
-  const absl::optional<std::string> drive_id_;
+  const std::optional<std::string> drive_id_;
   const std::u16string description_;
   // Whether this open tab result uses a generic backup icon.
   bool uses_generic_icon_ = false;

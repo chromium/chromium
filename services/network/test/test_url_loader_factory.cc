@@ -40,7 +40,7 @@ void TestURLLoaderFactory::TestURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   FollowRedirectParams params;
   params.removed_headers = removed_headers;
   params.modified_headers = modified_headers;
@@ -209,7 +209,7 @@ bool TestURLLoaderFactory::CreateLoaderAndStartInternal(
   return true;
 }
 
-absl::optional<network::TestURLLoaderFactory::PendingRequest>
+std::optional<network::TestURLLoaderFactory::PendingRequest>
 TestURLLoaderFactory::FindPendingRequest(const GURL& url,
                                          ResponseMatchFlags flags) {
   const bool url_match_prefix = flags & kUrlMatchPrefix;
@@ -248,10 +248,10 @@ TestURLLoaderFactory::FindPendingRequest(const GURL& url,
       on_new_pending_request_ = future.GetCallback();
       if (!future.Wait()) {
         // Timed out.
-        return absl::nullopt;
+        return std::nullopt;
       }
     } else {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
@@ -347,7 +347,7 @@ void TestURLLoaderFactory::SimulateResponse(
 
   if ((response_flags & kSendHeadersOnNetworkError) ||
       status.error_code == net::OK) {
-    client->OnReceiveResponse(std::move(head), std::move(body), absl::nullopt);
+    client->OnReceiveResponse(std::move(head), std::move(body), std::nullopt);
   }
 
   client->OnComplete(status);

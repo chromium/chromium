@@ -18,9 +18,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
-#include "components/sync/engine/configure_reason.h"
-#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_credentials.h"
@@ -59,7 +56,7 @@ class SyncEngine : public ModelTypeConfigurer {
 
     ~InitParams();
 
-    raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host = nullptr;
+    raw_ptr<SyncEngineHost> host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
     GURL service_url;
@@ -69,6 +66,7 @@ class SyncEngine : public ModelTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
+    bool sync_poll_immediately_on_every_startup = false;
   };
 
   SyncEngine();
@@ -185,11 +183,16 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Returns whether the poll interval elapsed since the last known poll time.
   // If returns true, there will likely be the next PERIODIC sync cycle soon but
-  // it's not guaranteed, see SyncSchedulerImpl for details.
+  // it's not guaranteed, see SyncSchedulerImpl for details. Note that this may
+  // diverge from a real scheduled poll time because this method uses base::Time
+  // while scheduler uses base::TimeTicks (which may be paused in sleep mode).
   virtual bool IsNextPollTimeInThePast() const = 0;
 
   // Returns a Value::List representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
+
+  // Record histograms related to Nigori type.
+  virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;
 };
 
 }  // namespace syncer

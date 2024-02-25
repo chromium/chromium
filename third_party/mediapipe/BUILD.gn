@@ -2,36 +2,84 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
+
+declare_args() {
+  mediapipe_build_with_gpu_support = false
+}
+
+# Generate a buildflag header for compile-time checking of MediaPipe GPU support.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags =
+      [ "MEDIAPIPE_BUILD_WITH_GPU_SUPPORT=$mediapipe_build_with_gpu_support" ]
+}
+
+action("stamp_metadata_parser_version") {
+  script = "stamp_metadata_parser_version.py"
+
+  _template_file = "src/mediapipe/tasks/cc/metadata/metadata_parser.h.template"
+  _schema_file = "src/mediapipe/tasks/metadata/metadata_schema.fbs"
+  _output_file =
+      "$target_gen_dir/src/mediapipe/tasks/cc/metadata/metadata_parser.h"
+
+  outputs = [ _output_file ]
+
+  args = [
+    "--schema",
+    rebase_path(_schema_file, root_build_dir),
+    "--template",
+    rebase_path(_template_file, root_build_dir),
+    "--output",
+    rebase_path(_output_file, root_build_dir),
+  ]
+
+  sources = [
+    _schema_file,
+    _template_file,
+  ]
+}
 
 config("mediapipe_config") {
   include_dirs = [
     "src",
     "shims",
     "shims/protobuf",
+  ]
+}
 
-    # TODO(b/283522287): Change the file under this directory to a gn action
-    # instead.
-    "generated",
+# This target contains compiler warnings that need to be supressed. This
+# config is not public (hence named internal).
+config("mediapipe_internal_config") {
+  cflags = [
+    "-Wno-unused-function",
+    "-Wno-deprecated-declarations",
+
+    # MediaPipe's CHECK macros are redefined from absl's.
+    "-Wno-macro-redefined",
   ]
 }
 
 config("mediapipe_flags") {
-  cflags = [
-    # MediaPipe's CHECK macros are redefined from absl's.
-    "-Wno-macro-redefined",
+  # This config is added to the public_config. Don't add cflags that disable
+  # warnings here.
+  defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
 
-    # TODO(b/283522287): Upstream or patch these.
-    "-Wno-range-loop-bind-reference",
-  ]
+  if (!mediapipe_build_with_gpu_support) {
+    defines += [ "MEDIAPIPE_DISABLE_GPU=1" ]
+  } else if (is_win) {
+    # When building with GPU support on Windows, we don't want MediaPipe to try
+    # and use pthreads, since they will be unavailable.
+    defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
+  }
 
-  defines = [
-    "MEDIAPIPE_DISABLE_GPU=1",
-    "MEDIAPIPE_PROTO_LITE=1",
-  ]
+  if (is_android) {
+    defines += [ "MEDIAPIPE_NO_JNI=1" ]
+  }
 }
 
 source_set("any_lite_proto_impl") {
@@ -81,6 +129,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/tool/field_data.proto",
     "src/mediapipe/framework/tool/packet_generator_wrapper_calculator.proto",
     "src/mediapipe/gpu/gl_context_options.proto",
+    "src/mediapipe/gpu/gpu_origin.proto",
     "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.proto",
     "src/mediapipe/tasks/cc/components/calculators/score_calibration_calculator.proto",
     "src/mediapipe/tasks/cc/components/containers/proto/classifications.proto",
@@ -90,7 +139,6 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/tasks/cc/components/processors/proto/detector_options.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/text_model_type.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/text_preprocessing_graph_options.proto",
-    "src/mediapipe/tasks/cc/components/processors/proto/transformer_params.proto",
     "src/mediapipe/tasks/cc/core/proto/acceleration.proto",
     "src/mediapipe/tasks/cc/core/proto/base_options.proto",
     "src/mediapipe/tasks/cc/core/proto/external_file.proto",
@@ -163,6 +211,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
@@ -179,6 +228,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
 # See src/docs/getting_started/troubleshooting.md
 tflite_source_set("mediapipe_core_always_link") {
   sources = [
+    "src/mediapipe/calculators/core/pass_through_calculator.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
     "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.cc",
@@ -203,6 +253,13 @@ tflite_source_set("mediapipe_core_always_link") {
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  if (mediapipe_build_with_gpu_support) {
+    sources += [
+      "src/mediapipe/gpu/gpu_buffer_to_image_frame_calculator.cc",
+      "src/mediapipe/gpu/image_frame_to_gpu_buffer_calculator.cc",
+    ]
+  }
 
   conditional_deps = [
     ":mediapipe_core",
@@ -241,6 +298,8 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/canonical_errors.h",
     "src/mediapipe/framework/deps/clock.cc",
     "src/mediapipe/framework/deps/clock.h",
+    "src/mediapipe/framework/deps/file_helpers.cc",
+    "src/mediapipe/framework/deps/file_helpers.h",
     "src/mediapipe/framework/deps/file_path.cc",
     "src/mediapipe/framework/deps/file_path.h",
     "src/mediapipe/framework/deps/map_util.h",
@@ -379,36 +438,15 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
 
-  if (!is_win) {
-    # TODO(b/283522287): Investigate this farther. The .cc file itself reads
-    # like it should be supported on Windows, but it fails to compile. This may
-    # be unneeded code though, as mediapipe links successfully on Windows
-    # without these files.
-    sources += [
-      "src/mediapipe/framework/deps/file_helpers.cc",
-      "src/mediapipe/framework/deps/file_helpers.h",
-    ]
-  }
-
   if (is_win) {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
   } else if (is_apple) {
     sources += [ "src/mediapipe/util/resource_util_apple.cc" ]
     cflags = [ "-ObjC++" ]
   } else if (is_android) {
-    sources += [
-      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.cc",
-      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.h",
-      "src/mediapipe/util/android/asset_manager_util.cc",
-      "src/mediapipe/util/android/asset_manager_util.h",
-      "src/mediapipe/util/android/file/base/file.cc",
-      "src/mediapipe/util/android/file/base/file.h",
-      "src/mediapipe/util/android/file/base/filesystem.cc",
-      "src/mediapipe/util/android/file/base/filesystem.h",
-      "src/mediapipe/util/android/file/base/helpers.cc",
-      "src/mediapipe/util/android/file/base/helpers.h",
-      "src/mediapipe/util/resource_util_android.cc",
-    ]
+    # This is by design - our Windows no-op implementation works for Android
+    # too, and in general we don't need this functionality.
+    sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
   } else {
     sources += [ "src/mediapipe/util/resource_util_default.cc" ]
   }
@@ -417,6 +455,7 @@ tflite_static_library("mediapipe_core") {
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
+    ":stamp_metadata_parser_version",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
@@ -425,6 +464,43 @@ tflite_static_library("mediapipe_core") {
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
+
+  if (mediapipe_build_with_gpu_support) {
+    sources += [
+      "src/mediapipe/framework/formats/image.cc",
+      "src/mediapipe/framework/formats/image.h",
+      "src/mediapipe/framework/formats/image_frame.cc",
+      "src/mediapipe/framework/formats/image_frame.h",
+      "src/mediapipe/gpu/gl_calculator_helper.cc",
+      "src/mediapipe/gpu/gl_calculator_helper.h",
+      "src/mediapipe/gpu/gl_context.cc",
+      "src/mediapipe/gpu/gl_context.h",
+      "src/mediapipe/gpu/gl_context_egl.cc",
+      "src/mediapipe/gpu/gl_context_internal.h",
+      "src/mediapipe/gpu/gl_texture_buffer.cc",
+      "src/mediapipe/gpu/gl_texture_buffer.h",
+      "src/mediapipe/gpu/gl_texture_view.cc",
+      "src/mediapipe/gpu/gl_texture_view.h",
+      "src/mediapipe/gpu/gpu_buffer.cc",
+      "src/mediapipe/gpu/gpu_buffer.h",
+      "src/mediapipe/gpu/gpu_buffer_format.cc",
+      "src/mediapipe/gpu/gpu_buffer_format.h",
+      "src/mediapipe/gpu/gpu_buffer_storage.cc",
+      "src/mediapipe/gpu/gpu_buffer_storage.h",
+      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.cc",
+      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.h",
+      "src/mediapipe/gpu/gpu_service.cc",
+      "src/mediapipe/gpu/gpu_service.h",
+      "src/mediapipe/gpu/gpu_shared_data_internal.cc",
+      "src/mediapipe/gpu/gpu_shared_data_internal.h",
+    ]
+
+    public_deps = [
+      "//third_party/angle:includes",
+      "//third_party/angle:libEGL_static",
+      "//third_party/angle:libGLESv2_static",
+    ]
+  }
 
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
@@ -435,6 +511,7 @@ tflite_static_library("mediapipe_core") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
@@ -469,6 +546,7 @@ tflite_static_library("mediapipe_core_api2") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
@@ -540,6 +618,7 @@ tflite_static_library("mediapipe_tasks") {
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
+    ":stamp_metadata_parser_version",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
@@ -568,6 +647,7 @@ tflite_static_library("mediapipe_tasks") {
 
 tflite_group("mediapipe") {
   public_deps = [
+    ":buildflags",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
   ]

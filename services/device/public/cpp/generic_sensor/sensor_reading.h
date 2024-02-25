@@ -5,9 +5,10 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_SENSOR_READING_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_SENSOR_READING_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <type_traits>
-#include "device/base/synchronization/one_writer_seqlock.h"
-#include "services/device/public/mojom/sensor.mojom.h"
 
 namespace device {
 
@@ -214,18 +215,6 @@ static_assert(sizeof(SensorReading) == sizeof(SensorReadingRaw),
               "Check SensorReading size.");
 static_assert(std::is_trivially_copyable<SensorReading>::value,
               "SensorReading must be trivially copyable.");
-
-// This structure represents sensor reading buffer: sensor reading and seqlock
-// for synchronization.
-struct SensorReadingSharedBuffer {
-  SensorReadingSharedBuffer();
-  ~SensorReadingSharedBuffer();
-  SensorReadingField<OneWriterSeqLock> seqlock;
-  SensorReading reading;
-
-  // Gets the shared reading buffer offset for the given sensor type.
-  static uint64_t GetOffset(mojom::SensorType type);
-};
 
 }  // namespace device
 

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -41,14 +42,24 @@ void MdTextButtonWithDownArrow::OnThemeChanged() {
   SetDropArrowImage();
 }
 
+void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
+  MdTextButton::StateChanged(old_state);
+
+  // A state change may require the arrow's color to be updated.
+  SetDropArrowImage();
+}
+
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
-  auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
-      kMenuDropArrowIcon,
-      color_utils::DeriveDefaultIconColor(label()->GetEnabledColor()));
+  SkColor drop_arrow_color =
+      features::IsChromeRefresh2023()
+          ? label()->GetEnabledColor()
+          : color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  auto drop_arrow_image =
+      ui::ImageModel::FromVectorIcon(kMenuDropArrowIcon, drop_arrow_color);
   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
 }
 
-BEGIN_METADATA(MdTextButtonWithDownArrow, views::MdTextButton)
+BEGIN_METADATA(MdTextButtonWithDownArrow)
 END_METADATA
 
 }  // namespace views

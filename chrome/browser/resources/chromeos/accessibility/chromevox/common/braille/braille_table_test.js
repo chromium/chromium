@@ -10,16 +10,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
  * This is an E2E test because there's no easy way to load a data file in
  * a webui-style test.
  */
-ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    // Alphabetical based on file path.
-    await importModule(
-        'BrailleTable', '/chromevox/common/braille/braille_table.js');
-  }
-};
+ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {};
 
 /**
  * Tests that {@code getAll} can fetch and parse the tables file.

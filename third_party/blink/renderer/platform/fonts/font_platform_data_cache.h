@@ -31,13 +31,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_CACHE_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 enum class AlternateFontName;
 class FontCache;
-class FontDataCache;
 class FontDescription;
 class FontFaceCreationParams;
 class FontPlatformData;
@@ -45,86 +45,31 @@ class FontPlatformData;
 // `FontPlatformDataCache` is the shared cache mapping from `FontDescription`
 // to `FontPlatformData`.
 class FontPlatformDataCache final {
+  DISALLOW_NEW();
+
  public:
-  static std::unique_ptr<FontPlatformDataCache> Create();
-
   FontPlatformDataCache();
-  ~FontPlatformDataCache();
 
-  FontPlatformDataCache(const FontPlatformDataCache&) = delete;
-  FontPlatformDataCache(FontPlatformDataCache&&) = delete;
+  void Trace(Visitor* visitor) const { visitor->Trace(map_); }
 
-  FontPlatformDataCache operator=(const FontPlatformDataCache&) = delete;
-  FontPlatformDataCache operator=(FontPlatformDataCache&&) = delete;
-
-  FontPlatformData* GetOrCreateFontPlatformData(
+  const FontPlatformData* GetOrCreateFontPlatformData(
       FontCache* font_cache,
       const FontDescription& font_description,
       const FontFaceCreationParams& creation_params,
       AlternateFontName alternate_font_name);
 
-  size_t ByteSize() const;
-  void Clear();
-  void Purge(const FontDataCache& font_data_cache);
+  void Clear() { map_.clear(); }
 
  private:
-  // `SizedFontPlatformDataSet` maps rounded font size to `FontPlatformData`.
-  class SizedFontPlatformDataSet final
-      : public ThreadSafeRefCounted<SizedFontPlatformDataSet> {
-   public:
-    static scoped_refptr<SizedFontPlatformDataSet> Create();
-
-    ~SizedFontPlatformDataSet();
-
-    SizedFontPlatformDataSet(const SizedFontPlatformDataSet&) = delete;
-    SizedFontPlatformDataSet(SizedFontPlatformDataSet&&) = delete;
-
-    SizedFontPlatformDataSet& operator=(const SizedFontPlatformDataSet&) =
-        delete;
-    SizedFontPlatformDataSet operator=(SizedFontPlatformDataSet&&) = delete;
-
-    FontPlatformData* GetOrCreateFontPlatformData(
-        FontCache* font_cache,
-        const FontDescription& font_description,
-        const FontFaceCreationParams& creation_params,
-        float size,
-        AlternateFontName alternate_font_name,
-        unsigned rounded_size);
-
-    // Returns true if `map_` is empty.
-    bool Purge(const FontDataCache& font_data_cache);
-
-    void Set(unsigned rounded_size, FontPlatformData* platform_data);
-
-   private:
-    using SizeToDataMap = HashMap<unsigned,
-                                  std::unique_ptr<FontPlatformData>,
-                                  IntWithZeroKeyHashTraits<unsigned>>;
-
-    SizedFontPlatformDataSet();
-
-    SizeToDataMap size_to_data_map_;
-  };
-
-  SizedFontPlatformDataSet& GetOrCreateSizeMap(const FontCacheKey& key);
-
-  HashMap<FontCacheKey, scoped_refptr<SizedFontPlatformDataSet>> map_;
+  HeapHashMap<FontCacheKey, WeakMember<const FontPlatformData>> map_;
 
   // A maximum float value to which we limit incoming font sizes. This is the
   // smallest float so that multiplying it by
   // FontCacheKey::PrecisionMultiplier() is still smaller than
   // std::numeric_limits<unsigned>::max() - 1 in order to avoid hitting
   // HashMap sentinel values (placed at std::numeric_limits<unsigned>::max()
-  // and std::numeric_limits<unsigned>::max() - 1) for
-  // SizedFontPlatformDataSet and FontPlatformDataCache.
+  // and std::numeric_limits<unsigned>::max() - 1) for FontPlatformDataCache.
   const float font_size_limit_;
-
-  // When true, the font size is removed from primary keys in |map_|.
-  // The font size is not necessary in the primary key, because per-size
-  // FontPlatformData are held in a nested map.
-  // This is controlled by a base::Feature to assess impact with an
-  // experiment.
-  const bool no_size_in_key_;
 };
 
 }  // namespace blink

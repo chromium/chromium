@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "filebrowser.office.microsoft_office_cloud_upload": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOfficeCloudUpload": "allowed"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_office_cloud_upload": {
+            "value": "allowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOfficeCloudUpload": "disallowed"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_office_cloud_upload": {
+            "value": "disallowed"
+          }
+        }
+      },
+      {
+        "policies": {
+          "MicrosoftOfficeCloudUpload": "automated"
+        },
+        "prefs": {
+          "filebrowser.office.microsoft_office_cloud_upload": {
+            "value": "automated"
+          }
+        }
+      }
+    ]
+  }
+]

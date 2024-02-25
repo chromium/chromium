@@ -1,0 +1,119 @@
+{
+    "images": [
+          {
+            "filename" : "monochrome_logo_20_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "20x20"
+          },
+          {
+            "filename" : "monochrome_logo_20_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "20x20"
+          },
+          {
+            "filename" : "monochrome_logo_29_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "29x29"
+          },
+          {
+            "filename" : "monochrome_logo_29_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "29x29"
+          },
+          {
+            "filename" : "monochrome_logo_38_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "38x38"
+          },
+          {
+            "filename" : "monochrome_logo_38_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "38x38"
+          },
+          {
+            "filename" : "monochrome_logo_40_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "40x40"
+          },
+          {
+            "filename" : "monochrome_logo_40_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "40x40"
+          },
+          {
+            "filename" : "monochrome_logo_60_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "60x60"
+          },
+          {
+            "filename" : "monochrome_logo_60_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "60x60"
+          },
+          {
+            "filename" : "monochrome_logo_64_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "64x64"
+          },
+          {
+            "filename" : "monochrome_logo_64_3x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "3x",
+            "size" : "64x64"
+          },
+          {
+            "filename" : "monochrome_logo_68_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "68x68"
+          },
+          {
+            "filename" : "monochrome_logo_76_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "76x76"
+          },
+          {
+            "filename" : "monochrome_logo_83.5_2x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "scale" : "2x",
+            "size" : "83.5x83.5"
+          },
+          {
+            "filename" : "monochrome_logo_1024_1x.png",
+            "idiom" : "universal",
+            "platform" : "ios",
+            "size" : "1024x1024"
+          }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

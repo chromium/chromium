@@ -5,13 +5,13 @@
 #ifndef UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_id.h"
@@ -70,7 +70,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   enum Shadow {
     STANDARD_SHADOW = 0,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // CHROMEOS_SYSTEM_UI_SHADOW uses ChromeOS system UI shadow style.
     CHROMEOS_SYSTEM_UI_SHADOW,
 #endif
@@ -83,7 +83,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
     // On Mac, the native window server should provide its own shadow for
     // windows that could overlap the browser window.
     DIALOG_SHADOW = NO_SHADOW,
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     DIALOG_SHADOW = CHROMEOS_SYSTEM_UI_SHADOW,
 #else
     DIALOG_SHADOW = STANDARD_SHADOW,
@@ -154,8 +154,8 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD insets.
   static gfx::Insets GetBorderAndShadowInsets(
-      const absl::optional<int>& shadow_elevation = absl::nullopt,
-      const absl::optional<bool>& draw_border_stroke = absl::nullopt,
+      const std::optional<int>& shadow_elevation = std::nullopt,
+      const std::optional<bool>& draw_border_stroke = std::nullopt,
       Shadow shadow_type = Shadow::STANDARD_SHADOW);
 
   // Draws a border and shadow outside the |rect| on |canvas|. |color_provider|
@@ -184,7 +184,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   // Sets whether to draw the border stroke. Passing `nullopt` uses the default
   // behavior (see comments on `ShouldDrawStroke()` below).
-  void set_draw_border_stroke(absl::optional<bool> draw_border_stroke) {
+  void set_draw_border_stroke(std::optional<bool> draw_border_stroke) {
     draw_border_stroke_ = std::move(draw_border_stroke);
   }
 
@@ -226,33 +226,37 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   gfx::Size GetMinimumSize() const override;
   void OnViewThemeChanged(View* view) override;
 
-  // Sets and activates the visible |arrow|. The position of the visible arrow
-  // on the edge of the |bubble_bounds| is determined using the
-  // |anchor_rect|. While the side of the arrow is already determined by
-  // |arrow|, the placement along the side is chosen to point towards the
-  // |anchor_rect|. For a horizontal bubble with an arrow on either the left
+  // Sets and activates the visible `arrow`. The position of the visible arrow
+  // on the edge of the `popup_bounds` is determined using the
+  // `anchor_rect`. While the side of the arrow is already determined by
+  // `arrow`, the placement along the side is chosen to point towards the
+  // `anchor_rect`. For a horizontal bubble with an arrow on either the left
   // or right side, the arrow is placed to point towards the vertical center of
-  // |anchor_rect|. For a vertical arrow that is either on top of below the
-  // bubble, the placement depends on the specifics of |arrow|:
+  // `anchor_rect`. For a vertical arrow that is either on top of below the
+  // bubble, the placement depends on the specifics of `arrow`:
   //
   //  * A right-aligned arrow (TOP_RIGHT, BOTTOM_RIGHT) optimizes the arrow
-  //  position to point at the right edge of the |element_bounds|.
+  //  position to point at the right edge of the `element_bounds`.
   //  * A center-aligned arrow (TOP_CENTER, BOTTOM_CENTER) points towards the
-  //  horizontal center of |element_bounds|.
-  //  * Otherwise, the arrow points towards the left edge of |element_bounds|.
+  //  horizontal center of `element_bounds`.
+  //  * Otherwise, the arrow points towards the left edge of `element_bounds`.
   //
   // If it is not possible for the arrow to point towards the targeted point
   // because there is no overlap between the bubble and the element in the
   // significant direction, the arrow is placed at the most extreme allowed
   // position that is closest to the targeted point.
   //
-  // Note that |bubble_bounds| can be slightly shifted to accommodate appended
-  // arrow and make the whole popup visialy pointing to the anchor element.
+  // Note that `popup_bounds` can be slightly shifted to accommodate appended
+  // arrow and make the whole popup visually pointing to the anchor element.
+  // `popup_min_y` limits this shift, which can be used to prevent overlapping
+  // the browser top elements (e.g., the address bar). The `popup_bounds`
+  // initial value is expected to not violate the `popup_min_y` restriction.
   //
   // Returns false if the arrow cannot be added due to missing space on the
   // bubble border.
   bool AddArrowToBubbleCornerAndPointTowardsAnchor(const gfx::Rect& anchor_rect,
-                                                   gfx::Rect& bubble_bounds);
+                                                   gfx::Rect& popup_bounds,
+                                                   int popup_min_y);
 
   // Returns a constant reference to the |visible_arrow_rect_| for teseting
   // purposes.
@@ -322,14 +326,14 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Cached arrow bounding box, calculated when bounds are calculated.
   mutable gfx::Rect visible_arrow_rect_;
 
-  absl::optional<bool> draw_border_stroke_;
+  std::optional<bool> draw_border_stroke_;
   Shadow shadow_;
-  absl::optional<int> md_shadow_elevation_;
+  std::optional<int> md_shadow_elevation_;
   ui::ColorId color_id_;
-  absl::optional<SkColor> requested_color_;
+  std::optional<SkColor> requested_color_;
   SkColor color_ = gfx::kPlaceholderColor;
   bool avoid_shadow_overlap_ = false;
-  absl::optional<gfx::Insets> insets_;
+  std::optional<gfx::Insets> insets_;
 };
 
 // A Background that clips itself to the specified BubbleBorder and uses the
@@ -345,7 +349,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
-  raw_ptr<BubbleBorder, DanglingUntriaged> border_;
+  const raw_ptr<BubbleBorder> border_;
 };
 
 }  // namespace views

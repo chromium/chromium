@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,20 +15,28 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace update_client {
+namespace update_client::protocol_request {
 
 // The protocol versions so far are:
 // * Version 3.1: it changes how the run actions are serialized.
 // * Version 3.0: it is the version implemented by the desktop updaters.
-constexpr char kProtocolVersion[] = "3.1";
+extern const char kProtocolVersion[];
 
 // Due to implementation constraints of the JSON parser and serializer,
 // precision of integer numbers greater than 2^53 is lost.
-constexpr int64_t kProtocolMaxInt = 1LL << 53;
+inline constexpr int64_t kProtocolMaxInt = 1LL << 53;
 
-namespace protocol_request {
+// Event type codes as described in //docs/updater/protocol_3_1.md.
+inline constexpr int kEventInstall = 2;
+inline constexpr int kEventUpdate = 3;
+inline constexpr int kEventUninstall = 4;
+inline constexpr int kEventDownload = 14;
+
+// App Command Events.
+inline constexpr int kEventAppCommandBegin = 40;
+
+inline constexpr int kEventAction = 42;
 
 struct HW {
   uint32_t physmemory = 0;  // Physical memory rounded down to the closest GB.
@@ -63,8 +72,8 @@ struct Updater {
   std::string version;
   bool is_machine = false;
   bool autoupdate_check_enabled = false;
-  absl::optional<int> last_started;
-  absl::optional<int> last_checked;
+  std::optional<int> last_started;
+  std::optional<int> last_checked;
   int update_policy = 0;
 };
 
@@ -102,11 +111,11 @@ struct Ping {
   ~Ping();
 
   // Preferred user count metrics ("ad" and "rd").
-  absl::optional<int> date_last_active;
-  absl::optional<int> date_last_roll_call;
+  std::optional<int> date_last_active;
+  std::optional<int> date_last_roll_call;
 
   // Legacy user count metrics ("a" and "r").
-  absl::optional<int> days_since_last_active_ping;
+  std::optional<int> days_since_last_active_ping;
   int days_since_last_roll_call = 0;
 
   std::string ping_freshness;
@@ -137,20 +146,20 @@ struct App {
 
   std::string release_channel;
 
-  absl::optional<bool> enabled;
-  absl::optional<std::vector<int>> disabled_reasons;
+  std::optional<bool> enabled;
+  std::optional<std::vector<int>> disabled_reasons;
 
   // Optional update check.
-  absl::optional<UpdateCheck> update_check;
+  std::optional<UpdateCheck> update_check;
 
   // Optional `data` elements.
   std::vector<Data> data;
 
   // Optional 'did run' ping.
-  absl::optional<Ping> ping;
+  std::optional<Ping> ping;
 
   // Progress/result pings.
-  absl::optional<std::vector<base::Value::Dict>> events;
+  std::optional<std::vector<base::Value::Dict>> events;
 };
 
 struct Request {
@@ -192,7 +201,7 @@ struct Request {
   std::string dlpref;
 
   // True if this machine is part of a managed enterprise domain.
-  absl::optional<bool> domain_joined;
+  std::optional<bool> domain_joined;
 
   base::flat_map<std::string, std::string> additional_attributes;
 
@@ -200,13 +209,11 @@ struct Request {
 
   OS os;
 
-  absl::optional<Updater> updater;
+  std::optional<Updater> updater;
 
   std::vector<App> apps;
 };
 
-}  // namespace protocol_request
-
-}  // namespace update_client
+}  // namespace update_client::protocol_request
 
 #endif  // COMPONENTS_UPDATE_CLIENT_PROTOCOL_DEFINITION_H_

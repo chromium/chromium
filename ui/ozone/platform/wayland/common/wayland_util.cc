@@ -6,9 +6,11 @@
 
 #include <xdg-shell-client-protocol.h>
 
+#include "build/buildflag.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -130,11 +132,11 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
     // directions relative to each other, so swap 90 and 270.
     // TODO(rivr): Currently all wl_buffers are created without y inverted, so
     // this may need to be revisited if that changes.
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return WL_OUTPUT_TRANSFORM_270;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return WL_OUTPUT_TRANSFORM_180;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return WL_OUTPUT_TRANSFORM_90;
     default:
       break;
@@ -330,6 +332,17 @@ void TransformToWlArray(
     DCHECK(ptr);
     *ptr = static_cast<float>(t.rc(rc[0], rc[1]));
   }
+}
+
+base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/1499638): `milliseconds` comes from Weston that
+  // uses timestamp from libinput, which is different from TimeTicks.
+  // Use EventTimeForNow(), for now.
+  return ui::EventTimeForNow();
+#else
+  return base::TimeTicks() + base::Milliseconds(milliseconds);
+#endif
 }
 
 }  // namespace wl

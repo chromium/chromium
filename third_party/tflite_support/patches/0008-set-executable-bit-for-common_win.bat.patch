@@ -1,0 +1,16 @@
+From 4139494b443aada98e09bee988a46e9f591b3a3f Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:39 -0800
+Subject: [PATCH 08/10] set executable bit for common_win.bat
+
+---
+ .../src/tensorflow_lite_support/tools/ci_build/common_win.bat     | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common_win.bat
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common_win.bat b/third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/common_win.bat
+old mode 100644
+new mode 100755
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_GRID_FOCUSGROUP_STRUCTURE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_GRID_FOCUSGROUP_STRUCTURE_INFO_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -16,9 +17,9 @@ namespace blink {
 
 class Element;
 class LayoutObject;
-class LayoutNGTable;
-class LayoutNGTableCell;
-class LayoutNGTableRow;
+class LayoutTable;
+class LayoutTableCell;
+class LayoutTableRow;
 
 // This interface is used to expose the grid focusgroup navigation functions
 // while hiding the type of grid we're in. A grid focusgroup can either be
@@ -89,7 +90,7 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
 
   void Trace(Visitor*) const;
 
-  const LayoutNGTable* Table();
+  const LayoutTable* Table();
 
   Element* Root() override;
   FocusgroupFlags Flags() override;
@@ -118,13 +119,13 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
                             NoCellFoundAtIndexBehavior behavior) override;
 
  private:
-  LayoutNGTableRow* PreviousRow(LayoutNGTableRow* current_row);
-  LayoutNGTableRow* NextRow(LayoutNGTableRow* current_row);
+  LayoutTableRow* PreviousRow(LayoutTableRow* current_row);
+  LayoutTableRow* NextRow(LayoutTableRow* current_row);
 
-  LayoutNGTableCell* TableCellAtIndexInRowRecursive(
+  LayoutTableCell* TableCellAtIndexInRowRecursive(
       unsigned index,
-      LayoutNGTableRow* row,
-      absl::optional<unsigned> expected_rowspan = absl::nullopt);
+      LayoutTableRow* row,
+      std::optional<unsigned> expected_rowspan = std::nullopt);
 
   Member<LayoutObject> table_;
 };

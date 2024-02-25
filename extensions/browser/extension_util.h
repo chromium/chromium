@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -19,6 +22,10 @@ class FilePath;
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace guest_view {
+class GuestViewBase;
+}  // namespace guest_view
 
 namespace content {
 class BrowserContext;
@@ -38,6 +45,14 @@ namespace util {
 // TODO(crbug.com/1417028): Move functions from
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
+
+// Returns a HostID type based on the given GuestViewBase.
+mojom::HostID::HostType HostIdTypeFromGuestView(
+    const guest_view::GuestViewBase& guest);
+
+// Returns a HostID instance based on the given GuestViewBase.
+mojom::HostID GenerateHostIdFromGuestView(
+    const guest_view::GuestViewBase& guest);
 
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);
@@ -76,6 +91,19 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
+// Sets the `extension` user script world configuration for `browser_context`
+// in the state store and notifies the renderer.
+void SetUserScriptWorldInfo(const Extension& extension,
+                            content::BrowserContext* browser_context,
+                            std::optional<std::string> csp,
+                            bool messaging);
+
+// Returns the `extension_id` user script world configuration for
+// `browser_context`.
+mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
+
 // Maps a |file_url| to a |file_path| on the local filesystem, including
 // resources in extensions. Returns true on success. See NaClBrowserDelegate for
 // full details. If |use_blocking_api| is false, only a subset of URLs will be
@@ -110,7 +138,7 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 // Initializes file scheme access if the extension has such permission.
 void InitializeFileSchemeAccessForExtension(
     int render_process_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
 // Returns the default extension/app icon (for extensions or apps that don't
@@ -134,16 +162,16 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id);
 
 // Returns true if the extension associated with `extension_id` is a Chrome App.
-bool IsChromeApp(const std::string& extension_id,
+bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context);
 
 // Returns true if `extension_id` can be launched (possibly only after being
 // enabled).
-bool IsAppLaunchable(const std::string& extension_id,
+bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context);
 
 // Returns true if `extension_id` can be launched without being enabled first.
-bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context);
 
 }  // namespace util

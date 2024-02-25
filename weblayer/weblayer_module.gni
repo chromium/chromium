@@ -1,8 +1,0 @@
-# Copyright 2020 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-weblayer_module_desc = {
-  name = "weblayer"
-  android_manifest = "//weblayer/browser/java/AndroidManifest_monochrome.xml"
-}

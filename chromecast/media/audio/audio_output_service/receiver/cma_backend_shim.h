@@ -14,10 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/base/task_runner_impl.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -25,10 +23,6 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace chromecast {
-
-namespace external_service_support {
-class ExternalConnector;
-}  // namespace external_service_support
 
 namespace media {
 class CmaBackendFactory;
@@ -74,8 +68,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
                  scoped_refptr<base::SequencedTaskRunner> delegate_task_runner,
                  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                  const CmaBackendParams& params,
-                 CmaBackendFactory* cma_backend_factory,
-                 external_service_support::ExternalConnector* connector);
+                 CmaBackendFactory* cma_backend_factory);
 
   // Removes this audio output. Public methods must not be called after Remove()
   // is called.
@@ -120,10 +113,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
                           uint32_t system_code) override;
   void OnVideoResolutionChanged(const Size& size) override;
 
-  void OnGetMultiroomInfo(chromecast::mojom::MultiroomInfoPtr multiroom_info);
-
-  void InitializeOnMediaThread(
-      chromecast::mojom::MultiroomInfoPtr multiroom_info);
+  void InitializeOnMediaThread();
   void DestroyOnMediaThread();
   void AddEosDataOnMediaThread();
   void AddDataOnMediaThread(scoped_refptr<DecoderBufferBase> buffer);
@@ -144,8 +134,6 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
   scoped_refptr<DecoderBufferBase> pushed_buffer_;
 
   float playback_rate_ = 0.0f;
-
-  mojo::Remote<chromecast::mojom::MultiroomManager> multiroom_manager_;
 
   std::unique_ptr<CmaBackend> cma_backend_;
   BackendState backend_state_ = BackendState::kStopped;

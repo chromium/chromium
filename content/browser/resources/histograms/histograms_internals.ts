@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 // Timer for automatic update in monitoring mode.
 let fetchDiffScheduler: number|null = null;
@@ -149,7 +149,7 @@ function stopMonitoring() {
 /**
  * Returns if monitoring mode is stopped.
  */
-function monitoringStopped() {
+export function monitoringStopped(): boolean {
   return inMonitoringMode && !fetchDiffScheduler;
 }
 
@@ -230,7 +230,7 @@ function addHistograms(histograms: Histogram[]) {
 /**
  * Returns the histograms as a formatted string.
  */
-function generateHistogramsAsText() {
+export function generateHistogramsAsText() {
   // Expanded/collapsed status is reflected in the text.
   return getRequiredElement('histograms').innerText;
 }
@@ -260,12 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
   getRequiredElement('stop').onclick = stopMonitoring;
   getRequiredElement('subprocess_checkbox').onclick = requestHistograms;
 
-  // Enable calling generateHistogramsAsText() from
-  // histograms_internals_ui_browsertest.js for testing purposes.
-  (document as any).generateHistogramsForTest = generateHistogramsAsText;
-  // Enable accessing monitoring mode status from
-  // histograms_internals_ui_browsertest.js for testing purposes.
-  (document as any).monitoringStopped = monitoringStopped;
   requestHistograms();
 });
 

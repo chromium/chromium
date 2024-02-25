@@ -157,7 +157,7 @@ void MediaNotificationVolumeSliderView::HandleVolumeChangeWithDelta(
   set_volume_callback_.Run(new_volume);
 }
 
-BEGIN_METADATA(MediaNotificationVolumeSliderView, views::View)
+BEGIN_METADATA(MediaNotificationVolumeSliderView)
 END_METADATA
 
 }  // namespace media_message_center

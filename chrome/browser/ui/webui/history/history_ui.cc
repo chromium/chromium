@@ -14,11 +14,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,10 +44,12 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -104,7 +109,6 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
-      {"turnOnSyncButton", IDS_HISTORY_TURN_ON_SYNC_BUTTON},
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"title", IDS_HISTORY_TITLE},
@@ -118,6 +122,31 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY)));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddLocalizedString("turnOnSyncButton",
+                             IDS_HISTORY_TURN_ON_SYNC_BUTTON);
+#else
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  bool has_primary_account =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
+      !has_primary_account && !account_info.IsEmpty()) {
+    source->AddString("turnOnSyncButton",
+                      l10n_util::GetStringFUTF16(
+                          IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
+                          base::UTF8ToUTF16(!account_info.given_name.empty()
+                                                ? account_info.given_name
+                                                : account_info.email)));
+  } else {
+    source->AddLocalizedString("turnOnSyncButton",
+                               IDS_HISTORY_TURN_ON_SYNC_BUTTON);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   PrefService* prefs = profile->GetPrefs();
   bool allow_deleting_history =
       prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory);
@@ -128,6 +157,14 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
+
+  source->AddInteger(
+      "lastSelectedTab",
+      prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
+
+  source->AddBoolean(
+      "enableHistoryEmbeddings",
+      base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings));
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
@@ -144,6 +181,22 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
 }
 
 }  // namespace
+
+HistoryUIConfig::HistoryUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIHistoryHost) {}
+
+HistoryUIConfig::~HistoryUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+HistoryUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                       const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUIHistoryHost);
+  }
+  return std::make_unique<HistoryUI>(web_ui);
+}
 
 HistoryUI::HistoryUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {

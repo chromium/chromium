@@ -7,6 +7,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "content/public/common/content_features.h"
@@ -52,10 +53,8 @@ std::string ToJSONString(base::StringPiece in) {
     } else if (codepoint == 0x5c) {
       ret.append("\\\\");
     } else {
-      static const char hextable[17] = "0123456789abcdef";
       ret.append("\\u00");
-      ret.push_back(hextable[codepoint >> 4]);
-      ret.push_back(hextable[codepoint & 15]);
+      base::AppendHexEncodedByte(static_cast<uint8_t>(codepoint), ret, false);
     }
   }
 

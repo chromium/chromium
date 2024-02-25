@@ -15,10 +15,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -52,7 +52,7 @@ namespace {
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser)
       continue;
     found = b;
@@ -220,7 +220,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
                const char* background_script,
                bool from_webstore) {
     extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifest(base::StringPrintf(
+    extension_dir.WriteManifest(base::StringPrintfNonConstexpr(
         manifest, https_test_server_.GetURL(web_app_path).spec().c_str()));
     extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                             background_script);
@@ -248,10 +248,10 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
              });
            });)";
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
-    web_app::AppId web_app_id =
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    webapps::AppId web_app_id =
+        web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
     EXPECT_EQ(0, static_cast<int>(
@@ -270,7 +270,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
-    chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   }
 
   net::EmbeddedTestServer https_test_server_;

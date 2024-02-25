@@ -147,10 +147,10 @@ template("cargo_crate") {
   # with build.rs and otherwise assuming that the target contains a
   # `crate/` subdirectory.
   if (defined(invoker.build_root)) {
-    manifest_dir = rebase_path(get_path_info(invoker.build_root, "dir"), "")
+    manifest_dir = "."
   } else {
     build_gn_dir = get_label_info(target_name, "dir")
-    manifest_dir = rebase_path(build_gn_dir + "/crate", "")
+    manifest_dir = rebase_path(build_gn_dir + "/crate", root_build_dir)
   }
   _rustenv += [ "CARGO_MANIFEST_DIR=${manifest_dir}" ]
 
@@ -195,6 +195,24 @@ template("cargo_crate") {
     }
   }
 
+  if (defined(invoker.output_name)) {
+    _output_name = invoker.output_name
+  } else if (_crate_type != "bin") {
+    # Note that file names of libraries must start with the crate name in
+    # order for the compiler to find transitive dependencies in the
+    # directory search paths (since they are not all explicitly specified).
+    #
+    # For bin targets, we expect the target name to be unique, and the name
+    # of the exe should not add magic stuff to it. And bin crates can not be
+    # transitive dependencies.
+    _output_name = "${_crate_name}_${_orig_target_name}"
+  }
+
+  _testonly = false
+  if (defined(invoker.testonly)) {
+    _testonly = invoker.testonly
+  }
+
   # The main target, either a Rust source set or an executable.
   target(_target_type, target_name) {
     forward_variables_from(invoker,
@@ -214,11 +232,23 @@ template("cargo_crate") {
                                  "rustenv",
                                  "dev_deps",
                                ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    testonly = _testonly
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
     if (defined(crate_type) && crate_type == "cdylib") {
       # See comments above about cdylib.
       crate_type = "rlib"
     }
+    crate_name = _crate_name
+
+    if (defined(_output_name)) {
+      output_name = _output_name
+    }
+
+    # Don't import the `chromium` crate into third-party code.
+    no_chromium_prelude = true
 
     rustc_metadata = _rustc_metadata
 
@@ -290,6 +320,9 @@ template("cargo_crate") {
       if (!defined(sources)) {
         sources = []
       }
+      if (!defined(inputs)) {
+        inputs = []
+      }
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
       # does not actually contain Rust code, but instead some flags to add
@@ -309,7 +342,6 @@ template("cargo_crate") {
                 filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
           sources += [ "$_build_script_env_out_dir/$extra_source" ]
         }
-        inputs = []
         foreach(extra_source,
                 filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
           inputs += [ "$_build_script_env_out_dir/$extra_source" ]
@@ -325,6 +357,10 @@ template("cargo_crate") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
       deps = [ build_script_target ]
+      testonly = _testonly
+      if (defined(invoker.visibility)) {
+        visibility = invoker.visibility
+      }
 
       # The build script may be built with a different toolchain when
       # cross-compiling (the host toolchain) so we must find the path relative
@@ -387,11 +423,22 @@ template("cargo_crate") {
       # the rust_macro_toolchain for it to unblock building them while the
       # Chromium stdlib is still being compiled.
       rust_executable(_build_script_name) {
+        crate_name = _build_script_name
         sources = invoker.build_sources
         crate_root = invoker.build_root
+        testonly = _testonly
+        if (defined(invoker.visibility)) {
+          visibility = invoker.visibility
+        }
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
+        if (defined(invoker.build_script_inputs)) {
+          inputs = invoker.build_script_inputs
+        }
+
+        # Don't import the `chromium` crate into third-party code.
+        no_chromium_prelude = true
 
         # The ${_build_script_name}_output target looks for the exe in this
         # location. Due to how the Windows component build works, this has to

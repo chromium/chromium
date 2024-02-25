@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -12,7 +13,7 @@
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece test_data(reinterpret_cast<const char*>(data), size);
+  std::string_view test_data(reinterpret_cast<const char*>(data), size);
   std::string header_string = base::StrCat(
       {"HTTP/1.1 200 OK\nCross-Origin-Opener-Policy: ", test_data, "\n\n"});
 

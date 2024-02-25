@@ -17,20 +17,20 @@
 
 namespace browsing_data {
 
+namespace {
+
 namespace policy_data_types {
 // Data retention policy types that require sync to be disabled.
-const char kBrowsingHistoryName[] = "browsing_history";
-const char kPasswordSigninName[] = "password_signin";
-const char kAutofillName[] = "autofill";
-const char kSiteSettingsName[] = "site_settings";
+constexpr char kBrowsingHistoryName[] = "browsing_history";
+constexpr char kPasswordSigninName[] = "password_signin";
+constexpr char kAutofillName[] = "autofill";
+constexpr char kSiteSettingsName[] = "site_settings";
 // Data retention policy types that do not require sync to be disabled.
-const char kHostedAppDataName[] = "hosted_app_data";
-const char kDownloadHistoryName[] = "download_history";
-const char kCookiesAndOtherSiteDataName[] = "cookies_and_other_site_data";
-const char kCachedImagesAndFilesName[] = "cached_images_and_files";
+constexpr char kHostedAppDataName[] = "hosted_app_data";
+constexpr char kDownloadHistoryName[] = "download_history";
+constexpr char kCookiesAndOtherSiteDataName[] = "cookies_and_other_site_data";
+constexpr char kCachedImagesAndFilesName[] = "cached_images_and_files";
 }  // namespace policy_data_types
-
-namespace {
 
 // The format of the log message shown in chrome://policy/logs when sync types
 // are automatically disabled.
@@ -43,28 +43,28 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
                                syncer::UserSelectableTypeSet* sync_types) {
   // Map of browsing data types to sync types that need to be disabled for
   // them.
-  static const auto kDataToSyncTypesMap =
-      base::MakeFixedFlatMap<std::string, syncer::UserSelectableTypeSet>(
-          {{browsing_data::policy_data_types::kBrowsingHistoryName,
+  static constexpr auto kDataToSyncTypesMap =
+      base::MakeFixedFlatMap<std::string_view, syncer::UserSelectableTypeSet>(
+          {{policy_data_types::kBrowsingHistoryName,
             {syncer::UserSelectableType::kHistory,
              syncer::UserSelectableType::kTabs,
              syncer::UserSelectableType::kSavedTabGroups}},
-           {browsing_data::policy_data_types::kPasswordSigninName,
+           {policy_data_types::kPasswordSigninName,
             {syncer::UserSelectableType::kPasswords}},
-           {browsing_data::policy_data_types::kSiteSettingsName,
+           {policy_data_types::kSiteSettingsName,
             {syncer::UserSelectableType::kPreferences}},
-           {browsing_data::policy_data_types::kAutofillName,
+           {policy_data_types::kAutofillName,
             {syncer::UserSelectableType::kAutofill,
              syncer::UserSelectableType::kPayments}},
-           {browsing_data::policy_data_types::kDownloadHistoryName, {}},
-           {browsing_data::policy_data_types::kCookiesAndOtherSiteDataName, {}},
-           {browsing_data::policy_data_types::kCachedImagesAndFilesName, {}},
-           {browsing_data::policy_data_types::kHostedAppDataName, {}}});
+           {policy_data_types::kDownloadHistoryName, {}},
+           {policy_data_types::kCookiesAndOtherSiteDataName, {}},
+           {policy_data_types::kCachedImagesAndFilesName, {}},
+           {policy_data_types::kHostedAppDataName, {}}});
 
   // When a new sync type or browsing data type is introduced in the code,
   // kDataToSyncTypesMap should be updated if needed to ensure that browsing
   // data that can be cleared by policy is not already synced across devices.
-  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 11,
+  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 12,
                 "It looks like a sync type was added or removed. Please update "
                 "`kDataToSyncTypesMap` value maps above if it affects any of "
                 "the browsing data types.");
@@ -76,7 +76,7 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
       "added or removed. Please update `kDataToSyncTypesMap` above to include "
       "the new type and the sync types it maps to if this data is synced.");
 
-  auto* it = kDataToSyncTypesMap.find(browsing_data_type.GetString());
+  const auto* it = kDataToSyncTypesMap.find(browsing_data_type.GetString());
   if (it == kDataToSyncTypesMap.end()) {
     return;
   }
@@ -114,24 +114,23 @@ syncer::UserSelectableTypeSet GetSyncTypesForBrowsingDataLifetime(
   return sync_types;
 }
 
-void DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
-                      PrefValueMap* prefs,
-                      const std::string& policy_name,
-                      std::string& log_message) {
+std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
+                             PrefValueMap* prefs,
+                             const std::string& policy_name) {
   for (const syncer::UserSelectableType type : types_set) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, type);
   }
-  log_message =
-      types_set.Size() > 0
-          ? base::StringPrintf(kDisabledSyncTypesLogFormat, policy_name.c_str(),
-                               UserSelectableTypeSetToString(types_set).c_str())
-          : std::string();
+  if (types_set.Size() > 0) {
+    return base::StringPrintf(kDisabledSyncTypesLogFormat, policy_name.c_str(),
+                              UserSelectableTypeSetToString(types_set).c_str());
+  }
+  return std::string();
 }
 
-absl::optional<PolicyDataType> NameToPolicyDataType(
+std::optional<PolicyDataType> NameToPolicyDataType(
     const std::string& type_name) {
-  static const auto kNameToDataType =
-      base::MakeFixedFlatMap<std::string, PolicyDataType>({
+  static constexpr auto kNameToDataType =
+      base::MakeFixedFlatMap<std::string_view, PolicyDataType>({
           {policy_data_types::kBrowsingHistoryName,
            PolicyDataType::kBrowsingHistory},
           {policy_data_types::kPasswordSigninName,
@@ -148,23 +147,11 @@ absl::optional<PolicyDataType> NameToPolicyDataType(
            PolicyDataType::kCachedImagesAndFiles},
       });
 
-  auto* it = kNameToDataType.find(type_name);
+  const auto* it = kNameToDataType.find(type_name);
   if (it == kNameToDataType.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
-}
-
-bool IsPolicyDependencyEnabled() {
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initalized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(
-             features::kDataRetentionPoliciesDisableSyncTypesNeeded);
 }
 
 }  // namespace browsing_data

@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 
 #include <array>
+#include <optional>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
@@ -13,11 +14,9 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
-#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -144,9 +143,10 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   static constexpr const char* const kExtensions[] = {
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
       XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
-      device::kExtSamsungOdysseyControllerExtensionName,
-      device::kExtHPMixedRealityControllerExtensionName,
-      device::kMSFTHandInteractionExtensionName,
+      XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
+      XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+      XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
+      XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
   };
@@ -190,12 +190,12 @@ class OpenXrTestHelper : public device::ServiceTestHook {
                      uint32_t& height) const;
   XrResult UpdateAction(XrAction action);
   void SetSessionState(XrSessionState state);
-  absl::optional<gfx::Transform> GetPose();
-  absl::optional<device::DeviceConfig> GetDeviceConfig();
+  std::optional<gfx::Transform> GetPose();
+  std::optional<device::DeviceConfig> GetDeviceConfig();
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(
-      device_test::mojom::InteractionProfileType type);
+      device::mojom::OpenXrInteractionProfileType type);
   bool IsSessionRunning() const;
   XrResult ValidateXrCompositionLayerProjectionView(
       const XrCompositionLayerProjectionView& projection_view,

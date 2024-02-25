@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_RECORD_PAINT_CANVAS_H_
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -13,7 +14,6 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 namespace cc {
@@ -105,6 +105,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                      const SkSamplingOptions&,
                      const PaintFlags* flags,
                      SkCanvas::SrcRectConstraint constraint) override;
+  void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                    const PaintFlags& flags) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,

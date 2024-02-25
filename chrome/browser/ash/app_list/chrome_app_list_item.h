@@ -73,6 +73,10 @@ class ChromeAppListItem {
   bool is_new_install() const { return metadata_->is_new_install; }
   bool is_ephemeral() const { return metadata_->is_ephemeral; }
   float progress() const { return metadata_->progress; }
+  bool is_placeholder_icon() const { return metadata_->is_placeholder_icon; }
+  const std::string accessible_name() const {
+    return metadata_->accessible_name;
+  }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
@@ -85,6 +89,7 @@ class ChromeAppListItem {
   // interfaces that talk to ash directly.
   void IncrementIconVersion();
   void SetIcon(const gfx::ImageSkia& icon, bool is_place_holder_icon);
+  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsSystemFolder(bool is_system_folder);
@@ -127,6 +132,8 @@ class ChromeAppListItem {
   // has its Android analog installed.
   virtual bool IsBadged() const;
 
+  virtual std::string GetPromisedItemId() const;
+
   bool CompareForTest(const ChromeAppListItem* other) const;
 
   std::string ToDebugString() const;
@@ -146,6 +153,7 @@ class ChromeAppListItem {
 
   AppListControllerDelegate* GetController();
 
+  void SetAccessibleName(const std::string& label);
   void SetName(const std::string& name);
   void SetPromisePackageId(const std::string& promise_package_id);
   void SetProgress(float progress);

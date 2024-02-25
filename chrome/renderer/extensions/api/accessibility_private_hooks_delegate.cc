@@ -32,7 +32,7 @@ RequestResult AccessibilityPrivateHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   // Error checks.
   // Ensure we would like to call the GetDisplayNameForLocale function.
@@ -52,7 +52,7 @@ RequestResult AccessibilityPrivateHooksDelegate::HandleRequest(
 
 RequestResult AccessibilityPrivateHooksDelegate::HandleGetDisplayNameForLocale(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const v8::LocalVector<v8::Value>& parsed_arguments) {
   DCHECK(script_context->extension());
   DCHECK_EQ(2u, parsed_arguments.size());
   DCHECK(parsed_arguments[0]->IsString());

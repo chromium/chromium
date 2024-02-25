@@ -18,17 +18,17 @@ limitations under the License.
 #include <cstdint>
 #include <memory>
 
-#include "absl/flags/flag.h"           // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
 #include "tensorflow_lite_support/cc/test/test_utils.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
 namespace tflite {
@@ -47,22 +47,23 @@ constexpr char kDummyIndexPath[] =
 TEST(CreateFromOptionsTest, Succeeds) {
   // Load file in memory using ExternalFile.
   ExternalFile file;
-  file.set_file_name(JoinPath("./" /*test src dir*/, kDummyIndexPath));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ExternalFileHandler> handler,
-      ExternalFileHandler::CreateFromExternalFile(&file));
+  file.set_file_name(
+      JoinPath("./" /*test src dir*/, kDummyIndexPath));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ExternalFileHandler> handler,
+                       ExternalFileHandler::CreateFromExternalFile(&file));
   absl::string_view file_contents = handler->GetFileContent();
 
   SUPPORT_EXPECT_OK(
       Index::CreateFromIndexBuffer(file_contents.data(), file_contents.size()));
 }
 
-class IndexTest : public tflite_shims::testing::Test {
+class IndexTest : public tflite::testing::Test {
  public:
   IndexTest() {
     // Load file in memory using ExternalFile.
     ExternalFile file;
-    file.set_file_name(JoinPath("./" /*test src dir*/, kDummyIndexPath));
+    file.set_file_name(
+        JoinPath("./" /*test src dir*/, kDummyIndexPath));
     handler_ = ExternalFileHandler::CreateFromExternalFile(&file).value();
     absl::string_view file_contents = handler_->GetFileContent();
     // Build index.
@@ -97,18 +98,18 @@ TEST_F(IndexTest, GetUserInfoSucceeds) {
 
 TEST_F(IndexTest, GetPartitionAtIndexSucceeds) {
   SUPPORT_ASSERT_OK_AND_ASSIGN(absl::string_view partition_0,
-                               index_->GetPartitionAtIndex(0));
+                       index_->GetPartitionAtIndex(0));
   EXPECT_EQ(partition_0.size(), 8);
-  const uint8_t* partition =
-      reinterpret_cast<const uint8_t*>(partition_0.data());
+  const uint8_t *partition =
+      reinterpret_cast<const uint8_t *>(partition_0.data());
   for (int i = 0; i < 8; ++i) {
     EXPECT_EQ(partition[i], i);
   }
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(absl::string_view partition_1,
-                               index_->GetPartitionAtIndex(1));
+                       index_->GetPartitionAtIndex(1));
   EXPECT_EQ(partition_1.size(), 4);
-  partition = reinterpret_cast<const uint8_t*>(partition_1.data());
+  partition = reinterpret_cast<const uint8_t *>(partition_1.data());
   for (int i = 0; i < 4; ++i) {
     EXPECT_EQ(partition[i], i + 8);
   }
@@ -121,15 +122,15 @@ TEST_F(IndexTest, GetPartitionAtIndexFailsOutOfBounds) {
 
 TEST_F(IndexTest, GetMetadataAtIndexSucceeds) {
   SUPPORT_ASSERT_OK_AND_ASSIGN(absl::string_view metadata_0,
-                               index_->GetMetadataAtIndex(0));
+                       index_->GetMetadataAtIndex(0));
   EXPECT_EQ(metadata_0, "metadata_0");
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(absl::string_view metadata_1,
-                               index_->GetMetadataAtIndex(1));
+                       index_->GetMetadataAtIndex(1));
   EXPECT_EQ(metadata_1, "metadata_1");
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(absl::string_view metadata_2,
-                               index_->GetMetadataAtIndex(2));
+                       index_->GetMetadataAtIndex(2));
   EXPECT_EQ(metadata_2, "metadata_2");
 }
 

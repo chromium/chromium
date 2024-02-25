@@ -17,6 +17,7 @@
 // clang-format off
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "dpf/internal/get_hwy_mode.cc"
+#include "absl/strings/string_view.h"
 #include "hwy/foreach_target.h"
 // clang-format on
 

@@ -6,11 +6,11 @@ assert(is_chromeos)
 
 component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
-  output_name = "editor_menu_public_cpp"
 
   sources = [
-    "editor_menu_controller.cc",
-    "editor_menu_controller.h",
+    "read_write_card_controller.h",
+    "read_write_cards_manager.cc",
+    "read_write_cards_manager.h",
   ]
 
   deps = [ "//base" ]

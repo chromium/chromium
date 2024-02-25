@@ -84,8 +84,9 @@ void DidClaim(ScriptPromiseResolver* resolver,
   resolver->Resolve();
 }
 
-void DidGetClients(ScriptPromiseResolver* resolver,
-                   Vector<mojom::blink::ServiceWorkerClientInfoPtr> infos) {
+void DidGetClients(
+    ScriptPromiseResolverTyped<IDLSequence<ServiceWorkerClient>>* resolver,
+    Vector<mojom::blink::ServiceWorkerClientInfoPtr> infos) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
@@ -124,16 +125,18 @@ ScriptPromise ServiceWorkerClients::get(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise ServiceWorkerClients::matchAll(
-    ScriptState* script_state,
-    const ClientQueryOptions* options) {
+ScriptPromiseTyped<IDLSequence<ServiceWorkerClient>>
+ServiceWorkerClients::matchAll(ScriptState* script_state,
+                               const ClientQueryOptions* options) {
   ServiceWorkerGlobalScope* global_scope =
       To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
   // FIXME: May be null due to worker termination: http://crbug.com/413518.
   if (!global_scope)
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<ServiceWorkerClient>>();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<ServiceWorkerClient>>>(
+      script_state);
   global_scope->GetServiceWorkerHost()->GetClients(
       mojom::blink::ServiceWorkerClientQueryOptions::New(
           options->includeUncontrolled(), GetClientType(options->type())),

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
@@ -108,7 +109,6 @@ android_library("java") {
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",
@@ -139,6 +139,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -190,7 +191,6 @@ android_resources("java_resources") {
     "java/res/layout/download_rename_extension_custom_dialog.xml",
     "java/res/layout/download_storage_summary.xml",
     "java/res/layout/downloads_empty_state_view.xml",
-    "java/res/layout/downloads_empty_view.xml",
     "java/res/layout/list_selection_handle_view.xml",
     "java/res/menu/download_manager_menu.xml",
     "java/res/values-sw600dp/dimens.xml",
@@ -220,6 +220,7 @@ android_library("javatests") {
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/download/android:java",
     "//chrome/browser/profiles/android:java",
@@ -257,7 +258,6 @@ android_library("unit_device_javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/download/android:java",
@@ -291,6 +291,7 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
@@ -321,7 +322,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/util/android:java",
@@ -329,6 +329,7 @@ robolectric_library("junit") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

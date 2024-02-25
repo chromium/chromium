@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/embedder_support",
-  "+components/metrics",
-  "+components/translate/content/android",
-  "+content/public/android",
-  "+content/public/app",
-  "+content/public/test",
-  "+ui/android",
-]

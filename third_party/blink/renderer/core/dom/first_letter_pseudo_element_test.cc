@@ -15,7 +15,11 @@ class FirstLetterPseudoElementTest : public PageTestBase {};
 
 TEST_F(FirstLetterPseudoElementTest, DoesNotBreakEmoji) {
   const UChar emoji[] = {0xD83D, 0xDE31, 0};
-  EXPECT_EQ(2u, FirstLetterPseudoElement::FirstLetterLength(emoji));
+  const bool preserve_breaks = false;
+  FirstLetterPseudoElement::Punctuation punctuation =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  EXPECT_EQ(2u, FirstLetterPseudoElement::FirstLetterLength(
+                    emoji, preserve_breaks, punctuation));
 }
 
 // http://crbug.com/1187834
@@ -119,7 +123,72 @@ TEST_F(FirstLetterPseudoElementTest, InitialLetter) {
 TEST_F(FirstLetterPseudoElementTest, UnicodePairBreaking) {
   const UChar test_string[] = {0xD800, 0xDD00, 'A', 0xD800, 0xDD00,
                                0xD800, 0xDD00, 'B', 0};
-  EXPECT_EQ(7u, FirstLetterPseudoElement::FirstLetterLength(test_string));
+  const bool preserve_breaks = false;
+  FirstLetterPseudoElement::Punctuation punctuation =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  EXPECT_EQ(7u, FirstLetterPseudoElement::FirstLetterLength(
+                    test_string, preserve_breaks, punctuation));
+}
+
+struct FirstLetterLayoutTextTestCase {
+  const char* markup;
+  const char* expected;
+};
+
+FirstLetterLayoutTextTestCase first_letter_layout_text_cases[] = {
+    {"F", "F"},
+    {" F", " F"},
+    {".", nullptr},
+    {" ", nullptr},
+    {". F", nullptr},
+    {"<span> </span>", nullptr},
+    {"<span> F </span>", " F "},
+    {" <span>.</span>.F", "."},
+    {"..<span></span>F", ".."},
+    {"..<span> </span>F", nullptr},
+    {".<span>.F</span>F", "."},
+    {". <span>F</span>", nullptr},
+    {".<span>..</span>F", "."},
+    {".<span>..</span> F", nullptr},
+    {".<span>..</span>", nullptr},
+    {"<span>..</span>F", ".."},
+    {"<span></span>F", "F"},
+    {"<span>   </span>F", "F"},
+    {"<span><span>.</span></span><span>F</span>", "."},
+    {"<span> <span> </span></span> <span>F</span>", "F"},
+    {"<span><span>.</span><span> </span></span><span>F</span>", nullptr},
+};
+
+class FirstLetterTextTest : public FirstLetterPseudoElementTest,
+                            public ::testing::WithParamInterface<
+                                struct FirstLetterLayoutTextTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(FirstLetterPseudoElemenTest,
+                         FirstLetterTextTest,
+                         testing::ValuesIn(first_letter_layout_text_cases));
+
+TEST_P(FirstLetterTextTest, All) {
+  FirstLetterLayoutTextTestCase param = GetParam();
+  SCOPED_TRACE(param.markup);
+
+  SetBodyContent(param.markup);
+
+  // Need to mark the body layout style as having ::first-letter styles.
+  // Otherwise FirstLetterTextLayoutObject() will always return nullptr.
+  LayoutObject* layout_body = GetDocument().body()->GetLayoutObject();
+  ComputedStyleBuilder builder(layout_body->StyleRef());
+  builder.SetPseudoElementStyles(
+      1 << (kPseudoIdFirstLetter - kFirstPublicPseudoId));
+  layout_body->SetStyle(builder.TakeStyle(),
+                        LayoutObject::ApplyStyleChanges::kNo);
+
+  LayoutText* layout_text =
+      FirstLetterPseudoElement::FirstLetterTextLayoutObject(
+          *GetDocument().body());
+  EXPECT_EQ(layout_text == nullptr, param.expected == nullptr);
+  if (layout_text) {
+    EXPECT_EQ(layout_text->OriginalText(), param.expected);
+  }
 }
 
 }  // namespace blink

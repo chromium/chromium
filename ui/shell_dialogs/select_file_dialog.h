@@ -55,41 +55,29 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // An interface implemented by a Listener object wishing to know about the
   // the result of the Select File/Folder action. These callbacks must be
   // re-entrant.
+  // WARNING: See note about the lifetime of the Listener in the
+  // SelectFileDialog::Create() comments below.
   class SHELL_DIALOGS_EXPORT Listener {
    public:
     // Notifies the Listener that a file/folder selection has been made. The
-    // file/folder path is in |path|. |params| is contextual passed to
+    // file/folder path is in |file|. |params| is the contextual value passed to
     // SelectFile. |index| specifies the index of the filter passed to the
-    // the initial call to SelectFile.
-    virtual void FileSelected(const base::FilePath& path,
+    // initial call to SelectFile.
+    virtual void FileSelected(const SelectedFileInfo& file,
                               int index,
                               void* params) = 0;
 
-    // Similar to FileSelected() but takes SelectedFileInfo instead of
-    // base::FilePath. Used for passing extra information (ex. display name).
-    //
-    // If not overridden, calls FileSelected() with path from |file|.
-    virtual void FileSelectedWithExtraInfo(const SelectedFileInfo& file,
-                                           int index,
-                                           void* params);
+    // Notifies the Listener that many files have been selected. The files are
+    // in |files|. |params| is the contextual value passed to SelectFile.
+    // Implementing this method is optional if no multi-file selection is ever
+    // made, as the default implementation will call NOTREACHED.
+    virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files,
+                                    void* params);
 
-    // Notifies the Listener that many files have been selected. The
-    // files are in |files|. |params| is contextual passed to SelectFile.
-    virtual void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                                    void* params) {}
-
-    // Similar to MultiFilesSelected() but takes SelectedFileInfo instead of
-    // base::FilePath. Used for passing extra information (ex. display name).
-    //
-    // If not overridden, calls MultiFilesSelected() with paths from |files|.
-    virtual void MultiFilesSelectedWithExtraInfo(
-        const std::vector<SelectedFileInfo>& files,
-        void* params);
-
-    // Notifies the Listener that the file/folder selection was aborted (via
-    // the  user canceling or closing the selection dialog box, for example).
-    // |params| is contextual passed to SelectFile.
-    virtual void FileSelectionCanceled(void* params) {}
+    // Notifies the Listener that the file/folder selection was canceled (via
+    // the user canceling or closing the selection dialog box, for example).
+    // |params| is the contextual value passed to SelectFile.
+    virtual void FileSelectionCanceled(void* params) = 0;
 
    protected:
     virtual ~Listener() = default;
@@ -108,8 +96,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // platform-native file selection dialog. |policy| is an optional class that
   // can prevent showing a dialog.
   //
-  // The lifetime of the Listener is not managed by this class. The calling
-  // code should call always ListenerDestroyed() (on the base class
+  // WARNING: The lifetime of the Listener is not managed by this class.
+  // The calling code should call always ListenerDestroyed() (on the base class
   // BaseShellDialog) when the listener is destroyed since the SelectFileDialog
   // is refcounted and uses a background thread.
   static scoped_refptr<SelectFileDialog> Create(
@@ -234,7 +222,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       const GURL* caller) = 0;
 
   // The listener to be notified of selection completion.
-  raw_ptr<Listener, AcrossTasksDanglingUntriaged> listener_;
+  raw_ptr<Listener> listener_;
 
  private:
   // Tests if the file selection dialog can be displayed by

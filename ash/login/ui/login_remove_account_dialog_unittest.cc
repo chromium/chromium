@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_manager/user_type.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
@@ -23,8 +25,19 @@ namespace {
 
 constexpr int kBubbleAnchorViewSizeDp = 100;
 
-class AnchorView : public views::View,
-                   public base::SupportsWeakPtr<AnchorView> {};
+class AnchorView final : public views::View {
+ public:
+  base::WeakPtr<AnchorView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  METADATA_HEADER(AnchorView, views::View)
+  base::WeakPtrFactory<AnchorView> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(AnchorView)
+END_METADATA
 
 }  // namespace
 
@@ -81,7 +94,7 @@ TEST_F(LoginRemoveAccountDialogTest, LongUserNameAndEmailLaidOutCorrectly) {
       "NedHasAReallyLongName StarkHasAReallyLongName";
   login_user_info.basic_user_info.display_email =
       "reallyreallyextralonggaianame@gmail.com";
-  login_user_info.basic_user_info.type = user_manager::USER_TYPE_REGULAR;
+  login_user_info.basic_user_info.type = user_manager::UserType::kRegular;
   login_user_info.is_device_owner = false;
   login_user_info.can_remove = true;
   auto* bubble = new LoginRemoveAccountDialog(

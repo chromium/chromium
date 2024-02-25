@@ -4,9 +4,7 @@
 
 package org.chromium.components.webauthn;
 
-/**
- * Callback interface for handling any errors from register or sign requests.
- */
+/** Callback interface for handling any errors from register or sign requests. */
 public interface FidoErrorResponseCallback {
     public void onError(int status);
 }

@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 
-/**
- * Test suite for the SplitInstallStatusLogger class.
- */
+/** Test suite for the SplitInstallStatusLogger class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SplitInstallStatusLoggerTest {
@@ -47,8 +45,9 @@ public class SplitInstallStatusLoggerTest {
     public void whenLogRequestDeferredStart_verifyHistogramCode() {
         // Arrange.
         String moduleName = "whenLogRequestDeferredStart_verifyHistogramCode";
-        String histogramName = "Android.FeatureModules.InstallingStatus."
-                + "whenLogRequestDeferredStart_verifyHistogramCode";
+        String histogramName =
+                "Android.FeatureModules.InstallingStatus."
+                        + "whenLogRequestDeferredStart_verifyHistogramCode";
         int expectedCode = 11;
         var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, expectedCode);
 
@@ -75,11 +74,17 @@ public class SplitInstallStatusLoggerTest {
         doTestStatusChange(histogramName, 7, moduleName, SplitInstallSessionStatus.FAILED);
         doTestStatusChange(histogramName, 8, moduleName, SplitInstallSessionStatus.CANCELING);
         doTestStatusChange(histogramName, 9, moduleName, SplitInstallSessionStatus.CANCELED);
-        doTestStatusChange(histogramName, 10, moduleName,
+        doTestStatusChange(
+                histogramName,
+                10,
+                moduleName,
                 SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION);
     }
 
-    private void doTestStatusChange(String histogramName, int expectedEnumValue, String moduleName,
+    private void doTestStatusChange(
+            String histogramName,
+            int expectedEnumValue,
+            String moduleName,
             @SplitInstallSessionStatus int status) {
         // Arrange
         var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, expectedEnumValue);

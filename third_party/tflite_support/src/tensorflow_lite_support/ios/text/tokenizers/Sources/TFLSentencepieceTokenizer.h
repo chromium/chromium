@@ -28,6 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Initializes the tokenizer with the path to sentencepiece model file.
  */
-- (instancetype)initWithModelPath:(NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString *)modelPath;
 @end
 NS_ASSUME_NONNULL_END

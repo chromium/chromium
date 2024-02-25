@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,4 +14,10 @@ interface CrosDiagnostics {
   // Returns a promise containing diagnostics information
   // of the CPU, e.g. model name, utilization and temperature.
   [CallWith=ScriptState] Promise<CrosCpuInfo> getCpuInfo();
+
+  // Retrieves diagnostics information on network interfaces.
+  //
+  // Returns a promise containing diagnostics information on each network interface
+  // attached to the system, e.g. network name and the associated IP address.
+  [CallWith=ScriptState] Promise<sequence<CrosNetworkInterface>> getNetworkInterfaces();
 };

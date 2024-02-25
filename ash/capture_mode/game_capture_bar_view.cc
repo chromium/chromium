@@ -36,7 +36,7 @@ void GameCaptureBarView::StartRecording() {
   CaptureModeController::Get()->PerformCapture();
 }
 
-BEGIN_METADATA(GameCaptureBarView, CaptureModeBarView)
+BEGIN_METADATA(GameCaptureBarView)
 END_METADATA
 
 }  // namespace ash

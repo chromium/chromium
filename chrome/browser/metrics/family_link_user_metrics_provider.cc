@@ -9,8 +9,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,27 +24,27 @@ FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;
 bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // This function is called at unpredictable intervals throughout the Chrome
   // session, so guarantee it will never crash.
-
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
-    std::vector<AccountInfo> primary_accounts;
-    for (Profile* profile : profile_list) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
+  std::vector<supervised_user::FamilyLinkUserLogRecord> records;
+  for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
-      // TODO(b/274889379): Mock call to GetBrowserCount().
-      if (!FamilyLinkUserMetricsProvider::
-              skip_active_browser_count_for_unittesting_ &&
-          chrome::GetBrowserCount(profile) == 0) {
-        // The profile is loaded, but there's no opened browser for this
-        // profile.
-        continue;
-      }
-#endif
-      signin::IdentityManager* identity_manager_ =
-          IdentityManagerFactory::GetForProfile(profile);
-      AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin));
-      primary_accounts.push_back(std::move(account_info));
+    // TODO(b/274889379): Mock call to GetBrowserCount().
+    if (!FamilyLinkUserMetricsProvider::
+            skip_active_browser_count_for_unittesting_ &&
+        chrome::GetBrowserCount(profile) == 0) {
+      // The profile is loaded, but there's no opened browser for this
+      // profile.
+      continue;
     }
-    return supervised_user::EmitLogSegmentHistogram(primary_accounts);
+#endif
+
+    supervised_user::SupervisedUserService* service =
+        SupervisedUserServiceFactory::GetForProfile(profile);
+
+    records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
+        IdentityManagerFactory::GetForProfile(profile),
+        service ? service->GetURLFilter() : nullptr));
+  }
+  return supervised_user::EmitLogRecordHistograms(records);
 }

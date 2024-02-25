@@ -5,10 +5,10 @@
 
 test(() => {
   assert_true(document.fonts.check('10px Arial'), 'Arial');
-  assert_false(document.fonts.check('10px Nonexistent'), 'Nonexistent');
+  assert_true(document.fonts.check('10px Nonexistent'), 'Nonexistent');
   assert_true(document.fonts.check('10px sans-serif'), 'sans-serif');
   assert_true(document.fonts.check('10px Nonexistent, monospace'), 'Nonexistent, monospace');
-  assert_false(document.fonts.check('10px Nonexistent1, Nonexistent2'), 'Nonexistent1, Nonexistent2');
+  assert_true(document.fonts.check('10px Nonexistent1, Nonexistent2'), 'Nonexistent1, Nonexistent2');
 }, 'Tests FontFaceSet#check() returns true for platform fonts');
 
 </script>

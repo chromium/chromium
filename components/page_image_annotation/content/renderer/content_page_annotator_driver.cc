@@ -4,13 +4,14 @@
 
 #include "components/page_image_annotation/content/renderer/content_page_annotator_driver.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "crypto/sha2.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -29,14 +30,14 @@ constexpr int kDomCrawlDelayMs = 3000;
 
 // Attempts to produce image metadata for the given element. Will produce a null
 // value if the element has a missing or malformed src attribute.
-absl::optional<PageAnnotator::ImageMetadata> ProduceMetadata(
+std::optional<PageAnnotator::ImageMetadata> ProduceMetadata(
     const GURL& page_url,
     const blink::WebElement element,
     const uint64_t node_id) {
   const std::string source_id = ContentPageAnnotatorDriver::GenerateSourceId(
       page_url, element.GetAttribute("src").Utf8());
   if (source_id.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return PageAnnotator::ImageMetadata{node_id, source_id};
 }
@@ -103,9 +104,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
       // We use SHA256 since it has comparable (<2x) speed to e.g. crc32, but
       // has no known collisions (which could lead to cached results for another
       // image being returned for this one).
-      std::string source_id;
-      base::Base64Encode(crypto::SHA256HashString(content), &source_id);
-      return source_id;
+      return base::Base64Encode(crypto::SHA256HashString(content));
     }
   } else if (src_url.SchemeIs("http") || src_url.SchemeIs("https")) {
     return src_url.spec();
@@ -158,7 +157,7 @@ void ContentPageAnnotatorDriver::FindImages(const GURL& page_url,
   } else {
     // This element is an image; attempt to produce metadata for it and begin
     // tracking.
-    const absl::optional<PageAnnotator::ImageMetadata> metadata =
+    const std::optional<PageAnnotator::ImageMetadata> metadata =
         ProduceMetadata(page_url, element, next_node_id_);
 
     if (metadata.has_value())

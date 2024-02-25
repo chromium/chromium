@@ -215,8 +215,7 @@ VaapiImageDecodeStatus VaapiJpegDecoder::AllocateVASurfaceAndSubmitVABuffers(
 
   // Parse the JPEG encoded data.
   JpegParseResult parse_result;
-  if (!ParseJpegPicture(encoded_image.data(), encoded_image.size(),
-                        &parse_result)) {
+  if (!ParseJpegPicture(encoded_image, &parse_result)) {
     VLOGF(1) << "ParseJpegPicture failed";
     return VaapiImageDecodeStatus::kParseFailed;
   }

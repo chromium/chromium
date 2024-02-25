@@ -62,6 +62,7 @@ void ChannelProxy::Context::CreateChannel(
   DCHECK(!channel_);
   DCHECK_EQ(factory->GetIPCTaskRunner(), ipc_task_runner_);
   channel_ = factory->BuildChannel(this);
+  channel_->SetUrgentMessageObserver(urgent_message_observer_);
 
   Channel::AssociatedInterfaceSupport* support =
       channel_->GetAssociatedInterfaceSupport();
@@ -423,6 +424,12 @@ void ChannelProxy::Context::Send(Message* message) {
                                 base::WrapUnique(message)));
 }
 
+// Called on the listener's thread.
+void ChannelProxy::Context::SetUrgentMessageObserver(
+    UrgentMessageObserver* observer) {
+  urgent_message_observer_ = observer;
+}
+
 //-----------------------------------------------------------------------------
 
 // static
@@ -450,23 +457,13 @@ std::unique_ptr<ChannelProxy> ChannelProxy::Create(
   return channel;
 }
 
-ChannelProxy::ChannelProxy(Context* context)
-    : context_(context), did_init_(false) {
-#if defined(ENABLE_IPC_FUZZER)
-  outgoing_message_filter_ = nullptr;
-#endif
-}
+ChannelProxy::ChannelProxy(Context* context) : context_(context) {}
 
 ChannelProxy::ChannelProxy(
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner)
-    : context_(new Context(listener, ipc_task_runner, listener_task_runner)),
-      did_init_(false) {
-#if defined(ENABLE_IPC_FUZZER)
-  outgoing_message_filter_ = nullptr;
-#endif
-}
+    : context_(new Context(listener, ipc_task_runner, listener_task_runner)) {}
 
 ChannelProxy::~ChannelProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -604,6 +601,12 @@ void ChannelProxy::ClearIPCTaskRunner() {
 }
 
 void ChannelProxy::OnChannelInit() {
+}
+
+void ChannelProxy::SetUrgentMessageObserver(UrgentMessageObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!did_init_);
+  context_->SetUrgentMessageObserver(observer);
 }
 
 //-----------------------------------------------------------------------------

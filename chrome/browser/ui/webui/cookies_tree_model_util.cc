@@ -52,9 +52,6 @@ const char kKeyCreated[] = "created";
 const char kKeyExpires[] = "expires";
 const char kKeyModified[] = "modified";
 
-const char kKeyPersistent[] = "persistent";
-const char kKeyTemporary[] = "temporary";
-
 const char kKeyTotalUsage[] = "totalUsage";
 const char kKeyTemporaryUsage[] = "temporaryUsage";
 
@@ -78,7 +75,7 @@ std::string CookiesTreeModelUtil::GetTreeNodeId(const CookieTreeNode* node) {
   return base::NumberToString(new_id);
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
   base::Value::Dict dict;
 
@@ -112,18 +109,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_DATABASE: {
-      dict.Set(kKeyType, "database");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE: {
       dict.Set(kKeyType, "local_storage");
 
@@ -137,83 +122,17 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB: {
-      dict.Set(kKeyType, "indexed_db");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM: {
-      dict.Set(kKeyType, "file_system");
-
-      const browsing_data::FileSystemHelper::FileSystemInfo& file_system_info =
-          *node.GetDetailedInfo().file_system_info;
-      const storage::FileSystemType kPerm = storage::kFileSystemTypePersistent;
-      const storage::FileSystemType kTemp = storage::kFileSystemTypeTemporary;
-
-      dict.Set(kKeyOrigin, file_system_info.origin.Serialize());
-      dict.Set(
-          kKeyPersistent,
-          base::Contains(file_system_info.usage_map, kPerm)
-              ? ui::FormatBytes(file_system_info.usage_map.find(kPerm)->second)
-              : l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEM_USAGE_NONE));
-      dict.Set(
-          kKeyTemporary,
-          base::Contains(file_system_info.usage_map, kTemp)
-              ? ui::FormatBytes(file_system_info.usage_map.find(kTemp)->second)
-              : l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEM_USAGE_NONE));
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA: {
       dict.Set(kKeyType, "quota");
 
       const BrowsingDataQuotaHelper::QuotaInfo& quota_info =
           *node.GetDetailedInfo().quota_info;
       if (quota_info.temporary_usage <= kNegligibleUsage)
-        return absl::nullopt;
+        return std::nullopt;
 
       dict.Set(kKeyOrigin, quota_info.storage_key.origin().host());
       dict.Set(kKeyTotalUsage, ui::FormatBytes(quota_info.temporary_usage));
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER: {
-      dict.Set(kKeyType, "service_worker");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      // TODO(jsbell): Include kKeyModified like other storage types.
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER: {
-      dict.Set(kKeyType, "shared_worker");
-
-      const browsing_data::SharedWorkerInfo& shared_worker_info =
-          *node.GetDetailedInfo().shared_worker_info;
-
-      dict.Set(kKeyOrigin, shared_worker_info.worker.spec());
-      dict.Set(kKeyName, shared_worker_info.name);
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE: {
-      dict.Set(kKeyType, "cache_storage");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
       break;
     }
     default:
@@ -237,7 +156,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
   // Only node types with detailed information above result in a dict.
   if (dict.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   dict.Set(kKeyId, GetTreeNodeId(&node));
   dict.Set(kKeyTitle, node.GetTitle());
@@ -255,7 +174,7 @@ base::Value::List CookiesTreeModelUtil::GetChildNodeDetailsDeprecated(
     // Whether a node is of interest is determined by
     // GetCookieTreeNodeDictionary().
     std::string cookie_id_path = id_path + "," + GetTreeNodeId(child.get());
-    absl::optional<base::Value::Dict> child_dict =
+    std::optional<base::Value::Dict> child_dict =
         GetCookieTreeNodeDictionary(*child);
     if (child_dict) {
       child_dict->Set("idPath", cookie_id_path);
@@ -264,7 +183,7 @@ base::Value::List CookiesTreeModelUtil::GetChildNodeDetailsDeprecated(
     cookie_id_path += ",";
 
     for (const auto& details : child->children()) {
-      absl::optional<base::Value::Dict> details_dict =
+      std::optional<base::Value::Dict> details_dict =
           GetCookieTreeNodeDictionary(*details);
       if (details_dict) {
         // TODO(dschuyler): This ID path is an artifact from using tree nodes to
@@ -284,7 +203,7 @@ const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
     const std::string& path) {
   const CookieTreeNode* child = nullptr;
   const CookieTreeNode* parent = root;
-  absl::optional<size_t> child_index;
+  std::optional<size_t> child_index;
 
   // Validate the tree path and get the node pointer.
   for (const base::StringPiece& cur_node : base::SplitStringPiece(

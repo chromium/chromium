@@ -6,7 +6,7 @@
 // prefs should live in Ash but are not supported in the current Ash version due
 // to version skew. These tests make use of the crosapi to set the value in Ash.
 // Thus, they run as lacros_chrome_browsertests.
-// Run with lacros_chrome_browsertests_run_in_series \
+// Run with lacros_chrome_browsertests \
 //     --gtest_filter=*/ExtensionPreferenceApiUnsupportedInAshBrowserTest.*/*
 // Based on the "standard" extension test.
 chrome.test.runTests([

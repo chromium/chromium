@@ -29,7 +29,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/test_url_constants.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
@@ -158,12 +158,6 @@ class ErrorPageTest : public WebTestWithWebState {
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
 TEST_F(ErrorPageTest, BackForwardErrorPage) {
-  // TODO(crbug.com/1153261): this test should be fixed in newer versions of
-  // WebKit.
-  if (@available(iOS 15, *)) {
-  } else {
-    return;
-  }
   test::LoadUrl(web_state(), server_.GetURL("/close-socket"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
 

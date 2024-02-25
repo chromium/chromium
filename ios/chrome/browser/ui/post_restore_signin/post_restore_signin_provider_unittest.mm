@@ -6,16 +6,25 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/promos_manager/constants.h"
-#import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/sync/test/sync_user_settings_mock.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
-#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
@@ -28,7 +37,13 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  public:
   explicit PostRestoreSignInProviderTest() {
     SetFakePreRestoreAccountInfo();
-    provider_ = [[PostRestoreSignInProvider alloc] init];
+    TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                       SyncServiceFactory::GetDefaultFactory());
+    browser_state_ = test_cbs_builder.Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    provider_ =
+        [[PostRestoreSignInProvider alloc] initForBrowser:browser_.get()];
   }
 
   void SetFakePreRestoreAccountInfo() {
@@ -36,15 +51,18 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
     accountInfo.given_name = std::string(kFakePreRestoreAccountGivenName);
     accountInfo.full_name = std::string(kFakePreRestoreAccountFullName);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
   }
 
   void ClearUserName() {
     AccountInfo accountInfo;
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
     // Reinstantiate a provider so that it picks up the changes.
-    provider_ = [[PostRestoreSignInProvider alloc] init];
+    provider_ =
+        [[PostRestoreSignInProvider alloc] initForBrowser:browser_.get()];
   }
 
   void SetupMockHandler() {
@@ -52,9 +70,12 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     provider_.handler = mock_handler_;
   }
 
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<Browser> browser_;
   PostRestoreSignInProvider* provider_;
 };
 
@@ -74,7 +95,9 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
 
 // Test the title text.
 TEST_F(PostRestoreSignInProviderTest, title) {
-  EXPECT_TRUE([[provider_ title] isEqualToString:@"Chrome is Signed Out"]);
+  EXPECT_TRUE([[provider_ title]
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE)]);
 }
 
 // Tests the alert message.

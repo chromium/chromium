@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "device/udev_linux/udev_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace testing {
 
@@ -25,8 +25,8 @@ class FakeUdevLoader : public device::UdevLoader {
   udev_device* AddFakeDevice(std::string name,
                              std::string syspath,
                              std::string subsystem,
-                             absl::optional<std::string> devnode,
-                             absl::optional<std::string> devtype,
+                             std::optional<std::string> devnode,
+                             std::optional<std::string> devtype,
                              std::map<std::string, std::string> sysattrs,
                              std::map<std::string, std::string> properties);
 

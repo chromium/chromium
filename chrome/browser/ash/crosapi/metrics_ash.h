@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_METRICS_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_METRICS_ASH_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -34,7 +34,7 @@ class MetricsAsh : public mojom::Metrics {
   void OnMachineStatisticsLoaded();
 
   // A cached copy of the full hardware class.
-  absl::optional<std::string> full_hardware_class_;
+  std::optional<std::string> full_hardware_class_;
 
   // Callbacks waiting for full_hardware_class_.
   std::vector<GetFullHardwareClassCallback> callbacks_;

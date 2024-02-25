@@ -29,6 +29,9 @@
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 
+// Disables the SetUpList via a pref.
++ (void)disableSetUpList;
+
 // Resets SetUpList prefs to clear any completed items.
 + (void)resetSetUpListPrefs;
 
@@ -40,6 +43,17 @@
 
 // Returns YES if the SetUpListItemView for Autofill is complete.
 + (BOOL)setUpListItemAutofillIsComplete;
+
+// Returns YES if the Default Browser SetUpListItemView item in the Magic Stack
+// is complete.
++ (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete;
+
+// Returns YES if the Autofill SetUpListItemView item in the Magic Stack is
+// complete.
++ (BOOL)setUpListItemAutofillInMagicStackIsComplete;
+
+// Returns the title of the Set Up List.
++ (NSString*)setUpListTitle;
 
 @end
 

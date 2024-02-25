@@ -67,24 +67,17 @@ namespace {
 #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 
 bool IsMp2tCodecSupported(std::string_view codec_id) {
-  bool is_codec_ambiguous = true;
-  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
-  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
-  media::VideoCodecProfile profile;
-  uint8_t level = 0;
-  media::VideoColorSpace color_space;
-  if (media::ParseVideoCodecString("", codec_id, &is_codec_ambiguous,
-                                   &video_codec, &profile, &level,
-                                   &color_space)) {
-    if (is_codec_ambiguous) {
-      return false;
-    }
-    if (video_codec != media::VideoCodec::kH264) {
+  if (auto result =
+          media::ParseVideoCodecString("", codec_id,
+                                       /*allow_ambiguous_matches=*/false)) {
+    if (result->codec != media::VideoCodec::kH264) {
       return false;
     }
     return true;
   }
 
+  auto audio_codec = media::AudioCodec::kUnknown;
+  bool is_codec_ambiguous = false;
   if (media::ParseAudioCodecString("", codec_id, &is_codec_ambiguous,
                                    &audio_codec)) {
     if (is_codec_ambiguous) {
@@ -294,7 +287,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
       return nullptr;
     }
 
-    absl::optional<media::AudioDecoderConfig> out_audio_config =
+    std::optional<media::AudioDecoderConfig> out_audio_config =
         AudioDecoder::MakeMediaAudioDecoderConfig(*(config->audioConfig()),
                                                   &console_message /* out */);
 
@@ -316,7 +309,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
     }
 
     bool converter_needed = false;
-    absl::optional<media::VideoDecoderConfig> out_video_config =
+    std::optional<media::VideoDecoderConfig> out_video_config =
         VideoDecoder::MakeMediaVideoDecoderConfig(*(config->videoConfig()),
                                                   &console_message /* out */,
                                                   &converter_needed /* out */);
@@ -324,7 +317,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
     // TODO(crbug.com/1144908): Initial prototype does not support h264
     // buffering. See above.
     if (out_video_config && converter_needed) {
-      out_video_config = absl::nullopt;
+      out_video_config = std::nullopt;
       console_message =
           "H.264/H.265 EncodedVideoChunk buffering is not yet supported in "
           "MSE.See https://crbug.com/1144908.";
@@ -617,17 +610,12 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
     bool first = true;
     for (const auto& codec_id : parsed_codec_ids) {
-      bool is_codec_ambiguous;
-      media::VideoCodec video_codec = media::VideoCodec::kUnknown;
-      media::VideoCodecProfile profile;
-      uint8_t level = 0;
-      media::VideoColorSpace color_space;
-      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
-                                       &is_codec_ambiguous, &video_codec,
-                                       &profile, &level, &color_space) &&
-          !is_codec_ambiguous &&
-          video_codec == media::VideoCodec::kDolbyVision) {
-        continue;
+      if (auto result =
+              media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
+                                           /*allow_ambiguous_matches=*/false)) {
+        if (result->codec == media::VideoCodec::kDolbyVision) {
+          continue;
+        }
       }
       if (first)
         first = false;
@@ -1346,7 +1334,7 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
 std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
 MediaSource::AttachmentAndTracer() const {
   base::AutoLock lock(attachment_link_lock_);
-  return std::make_pair(media_source_attachment_, attachment_tracer_);
+  return std::make_pair(media_source_attachment_, attachment_tracer_.Get());
 }
 
 void MediaSource::EndOfStreamAlgorithm(
@@ -1421,7 +1409,7 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
   media_source_attachment_ = attachment;
   attachment_tracer_ =
       MakeGarbageCollected<SameThreadMediaSourceTracer>(element, this);
-  return attachment_tracer_;
+  return attachment_tracer_.Get();
 }
 
 bool MediaSource::StartWorkerAttachingToMainThreadMediaElement(

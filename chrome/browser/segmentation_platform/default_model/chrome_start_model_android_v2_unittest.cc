@@ -20,16 +20,20 @@ TEST_F(ChromeStartModelV2Test, InitAndFetchModel) {
 }
 
 TEST_F(ChromeStartModelV2Test, ExecuteModelWithInput) {
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
   // 3 input features defined in `kChromeStartUMAFeatures`, set all to 0.
   ModelProvider::Request input = {0, 0, 0};
   const float kDefaultReturnTimeSeconds = 28800;
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            {kDefaultReturnTimeSeconds});
+  ExpectClassifierResults(input, {kChromeStartAndroidV2Label8HourInMs});
 
   // Set to higher values, the model returns the same result.
   input = {3, 6, 3};
   ExpectExecutionWithInput(input, /*expected_error=*/false,
                            {kDefaultReturnTimeSeconds});
+  ExpectClassifierResults(input, {kChromeStartAndroidV2Label8HourInMs});
 }
 
 }  // namespace segmentation_platform

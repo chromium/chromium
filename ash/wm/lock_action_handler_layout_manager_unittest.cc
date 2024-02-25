@@ -68,7 +68,7 @@ class TestWindowDelegate : public views::WidgetDelegate {
   void set_widget(views::Widget* widget) { widget_ = widget; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 };
 
 }  // namespace
@@ -201,8 +201,7 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
  private:
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
-  raw_ptr<TestLockScreenActionBackgroundController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestLockScreenActionBackgroundController, DanglingUntriaged>
       background_controller_ = nullptr;
 };
 

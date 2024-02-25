@@ -40,7 +40,7 @@ class NativeMessagingHostManifestTest : public ::testing::Test {
       const std::string& name,
       const std::string& path,
       const std::string& origin,
-      absl::optional<std::string> supports_native_initiated_connections) {
+      std::optional<std::string> supports_native_initiated_connections) {
     std::string supports_native_initiated_connections_snippet;
     if (supports_native_initiated_connections) {
       supports_native_initiated_connections_snippet = base::StrCat({
@@ -89,7 +89,7 @@ TEST_F(NativeMessagingHostManifestTest, HostNameValidation) {
 
 TEST_F(NativeMessagingHostManifestTest, LoadValid) {
   ASSERT_TRUE(
-      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, absl::nullopt));
+      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, std::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
@@ -157,7 +157,7 @@ TEST_F(NativeMessagingHostManifestTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kOnConnectNative);
   ASSERT_TRUE(
-      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, absl::nullopt));
+      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, std::nullopt));
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
       NativeMessagingHostManifest::Load(manifest_path_, &error_message);
@@ -182,7 +182,7 @@ TEST_F(NativeMessagingHostManifestTest,
 
 TEST_F(NativeMessagingHostManifestTest, InvalidName) {
   ASSERT_TRUE(WriteManifest(".com.chrome.test.native_host", kTestHostPath,
-                            kTestOrigin, absl::nullopt));
+                            kTestOrigin, std::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
@@ -194,7 +194,7 @@ TEST_F(NativeMessagingHostManifestTest, InvalidName) {
 // Verify that match-all origins are rejected.
 TEST_F(NativeMessagingHostManifestTest, MatchAllOrigin) {
   ASSERT_TRUE(WriteManifest(kTestHostName, kTestHostPath,
-                            "chrome-extension://*/", absl::nullopt));
+                            "chrome-extension://*/", std::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =

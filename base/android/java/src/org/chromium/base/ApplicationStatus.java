@@ -17,9 +17,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Field;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -74,15 +76,11 @@ public class ApplicationStatus {
         }
     }
 
-    /**
-     * A map of which observers listen to state changes from which {@link Activity}.
-     */
+    /** A map of which observers listen to state changes from which {@link Activity}. */
     private static final Map<Activity, ActivityInfo> sActivityInfo =
             Collections.synchronizedMap(new HashMap<Activity, ActivityInfo>());
 
-    /**
-     * A map to cache TaskId for each {@link Activity}.
-     */
+    /** A map to cache TaskId for each {@link Activity}. */
     public static final Map<Activity, Integer> sActivityTaskId =
             Collections.synchronizedMap(new HashMap<Activity, Integer>());
 
@@ -96,20 +94,14 @@ public class ApplicationStatus {
     // when no activity has been observed.
     private static int sCurrentApplicationState = ApplicationState.UNKNOWN;
 
-    /**
-     * Last activity that was shown (or null if none or it was destroyed).
-     */
+    /** Last activity that was shown (or null if none or it was destroyed). */
     @SuppressLint("StaticFieldLeak")
     private static Activity sActivity;
 
-    /**
-     * A lazily initialized listener that forwards application state changes to native.
-     */
+    /** A lazily initialized listener that forwards application state changes to native. */
     private static ApplicationStateListener sNativeApplicationStateListener;
 
-    /**
-     * A list of observers to be notified when any {@link Activity} has a state change.
-     */
+    /** A list of observers to be notified when any {@link Activity} has a state change. */
     private static ObserverList<ActivityStateListener> sGeneralActivityStateListeners;
 
     /**
@@ -124,14 +116,10 @@ public class ApplicationStatus {
      */
     private static ObserverList<WindowFocusChangedListener> sWindowFocusListeners;
 
-    /**
-     * A list of observers to be notified when the visibility of any task changes.
-     */
+    /** A list of observers to be notified when the visibility of any task changes. */
     private static ObserverList<TaskVisibilityListener> sTaskVisibilityListeners;
 
-    /**
-     * Interface to be implemented by listeners.
-     */
+    /** Interface to be implemented by listeners. */
     public interface ApplicationStateListener {
         /**
          * Called when the application's state changes.
@@ -141,9 +129,7 @@ public class ApplicationStatus {
         void onApplicationStateChange(@ApplicationState int newState);
     }
 
-    /**
-     * Interface to be implemented by listeners.
-     */
+    /** Interface to be implemented by listeners. */
     public interface ActivityStateListener {
         /**
          * Called when the activity's state changes.
@@ -154,9 +140,7 @@ public class ApplicationStatus {
         void onActivityStateChange(Activity activity, @ActivityState int newState);
     }
 
-    /**
-     * Interface to be implemented by listeners for window focus events.
-     */
+    /** Interface to be implemented by listeners for window focus events. */
     public interface WindowFocusChangedListener {
         /**
          * Called when the window focus changes for {@code activity}.
@@ -167,9 +151,7 @@ public class ApplicationStatus {
         public void onWindowFocusChanged(Activity activity, boolean hasFocus);
     }
 
-    /**
-     * Interface to be implemented by listeners for task visibility changes.
-     */
+    /** Interface to be implemented by listeners for task visibility changes. */
     public interface TaskVisibilityListener {
         /**
          * Called when the visibility of a task changes.
@@ -235,8 +217,8 @@ public class ApplicationStatus {
 
     public static boolean isCachingEnabled() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getAppSharedPreferences().getBoolean(
-                    CACHE_ACTIVITY_TASKID_KEY, false);
+            return ContextUtils.getAppSharedPreferences()
+                    .getBoolean(CACHE_ACTIVITY_TASKID_KEY, false);
         }
     }
 
@@ -270,7 +252,8 @@ public class ApplicationStatus {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("onWindowFocusChanged") && args.length == 1
+            if (method.getName().equals("onWindowFocusChanged")
+                    && args.length == 1
                     && args[0] instanceof Boolean) {
                 onWindowFocusChanged((boolean) args[0]);
                 return null;
@@ -321,77 +304,83 @@ public class ApplicationStatus {
             sCurrentApplicationState = ApplicationState.HAS_DESTROYED_ACTIVITIES;
         }
 
-        registerWindowFocusChangedListener(new WindowFocusChangedListener() {
-            @Override
-            public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
-                if (!hasFocus || activity == sActivity) return;
+        registerWindowFocusChangedListener(
+                new WindowFocusChangedListener() {
+                    @Override
+                    public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
+                        if (!hasFocus || activity == sActivity) return;
 
-                int state = getStateForActivity(activity);
+                        int state = getStateForActivity(activity);
 
-                if (state != ActivityState.DESTROYED && state != ActivityState.STOPPED) {
-                    sActivity = activity;
-                }
+                        if (state != ActivityState.DESTROYED && state != ActivityState.STOPPED) {
+                            sActivity = activity;
+                        }
 
-                // TODO(dtrainor): Notify of active activity change?
-            }
-        });
+                        // TODO(dtrainor): Notify of active activity change?
+                    }
+                });
 
-        application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {
-                onStateChange(activity, ActivityState.CREATED);
-                Window.Callback callback = activity.getWindow().getCallback();
-                activity.getWindow().setCallback(createWindowCallbackProxy(activity, callback));
-            }
+        application.registerActivityLifecycleCallbacks(
+                new ActivityLifecycleCallbacks() {
+                    @Override
+                    public void onActivityCreated(
+                            final Activity activity, Bundle savedInstanceState) {
+                        onStateChange(activity, ActivityState.CREATED);
+                        Window.Callback callback = activity.getWindow().getCallback();
+                        activity.getWindow()
+                                .setCallback(createWindowCallbackProxy(activity, callback));
+                    }
 
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-                onStateChange(activity, ActivityState.DESTROYED);
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivityDestroyed(Activity activity) {
+                        onStateChange(activity, ActivityState.DESTROYED);
+                        checkCallback(activity);
+                    }
 
-            @Override
-            public void onActivityPaused(Activity activity) {
-                onStateChange(activity, ActivityState.PAUSED);
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivityPaused(Activity activity) {
+                        onStateChange(activity, ActivityState.PAUSED);
+                        checkCallback(activity);
+                    }
 
-            @Override
-            public void onActivityResumed(Activity activity) {
-                onStateChange(activity, ActivityState.RESUMED);
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivityResumed(Activity activity) {
+                        onStateChange(activity, ActivityState.RESUMED);
+                        checkCallback(activity);
+                    }
 
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                        checkCallback(activity);
+                    }
 
-            @Override
-            public void onActivityStarted(Activity activity) {
-                onStateChange(activity, ActivityState.STARTED);
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivityStarted(Activity activity) {
+                        onStateChange(activity, ActivityState.STARTED);
+                        checkCallback(activity);
+                    }
 
-            @Override
-            public void onActivityStopped(Activity activity) {
-                onStateChange(activity, ActivityState.STOPPED);
-                checkCallback(activity);
-            }
+                    @Override
+                    public void onActivityStopped(Activity activity) {
+                        onStateChange(activity, ActivityState.STOPPED);
+                        checkCallback(activity);
+                    }
 
-            private void checkCallback(Activity activity) {
-                if (BuildConfig.ENABLE_ASSERTS) {
-                    assert reachesWindowCallback(activity.getWindow().getCallback());
-                }
-            }
-        });
+                    private void checkCallback(Activity activity) {
+                        if (BuildConfig.ENABLE_ASSERTS) {
+                            assert reachesWindowCallback(activity.getWindow().getCallback());
+                        }
+                    }
+                });
     }
 
     @VisibleForTesting
     static Window.Callback createWindowCallbackProxy(Activity activity, Window.Callback callback) {
-        return (Window.Callback) Proxy.newProxyInstance(Window.Callback.class.getClassLoader(),
-                new Class[] {Window.Callback.class},
-                new ApplicationStatus.WindowCallbackProxy(activity, callback));
+        return (Window.Callback)
+                Proxy.newProxyInstance(
+                        Window.Callback.class.getClassLoader(),
+                        new Class[] {Window.Callback.class},
+                        new ApplicationStatus.WindowCallbackProxy(activity, callback));
     }
 
     /**
@@ -412,7 +401,7 @@ public class ApplicationStatus {
         }
         if (Proxy.isProxyClass(callback.getClass())) {
             return Proxy.getInvocationHandler(callback)
-                           instanceof ApplicationStatus.WindowCallbackProxy;
+                    instanceof ApplicationStatus.WindowCallbackProxy;
         }
         for (Class<?> c = callback.getClass(); c != Object.class; c = c.getSuperclass()) {
             for (Field f : c.getDeclaredFields()) {
@@ -443,7 +432,7 @@ public class ApplicationStatus {
      * @param newState New state value.
      */
     private static void onStateChange(Activity activity, @ActivityState int newState) {
-        if (activity == null) throw new IllegalArgumentException("null activity is not supported");
+        assert activity != null;
 
         if (sActivity == null
                 || newState == ActivityState.CREATED
@@ -508,9 +497,7 @@ public class ApplicationStatus {
         }
     }
 
-    /**
-     * Testing method to update the state of the specified activity.
-     */
+    /** Testing method to update the state of the specified activity. */
     @VisibleForTesting
     @MainThread
     public static void onStateChangeForTesting(Activity activity, int newState) {
@@ -640,14 +627,32 @@ public class ApplicationStatus {
         assert isInitialized();
         for (Map.Entry<Activity, ActivityInfo> entry : sActivityInfo.entrySet()) {
             if (getTaskId(entry.getKey()) == taskId) {
-                @ActivityState
-                int state = entry.getValue().getStatus();
+                @ActivityState int state = entry.getValue().getStatus();
                 if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Cleanup Activity info from an app Task that is no longer reachable.
+     *
+     * @param taskId The id of the Task that is no longer running.
+     * @return Whether any tasks were cleaned up.
+     */
+    public static boolean cleanupInvalidTask(int taskId) {
+        List<Activity> inaccessibleActivities = new ArrayList<>();
+        for (Entry<Activity, Integer> activityTaskInfo : sActivityTaskId.entrySet()) {
+            if (taskId == activityTaskInfo.getValue()) {
+                inaccessibleActivities.add(activityTaskInfo.getKey());
+            }
+        }
+        for (Activity activity : inaccessibleActivities) {
+            onStateChange(activity, ActivityState.DESTROYED);
+        }
+        return !inaccessibleActivities.isEmpty();
     }
 
     /**
@@ -681,6 +686,8 @@ public class ApplicationStatus {
         assert activity != null;
 
         ActivityInfo info = sActivityInfo.get(activity);
+        assert info != null
+                : "destroyed: " + activity.isDestroyed() + " finishing: " + activity.isFinishing();
         assert info.getStatus() != ActivityState.DESTROYED;
         info.getListeners().addObserver(listener);
     }
@@ -740,6 +747,7 @@ public class ApplicationStatus {
             if (sGeneralActivityStateListeners != null) sGeneralActivityStateListeners.clear();
             if (sTaskVisibilityListeners != null) sTaskVisibilityListeners.clear();
             sActivityInfo.clear();
+            sActivityTaskId.clear();
             if (sWindowFocusListeners != null) sWindowFocusListeners.clear();
             sCurrentApplicationState = ApplicationState.UNKNOWN;
             sActivity = null;
@@ -747,9 +755,7 @@ public class ApplicationStatus {
         }
     }
 
-    /**
-     * Mark all Activities as destroyed to avoid side-effects in future test.
-     */
+    /** Mark all Activities as destroyed to avoid side-effects in future test. */
     @MainThread
     public static void resetActivitiesForInstrumentationTests() {
         assert ThreadUtils.runningOnUiThread();
@@ -757,9 +763,9 @@ public class ApplicationStatus {
         synchronized (sActivityInfo) {
             // Copy the set to avoid concurrent modifications to the underlying set.
             for (Activity activity : new HashSet<>(sActivityInfo.keySet())) {
-                assert activity.getApplication()
-                        == null : "Real activities that are launched should be closed by test code "
-                                  + "and not rely on this cleanup of mocks.";
+                assert activity.getApplication() == null
+                        : "Real activities that are launched should be closed by test code "
+                                + "and not rely on this cleanup of mocks.";
                 onStateChangeForTesting(activity, ActivityState.DESTROYED);
             }
         }
@@ -773,20 +779,23 @@ public class ApplicationStatus {
      */
     @CalledByNative
     private static void registerThreadSafeNativeApplicationStateListener() {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (sNativeApplicationStateListener != null) return;
-
-                sNativeApplicationStateListener = new ApplicationStateListener() {
+        ThreadUtils.runOnUiThread(
+                new Runnable() {
                     @Override
-                    public void onApplicationStateChange(int newState) {
-                        ApplicationStatusJni.get().onApplicationStateChange(newState);
+                    public void run() {
+                        if (sNativeApplicationStateListener != null) return;
+
+                        sNativeApplicationStateListener =
+                                new ApplicationStateListener() {
+                                    @Override
+                                    public void onApplicationStateChange(int newState) {
+                                        ApplicationStatusJni.get()
+                                                .onApplicationStateChange(newState);
+                                    }
+                                };
+                        registerApplicationStateListener(sNativeApplicationStateListener);
                     }
-                };
-                registerApplicationStateListener(sNativeApplicationStateListener);
-            }
-        });
+                });
     }
 
     /**
@@ -807,7 +816,8 @@ public class ApplicationStatus {
 
         for (ActivityInfo info : sActivityInfo.values()) {
             int state = info.getStatus();
-            if (state != ActivityState.PAUSED && state != ActivityState.STOPPED
+            if (state != ActivityState.PAUSED
+                    && state != ActivityState.STOPPED
                     && state != ActivityState.DESTROYED) {
                 return ApplicationState.HAS_RUNNING_ACTIVITIES;
             } else if (state == ActivityState.PAUSED) {

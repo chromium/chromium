@@ -113,11 +113,11 @@ class MODULES_EXPORT HIDDevice
   void FinishReceiveReport(ScriptPromiseResolver*,
                            bool success,
                            uint8_t report_id,
-                           const absl::optional<Vector<uint8_t>>&);
+                           const std::optional<Vector<uint8_t>>&);
   void FinishSendFeatureReport(ScriptPromiseResolver*, bool success);
   void FinishReceiveFeatureReport(ScriptPromiseResolver*,
                                   bool success,
-                                  const absl::optional<Vector<uint8_t>>&);
+                                  const std::optional<Vector<uint8_t>>&);
 
   void MarkRequestComplete(ScriptPromiseResolver*);
 

@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
@@ -35,7 +36,7 @@ class WebTestBluetoothChooserFactory {
   std::vector<std::string> events_;
 
   // Contains the set of live choosers, in order to send them events.
-  std::set<Chooser*> choosers_;
+  std::set<raw_ptr<Chooser, SetExperimental>> choosers_;
 
   base::WeakPtrFactory<WebTestBluetoothChooserFactory> weak_this_{this};
 };

@@ -41,9 +41,9 @@ class LayoutFrame final : public LayoutEmbeddedContent {
   }
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsFrame() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectFrame || LayoutEmbeddedContent::IsOfType(type);
+    return true;
   }
 };
 

@@ -1,0 +1,8 @@
+per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+per-file enums.xml=file://components/compose/OWNERS
+
+# Prefer sending CLs to the owners listed below.
+# Use chromium-metrics-reviews@google.com as a backup.
+dewittj@chromium.org
+jeffreycohen@chromium.org
+perrier@chromium.org

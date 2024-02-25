@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_READING_LIST_IOS_ADD_TO_READING_LIST_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_READING_LIST_IOS_ADD_TO_READING_LIST_INFOBAR_DELEGATE_H_
 
+#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace web {
@@ -55,7 +57,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   // The URL of the page to be saved to Reading List.
   GURL url_;
   // The title of the page to be saved to Reading List.
-  const std::u16string& title_;
+  const raw_ref<const std::u16string> title_;
   // The estimated time to read of the page.
   int estimated_read_time_;
   // The score of the page measuring distilibility, a proxy for whether the
@@ -64,9 +66,9 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   // The score of the page measuring length of the page.
   double length_score_;
   // Reference to save `url_` to Reading List.
-  ReadingListModel* model_ = nullptr;
+  raw_ptr<ReadingListModel> model_ = nullptr;
   // WebState pointer that is showing `url_`.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_IOS_ADD_TO_READING_LIST_INFOBAR_DELEGATE_H_

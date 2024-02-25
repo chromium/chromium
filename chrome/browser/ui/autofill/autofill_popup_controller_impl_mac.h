@@ -30,12 +30,12 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   // If the popup contains credit card items, find and set
   // |touchBarController_| and show the credit card autofill touch bar.
   void Show(std::vector<autofill::Suggestion> suggestions,
-            AutofillSuggestionTriggerSource trigger_source) override;
+            AutofillSuggestionTriggerSource trigger_source,
+            AutoselectFirstSuggestion autoselect_first_suggestion) override;
 
   // Updates the data list values currently shown with the popup. Calls
   // -invalidateTouchBar from |touchBarController_|.
-  void UpdateDataListValues(const std::vector<std::u16string>& values,
-                            const std::vector<std::u16string>& labels) override;
+  void UpdateDataListValues(base::span<const SelectOption> options) override;
 
  protected:
   // Hides the popup and destroys the controller. This also invalidates

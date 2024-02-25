@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("url_mojom_gurl") {
@@ -42,6 +43,15 @@ mojom("url_mojom_gurl") {
   ]
 
   webui_module_path = "chrome://resources/mojo/url/mojom"
+
+  # Used by Closure compiler targets in ash/webui/help_app_ui/, so this needs
+  # to generate WebUI bindings in JavaScript on Ash.
+  if (is_chromeos_ash) {
+    generate_webui_js_bindings = true
+  }
+
+  # Legacy JS bindings are needed for Blink regardless of platform.
+  generate_legacy_js_bindings = true
 }
 
 mojom("url_mojom_origin") {
@@ -86,6 +96,7 @@ mojom("url_mojom_origin") {
   ]
 
   webui_module_path = "chrome://resources/mojo/url/mojom"
+  generate_legacy_js_bindings = true
 }
 
 mojom("url_mojom_scheme_host_port") {
@@ -138,4 +149,6 @@ component("mojom_traits") {
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

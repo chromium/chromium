@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Braille display access private API.
-[modernised_enums]
 namespace brailleDisplayPrivate {
   // Braille display keyboard command.
   enum KeyCommand {
@@ -65,7 +64,7 @@ namespace brailleDisplayPrivate {
 
   interface Functions {
     // Gets the current display state.
-    [supportsPromises] static void getDisplayState(
+    static void getDisplayState(
         DisplayStateCallback callback);
 
     // Write the given dot patterns to the display.  The buffer contains one

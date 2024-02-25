@@ -27,7 +27,7 @@ class TestFocusChangeListener : public views::FocusChangeListener {
   int focus_change_count() { return focus_change_count_; }
 
  private:
-  const raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
+  const raw_ptr<views::FocusManager> focus_manager_;
 
   // Records the count of focus changes.
   int focus_change_count_ = 0;

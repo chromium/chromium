@@ -57,13 +57,13 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptySinks) {
   const char expected_str[] = R"(
       {
         "available_sinks": {
-          "DIAL:dial:youtube" : ["3610", "id2"]
+          "DIAL:dial:youtube" : ["dial:de51", "dial:id2"]
         },
         "discovered_sinks": { }
       })";
 
   MediaSinkInternal dial_sink1 = CreateDialSink(1);
-  dial_sink1.sink().set_sink_id("dial:<de51d94921f15f8af6dbf65592bb3610>");
+  dial_sink1.sink().set_sink_id("dial:de51d94921f15f8af6dbf65592bb3610");
   MediaSinkInternal dial_sink2 = CreateDialSink(2);
   std::vector<MediaSinkInternal> available_sinks = {dial_sink1, dial_sink2};
 
@@ -84,7 +84,7 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptyAvailability) {
             {
               "app_url":"http://192.168.0.101/apps",
               "icon_type":7,
-              "id":"id1",
+              "id":"dial:id1",
               "ip_address":"192.168.0.101",
               "model_name":"model name 1",
               "name":"friendly name 1"
@@ -92,7 +92,7 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptyAvailability) {
             {
               "app_url":"http://192.168.0.102/apps",
               "icon_type":7,
-              "id":"id2",
+              "id":"dial:id2",
               "ip_address":"192.168.0.102",
               "model_name":"model name 2",
               "name":"friendly name 2"
@@ -116,15 +116,15 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringMultipleProviders) {
   const char expected_str[] = R"(
       {
         "available_sinks": {
-          "CAST:cast:netflix" : ["id2"],
-          "DIAL:dial:youtube" : ["id1"]
+          "CAST:cast:netflix" : ["cast:id2"],
+          "DIAL:dial:youtube" : ["dial:id1"]
         },
         "discovered_sinks": {
           "dial": [
             {
               "app_url":"http://192.168.0.101/apps",
               "icon_type":7,
-              "id":"id1",
+              "id":"dial:id1",
               "ip_address":"192.168.0.101",
               "model_name":"model name 1",
               "name":"friendly name 1"
@@ -132,19 +132,21 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringMultipleProviders) {
           ],
           "cast": [
             {
-              "app_url":"http://192.168.0.102/apps",
-              "icon_type":7,
-              "id":"id2",
-              "ip_address":"192.168.0.102",
-              "model_name":"model name 2",
-              "name":"friendly name 2"
+              "capabilities": 5,
+              "channel_id": 2,
+              "discovered_by_dial": false,
+              "icon_type": 0,
+              "id": "cast:id2",
+              "ip_endpoint": "192.168.0.102:8011",
+              "model_name": "model name 2",
+              "name": "friendly name 2"
             }
           ]
         }
       })";
 
   MediaSinkInternal dial_sink1 = CreateDialSink(1);
-  MediaSinkInternal dial_sink2 = CreateDialSink(2);
+  MediaSinkInternal dial_sink2 = CreateCastSink(2);
   std::vector<MediaSinkInternal> sinks1 = {dial_sink1};
   std::vector<MediaSinkInternal> sinks2 = {dial_sink2};
 

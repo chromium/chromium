@@ -49,6 +49,8 @@ class TabOnBackGestureHandler {
  private:
   const raw_ptr<TabAndroid> tab_android_;
   bool is_in_progress_ = false;
+  ui::BackGestureEventSwipeEdge started_edge_ =
+      ui::BackGestureEventSwipeEdge::LEFT;
 };
 }  // namespace gesturenav
 

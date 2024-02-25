@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/mock_key_rotation_command.h"
@@ -26,7 +28,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
@@ -82,7 +83,7 @@ class KeyRotationLauncherTest : public testing::Test {
 TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {
   SetDMToken();
 
-  absl::optional<KeyRotationCommand::Params> params;
+  std::optional<KeyRotationCommand::Params> params;
   EXPECT_CALL(*mock_command_, Trigger(testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&params](const KeyRotationCommand::Params given_params,
@@ -99,18 +100,48 @@ TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {
   EXPECT_EQ(kExpectedDmServerUrl, params->dm_server_url);
 }
 
+TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidDMTokenStorage) {
+  auto launcher = KeyRotationLauncher::Create(
+      nullptr, &fake_device_management_service_, test_shared_loader_factory_);
+
+  base::test::TestFuture<KeyRotationCommand::Status> future;
+  launcher->LaunchKeyRotation(kNonce, future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE);
+}
+
 TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidDMToken) {
   // Set the DM token to an invalid value (i.e. empty string).
   fake_dm_token_storage_.SetDMToken("");
 
-  bool callback_called;
-  launcher_->LaunchKeyRotation(
-      kNonce, base::BindLambdaForTesting(
-                  [&callback_called](KeyRotationCommand::Status status) {
-                    EXPECT_EQ(KeyRotationCommand::Status::FAILED, status);
-                    callback_called = true;
-                  }));
-  EXPECT_TRUE(callback_called);
+  base::test::TestFuture<KeyRotationCommand::Status> future;
+  launcher_->LaunchKeyRotation(kNonce, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN);
+}
+
+TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidManagementService) {
+  SetDMToken();
+
+  auto launcher = KeyRotationLauncher::Create(&fake_dm_token_storage_, nullptr,
+                                              test_shared_loader_factory_);
+
+  base::test::TestFuture<KeyRotationCommand::Status> future;
+  launcher->LaunchKeyRotation(kNonce, future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE);
+}
+
+TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidCommand) {
+  SetDMToken();
+  scoped_command_factory_.ReturnInvalidCommand();
+
+  base::test::TestFuture<KeyRotationCommand::Status> future;
+  launcher_->LaunchKeyRotation(kNonce, future.GetCallback());
+
+  EXPECT_EQ(future.Get(), KeyRotationCommand::Status::FAILED_INVALID_COMMAND);
 }
 
 }  // namespace enterprise_connectors

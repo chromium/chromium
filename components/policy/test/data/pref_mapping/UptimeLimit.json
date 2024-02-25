@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "UptimeLimit": 86400
+        },
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "location": "local_state",
+            "value": 86400
+          }
+        }
+      },
+      {
+        "note": "Values are clamped to be at least 3,600.",
+        "policies": {
+          "UptimeLimit": 1200
+        },
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "location": "local_state",
+            "value": 3600
+          }
+        }
+      }
+    ]
+  }
+]

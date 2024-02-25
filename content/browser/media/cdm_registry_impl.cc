@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/key_system_support_android.h"
+#include "media/base/android/media_drm_bridge.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -125,12 +126,12 @@ bool IsEnabled(CdmInfo::Status status) {
 // Returns a CdmCapability with codecs specified on command line. Returns null
 // if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
 // codecs specified.
-absl::optional<media::CdmCapability>
+std::optional<media::CdmCapability>
 GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line || !command_line->HasSwitch(
                            switches::kOverrideHardwareSecureCodecsForTesting)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto overridden_codecs_string = command_line->GetSwitchValueASCII(
@@ -181,7 +182,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 
   if (video_codecs.empty()) {
     DVLOG(1) << "No codec codec specified on command line";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Overridden codecs assume CENC and temporary session support.
@@ -204,6 +205,13 @@ bool IsGpuHardwareCompositionDisabled() {
   auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
   return gpu_data_manager->IsGpuCompositingDisabled() ||
          !gpu_data_manager->GetGPUInfo().overlay_info.direct_composition;
+}
+
+bool IsGpuSoftwareEmulated() {
+  auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  const bool is_gpu_software_emulated =
+      gpu_data_manager->GetGPUInfo().active_gpu().IsSoftwareRenderer();
+  return is_gpu_software_emulated;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -348,7 +356,7 @@ void CdmRegistryImpl::ObserveKeySystemCapabilities(
   FinalizeKeySystemCapabilities();
 }
 
-std::pair<absl::optional<media::CdmCapability>, CdmInfo::Status>
+std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
 CdmRegistryImpl::GetCapability(const std::string& key_system,
                                CdmInfo::Robustness robustness) {
   DVLOG(2) << __func__ << ": key_system=" << key_system
@@ -359,12 +367,12 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kLacrosUseChromeosProtectedMedia)) {
-      return {absl::nullopt, Status::kHardwareSecureDecryptionDisabled};
+      return {std::nullopt, Status::kHardwareSecureDecryptionDisabled};
     }
 #elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
     if (!media::IsHardwareSecureDecryptionEnabled()) {
       DVLOG(1) << "Hardware secure decryption disabled";
-      return {absl::nullopt, Status::kHardwareSecureDecryptionDisabled};
+      return {std::nullopt, Status::kHardwareSecureDecryptionDisabled};
     }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
@@ -385,18 +393,28 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
         command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
       DVLOG(1) << "Hardware security not supported because accelerated video "
                   "decode disabled";
-      return {absl::nullopt, Status::kAcceleratedVideoDecodeDisabled};
+      return {std::nullopt, Status::kAcceleratedVideoDecodeDisabled};
     }
 
 #if BUILDFLAG(IS_WIN)
     if (IsMediaFoundationHardwareSecurityDisabledByGpuFeature()) {
       DVLOG(1) << "Hardware security not supported: GPU workarounds";
-      return {absl::nullopt, Status::kGpuFeatureDisabled};
+      return {std::nullopt, Status::kGpuFeatureDisabled};
     }
 
     if (IsGpuHardwareCompositionDisabled()) {
       DVLOG(1) << "Hardware security not supported: GPU composition disabled";
-      return {absl::nullopt, Status::kGpuCompositionDisabled};
+      return {std::nullopt, Status::kGpuCompositionDisabled};
+    }
+
+    // Due to the bugs (crbug.com/41496376 and crbug.com/41497095),
+    // `disable_media_foundation_hardware_security` workaround flag cannot be
+    // enabled for the vendor ID 0x0000 and 0x1414. All software emulated GPUs
+    // are considered as disabled for the media foundation hardware security.
+    if (IsGpuSoftwareEmulated()) {
+      DVLOG(1)
+          << "Hardware security not supported: software emulated GPU enabled";
+      return {std::nullopt, Status::kDisabledBySoftwareEmulatedGpu};
     }
 #endif  // BUILDFLAG(IS_WIN)
   }
@@ -405,7 +423,7 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
   if (!cdm_info) {
     DVLOG(1) << "No " << robustness << " decryption CDM registered for "
              << key_system;
-    return {absl::nullopt, Status::kEnabled};
+    return {std::nullopt, Status::kEnabled};
   }
 
   DCHECK(!(cdm_info->status == Status::kUninitialized && cdm_info->capability))
@@ -415,7 +433,7 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
   return {cdm_info->capability, cdm_info->status};
 }
 
-std::pair<absl::optional<media::CdmCapability>, CdmInfo::Status>
+std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
 CdmRegistryImpl::GetFinalCapability(const std::string& key_system,
                                     CdmInfo::Robustness robustness) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -423,7 +441,7 @@ CdmRegistryImpl::GetFinalCapability(const std::string& key_system,
   const auto [capability, status] = GetCapability(key_system, robustness);
   DCHECK(status != CdmInfo::Status::kUninitialized);
 
-  return {IsEnabled(status) ? capability : absl::nullopt, status};
+  return {IsEnabled(status) ? capability : std::nullopt, status};
 }
 
 void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
@@ -511,19 +529,19 @@ void CdmRegistryImpl::LazyInitializeCapability(
                                            std::move(cdm_capability_cb));
   } else {
     // kSoftwareSecure should have been determined from the manifest.
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
   }
 #elif BUILDFLAG(IS_ANDROID)
   GetAndroidCdmCapability(key_system, robustness, std::move(cdm_capability_cb));
 #else
-  std::move(cdm_capability_cb).Run(absl::nullopt);
+  std::move(cdm_capability_cb).Run(std::nullopt);
 #endif
 }
 
 void CdmRegistryImpl::OnCapabilityInitialized(
     const std::string& key_system,
     const CdmInfo::Robustness robustness,
-    absl::optional<media::CdmCapability> cdm_capability) {
+    std::optional<media::CdmCapability> cdm_capability) {
   DVLOG(1) << __func__ << ": key_system=" << key_system
            << ", robustness=" << robustness
            << ", cdm_capability=" << (cdm_capability ? "yes" : "no");
@@ -541,7 +559,7 @@ void CdmRegistryImpl::OnCapabilityInitialized(
 void CdmRegistryImpl::FinalizeCapability(
     const std::string& key_system,
     const CdmInfo::Robustness robustness,
-    absl::optional<media::CdmCapability> cdm_capability,
+    std::optional<media::CdmCapability> cdm_capability,
     CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -568,6 +586,13 @@ void CdmRegistryImpl::FinalizeCapability(
 
   itr->status = status;
   itr->capability = cdm_capability;
+#if BUILDFLAG(IS_ANDROID)
+  // Querying for the CDM version requires creating a MediaDrm object, so
+  // delaying it until the capability is determined.
+  // TODO(crbug.com/1478367): Once querying capabilities on Android is done in a
+  // separate process, include the version with the capabilities returned.
+  itr->version = media::MediaDrmBridge::GetVersion(key_system);
+#endif
 }
 
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {
@@ -610,7 +635,7 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
     std::tie(capability.sw_secure_capability, status) =
         GetFinalCapability(key_system, CdmInfo::Robustness::kSoftwareSecure);
     ReportSoftwareSecureCdmAvailableUMA(
-        key_system, capability.sw_secure_capability != absl::nullopt);
+        key_system, capability.sw_secure_capability != std::nullopt);
 
     // Hardware secure capability.
     std::tie(capability.hw_secure_capability, status) =

@@ -1,0 +1,47 @@
+{% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+
+#include <ostream>
+
+namespace blink {
+
+#if DCHECK_IS_ON()
+{% for enum in enums %}
+{% if not enum.set_type %}
+std::ostream& operator<<(std::ostream& o, const {{enum.type_name}} v) {
+  switch (v) {
+  {% for value in enum.values %}
+   case {{enum.type_name}}::{{value}}:
+    o << "{{enum.keywords[loop.index0]}}";
+    break;
+  {% endfor %}
+  }
+  return o;
+}
+
+{% elif enum.set_type == 'multi' %}
+std::ostream& operator<<(std::ostream& o, const {{enum.type_name}} v) {
+  {% for value in enum.values %}
+  {% if loop.first %}
+  if (v == {{enum.type_name}}::{{value}}) {
+    return o << "{{enum.keywords[loop.index0]}}";
+  }
+  {% else %}
+  if ((v & {{enum.type_name}}::{{value}}) == {{enum.type_name}}::{{value}}) {
+    o << "{{enum.keywords[loop.index0]}} ";
+  }
+  {% endif %}
+  {% endfor %}
+  return o;
+}
+
+{% endif %}
+{% endfor %}
+#endif
+
+}  // namespace blink
+

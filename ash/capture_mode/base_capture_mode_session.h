@@ -164,18 +164,18 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // if the window is in overview session.
   gfx::Rect GetSelectedWindowTargetBounds() const;
 
-  const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
+  const raw_ptr<CaptureModeController> controller_;
 
   // The currently active capture mode behavior for this session which will be
   // used to configure capture mode session differently with different modes.
-  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
+  const raw_ptr<CaptureModeBehavior> active_behavior_;
 
   // Indicates whether this is a regular (real) session or a null session.
   const SessionType session_type_;
 
   // The current root window on which the capture session is active, which may
   // change if the user warps the cursor to another display in some situations.
-  raw_ptr<aura::Window, ExperimentalAsh> current_root_;
+  raw_ptr<aura::Window> current_root_;
 
   // Whether pressing the escape key can exit the session. This is used when we
   // find capturable content at the end of the 3-second count down, but we need

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
@@ -61,8 +62,8 @@ blink::WebSandboxSupport* PpapiBlinkPlatformImpl::GetSandboxSupport() {
 #endif
 }
 
-uint64_t PpapiBlinkPlatformImpl::VisitedLinkHash(const char* canonical_url,
-                                                 size_t length) {
+uint64_t PpapiBlinkPlatformImpl::VisitedLinkHash(
+    std::string_view canonical_url) {
   NOTREACHED();
   return 0;
 }

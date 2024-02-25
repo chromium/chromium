@@ -1,0 +1,22 @@
+
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
+<translationbundle lang="de">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing ist eine KI-Suchmaschine, betrieben von GPT-4</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Blockieren Sie Werbung und Tracker, während Sie im Internet surfen.</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Pflanze Bäume beim Surfen. Über 200 Millionen Bäume gepflanzt.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Mit der meistgenutzten Suchmaschine der Welt findest du alles, was du brauchst.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Schnelle und einfache Suche</translation>
+  <translation id="IDS_METAGER_SEARCH_DESCRIPTION">Sicher suchen und finden unter Wahrung der Privatsphäre.</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Unabhängig, europäisch, no-Tracking-Suchmaschine</translation>
+  <translation id="IDS_NONA_SEARCH_DESCRIPTION">Eine Suchmaschine aus Deutschland, bei der Du an erster Stelle stehst.</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Ihre Suchen reinigen unsere Meere und Strände von Plastik.</translation>
+  <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Suche mit Panda und unterstütze Projekte und Kampagnen des WWF.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Eine Suchmaschine, die Ihre Privatsphäre schützt.</translation>
+  <translation id="IDS_QUENDU_SEARCH_DESCRIPTION">Eine Suchmaschine für pragmatische Menschen</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Schnelle und sichere Suche nach Websites, Bildern und Videos</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Websuchmaschine mit der Zielsetzung Anzeigeneinnahmen mit den Urhebern zu teilen.</translation>
+</translationbundle>

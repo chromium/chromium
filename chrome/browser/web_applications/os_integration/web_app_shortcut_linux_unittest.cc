@@ -29,9 +29,9 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -845,7 +845,7 @@ TEST_F(WebAppShortcutLinuxTest, UpdateDesktopShortcuts) {
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
 
   UpdateDesktopShortcuts(&env, *shortcut_info,
-                         /*user_specified_locations=*/absl::nullopt);
+                         /*user_specified_locations=*/std::nullopt);
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu

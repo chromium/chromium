@@ -56,10 +56,6 @@ class ASH_EXPORT TabletModeMultitaskCueController
   // observers related to its parent window.
   void DismissCue();
 
-  // Resets the position of the cue back to the top of `window_` if the cue is
-  // still visible.
-  void ResetPosition();
-
   // If the cue is visible, checks to see if it is on the same window as the
   // multitask menu, and shows it on the correct window if not.
   void OnMenuOpened(aura::Window* active_window);
@@ -85,6 +81,10 @@ class ASH_EXPORT TabletModeMultitaskCueController
     return &nudge_controller_;
   }
 
+  void set_pre_cue_shown_callback_for_test(base::OnceClosure callback) {
+    pre_cue_shown_callback_for_test_ = std::move(callback);
+  }
+
  private:
   friend class TabletModeMultitaskMenu;
   FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuTest,
@@ -99,7 +99,7 @@ class ASH_EXPORT TabletModeMultitaskCueController
   void OnTimerFinished();
 
   // The app window that the cue is associated with.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // Handles showing the educational nudge for the tablet multitask menu.
   chromeos::MultitaskMenuNudgeController nudge_controller_;
@@ -113,6 +113,10 @@ class ASH_EXPORT TabletModeMultitaskCueController
 
   // Dismisses the cue after a short amount of time if it is still active.
   base::OneShotTimer cue_dismiss_timer_;
+
+  // If set, will be called after all checks have been passed but before the cue
+  // is initialized.
+  base::OnceClosure pre_cue_shown_callback_for_test_;
 };
 
 }  // namespace ash

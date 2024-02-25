@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
-#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.pb.h"
@@ -32,7 +31,7 @@ constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
 
 }  // namespace
 
-RankerManager::RankerManager(Profile* profile, SearchController* controller) {
+RankerManager::RankerManager(Profile* profile) {
   // Score normalization parameters:
   ScoreNormalizer::Params score_normalizer_params;
   // Change this version number when changing the number of bins below.
@@ -103,8 +102,9 @@ RankerManager::RankerManager(Profile* profile, SearchController* controller) {
       PersistentProto<MrfuCacheProto>(
           state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
 
-  // TODO(b/274921356): Temporarly comment out the `KeywordRanker` construction to avoid any 
-  // possible crashes. Re-enable it when we make sure this problem has been fixed.
+  // TODO(b/274921356): Temporarily comment out the `KeywordRanker` construction
+  // to avoid any possible crashes. Re-enable it when we make sure this problem
+  // has been fixed.
   //
   // if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
   //   AddRanker(std::make_unique<KeywordRanker>());
@@ -120,10 +120,9 @@ RankerManager::RankerManager(Profile* profile, SearchController* controller) {
 RankerManager::~RankerManager() {}
 
 void RankerManager::Start(const std::u16string& query,
-                          ResultsMap& results,
                           CategoriesList& categories) {
   for (auto& ranker : rankers_) {
-    ranker->Start(query, results, categories);
+    ranker->Start(query, categories);
   }
 }
 

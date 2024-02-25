@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"someone@example.com" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="email"}, {value="someone@example.com"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"someone@example.com" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

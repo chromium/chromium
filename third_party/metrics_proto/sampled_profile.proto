@@ -12,6 +12,7 @@ option java_outer_classname = "SampledProfileProtos";
 package metrics;
 
 import "call_stack_profile.proto";
+import "device_state.proto";
 import "execution_context.proto";
 import "perf_data.proto";
 import "perf_stat.proto";
@@ -20,7 +21,7 @@ import "system_profile.proto";
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
-// Next tag: 21
+// Next tag: 23
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
@@ -140,4 +141,12 @@ message SampledProfile {
   // The percent of the time that runnable processes are delayed because the CPU
   // is unavailable, accumulated over 60 seconds.
   optional float psi_cpu_last_60s_pct = 17;
+
+  // The device thermal state when the profile was collected.
+  optional ThermalState thermal_state = 21;
+
+  // The operating system's advertised speed limit for CPUs in percent. Values
+  // below 100 indicate that the system is impairing processing power due to
+  // thermal management.
+  optional int32 cpu_speed_limit_percent = 22;
 }

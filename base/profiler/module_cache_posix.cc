@@ -7,10 +7,11 @@
 #include <dlfcn.h>
 #include <elf.h>
 
+#include <optional>
+
 #include "base/debug/elf_reader.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 extern "C" {
@@ -72,7 +73,7 @@ FilePath GetDebugBasenameForModule(const void* base_address,
   // Preferentially identify the library using its soname on Android. Libraries
   // mapped directly from apks have the apk filename in |dl_info.dli_fname|, and
   // this doesn't distinguish the particular library.
-  absl::optional<StringPiece> library_name =
+  std::optional<StringPiece> library_name =
       debug::ReadElfLibraryName(base_address);
   if (library_name)
     return FilePath(*library_name);

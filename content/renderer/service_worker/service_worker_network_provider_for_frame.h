@@ -45,7 +45,8 @@ class ServiceWorkerNetworkProviderForFrame final
   // Implements WebServiceWorkerNetworkProvider.
   void WillSendRequest(blink::WebURLRequest& request) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSubresourceLoaderFactory(
-      const blink::WebURLRequest& request) override;
+      const network::ResourceRequest& network_request,
+      bool is_from_origin_dirty_style_sheet) override;
   blink::mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       override;
   blink::mojom::ServiceWorkerFetchHandlerType GetFetchHandlerType() override;

@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/notifications/win/fake_notification_image_retainer.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util_win.h"
@@ -29,22 +29,22 @@ using message_center::RichNotificationData;
 namespace {
 
 const char kContextMenuLabel[] = "settings";
-const char kEncodedId[] = "0|0|Default|0|https://example.com/|notification_id";
+const char kEncodedId[] =
+    "0|0|Default|aumi|0|https://example.com/|notification_id";
 const char kNotificationId[] = "notification_id";
 const char16_t kNotificationTitle[] = u"My Title";
 const char16_t kNotificationMessage[] = u"My Message";
 const char kNotificationOrigin[] = "https://example.com";
 
 base::Time FixedTime() {
+  static constexpr base::Time::Exploded kTime = {.year = 1998,
+                                                 .month = 9,
+                                                 .day_of_month = 4,
+                                                 .hour = 1,
+                                                 .minute = 2,
+                                                 .second = 3};
   base::Time time;
-  base::Time::Exploded exploded = {0};
-  exploded.year = 1998;
-  exploded.month = 9;
-  exploded.day_of_month = 4;
-  exploded.hour = 1;
-  exploded.minute = 2;
-  exploded.second = 3;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kTime, &time));
   return time;
 }
 
@@ -97,7 +97,7 @@ TEST_F(NotificationTemplateBuilderTest, SimpleToast) {
   message_center::Notification notification = BuildNotification();
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -106,7 +106,7 @@ TEST_F(NotificationTemplateBuilderTest, SimpleToast) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -123,7 +123,7 @@ TEST_F(NotificationTemplateBuilderTest, Buttons) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -132,9 +132,9 @@ TEST_F(NotificationTemplateBuilderTest, Buttons) {
   </binding>
  </visual>
  <actions>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -153,7 +153,7 @@ TEST_F(NotificationTemplateBuilderTest, InlineReplies) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -163,9 +163,9 @@ TEST_F(NotificationTemplateBuilderTest, InlineReplies) {
  </visual>
  <actions>
   <input id="userResponse" type="text" placeHolderContent="Reply here"/>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -186,7 +186,7 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesDoubleInput) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -196,9 +196,9 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesDoubleInput) {
  </visual>
  <actions>
   <input id="userResponse" type="text" placeHolderContent="Reply here"/>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -217,7 +217,7 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesTextTypeNotFirst) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -227,9 +227,9 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesTextTypeNotFirst) {
  </visual>
  <actions>
   <input id="userResponse" type="text" placeHolderContent="Reply here"/>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button2" arguments="1|1|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -242,7 +242,7 @@ TEST_F(NotificationTemplateBuilderTest, Silent) {
   notification.set_silent(true);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -251,7 +251,7 @@ TEST_F(NotificationTemplateBuilderTest, Silent) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
  <audio silent="true"/>
 </toast>
@@ -269,7 +269,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteraction) {
   notification.set_never_timeout(true);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" scenario="reminder" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" scenario="reminder" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -278,8 +278,8 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteraction) {
   </binding>
  </visual>
  <actions>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -296,7 +296,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteractionSuppressed) {
   notification.set_never_timeout(true);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" duration="long" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" duration="long" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -305,7 +305,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteractionSuppressed) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -318,7 +318,7 @@ TEST_F(NotificationTemplateBuilderTest, NullTimestamp) {
   notification.set_timestamp(base::Time());
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -327,7 +327,7 @@ TEST_F(NotificationTemplateBuilderTest, NullTimestamp) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -341,8 +341,8 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
   // Disable overriding context menu label.
   SetContextMenuLabelForTesting(nullptr);
 
-  const wchar_t kExpectedXmlTemplate[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+  std::wstring expected_xml = base::StrCat(
+      {LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -351,15 +351,13 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
   </binding>
  </visual>
  <actions>
-  <action content="%ls" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content=")",
+       l10n_util::GetWideString(
+           IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME),
+       LR"(" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
-)";
-
-  std::wstring settings_msg = l10n_util::GetWideString(
-      IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME);
-  std::wstring expected_xml =
-      base::StringPrintf(kExpectedXmlTemplate, settings_msg.c_str());
+)"});
 
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, expected_xml));
 }
@@ -383,7 +381,7 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -395,8 +393,8 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
  </visual>
  <actions>
   <input id="userResponse" type="text" placeHolderContent="Reply here"/>
-  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|0|https://example.com/|notification_id" imageUri="c:\temp\img2.tmp"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" content="Button1" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id" imageUri="c:\temp\img2.tmp"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -410,7 +408,7 @@ TEST_F(NotificationTemplateBuilderTest, ContextMessage) {
   notification.set_context_message(u"context_message");
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -419,7 +417,7 @@ TEST_F(NotificationTemplateBuilderTest, ContextMessage) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -437,7 +435,7 @@ TEST_F(NotificationTemplateBuilderTest, ExtensionNoContextMessage) {
       GURL("chrome-extension://bfojpkhoiegeigfifhdnbeobmhlahdle/"));
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -445,7 +443,7 @@ TEST_F(NotificationTemplateBuilderTest, ExtensionNoContextMessage) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -460,7 +458,7 @@ TEST_F(NotificationTemplateBuilderTest, ProgressBar) {
   notification.set_progress(30);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -470,7 +468,7 @@ TEST_F(NotificationTemplateBuilderTest, ProgressBar) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -487,7 +485,7 @@ TEST_F(NotificationTemplateBuilderTest, ProgressBar_Indeterminate) {
   notification.set_progress(-1);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -497,7 +495,7 @@ TEST_F(NotificationTemplateBuilderTest, ProgressBar_Indeterminate) {
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -518,7 +516,7 @@ TEST_F(NotificationTemplateBuilderTest, ListEntries) {
   notification.set_items(items);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -531,7 +529,7 @@ title4 - message4
   </binding>
  </visual>
  <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -549,7 +547,7 @@ TEST_F(NotificationTemplateBuilderTest, NoSettings) {
       message_center::SettingsButtonHandler::NONE);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -579,7 +577,7 @@ TEST_F(NotificationTemplateBuilderTest, IncomingCallFromWebApp) {
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" scenario="incomingCall" useButtonStyle="true" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" scenario="incomingCall" useButtonStyle="true" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -588,9 +586,9 @@ TEST_F(NotificationTemplateBuilderTest, IncomingCallFromWebApp) {
   </binding>
  </visual>
  <actions>
-  <action activationType="foreground" hint-buttonStyle="Success" content="Acknowledge" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="background" hint-buttonStyle="Critical" content="Close" arguments="3|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" hint-buttonStyle="Success" content="Acknowledge" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="background" hint-buttonStyle="Critical" content="Close" arguments="3|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";
@@ -614,7 +612,7 @@ TEST_F(NotificationTemplateBuilderTest, IncomingCallFromNonInstalledOrigin) {
   // arguments being set. Thus, even if the action buttons have the
   // "hint-buttonStyle" argument set, it should not take effect.
   const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -623,9 +621,9 @@ TEST_F(NotificationTemplateBuilderTest, IncomingCallFromNonInstalledOrigin) {
   </binding>
  </visual>
  <actions>
-  <action activationType="foreground" hint-buttonStyle="Success" content="Acknowledge" arguments="1|0|0|Default|0|https://example.com/|notification_id"/>
-  <action activationType="background" hint-buttonStyle="Critical" content="Close" arguments="3|0|Default|0|https://example.com/|notification_id"/>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action activationType="foreground" hint-buttonStyle="Success" content="Acknowledge" arguments="1|0|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action activationType="background" hint-buttonStyle="Critical" content="Close" arguments="3|0|Default|aumi|0|https://example.com/|notification_id"/>
+  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
 )";

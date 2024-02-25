@@ -22,6 +22,10 @@ id<GREYMatcher> ReadingListItem(NSString* entryTitle);
 // Matcher for the currently visible Reading List item cell with a given title.
 id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle);
 
+// The cloud slash icon that appears for Reading List items that are only stored
+// in the local storage. Shown only for signed-in users.
+id<GREYMatcher> VisibleLocalItemIcon(NSString* title);
+
 // Opens the reading list.
 void OpenReadingList();
 

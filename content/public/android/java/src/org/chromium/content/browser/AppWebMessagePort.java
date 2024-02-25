@@ -13,11 +13,12 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.MessagePayload;
@@ -83,8 +84,7 @@ public class AppWebMessagePort implements MessagePort {
         // The |what| value for handleMessage.
         private static final int MESSAGE_RECEIVED = 1;
 
-        @NonNull
-        private final MessageCallback mMessageCallback;
+        @NonNull private final MessageCallback mMessageCallback;
 
         MessageHandler(@NonNull MessageCallback callback, @Nullable Handler handler) {
             super(handler == null ? Looper.getMainLooper() : handler.getLooper());
@@ -138,10 +138,12 @@ public class AppWebMessagePort implements MessagePort {
         }
         if (isClosed()) return;
         mClosed = true;
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeAppWebMessagePort == 0L) return;
-            AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeAppWebMessagePort == 0L) return;
+                    AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);
+                });
     }
 
     @Override
@@ -165,13 +167,18 @@ public class AppWebMessagePort implements MessagePort {
             throw new IllegalStateException("Port is already closed or transferred");
         }
         mStarted = true;
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeAppWebMessagePort == 0L) return;
-            mMessageHandler =
-                    messageCallback == null ? null : new MessageHandler(messageCallback, handler);
-            AppWebMessagePortJni.get().setShouldReceiveMessages(
-                    mNativeAppWebMessagePort, messageCallback != null);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeAppWebMessagePort == 0L) return;
+                    mMessageHandler =
+                            messageCallback == null
+                                    ? null
+                                    : new MessageHandler(messageCallback, handler);
+                    AppWebMessagePortJni.get()
+                            .setShouldReceiveMessages(
+                                    mNativeAppWebMessagePort, messageCallback != null);
+                });
     }
 
     @Override
@@ -198,11 +205,13 @@ public class AppWebMessagePort implements MessagePort {
             }
         }
         mStarted = true;
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeAppWebMessagePort == 0L) return;
-            AppWebMessagePortJni.get().postMessage(
-                    mNativeAppWebMessagePort, messagePayload, sentPorts);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeAppWebMessagePort == 0L) return;
+                    AppWebMessagePortJni.get()
+                            .postMessage(mNativeAppWebMessagePort, messagePayload, sentPorts);
+                });
     }
 
     /**
@@ -221,11 +230,13 @@ public class AppWebMessagePort implements MessagePort {
         try {
             if (mNativeAppWebMessagePort == 0L) return;
             Log.d(TAG, "AppWebMessagePort was not closed before finalization");
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                if (mNativeAppWebMessagePort == 0L) return;
-                mClosed = true;
-                AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (mNativeAppWebMessagePort == 0L) return;
+                        mClosed = true;
+                        AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);
+                    });
         } finally {
             super.finalize();
         }
@@ -280,9 +291,14 @@ public class AppWebMessagePort implements MessagePort {
     interface Natives {
         @NonNull
         AppWebMessagePort[] createPair();
-        void postMessage(long nativeAppWebMessagePort, MessagePayload messagePayload,
+
+        void postMessage(
+                long nativeAppWebMessagePort,
+                MessagePayload messagePayload,
                 MessagePort[] sentPorts);
+
         void setShouldReceiveMessages(long nativeAppWebMessagePort, boolean shouldReceiveMessage);
+
         void closeAndDestroy(long nativeAppWebMessagePort);
     }
 }

@@ -5,13 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
+
 (async function() {
   TestRunner.addResult(`Tests retainers view.
     - Number of retainers of an A object must be 2 (A itself and B).
     - When an object has just one retainer it must be expanded automatically until
       there's an object having two or more retainers.
     - Test the expansion of a long retainment chain is limited by a certain level.\n`);
-  await TestRunner.showPanel('heap_profiler');
+  await TestRunner.showPanel('heap-profiler');
 
   var instanceCount = 25;
   function createHeapSnapshot() {
@@ -99,7 +101,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            ProfilerModule.HeapSnapshotDataGrids.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {
@@ -170,7 +172,7 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            ProfilerModule.HeapSnapshotDataGrids.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {

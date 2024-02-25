@@ -181,3 +181,23 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
 ++++++++++++++UNKNOWN label='This should have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++++UNKNOWN label='This should have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++++UNKNOWN label='This should have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++++UNKNOWN label='This should have complementary role.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='This should have complementary role.'
+++++++++++++++UNKNOWN label='This should have complementary role.'

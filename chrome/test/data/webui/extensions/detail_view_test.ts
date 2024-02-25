@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
-import {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement, navigation, Page} from 'chrome://extensions/extensions.js';
+import type {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -291,7 +292,7 @@ suite('ExtensionDetailViewTest', function() {
     flush();
   });
 
-  test('ClickableElements', function() {
+  test('ClickableElements', async function() {
     const optionsUrl =
         'chrome-extension://' + extensionData.id + '/options.html';
     item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
@@ -317,37 +318,37 @@ suite('ExtensionDetailViewTest', function() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: extensionData.id});
     currentPage = null;
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-incognito')!.getLabel(),
         'setItemAllowedIncognito', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-on-file-urls')!.getLabel(),
         'setItemAllowedOnFileUrls', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#collect-errors')!.getLabel(),
         'setItemCollectsErrors', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.extensionsOptions, 'showItemOptionsPage', [extensionData]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#remove-extension')!, 'deleteItem',
         [extensionData.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#load-path > a[is=\'action-link\']')!,
         'showInFolder', [extensionData.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#warnings-reload-button')!,
         'reloadItem', [extensionData.id], Promise.resolve());
 
     // Terminate the extension so the reload button appears.
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#terminated-reload-button')!,
         'reloadItem', [extensionData.id], Promise.resolve());
   });
@@ -554,7 +555,7 @@ suite('ExtensionDetailViewTest', function() {
         ['service worker', 'background page', 'popup.html'], orderedListItems);
   });
 
-  test('ShowAccessRequestsInToolbar', function() {
+  test('ShowAccessRequestsInToolbar', async function() {
     const testIsVisible = isChildVisible.bind(null, item);
 
     const allSitesPermissions = {
@@ -580,7 +581,7 @@ suite('ExtensionDetailViewTest', function() {
                    .querySelector<ExtensionsToggleRowElement>(
                        '#show-access-requests-toggle')!.checked);
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#show-access-requests-toggle')!.getLabel(),
@@ -605,5 +606,26 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(!!safetyWarningText);
     assertTrue(isVisible(safetyWarningText));
     assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
+  });
+
+  test('PinnedToToolbar', async function() {
+    assertFalse(
+        isVisible(item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
+            '#pin-to-toolbar')));
+
+    item.set('data.pinnedToToolbar', true);
+    flush();
+    const itemPinnedToggle =
+        item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
+            '#pin-to-toolbar');
+    assertTrue(isVisible(itemPinnedToggle));
+    assertTrue(itemPinnedToggle!.checked);
+
+    await mockDelegate.testClickingCalls(
+        itemPinnedToggle!.getLabel(), 'setItemPinnedToToolbar',
+        [extensionData.id, false]);
+    flush();
+    assertTrue(isVisible(itemPinnedToggle));
+    assertFalse(itemPinnedToggle!.checked);
   });
 });

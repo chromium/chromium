@@ -22,6 +22,7 @@ source_set("diagnostics") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
+    "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
@@ -43,6 +44,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "diagnostics_api_browsertest.cc",
+    "diagnostics_api_v2_browsertest.cc",
     "fake_diagnostics_service.cc",
     "fake_diagnostics_service.h",
   ]
@@ -52,6 +54,8 @@ source_set("browser_tests") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/browser/chromeos/extensions/telemetry/api/routines:test_support",
+    "//chrome/test:test_support_ui",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
     "//extensions/common",

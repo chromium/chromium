@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Internals>Compositing"
 }
 team_email: "graphics-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456836
+}

@@ -61,7 +61,7 @@ COMPONENT_EXPORT(PRINT_BACKEND) ScopedIppPtr WrapIpp(ipp_t* ipp);
 
 // Returns a MediaColData object by extracting necessary fields from `db_entry`.
 COMPONENT_EXPORT(PRINT_BACKEND)
-absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry);
+std::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry);
 
 // Creates a new media-col-database entry from `data`.  The caller is
 // responsible for the returned memory.

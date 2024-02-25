@@ -1,0 +1,13 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='color'
+++AXHeading AXTitle='text size' AXValue=1
+++++AXStaticText AXValue='text size'
+++AXHeading AXTitle='text style' AXValue=2
+++++AXStaticText AXValue='text style'
+++AXGroup
+++++AXGroup AXSubrole=AXStrongStyleGroup
+++++++AXStaticText AXValue='strong'
+++AXStaticText AXValue='italic'
+++AXStaticText AXValue=' '
+++AXStaticText AXValue='bold'

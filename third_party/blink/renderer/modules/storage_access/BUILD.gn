@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("storage_access") {
+  sources = [
+    "document_storage_access.cc",
+    "document_storage_access.h",
+    "storage_access_handle.cc",
+    "storage_access_handle.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/modules/broadcastchannel",
+    "//third_party/blink/renderer/modules/cache_storage",
+    "//third_party/blink/renderer/modules/file_system_access",
+    "//third_party/blink/renderer/modules/indexeddb",
+    "//third_party/blink/renderer/modules/locks",
+    "//third_party/blink/renderer/modules/storage",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "storage_access_handle_test.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+}

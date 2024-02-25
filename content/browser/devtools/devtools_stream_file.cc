@@ -140,9 +140,7 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
   buffer.resize(size_got);
   last_read_pos_ = position + size_got;
   if (binary_) {
-    std::string encoded;
-    base::Base64Encode(buffer, &encoded);
-    buffer = std::move(encoded);
+    buffer = base::Base64Encode(buffer);
   }
   return size_got ? StatusSuccess : StatusEOF;
 }

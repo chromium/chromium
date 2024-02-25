@@ -13,8 +13,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 SmbShareFinder::SmbShareFinder(SmbProviderClient* client) : client_(client) {}
 SmbShareFinder::~SmbShareFinder() = default;
@@ -48,8 +47,8 @@ void SmbShareFinder::GatherSharesInNetwork(
   // discovery has been fully completed.
   InsertDiscoveryAndShareCallbacks(std::move(discovery_callback),
                                    std::move(shares_callback));
-  scanner_.FindHostsInNetwork(
-      base::BindOnce(&SmbShareFinder::OnHostsFound, AsWeakPtr()));
+  scanner_.FindHostsInNetwork(base::BindOnce(&SmbShareFinder::OnHostsFound,
+                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmbShareFinder::DiscoverHostsInNetwork(
@@ -77,8 +76,8 @@ void SmbShareFinder::DiscoverHostsInNetwork(
   // GatherSharesInNetwork has not been called yet or the previous host
   // discovery has been fully completed.
   InsertDiscoveryCallback(std::move(discovery_callback));
-  scanner_.FindHostsInNetwork(
-      base::BindOnce(&SmbShareFinder::OnHostsFound, AsWeakPtr()));
+  scanner_.FindHostsInNetwork(base::BindOnce(&SmbShareFinder::OnHostsFound,
+                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmbShareFinder::RegisterHostLocator(std::unique_ptr<HostLocator> locator) {
@@ -132,8 +131,8 @@ void SmbShareFinder::OnHostsFound(bool success, const HostMap& hosts) {
     const base::FilePath server_url(kSmbSchemePrefix + resolved_address);
 
     client_->GetShares(
-        server_url,
-        base::BindOnce(&SmbShareFinder::OnSharesFound, AsWeakPtr(), host_name));
+        server_url, base::BindOnce(&SmbShareFinder::OnSharesFound,
+                                   weak_ptr_factory_.GetWeakPtr(), host_name));
   }
 }
 
@@ -203,5 +202,4 @@ void SmbShareFinder::InsertDiscoveryCallback(
   discovery_callbacks_.push_back(std::move(discovery_callback));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

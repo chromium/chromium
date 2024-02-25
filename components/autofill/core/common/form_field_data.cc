@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 
 #include <algorithm>
+#include <optional>
 #include <tuple>
 
 #include "base/notreached.h"
@@ -14,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -92,13 +94,23 @@ bool ReadAsInt(base::PickleIterator* iter, T* target_value) {
 
 bool DeserializeSection1(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->label) &&
-         iter->ReadString16(&field_data->name) &&
-         iter->ReadString16(&field_data->value) &&
-         iter->ReadString(&field_data->form_control_type) &&
-         iter->ReadString(&field_data->autocomplete_attribute) &&
-         iter->ReadUInt64(&field_data->max_length) &&
-         iter->ReadBool(&field_data->is_autofilled);
+  std::string form_control_type;
+  bool success = iter->ReadString16(&field_data->label) &&
+                 iter->ReadString16(&field_data->name) &&
+                 iter->ReadString16(&field_data->value) &&
+                 iter->ReadString(&form_control_type) &&
+                 iter->ReadString(&field_data->autocomplete_attribute) &&
+                 iter->ReadUInt64(&field_data->max_length) &&
+                 iter->ReadBool(&field_data->is_autofilled);
+  if (success) {
+    // Form control types are serialized as strings for legacy reasons.
+    // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
+    // (de)serialize form control types? Remove it or migrate it to the enum
+    // values.
+    field_data->form_control_type = StringToFormControlTypeDiscouraged(
+        form_control_type, /*fallback=*/FormControlType::kInputText);
+  }
+  return success;
 }
 
 bool DeserializeSection5(base::PickleIterator* iter,
@@ -178,78 +190,16 @@ bool DeserializeSection11(base::PickleIterator* iter,
   return iter->ReadString16(&field_data->name_attribute);
 }
 
-// LabelInfo is used to implement that "a.label == b.label" can be weakened to
-// "a.label == b.label OR a certain feature is enabled and {a,b}.label_source !=
-// kLabelTag and a.label_source == b.label_source".
-// Beware of the StringPiece member and resulting lifetime issues. Deleted copy
-// and move ctors/operators to reduce risk potential.
-struct LabelInfo {
-  explicit LabelInfo(const FormFieldData& f)
-      : label(f.label), source(f.label_source) {}
-  LabelInfo(const LabelInfo&) = delete;
-  LabelInfo& operator=(const LabelInfo&) = delete;
-  LabelInfo(LabelInfo&&) = default;
-  LabelInfo& operator=(LabelInfo&&) = default;
-
-  bool operator==(const LabelInfo& that) const {
-    if (label == that.label)
-      return true;
-
-    // Feature |kAutofillSkipComparingInferredLabels| weakens equivalence of
-    // labels: two labels are equivalent if they were inferred from the same
-    // type of tag other than a LABEL tag.
-    // TODO(crbug.com/1211834): The experiment seems dead; remove?
-    return base::FeatureList::IsEnabled(
-               features::kAutofillSkipComparingInferredLabels) &&
-           source != FormFieldData::LabelSource::kLabelTag &&
-           source == that.source;
-  }
-
-  bool operator<(const LabelInfo& that) const { return label < that.label; }
-
-  base::StringPiece16 label;
-  FormFieldData::LabelSource source = FormFieldData::LabelSource::kLabelTag;
-};
-
-// CommonTuple(), SimilarityTuple(), DynamicIdentityTuple(), IdentityTuple()
-// return values should be used as temporaries only because they include a
-// StringPiece.
-
-auto CommonTuple(const FormFieldData& f) {
-  return std::tuple_cat(
-      std::make_tuple(LabelInfo(f)),
-      std::tie(f.name, f.name_attribute, f.id_attribute, f.form_control_type));
-}
-
-auto SimilarityTuple(const FormFieldData& f) {
-  return std::tuple_cat(CommonTuple(f),
-                        std::make_tuple(IsCheckable(f.check_status)));
-}
-
-auto DynamicIdentityTuple(const FormFieldData& f) {
-  return std::tuple_cat(CommonTuple(f), std::make_tuple(f.IsFocusable()));
-}
-
 auto IdentityTuple(const FormFieldData& f) {
-  // |unique_renderer_id| uniquely identifies the field, if and only if it is
-  // set; the other members compared below (excluding label_source) together
-  // uniquely identify the field as well.
   return std::tuple_cat(
-      SimilarityTuple(f),
-      std::tie(f.autocomplete_attribute, f.placeholder, f.max_length,
-               f.css_classes, f.is_focusable, f.should_autocomplete, f.role,
-               f.text_direction, f.options));
+      std::tie(f.label, f.name, f.name_attribute, f.id_attribute,
+               f.form_control_type, f.autocomplete_attribute, f.placeholder,
+               f.max_length, f.css_classes, f.is_focusable,
+               f.should_autocomplete, f.role, f.text_direction, f.options),
+      std::make_tuple(IsCheckable(f.check_status)));
 }
 
 }  // namespace
-
-bool operator==(const SelectOption& lhs, const SelectOption& rhs) {
-  return std::tie(lhs.value, lhs.content) == std::tie(rhs.value, rhs.content);
-}
-
-bool operator!=(const SelectOption& lhs, const SelectOption& rhs) {
-  return !(lhs == rhs);
-}
 
 Section Section::FromAutocomplete(Section::Autocomplete autocomplete) {
   Section section;
@@ -276,58 +226,16 @@ Section Section::FromFieldIdentifier(
   size_t generated_frame_id =
       frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
           .first->second;
-  section.value_ =
-      FieldIdentifier(base::UTF16ToUTF8(field.name), generated_frame_id,
-                      field.unique_renderer_id);
+  section.value_ = FieldIdentifier(base::UTF16ToUTF8(field.name),
+                                   generated_frame_id, field.renderer_id);
   return section;
 }
 
 Section::Section() = default;
+
 Section::Section(const Section& section) = default;
+
 Section::~Section() = default;
-
-bool operator==(const Section::Autocomplete& a,
-                const Section::Autocomplete& b) {
-  return std::tie(a.section, a.mode) == std::tie(b.section, b.mode);
-}
-
-bool operator!=(const Section::Autocomplete& a,
-                const Section::Autocomplete& b) {
-  return !(a == b);
-}
-
-bool operator<(const Section::Autocomplete& a, const Section::Autocomplete& b) {
-  return std::tie(a.section, a.mode) < std::tie(b.section, b.mode);
-}
-
-bool operator==(const Section::FieldIdentifier& a,
-                const Section::FieldIdentifier& b) {
-  return std::tie(a.field_name, a.local_frame_id, a.field_renderer_id) ==
-         std::tie(b.field_name, b.local_frame_id, b.field_renderer_id);
-}
-
-bool operator!=(const Section::FieldIdentifier& a,
-                const Section::FieldIdentifier& b) {
-  return !(a == b);
-}
-
-bool operator<(const Section::FieldIdentifier& a,
-               const Section::FieldIdentifier& b) {
-  return std::tie(a.field_name, a.local_frame_id, a.field_renderer_id) <
-         std::tie(b.field_name, b.local_frame_id, b.field_renderer_id);
-}
-
-bool operator==(const Section& a, const Section& b) {
-  return a.value_ == b.value_;
-}
-
-bool operator!=(const Section& a, const Section& b) {
-  return !(a == b);
-}
-
-bool operator<(const Section& a, const Section& b) {
-  return a.value_ < b.value_;
-}
 
 Section::operator bool() const {
   return !is_default();
@@ -346,7 +254,7 @@ bool Section::is_default() const {
 }
 
 std::string Section::ToString() const {
-  constexpr char kDefaultSection[] = "-default";
+  static constexpr char kDefaultSection[] = "-default";
 
   std::string section_name;
   if (const Autocomplete* autocomplete = absl::get_if<Autocomplete>(&value_)) {
@@ -354,11 +262,10 @@ std::string Section::ToString() const {
     // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
     // attribute values "section--shipping street-address" and "shipping
     // street-address" would have the same prefix.
-    section_name =
-        autocomplete->section +
-        (autocomplete->mode != HtmlFieldMode::kNone
-             ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete->mode))
-             : kDefaultSection);
+    section_name = autocomplete->section +
+                   (autocomplete->mode != HtmlFieldMode::kNone
+                        ? "-" + HtmlFieldModeToString(autocomplete->mode)
+                        : kDefaultSection);
   } else if (const FieldIdentifier* f =
                  absl::get_if<FieldIdentifier>(&value_)) {
     FieldIdentifier field_identifier = *f;
@@ -379,6 +286,10 @@ std::ostream& operator<<(std::ostream& os, const Section& section) {
   return os << section.ToString();
 }
 
+LogBuffer& operator<<(LogBuffer& buffer, FormControlType type) {
+  return buffer << FormControlTypeToString(type);
+}
+
 FormFieldData::FormFieldData() = default;
 
 FormFieldData::FormFieldData(const FormFieldData&) = default;
@@ -395,31 +306,26 @@ bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
   return IdentityTuple(*this) == IdentityTuple(field);
 }
 
-bool FormFieldData::SimilarFieldAs(const FormFieldData& field) const {
-  return SimilarityTuple(*this) == SimilarityTuple(field);
-}
-
-bool FormFieldData::DynamicallySameFieldAs(const FormFieldData& field) const {
-  return DynamicIdentityTuple(*this) == DynamicIdentityTuple(field);
-}
-
 bool FormFieldData::IsTextInputElement() const {
-  return form_control_type == "text" || form_control_type == "password" ||
-         form_control_type == "search" || form_control_type == "tel" ||
-         form_control_type == "url" || form_control_type == "email" ||
-         form_control_type == "number";
+  return form_control_type == FormControlType::kInputText ||
+         form_control_type == FormControlType::kInputPassword ||
+         form_control_type == FormControlType::kInputSearch ||
+         form_control_type == FormControlType::kInputTelephone ||
+         form_control_type == FormControlType::kInputUrl ||
+         form_control_type == FormControlType::kInputEmail ||
+         form_control_type == FormControlType::kInputNumber;
 }
 
 bool FormFieldData::IsPasswordInputElement() const {
-  return form_control_type == "password";
+  return form_control_type == FormControlType::kInputPassword;
 }
 
 bool FormFieldData::IsSelectElement() const {
-  return form_control_type == "select-one";
+  return form_control_type == FormControlType::kSelectOne;
 }
 
 bool FormFieldData::IsSelectListElement() const {
-  return form_control_type == "selectlist";
+  return form_control_type == FormControlType::kSelectList;
 }
 
 bool FormFieldData::IsSelectOrSelectListElement() const {
@@ -440,8 +346,70 @@ bool FormFieldData::WasPasswordAutofilled() const {
 
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
-  return a.unique_renderer_id == b.unique_renderer_id &&
-         IdentityTuple(a) == IdentityTuple(b);
+  return a.renderer_id == b.renderer_id && IdentityTuple(a) == IdentityTuple(b);
+}
+
+FormFieldData::FillData::FillData() = default;
+
+FormFieldData::FillData::~FillData() = default;
+
+FormFieldData::FillData::FillData(const FormFieldData& field)
+    : value(field.value),
+      renderer_id(field.renderer_id),
+      section(field.section),
+      is_autofilled(field.is_autofilled),
+      force_override(field.force_override) {}
+
+std::string_view FormControlTypeToString(FormControlType type) {
+  switch (type) {
+    case FormControlType::kContentEditable:
+      return "contenteditable";
+    case FormControlType::kInputCheckbox:
+      return "checkbox";
+    case FormControlType::kInputEmail:
+      return "email";
+    case FormControlType::kInputMonth:
+      return "month";
+    case FormControlType::kInputNumber:
+      return "number";
+    case FormControlType::kInputPassword:
+      return "password";
+    case FormControlType::kInputRadio:
+      return "radio";
+    case FormControlType::kInputSearch:
+      return "search";
+    case FormControlType::kInputTelephone:
+      return "tel";
+    case FormControlType::kInputText:
+      return "text";
+    case FormControlType::kInputUrl:
+      return "url";
+    case FormControlType::kSelectOne:
+      return "select-one";
+    case FormControlType::kSelectMultiple:
+      return "select-multiple";
+    case FormControlType::kSelectList:
+      return "selectlist";
+    case FormControlType::kTextArea:
+      return "textarea";
+  }
+  NOTREACHED_NORETURN();
+}
+
+FormControlType StringToFormControlTypeDiscouraged(
+    std::string_view type_string,
+    std::optional<FormControlType> fallback) {
+  for (auto i = base::to_underlying(FormControlType::kMinValue);
+       i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
+    FormControlType type = static_cast<FormControlType>(i);
+    if (type_string == autofill::FormControlTypeToString(type)) {
+      return type;
+    }
+  }
+  if (fallback) {
+    return *fallback;
+  }
+  NOTREACHED_NORETURN();
 }
 
 void SerializeFormFieldData(const FormFieldData& field_data,
@@ -450,7 +418,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString16(field_data.label);
   pickle->WriteString16(field_data.name);
   pickle->WriteString16(field_data.value);
-  pickle->WriteString(field_data.form_control_type);
+  pickle->WriteString(FormControlTypeToString(field_data.form_control_type));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
   pickle->WriteUInt64(field_data.max_length);
@@ -641,14 +609,13 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tag{"table"};
   buffer << Tr{} << "Name:" << field.name;
-  buffer << Tr{} << "Identifiers:"
-         << base::StrCat(
-                {"renderer id: ",
-                 base::NumberToString(field.unique_renderer_id.value()),
-                 ", host frame: ",
-                 field.renderer_form_id().frame_token.ToString(), " (",
-                 field.origin.Serialize(), "), host form renderer id: ",
-                 base::NumberToString(field.host_form_id.value())});
+  buffer
+      << Tr{} << "Identifiers:"
+      << base::StrCat(
+             {"renderer id: ", base::NumberToString(field.renderer_id.value()),
+              ", host frame: ", field.renderer_form_id().frame_token.ToString(),
+              " (", field.origin.Serialize(), "), host form renderer id: ",
+              base::NumberToString(field.host_form_id.value())});
   buffer << Tr{} << "Origin:" << field.origin.Serialize();
   buffer << Tr{} << "Name attribute:" << field.name_attribute;
   buffer << Tr{} << "Id attribute:" << field.id_attribute;

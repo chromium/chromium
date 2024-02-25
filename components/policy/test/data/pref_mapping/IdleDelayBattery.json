@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleDelayBattery": 600000
+        },
+        "prefs": {
+          "power.battery_idle_delay_ms": {
+            "value": 600000
+          }
+        }
+      }
+    ]
+  }
+]

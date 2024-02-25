@@ -40,6 +40,17 @@ MockPermissionRequest::MockPermissionRequest(
       cancelled_(false),
       finished_(false) {}
 
+MockPermissionRequest::MockPermissionRequest(
+    RequestType request_type,
+    bool embedded_permission_element_initiated)
+    : MockPermissionRequest(request_type,
+                            embedded_permission_element_initiated
+                                ? PermissionRequestGestureType::GESTURE
+                                : PermissionRequestGestureType::NO_GESTURE) {
+  SetEmbeddedPermissionElementInitiatedForTesting(
+      embedded_permission_element_initiated);
+}
+
 MockPermissionRequest::~MockPermissionRequest() {
   // TODO(crbug.com/1110905): `PermissionRequest` enforces that
   // `RequestFinished` is called before its destructor runs, but a lot of tests

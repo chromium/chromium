@@ -10,12 +10,12 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/safe_browsing/core/common/features.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -24,11 +24,10 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
@@ -36,14 +35,13 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 using password_manager::WarningType;
 
 @interface SafetyCheckCoordinator () <
     PasswordCheckupCoordinatorDelegate,
-    PasswordIssuesCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckNavigationCommands,
@@ -59,10 +57,6 @@ using password_manager::WarningType;
 @property(nonatomic, strong)
     PasswordCheckupCoordinator* passwordCheckupCoordinator;
 
-// Coordinator for passwords issues screen.
-@property(nonatomic, strong)
-    PasswordIssuesCoordinator* passwordIssuesCoordinator;
-
 // Dispatcher which can handle changing passwords on sites.
 @property(nonatomic, strong) id<ApplicationCommands> handler;
 
@@ -70,6 +64,9 @@ using password_manager::WarningType;
 // location).
 @property(nonatomic, strong)
     PrivacySafeBrowsingCoordinator* privacySafeBrowsingCoordinator;
+
+// Where in the app the Safety Check was requested from.
+@property(nonatomic, assign) password_manager::PasswordCheckReferrer referrer;
 
 // Popover view controller with error information.
 @property(nonatomic, strong)
@@ -81,15 +78,19 @@ using password_manager::WarningType;
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                            referrer:(password_manager::PasswordCheckReferrer)
+                                         referrer {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
     _handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                   ApplicationCommands);
+    _referrer = referrer;
   }
   return self;
 }
@@ -111,11 +112,13 @@ using password_manager::WarningType;
           self.browser->GetBrowserState());
   self.mediator = [[SafetyCheckMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+             localPrefService:GetApplicationContext()->GetLocalState()
          passwordCheckManager:passwordCheckManager
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
                   syncService:SyncServiceFactory::GetForBrowserState(
-                                  self.browser->GetBrowserState())];
+                                  self.browser->GetBrowserState())
+                     referrer:_referrer];
 
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
@@ -173,10 +176,8 @@ using password_manager::WarningType;
 
 #pragma mark - SafetyCheckNavigationCommands
 
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `passwordCheckupCoordinator`s at once.
 - (void)showPasswordCheckupPage {
-  CHECK(password_manager::features::IsPasswordCheckupEnabled());
+  DUMP_WILL_BE_CHECK(!self.passwordCheckupCoordinator);
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
@@ -185,18 +186,6 @@ using password_manager::WarningType;
                                            kSafetyCheck];
   self.passwordCheckupCoordinator.delegate = self;
   [self.passwordCheckupCoordinator start];
-}
-
-- (void)showPasswordIssuesPage {
-  CHECK(!password_manager::features::IsPasswordCheckupEnabled());
-  CHECK(!self.passwordIssuesCoordinator);
-  self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-            initForWarningType:WarningType::kCompromisedPasswordsWarning
-      baseNavigationController:self.baseNavigationController
-                       browser:self.browser];
-  self.passwordIssuesCoordinator.delegate = self;
-  self.passwordIssuesCoordinator.reauthModule = nil;
-  [self.passwordIssuesCoordinator start];
 }
 
 - (void)showErrorInfoFrom:(UIButton*)buttonView
@@ -272,16 +261,24 @@ using password_manager::WarningType;
   self.passwordCheckupCoordinator = nil;
 }
 
-// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
-// default.
-#pragma mark - PasswordIssuesCoordinatorDelegate
+#pragma mark - PasswordManagerReauthenticationDelegate
 
-- (void)passwordIssuesCoordinatorDidRemove:
-    (PasswordIssuesCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordIssuesCoordinator, coordinator);
-  [self.passwordIssuesCoordinator stop];
-  self.passwordIssuesCoordinator.delegate = nil;
-  self.passwordIssuesCoordinator = nil;
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  // Pop everything up to the Safety Check page.
+  // When there is content presented, don't animate the dismissal of the view
+  // controllers in the navigation controller to prevent revealing passwords
+  // when the presented content is the one covered by the reauthentication UI.
+  UINavigationController* navigationController = self.baseNavigationController;
+  UIViewController* topViewController = navigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+
+  [navigationController popToViewController:_viewController
+                                   animated:presentedViewController == nil];
+
+  [presentedViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate

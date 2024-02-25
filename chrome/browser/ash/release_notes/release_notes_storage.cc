@@ -28,7 +28,7 @@ namespace {
 // This stores the latest milestone with new Release Notes content. If the last
 // milestone the user has seen the notification is before this, a new
 // notification will be shown.
-constexpr int kLastChromeVersionWithReleaseNotes = 117;
+constexpr int kLastChromeVersionWithReleaseNotes = 122;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
@@ -117,10 +117,6 @@ void ReleaseNotesStorage::MarkNotificationShown() {
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {
-  if (!base::FeatureList::IsEnabled(features::kReleaseNotesSuggestionChip)) {
-    return false;
-  }
-
   const int times_left_to_show = profile_->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
   return times_left_to_show > 0;

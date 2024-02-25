@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/components/network/hotspot_util.h"
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ hotspot_config::mojom::WiFiBand ShillBandToMojom(
   if (shill_band == shill::kBandAll) {
     return WiFiBand::kAutoChoose;
   }
-  NOTREACHED() << "Unexpected shill tethering band: " << shill_band;
+  NET_LOG(ERROR) << "Unexpected shill tethering band: " << shill_band;
   return WiFiBand::kAutoChoose;
 }
 
@@ -53,10 +54,6 @@ std::string MojomSecurityToString(
   }
 }
 
-std::string HexEncode(const std::string& ssid) {
-  return base::HexEncode(ssid.c_str(), ssid.size());
-}
-
 std::string HexDecode(const std::string& hex_ssid) {
   std::string ssid;
   if (!base::HexStringToString(hex_ssid, &ssid)) {
@@ -71,7 +68,6 @@ std::string HexDecode(const std::string& hex_ssid) {
 hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     const std::string& shill_state) {
   using hotspot_config::mojom::HotspotState;
-
   if (shill_state == shill::kTetheringStateActive) {
     return HotspotState::kEnabled;
   }
@@ -80,7 +76,8 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     return HotspotState::kDisabled;
   }
 
-  if (shill_state == shill::kTetheringStateStarting) {
+  if (shill_state == shill::kTetheringStateStarting ||
+      shill_state == shill::kTetheringStateRestarting) {
     return HotspotState::kEnabling;
   }
 
@@ -88,7 +85,7 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     return HotspotState::kDisabling;
   }
 
-  NOTREACHED() << "Unexpected shill tethering state: " << shill_state;
+  NET_LOG(ERROR) << "Unexpected shill tethering state: " << shill_state;
   return HotspotState::kDisabled;
 }
 
@@ -117,7 +114,24 @@ hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
     return DisableReason::kUserInitiated;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected idle reason: " << idle_reason;
+  if (idle_reason == shill::kTetheringIdleReasonConfigChange) {
+    return DisableReason::kRestart;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUpstreamNoInternet) {
+    return DisableReason::kUpstreamNoInternet;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonDownstreamLinkDisconnect) {
+    return DisableReason::kDownstreamLinkDisconnect;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonDownstreamNetworkDisconnect) {
+    return DisableReason::kDownstreamNetworkDisconnect;
+  }
+
+  NET_LOG(ERROR) << "Unexpected idle reason: " << idle_reason;
+  return DisableReason::kInternalError;
 }
 
 hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
@@ -134,7 +148,8 @@ hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
     return WiFiSecurityMode::kWpa2Wpa3;
   }
 
-  NOTREACHED() << "Unexpeted shill tethering security mode: " << shill_security;
+  NET_LOG(ERROR) << "Unexpeted shill tethering security mode: "
+                 << shill_security;
   return WiFiSecurityMode::kWpa2;
 }
 
@@ -143,7 +158,7 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   using hotspot_config::mojom::HotspotConfig;
 
   auto result = HotspotConfig::New();
-  absl::optional<bool> auto_disable =
+  std::optional<bool> auto_disable =
       shill_tethering_config.FindBool(shill::kTetheringConfAutoDisableProperty);
   if (!auto_disable) {
     NET_LOG(ERROR) << "Auto_disable not found in tethering config.";
@@ -179,7 +194,7 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
     NET_LOG(ERROR) << "Passphrase not found in tethering config.";
   }
   result->passphrase = passphrase ? *passphrase : std::string();
-  absl::optional<bool> bssid_randomization =
+  std::optional<bool> bssid_randomization =
       shill_tethering_config.FindBool(shill::kTetheringConfMARProperty);
   if (!bssid_randomization) {
     NET_LOG(ERROR) << shill::kTetheringConfMARProperty
@@ -202,7 +217,8 @@ base::Value::Dict MojomConfigToShillConfig(
              MojomBandToString(mojom_config->band));
   result.Set(shill::kTetheringConfSecurityProperty,
              MojomSecurityToString(mojom_config->security));
-  result.Set(shill::kTetheringConfSSIDProperty, HexEncode(mojom_config->ssid));
+  result.Set(shill::kTetheringConfSSIDProperty,
+             base::HexEncode(mojom_config->ssid));
   result.Set(shill::kTetheringConfPassphraseProperty, mojom_config->passphrase);
   result.Set(shill::kTetheringConfMARProperty,
              mojom_config->bssid_randomization);

@@ -27,9 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 
-/**
- * Tests for the "Save Passwords" settings screen.
- */
+/** Tests for the "Save Passwords" settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -58,6 +56,7 @@ public class ReauthenticationManagerTest {
     /**
      * Prepares a dummy Intent to pass to PasswordReauthenticationFragment as a fake result of the
      * reauthentication screen.
+     *
      * @return The dummy Intent.
      */
     private Intent prepareDummyDataForActivityResult() {
@@ -73,13 +72,17 @@ public class ReauthenticationManagerTest {
     @Test
     public void testDisplayReauthenticationFragment_Passed() {
         ReauthenticationManager.resetLastReauth();
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
 
         ReauthenticationManager.displayReauthenticationFragment(
-                R.string.lockscreen_description_view, View.NO_ID, mFragmentManager,
+                R.string.lockscreen_description_view,
+                View.NO_ID,
+                mFragmentManager,
                 ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
         Fragment reauthFragment =
                 mFragmentManager.findFragmentByTag(ReauthenticationManager.FRAGMENT_TAG);
@@ -87,11 +90,13 @@ public class ReauthenticationManagerTest {
 
         reauthFragment.onActivityResult(
                 PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE,
-                Activity.RESULT_OK, prepareDummyDataForActivityResult());
+                Activity.RESULT_OK,
+                prepareDummyDataForActivityResult());
         mFragmentManager.executePendingTransactions();
 
-        assertTrue(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertTrue(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
     }
 
     /**
@@ -101,13 +106,17 @@ public class ReauthenticationManagerTest {
     @Test
     public void testDisplayReauthenticationFragment_Failed() {
         ReauthenticationManager.resetLastReauth();
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
 
         ReauthenticationManager.displayReauthenticationFragment(
-                R.string.lockscreen_description_view, View.NO_ID, mFragmentManager,
+                R.string.lockscreen_description_view,
+                View.NO_ID,
+                mFragmentManager,
                 ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
         Fragment reauthFragment =
                 mFragmentManager.findFragmentByTag(ReauthenticationManager.FRAGMENT_TAG);
@@ -115,13 +124,16 @@ public class ReauthenticationManagerTest {
 
         reauthFragment.onActivityResult(
                 PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE,
-                Activity.RESULT_CANCELED, prepareDummyDataForActivityResult());
+                Activity.RESULT_CANCELED,
+                prepareDummyDataForActivityResult());
         mFragmentManager.executePendingTransactions();
 
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
     }
 
     /**
@@ -131,13 +143,17 @@ public class ReauthenticationManagerTest {
     @Test
     public void testDisplayReauthenticationFragment_OneAtATimeCovered() {
         ReauthenticationManager.resetLastReauth();
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
 
         ReauthenticationManager.displayReauthenticationFragment(
-                R.string.lockscreen_description_export, View.NO_ID, mFragmentManager,
+                R.string.lockscreen_description_export,
+                View.NO_ID,
+                mFragmentManager,
                 ReauthenticationManager.ReauthScope.BULK);
         Fragment reauthFragment =
                 mFragmentManager.findFragmentByTag(ReauthenticationManager.FRAGMENT_TAG);
@@ -145,14 +161,17 @@ public class ReauthenticationManagerTest {
 
         reauthFragment.onActivityResult(
                 PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE,
-                Activity.RESULT_OK, prepareDummyDataForActivityResult());
+                Activity.RESULT_OK,
+                prepareDummyDataForActivityResult());
         mFragmentManager.executePendingTransactions();
 
         // Both BULK and ONE_AT_A_TIME scopes should be covered by the BULK request above.
-        assertTrue(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertTrue(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertTrue(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertTrue(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
     }
 
     /**
@@ -162,13 +181,17 @@ public class ReauthenticationManagerTest {
     @Test
     public void testDisplayReauthenticationFragment_BulkNotCovered() {
         ReauthenticationManager.resetLastReauth();
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
 
         ReauthenticationManager.displayReauthenticationFragment(
-                R.string.lockscreen_description_view, View.NO_ID, mFragmentManager,
+                R.string.lockscreen_description_view,
+                View.NO_ID,
+                mFragmentManager,
                 ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
         Fragment reauthFragment =
                 mFragmentManager.findFragmentByTag(ReauthenticationManager.FRAGMENT_TAG);
@@ -176,13 +199,16 @@ public class ReauthenticationManagerTest {
 
         reauthFragment.onActivityResult(
                 PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE,
-                Activity.RESULT_OK, prepareDummyDataForActivityResult());
+                Activity.RESULT_OK,
+                prepareDummyDataForActivityResult());
         mFragmentManager.executePendingTransactions();
 
         // Only ONE_AT_A_TIME scope should be covered by the ONE_AT_A_TIME request above.
-        assertTrue(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
-        assertFalse(ReauthenticationManager.authenticationStillValid(
-                ReauthenticationManager.ReauthScope.BULK));
+        assertTrue(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME));
+        assertFalse(
+                ReauthenticationManager.authenticationStillValid(
+                        ReauthenticationManager.ReauthScope.BULK));
     }
 }

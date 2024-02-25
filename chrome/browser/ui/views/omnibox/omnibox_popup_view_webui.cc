@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -27,7 +28,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/closure_animation_observer.h"
@@ -65,7 +65,9 @@ void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  handler()->UpdateSelection(new_selection);
+  if (RealboxHandler* handler = presenter_->GetHandler()) {
+    handler->UpdateSelection(old_selection, new_selection);
+  }
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
@@ -76,7 +78,8 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
     base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
   }
 
-  if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
+  if (controller()->autocomplete_controller()->result().empty() ||
+      omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {
     presenter_->Show();
@@ -104,8 +107,4 @@ void OmniboxPopupViewWebUI::AddPopupAccessibleNodeData(
 std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
     size_t line) {
   return u"";
-}
-
-RealboxHandler* OmniboxPopupViewWebUI::handler() const {
-  return presenter_->GetHandler();
 }

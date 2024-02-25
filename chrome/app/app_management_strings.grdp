@@ -19,6 +19,9 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSIONS" desc="Label for permissions section in the app settings page.">
     Permissions
   </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSIONS_WITH_ORIGIN" desc="Label for permissions section in the app settings page. Shows URL of the app where permissions are applied.">
+    Permissions (<ph name="FORMATTED_ORIGIN">$1<ex>foo.com</ex></ph>)
+  </message>
   <message name="IDS_APP_MANAGEMENT_MORE_SETTINGS" desc="Label for a link to more settings and permissions for an app.">
     More settings and permissions
   </message>
@@ -109,8 +112,8 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
     App details
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM" desc="Text for ChromeOS System app tooltip">
-    This app is preinstalled on your device
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_WEB_A11Y" desc="Text to be read out by ChromeVox, when highlighting an info icon for Web Apps downloaded from the Chrome browser, stating the source URL of the app">
+    From <ph name="APP_URL">$1<ex>https://google.com</ex></ph>
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
     Android App
@@ -136,6 +139,9 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
     <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP" desc="Explanation text for the installation source of an app, describing the type of the app, and that it came automatically installed with the device (preinstalled).">
+    <ph name="APP_TYPE">$1<ex>ChromeOS System App</ex></ph> preinstalled on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+  </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
     Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
   </message>
@@ -147,6 +153,9 @@
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE" desc="Text for data size label for the amount of storage the app's associated files is using">
     Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL" desc="The label for the settings row button to manage app language selection section of OS Settings which opens a dialog.">
+    App language
   </message>
   <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions for an app.">
     Manage permissions
@@ -213,8 +222,18 @@
     Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for its installed and streamed apps.
   </message>
 
-  <message name="IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app.">
-    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for this app.
+  <message name="IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app. The 'Manage' link takes the user to the parent app's settings page where they can change the permissions.">
+    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for this app. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Manage<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
+  <!-- App Content, Scope Extensions -->
+  <message name="IDS_APP_MANAGEMENT_APP_CONTENT_TITLE" desc="Label for App content section in the app settings page.">
+    App Content
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_CONTENT_SUBTITLE" desc="Sub-label for App content section in the app settings page.">
+    This app contains web content from other sites
+  </message>
+   <message name="IDS_APP_MANAGEMENT_APP_CONTENT_DIALOG_SUBTITLE" desc="Sub-label for App content dialog in the app settings page.">
+    This app contains web content from
+  </message>
 </grit-part>

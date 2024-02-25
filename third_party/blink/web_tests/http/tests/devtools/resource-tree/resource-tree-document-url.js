@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that resources have proper documentURL set in the tree model.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   TestRunner.resourceTreeModel.addEventListener(SDK.ResourceTreeModel.Events.FrameNavigated, waitForResources);

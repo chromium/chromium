@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_TAGS_H_
 #define MEDIA_FORMATS_HLS_TAGS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 
@@ -47,7 +47,7 @@ struct MEDIA_EXPORT XDefineTag {
 
   // The value of the variable. If this is `nullopt`, then the value
   // is being IMPORT-ed and must be defined in the parent playlist.
-  absl::optional<base::StringPiece> value;
+  std::optional<base::StringPiece> value;
 };
 
 // Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
@@ -97,22 +97,22 @@ struct MEDIA_EXPORT XMediaTag {
   // of any associated variants, and the absence of this value for `kAudio`
   // indicates that the media data is included in every video rendition of any
   // associated variants.
-  absl::optional<ResolvedSourceString> uri;
+  std::optional<ResolvedSourceString> uri;
 
   // For renditions with type `kClosedCaptions`, this specifies a rendition
   // within the segments of an associated media playlist. For all other types
   // this will be empty.
-  absl::optional<types::InstreamId> instream_id;
+  std::optional<types::InstreamId> instream_id;
 
   // Indicates the group to which this rendition belongs.
   ResolvedSourceString group_id;
 
   // This identifies the primary language used in the rendition.
-  absl::optional<ResolvedSourceString> language;
+  std::optional<ResolvedSourceString> language;
 
   // This identifies a language that is associated with the rendition, in a
   // different role than `language`.
-  absl::optional<ResolvedSourceString> associated_language;
+  std::optional<ResolvedSourceString> associated_language;
 
   // A human-readable description of this rendition.
   ResolvedSourceString name;
@@ -120,7 +120,7 @@ struct MEDIA_EXPORT XMediaTag {
   // A stable identifier for the URI of this rendition within a multivariant
   // playlist. All renditions with the same URI SHOULD use the same
   // stable-rendition-id.
-  absl::optional<types::StableId> stable_rendition_id;
+  std::optional<types::StableId> stable_rendition_id;
 
   // Indicates whether the client should play this rendition in the absence of
   // information from the user indicating a different choice.
@@ -141,7 +141,7 @@ struct MEDIA_EXPORT XMediaTag {
   // Contains channel information for this rendition. The only type with channel
   // information currently defined is `kAudio`, others are ignored for
   // forward-compatibility.
-  absl::optional<types::AudioChannels> channels;
+  std::optional<types::AudioChannels> channels;
 };
 
 // Represents the contents of the #EXT-X-STREAM-INF tag
@@ -165,12 +165,12 @@ struct MEDIA_EXPORT XStreamInfTag {
 
   // The average segment bitrate of the stream this tag applies to, in bits per
   // second.
-  absl::optional<types::DecimalInteger> average_bandwidth;
+  std::optional<types::DecimalInteger> average_bandwidth;
 
   // An abstract, relative measure of the quality-of-experience of the stream
   // this tag applies to. The determination of this number is up to the playlist
   // author, however higher scores must indicate a better playback experience.
-  absl::optional<types::DecimalFloatingPoint> score;
+  std::optional<types::DecimalFloatingPoint> score;
 
   // A list of formats, where each format specifies a media
   // sample type that is present is one or more renditions of the variant stream
@@ -178,22 +178,22 @@ struct MEDIA_EXPORT XStreamInfTag {
   // every instance of this tag, but in practice it's not. It's represented as
   // optional here so that the caller may decide how they wish to handle its
   // absence.
-  absl::optional<std::vector<std::string>> codecs;
+  std::optional<std::vector<std::string>> codecs;
 
   // The optimal pixel resolution at which to display all video in this variant
   // stream.
-  absl::optional<types::DecimalResolution> resolution;
+  std::optional<types::DecimalResolution> resolution;
 
   // This describes the maximum framerate for all video in this variant stream.
-  absl::optional<types::DecimalFloatingPoint> frame_rate;
+  std::optional<types::DecimalFloatingPoint> frame_rate;
 
   // The id of an audio rendition group that should be used when playing this
   // variant.
-  absl::optional<ResolvedSourceString> audio;
+  std::optional<ResolvedSourceString> audio;
 
   // The id of a video rendition group that should be used when playing this
   // variant.
-  absl::optional<ResolvedSourceString> video;
+  std::optional<ResolvedSourceString> video;
 };
 
 // Represents the contents of the #EXTINF tag
@@ -275,7 +275,7 @@ struct MEDIA_EXPORT XMapTag {
 
   // This specifies a byte range into the resource containing the media
   // initialization section.
-  absl::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::ByteRangeExpression> byte_range;
 };
 
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
@@ -306,7 +306,7 @@ struct MEDIA_EXPORT XPartTag {
 
   // If this partial segment is a subrange of its resource, this defines the
   // subrange.
-  absl::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::ByteRangeExpression> byte_range;
 
   // Whether the partial segment contains an independent frame.
   bool independent = false;
@@ -351,7 +351,7 @@ struct MEDIA_EXPORT XServerControlTag {
   // This value (given by the 'CAN-SKIP-UNTIL' attribute) represents the
   // distance from the last media segment that the server is able
   // to produce a playlist delta update.
-  absl::optional<base::TimeDelta> skip_boundary;
+  std::optional<base::TimeDelta> skip_boundary;
 
   // This indicates whether the server supports skipping EXT-X-DATERANGE tags
   // older than the skip boundary when producing playlist delta updates.
@@ -360,13 +360,13 @@ struct MEDIA_EXPORT XServerControlTag {
   // This indicates the distance from the end of the playlist
   // at which clients should begin playback. This MUST be at least three times
   // the playlist's target duration.
-  absl::optional<base::TimeDelta> hold_back;
+  std::optional<base::TimeDelta> hold_back;
 
   // This indicates the distance from the end of the playlist
   // at which clients should begin playback when playing in low-latency mode.
   // This value MUST be at least twice the playlist's partial segment target
   // duration, and SHOULD be at least three times that.
-  absl::optional<base::TimeDelta> part_hold_back;
+  std::optional<base::TimeDelta> part_hold_back;
 
   // This indicates whether the server supports blocking playlist reloads.
   bool can_block_reload = false;
@@ -382,6 +382,67 @@ struct MEDIA_EXPORT XTargetDurationTag {
   // file, when rounded to the nearest integer, MUST be less than or equal to
   // this duration.
   base::TimeDelta duration;
+};
+
+struct MEDIA_EXPORT XSkipTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXSkip;
+  static ParseStatus::Or<XSkipTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  XSkipTag();
+  ~XSkipTag();
+  XSkipTag(const XSkipTag&);
+  XSkipTag(XSkipTag&&);
+
+  // The value is a decimal integer specifying the number of Media Segments
+  // replaced by the EXT-X-SKIP tag. This attribute is REQUIRED.
+  types::DecimalInteger skipped_segments;
+
+  // The value is a quoted string consisting of a tab delimited list of
+  // EXT-X-DATERANGE IDs that have been removed from the playlist recently.
+  // This attribute is REQUIRED if the client requested an update that skips
+  // EXT-X-DATERANGE tags. The quoted string MAY be empty.
+  std::optional<std::vector<std::string>> recently_removed_dateranges =
+      std::nullopt;
+};
+
+// A server MAY omit adding an attribute to an EXT-X-RENDITION-REPORT tag - even
+// a mandatory attribute - if its value is the same as that of the Rendition
+// Report of the Media Playlist to which the EXT-X-RENDITION-REPORT tag is being
+// added.  Doing so reduces the size of the Rendition Report.
+struct MEDIA_EXPORT XRenditionReportTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXRenditionReport;
+  static ParseStatus::Or<XRenditionReportTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // Url for the media playlist of the specified rendition. It MUST be relative
+  // to the URI of the media playlist containing the EXT-X-RENDITION-REPORT tag.
+  std::optional<ResolvedSourceString> uri;
+
+  // The valid specifying the last media segment's sequence number in the
+  // rendition. if the rendition contains partial segments, then this value is
+  // the last partial segments media sequence number.
+  std::optional<types::DecimalInteger> last_msn;
+
+  // The value is a decimal-integer that indicates the Part Index of the last
+  // Partial Segment currently in the specified Rendition whose Media Sequence
+  // Number is equal to the LAST-MSN attribute value. This attribute is REQUIRED
+  // if the Rendition contains a Partial Segment.
+  std::optional<types::DecimalInteger> last_part;
+};
+
+// The EXT-X-PROGRAM-DATE-TIME tag associates the first sample of a Media
+// Segment with an absolute date and/or time. It applies only to the next
+// Media Segment.
+struct MEDIA_EXPORT XProgramDateTimeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXProgramDateTime;
+  static ParseStatus::Or<XProgramDateTimeTag> Parse(TagItem);
+
+  base::Time time;
 };
 
 }  // namespace media::hls

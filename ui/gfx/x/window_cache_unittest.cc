@@ -7,10 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace x11 {
 
@@ -229,8 +228,9 @@ TEST_F(WindowCacheTest, CirculateNotify) {
   Window b = CreateWindow(root());
   Window c = CreateWindow(root());
   Window d = CreateWindow(root());
-  for (Window w : {a, b, c, d})
+  for (Window w : {a, b, c, d}) {
     connection()->MapWindow(w);
+  }
 
   cache()->SyncForTest();
   auto& windows = cache()->windows().at(root()).children;
@@ -247,8 +247,9 @@ TEST_F(WindowCacheTest, CirculateNotify) {
 
 TEST_F(WindowCacheTest, ShapeExtension) {
   auto& shape = connection()->shape();
-  if (!shape.present())
+  if (!shape.present()) {
     return;
+  }
 
   const WindowCache::WindowInfo& info = cache()->windows().at(root());
   EXPECT_EQ(info.bounding_rects_px,
@@ -274,7 +275,7 @@ TEST_F(WindowCacheTest, WmName) {
   const WindowCache::WindowInfo& info = cache()->windows().at(root());
   EXPECT_FALSE(info.has_wm_name);
 
-  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "Foo");
+  connection()->SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "Foo");
   cache()->SyncForTest();
   EXPECT_TRUE(info.has_wm_name);
 
@@ -288,8 +289,8 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 
   const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
-  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
-                   std::vector<uint32_t>{1, 2, 3, 4});
+  connection()->SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                                 std::vector<uint32_t>{1, 2, 3, 4});
   cache()->SyncForTest();
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets::TLBR(3, 1, 4, 2));
 
@@ -298,13 +299,13 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 
   // Make sure malformed values don't get cached.
-  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
-                   std::vector<uint32_t>{1, 2});
+  connection()->SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                                 std::vector<uint32_t>{1, 2});
   cache()->SyncForTest();
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 
-  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
-                   std::vector<uint8_t>{1, 2, 3, 4});
+  connection()->SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                                 std::vector<uint8_t>{1, 2, 3, 4});
   cache()->SyncForTest();
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 }
@@ -312,7 +313,7 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
 TEST_F(WindowCacheTest, GetWindowAtPoint) {
   // Basic test on an undecorated, unobscured window.
   connection()->MapWindow(root());
-  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
+  connection()->SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), root());
 
@@ -342,7 +343,7 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
       .height = 100,
   });
   connection()->MapWindow(a);
-  SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
+  connection()->SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), a);
   EXPECT_EQ(cache()->GetWindowAtPoint({50, 50}, root()), Window::None);
@@ -364,15 +365,16 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
   EXPECT_EQ(cache()->GetWindowAtPoint({250, 250}, root()), a);
   connection()->ConfigureWindow({.window = a, .border_width = 0});
   if (shape.present()) {
-    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input})
+    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
       shape.Mask({.destination_kind = kind, .destination_window = a});
+    }
   }
 
   // GTK_FRAME_EXTENTS insets the window bounds.
   EXPECT_EQ(cache()->GetWindowAtPoint({125, 125}, root()), a);
   const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
-  SetArrayProperty(a, gtk_frame_extents, Atom::CARDINAL,
-                   std::vector<uint32_t>{40, 40, 40, 40});
+  connection()->SetArrayProperty(a, gtk_frame_extents, Atom::CARDINAL,
+                                 std::vector<uint32_t>{40, 40, 40, 40});
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({125, 125}, root()), Window::None);
   connection()->DeleteProperty(a, gtk_frame_extents);
@@ -399,7 +401,7 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
       .height = 100,
   });
   connection()->MapWindow(b);
-  SetStringProperty(b, Atom::WM_NAME, Atom::STRING, "b");
+  connection()->SetStringProperty(b, Atom::WM_NAME, Atom::STRING, "b");
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), b);
 
@@ -413,7 +415,7 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
       .height = 100,
   });
   connection()->MapWindow(c);
-  SetStringProperty(c, Atom::WM_NAME, Atom::STRING, "c");
+  connection()->SetStringProperty(c, Atom::WM_NAME, Atom::STRING, "c");
   connection()->DeleteProperty(b, Atom::WM_NAME);
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), c);
@@ -424,11 +426,11 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
 // should be returned by GetWindowAtPoint().
 TEST_F(WindowCacheTest, NestedWmName) {
   connection()->MapWindow(root());
-  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
+  connection()->SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
 
   Window a = CreateWindow(root());
   connection()->MapWindow(a);
-  SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
+  connection()->SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
 
   cache()->SyncForTest();
   EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), a);

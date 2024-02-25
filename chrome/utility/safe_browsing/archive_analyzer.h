@@ -5,11 +5,12 @@
 #ifndef CHROME_UTILITY_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
 #define CHROME_UTILITY_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -35,7 +36,7 @@ class ArchiveAnalyzer {
 
   void Analyze(base::File archive_file,
                base::FilePath relative_path,
-               const absl::optional<std::string>& password,
+               const std::optional<std::string>& password,
                FinishedAnalysisCallback finished_analysis_callback,
                GetTempFileCallback get_temp_file_callback,
                ArchiveAnalyzerResults* results);
@@ -58,7 +59,7 @@ class ArchiveAnalyzer {
   base::File& GetArchiveFile();
   const base::FilePath& GetRootPath() const;
   ArchiveAnalyzerResults* results() { return results_; }
-  const absl::optional<std::string>& password() const { return password_; }
+  const std::optional<std::string>& password() const { return password_; }
 
   // Request a temporary file for use during extraction.
   void GetTempFile(base::OnceCallback<void(base::File)> callback);
@@ -95,7 +96,7 @@ class ArchiveAnalyzer {
   raw_ptr<ArchiveAnalyzerResults> results_;
   FinishedAnalysisCallback finished_analysis_callback_;
   GetTempFileCallback get_temp_file_callback_;
-  absl::optional<std::string> password_;
+  std::optional<std::string> password_;
 
   std::unique_ptr<safe_browsing::ArchiveAnalyzer> nested_analyzer_;
 };

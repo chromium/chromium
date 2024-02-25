@@ -18,8 +18,8 @@
 # -----------------------------------------------------------------
 
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
+crbug.com/325977041 [ Linux ] external/wpt/document-picture-in-picture/focus-opener.https.html [ Failure Pass ]
 
-crbug.com/733494 [ Linux ] media/autoplay/document-user-activation.html [ Pass Failure ]
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
 
@@ -27,8 +27,6 @@ crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html
 # a prior crash.
 crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
 
-# Sheriff 2021-02-25
-crbug.com/1182675 [ Linux ] dom/mutation-event-tests/dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
@@ -37,21 +35,9 @@ crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_c
 crbug.com/1219915 [ Linux ] editing/selection/context-menu-text-selection.html [ Failure ]
 crbug.com/1219915 [ Linux ] editing/selection/readonly-disabled-hittest.html [ Failure ]
 crbug.com/1219915 [ Linux ] editing/selection/readonly-disabled-text-selection.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-focuses-frame.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-on-draggable-element-in-iframe-triggers-drag.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-on-draggable-element-in-nested-iframes-triggers-drag.html [ Failure ]
-crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-selects-word-when-touch-editing-enabled.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/focusout-on-touch.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/touch-links-longpress.html [ Failure ]
 
-# Sheriff 2021-11-18
-crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigation-headers.https.html [ Failure Pass ]
-
-# Sheriff 2022-08-04
-crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Failure Pass ]
 
 # This has been marked as Skip in the TestExpectations file.
 crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.html [ Skip ]

@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
 #include <memory>
+#include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -35,7 +36,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -106,9 +106,9 @@ class DemoSetupControllerTestHelper {
   }
 
  private:
-  absl::optional<bool> succeeded_;
-  absl::optional<DemoSetupController::DemoSetupStep> setup_step_;
-  absl::optional<DemoSetupController::DemoSetupError> error_;
+  std::optional<bool> succeeded_;
+  std::optional<DemoSetupController::DemoSetupStep> setup_step_;
+  std::optional<DemoSetupController::DemoSetupError> error_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

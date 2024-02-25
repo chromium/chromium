@@ -27,12 +27,13 @@
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -67,15 +68,16 @@ void LayoutSVGRoot::Trace(Visitor* visitor) const {
 }
 
 void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+    IntrinsicSizingInfo& intrinsic_sizing_info,
+    bool use_correct_viewbox) const {
   NOT_DESTROYED();
   // https://www.w3.org/TR/SVG/coords.html#IntrinsicSizing
 
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
 
-  absl::optional<float> intrinsic_width = svg->IntrinsicWidth();
-  absl::optional<float> intrinsic_height = svg->IntrinsicHeight();
+  std::optional<float> intrinsic_width = svg->IntrinsicWidth();
+  std::optional<float> intrinsic_height = svg->IntrinsicHeight();
   intrinsic_sizing_info.size =
       gfx::SizeF(intrinsic_width.value_or(0), intrinsic_height.value_or(0));
   intrinsic_sizing_info.has_width = intrinsic_width.has_value();
@@ -84,7 +86,10 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
-    const gfx::SizeF view_box_size = svg->CurrentViewBox().Rect().size();
+    const SVGRect& view_box = use_correct_viewbox
+                                  ? svg->CurrentViewBox()
+                                  : *svg->viewBox()->CurrentValue();
+    const gfx::SizeF view_box_size = view_box.Rect().size();
     if (!view_box_size.IsEmpty()) {
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
       intrinsic_sizing_info.aspect_ratio = view_box_size;
@@ -146,7 +151,7 @@ void LayoutSVGRoot::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  PhysicalSize old_size = Size();
+  PhysicalSize old_content_size = PhysicalContentBoxRect().size;
 
   // Whether we have a self-painting layer depends on whether there are
   // compositing descendants (see: |HasCompositingDescendants()| which is called
@@ -179,7 +184,8 @@ void LayoutSVGRoot::UpdateLayout() {
   // selfNeedsLayout() will cover changes to one (or more) of viewBox,
   // current{Scale,Translate}, decorations and 'overflow'.
   const bool viewport_may_have_changed =
-      SelfNeedsFullLayout() || old_size != SizeFromNG();
+      SelfNeedsFullLayout() ||
+      old_content_size != PhysicalContentBoxRectFromNG().size;
   is_layout_size_changed_ = viewport_may_have_changed;
 
   SVGContainerLayoutInfo layout_info;
@@ -189,12 +195,15 @@ void LayoutSVGRoot::UpdateLayout() {
   content_.Layout(layout_info);
 
   if (needs_boundaries_or_transform_update_) {
-    UpdateCachedBoundaries();
+    if (UpdateCachedBoundaries()) {
+      // Boundaries affects the mask clip. (Other resources handled elsewhere.)
+      SetNeedsPaintPropertyUpdate();
+    }
     needs_boundaries_or_transform_update_ = false;
   }
 
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearLayoutOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearScrollableOverflow();
 
   // The scale of one or more of the SVG elements may have changed, content
   // (the entire SVG) could have moved or new content may have been exposed, so
@@ -218,7 +227,7 @@ void LayoutSVGRoot::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ComputeContentsVisualOverflow());
 }
 
-LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
+PhysicalRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   NOT_DESTROYED();
   gfx::RectF content_visual_rect = VisualRectInLocalSVGCoordinates();
   content_visual_rect =
@@ -228,8 +237,8 @@ LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   // overflow that would never be seen anyway.
   // To condition, we intersect with something that we oftentimes
   // consider to be "infinity".
-  return Intersection(EnclosingLayoutRect(content_visual_rect),
-                      LayoutRect(InfiniteIntRect()));
+  return Intersection(PhysicalRect::EnclosingRect(content_visual_rect),
+                      PhysicalRect(InfiniteIntRect()));
 }
 
 void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
@@ -289,8 +298,9 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
-  if (diff.NeedsFullLayout())
+  if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
+  }
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
@@ -398,13 +408,8 @@ PositionWithAffinity LayoutSVGRoot::PositionForPoint(
 
   LayoutObject* layout_object = closest_descendant;
   AffineTransform transform = layout_object->LocalToSVGParentTransform();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    PhysicalOffset location = To<LayoutBox>(layout_object)->PhysicalLocation();
-    transform.Translate(location.left, location.top);
-  } else {
-    transform.Translate(To<LayoutBox>(layout_object)->Location().X(),
-                        To<LayoutBox>(layout_object)->Location().Y());
-  }
+  PhysicalOffset location = To<LayoutBox>(layout_object)->PhysicalLocation();
+  transform.Translate(location.left, location.top);
   while (layout_object) {
     layout_object = layout_object->Parent();
     if (layout_object->IsSVGRoot())
@@ -442,14 +447,9 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
 
 AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    PhysicalOffset location = PhysicalLocation();
-    return AffineTransform::Translation(RoundToInt(location.left),
-                                        RoundToInt(location.top)) *
-           local_to_border_box_transform_;
-  }
-  return AffineTransform::Translation(RoundToInt(Location().X()),
-                                      RoundToInt(Location().Y())) *
+  PhysicalOffset location = PhysicalLocation();
+  return AffineTransform::Translation(RoundToInt(location.left),
+                                      RoundToInt(location.top)) *
          local_to_border_box_transform_;
 }
 
@@ -474,68 +474,41 @@ void LayoutSVGRoot::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   LayoutReplaced::MapLocalToAncestor(ancestor, transform_state, mode);
 }
 
-void LayoutSVGRoot::UpdateCachedBoundaries() {
+bool LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   bool ignore;
-  content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
+  return content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
 }
 
-bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                HitTestPhase phase) {
+bool LayoutSVGRoot::HitTestChildren(HitTestResult& result,
+                                    const HitTestLocation& hit_test_location,
+                                    const PhysicalOffset& accumulated_offset,
+                                    HitTestPhase phase) {
   NOT_DESTROYED();
   HitTestLocation local_border_box_location(hit_test_location,
                                             -accumulated_offset);
-
-  // Only test SVG content if the point is in our content box, or in case we
-  // don't clip to the viewport, the visual overflow rect.
-  // FIXME: This should be an intersection when rect-based hit tests are
-  // supported by nodeAtFloatPoint.
-  bool skip_children = (result.GetHitTestRequest().GetStopNode() == this);
-  if (!skip_children &&
-      (local_border_box_location.Intersects(PhysicalContentBoxRect()) ||
-       (!ClipsToContentBox() &&
-        local_border_box_location.Intersects(PhysicalVisualOverflowRect())))) {
-    TransformedHitTestLocation local_location(local_border_box_location,
-                                              LocalToBorderBoxTransform());
-    if (local_location) {
-      if (content_.HitTest(result, *local_location, phase))
-        return true;
-    }
+  TransformedHitTestLocation local_location(local_border_box_location,
+                                            LocalToBorderBoxTransform());
+  if (!local_location) {
+    return false;
   }
-
-  // If we didn't early exit above, we've just hit the container <svg> element.
-  // Unlike SVG 1.1, 2nd Edition allows container elements to be hit.
-  if (phase == HitTestPhase::kSelfBlockBackground &&
-      VisibleToHitTestRequest(result.GetHitTestRequest())) {
-    // Only return true here, if the last hit testing phase 'BlockBackground'
-    // (or 'ChildBlockBackground' - depending on context) is executed.
-    // If we'd return true in the 'Foreground' phase, hit testing would stop
-    // immediately. For SVG only trees this doesn't matter.
-    // Though when we have a <foreignObject> subtree we need to be able to
-    // detect hits on the background of a <div> element.
-    // If we'd return true here in the 'Foreground' phase, we are not able to
-    // detect these hits anymore.
-    PhysicalRect bounds_rect(accumulated_offset, Size());
-    if (hit_test_location.Intersects(bounds_rect)) {
-      UpdateHitTestResult(result, local_border_box_location.Point());
-      if (result.AddNodeToListBasedTestResult(GetNode(), hit_test_location,
-                                              bounds_rect) == kStopHitTesting)
-        return true;
-    }
-  }
-
-  return false;
+  return content_.HitTest(result, *local_location, phase);
 }
 
-void LayoutSVGRoot::AddSvgTextDescendant(LayoutNGSVGText& svg_text) {
+bool LayoutSVGRoot::IsInSelfHitTestingPhase(HitTestPhase phase) const {
+  // Only hit-test the root <svg> container during the background
+  // phase. (Hit-testing during the foreground phase would make us miss for
+  // instance backgrounds of children inside <foreignObject>.)
+  return phase == HitTestPhase::kSelfBlockBackground;
+}
+
+void LayoutSVGRoot::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(!text_set_.Contains(&svg_text));
   text_set_.insert(&svg_text);
 }
 
-void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutNGSVGText& svg_text) {
+void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(text_set_.Contains(&svg_text));
   text_set_.erase(&svg_text);

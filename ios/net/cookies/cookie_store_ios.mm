@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #import <utility>
 
 #import "base/apple/foundation_util.h"
@@ -27,12 +28,11 @@
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/net/ios_net_buildflags.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cookies/cookie_constants.h"
 #import "net/cookies/cookie_util.h"
 #import "net/cookies/parsed_cookie.h"
 #import "net/log/net_log.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace net {
@@ -159,7 +159,7 @@ std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForCookie(
     const GURL& gurl,
     const std::string& name,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   // iOS does not support Partitioned cookies.
   DCHECK(!cookie_partition_key);
@@ -169,7 +169,7 @@ CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForCookie(
 std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForUrl(
     const GURL& gurl,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   // iOS does not support Partitioned cookies.
   DCHECK(!cookie_partition_key);
@@ -223,7 +223,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
     const GURL& source_url,
     const net::CookieOptions& options,
     SetCookiesCallback callback,
-    absl::optional<net::CookieAccessResult> cookie_access_result) {
+    std::optional<net::CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
@@ -243,7 +243,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
     access_result = *cookie_access_result;
   }
 
-  if (cookie->IsSecure() &&
+  if (cookie->SecureAttribute() &&
       access_scheme == CookieAccessScheme::kNonCryptographic) {
     if (!callback.is_null()) {
       access_result.status.AddExclusionReason(

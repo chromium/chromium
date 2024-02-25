@@ -17,7 +17,6 @@ TEST COMPLETE
 --------
 Frame: '<!--framePath //<!--frame0-->-->'
 --------
-PASS window.openDatabase('SandboxedIframeStorageDisallowed', '1.0', '', 1) threw exception "SecurityError: Failed to execute 'openDatabase' on 'Window': Access to the WebDatabase API is denied in this context.".
 PASS window.indexedDB.open('foo') threw exception "SecurityError: Failed to execute 'open' on 'IDBFactory': access to the Indexed Database API is denied in this context.".
 PASS window.indexedDB.deleteDatabase('foo') threw exception "SecurityError: Failed to execute 'deleteDatabase' on 'IDBFactory': access to the Indexed Database API is denied in this context.".
 PASS window.localStorage threw exception "SecurityError: Failed to read the 'localStorage' property from 'Window': The document is sandboxed and lacks the 'allow-same-origin' flag.".
@@ -32,7 +31,6 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
-PASS window.openDatabase('SandboxedIframeStorageAllowed', '1.0', '', 1) != null is true
 PASS window.localStorage != null is true
 PASS window.sessionStorage != null is true
 PASS document.cookie != null is true

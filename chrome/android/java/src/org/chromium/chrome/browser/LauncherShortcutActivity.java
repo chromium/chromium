@@ -17,22 +17,22 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * A helper activity for routing launcher shortcut intents.
- */
+/** A helper activity for routing launcher shortcut intents. */
 public class LauncherShortcutActivity extends Activity {
     public static final String ACTION_OPEN_NEW_TAB = "chromium.shortcut.action.OPEN_NEW_TAB";
     public static final String ACTION_OPEN_NEW_INCOGNITO_TAB =
             "chromium.shortcut.action.OPEN_NEW_INCOGNITO_TAB";
+
     @VisibleForTesting
     static final String DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID = "dynamic-new-incognito-tab-shortcut";
 
@@ -71,7 +71,7 @@ public class LauncherShortcutActivity extends Activity {
     public static void updateIncognitoShortcut(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled();
         boolean incognitoShortcutAdded =
                 preferences.readBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
@@ -106,12 +106,16 @@ public class LauncherShortcutActivity extends Activity {
 
         ShortcutInfo shortcut =
                 new ShortcutInfo.Builder(context, DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID)
-                        .setShortLabel(context.getResources().getString(
-                                R.string.accessibility_tabstrip_incognito_identifier))
-                        .setLongLabel(sLabelForTesting != null
+                        .setShortLabel(
+                                context.getResources()
+                                        .getString(
+                                                R.string
+                                                        .accessibility_tabstrip_incognito_identifier))
+                        .setLongLabel(
+                                sLabelForTesting != null
                                         ? sLabelForTesting
-                                        : context.getResources().getString(
-                                                R.string.menu_new_incognito_tab))
+                                        : context.getResources()
+                                                .getString(R.string.menu_new_incognito_tab))
                         .setIcon(Icon.createWithResource(context, R.drawable.shortcut_incognito))
                         .setIntent(intent)
                         .build();
@@ -142,8 +146,10 @@ public class LauncherShortcutActivity extends Activity {
      */
     private static Intent getChromeLauncherActivityIntent(
             Context context, String launcherShortcutIntentAction) {
-        Intent newIntent = IntentHandler.createTrustedOpenNewTabIntent(context,
-                launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB));
+        Intent newIntent =
+                IntentHandler.createTrustedOpenNewTabIntent(
+                        context,
+                        launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB));
         newIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, true);
 
         return newIntent;

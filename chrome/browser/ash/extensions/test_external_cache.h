@@ -48,7 +48,7 @@ class TestExternalCache : public ExternalCache {
                             const std::string& version,
                             PutExternalExtensionCallback callback) override;
   void SetBackoffPolicy(
-      absl::optional<net::BackoffEntry::Policy> new_backoff_policy) override;
+      std::optional<net::BackoffEntry::Policy> new_backoff_policy) override;
 
   // Simulates extension CRX download succeeding - it adds the extension
   // information to |cache_|.
@@ -82,7 +82,7 @@ class TestExternalCache : public ExternalCache {
     return pending_downloads_;
   }
 
-  const absl::optional<net::BackoffEntry::Policy>& backoff_policy() const {
+  const std::optional<net::BackoffEntry::Policy>& backoff_policy() const {
     return backoff_policy_;
   }
 
@@ -106,10 +106,10 @@ class TestExternalCache : public ExternalCache {
                           const std::string& crx_path,
                           const std::string& version);
 
-  const raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ExternalCacheDelegate> delegate_;
   const bool always_check_for_updates_;
 
-  absl::optional<net::BackoffEntry::Policy> backoff_policy_;
+  std::optional<net::BackoffEntry::Policy> backoff_policy_;
 
   base::Value::Dict configured_extensions_;
   base::Value::Dict cached_extensions_;

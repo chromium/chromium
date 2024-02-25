@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_ANDROID_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_ANDROID_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

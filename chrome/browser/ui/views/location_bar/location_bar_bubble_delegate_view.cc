@@ -83,7 +83,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
       WebContentsObserver(web_contents) {
   // Add observer to close the bubble if the fullscreen state changes.
   if (web_contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
     // |browser| can be null in tests.
     if (browser) {
       fullscreen_observation_.Observe(
@@ -130,7 +130,7 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
     if (allow_refocus_alert) {
       // Since this will show as inactive, add a description for how to get to
       // it.
-      GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+      GetWidget()->GetRootView()->GetViewAccessibility().SetDescription(
           l10n_util::GetStringUTF8(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
     }
     GetWidget()->ShowInactive();
@@ -202,6 +202,6 @@ bool LocationBarBubbleDelegateView::GetCloseOnMainFrameOriginNavigation()
   return close_on_main_frame_origin_navigation_;
 }
 
-BEGIN_METADATA(LocationBarBubbleDelegateView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(LocationBarBubbleDelegateView)
 ADD_READONLY_PROPERTY_METADATA(bool, CloseOnMainFrameOriginNavigation)
 END_METADATA

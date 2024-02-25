@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -88,14 +89,21 @@ class DownloadProtectionService {
   // method must be called on the UI thread, and the callback will also be
   // invoked on the UI thread.  This method must be called once the download
   // is finished and written to disk.
-  virtual void CheckClientDownload(download::DownloadItem* item,
-                                   CheckDownloadRepeatingCallback callback);
+  virtual void CheckClientDownload(
+      download::DownloadItem* item,
+      CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password = std::nullopt);
 
   // Checks the user permissions, then calls |CheckClientDownload| if
   // appropriate. Returns whether we began scanning.
   virtual bool MaybeCheckClientDownload(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback);
+
+  // Cancel the pending check for `item`. This function simply drops the pending
+  // work in the `DownloadProtectionService`. The caller is responsible for
+  // updating the download state so that it completes successfully.
+  void CancelChecksForDownload(download::DownloadItem* item);
 
   // Returns whether the download URL should be checked for safety based on user
   // prefs.
@@ -221,11 +229,15 @@ class DownloadProtectionService {
       DeepScanningRequest::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings,
-      const std::string& password);
+      base::optional_ref<const std::string> password);
 
-  // Helper function for consumer deep scans.
-  static void UploadForConsumerDeepScanning(download::DownloadItem* item,
-                                            const std::string& password);
+  // Helper functions for encrypted archive scans.
+  static void UploadForConsumerDeepScanning(
+      download::DownloadItem* item,
+      base::optional_ref<const std::string> password);
+  static void CheckDownloadWithLocalDecryption(
+      download::DownloadItem* item,
+      base::optional_ref<const std::string> password);
 
   // Uploads a save package `item` for deep scanning. `save_package_file`
   // contains a mapping of on-disk files part of that save package to their

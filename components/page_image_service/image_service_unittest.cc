@@ -44,7 +44,9 @@ class ImageServiceTestOptGuide : public TestOptimizationGuideDecider {
       const std::vector<GURL>& urls,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback) override {
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      proto::RequestContextMetadata* request_context_metadata =
+          nullptr) override {
     requests_received_++;
 
     // For this test, we just want to store the parameters which were used in
@@ -75,7 +77,8 @@ class ImageServiceTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {kImageService, kImageServiceSuggestPoweredImages,
-         kImageServiceOptimizationGuideSalientImages},
+         kImageServiceOptimizationGuideSalientImages,
+         kImageServiceObserveSyncDownloadStatus},
         {});
 
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
@@ -91,16 +94,18 @@ class ImageServiceTest : public testing::Test {
         std::make_unique<TestSchemeClassifier>());
   }
 
-  bool GetConsentToFetchImageAwaitResult(mojom::ClientId client_id) {
-    bool out_consent = false;
+  PageImageServiceConsentStatus GetConsentStatusToFetchImageAwaitResult(
+      mojom::ClientId client_id) {
+    PageImageServiceConsentStatus out_status;
     base::RunLoop loop;
     image_service_->GetConsentToFetchImage(
-        client_id, base::BindLambdaForTesting([&](bool result) {
-          out_consent = result;
+        client_id,
+        base::BindLambdaForTesting([&](PageImageServiceConsentStatus status) {
+          out_status = status;
           loop.Quit();
         }));
     loop.Run();
-    return out_consent;
+    return out_status;
   }
 
   ImageServiceTest(const ImageServiceTest&) = delete;
@@ -155,25 +160,37 @@ TEST_F(ImageServiceTest, GetConsentToFetchImage) {
       syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
-  EXPECT_FALSE(
-      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::JourneysSidePanel),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(
+      GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpRealbox),
+      PageImageServiceConsentStatus::kFailure);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpQuests),
+            PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
+            PageImageServiceConsentStatus::kTimedOut);
 
   test_sync_service_->SetDownloadStatusFor(
       {syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
 
-  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
-  EXPECT_TRUE(
-      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
+            PageImageServiceConsentStatus::kSuccess);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::JourneysSidePanel),
+            PageImageServiceConsentStatus::kSuccess);
   // NTP Realbox still false as it does not have an approved privacy model yet.
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
-  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
+  EXPECT_EQ(
+      GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpRealbox),
+      PageImageServiceConsentStatus::kFailure);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::NtpQuests),
+            PageImageServiceConsentStatus::kSuccess);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
+            PageImageServiceConsentStatus::kTimedOut);
 }
 
 TEST_F(ImageServiceTest, SyncInitialization) {
@@ -328,13 +345,17 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   image_service_->FetchImageFor(
       mojom::ClientId::Journeys, GURL("https://1.com"), options,
       base::BindOnce(&StoreImageUrlResponse, &response_3));
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys, GURL("https://httpimage.com"), options,
+      base::BindOnce(&StoreImageUrlResponse, &response_3));
   task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
 
   // Verify that the OptimizationGuide backend got one appropriate call.
   ASSERT_EQ(test_opt_guide_->requests_received_, 1U);
-  EXPECT_THAT(test_opt_guide_->on_demand_call_urls_,
-              ElementsAre(GURL("https://1.com"), GURL("https://2.com"),
-                          GURL("https://1.com")));
+  EXPECT_THAT(
+      test_opt_guide_->on_demand_call_urls_,
+      ElementsAre(GURL("https://1.com"), GURL("https://2.com"),
+                  GURL("https://1.com"), GURL("https://httpimage.com")));
   EXPECT_THAT(test_opt_guide_->on_demand_call_optimization_types_,
               ElementsAre(optimization_guide::proto::SALIENT_IMAGE));
   EXPECT_EQ(test_opt_guide_->on_demand_call_request_context_,
@@ -344,11 +365,11 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend",
                 PageImageServiceBackend::kOptimizationGuide),
-            3);
+            4);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.Journeys",
                 PageImageServiceBackend::kOptimizationGuide),
-            3);
+            4);
 
   // Verify the decision can be parsed and sent back to the original caller.
   optimization_guide::OptimizationGuideDecisionWithMetadata decision;
@@ -365,6 +386,22 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
     decision.metadata.set_any_metadata(any);
   }
 
+  // Verify the decision can be parsed and sent back to the original caller.
+  optimization_guide::OptimizationGuideDecisionWithMetadata http_decision;
+  {
+    http_decision.decision =
+        optimization_guide::OptimizationGuideDecision::kTrue;
+
+    optimization_guide::proto::SalientImageMetadata salient_image_metadata;
+    auto* thumbnail = salient_image_metadata.add_thumbnails();
+    thumbnail->set_image_url("http://image-url.com/foo.png");
+
+    optimization_guide::proto::Any any;
+    any.set_type_url(salient_image_metadata.GetTypeName());
+    salient_image_metadata.SerializeToString(any.mutable_value());
+    http_decision.metadata.set_any_metadata(any);
+  }
+
   // Verify that the repeating callback can be called twice with the two
   // different URLs, the "https://1.com" one being deduplicated.
   test_opt_guide_->on_demand_call_callback_.Run(
@@ -379,16 +416,23 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(response_1, GURL("https://image-url.com/foo.png"));
   EXPECT_EQ(response_2, GURL("https://image-url.com/foo.png"));
   EXPECT_EQ(response_3, GURL("https://image-url.com/foo.png"));
+  test_opt_guide_->on_demand_call_callback_.Run(
+      GURL("https://httpimage.com"),
+      {{optimization_guide::proto::SALIENT_IMAGE, http_decision}});
 
   // Test histograms with literal names to validate client-sliced names.
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                "PageImageService.Backend.OptimizationGuide.Result",
-                PageImageServiceResult::kSuccess),
-            2);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                "PageImageService.Backend.OptimizationGuide.Result.Journeys",
-                PageImageServiceResult::kSuccess),
-            2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result",
+      PageImageServiceResult::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result.Journeys",
+      PageImageServiceResult::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result",
+      PageImageServiceResult::kResponseMalformed, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result.Journeys",
+      PageImageServiceResult::kResponseMalformed, 1);
 }
 
 TEST_F(ImageServiceTest, OptimizationGuideBatchingRespectsMaxUrls) {

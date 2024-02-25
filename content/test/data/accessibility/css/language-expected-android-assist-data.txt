@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}, {lang="es-ES"}]
+++++TextView text:"Espanyol" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++TextView text:"Comment allez-vous?" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -17,8 +17,9 @@ class VirtualCardSelectionDialogController;
 // The View implementation of VirtualCardSelectionDialog.
 class VirtualCardSelectionDialogView : public VirtualCardSelectionDialog,
                                        public views::DialogDelegateView {
+  METADATA_HEADER(VirtualCardSelectionDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(VirtualCardSelectionDialogView);
   VirtualCardSelectionDialogView(
       VirtualCardSelectionDialogController* controller);
   VirtualCardSelectionDialogView(const VirtualCardSelectionDialogView&) =
@@ -42,4 +43,4 @@ class VirtualCardSelectionDialogView : public VirtualCardSelectionDialog,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_H_

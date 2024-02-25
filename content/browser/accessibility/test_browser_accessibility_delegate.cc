@@ -50,6 +50,10 @@ void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
     base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
                             ui::AXNodeID hit_node_id)> opt_callback) {}
 
+gfx::NativeWindow TestBrowserAccessibilityDelegate::GetTopLevelNativeWindow() {
+  return gfx::NativeWindow();
+}
+
 bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() const {
   return is_root_frame_;
 }

@@ -12,6 +12,7 @@
  * A class capturing the braille for navigation from one object to
  * another.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Spannable} from '../spannable.js';
 
@@ -107,3 +108,5 @@ export class NavBraille {
     };
   }
 }
+
+TestImportManager.exportForTesting(NavBraille);

@@ -4,7 +4,6 @@
 
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -24,8 +23,7 @@ TEST(BitmapCursorFactoryTest, InvisibleCursor) {
             CursorType::kNone);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(BitmapCursorFactoryTest, LacrosUsesDefaultCursorsForCommonTypes) {
+TEST(BitmapCursorFactoryTest, DefaultCursorsHaveTypeInformation) {
   BitmapCursorFactory factory;
 
   // Verify some common cursor types.
@@ -44,13 +42,5 @@ TEST(BitmapCursorFactoryTest, LacrosUsesDefaultCursorsForCommonTypes) {
   EXPECT_EQ(BitmapCursor::FromPlatformCursor(cursor)->type(),
             CursorType::kIBeam);
 }
-
-TEST(BitmapCursorFactoryTest, LacrosCustomCursor) {
-  BitmapCursorFactory factory;
-  auto cursor = factory.GetDefaultCursor(CursorType::kCustom);
-  // Custom cursors don't have a default platform cursor.
-  EXPECT_EQ(cursor, nullptr);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace ui

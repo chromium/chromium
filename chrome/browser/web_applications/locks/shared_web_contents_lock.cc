@@ -13,6 +13,8 @@ namespace web_app {
 
 SharedWebContentsLockDescription::SharedWebContentsLockDescription()
     : LockDescription({}, LockDescription::Type::kBackgroundWebContents) {}
+SharedWebContentsLockDescription::SharedWebContentsLockDescription(
+    SharedWebContentsLockDescription&&) = default;
 SharedWebContentsLockDescription::~SharedWebContentsLockDescription() = default;
 
 SharedWebContentsLock::SharedWebContentsLock(

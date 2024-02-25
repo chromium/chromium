@@ -101,8 +101,10 @@ void CreateAndShowWidget(views::WidgetDelegateView* delegate,
 class IdleAppNameNotificationDelegateView
     : public views::WidgetDelegateView,
       public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(IdleAppNameNotificationDelegateView,
+                  views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(IdleAppNameNotificationDelegateView);
   // An idle message which will get shown from the caller and hides itself after
   // a time, calling |owner->CloseMessage| to inform the owner that it got
   // destroyed. The |app_name| is a string which gets used as message and
@@ -200,7 +202,7 @@ class IdleAppNameNotificationDelegateView
 
   // The owner of this message which needs to get notified when the message
   // closes.
-  raw_ptr<IdleAppNameNotificationView, ExperimentalAsh> owner_;
+  raw_ptr<IdleAppNameNotificationView> owner_;
 
   // True if the widget got already closed.
   bool widget_closed_;
@@ -262,7 +264,7 @@ void IdleAppNameNotificationView::ShowMessage(
   CreateAndShowWidget(view_, animation_time_ms);
 }
 
-BEGIN_METADATA(IdleAppNameNotificationDelegateView, views::WidgetDelegateView)
+BEGIN_METADATA(IdleAppNameNotificationDelegateView)
 END_METADATA
 
 }  // namespace ash

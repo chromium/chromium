@@ -68,7 +68,7 @@ class WorldSafeV8Reference final {
     if (isolate->InContext()) {
       world_ = &DOMWrapperWorld::Current(isolate);
       WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
-          *world_.get(), value);
+          *world_.Get(), value);
     } else if (value->IsObject()) {
       ScriptState* script_state = ScriptState::From(
           value.template As<v8::Object>()->GetCreationContextChecked());
@@ -82,7 +82,7 @@ class WorldSafeV8Reference final {
   v8::Local<V8Type> Get(ScriptState* target_script_state) const {
     DCHECK(!v8_reference_.IsEmpty());
     if (world_) {
-      CHECK_EQ(world_.get(), &target_script_state->World());
+      CHECK_EQ(world_.Get(), &target_script_state->World());
     }
     return v8_reference_.Get(target_script_state->GetIsolate());
   }
@@ -92,7 +92,7 @@ class WorldSafeV8Reference final {
   v8::Local<V8Type> GetAcrossWorld(ScriptState* target_script_state) const {
     CHECK(world_);
     return WorldSafeV8ReferenceInternal::ToWorldSafeValue(
-               target_script_state, v8_reference_, *world_.get())
+               target_script_state, v8_reference_, *world_.Get())
         .template As<V8Type>();
   }
 
@@ -104,9 +104,9 @@ class WorldSafeV8Reference final {
     const DOMWrapperWorld& new_world = DOMWrapperWorld::Current(isolate);
     WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(new_world,
                                                                  new_value);
-    CHECK(v8_reference_.IsEmpty() || world_.get() == &new_world);
+    CHECK(v8_reference_.IsEmpty() || world_.Get() == &new_world);
     v8_reference_.Reset(isolate, new_value);
-    world_ = WrapRefCounted(&new_world);
+    world_ = &new_world;
   }
 
   // Forcibly sets a new V8 reference even when the worlds are different.  The
@@ -116,17 +116,20 @@ class WorldSafeV8Reference final {
     CHECK(isolate->InContext());
     const DOMWrapperWorld& new_world = DOMWrapperWorld::Current(isolate);
     v8_reference_.Reset(isolate, new_value);
-    world_ = WrapRefCounted(&new_world);
+    world_ = &new_world;
   }
 
   void Reset() {
     v8_reference_.Reset();
-    world_.reset();
+    world_.Clear();
   }
 
   bool IsEmpty() const { return v8_reference_.IsEmpty(); }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(v8_reference_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(v8_reference_);
+    visitor->Trace(world_);
+  }
 
   WorldSafeV8Reference& operator=(const WorldSafeV8Reference<V8Type>& other) =
       default;
@@ -140,7 +143,7 @@ class WorldSafeV8Reference final {
   // The world of the current context at the time when |v8_reference_| was set.
   // It's guaranteed that, if |v8_reference_| is a v8::Object, the world of the
   // creation context of |v8_reference_| is the same as |world_|.
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
 };
 
 }  // namespace blink

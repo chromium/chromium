@@ -14,10 +14,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/video/video_decode_accelerator.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#include <d3d12.h>
+#include <wrl.h>
+#endif
 
 namespace gpu {
 class GpuChannel;
@@ -47,7 +54,15 @@ class MediaGpuChannelManager
   // TODO(sandersd): Should we expose the MediaGpuChannel instead?
   gpu::GpuChannel* LookupChannel(const base::UnguessableToken& channel_token);
 
-  gpu::GpuChannelManager* channel_manager() const { return channel_manager_; }
+#if BUILDFLAG(IS_WIN)
+  const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device() const {
+    return d3d11_device_;
+  }
+
+  const Microsoft::WRL::ComPtr<ID3D12Device>& d3d12_device() const {
+    return d3d12_device_;
+  }
+#endif
 
  private:
   const raw_ptr<gpu::GpuChannelManager> channel_manager_;
@@ -56,6 +71,11 @@ class MediaGpuChannelManager
   std::map<base::UnguessableToken, int32_t> token_to_channel_;
   std::map<int32_t, base::UnguessableToken> channel_to_token_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
+
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+#endif
 };
 
 }  // namespace media

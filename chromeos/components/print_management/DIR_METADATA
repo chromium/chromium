@@ -1,3 +1,4 @@
-monorail {
-  component: "OS>Systems>Printing"
+# ChromeOS > Software > System Services > Peripherals > Printing
+buganizer {
+  component_id: 1131981
 }

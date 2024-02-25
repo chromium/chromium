@@ -11,7 +11,6 @@ mojom("mojom") {
   sources = [
     "battery_monitor.mojom",
     "battery_status.mojom",
-    "device_posture_provider.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
     "geolocation_config.mojom",
@@ -45,6 +44,7 @@ mojom("mojom") {
     "//services/network/public/mojom:url_loader_base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 
   if (is_chromeos_ash) {
@@ -104,13 +104,6 @@ mojom("device_service") {
     enabled_features += [ "enable_hid" ]
   }
 
-  # While the device posture API applies to all platforms, only Android and
-  # Windows can fetch posture information so we only build mojo bindings on
-  # these platforms
-  if (is_android || is_win) {
-    enabled_features += [ "enable_device_posture" ]
-  }
-
   public_deps = [
     ":generic_sensor",
     ":geolocation_internals",
@@ -133,6 +126,7 @@ mojom("generic_sensor") {
 
   visibility_blink = [
     ":mojom_blink",
+    "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
   ]
 
@@ -148,6 +142,10 @@ mojom("generic_sensor") {
           mojom = "device.mojom.SensorConfiguration"
           cpp = "::device::PlatformSensorConfiguration"
         },
+        {
+          mojom = "device.mojom.SensorReadingRaw"
+          cpp = "::device::SensorReading"
+        },
       ]
       traits_headers = [
         "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.h",
@@ -155,8 +153,10 @@ mojom("generic_sensor") {
       traits_sources = [
         "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.cc",
       ]
-      traits_public_deps =
-          [ "//services/device/public/cpp/generic_sensor:sensor_configuration" ]
+      traits_public_deps = [
+        "//services/device/public/cpp/generic_sensor:sensor_configuration",
+        "//services/device/public/cpp/generic_sensor:sensor_reading",
+      ]
     },
   ]
 
@@ -199,7 +199,6 @@ mojom("usb") {
   ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   # Generate legacy JS bindings in addition to WebUI TS bindings for Blink Web
   # Tests.
@@ -211,7 +210,6 @@ mojom("usb_test") {
   sources = [ "usb_manager_test.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
 
 mojom("geoposition") {
@@ -228,14 +226,12 @@ mojom("geoposition") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 }
 
 mojom("geolocation_internals") {
   sources = [ "geolocation_internals.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
   public_deps = [
     ":geoposition",
     "//mojo/public/mojom/base",

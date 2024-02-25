@@ -9,6 +9,7 @@
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './site_favicon.html.js';
 
 export interface SiteFaviconElement {
@@ -30,15 +31,21 @@ export class SiteFaviconElement extends PolymerElement {
     return {
       faviconUrl: String,
       url: String,
+      // The icon's local path. We don't need to fetch the icon from the url if
+      // the path is not empty.
+      iconPath: String,
     };
   }
 
   faviconUrl: string;
   url: string;
+  iconPath: string;
 
   private getBackgroundImage_() {
     let backgroundImage = getFavicon('');
-    if (this.faviconUrl) {
+    if (this.iconPath) {
+      backgroundImage = 'url(' + this.iconPath + ')';
+    } else if (this.faviconUrl) {
       const url = this.ensureUrlHasScheme_(this.faviconUrl);
       backgroundImage = getFavicon(url);
     } else if (this.url) {

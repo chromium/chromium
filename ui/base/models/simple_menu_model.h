@@ -5,13 +5,14 @@
 #ifndef UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
 #define UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -46,6 +47,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     // Determines if |command_id| should be rendered with an alert for
     // in-product help.
     virtual bool IsCommandIdAlerted(int command_id) const;
+
+    // Determines if |element_id| should be rendered with an alert for
+    // in-product help.
+    virtual bool IsElementIdAlerted(ui::ElementIdentifier element_id) const;
 
     // Some command ids have labels and icons that change over time.
     virtual bool IsItemForCommandIdDynamic(int command_id) const;
@@ -194,12 +199,16 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   // allowing it to be tracked without knowledge of menu-specific command IDs.
   void SetElementIdentifierAt(size_t index, ElementIdentifier unique_id);
 
+  // Sets the callback that will be run after the menu item has been executed.
+  void SetExecuteCallbackAt(size_t index,
+                            base::RepeatingCallback<void(int)> callback);
+
   // Clears all items. Note that it does not free MenuModel of submenu.
   void Clear();
 
   // Returns the index of the item that has the given |command_id|. Returns
   // nullopt if not found.
-  absl::optional<size_t> GetIndexOfCommandId(int command_id) const;
+  std::optional<size_t> GetIndexOfCommandId(int command_id) const;
 
   // Overridden from MenuModel:
   size_t GetItemCount() const override;
@@ -259,6 +268,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     bool may_have_mnemonics = true;
     std::u16string accessible_name;
     ElementIdentifier unique_id;
+    base::RepeatingCallback<void(int)> on_execute_callback;
   };
 
   using ItemVector = std::vector<Item>;

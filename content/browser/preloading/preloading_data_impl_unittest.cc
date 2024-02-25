@@ -220,7 +220,8 @@ TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecisionAndRecall) {
 
   for (const auto& [predictor, preloading_type, url] : attempts) {
     preloading_data->AddPreloadingAttempt(
-        predictor, preloading_type, PreloadingData::GetSameURLMatcher(url));
+        predictor, preloading_type, PreloadingData::GetSameURLMatcher(url),
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
   NavigationSimulator::NavigateAndCommitFromBrowser(GetWebContents(), target);

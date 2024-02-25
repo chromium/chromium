@@ -57,20 +57,6 @@ void TabManager::ResourceCoordinatorSignalObserver::OnTakenFromGraph(
 }
 
 // static
-content::WebContents*
-TabManager::ResourceCoordinatorSignalObserver::GetContentsForDispatch(
-    const base::WeakPtr<TabManager>& tab_manager,
-    const WebContentsProxy& contents_proxy,
-    int64_t navigation_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!tab_manager.get() || !contents_proxy.Get() ||
-      contents_proxy.LastNavigationId() != navigation_id) {
-    return nullptr;
-  }
-  return contents_proxy.Get();
-}
-
-// static
 void TabManager::ResourceCoordinatorSignalObserver::OnPageStoppedLoadingOnUi(
     const WebContentsProxy& contents_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

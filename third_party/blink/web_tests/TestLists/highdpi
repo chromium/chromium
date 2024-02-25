@@ -180,7 +180,6 @@ css1/formatting_model/horizontal_formatting.html
 css1/formatting_model/vertical_formatting.html
 css1/pseudo/multiple_pseudo_elements.html
 css1/text_properties/text_align.html
-css1/units/color_units.html
 css2.1/20110323/background-intrinsic-001.htm
 css2.1/20110323/border-conflict-style-079.htm
 css2.1/20110323/c541-word-sp-001.htm
@@ -1025,7 +1024,7 @@ external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html
 external/wpt/selection/caret/collapse-pre-linestart-2.html
 external/wpt/selection/crashtests/table.html
-external/wpt/shadow-dom/declarative/declarative-shadow-dom-opt-in.tentative.html
+external/wpt/shadow-dom/declarative/declarative-shadow-dom-opt-in.html
 external/wpt/shadow-dom/focus/focus-tabindex-order-shadow-slot-one.html
 external/wpt/shadow-dom/input-element-list.html
 external/wpt/shadow-dom/leaktests/get-elements.html
@@ -1233,6 +1232,7 @@ fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html
 fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html
 fast/forms/text/input-baseline.html
 fast/forms/text/text-appearance-datalist.html
+fast/forms/text/text-field-sizing-caret.html
 fast/forms/textarea/basic-textareas-quirks.html
 fast/forms/textarea/textarea-align.html
 fast/forms/textarea/textarea-scrolled-type.html
@@ -1558,7 +1558,6 @@ transforms/transform-on-inline.html
 transforms/transformed-document-element.html
 virtual/android/fullscreen/video-controls-timeline.html
 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
-virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html
@@ -1573,10 +1572,7 @@ virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/backplate/forced
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-04.html
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html
 virtual/forced-high-contrast-colors/html/details_summary/color-scheme-validation/details-with-summary-open.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-image.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/jpeg-missing-eoi.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/webp-color-profile-lossy.html
+
 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/border-color.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/entire-canvas-visible-zoom.html

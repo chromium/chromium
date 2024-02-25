@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Vee bladsy <ph name="PAGE_NUMBER" /> uit</translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Rooster af</translation>
-<translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Bladsy <ph name="PAGE_NUMBER" /> is uitgevee</translation>
 <translation id="1258009455399840361">Draai 90 grade kloksgewys</translation>
 <translation id="1417314334557041815">Wysig bladsy <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Swenk regs</translation>
 <translation id="3081586908890909590">Skakel oor na opneem van video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Sluit aan by “<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3240426699337459095">Skakel gekopieer</translation>
 <translation id="3354465018370944241">Foto-instellings</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Verwerk tans video …</translation>
 <translation id="3789724198583203151">Draai 90 grade antikloksgewys</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="4060608699153044055">Jy kan nie opneem nie vanweë min bergingspasie. Jy moet spasie op jou toestel beskikbaar maak as jy die opname wil begin.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Onderbreek opname</translation>
 <translation id="4121305183798804752">Dokument bespeur</translation>
 <translation id="414641094616694804">Hierdie kamera kan nie resolusie verander nie</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
-<translation id="4269820728363426813">Kopieer skakeladres</translation>
 <translation id="428234092390943511">Bladsyminiprent</translation>
 <translation id="4349714250734879769">Skaleer rame deur Chrome</translation>
 <translation id="4383571725254449280">Drukwerkverrigtingloglêers</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Volle resolusie</translation>
 <translation id="4864143361253542638">Lys geskandeerde bladsye</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopieer skakeladres <ph name="URL" /></translation>
 <translation id="491895758387112773">Multistroom-video-opname</translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4984613436295737187">Viervoudige HD (1440 p)</translation>
 <translation id="5034763830503483128">Fotoaspekverhouding</translation>
 <translation id="5057360777601936059">Jou kamera is tans nie beskikbaar nie.
         Kyk asseblief of die kamera behoorlik gekoppel is.</translation>
+<translation id="5157591164390831335">URL bespeur.</translation>
 <translation id="5163387177077603948">Beweeg tans na regs</translation>
-<translation id="5219374179772385066">Tydsverloop-modus is nou beskikbaar!</translation>
 <translation id="5235304959032763950">16 tot 9</translation>
 <translation id="5266635337630551423">Dokument se hoek links bo</translation>
 <translation id="5317780077021120954">Berg</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Dankie dat jy terugvoer oor die Kamera-program gegee het.
 
 As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeldfoto of -video aanheg en beskryf wat fout is. (Byvoorbeeld, foto is te donker of onderwerp is nie in fokus nie.)</translation>
+<translation id="6519884562954018934">Sluit aan by <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6617916774429601017">Wys alle resolusies</translation>
 <translation id="6631515515009660915">Spieël af</translation>
@@ -133,6 +133,7 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="7450541714075000668">Teks gekopieer</translation>
 <translation id="7488619942230388918">Neem GIF-video op</translation>
 <translation id="7557677699350329807">Skakel oor na volgende kamera</translation>
+<translation id="7562584071994185503">Kopieer teks <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="761421184377987513">Beweeg tans na links onder</translation>
@@ -155,10 +156,12 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8346544573713510785">Skaleer rame deur Kamera HAL</translation>
 <translation id="8425673304802773841">Kantel af</translation>
 <translation id="8428213095426709021">Instellings</translation>
+<translation id="8609951387004618906">Maak <ph name="URL" /> oop</translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Wissel mikrofoondempknoppie. Demp is aan</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8732462232047530626">Voorbeskou metadata</translation>
+<translation id="874854738381978209">Wi-fi-netwerk bespeur.</translation>
 <translation id="8815966864175525708">Wissel om portretfoto te neem</translation>
 <translation id="8828441885228359828">Hervat opname</translation>
 <translation id="8870695351537079478">Kan nie opname begin nie</translation>

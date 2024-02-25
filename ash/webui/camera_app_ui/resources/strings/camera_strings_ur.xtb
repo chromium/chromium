@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">صفحہ <ph name="PAGE_NUMBER" /> حذف کریں</translation>
 <translation id="1113173431709655881">کیمرا وضع</translation>
 <translation id="1153190633558910465">گرڈ آف کریں</translation>
-<translation id="1175958423215084756">لنک کا پتہ چلا۔ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">صفحہ <ph name="PAGE_NUMBER" /> حذف ہو گیا</translation>
 <translation id="1258009455399840361">گھڑی کی سمت 90 ڈگری پر گھمائیں</translation>
 <translation id="1417314334557041815">صفحہ <ph name="INDEX" /> میں ترمیم کریں</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">دائیں طرف پین کریں</translation>
 <translation id="3081586908890909590">ویڈیو ریکارڈ کرنے کی وضع پر سوئچ کریں</translation>
 <translation id="313467653172006084">‎30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" میں شامل ہوں</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3354465018370944241">تصویر کی ترتیبات</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">ویڈیو پر کارروائی ہو رہی ہے...</translation>
 <translation id="3789724198583203151">90 ڈگری پر خلاف گھڑی وار گھمائیں</translation>
 <translation id="3810838688059735925">ویڈیو</translation>
-<translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="4060608699153044055">آپ آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے ریکارڈ نہیں کر سکتے۔ ریکارڈنگ شروع کرنے کے لیے آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ریکارڈنگ موقوف کریں</translation>
 <translation id="4121305183798804752">دستاویز کا پتہ چلا</translation>
 <translation id="414641094616694804">یہ کیمرا ریزولوشن تبدیل نہیں کر سکتا</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
-<translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="428234092390943511">صفحہ کا تھمب نیل</translation>
 <translation id="4349714250734879769">‏Chrome کے زیر انتظام اسکیل فریمز</translation>
 <translation id="4383571725254449280">کارکردگی کے لاگز پرنٹ کریں</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">مکمل ریزولیوشن</translation>
 <translation id="4864143361253542638">اسکین شدہ صفحہ کی فہرست</translation>
 <translation id="4890010094662541459">‎3 x 3‎</translation>
+<translation id="4892746741161549733">لنک کا پتہ <ph name="URL" /> کاپی کریں</translation>
 <translation id="491895758387112773">ملٹی اسٹریم ویڈیو ریکارڈنگ</translation>
 <translation id="495170559598752135">کارروائیاں</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">تصویر کی تناسبی شرح</translation>
 <translation id="5057360777601936059">آپ کا کیمرا فی الحال دستیاب نہیں ہے۔
         چیک کریں کہ کیمرا ٹھیک سے منسلک ہے۔</translation>
+<translation id="5157591164390831335">‏URL کا پتہ چلا۔</translation>
 <translation id="5163387177077603948">صحیح سمت میں جا رہا ہے</translation>
-<translation id="5219374179772385066">ٹائم لیپس موڈ اب دستیاب ہے!</translation>
 <translation id="5235304959032763950">16 سے 9</translation>
 <translation id="5266635337630551423">دستاویز کا اوپری بایاں کونا</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">کیمرا ایپ پر تاثرات دینے کے لئے شکریہ۔
 
 اگر آپ کے تاثرات تصویر یا ویڈیو کے معیار کے بارے میں ہیں تو براہ کرم نمونہ کی تصویر یا ویڈیو منسلک کریں اور وضاحت کریں کہ کیا غلط ہے۔ (مثال کے طور پر، تصویر بہت گہری ہے یا مضمون فوکس میں نہیں ہے۔)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> میں شامل ہوں</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6617916774429601017">تمام ریزولیوشن دکھائیں</translation>
 <translation id="6631515515009660915">دو طرفہ مطابقت پذیر بنانے کو آف کریں</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">متن کاپی ہو گیا</translation>
 <translation id="7488619942230388918">‏GIF ویڈیو ریکارڈ کریں</translation>
 <translation id="7557677699350329807">اگلے کیمرے پر سوئچ کريں</translation>
+<translation id="7562584071994185503">ٹیکسٹ <ph name="TEXT" /> کاپی کریں</translation>
 <translation id="7607002721634913082">موقوف</translation>
 <translation id="7608223098072244877">4 ضرب 4</translation>
 <translation id="761421184377987513">نیچے دائیں سمت میں جا رہا ہے</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">‏HAL کیمرا کے زیر انتظام اسکیل فریمز</translation>
 <translation id="8425673304802773841">نیچے کی طرف جھکائیں</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
+<translation id="8609951387004618906"><ph name="URL" /> کھولیں</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">مائیکروفون خاموش بٹن کو ٹوگل کریں خاموش کریں بٹن آن ہے</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8732462232047530626">میٹا ڈیٹا کا پیش منظر</translation>
+<translation id="874854738381978209">‏Wi-Fi نیٹ ورک کا پتہ چلا۔</translation>
 <translation id="8815966864175525708">پورٹریٹ تصویر لینے کی وضع پر سوئچ کریں</translation>
 <translation id="8828441885228359828">ریکارڈنگ دوبارہ شروع کریں</translation>
 <translation id="8870695351537079478">ریکارڈنگ شروع کرنے سے قاصر</translation>

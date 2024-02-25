@@ -1,1 +1,6 @@
 file://ui/webui/PLATFORM_OWNERS
+
+# Review from WebUI PLATFORM_OWNERs required since these files are commonly
+# used to add new WebUI surfaces.
+per-file content_web_ui_configs*=set noparent
+per-file content_web_ui_configs*=file://ui/webui/PLATFORM_OWNERS

@@ -1,0 +1,9 @@
+# https://ci.chromium.org/ui/p/chromium/builders/try/win-rel-cft/185
+-All/PasswordGenerationPopupViewBrowsertest.*
+-All/PopupViewViewsBrowsertest*
+-InfoBarUiTest.*
+-InteractionTestUtilBrowserTest.CompareScreenshot_WebPage
+
+# https://ci.chromium.org/ui/p/chromium/builders/ci/win-rel-cft/3427/
+-PageInfoBubbleViewCookiesSubpageBrowserTest.*
+-PageInfoBubbleViewDialogBrowserTest.*

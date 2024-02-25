@@ -10,8 +10,8 @@
 
 namespace blink {
 
-class Element;
 class ComputedStyle;
+class Element;
 class HTMLSlotElement;
 class StyleScopeFrame;
 
@@ -69,16 +69,18 @@ class CORE_EXPORT StyleRecalcContext {
   // display:none.
   const ComputedStyle* old_style = nullptr;
 
-  // If true, something about the parent's style (e.g., that it has
+  // If false, something about the parent's style (e.g., that it has
   // modifications to one or more non-independent inherited properties)
   // forces a full recalculation of this element's style, precluding
-  // any incremental style calculation.
+  // any incremental style calculation. This is false by default so that
+  // any “weird” calls to ResolveStyle() (e.g., those where the element
+  // is not marked for recalc) don't get incremental style.
   //
   // NOTE: For the base computed style optimization, we do not only
   // rely on this, but also on the fact that the caller calls
   // SetAnimationStyleChange(false) directly. This is somewhat out of
   // legacy reasons.
-  bool parent_forces_recalc = false;
+  bool can_use_incremental_style = false;
 
   // True when we're ensuring the style of an element. This can only happen
   // when regular style can't reach the element (i.e. inside display:none, or
@@ -94,6 +96,13 @@ class CORE_EXPORT StyleRecalcContext {
   // TODO(crbug.com/831568): Elements outside the flat tree should
   // not have a style.
   bool is_outside_flat_tree = false;
+
+  // True when we're computing style interleaved from OOF-layout. This can
+  // happen when e.g. position-fallback is used.
+  //
+  // Note however that declarations from @try styles may still be included
+  // when this flag is false (see OutOfFlowData, "speculative @try styling").
+  bool is_interleaved_oof = false;
 };
 
 }  // namespace blink

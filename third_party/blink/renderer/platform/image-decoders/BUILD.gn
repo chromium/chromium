@@ -1,0 +1,143 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//media/media_options.gni")
+import("//testing/test.gni")
+import("//third_party/blink/renderer/platform/platform.gni")
+component("image_decoders") {
+  visibility = [
+    "//third_party/blink/renderer/core/*",
+    "//third_party/blink/renderer/platform/*",
+  ]
+  output_name = "image_decoders"
+
+  sources = [
+    "bmp/bmp_image_decoder.cc",
+    "bmp/bmp_image_decoder.h",
+    "bmp/bmp_image_reader.cc",
+    "bmp/bmp_image_reader.h",
+    "exif_reader.cc",
+    "exif_reader.h",
+    "fast_shared_buffer_reader.cc",
+    "fast_shared_buffer_reader.h",
+    "gif/gif_image_decoder.cc",
+    "gif/gif_image_decoder.h",
+    "ico/ico_image_decoder.cc",
+    "ico/ico_image_decoder.h",
+    "image_animation.h",
+    "image_decoder.cc",
+    "image_decoder.h",
+    "image_frame.cc",
+    "image_frame.h",
+    "jpeg/jpeg_image_decoder.cc",
+    "jpeg/jpeg_image_decoder.h",
+    "png/png_image_decoder.cc",
+    "png/png_image_decoder.h",
+    "png/png_image_reader.cc",
+    "png/png_image_reader.h",
+    "rw_buffer.cc",
+    "rw_buffer.h",
+    "segment_reader.cc",
+    "segment_reader.h",
+    "segment_stream.cc",
+    "segment_stream.h",
+    "webp/webp_image_decoder.cc",
+    "webp/webp_image_decoder.h",
+  ]
+
+  configs +=
+      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+
+  public_deps = [
+    "//base:base",
+    "//cc/paint:paint",
+    "//third_party/blink/renderer/platform:allow_discouraged_type",
+    "//third_party/blink/renderer/platform:image_headers",
+    "//third_party/blink/renderer/platform:platform_export",
+    "//third_party/blink/renderer/platform/instrumentation:histogram",
+    "//third_party/blink/renderer/platform/wtf:wtf",
+  ]
+
+  deps = [
+    "//skia",
+    "//skia:skcms",
+    "//third_party:jpeg",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/public/common:headers",
+    "//third_party/libpng",
+    "//third_party/libwebp",
+    "//third_party/libyuv",
+  ]
+
+  if (enable_av1_decoder) {
+    sources += [
+      "avif/avif_image_decoder.cc",
+      "avif/avif_image_decoder.h",
+    ]
+
+    deps += [
+      "//third_party/libavif",
+      "//third_party/libavifinfo",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  visibility = [ "//third_party/blink/renderer/platform:*" ]
+  testonly = true
+
+  configs +=
+      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+
+  sources = [
+    "bmp/bmp_image_decoder_test.cc",
+    "fast_shared_buffer_reader_test.cc",
+    "gif/gif_image_decoder_test.cc",
+    "ico/ico_image_decoder_test.cc",
+    "image_decoder_base_test.cc",
+    "image_decoder_base_test.h",
+    "image_decoder_test.cc",
+    "image_decoder_test_helpers.cc",
+    "image_decoder_test_helpers.h",
+    "image_frame_test.cc",
+    "jpeg/jpeg_image_decoder_test.cc",
+    "png/png_image_decoder_test.cc",
+    "rw_buffer_test.cc",
+    "segment_stream_test.cc",
+    "webp/webp_image_decoder_test.cc",
+  ]
+
+  deps = [
+    ":image_decoders",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+
+  if (is_win || is_mac || (is_linux && !is_castos)) {
+    deps += [ "//ui/base:pixel_diff_test_support" ]
+  }
+
+  if (enable_av1_decoder) {
+    sources += [ "avif/avif_image_decoder_test.cc" ]
+
+    deps += [ "//third_party/libavif:libavif" ]
+  }
+}
+
+fuzzer_test("blink_bmp_image_decoder_fuzzer") {
+  sources = [ "bmp/bmp_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":image_decoders",
+    "//base",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/blink/renderer/platform:image_headers",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/bmp-suite/good" ]
+  # TODO: crbug.com/324586211 - raise the memory limit to avoid OOMs in the
+  # fuzzer harness. This can be removed once the global memory limit is raised.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
+}

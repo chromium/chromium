@@ -264,7 +264,8 @@ object_value {
           }
         }
       }
-
+    }
+  }
   field {
     name: "not_filters"
     value {
@@ -391,6 +392,14 @@ object_value {
     value {
       string_value {
         value: "include"
+      }
+    }
+  }
+  field {
+    name: "trigger_context_id"
+    value {
+      string_value {
+        value: "example"
       }
     }
   }

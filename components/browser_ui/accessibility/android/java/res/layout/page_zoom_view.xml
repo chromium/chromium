@@ -39,13 +39,12 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
 
-    <!-- TODO aashnas: do not use a hardcoded value for the width
-            (should be wrap_content) -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_zoom_reset_zoom_button"
         style="@style/TextAppearance.PageZoomResetButton"
-        android:layout_width="@dimen/page_zoom_reset_button_width"
-        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
         android:text="@string/reset"
         android:textAlignment="center"
         android:layout_gravity="center_vertical"

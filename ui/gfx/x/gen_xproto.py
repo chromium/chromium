@@ -9,15 +9,11 @@
 # with xcbgen, a python library that parses the files into python data
 # structures for us.
 
-from __future__ import print_function
-
 import argparse
 import collections
 import itertools
 import os
-import re
 import sys
-import types
 
 # __main__.output must be defined before importing xcbgen,
 # so this global is unavoidable.
@@ -30,7 +26,6 @@ RENAME = {
     'CHARINFO': 'CharInfo',
     'COLORITEM': 'ColorItem',
     'COLORMAP': 'ColorMap',
-    'Connection': 'RandRConnection',
     'CP': 'CreatePictureAttribute',
     'CS': 'ClientSpec',
     'CW': 'CreateWindowAttribute',
@@ -66,6 +61,9 @@ RENAME = {
     'VISUALID': 'VisualId',
     'VISUALTYPE': 'VisualType',
     'WAITCONDITION': 'WaitCondition',
+
+    # Avoid name conflicts.
+    'Connection': 'RandRConnection',
 }
 
 READ_SPECIAL = set([
@@ -91,6 +89,31 @@ FILE_HEADER = \
 // This file was automatically generated with:
 // %s
 ''' % ' \\\n//    '.join(sys.argv)
+
+EVENT_TYPE_AND_OP = '''
+void ExtensionManager::GetEventTypeAndOp(const void* raw_event,
+                                         uint8_t* type_id,
+                                         uint8_t* opcode) const {
+  const auto* event = static_cast<const xcb_generic_event_t*>(raw_event);
+  auto event_id = event->response_type & ~kSendEventMask;
+  if (event_id != GeGenericEvent::opcode) {
+    *type_id = event_type_ids_[event_id];
+    *opcode = opcodes_[event_id];
+    return;
+  }
+
+  const auto* ge = static_cast<const xcb_ge_generic_event_t*>(raw_event);
+  *type_id = 0;
+  *opcode = ge->event_type;
+  for (const auto& ext : ge_extensions_) {
+    if (ext.extension_id == ge->extension) {
+      if (ge->event_type < ext.ge_count) {
+        *type_id = ge_type_ids_[ext.offset + ge->event_type];
+      }
+      return;
+    }
+  }
+}'''
 
 
 def adjust_type_name(name):
@@ -595,7 +618,7 @@ class GenXproto(FileWriter):
                 self.write('%s.resize(%s);' % (name, size))
             else:
                 left = 'static_cast<size_t>(%s)' % size
-                self.write('DCHECK_EQ(%s, %s.size());' % (left, name))
+                self.write('CHECK_EQ(%s, %s.size());' % (left, name))
         with Indent(self, 'for (auto& %s_elem : %s) {' % (name, name), '}'):
             elem_name = name + '_elem'
             elem_type = t.member
@@ -726,44 +749,11 @@ class GenXproto(FileWriter):
             for field_type_name in self.declare_field(field):
                 self.write('%s %s{};' % field_type_name)
 
-    # This tries to match XEvent.xany.window, except the window will be
-    # Window::None for events that don't have a window, unlike the XEvent
-    # union which will get whatever data happened to be at the offset of
-    # xany.window.
-    def get_window_field(self, event):
-        # The window field is not stored at any particular offset in the event,
-        # so get a list of all the window fields.
-        WINDOW_TYPES = set([
-            ('xcb', 'WINDOW'),
-            ('xcb', 'DRAWABLE'),
-            ('xcb', 'Glx', 'DRAWABLE'),
-        ])
-        # The window we want may not be the first in the list if there are
-        # multiple windows. This is a list of all possible window names,
-        # ordered from highest to lowest priority.
-        WINDOW_NAMES = [
-            'window',
-            'event',
-            'request_window',
-            'owner',
-        ]
-        windows = set([
-            field.field_name for field in event.fields
-            if field.field_type in WINDOW_TYPES
-        ])
-        if len(windows) == 0:
-            return ''
-        if len(windows) == 1:
-            return list(windows)[0]
-        for name in WINDOW_NAMES:
-            if name in windows:
-                return name
-        assert False
-
     def declare_event(self, event, name):
         event_name = name[-1] + 'Event'
         with Indent(self, 'struct %s {' % adjust_type_name(event_name), '};'):
-            self.write('static constexpr int type_id = %d;' % event.type_id)
+            self.write('static constexpr uint8_t type_id = %d;' %
+                       event.type_id)
             if len(event.opcodes) == 1:
                 self.write('static constexpr uint8_t opcode = %s;' %
                            event.opcodes[name])
@@ -774,11 +764,6 @@ class GenXproto(FileWriter):
                     for opcode, opname in sorted(items):
                         self.write('%s = %s,' % (opname, opcode))
             self.declare_fields(event.fields)
-            self.write()
-            window_field = self.get_window_field(event)
-            ret = ('reinterpret_cast<x11::Window*>(&%s)' %
-                   window_field if window_field else 'nullptr')
-            self.write('x11::Window* GetWindow() { return %s; }' % ret)
         self.write()
 
     def declare_error(self, error, name):
@@ -986,7 +971,7 @@ class GenXproto(FileWriter):
             self.copy_container(reply, '(*reply)')
             self.write('Align(&buf, 4);')
             offset = 'buf.offset < 32 ? 0 : buf.offset - 32'
-            self.write('DCHECK_EQ(%s, 4 * length);' % offset)
+            self.write('CHECK_EQ(%s, 4 * length);' % offset)
             self.write()
             self.write('return reply;')
         self.write()
@@ -1003,9 +988,9 @@ class GenXproto(FileWriter):
             self.copy_container(event, '(*event_)')
             if event.is_ge_event:
                 self.write('Align(&buf, 4);')
-                self.write('DCHECK_EQ(buf.offset, 32 + 4 * length);')
+                self.write('CHECK_EQ(buf.offset, 32 + 4 * length);')
             else:
-                self.write('DCHECK_LE(buf.offset, 32ul);')
+                self.write('CHECK_LE(buf.offset, 32ul);')
         self.write()
 
     def define_error(self, error, name):
@@ -1029,7 +1014,8 @@ class GenXproto(FileWriter):
             self.write()
             self.is_read = True
             self.copy_container(error, '(*error_)')
-            self.write('DCHECK_LE(buf.offset, 32ul);')
+            self.write('CHECK_LE(buf.offset, 32ul);')
+        self.write()
 
     def define_type(self, item, name):
         if name in READ_SPECIAL:
@@ -1339,6 +1325,7 @@ class GenXproto(FileWriter):
         self.write()
         self.write('#include "base/logging.h"')
         self.write('#include "base/posix/eintr_wrapper.h"')
+        self.write('#include "ui/gfx/x/connection.h"')
         self.write('#include "ui/gfx/x/xproto_internal.h"')
         self.write()
         self.write('namespace x11 {')
@@ -1372,9 +1359,27 @@ class GenExtensionManager(FileWriter):
 
         self.gen_dir = gen_dir
         self.genprotos = genprotos
-        self.extensions = [
-            proto for proto in genprotos if proto.module.namespace.is_ext
-        ]
+        self.extensions = []
+        for proto in genprotos:
+            if proto.module.namespace.is_ext:
+                self.extensions.append(proto)
+            else:
+                self.xproto = proto
+
+        # Calculate the number of generic events and the number of extensions
+        # that have any generic events.
+        self.total_ge = 0
+        self.ge_extensions = 0
+        for extension in self.extensions:
+            max_op = -1
+            for _, item in extension.module.all:
+                if item.is_event and item.is_ge_event:
+                    for op in item.opcodes.values():
+                        max_op = max(max_op, int(op))
+            extension.ge_events = max_op + 1
+            if extension.ge_events:
+                self.total_ge += extension.ge_events
+                self.ge_extensions += 1
 
     def gen_header(self):
         self.file = open(os.path.join(self.gen_dir, 'extension_manager.h'),
@@ -1400,6 +1405,9 @@ class GenExtensionManager(FileWriter):
             self.write('ExtensionManager();')
             self.write('~ExtensionManager();')
             self.write()
+            self.write('void GetEventTypeAndOp(const void* raw_event,')
+            self.write('     uint8_t* type_id, uint8_t* opcode) const;')
+            self.write()
             for extension in self.extensions:
                 name = extension.proto
                 self.write('%s& %s() { return *%s_; }' %
@@ -1409,9 +1417,28 @@ class GenExtensionManager(FileWriter):
             self.write('void Init(Connection* conn);')
             self.write()
             self.write('private:')
+            with Indent(self, 'struct ExtensionGeMap {', '};'):
+                self.write('// The extension ID provided by the server.')
+                self.write('uint8_t extension_id = 0;')
+                self.write(
+                    '// The count of generic events for this extension.')
+                self.write('uint8_t ge_count = 0;')
+                self.write(
+                    '// The index in `ge_type_ids_` for this extension.')
+                self.write('uint16_t offset = 0;')
+            self.write()
             for extension in self.extensions:
                 self.write('std::unique_ptr<%s> %s_;' %
                            (extension.class_name, extension.proto))
+            self.write()
+            self.write('// Event opcodes indexed by response ID.')
+            self.write('uint8_t opcodes_[128] = {0};')
+            self.write('// Event type IDs indexed by response ID.')
+            self.write('uint8_t event_type_ids_[128] = {0};')
+            self.write('// Generic event type IDs for all extensions.')
+            self.write('uint8_t ge_type_ids_[%d] = {0};' % self.total_ge)
+            self.write('ExtensionGeMap ge_extensions_[%d] = {};' %
+                       self.ge_extensions)
         self.write()
         self.write('}  // namespace x11')
         self.write()
@@ -1423,8 +1450,11 @@ class GenExtensionManager(FileWriter):
         self.write_header()
         self.write('#include "ui/gfx/x/extension_manager.h"')
         self.write()
+        self.write('#include <xcb/xcb.h>')
+        self.write()
         self.write('#include "ui/gfx/x/connection.h"')
         self.write('#include "ui/gfx/x/xproto_internal.h"')
+        self.write('#include "ui/gfx/x/xproto_types.h"')
         for genproto in self.genprotos:
             self.write('#include "ui/gfx/x/%s.h"' % genproto.proto)
         self.write()
@@ -1438,115 +1468,69 @@ class GenExtensionManager(FileWriter):
                     (extension.proto, extension.module.namespace.ext_xname))
             # Flush so all requests are sent before waiting on any replies.
             self.write('conn->Flush();')
-            self.write()
             for extension in self.extensions:
                 name = extension.proto
                 self.write(
                     '%s_ = MakeExtension<%s>(conn, std::move(%s_future));' %
                     (name, extension.class_name, name))
+            self.write()
+
+            self.write('// XProto may know about more events than the server')
+            self.write('// if the server extension is an earlier version.')
+            self.write('// Always take the event with the later `first_event`')
+            self.write('// to prevent conflicts.')
+            self.write('uint8_t first_events[128] = {0};')
+            args = 'uint8_t first_event, uint8_t op, uint8_t type_id'
+            with Indent(self, 'auto set_type = [&](%s) {' % args, '};'):
+                self.write('const uint8_t id = first_event + op;')
+                cond = 'first_events[id] <= first_event'
+                with Indent(self, 'if (%s) {' % cond, '}'):
+                    self.write('first_events[id] = first_event;')
+                    self.write('event_type_ids_[id] = type_id;')
+                    self.write('opcodes_[id] = op;')
+            self.write()
+
+            # Generate event metadata for core protocol events.
+            for _, item in self.xproto.module.all:
+                if item.is_event and not item.is_ge_event:
+                    for op in item.opcodes.values():
+                        self.write('set_type(0, %s, %s);' % (op, item.type_id))
+
+            # Generate event metadata for extension events.
+            self.write('uint16_t ge_offset = 0;')
+            self.write('uint8_t ge_extension = 0;')
+            for extension in self.extensions:
+                if any(item.is_event for _, item in extension.module.all):
+                    name = extension.proto
+                    with Indent(self, 'if (%s_->present()) {' % name, '}'):
+                        self.gen_extension_events(extension)
+
+        self.write(EVENT_TYPE_AND_OP)
         self.write()
         self.write('ExtensionManager::ExtensionManager() = default;')
         self.write('ExtensionManager::~ExtensionManager() = default;')
         self.write()
         self.write('}  // namespace x11')
 
-
-class GenReadEvent(FileWriter):
-    def __init__(self, gen_dir, genprotos):
-        FileWriter.__init__(self)
-
-        self.gen_dir = gen_dir
-        self.genprotos = genprotos
-
-        self.events = []
-        for proto in self.genprotos:
-            for name, item in proto.module.all:
-                if item.is_event:
-                    self.events.append((name, item, proto))
-
-    def event_condition(self, event, typename, proto):
-        ext = 'conn->%s()' % proto.proto
-
-        conds = []
-        if not proto.module.namespace.is_ext:
-            # Core protocol event
-            opcode = 'evtype'
-        elif event.is_ge_event:
-            # GenericEvent extension event
-            conds.extend([
-                'evtype == GeGenericEvent::opcode',
-                '%s.present()' % ext,
-                'ge->extension == %s.major_opcode()' % ext,
-            ])
-            opcode = 'ge->event_type'
-        else:
-            # Extension event
-            opcode = 'evtype - %s.first_event()' % ext
-            conds.append('%s.present()' % ext)
-
-        if len(event.opcodes) == 1:
-            conds.append('%s == %s::opcode' % (opcode, typename))
-        else:
-            conds.append('(%s)' % ' || '.join([
-                '%s == %s::%s' % (opcode, typename, opname)
-                for opname in event.enum_opcodes.keys()
-            ]))
-
-        return ' && '.join(conds), opcode
-
-    def gen_event(self, name, event, proto):
-        # We can't ever have a plain generic event.  It must be a concrete
-        # event provided by an extension.
-        if name == ('xcb', 'GeGeneric'):
-            return
-
-        name = [adjust_type_name(part) for part in name[1:]]
-        typename = '::'.join(name) + 'Event'
-
-        cond, opcode = self.event_condition(event, typename, proto)
-        with Indent(self, 'if (%s) {' % cond, '}'):
-            self.write('event->type_id_ = %d;' % event.type_id)
-            with Indent(self, 'auto deleter_ = [](void* e) {', '};'):
-                self.write('if(e){delete reinterpret_cast<%s*>(e);}' %
-                           typename)
-            self.write('auto* event_ = new %s;' % typename)
-            self.write('ReadEvent(event_, buffer);')
-            if len(event.opcodes) > 1:
-                self.write('{0} = static_cast<decltype({0})>({1});'.format(
-                    'event_->opcode', opcode))
-            self.write('event->event_ = {event_, deleter_};')
-            self.write('event->window_ = event_->GetWindow();')
-            self.write('return;')
-        self.write()
-
-    def gen_source(self):
-        self.file = open(os.path.join(self.gen_dir, 'read_event.cc'), 'w')
-        self.write_header()
-        self.write('#include "ui/gfx/x/event.h"')
-        self.write()
-        self.write('#include <xcb/xcb.h>')
-        self.write()
-        self.write('#include "ui/gfx/x/connection.h"')
-        self.write('#include "ui/gfx/x/xproto_types.h"')
-        for genproto in self.genprotos:
-            self.write('#include "ui/gfx/x/%s.h"' % genproto.proto)
-        self.write()
-        self.write('namespace x11 {')
-        self.write()
-        self.write('void ReadEvent(')
-        args = 'Event* event, Connection* conn, ReadBuffer* buffer'
-        with Indent(self, '    %s) {' % args, '}'):
-            self.write('auto* buf = buffer->data->data();')
-            cast = 'auto* %s = reinterpret_cast<const %s*>(buf);'
-            self.write(cast % ('ev', 'xcb_generic_event_t'))
-            self.write(cast % ('ge', 'xcb_ge_generic_event_t'))
-            self.write('auto evtype = ev->response_type & ~kSendEventMask;')
-            self.write()
-            for name, event, proto in self.events:
-                self.gen_event(name, event, proto)
-            self.write('// Leave `event` default-initialized.')
-        self.write()
-        self.write('}  // namespace x11')
+    def gen_extension_events(self, extension):
+        name = extension.proto
+        self.write('auto first_event = %s_->first_event();' % name)
+        for _, item in extension.module.all:
+            if not item.is_event:
+                continue
+            for op in item.opcodes.values():
+                if item.is_ge_event:
+                    self.write('ge_type_ids_[ge_offset + %s] = %d;' %
+                               (op, item.type_id))
+                else:
+                    self.write('set_type(first_event, %s, %s);' %
+                               (op, item.type_id))
+        if extension.ge_events:
+            op = name + '_->major_opcode()'
+            self.write('ge_extensions_[ge_extension] = {%s, %d, ge_offset};' %
+                       (op, extension.ge_events))
+            self.write('ge_offset += %d;' % extension.ge_events)
+            self.write('ge_extension++;')
 
 
 class GenReadError(FileWriter):
@@ -1618,7 +1602,7 @@ class GenReadError(FileWriter):
         self.write('namespace {')
         self.write()
         self.write('template <typename T>')
-        sig = 'std::unique_ptr<Error> MakeError(Connection::RawError error_)'
+        sig = 'std::unique_ptr<Error> MakeError(RawError error_)'
         with Indent(self, '%s {' % sig, '}'):
             self.write('ReadBuffer buf(error_);')
             self.write('auto error = std::make_unique<T>();')
@@ -1671,8 +1655,6 @@ def main():
     gen_extension_manager = GenExtensionManager(args.gen_dir, genprotos)
     gen_extension_manager.gen_header()
     gen_extension_manager.gen_source()
-
-    GenReadEvent(args.gen_dir, genprotos).gen_source()
 
     GenReadError(args.gen_dir, genprotos, xcbgen).gen_source()
 

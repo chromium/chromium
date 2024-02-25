@@ -14,6 +14,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_metrics_recorder.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_structured_metrics_logger.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace base {
 class Clock;
@@ -45,12 +47,14 @@ class ConnectionManagerImpl : public ConnectionManager,
       device_sync::DeviceSyncClient* device_sync_client,
       SecureChannelClient* secure_channel_client,
       const std::string& feature_name,
-      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder);
+      std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger);
   ~ConnectionManagerImpl() override;
 
   // ConnectionManager:
   ConnectionManager::Status GetStatus() const override;
-  void AttemptNearbyConnection() override;
+  bool AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
@@ -60,7 +64,7 @@ class ConnectionManagerImpl : public ConnectionManager,
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
 
  private:
   friend class ConnectionManagerImplTest;
@@ -72,6 +76,8 @@ class ConnectionManagerImpl : public ConnectionManager,
       std::unique_ptr<base::OneShotTimer> timer,
       const std::string& feature_name,
       std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger,
       base::Clock* clock);
 
   // ConnectionAttempt::Delegate:
@@ -82,6 +88,9 @@ class ConnectionManagerImpl : public ConnectionManager,
   // ClientChannel::Observer:
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& payload) override;
+  void OnNearbyConnectionStateChagned(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   void OnConnectionTimeout();
   void TearDownConnection();
@@ -89,18 +98,19 @@ class ConnectionManagerImpl : public ConnectionManager,
   void OnStatusChanged();
   void RecordMetrics();
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<SecureChannelClient, ExperimentalAsh> secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<SecureChannelClient> secure_channel_client_;
   std::unique_ptr<ConnectionAttempt> connection_attempt_;
   std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
   const std::string feature_name_;
   std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
+  raw_ptr<SecureChannelStructuredMetricsLogger>
+      secure_channel_structured_metrics_logger_ = nullptr;
   Status last_status_;
   base::Time status_change_timestamp_;
-  raw_ptr<base::Clock, DanglingUntriaged | ExperimentalAsh> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

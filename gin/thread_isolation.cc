@@ -10,7 +10,7 @@
 #include <sys/utsname.h>
 #include <cstddef>
 
-#include "base/allocator/partition_allocator/thread_isolation/alignment.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/alignment.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/page_size.h"

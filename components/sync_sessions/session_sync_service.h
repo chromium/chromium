@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/service/data_type_controller.h"
 
 namespace syncer {
 class GlobalIdMapper;
@@ -44,11 +43,6 @@ class SessionSyncService : public KeyedService {
 
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
-  // Intended to be used by ProxyDataTypeController: influences whether
-  // GetOpenTabsUIDelegate() returns null or not.
-  virtual void ProxyTabsStateChanged(
-      syncer::DataTypeController::State state) = 0;
 };
 
 }  // namespace sync_sessions

@@ -102,7 +102,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.
   void ShowNearbyShareBubbleInArcWindow(
-      absl::optional<base::File::Error> result = absl::nullopt);
+      std::optional<base::File::Error> result = std::nullopt);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();
@@ -148,11 +148,10 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   mojom::ShareIntentInfoPtr share_info_;
 
   // Unowned pointer.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // Unowned pointer
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> arc_window_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> arc_window_ = nullptr;
 
   // Created and lives on the UI thread but is destructed on the IO thread.
   scoped_refptr<ShareInfoFileHandler> file_handler_;

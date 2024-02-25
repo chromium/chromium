@@ -29,22 +29,57 @@ systems in platform-specific subdirectories.
 If you build from a Git tree, you have to install Autotools and start
 by generating the configuration files with:
 
-    ./autogen.sh
+    ./autogen.sh [configuration options]
 
 If you build from a source tarball, extract the archive with:
 
     tar xf libxml2-xxx.tar.gz
     cd libxml2-xxx
 
-To see a list of build options:
+Then you can configure and build the library:
 
-    ./configure --help
-
-Also see the INSTALL file for additional instructions. Then you can
-configure and build the library:
-
-    ./configure [possible options]
+    ./configure [configuration options]
     make
+
+The following options disable or enable code modules and relevant symbols:
+
+    --with-c14n             Canonical XML 1.0 support (on)
+    --with-catalog          XML Catalogs support (on)
+    --with-debug            debugging module and shell (on)
+    --with-history          history support for shell (off)
+    --with-readline[=DIR]   use readline in DIR (for shell history)
+    --with-html             HTML parser (on)
+    --with-http             HTTP support (on)
+    --with-iconv[=DIR]      iconv support (on)
+    --with-icu              ICU support (off)
+    --with-iso8859x         ISO-8859-X support if no iconv (on)
+    --with-lzma[=DIR]       use liblzma in DIR (on)
+    --with-mem-debug        memory debugging module (off)
+    --with-modules          dynamic modules support (on)
+    --with-output           serialization support (on)
+    --with-pattern          xmlPattern selection interface (on)
+    --with-push             push parser interfaces (on)
+    --with-python           Python bindings (on)
+    --with-reader           xmlReader parsing interface (on)
+    --with-regexps          regular expressions support (on)
+    --with-run-debug        runtime debugging module (off)
+    --with-sax1             older SAX1 interface (on)
+    --with-schemas          XML Schemas 1.0 and RELAX NG support (on)
+    --with-schematron       Schematron support (on)
+    --with-threads          multithreading support (on)
+    --with-thread-alloc     per-thread malloc hooks (off)
+    --with-tree             DOM like tree manipulation APIs (on)
+    --with-valid            DTD validation support (on)
+    --with-writer           xmlWriter serialization interface (on)
+    --with-xinclude         XInclude 1.0 support (on)
+    --with-xpath            XPath 1.0 support (on)
+    --with-xptr             XPointer support (on)
+    --with-zlib[=DIR]       use libz in DIR (on)
+
+Other options:
+
+    --with-minimum          build a minimally sized library (off)
+    --with-legacy           maximum ABI compatibility (off)
 
 Note that by default, no optimization options are used. You have to
 enable them manually, for example with:

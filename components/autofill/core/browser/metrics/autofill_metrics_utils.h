@@ -53,6 +53,11 @@ struct FormGroupFillingStats {
 AutofillMetrics::FieldFillingStatus GetFieldFillingStatus(
     const AutofillField& field);
 
+// Merge `first` into `second` by summing each attribute from
+// `FormGroupFillingStats`.
+void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
+                                FormGroupFillingStats& second);
+
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
 // for Autofill, the `AutofillProfile::Source` is further resolved in some
@@ -88,7 +93,7 @@ enum class SettingsVisibleFieldTypeForMetrics {
   kState = 7,
   kStreetAddress = 8,
   kDependentLocality = 9,
-  kHonorificPrefix = 10,
+  // kHonorificPrefix = 10,  // Deprecated in M123.
   kCompany = 11,
   kMaxValue = kCompany
 };
@@ -96,7 +101,7 @@ enum class SettingsVisibleFieldTypeForMetrics {
 // Converts a server field type that can be edited in the settings to an enum
 // used for metrics.
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
-    ServerFieldType field_type);
+    FieldType field_type);
 
 }  // namespace autofill::autofill_metrics
 

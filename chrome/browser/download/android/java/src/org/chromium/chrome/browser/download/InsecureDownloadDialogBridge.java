@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.download.dialogs.InsecureDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -48,9 +49,15 @@ public class InsecureDownloadDialogBridge {
             return;
         }
 
-        new InsecureDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                (accepted) -> { onConfirmed(callbackId, accepted); });
+        new InsecureDownloadDialog()
+                .show(
+                        activity,
+                        ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        fileName,
+                        totalBytes,
+                        (accepted) -> {
+                            onConfirmed(callbackId, accepted);
+                        });
     }
 
     @CalledByNative
@@ -59,8 +66,8 @@ public class InsecureDownloadDialogBridge {
     }
 
     private void onConfirmed(long callbackId, boolean accepted) {
-        InsecureDownloadDialogBridgeJni.get().onConfirmed(
-                mNativeInsecureDownloadDialogBridge, callbackId, accepted);
+        InsecureDownloadDialogBridgeJni.get()
+                .onConfirmed(mNativeInsecureDownloadDialogBridge, callbackId, accepted);
     }
 
     @NativeMethods

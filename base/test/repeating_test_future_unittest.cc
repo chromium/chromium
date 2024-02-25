@@ -124,12 +124,12 @@ TEST_F(RepeatingTestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
   test::ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
-  // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
-  // EXPECT_FATAL_FAILURE only works on static objects.
+  // happens, so we use EXPECT_NONFATAL_FAILURE to handle this failure.
+  // EXPECT_NONFATAL_FAILURE only works on static objects.
   static bool success;
   static RepeatingTestFuture<std::string> future;
 
-  EXPECT_FATAL_FAILURE({ success = future.Wait(); }, "timed out");
+  EXPECT_NONFATAL_FAILURE({ success = future.Wait(); }, "timed out");
 
   EXPECT_FALSE(success);
 }

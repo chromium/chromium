@@ -1,0 +1,15 @@
+Name: play-services-tflite-java
+Short Name: play-services-tflite-java
+URL: https://developers.google.com/android/guides/setup
+Version: 16.0.1
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+
+
+Local Modifications:
+No modifications.

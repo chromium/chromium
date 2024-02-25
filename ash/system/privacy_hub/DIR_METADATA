@@ -1,0 +1,17 @@
+# Metadata information for this directory.
+#
+# For more information on DIR_METADATA files, see:
+#   https://chromium.googlesource.com/chromiumos/docs/+/HEAD/dir_metadata.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+buganizer {
+  component_id: 1178745  # ChromeOS > Privacy > Feature Development
+}
+
+buganizer_public {
+  component_id: 1280226  # ChromeOS Public Tracker > Trust & Safety > Privacy > Privacy Feature Development
+}
+
+team_email: "cros-privacy-features-dev@google.com"

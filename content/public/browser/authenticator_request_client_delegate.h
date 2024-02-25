@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_AUTHENTICATOR_REQUEST_CLIENT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_AUTHENTICATOR_REQUEST_CLIENT_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -18,12 +19,8 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
@@ -80,13 +77,6 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
-  // Returns true if the tab security level is acceptable to allow WebAuthn
-  // requests, false otherwise.
-  virtual bool IsSecurityLevelAcceptableForWebAuthn(
-      content::RenderFrameHost* rfh,
-      const url::Origin& caller_origin);
-
-#if !BUILDFLAG(IS_ANDROID)
   // Permits the embedder to override the Relying Party ID for a WebAuthn call,
   // given the claimed relying party ID and the origin of the caller.
   //
@@ -94,7 +84,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // credentials so thought is required before allowing an origin to assert an
   // RP ID. RP ID strings may be stored on authenticators and may later appear
   // in management UI.
-  virtual absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
+  virtual std::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin);
 
@@ -114,6 +104,10 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // create or get assertions will be immediately rejected.
   virtual bool SupportsResidentKeys(RenderFrameHost* render_frame_host);
 
+  // SupportsPasskeyMetadataSyncing returns true if the embedder supports
+  // syncing passkey metadata from external authenticators.
+  virtual bool SupportsPasskeyMetadataSyncing();
+
   // Returns whether |web_contents| is the active tab in the focused window. We
   // do not want to allow authenticatorMakeCredential operations to be triggered
   // by background tabs.
@@ -125,8 +119,8 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
   // API call originating from |render_frame_host| should be overridden with
-  // that value, or absl::nullopt otherwise.
-  virtual absl::optional<bool>
+  // that value, or std::nullopt otherwise.
+  virtual std::optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
 
@@ -138,7 +132,9 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
-#endif  // !IS_ANDROID
+
+  // Returns true when the cloud enclave authenticator is available for use.
+  virtual bool IsEnclaveAuthenticatorAvailable(BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
@@ -147,7 +143,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // authenticator. May return nullopt if the authenticator is not available in
   // the current context, in which case the Touch ID authenticator will be
   // unavailable.
-  virtual absl::optional<TouchIdAuthenticatorConfig>
+  virtual std::optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -164,14 +160,6 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
       RenderFrameHost* render_frame_host);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-  // GetIntentSender returns a Java object that implements
-  // `WebAuthenticationDelegate.IntentSender` from
-  // WebAuthenticationDelegate.java. See the comments in that file for details.
-  virtual base::android::ScopedJavaLocalRef<jobject> GetIntentSender(
-      WebContents* web_contents);
-#endif
 };
 
 // AuthenticatorRequestClientDelegate is an interface that lets embedders
@@ -205,6 +193,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // Windows UI.
     kWinUserCancelled,
     kHybridTransportError,
+    kNoPasskeys,
+    // kEnclaveError means that there was some error communicating with a
+    // passkeys enclave. This is a fatal (like `kHybridTransportError` but
+    // unlike security keys) because, like hybrid, the user has taken some
+    // action to send the request to the enclave.
+    kEnclaveError,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web
@@ -291,6 +285,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // be functional and |pairings_from_extension| contains any caBLEv1 pairings
   // that have been provided in an extension to the WebAuthn get() call.
   //
+  // When `is_enclave_authenticator_available` is true, the embedder will
+  // provide a cloud enclave authenticator option.
+  //
   // Other FidoDiscoveryFactory fields (e.g. the `LAContextDropbox`) can also be
   // configured by this function.
   virtual void ConfigureDiscoveries(
@@ -298,9 +295,22 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       const std::string& rp_id,
       RequestSource request_source,
       device::FidoRequestType request_type,
-      absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      device::UserVerificationRequirement user_verification_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
+      bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);
+
+  // Hints reflects the "hints" parameter that can be set on a request. See
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  struct Hints {
+    // The site's preferred transport for this operation.
+    std::optional<device::FidoTransportProtocol> transport;
+  };
+
+  // SetHints communicates the "hints" that were set in the request. See
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  virtual void SetHints(const Hints& hints);
 
   // SelectAccount is called to allow the embedder to select between one or more
   // accounts. This is triggered when the web page requests an unspecified

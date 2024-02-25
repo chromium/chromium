@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 # Language files used in //chrome/android:base_module_java
 android_library("base_module_java") {
@@ -43,13 +44,14 @@ android_library("java") {
 
     # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+    "java/src/org/chromium/chrome/browser/translate/TranslationObserver.java",
   ]
   deps = [
     ":base_module_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -72,6 +74,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -83,6 +86,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/LanguageBridge.java",
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+    "java/src/org/chromium/chrome/browser/translate/TranslationObserver.java",
   ]
 }
 
@@ -180,7 +184,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
@@ -189,6 +192,7 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",

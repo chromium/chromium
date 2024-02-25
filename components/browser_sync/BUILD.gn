@@ -11,24 +11,31 @@ static_library("browser_sync") {
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
     "browser_sync_client.h",
-    "browser_sync_switches.cc",
-    "browser_sync_switches.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
     "sync_api_component_factory_impl.cc",
     "sync_api_component_factory_impl.h",
+    "sync_client_utils.cc",
+    "sync_client_utils.h",
+    "sync_to_signin_migration.cc",
+    "sync_to_signin_migration.h",
   ]
 
-  public_deps = [ "//components/sync" ]
+  public_deps = [
+    ":switches",
+    "//components/sync",
+  ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/sharing",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:features",
     "//components/prefs",
@@ -41,8 +48,11 @@ static_library("browser_sync") {
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/sync_user_events",
+    "//components/url_formatter",
     "//components/version_info",
     "//components/version_info:generate_version_info",
+    "//components/webauthn/core/browser",
+    "//ui/base",
   ]
 
   if (is_chromeos_ash) {
@@ -57,10 +67,23 @@ static_library("browser_sync") {
   }
 }
 
+static_library("switches") {
+  sources = [
+    "browser_sync_switches.cc",
+    "browser_sync_switches.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "active_devices_provider_impl_unittest.cc" ]
+  sources = [
+    "active_devices_provider_impl_unittest.cc",
+    "sync_client_utils_unittest.cc",
+    "sync_to_signin_migration_unittest.cc",
+  ]
 
   deps = [
     ":browser_sync",
@@ -72,12 +95,17 @@ source_set("unit_tests") {
     "//components/bookmarks/managed",
     "//components/bookmarks/test",
     "//components/history/core/browser",
+    "//components/password_manager/core/browser:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/reading_list/core:test_support",
+    "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/undo",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/webdata/common",

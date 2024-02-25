@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -240,7 +241,7 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
             context) = std::move(result);
       },
       &readback_result);
-  direct_context->submit(true);
+  direct_context->submit(GrSyncCpu::kYes);
 
   ASSERT_NE(nullptr, readback_result);
   EXPECT_EQ(1, readback_result->count());
@@ -531,7 +532,7 @@ class DCompImageBackingFactoryVisualTreeTest
         direct_context->flush(write_access->surface(), flush_info, nullptr));
 
     write_access->ApplyBackendSurfaceEndState();
-    direct_context->submit(true);
+    direct_context->submit(GrSyncCpu::kYes);
   }
 
   // Create a backing, fill |draw_area| with |draw_color|, and schedule the
@@ -672,7 +673,7 @@ class DCompImageBackingFactoryVisualTreeTest
   };
 
   gfx::Size window_size_;
-  absl::optional<SkColor4f> background_fill_override_;
+  std::optional<SkColor4f> background_fill_override_;
 
   TestPlatformDelegate platform_delegate_;
   ui::WinWindow window_;

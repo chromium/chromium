@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] globalCompositeOperation destination
+  assert_equals: composite operation expected "destination" but got "source-over"
+[FAIL] globalCompositeOperation lighter
+  assert_approx_equals: alpha: g=0 a=47 lighter g=0 a=255 expected 302 +/- 1.01 but got 255
+[FAIL] globalCompositeOperation plus-darker
+  assert_equals: composite operation expected "plus-darker" but got "source-over"
+[FAIL] globalCompositeOperation plus-lighter
+  assert_equals: composite operation expected "plus-lighter" but got "source-over"
+Harness: the test ran to completion.
+

@@ -42,8 +42,8 @@ class NearbyShareSessionImplTest : public testing::Test {
   // not commence until an ARC window is visible.
   NearbyShareSessionImpl* MakeSession(mojom::ShareIntentInfoPtr share_info) {
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    shelf_controller_ = std::make_unique<ChromeShelfController>(
-        &profile_, shelf_model_.get(), nullptr);
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(&profile_, shelf_model_.get());
     shelf_controller_->Init();
 
     session_ = std::make_unique<NearbyShareSessionImpl>(
@@ -115,6 +115,10 @@ class NearbyShareSessionImplFuseBoxTest : public NearbyShareSessionImplTest {
     fusebox_server_ = std::make_unique<fusebox::Server>(/*delegate=*/nullptr);
   }
 
+  void TearDown() override {
+    arc_service_manager_->set_browser_context(nullptr);
+  }
+
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<fusebox::Server> fusebox_server_;
@@ -127,10 +131,10 @@ TEST_F(NearbyShareSessionImplFuseBoxTest, FileIntent) {
   mojom::ShareIntentInfoPtr share_info = mojom::ShareIntentInfo::New();
 
   std::vector<mojom::FileInfoPtr> files;
-  files.emplace_back(absl::in_place,
+  files.emplace_back(std::in_place,
                      GURL("content://com.example/provider/file.jpg"),
                      "image/jpeg", "file.jpg", 100);
-  files.emplace_back(absl::in_place,
+  files.emplace_back(std::in_place,
                      GURL("content://com.example/provider/some_opaque_name"),
                      "text/plain", "test.txt", 100);
   share_info->files = std::move(files);

@@ -8,9 +8,27 @@
 
 namespace content {
 
+namespace {
+
+storage::FileSystemURL ToFileSystemURL(storage::FileSystemContext& context,
+                                       const storage::FileSystemURL& root_url,
+                                       const base::FilePath& relative_path) {
+  auto result = context.CreateCrackedFileSystemURL(
+      root_url.storage_key(), root_url.mount_type(),
+      root_url.virtual_path().Append(relative_path));
+  if (root_url.bucket()) {
+    result.SetBucket(root_url.bucket().value());
+  }
+  return result;
+}
+
+}  // namespace
+
 FileSystemAccessChangeSource::FileSystemAccessChangeSource(
-    FileSystemAccessWatchScope scope)
-    : scope_(std::move(scope)) {}
+    FileSystemAccessWatchScope scope,
+    scoped_refptr<storage::FileSystemContext> file_system_context)
+    : scope_(std::move(scope)),
+      file_system_context_(std::move(file_system_context)) {}
 
 FileSystemAccessChangeSource::~FileSystemAccessChangeSource() {
   for (auto& observer : observers_) {
@@ -28,12 +46,13 @@ void FileSystemAccessChangeSource::RemoveObserver(RawChangeObserver* observer) {
 }
 
 void FileSystemAccessChangeSource::EnsureInitialized(
-    base::OnceCallback<void(bool)> on_source_initialized) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (initialization_result_.has_value()) {
     CHECK(initialization_callbacks_.empty());
-    std::move(on_source_initialized).Run(*initialization_result_);
+    std::move(on_source_initialized).Run(initialization_result_->Clone());
     return;
   }
 
@@ -46,17 +65,20 @@ void FileSystemAccessChangeSource::EnsureInitialized(
                             weak_factory_.GetWeakPtr()));
 }
 
-void FileSystemAccessChangeSource::DidInitialize(bool result) {
+void FileSystemAccessChangeSource::DidInitialize(
+    blink::mojom::FileSystemAccessErrorPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!initialization_result_.has_value());
   CHECK(!initialization_callbacks_.empty());
 
-  initialization_result_ = result;
+  initialization_result_ = std::move(result);
 
-  for (auto& callback : initialization_callbacks_) {
-    std::move(callback).Run(result);
-  }
+  // Move the callbacks to the stack since they may cause |this| to be deleted.
+  auto initialization_callbacks = std::move(initialization_callbacks_);
   initialization_callbacks_.clear();
+  for (auto& callback : initialization_callbacks) {
+    std::move(callback).Run(initialization_result_->Clone());
+  }
 }
 
 base::WeakPtr<FileSystemAccessChangeSource>
@@ -66,12 +88,33 @@ FileSystemAccessChangeSource::AsWeakPtr() {
 }
 
 void FileSystemAccessChangeSource::NotifyOfChange(
-    const base::FilePath& relative_path,
-    bool error) {
+    const storage::FileSystemURL& changed_url,
+    bool error,
+    const ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(scope().Contains(changed_url));
+  CHECK(changed_url.is_valid());
 
-  for (auto& observer : observers_) {
-    observer.OnRawChange(this, relative_path, error);
+  for (RawChangeObserver& observer : observers_) {
+    observer.OnRawChange(changed_url, error, change_info);
+  }
+}
+
+void FileSystemAccessChangeSource::NotifyOfChange(
+    const base::FilePath& relative_path,
+    bool error,
+    const ChangeInfo& change_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!relative_path.IsAbsolute());
+  CHECK(!relative_path.ReferencesParent());
+
+  const storage::FileSystemURL& root_url = scope().root_url();
+  CHECK(root_url.is_valid());
+
+  for (RawChangeObserver& observer : observers_) {
+    observer.OnRawChange(
+        ToFileSystemURL(*file_system_context_, root_url, relative_path), error,
+        change_info);
   }
 }
 

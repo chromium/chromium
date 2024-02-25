@@ -11,7 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "ios/net/crn_http_url_response.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"

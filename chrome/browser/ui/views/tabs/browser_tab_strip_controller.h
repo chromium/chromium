@@ -23,12 +23,15 @@
 class Browser;
 class BrowserNonClientFrameView;
 class Tab;
-class TabGroupId;
-class TabGroupVisualData;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace tab_groups {
+class TabGroupId;
+class TabGroupVisualData;
+}  // namespace tab_groups
 
 namespace ui {
 class ListSelectionModel;
@@ -63,7 +66,7 @@ class BrowserTabStripController : public TabStripController,
   int GetCount() const override;
   bool IsValidIndex(int model_index) const override;
   bool IsActiveTab(int model_index) const override;
-  absl::optional<int> GetActiveIndex() const override;
+  std::optional<int> GetActiveIndex() const override;
   bool IsTabSelected(int model_index) const override;
   bool IsTabPinned(int model_index) const override;
   void SelectTab(int model_index, const ui::Event& event) override;
@@ -85,12 +88,12 @@ class BrowserTabStripController : public TabStripController,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;
   int HasAvailableDragActions() const override;
-  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override;
+  void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
   void CreateNewTab() override;
   void CreateNewTabWithLocation(const std::u16string& loc) override;
   void OnStartedDragging(bool dragging_window) override;
   void OnStoppedDragging() override;
-  void OnKeyboardFocusedTabChanged(absl::optional<int> index) override;
+  void OnKeyboardFocusedTabChanged(std::optional<int> index) override;
   std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group_id) const override;
   std::u16string GetGroupContentString(
@@ -102,7 +105,7 @@ class BrowserTabStripController : public TabStripController,
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
-  absl::optional<int> GetFirstTabInGroup(
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
@@ -111,7 +114,7 @@ class BrowserTabStripController : public TabStripController,
   bool EverHasVisibleBackgroundTabShapes() const override;
   bool CanDrawStrokes() const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
-  absl::optional<int> GetCustomBackgroundId(
+  std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   Profile* GetProfile() const override;
@@ -133,7 +136,7 @@ class BrowserTabStripController : public TabStripController,
                              int model_index) override;
   void TabBlockedStateChanged(content::WebContents* contents,
                               int model_index) override;
-  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
   void SetTabNeedsAttentionAt(int index, bool attention) override;

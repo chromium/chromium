@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_LOCAL_MEDIA_STREAM_AUDIO_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_LOCAL_MEDIA_STREAM_AUDIO_SOURCE_H_
 
-#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-
+#include <optional>
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_capturer_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 
 namespace blink {
 
@@ -32,11 +31,14 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // audio data. Audio parameters and (optionally) a pre-existing audio session
   // ID are read from |device_info|. |requested_buffer_size| is the desired
   // buffer size for the audio hardware, a nullptr means to use the default.
+  // |enable_system_echo_cancellation| specifies whether to apply system echo
+  // cancellation, and may only be enabled if supported by the device.
   LocalMediaStreamAudioSource(
       LocalFrame* consumer_frame,
       const MediaStreamDevice& device,
       const int* requested_buffer_size,
       bool disable_local_echo,
+      bool enable_system_echo_cancellation,
       ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -49,7 +51,7 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // MediaStreamAudioSource implementation.
   void ChangeSourceImpl(const MediaStreamDevice& new_device) final;
 
-  absl::optional<AudioProcessingProperties> GetAudioProcessingProperties()
+  std::optional<AudioProcessingProperties> GetAudioProcessingProperties()
       const final;
 
  private:

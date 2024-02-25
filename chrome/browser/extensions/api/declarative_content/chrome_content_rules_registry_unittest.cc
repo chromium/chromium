@@ -170,8 +170,7 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
   EXPECT_EQ(0u, registry->GetActiveRulesCountForTesting());
 
   // Add a rule.
-  api::events::Rule rule;
-  api::events::Rule::Populate(base::test::ParseJsonDict(R"({
+  auto rule = api::events::Rule::FromValue(base::test::ParseJsonDict(R"({
           "id": "rule1",
           "priority": 100,
           "conditions": [
@@ -182,9 +181,9 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
           "actions": [
             {"instanceType": "declarativeContent.ShowAction"}
           ]
-      })"),
-                              rule);
-  std::vector<const api::events::Rule*> rules({&rule});
+      })"));
+  ASSERT_TRUE(rule.has_value());
+  std::vector<const api::events::Rule*> rules({&rule.value()});
 
   const Extension* extension =
       env()->MakeExtension(base::test::ParseJsonDict("{\"page_action\": {}}"));

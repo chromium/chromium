@@ -15,6 +15,8 @@ class RuleData;
 struct RulePerfDataPerRequest {
   RulePerfDataPerRequest(const RuleData* r, bool f, bool m, base::TimeDelta e)
       : rule(r), fast_reject(f), did_match(m), elapsed(e) {}
+  // RuleData is Traceable but not owned here, so there's no need to Trace it
+  // here. The RuleData is owned and traced by HeapVectors in RuleSet.
   const RuleData* const rule;
   bool fast_reject;
   bool did_match;
@@ -50,12 +52,15 @@ class SelectorStatisticsCollector {
   void SetWasFastRejected() { fast_reject_ = true; }
   void SetDidMatch() { did_match_ = true; }
 
-  const HeapVector<RulePerfDataPerRequest>& PerRuleStatistics() const {
+  const Vector<RulePerfDataPerRequest>& PerRuleStatistics() const {
     return per_rule_statistics_;
   }
 
  private:
-  HeapVector<RulePerfDataPerRequest> per_rule_statistics_;
+  // `Vector` is more beneficial here since `RulePerfDataPerRequest` is
+  // non-traceable and `SelectorStatisticsCollector` is stack allocated.
+  // `HeapVector` could also be used but will be less performant in this case.
+  Vector<RulePerfDataPerRequest> per_rule_statistics_;
   // The below values are for the selector currently being matched. These values
   // are pushed into `per_rule_statistics_` when `EndCollectionForCurrentRule`
   // is called.

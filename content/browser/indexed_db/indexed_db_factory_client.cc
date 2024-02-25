@@ -31,75 +31,13 @@ using std::swap;
 
 namespace content {
 
-namespace {
-
-// The following two objects protect the given objects from being destructed
-// while the current transaction task queue is being processed.
-class SafeConnectionWrapper {
- public:
-  explicit SafeConnectionWrapper(
-      std::unique_ptr<IndexedDBConnection> connection)
-      : connection_(std::move(connection)),
-        idb_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-
-  SafeConnectionWrapper(const SafeConnectionWrapper&) = delete;
-  SafeConnectionWrapper& operator=(const SafeConnectionWrapper&) = delete;
-
-  ~SafeConnectionWrapper() {
-    if (connection_) {
-      idb_runner_->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](std::unique_ptr<IndexedDBConnection> connection) {
-                           connection->CloseAndReportForceClose();
-                         },
-                         std::move(connection_)));
-    }
-  }
-  SafeConnectionWrapper(SafeConnectionWrapper&& other) = default;
-
-  std::unique_ptr<IndexedDBConnection> connection_;
-  scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-};
-
-class SafeCursorWrapper {
- public:
-  explicit SafeCursorWrapper(std::unique_ptr<IndexedDBCursor> cursor)
-      : cursor_(std::move(cursor)),
-        idb_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-
-  SafeCursorWrapper(const SafeCursorWrapper&) = delete;
-  SafeCursorWrapper& operator=(const SafeCursorWrapper&) = delete;
-
-  ~SafeCursorWrapper() {
-    if (cursor_) {
-      idb_runner_->DeleteSoon(FROM_HERE, cursor_.release());
-    }
-  }
-  SafeCursorWrapper(SafeCursorWrapper&& other) = default;
-
-  std::unique_ptr<IndexedDBCursor> cursor_;
-  scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-};
-
-}  // namespace
-
 IndexedDBFactoryClient::IndexedDBFactoryClient(
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-    const absl::optional<storage::BucketInfo>& bucket,
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-        pending_client,
-    scoped_refptr<base::SequencedTaskRunner> idb_runner)
-    : data_loss_(blink::mojom::IDBDataLoss::None),
-      dispatcher_host_(std::move(dispatcher_host)),
-      bucket_info_(bucket),
-      idb_runner_(std::move(idb_runner)) {
-  DCHECK(idb_runner_->RunsTasksInCurrentSequence());
+        pending_client)
+    : data_loss_(blink::mojom::IDBDataLoss::None) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pending_client.is_valid()) {
     remote_.Bind(std::move(pending_client));
-    // |remote_| is owned by |this|, so if |this| is destroyed, then
-    // |remote_| will also be destroyed.  While |remote_| is
-    // otherwise alive, |this| will always be valid.
     remote_.set_disconnect_handler(base::BindOnce(
         &IndexedDBFactoryClient::OnConnectionError, base::Unretained(this)));
   }
@@ -116,10 +54,6 @@ void IndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   remote_->Error(error.code(), error.message());
   complete_ = true;
 }
@@ -134,10 +68,6 @@ void IndexedDBFactoryClient::OnBlocked(int64_t existing_version) {
 
   sent_blocked_ = true;
 
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   if (remote_) {
     remote_->Blocked(existing_version);
   }
@@ -156,18 +86,16 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   data_loss_ = data_loss_info.status;
   connection_created_ = true;
 
-  SafeConnectionWrapper wrapper(std::move(connection));
   if (!remote_) {
-    return;
-  }
-  if (!dispatcher_host_) {
-    OnConnectionError();
+    // Don't destroy the connection while the current transaction task queue is
+    // being processed.
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(connection));
     return;
   }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending =
-      DatabaseImpl::CreateAndBind(std::move(wrapper.connection_), *bucket_info_,
-                                  dispatcher_host_.get());
+      DatabaseImpl::CreateAndBind(std::move(connection));
   remote_->UpgradeNeeded(std::move(pending), old_version, data_loss_info.status,
                          data_loss_info.message, metadata);
 }
@@ -187,19 +115,20 @@ void IndexedDBFactoryClient::OnOpenSuccess(
     database_connection = std::move(connection);
   }
 
-  SafeConnectionWrapper wrapper(std::move(database_connection));
   if (!remote_) {
-    return;
-  }
-  if (!dispatcher_host_) {
-    OnConnectionError();
+    if (database_connection) {
+      // Don't destroy the connection while the current transaction task queue
+      // is being processed.
+      base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+          FROM_HERE, std::move(database_connection));
+    }
     return;
   }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
-  if (wrapper.connection_) {
-    pending_remote = DatabaseImpl::CreateAndBind(
-        std::move(wrapper.connection_), *bucket_info_, dispatcher_host_.get());
+  if (database_connection) {
+    pending_remote =
+        DatabaseImpl::CreateAndBind(std::move(database_connection));
   }
   remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;
@@ -212,18 +141,15 @@ void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   remote_->DeleteSuccess(old_version);
   complete_ = true;
 }
 
 void IndexedDBFactoryClient::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Since the renderer-process `IDBFactory` is a self-owned receiver, a
+  // disconnection should only occur if the renderer process is gone.
   remote_.reset();
-  dispatcher_host_ = nullptr;
 }
 
 }  // namespace content

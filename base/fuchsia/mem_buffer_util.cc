@@ -18,15 +18,15 @@
 
 namespace base {
 
-absl::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
+std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
     const fuchsia::mem::Buffer& buffer) {
-  absl::optional<std::string> output_utf8 = StringFromMemBuffer(buffer);
+  std::optional<std::string> output_utf8 = StringFromMemBuffer(buffer);
   if (!output_utf8)
-    return absl::nullopt;
+    return std::nullopt;
   std::u16string output;
   return UTF8ToUTF16(&output_utf8->front(), output_utf8->size(), &output)
-             ? absl::optional<std::u16string>(std::move(output))
-             : absl::nullopt;
+             ? std::optional<std::u16string>(std::move(output))
+             : std::nullopt;
 }
 
 zx::vmo VmoFromString(StringPiece data, StringPiece name) {
@@ -60,14 +60,14 @@ fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
       name);
 }
 
-absl::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
+std::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
   std::string result;
 
   size_t size;
   zx_status_t status = vmo.get_prop_content_size(&size);
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "zx::vmo::get_prop_content_size";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (size == 0)
@@ -79,10 +79,10 @@ absl::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
     return result;
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> StringFromMemBuffer(
+std::optional<std::string> StringFromMemBuffer(
     const fuchsia::mem::Buffer& buffer) {
   std::string result;
 
@@ -95,10 +95,10 @@ absl::optional<std::string> StringFromMemBuffer(
     return result;
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
+std::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
   switch (data.Which()) {
     case fuchsia::mem::Data::kBytes: {
       const std::vector<uint8_t>& bytes = data.bytes();
@@ -112,7 +112,7 @@ absl::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 fuchsia::mem::Buffer MemBufferFromFile(File file) {

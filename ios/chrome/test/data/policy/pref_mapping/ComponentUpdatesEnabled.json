@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ComponentUpdatesEnabled": true
+        },
+        "prefs": {
+          "component_updates.component_updates_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

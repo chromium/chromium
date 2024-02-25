@@ -70,8 +70,7 @@ std::string GetStringFromDictionary(const base::Value::Dict& dict,
 }  // namespace
 
 void SetSSID(const std::string& ssid, base::Value::Dict* properties) {
-  std::string hex_ssid = base::HexEncode(ssid.c_str(), ssid.size());
-  properties->Set(shill::kWifiHexSsid, hex_ssid);
+  properties->Set(shill::kWifiHexSsid, base::HexEncode(ssid));
 }
 
 std::string GetSSIDFromProperties(const base::Value::Dict& properties,
@@ -200,7 +199,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
   if (ui_data_str->empty()) {
     return std::make_unique<NetworkUIData>();
   }
-  absl::optional<base::Value::Dict> ui_data_dict =
+  std::optional<base::Value::Dict> ui_data_dict =
       chromeos::onc::ReadDictionaryFromJson(*ui_data_str);
   if (!ui_data_dict.has_value()) {
     return nullptr;
@@ -401,6 +400,7 @@ bool IsLoggableShillProperty(const std::string& key) {
     s_skip_properties->insert(shill::kOpenVPNPinProperty);
     s_skip_properties->insert(shill::kOpenVPNTLSAuthContentsProperty);
     s_skip_properties->insert(shill::kPassphraseProperty);
+    s_skip_properties->insert(shill::kUIDataProperty);
   }
   return s_skip_properties->count(key) == 0;
 }

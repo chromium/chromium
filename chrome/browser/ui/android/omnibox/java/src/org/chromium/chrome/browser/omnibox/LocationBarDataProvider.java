@@ -16,38 +16,41 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
-/**
- * Interface defining a provider for data needed by the {@link LocationBar}.
- */
+/** Interface defining a provider for data needed by the {@link LocationBar}. */
 // TODO(crbug.com/1142887): Refine split between LocationBar properties and sub-component
 // properties, e.g. security state, which is only used by the status icon.
 public interface LocationBarDataProvider {
     /**
-     * Observer interface for consumers who wish to subscribe to updates of LocationBarData.
-     * Since LocationBarDataProvider data is typically calculated lazily, individual observer
-     * methods don't directly supply the updated value. Instead, the expectation is that the
-     * consumer will query the data it cares about.
+     * Observer interface for consumers who wish to subscribe to updates of LocationBarData. Since
+     * LocationBarDataProvider data is typically calculated lazily, individual observer methods
+     * don't directly supply the updated value. Instead, the expectation is that the consumer will
+     * query the data it cares about.
      */
     interface Observer {
-        default void onIncognitoStateChanged(){};
-        default void onNtpStartedLoading(){};
+        default void onIncognitoStateChanged() {}
+
+        default void onNtpStartedLoading() {}
 
         /**
          * Notifies about a possible change of the value of {@link #getPrimaryColor()}, or {@link
          * #isUsingBrandColor()}.
          */
-        default void onPrimaryColorChanged(){};
+        default void onPrimaryColorChanged() {}
 
         /** Notifies about possible changes to values affecting the status icon. */
-        default void onSecurityStateChanged(){};
+        default void onSecurityStateChanged() {}
 
         /** Notifies when the page stopped loading. */
         default void onPageLoadStopped() {}
 
-        default void onTitleChanged(){};
-        default void onUrlChanged(){};
+        default void onTitleChanged() {}
 
-        default void hintZeroSuggestRefresh(){};
+        default void onUrlChanged() {}
+
+        default void hintZeroSuggestRefresh() {}
+
+        /** Notifies when the tab crashes. */
+        default void onTabCrashed() {}
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */
@@ -97,7 +100,7 @@ public interface LocationBarDataProvider {
     @NonNull
     String getTitle();
 
-    /** Returns the primary color to use for the background.*/
+    /** Returns the primary color to use for the background. */
     int getPrimaryColor();
 
     /** Returns whether the current primary color is a brand color. */

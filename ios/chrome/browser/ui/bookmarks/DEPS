@@ -6,7 +6,8 @@ include_rules = [
   "+ios/chrome/browser/ui/incognito_reauth",
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/sharing",
-    "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+  "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+  "+ios/chrome/browser/ui/settings",
 ]
 
 specific_include_rules = {

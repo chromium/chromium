@@ -81,12 +81,14 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetDefaultZoomLevelPrefCallback(
       HostZoomMap::DefaultZoomChangedCallback callback) override;
   HostZoomMap::DefaultZoomChangedCallback* GetDefaultZoomLevelPrefCallback();
-  double GetDesktopSiteZoomScale(bool is_overriding_user_agent);
-  double GetZoomLevelForHostAndScheme(const std::string& scheme,
-                                      const std::string& host,
-                                      bool is_overriding_user_agent) override;
+  double GetZoomLevelForHostAndSchemeAndroid(const std::string& scheme,
+                                             const std::string& host) override;
   void SetSystemFontScaleForTesting(float scale);
 #endif
+
+  double GetZoomLevelForPreviewAndHost(const std::string& host) override;
+  void SetZoomLevelForPreviewAndHost(const std::string& host,
+                                     double level) override;
 
  private:
   struct ZoomLevel {
@@ -128,6 +130,8 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   double default_zoom_level_;
 
   TemporaryZoomLevels temporary_zoom_levels_;
+
+  HostZoomLevels host_zoom_levels_for_preview_;
 
   raw_ptr<base::Clock> clock_;
 };

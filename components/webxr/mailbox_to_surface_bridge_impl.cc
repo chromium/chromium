@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -28,8 +29,11 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/android/surface_texture.h"
 
 #define VOID_OFFSET(x) reinterpret_cast<void*>(x)
@@ -238,27 +242,8 @@ void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
       FROM_HERE, base::BindOnce(
                      [](int surface_handle,
                         content::Compositor::ContextProviderCallback callback) {
-                       // Our attributes must be compatible with the shared
-                       // offscreen surface used by virtualized contexts,
-                       // otherwise mailbox synchronization doesn't work
-                       // properly - it assumes a shared underlying GL context.
-                       // See GetCompositorContextAttributes in
-                       // content/browser/renderer_host/compositor_impl_android.cc
-                       // and https://crbug.com/699330.
-                       gpu::ContextCreationAttribs attributes;
-                       attributes.alpha_size = -1;
-                       attributes.red_size = 8;
-                       attributes.green_size = 8;
-                       attributes.blue_size = 8;
-                       attributes.bind_generates_resource = false;
-                       if (base::SysInfo::IsLowEndDevice()) {
-                         attributes.alpha_size = 0;
-                         attributes.red_size = 5;
-                         attributes.green_size = 6;
-                         attributes.blue_size = 5;
-                       }
                        content::Compositor::CreateContextProvider(
-                           surface_handle, attributes,
+                           surface_handle,
                            gpu::SharedMemoryLimits::ForMailboxContext(),
                            std::move(callback));
                      },
@@ -356,37 +341,41 @@ void MailboxToSurfaceBridgeImpl::CreateGpuFence(
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
 
-gpu::MailboxHolder MailboxToSurfaceBridgeImpl::CreateSharedImage(
-    gpu::GpuMemoryBufferImplAndroidHardwareBuffer* buffer,
+scoped_refptr<gpu::ClientSharedImage>
+MailboxToSurfaceBridgeImpl::CreateSharedImage(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    gfx::BufferFormat buffer_format,
+    const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    uint32_t usage) {
+    uint32_t usage,
+    gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
 
   auto* sii = context_provider_->SharedImageInterface();
   DCHECK(sii);
 
-  gpu::MailboxHolder mailbox_holder;
-  CHECK_EQ(buffer->GetFormat(), gfx::BufferFormat::RGBA_8888);
-  mailbox_holder.mailbox = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, buffer->GetSize(), color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "WebXrMailboxToSurfaceBridge", buffer->CloneHandle());
-  mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
-      buffer->GetFormat()));
-  mailbox_holder.texture_target = GL_TEXTURE_2D;
-  return mailbox_holder;
+  CHECK_EQ(buffer_format, gfx::BufferFormat::RGBA_8888);
+  auto client_shared_image = sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kRGBA_8888, size, color_space, usage,
+       "WebXrMailboxToSurfaceBridge"},
+      std::move(buffer_handle));
+  CHECK(client_shared_image);
+  sync_token = sii->GenVerifiedSyncToken();
+  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format));
+  return client_shared_image;
 }
 
 void MailboxToSurfaceBridgeImpl::DestroySharedImage(
-    const gpu::MailboxHolder& mailbox_holder) {
+    const gpu::SyncToken& sync_token,
+    scoped_refptr<gpu::ClientSharedImage> shared_image) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
+  DCHECK(shared_image);
 
   auto* sii = context_provider_->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(mailbox_holder.sync_token, mailbox_holder.mailbox);
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
 }
 
 void MailboxToSurfaceBridgeImpl::DestroyContext() {

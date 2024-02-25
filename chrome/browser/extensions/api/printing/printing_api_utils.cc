@@ -37,7 +37,7 @@ constexpr char kNamePattern[] = "namePattern";
 
 bool DoesPrinterMatchDefaultPrinterRules(
     const crosapi::mojom::LocalDestinationInfo& printer,
-    const absl::optional<DefaultPrinterRules>& rules) {
+    const std::optional<DefaultPrinterRules>& rules) {
   if (!rules.has_value())
     return false;
   return (rules->kind.empty() || rules->kind == kLocal) &&
@@ -67,19 +67,19 @@ bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
 
 }  // namespace
 
-absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
+std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules) {
   if (default_destination_selection_rules.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<base::Value> default_destination_selection_rules_value =
+  std::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules);
   base::Value::Dict* default_destination_selection_rules_dict =
       default_destination_selection_rules_value.has_value()
           ? default_destination_selection_rules_value->GetIfDict()
           : nullptr;
   if (!default_destination_selection_rules_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DefaultPrinterRules default_printer_rules;
@@ -101,7 +101,7 @@ absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
 
 idl::Printer PrinterToIdl(
     const crosapi::mojom::LocalDestinationInfo& printer,
-    const absl::optional<DefaultPrinterRules>& default_printer_rules,
+    const std::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks) {
   idl::Printer idl_printer;
   idl_printer.id = printer.id;
@@ -110,8 +110,8 @@ idl::Printer PrinterToIdl(
   if (printer.uri)
     idl_printer.uri = *printer.uri;
   idl_printer.source = printer.configured_via_policy
-                           ? idl::PRINTER_SOURCE_POLICY
-                           : idl::PRINTER_SOURCE_USER;
+                           ? idl::PrinterSource::kPolicy
+                           : idl::PrinterSource::kUser;
   idl_printer.is_default =
       DoesPrinterMatchDefaultPrinterRules(printer, default_printer_rules);
   auto it = recently_used_ranks.find(printer.id);
@@ -123,29 +123,29 @@ idl::Printer PrinterToIdl(
 idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
   switch (status) {
     case chromeos::PrinterErrorCode::NO_ERROR:
-      return idl::PRINTER_STATUS_AVAILABLE;
+      return idl::PrinterStatus::kAvailable;
     case chromeos::PrinterErrorCode::PAPER_JAM:
-      return idl::PRINTER_STATUS_PAPER_JAM;
+      return idl::PrinterStatus::kPaperJam;
     case chromeos::PrinterErrorCode::OUT_OF_PAPER:
-      return idl::PRINTER_STATUS_OUT_OF_PAPER;
+      return idl::PrinterStatus::kOutOfPaper;
     case chromeos::PrinterErrorCode::OUT_OF_INK:
-      return idl::PRINTER_STATUS_OUT_OF_INK;
+      return idl::PrinterStatus::kOutOfInk;
     case chromeos::PrinterErrorCode::DOOR_OPEN:
-      return idl::PRINTER_STATUS_DOOR_OPEN;
+      return idl::PrinterStatus::kDoorOpen;
     case chromeos::PrinterErrorCode::PRINTER_UNREACHABLE:
-      return idl::PRINTER_STATUS_UNREACHABLE;
+      return idl::PrinterStatus::kUnreachable;
     case chromeos::PrinterErrorCode::TRAY_MISSING:
-      return idl::PRINTER_STATUS_TRAY_MISSING;
+      return idl::PrinterStatus::kTrayMissing;
     case chromeos::PrinterErrorCode::OUTPUT_FULL:
-      return idl::PRINTER_STATUS_OUTPUT_FULL;
+      return idl::PrinterStatus::kOutputFull;
     case chromeos::PrinterErrorCode::STOPPED:
-      return idl::PRINTER_STATUS_STOPPED;
+      return idl::PrinterStatus::kStopped;
     case chromeos::PrinterErrorCode::EXPIRED_CERTIFICATE:
-      return idl::PRINTER_STATUS_EXPIRED_CERTIFICATE;
+      return idl::PrinterStatus::kExpiredCertificate;
     default:
       break;
   }
-  return idl::PRINTER_STATUS_GENERIC_ISSUE;
+  return idl::PrinterStatus::kGenericIssue;
 }
 
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
@@ -282,7 +282,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
   if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode()))
     return false;
 
-  absl::optional<bool> is_color =
+  std::optional<bool> is_color =
       ::printing::IsColorModelSelected(settings.color());
   bool color_mode_selected = is_color.has_value() && is_color.value();
   if (!color_mode_selected &&

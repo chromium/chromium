@@ -46,7 +46,7 @@ ViewsTextServicesContextMenuLacros::ViewsTextServicesContextMenuLacros(
     return;
 
   // If the menu has a paste option, add a clipboard history option as well.
-  const absl::optional<size_t> paste_index =
+  const std::optional<size_t> paste_index =
       menu->GetIndexOfCommandId(ui::TouchEditable::kPaste);
 
   if (!paste_index.has_value())

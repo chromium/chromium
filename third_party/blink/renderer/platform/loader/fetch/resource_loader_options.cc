@@ -36,14 +36,13 @@
 
 namespace blink {
 
-ResourceLoaderOptions::ResourceLoaderOptions(
-    scoped_refptr<const DOMWrapperWorld> world)
+ResourceLoaderOptions::ResourceLoaderOptions(const DOMWrapperWorld* world)
     : data_buffering_policy(kBufferData),
       content_security_policy_option(network::mojom::CSPDisposition::CHECK),
       synchronous_policy(kRequestAsynchronously),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),
-      world_for_csp(std::move(world)) {}
+      world_for_csp(world) {}
 
 ResourceLoaderOptions::ResourceLoaderOptions(
     const ResourceLoaderOptions& other) = default;

@@ -24,9 +24,16 @@ source_set("fakes") {
     "fake_drag_session.mm",
     "fake_drop_session.h",
     "fake_drop_session.mm",
+    "fake_pinned_tab_collection_consumer.h",
+    "fake_pinned_tab_collection_consumer.mm",
     "fake_tab_collection_consumer.h",
     "fake_tab_collection_consumer.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/tab_switcher" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
+    "//ios/web/public",
+  ]
   frameworks = [ "UIKit.framework" ]
 }

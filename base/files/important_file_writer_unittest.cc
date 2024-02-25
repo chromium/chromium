@@ -4,6 +4,8 @@
 
 #include "base/files/important_file_writer.h"
 
+#include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -41,7 +42,7 @@ class DataSerializer : public ImportantFileWriter::DataSerializer {
   explicit DataSerializer(const std::string& data) : data_(data) {
   }
 
-  absl::optional<std::string> SerializeData() override {
+  std::optional<std::string> SerializeData() override {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     return data_;
   }
@@ -53,7 +54,7 @@ class DataSerializer : public ImportantFileWriter::DataSerializer {
 
 class FailingDataSerializer : public ImportantFileWriter::DataSerializer {
  public:
-  absl::optional<std::string> SerializeData() override { return absl::nullopt; }
+  std::optional<std::string> SerializeData() override { return std::nullopt; }
 };
 
 class BackgroundDataSerializer
@@ -380,7 +381,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
   EXPECT_FALSE(writer.HasPendingWrite());
   ASSERT_FALSE(file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
   BackgroundDataSerializer serializer(
-      base::BindLambdaForTesting([&]() -> absl::optional<std::string> {
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
         EXPECT_TRUE(
             file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
         return "foo";
@@ -416,10 +417,10 @@ TEST_F(ImportantFileWriterTest,
   EXPECT_FALSE(writer.HasPendingWrite());
   ASSERT_FALSE(file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
   BackgroundDataSerializer serializer(
-      base::BindLambdaForTesting([&]() -> absl::optional<std::string> {
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
         EXPECT_TRUE(
             file_writer_thread.task_runner()->RunsTasksInCurrentSequence());
-        return absl::nullopt;
+        return std::nullopt;
       }));
   writer.ScheduleWriteWithBackgroundDataSerializer(&serializer);
   EXPECT_TRUE(writer.HasPendingWrite());

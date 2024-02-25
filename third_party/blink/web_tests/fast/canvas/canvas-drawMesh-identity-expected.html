@@ -1,0 +1,18 @@
+<!doctype html>
+<p>Verifies that an identity drawMesh() renders the same as direct canvas draw commands.</p>
+<canvas id='canvas' width='256' height='256'></canvas>
+
+<script>
+const canvas = document.getElementById('canvas'),
+ctx = canvas.getContext('2d', {alpha: false});
+
+ctx.fillStyle = 'green';
+ctx.fillRect( 0, 0, 256, 256 );
+ctx.fillStyle = 'red';
+ctx.fillRect( 0, 0, 256, 128 );
+ctx.fillStyle = 'blue';
+ctx.fillRect( 128, 0, 128, 128 );
+ctx.fillStyle = 'yellow';
+ctx.fillRect( 128, 128, 128, 128 );
+
+</script>

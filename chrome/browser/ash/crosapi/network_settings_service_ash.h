@@ -33,6 +33,8 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   // crosapi::mojom::NetworkSettingsServiceAsh:
   void AddNetworkSettingsObserver(
       mojo::PendingRemote<mojom::NetworkSettingsObserver> observer) override;
+  void IsAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      IsAlwaysOnVpnPreConnectUrlAllowlistEnforcedCallback callback) override;
 
   // Deprecated. Please use `SetExtensionControllingProxyMetadata` and
   // `ClearExtensionControllingProxyMetadata`.
@@ -48,6 +50,10 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
       crosapi::mojom::ExtensionControllingProxyPtr extension) override;
   void ClearExtensionControllingProxyMetadata() override;
 
+  // Sets a value which indicates if the AlwaysOnVpnPreConnectUrlAllowlist
+  // should be used to restrict user navigation.
+  void SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(bool enforced);
+
  private:
   // ash::AshProxyMonitor::Observer:
   void OnProxyChanged() override;
@@ -57,6 +63,8 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   void OnDisconnect(mojo::RemoteSetElementId mojo_id);
 
   crosapi::mojom::ProxyConfigPtr cached_proxy_config_;
+
+  bool alwayson_vpn_pre_connect_url_allowlist_enforced_ = false;
 
   base::ScopedObservation<ash::AshProxyMonitor, ash::AshProxyMonitor::Observer>
       ash_proxy_monitor_observation_{this};

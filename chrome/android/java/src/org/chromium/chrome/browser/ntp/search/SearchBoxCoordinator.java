@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
@@ -37,8 +38,10 @@ public class SearchBoxCoordinator {
         mMediator = new SearchBoxMediator(context, mModel, mView);
     }
 
-    public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            boolean isIncognito, WindowAndroid windowAndroid) {
+    public void initialize(
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            boolean isIncognito,
+            WindowAndroid windowAndroid) {
         mMediator.initialize(activityLifecycleDispatcher);
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
@@ -74,6 +77,10 @@ public class SearchBoxCoordinator {
 
     public void setSearchBoxClickListener(OnClickListener listener) {
         mMediator.setSearchBoxClickListener(listener);
+    }
+
+    public void setSearchBoxDragListener(OnDragListener listener) {
+        mMediator.setSearchBoxDragListener(listener);
     }
 
     public void setSearchBoxTextWatcher(TextWatcher textWatcher) {
@@ -139,6 +146,10 @@ public class SearchBoxCoordinator {
 
     public void setLensButtonLeftMargin(int leftMargin) {
         mMediator.setLensButtonLeftMargin(leftMargin);
+    }
+
+    public void setSearchTextSize(float textSize) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE, textSize);
     }
 
     public boolean getIncognitoModeForTesting() {

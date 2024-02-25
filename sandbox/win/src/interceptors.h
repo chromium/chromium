@@ -29,8 +29,6 @@ enum InterceptorId {
   QUERY_ATTRIB_FILE_ID,
   QUERY_FULL_ATTRIB_FILE_ID,
   SET_INFO_FILE_ID,
-  // Named pipe dispatcher:
-  CREATE_NAMED_PIPE_ID,
   // Process-thread dispatcher:
   CREATE_PROCESSW_ID,
   CREATE_PROCESSA_ID,
@@ -51,7 +49,9 @@ enum InterceptorId {
   INTERCEPTOR_MAX_ID
 };
 
-typedef void* OriginalFunctions[INTERCEPTOR_MAX_ID];
+struct OriginalFunctions {
+  void* functions[INTERCEPTOR_MAX_ID];
+};
 
 }  // namespace sandbox
 

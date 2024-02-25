@@ -2,13 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+typedef (USVString or FencedFrameConfig) SharedStorageResponse;
+
 [
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window)
 ] interface SharedStorageWorklet {
-    [
-      CallWith=ScriptState,
-      RaisesException,
-      MeasureAs=SharedStorageAPI_AddModule_Method
-    ] Promise<void> addModule(USVString moduleURL);
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_AddModule_Method
+  ] Promise<void> addModule(USVString moduleURL, optional WorkletOptions options = {});
+
+  [
+    RuntimeEnabled=SharedStorageAPIM123,
+    Exposed=Window,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_SelectURL_Method
+  ] Promise<SharedStorageResponse> selectURL(DOMString name,
+                                 FrozenArray<SharedStorageUrlWithMetadata> urls,
+                                 optional SharedStorageRunOperationMethodOptions options);
+
+  [
+    RuntimeEnabled=SharedStorageAPIM123,
+    Exposed=Window,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_Run_Method
+  ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 };

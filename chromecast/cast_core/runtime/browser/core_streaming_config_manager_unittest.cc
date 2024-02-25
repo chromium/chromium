@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "chromecast/shared/platform_info_serializer.h"
@@ -45,7 +47,7 @@ class CoreStreamingConfigManagerTest : public testing::Test {
   ~CoreStreamingConfigManagerTest() override { ResetMessagePort(); }
 
  protected:
-  bool PostMessage(base::StringPiece message) {
+  bool PostMessage(std::string_view message) {
     return streaming_config_manager_.OnMessage(message, {});
   }
 
@@ -82,7 +84,7 @@ TEST_F(CoreStreamingConfigManagerTest, OnSingleValidMessageNoCodecs) {
   auto config = streaming_config_manager_.config();
   ASSERT_EQ(config.audio_limits.size(), size_t{1});
   auto& limit = config.audio_limits.back();
-  EXPECT_EQ(limit.codec, absl::nullopt);
+  EXPECT_EQ(limit.codec, std::nullopt);
   EXPECT_EQ(limit.channel_layout, ::media::CHANNEL_LAYOUT_STEREO);
 }
 

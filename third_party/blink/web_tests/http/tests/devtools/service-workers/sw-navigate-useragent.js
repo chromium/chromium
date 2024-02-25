@@ -1,10 +1,11 @@
 
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
+
+import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(
       `Tests that User-Agent override works for requests from Service Workers.\n`);
-  await TestRunner.loadLegacyModule('console');
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');
 
@@ -14,7 +15,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   const testPage =
       'http://localhost:8000/devtools/service-workers/resources/sw-return-useragent.php';
-  SDK.multitargetNetworkManager.setUserAgentOverride(
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setUserAgentOverride(
       'Mozilla/5.0 (Overridden User Agent)');
 
   const targetAdded = TestRunner.waitForTarget(

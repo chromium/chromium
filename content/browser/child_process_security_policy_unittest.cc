@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -68,7 +68,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
   ChildProcessSecurityPolicyTestBrowserClient() {}
 
   bool IsHandledURL(const GURL& url) override {
-    return schemes_.find(url.scheme()) != schemes_.end();
+    return base::Contains(schemes_, url.scheme());
   }
 
   void ClearSchemes() {
@@ -84,7 +84,8 @@ class ChildProcessSecurityPolicyTestBrowserClient
 };
 
 bool IsCitadelProtectionEnabled() {
-  return base::FeatureList::IsEnabled(kSiteIsolationCitadelEnforcement);
+  return base::FeatureList::IsEnabled(
+      features::kSiteIsolationCitadelEnforcement);
 }
 
 void LockProcessIfNeeded(int process_id,
@@ -116,7 +117,7 @@ class ChildProcessSecurityPolicyTest
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         old_browser_client_(nullptr) {
     feature_list_.InitWithFeatureState(
-        kSiteIsolationCitadelEnforcement,
+        features::kSiteIsolationCitadelEnforcement,
         GetParam() == ChildProcessSecurityPolicyTestCase::kCitadelEnabled);
   }
 
@@ -397,7 +398,6 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   const std::vector<std::string> kCommitURLs({
       "http://www.google.com/",
       "https://www.paypal.com/",
-      "data:text/html,<b>Hi</b>",
       "filesystem:http://localhost/temporary/a.gif",
   });
   for (const auto& url_string : kCommitURLs) {
@@ -406,12 +406,13 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
       // A non-locked process cannot access URL (because with
       // site-per-process all the URLs need to be isolated).
       EXPECT_FALSE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-      EXPECT_FALSE(handle.CanCommitURL(commit_url)) << commit_url;
     } else {
       EXPECT_TRUE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-      EXPECT_TRUE(handle.CanCommitURL(commit_url)) << commit_url;
     }
   }
+
+  // A data URL can commit in any process, even with Citadel enabled.
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
 
   // Dangerous to request, commit, or set as origin header.
   EXPECT_FALSE(p->CanRequestURL(kRendererID,
@@ -430,7 +431,6 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   for (const auto& url_string : kFailedCommitURLs) {
     const GURL commit_url(url_string);
     EXPECT_FALSE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-    EXPECT_FALSE(handle.CanCommitURL(commit_url)) << commit_url;
   }
 
   p->Remove(kRendererID);
@@ -759,7 +759,12 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanRequestURL(kRendererID, sensitive_url));
   EXPECT_TRUE(p->CanRedirectToURL(icon_url));
   EXPECT_TRUE(p->CanRedirectToURL(sensitive_url));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, icon_url));
+  if (base::FeatureList::IsEnabled(
+          features::kRequestFileSetCheckedInCanRequestURL)) {
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
+  } else {
+    EXPECT_TRUE(p->CanCommitURL(kRendererID, icon_url));
+  }
   EXPECT_FALSE(p->CanCommitURL(kRendererID, sensitive_url));
 
   p->GrantCommitURL(kRendererID, icon_url);
@@ -1824,8 +1829,8 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   {
     base::test::MockLog mock_log;
     EXPECT_CALL(mock_log,
-                Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
-                    testing::HasSubstr(invalid_etld.Serialize())))
+                Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                    testing::_, testing::HasSubstr(invalid_etld.Serialize())))
         .Times(1);
 
     mock_log.StartCapturingLogs();
@@ -1842,7 +1847,7 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   // AddFutureIsolatedOrigins() logs a warning.
   {
     base::test::MockLog mock_log;
-    EXPECT_CALL(mock_log, Log(::logging::LOG_ERROR, testing::_, testing::_,
+    EXPECT_CALL(mock_log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
                               testing::_, testing::HasSubstr("about:blank")))
         .Times(1);
 
@@ -3076,9 +3081,11 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
     UrlInfo url_info(UrlInfoInit(foo.GetURL())
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false,
-                                           /*is_fenced=*/false);
+        SiteInstanceImpl::CreateForUrlInfo(
+            &context, url_info,
+            /*is_guest=*/false,
+            /*is_fenced=*/false,
+            /*is_fixed_storage_partition=*/false);
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
@@ -3134,9 +3141,11 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
 
     UrlInfo url_info(UrlInfoInit(foo.GetURL()));
     scoped_refptr<SiteInstanceImpl> foo_instance =
-        SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
-                                           /*is_guest=*/false,
-                                           /*is_fenced=*/false);
+        SiteInstanceImpl::CreateForUrlInfo(
+            &context, url_info,
+            /*is_guest=*/false,
+            /*is_fenced=*/false,
+            /*is_fixed_storage_partition=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
                    /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));

@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 
 #include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace views {
 
@@ -16,7 +17,8 @@ void MenuConfig::Init() {
 
 void MenuConfig::InitPlatformCR2023() {
   context_menu_font_list = font_list;
-  use_bubble_border = true;
+  use_bubble_border =
+      ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
 }
 
 }  // namespace views

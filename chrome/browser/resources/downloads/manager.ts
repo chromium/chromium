@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './bypass_warning_confirmation_dialog.js';
 import './item.js';
 import './toolbar.js';
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
@@ -16,33 +17,34 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {States} from './constants.js';
-import {MojomData} from './data.js';
-import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
+import type {MojomData} from './data.js';
+import type {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
+import {State} from './downloads.mojom-webui.js';
 import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
-import {DownloadsToolbarElement} from './toolbar.js';
-
-declare global {
-  interface Window {
-    // https://github.com/microsoft/TypeScript/issues/40807
-    requestIdleCallback(callback: () => void): void;
-  }
-}
+import type {DownloadsToolbarElement} from './toolbar.js';
 
 export interface DownloadsManagerElement {
   $: {
     'toolbar': DownloadsToolbarElement,
     'downloadsList': IronListElement,
   };
+}
+
+type SaveDangerousClickEvent = CustomEvent<{id: string}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'save-dangerous-click': SaveDangerousClickEvent;
+  }
 }
 
 const DownloadsManagerElementBase = FindShortcutMixin(PolymerElement);
@@ -86,6 +88,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         notify: true,
       },
 
+      bypassDialogItemId_: {
+        type: String,
+        value: '',
+      },
+
       lastFocused_: Object,
 
       listBlurred_: Boolean,
@@ -101,6 +108,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private hasShadow_: boolean;
   private inSearchMode_: boolean;
   private spinnerActive_: boolean;
+  private bypassDialogItemId_: string;
 
   private announcerDebouncer_: Debouncer|null = null;
   private mojoHandler_: PageHandlerInterface;
@@ -128,7 +136,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
-  /** @override */
   override connectedCallback() {
     super.connectedCallback();
 
@@ -149,10 +156,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.eventTracker_.add(document, 'click', () => this.onClick_());
 
     this.loaded_.promise.then(() => {
-      window.requestIdleCallback(function() {
-        chrome.send(
-            'metricsHandler:recordTime',
-            ['Download.ResultsRenderedTime', window.performance.now()]);
+      requestIdleCallback(function() {
         // https://github.com/microsoft/TypeScript/issues/13569
         (document as any).fonts.load('bold 12px Roboto');
       });
@@ -166,7 +170,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         e => this.onToastClicked_(e);
   }
 
-  /** @override */
   override disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -174,6 +177,47 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         id => assert(this.mojoEventTarget_.removeListener(id)));
 
     this.eventTracker_.removeAll();
+  }
+
+  private onSaveDangerousClick_(e: SaveDangerousClickEvent) {
+    const bypassItem = this.items_.find(item => item.id === e.detail.id);
+    if (bypassItem) {
+      this.bypassDialogItemId_ = bypassItem.id;
+      assert(!!this.mojoHandler_);
+      this.mojoHandler_.recordOpenBypassWarningPrompt(this.bypassDialogItemId_);
+    }
+  }
+
+  private shouldShowBypassWarningDialog_(): boolean {
+    return this.bypassDialogItemId_ !== '';
+  }
+
+  private computeBypassWarningDialogFileName_(): string {
+    const bypassItem =
+        this.items_.find(item => item.id === this.bypassDialogItemId_);
+    return bypassItem?.fileName || '';
+  }
+
+  private hideBypassWarningDialog_() {
+    this.bypassDialogItemId_ = '';
+  }
+
+  private onBypassWarningConfirmationDialogClose_() {
+    const dialog = this.shadowRoot!.querySelector(
+        'download-bypass-warning-confirmation-dialog');
+    assert(dialog);
+    assert(this.bypassDialogItemId_ !== '');
+    assert(!!this.mojoHandler_);
+    if (dialog.wasConfirmed()) {
+      this.mojoHandler_.saveDangerousFromPromptRequiringGesture(
+          this.bypassDialogItemId_);
+    } else {
+      // Closing the dialog by clicking cancel is treated the same as closing
+      // the dialog by pressing Esc. Both are treated as CANCEL, not CLOSE.
+      this.mojoHandler_.recordCancelBypassWarningPrompt(
+          this.bypassDialogItemId_);
+    }
+    this.hideBypassWarningDialog_();
   }
 
   private clearAll_() {
@@ -213,9 +257,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.$.toolbar.hasClearableDownloads =
         loadTimeData.getBoolean('allowDeletingHistory') &&
         this.items_.some(
-            ({state}) => state !== States.DANGEROUS &&
-                state !== States.INSECURE && state !== States.IN_PROGRESS &&
-                state !== States.PAUSED);
+            ({state}) => state !== State.kDangerous &&
+                state !== State.kInsecure && state !== State.kInProgress &&
+                state !== State.kPaused);
 
     if (this.inSearchMode_) {
       this.announcerDebouncer_ = Debouncer.debounce(
@@ -319,6 +363,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private removeItem_(index: number) {
     const removed = this.items_.splice(index, 1);
     this.updateHideDates_(index, index);
+    if (removed.some(item => item.id === this.bypassDialogItemId_)) {
+      this.hideBypassWarningDialog_();
+    }
     this.notifySplices('items_', [{
                          index: index,
                          addedCount: 0,

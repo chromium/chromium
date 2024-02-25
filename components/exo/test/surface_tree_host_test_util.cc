@@ -10,6 +10,31 @@
 
 namespace exo::test {
 
+void SetFrameSubmissionFeatureFlags(base::test::ScopedFeatureList* feature_list,
+                                    FrameSubmissionType frame_submission) {
+  switch (frame_submission) {
+    case FrameSubmissionType::kNoReactive: {
+      feature_list->InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kExoReactiveFrameSubmission});
+      break;
+    }
+    case FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame: {
+      feature_list->InitWithFeatures(
+          /*enabled_features=*/{kExoReactiveFrameSubmission},
+          /*disabled_features=*/{kExoAutoNeedsBeginFrame});
+      break;
+    }
+    case FrameSubmissionType::kReactive_AutoNeedsBeginFrame: {
+      feature_list->InitWithFeatures(
+          /*enabled_features=*/{kExoReactiveFrameSubmission,
+                                kExoAutoNeedsBeginFrame},
+          /*disabled_features=*/{});
+      break;
+    }
+  }
+}
+
 void WaitForLastFrameAck(SurfaceTreeHost* surface_tree_host) {
   CHECK(!surface_tree_host->GetFrameCallbacksForTesting().empty());
 
@@ -34,6 +59,31 @@ void WaitForLastFramePresentation(SurfaceTreeHost* surface_tree_host) {
       },
       runloop.QuitClosure()));
   runloop.Run();
+}
+
+base::RepeatingClosure CreateReleaseBufferClosure(
+    int* release_buffer_call_count,
+    base::RepeatingClosure closure) {
+  return base::BindLambdaForTesting(
+      [release_buffer_call_count, closure = std::move(closure)]() {
+        if (release_buffer_call_count) {
+          (*release_buffer_call_count)++;
+        }
+        closure.Run();
+      });
+}
+
+base::OnceCallback<void(gfx::GpuFenceHandle)> CreateExplicitReleaseCallback(
+    int* release_call_count,
+    base::RepeatingClosure closure) {
+  return base::BindLambdaForTesting(
+      [release_call_count,
+       closure = std::move(closure)](gfx::GpuFenceHandle release_fence) {
+        if (release_call_count) {
+          (*release_call_count)++;
+        }
+        closure.Run();
+      });
 }
 
 }  // namespace exo::test

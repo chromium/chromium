@@ -8,10 +8,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -60,27 +59,18 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
-  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
-}
-
-// Disable the default browser blue dot feature flag (which blocks this promo).
-// TODO(crbug.com/1410229) remove when fully launched and no longer behing flag.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(kDefaultBrowserBlueDotPromo);
-  return config;
+  [ChromeEarlGrey clearDefaultBrowserPromoData];
 }
 
 // Test that a non modal default modal promo appears when it is triggered by
 // pasting a copied link.
 - (void)testNonModalAppears {
-  [ChromeEarlGreyAppInterface copyURLToPasteBoard];
+  [ChromeEarlGrey copyURLToPasteBoard];
   [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:LinkYouCopiedMatcher()]

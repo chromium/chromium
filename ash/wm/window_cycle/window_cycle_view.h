@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/gestures/wm_fling_handler.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -39,16 +38,18 @@ class WindowCycleItemView;
 // A view that shows a collection of windows the user can cycle through.
 class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
                                    public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(WindowCycleView);
+  METADATA_HEADER(WindowCycleView, views::WidgetDelegateView)
 
-  using WindowList = std::vector<aura::Window*>;
+ public:
+  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   // Horizontal padding between the alt-tab bandshield and the window
   // previews.
   static constexpr int kInsideBorderHorizontalPaddingDp = 64;
 
-  WindowCycleView(aura::Window* root_window, const WindowList& windows);
+  WindowCycleView(aura::Window* root_window,
+                  const WindowList& windows,
+                  const bool same_app_only);
   WindowCycleView(const WindowCycleView&) = delete;
   WindowCycleView& operator=(const WindowCycleView&) = delete;
   ~WindowCycleView() override;
@@ -119,25 +120,26 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // `tab_slider_container_` of the change.
   void OnModePrefsChanged();
 
-  // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
-
-  // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override;
-
   // Returns whether or not the given `screen_point` is located in tab slider
   // container.
-  bool IsEventInTabSliderContainer(const gfx::Point& screen_point);
+  bool IsEventInTabSliderContainer(const gfx::Point& screen_point) const;
 
   // Returns the maximum width of the cycle view.
   int CalculateMaxWidth() const;
+
+  // views::WidgetDelegateView:
+  gfx::Size CalculatePreferredSize() const override;
+  void Layout(PassKey) override;
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override;
 
   const views::View* mirror_container_for_testing() const {
     return mirror_container_;
   }
 
-  const std::vector<WindowMiniViewBase*>& cycle_views_for_testing() const {
+  const std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>&
+  cycle_views_for_testing() const {
     return cycle_views_;
   }
 
@@ -154,39 +156,40 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   WindowMiniViewBase* GetCycleViewForWindow(aura::Window* window) const;
 
   // The root window that `this` resides on.
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window> root_window_;
+
+  // True if the `this` is built for same app cycling.
+  const bool same_app_only_;
 
   // Constructed as the child views of `mirror_container` and used for window
   // cycling.
-  std::vector<WindowMiniViewBase*> cycle_views_;
+  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> mirror_container_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> mirror_container_ = nullptr;
 
   // Tells users that there are no app windows on the active desk. It only shows
   // when there're more than 1 desk.
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
-      no_recent_items_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> no_recent_items_label_ = nullptr;
 
   // The `tab_slider_` only shows when there're more than 1 desk. It contains
   // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
   // user can tab through or toggle between.
-  raw_ptr<TabSlider, DanglingUntriaged | ExperimentalAsh> tab_slider_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
-      all_desks_tab_slider_button_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TabSlider, DanglingUntriaged> tab_slider_ = nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged> all_desks_tab_slider_button_ =
+      nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged>
       current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.
-  raw_ptr<aura::Window, ExperimentalAsh> target_window_ = nullptr;
+  raw_ptr<aura::Window> target_window_ = nullptr;
 
   // The |current_window_| is the window that the window cycle list uses to
   // determine the layout and positioning of the list's items. If this window's
   // preview can equally divide the list it is centered, otherwise it is
   // off-center.
-  raw_ptr<aura::Window, ExperimentalAsh> current_window_ = nullptr;
+  raw_ptr<aura::Window> current_window_ = nullptr;
 
   // Used when the widget bounds update should be deferred during the cycle
   // view's scaling animation..
@@ -195,12 +198,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // List which contains items which have been created but have some of their
   // performance heavy elements not created yet. These elements will be created
   // once onscreen to improve fade in performance, then removed from this set.
-  std::vector<WindowMiniViewBase*> no_previews_list_;
-
-  // Used for preventng occlusion state computations for the duration of the
-  // fade in animation.
-  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
-      occlusion_tracker_pauser_;
+  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>
+      no_previews_list_;
 
   // Tracks the distance that a user has dragged, offsetting the
   // |mirror_container_|. This should be reset only when a user cycles the

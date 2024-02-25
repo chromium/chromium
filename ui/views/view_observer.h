@@ -71,6 +71,11 @@ class VIEWS_EXPORT ViewObserver {
   // Called from ~View.
   virtual void OnViewIsDeleting(View* observed_view) {}
 
+  // Called from the very beginning of ~View (before child views are deleted) to
+  // indicate that destruction is starting at the hierarchy owned by
+  // `observed_view`.
+  virtual void OnViewHierarchyWillBeDeleted(View* observed_view) {}
+
   // Called immediately after |observed_view| has gained focus.
   virtual void OnViewFocused(View* observed_view) {}
 

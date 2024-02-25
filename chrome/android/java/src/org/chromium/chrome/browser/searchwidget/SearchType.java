@@ -9,9 +9,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Specifies recognizable search types.
- */
+/** Specifies recognizable search types. */
 @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS})
 @Retention(RetentionPolicy.SOURCE)
 /* package */ @interface SearchType {

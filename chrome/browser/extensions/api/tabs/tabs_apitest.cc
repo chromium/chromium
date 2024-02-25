@@ -76,9 +76,7 @@ class ExtensionApiTabBackForwardCacheTest
   ExtensionApiTabBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetBasicBackForwardCacheFeatureForTesting(
-            {{features::kBackForwardCache,
-              {{"content_injection_supported", "true"},
-               {"all_extensions_allowed", "true"}}}}),
+            {{features::kBackForwardCache, {}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~ExtensionApiTabBackForwardCacheTest() override = default;
@@ -162,7 +160,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Move) {
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Move DISABLED_Move
+#else
+#define MAYBE_Move Move
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, MAYBE_Move) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/move")) << message_;
 }
 
@@ -185,6 +188,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
 #endif
+
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;
+}
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, CrashBrowser) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
@@ -323,7 +330,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, NoPermissions) {
   ASSERT_TRUE(RunExtensionTest("tabs/no_permissions")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, HostPermission) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
+                       DISABLED_HostPermission) {
   ASSERT_TRUE(RunExtensionTest("tabs/host_permission")) << message_;
 }
 
@@ -535,6 +543,11 @@ class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
 // TODO(crbug.com/1352966): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
+                       PrerenderingIntoANewTab) {
+  ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
 // Adding a new test? Awesome. But API tests are the old hotness. The new

@@ -25,7 +25,10 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -156,6 +159,20 @@ bool IDBKeyPath::IsValid() const {
   }
   NOTREACHED();
   return false;
+}
+
+v8::Local<v8::Value> IDBKeyPath::ToV8(ScriptState* script_state) const {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  switch (type_) {
+    case mojom::IDBKeyPathType::Null:
+      return v8::Null(isolate);
+    case mojom::IDBKeyPathType::String:
+      return V8String(isolate, GetString());
+    case mojom::IDBKeyPathType::Array:
+      return ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, Array());
+  }
+  NOTREACHED();
+  return v8::Undefined(isolate);
 }
 
 bool IDBKeyPath::operator==(const IDBKeyPath& other) const {

@@ -7,11 +7,12 @@
 
 #include <objbase.h>
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/variant_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -107,9 +108,9 @@ class BASE_EXPORT ScopedSafearray {
       array_size_ = 0U;
     }
 
-    // Cannot rewrite this pointer to raw_ptr<>, because this pointer
-    // comes from the operating system and may have been laundered
-    // if rewritten it may generate incorrect DPD error.
+    // RAW_PTR_EXCLUSION: Comes from the operating system and may have been
+    // laundered. If rewritten, it may generate an incorrect Dangling Pointer
+    // Detector error.
     RAW_PTR_EXCLUSION SAFEARRAY* safearray_ = nullptr;
     VARTYPE vartype_ = VT_EMPTY;
     pointer array_ = nullptr;
@@ -140,21 +141,21 @@ class BASE_EXPORT ScopedSafearray {
   // Creates a LockScope for accessing the contents of a
   // single-dimensional SAFEARRAYs.
   template <VARTYPE ElementVartype>
-  absl::optional<LockScope<ElementVartype>> CreateLockScope() const {
+  std::optional<LockScope<ElementVartype>> CreateLockScope() const {
     if (!safearray_ || SafeArrayGetDim(safearray_) != 1)
-      return absl::nullopt;
+      return std::nullopt;
 
     VARTYPE vartype;
     HRESULT hr = SafeArrayGetVartype(safearray_, &vartype);
     if (FAILED(hr) ||
         !internal::VariantConverter<ElementVartype>::IsConvertibleTo(vartype)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     typename LockScope<ElementVartype>::pointer array = nullptr;
     hr = SafeArrayAccessData(safearray_, reinterpret_cast<void**>(&array));
     if (FAILED(hr))
-      return absl::nullopt;
+      return std::nullopt;
 
     const size_t array_size = GetCount();
     return LockScope<ElementVartype>(safearray_, vartype, array, array_size);
@@ -222,8 +223,7 @@ class BASE_EXPORT ScopedSafearray {
   bool operator!=(const ScopedSafearray& safearray2) const = delete;
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // RAW_PTR_EXCLUSION: #addr-of
   RAW_PTR_EXCLUSION SAFEARRAY* safearray_;
 };
 

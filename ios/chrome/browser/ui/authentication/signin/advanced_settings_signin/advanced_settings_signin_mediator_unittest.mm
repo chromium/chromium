@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -15,14 +16,14 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
@@ -72,9 +73,10 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
   PrefService* GetPrefService() {
     TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
     PrefRegistrySimple* registry = prefs->registry();
-    registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
+    registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingUsername,
                                  kTestEmail);
-    registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
+    registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingGaiaId,
+                                 kTestGaiaID);
     return prefs;
   }
 
@@ -106,7 +108,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
 
   AdvancedSettingsSigninMediator* mediator_ = nil;
 
-  AuthenticationService* authentication_service_ = nullptr;
+  raw_ptr<AuthenticationService> authentication_service_ = nullptr;
 };
 
 // Tests that a user's authentication does not change when sign-in is

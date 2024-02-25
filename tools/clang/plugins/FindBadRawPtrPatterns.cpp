@@ -6,6 +6,7 @@
 
 #include "RawPtrHelpers.h"
 #include "RawPtrManualPathsToIgnore.h"
+#include "SeparateRepositoryPaths.h"
 #include "StackAllocatedChecker.h"
 #include "TypePredicateUtil.h"
 #include "Util.h"
@@ -34,8 +35,12 @@ constexpr char kBadCastDiagnosticNoteType[] =
 
 class BadCastMatcher : public MatchFinder::MatchCallback {
  public:
-  explicit BadCastMatcher(clang::CompilerInstance& compiler)
-      : compiler_(compiler) {
+  explicit BadCastMatcher(clang::CompilerInstance& compiler,
+                          const FilterFile& exclude_files,
+                          const FilterFile& exclude_functions)
+      : compiler_(compiler),
+        exclude_files_(exclude_files),
+        exclude_functions_(exclude_functions) {
     error_bad_cast_signature_ = compiler_.getDiagnostics().getCustomDiagID(
         clang::DiagnosticsEngine::Error, kBadCastDiagnostic);
     note_bad_cast_signature_explanation_ =
@@ -46,27 +51,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
   }
 
   void Register(MatchFinder& match_finder) {
-    // Matches anything contains |raw_ptr<T>| / |raw_ref<T>|.
-    auto src_type =
-        type(isCastingUnsafe(casting_unsafe_predicate_)).bind("srcType");
-    auto dst_type =
-        type(isCastingUnsafe(casting_unsafe_predicate_)).bind("dstType");
-    // Matches |static_cast| on pointers, all |bit_cast|
-    // and all |reinterpret_cast|.
-    auto cast_kind = castExpr(anyOf(
-        hasCastKind(CK_BitCast), hasCastKind(CK_LValueBitCast),
-        hasCastKind(CK_LValueToRValueBitCast),
-        hasCastKind(CK_PointerToIntegral), hasCastKind(CK_IntegralToPointer)));
-    // Implicit/explicit casting from/to |raw_ptr<T>| matches.
-    // Both casting direction is unsafe.
-    //   https://godbolt.org/z/zqKMzcKfo
-    auto cast_matcher =
-        castExpr(
-            allOf(anyOf(hasSourceExpression(hasType(src_type)),
-                        implicitCastExpr(hasImplicitDestinationType(dst_type)),
-                        explicitCastExpr(hasDestinationType(dst_type))),
-                  cast_kind))
-            .bind("castExpr");
+    auto cast_matcher = BadRawPtrCastExpr(casting_unsafe_predicate_,
+                                          exclude_files_, exclude_functions_);
     match_finder.addMatcher(cast_matcher, this);
   }
 
@@ -79,23 +65,6 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
     clang::SourceLocation loc = cast_expr->getSourceRange().getBegin();
     std::string file_path = GetFilename(source_manager, loc);
 
-    // Using raw_ptr<T> in a stdlib collection will cause a cast.
-    // e.g.
-    // https://source.chromium.org/chromium/chromium/src/+/main:components/feed/core/v2/xsurface_datastore.h;drc=a0ff03edcace35ec020edd235f4d9e9735fc9690;l=107
-    // |__bit/bit_cast.h| header is excluded to perform checking on
-    // |std::bit_cast<T>|.
-    if (file_path.find("buildtools/third_party/libc++") != std::string::npos &&
-        file_path.find("__bit/bit_cast.h") == std::string::npos) {
-      return;
-    }
-
-    // Exclude casts via "unsafe_raw_ptr_*_cast".
-    if (file_path.find(
-            "base/allocator/partition_allocator/pointers/raw_ptr_cast.h") !=
-        std::string::npos) {
-      return;
-    }
-
     clang::PrintingPolicy printing_policy(result.Context->getLangOpts());
     const std::string src_name =
         cast_expr->getSubExpr()->getType().getAsString(printing_policy);
@@ -106,18 +75,24 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
     const auto* dst_type = result.Nodes.getNodeAs<clang::Type>("dstType");
     assert((src_type || dst_type) &&
            "matcher should bind 'srcType' or 'dstType'");
-    compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+
+    const auto* enclosing_cast_expr =
+        result.Nodes.getNodeAs<clang::ExplicitCastExpr>("enclosingCastExpr");
+    const auto* cast_expr_for_display =
+        enclosing_cast_expr ? enclosing_cast_expr : cast_expr;
+
+    compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                       error_bad_cast_signature_)
         << src_name << dst_name;
 
     std::shared_ptr<MatchResult> type_note;
     if (src_type != nullptr) {
-      compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+      compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << src_name;
       type_note = casting_unsafe_predicate_.GetMatchResult(src_type);
     } else {
-      compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
+      compiler_.getDiagnostics().Report(cast_expr_for_display->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << dst_name;
       type_note = casting_unsafe_predicate_.GetMatchResult(dst_type);
@@ -137,6 +112,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
 
  private:
   clang::CompilerInstance& compiler_;
+  const FilterFile& exclude_files_;
+  const FilterFile& exclude_functions_;
   CastingUnsafePredicate casting_unsafe_predicate_;
   unsigned error_bad_cast_signature_;
   unsigned note_bad_cast_signature_explanation_;
@@ -269,24 +246,41 @@ void FindBadRawPtrPatterns(Options options,
                            clang::CompilerInstance& compiler) {
   MatchFinder match_finder;
 
-  BadCastMatcher bad_cast_matcher(compiler);
-  if (options.check_bad_raw_ptr_cast)
-    bad_cast_matcher.Register(match_finder);
-
   std::vector<std::string> paths_to_exclude_lines;
+  std::vector<std::string> check_bad_raw_ptr_cast_exclude_paths;
   for (auto* const line : kRawPtrManualPathsToIgnore) {
     paths_to_exclude_lines.push_back(line);
+  }
+  for (auto* const line : kSeparateRepositoryPaths) {
+    paths_to_exclude_lines.push_back(line);
+    check_bad_raw_ptr_cast_exclude_paths.push_back(line);
   }
   paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
                                 options.raw_ptr_paths_to_exclude_lines.begin(),
                                 options.raw_ptr_paths_to_exclude_lines.end());
+  check_bad_raw_ptr_cast_exclude_paths.insert(
+      check_bad_raw_ptr_cast_exclude_paths.end(),
+      options.check_bad_raw_ptr_cast_exclude_paths.begin(),
+      options.check_bad_raw_ptr_cast_exclude_paths.end());
 
   FilterFile exclude_fields(options.exclude_fields_file, "exclude-fields");
   FilterFile exclude_lines(paths_to_exclude_lines);
+
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
-      &stack_allocated_predicate, options.raw_ptr_fix_crbug_1449812};
+      &stack_allocated_predicate};
+
+  FilterFile filter_check_bad_raw_ptr_cast_exclude_paths(
+      check_bad_raw_ptr_cast_exclude_paths);
+  FilterFile filter_check_bad_raw_ptr_cast_exclude_funcs(
+      options.check_bad_raw_ptr_cast_exclude_funcs);
+  BadCastMatcher bad_cast_matcher(compiler,
+                                  filter_check_bad_raw_ptr_cast_exclude_paths,
+                                  filter_check_bad_raw_ptr_cast_exclude_funcs);
+  if (options.check_bad_raw_ptr_cast) {
+    bad_cast_matcher.Register(match_finder);
+  }
 
   RawPtrFieldMatcher field_matcher(compiler, exclusion_options);
   if (options.check_raw_ptr_fields) {
@@ -299,7 +293,8 @@ void FindBadRawPtrPatterns(Options options,
   }
 
   RawPtrToStackAllocatedMatcher raw_ptr_to_stack(compiler);
-  if (options.check_raw_ptr_to_stack_allocated) {
+  if (options.check_raw_ptr_to_stack_allocated &&
+      !options.disable_check_raw_ptr_to_stack_allocated_error) {
     raw_ptr_to_stack.Register(match_finder);
   }
 

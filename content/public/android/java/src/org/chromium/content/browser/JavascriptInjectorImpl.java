@@ -6,10 +6,11 @@ package org.chromium.content.browser;
 
 import android.util.Pair;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.content.browser.remoteobjects.RemoteObjectInjector;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -23,9 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Implementation class of the interface {@link JavascriptInjector}.
- */
+/** Implementation class of the interface {@link JavascriptInjector}. */
 @JNINamespace("content")
 public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     private static final class UserDataFactoryLazyHolder {
@@ -35,8 +34,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     // The set is passed to native and stored in a weak reference, so ensure this
     // strong reference is not optimized away by R8.
-    @DoNotInline
-    private final Set<Object> mRetainedObjects = new HashSet<>();
+    @DoNotInline private final Set<Object> mRetainedObjects = new HashSet<>();
     private final Map<String, Pair<Object, Class>> mInjectedObjects = new HashMap<>();
     private long mNativePtr;
     private RemoteObjectInjector mInjector;
@@ -58,8 +56,9 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     public JavascriptInjectorImpl(WebContents webContents) {
-        mNativePtr = JavascriptInjectorImplJni.get().init(
-                JavascriptInjectorImpl.this, webContents, mRetainedObjects);
+        mNativePtr =
+                JavascriptInjectorImplJni.get()
+                        .init(JavascriptInjectorImpl.this, webContents, mRetainedObjects);
         mInjector = new RemoteObjectInjector(webContents);
         webContents.addObserver(mInjector);
     }
@@ -88,8 +87,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         if (mUseMojo) {
             mInjector.setAllowInspection(allow);
         } else if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get().setAllowInspection(
-                    mNativePtr, JavascriptInjectorImpl.this, allow);
+            JavascriptInjectorImplJni.get()
+                    .setAllowInspection(mNativePtr, JavascriptInjectorImpl.this, allow);
         }
     }
 
@@ -103,8 +102,13 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
             mInjector.addInterface(object, name, requiredAnnotation);
         } else if (mNativePtr != 0) {
             mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
-            JavascriptInjectorImplJni.get().addInterface(
-                    mNativePtr, JavascriptInjectorImpl.this, object, name, requiredAnnotation);
+            JavascriptInjectorImplJni.get()
+                    .addInterface(
+                            mNativePtr,
+                            JavascriptInjectorImpl.this,
+                            object,
+                            name,
+                            requiredAnnotation);
         }
     }
 
@@ -116,8 +120,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         } else {
             mInjectedObjects.remove(name);
             if (mNativePtr != 0) {
-                JavascriptInjectorImplJni.get().removeInterface(
-                        mNativePtr, JavascriptInjectorImpl.this, name);
+                JavascriptInjectorImplJni.get()
+                        .removeInterface(mNativePtr, JavascriptInjectorImpl.this, name);
             }
         }
     }
@@ -125,10 +129,17 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     @NativeMethods
     interface Natives {
         long init(JavascriptInjectorImpl caller, WebContents webContents, Object retainedObjects);
+
         void setAllowInspection(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, boolean allow);
-        void addInterface(long nativeJavascriptInjector, JavascriptInjectorImpl caller,
-                Object object, String name, Class requiredAnnotation);
+
+        void addInterface(
+                long nativeJavascriptInjector,
+                JavascriptInjectorImpl caller,
+                Object object,
+                String name,
+                Class requiredAnnotation);
+
         void removeInterface(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);
     }

@@ -38,7 +38,17 @@ public class DefaultBrowserPromoManager {
     void promoByRoleManager() {
         RoleManager roleManager = (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
 
+        DefaultBrowserPromoMetrics.recordRoleManagerShow(mCurrentState);
+
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
-        mWindowAndroid.showCancelableIntent(intent, (resultCode, data) -> {}, null);
+        mWindowAndroid.showCancelableIntent(
+                intent,
+                (resultCode, data) -> {
+                    DefaultBrowserPromoMetrics.recordOutcome(
+                            mCurrentState,
+                            DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(),
+                            DefaultBrowserPromoDeps.getInstance().getPromoCount());
+                },
+                null);
     }
 }

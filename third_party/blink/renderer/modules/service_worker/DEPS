@@ -1,7 +1,4 @@
 include_rules = [
-    "+base/barrier_closure.h",
-    "+base/threading/thread_checker.h",
-    "+base/trace_event/trace_event.h",
     "+mojo/public/cpp/system/data_pipe.h",
     "+services/network/public",
     "+services/metrics/public/cpp/ukm_source_id.h",

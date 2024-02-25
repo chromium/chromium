@@ -25,6 +25,7 @@ include_rules = [
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",
     "+ui/display/mojom",
+    "+ui/color",
     "+ui/gfx/geometry",
     "-web",
 ]
@@ -61,13 +62,15 @@ specific_include_rules = {
     ],
 
     "tcp_writable_stream_wrapper.h": [
-        "+base/allocator/partition_allocator/partition_root.h",
+        "+base/allocator/partition_allocator/src/partition_alloc/partition_root.h",
     ],
     ".*_stream_wrapper.cc": [
         "+net/base/ip_endpoint.h",
     ],
     ".*socket.cc": [
-        "+base/barrier_callback.h",
         "+base/functional/identity.h",
     ],
+    "web_printing_manager.cc": [
+      "+printing/buildflags/buildflags.h",
+    ]
 }

@@ -409,11 +409,6 @@
 -AdsPageLoadMetricsObserverResourceBrowserTest.HeavyAdInterventionFired_ReportsToAllChildren
 -All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/1
 -All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/3
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/0
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/2
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/2
--All/MediaHistoryBrowserTest.RecordWatchtime_VideoOnly/0
 -All/PageSpecificSiteDataDialogBrowserTest.ChangeAndCloseTab/1
 -All/PageSpecificSiteDataDialogBrowserTest.ClearOnExitMenuItem/1
 -All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/0
@@ -537,8 +532,8 @@
 # yet identified.
 -CrSettingsPrivacyPageTest.PrivacyPageTests
 
-# TODO(crbug.com/1402833): cannot find ShoppingListUiTabHelper
--All/PriceTrackingEntryPointFeatureFlagTest.ShoppingListUiTabHelperCreation/ShoppingListEnabled
+# TODO(crbug.com/1402833): cannot find CommerceUiTabHelper
+-All/PriceTrackingEntryPointFeatureFlagTest.CommerceUiTabHelperCreation/ShoppingListEnabled
 -BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details*
 -BookmarkBubbleViewTest.SyncPromo*
 

@@ -33,7 +33,6 @@ OverlayWindowAndroid::OverlayWindowAndroid(
       controller_(controller) {
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
-  surface_layer_->SetMayContainVideo(true);
   surface_layer_->SetBackgroundColor(SkColors::kBlack);
 
   auto* web_contents = controller_->GetWebContents();

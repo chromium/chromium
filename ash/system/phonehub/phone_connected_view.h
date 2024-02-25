@@ -10,6 +10,7 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ class QuickActionsView;
 // A view of the Phone Hub panel, displaying phone status and utility actions
 // such as phone status, task continuation, etc.
 class PhoneConnectedView : public PhoneHubContentView {
+  METADATA_HEADER(PhoneConnectedView, PhoneHubContentView)
+
  public:
   explicit PhoneConnectedView(phonehub::PhoneHubManager* phone_hub_manager);
   ~PhoneConnectedView() override;
@@ -31,7 +34,6 @@ class PhoneConnectedView : public PhoneHubContentView {
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
   void ChildVisibilityChanged(View* child) override;
-  const char* GetClassName() const override;
 
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
@@ -44,8 +46,8 @@ class PhoneConnectedView : public PhoneHubContentView {
 
   void OnAppStreamErrorDialogButtonClicked(const ui::Event& event);
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
-  raw_ptr<QuickActionsView, ExperimentalAsh> quick_actions_view_;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_;
+  raw_ptr<QuickActionsView> quick_actions_view_;
   std::unique_ptr<AppStreamConnectionErrorDialog> app_stream_error_dialog_;
 };
 

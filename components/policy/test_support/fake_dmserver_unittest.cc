@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/test_support/fake_dmserver.h"
+
+#include <memory>
 #include <set>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -27,7 +32,6 @@
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
-#include "components/policy/test_support/fake_dmserver.h"
 #include "components/policy/test_support/policy_storage.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -45,7 +49,7 @@ namespace fakedms {
 
 namespace {
 
-constexpr base::StringPiece kRawExtensionPolicyPayload =
+constexpr std::string_view kRawExtensionPolicyPayload =
     R"({
       "VisibleStringPolicy": {
         "Value": "notsecret"
@@ -66,7 +70,7 @@ constexpr base::StringPiece kRawExtensionPolicyPayload =
         }
       }
     })";
-constexpr base::StringPiece kPolicyBlobForExternalPolicy =
+constexpr std::string_view kPolicyBlobForExternalPolicy =
     R"(
     {
       "managed_users" : [ "*" ],
@@ -87,7 +91,7 @@ constexpr base::StringPiece kPolicyBlobForExternalPolicy =
       ]
     }
   )";
-constexpr base::StringPiece kSHA256HashForExtensionPolicyPayload(
+constexpr std::string_view kSHA256HashForExtensionPolicyPayload(
     "\x1e\x95\xf3\xeb\x42\xcc\x72\x2c\x83\xdb\x2d\x1c\xb1\xca\xfa\x2b\x78\x1e"
     "\x4b\x91\x2b\x73\x1a\x5c\x85\x72\xa8\xf2\x87\x4a\xbc\x44",
     32);
@@ -136,6 +140,8 @@ class FakeDMServerTest : public testing::Test {
     if (response_body) {
       LOG(INFO) << "Response body: " << *response_body;
     }
+    LOG(INFO) << "Response headers: "
+              << url_loader->ResponseInfo()->headers->raw_headers();
     return url_loader->ResponseInfo()->headers->response_code();
   }
 
@@ -148,19 +154,19 @@ class FakeDMServerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(FakeDMServerTest, HandleExitRequest_Succeeds) {
+TEST_F(FakeDMServerTest, HandleExitRequestSucceeds) {
   base::MockOnceCallback<void()> callback;
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_, callback.Get());
   EXPECT_TRUE(fake_dmserver.Start());
 
-  EXPECT_CALL(callback, Run()).Times(1);
+  EXPECT_CALL(callback, Run());
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(), "/test/exit"),
             net::HTTP_OK);
 }
 
-TEST_F(FakeDMServerTest, HandlePingRequest_Succeeds) {
+TEST_F(FakeDMServerTest, HandlePingRequestSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -170,7 +176,7 @@ TEST_F(FakeDMServerTest, HandlePingRequest_Succeeds) {
             net::HTTP_OK);
 }
 
-TEST_F(FakeDMServerTest, HandleRegisterRequest_Succeeds) {
+TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -192,12 +198,12 @@ TEST_F(FakeDMServerTest, HandleRegisterRequest_Succeeds) {
   // client state file.
   std::vector<policy::ClientStorage::ClientInfo> clients =
       fake_dmserver.client_storage()->GetAllClients();
-  EXPECT_EQ(clients.size(), 1u);
+  ASSERT_EQ(clients.size(), 1u);
   EXPECT_EQ(clients[0].device_id, "fake_device_id");
   EXPECT_FALSE(clients[0].device_token.empty());
   EXPECT_FALSE(clients[0].machine_name.empty());
   EXPECT_EQ(clients[0].username.value(), "tast-user@managedchrome.com");
-  EXPECT_EQ(clients[0].allowed_policy_types.size(), 1u);
+  ASSERT_EQ(clients[0].allowed_policy_types.size(), 1u);
   EXPECT_EQ(*clients[0].allowed_policy_types.begin(),
             policy::dm_protocol::kChromeUserPolicyType);
   EXPECT_TRUE(clients[0].state_keys.empty());
@@ -207,36 +213,38 @@ TEST_F(FakeDMServerTest, HandleRegisterRequest_Succeeds) {
   std::string error_msg;
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(&error_code, &error_msg);
-  EXPECT_TRUE(value);
-  EXPECT_TRUE(value->is_dict());
-  base::Value::Dict& state_dict = value->GetDict();
-  EXPECT_EQ(state_dict.size(), 1u);
-  EXPECT_TRUE(state_dict.contains("fake_device_id"));
-  base::Value::Dict* client_dict = state_dict.FindDict("fake_device_id");
-  EXPECT_NE(client_dict, nullptr);
-  EXPECT_TRUE(client_dict->contains("device_id"));
-  EXPECT_EQ(*client_dict->FindString("device_id"), "fake_device_id");
-  EXPECT_TRUE(client_dict->contains("device_token"));
-  EXPECT_FALSE(client_dict->FindString("device_token")->empty());
-  EXPECT_TRUE(client_dict->contains("machine_name"));
-  EXPECT_FALSE(client_dict->FindString("machine_name")->empty());
-  EXPECT_TRUE(client_dict->contains("username"));
-  EXPECT_EQ(*client_dict->FindString("username"),
-            "tast-user@managedchrome.com");
+  ASSERT_TRUE(value);
+  const base::Value::Dict* state_dict = value->GetIfDict();
+  ASSERT_TRUE(state_dict);
+  ASSERT_EQ(state_dict->size(), 1u);
+  const base::Value::Dict* client_dict = state_dict->FindDict("fake_device_id");
+  ASSERT_TRUE(client_dict);
+  const std::string* device_id = client_dict->FindString("device_id");
+  ASSERT_TRUE(device_id);
+  EXPECT_EQ(*device_id, "fake_device_id");
+  const std::string* device_token = client_dict->FindString("device_token");
+  ASSERT_TRUE(device_token);
+  EXPECT_FALSE(device_token->empty());
+  const std::string* machine_name = client_dict->FindString("machine_name");
+  ASSERT_TRUE(machine_name);
+  EXPECT_FALSE(machine_name->empty());
+  const std::string* username = client_dict->FindString("username");
+  ASSERT_TRUE(username);
+  EXPECT_EQ(*username, "tast-user@managedchrome.com");
 
-  base::Value::List* allowed_policy_types =
+  const base::Value::List* allowed_policy_types =
       client_dict->FindList("allowed_policy_types");
-  EXPECT_NE(allowed_policy_types, nullptr);
-  EXPECT_EQ(allowed_policy_types->size(), 1u);
+  ASSERT_TRUE(allowed_policy_types);
+  ASSERT_EQ(allowed_policy_types->size(), 1u);
   EXPECT_EQ((*allowed_policy_types)[0].GetString(),
             policy::dm_protocol::kChromeUserPolicyType);
 
-  base::Value::List* state_keys = client_dict->FindList("state_keys");
-  EXPECT_NE(state_keys, nullptr);
+  const base::Value::List* state_keys = client_dict->FindList("state_keys");
+  ASSERT_TRUE(state_keys);
   EXPECT_TRUE(state_keys->empty());
 }
 
-TEST_F(FakeDMServerTest, ReadClientStateFile_WithWrongJSONData_Fails) {
+TEST_F(FakeDMServerTest, ReadClientStateFileWithWrongJSONDataFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -249,7 +257,7 @@ TEST_F(FakeDMServerTest, ReadClientStateFile_WithWrongJSONData_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadClientStateFile_WithNonDictFile_Fails) {
+TEST_F(FakeDMServerTest, ReadClientStateFileWithNonDictFileFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -262,7 +270,7 @@ TEST_F(FakeDMServerTest, ReadClientStateFile_WithNonDictFile_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithNonDictValue_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithNonDictValueFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -276,7 +284,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithNonDictValue_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithOnlyDeviceID_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithOnlyDeviceIDFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -291,7 +299,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithOnlyDeviceID_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringDeviceID_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringDeviceIDFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -305,7 +313,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringDeviceID_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithoutStateKeyList_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithoutStateKeyListFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -328,7 +336,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithoutStateKeyList_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringStateKeys_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -352,7 +360,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringStateKeys_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringPolicyTypes_Fails) {
+TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -376,7 +384,7 @@ TEST_F(FakeDMServerTest, GetClientFromValue_WithNonStringPolicyTypes_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
+TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -443,15 +451,13 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
   std::string user_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/user",
                                                        "");
-  std::string user_policy_output;
-  base::Base64Encode(user_policy_payload, &user_policy_output);
+  std::string user_policy_output = base::Base64Encode(user_policy_payload);
   EXPECT_EQ(user_policy_output, "uhMCEAE=");
 
   std::string device_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/device",
                                                        "");
-  std::string device_policy_output;
-  base::Base64Encode(device_policy_payload, &device_policy_output);
+  std::string device_policy_output = base::Base64Encode(device_policy_payload);
   EXPECT_EQ(device_policy_output,
             "qgFSCikSJWRlZmF1bHRNZ3NTZXRCeVRhc3RAbWFuYWdlZGNocm9tZS5jb20YABIlZG"
             "VmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ==");
@@ -459,8 +465,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
   std::string publicaccount_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload(
           "google/chromeos/publicaccount", "accountid@managedchrome.com");
-  std::string public_policy_output;
-  base::Base64Encode(publicaccount_policy_payload, &public_policy_output);
+  std::string public_policy_output =
+      base::Base64Encode(publicaccount_policy_payload);
   EXPECT_EQ(public_policy_output,
             "ojCsARKpAXsiaGFzaCI6IjdhMDUyYzVlNGYyM2MxNTk2NjgxNDhkZjJhM2MyMDJiZW"
             "Q0ZDY1NzQ5Y2FiNWVjZDBmYTdkYjIxMWMxMmEzYjgiLCJ1cmwiOiJodHRwczovL3N0"
@@ -486,19 +492,19 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
 
   std::vector<std::string> device_affiliation_ids =
       fake_dmserver.policy_storage()->device_affiliation_ids();
-  EXPECT_EQ(device_affiliation_ids.size(), 1u);
+  ASSERT_EQ(device_affiliation_ids.size(), 1u);
   EXPECT_EQ(device_affiliation_ids[0], "device_id");
 
   std::vector<std::string> user_affiliation_ids =
       fake_dmserver.policy_storage()->user_affiliation_ids();
-  EXPECT_EQ(user_affiliation_ids.size(), 1u);
+  ASSERT_EQ(user_affiliation_ids.size(), 1u);
   EXPECT_EQ(user_affiliation_ids[0], "user_id");
 
   const policy::PolicyStorage::InitialEnrollmentState*
       initial_enrollment_state =
           fake_dmserver.policy_storage()->GetInitialEnrollmentState(
               "TEST_serial");
-  EXPECT_TRUE(initial_enrollment_state);
+  ASSERT_TRUE(initial_enrollment_state);
   EXPECT_EQ(initial_enrollment_state->management_domain, "test-domain.com");
   EXPECT_EQ(
       initial_enrollment_state->initial_enrollment_mode,
@@ -506,7 +512,7 @@ TEST_F(FakeDMServerTest, HandlePolicyRequest_Succeeds) {
                       InitialEnrollmentMode>(2));
 }
 
-TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomError_Succeeds) {
+TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -544,7 +550,7 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomError_Succeeds) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, HandleExternalPolicyRequest_Succeeds) {
+TEST_F(FakeDMServerTest, HandleExternalPolicyRequestSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -585,7 +591,7 @@ TEST_F(FakeDMServerTest, HandleExternalPolicyRequest_Succeeds) {
   EXPECT_EQ(extension_policy_payload, kRawExtensionPolicyPayload);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithWrongJSONData_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithWrongJSONDataFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -598,7 +604,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithWrongJSONData_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictFile_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictFileFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -611,7 +617,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictFile_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictPolicies_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictPoliciesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -629,7 +635,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictPolicies_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictExternalPolicies_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictExternalPoliciesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -647,7 +653,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonDictExternalPolicies_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntRequestError_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntRequestErrorFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -672,7 +678,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntRequestError_Fails) {
 }
 
 TEST_F(FakeDMServerTest,
-       ReadPolicyBlobFile_WithNonBoolAllowSetDeviceAttributes_Fails) {
+       ReadPolicyBlobFileWithNonBoolAllowSetDeviceAttributesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -696,8 +702,7 @@ TEST_F(FakeDMServerTest,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest,
-       ReadPolicyBlobFile_WithNonStringManagementDomain_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonStringManagementDomainFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -726,7 +731,7 @@ TEST_F(FakeDMServerTest,
 }
 
 TEST_F(FakeDMServerTest,
-       ReadPolicyBlobFile_WithNonIntInitialEnrollmentMode_Fails) {
+       ReadPolicyBlobFileWithNonIntInitialEnrollmentModeFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -754,7 +759,7 @@ TEST_F(FakeDMServerTest,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntCurrentKeyIndex_Fails) {
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntCurrentKeyIndexFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -778,7 +783,7 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFile_WithNonIntCurrentKeyIndex_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, SetPolicyPayload_WithoutValueOrTypeField_Fails) {
+TEST_F(FakeDMServerTest, SetPolicyPayloadWithoutValueOrTypeFieldFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -798,7 +803,7 @@ TEST_F(FakeDMServerTest, SetPolicyPayload_WithoutValueOrTypeField_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, SetPolicyPayload_WithNonBase64Value_Fails) {
+TEST_F(FakeDMServerTest, SetPolicyPayloadWithNonBase64ValueFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -818,8 +823,7 @@ TEST_F(FakeDMServerTest, SetPolicyPayload_WithNonBase64Value_Fails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest,
-       SetExternalPolicyPayload_WithoutValueOrTypeField_Fails) {
+TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithoutValueOrTypeFieldFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
@@ -843,7 +847,7 @@ TEST_F(FakeDMServerTest,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
-TEST_F(FakeDMServerTest, SetExternalPolicyPayload_WithNonBase64Value_Fails) {
+TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithNonBase64ValueFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);

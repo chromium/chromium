@@ -27,7 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_MATCHER_MAC_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_MATCHER_MAC_H_
 
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
+#import <CoreText/CoreText.h>
 
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -40,12 +41,35 @@ PLATFORM_EXPORT NSFont* MatchNSFontFamily(const AtomicString& desired_family,
                                           FontSelectionValue desired_weight,
                                           float size);
 
-PLATFORM_EXPORT NSFont* MatchUniqueFont(const AtomicString& unique_font_name,
-                                        float size);
+PLATFORM_EXPORT
+base::apple::ScopedCFTypeRef<CTFontRef> MatchFontFamily(
+    const AtomicString& desired_family,
+    FontSelectionValue desired_weight,
+    FontSelectionValue desired_slant,
+    FontSelectionValue desired_width,
+    float size);
+
+PLATFORM_EXPORT
+base::apple::ScopedCFTypeRef<CTFontRef> MatchUniqueFont(
+    const AtomicString& unique_font_name,
+    float size);
+
+PLATFORM_EXPORT
+base::apple::ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(
+    FontSelectionValue desired_weight,
+    FontSelectionValue desired_slant,
+    FontSelectionValue desired_width,
+    float size);
 
 // Converts a blink::FontSelectionValue to the nearest AppKit font weight if
 // possible, otherwise returns the default font weight.
 int ToAppKitFontWeight(FontSelectionValue);
+
+PLATFORM_EXPORT
+int ToCSSFontWeight(float ct_font_weight);
+
+float ToCTFontWeight(int css_weight);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_MATCHER_MAC_H_

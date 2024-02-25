@@ -43,9 +43,9 @@ class ParentPermissionInputSection;
 // asynchronously fetched).
 class ParentPermissionDialogView : public views::DialogDelegateView,
                                    public GaiaAuthConsumer {
- public:
-  METADATA_HEADER(ParentPermissionDialogView);
+  METADATA_HEADER(ParentPermissionDialogView, views::DialogDelegateView)
 
+ public:
   class Observer {
    public:
     // Tells observers that their references to the view are becoming invalid.

@@ -11,17 +11,12 @@ build_webui("build") {
   grd_prefix = "emoji_picker"
 
   static_files = [
-    "generic_error_dark.svg",
-    "generic_error.svg",
     "index.html",
-    "network_error_dark.svg",
-    "network_error.svg",
-    "no_results_dark.svg",
-    "no_results.svg",
     "nudge_icon.svg",
   ]
 
   web_component_files = [
+    "app.ts",
     "emoji_button.ts",
     "emoji_category_button.ts",
     "emoji_error.ts",
@@ -29,7 +24,6 @@ build_webui("build") {
     "emoji_group.ts",
     "emoji_group_button.ts",
     "emoji_image.ts",
-    "emoji_picker.ts",
     "emoji_search.ts",
     "emoji_variants.ts",
     "text_group_button.ts",
@@ -37,6 +31,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "constants.ts",
+    "emoji_picker.ts",
     "emoji_picker_api_proxy.ts",
     "events.ts",
     "metadata_extension.ts",
@@ -48,18 +43,22 @@ build_webui("build") {
 
   icons_html_files = [ "icons.html" ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator",
+    "//chromeos/ash/components/emoji:mojo_bindings_ts__generator",
+  ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/components/emoji/emoji_search.mojom-webui.ts",
   ]
 
   ts_composite = true
   ts_definitions = [ "$preprocess_folder/fuse.d.ts" ]
   ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -67,16 +66,17 @@ build_webui("build") {
     ":copy_fuse",
     ":copy_fuse_dts",
     "//ash/webui/common/resources:generate_definitions",
+    "//chromeos/ash/components/emoji:resources",
   ]
 
-  extra_grdp_deps = [
-    ":build_fuse_grdp",
-    ":generate_json_files",
-  ]
-  extra_grdp_files = [
-    "$target_gen_dir/fuse_resources.grdp",
-    "emoji_ordering.grdp",
-  ]
+  extra_grdp_deps = [ ":build_fuse_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "emoji-picker"
+    optimize_webui_in_files = [ "emoji_picker.js" ]
+    optimize_webui_excludes = [ "fuse.js" ]
+  }
 }
 
 generate_grd("build_fuse_grdp") {
@@ -95,118 +95,4 @@ copy("copy_fuse") {
 copy("copy_fuse_dts") {
   sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
   outputs = [ "$preprocess_folder/fuse.d.ts" ]
-}
-
-# Generate json files listed in emoji_ordering.grdp.
-group("generate_json_files") {
-  deps = [
-    ":emoji_data",
-    ":emoji_data_remaining",
-    ":emoticon_data",
-    ":symbol_data",
-    ":symbol_test_data",
-  ]
-}
-
-action_foreach("emoji_data") {
-  script = "tools/emoji_data.py"
-
-  metadata_json = [
-    "//third_party/emoji-metadata/src/emoji_15_0_ordering.json",
-    "./emoji_test_ordering.json",
-  ]
-  keyword_xmls = [
-    # later keywords will override earlier keywords for a particular emoji.
-    "//third_party/cldr/src/common/annotations/en.xml",
-    "//third_party/cldr/src/common/annotations/en_001.xml",
-    "//third_party/cldr/src/common/annotationsDerived/en.xml",
-    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
-  ]
-  merged_json = "$target_gen_dir/{{source_name_part}}_start.json"
-
-  sources = metadata_json
-  inputs = keyword_xmls
-  outputs = [ merged_json ]
-  args = [
-           "--firstgroup",
-           "True",
-           "--metadata",
-           "{{source}}",
-           "--output",
-           rebase_path(merged_json, root_build_dir),
-           "--keywords",
-         ] + rebase_path(keyword_xmls, root_build_dir)
-}
-
-action_foreach("emoji_data_remaining") {
-  script = "tools/emoji_data.py"
-
-  metadata_json = [
-    "//third_party/emoji-metadata/src/emoji_15_0_ordering.json",
-    "./emoji_test_ordering.json",
-  ]
-  keyword_xmls = [
-    # later keywords will override earlier keywords for a particular emoji.
-    "//third_party/cldr/src/common/annotations/en.xml",
-    "//third_party/cldr/src/common/annotations/en_001.xml",
-    "//third_party/cldr/src/common/annotationsDerived/en.xml",
-    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
-  ]
-  merged_json = "$target_gen_dir/{{source_name_part}}_remaining.json"
-
-  sources = metadata_json
-  inputs = keyword_xmls
-  outputs = [ merged_json ]
-  args = [
-           "--firstgroup",
-           "False",
-           "--metadata",
-           "{{source}}",
-           "--output",
-           rebase_path(merged_json, root_build_dir),
-           "--keywords",
-         ] + rebase_path(keyword_xmls, root_build_dir)
-}
-
-action_foreach("emoticon_data") {
-  script = "tools/emoticon_data.py"
-  merged_json = "$target_gen_dir/{{source_name_part}}.json"
-
-  sources = [
-    "./emoticon_test_ordering.json",
-    "//third_party/emoji-metadata/src/emoticon_ordering.json",
-  ]
-
-  outputs = [ merged_json ]
-  args = [
-    "--metadata",
-    "{{source}}",
-    "--output",
-    rebase_path(merged_json, root_build_dir),
-  ]
-}
-
-action("symbol_data") {
-  script = "tools/symbol_data.py"
-
-  outputs = [ "$target_gen_dir/symbol_ordering.json" ]
-
-  deps = [
-    ":emoji_data",
-    ":emoji_data_remaining",
-  ]
-
-  args = [
-    "--output",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-  args +=
-      [ "--filter-data-paths" ] +
-      rebase_path(get_target_outputs(":emoji_data"), root_build_dir) +
-      rebase_path(get_target_outputs(":emoji_data_remaining"), root_build_dir)
-}
-
-copy("symbol_test_data") {
-  sources = [ "./symbol_test_ordering.json" ]
-  outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
 }

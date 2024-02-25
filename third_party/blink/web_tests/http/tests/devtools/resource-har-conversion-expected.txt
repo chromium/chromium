@@ -1,6 +1,8 @@
 Tests conversion of Inspector's resource representation into HAR format.
 
 Page reloaded.
+error: Failed getting cookie attribute: Discard
+error: Failed getting cookie attribute: Version
 {
     creator : {
         name : "WebInspector"

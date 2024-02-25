@@ -9,9 +9,10 @@ import "mojo/public/mojom/base/file_error.mojom";
 
 // Routes file operations to the browser to interact with an in-memory file.
 // Used by a SyncAccessHandle in incognito mode, which creates an in-memory file
-// for the Origin-Private File System.
-// Methods are sync or async as appropriate to match the web-exposed
-// behavior of the corresponding methods of the SyncAccessHandle.
+// for a Bucket File System.
+//
+// Methods are sync to match the web-exposed behavior of the corresponding
+// methods of the SyncAccessHandle.
 interface FileSystemAccessFileDelegateHost {
   // Read up to `bytes_to_read` from the associated file starting at `offset`.
   // Ideally these would each be unsigned, but the backend code expects signed

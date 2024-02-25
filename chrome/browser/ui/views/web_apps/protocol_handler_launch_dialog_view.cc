@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -21,8 +22,8 @@ namespace web_app {
 ProtocolHandlerLaunchDialogView::ProtocolHandlerLaunchDialogView(
     GURL url,
     Profile* profile,
-    const AppId& app_id,
-    chrome::WebAppLaunchAcceptanceCallback close_callback)
+    const webapps::AppId& app_id,
+    WebAppLaunchAcceptanceCallback close_callback)
     : LaunchAppUserChoiceDialogView(profile, app_id, std::move(close_callback)),
       url_(std::move(url)) {
   auto* layout_provider = views::LayoutProvider::Get();
@@ -65,17 +66,13 @@ std::u16string ProtocolHandlerLaunchDialogView::GetRememberChoiceString() {
       IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION);
 }
 
-BEGIN_METADATA(ProtocolHandlerLaunchDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ProtocolHandlerLaunchDialogView)
 END_METADATA
-
-}  // namespace web_app
-
-namespace chrome {
 
 void ShowWebAppProtocolLaunchDialog(
     const GURL& url,
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     WebAppLaunchAcceptanceCallback close_callback) {
   auto view = std::make_unique<web_app::ProtocolHandlerLaunchDialogView>(
       url, profile, app_id, std::move(close_callback));
@@ -86,4 +83,4 @@ void ShowWebAppProtocolLaunchDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace web_app

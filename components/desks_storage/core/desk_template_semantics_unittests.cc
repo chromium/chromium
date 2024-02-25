@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/json/json_reader.h"
@@ -78,7 +79,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
 
 TEST_P(DeskTemplateSemanticsTest, PolicyTemplateSemanticallyEquivalentToProto) {
   auto expected_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(GetParam()));
+      std::string_view(GetParam()));
 
   EXPECT_TRUE(expected_json.has_value());
   EXPECT_TRUE(expected_json->is_dict());

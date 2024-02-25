@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Fshi faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modaliteti i kamerës</translation>
 <translation id="1153190633558910465">Çaktivizo rrjetin</translation>
-<translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Faqja <ph name="PAGE_NUMBER" /> u fshi</translation>
 <translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
 <translation id="1417314334557041815">Modifiko faqen <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Bashkohu në "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3354465018370944241">Cilësimet e fotografive</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Videoja po përpunohet...</translation>
 <translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Që të fillosh të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
 <translation id="4121305183798804752">U zbulua një dokument</translation>
 <translation id="414641094616694804">Kjo kamerë nuk mund ta ndryshojë rezolucionin</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
-<translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="428234092390943511">Miniatura e faqes</translation>
 <translation id="4349714250734879769">Shkallëzo kuadrot me Chrome</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Rezolucion i plotë</translation>
 <translation id="4864143361253542638">Lista e faqeve të skanuara</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopjo adresën e lidhjes <ph name="URL" /></translation>
 <translation id="491895758387112773">Regjistrim videoje me disa transmetime</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Raporti i pamjes së fotografisë</translation>
 <translation id="5057360777601936059">Kamera jote nuk ofrohet aktualisht.
         Kontrollo nëse kamera është lidhur si duhet.</translation>
+<translation id="5157591164390831335">URL-ja u zbulua.</translation>
 <translation id="5163387177077603948">Po zhvendoset djathtas</translation>
-<translation id="5219374179772385066">Modaliteti i "Regjistrimit me intervale" ofrohet tani!</translation>
 <translation id="5235304959032763950">16 me 9</translation>
 <translation id="5266635337630551423">Këndi lart majtas i dokumentit</translation>
 <translation id="5317780077021120954">Ruaj</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Faleminderit për komentet e dhëna për aplikacionin e "Kamerës".
 
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
+<translation id="6519884562954018934">Bashkohu në <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6617916774429601017">Shfaq të gjitha rezolucionet</translation>
 <translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
@@ -133,6 +133,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7450541714075000668">Teksti u kopjua</translation>
 <translation id="7488619942230388918">Regjistro video GIF</translation>
 <translation id="7557677699350329807">Kalo te kamera tjetër</translation>
+<translation id="7562584071994185503">Kopjo tekstin "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7608223098072244877">4 me 4</translation>
 <translation id="761421184377987513">Po zhvendoset majtas për poshtë</translation>
@@ -155,10 +156,12 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8346544573713510785">Shkallëzo kuadrot me shtresën HAL të kamerës</translation>
 <translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8609951387004618906">Hap <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht metadatat</translation>
+<translation id="874854738381978209">U zbulua një rrjet Wi-Fi.</translation>
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>

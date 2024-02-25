@@ -61,7 +61,7 @@ GetRestrictedCookieManagerForContext(
          site_for_cookies.IsFirstParty(top_frame_origin.GetURL()));
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      top_frame_origin, site_for_cookies, absl::nullopt);
+      top_frame_origin, site_for_cookies);
 
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)
@@ -120,7 +120,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
   // Non-standard URLs, such as data, will not be found in HTTP auth cache
   // anyway, because they have no valid origin, so don't waste the time.
   if (!url.IsStandard()) {
-    GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
+    GetAuthCredentialsCallback(std::move(callback), std::nullopt);
     return;
   }
 
@@ -129,7 +129,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
   // Can't get a NetworkAnonymizationKey to get credentials if the
   // RenderFrameHost has already been destroyed.
   if (!render_frame_host) {
-    GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
+    GetAuthCredentialsCallback(std::move(callback), std::nullopt);
     return;
   }
 
@@ -167,14 +167,14 @@ void MediaResourceGetterImpl::GetCookies(
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
       url, site_for_cookies, top_frame_origin, has_storage_access,
-      /*get_version_shared_memory=*/false,
+      /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }
 
 void MediaResourceGetterImpl::GetAuthCredentialsCallback(
     GetAuthCredentialsCB callback,
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (credentials)
     std::move(callback).Run(credentials->username(), credentials->password());

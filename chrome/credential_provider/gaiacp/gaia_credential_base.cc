@@ -53,6 +53,7 @@
 #include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
+#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
@@ -663,7 +664,7 @@ HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
   DCHECK(status_text);
 
   // Check the exit_code to see if any errors were detected by the GLS.
-  absl::optional<int> exit_code = result.FindInt(kKeyExitCode);
+  std::optional<int> exit_code = result.FindInt(kKeyExitCode);
   if (exit_code.value() != kUiecSuccess) {
     switch (exit_code.value()) {
       case kUiecAbort:
@@ -751,80 +752,6 @@ HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
   return S_OK;
 }
 
-// Creates a new windows OS user with the given |base_username|, |fullname| and
-// |password| on the local machine.  Returns the SID of the new user.
-// If a user with |base_username| already exists, the function will try to
-// generate a new indexed username up to |max_attempts| before failing.
-// The actual username used for the new user will be filled in |final_username|
-// if successful.
-HRESULT CreateNewUser(OSUserManager* manager,
-                      const wchar_t* base_username,
-                      const wchar_t* password,
-                      const wchar_t* fullname,
-                      const wchar_t* comment,
-                      bool add_to_users_group,
-                      int max_attempts,
-                      BSTR* final_username,
-                      BSTR* sid) {
-  DCHECK(manager);
-  DCHECK(base_username);
-  DCHECK(password);
-  DCHECK(fullname);
-  DCHECK(comment);
-  DCHECK(final_username);
-  DCHECK(sid);
-  wchar_t new_username[kWindowsUsernameBufferLength];
-  errno_t err = wcscpy_s(new_username, std::size(new_username), base_username);
-  if (err != 0) {
-    LOGFN(ERROR) << "wcscpy_s errno=" << err;
-    return E_FAIL;
-  }
-
-  // Keep trying to create the user account until an unused username can be
-  // found or |max_attempts| has been reached.
-  for (int i = 0; i < max_attempts; ++i) {
-    CComBSTR new_sid;
-    DWORD error;
-    HRESULT hr = manager->AddUser(new_username, password, fullname, comment,
-                                  add_to_users_group, &new_sid, &error);
-    if (hr == HRESULT_FROM_WIN32(NERR_UserExists)) {
-      std::wstring next_username = base_username;
-      std::wstring next_username_suffix =
-          base::NumberToWString(i + kInitialDuplicateUsernameIndex);
-      // Create a new user name that fits in |kWindowsUsernameBufferLength|
-      if (next_username.size() + next_username_suffix.size() >
-          (kWindowsUsernameBufferLength - 1)) {
-        next_username =
-            next_username.substr(0, (kWindowsUsernameBufferLength - 1) -
-                                        next_username_suffix.size()) +
-            next_username_suffix;
-      } else {
-        next_username += next_username_suffix;
-      }
-      LOGFN(VERBOSE) << "Username '" << new_username
-                     << "' already exists. Trying '" << next_username << "'";
-
-      err = wcscpy_s(new_username, std::size(new_username),
-                     next_username.c_str());
-      if (err != 0) {
-        LOGFN(ERROR) << "wcscpy_s errno=" << err;
-        return E_FAIL;
-      }
-
-      continue;
-    } else if (FAILED(hr)) {
-      LOGFN(ERROR) << "manager->AddUser hr=" << putHR(hr);
-      return hr;
-    }
-
-    *sid = ::SysAllocString(new_sid);
-    *final_username = ::SysAllocString(new_username);
-    return S_OK;
-  }
-
-  return HRESULT_FROM_WIN32(NERR_UserExists);
-}
-
 // If GCPW user policies or experiments are stale, make sure to fetch them
 // before proceeding with the login.
 void GetUserConfigsIfStale(const std::wstring& sid,
@@ -876,8 +803,6 @@ bool CGaiaCredentialBase::IsCloudAssociationEnabled() {
 
 // static
 HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
-  OSUserManager* manager = OSUserManager::Get();
-
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
 
   if (!policy) {
@@ -896,7 +821,7 @@ HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
 
   if (SUCCEEDED(hr)) {
     LOGFN(VERBOSE) << "Expecting gaia user '" << gaia_username << "' to exist.";
-    wchar_t password[32];
+    wchar_t password[kWindowsPasswordBufferLength];
     hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
                                      std::size(password));
     if (SUCCEEDED(hr)) {
@@ -918,57 +843,10 @@ HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
   }
 
   if (sid == nullptr) {
-    // No valid existing user found, reset to default name and start generating
-    // from there.
-    errno_t err = wcscpy_s(gaia_username, std::size(gaia_username),
-                           kDefaultGaiaAccountName);
-    if (err != 0) {
-      LOGFN(ERROR) << "wcscpy_s errno=" << err;
-      return E_FAIL;
-    }
-
-    // Generate a random password for the new gaia account.
-    wchar_t password[32];
-    hr = manager->GenerateRandomPassword(password, std::size(password));
+    hr = OSGaiaUserManager::Get()->CreateGaiaUser(&sid);
     if (FAILED(hr)) {
-      LOGFN(ERROR) << "GenerateRandomPassword hr=" << putHR(hr);
-      return hr;
-    }
-
-    CComBSTR sid_string;
-    CComBSTR gaia_username_bstr;
-    // Keep trying to create the special Gaia account used to run the UI until
-    // an unused username can be found or kMaxUsernameAttempts has been reached.
-    hr =
-        CreateNewUser(manager, kDefaultGaiaAccountName, password,
-                      GetStringResource(IDS_GAIA_ACCOUNT_FULLNAME_BASE).c_str(),
-                      GetStringResource(IDS_GAIA_ACCOUNT_COMMENT_BASE).c_str(),
-                      /*add_to_users_group=*/false, kMaxUsernameAttempts,
-                      &gaia_username_bstr, &sid_string);
-
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "CreateNewUser hr=" << putHR(hr);
-      return hr;
-    }
-
-    if (!::ConvertStringSidToSid(sid_string, &sid)) {
-      hr = HRESULT_FROM_WIN32(::GetLastError());
-      LOGFN(ERROR) << "ConvertStringSidToSid hr=" << putHR(hr);
-      return hr;
-    }
-
-    // Save the password in a machine secret area.
-    hr = policy->StorePrivateData(kLsaKeyGaiaPassword, password);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "Failed to store gaia user password in LSA hr="
+      LOGFN(ERROR) << "OSGaiaUserManager::Get()->CreateGaiaUser hr="
                    << putHR(hr);
-      return hr;
-    }
-
-    // Save the gaia username in a machine secret area.
-    hr = policy->StorePrivateData(kLsaKeyGaiaUsername, gaia_username_bstr);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "Failed to store gaia user name in LSA hr=" << putHR(hr);
       return hr;
     }
   }
@@ -993,7 +871,7 @@ HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
 HRESULT CGaiaCredentialBase::OnDllUnregisterServer() {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
   if (policy) {
-    wchar_t password[32];
+    wchar_t password[kWindowsPasswordBufferLength];
 
     HRESULT hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
                                              std::size(password));
@@ -1013,6 +891,14 @@ HRESULT CGaiaCredentialBase::OnDllUnregisterServer() {
 
     if (SUCCEEDED(hr)) {
       hr = policy->RemovePrivateData(kLsaKeyGaiaUsername);
+      if (FAILED(hr)) {
+        LOGFN(ERROR) << "RemovePrivateData GaiaUsername hr=" << putHR(hr);
+      }
+      hr = policy->RemovePrivateData(kLsaKeyGaiaSid);
+      if (FAILED(hr)) {
+        LOGFN(ERROR) << "RemovePrivateData kLsaKeyGaiaSid hr=" << putHR(hr);
+      }
+
       std::wstring local_domain = OSUserManager::GetLocalDomain();
 
       hr = manager->GetUserSID(local_domain.c_str(), gaia_username, &sid);
@@ -1830,7 +1716,7 @@ HRESULT CGaiaCredentialBase::CreateGaiaLogonToken(
     LOGFN(ERROR) << "Retrieve gaia username hr=" << putHR(hr);
     return hr;
   }
-  wchar_t password[32];
+  wchar_t password[kWindowsPasswordBufferLength];
   hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
                                    std::size(password));
   if (FAILED(hr)) {
@@ -2460,9 +2346,9 @@ HRESULT CGaiaCredentialBase::ValidateOrCreateUser(
   std::wstring local_password = GetDictString(result, kKeyPassword);
   std::wstring local_fullname = GetDictString(result, kKeyFullname);
   std::wstring comment(GetStringResource(IDS_USER_ACCOUNT_COMMENT_BASE));
-  hr = CreateNewUser(
-      OSUserManager::Get(), found_username, local_password.c_str(),
-      local_fullname.c_str(), comment.c_str(),
+  hr = OSUserManager::Get()->CreateNewUser(
+      found_username, local_password.c_str(), local_fullname.c_str(),
+      comment.c_str(),
       /*add_to_users_group=*/true, kMaxUsernameAttempts, username, sid);
   SecurelyClearString(local_password);
 
@@ -2507,7 +2393,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   base::WideToUTF8(OLE2CW(authentication_info),
                    ::SysStringLen(authentication_info), &json_string);
 
-  absl::optional<base::Value::Dict> properties =
+  std::optional<base::Value::Dict> properties =
       base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
 
   SecurelyClearString(json_string);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -20,8 +21,8 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -34,7 +35,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
@@ -54,6 +54,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+
+using borealis::mojom::InstallResult;
 
 namespace {
 
@@ -114,11 +116,10 @@ void borealis::ShowBorealisInstallerView(Profile* profile) {
 // We need a separate class so that we can alert screen readers appropriately
 // when the text changes.
 class BorealisInstallerView::TitleLabel : public views::Label {
+  METADATA_HEADER(TitleLabel, views::Label)
+
  public:
   using Label::Label;
-
-  METADATA_HEADER(TitleLabel);
-
   TitleLabel() = default;
   ~TitleLabel() override = default;
 
@@ -128,7 +129,7 @@ class BorealisInstallerView::TitleLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(BorealisInstallerView, TitleLabel, views::Label)
+BEGIN_METADATA(BorealisInstallerView, TitleLabel)
 END_METADATA
 
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
@@ -167,8 +168,8 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   primary_message_label_->SetMaximumWidth(kLeftPannelWidth);
 
-  beta_badge_ = left_container_view->AddChildView(
-      std::make_unique<views::BorealisBetaBadge>());
+  beta_badge_ =
+      left_container_view->AddChildView(std::make_unique<BorealisBetaBadge>());
   beta_badge_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(16, 0, 0, 0));
 
   secondary_message_label_ =
@@ -315,12 +316,12 @@ void BorealisInstallerView::OnProgressUpdated(double fraction_complete) {
 }
 
 void BorealisInstallerView::OnInstallationEnded(
-    borealis::BorealisInstallResult result,
+    InstallResult result,
     const std::string& error_description) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result == borealis::BorealisInstallResult::kSuccess) {
+  if (result == InstallResult::kSuccess) {
     state_ = State::kCompleted;
-  } else if (result != borealis::BorealisInstallResult::kCancelled) {
+  } else if (result != InstallResult::kCancelled) {
     result_ = result;
     LOG(ERROR) << "Borealis Installation Error: " << error_description;
     views::borealis::ShowInstallerErrorDialog(
@@ -530,7 +531,7 @@ void BorealisInstallerView::StartInstallation() {
   OnStateUpdated();
 }
 
-BEGIN_METADATA(BorealisInstallerView, views::DialogDelegateView)
+BEGIN_METADATA(BorealisInstallerView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, PrimaryMessage)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, SecondaryMessage)
 ADD_READONLY_PROPERTY_METADATA(int, CurrentDialogButtons)

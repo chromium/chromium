@@ -1,0 +1,38 @@
+From a948100b0aa6e231df0b78d4901d244077a4face Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:12 -0800
+Subject: [PATCH 04/10] rm stdio static init
+
+---
+ .../cc/task/core/tflite_engine.cc                 | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
+index 6ad1124659454..0b9af59afdc79 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
+@@ -36,21 +36,6 @@ namespace tflite {
+ namespace task {
+ namespace core {
+ 
+-#ifdef __ANDROID__
+-// https://github.com/opencv/opencv/issues/14906
+-// "ios_base::Init" object is not a part of Android's "iostream" header (in case
+-// of clang toolchain, NDK 20).
+-//
+-// Ref1:
+-// https://en.cppreference.com/w/cpp/io/ios_base/Init
+-//       The header <iostream> behaves as if it defines (directly or indirectly)
+-//       an instance of std::ios_base::Init with static storage duration
+-//
+-// Ref2:
+-// https://github.com/gcc-mirror/gcc/blob/gcc-8-branch/libstdc%2B%2B-v3/include/std/iostream#L73-L74
+-static std::ios_base::Init s_iostream_initializer;
+-#endif
+-
+ using ::absl::StatusCode;
+ using ::tflite::proto::ComputeSettings;
+ using ::tflite::support::CreateStatusWithPayload;
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

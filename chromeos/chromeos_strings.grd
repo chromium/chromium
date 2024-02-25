@@ -228,12 +228,6 @@
       <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
         pounds
       </message>
-      <message name="IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
-        Quick answers settings
-      </message>
-      <message name="IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
-        Listen
-      </message>
       <message name="IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the dogfood feedback button in Quick-Answers related views.">
         Send feedback
       </message>
@@ -287,7 +281,7 @@
       </message>
       <!-- TODO(b/259440976): Remove navigation directions once the QA Rich Card feature launches. -->
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
-        Info related to your selection. Use Left or Right arrow keys to access controls.
+        Info related to your selection
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC" desc="A11y retry label description for the Quick Answers view.">
         Cannot connect to the internet. Click to try again.
@@ -306,19 +300,94 @@
       </message>
 
       <!-- Rich Answers -->
+      <message name="IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the settings-button in Quick-Answers related views.">
+        Open Quick Answers settings
+      </message>
       <message name="IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Rich Answers view.">
-        Additional info related to your selection
+        More info related to your selection
       </message>
       <message name="IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT" desc="Display text for the Google Search link label on the Rich Answers view.">
         Open in Google Search
       </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the phonetics-button in Quick-Answers related views.">
+        Listen to pronunciation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_TRANSLATION_READ_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the read-button in a Quick Answers translation result card.">
+        Listen to translation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_TRANSLATION_COPY_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the copy-button in a Quick Answers translation result card.">
+        Copy translation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
+        Similar:
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_FORMULA_LABEL_TEXT" desc="The text that precedes a formula description in a Quick Answers unit conversion result card.">
+        Formula
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        For an approximate result, divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        Divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        For an approximate result, multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        Multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
+      </message>
 
       <!-- Editor Menu -->
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature.">
-        Dismiss
+      <!-- TODO(b/286268215): Finalize these strings and make them translatable. -->
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Write faster and with more confidence
       </message>
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON" desc="Label on the tell me more button in the dialog that is shown to introduce the Editor Menu feature.">
-        Tell me more
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DESC" desc="Description text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Use Orca to create a draft or refine existing work, powered by Google AI
+      </message>
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        No thanks
+      </message>
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+        Try it
+      </message>
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode." translateable="false">
+        Writing help
+      </message>
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
+        Enter a prompt like "write a thank you note"
+      </message>
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
+        Rewrite
+      </message>
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
+        Enter a prompt like "sound more confident"
+      </message>
+      <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
+        Settings
+      </message>
+      <message name="IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP" desc="Tooltip text for the arrow button in the freeform textfield in the Editor Menu." translateable="false">
+        Submit
+      </message>
+      <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature." translateable="false">
+        Experiment
+      </message>
+
+      <!-- Mahi -->
+      <message name="IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
+        Experimental feature
+      </message>
+      <message name="IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT" desc="The text label for the summarize button inside the Mahi menu">
+        Summarize
+      </message>
+      <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
+        Ask question
+      </message>
+      <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
+        Summary
+      </message>
+      <message name="IDS_MAHI_PANEL_OUTLINES_SECTION_NAME" desc="The name for the outlines section that lies within the Mahi panel">
+        Outlines
       </message>
 
       <!-- Multitask Menu -->
@@ -552,9 +621,6 @@
         <message name="IDS_HELP_APP_PERKS" desc="Name of a tab in the Help app that offers users additional perks like apps or drive storage space.">
           Perks
         </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP" desc="Text for the suggestion chip to view a magazine showing the user tools they can use for creating movies on a Chromebook. [CHAR_LIMIT=24]">
-          Create your own movie
-        </message>
         <message name="IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP" desc="Text for the suggestion chip to view updated patch notes are available. [CHAR_LIMIT=24]">
           What's new with ChromeOS
         </message>
@@ -563,12 +629,6 @@
         </message>
         <message name="IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_DETAILS" desc="Details label for a ChromeOS launcher continue section item that can be used to quickly access most recent ChromeOS release notes. Continue section contains set of UI elements that are suggestions for continuing recent user workflows. Release notes element is shown after ChromeOS device updates to a new version. Clicking the relese notes element will redirect user to an app that gives the user more information about the ChromeOS update [CHAR_LIMIT=22]">
           See what's new
-        </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_TITLE" desc="Title for a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can use their Chromebooks for creating movies and animations.">
-          Create your own movie
-        </message>
-        <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE" desc="Message on a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can create content using their Chromebooks.">
-          Check out Chromebook's new digital magazine for creators
         </message>
 
         <!-- Media App -->
@@ -2446,6 +2506,24 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE" desc="Label for auto color mode setting">
           Auto
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER" translateable="true" desc="In Personalization>Wallpaper, the warning text that tells users that system geolocation permission is needed for auto theme mode scheduling">
+          Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the dark mode schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" translateable="false" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
+          Weather is not displayed because it doesn't know your location. To display local weather, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE" translateable="false" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
+          Allow system services to use your location?
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_BODY" translateable="false" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
+          This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
+          Allow
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CANCEL_BUTTON" translateable="false"  desc="Label of the cancel button, that dismisses the geolocation dialog.">
+          Cancel
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
           Avatar
         </message>
@@ -2493,7 +2571,7 @@
           Downloading the screen saver
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
-          When your screen is idle, show photos, time, weather, and media info.
+          When your screen is idle, show photos, time, weather, and media info
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON" desc="Label for the toggle row in ambient mode settings page when it is enabled.">
           On
@@ -2502,22 +2580,19 @@
           Off
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_TITLE" desc="Label for the drop down menu of ambient mode duration settings.">
-         Show screen saver
+          While charging, show screen saver for
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_MINUTES" desc="Label for the screen saver duration option in minutes.">
-         for <ph name="MINUTES">$1<ex>10</ex></ph> minutes
+          <ph name="MINUTES">$1<ex>10</ex></ph> minutes
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR" desc="Label for the screen saver duration option 1 hour.">
-         for 1 hour
+          1 hour
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER" desc="Label for the screen saver duration option forever.">
-         forever
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION" desc="Label for the screen saver duration description.">
-         To conserve battery, screen saver works only while charging.
+          forever
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
-         Image source
+          Image source
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS" desc="Label for the radio button to choose the topic source from Google Photos. The radio button allows the user to set Google Photos for ambient mode, which shows photos to the user when their device is idle.">
           Google Photos
@@ -2579,10 +2654,10 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_UNSELECTED" desc="A11y label of an unselected album in ambient mode.">
           Select album <ph name="TITLE">$1<ex>Recent highlights</ex></ph> <ph name="DESC">$2<ex>Your best auto selected photos</ex></ph>
         </message>
-        <message name="IDS_PERONSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE" desc="A message shown when deselecting the last art album.">
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE" desc="A message shown when deselecting the last art album.">
           A minimum of one Art gallery album needs to be selected
         </message>
-        <message name="IDS_PERONSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL" desc="Label on the close button in the art album dialog.">
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL" desc="Label on the close button in the art album dialog.">
           Got it
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE" desc="Label for the ambient mode animation section.">
@@ -2726,7 +2801,7 @@
           Earth Flow
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
-          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive
+          Exclusive to <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE" desc="Title for the Time of Day promo banner.">
           Exclusive <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> assets now available
@@ -2739,6 +2814,18 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL" desc="Sublabel for the Time of Day wallpaper collection.">
           Exclusive
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE" desc="Title for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn on dark mode automatically?
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT" desc="Content for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn this on for best results with this wallpaper. You can turn off this setting at anytime.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON" desc="Label for the button to close the dialog confirming user's selection of auto dark mode for Time of Day wallpaper">
+          No thanks
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON" desc="Label for the button to accept the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
+          Turn on
         </message>
 
         <!-- Personalization App Search Results -->
@@ -2988,6 +3075,702 @@
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT20" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 20">
           rgb controls
         </message>
+        <message name="IDS_PERSONALIZATION_APP_EXCLUSIVE_WALLPAPERS_HEADING" desc="Heading describing that the following section is exclusive for Chromebook Plus users.">
+          Exclusive for Chromebook Plus
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_CHOOSE_A_WALLPAPER_HEADING" desc="Heading describing that you can choose a wallpaper by clicking on the itemss below.">
+          Choose a wallpaper
+        </message>
+
+        <!-- Sea Pen UI -->
+        <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">
+          Create with AI
+        </message>
+        <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE" desc="Subheading describing that Google made these wallpapers.">
+          Powered by Google
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_HEADING" desc="Section heading for wallpaper templates.">
+          Use a template
+        </message>
+        <message name="IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created wallpapers.">
+          Recent wallpapers powered by Google AI
+        </message>
+        <message name="IDS_SEA_PEN_INSPIRE_ME_BUTTON" desc="Button that randomizes selected options.">
+          Inspire me
+        </message>
+        <message name="IDS_SEA_PEN_CREATE_BUTTON" desc="Button that creates a new wallpaper.">
+          Create
+        </message>
+        <message name="IDS_SEA_PEN_RECREATE_BUTTON" desc="Button that recreates a wallpaper.">
+          Recreate
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
+          Wallpaper powered by Google AI
+        </message>
+        <message name="IDS_SEA_PEN_DELETE_WALLPAPER" desc="Menu item that deletes a wallpaper.">
+          Delete
+        </message>
+        <message name="IDS_SEA_PEN_CREATE_MORE" desc="Menu item that, when clicked, will allow users to create more wallpapers like the selected wallpaper.">
+          Create more
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT" desc="Menu item that, when clicked, will show users more about the selected wallpaper.">
+          About
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_TITLE" desc="Title for dialog that shows more information about the selected wallpaper.">
+          About wallpaper
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_PROMPT" desc="About dialog's description of the prompt that created the selected wallpaper.">
+          This wallpaper was created with AI using the following text: "<ph name="PROMPT">$1<ex>A radiant pink garden rose in bloom</ex></ph>."
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_DATE" desc="About dialog's description of the date that the selected wallpaper was created.">
+          Created on <ph name="DATE">$1<ex>Aug 25, 2023</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_CLOSE" desc="Button that closes the about dialog.">
+          Close
+        </message>
+        <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
+          Experiment
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
+          No internet. Connect to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED" desc="Error message displayed when the resource is exhausted.">
+          We're at capacity. Please come back in a bit.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
+          Something went wrong. Try again.
+        </message>
+        <message name="IDS_SEA_PEN_THUMBNAILS_LOADING" desc="Placeholder text displayed when thumbnails are loading">
+          Generating images...
+        </message>
+        <message name="IDS_SEA_PEN_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
+          Feedback for wallpaper powered by Google AI
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_DIALOG_TITLE" desc="Title for the wallpaper terms of service dialog.">
+          Terms of service
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_ACCEPT_BUTTON" desc="The button which accepts and agrees to the terms for wallpaper service.">
+          I agree
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_REFUSE_BUTTON" desc="The button which refuses the terms for wallpaper service.">
+          No thanks
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC" desc="Title for the wallpaper terms of service dialog.">
+          You must be at least 18 years old and agree your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK">&lt;a target="_blank" href="https://policies.google.com/terms"&gt;</ph>Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;a target="_blank" href="https://policies.google.com/terms/generative-ai"&gt;</ph>Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE">&lt;/a&gt;</ph>.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          You can only create wallpapers with AI for personal and non-commercial use. When you get wallpaper help, text is sent to Google AI servers to generate wallpaper suggestions, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://support.google.com/chromebook?p=copyeditor"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_SEA_PEN_CREATING_HIGH_RES_IMAGE" desc="The message displayed when the high resolution image is being created.">
+          Creating hi-res image…
+        </message>
+
+        <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
+        <!-- Wallpaper template flower -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_FLOWER" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          Airbrushed
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_FLOWER" desc="Template used to generate an image of a flower. Users can select the variables from a drop-down menu.">
+          A radiant <ph name="FLOWER_COLOR">$1<ex>pink</ex></ph> <ph name="FLOWER_TYPE">$2<ex>garden rose</ex></ph> in bloom
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ROSE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          garden rose
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_CALLA_LILY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          calla lily
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_WINDFLOWER" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          windflower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_TULIP" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          tulip
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_LILY_OF_THE_VALLEY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          lily of the valley
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_BIRD_OF_PARADISE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          bird of paradise
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ORCHID" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          orchid
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_RANUNCULUS" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          ranunculus
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_DAISY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          daisy
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_HYDRANGEA" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          hydrangea
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_PINK" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_PURPLE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_BLUE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_WHITE" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_CORAL" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          coral
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_YELLOW" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          pastel yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_GREEN" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          light green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_RED" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          dark red
+        </message>
+        <!-- Wallpaper template art -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_ART" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_ART.">
+          Classic art
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_ART" desc="Template used to generate an image of classic art. Users can select the variables from a drop-down menu.">
+          A painting of a <ph name="ART_FEATURE">$1<ex>canyon</ex></ph> in the <ph name="ART_MOVEMENT">$2<ex>avant-garde</ex></ph> style
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_CANYON" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          canyon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_MOUNTAIN" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          mountain
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_BEACH" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          beach
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_CAVE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          cave
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_CLIFF" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          cliff
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_FOREST" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_GLACIER" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          glacier
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_ISLAND" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          tropical island
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_JUNGLE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          jungle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_LAKE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          lake
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_MEADOW" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          meadow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_OCEAN" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          vast ocean
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_RIVER" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_DUNE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          sand dune
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_SWAMP" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          swamp
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_VALLEY" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          valley
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_WATERFALL" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          waterfall
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_FIELD" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          field of flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_CITYSCAPE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          cityscape
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_FEATURE_VILLAGE" desc="Option to fill in the ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          village
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_AVANT_GARDE" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          avant-garde
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_REALIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          realist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_EXPRESSIONIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          expressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_IMPRESSIONIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          impressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_POST_IMPRESSIONIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          post-impressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_ART_NOUVEAU" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          art nouveau
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_BAROQUE" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          baroque
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_BAUHAUS" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          bauhaus
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_CLASSICIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          classicist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_WATERCOLOR" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          watercolor
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_ABSTRACT" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          abstract
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_POINTILLIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          pointillist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_GRAPHIC_DESIGN" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          graphic design
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_MODERN_ART" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
+          modern art
+        </message>
+        <!-- Wallpaper template characters -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_CHARACTERS" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          Characters
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_CHARACTERS" desc="Template used to generate an image of CHARACTERS. Users can select the variables from a drop-down menu.">
+          <ph name="CHARACTERS_COLOR">$1<ex>yellow</ex></ph> <ph name="CHARACTERS_SUBJECTS">$2<ex>lemons</ex></ph> on a <ph name="CHARACTERS_BACKGROUND">$3<ex>purple</ex></ph> background
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_YELLOW" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_RED" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BLUE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_INDIGO" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GREEN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_CYAN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_PURPLE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BROWN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GOLD" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_RUST" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_OLIVE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GRAY" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_WHITE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BEIGE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_MAGENTA" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_NEON_GREEN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_LIGHT_BLUE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_NEON_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_CORAL_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          coral pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_LEMONS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          lemons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_FLOWERS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_APPLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          apples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CHERRIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cherries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_ORANGES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          oranges
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PINEAPPLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pineapples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_STRAWBERRIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          strawberries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_WATERMELONS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          watermelons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_POTATOES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          potatoes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_SUSHI" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          sushi
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BACON_AND_EGGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bacon and eggs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PIZZA" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pizza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_HOT_DOGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          hot dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_HAMBURGERS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          hamburgers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_RAMEN" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          ramen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_TACOS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          tacos
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BUNNIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bunnies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CATS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_DOGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_KOALAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          koalas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PANDAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pandas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PENGUINS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          penguins
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PIGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pigs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_SLOTHS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          sloths
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PONIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          ponies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_ELEPHANTS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          elephants
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_FOXES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          foxes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_OWLS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          owls
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CRABS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          crabs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BEES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bees
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BUTTERFLIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          butterflies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BICYCLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bicycles
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BOATS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          boats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BOOKS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          books
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CUTLERY" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cutlery
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_UMBRELLAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          umbrellas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_INSTRUMENTS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          instruments
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_PURPLE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BLUE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_INDIGO" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GREEN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_CYAN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BROWN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GOLD" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_RED" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_RUST" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_OLIVE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GRAY" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_YELLOW" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_WHITE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BEIGE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_MAGENTA" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_NEON_GREEN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_LIGHT_BLUE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_NEON_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_CORAL_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          coral pink
+        </message>
+        <!-- Wallpaper template terrain -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_TERRAIN" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          Landscape
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_TERRAIN" desc="Template used to generate an image of TERRAIN. Users can select the variables from a drop-down menu.">
+          <ph name="TERRAIN_FEATURE">$1<ex>salt lake</ex></ph> in shades of <ph name="TERRAIN_COLOR">$2<ex>pink</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SALT_LAKE" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          salt lake
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_RIVER" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          glacial river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_NORTHERN_LIGHTS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          northern lights
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SAND_DUNES" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          sand dunes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_CLAY_HILLS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          clay hills
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SANDY_LAGOON" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          sandy lagoon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_MOUNTAINS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          mountains
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_BIOLUMINESCENT_BEACH" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          bioluminescent beach
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_FIREFLY_FOREST" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          firefly forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_DIFFERENT_PLANET" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          different planet
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_TEAL" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          teal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_WHITE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PURPLE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_YELLOW" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_MAROON_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          maroon and pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE_PURPLE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PINK_YELLOW" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          pink and yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue and pink
+        </message>
+        <!-- Wallpaper template dreamscapes -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_DREAMSCAPES" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          Dreamscape
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_DREAMSCAPES" desc="Template used to generate an image of DREAMSCAPES. Users can select the variables from a drop-down menu.">
+          A surreal <ph name="DREAMSCAPES_OBJECT">$1<ex>bicycle</ex></ph> made of <ph name="DREAMSCAPES_MATERIAL">$2<ex>flowers</ex></ph> in <ph name="DREAMSCAPES_COLORS">$3<ex>pink and purple</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BICYCLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          bicycle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_CASTLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          castle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BUILDING" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          building
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BOAT" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          boat
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_LAMP" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lamp
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_TABLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          table
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BRIDGE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          bridge
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_LIGHTHOUSE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lighthouse
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PAGODA" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          pagoda
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PALACE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          palace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_TOWER" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          tower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_CHAIR" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          chair
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FLOWERS" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_SILK" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          silk
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FELT" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          felt
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_BURLAP" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          burlap
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_CHIFFON" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          chiffon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_COTTON" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          cotton
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FUR" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          fur
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LACE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LINEN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          linen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_ORGANZA" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          organza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_TULLE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          tulle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_WOOL" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          wool
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_YARN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          yarn
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FLEECE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          fleece
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_CLAY" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          clay
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_STONE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          stone
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_WOOD" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          wood
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_AMETHYST" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          amethyst
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LAPIS_LUZULI" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lapis luzuli
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_OBSIDIAN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          obsidian
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_OPAL" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          opal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_SAPPHIRE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          sapphire
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_PINK_PURPLE" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          pink and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_CORAL_TAN" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          coral and tan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_CREAM_ORANGE" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          cream and orange
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_BLUE_INDIGO" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          blue and indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_GREEN_TEAL" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          green and teal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_BURGUNDY_MAROON" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          burgundy and maroon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_YELLOW_TEAL" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          yellow and teal
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
@@ -3231,6 +4014,12 @@
         </message>
         <message name="IDS_SHIMLESS_RMA_DONE_BUTTON" translateable="false" desc="Default text for Done button when action is completed for closing a dialog.">
           Done
+        </message>
+        <message name="IDS_SHIMLESS_RMA_INSTALL_BUTTON" translateable="false" desc="Default text for button to install things.">
+          Install
+        </message>
+        <message name="IDS_SHIMLESS_RMA_ACCEPT_BUTTON" translateable="false" desc="Default text for button to accept a request.">
+          Accept
         </message>
         <!-- Exit dialog -->
         <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE" translateable="false" desc="Title for the exit dialog.">
@@ -3755,6 +4544,34 @@
         <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT" translateable="false" desc="Alt text for illustration showing an hourglass representing updating the OS.">
           Update OS
         </message>
+        <!-- 3p diagnostics -->
+        <message name="IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_TITLE" translateable="false" desc="Dialog title for asking whether users want to install manufacturer diagnostics app.">
+          Install <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app?
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_MESSAGE" translateable="false" desc="Dialog message for asking whether users want to install manufacturer diagnostics app.">
+          There is an installable app at <ph name="APP_PATH">$1<ex>/usr/local/diag.swbn</ex></ph>
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_TITLE" translateable="false" desc="Dialog title for users to review the permission of the manufacturer diagnostics app before install.">
+          Review <ph name="APP_NAME">$1<ex>Google's diagnostic reference app</ex></ph> permissions
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_MESSAGE_PREFIX" translateable="false" desc="Dialog message prefix for users to review the permission of the manufacturer diagnostics app before install.">
+          It can:
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_INSTALL_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that manufacturer diagnostics app couldn't be installed.">
+          Couldn't install <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_CHECK_WITH_OEM_DIALOG_MESSAGE" translateable="false" desc="Dialog message for telling users to check with the device manufacturer for errors related to manufacturer diagnostics app.">
+          Check with the device manufacturer
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_NOT_INSTALLED_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that manufacturer diagnostics app isn't installed.">
+          <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app is not installed
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that installed manufacturer diagnostics app couldn't be loaded.">
+          Couldn't load <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_MESSAGE" translateable="false" desc="Dialog message for telling users that installed manufacturer diagnostics app couldn't be loaded.">
+          Try installing the app again
+        </message>
 
         <!-- Peripheral Firmware Update -->
         <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
@@ -3814,6 +4631,9 @@
         <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
           Restarting...
         </message>
+        <message name="IDS_FIRMWARE_WAITING_FOOTER_TEXT" desc="Label that displays what percentage of the update has been installed, shown while waiting for user action." translateable="false">
+          Paused (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
+        </message>
         <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
           Can't update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
         </message>
@@ -3828,6 +4648,35 @@
         </message>
         <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
           To proceed with the update, click Next.
+        </message>
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google." translateable="false">
+          This update is provided by the external device manufacturer and hasn't been verified by Google.
+        </message>
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected." translateable="false">
+          Warning
+        </message>
+        <!-- TODO(cambickel): Make these strings translatable. -->
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted." translateable="false">
+          Please unplug and then re-insert the device USB cable to continue the update process.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged." translateable="false">
+          Please unplug the device USB cable to continue the update process.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be reinserted." translateable="false">
+          Please re-insert the device USB cable to continue the update process.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated." translateable="false">
+          Press unlock on the device to continue the update process.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update." translateable="false">
+          Do not turn off your computer or remove the AC adapter while the update is in progress.
+        </message>
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
+          Unplug and replug the device to continue the update process.
+        </message>
+        <!-- TODO(cambickel): Upload screenshot for IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER once it's approved by UX. -->
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER" desc="Request shown to the user during an update, requesting that the device power cable be unplugged and reinserted." translateable="false">
+          Please unplug and then re-insert the device power cable to continue the update process.
         </message>
         <!-- Search Page -->
         <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
@@ -3882,6 +4731,9 @@
         <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL" desc="Label for adding a screenshot and/or a filename.">
           Attach files
         </message>
+        <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL_LOGGED_OUT" desc="Label for adding a screenshot. Shown to loggout users.">
+          Add screenshot
+        </message>
         <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label of the replace file button">
           Replace file
         </message>
@@ -3909,6 +4761,12 @@
         <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
           Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
         </message>
+        <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach Wifi debug logs from the current session.">
+          Attach additional Wi-Fi information. <ph name="BEGIN_LINK1">&lt;a id="wifiDebugLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
+        </message>
+        <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the Wifi debug logs hyperlink">
+          Include proprietary debug data generated by the closed-source firmware of Wi-Fi chipsets. It may include information about the Wi-Fi chip (such as its MAC address), connected and surrounding Wi-Fi access points, and any other data going through the chipsets.&#10;&#10;This data can't be debugged by Google directly and is shared with the chipset vendors so that they can debug and fix any issues Googlers are experiencing. In case the issue needs to be shared with vendors, the data is kept in Buganizer until the bug is resolved.
+        </message>
         <message name="IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO" translateable="false" desc="Checkbox for Google internal account to submit a Cross Device Feedback Report.">
           This is an issue between this Chromebook and another device. <ph name="BEGIN_LINK1">&lt;a id="linkCrossDeviceDogfoodFeedbackInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
         </message>
@@ -3927,7 +4785,10 @@
           Google Assistance captures recent history and information such as your identity and location to help us better understand your issue.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
         </message>
         <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
-          Go to the <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help page<ph name="END_LINK1">&lt;/a&gt;</ph> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
+          Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>. To request content changes, go to <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help<ph name="END_LINK1">&lt;/a&gt;</ph>.
+        </message>
+        <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE_LOGGED_OUT" desc="Text for the privacy note included in the feedback app when users are logged out">
+          Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our Privacy Policy (<ph name="privacyPolicyUrl">$1<ex>https://policies.google.com/privacy</ex></ph>) and Terms of Service (<ph name="termsOfServiceUrl">$2<ex>https://policies.google.com/terms</ex></ph>). To request content changes, go to Legal Help (<ph name="legalHelpPageUrl">$3<ex>https://support.google.com/legal/answer/3110420</ex></ph>).
         </message>
         <message name="IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE" desc="Text to inform all users that their feedback may be shared">
           We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.
@@ -4029,6 +4890,26 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals">
           Cancel
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_FOR_ROW" desc="Text read aloud by screen reader describing the edit button for the acceleartor row.">
+          Edit button for <ph name="SHORTCUT_DESCRIPTION">$1<ex>Open Quick Settings</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_FOR_ACTION" desc="Text read aloud by screen reader describing the edit button for the action.">
+          Edit button for <ph name="ACCELERATOR_INFO">$1<ex>ctrl T</ex></ph>.
+        </message>
+         <message name="IDS_SHORTCUT_CUSTOMIZATION_DELETE_BUTTON_FOR_ACTION" desc="Text read aloud by screen reader describing the delete button for the action.">
+          Delete button for <ph name="ACCELERATOR_INFO">$1<ex>ctrl T</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_SHORTCUT" desc="Title for a dialog that allows the user to edit a shortcut.">
+          Edit shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_LOCK" desc="The text read aloud by the screen reader describing the lock icon.">
+          Lock
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
+            desc="The message shown to indicate that a user policy is in place
+            to prevent the user from customizing the system shortcut">
+          This app is managed by your administrator
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut">
           Press 1-4 modifiers and 1 other key on your keyboard. To exit editing mode, press alt + esc.
         </message>
@@ -4048,7 +4929,7 @@
           Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator">
-          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut. To replace the original shortcut, press this shortcut again.
+          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut. To replace the existing shortcut, press this shortcut again.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog">
           You can only customize 5 shortcuts. Delete a shortcut to add a new one.
@@ -4062,21 +4943,37 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that use only 'shift' as modifier">
-          Shortcut not available. Press a new shortcut using shift and 1 more modifier key (ctrl, alt, search, or launcher).
+          Shortcut not available. Press a new shortcut using shift and 1 more modifier key (ctrl, alt, or <ph name="meta_key">$1<ex>search</ex></ph>).
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that does not include a modifier key.">
-          Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, search, or launcher).
+          Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, or <ph name="meta_key">$1<ex>search</ex></ph>).
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
-            that includes a top row key but does not include the search key">
-          Shortcut with top row keys need to include the search key.
+            that includes a top row key but does not include the search/launcher key">
+          Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that includes the search/launcher key with a function key.">
+          Shortcut not available. Press a new shortcut without using function and <ph name="meta_key">$1<ex>search</ex></ph> keys.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESERVED_KEY_NOT_ALLOWED_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that includes a reserved key.">
+          Shortcut not available. Press a new shortcut without <ph name="key">$1<ex>CapsLock</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_STANDARD_KEY_WITH_SEARCH_MODIFIER"
+            desc="The status message that displays when user press a key combination
+            that includes a non-standard 101 key and the search modifier."
+            translateable="false">
+          <ph name="key">$1<ex>Volume Up</ex></ph> is not available with the <ph name="meta_key">$2<ex>search</ex></ph> key. Press a new shortcut.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
-            desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/meta key.">
-          Shortcut without search key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the search key.
+            desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/launcher key.">
+          Shortcut without <ph name="meta_key">$1<ex>search</ex></ph> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="key">$1<ex>search</ex></ph> key. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
@@ -4087,8 +4984,49 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_PLACEHOLDER_LABEL" desc="Placeholder text shown in search input field before user has typed anything.">
           Search shortcuts
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys in search results.">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER"
+            desc="The placeholder text that appears in the input box where the
+            user is required to press a key combination for a shortcut.">
+          key
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_READ_ONLY_A11Y" desc="Accessibility text for the selected accelerator row when customization is not allowed.">
+          <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph>, <ph name="ACCELERATOR_INFO">$2<ex>ctrl T</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_ROW_A11Y" desc="Accessibility text for the selected accelerator row.">
+          <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph>, <ph name="ACCELERATOR_INFO">$2<ex>ctrl T</ex></ph>, <ph name="ROW_STATUS">$3<ex>locked</ex></ph>.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ROW_STATUS_EDITABLE" desc="Accessibility text that indicates that the selected accelerator row can be edited.">
+          editable
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ROW_STATUS_LOCKED" desc="Accessibility text that indicates that the selected accelerator row is locked.">
+          locked
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_BUTTON_A11Y" desc="Accessibility text for the edit button.">
+          Edit shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL_BUTTON_A11Y" desc="Accessibility text for the cancel button.">
+          Cancel shortcut editing
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_DELETE_BUTTON_A11Y" desc="Accessibility text for the delete button.">
+          Delete shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_A11Y" desc="The text read by the screen reader when edit dialog is open.">
+          Edit dialog for <ph name="DESCRIPTION">$1<ex>Open notifications</ex></ph> is open.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_ADDED_A11Y" desc="The text read by the screen reader when shortcut is added successfully.">
+          Shortcut added
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_EDITED_A11Y" desc="The text read by the screen reader when shortcut is edited successfully.">
+          Shortcut edited
+        </message>
+         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_DELETED_A11Y" desc="The text read by the screen reader when shortcut is deleted successfully.">
+          Shortcut deleted
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_RESTORED_A11Y" desc="The text read by the screen reader when shortcut is restored successfully.">
+          Shortcut restored
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.
@@ -4204,8 +5142,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_BACK" desc="The text read aloud by the screen reader describing the keyboard icon 'back'.">
           back
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'.">
           forward
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH" desc="The text read aloud by the screen reader describing the keyboard icon 'refresh'.">
@@ -4256,8 +5193,16 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_TRACK_PREVIOUS" desc="The text read aloud by the screen reader describing the keyboard icon 'previous track'.">
           previous track
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MENU" desc="The text read aloud by the screen reader describing the keyboard icon 'menu." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_HOME" desc="The text read aloud by the screen reader describing the keyboard icon 'browser home'.">
+          browser home
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_MAIL" desc="The text read aloud by the screen reader describing the keyboard icon 'email'.">
+          email
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_STAND_BY" desc="The text read aloud by the screen reader describing the keyboard icon 'lock'.">
+          lock
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU" desc="The text read aloud by the screen reader describing the keyboard icon 'menu'.">
           menu
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MICROPHONE_MUTE_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'toggle microphone mute'.">
@@ -4266,16 +5211,13 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MODE_CHANGE" desc="The text read aloud by the screen reader describing the keyboard icon 'mode change'.">
           mode change
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'meta launcher'." translateable="false">
-          meta launcher
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'launcher'.">
+          launcher
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'meta search'." translateable="false">
-          meta search
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'search'.">
+          search
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER" desc="The text read aloud by the screen reader describing the keyboard icon 'power'." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER" desc="The text read aloud by the screen reader describing the keyboard icon 'power'.">
           power
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRINT_SCREEN" desc="The text read aloud by the screen reader describing the keyboard icon 'take screenshot'.">
@@ -4309,7 +5251,7 @@
           Remove an APN to add a new APN
         </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK" desc="Text describing APN settings menu with a link to more detailed information.">
-          Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+          Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION" desc="Text explaining there is no APN information to show because the network has not been attempted to be connected with, and that the user might need to add a custom APN.">
           You are not connected yet. If your mobile carrier recommends a custom APN, enter the APN information by selecting "+ New APN"
@@ -4338,6 +5280,9 @@
         <message name="IDS_SETTINGS_APN_A11Y_NAME" desc="Accessibility text to display the name of an APN item in the APN list and what index it is in the list">
           <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>5</ex></ph>, <ph name="NAME">$3<ex>ATT Broadband</ex></ph>.
         </message>
+        <message name="IDS_SETTINGS_APN_A11Y_USER_FRIENDLY_NAME_INDICATOR" desc="Accessibility text to indicate that the displayed APN name is the user-friendly name">
+          <ph name="USER_FRIENDLY_APN_NAME">$1<ex>ATT Broadband</ex></ph> is the user-friendly name for <ph name="APN_NAME">$2<ex>broadband</ex></ph>.
+        </message>
         <message name="IDS_SETTINGS_APN_A11Y_AUTO_DETECTED" desc="Accessibility text for when an APN is automatically detected">
           APN is automatically detected.
         </message>
@@ -4346,6 +5291,9 @@
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_DISABLED" desc="Accessibility text for when an APN is disabled">
           APN is disabled.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ENABLED" desc="Accessibility text for when an APN is enabled">
+          APN is enabled.
         </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
           More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
@@ -4361,6 +5309,12 @@
         </message>
         <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified, the asterisk indicates that this is required">
           APN*
+        </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_MAX_CHARS" desc="Error for the APN input field when the maximum character limit is reached">
+          APN can’t have more than <ph name="CHAR_LIMIT">$1<ex>63</ex></ph> characters
+        </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_INVALID_CHAR" desc="Error for the APN input field when an invalid character is used">
+          Can’t use accented letters, non-Latin alphabet, or symbols
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADVANCED_SETTING" desc="Title for the button which toggles the advanced settings section">
           Advanced settings
@@ -4396,16 +5350,28 @@
           Default
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN type will be used">
-          Attach
+          <ph name="ATTACH">Attach</ph> (<ph name="IA">IA</ph>)
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN" desc="Accessibility text for when an APN is both a default and an attach APN">
+          APN is type default and <ph name="ATTACH">attach</ph>.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_APN_ONLY" desc="Accessibility text for when an APN is only a default APN">
+          APN is type default.
+        </message>
+        <message name="IDS_SETTINGS_APN_A11Y_ATTACH_APN_ONLY" desc="Accessibility text for when an APN is only an attach APN">
+          APN is type <ph name="ATTACH">attach</ph>.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required
+        </message>
+        <message name="IDS_SETTINGS_APN_NAME_MODEM" desc="Label for APNs that are selected by the modem">
+          Modem APN
         </message>
         <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
           Automatically detected
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
-          Can't disable or remove this APN. Make sure enabled attach APNs are disabled or removed.
+          Can't disable or remove this APN. Make sure enabled <ph name="ATTACH">attach</ph> APNs are disabled or removed.
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_ENABLE" desc="Warning Prompt describing why the APN can't be enabled.">
           Can’t enable this APN. Make sure a default APN is added.
@@ -4415,6 +5381,18 @@
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_SAVE" desc="Text used to save a modified APN.">
           Save
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_ADD_ENABLED" desc="A11y announcement when 'Add' button becomes enabled in the APN detail dialog.">
+          Add APN button is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_SAVE_ENABLED" desc="A11y announcement when 'Save' button becomes enabled in the APN detail dialog.">
+          Save APN button is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_ADD_DISABLED" desc="A11y announcement when 'Add' button becomes disabled in the APN detail dialog.">
+          Add APN button is now disabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_SAVE_DISABLED" desc="A11y announcement when 'Save' button becomes disabled in the APN detail dialog.">
+          Save APN button is now disabled
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_CANCEL" desc="Text used to cancel the APN dialog.">
           Cancel
@@ -4458,29 +5436,136 @@
         <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS" desc="Text presented via a tooltip so the user knows how to interact when the touch point is focused.">
           Move the blue touch point to an action. Select the associated key to customize.
         </message>
+        <!-- TODO(b/274690042): Make the strings translatable. -->
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_TITLE" desc="Button placement mode rich nudge title text." translateable="false">
+          Create control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_BODY" desc="Button placement mode rich nudge body text." translateable="false">
+          Place control on game action to play with your keyboard
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGN_NEW_KEY" desc="The instruction in the second last row of the Button Options Menu to assign a key from the keyboard to a newly created button." translateable="false">
+          Assign a keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ASSIGNED_KEY" desc="The label in the second last row of the Button Options Menu indicating which keyboard key has been assigned to the selected button." translateable="false">
+          Assigned keyboard key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_BUTTON_TYPE" desc="The text directly above the Joystick and Single Button options in the Button Options Menu saying to choose between the two options." translateable="false">
+          Select your control type
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_DELETE_TOOLTIP_TEXT" desc="The tooltip text for the trash button within Game Controls so that users know what the button does." translateable="false">
+          Delete
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_EDIT_INFO" desc="The text directly below the title of the Button Options Menu explaining that you can choose keyboard keys for the current mobile game." translateable="false">
+          Place controls on game actions to play with keyboard keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL" desc="The button label of the single button fir choosing that button type in the 'Create Button' menu." translateable="false">
+          Button
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL" desc="The button label of the joystick button for choosing that button type in the 'Create Button' menu." translateable="false">
+          Joystick
+        </message>
+        <message name="IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE" desc="The Control name is formed by Control type and assigned keys. e.g. 'Joystick wasd' or 'Button a'." translateable="false">
+          <ph name="CONTROL_TYPE">$1<ex>Button</ex></ph> <ph name="KEY_LIST">$2<ex>w</ex></ph>
+        </message>
+         <message name="IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE" desc="The Control name is formed by Control type and assigned keys. For example, Unassigned button or Unassigned Joystick." translateable="false">
+          Unassigned <ph name="CONTROL_TYPE">$1<ex>Button</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_REASSIGN_A11Y_LABEL" desc="Edit label button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Tap on another keyboard key to replace
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_A11Y_LABEL_TEMPLATE" desc="Edit label a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. <ph name="REASSIGN_INSTRUCTION">$2<ex>reassign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_UNASSIGNED_A11Y_LABEL" desc="A11y name for symbol '?' or empty string and spoken by screen readers when symbol ? or nothing renders in key label and gets focus but the name not visually rendered." translateable="false">
+          Key is missing. Tap on a keyboard key to assign
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu." translateable="false">
+          Done
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ACTION_EDIT_BUTTON_A11Y_LABEL" desc="Action edit button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Tap on the button to focus on the label
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL" desc="A11y label for button placement mode. Spoken by screen readers when in button placement mode but not visually rendered." translateable="false">
+          Use arrow keys to move this control to the game action you want. Use the enter key to place the control. Use the escape key to cancel.
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
+          Assign first control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu having created at least one button." translateable="false">
+          Assign another control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_TITLE" desc="The title of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Quickly switch keys
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_SUB_TITLE" desc="The subtitle of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
+          Reassign by selecting a new key
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_TITLE" desc="The title in the header row of the Game Controls editor menu." translateable="false">
+          Controls
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_HELP_BUTTON_NAME" desc="Helper button tooltip text and a11y label." translateable="false">
+          Get help
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL" desc="Done button a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Done editing
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_TEMPLATE" desc="List item button a11y label for editing list when including one single edit label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. Tap on the button to edit the control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_PLURAL_TEMPLATE" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
+          Selected key are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_SHORTCUT_EDIT_A11Y_LABEL_TEMPLATE" desc="Edit button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Edit <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_SHORTCUT_DELETE_A11Y_LABEL_TEMPLATE" desc="Delete button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Delete <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 
-       <!-- Strings for WebAppSettings -->
-    <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
-      {NUM_ROOL_APPS, plural, offset:2
-      =1 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> to start automatically every time you log in.}
-      =2 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> and <ph name="APP_NAME_2">{APP_NAME_2}</ph> to start automatically every time you log in.}
-      =3 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and <ph name="APP_NAME_3">{APP_NAME_3}</ph> to start automatically every time you log in.}
-      other {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and # other apps to start automatically every time you log in.}
-      }
+      <!-- Strings for WebAppSettings -->
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_NO_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
+        {NUM_ROOL_APPS, plural, offset:1
+          =1 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically every time you log in.}
+          =2 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and 1 other app to start automatically every time you log in.}
+          other {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and # other apps to start automatically every time you log in.}
+        }
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_ONE_APP_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when one application is automatically started on OS login and is prevented from closing.">
+        Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically. This app may not be closed.
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MULTIPLE_APPS_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when multiple applications are automatically started on OS login and are prevented from closing.">
+        Your administrator has set up some apps to start automatically. Some of these apps may not be closed.
       </message>
 
-       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_TITLE" desc="This is the title of the notification when an application is automatically started on OS login. [ICU Syntax]">
-      {NUM_ROOL_APPS, plural,
-      =1 {<ph name="APP_NAME_1">{APP_NAME_1}</ph> was started automatically}
-      other {# apps were started automatically}
-      }
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_TITLE" desc="This is the title of the notification when an application is automatically started on OS login. [ICU Syntax]">
+        {NUM_ROOL_APPS, plural,
+          =1 {"<ph name="APP_NAME_1">{APP_NAME_1}</ph>" was started automatically}
+          other {# apps were started automatically}
+        }
       </message>
 
-       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE" desc="This is the button-text of the notification when an application is automatically started on OS login.">
-      Learn more
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE" desc="This is the button-text of the notification when an application is automatically started on OS login.">
+        Learn more about auto-launch
       </message>
+
+      <message name="IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN" desc="Text for the close button when prevent close is enabled by the administrator">
+        Your administrator doesn't allow closing this app
+      </message>
+
+      <message name="IDS_PREVENT_CLOSE_TOAST_MESSAGE" desc="Text for the toast that is shown if a user tried to close an unclosable PWA">
+        Your administrator doesn't allow closing <ph name="APP_NAME">{APP_NAME}</ph>
+      </message>
+
+      <!-- End of Strings for WebAppSettings -->
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_TITLE" desc="Title of the app relaunch notification.">
+          Restarting and updating <ph name="APP_NAME">$1</ph>
+      </message>
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_MESSAGE" desc="Message of the app relaunch notification.">
+          Please wait while this application is being updated
+      </message>
+
     </messages>
   </release>
 </grit>

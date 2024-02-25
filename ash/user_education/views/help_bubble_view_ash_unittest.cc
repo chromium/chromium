@@ -4,6 +4,7 @@
 
 #include "ash/user_education/views/help_bubble_view_ash.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -15,8 +16,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
@@ -60,9 +61,9 @@ ui::MouseEvent CreateMouseMovedEvent(aura::Window* target,
   return mouse_moved_event;
 }
 
-std::vector<absl::optional<HelpBubbleStyle>> GetHelpBubbleStyles() {
-  std::vector<absl::optional<HelpBubbleStyle>> styles;
-  styles.emplace_back(absl::nullopt);
+std::vector<std::optional<HelpBubbleStyle>> GetHelpBubbleStyles() {
+  std::vector<std::optional<HelpBubbleStyle>> styles;
+  styles.emplace_back(std::nullopt);
   for (size_t i = static_cast<size_t>(HelpBubbleStyle::kMinValue);
        i <= static_cast<size_t>(HelpBubbleStyle::kMaxValue); ++i) {
     styles.emplace_back(static_cast<HelpBubbleStyle>(i));
@@ -105,19 +106,19 @@ TEST_F(HelpBubbleViewAshTest, ParentWindow) {
 class HelpBubbleViewAshBodyIconTest
     : public HelpBubbleViewAshTestBase,
       public ::testing::WithParamInterface<
-          std::tuple</*body_icon_from_params=*/absl::optional<
+          std::tuple</*body_icon_from_params=*/std::optional<
                          std::reference_wrapper<const gfx::VectorIcon>>,
-                     /*body_icon_from_extended_properties=*/absl::optional<
+                     /*body_icon_from_extended_properties=*/std::optional<
                          std::reference_wrapper<const gfx::VectorIcon>>>> {
  public:
   // Returns the body icon from help bubble params given test parameterization.
-  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  const std::optional<std::reference_wrapper<const gfx::VectorIcon>>
   body_icon_from_params() const {
     return std::get<0>(GetParam());
   }
 
   // Returns the body icon from extended properties given test parameterization.
-  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  const std::optional<std::reference_wrapper<const gfx::VectorIcon>>
   body_icon_from_extended_properties() const {
     return std::get<1>(GetParam());
   }
@@ -128,15 +129,15 @@ INSTANTIATE_TEST_SUITE_P(
     HelpBubbleViewAshBodyIconTest,
     ::testing::Combine(
         /*body_icon_from_params=*/::testing::Values(
-            absl::make_optional(std::cref(gfx::kNoneIcon)),
-            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
-            absl::nullopt),
+            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::nullopt),
         /*body_icon_from_extended_properties=*/::testing::Values(
-            absl::make_optional(std::cref(gfx::kNoneIcon)),
-            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
-            absl::nullopt)));
+            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::nullopt)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -189,10 +190,10 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
 // Base class for tests of `HelpBubbleViewAsh` parameterized by style.
 class HelpBubbleViewAshStyleTest
     : public HelpBubbleViewAshTestBase,
-      public ::testing::WithParamInterface<absl::optional<HelpBubbleStyle>> {
+      public ::testing::WithParamInterface<std::optional<HelpBubbleStyle>> {
  public:
   // Returns the help bubble style to use given test parameterization.
-  const absl::optional<HelpBubbleStyle>& style() const { return GetParam(); }
+  const std::optional<HelpBubbleStyle>& style() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -225,6 +226,8 @@ TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
   auto* const help_bubble_view = CreateHelpBubbleView(style());
   auto* const help_bubble_widget = help_bubble_view->GetWidget();
   auto* const help_bubble_window = help_bubble_widget->GetNativeWindow();
+  auto* const root_window = help_bubble_window->GetRootWindow();
+  auto* const root_window_targeter = root_window->targeter();
 
   // Case: Event within help bubble contents bounds.
   // NOTE: We inset `contents_bounds` to account for fractional pixel rounding
@@ -234,22 +237,42 @@ TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
 
   // Events within help bubble `contents_bounds` should be handled.
   for (const gfx::Point& point : GetPerimeterPoints(contents_bounds)) {
-    EXPECT_THAT(window_util::GetEventHandlerForEvent(CreateMouseMovedEvent(
-                    help_bubble_window->GetRootWindow(), point)),
+    EXPECT_THAT(window_util::GetEventHandlerForEvent(
+                    CreateMouseMovedEvent(root_window, point)),
                 AnyOf(Eq(help_bubble_window), Contains(help_bubble_window)));
+
+    // Confirm that the help bubble window will be targeted for the event so its
+    // events don't leak through to windows behind it.
+    // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
+    // updated, since it should be tested at that level
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    EXPECT_EQ(root_window_targeter->FindTargetForEvent(root_window, &press),
+              help_bubble_window);
   }
 
   // Case: Event within help bubble shadow bounds.
   // NOTE: We outset contents bounds to enlarge the rect into the shadow.
   gfx::Rect shadow_bounds(help_bubble_view->GetBoundsInScreen());
   shadow_bounds.Outset(1);
-
-  // Events within help bubble `shadow_bounds` should *not* be handled.
+  // Events within help bubble `shadow_bounds` should *not* be handled, nor
+  // should they target that window.
   for (const gfx::Point& point : GetPerimeterPoints(shadow_bounds)) {
     EXPECT_THAT(
         window_util::GetEventHandlerForEvent(
-            CreateMouseMovedEvent(help_bubble_window->GetRootWindow(), point)),
+            CreateMouseMovedEvent(root_window, point)),
         Not(AnyOf(Eq(help_bubble_window), Contains(help_bubble_window))));
+
+    // Also confirm that the help bubble window will not be targeted for the
+    // event so it doesn't block events in its shadow.
+    // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
+    // updated, since it should be tested at that level
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    EXPECT_NE(root_window_targeter->FindTargetForEvent(root_window, &press),
+              help_bubble_window);
   }
 }
 

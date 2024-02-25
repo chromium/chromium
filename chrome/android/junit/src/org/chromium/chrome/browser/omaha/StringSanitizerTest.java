@@ -22,7 +22,8 @@ public class StringSanitizerTest {
         Assert.assertEquals("normal string", StringSanitizer.sanitize("Normal string"));
         Assert.assertEquals(
                 "extra spaces string", StringSanitizer.sanitize("\nExtra,  spaces;  string "));
-        Assert.assertEquals("a quick brown fox jumped over the lazy dog",
+        Assert.assertEquals(
+                "a quick brown fox jumped over the lazy dog",
                 StringSanitizer.sanitize("  a\"quick;  brown,fox'jumped;over \nthe\rlazy\tdog\n"));
     }
 }

@@ -1,0 +1,36 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-13 (T, API 33) AVD on google_atd on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
+  dest_path: "android_33_google_atd_x64"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-33/google_atd/x86_64"
+  version: "RzAMzXHpmZLkIt9sdHJjlzYmcLPDyq4wwkSKo7miG24C"  # r1
+  dest_path: "android_33_google_atd_x64"
+}
+system_image_name: "system-images;android-33;google_atd;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-33/google_atd/x86_64"
+  dest_path: "android_33_google_atd_x64"
+}
+avd_name: "android_33_google_atd_x64"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+}

@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("default") {
+  sources = [
+    "default_infobar_overlay_request_config.h",
+    "default_infobar_overlay_request_config.mm",
+  ]
+
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model/overlays:overlay_type",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+  ]
+}

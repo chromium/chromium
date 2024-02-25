@@ -8,6 +8,8 @@
 #include <windows.foundation.h>
 #include <wrl/event.h>
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +18,6 @@
 #include "base/win/core_winrt_util.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -49,42 +50,21 @@ using Microsoft::WRL::ComPtr;
 // API which will trigger an update.
 constexpr double kDefaultMovementThresholdMeters = 1.0;
 
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "WindowsRTLocationRequestEvent" in
-// src/tools/metrics/histograms/enums.xml.
-enum WindowsRTLocationRequestEvent {
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_START = 0,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_CANCEL = 1,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_SUCCESS = 2,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE = 3,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_INVALID_POSITION = 4,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_PERMISSION_DENIED = 5,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_POSITION_UNAVAILABLE = 6,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_TIMEOUT = 7,
-  WINDOWS_RT_LOCATION_CALLBACK_EVENT_UNKNOWN_ERROR_CONDITION = 8,
-  kMaxValue = WINDOWS_RT_LOCATION_CALLBACK_EVENT_UNKNOWN_ERROR_CONDITION
-};
-
-void RecordUmaEvent(WindowsRTLocationRequestEvent event) {
-  base::UmaHistogramEnumeration("Windows.RT.LocationRequest.Event", event);
-}
-
 template <typename F>
-absl::optional<DOUBLE> GetOptionalDouble(F&& getter) {
+std::optional<DOUBLE> GetOptionalDouble(F&& getter) {
   DOUBLE value = 0;
   HRESULT hr = getter(&value);
   if (SUCCEEDED(hr))
     return value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 template <typename F>
-absl::optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
+std::optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
   IReference<DOUBLE>* reference_value;
   HRESULT hr = getter(&reference_value);
   if (!SUCCEEDED(hr) || !reference_value)
-    return absl::nullopt;
+    return std::nullopt;
   return GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
     return reference_value->get_Value(value);
   });
@@ -116,24 +96,24 @@ bool IsSystemLocationSettingEnabled() {
            status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
 }
 
-absl::optional<BasicGeoposition> GetPositionFromCoordinate(
+std::optional<BasicGeoposition> GetPositionFromCoordinate(
     const ComPtr<IGeocoordinate>& coordinate) {
   ComPtr<IGeocoordinateWithPoint> coordinate_with_point = nullptr;
   const HRESULT query_result = coordinate.As(&coordinate_with_point);
   if (FAILED(query_result) || !coordinate_with_point) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ComPtr<IGeopoint> point = nullptr;
   const HRESULT point_result = coordinate_with_point->get_Point(&point);
   if (FAILED(point_result) || !point) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BasicGeoposition position;
   const HRESULT position_result = point->get_Position(&position);
   if (FAILED(position_result)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return position;
@@ -244,19 +224,6 @@ void LocationProviderWinrt::OnPermissionGranted() {
 void LocationProviderWinrt::HandleErrorCondition(
     mojom::GeopositionErrorCode position_error_code,
     const std::string& position_error_message) {
-  WindowsRTLocationRequestEvent event;
-  switch (position_error_code) {
-    case mojom::GeopositionErrorCode::kPermissionDenied:
-      event = WindowsRTLocationRequestEvent::
-          WINDOWS_RT_LOCATION_CALLBACK_EVENT_PERMISSION_DENIED;
-      break;
-    case mojom::GeopositionErrorCode::kPositionUnavailable:
-      event = WindowsRTLocationRequestEvent::
-          WINDOWS_RT_LOCATION_CALLBACK_EVENT_POSITION_UNAVAILABLE;
-      break;
-  }
-  RecordUmaEvent(event);
-
   last_result_ =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           position_error_code, position_error_message, /*error_technical=*/""));
@@ -298,8 +265,6 @@ void LocationProviderWinrt::RegisterCallbacks() {
         &tmp_position_token);
 
     if (FAILED(hr)) {
-      RecordUmaEvent(WindowsRTLocationRequestEvent::
-                         WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
       if (!HasValidLastPosition()) {
         HandleErrorCondition(
             mojom::GeopositionErrorCode::kPositionUnavailable,
@@ -311,8 +276,6 @@ void LocationProviderWinrt::RegisterCallbacks() {
     }
 
     position_callback_initialized_time_ = base::TimeTicks::Now();
-    RecordUmaEvent(WindowsRTLocationRequestEvent::
-                       WINDOWS_RT_LOCATION_CALLBACK_EVENT_START);
     position_changed_token_ = tmp_position_token;
   }
 
@@ -357,8 +320,6 @@ void LocationProviderWinrt::UnregisterCallbacks() {
   if (position_changed_token_) {
     geo_locator_->remove_PositionChanged(*position_changed_token_);
     position_changed_token_.reset();
-    RecordUmaEvent(WindowsRTLocationRequestEvent::
-                       WINDOWS_RT_LOCATION_CALLBACK_EVENT_CANCEL);
   }
 
   if (status_changed_token_) {
@@ -376,8 +337,6 @@ void LocationProviderWinrt::OnPositionChanged(
   ComPtr<IGeoposition> position;
   HRESULT hr = position_update->get_Position(&position);
   if (FAILED(hr)) {
-    RecordUmaEvent(WindowsRTLocationRequestEvent::
-                       WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
     if (!HasValidLastPosition()) {
       HandleErrorCondition(
           mojom::GeopositionErrorCode::kPositionUnavailable,
@@ -389,8 +348,6 @@ void LocationProviderWinrt::OnPositionChanged(
 
   mojom::GeopositionPtr location_data = CreateGeoposition(position.Get());
   if (!location_data || !ValidateGeoposition(*location_data)) {
-    RecordUmaEvent(WindowsRTLocationRequestEvent::
-                       WINDOWS_RT_LOCATION_CALLBACK_EVENT_INVALID_POSITION);
     return;
   }
 
@@ -406,8 +363,6 @@ void LocationProviderWinrt::OnPositionChanged(
                             base::Seconds(10), 100);
     position_received_ = true;
   }
-  RecordUmaEvent(WindowsRTLocationRequestEvent::
-                     WINDOWS_RT_LOCATION_CALLBACK_EVENT_SUCCESS);
 
   if (location_update_callback_) {
     location_update_callback_.Run(this, last_result_.Clone());
@@ -454,7 +409,7 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
     return nullptr;
   }
 
-  const absl::optional<BasicGeoposition> position =
+  const std::optional<BasicGeoposition> position =
       GetPositionFromCoordinate(coordinate);
   if (!position) {
     return nullptr;

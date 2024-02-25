@@ -128,13 +128,13 @@ base::TimeDelta VelocityBasedDurationBound(gfx::Vector2dF old_delta,
 
 }  // namespace
 
-absl::optional<double>
+std::optional<double>
     ScrollOffsetAnimationCurve::animation_duration_for_testing_;
 
 ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
     const gfx::PointF& target_value,
     AnimationType animation_type,
-    absl::optional<DurationBehavior> duration_behavior)
+    std::optional<DurationBehavior> duration_behavior)
     : target_value_(target_value),
       animation_type_(animation_type),
       duration_behavior_(duration_behavior),
@@ -159,7 +159,7 @@ ScrollOffsetAnimationCurve::ScrollOffsetAnimationCurve(
     const gfx::PointF& target_value,
     std::unique_ptr<TimingFunction> timing_function,
     AnimationType animation_type,
-    absl::optional<DurationBehavior> duration_behavior)
+    std::optional<DurationBehavior> duration_behavior)
     : target_value_(target_value),
       timing_function_(std::move(timing_function)),
       animation_type_(animation_type),
@@ -179,15 +179,15 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
   double duration = kConstantDuration;
   if (!animation_duration_for_testing_) {
     switch (duration_behavior) {
-      case DurationBehavior::CONSTANT:
+      case DurationBehavior::kConstant:
         duration = kConstantDuration;
         break;
-      case DurationBehavior::DELTA_BASED:
+      case DurationBehavior::kDeltaBased:
         duration =
             std::min<double>(std::sqrt(std::abs(MaximumDimension(delta))),
                              kDeltaBasedMaxDuration);
         break;
-      case DurationBehavior::INVERSE_DELTA:
+      case DurationBehavior::kInverseDelta:
         duration = kInverseDeltaOffset +
                    std::abs(MaximumDimension(delta)) * kInverseDeltaSlope;
         duration = std::clamp(duration, kInverseDeltaMinDuration,
@@ -224,7 +224,7 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutBoundedSegmentDuration(
 base::TimeDelta ScrollOffsetAnimationCurve::SegmentDuration(
     const gfx::Vector2dF& delta,
     base::TimeDelta delayed_by,
-    absl::optional<double> velocity) {
+    std::optional<double> velocity) {
   switch (animation_type_) {
     case AnimationType::kEaseInOut:
       DCHECK(duration_behavior_.has_value());

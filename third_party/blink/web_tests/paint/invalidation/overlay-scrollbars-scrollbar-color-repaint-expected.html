@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script>
+    if (window.internals) {
+      internals.settings.setPreferCompositingToLCDTextEnabled(false);
+      internals.useMockOverlayScrollbars();
+    }
+  </script>
+  <style media="screen">
+    html, body { margin: 0; padding: 0; }
+    html { scrollbar-color: blue yellow }
+    #outer {
+      width: 400px;
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid green;
+    }
+    #inner {
+      width: 100px;
+      height: 100px;
+      overflow-y: scroll;
+      border: 1px solid blue;
+    }
+    .strut { height: 500px; }
+  </style>
+</head>
+<body>
+<div id="outer">
+  <div class="strut"></div>
+  <div id="inner">
+    <div class="strut"></div>
+  </div>
+</div>
+<script>
+  const outer = document.getElementById('outer');
+  const inner = document.getElementById('inner');
+  outer.scrollTop = outer.scrollHeight - outer.clientHeight;
+  inner.scrollTop = inner.scrollHeight - inner.clientHeight;
+</script>
+</body>
+</html>

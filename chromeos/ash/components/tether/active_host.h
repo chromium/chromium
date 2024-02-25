@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_ACTIVE_HOST_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_ACTIVE_HOST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -41,7 +41,7 @@ class ActiveHost {
     ActiveHostChangeInfo(
         ActiveHostStatus new_status,
         ActiveHostStatus old_status,
-        absl::optional<multidevice::RemoteDeviceRef> new_active_host,
+        std::optional<multidevice::RemoteDeviceRef> new_active_host,
         std::string old_active_host_id,
         std::string new_tether_network_guid,
         std::string old_tether_network_guid,
@@ -58,7 +58,7 @@ class ActiveHost {
     ActiveHostStatus old_status;
 
     // |new_active_host| will be empty if |new_status| is DISCONNECTED.
-    absl::optional<multidevice::RemoteDeviceRef> new_active_host;
+    std::optional<multidevice::RemoteDeviceRef> new_active_host;
     // |old_active_host_id| will be "" if |old_status| is DISCONNECTED.
     std::string old_active_host_id;
 
@@ -117,7 +117,7 @@ class ActiveHost {
   //     CONNECTED: All four parameters  will be present.
   using ActiveHostCallback = base::OnceCallback<void(
       ActiveHostStatus active_host_status,
-      absl::optional<multidevice::RemoteDeviceRef> active_host,
+      std::optional<multidevice::RemoteDeviceRef> active_host,
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid)>;
   virtual void GetActiveHost(ActiveHostCallback active_host_callback);
@@ -138,7 +138,7 @@ class ActiveHost {
       const std::string& old_tether_network_guid,
       const std::string& old_wifi_network_guid,
       ActiveHostStatus new_status,
-      absl::optional<multidevice::RemoteDeviceRef> new_active_host,
+      std::optional<multidevice::RemoteDeviceRef> new_active_host,
       const std::string& new_tether_network_guid,
       const std::string& new_wifi_network_guid);
 
@@ -152,10 +152,10 @@ class ActiveHost {
 
   void OnTetherHostFetched(
       ActiveHostCallback active_host_callback,
-      absl::optional<multidevice::RemoteDeviceRef> active_host);
+      std::optional<multidevice::RemoteDeviceRef> active_host);
 
-  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<TetherHostFetcher> tether_host_fetcher_;
+  raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

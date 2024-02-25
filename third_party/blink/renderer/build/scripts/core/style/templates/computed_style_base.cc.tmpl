@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_initialize, fieldwise_diff %}
+{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_diff, group_source_expression, field_source_expression, group_getter_expression %}
 {% from 'templates/fields/group.tmpl' import define_field_group_class %}
 {% import 'templates/fields/derived_flag.tmpl' as derived_flag %}
 {{license()}}
@@ -22,36 +22,53 @@ ComputedStyleBase::ComputedStyleBase() :
 {% for subgroup in computed_style.subgroups %}
     {{comma()}}{{subgroup.member_name}}({{subgroup.type_name}}::Create())
 {% endfor %}
-{% for field in computed_style.fields %}
+{% for field in computed_style.fields|selectattr('requires_tracing') %}
     {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
 {% endfor %}
+  {{comma()}}data_{
+    {% set data_comma = joiner(", ") %}
+    {% for field in computed_style.fields|rejectattr('requires_tracing') %}
+    {{data_comma()}}{{encode(field, field.default_value)}} // {{field.name}}
+    {% endfor %}
+  }
 {
 }
 
-ComputedStyleBase::ComputedStyleBase(const ComputedStyleBase &source_for_noninherited,
-                                     const ComputedStyleBase &parent_style,
-                                     ComputedStyleAccessFlags &access_) :
-{{fieldwise_initialize(computed_style)}}
-{
-{% for subgroup in computed_style.subgroups %}
-  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length != 0 and
-     subgroup.all_fields|selectattr("is_inherited")|list|length != 0 -%}
-  if (parent_style.{{subgroup.member_name}} != source_for_noninherited.{{subgroup.member_name}}) {
-    // We created this object fresh ourselves, so we do not need to clone it
-    // if we wish to do further changes later on.
-    access_.{{subgroup.member_name}} = true;
+// These const_casts are quite safe, since ComputedStyle[Base] is immutable.
+ComputedStyleBase::ComputedStyleBase(const ComputedStyleBuilderBase& builder) :
+  {% set comma = joiner(", ") %}
+  {% for subgroup in computed_style.subgroups %}
+    {{comma()}}{{subgroup.member_name}}(const_cast<{{subgroup.type_name}}*>(builder.{{subgroup.member_name}}))
+   {% endfor %}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
+    {{comma()}}{{field.name}}(builder.{{field.name}})
+  {% endfor %}
+    {{comma()}}data_(builder.data_)
+  {
+    // Reset derived flags:
+    {% for field in computed_style.fields|selectattr('derived_from') %}
+    {{derived_flag.reset_expression(field)}}
+    {% endfor %}
+  }
+
+{% macro find_changed_groups(group) -%}
+  {% if group_getter_expression(group) != '' %}
+  if (!base::ValuesEquivalent({{group_getter_expression(group)}},
+      other_style.{{group_getter_expression(group)}})) {
+    output.emplace_back("{{group_getter_expression(group)}}",
+        sizeof(*{{group_getter_expression(group)}}));
   }
   {% endif %}
-{% endfor %}
-{% for subgroup in computed_style.subgroups %}
-  {% for field in subgroup.all_fields|selectattr("reset_on_new_style") -%}
-    if ({{getter_expression(field)}} != {{encode(field, field.default_value)}}) {
-      // We need to reset this value, since it was part of a subgroup
-      // that was copied wholesale.
-      {{setter_expression(field)}} = {{encode(field, field.default_value)}};
-    }
-  {% endfor %}
-{% endfor %}
+  {% for subgroup in group.subgroups -%}
+    {{find_changed_groups(subgroup)}}
+  {%- endfor %}
+{%- endmacro %}
+
+Vector<std::pair<String, size_t>>
+ComputedStyleBase::FindChangedGroups(const ComputedStyleBase &other_style) const {
+  Vector<std::pair<String, size_t>> output;
+  {{ find_changed_groups(computed_style) }}
+  return output;
 }
 
 void ComputedStyleBase::Trace(Visitor* visitor) const {
@@ -140,12 +157,62 @@ ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
 
 {% endfor %}
 
+ComputedStyleBuilderBase::ComputedStyleBuilderBase(const ComputedStyleBase& style) :
+  {% set comma = joiner(", ") %}
+  {% for subgroup in computed_style.subgroups %}
+  {{comma()}}{{subgroup.member_name}}(style.{{subgroup.member_name}})
+  {% endfor %}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
+  {{comma()}}{{field.name}}(style.{{field.name}})
+  {% endfor %}
+  {{comma()}}data_(style.data_)
+  {}
+
+ComputedStyleBuilderBase::ComputedStyleBuilderBase(
+  const ComputedStyleBase &source_for_noninherited,
+  const ComputedStyleBase &parent_style) :
+  {% set comma = joiner(", ") %}
+  {% for subgroup in computed_style.subgroups %}
+  {{comma()}}{{subgroup.member_name}}({{group_source_expression(subgroup, 'source_for_noninherited', 'parent_style')}})
+  {% endfor %}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
+  {{comma()}}{{field.name}}({{field_source_expression(field, 'source_for_noninherited', 'parent_style')}})
+  {% endfor %}
+  {{comma()}}data_{
+    {% set comma = joiner(", ") %}
+    {% for field in computed_style.fields|rejectattr('requires_tracing') %}
+    {{comma()}}{{field_source_expression(field, 'source_for_noninherited', 'parent_style')}}
+    {% endfor %}
+  }
+{
+  {% for subgroup in computed_style.subgroups %}
+    {% if subgroup.all_fields|rejectattr("is_inherited")|list|length != 0 and
+       subgroup.all_fields|selectattr("is_inherited")|list|length != 0 %}
+    if (parent_style.{{subgroup.member_name}} != source_for_noninherited.{{subgroup.member_name}}) {
+      // We created this object fresh ourselves, so we do not need to clone it
+      // if we wish to do further changes later on.
+      access_.{{subgroup.member_name}} = true;
+    }
+    {% endif %}
+  {% endfor %}
+
+    // The following fields have the 'reset_on_new_style' flag set, but were
+    // part of groups that were copied wholesale in the initialization.
+  {% for subgroup in computed_style.subgroups %}
+    {% for field in subgroup.all_fields|selectattr("reset_on_new_style") %}
+    if ({{getter_expression(field)}} != {{encode(field, field.default_value)}}) {
+      {{setter_expression(field)}} = {{encode(field, field.default_value)}};
+    }
+    {% endfor %}
+  {% endfor %}
+}
+
 void ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
     const ComputedStyleBase& parent_style) {
-  ComputedStyleBase& style = *style_;
+  ComputedStyleBuilderBase& builder = *this;
   {% for field in computed_style.all_fields if field.is_property and field.is_independent %}
   if ({{field.is_inherited_method_name}}())
-    style.{{setter_expression(field)}} = parent_style.{{getter_expression(field)}};
+    builder.{{setter_expression(field)}} = parent_style.{{getter_expression(field)}};
   {% endfor %}
 }
 

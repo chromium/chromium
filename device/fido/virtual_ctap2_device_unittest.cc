@@ -5,6 +5,7 @@
 #include "device/fido/virtual_ctap2_device.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -32,7 +33,7 @@ namespace device {
 namespace {
 
 using TestCallbackReceiver =
-    test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
+    test::ValueCallbackReceiver<std::optional<std::vector<uint8_t>>>;
 
 void SendCommand(VirtualCtap2Device* device,
                  base::span<const uint8_t> command,
@@ -43,18 +44,18 @@ void SendCommand(VirtualCtap2Device* device,
 
 // DecodeCBOR parses a CBOR structure, ignoring the first byte of |in|, which is
 // assumed to be a CTAP2 status byte.
-absl::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
+std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
   return cbor::Reader::Read(in.subspan(1));
 }
 
 std::vector<uint8_t> ToCTAP2Command(
-    const std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>&
+    const std::pair<device::CtapRequestCommand, std::optional<cbor::Value>>&
         parts) {
   std::vector<uint8_t> ret;
 
   if (parts.second.has_value()) {
-    absl::optional<std::vector<uint8_t>> cbor_bytes =
+    std::optional<std::vector<uint8_t>> cbor_bytes =
         cbor::Writer::Write(std::move(*parts.second));
     ret.swap(*cbor_bytes);
   }
@@ -93,7 +94,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseMakeCredentialRequestForVirtualCtapKey) {
       base::make_span(test_data::kCtapMakeCredentialRequest).subspan(1));
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
-  const absl::optional<CtapMakeCredentialRequest> request =
+  const std::optional<CtapMakeCredentialRequest> request =
       CtapMakeCredentialRequest::Parse(cbor_request->GetMap());
   ASSERT_TRUE(request);
   EXPECT_THAT(request->client_data_hash,
@@ -142,7 +143,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
 
-  const absl::optional<CtapGetAssertionRequest> request =
+  const std::optional<CtapGetAssertionRequest> request =
       CtapGetAssertionRequest::Parse(cbor_request->GetMap());
   EXPECT_THAT(request->client_data_hash,
               ::testing::ElementsAreArray(test_data::kClientDataHash));
@@ -179,9 +180,9 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
               callback_receiver.callback());
   callback_receiver.WaitForCallback();
 
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
+  std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   ASSERT_TRUE(response);
@@ -211,13 +212,13 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
 
   bool present;
   bool critical;
-  base::StringPiece contents;
+  std::string_view contents;
   ASSERT_TRUE(net::asn1::ExtractExtensionFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      base::StringPiece("\x55\x1d\x13"), &present, &critical, &contents));
+      std::string_view("\x55\x1d\x13"), &present, &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
-  EXPECT_EQ(base::StringPiece("\x30\x00", 2), contents);
+  EXPECT_EQ(std::string_view("\x30\x00", 2), contents);
 }
 
 TEST_F(VirtualCtap2DeviceTest, RejectsCredentialsWithExtraKeys) {
@@ -243,7 +244,7 @@ TEST_F(VirtualCtap2DeviceTest, RejectsCredentialsWithExtraKeys) {
     allow_list.emplace_back(std::move(cred));
     map.emplace(3, std::move(allow_list));
 
-    absl::optional<std::vector<uint8_t>> bytes =
+    std::optional<std::vector<uint8_t>> bytes =
         cbor::Writer::Write(cbor::Value(std::move(map)));
     ASSERT_TRUE(bytes.has_value());
 
@@ -291,10 +292,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionBogusSignature) {
       base::BindOnce(callback_receiver.callback()));
   callback_receiver.WaitForCallback();
 
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       ReadCTAPGetAssertionResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   ASSERT_TRUE(response);
@@ -310,9 +311,9 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialBogusSignature) {
   SendCommand(device_.get(), test_data::kCtapSimpleMakeCredentialRequest,
               callback_receiver.callback());
   callback_receiver.WaitForCallback();
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
+  std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   const AttestationStatement& attestation =
@@ -347,10 +348,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUPBit) {
       base::BindOnce(callback_receiver.callback()));
   callback_receiver.WaitForCallback();
 
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       ReadCTAPGetAssertionResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   ASSERT_TRUE(response);
@@ -385,10 +386,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUVBit) {
       base::BindOnce(callback_receiver.callback()));
   callback_receiver.WaitForCallback();
 
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       ReadCTAPGetAssertionResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
   ASSERT_TRUE(response);
@@ -403,9 +404,9 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialUnsetUPBit) {
   SendCommand(device_.get(), test_data::kCtapSimpleMakeCredentialRequest,
               callback_receiver.callback());
   callback_receiver.WaitForCallback();
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
+  std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
 
@@ -428,9 +429,9 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialUnsetUVBit) {
               callback_receiver.callback());
   callback_receiver.WaitForCallback();
 
-  absl::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
   ASSERT_TRUE(cbor);
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
+  std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
           FidoTransportProtocol::kUsbHumanInterfaceDevice, std::move(cbor));
 
@@ -444,12 +445,12 @@ TEST_F(VirtualCtap2DeviceTest, InjectLargeBlob) {
   std::vector<uint8_t> credential1 = {1, 2, 3, 4};
   ASSERT_TRUE(device_->mutable_state()->InjectResidentKey(
       credential1, test_data::kRelyingPartyId, std::vector<uint8_t>{5, 6, 7, 8},
-      absl::nullopt, absl::nullopt));
+      std::nullopt, std::nullopt));
 
   std::vector<uint8_t> credential2 = {5, 6, 7, 8};
   ASSERT_TRUE(device_->mutable_state()->InjectResidentKey(
       credential2, test_data::kRelyingPartyId, std::vector<uint8_t>{9, 0, 1, 2},
-      absl::nullopt, absl::nullopt));
+      std::nullopt, std::nullopt));
 
   // Inject two large blobs.
   LargeBlob blob1({'b', 'l', 'o', 'b', '1'}, 5);
@@ -465,11 +466,11 @@ TEST_F(VirtualCtap2DeviceTest, InjectLargeBlob) {
   device_->mutable_state()->InjectLargeBlob(
       &device_->mutable_state()->registrations.at(credential1), blob3);
 
-  absl::optional<LargeBlob> blob_cred1 = device_->mutable_state()->GetLargeBlob(
+  std::optional<LargeBlob> blob_cred1 = device_->mutable_state()->GetLargeBlob(
       device_->mutable_state()->registrations.at(credential1));
   EXPECT_EQ(*blob_cred1, blob3);
 
-  absl::optional<LargeBlob> blob_cred2 = device_->mutable_state()->GetLargeBlob(
+  std::optional<LargeBlob> blob_cred2 = device_->mutable_state()->GetLargeBlob(
       device_->mutable_state()->registrations.at(credential2));
   EXPECT_EQ(*blob_cred2, blob2);
 }

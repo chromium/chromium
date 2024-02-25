@@ -29,7 +29,7 @@ DXGISwapChainOverlayImageRepresentation::
 DXGISwapChainOverlayImageRepresentation::
     ~DXGISwapChainOverlayImageRepresentation() = default;
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 DXGISwapChainOverlayImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<DXGISwapChainImageBacking*>(backing())
       ->GetDCLayerOverlayImage();
@@ -84,10 +84,8 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker) {
   GrBackendTexture backend_texture;
-  bool angle_rgbx_internal_format =
-      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
-  GLFormatDesc format_desc = ToGLFormatDesc(
-      backing->format(), /*plane_index=*/0, angle_rgbx_internal_format);
+  GLFormatDesc format_desc = context_state->GetGLFormatCaps().ToGLFormatDesc(
+      backing->format(), /*plane_index=*/0);
   if (!GetGrBackendTexture(
           context_state->feature_info(),
           gl_representation->GetTextureBase()->target(), backing->size(),
@@ -163,6 +161,7 @@ void SkiaGLImageRepresentationDXGISwapChain::EndWriteAccess() {
   SkiaGLImageRepresentation::ClearCachedSurfaces();
 }
 
+#if BUILDFLAG(USE_DAWN)
 DawnRepresentationDXGISwapChain::DawnRepresentationDXGISwapChain(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -198,5 +197,6 @@ void DawnRepresentationDXGISwapChain::EndAccess() {
   auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
   swapchain_backing->EndAccessDawn(device_, std::move(texture_));
 }
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

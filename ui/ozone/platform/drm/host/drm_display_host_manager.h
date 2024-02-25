@@ -109,13 +109,11 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
 
   void NotifyDisplayDelegate() const;
 
-  const raw_ptr<GpuThreadAdapter, ExperimentalAsh> proxy_;        // Not owned.
-  const raw_ptr<DeviceManager, ExperimentalAsh> device_manager_;  // Not owned.
-  const raw_ptr<InputControllerEvdev, ExperimentalAsh>
-      input_controller_;  // Not owned.
+  const raw_ptr<GpuThreadAdapter> proxy_;                 // Not owned.
+  const raw_ptr<DeviceManager> device_manager_;           // Not owned.
+  const raw_ptr<InputControllerEvdev> input_controller_;  // Not owned.
 
-  raw_ptr<DrmNativeDisplayDelegate, ExperimentalAsh> delegate_ =
-      nullptr;  // Not owned.
+  raw_ptr<DrmNativeDisplayDelegate> delegate_ = nullptr;  // Not owned.
 
   // File path for the primary graphics card which is opened by default in the
   // GPU process. We'll avoid opening this in hotplug events since it will race
@@ -151,6 +149,9 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   // This is used to cache the primary DRM device until the channel is
   // established.
   std::unique_ptr<DrmWrapper> primary_drm_device_;
+
+  // Used to disable input devices when the display is externally controlled.
+  std::unique_ptr<ScopedDisableInputDevices> scoped_input_devices_disabler_;
 
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
 };

@@ -5,7 +5,7 @@
     display: flex;
     flex-flow: row nowrap;
     height: 100%;
-    padding: 0 8px;
+    padding: 0 10px;
   }
 
   #backButton {
@@ -70,6 +70,23 @@
     --text-color: var(--cros-sys-on_surface);
     background-color: transparent;
   }
+
+  #seaPenDropdown {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+  }
+
+  .dropdown-check {
+    margin-inline-end: 16px;
+  }
+
+  button:not([aria-selected='true']) iron-icon.dropdown-check {
+    visibility: hidden;
+  }
+
+  button {
+    font: var(--cros-button-2-font);
+    padding: 8px 32px 8px 16px;
+  }
 </style>
 <nav id="container">
     <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
@@ -95,7 +112,22 @@
             id="breadcrumb[[index]]"
             on-click="onBreadcrumbClick_">
           <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
+          <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+            <iron-icon id="seaPenDropdown" icon="cr:arrow-drop-down"></iron-icon>
+          </template>
         </cr-button>
       </template>
+      <cr-action-menu>
+        <template is="dom-repeat" items="[[seaPenTemplates_]]" as="template">
+          <button
+              aria-selected$="[[getAriaSelected_(template.id, seaPenTemplateId)]]"
+              class="dropdown-item"
+              data-id$="[[template.id]]"
+              on-click="onClickMenuItem_">
+            <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>
+            [[template.title]]
+          </button>
+        </template>
+      </cr-action-menu>
     </iron-selector>
 </nav>

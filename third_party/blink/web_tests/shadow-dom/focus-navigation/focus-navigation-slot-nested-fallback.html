@@ -60,9 +60,7 @@ test(() => {
        'sixth'
   ];
 
-  assert_focus_navigation_forward(elements);
-  elements.reverse();
-  assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Focus should cover assigned elements of an assigned slot espacially there are fallback contents.');
 
 </script>

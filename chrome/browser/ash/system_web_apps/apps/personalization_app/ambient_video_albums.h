@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_AMBIENT_VIDEO_ALBUMS_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_AMBIENT_VIDEO_ALBUMS_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ambient_video.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::personalization_app {
 
@@ -39,7 +39,7 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
 // Returns the |AmbientVideo| for the corresponding |id|. |id| must match that
 // of one of the |AmbientModeAlbum|s returned by |AppendAmbientVideoAlbums()|.
 // Returns nullopt if not.
-absl::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id);
+std::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id);
 
 inline constexpr base::StringPiece kCloudsAlbumId = "AmbientCloudsVideoAlbumId";
 inline constexpr base::StringPiece kNewMexicoAlbumId =

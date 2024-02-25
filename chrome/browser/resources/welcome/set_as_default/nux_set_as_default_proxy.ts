@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {DefaultBrowserInfo} from '../shared/nux_types.js';
+
+import type {DefaultBrowserInfo} from '../shared/nux_types.js';
 
 const NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.SetAsDefaultInteraction';

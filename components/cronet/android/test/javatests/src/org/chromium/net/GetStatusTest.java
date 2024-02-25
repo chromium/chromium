@@ -24,7 +24,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
 import org.chromium.net.UrlRequest.StatusListener;
@@ -39,17 +41,17 @@ import java.util.concurrent.Executors;
  * Tests that {@link org.chromium.net.impl.CronetUrlRequest#getStatus(StatusListener)} works as
  * expected.
  */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class GetStatusTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -64,8 +66,11 @@ public class GetStatusTest {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                url, callback, callback.getExecutor());
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         // Calling before request is started should give Status.INVALID,
         // since the native adapter is not created.
@@ -117,7 +122,8 @@ public class GetStatusTest {
     @Test
     @SmallTest
     public void testInvalidLoadState() throws Exception {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(
+                IllegalArgumentException.class,
                 () -> UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE));
         // Expected throw because LoadState.WAITING_FOR_APPCACHE is not mapped.
 
@@ -128,27 +134,36 @@ public class GetStatusTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "Relies on timings which are not respected by the fallback implementation")
     // Regression test for crbug.com/606872.
-    @OnlyRunNativeCronet
     public void testGetStatusForUpload() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getEchoBodyURL(),
+                                callback,
+                                callback.getExecutor());
 
         final ConditionVariable block = new ConditionVariable();
         // Use a separate executor for UploadDataProvider so the upload can be
         // stalled while getStatus gets processed.
         Executor uploadProviderExecutor = Executors.newSingleThreadExecutor();
-        TestUploadDataProvider dataProvider = new TestUploadDataProvider(
-                TestUploadDataProvider.SuccessCallbackMode.SYNC, uploadProviderExecutor) {
-            @Override
-            public long getLength() throws IOException {
-                // Pause the data provider.
-                block.block();
-                block.close();
-                return super.getLength();
-            }
-        };
+        TestUploadDataProvider dataProvider =
+                new TestUploadDataProvider(
+                        TestUploadDataProvider.SuccessCallbackMode.SYNC, uploadProviderExecutor) {
+                    @Override
+                    public long getLength() throws IOException {
+                        // Pause the data provider.
+                        block.block();
+                        block.close();
+                        return super.getLength();
+                    }
+                };
         dataProvider.addRead("test".getBytes());
         builder.setUploadDataProvider(dataProvider, uploadProviderExecutor);
         builder.addHeader("Content-Type", "useless/string");

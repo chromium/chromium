@@ -4,23 +4,27 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
+#include <optional>
+
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
+#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -59,7 +63,7 @@ bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
 
 PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
                                                    const LayoutBox& box) {
-  PhysicalRect contents_visual_rect = box.PhysicalContentsVisualOverflowRect();
+  PhysicalRect contents_visual_rect = box.ContentsVisualOverflowRect();
   contents_visual_rect.Move(fragment.PaintOffset());
   const auto* replaced_transform =
       fragment.PaintProperties()
@@ -100,8 +104,8 @@ static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
 static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
   // We don't want to include overflowing contents.
   PhysicalRect overflow_rect =
-      object.IsBox() ? To<LayoutBox>(object).PhysicalSelfVisualOverflowRect()
-                     : object.PhysicalVisualOverflowRect();
+      object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
+                     : object.VisualOverflowRect();
   overflow_rect.Move(object.FirstFragment().PaintOffset());
   return ToEnclosingRect(overflow_rect);
 }
@@ -125,6 +129,10 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
 
   if (object.GetFrameView()->ShouldThrottleRendering())
     return kFullyPainted;
+
+  if (object.IsFragmentLessBox()) {
+    return kFullyPainted;
+  }
 
   // Non self-painting layers without self-painting descendants don't need to be
   // painted as their layoutObject() should properly paint itself.
@@ -171,7 +179,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer;
 
   PaintResult result = kFullyPainted;
-  if (object.FirstFragment().NextFragment() ||
+  if (object.IsFragmented() ||
       // When printing, the LayoutView's background should extend infinitely
       // regardless of LayoutView's visual rect, so don't check intersection
       // between the visual rect and the cull rect (custom for each page).
@@ -213,7 +221,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   bool should_create_subsequence =
       should_paint_content &&
       ShouldCreateSubsequence(paint_layer_, context, paint_flags);
-  absl::optional<SubsequenceRecorder> subsequence_recorder;
+  std::optional<SubsequenceRecorder> subsequence_recorder;
   if (should_create_subsequence) {
     if (!paint_layer_.SelfOrDescendantNeedsRepaint() &&
         SubsequenceRecorder::UseCachedSubsequenceIfPossible(context,
@@ -224,11 +232,11 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
-  absl::optional<ScopedEffectivelyInvisible> effectively_invisible;
+  std::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef()))
     effectively_invisible.emplace(context.GetPaintController());
 
-  absl::optional<ScopedPaintChunkProperties> layer_chunk_properties;
+  std::optional<ScopedPaintChunkProperties> layer_chunk_properties;
   if (should_paint_content) {
     // If we will create a new paint chunk for this layer, this gives the chunk
     // a stable id.
@@ -295,7 +303,12 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (should_paint_content && !selection_drag_image_only) {
     if (const auto* properties = object.FirstFragment().PaintProperties()) {
       if (properties->Mask()) {
-        PaintWithPhase(PaintPhase::kMask, context, paint_flags);
+        if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled() &&
+            object.IsSVGForeignObject()) {
+          SVGMaskPainter::Paint(context, object, object);
+        } else {
+          PaintWithPhase(PaintPhase::kMask, context, paint_flags);
+        }
       }
       if (properties->ClipPathMask())
         ClipPathClipper::PaintClipPathAsMaskImage(context, object, object);
@@ -356,7 +369,8 @@ void PaintLayerPainter::PaintOverlayOverflowControls(GraphicsContext& context,
 void PaintLayerPainter::PaintFragmentWithPhase(
     PaintPhase phase,
     const FragmentData& fragment_data,
-    const NGPhysicalBoxFragment* physical_fragment,
+    wtf_size_t fragment_data_idx,
+    const PhysicalBoxFragment* physical_fragment,
     GraphicsContext& context,
     PaintFlags paint_flags) {
   DCHECK(paint_layer_.IsSelfPaintingLayer() ||
@@ -384,9 +398,15 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     paint_info.SetDescendantPaintingBlocked(true);
 
   if (physical_fragment) {
-    NGBoxFragmentPainter(*physical_fragment).Paint(paint_info);
+    BoxFragmentPainter(*physical_fragment).Paint(paint_info);
+  } else if (const auto* layout_inline =
+                 DynamicTo<LayoutInline>(&paint_layer_.GetLayoutObject())) {
+    InlineBoxFragmentPainter::PaintAllFragments(*layout_inline, fragment_data,
+                                                fragment_data_idx, paint_info);
   } else {
-    paint_info.SetFragmentID(fragment_data.FragmentID());
+    // We are about to enter legacy paint code. Set the right FragmentData
+    // object, to use the right paint offset.
+    paint_info.SetFragmentDataOverride(&fragment_data);
     paint_layer_.GetLayoutObject().Paint(paint_info);
   }
 }
@@ -405,24 +425,26 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
       layout_box_with_fragments ||
       CanPaintMultipleFragments(paint_layer_.GetLayoutObject());
 
-  for (const auto* fragment = &paint_layer_.GetLayoutObject().FirstFragment();
-       fragment; fragment = fragment->NextFragment(), ++fragment_idx) {
-    const NGPhysicalBoxFragment* physical_fragment = nullptr;
+  for (const FragmentData& fragment :
+       FragmentDataIterator(paint_layer_.GetLayoutObject())) {
+    const PhysicalBoxFragment* physical_fragment = nullptr;
     if (layout_box_with_fragments) {
       physical_fragment =
           layout_box_with_fragments->GetPhysicalFragment(fragment_idx);
       DCHECK(physical_fragment);
     }
 
-    absl::optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
+    std::optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
     if (fragment_idx)
       scoped_display_item_fragment.emplace(context, fragment_idx);
 
-    PaintFragmentWithPhase(phase, *fragment, physical_fragment, context,
-                           paint_flags);
+    PaintFragmentWithPhase(phase, fragment, fragment_idx, physical_fragment,
+                           context, paint_flags);
 
     if (!multiple_fragments_allowed)
       break;
+
+    fragment_idx++;
   }
 }
 

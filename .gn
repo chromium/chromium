@@ -39,6 +39,12 @@ default_args = {
   # Don't include webrtc's builtin task queue implementation.
   rtc_link_task_queue_impl = false
 
+  # When building with Chromium, `webrtc::Location` is replaced by
+  # `base::Location`. Since WebRTC doesn't use `public_deps` (webrtc:8603), it
+  # would fail to propagate the dependency internally. Instead WebRTC let its
+  # embedders to define it globally for all of its targets.
+  rtc_common_public_deps = [ "//base" ]
+
   # Don't include the iLBC audio codec.
   # TODO(bugs.webrtc.org/8396): Once WebRTC gets rid of its internal
   # deps on codecs, we can remove this.
@@ -59,6 +65,9 @@ default_args = {
   fuchsia_sdk_readelf_exec =
       "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf"
 
+  # Overwrite default args declared in the pdfium library
+  pdf_partition_alloc_dir = "//base/allocator/partition_allocator"
+
   devtools_visibility = [ "*" ]
 }
 
@@ -67,6 +76,12 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
+  # TODO(crbug.com/326607005): Remove the exceptions for googletest once it is
+  # possible to support Abseil flags in tests without regressing things (e.g.
+  # no added static initializers) in production binaries.
+  "//third_party/googletest:gmock",
+  "//third_party/googletest:gtest",
+
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
   "//v8/test/cctest:cctest_sources",  # 15 errors

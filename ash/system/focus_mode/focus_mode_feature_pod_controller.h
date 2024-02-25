@@ -13,7 +13,6 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class UnifiedSystemTrayController;
 
 // Controller of the feature pod button that allows users to toggle whether
@@ -31,7 +30,6 @@ class ASH_EXPORT FocusModeFeaturePodController
   ~FocusModeFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -39,16 +37,20 @@ class ASH_EXPORT FocusModeFeaturePodController
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
-  void OnTimerTick() override;
+  void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
+  void OnInactiveSessionDurationChanged(
+      const base::TimeDelta& session_duration) override;
+  void OnActiveSessionDurationChanged(
+      const FocusModeSession::Snapshot& session_snapshot) override;
 
  private:
-  void UpdateUI();
+  void UpdateUI(const FocusModeSession::Snapshot& session_snapshot);
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ =
-      nullptr;  // Owned by views hierarchy.
-  raw_ptr<FeatureTile, ExperimentalAsh> tile_ =
-      nullptr;  // Owned by views hierarchy.
+  // Owned by views hierarchy.
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
+
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
+      tray_controller_;
 
   base::WeakPtrFactory<FocusModeFeaturePodController> weak_factory_{this};
 };

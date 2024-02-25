@@ -71,7 +71,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
     AllowServiceWorkerCallLog(
         const GURL& scope,
         const net::SiteForCookies& site_for_cookies,
-        const absl::optional<url::Origin>& top_frame_origin,
+        const std::optional<url::Origin>& top_frame_origin,
         const GURL& script_url)
         : scope(scope),
           site_for_cookies(site_for_cookies),
@@ -79,7 +79,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
           script_url(script_url) {}
     const GURL scope;
     const net::SiteForCookies site_for_cookies;
-    const absl::optional<url::Origin> top_frame_origin;
+    const std::optional<url::Origin> top_frame_origin;
     const GURL script_url;
   };
 
@@ -88,7 +88,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
     logs_.emplace_back(scope, site_for_cookies, top_frame_origin, script_url);
@@ -125,7 +125,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
         &ServiceWorkerContainerHostTest::OnMojoError, base::Unretained(this)));
 
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
-    context_ = helper_->context();
+    context_ = helper_->context()->AsWeakPtr();
     script_url_ = GURL("https://www.example.com/service_worker.js");
 
     blink::mojom::ServiceWorkerRegistrationOptions options1;
@@ -133,7 +133,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     const blink::StorageKey key1 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options1.scope));
     registration1_ = new ServiceWorkerRegistration(
-        options1, key1, 1L, context_->AsWeakPtr(),
+        options1, key1, 1L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options2;
@@ -141,7 +141,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     const blink::StorageKey key2 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options2.scope));
     registration2_ = new ServiceWorkerRegistration(
-        options2, key2, 2L, context_->AsWeakPtr(),
+        options2, key2, 2L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options3;
@@ -149,7 +149,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     const blink::StorageKey key3 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options3.scope));
     registration3_ = new ServiceWorkerRegistration(
-        options3, key3, 3L, context_->AsWeakPtr(),
+        options3, key3, 3L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
   }
 
@@ -174,7 +174,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   ServiceWorkerRemoteContainerEndpoint
   PrepareServiceWorkerContainerHostWithSiteForCookies(
       const GURL& document_url,
-      const absl::optional<url::Origin>& top_frame_origin) {
+      const std::optional<url::Origin>& top_frame_origin) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     CreateContainerHostInternal(document_url, top_frame_origin,
                                 &remote_endpoint);
@@ -238,7 +238,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce([](blink::mojom::ServiceWorkerErrorType* out_error,
                           blink::mojom::ServiceWorkerErrorType error,
-                          const absl::optional<std::string>& error_msg,
+                          const std::optional<std::string>& error_msg,
                           blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                               registration) { *out_error = error; },
                        &error));
@@ -259,12 +259,13 @@ class ServiceWorkerContainerHostTest : public testing::Test {
             [](blink::mojom::ServiceWorkerErrorType* out_error,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr* out_info,
                blink::mojom::ServiceWorkerErrorType error,
-               const absl::optional<std::string>& error_msg,
+               const std::optional<std::string>& error_msg,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                    registration) {
               *out_error = error;
-              if (out_info)
+              if (out_info) {
                 *out_info = std::move(registration);
+              }
             },
             &error, out_info));
     base::RunLoop().RunUntilIdle();
@@ -278,8 +279,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     container_host->GetRegistrations(base::BindOnce(
         [](blink::mojom::ServiceWorkerErrorType* out_error,
            blink::mojom::ServiceWorkerErrorType error,
-           const absl::optional<std::string>& error_msg,
-           absl::optional<std::vector<
+           const std::optional<std::string>& error_msg,
+           std::optional<std::vector<
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>> infos) {
           *out_error = error;
         },
@@ -291,13 +292,16 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   void OnMojoError(const std::string& error) { bad_messages_.push_back(error); }
 
   bool CanFindClientContainerHost(ServiceWorkerContainerHost* container_host) {
-    for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-             context_->GetClientContainerHostIterator(
-                 container_host->key(), false /* include_reserved_clients */,
-                 false /* include_back_forward_cached_clients */);
-         !it->IsAtEnd(); it->Advance()) {
-      if (container_host == it->GetContainerHost())
-        return true;
+    if (context_) {
+      for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
+               context_->GetClientContainerHostIterator(
+                   container_host->key(), false /* include_reserved_clients */,
+                   false /* include_back_forward_cached_clients */);
+           !it->IsAtEnd(); it->Advance()) {
+        if (container_host == it->GetContainerHost()) {
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -332,21 +336,21 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  raw_ptr<ServiceWorkerContextCore, DanglingUntriaged> context_;
+  base::WeakPtr<ServiceWorkerContextCore> context_;
   scoped_refptr<ServiceWorkerRegistration> registration1_;
   scoped_refptr<ServiceWorkerRegistration> registration2_;
   scoped_refptr<ServiceWorkerRegistration> registration3_;
   GURL script_url_;
   ServiceWorkerTestContentClient test_content_client_;
   TestContentBrowserClient test_content_browser_client_;
-  raw_ptr<ContentBrowserClient> old_content_browser_client_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
   std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints_;
   std::vector<std::string> bad_messages_;
 
  private:
   base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostInternal(
       const GURL& document_url,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(
@@ -479,6 +483,7 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
       net::SiteForCookies::FromUrl(url2)));
   EXPECT_EQ(uuid1, container_host->client_uuid());
 
+  ASSERT_TRUE(context_);
   EXPECT_EQ(container_host.get(), context_->GetContainerHostByClientID(
                                       container_host->client_uuid()));
 }
@@ -502,6 +507,7 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
       net::SiteForCookies::FromUrl(url2)));
   EXPECT_NE(uuid1, container_host->client_uuid());
 
+  ASSERT_TRUE(context_);
   EXPECT_FALSE(context_->GetContainerHostByClientID(uuid1));
   EXPECT_EQ(container_host.get(), context_->GetContainerHostByClientID(
                                       container_host->client_uuid()));
@@ -995,8 +1001,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WebUIUntrustedServiceWorkerContainerHostTest,
                          testing::Bool(),
                          [](const ::testing::TestParamInfo<bool>& info) {
-                           if (info.param)
+                           if (info.param) {
                              return "ServiceWorkersForChromeUntrustedEnabled";
+                           }
                            return "ServiceWorkersForChromeUntrustedDisabled";
                          });
 
@@ -1046,8 +1053,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WebUIServiceWorkerContainerHostTest,
                          testing::Bool(),
                          [](const ::testing::TestParamInfo<bool>& info) {
-                           if (info.param)
+                           if (info.param) {
                              return "ServiceWorkersForChromeEnabled";
+                           }
                            return "ServiceWorkersForChromeDisabled";
                          });
 
@@ -1159,6 +1167,7 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
     host_receiver =
         container_info->host_remote.InitWithNewEndpointAndPassReceiver();
 
+    ASSERT_TRUE(context_);
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         context_->CreateContainerHostForWorker(
             std::move(host_receiver), helper_->mock_render_process_id(),

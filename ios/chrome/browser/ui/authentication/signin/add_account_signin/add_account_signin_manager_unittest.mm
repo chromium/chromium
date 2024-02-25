@@ -16,10 +16,10 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_interaction_manager.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -74,8 +74,8 @@ class AddAccountSigninManagerTest : public PlatformTest {
     PlatformTest::SetUp();
 
     PrefService* prefs = browser_state_->GetPrefs();
-    prefs->SetString(prefs::kGoogleServicesLastUsername, kTestEmail);
-    prefs->SetString(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
+    prefs->SetString(prefs::kGoogleServicesLastSyncingUsername, kTestEmail);
+    prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId, kTestGaiaID);
 
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
@@ -223,8 +223,8 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithUserCancel) {
 TEST_F(AddAccountSigninManagerTest,
        AddAccountWithoutEmailWithSuccessNoLastKnowSyncAccount) {
   PrefService* prefs = browser_state_->GetPrefs();
-  prefs->ClearPref(prefs::kGoogleServicesLastUsername);
-  prefs->ClearPref(prefs::kGoogleServicesLastGaiaId);
+  prefs->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  prefs->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
 
   // Verify that completion was called with canceled result state.
   FakeSystemIdentityInteractionManager.identity = fake_identity_;

@@ -175,4 +175,57 @@ std::unique_ptr<PublicKey> P256PublicKey::ParseX962Uncompressed(
                                      DERFromEC_POINT(point.get()));
 }
 
+// static
+std::unique_ptr<PublicKey> P256PublicKey::ParseSpkiDer(
+    int32_t algorithm,
+    base::span<const uint8_t> spki_der) {
+  CBS cbs;
+  CBS_init(&cbs, spki_der.data(), spki_der.size());
+  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
+  if (!public_key || CBS_len(&cbs) != 0 ||
+      EVP_PKEY_id(public_key.get()) != EVP_PKEY_EC) {
+    return nullptr;
+  }
+  bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(public_key.get()));
+  if (!ec_key || EC_GROUP_get_curve_name(EC_KEY_get0_group(ec_key.get())) !=
+                     NID_X9_62_prime256v1) {
+    return nullptr;
+  }
+  const EC_POINT* ec_point = EC_KEY_get0_public_key(ec_key.get());
+  if (!ec_point) {
+    return nullptr;
+  }
+
+  bssl::UniquePtr<BIGNUM> x_bn(BN_new());
+  bssl::UniquePtr<BIGNUM> y_bn(BN_new());
+  if (!EC_POINT_get_affine_coordinates_GFp(EC_KEY_get0_group(ec_key.get()),
+                                           ec_point, x_bn.get(), y_bn.get(),
+                                           nullptr)) {
+    return nullptr;
+  }
+
+  std::vector<uint8_t> x(kFieldElementLength);
+  std::vector<uint8_t> y(kFieldElementLength);
+  if (!BN_bn2binpad(x_bn.get(), x.data(), x.size()) ||
+      !BN_bn2binpad(y_bn.get(), y.data(), y.size())) {
+    return nullptr;
+  }
+
+  cbor::Value::MapValue map;
+  map.emplace(static_cast<int>(CoseKeyKey::kKty),
+              static_cast<int64_t>(CoseKeyTypes::kEC2));
+  map.emplace(static_cast<int>(CoseKeyKey::kAlg), algorithm);
+  map.emplace(static_cast<int>(CoseKeyKey::kEllipticCurve),
+              static_cast<int64_t>(CoseCurves::kP256));
+  map.emplace(static_cast<int>(CoseKeyKey::kEllipticX), std::move(x));
+  map.emplace(static_cast<int>(CoseKeyKey::kEllipticY), std::move(y));
+
+  const std::vector<uint8_t> cbor_bytes(
+      std::move(cbor::Writer::Write(cbor::Value(std::move(map))).value()));
+
+  return std::make_unique<PublicKey>(
+      algorithm, cbor_bytes,
+      std::vector<uint8_t>(spki_der.begin(), spki_der.end()));
+}
+
 }  // namespace device

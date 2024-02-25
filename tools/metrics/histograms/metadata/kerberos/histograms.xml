@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Kerberos.AcquireKerberosTgtTime" units="ms"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -33,11 +33,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.DailyActiveUsers" enum="KerberosUserType"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Type of the Chrome OS login user (primary user) who requests Kerberos
+    Type of the ChromeOS login user (primary user) who requests Kerberos
     tickets. Reported at most once a day by the Kerberos daemon when a Kebreros
     ticket is acquired or Kerberos files are requested, which happens e.g. on
     Chrome startup.
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.EncryptionTypesAcquireKerberosTgt"
-    enum="KerberosEncryptionTypes" expires_after="2024-01-21">
+    enum="KerberosEncryptionTypes" expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -56,63 +56,63 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Managed" units="units"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of managed Kerberos accounts owned by the current Chrome OS user. A
+    Number of managed Kerberos accounts owned by the current ChromeOS user. A
     managed account is an account that got added via the KerberosAccounts
-    policy. Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    policy. Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.RememberedPassword" units="units"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of Kerberos accounts owned by the current Chrome OS user that use the
+    Number of Kerberos accounts owned by the current ChromeOS user that use the
     'Remember password' feature, i.e. the account password is stored by the
-    Kerberos daemon. Reported at most once a day similar to
+    Kerberos daemon. Reported at most once a day, similarly to
     Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Total" units="units"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Total number of Kerberos accounts owned by the current Chrome OS user.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Total number of Kerberos accounts owned by the current ChromeOS user.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Unmanaged" units="units"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of unmanaged Kerberos accounts owned by the current Chrome OS user.
-    An unmanaged account is an account that was added manually by the user.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Number of unmanaged Kerberos accounts owned by the current ChromeOS user. An
+    unmanaged account is an account that was added manually by the user.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.UseLoginPassword" units="units"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of Kerberos accounts owned by the current Chrome OS user that use the
+    Number of Kerberos accounts owned by the current ChromeOS user that use the
     login password for authentication. These accounts were added via the
     KerberosAccounts policy, using the '${PASSWORD}' placeholder as password.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
 <histogram name="Kerberos.Result.AcquireKerberosTgt" enum="KerberosErrorType"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.AddAccount" enum="KerberosErrorType"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ClearAccounts" enum="KerberosErrorType"
-    expires_after="2023-12-24">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.GetKerberosFiles" enum="KerberosErrorType"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ListAccounts" enum="KerberosErrorType"
-    expires_after="2024-02-20">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.RemoveAccount" enum="KerberosErrorType"
-    expires_after="M120">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.SetConfig" enum="KerberosErrorType"
-    expires_after="2024-01-21">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ValidateConfig" enum="KerberosErrorType"
-    expires_after="2024-02-20">
+    expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.ValidateConfigErrorCode"
-    enum="KerberosConfigErrorCode" expires_after="2024-02-20">
+    enum="KerberosConfigErrorCode" expires_after="M130">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>

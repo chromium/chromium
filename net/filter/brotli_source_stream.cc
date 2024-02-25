@@ -6,7 +6,6 @@
 
 #include "net/filter/brotli_source_stream.h"
 
-#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -33,13 +32,13 @@ class BrotliSourceStream : public FilterSourceStream {
         dictionary_size_(dictionary_size) {
     brotli_state_ =
         BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
+    CHECK(brotli_state_);
     if (dictionary_) {
       BROTLI_BOOL result = BrotliDecoderAttachDictionary(
           brotli_state_, BROTLI_SHARED_DICTIONARY_RAW, dictionary_size_,
           reinterpret_cast<const unsigned char*>(dictionary_->data()));
       CHECK(result);
     }
-    CHECK(brotli_state_);
   }
 
   BrotliSourceStream(const BrotliSourceStream&) = delete;
@@ -108,9 +107,9 @@ class BrotliSourceStream : public FilterSourceStream {
     if (decoding_status_ != DecodingStatus::DECODING_IN_PROGRESS)
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
 
-    const uint8_t* next_in = base::bit_cast<uint8_t*>(input_buffer->data());
+    const uint8_t* next_in = reinterpret_cast<uint8_t*>(input_buffer->data());
     size_t available_in = input_buffer_size;
-    uint8_t* next_out = base::bit_cast<uint8_t*>(output_buffer->data());
+    uint8_t* next_out = reinterpret_cast<uint8_t*>(output_buffer->data());
     size_t available_out = output_buffer_size;
 
     BrotliDecoderResult result =

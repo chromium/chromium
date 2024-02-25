@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/public/field_trial_configuration_provider.h"
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -570,9 +570,6 @@ void ParseConfigFields(const base::Feature* feature,
       }
       *output.snooze_params = parsed_snooze_params;
     } else if (key == kGroupsKey && output.groups) {
-      if (!base::FeatureList::IsEnabled(kIPHGroups)) {
-        continue;
-      }
       std::vector<std::string> groups;
       if (!ParseGroups(param_value, &groups, feature, known_groups)) {
         stats::RecordConfigParsingEvent(
@@ -616,11 +613,6 @@ bool FieldTrialConfigurationProvider::MaybeProvideFeatureConfiguration(
     FeatureConfig& config,
     const FeatureVector& known_features,
     const GroupVector& known_groups) const {
-  // If UseClientConfig is set, never parse field trial data.
-  if (base::FeatureList::IsEnabled(kUseClientConfigIPH)) {
-    return false;
-  }
-
   if (config.valid) {
     return false;
   }
@@ -670,11 +662,6 @@ bool FieldTrialConfigurationProvider::MaybeProvideFeatureConfiguration(
 bool FieldTrialConfigurationProvider::MaybeProvideGroupConfiguration(
     const base::Feature& feature,
     GroupConfig& config) const {
-  // If UseClientConfig is set, never parse field trial data.
-  if (base::FeatureList::IsEnabled(kUseClientConfigIPH)) {
-    return false;
-  }
-
   if (config.valid) {
     return false;
   }

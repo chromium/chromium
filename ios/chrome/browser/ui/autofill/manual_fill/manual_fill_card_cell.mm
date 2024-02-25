@@ -7,6 +7,11 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
@@ -15,8 +20,10 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 @interface ManualFillCardItem ()
 
@@ -58,7 +65,7 @@
 
 @end
 
-@interface ManualFillCardCell ()
+@interface ManualFillCardCell () <UITextViewDelegate>
 
 // The dynamic constraints for all the lines (i.e. not set in createView).
 @property(nonatomic, strong)
@@ -69,6 +76,9 @@
 
 // The credit card icon.
 @property(nonatomic, strong) UIImageView* cardIcon;
+
+// The text view with instructions for how to use virtual cards.
+@property(nonatomic, strong) UITextView* virtualCardInstructionTextView;
 
 // A button showing the card number.
 @property(nonatomic, strong) UIButton* cardNumberButton;
@@ -104,6 +114,7 @@
   [self.dynamicConstraints removeAllObjects];
 
   self.cardLabel.text = @"";
+  self.virtualCardInstructionTextView = nil;
   [self.cardNumberButton setTitle:@"" forState:UIControlStateNormal];
   [self.cardholderButton setTitle:@"" forState:UIControlStateNormal];
   [self.expirationMonthButton setTitle:@"" forState:UIControlStateNormal];
@@ -126,30 +137,36 @@
   }
 
   if (self.contentView.subviews.count == 0) {
-    [self createViewHierarchy];
+    [self createViewHierarchy:card.recordType];
   }
   self.contentInjector = contentInjector;
   self.navigationDelegate = navigationDelegate;
   self.card = card;
 
-  NSString* cardName = @"";
-  if (card.bankName.length) {
-    cardName = card.network;
+  NSMutableAttributedString* attributedString;
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    attributedString = [self createCardLabelAttributedText:card];
+    self.cardLabel.numberOfLines = 0;
+    self.cardLabel.attributedText = attributedString;
+    self.cardLabel.accessibilityIdentifier = attributedString.string;
+    if (card.recordType == autofill::CreditCard::RecordType::kVirtualCard) {
+      self.virtualCardInstructionTextView.attributedText =
+          [self createvirtualCardInstructionTextViewAttributedText];
+      self.virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
+    }
   } else {
-    cardName =
-        [NSString stringWithFormat:@"%@ %@", card.network, card.bankName];
+    NSString* cardName = [self createCardName:card];
+    attributedString = [[NSMutableAttributedString alloc]
+        initWithString:cardName
+            attributes:@{
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextPrimaryColor],
+              NSFontAttributeName :
+                  [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+            }];
+    self.cardLabel.attributedText = attributedString;
   }
-
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:cardName
-              attributes:@{
-                NSForegroundColorAttributeName :
-                    [UIColor colorNamed:kTextPrimaryColor],
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-              }];
-  self.cardLabel.attributedText = attributedString;
 
   self.cardIcon.image = NativeImage(card.issuerNetworkIconID);
 
@@ -165,6 +182,15 @@
 
   NSMutableArray<UIView*>* verticalViews =
       [[NSMutableArray alloc] initWithObjects:self.cardLabel, nil];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    if (card.recordType == autofill::CreditCard::RecordType::kVirtualCard) {
+      [verticalViews addObject:self.virtualCardInstructionTextView];
+    } else {
+      self.virtualCardInstructionTextView.hidden = YES;
+    }
+  }
 
   if (card.obfuscatedNumber.length) {
     [verticalViews addObject:self.cardNumberButton];
@@ -188,7 +214,7 @@
 #pragma mark - Private
 
 // Creates and sets up the view hierarchy.
-- (void)createViewHierarchy {
+- (void)createViewHierarchy:(autofill::CreditCard::RecordType)cardRecordType {
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
   UIView* grayLine = CreateGraySeparatorForContainer(self.contentView);
@@ -209,6 +235,17 @@
     [self.cardIcon.centerYAnchor
         constraintEqualToAnchor:self.cardLabel.centerYAnchor]
   ]];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards) &&
+      (cardRecordType == autofill::CreditCard::RecordType::kVirtualCard)) {
+    self.virtualCardInstructionTextView =
+        [self createVirtualCardInstructionTextView];
+    [self.contentView addSubview:self.virtualCardInstructionTextView];
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.virtualCardInstructionTextView ],
+        self.contentView, kButtonHorizontalMargin);
+  }
 
   self.cardNumberButton =
       CreateChipWithSelectorAndTarget(@selector(userDidTapCardNumber:), self);
@@ -288,6 +325,120 @@
   [self.contentInjector userDidPickContent:sender.titleLabel.text
                              passwordField:NO
                              requiresHTTPS:NO];
+}
+
+- (NSString*)createCardName:(ManualFillCreditCard*)card {
+  NSString* cardName;
+  // TODO: b/322543459 Take out deprecated bank name, add functionality for card
+  // product name.
+  if (card.bankName.length) {
+    cardName = card.network;
+  } else {
+    cardName =
+        [NSString stringWithFormat:@"%@ %@", card.network, card.bankName];
+  }
+  return cardName;
+}
+
+// Creates the attributed string containing the card name and potentially a
+// virtual card subtitle for the card label.
+- (NSMutableAttributedString*)createCardLabelAttributedText:
+    (ManualFillCreditCard*)card {
+  NSString* cardName = [self createCardName:card];
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:cardName
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+              }];
+
+  if (card.recordType == autofill::CreditCard::RecordType::kVirtualCard) {
+    NSMutableAttributedString* virtualCardAttributedString =
+        [[NSMutableAttributedString alloc]
+            initWithString:
+                [NSString
+                    stringWithFormat:
+                        @"\n%@",
+                        l10n_util::GetNSString(
+                            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)]
+                attributes:@{
+                  NSForegroundColorAttributeName :
+                      [UIColor colorNamed:kTextSecondaryColor],
+                  NSFontAttributeName :
+                      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+                }];
+    [attributedString appendAttributedString:virtualCardAttributedString];
+  }
+  return attributedString;
+}
+
+// Creates the attributed string for virtual card instructions.
+- (NSMutableAttributedString*)
+    createvirtualCardInstructionTextViewAttributedText {
+  NSMutableAttributedString* virtualCardInstructionAttributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:
+              [NSString
+                  stringWithFormat:
+                      @"%@ ",
+                      l10n_util::GetNSString(
+                          IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_VIRTUAL_CARD_INSTRUCTION_TEXT)]
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextSecondaryColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+              }];
+
+  NSString* learnMoreString = l10n_util::GetNSString(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
+  NSMutableAttributedString* virtualCardLearnMoreAttributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:learnMoreString
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kBlueColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+              }];
+  [virtualCardLearnMoreAttributedString
+      addAttribute:NSLinkAttributeName
+             value:@"unused"
+             range:[learnMoreString rangeOfString:learnMoreString]];
+
+  [virtualCardInstructionAttributedString
+      appendAttributedString:virtualCardLearnMoreAttributedString];
+  return virtualCardInstructionAttributedString;
+}
+
+- (UITextView*)createVirtualCardInstructionTextView {
+  UITextView* virtualCardInstructionTextView =
+      [[UITextView alloc] initWithFrame:self.contentView.frame];
+  virtualCardInstructionTextView.scrollEnabled = NO;
+  virtualCardInstructionTextView.editable = NO;
+  virtualCardInstructionTextView.delegate = self;
+  virtualCardInstructionTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  virtualCardInstructionTextView.textColor =
+      [UIColor colorNamed:kTextSecondaryColor];
+  virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
+  return virtualCardInstructionTextView;
+}
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  if (textView == self.virtualCardInstructionTextView) {
+    // The learn more link was clicked.
+    [self.navigationDelegate
+        openURL:[[CrURL alloc]
+                    initWithGURL:autofill::payments::
+                                     GetVirtualCardEnrollmentSupportUrl()]];
+  }
+  return NO;
 }
 
 @end

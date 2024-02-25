@@ -21,6 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/origin.h"
 
 using message_center::MessageCenter;
 using message_center::NotifierId;
@@ -54,7 +55,7 @@ class NotifierComparator {
   }
 
  private:
-  raw_ptr<icu::Collator, ExperimentalAsh> collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 // This delegate forwards NotificationDelegate methods to their equivalent in
@@ -75,8 +76,8 @@ class ForwardingNotificationDelegate
     delegate_->HandleNotificationClosed(notification_id_, by_user);
   }
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (button_index) {
       delegate_->HandleNotificationButtonClicked(notification_id_,
                                                  *button_index, reply);
@@ -99,7 +100,7 @@ class ForwardingNotificationDelegate
   // The ID of the notification.
   const std::string notification_id_;
 
-  raw_ptr<NotificationPlatformBridgeDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<NotificationPlatformBridgeDelegate> delegate_;
 };
 
 }  // namespace
@@ -170,8 +171,26 @@ void ChromeAshMessageCenterClient::GetDisplayed(
       MessageCenter::Get()->GetNotifications();
 
   std::set<std::string> notification_ids;
-  for (message_center::Notification* notification : notifications)
+  for (message_center::Notification* notification : notifications) {
     notification_ids.insert(notification->id());
+  }
+
+  std::move(callback).Run(std::move(notification_ids), /*supports_sync=*/true);
+}
+
+void ChromeAshMessageCenterClient::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetNotifications();
+
+  std::set<std::string> notification_ids;
+  for (message_center::Notification* notification : notifications) {
+    if (url::IsSameOriginWith(notification->origin_url(), origin)) {
+      notification_ids.insert(notification->id());
+    }
+  }
 
   std::move(callback).Run(std::move(notification_ids), /*supports_sync=*/true);
 }

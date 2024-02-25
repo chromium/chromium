@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] interface GPUCommandEncoder {
     [RaisesException] GPURenderPassEncoder beginRenderPass(GPURenderPassDescriptor descriptor);
@@ -44,7 +44,8 @@
         GPUBuffer destination,
         GPUSize64 destinationOffset);
 
-   [NoAllocDirectCall, RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RuntimeEnabled=WebGPUExperimentalFeatures, NoAllocDirectCall, RaisesException]
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     [NoAllocDirectCall] void clearBuffer(
         GPUBuffer buffer,

@@ -13,8 +13,8 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -167,7 +167,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
 // This is not expected to happen because only the PersonalDataManager can
 // trigger reuploads - and it only operates on finalized profiles.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
-  AutofillProfile unfinalized_profile(AutofillProfile::Source::kAccount);
+  AutofillProfile unfinalized_profile(
+      AutofillProfile::Source::kAccount,
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   unfinalized_profile.SetRawInfo(autofill::NAME_FULL, u"Full Name");
   AutofillProfile finalized_profile = unfinalized_profile;
   finalized_profile.FinalizeAfterImport();
@@ -199,18 +201,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnDisableSync) {
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
                                                 UnorderedElementsAre(kProfile))
                   .Wait());
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   EXPECT_TRUE(
       PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
           .Wait());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Specialized fixture to test the behavior for custom passphrase users with and
 // without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.
@@ -292,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   const std::string kUnsupportedField =
       CreateSerializedProtoField(/*field_number=*/999999, "unknown_field");
 
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfoWithVerificationStatus(
       autofill::NAME_FULL, u"Full Name",
       autofill::VerificationStatus::kFormatted);
@@ -323,7 +329,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
       autofill::NAME_FULL, u"New Name", autofill::VerificationStatus::kParsed);
   GetPersonalDataManager()->UpdateProfile(profile);
 
-  autofill::AutofillProfile profile2;
+  autofill::AutofillProfile profile2(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfoWithVerificationStatus(
       autofill::NAME_FULL, u"Name of new profile.",
       autofill::VerificationStatus::kFormatted);
@@ -362,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
                        DisabledForManagedAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   CoreAccountInfo account =
@@ -382,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DisableForChildAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a child account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   AccountInfo account = identity_manager->FindExtendedAccountInfo(

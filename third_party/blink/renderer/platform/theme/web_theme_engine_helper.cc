@@ -59,4 +59,13 @@ void WebThemeEngineHelper::DidUpdateRendererPreferences(
 #endif
 }
 
+const WebThemeEngine::ScrollbarStyle&
+WebThemeEngineHelper::AndroidScrollbarStyle() {
+  DEFINE_STATIC_LOCAL(WebThemeEngine::ScrollbarStyle, style,
+                      ({/*thumb_thickness=*/4,
+                        /*scrollbar_margin=*/0,
+                        /*color=*/{0.5f, 0.5f, 0.5f, 0.5f}}));
+  return style;
+}
+
 }  // namespace blink

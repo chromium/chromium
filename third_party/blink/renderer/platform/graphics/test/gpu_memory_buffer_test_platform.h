@@ -20,6 +20,8 @@ class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
     SharedGpuContext::SetGpuMemoryBufferManagerForTesting(nullptr);
   }
 
+  bool IsGpuCompositingDisabled() const override { return false; }
+
  private:
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override {
     return &test_gpu_memory_buffer_manager_;

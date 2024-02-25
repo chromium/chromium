@@ -199,7 +199,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
 void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
   DCHECK(properties_.dirty_flags & flag);
   const auto& name = OperatorPropertyFlagToAttributeName(flag);
-  if (absl::optional<bool> value = BooleanAttribute(name)) {
+  if (std::optional<bool> value = BooleanAttribute(name)) {
     // https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
     // Step 1.
     if (*value) {

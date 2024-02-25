@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package gaia;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// An OAuth token together with the token binding assertion. Some tokens
+// are bound to devices, and are expected to be used together with a proof of
+// possession assertion of a private key, the public key for which was provided
+// to the OAuth server during registration.
+message BoundOAuthToken {
+  // Required.
+  optional string gaia_id = 1;
+  // Required.
+  optional string token = 2;
+  // Required.
+  optional string token_binding_assertion = 3;
+}

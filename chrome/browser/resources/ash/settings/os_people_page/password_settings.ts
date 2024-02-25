@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {AuthFactor, AuthFactorConfig, FactorObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_settings.html.js';
+import {SettingsSetLocalPasswordDialogElement} from './set_local_password_dialog.js';
 
 enum PasswordType {
   LOCAL = 'local',
@@ -146,6 +147,16 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     // updatePasswordState_ being called, which then sets
     // `selectedPasswordType_`.
     this.selectedPasswordType_ = this.passwordType_();
+  }
+
+  private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {
+    const el = this.shadowRoot!.getElementById('setLocalPasswordDialog');
+    assert(el instanceof SettingsSetLocalPasswordDialogElement);
+    return el;
+  }
+
+  private openSetLocalPasswordDialog_(): void {
+    this.setLocalPasswordDialog().showModal();
   }
 }
 

@@ -6,10 +6,11 @@
 
 #include <wayland-util.h>
 
+#include <optional>
+
 #include "base/logging.h"
 #include "components/exo/wayland/test/wlcs/display_server.h"
 #include "components/exo/wayland/test/wlcs/wlcs_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/test/event_generator.h"
 
 namespace exo::wlcs {
@@ -35,8 +36,8 @@ Touch::~Touch() = default;
 void Touch::TouchDown(wl_fixed_t x, wl_fixed_t y) {
   server_->server()->GenerateEvent(base::BindOnce(
       [](wl_fixed_t x, wl_fixed_t y, ui::test::EventGenerator& evg) {
-        evg.PressTouch(absl::make_optional<gfx::Point>(wl_fixed_to_int(x),
-                                                       wl_fixed_to_int(y)));
+        evg.PressTouch(std::make_optional<gfx::Point>(wl_fixed_to_int(x),
+                                                      wl_fixed_to_int(y)));
       },
       x, y));
 }

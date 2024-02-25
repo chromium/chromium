@@ -77,8 +77,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenTCPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   void OnResolveCompleteForUDPSocket(
       blink::mojom::DirectConnectedUDPSocketOptionsPtr,
@@ -87,8 +87,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenConnectedUDPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   std::unique_ptr<network::SimpleHostResolver> resolver_;
 

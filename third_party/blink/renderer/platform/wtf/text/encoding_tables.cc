@@ -256,7 +256,7 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
     DCHECK(U_SUCCESS(error));
     auto get_pair =
         [&icu_converter](
-            uint16_t pointer) -> absl::optional<std::pair<uint16_t, UChar>> {
+            uint16_t pointer) -> std::optional<std::pair<uint16_t, UChar>> {
       std::array<uint8_t, 2> icu_input{
           static_cast<uint8_t>(pointer / 190u + 0x81),
           static_cast<uint8_t>(pointer % 190u + 0x41)};
@@ -268,7 +268,7 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
                      input + sizeof(icu_input), nullptr, true, &error);
       DCHECK(U_SUCCESS(error));
       if (icu_output[0] == kReplacementCharacter)
-        return absl::nullopt;
+        return std::nullopt;
       return {{pointer, icu_output[0]}};
     };
     size_t array_index = 0;

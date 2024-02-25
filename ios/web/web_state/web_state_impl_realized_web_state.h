@@ -7,6 +7,7 @@
 
 #include <map>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/web_state_impl.h"
 
@@ -36,7 +37,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   RealizedWebState(WebStateImpl* owner,
                    base::Time creation_time,
                    NSString* stable_identifier,
-                   SessionID unique_identifier);
+                   WebStateID unique_identifier);
 
   RealizedWebState(const RealizedWebState&) = delete;
   RealizedWebState& operator=(const RealizedWebState&) = delete;
@@ -140,7 +141,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   UserAgentType GetUserAgentForSessionRestoration() const;
   void SendChangeLoadProgress(double progress);
   void HandleContextMenu(const ContextMenuParams& params);
-  void ShowRepostFormWarningDialog(base::OnceCallback<void(bool)> callback);
+  void ShowRepostFormWarningDialog(FormWarningType warning_type,
+                                   base::OnceCallback<void(bool)> callback);
   void RunJavaScriptAlertDialog(const GURL& origin_url,
                                 NSString* message_text,
                                 base::OnceClosure callback);
@@ -177,7 +179,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetKeepRenderProcessAlive(bool keep_alive);
   BrowserState* GetBrowserState() const;
   NSString* GetStableIdentifier() const;
-  SessionID GetUniqueIdentifier() const;
+  WebStateID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
   void LoadData(NSData* data, NSString* mime_type, const GURL& url);
@@ -196,31 +198,27 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const;
   id<CRWWebViewProxy> GetWebViewProxy() const;
   void DidChangeVisibleSecurityState();
   WebState::InterfaceBinder* GetInterfaceBinderForMainFrame();
   bool HasOpener() const;
   void SetHasOpener(bool has_opener);
   bool CanTakeSnapshot() const;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback);
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback);
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback);
   void CloseMediaPresentations();
   void CloseWebState();
   bool SetSessionStateData(NSData* data);
   NSData* SessionStateData() const;
-  PermissionState GetStateForPermission(Permission permission) const
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state, Permission permission)
-      API_AVAILABLE(ios(15.0));
-  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
-      API_AVAILABLE(ios(15.0));
-  void OnStateChangedForPermission(Permission permission)
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const;
+  void SetStateForPermission(PermissionState state, Permission permission);
+  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const;
+  void OnStateChangedForPermission(Permission permission);
   void RequestPermissionsWithDecisionHandler(
       NSArray<NSNumber*>* permissions,
-      PermissionDecisionHandler web_view_decision_handler)
-      API_AVAILABLE(ios(15.0));
+      const GURL& origin,
+      PermissionDecisionHandler web_view_decision_handler);
 
   // NavigationManagerDelegate:
   void ClearDialogs() final;
@@ -268,14 +266,14 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
       base::OnceCallback<void(Args...)> callback);
 
   // Owner. Never null. Owns this object.
-  WebStateImpl* const owner_;
+  const raw_ptr<WebStateImpl> owner_;
 
   // The InterfaceBinder exposed by WebStateImpl. Used to handle Mojo
   // interface requests from the main frame.
   InterfaceBinder interface_binder_;
 
   // Delegate, not owned by this object.
-  WebStateDelegate* delegate_ = nullptr;
+  raw_ptr<WebStateDelegate> delegate_ = nullptr;
 
   // Stores whether the web state is currently loading a page.
   bool is_loading_ = false;
@@ -328,7 +326,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   __strong NSString* const stable_identifier_;
 
   // The unique identifier. Stable across application restarts.
-  const SessionID unique_identifier_;
+  const WebStateID unique_identifier_;
 
   // The fake CRWWebViewNavigationProxy used for testing. Nil in production.
   __strong id<CRWWebViewNavigationProxy> web_view_for_testing_;

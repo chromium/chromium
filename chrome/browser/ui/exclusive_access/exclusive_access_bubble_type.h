@@ -15,7 +15,7 @@ class ExtensionRegistry;
 
 // Describes the contents of the fullscreen exit bubble.
 // For example, if the user already agreed to fullscreen mode and the
-// web page then requests mouse lock, "do you want to allow mouse lock"
+// web page then requests pointer lock, "do you want to allow pointer lock"
 // will be shown.
 enum ExclusiveAccessBubbleType {
   // This "type" typically signifies closing the exclusive access bubble, except
@@ -28,8 +28,8 @@ enum ExclusiveAccessBubbleType {
   // More comments about tab and browser fullscreen mode can be found in
   // chrome/browser/ui/exclusive_access/fullscreen_controller.h.
   EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-  EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION,
-  EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION,
+  EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION,
+  EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION,
   EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION,
 
   // For browser fullscreen mode.

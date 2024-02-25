@@ -91,9 +91,9 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList() {
   return apps;
 }
 
-absl::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
+std::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  absl::optional<bool> has_badge;
+  std::optional<bool> has_badge;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&has_badge](const apps::AppUpdate& update) {
         has_badge = update.HasBadge();
@@ -127,8 +127,8 @@ class ScopedBadgingClockOverride {
   }
 
  private:
-  const raw_ptr<badging::BadgeManager, ExperimentalAsh> badge_manager_;
-  raw_ptr<const base::Clock, ExperimentalAsh> previous_clock_;
+  const raw_ptr<badging::BadgeManager> badge_manager_;
+  raw_ptr<const base::Clock> previous_clock_;
 };
 
 }  // namespace
@@ -174,8 +174,9 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
 
     std::set<std::string> notifications =
         GetDisplayHelper()->GetNotificationIdsForExtension(extension->url());
-    if (notifications.size() != 1)
+    if (notifications.size() != 1) {
       return nullptr;
+    }
 
     return GetDisplayHelper()->GetByNotificationId(*notifications.begin());
   }
@@ -856,8 +857,9 @@ class AppNotificationsArcNotificationTest
   }
 
   void StopInstance() {
-    if (app_instance_)
+    if (app_instance_) {
       arc_bridge_service()->app()->CloseInstance(app_instance_.get());
+    }
     arc_session_manager()->Shutdown();
   }
 

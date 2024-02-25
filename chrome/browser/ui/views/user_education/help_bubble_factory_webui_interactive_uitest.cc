@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +15,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -23,13 +29,17 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 
@@ -42,34 +52,37 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
 
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleFactoryWebUIInteractiveUiTest() = default;
+  HelpBubbleFactoryWebUIInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+  }
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
 
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
   auto OpenReadingListSidePanel() {
-    return Steps(
-        // Remove delays in switching side panels to prevent possible race
-        // conditions when selecting items from the side panel dropdown.
-        Do([this]() {
-          SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-              ->SetNoDelaysForTesting(true);
-        }),
-        // Click the Side Panel button and wait for the side panel to appear.
-        PressButton(kToolbarSidePanelButtonElementId),
-        WaitForShow(kSidePanelElementId), FlushEvents(),
-        // Select the Reading List side panel and wait for the WebView to
-        // appear.
-        SelectDropdownItem(kSidePanelComboboxElementId,
-                           static_cast<int>(SidePanelEntry::Id::kReadingList)),
-        WaitForShow(kReadLaterSidePanelWebViewElementId),
-        // Ensure that the Reading List side panel loads properly.
-        InstrumentNonTabWebView(kReadLaterWebContentsElementId,
-                                kReadLaterSidePanelWebViewElementId));
+      return Steps(
+          PressButton(kToolbarAppMenuButtonElementId),
+          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+          SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+          SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+          WaitForShow(kSidePanelElementId),
+          WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+          // Ensure that the Reading List side panel loads properly.
+          InstrumentNonTabWebView(kReadLaterWebContentsElementId,
+                                  kReadLaterSidePanelWebViewElementId));
+  }
+
+  auto OpenBookmarksSidePanel() {
+      return Steps(
+          PressButton(kToolbarAppMenuButtonElementId),
+          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+          SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+          WaitForShow(kSidePanelElementId), FlushEvents());
   }
 
   auto ShowHelpBubble(ElementSpecifier element) {
-    StepBuilder step = std::move(
+    return InAnyContext(std::move(
         AfterShow(
             element,
             base::BindLambdaForTesting(
@@ -81,17 +94,31 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                     seq->FailForTesting();
                   }
                 }))
-            .SetDescription("ShowHelpBubble"));
-
-    // A WebUI anchor will not be in the same context as the browser. However,
-    // InAnyContext is not compatible with named elements.
-    return absl::holds_alternative<ui::ElementIdentifier>(element)
-               ? InAnyContext(step)
-               : std::move(step);
+            .SetDescription("ShowHelpBubble")));
   }
 
   auto CloseHelpBubble() {
     return Do(base::BindLambdaForTesting([this]() { help_bubble_->Close(); }));
+  }
+
+  auto CheckHandlerHasHelpBubble(ElementSpecifier anchor,
+                                 bool has_help_bubble) {
+    return InAnyContext(
+        std::move(CheckElement(
+                      anchor,
+                      [](ui::TrackedElement* el) {
+                        return el->AsA<user_education::TrackedElementWebUI>()
+                            ->handler()
+                            ->IsHelpBubbleShowingForTesting(el->identifier());
+                      },
+                      has_help_bubble)
+                      .SetDescription(base::StringPrintf(
+                          "CheckHandlerHasHelpBubble(%s)",
+                          has_help_bubble ? "true" : "false"))));
+  }
+
+  auto Cleanup() {
+    return Do(base::BindLambdaForTesting([this]() { help_bubble_.reset(); }));
   }
 
  protected:
@@ -115,6 +142,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
     return static_cast<BrowserFeaturePromoController*>(controller)
         ->bubble_factory_registry();
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
@@ -124,6 +153,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
+
+      // Verify that the handler does not believe a WebUI help bubble is
+      // present.
+      CheckHandlerHasHelpBubble(kAddCurrentTabToReadingListElementId, false),
 
       // Verify that the anchor element is marked.
       CheckJsResultAt(
@@ -151,26 +184,69 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                     },
                     browser()->window()->GetElementContext())),
 
-      // Verify that the anchor element is no longer marked.
       CloseHelpBubble(),
+
+      // Verify that the anchor element is no longer marked.
       CheckJsResultAt(
           kReadLaterWebContentsElementId, kPathToAddCurrentTabElement,
-          "el => el.classList.contains('help-anchor-highlight')", false));
+          "el => el.classList.contains('help-anchor-highlight')", false),
+
+      Cleanup());
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowEmbeddedHelpBubble) {
+                       ShowEmbeddedHelpBubbleAndCloseViaExternalApi) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
   static const DeepQuery kPathToHelpBubbleBody = {"user-education-internals",
                                                   "#IPH_WebUiHelpBubbleTest",
                                                   "help-bubble", "#topBody"};
-  RunTestSequence(InstrumentTab(kBrowserTabId),
-                  NavigateWebContents(
-                      kBrowserTabId, GURL("chrome://internals/user-education")),
-                  ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
-                  CheckJsResultAt(kBrowserTabId, kPathToHelpBubbleBody,
-                                  "(el) => el.innerText",
-                                  base::UTF16ToUTF8(kBubbleBodyText)));
+  RunTestSequence(
+      InstrumentTab(kBrowserTabId),
+      NavigateWebContents(kBrowserTabId,
+                          GURL("chrome://internals/user-education")),
+      ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
+
+      // Verify that the handler believes that the anchor has a help bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, true),
+
+      CheckJsResultAt(kBrowserTabId, kPathToHelpBubbleBody,
+                      "el => el.innerText", base::UTF16ToUTF8(kBubbleBodyText)),
+      CloseHelpBubble(),
+
+      // Verify that the handler no longer believes that the anchor has a help
+      // bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false),
+
+      Cleanup());
+}
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
+                       ShowEmbeddedHelpBubbleAndCloseViaClick) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
+  static const DeepQuery kPathToHelpBubbleCloseButton = {
+      "user-education-internals", "#IPH_WebUiHelpBubbleTest", "help-bubble",
+      "#close"};
+  StateChange bubble_hidden;
+  bubble_hidden.type = StateChange::Type::kDoesNotExist;
+  bubble_hidden.where = kPathToHelpBubbleCloseButton;
+  bubble_hidden.event = kHelpBubbleHiddenEvent;
+
+  RunTestSequence(
+      InstrumentTab(kBrowserTabId),
+      NavigateWebContents(kBrowserTabId,
+                          GURL("chrome://internals/user-education")),
+      ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
+
+      ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,
+                  "el => el.click()"),
+      WaitForStateChange(kBrowserTabId, bubble_hidden), FlushEvents(),
+
+      // Verify that the handler no longer believes that the anchor has a help
+      // bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false),
+
+      Cleanup());
 }
 
 // Regression test for item (1) in crbug.com/1422875.
@@ -183,10 +259,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       // Switch to a different side panel; this removes the Reading List WebView
       // from its widget and effectively hides the WebContents.
-      SelectDropdownItem(kSidePanelComboboxElementId,
-                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
+      OpenBookmarksSidePanel(),
       WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      Cleanup());
 }
 
 namespace {
@@ -224,5 +300,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
                  side_panel->GetWidget()->LayoutRootViewIfNecessary();
                }),
       WaitForEvent(kSidePanelElementName,
-                   user_education::kHelpBubbleAnchorBoundsChangedEvent));
+                   user_education::kHelpBubbleAnchorBoundsChangedEvent),
+      Cleanup());
 }

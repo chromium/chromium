@@ -7,6 +7,51 @@ module downloads.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
+// This is a subset of download::DownloadDangerType.
+enum DangerType {
+  // This is the catch-all value for DownloadDangerTypes that are not relevant
+  // to the UI.
+  kNoApplicableDangerType,
+  kDangerousFile,
+  kDangerousUrl,
+  kDangerousContent,
+  kUncommonContent,
+  kDangerousHost,
+  kPotentiallyUnwanted,
+  kAsyncScanning,
+  kAsyncLocalPasswordScanning,
+  kBlockedPasswordProtected,
+  kBlockedTooLarge,
+  kSensitiveContentWarning,
+  kSensitiveContentBlock,
+  kDeepScannedFailed,
+  kDeepScannedSafe,
+  kDeepScannedOpenedDangerous,
+  kBlockedUnsupportedFileType,
+};
+
+// Represents the state of a download in the UI.
+enum State {
+  kInProgress,
+  kCancelled,
+  kComplete,
+  kPaused,
+  kDangerous,
+  kInterrupted,
+  kInsecure,
+  // See download::DownloadDangerType for more details on the scanning States.
+  kAsyncScanning,
+  kPromptForScanning,
+  kPromptForLocalPasswordScanning,
+};
+
+// This corresponds to safe_browsing::SafeBrowsingState.
+enum SafeBrowsingState {
+  kNoSafeBrowsing,
+  kStandardProtection,
+  kEnhancedProtection,
+};
+
 // This is the information associated with a download used for rendering in the
 // UI.
 struct Data {
@@ -22,10 +67,10 @@ struct Data {
   bool retry;
   int32 percent;
   int32 started;
-  int32 total;
+  int64 total;
   string by_ext_id;
   string by_ext_name;
-  string danger_type;
+  DangerType danger_type;
   string date_string;
   string file_name;
   string file_path;
@@ -40,7 +85,7 @@ struct Data {
   // indicate the download needs confirmation before initiating. After
   // confirmation, the state will indicate the download is in progress, complete
   // or cancelled.
-  string state;
+  State state;
   // The URL of the download item. Present if this field is populated with the
   // original URL. Omitted if the URL should not be clickable on the downloads
   // page, due to URL size limits requiring truncation.
@@ -48,6 +93,12 @@ struct Data {
   // The display string for the URL in the UI. May be truncated/elided from the
   // original URL, and IDN domains may be converted to Unicode.
   mojo_base.mojom.String16 display_url;
+  // Safe Browsing protection level of the profile in which the item was
+  // downloaded. Used to determine whether to show a special warning message.
+  SafeBrowsingState safe_browsing_state;
+  // Whether the download had a Safe Browsing verdict. This is used to determine
+  // whether to call a file type warning "suspicious" or "unverified".
+  bool has_safe_browsing_verdict;
 };
 
 interface PageHandlerFactory {
@@ -59,7 +110,31 @@ interface PageHandler {
   GetDownloads(array<string> search_terms);
   OpenFileRequiringGesture(string id);
   Drag(string id);
+
+  // This shows the DownloadDangerPrompt (native UI dialog) and is obsoleted by
+  // the following four methods.
+  // TODO(chlily): Remove this when cleaning up ImprovedDownloadPageWarnings.
   SaveDangerousRequiringGesture(string id);
+
+  // Called when "Download suspicious file" is clicked from the
+  // chrome://downloads overflow menu, for suspicious/unverified files. Does not
+  // show a prompt.
+  SaveSuspiciousRequiringGesture(string id);
+
+  // Called when "Download dangerous file" is clicked from the
+  // chrome://downloads overflow menu to open the warning bypass prompt, for
+  // dangerous files. Only records the opening of the warning bypass prompt.
+  RecordOpenBypassWarningPrompt(string id);
+
+  // Called when "Download dangerous file" is clicked from the
+  // chrome://downloads warning bypass prompt, for dangerous files.
+  SaveDangerousFromPromptRequiringGesture(string id);
+
+  // Called when "Cancel" is clicked on the chrome://downloads warning bypass
+  // prompt, or the prompt is closed by dismissing it. Only records the event
+  // and potentially sends a report.
+  RecordCancelBypassWarningPrompt(string id);
+
   DiscardDangerous(string id);
   RetryDownload(string id);
   Show(string id);

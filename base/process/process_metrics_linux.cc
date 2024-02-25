@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/cpu.h"
@@ -22,9 +23,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
-#include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -35,7 +36,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -118,37 +118,6 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
   return !cpu_per_thread.empty();
 }
 
-// For the /proc/self/io file to exist, the Linux kernel must have
-// CONFIG_TASK_IO_ACCOUNTING enabled.
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  StringPairs pairs;
-  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "io", &pairs)) {
-    return false;
-  }
-
-  io_counters->OtherOperationCount = 0;
-  io_counters->OtherTransferCount = 0;
-
-  for (const auto& pair : pairs) {
-    const std::string& key = pair.first;
-    const std::string& value_str = pair.second;
-    uint64_t* target_counter = nullptr;
-    if (key == "syscr")
-      target_counter = &io_counters->ReadOperationCount;
-    else if (key == "syscw")
-      target_counter = &io_counters->WriteOperationCount;
-    else if (key == "rchar")
-      target_counter = &io_counters->ReadTransferCount;
-    else if (key == "wchar")
-      target_counter = &io_counters->WriteTransferCount;
-    if (!target_counter)
-      continue;
-    bool converted = StringToUint64(value_str, target_counter);
-    DCHECK(converted);
-  }
-  return true;
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 uint64_t ProcessMetrics::GetVmSwapBytes() const {
   return internal::ReadProcStatusAndGetKbFieldAsSizeT(process_, "VmSwap") *
@@ -228,8 +197,16 @@ size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
     return 0;
-  return checked_cast<size_t>(meminfo.total - meminfo.free - meminfo.buffers -
-                              meminfo.cached);
+  return GetSystemCommitChargeFromMeminfo(meminfo);
+}
+
+size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
+  // TODO(crbug.com/315988925): This math is incorrect: `cached` can be very
+  // large so that `free` + `buffers` + `cached` > `total`. Replace this with a
+  // more meaningful metric or remove it. In the meantime, convert underflows to
+  // 0 instead of crashing.
+  return ClampedNumeric<size_t>(meminfo.total) - meminfo.free -
+         meminfo.buffers - meminfo.cached;
 }
 
 int ParseProcStatCPU(StringPiece input) {
@@ -790,7 +767,7 @@ bool GetSwapInfoImpl(SwapInfo* swap_info) {
   // Since ZRAM update, it shows the usage data in different places.
   // If file "/sys/block/zram0/mm_stat" exists, use the new way, otherwise,
   // use the old way.
-  static absl::optional<bool> use_new_zram_interface;
+  static std::optional<bool> use_new_zram_interface;
   FilePath zram_mm_stat_file("/sys/block/zram0/mm_stat");
   if (!use_new_zram_interface.has_value()) {
     use_new_zram_interface = PathExists(zram_mm_stat_file);

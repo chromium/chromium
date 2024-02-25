@@ -656,7 +656,7 @@ Instance* HprofParser::FindInstance(ObjectId id) {
 }
 
 bool HprofParser::SeekToFieldPosition(ClassInstance* instance,
-                                      base::StringPiece field_name) {
+                                      std::string_view field_name) {
   ClassObject* class_obj = FindClassObject(instance->class_id);
   if (class_obj == nullptr)
     return false;

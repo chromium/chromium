@@ -17,10 +17,10 @@
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,7 +28,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -37,18 +36,13 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 
 namespace base {
 class CommandLine;
 class FilePath;
 class TimeDelta;
 }  // namespace base
-
-namespace chromeos {
-class ScopedDisableCrosapiForTesting;
-}
 
 namespace ui {
 class ScopedAnimationDurationScaleMode;
@@ -57,6 +51,7 @@ class ScopedAnimationDurationScaleMode;
 namespace content {
 class BrowserMainParts;
 class ContentMainDelegate;
+class NoRendererCrashesAssertion;
 class WebContents;
 
 class BrowserTestBase : public ::testing::Test {
@@ -178,7 +173,7 @@ class BrowserTestBase : public ::testing::Test {
   // Sets expected browser exit code, in case it's different than 0 (success).
   void set_expected_exit_code(int code) { expected_exit_code_ = code; }
 
-  // Returns the embedded test server. Guaranteed to be non-NULL.
+  // Returns the HTTP embedded test server. Guaranteed to be non-NULL.
   const net::EmbeddedTestServer* embedded_test_server() const {
     return embedded_test_server_.get();
   }
@@ -248,7 +243,7 @@ class BrowserTestBase : public ::testing::Test {
   // CreatedBrowserMainParts().
   void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
 
-  // Embedded test server, cheap to create, started on demand.
+  // Embedded HTTP test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
   // Host resolver used during tests.
@@ -260,7 +255,7 @@ class BrowserTestBase : public ::testing::Test {
 
   // DoH configuration used during tests. When it contains a value,
   // `InitializeNetworkProcess` will pass it to the network service.
-  absl::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
+  std::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
       test_doh_config_;
 
   // A field trial list that's used to support field trials activated prior to
@@ -282,8 +277,7 @@ class BrowserTestBase : public ::testing::Test {
   // When verifying pixel output, animations are disabled to reduce flakiness.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       disable_layer_animations_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      disable_rich_animations_;
+  gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_;
 
   // When true, do compositing with the software backend instead of using GL.
   bool use_software_compositing_ = false;
@@ -295,10 +289,6 @@ class BrowserTestBase : public ::testing::Test {
   // class to ensure that SetUp was called. If it's not called, the test will
   // not run and report a false positive result.
   bool set_up_called_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedDisableCrosapiForTesting> disable_crosapi_;
-#endif
 
   std::unique_ptr<storage::QuotaSettings> quota_settings_;
 

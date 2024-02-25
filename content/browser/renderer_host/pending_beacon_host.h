@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PENDING_BEACON_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PENDING_BEACON_HOST_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 
 namespace network {
@@ -240,7 +240,7 @@ class Beacon : public blink::mojom::PendingBeacon {
   std::string content_type_;
   // The beacon data represented as a data element. If `method_` is GET, this
   // field should not be used.
-  absl::optional<network::DataElement> request_element_;
+  std::optional<network::DataElement> request_element_;
 };
 
 }  // namespace content

@@ -6,9 +6,6 @@
 
 namespace enterprise_connectors {
 
-const char kContextAwareAccessSignalsAllowlistPref[] =
-    "enterprise_connectors.device_trust.origins";
-
 const char kUserContextAwareAccessSignalsAllowlistPref[] =
     "enterprise_connectors.device_trust_user.origins";
 
@@ -16,7 +13,6 @@ const char kBrowserContextAwareAccessSignalsAllowlistPref[] =
     "enterprise_connectors.device_trust_browser.origins";
 
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
   registry->RegisterListPref(kUserContextAwareAccessSignalsAllowlistPref);
   registry->RegisterListPref(kBrowserContextAwareAccessSignalsAllowlistPref);
 }

@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_format.h"
 #include "mediapipe/calculators/tensor/inference_calculator.h"
@@ -74,7 +75,7 @@ tflite::gpu::BHWC BhwcFromTensorShape(const Tensor::Shape& shape) {
       break;
     default:
       // Handles 0 and >4.
-      LOG(FATAL)
+      ABSL_LOG(FATAL)
           << "Dimensions size must be in range [1,4] for GPU inference, but "
           << shape.dims.size() << " is provided";
   }
@@ -190,6 +191,11 @@ absl::Status InferenceCalculatorMetalImpl::Process(CalculatorContext* cc) {
     [output_encoder endEncoding];
   }
   [command_buffer commit];
+  // The below call is found (manual testing) to resolve flickering issues for
+  // some use cases where multiple Metal calculators are involved.
+  // TODO: investigate and ensure proper synchronization
+  // (e.g. fences/barriers/events).
+  [command_buffer waitUntilScheduled];
 
   kOutTensors(cc).Send(std::move(output_tensors));
   return absl::OkStatus();
@@ -207,9 +213,9 @@ absl::Status InferenceCalculatorMetalImpl::Close(CalculatorContext* cc) {
 
 absl::Status InferenceCalculatorMetalImpl::InitInterpreter(
     CalculatorContext* cc) {
-  ASSIGN_OR_RETURN(model_packet_, GetModelAsPacket(cc));
+  MP_ASSIGN_OR_RETURN(model_packet_, GetModelAsPacket(cc));
   const auto& model = *model_packet_.Get();
-  ASSIGN_OR_RETURN(auto op_resolver_packet, GetOpResolverAsPacket(cc));
+  MP_ASSIGN_OR_RETURN(auto op_resolver_packet, GetOpResolverAsPacket(cc));
   const auto& op_resolver = op_resolver_packet.Get();
   tflite::InterpreterBuilder interpreter_builder(model, op_resolver);
   AddDelegate(cc, &interpreter_builder);

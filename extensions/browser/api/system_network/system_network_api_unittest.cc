@@ -30,7 +30,7 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   socket_function->set_extension(empty_extension.get());
   socket_function->set_has_callback(true);
 
-  absl::optional<base::Value> result(RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_function.get(), "[]", browser_context()));
   ASSERT_TRUE(result->is_list());
 
@@ -40,16 +40,16 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
 
   for (const auto& network_interface_value : result->GetList()) {
     ASSERT_TRUE(network_interface_value.is_dict());
-    NetworkInterface network_interface;
-    ASSERT_TRUE(NetworkInterface::Populate(network_interface_value.GetDict(),
-                                           network_interface));
+    auto network_interface =
+        NetworkInterface::FromValue(network_interface_value.GetDict());
+    ASSERT_TRUE(network_interface);
 
-    LOG(INFO) << "Network interface: address=" << network_interface.address
-              << ", name=" << network_interface.name
-              << ", prefix length=" << network_interface.prefix_length;
-    ASSERT_NE(std::string(), network_interface.address);
-    ASSERT_NE(std::string(), network_interface.name);
-    ASSERT_LE(0, network_interface.prefix_length);
+    LOG(INFO) << "Network interface: address=" << network_interface->address
+              << ", name=" << network_interface->name
+              << ", prefix length=" << network_interface->prefix_length;
+    ASSERT_NE(std::string(), network_interface->address);
+    ASSERT_NE(std::string(), network_interface->name);
+    ASSERT_LE(0, network_interface->prefix_length);
   }
 }
 

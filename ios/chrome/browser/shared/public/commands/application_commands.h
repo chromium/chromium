@@ -12,114 +12,23 @@
 
 class GURL;
 @class OpenNewTabCommand;
-@class ShowSigninCommand;
-@class StartVoiceSearchCommand;
-@class UIViewController;
-enum class DefaultBrowserPromoSource;
-namespace syncer {
-enum class TrustedVaultUserActionTriggerForUMA;
-}  // namespace syncer
-namespace autofill {
-class CreditCard;
-}  // namespace autofill
 namespace password_manager {
-struct CredentialUIEntry;
 enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
-
-// This protocol groups commands that are part of ApplicationCommands, but
-// may also be forwarded directly to a settings navigation controller.
-@protocol ApplicationSettingsCommands
-
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the accounts settings UI, presenting from `baseViewController`. If
-// `baseViewController` is nil BVC will be used as presenterViewController.
-- (void)showAccountsSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Google services settings UI, presenting from `baseViewController`.
-// If `baseViewController` is nil BVC will be used as presenterViewController.
-- (void)showGoogleServicesSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Sync settings UI, presenting from `baseViewController`.
-// If `baseViewController` is nil BVC will be used as presenterViewController.
-- (void)showSyncSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the sync encryption passphrase UI, presenting from
-// `baseViewController`.
-- (void)showSyncPassphraseSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// TODO(crbug.com/1406871): Remove the `startPasswordCheck` parameter when
-// kIOSPasswordCheckup feature is enabled by default.
-// Shows the list of saved passwords in the settings. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the saved passwords view. `startPasswordCheck` indicates whether a
-// password check should be started when the saved passwords are shown.
-- (void)showSavedPasswordsSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton
-                                  startPasswordCheck:(BOOL)startPasswordCheck;
-
-// Shows the password details page for a credential.
-// `showCancelButton` indicates whether a cancel button should be added as the
-// left navigation item of the password details view.
-- (void)showPasswordDetailsForCredential:
-            (password_manager::CredentialUIEntry)credential
-                        showCancelButton:(BOOL)showCancelButton;
-
-// Shows the list of profiles (addresses) in the settings.
-- (void)showProfileSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// Shows the list of credit cards in the settings.
-- (void)showCreditCardSettings;
-
-// Shows the credit card details view.
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard;
-
-// Shows the settings page informing the user how to set Chrome as the default
-// browser.
-- (void)showDefaultBrowserSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                        sourceForUMA:
-                                            (DefaultBrowserPromoSource)source;
-
-// Shows the settings page allowing the user to clear their browsing data.
-- (void)showClearBrowsingDataSettings;
-
-// Shows the Safety Check page and start Safety Check.
-- (void)showSafetyCheckSettingsAndStartSafetyCheck;
-
-// Shows the Safe Browsing page.
-- (void)showSafeBrowsingSettings;
-
-// Shows the Password Manager's search page.
-- (void)showPasswordSearchPage;
-
-// Shows the Tab Pickup Settings screen.
-- (void)showTabPickupSettings;
-
-// Shows the Content Settings page in the settings on top of baseViewController.
-- (void)showContentsSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-@end
+@class ShowSigninCommand;
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+namespace syncer {
+enum class TrustedVaultUserActionTriggerForUMA;
+}  // namespace syncer
+@class UIViewController;
 
 // Protocol for commands that will generally be handled by the application,
-// rather than a specific tab; in practice this means the MainController
+// rather than a specific tab; in practice this means the SceneController
 // instance.
-// This protocol includes all of the methods in ApplicationSettingsCommands; an
-// object that implements the methods in this protocol should be able to forward
-// ApplicationSettingsCommands to the settings view controller if necessary.
-
-@protocol ApplicationCommands <NSObject, ApplicationSettingsCommands>
+@protocol ApplicationCommands
 
 // Dismisses all modal dialogs with a completion block that is called when
 // modals are dismissed (animations done).
@@ -130,7 +39,7 @@ enum class WarningType;
     (password_manager::PasswordCheckReferrer)referrer;
 
 // Opens the Password Issues list displaying compromised, weak or reused
-// credentials for `referrer`.
+// credentials for `warningType` and `referrer`.
 - (void)
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)
@@ -149,7 +58,10 @@ enum class WarningType;
                                                  trigger:
                                                      (syncer::
                                                           TrustedVaultUserActionTriggerForUMA)
-                                                         trigger;
+                                                         trigger
+                                             accessPoint:
+                                                 (signin_metrics::AccessPoint)
+                                                     accessPoint;
 
 // Presents the Trusted Vault degraded recoverability (to enroll additional
 // recovery factors).
@@ -161,7 +73,11 @@ enum class WarningType;
                                                               trigger:
                                                                   (syncer::
                                                                        TrustedVaultUserActionTriggerForUMA)
-                                                                      trigger;
+                                                                      trigger
+                                                          accessPoint:
+                                                              (signin_metrics::
+                                                                   AccessPoint)
+                                                                  accessPoint;
 
 // Starts a voice search on the current BVC.
 - (void)startVoiceSearch;
@@ -186,10 +102,6 @@ enum class WarningType;
 - (void)displayRegularTabSwitcherInGridLayout;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Autofill Settings UI, presenting from `baseViewController`.
-- (void)showAutofillSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
 // Shows the settings Privacy UI.
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;

@@ -58,8 +58,11 @@ const base::FilePath::StringPieceType kPersistentTrialTokenDbPath =
 std::unique_ptr<LevelDbPersistenceProvider::DbLoadResult> BuildMapFromDb(
     std::unique_ptr<std::vector<origin_trials_pb::TrialTokenDbEntries>>
         entries) {
-  // Build a new map of values
-  std::unique_ptr<OriginTrialMap> new_map = std::make_unique<OriginTrialMap>();
+  // Build new maps
+  std::unique_ptr<OriginTrialMap> new_origin_trial_map =
+      std::make_unique<OriginTrialMap>();
+  std::unique_ptr<SiteOriginsMap> new_site_origins_map =
+      std::make_unique<SiteOriginsMap>();
 
   // Keep track of values to clean up
   blink::TrialTokenValidator validator;
@@ -72,9 +75,10 @@ std::unique_ptr<LevelDbPersistenceProvider::DbLoadResult> BuildMapFromDb(
   // Move values out of the protobuffer to avoid allocating new strings
   for (auto& entry : *entries) {
     origin_trials_pb::OriginMessage* source_origin = entry.mutable_origin();
-    url::Origin key = url::Origin::CreateFromNormalizedTuple(
+    url::Origin origin = url::Origin::CreateFromNormalizedTuple(
         std::move(*source_origin->mutable_scheme()),
         std::move(*source_origin->mutable_host()), source_origin->port());
+    SiteKey mapKey = LevelDbPersistenceProvider::GetSiteKey(origin);
     base::flat_set<PersistedTrialToken> new_tokens;
     auto* mutable_tokens = entry.mutable_tokens();
     size_t stored_count = entry.mutable_tokens()->size();
@@ -94,30 +98,43 @@ std::unique_ptr<LevelDbPersistenceProvider::DbLoadResult> BuildMapFromDb(
             it->partition_sites().size());
         UMA_HISTOGRAM_BOOLEAN(
             "OriginTrials.PersistentOriginTrial.TokenHasFirstPartyPartition",
-            HasFirstPartyPartition(key, it->partition_sites()));
+            HasFirstPartyPartition(origin, it->partition_sites()));
         // Move the strings out of the protobuffer to avoid allocations
         base::flat_set<std::string> partition_sites;
         for (std::string& site : *it->mutable_partition_sites()) {
           partition_sites.insert(std::move(site));
         }
-        new_tokens.emplace(std::move(*it->mutable_trial_name()), token_expiry,
+        new_tokens.emplace(it->match_subdomains(),
+                           std::move(*it->mutable_trial_name()), token_expiry,
                            usage_restriction,
                            std::move(*it->mutable_token_signature()),
                            std::move(partition_sites));
       }
     }
 
-    if (new_tokens.empty())
-      keys_to_delete->push_back(key.Serialize());
-    else if (new_tokens.size() < stored_count)
-      entries_to_update->insert_or_assign(key, new_tokens);
+    if (new_tokens.empty()) {
+      keys_to_delete->push_back(origin.Serialize());
+    } else if (new_tokens.size() < stored_count) {
+      entries_to_update->insert_or_assign(origin, new_tokens);
+    }
 
-    if (!new_tokens.empty())
-      new_map->insert_or_assign(std::move(key), std::move(new_tokens));
+    if (!new_tokens.empty()) {
+      new_origin_trial_map->insert_or_assign(origin, std::move(new_tokens));
+
+      SiteKey site_key = LevelDbPersistenceProvider::GetSiteKey(origin);
+      auto find_it = new_site_origins_map->find(site_key);
+      if (find_it == new_site_origins_map->end()) {
+        new_site_origins_map->insert_or_assign(
+            std::move(site_key),
+            base::flat_set<url::Origin>({std::move(origin)}));
+      } else {
+        find_it->second.insert(std::move(origin));
+      }
+    }
   }
   return std::make_unique<LevelDbPersistenceProvider::DbLoadResult>(
-      std::move(new_map), std::move(keys_to_delete),
-      std::move(entries_to_update));
+      std::move(new_origin_trial_map), std::move(keys_to_delete),
+      std::move(entries_to_update), std::move(new_site_origins_map));
 }
 
 }  // namespace
@@ -141,6 +158,7 @@ LevelDbPersistenceProvider::LevelDbPersistenceProvider(
     : db_loaded_(false),
       db_(std::move(database)),
       trial_status_cache_(std::make_unique<OriginTrialMap>()),
+      site_origins_map_(std::make_unique<SiteOriginsMap>()),
       database_load_start_(base::TimeTicks::Now()),
       lookups_before_db_loaded_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -207,7 +225,8 @@ void LevelDbPersistenceProvider::OnMapBuild(
   MergeCacheIntoLoadResult(*result);
 
   // Activate the new cache.
-  trial_status_cache_.swap(result->result_map);
+  trial_status_cache_.swap(result->result_origin_trial_map);
+  site_origins_map_.swap(result->result_site_origins_map);
 
   // Update the database with any changes or deletions caused by expired
   // tokens or pre-load writes.
@@ -234,16 +253,33 @@ void LevelDbPersistenceProvider::OnMapBuild(
 
 void LevelDbPersistenceProvider::MergeCacheIntoLoadResult(
     DbLoadResult& result) {
-  // Merge the |trial_status_cache_| into the |result.result_map| to update the
-  // entries loaded from the database.
-  for (const auto& [cache_origin, cache_tokens] : *trial_status_cache_) {
-    auto find_iter = result.result_map->find(cache_origin);
-    if (find_iter == result.result_map->end()) {
-      // This is a completely new origin, add it directly.
-      (*result.result_map)[cache_origin] = cache_tokens;
+  // Merge the `site_origins_map_` into the `result.result_site_origins_map`
+  // to update the mappings created loading the token entries from the database.
+  for (const auto& [cache_site, cache_origins] : *site_origins_map_) {
+    auto find_iter = result.result_site_origins_map->find(cache_site);
+    if (find_iter == result.result_site_origins_map->end()) {
+      // This is a completely new site, add it directly.
+      (*result.result_site_origins_map)[cache_site] = cache_origins;
+
     } else {
-      // The |result.result_map| already has a set of tokens for the
-      // |cache_origin|, merge the |cache_tokens| into the |result.result_map|.
+      // The `result.result_site_origins_map` already has a set of origins for
+      // the `cache_site`, merge the `cache_origins` into it.
+      find_iter->second.insert(cache_origins.begin(), cache_origins.end());
+    }
+  }
+
+  // Merge the |trial_status_cache_| into the |result.result_origin_trial_map|
+  // to update the entries loaded from the database.
+  for (const auto& [cache_origin, cache_tokens] : *trial_status_cache_) {
+    auto find_iter = result.result_origin_trial_map->find(cache_origin);
+    if (find_iter == result.result_origin_trial_map->end()) {
+      // This is a completely new origin, add it directly.
+      (*result.result_origin_trial_map)[cache_origin] = cache_tokens;
+
+    } else {
+      // The |result.result_origin_trial_map| already has a set of tokens for
+      // the |cache_origin|, merge the |cache_tokens| into the
+      // |result.result_origin_trial_map|.
       base::flat_set<PersistedTrialToken>& destination_set = find_iter->second;
       for (const PersistedTrialToken& token : cache_tokens) {
         auto token_iter = destination_set.find(token);
@@ -263,7 +299,42 @@ void LevelDbPersistenceProvider::MergeCacheIntoLoadResult(
   // modified entries in |result.updated_entries|.
   for (const auto& [cache_origin, ignored] : *trial_status_cache_) {
     (*result.updated_entries)[cache_origin] =
-        (*result.result_map)[cache_origin];
+        (*result.result_origin_trial_map)[cache_origin];
+  }
+}
+
+void LevelDbPersistenceProvider::UpdateSiteToOriginsMap(
+    const url::Origin& origin,
+    bool insert) {
+  // If `insert` is false, removes `origin` from the set of origins for its
+  // SiteKey. If `insert` is true, adds `origin` to the set of origins for its
+  // SiteKey.
+  SiteKey site_key = GetSiteKey(origin);
+  auto find_it = site_origins_map_->find(site_key);
+  bool site_mapped = (find_it != site_origins_map_->end());
+  bool origin_mapped = (site_mapped && find_it->second.contains(origin));
+
+  bool needs_create = insert && !site_mapped;
+  bool needs_update = insert && (site_mapped && !origin_mapped);
+  bool needs_delete = !insert && origin_mapped;
+
+  if (needs_delete) {
+    // There exists an origin set for `site_key` and `origin` needs to be
+    // removed from it.
+    find_it->second.erase(origin);
+
+    if (find_it->second.empty()) {
+      site_origins_map_->erase(find_it);
+    }
+  } else if (needs_update) {
+    // There exists an origin set for `site_key` and `origin` needs to be
+    // added to it.
+    find_it->second.insert(origin);
+  } else if (needs_create) {
+    // There is not an existing origin set for `site_key`, but one needs to be
+    // created (containing `origin`).
+    site_origins_map_->insert_or_assign(find_it, site_key,
+                                        base::flat_set<url::Origin>({origin}));
   }
 }
 
@@ -278,6 +349,26 @@ LevelDbPersistenceProvider::GetPersistentTrialTokens(
   if (find_it != trial_status_cache_->end())
     return find_it->second;
   return base::flat_set<PersistedTrialToken>();
+}
+
+SiteOriginTrialTokens
+LevelDbPersistenceProvider::GetPotentialPersistentTrialTokens(
+    const url::Origin& origin) {
+  SiteOriginTrialTokens site_tokens;
+  auto site_iter = site_origins_map_->find(GetSiteKey(origin));
+
+  if (site_iter == site_origins_map_->end()) {
+    return site_tokens;
+  }
+
+  for (const auto& token_origin : site_iter->second) {
+    auto token_origin_iter = trial_status_cache_->find(token_origin);
+    if (token_origin_iter != trial_status_cache_->end()) {
+      site_tokens.emplace_back(token_origin, token_origin_iter->second);
+    }
+  }
+
+  return site_tokens;
 }
 
 void LevelDbPersistenceProvider::SavePersistentTrialTokens(
@@ -298,6 +389,8 @@ void LevelDbPersistenceProvider::SavePersistentTrialTokens(
     trial_status_cache_->insert_or_assign(find_it, origin, tokens);
   else
     trial_status_cache_->erase(find_it);
+
+  UpdateSiteToOriginsMap(origin, !needs_delete);
 
   if (db_loaded_) {
     std::string origin_key = origin.Serialize();
@@ -320,6 +413,7 @@ void LevelDbPersistenceProvider::SavePersistentTrialTokens(
 void LevelDbPersistenceProvider::ClearPersistedTokens() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   trial_status_cache_ = std::make_unique<OriginTrialMap>();
+  site_origins_map_ = std::make_unique<SiteOriginsMap>();
   db_->UpdateEntriesWithRemoveFilter(
       std::make_unique<ProtoKeyEntryVector>(),
       base::BindRepeating([](const std::string& key) { return true; }),
@@ -327,12 +421,14 @@ void LevelDbPersistenceProvider::ClearPersistedTokens() {
 }
 
 LevelDbPersistenceProvider::DbLoadResult::DbLoadResult(
-    std::unique_ptr<OriginTrialMap> new_map,
+    std::unique_ptr<OriginTrialMap> new_origin_trial_map,
     std::unique_ptr<ProtoKeyVector> keys_to_delete,
-    std::unique_ptr<OriginTrialMap> entries_to_update)
-    : result_map(std::move(new_map)),
+    std::unique_ptr<OriginTrialMap> entries_to_update,
+    std::unique_ptr<SiteOriginsMap> new_site_origins_map)
+    : result_origin_trial_map(std::move(new_origin_trial_map)),
       expired_keys(std::move(keys_to_delete)),
-      updated_entries(std::move(entries_to_update)) {}
+      updated_entries(std::move(entries_to_update)),
+      result_site_origins_map(std::move(new_site_origins_map)) {}
 
 LevelDbPersistenceProvider::DbLoadResult::~DbLoadResult() = default;
 

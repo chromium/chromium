@@ -33,7 +33,7 @@ class LaserPointerControllerTestApi {
   const FastInkPoints& predicted_laser_points() const;
 
  private:
-  raw_ptr<LaserPointerController, ExperimentalAsh> instance_;
+  raw_ptr<LaserPointerController> instance_;
 };
 
 }  // namespace ash

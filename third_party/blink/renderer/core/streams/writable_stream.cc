@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -50,7 +49,7 @@ class WritableStream::PendingAbortRequest final
   PendingAbortRequest(const PendingAbortRequest&) = delete;
   PendingAbortRequest& operator=(const PendingAbortRequest&) = delete;
 
-  StreamPromiseResolver* GetPromise() { return promise_; }
+  StreamPromiseResolver* GetPromise() { return promise_.Get(); }
   v8::Local<v8::Value> Reason(v8::Isolate* isolate) {
     return reason_.Get(isolate);
   }
@@ -213,8 +212,9 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
     size_t high_water_mark,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "WritableStream");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      "WritableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -275,7 +275,8 @@ void WritableStream::Serialize(ScriptState* script_state,
   // 7. Let promise be ! ReadableStreamPipeTo(readable, value, false, false,
   //    false).
   auto promise = ReadableStream::PipeTo(script_state, readable, this,
-                                        MakeGarbageCollected<PipeOptions>());
+                                        MakeGarbageCollected<PipeOptions>(),
+                                        exception_state);
 
   // 8. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();

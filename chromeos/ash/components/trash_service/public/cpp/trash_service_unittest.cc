@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -45,8 +45,8 @@ struct TrashInfoContents {
   }
 
   base::Time GetDeletionDate() const {
-    std::vector<base::StringPiece> key_value =
-        base::SplitStringPiece(base::StringPiece(deletion_date), "=",
+    std::vector<std::string_view> key_value =
+        base::SplitStringPiece(std::string_view(deletion_date), "=",
                                base::WhitespaceHandling::TRIM_WHITESPACE,
                                base::SplitResult::SPLIT_WANT_ALL);
     EXPECT_EQ(2UL, key_value.size());
@@ -56,8 +56,8 @@ struct TrashInfoContents {
   }
 
   base::FilePath GetRestorePath() const {
-    std::vector<base::StringPiece> key_value =
-        base::SplitStringPiece(base::StringPiece(restore_path), "=",
+    std::vector<std::string_view> key_value =
+        base::SplitStringPiece(std::string_view(restore_path), "=",
                                base::WhitespaceHandling::TRIM_WHITESPACE,
                                base::SplitResult::SPLIT_WANT_ALL);
     EXPECT_EQ(2UL, key_value.size());

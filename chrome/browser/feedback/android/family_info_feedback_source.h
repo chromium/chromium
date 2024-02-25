@@ -43,12 +43,12 @@ class FamilyInfoFeedbackSource {
   friend class FamilyInfoFeedbackSourceForChildFilterBehaviorTest;
 
   void OnResponse(
-      supervised_user::ProtoFetcherStatus status,
+      const supervised_user::ProtoFetcherStatus& status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
   void OnSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
-  void OnFailure(supervised_user::ProtoFetcherStatus status);
+  void OnFailure(const supervised_user::ProtoFetcherStatus& status);
 
   // Cleans up following the call to ListFamilyMembers
   void OnComplete();

@@ -5,9 +5,9 @@
 #ifndef NET_BASE_HOST_MAPPING_RULES_H_
 #define NET_BASE_HOST_MAPPING_RULES_H_
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -41,7 +41,7 @@ class NET_EXPORT_PRIVATE HostMappingRules {
   // If `url` is rewritten, returns `kRewritten`. If no matching rule is found,
   // returns `kNoMatchingRule` and `url` is not modified. If a matching rule is
   // found but it results in an invalid URL, e.g. if the rule maps to
-  // "~NOTFOUND", returns `kInvalidRewrite` and `url` is not modified.
+  // "^NOTFOUND", returns `kInvalidRewrite` and `url` is not modified.
   RewriteResult RewriteUrl(GURL& url) const;
 
   // Adds a rule to this mapper. The format of the rule can be one of:
@@ -52,10 +52,10 @@ class NET_EXPORT_PRIVATE HostMappingRules {
   // The <replacement_host> can be either a hostname, or an IP address literal.
   //
   // Returns true if the rule was successfully parsed and added.
-  bool AddRuleFromString(base::StringPiece rule_string);
+  bool AddRuleFromString(std::string_view rule_string);
 
   // Sets the rules from a comma separated list of rules.
-  void SetRulesFromString(base::StringPiece rules_string);
+  void SetRulesFromString(std::string_view rules_string);
 
  private:
   struct MapRule;

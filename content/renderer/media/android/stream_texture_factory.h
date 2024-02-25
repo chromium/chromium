@@ -36,11 +36,11 @@ class StreamTextureFactory;
 // when a new video frame is available.
 class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
  public:
-  using CreateVideoFrameCB = base::RepeatingCallback<void(
-      const gpu::Mailbox& mailbox,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const absl::optional<gpu::VulkanYCbCrInfo>&)>;
+  using CreateVideoFrameCB =
+      base::RepeatingCallback<void(const gpu::Mailbox& mailbox,
+                                   const gfx::Size& coded_size,
+                                   const gfx::Rect& visible_rect,
+                                   const std::optional<gpu::VulkanYCbCrInfo>&)>;
 
   StreamTextureProxy() = delete;
   StreamTextureProxy(const StreamTextureProxy&) = delete;
@@ -62,7 +62,7 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
+      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
 
   // Sends an IPC to the GPU process.
   // Asks the StreamTexture to forward its SurfaceTexture to the
@@ -131,7 +131,7 @@ class CONTENT_EXPORT StreamTextureFactory
   ~StreamTextureFactory();
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace content

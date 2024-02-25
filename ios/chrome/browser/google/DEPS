@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/search_engines",
-  "+ios/chrome/browser/signin",
-]

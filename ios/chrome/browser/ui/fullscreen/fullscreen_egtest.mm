@@ -9,9 +9,10 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
@@ -97,18 +98,16 @@ void WaitforPDFExtensionView() {
   [super setUp];
 
   // Disable translate to avoid the info bar that block the top toolbar.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
+
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
 }
 
 - (void)tearDown {
   // Reactivate translation.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
   [super tearDown];
 }
 
@@ -160,7 +159,8 @@ void WaitforPDFExtensionView() {
   WaitforPDFExtensionView();
 
   // Test that the toolbar is hidden after a user swipes up.
-  HideToolbarUsingUI();
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   // Test that the toolbar is visible after a user swipes down.
@@ -169,7 +169,8 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Test that the toolbar is hidden after a user swipes up.
-  HideToolbarUsingUI();
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 }
 
@@ -411,6 +412,31 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
+// Tests collapsing of toolbar when a user scroll on a long page and rotate.
+- (void)testCollapseToolbarOnScrollAndRotate {
+  std::map<GURL, std::string> responses;
+  const GURL URL = web::test::HttpServer::MakeUrl("http://tallpage");
+  // A page long enough to ensure that the toolbar goes away on scrolling.
+  responses[URL] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+  web::test::SetUpSimpleHttpServer(responses);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Scroll and check that toolbar is collapsed.
+  HideToolbarUsingUI();
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Rotate and check that toolbar is still collapsed.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Cancel the rotation.
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+}
+
 @end
 
 #pragma mark - Smooth scrolling enabled Tests
@@ -429,6 +455,33 @@ void WaitforPDFExtensionView() {
 
 // This is currently needed to prevent this test case from being ignored.
 - (void)testEmpty {
+}
+
+@end
+
+#pragma mark - Bottom omnibox Tests
+
+// Fullscreens tests for Chrome with bottom omnibox enabled by default.
+@interface FullscreenBottomOmniboxTestCase : ZZZFullscreenTestCase
+@end
+
+@implementation FullscreenBottomOmniboxTestCase
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+- (void)testLongPDFScroll {
+  // TODO(b/326032734): reenable this test.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPhone.");
+  }
+  [super testLongPDFScroll];
 }
 
 @end

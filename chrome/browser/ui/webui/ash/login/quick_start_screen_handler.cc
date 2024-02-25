@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "quick_start_screen_handler.h"
 
 namespace ash {
 
@@ -32,41 +33,68 @@ void QuickStartScreenHandler::SetDiscoverableName(
   CallExternalAPI("setDiscoverableName", discoverable_name);
 }
 
+void QuickStartScreenHandler::ShowInitialUiStep() {
+  CallExternalAPI("showInitialUiStep");
+}
+
+void QuickStartScreenHandler::ShowBluetoothDialog() {
+  CallExternalAPI("showBluetoothDialog");
+}
+
+void QuickStartScreenHandler::ShowConnectingToPhoneStep() {
+  CallExternalAPI("showConnectingToPhoneStep");
+}
+
 void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }
 
-void QuickStartScreenHandler::ShowConnectedToWifi(
-    std::string ssid,
-    absl::optional<std::string> password) {
-  if (password.has_value()) {
-    CallExternalAPI("showConnectedToWifi", ssid, password.value());
-  } else {
-    CallExternalAPI("showConnectedToWifi", ssid);
-  }
+void QuickStartScreenHandler::ShowConfirmGoogleAccount() {
+  CallExternalAPI("showConfirmGoogleAccount");
 }
 
-void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
-  CallExternalAPI("showTransferringGaiaCredentials");
+void QuickStartScreenHandler::ShowSigningInStep() {
+  CallExternalAPI("showSigningInStep");
 }
 
-void QuickStartScreenHandler::ShowFidoAssertionReceived(std::string email) {
-  CallExternalAPI("showFidoAssertionReceived", email);
+void QuickStartScreenHandler::ShowCreatingAccountStep() {
+  CallExternalAPI("showCreatingAccountStep");
+}
+
+void QuickStartScreenHandler::ShowSetupCompleteStep() {
+  CallExternalAPI("showSetupCompleteStep");
+}
+
+void QuickStartScreenHandler::SetUserEmail(const std::string email) {
+  CallExternalAPI("setUserEmail", email);
+}
+
+void QuickStartScreenHandler::SetUserFullName(const std::string full_name) {
+  CallExternalAPI("setUserFullName", full_name);
+}
+
+void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
+  CallExternalAPI("setUserAvatarUrl", avatar_url);
+}
+
+base::WeakPtr<QuickStartView> QuickStartScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("quickStartSetupTitle", IDS_LOGIN_QUICK_START_SETUP_TITLE);
-  builder->Add("quickStartSetupSubtitleQrCode",
-               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_QR_CODE);
-  builder->Add("quickStartSetupSubtitlePinCode",
-               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_PIN_CODE);
+  builder->Add("quickStartSetupQrTitle", IDS_LOGIN_QUICK_START_SETUP_QR_TITLE);
+  builder->Add("quickStartSetupPinTitle",
+               IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE);
+  builder->Add("quickStartSetupSubtitle", IDS_LOGIN_QUICK_START_SETUP_SUBTITLE);
+  builder->Add("quickStartSetupContentFooterTurnOnWifi",
+               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT);
+  builder->Add("quickStartSetupContentFooterFollowInstructions",
+               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS);
   builder->Add("quickStartWifiTransferTitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("quickStartWifiTransferSubtitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
-  builder->Add("quickStartNetworkNeededSubtitle",
-               IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE);
   builder->Add("quickStartStartAfterResumeTitle",
                IDS_LOGIN_QUICK_START_RESUME_AFTER_REBOOT_TITLE);
   builder->Add("quickStartStartAfterResumeSubtitle",
@@ -75,10 +103,26 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE);
   builder->Add("quickStartAccountTransferSubtitle",
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE);
+  builder->Add("quickStartSetupCompleteTitle",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_TITLE);
+  builder->Add("quickStartSetupCompleteSubtitle",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE);
   builder->Add("quickStartSetupFromSigninTitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE);
   builder->Add("quickStartSetupFromSigninSubtitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_SUBTITLE);
+  builder->Add("quickStartBluetoothTitle",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_TITLE);
+  builder->Add("quickStartBluetoothContent",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CONTENT);
+  builder->Add("quickStartBluetoothCancelButton",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL);
+  builder->Add("quickStartBluetoothEnableButton",
+               IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE);
+  builder->Add("quickStartConfirmAccountTitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_TITLE);
+  builder->Add("quickStartConfirmAccountSubtitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_SUBTITLE);
 }
 
 }  // namespace ash

@@ -140,6 +140,11 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
 
+  virtual void Minimize(LocalFrame&) = 0;
+  virtual void Maximize(LocalFrame&) = 0;
+  virtual void Restore(LocalFrame&) = 0;
+  virtual void SetResizable(bool resizable, LocalFrame&) = 0;
+
   // For non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. This informs the client of the area that needs to be redrawn.
   virtual void InvalidateContainer() = 0;
@@ -171,6 +176,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void TakeFocus(mojom::blink::FocusType) = 0;
 
   virtual void SetKeyboardFocusURL(Element*) {}
+
+  // Returns true if the page should support drag regions via the app-region
+  // CSS property.
+  virtual bool SupportsAppRegion() = 0;
 
   // Allow document lifecycle updates to be run in order to produce composited
   // outputs. Updates are blocked from occurring during loading navigation in
@@ -212,7 +221,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // compositing.
   // Returns null if the compositing stack has not been initialized yet.
   // |frame| must be a local frame.
-  virtual absl::optional<int> GetMaxRenderBufferBounds(
+  virtual std::optional<int> GetMaxRenderBufferBounds(
       LocalFrame& frame) const = 0;
 
   // Start a system drag and drop operation.
@@ -262,18 +271,19 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                              const gfx::PointF& position_in_viewport,
                              const gfx::Vector2dF& velocity_in_viewport) = 0;
 
-  // Causes a gesture event of |injected_type| to be dispatched at a later
-  // point in time. |injected_type| is required to be one of
-  // GestureScroll{Begin,Update,End}. If the main thread is currently handling
-  // an input event, the gesture will be dispatched immediately after the
-  // current event is finished being processed.
+  // For a scrollbar scroll action, injects a gesture event of |injected_type|
+  // to be dispatched at a later point in time. |injected_type| is required to
+  // be one of GestureScroll{Begin,Update,End}. If the main thread is currently
+  // handling an input event, the gesture will be dispatched immediately after
+  // the current event is finished being processed.
   // If there is no input event being handled, the gesture is queued up
   // on the main thread's input event queue.
   // The dispatched gesture will scroll the ScrollableArea identified by
   // |scrollable_area_element_id| by the given delta+granularity.
-  virtual void InjectGestureScrollEvent(
+  // See also InputHandlerProxy::InjectScrollbarGestureScroll() which may
+  // shortcut callers of this function for composited scrollbars.
+  virtual void InjectScrollbarGestureScroll(
       LocalFrame& local_frame,
-      WebGestureDevice device,
       const gfx::Vector2dF& delta,
       ui::ScrollGranularity granularity,
       CompositorElementId scrollable_area_element_id,
@@ -316,7 +326,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                     LocalFrame*,
                                     bool is_reload);
 
-  virtual void CloseWindowSoon() = 0;
+  virtual void CloseWindow() = 0;
 
   bool OpenJavaScriptAlert(LocalFrame*, const String&);
   bool OpenJavaScriptConfirm(LocalFrame*, const String&);
@@ -490,8 +500,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual bool IsChromeClientImpl() const { return false; }
 
-  virtual void DidAddOrRemoveFormRelatedElementsAfterLoad(LocalFrame*) {}
+  virtual void DidChangeFormRelatedElementDynamically(
+      LocalFrame*,
+      HTMLElement*,
+      WebFormRelatedChangeType) {}
   virtual void DidChangeValueInTextField(HTMLFormControlElement&) {}
+  virtual void DidUserChangeContentEditableContent(Element&) {}
   virtual void DidEndEditingOnTextField(HTMLInputElement&) {}
   virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,
                                               KeyboardEvent&) {}

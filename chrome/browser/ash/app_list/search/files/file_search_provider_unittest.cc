@@ -54,9 +54,9 @@ class FileSearchProviderTest : public testing::Test,
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    provider_ = std::make_unique<FileSearchProvider>(profile_.get());
-
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<FileSearchProvider>(profile_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
 
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     provider_->SetRootPathForTesting(scoped_temp_dir_.GetPath());
@@ -80,6 +80,10 @@ class FileSearchProviderTest : public testing::Test,
     Wait();
   }
 
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
+
   const SearchProvider::Results& LastResults() {
     return search_controller_->last_results();
   }
@@ -91,7 +95,7 @@ class FileSearchProviderTest : public testing::Test,
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<FileSearchProvider> provider_;
+  raw_ptr<FileSearchProvider> provider_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
@@ -104,7 +108,7 @@ TEST_P(FileSearchProviderTest, SearchResultsMatchQuery) {
   WriteFile("no_match.png");
   WriteFile("my_file_2.png");
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("file_1.txt"),
@@ -115,7 +119,7 @@ TEST_P(FileSearchProviderTest, SearchIsCaseInsensitive) {
   WriteFile("FILE_1.png");
   WriteFile("FiLe_2.Png");
 
-  provider_->Start(u"fIle");
+  StartSearch(u"fIle");
   Wait();
 
   EXPECT_THAT(LastResults(),
@@ -126,7 +130,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentAndCaseInsensitive) {
   WriteFile("FĪLE_1.png");
   WriteFile("FīLe_2.Png");
 
-  provider_->Start(u"fīle");
+  StartSearch(u"fīle");
   Wait();
 
   EXPECT_THAT(LastResults(),
@@ -141,7 +145,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentInsensitive) {
   WriteFile("FiLË_5.png");
   WriteFile("FILê_6.Png");
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   EXPECT_THAT(LastResults(),
@@ -155,7 +159,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentHonored) {
   WriteFile("FīLe_2.Png");
   WriteFile("file_3.png");
 
-  provider_->Start(u"fīle");
+  StartSearch(u"fīle");
   Wait();
 
   EXPECT_THAT(LastResults(),
@@ -165,7 +169,7 @@ TEST_P(FileSearchProviderTest, SearchIsAccentHonored) {
 TEST_P(FileSearchProviderTest, SearchDirectories) {
   CreateDirectory("my_folder");
 
-  provider_->Start(u"my_folder");
+  StartSearch(u"my_folder");
   Wait();
 
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("my_folder")));
@@ -174,7 +178,7 @@ TEST_P(FileSearchProviderTest, SearchDirectories) {
 TEST_P(FileSearchProviderTest, ResultMetadataTest) {
   WriteFile("file.txt");
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   ASSERT_TRUE(LastResults().size() == 1u);
@@ -196,7 +200,7 @@ TEST_P(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
   TouchFile(Path("file.png"), earliest_time, time);
   TouchFile(Path("file.pdf"), earlier_time, time);
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   ASSERT_TRUE(LastResults().size() == 3u);
@@ -229,7 +233,7 @@ TEST_P(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   TouchFile(Path("file"), earlier_time, time);
 
   // Match them perfectly, so both score 1.0.
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   ASSERT_EQ(LastResults().size(), 2u);
@@ -258,7 +262,7 @@ TEST_P(FileSearchProviderTest, ResultsNotReturnedAfterClearingSearch) {
 
   // Start search, and cancel it before the provider has had a chance to return
   // results.
-  provider_->Start(u"file");
+  StartSearch(u"file");
 
   provider_->StopQuery();
   Wait();
@@ -303,7 +307,7 @@ TEST_P(FileSearchProviderTrashTest, FilesInTrashAreIgnored) {
   WriteFile("file");
   WriteFile(base::FilePath(kTrashFolderName).Append("trashed_file").value());
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("file")));
@@ -318,7 +322,7 @@ TEST_P(FileSearchProviderTrashTest, FilesInTrashArentIgnoredIfTrashDisabled) {
   WriteFile("file");
   WriteFile(base::FilePath(kTrashFolderName).Append("trashed_file").value());
 
-  provider_->Start(u"file");
+  StartSearch(u"file");
   Wait();
 
   EXPECT_THAT(LastResults(),

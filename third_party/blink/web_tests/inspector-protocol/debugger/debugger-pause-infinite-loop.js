@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank('Tests that an infinite loop can be interrupted and paused from a step-over.');
 
   await dp.Debugger.enable();

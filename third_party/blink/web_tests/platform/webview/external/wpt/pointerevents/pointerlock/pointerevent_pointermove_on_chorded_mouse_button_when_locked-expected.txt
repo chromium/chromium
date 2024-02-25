@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: If you see this error we have a bug. Please report this bug to chromium.
+[NOTRUN] pointer locked pointermove events received for button state changes
+Harness: the test ran to completion.

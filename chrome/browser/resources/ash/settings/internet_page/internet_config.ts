@@ -7,17 +7,17 @@
  * 'internet-config' is a Settings dialog wrapper for network-config.
  */
 import 'chrome://resources/ash/common/network/network_config.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './internet_shared.css.js';
 
 import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {htmlEscape} from 'chrome://resources/js/util_ts.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -177,7 +177,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
     if (this.type === OncMojo.getNetworkTypeString(NetworkType.kWiFi)) {
       recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
     } else {
-      recordSettingChange();
+      // TODO(b/282233232) Record setting change for other network types.
     }
   }
 }

@@ -200,12 +200,17 @@ interface PrintBackendService {
   // that and then are provided at start of printing via `settings`.  This is
   // optional since such settings are not necessary when printing from Print
   // Preview, where the print settings are provided via `UpdatePrintSettings()`.
+  // A `job_id` is also provided back as a result from starting the print job.
+  // This value will be non-zero if the job was successfully started, and zero
+  // if there is any error.  This matches the behavior for the job ID in
+  // `PrintingContext`.
   StartPrinting(uint32 context_id,
                 int32 document_cookie,
                 mojo_base.mojom.String16 document_name,
                 [EnableIfNot=enable_oop_basic_print_dialog]
                 PrintSettings? settings)
-    => (ResultCode result_code);
+    => (ResultCode result_code,
+        int32 job_id);
 
   // Render the indicated page as part of print job for `document_cookie`.
   [EnableIf=is_win]

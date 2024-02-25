@@ -12,9 +12,10 @@
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/shellcc/platform/commctls/userex/topics/partsandstates.asp
 #include <windows.h>
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/sys_color_change_listener.h"
@@ -67,12 +68,20 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
-             const absl::optional<SkColor>& accent_color) const override;
+             const std::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
+
+  // On Windows, we look at the high contrast setting to calculate the color
+  // scheme. If high contrast is enabled, the preferred color scheme calculation
+  // will ignore the state of dark mode. Instead, preferred color scheme will be
+  // light or dark depending on the OS high contrast theme. If high contrast is
+  // off, the preferred color scheme calculation will be based of the state of
+  // dark mode.
   PreferredColorScheme CalculatePreferredColorScheme() const override;
+
   PreferredContrast CalculatePreferredContrast() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 

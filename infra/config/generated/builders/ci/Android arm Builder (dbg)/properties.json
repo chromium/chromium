@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Android arm Builder (dbg)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -41,12 +44,18 @@
           "builder": "Android arm Builder (dbg)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-arm-compile-dbg",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },

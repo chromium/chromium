@@ -95,7 +95,7 @@ InterpolationValue CSSTextIndentInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   const ComputedStyle& parent_style = *state.ParentStyle();
   conversion_checkers.push_back(
-      std::make_unique<InheritedIndentChecker>(parent_style.TextIndent()));
+      MakeGarbageCollected<InheritedIndentChecker>(parent_style.TextIndent()));
   return CreateValue(parent_style.TextIndent(), parent_style.EffectiveZoom());
 }
 

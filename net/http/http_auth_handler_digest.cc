@@ -263,21 +263,15 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
       algorithm_ = Algorithm::MD5;
     } else if (base::EqualsCaseInsensitiveASCII(value, "md5-sess")) {
       algorithm_ = Algorithm::MD5_SESS;
-    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256") &&
-               base::FeatureList::IsEnabled(
-                   features::kDigestAuthEnableSecureAlgorithms)) {
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256")) {
       algorithm_ = Algorithm::SHA256;
-    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256-sess") &&
-               base::FeatureList::IsEnabled(
-                   features::kDigestAuthEnableSecureAlgorithms)) {
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256-sess")) {
       algorithm_ = Algorithm::SHA256_SESS;
     } else {
       DVLOG(1) << "Unknown value of algorithm";
       return false;  // FAIL -- unsupported value of algorithm.
     }
-  } else if (base::EqualsCaseInsensitiveASCII(name, "userhash") &&
-             base::FeatureList::IsEnabled(
-                 features::kDigestAuthEnableSecureAlgorithms)) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "userhash")) {
     userhash_ = base::EqualsCaseInsensitiveASCII(value, "true");
   } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.
@@ -382,8 +376,8 @@ class HttpAuthHandlerDigest::DigestContext {
     uint8_t md_value[EVP_MAX_MD_SIZE] = {};
     unsigned int md_len = sizeof(md_value);
     CHECK(EVP_DigestFinal_ex(md_ctx_.get(), md_value, &md_len));
-    CHECK_LE(out_len_, md_len);
-    return base::ToLowerASCII(base::HexEncode(md_value, out_len_));
+    return base::ToLowerASCII(
+        base::HexEncode(base::span(md_value).first(out_len_)));
   }
 
  private:

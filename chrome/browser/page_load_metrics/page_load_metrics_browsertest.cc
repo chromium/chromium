@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
+#include "chrome/browser/preloading/preview/preview_test_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,6 +58,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -90,6 +93,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/net_errors.h"
@@ -188,8 +192,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   PageLoadMetricsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ukm::kUkmFeature, blink::features::kPortals,
-         blink::features::kPortalsCrossOrigin},
+        {ukm::kUkmFeature},
         // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         {features::kHttpsUpgrades});
@@ -245,10 +248,8 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   std::string GetRecordedPageLoadMetricNames() {
     auto entries = histogram_tester_->GetTotalCountsForPrefix("PageLoad.");
-    std::vector<std::string> names;
-    base::ranges::transform(
-        entries, std::back_inserter(names),
-        &base::HistogramTester::CountsMap::value_type::first);
+    std::vector<std::string> names = base::test::ToVector(
+        entries, &base::HistogramTester::CountsMap::value_type::first);
     return base::JoinString(names, ",");
   }
 
@@ -667,25 +668,6 @@ class PageLoadMetricsBrowserTestAnimatedLCP
   }
 };
 
-class PageLoadMetricsBrowserTestWithAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  PageLoadMetricsBrowserTestWithAnimatedLCPFlag() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kLCPAnimatedImagesReporting}, {});
-  }
-};
-
-class PageLoadMetricsBrowserTestWithRuntimeAnimatedLCPFlag
-    : public PageLoadMetricsBrowserTestAnimatedLCP {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LCPAnimatedImagesWebExposed");
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NoPageLoadMetricsRecorded())
@@ -1015,9 +997,27 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Redirect) {
   VerifyNavigationMetrics({final_url});
 }
 
+class PageLoadMetricsPre3pcdBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsPre3pcdBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1482170): Re-enable this test on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NoStatePrefetchMetrics DISABLED_NoStatePrefetchMetrics
+#else
+#define MAYBE_NoStatePrefetchMetrics NoStatePrefetchMetrics
+#endif
 // Triggers nostate prefetch, and verifies that the UKM metrics related to
 // nostate prefetch are recorded correctly.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoStatePrefetchMetrics) {
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsPre3pcdBrowserTest,
+                       MAYBE_NoStatePrefetchMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
@@ -1474,7 +1474,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
+// Flaky on lacros. See https://crbug.com/1484915
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DocumentWriteBlock DISABLED_DocumentWriteBlock
+#else
+#define MAYBE_DocumentWriteBlock DocumentWriteBlock
+#endif
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_DocumentWriteBlock) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
@@ -1489,7 +1495,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
+// TODO(crbug.com/1482261): Re-enable this test on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DocumentWriteReload DISABLED_DocumentWriteReload
+#else
+#define MAYBE_DocumentWriteReload DocumentWriteReload
+#endif
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_DocumentWriteReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
@@ -1909,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(3));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
@@ -1959,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(6));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
@@ -2388,8 +2400,53 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ASSERT_EQ(2, tab_strip->count());
 }
 
+enum class ReduceTransferSizeUpdatedIPCTestCase {
+  kEnabled,
+  kDisabled,
+};
+
+class PageLoadMetricsResourceLoadBrowserTest
+    : public PageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<
+          ReduceTransferSizeUpdatedIPCTestCase> {
+ public:
+  PageLoadMetricsResourceLoadBrowserTest() {
+    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          network::features::kReduceTransferSizeUpdatedIPC);
+    }
+  }
+  ~PageLoadMetricsResourceLoadBrowserTest() override = default;
+
+ protected:
+  bool IsReduceTransferSizeUpdatedIPCEnabled() const {
+    return GetParam() == ReduceTransferSizeUpdatedIPCTestCase::kEnabled;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLoadMetricsResourceLoadBrowserTest,
+    testing::ValuesIn({ReduceTransferSizeUpdatedIPCTestCase::kDisabled,
+                       ReduceTransferSizeUpdatedIPCTestCase::kEnabled}),
+    [](const testing::TestParamInfo<ReduceTransferSizeUpdatedIPCTestCase>&
+           info) {
+      switch (info.param) {
+        case ReduceTransferSizeUpdatedIPCTestCase::kEnabled:
+          return "ReduceTransferSizeUpdatedIPCEnabled";
+        case ReduceTransferSizeUpdatedIPCTestCase::kDisabled:
+          return "ReduceTransferSizeUpdatedIPCDisabled";
+      }
+    });
+
 // TODO(crbug.com/882077) Disabled due to flaky timeouts on all platforms.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        DISABLED_ReceivedAggregateResourceDataLength) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -2415,7 +2472,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        ChunkedResponse_OverheadDoesNotCountForBodyBytes) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
@@ -2452,7 +2509,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   EXPECT_EQ(waiter->current_network_body_bytes(), kChunkSize * kNumChunks);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
+                       ReceivedCompleteResources) {
   const char kHttpResponseHeader[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/html; charset=utf-8\r\n"
@@ -2497,8 +2555,20 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
   // Data received but resource not complete
   waiter->AddMinimumCompleteResourcesExpectation(1);
   waiter->AddMinimumNetworkBytesExpectation(2000);
-  waiter->Wait();
-  script_response->Done();
+
+  if (!IsReduceTransferSizeUpdatedIPCEnabled()) {
+    // When ReduceTransferSizeUpdatedIPC is disabled, network bytes information
+    // is sent almost every time when the body data is received. So we can call
+    // Wait() before finising `script_response`,
+    waiter->Wait();
+    script_response->Done();
+  } else {
+    // But when ReduceTransferSizeUpdatedIPC is enabled, network bytes
+    // information is sent only when the resource is complete. So we need to
+    // call Wait() after finising `script_response`.
+    script_response->Done();
+    waiter->Wait();
+  }
   waiter->AddMinimumCompleteResourcesExpectation(2);
   waiter->Wait();
 
@@ -2569,6 +2639,9 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
     waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
+    if (wait_for_second_lcp) {
+      waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+    }
 
     const std::string wait_for_lcp = R"(
       (async () => {
@@ -2671,6 +2744,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     EXPECT_EQ(expected_event_number, num_events);
 
     std::string previous_frame;
+    std::string navigation_id;
     double soft_navigation_timestamp = 0.0;
     for (auto* event : events) {
       EXPECT_TRUE(event->HasStringArg("frame"));
@@ -2681,8 +2755,15 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
       previous_frame = frame;
       if (event->name == "SoftNavigationHeuristics_SoftNavigationDetected") {
         soft_navigation_timestamp = event->timestamp;
+        EXPECT_TRUE(event->HasStringArg("navigationId"));
+        navigation_id = event->GetKnownArgAsString("navigationId");
       } else if (soft_navigation_timestamp > 0.0) {
         EXPECT_LE(soft_navigation_timestamp, event->timestamp);
+        EXPECT_EQ(event->name, "largestContentfulPaint::Candidate");
+        base::Value::Dict data = event->GetKnownArgAsDict("data");
+        if (!navigation_id.empty()) {
+          EXPECT_EQ(navigation_id, *data.FindString("navigationId"));
+        }
       }
     }
     // If we have more than one event, one of them needs to be a soft
@@ -2712,9 +2793,10 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, DISABLED_SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
 
+// TODO(crbug.com/1505700): Flaky on several platforms.
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
-    SoftNavigation) {
+    DISABLED_SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/true);
 }
 
@@ -3257,6 +3339,41 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class PageLoadMetricsPreviewBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsPreviewBrowserTest() {
+    helper_ = std::make_unique<test::PreviewTestHelper>(
+        base::BindRepeating(&PageLoadMetricsPreviewBrowserTest::web_contents,
+                            base::Unretained(this)));
+  }
+
+ protected:
+  std::unique_ptr<test::PreviewTestHelper> helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsPreviewBrowserTest,
+                       PreviewPrimaryPageType) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadTrackerPageType,
+      page_load_metrics::internal::PageLoadTrackerPageType::kPrimaryPage, 1);
+
+  helper_->InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper_->WaitUntilLoadFinished();
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadTrackerPageType,
+      page_load_metrics::internal::PageLoadTrackerPageType::kPreviewPrimaryPage,
+      1);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {
  protected:
@@ -3459,8 +3576,15 @@ class PageLoadMetricsBrowserTestCrashedPage
     : public PageLoadMetricsBrowserTestTerminatedPage,
       public ::testing::WithParamInterface<const char*> {};
 
+// TODO(crbug.com/1479116): Very flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UkmIsRecordedForCrashedTabPage \
+  DISABLED_UkmIsRecordedForCrashedTabPage
+#else
+#define MAYBE_UkmIsRecordedForCrashedTabPage UkmIsRecordedForCrashedTabPage
+#endif
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
-                       UkmIsRecordedForCrashedTabPage) {
+                       MAYBE_UkmIsRecordedForCrashedTabPage) {
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
@@ -3510,7 +3634,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
 // Tests that an animated image's reported LCP values are smaller than its load
 // times, when the feature flag for animated image reporting is enabled.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestAnimatedLCP,
                        MAYBE_PageLCPAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
 }
@@ -3523,7 +3647,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
 #else
 #define MAYBE_PageLCPNonAnimatedImage PageLCPNonAnimatedImage
 #endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestAnimatedLCP,
                        MAYBE_PageLCPNonAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/false, /*animated=*/false);
 }
@@ -3551,86 +3675,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputDelayFromClick) {
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 1);
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputTimestamp,
                                       1);
-}
-
-// Flaky on all platforms: https://crbug.com/1211028.
-// Tests that a portal activation records metrics.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
-  // We only record metrics for portals when the time is consistent across
-  // processes.
-  if (!base::TimeTicks::IsConsistentAcrossProcesses())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  content::WebContents* outer_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a portal to a.com.
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  std::string script = R"(
-    var portal = document.createElement('portal');
-    portal.src = '%s';
-    document.body.appendChild(portal);
-  )";
-  content::WebContentsAddedObserver contents_observer;
-  content::TestNavigationObserver portal_nav_observer(a_url);
-  portal_nav_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(ExecJs(outer_contents,
-                     base::StringPrintf(script.c_str(), a_url.spec().c_str())));
-  portal_nav_observer.WaitForNavigationFinished();
-  content::WebContents* portal_contents = contents_observer.GetWebContents();
-
-  {
-    // The portal is not activated, so no page end metrics should be recorded
-    // (although the outer contents may have recorded FCP).
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    for (const auto& kv : entries) {
-      EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name));
-    }
-  }
-
-  // Activate the portal.
-  std::string activated_listener = R"(
-    activatePromise = new Promise(resolve => {
-      window.addEventListener('portalactivate', resolve(true));
-    });
-  )";
-  EXPECT_TRUE(ExecJs(portal_contents, activated_listener));
-  EXPECT_TRUE(
-      ExecJs(outer_contents, "document.querySelector('portal').activate()"));
-
-  EXPECT_EQ(true, content::EvalJs(portal_contents, "activatePromise"));
-
-  // The activated portal contents should be the currently active contents.
-  EXPECT_EQ(portal_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(portal_contents, outer_contents);
-
-  {
-    // The portal is activated, so there should be a PageLoad entry showing
-    // that the outer contents was closed.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::PageLoad::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    for (const auto& kv : entries) {
-      ukm::TestUkmRecorder::ExpectEntryMetric(
-          kv.second.get(),
-          ukm::builders::PageLoad::kNavigation_PageEndReason3Name,
-          PageEndReason::END_CLOSE);
-    }
-  }
-  {
-    // The portal is activated, also check the portal entry.
-    auto entries = test_ukm_recorder_->GetMergedEntriesByName(
-        ukm::builders::Portal_Activate::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SameOriginNavigation) {
@@ -3838,7 +3882,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
       ukm::builders::Blink_UseCounter::kEntryName);
   EXPECT_THAT(entries, SizeIs(4));
   std::vector<int64_t> ukm_features;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
     const auto* metric = test_ukm_recorder_->GetEntryMetric(
@@ -4093,7 +4137,7 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
     const GURL& url,
     bool is_bfcache_enabled) {
   unsigned int reason_index = 0;
-  for (auto* entry :
+  for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(PageLoad::kEntryName)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
@@ -4116,7 +4160,7 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
   } else {
     EXPECT_EQ(reason_index, reasons.size());
   }
-  for (auto* entry :
+  for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(HistoryNavigation::kEntryName)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
@@ -4141,7 +4185,8 @@ int64_t PageLoadMetricsBackForwardCacheBrowserTest::CountForMetricForURL(
     base::StringPiece metric_name,
     const GURL& url) {
   int64_t count = 0;
-  for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
+  for (const ukm::mojom::UkmEntry* entry :
+       test_ukm_recorder_->GetEntriesByName(entry_name)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
     if (source->url() != url)
       continue;

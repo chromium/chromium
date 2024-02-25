@@ -1280,7 +1280,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
   if (!node)
     return E_INVALIDARG;
 
-  absl::optional<size_t> index_in_parent = absl::nullopt;
+  std::optional<size_t> index_in_parent = std::nullopt;
   if (GetOwner()->PlatformGetParent()) {
     index_in_parent = GetIndexInParent();
   }
@@ -1305,7 +1305,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
   if (!node)
     return E_INVALIDARG;
 
-  absl::optional<size_t> index_in_parent = absl::nullopt;
+  std::optional<size_t> index_in_parent = std::nullopt;
   if (GetOwner()->PlatformGetParent()) {
     index_in_parent = GetIndexInParent();
   }

@@ -1,0 +1,56 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LegacyTechReportAllowlist": [
+            "https://www.example.com",
+            "www.example.com/path",
+            "192.168.0.1:8088/path",
+            "localhost"
+          ]
+        },
+        "policies_settings": {
+          "LegacyTechReportAllowlist": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.legacy_tech.urls": {
+            "value": [
+              "https://www.example.com",
+              "www.example.com/path",
+              "192.168.0.1:8088/path",
+              "localhost"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "LegacyTechReportAllowlist": []
+        },
+        "policies_settings": {
+          "LegacyTechReportAllowlist": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.legacy_tech.urls": {
+            "value": []
+          }
+        }
+      }
+    ]
+  }
+]

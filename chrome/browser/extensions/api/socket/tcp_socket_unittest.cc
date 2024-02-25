@@ -37,7 +37,7 @@ const char FAKE_ID[] = "abcdefghijklmnopqrst";
 using AcceptFuture = base::test::TestFuture<
     int32_t,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket>,
-    const absl::optional<net::IPEndPoint>&,
+    const std::optional<net::IPEndPoint>&,
     mojo::ScopedDataPipeConsumerHandle,
     mojo::ScopedDataPipeProducerHandle>;
 

@@ -36,14 +36,18 @@ OpenXrDeviceProvider::~OpenXrDeviceProvider() {
   openxr_platform_helper_.reset();
 }
 
-void OpenXrDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
+void OpenXrDeviceProvider::Initialize(
+    device::VRDeviceProviderClient* client,
+    content::WebContents* initializing_web_contents) {
   CHECK(!initialized_);
 
   // TODO(https://crbug.com/1454942): Support non-shared buffer rendering path.
   if (device::XrImageTransportBase::UseSharedBuffer()) {
     openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
 
-    if (openxr_platform_helper_->EnsureInitialized()) {
+    if (openxr_platform_helper_->EnsureInitialized() &&
+        openxr_platform_helper_->CheckHardwareSupport(
+            initializing_web_contents)) {
       DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
       // Unretained is safe since we own the device this callback is being
       // passed to and we ensure that it does not outlive us. The device is
@@ -80,28 +84,8 @@ void OpenXrDeviceProvider::CreateContextProviderAsync(
       base::BindOnce(
           [](int surface_handle,
              content::Compositor::ContextProviderCallback callback) {
-            // Our attributes must be compatible with the shared
-            // offscreen surface used by virtualized contexts,
-            // otherwise mailbox synchronization doesn't work
-            // properly - it assumes a shared underlying GL context.
-            // See GetCompositorContextAttributes in
-            // content/browser/renderer_host/compositor_impl_android.cc
-            // and https://crbug.com/699330.
-            gpu::ContextCreationAttribs attributes;
-            attributes.alpha_size = -1;
-            attributes.red_size = 8;
-            attributes.green_size = 8;
-            attributes.blue_size = 8;
-            attributes.bind_generates_resource = false;
-            if (base::SysInfo::IsLowEndDevice()) {
-              attributes.alpha_size = 0;
-              attributes.red_size = 5;
-              attributes.green_size = 6;
-              attributes.blue_size = 5;
-            }
             content::Compositor::CreateContextProvider(
-                surface_handle, attributes,
-                gpu::SharedMemoryLimits::ForMailboxContext(),
+                surface_handle, gpu::SharedMemoryLimits::ForMailboxContext(),
                 std::move(callback));
           },
           gpu::kNullSurfaceHandle, std::move(viz_context_provider_callback)));

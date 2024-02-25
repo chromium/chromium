@@ -11,6 +11,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -84,8 +85,9 @@ class OfferNotificationBubbleControllerImplTest
   void ShowBubble(const AutofillOfferData* offer,
                   bool expand_notification_icon = false) {
     controller()->ShowOfferNotificationIfApplicable(
-        offer, &card_, /*should_show_icon_only=*/false,
-        expand_notification_icon);
+        offer, &card_,
+        {.expand_notification_icon = expand_notification_icon,
+         .show_notification_automatically = true});
   }
 
   void CloseBubble(PaymentsBubbleClosedReason closed_reason =
@@ -181,16 +183,14 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr, /*should_show_icon_only=*/true,
-      /*expand_notification_icon=*/false);
+      &offer, nullptr, {.notification_has_been_shown = true});
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
   test_clock_.Advance(base::Seconds(2));
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr, /*should_show_icon_only=*/true,
-      /*expand_notification_icon=*/false);
+      &offer, nullptr, {.notification_has_been_shown = true});
   // Ensure new page does not have an active offer notification bubble.
   EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
@@ -294,8 +294,8 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*promo_code=*/"FREEFALL1234");
   controller()->ShowOfferNotificationIfApplicable(
-      &offer, nullptr, /*should_show_icon_only=*/true,
-      /*expand_notification_icon=*/true);
+      &offer, nullptr,
+      {.notification_has_been_shown = true, .expand_notification_icon = true});
 
   EXPECT_TRUE(controller()->ShouldIconExpand());
 }

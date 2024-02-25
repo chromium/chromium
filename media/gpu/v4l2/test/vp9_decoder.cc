@@ -136,10 +136,9 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        gfx::Size display_resolution)
     : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
       ivf_parser_(std::move(ivf_parser)),
-      vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/true)),
       supports_compressed_headers_(
-          v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)) {
+          v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)),
+      vp9_parser_(std::make_unique<Vp9Parser>(supports_compressed_headers_)) {
   DCHECK(v4l2_ioctl_);
 
   // This control was landed in v5.17 and is pretty much a marker that the
@@ -181,12 +180,6 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   }
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
-
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
 
   gfx::Size display_resolution =
       gfx::Size(file_header.width, file_header.height);
@@ -336,8 +329,6 @@ void Vp9Decoder::SetupFrameParams(
       break;
     default:
       LOG(FATAL) << "Invalid reset frame context value!";
-      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
-      break;
   }
   v4l2_frame_params->frame_context_idx =
       frame_hdr.frame_context_idx_to_save_probs;
@@ -431,11 +422,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   switch (parser_res) {
     case Vp9Parser::kInvalidStream:
-      LOG_ASSERT(false) << "Failed to parse frame.";
-      return Vp9Decoder::kError;
-    case Vp9Parser::kAwaitingRefresh:
-      LOG_ASSERT(false) << "Unsupported parser return value.";
-      return Vp9Decoder::kError;
+      LOG(FATAL) << "Failed to parse frame.";
     case Vp9Parser::kEOStream:
       return Vp9Decoder::kEOStream;
     case Vp9Parser::kOk:
@@ -526,11 +513,6 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
   }
 
   v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id);
-
-  // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
-  // needed when forward probabilities update is used. With new VP9 API landing
-  // in kernel 5.17, VIDIOC_G_EXT_CTRLS ioctl call is no longer needed, see:
-  // https://lwn.net/Articles/855419/
 
   v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_);
 

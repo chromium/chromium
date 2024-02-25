@@ -13,3 +13,9 @@ TODO(dpapad): Audit elements currently using chrome.settingsPrivate and decide w
 guidelines.
 
 For more complex components, see cr_components.
+
+NOTE (19 Dec 2023): cr_elements are currently being forked between Ash and
+Desktop, see https://crbug.com/1512231. *Do not make new CrOS-only changes in
+this folder*; instead make such changes in the Ash fork at
+ash/webui/resources/common/cr_elements. If an element that is not yet forked
+requires a CrOS-only change, comment on the bug to expedite forking it.

@@ -16,9 +16,9 @@ namespace device {
 void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
     CtapMakeCredentialRequest request,
     MakeCredentialOptions options,
-    base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>
+    base::OnceCallback<void(CtapDeviceResponseCode, std::optional<bool>)>
         callback) {
-  std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);
+  std::move(callback).Run(CtapDeviceResponseCode::kSuccess, std::nullopt);
 }
 
 void FidoAuthenticator::GetPlatformCredentialInfoForRequest(
@@ -38,7 +38,7 @@ void FidoAuthenticator::GetPinRetries(
 void FidoAuthenticator::GetPINToken(
     std::string pin,
     std::vector<pin::Permissions> permissions,
-    absl::optional<std::string> rp_id,
+    std::optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
   NOTREACHED();
 }
@@ -54,7 +54,7 @@ bool FidoAuthenticator::CanGetUvToken() {
 
 void FidoAuthenticator::GetUvToken(
     std::vector<pin::Permissions> permissions,
-    absl::optional<std::string> rp_id,
+    std::optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
   NOTREACHED();
 }
@@ -140,7 +140,7 @@ void FidoAuthenticator::GetSensorInfo(BioEnrollmentCallback) {
 
 void FidoAuthenticator::BioEnrollFingerprint(
     const pin::TokenResponse&,
-    absl::optional<std::vector<uint8_t>> template_id,
+    std::optional<std::vector<uint8_t>> template_id,
     BioEnrollmentCallback) {
   NOTREACHED();
 }
@@ -173,8 +173,8 @@ void FidoAuthenticator::GarbageCollectLargeBlob(
   NOTREACHED();
 }
 
-absl::optional<base::span<const int32_t>> FidoAuthenticator::GetAlgorithms() {
-  return absl::nullopt;
+std::optional<base::span<const int32_t>> FidoAuthenticator::GetAlgorithms() {
+  return std::nullopt;
 }
 
 bool FidoAuthenticator::DiscoverableCredentialStorageFull() const {
@@ -183,7 +183,7 @@ bool FidoAuthenticator::DiscoverableCredentialStorageFull() const {
 
 void FidoAuthenticator::Reset(ResetCallback callback) {
   std::move(callback).Run(CtapDeviceResponseCode::kCtap1ErrInvalidCommand,
-                          absl::nullopt);
+                          std::nullopt);
 }
 
 AuthenticatorType FidoAuthenticator::GetType() const {

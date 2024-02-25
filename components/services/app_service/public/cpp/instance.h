@@ -69,12 +69,12 @@ class Instance {
   // The unique id for instance.
   base::UnguessableToken instance_id_;
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> window_ = nullptr;
 
   std::string launch_id_;
   InstanceState state_ = InstanceState::kUnknown;
   base::Time last_updated_time_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 };
 
 }  // namespace apps

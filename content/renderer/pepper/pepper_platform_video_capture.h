@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -45,10 +46,8 @@ class PepperPlatformVideoCapture {
  private:
   void OnDeviceOpened(int request_id, bool succeeded, const std::string& label);
   void OnStateUpdate(blink::VideoCaptureState state);
-  void OnFrameReady(
-      scoped_refptr<media::VideoFrame> video_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
-      base::TimeTicks estimated_capture_time);
+  void OnFrameReady(scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks estimated_capture_time);
 
   // Can return NULL if the RenderFrame referenced by |render_frame_id_| has
   // gone away.
@@ -62,7 +61,7 @@ class PepperPlatformVideoCapture {
   base::OnceClosure release_device_cb_;
   base::OnceClosure stop_capture_cb_;
 
-  PepperVideoCaptureHost* handler_;
+  raw_ptr<PepperVideoCaptureHost> handler_;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.

@@ -19,14 +19,15 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -48,9 +49,10 @@ bool HeadersContainFrameAncestorsCSP(
 }
 
 // From a RenderFrameHost |rfh|, return its parent. This goes through nested
-// WebContents like Portals, but doesn't go through FencedFrames. This returns
+// WebContents, but doesn't go through FencedFrames. This returns
 // nullptr for the top-level document and FencedFrame top-level document.
 RenderFrameHostImpl* GetParentExceptForFencedFrame(RenderFrameHostImpl* frame) {
+  // TODO(crbug.com/1498140): It might suffice to use GetParent() now.
   return frame->IsFencedFrameRoot() ? nullptr
                                     : frame->GetParentOrOuterDocument();
 }
@@ -94,8 +96,7 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
     bool is_response_check) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  bool is_portal = request->frame_tree_node()->frame_tree().IsPortal();
-  if (request->IsInMainFrame() && !is_portal) {
+  if (request->IsInMainFrame()) {
     // Allow main frame navigations.
     return NavigationThrottle::PROCEED;
   }
@@ -326,7 +327,8 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
     // committed yet and the target frame might not yet have a URLLoaderFactory
     // that could be used to report the violation).
     // See also https://crbug.com/1111049.
-    if (!RenderFrameHostCSPContext(parent).IsAllowedByCsp(
+    network::CSPCheckResult result =
+        RenderFrameHostCSPContext(parent).IsAllowedByCsp(
             content_security_policy,
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
@@ -334,7 +336,18 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             navigation_handle()->WasServerRedirect(),
             true /* is_response_check */, empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
-            navigation_handle()->IsFormSubmission())) {
+            navigation_handle()->IsFormSubmission());
+    if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          parent,
+          blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
+    }
+    if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          parent,
+          blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
+    }
+    if (!result) {
       return CheckResult::BLOCK;
     }
     parent = GetParentExceptForFencedFrame(parent);

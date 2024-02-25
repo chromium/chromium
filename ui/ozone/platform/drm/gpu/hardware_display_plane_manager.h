@@ -17,7 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -102,11 +102,19 @@ class HardwareDisplayPlaneManager {
 
     CrtcProperties properties = {};
 
-    // Cached blobs for the properties since the CRTC properties are applied on
-    // the next page flip and we need to keep the properties valid until then.
-    ScopedDrmPropertyBlob ctm_blob;
-    ScopedDrmPropertyBlob gamma_lut_blob;
-    ScopedDrmPropertyBlob degamma_lut_blob;
+    // The parameters most recently set from the browser. These are used to
+    // compute the CTM, GAMMA, and DEGAMMA blobs.
+    display::ColorTemperatureAdjustment color_temperature_adjustment;
+    display::ColorCalibration color_calibration;
+    display::GammaAdjustment gamma_adjustment;
+
+    // Cached blobs for the properties to commit in CommitCrtcProperties.
+    // * If a property is `std::nullopt`, then it should be left unchanged.
+    // * If a property is `nullptr` then it should be set to 0.
+    // * If a property is a blob, then it should be set to that blob.
+    std::optional<ScopedDrmPropertyBlob> pending_ctm_blob;
+    std::optional<ScopedDrmPropertyBlob> pending_gamma_lut_blob;
+    std::optional<ScopedDrmPropertyBlob> pending_degamma_lut_blob;
   };
 
   explicit HardwareDisplayPlaneManager(DrmDevice* drm);
@@ -133,18 +141,17 @@ class HardwareDisplayPlaneManager {
   // calls.
   void BeginFrame(HardwareDisplayPlaneList* plane_list);
 
-  // Sets the color transform matrix (a 3x3 matrix represented in vector form)
-  // on the CRTC with ID |crtc_id|.
-  bool SetColorMatrix(uint32_t crtc_id, const std::vector<float>& color_matrix);
+  // Sets the color temperature adjustment for a given CRTC.
+  void SetColorTemperatureAdjustment(
+      uint32_t crtc_id,
+      const display::ColorTemperatureAdjustment& cta);
+
+  // Sets the gamma adjustment for a given CRTC.
+  void SetGammaAdjustment(uint32_t crtc_id,
+                          const display::GammaAdjustment& adjustment);
 
   // Sets the background color on the CRTC object with ID |crtc_id|.
   void SetBackgroundColor(uint32_t crtc_id, const uint64_t background_color);
-
-  // Sets the degamma/gamma luts on the CRTC object with ID |crtc_id|.
-  virtual bool SetGammaCorrection(
-      uint32_t crtc_id,
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
 
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with
@@ -167,12 +174,6 @@ class HardwareDisplayPlaneManager {
   // Disable all the overlay planes previously submitted and now stored in
   // plane_list->old_plane_list.
   virtual bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) = 0;
-
-  // Set the drm_color_ctm contained in |ctm_blob_data| to all planes' KMS
-  // states
-  virtual bool SetColorCorrectionOnAllCrtcPlanes(
-      uint32_t crtc_id,
-      ScopedDrmColorCtmPtr ctm_blob_data) = 0;
 
   // Check that the primary plane is valid for this
   // PlaneManager. Specifically, legacy can't support primary planes
@@ -256,8 +257,8 @@ class HardwareDisplayPlaneManager {
 
   // Convert |crtc/connector_id| into an index, returning empty if the ID
   // couldn't be found.
-  absl::optional<int> LookupCrtcIndex(uint32_t crtc_id) const;
-  absl::optional<int> LookupConnectorIndex(uint32_t connector_id) const;
+  std::optional<int> LookupCrtcIndex(uint32_t crtc_id) const;
+  std::optional<int> LookupConnectorIndex(uint32_t connector_id) const;
 
   // Get Mutable CRTC State.
   CrtcState& CrtcStateForCrtcId(uint32_t crtc_id);
@@ -279,13 +280,12 @@ class HardwareDisplayPlaneManager {
   // Populates scanout formats supported by all planes.
   void PopulateSupportedFormats();
 
-  virtual bool CommitColorMatrix(const CrtcProperties& crtc_props) = 0;
-
-  virtual bool CommitGammaCorrection(const CrtcProperties& crtc_props) = 0;
+  void UpdateAndCommitCrtcState(uint32_t crtc_id, CrtcState* state);
+  virtual bool CommitPendingCrtcState(CrtcState* state) = 0;
 
   // Object containing the connection to the graphics device and wraps the API
   // calls to control it. Not owned.
-  const raw_ptr<DrmDevice, ExperimentalAsh> drm_;
+  const raw_ptr<DrmDevice> drm_;
 
   bool has_universal_planes_ = false;
 

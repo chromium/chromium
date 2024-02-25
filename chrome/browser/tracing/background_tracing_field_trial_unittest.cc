@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -14,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_config.h"
@@ -21,6 +23,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace tracing {
 
 class BackgroundTracingTest : public testing::Test {
  public:
@@ -30,8 +34,13 @@ class BackgroundTracingTest : public testing::Test {
   }
 
   void TearDown() override {
+    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
     content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   }
+
+ protected:
+  // Needs to stay alive through TearDown().
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -87,28 +96,47 @@ std::string GetFieldTracingConfigFromText(const std::string& proto_text) {
 
 }  // namespace
 
-TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrial) {
+TEST_F(BackgroundTracingTest, MaybeSetupBackgroundTracingFromFieldTrial) {
   const std::string kTrialName = "BackgroundTracing";
   const std::string kExperimentName = "SlowStart";
   base::AssociateFieldTrialParams(kTrialName, kExperimentName,
                                   {{"config", kValidJsonTracingConfig}});
   base::FieldTrialList::CreateFieldTrial(kTrialName, kExperimentName);
 
-  TestingProfileManager testing_profile_manager(
+  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_TRUE(testing_profile_manager_->SetUp());
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromFieldTrial);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
-  TestingProfileManager testing_profile_manager(
+TEST_F(BackgroundTracingTest, MaybeSetupFieldTracingFromFieldTrial) {
+  std::string serialized_config =
+      GetFieldTracingConfigFromText(kValidProtoTracingConfig);
+  std::string encoded_config = base::Base64Encode(serialized_config);
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
+                                                 {{"config", encoded_config}});
+
+  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_TRUE(testing_profile_manager_->SetUp());
+
+  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
+            BackgroundTracingSetupMode::kFromFieldTrial);
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
+}
+
+TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
+  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager_->SetUp());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -125,13 +153,15 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromProtoConfigFile) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromProtoConfigFile);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupSystemTracingFromFieldTrial());
+  EXPECT_FALSE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
+  EXPECT_TRUE(tracing::SetupBackgroundTracingFromCommandLine());
 }
 
 TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
-  TestingProfileManager testing_profile_manager(
+  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_TRUE(testing_profile_manager_->SetUp());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -148,8 +178,8 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromJsonConfigFile) {
 
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromJsonConfigFile);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
-  EXPECT_TRUE(
+  EXPECT_FALSE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
+  EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
@@ -160,9 +190,9 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
                                   {{"config", kValidJsonTracingConfig}});
   base::FieldTrialList::CreateFieldTrial(kTrialName, kExperimentName);
 
-  TestingProfileManager testing_profile_manager(
+  testing_profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_TRUE(testing_profile_manager_->SetUp());
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -176,10 +206,13 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrialOutputFile) {
       switches::kBackgroundTracingOutputFile,
       temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz"));
 
+  ASSERT_TRUE(tracing::HasBackgroundTracingOutputFile());
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromFieldTrialLocalOutput);
-  EXPECT_TRUE(tracing::SetupBackgroundTracingFieldTrial());
+            BackgroundTracingSetupMode::kFromFieldTrial);
+  EXPECT_TRUE(tracing::MaybeSetupBackgroundTracingFromFieldTrial());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
+
+}  // namespace tracing

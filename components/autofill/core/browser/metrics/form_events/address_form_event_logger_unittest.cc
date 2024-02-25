@@ -15,48 +15,6 @@
 
 namespace autofill::autofill_metrics {
 
-class AddressFormEventLoggerTest : public AutofillMetricsBaseTest,
-                                   public testing::Test {
- public:
-  void SetUp() override { SetUpHelper(); }
-  void TearDown() override { TearDownHelper(); }
-};
-
-// Verify that FormEvent metrics log the appropriate sync state.
-TEST_F(AddressFormEventLoggerTest, SyncState) {
-  FormData form;
-  FormStructure form_structure(form);
-  SeeForm(form);
-  autofill_manager().Reset();
-
-  {
-    base::HistogramTester histogram_tester;
-    AddressFormEventLogger logger(
-        /*is_in_any_main_frame=*/true,
-        /*form_interactions_ukm_logger=*/nullptr,
-        /*client=*/autofill_client_.get());
-    logger.OnDidSeeFillableDynamicForm(
-        AutofillMetrics::PaymentsSigninState::kSignedOut, form_structure);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address.WithNoData.SignedOut",
-        FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1);
-    logger.OnDestroyed();
-  }
-  {
-    base::HistogramTester histogram_tester;
-    AddressFormEventLogger logger(
-        /*is_in_any_main_frame=*/true,
-        /*form_interactions_ukm_logger=*/nullptr,
-        /*client=*/autofill_client_.get());
-    logger.OnDidRefill(AutofillMetrics::PaymentsSigninState::kSignedIn,
-                       form_structure);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address.WithNoData.SignedIn",
-        FORM_EVENT_DID_DYNAMIC_REFILL, 1);
-    logger.OnDestroyed();
-  }
-}
-
 class CategoryResolvedKeyMetricsTest
     : public autofill_metrics::AutofillMetricsBaseTest,
       public testing::Test {
@@ -77,9 +35,13 @@ class CategoryResolvedKeyMetricsTest
 
   // Creates an arbitrary address form and triggers AutofillManager's
   // OnFormSeen() event.
+  // TODO(crbug.com/1007974): Replace this with a modern form creation function.
   FormData CreateAndSeeForm() {
     FormData form = CreateEmptyForm();
     form.fields.resize(3);
+    for (FormFieldData& field : form.fields) {
+      field.renderer_id = autofill_test_environment_.NextFieldRendererId();
+    }
     autofill_manager().AddSeenForm(
         form, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
     SeeForm(form);
@@ -92,9 +54,8 @@ class CategoryResolvedKeyMetricsTest
                            const AutofillProfile& profile) {
     ASSERT_TRUE(personal_data().GetProfileByGUID(profile.guid()));
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
-    autofill_manager().FillOrPreviewForm(
-        mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
-        Suggestion::BackendId(profile.guid()),
+    autofill_manager().FillOrPreviewProfileForm(
+        mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 

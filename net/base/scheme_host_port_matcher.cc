@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/memory_usage_estimator.h"
 
 namespace net {
 
@@ -101,5 +102,11 @@ std::string SchemeHostPortMatcher::ToString() const {
 void SchemeHostPortMatcher::Clear() {
   rules_.clear();
 }
+
+#if !BUILDFLAG(CRONET_BUILD)
+size_t SchemeHostPortMatcher::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(rules_);
+}
+#endif  // !BUILDFLAG(CRONET_BUILD)
 
 }  // namespace net

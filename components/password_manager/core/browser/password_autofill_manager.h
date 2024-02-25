@@ -20,11 +20,9 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_suggestion_flow.h"
+#include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "ui/gfx/image/image.h"
-
-namespace autofill {
-class AutofillDriver;
-}
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -38,6 +36,7 @@ namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordManagerDriver;
+class PasswordSuggestionGenerator;
 
 // This class is responsible for filling password forms.
 class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
@@ -54,31 +53,15 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
-  void OnPopupSuppressed() override;
 
-  // The password manager doesn't distinguish between trigger sources and its
-  // value is `kPasswordManager` for all password suggestions.
-  void DidSelectSuggestion(
-      const autofill::Suggestion& suggestion,
-      autofill::AutofillSuggestionTriggerSource trigger_source =
-          autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
-  void DidAcceptSuggestion(
-      const autofill::Suggestion& suggestion,
-      int position,
-      autofill::AutofillSuggestionTriggerSource trigger_source =
-          autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
-  bool GetDeletionConfirmationText(const std::u16string& value,
-                                   autofill::PopupItemId popup_item_id,
-                                   autofill::Suggestion::BackendId backend_id,
-                                   std::u16string* title,
-                                   std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value,
-                        autofill::PopupItemId popup_item_id,
-                        autofill::Suggestion::BackendId backend_id) override;
+  void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
+  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
+                           const SuggestionPosition& position) override;
+  void DidPerformButtonActionForSuggestion(
+      const autofill::Suggestion&) override;
+  bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
-  autofill::PopupType GetPopupType() const override;
-  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
-      override;
+  autofill::FillingProduct GetMainFillingProduct() const override;
   int32_t GetWebContentsPopupControllerAxId() const override;
   void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
 
@@ -89,13 +72,14 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void DeleteFillData();
 
   // Handles a request from the renderer to show a popup with the suggestions
-  // from the password manager. |options| should be a bitwise mask of
-  // autofill::ShowPasswordSuggestionsOptions values.
-  void OnShowPasswordSuggestions(autofill::FieldRendererId element_id,
-                                 base::i18n::TextDirection text_direction,
-                                 const std::u16string& typed_username,
-                                 int options,
-                                 const gfx::RectF& bounds);
+  // from the password manager.
+  void OnShowPasswordSuggestions(
+      autofill::FieldRendererId element_id,
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      base::i18n::TextDirection text_direction,
+      const std::u16string& typed_username,
+      ShowWebAuthnCredentials show_webauthn_credentials,
+      const gfx::RectF& bounds);
 
   // If there are relevant credentials for the current frame show them and
   // return true. Otherwise, return false.
@@ -126,24 +110,14 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
 
+  void SetManualFallbackFlowForTest(
+      std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow);
+
+  inline PasswordSuggestionFlow* manual_fallback_flow() {
+    return manual_fallback_flow_.get();
+  }
+
  private:
-  using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
-  using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
-  using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
-  using ShowPasswordSuggestions =
-      base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
-  using ShowWebAuthnCredentials =
-      base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
-
-  // Builds the suggestions used to show or update the autofill popup.
-  std::vector<autofill::Suggestion> BuildSuggestions(
-      const std::u16string& username_filter,
-      ForPasswordField for_password_field,
-      ShowAllPasswords show_all_passwords,
-      OffersGeneration for_generation,
-      ShowPasswordSuggestions show_password_suggestions,
-      ShowWebAuthnCredentials show_webauthn_credentials);
-
   // Called just before showing a popup to log which |suggestions| were shown.
   void LogMetricsForSuggestions(
       const std::vector<autofill::Suggestion>& suggestions) const;
@@ -214,6 +188,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
+  password_manager::PasswordSuggestionGenerator suggestion_generator_;
+
   // Contains the favicon for the credentials offered on the current page.
   gfx::Image page_favicon_;
 
@@ -233,7 +209,12 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Used to trigger a reauthentication prompt based on biometrics that needs
   // to be cleared before the password is filled. Currently only used
   // on Android, Mac and Windows.
-  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+
+  // Initialized when the user triggers the password manual fallback. This flow
+  // reads all user passworns upon initialization. Hence it's reset upon main
+  // frame navigation or if this `PasswordAutofillManager` is destroyed.
+  std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

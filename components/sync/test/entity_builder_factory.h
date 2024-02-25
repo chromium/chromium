@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_util.h"
 #include "components/sync/test/bookmark_entity_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace fake_server {
@@ -32,7 +32,7 @@ class EntityBuilderFactory {
 
   BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
-      absl::optional<std::string> originator_client_item_id = absl::nullopt);
+      std::optional<std::string> originator_client_item_id = std::nullopt);
 
  private:
   // An identifier used when creating entities. This value is used similarly to

@@ -4,11 +4,14 @@
 
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace viz {
 
@@ -51,12 +54,15 @@ void OverlayStateService::RegisterObserver(
         overlay_state_observer,
     const gpu::Mailbox& mailbox) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT1("gpu", "OverlayStateService::RegisterObserver", "mailbox",
+               mailbox.ToDebugString());
 
-  MailboxState*& mailbox_state = mailboxes_[mailbox];
-  if (!mailbox_state) {
-    mailbox_state = new MailboxState();
-    // Use of base::Unretained is safe as OverlayStateService is a singleton
-    // service bound to the lifetime of the GPU process.
+  auto [mailbox_iterator, insert] =
+      mailboxes_.try_emplace(mailbox, std::make_unique<MailboxState>());
+  MailboxState* mailbox_state = mailbox_iterator->second.get();
+  DCHECK(mailbox_state != nullptr);
+
+  if (insert) {
     mailbox_state->observer_set_.set_disconnect_handler(
         base::BindRepeating(&OverlayStateService::OnBoundObserverDisconnect,
                             base::Unretained(this), mailbox));
@@ -84,6 +90,8 @@ void OverlayStateService::RegisterObserver(
 
 void OverlayStateService::OnBoundObserverDisconnect(const gpu::Mailbox& mailbox,
                                                     mojo::RemoteSetElementId) {
+  TRACE_EVENT1("gpu", "OverlayStateService::OnBoundObserverDisconnect",
+               "mailbox", mailbox.ToDebugString());
   auto mailbox_iterator = mailboxes_.find(mailbox);
   if (mailbox_iterator != mailboxes_.end() &&
       mailbox_iterator->second->observer_set_.empty()) {
@@ -117,6 +125,9 @@ void OverlayStateService::OnStateChangedOnTaskRunnerSequence(
   // Notify all observers of the new hint state.
   bool promoted =
       promotion_state == OverlayStateAggregator::PromotionState::kPromoted;
+
+  TRACE_EVENT2("gpu", "OverlayStateService::OnStateChangedOnTaskRunnerSequence",
+               "mailbox", mailbox.ToDebugString(), "promoted", promoted);
   auto mailbox_iterator = mailboxes_.find(mailbox);
   DCHECK(mailbox_iterator != mailboxes_.end());
   for (auto& observer : mailbox_iterator->second->observer_set_) {
@@ -138,6 +149,9 @@ void OverlayStateService::SetPromotionHint(const gpu::Mailbox& mailbox,
 void OverlayStateService::SetPromotionHintOnTaskRunnerSequence(
     const gpu::Mailbox& mailbox,
     bool promoted) {
+  TRACE_EVENT2("gpu",
+               "OverlayStateService::SetPromotionHintOnTaskRunnerSequence",
+               "mailbox", mailbox.ToDebugString(), "promoted", promoted);
   // The OverlayStateService is made aware of mailboxes of interest through two
   // channels:
   // 1.) The registration of an observer for a mailbox.
@@ -150,20 +164,16 @@ void OverlayStateService::SetPromotionHintOnTaskRunnerSequence(
   // entry in 'mailboxes_' tracking it. Since there is no guarantee when we'll
   // receive another promotion hint for the mailbox we'll store the result so
   // any future observer can be informed of the current promotion state.
-  auto mailbox_iterator = mailboxes_.find(mailbox);
-  if (mailbox_iterator != mailboxes_.end()) {
-    bool state_change =
-        mailbox_iterator->second->aggregator_.SetPromotionHint(promoted);
-    if (state_change) {
-      // Notifying observers requires an IPC so we only send an update when
-      // the underlying state changes.
-      OnStateChanged(mailbox,
-                     mailbox_iterator->second->aggregator_.GetPromotionState());
-    }
-  } else {
-    MailboxState* new_mailbox_state = new MailboxState();
-    new_mailbox_state->aggregator_.SetPromotionHint(promoted);
-    mailboxes_.insert({mailbox, new_mailbox_state});
+  auto [mailbox_iterator, insert] =
+      mailboxes_.try_emplace(mailbox, std::make_unique<MailboxState>());
+  MailboxState* mailbox_state = mailbox_iterator->second.get();
+  DCHECK(mailbox_state != nullptr);
+  bool state_change = mailbox_state->aggregator_.SetPromotionHint(promoted);
+
+  if (!insert & state_change) {
+    // Notifying observers requires an IPC so we only send an update when
+    // the underlying state changes.
+    OnStateChanged(mailbox, mailbox_state->aggregator_.GetPromotionState());
   }
 }
 
@@ -179,6 +189,9 @@ void OverlayStateService::MailboxDestroyed(const gpu::Mailbox& mailbox) {
 
 void OverlayStateService::MailboxDestroyedOnTaskRunnerSequence(
     const gpu::Mailbox& mailbox) {
+  TRACE_EVENT1("gpu",
+               "OverlayStateService::MailboxDestroyedOnTaskRunnerSequence",
+               "mailbox", mailbox.ToDebugString());
   mailboxes_.erase(mailbox);
 }
 

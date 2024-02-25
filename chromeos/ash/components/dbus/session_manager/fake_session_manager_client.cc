@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +36,6 @@
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace ash {
@@ -121,7 +121,8 @@ std::vector<std::string> ReadCreateStateKeysStub(const base::FilePath& path) {
     for (int i = 0; i < 5; ++i) {
       contents += crypto::SHA256HashString(
           base::NumberToString(i) +
-          base::NumberToString(base::Time::Now().ToJavaTime()));
+          base::NumberToString(
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
     StoreFiles({{path, contents}});
   }
@@ -339,7 +340,7 @@ void FakeSessionManagerClient::LoginScreenStorageStore(
   // need to store data into the file. Currently all the data is cleared on
   // session exit.
   login_screen_storage_[key] = data;
-  PostReply(FROM_HERE, std::move(callback), absl::nullopt /* error */);
+  PostReply(FROM_HERE, std::move(callback), std::nullopt /* error */);
 }
 
 void FakeSessionManagerClient::LoginScreenStorageRetrieve(
@@ -352,7 +353,7 @@ void FakeSessionManagerClient::LoginScreenStorageRetrieve(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), data, absl::nullopt /* error */));
+      base::BindOnce(std::move(callback), data, std::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageListKeys(
@@ -363,7 +364,7 @@ void FakeSessionManagerClient::LoginScreenStorageListKeys(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), keys, absl::nullopt /* error */));
+      base::BindOnce(std::move(callback), keys, std::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageDelete(
@@ -405,7 +406,8 @@ void FakeSessionManagerClient::LoadShillProfile(
       base::BindOnce(on_load_shill_profile_callback_, cryptohome_id));
 }
 
-void FakeSessionManagerClient::StartDeviceWipe() {
+void FakeSessionManagerClient::StartDeviceWipe(
+    chromeos::VoidDBusMethodCallback callback) {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -806,7 +808,7 @@ void FakeSessionManagerClient::GetArcStartTime(
     chromeos::DBusMethodCallback<base::TimeTicks> callback) {
   PostReply(
       FROM_HERE, std::move(callback),
-      arc_available_ ? absl::make_optional(arc_start_time_) : absl::nullopt);
+      arc_available_ ? std::make_optional(arc_start_time_) : std::nullopt);
 }
 
 void FakeSessionManagerClient::EnableAdbSideload(
@@ -861,6 +863,18 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   }
 
   return true;
+}
+
+void FakeSessionManagerClient::NotifySessionStopping() const {
+  for (auto& observer : observers_) {
+    observer.SessionStopping();
+  }
+}
+
+void FakeSessionManagerClient::SetServerBackedStateKeyError(
+    const StateKeyErrorType error_type) {
+  DCHECK_EQ(policy_storage_, PolicyStorageType::kInMemory);
+  server_backed_state_keys_ = base::unexpected(error_type);
 }
 
 const std::string& FakeSessionManagerClient::device_policy() const {

@@ -149,9 +149,8 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // `session_id`.
   void OnSessionDestroyed(int32_t session_id);
 
-  const raw_ptr<Profile, ExperimentalAsh> observed_profile_;
-  const raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>
-      app_service_controller_;
+  const raw_ptr<Profile> observed_profile_;
+  const raw_ptr<AppServiceAppWindowShelfController> app_service_controller_;
 
   TaskIdToArcAppWindowInfo task_id_to_arc_app_window_info_;
   SessionIdToArcAppWindowInfo session_id_to_arc_app_window_info_;
@@ -168,7 +167,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // the windows in |arc_window_candidates_| will be checked and attach the task
   // id. Once the window is assigned a task id, the window is removed from
   // |arc_window_candidates_|.
-  std::set<aura::Window*> arc_window_candidates_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> arc_window_candidates_;
 
   int active_task_id_ = arc::kNoTaskId;
   int active_session_id_ = arc::kNoTaskId;

@@ -47,9 +47,7 @@ public class NumberRollView extends FrameLayout {
                 }
             };
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NumberRollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -99,16 +97,12 @@ public class NumberRollView extends FrameLayout {
         mStringIdForZero = stringIdForZero;
     }
 
-    /**
-     * Gets the current number roll position.
-     */
+    /** Gets the current number roll position. */
     private float getNumberRoll() {
         return mNumber;
     }
 
-    /**
-     * Sets the number roll position.
-     */
+    /** Sets the number roll position. */
     private void setNumberRoll(float number) {
         mNumber = number;
         int downNumber = (int) number;
@@ -117,9 +111,10 @@ public class NumberRollView extends FrameLayout {
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         String newString;
         if (mStringId != 0) {
-            newString = upNumber == 0 && mStringIdForZero != 0
-                    ? getResources().getString(mStringIdForZero)
-                    : getResources().getQuantityString(mStringId, upNumber, upNumber);
+            newString =
+                    upNumber == 0 && mStringIdForZero != 0
+                            ? getResources().getString(mStringIdForZero)
+                            : getResources().getQuantityString(mStringId, upNumber, upNumber);
         } else {
             newString = numberFormatter.format(upNumber);
         }
@@ -128,9 +123,10 @@ public class NumberRollView extends FrameLayout {
         }
 
         if (mStringId != 0) {
-            newString = downNumber == 0 && mStringIdForZero != 0
-                    ? getResources().getString(mStringIdForZero)
-                    : getResources().getQuantityString(mStringId, downNumber, downNumber);
+            newString =
+                    downNumber == 0 && mStringIdForZero != 0
+                            ? getResources().getString(mStringIdForZero)
+                            : getResources().getQuantityString(mStringId, downNumber, downNumber);
         } else {
             newString = numberFormatter.format(downNumber);
         }

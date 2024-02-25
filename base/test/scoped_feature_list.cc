@@ -24,14 +24,6 @@
 
 namespace base {
 namespace test {
-namespace {
-
-// A monotonically increasing id, passed to `FeatureList`s as they are created
-// to invalidate the cache member of `base::Feature` objects that were queried
-// with a different `FeatureList` installed.
-uint16_t g_current_caching_context = 1;
-
-}  // namespace
 
 // A struct describes ParsedEnableFeatures()' result.
 struct ScopedFeatureList::FeatureWithStudyGroup {
@@ -260,7 +252,7 @@ std::string HexDecodeString(const std::string& input) {
 }
 
 // Returns a command line string suitable to pass to
-// FeatureList::InitializeFromCommandLine(). For example,
+// FeatureList::InitFromCommandLine(). For example,
 // {{"Feature1", "Study1", "Group1", "Param1/Value1/"}, {"Feature2"}} returns:
 // - |enabled_feature|=true -> "Feature1<Study1.Group1:Param1/Value1/,Feature2"
 // - |enabled_feature|=false -> "Feature1<Study1.Group1,Feature2"
@@ -393,7 +385,6 @@ void ScopedFeatureList::InitWithFeatureList(
       "ScopedFeatureList must be Init from the test main thread");
 
   original_feature_list_ = FeatureList::ClearInstanceForTesting();
-  feature_list->SetCachingContextForTesting(++g_current_caching_context);
   FeatureList::SetInstance(std::move(feature_list));
   init_called_ = true;
 }
@@ -558,7 +549,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
     // If |create_associated_field_trials| is true, we want to match the
     // behavior of VariationsFieldTrialCreator to always associate a field
     // trial, even when there no params. Since
-    // FeatureList::InitializeFromCommandLine() doesn't associate a field trial
+    // FeatureList::InitFromCommandLine() doesn't associate a field trial
     // when there are no params, we do it here.
     if (!feature.has_params()) {
       scoped_refptr<FieldTrial> field_trial_without_params =
@@ -598,7 +589,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
       merged_features.disabled_feature_list, /*enable_features=*/false);
 
   std::unique_ptr<FeatureList> new_feature_list(new FeatureList);
-  new_feature_list->InitializeFromCommandLine(enabled, disabled);
+  new_feature_list->InitFromCommandLine(enabled, disabled);
   InitWithFeatureList(std::move(new_feature_list));
 }
 

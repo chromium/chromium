@@ -44,9 +44,7 @@ public class SplitAvailabilityLogger {
 
     private final Map<String, InstallTimes> mInstallTimesMap = new HashMap<>();
 
-    /**
-     * Records via UMA all modules that have been requested and are currently installed.
-     */
+    /** Records via UMA all modules that have been requested and are currently installed. */
     public static void logModuleAvailability() {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         Set<String> requestedModules = new HashSet<>();
@@ -80,13 +78,25 @@ public class SplitAvailabilityLogger {
      * @param moduleName The module name.
      */
     public void logInstallTimes(String moduleName) {
-        recordInstallTime(moduleName, "", SplitInstallSessionStatus.UNKNOWN,
+        recordInstallTime(
+                moduleName,
+                "",
+                SplitInstallSessionStatus.UNKNOWN,
                 SplitInstallSessionStatus.INSTALLED);
-        recordInstallTime(moduleName, ".PendingDownload", SplitInstallSessionStatus.UNKNOWN,
+        recordInstallTime(
+                moduleName,
+                ".PendingDownload",
+                SplitInstallSessionStatus.UNKNOWN,
                 SplitInstallSessionStatus.DOWNLOADING);
-        recordInstallTime(moduleName, ".Download", SplitInstallSessionStatus.DOWNLOADING,
+        recordInstallTime(
+                moduleName,
+                ".Download",
+                SplitInstallSessionStatus.DOWNLOADING,
                 SplitInstallSessionStatus.INSTALLING);
-        recordInstallTime(moduleName, ".Installing", SplitInstallSessionStatus.INSTALLING,
+        recordInstallTime(
+                moduleName,
+                ".Installing",
+                SplitInstallSessionStatus.INSTALLING,
                 SplitInstallSessionStatus.INSTALLED);
     }
 
@@ -160,8 +170,10 @@ public class SplitAvailabilityLogger {
 
         String cacheKey = installTimes.mIsCached ? "Cached" : "Uncached";
         long timing = endTime - startTime;
-        String key = String.format("Android.FeatureModules.%sAwakeInstallDuration%s.%s", cacheKey,
-                histogramSubname, moduleName);
+        String key =
+                String.format(
+                        "Android.FeatureModules.%sAwakeInstallDuration%s.%s",
+                        cacheKey, histogramSubname, moduleName);
 
         RecordHistogram.recordLongTimesHistogram(key, timing);
     }

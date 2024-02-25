@@ -67,11 +67,22 @@ ContentBrowserTest::ContentBrowserTest() {
   file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
                              /*is_absolute=*/false, /*create=*/false);
 #endif
-  CreateTestServer(GetTestDataFilePath());
 
-  // Fail as quickly as possible during tests, rather than attempting to reset
-  // accessibility and continue when unserialization fails.
-  RenderFrameHostImpl::max_accessibility_resets_ = 0;
+  // The HTTPS test server must be setup here as different browser test suites
+  // have different bundle behavior on macOS, and the HTTPS test server
+  // constructor reads in the local test root cert. It might be possible
+  // to move this to BrowserTestBase in the future.
+  embedded_https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  // Default hostnames for the HTTPS test server. Test fixtures can call this
+  // with different hostnames (before starting the server) to override.
+  embedded_https_test_server_->SetCertHostnames(
+      {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
+       "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
+       "*.c.com"});
+
+  embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
+  embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
 }
 
 ContentBrowserTest::~ContentBrowserTest() {
@@ -110,11 +121,21 @@ void ContentBrowserTest::SetUp() {
 
   ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
 
+// Enable this switch to prevent undesired viewport resizing for the scaling
+// issue addressed in https://crrev.com/c/4615623.
+#if BUILDFLAG(IS_IOS)
+  command_line->AppendSwitch(switches::kPreventResizingContentsForTesting);
+#endif
+
   BrowserTestBase::SetUp();
 }
 
 void ContentBrowserTest::TearDown() {
   BrowserTestBase::TearDown();
+
+  if (embedded_https_test_server().Started()) {
+    ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+  }
 
   // LinuxInputMethodContextFactory has to be shutdown.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -142,7 +163,7 @@ void ContentBrowserTest::PreRunTestOnMainThread() {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  pool_ = new base::apple::ScopedNSAutoreleasePool;
+  pool_.emplace();
 #endif
 
   // Pump startup related events.
@@ -163,7 +184,7 @@ void ContentBrowserTest::PostRunTestOnMainThread() {
   DCHECK(pre_run_test_executed_);
 
 #if BUILDFLAG(IS_MAC)
-  pool_->Recycle();
+  pool_.reset();
 #endif
 
   for (RenderProcessHost::iterator i(RenderProcessHost::AllHostsIterator());

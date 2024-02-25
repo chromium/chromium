@@ -9,8 +9,8 @@
         value="{{selectedScannerId::change}}"
         disabled="[[disabled]]" aria-labelledby="scannerLabel">
       <template is="dom-repeat" items="[[scanners]]" as="scanner">
-        <option value="[[getTokenAsString_(scanner)]]">
-          [[getScannerDisplayName_(scanner)]]
+        <option value="[[getTokenAsString(scanner)]]">
+          [[getScannerDisplayName(scanner)]]
         </option>
       </template>
     </select>

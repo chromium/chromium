@@ -51,7 +51,7 @@ class BaseSaveUpdateAddressProfileBubbleControllerImplTest
 
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile profile) {
+      base::optional_ref<const AutofillProfile> profile) {
     user_decision_ = decision;
   }
 
@@ -120,9 +120,10 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveInEdit) {
                               kSuppressedScreenshotError),
       ShowInitBubble(), PressButton(SaveAddressProfileView::kEditButtonViewId),
 
-      InAnyContext(
-          Steps(WaitForShow(EditAddressProfileView::kTopViewId),
-                PressButton(views::DialogClientView::kOkButtonElementId))),
+      InAnyContext(Steps(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          PressButton(views::DialogClientView::kOkButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
 
       EnsureClosedWithDecision(
           AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted));

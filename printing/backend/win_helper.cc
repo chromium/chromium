@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
@@ -19,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -472,7 +472,7 @@ std::vector<std::string> GetDriverInfo(HANDLE printer) {
 }
 
 bool DoesDriverDisplayFileDialogForPrinting(const std::string& printer_name) {
-  static constexpr auto kPortNames = base::MakeFixedFlatSet<base::WStringPiece>(
+  static constexpr auto kPortNames = base::MakeFixedFlatSet<std::wstring_view>(
       {kPrinterDriverPortFile, kPrinterDriverPortPrompt,
        kPrinterDriverPortFax});
   return kPortNames.contains(GetPrinterDriverPort(printer_name));
@@ -670,6 +670,14 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
 
 std::string GetDriverVersionStringForTesting(DWORDLONG version_number) {
   return GetDriverVersionString(version_number);
+}
+
+mojom::ResultCode GetResultCodeFromSystemErrorCode(
+    logging::SystemErrorCode system_code) {
+  if (system_code == ERROR_ACCESS_DENIED) {
+    return mojom::ResultCode::kAccessDenied;
+  }
+  return mojom::ResultCode::kFailed;
 }
 
 }  // namespace printing

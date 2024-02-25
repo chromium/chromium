@@ -175,7 +175,7 @@ void ArcVmDataMigrationNotifier::CloseNotification() {
 }
 
 void ArcVmDataMigrationNotifier::OnNotificationClicked(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index) {
     // Notification message body is clicked.
     return;

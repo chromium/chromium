@@ -20,6 +20,7 @@
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
@@ -176,16 +177,12 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
       discardable_memory_allocator())
       ->ReleaseFreeMemory();
 
-  // Busy wait for host memory usage to be reduced.
-  base::TimeTicks end = base::TimeTicks::Now() + base::Seconds(5);
-  while (base::TimeTicks::Now() < end) {
-    if (!discardable_memory::DiscardableSharedMemoryManager::Get()
-             ->GetBytesAllocated())
-      break;
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_LT(base::TimeTicks::Now(), end);
+  // ReleaseFreeMemory() should result in the allocated bytes dropping to zero
+  // within a shorter time than the RunLoop timeout.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    return discardable_memory::DiscardableSharedMemoryManager::Get()
+               ->GetBytesAllocated() == 0;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,

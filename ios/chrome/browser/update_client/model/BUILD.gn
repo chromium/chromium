@@ -1,0 +1,30 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_chrome_update_query_params_delegate.h",
+    "ios_chrome_update_query_params_delegate.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/update_client",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_update_query_params_delegate_unittest.cc" ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/update_client",
+    "//components/version_info",
+    "//ios/chrome/common",
+    "//testing/gtest",
+  ]
+}

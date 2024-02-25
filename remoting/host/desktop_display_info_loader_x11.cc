@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
@@ -16,14 +17,14 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 
 namespace remoting {
 
 namespace {
 
 // Monitors were added in XRANDR 1.5.
-constexpr int kMinRandrVersion = 105;
+constexpr std::pair<uint32_t, uint32_t> kMinRandrVersion{1, 5};
 
 }  // namespace
 
@@ -44,13 +45,14 @@ void DesktopDisplayInfoLoaderX11::Init() {
     return;
   }
 
-  xrandr_version_ = ui::GetXrandrVersion();
-  if (xrandr_version_ < kMinRandrVersion) {
-    HOST_LOG << "XRANDR version (" << xrandr_version_ << ") is too old.";
+  auto randr_version = connection_->randr_version();
+  if (randr_version < kMinRandrVersion) {
+    HOST_LOG << "XRANDR version (" << randr_version.first << ", "
+             << randr_version.second << ") is too old.";
     return;
   }
 
-  root_window_events_ = std::make_unique<x11::XScopedEventSelector>(
+  root_window_events_ = connection_->ScopedSelectEvent(
       ui::GetX11RootWindow(), x11::EventMask::StructureNotify);
   auto randr_event_mask =
       x11::RandR::NotifyMask::ScreenChange | x11::RandR::NotifyMask::CrtcChange;
@@ -71,7 +73,15 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
     info.y = monitor.y;
     info.width = monitor.width;
     info.height = monitor.height;
-    info.dpi = GetMonitorDpi(monitor).x();
+
+    // Hard-code the default DPI instead of calculating it from the monitor's
+    // resolution and physical size. This avoids an issue where the website
+    // pre-multiplies the ClientResolution sizes by the host's pixels/DIPs
+    // ratio, sometimes leading to a feedback loop of ever-increasing resizes.
+    //
+    // TODO: b/309174172 - Change this back to GetMonitorDpi(monitor).x() when
+    // the website issue has been addressed.
+    info.dpi = kDefaultDpi;
     info.bpp = 24;
 
     result.AddDisplay(info);
@@ -98,7 +108,7 @@ void DesktopDisplayInfoLoaderX11::OnEvent(const x11::Event& xevent) {
 }
 
 void DesktopDisplayInfoLoaderX11::LoadMonitors() {
-  if (xrandr_version_ < kMinRandrVersion) {
+  if (connection_->randr_version() < kMinRandrVersion) {
     return;
   }
 

@@ -29,8 +29,7 @@ namespace audio {
 
 /* static */
 tflite::support::StatusOr<double> AudioEmbedder::CosineSimilarity(
-    const processor::FeatureVector& u,
-    const processor::FeatureVector& v) {
+    const processor::FeatureVector& u, const processor::FeatureVector& v) {
   return processor::EmbeddingPostprocessor::CosineSimilarity(u, v);
 }
 
@@ -38,14 +37,14 @@ tflite::support::StatusOr<double> AudioEmbedder::CosineSimilarity(
 tflite::support::StatusOr<std::unique_ptr<AudioEmbedder>>
 AudioEmbedder::CreateFromOptions(const AudioEmbedderOptions& options,
                                  std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
   auto options_copy = absl::make_unique<AudioEmbedderOptions>(options);
 
-  ASSIGN_OR_RETURN(auto audio_embedder,
+  TFLITE_ASSIGN_OR_RETURN(auto audio_embedder,
                    core::TaskAPIFactory::CreateFromBaseOptions<AudioEmbedder>(
                        &options_copy->base_options(), std::move(resolver)));
 
-  RETURN_IF_ERROR(audio_embedder->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(audio_embedder->Init(std::move(options_copy)));
   return audio_embedder;
 }
 
@@ -66,7 +65,7 @@ absl::Status AudioEmbedder::Init(
   options_ = std::move(options);
 
   // Create preprocessor, assuming having only 1 input tensor.
-  ASSIGN_OR_RETURN(preprocessor_,
+  TFLITE_ASSIGN_OR_RETURN(preprocessor_,
                    tflite::task::processor::AudioPreprocessor::Create(
                        GetTfLiteEngine(), {0}));
 
@@ -96,7 +95,7 @@ absl::Status AudioEmbedder::Init(
           "number of output tensors.",
           support::TfLiteSupportStatus::kInvalidArgumentError);
     }
-    ASSIGN_OR_RETURN(auto processor,
+    TFLITE_ASSIGN_OR_RETURN(auto processor,
                      processor::EmbeddingPostprocessor::Create(
                          GetTfLiteEngine(), {i}, std::move(option)));
     postprocessors_.emplace_back(std::move(processor));
@@ -111,7 +110,7 @@ AudioEmbedder::Postprocess(
   tflite::task::processor::EmbeddingResult result;
   for (int i = 0; i < postprocessors_.size(); i++) {
     auto processor = postprocessors_.at(i).get();
-    RETURN_IF_ERROR(processor->Postprocess(result.add_embeddings()));
+    TFLITE_RETURN_IF_ERROR(processor->Postprocess(result.add_embeddings()));
   }
   return result;
 }

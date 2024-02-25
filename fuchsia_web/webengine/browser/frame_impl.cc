@@ -11,7 +11,6 @@
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <limits>
 
@@ -50,6 +49,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/event_filter.h"
@@ -79,6 +79,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/platform_window/fuchsia/view_ref_pair.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -226,7 +227,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->audio_device = blink::MediaStreamDevice(
-          request.audio_type, request.requested_audio_device_id,
+          request.audio_type,
+          request.requested_audio_device_ids.empty()
+              ? ""
+              : request.requested_audio_device_ids.front(),
           /*name=*/"");
     }
     result_pos++;
@@ -236,7 +240,10 @@ void HandleMediaPermissionsRequestResult(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
       devices->video_device = blink::MediaStreamDevice(
-          request.video_type, request.requested_video_device_id,
+          request.video_type,
+          request.requested_video_device_ids.empty()
+              ? ""
+              : request.requested_video_device_ids.front(),
           /*name=*/"");
     }
   }
@@ -253,20 +260,20 @@ void HandleMediaPermissionsRequestResult(
       nullptr);
 }
 
-absl::optional<url::Origin> ParseAndValidateWebOrigin(
+std::optional<url::Origin> ParseAndValidateWebOrigin(
     const std::string& origin_str) {
   GURL origin_url(origin_str);
   if (!origin_url.username().empty() || !origin_url.password().empty() ||
       !origin_url.query().empty() || !origin_url.ref().empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!origin_url.path().empty() && origin_url.path() != "/")
-    return absl::nullopt;
+    return std::nullopt;
 
   auto origin = url::Origin::Create(origin_url);
   if (origin.opaque())
-    return absl::nullopt;
+    return std::nullopt;
 
   return origin;
 }
@@ -378,7 +385,7 @@ class AudioStreamBrokerFactory final
   }
 
   std::unique_ptr<content::AudioStreamBrokerFactory> base_factory_;
-  absl::optional<fuchsia::media::AudioRenderUsage> output_usage_;
+  std::optional<fuchsia::media::AudioRenderUsage> output_usage_;
   base::WeakPtrFactory<AudioStreamBrokerFactory> weak_factory_{this};
 };
 
@@ -531,7 +538,7 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
     return;
   }
 
-  absl::optional<std::u16string> script_utf16 =
+  std::optional<std::u16string> script_utf16 =
       base::ReadUTF8FromVMOAsUTF16(script);
   if (!script_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
@@ -810,7 +817,7 @@ void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Frame.CreateView",
               perfetto::Flow::FromPointer(this));
 
-  auto view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   CreateViewImpl(std::move(view_token), std::move(view_ref_pair.control_ref),
                  std::move(view_ref_pair.view_ref));
 }
@@ -844,7 +851,7 @@ void FrameImpl::CreateViewImpl(fuchsia::ui::views::ViewToken view_token,
   // If a View to this Frame is already active then disconnect it.
   DestroyWindowTreeHost();
 
-  scenic::ViewRefPair view_ref_pair;
+  ui::ViewRefPair view_ref_pair;
   view_ref_pair.control_ref = std::move(control_ref);
   view_ref_pair.view_ref = std::move(view_ref);
   SetupWindowTreeHost(std::move(view_token), std::move(view_ref_pair));
@@ -872,7 +879,7 @@ void FrameImpl::CreateView2(fuchsia::web::CreateView2Args view_args) {
   // If a View to this Frame is already active then disconnect it.
   DestroyWindowTreeHost();
 
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   SetupWindowTreeHost(std::move(*view_args.mutable_view_creation_token()),
                       std::move(view_ref_pair));
 
@@ -945,7 +952,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     return;
   }
 
-  absl::optional<std::string> script_as_string =
+  std::optional<std::string> script_as_string =
       base::StringFromMemBuffer(script);
   if (!script_as_string) {
     LOG(ERROR) << "Couldn't read script from buffer.";
@@ -1003,11 +1010,11 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  absl::optional<std::u16string> origin_utf16;
+  std::optional<std::u16string> origin_utf16;
   if (origin != kWildcardOrigin)
     origin_utf16 = base::UTF8ToUTF16(origin);
 
-  absl::optional<std::u16string> data_utf16 =
+  std::optional<std::u16string> data_utf16 =
       base::ReadUTF8FromVMOAsUTF16(message.data());
   if (!data_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
@@ -1125,7 +1132,7 @@ void FrameImpl::EnableHeadlessRendering() {
     return;
   }
 
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   SetupWindowTreeHost(fuchsia::ui::views::ViewToken(),
                       std::move(view_ref_pair));
 
@@ -1159,7 +1166,7 @@ void FrameImpl::DisableHeadlessRendering() {
 }
 
 void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                                    scenic::ViewRefPair view_ref_pair) {
+                                    ui::ViewRefPair view_ref_pair) {
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
@@ -1172,7 +1179,7 @@ void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
 
 void FrameImpl::SetupWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
-    scenic::ViewRefPair view_ref_pair) {
+    ui::ViewRefPair view_ref_pair) {
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
@@ -1506,14 +1513,15 @@ void FrameImpl::RequestMediaAccessPermission(
   DCHECK(permission_controller);
 
   permission_controller->RequestPermissionsFromCurrentDocument(
-      permissions, render_frame_host, request.user_gesture,
+      render_frame_host,
+      content::PermissionRequestDescription(permissions, request.user_gesture),
       base::BindOnce(&HandleMediaPermissionsRequestResult, request,
                      std::move(callback)));
 }
 
 bool FrameImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   blink::PermissionType permission;
   switch (type) {
@@ -1529,8 +1537,7 @@ bool FrameImpl::CheckMediaAccessPermission(
   }
 
   // TODO(crbug.com/1321100): Remove `security_origin`.
-  if (url::Origin::Create(security_origin) !=
-      render_frame_host->GetLastCommittedOrigin()) {
+  if (security_origin != render_frame_host->GetLastCommittedOrigin()) {
     return false;
   }
 
@@ -1635,14 +1642,12 @@ void FrameImpl::OnPixelScaleUpdate(float pixel_scale) {
 }
 
 void FrameImpl::SetAccessibilityEnabled(bool enabled) {
-  auto* browser_accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
-  if (enabled) {
-    browser_accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else {
-    browser_accessibility_state->RemoveAccessibilityModeFlags(
-        ui::kAXModeComplete);
+  if (!enabled) {
+    scoped_accessibility_mode_.reset();
+  } else if (!scoped_accessibility_mode_) {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete);
   }
 }
 

@@ -13,11 +13,46 @@ class DictationTestSupport {
 
   /**
    * Notifies C++ tests, which wait for the JS side to call
-   * `domAutomationController.send`, that they can continue.
+   * `chrome.test.sendScriptResult`, that they can continue.
    * @private
    */
   notifyCcTests_() {
-    domAutomationController.send('ready');
+    chrome.test.sendScriptResult('ready');
+  }
+
+  /**
+   * TODO(b/301475127): Move this logic into AutomationTestSupport.
+   * Waits for focus to land on the editable field used in Dictation C++ tests.
+   */
+  async waitForEditableFocus() {
+    const desktop = await this.getDesktop_();
+    const focus = await new Promise(resolve => {
+      chrome.automation.getFocus(f => resolve(f));
+    });
+    const isCorrectNode = (node) => {
+      return node && node.className === 'editableForDictation';
+    };
+
+    if (isCorrectNode(focus)) {
+      this.notifyCcTests_();
+      return;
+    }
+
+    await new Promise(resolve => {
+      const onFocusChanged = (event) => {
+        const newFocus = event.target;
+        if (isCorrectNode(newFocus)) {
+          desktop.removeEventListener(
+              chrome.automation.EventType.FOCUS, onFocusChanged);
+          resolve();
+        }
+      };
+
+      desktop.addEventListener(
+          chrome.automation.EventType.FOCUS, onFocusChanged);
+    });
+
+    this.notifyCcTests_();
   }
 
   /** Sets Dictation timeouts for test stability. */
@@ -32,11 +67,14 @@ class DictationTestSupport {
     this.notifyCcTests_();
   }
 
-  /** Waits for the FocusHandler to initialize. */
-  async waitForFocusHandler() {
+  /**
+   * Waits for the FocusHandler to initialize.
+   * @param {string} expectedClassName
+   */
+  async waitForFocusHandler(expectedClassName) {
     const focusHandler = this.dictation_.focusHandler_;
     const isReady = () => {
-      return focusHandler.isReadyForTesting();
+      return focusHandler.isReadyForTesting(expectedClassName);
     };
 
     if (isReady()) {
@@ -145,6 +183,7 @@ class DictationTestSupport {
    * @param {number} selEnd
    */
   async waitForSelection(selStart, selEnd) {
+    const desktop = await this.getDesktop_();
     const inputController = this.dictation_.inputController_;
     const goalTest = () => {
       const data = inputController.getEditableNodeData();
@@ -160,11 +199,17 @@ class DictationTestSupport {
       const onSelectionChanged = () => {
         if (goalTest()) {
           inputController.onSelectionChangedForTesting_ = null;
+          desktop.removeEventListener(
+              chrome.automation.EventType.DOCUMENT_SELECTION_CHANGED,
+              onSelectionChanged);
           resolve();
         }
       };
 
       inputController.onSelectionChangedForTesting_ = onSelectionChanged;
+      desktop.addEventListener(
+          chrome.automation.EventType.DOCUMENT_SELECTION_CHANGED,
+          onSelectionChanged);
     });
 
     this.notifyCcTests_();
@@ -199,6 +244,12 @@ class DictationTestSupport {
     chrome.speechRecognitionPrivate.start = this.speechRecognitionPrivateStart_;
     this.notifyCcTests_();
   }
+
+  async getDesktop_() {
+    return new Promise(resolve => {
+      chrome.automation.getDesktop(d => resolve(d));
+    });
+  }
 }
 
-globalThis.testSupport = new DictationTestSupport();
+globalThis.dictationTestSupport = new DictationTestSupport();

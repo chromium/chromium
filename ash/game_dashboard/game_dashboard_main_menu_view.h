@@ -5,6 +5,8 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,6 +14,7 @@
 
 namespace ash {
 
+class AnchoredNudge;
 class FeatureTile;
 class GameDashboardContext;
 class PillButton;
@@ -21,13 +24,11 @@ class Switch;
 // dashboard button.
 class ASH_EXPORT GameDashboardMainMenuView
     : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(GameDashboardMainMenuView);
+  METADATA_HEADER(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
 
+ public:
   explicit GameDashboardMainMenuView(GameDashboardContext* context);
 
-  GameDashboardMainMenuView(views::Widget* main_menu_button_widget,
-                            aura::Window* game_window);
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;
@@ -47,10 +48,13 @@ class ASH_EXPORT GameDashboardMainMenuView
   // recording duration.
   void UpdateRecordingDuration(const std::u16string& duration);
 
+  // Updates the `game_controls_tile_` states, sub-label and tooltip text.
+  void UpdateGameControlsTile();
+
  private:
   friend class GameDashboardContextTestApi;
 
-  class FeatureDetailsRow;
+  class GameControlsDetailsRow;
 
   // Callbacks for the tiles and buttons in the main menu view.
   // Handles showing and hiding the toolbar.
@@ -62,9 +66,6 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Handles functions for Game Controls buttons.
   void OnGameControlsTilePressed();
-  void OnGameControlsDetailsPressed();
-  void OnGameControlsSetUpButtonPressed();
-  void OnGameControlsHintSwitchButtonPressed();
 
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
@@ -81,25 +82,22 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Adds feature details rows, for example, including Game Controls or window
   // size.
-  void AddFeatureDetailsRows();
+  void MaybeAddArcFeatureRows();
 
   // Adds Game Controls feature tile in `container` if it is the ARC game window
   // and Game Controls is available.
   void MaybeAddGameControlsTile(views::View* container);
 
   // Adds menu controls row for Game Controls.
-  void MaybeAddGameControlsDetailsRow(views::View* container);
+  void AddGameControlsDetailsRow(views::View* container);
 
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.
-  void MaybeAddScreenSizeSettingsRow(views::View* container);
+  void AddScreenSizeSettingsRow(views::View* container);
 
   // Adds the dashboard cluster (containing feedback, settings, and help
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
-
-  // Enables Game Controls edit mode.
-  void EnableGameControlsEditMode();
 
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -109,29 +107,44 @@ class ASH_EXPORT GameDashboardMainMenuView
   // the default UI.
   void UpdateRecordGameTile(bool is_recording_game_window);
 
+  // Adds pulse animation and an education nudge for
+  // `game_controls_setup_button_` if it exists and `is_o4c` is false. `is_o4c`
+  // is true if the ARC game is optimized for ChromeOS.
+  void MaybeDecorateSetupButton(bool is_o4c);
+  // Performs pulse animation for `game_controls_setup_button_`.
+  void PerformPulseAnimationForSetupButton(int pulse_count);
+  // Shows education nudge for `game_controls_setup_button_`.
+  void ShowNudgeForSetupButton();
+
+  // Gets UI elements from Game Controls details row.
+  PillButton* GetGameControlsSetupButton();
+  Switch* GetGameControlsFeatureSwith();
+
+  // For test to access the nudge ID in the anonymous namespace.
+  AnchoredNudge* GetGameControlsSetupNudgeForTesting();
+
+  // views::Views:
+  void OnThemeChanged() override;
+
   // Allows this class to access `GameDashboardContext` owned functions/objects.
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+  const raw_ptr<GameDashboardContext> context_;
 
   // Shortcut Tiles:
   // Toolbar button to toggle the `GameDashboardToolbarView`.
   raw_ptr<FeatureTile> toolbar_tile_ = nullptr;
 
-  // Game controls button to toggle the Game Controls UI visibility.
+  // Game controls button to toggle the Game Controls UI hint.
   raw_ptr<FeatureTile> game_controls_tile_ = nullptr;
 
   // Record game button to start recording the game window. This will open the
   // screen capture tool, allowing the user to select recording options.
   raw_ptr<FeatureTile> record_game_tile_ = nullptr;
 
-  // Game Controls details:
-  // Feature row to configure Game Controls.
-  raw_ptr<FeatureDetailsRow> game_controls_details_ = nullptr;
+  // Game Controls details row to configure Game Controls.
+  raw_ptr<GameControlsDetailsRow> game_controls_details_ = nullptr;
 
-  // Setup button to configure Game Controls for the current game window.
-  raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
-
-  // Hint button to toggle the Game Controls hint UI.
-  raw_ptr<Switch> game_controls_hint_switch_ = nullptr;
+  // Layer for setup button pulse animation.
+  std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
 };
 
 }  // namespace ash

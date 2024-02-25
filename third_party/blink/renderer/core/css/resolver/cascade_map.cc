@@ -119,12 +119,6 @@ void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
   size_t index = static_cast<size_t>(static_cast<unsigned>(id));
   DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
 
-  // Set bit in high_priority_, if appropriate.
-  static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
-                "CascadeMap supports at most 63 high-priority properties");
-  if (IsHighPriority(id)) {
-    high_priority_ |= (1ull << index);
-  }
   has_important_ |= priority.IsImportant();
 
   CascadePriorityList* list = &native_properties_.Buffer()[index];
@@ -163,7 +157,6 @@ void CascadeMap::Add(CascadePriorityList* list, CascadePriority priority) {
 
 void CascadeMap::Reset() {
   inline_style_lost_ = false;
-  high_priority_ = 0;
   has_important_ = false;
   native_properties_.Bits().Reset();
   custom_properties_.clear();

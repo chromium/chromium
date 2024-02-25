@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -44,7 +45,6 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/service/context_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface.h"
@@ -59,13 +59,10 @@ namespace gfx {
 struct GpuFenceHandle;
 }
 
-namespace viz {
-class GpuTaskSchedulerHelper;
-}
-
 namespace gpu {
 class SharedContextState;
 class GpuProcessShmCount;
+class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class SyncPointClientState;
 struct ContextCreationAttribs;
@@ -126,6 +123,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void SetGpuControlClient(GpuControlClient*) override;
   // GetCapabilities() can be called on any thread.
   const Capabilities& GetCapabilities() const override;
+  const GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query_id, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -179,16 +177,19 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
  private:
   struct InitializeOnGpuThreadParams {
     const raw_ref<const ContextCreationAttribs> attribs;
-    raw_ptr<Capabilities> capabilities;  // Ouptut.
+    raw_ptr<Capabilities> capabilities;       // Output.
+    raw_ptr<GLCapabilities> gl_capabilities;  // Output.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count;
 
     InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
                                 Capabilities* capabilities,
+                                GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
                                 GpuProcessShmCount* use_shader_cache_shm_count)
         : attribs(attribs),
           capabilities(capabilities),
+          gl_capabilities(gl_capabilities),
           gr_shader_cache(gr_shader_cache),
           use_shader_cache_shm_count(use_shader_cache_shm_count) {}
   };
@@ -212,7 +213,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   bool MakeCurrent();
 
   void CreateCacheUse(
-      absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
+      std::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
 
   // Client callbacks are posted back to |origin_task_runner_|, or run
   // synchronously if there's no task runner or message loop.
@@ -270,7 +271,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   std::unique_ptr<CommandBufferService> command_buffer_;
   std::unique_ptr<DecoderContext> decoder_;
   scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
 
   // Used to throttle PerformDelayedWorkOnGpuThread.
@@ -287,6 +287,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   base::Lock last_state_lock_;
   int32_t last_put_offset_ = -1;
   Capabilities capabilities_;
+  GLCapabilities gl_capabilities_;
   uint64_t next_fence_sync_release_ = 1;
   std::vector<SyncToken> next_flush_sync_token_fences_;
   // Sequence checker for client sequence used for initialization, destruction,
@@ -303,7 +304,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Pointer to the SingleTaskSequence that actually does the scheduling.
   raw_ptr<SingleTaskSequence> task_sequence_;
-  std::unique_ptr<SharedImageInterfaceInProcess> shared_image_interface_;
+  scoped_refptr<SharedImageInterfaceInProcess> shared_image_interface_;
 
   // The group of contexts that share namespaces with this context.
   scoped_refptr<gles2::ContextGroup> context_group_;

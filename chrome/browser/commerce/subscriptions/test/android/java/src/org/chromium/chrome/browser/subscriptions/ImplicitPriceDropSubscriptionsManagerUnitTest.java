@@ -27,18 +27,15 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
@@ -48,14 +45,11 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link ImplicitPriceDropSubscriptionsManager}.
- */
+/** Tests for {@link ImplicitPriceDropSubscriptionsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImplicitPriceDropSubscriptionsManagerUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -69,8 +63,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     static class TestImplicitPriceDropSubscriptionsManager
             extends ImplicitPriceDropSubscriptionsManager {
-        private TabImpl mTab1;
-        private TabImpl mTab2;
+        private Tab mTab1;
+        private Tab mTab2;
         private String mMockTab1OfferId;
         private String mMockTab2OfferId;
 
@@ -91,7 +85,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         }
 
         void setupForFetchOfferId(
-                TabImpl tab1, TabImpl tab2, String mockTab1OfferId, String mockTab2OfferId) {
+                Tab tab1, Tab tab2, String mockTab1OfferId, String mockTab2OfferId) {
             mTab1 = tab1;
             mTab2 = tab2;
             mMockTab1OfferId = mockTab1OfferId;
@@ -99,23 +93,14 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         }
     }
 
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    ShoppingService mShoppingService;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData1;
-    @Mock
-    CriticalPersistedTabData mCriticalPersistedTabData2;
-    @Captor
-    ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
+    @Mock TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock ShoppingService mShoppingService;
+    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
+    private Tab mTab1;
+    private Tab mTab2;
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private TestImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
@@ -123,18 +108,30 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
-        mTab2 = prepareTab(TAB2_ID, URL2, POSITION2, mCriticalPersistedTabData2);
+        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1);
+        mTab2 = prepareTab(TAB2_ID, URL2, POSITION2);
         // Mock that tab1 and tab2 are both stale tabs.
-        long fakeTimestamp = System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                + TimeUnit.DAYS.toMillis(7);
-        doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
-        doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
-        mSubscription1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.OFFER_ID, OFFER1_ID, ManagementType.CHROME_MANAGED, null);
-        mSubscription2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.OFFER_ID, OFFER2_ID, ManagementType.CHROME_MANAGED, null);
+        long fakeTimestamp =
+                System.currentTimeMillis()
+                        - TimeUnit.SECONDS.toMillis(
+                                ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                        + TimeUnit.DAYS.toMillis(7);
+        doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
+        doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
+        mSubscription1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.OFFER_ID,
+                        OFFER1_ID,
+                        ManagementType.CHROME_MANAGED,
+                        null);
+        mSubscription2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.OFFER_ID,
+                        OFFER2_ID,
+                        ManagementType.CHROME_MANAGED,
+                        null);
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -157,8 +154,15 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_WithDuplicateURL() {
-        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
-        mTab2 = prepareTab(TAB2_ID, URL1, POSITION2, mCriticalPersistedTabData2);
+        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1);
+        mTab2 = prepareTab(TAB2_ID, URL1, POSITION2);
+        long fakeTimestamp =
+                System.currentTimeMillis()
+                        - TimeUnit.SECONDS.toMillis(
+                                ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                        + TimeUnit.DAYS.toMillis(7);
+        doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
+        doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
 
         initializeSubscriptionsAndVerify(true, false);
@@ -174,10 +178,12 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_TabTooOld() {
-        doReturn(System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                - TimeUnit.DAYS.toMillis(7))
-                .when(mCriticalPersistedTabData1)
+        doReturn(
+                        System.currentTimeMillis()
+                                - TimeUnit.SECONDS.toMillis(
+                                        ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                                - TimeUnit.DAYS.toMillis(7))
+                .when(mTab1)
                 .getTimestampMillis();
 
         initializeSubscriptionsAndVerify(false, true);
@@ -186,7 +192,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_TabTooNew() {
-        doReturn(System.currentTimeMillis()).when(mCriticalPersistedTabData1).getTimestampMillis();
+        doReturn(System.currentTimeMillis()).when(mTab1).getTimestampMillis();
 
         initializeSubscriptionsAndVerify(false, true);
         verifyEligibleSubscriptionMetrics(1, 2);
@@ -218,8 +224,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testUnsubscribe_NotUnique() {
-        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
-        mTab2 = prepareTab(TAB2_ID, URL1, POSITION2, mCriticalPersistedTabData2);
+        mTab1 = prepareTab(TAB1_ID, URL1, POSITION1);
+        mTab2 = prepareTab(TAB2_ID, URL1, POSITION2);
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
 
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
@@ -241,17 +247,13 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         verify(mTabModel).removeObserver(any(TabModelObserver.class));
     }
 
-    private TabImpl prepareTab(int id, String urlString, int position,
-            CriticalPersistedTabData criticalPersistedTabData) {
-        TabImpl tab = mock(TabImpl.class);
+    private Tab prepareTab(int id, String urlString, int position) {
+        Tab tab = mock(Tab.class);
         doReturn(id).when(tab).getId();
         GURL gurl = new GURL(urlString);
         doReturn(gurl).when(tab).getUrl();
         doReturn(gurl).when(tab).getOriginalUrl();
         doReturn(tab).when(mTabModel).getTabAt(position);
-        UserDataHost userDataHost = new UserDataHost();
-        userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        doReturn(userDataHost).when(tab).getUserDataHost();
         return tab;
     }
 
@@ -274,9 +276,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     }
 
     private void verifyEligibleSubscriptionMetrics(int eligibleCount, int totalCount) {
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(TAB_ELIGIBLE_HISTOGRAM, 1),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(TAB_ELIGIBLE_HISTOGRAM, 1),
                 equalTo(eligibleCount));
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(TAB_ELIGIBLE_HISTOGRAM),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(TAB_ELIGIBLE_HISTOGRAM),
                 equalTo(totalCount));
     }
 }

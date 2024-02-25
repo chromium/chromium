@@ -4,11 +4,14 @@
 
 #include "ui/native_theme/native_theme_win.h"
 
-#include <windows.h>
 #include <stddef.h>
 #include <uxtheme.h>
 #include <vsstyle.h>
 #include <vssym32.h>
+#include <windows.h>
+
+#include <optional>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -27,7 +30,6 @@
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -146,17 +148,17 @@ class ScopedCreateDCWithBitmap {
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
   base::win::RegKey hkcu_themes_regkey;
   // Validity is checked at time-of-use.
-  (void)hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
-                                L"Software\\Microsoft\\Windows\\"
-                                L"CurrentVersion\\Themes\\Personalize",
-                                access);
+  std::ignore = hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
+                                        L"Software\\Microsoft\\Windows\\"
+                                        L"CurrentVersion\\Themes\\Personalize",
+                                        access);
   return hkcu_themes_regkey;
 }
 
 base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
   base::win::RegKey hkcu_color_filtering_regkey;
   // Validity is checked at time-of-use.
-  (void)hkcu_color_filtering_regkey.Open(
+  std::ignore = hkcu_color_filtering_regkey.Open(
       HKEY_CURRENT_USER, L"Software\\Microsoft\\ColorFiltering", access);
   return hkcu_color_filtering_regkey;
 }
@@ -262,7 +264,7 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
                            ColorScheme color_scheme,
-                           const absl::optional<SkColor>& accent_color) const {
+                           const std::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 
@@ -293,37 +295,39 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     : NativeTheme(should_only_use_dark_colors),
       supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
       color_change_listener_(this) {
+  // By default UI should not use the system accent color.
+  set_should_use_system_accent_color(false);
+
   // If there's no sequenced task runner handle, we can't be called back for
-  // dark mode changes. This generally happens in tests. As a result, ignore
-  // dark mode in this case.
-  if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
-      !IsForcedHighContrast() &&
-      base::SequencedTaskRunner::HasCurrentDefault()) {
-    // Dark Mode currently targets UWP apps, which means Win32 apps need to use
-    // alternate, less reliable means of detecting the state. The following
-    // can break in future Windows versions.
-    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_themes_regkey_.Valid()) {
+  // registry changes. This generally happens in tests.
+  const bool observers_can_operate =
+      base::SequencedTaskRunner::HasCurrentDefault();
+
+  hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+  if (hkcu_themes_regkey_.Valid()) {
+    if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
+        !IsForcedHighContrast()) {
       UpdateDarkModeStatus();
-      UpdatePrefersReducedTransparency();
-      RegisterThemeRegkeyObserver();
     }
-  } else if (base::SequencedTaskRunner::HasCurrentDefault()) {
-    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_themes_regkey_.Valid()) {
-      UpdatePrefersReducedTransparency();
+    UpdatePrefersReducedTransparency();
+    if (observers_can_operate) {
       RegisterThemeRegkeyObserver();
     }
   }
+
   hkcu_color_filtering_regkey_ =
       OpenColorFilteringRegKey(KEY_READ | KEY_NOTIFY);
   if (hkcu_color_filtering_regkey_.Valid()) {
     UpdateInvertedColors();
-    RegisterColorFilteringRegkeyObserver();
+    if (observers_can_operate) {
+      RegisterColorFilteringRegkeyObserver();
+    }
   }
+
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
   }
+
   // Initialize the cached system colors.
   UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
@@ -336,15 +340,12 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
 }
 
 void NativeThemeWin::ConfigureWebInstance() {
-  if (!IsForcedDarkMode() && !IsForcedHighContrast() &&
-      base::SequencedTaskRunner::HasCurrentDefault()) {
-    // Add the web native theme as an observer to stay in sync with color scheme
-    // changes.
-    color_scheme_observer_ =
-        std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
-            NativeTheme::GetInstanceForWeb());
-    AddObserver(color_scheme_observer_.get());
-  }
+  // Add the web native theme as an observer to stay in sync with color scheme
+  // changes.
+  color_scheme_observer_ =
+      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
+          NativeTheme::GetInstanceForWeb());
+  AddObserver(color_scheme_observer_.get());
 
   // Initialize the native theme web instance with the system color info.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
@@ -355,6 +356,8 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_prefers_reduced_transparency(
       GetPrefersReducedTransparency());
   web_instance->set_system_colors(GetSystemColors());
+  web_instance->set_should_use_system_accent_color(
+      should_use_system_accent_color());
 }
 
 NativeThemeWin::~NativeThemeWin() {
@@ -1628,6 +1631,7 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
 
 void NativeThemeWin::RegisterThemeRegkeyObserver() {
   DCHECK(hkcu_themes_regkey_.Valid());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateDarkModeStatus();
@@ -1641,6 +1645,7 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
 
 void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
   DCHECK(hkcu_color_filtering_regkey_.Valid());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   hkcu_color_filtering_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateInvertedColors();

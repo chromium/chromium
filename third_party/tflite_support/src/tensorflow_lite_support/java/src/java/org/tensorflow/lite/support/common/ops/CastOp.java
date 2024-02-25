@@ -22,33 +22,34 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 /** Casts a {@link TensorBuffer} to a specified data type. */
 public class CastOp implements TensorOperator {
-    private final DataType destinationType;
 
-    /**
-     * Constructs a CastOp.
-     *
-     * <p>Note: For only converting type for a certain {@link TensorBuffer} on-the-fly rather than
-     * in a processor, please directly use {@link TensorBuffer#createFrom(TensorBuffer, DataType)}.
-     *
-     * <p>When this Op is executed, if the original {@link TensorBuffer} is already in {@code
-     * destinationType}, the original buffer will be directly returned.
-     *
-     * @param destinationType The type of the casted {@link TensorBuffer}.
-     * @throws IllegalArgumentException if {@code destinationType} is neither {@link DataType#UINT8}
-     *     nor {@link DataType#FLOAT32}.
-     */
-    public CastOp(DataType destinationType) {
-        SupportPreconditions.checkArgument(
-                destinationType == DataType.UINT8 || destinationType == DataType.FLOAT32,
-                "Destination type " + destinationType + " is not supported.");
-        this.destinationType = destinationType;
-    }
+  private final DataType destinationType;
 
-    @Override
-    public TensorBuffer apply(TensorBuffer input) {
-        if (input.getDataType() == destinationType) {
-            return input;
-        }
-        return TensorBuffer.createFrom(input, destinationType);
+  /**
+   * Constructs a CastOp.
+   *
+   * <p>Note: For only converting type for a certain {@link TensorBuffer} on-the-fly rather than in
+   * a processor, please directly use {@link TensorBuffer#createFrom(TensorBuffer, DataType)}.
+   *
+   * <p>When this Op is executed, if the original {@link TensorBuffer} is already in {@code
+   * destinationType}, the original buffer will be directly returned.
+   *
+   * @param destinationType The type of the casted {@link TensorBuffer}.
+   * @throws IllegalArgumentException if {@code destinationType} is neither {@link DataType#UINT8}
+   *     nor {@link DataType#FLOAT32}.
+   */
+  public CastOp(DataType destinationType) {
+    SupportPreconditions.checkArgument(
+        destinationType == DataType.UINT8 || destinationType == DataType.FLOAT32,
+        "Destination type " + destinationType + " is not supported.");
+    this.destinationType = destinationType;
+  }
+
+  @Override
+  public TensorBuffer apply(TensorBuffer input) {
+    if (input.getDataType() == destinationType) {
+      return input;
     }
+    return TensorBuffer.createFrom(input, destinationType);
+  }
 }

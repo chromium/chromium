@@ -27,7 +27,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
@@ -199,12 +199,10 @@ TEST_F(ProfileWriterTest, CheckBookmarksWithMultiProfile) {
       new TestProfileWriter(profile()));
   profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
 
-  std::vector<UrlAndTitle> url_record1;
-  bookmark_model1->GetBookmarks(&url_record1);
+  std::vector<UrlAndTitle> url_record1 = bookmark_model1->GetUniqueUrls();
   EXPECT_EQ(2u, url_record1.size());
 
-  std::vector<UrlAndTitle> url_record2;
-  bookmark_model2->GetBookmarks(&url_record2);
+  std::vector<UrlAndTitle> url_record2 = bookmark_model2->GetUniqueUrls();
   EXPECT_EQ(1u, url_record2.size());
 }
 
@@ -218,8 +216,7 @@ TEST_F(ProfileWriterTest, CheckBookmarksAfterWritingDataTwice) {
   scoped_refptr<TestProfileWriter> profile_writer(
       new TestProfileWriter(profile()));
   profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
-  std::vector<UrlAndTitle> bookmarks_record;
-  bookmark_model->GetBookmarks(&bookmarks_record);
+  std::vector<UrlAndTitle> bookmarks_record = bookmark_model->GetUniqueUrls();
   EXPECT_EQ(2u, bookmarks_record.size());
 
   VerifyBookmarksCount(bookmarks_record, bookmark_model, 1);

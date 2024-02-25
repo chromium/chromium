@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,10 @@
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace cross_device {
+class TimerFactory;
+}  // namespace cross_device
 
 namespace base {
 class OneShotTimer;
@@ -28,7 +32,6 @@ class BleSynchronizerBase;
 class BluetoothHelper;
 class ErrorTolerantBleAdvertisement;
 class SharedResourceScheduler;
-class TimerFactory;
 enum class ConnectionPriority;
 
 // Concrete BleAdvertiser implementation. Because systems have a limited number
@@ -55,7 +58,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
         Delegate* delegate,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
             base::SequencedTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -66,7 +69,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
         Delegate* delegate,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) = 0;
 
    private:
@@ -103,7 +106,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
       Delegate* delegate,
       BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer_base,
-      TimerFactory* timer_factory,
+      cross_device::TimerFactory* timer_factory,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
   // BleAdvertiser:
@@ -116,12 +119,12 @@ class BleAdvertiserImpl : public BleAdvertiser {
 
   bool ReplaceLowPriorityAdvertisementIfPossible(
       ConnectionPriority connection_priority);
-  absl::optional<size_t> GetIndexWithLowerPriority(
+  std::optional<size_t> GetIndexWithLowerPriority(
       ConnectionPriority connection_priority);
   void UpdateAdvertisementState();
   void AddActiveAdvertisementRequest(size_t index_to_add);
   void AttemptToAddActiveAdvertisement(size_t index_to_add);
-  absl::optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
+  std::optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
   void StopAdvertisementRequestAndUpdateActiveRequests(
       size_t index,
       bool replaced_by_higher_priority_advertisement,
@@ -135,9 +138,9 @@ class BleAdvertiserImpl : public BleAdvertiser {
   void AttemptToNotifyFailureToGenerateAdvertisement(
       const DeviceIdPair& device_id_pair);
 
-  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
-  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
-  raw_ptr<TimerFactory, ExperimentalAsh> timer_factory_;
+  raw_ptr<BluetoothHelper> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
+  raw_ptr<cross_device::TimerFactory> timer_factory_;
 
   // For posting tasks to the current base::SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

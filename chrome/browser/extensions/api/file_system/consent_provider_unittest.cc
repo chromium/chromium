@@ -123,13 +123,13 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   void TearDown() override {
     scoped_user_manager_enabler_.reset();
     user_manager_ = nullptr;
-    testing_pref_service_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    testing_pref_service_.reset();
   }
 
  protected:
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;

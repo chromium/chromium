@@ -15,6 +15,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -120,30 +121,40 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
   scoped_feature_list.Init();
   base::FeatureList feature_list;
   auto client_state = CreateDummyClientFilterableState();
+  VariationsLayers layers(seed, entropy_providers);
   // This should mimic the call through SetUpFieldTrials from
   // android_webview/browser/aw_feature_list_creator.cc
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, &feature_list);
+      entropy_providers, layers, &feature_list);
   testing::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
 }
 
 // Process the seed and return which group the user is assigned for Uniformity.
+// TODO(crbug.com/1518404) Add cases to test studies constrained to a layer
+// with LIMITED entropy mode after the limited entropy randomization logic
+// lands.
 std::vector<std::string> GetUniformityAssignments(
     const VariationsSeed& seed,
     bool enable_benchmarking = false) {
   std::vector<std::string> result;
   // Add 20 clients that do not have client IDs, 1 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy; i++) {
-    EntropyProviders providers("", {i, kMaxEntropy}, enable_benchmarking);
+    EntropyProviders providers(
+        "", {i, kMaxEntropy},
+        /*limited_entropy_randomization_source=*/std::string_view(),
+        enable_benchmarking);
     result.push_back(GetUniformityAssignment(seed, providers));
   }
   // Add 100 clients that do have client IDs, 5 per low entropy value.
   for (uint32_t i = 0; i < kMaxEntropy * 5; i++) {
     auto high_entropy = base::StringPrintf("clientid_%02d", i);
     ValueInRange low_entropy = {i % kMaxEntropy, kMaxEntropy};
-    EntropyProviders providers(high_entropy, low_entropy, enable_benchmarking);
+    EntropyProviders providers(
+        high_entropy, low_entropy,
+        /*limited_entropy_randomization_source=*/std::string_view(),
+        enable_benchmarking);
     result.push_back(GetUniformityAssignment(seed, providers));
   }
   return result;
@@ -342,7 +353,9 @@ TEST(VariationsUniformityTest, SessionEntropyStudyChiSquare) {
   }
 
   // The persistent entropy shouldn't matter here.
-  EntropyProviders entropy_providers("not_used", {0, 8000});
+  EntropyProviders entropy_providers(
+      "not_used", {0, 8000},
+      /*limited_entropy_randomization_source=*/std::string_view());
 
   for (size_t i = 1; i <= kMaxIterationCount; i += kCheckIterationCount) {
     for (size_t j = 0; j < kCheckIterationCount; j++) {

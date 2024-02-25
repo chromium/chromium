@@ -13,6 +13,10 @@
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/linux/bpf_renderer_policy_linux.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 namespace content {
@@ -37,7 +41,25 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   sandbox::BaselinePolicyAndroid::RuntimeOptions options(
       starter.GetDefaultBaselineOptions());
-  starter.set_policy(std::make_unique<sandbox::BaselinePolicyAndroid>(options));
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kRestrictRendererPoliciesInBaseline)) {
+    options.should_restrict_renderer_syscalls = true;
+  }
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kRestrictCloneParameters)) {
+    options.should_restrict_clone_params = true;
+  }
+  if (sandbox::policy::SandboxTypeFromCommandLine(
+          *base::CommandLine::ForCurrentProcess()) ==
+          sandbox::mojom::Sandbox::kRenderer &&
+      base::FeatureList::IsEnabled(
+          sandbox::policy::features::kUseRendererProcessPolicy)) {
+    starter.set_policy(
+        std::make_unique<sandbox::policy::RendererProcessPolicy>(options));
+  } else {
+    starter.set_policy(
+        std::make_unique<sandbox::BaselinePolicyAndroid>(options));
+  }
 #endif
   starter.StartSandbox();
 

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -86,6 +88,14 @@ const int kGoogleDriveErrorHelpNumber = 2649458;
 // Location of the help page about no-action-available files.
 const int kNoActionForFileHelpNumber = 1700055;
 
+// Supported locales of Google One offer banner.
+constexpr auto kGoogleOneOfferBannerSupportedLocales =
+    base::MakeFixedFlatSet<std::string>({"en-US", "en-GB", "en-AU", "en-CA"});
+
+// Supported countries of Google One offer banner.
+constexpr auto kGoogleOneOfferBannerSupportedCountries =
+    base::MakeFixedFlatSet<std::string>({"us", "gb", "au", "ca"});
+
 #define SET_STRING(id, idr) dict->Set(id, l10n_util::GetStringUTF16(idr))
 
 #define SET_STRING_PLURAL(id, idr, n) \
@@ -114,6 +124,8 @@ void AddStringsForFileTypes(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_GSHEET_DOCUMENT_FILE_TYPE);
   SET_STRING("GSITE_DOCUMENT_FILE_TYPE",
              IDS_FILE_BROWSER_GSITE_DOCUMENT_FILE_TYPE);
+  SET_STRING("EMAIL_LAYOUTS_DOCUMENT_FILE_TYPE",
+             IDS_FILE_BROWSER_EMAIL_LAYOUTS_DOCUMENT_FILE_TYPE);
   SET_STRING("GSLIDES_DOCUMENT_FILE_TYPE",
              IDS_FILE_BROWSER_GSLIDES_DOCUMENT_FILE_TYPE);
   SET_STRING("GTABLE_DOCUMENT_FILE_TYPE",
@@ -168,8 +180,8 @@ void AddStringsForDrive(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_CONFIRM_COPY_BUTTON_LABEL);
   SET_STRING("DRIVE_LEARN_MORE", IDS_LEARN_MORE);
   SET_STRING("DRIVE_MENU_HELP", IDS_FILE_BROWSER_DRIVE_MENU_HELP);
-  SET_STRING("DRIVE_MOBILE_CONNECTION_OPTION",
-             IDS_FILE_BROWSER_DRIVE_MOBILE_CONNECTION_OPTION);
+  SET_STRING("DRIVE_METERED_CONNECTION_OPTION",
+             IDS_FILE_BROWSER_DRIVE_METERED_CONNECTION_OPTION);
   SET_STRING("DRIVE_MY_DRIVE_LABEL", IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL);
   SET_STRING("DRIVE_SHARED_DRIVES_LABEL",
              IDS_FILE_BROWSER_DRIVE_SHARED_DRIVES_LABEL);
@@ -211,8 +223,6 @@ void AddStringsForDrive(base::Value::Dict* dict) {
   SET_STRING("DRIVE_WELCOME_TITLE", IDS_FILE_BROWSER_DRIVE_WELCOME_TITLE);
   SET_STRING("SYNC_DELETE_WITHOUT_PERMISSION_ERROR",
              IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR);
-  SET_STRING("SYNC_FILE_NAME", IDS_FILE_BROWSER_SYNC_FILE_NAME);
-  SET_STRING("SYNC_FILE_NUMBER", IDS_FILE_BROWSER_SYNC_FILE_NUMBER);
   SET_STRING("SYNC_MISC_ERROR", IDS_FILE_BROWSER_SYNC_MISC_ERROR);
   SET_STRING("SYNC_NO_SERVER_SPACE", IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
   SET_STRING("SYNC_NO_SERVER_SPACE_ORGANIZATION",
@@ -242,6 +252,8 @@ void AddStringsForDrive(base::Value::Dict* dict) {
       IDS_FILE_BROWSER_BULK_PINNING_ITEM_TEMPORARILY_UNAVAILABLE_OFFLINE);
   SET_STRING("DRIVE_BULK_PINNING_CALCULATING",
              IDS_FILE_BROWSER_BULK_PINNING_CALCULATING);
+  SET_STRING("DRIVE_BULK_PINNING_METERED_NETWORK",
+             IDS_FILE_BROWSER_BULK_PINNING_METERED_NETWORK_LABEL);
 }
 
 void AddStringsForMediaView(base::Value::Dict* dict) {
@@ -462,6 +474,15 @@ void AddStringsGeneric(base::Value::Dict* dict) {
 
   SET_STRING("COPY_BUTTON_LABEL", IDS_FILE_BROWSER_COPY_BUTTON_LABEL);
   SET_STRING("COPY_FILESYSTEM_ERROR", IDS_FILE_BROWSER_COPY_FILESYSTEM_ERROR);
+  SET_STRING("COPY_SKIPPED_ENCRYPTED_SINGLE_FILE",
+             IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_SINGLE_FILE);
+  SET_STRING("MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE",
+             IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE);
+  SET_STRING("COPY_SKIPPED_ENCRYPTED_FILES",
+             IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_FILES);
+  SET_STRING("MOVE_SKIPPED_ENCRYPTED_FILES",
+             IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_FILES);
+  SET_STRING("ENCRYPTED_DETAILS", IDS_FILE_BROWSER_ENCRYPTED_DETAILS);
   SET_STRING("EMPTY_TRASH_UNEXPECTED_ERROR",
              IDS_FILE_BROWSER_EMPTY_TRASH_UNEXPECTED_ERROR);
   SET_STRING("TRASH_UNEXPECTED_ERROR", IDS_FILE_BROWSER_TRASH_UNEXPECTED_ERROR);
@@ -536,12 +557,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ERROR_LONG_NAME", IDS_FILE_BROWSER_ERROR_LONG_NAME);
   SET_STRING("ERROR_EXTERNAL_DRIVE_LONG_NAME",
              IDS_FILE_BROWSER_ERROR_EXTERNAL_DRIVE_LONG_NAME);
-  SET_STRING("ERROR_PROGRESS_SUMMARY_PLURAL",
-             IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL);
-  SET_STRING_PLURAL("WARNING_PROGRESS_SUMMARY_SINGLE",
-                    IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY, 1);
-  SET_STRING_PLURAL("WARNING_PROGRESS_SUMMARY_PLURAL",
-                    IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY, 2);
   SET_STRING("ERROR_RENAMING", IDS_FILE_BROWSER_ERROR_RENAMING);
   SET_STRING("ERROR_RESERVED_NAME", IDS_FILE_BROWSER_ERROR_RESERVED_NAME);
   SET_STRING("ERROR_WHITESPACE_NAME", IDS_FILE_BROWSER_ERROR_WHITESPACE_NAME);
@@ -754,10 +769,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_SUBTITLE);
   SET_STRING("OFFLINE_FAILURE_MESSAGE",
              IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE);
-  SET_STRING("OFFLINE_PROGRESS_MESSAGE",
-             IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE);
-  SET_STRING("OFFLINE_PROGRESS_MESSAGE_PLURAL",
-             IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL);
   SET_STRING("OK_LABEL", IDS_FILE_BROWSER_OK_LABEL);
   SET_STRING("ONE_DIRECTORY_SELECTED", IDS_FILE_BROWSER_ONE_DIRECTORY_SELECTED);
   SET_STRING("ONE_FILE_SELECTED", IDS_FILE_BROWSER_ONE_FILE_SELECTED);
@@ -840,6 +851,7 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("RENAME_BUTTON_LABEL", IDS_FILE_BROWSER_RENAME_BUTTON_LABEL);
   SET_STRING("SAVE_LABEL", IDS_FILE_BROWSER_SAVE_LABEL);
   SET_STRING("SCANNING_LABEL", IDS_FILE_BROWSER_SCANNING_LABEL);
+  SET_STRING("SCANNING_LABEL_PLURAL", IDS_FILE_BROWSER_SCANNING_LABEL_PLURAL);
   SET_STRING("SEARCH_DRIVE_HTML", IDS_FILE_BROWSER_SEARCH_DRIVE_HTML);
   SET_STRING("SEARCH_NO_MATCHING_FILES_HTML",
              IDS_FILE_BROWSER_SEARCH_NO_MATCHING_FILES_HTML);
@@ -894,7 +906,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("TASKS_BUTTON_LABEL", IDS_FILE_BROWSER_TASKS_BUTTON_LABEL);
   SET_STRING("TOGGLE_HIDDEN_FILES_COMMAND_LABEL",
              IDS_FILE_BROWSER_TOGGLE_HIDDEN_FILES_COMMAND_LABEL);
-  SET_STRING("SHARE_BUTTON_LABEL", IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
   SET_STRING("MANAGE_TOAST_BUTTON_LABEL",
              IDS_FILE_BROWSER_MANAGE_TOAST_BUTTON_LABEL);
   SET_STRING("MANAGE_IN_DRIVE_BUTTON_LABEL",
@@ -1006,6 +1017,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_WEBSTORE_WIDGET_LOADING_SPINNER_ALT);
   SET_STRING("SUGGEST_DIALOG_INSTALLING_SPINNER_ALT",
              IDS_WEBSTORE_WIDGET_INSTALLING_SPINNER_ALT);
+  SET_STRING("TASK_INSTALL_ISOLATED_WEB_APP",
+             IDS_FILE_BROWSER_TASK_INSTALL_ISOLATED_WEB_APP);
   SET_STRING("TASK_INSTALL_LINUX_PACKAGE",
              IDS_FILE_BROWSER_TASK_INSTALL_LINUX_PACKAGE);
   SET_STRING("TASK_IMPORT_CROSTINI_IMAGE", IDS_SETTINGS_CROSTINI_IMPORT_LABEL);
@@ -1205,6 +1218,17 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
+  if (!kGoogleOneOfferBannerSupportedLocales.contains(
+          g_browser_process->GetApplicationLocale())) {
+    return false;
+  }
+
+  if (!kGoogleOneOfferBannerSupportedCountries.contains(
+          g_browser_process->variations_service()
+              ->GetStoredPermanentCountry())) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(
       ash::features::kGoogleOneOfferFilesBanner);
 }
@@ -1289,6 +1313,16 @@ base::Value::Dict GetFileManagerStrings() {
   return dict;
 }
 
+base::Value::Dict GetFileManagerPluralStrings() {
+  base::Value::Dict dict;
+
+  dict.Set("ERROR_PROGRESS_SUMMARY", IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY);
+  dict.Set("WARNING_PROGRESS_SUMMARY",
+           IDS_FILE_BROWSER_WARNING_PROGRESS_SUMMARY);
+
+  return dict;
+}
+
 int GetLocaleBasedWeekStart() {
   // To avoid the DST difference, use a certain date here to calculate the week
   // start, since there are no daylight saving starts/ends in June worldwide.
@@ -1324,37 +1358,28 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("ARC_USB_STORAGE_UI_ENABLED",
             base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
-  dict->Set("FILES_SEARCH_V2",
-            base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
+  dict->Set("FILES_LOCAL_IMAGE_SEARCH",
+            ash::features::IsFilesLocalImageSearchEnabled());
   dict->Set("FILES_TRASH_DRIVE_ENABLED",
             base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
   dict->Set(
       "FILES_SINGLE_PARTITION_FORMAT_ENABLED",
       base::FeatureList::IsEnabled(ash::features::kFilesSinglePartitionFormat));
-  dict->Set("FILES_APP_EXPERIMENTAL",
-            base::FeatureList::IsEnabled(ash::features::kFilesAppExperimental));
-
-  dict->Set("FILES_CONFLICT_DIALOG",
-            base::FeatureList::IsEnabled(ash::features::kFilesConflictDialog));
 
   dict->Set("FUSEBOX_DEBUG",
             base::FeatureList::IsEnabled(ash::features::kFuseBoxDebug));
 
   dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
-  dict->Set("INLINE_SYNC_STATUS", ash::features::IsInlineSyncStatusEnabled());
-
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", chromeos::features::IsJellyEnabled());
-
-  dict->Set("DRIVE_SHORTCUTS",
-            base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
-
   dict->Set("DRIVE_FS_BULK_PINNING",
-            drive::util::IsDriveFsBulkPinningEnabled(profile));
+            drive::util::IsDriveFsBulkPinningAvailable(profile));
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
+
+  dict->Set("NEW_DIRECTORY_TREE", base::FeatureList::IsEnabled(
+                                      ash::features::kFilesNewDirectoryTree));
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(

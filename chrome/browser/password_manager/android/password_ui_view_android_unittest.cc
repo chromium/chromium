@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

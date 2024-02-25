@@ -14,15 +14,16 @@
 struct Environment {
   Environment() {
     base::CommandLine::Init(0, nullptr);
-    content::SetUpBlinkTestEnvironment();
+    blink_environment_.SetUp();
 
     // Suppress WARNING messages from the debug build.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
     // This is needed to suppress noisy log messages from ffmpeg.
     media::InitializeMediaLibrary();
   }
 
+  content::BlinkTestEnvironment blink_environment_;
   base::AtExitManager at_exit;
 };
 

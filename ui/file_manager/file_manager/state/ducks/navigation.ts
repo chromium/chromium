@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {isOneDriveId} from '../../common/js/entry_utils.js';
+import type {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {Slice} from '../../lib/base_store.js';
+import {type AndroidApp, DialogType, type NavigationKey, type NavigationRoot, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';
+import {getMyFiles} from '../ducks/all_entries.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
-import {FileKey} from '../file_key.js';
-import {getMyFiles} from '../reducers/all_entries.js';
-import {getEntry, getFileData} from '../store.js';
+import {getEntry} from '../store.js';
 
-const VolumeType = VolumeManagerCommon.VolumeType;
+/**
+ * @fileoverview Navigation slice of the store.
+ */
 
-const sections = new Map<VolumeManagerCommon.VolumeType, NavigationSection>();
+const slice = new Slice<State, State['navigation']>('navigation');
+export {slice as navigationSlice};
+
+const sections = new Map<VolumeType, NavigationSection>();
 // My Files.
 sections.set(VolumeType.DOWNLOADS, NavigationSection.MY_FILES);
 // Cloud.
@@ -44,18 +46,12 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
   return entry as VolumeEntry | EntryList | null;
 }
 
-/** Map of actions to reducers for the navigation slice. */
-export const navigationReducersMap: ReducersMap<State, Action> = new Map();
-
-/** Action to refresh all navigation roots. */
-export interface RefreshNavigationRootsAction extends BaseAction {
-  type: ActionType.REFRESH_NAVIGATION_ROOTS;
-  payload: {};
-}
-
 /**
- * Reducer for refresh navigation roots, it will construct the
- * navigation roots with Entries/Volume in desired order:
+ * Create action to refresh all navigation roots. This will clear all existing
+ * navigation roots in the store and regenerate them with the current state
+ * data.
+ *
+ * Navigation roots' Entries/Volumes will be ordered as below:
  *  1. Recents.
  *  2. Shortcuts.
  *  3. "My-Files" (grouping), actually Downloads volume.
@@ -67,8 +63,10 @@ export interface RefreshNavigationRootsAction extends BaseAction {
  *  9. Android apps.
  *  10. Trash.
  */
-function refreshNavigationRootsReducer(
-    currentState: State, _: RefreshNavigationRootsAction['payload']): State {
+export const refreshNavigationRoots =
+    slice.addReducer('refresh-roots', refreshNavigationRootsReducer);
+
+function refreshNavigationRootsReducer(currentState: State): State {
   const {
     navigation: {roots: previousRoots},
     folderShortcuts,
@@ -128,9 +126,16 @@ function refreshNavigationRootsReducer(
   processedEntryKeys.add(myFilesEntry.toURL());
 
   // 4. Add Google Drive - the only Drive.
+  // When drive pref changes from enabled to disabled, we remove the drive root
+  // key from the `state.uiEntries` immediately, but the drive root entry itself
+  // is removed asynchronously, so here we need to check both, if the key
+  // doesn't exist any more, we shouldn't render Drive item even if the drive
+  // root entry is still available.
+  const driveEntryKeyExist =
+      currentState.uiEntries.includes(driveRootEntryListKey);
   const driveEntry =
       getEntry(currentState, driveRootEntryListKey) as EntryList | null;
-  if (driveEntry) {
+  if (driveEntryKeyExist && driveEntry) {
     roots.push({
       key: driveEntry.toURL(),
       section: NavigationSection.GOOGLE_DRIVE,
@@ -142,9 +147,9 @@ function refreshNavigationRootsReducer(
 
 
   // 5/6/7/8 Other volumes.
-  const volumesOrder = {
-    // ODFS is a PROVIDED volume type but is a special case to be directly below
-    // Drive.
+  const volumesOrder: Partial<Record<VolumeType, number>> = {
+    // ODFS is a PROVIDED volume type but is a special case to be directly
+    // below Drive.
     // ODFS : 0
     [VolumeType.SMB]: 1,
     [VolumeType.PROVIDED]: 2,  // FSP.
@@ -163,7 +168,7 @@ function refreshNavigationRootsReducer(
       });
 
   function getVolumeOrder(volume: Volume) {
-    if (util.isOneDriveId(volume.providerId)) {
+    if (isOneDriveId(volume.providerId)) {
       return 0;
     }
     return volumesOrder[volume.volumeType] ?? 999;
@@ -196,7 +201,7 @@ function refreshNavigationRootsReducer(
     if (volumeEntry && !processedEntryKeys.has(volumeEntry.toURL())) {
       let section =
           sections.get(volume.volumeType) ?? NavigationSection.REMOVABLE;
-      if (util.isOneDriveId(volume.providerId)) {
+      if (isOneDriveId(volume.providerId)) {
         section = NavigationSection.ODFS;
       }
       const isSectionStart = section !== lastSection;
@@ -212,9 +217,7 @@ function refreshNavigationRootsReducer(
   }
 
   // 9. Android Apps.
-  Object
-      .values(
-          androidApps as Record<string, chrome.fileManagerPrivate.AndroidApp>)
+  Object.values(androidApps as Record<string, AndroidApp>)
       .forEach((app, index) => {
         roots.push({
           key: app.packageName,
@@ -226,9 +229,23 @@ function refreshNavigationRootsReducer(
       });
 
   // 10. Trash
+  // Trash should only show when Files app is open as a standalone app. The ARC
+  // file selector, however, opens Files app as a standalone app but passes a
+  // query parameter to indicate the mode. As Trash is a fake volume, it is
+  // not filtered out in the filtered volume manager so perform it here
+  // instead.
+  const {dialogType} = window.fileManager;
+  const shouldShowTrash = dialogType === DialogType.FULL_PAGE &&
+      !volumeManager.getMediaStoreFilesOnlyFilterEnabled();
+  // When trash pref changes from enabled to disabled, we remove the trash root
+  // key from the `state.uiEntries` immediately, but the trash entry itself is
+  // removed asynchronously, so here we need to check both, if the key doesn't
+  // exist any more, we shouldn't render Trash item even if the trash entry is
+  // still available.
+  const trashEntryKeyExist = currentState.uiEntries.includes(trashRootKey);
   const trashEntry =
       getEntry(currentState, trashRootKey) as FilesAppEntry | null;
-  if (trashEntry) {
+  if (shouldShowTrash && trashEntryKeyExist && trashEntry) {
     roots.push({
       key: trashRootKey,
       section: NavigationSection.TRASH,
@@ -245,47 +262,3 @@ function refreshNavigationRootsReducer(
     },
   };
 }
-
-/**
- * Action factory to refresh all navigation roots. This will clear all existing
- * navigation roots in the store and regenerate them with the current state
- * data.
- */
-export const refreshNavigationRoots = addReducer(
-    ActionType.REFRESH_NAVIGATION_ROOTS,
-    refreshNavigationRootsReducer as Reducer<State, Action>,
-    navigationReducersMap);
-
-
-/** Action to update the navigation data in FileData for a given entry. */
-export interface UpdateNavigationEntryAction extends BaseAction {
-  type: ActionType.UPDATE_NAVIGATION_ENTRY;
-  payload: {
-    key: FileKey,
-    expanded: boolean,
-  };
-}
-
-function updateNavigationEntryReducer(
-    currentState: State,
-    payload: UpdateNavigationEntryAction['payload']): State {
-  const {key, expanded} = payload;
-  const fileData = getFileData(currentState, key);
-  if (!fileData) {
-    return currentState;
-  }
-
-  currentState.allEntries[key] = {
-    ...fileData,
-    expanded,
-  };
-  return {...currentState};
-}
-
-/**
- * Action factory to update the navigation data in FileData for a given entry.
- */
-export const updateNavigationEntry = addReducer(
-    ActionType.UPDATE_NAVIGATION_ENTRY,
-    updateNavigationEntryReducer as Reducer<State, Action>,
-    navigationReducersMap);

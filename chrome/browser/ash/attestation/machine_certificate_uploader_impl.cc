@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -27,8 +29,6 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::attestation {
 
@@ -107,6 +107,14 @@ void MachineCertificateUploaderImpl::Start() {
     return;
   }
 
+  // We always expect a valid attestation client, except for testing scenarios.
+  if (!AttestationClient::Get()) {
+    CHECK_IS_TEST();
+    certificate_uploaded_ = false;
+    RunCallbacks(certificate_uploaded_.value());
+    return;
+  }
+
   if (!attestation_flow_) {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
@@ -139,7 +147,7 @@ void MachineCertificateUploaderImpl::GetNewCertificate() {
       /*force_new_key=*/true,            // Force a new key to be generated.
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/ash::attestation::kEnterpriseMachineKey,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           [](const base::RepeatingCallback<void(const std::string&)> on_success,

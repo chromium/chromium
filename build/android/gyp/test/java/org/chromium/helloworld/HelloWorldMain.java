@@ -12,4 +12,3 @@ public class HelloWorldMain {
         HelloWorldPrinter.print();
     }
 }
-

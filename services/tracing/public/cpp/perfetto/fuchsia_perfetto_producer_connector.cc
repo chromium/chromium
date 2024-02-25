@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,11 +94,11 @@ FuchsiaPerfettoProducerConnector::~FuchsiaPerfettoProducerConnector() {
           std::move(buffer_receiver_), std::move(buffer_receiver_thread_)));
 }
 
-absl::optional<perfetto::ipc::Client::ConnArgs>
+std::optional<perfetto::ipc::Client::ConnArgs>
 FuchsiaPerfettoProducerConnector::Connect() {
   auto socket = ConnectSocket();
   if (!socket.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   perfetto::ipc::Client::ConnArgs conn_args(
       perfetto::base::ScopedSocketHandle(socket.release()));

@@ -13,8 +13,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 
-class ClipboardHistoryUrlTitleFetcherImpl;
-class ClipboardImageModelFactoryImpl;
 class Profile;
 
 namespace user_manager {
@@ -82,19 +80,10 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   // Initializes RLZ. If `disabled` is true, RLZ pings are disabled.
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_ =
-      nullptr;
+  raw_ptr<Profile, DanglingUntriaged> primary_profile_ = nullptr;
 
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;
-
-  // Clipboard history URL title fetcher for the primary user.
-  std::unique_ptr<ClipboardHistoryUrlTitleFetcherImpl>
-      clipboard_history_url_title_fetcher_impl_;
-
-  // Clipboard html image generator for the primary user.
-  std::unique_ptr<ClipboardImageModelFactoryImpl>
-      clipboard_image_model_factory_impl_;
 
   base::WeakPtrFactory<UserSessionInitializer> weak_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <hb.h>
 #include <unicode/uchar.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
@@ -27,7 +28,7 @@ inline float HarfBuzzUnitsToFloat(hb_position_t value) {
   return kFloatToHbRatio * value;
 }
 
-absl::optional<OpenTypeMathStretchData::AssemblyParameters>
+std::optional<OpenTypeMathStretchData::AssemblyParameters>
 GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                       Glyph base_glyph,
                       OpenTypeMathStretchData::StretchAxis stretch_axis,
@@ -37,7 +38,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       OpenTypeMathSupport::GetGlyphPartRecords(harfbuzz_face, base_glyph,
                                                stretch_axis, italic_correction);
   if (parts.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
 
@@ -82,15 +83,17 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       extender_advance_sum - min_connector_overlap * extender_count;
   if (extender_count == 0 || max_connector_overlap < min_connector_overlap ||
       extender_non_overlapping_advance_sum <= 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Calculate the minimal number of repetitions needed to obtain an assembly
-  // size of size at least target size (r_min in MathML Core).
-  unsigned repetition_count = std::max<float>(
+  // size of size at least target size (r_min in MathML Core). Use a saturated
+  // cast; if the value does not fit in unsigned, the kMaxGlyphs limit below
+  // will take effect anyway.
+  unsigned repetition_count = base::saturated_cast<unsigned>(std::max<float>(
       std::ceil((target_size - non_extender_advance_sum +
                  min_connector_overlap * (non_extender_count - 1)) /
                 extender_non_overlapping_advance_sum),
-      0);
+      0));
 
   // Calculate the number of glyphs, limiting repetition_count to ensure the
   // assembly does not have more than HarfBuzzRunGlyphData::kMaxGlyphs.
@@ -119,17 +122,16 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                        repetition_count * extender_advance_sum -
                        connector_overlap * (glyph_count - 1);
 
-  return absl::optional<OpenTypeMathStretchData::AssemblyParameters>(
+  return std::optional<OpenTypeMathStretchData::AssemblyParameters>(
       {connector_overlap, repetition_count, glyph_count, stretch_size,
        std::move(parts)});
 }
 
 }  // namespace
 
-scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
-    const Font* font,
-    float target_size,
-    Metrics* metrics) const {
+const ShapeResult* StretchyOperatorShaper::Shape(const Font* font,
+                                                 float target_size,
+                                                 Metrics* metrics) const {
   const SimpleFontData* primary_font = font->PrimaryFont();
   const HarfBuzzFace* harfbuzz_face =
       primary_font->PlatformData().GetHarfBuzzFace();
@@ -173,7 +175,7 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
         font, direction, glyph_variant, glyph_variant_stretch_size);
   }
 
-  scoped_refptr<ShapeResult> shape_result_for_glyph_assembly =
+  const ShapeResult* shape_result_for_glyph_assembly =
       ShapeResult::CreateForStretchyMathOperator(font, direction, stretch_axis_,
                                                  std::move(*params));
   if (metrics) {

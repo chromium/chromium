@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
 
@@ -30,7 +30,7 @@ base::SequenceBound<FontEnumerationCache> FontEnumerationCache::Create() {
   return base::SequenceBound<FontEnumerationCache>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      FontEnumerationDataSource::Create(), absl::nullopt,
+      FontEnumerationDataSource::Create(), std::nullopt,
       base::PassKey<FontEnumerationCache>());
 }
 
@@ -39,7 +39,7 @@ base::SequenceBound<FontEnumerationCache>
 FontEnumerationCache::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<FontEnumerationDataSource> data_source,
-    absl::optional<std::string> locale_override) {
+    std::optional<std::string> locale_override) {
   DCHECK(data_source);
   return base::SequenceBound<FontEnumerationCache>(
       std::move(task_runner), std::move(data_source),
@@ -48,7 +48,7 @@ FontEnumerationCache::CreateForTesting(
 
 FontEnumerationCache::FontEnumerationCache(
     std::unique_ptr<FontEnumerationDataSource> data_source,
-    absl::optional<std::string> locale_override,
+    std::optional<std::string> locale_override,
     base::PassKey<FontEnumerationCache>)
     : data_source_(std::move(data_source)),
       locale_override_(std::move(locale_override)) {

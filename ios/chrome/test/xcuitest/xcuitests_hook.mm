@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "base/time/time.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
 namespace tests_hook {
@@ -24,7 +25,11 @@ bool DisableDiscoverFeed() {
   return true;
 }
 
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
+  return true;
+}
+
+bool DisableDefaultSearchEngineChoice() {
   return true;
 }
 
@@ -82,6 +87,23 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {
   // No-op for XCUITest.
+}
+
+void SignalAppLaunched() {
+  // No-op for XCUITest.
+}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No artificial delays for tests.
+  return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return nullptr;
+}
+
+std::optional<std::string> FETDemoModeOverride() {
+  return std::nullopt;
 }
 
 }  // namespace tests_hook

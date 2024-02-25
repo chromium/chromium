@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -44,7 +45,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -77,20 +76,27 @@ public class TabReparentingTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
-                    (BrowserServicesIntentDataProvider intentDataProvider,
-                            CustomTabNightModeStateController nightModeController,
-                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
-                            TopUiThemeColorProvider topUiThemeColorProvider,
-                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
-                            -> new BaseCustomTabActivityModule(intentDataProvider,
-                                    nightModeController, intentIgnoringCriterion,
-                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+            new ModuleOverridesRule()
+                    .setOverride(
+                            BaseCustomTabActivityModule.Factory.class,
+                            (BrowserServicesIntentDataProvider intentDataProvider,
+                                    CustomTabNightModeStateController nightModeController,
+                                    CustomTabIntentHandler.IntentIgnoringCriterion
+                                            intentIgnoringCriterion,
+                                    TopUiThemeColorProvider topUiThemeColorProvider,
+                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
+                                    new BaseCustomTabActivityModule(
+                                            intentDataProvider,
+                                            nightModeController,
+                                            intentIgnoringCriterion,
+                                            topUiThemeColorProvider,
+                                            new FakeDefaultBrowserProviderImpl()));
 
     @Rule
-    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
-                                          .around(mCustomTabActivityTestRule)
-                                          .around(mModuleOverridesRule);
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain()
+                    .around(mCustomTabActivityTestRule)
+                    .around(mModuleOverridesRule);
 
     private String mTestPage;
     private EmbeddedTestServer mTestServer;
@@ -99,9 +105,10 @@ public class TabReparentingTest {
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mTestPage = mTestServer.getURL(TEST_PAGE);
         LibraryLoader.getInstance().ensureInitialized();
@@ -126,79 +133,90 @@ public class TabReparentingTest {
 
     private ChromeActivity reparentAndVerifyTab() {
         final Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(
-                        ChromeTabbedActivity.class.getName(), /* result = */ null, false);
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                ChromeTabbedActivity.class.getName(), /* result= */ null, false);
         final Tab tabToBeReparented = getActivity().getActivityTab();
         final CallbackHelper tabHiddenHelper = new CallbackHelper();
-        TabObserver observer = new EmptyTabObserver() {
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                tabHiddenHelper.notifyCalled();
-            }
-        };
+        TabObserver observer =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        tabHiddenHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            getActivity().getComponent().resolveNavigationController().openCurrentUrlInBrowser(
-                    true);
-            assertNull(getActivity().getActivityTab());
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    getActivity()
+                            .getComponent()
+                            .resolveNavigationController()
+                            .openCurrentUrlInBrowser();
+                    assertNull(getActivity().getActivityTab());
+                });
         // Use the extended CriteriaHelper timeout to make sure we get an activity
         final Activity lastActivity =
                 monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertNotNull(
                 "Monitor did not get an activity before hitting the timeout", lastActivity);
-        Assert.assertTrue("Expected lastActivity to be a ChromeActivity, was "
+        Assert.assertTrue(
+                "Expected lastActivity to be a ChromeActivity, was "
                         + lastActivity.getClass().getName(),
                 lastActivity instanceof ChromeActivity);
         final ChromeActivity newActivity = (ChromeActivity) lastActivity;
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(newActivity.getActivityTab(), Matchers.notNullValue());
-            Criteria.checkThat(newActivity.getActivityTab(), is(tabToBeReparented));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(newActivity.getActivityTab(), Matchers.notNullValue());
+                    Criteria.checkThat(newActivity.getActivityTab(), is(tabToBeReparented));
+                });
         assertEquals(newActivity.getWindowAndroid(), tabToBeReparented.getWindowAndroid());
-        assertEquals(newActivity.getWindowAndroid(),
+        assertEquals(
+                newActivity.getWindowAndroid(),
                 tabToBeReparented.getWebContents().getTopLevelNativeWindow());
-        Assert.assertFalse(TabTestUtils.getDelegateFactory(tabToBeReparented)
-                                   instanceof CustomTabDelegateFactory);
-        assertEquals("The tab should never be hidden during the reparenting process", 0,
+        Assert.assertFalse(
+                TabTestUtils.getDelegateFactory(tabToBeReparented)
+                        instanceof CustomTabDelegateFactory);
+        assertEquals(
+                "The tab should never be hidden during the reparenting process",
+                0,
                 tabHiddenHelper.getCallCount());
         Assert.assertFalse(TabTestUtils.isCustomTab(tabToBeReparented));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabToBeReparented.removeObserver(observer);
-            ObserverList.RewindableIterator<TabObserver> observers =
-                    TabTestUtils.getTabObservers(tabToBeReparented);
-            while (observers.hasNext()) {
-                Assert.assertFalse(observers.next() instanceof CustomTabObserver);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabToBeReparented.removeObserver(observer);
+                    ObserverList.RewindableIterator<TabObserver> observers =
+                            TabTestUtils.getTabObservers(tabToBeReparented);
+                    while (observers.hasNext()) {
+                        Assert.assertFalse(observers.next() instanceof CustomTabObserver);
+                    }
+                });
         return newActivity;
     }
 
-    /**
-     * Test whether a custom tab can be reparented to a new activity.
-     */
+    /** Test whether a custom tab can be reparented to a new activity. */
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/1434800")
     public void testTabReparentingBasic() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                         LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
         reparentAndVerifyTab();
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                         LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
     }
 
-    /**
-     * Test whether a custom tab can be reparented to a new activity while showing an infobar.
-     */
+    /** Test whether a custom tab can be reparented to a new activity while showing an infobar. */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
+    @DisableFeatures("MessagesForAndroidPopupBlocked")
     public void testTabReparentingInfoBar() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
@@ -220,8 +238,8 @@ public class TabReparentingTest {
     }
 
     /**
-     * Test whether a custom tab can be reparented to a new activity and the select element is
-     * still interactable after reparenting.
+     * Test whether a custom tab can be reparented to a new activity and the select element is still
+     * interactable after reparenting.
      */
     @SmallTest
     @Test
@@ -231,11 +249,12 @@ public class TabReparentingTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(),
                         mTestServer.getURL(SELECT_POPUP_PAGE)));
-        CriteriaHelper.pollUiThread(() -> {
-            Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(currentTab, Matchers.notNullValue());
-            Criteria.checkThat(currentTab.getWebContents(), Matchers.notNullValue());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(currentTab, Matchers.notNullValue());
+                    Criteria.checkThat(currentTab.getWebContents(), Matchers.notNullValue());
+                });
 
         DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "select");
         CriteriaHelper.pollUiThread(

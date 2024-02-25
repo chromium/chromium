@@ -7,6 +7,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "build/branding_buildflags.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -34,30 +35,33 @@ namespace ash {
 // 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
-    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowTaskManager},
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_OEM_2,
      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowShortcutViewer}};
+     AcceleratorAction::kShowShortcutViewer},
+    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kOpenGetHelp},
+    {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kOpenGetHelp},
+};
 
-// `kShowShortcutViewer` has two accelerators that are deprecated but use the
-// same message.
-const size_t kNumDeprecatedAcceleratorsDuplicate = 1u;
+// `kShowShortcutViewer` and `kOpenGetHelp` both have two accelerators that are
+// deprecated but use the same message.
+const size_t kNumDeprecatedAcceleratorsDuplicate = 2u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
-    // The action for the old shortcut was stopped in M92. Delete
-    // completely in M94.
-    {AcceleratorAction::kShowTaskManager,
-     "Ash.Accelerators.Deprecated.ShowTaskManager",
-     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_NEW,
-     false},
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
-     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false}};
+     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
+     ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+     false},
+    {AcceleratorAction::kOpenGetHelp,
+     "Ash.Accelerators.Deprecated.ShowShortcutViewer",
+     IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
+     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
@@ -73,7 +77,11 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugKeyboardBacklightToggle},
     {true, ui::VKEY_M, kDebugModifier,
      AcceleratorAction::kDebugMicrophoneMuteToggle},
+    {true, ui::VKEY_9, kDebugModifier,
+     AcceleratorAction::kDebugShowInformedRestore},
     {true, ui::VKEY_O, kDebugModifier, AcceleratorAction::kDebugShowToast},
+    {true, ui::VKEY_J, kDebugModifier,
+     AcceleratorAction::kDebugShowSystemNudge},
     {true, ui::VKEY_Z, kDebugModifier,
      AcceleratorAction::kDebugSystemUiStyleViewer},
     {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
@@ -92,8 +100,6 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugPrintViewHierarchy},
     {true, ui::VKEY_W, kDebugModifier,
      AcceleratorAction::kDebugPrintWindowHierarchy},
-    {true, ui::VKEY_9, kDebugModifier,
-     AcceleratorAction::kDebugToggleGlanceables},
     {true, ui::VKEY_B, kDebugModifier,
      AcceleratorAction::kDebugToggleShowDebugBorders},
     {true, ui::VKEY_F, kDebugModifier,
@@ -112,6 +118,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugTogglePowerButtonMenu},
     {true, ui::VKEY_C, kDebugModifier,
      AcceleratorAction::kDebugClearUseKMeansPref},
+    {true, ui::VKEY_H, kDebugModifier,
+     AcceleratorAction::kDebugToggleFocusModeState},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);
@@ -184,6 +192,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kDebugPrintLayerHierarchy,
     AcceleratorAction::kDebugPrintViewHierarchy,
     AcceleratorAction::kDebugPrintWindowHierarchy,
+    AcceleratorAction::kDebugShowSystemNudge,
     AcceleratorAction::kDebugToggleHudDisplay,
     AcceleratorAction::kDebugToggleTouchPad,
     AcceleratorAction::kDebugToggleTouchScreen,
@@ -241,6 +250,7 @@ const size_t kActionsAllowedAtLoginOrLockScreenLength =
     std::size(kActionsAllowedAtLoginOrLockScreen);
 
 const AcceleratorAction kActionsAllowedAtLockScreen[] = {
+    AcceleratorAction::kDebugToggleFocusModeState,
     AcceleratorAction::kExit,
     AcceleratorAction::kSuspend,
 };
@@ -491,13 +501,17 @@ const AcceleratorAction kActionsDuplicatedWithBrowser[] = {
     AcceleratorAction::kNewIncognitoWindow,
     AcceleratorAction::kRestoreTab,
     AcceleratorAction::kNewTab,
+    AcceleratorAction::kToggleMultitaskMenu,
 // clang-format on
 
-// AcceleratorAction::kOpenFeedbackPage is guarded by the BRANDING macro on
-// defining Browser's shortcuts. To follow it, guard it here, too.
+// kOpenFeedbackPage has two accelerators in browser:
+// 1: [alt shift i] guarded by GOOGLE_CHROME_BRANDING.
+// 2: [search ctrl i] guarded by both GOOGLE_CHROME_BRANDING and IS_CHROMEOS.
+// This file is built only for ash-chrome, so we only need to check BRANDING
+// macro.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AcceleratorAction::kOpenFeedbackPage,
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 
 const size_t kActionsDuplicatedWithBrowserLength =

@@ -17,7 +17,7 @@ namespace autofill {
 struct CardUnmaskPromptOptions {
   CardUnmaskPromptOptions();
   CardUnmaskPromptOptions(
-      const absl::optional<CardUnmaskChallengeOption>& challenge_option,
+      const std::optional<CardUnmaskChallengeOption>& challenge_option,
       AutofillClient::UnmaskCardReason reason);
   CardUnmaskPromptOptions(const CardUnmaskPromptOptions&);
   ~CardUnmaskPromptOptions();
@@ -26,7 +26,7 @@ struct CardUnmaskPromptOptions {
   // challenge option the user is presented with. In the
   // CardUnmaskPromptController, only a CardUnmaskChallengeOptionType::kCvc
   // challenge option is supported.
-  absl::optional<CardUnmaskChallengeOption> challenge_option;
+  std::optional<CardUnmaskChallengeOption> challenge_option;
 
   // The origin of the unmask request.
   AutofillClient::UnmaskCardReason reason;

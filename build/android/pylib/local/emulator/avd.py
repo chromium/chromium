@@ -18,8 +18,8 @@ from google.protobuf import text_format  # pylint: disable=import-error
 
 from devil.android import apk_helper
 from devil.android import device_utils
-from devil.android import settings
 from devil.android.sdk import adb_wrapper
+from devil.android.sdk import version_codes
 from devil.android.tools import system_app
 from devil.utils import cmd_helper
 from devil.utils import timeout_retry
@@ -556,10 +556,9 @@ class AvdConfig:
       # https://bit.ly/3agmjcM).
       # Wait for this step to complete since it can take a while for old OSs
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      instance.device.WaitUntilFullyBooted(decrypt=True,
-                                           wifi=True,
-                                           timeout=180,
-                                           retries=0)
+      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=360, retries=0)
+      logging.info('The build fingerprint of the system is %r',
+                   instance.device.build_fingerprint)
 
       if additional_apks:
         for apk in additional_apks:
@@ -577,16 +576,23 @@ class AvdConfig:
           logging.info('The version for package %r on the device is %r',
                        package_name, package_version)
 
-      # Always disable the network to prevent built-in system apps from
-      # updating themselves, which could take over package manager and
-      # cause shell command timeout.
-      logging.info('Disabling the network.')
-      settings.ConfigureContentSettings(instance.device,
-                                        settings.NETWORK_DISABLED_SETTINGS)
+      # Skip Marshmallow as svc commands fail on this version.
+      if instance.device.build_version_sdk != 23:
+        # Always disable the network to prevent built-in system apps from
+        # updating themselves, which could take over package manager and
+        # cause shell command timeout.
+        # Use svc as this also works on the images with build type "user", and
+        # does not require a reboot or broadcast compared to setting the
+        # airplane_mode_on in "settings/global".
+        logging.info('Disabling the network.')
+        instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
+                                        as_root=True,
+                                        check_return=True)
+        instance.device.RunShellCommand(['svc', 'data', 'disable'],
+                                        as_root=True,
+                                        check_return=True)
 
       if snapshot:
-        # Reboot so that changes like disabling network can take effect.
-        instance.device.Reboot()
         instance.SaveSnapshot()
 
       instance.Stop()
@@ -880,8 +886,11 @@ class AvdConfig:
       with ini.update_ini_file(config_path) as config_contents:
         config_contents.update(properties)
 
-    # Create qt config file to disable adb warning when launched in window mode.
+    # Create qt config file to disable certain warnings when launched in window.
     with ini.update_ini_file(self._qt_config_path) as config_contents:
+      # Disable nested virtualization warning.
+      config_contents['General'] = {'showNestedWarning': 'false'}
+      # Disable adb warning.
       config_contents['set'] = {'autoFindAdb': 'false'}
 
   def _Initialize(self):
@@ -958,6 +967,7 @@ class _AvdInstance:
             wipe_data=False,
             debug_tags=None,
             disk_size=None,
+            enable_network=False,
             require_fast_start=False):
     """Starts the emulator running an instance of the given AVD.
 
@@ -1022,7 +1032,7 @@ class _AvdInstance:
         # Always print timestamp when debug tags are set.
         self._debug_tags.add('time')
         emulator_cmd.extend(['-debug', ','.join(self._debug_tags)])
-        if 'kernel' in self._debug_tags:
+        if 'kernel' in self._debug_tags or 'all' in self._debug_tags:
           # TODO(crbug.com/1404176): newer API levels need "-virtio-console"
           # as well to print kernel log.
           emulator_cmd.append('-show-kernel')
@@ -1098,6 +1108,9 @@ class _AvdInstance:
                                        retries=0)
       logging.info('Device fully booted, verifying system settings.')
       _EnsureSystemSettings(self.device)
+
+    if enable_network:
+      _EnableNetwork(self.device)
 
   def Stop(self, force=False):
     """Stops the emulator process.
@@ -1179,3 +1192,42 @@ def _EnsureSystemSettings(device):
     logging.info('long_press_timeout set to %r', _LONG_PRESS_TIMEOUT)
   else:
     logging.warning('long_press_timeout is not set correctly')
+
+  # TODO(crbug.com/1488458): Move the date sync function to device_utils.py
+  if device.IsUserBuild():
+    logging.warning('Cannot sync the device date on "user" build')
+    return
+
+  logging.info('Sync the device date.')
+  timezone = device.RunShellCommand(['date', '+"%Z"'],
+                                    single_line=True,
+                                    check_return=True)
+  if timezone != 'UTC':
+    device.RunShellCommand(['setprop', 'persist.sys.timezone', '"Etc/UTC"'],
+                           check_return=True,
+                           as_root=True)
+  set_date_format = '%Y%m%d.%H%M%S'
+  set_date_command = ['date', '-s']
+  if device.build_version_sdk >= version_codes.MARSHMALLOW:
+    set_date_format = '%m%d%H%M%Y.%S'
+    set_date_command = ['date']
+  strgmtime = time.strftime(set_date_format, time.gmtime())
+  set_date_command.append(strgmtime)
+  device.RunShellCommand(set_date_command, check_return=True, as_root=True)
+
+  logging.info('Hide system error dialogs such as crash and ANR dialogs.')
+  device.RunShellCommand(
+      ['settings', 'put', 'global', 'hide_error_dialogs', '1'])
+
+
+def _EnableNetwork(device):
+  logging.info('Enable the network on the emulator.')
+  # TODO(https://crbug.com/1486376): Remove airplane_mode once all AVD
+  # are rolled to svc-based version.
+  device.RunShellCommand(
+      ['settings', 'put', 'global', 'airplane_mode_on', '0'], as_root=True)
+  device.RunShellCommand(
+      ['am', 'broadcast', '-a', 'android.intent.action.AIRPLANE_MODE'],
+      as_root=True)
+  device.RunShellCommand(['svc', 'wifi', 'enable'], as_root=True)
+  device.RunShellCommand(['svc', 'data', 'enable'], as_root=True)

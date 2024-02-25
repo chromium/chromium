@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION_CONTEXT_H_
 #define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION_CONTEXT_H_
 
-#include "components/permissions/object_permission_context_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
-
+#include <optional>
 #include <string>
 #include <vector>
+
+#include "components/permissions/object_permission_context_base.h"
+#include "url/origin.h"
 
 namespace content {
 class BrowserContext;

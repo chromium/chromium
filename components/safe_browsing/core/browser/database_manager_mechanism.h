@@ -21,7 +21,6 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection,
       CheckBrowseUrlType check_type);
 
   DatabaseManagerMechanism(const DatabaseManagerMechanism&) = delete;

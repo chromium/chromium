@@ -166,6 +166,7 @@ test("ios_web_unittests") {
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
     "//ios/web/js_features/context_menu:unittests",
+    "//ios/web/js_features/fullscreen:unittests",
     "//ios/web/js_features/window_error:unittests",
     "//ios/web/js_messaging:unittests",
     "//ios/web/public/session/proto:unittests",
@@ -269,6 +270,7 @@ source_set("ios_web_navigation_unittests") {
     "navigation/navigation_item_impl_unittest.mm",
     "navigation/navigation_manager_impl_unittest.mm",
     "navigation/navigation_manager_util_unittest.mm",
+    "navigation/navigation_util_unittest.mm",
     "navigation/nscoder_util_unittest.mm",
     "navigation/proto_util_unittest.mm",
     "navigation/synthesized_session_restore_unittest.mm",
@@ -320,8 +322,6 @@ source_set("ios_web_net_unittests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "navigation/navigation_item_storage_test_util.h",
-    "navigation/navigation_item_storage_test_util.mm",
     "public/test/crw_fake_web_state_delegate.h",
     "public/test/crw_fake_web_state_delegate.mm",
   ]
@@ -395,7 +395,6 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state",
-    "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
@@ -410,7 +409,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/page_viewport_state_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
     "web_state/web_state_context_menu_bridge_unittest.mm",
     "web_state/web_state_delegate_bridge_unittest.mm",
@@ -582,6 +580,7 @@ test("ios_web_inttests") {
     "//ios/web/test:resources",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/test/fakes",
     "//ios/web/web_state",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
@@ -604,6 +603,7 @@ test("ios_web_inttests") {
     "navigation/crw_wk_navigation_handler_inttest.mm",
     "navigation/history_state_operations_inttest.mm",
     "navigation/meta_tag_inttest.mm",
+    "navigation/navigation_manager_impl_inttest.mm",
     "navigation/window_location_inttest.mm",
     "public/test/http_server_inttest.mm",
     "test/run_all_unittests.cc",

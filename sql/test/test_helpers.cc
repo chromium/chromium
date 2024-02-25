@@ -12,6 +12,7 @@
 #include <string>
 #include <tuple>
 
+#include <optional>
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -24,7 +25,6 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql::test {
@@ -43,17 +43,16 @@ size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
 // Read the number of the root page of a B-tree (index/table).
 //
 // Returns a 0-indexed page number, not the raw SQLite page number.
-absl::optional<int> GetRootPage(sql::Database& db,
-                                base::StringPiece tree_name) {
+std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   sql::Statement select(
       db.GetUniqueStatement("SELECT rootpage FROM sqlite_schema WHERE name=?"));
   select.BindString(0, tree_name);
   if (!select.Step())
-    return absl::nullopt;
+    return std::nullopt;
 
   int sqlite_page_number = select.ColumnInt(0);
   if (!sqlite_page_number)
-    return absl::nullopt;
+    return std::nullopt;
 
   return sqlite_page_number - 1;
 }
@@ -117,15 +116,15 @@ absl::optional<int> GetRootPage(sql::Database& db,
 
 }  // namespace
 
-absl::optional<int> ReadDatabasePageSize(const base::FilePath& db_path) {
+std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path) {
   // See https://www.sqlite.org/fileformat2.html#page_size
   constexpr size_t kPageSizeOffset = 16;
   uint8_t raw_page_size_bytes[2];
   base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   if (!file.ReadAndCheck(kPageSizeOffset, raw_page_size_bytes))
-    return absl::nullopt;
+    return std::nullopt;
 
   uint16_t raw_page_size;
   base::ReadBigEndian(raw_page_size_bytes, &raw_page_size);
@@ -142,7 +141,7 @@ absl::optional<int> ReadDatabasePageSize(const base::FilePath& db_path) {
   // Sanity-check that the page size is valid.
   constexpr uint16_t kMinPageSize = 512;
   if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   return page_size;
 }
@@ -153,10 +152,10 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
     // any future transaction always touches the DB file and not just the WAL
     // file.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    // TODO: This function doesn't reliably work if connections to the DB are
-    // still open. Change any uses to ensure that we close all database
-    // connections before calling this function.
-    sql::Database db({.exclusive_locking = false, .wal_mode = true});
+    // This function doesn't reliably work if connections to the DB are still
+    // open. The database is opened in excusive mode. Open will fail if any
+    // other connection exists on the database.
+    sql::Database db({.wal_mode = true});
     if (!db.Open(db_path))
       return false;
     int wal_log_size = 0;
@@ -209,7 +208,7 @@ bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
 
 bool CorruptIndexRootPage(const base::FilePath& db_path,
                           base::StringPiece index_name) {
-  absl::optional<int> page_size = ReadDatabasePageSize(db_path);
+  std::optional<int> page_size = ReadDatabasePageSize(db_path);
   if (!page_size.has_value())
     return false;
 
@@ -217,7 +216,7 @@ bool CorruptIndexRootPage(const base::FilePath& db_path,
   if (!db.Open(db_path))
     return false;
 
-  absl::optional<int> page_number = GetRootPage(db, index_name);
+  std::optional<int> page_number = GetRootPage(db, index_name);
   db.Close();
   if (!page_number.has_value())
     return false;

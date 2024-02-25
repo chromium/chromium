@@ -28,6 +28,10 @@ namespace display {
 class ScopedNativeScreen;
 }
 
+namespace mac_notifications {
+class MacNotificationServiceUN;
+}
+
 @class AppShimDelegate;
 @class ProfileMenuTarget;
 @class ApplicationDockMenuTarget;
@@ -51,6 +55,9 @@ class AppShimController
     std::string app_id;
     std::u16string app_name;
     GURL app_url;
+    // Task runner for the IO thread, only used to guarantee no race conditions
+    // when swapping out FeatureList instances in FinalizeFeatureState();
+    scoped_refptr<base::SequencedTaskRunner> io_thread_runner;
   };
 
   explicit AppShimController(const Params& params);
@@ -60,12 +67,29 @@ class AppShimController
 
   ~AppShimController() override;
 
+  // Called early in process startup to temporarily initialize base::FeatureList
+  // and field trial state with a best guess of what the state should be. This
+  // gets state from the command line and/or a file in user_data_dir.
+  // FeatureList and field trials are later re-initialized in
+  // OnShimConnectedResponse, once communication with the correct chrome
+  // instance has been established.
+  static void PreInitFeatureState(const base::CommandLine& command_line);
+
+  // Called by OnShimConnectedResponse to finish setting up FeatureList and
+  // field trials for this process.
+  static void FinalizeFeatureState(
+      const variations::VariationsCommandLine& feature_state,
+      const scoped_refptr<base::SequencedTaskRunner>& io_thread_runner);
+
   chrome::mojom::AppShimHost* host() const { return host_.get(); }
 
   // Called by AppShimDelegate in response to receiving the notification
   // -[NSApplicationDelegate applicationDidFinishLaunching:]. This kicks off
   // the initialization process (connecting to Chrome, etc).
-  void OnAppFinishedLaunching();
+  // `was_notification_action_launch` is set to true if this app shim was
+  // launched by the OS in response to the user interacting with a
+  // notification.
+  void OnAppFinishedLaunching(bool launched_by_notification_action);
 
   // Called by AppShimDelegate in response a file being opened. If this occurs
   // before OnDidFinishLaunching, then the argument is the files that triggered
@@ -129,6 +153,7 @@ class AppShimController
   // be controlled by the browser. On failure, the app will quit.
   void OnShimConnectedResponse(
       chrome::mojom::AppShimLaunchResult result,
+      variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver);
 
   // Builds main menu bar items.
@@ -153,6 +178,8 @@ class AppShimController
   void BindNotificationProvider(
       mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
           provider) override;
+  void RequestNotificationPermission(
+      RequestNotificationPermissionCallback callback) override;
 
   // mac_notifications::mojom::MacNotificationProvider implementation.
   void BindNotificationService(
@@ -161,6 +188,16 @@ class AppShimController
       mojo::PendingRemote<
           mac_notifications::mojom::MacNotificationActionHandler> handler)
       override;
+
+  // Returns the current MacNotificationService instances as a
+  // MacNotificationServiceUN, or nullptr if no notification service has been
+  // created yet, or if it is of the wrong type.
+  mac_notifications::MacNotificationServiceUN* notification_service_un();
+
+  // Called when a change in the system notification permission status has been
+  // detected.
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status);
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.
@@ -186,9 +223,13 @@ class AppShimController
   // was called.
   std::vector<base::FilePath> launch_files_;
 
-  // Populated by OpenUrls if it was called before nAppFinishedLaunching
+  // Populated by OpenUrls if it was called before OnAppFinishedLaunching
   // was called.
   std::vector<GURL> launch_urls_;
+
+  // Populated by OnAppfinishedLaunching to indicate if this app was launched
+  // as a result of a notification action.
+  bool launched_by_notification_action_ = false;
 
   // This is the Chrome process that this app is committed to connecting to.
   // The app will quit if this process is terminated before the mojo connection
@@ -238,6 +279,16 @@ class AppShimController
   // notifications in this app shim process.
   std::unique_ptr<mac_notifications::mojom::MacNotificationService>
       notification_service_;
+
+  // Remote and receiver used for passing notification actions to the browser
+  // process. The receiver end is passed to the browser process when connection
+  // is established, while the remote end is passed to
+  // `MacNotificationServiceUN` when it is constructed.
+  mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+      notification_action_handler_remote_;
+  mojo::PendingReceiver<mac_notifications::mojom::MacNotificationActionHandler>
+      notification_action_handler_receiver_ =
+          notification_action_handler_remote_.InitWithNewPipeAndPassReceiver();
 
   NSInteger attention_request_id_ = 0;
 };

@@ -14,6 +14,7 @@ namespace base {
 
 namespace {
 
+template <class T>
 class SequenceLocalStorageSlotTest : public testing::Test {
  public:
   SequenceLocalStorageSlotTest(const SequenceLocalStorageSlotTest&) = delete;
@@ -31,19 +32,34 @@ class SequenceLocalStorageSlotTest : public testing::Test {
 
 }  // namespace
 
-// Verify that a value stored with Set() can be retrieved with Get().
-TEST_F(SequenceLocalStorageSlotTest, GetEmplace) {
-  SequenceLocalStorageSlot<int> slot;
+struct GenericSLS {
+  template <class T>
+  using Type = GenericSequenceLocalStorageSlot<T>;
+};
+
+struct SmallSLS {
+  template <class T>
+  using Type = GenericSequenceLocalStorageSlot<T>;
+};
+
+using StorageTypes = testing::Types<GenericSLS, SmallSLS>;
+TYPED_TEST_SUITE(SequenceLocalStorageSlotTest, StorageTypes);
+
+// Verify that a value stored with emplace() can be retrieved with operator*().
+TYPED_TEST(SequenceLocalStorageSlotTest, GetEmplace) {
+  using SLSType = typename TypeParam::template Type<int>;
+  SLSType slot;
   slot.emplace(5);
   EXPECT_EQ(*slot, 5);
 }
 
 // Verify that inserting an object in a SequenceLocalStorageSlot creates a copy
 // of that object independent of the original one.
-TEST_F(SequenceLocalStorageSlotTest, EmplaceObjectIsIndependent) {
+TYPED_TEST(SequenceLocalStorageSlotTest, EmplaceObjectIsIndependent) {
+  using SLSType = typename TypeParam::template Type<bool>;
   bool should_be_false = false;
 
-  SequenceLocalStorageSlot<bool> slot;
+  SLSType slot;
 
   slot.emplace(should_be_false);
 
@@ -54,12 +70,13 @@ TEST_F(SequenceLocalStorageSlotTest, EmplaceObjectIsIndependent) {
   EXPECT_NE(should_be_false, *slot);
 }
 
-// Verify that multiple slots work and that calling Get after overwriting
+// Verify that multiple slots work and that calling emplace after overwriting
 // a value in a slot yields the new value.
-TEST_F(SequenceLocalStorageSlotTest, GetEmplaceMultipleSlots) {
-  SequenceLocalStorageSlot<int> slot1;
-  SequenceLocalStorageSlot<int> slot2;
-  SequenceLocalStorageSlot<int> slot3;
+TYPED_TEST(SequenceLocalStorageSlotTest, GetEmplaceMultipleSlots) {
+  using SLSType = typename TypeParam::template Type<int>;
+  SLSType slot1;
+  SLSType slot2;
+  SLSType slot3;
   EXPECT_FALSE(slot1);
   EXPECT_FALSE(slot2);
   EXPECT_FALSE(slot3);
@@ -86,31 +103,42 @@ TEST_F(SequenceLocalStorageSlotTest, GetEmplaceMultipleSlots) {
 
 // Verify that changing the value returned by Get() changes the value
 // in sequence local storage.
-TEST_F(SequenceLocalStorageSlotTest, GetReferenceModifiable) {
-  SequenceLocalStorageSlot<bool> slot;
+TYPED_TEST(SequenceLocalStorageSlotTest, GetReferenceModifiable) {
+  using SLSType = typename TypeParam::template Type<bool>;
+  SLSType slot;
   slot.emplace(false);
   *slot = true;
   EXPECT_TRUE(*slot);
 }
 
 // Verify that a move-only type can be stored in sequence local storage.
-TEST_F(SequenceLocalStorageSlotTest, EmplaceGetWithMoveOnlyType) {
-  std::unique_ptr<int> int_unique_ptr = std::make_unique<int>(5);
+TYPED_TEST(SequenceLocalStorageSlotTest, EmplaceGetWithMoveOnlyType) {
+  struct MoveOnly {
+    MoveOnly() = default;
+    MoveOnly(const MoveOnly&) = delete;
+    MoveOnly& operator=(const MoveOnly&) = delete;
+    MoveOnly(MoveOnly&&) = default;
+    MoveOnly& operator=(MoveOnly&&) = default;
+    int x = 0x12345678;
+  };
+  using SLSType = typename TypeParam::template Type<MoveOnly>;
+  MoveOnly move_only;
 
-  SequenceLocalStorageSlot<std::unique_ptr<int>> slot;
-  slot.emplace(std::move(int_unique_ptr));
+  SLSType slot;
+  slot.emplace(std::move(move_only));
 
-  EXPECT_EQ(*slot->get(), 5);
+  EXPECT_EQ(slot->x, 0x12345678);
 }
 
 // Verify that a Get() without a previous Set() on a slot returns a
 // default-constructed value.
-TEST_F(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructs) {
+TYPED_TEST(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructs) {
   struct DefaultConstructable {
     int x = 0x12345678;
   };
+  using SLSType = typename TypeParam::template Type<DefaultConstructable>;
 
-  SequenceLocalStorageSlot<DefaultConstructable> slot;
+  SLSType slot;
 
   EXPECT_EQ(slot.GetOrCreateValue().x, 0x12345678);
 }
@@ -119,8 +147,9 @@ TEST_F(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructs) {
 // a POD-type returns a default-constructed value.
 // Note: this test could be flaky and give a false pass. If it's flaky, the test
 // might've "passed" because the memory for the slot happened to be zeroed.
-TEST_F(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructsPOD) {
-  SequenceLocalStorageSlot<void*> slot;
+TYPED_TEST(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructsPOD) {
+  using SLSType = typename TypeParam::template Type<void*>;
+  SLSType slot;
 
   EXPECT_EQ(slot.GetOrCreateValue(), nullptr);
 }
@@ -145,6 +174,33 @@ TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
 
     EXPECT_EQ(*slot, i);
   }
+}
+
+TEST(SequenceLocalStorageComPtrTest,
+     TestClassesWithNoAddressOfOperatorCanCompile) {
+  internal::SequenceLocalStorageMap sequence_local_storage_map;
+  internal::ScopedSetSequenceLocalStorageMapForCurrentThread
+      scoped_sequence_local_storage(&sequence_local_storage_map);
+  // Microsoft::WRL::ComPtr overrides & operator to release the underlying
+  // pointer.
+  // https://learn.microsoft.com/en-us/cpp/cppcx/wrl/comptr-class?view=msvc-170#operator-ampersand
+  // Types stored in SequenceLocalStorage may override `operator&` to have
+  // additional side effects, e.g. Microsoft::WRL::ComPtr. Make sure
+  // SequenceLocalStorage does not invoke/use custom `operator&`s to avoid
+  // triggering those side effects.
+  class TestNoAddressOfOperator {
+   public:
+    TestNoAddressOfOperator() = default;
+    ~TestNoAddressOfOperator() {
+      // Define a non-trivial destructor so that SequenceLocalStorageSlot
+      // will use the external value path.
+    }
+    // See note above class definition for the reason this operator is deleted.
+    TestNoAddressOfOperator* operator&() = delete;
+  };
+  SequenceLocalStorageSlot<TestNoAddressOfOperator> slot;
+  slot.emplace(TestNoAddressOfOperator());
+  EXPECT_NE(slot.GetValuePointer(), nullptr);
 }
 
 }  // namespace base

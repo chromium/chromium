@@ -101,6 +101,8 @@ class EncryptedReportingUploadProvider::UploadHelper
       stored_reservations_ GUARDED_BY_CONTEXT(sequenced_task_checker_);
   bool stored_need_encryption_key_ GUARDED_BY_CONTEXT(sequenced_task_checker_){
       false};
+  int stored_config_file_version_ GUARDED_BY_CONTEXT(sequenced_task_checker_){
+      0};
 
   // Upload client (protected by sequenced task runner). Once set, is used
   // repeatedly.
@@ -173,7 +175,7 @@ void EncryptedReportingUploadProvider::UploadHelper::
 void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
     StatusOr<std::unique_ptr<UploadClient>> client_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
-  if (!client_result.ok()) {
+  if (!client_result.has_value()) {
     upload_client_request_in_progress_ = false;
     PostNewUploadClientRequest();
     return;
@@ -181,7 +183,7 @@ void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
   sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UploadHelper::UpdateUploadClient,
                                 weak_ptr_factory_.GetWeakPtr(),
-                                std::move(client_result.ValueOrDie())));
+                                std::move(client_result.value())));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
@@ -208,8 +210,9 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     const bool need_encryption_key =
         std::exchange(stored_need_encryption_key_, false);
     const auto result = upload_client_->EnqueueUpload(
-        need_encryption_key, std::move(records), std::move(scoped_reservation),
-        report_successful_upload_cb_, encryption_key_attached_cb_);
+        need_encryption_key, stored_config_file_version_, std::move(records),
+        std::move(scoped_reservation), report_successful_upload_cb_,
+        encryption_key_attached_cb_);
     LOG_IF(ERROR, !result.ok()) << "Upload failed, error=" << result;
   }
 }
@@ -251,7 +254,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
   }
   std::move(enqueued_cb)
       .Run(upload_client_->EnqueueUpload(
-          need_encryption_key, std::move(records),
+          need_encryption_key, stored_config_file_version_, std::move(records),
           std::move(scoped_reservation), report_successful_upload_cb_,
           encryption_key_attached_cb_));
 }
@@ -280,6 +283,11 @@ void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
   CHECK(helper_);
   helper_->EnqueueUpload(need_encryption_key, std::move(records),
                          std::move(scoped_reservation), std::move(result_cb));
+}
+
+base::WeakPtr<EncryptedReportingUploadProvider>
+EncryptedReportingUploadProvider::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // static

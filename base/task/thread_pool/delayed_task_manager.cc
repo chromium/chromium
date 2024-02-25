@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/delayed_task_manager.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -14,20 +15,15 @@
 #include "base/task/task_features.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool/task.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
 
 DelayedTaskManager::DelayedTask::DelayedTask() = default;
 
-DelayedTaskManager::DelayedTask::DelayedTask(
-    Task task,
-    PostTaskNowCallback callback,
-    scoped_refptr<TaskRunner> task_runner)
-    : task(std::move(task)),
-      callback(std::move(callback)),
-      task_runner(std::move(task_runner)) {}
+DelayedTaskManager::DelayedTask::DelayedTask(Task task,
+                                             PostTaskNowCallback callback)
+    : task(std::move(task)), callback(std::move(callback)) {}
 
 DelayedTaskManager::DelayedTask::DelayedTask(
     DelayedTaskManager::DelayedTask&& other) = default;
@@ -72,7 +68,7 @@ void DelayedTaskManager::Start(
     CheckedAutoLock auto_lock(queue_lock_);
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
-    align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
+    max_precise_delay = kMaxPreciseDelay.Get();
     std::tie(process_ripe_tasks_time, delay_policy) =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
   }
@@ -84,8 +80,7 @@ void DelayedTaskManager::Start(
 
 void DelayedTaskManager::AddDelayedTask(
     Task task,
-    PostTaskNowCallback post_task_now_callback,
-    scoped_refptr<TaskRunner> task_runner) {
+    PostTaskNowCallback post_task_now_callback) {
   DCHECK(task.task);
   DCHECK(!task.delayed_run_time.is_null());
   DCHECK(!task.queue_time.is_null());
@@ -97,11 +92,14 @@ void DelayedTaskManager::AddDelayedTask(
   subtle::DelayPolicy delay_policy;
   {
     CheckedAutoLock auto_lock(queue_lock_);
+    task.delay_policy = subtle::MaybeOverrideDelayPolicy(
+        task.delay_policy, task.delayed_run_time - task.queue_time,
+        max_precise_delay);
+
     auto [old_process_ripe_tasks_time, old_delay_policy] =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
-    delayed_task_queue_.insert(DelayedTask(std::move(task),
-                                           std::move(post_task_now_callback),
-                                           std::move(task_runner)));
+    delayed_task_queue_.insert(
+        DelayedTask(std::move(task), std::move(post_task_now_callback)));
     // Not started or already shutdown.
     if (service_thread_task_runner_ == nullptr)
       return;
@@ -164,10 +162,10 @@ void DelayedTaskManager::ProcessRipeTasks() {
   }
 }
 
-absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
+std::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
   CheckedAutoLock auto_lock(queue_lock_);
   if (delayed_task_queue_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return delayed_task_queue_.top().task.delayed_run_time;
 }
 

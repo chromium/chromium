@@ -15,8 +15,7 @@
 @property(nonatomic, readwrite) BOOL calledStartDownloadBlock;
 
 // Overriding properties in NativeTaskBridge to be used in unit tests
-@property(nonatomic, readwrite, strong)
-    WKDownload* download API_AVAILABLE(ios(15));
+@property(nonatomic, readwrite, strong) WKDownload* download;
 @property(nonatomic, readwrite, strong) NSProgress* progress;
 @property(nonatomic, readwrite, strong) NSURLResponse* response;
 @property(nonatomic, readwrite, strong) NSString* suggestedFilename;

@@ -31,8 +31,8 @@
 
 namespace blink {
 
-UnicodeRangeSet::UnicodeRangeSet(const Vector<UnicodeRange>& ranges)
-    : ranges_(ranges) {
+UnicodeRangeSet::UnicodeRangeSet(HeapVector<UnicodeRange>&& ranges)
+    : ranges_(std::move(ranges)) {
   if (ranges_.empty())
     return;
 

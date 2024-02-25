@@ -25,9 +25,6 @@ COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kUseWaylandExplicitGrab[];
 
 COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kDisableExplicitDmaFences[];
 
-COMPONENT_EXPORT(OZONE_SWITCHES)
-extern const char kDisableBufferBWCompression[];
-
 COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kOzoneOverrideScreenSize[];
 
 }  // namespace switches

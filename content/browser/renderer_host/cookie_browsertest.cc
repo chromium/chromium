@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -43,7 +44,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -68,8 +68,8 @@ void SetCookieDirect(WebContentsImpl* tab,
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
   auto cookie_obj = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
 
   base::RunLoop run_loop;
   tab->GetBrowserContext()
@@ -434,7 +434,7 @@ class RestrictedCookieManagerInterceptor
       mojo::PendingRemote<network::mojom::RestrictedCookieManager> real_rcm)
       : receiver_(this, std::move(receiver)), real_rcm_(std::move(real_rcm)) {}
 
-  void set_override_url(absl::optional<std::string> maybe_url) {
+  void set_override_url(std::optional<std::string> maybe_url) {
     override_url_ = std::move(maybe_url);
   }
 
@@ -454,10 +454,11 @@ class RestrictedCookieManagerInterceptor
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
                         bool get_version_shared_memory,
+                        bool is_ad_tagged,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        get_version_shared_memory, std::move(callback));
+        get_version_shared_memory, is_ad_tagged, std::move(callback));
   }
 
  private:
@@ -469,7 +470,7 @@ class RestrictedCookieManagerInterceptor
     return override_url_ ? GURL(override_url_.value()) : url_in;
   }
 
-  absl::optional<std::string> override_url_;
+  std::optional<std::string> override_url_;
 
   mojo::Receiver<network::mojom::RestrictedCookieManager> receiver_;
   mojo::Remote<network::mojom::RestrictedCookieManager> real_rcm_;
@@ -503,14 +504,14 @@ class CookieStoreContentBrowserClient
     return false;  // only made a proxy, still need the actual impl to be made.
   }
 
-  void set_override_url(absl::optional<std::string> maybe_url) {
+  void set_override_url(std::optional<std::string> maybe_url) {
     override_url_ = maybe_url;
     if (rcm_interceptor_)
       rcm_interceptor_->set_override_url(override_url_);
   }
 
  private:
-  absl::optional<std::string> override_url_;
+  std::optional<std::string> override_url_;
   std::unique_ptr<RestrictedCookieManagerInterceptor> rcm_interceptor_;
 };
 

@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
 
+/* Define to 1 if you have the `getentropy' function. */
+#undef HAVE_GETENTROPY
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
@@ -68,14 +71,8 @@
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
-/* Define to 1 if you have the `rand_r' function. */
-#undef HAVE_RAND_R
-
 /* Have shl_load based dso */
 #undef HAVE_SHLLOAD
-
-/* Define to 1 if you have the `snprintf' function. */
-#undef HAVE_SNPRINTF
 
 /* Define to 1 if you have the `stat' function. */
 #undef HAVE_STAT
@@ -98,6 +95,9 @@
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
+/* Define to 1 if you have the <sys/random.h> header file. */
+#undef HAVE_SYS_RANDOM_H
+
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
 
@@ -119,17 +119,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Whether va_copy() is available */
-#undef HAVE_VA_COPY
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#undef HAVE_VSNPRINTF
-
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
-
-/* Whether __va_copy() is available */
-#undef HAVE___VA_COPY
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
@@ -163,14 +154,14 @@
 /* Support for IPv6 */
 #undef SUPPORT_IP6
 
-/* Define if va_list is an array type */
-#undef VA_LIST_IS_ARRAY
-
 /* Version number of package */
 #undef VERSION
 
 /* Determine what socket length (socklen_t) data type is */
 #undef XML_SOCKLEN_T
+
+/* TLS specifier */
+#undef XML_THREAD_LOCAL
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

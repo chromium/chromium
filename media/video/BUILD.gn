@@ -16,6 +16,8 @@ source_set("video") {
   ]
 
   sources = [
+    "alpha_video_encoder_wrapper.cc",
+    "alpha_video_encoder_wrapper.h",
     "bit_reader_macros.h",
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
@@ -29,8 +31,6 @@ source_set("video") {
     "h264_parser.h",
     "h264_poc.cc",
     "h264_poc.h",
-    "half_float_maker.cc",
-    "half_float_maker.h",
     "offloading_video_encoder.cc",
     "offloading_video_encoder.h",
     "picture.cc",
@@ -116,6 +116,10 @@ source_set("video") {
     ]
     deps += [ "//third_party/openh264:encoder" ]
   }
+
+  if (is_apple) {
+    deps += [ "//media/base/mac:mac" ]
+  }
 }
 
 # Note: This is a roll-up only target; do not expand the visibility. DEPS should
@@ -152,11 +156,11 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "alpha_video_encoder_wrapper_unittest.cc",
     "gpu_memory_buffer_video_frame_pool_unittest.cc",
     "h264_bit_reader_unittest.cc",
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
-    "half_float_maker_unittest.cc",
     "offloading_video_encoder_unittest.cc",
     "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",

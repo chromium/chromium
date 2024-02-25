@@ -6,13 +6,15 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(
       `Verify that navigator is rendered properly when frame with dynamic script and style is added and removed.\n`);
-  await TestRunner.loadLegacyModule('sources');
 
-  var sourcesNavigator = new Sources.NetworkNavigatorView();
-  sourcesNavigator.show(UI.inspectorView.element);
+  var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
+  sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.markStep('dumpInitialNavigator');
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);

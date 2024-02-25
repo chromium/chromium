@@ -1,21 +1,24 @@
 ---
   # TODO(crbug.com/1282228): reenable google-readability-casting once it no
   # longer has as many false-positives.
-  # TODO(crbug.com/1406869): reenable modernize-use-default-member-init once
-  # C++20 is everywhere; it recommends using default member init for bit fields,
-  # which is C++20-only.
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
+                    bugprone-bool-pointer-implicit-conversion,
                     bugprone-dangling-handle,
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
                     bugprone-undefined-memory-manipulation,
+                    bugprone-unique-ptr-array-mismatch,
                     bugprone-unused-raii,
                     bugprone-use-after-move,
+                    bugprone-virtual-near-miss,
                     google-build-explicit-make-pair,
+                    google-default-arguments,
                     google-explicit-constructor,
+                    google-objc-avoid-nsobject-new,
+                    google-upgrade-googletest-case,
                     misc-misleading-identifier,
                     misc-homoglyph,
                     modernize-avoid-bind,
@@ -27,6 +30,7 @@
                     modernize-replace-random-shuffle,
                     modernize-shrink-to-fit,
                     modernize-use-bool-literals,
+                    modernize-use-default-member-init,
                     modernize-use-emplace,
                     modernize-use-equals-default,
                     modernize-use-equals-delete,
@@ -53,12 +57,10 @@
     # https://groups.google.com/a/chromium.org/g/cxx/c/noMMTNYiM0w .
     - key:          modernize-use-emplace.IgnoreImplicitConstructors
       value:        1
-    # crbug.com/1420969, crbug.com/1421042: Tricium's `show fix` button isn't
-    # working, which leads to devs thinking that clang-tidy is suggesting C++20
-    # constructs in some cases. Until fixes can be surfaced to show that
-    # `base::Reversed` is encouraged, just turn reverse ranges off entirely.
-    # TODO(crbug.com/1404958): alternatively, remove these once C++20 is
-    # everywhere.
-    - key:          modernize-loop-convert.UseCxx20ReverseRanges
-      value:        false
+    # Use of `std::ranges::reverse_view` is inconsistent with
+    # Chromium style. Recommend `base::Reversed` instead.
+    - key:          modernize-loop-convert.MakeReverseRangeFunction
+      value:        base::Reversed
+    - key:          modernize-loop-convert.MakeReverseRangeHeader
+      value:        base/containers/adapters.h
 ...

@@ -73,9 +73,9 @@ class LayoutMedia : public LayoutImage {
   LayoutUnit ComputePanelWidth(const PhysicalRect& media_width) const;
 
  protected:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsMedia() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectMedia || LayoutImage::IsOfType(type);
+    return true;
   }
 
  private:
@@ -105,7 +105,7 @@ class LayoutMedia : public LayoutImage {
     return false;
   }
 
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
+  RecalcScrollableOverflowResult RecalcScrollableOverflow() override;
 
   LayoutObjectChildList children_;
 };

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,12 +16,12 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -56,7 +58,8 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   explicit TestIconLabelBubbleView(const gfx::FontList& font_list,
                                    Delegate* delegate)
       : IconLabelBubbleView(font_list, delegate) {
-    GetImageView()->SetImageSize(gfx::Size(kImageSize, kImageSize));
+    SetImageModel(
+        ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(kImageSize)));
     SetLabel(u"Label");
   }
 
@@ -192,7 +195,7 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     steady_reached_ = false;
     shrinking_reached_ = false;
     minimum_size_reached_ = false;
-    initial_image_x_ = GetImageBounds().x();
+    initial_image_x_ = GetImageContainerBounds().x();
     EXPECT_EQ(GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left(),
               initial_image_x_);
 
@@ -204,13 +207,14 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     switch (state()) {
       case TestIconLabelBubbleView::State::GROWING: {
         EXPECT_GE(width(), previous_width_);
-        EXPECT_EQ(initial_image_x_, GetImageBounds().x());
-        EXPECT_GE(GetImageBounds().x(), 0);
-        if (GetImageBounds().width() > 0)
-          EXPECT_LE(GetImageBounds().right(), width());
+        EXPECT_EQ(initial_image_x_, GetImageContainerBounds().x());
+        EXPECT_GE(GetImageContainerBounds().x(), 0);
+        if (GetImageContainerBounds().width() > 0) {
+          EXPECT_LE(GetImageContainerBounds().right(), width());
+        }
         EXPECT_TRUE(IsLabelVisible());
         if (GetLabelBounds().width() > 0) {
-          EXPECT_GT(GetLabelBounds().x(), GetImageBounds().right());
+          EXPECT_GT(GetLabelBounds().x(), GetImageContainerBounds().right());
           EXPECT_LT(GetLabelBounds().right(), width());
         }
         break;
@@ -218,10 +222,10 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
       case TestIconLabelBubbleView::State::STEADY: {
         if (steady_reached_)
           EXPECT_EQ(previous_width_, width());
-        EXPECT_EQ(initial_image_x_, GetImageBounds().x());
-        EXPECT_LT(GetImageBounds().right(), width());
+        EXPECT_EQ(initial_image_x_, GetImageContainerBounds().x());
+        EXPECT_LT(GetImageContainerBounds().right(), width());
         EXPECT_TRUE(IsLabelVisible());
-        EXPECT_GT(GetLabelBounds().x(), GetImageBounds().right());
+        EXPECT_GT(GetLabelBounds().x(), GetImageContainerBounds().right());
         EXPECT_LT(GetLabelBounds().right(), width());
         steady_reached_ = true;
         break;
@@ -232,16 +236,16 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
         if (minimum_size_reached_)
           EXPECT_EQ(previous_width_, width());
 
-        EXPECT_GE(GetImageBounds().x(), 0);
+        EXPECT_GE(GetImageContainerBounds().x(), 0);
         if (width() <= initial_image_x_ + kImageSize) {
-          EXPECT_EQ(width(), GetImageBounds().right());
+          EXPECT_EQ(width(), GetImageContainerBounds().right());
           EXPECT_EQ(0, GetLabelBounds().width());
         } else {
-          EXPECT_EQ(initial_image_x_, GetImageBounds().x());
-          EXPECT_LE(GetImageBounds().right(), width());
+          EXPECT_EQ(initial_image_x_, GetImageContainerBounds().x());
+          EXPECT_LE(GetImageContainerBounds().right(), width());
         }
         if (GetLabelBounds().width() > 0) {
-          EXPECT_GT(GetLabelBounds().x(), GetImageBounds().right());
+          EXPECT_GT(GetLabelBounds().x(), GetImageContainerBounds().right());
           EXPECT_LT(GetLabelBounds().right(), width());
         }
         shrinking_reached_ = true;
@@ -263,8 +267,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
 
   const gfx::Rect& GetLabelBounds() const { return view_->GetLabelBounds(); }
 
-  const gfx::Rect& GetImageBounds() const {
-    return view_->GetImageView()->bounds();
+  const gfx::Rect& GetImageContainerBounds() const {
+    return view_->GetImageContainerView()->bounds();
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -388,12 +392,12 @@ TEST_F(IconLabelBubbleViewTest, GestureInkDropState) {
 #endif
 
 TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimation) {
-  view()->AnimateIn(absl::nullopt);
+  view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   view()->AnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
   // Label should reappear if animated in after being animated out.
-  view()->AnimateIn(absl::nullopt);
+  view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 
@@ -403,7 +407,7 @@ TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
   view()->ResetSlideAnimation(false);
   EXPECT_FALSE(view()->IsLabelVisible());
   // Label should reappear if animated in after being reset out.
-  view()->AnimateIn(absl::nullopt);
+  view()->AnimateIn(std::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 

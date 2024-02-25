@@ -8,13 +8,11 @@ build_webui("build") {
   grd_prefix = "media"
   static_files = [
     "media_engagement.html",
-    "media_history.html",
     "webrtc_logs.css",
     "webrtc_logs.html",
   ]
 
   non_web_component_files = [
-    "media_history.ts",
     "media_data_table.ts",
     "media_engagement.ts",
     "webrtc_logs.ts",
@@ -25,14 +23,12 @@ build_webui("build") {
     "//services/media_session/public/mojom:mojom_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/media/history/media_history_store.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/media/media_engagement_score_details.mojom-webui.ts",
     "$root_gen_dir/services/media_session/public/mojom/media_session.mojom-webui.ts",
   ]
 
   ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
-    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

@@ -22,23 +22,9 @@ class AutofillManagerTestApi {
     manager_->OnLoadedServerPredictions(response, queried_form_signatures);
   }
 
-  void OnAutofillProfileOrCreditCardFormFilled(
-      autofill::FormGlobalId form,
-      base::span<const std::pair<const FormFieldData*, const AutofillField*>>
-          filled_fields,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card) {
-    manager_->OnAutofillProfileOrCreditCardFormFilled(form, filled_fields,
-                                                      profile_or_credit_card);
-  }
-
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {
     return manager_->mutable_form_structures();
-  }
-
-  FormStructure* ParseForm(const FormData& form) {
-    return manager_->ParseForm(form, nullptr);
   }
 
  private:

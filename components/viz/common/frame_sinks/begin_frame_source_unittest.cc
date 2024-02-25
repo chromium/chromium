@@ -685,12 +685,42 @@ TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   source_->RemoveObserver(&obs);
 
   // New args created 8 intervals later.
-  // Sequence number should increase bt this much.
+  // Sequence number should increase by this much.
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
   EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 10, 90000, 100000,
                                  10000);
   task_runner_->AdvanceMockTickClock(base::Microseconds(80000));
   source_->AddObserver(&obs);
+}
+
+TEST_F(DelayBasedBeginFrameSourceTest, WithVrrInterval) {
+  NiceMock<MockBeginFrameObserver> obs;
+  source_->SetMaxVrrInterval(base::Microseconds(25000));
+
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
+  EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 25000, 25000);
+  source_->AddObserver(&obs);
+
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 35000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 45000, 25000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(21000));
+  source_->OnUpdateVSyncParameters(TicksFromMicroseconds(21000),
+                                   base::Microseconds(10000));
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 4, 30000, 46000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 5, 31000, 56000, 25000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(32000));
+  source_->OnUpdateVSyncParameters(TicksFromMicroseconds(32000),
+                                   base::Microseconds(10000));
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 6, 41000, 57000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 7, 42000, 67000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 8, 52000, 77000, 25000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(53000));
+  source_->OnUpdateVSyncParameters(TicksFromMicroseconds(53000),
+                                   base::Microseconds(10000));
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 9, 62000, 78000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 10, 63000, 88000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 11, 73000, 98000, 25000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(73000));
 }
 
 // ExternalBeginFrameSource testing

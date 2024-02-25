@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/network_quality_observation_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net::nqe::internal {
 
@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE Observation {
               base::TimeTicks timestamp,
               int32_t signal_strength,
               NetworkQualityObservationSource source,
-              const absl::optional<IPHash>& host);
+              const std::optional<IPHash>& host);
 
   Observation(const Observation& other);
   Observation& operator=(const Observation& other);
@@ -53,7 +53,7 @@ class NET_EXPORT_PRIVATE Observation {
   NetworkQualityObservationSource source() const { return source_; }
 
   // A unique identifier for the remote host which was used for the measurement.
-  absl::optional<IPHash> host() const { return host_; }
+  std::optional<IPHash> host() const { return host_; }
 
   // Returns the observation categories to which this observation belongs to.
   std::vector<ObservationCategory> GetObservationCategories() const;
@@ -70,7 +70,7 @@ class NET_EXPORT_PRIVATE Observation {
 
   NetworkQualityObservationSource source_;
 
-  absl::optional<IPHash> host_;
+  std::optional<IPHash> host_;
 };
 
 }  // namespace net::nqe::internal

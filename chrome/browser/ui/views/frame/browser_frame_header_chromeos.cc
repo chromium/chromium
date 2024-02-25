@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -18,6 +17,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -136,17 +136,6 @@ BrowserFrameHeaderChromeOS::BrowserFrameHeaderChromeOS(
 
 BrowserFrameHeaderChromeOS::~BrowserFrameHeaderChromeOS() = default;
 
-// static
-int BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset() {
-  // In the pre-Ash era the web content area had a frame along the left edge, so
-  // user-generated theme images for the new tab page assume they are shifted
-  // right relative to the header.  Now that we have removed the left edge frame
-  // we need to copy the theme image for the window header from a few pixels
-  // inset to preserve alignment with the NTP image, or else we'll break a bunch
-  // of existing themes.  We do something similar on OS X for the same reason.
-  return 5;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameHeaderChromeOS, protected:
 
@@ -157,9 +146,9 @@ void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
 
 views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (chromeos::TabletState::Get() &&
-      chromeos::TabletState::Get()->InTabletMode())
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
+  }
 
   return chromeos::ShouldUseRestoreFrame(target_widget())
              ? views::CaptionButtonLayoutSize::kBrowserCaptionRestored
@@ -176,7 +165,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
-  absl::optional<ui::ColorId> button_colors;
+  std::optional<ui::ColorId> button_colors;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsChromeRefresh2023()) {

@@ -51,7 +51,7 @@ class SystemMediaControlsNotifierTest : public testing::Test {
 
   void SetUp() override {
     notifier_ = std::make_unique<SystemMediaControlsNotifier>(
-        &mock_system_media_controls_);
+        &mock_system_media_controls_, base::UnguessableToken::Null());
     SetupMediaSessionClient();
   }
 
@@ -78,7 +78,7 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     metadata.artist = artist;
     metadata.album = album;
     notifier_->MediaSessionMetadataChanged(
-        absl::optional<media_session::MediaMetadata>(metadata));
+        std::optional<media_session::MediaMetadata>(metadata));
   }
 
   void SimulateHidden() {
@@ -88,16 +88,16 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   }
 
   void SimulateEmptyMetadata() {
-    notifier_->MediaSessionMetadataChanged(absl::nullopt);
+    notifier_->MediaSessionMetadataChanged(std::nullopt);
   }
 
   void SimulatePositionChanged(const media_session::MediaPosition& position) {
     notifier_->MediaSessionPositionChanged(
-        absl::optional<media_session::MediaPosition>(position));
+        std::optional<media_session::MediaPosition>(position));
   }
 
   void SimulateEmptyPosition() {
-    notifier_->MediaSessionPositionChanged(absl::nullopt);
+    notifier_->MediaSessionPositionChanged(std::nullopt);
   }
 
   void SimulateImageChanged(int image_size) {
@@ -439,7 +439,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
   // When the request ID is cleared, the system media controls should receive
   // null.
   EXPECT_CALL(mock_system_media_controls(), SetID(nullptr));
-  notifier().MediaSessionChanged(absl::nullopt);
+  notifier().MediaSessionChanged(std::nullopt);
 }
 
 TEST_F(SystemMediaControlsNotifierTest, DontHideMediaMetadataIfNotNeeded) {
@@ -472,7 +472,6 @@ TEST_F(SystemMediaControlsNotifierTest, HideMediaMetadataIfNeeded) {
   std::u16string title = u"original_title";
   std::u16string artist = u"original_artist";
   std::u16string album = u"original_album";
-  int thumbnail_size = 1;
 
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
       .WillOnce(testing::Invoke([this](const SkBitmap& bitmap) {
@@ -489,9 +488,23 @@ TEST_F(SystemMediaControlsNotifierTest, HideMediaMetadataIfNeeded) {
               SetAlbum(client_.GetAlbumPlaceholder()));
 
   SimulateHidden();
+  // Just metadata changed should trigger an icon change as well.
   SimulateMetadataChanged(title, artist, album);
-  SimulateImageChanged(thumbnail_size);
   metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, HideMediaImageIfNeeded) {
+  int thumbnail_size = 1;
+
+  EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
+      .WillOnce(testing::Invoke([this](const SkBitmap& bitmap) {
+        SkBitmap placeholder_bitmap = client_.GetThumbnailPlaceholder();
+        EXPECT_EQ(bitmap.width(), placeholder_bitmap.width());
+        EXPECT_EQ(bitmap.height(), placeholder_bitmap.height());
+      }));
+
+  SimulateHidden();
+  SimulateImageChanged(thumbnail_size);
   icon_update_timer().FireNow();
 }
 

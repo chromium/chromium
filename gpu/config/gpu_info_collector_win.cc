@@ -24,12 +24,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/direct_composition_support.h"
@@ -665,33 +663,14 @@ bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,
   return false;
 }
 
-void PostProcessForWinARM(GPUInfo* gpu_info) {
-  constexpr uint32_t kQualcommVendorId = 0x5143;
-  constexpr char kQualcommName[] = "Qualcomm";
-  constexpr char kUnknownName[] = "Unknown";
-  std::string vendor, renderer, version;
-  if (!RE2::FullMatch(gpu_info->gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)",
-                      &vendor, &renderer, &version)) {
-    return;
-  }
-  if (base::StartsWith(renderer, kQualcommName)) {
-    if (vendor == kUnknownName) {
-      base::ReplaceFirstSubstringAfterOffset(&(gpu_info->gl_renderer), 0,
-                                             kUnknownName, kQualcommName);
-      base::ReplaceFirstSubstringAfterOffset(&(gpu_info->gl_vendor), 0,
-                                             kUnknownName, kQualcommName);
-    }
-    gpu_info->gpu.vendor_id = kQualcommVendorId;
-  }
-}
-
 bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   TRACE_EVENT0("gpu", "CollectGraphicsInfo");
 
   DCHECK(gpu_info);
 
-  if (!CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL()))
+  if (!CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL())) {
     return false;
+  }
 
   // ANGLE's renderer strings are of the form:
   // ANGLE (<adapter_identifier> Direct3D<version> vs_x_x ps_x_x)
@@ -700,27 +679,19 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   int vertex_shader_minor_version = 0;
   int pixel_shader_major_version = 0;
   int pixel_shader_minor_version = 0;
-  if (RE2::FullMatch(gpu_info->gl_renderer,
-                     "ANGLE \\(.*\\)") &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " Direct3D(\\w+)",
+  if (RE2::FullMatch(gpu_info->gl_renderer, "ANGLE \\(.*\\)") &&
+      RE2::PartialMatch(gpu_info->gl_renderer, " Direct3D(\\w+)",
                         &direct3d_version) &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " vs_(\\d+)_(\\d+)",
+      RE2::PartialMatch(gpu_info->gl_renderer, " vs_(\\d+)_(\\d+)",
                         &vertex_shader_major_version,
                         &vertex_shader_minor_version) &&
-      RE2::PartialMatch(gpu_info->gl_renderer,
-                        " ps_(\\d+)_(\\d+)",
+      RE2::PartialMatch(gpu_info->gl_renderer, " ps_(\\d+)_(\\d+)",
                         &pixel_shader_major_version,
                         &pixel_shader_minor_version)) {
-    gpu_info->vertex_shader_version =
-        base::StringPrintf("%d.%d",
-                           vertex_shader_major_version,
-                           vertex_shader_minor_version);
-    gpu_info->pixel_shader_version =
-        base::StringPrintf("%d.%d",
-                           pixel_shader_major_version,
-                           pixel_shader_minor_version);
+    gpu_info->vertex_shader_version = base::StringPrintf(
+        "%d.%d", vertex_shader_major_version, vertex_shader_minor_version);
+    gpu_info->pixel_shader_version = base::StringPrintf(
+        "%d.%d", pixel_shader_major_version, pixel_shader_minor_version);
 
     DCHECK(!gpu_info->vertex_shader_version.empty());
     // Note: do not reorder, used by UMA_HISTOGRAM below
@@ -751,10 +722,6 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
     // DirectX diagnostics are collected asynchronously because it takes a
     // couple of seconds.
   }
-
-#if defined(ARCH_CPU_ARM64)
-  PostProcessForWinARM(gpu_info);
-#endif
   return true;
 }
 

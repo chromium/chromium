@@ -14,13 +14,13 @@ using ::mediapipe::tasks::text::text_classifier::TextClassifierOptions;
 MediapipeTextModelExecutor::MediapipeTextModelExecutor() = default;
 MediapipeTextModelExecutor::~MediapipeTextModelExecutor() = default;
 
-absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
+std::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
     TextClassifier* execution_task,
     ExecutionStatus* out_status,
     const std::string& input) {
   if (input.empty()) {
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
-    return absl::nullopt;
+    return std::nullopt;
   }
   TRACE_EVENT2("browser", "MediapipeTextModelExecutor::Execute",
                "optimization_target",
@@ -33,12 +33,12 @@ absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
     *out_status = ExecutionStatus::kErrorCancelled;
     LOG(ERROR) << "MediaPipe Execution Cancelled: "
                << status_or_result.status();
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!status_or_result.ok()) {
     *out_status = ExecutionStatus::kErrorUnknown;
     LOG(ERROR) << "MediaPipe Execution Error: " << status_or_result.status();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CHECK_EQ(status_or_result->classifications.size(), 1U);
@@ -47,10 +47,9 @@ absl::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
   return status_or_result->classifications.at(0).categories;
 }
 
-std::unique_ptr<TextClassifier>
+base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
 MediapipeTextModelExecutor::BuildModelExecutionTask(
-    base::MemoryMappedFile* model_file,
-    ExecutionStatus* out_status) {
+    base::MemoryMappedFile* model_file) {
   // Use the inline struct ctor to bypass the default op resolver ctor which is
   // not linked.
   TextClassifierOptions options{
@@ -68,11 +67,9 @@ MediapipeTextModelExecutor::BuildModelExecutionTask(
   if (!maybe_classifier.ok()) {
     LOG(ERROR) << "Failed to load model with MediaPipe: "
                << maybe_classifier.status();
-    *out_status = ExecutionStatus::kErrorModelFileNotValid;
-    return nullptr;
+    return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
   }
 
-  *out_status = ExecutionStatus::kSuccess;
   return std::move(*maybe_classifier);
 }
 

@@ -44,8 +44,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #endif
@@ -115,7 +115,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
     return RespondNow(Error(error.ToString()));
   }
 
-  absl::optional<api::identity::GetAuthToken::Params> params =
+  std::optional<api::identity::GetAuthToken::Params> params =
       api::identity::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ComputeInteractivityStatus(params->details);
@@ -141,8 +141,9 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   std::string gaia_id;
 
   if (params->details) {
-    if (params->details->account)
+    if (params->details->account) {
       gaia_id = params->details->account->id;
+    }
 
     if (params->details->scopes) {
       scopes = std::set<std::string>(params->details->scopes->begin(),
@@ -238,7 +239,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()
           ->IsDeviceEnterpriseManaged()) {
-    if (profiles::IsManagedGuestSession()) {
+    if (chromeos::IsManagedGuestSession()) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
@@ -268,8 +269,9 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 void IdentityGetAuthTokenFunction::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  if (account_listening_mode_ != AccountListeningMode::kListeningCookies)
+  if (account_listening_mode_ != AccountListeningMode::kListeningCookies) {
     return;
+  }
 
   // Stop listening cookies.
   account_listening_mode_ = AccountListeningMode::kNotListening;
@@ -459,7 +461,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
 #if BUILDFLAG(IS_CHROMEOS)
         // Always force minting token for ChromeOS kiosk app and managed guest
         // session.
-        if (profiles::IsManagedGuestSession()) {
+        if (chromeos::IsManagedGuestSession()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
                                             kNotAllowlistedInPublicSession));
@@ -589,12 +591,14 @@ void IdentityGetAuthTokenFunction::OnRemoteConsentSuccess(
 
 void IdentityGetAuthTokenFunction::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  if (account_listening_mode_ != AccountListeningMode::kListeningTokens)
+  if (account_listening_mode_ != AccountListeningMode::kListeningTokens) {
     return;
+  }
 
   // No specific account id was requested, use the first one we find.
-  if (token_key_.account_info.IsEmpty())
+  if (token_key_.account_info.IsEmpty()) {
     token_key_.account_info = account_info;
+  }
 
   if (token_key_.account_info == account_info) {
     // Stop listening tokens.
@@ -622,11 +626,14 @@ bool IdentityGetAuthTokenFunction::TryRecoverFromServiceAuthError(
 void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
-      signin::PrimaryAccountChangeEvent::Type::kSet)
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
+  }
 
-  if (account_listening_mode_ != AccountListeningMode::kListeningPrimaryAccount)
+  if (account_listening_mode_ !=
+      AccountListeningMode::kListeningPrimaryAccount) {
     return;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity",
                                       "OnPrimaryAccountChanged (set)", this);
@@ -736,7 +743,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
 }
 
 void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
-    const absl::optional<std::string>& access_token,
+    const std::optional<std::string>& access_token,
     base::Time expiration_time,
     const GoogleServiceAuthError& error) {
   // By the time we get here we should no longer have an outstanding access
@@ -768,7 +775,7 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
 #if BUILDFLAG(IS_CHROMEOS)
 void IdentityGetAuthTokenFunction::OnAccessTokenForDeviceAccountFetchCompleted(
     crosapi::mojom::AccessTokenResultPtr result) {
-  absl::optional<std::string> access_token;
+  std::optional<std::string> access_token;
   base::Time expiration_time;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   if (result->is_access_token_info()) {
@@ -794,7 +801,7 @@ void IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted(
                              access_token_info.expiration_time,
                              GoogleServiceAuthError::AuthErrorNone());
   } else {
-    OnGetAccessTokenComplete(absl::nullopt, base::Time(), error);
+    OnGetAccessTokenComplete(std::nullopt, base::Time(), error);
   }
 }
 
@@ -893,8 +900,9 @@ std::string IdentityGetAuthTokenFunction::GetOAuth2ClientId() const {
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
 
   std::string client_id;
-  if (oauth2_info.client_id)
+  if (oauth2_info.client_id) {
     client_id = *oauth2_info.client_id;
+  }
 
   // Component apps using auto_approve may use Chrome's client ID by
   // omitting the field.
@@ -921,14 +929,15 @@ bool IdentityGetAuthTokenFunction::enable_granular_permissions() const {
 }
 
 std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
-  if (selected_gaia_id_ == token_key_.account_info.gaia)
+  if (selected_gaia_id_ == token_key_.account_info.gaia) {
     return selected_gaia_id_;
+  }
 
   return "";
 }
 
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
-    const absl::optional<api::identity::TokenDetails>& details) {
+    const std::optional<api::identity::TokenDetails>& details) {
   bool interactive = details && details->interactive.value_or(false);
   if (!interactive) {
     interactivity_status_for_consent_ = InteractivityStatus::kNotRequested;

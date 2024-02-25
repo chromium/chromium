@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -619,6 +620,11 @@ TEST_F(EnumSetDeathTest, PutRangeCrashesOnBadInputs) {
   // Crashes when inputs are out of order.
   EXPECT_CHECK_DEATH(
       TestEnumSet().PutRange(TestEnum::TEST_2, TestEnum::TEST_1));
+}
+
+TEST_F(EnumSetTest, ToString) {
+  const TestEnumSet enums = {TestEnum::TEST_4};
+  EXPECT_THAT(enums.ToString(), testing::Eq("01000"));
 }
 
 }  // namespace

@@ -6,13 +6,16 @@
 
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/remote_cocoa/common/application.mojom.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -36,7 +39,8 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
         views_application_receiver;
     remote_cocoa_application_host_ =
         std::make_unique<remote_cocoa::ApplicationHost>(
-            &views_application_receiver);
+            &views_application_receiver,
+            web_app::GetBundleIdentifierForShim(app_id, profile_path));
     app_shim_->CreateRemoteCocoaApplication(
         std::move(views_application_receiver));
   }
@@ -207,8 +211,32 @@ void AppShimHost::OpenAppWithOverrideUrl(const GURL& override_url) {
   client_->OnShimOpenAppWithOverrideUrl(this, override_url);
 }
 
+void AppShimHost::EnableAccessibilitySupport(
+    chrome::mojom::AppShimScreenReaderSupportMode mode) {
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  switch (mode) {
+    case chrome::mojom::AppShimScreenReaderSupportMode::kComplete: {
+      accessibility_state->OnScreenReaderDetected();
+      break;
+    }
+    case chrome::mojom::AppShimScreenReaderSupportMode::kPartial: {
+      if (!accessibility_state->GetAccessibilityMode().has_mode(
+              ui::kAXModeBasic.flags())) {
+        accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
+      }
+      break;
+    }
+  }
+}
+
 void AppShimHost::ApplicationWillTerminate() {
   client_->OnShimWillTerminate(this);
+}
+
+void AppShimHost::NotificationPermissionStatusChanged(
+    mac_notifications::mojom::PermissionStatus status) {
+  client_->OnNotificationPermissionStatusChanged(this, status);
 }
 
 base::FilePath AppShimHost::GetProfilePath() const {

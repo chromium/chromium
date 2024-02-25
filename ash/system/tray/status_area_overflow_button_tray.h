@@ -30,9 +30,9 @@ class Shelf;
 // status area contains more buttons than the maximum width. Tapping on this
 // button will show/hide the overflown tray buttons.
 class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
- public:
-  METADATA_HEADER(StatusAreaOverflowButtonTray);
+  METADATA_HEADER(StatusAreaOverflowButtonTray, TrayBackgroundView)
 
+ public:
   explicit StatusAreaOverflowButtonTray(Shelf* shelf);
   StatusAreaOverflowButtonTray(const StatusAreaOverflowButtonTray&) = delete;
   StatusAreaOverflowButtonTray& operator=(const StatusAreaOverflowButtonTray&) =
@@ -42,12 +42,13 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   enum State { CLICK_TO_EXPAND = 0, CLICK_TO_COLLAPSE };
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   // No need to override since this view doesn't have an active/inactive state.
   void UpdateTrayItemColor(bool is_active) override {}
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
   void Initialize() override;
   void SetVisiblePreferred(bool visible_preferred) override;
   void UpdateAfterStatusAreaCollapseChange() override;
@@ -63,6 +64,8 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
  private:
   // The button icon of an animating arrow based on the collapse/expand state.
   class IconView : public views::ImageView, public gfx::AnimationDelegate {
+    METADATA_HEADER(IconView, views::ImageView)
+
    public:
     IconView();
     ~IconView() override;
@@ -83,7 +86,7 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   State state_ = CLICK_TO_EXPAND;
 
   // Owned by the views hierarchy.
-  const raw_ptr<IconView, ExperimentalAsh> icon_;
+  const raw_ptr<IconView> icon_;
 };
 
 }  // namespace ash

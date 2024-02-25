@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"ComboBoxGrouping" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="ComboBoxGrouping"}, {role="combobox"}]
+++++EditText textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++EditText text:"TextFieldWithComboBox" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-label="TextFieldWithComboBox"}, {role="combobox"}]
+++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++Spinner text:"Select" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="ComboBoxMenuButton""}, {role="combobox"}, {tabindex="0"}]
+++++TextView text:"Select" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

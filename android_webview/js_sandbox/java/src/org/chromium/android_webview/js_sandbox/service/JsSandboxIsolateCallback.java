@@ -6,14 +6,13 @@ package org.chromium.android_webview.js_sandbox.service;
 
 import android.os.RemoteException;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
-/**
- * Callback interface for the native code to report a JavaScript evaluation outcome.
- */
+/** Callback interface for the native code to report a JavaScript evaluation outcome. */
 @JNINamespace("android_webview")
 public class JsSandboxIsolateCallback {
     private static final String TAG = "JsSandboxIsolateCallback";

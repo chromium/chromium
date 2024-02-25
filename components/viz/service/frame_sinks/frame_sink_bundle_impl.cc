@@ -274,6 +274,12 @@ void FrameSinkBundleImpl::SetNeedsBeginFrame(uint32_t sink_id,
   }
 }
 
+void FrameSinkBundleImpl::SetWantsBeginFrameAcks(uint32_t sink_id) {
+  if (auto* sink = GetFrameSink(sink_id)) {
+    sink->SetWantsBeginFrameAcks();
+  }
+}
+
 void FrameSinkBundleImpl::Submit(
     std::vector<mojom::BundledFrameSubmissionPtr> submissions) {
   std::set<SinkGroup*> groups;

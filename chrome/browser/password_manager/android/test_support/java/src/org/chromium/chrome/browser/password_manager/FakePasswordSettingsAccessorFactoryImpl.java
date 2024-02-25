@@ -9,9 +9,7 @@ package org.chromium.chrome.browser.password_manager;
  * tests.
  */
 public class FakePasswordSettingsAccessorFactoryImpl extends PasswordSettingsAccessorFactory {
-    /**
-     * Returns the fake implementation of {@link PasswordSettingsAccessor} used for tests.
-     */
+    /** Returns the fake implementation of {@link PasswordSettingsAccessor} used for tests. */
     @Override
     public PasswordSettingsAccessor createAccessor() {
         return new FakePasswordSettingsAccessor();

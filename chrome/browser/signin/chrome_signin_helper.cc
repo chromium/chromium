@@ -187,7 +187,7 @@ class ManageAccountsHeaderReceivedUserData
 void ProcessMirrorHeader(
     ManageAccountsParams manage_accounts_params,
     const content::WebContents::Getter& web_contents_getter,
-    const absl::optional<url::Origin>& request_initiator) {
+    const std::optional<url::Origin>& request_initiator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GAIAServiceType service_type = manage_accounts_params.service_type;
@@ -210,8 +210,11 @@ void ProcessMirrorHeader(
       base::FeatureList::IsEnabled(kVerifyRequestInitiatorForMirrorHeaders)) {
     GURL initiator_url =
         request_initiator ? request_initiator->GetURL() : GURL();
-    const bool is_request_initiated_by_google_domain =
-        google_util::IsGoogleAssociatedDomainUrl(initiator_url);
+    bool is_request_initiated_by_google_domain =
+        IsGoogleDomainUrl(initiator_url, google_util::ALLOW_SUBDOMAIN,
+                          google_util::ALLOW_NON_STANDARD_PORTS) ||
+        IsYoutubeDomainUrl(initiator_url, google_util::ALLOW_SUBDOMAIN,
+                           google_util::ALLOW_NON_STANDARD_PORTS);
     base::UmaHistogramBoolean(
         "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito",
         is_request_initiated_by_google_domain);
@@ -230,7 +233,7 @@ void ProcessMirrorHeader(
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // Do not do anything if the navigation happened in the "background".
   if (!browser || !browser->window()->IsActive()) {
     return;
@@ -338,16 +341,10 @@ void ProcessMirrorHeader(
 
 #elif BUILDFLAG(IS_ANDROID)
   if (manage_accounts_params.show_consistency_promo) {
-    auto* window = web_contents->GetNativeView()->GetWindowAndroid();
-    if (!window) {
-      // The page is prefetched in the background, ignore the header.
-      // See https://crbug.com/1145031#c5 for details.
-      return;
-    }
     SigninBridge::OpenAccountPickerBottomSheet(
-        window, manage_accounts_params.continue_url.empty()
-                    ? chrome::kChromeUINativeNewTabURL
-                    : manage_accounts_params.continue_url);
+        web_contents, manage_accounts_params.continue_url.empty()
+                          ? chrome::kChromeUINativeNewTabURL
+                          : manage_accounts_params.continue_url);
     return;
   }
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {

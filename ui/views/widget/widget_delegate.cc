@@ -56,10 +56,6 @@ WidgetDelegate::~WidgetDelegate() {
     delete default_contents_view_;
     default_contents_view_ = nullptr;
   }
-  if (destructor_ran_) {
-    DCHECK(!*destructor_ran_);
-    *destructor_ran_ = true;
-  }
 }
 
 void WidgetDelegate::SetCanActivate(bool can_activate) {
@@ -256,6 +252,8 @@ bool WidgetDelegate::GetSavedWindowPlacement(
 }
 
 void WidgetDelegate::WidgetInitializing(Widget* widget) {
+  can_delete_this_ = false;
+
   widget_ = widget;
 }
 
@@ -284,12 +282,13 @@ void WidgetDelegate::WindowClosing() {
 }
 
 void WidgetDelegate::DeleteDelegate() {
-  bool owned_by_widget = params_.owned_by_widget;
+  can_delete_this_ = true;
+
+  bool owned_by_widget = owned_by_widget_;
   ClosureVector delete_callbacks;
   delete_callbacks.swap(delete_delegate_callbacks_);
 
-  bool destructor_ran = false;
-  destructor_ran_ = &destructor_ran;
+  base::WeakPtr<WidgetDelegate> weak_this = AsWeakPtr();
   for (auto&& callback : delete_callbacks)
     std::move(callback).Run();
 
@@ -300,21 +299,10 @@ void WidgetDelegate::DeleteDelegate() {
   // DeleteDelegate callbacks to destruct it; if it is not owned by the Widget,
   // the DeleteDelete callbacks are allowed but not required to destroy it.
   if (owned_by_widget) {
-    DCHECK(!destructor_ran);
+    DCHECK(weak_this);
     // TODO(kylxird): Rework this once the Widget stops being able to "own" the
     // delegate.
-    // Only delete this if this delegate was never actually initialized wth a
-    // Widget or the delegate isn't "owned" by the Widget.
-    if (can_delete_this_) {
-      delete this;
-      return;
-    }
-    destructor_ran_ = nullptr;
-  } else {
-    // If the destructor didn't get run, reset destructor_ran_ so that when it
-    // does run it doesn't try to scribble over where our stack was.
-    if (!destructor_ran)
-      destructor_ran_ = nullptr;
+    delete this;
   }
 }
 
@@ -389,12 +377,6 @@ void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
 
 void WidgetDelegate::SetCanMaximize(bool can_maximize) {
   bool old_can_maximize = std::exchange(params_.can_maximize, can_maximize);
-  // TODO(b/256551737): Remove this. CanMaximize currently means that a window
-  // is also able to go into fullscreen. We'd like to split the logic, but
-  // this could introduce some defects. Retaining current behaviour at the
-  // moment, then change it in another CL, so that it'll be easier to rollback
-  // in case there is a regression.
-  params_.can_fullscreen = true;
   if (GetWidget() && params_.can_maximize != old_can_maximize)
     GetWidget()->OnSizeConstraintsChanged();
 }
@@ -414,15 +396,7 @@ void WidgetDelegate::SetCanResize(bool can_resize) {
 // TODO (kylixrd): This will be removed once Widget no longer "owns" the
 // WidgetDelegate.
 void WidgetDelegate::SetOwnedByWidget(bool owned) {
-  if (params_.owned_by_widget == owned)
-    return;
-  params_.owned_by_widget = owned;
-  if (widget_ && widget_->widget_delegate_.get() == this) {
-    if (params_.owned_by_widget)
-      widget_->owned_widget_delegate_ = base::WrapUnique(this);
-    else
-      widget_->owned_widget_delegate_.release();
-  }
+  owned_by_widget_ = owned;
 }
 
 void WidgetDelegate::SetFocusTraversesOut(bool focus_traverses_out) {
@@ -489,6 +463,7 @@ void WidgetDelegate::SetCenterTitle(bool center_title) {
 #endif
 
 void WidgetDelegate::SetHasWindowSizeControls(bool has_controls) {
+  SetCanFullscreen(has_controls);
   SetCanMaximize(has_controls);
   SetCanMinimize(has_controls);
   SetCanResize(has_controls);
@@ -554,7 +529,7 @@ views::View* WidgetDelegateView::GetContentsView() {
   return this;
 }
 
-BEGIN_METADATA(WidgetDelegateView, View)
+BEGIN_METADATA(WidgetDelegateView)
 END_METADATA
 
 }  // namespace views

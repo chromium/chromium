@@ -23,7 +23,7 @@ class ContentSettingConstraintsTest : public testing::Test {
 TEST_F(ContentSettingConstraintsTest, CopyCtor) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(1234));
-  constraints.set_session_model(SessionModel::UserSession);
+  constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
 
   ContentSettingConstraints copy = constraints;
@@ -50,7 +50,7 @@ TEST_F(ContentSettingConstraintsTest, CopyCtor) {
 TEST_F(ContentSettingConstraintsTest, MoveCtor) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(1234));
-  constraints.set_session_model(SessionModel::UserSession);
+  constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
 
   ContentSettingConstraints copy = constraints;

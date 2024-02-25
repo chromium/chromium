@@ -1,0 +1,50 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
+
+if (enable_chromium_prelude) {
+  rust_static_library("chromium_prelude") {
+    crate_name = "chromium"
+    crate_root = "chromium_prelude.rs"
+    sources = [ "chromium_prelude.rs" ]
+    deps = [ ":import_attribute" ]
+
+    # Don't depend on ourselves.
+    no_chromium_prelude = true
+  }
+
+  rust_macro("import_attribute") {
+    crate_name = "import_attribute"
+    crate_root = "import_attribute.rs"
+    sources = [ "import_attribute.rs" ]
+    deps = [
+      "//third_party/rust/proc_macro2/v1:lib",
+      "//third_party/rust/quote/v1:lib",
+      "//third_party/rust/syn/v2:lib",
+    ]
+    visibility = [ ":*" ]
+
+    # Don't depend on ourselves.
+    no_chromium_prelude = true
+  }
+
+  rust_static_library("import_test_lib") {
+    testonly = true
+    crate_root = "import_test_lib.rs"
+    sources = [ "import_test_lib.rs" ]
+  }
+
+  rust_executable("import_test") {
+    testonly = true
+    crate_root = "import_test.rs"
+    sources = [ "import_test.rs" ]
+    deps = [
+      ":chromium_prelude",
+      ":import_test_lib",
+    ]
+  }
+}

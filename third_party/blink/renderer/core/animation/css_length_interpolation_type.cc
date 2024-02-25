@@ -72,7 +72,7 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
   Length inherited_length;
   LengthPropertyFunctions::GetLength(CssProperty(), *state.ParentStyle(),
                                      inherited_length);
-  conversion_checkers.push_back(std::make_unique<InheritedLengthChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedLengthChecker>(
       CssProperty(), inherited_length));
   if (inherited_length.IsAuto()) {
     // If the inherited value changes to a length, the InheritedLengthChecker

@@ -60,7 +60,7 @@ class StructPtr {
   }
 
   template <typename... Args>
-  StructPtr(absl::in_place_t, Args&&... args)
+  StructPtr(std::in_place_t, Args&&... args)
       : ptr_(new Struct(std::forward<Args>(args)...)) {}
 
   template <typename U>
@@ -159,7 +159,7 @@ class InlinedStructPtr {
   }
 
   template <typename... Args>
-  InlinedStructPtr(absl::in_place_t, Args&&... args)
+  InlinedStructPtr(std::in_place_t, Args&&... args)
       : value_(std::forward<Args>(args)...), state_(VALID) {}
 
   template <typename U>

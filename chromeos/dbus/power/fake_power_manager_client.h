@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_POWER_FAKE_POWER_MANAGER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
@@ -25,7 +26,6 @@
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetKeyboardBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void ToggleKeyboardBacklight() override;
-  const absl::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
+  const std::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;
   void RequestAllPeripheralBatteryUpdate() override;
@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
       DBusMethodCallback<power_manager::ChargeHistoryState> callback) override;
 
   // Sets availability. If `availability` is present, notifies observers.
-  void SetServiceAvailability(absl::optional<bool> availability);
+  void SetServiceAvailability(std::optional<bool> availability);
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
@@ -199,7 +199,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // Updates |props_| and notifies observers of its changes.
   void UpdatePowerProperties(
-      absl::optional<power_manager::PowerSupplyProperties> power_props);
+      std::optional<power_manager::PowerSupplyProperties> power_props);
 
   // The PowerAPI requests system wake lock asynchronously. Test can run a
   // RunLoop and set the quit closure by this function to make sure the wake
@@ -222,11 +222,11 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Sets the screen brightness percent to be returned.
   // The nullopt |percent| means an error. In case of success,
   // |percent| must be in the range of [0, 100].
-  void set_screen_brightness_percent(const absl::optional<double>& percent) {
+  void set_screen_brightness_percent(const std::optional<double>& percent) {
     screen_brightness_percent_ = percent;
   }
 
-  void set_keyboard_brightness_percent(const absl::optional<double>& percent) {
+  void set_keyboard_brightness_percent(const std::optional<double>& percent) {
     keyboard_brightness_percent_ = percent;
   }
 
@@ -248,13 +248,13 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  absl::optional<bool> service_availability_ = true;
+  std::optional<bool> service_availability_ = true;
 
   // Last policy passed to SetPolicy().
   power_manager::PowerManagementPolicy policy_;
 
   // Power status received from the power manager.
-  absl::optional<power_manager::PowerSupplyProperties> props_;
+  std::optional<power_manager::PowerSupplyProperties> props_;
 
   // Number of times that various methods have been called.
   int num_request_restart_calls_ = 0;
@@ -269,10 +269,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_pending_suspend_readiness_callbacks_ = 0;
 
   // Current screen brightness in the range [0.0, 100.0].
-  absl::optional<double> screen_brightness_percent_;
+  std::optional<double> screen_brightness_percent_;
 
   // Current keyboard brightness in the range [0.0, 100.0].
-  absl::optional<double> keyboard_brightness_percent_;
+  std::optional<double> keyboard_brightness_percent_;
 
   // Last screen brightness requested via SetScreenBrightness().
   // Unlike |screen_brightness_percent_|, this value will not be changed by
@@ -343,7 +343,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   base::RepeatingClosure user_activity_callback_;
 
   // Clock to use to calculate time ticks. Used for ArcTimer related APIs.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // If set then |StartArcTimer| returns failure.
   bool simulate_start_arc_timer_failure_ = false;

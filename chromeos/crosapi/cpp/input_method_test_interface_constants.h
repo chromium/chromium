@@ -10,34 +10,11 @@
 
 namespace crosapi {
 
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece kInputMethodTestCapabilitySendKeyModifiers =
-    "SendKeyEventModifiers";
-
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece
-    kInputMethodTestCapabilityConfirmComposition = "ConfirmComposition";
-
-// When the input method wants to commit the composition, always call
-// ConfirmCompositionText even if Ash thinks there's no composition.
-// Fixes b/265853952.
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece
-    kInputMethodTestCapabilityAlwaysConfirmComposition =
-        "AlwaysConfirmComposition";
-
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece
-    kInputMethodTestCapabilityDeleteSurroundingText = "DeleteSurroundingText";
-
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece
-    kInputMethodTestCapabilityExtendedConfirmComposition =
-        "ExtendedConfirmComposition";
-
-COMPONENT_EXPORT(CROSAPI)
-inline constexpr base::StringPiece kInputMethodTestCapabilityChangeInputMethod =
-    "ChangeInputMethod";
+// Any constants related to Lacros input method browser tests goes here.
+// Typically this is used for strings representing "test capabilities" to check
+// for version skew. See `InputMethodTestInterface::HasCapabilities`.
+// This might be temporarily empty if test capabilities were removed over time
+// when older versions of Ash are no longer tested against Lacros.
 
 }  // namespace crosapi
 

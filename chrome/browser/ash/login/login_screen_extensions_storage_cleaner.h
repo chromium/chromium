@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_STORAGE_CLEANER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -38,9 +38,9 @@ class LoginScreenExtensionsStorageCleaner {
   void ClearPersistentDataForUninstalledExtensionsImpl(
       const std::vector<std::string>& installed_extension_ids,
       std::vector<std::string> keys,
-      absl::optional<std::string> error);
+      std::optional<std::string> error);
 
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

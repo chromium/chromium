@@ -1,41 +1,31 @@
 <html>
 <head>
 <title>Test that print restores previous media type</title>
-<style type="text/css">
-
-</style>
+<script type="text/javascript" src="resources/media-utils.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        internals.settings.setMediaTypeOverride("handheld");
-    }
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    internals.settings.setMediaTypeOverride("handheld");
+  }
 
-    function log(m)
-    {
-        var results = document.getElementById('results');
-        results.innerHTML += m + '<br>';
+  function shouldBe(expected) {
+    if (window.styleMedia.type === expected) {
+      log(`PASS: window.styleMedia.type should be '${expected}' and is.`);
+    } else {
+      log(`FAIL: window.styleMedia.type should be '${expected}' but instead is ${window.styleMedia.type}.`);
     }
+  }
 
-    function shouldBe(aDescription, a, b)
-    {
-        if (a === b) {
-            log("PASS: " + aDescription + " should be '" + b + "' and is.");
-        } else {
-            log("FAIL: " + aDescription + " should be '" + b + "' but instead is '" + a + "'.");
-        }
-    }
-
-    function runTests()
-    {
-        log("Media type is set to 'handheld' to be different than the default 'screen'");
-        shouldBe("window.styleMedia.type", window.styleMedia.type, "handheld");
-        log("<br>The page is printed, which changes the media type to 'print', and then back");
-        window.print();
-        shouldBe("window.styleMedia.type", window.styleMedia.type, "handheld");
-    }
+  function runTests() {
+    log("Media type is set to 'handheld' to be different than the default 'screen'");
+    shouldBe("handheld");
+    log("<br>The page is printed, which changes the media type to 'print', and then back");
+    window.print();
+    shouldBe("handheld");
+  }
 </script>
 </head>
 <body onload="runTests()">
-    <div id="results"></div>
+  <div id="results"></div>
 </body>
 </html>

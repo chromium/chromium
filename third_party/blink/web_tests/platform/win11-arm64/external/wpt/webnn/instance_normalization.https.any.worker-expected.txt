@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] instanceNormalization float32 4D tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor options.scale / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor options.bias / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor options.epsilon / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor explict options.layout='nchw' / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor options.layout='nhwc' / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor all options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] instanceNormalization float32 4D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor options.scale / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor options.bias / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor options.epsilon / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor explict options.layout='nchw' / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor options.layout='nhwc' / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] instanceNormalization float32 4D tensor all options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

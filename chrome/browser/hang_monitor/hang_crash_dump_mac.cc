@@ -12,7 +12,7 @@
 void CrashDumpHungChildProcess(base::ProcessHandle handle) {
   base::PortProvider* provider =
       content::BrowserChildProcessHost::GetPortProvider();
-  mach_port_t task_port = provider->TaskForPid(handle);
+  mach_port_t task_port = provider->TaskForHandle(handle);
   if (task_port != MACH_PORT_NULL) {
     crash_reporter::DumpProcessWithoutCrashing(task_port);
   }

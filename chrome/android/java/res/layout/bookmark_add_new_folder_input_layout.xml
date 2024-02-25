@@ -22,10 +22,11 @@ found in the LICENSE file.
                 android:id="@+id/dialog_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="12dp"
-                android:layout_marginStart="@dimen/add_new_folder_dialog_horizontal_margin"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="@dimen/add_new_folder_dialog_horizontal_margin"
                 android:text="@string/create_new_folder"
-                android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                         android:id="@+id/folder_title"
@@ -33,7 +34,6 @@ found in the LICENSE file.
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/add_new_folder_dialog_horizontal_margin"
                         android:layout_marginVertical="8dp"
-                        android:layout_marginTop="24dp"
                         android:hint="@string/title"
                         app:emptyErrorMessage="@string/bookmark_missing_title">
 

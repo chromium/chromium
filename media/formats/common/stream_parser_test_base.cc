@@ -43,7 +43,6 @@ StreamParserTestBase::StreamParserTestBase(
                           base::Unretained(this)),
       base::BindRepeating(&StreamParserTestBase::OnNewBuffers,
                           base::Unretained(this)),
-      true,
       base::BindRepeating(&StreamParserTestBase::OnKeyNeeded,
                           base::Unretained(this)),
       base::BindRepeating(&StreamParserTestBase::OnNewSegment,
@@ -123,9 +122,7 @@ void StreamParserTestBase::OnInitDone(
   DVLOG(1) << __func__ << "(" << params.duration.InMilliseconds() << ")";
 }
 
-bool StreamParserTestBase::OnNewConfig(
-    std::unique_ptr<MediaTracks> tracks,
-    const StreamParser::TextTrackConfigMap& text_config) {
+bool StreamParserTestBase::OnNewConfig(std::unique_ptr<MediaTracks> tracks) {
   DVLOG(1) << __func__ << ": got " << tracks->tracks().size() << " tracks";
   EXPECT_EQ(tracks->tracks().size(), 1u);
   const auto& track = tracks->tracks()[0];

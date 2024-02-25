@@ -42,21 +42,25 @@ public class ContentViewLocationTest {
     private MockLocationProvider mMockLocationProvider;
 
     private void hideContentViewOnUiThread() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getWebContents().onHide();
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivityTestRule.getWebContents().onHide();
+                            }
+                        });
     }
 
     private void showContentViewOnUiThread() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getWebContents().onShow();
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivityTestRule.getWebContents().onShow();
+                            }
+                        });
     }
 
     private void pollForPositionCallback() throws Throwable {
@@ -65,17 +69,18 @@ public class ContentViewLocationTest {
         mJavascriptHelper.waitUntilHasValue();
         Assert.assertEquals(0, Integer.parseInt(mJavascriptHelper.getJsonResultAndClear()));
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            mJavascriptHelper.evaluateJavaScriptForTests(
-                    mActivityTestRule.getWebContents(), "positionCount");
-            try {
-                mJavascriptHelper.waitUntilHasValue();
-            } catch (Exception e) {
-                throw new CriteriaNotSatisfiedException(e);
-            }
-            int result = Integer.parseInt(mJavascriptHelper.getJsonResultAndClear());
-            Criteria.checkThat(result, Matchers.greaterThan(0));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    mJavascriptHelper.evaluateJavaScriptForTests(
+                            mActivityTestRule.getWebContents(), "positionCount");
+                    try {
+                        mJavascriptHelper.waitUntilHasValue();
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                    int result = Integer.parseInt(mJavascriptHelper.getJsonResultAndClear());
+                    Criteria.checkThat(result, Matchers.greaterThan(0));
+                });
     }
 
     private void startGeolocationWatchPosition() throws Throwable {
@@ -85,9 +90,10 @@ public class ContentViewLocationTest {
     }
 
     private void ensureGeolocationRunning(final boolean running) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(mMockLocationProvider.isRunning(), Matchers.is(running));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(mMockLocationProvider.isRunning(), Matchers.is(running));
+                });
     }
 
     @Before
@@ -136,8 +142,10 @@ public class ContentViewLocationTest {
         ensureGeolocationRunning(true);
 
         // Navigate away and ensure that geolocation stops.
-        mActivityTestRule.loadUrl(mActivityTestRule.getWebContents().getNavigationController(),
-                mTestCallbackHelperContainer, new LoadUrlParams("about:blank"));
+        mActivityTestRule.loadUrl(
+                mActivityTestRule.getWebContents().getNavigationController(),
+                mTestCallbackHelperContainer,
+                new LoadUrlParams("about:blank"));
         ensureGeolocationRunning(false);
     }
 
@@ -182,8 +190,10 @@ public class ContentViewLocationTest {
         startGeolocationWatchPosition();
         ensureGeolocationRunning(false);
 
-        mActivityTestRule.loadUrl(mActivityTestRule.getWebContents().getNavigationController(),
-                mTestCallbackHelperContainer, new LoadUrlParams("about:blank"));
+        mActivityTestRule.loadUrl(
+                mActivityTestRule.getWebContents().getNavigationController(),
+                mTestCallbackHelperContainer,
+                new LoadUrlParams("about:blank"));
         showContentViewOnUiThread();
         ensureGeolocationRunning(false);
     }

@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "url/gurl.h"
@@ -49,6 +49,10 @@ class ManagePasswordsState {
   void OnPendingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
+  // Move to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
+  void OnDefaultStoreChanged(
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+
   // Move to PENDING_PASSWORD_UPDATE_STATE.
   void OnUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
@@ -64,8 +68,14 @@ class ManagePasswordsState {
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin);
 
-  // Move to CONFIRMATION_STATE.
+  // Move to SAVE_CONFIRMATION_STATE.
   void OnAutomaticPasswordSave(
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+
+  // Move to |state|. Updates local_credentials_forms_ to contain pending
+  // credentials.
+  void OnSubmittedGeneratedPassword(
+      password_manager::ui::State state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
   // Move to MANAGE_STATE or INACTIVE_STATE for PSL matched passwords.
@@ -74,15 +84,19 @@ class ManagePasswordsState {
   // autofilled. In addition, |federated_matches|, if not null, contains stored
   // federated credentials to show to the user as well.
   void OnPasswordAutofilled(
-      const std::vector<const password_manager::PasswordForm*>& password_forms,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>& password_forms,
       url::Origin origin,
-      const std::vector<const password_manager::PasswordForm*>*
-          federated_matches);
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>* federated_matches);
 
   // Move to INACTIVE_STATE.
   void OnInactive();
 
-  // Move to CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE. Triggers a bubble to move the
+  // Move to KEYCHAIN_ERROR_STATE.
+  void OnKeychainError();
+
+  // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move);
@@ -120,6 +134,15 @@ class ManagePasswordsState {
     credentials_callback_ = std::move(callback);
   }
 
+  password_manager::PasswordForm* selected_password() const {
+    return selected_password_.get();
+  }
+  void set_selected_password(
+      std::unique_ptr<password_manager::PasswordForm> form) {
+    selected_password_ = std::move(form);
+  }
+  void clear_selected_password() { selected_password_.reset(); }
+
   bool auth_for_account_storage_opt_in_failed() const {
     return auth_for_account_storage_opt_in_failed_;
   }
@@ -148,6 +171,9 @@ class ManagePasswordsState {
 
   // Contains the password that was submitted.
   std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager_;
+
+  // Contains password selected for moving to the account.
+  std::unique_ptr<password_manager::PasswordForm> selected_password_;
 
   // Contains all the current forms.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>

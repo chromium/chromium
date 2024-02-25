@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -22,6 +23,9 @@
 #include "chromeos/ash/components/network/policy_applicator.h"
 #include "chromeos/ash/components/network/profile_policies.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "components/prefs/pref_service.h"
+
+class PrefService;
 
 namespace base {
 class Value;
@@ -140,6 +144,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void NotifyPolicyAppliedToNetwork(
       const std::string& service_path) const override;
 
+  void TriggerEphemeralNetworkConfigActions() override;
+
   void TriggerCellularPolicyApplication(
       const NetworkProfile& profile,
       const base::flat_set<std::string>& new_cellular_policy_guids);
@@ -152,6 +158,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;
   bool AllowOnlyPolicyNetworksToAutoconnect() const override;
+  bool IsProhibitedFromConfiguringVpn() const override;
+
+  bool RecommendedValuesAreEphemeral() const override;
+  bool UserCreatedNetworkConfigurationsAreEphemeral() const override;
   std::vector<std::string> GetBlockedHexSSIDs() const override;
 
   // NetworkProfileObserver overrides
@@ -208,6 +218,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
     // Holds the set of ONC NetworkConfiguration GUIDs which have been modified
     // since network policy has been last applied.
     base::flat_set<std::string> modified_policy_guids;
+    // Additional PolicyApplicator options.
+    PolicyApplicator::Options options;
     // If true, network policy application needs to happen for this shill
     // profile, i.e. there were network policy changes that have not been
     // applied yet. Note that this can be true even if |modified_policy_guids|
@@ -276,27 +288,26 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // Note: Requesting Device properties requires an additional fetch and
   // additional copying of data, so we only do it for Cellular networks which
   // contain a lot of necessary state in the associated Device object.
-  void GetPropertiesCallback(
-      PropertiesType properties_type,
-      const std::string& userhash,
-      network_handler::PropertiesCallback callback,
-      const std::string& service_path,
-      absl::optional<base::Value::Dict> shill_properties);
+  void GetPropertiesCallback(PropertiesType properties_type,
+                             const std::string& userhash,
+                             network_handler::PropertiesCallback callback,
+                             const std::string& service_path,
+                             std::optional<base::Value::Dict> shill_properties);
 
   void OnGetDeviceProperties(
       PropertiesType properties_type,
       const std::string& userhash,
       const std::string& service_path,
       network_handler::PropertiesCallback callback,
-      absl::optional<base::Value::Dict> network_properties,
+      std::optional<base::Value::Dict> network_properties,
       const std::string& device_path,
-      absl::optional<base::Value::Dict> device_properties);
+      std::optional<base::Value::Dict> device_properties);
 
   void SendProperties(PropertiesType properties_type,
                       const std::string& userhash,
                       const std::string& service_path,
                       network_handler::PropertiesCallback callback,
-                      absl::optional<base::Value::Dict> shill_properties);
+                      std::optional<base::Value::Dict> shill_properties);
 
   // Called from SetProperties, calls NCH::SetShillProperties.
   void SetShillProperties(const std::string& service_path,
@@ -320,7 +331,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // changed.
   void ApplyOrQueuePolicies(const std::string& userhash,
                             base::flat_set<std::string> modified_policies,
-                            bool can_affect_other_networks);
+                            bool can_affect_other_networks,
+                            PolicyApplicator::Options options);
 
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);
@@ -328,28 +340,42 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
 
+  void set_user_prefs(PrefService* user_prefs);
+
+  // Returns the device policy GlobalNetworkConfiguration boolean value under
+  // `key` or `std::nullopt` if such a value doesn't exist or is not of type
+  // BOOLEAN.
+  std::optional<bool> FindGlobalPolicyBool(std::string_view key) const;
+  // Returns the device policy GlobalNetworkConfiguration List value under
+  // `key` or `nullptr` if such a value doesn't exist or is not of type LIST.
+  const base::Value::List* FindGlobalPolicyList(std::string_view key) const;
+  // Returns the device policy GlobalNetworkConfiguration string value under
+  // `key` or `nullptr` if such a value doesn't exist or is not of type STRING.
+  const std::string* FindGlobalPolicyString(std::string_view key) const;
+
   // If present, the empty string maps to the device policy.
   UserToPoliciesMap policies_by_user_;
 
   // Local references to the associated handler instances.
-  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
-      cellular_policy_handler_ = nullptr;
-  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
-      managed_cellular_pref_handler_ = nullptr;
-  raw_ptr<NetworkStateHandler, DanglingUntriaged | ExperimentalAsh>
-      network_state_handler_ = nullptr;
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged> cellular_policy_handler_ =
       nullptr;
-  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, DanglingUntriaged> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkProfileHandler> network_profile_handler_ = nullptr;
+  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged>
       network_configuration_handler_ = nullptr;
-  raw_ptr<NetworkDeviceHandler, DanglingUntriaged | ExperimentalAsh>
-      network_device_handler_ = nullptr;
-  raw_ptr<ProhibitedTechnologiesHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDeviceHandler, DanglingUntriaged> network_device_handler_ =
+      nullptr;
+  raw_ptr<ProhibitedTechnologiesHandler, DanglingUntriaged>
       prohibited_technologies_handler_ = nullptr;
-  raw_ptr<UIProxyConfigService, DanglingUntriaged | ExperimentalAsh>
-      ui_proxy_config_service_ = nullptr;
-  raw_ptr<HotspotController, DanglingUntriaged | ExperimentalAsh>
-      hotspot_controller_ = nullptr;
+  raw_ptr<UIProxyConfigService, DanglingUntriaged> ui_proxy_config_service_ =
+      nullptr;
+  raw_ptr<HotspotController, DanglingUntriaged> hotspot_controller_ = nullptr;
+
+  // Initialized to null and set once SetUserPrefs() is called.
+  raw_ptr<PrefService> user_prefs_ = nullptr;
 
   UserToPolicyApplicationInfo policy_application_info_map_;
 

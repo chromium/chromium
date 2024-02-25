@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -61,10 +62,6 @@ HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
 HotspotTrayView::~HotspotTrayView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
   Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
-}
-
-const char* HotspotTrayView::GetClassName() const {
-  return "HotspotTrayView";
 }
 
 void HotspotTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -154,5 +151,8 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
     UpdateIconImage();
   }
 }
+
+BEGIN_METADATA(HotspotTrayView)
+END_METADATA
 
 }  // namespace ash

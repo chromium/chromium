@@ -30,7 +30,7 @@ class ASH_EXPORT BootingAnimationView : public views::View {
   lottie::Animation* GetAnimatedImage();
 
  private:
-  raw_ptr<views::AnimatedImageView, ExperimentalAsh> animation_ = nullptr;
+  raw_ptr<views::AnimatedImageView> animation_ = nullptr;
 };
 
 }  // namespace ash

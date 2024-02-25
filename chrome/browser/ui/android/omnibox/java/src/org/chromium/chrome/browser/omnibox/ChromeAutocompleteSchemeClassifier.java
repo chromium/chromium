@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.LifetimeAssert;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 
 /**
- * Creates the c++ class that provides scheme classification logic for Chrome.
- * Must call destroy() after using this object to delete the native object.
+ * Creates the c++ class that provides scheme classification logic for Chrome. Must call destroy()
+ * after using this object to delete the native object.
  */
 public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassifier {
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
@@ -22,8 +23,8 @@ public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassi
 
     @Override
     public void destroy() {
-        ChromeAutocompleteSchemeClassifierJni.get().deleteAutocompleteClassifier(
-                super.getNativePtr());
+        ChromeAutocompleteSchemeClassifierJni.get()
+                .deleteAutocompleteClassifier(super.getNativePtr());
 
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().
@@ -33,6 +34,7 @@ public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassi
     @NativeMethods
     public interface Natives {
         long createAutocompleteClassifier(Profile profile);
+
         void deleteAutocompleteClassifier(long chromeAutocompleteSchemeClassifier);
     }
 }

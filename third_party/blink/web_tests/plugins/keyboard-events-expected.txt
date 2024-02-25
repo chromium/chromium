@@ -1,11 +1,14 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
-CONSOLE MESSAGE: Blink Test Plugin: MouseDown at (12,12)
-CONSOLE MESSAGE: Blink Test Plugin: MouseUp at (12,12)
-CONSOLE MESSAGE: Blink Test Plugin: KeyDown 'KeyA'
-CONSOLE MESSAGE: Blink Test Plugin: KeyUp 'KeyA'
-CONSOLE MESSAGE: Blink Test Plugin: KeyDown 'KeyB'
-CONSOLE MESSAGE: Blink Test Plugin: KeyUp 'KeyB'
-CONSOLE MESSAGE: Blink Test Plugin: KeyDown 'KeyC'
-CONSOLE MESSAGE: Blink Test Plugin: KeyUp 'KeyC'
+Plugin received event: MouseEnter
+Plugin received event: MouseMove
+Plugin received event: MouseDown
+Plugin received event: MouseUp
+Plugin received event: RawKeyDown
+Plugin received event: Char
+Plugin received event: KeyUp
+Plugin received event: RawKeyDown
+Plugin received event: Char
+Plugin received event: KeyUp
+Plugin received event: RawKeyDown
+Plugin received event: Char
+Plugin received event: KeyUp
 This test checks if a plugin can receive keyboard events sent from eventSender. This is a test for Bug 34936.

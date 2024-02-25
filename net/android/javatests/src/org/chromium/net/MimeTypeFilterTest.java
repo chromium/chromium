@@ -17,9 +17,7 @@ import org.chromium.base.test.util.Batch;
 
 import java.util.ArrayList;
 
-/**
- * Tests for MimeTypeFilter.
- */
+/** Tests for MimeTypeFilter. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MimeTypeFilterTest {

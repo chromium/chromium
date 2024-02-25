@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fullscreen and Pointer Lock Scripts</title>
+<style type="text/css">
+  #HTMLCursor {
+      border: solid black 1px;
+      background: yellow;
+      display: inline;
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+  }
+</style>
+<script type="text/javascript">
+
+function enterFullscreen() {
+  console.log("enterFullscreen()");
+  document.getElementById('container').webkitRequestFullScreen(
+    Element.ALLOW_KEYBOARD_INPUT);
+}
+
+// Wait for notification from JS, then notify test of success or failure
+// callback that the click has registered and the pointer lock state has
+// changed.
+function lockPointer(callback) {
+  console.log("lockPointer()");
+  var target = document.getElementById("lockTarget1");
+
+  function failure() {
+    console.log("lock failed");
+    if (callback) {
+      callback("failure");
+    }
+  };
+  function possibleSuccess() {
+    if (document.pointerLockElement == target) {
+      console.log("lock success");
+      if (callback)
+        callback("success");
+    } else {
+      failure();
+    }
+  };
+  document.onpointerlockchange = possibleSuccess;
+  document.onpointerlockerror = failure;
+  target.requestPointerLock();
+}
+
+// In the PyAuto test the fullscreen is initiated, accepted and enters into a
+// wait state reading the value of lock_result. One of the two asynchronous
+// functions in the JS will be executed. The PyAuto code waits for lock_result
+// to return "success" or "failure". Sample PyAuto code:
+// lock_result = self._driver.execute_script('lockPointerAndSetLockResult()')
+function lockPointerAndSetLockResult(targetId) {
+  var target = document.getElementById(targetId);
+  lock_result = "";
+
+  function failure() {
+    console.log("lock failed");
+    lock_result = "failure"
+  };
+  function possibleSuccess() {
+    if (document.pointerLockElement == target) {
+      console.log("lock success");
+      lock_result = "success"
+    } else {
+      failure();
+    }
+  };
+  document.onpointerlockchange = possibleSuccess;
+  document.onpointerlockerror = failure;
+  target.requestPointerLock();
+}
+
+function lockPointerAndSetLockResult() {
+  console.log("lockPointerAndSetLockResult()");
+  lockPointerAndSetLockResult("lockTarget1");
+}
+
+function delayedLockPointer() {
+  console.log("delayedLockPointer()");
+  window.setTimeout(lockPointer, 5050);
+  // To test a lock not associated with user activation, the delay must
+  // be over 5 seconds so that the transient user activation expires
+  // before locking.
+}
+
+function unlockPointer() {
+  console.log("unlockPointer()");
+  document.exitPointerLock();
+}
+
+function enterFullscreenAndLockPointer() {
+  console.log("enterFullscreenAndLockPointer()");
+  enterFullscreen();
+  lockPointer();
+}
+
+function moveHTMLCursorTo(x, y) {
+  HTMLCursor.style.left = x + "px";;
+  HTMLCursor.style.top = y + "px";
+}
+
+function moveHTMLCursorToCenter() {
+  moveHTMLCursorTo(window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function moveHTMLCursorBy(x, y) {
+  moveHTMLCursorTo(
+      HTMLCursor.getBoundingClientRect().left + parseInt(x),
+      HTMLCursor.getBoundingClientRect().top + parseInt(y));
+}
+
+var polyFillMouseEventMovementFromVenderPrefix = function (e) {
+  e.movementX = (e.movementX !== undefined ? e.movementX :
+                (e.mozMovementX !== undefined ? e.mozMovementX :
+                (e.oMovementX !== undefined ? e.oMovementX :
+                 e.msMovementY)));
+  e.movementY = (e.movementY !== undefined ? e.movementY :
+                (e.mozMovementY !== undefined ? e.mozMovementY :
+                (e.oMovementY !== undefined ? e.oMovementY :
+                 e.msMovementY)));
+}
+
+var clicked_elem_ID = ""
+function clickElement(id) {
+  clicked_elem_ID = id;
+}
+
+function init() {
+  moveHTMLCursorToCenter();
+
+  document.addEventListener("mousemove",
+                            polyFillMouseEventMovementFromVenderPrefix);
+  document.addEventListener("mousemove", function (e) {
+    if (e.movementX !== undefined) {
+      moveHTMLCursorBy(e.movementX, e.movementY);
+      displaytext.innerHTML =
+        "Document mousemove listener:<br>" +
+        "<ul>" +
+        "<li>Raw screen position: " + e.screenX + ", " + e.screenY + "</li>" +
+        "<li>HTMLCursor: "
+        + HTMLCursor.getBoundingClientRect().left + ", "
+        + HTMLCursor.getBoundingClientRect().top + "</li>" +
+        "<li>Movement: " + e.movementX + ", " + e.movementY + "</li>" +
+        "</ul>";
+    } else {
+      displaytext.innerHTML =
+        "<b>You must enable pointer lock in about:flags</b>";
+    }
+  });
+
+  document.addEventListener("keypress", function (e) {
+    switch (String.fromCharCode(e.charCode)) {
+    case "1": lockPointer(); break;
+    case "d": delayedLockPointer(); break;
+    case "u": unlockPointer(); break;
+    case "b": enterFullscreenAndLockPointer(); break;
+    default: moveHTMLCursorToCenter(); break;
+    }
+  });
+}
+
+</script>
+</head>
+<body onload="init()"
+  title="This tooltip should not be shown if the mouse is locked.">
+  <div id="container">
+    <button id="lockPointer" onclick="lockPointer();">
+      lockPointer() [1]
+    </button><br>
+    <button id="delayedLockPointer" onclick="delayedLockPointer();">
+      delayedLockPointer() [d]
+    </button><br>
+    <button id="unlockPointer" onclick="unlockPointer();">
+      unlockPointer() [u]
+    </button><br>
+    <button id="enterFullscreenAndLockPointer"
+      onclick="enterFullscreenAndLockPointer()">
+      enterFullscreenAndLockPointer() [b]
+    </button><br>
+    <div id="lockTarget1">lockTarget1</div>
+    <div id="lockTarget2">lockTarget2</div>
+    <form name="HTMLCursor" id="HTMLCursor">HTMLCursor</form>
+    <form name="displaytext">...</form>
+    <p>The <a href="#anchor" name="anchor" id="anchor"
+      onclick="clickElement(this.id);">
+      anchor link
+    </a>
+    navigates to an anchor on this page. The browser should not exit tab
+    fullscreen or pointer lock.</p>
+  </div>
+  <p>This text is outside of the container that is made fullscreen. This text
+  should not be visible when fullscreen.</p>
+</body>
+</html>

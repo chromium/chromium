@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/feedback/feedback_common.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
@@ -34,13 +35,37 @@ constexpr char kFeedbackPostUrl[] =
 
 void QueueReport(FeedbackUploader* uploader,
                  const std::string& report_data,
-                 bool has_email = true) {
-  uploader->QueueReport(std::make_unique<std::string>(report_data), has_email);
+                 bool has_email = true,
+                 int product_id = 0) {
+  uploader->QueueReport(std::make_unique<std::string>(report_data), has_email,
+                        product_id);
 }
+
+class TestFeedbackUploader final : public FeedbackUploader {
+ public:
+  TestFeedbackUploader(
+      bool is_off_the_record,
+      const base::FilePath& state_path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FeedbackUploader(is_off_the_record,
+                         state_path,
+                         std::move(url_loader_factory)) {}
+  TestFeedbackUploader(const TestFeedbackUploader&) = delete;
+  TestFeedbackUploader& operator=(const TestFeedbackUploader&) = delete;
+
+  ~TestFeedbackUploader() override = default;
+
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFeedbackUploader> weak_ptr_factory_{this};
+};
 
 // Stand-in for the FeedbackUploaderChrome class that adds a fake bearer token
 // to the request.
-class MockFeedbackUploaderChrome : public FeedbackUploader {
+class MockFeedbackUploaderChrome final : public FeedbackUploader {
  public:
   MockFeedbackUploaderChrome(
       bool is_off_the_record,
@@ -53,6 +78,13 @@ class MockFeedbackUploaderChrome : public FeedbackUploader {
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                         "Bearer abcdefg");
   }
+
+  base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockFeedbackUploaderChrome> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -110,8 +142,8 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
   // headers.
   CreateFieldTrialWithId("Test", "Group1", 123);
 
-  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
-                            shared_url_loader_factory());
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
 
   net::HttpRequestHeaders headers;
   test_url_loader_factory()->SetInterceptor(
@@ -120,6 +152,43 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
       }));
 
   QueueReport(&uploader, "test");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FeedbackUploaderDispatchTest, VariationHeadersForProductID) {
+  // Register a trial and variation id, so that there is data in variations
+  // headers.
+  CreateFieldTrialWithId("Test", "Group1", 123);
+
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
+
+  net::HttpRequestHeaders headers;
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(variations::HasVariationsHeader(request));
+      }));
+
+  QueueReport(&uploader, "test", /*has_email=*/false, /*product_id=*/208);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FeedbackUploaderDispatchTest, NoVariationHeadersForOrcaProductID) {
+  // Register a trial and variation id, so that there is data in variations
+  // headers.
+  CreateFieldTrialWithId("Test", "Group1", 123);
+
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
+
+  net::HttpRequestHeaders headers;
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_FALSE(variations::HasVariationsHeader(request));
+      }));
+
+  QueueReport(&uploader, "test", /*has_email=*/false,
+              /*product_id=*/kOrcaFeedbackProductId);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -153,8 +222,8 @@ TEST_F(FeedbackUploaderDispatchTest, BearerTokenNoEmail) {
 
 TEST_F(FeedbackUploaderDispatchTest, 204Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
-                            shared_url_loader_factory());
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Successful reports should not introduce any retries, and should not
@@ -175,8 +244,8 @@ TEST_F(FeedbackUploaderDispatchTest, 204Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 400Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
-                            shared_url_loader_factory());
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Failed reports due to client errors are not retried. No backoff delay
@@ -197,8 +266,8 @@ TEST_F(FeedbackUploaderDispatchTest, 400Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 500Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
-                            shared_url_loader_factory());
+  TestFeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                                shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Failed reports due to server errors are retried.

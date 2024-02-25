@@ -117,7 +117,7 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
             for f in _rel_extracted_files)
 
     contents = [
-        '# Copyright 2021 The Chromium Authors. All rights reserved.',
+        '# Copyright 2021 The Chromium Authors',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
         'package: chromium/third_party/android_deps_autorolled', 'description: android_deps_autorolled',

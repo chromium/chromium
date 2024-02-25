@@ -7,17 +7,9 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "components/favicon_base/favicon_callback.h"
-#include "components/favicon_base/favicon_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
 
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
@@ -41,12 +33,6 @@ class TabUIHelper : public content::WebContentsObserver,
   // Return true if the throbber should be hidden during a page load.
   bool ShouldHideThrobber() const;
 
-  // Notifies TabUIHelper that the WebContents' initial navigation is delayed.
-  // This is called by TabManager when it decides to delay a new tab's
-  // navigation. TabUIHelper will obtain appropriate title and favicon after
-  // receiving this signal.
-  void NotifyInitialNavigationDelayed(bool is_navigation_delayed);
-
   // content::WebContentsObserver implementation
   void DidStopLoading() override;
 
@@ -61,33 +47,10 @@ class TabUIHelper : public content::WebContentsObserver,
  private:
   friend class content::WebContentsUserData<TabUIHelper>;
 
-  struct TabUIData {
-    explicit TabUIData(const GURL& url);
-    std::u16string title;
-    ui::ImageModel favicon;
-  };
-
   explicit TabUIHelper(content::WebContents* contents);
 
-  // Returns true if a favicon from history should be used. It is used when a
-  // new tab is opened in the background and its initial navigation is delayed.
-  bool ShouldUseFaviconFromHistory() const;
-
-  void FetchFaviconFromHistory(const GURL& url,
-                               favicon_base::FaviconImageCallback callback);
-  void OnURLFaviconFetched(const favicon_base::FaviconImageResult& favicon);
-  void OnHostFaviconFetched(const favicon_base::FaviconImageResult& favicon);
-  void UpdateFavicon(const favicon_base::FaviconImageResult& favicon);
-
   bool was_active_at_least_once_ = false;
-  bool is_navigation_delayed_ = false;
   bool created_by_session_restore_ = false;
-
-  // The data that stores favicon and title. It is non-null only during initial
-  // navigation when the tab is opened in background.
-  std::unique_ptr<TabUIData> tab_ui_data_;
-  base::CancelableTaskTracker favicon_tracker_;
-  base::WeakPtrFactory<TabUIHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

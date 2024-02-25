@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui_test.h"
 
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
@@ -12,6 +15,9 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_getter.h"
 #endif
+
+OmniboxPopupViewWebUITest::OmniboxPopupViewWebUITest() = default;
+OmniboxPopupViewWebUITest::~OmniboxPopupViewWebUITest() = default;
 
 OmniboxPopupViewWebUITest::ThemeChangeWaiter::~ThemeChangeWaiter() {
   waiter_.WaitForThemeChanged();
@@ -21,7 +27,8 @@ OmniboxPopupViewWebUITest::ThemeChangeWaiter::~ThemeChangeWaiter() {
 }
 
 void OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
-  EXPECT_TRUE(controller()->result().empty());
+  auto* autocomplete_controller = controller()->autocomplete_controller();
+  EXPECT_TRUE(autocomplete_controller->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
 
   edit_model()->SetUserText(u"foo");
@@ -29,9 +36,9 @@ void OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_omit_asynchronous_matches(true);
-  controller()->autocomplete_controller()->Start(input);
+  autocomplete_controller->Start(input);
 
-  EXPECT_FALSE(controller()->result().empty());
+  EXPECT_FALSE(autocomplete_controller->result().empty());
   EXPECT_TRUE(popup_view()->IsOpen());
 }
 
@@ -60,4 +67,26 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
 void OmniboxPopupViewWebUITest::SetUp() {
   feature_list_.InitAndEnableFeature(omnibox::kWebUIOmniboxPopup);
   InProcessBrowserTest::SetUp();
+}
+
+void OmniboxPopupViewWebUITest::WaitForHandler() {
+  if (!popup_view()->presenter_->IsHandlerReady()) {
+    base::RunLoop loop;
+    auto quit = loop.QuitClosure();
+    auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
+    runner->PostTask(FROM_HERE,
+                     base::BindOnce(&OmniboxPopupViewWebUITest::WaitInternal,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    popup_view()->presenter_.get(), &quit));
+    loop.Run();
+    CHECK(popup_view()->presenter_->IsHandlerReady());
+  }
+}
+
+void OmniboxPopupViewWebUITest::WaitInternal(OmniboxPopupPresenter* presenter,
+                                             base::RepeatingClosure* closure) {
+  while (!presenter->IsHandlerReady()) {
+    base::PlatformThread::Sleep(base::Milliseconds(1));
+  }
+  closure->Run();
 }

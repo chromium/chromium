@@ -42,11 +42,11 @@ class MockSigninUI : public SigninUI {
               (override));
   MOCK_METHOD(void, ClearOnboardingAuthSession, (), (override));
   MOCK_METHOD(void,
-              ShowPasswordChangedDialogLegacy,
-              (const AccountId&, bool),
+              UseAlternativeAuthentication,
+              (std::unique_ptr<UserContext> user_context, bool),
               (override));
   MOCK_METHOD(void,
-              StartCryptohomeRecovery,
+              RunLocalAuthentication,
               (std::unique_ptr<UserContext> user_context),
               (override));
   MOCK_METHOD(void,

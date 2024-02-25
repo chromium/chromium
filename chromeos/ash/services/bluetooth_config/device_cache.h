@@ -75,7 +75,7 @@ class DeviceCache {
  private:
   bool IsBluetoothEnabledOrEnabling() const;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   base::ObserverList<Observer> observers_;
 };

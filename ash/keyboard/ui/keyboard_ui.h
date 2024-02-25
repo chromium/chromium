@@ -83,7 +83,7 @@ class KEYBOARD_EXPORT KeyboardUI {
   KeyboardUIController* keyboard_controller() { return keyboard_controller_; }
 
  private:
-  raw_ptr<KeyboardUIController, ExperimentalAsh> keyboard_controller_ = nullptr;
+  raw_ptr<KeyboardUIController> keyboard_controller_ = nullptr;
 };
 
 }  // namespace keyboard

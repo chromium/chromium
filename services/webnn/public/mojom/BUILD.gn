@@ -6,10 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "webnn_context_provider.mojom",
+    "webnn_error.mojom",
     "webnn_graph.mojom",
-    "webnn_service.mojom",
   ]
   deps = [
+    "//components/ml/webnn:features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]

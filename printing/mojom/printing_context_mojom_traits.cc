@@ -15,6 +15,10 @@
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "base/numerics/safe_conversions.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "mojo/public/mojom/base/values.mojom.h"
 #endif
@@ -132,6 +136,8 @@ bool StructTraits<
   }
   out->set_media_type(media_type);
 
+  out->set_borderless(data.borderless());
+
   gfx::Size dpi;
   if (!data.ReadDpi(&dpi))
     return false;
@@ -173,6 +179,94 @@ bool StructTraits<
     return false;
   out->set_pin_value(pin_value);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  base::Value::Dict system_print_dialog_data;
+  if (!data.ReadSystemPrintDialogData(&system_print_dialog_data)) {
+    return false;
+  }
+  // If doing system print then a dialog invoked in-browser needs to provide
+  // the settings that were specified.  Such data is platform-specific.
+  if (!system_print_dialog_data.empty()) {
+#if BUILDFLAG(IS_MAC)
+    // The dictionary must contain the destination type, page format, and
+    // print settings.
+    std::optional<int> destination_type = system_print_dialog_data.FindInt(
+        printing::kMacSystemPrintDialogDataDestinationType);
+    if (!destination_type.has_value()) {
+      return false;
+    }
+    const base::Value::BlobStorage* page_format =
+        system_print_dialog_data.FindBlob(
+            printing::kMacSystemPrintDialogDataPageFormat);
+    if (!page_format || page_format->empty()) {
+      return false;
+    }
+    const base::Value::BlobStorage* print_settings =
+        system_print_dialog_data.FindBlob(
+            printing::kMacSystemPrintDialogDataPrintSettings);
+    if (!print_settings || print_settings->empty()) {
+      return false;
+    }
+    size_t dictionary_entries = 3;
+
+    // Destination type must be uint16.
+    if (!base::IsValueInRangeForNumericType<uint16_t>(*destination_type)) {
+      return false;
+    }
+
+    // Destination format and location are optional.  If present, they must be
+    // strings.
+    const base::Value* destination_format = system_print_dialog_data.Find(
+        printing::kMacSystemPrintDialogDataDestinationFormat);
+    if (destination_format) {
+      if (!destination_format->is_string()) {
+        return false;
+      }
+      ++dictionary_entries;
+    }
+    const base::Value* destination_location = system_print_dialog_data.Find(
+        printing::kMacSystemPrintDialogDataDestinationLocation);
+    if (destination_location) {
+      if (!destination_location->is_string()) {
+        return false;
+      }
+      ++dictionary_entries;
+    }
+
+    // There should not be any other keys present.
+    if (system_print_dialog_data.size() != dictionary_entries) {
+      return false;
+    }
+#elif BUILDFLAG(IS_LINUX)
+    // The dictionary must contain three strings.
+    const base::Value* value = system_print_dialog_data.Find(
+        printing::kLinuxSystemPrintDialogDataPrinter);
+    if (!value || !value->is_string()) {
+      return false;
+    }
+    value = system_print_dialog_data.Find(
+        printing::kLinuxSystemPrintDialogDataPrintSettings);
+    if (!value || !value->is_string()) {
+      return false;
+    }
+    value = system_print_dialog_data.Find(
+        printing::kLinuxSystemPrintDialogDataPageSetup);
+    if (!value || !value->is_string()) {
+      return false;
+    }
+
+    // There should not be any other keys present.
+    if (system_print_dialog_data.size() != 3) {
+      return false;
+    }
+#else
+#error "System print dialog support not implemented for this platform."
+#endif
+  }
+
+  out->set_system_print_dialog_data(std::move(system_print_dialog_data));
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
   return true;
 }

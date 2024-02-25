@@ -24,7 +24,7 @@
 #import "ios/testing/earl_grey/system_alert_handler.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/element_selector.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -107,6 +107,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Test Utilities
 
+- (void)startReloading {
+  [ChromeEarlGreyAppInterface startReloading];
+}
+
 - (void)waitForMatcher:(id<GREYMatcher>)matcher {
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -157,6 +161,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [chrome_test_util::GetAnyKeyWindow() traitCollection];
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
+}
+
+- (void)primesStopLogging {
+  [ChromeEarlGreyAppInterface primesStopLogging];
+}
+
+- (void)primesTakeMemorySnapshot:(NSString*)eventName {
+  [ChromeEarlGreyAppInterface primesTakeMemorySnapshot:eventName];
 }
 
 #pragma mark - History Utilities (EG2)
@@ -264,6 +276,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface browserCount];
 }
 
+- (NSInteger)realizedWebStatesCount {
+  return [ChromeEarlGreyAppInterface realizedWebStatesCount];
+}
+
 - (NSUInteger)evictedMainTabCount {
   return [ChromeEarlGreyAppInterface evictedMainTabCount];
 }
@@ -291,6 +307,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface openNewTab];
   [self waitForPageToFinishLoading];
   GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+- (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url {
+  [ChromeEarlGreyAppInterface simulateExternalAppURLOpeningWithURL:url];
 }
 
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url {
@@ -538,8 +558,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       @"document.cookie ? document.cookie.split(/;\\s*/) : [];";
   base::Value result = [self evaluateJavaScript:kGetCookiesScript];
 
-  EG_TEST_HELPER_ASSERT_TRUE(result.is_list(),
-                             @"The script response is not iterable.");
+  if (!result.is_list()) {
+    EG_TEST_HELPER_ASSERT_TRUE(
+        false,
+        @"The script response is not iterable. Cookies can not be retrieved.");
+    return nil;
+  }
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
   for (const auto& option : result.GetList()) {
@@ -670,6 +694,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface submitWebStateFormWithID:formID]);
 }
 
+- (BOOL)webStateContainsElement:(ElementSelector*)selector {
+  return [ChromeEarlGreyAppInterface webStateContainsElement:selector];
+}
+
 - (void)waitForWebStateVisible {
   NSString* errorString =
       [NSString stringWithFormat:@"Failed waiting for web state to be visible"];
@@ -765,21 +793,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self waitForPageToFinishLoading];
 }
 
-- (void)triggerRestoreViaTabGridRemoveAllUndo {
-  [ChromeEarlGrey showTabSwitcher];
-  GREYWaitForAppToIdle(@"App failed to idle");
-  [ChromeEarlGrey
-      waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                     grey_sufficientlyVisible(), nil)];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridUndoCloseAllButton()];
-  [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
-  [self waitForRestoreSessionToFinish];
-  [self waitForPageToFinishLoading];
-}
-
 - (BOOL)webStateWebViewUsesContentInset {
   return [ChromeEarlGreyAppInterface webStateWebViewUsesContentInset];
 }
@@ -808,8 +821,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Sync Utilities (EG2)
 
-- (void)clearSyncServerData {
-  [ChromeEarlGreyAppInterface clearSyncServerData];
+// Whether or not the fake sync server has been setup.
+- (BOOL)isFakeSyncServerSetUp {
+  return [ChromeEarlGreyAppInterface isFakeSyncServerSetUp];
+}
+
+- (void)disconnectFakeSyncServerNetwork {
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+}
+
+- (void)connectFakeSyncServerNetwork {
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
 }
 
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
@@ -857,6 +879,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface tearDownFakeSyncServer];
 }
 
+- (void)clearFakeSyncServerData {
+  [ChromeEarlGreyAppInterface clearFakeSyncServerData];
+}
+
+- (void)flushFakeSyncServerToDisk {
+  [ChromeEarlGreyAppInterface flushFakeSyncServerToDisk];
+}
+
 - (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
   return [ChromeEarlGreyAppInterface numberOfSyncEntitiesWithType:type];
 }
@@ -887,11 +917,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       addFakeSyncServerLegacyBookmarkWithURL:spec
                                        title:title
                    originator_client_item_id:originator_client_item_id];
-}
-
-- (void)addFakeSyncServerTypedURL:(const GURL&)URL {
-  NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  [ChromeEarlGreyAppInterface addFakeSyncServerTypedURL:spec];
 }
 
 - (void)addFakeSyncServerHistoryVisit:(const GURL&)URL {
@@ -1247,6 +1272,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   GREYCondition* signOutFinished = [GREYCondition
       conditionWithName:@"Sign-out done, and identities & browsing data cleared"
                   block:^{
+                    // Spin run loop to ensure observers are notified when
+                    // webstate loading stops.
+                    base::test::ios::SpinRunLoopWithMinDelay(
+                        base::Milliseconds(100));
                     return isSignoutFinished;
                   }];
   bool success =
@@ -1333,20 +1362,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }
 
-- (BOOL)isSynthesizedRestoreSessionEnabled {
-  return [ChromeEarlGreyAppInterface isSynthesizedRestoreSessionEnabled];
-}
-
 - (BOOL)isTestFeatureEnabled {
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }
 
 - (BOOL)isDemographicMetricsReportingEnabled {
   return [ChromeEarlGreyAppInterface isDemographicMetricsReportingEnabled];
-}
-
-- (BOOL)isSyncHistoryDataTypeEnabled {
-  return [ChromeEarlGreyAppInterface isSyncHistoryDataTypeEnabled];
 }
 
 - (BOOL)isReplaceSyncWithSigninEnabled {
@@ -1387,10 +1408,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
-- (BOOL)isUIButtonConfigurationEnabled {
-  return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
-}
-
 - (BOOL)isBottomOmniboxSteadyStateEnabled {
   return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled];
 }
@@ -1415,6 +1432,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface resetDesktopContentSetting];
 }
 
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type {
+  [ChromeEarlGreyAppInterface setContentSetting:setting
+                         forContentSettingsType:type];
+}
+
 #pragma mark - Keyboard utilities
 
 - (NSInteger)registeredKeyCommandCount {
@@ -1428,15 +1451,23 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Default Utilities (EG2)
 
-- (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName {
-  [ChromeEarlGreyAppInterface setUserDefaultObject:value forKey:defaultName];
+- (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName {
+  [ChromeEarlGreyAppInterface setUserDefaultsObject:value forKey:defaultName];
 }
 
-- (void)removeUserDefaultObjectForKey:(NSString*)key {
-  [ChromeEarlGreyAppInterface removeUserDefaultObjectForKey:key];
+- (void)removeUserDefaultsObjectForKey:(NSString*)key {
+  [ChromeEarlGreyAppInterface removeUserDefaultsObjectForKey:key];
+}
+
+- (id)userDefaultsObjectForKey:(NSString*)key {
+  return [ChromeEarlGreyAppInterface userDefaultsObjectForKey:key];
 }
 
 #pragma mark - Pref Utilities (EG2)
+
+- (void)commitPendingUserPrefsWrite {
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+}
 
 // Returns a base::Value representation of the requested pref.
 - (std::unique_ptr<base::Value>)localStatePrefValue:
@@ -1492,6 +1523,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                   forLocalStatePref:prefName];
 }
 
+- (void)setBoolValue:(BOOL)value
+    forLocalStatePref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setBoolValue:value
+                                forLocalStatePref:prefName];
+}
+
 // Returns a base::Value representation of the requested pref.
 - (std::unique_ptr<base::Value>)userPrefValue:(const std::string&)prefName {
   std::string jsonRepresentation =
@@ -1528,11 +1566,27 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface setBoolValue:value forUserPref:prefName];
 }
 
+- (void)setStringValue:(NSString*)value
+           forUserPref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setStringValue:value forUserPref:prefName];
+}
+
 - (void)setIntegerValue:(int)value
             forUserPref:(const std::string&)UTF8PrefName {
   NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
   return [ChromeEarlGreyAppInterface setIntegerValue:value
                                          forUserPref:prefName];
+}
+
+- (bool)prefWithNameIsDefaultValue:(const std::string&)prefName {
+  return [ChromeEarlGreyAppInterface
+      prefWithNameIsDefaultValue:base::SysUTF8ToNSString(prefName)];
+}
+
+- (void)clearUserPrefWithName:(const std::string&)prefName {
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(prefName)];
 }
 
 - (void)resetBrowsingDataPrefs {
@@ -1570,7 +1624,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (GURL)pasteboardURL {
   NSString* absoluteString = [ChromeEarlGreyAppInterface pasteboardURLSpec];
   return absoluteString ? GURL(base::SysNSStringToUTF8(absoluteString))
-                        : GURL::EmptyGURL();
+                        : GURL();
 }
 
 - (void)clearPasteboard {
@@ -1685,6 +1739,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface stopWatcher];
 }
 
+#pragma mark - Default Browser Promo Utilities
+
+- (void)clearDefaultBrowserPromoData {
+  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+}
+
+- (void)copyURLToPasteBoard {
+  [ChromeEarlGreyAppInterface copyURLToPasteBoard];
+}
+
 #pragma mark - ActivitySheet utilities
 
 - (void)verifyActivitySheetVisible {
@@ -1788,4 +1852,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   }
 }
 
+#pragma mark - First Run Utilities
+
+- (void)writeFirstRunSentinel {
+  [ChromeEarlGreyAppInterface writeFirstRunSentinel];
+}
+
+- (void)removeFirstRunSentinel {
+  [ChromeEarlGreyAppInterface removeFirstRunSentinel];
+}
+
+- (bool)hasFirstRunSentinel {
+  return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
+}
 @end

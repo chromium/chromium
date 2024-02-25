@@ -29,8 +29,9 @@
 namespace {
 
 class ContentShadow : public views::View {
+  METADATA_HEADER(ContentShadow, views::View)
+
  public:
-  METADATA_HEADER(ContentShadow);
   ContentShadow();
 
  protected:
@@ -59,7 +60,7 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
                                            canvas, GetColorProvider());
 }
 
-BEGIN_METADATA(ContentShadow, views::View)
+BEGIN_METADATA(ContentShadow)
 END_METADATA
 
 }  // namespace
@@ -81,8 +82,13 @@ InfoBarContainerView::~InfoBarContainerView() {
   RemoveAllInfoBarsForDestruction();
 }
 
-void InfoBarContainerView::Layout() {
-  const auto set_bounds = [this](int top, auto* child) {
+bool InfoBarContainerView::IsEmpty() const {
+  // NOTE: Can't check if the size IsEmpty() since it's always 0-width.
+  return GetPreferredSize().height() == 0;
+}
+
+void InfoBarContainerView::Layout(PassKey) {
+  const auto set_bounds = [this](int top, View* child) {
     const int height = static_cast<InfoBarView*>(child)->computed_height();
     // Do not add separator dip if it's the first infobar. The first infobar
     // should be flush with the top of InfoBarContainerView.
@@ -110,7 +116,7 @@ void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
-  const auto enlarge_size = [this](const gfx::Size& size, const auto* child) {
+  const auto enlarge_size = [this](const gfx::Size& size, const View* child) {
     const gfx::Size child_size = child->GetPreferredSize();
     int add_separator_height =
         (child == children().front()) ? 0 : kSeparatorHeightDip;
@@ -163,5 +169,5 @@ void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
   }
 }
 
-BEGIN_METADATA(InfoBarContainerView, views::AccessiblePaneView)
+BEGIN_METADATA(InfoBarContainerView)
 END_METADATA

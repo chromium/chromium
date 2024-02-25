@@ -20,12 +20,26 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kClosedTabCache);
 
+BASE_DECLARE_FEATURE(kDeferredSpareRendererForTopChromeWebUI);
+extern const base::FeatureParam<base::TimeDelta> kSpareRendererWarmupDelay;
+extern const base::FeatureParam<bool>
+    kSpareRendererWarmupDelayUntilPageStopsLoading;
+
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
+BASE_DECLARE_FEATURE(kDevToolsVeLogging);
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsAidaEndpoint;
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
+extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
-BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
@@ -34,17 +48,18 @@ extern const char kBrowserCommandIdParam[];
 BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kEnableUniveralLinks);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kCopyLinkToText);
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
+#else
+BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 #endif
 
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
@@ -69,6 +84,10 @@ BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
+BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
+BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
+BASE_DECLARE_FEATURE(kEnableDPAPIEncryptionProvider);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
@@ -95,16 +114,14 @@ const base::FeatureParam<int>
     kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "prerender_start_delay_on_mouse_hover_ms", 300};
+const base::FeatureParam<int>
+    kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
+        &features::kNewTabPageTriggerForPrerender2,
+        "preconnect_start_delay_on_mouse_hover_ms", 100};
 
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-enum class SearchSuggestionPrerenderImplementationType {
-  kUsePrefetch,
-  kIgnorePrefetch,
-};
-extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
-    kSearchSuggestionPrerenderImplementationTypeParam;
 // Indicates whether to make search prefetch response shareable to prerender.
 // When allowing this, prerender can only copy the cache but cannot take over
 // the ownership.
@@ -129,11 +146,7 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
-#if !BUILDFLAG(IS_ANDROID)
-// This flag is used for enabling the Manta Service, a profile keyed service for
-// the google chrome Manta project.
-BASE_DECLARE_FEATURE(kMantaService);
-#endif
+BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 
 }  // namespace features
 

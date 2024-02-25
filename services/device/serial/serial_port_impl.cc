@@ -221,7 +221,7 @@ void SerialPortImpl::WriteToPort(MojoResult result,
   }
   if (result == MOJO_RESULT_OK) {
     io_handler_->Write(
-        base::make_span(reinterpret_cast<const uint8_t*>(buffer), num_bytes),
+        base::make_span(static_cast<const uint8_t*>(buffer), num_bytes),
         base::BindOnce(&SerialPortImpl::OnWriteToPortCompleted,
                        weak_factory_.GetWeakPtr(), num_bytes));
     return;
@@ -276,10 +276,9 @@ void SerialPortImpl::ReadFromPortAndWriteOut(
                                          MOJO_WRITE_DATA_FLAG_NONE);
   }
   if (result == MOJO_RESULT_OK) {
-    io_handler_->Read(
-        base::make_span(reinterpret_cast<uint8_t*>(buffer), num_bytes),
-        base::BindOnce(&SerialPortImpl::WriteToOutStream,
-                       weak_factory_.GetWeakPtr()));
+    io_handler_->Read(base::make_span(static_cast<uint8_t*>(buffer), num_bytes),
+                      base::BindOnce(&SerialPortImpl::WriteToOutStream,
+                                     weak_factory_.GetWeakPtr()));
     return;
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {

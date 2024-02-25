@@ -10,6 +10,7 @@ component("missive") {
   defines = [ "IS_MISSIVE_IMPL" ]
 
   deps = [
+    ":history_tracker",
     "//base",
     "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:record_constants",
@@ -25,6 +26,22 @@ component("missive") {
     "fake_missive_client.h",
     "missive_client.cc",
     "missive_client.h",
+  ]
+}
+
+static_library("history_tracker") {
+  deps = [
+    "//base",
+    "//components/reporting/proto:health_proto",
+    "//components/reporting/proto:interface_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+
+  sources = [
+    "history_tracker.cc",
+    "history_tracker.h",
   ]
 }
 

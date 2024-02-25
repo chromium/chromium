@@ -13,6 +13,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -115,8 +116,8 @@ class SystemNudge::SystemNudgeView : public views::View {
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
   }
 
-  raw_ptr<views::View, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::View> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
 SystemNudge::SystemNudge(const std::string& name,
@@ -126,6 +127,12 @@ SystemNudge::SystemNudge(const std::string& name,
                          int nudge_padding,
                          ui::ColorId icon_color_id)
     : root_window_(Shell::GetRootWindowForNewWindows()) {
+  // This class is deprecated in favor of using the new `AnchoredNudge`
+  // component, created through the `AnchoredNudgeManager` class, and will now
+  // be only used in tests while the migration is rolling out. Please visit
+  // go/system-nudge-v2 to learn more about this migration and go/howtonudge on
+  // how to use the new component.
+  CHECK_IS_TEST();
   params_.name = name;
   params_.catalog_name = catalog_name;
   params_.icon_size = icon_size;

@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_INFO_H_
 #define COMPONENTS_DOWNLOAD_DATABASE_DOWNLOAD_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "components/download/database/in_progress/in_progress_info.h"
 #include "components/download/database/in_progress/ukm_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -30,10 +30,10 @@ struct DownloadInfo {
   int id = -1;
 
   // UKM information for reporting.
-  absl::optional<UkmInfo> ukm_info;
+  std::optional<UkmInfo> ukm_info;
 
   // In progress information for active download.
-  absl::optional<InProgressInfo> in_progress_info;
+  std::optional<InProgressInfo> in_progress_info;
 };
 
 }  // namespace download

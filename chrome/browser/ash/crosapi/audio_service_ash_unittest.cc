@@ -21,7 +21,7 @@ class MockCallbacks {
  public:
   MOCK_METHOD2(GetMuteResponse, void(bool, bool));
   MOCK_METHOD1(GetDevicesResponse,
-               void(absl::optional<std::vector<mojom::AudioDeviceInfoPtr>>));
+               void(std::optional<std::vector<mojom::AudioDeviceInfoPtr>>));
   MOCK_METHOD1(SetMuteResponse, void(bool));
   MOCK_METHOD1(SetActiveDeviceListsResponse, void(bool));
   MOCK_METHOD1(SetPropertiesResponse, void(bool));
@@ -269,15 +269,15 @@ TEST_F(AudioServiceAshTest, OnDeviceListChangedAdd) {
 }
 
 TEST_F(AudioServiceAshTest, OnDeviceListChangedRemove) {
-  const uint64_t kId = 0x200000002;  // taken from FakeCrasAudioClient
-
-  ash::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(kId);
+  const uint64_t id = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
+  ash::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(id);
 
   // Active input device changes and level is set to preference when devices are
   // changed.
   const int kPreferredGain = 50;
-  uint64_t kInputId = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
-  EXPECT_CALL(mock_observer_, OnLevelChangedMock(base::NumberToString(kInputId),
+  uint64_t input_id = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
+  EXPECT_EQ(kPreferredGain, cras_audio_handler_.Get().GetInputGainPercent());
+  EXPECT_CALL(mock_observer_, OnLevelChangedMock(base::NumberToString(input_id),
                                                  kPreferredGain));
 
   // Device list change happens after input level change.

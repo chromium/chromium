@@ -61,43 +61,6 @@ An example script using this API is
 If we regularly need incremental rollouts, it may be worth creating our own
 scripts to do so reliably.
 
-## Procedure for incremental rollout with A/B testing
-  * Open the Omaha Release manager at:
-    https://omaharelease.corp.google.com/product/1436/cohorts
-  * **Disable** the automatic push by changing the _Push Scheduler_ from
-    `LATEST_TO_AUTO` to `NONE`. Then commit the changes by clicking _Commit
-    Automation Changes_.
-  * **Edit** the `download_file_types_experiment.asciipb` file. Make sure the
-    version in this file is greater than the version in
-    `download_file_types.asciipb`. Do not edit `download_file_types.asciipb`.
-    Otherwise, the experiment version will be automatically released with Chrome
-    binary.
-  * **Upload** the new version of the file types.
-    * In a synced checkout, run the following to generate experiment protos for all
-      platforms and push them to GCS. Replace the arg with your build directory:
-        * % `components/safe_browsing/content/resources/push_file_type_proto.py -d
-          out-gn/Debug --experiment`
-  * Create a new cohort.
-    * Name the new cohort with the new experiment version (e.g. `v44`).
-    * Select the file group as `auto_$EXPERIMENT_VERSION_ID`.
-    * Add an attribute with name `tag` and value `$EXPERIMENT_VERSION_ID`
-      (e.g. `44`).
-    * Keep the `auto` cohort unchanged. The auto cohort should be matching to
-      any tag value.
-  * **Rollout** Create a finch study to rollout the new version.
-    * The finch study should set the `tag` value to `$EXPERIMENT_VERSION_ID`
-      that is sent to Omaha.
-    * Recommended schedule: Canary_Dev 50% -> Beta 50% -> Stable 1% -> Launched.
-  * **Cleanup** After the incremental rollout is complete, perform the following
-    cleanup:
-    * Update `download_file_types.asciipb` with changes in
-      `download_file_types_experiment.asciipb`. Make sure the `version_id` is
-      also updated to be equal to the `version_id` in the experiment config.
-      Chrome will then get the new version by default.
-    * Update the `auto` cohort to match to the new file group. Delete the
-      experiment cohort.
-    * set the _Push Scheduler_ back to `LATEST_TO_AUTO`.
-
 ## Guidelines for a DownloadFileType entry:
 See `download_file_types.proto` for all fields.
 
@@ -166,6 +129,9 @@ See `download_file_types.proto` for all fields.
     * `DANGEROUS`: Always warn the user that this file may harm their
       computer. We let them continue or discard the file. If Safe
       Browsing returns a `SAFE` verdict, we still warn the user.
+        * Note that file types at this level can affect how our partner team
+          calculates the warning volume. Please reach out before adding a new
+          file type under this danger level.
     * `ALLOW_ON_USER_GESTURE`: Potentially dangerous, but is likely harmless if
       the user is familiar with host and if the download was intentional. Chrome
       doesn't warn the user if both of the following conditions are true:
@@ -176,9 +142,10 @@ See `download_file_types.proto` for all fields.
           the most recent midnight. This is taken to imply that the user has a
           history of visiting the site.
 
-      In addition, Chrome skips the warning if the download was explicit (i.e.
-      the user selected "Save link as ..." from the context menu), or if the
-      navigation that resulted in the download was initiated using the Omnibox.
+      In addition, Chrome skips the warning if the users preference enables Safe
+      Browsing or the download was explicit (i.e.  the user selected "Save link
+      as ..." from the context menu), or if the navigation that resulted in the
+      download was initiated using the Omnibox.
 
     If the `SafeBrowsingForTrustedSourcesEnabled` policy is set and the download
     originates from a Trusted source, no warnings will be shown even for types

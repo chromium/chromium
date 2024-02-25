@@ -9,6 +9,9 @@
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/linux-archive-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -27,7 +30,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -45,14 +49,15 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux_chromium_archive_rel_ng",
+          "builder": "linux-clobber-rel",
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux_chromium_clobber_rel_ng",
+          "builder": "linux_chromium_archive_rel_ng",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-archive-rel/targets"
     }
   },
   "$build/reclient": {

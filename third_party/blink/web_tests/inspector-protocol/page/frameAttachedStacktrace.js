@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('../resources/frame-attached-stacktrace-page.html', 'Tests stackTrace reported on frame attach.');
 
   const expectedNumberOfFrames = 3;

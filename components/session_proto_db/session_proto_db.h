@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 #define COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 
+#include <memory>
+#include <optional>
 #include <queue>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -23,7 +26,6 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/session_proto_db/session_proto_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 
 namespace {
@@ -96,6 +98,10 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   void DeleteOneEntry(const std::string& key,
                       OperationCallback callback) override;
 
+  void UpdateEntries(std::unique_ptr<ContentEntry> entries_to_update,
+                     std::unique_ptr<std::vector<std::string>> keys_to_remove,
+                     OperationCallback callback) override;
+
   void DeleteContentWithPrefix(const std::string& key_prefix,
                                OperationCallback callback) override;
 
@@ -147,7 +153,7 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   }
 
   // Status of the database initialization.
-  absl::optional<leveldb_proto::Enums::InitStatus> database_status_;
+  std::optional<leveldb_proto::Enums::InitStatus> database_status_;
 
   // The database for storing content storage information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<T>> storage_database_;
@@ -169,7 +175,7 @@ SessionProtoDB<T>::SessionProtoDB(
     leveldb_proto::ProtoDbType proto_db_type,
     scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
     : SessionProtoStorage<T>(),
-      database_status_(absl::nullopt),
+      database_status_(std::nullopt),
       storage_database_(proto_database_provider->GetDB<T>(
           proto_db_type,
           database_dir,
@@ -320,6 +326,27 @@ void SessionProtoDB<T>::DeleteOneEntry(const std::string& key,
   }
 }
 
+template <typename T>
+void SessionProtoDB<T>::UpdateEntries(
+    std::unique_ptr<ContentEntry> entries_to_update,
+    std::unique_ptr<std::vector<std::string>> keys_to_remove,
+    OperationCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(base::BindOnce(
+        &SessionProtoDB::UpdateEntries, weak_ptr_factory_.GetWeakPtr(),
+        std::move(entries_to_update), std::move(keys_to_remove),
+        std::move(callback)));
+  } else if (FailedToInit()) {
+    ui_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+  } else {
+    storage_database_->UpdateEntries(
+        std::move(entries_to_update), std::move(keys_to_remove),
+        base::BindOnce(&SessionProtoDB::OnOperationCommitted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
 // Deletes content in the database, matching all keys which have a prefix
 // that matches the key.
 template <typename T>
@@ -371,7 +398,7 @@ SessionProtoDB<T>::SessionProtoDB(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
     : SessionProtoStorage<T>(),
-      database_status_(absl::nullopt),
+      database_status_(std::nullopt),
       storage_database_(std::move(storage_database)),
       ui_thread_task_runner_(ui_thread_task_runner) {
   static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
@@ -385,7 +412,7 @@ template <typename T>
 void SessionProtoDB<T>::OnDatabaseInitialized(
     leveldb_proto::Enums::InitStatus status) {
   database_status_ =
-      absl::make_optional<leveldb_proto::Enums::InitStatus>(status);
+      std::make_optional<leveldb_proto::Enums::InitStatus>(status);
   for (auto& deferred_operation : deferred_operations_) {
     std::move(deferred_operation).Run();
   }
@@ -451,7 +478,7 @@ void SessionProtoDB<T>::OnOperationCommitted(OperationCallback callback,
 // Returns true if initialization status of database is not yet known.
 template <typename T>
 bool SessionProtoDB<T>::InitStatusUnknown() const {
-  return database_status_ == absl::nullopt;
+  return database_status_ == std::nullopt;
 }
 
 // Returns true if the database failed to initialize.

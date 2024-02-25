@@ -10,51 +10,46 @@ Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIA
 """
 
 from collections import defaultdict
-import io
 import logging
 import re
 import typing
-from typing import NamedTuple, Optional, Set, Tuple
-from urllib.parse import urljoin
+from typing import NamedTuple, Optional
 
 from blinkpy.common import path_finder
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.system.executive import ScriptError
-from blinkpy.w3c import wpt_metadata
+from blinkpy.web_tests.models.testharness_results import (
+    LineType,
+    Status,
+    parse_testharness_baseline,
+)
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
+from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
-
-path_finder.bootstrap_wpt_imports()
-from wptrunner import manifestexpected, metadata
-from wptrunner.wptmanifest.backends import static
+from blinkpy.w3c.wpt_results_processor import TestType
 
 _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-MetadataChange = Tuple[manifestexpected.ExpectedManifest,
-                       manifestexpected.ExpectedManifest]
+USE_BUGANIZER = True
+BUGANIZER_WPT_COMPONENT = '1456176'
 
 
 class ImportNotifier:
-    def __init__(self,
-                 host,
-                 chromium_git,
-                 local_wpt,
-                 configs: Optional[wpt_metadata.TestConfigurations] = None):
+    def __init__(self, host, chromium_git, local_wpt):
         self.host = host
         self.git = chromium_git
         self.local_wpt = local_wpt
-        self._configs = configs or wpt_metadata.TestConfigurations.generate(
-            self.host)
 
         self._monorail_api = MonorailAPI
+        self._buganizer_api = BuganizerClient
         self.default_port = host.port_factory.get()
-        self.default_port.set_option_default(
-            'test_types', typing.get_args(wpt_metadata.TestType))
+        self.default_port.set_option_default('test_types',
+                                             typing.get_args(TestType))
         self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
@@ -67,7 +62,8 @@ class ImportNotifier:
              issue,
              patchset,
              dry_run=True,
-             service_account_key_json=None):
+             service_account_key_json=None,
+             sheriff_email=None):
         """Files bug reports for new failures.
 
         Args:
@@ -90,11 +86,12 @@ class ImportNotifier:
         gerrit_url = SHORT_GERRIT_PREFIX + issue
         gerrit_url_with_ps = gerrit_url + '/' + patchset + '/'
 
+        self.sheriff_email = sheriff_email
+
         changed_test_baselines = self.find_changed_baselines_of_tests(
             rebaselined_tests)
         self.examine_baseline_changes(changed_test_baselines,
                                       gerrit_url_with_ps)
-        self.examine_metadata_changes(gerrit_url_with_ps)
         self.examine_new_test_expectations(test_expectations)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
@@ -145,7 +142,7 @@ class ImportNotifier:
                         TestFailure.from_file(test_name, baseline,
                                               gerrit_url_with_ps))
 
-    def more_failures_in_baseline(self, baseline):
+    def more_failures_in_baseline(self, baseline: str) -> bool:
         """Determines if a testharness.js baseline file has new failures.
 
         The file is assumed to have been modified in the current git checkout,
@@ -156,122 +153,33 @@ class ImportNotifier:
         error in the test. Increasing numbers of either are considered new
         failures - this includes going from FAIL to error or vice-versa.
         """
-
-        diff = self.git.run(['diff', '-U0', 'origin/main', '--', baseline])
-        delta_failures = 0
-        delta_harness_errors = 0
-        for line in diff.splitlines():
-            if line.startswith('+FAIL'):
-                delta_failures += 1
-            if line.startswith('-FAIL'):
-                delta_failures -= 1
-            if line.startswith('+Harness Error.'):
-                delta_harness_errors += 1
-            if line.startswith('-Harness Error.'):
-                delta_harness_errors -= 1
-        return delta_failures > 0 or delta_harness_errors > 0
-
-    def examine_metadata_changes(self, gerrit_url_with_ps: str):
-        manifest = self.default_port.wpt_manifest('external/wpt')
-        for changed_file in self.git.changed_files(diff_filter='AM'):
-            test_path = self._metadata_path_to_test_path(changed_file)
-            if not test_path:
-                continue
-            test_type = manifest.get_test_type(
-                self.finder.strip_wpt_path(test_path))
-            # TODO(crbug.com/1474702): After the switch to wptrunner, change the
-            # condition to just `if not test_type` to check for failures in
-            # metadata for other test types. Then, remove the other `examine_*`
-            # methods.
-            if test_type != 'wdspec':
-                continue
-            failing_tests = set()
-            for config in self._configs:
-                exp_before, exp_after = self._load_metadata_change(
-                    test_path, config)
-                exp_before.set('type', test_type)
-                exp_after.set('type', test_type)
-                failing_tests.update(
-                    self._detect_new_metadata_failures(exp_before, exp_after))
-            for test_name in failing_tests:
-                directory = self.find_directory_for_bug(test_name)
-                if not directory:
-                    continue
-                self.new_failures_by_directory[directory].append(
-                    TestFailure.from_file(test_name, changed_file,
-                                          gerrit_url_with_ps))
-
-    def _load_metadata_change(self, test_path: str,
-                              config: metadata.RunInfo) -> MetadataChange:
         try:
-            rel_test_path = path_finder.RELATIVE_WEB_TESTS + test_path
-            contents_before = self.git.show_blob(
-                rel_test_path + wpt_metadata.METADATA_EXTENSION)
+            old_contents = self.git.show_blob(baseline).decode(
+                errors='replace')
+            old_lines = parse_testharness_baseline(old_contents)
         except ScriptError:
-            contents_before = b''
-        exp_before = static.compile(io.BytesIO(contents_before),
-                                    config.data,
-                                    manifestexpected.data_cls_getter,
-                                    test_path=test_path)
-        metadata_path = self.finder.path_from_web_tests(
-            test_path + wpt_metadata.METADATA_EXTENSION)
-        with self.host.filesystem.open_binary_file_for_reading(
-                metadata_path) as metadata_file:
-            exp_after = static.compile(metadata_file,
-                                       config.data,
-                                       manifestexpected.data_cls_getter,
-                                       test_path=test_path)
-        return exp_before, exp_after
+            old_lines = []
+        try:
+            new_contents = self.host.filesystem.read_text_file(
+                self.finder.path_from_chromium_base(baseline))
+            new_lines = parse_testharness_baseline(new_contents)
+        except FileNotFoundError:
+            new_lines = []
 
-    def _detect_new_metadata_failures(
-            self, exp_before: manifestexpected.ExpectedManifest,
-            exp_after: manifestexpected.ExpectedManifest) -> Set[str]:
-        failing_tests = set()
-        for test_after in exp_after.iterchildren():
-            test_before = exp_before.get_test(test_after.id)
-            if not test_before:
-                test_before = wpt_metadata.make_empty_test(test_after)
-            wpt_metadata.fill_implied_expectations(test_before,
-                                                   set(test_after.subtests))
-            wpt_metadata.fill_implied_expectations(test_after,
-                                                   set(test_before.subtests))
-            assert set(test_before.subtests) == set(test_after.subtests)
-            nodes = [(test_before, test_after)]
-            nodes.extend((
-                test_before.get_subtest(subtest),
-                test_after.get_subtest(subtest),
-            ) for subtest in test_after.subtests)
-            if any(
-                    self._has_new_failure(before, after)
-                    for before, after in nodes):
-                # Replace the test path's basename with the metadata section header.
-                test = urljoin(exp_after.test_path, test_after.id)
-                failing_tests.add(test)
-        return failing_tests
+        failure_statuses = set(Status) - {Status.PASS, Status.NOTRUN}
+        old_failures = [
+            line for line in old_lines if line.statuses & failure_statuses
+        ]
+        new_failures = [
+            line for line in new_lines if line.statuses & failure_statuses
+        ]
 
-    def _has_new_failure(self, test_before: manifestexpected.TestNode,
-                         test_after: manifestexpected.TestNode) -> bool:
-        is_subtest = isinstance(test_before, manifestexpected.SubtestNode)
-        default_statuses = wpt_metadata.default_expected_by_type()
-        default_status = default_statuses[test_after.test_type, is_subtest]
-        statuses_before = {
-            test_before.expected, *test_before.known_intermittent
-        }
-        # Never notify when `statuses_before` has known failures, even if they
-        # may not be the same as those for `test_after`. Doing so could be too
-        # noisy (e.g., a flaky TIMEOUT timing out a random subtest).
-        if statuses_before - {default_status}:
-            return False
-        statuses_after = {test_after.expected, *test_after.known_intermittent}
-        new_statuses = statuses_after - statuses_before
-        return bool(new_statuses - {default_status})
-
-    def _metadata_path_to_test_path(self, path: str) -> Optional[str]:
-        if path.startswith(path_finder.RELATIVE_WEB_TESTS) and path.endswith(
-                wpt_metadata.METADATA_EXTENSION):
-            path = path[len(path_finder.RELATIVE_WEB_TESTS):]
-            return path[:-len(wpt_metadata.METADATA_EXTENSION)]
-        return None
+        is_error = lambda line: line.line_type is LineType.HARNESS_ERROR
+        if sum(map(is_error, new_failures)) > sum(map(is_error, old_failures)):
+            return True
+        is_subtest = lambda line: line.line_type is LineType.SUBTEST
+        return sum(map(is_subtest, new_failures)) > sum(
+            map(is_subtest, old_failures))
 
     def examine_new_test_expectations(self, test_expectations):
         """Examines new test expectations to find new failures.
@@ -329,7 +237,11 @@ class ImportNotifier:
                              'was not added to the CC list.')
 
             # component could be None.
-            components = [metadata.component] if metadata.component else None
+            components = [metadata.monorail_component
+                          ] if metadata.monorail_component else None
+            buganizer_public_components = [
+                metadata.buganizer_public_component
+            ] if metadata.buganizer_public_component else None
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
@@ -369,6 +281,10 @@ class ImportNotifier:
                                                    labels=['Test-WebTest'])
             _log.info(bug)
             _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
+
+            # TODO(crbug.com/1487196): refactor this so we use a common issue which is converted later to
+            # buganizer or monorail specific issue.
+            bug.buganizer_public_components = buganizer_public_components
             bugs.append(bug)
         return bugs
 
@@ -439,10 +355,51 @@ class ImportNotifier:
 
         _log.info('Filing %d bugs in the pending list to Monorail', len(bugs))
         api = self._get_monorail_api(service_account_key_json)
+        buganizer_api = None
+        try:
+            buganizer_api = self._get_buganizer_api()
+        except Exception as e:
+            _log.warning('buganizer instantiation failed')
+            _log.warning(e)
+
         for index, bug in enumerate(bugs, start=1):
-            response = api.insert_issue(bug)
-            _log.info('[%d] Filed bug: %s', index,
-                      MonorailIssue.crbug_link(response['id']))
+            buganizer_component_id = BUGANIZER_WPT_COMPONENT
+            issue_link = None
+            if buganizer_api and USE_BUGANIZER:
+                if 'summary' not in bug.body:
+                    _log.warning('failed to file bug')
+                    _log.warning('summary missing from bug:')
+                    _log.warning(bug)
+                    continue
+                if 'description' not in bug.body:
+                    _log.warning('failed to file bug')
+                    _log.warning('description missing from bug:')
+                    _log.warning(bug)
+                    continue
+                title = bug.body['summary']
+                description = bug.body['description']
+                cc = bug.body.get('cc', []) + [self.sheriff_email]
+                if bug.buganizer_public_components:
+                    buganizer_component_id = bug.buganizer_public_components[0]
+                try:
+                    buganizer_res = buganizer_api.NewIssue(
+                        title=title,
+                        description=description,
+                        cc=cc,
+                        status="New",
+                        componentId=buganizer_component_id)
+                    issue_link = f'b/{buganizer_res["issue_id"]}'
+                except Exception as e:
+                    _log.warning('buganizer api call to new issue failed')
+                    _log.warning(e)
+            else:
+                # using monorail
+                response = api.insert_issue(bug)
+                issue_link = MonorailIssue.crbug_link(response['id'])
+            _log.info('[%d] Filed bug: %s', index, issue_link)
+
+    def _get_buganizer_api(self):
+        return self._buganizer_api()
 
     def _get_monorail_api(self, service_account_key_json):
         if service_account_key_json:

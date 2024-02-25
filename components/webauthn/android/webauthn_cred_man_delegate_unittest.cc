@@ -24,19 +24,21 @@ class WebAuthnCredManDelegateTest : public testing::Test {
   std::unique_ptr<WebAuthnCredManDelegate> delegate_;
 };
 
-TEST_F(WebAuthnCredManDelegateTest, FullRequestNotRunAfterCleanup) {
+TEST_F(WebAuthnCredManDelegateTest, ShowCredManUiCallbackNotRunAfterCleanup) {
   base::MockCallback<base::RepeatingCallback<void(bool)>> closure;
   EXPECT_CALL(closure, Run(testing::_)).Times(0);
   delegate()->OnCredManConditionalRequestPending(true, closure.Get());
 
   EXPECT_CALL(closure, Run(false)).Times(1);
-  delegate()->TriggerFullRequest();
+  delegate()->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(false));
 
   EXPECT_CALL(closure, Run(false)).Times(0);
   delegate()->CleanUpConditionalRequest();
 
   EXPECT_CALL(closure, Run(false)).Times(0);
-  delegate()->TriggerFullRequest();
+  delegate()->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(false));
 }
 
 TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {
@@ -58,13 +60,13 @@ TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {
 }
 
 TEST_F(WebAuthnCredManDelegateTest,
-       TriggerFullRequestCallsRequestCompletionCallbackImmediately) {
-  base::MockCallback<base::RepeatingCallback<void(bool)>>
-      mock_request_completion_callback;
-  delegate()->SetRequestCompletionCallback(
-      mock_request_completion_callback.Get());
-  EXPECT_CALL(mock_request_completion_callback, Run(false)).Times(1);
-  delegate()->TriggerFullRequest();
+       IfNoFillingCallbackDoesNotRequestPasswords) {
+  base::MockCallback<base::RepeatingCallback<void(bool)>> mock_cred_man_request;
+  delegate()->OnCredManConditionalRequestPending(true,
+                                                 mock_cred_man_request.Get());
+
+  EXPECT_CALL(mock_cred_man_request, Run(false)).Times(1);
+  delegate()->TriggerCredManUi(WebAuthnCredManDelegate::RequestPasswords(true));
 }
 
 }  // namespace webauthn

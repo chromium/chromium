@@ -55,7 +55,7 @@ struct _xmlEntity {
 
     struct _xmlEntity     *nexte;	/* unused */
     const xmlChar           *URI;	/* the full URI as computed */
-    int                    owner;	/* does the entity own the childrens */
+    int                    owner;	/* unused */
     int                    flags;       /* various flags */
     unsigned long   expandedSize;       /* expanded size */
 };
@@ -85,6 +85,17 @@ XMLPUBFUN xmlEntityPtr
 						 const xmlChar *ExternalID,
 						 const xmlChar *SystemID,
 						 const xmlChar *content);
+XMLPUBFUN void
+			xmlFreeEntity		(xmlEntityPtr entity);
+XMLPUBFUN int
+			xmlAddEntity		(xmlDocPtr doc,
+						 int extSubset,
+						 const xmlChar *name,
+						 int type,
+						 const xmlChar *ExternalID,
+						 const xmlChar *SystemID,
+						 const xmlChar *content,
+						 xmlEntityPtr *out);
 XMLPUBFUN xmlEntityPtr
 			xmlAddDocEntity		(xmlDocPtr doc,
 						 const xmlChar *name,

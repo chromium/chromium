@@ -7,15 +7,17 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -25,28 +27,18 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 namespace {
 
+using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsTrue;
 using ::testing::Lt;
 using ::testing::Optional;
-
-std::string GetTestIconInString() {
-  SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
-  SkDynamicMemoryWStream stream;
-  EXPECT_THAT(SkPngEncoder::Encode(&stream, icon_bitmap.pixmap(), {}),
-              IsTrue());
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
-  return std::string(static_cast<const char*>(icon_skdata->data()),
-                     icon_skdata->size());
-}
 
 // TODO(cmfcmf): Consider also adding tests for dev mode proxy.
 class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
@@ -56,7 +48,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
   using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                        InstallIsolatedWebAppCommandError>;
   using PrepareAndStoreUpdateResult =
-      base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>;
+      IsolatedWebAppUpdatePrepareAndStoreCommandResult;
 
   using PendingUpdateInfo = WebApp::IsolationData::PendingUpdateInfo;
 
@@ -65,7 +57,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
 
     installed_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("installed-bundle.swbn"));
-    installed_location_ =
+    installed_location_input_ =
         is_dev_mode_ ? IsolatedWebAppLocation(
                            DevModeBundle{.path = installed_bundle_path_})
                      : IsolatedWebAppLocation(
@@ -73,7 +65,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
 
     update_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("update-bundle.swbn"));
-    update_location_ =
+    update_location_input_ =
         is_dev_mode_
             ? IsolatedWebAppLocation(DevModeBundle{.path = update_bundle_path_})
             : IsolatedWebAppLocation(
@@ -94,31 +86,33 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
     ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());
   }
 
-  void Install() {
+  InstallIsolatedWebAppCommandSuccess Install() {
     base::test::TestFuture<InstallResult> future;
     provider()->scheduler().InstallIsolatedWebApp(
-        url_info_, installed_location_,
+        url_info_, installed_location_input_,
         /*expected_version=*/installed_version_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     InstallResult result = future.Take();
-    ASSERT_THAT(result.has_value(), IsTrue());
+    EXPECT_THAT(result.has_value(), IsTrue());
 
     const WebApp* web_app =
         provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-    ASSERT_THAT(web_app,
+    EXPECT_THAT(web_app,
                 test::IwaIs(Eq("installed app"),
                             test::IsolationDataIs(
-                                Eq(installed_location_), Eq(installed_version_),
+                                Eq(result->location), Eq(installed_version_),
                                 /*controlled_frame_partitions=*/_,
-                                /*pending_update_info=*/Eq(absl::nullopt))));
+                                /*pending_update_info=*/Eq(std::nullopt))));
+    return result.value();
   }
 
   PrepareAndStoreUpdateResult PrepareAndStoreUpdateInfo(
-      const PendingUpdateInfo& pending_update_info) {
+      const IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo&
+          update_info) {
     base::test::TestFuture<PrepareAndStoreUpdateResult> future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
-        pending_update_info, url_info_,
+        update_info, url_info_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
@@ -140,11 +134,11 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
           *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId));
 
   base::FilePath installed_bundle_path_;
-  IsolatedWebAppLocation installed_location_;
+  IsolatedWebAppLocation installed_location_input_;
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;
-  IsolatedWebAppLocation update_location_;
+  IsolatedWebAppLocation update_location_input_;
   base::Version update_version_ = base::Version("2.0.0");
 };
 
@@ -155,21 +149,28 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       CreateBundle(update_version_, "updated app", update_bundle_path_));
 
-  ASSERT_NO_FATAL_FAILURE(Install());
+  IsolatedWebAppLocation final_install_location = Install().location;
 
   PrepareAndStoreUpdateResult result = PrepareAndStoreUpdateInfo(
-      PendingUpdateInfo(update_location_, update_version_));
-  EXPECT_THAT(result.has_value(), IsTrue()) << result.error();
+      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
+          update_location_input_, update_version_));
+  EXPECT_THAT(
+      result,
+      ValueIs(Field(
+          "update_version",
+          &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
+          Eq(update_version_))));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app,
-              test::IwaIs(Eq("installed app"),
-                          test::IsolationDataIs(
-                              Eq(installed_location_), Eq(installed_version_),
-                              /*controlled_frame_partitions=*/_,
-                              test::PendingUpdateInfoIs(update_location_,
-                                                        update_version_))));
+  EXPECT_THAT(
+      web_app,
+      test::IwaIs(
+          Eq("installed app"),
+          test::IsolationDataIs(
+              Eq(final_install_location), Eq(installed_version_),
+              /*controlled_frame_partitions=*/_,
+              test::PendingUpdateInfoIs(result->location, update_version_))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

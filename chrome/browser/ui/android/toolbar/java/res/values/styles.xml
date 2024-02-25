@@ -22,10 +22,13 @@ found in the LICENSE file.
         <item name="android:background">@drawable/single_tab_card_ripple</item>
     </style>
     <style name="ToolbarButton">
-        <item name="android:background">@drawable/toolbar_button_ripple</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:layout_width">@dimen/toolbar_button_width</item>
         <item name="android:layout_height">56dp</item>
         <item name="android:scaleType">center</item>
+    </style>
+    <style name="ToolbarHoverableButton" parent="ToolbarButton">
+        <item name="android:background">@drawable/toolbar_button_ripple</item>
     </style>
     <style name="ToolbarMenuButton" parent="ToolbarButton">
         <item name="android:layout_gravity">top</item>

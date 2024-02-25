@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/values.h"
@@ -24,7 +25,8 @@ struct InstallWarning;
 class Manifest final {
  public:
   // Do not change the order of entries or remove entries in this list as this
-  // is used in ExtensionType enum in tools/metrics/histograms/enums.xml.
+  // is used in ExtensionType enum in
+  // tools/metrics/histograms/metadata/extensions/enums.xml.
   enum Type {
     TYPE_UNKNOWN = 0,
     TYPE_EXTENSION = 1,
@@ -131,11 +133,9 @@ class Manifest final {
 
   mojom::ManifestLocation location() const { return location_; }
 
-  // Returns false and |error| will be non-empty if the manifest is malformed.
-  // |warnings| will be populated if there are keys in the manifest that cannot
-  // be specified by the extension type.
-  bool ValidateManifest(std::string* error,
-                        std::vector<InstallWarning>* warnings) const;
+  // Populates |warnings| if manifest contains keys not permitted for the
+  // chosen extension type.
+  void ValidateManifest(std::vector<InstallWarning>* warnings) const;
 
   // The version of this extension's manifest. We increase the manifest
   // version when making breaking changes to the extension system. If the
@@ -166,13 +166,13 @@ class Manifest final {
 
   // These access the wrapped manifest value, returning nullptr/nullopt when the
   // property does not exist or if the manifest type can't access it.
-  const base::Value* FindKey(base::StringPiece path) const;
-  const base::Value* FindPath(base::StringPiece path) const;
-  absl::optional<bool> FindBoolPath(base::StringPiece path) const;
-  absl::optional<int> FindIntPath(base::StringPiece path) const;
-  const std::string* FindStringPath(base::StringPiece path) const;
+  const base::Value* FindKey(std::string_view path) const;
+  const base::Value* FindPath(std::string_view path) const;
+  std::optional<bool> FindBoolPath(std::string_view path) const;
+  std::optional<int> FindIntPath(std::string_view path) const;
+  const std::string* FindStringPath(std::string_view path) const;
 
-  const base::Value::Dict* FindDictPath(base::StringPiece path) const;
+  const base::Value::Dict* FindDictPath(std::string_view path) const;
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;

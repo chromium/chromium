@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -31,8 +31,10 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
@@ -43,17 +45,16 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "net/base/url_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -84,7 +85,7 @@ struct PlayStoreIntent {
 // Find the first Chrome OS app in related_applications of |manifest| and return
 // the details necessary to redirect the user to the app's listing in the Play
 // Store.
-absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
+std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
     const blink::mojom::Manifest& manifest) {
   for (const auto& app : manifest.related_applications) {
     std::string id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
@@ -109,7 +110,7 @@ absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
     std::string intent = kPlayIntentPrefix + id + referrer;
     return PlayStoreIntent{id, intent};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -117,8 +118,6 @@ absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 bool ShouldInteractWithArc() {
   auto* lacros_service = chromeos::LacrosService::Get();
   return lacros_service &&
-         // Check if the feature is enabled.
-         chromeos::BrowserParamsProxy::Get()->WebAppsEnabled() &&
          // Only use ARC installation flow if we know that remote ash-chrome is
          // capable of installing from Play Store in lacros-chrome, to avoid
          // redirecting users to the Play Store if they cannot install
@@ -143,37 +142,51 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
+    base::WeakPtr<WebAppUiManager> ui_manager,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : WebAppCommandTemplate<NoopLock>("FetchManifestAndInstallCommand"),
-      noop_lock_description_(std::make_unique<NoopLockDescription>()),
+    : WebAppCommand<NoopLock,
+                    const webapps::AppId&,
+                    webapps::InstallResultCode>(
+          "FetchManifestAndInstallCommand",
+          NoopLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(webapps::AppId(),
+                          webapps::InstallResultCode::
+                              kCancelledOnWebAppProviderShuttingDown)),
       install_surface_(install_surface),
       web_contents_(contents),
-      bypass_service_worker_check_(bypass_service_worker_check),
       dialog_callback_(std::move(dialog_callback)),
-      install_callback_(std::move(callback)),
       use_fallback_(use_fallback),
+      ui_manager_(ui_manager),
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
                                install_surface_) {
-  debug_log_.Set("visible_url", web_contents_->GetVisibleURL().spec());
-  debug_log_.Set("last_committed_url",
-                 web_contents_->GetLastCommittedURL().spec());
+  Observe(web_contents_.get());
+  GetMutableDebugValue().Set("visible_url",
+                             web_contents_->GetVisibleURL().spec());
+  GetMutableDebugValue().Set("last_committed_url",
+                             web_contents_->GetLastCommittedURL().spec());
+  GetMutableDebugValue().Set("initial_visibility",
+                             static_cast<int>(web_contents()->GetVisibility()));
+  GetMutableDebugValue().Set("install_surface",
+                             static_cast<int>(install_surface_));
+  GetMutableDebugValue().Set("use_fallback", use_fallback_);
 }
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 
-const LockDescription& FetchManifestAndInstallCommand::lock_description()
-    const {
-  DCHECK(noop_lock_description_ || app_lock_description_);
+void FetchManifestAndInstallCommand::OnShutdown(
+    base::PassKey<WebAppCommandManager>) const {
+  webapps::InstallableMetrics::TrackInstallResult(false);
+}
 
-  if (app_lock_description_)
-    return *app_lock_description_;
-
-  return *noop_lock_description_;
+content::WebContents* FetchManifestAndInstallCommand::GetInstallingWebContents(
+    base::PassKey<WebAppCommandManager>) {
+  return web_contents_.get();
 }
 
 void FetchManifestAndInstallCommand::StartWithLock(
@@ -184,7 +197,15 @@ void FetchManifestAndInstallCommand::StartWithLock(
     return;
   }
 
-  Observe(web_contents_.get());
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+    return;
+  }
+
+  if (did_navigation_occur_before_start_) {
+    Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+    return;
+  }
 
   // This metric is recorded regardless of the installation result.
   if (webapps::InstallableMetrics::IsReportableInstallSource(
@@ -205,23 +226,6 @@ void FetchManifestAndInstallCommand::StartWithLock(
   }
 }
 
-void FetchManifestAndInstallCommand::OnShutdown() {
-  Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-}
-
-content::WebContents*
-FetchManifestAndInstallCommand::GetInstallingWebContents() {
-  return web_contents_.get();
-}
-
-base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
-  auto debug_value = debug_log_.Clone();
-  debug_value.Set("app_id", app_id_);
-  debug_value.Set("install_surface", static_cast<int>(install_surface_));
-  debug_value.Set("used_fallback", use_fallback_);
-  return base::Value(std::move(debug_value));
-}
-
 void FetchManifestAndInstallCommand::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -235,18 +239,48 @@ void FetchManifestAndInstallCommand::DidFinishNavigation(
     return;
   }
 
+  if (!IsStarted()) {
+    did_navigation_occur_before_start_ = true;
+    return;
+  }
+
   Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
 }
 
-void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
-  if (!install_callback_)
+void FetchManifestAndInstallCommand::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
     return;
-  debug_log_.Set("result_code", base::ToString(code));
+  }
+
+  if (!IsStarted()) {
+    did_navigation_occur_before_start_ = true;
+    return;
+  }
+
+  // This prevents us from closing the dialog if the visibility of the window
+  // itself changes but the tab doesn't. A more thorough fix here is to listen
+  // to the tab strip changing (AKA a different tab being opened / changed to),
+  // but due to needing to use code in `ui`, this is a bit hard to do.
+  if (ui_manager_->IsWebContentsActiveTabInBrowser(web_contents())) {
+    return;
+  }
+
+  Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+}
+
+void FetchManifestAndInstallCommand::WebContentsDestroyed() {
+  Observe(nullptr);
+  // No need to abort - web content destruction is handled in the beginning of
+  // each method. However, this needs to be here in case the web contents is
+  // destroyed before the command is started.
+}
+
+void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
+  GetMutableDebugValue().Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   Observe(nullptr);
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), AppId(), code));
+  CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code);
 }
 
 bool FetchManifestAndInstallCommand::IsWebContentsDestroyed() {
@@ -279,7 +313,7 @@ void FetchManifestAndInstallCommand::FetchManifest() {
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), bypass_service_worker_check_,
+      web_contents_.get(),
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnDidPerformInstallableCheck,
           weak_ptr_factory_.GetWeakPtr()));
@@ -311,8 +345,12 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   }
 
   if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
-      base::FeatureList::IsEnabled(
-          webapps::features::kCreateShortcutIgnoresManifest)) {
+      (base::FeatureList::IsEnabled(
+           webapps::features::kCreateShortcutIgnoresManifest)
+#if BUILDFLAG(IS_CHROMEOS)
+       || chromeos::features::IsCrosShortstandEnabled()
+#endif
+           )) {
     // When creating a shortcut, the |manifest_id| is not part of the App's
     // primary key. The only thing that identifies a shortcut is the start URL,
     // which is always set to the current page.
@@ -321,7 +359,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
         *web_app_info_);
   }
 
-  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
 
   opt_manifest_ = std::move(opt_manifest);
 
@@ -330,18 +368,16 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
       opt_manifest_ && !opt_manifest_->icons.empty();
 
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
-
-  app_lock_description_ =
-      command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(noop_lock_), {app_id_},
-          base::BindOnce(&FetchManifestAndInstallCommand::
-                             CheckForPlayStoreIntentOrGetIcons,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
-                         skip_page_favicons));
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(noop_lock_), {app_id_},
+      base::BindOnce(
+          &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
+          weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
+          skip_page_favicons));
 }
 
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
@@ -354,7 +390,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 
   if (!skip_store) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    absl::optional<PlayStoreIntent> intent =
+    std::optional<PlayStoreIntent> intent =
         GetPlayStoreIntentFromManifest(*opt_manifest_);
     if (intent) {
       auto* arc_service_manager = arc::ArcServiceManager::Get();
@@ -377,7 +413,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (ShouldInteractWithArc()) {
-      absl::optional<PlayStoreIntent> intent =
+      std::optional<PlayStoreIntent> intent =
           GetPlayStoreIntentFromManifest(*opt_manifest_);
       mojo::Remote<crosapi::mojom::Arc>* opt_arc = GetArcRemoteWithMinVersion(
           crosapi::mojom::Arc::MethodMinVersions::kIsInstallableMinVersion);
@@ -400,7 +436,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 }
 
 void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     const std::string& intent,
     bool should_intent_to_store) {
@@ -447,7 +483,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStoreLacros(
-    base::flat_set<GURL> icon_urls,
+    IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
     const std::string& intent,
     crosapi::mojom::IsInstallableResult result) {
@@ -508,29 +544,16 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
   finalize_options.add_to_desktop = true;
   finalize_options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ResolveExperimentalWebAppIsolationFeature() ==
-      ExperimentalWebAppIsolationMode::kProfile) {
-    app_profile_path_ = absl::make_optional(GenerateWebAppProfilePath(app_id_));
-    finalize_options.chromeos_data.emplace();
-    finalize_options.chromeos_data->app_profile_path = app_profile_path_;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   DCHECK(app_lock_);
   app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab,
           weak_ptr_factory_.GetWeakPtr()));
-
-  // Check that the finalizer hasn't called OnInstallFinalizedMaybeReparentTab
-  // synchronously:
-  DCHECK(install_callback_);
 }
 
 void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   if (IsWebContentsDestroyed()) {
@@ -543,6 +566,9 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
     return;
   }
 
+  // Stop observing the web contents to prevent cancellation when reparenting.
+  Observe(nullptr);
+
   RecordWebAppInstallationTimestamp(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
@@ -553,7 +579,17 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   const bool can_reparent_tab =
       app_lock_->install_finalizer().CanReparentTab(app_id, !error);
 
-  if (can_reparent_tab &&
+  bool should_reparent_tab = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // All calls to this command in ash (and lacros soon) come from the ChromeOS
+  // install dialog, which should never reparent the tab.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrosOmniboxInstallDialog)) {
+    should_reparent_tab = false;
+  }
+#endif
+
+  if (should_reparent_tab && can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
     app_lock_->install_finalizer().ReparentTab(app_id, !error,
                                                web_contents_.get());
@@ -563,7 +599,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 }
 
 void FetchManifestAndInstallCommand::OnInstallCompleted(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     if (install_error_log_entry_.HasErrorDict()) {
@@ -571,44 +607,17 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
           install_error_log_entry_.TakeErrorDict());
     }
   }
-  debug_log_.Set("result_code", base::ToString(code));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // `web_app_info_` might be moved after this point. This is ok since we don't
-  // need it here any more.
-  if (app_profile_path_) {
-    CHECK(ResolveExperimentalWebAppIsolationFeature() ==
-          ExperimentalWebAppIsolationMode::kProfile);
-    // Create the app profile and install the same app inside it too.
-    g_browser_process->profile_manager()->CreateProfileAsync(
-        app_profile_path_.value(),
-        /*initialized_callback=*/
-        base::BindOnce(
-            [](std::unique_ptr<WebAppInstallInfo> web_app_info,
-               webapps::WebappInstallSource install_surface,
-               Profile* app_profile) {
-              CHECK(app_profile) << "failed to create app profile";
-              auto* provider = WebAppProvider::GetForWebApps(app_profile);
-              provider->scheduler().InstallFromInfo(
-                  std::move(web_app_info),
-                  /*overwrite_existing_manifest_fields=*/true, install_surface,
-                  base::DoNothing());
-            },
-            std::move(web_app_info_), install_surface_),
-        /*created_callback=*/base::DoNothing());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  GetMutableDebugValue().Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
-  SignalCompletionAndSelfDestruct(
-      webapps::IsSuccess(code) ? CommandResult::kSuccess
-                               : CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), app_id, code));
+  CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
+                                                   : CommandResult::kFailure,
+                          app_id, code);
 }
 
 void FetchManifestAndInstallCommand::LogInstallInfo() {
-  debug_log_.Set("manifest_id", web_app_info_->manifest_id.spec());
-  debug_log_.Set("start_url", web_app_info_->start_url.spec());
-  debug_log_.Set("name", web_app_info_->title);
+  GetMutableDebugValue().Set("manifest_id", web_app_info_->manifest_id.spec());
+  GetMutableDebugValue().Set("start_url", web_app_info_->start_url.spec());
+  GetMutableDebugValue().Set("name", web_app_info_->title);
 }
 }  // namespace web_app

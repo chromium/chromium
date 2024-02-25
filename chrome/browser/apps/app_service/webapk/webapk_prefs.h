@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_PREFS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_PREFS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -27,8 +27,8 @@ void AddWebApk(Profile* profile,
                const std::string& app_id,
                const std::string& package_name);
 
-absl::optional<std::string> GetWebApkPackageName(Profile* profile,
-                                                 const std::string& app_id);
+std::optional<std::string> GetWebApkPackageName(Profile* profile,
+                                                const std::string& app_id);
 
 // Returns the package names of all WebAPKs installed in the profile.
 base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile);
@@ -37,9 +37,9 @@ base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile);
 base::flat_set<std::string> GetWebApkAppIds(Profile* profile);
 
 // Removes the entry for the WebAPK with the given |package_name|, and returns
-// the App Id for the uninstalled package. Returns absl::nullopt if no WebAPK
+// the App Id for the uninstalled package. Returns std::nullopt if no WebAPK
 // was installed with the |package_name|.
-absl::optional<std::string> RemoveWebApkByPackageName(
+std::optional<std::string> RemoveWebApkByPackageName(
     Profile* profile,
     const std::string& package_name);
 

@@ -5,6 +5,7 @@
 #include "components/metrics/structured/mojom/event_mojom_traits.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
@@ -12,7 +13,6 @@
 #include "base/values.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/mojom/event.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -80,13 +80,13 @@ bool UnionTraits<metrics::structured::mojom::MetricValueDataView,
 }
 
 // static
-absl::optional<base::TimeDelta> StructTraits<
+std::optional<base::TimeDelta> StructTraits<
     metrics::structured::mojom::EventDataView,
     metrics::structured::Event>::system_uptime(const metrics::structured::Event&
                                                    event) {
   if (event.IsEventSequenceType())
     return event.recorded_time_since_boot();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -96,7 +96,7 @@ bool StructTraits<metrics::structured::mojom::EventDataView,
          metrics::structured::Event* out) {
   std::string project_name, event_name;
   std::map<std::string, metrics::structured::Event::MetricValue> metrics;
-  absl::optional<base::TimeDelta> system_uptime;
+  std::optional<base::TimeDelta> system_uptime;
   bool is_event_sequence = event.is_event_sequence();
 
   if (!event.ReadProjectName(&project_name) ||

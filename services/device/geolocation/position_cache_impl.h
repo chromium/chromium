@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_POSITION_CACHE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -93,8 +93,8 @@ class PositionCacheImpl
   raw_ptr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
   mojom::GeopositionResultPtr last_used_result_;
-  absl::optional<base::Time> last_hit_;
-  absl::optional<base::Time> last_miss_;
+  std::optional<base::Time> last_hit_;
+  std::optional<base::Time> last_miss_;
   int hit_count_ = 0;
   int miss_count_ = 0;
 };

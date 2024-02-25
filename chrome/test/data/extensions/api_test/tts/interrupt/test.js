@@ -30,6 +30,8 @@ chrome.test.runTests([
            callbacks++;
            if (callbacks == 4) {
              chrome.test.succeed();
+           } else {
+             chrome.test.fail();
            }
          }
         },

@@ -30,14 +30,6 @@
     max-width: 450px;
     overflow-wrap: break-word;
   }
-
-  #stickyKeysDisabledTooltip,
-  #focusHighlightDisabledTooltip {
-    --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-border-radius: 4px;
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
-    --paper-tooltip-padding: 8px;
-  }
 </style>
 
 <settings-toggle-button
@@ -80,28 +72,26 @@
     </template>
   </div>
 </template>
-<template is="dom-if" if="[[!isKioskModeActive_]]">
-  <settings-toggle-button
-      id="enableSwitchAccess"
-      class="hr"
-      icon="os-settings:switch-access"
-      pref="{{prefs.settings.a11y.switch_access.enabled}}"
-      label="$i18n{switchAccessLabel}"
-      sub-label="$i18n{switchAccessLabelSubtext}"
-      deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
-  </settings-toggle-button>
-  <iron-collapse
-      opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
-    <div class="sub-item">
-      <cr-link-row id="switchAccessSubpageButton"
-          class="settings-box"
-          label="$i18n{switchAccessOptionsLabel}"
-          on-click="onSwitchAccessSettingsClick_"
-          role-description="$i18n{subpageArrowRoleDescription}" embedded>
-      </cr-link-row>
-    </div>
-  </iron-collapse>
-</template>
+<settings-toggle-button
+    id="enableSwitchAccess"
+    class="hr"
+    icon="os-settings:switch-access"
+    pref="{{prefs.settings.a11y.switch_access.enabled}}"
+    label="$i18n{switchAccessLabel}"
+    sub-label="$i18n{switchAccessLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
+</settings-toggle-button>
+<iron-collapse
+    opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
+  <div class="sub-item">
+    <cr-link-row id="switchAccessSubpageButton"
+        class="settings-box"
+        label="$i18n{switchAccessOptionsLabel}"
+        on-click="onSwitchAccessSettingsClick_"
+        role-description="$i18n{subpageArrowRoleDescription}" embedded>
+    </cr-link-row>
+  </div>
+</iron-collapse>
 <settings-toggle-button
     id="stickyKeysToggle"
     class="hr"

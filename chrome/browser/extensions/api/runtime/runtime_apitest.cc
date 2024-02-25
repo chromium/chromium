@@ -38,6 +38,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -83,15 +84,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-// TODO(crbug.com/1446968): The service worker version is flaky.
-using RuntimeApiBackgroundPageTest = RuntimeApiTest;
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         RuntimeApiBackgroundPageTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-IN_PROC_BROWSER_TEST_P(RuntimeApiBackgroundPageTest,
-                       ChromeRuntimeUninstallURL) {
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
@@ -152,7 +145,7 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
     }
   }
 
-  bool CrashEnabledExtension(const std::string& extension_id) {
+  bool CrashEnabledExtension(const ExtensionId& extension_id) {
     ExtensionHost* background_host =
         ProcessManager::Get(browser()->profile())
             ->GetBackgroundHostForExtension(extension_id);
@@ -194,10 +187,23 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
       << message_;
 }
 
-// Tests chrome.runtime.getPackageDirectory with an extension.
+// Tests chrome.runtime.getPackageDirectory with an MV2 extension.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       ChromeRuntimeGetPackageDirectoryEntryExtension) {
-  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension"))
+                       ChromeRuntimeGetPackageDirectoryEntryMV2Extension) {
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"}))
+      << message_;
+}
+
+// Tests chrome.runtime.getPackageDirectory with an MV3 extension. Note: we use
+// an html page in this test as getPackageDirectory isn't exposed on service
+// workers.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
+                       ChromeRuntimeGetPackageDirectoryEntryMV3Extension) {
+  SetCustomArg("run_promise_test");
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"},
+                               {.load_as_manifest_version_3 = true}))
       << message_;
 }
 
@@ -225,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
   // time, to avoid interfering with the developer work flow.
   const Extension* extension = LoadExtension(dir.Pack());
   ASSERT_TRUE(extension);
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // The current limit for fast reload is 5, so the loop limit of 10
   // be enough to trigger termination. If the extension manages to
@@ -239,15 +245,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
     unload_observer.WaitForExtensionUnloaded();
     base::RunLoop().RunUntilIdle();
 
-    if (registry->GetExtensionById(extension_id,
-                                   ExtensionRegistry::TERMINATED)) {
+    if (registry->terminated_extensions().GetByID(extension_id)) {
       break;
     } else {
       EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
     }
   }
-  ASSERT_TRUE(
-      registry->GetExtensionById(extension_id, ExtensionRegistry::TERMINATED));
+  ASSERT_TRUE(registry->terminated_extensions().GetByID(extension_id));
 }
 
 // Tests chrome.runtime.reload
@@ -282,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
                                                      ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
   EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
 
   // This listener will respond to the ready message from the
@@ -500,8 +504,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 
 // Tests that when a blocklisted extension with a set uninstall url is
 // uninstalled, its uninstall url does not open.
-// TODO(crbug.com/1446468): Flaky on multiple builds.
-IN_PROC_BROWSER_TEST_P(RuntimeApiBackgroundPageTest,
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                        DoNotOpenUninstallUrlForBlocklistedExtensions) {
   ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
@@ -612,7 +615,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
     ASSERT_EQ("1", json);
 
     ASSERT_TRUE(message_queue.WaitForMessage(&json));
-    absl::optional<base::Value> url =
+    std::optional<base::Value> url =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     ASSERT_TRUE(url->is_string());
     ASSERT_EQ(new_tab_url.spec(), url->GetString());

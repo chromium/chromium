@@ -100,7 +100,8 @@ void TriggerManager::set_trigger_throttler(TriggerThrottler* throttler) {
 SBErrorOptions TriggerManager::GetSBErrorDisplayOptions(
     const PrefService& pref_service,
     content::WebContents* web_contents) {
-  return SBErrorOptions(/*is_main_frame_load_blocked=*/false,
+  return SBErrorOptions(/*is_main_frame_load_pending=*/false,
+                        /*is_subresource=*/true,
                         IsExtendedReportingOptInAllowed(pref_service),
                         web_contents->GetBrowserContext()->IsOffTheRecord(),
                         IsExtendedReportingEnabled(pref_service),
@@ -221,6 +222,7 @@ TriggerManager::FinishCollectingThreatDetails(
     bool did_proceed,
     int num_visits,
     const SBErrorOptions& error_display_options,
+    std::optional<int64_t> warning_shown_ts,
     bool is_hats_candidate) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Determine whether a report should be sent.
@@ -273,7 +275,8 @@ TriggerManager::FinishCollectingThreatDetails(
         FROM_HERE,
         base::BindOnce(&ThreatDetails::FinishCollection,
                        collectors->threat_details->GetWeakPtr(), did_proceed,
-                       num_visits, std::move(interstitial_interactions_)),
+                       num_visits, std::move(interstitial_interactions_),
+                       warning_shown_ts),
         delay);
 
     // Record that this trigger fired and collected data.

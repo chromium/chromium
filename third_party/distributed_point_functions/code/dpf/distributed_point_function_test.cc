@@ -14,12 +14,28 @@
 
 #include "dpf/distributed_point_function.h"
 
+#include <memory>
+#include <ostream>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
+#include "absl/algorithm/container.h"
+#include "absl/base/config.h"
 #include "absl/numeric/int128.h"
 #include "absl/random/random.h"
+#include "absl/random/uniform_int_distribution.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
+#include "absl/types/span.h"
 #include "absl/utility/utility.h"
 #include "dpf/distributed_point_function.pb.h"
+#include "dpf/internal/proto_validator.h"
 #include "dpf/internal/status_matchers.h"
+#include "dpf/xor_wrapper.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -29,6 +45,7 @@ namespace {
 using dpf_internal::IsOk;
 using dpf_internal::IsOkAndHolds;
 using dpf_internal::StatusIs;
+using ::testing::HasSubstr;
 using ::testing::Ne;
 using ::testing::StartsWith;
 
@@ -94,7 +111,7 @@ TEST(DistributedPointFunction, CreateFailsForInvalidValueType) {
                        StartsWith("ValidateValueType: Unsupported ValueType")));
 }
 
-TEST(DistributedPointFunction, TestGenerateKeysIncrementalTemplate) {
+TEST(DistributedPointFunction, TestGenerateKeysIncrementalVariadicTemplate) {
   std::vector<DpfParameters> parameters(2);
 
   parameters[0].set_log_domain_size(10);
@@ -108,6 +125,23 @@ TEST(DistributedPointFunction, TestGenerateKeysIncrementalTemplate) {
 
   absl::StatusOr<std::pair<DpfKey, DpfKey>> keys = dpf->GenerateKeysIncremental(
       23, uint16_t{42}, Tuple<uint32_t, uint64_t>{123, 456});
+  EXPECT_THAT(keys, IsOk());
+}
+
+TEST(DistributedPointFunction, TestGenerateKeysIncrementalTemplate) {
+  std::vector<DpfParameters> parameters(2);
+  using T = XorWrapper<absl::uint128>;
+
+  parameters[0].set_log_domain_size(10);
+  parameters[1].set_log_domain_size(20);
+  *(parameters[0].mutable_value_type()) = ToValueType<T>();
+  *(parameters[1].mutable_value_type()) = ToValueType<T>();
+  DPF_ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<DistributedPointFunction> dpf,
+      DistributedPointFunction::CreateIncremental(parameters));
+
+  absl::StatusOr<std::pair<DpfKey, DpfKey>> keys =
+      dpf->GenerateKeysIncremental(23, T{42}, T{123});
   EXPECT_THAT(keys, IsOk());
 }
 
@@ -132,7 +166,7 @@ TEST(DistributedPointFunction, KeyGenerationFailsIfValueTypeNotRegistered) {
                        StartsWith("No value correction function known")));
 }
 
-TEST(DistributedPointFunction, EvaluationFailsIfOutputSizeTooLarge) {
+TEST(DistributedPointFunction, EvaluationFailsIfDomainSizeGapTooLarge) {
   std::vector<DpfParameters> parameters(2);
   parameters[0].mutable_value_type()->mutable_integer()->set_bitsize(128);
   parameters[1].mutable_value_type()->mutable_integer()->set_bitsize(128);
@@ -147,10 +181,33 @@ TEST(DistributedPointFunction, EvaluationFailsIfOutputSizeTooLarge) {
   DPF_ASSERT_OK_AND_ASSIGN(EvaluationContext ctx,
                            dpf->CreateEvaluationContext(keys.first));
 
-  EXPECT_THAT(dpf->EvaluateUntil<absl::uint128>(1, {}, ctx),
-              StatusIs(absl::StatusCode::kInvalidArgument,
-                       "Output size would be larger than 2**62. Please "
-                       "evaluate fewer hierarchy levels at once."));
+  EXPECT_THAT(
+      dpf->EvaluateUntil<absl::uint128>(1, {}, ctx),
+      StatusIs(absl::StatusCode::kInvalidArgument, StartsWith("Domain size")));
+}
+
+TEST(DistributedPointFunction, EvaluationFailsIfOutputSizeTooLarge) {
+  std::vector<DpfParameters> parameters(2);
+  parameters[0].mutable_value_type()->mutable_integer()->set_bitsize(128);
+  parameters[1].mutable_value_type()->mutable_integer()->set_bitsize(128);
+  parameters[0].set_log_domain_size(10);
+  parameters[1].set_log_domain_size(72);
+  DPF_ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<DistributedPointFunction> dpf,
+      DistributedPointFunction::CreateIncremental(parameters));
+
+  std::pair<DpfKey, DpfKey> keys;
+  DPF_ASSERT_OK_AND_ASSIGN(keys, dpf->GenerateKeysIncremental(123, 456u, 789u));
+  DPF_ASSERT_OK_AND_ASSIGN(EvaluationContext ctx,
+                           dpf->CreateEvaluationContext(keys.first));
+
+  // Evaluate on 2**2 prefixes, bringing the output size to 2**(72-10+2) =
+  // 2**64, which overflows an int64_t. Assumes a size_t is at most 64 bits.
+  std::vector<absl::uint128> prefixes = {123, 456, 789, 1011};
+  DPF_ASSERT_OK(dpf->EvaluateUntil<absl::uint128>(0, {}, ctx));
+  EXPECT_THAT(
+      dpf->EvaluateUntil<absl::uint128>(1, prefixes, ctx),
+      StatusIs(absl::StatusCode::kInvalidArgument, StartsWith("Output size")));
 }
 
 TEST(DistributedPointFunction, TestSinglePointPartialEvaluation) {
@@ -900,17 +957,28 @@ class DpfEvaluationTest : public ::testing::Test {
  protected:
   void SetUp() { SetUp(10, 23); }
   void SetUp(int log_domain_size, absl::uint128 alpha) {
-    log_domain_size_ = log_domain_size;
+    return SetUp(absl::MakeConstSpan(&log_domain_size, 1), alpha);
+  }
+  void SetUp(absl::Span<const int> log_domain_size, absl::uint128 alpha) {
+    log_domain_size_.resize(log_domain_size.size());
+    absl::c_copy(log_domain_size, log_domain_size_.begin());
     alpha_ = alpha;
-    SetTo42(beta_);
-    parameters_.set_log_domain_size(log_domain_size_);
-    parameters_.set_security_parameter(48);
-    *(parameters_.mutable_value_type()) = ToValueType<T>();
-    DPF_ASSERT_OK_AND_ASSIGN(dpf_,
-                             DistributedPointFunction::Create(parameters_));
+    beta_.resize(log_domain_size.size());
+    for (T& beta : beta_) {
+      SetTo42(beta);
+    }
+    parameters_.resize(log_domain_size.size());
+    for (int i = 0; i < parameters_.size(); ++i) {
+      parameters_[i].set_log_domain_size(log_domain_size_[i]);
+      parameters_[i].set_security_parameter(48);
+      *(parameters_[i].mutable_value_type()) = ToValueType<T>();
+    }
+    DPF_ASSERT_OK_AND_ASSIGN(
+        dpf_, DistributedPointFunction::CreateIncremental(parameters_));
     DPF_ASSERT_OK(this->dpf_->template RegisterValueType<T>());
     DPF_ASSERT_OK_AND_ASSIGN(
-        keys_, this->dpf_->GenerateKeys(this->alpha_, this->beta_));
+        keys_, this->dpf_->GenerateKeysIncremental(
+                   this->alpha_, absl::MakeConstSpan(this->beta_)));
   }
 
   // Helper function that recursively sets all elements of a tuple to 42.
@@ -928,10 +996,10 @@ class DpfEvaluationTest : public ::testing::Test {
     absl::apply([](auto&... in) { SetTo42(in...); }, x.value());
   }
 
-  int log_domain_size_;
+  std::vector<int> log_domain_size_;
   absl::uint128 alpha_;
-  T beta_;
-  DpfParameters parameters_;
+  std::vector<T> beta_;
+  std::vector<DpfParameters> parameters_;
   std::unique_ptr<DistributedPointFunction> dpf_;
   std::pair<DpfKey, DpfKey> keys_;
 };
@@ -944,6 +1012,8 @@ using MyIntModN128 =
                                65535u, 18446744073709551551ull))>;  // 2**80-65
 #endif
 using DpfEvaluationTypes = ::testing::Types<
+    // Integers
+    uint8_t, uint32_t, uint64_t, absl::uint128,
     // Tuple
     Tuple<uint8_t>, Tuple<uint32_t>, Tuple<absl::uint128>,
     Tuple<uint32_t, uint32_t>, Tuple<uint32_t, uint64_t>,
@@ -966,6 +1036,9 @@ using DpfEvaluationTypes = ::testing::Types<
 TYPED_TEST_SUITE(DpfEvaluationTest, DpfEvaluationTypes);
 
 TYPED_TEST(DpfEvaluationTest, TestRegularDpf) {
+  int log_domain_size = 10;
+  absl::uint128 alpha = 23;
+  this->SetUp(log_domain_size, alpha);
   DPF_ASSERT_OK_AND_ASSIGN(
       EvaluationContext ctx_1,
       this->dpf_->CreateEvaluationContext(this->keys_.first));
@@ -979,12 +1052,12 @@ TYPED_TEST(DpfEvaluationTest, TestRegularDpf) {
       std::vector<TypeParam> output_2,
       this->dpf_->template EvaluateNext<TypeParam>({}, ctx_2));
 
-  EXPECT_EQ(output_1.size(), 1 << this->log_domain_size_);
-  EXPECT_EQ(output_2.size(), 1 << this->log_domain_size_);
-  for (int i = 0; i < (1 << this->log_domain_size_); ++i) {
+  EXPECT_EQ(output_1.size(), 1 << log_domain_size);
+  EXPECT_EQ(output_2.size(), 1 << log_domain_size);
+  for (int i = 0; i < (1 << log_domain_size); ++i) {
     TypeParam sum = output_1[i] + output_2[i];
     if (i == this->alpha_) {
-      EXPECT_EQ(sum, this->beta_);
+      EXPECT_EQ(sum, this->beta_[0]);
     } else {
       EXPECT_EQ(sum, TypeParam{});
     }
@@ -1017,7 +1090,7 @@ TYPED_TEST(DpfEvaluationTest, TestBatchSinglePointEvaluation) {
       for (int i = 0; i < num_evaluation_points; ++i) {
         TypeParam sum = output_1[i] + output_2[i];
         if (evaluation_points[i] == this->alpha_) {
-          EXPECT_EQ(sum, this->beta_)
+          EXPECT_EQ(sum, this->beta_[0])
               << "i=" << i << ", log_domain_size=" << log_domain_size;
         } else {
           EXPECT_EQ(sum, TypeParam{})
@@ -1026,6 +1099,90 @@ TYPED_TEST(DpfEvaluationTest, TestBatchSinglePointEvaluation) {
       }
     }
   }
+}
+
+TYPED_TEST(DpfEvaluationTest, TestEvaluateAndApplySimpleAddition) {
+  std::vector<std::vector<int>> parameters = {
+      {0, 1, 2}, {8, 16, 32, 64}, {0, 128}, {128}, {/* filled below */}};
+  for (int i = 0; i <= 128; ++i) {
+    parameters.back().push_back(i);
+  }
+  for (const auto& log_domain_sizes : parameters) {
+    absl::uint128 max_domain_element = absl::Uint128Max();
+    if (log_domain_sizes.back() < 128) {
+      max_domain_element = (absl::uint128{1} << log_domain_sizes.back()) - 1;
+    }
+    absl::uint128 alpha = max_domain_element;
+    this->SetUp(log_domain_sizes, alpha);
+
+    std::vector<absl::uint128> evaluation_points = {23, 42, 123, 0,
+                                                    absl::Uint128Max()};
+    for (auto& point : evaluation_points) {
+      point &= max_domain_element;
+    }
+    std::vector<const DpfKey*> keys = {
+        &(this->keys_.first), &(this->keys_.second), &(this->keys_.first),
+        &(this->keys_.second), &(this->keys_.first)};
+    int num_levels = log_domain_sizes.size();
+    int num_keys = keys.size();
+
+    std::vector<TypeParam> sum(num_keys, TypeParam{});
+    int count = 0;
+    auto fn = [&sum, &count](absl::Span<const TypeParam> values) {
+      for (int i = 0; i < values.size(); ++i) {
+        sum[i] += values[i];
+      }
+      ++count;
+      return true;
+    };
+
+    // Run evaluation level-by-level to compute the expected sum.
+    std::vector<TypeParam> expected(num_keys, TypeParam{});
+    for (int hierarchy_level = 0; hierarchy_level < num_levels;
+         ++hierarchy_level) {
+      const int shift_amount =
+          (log_domain_sizes.back() - log_domain_sizes[hierarchy_level]);
+      for (int i = 0; i < num_keys; ++i) {
+        absl::uint128 prefix = 0;
+        if (shift_amount < 128) {
+          prefix = evaluation_points[i] >> shift_amount;
+        }
+        DPF_ASSERT_OK_AND_ASSIGN(
+            auto result,
+            this->dpf_->template EvaluateAt<TypeParam>(
+                *keys[i], hierarchy_level, absl::MakeConstSpan(&prefix, 1)));
+        expected[i] += result[0];
+      }
+    }
+
+    EXPECT_THAT(this->dpf_->template EvaluateAndApply<TypeParam>(
+                    keys, evaluation_points, fn),
+                IsOk());
+    EXPECT_EQ(sum, expected)
+        << "log_domain_sizes=" << absl::StrJoin(log_domain_sizes, " ");
+    EXPECT_EQ(count, num_levels);
+  }
+}
+
+TYPED_TEST(DpfEvaluationTest,
+           EvaluateAndApplyFailsWithTooManyEvaluationPoints) {
+  std::vector<absl::uint128> evaluation_points = {0, 1};
+
+  EXPECT_THAT(
+      this->dpf_->template EvaluateAndApply<TypeParam>(
+          absl::MakeConstSpan(&(this->keys_.first), 1), evaluation_points,
+          [](absl::Span<const TypeParam>) { return true; }),
+      StatusIs(absl::StatusCode::kInvalidArgument,
+               HasSubstr("evaluation_points")));
+}
+
+TYPED_TEST(DpfEvaluationTest, EvaluateAndApplyFailsWithInvalidKey) {
+  DpfKey key;
+
+  EXPECT_THAT(this->dpf_->template EvaluateAndApply<TypeParam>(
+                  absl::MakeConstSpan(&key, 1), {0},
+                  [](absl::Span<const TypeParam>) { return true; }),
+              StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("key")));
 }
 
 }  // namespace

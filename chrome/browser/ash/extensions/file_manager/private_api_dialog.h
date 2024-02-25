@@ -75,7 +75,9 @@ class FileManagerPrivateSelectFilesFunction : public LoggedExtensionFunction {
       const std::vector<ui::SelectedFileInfo>& files);
 
   bool should_return_local_path_;
-  std::vector<GURL> file_urls_;
+  // Only used when we need to resync files so we can save the local paths of
+  // the selected files after resync is done.
+  std::vector<base::FilePath> local_paths_for_resync_callback_;
   int resync_files_remaining_ = 0;
 };
 

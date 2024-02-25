@@ -34,18 +34,6 @@
 namespace blink {
 
 // static
-const FontSelectionValue& LayoutThemeFontProvider::SystemFontStyle(
-    CSSValueID system_font_id) {
-  return NormalSlopeValue();
-}
-
-// static
-const FontSelectionValue& LayoutThemeFontProvider::SystemFontWeight(
-    CSSValueID system_font_id) {
-  return NormalWeightValue();
-}
-
-// static
 const AtomicString& LayoutThemeFontProvider::SystemFontFamily(
     CSSValueID system_font_id) {
   return DefaultGUIFont();

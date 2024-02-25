@@ -178,9 +178,7 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   }
 
   if (action_id == kUserActionReturn) {
-    LoginDisplayHost::default_host()
-        ->GetWizardContext()
-        ->return_to_choobe_screen = true;
+    context()->return_to_choobe_screen = true;
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
     RecordSettingChangedMetric(initial_pref_value_,

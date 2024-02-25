@@ -1,0 +1,26 @@
+From ac9b477facaff6b6cb4668e1cd20468478317ef1 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:06 -0800
+Subject: [PATCH 02/10] rm noop deprecated attribute
+
+---
+ .../cc/task/text/nlclassifier/nl_classifier.h                  | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+index 42989daed506f..554eb306c5e0a 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+@@ -43,9 +43,6 @@ namespace text {
+ namespace nlclassifier {
+ 
+ // Options to identify input and output tensors of the model
+-ABSL_DEPRECATED(
+-    "Prefer using `tflite::task::text::NLClassifierOptions` and "
+-    "`CreateFromOptions`")
+ struct NLClassifierOptions {
+   int input_tensor_index = 0;
+   int output_score_tensor_index = 0;
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

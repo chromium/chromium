@@ -88,7 +88,7 @@ class ExternalCacheImpl : public ExternalCache,
                             const std::string& version,
                             PutExternalExtensionCallback callback) override;
   void SetBackoffPolicy(
-      absl::optional<net::BackoffEntry::Policy> backoff_policy) override;
+      std::optional<net::BackoffEntry::Policy> backoff_policy) override;
 
   // Implementation of ExtensionDownloaderDelegate:
   void OnExtensionDownloadFailed(const extensions::ExtensionId& id,
@@ -105,6 +105,8 @@ class ExternalCacheImpl : public ExternalCache,
   bool IsExtensionPending(const extensions::ExtensionId& id) override;
   bool GetExtensionExistingVersion(const extensions::ExtensionId& id,
                                    std::string* version) override;
+  RequestRollbackResult RequestRollback(
+      const extensions::ExtensionId& id) override;
 
   void set_flush_on_put(bool flush_on_put) { flush_on_put_ = flush_on_put; }
 
@@ -153,7 +155,7 @@ class ExternalCacheImpl : public ExternalCache,
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Delegate that would like to get notifications about cache updates.
-  raw_ptr<ExternalCacheDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<ExternalCacheDelegate> delegate_;
 
   // Updates needs to be check for the extensions with external_crx too.
   bool always_check_updates_;
@@ -178,7 +180,7 @@ class ExternalCacheImpl : public ExternalCache,
   std::unique_ptr<extensions::ExtensionDownloader> downloader_;
 
   // Backoff policy of extension downloader.
-  absl::optional<net::BackoffEntry::Policy> backoff_policy_;
+  std::optional<net::BackoffEntry::Policy> backoff_policy_;
 
   // Used to observe CrosSettings.
   base::CallbackListSubscription kiosk_crx_updates_from_policy_subscription_;

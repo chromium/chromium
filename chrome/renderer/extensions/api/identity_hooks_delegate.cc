@@ -20,8 +20,8 @@ constexpr char kGetAuthToken[] = "identity.getAuthToken";
 // Note: This is to allow the promise version of the API to return a
 // single object, while still supporting the previous callback version which
 // expects multiple parameters to be passed to the callback.
-std::vector<v8::Local<v8::Value>> MassageGetAuthTokenResults(
-    const std::vector<v8::Local<v8::Value>>& result_args,
+v8::LocalVector<v8::Value> MassageGetAuthTokenResults(
+    const v8::LocalVector<v8::Value>& result_args,
     v8::Local<v8::Context> context,
     binding::AsyncResponseType async_type) {
   // If this is not a callback based API call, we don't need to modify anything.
@@ -42,7 +42,8 @@ std::vector<v8::Local<v8::Value>> MassageGetAuthTokenResults(
   success = v8_helpers::GetProperty(context, result_obj, "grantedScopes",
                                     &granted_scopes);
   DCHECK(success);
-  std::vector<v8::Local<v8::Value>> new_args{token, granted_scopes};
+  v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+                                      {token, granted_scopes});
 
   return new_args;
 }
@@ -58,7 +59,7 @@ RequestResult IdentityHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   // Only add the result handler for the getAuthToken function.
   if (method_name != kGetAuthToken)

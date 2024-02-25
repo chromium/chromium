@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1012241361789814178">Түзеткіш басқа қойындыда кідіртілді. Сол қойындыға ауысу үшін басыңыз.</translation>
 <translation id="1088086359088493902">Секундтар</translation>
 <translation id="1142001580032786438">Апта таңдау құралын көрсету</translation>
 <translation id="1171774979989969504">Электрондық пошта мекенжайын енгізіңіз.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Электрондық пошта мекенжайын енгізіңіз.</translation>
 <translation id="1758486001363313524">Басқа…</translation>
 <translation id="1787192514241997742">жалпы уақыт: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Камераны пайдалануға рұқсат беру</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">қашықтағы құрылғыда ойнату</translation>
 <translation id="1921819250265091946">кк</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Экран көшірмесін көрсетуге ауысты</translation>
 <translation id="2031987842108996681">Қызыл түсті арна</translation>
 <translation id="2060505056492490888">"<ph name="INVALIDDOMAIN" />" ішінде "<ph name="DOT" />" қате орында пайдаланылған.</translation>
+<translation id="2068711044993563745">Минималды мән (<ph name="MINIMUM" />) максималды мәннен (<ph name="MAXIMUM" />) аз болуы керек.</translation>
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2226276347425096477">Осы мәтінді <ph name="MAX_CHARACTERS" /> таңбаға немесе одан азырақ етіп қысқартыңыз (сіз қазір  <ph name="CURRENT_LENGTH" /> таңба пайдаланып жатырсыз).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-аудиотрек</translation>
+<translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
 <translation id="2398813069815436052">диалогтік терезе ашылды.</translation>
 <translation id="245932805758469625">бейненің соңына дейін қалған секундтар саны</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Жалғастырғыңыз келсе, осы ұяшықты белгілеңіз.</translation>
 <translation id="2908441821576996758">Электрондық пошта мекенжайларының үтірмен бөлінген тізімін енгізіңіз.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
+<translation id="3053226512517284904">аудиосипаттамалар мәзірін көрсету</translation>
 <translation id="3075154866155599887">Жарамды мән енгізіңіз. Бұл өріс толық емес немесе күні жарамсыз.</translation>
 <translation id="310520048233152454">URL мекенжайын енгізіңіз.</translation>
 <translation id="3220661731597678625">ағымдағы қадам</translation>
 <translation id="3321030238473337787">Ойнату жылдамдығы</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
+<translation id="3377518164566272702">Микрофон мен камераны пайдалануға рұқсат беру</translation>
 <translation id="3450233048674729344">Мән <ph name="MAXIMUM" /> шамасынан кіші немесе оған тең болуы керек.</translation>
 <translation id="3732799496749320381">аа</translation>
 <translation id="3754210790023674521">"Суреттегі сурет" режимінен шығу</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (қазір <ph name="CURRENT_LENGTH" /> таңба).</translation>
 <translation id="383465348367842624">"<ph name="ATSIGN" />" кейінгі бөлім "<ph name="INVALIDCHARACTER" />" белгісін қамтымауы тиіс.</translation>
 <translation id="3846214748874656680">Толық экраннан шығу</translation>
+<translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4103419683916926126">Миллисекундтар</translation>
 <translation id="4201051445878709314">Алдыңғы айды көрсету</translation>
 <translation id="4360991593054037559">Жарамды мән енгізіңіз. Екі ең жақын жарамды мән — <ph name="VALID_VALUE_LOW" /> және <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
+<translation id="4663373278480897665">Камераны пайдалануға рұқсат берілген</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" кейінгі бөлікте "<ph name="INVALIDCHARACTER" />" таңбасы болмауы керек.</translation>
 <translation id="4718048029184481307">"Суреттегі сурет" режимінде ойнатылуда.</translation>
 <translation id="4748357248530471599">экран ойығын толық экранға ауыстыру</translation>
 <translation id="4763480195061959176">бейне</translation>
+<translation id="4792862212177489858">Локацияны бөлісу</translation>
 <translation id="4812940957355064477">Нөмірді енгізіңіз.</translation>
 <translation id="4912200001568447310">ағымдағы элемент</translation>
 <translation id="4915360478455618802">Уақыт таңдау құралын көрсету</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> таңдалды</translation>
 <translation id="4992066212339426712">Дыбысын қосу</translation>
 <translation id="49969490063480558">"<ph name="ATSIGN" />" кейінгі бөлімді енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
+<translation id="5037575921016181960">Күрделі құпия сөз</translation>
 <translation id="5090250355906949916">бейненің уақыт жолағы</translation>
 <translation id="509897012892853729">Көк түсті арна</translation>
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">мультимедиа файлын жүктеп алу</translation>
 <translation id="698788488269350478">жайылды.</translation>
 <translation id="6989848892321993519">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (әзірге 1 таңба пайдаланылған).</translation>
+<translation id="7080893216867146095">Локация бөлісуге рұқсат берілді</translation>
 <translation id="709897737746224366">Сұралған пішімге сәйкес толтырыңыз.</translation>
 <translation id="7102274145889307184">ағымдағы орын</translation>
 <translation id="7263440858009898357">Тізімдегі элементті таңдаңыз.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Басқа…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> күні басталады</translation>
 <translation id="916607977885256133">Суреттегі сурет</translation>
+<translation id="918430632320614861">Микрофонды пайдалануға рұқсат беру</translation>
 <translation id="945780513535800434">Ішінара тексерілген</translation>
 <translation id="954003015749068518">"суреттегі сурет" режиміне кіру</translation>
 </translationbundle>

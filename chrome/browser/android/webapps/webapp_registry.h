@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
 #define CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "components/sync/protocol/web_apk_specifics.pb.h"
 
 class GURL;
 
@@ -31,6 +35,25 @@ class WebappRegistry {
   // URLs matching |url_filter|, whilst leaving other data intact.
   virtual void ClearWebappHistoryForUrls(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
+
+  // Returns a std::vector of all origins that have an installed WebAPK.
+  virtual std::vector<std::string> GetOriginsWithWebApk();
+
+  // Returns all origins that have a WebAPK or TWA installed.
+  virtual std::vector<std::string> GetOriginsWithInstalledApp();
+
+  // Returns a vector of |sync_pb::WebApkSpecifics| with information for each
+  // installed WebAPK.
+  virtual std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
+  GetWebApkSpecifics() const;
+
+  // Sets an Android Shared Preference bit to indicate that there are WebAPKs
+  // that need to be restored from Sync on Chrome's 2nd run.
+  virtual void SetNeedsPwaRestore(bool needs);
+
+  // Gets an Android Shared Preference bit which indicates whether or not there
+  // are WebAPKs that need to be restored from Sync on Chrome's 2nd run.
+  virtual bool GetNeedsPwaRestore();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_

@@ -9,8 +9,6 @@
 
 load("//devtools/compliance/addlicensedeps/py:third_party_licenses.bzl", "third_party_licenses")
 
-package(default_applicable_licenses = ["//tensorflow_lite_support:license"])
-
 third_party_licenses(
     create_licenses_and_metadata_filegroups = True,
     custom_output_directory = None,

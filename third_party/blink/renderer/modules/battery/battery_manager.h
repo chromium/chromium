@@ -29,12 +29,13 @@ class BatteryManager final : public EventTarget,
 
  public:
   static const char kSupplementName[];
-  static ScriptPromise getBattery(ScriptState*, Navigator&);
+  static ScriptPromiseTyped<BatteryManager> getBattery(ScriptState*,
+                                                       Navigator&);
   explicit BatteryManager(Navigator&);
   ~BatteryManager() override;
 
   // Returns a promise object that will be resolved with this BatteryManager.
-  ScriptPromise StartRequest(ScriptState*);
+  ScriptPromiseTyped<BatteryManager> StartRequest(ScriptState*);
 
   // EventTarget implementation.
   const WTF::AtomicString& InterfaceName() const override {
@@ -70,8 +71,7 @@ class BatteryManager final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
-  using BatteryProperty =
-      ScriptPromiseProperty<Member<BatteryManager>, Member<DOMException>>;
+  using BatteryProperty = ScriptPromiseProperty<BatteryManager, DOMException>;
   Member<BatteryProperty> battery_property_;
   BatteryStatus battery_status_;
   Member<BatteryDispatcher> battery_dispatcher_;

@@ -27,8 +27,7 @@ class PrefRegistrySyncable;
 // created in order to work correctly (see crbug.com/1150733). The standard way
 // to do this in a //content-based embedder is to call FooFactory::GetInstance()
 // for each factory used by your embedder from your embedder's implementation of
-// content::BrowserMainParts::PreMainMessageLoopRun(). See //weblayer's
-// browser_main_parts_impl.cc for a straightforward example.
+// content::BrowserMainParts::PreMainMessageLoopRun().
 class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
  public:
   // The type is used to determine whether a service can depend on another.

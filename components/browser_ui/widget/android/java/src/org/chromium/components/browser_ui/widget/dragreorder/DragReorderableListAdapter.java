@@ -43,9 +43,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
     private int mStart;
     private ObserverList<DragListener> mListeners = new ObserverList<>();
 
-    /**
-     * A callback for touch actions on drag-reorderable lists.
-     */
+    /** A callback for touch actions on drag-reorderable lists. */
     private class DragTouchCallback extends ItemTouchHelper.Callback {
         // The view that is being dragged now; null means no view is being dragged now;
         private @Nullable ViewHolder mBeingDragged;
@@ -131,16 +129,16 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
          * @param viewHolder The DraggableRowViewHolder that is holding this row's content.
          */
         private void updateVisualState(boolean dragged, ViewHolder viewHolder) {
-            DragUtils
-                    .createViewDragAnimation(dragged, viewHolder.itemView, mDraggedBackgroundColor,
+            DragUtils.createViewDragAnimation(
+                            dragged,
+                            viewHolder.itemView,
+                            mDraggedBackgroundColor,
                             mDraggedElevation)
                     .start();
         }
     }
 
-    /**
-     * Listens to drag actions in a drag-reorderable list.
-     */
+    /** Listens to drag actions in a drag-reorderable list. */
     public interface DragListener {
         /**
          * Called when drag starts or ends.
@@ -160,9 +158,10 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
 
         Resources resources = context.getResources();
         // Set the alpha to 90% when dragging which is 230/255
-        mDraggedBackgroundColor = ColorUtils.setAlphaComponent(
-                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1),
-                resources.getInteger(R.integer.list_item_dragged_alpha));
+        mDraggedBackgroundColor =
+                ColorUtils.setAlphaComponent(
+                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1),
+                        resources.getInteger(R.integer.list_item_dragged_alpha));
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
 
@@ -175,9 +174,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         return mElements.get(position);
     }
 
-    /**
-     * Enables drag & drop interaction on the RecyclerView that this adapter is attached to.
-     */
+    /** Enables drag & drop interaction on the RecyclerView that this adapter is attached to. */
     public void enableDrag() {
         if (mItemTouchHelper == null) {
             mTouchHelperCallback = new DragTouchCallback();
@@ -186,9 +183,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    /**
-     * Disables drag & drop interaction.
-     */
+    /** Disables drag & drop interaction. */
     public void disableDrag() {
         if (mItemTouchHelper != null) mItemTouchHelper.attachToRecyclerView(null);
     }
@@ -246,16 +241,12 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         mDragStateDelegate = delegate;
     }
 
-    /**
-     * @param l The drag listener to be added.
-     */
+    /** @param l The drag listener to be added. */
     public void addDragListener(DragListener l) {
         mListeners.addObserver(l);
     }
 
-    /**
-     * @param l The drag listener to be added.
-     */
+    /** @param l The drag listener to be added. */
     public void removeDragListener(DragListener l) {
         mListeners.removeObserver(l);
     }

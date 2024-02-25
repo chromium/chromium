@@ -3,7 +3,6 @@
 <translationbundle lang="ca">
 <translation id="1016765312371154165">Chrome no s'ha tancat correctament.</translation>
 <translation id="130631256467250065">Els canvis es faran efectius la propera vegada que reinicieu el dispositiu.</translation>
-<translation id="1555506416658437797">editar les formes de pagament.</translation>
 <translation id="1635457557763038537">Els canvis s'aplicaran la propera vegada que reiniciïs Chrome.</translation>
 <translation id="2399868464369312507">Google Chrome està provant d'editar les formes de pagament.</translation>
 <translation id="2447485272386224171">Chrome és possible gràcies al projecte de codi obert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i a altres <ph name="BEGIN_LINK_OSS" />programes de codi obert<ph name="END_LINK_OSS" />.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">Configureu el tallafoc o l'antivirus per permetre que Chrome accedeixi
           a la xarxa.</translation>
 <translation id="5005121315113832363">Chrome ha bloquejat aquesta pàgina</translation>
-<translation id="585620188971323280">modificar la configuració per emplenar les formes de pagament.</translation>
 <translation id="6011049234605203654">Aneu al
           menú de Chrome &gt;
           <ph name="SETTINGS_TITLE" />

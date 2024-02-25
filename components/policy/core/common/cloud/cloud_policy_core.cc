@@ -86,9 +86,10 @@ void CloudPolicyCore::StartRemoteCommandsService(
     observer.OnRemoteCommandsServiceStarted(this);
 }
 
-void CloudPolicyCore::RefreshSoon() {
-  if (refresh_scheduler_)
-    refresh_scheduler_->RefreshSoon();
+void CloudPolicyCore::RefreshSoon(PolicyFetchReason reason) {
+  if (refresh_scheduler_) {
+    refresh_scheduler_->RefreshSoon(reason);
+  }
 }
 
 void CloudPolicyCore::StartRefreshScheduler() {

@@ -75,7 +75,6 @@ def _PatchAbseil(abseil_in_chromium_dir):
   for patch in os.listdir(os.path.join(abseil_in_chromium_dir, 'patches')):
     subprocess.check_call(['patch', '--strip', '1', '-i', os.path.join(abseil_in_chromium_dir, 'patches', patch)])
 
-  os.remove(os.path.join(abseil_in_chromium_dir, 'absl', 'base', 'internal', 'thread_annotations.h'))
   os.remove(os.path.join(abseil_in_chromium_dir, 'absl', 'base', 'internal', 'dynamic_annotations.h'))
 
 

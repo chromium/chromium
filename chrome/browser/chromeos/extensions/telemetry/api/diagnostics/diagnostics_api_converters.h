@@ -7,6 +7,7 @@
 
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::diagnostics {
 
@@ -30,6 +31,10 @@ crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
 
 crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
     chromeos::api::os_diagnostics::RunNvmeSelfTestRequest routineType);
+
+crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
+ConvertVolumeButtonRoutineButtonType(
+    chromeos::api::os_diagnostics::VolumeButtonType volume_button_type);
 
 }  // namespace chromeos::converters::diagnostics
 

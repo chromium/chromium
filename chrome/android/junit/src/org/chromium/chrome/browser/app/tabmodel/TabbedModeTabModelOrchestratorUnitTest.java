@@ -19,13 +19,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 
@@ -35,20 +37,20 @@ import java.util.List;
 /** Tests for TabbedModeTabModelOrchestrator */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedModeTabModelOrchestratorUnitTest {
-    @Mock
-    private ChromeTabbedActivity mChromeActivity;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private ChromeTabCreator mChromeTabCreator;
-    @Mock
-    private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
+
+    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     // TabbedModeTabModelOrchestrator running on Android S where tab merging into other instance
     // is not performed.
     private class TabbedModeTabModelOrchestratorApi31 extends TabbedModeTabModelOrchestrator {
         public TabbedModeTabModelOrchestratorApi31() {
-            super(/*tabMergingEnabled=*/false);
+            super(/* tabMergingEnabled= */ false);
         }
 
         @Override
@@ -60,6 +62,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mProfileProviderSupplier.set(mProfileProvider);
     }
 
     @After
@@ -81,18 +84,28 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         assertEquals(0, MultiWindowUtils.getInstanceCount());
         TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
-                mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 0);
+                mChromeActivity,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0);
         List<Pair<AsyncTask<DataInputStream>, String>> tabStatesToMerge;
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
         assertFalse("Should have a tab state file to merge", tabStatesToMerge.isEmpty());
 
-        MultiWindowTestUtils.createInstance(/*instanceId=*/0, "https://url.com", 1, 57);
+        MultiWindowTestUtils.createInstance(/* instanceId= */ 0, "https://url.com", 1, 57);
         assertEquals(1, MultiWindowUtils.getInstanceCount());
 
         // Once an instance is created, no more merging is allowed.
         orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
-                mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 1);
+                mChromeActivity,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                1);
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
     }

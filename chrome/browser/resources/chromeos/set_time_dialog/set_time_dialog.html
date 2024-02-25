@@ -27,26 +27,26 @@
           flex: 1;
         }
 
-        /* Style to match md-select. */
+        /* Style to match <cros-textfield>. */
         input[type='date'],
         input[type='time'] {
-          background-color: var(--cros-textfield-background-color);
+          background-color: var(--cros-sys-input_field_on_base);
           border: none;
-          border-radius: 4px;
+          border-radius: 8px;
           box-sizing: border-box;
-          color: var(--cros-textfield-input-color);
-          color-scheme: light dark;
-          font-family: inherit;
-          font-size: inherit;
+          color: var(--cros-sys-on_surface);
+          font: var(--cros-body-2-font);
+          height: 36px;
           /* Ensure space for focus border. */
           margin-bottom: 2px;
-          padding: 6px 8px;
+          padding-inline-end: 16px;
+          padding-inline-start: 16px;
           width: 100%;
         }
 
         input[type='date']:focus,
         input[type='time']:focus {
-          outline: 2px solid var(--cros-focus-ring-color);
+          outline: 2px solid var(--cros-sys-focus_ring);
         }
 
         input[type='date']::-webkit-clear-button,
@@ -83,12 +83,12 @@
             <div class="column">
               <div id="label">$i18n{dateLabel}</div>
               <input id="dateInput" type="date" aria-label="$i18n{dateLabel}"
-                  min="[[minDate_]]" max="[[maxDate_]]" on-blur="onTimeBlur_">
+                  min="[[minDate_]]" max="[[maxDate_]]" on-blur="onInputBlur_">
             </div>
             <div class="column" id="timeColumn">
               <div id="label">$i18n{timeLabel}</div>
               <input id="timeInput" type="time" aria-label="$i18n{timeLabel}"
-                  on-blur="onTimeBlur_">
+                  on-blur="onInputBlur_">
             </div>
           </div>
 

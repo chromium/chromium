@@ -97,7 +97,7 @@ void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
 void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Should have already happened.
   NOTREACHED();
 }

@@ -1,10 +1,8 @@
-#############################################################################
-# UBSan ignorelist.
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
 
 #############################################################################
-# YASM does some funny things that UBsan doesn't like.
-# https://crbug.com/489901
-src:*/third_party/yasm/*
+# UBSan ignorelist.
 
 #############################################################################
 # Ignore system libraries.

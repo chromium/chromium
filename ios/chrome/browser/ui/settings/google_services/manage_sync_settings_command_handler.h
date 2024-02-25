@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 
-// Protocol to communicate user actions from the mediator to its coordinator.
+// Protocol to communicate user actions from the mediator to its
+// coordinator.
 @protocol ManageSyncSettingsCommandHandler <NSObject>
 
 // Opens the "Web & App Activity" dialog.
@@ -14,13 +15,17 @@
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 
-// Presents the data options available when turning off Sync.
-// `targetRect` rect in table view system coordinate to display the signout
-// popover dialog.
-- (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect;
+// If the sync feature is disabled, sign-out and display a toast.
+// Otherwise, if the sync feature is enabled, presents the data options
+// available when turning off Sync. `targetRect` rect in table view system
+// coordinate to display the signout popover dialog.
+// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
+// won't be enabled anymore.
+- (void)signOutFromTargetRect:(CGRect)targetRect;
 
-// Signs out.
-- (void)signOut;
+// Shows a dialog to warn users that addresses are not encrypted by custom
+// passphrase.
+- (void)showAdressesNotEncryptedDialog;
 
 // Shows a view displaying all Google Accounts present on the current device.
 // The view allows adding and removing accounts.
@@ -30,6 +35,9 @@
 // to Chrome. The content is displayed in a new view in the stack, i.e.
 // it doesn't close the current view.
 - (void)showManageYourGoogleAccount;
+
+// Open the view to batch upload data.
+- (void)openBulkUpload;
 
 @end
 

@@ -16,16 +16,8 @@ rootWebArea
 ++++++++staticText name='Description'
 ++++++++++inlineTextBox name='Description'
 ++++++paragraph ignored
-++++++genericContainer ignored
-++++++++staticText name='Generic'
-++++++++++inlineTextBox name='Generic'
+++++++staticText name='Generic'
+++++++++inlineTextBox name='Generic'
 ++++++genericContainer
-++++++++genericContainer ignored
-++++++++++staticText name='Generic (nested)'
-++++++++++++inlineTextBox name='Generic (nested)'
-++++++main ignored invisible
-++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible name='Paragraph inside of hidden main that's also display:contents'
-++++++complementary ignored invisible
-++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible name='Display:contents paragraph inside of hidden complementary'
+++++++++staticText name='Generic (nested)'
+++++++++++inlineTextBox name='Generic (nested)'

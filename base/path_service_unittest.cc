@@ -10,7 +10,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
@@ -301,7 +303,8 @@ TEST_F(PathServiceTest, GetProgramFiles) {
   EXPECT_EQ(programfiles_dir.value(),
       FILE_PATH_LITERAL("C:\\Program Files"));
 #else
-  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
+  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64() ||
+      base::win::OSInfo::GetInstance()->IsWowX86OnARM64()) {
     // 32-bit on 64-bit.
     EXPECT_TRUE(PathService::Get(DIR_PROGRAM_FILES,
         &programfiles_dir));
@@ -386,6 +389,58 @@ TEST_F(PathServiceTest, DIR_GEN_TEST_DATA_ROOT) {
   EXPECT_TRUE(base::PathExists(
       path.Append(FILE_PATH_LITERAL("base/generated_file_for_test.txt"))));
 }
+
+#if ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && \
+      !BUILDFLAG(IS_ANDROID)) ||                     \
+     BUILDFLAG(IS_WIN))
+
+// Test that CR_SOURCE_ROOT is being used when set.
+// By default on those platforms, this directory is set to two directories up
+// the current executable directory ("../../").
+TEST_F(PathServiceTest, SetTestDataRootAsAbsolutePath) {
+  // This is needed because on some platform `DIR_SRC_TEST_DATA_ROOT` can be
+  // cached before reaching this function.
+  PathService::DisableCache();
+  base::ScopedTempDir tempdir;
+  ASSERT_TRUE(tempdir.CreateUniqueTempDir());
+
+#if BUILDFLAG(IS_WIN)
+  auto scoped_env = base::ScopedEnvironmentVariableOverride(
+      "CR_SOURCE_ROOT", base::WideToUTF8(tempdir.GetPath().value()));
+#else
+  auto scoped_env = base::ScopedEnvironmentVariableOverride(
+      "CR_SOURCE_ROOT", tempdir.GetPath().value());
+#endif
+
+  base::FilePath test_data_root;
+  ASSERT_TRUE(PathService::Get(DIR_SRC_TEST_DATA_ROOT, &test_data_root));
+
+  ASSERT_EQ(test_data_root, tempdir.GetPath());
+}
+
+// Test that CR_SOURCE_ROOT is being used when set.
+TEST_F(PathServiceTest, SetTestDataRootAsRelativePath) {
+  // This is needed because on some platform `DIR_SRC_TEST_DATA_ROOT` can be
+  // cached before reaching this function.
+  PathService::DisableCache();
+#if BUILDFLAG(IS_WIN)
+  auto scoped_env = base::ScopedEnvironmentVariableOverride(
+      "CR_SOURCE_ROOT", base::WideToUTF8(base::FilePath::kParentDirectory));
+#else
+  auto scoped_env = base::ScopedEnvironmentVariableOverride(
+      "CR_SOURCE_ROOT", base::FilePath::kParentDirectory);
+#endif
+  base::FilePath path;
+  ASSERT_TRUE(PathService::Get(DIR_EXE, &path));
+
+  base::FilePath test_data_root;
+  ASSERT_TRUE(PathService::Get(DIR_SRC_TEST_DATA_ROOT, &test_data_root));
+
+  path = MakeAbsoluteFilePath(path.Append(base::FilePath::kParentDirectory));
+  ASSERT_EQ(test_data_root, path);
+}
+
+#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 // On Fuchsia, some keys have fixed paths that are easy to test.

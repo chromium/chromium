@@ -19,20 +19,18 @@ namespace user_education {
 class FeaturePromoRegistry {
  public:
   FeaturePromoRegistry();
-  FeaturePromoRegistry(FeaturePromoRegistry&& other);
+  FeaturePromoRegistry(FeaturePromoRegistry&& other) noexcept;
+  FeaturePromoRegistry& operator=(FeaturePromoRegistry&& other) noexcept;
   ~FeaturePromoRegistry();
-  FeaturePromoRegistry& operator=(FeaturePromoRegistry&& other);
 
   // Determines whether or not a particular feature is registered.
   bool IsFeatureRegistered(const base::Feature& iph_feature) const;
 
   // Returns the FeaturePromoSpecification to start an IPH for
-  // the given feature. |iph_feature| is the feature to show for.
-  // |browser_view| is the window it should show in.
+  // the given `iph_feature`, or null if not found.
   //
-  // The params must be used immediately since it contains a View
-  // pointer that may become stale. This may return nothing in which
-  // case the promo shouldn't show.
+  // (Some configurations may be only conditionally registered based on feature
+  // flags.)
   const FeaturePromoSpecification* GetParamsForFeature(
       const base::Feature& iph_feature) const;
 

@@ -58,7 +58,7 @@ TEST_F(EqualsTest, Array) {
   NamedRegionPtr n2(n1.Clone());
   EXPECT_TRUE(n1.Equals(n2));
 
-  n2->rects = absl::nullopt;
+  n2->rects = std::nullopt;
   EXPECT_FALSE(n1.Equals(n2));
   n2->rects.emplace();
   EXPECT_FALSE(n1.Equals(n2));

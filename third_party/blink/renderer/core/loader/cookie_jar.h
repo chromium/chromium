@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_COOKIE_JAR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_COOKIE_JAR_H_
 
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -71,7 +71,7 @@ class CookieJar : public GarbageCollected<CookieJar> {
   // ATTENTION: Just use hashes for now to keep space overhead low, but more
   // importantly, because keeping cookies around is tricky from a security
   // perspective.
-  absl::optional<unsigned> last_cookies_hash_;
+  std::optional<unsigned> last_cookies_hash_;
   // Whether the last operation performed on this jar was a set or get. Used
   // along with `last_cookies_hash_` when updating the histogram that tracks
   // cookie access results.

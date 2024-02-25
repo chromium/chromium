@@ -116,7 +116,7 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
 String GetSamplePrefix(const ExceptionContext& exception_context,
                        const String& value) {
   const char* interface_name = exception_context.GetClassName();
-  const char* property_name = exception_context.GetPropertyName();
+  const String& property_name = exception_context.GetPropertyName();
 
   // We have two sample formats, one for eval and one for assignment.
   // If we don't have the required values being passed in, just leave the
@@ -130,11 +130,11 @@ String GetSamplePrefix(const ExceptionContext& exception_context,
                                                             : "eval");
   } else if ((strcmp("Worker", interface_name) == 0 ||
               strcmp("SharedWorker", interface_name) == 0) &&
-             !property_name) {
+             property_name.IsNull()) {
     // Worker/SharedWorker constructor has nullptr as property_name.
     sample_prefix.Append(interface_name);
     sample_prefix.Append(" constructor");
-  } else if (interface_name && property_name) {
+  } else if (interface_name && !property_name.IsNull()) {
     sample_prefix.Append(interface_name);
     sample_prefix.Append(" ");
     sample_prefix.Append(property_name);
@@ -158,11 +158,10 @@ HeapVector<ScriptValue> GetDefaultCallbackArgs(
     const char* type,
     const ExceptionContext& exception_context,
     const String& value = g_empty_string) {
-  ScriptState* script_state = ScriptState::Current(isolate);
   HeapVector<ScriptValue> args;
-  args.push_back(ScriptValue::From(script_state, type));
-  args.push_back(ScriptValue::From(script_state,
-                                   GetSamplePrefix(exception_context, value)));
+  args.push_back(ScriptValue(isolate, V8String(isolate, type)));
+  args.push_back(ScriptValue(
+      isolate, V8String(isolate, GetSamplePrefix(exception_context, value))));
   return args;
 }
 
@@ -268,10 +267,9 @@ String GetStringFromScriptHelper(
   //   we are not executing a source String, but an already compiled callback
   //   function.
   v8::HandleScope handle_scope(context->GetIsolate());
-  ScriptState::Scope script_state_scope(
-      ToScriptState(context, DOMWrapperWorld::MainWorld()));
+  ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
   ExceptionState exception_state(
-      context->GetIsolate(), ExceptionState::kUnknownContext,
+      context->GetIsolate(), ExceptionContextType::kUnknown,
       element_name_for_exception, attribute_name_for_exception);
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);
@@ -627,7 +625,7 @@ String GetTrustedTypesLiteral(const ScriptValue& script_value,
         first_value->IsString()) {
       v8::Local<v8::String> first_value_as_string =
           v8::Local<v8::String>::Cast(first_value);
-      return ToCoreString(first_value_as_string);
+      return ToCoreString(script_state->GetIsolate(), first_value_as_string);
     }
   }
 

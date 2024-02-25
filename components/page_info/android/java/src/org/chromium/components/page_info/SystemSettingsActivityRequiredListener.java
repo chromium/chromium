@@ -6,9 +6,7 @@ package org.chromium.components.page_info;
 
 import android.content.Intent;
 
-/**
- * Extracted to allow testing of PermissionParamsListBuilder.
- */
+/** Extracted to allow testing of PermissionParamsListBuilder. */
 public interface SystemSettingsActivityRequiredListener {
     void onSystemSettingsActivityRequired(Intent intentOverride);
 }

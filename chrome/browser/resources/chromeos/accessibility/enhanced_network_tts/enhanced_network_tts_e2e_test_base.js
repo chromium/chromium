@@ -32,26 +32,12 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
 
   /** @override */
   testGenPreamble() {
-    // TODO(leileilei@google.com): Figure out a better way to test Enhanced
-    // Network TTS. Currently, loads Select-to-Speak for quick testing purpose.
-    // This enables us to load the EnhancedNetworkTts module.
     super.testGenPreamble();
     GEN(`
     base::OnceClosure load_cb =
-        base::BindOnce(&ash::AccessibilityManager::SetSelectToSpeakEnabled,
-            base::Unretained(ash::AccessibilityManager::Get()),
-            true);
+        base::BindOnce(
+            &ash::AccessibilityManager::LoadEnhancedNetworkTtsForTest,
+            base::Unretained(ash::AccessibilityManager::Get()));
     `);
-  }
-
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'EnhancedNetworkTts',
-          '/enhanced_network_tts/enhanced_network_tts.js'),
-      importModule('enhancedNetworkTts', '/enhanced_network_tts/background.js'),
-    ]);
   }
 };

@@ -30,10 +30,6 @@ BASE_FEATURE(kEnablePersistentDownloads,
              "EnablePersistentDownloads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRecordSnapshotSize,
-             "RecordSnapshotSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSetRequestAttribution,
              "SetRequestAttribution",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -42,24 +38,8 @@ BASE_FEATURE(kIOSSharedHighlightingColorChange,
              "IOSSharedHighlightingColorChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSynthesizedRestoreSession,
-             "SynthesizedRestoreSession",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableFullscreenAPI,
-             "EnableFullscreenAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
              "UseLoadSimulatedRequestForErrorPageNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableEmails,
-             "EnableEmailsExperience",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnablePhoneNumbers,
-             "EnablePhoneNumbersExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableMeasurements,
@@ -71,6 +51,8 @@ const char kOneTapForMapsConsentModeParamTitle[] =
 const char kOneTapForMapsConsentModeDefaultParam[] = "default";
 const char kOneTapForMapsConsentModeForcedParam[] = "forced";
 const char kOneTapForMapsConsentModeDisabledParam[] = "disabled";
+const char kOneTapForMapsConsentModeIPHParam[] = "iph";
+const char kOneTapForMapsConsentModeIPHForcedParam[] = "iphforced";
 BASE_FEATURE(kOneTapForMaps,
              "EnableOneTapForMaps",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -81,6 +63,10 @@ BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
 
 BASE_FEATURE(kPreventNavigationWithoutUserInteraction,
              "PreventNavigationWithoutUserInteraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowCrossWindowExternalAppNavigation,
+             "kAllowCrossWindowExternalAppNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWebInspector,
@@ -96,15 +82,21 @@ BASE_FEATURE(kSmoothScrollingDefault,
 #endif
 );
 
-BASE_FEATURE(kEnableSessionSerializationOptimizations,
-             "EnableSessionSerializationOptimizations",
+// This feature will always be disabled and will only be enabled by tests.
+BASE_FEATURE(kForceSynthesizedRestoreSession,
+             "ForceSynthesizedRestoreSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRemoveOldWebStateRestoration,
+             "RemoveOldWebStateRestoration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableViewportIntents,
+             "EnableViewportIntents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLoadSimulatedRequestAPIEnabled() {
-  if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
 }
 
 bool IsWebInspectorSupportEnabled() {
@@ -114,9 +106,9 @@ bool IsWebInspectorSupportEnabled() {
   return false;
 }
 
-bool UseSessionSerializationOptimizations() {
-  return base::FeatureList::IsEnabled(kEnableSessionSerializationOptimizations);
-}
+BASE_FEATURE(kDisableRaccoon,
+             "DisableRaccoon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace web

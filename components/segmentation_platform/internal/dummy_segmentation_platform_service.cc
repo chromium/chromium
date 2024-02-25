@@ -51,14 +51,6 @@ SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
   return SegmentSelectionResult();
 }
 
-void DummySegmentationPlatformService::GetSelectedSegmentOnDemand(
-    const std::string& segmentation_key,
-    scoped_refptr<InputContext> input_context,
-    SegmentSelectionCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
-}
-
 void DummySegmentationPlatformService::CollectTrainingData(
     proto::SegmentId segment_id,
     TrainingRequestId request_id,

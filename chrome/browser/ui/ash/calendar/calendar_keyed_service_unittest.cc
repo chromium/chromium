@@ -9,20 +9,21 @@
 
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,9 @@ namespace {
 
 const char kPrimaryProfileName[] = "primary_profile";
 const char kSecondaryProfileName[] = "secondary_profile";
+const char kTestGroupCalendarId[] =
+    "oz2iwbysdg20tn8zdjvtqnkj12test@group.calendar.google.com";
+const char kTestGroupCalendarColorId[] = "3";
 const char kTestUserAgent[] = "test-user-agent";
 
 }  // namespace
@@ -44,44 +48,22 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
       delete;
   ~CalendarKeyedServiceTest() override = default;
 
-  TestingProfile* CreateProfile() override {
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-
-    GetSessionControllerClient()->AddUserSession(kPrimaryProfileName);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-
-    return profile_manager()->CreateTestingProfile(kPrimaryProfileName,
-                                                   /*testing_factories=*/{});
+  void SetUp() override {
+    ProfileHelper::SetProfileToUserForTestingEnabled(true);
+    BrowserWithTestWindowTest::SetUp();
   }
+
+  void TearDown() override {
+    BrowserWithTestWindowTest::TearDown();
+    ProfileHelper::SetProfileToUserForTestingEnabled(false);
+  }
+
+  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
 
   TestingProfile* CreateSecondaryProfile() {
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(
-        kSecondaryProfileName,
-        std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        u"Test profile",
-        /*avatar_id=*/1,
-        /*testing_factories=*/{});
+    LogIn(kSecondaryProfileName);
+    return CreateProfile(kSecondaryProfileName);
   }
-
-  void ActivateSecondaryProfile() {
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    GetSessionControllerClient()->AddUserSession(kSecondaryProfileName);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
-  TestSessionControllerClient* GetSessionControllerClient() {
-    return ash_test_helper()->test_session_controller_client();
-  }
-
- private:
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
 };
 
 class CalendarKeyedServiceIOTest : public testing::Test {
@@ -117,21 +99,38 @@ class CalendarKeyedServiceIOTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // Returns the response from a mock json file in google_apis/test/data/
+  // depending on whether the request is for the calendar list or the event
+  // list.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (net::test_server::ShouldHandle(request,
+                                       "/calendar/v3/users/me/calendarList")) {
+      return google_apis::test_util::CreateHttpResponseFromFile(
+          google_apis::test_util::GetTestFilePath(
+              "calendar/calendar_list.json"));
+    }
+    if (net::test_server::ShouldHandle(request,
+                                       "/calendar/v3/calendars/primary")) {
+      return google_apis::test_util::CreateHttpResponseFromFile(
+          google_apis::test_util::GetTestFilePath("calendar/events.json"));
+    }
+    if (net::test_server::ShouldHandle(
+            request,
+            base::StrCat({"/calendar/v3/calendars/", kTestGroupCalendarId}))) {
+      return google_apis::test_util::CreateHttpResponseFromFile(
+          google_apis::test_util::GetTestFilePath(
+              "calendar/group_calendar_events.json"));
+    }
+    NOTREACHED_NORETURN();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_;
-
-  // Returns the mock calendar event list.
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    // Return the response from the event json file. The json file path is:
-    // google_apis/test/data/calendar/events.json
-    return google_apis::test_util::CreateHttpResponseFromFile(
-        google_apis::test_util::GetTestFilePath("calendar/events.json"));
-  }
 };
 
 // Calendar service does not support guest user.
@@ -190,18 +189,55 @@ TEST_F(CalendarKeyedServiceTest, SecondaryUserProfile) {
 
   // Switching the active user should change the active client (multi-user
   // support).
-  ActivateSecondaryProfile();
+  SwitchActiveUser(kSecondaryProfileName);
   EXPECT_EQ(ash::Shell::Get()->calendar_controller()->GetClient(),
             secondary_calendar_service->client());
 }
 
-TEST_F(CalendarKeyedServiceIOTest, GetEventList) {
+TEST_F(CalendarKeyedServiceIOTest, GetCalendarList) {
+  // Creating the service with a test profile and account ID.
+  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
+  auto calendar_service = std::make_unique<CalendarKeyedService>(
+      profile.get(), AccountId::FromUserEmail("test@email.com"));
+
+  calendar_service->set_sender_for_testing(std::move(request_sender_));
+  calendar_service->SetUrlForTesting(test_server_.base_url().spec());
+
+  // The error code should be overwritten by `HTTP_SUCCESS` after the
+  // `GetCalendarList` call.
+  google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
+
+  // Declaring the mock 'GetCalendarList' result.
+  std::unique_ptr<google_apis::calendar::CalendarList> calendar_list;
+
+  {
+    base::RunLoop run_loop;
+    calendar_service->GetCalendarList(
+        google_apis::test_util::CreateQuitCallback(
+            &run_loop, google_apis::test_util::CreateCopyResultCallback(
+                           &error, &calendar_list)));
+    run_loop.Run();
+  }
+
+  // Verify that the result has expected values.
+  EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
+  EXPECT_EQ("calendar#calendarList", calendar_list->kind());
+  EXPECT_EQ(3U, calendar_list->items().size());
+  const google_apis::calendar::SingleCalendar& calendar =
+      *calendar_list->items()[1];
+  EXPECT_EQ(calendar.id(),
+            "google.com_zu35dc5syt5k0fddetqqfggb75test@"
+            "group.calendar.google.com");
+  EXPECT_FALSE(calendar.selected());
+}
+
+TEST_F(CalendarKeyedServiceIOTest, GetEventListForDefaultCalendar) {
   // Creating the service with some testing profile and account id. Since in
   // this test we are using the IO thread, the service can not be created from
   // the factory.
-  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
+  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
   auto calendar_service = std::make_unique<CalendarKeyedService>(
-      profile_.get(), AccountId::FromUserEmail("test@email.com"));
+      profile.get(), AccountId::FromUserEmail("test@email.com"));
 
   calendar_service->set_sender_for_testing(std::move(request_sender_));
   calendar_service->SetUrlForTesting(test_server_.base_url().spec());
@@ -233,6 +269,49 @@ TEST_F(CalendarKeyedServiceIOTest, GetEventList) {
   EXPECT_EQ(event.summary(), "Mobile weekly team meeting ");
   EXPECT_EQ(event.id(), "or8221sirt4ogftest");
   EXPECT_EQ(events->time_zone(), "America/Los_Angeles");
+}
+
+TEST_F(CalendarKeyedServiceIOTest, GetEventListForNonDefaultCalendar) {
+  // Creating the service with a test profile and account ID.
+  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
+  auto calendar_service = std::make_unique<CalendarKeyedService>(
+      profile.get(), AccountId::FromUserEmail("test@email.com"));
+
+  calendar_service->set_sender_for_testing(std::move(request_sender_));
+  calendar_service->SetUrlForTesting(test_server_.base_url().spec());
+
+  // The error code should be overwritten by `HTTP_SUCCESS` after the
+  // `GetEventList` call.
+  google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
+
+  // Declaring the mock 'GetEventList' result.
+  std::unique_ptr<google_apis::calendar::EventList> events;
+
+  base::Time start;
+  base::Time end;
+  ASSERT_TRUE(base::Time::FromString("19 Jan 2024 5:00 GMT", &start));
+  ASSERT_TRUE(base::Time::FromString("01 Feb 2024 5:00 GMT", &end));
+
+  {
+    base::RunLoop run_loop;
+    calendar_service->GetEventList(
+        google_apis::test_util::CreateQuitCallback(
+            &run_loop,
+            google_apis::test_util::CreateCopyResultCallback(&error, &events)),
+        start, end, /*calendar_id=*/kTestGroupCalendarId,
+        /*calendar_color_id=*/kTestGroupCalendarColorId);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
+  const google_apis::calendar::CalendarEvent& event = *events->items()[2];
+  // Verify that a returned event matches one at the same position on the mock
+  // group calendar events list.
+  EXPECT_EQ(event.summary(), "Popcorn Pop-Up");
+  EXPECT_EQ(event.id(), "kff9ghr5gt8fhhechomqnld9et");
+  // Verify that the event color ID is now equal to the value passed into
+  // calendar_color_id.
+  EXPECT_EQ(event.color_id(), kTestGroupCalendarColorId);
 }
 
 }  // namespace ash

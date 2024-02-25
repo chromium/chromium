@@ -106,7 +106,6 @@ cast_source_set("common") {
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
     "//components/cast/common:constants",
-    "//components/cdm/common:common",
     "//components/embedder_support:browser_util",
     "//content/public/common",
     "//media:media_buildflags",
@@ -119,8 +118,13 @@ cast_source_set("common") {
     deps += [ "//components/services/heap_profiling/public/cpp" ]
   }
 
+  if (is_android || is_fuchsia) {
+    deps += [ "//components/cdm/common:common" ]
+  }
+
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
+
   defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }

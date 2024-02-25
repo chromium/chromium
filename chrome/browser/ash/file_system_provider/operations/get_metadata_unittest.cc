@@ -24,9 +24,7 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -48,7 +46,7 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  std::optional<Params> params = Params::Create(parsed_json->GetList());
   ASSERT_TRUE(params.has_value());
   *result = RequestValue::CreateForGetMetadataSuccess(std::move(*params));
   ASSERT_TRUE(result->is_valid());
@@ -65,7 +63,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     const EntryMetadata* metadata() const { return metadata_.get(); }
     base::File::Error result() const { return result_; }
@@ -75,12 +73,12 @@ class CallbackLogger {
     base::File::Error result_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnGetMetadata(std::unique_ptr<EntryMetadata> metadata,
                      base::File::Error result) {
@@ -100,8 +98,8 @@ using ModificationTime =
 
 class FileSystemProviderOperationsGetMetadataTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsGetMetadataTest() {}
-  ~FileSystemProviderOperationsGetMetadataTest() override {}
+  FileSystemProviderOperationsGetMetadataTest() = default;
+  ~FileSystemProviderOperationsGetMetadataTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
@@ -291,13 +289,13 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  GetMetadataRequestedOptions options;
-  ASSERT_TRUE(GetMetadataRequestedOptions::Populate(options_as_value->GetDict(),
-                                                    options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kDirectoryPath, options.entry_path);
-  EXPECT_TRUE(options.thumbnail);
+  auto options =
+      GetMetadataRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kDirectoryPath, options->entry_path);
+  EXPECT_TRUE(options->thumbnail);
 }
 
 TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute_NoListener) {
@@ -453,6 +451,4 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnError) {
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, event->result());
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

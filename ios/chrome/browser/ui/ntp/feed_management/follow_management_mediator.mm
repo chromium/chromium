@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_mediator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/follow_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/follow/follow_browser_agent_observing.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent_observing.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_ui_updater.h"
@@ -37,10 +38,10 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
 
 @implementation FollowManagementMediator {
   // FaviconLoader retrieves favicons for a given page URL.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
 
   // FollowBrowserAgent retrieves the list of followed channels.
-  FollowBrowserAgent* _followBrowserAgent;
+  raw_ptr<FollowBrowserAgent> _followBrowserAgent;
 
   // Used to observer FollowBrowserAgent.
   std::unique_ptr<FollowServiceObserver> _observer;
@@ -49,14 +50,14 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
   NSMutableArray<id<FollowManagementUIUpdater>>* _updaters;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowserAgent:(FollowBrowserAgent*)browserAgent
+                       faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
-    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForBrowserState(
-        browser->GetBrowserState());
-    _followBrowserAgent = FollowBrowserAgent::FromBrowser(browser);
+    _followBrowserAgent = browserAgent;
     _observer = std::make_unique<FollowBrowserAgentObserverBridge>(
         self, _followBrowserAgent);
+    _faviconLoader = faviconLoader;
     _updaters = [[NSMutableArray alloc] init];
   }
   return self;

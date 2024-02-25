@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/span.h"
@@ -17,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -106,9 +107,6 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 #endif
   helper_library_path = helper_library_path.AppendASCII(
       GetNativeLibraryName("immediate_crash_test_helper"));
-#if BUILDFLAG(IS_ANDROID) && defined(COMPONENT_BUILD)
-  helper_library_path = helper_library_path.ReplaceExtension(".cr.so");
-#endif
   ScopedNativeLibrary helper_library(helper_library_path);
   ASSERT_TRUE(helper_library.is_valid())
       << "shared library load failed: "
@@ -142,17 +140,16 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
     body->push_back(instruction);
 }
 
-absl::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
+std::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
   for (const auto inst : kRequiredBody) {
     if (iter == instructions.end())
-      return absl::nullopt;
+      return std::nullopt;
     EXPECT_EQ(inst, *iter);
     iter++;
   }
-  return absl::make_optional(
-      std::vector<Instruction>(iter, instructions.end()));
+  return std::make_optional(std::vector<Instruction>(iter, instructions.end()));
 }
 
 std::vector<Instruction> MaybeSkipOptionalFooter(
@@ -225,7 +222,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  absl::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
+  std::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
   result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
   result = MaybeSkipCoverageHook(result.value());

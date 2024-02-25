@@ -48,16 +48,12 @@ BASE_FEATURE(kDisableVoiceMatch,
              "DisableVoiceMatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLibAssistantV2,
-             "LibAssistantV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLibAssistantDLC,
              "LibAssistantDLC",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableAssistantLearnMore,
-             "AssistantLearnMore",
+BASE_FEATURE(kEnableAssistantOnboarding,
+             "AssistantOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppSupportEnabled() {
@@ -104,16 +100,12 @@ bool IsLibAssistantSandboxEnabled() {
       sandbox::policy::switches::kNoSandbox);
 }
 
-bool IsLibAssistantV2Enabled() {
-  return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
-}
-
 bool IsLibAssistantDLCEnabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantDLC);
 }
 
-bool IsAssistantLearnMoreEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAssistantLearnMore);
+bool IsOnboardingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableAssistantOnboarding);
 }
 
 }  // namespace ash::assistant::features

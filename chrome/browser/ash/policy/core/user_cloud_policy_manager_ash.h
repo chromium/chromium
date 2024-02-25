@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_ASH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 class PrefService;
@@ -255,10 +255,7 @@ class UserCloudPolicyManagerAsh
   void ShutdownRemoteCommands();
 
   // Profile associated with the current user.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-
-  // Owns the store, note that CloudPolicyManager just keeps a plain pointer.
-  std::unique_ptr<CloudPolicyStore> store_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
@@ -325,7 +322,7 @@ class UserCloudPolicyManagerAsh
 
   // Refresh token used in tests instead of the user context refresh token to
   // fetch the policy OAuth token.
-  absl::optional<std::string> user_context_refresh_token_for_tests_;
+  std::optional<std::string> user_context_refresh_token_for_tests_;
 
   // Used to track the reregistration state of the CloudPolicyClient, i.e.
   // whether this class has triggered a re-registration after the client failed

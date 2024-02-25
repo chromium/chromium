@@ -14,9 +14,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 // Convert |value| into |output|. If parsing fails, then returns a negative
@@ -61,8 +59,7 @@ ReadFile::ReadFile(
       current_offset_(0),
       callback_(std::move(callback)) {}
 
-ReadFile::~ReadFile() {
-}
+ReadFile::~ReadFile() = default;
 
 bool ReadFile::Execute(int request_id) {
   using extensions::api::file_system_provider::ReadFileRequestedOptions;
@@ -109,6 +106,4 @@ void ReadFile::OnError(int /* request_id */,
   callback_.Run(0 /* chunk_length */, false /* has_more */, error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

@@ -5,34 +5,35 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_TRANSFER_PROFILER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_TRANSFER_PROFILER_H_
 
+#include <optional>
 #include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct SenderData {
-  absl::optional<base::TimeTicks> discovered_time = absl::nullopt;
-  absl::optional<base::TimeTicks> endpoint_decoded_time = absl::nullopt;
-  absl::optional<base::TimeTicks> share_target_selected_time = absl::nullopt;
-  absl::optional<base::TimeTicks> connection_established_time = absl::nullopt;
-  absl::optional<base::TimeTicks> introduction_sent_time = absl::nullopt;
-  absl::optional<base::TimeTicks> send_start_time = absl::nullopt;
-  absl::optional<base::TimeTicks> bandwidth_upgrade_time = absl::nullopt;
-  absl::optional<nearby::connections::mojom::Medium> upgraded_medium =
-      absl::nullopt;
+  std::optional<base::TimeTicks> discovered_time = std::nullopt;
+  std::optional<base::TimeTicks> endpoint_decoded_time = std::nullopt;
+  std::optional<base::TimeTicks> share_target_selected_time = std::nullopt;
+  std::optional<base::TimeTicks> connection_established_time = std::nullopt;
+  std::optional<base::TimeTicks> introduction_sent_time = std::nullopt;
+  std::optional<base::TimeTicks> send_start_time = std::nullopt;
+  std::optional<base::TimeTicks> bandwidth_upgrade_time = std::nullopt;
+  std::optional<nearby::connections::mojom::Medium> upgraded_medium =
+      std::nullopt;
 };
 
 struct ReceiverData {
   bool is_high_visibility = false;
-  absl::optional<base::TimeTicks> endpoint_decoded_time = absl::nullopt;
-  absl::optional<base::TimeTicks> paired_key_handshake_time = absl::nullopt;
-  absl::optional<base::TimeTicks> introduction_received_time = absl::nullopt;
-  absl::optional<base::TimeTicks> accept_transfer_time = absl::nullopt;
-  absl::optional<base::TimeTicks> bandwidth_upgrade_time = absl::nullopt;
-  absl::optional<nearby::connections::mojom::Medium> upgraded_medium =
-      absl::nullopt;
+  std::optional<base::TimeTicks> endpoint_decoded_time = std::nullopt;
+  std::optional<base::TimeTicks> paired_key_handshake_time = std::nullopt;
+  std::optional<base::TimeTicks> introduction_received_time = std::nullopt;
+  std::optional<base::TimeTicks> accept_transfer_time = std::nullopt;
+  std::optional<base::TimeTicks> bandwidth_upgrade_time = std::nullopt;
+  std::optional<nearby::connections::mojom::Medium> upgraded_medium =
+      std::nullopt;
 };
 
 class NearbyShareTransferProfiler {

@@ -326,4 +326,8 @@ void ThrottlingNetworkTransaction::CloseConnectionOnDestruction() {
   network_transaction_->CloseConnectionOnDestruction();
 }
 
+bool ThrottlingNetworkTransaction::IsMdlMatchForMetrics() const {
+  return network_transaction_->IsMdlMatchForMetrics();
+}
+
 }  // namespace network

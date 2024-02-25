@@ -127,7 +127,7 @@ void TaskSession::DocumentSession::Trace(Visitor* visitor) const {
 void TaskSession::DocumentSession::Reset() {
   changed_content_.clear();
   captured_content_.clear();
-  detached_nodes_.Clear();
+  detached_nodes_.clear();
   sent_nodes_.clear();
   visible_sent_nodes_.clear();
   changed_nodes_.clear();
@@ -139,7 +139,7 @@ TaskSession::DocumentSession* TaskSession::GetNextUnsentDocumentSession() {
   for (auto& doc : to_document_session_.Values()) {
     if (!doc->HasUnsentData())
       continue;
-    return doc;
+    return doc.Get();
   }
   has_unsent_data_ = false;
   return nullptr;
@@ -194,7 +194,7 @@ TaskSession::DocumentSession* TaskSession::GetDocumentSession(
   auto it = to_document_session_.find(&document);
   if (it == to_document_session_.end())
     return nullptr;
-  return it->value;
+  return it->value.Get();
 }
 
 void TaskSession::Trace(Visitor* visitor) const {

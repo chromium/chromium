@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_CORE_OOBE_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_CORE_OOBE_H_
 
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -13,7 +12,12 @@
 #include "chrome/browser/ash/login/version_info_updater.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event_source.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -58,7 +62,7 @@ class CoreOobeView;
 class PendingFrontendCalls;
 
 class CoreOobe : public VersionInfoUpdater::Delegate,
-                 public TabletModeObserver,
+                 public display::DisplayObserver,
                  public OobeConfiguration::Observer,
                  public ChromeKeyboardControllerClient::Observer {
  public:
@@ -71,7 +75,7 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   // Calls to these methods will be deferred until fully initialized.
   // See |CoreOobeView::UiState| for details.
   void ShowScreenWithData(const OobeScreenId& screen,
-                          absl::optional<base::Value::Dict> data);
+                          std::optional<base::Value::Dict> data);
   void ReloadContent();
   void ForwardCancel();
 
@@ -94,10 +98,8 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   // ChromeKeyboardControllerClient::Observer:
   void OnKeyboardVisibilityChanged(bool visible) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletModeChanged(bool tablet_mode_enabled);
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // OobeConfiguration::Observer:
   void OnOobeConfigurationChanged() override;
@@ -115,6 +117,9 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   // will show it as soon as the state |UiState::kPriorityScreensLoaded| is
   // reached.
   void MaybeShowPriorityScreen();
+
+  // Called when the display tablet state transition has completed.
+  void OnTabletModeChanged(bool tablet_mode_enabled);
 
   class PendingFrontendCalls {
    public:
@@ -138,6 +143,8 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   bool is_oobe_display_ = false;
 
   CoreOobeView::UiState ui_init_state_ = CoreOobeView::UiState::kUninitialized;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtr<CoreOobeView> view_;
 };

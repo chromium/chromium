@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
+
 namespace optimization_guide {
 
 // The type of annotation that is being done on the given input.
@@ -23,12 +25,17 @@ enum class AnnotationType {
   // The input will be annotated with the entities on the page. If the entities
   // will be persisted, make sure that only the entity IDs are persisted. To map
   // the IDs back to human-readable strings, use `EntityMetadataProvider`.
-  kPageEntities,
+  //
+  // This is deprecated and should not be used.
+  kDeprecatedPageEntities,
 
   // The input will be annotated for text embedding.
-  kTextEmbedding,
+  //
+  // This is deprecated and should not be used.
+  kDeprecatedTextEmbedding,
 };
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string AnnotationTypeToString(AnnotationType type);
 
 }  // namespace optimization_guide

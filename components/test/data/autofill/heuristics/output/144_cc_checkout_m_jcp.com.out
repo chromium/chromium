@@ -15,4 +15,4 @@ ADDRESS_HOME_STATE | state-guest |  |  | billingAsShipping_2
 UNKNOWN_TYPE | military-state |  |  | billingAsShipping_2
 ADDRESS_HOME_CITY | city-guest | City |  | billingAsShipping_2
 EMAIL_ADDRESS | email | Email address |  | billingAsShipping_2
-PHONE_HOME_WHOLE_NUMBER | phone-guest | Phone number |  | billingAsShipping_2
+PHONE_HOME_CITY_AND_NUMBER | phone-guest | Phone number |  | billingAsShipping_2

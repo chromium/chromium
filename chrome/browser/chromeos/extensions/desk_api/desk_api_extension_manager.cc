@@ -87,6 +87,8 @@ void DeskApiExtensionManager::Delegate::InstallExtension(
     const std::string& manifest_content) {
   component_loader->Add(manifest_content,
                         base::FilePath(FILE_PATH_LITERAL("chromeos/desk_api")));
+  // Force reload extension.
+  component_loader->Reload(extension_misc::kDeskApiExtensionId);
 }
 
 void DeskApiExtensionManager::Delegate::UninstallExtension(

@@ -77,10 +77,42 @@ std::string GetStringNameForOptimizationType(
       return "PriceInsights";
     case proto::OptimizationType::V8_COMPILE_HINTS:
       return "V8CompileHints";
+    case proto::OptimizationType::PAGE_INSIGHTS:
+      return "PageInsights";
     case proto::OptimizationType::SHOPPING_PAGE_TYPES:
       return "ShoppingPageTypes";
     case proto::OptimizationType::SHOPPING_DISCOUNTS:
       return "ShoppingDiscounts";
+    case proto::OptimizationType::COMPOSE:
+      return "Compose";
+    case proto::OptimizationType::PIX_PAYMENT_MERCHANT_ALLOWLIST:
+      return "PixPaymentMerchantAllowlist";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_FLIGHT_BENEFITS:
+      return "SharedCreditCardFlightBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_DINING_BENEFITS:
+      return "SharedCreditCardDiningBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_GROCERY_BENEFITS:
+      return "SharedCreditCardGroceryBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
+      return "SharedCreditCardEntertainmentBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_STREAMING_BENEFITS:
+      return "SharedCreditCardStreamingBenefits";
+    case proto::OptimizationType::SHARED_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
+      return "SharedCreditCardSubscriptionBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS:
+      return "CapitalOneCreditCardDiningBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS:
+      return "CapitalOneCreditCardGroceryBenefits";
+    case proto::OptimizationType::
+        CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
+      return "CapitalOneCreditCardEntertainmentBenefits";
+    case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS:
+      return "CapitalOneCreditCardStreamingBenefits";
+    case proto::OptimizationType::AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS:
+      return "AmericanExpressCreditCardFlightBenefits";
+    case proto::OptimizationType::
+        AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
+      return "AmericanExpressCreditCardSubscriptionBenefits";
   }
 
   // The returned string is used to record histograms for the optimization type.

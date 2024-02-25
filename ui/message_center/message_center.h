@@ -182,6 +182,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // center observers.
   virtual void ClickOnSettingsButton(const std::string& id) = 0;
 
+  // Called when the snooze buttons is clicked to trigger the notification's
+  // delegate.
+  virtual void ClickOnSnoozeButton(const std::string& id) = 0;
+
   // This should be called by UI classes when a user select from notification
   // inline settings to disable notifications from the same origin of the
   // notification.
@@ -207,7 +211,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
                                      const DisplaySource source) = 0;
 
   // This can be called to change the quiet mode state (without a timeout).
-  virtual void SetQuietMode(bool in_quiet_mode) = 0;
+  virtual void SetQuietMode(
+      bool in_quiet_mode,
+      QuietModeSourceType type = QuietModeSourceType::kUserAction) = 0;
+  virtual QuietModeSourceType GetLastQuietModeChangeSourceType() const = 0;
 
   // Used to set the spoken feedback state.
   virtual void SetSpokenFeedbackEnabled(bool enabled) = 0;

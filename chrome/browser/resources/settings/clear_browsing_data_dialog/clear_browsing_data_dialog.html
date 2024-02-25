@@ -145,25 +145,34 @@
         <div>$i18n{clearBrowsingData}</div>
       </div>
       <div slot="header">
-        <cr-tabs tab-names="[[tabsNames_]]"
-            selected="{{prefs.browser.last_clear_browsing_data_tab.value}}"
-            on-selected-changed="recordTabChange_"></cr-tabs>
+        <cr-tabs tab-names="[[tabsNames_]]" selected="{{selectedTabIndex_}}"
+            on-selected-changed="recordTabChange_">
+        </cr-tabs>
       </div>
       <div slot="body">
-        <iron-pages id="tabs"
-            selected="[[prefs.browser.last_clear_browsing_data_tab.value]]"
+        <iron-pages id="tabs" selected="[[selectedTabIndex_]]"
             on-selected-item-changed="updateClearButtonState_">
           <div id="basic-tab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <settings-dropdown-menu id="clearFromBasic"
-                  class="time-range-select"
-                  label="$i18n{clearTimeRange}"
-                  pref="{{prefs.browser.clear_data.time_period_basic}}"
-                  menu-options="[[clearFromOptions_]]">
-              </settings-dropdown-menu>
+              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFromBasic" no-set-pref
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_basic}}"
+                    menu-options="[[clearFromOptions_]]">
+                </settings-dropdown-menu>
+              </template>
+              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFromBasic" no-set-pref
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
+                    menu-options="[[clearFromOptionsV2_]]">
+                </settings-dropdown-menu>
+              </template>
             </div>
             <!-- Note: whether these checkboxes are checked are ignored if
                  deleting history is disabled (i.e. supervised users, policy),
@@ -185,9 +194,11 @@
                 pref="{{prefs.browser.clear_data.cookies_basic}}"
                 label="$i18n{clearCookies}"
                 sub-label="[[cookiesCheckboxLabel_(
+                    isSignedIn_,
                     shouldShowCookieException_,
                     '$i18nPolymer{clearCookiesSummary}',
                     '$i18nPolymer{clearCookiesSummarySignedIn}',
+                    '$i18nPolymer{clearCookiesSummarySyncing}',
                     '$i18nPolymer{clearCookiesSummarySignedInSupervisedProfile}'
                     )]]"
                 disabled="[[clearingInProgress_]]" no-set-pref>
@@ -224,12 +235,22 @@
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <settings-dropdown-menu id="clearFrom"
-                  class="time-range-select"
-                  label="$i18n{clearTimeRange}"
-                  pref="{{prefs.browser.clear_data.time_period}}"
-                  menu-options="[[clearFromOptions_]]">
-              </settings-dropdown-menu>
+              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFrom" no-set-pref
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period}}"
+                    menu-options="[[clearFromOptions_]]">
+                </settings-dropdown-menu>
+              </template>
+              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
+                <settings-dropdown-menu id="clearFrom" no-set-pref
+                    class="time-range-select"
+                    label="$i18n{clearTimeRange}"
+                    pref="{{prefs.browser.clear_data.time_period_v2}}"
+                    menu-options="[[clearFromOptionsV2_]]">
+                </settings-dropdown-menu>
+              </template>
             </div>
             <settings-checkbox id="browsingCheckbox"
                 pref="{{prefs.browser.clear_data.browsing_history}}"
@@ -305,15 +326,21 @@
           [[clearingDataAlertString_]]
         </div>
       </div>
-      <template is="dom-if" if="[[shouldShowFooter_(syncStatus.signedIn)]]"
+      <template is="dom-if"
+          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedIn)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
-              prefs="{{prefs}}" hide-buttons>
+              prefs="{{prefs}}" hide-buttons hide-banner>
           </settings-sync-account-control>
           <div class="divider"></div>
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
-            <span id="sync-info" hidden="[[syncStatus.hasError]]">
+            <span id="signin-info"
+                hidden="[[!showSigninInfo_(isSignedIn_, syncStatus.signedIn)]]">
+              $i18nRaw{clearBrowsingDataSignedIn}
+            </span>
+            <span id="sync-info"
+                hidden="[[!showSyncInfo_(isSignedIn_, syncStatus.signedIn)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
             <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">

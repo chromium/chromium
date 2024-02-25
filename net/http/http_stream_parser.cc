@@ -16,10 +16,12 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_data_stream.h"
 #include "net/http/http_chunked_decoder.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
@@ -112,10 +114,10 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 // // size() == BytesRemaining() == BytesConsumed() == 0.
 // // data() points to the beginning of the buffer.
 //
-class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
+class HttpStreamParser::SeekableIOBuffer : public IOBufferWithSize {
  public:
   explicit SeekableIOBuffer(int capacity)
-      : IOBuffer(capacity), real_data_(data_), capacity_(capacity) {}
+      : IOBufferWithSize(capacity), real_data_(data_), capacity_(capacity) {}
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
   // to the first unconsumed byte.
@@ -186,7 +188,9 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
       response_header_start_offset_(std::string::npos),
       stream_socket_(stream_socket),
       connection_is_reused_(connection_is_reused),
-      net_log_(net_log) {
+      net_log_(net_log),
+      truncate_to_content_length_enabled_(base::FeatureList::IsEnabled(
+          net::features::kTruncateBodyToContentLength)) {
   io_callback_ = base::BindRepeating(&HttpStreamParser::OnIOComplete,
                                      weak_ptr_factory_.GetWeakPtr());
 }
@@ -245,8 +249,8 @@ int HttpStreamParser::SendRequest(
   if (ShouldMergeRequestHeadersAndBody(request, request_->upload_data_stream)) {
     int merged_size = static_cast<int>(
         request_headers_length_ + request_->upload_data_stream->size());
-    scoped_refptr<IOBuffer> merged_request_headers_and_body =
-        base::MakeRefCounted<IOBuffer>(merged_size);
+    auto merged_request_headers_and_body =
+        base::MakeRefCounted<IOBufferWithSize>(merged_size);
     // We'll repurpose |request_headers_| to store the merged headers and
     // body.
     request_headers_ = base::MakeRefCounted<DrainableIOBuffer>(
@@ -278,10 +282,11 @@ int HttpStreamParser::SendRequest(
   if (!did_merge) {
     // If we didn't merge the body with the headers, then |request_headers_|
     // contains just the HTTP headers.
+    size_t request_size = request.size();
     scoped_refptr<StringIOBuffer> headers_io_buf =
-        base::MakeRefCounted<StringIOBuffer>(request);
+        base::MakeRefCounted<StringIOBuffer>(std::move(request));
     request_headers_ = base::MakeRefCounted<DrainableIOBuffer>(
-        std::move(headers_io_buf), request.size());
+        std::move(headers_io_buf), request_size);
   }
 
   result = DoLoop(OK);
@@ -643,17 +648,35 @@ int HttpStreamParser::DoReadBody() {
   // Added to investigate crbug.com/499663.
   CHECK(user_read_buf_.get());
 
+  // There may be additional data after the end of the body waiting in
+  // the socket, but in order to find out, we need to read as much as possible.
+  // If there is additional data, discard it and close the connection later.
+  int64_t remaining_read_len = user_read_buf_len_;
+  int64_t remaining_body = 0;
+  if (truncate_to_content_length_enabled_ && !chunked_decoder_.get() &&
+      response_body_length_ >= 0) {
+    remaining_body = response_body_length_ - response_body_read_;
+    remaining_read_len = std::min(remaining_read_len, remaining_body);
+  }
+
   // There may be some data left over from reading the response headers.
   if (read_buf_->offset()) {
-    int available = read_buf_->offset() - read_buf_unused_offset_;
+    int64_t available = read_buf_->offset() - read_buf_unused_offset_;
     if (available) {
       CHECK_GT(available, 0);
-      int bytes_from_buffer = std::min(available, user_read_buf_len_);
+      int64_t bytes_from_buffer = std::min(available, remaining_read_len);
       memcpy(user_read_buf_->data(),
              read_buf_->StartOfBuffer() + read_buf_unused_offset_,
              bytes_from_buffer);
       read_buf_unused_offset_ += bytes_from_buffer;
-      if (bytes_from_buffer == available) {
+      // Clear out the remaining data if we've reached the end of the body.
+      if (truncate_to_content_length_enabled_ &&
+          (remaining_body == bytes_from_buffer) &&
+          (available > bytes_from_buffer)) {
+        read_buf_->SetCapacity(0);
+        read_buf_unused_offset_ = 0;
+        discarded_extra_data_ = true;
+      } else if (bytes_from_buffer == available) {
         read_buf_->SetCapacity(0);
         read_buf_unused_offset_ = 0;
       }
@@ -668,12 +691,31 @@ int HttpStreamParser::DoReadBody() {
   if (IsResponseBodyComplete())
     return 0;
 
+  // DoReadBodyComplete will truncate the amount read if necessary whether the
+  // read completes synchronously or asynchronously.
   DCHECK_EQ(0, read_buf_->offset());
   return stream_socket_->Read(user_read_buf_.get(), user_read_buf_len_,
                               io_callback_);
 }
 
 int HttpStreamParser::DoReadBodyComplete(int result) {
+  // Check to see if we've read too much and need to discard data before we
+  // increment received_bytes_ and response_body_read_ or otherwise start
+  // processing the data.
+  if (truncate_to_content_length_enabled_ && !chunked_decoder_.get() &&
+      response_body_length_ >= 0) {
+    // Calculate how much we should have been allowed to read to not go beyond
+    // the Content-Length.
+    int64_t remaining_body = response_body_length_ - response_body_read_;
+    int64_t remaining_read_len =
+        std::min(static_cast<int64_t>(user_read_buf_len_), remaining_body);
+    if (result > remaining_read_len) {
+      // Truncate to only what is in the body.
+      result = remaining_read_len;
+      discarded_extra_data_ = true;
+    }
+  }
+
   // When the connection is closed, there are numerous ways to interpret it.
   //
   //  - If a Content-Length header is present and the body contains exactly that
@@ -1031,11 +1073,11 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
 
   response_->headers = headers;
   if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP0_9;
+    response_->connection_info = HttpConnectionInfo::kHTTP0_9;
   } else if (headers->GetHttpVersion() == HttpVersion(1, 0)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_0;
+    response_->connection_info = HttpConnectionInfo::kHTTP1_0;
   } else if (headers->GetHttpVersion() == HttpVersion(1, 1)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+    response_->connection_info = HttpConnectionInfo::kHTTP1_1;
   }
   DVLOG(1) << __func__ << "() content_length = \""
            << response_->headers->GetContentLength() << "\n\""
@@ -1124,8 +1166,10 @@ bool HttpStreamParser::CanReuseConnection() const {
   //
   // TODO(mmenke): Consider logging this - hard to decipher socket reuse
   //     behavior makes NetLogs harder to read.
-  if (IsResponseBodyComplete() && IsMoreDataBuffered())
+  if ((IsResponseBodyComplete() && IsMoreDataBuffered()) ||
+      discarded_extra_data_) {
     return false;
+  }
 
   return stream_socket_->IsConnected();
 }
@@ -1134,13 +1178,6 @@ void HttpStreamParser::OnConnectionClose() {
   // This is to ensure `stream_socket_` doesn't get dangling on connection
   // close.
   stream_socket_ = nullptr;
-}
-
-void HttpStreamParser::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!request_->url.SchemeIsCryptographic() ||
-      !stream_socket_->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
-  }
 }
 
 void HttpStreamParser::GetSSLCertRequestInfo(

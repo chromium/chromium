@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -18,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace ash {
 namespace quick_pair {
@@ -29,9 +29,10 @@ FastPairDataEncryptorImpl::Factory* g_test_factory_ = nullptr;
 
 bool ValidateInputSize(const std::vector<uint8_t>& encrypted_bytes) {
   if (encrypted_bytes.size() != kBlockSizeBytes) {
-    QP_LOG(WARNING) << __func__ << ": Encrypted bytes should have size = "
-                    << kBlockSizeBytes
-                    << ", actual =  " << encrypted_bytes.size();
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Encrypted bytes should have size = " << kBlockSizeBytes
+        << ", actual =  " << encrypted_bytes.size();
     return false;
   }
 
@@ -78,7 +79,7 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithKeyExchange(
     scoped_refptr<Device> device,
     base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
         on_get_instance_callback) {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
 
   // We first have to get the metadata in order to get the public key to use
   // to generate the new secret key pair.
@@ -95,9 +96,9 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
     scoped_refptr<Device> device,
     base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
         on_get_instance_callback) {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
 
-  absl::optional<std::vector<uint8_t>> account_key = device->account_key();
+  std::optional<std::vector<uint8_t>> account_key = device->account_key();
   DCHECK(account_key);
   DCHECK_EQ(account_key->size(), static_cast<size_t>(kPrivateKeyByteSize));
 
@@ -117,14 +118,15 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
   if (!device_metadata) {
-    QP_LOG(WARNING) << __func__ << ": No device metadata retrieved.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No device metadata retrieved.";
     std::move(on_get_instance_callback).Run(nullptr);
     return;
   }
 
   const std::string& public_anti_spoofing_key =
       device_metadata->GetDetails().anti_spoofing_key_pair().public_key();
-  absl::optional<fast_pair_encryption::KeyPair> key_pair =
+  std::optional<fast_pair_encryption::KeyPair> key_pair =
       fast_pair_encryption::GenerateKeysWithEcdhKeyAgreement(
           public_anti_spoofing_key);
 
@@ -135,7 +137,8 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
         base::WrapUnique(new FastPairDataEncryptorImpl(key_pair.value()));
     std::move(on_get_instance_callback).Run(std::move(data_encryptor));
   } else {
-    QP_LOG(WARNING) << __func__ << ": Failed to get key pair for device";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get key pair for device";
     std::move(on_get_instance_callback).Run(nullptr);
   }
 }
@@ -156,17 +159,17 @@ FastPairDataEncryptorImpl::EncryptBytes(
   return fast_pair_encryption::EncryptBytes(secret_key_, bytes_to_encrypt);
 }
 
-const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>&
+const std::optional<std::array<uint8_t, kPublicKeyByteSize>>&
 FastPairDataEncryptorImpl::GetPublicKey() {
   return public_key_;
 }
 
 void FastPairDataEncryptorImpl::ParseDecryptedResponse(
     const std::vector<uint8_t>& encrypted_response_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+    base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
         callback) {
   if (!ValidateInputSize(encrypted_response_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -180,10 +183,9 @@ void FastPairDataEncryptorImpl::ParseDecryptedResponse(
 
 void FastPairDataEncryptorImpl::ParseDecryptedPasskey(
     const std::vector<uint8_t>& encrypted_passkey_bytes,
-    base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-        callback) {
+    base::OnceCallback<void(const std::optional<DecryptedPasskey>&)> callback) {
   if (!ValidateInputSize(encrypted_passkey_bytes)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -197,14 +199,14 @@ void FastPairDataEncryptorImpl::ParseDecryptedPasskey(
 
 void FastPairDataEncryptorImpl::QuickPairProcessStoppedOnResponse(
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  QP_LOG(WARNING)
+  CD_LOG(WARNING, Feature::FP)
       << ": Quick Pair process stopped while decrypting response due to error: "
       << shutdown_reason;
 }
 
 void FastPairDataEncryptorImpl::QuickPairProcessStoppedOnPasskey(
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  QP_LOG(WARNING)
+  CD_LOG(WARNING, Feature::FP)
       << ": Quick Pair process stopped while decrypting passkey due to error: "
       << shutdown_reason;
 }

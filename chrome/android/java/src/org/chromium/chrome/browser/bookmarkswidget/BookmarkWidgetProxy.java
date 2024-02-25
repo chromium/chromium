@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.components.webapps.ShortcutSource;
 
-/**
- * Proxy that responds to tapping on the Bookmarks widget.
- */
+/** Proxy that responds to tapping on the Bookmarks widget. */
 public class BookmarkWidgetProxy extends Activity {
     private static final String TAG = "BookmarkWidgetProxy";
 

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -38,8 +40,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -48,30 +48,24 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Unit tests for {@link ReaderModeActionProvider}
- */
+/** Unit tests for {@link ReaderModeActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
 public class ReaderModeActionProviderTest {
-    @Rule
-    public final TestRule mFeatureProcessor = new Features.JUnitProcessor();
+    @Rule public final TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private Tab mMockTab;
-    @Mock
-    private ReaderModeManager mMockReaderModeManager;
-    @Mock
-    private SignalAccumulator mMockSignalAccumulator;
+    @Mock private Tab mMockTab;
+    @Mock private ReaderModeManager mMockReaderModeManager;
+    @Mock private SignalAccumulator mMockSignalAccumulator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         initializeReaderModeBackend();
 
-        mMockTab.getUserDataHost().setUserData(
-                ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
+        mMockTab.getUserDataHost()
+                .setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
         doReturn(false).when(mMockReaderModeManager).isReaderModeUiRateLimited();
     }
 
@@ -155,8 +149,10 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testUsingReaderModeManagerRateLimiting() {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-                "reader_mode_session_rate_limiting", "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting",
+                "true");
         FeatureList.setTestValues(testValues);
         when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(true);
 
@@ -169,10 +165,31 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
+    public void testUsingReaderModeManagerRateLimiting_shouldIgnoreTabsWithNoManager() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting",
+                "true");
+        FeatureList.setTestValues(testValues);
+
+        mMockTab.getUserDataHost().removeUserData(ReaderModeManager.USER_DATA_KEY);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(false);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
     public void testProviderDelaysSettingOnShown() throws TimeoutException {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-                "reader_mode_session_rate_limiting", "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting",
+                "true");
         FeatureList.setTestValues(testValues);
         when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
 
@@ -189,8 +206,10 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testProviderSetsOnShownAfterDelay() throws TimeoutException {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-                "reader_mode_session_rate_limiting", "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting",
+                "true");
         FeatureList.setTestValues(testValues);
         when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
 
@@ -207,8 +226,10 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testProviderSetsOnShownAfterDelay_ExceptIfTabIsDestroyed() throws TimeoutException {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-                "reader_mode_session_rate_limiting", "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting",
+                "true");
         FeatureList.setTestValues(testValues);
         when(mMockReaderModeManager.isReaderModeUiRateLimited()).thenReturn(false);
 

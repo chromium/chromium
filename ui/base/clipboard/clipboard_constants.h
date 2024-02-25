@@ -30,6 +30,7 @@ extern const char kMimeTypeDownloadURL[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeMozillaURL[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTML[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTMLUtf8[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeSvg[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRTF[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
@@ -91,7 +92,15 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumPrivilegedInitiatedDrag;
 
 // Data type placed on dragging pasteboards when the drag is initiated from a
-// renderer. There is never any data associated with this type.
+// renderer. If the initiator has a tuple origin (e.g. https://example.com),
+// the data is a string representation (i.e. the result of calling
+// `url::Origin::Serialize()`). Otherwise, the initiator has an opaque origin
+// and the data is the empty string.
+//
+// This format is intentionally chosen for safer backwards compatibility with
+// previous versions of Chrome, which always set an empty string for the data.
+// When newer versions of Chrome attempt to interpret this data as an origin,
+// they will safely treat it as a unique opaque origin.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumRendererInitiatedDrag;
 
@@ -117,6 +126,10 @@ extern NSString* const kUTTypeWebKitWebSmartPaste;
 // A type used by WebKit to add an array of URLs with titles to the clipboard.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeWebKitWebURLsWithTitles;
+
+// A type used to track the source URL of data put in the clipboard.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern NSString* const kUTTypeChromiumSourceURL;
 
 #endif  // BUILDFLAG(IS_APPLE)
 

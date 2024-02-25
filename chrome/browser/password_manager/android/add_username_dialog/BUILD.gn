@@ -1,0 +1,84 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  sources = [
+    "add_username_dialog_bridge.cc",
+    "add_username_dialog_bridge.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//content/public/browser",
+    "//ui/android:android",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogBridge.java" ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentProperties.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentView.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogContentViewBinder.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogController.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.add_username_dialog"
+}
+
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources = [ "java/res/layout/add_username_dialog_content.xml" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/add_username_dialog/AddUsernameDialogModuleTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.add_username_dialog"
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PowerManagementUsesVideoActivity": true
+        },
+        "prefs": {
+          "power.use_video_activity": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -15,24 +15,29 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_tree.h"
 #include "base/dcheck_is_on.h"
-#include "base/functional/identity.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
+#include "chrome/common/privacy_budget/identifiability_study_configurator.mojom.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/variations_switches.h"
+#include "content/public/browser/render_process_host.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
@@ -43,6 +48,16 @@ namespace {
 int GetStudyGenerationFromFieldTrial() {
   return std::clamp(features::kIdentifiabilityStudyGeneration.Get(), 0,
                      std::numeric_limits<int>::max());
+}
+
+double GetMetaExperimentActivationProbability() {
+  double settings_probability =
+      features::kIdentifiabilityStudyMetaExperimentActivationProbability.Get();
+  if (settings_probability < 0 || settings_probability > 1) {
+    return chrome::GetChannel() == version_info::Channel::STABLE ? 0.01 : 0.5;
+  } else {
+    return settings_probability;
+  }
 }
 
 }  // namespace
@@ -66,8 +81,7 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
               : 1,
           kMesaDistributionRatio,
           kMesaDistributionGeometricDistributionParam),
-      reid_estimator_(
-          PrivacyBudgetReidScoreEstimator(&settings_, pref_service)) {
+      meta_experiment_active_(IsMetaExperimentActive()) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }
@@ -81,16 +95,16 @@ int IdentifiabilityStudyState::generation() const {
 bool IdentifiabilityStudyState::ShouldRecordSurface(
     blink::IdentifiableSurface surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (LIKELY(!settings_.enabled()))
+  if (LIKELY(!settings_.enabled() && !meta_experiment_active_)) {
     return false;
+  }
 
   // We always record surfaces of type zero.
   if (surface.GetType() == blink::IdentifiableSurface::Type::kReservedInternal)
     return true;
 
-  if (surface.GetType() ==
-      blink::IdentifiableSurface::Type::kReidScoreEstimator) {
-    return settings_.IsUsingReidScoreEstimator();
+  if (LIKELY(!settings_.enabled())) {
+    return false;
   }
 
   // All other surfaces should be recorded only when sampling.
@@ -129,10 +143,23 @@ void IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting() {
   blink::IdentifiabilityStudySettings::ResetStateForTesting();
 }
 
-// static
 void IdentifiabilityStudyState::InitializeGlobalStudySettings() {
   blink::IdentifiabilityStudySettings::SetGlobalProvider(
-      std::make_unique<PrivacyBudgetSettingsProvider>());
+      std::make_unique<PrivacyBudgetSettingsProvider>(meta_experiment_active_));
+}
+
+void IdentifiabilityStudyState::InitializeRenderer(
+    content::RenderProcessHost* render_process_host) {
+  IPC::ChannelProxy* channel = render_process_host->GetChannel();
+  if (!channel) {
+    return;
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::IdentifiabilityStudyConfigurator>
+      identifiability_study_configurator;
+  channel->GetRemoteAssociatedInterface(&identifiability_study_configurator);
+  identifiability_study_configurator->ConfigureIdentifiabilityStudy(
+      /*meta_experiment_active=*/meta_experiment_active_);
 }
 
 bool IdentifiabilityStudyState::DecideInclusionForNewSurface(
@@ -343,7 +370,6 @@ void IdentifiabilityStudyState::ResetInMemoryState() {
 
 void IdentifiabilityStudyState::ResetPersistedState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  reid_estimator_.ResetPersistedState();
 
   ResetInMemoryState();
 
@@ -491,6 +517,35 @@ IdentifiabilityStudyState::AdjustForDroppedOffsets(
   return offsets;
 }
 
+bool IdentifiabilityStudyState::IsMetaExperimentActive() {
+  if (!base::FeatureList::IsEnabled(
+          features::kIdentifiabilityStudyMetaExperiment)) {
+    pref_service_->ClearPref(prefs::kPrivacyBudgetMetaExperimentActivationSalt);
+    return false;
+  }
+
+  // Use a fixed state when benchmarking, so that benchmarking results are more
+  // reproducible.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking)) {
+    return false;
+  }
+
+  // Keep the experiment consistently active or inactive for a given client.
+  double salt;
+  if (pref_service_->HasPrefPath(
+          prefs::kPrivacyBudgetMetaExperimentActivationSalt)) {
+    salt = pref_service_->GetDouble(
+        prefs::kPrivacyBudgetMetaExperimentActivationSalt);
+  } else {
+    salt = base::RandDouble();
+    pref_service_->SetDouble(prefs::kPrivacyBudgetMetaExperimentActivationSalt,
+                             salt);
+  }
+
+  return salt < GetMetaExperimentActivationProbability();
+}
+
 void IdentifiabilityStudyState::InitFromPrefs() {
   if (LIKELY(!settings_.enabled())) {
     // Nothing to do if the study is not active. However it is possible that
@@ -508,8 +563,6 @@ void IdentifiabilityStudyState::InitFromPrefs() {
     return;
   }
 
-  reid_estimator_.Init();
-
   if (settings_.IsUsingAssignedBlockSampling()) {
     InitStateForAssignedBlockSampling();
   }
@@ -519,14 +572,6 @@ void IdentifiabilityStudyState::InitFromPrefs() {
   }
 
   CheckInvariants();
-}
-
-void IdentifiabilityStudyState::MaybeStoreValueForComputingReidScore(
-    blink::IdentifiableSurface surface,
-    blink::IdentifiableToken token) {
-  if (!settings_.IsUsingReidScoreEstimator())
-    return;
-  reid_estimator_.ProcessForReidScore(surface, token);
 }
 
 void IdentifiabilityStudyState::InitStateForRandomSurfaceSampling() {

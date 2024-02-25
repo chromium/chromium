@@ -443,6 +443,18 @@ message PerfDataProto {
     optional uint64 name_md5_prefix = 3;
   }
 
+  message PerfHybridTopologyMetadata {
+    // The pmu name, field 1, has been intentionally left out.
+
+    // The 16 most significant bytes of the pmu name's md5 prefix.
+    optional uint64 pmu_name_md5_prefix = 2;
+
+    // The string version of cpus, field 3, has been intentionally left out.
+
+    // A range of cpu numbers for this pmu.
+    repeated uint32 cpu_list = 4 [packed = true];
+  }
+
   repeated PerfFileAttr file_attrs = 1;
   repeated PerfEvent events = 2;
 
@@ -471,6 +483,8 @@ message PerfDataProto {
   repeated PerfPMUMappingsMetadata pmu_mappings = 15;
 
   // Not added from original: repeated PerfGroupDescMetadata group_desc = 16;
+
+  repeated PerfHybridTopologyMetadata hybrid_topology = 17;
 
   message StringMetadata {
     message StringAndMd5sumPrefix {

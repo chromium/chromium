@@ -16,9 +16,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-/**
- * Adapter between AwProxyController and ProxyControllerBoundaryInterface.
- */
+/** Adapter between AwProxyController and ProxyControllerBoundaryInterface. */
 public class SupportLibProxyControllerAdapter implements ProxyControllerBoundaryInterface {
     private final WebViewChromiumRunQueue mRunQueue;
     private final AwProxyController mProxyController;
@@ -36,22 +34,35 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
     }
 
     @Override
-    public void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
-            Executor executor, boolean reverseBypass) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.SET_PROXY_OVERRIDE_OR_REVERSE_BYPASS")) {
-            recordApiCall(reverseBypass ? ApiCall.SET_PROXY_OVERRIDE
-                                        : ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS);
+    public void setProxyOverride(
+            String[][] proxyRules,
+            String[] bypassRules,
+            Runnable listener,
+            Executor executor,
+            boolean reverseBypass) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SET_PROXY_OVERRIDE_OR_REVERSE_BYPASS")) {
+            recordApiCall(
+                    reverseBypass
+                            ? ApiCall.SET_PROXY_OVERRIDE
+                            : ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS);
             if (checkNeedsPost()) {
-                RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
-                    try {
-                        mProxyController.setProxyOverride(
-                                proxyRules, bypassRules, listener, executor, reverseBypass);
-                    } catch (RuntimeException e) {
-                        return e;
-                    }
-                    return null;
-                });
+                RuntimeException exception =
+                        mRunQueue.runOnUiThreadBlocking(
+                                () -> {
+                                    try {
+                                        mProxyController.setProxyOverride(
+                                                proxyRules,
+                                                bypassRules,
+                                                listener,
+                                                executor,
+                                                reverseBypass);
+                                    } catch (RuntimeException e) {
+                                        return e;
+                                    }
+                                    return null;
+                                });
                 maybeThrowUnwrappedException(exception);
             } else {
                 mProxyController.setProxyOverride(
@@ -63,17 +74,19 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
     @Override
     public void clearProxyOverride(Runnable listener, Executor executor) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_PROXY_OVERRIDE")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_PROXY_OVERRIDE")) {
             recordApiCall(ApiCall.CLEAR_PROXY_OVERRIDE);
             if (checkNeedsPost()) {
-                RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
-                    try {
-                        mProxyController.clearProxyOverride(listener, executor);
-                    } catch (RuntimeException e) {
-                        return e;
-                    }
-                    return null;
-                });
+                RuntimeException exception =
+                        mRunQueue.runOnUiThreadBlocking(
+                                () -> {
+                                    try {
+                                        mProxyController.clearProxyOverride(listener, executor);
+                                    } catch (RuntimeException e) {
+                                        return e;
+                                    }
+                                    return null;
+                                });
                 maybeThrowUnwrappedException(exception);
             } else {
                 mProxyController.clearProxyOverride(listener, executor);

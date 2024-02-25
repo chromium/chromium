@@ -32,7 +32,7 @@ class MODULES_EXPORT V8ContextSnapshotImpl {
 
   static void InstallInterfaceTemplates(v8::Isolate* isolate);
 
-  static v8::StartupData TakeSnapshot();
+  static v8::StartupData TakeSnapshot(v8::Isolate* isolate);
 
   static const intptr_t* GetReferenceTable();
 };

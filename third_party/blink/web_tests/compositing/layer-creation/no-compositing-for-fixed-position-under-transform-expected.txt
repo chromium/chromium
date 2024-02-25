@@ -8,7 +8,7 @@ TEST
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='transform'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='transform'",
       "bounds": [100, 30],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

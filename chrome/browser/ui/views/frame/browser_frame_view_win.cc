@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
@@ -147,7 +150,12 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
   }
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     x = 0;
+  } else if (window_icon_) {
+    // Add extra padding to the left of the toolbar to account for the window
+    // icon.
+    x += window_icon_->size().width() + kIconTitleSpacing;
   }
+
   int trailing_x = width() - CaptionButtonsRegionWidth();
   return gfx::Rect(x, WindowTopY(), std::max(0, trailing_x - x),
                    caption_button_container_->size().height());
@@ -177,10 +185,6 @@ int BrowserFrameViewWin::GetTopInset(bool restored) const {
   return ShouldBrowserCustomDrawTitlebar(browser_view())
              ? TitlebarHeight(restored)
              : 0;
-}
-
-int BrowserFrameViewWin::GetThemeBackgroundXInset() const {
-  return 0;
 }
 
 bool BrowserFrameViewWin::HasVisibleBackgroundTabShapes(
@@ -382,8 +386,14 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
       top_border_thickness, kResizeCornerWidth - FrameBorderThickness(),
       frame()->widget_delegate()->CanResize());
+
+  if (window_component != HTNOWHERE) {
+    return window_component;
+  }
+
   // Fall back to the caption if no other component matches.
-  return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
+  TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(false);
+  return HTCAPTION;
 }
 
 void BrowserFrameViewWin::UpdateWindowIcon() {
@@ -415,6 +425,12 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   if (!ShouldShowWindowIcon(TitlebarType::kCustom)) {
     return false;
   }
+
+  // Web apps use their app icon and shouldn't show a throbber.
+  if (browser_view()->GetIsWebAppType()) {
+    return false;
+  }
+
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
   return current_tab && current_tab->IsLoading();
 }
@@ -443,7 +459,7 @@ void BrowserFrameViewWin::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void BrowserFrameViewWin::Layout() {
+void BrowserFrameViewWin::Layout(PassKey) {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::Layout");
 
   LayoutCaptionButtons();
@@ -451,7 +467,7 @@ void BrowserFrameViewWin::Layout() {
     LayoutTitleBar();
   }
   LayoutClientView();
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -467,13 +483,13 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
   const bool is_fullscreen =
       (frame()->IsFullscreen() || IsMaximized()) && !restored;
   if (!is_fullscreen) {
-    // Restored windows have a smaller top resize handle than the system
-    // default. When maximized, the OS sizes the window such that the border
-    // extends beyond the screen edges. In that case, we must return the default
-    // value.
-    constexpr int kTopResizeFrameArea = 5;
     if (browser_view()->GetTabStripVisible()) {
-      return features::IsChromeRefresh2023() ? 0 : kTopResizeFrameArea;
+      // Restored windows have a smaller top resize handle than the system
+      // default. When maximized, the OS sizes the window such that the border
+      // extends beyond the screen edges. In that case, we must return the
+      // default value.
+      const int kTopResizeFrameArea = features::IsChromeRefresh2023() ? 1 : 5;
+      return kTopResizeFrameArea;
     }
 
     // There is no top border in tablet mode when the window is "restored"
@@ -624,7 +640,7 @@ bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
       ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (frame()->IsFullscreen() || browser_view()->GetIsWebAppType()) {
+  if (frame()->IsFullscreen()) {
     return false;
   }
   return browser_view()->ShouldShowWindowIcon();
@@ -917,5 +933,5 @@ void BrowserFrameViewWin::InitThrobberIcons() {
   }
 }
 
-BEGIN_METADATA(BrowserFrameViewWin, BrowserNonClientFrameView)
+BEGIN_METADATA(BrowserFrameViewWin)
 END_METADATA

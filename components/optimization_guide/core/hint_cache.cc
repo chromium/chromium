@@ -21,9 +21,7 @@ HintCache::HintCache(
     : optimization_guide_store_(optimization_guide_store),
       host_keyed_cache_(max_memory_cache_host_keyed_hints),
       url_keyed_hint_cache_(features::MaxURLKeyedHintCacheSize()),
-      clock_(base::DefaultClock::GetInstance()),
-      should_drop_fragments_from_url_keyed_cache_key_(
-          features::ShouldDropFragmentsForURLKeyedHintCacheKey()) {}
+      clock_(base::DefaultClock::GetInstance()) {}
 
 HintCache::~HintCache() = default;
 
@@ -300,10 +298,7 @@ base::Time HintCache::GetFetchedHintsUpdateTime() const {
 }
 
 std::string HintCache::GetURLKeyedHintCacheKey(const GURL& url) const {
-  if (should_drop_fragments_from_url_keyed_cache_key_) {
-    return url.GetWithoutRef().spec();
-  }
-  return url.spec();
+  return url.GetWithoutRef().spec();
 }
 
 void HintCache::OnStoreInitialized(base::OnceClosure callback) {

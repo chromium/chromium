@@ -1,0 +1,38 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SafeBrowsingForTrustedSourcesEnabled": true
+        },
+        "prefs": {
+          "safebrowsing_for_trusted_sources_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingForTrustedSourcesEnabled": false
+        },
+        "prefs": {
+          "safebrowsing_for_trusted_sources_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing_for_trusted_sources_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

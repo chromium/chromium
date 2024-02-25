@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_context.h"
@@ -76,10 +77,11 @@ void MojoRenderer::InitializeRendererFromStreams(
 
   // Create mojom::DemuxerStream for each demuxer stream and bind its lifetime
   // to the pipe.
-  std::vector<DemuxerStream*> streams = media_resource_->GetAllStreams();
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
+      media_resource_->GetAllStreams();
   std::vector<mojo::PendingRemote<mojom::DemuxerStream>> stream_proxies;
 
-  for (auto* stream : streams) {
+  for (media::DemuxerStream* stream : streams) {
     mojo::PendingRemote<mojom::DemuxerStream> stream_proxy;
     auto mojo_stream = std::make_unique<MojoDemuxerStreamImpl>(
         stream, stream_proxy.InitWithNewPipeAndPassReceiver());
@@ -119,9 +121,9 @@ void MojoRenderer::InitializeRendererFromUrl(media::RendererClient* client) {
   mojom::MediaUrlParamsPtr media_url_params = mojom::MediaUrlParams::New(
       url_params.media_url, url_params.site_for_cookies,
       url_params.top_frame_origin, url_params.has_storage_access,
-      url_params.allow_credentials, url_params.is_hls);
+      url_params.allow_credentials, url_params.is_hls, url_params.headers);
   remote_renderer_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
-                               absl::nullopt, std::move(media_url_params),
+                               std::nullopt, std::move(media_url_params),
                                base::BindOnce(&MojoRenderer::OnInitialized,
                                               base::Unretained(this), client));
 }
@@ -140,7 +142,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
     return;
   }
 
-  absl::optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
+  std::optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
   if (!cdm_id) {
     DVLOG(2) << "MojoRenderer only works with remote CDMs but the CDM ID "
                 "is invalid.";
@@ -156,8 +158,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
                                                   base::Unretained(this)));
 }
 
-void MojoRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+void MojoRenderer::SetLatencyHint(std::optional<base::TimeDelta> latency_hint) {
   // TODO(chcunningham): Proxy to remote renderer if needed.
 }
 

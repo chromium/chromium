@@ -25,8 +25,8 @@ export enum I18nString {
   BACK_BUTTON = 'back_button',
   BARCODE_COPY_LINK_BUTTON = 'barcode_copy_link_button',
   BARCODE_COPY_TEXT_BUTTON = 'barcode_copy_text_button',
-  BARCODE_LINK_DETECTED = 'barcode_link_detected',
-  BARCODE_TEXT_DETECTED = 'barcode_text_detected',
+  BARCODE_LINK_CHIPTEXT = 'barcode_link_chiptext',
+  BARCODE_WIFI_CHIPTEXT = 'barcode_wifi_chiptext',
   CANCEL_REVIEW_BUTTON = 'cancel_review_button',
   CONFIRM_REVIEW_BUTTON = 'confirm_review_button',
   DELETE_PAGE_BUTTON = 'delete_page_button',
@@ -68,6 +68,10 @@ export enum I18nString {
   LABEL_30FPS = 'label_30fps',
   LABEL_60FPS = 'label_60fps',
   LABEL_BACK_CAMERA = 'label_back_camera',
+  LABEL_BARCODE_TEXT = 'label_barcode_text',
+  LABEL_BARCODE_URL = 'label_barcode_url',
+  LABEL_BARCODE_WIFI = 'label_barcode_wifi',
+  LABEL_BARCODE_WIFI_CHIP = 'label_barcode_wifi_chip',
   LABEL_CROP_DONE = 'label_crop_done',
   LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME =
       'label_current_and_maximal_record_time',
@@ -129,7 +133,6 @@ export enum I18nString {
   MSG_DOCUMENT_DETECTED = 'msg_document_detected',
   MSG_PROCESSING_IMAGE = 'msg_processing_image',
   MSG_PROCESSING_VIDEO = 'msg_processing_video',
-  NEW_TIME_LAPSE_TOAST = 'new_time_lapse_toast',
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',

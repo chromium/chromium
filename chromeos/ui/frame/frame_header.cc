@@ -173,7 +173,7 @@ void FrameHeader::FrameAnimatorView::StopAnimation() {
   }
 }
 
-BEGIN_METADATA(FrameHeader, FrameAnimatorView, views::View)
+BEGIN_METADATA(FrameHeader, FrameAnimatorView)
 END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -202,6 +202,11 @@ FrameHeader::~FrameHeader() {
   if (center_button_ && !center_button_->parent()) {
     delete center_button_;
     center_button_ = nullptr;
+  }
+
+  if (underneath_layer_owner_) {
+    underneath_layer_owner_->RemoveObserver(this);
+    underneath_layer_owner_ = nullptr;
   }
 
   auto* target_window = target_widget_->GetNativeView();
@@ -353,12 +358,41 @@ void FrameHeader::UpdateFrameHeaderKey() {
   target_widget_->GetNativeView()->SetProperty(kFrameHeaderKey, this);
 }
 
+void FrameHeader::OnLayerRecreated(ui::Layer* old_layer) {
+  if (underneath_layer_owner_) {
+    frame_animator_->RemoveLayerFromRegionsKeepInLayerTree(old_layer);
+    frame_animator_->AddLayerToRegion(underneath_layer_owner_->layer(),
+                                      views::LayerRegion::kBelow);
+  }
+}
+
+void FrameHeader::AddLayerBeneath(ui::LayerOwner* layer_owner) {
+  if (layer_owner) {
+    underneath_layer_owner_ = layer_owner;
+    // A relationship between the layer_owner's layer and animation view is
+    // created, we need to observe the layer_owner in case of the layer gets
+    // recreated.
+    layer_owner->AddObserver(this);
+    frame_animator_->AddLayerToRegion(layer_owner->layer(),
+                                      views::LayerRegion::kBelow);
+  }
+}
+
+void FrameHeader::RemoveLayerBeneath() {
+  if (underneath_layer_owner_) {
+    frame_animator_->RemoveLayerFromRegionsKeepInLayerTree(
+        underneath_layer_owner_->layer());
+    underneath_layer_owner_->RemoveObserver(this);
+    underneath_layer_owner_ = nullptr;
+  }
+}
+
 gfx::Rect FrameHeader::GetPaintedBounds() const {
   return gfx::Rect(view_->width(), painted_height_);
 }
 
 void FrameHeader::UpdateCaptionButtonColors(
-    absl::optional<ui::ColorId> icon_color_id) {
+    std::optional<ui::ColorId> icon_color_id) {
   const SkColor frame_color = GetCurrentFrameColor();
   if (caption_button_container_->window_controls_overlay_enabled()) {
     caption_button_container_->SetBackground(
@@ -437,7 +471,7 @@ void FrameHeader::LayoutHeaderInternal() {
       caption_button_container_size.width(),
       caption_button_container_size.height());
 
-  caption_button_container()->Layout();
+  caption_button_container()->DeprecatedLayoutImmediately();
 
   int origin = 0;
   if (back_button_) {

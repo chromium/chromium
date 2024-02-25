@@ -44,7 +44,7 @@ enum class FedCmRequestIdTokenStatus {
   kIdTokenInvalidResponse,
   kIdTokenInvalidRequest,                  // obsolete
   kClientMetadataMissingPrivacyPolicyUrl,  // obsolete
-  kThirdPartyCookiesBlocked,
+  kThirdPartyCookiesBlocked,               // obsolete
   kDisabledInSettings,
   kDisabledInFlags,
   kWellKnownHttpNotFound,
@@ -64,8 +64,10 @@ enum class FedCmRequestIdTokenStatus {
   kAccountsInvalidContentType,
   kIdTokenInvalidContentType,
   kSilentMediationFailure,
+  kIdTokenIdpErrorResponse,
+  kIdTokenCrossSiteIdpErrorResponse,
 
-  kMaxValue = kSilentMediationFailure
+  kMaxValue = kIdTokenCrossSiteIdpErrorResponse
 };
 
 // This enum describes whether user sign-in states between IDP and browser
@@ -98,8 +100,8 @@ enum class FedCmIdpSigninMatchStatus {
   kMaxValue = kMismatchWithUnexpectedAccounts
 };
 
-// This enum describes the type of frame that invokes preventSilentAccess.
-enum class PreventSilentAccessFrameType {
+// This enum describes the type of frame that invokes a FedCM API.
+enum class FedCmRequesterFrameType {
   // Do not change the meaning or order of these values since they are being
   // recorded in metrics and in sync with the counterpart in enums.xml.
   kMainFrame,
@@ -107,6 +109,77 @@ enum class PreventSilentAccessFrameType {
   kCrossSiteIframe,
 
   kMaxValue = kCrossSiteIframe
+};
+
+// This enum describes the status of a disconnect call to the FedCM API.
+enum class FedCmDisconnectStatus {
+  // Don't change the meaning or the order of these values because they are
+  // being recorded in metrics and in sync with the counterpart in enums.xml.
+  kSuccess,
+  kTooManyRequests,
+  kUnhandledRequest,
+  kNoAccountToDisconnect,
+  kDisconnectUrlIsCrossOrigin,
+  kDisconnectFailedOnServer,
+  kConfigHttpNotFound,
+  kConfigNoResponse,
+  kConfigInvalidResponse,
+  kDisabledInSettings,
+  kDisabledInFlags,
+  kWellKnownHttpNotFound,
+  kWellKnownNoResponse,
+  kWellKnownInvalidResponse,
+  kWellKnownListEmpty,
+  kConfigNotInWellKnown,
+  kWellKnownTooBig,
+  kWellKnownInvalidContentType,
+  kConfigInvalidContentType,
+  kIdpNotPotentiallyTrustworthy,
+
+  kMaxValue = kIdpNotPotentiallyTrustworthy
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmSetLoginStatusIgnoredReason {
+  kFrameTreeLookupFailed = 0,
+  kInFencedFrame = 1,
+  kCrossOrigin = 2,
+
+  kMaxValue = kCrossOrigin
+};
+
+// This enum describes the result of the error dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmErrorDialogResult {
+  kMoreDetails = 0,
+  kGotItWithoutMoreDetails = 1,
+  kGotItWithMoreDetails = 2,
+  kCloseWithoutMoreDetails = 3,
+  kCloseWithMoreDetails = 4,
+  kSwipeWithoutMoreDetails = 5,
+  kSwipeWithMoreDetails = 6,
+  kOtherWithoutMoreDetails = 7,
+  kOtherWithMoreDetails = 8,
+
+  kMaxValue = kOtherWithMoreDetails
+};
+
+// This enum is used when we fail a FedCM request due to a bad
+// lifecycle state.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmLifecycleStateFailureReason {
+  kOther = 0,
+  kSpeculative = 1,
+  kPendingCommit = 2,
+  kPrerendering = 3,
+  kInBackForwardCache = 4,
+  kRunningUnloadHandlers = 5,
+  kReadyToBeDeleted = 6,
+
+  kMaxValue = kReadyToBeDeleted
 };
 
 class CONTENT_EXPORT FedCmMetrics {
@@ -162,15 +235,16 @@ class CONTENT_EXPORT FedCmMetrics {
   // the IDP based on observing signin/signout HTTP headers matches the
   // information returned by the accounts endpoint.
   void RecordIdpSigninMatchStatus(
-      absl::optional<bool> idp_signin_status,
+      std::optional<bool> idp_signin_status,
       IdpNetworkRequestManager::ParseStatus accounts_endpoint_status);
 
   // Records whether the user selected account is for sign-in or not.
   void RecordIsSignInUser(bool is_sign_in);
 
-  // Records whether a user has left the page where the API is called when the
-  // browser is ready to show the accounts dialog.
-  void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible);
+  // Records whether the frame is visible or active upon ready to show accounts
+  // UI.
+  void RecordWebContentsStatusUponReadyToShowDialog(bool is_visible,
+                                                    bool is_active);
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
@@ -185,19 +259,33 @@ class CONTENT_EXPORT FedCmMetrics {
   // |has_single_returning_account| is nullopt when we are recording the metrics
   // during a failure that happened before the accounts fetch.
   void RecordAutoReauthnMetrics(
-      absl::optional<bool> has_single_returning_account,
+      std::optional<bool> has_single_returning_account,
       const IdentityRequestAccount* auto_signin_account,
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
-      absl::optional<base::TimeDelta> time_from_embargo,
+      std::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 
   // Records a sample when an accounts dialog is shown.
   void RecordAccountsDialogShown();
 
-  // Records a sample when a mismatch dialog is shown.
-  void RecordMismatchDialogShown();
+  // This enum is used in histograms. Do not remove or modify existing entries.
+  // You may add entries at the end, and update |kMaxValue|.
+  enum class MismatchDialogType {
+    kFirstWithoutHints,
+    kFirstWithHints,
+    kRepeatedWithoutHints,
+    kRepeatedWithHints,
+
+    kMaxValue = kRepeatedWithHints
+  };
+
+  // Records a sample when a mismatch dialog is shown. Also records whether this
+  // is a mismatch seen for the first time or a if there has already been a
+  // mismatch dialog for this call. Finally, records when there is a repeated
+  // mismatch and hints were requested in the call.
+  void RecordMismatchDialogShown(bool has_shown_mismatch, bool has_hints);
 
   // Records a sample when an accounts request is sent.
   void RecordAccountsRequestSent();
@@ -206,6 +294,31 @@ class CONTENT_EXPORT FedCmMetrics {
   // document. Requests made when FedCM is disabled, when there is a pending
   // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
   void RecordNumRequestsPerDocument(const int num_requests);
+
+  // Records metrics for a disconnect call. `duration` is nullopt if the
+  // disconnect fetch request was not sent, in which case we do not log the
+  // metric.
+  void RecordDisconnectMetrics(FedCmDisconnectStatus status,
+                               std::optional<base::TimeDelta> duration,
+                               const RenderFrameHost& rfh,
+                               url::Origin requester,
+                               url::Origin embedder);
+
+  // Records the type of error dialog shown.
+  void RecordErrorDialogType(
+      IdpNetworkRequestManager::FedCmErrorDialogType type);
+
+  // Records the outcome of the error dialog.
+  void RecordErrorDialogResult(FedCmErrorDialogResult result);
+
+  // Records the type of token response received.
+  void RecordTokenResponseTypeMetrics(
+      IdpNetworkRequestManager::FedCmTokenResponseType type);
+
+  // Records whether the error URL is same-site cross-origin, same-origin or
+  // cross-site with the config URL.
+  void RecordErrorUrlTypeMetrics(
+      IdpNetworkRequestManager::FedCmErrorUrlType type);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
@@ -231,7 +344,8 @@ class CONTENT_EXPORT FedCmMetrics {
 // existing FedCM call. Records metrics associated with a preventSilentAccess()
 // call from the given RenderFrameHost.
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
-                               PreventSilentAccessFrameType frame_type);
+                               url::Origin requester,
+                               url::Origin embedder);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.
@@ -249,6 +363,22 @@ void RecordIdpSignOutNetError(int response_code);
 // Records why there's no valid account in the response.
 void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason);
+
+// Records the reason why we ignored an attempt to set a login status.
+void RecordSetLoginStatusIgnoredReason(FedCmSetLoginStatusIgnoredReason reason);
+
+// Records the lifecycle state if we fail a FedCM request due to a page not
+// being primary.
+void RecordLifecycleStateFailureReason(FedCmLifecycleStateFailureReason reason);
+
+// Records the number of accounts received before applying login/domain hints
+// filter.
+void RecordRawAccountsSize(int size);
+
+// Records the number of accounts received after applying login/domain hints
+// filter. If no account left, nothing will be recorded.
+void RecordReadyToShowAccountsSize(int size);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

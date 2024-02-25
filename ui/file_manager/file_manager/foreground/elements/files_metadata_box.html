@@ -14,14 +14,7 @@ found in the LICENSE file.
     display: none;
   }
 
-  :host-context([theme='legacy']) #box {
-    display: block;
-    overflow: auto;
-    padding-top: 16px;
-    width: 320px;
-  }
-
-  :host-context([theme='refresh23']) #box {
+  #box {
     display: block;
     overflow: auto;
     padding-bottom: 16px;
@@ -29,15 +22,7 @@ found in the LICENSE file.
     width: 320px;
   }
 
-  :host-context([theme='legacy']) .category {
-    color: var(--cros-text-color-primary);
-    font-family: 'Roboto Medium';
-    font-size: 14px;
-    line-height: 56px;
-    margin-inline-start: 32px;
-  }
-
-  :host-context([theme='refresh23']) .category {
+  .category {
     color: var(--cros-sys-on_surface);
     font: var(--cros-button-1-font);
     padding-bottom: 16px;
@@ -45,29 +30,12 @@ found in the LICENSE file.
     padding-top: 16px;
   }
 
-  :host-context([theme='legacy']) hr {
-    border-color: var(--cros-separator-color);
-    border-top-width: 1px !important;
-    border-width: 0;
-    margin-bottom: 8px;
-    margin-top: 16px;
-  }
-
-  :host-context([theme='refresh23']) hr {
+  hr {
     border-color: var(--cros-sys-separator);
     border-top-width: 1px !important;
     border-width: 0;
     margin-bottom: 16px;
     margin-top: 16px;
-  }
-
-  @media only screen and (max-width: 720px) {
-    :host-context([theme='legacy']) #box {
-      width: 240px;
-    }
-    :host-context([theme='legacy']) .category {
-      margin: 12px 12px;
-    }
   }
 </style>
 <div id="box">
@@ -80,19 +48,19 @@ found in the LICENSE file.
 
   <div hidden="[[!hasFileSpecificMetadata_]]">
     <hr>
-    <div class="category" hidden="[[!isImage_(type)]]">$i18n{METADATA_BOX_IMAGE_INFO}</div>
-    <div class="category" hidden="[[!isAudio_(type)]]">$i18n{METADATA_BOX_AUDIO_INFO}</div>
-    <div class="category" hidden="[[!isVideo_(type)]]">$i18n{METADATA_BOX_VIDEO_INFO}</div>
-    <files-metadata-entry key="$i18n{METADATA_BOX_DIMENSION}" value="[[dimension_(imageWidth, imageHeight)]]"></files-metadata-entry>
+    <div class="category" hidden="[[!isImage(type)]]">$i18n{METADATA_BOX_IMAGE_INFO}</div>
+    <div class="category" hidden="[[!isAudio(type)]]">$i18n{METADATA_BOX_AUDIO_INFO}</div>
+    <div class="category" hidden="[[!isVideo(type)]]">$i18n{METADATA_BOX_VIDEO_INFO}</div>
+    <files-metadata-entry key="$i18n{METADATA_BOX_DIMENSION}" value="[[dimension(imageWidth, imageHeight)]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_ALBUM_TITLE}" value="[[mediaAlbum]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_TITLE}" value="[[mediaTitle]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_ARTIST}" value="[[mediaArtist]]"></files-metadata-entry>
-    <files-metadata-entry key="$i18n{METADATA_BOX_DURATION}" value="[[time2string_(mediaDuration)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_DURATION}" value="[[time2string(mediaDuration)]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_GENRE}" value="[[mediaGenre]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_TRACK}" value="[[mediaTrack]]"></files-metadata-entry>
-    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_MODEL}" value="[[deviceModel_(ifd)]]"></files-metadata-entry>
-    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_SETTINGS}" value="[[deviceSettings_(ifd)]]"></files-metadata-entry>
-    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_GEOGRAPHY}" value="[[geography_(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_MODEL}" value="[[deviceModel(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_SETTINGS}" value="[[deviceSettings(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_GEOGRAPHY}" value="[[geography(ifd)]]"></files-metadata-entry>
     <files-metadata-entry key="$i18n{METADATA_BOX_YEAR_RECORDED}" value="[[mediaYearRecorded]]"></files-metadata-entry>
   </div>
 </div>

@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "url/gurl.h"
 
 namespace password_manager {

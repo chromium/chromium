@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NativeMessagingUserLevelHosts": false
+        },
+        "prefs": {
+          "native_messaging.user_level_hosts": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -15,7 +15,7 @@ import java.util.Arrays;
 /**
  * JUnit rule for setting command line arguments before initializing the browser.
  *
- * Having it as its own rule allows us to chain it using RuleChain and allows it to be explicitly
+ * <p>Having it as its own rule allows us to chain it using RuleChain and allows it to be explicitly
  * run prior to initializing the browser.
  */
 public class CommandLineInitRule implements TestRule {

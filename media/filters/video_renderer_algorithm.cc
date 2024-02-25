@@ -382,7 +382,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   //
   // Note: This duration value is not compensated for playback rate and
   // thus is different than |average_frame_duration_| which is compensated.
-  if (!frame_duration_calculator_.count() &&
+  if (!frame_duration_calculator_.Count() &&
       metadata_frame_duration.is_positive()) {
     media_timestamps.push_back(timestamp + metadata_frame_duration);
   }
@@ -391,7 +391,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   base::TimeDelta wallclock_duration;
   wall_clock_time_cb_.Run(media_timestamps, &wall_clock_times);
   ready_frame.start_time = wall_clock_times[0];
-  if (frame_duration_calculator_.count()) {
+  if (frame_duration_calculator_.Count()) {
     ready_frame.end_time = ready_frame.start_time + average_frame_duration_;
     wallclock_duration = average_frame_duration_;
   } else if (wall_clock_times.size() > 1u) {
@@ -517,10 +517,10 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
   }
 
   base::TimeDelta deviation;
-  if (frame_duration_calculator_.count()) {
+  if (frame_duration_calculator_.Count()) {
     // Compute |average_frame_duration_|, a moving average of the last few
     // frames; see kMovingAverageSamples for the exact number.
-    average_frame_duration_ = frame_duration_calculator_.Average();
+    average_frame_duration_ = frame_duration_calculator_.Mean();
     deviation = frame_duration_calculator_.Deviation();
   }
 
@@ -533,7 +533,7 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
     // to use our estimate of |average_frame_duration_| when we have no samples
     // in |frame_duration_calculator_| -- since it's a more accurate reflection
     // of the per-frame on screen time.
-    if (!frame_duration_calculator_.count()) {
+    if (!frame_duration_calculator_.Count()) {
       average_frame_duration_ = frame.end_time - frame.start_time;
       if (average_frame_duration_.is_zero())
         return;
@@ -544,8 +544,9 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
     // If |have_metadata_duration| is false and we don't have any subsequent
     // frames, we can't continue processing since the cadence estimate requires
     // |average_frame_duration_| and |deviation| to be non-zero.
-    if (!frame_duration_calculator_.count())
+    if (!frame_duration_calculator_.Count()) {
       return;
+    }
 
     // Update the frame end time for the last frame based on the average.
     frame_queue_.back().end_time =

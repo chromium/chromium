@@ -432,4 +432,58 @@ TEST_F(ScrollSnapTest, SnapWhenBodyOverflowHtmlViewportDefining) {
   ASSERT_EQ(body->scrollTop(), 200);
 }
 
+TEST_F(ScrollSnapTest, ResizeDuringGesture) {
+  ResizeView(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    ::-webkit-scrollbar { display: none; }
+    html { scroll-snap-type: both mandatory; }
+    body { margin: 0; width: 600px; height: 600px; }
+    #a1 { position: absolute; left: 0; top: 0; background: blue;
+          width: 100px; height: 100px; scroll-snap-align: start; }
+    #a2 { position: absolute; left: 400px; top: 400px; background: blue;
+          width: 100px; height: 100px; scroll-snap-align: end; }
+    </style>
+    <div id='a1'></div>
+    <div id='a2'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* viewport = GetDocument().scrollingElement();
+  ASSERT_EQ(viewport->scrollLeft(), 0);
+  ASSERT_EQ(viewport->scrollTop(), 0);
+
+  ScrollBegin(10, 10, -75, -75);
+  ScrollUpdate(10, 10, -75, -75);
+
+  Compositor().BeginFrame();
+
+  ASSERT_EQ(viewport->scrollLeft(), 75);
+  ASSERT_EQ(viewport->scrollTop(), 75);
+
+  ResizeView(gfx::Size(450, 450));
+  Compositor().BeginFrame();
+
+  // After mid-gesture resize, we should still be at 75.
+  ASSERT_EQ(viewport->scrollLeft(), 75);
+  ASSERT_EQ(viewport->scrollTop(), 75);
+
+  ScrollEnd(10, 10);
+
+  // The scrollend is deferred for the snap animation in cc::InputHandler; wait
+  // for the animation to finish.  (We pss raster = true to ensure that we call
+  // LayerTreeHostImpl::UpdateAnimationState, which will set start time and
+  // transition to KeyframeModel::RUNNING.)
+  Compositor().BeginFrame(0.016, true);
+  Compositor().BeginFrame(0.3);
+
+  // Once the snap animation is finished, we run a deferred SnapAfterLayout.
+  ASSERT_EQ(viewport->scrollLeft(), 50);
+  ASSERT_EQ(viewport->scrollTop(), 50);
+}
+
 }  // namespace blink

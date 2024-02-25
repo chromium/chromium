@@ -28,12 +28,12 @@
 #include <unicode/uvernum.h>
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -64,8 +64,8 @@ const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
 
 namespace blink {
 
-ScriptRegexp* EmailInputType::CreateEmailRegexp() {
-  return MakeGarbageCollected<ScriptRegexp>(kEmailPattern,
+ScriptRegexp* EmailInputType::CreateEmailRegexp(v8::Isolate* isolate) {
+  return MakeGarbageCollected<ScriptRegexp>(isolate, kEmailPattern,
                                             kTextCaseUnicodeInsensitive);
 }
 
@@ -182,10 +182,6 @@ void EmailInputType::CountUsage() {
     if (has_max_length)
       CountUsageIfVisible(WebFeature::kInputTypeEmailMultipleMaxLength);
   }
-}
-
-const AtomicString& EmailInputType::FormControlType() const {
-  return input_type_names::kEmail;
 }
 
 // The return value is an invalid email address string if the specified string

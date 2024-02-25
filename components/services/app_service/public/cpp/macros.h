@@ -76,6 +76,16 @@ namespace apps {
 #define PRINT_OPTIONAL_BOOL(VALUE) \
   (VALUE.has_value() ? (VALUE.value() ? "true" : "false") : "null")
 
+#define IS_VECTOR_VALUE_EQUAL(VALUE)                \
+  if (this->VALUE.size() != other.VALUE.size()) {   \
+    return false;                                   \
+  }                                                 \
+  for (size_t i = 0; i < other.VALUE.size(); i++) { \
+    if (this->VALUE[i] != other.VALUE[i]) {         \
+      return false;                                 \
+    }                                               \
+  }
+
 // Macros for enum
 
 #define ARC_COUNT_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, \

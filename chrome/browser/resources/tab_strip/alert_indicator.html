@@ -9,6 +9,8 @@
   }
 
   :host([alert-state_='media-recording']),
+  :host([alert-state_='audio-recording']),
+  :host([alert-state_='video-recording']),
   :host([alert-state_='desktop-capturing']) {
     -webkit-mask-image: url(alert_indicators/tab_media_recording.svg);
     background-color: var(--tabstrip-indicator-recording-color);

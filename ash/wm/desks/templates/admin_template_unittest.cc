@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
@@ -35,13 +37,14 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
               (),
               (override));
   MOCK_METHOD(bool, IsWindowPersistable, (aura::Window*), (const override));
-  MOCK_METHOD(absl::optional<gfx::ImageSkia>,
+  MOCK_METHOD(std::optional<gfx::ImageSkia>,
               MaybeRetrieveIconForSpecialIdentifier,
               (const std::string&, const ui::ColorProvider*),
               (const override));
   MOCK_METHOD(void,
               GetFaviconForUrl,
               (const std::string&,
+               uint64_t,
                base::OnceCallback<void(const gfx::ImageSkia&)>,
                base::CancelableTaskTracker*),
               (const override));
@@ -96,7 +99,7 @@ class AdminTemplateTest : public OverviewTestBase,
 
  protected:
   // Creates a template from a JSON string.
-  std::unique_ptr<DeskTemplate> CreateTemplateFromJson(base::StringPiece json) {
+  std::unique_ptr<DeskTemplate> CreateTemplateFromJson(std::string_view json) {
     base::JSONReader::Result json_read_result =
         base::JSONReader::ReadAndReturnValueWithError(json);
     if (!json_read_result.has_value()) {
@@ -126,15 +129,16 @@ TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
       MergeAdminTemplateWindowUpdate(*admin_template, {.template_rwid = 123}));
 
   // Checks that the original window bounds are present.
-  EXPECT_THAT(app_restore_data->current_bounds,
+  EXPECT_THAT(app_restore_data->window_info.current_bounds,
               Optional(gfx::Rect(100, 50, 640, 480)));
 
   gfx::Rect new_bounds(10, 10, 300, 200);
   EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
       *admin_template, {.template_rwid = 1, .bounds = new_bounds}));
-  EXPECT_THAT(app_restore_data->current_bounds, Optional(new_bounds));
+  EXPECT_THAT(app_restore_data->window_info.current_bounds,
+              Optional(new_bounds));
 
-  EXPECT_THAT(app_restore_data->display_id, Eq(absl::nullopt));
+  EXPECT_THAT(app_restore_data->display_id, Eq(std::nullopt));
   EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
       *admin_template, {.template_rwid = 1, .display_id = 123456}));
   EXPECT_THAT(app_restore_data->display_id, Optional(123456));
@@ -256,13 +260,14 @@ TEST_P(AdminTemplateTest, LaunchTemplate) {
   const auto* app_restore_data = QueryRestoreData(*launched_template, {});
   ASSERT_TRUE(app_restore_data);
 
-  // Verifies that the window has been assigned with bounds.
-  ASSERT_FALSE(app_restore_data->current_bounds->IsEmpty());
   // Verifies that a display id has been assigned.
   EXPECT_THAT(app_restore_data->display_id, Optional(Not(Eq(-1))));
+
   // And window activation index.
-  EXPECT_THAT(app_restore_data->activation_index,
+  EXPECT_THAT(app_restore_data->window_info.activation_index,
               Optional(Le(kTemplateStartingActivationIndex)));
+  // Verifies that the window has been assigned with bounds.
+  ASSERT_FALSE(app_restore_data->window_info.current_bounds->IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

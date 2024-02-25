@@ -45,12 +45,18 @@
 namespace content {
 
 SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
-                            const gfx::Size& page_size_in_pixels,
+                            const gfx::Size& default_page_size,
+                            int default_margins,
                             const printing::PageRanges& page_ranges) {
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
-  auto print_params = blink::WebPrintParams(gfx::SizeF(page_size_in_pixels));
+  auto print_params = blink::WebPrintParams(gfx::SizeF(default_page_size));
+
+  print_params.default_page_description.margin_top = default_margins;
+  print_params.default_page_description.margin_right = default_margins;
+  print_params.default_page_description.margin_bottom = default_margins;
+  print_params.default_page_description.margin_left = default_margins;
 
   uint32_t page_count = web_frame->PrintBegin(print_params, blink::WebNode());
 

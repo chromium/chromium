@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PerformanceBrowserProxy} from 'chrome://settings/settings.js';
+import type {PerformanceBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
@@ -15,7 +15,8 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
       'getCurrentOpenSites',
       'getDeviceHasBattery',
       'openBatterySaverFeedbackDialog',
-      'openHighEfficiencyFeedbackDialog',
+      'openMemorySaverFeedbackDialog',
+      'openSpeedFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
   }
@@ -38,8 +39,12 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('openBatterySaverFeedbackDialog');
   }
 
-  openHighEfficiencyFeedbackDialog() {
-    this.methodCalled('openHighEfficiencyFeedbackDialog');
+  openMemorySaverFeedbackDialog() {
+    this.methodCalled('openMemorySaverFeedbackDialog');
+  }
+
+  openSpeedFeedbackDialog() {
+    this.methodCalled('openSpeedFeedbackDialog');
   }
 
   setValidationResults(results: Record<string, boolean>) {

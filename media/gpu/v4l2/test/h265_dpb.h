@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H265_DPB_H_
 #define MEDIA_GPU_V4L2_TEST_H265_DPB_H_
 
+#include <set>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -83,6 +84,12 @@ class H265Picture : public base::RefCountedThreadSafe<H265Picture> {
 
   bool outputted_{false};
 
+  // Reference timestamp in nanoseconds.
+  uint64_t ref_ts_nsec_ = 0;
+
+  // Buffer ID (index) in CAPTURE queue this frame is queued in.
+  int capture_queue_buffer_id_ = -1;
+
  protected:
   friend class base::RefCountedThreadSafe<H265Picture>;
   virtual ~H265Picture();
@@ -142,6 +149,10 @@ class H265DPB {
   // Appends to |out| all of the pictures in the DPB that are not marked as
   // unused for reference.
   void AppendReferencePics(H265Picture::Vector* out);
+
+  // Returns a set of indices (buffer IDs) on the CAPTURE queue which are
+  // currently in use and cannot be refreshed.
+  std::set<uint32_t> GetBufferIdsInUse() const;
 
   size_t Size() const { return pics_.size(); }
   bool IsFull() const { return pics_.size() >= max_num_pics_; }

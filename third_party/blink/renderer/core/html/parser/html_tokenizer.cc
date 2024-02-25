@@ -56,7 +56,7 @@ V(120), V(121), V(122), V(123), V(124), V(125), V(126), V(127),
 // clang-format on
 
 // Character flags for fast paths.
-enum class ScanFlags : uint8_t {
+enum class ScanFlags : uint16_t {
   // Base flags
   kNullCharacter = 1 << 0,
   kNewlineOrCarriageReturn = 1 << 1,
@@ -66,10 +66,11 @@ enum class ScanFlags : uint8_t {
   kSlashAndCloseTag = 1 << 5,
   kEqual = 1 << 6,
   kQuotes = 1 << 7,
+  kOpenBrace = 1 << 8,
   // Compound flags
   kWhitespace = kWhitespaceNotNewline | kNewlineOrCarriageReturn,
-  kCharacterTokenSpecial =
-      kNullCharacter | kNewlineOrCarriageReturn | kAmpersand | kOpenTag,
+  kCharacterTokenSpecial = kNullCharacter | kNewlineOrCarriageReturn |
+                           kAmpersand | kOpenTag | kOpenBrace,
   kNullOrNewline = kNullCharacter | kNewlineOrCarriageReturn,
   kRCDATASpecial = kNullCharacter | kAmpersand | kOpenTag,
   kTagNameSpecial = kWhitespace | kSlashAndCloseTag | kNullCharacter,
@@ -77,32 +78,41 @@ enum class ScanFlags : uint8_t {
                           kEqual | kOpenTag | kQuotes,
 };
 
-static constexpr uint8_t CreateScanFlags(UChar cc) {
-#define SCAN_FLAG(flag) static_cast<uint8_t>(ScanFlags::flag)
+static constexpr uint16_t CreateScanFlags(UChar cc) {
+#define SCAN_FLAG(flag) static_cast<uint16_t>(ScanFlags::flag)
   DCHECK(!(cc & ~0x7F));  // IsASCII
-  uint8_t scan_flag = 0;
-  if (cc == '\0')
+  uint16_t scan_flag = 0;
+  if (cc == '\0') {
     scan_flag = SCAN_FLAG(kNullCharacter);
-  else if (cc == '\n' || cc == '\r')
+  } else if (cc == '\n' || cc == '\r') {
     scan_flag = SCAN_FLAG(kNewlineOrCarriageReturn);
-  else if (cc == ' ' || cc == '\x09' || cc == '\x0C')
+  } else if (cc == ' ' || cc == '\x09' || cc == '\x0C') {
     scan_flag = SCAN_FLAG(kWhitespaceNotNewline);
-  else if (cc == '&')
+  } else if (cc == '&') {
     scan_flag = SCAN_FLAG(kAmpersand);
-  else if (cc == '<')
+  } else if (cc == '<') {
     scan_flag = SCAN_FLAG(kOpenTag);
-  else if (cc == '/' || cc == '>')
+  } else if (cc == '/' || cc == '>') {
     scan_flag = SCAN_FLAG(kSlashAndCloseTag);
-  else if (cc == '=')
+  } else if (cc == '=') {
     scan_flag = SCAN_FLAG(kEqual);
-  else if (cc == '"' || cc == '\'')
+  } else if (cc == '"' || cc == '\'') {
     scan_flag = SCAN_FLAG(kQuotes);
+  } else if (cc == '{') {
+    scan_flag = SCAN_FLAG(kOpenBrace);
+  }
   return scan_flag;
 #undef SCAN_FLAG
 }
 
+// DOM Part marker strings. Eventually move these to html_tokenizer_names.
+#define kChildNodePartStartMarker "{{#}}"
+#define kChildNodePartEndMarker "{{/}}"
+#define kNodePartMarker "{{}}"
+#define kAttributePartMarker "{{}}"
+
 // Table of precomputed scan flags for the first 128 ASCII characters.
-static constexpr const uint8_t character_scan_flags_[128] = {
+static constexpr const uint16_t character_scan_flags_[128] = {
     INT_0_TO_127_LIST(CreateScanFlags)};
 
 static inline UChar ToLowerCase(UChar cc) {
@@ -112,7 +122,7 @@ static inline UChar ToLowerCase(UChar cc) {
 
 static inline bool CheckScanFlag(UChar cc, ScanFlags flag) {
   return IsASCII(cc) &&
-         (character_scan_flags_[cc] & static_cast<uint8_t>(flag));
+         (character_scan_flags_[cc] & static_cast<uint16_t>(flag));
 }
 
 static inline UChar ToLowerCaseIfAlpha(UChar cc) {
@@ -209,6 +219,21 @@ bool HTMLTokenizer::FlushBufferedEndTag(SegmentedString& source,
 #define FLUSH_AND_ADVANCE_TO_MAY_CONTAIN_NEWLINE(stateName) \
   FLUSH_AND_ADVANCE_TO(stateName, /* current_char_may_be_newline */ true)
 
+#define ADVANCE_PAST_MULTIPLE_NO_NEWLINE(len, newState)                 \
+  {                                                                     \
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());               \
+    for (unsigned i = 1; i < (len); ++i) {                              \
+      bool success =                                                    \
+          input_stream_preprocessor_.AdvancePastNonNewline(source, cc); \
+      DCHECK(success);                                                  \
+    }                                                                   \
+    if (state_ == HTMLTokenizer::newState) {                            \
+      HTML_CONSUME(newState);                                           \
+    } else {                                                            \
+      HTML_SWITCH_TO(newState);                                         \
+    }                                                                   \
+  }
+
 bool HTMLTokenizer::FlushEmitAndResumeInDataState(SegmentedString& source) {
   state_ = HTMLTokenizer::kDataState;
   FlushBufferedEndTag(source, /* current_char_may_be_newline */ false);
@@ -255,7 +280,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (cc == '&')
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kCharacterReferenceInDataState);
       else if (cc == '<') {
-        if (token_.GetType() == HTMLToken::kCharacter) {
+        if (HaveBufferedCharacterToken()) {
           // We have a bunch of character tokens queued up that we
           // are emitting lazily here.
           return true;
@@ -266,6 +291,28 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       else {
         return EmitData(source, cc);
       }
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE_NOLABEL(kChildNodePartStartState) {
+      DCHECK_EQ(source.LookAhead(kChildNodePartStartMarker),
+                SegmentedString::kDidMatch);
+      AdvanceStringAndASSERT(source, kChildNodePartStartMarker);
+      token_.BeginDOMPart(DOMPartTokenType::kChildNodePartStart);
+      // Emit the DOM Part token and then return to the DATA state.
+      state_ = kDataState;
+      return true;
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE_NOLABEL(kChildNodePartEndState) {
+      DCHECK_EQ(source.LookAhead(kChildNodePartEndMarker),
+                SegmentedString::kDidMatch);
+      AdvanceStringAndASSERT(source, kChildNodePartEndMarker);
+      token_.BeginDOMPart(DOMPartTokenType::kChildNodePartEnd);
+      // Emit the DOM Part token and then return to the DATA state.
+      state_ = kDataState;
+      return true;
     }
     END_STATE()
 
@@ -809,14 +856,22 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         HTML_RECONSUME_IN(kDataState);
-      } else {
-        if (cc == '"' || cc == '\'' || cc == '<' || cc == '=')
-          ParseError();
-        token_.AddNewAttribute(ToLowerCaseIfAlpha(cc));
-        if (track_attributes_ranges_)
-          attributes_ranges_.AddAttribute(source.NumberOfCharactersConsumed());
-        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kAttributeNameState);
+      } else if (cc == '{' && ShouldAllowDOMParts() &&
+                 source.LookAhead(kNodePartMarker) ==
+                     SegmentedString::kDidMatch) {
+        static_assert(kNodePartMarker[0] == '{');
+        token_.SetNeedsNodePart();
+        // Need to skip ahead here so we don't get {{}} as an attribute.
+        ADVANCE_PAST_MULTIPLE_NO_NEWLINE(sizeof(kNodePartMarker) - 1,
+                                         kBeforeAttributeNameState);
+      } else if (cc == '"' || cc == '\'' || cc == '<' || cc == '=') {
+        ParseError();
       }
+      token_.AddNewAttribute(ToLowerCaseIfAlpha(cc));
+      if (track_attributes_ranges_) {
+        attributes_ranges_.AddAttribute(source.NumberOfCharactersConsumed());
+      }
+      HTML_ADVANCE_PAST_NON_NEWLINE_TO(kAttributeNameState);
     }
     END_STATE()
 
@@ -878,14 +933,21 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         HTML_RECONSUME_IN(kDataState);
-      } else {
-        if (cc == '"' || cc == '\'' || cc == '<')
-          ParseError();
-        token_.AddNewAttribute(ToLowerCaseIfAlpha(cc));
-        if (track_attributes_ranges_)
-          attributes_ranges_.AddAttribute(source.NumberOfCharactersConsumed());
-        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kAttributeNameState);
+      } else if (cc == '{' && ShouldAllowDOMParts() &&
+                 source.LookAhead(kNodePartMarker) ==
+                     SegmentedString::kDidMatch) {
+        token_.SetNeedsNodePart();
+        // Need to skip ahead here so we don't get {{}} as an attribute.
+        ADVANCE_PAST_MULTIPLE_NO_NEWLINE(sizeof(kNodePartMarker) - 1,
+                                         kAfterAttributeNameState);
+      } else if (cc == '"' || cc == '\'' || cc == '<') {
+        ParseError();
       }
+      token_.AddNewAttribute(ToLowerCaseIfAlpha(cc));
+      if (track_attributes_ranges_) {
+        attributes_ranges_.AddAttribute(source.NumberOfCharactersConsumed());
+      }
+      HTML_ADVANCE_PAST_NON_NEWLINE_TO(kAttributeNameState);
     }
     END_STATE()
 
@@ -913,6 +975,19 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == '>') {
         ParseError();
         return EmitAndResumeInDataState(source);
+
+      } else if (cc == '{' && ShouldAllowDOMParts() &&
+                 source.LookAhead(kAttributePartMarker) ==
+                     SegmentedString::kDidMatch) {
+        static_assert(kAttributePartMarker[0] == '{');
+        token_.SetNeedsAttributePart();
+        if (track_attributes_ranges_) {
+          attributes_ranges_.EndAttributeValue(
+              source.NumberOfCharactersConsumed());
+        }
+        // Skip ahead so we don't get {{}} in the attribute value.
+        ADVANCE_PAST_MULTIPLE_NO_NEWLINE(sizeof(kAttributePartMarker) - 1,
+                                         kBeforeAttributeNameState);
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         HTML_RECONSUME_IN(kDataState);
@@ -1687,6 +1762,55 @@ bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
         if (cc == kEndOfFileMarker)
           return EmitEndOfFile(source);
         break;
+      case '{':
+        DCHECK_EQ(strlen(kChildNodePartStartMarker),
+                  strlen(kChildNodePartEndMarker));
+        static_assert(kChildNodePartStartMarker[0] == '{');
+        static_assert(kChildNodePartEndMarker[0] == '{');
+        if (ShouldAllowDOMParts()) {
+          auto result = source.LookAhead(kChildNodePartStartMarker);
+          if (result == SegmentedString::kDidMatch) {
+            state_ = kChildNodePartStartState;
+            if (token_.Characters().IsEmpty()) {
+              // TODO(crbug.com/1453291) If we have `<div parseparts>{{#}}`,
+              // then we will be in a character token that is empty, which is
+              // not good. Add a space for now to get around this, but it'd
+              // be better to not get to EmitData at all from kDataState at all
+              // in this case and just go directly to kChildNodePartStartState.
+              token_.AppendToCharacter(' ');
+            }
+            // Emit the character data up to this point, then switch to
+            // kChildNodePartStartState.
+            return true;
+          } else if (result == SegmentedString::kNotEnoughCharacters) {
+            // TODO(crbug.com/1453291) If we never receive the rest of the start
+            // marker, we'll get in an infinite loop here. This might be the
+            // same problem that happens for <!DOCTYPE>, in crbug.com/1141343
+            // and crbug.com/985307.
+            return false;
+          }
+          result = source.LookAhead(kChildNodePartEndMarker);
+          if (result == SegmentedString::kDidMatch) {
+            state_ = kChildNodePartEndState;
+            if (token_.Characters().IsEmpty()) {
+              // TODO(crbug.com/1453291) If we have `{{#}}{{/}}`, then we will
+              // be in a character token that is empty (between the markers),
+              // which is not good. Add a space for now to get around this, but
+              // it'd be better to not get to EmitData at all from kDataState at
+              // all in this case and just go directly to
+              // kChildNodePartEndState.
+              token_.AppendToCharacter(' ');
+            }
+            // Emit the character data up to this point, then switch to
+            // kChildNodePartEndState.
+            return true;
+          } else if (result == SegmentedString::kNotEnoughCharacters) {
+            return false;
+          }
+        }
+        token_.AppendToCharacter(cc);
+        cc = source.AdvancePastNonNewline();
+        break;
       default:
         NOTREACHED();
         break;
@@ -1749,7 +1873,7 @@ void HTMLTokenizer::UpdateStateFor(html_names::HTMLTag tag) {
     SetState(*state);
 }
 
-absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
+std::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
     html_names::HTMLTag tag) const {
   switch (tag) {
     case html_names::HTMLTag::kTextarea:
@@ -1768,9 +1892,9 @@ absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
     case html_names::HTMLTag::kNoscript:
       if (options_.scripting_flag)
         return HTMLTokenizer::kRAWTEXTState;
-      return absl::nullopt;
+      return std::nullopt;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

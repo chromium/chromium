@@ -52,9 +52,11 @@ class MojoVideoEncoderMetricsProviderTest : public ::testing::Test {
     mojo_encoder_metrics_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<MockMojomVideoEncoderMetricsProvider>(),
         pending_remote.InitWithNewPipeAndPassReceiver());
-
-    mojo_encoder_metrics_provider_ = CreateMojoVideoEncoderMetricsProvider(
-        kUseCase, std::move(pending_remote));
+    mojo_encoder_metrics_provider_factory_ =
+        base::MakeRefCounted<MojoVideoEncoderMetricsProviderFactory>(
+            kUseCase, std::move(pending_remote));
+    mojo_encoder_metrics_provider_ = mojo_encoder_metrics_provider_factory_
+                                         ->CreateVideoEncoderMetricsProvider();
   }
 
   void TearDown() override {
@@ -77,6 +79,8 @@ class MojoVideoEncoderMetricsProviderTest : public ::testing::Test {
   mojo::SelfOwnedReceiverRef<mojom::VideoEncoderMetricsProvider>
       mojo_encoder_metrics_receiver_;
 
+  scoped_refptr<MojoVideoEncoderMetricsProviderFactory>
+      mojo_encoder_metrics_provider_factory_;
   std::unique_ptr<VideoEncoderMetricsProvider> mojo_encoder_metrics_provider_;
 };
 
@@ -172,4 +176,112 @@ TEST_F(MojoVideoEncoderMetricsProviderTest,
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   base::RunLoop().RunUntilIdle();
 }
+
+class MojoVideoEncoderMetricsProviderFactoryTest : public ::testing::Test {
+ public:
+  MojoVideoEncoderMetricsProviderFactoryTest() = default;
+
+  static constexpr auto kUseCase = mojom::VideoEncoderUseCase::kWebRTC;
+
+  void SetUp() override {
+    mojo::PendingRemote<mojom::VideoEncoderMetricsProvider> pending_remote;
+    mojo_encoder_metrics_receiver_ = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<MockMojomVideoEncoderMetricsProvider>(),
+        pending_remote.InitWithNewPipeAndPassReceiver());
+
+    mojo_encoder_metrics_provider_factory_ =
+        base::MakeRefCounted<MojoVideoEncoderMetricsProviderFactory>(
+            mojom::VideoEncoderUseCase::kWebRTC, std::move(pending_remote));
+  }
+
+  void TearDown() override {
+    // The destruction of a mojo::SelfOwnedReceiver closes the bound message
+    // pipe but does not destroy the implementation object(s): this needs to
+    // happen manually by Close()ing it.
+    if (mojo_encoder_metrics_receiver_) {
+      mojo_encoder_metrics_receiver_->Close();
+    }
+  }
+
+  MockMojomVideoEncoderMetricsProvider* mock_mojo_receiver() {
+    return reinterpret_cast<MockMojomVideoEncoderMetricsProvider*>(
+        mojo_encoder_metrics_receiver_->impl());
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  // This member holds on to the mock implementation of the "service" side.
+  mojo::SelfOwnedReceiverRef<mojom::VideoEncoderMetricsProvider>
+      mojo_encoder_metrics_receiver_;
+
+  scoped_refptr<MojoVideoEncoderMetricsProviderFactory>
+      mojo_encoder_metrics_provider_factory_;
+};
+
+TEST_F(MojoVideoEncoderMetricsProviderFactoryTest, CreateMultipleEncoders) {
+  constexpr auto kCodecProfile = media::VP9PROFILE_PROFILE0;
+  constexpr gfx::Size kEncodeSize(1920, 1080);
+  constexpr bool kIsHardwareEncoder = true;
+  constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
+
+  auto metrics_provider0 = mojo_encoder_metrics_provider_factory_
+                               ->CreateVideoEncoderMetricsProvider();
+  auto metrics_provider1 = mojo_encoder_metrics_provider_factory_
+                               ->CreateVideoEncoderMetricsProvider();
+
+  InSequence s;
+  EXPECT_CALL(*mock_mojo_receiver(),
+              Initialize(0u, kUseCase, kCodecProfile, kEncodeSize,
+                         kIsHardwareEncoder, kSVCMode));
+  EXPECT_CALL(*mock_mojo_receiver(),
+              Initialize(1u, kUseCase, kCodecProfile, kEncodeSize,
+                         kIsHardwareEncoder, kSVCMode));
+  metrics_provider0->Initialize(kCodecProfile, kEncodeSize, kIsHardwareEncoder,
+                                kSVCMode);
+  metrics_provider1->Initialize(kCodecProfile, kEncodeSize, kIsHardwareEncoder,
+                                kSVCMode);
+
+  EXPECT_CALL(*mock_mojo_receiver(), Complete(0u));
+  EXPECT_CALL(*mock_mojo_receiver(), Complete(1u));
+  metrics_provider0.reset();
+  metrics_provider1.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MojoVideoEncoderMetricsProviderFactoryTest,
+       CanOperateAfterDestroyingOtherMetricsProvider) {
+  constexpr auto kCodecProfile = media::VP9PROFILE_PROFILE0;
+  constexpr gfx::Size kEncodeSize(1920, 1080);
+  constexpr bool kIsHardwareEncoder = true;
+  constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
+
+  auto metrics_provider0 = mojo_encoder_metrics_provider_factory_
+                               ->CreateVideoEncoderMetricsProvider();
+  auto metrics_provider1 = mojo_encoder_metrics_provider_factory_
+                               ->CreateVideoEncoderMetricsProvider();
+
+  InSequence s;
+  EXPECT_CALL(*mock_mojo_receiver(),
+              Initialize(0u, kUseCase, kCodecProfile, kEncodeSize,
+                         kIsHardwareEncoder, kSVCMode));
+  EXPECT_CALL(*mock_mojo_receiver(),
+              Initialize(1u, kUseCase, kCodecProfile, kEncodeSize,
+                         kIsHardwareEncoder, kSVCMode));
+  metrics_provider0->Initialize(kCodecProfile, kEncodeSize, kIsHardwareEncoder,
+                                kSVCMode);
+  metrics_provider1->Initialize(kCodecProfile, kEncodeSize, kIsHardwareEncoder,
+                                kSVCMode);
+
+  EXPECT_CALL(*mock_mojo_receiver(), Complete(0u));
+  metrics_provider0.reset();
+
+  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(1u, 1u));
+  metrics_provider1->IncrementEncodedFrameCount();
+  EXPECT_CALL(*mock_mojo_receiver(), Complete(1u));
+  metrics_provider1.reset();
+
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace media

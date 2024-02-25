@@ -55,14 +55,6 @@ class BrowserPluginEmbedder {
 
   BrowserPluginGuestManager* GetBrowserPluginGuestManager() const;
 
-  // Closes modal dialogs in |guest_web_contents|.
-  static bool CancelDialogs(WebContents* guest_web_contents);
-
-  static bool UnlockMouseIfNecessaryCallback(bool* mouse_unlocked,
-                                             WebContents* guest);
-
-  static bool GuestCurrentlyAudibleCallback(WebContents* guest);
-
   // Pointer to the WebContentsImpl that owns this object.
   raw_ptr<WebContentsImpl, DanglingUntriaged> web_contents_;
 };

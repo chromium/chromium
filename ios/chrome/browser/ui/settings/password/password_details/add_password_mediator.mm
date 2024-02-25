@@ -14,19 +14,18 @@
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
-#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller_delegate.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
@@ -103,7 +102,7 @@ bool CheckForDuplicates(
   if (_consumer == consumer)
     return;
   _consumer = consumer;
-  absl::optional<std::string> account =
+  std::optional<std::string> account =
       password_manager::sync_util::GetAccountForSaving(_prefService,
                                                        _syncService);
   if (account) {
@@ -137,9 +136,7 @@ bool CheckForDuplicates(
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    credential.note = SysNSStringToUTF16(note);
-  }
+  credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
       password_manager::features_util::GetDefaultPasswordStore(_prefService,
                                                                _syncService)};

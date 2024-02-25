@@ -8,11 +8,9 @@
 #include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -110,7 +108,7 @@ bool KeyboardLockController::HandleKeyEvent(
              !hold_timer_.IsRunning()) {
     // Seeing a key down event on Esc when the hold timer is stopped starts
     // the timer. When the timer fires, the callback will trigger an exit from
-    // fullscreen/mouselock/keyboardlock.
+    // fullscreen/pointerlock/keyboardlock.
     hold_timer_.Start(
         FROM_HERE, kHoldEscapeTime,
         base::BindOnce(&KeyboardLockController::HandleUserHeldEscape,
@@ -167,7 +165,7 @@ void KeyboardLockController::UnlockKeyboard() {
 void KeyboardLockController::HandleUserHeldEscape() {
   ExclusiveAccessManager* const manager = exclusive_access_manager();
   manager->fullscreen_controller()->HandleUserPressedEscape();
-  manager->mouse_lock_controller()->HandleUserPressedEscape();
+  manager->pointer_lock_controller()->HandleUserPressedEscape();
   HandleUserPressedEscape();
 }
 

@@ -1136,6 +1136,24 @@ void GLES2InterfaceStub::ConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum /* subsampling */,
     const GLbyte* /* mailboxes */) {}
 void GLES2InterfaceStub::ConvertYUVAMailboxesToRGBINTERNAL(
+    GLint /* src_x */,
+    GLint /* src_y */,
+    GLsizei /* width */,
+    GLsizei /* height */,
+    GLenum /* planes_yuv_color_space */,
+    GLenum /* plane_config */,
+    GLenum /* subsampling */,
+    const GLbyte* /* mailboxes */) {}
+void GLES2InterfaceStub::ConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint /* texture */,
+    GLenum /* target */,
+    GLuint /* internal_format */,
+    GLenum /* type */,
+    GLint /* src_x */,
+    GLint /* src_y */,
+    GLsizei /* width */,
+    GLsizei /* height */,
+    GLboolean /* flip_y */,
     GLenum /* planes_yuv_color_space */,
     GLenum /* plane_config */,
     GLenum /* subsampling */,
@@ -1252,4 +1270,11 @@ void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterivANGLE(
     GLint /* plane */,
     GLenum /* pname */,
     GLint* /* params */) {}
+void GLES2InterfaceStub::ClipControlEXT(GLenum /* origin */,
+                                        GLenum /* depth */) {}
+void GLES2InterfaceStub::PolygonModeANGLE(GLenum /* face */,
+                                          GLenum /* mode */) {}
+void GLES2InterfaceStub::PolygonOffsetClampEXT(GLfloat /* factor */,
+                                               GLfloat /* units */,
+                                               GLfloat /* clamp */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

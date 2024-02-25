@@ -9,6 +9,7 @@
 #include "ash/login/ui/login_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -21,6 +22,8 @@ class LoginBubbleHandler;
 // Base bubble view for login screen bubbles.
 class ASH_EXPORT LoginBaseBubbleView : public views::View,
                                        public ui::LayerAnimationObserver {
+  METADATA_HEADER(LoginBaseBubbleView, views::View)
+
  public:
   enum class PositioningStrategy {
     // Try to show the bubble after the anchor (on the right side in LTR), if
@@ -67,7 +70,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnBlur() override;
 
   void set_positioning_strategy(PositioningStrategy positioning_strategy) {

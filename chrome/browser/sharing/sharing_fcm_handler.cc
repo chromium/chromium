@@ -146,27 +146,27 @@ void SharingFCMHandler::OnStoreReset() {
   // TODO: Handle GCM store reset.
 }
 
-absl::optional<chrome_browser_sharing::FCMChannelConfiguration>
+std::optional<chrome_browser_sharing::FCMChannelConfiguration>
 SharingFCMHandler::GetFCMChannel(
     const chrome_browser_sharing::SharingMessage& original_message) {
   if (!original_message.has_fcm_channel_configuration())
-    return absl::nullopt;
+    return std::nullopt;
 
   return original_message.fcm_channel_configuration();
 }
 
-absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
+std::optional<chrome_browser_sharing::ServerChannelConfiguration>
 SharingFCMHandler::GetServerChannel(
     const chrome_browser_sharing::SharingMessage& original_message) {
   if (!original_message.has_server_channel_configuration())
-    return absl::nullopt;
+    return std::nullopt;
 
   return original_message.server_channel_configuration();
 }
 
 SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
     const chrome_browser_sharing::SharingMessage& original_message) {
-  auto device_info =
+  const syncer::DeviceInfo* device_info =
       device_info_tracker_->GetDeviceInfo(original_message.sender_guid());
   if (!device_info)
     return SharingDevicePlatform::kUnknown;
@@ -177,8 +177,8 @@ SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
 void SharingFCMHandler::SendAckMessage(
     std::string original_message_id,
     chrome_browser_sharing::MessageType original_message_type,
-    absl::optional<chrome_browser_sharing::FCMChannelConfiguration> fcm_channel,
-    absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
+    std::optional<chrome_browser_sharing::FCMChannelConfiguration> fcm_channel,
+    std::optional<chrome_browser_sharing::ServerChannelConfiguration>
         server_channel,
     SharingDevicePlatform sender_device_type,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
@@ -224,7 +224,7 @@ void SharingFCMHandler::OnAckMessageSent(
     SharingDevicePlatform sender_device_type,
     int trace_id,
     SharingSendMessageResult result,
-    absl::optional<std::string> message_id,
+    std::optional<std::string> message_id,
     SharingChannelType channel_type) {
   if (result != SharingSendMessageResult::kSuccessful)
     LOG(ERROR) << "Failed to send ack mesage for " << original_message_id;

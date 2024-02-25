@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_CRYPTOHOME_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -36,7 +36,7 @@ class PinStorageCryptohome {
 
   // Transforms `key` for usage in PIN. Returns nullopt if the key could not be
   // transformed.
-  static absl::optional<Key> TransformPinKey(
+  static std::optional<Key> TransformPinKey(
       const PinSaltStorage* pin_salt_storage,
       const AccountId& account_id,
       const Key& key);
@@ -53,7 +53,7 @@ class PinStorageCryptohome {
   // plain-text. If `pin_salt` contains a value, `pin` will not be hashed.
   void SetPin(std::unique_ptr<UserContext> user_context,
               const std::string& pin,
-              const absl::optional<std::string>& pin_salt,
+              const std::optional<std::string>& pin_salt,
               AuthOperationCallback callback);
   void RemovePin(std::unique_ptr<UserContext> user_context,
                  AuthOperationCallback callback);
@@ -75,14 +75,13 @@ class PinStorageCryptohome {
   // AuthFactorsConfiguration.
   void OnAuthFactorsEdit(AuthOperationCallback callback,
                          std::unique_ptr<UserContext> user_context,
-                         absl::optional<AuthenticationError> error);
+                         std::optional<AuthenticationError> error);
 
-  void TryAuthenticateWithAuthSession(
-      const Key& key,
-      AuthOperationCallback callback,
-      bool user_exists,
-      std::unique_ptr<UserContext> user_context,
-      absl::optional<AuthenticationError> error);
+  void TryAuthenticateWithAuthSession(const Key& key,
+                                      AuthOperationCallback callback,
+                                      bool user_exists,
+                                      std::unique_ptr<UserContext> user_context,
+                                      std::optional<AuthenticationError> error);
 
   bool salt_obtained_ = false;
   std::string system_salt_;

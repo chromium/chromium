@@ -12,21 +12,17 @@ include_rules = [
 
     # Dependencies.
     "+base/containers/circular_deque.h",
-    "+base/functional/bind.h",
-    "+base/functional/bind_post_task.h",
-    "+base/functional/callback.h",
-    "+base/functional/callback_forward.h",
-    "+base/strings/string_number_conversions.h",
-    "+base/strings/string_split.h",
     "+base/task/bind_post_task.h",
     "+base/task/task_traits.h",
-    "+base/task/sequenced_task_runner.h",
-    "+base/threading/thread_restrictions.h",
     "+media/base",
     "+media/capture/capture_switches.h",
     "+media/capture/video/video_capture_feedback.h",
     "+media/filters/decoder_stream.h",
+    "+media/filters/resolution_monitor.h",
+    "+media/filters/vp9_parser.h",
     "+media/media_buildflags.h",
+    "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
+    "+media/parsers/vp8_parser.h",
     # This is only needed for a cast to DecoderFactory.
     "+media/renderers/default_decoder_factory.h",
     "+media/video/gpu_video_accelerator_factories.h",
@@ -50,6 +46,10 @@ specific_include_rules = {
         "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
         "+media/video/mock_video_encode_accelerator.h",
+        "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
         "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
     ],
+    "resolution_monitor_unittest.cc" : [
+        "+media/filters/ivf_parser.h",
+    ]
 }

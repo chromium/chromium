@@ -22,9 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Overrides InputMethodManagerWrapper for testing purposes.
- */
+/** Overrides InputMethodManagerWrapper for testing purposes. */
 public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper {
     private static final String TAG = "Ime";
 
@@ -122,7 +120,12 @@ public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper 
     @Override
     public void updateSelection(
             View view, int selStart, int selEnd, int candidatesStart, int candidatesEnd) {
-        Log.d(TAG, "updateSelection: [%d %d] [%d %d]", selStart, selEnd, candidatesStart,
+        Log.d(
+                TAG,
+                "updateSelection: [%d %d] [%d %d]",
+                selStart,
+                selEnd,
+                candidatesStart,
                 candidatesEnd);
         Pair<Range, Range> newUpdateSelection =
                 new Pair<>(new Range(selStart, selEnd), new Range(candidatesStart, candidatesEnd));
@@ -135,8 +138,9 @@ public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper 
             lastSelection = lastUpdateSelection.first;
             lastComposition = lastUpdateSelection.second;
         }
-        mUpdateSelectionList.add(new Pair<Range, Range>(
-                new Range(selStart, selEnd), new Range(candidatesStart, candidatesEnd)));
+        mUpdateSelectionList.add(
+                new Pair<Range, Range>(
+                        new Range(selStart, selEnd), new Range(candidatesStart, candidatesEnd)));
         mSelection.set(selStart, selEnd);
         mComposition.set(candidatesStart, candidatesEnd);
         onUpdateSelection(lastSelection, lastComposition, mSelection, mComposition);

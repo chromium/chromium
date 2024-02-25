@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHANGE_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHANGE_RECORD_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -22,13 +23,15 @@ class FileSystemChangeRecord : public ScriptWrappable {
                          const Vector<String>& relative_path,
                          mojom::blink::FileSystemAccessChangeTypePtr type);
 
-  const FileSystemHandle* root() const { return root_; }
-  const FileSystemHandle* changedHandle() const { return changed_handle_; }
+  const FileSystemHandle* root() const { return root_.Get(); }
+  const FileSystemHandle* changedHandle() const {
+    return changed_handle_.Get();
+  }
   const Vector<String>& relativePathComponents() const {
     return relative_path_components_;
   }
   const char* type() const;
-  absl::optional<Vector<String>> relativePathMovedFrom() const;
+  std::optional<Vector<String>> relativePathMovedFrom() const;
 
   void Trace(Visitor* visitor) const override;
 

@@ -140,7 +140,8 @@ class MediaControlsRotateToFullscreenDelegateTest
 
   bool IsObservingVisibility() const {
     return GetMediaControls()
-        .rotate_to_fullscreen_delegate_->intersection_observer_;
+               .rotate_to_fullscreen_delegate_->intersection_observer_ !=
+           nullptr;
   }
 
   bool ObservedVisibility() const {

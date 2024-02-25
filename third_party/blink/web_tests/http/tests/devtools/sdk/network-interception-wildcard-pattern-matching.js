@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult("Test to ensure the consistency of front-end patterns vs backend patterns for request interception.\n");
 
   // Backend supports wildcards, but front-end does not. This test is to ensure the basic stability with wildcard characters.
-  var urlPrefix = SDK.targetManager.primaryPageTarget().inspectedURL().replace(/\/[^\/]*$/, '');
+  var urlPrefix = SDK.TargetManager.TargetManager.instance().primaryPageTarget().inspectedURL().replace(/\/[^\/]*$/, '');
   var resourceURL = urlPrefix + '/bar.js';
   await checkPattern('**bar.js');
   await checkPattern(resourceURL);
@@ -28,15 +30,15 @@ import {TestRunner} from 'test_runner';
    */
   async function checkPattern(pattern) {
     TestRunner.addResult("Setting Pattern: " + cleanURLOrPattern(pattern));
-    await SDK.multitargetNetworkManager.setInterceptionHandlerForPatterns([{urlPattern: pattern}], interceptionHandler);
+    await SDK.NetworkManager.MultitargetNetworkManager.instance().setInterceptionHandlerForPatterns([{urlPattern: pattern}], interceptionHandler);
     TestRunner.addResult("Requesting: " + cleanURLOrPattern(resourceURL));
     await TestRunner.evaluateInPageAsync(`fetch('` + resourceURL + `')`);
     TestRunner.addResult("Response Received: " + cleanURLOrPattern(resourceURL));
-    await SDK.multitargetNetworkManager.setInterceptionHandlerForPatterns([], interceptionHandler);
+    await SDK.NetworkManager.MultitargetNetworkManager.instance().setInterceptionHandlerForPatterns([], interceptionHandler);
     TestRunner.addResult("");
 
     /**
-     * @param {!SDK.MultitargetNetworkManager.InterceptedRequest} interceptedRequest
+     * @param {!SDK.NetworkManager.InterceptedRequest} interceptedRequest
      * @return {!Promise}
      */
     function interceptionHandler(interceptedRequest) {

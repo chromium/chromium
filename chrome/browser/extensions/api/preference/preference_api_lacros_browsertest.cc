@@ -28,8 +28,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -50,8 +50,8 @@ void SetPref(crosapi::mojom::PrefPath path, base::Value value) {
   ASSERT_TRUE(future.Wait());
 }
 
-absl::optional<base::Value> GetPref(crosapi::mojom::PrefPath path) {
-  base::test::TestFuture<absl::optional<base::Value>> future;
+std::optional<base::Value> GetPref(crosapi::mojom::PrefPath path) {
+  base::test::TestFuture<std::optional<base::Value>> future;
   chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
       path, future.GetCallback());
   return future.Take();
@@ -195,7 +195,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
   // At start, the value in ash should not be set.
-  absl::optional<base::Value> out_value =
+  std::optional<base::Value> out_value =
       GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_FALSE(out_value.value().GetBool());
 
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
                        LacrosSecondaryProfile) {
   // At start, the value in ash should not be set.
-  absl::optional<base::Value> out_value =
+  std::optional<base::Value> out_value =
       GetPref(crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled);
   EXPECT_FALSE(out_value.value().GetBool());
 
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
 }
 
 base::Value::Dict GetAshProxyPrefValue() {
-  absl::optional<::base::Value> out_value =
+  std::optional<::base::Value> out_value =
       GetPref(crosapi::mojom::PrefPath::kProxy);
   return out_value.value().GetDict().Clone();
 }
@@ -508,7 +508,7 @@ class FakePrefsAshService : public crosapi::mojom::Prefs {
   // crosapi::mojom::Prefs:
   void GetPref(crosapi::mojom::PrefPath path,
                GetPrefCallback callback) override {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
   void SetPref(crosapi::mojom::PrefPath path,
                base::Value value,
@@ -525,7 +525,7 @@ class FakePrefsAshService : public crosapi::mojom::Prefs {
       crosapi::mojom::PrefPath path,
       GetExtensionPrefWithControlCallback callback) override {
     // Not a valid prefpath
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             crosapi::mojom::PrefControlState::kDefaultUnknown);
   }
   void ClearExtensionControlledPref(

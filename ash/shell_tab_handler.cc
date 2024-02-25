@@ -12,6 +12,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -24,7 +25,7 @@ void ShellTabHandler::OnKeyEvent(ui::KeyEvent* key_event) {
       key_event->type() != ui::EventType::ET_KEY_PRESSED ||
       key_event->IsAltDown() || key_event->IsControlDown() ||
       key_event->IsCommandDown() ||
-      shell_->tablet_mode_controller()->InTabletMode()) {
+      display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 

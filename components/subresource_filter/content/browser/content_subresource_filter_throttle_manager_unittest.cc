@@ -101,7 +101,7 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
       mojom::ActivationStatePtr activation_state,
-      const absl::optional<blink::FrameAdEvidence>& ad_evidence) override {
+      const std::optional<blink::FrameAdEvidence>& ad_evidence) override {
     last_activation_ = std::move(activation_state);
     is_ad_frame_ = ad_evidence.has_value() && ad_evidence->IndicatesAdFrame();
   }
@@ -112,9 +112,9 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
     is_ad_frame_ = false;
     return is_ad_frame;
   }
-  absl::optional<bool> LastActivated() {
+  std::optional<bool> LastActivated() {
     if (!last_activation_)
-      return absl::nullopt;
+      return std::nullopt;
     bool activated =
         last_activation_->activation_level != mojom::ActivationLevel::kDisabled;
     last_activation_.reset();
@@ -194,7 +194,13 @@ class ContentSubresourceFilterThrottleManagerTest
       public content::WebContentsObserver,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
-  ContentSubresourceFilterThrottleManagerTest() {}
+  ContentSubresourceFilterThrottleManagerTest()
+      // We need the task environment to use a separate IO thread so that the
+      // ChildProcessSecurityPolicy checks which perform different logic
+      // based on whether they are called on the UI thread or the IO thread do
+      // the right thing.
+      : content::RenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
   ContentSubresourceFilterThrottleManagerTest(
       const ContentSubresourceFilterThrottleManagerTest&) = delete;
@@ -276,7 +282,7 @@ class ContentSubresourceFilterThrottleManagerTest
     // ensure mojo calls make it to the fake agent.
     base::RunLoop().RunUntilIdle();
     FakeSubresourceFilterAgent* agent = agent_map_[rfh].get();
-    absl::optional<bool> last_activated = agent->LastActivated();
+    std::optional<bool> last_activated = agent->LastActivated();
     EXPECT_EQ(expect_activation, last_activated && *last_activated);
     EXPECT_EQ(expect_is_ad_frame, agent->LastAdFrame());
     EXPECT_EQ(expect_activation_sent_to_agent, last_activated.has_value());
@@ -1109,13 +1115,30 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_frame */);
 }
 
+// Helper class to make sure strict site isolation is on for tests that need
+// it. This is already the default on desktop platforms, so doing this is
+// mainly to provide coverage on Android. Note that these tests can't just call
+// IsolateAllSitesForTesting() in the test body, as the SetUp() method in the
+// test harness also performs a navigation, so site isolation must be turned on
+// early enough so that it can be in effect for that navigation.
+class SitePerProcessContentSubresourceFilterThrottleManagerTest
+    : public ContentSubresourceFilterThrottleManagerTest {
+ public:
+  SitePerProcessContentSubresourceFilterThrottleManagerTest() {
+    content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SitePerProcessContentSubresourceFilterThrottleManagerTest,
+    ::testing::Values(WILL_START_REQUEST, WILL_PROCESS_RESPONSE));
+
 // If the RenderFrame determines that the frame is an ad due to creation by ad
 // script, and the frame changes processes, then the frame should still be
 // considered an ad.
-TEST_P(ContentSubresourceFilterThrottleManagerTest,
+TEST_P(SitePerProcessContentSubresourceFilterThrottleManagerTest,
        AdTagCarriesAcrossProcesses) {
-  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
-
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */,
                                  false /* is_ad_frame */);
@@ -1773,14 +1796,15 @@ class ContentSubresourceFilterThrottleManagerInfoBarUiTest
   bool presenting_ads_blocked_infobar() {
     auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
         content::RenderViewHostTestHarness::web_contents());
-    if (infobar_manager->infobar_count() == 0)
+    if (infobar_manager->infobars().empty()) {
       return false;
+    }
 
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
-    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-    auto* infobar = infobar_manager->infobar_at(0);
-    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+    EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+    auto* infobar = infobar_manager->infobars()[0].get();
+    EXPECT_EQ(infobar->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 
     return true;

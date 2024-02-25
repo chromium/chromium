@@ -26,7 +26,7 @@ class ScrollTree;
 
 // Used as the return value of GetAnimationScales() to indicate that there is
 // no active transform animation or the scale cannot be computed.
-constexpr float kInvalidScale = 0.f;
+inline constexpr float kInvalidScale = 0.f;
 
 // A MutatorHost owns all the animation and mutation effects.
 // There is just one MutatorHost for LayerTreeHost on main renderer thread
@@ -120,7 +120,7 @@ class MutatorHost {
       const gfx::PointF& current_offset,
       base::TimeDelta delayed_by,
       base::TimeDelta animation_start_offset) = 0;
-  virtual bool ImplOnlyScrollAnimationUpdateTarget(
+  virtual std::optional<gfx::PointF> ImplOnlyScrollAnimationUpdateTarget(
       const gfx::Vector2dF& scroll_delta,
       const gfx::PointF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,

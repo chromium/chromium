@@ -24,8 +24,16 @@
 class ComponentsHandler;
 class PluginObserver;
 
+namespace ash {
+class SmartDimComponentIntegrationTest;
+}
+
 namespace policy {
 class ComponentUpdaterPolicyTest;
+}
+
+namespace screen_ai {
+class ScreenAIDownloaderNonChromeOS;
 }
 
 namespace speech {
@@ -33,11 +41,10 @@ class SodaInstallerImpl;
 }
 
 namespace update_client {
-class ComponentInstaller;
 class Configurator;
 struct CrxComponent;
 struct CrxUpdateItem;
-}
+}  // namespace update_client
 
 namespace extensions {
 class AutotestPrivateLoadSmartDimComponentFunction;
@@ -85,7 +92,9 @@ struct ComponentRegistration {
       scoped_refptr<update_client::ActionHandler> action_handler,
       scoped_refptr<update_client::CrxInstaller> installer,
       bool requires_network_encryption,
-      bool supports_group_policy_enable_component_updates);
+      bool supports_group_policy_enable_component_updates,
+      bool allow_cached_copies,
+      bool allow_updates_on_metered_connection);
   ComponentRegistration(const ComponentRegistration& other);
   ComponentRegistration& operator=(const ComponentRegistration& other);
   ComponentRegistration(ComponentRegistration&& other);
@@ -102,6 +111,8 @@ struct ComponentRegistration {
   scoped_refptr<update_client::CrxInstaller> installer;
   bool requires_network_encryption;
   bool supports_group_policy_enable_component_updates;
+  bool allow_cached_copies;
+  bool allow_updates_on_metered_connection;
 };
 
 // The component update service is in charge of installing or upgrading select
@@ -134,6 +145,11 @@ class ComponentUpdateService {
   // Returns the last registered version for the component associated with
   // |app_id|. Returns kNullVersion if no suitable version is found.
   virtual base::Version GetRegisteredVersion(const std::string& app_id) = 0;
+
+  // Returns the max previous product version for the component associated with
+  // |app_id|. Returns kNullVersion if no suitable version is found.
+  virtual base::Version GetMaxPreviousProductVersion(
+      const std::string& app_id) = 0;
 
   // Add component to be checked for updates.
   virtual bool RegisterComponent(const ComponentRegistration& component) = 0;
@@ -184,6 +200,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
+  friend class screen_ai::ScreenAIDownloaderNonChromeOS;
   friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
@@ -210,6 +227,7 @@ class OnDemandUpdater {
   friend class SodaLanguagePackComponentInstallerPolicy;
   friend class ::extensions::AutotestPrivateLoadSmartDimComponentFunction;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  friend class ash::SmartDimComponentIntegrationTest;
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

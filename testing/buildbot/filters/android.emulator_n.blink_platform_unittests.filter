@@ -1,6 +1,0 @@
-# https://crbug.com/1254869
--HarfBuzzShaperTest.IdeographicSpace
-
-# https://crbug.com/1108121
--HarfBuzzShaperTest.ShapeHorizontalWithSubpixelPositionWithoutKerningIsNotRounded
--HarfBuzzShaperTest.ShapeHorizontalWithoutSubpixelPositionWithKerningIsRounded

@@ -141,13 +141,13 @@ void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
     } else {
       NET_LOG(ERROR) << "DBus call failed with no error.";
     }
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   dbus::MessageReader reader(response);
   base::Value value(dbus::PopDataAsValue(&reader));
   if (value.is_none()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(std::move(value));
@@ -169,13 +169,13 @@ void OnDictValueMethod(ShillClientHelper::RefHolder* ref_holder,
     } else {
       NET_LOG(ERROR) << "DBus call failed with no error.";
     }
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   dbus::MessageReader reader(response);
   base::Value value(dbus::PopDataAsValue(&reader));
   if (!value.is_dict()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(std::move(value.GetDict()));

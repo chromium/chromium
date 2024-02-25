@@ -24,9 +24,8 @@ jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& buffer) {
   mojom::PaymentDetailsPtr details;
-  if (!mojom::PaymentDetails::Deserialize(
-          std::move(android::JavaByteBufferToNativeByteVector(env, buffer)),
-          &details)) {
+  auto span = base::android::JavaByteBufferToSpan(env, buffer.obj());
+  if (!mojom::PaymentDetails::Deserialize(span.data(), span.size(), &details)) {
     return false;
   }
   std::string unused_error_message;
@@ -38,9 +37,9 @@ jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& buffer) {
   mojom::PaymentValidationErrorsPtr errors;
-  if (!mojom::PaymentValidationErrors::Deserialize(
-          std::move(android::JavaByteBufferToNativeByteVector(env, buffer)),
-          &errors)) {
+  auto span = base::android::JavaByteBufferToSpan(env, buffer.obj());
+  if (!mojom::PaymentValidationErrors::Deserialize(span.data(), span.size(),
+                                                   &errors)) {
     return false;
   }
   std::string unused_error_message;

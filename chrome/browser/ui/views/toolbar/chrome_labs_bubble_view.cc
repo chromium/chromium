@@ -13,11 +13,12 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -37,12 +38,14 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
 class ChromeLabsFooter : public views::View {
+  METADATA_HEADER(ChromeLabsFooter, views::View)
+
  public:
-  METADATA_HEADER(ChromeLabsFooter);
   explicit ChromeLabsFooter(base::RepeatingClosure restart_callback) {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -69,7 +72,7 @@ class ChromeLabsFooter : public views::View {
                      .SetCallback(restart_callback)
                      .SetText(l10n_util::GetStringUTF16(
                          IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
-                     .SetProminent(true)
+                     .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
@@ -86,7 +89,7 @@ class ChromeLabsFooter : public views::View {
   raw_ptr<views::Label> restart_label_;
 };
 
-BEGIN_METADATA(ChromeLabsFooter, views::View)
+BEGIN_METADATA(ChromeLabsFooter)
 END_METADATA
 
 }  // namespace
@@ -94,6 +97,7 @@ END_METADATA
 ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT) {
+  SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
@@ -120,23 +124,43 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  menu_item_container_ = scroll_view->SetContents(
+  std::unique_ptr<views::FlexLayoutView> scroll_contents =
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
                            views::MinimumFlexSizeRule::kScaleToZero,
                            views::MaximumFlexSizeRule::kPreferred, true))
-          .SetBorder(views::CreateEmptyBorder(
-              views::LayoutProvider::Get()->GetInsetsMetric(
-                  views::INSETS_DIALOG)))
-          .Build());
-  scroll_view->ClipHeightTo(0, kMaxChromeLabsHeightDp);
+          .Build();
+
+  gfx::Insets dialog_insets =
+      views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG);
+// On Mac the scroll bar is painted on top of the bubble so we need to have the
+// bottom margins be on the scroll view instead of the scroll contents in order
+// to ensure the scroll bar is correctly inside the bubble.
+// On both Mac and non-Mac platforms, we will put the left and right insets on
+// the contents rather than the ScrollView itself because if we put those insets
+// on the ScrollView itself the ScrollBar will also be inset.
+#if BUILDFLAG(IS_MAC)
+  scroll_contents->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right())));
+  scroll_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(dialog_insets.top(), 0, dialog_insets.bottom(), 0)));
+
+#else
+  scroll_contents->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, dialog_insets.left(), dialog_insets.bottom(), dialog_insets.right())));
+  scroll_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(dialog_insets.top(), 0, 0, 0)));
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kDialogRadius);
   scroll_view->SetViewportRoundedCornerRadius(
       gfx::RoundedCornersF(0.0f, 0.0f, corner_radius, corner_radius));
-  AddChildView(std::move(scroll_view));
+#endif  // BUILDFLAG(IS_MAC)
+
+  menu_item_container_ = scroll_view->SetContents(std::move(scroll_contents));
+  scroll_view->ClipHeightTo(0, kMaxChromeLabsHeightDp);
+  scroll_view_ = AddChildView(std::move(scroll_view));
 
   /* base::Unretained is safe here because NotifyRestartCallback will notify a
    * CallbackListSubscription, and ChromeLabsFooter is a child on
@@ -206,5 +230,9 @@ bool ChromeLabsBubbleView::IsRestartPromptVisibleForTesting() {
   return restart_prompt_->GetVisible();
 }
 
-BEGIN_METADATA(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+views::ScrollView* ChromeLabsBubbleView::GetScrollViewForTesting() {
+  return scroll_view_;
+}
+
+BEGIN_METADATA(ChromeLabsBubbleView)
 END_METADATA

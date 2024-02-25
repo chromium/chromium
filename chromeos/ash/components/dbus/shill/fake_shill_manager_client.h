@@ -221,11 +221,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   // For testing dynamic WEP networks (uses wifi2).
   bool dynamic_wep_ = false;
 
-  // For testing proxy-auth case for shill service state.
-  bool proxy_auth_ = false;
-
   // Caches the last-passed callbacks for ScanAndConnectToBestServices.
-  absl::optional<ConnectToBestServicesCallbacks>
+  std::optional<ConnectToBestServicesCallbacks>
       connect_to_best_services_callbacks_;
 
   // Note: This should remain the last member so it'll be destroyed and

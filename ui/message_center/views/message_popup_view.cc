@@ -85,6 +85,23 @@ void MessagePopupView::UpdateContents(const Notification& notification) {
   }
 }
 
+void MessagePopupView::UpdateContentsForChildNotification(
+    const std::string& notification_id,
+    const Notification& notification) {
+  if (!IsWidgetValid()) {
+    return;
+  }
+
+  auto* child_notification_view = static_cast<MessageView*>(
+      message_view_->FindGroupNotificationView(notification_id));
+  if (!child_notification_view) {
+    return;
+  }
+
+  child_notification_view->UpdateWithNotification(notification);
+  popup_collection_->NotifyPopupResized();
+}
+
 #if !BUILDFLAG(IS_APPLE)
 float MessagePopupView::GetOpacity() const {
   if (!IsWidgetValid())
@@ -239,7 +256,7 @@ bool MessagePopupView::IsWidgetValid() const {
   return GetWidget() && !GetWidget()->IsClosed();
 }
 
-BEGIN_METADATA(MessagePopupView, views::WidgetDelegateView)
+BEGIN_METADATA(MessagePopupView)
 END_METADATA
 
 }  // namespace message_center

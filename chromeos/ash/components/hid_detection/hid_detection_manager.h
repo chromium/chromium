@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::hid_detection {
 
@@ -49,7 +49,7 @@ class HidDetectionManager {
     HidDetectionStatus(InputMetadata pointer_metadata,
                        InputMetadata keyboard_metadata,
                        bool touchscreen_detected,
-                       absl::optional<BluetoothHidPairingState> pairing_state);
+                       std::optional<BluetoothHidPairingState> pairing_state);
     HidDetectionStatus(HidDetectionStatus&& other);
     HidDetectionStatus& operator=(HidDetectionStatus&& other);
     ~HidDetectionStatus();
@@ -65,7 +65,7 @@ class HidDetectionManager {
 
     // Set if the current pairing requires a code that should be displayed to
     // the user to enter.
-    absl::optional<BluetoothHidPairingState> pairing_state;
+    std::optional<BluetoothHidPairingState> pairing_state;
   };
 
   class Delegate {
@@ -109,7 +109,7 @@ class HidDetectionManager {
   // types to notify observers of status changes.
   void NotifyHidDetectionStatusChanged();
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

@@ -13,13 +13,15 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './appearance.html.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
+import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface AppearanceElement {
@@ -31,10 +33,13 @@ export interface AppearanceElement {
     thirdPartyLinkButton: HTMLButtonElement,
     followThemeToggle: HTMLElement,
     followThemeToggleControl: CrToggleElement,
+    uploadedImageButton: HTMLButtonElement,
+    searchedImageButton: HTMLButtonElement,
   };
 }
 
-export class AppearanceElement extends PolymerElement {
+export class AppearanceElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'customize-chrome-appearance';
   }
@@ -48,6 +53,17 @@ export class AppearanceElement extends PolymerElement {
       theme_: Object,
       themeButtonClass_: String,
 
+      chromeRefresh2023Enabled_: {
+        type: Boolean,
+        value: () =>
+            document.documentElement.hasAttribute('chrome-refresh-2023'),
+      },
+
+      editThemeButtonText_: {
+        type: String,
+        computed: 'computeEditThemeButtonText_(wallpaperSearchButtonEnabled_)',
+      },
+
       thirdPartyThemeId_: {
         type: String,
         computed: 'computeThirdPartyThemeId_(theme_)',
@@ -60,18 +76,11 @@ export class AppearanceElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      // Prevents side panel from showing theme snapshot and colors before
-      // thirdPartyThemeName_ is determined if third party theme is installed.
-      showFirstPartyThemeView_: {
+      showBottomDivider_: {
         type: Boolean,
         value: false,
-        computed: 'computeShowFirstPartyThemeView_(theme_)',
-      },
-
-      showDeviceThemeToggle_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowDeviceThemeToggle_(theme_)',
+        computed:
+            'computeShowBottomDivider_(showClassicChromeButton_, showDeviceThemeToggle_)',
       },
 
       showClassicChromeButton_: {
@@ -80,25 +89,62 @@ export class AppearanceElement extends PolymerElement {
         computed: 'computeShowClassicChromeButton_(theme_)',
       },
 
-      showBottomDivider_: {
+      showColorPicker_: {
         type: Boolean,
-        computed:
-            'computeShowBottomDivider_(showClassicChromeButton_, showDeviceThemeToggle_)',
+        value: false,
+        computed: 'computeShowColorPicker_(theme_)',
+      },
+
+      showDeviceThemeToggle_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowDeviceThemeToggle_(theme_)',
+      },
+
+      showThemeSnapshot_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowThemeSnapshot_(theme_)',
+      },
+
+      showUploadedImageButton_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowUploadedImageButton_(theme_)',
+      },
+
+      showSearchedImageButton_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSearchedImageButton_(theme_)',
       },
 
       showManagedDialog_: Boolean,
+
+      wallpaperSearchButtonEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
+        reflectToAttribute: true,
+      },
     };
   }
 
   private theme_: Theme|undefined = undefined;
   private themeButtonClass_: string;
+  private chromeRefresh2023Enabled_: boolean;
+  private editThemeButtonText_:
+    string;
   private thirdPartyThemeId_: string|null = null;
   private thirdPartyThemeName_: string|null = null;
-  private showFirstPartyThemeView_: boolean;
-  private showDeviceThemeToggle_: boolean;
-  private showClassicChromeButton_: boolean;
+  private hasUploadedImage_: boolean;
   private showBottomDivider_: boolean;
+  private showClassicChromeButton_: boolean;
+  private showColorPicker_: boolean;
+  private showDeviceThemeToggle_: boolean;
+  private showThemeSnapshot: boolean;
   private showManagedDialog_: boolean;
+  private wallpaperSearchButtonEnabled_:
+    boolean;
 
   private setThemeListenerId_: number|null = null;
 
@@ -114,9 +160,7 @@ export class AppearanceElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     this.themeButtonClass_ =
-        document.documentElement.hasAttribute('chrome-refresh-2023') ?
-        'floating-button' :
-        'action-button';
+        this.chromeRefresh2023Enabled_ ? 'floating-button' : 'action-button';
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
@@ -135,6 +179,14 @@ export class AppearanceElement extends PolymerElement {
     this.$.editThemeButton.focus();
   }
 
+  private computeEditThemeButtonText_(): string {
+    if (!this.wallpaperSearchButtonEnabled_) {
+      return this.i18n('changeTheme');
+    } else {
+      return this.i18n('categoriesHeader');
+    }
+  }
+
   private computeThirdPartyThemeId_(): string|null {
     if (this.theme_ && this.theme_.thirdPartyThemeInfo) {
       return this.theme_.thirdPartyThemeInfo.id;
@@ -151,13 +203,8 @@ export class AppearanceElement extends PolymerElement {
     }
   }
 
-  private computeShowFirstPartyThemeView_(): boolean {
-    return !!this.theme_ && !this.theme_.thirdPartyThemeInfo;
-  }
-
-  private computeShowDeviceThemeToggle_(): boolean {
-    return loadTimeData.getBoolean('showDeviceThemeToggle') &&
-        !(!!this.theme_ && !!this.theme_.thirdPartyThemeInfo);
+  private computeShowBottomDivider_(): boolean {
+    return !!(this.showClassicChromeButton_ || this.showDeviceThemeToggle_);
   }
 
   private computeShowClassicChromeButton_(): boolean {
@@ -166,15 +213,52 @@ export class AppearanceElement extends PolymerElement {
         (this.theme_.backgroundImage || this.theme_.thirdPartyThemeInfo));
   }
 
-  private computeShowBottomDivider_(): boolean {
-    return !!(this.showClassicChromeButton_ || this.showDeviceThemeToggle_);
+  private computeShowColorPicker_(): boolean {
+    return !!this.theme_ && !this.theme_.thirdPartyThemeInfo;
+  }
+
+  private computeShowDeviceThemeToggle_(): boolean {
+    return loadTimeData.getBoolean('showDeviceThemeToggle') &&
+        !(!!this.theme_ && !!this.theme_.thirdPartyThemeInfo);
+  }
+
+  private computeShowThemeSnapshot_(): boolean {
+    return !!this.theme_ && !this.theme_.thirdPartyThemeInfo &&
+        (!this.chromeRefresh2023Enabled_ ||
+         !(this.theme_.backgroundImage &&
+           this.theme_.backgroundImage.isUploadedImage));
+  }
+
+  private computeShowUploadedImageButton_(): boolean {
+    return !!(
+        this.chromeRefresh2023Enabled_ && this.theme_ &&
+        this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.isUploadedImage &&
+        !this.theme_.backgroundImage.localBackgroundId);
+  }
+
+  private computeShowSearchedImageButton_(): boolean {
+    return !!(
+        this.chromeRefresh2023Enabled_ && this.theme_ &&
+        this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.localBackgroundId);
   }
 
   private onEditThemeClicked_() {
+    recordCustomizeChromeAction(CustomizeChromeAction.EDIT_THEME_CLICKED);
     if (this.handleClickForManagedThemes_()) {
       return;
     }
     this.dispatchEvent(new Event('edit-theme-click'));
+  }
+
+  private onWallpaperSearchClicked_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_APPEARANCE_BUTTON_CLICKED);
+    if (this.handleClickForManagedThemes_()) {
+      return;
+    }
+    this.dispatchEvent(new Event('wallpaper-search-click'));
   }
 
   private onThirdPartyLinkButtonClick_() {
@@ -183,12 +267,22 @@ export class AppearanceElement extends PolymerElement {
     }
   }
 
+  private onUploadedImageButtonClick_() {
+    this.pageHandler_.chooseLocalCustomBackground();
+  }
+
+  private onSearchedImageButtonClick_() {
+    this.dispatchEvent(new CustomEvent('wallpaper-search-click'));
+  }
+
   private onSetClassicChromeClicked_() {
     if (this.handleClickForManagedThemes_()) {
       return;
     }
     this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setDefaultColor();
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.SET_CLASSIC_CHROME_THEME_CLICKED);
   }
 
   private onFollowThemeToggleChange_(e: CustomEvent<boolean>) {

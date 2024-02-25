@@ -17,7 +17,6 @@ function wait_for_message(number_of_messages) {
 (async function() {
   TestRunner.addResult(
       `Tests that a warning is shown in the console if addEventListener adds an empty fetch handler.\n`);
-  await TestRunner.loadLegacyModule('console');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');

@@ -545,8 +545,9 @@ TEST_F(NativeWindowOcclusionTrackerTest,
 }
 
 // Test that a maximized aura window that is covered by a fullscreen window
-// is marked as occluded.
-TEST_F(NativeWindowOcclusionTrackerTest, MaximizedOccludedByFullscreenWindow) {
+// is marked as occluded. TODO(https://crbug.com/1315398): Fix flakiness.
+TEST_F(NativeWindowOcclusionTrackerTest,
+       DISABLED_MaximizedOccludedByFullscreenWindow) {
   // Create an aura window that is maximized.
   base::RunLoop run_loop1;
   MockWindowTreeHostObserver observer(run_loop1.QuitClosure());

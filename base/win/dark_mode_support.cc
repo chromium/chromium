@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/check.h"
 #include "base/native_library.h"
 #include "base/win/windows_version.h"
 

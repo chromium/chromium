@@ -40,7 +40,7 @@ SafeBrowsingPrivateGetReferrerChainFunction::
 
 ExtensionFunction::ResponseAction
 SafeBrowsingPrivateGetReferrerChainFunction::Run() {
-  absl::optional<api::safe_browsing_private::GetReferrerChain::Params> params =
+  std::optional<api::safe_browsing_private::GetReferrerChain::Params> params =
       api::safe_browsing_private::GetReferrerChain::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

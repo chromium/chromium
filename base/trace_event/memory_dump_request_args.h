@@ -27,41 +27,41 @@ class ProcessMemoryDump;
 // consistent with memory_instrumentation.mojo and
 // memory_instrumentation_struct_traits.{h,cc}
 enum class MemoryDumpType {
-  PERIODIC_INTERVAL,     // Dumping memory at periodic intervals.
-  EXPLICITLY_TRIGGERED,  // Non maskable dump request.
-  SUMMARY_ONLY,          // Calculate just the summary & don't add to the trace.
-  LAST = SUMMARY_ONLY
+  kPeriodicInterval,     // Dumping memory at periodic intervals.
+  kExplicitlyTriggered,  // Non maskable dump request.
+  kSummaryOnly,          // Calculate just the summary & don't add to the trace.
+  kLast = kSummaryOnly
 };
 
 // Tells the MemoryDumpProvider(s) how much detailed their dumps should be.
 // Keep this consistent with memory_instrumentation.mojo and
 // memory_instrumentation_struct_traits.{h,cc}
 enum class MemoryDumpLevelOfDetail : uint32_t {
-  FIRST,
+  kFirst,
 
   // For background tracing mode. The dump time is quick, and typically just the
   // totals are expected. Suballocations need not be specified. Dump name must
   // contain only pre-defined strings and string arguments cannot be added.
-  BACKGROUND = FIRST,
+  kBackground = kFirst,
 
   // For the levels below, MemoryDumpProvider instances must guarantee that the
   // total size reported in the root node is consistent. Only the granularity of
   // the child MemoryAllocatorDump(s) differs with the levels.
 
   // Few entries, typically a fixed number, per dump.
-  LIGHT,
+  kLight,
 
   // Unrestricted amount of entries per dump.
-  DETAILED,
+  kDetailed,
 
-  LAST = DETAILED
+  kLast = kDetailed
 };
 
 // Tells the MemoryDumpProvider(s) if they should try to make the result
 // more deterministic by forcing garbage collection.
 // Keep this consistent with memory_instrumentation.mojo and
 // memory_instrumentation_struct_traits.{h,cc}
-enum class MemoryDumpDeterminism : uint32_t { NONE, FORCE_GC };
+enum class MemoryDumpDeterminism : uint32_t { kNone, kForceGc };
 
 // Keep this consistent with memory_instrumentation.mojo and
 // memory_instrumentation_struct_traits.{h,cc}

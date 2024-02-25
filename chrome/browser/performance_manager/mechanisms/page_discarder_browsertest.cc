@@ -55,10 +55,13 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesUrgent) {
         mechanism::PageDiscarder discarder;
         discarder.DiscardPageNodes(
             {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::URGENT,
-            base::BindLambdaForTesting([&quit_closure](bool success) {
-              EXPECT_TRUE(success);
-              std::move(quit_closure).Run();
-            }));
+            base::BindLambdaForTesting(
+                [&quit_closure](
+                    const std::vector<mechanism::PageDiscarder::DiscardEvent>&
+                        discard_events) {
+                  EXPECT_EQ(discard_events.size(), 1U);
+                  std::move(quit_closure).Run();
+                }));
       }));
   run_loop.Run();
 
@@ -104,10 +107,13 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesProactive) {
         mechanism::PageDiscarder discarder;
         discarder.DiscardPageNodes(
             {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
-            base::BindLambdaForTesting([&quit_closure](bool success) {
-              EXPECT_TRUE(success);
-              std::move(quit_closure).Run();
-            }));
+            base::BindLambdaForTesting(
+                [&quit_closure](
+                    const std::vector<mechanism::PageDiscarder::DiscardEvent>&
+                        discard_events) {
+                  EXPECT_EQ(discard_events.size(), 1U);
+                  std::move(quit_closure).Run();
+                }));
       }));
   run_loop.Run();
 

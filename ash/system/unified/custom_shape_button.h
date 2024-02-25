@@ -13,8 +13,9 @@ namespace ash {
 // Abstract base class of buttons that have custom shape with Material Design
 // ink drop.
 class CustomShapeButton : public views::ImageButton {
+  METADATA_HEADER(CustomShapeButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(CustomShapeButton);
   explicit CustomShapeButton(PressedCallback callback);
 
   CustomShapeButton(const CustomShapeButton&) = delete;

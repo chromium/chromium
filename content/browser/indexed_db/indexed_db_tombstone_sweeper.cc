@@ -5,11 +5,11 @@
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -104,7 +104,7 @@ IndexedDBTombstoneSweeper::SweepState::~SweepState() = default;
 
 void IndexedDBTombstoneSweeper::Stop(StopReason reason) {
   leveldb::Status s;
-  RecordUMAStats(reason, absl::nullopt, s);
+  RecordUMAStats(reason, std::nullopt, s);
 }
 
 bool IndexedDBTombstoneSweeper::RunRound() {
@@ -130,13 +130,13 @@ bool IndexedDBTombstoneSweeper::RunRound() {
   if (status == Status::SWEEPING)
     return false;
 
-  RecordUMAStats(absl::nullopt, status, s);
+  RecordUMAStats(std::nullopt, status, s);
   return true;
 }
 
 void IndexedDBTombstoneSweeper::RecordUMAStats(
-    absl::optional<StopReason> stop_reason,
-    absl::optional<IndexedDBTombstoneSweeper::Status> status,
+    std::optional<StopReason> stop_reason,
+    std::optional<IndexedDBTombstoneSweeper::Status> status,
     const leveldb::Status& leveldb_error) {
   DCHECK(stop_reason || status);
   DCHECK(!stop_reason || !status);
@@ -349,9 +349,9 @@ IndexedDBTombstoneSweeper::Status IndexedDBTombstoneSweeper::DoSweep(
         if (!can_continue)
           return sweep_status;
       }
-      sweep_state_.index_it = absl::nullopt;
+      sweep_state_.index_it = std::nullopt;
     }
-    sweep_state_.object_store_it = absl::nullopt;
+    sweep_state_.object_store_it = std::nullopt;
   }
   return Status::DONE_COMPLETE;
 }
@@ -387,10 +387,10 @@ bool IndexedDBTombstoneSweeper::IterateIndex(
 
   while (iterator_->Valid()) {
     leveldb::Slice key_slice = iterator_->key();
-    base::StringPiece index_key_str = leveldb_env::MakeStringPiece(key_slice);
+    std::string_view index_key_str = leveldb_env::MakeStringView(key_slice);
     size_t key_size = index_key_str.size();
-    base::StringPiece index_value_str =
-        leveldb_env::MakeStringPiece(iterator_->value());
+    std::string_view index_value_str =
+        leveldb_env::MakeStringView(iterator_->value());
     size_t value_size = index_value_str.size();
     // See if we've reached the end of the current index or all indexes.
     sweep_state_.index_it_key.emplace(IndexDataKey());
@@ -430,7 +430,7 @@ bool IndexedDBTombstoneSweeper::IterateIndex(
       }
       continue;
     }
-    base::StringPiece exists_value_piece(exists_value);
+    std::string_view exists_value_piece(exists_value);
     int64_t decoded_exists_version;
     if (!DecodeInt(&exists_value_piece, &decoded_exists_version) ||
         !exists_value_piece.empty()) {
@@ -457,7 +457,7 @@ bool IndexedDBTombstoneSweeper::IterateIndex(
     }
   }
   ++indices_scanned_;
-  sweep_state_.index_it_key = absl::nullopt;
+  sweep_state_.index_it_key = std::nullopt;
   return true;
 }
 

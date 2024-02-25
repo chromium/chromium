@@ -61,7 +61,8 @@ chrome.events.Event;
  *   urlPrefix: (string|undefined),
  *   urlSuffix: (string|undefined),
  *   schemes: (!Array<string>|undefined),
- *   ports: (!Array<(number|!Array<number>)>|undefined)
+ *   ports: (!Array<(number|!Array<number>)>|undefined),
+ *   cidrBlocks: (!Array<string>|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/events#type-UrlFilter
  */

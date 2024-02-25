@@ -87,8 +87,7 @@ bool ProfilerGroup::CanProfile(LocalDOMWindow* local_window,
 
 void ProfilerGroup::InitializeIfEnabled(LocalDOMWindow* local_window) {
   if (ProfilerGroup::CanProfile(local_window)) {
-    auto* profiler_group =
-        ProfilerGroup::From(V8PerIsolateData::MainThreadIsolate());
+    auto* profiler_group = ProfilerGroup::From(local_window->GetIsolate());
     profiler_group->OnProfilingContextAdded(local_window);
   }
 }

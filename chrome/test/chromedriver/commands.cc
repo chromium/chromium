@@ -34,6 +34,20 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
 
+namespace {
+void WriteChromeDriverExtendedStatus(base::Value::Dict& info) {
+  base::Value::Dict build;
+  build.Set("version", kChromeDriverVersion);
+  info.Set("build", std::move(build));
+
+  base::Value::Dict os;
+  os.Set("name", base::SysInfo::OperatingSystemName());
+  os.Set("version", base::SysInfo::OperatingSystemVersion());
+  os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
+  info.Set("os", std::move(os));
+}
+}  // namespace
+
 void ExecuteGetStatus(const base::Value::Dict& params,
                       const std::string& session_id,
                       const CommandCallback& callback) {
@@ -46,18 +60,33 @@ void ExecuteGetStatus(const base::Value::Dict& params,
                                          kChromeDriverProductShortName));
 
   // ChromeDriver specific data:
-  base::Value::Dict build;
-  build.Set("version", kChromeDriverVersion);
-  info.Set("build", std::move(build));
-
-  base::Value::Dict os;
-  os.Set("name", base::SysInfo::OperatingSystemName());
-  os.Set("version", base::SysInfo::OperatingSystemVersion());
-  os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
-  info.Set("os", std::move(os));
+  WriteChromeDriverExtendedStatus(info);
 
   callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(info)),
                std::string(), kW3CDefault);
+}
+
+void ExecuteBidiSessionStatus(const base::Value::Dict& params,
+                              const std::string& session_id,
+                              const CommandCallback& callback) {
+  base::Value::Dict info;
+  if (session_id.empty()) {
+    info.Set("ready", true);
+    info.Set("message", base::StringPrintf("%s ready for new sessions.",
+                                           kChromeDriverProductShortName));
+  } else {
+    info.Set("ready", false);
+    // The error message is borrowed from BiDiMapper code.
+    // See bidiMapper/domains/session/SessionProcessor.ts of chromium-bidi
+    // repository.
+    info.Set("message", "already connected");
+  }
+
+  // ChromeDriver specific data:
+  WriteChromeDriverExtendedStatus(info);
+
+  callback.Run(Status(kOk), std::make_unique<base::Value>(std::move(info)),
+               session_id, kW3CDefault);
 }
 
 void ExecuteCreateSession(SessionThreadMap* session_thread_map,
@@ -79,8 +108,29 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
 
   thread_info->thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SetThreadLocalSession, std::move(session)));
-  session_thread_map->insert(std::make_pair(new_id, std::move(thread_info)));
+  session_thread_map->emplace(new_id, std::move(thread_info));
   init_session_cmd.Run(params, new_id, callback);
+}
+
+void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
+                           const Command& init_session_cmd,
+                           const base::Value::Dict& params,
+                           const std::string& resource,
+                           const CommandCallback& callback) {
+  if (!resource.empty()) {
+    callback.Run(Status{kSessionNotCreated, "session already exists"}, nullptr,
+                 resource, kW3CDefault);
+    return;
+  }
+  base::Value::Dict new_params;
+  const base::Value::Dict* capabilities =
+      params.FindDictByDottedPath("params.capabilities");
+  if (capabilities) {
+    new_params.Set("capabilities", capabilities->Clone());
+  }
+  new_params.SetByDottedPath("capabilities.alwaysMatch.webSocketUrl", true);
+  ExecuteCreateSession(session_thread_map, init_session_cmd, new_params,
+                       resource, callback);
 }
 
 namespace {
@@ -196,9 +246,12 @@ void ExecuteQuitAll(const Command& quit_command,
 
 namespace {
 
-void TerminateSessionThreadOnCommandThread(SessionThreadMap* session_thread_map,
-                                           const std::string& session_id) {
+void TerminateSessionThreadOnCommandThread(
+    SessionThreadMap* session_thread_map,
+    SessionConnectionMap* session_connection_map,
+    const std::string& session_id) {
   session_thread_map->erase(session_id);
+  session_connection_map->erase(session_id);
 }
 
 void ExecuteSessionCommandOnSessionThread(
@@ -330,6 +383,7 @@ void ExecuteSessionCommandOnSessionThread(
 }  // namespace
 
 void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
+                           SessionConnectionMap* session_connection_map,
                            const char* command_name,
                            const SessionCommand& command,
                            bool w3c_standard_command,
@@ -351,7 +405,8 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
             params.Clone(), base::SingleThreadTaskRunner::GetCurrentDefault(),
             callback,
             base::BindRepeating(&TerminateSessionThreadOnCommandThread,
-                                session_thread_map, session_id)));
+                                session_thread_map, session_connection_map,
+                                session_id)));
   }
 }
 

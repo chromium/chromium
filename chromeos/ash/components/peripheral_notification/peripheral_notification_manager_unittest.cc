@@ -219,12 +219,9 @@ class PeripheralNotificationManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeTypecdClient, DanglingUntriaged | ExperimentalAsh>
-      fake_typecd_client_;
-  raw_ptr<FakePciguardClient, DanglingUntriaged | ExperimentalAsh>
-      fake_pciguard_client_;
-  raw_ptr<PeripheralNotificationManager, DanglingUntriaged | ExperimentalAsh>
-      manager_ = nullptr;
+  raw_ptr<FakeTypecdClient, DanglingUntriaged> fake_typecd_client_;
+  raw_ptr<FakePciguardClient, DanglingUntriaged> fake_pciguard_client_;
+  raw_ptr<PeripheralNotificationManager, DanglingUntriaged> manager_ = nullptr;
   FakeObserver fake_observer_;
 };
 

@@ -44,6 +44,10 @@ def checkIsGzipped(filename, compress_attr):
 
 
 class StructureUnittest(unittest.TestCase):
+  @classmethod
+  def setUpClass(cls):
+    os.environ["root_gen_dir"] = "gen"
+
   def testSkeleton(self):
     grd = util.ParseGrdForUnittest('''
         <structures>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="resources/file-drag-common.js"></script>
+
+<input id="target" type=file style="field-sizing:content">
+<input id="reference" type=file>
+
+<script>
+test(() => {
+  const target = document.querySelector('#target');
+  const initialWidth = target.offsetWidth;
+
+  dragFilesOntoInput(target, ['no file chosen no file chosen no file chosen.txt']);
+  assert_greater_than(target.offsetWidth, initialWidth);
+
+  target.removeAttribute('style');
+  assert_equals(target.offsetWidth, document.querySelector('#reference').offsetWidth);
+}, 'field-sizing: The width of a file upload control depends on its label');
+</script>

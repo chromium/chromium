@@ -10,4 +10,9 @@ MockAttributionDataHostManager::MockAttributionDataHostManager() = default;
 
 MockAttributionDataHostManager::~MockAttributionDataHostManager() = default;
 
+base::WeakPtr<AttributionDataHostManager>
+MockAttributionDataHostManager::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content

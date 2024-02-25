@@ -6,6 +6,10 @@
 
 namespace ui {
 
+BASE_FEATURE(kEnableHeatmapPalmDetection,
+             "EnableHeatmapPalmDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableHeuristicPalmDetectionFilter,
              "EnableHeuristicPalmDetectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -46,6 +50,10 @@ BASE_FEATURE(kLibinputHandleTouchpad,
 
 BASE_FEATURE(kEnableFakeKeyboardHeuristic,
              "EnableFakeKeyboardHeuristic",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableFakeMouseHeuristic,
+             "EnableFakeMouseHeuristic",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{

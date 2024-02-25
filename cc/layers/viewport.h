@@ -44,6 +44,7 @@ class CC_EXPORT Viewport {
     gfx::Vector2dF consumed_delta;
     gfx::Vector2dF content_scrolled_delta;
     gfx::Vector2dF outer_viewport_scrolled_delta;
+    gfx::Vector2dF inner_viewport_scrolled_delta;
   };
 
   static std::unique_ptr<Viewport> Create(LayerTreeHostImpl* host_impl);
@@ -105,6 +106,10 @@ class CC_EXPORT Viewport {
   // for scrollbars. This method can be useful for calculating the area of the
   // inner viewport where content is visible.
   gfx::SizeF GetInnerViewportSizeExcludingScrollbars() const;
+
+  // Performs an instant snap if the viewport is a snap container and no scroll
+  // gesture is in progress.
+  void SnapIfNeeded();
 
  private:
   explicit Viewport(LayerTreeHostImpl* host_impl);

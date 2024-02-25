@@ -132,13 +132,13 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   ~TestChromeDownloadManagerDelegate() override;
 
   // ChromeDownloadManagerDelegate override:
-  bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path) override;
+  bool IsOpenInBrowserPreferredForFile(const base::FilePath& path) override;
 };
 
 TestChromeDownloadManagerDelegate::~TestChromeDownloadManagerDelegate() =
     default;
 
-bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
+bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
     const base::FilePath& path) {
   return true;
 }
@@ -233,12 +233,6 @@ class DownloadItemModelTest : public testing::Test {
     model_.set_status_text_builder_for_testing(for_bubble);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  void SetIsBubbleV2Enabled(bool is_enabled) {
-    model_.set_is_bubble_v2_enabled_for_testing(is_enabled);
-  }
-#endif
-
   content::BrowserTaskEnvironment task_environment_;
 
  private:
@@ -264,14 +258,9 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
 
     // Expected bubble status string. This will include the progress as well.
     // If empty, use the expected_status_msg.
-    // \xE2\x80\xA2 refers to the UTF8 encoding for the unicode symbol
-    // 0x2022 "•" bullet, used as the separator in Download Bubble
-    // \xE2\x80\xA6 refers to the UTF8 encoding for the unicode symbol
-    // 0x2026 "…" HORIZONTAL ELLIPSIS
     std::string expected_bubble_status_msg;
   } kTestCases[] = {
-      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B",
-       "1/2 B \xE2\x80\xA2 Resuming\xE2\x80\xA6"},
+      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B", "1/2 B • Resuming…"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, "%s - Download error",
        "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
@@ -293,7 +282,7 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
        "%s - Already downloaded", "Already downloaded"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-       "%s - System busy", "Couldn\xE2\x80\x99t finish download"},
+       "%s - System busy", "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, "%s - Network error",
@@ -303,33 +292,33 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
        "%s - Network disconnected", "Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-       "%s - Server unavailable", "Site wasn\xE2\x80\x99t available"},
+       "%s - Server unavailable", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
        "%s - Network error", "Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, "%s - Server problem",
-       "Site wasn\xE2\x80\x99t available"},
+       "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, "%s - No file",
-       "File wasn\xE2\x80\x99t available on site"},
+       "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED,
-       "%s - Needs authorization", "File wasn\xE2\x80\x99t available on site"},
+       "%s - Needs authorization", "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-       "%s - Bad certificate", "Site wasn\xE2\x80\x99t available"},
+       "%s - Bad certificate", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN, "%s - Forbidden",
-       "File wasn\xE2\x80\x99t available on site"},
+       "File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-       "%s - Server unreachable", "Site wasn\xE2\x80\x99t available"},
+       "%s - Server unreachable", "Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-       "%s - File incomplete", "Couldn\xE2\x80\x99t finish download"},
+       "%s - File incomplete", "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
        "%s - Download error", "Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, "Canceled",
        "Canceled"},
       {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown",
-       "Couldn\xE2\x80\x99t finish download"},
+       "Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash",
-       "Couldn\xE2\x80\x99t finish download"},
+       "Couldn’t finish download"},
   };
   static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");
@@ -339,8 +328,8 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
   const char default_failed_msg[] = "Failed";
   for (const auto& test_case : kTestCases) {
     SetupInterruptedDownloadItem(test_case.reason);
-    std::string expected_status_msg =
-        base::StringPrintf(test_case.expected_status_msg, default_failed_msg);
+    std::string expected_status_msg = base::StringPrintfNonConstexpr(
+        test_case.expected_status_msg, default_failed_msg);
     std::u16string expected_bubble_status_msg =
         base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
     if (expected_bubble_status_msg.empty()) {
@@ -548,13 +537,8 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 
   EXPECT_CALL(item(), GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
-  if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
     EXPECT_EQ("2 B \xE2\x80\xA2 Scan is done",
               base::UTF16ToUTF8(model().GetStatusText()));
-  } else {
-    EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
-              base::UTF16ToUTF8(model().GetStatusText()));
-  }
 
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));
@@ -568,7 +552,7 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
   SetStatusTextBuilder(/*for_bubble=*/true);
 
   const struct InsecureDownloadStatusTestCase {
-    download::DownloadItem::InsecureDownloadStatus mixed_content_status;
+    download::DownloadItem::InsecureDownloadStatus insecure_download_status;
     std::string expected_bubble_status_msg;
   } kInsecureDownloadStatusTestCases[] = {
       {download::DownloadItem::InsecureDownloadStatus::BLOCK,
@@ -579,38 +563,27 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
   for (const auto& test_case : kInsecureDownloadStatusTestCases) {
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetInsecureDownloadStatus())
-        .WillByDefault(Return(test_case.mixed_content_status));
+        .WillByDefault(Return(test_case.insecure_download_status));
     EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
               test_case.expected_bubble_status_msg);
-#if !BUILDFLAG(IS_ANDROID)
-    // Android doesn't have BubbleUI info.
-    // Whether it's v2 or not doesn't affect the primary button, so it doesn't
-    // matter what we pass here.
-    EXPECT_EQ(model()
-                  .GetBubbleUIInfo(/*is_download_bubble_v2=*/false)
-                  .primary_button_command.value(),
-              DownloadCommands::Command::KEEP);
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   const struct DangerTypeTestCase {
     download::DownloadDangerType danger_type;
     std::string expected_bubble_status_msg;
   } kDangerTypeTestCases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       "Blocked \xE2\x80\xA2 Dangerous"},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       "Blocked \xE2\x80\xA2 Dangerous"},
+       "Dangerous download blocked"},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       "Blocked \xE2\x80\xA2 Dangerous"},
+       "Dangerous download blocked"},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       "Blocked \xE2\x80\xA2 Dangerous"},
+       "Dangerous download blocked"},
       {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       "Blocked \xE2\x80\xA2 Dangerous"},
+       "Dangerous download blocked"},
       {download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED,
        "Blocked \xE2\x80\xA2 Encrypted"},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       "Blocked \xE2\x80\xA2 Malware"},
+       "Dangerous download blocked"},
       {download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE,
        "Blocked \xE2\x80\xA2 Too big"},
       {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
@@ -621,6 +594,10 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
        "Scan for malware \xE2\x80\xA2 Suspicious"},
   };
   for (const auto& test_case : kDangerTypeTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(test_case.danger_type)
+                 << std::endl);
     SetupDownloadItemDefaults();
     ON_CALL(item(), GetDangerType())
         .WillByDefault(Return(test_case.danger_type));
@@ -629,377 +606,43 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
   }
 }
 
+TEST_F(DownloadItemModelTest,
+       CompletedBubbleWarningStatusText_FiletypeWarning) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetStatusTextBuilder(/*for_bubble=*/true);
+  SetupDownloadItemDefaults();
+  ON_CALL(item(), GetDangerType())
+      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+            "Unverified download blocked");
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+  // It doesn't matter what the DownloadProtectionData is; just that it is
+  // present.
+  std::string token = "token";
+  safe_browsing::ClientDownloadResponse::Verdict verdict =
+      safe_browsing::ClientDownloadResponse::SAFE;
+  safe_browsing::ClientDownloadResponse::TailoredVerdict tailored_verdict;
+  safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+      &item(), token, verdict, tailored_verdict);
+
+  EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+            "Suspicious download blocked");
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
-TEST_F(DownloadItemModelTest, ShouldPreferOpeningInBrowser_V2On) {
+TEST_F(DownloadItemModelTest, ShouldPreferOpeningInBrowser) {
   SetupDownloadItemDefaults();
   SetupCompletedDownloadItem(base::Hours(1));
-  SetIsBubbleV2Enabled(true);
   EXPECT_TRUE(model().ShouldPreferOpeningInBrowser());
-}
-
-TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2On) {
-  SetupDownloadItemDefaults();
-
-  SetupCompletedDownloadItem(base::Hours(1));
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  std::vector<DownloadCommands::Command> quick_action_commands;
-  for (auto quick_action : bubble_ui_info.quick_actions) {
-    quick_action_commands.push_back(quick_action.command);
-  }
-  EXPECT_EQ(quick_action_commands,
-            std::vector({DownloadCommands::Command::SHOW_IN_FOLDER,
-                         DownloadCommands::Command::OPEN_WHEN_COMPLETE}));
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-
-  Mock::VerifyAndClearExpectations(&item());
-  Mock::VerifyAndClearExpectations(&model());
-
-  ON_CALL(item(), GetState())
-      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
-  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(true));
-  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  quick_action_commands = {};
-  for (auto quick_action : bubble_ui_info.quick_actions) {
-    quick_action_commands.push_back(quick_action.command);
-  }
-  EXPECT_EQ(quick_action_commands,
-            std::vector({DownloadCommands::Command::RESUME,
-                         DownloadCommands::Command::CANCEL}));
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-
-  Mock::VerifyAndClearExpectations(&item());
-  Mock::VerifyAndClearExpectations(&model());
-
-  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(false));
-  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  quick_action_commands = {};
-  for (auto quick_action : bubble_ui_info.quick_actions) {
-    quick_action_commands.push_back(quick_action.command);
-  }
-  EXPECT_EQ(quick_action_commands,
-            std::vector({DownloadCommands::Command::PAUSE,
-                         DownloadCommands::Command::CANCEL}));
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-}
-
-TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2Off) {
-  SetupDownloadItemDefaults();
-
-  SetupCompletedDownloadItem(base::Hours(1));
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-  std::vector<DownloadCommands::Command> quick_action_commands;
-  for (auto quick_action : bubble_ui_info.quick_actions) {
-    quick_action_commands.push_back(quick_action.command);
-  }
-  EXPECT_EQ(quick_action_commands, std::vector<DownloadCommands::Command>());
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-
-  Mock::VerifyAndClearExpectations(&item());
-  Mock::VerifyAndClearExpectations(&model());
-
-  ON_CALL(item(), GetState())
-      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
-  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(true));
-  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-  EXPECT_TRUE(bubble_ui_info.quick_actions.empty());
-  EXPECT_EQ(bubble_ui_info.primary_button_command.value(),
-            DownloadCommands::Command::RESUME);
-
-  Mock::VerifyAndClearExpectations(&item());
-  Mock::VerifyAndClearExpectations(&model());
-
-  EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(false));
-  bubble_ui_info = model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-  EXPECT_TRUE(bubble_ui_info.quick_actions.empty());
-  EXPECT_EQ(bubble_ui_info.primary_button_command.value(),
-            DownloadCommands::Command::CANCEL);
-}
-
-TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
-  SetupCompletedDownloadItem(base::Hours(1));
-  const struct DangerTypeTestCase {
-    download::DownloadDangerType danger_type;
-    bool has_checkbox;
-    absl::optional<DownloadCommands::Command> primary_button_command;
-    std::vector<DownloadCommands::Command> subpage_button_commands;
-  } kDangerTypeTestCases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       false,
-       DownloadCommands::Command::KEEP,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD}},
-      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD}},
-      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-       false,
-       absl::nullopt,
-       {DownloadCommands::Command::DEEP_SCAN,
-        DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
-       false,
-       absl::nullopt,
-       {DownloadCommands::Command::DISCARD,
-        DownloadCommands::Command::CANCEL_DEEP_SCAN}},
-  };
-  for (const auto& test_case : kDangerTypeTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "Failed for danger type "
-                 << download::GetDownloadDangerTypeString(test_case.danger_type)
-                 << std::endl);
-    SetupDownloadItemDefaults();
-    ON_CALL(item(), GetDangerType())
-        .WillByDefault(Return(test_case.danger_type));
-    DownloadUIModel::BubbleUIInfo bubble_ui_info =
-        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-    EXPECT_EQ(bubble_ui_info.HasCheckbox(), test_case.has_checkbox);
-    EXPECT_EQ(bubble_ui_info.primary_button_command,
-              test_case.primary_button_command);
-    std::vector<DownloadCommands::Command> subpage_commands;
-    for (auto button : bubble_ui_info.subpage_buttons) {
-      subpage_commands.push_back(button.command);
-    }
-    EXPECT_EQ(subpage_commands, test_case.subpage_button_commands);
-  }
-}
-
-TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
-  SetupCompletedDownloadItem(base::Hours(1));
-  SetIsBubbleV2Enabled(false);
-  const struct DangerTypeTestCase {
-    download::DownloadDangerType danger_type;
-    bool has_checkbox;
-    absl::optional<DownloadCommands::Command> primary_button_command;
-    std::vector<DownloadCommands::Command> subpage_button_commands;
-  } kDangerTypeTestCases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       false,
-       DownloadCommands::Command::KEEP,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       true,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       true,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       true,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       true,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       true,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
-       false,
-       DownloadCommands::Command::DISCARD,
-       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
-      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-       false,
-       absl::nullopt,
-       {DownloadCommands::Command::DEEP_SCAN,
-        DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
-       false,
-       absl::nullopt,
-       {DownloadCommands::Command::DISCARD,
-        DownloadCommands::Command::CANCEL_DEEP_SCAN}},
-  };
-  for (const auto& test_case : kDangerTypeTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "Failed for danger type "
-                 << download::GetDownloadDangerTypeString(test_case.danger_type)
-                 << std::endl);
-    SetupDownloadItemDefaults();
-    ON_CALL(item(), GetDangerType())
-        .WillByDefault(Return(test_case.danger_type));
-    DownloadUIModel::BubbleUIInfo bubble_ui_info =
-        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-    EXPECT_EQ(bubble_ui_info.HasCheckbox(), test_case.has_checkbox);
-    EXPECT_EQ(bubble_ui_info.primary_button_command,
-              test_case.primary_button_command);
-    std::vector<DownloadCommands::Command> subpage_commands;
-    for (auto button : bubble_ui_info.subpage_buttons) {
-      subpage_commands.push_back(button.command);
-    }
-    EXPECT_EQ(subpage_commands, test_case.subpage_button_commands);
-  }
-}
-
-TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_V2On) {
-  std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT};
-  std::vector<download::DownloadInterruptReason> retry_interrupt_reasons = {
-      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
-      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
-      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
-      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-      download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
-      download::DOWNLOAD_INTERRUPT_REASON_CRASH,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-      download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT};
-
-  const struct TestCase {
-    std::vector<download::DownloadInterruptReason> interrupt_reasons;
-    bool can_resume;
-
-    std::string expected_warning_summary;
-    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
-    absl::optional<DownloadCommands::Command> expected_primary_button_command;
-  } kTestCases[] = {
-      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
-       false,
-       "Your organization blocked this file because it didn't meet a security "
-       "policy",
-       &views::kInfoIcon,
-       absl::optional<DownloadCommands::Command>()},
-      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
-       false,
-       "Try using a shorter file name or saving to a different folder",
-       &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
-      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
-       false,
-       "Free up space on your device. Then, try to download again",
-       &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
-      {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
-       false,
-       "Try to sign in to the site. Then, download again",
-       &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
-      {no_retry_interrupt_reasons, false, "",
-       &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
-      {retry_interrupt_reasons, false, "", &vector_icons::kFileDownloadOffIcon,
-       DownloadCommands::Command::RETRY},
-      {retry_interrupt_reasons, true, "", &vector_icons::kFileDownloadOffIcon,
-       DownloadCommands::Command::RESUME},
-  };
-
-  SetIsBubbleV2Enabled(true);
-  SetupDownloadItemDefaults();
-  for (const auto& test_case : kTestCases) {
-    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
-      SetupInterruptedDownloadItem(interrupt_reason);
-      EXPECT_CALL(item(), CanResume())
-          .WillRepeatedly(Return(test_case.can_resume));
-
-      DownloadUIModel::BubbleUIInfo bubble_ui_info =
-          model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-      EXPECT_EQ(test_case.expected_warning_summary,
-                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
-      EXPECT_EQ(test_case.expected_icon_model_override,
-                bubble_ui_info.icon_model_override);
-      EXPECT_EQ(test_case.expected_primary_button_command,
-                bubble_ui_info.primary_button_command);
-      EXPECT_EQ(kColorDownloadItemIconDangerous,
-                bubble_ui_info.secondary_color);
-      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
-    }
-  }
-}
-
-TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_V2Off) {
-  const struct TestCase {
-    std::vector<download::DownloadInterruptReason> interrupt_reasons;
-
-    std::string expected_warning_summary;
-    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
-    absl::optional<DownloadCommands::Command> expected_primary_button_command;
-  } kTestCases[] = {
-      {{
-           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
-           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
-           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
-           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-           download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-           download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
-           download::DOWNLOAD_INTERRUPT_REASON_CRASH,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
-           download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-           download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-           download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-           download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
-       },
-       "",
-       &vector_icons::kFileDownloadOffIcon,
-       absl::optional<DownloadCommands::Command>()},
-  };
-
-  SetIsBubbleV2Enabled(false);
-  SetupDownloadItemDefaults();
-  for (const auto& test_case : kTestCases) {
-    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
-      SetupInterruptedDownloadItem(interrupt_reason);
-      DownloadUIModel::BubbleUIInfo bubble_ui_info =
-          model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-      EXPECT_EQ(test_case.expected_warning_summary,
-                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
-      EXPECT_EQ(test_case.expected_icon_model_override,
-                bubble_ui_info.icon_model_override);
-      EXPECT_EQ(test_case.expected_primary_button_command,
-                bubble_ui_info.primary_button_command);
-      EXPECT_EQ(kColorDownloadItemIconDangerous,
-                bubble_ui_info.secondary_color);
-      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
-    }
-  }
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
   auto in_progress = DownloadItem::IN_PROGRESS;
   auto canceled = DownloadItem::CANCELLED;
-  auto never = absl::optional<base::Time>();
+  auto never = std::optional<base::Time>();
   auto two_mins_ago = base::Time::Now() - base::Minutes(2);
   auto ten_mins_ago = base::Time::Now() - base::Minutes(10);
   auto dangerous_file = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
@@ -1008,7 +651,7 @@ TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
   const struct TestCase {
     DownloadItem::DownloadState state;
     download::DownloadDangerType danger_type;
-    absl::optional<base::Time> shown_time;
+    std::optional<base::Time> shown_time;
     bool expected_should_show;
   } kTestCases[] = {
       {in_progress, not_dangerous, two_mins_ago, true},
@@ -1022,7 +665,6 @@ TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
       {canceled, not_dangerous, ten_mins_ago, true},
   };
 
-  SetIsBubbleV2Enabled(true);
   SetupDownloadItemDefaults();
   for (const auto& test_case : kTestCases) {
     EXPECT_CALL(item(), GetState()).WillRepeatedly(Return(test_case.state));
@@ -1080,177 +722,6 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
   std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
   compare_results(english, expected_english);
 }
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-// TODO(chlily): Add more tests for kImprovedDownloadBubbleWarnings. At the
-// moment, these only include tests for the file type warnings.
-class DownloadItemModelImprovedDownloadBubbleWarningsTest
-    : public DownloadItemModelTest {
- public:
-  DownloadItemModelImprovedDownloadBubbleWarningsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2,
-         safe_browsing::kImprovedDownloadBubbleWarnings},
-        {});
-  }
-
-  void SetUp() override {
-    DownloadItemModelTest::SetUp();
-    SetupDownloadItemDefaults();
-    SetupCompletedDownloadItem(base::Minutes(30));
-    SetIsBubbleV2Enabled(true);
-    SetStatusTextBuilder(/*for_bubble=*/true);
-  }
-  ~DownloadItemModelImprovedDownloadBubbleWarningsTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test file type warning where SB is on and verdict was obtained.
-TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
-       FileTypeWarning_SafeBrowsingOn_HasVerdict) {
-  for (auto sb_state :
-       {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
-        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION}) {
-    SetSafeBrowsingState(profile()->GetPrefs(), sb_state);
-    EXPECT_CALL(item(), GetDangerType())
-        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
-    safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
-        &item(), "token", safe_browsing::ClientDownloadResponse::DANGEROUS,
-        safe_browsing::ClientDownloadResponse::TailoredVerdict());
-    DownloadUIModel::BubbleUIInfo bubble_ui_info =
-        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-
-    // Subpage warning
-    EXPECT_TRUE(bubble_ui_info.HasSubpage());
-    EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
-                                   u"*file type isn't commonly downloaded*"));
-    // Suspicious pattern has 2 buttons on the subpage.
-    ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
-    // Primary subpage button.
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
-              DownloadCommands::DISCARD);
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
-    // Secondary subpage button. File is described as "suspicious".
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command,
-              DownloadCommands::KEEP);
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
-              u"Download suspicious file");
-    // Learn more link.
-    EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
-    EXPECT_TRUE(
-        base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
-                           u"Learn why * blocks some downloads"));
-    // Status text for row view. File is described as suspicious.
-    EXPECT_EQ(model().GetStatusText(), u"Suspicious download blocked");
-  }
-}
-
-// Test file type warning where SB is on but no SB verdict was obtained.
-TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
-       FileTypeWarning_SafeBrowsingOn_NoVerdict) {
-  for (auto sb_state :
-       {safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
-        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION}) {
-    SetSafeBrowsingState(profile()->GetPrefs(), sb_state);
-    EXPECT_CALL(item(), GetDangerType())
-        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
-    DownloadUIModel::BubbleUIInfo bubble_ui_info =
-        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-
-    // Subpage warning
-    EXPECT_TRUE(bubble_ui_info.HasSubpage());
-    EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
-                                   u"*file type isn't commonly downloaded*"));
-    // Suspicious pattern has 2 buttons on the subpage.
-    ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
-    // Primary subpage button.
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
-              DownloadCommands::DISCARD);
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
-    // Secondary subpage button. File is described as "unverified".
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command,
-              DownloadCommands::KEEP);
-    EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
-              u"Download unverified file");
-    // Learn more link.
-    EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
-    EXPECT_TRUE(
-        base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
-                           u"Learn why * blocks some downloads"));
-    // Status text for row view. File is described as unverified.
-    EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
-  }
-}
-
-// Test file type warning where SB is disabled by pref and can be turned on.
-TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
-       FileTypeWarning_NoSafeBrowsing_DisabledByPref) {
-  SetSafeBrowsingState(profile()->GetPrefs(),
-                       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-
-  // Subpage warning
-  EXPECT_TRUE(bubble_ui_info.HasSubpage());
-  EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
-                                 u"*file can't be verified*"));
-  // Suspicious pattern has 2 buttons on the subpage.
-  ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
-  // Primary subpage button.
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
-            DownloadCommands::DISCARD);
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
-  // Secondary subpage button. File is described as "unverified".
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command, DownloadCommands::KEEP);
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
-            u"Download unverified file");
-  // Learn more link.
-  EXPECT_TRUE(bubble_ui_info.learn_more_link.has_value());
-  EXPECT_TRUE(
-      base::MatchPattern(bubble_ui_info.learn_more_link->label_and_link_text,
-                         u"Turn on Safe Browsing to *"));
-  // Status text for row view. File is described as unverified.
-  EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
-}
-
-// Test file type warning where SB is disabled by enterprise controls and cannot
-// be turned on.
-TEST_F(DownloadItemModelImprovedDownloadBubbleWarningsTest,
-       FileTypeWarning_NoSafeBrowsing_DisabledManaged) {
-  SetSafeBrowsingState(profile()->GetPrefs(),
-                       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
-  testing_profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
-  EXPECT_CALL(item(), GetDangerType())
-      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-
-  // Subpage warning
-  EXPECT_TRUE(bubble_ui_info.HasSubpage());
-  EXPECT_TRUE(base::MatchPattern(bubble_ui_info.warning_summary,
-                                 u"*file can't be verified*"));
-  // Suspicious pattern has 2 buttons on the subpage.
-  ASSERT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
-  // Primary subpage button.
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
-            DownloadCommands::DISCARD);
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].label, u"Delete from history");
-  // Secondary subpage button. File is described as "unverified".
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command, DownloadCommands::KEEP);
-  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].label,
-            u"Download unverified file");
-  // There is no learn more link because the user cannot turn on SB.
-  EXPECT_FALSE(bubble_ui_info.learn_more_link.has_value());
-  // Status text for row view. File is described as unverified.
-  EXPECT_EQ(model().GetStatusText(), u"Unverified download blocked");
-}
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
@@ -1425,10 +896,8 @@ class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
  public:
   DownloadItemModelTailoredWarningTest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2,
-         safe_browsing::kDownloadTailoredWarnings},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kDownloadTailoredWarnings);
   }
 
   ~DownloadItemModelTailoredWarningTest() override = default;
@@ -1454,114 +923,41 @@ class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DownloadItemModelTailoredWarningTest, ShouldShowTailoredWarning) {
+TEST_F(DownloadItemModelTailoredWarningTest, GetTailoredWarningType) {
   SetupDownloadItemDefaults();
 
-  const struct ShouldShowTailoredWarningTestCase {
+  const struct GetTailoredWarningTypeTestCase {
     download::DownloadDangerType danger_type;
     TailoredVerdict::TailoredVerdictType tailored_verdict_type;
-    bool expected_should_show;
+    DownloadUIModel::TailoredWarningType expected_warning_type;
   } kShouldShowTailoredWarningTestCases[] = {
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       TailoredVerdict::COOKIE_THEFT, true},
+       TailoredVerdict::COOKIE_THEFT,
+       DownloadUIModel::TailoredWarningType::kCookieTheft},
       {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-       TailoredVerdict::SUSPICIOUS_ARCHIVE, true},
+       TailoredVerdict::SUSPICIOUS_ARCHIVE,
+       DownloadUIModel::TailoredWarningType::kSuspiciousArchive},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       TailoredVerdict::COOKIE_THEFT, false},
+       TailoredVerdict::COOKIE_THEFT,
+       DownloadUIModel::TailoredWarningType::kNoTailoredWarning},
       {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       TailoredVerdict::SUSPICIOUS_ARCHIVE, false},
+       TailoredVerdict::SUSPICIOUS_ARCHIVE,
+       DownloadUIModel::TailoredWarningType::kNoTailoredWarning},
   };
   for (const auto& test_case : kShouldShowTailoredWarningTestCases) {
     SetupTailoredWarningForItem(test_case.danger_type,
                                 test_case.tailored_verdict_type,
                                 /*adjustments=*/{});
-    EXPECT_EQ(test_case.expected_should_show,
-              model().ShouldShowTailoredWarning());
+    EXPECT_EQ(model().GetTailoredWarningType(),
+              test_case.expected_warning_type);
   }
-}
 
-TEST_F(DownloadItemModelTailoredWarningTest,
-       GetBubbleUIInfoForTailoredWarning_CookieTheft) {
-  SetupDownloadItemDefaults();
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
-
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  // No primary button on download row view. Button only appears on subpage.
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
-  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(u"This file can harm your personal and social network accounts",
-            bubble_ui_info.warning_summary);
-}
-
-TEST_F(DownloadItemModelTailoredWarningTest,
-       GetBubbleUIInfoForTailoredWarning_SuspiciousArchive) {
-  SetupDownloadItemDefaults();
-  SetupTailoredWarningForItem(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-                              TailoredVerdict::SUSPICIOUS_ARCHIVE,
-                              /*adjustments=*/{});
-
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  // No primary button on download row view. Button only appears on subpage.
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(2u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
-  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(DownloadCommands::Command::KEEP,
-            bubble_ui_info.subpage_buttons[1].command);
-  EXPECT_FALSE(bubble_ui_info.subpage_buttons[1].is_prominent);
-  EXPECT_EQ(u"This file may hide malware", bubble_ui_info.warning_summary);
-}
-
-TEST_F(DownloadItemModelTailoredWarningTest,
-       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithAccount) {
-  SetupDownloadItemDefaults();
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  signin::SetPrimaryAccount(identity_manager, "test@example.com",
-                            signin::ConsentLevel::kSignin);
-
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  // No primary button on download row view. Button only appears on subpage.
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
-  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(
-      u"This file can harm your personal and social network accounts, "
-      u"including test@example.com",
-      bubble_ui_info.warning_summary);
-}
-
-TEST_F(DownloadItemModelTailoredWarningTest,
-       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithoutAccount) {
-  SetupDownloadItemDefaults();
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
-
-  DownloadUIModel::BubbleUIInfo bubble_ui_info =
-      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-  // No primary button on download row view. Button only appears on subpage.
-  EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
-  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(u"This file can harm your personal and social network accounts",
-            bubble_ui_info.warning_summary);
+      TailoredVerdict::COOKIE_THEFT,
+      /*adjustments=*/{TailoredVerdict::ACCOUNT_INFO_STRING});
+  EXPECT_EQ(model().GetTailoredWarningType(),
+            DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo);
 }
 
 class DownloadItemModelTailoredWarningDisabledTest
@@ -1569,9 +965,8 @@ class DownloadItemModelTailoredWarningDisabledTest
  public:
   DownloadItemModelTailoredWarningDisabledTest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2},
-        {safe_browsing::kDownloadTailoredWarnings});
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kDownloadTailoredWarnings);
   }
 
   ~DownloadItemModelTailoredWarningDisabledTest() override = default;
@@ -1586,7 +981,8 @@ TEST_F(DownloadItemModelTailoredWarningDisabledTest,
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
       TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
-  EXPECT_FALSE(model().ShouldShowTailoredWarning());
+  EXPECT_EQ(model().GetTailoredWarningType(),
+            DownloadUIModel::TailoredWarningType::kNoTailoredWarning);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

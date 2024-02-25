@@ -40,19 +40,20 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_height_no_shadow"
             android:layout="@layout/find_toolbar" />
-
-        <ViewStub
-            android:id="@+id/find_toolbar_tablet_stub"
-            android:inflatedId="@+id/find_toolbar"
-            android:layout_width="@dimen/find_in_page_popup_width"
-            android:layout_height="@dimen/find_in_page_popup_height"
-            android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
-            android:layout_gravity="end|top"
-            android:layout="@layout/find_toolbar" />
     </view>
 
     <ViewStub
+        android:id="@+id/find_toolbar_tablet_stub"
+        android:inflatedId="@+id/find_toolbar"
+        android:layout_width="@dimen/find_in_page_popup_width"
+        android:layout_height="@dimen/find_in_page_popup_height"
+        android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
+        android:layout_gravity="end|top"
+        android:layout="@layout/find_toolbar" />
+
+    <ViewStub
         android:id="@+id/target_view_stub"
+        android:inflatedId="@+id/toolbar_drag_drop_target_view"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/tab_strip_height"
         android:layout_height="@dimen/toolbar_height_no_shadow"

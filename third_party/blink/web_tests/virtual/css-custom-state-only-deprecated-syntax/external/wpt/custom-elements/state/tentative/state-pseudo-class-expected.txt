@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] :state() parsing passes
+  Failed to execute 'querySelector' on 'Document': ':state(foo)' is not a valid selector.
+[FAIL] :state(foo) serialization
+  Cannot read properties of undefined (reading 'cssText')
+[FAIL] :state(foo) in simple cases
+  Failed to execute 'matches' on 'Element': ':state(foo)' is not a valid selector.
+[FAIL] :state(foo) and other pseudo classes
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'foo' must start with '--'.
+[FAIL] :state(foo) and ::part()
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'innerFoo' must start with '--'.
+[FAIL] :state(foo) and :host()
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'dotted' must start with '--'.
+Harness: the test ran to completion.
+

@@ -124,10 +124,7 @@ PersistentSampleMap::PersistentSampleMap(
     Metadata* meta)
     : HistogramSamples(id, meta), allocator_(allocator) {}
 
-PersistentSampleMap::~PersistentSampleMap() {
-  if (records_)
-    records_->Release(this);
-}
+PersistentSampleMap::~PersistentSampleMap() = default;
 
 void PersistentSampleMap::Accumulate(Sample value, Count count) {
   // We have to do the following atomically, because even if the caller is using
@@ -149,7 +146,8 @@ Count PersistentSampleMap::GetCount(Sample value) const {
 Count PersistentSampleMap::TotalCount() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(-1, true);
+  const_cast<PersistentSampleMap*>(this)->ImportSamples(
+      /*until_value=*/std::nullopt);
 
   Count count = 0;
   for (const auto& entry : sample_counts_) {
@@ -161,28 +159,41 @@ Count PersistentSampleMap::TotalCount() const {
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(-1, true);
+  const_cast<PersistentSampleMap*>(this)->ImportSamples(
+      /*until_value=*/std::nullopt);
   return std::make_unique<PersistentSampleMapIterator>(sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
   // Make sure all samples have been loaded before trying to iterate over the
   // map.
-  ImportSamples(-1, true);
+  ImportSamples(/*until_value=*/std::nullopt);
   return std::make_unique<ExtractingPersistentSampleMapIterator>(
       sample_counts_);
+}
+
+bool PersistentSampleMap::IsDefinitelyEmpty() const {
+  // Not implemented.
+  NOTREACHED();
+
+  // Always return false. If we are wrong, this will just make the caller
+  // perform some extra work thinking that |this| is non-empty.
+  return false;
 }
 
 // static
 PersistentMemoryAllocator::Reference
 PersistentSampleMap::GetNextPersistentRecord(
     PersistentMemoryAllocator::Iterator& iterator,
-    uint64_t* sample_map_id) {
+    uint64_t* sample_map_id,
+    Sample* value) {
   const SampleRecord* record = iterator.GetNextOfObject<SampleRecord>();
-  if (!record)
+  if (!record) {
     return 0;
+  }
 
   *sample_map_id = record->id;
+  *value = record->value;
   return iterator.GetAsReference(record);
 }
 
@@ -244,7 +255,7 @@ Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
     return it->second;
 
   // Import any new samples from persistent memory looking for the value.
-  return ImportSamples(value, false);
+  return ImportSamples(/*until_value=*/value);
 }
 
 Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
@@ -255,7 +266,7 @@ Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
 
   // Create a new record in persistent memory for the value. |records_| will
   // have been initialized by the GetSampleCountStorage() call above.
-  DCHECK(records_);
+  CHECK(records_);
   PersistentMemoryAllocator::Reference ref = records_->CreateNew(value);
   if (!ref) {
     // If a new record could not be created then the underlying allocator is
@@ -276,7 +287,7 @@ Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
   // Thread-safety within a process where multiple threads use the same
   // histogram object is delegated to the controlling histogram object which,
   // for sparse histograms, is a lock object.
-  count_pointer = ImportSamples(value, false);
+  count_pointer = ImportSamples(/*until_value=*/value);
   DCHECK(count_pointer);
   return count_pointer;
 }
@@ -287,47 +298,51 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
   // and if both were to grab the records object, there would be a conflict.
   // Use of a histogram, and thus a call to this method, won't occur until
   // after the histogram has been de-dup'd.
-  if (!records_)
-    records_ = allocator_->UseSampleMapRecords(id(), this);
-  return records_;
+  if (!records_) {
+    records_ = allocator_->CreateSampleMapRecords(id());
+  }
+  return records_.get();
 }
 
-Count* PersistentSampleMap::ImportSamples(Sample until_value,
-                                          bool import_everything) {
-  Count* found_count = nullptr;
-  PersistentMemoryAllocator::Reference ref;
+Count* PersistentSampleMap::ImportSamples(std::optional<Sample> until_value) {
+  std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
-  while ((ref = records->GetNext()) != 0) {
-    SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
-    if (!record)
-      continue;
+  while (!(refs = records->GetNextRecords(until_value)).empty()) {
+    // GetNextRecords() returns a list of new unseen records belonging to this
+    // map. Iterate through them all and store them internally. Note that if
+    // |until_value| was found, it will be the last element in |refs|.
+    for (auto ref : refs) {
+      SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
+      if (!record) {
+        continue;
+      }
 
-    DCHECK_EQ(id(), record->id);
+      DCHECK_EQ(id(), record->id);
 
-    // Check if the record's value is already known.
-    if (!Contains(sample_counts_, record->value)) {
-      // No: Add it to map of known values.
-      sample_counts_[record->value] = &record->count;
-    } else {
-      // Yes: Ignore it; it's a duplicate caused by a race condition -- see
-      // code & comment in GetOrCreateSampleCountStorage() for details.
-      // Check that nothing ever operated on the duplicate record.
-      DCHECK_EQ(0, record->count);
-    }
+      // Check if the record's value is already known.
+      if (!Contains(sample_counts_, record->value)) {
+        // No: Add it to map of known values.
+        sample_counts_[record->value] = &record->count;
+      } else {
+        // Yes: Ignore it; it's a duplicate caused by a race condition -- see
+        // code & comment in GetOrCreateSampleCountStorage() for details.
+        // Check that nothing ever operated on the duplicate record.
+        DCHECK_EQ(0, record->count);
+      }
 
-    // Check if it's the value being searched for and, if so, keep a pointer
-    // to return later. Stop here unless everything is being imported.
-    // Because race conditions can cause multiple records for a single value,
-    // be sure to return the first one found.
-    if (record->value == until_value) {
-      if (!found_count)
-        found_count = &record->count;
-      if (!import_everything)
-        break;
+      // Check if it's the value being searched for and, if so, stop here.
+      // Because race conditions can cause multiple records for a single value,
+      // be sure to return the first one found.
+      if (until_value.has_value() && record->value == until_value.value()) {
+        // Ensure that this was the last value in |refs|.
+        CHECK_EQ(refs.back(), ref);
+
+        return &record->count;
+      }
     }
   }
 
-  return found_count;
+  return nullptr;
 }
 
 }  // namespace base

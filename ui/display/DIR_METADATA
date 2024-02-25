@@ -1,3 +1,6 @@
 monorail: {
   component: "UI>Shell>UIFoundations"
 }
+buganizer_public: {
+  component_id: 1457417
+}

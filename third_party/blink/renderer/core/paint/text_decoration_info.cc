@@ -7,8 +7,8 @@
 #include <math.h>
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -60,7 +60,7 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
 
 inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   // Disable the decorating box for styles not in the tree, because they can't
-  // find the decorating box. For example, |NGHighlightPainter| creates a
+  // find the decorating box. For example, |HighlightPainter| creates a
   // |kPseudoIdHighlight| pseudo style on the fly.
   const PseudoId pseudo_id = style.StyleType();
   if (IsHighlightPseudoElement(pseudo_id))
@@ -87,7 +87,7 @@ static float ComputeDecorationThickness(
     return auto_underline_thickness;
 
   if (text_decoration_thickness.IsFromFont()) {
-    absl::optional<float> font_underline_thickness =
+    std::optional<float> font_underline_thickness =
         font_data->GetFontMetrics().UnderlineThickness();
 
     if (!font_underline_thickness)
@@ -264,11 +264,11 @@ cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
 }  // anonymous namespace
 
 TextDecorationInfo::TextDecorationInfo(
-    PhysicalOffset local_origin,
+    LineRelativeOffset local_origin,
     LayoutUnit width,
     const ComputedStyle& target_style,
-    const NGInlinePaintContext* inline_context,
-    const absl::optional<AppliedTextDecoration> selection_text_decoration,
+    const InlinePaintContext* inline_context,
+    const std::optional<AppliedTextDecoration> selection_text_decoration,
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,
     MinimumThickness1 minimum_thickness1,
@@ -454,11 +454,11 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
   const LayoutUnit decorating_box_paint_offset =
       decorating_box_->ContentOffsetInContainer().top +
       inline_context_->PaintOffset().top;
-  return decorating_box_paint_offset - local_origin_.top;
+  return decorating_box_paint_offset - local_origin_.line_over;
 }
 
 void TextDecorationInfo::SetUnderlineLineData(
-    const TextDecorationOffsetBase& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -475,7 +475,7 @@ void TextDecorationInfo::SetUnderlineLineData(
 }
 
 void TextDecorationInfo::SetOverlineLineData(
-    const TextDecorationOffsetBase& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -502,7 +502,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
 }
 
 void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
-    const TextDecorationOffsetBase& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasSpellingOrGrammerError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());
@@ -517,7 +517,7 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
 }
 
 bool TextDecorationInfo::ShouldAntialias() const {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (line_data_.line == TextDecorationLine::kSpellingError ||
       line_data_.line == TextDecorationLine::kGrammarError) {
     return true;
@@ -528,7 +528,7 @@ bool TextDecorationInfo::ShouldAntialias() const {
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     return ETextDecorationStyle::kDotted;
 #else
     return ETextDecorationStyle::kWavy;
@@ -578,7 +578,7 @@ float TextDecorationInfo::ComputeThickness() const {
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
   if (HasSpellingOrGrammerError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     return 2.f * decorating_box_style_->EffectiveZoom();
 #else
     return 1.f * decorating_box_style_->EffectiveZoom();
@@ -629,7 +629,7 @@ void TextDecorationInfo::ComputeWavyLineData(
     DISALLOW_NEW();
   };
 
-  DEFINE_STATIC_LOCAL(absl::optional<WavyCache>, wavy_cache, (absl::nullopt));
+  DEFINE_STATIC_LOCAL(std::optional<WavyCache>, wavy_cache, (std::nullopt));
 
   if (wavy_cache && wavy_cache->key.resolved_thickness == ResolvedThickness() &&
       wavy_cache->key.effective_zoom ==
@@ -720,7 +720,7 @@ cc::PaintRecord TextDecorationInfo::WavyTileRecord() const {
 }
 
 void TextDecorationInfo::SetHighlightOverrideColor(
-    const absl::optional<Color>& color) {
+    const std::optional<Color>& color) {
   highlight_override_ = color;
 }
 

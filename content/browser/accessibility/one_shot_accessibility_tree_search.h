@@ -155,7 +155,7 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   std::string search_text_;
 
   std::vector<AccessibilityMatchPredicate> predicates_;
-  std::vector<BrowserAccessibility*> matches_;
+  std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> matches_;
 
   bool did_search_;
 };

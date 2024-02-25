@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -37,8 +37,9 @@
 namespace {
 
 class CircularImageView : public views::ImageView {
+  METADATA_HEADER(CircularImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(CircularImageView);
   CircularImageView() = default;
   CircularImageView(const CircularImageView&) = delete;
   CircularImageView& operator=(const CircularImageView&) = delete;
@@ -60,7 +61,7 @@ void CircularImageView::OnPaint(gfx::Canvas* canvas) {
   ImageView::OnPaint(canvas);
 }
 
-BEGIN_METADATA(CircularImageView, views::ImageView)
+BEGIN_METADATA(CircularImageView)
 END_METADATA
 
 }  // namespace
@@ -137,8 +138,8 @@ CredentialsItemView::CredentialsItemView(
   if (form->match_type.has_value() &&
       password_manager_util::GetMatchType(*form) !=
           password_manager_util::GetLoginMatchType::kExact) {
-    auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-        form->signon_realm);
+    auto facet =
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
     if (facet.IsValidAndroidFacetURI()) {
       std::u16string app_name = base::UTF8ToUTF16(form->app_display_name);
       if (app_name.empty()) {
@@ -185,7 +186,8 @@ void CredentialsItemView::SetStoreIndicatorIcon(
 }
 
 void CredentialsItemView::UpdateAvatar(const gfx::ImageSkia& image) {
-  image_view_->SetImage(ScaleImageForAccountAvatar(image));
+  image_view_->SetImage(
+      ui::ImageModel::FromImageSkia(ScaleImageForAccountAvatar(image)));
 }
 
 int CredentialsItemView::GetPreferredHeight() const {
@@ -199,5 +201,5 @@ void CredentialsItemView::OnPaintBackground(gfx::Canvas* canvas) {
   }
 }
 
-BEGIN_METADATA(CredentialsItemView, views::Button)
+BEGIN_METADATA(CredentialsItemView)
 END_METADATA

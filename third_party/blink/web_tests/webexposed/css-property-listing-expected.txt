@@ -22,15 +22,8 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-box-image-slice
     -webkit-mask-box-image-source
     -webkit-mask-box-image-width
-    -webkit-mask-clip
-    -webkit-mask-composite
-    -webkit-mask-image
-    -webkit-mask-origin
     -webkit-mask-position-x
     -webkit-mask-position-y
-    -webkit-mask-repeat-x
-    -webkit-mask-repeat-y
-    -webkit-mask-size
     -webkit-perspective-origin-x
     -webkit-perspective-origin-y
     -webkit-print-color-adjust
@@ -83,8 +76,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-origin
     background-position-x
     background-position-y
-    background-repeat-x
-    background-repeat-y
+    background-repeat
     background-size
     baseline-shift
     baseline-source
@@ -174,6 +166,7 @@ All changes to this list should go through Blink's feature review process: http:
     dominant-baseline
     dynamic-range-limit
     empty-cells
+    field-sizing
     fill
     fill-opacity
     fill-rule
@@ -225,6 +218,7 @@ All changes to this list should go through Blink's feature review process: http:
     image-rendering
     initial-letter
     inline-size
+    inset-area
     inset-block-end
     inset-block-start
     inset-inline-end
@@ -252,7 +246,13 @@ All changes to this list should go through Blink's feature review process: http:
     marker-end
     marker-mid
     marker-start
-    mask
+    mask-clip
+    mask-composite
+    mask-image
+    mask-mode
+    mask-origin
+    mask-repeat
+    mask-size
     mask-type
     math-depth
     math-shift
@@ -312,6 +312,8 @@ All changes to this list should go through Blink's feature review process: http:
     position
     position-fallback
     position-fallback-bounds
+    position-try-options
+    position-try-order
     quotes
     r
     resize
@@ -376,6 +378,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-align
     text-align-last
     text-anchor
+    text-autospace
     text-box-trim
     text-combine-upright
     text-decoration-color
@@ -392,15 +395,12 @@ All changes to this list should go through Blink's feature review process: http:
     text-rendering
     text-shadow
     text-size-adjust
+    text-spacing-trim
     text-transform
     text-underline-offset
     text-underline-position
     text-wrap
     timeline-scope
-    toggle-group
-    toggle-root
-    toggle-trigger
-    toggle-visibility
     top
     touch-action
     transform
@@ -420,6 +420,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline-axis
     view-timeline-inset
     view-timeline-name
+    view-transition-class
     view-transition-name
     visibility
     white-space-collapse
@@ -441,27 +442,12 @@ All changes to this list should go through Blink's feature review process: http:
         break-before
     -webkit-column-break-inside
         break-inside
-    -webkit-mask
-        -webkit-mask-clip
-        -webkit-mask-image
-        -webkit-mask-origin
-        -webkit-mask-position-x
-        -webkit-mask-position-y
-        -webkit-mask-repeat-x
-        -webkit-mask-repeat-y
-        -webkit-mask-size
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
         -webkit-mask-box-image-repeat
         -webkit-mask-box-image-slice
         -webkit-mask-box-image-source
         -webkit-mask-box-image-width
-    -webkit-mask-position
-        -webkit-mask-position-x
-        -webkit-mask-position-y
-    -webkit-mask-repeat
-        -webkit-mask-repeat-x
-        -webkit-mask-repeat-y
     -webkit-text-stroke
         -webkit-text-stroke-color
         -webkit-text-stroke-width
@@ -488,15 +474,11 @@ All changes to this list should go through Blink's feature review process: http:
         background-origin
         background-position-x
         background-position-y
-        background-repeat-x
-        background-repeat-y
+        background-repeat
         background-size
     background-position
         background-position-x
         background-position-y
-    background-repeat
-        background-repeat-x
-        background-repeat-y
     border
         border-bottom-color
         border-bottom-style
@@ -719,6 +701,19 @@ All changes to this list should go through Blink's feature review process: http:
         marker-end
         marker-mid
         marker-start
+    mask
+        -webkit-mask-position-x
+        -webkit-mask-position-y
+        mask-clip
+        mask-composite
+        mask-image
+        mask-mode
+        mask-origin
+        mask-repeat
+        mask-size
+    mask-position
+        -webkit-mask-position-x
+        -webkit-mask-position-y
     offset
         offset-anchor
         offset-distance
@@ -761,6 +756,9 @@ All changes to this list should go through Blink's feature review process: http:
     place-self
         align-self
         justify-self
+    position-try
+        position-try-options
+        position-try-order
     scroll-margin
         scroll-margin-bottom
         scroll-margin-left
@@ -800,9 +798,6 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis
         text-emphasis-color
         text-emphasis-style
-    toggle
-        toggle-root
-        toggle-trigger
     transition
         transition-behavior
         transition-delay
@@ -972,6 +967,22 @@ All changes to this list should go through Blink's feature review process: http:
         margin-inline-end
     -webkit-margin-start
         margin-inline-start
+    -webkit-mask
+        mask
+    -webkit-mask-clip
+        mask-clip
+    -webkit-mask-composite
+        mask-composite
+    -webkit-mask-image
+        mask-image
+    -webkit-mask-origin
+        mask-origin
+    -webkit-mask-position
+        mask-position
+    -webkit-mask-repeat
+        mask-repeat
+    -webkit-mask-size
+        mask-size
     -webkit-max-logical-height
         max-block-size
     -webkit-max-logical-width

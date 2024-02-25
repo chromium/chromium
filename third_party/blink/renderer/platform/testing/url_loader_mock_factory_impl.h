@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -65,7 +67,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   // Called by the loader to load a resource.
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          WebURLResponse* response,
-                         absl::optional<WebURLError>* error,
+                         std::optional<WebURLError>* error,
                          scoped_refptr<SharedBuffer>& data,
                          int64_t* encoded_data_length);
   void LoadAsynchronouly(std::unique_ptr<network::ResourceRequest> request,
@@ -86,7 +88,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   // accordingly.
   void LoadRequest(const WebURL& url,
                    WebURLResponse* response,
-                   absl::optional<WebURLError>* error,
+                   std::optional<WebURLError>* error,
                    scoped_refptr<SharedBuffer>& data);
 
   // Checks if the loader is pending. Otherwise, it may have been deleted.
@@ -96,7 +98,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   //
   // If the URL is found, returns true and sets |error| and |response_info|.
   bool LookupURL(const WebURL& url,
-                 absl::optional<WebURLError>* error,
+                 std::optional<WebURLError>* error,
                  ResponseInfo* response_info);
 
   // Reads 'file_path' and puts its content in 'data'.
@@ -104,7 +106,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   static bool ReadFile(const base::FilePath& file_path,
                        scoped_refptr<SharedBuffer>& data);
 
-  URLLoaderTestDelegate* delegate_ = nullptr;
+  raw_ptr<URLLoaderTestDelegate> delegate_ = nullptr;
 
   // The loaders that have not being served data yet.
   using LoaderToRequestMap =
@@ -113,7 +115,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
 
   // All values must be valid, but we use Optional because HashMap requires
   // "empty value".
-  typedef HashMap<KURL, absl::optional<WebURLError>> URLToErrorMap;
+  typedef HashMap<KURL, std::optional<WebURLError>> URLToErrorMap;
   URLToErrorMap url_to_error_info_;
 
   // Table of the registered URLs and the responses that they should receive.
@@ -125,7 +127,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   using ProtocolToResponseMap = HashMap<String, ResponseInfo>;
   ProtocolToResponseMap protocol_to_response_info_;
 
-  TestingPlatformSupport* platform_;
+  raw_ptr<TestingPlatformSupport> platform_;
 };
 
 }  // namespace blink

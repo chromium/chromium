@@ -9,9 +9,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
-/**
- * Shared dictionary information for a given frame origin and a top level site.
- */
+/** Shared dictionary information for a given frame origin and a top level site. */
 public class SharedDictionaryInfo implements Serializable {
     private final String mOrigin;
     private final String mTopLevelSite;
@@ -29,8 +27,8 @@ public class SharedDictionaryInfo implements Serializable {
 
     public void clear(
             BrowserContextHandle browserContextHandle, StorageInfoClearedCallback callback) {
-        WebsitePreferenceBridgeJni.get().clearSharedDictionary(
-                browserContextHandle, mOrigin, mTopLevelSite, callback);
+        WebsitePreferenceBridgeJni.get()
+                .clearSharedDictionary(browserContextHandle, mOrigin, mTopLevelSite, callback);
     }
 
     public long getSize() {

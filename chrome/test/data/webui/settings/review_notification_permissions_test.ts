@@ -7,8 +7,10 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {CrActionMenuElement, MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions, SettingsRoutes} from 'chrome://settings/settings.js';
+import type {SettingsReviewNotificationPermissionsElement} from 'chrome://settings/lazy_load.js';
+import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import type {CrActionMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -474,7 +476,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // User collapses the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.MINIMIZE);
 
@@ -484,7 +486,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // User expands the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are expanded.
     assertTrue(expandButton.expanded);

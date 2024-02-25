@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,12 +15,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/rtree.h"
+#include "cc/paint/directly_composited_image_info.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -126,18 +127,12 @@ class CC_PAINT_EXPORT DisplayItemList
   // leaving |this| in an empty state.
   PaintRecord FinalizeAndReleaseAsRecord();
 
-  struct DirectlyCompositedImageResult {
-    // See PictureLayerImpl::direct_composited_image_default_raster_scale_.
-    gfx::Vector2dF default_raster_scale;
-    bool nearest_neighbor;
-  };
-
   // If this list represents an image that should be directly composited (i.e.
   // rasterized at the intrinsic size of the image), return the intrinsic size
   // of the image and whether or not to use nearest neighbor filtering when
   // scaling the layer.
-  absl::optional<DirectlyCompositedImageResult>
-  GetDirectlyCompositedImageResult() const;
+  std::optional<DirectlyCompositedImageInfo> GetDirectlyCompositedImageInfo()
+      const;
 
   int num_slow_paths_up_to_min_for_MSAA() const {
     return paint_op_buffer_.num_slow_paths_up_to_min_for_MSAA();
@@ -154,16 +149,28 @@ class CC_PAINT_EXPORT DisplayItemList
   }
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
+  DiscardableImageMap& discardable_image_map() {
+    base::AutoLock lock(image_generation_lock_);
+    if (!image_map_) {
+      GenerateDiscardableImagesMetadata();
+    }
+    return *image_map_;
+  }
+
   const DiscardableImageMap& discardable_image_map() const {
-    return image_map_;
+    base::AutoLock lock(image_generation_lock_);
+    if (!image_map_) {
+      GenerateDiscardableImagesMetadata();
+    }
+    return *image_map_;
   }
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
   TakeDecodingModeMap() {
-    return image_map_.TakeDecodingModeMap();
+    return discardable_image_map().TakeDecodingModeMap();
   }
 
   void EmitTraceSnapshot() const;
-  void GenerateDiscardableImagesMetadata();
+  void GenerateDiscardableImagesMetadataForTesting() const;
 
   gfx::Rect VisualRectForTesting(int index) {
     return visual_rects_[static_cast<size_t>(index)];
@@ -192,6 +199,8 @@ class CC_PAINT_EXPORT DisplayItemList
         old_list.paint_op_buffer_);
   }
 
+  std::optional<gfx::Rect> bounds() const { return rtree_.bounds(); }
+
  private:
   friend class DisplayItemListTest;
   friend gpu::raster::RasterImplementation;
@@ -216,10 +225,14 @@ class CC_PAINT_EXPORT DisplayItemList
   // `paint_op_buffer_`.
   void FinalizeImpl();
 
-  // RTree stores indices into the paint op buffer.
-  // TODO(vmpstr): Update the rtree to store offsets instead.
+  void GenerateDiscardableImagesMetadata() const;
+
+  mutable std::optional<DiscardableImageMap> image_map_
+      GUARDED_BY_CONTEXT(image_generation_lock_);
+  mutable base::Lock image_generation_lock_;
+
+  // RTree stores offsets into the paint op buffer.
   RTree<size_t> rtree_;
-  DiscardableImageMap image_map_;
   PaintOpBuffer paint_op_buffer_;
 
   // The visual rects associated with each of the display items in the

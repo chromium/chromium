@@ -16,40 +16,42 @@ limitations under the License.
 package com.google.android.odml.image;
 
 import com.google.android.odml.image.MlImage.ImageFormat;
-
 import java.nio.ByteBuffer;
 
 class ByteBufferImageContainer implements ImageContainer {
-    private final ByteBuffer buffer;
-    private final ImageProperties properties;
 
-    public ByteBufferImageContainer(ByteBuffer buffer, @ImageFormat int imageFormat) {
-        this.buffer = buffer;
-        this.properties = ImageProperties.builder()
-                                  .setStorageType(MlImage.STORAGE_TYPE_BYTEBUFFER)
-                                  .setImageFormat(imageFormat)
-                                  .build();
-    }
+  private final ByteBuffer buffer;
+  private final ImageProperties properties;
 
-    public ByteBuffer getByteBuffer() {
-        return buffer;
-    }
+  public ByteBufferImageContainer(
+      ByteBuffer buffer,
+      @ImageFormat int imageFormat) {
+    this.buffer = buffer;
+    this.properties = ImageProperties.builder()
+        .setStorageType(MlImage.STORAGE_TYPE_BYTEBUFFER)
+        .setImageFormat(imageFormat)
+        .build();
+  }
 
-    @Override
-    public ImageProperties getImageProperties() {
-        return properties;
-    }
+  public ByteBuffer getByteBuffer() {
+    return buffer;
+  }
 
-    /**
-     * Returns the image format.
-     */
-    @ImageFormat
-    public int getImageFormat() {
-        return properties.getImageFormat();
-    }
+  @Override
+  public ImageProperties getImageProperties() {
+    return properties;
+  }
 
-    @Override
-    public void close() {
-        // No op for ByteBuffer.
-    }
+  /**
+   * Returns the image format.
+   */
+  @ImageFormat
+  public int getImageFormat() {
+    return properties.getImageFormat();
+  }
+
+  @Override
+  public void close() {
+    // No op for ByteBuffer.
+  }
 }

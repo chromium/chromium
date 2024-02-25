@@ -2,10 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import Combine
 import SwiftUI
 
+/// Compatibility modifier to allow easy usage of `.scrollClipDisabled`
+/// introduced in iOS 17.
+struct ScrollClipDisabledCompat: ViewModifier {
+  var disabled: Bool
+  func body(content: Content) -> some View {
+    #if swift(>=5.9)
+      if #available(iOS 17, *) {
+        return content.scrollClipDisabled(disabled)
+      }
+    #endif
+    return content
+  }
+}
+
+extension View {
+  func scrollClipDisabledCompat(_ disabled: Bool = true) -> some View {
+    modifier(ScrollClipDisabledCompat(disabled: disabled))
+  }
+}
+
 /// A view displaying a list of destinations.
-@available(iOS 15, *)
 struct OverflowMenuDestinationList: View {
   enum Constants {
     /// Padding breakpoints for each width. The ranges should be inclusive of
@@ -30,12 +50,10 @@ struct OverflowMenuDestinationList: View {
     /// Range of icon paddings; varies based on view width.
     static let iconPaddingRange: ClosedRange<CGFloat> = 0...3
 
-    /// When the dynamic text size is large, the width of each item is the
-    /// screen width minus a fixed space.
-    static let largeTextSizeSpace: CGFloat = 120
+    /// The top margin between the destinations and the edge of the list.
+    static let defaultTopMargin: CGFloat = 15
 
-    /// The bottom margin between the destinations and the edge of the list.
-    static let bottomMargin: CGFloat = 5
+    static let defaultBottomMargin: CGFloat = 8
 
     /// The name for the coordinate space of the scroll view, so children can
     /// find their positioning in the scroll view.
@@ -74,12 +92,15 @@ struct OverflowMenuDestinationList: View {
   /// The destinations for this view.
   @Binding var destinations: [OverflowMenuDestination]
 
+  // The allotted width of this view.
+  var width: CGFloat
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
 
   // The drag handler to use for drag interactions on this list
-  var dragHandler: DestinationDragHandler?
+  @ObservedObject var dragHandlerContainer: DestinationDragHandlerContainer
 
   /// The namespace for the animation of this view appearing or disappearing.
   let namespace: Namespace.ID
@@ -90,99 +111,124 @@ struct OverflowMenuDestinationList: View {
   /// of the list first.
   @State var listOffset: CGFloat? = nil
 
+  init(
+    destinations: Binding<[OverflowMenuDestination]>,
+    width: CGFloat,
+    metricsHandler: PopupMenuMetricsHandler? = nil,
+    uiConfiguration: OverflowMenuUIConfiguration,
+    dragHandler: DestinationDragHandler? = nil,
+    namespace: Namespace.ID
+  ) {
+    self._destinations = destinations
+    self.width = width
+    self.metricsHandler = metricsHandler
+    self.uiConfiguration = uiConfiguration
+    dragHandlerContainer = DestinationDragHandlerContainer(dragHandler: dragHandler)
+    self.namespace = namespace
+  }
+
   var body: some View {
-    GeometryReader { geometry in
-      scrollView(in: geometry)
-        .coordinateSpace(name: Constants.coordinateSpaceName)
-        .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
-    }
-    .background(
-      Color("destination_highlight_color").opacity(uiConfiguration.highlightDestinationsRow ? 1 : 0)
-    )
-    .animation(
-      .linear(duration: kMaterialDuration3), value: uiConfiguration.highlightDestinationsRow
-    )
-    .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
-      // Only alert the handler if scroll tracking has started.
-      if let listOffset = listOffset,
-        newOffset != listOffset
-      {
-        metricsHandler?.popupMenuScrolledHorizontally()
+    scrollView
+      .coordinateSpace(name: Constants.coordinateSpaceName)
+      .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
+      .background(
+        Color("destination_highlight_color").opacity(
+          uiConfiguration.highlightDestinationsRow ? 1 : 0)
+      )
+      .animation(
+        .linear(duration: kMaterialDuration3), value: uiConfiguration.highlightDestinationsRow
+      )
+      .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
+        // Only alert the handler if scroll tracking has started.
+        if let listOffset = listOffset,
+          newOffset != listOffset
+        {
+          metricsHandler?.popupMenuScrolledHorizontally()
+        }
+        // Only update the offset if scroll tracking has started or the newOffset
+        // is approximately 0 (this starts scroll tracking). In RTL mode, the
+        // offset is not exactly 0, so a strict comparison won't work.
+        if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
+          listOffset = newOffset
+        }
       }
-      // Only update the offset if scroll tracking has started or the newOffset
-      // is approximately 0 (this starts scroll tracking). In RTL mode, the
-      // offset is not exactly 0, so a strict comparison won't work.
-      if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
-        listOffset = newOffset
-      }
-    }
   }
 
   @ViewBuilder
-  private func scrollView(in geometry: GeometryProxy) -> some View {
+  private var scrollView: some View {
     ScrollViewReader { proxy in
       ScrollView(.horizontal, showsIndicators: false) {
         let spacing = OverflowMenuDestinationList.destinationSpacing(
-          forScreenWidth: geometry.size.width)
+          forScreenWidth: width)
         let layoutParameters = OverflowMenuDestinationList.layoutParameters(
-          forScreenWidth: geometry.size.width, forSizeCategory: sizeCategory)
+          forScreenWidth: width, forSizeCategory: sizeCategory)
         let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .icon
-
-        ZStack(alignment: .bottom) {
-          HStack(alignment: alignment, spacing: 0) {
-            // Make sure the space to the first icon is constant, so add extra
-            // spacing before the first item.
-            Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
-            ForEach(destinations) { destination in
-              let destinationView = OverflowMenuDestinationView(
-                destination: destination, layoutParameters: layoutParameters,
-                highlighted: uiConfiguration.highlightDestination == destination.destination,
-                metricsHandler: metricsHandler
-              )
-              let destinationBeingDragged =
-                dragHandler?.dragOnDestinations ?? false
-                && dragHandler?.currentDrag?.item == destination
-              destinationView
-                .id(destination.destination)
-                .ifLet(dragHandler) { view, dragHandler in
-                  view
-                    .opacity(destinationBeingDragged ? 0.01 : 1)
-                    .onDrag {
-                      dragHandler.startDrag(from: destination)
-                      return dragHandler.newItemProvider(forDestination: destination)
-                    }
-                    .onDrop(
-                      of: [.text],
-                      delegate: dragHandler.newDropDelegate(
-                        forDestination: destination))
-                }
-                .overlay(alignment: .editButton) {
-                  if !destinationBeingDragged && editMode?.wrappedValue.isEditing == true
-                    && destination.canBeHidden
-                  {
-                    DestinationEditButton(destination: destination)
-                      .alignmentGuide(HorizontalAlignment.editButton) {
-                        $0[HorizontalAlignment.center]
-                      }
-                      .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
+        HStack(alignment: alignment, spacing: 0) {
+          // Make sure the space to the first icon is constant, so add extra
+          // spacing before the first item.
+          Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
+          ForEach(destinations) { destination in
+            let destinationView = OverflowMenuDestinationView(
+              destination: destination, layoutParameters: layoutParameters,
+              highlighted: uiConfiguration.highlightDestination == destination.destination,
+              metricsHandler: metricsHandler
+            )
+            let destinationBeingDragged =
+              dragHandlerContainer.dragHandler?.dragOnDestinations ?? false
+              && dragHandlerContainer.dragHandler?.currentDrag?.item == destination
+            destinationView
+              .id(destination.destination)
+              .ifLet(dragHandlerContainer.dragHandler) { view, dragHandler in
+                view
+                  .opacity(destinationBeingDragged ? 0.01 : 1)
+                  .onDrag {
+                    dragHandler.startDrag(from: destination)
+                    return dragHandler.newItemProvider(forDestination: destination)
                   }
+                  .onDrop(
+                    of: [.text],
+                    delegate: dragHandler.newDropDelegate(
+                      forDestination: destination))
+              }
+              .overlay(alignment: .editButton) {
+                if !destinationBeingDragged && editMode?.wrappedValue.isEditing == true
+                  && destination.canBeHidden
+                {
+                  DestinationEditButton(destination: destination)
+                    .alignmentGuide(HorizontalAlignment.editButton) {
+                      $0[HorizontalAlignment.center]
+                    }
+                    .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
                 }
-                .matchedGeometryEffect(
-                  id: MenuCustomizationAnimationID.from(destination), in: namespace
-                )
-            }
-          }.alignmentGuide(.bottom) { $0[.bottom] + Constants.bottomMargin }
-
+              }
+              .matchedGeometryEffect(
+                id: MenuCustomizationAnimationID.from(destination), in: namespace
+              )
+              .accessibilityElement(children: .combine)
+              .accessibilityHint(editButtonAccessibilityHint(for: destination))
+          }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding([.top], Constants.defaultTopMargin)
+        .padding([.bottom], Constants.defaultBottomMargin)
+        .overlay {
           GeometryReader { innerGeometry in
             let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
-            let parentWidth = geometry.size.width
 
             // When the view is RTL, the offset should be calculated from the
             // right edge.
-            let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
+            let offset = layoutDirection == .leftToRight ? frame.minX : width - frame.maxX
 
             Color.clear
               .preference(key: ScrollViewLeadingOffset.self, value: offset)
+          }
+        }
+      }
+      .scrollClipDisabledCompat()
+      .background {
+        GeometryReader { geometry in
+          Color.clear.onAppear {
+            uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
           }
         }
       }
@@ -192,9 +238,18 @@ struct OverflowMenuDestinationList: View {
         } else if layoutDirection == .rightToLeft {
           proxy.scrollTo(destinations.first?.destination)
         }
-        uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
     }
+  }
+
+  private func editButtonAccessibilityHint(for destination: OverflowMenuDestination) -> String {
+    guard editMode?.wrappedValue.isEditing == true && destination.canBeHidden else {
+      return ""
+    }
+    return destination.shown
+      ? L10nUtils.stringWithFixup(
+        messageId: IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT)
+      : L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SHOW_ITEM_ACCESSIBILITY_HINT)
   }
 
   /// Finds the lower and upper breakpoint above and below `width`.
@@ -259,7 +314,7 @@ struct OverflowMenuDestinationList: View {
     let spacing = OverflowMenuDestinationList.destinationSpacing(forScreenWidth: width)
 
     return sizeCategory >= .accessibilityMedium
-      ? .horizontal(itemWidth: width - Constants.largeTextSizeSpace)
+      ? .horizontal
       : .vertical(
         iconSpacing: spacing.iconSpacing,
         iconPadding: spacing.iconPadding)
@@ -272,9 +327,20 @@ struct OverflowMenuDestinationList: View {
   {
     let layoutParameters = OverflowMenuDestinationList.layoutParameters(
       forScreenWidth: width, forSizeCategory: sizeCategory)
-    let destinationWidth = OverflowMenuDestinationView.destinationWidth(layoutParameters)
 
-    return (width / destinationWidth).rounded(.up)
+    switch layoutParameters {
+    case .vertical(let iconSpacing, let iconPadding):
+      let destinationWidth = OverflowMenuDestinationView.verticalLayoutDestinationWidth(
+        iconSpacing: iconSpacing, iconPadding: iconPadding)
+
+      return (width / destinationWidth).rounded(.up)
+    case .horizontal:
+      // In horizontal layout, the width of an individual item depends on the
+      // text length. However, it'll always be pretty long, so 2 is a good
+      // estimate.
+      return 2
+    }
+
   }
 
   /// Maps the given `number` from its relative position in `inRange` to its
@@ -327,4 +393,29 @@ extension Alignment {
   /// A new custom alignment to allow aligning the edit buttons at specific
   /// locations.
   static let editButton = Alignment(horizontal: .editButton, vertical: .editButton)
+}
+
+/// Before iOS 17, it was not possible to directly observe optional objects
+/// e.g.
+/// ```
+/// @ObservedObject var myOptional: Foo?
+/// ```
+/// `DestinationDragHandler` is often optional, so this simple class wraps it
+/// in a container that just re-publishes any changes to the underlying drag
+/// handler.
+/// The `Observable` macro in iOS 17 looks to also solve this issue, and
+/// this should be migrateable once iOS 17 is the minimum version supported.
+class DestinationDragHandlerContainer: ObservableObject {
+  // The underlying drag handler.
+  let dragHandler: DestinationDragHandler?
+
+  var cancellable: AnyCancellable?
+
+  init(dragHandler: DestinationDragHandler?) {
+    self.dragHandler = dragHandler
+
+    cancellable = dragHandler?.objectWillChange.sink { [weak self] in
+      self?.objectWillChange.send()
+    }
+  }
 }

@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAST_COMMON_SENDER_ENCODED_FRAME_H_
 #define MEDIA_CAST_COMMON_SENDER_ENCODED_FRAME_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "media/cast/common/encoded_frame.h"
 
@@ -45,6 +47,12 @@ struct SenderEncodedFrame final : public EncodedFrame {
 
   // The time at which the encode of the frame completed.
   base::TimeTicks encode_completion_time;
+
+  // The time at which capture of the frame started.
+  std::optional<base::TimeTicks> capture_begin_time;
+
+  // The time at which capture of the frame ended.
+  std::optional<base::TimeTicks> capture_end_time;
 };
 
 }  // namespace cast

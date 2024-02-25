@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
@@ -41,16 +41,14 @@ class BorealisContextTest : public testing::Test,
   BorealisContextTest()
       : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {
     profile_ = std::make_unique<TestingProfile>();
-    borealis_disk_manager_dispatcher_ =
-        std::make_unique<BorealisDiskManagerDispatcher>();
     borealis_shutdown_monitor_ =
         std::make_unique<BorealisShutdownMonitor>(profile_.get());
     borealis_window_manager_ =
         std::make_unique<BorealisWindowManager>(profile_.get());
 
+    features_ = std::make_unique<BorealisFeatures>(profile_.get());
     service_fake_ = BorealisServiceFake::UseFakeForTesting(profile_.get());
-    service_fake_->SetDiskManagerDispatcherForTesting(
-        borealis_disk_manager_dispatcher_.get());
+    service_fake_->SetFeaturesForTesting(features_.get());
     service_fake_->SetShutdownMonitorForTesting(
         borealis_shutdown_monitor_.get());
     service_fake_->SetWindowManagerForTesting(borealis_window_manager_.get());
@@ -86,9 +84,8 @@ class BorealisContextTest : public testing::Test,
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<borealis::BorealisContext> borealis_context_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
-  std::unique_ptr<BorealisDiskManagerDispatcher>
-      borealis_disk_manager_dispatcher_;
+  std::unique_ptr<BorealisFeatures> features_;
+  raw_ptr<BorealisServiceFake> service_fake_;
   std::unique_ptr<BorealisShutdownMonitor> borealis_shutdown_monitor_;
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   base::HistogramTester histogram_tester_;

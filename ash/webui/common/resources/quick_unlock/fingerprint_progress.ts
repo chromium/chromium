@@ -8,7 +8,7 @@ import './fingerprint_progress_icons.html.js';
 import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import {LottieRenderer} from '//resources/cros_components/lottie_renderer/lottie-renderer.js';
-import {assert} from '//resources/js/assert_ts.js';
+import {assert} from '//resources/js/assert.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -168,7 +168,6 @@ export class FingerprintProgressElement extends PolymerElement {
     this.progressCircleBackgroundColor =
         getComputedStyle(document.body)
             .getPropertyValue('--cros-sys-primary_container');
-    this.$.scanningAnimation.onColorSchemeChanged();
   }
 
   override connectedCallback() {
@@ -184,11 +183,6 @@ export class FingerprintProgressElement extends PolymerElement {
    */
   reset() {
     if (this.dynamic) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
       this.progressCircleFillColor =
           getComputedStyle(document.body)
               .getPropertyValue('--cros-sys-primary');
@@ -210,7 +204,6 @@ export class FingerprintProgressElement extends PolymerElement {
     this.updateAnimationAsset_();
     this.resizeAndCenterIcon_(scanningAnimation);
     scanningAnimation.hidden = false;
-    scanningAnimation.onColorSchemeChanged();
   }
 
   /**

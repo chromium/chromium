@@ -501,7 +501,6 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kParagraph:
     case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kPluginObject:
-    case ax::mojom::Role::kPre:
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kRuby:
@@ -556,6 +555,7 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kDirectory:
       return NSAccessibilityListRole;
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       // If Mac supports AXExpandedChanged event with
       // NSAccessibilityDisclosureTriangleRole, We should update
       // ax::mojom::Role::kDisclosureTriangle mapping to
@@ -685,6 +685,8 @@ void CollectAncestorRoles(
       // specially by screen readers, can break their ability to find the
       // content window. See http://crbug.com/875843 for more information.
       return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kPreDeprecated:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -788,13 +790,6 @@ void CollectAncestorRoles(
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
 
-    int leafTextLength = leafTextRange.GetText().length();
-    if (static_cast<unsigned long>(anchorStartOffset + leafTextLength) >
-        attributedString.length) {
-      // We've exceeded the maximum text requested by the caller.
-      break;
-    }
-
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
@@ -828,6 +823,9 @@ void CollectAncestorRoles(
     }
 
     // Add annotation information
+    int leafTextLength = leafTextRange.GetText().length();
+    DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
+              attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
 
     CollectAncestorRoles(*anchor, ancestor_roles);
@@ -1472,7 +1470,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIAColumnCount {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaColCount =
+  std::optional<int> ariaColCount =
       _node->GetDelegate()->GetTableAriaColCount();
   if (!ariaColCount)
     return nil;
@@ -1483,7 +1481,7 @@ void CollectAncestorRoles(
   if (![self instanceActive])
     return nil;
 
-  absl::optional<int> ariaColIndex =
+  std::optional<int> ariaColIndex =
       _node->GetDelegate()->GetTableCellAriaColIndex();
   if (!ariaColIndex)
 
@@ -1508,7 +1506,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIARowCount {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaRowCount =
+  std::optional<int> ariaRowCount =
       _node->GetDelegate()->GetTableAriaRowCount();
   if (!ariaRowCount)
     return nil;
@@ -1518,7 +1516,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIARowIndex {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaRowIndex =
+  std::optional<int> ariaRowIndex =
       _node->GetDelegate()->GetTableCellAriaRowIndex();
   if (!ariaRowIndex)
     return nil;
@@ -1819,7 +1817,7 @@ void CollectAncestorRoles(
   // AXCustomContent is only supported by VoiceOver since macOS 11. In
   // macOS 11 or later we expose the aria description in AXCustomContent,
   // before then we expose the description in AXHelp.
-  if (base::mac::IsAtLeastOS11() &&
+  if (base::mac::MacOSMajorVersion() >= 11 &&
       [[self descriptionIfFromAriaDescription] length]) {
     return nil;
   }
@@ -1951,7 +1949,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIAPosInSet {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> posInSet = _node->GetPosInSet();
+  std::optional<int> posInSet = _node->GetPosInSet();
   if (!posInSet)
     return nil;
   return @(*posInSet);
@@ -1960,7 +1958,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIASetSize {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> setSize = _node->GetSetSize();
+  std::optional<int> setSize = _node->GetSetSize();
   if (!setSize)
     return nil;
   return @(*setSize);
@@ -2091,12 +2089,7 @@ void CollectAncestorRoles(
   if (axRange.IsNull())
     return nil;
 
-  NSString* text = base::SysUTF16ToNSString(axRange.GetText(
-      ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
-      ui::AXEmbeddedObjectBehavior::kExposeCharacterForHypertext,
-      // Constrain the amount of text retrieved for performance.
-      /* max_count =*/200));
-
+  NSString* text = base::SysUTF16ToNSString(axRange.GetText());
   if (text.length == 0) {
     return nil;
   }
@@ -2458,7 +2451,7 @@ void CollectAncestorRoles(
     return nil;
   }
 
-  absl::optional<int> column = delegate->GetTableCellColIndex();
+  std::optional<int> column = delegate->GetTableCellColIndex();
   if (!column) {
     return nil;
   }

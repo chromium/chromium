@@ -18,11 +18,11 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
-#include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/browser/renderer_host/render_widget_host_view_base_observer.h"
 #include "content/browser/renderer_host/render_widget_targeter.h"
 #include "content/common/content_export.h"
+#include "content/common/input/event_with_latency_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/geometry/transform.h"
@@ -122,10 +122,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                            RenderWidgetHostViewBase* owner);
   void RemoveFrameSinkIdOwner(const viz::FrameSinkId& id);
 
-  bool is_registered(const viz::FrameSinkId& id) const {
-    return owner_map_.find(id) != owner_map_.end();
-  }
-
   TouchEmulator* GetTouchEmulator();
   // Since GetTouchEmulator will lazily create a touch emulator, the following
   // accessor allows testing for its existence without causing it to be created.
@@ -161,6 +157,10 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   // Allows a target to claim or release capture of mouse events.
   void SetMouseCaptureTarget(RenderWidgetHostViewBase* target,
                              bool captures_dragging);
+
+  // Toggle if mouse up event should be dispatched to root RenderWidgetHostView
+  // in addition to the target RenderWidgethostView.
+  void RootViewReceivesMouseUpIfNecessary(bool root_view_receives_mouse_up);
 
   std::vector<RenderWidgetHostView*> GetRenderWidgetHostViewsForTests() const;
   RenderWidgetTargeter* GetRenderWidgetTargeterForTests();
@@ -204,6 +204,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
       DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsImplBrowserTest,
+      MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection);
 
   using FrameSinkIdOwnerMap =
       std::unordered_map<viz::FrameSinkId,
@@ -233,7 +236,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewBase* target,
       const blink::WebGestureEvent& touchpad_gesture_event,
       const ui::LatencyInfo& latency,
-      const absl::optional<gfx::PointF>& target_location);
+      const std::optional<gfx::PointF>& target_location);
 
   // MouseMove/Enter/Leave events might need to be processed by multiple frames
   // in different processes for MouseEnter and MouseLeave event handlers to
@@ -291,20 +294,20 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                           RenderWidgetHostViewBase* target,
                           const blink::WebMouseEvent& mouse_event,
                           const ui::LatencyInfo& latency,
-                          const absl::optional<gfx::PointF>& target_location);
+                          const std::optional<gfx::PointF>& target_location);
   // |mouse_wheel_event| is in the coord-space of |root_view|.
   void DispatchMouseWheelEvent(
       RenderWidgetHostViewBase* root_view,
       RenderWidgetHostViewBase* target,
       const blink::WebMouseWheelEvent& mouse_wheel_event,
       const ui::LatencyInfo& latency,
-      const absl::optional<gfx::PointF>& target_location);
+      const std::optional<gfx::PointF>& target_location);
   // Assumes |touch_event| has coordinates in the root view's coordinate space.
   void DispatchTouchEvent(RenderWidgetHostViewBase* root_view,
                           RenderWidgetHostViewBase* target,
                           const blink::WebTouchEvent& touch_event,
                           const ui::LatencyInfo& latency,
-                          const absl::optional<gfx::PointF>& target_location,
+                          const std::optional<gfx::PointF>& target_location,
                           bool is_emulated);
   // Assumes |gesture_event| has coordinates in root view's coordinate space.
   void DispatchTouchscreenGestureEvent(
@@ -312,7 +315,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewBase* target,
       const blink::WebGestureEvent& gesture_event,
       const ui::LatencyInfo& latency,
-      const absl::optional<gfx::PointF>& target_location);
+      const std::optional<gfx::PointF>& target_location);
 
   // TODO(828422): Remove once this issue no longer occurs.
   void ReportBubblingScrollToSameView(const blink::WebGestureEvent& event,
@@ -331,7 +334,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewBase* target,
       blink::WebInputEvent* event,
       const ui::LatencyInfo& latency,
-      const absl::optional<gfx::PointF>& target_location) override;
+      const std::optional<gfx::PointF>& target_location) override;
   // Notify whether the events in the queue are being flushed due to touch ack
   // timeout, or the flushing has completed.
   void SetEventsBeingFlushed(bool events_being_flushed) override;
@@ -378,6 +381,14 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   RAW_PTR_EXCLUSION RenderWidgetHostViewBase* wheel_target_ = nullptr;
   // Maintains the same target between mouse down and mouse up.
   raw_ptr<RenderWidgetHostViewBase> mouse_capture_target_ = nullptr;
+  // There is no mouse capture set if a mouse down event dispatches to main
+  // frame. The subsequent mouse events might not be delivered to the main frame
+  // if mouse is moved over to an OOP iframe. There is caches mouse state in
+  // main frame such as autoscroll selection. In this case we should dispatch an
+  // additional mouse up event to the main frame to clear any cached mouse
+  // state. This flag indicates the state is active and mouse up event will be
+  // dispatched to main frame in addition to the target frame.
+  bool root_view_receive_additional_mouse_up_ = false;
 
   // Tracked for the purpose of generating MouseEnter and MouseLeave events.
   raw_ptr<RenderWidgetHostViewBase> last_mouse_move_target_;

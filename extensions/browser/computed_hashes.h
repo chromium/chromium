@@ -9,13 +9,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -108,7 +107,7 @@ class ComputedHashes {
   // Reads computed hashes from the computed_hashes.json file, stores read
   // success/failure status to |status|. Returns nullopt upon any failure (i.e.
   // |status| != Status::SUCCESS).
-  static absl::optional<ComputedHashes> CreateFromFile(
+  static std::optional<ComputedHashes> CreateFromFile(
       const base::FilePath& path,
       Status* status);
 
@@ -119,7 +118,7 @@ class ComputedHashes {
   // of passing |block_size| as an argument make callback
   // |should_compute_hashes_for| return optional<int>: nullopt if hashes are not
   // needed for this file, block size for this file otherwise.
-  static absl::optional<ComputedHashes::Data> Compute(
+  static std::optional<ComputedHashes::Data> Compute(
       const base::FilePath& extension_root,
       int block_size,
       const IsCancelledCallback& is_cancelled,
@@ -145,7 +144,7 @@ class ComputedHashes {
   // Builds hashes for one resource and checks them against
   // verified_contents.json if needed. Returns nullopt if nothing should be
   // added to computed_hashes.json for this resource.
-  static absl::optional<std::vector<std::string>> ComputeAndCheckResourceHash(
+  static std::optional<std::vector<std::string>> ComputeAndCheckResourceHash(
       const base::FilePath& full_path,
       int block_size);
 

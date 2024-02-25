@@ -6,14 +6,6 @@
 
 #include <string>
 
-bool AuthenticatorRequestSheetModel::ShouldFocusBackArrow() const {
-  return false;
-}
-
-bool AuthenticatorRequestSheetModel::IsCloseButtonVisible() const {
-  return false;
-}
-
 std::u16string AuthenticatorRequestSheetModel::GetAdditionalDescription()
     const {
   return std::u16string();

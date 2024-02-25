@@ -4,12 +4,15 @@
 
 #include "components/services/screen_ai/public/cpp/utilities.h"
 
+#include "base/check_is_test.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace screen_ai {
 
@@ -30,6 +33,52 @@ constexpr char kScreenAIDlcRootPath[] =
     "/run/imageloader/screen-ai/package/root/";
 #endif
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+#if BUILDFLAG(IS_LINUX)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party/screen-ai/linux/resources");
+#elif BUILDFLAG(IS_MAC)
+#if defined(ARCH_CPU_X86_64)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party/screen-ai/macos_amd64/resources");
+#elif defined(ARCH_CPU_ARM64)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party/screen-ai/macos_arm64/resources");
+#endif  // defined(ARCH_CPU_X86_64)
+#elif BUILDFLAG(IS_WIN)
+#if defined(ARCH_CPU_X86_64)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party\\screen-ai\\windows_amd64\\resources");
+#elif defined(ARCH_CPU_X86)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party\\screen-ai\\windows_386\\resources");
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_LINUX)
+
+// Get the directory that contains the ScreenAI component for testing.
+base::FilePath GetTestComponentDir() {
+  base::FilePath test_data_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+
+  base::FilePath screenai_library_dir =
+      test_data_dir.Append(base::FilePath(kScreenAIResourcePathForTests));
+
+  CHECK(base::PathExists(screenai_library_dir));
+  return screenai_library_dir;
+}
+
+// Get the absolute path of the ScreenAI component for testing.
+base::FilePath GetTestComponentBinaryPath() {
+  base::FilePath test_data_dir = GetTestComponentDir();
+
+  base::FilePath screenai_library_path =
+      test_data_dir.Append(kScreenAIComponentBinaryName);
+
+  CHECK(base::PathExists(screenai_library_path));
+  return screenai_library_path;
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+
 }  // namespace
 
 base::FilePath GetRelativeInstallDir() {
@@ -41,6 +90,15 @@ base::FilePath GetComponentBinaryFileName() {
 }
 
 base::FilePath GetComponentDir() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+  // When in `ScreenAITestMode`, return the path that contains the screen-ai
+  // binary downloaded from CIPD.
+  if (features::IsScreenAITestModeEnabled()) {
+    CHECK_IS_TEST();
+    return GetTestComponentDir();
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+
   base::FilePath components_dir;
   if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                               &components_dir) ||
@@ -52,6 +110,13 @@ base::FilePath GetComponentDir() {
 }
 
 base::FilePath GetLatestComponentBinaryPath() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+  if (features::IsScreenAITestModeEnabled()) {
+    CHECK_IS_TEST();
+    return GetTestComponentBinaryPath();
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+
   base::FilePath latest_version_dir;
 #if BUILDFLAG(IS_CHROMEOS)
   latest_version_dir = base::FilePath::FromASCII(kScreenAIDlcRootPath);

@@ -70,7 +70,8 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
                 ? init->info()
                 : ScriptValue(context->GetIsolate(),
                               v8::Undefined(context->GetIsolate()))),
-      has_ua_visual_transition_(init->hasUAVisualTransition()) {
+      has_ua_visual_transition_(init->hasUAVisualTransition()),
+      source_element_(init->sourceElement()) {
   CHECK(IsA<LocalDOMWindow>(context));
   CHECK(!controller_ || controller_->signal() == signal_);
 }
@@ -475,10 +476,10 @@ void NavigateEvent::ProcessScrollBehavior() {
   CHECK_EQ(intercept_state_, InterceptState::kCommitted);
   intercept_state_ = InterceptState::kScrolled;
 
-  absl::optional<HistoryItem::ViewState> view_state =
+  std::optional<HistoryItem::ViewState> view_state =
       dispatch_params_->destination_item
           ? dispatch_params_->destination_item->GetViewState()
-          : absl::nullopt;
+          : std::nullopt;
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
@@ -501,6 +502,7 @@ void NavigateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(form_data_);
   visitor->Trace(info_);
+  visitor->Trace(source_element_);
   visitor->Trace(navigation_action_promises_list_);
   visitor->Trace(navigation_action_handlers_list_);
 }

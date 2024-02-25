@@ -12,6 +12,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+#include "test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -80,6 +81,11 @@ void TestBluetoothAdapterObserver::Reset() {
   last_gatt_descriptor_id_.clear();
   last_gatt_descriptor_uuid_ = BluetoothUUID();
   last_changed_descriptor_value_.clear();
+}
+
+void TestBluetoothAdapterObserver::set_quit_closure(
+    base::OnceClosure quit_closure) {
+  quit_closure_ = std::move(quit_closure);
 }
 
 void TestBluetoothAdapterObserver::AdapterPresentChanged(
@@ -169,11 +175,11 @@ void TestBluetoothAdapterObserver::DeviceAddressChanged(
 
 void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
     const std::string& device_address,
-    const absl::optional<std::string>& device_name,
-    const absl::optional<std::string>& advertisement_name,
-    absl::optional<int8_t> rssi,
-    absl::optional<int8_t> tx_power,
-    absl::optional<uint16_t> appearance,
+    const std::optional<std::string>& device_name,
+    const std::optional<std::string>& advertisement_name,
+    std::optional<int8_t> rssi,
+    std::optional<int8_t> tx_power,
+    std::optional<uint16_t> appearance,
     const device::BluetoothDevice::UUIDList& advertised_uuids,
     const device::BluetoothDevice::ServiceDataMap& service_data_map,
     const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {
@@ -445,8 +451,10 @@ void TestBluetoothAdapterObserver::
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TestBluetoothAdapterObserver::QuitMessageLoop() {
-  if (base::RunLoop::IsRunningOnCurrentThread())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  // only call closure if set
+  if (!quit_closure_.is_null()) {
+    std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace device

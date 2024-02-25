@@ -62,7 +62,7 @@ class Blending : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void blending_destroy(wl_client* client, wl_resource* resource) {

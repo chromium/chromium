@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
@@ -41,10 +40,6 @@ class ChildAccountService : public KeyedService,
                             public SupervisedUserService::Delegate {
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-    registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
-  }
 
   ChildAccountService(const ChildAccountService&) = delete;
   ChildAccountService& operator=(const ChildAccountService&) = delete;

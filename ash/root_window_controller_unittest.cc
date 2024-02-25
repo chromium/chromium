@@ -19,7 +19,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -79,7 +79,7 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
     }
   }
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_{nullptr};
+  raw_ptr<aura::Window, DanglingUntriaged> window_{nullptr};
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
@@ -311,7 +311,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to mirror.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
   controller = Shell::GetPrimaryRootWindowController();
@@ -320,7 +320,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to unified.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   controller = Shell::GetPrimaryRootWindowController();
@@ -376,9 +376,9 @@ TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
   // ordering.
   aura::Window* parent = moved->GetNativeWindow()->parent();
   ASSERT_EQ(parent, existing1->GetNativeWindow()->parent());
-  const std::vector<aura::Window*> expected_order = {
-      existing1->GetNativeWindow(), moved->GetNativeWindow(),
-      existing2->GetNativeWindow(), active->GetNativeWindow()};
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>> expected_order =
+      {existing1->GetNativeWindow(), moved->GetNativeWindow(),
+       existing2->GetNativeWindow(), active->GetNativeWindow()};
   EXPECT_EQ(expected_order, parent->children());
 }
 
@@ -649,7 +649,7 @@ class DestroyedWindowObserver : public aura::WindowObserver {
   }
 
   bool destroyed_ = false;
-  raw_ptr<Window, ExperimentalAsh> window_{nullptr};
+  raw_ptr<Window> window_{nullptr};
 };
 
 // Verifies shutdown doesn't delete windows that are not owned by the parent.
@@ -662,7 +662,8 @@ TEST_F(RootWindowControllerTest, DontDeleteWindowsNotOwnedByParent) {
   observer1.SetWindow(window1.get());
   window1->Init(ui::LAYER_NOT_DRAWN);
   aura::client::ParentWindowWithContext(
-      window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect());
+      window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect(),
+      display::kInvalidDisplayId);
 
   DestroyedWindowObserver observer2;
   std::unique_ptr<aura::Window> window2 =
@@ -693,7 +694,7 @@ TEST_F(RootWindowControllerTest, ContextMenuDisappearsInTabletMode) {
   EXPECT_TRUE(controller->root_window_menu_model_adapter_);
 
   // Verify menu closes on entering tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_FALSE(controller->root_window_menu_model_adapter_);
 
   // Open context menu.
@@ -702,7 +703,7 @@ TEST_F(RootWindowControllerTest, ContextMenuDisappearsInTabletMode) {
   EXPECT_TRUE(controller->root_window_menu_model_adapter_);
 
   // Verify menu closes on exiting tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_FALSE(controller->root_window_menu_model_adapter_);
 }
 

@@ -101,16 +101,16 @@ void FakeCentral::SimulateAdvertisementReceived(
     observer.DeviceAdvertisementReceived(
         scan_result_ptr->device_address, scan_record->name, scan_record->name,
         scan_result_ptr->rssi, scan_record->tx_power->value,
-        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         uuids, service_data, manufacturer_data);
   }
 
   fake_peripheral->SetName(std::move(scan_record->name));
   fake_peripheral->UpdateAdvertisementData(
-      scan_result_ptr->rssi, absl::nullopt /* flags */, uuids,
+      scan_result_ptr->rssi, std::nullopt /* flags */, uuids,
       scan_record->tx_power->has_value
-          ? absl::make_optional(scan_record->tx_power->value)
-          : absl::nullopt,
+          ? std::make_optional(scan_record->tx_power->value)
+          : std::nullopt,
       service_data, manufacturer_data);
 
   if (is_new_device) {
@@ -236,7 +236,7 @@ void FakeCentral::AddFakeService(const std::string& peripheral_address,
                                  AddFakeServiceCallback callback) {
   FakePeripheral* fake_peripheral = GetFakePeripheral(peripheral_address);
   if (fake_peripheral == nullptr) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -263,7 +263,7 @@ void FakeCentral::AddFakeCharacteristic(
   FakeRemoteGattService* fake_remote_gatt_service =
       GetFakeRemoteGattService(peripheral_address, service_id);
   if (fake_remote_gatt_service == nullptr) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -297,7 +297,7 @@ void FakeCentral::AddFakeDescriptor(
       GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
                                       characteristic_id);
   if (fake_remote_gatt_characteristic == nullptr) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -324,7 +324,7 @@ void FakeCentral::RemoveFakeDescriptor(const std::string& descriptor_id,
 
 void FakeCentral::SetNextReadCharacteristicResponse(
     uint16_t gatt_code,
-    const absl::optional<std::vector<uint8_t>>& value,
+    const std::optional<std::vector<uint8_t>>& value,
     const std::string& characteristic_id,
     const std::string& service_id,
     const std::string& peripheral_address,
@@ -421,7 +421,7 @@ void FakeCentral::GetLastWrittenCharacteristicValue(
       GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
                                       characteristic_id);
   if (fake_remote_gatt_characteristic == nullptr) {
-    std::move(callback).Run(false, absl::nullopt, mojom::WriteType::kNone);
+    std::move(callback).Run(false, std::nullopt, mojom::WriteType::kNone);
     return;
   }
 
@@ -432,7 +432,7 @@ void FakeCentral::GetLastWrittenCharacteristicValue(
 
 void FakeCentral::SetNextReadDescriptorResponse(
     uint16_t gatt_code,
-    const absl::optional<std::vector<uint8_t>>& value,
+    const std::optional<std::vector<uint8_t>>& value,
     const std::string& descriptor_id,
     const std::string& characteristic_id,
     const std::string& service_id,
@@ -479,7 +479,7 @@ void FakeCentral::GetLastWrittenDescriptorValue(
       GetFakeRemoteGattDescriptor(peripheral_address, service_id,
                                   characteristic_id, descriptor_id);
   if (!fake_remote_gatt_descriptor) {
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
@@ -594,6 +594,13 @@ void FakeCentral::RegisterAdvertisement(
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool FakeCentral::IsExtendedAdvertisementsAvailable() const {
+  NOTREACHED();
+  return false;
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& min,
@@ -608,7 +615,7 @@ void FakeCentral::ResetAdvertising(base::OnceClosure callback,
 }
 void FakeCentral::ConnectDevice(
     const std::string& address,
-    const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+    const std::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ConnectDeviceErrorCallback error_callback) {
   NOTREACHED();
@@ -639,6 +646,12 @@ FakeCentral::StartLowEnergyScanSession(
 device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
   return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+}
+
+std::vector<device::BluetoothAdapter::BluetoothRole>
+FakeCentral::GetSupportedRoles() {
+  NOTREACHED();
+  return std::vector<device::BluetoothAdapter::BluetoothRole>{};
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

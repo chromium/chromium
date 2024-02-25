@@ -20,27 +20,22 @@ async function waitForScrollendEventNoTimeout(target) {
   });
 }
 
-async function waitForOverscrollEvent(test, target, timeoutMs = 500) {
-  return waitForEvent("overscroll", test, target, timeoutMs);
-}
-
 async function waitForPointercancelEvent(test, target, timeoutMs = 500) {
   return waitForEvent("pointercancel", test, target, timeoutMs);
 }
 
 // Resets the scroll position to (0,0).  If a scroll is required, then the
 // promise is not resolved until the scrollend event is received.
-async function waitForScrollReset(test, scroller, timeoutMs = 500) {
+async function waitForScrollReset(test, scroller, x = 0, y = 0) {
   return new Promise(resolve => {
-    if (scroller.scrollTop == 0 &&
-        scroller.scrollLeft == 0) {
+    if (scroller.scrollTop == x && scroller.scrollLeft == y) {
       resolve();
     } else {
       const eventTarget =
         scroller == document.scrollingElement ? document : scroller;
-      scroller.scrollTop = 0;
-      scroller.scrollLeft = 0;
-      waitForScrollendEvent(test, eventTarget, timeoutMs).then(resolve);
+      scroller.scrollTop = y;
+      scroller.scrollLeft = x;
+      waitForScrollendEventNoTimeout(eventTarget).then(resolve);
     }
   });
 }
@@ -119,10 +114,10 @@ function waitForCompositorCommit() {
   });
 }
 
-// Please don't remove this. This is necessary for chromium-based browsers.
-// This shouldn't be necessary if the test harness deferred running the tests
-// until after paint holding. This can be a no-op on user-agents that do not
-// have a separate compositor thread.
+// Please don't remove this. This is necessary for chromium-based browsers. It
+// can be a no-op on user-agents that do not have a separate compositor thread.
+// TODO(crbug.com/1509054): This shouldn't be necessary if the test harness
+// deferred running the tests until after paint holding.
 async function waitForCompositorReady() {
   const animation =
       document.body.animate({ opacity: [ 1, 1 ] }, {duration: 1 });

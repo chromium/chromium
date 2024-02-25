@@ -11,11 +11,13 @@
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -114,8 +116,8 @@ class PreinstalledWebAppMigrationBrowserTest
     return embedded_test_server()->GetURL(kWebAppPath);
   }
 
-  AppId GetWebAppId() const {
-    return GenerateAppId(/*manifest_id=*/absl::nullopt, GetWebAppUrl());
+  webapps::AppId GetWebAppId() const {
+    return GenerateAppId(/*manifest_id=*/std::nullopt, GetWebAppUrl());
   }
 
   // extensions::ExtensionBrowserTest:
@@ -139,7 +141,7 @@ class PreinstalledWebAppMigrationBrowserTest
     // We uninstall all web apps, as Ash is not restarted between Lacros tests.
     auto* const provider = WebAppProvider::GetForTest(profile());
     const WebAppRegistrar& registrar = provider->registrar_unsafe();
-    std::vector<AppId> app_ids = registrar.GetAppIds();
+    std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
     for (const auto& app_id : app_ids) {
       if (!registrar.IsInstalled(app_id)) {
         continue;
@@ -224,7 +226,7 @@ class PreinstalledWebAppMigrationBrowserTest
                            bool pass_config = true) {
     base::RunLoop run_loop;
 
-    absl::optional<webapps::InstallResultCode> code;
+    std::optional<webapps::InstallResultCode> code;
 
     auto callback = base::BindLambdaForTesting(
         [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -295,7 +297,7 @@ class PreinstalledWebAppMigrationBrowserTest
  protected:
   const char* uninstall_and_replace_ = kExtensionId;
   base::test::ScopedFeatureList features_;
-  absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
+  std::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 
@@ -520,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   // Check UI preferences have migrated across.
   {
-    const AppId web_app_id = GetWebAppId();
+    const webapps::AppId web_app_id = GetWebAppId();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Chrome OS shelf/list position should migrate.
@@ -735,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     return info;
   });
   preinstalled_apps.apps.push_back(std::move(options));
-  EXPECT_EQ(1u, GetPreinstalledWebApps().size());
+  EXPECT_EQ(1u, GetPreinstalledWebApps(*profile()).size());
   // Set up pre-migration state.
   {
     base::HistogramTester histograms;
@@ -815,10 +817,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   auto& test_controller =
       lacros_service->GetRemote<crosapi::mojom::TestController>();
 
-  AppId old_app_id;
+  webapps::AppId old_app_id;
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/old/");
+    info->scope = info->start_url;
     info->title = u"Old app";
     old_app_id = web_app::test::InstallWebApp(profile(), std::move(info));
     apps::AppReadinessWaiter(profile(), old_app_id).Await();
@@ -833,15 +836,15 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     ASSERT_TRUE(future.Wait());
   }
 
-  AppId new_app_id;
+  webapps::AppId new_app_id;
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/new/");
+    info->scope = info->start_url;
     info->title = u"New app";
 
     WebAppInstallParams install_params;
-    install_params.bypass_service_worker_check = true;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode,
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                            bool /*did_uninstall_and_replace*/>
         future;
     WebAppProvider::GetForTest(profile())
@@ -855,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
     EXPECT_TRUE(future.Get<bool /*did_uninstall_and_replace*/>());
-    new_app_id = future.Get<AppId>();
+    new_app_id = future.Get<webapps::AppId>();
     apps::AppReadinessWaiter(profile(), new_app_id).Await();
   }
 

@@ -42,7 +42,7 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
         "type.googleapis.com/com.foo.OnDeviceTailSuggestModelMetadata");
 
     base::FilePath test_data_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
     test_data_dir = test_data_dir.AppendASCII("components/test/data/omnibox");
 
     base::flat_set<base::FilePath> additional_files;
@@ -128,7 +128,7 @@ TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      absl::nullopt);
+      std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsExecutorReady());
 }

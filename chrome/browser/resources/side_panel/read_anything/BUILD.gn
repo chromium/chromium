@@ -17,11 +17,14 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "read_anything_toolbar.ts",
+    "voice_selection_menu.ts",
   ]
+  non_web_component_files = [ "common.ts" ]
   icons_html_files = [ "icons.html" ]
 
   ts_composite = true
   ts_deps = [
+    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -31,6 +34,7 @@ build_webui("build") {
   ts_definitions = [
     "read_anything.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   ts_path_mappings =
       [ "//read-anything-side-panel.top-chrome/shared/*|" +

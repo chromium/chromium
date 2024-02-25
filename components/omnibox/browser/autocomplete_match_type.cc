@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -52,7 +53,9 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "open-tab",
     "history-cluster",
     "null-result-message",
-    "starter-pack"
+    "starter-pack",
+    "most-visited-site-tile",
+    "organic-repeatable-query-tile"
   };
   // clang-format on
   static_assert(std::size(strings) == AutocompleteMatchType::NUM_TYPES,
@@ -145,6 +148,8 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // HISTORY_CLUSTER
       0,                                     // NULL_RESULT_MESSAGE
       0,                                     // STARTER_PACK
+      0,                                     // TILE_MOST_VISITED_SITE
+      0,                                     // TILE_REPEATABLE_QUERY
   };
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
@@ -157,6 +162,12 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
     std::u16string doc_string =
         match.contents + u", " + match.description + u", " + match_text;
     return doc_string;
+  }
+
+  // Standalone action suggestions must use the associated accessibility hint.
+  if (match.type == AutocompleteMatchType::PEDAL) {
+    DCHECK(match.takeover_action);
+    return match.takeover_action->GetLabelStrings().accessibility_hint;
   }
 
   int message = message_ids[match.type];

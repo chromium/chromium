@@ -6,6 +6,7 @@
 #define ASH_SHELF_WINDOW_PREVIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -27,6 +28,7 @@ class WindowPreviewView;
 // click events will activate the window and dismiss the bubble which holds this
 // view.
 class WindowPreview : public views::View {
+  METADATA_HEADER(WindowPreview, views::View)
  public:
   class Delegate {
    public:
@@ -52,9 +54,8 @@ class WindowPreview : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   const WindowPreviewView* preview_view() const { return preview_view_; }
@@ -66,13 +67,13 @@ class WindowPreview : public views::View {
   void CloseButtonPressed();
 
   // Child views.
-  raw_ptr<views::ImageButton, ExperimentalAsh> close_button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> preview_container_view_ = nullptr;
-  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::View> preview_container_view_ = nullptr;
+  raw_ptr<WindowPreviewView> preview_view_ = nullptr;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

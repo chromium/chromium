@@ -9,19 +9,18 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -76,10 +75,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //     this is simpler than MessagePumpForUI.
   std::atomic_bool work_scheduled_{false};
 
-  // State for the current invocation of Run(). null if not running.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
+  raw_ptr<RunState> run_state_ = nullptr;
 
   THREAD_CHECKER(bound_thread_);
 };
@@ -172,7 +168,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // Non-nullopt if there's currently a native timer installed. If so, it
   // indicates when the timer is set to fire and can be used to avoid setting
   // redundant timers.
-  absl::optional<TimeTicks> installed_native_timer_;
+  std::optional<TimeTicks> installed_native_timer_;
 
   // This will become true when a native loop takes our kMsgHaveWork out of the
   // system queue. It will be reset to false whenever DoRunLoop regains control.

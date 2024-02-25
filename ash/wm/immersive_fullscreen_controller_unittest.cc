@@ -100,7 +100,7 @@ class MockImmersiveFullscreenControllerDelegate
   double visible_fraction() const { return visible_fraction_; }
 
  private:
-  raw_ptr<views::View, ExperimentalAsh> top_container_view_;
+  raw_ptr<views::View> top_container_view_;
   bool enabled_;
   double visible_fraction_;
 };
@@ -285,10 +285,10 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
   std::unique_ptr<ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler>
       test_api_animation_disabler_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_ =
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ =
       nullptr;  // Owned by the native widget.
-  raw_ptr<views::NativeViewHost, DanglingUntriaged | ExperimentalAsh>
-      content_view_ = nullptr;  // Owned by |widget_|'s root-view.
+  raw_ptr<views::NativeViewHost, DanglingUntriaged> content_view_ =
+      nullptr;  // Owned by |widget_|'s root-view.
   std::unique_ptr<ImmersiveFullscreenControllerTestApi> test_api_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -735,8 +735,7 @@ TEST_F(ImmersiveFullscreenControllerTest, WindowsInTabletMode) {
 
   // Top-of-window views will not be revealed for snapped window in splitview
   // mode either.
-  split_view_controller()->SnapWindow(
-      window(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window(), SnapPosition::kPrimary);
   EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   AttemptReveal(MODALITY_GESTURE_SCROLL);

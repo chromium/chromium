@@ -6,6 +6,7 @@
 #define BASE_TEST_TEST_FUTURE_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/auto_reset.h"
@@ -17,10 +18,11 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -171,7 +173,7 @@ class TestFuture {
  public:
   using TupleType = std::tuple<std::decay_t<Types>...>;
 
-  static_assert(std::tuple_size<TupleType>::value > 0,
+  static_assert(std::tuple_size_v<TupleType> > 0,
                 "Don't use TestFuture<> but use TestFuture<void> instead");
 
   TestFuture() = default;
@@ -243,7 +245,9 @@ class TestFuture {
   }
 
   // Returns a callback that when invoked will store all the argument values,
-  // and unblock any waiters.
+  // and unblock any waiters. The callback must be invoked on the sequence the
+  // TestFuture was created on.
+  //
   // Templated so you can specify how you need the arguments to be passed -
   // const, reference, .... Defaults to simply `Types...`.
   //
@@ -251,10 +255,12 @@ class TestFuture {
   //
   //   TestFuture<int, std::string> future;
   //
-  //   // returns base::OnceCallback<void(int, std::string)>
+  //   // Without specifying the callback argument types, this returns
+  //   // base::OnceCallback<void(int, std::string)>.
   //   future.GetCallback();
   //
-  //   // returns base::OnceCallback<void(int, const std::string&)>
+  //   // By explicitly specifying the callback argument types, this returns
+  //   // base::OnceCallback<void(int, const std::string&)>.
   //   future.GetCallback<int, const std::string&>();
   //
   template <typename... CallbackArgumentsTypes>
@@ -265,11 +271,12 @@ class TestFuture {
   OnceCallback<void(Types...)> GetCallback() { return GetCallback<Types...>(); }
 
   // Returns a repeating callback that when invoked will store all the argument
-  // values, and unblock any waiters.
+  // values, and unblock any waiters. The callback must be invoked on the
+  // sequence the TestFuture was created on.
   //
   // You must take care that the stored value is consumed before the callback
-  // is invoked a second time.
-  // You can consume the value by calling either `Take()` or `Clear()`.
+  // is invoked a second time. You can consume the value by calling either
+  // `Take()` or `Clear()`.
   //
   // Example usage:
   //
@@ -304,6 +311,81 @@ class TestFuture {
 
   RepeatingCallback<void(Types...)> GetRepeatingCallback() {
     return GetRepeatingCallback<Types...>();
+  }
+
+  // Returns a callback that can be invoked on any sequence. When invoked it
+  // will post a task to the sequence the TestFuture was created on, to store
+  // all the argument values, and unblock any waiters.
+  //
+  // Templated so you can specify how you need the arguments to be passed -
+  // const, reference, .... Defaults to simply `Types...`.
+  //
+  // Example usage:
+  //
+  //   TestFuture<int, std::string> future;
+  //
+  //   // Without specifying the callback argument types, this returns
+  //   // base::OnceCallback<void(int, std::string)>.
+  //   auto callback = future.GetSequenceBoundCallback();
+  //
+  //   // By explicitly specifying the callback argument types, this returns
+  //   // base::OnceCallback<void(int, const std::string&)>.
+  //   auto callback =
+  //       future.GetSequenceBoundCallback<int, const std::string&>();
+  //
+  //   // AsyncOperation invokes `callback` with a result.
+  //   other_task_runner->PostTask(FROM_HERE, base::BindOnce(&AsyncOperation,
+  //                                              std::move(callback));
+  //
+  //   future.Wait();
+  //
+  template <typename... CallbackArgumentsTypes>
+  OnceCallback<void(CallbackArgumentsTypes...)> GetSequenceBoundCallback() {
+    return GetSequenceBoundRepeatingCallback<CallbackArgumentsTypes...>();
+  }
+
+  OnceCallback<void(Types...)> GetSequenceBoundCallback() {
+    return GetSequenceBoundCallback<Types...>();
+  }
+
+  // Returns a repeating callback that can be invoked on any sequence. When
+  // invoked it will post a task to the sequence the TestFuture was created on,
+  // to store all the argument values, and unblock any waiters.
+  //
+  // You must take care that the stored value is consumed before the callback
+  // is invoked a second time. You can consume the value by calling either
+  // `Take()` or `Clear()`.
+  //
+  // Example usage:
+  //
+  //   base::SequenceBound<Object> object_under_test(other_task_runner);
+  //   TestFuture<std::string> future;
+  //
+  //   object_under_test.AsyncCall(&Object::InstallCallback,
+  //                               future.GetSequenceBoundRepeatingCallback());
+  //
+  //   object_under_test.AsyncCall(&DoSomething);
+  //   EXPECT_EQ(future.Take(), "expected-first-value");
+  //   // Because we used `Take()` the test future is ready for reuse.
+  //
+  //   object_under_test.AsyncCall(&DoSomethingElse);
+  //   // We can also use `Get()` + `Clear()` to reuse the callback.
+  //   EXPECT_EQ(future.Get(), "expected-second-value");
+  //   future.Clear();
+  //
+  //   object_under_test.AsyncCall(&DoSomethingElse);
+  //   EXPECT_EQ(future.Take(), "expected-third-value");
+  //
+  template <typename... CallbackArgumentsTypes>
+  RepeatingCallback<void(CallbackArgumentsTypes...)>
+  GetSequenceBoundRepeatingCallback() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                        GetRepeatingCallback<CallbackArgumentsTypes...>());
+  }
+
+  RepeatingCallback<void(Types...)> GetSequenceBoundRepeatingCallback() {
+    return GetSequenceBoundRepeatingCallback<Types...>();
   }
 
   // Sets the value of the future.
@@ -393,7 +475,7 @@ class TestFuture {
   base::RepeatingClosure ready_signal_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::DoNothing();
 
-  absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
@@ -413,6 +495,14 @@ class TestFuture<void> {
   //   ASSERT_TRUE(future.Wait()) << "Detailed error message";
   [[nodiscard]] bool Wait() { return implementation_.Wait(); }
 
+  // Same as above, then clears the future, allowing it to be reused and accept
+  // a new value.
+  [[nodiscard]] bool WaitAndClear() {
+    auto result = Wait();
+    Clear();
+    return result;
+  }
+
   // Waits until the callback or `SetValue()` is invoked.
   void Get() { std::ignore = implementation_.Get(); }
 
@@ -420,13 +510,26 @@ class TestFuture<void> {
   bool IsReady() const { return implementation_.IsReady(); }
 
   // Returns a callback that when invoked will unblock any waiters.
-  OnceCallback<void()> GetCallback() {
+  OnceClosure GetCallback() {
     return BindOnce(implementation_.GetCallback(), true);
   }
 
   // Returns a callback that when invoked will unblock any waiters.
-  RepeatingCallback<void()> GetRepeatingCallback() {
+  RepeatingClosure GetRepeatingCallback() {
     return BindRepeating(implementation_.GetRepeatingCallback(), true);
+  }
+
+  // Returns a callback that when invoked on any sequence will unblock any
+  // waiters.
+  OnceClosure GetSequenceBoundCallback() {
+    return BindOnce(implementation_.GetSequenceBoundCallback(), true);
+  }
+
+  // Returns a callback that when invoked on any sequence will unblock any
+  // waiters.
+  RepeatingClosure GetSequenceBoundRepeatingCallback() {
+    return BindRepeating(implementation_.GetSequenceBoundRepeatingCallback(),
+                         true);
   }
 
   // Indicates this `TestFuture` is ready, and unblocks any waiters.

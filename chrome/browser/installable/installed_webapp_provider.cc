@@ -36,7 +36,7 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
     ContentSetting setting = rules_[index_].second;
     index_++;
 
-    return std::make_unique<content_settings::OwnedRule>(
+    return std::make_unique<content_settings::Rule>(
         ContentSettingsPattern::FromURLNoWildcard(origin),
         ContentSettingsPattern::Wildcard(), base::Value(setting),
         content_settings::RuleMetaData{});
@@ -69,7 +69,8 @@ InstalledWebappProvider::~InstalledWebappProvider() {
 
 std::unique_ptr<RuleIterator> InstalledWebappProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito) const {
+    bool incognito,
+    const content_settings::PartitionKey& partition_key) const {
   if (incognito)
     return nullptr;
 
@@ -85,13 +86,15 @@ bool InstalledWebappProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints) {
+    const content_settings::ContentSettingConstraints& constraints,
+    const content_settings::PartitionKey& partition_key) {
   // You can't set settings through this provider.
   return false;
 }
 
 void InstalledWebappProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   // You can't set settings through this provider.
 }
 
@@ -102,5 +105,6 @@ void InstalledWebappProvider::ShutdownOnUIThread() {
 
 void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 }

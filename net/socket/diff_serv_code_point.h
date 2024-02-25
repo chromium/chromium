@@ -37,6 +37,33 @@ enum DiffServCodePoint {
   DSCP_LAST = DSCP_CS7
 };
 
+// Explicit Congestion Notification
+// See RFC3168 and RFC9330 for details.
+enum EcnCodePoint {
+  ECN_NO_CHANGE = -1,
+  ECN_FIRST = ECN_NO_CHANGE,
+  ECN_DEFAULT = 0,
+  ECN_NOT_ECT = 0,
+  ECN_ECT1 = 1,
+  ECN_ECT0 = 2,
+  ECN_CE = 3,
+  ECN_LAST = ECN_CE,
+};
+
+struct DscpAndEcn {
+  DiffServCodePoint dscp;
+  EcnCodePoint ecn;
+};
+
+// Converts an 8-bit IP TOS field to its DSCP and ECN parts.
+static inline DscpAndEcn TosToDscpAndEcn(uint8_t tos) {
+  // Bitmasks to find the DSCP and ECN pieces of the TOS byte.
+  constexpr uint8_t kEcnMask = 0b11;
+  constexpr uint8_t kDscpMask = ~kEcnMask;
+  return DscpAndEcn{static_cast<DiffServCodePoint>((tos & kDscpMask) >> 2),
+                    static_cast<EcnCodePoint>(tos & kEcnMask)};
+}
+
 }  // namespace net
 
 #endif  // NET_SOCKET_DIFF_SERV_CODE_POINT_H_

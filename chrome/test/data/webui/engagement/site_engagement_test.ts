@@ -4,7 +4,7 @@
 
 import 'chrome://site-engagement/app.js';
 
-import {SiteEngagementAppElement} from 'chrome://site-engagement/app.js';
+import type {SiteEngagementAppElement} from 'chrome://site-engagement/app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SiteEngagement', function() {

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -77,7 +79,7 @@ ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
 ExtensionMenuItemView* GetMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
-  for (auto* view : parent_view->children()) {
+  for (views::View* view : parent_view->children()) {
     auto* item_view = GetAsMenuItem(view);
     if (item_view->view_controller()->GetId() == action_id) {
       return item_view;
@@ -207,6 +209,12 @@ MessageSection::MessageSection(
   const int control_vertical_margin = layout_provider->GetDistanceMetric(
       DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
 
+  // Views that need configuration after construction.
+  views::Label* text_container_main_text;
+  views::Label* reload_container_main_text;
+  views::Label* reload_container_description_text;
+  views::Label* requests_container_header;
+
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
@@ -225,6 +233,7 @@ MessageSection::MessageSection(
               .AddChildren(
                   // Main text.
                   views::Builder<views::Label>()
+                      .CopyAddressTo(&text_container_main_text)
                       .SetTextContext(
                           ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
                       .SetHorizontalAlignment(gfx::ALIGN_CENTER),
@@ -247,12 +256,14 @@ MessageSection::MessageSection(
               .AddChildren(
                   // Main text.
                   views::Builder<views::Label>()
+                      .CopyAddressTo(&reload_container_main_text)
                       // Text will be set based on the `state_`.
                       .SetTextContext(
                           ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
                       .SetTextStyle(views::style::STYLE_EMPHASIZED),
                   // Description text.
                   views::Builder<views::Label>()
+                      .CopyAddressTo(&reload_container_description_text)
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
                       .SetTextContext(
@@ -276,6 +287,7 @@ MessageSection::MessageSection(
               .AddChildren(
                   // Header.
                   views::Builder<views::Label>()
+                      .CopyAddressTo(&requests_container_header)
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
                       .SetTextContext(
@@ -286,6 +298,21 @@ MessageSection::MessageSection(
                   views::Builder<views::BoxLayoutView>().SetOrientation(
                       views::BoxLayout::Orientation::kVertical)))
       .BuildChildren();
+
+  if (features::IsChromeRefresh2023()) {
+    text_container_main_text->SetEnabledColorId(
+        kColorExtensionsMenuSecondaryText);
+    text_container_main_text->SetTextStyle(views::style::STYLE_BODY_3);
+    reload_container_main_text->SetEnabledColorId(kColorExtensionsMenuText);
+    reload_container_main_text->SetTextStyle(
+        views::style::STYLE_BODY_3_EMPHASIS);
+    reload_container_description_text->SetEnabledColorId(
+        kColorExtensionsMenuSecondaryText);
+    reload_container_description_text->SetTextStyle(views::style::STYLE_BODY_3);
+    requests_container_header->SetEnabledColorId(kColorExtensionsMenuText);
+    requests_container_header->SetTextStyle(
+        views::style::STYLE_BODY_2_EMPHASIS);
+  }
 }
 
 void MessageSection::Update(
@@ -301,6 +328,13 @@ void MessageSection::Update(
       container_type = ContainerType::kTextContainer;
       label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT;
       show_label_tooltip = false;
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kPolicyBlockedAccess:
+      container_type = ContainerType::kTextContainer;
+      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_POLICY_BLOCKED_ACCESS_TEXT;
+      // Tooltip can only be visible on this state, and if there are any
+      // enterprise extensions installed.
+      show_label_tooltip = has_enterprise_extensions;
       break;
     case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
       container_type = ContainerType::kRequestsAccessContainer;
@@ -386,6 +420,9 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
         layout_provider->GetDistanceMetric(
             DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
+    // Views that need configuration after construction
+    views::Label* extension_label;
+
     auto item =
         views::Builder<views::FlexLayoutView>()
             .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -394,6 +431,7 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
             .AddChildren(
                 views::Builder<views::ImageView>().SetImage(icon),
                 views::Builder<views::Label>()
+                    .CopyAddressTo(&extension_label)
                     .SetText(name)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .SetProperty(views::kFlexBehaviorKey,
@@ -417,6 +455,12 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                         gfx::Insets::TLBR(0, related_control_horizontal_margin,
                                           0, 0)))
             .Build();
+
+    if (features::IsChromeRefresh2023()) {
+      extension_label->SetEnabledColorId(kColorExtensionsMenuText);
+      extension_label->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    }
+
     extension_entries_.insert({id, item.get()});
     requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
                                                               index);
@@ -424,7 +468,8 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
     UpdateVisibility();
   } else {
     // Update extension entry.
-    std::vector<View*> extension_items = extension_iter->second->children();
+    std::vector<raw_ptr<View, VectorExperimental>> extension_items =
+        extension_iter->second->children();
     views::AsViewClass<views::ImageView>(
         extension_items[kExtensionItemIconIndex])
         ->SetImage(icon);
@@ -535,7 +580,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetInteriorMargin(gfx::Insets::TLBR(dialog_insets.top(),
                                                    dialog_insets.left(), 0,
                                                    dialog_insets.right()))
-              .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+              .SetProperty(views::kBoxLayoutFlexKey,
+                           views::BoxLayoutFlexSpecification())
               .SetVisible(true)
               .AddChildren(
                   views::Builder<views::FlexLayoutView>()
@@ -568,8 +614,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               &chrome::ShowWebStore, browser_,
                               extension_urls::kExtensionsMenuUtmSource),
                           vector_icons::kGoogleChromeWebstoreIcon, icon_size))
-                      .SetAccessibleName(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_ACCESSIBLE_NAME))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_TOOLTIP))
                       .CustomConfigure(
                           base::BindOnce([](views::ImageButton* view) {
                             view->SizeToPreferredSize();
@@ -627,6 +673,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetDrawOverflowIndicator(false)
               .SetHorizontalScrollBarMode(
                   views::ScrollView::ScrollBarMode::kDisabled)
+              // Add bottom dialog margins since it's the last view. Its last
+              // child view will be a HoverButton with has its own inset. Thus,
+              // we subtract such insets from the dialog bottom inset.
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::TLBR(0, 0,
+                                             dialog_insets.bottom() -
+                                                 hover_button_vertical_spacing,
+                                             0))
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -655,19 +709,24 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
-                              // Add bottom dialog margins since it's the last
-                              // element.
-                              .SetProperty(
-                                  views::kMarginsKey,
-                                  gfx::Insets::TLBR(
-                                      0, 0,
-                                      dialog_insets.bottom() -
-                                          hover_button_vertical_spacing,
-                                      0))
                               .SetOrientation(
                                   views::BoxLayout::Orientation::kVertical))))
 
       .BuildChildren();
+
+  if (features::IsChromeRefresh2023()) {
+    subheader_title->SetEnabledColorId(kColorExtensionsMenuText);
+    subheader_title->SetTextStyle(views::style::STYLE_HEADLINE_4);
+    subheader_subtitle_->SetEnabledColorId(kColorExtensionsMenuSecondaryText);
+    subheader_subtitle_->SetTextStyle(views::style::STYLE_BODY_3);
+  }
+
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  site_settings_toggle_->GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Align the site setting toggle vertically with the subheader title by
   // getting the label height after construction.
@@ -780,5 +839,5 @@ content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-BEGIN_METADATA(ExtensionsMenuMainPageView, views::View)
+BEGIN_METADATA(ExtensionsMenuMainPageView)
 END_METADATA

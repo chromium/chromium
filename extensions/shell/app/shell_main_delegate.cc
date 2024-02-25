@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
+#include "base/process/process_info.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
 #elif BUILDFLAG(IS_MAC)
@@ -57,8 +58,9 @@ base::FilePath GetDataPath() {
   // earlier, instead of reading the switch both here and in
   // ShellBrowserContext::InitWhileIOAllowed().
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kContentShellDataPath))
-    return cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
+  if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
+    return cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
+  }
 
   base::FilePath data_dir;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -79,17 +81,24 @@ base::FilePath GetDataPath() {
 }
 
 void InitLogging() {
+  uint32_t logging_dest = logging::LOG_TO_ALL;
   base::FilePath log_path;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kLogFile)) {
     log_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
         switches::kLogFile);
+#if BUILDFLAG(IS_WIN)
+  } else if (base::IsCurrentProcessInAppContainer()) {
+    // Sandboxed appcontainer processes are unable to resolve the default log
+    // file path without asserting.
+    logging_dest = (logging_dest & ~logging::LOG_TO_FILE);
+#endif
   } else {
     log_path = GetDataPath().Append(FILE_PATH_LITERAL("app_shell.log"));
   }
 
   // Set up log initialization settings.
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_ALL;
+  settings.logging_dest = logging_dest;
   settings.log_file_path = log_path.value().c_str();
 
   // Replace the old log file if this is the first process.
@@ -123,7 +132,7 @@ ShellMainDelegate::ShellMainDelegate() {
 ShellMainDelegate::~ShellMainDelegate() {
 }
 
-absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
+std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   InitLogging();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -136,7 +145,7 @@ absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
   nacl::RegisterPathProvider();
 #endif
   extensions::RegisterPathProvider();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ShellMainDelegate::PreSandboxStartup() {

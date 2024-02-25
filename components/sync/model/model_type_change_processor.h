@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_CHANGE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -122,7 +122,7 @@ class ModelTypeChangeProcessor {
 
   // Returns whether the processor has encountered any error, either reported
   // by the bridge via ReportError() or by other means.
-  virtual absl::optional<ModelError> GetError() const = 0;
+  virtual std::optional<ModelError> GetError() const = 0;
 
   // Returns the delegate for the controller.
   virtual base::WeakPtr<ModelTypeControllerDelegate>

@@ -522,11 +522,11 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
 
   float old_top_offset = ContentTopOffset();
   float old_bottom_offset = ContentBottomOffset();
-  absl::optional<float> new_top_ratio =
+  std::optional<float> new_top_ratio =
       top_controls_animation_.Tick(monotonic_time);
   if (!new_top_ratio.has_value())
     new_top_ratio = TopControlsShownRatio();
-  absl::optional<float> new_bottom_ratio =
+  std::optional<float> new_bottom_ratio =
       bottom_controls_animation_.Tick(monotonic_time);
   if (!new_bottom_ratio.has_value())
     new_bottom_ratio = BottomControlsShownRatio();
@@ -573,9 +573,9 @@ bool BrowserControlsOffsetManager::HasAnimation() {
 
 void BrowserControlsOffsetManager::ResetAnimations() {
   // If the animation doesn't need to jump to the end, Animation::Reset() will
-  // return |absl::nullopt|.
-  absl::optional<float> top_ratio = top_controls_animation_.Reset();
-  absl::optional<float> bottom_ratio = bottom_controls_animation_.Reset();
+  // return |std::nullopt|.
+  std::optional<float> top_ratio = top_controls_animation_.Reset();
+  std::optional<float> bottom_ratio = bottom_controls_animation_.Reset();
 
   if (top_ratio.has_value() || bottom_ratio.has_value()) {
     client_->SetCurrentBrowserControlsShownRatio(
@@ -720,6 +720,33 @@ void BrowserControlsOffsetManager::SetBottomMinHeightOffsetAnimationRange(
       std::make_pair(std::min(from, to), std::max(from, to));
 }
 
+double BrowserControlsOffsetManager::PredictViewportBoundsDelta(
+    double current_bounds_delta,
+    gfx::Vector2dF scroll_distance) {
+  double adjustment = current_bounds_delta;
+  if (scroll_distance.y() > 0 && adjustment > 0) {
+    // We're scrolling down and started to hide controls. Let's assume they're
+    // going to be fully hidden by the end of the fling.
+    if (TopControlsShownRatio() < 1) {
+      adjustment += ContentTopOffset();
+    }
+    if (BottomControlsShownRatio() < 1) {
+      adjustment += ContentBottomOffset();
+    }
+  }
+  if (scroll_distance.y() < 0 && adjustment < 0) {
+    // We're scrolling up and started to show controls. Let's assume they're
+    // going to be fully shown by the end of the fling.
+    if (TopControlsShownRatio() > 0) {
+      adjustment -= TopControlsHeight() - ContentTopOffset();
+    }
+    if (BottomControlsShownRatio() > 0) {
+      adjustment -= BottomControlsHeight() - ContentBottomOffset();
+    }
+  }
+  return adjustment;
+}
+
 // class Animation
 
 BrowserControlsOffsetManager::Animation::Animation() {}
@@ -740,10 +767,10 @@ void BrowserControlsOffsetManager::Animation::Initialize(
             std::max(start_value_, stop_value_));
 }
 
-absl::optional<float> BrowserControlsOffsetManager::Animation::Tick(
+std::optional<float> BrowserControlsOffsetManager::Animation::Tick(
     base::TimeTicks monotonic_time) {
   if (!IsInitialized())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!started_) {
     start_time_ = monotonic_time;
@@ -767,11 +794,11 @@ void BrowserControlsOffsetManager::Animation::SetBounds(float min, float max) {
   max_value_ = max;
 }
 
-absl::optional<float> BrowserControlsOffsetManager::Animation::Reset() {
+std::optional<float> BrowserControlsOffsetManager::Animation::Reset() {
   auto ret =
       jump_to_end_on_reset_
-          ? absl::make_optional(std::clamp(stop_value_, min_value_, max_value_))
-          : absl::nullopt;
+          ? std::make_optional(std::clamp(stop_value_, min_value_, max_value_))
+          : std::nullopt;
 
   started_ = false;
   initialized_ = false;

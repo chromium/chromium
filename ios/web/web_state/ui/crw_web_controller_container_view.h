@@ -10,7 +10,6 @@
 
 #import "ios/web/common/crw_content_view.h"
 
-@class CRWContextMenuItem;
 @class CRWWebControllerContainerView;
 @class CRWWebViewContentView;
 @class CRWWebViewProxyImpl;
@@ -44,6 +43,9 @@
 @property(nonatomic, weak) id<CRWWebControllerContainerViewDelegate>
     delegate;  // weak
 
+// YES if the webView should cover the entire screen and ignore the safe area.
+@property(nonatomic, assign) BOOL cover;
+
 // Designated initializer.  `proxy`'s content view will be updated as different
 // content is added to the container.
 - (instancetype)initWithDelegate:
@@ -74,11 +76,6 @@
 // Updates `webViewContentView` with the current fullscreen state
 - (void)updateWebViewContentViewFullscreenState:
     (CrFullscreenState)fullscreenState;
-
-// Shows a custom iOS context menu with the given `items` for options targeted
-// to the data visible in given window `rect`.
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect;
 
 @end
 

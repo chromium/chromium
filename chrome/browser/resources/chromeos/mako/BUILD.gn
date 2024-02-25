@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Resources used by chrome-untrusted://mako
+import("//tools/grit/grit_rule.gni")
+grit("resources") {
+  source = "//chrome/browser/resources/chromeos/mako/resources.grd"
+
+  outputs = [
+    "grit/orca_resources.h",
+    "grit/orca_resources_map.h",
+    "grit/orca_resources_map.cc",
+    "orca_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+
+  use_brotli = true
+}

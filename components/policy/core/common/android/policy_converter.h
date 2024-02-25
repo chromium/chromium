@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -68,8 +68,8 @@ class POLICY_EXPORT PolicyConverter {
   // additional restrictions, or the schema for value's items or properties in
   // the case of a list or dictionary value.
   // Public for testing.
-  static absl::optional<base::Value> ConvertValueToSchema(base::Value value,
-                                                          const Schema& schema);
+  static std::optional<base::Value> ConvertValueToSchema(base::Value value,
+                                                         const Schema& schema);
 
   // Public for testing.
   static base::Value::List ConvertJavaStringArrayToListValue(

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/screen_time/screen_time_consumer.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 
 @interface ScreenTimeMediator () <WebStateListObserving, CRWWebStateObserver> {
   std::unique_ptr<WebStateListObserver> _webStateListObserver;

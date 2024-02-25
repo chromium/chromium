@@ -29,6 +29,13 @@ message WaitRemoteCommandResultResponse {
   optional enterprise_management.RemoteCommandResult result = 1;
 }
 
+message WaitRemoteCommandAckedRequest {
+  // A command_id that has been previously returned by SendRemoteCommand.
+  optional int64 command_id = 1;
+}
+
+message WaitRemoteCommandAckedResponse {}
+
 // RemoteCommands provides functions to send remote commands and get the
 // results.
 service RemoteCommandsService {
@@ -40,4 +47,9 @@ service RemoteCommandsService {
   // is available.
   rpc WaitRemoteCommandResult(WaitRemoteCommandResultRequest)
       returns (WaitRemoteCommandResultResponse) {}
+  // Gets the command id as argument, and returns when the remote command is
+  // acknowledged. "acknowledge" means that the client has sent a message
+  // confirming that the fake DMServer has received the remote command.
+  rpc WaitRemoteCommandAcked(WaitRemoteCommandAckedRequest)
+      returns (WaitRemoteCommandAckedResponse) {}
 }

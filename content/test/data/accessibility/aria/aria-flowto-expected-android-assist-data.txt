@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"current" textSize:16.0 style:0 htmlInfo:[{htmlTag="section"}, {display="block"}, {aria-flowto="next"}, {aria-label="current"}]
+++++TextView text:"Lorem ipsum" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View text:"next" textSize:16.0 style:0 htmlInfo:[{htmlTag="footer"}, {display="block"}, {aria-label="next"}, {id="next"}]
+++++TextView text:"dolor sit amet" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -46,11 +46,14 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool shift,
                                 bool alt,
                                 bool command,
-                                base::OnceClosure task) {
+                                base::OnceClosure task,
+                                KeyEventType wait_for) {
   CHECK(g_ui_controls_enabled);
+  CHECK(wait_for == ui_controls::KeyEventType::kKeyPress ||
+        wait_for == ui_controls::KeyEventType::kKeyRelease);
   return instance_->SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(task),
-      GenerateAcceleratorState(control, shift, alt, command));
+      GenerateAcceleratorState(control, shift, alt, command), wait_for);
 }
 
 // static
@@ -85,7 +88,8 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
          accelerator_state <= (kShift | kControl | kAlt | kCommand));
 
   return instance_->SendKeyEventsNotifyWhenDone(
-      window, key, key_event_types, std::move(task), accelerator_state);
+      window, key, key_event_types, std::move(task), accelerator_state,
+      KeyEventType::kKeyPress);
 }
 
 // static

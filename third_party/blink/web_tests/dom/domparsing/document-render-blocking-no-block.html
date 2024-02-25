@@ -5,7 +5,6 @@
   <script src="../../resources/testharnessreport.js"></script>
   <title>Absence of blocking doesn't defer frames until complete document parsed</title>
   <script>
-    assert_implements(document.documentElement.blocking, "no blocking attribute");
     function jank(ms) {
       let start = performance.now();
       while (performance.now() < start + ms);

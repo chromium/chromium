@@ -6,12 +6,12 @@
 #define EXTENSIONS_BROWSER_API_UNITTEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extensions_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -57,17 +57,17 @@ class ApiUnitTest : public ExtensionsTest {
   // |function|. |args| should be in JSON format, wrapped in a list.
 
   // Return the function result as a base::Value.
-  absl::optional<base::Value> RunFunctionAndReturnValue(
+  std::optional<base::Value> RunFunctionAndReturnValue(
       ExtensionFunction* function,
-      const std::string& args);
+      api_test_utils::ArgsType args);
 
   // Return an error thrown from the function, if one exists.
   // This will EXPECT-fail if any result is returned from the function.
   std::string RunFunctionAndReturnError(ExtensionFunction* function,
-                                        const std::string& args);
+                                        api_test_utils::ArgsType args);
 
   // Run the function and ignore any result.
-  void RunFunction(ExtensionFunction* function, const std::string& args);
+  void RunFunction(ExtensionFunction* function, api_test_utils::ArgsType args);
 
  private:
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;

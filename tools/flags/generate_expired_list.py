@@ -110,6 +110,23 @@ def gen_expiry_file(program_name, metadata_name):
   return output
 
 
+def write_if_changed(filename, contents):
+  """Write contents into the named file if the file's content is different.
+
+  This avoids updating the mtime if the file's contents haven't changed,
+  which helps reduce spurious rebuilds.
+  """
+  try:
+    with open(filename, 'r', encoding='utf-8') as f:
+      current = f.read()
+  except FileNotFoundError:
+    # If the file doesn't exist yet, we'll always need to rewrite the file.
+    current = None
+  if not current or contents != current:
+    with open(filename, 'w', encoding='utf-8') as f:
+      f.write(contents)
+
+
 def main():
   import doctest
   doctest.testmod()
@@ -119,8 +136,7 @@ def main():
     return
 
   output = gen_expiry_file(sys.argv[0], sys.argv[1])
-  with open(sys.argv[2], 'w', encoding='utf-8') as f:
-    f.write(output)
+  write_if_changed(sys.argv[2], output)
 
 
 if __name__ == '__main__':

@@ -20,9 +20,7 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -35,8 +33,8 @@ const base::FilePath::CharType kEntryPath[] =
 
 class FileSystemProviderOperationsAddWatcherTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsAddWatcherTest() {}
-  ~FileSystemProviderOperationsAddWatcherTest() override {}
+  FileSystemProviderOperationsAddWatcherTest() = default;
+  ~FileSystemProviderOperationsAddWatcherTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
@@ -72,13 +70,13 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  AddWatcherRequestedOptions options;
-  ASSERT_TRUE(AddWatcherRequestedOptions::Populate(options_as_value->GetDict(),
-                                                   options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kEntryPath, options.entry_path);
-  EXPECT_TRUE(options.recursive);
+  auto options =
+      AddWatcherRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kEntryPath, options->entry_path);
+  EXPECT_TRUE(options->recursive);
 }
 
 TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute_NoListener) {
@@ -126,6 +124,4 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

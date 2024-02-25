@@ -50,8 +50,7 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks timestamp) override;
 
-  const raw_ptr<const SessionControllerImpl, ExperimentalAsh>
-      session_controller_;
+  const raw_ptr<const SessionControllerImpl> session_controller_;
 
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
 

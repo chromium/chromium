@@ -83,5 +83,13 @@ void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
   NOTREACHED();
 }
 
+void WebThreadScheduler::OnUrgentMessageReceived() {
+  NOTREACHED();
+}
+
+void WebThreadScheduler::OnUrgentMessageProcessed() {
+  NOTREACHED();
+}
+
 }  // namespace scheduler
 }  // namespace blink

@@ -10,7 +10,7 @@
 #include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/locale_model.h"
@@ -152,6 +152,14 @@ void SystemTrayModel::SetPhoneHubManager(
       ->SetManager(phone_hub_manager);
 
   phone_hub_manager_ = phone_hub_manager;
+}
+
+bool SystemTrayModel::IsFakeModel() const {
+  return false;
+}
+
+bool SystemTrayModel::IsInUserChildSession() const {
+  return Shell::Get()->session_controller()->IsUserChild();
 }
 
 }  // namespace ash

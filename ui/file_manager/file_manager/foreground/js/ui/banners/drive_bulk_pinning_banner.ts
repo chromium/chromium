@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
+import type {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
 
 import {getTemplate} from './drive_bulk_pinning_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';
@@ -51,8 +45,8 @@ export class DriveBulkPinningBanner extends EducationalBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 

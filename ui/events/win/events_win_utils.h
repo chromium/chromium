@@ -31,7 +31,7 @@ class TimeTicks;
 // Utility functions for Windows specific events code.
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Get the EventType from a native event.
 EVENTS_EXPORT EventType EventTypeFromMSG(const CHROME_MSG& native_event);

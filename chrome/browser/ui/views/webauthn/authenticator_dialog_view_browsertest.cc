@@ -21,6 +21,11 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/label.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/win/authenticator.h"
+#include "device/fido/win/fake_webauthn_api.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 class TestSheetModel : public AuthenticatorRequestSheetModel {
@@ -38,7 +43,6 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
  private:
   // AuthenticatorRequestSheetModel:
   bool IsActivityIndicatorVisible() const override { return true; }
-  bool IsBackButtonVisible() const override { return true; }
   bool IsCancelButtonVisible() const override { return true; }
   std::u16string GetCancelButtonLabel() const override {
     return u"Test Cancel";
@@ -100,6 +104,21 @@ class TestSheetView : public AuthenticatorRequestSheetView {
 
 class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Make this test work with webauth versions
+  // that support hybrid mode.
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+
+    // Set up the fake Windows platform authenticator.
+    fake_webauthn_api_ = std::make_unique<device::FakeWinWebAuthnApi>();
+    fake_webauthn_api_->set_version(WEBAUTHN_API_VERSION_4);
+    win_webauthn_api_override_ =
+        std::make_unique<device::WinWebAuthnApi::ScopedOverride>(
+            fake_webauthn_api_.get());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
@@ -137,7 +156,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       pairing->name = "Phone";
       phones.emplace_back(std::move(pairing));
       dialog_model_->set_cable_transport_info(
-          /*extension_is_v2=*/absl::nullopt, std::move(phones),
+          /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       dialog_model_->StartFlow(std::move(transport_availability),
                                /*is_conditional_mediation=*/false);
@@ -164,6 +183,13 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
   }
 
   std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+
+ protected:
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<device::FakeWinWebAuthnApi> fake_webauthn_api_;
+  std::unique_ptr<device::WinWebAuthnApi::ScopedOverride>
+      win_webauthn_api_override_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // Test the dialog with a custom delegate.
@@ -173,13 +199,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
 
 // Test that the models decide to show the "Manage devices" button when a phone
 // is listed.
-// TODO(crbug.com/1474278): Flaky on Mac, Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_InvokeUi_manage_devices DISABLED_InvokeUi_manage_devices
-#else
-#define MAYBE_InvokeUi_manage_devices InvokeUi_manage_devices
-#endif
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
-                       MAYBE_InvokeUi_manage_devices) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_manage_devices) {
   ShowAndVerifyUi();
 }

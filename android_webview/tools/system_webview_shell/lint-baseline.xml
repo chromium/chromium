@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha15" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha15">
-
-    <issue
-        id="MissingClass"
-        message="Class referenced in the manifest, `org.chromium.test.broker.OnDeviceInstrumentationBroker`, was not found in the project or the libraries"
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.test.broker.OnDeviceInstrumentationBroker&quot; android:exported=&quot;true&quot;/>"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="185"
-            column="29"/>
-    </issue>
+<issues format="6" by="lint 8.4.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.4.0-alpha09">
 
     <issue
         id="RequiresFeature"
@@ -19,7 +8,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="723"
+            line="209"
             column="51"/>
     </issue>
 
@@ -30,7 +19,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="744"
+            line="231"
             column="13"/>
     </issue>
 
@@ -41,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="749"
+            line="236"
             column="13"/>
     </issue>
 
@@ -52,7 +41,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="754"
+            line="241"
             column="13"/>
     </issue>
 
@@ -63,41 +52,8 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
-            line="100"
+            line="102"
             column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
-        errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
-        errorLine2="                                                             ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
-            line="315"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
-        errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
-        errorLine2="                                                             ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
-            line="353"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Notification.UNKNOWN_TRIM_LEVEL, Notification.TRIM_MEMORY_COMPLETE, Notification.TRIM_MEMORY_MODERATE, Notification.TRIM_MEMORY_BACKGROUND, Notification.TRIM_MEMORY_UI_HIDDEN, Notification.TRIM_MEMORY_RUNNING_CRITICAL, Notification.TRIM_MEMORY_RUNNING_LOW, Notification.TRIM_MEMORY_RUNNING_MODERATE, Notification.ON_LOW_MEMORY"
-        errorLine1="                mHistogramName, notification, Notification.NUM_ENTRIES);"
-        errorLine2="                                                           ~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java"
-            line="110"
-            column="60"/>
     </issue>
 
     <issue
@@ -107,30 +63,74 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
-            line="269"
+            line="237"
             column="13"/>
     </issue>
 
     <issue
         id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
         errorLine1="            return pm.queryIntentActivities(intent, flags);"
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/PackageManagerUtils.java"
-            line="63"
+            line="62"
             column="23"/>
     </issue>
 
     <issue
         id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
+        message="`receiver` is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected broadcasts registered for an IntentFilter that cannot be inspected by lint"
         errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="304"
+            line="320"
             column="20"/>
+    </issue>
+
+    <issue
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(name);"
+        errorLine2="              ~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java"
+            line="33"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(startUpAndLoadUrlTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="55"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(loadUrlTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="103"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(dummyTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="111"
+            column="15"/>
     </issue>
 
     <issue
@@ -145,69 +145,14 @@
     </issue>
 
     <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="            startActivity(new Intent(this, WebViewAnimationTestActivity.class));"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="769"
-            column="27"/>
-    </issue>
-
-    <issue
         id="HardcodedDebugMode"
         message="Avoid hardcoding the debug mode; leaving it out allows debug and release builds to automatically assign one"
         errorLine1="  &lt;application android:icon=&quot;@drawable/ic_launcher&quot; android:label=&quot;@string/app_name&quot; android:theme=&quot;@style/ShellTheme&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:debuggable=&quot;true&quot;>"
         errorLine2="                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
+            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/AndroidManifest.xml"
             line="67"
             column="224"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: f.setAccessible(true)"
-        errorLine1="                    assert reachesWindowCallback(activity.getWindow().getCallback());"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="384"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="80"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="105"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="131"
-            column="16"/>
     </issue>
 
     <issue

@@ -12,9 +12,9 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -106,6 +106,9 @@ TEST_F(PasswordMigrationWarningStartupLauncherTest, DoesntFetchIfAlreadyShown) {
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kLocalPasswordMigrationWarningShownAtStartup,
       true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kLocalPasswordMigrationWarningPrefsVersion, 1);
+
   scoped_refptr<MockPasswordStoreInterface> mock_store(
       new MockPasswordStoreInterface());
 

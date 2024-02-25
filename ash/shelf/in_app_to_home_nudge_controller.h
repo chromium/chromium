@@ -31,7 +31,7 @@ class ASH_EXPORT InAppToHomeNudgeController {
 
  private:
   // pointer to the shelf widget that owns the drag handle anchoring the nudge.
-  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
+  const raw_ptr<ShelfWidget> shelf_widget_;
 };
 
 }  // namespace ash

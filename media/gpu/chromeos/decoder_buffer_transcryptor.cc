@@ -64,7 +64,7 @@ void DecoderBufferTranscryptor::Reset(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_transcrypt_task_) {
     std::move(current_transcrypt_task_->decode_done_cb).Run(status);
-    current_transcrypt_task_ = absl::nullopt;
+    current_transcrypt_task_ = std::nullopt;
   }
 
   while (!transcrypt_task_queue_.empty()) {
@@ -152,9 +152,9 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   if (status == Decryptor::kError) {
     // Clear |current_transcrypt_task_| now so when the pipeline invokes Reset
     // on us we don't try to invoke the move'd callback.
-    absl::optional<TranscryptTask> temp_task =
+    std::optional<TranscryptTask> temp_task =
         std::move(current_transcrypt_task_);
-    current_transcrypt_task_ = absl::nullopt;
+    current_transcrypt_task_ = std::nullopt;
     transcrypt_callback_.Run(nullptr, std::move(temp_task->decode_done_cb));
     return;
   }
@@ -173,9 +173,8 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   DCHECK(transcrypted_buffer);
 
   const bool eos_buffer = transcrypted_buffer->end_of_stream();
-  absl::optional<TranscryptTask> temp_task =
-      std::move(current_transcrypt_task_);
-  current_transcrypt_task_ = absl::nullopt;
+  std::optional<TranscryptTask> temp_task = std::move(current_transcrypt_task_);
+  current_transcrypt_task_ = std::nullopt;
   transcrypt_callback_.Run(std::move(transcrypted_buffer),
                            std::move(temp_task->decode_done_cb));
 

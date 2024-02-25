@@ -1,0 +1,22 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "google_drive_handler.mojom",
+    "one_drive_handler.mojom",
+  ]
+
+  webui_module_path = "/"
+
+  public_deps = [
+    "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
+    "//mojo/public/mojom/base",
+  ]
+}

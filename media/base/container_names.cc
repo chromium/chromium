@@ -1436,13 +1436,13 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
                                                   int buffer_size) {
   // Minimum size that the code expects to exist without checking size.
   if (buffer_size < kMinimumContainerSize)
-    return CONTAINER_UNKNOWN;
+    return MediaContainerName::kContainerUnknown;
 
   uint32_t first4 = Read32(buffer);
   switch (first4) {
     case 0x1a45dfa3:
       if (CheckWebm(buffer, buffer_size))
-        return CONTAINER_WEBM;
+        return MediaContainerName::kContainerWEBM;
       break;
 
     case 0x3026b275:
@@ -1450,27 +1450,27 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
                      buffer_size,
                      kAsfSignature,
                      sizeof(kAsfSignature))) {
-        return CONTAINER_ASF;
+        return MediaContainerName::kContainerASF;
       }
       break;
 
     case TAG('#','!','A','M'):
       if (StartsWith(buffer, buffer_size, kAmrSignature))
-        return CONTAINER_AMR;
+        return MediaContainerName::kContainerAMR;
       break;
 
     case TAG('#','E','X','T'):
       if (CheckHls(buffer, buffer_size))
-        return CONTAINER_HLS;
+        return MediaContainerName::kContainerHLS;
       break;
 
     case TAG('.','R','M','F'):
       if (buffer[4] == 0 && buffer[5] == 0)
-        return CONTAINER_RM;
+        return MediaContainerName::kContainerRM;
       break;
 
     case TAG('.','r','a','\xfd'):
-      return CONTAINER_RM;
+      return MediaContainerName::kContainerRM;
 
     case TAG('B','I','K','b'):
     case TAG('B','I','K','d'):
@@ -1479,25 +1479,25 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case TAG('B','I','K','h'):
     case TAG('B','I','K','i'):
       if (CheckBink(buffer, buffer_size))
-        return CONTAINER_BINK;
+        return MediaContainerName::kContainerBink;
       break;
 
     case TAG('c','a','f','f'):
       if (CheckCaf(buffer, buffer_size))
-        return CONTAINER_CAF;
+        return MediaContainerName::kContainerCAF;
       break;
 
     case TAG('D','E','X','A'):
       if (buffer_size > 15 &&
           Read16(buffer + 11) <= 2048 &&
           Read16(buffer + 13) <= 2048) {
-        return CONTAINER_DXA;
+        return MediaContainerName::kContainerDXA;
       }
       break;
 
     case TAG('D','T','S','H'):
       if (Read32(buffer + 4) == TAG('D','H','D','R'))
-        return CONTAINER_DTSHD;
+        return MediaContainerName::kContainerDTSHD;
       break;
 
     case 0x64a30100:
@@ -1508,11 +1508,11 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case 0x0002a364:
     case 0x0003a364:
       if (Read32(buffer + 4) != 0 && Read32(buffer + 8) != 0)
-        return CONTAINER_IRCAM;
+        return MediaContainerName::kContainerIRCAM;
       break;
 
     case TAG('f','L','a','C'):
-      return CONTAINER_FLAC;
+      return MediaContainerName::kContainerFLAC;
 
     case TAG('F','L','V',0):
     case TAG('F','L','V',1):
@@ -1520,33 +1520,33 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case TAG('F','L','V',3):
     case TAG('F','L','V',4):
       if (buffer[5] == 0 && Read32(buffer + 5) > 8)
-        return CONTAINER_FLV;
+        return MediaContainerName::kContainerFLV;
       break;
 
     case TAG('F','O','R','M'):
       switch (Read32(buffer + 8)) {
         case TAG('A','I','F','F'):
         case TAG('A','I','F','C'):
-          return CONTAINER_AIFF;
+          return MediaContainerName::kContainerAIFF;
       }
       break;
 
     case TAG('M','A','C',' '):
-      return CONTAINER_APE;
+      return MediaContainerName::kContainerAPE;
 
     case TAG('O','N','2',' '):
       if (Read32(buffer + 8) == TAG('O','N','2','f'))
-        return CONTAINER_AVI;
+        return MediaContainerName::kContainerAVI;
       break;
 
     case TAG('O','g','g','S'):
       if (buffer[5] <= 7)
-        return CONTAINER_OGG;
+        return MediaContainerName::kContainerOgg;
       break;
 
     case TAG('R','F','6','4'):
       if (buffer_size > 16 && Read32(buffer + 12) == TAG('d','s','6','4'))
-        return CONTAINER_WAV;
+        return MediaContainerName::kContainerWAV;
       break;
 
     case TAG('R','I','F','F'):
@@ -1555,20 +1555,20 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
         case TAG('A','V','I','X'):
         case TAG('A','V','I','\x19'):
         case TAG('A','M','V',' '):
-          return CONTAINER_AVI;
+          return MediaContainerName::kContainerAVI;
         case TAG('W','A','V','E'):
-          return CONTAINER_WAV;
+          return MediaContainerName::kContainerWAV;
       }
       break;
 
     case TAG('[','S','c','r'):
       if (StartsWith(buffer, buffer_size, kAssSignature))
-        return CONTAINER_ASS;
+        return MediaContainerName::kContainerASS;
       break;
 
     case TAG('\xef','\xbb','\xbf','['):
       if (StartsWith(buffer, buffer_size, kAssBomSignature))
-        return CONTAINER_ASS;
+        return MediaContainerName::kContainerASS;
       break;
 
     case 0x7ffe8001:
@@ -1576,7 +1576,7 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case 0x1fffe800:
     case 0xff1f00e8:
       if (CheckDts(buffer, buffer_size))
-        return CONTAINER_DTS;
+        return MediaContainerName::kContainerDTS;
       break;
 
     case 0xb7d80020:
@@ -1584,7 +1584,7 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
                      buffer_size,
                      kWtvSignature,
                      sizeof(kWtvSignature))) {
-        return CONTAINER_WTV;
+        return MediaContainerName::kContainerWTV;
       }
       break;
   }
@@ -1595,10 +1595,10 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
   switch (first3) {
     case TAG('C','W','S',0):
     case TAG('F','W','S',0):
-      return CONTAINER_SWF;
+      return MediaContainerName::kContainerSWF;
 
     case TAG('I','D','3',0):
-      return CONTAINER_MP3;
+      return MediaContainerName::kContainerMP3;
   }
 
   // Maybe the first 2 characters are something we can use.
@@ -1606,9 +1606,9 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
   switch (first2) {
     case kAc3SyncWord:
       if (CheckAc3(buffer, buffer_size))
-        return CONTAINER_AC3;
+        return MediaContainerName::kContainerAC3;
       if (CheckEac3(buffer, buffer_size))
-        return CONTAINER_EAC3;
+        return MediaContainerName::kContainerEAC3;
       break;
 
     case 0xfff0:
@@ -1616,15 +1616,15 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
     case 0xfff8:
     case 0xfff9:
       if (CheckAac(buffer, buffer_size))
-        return CONTAINER_AAC;
+        return MediaContainerName::kContainerAAC;
       break;
   }
 
   // Check if the file is in MP3 format without the ID3 header.
   if (CheckMp3(buffer, buffer_size))
-    return CONTAINER_MP3;
+    return MediaContainerName::kContainerMP3;
 
-  return CONTAINER_UNKNOWN;
+  return MediaContainerName::kContainerUnknown;
 }
 
 // Attempt to determine the container name from the buffer provided.
@@ -1633,49 +1633,50 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
 
   // Since MOV/QuickTime/MPEG4 streams are common, check for them first.
   if (CheckMov(buffer, buffer_size))
-    return CONTAINER_MOV;
+    return MediaContainerName::kContainerMOV;
 
   // Next attempt the simple checks, that typically look at just the
   // first few bytes of the file.
   MediaContainerName result = LookupContainerByFirst4(buffer, buffer_size);
-  if (result != CONTAINER_UNKNOWN)
+  if (result != MediaContainerName::kContainerUnknown) {
     return result;
+  }
 
   // Additional checks that may scan a portion of the buffer.
   if (CheckMpeg2ProgramStream(buffer, buffer_size))
-    return CONTAINER_MPEG2PS;
+    return MediaContainerName::kContainerMPEG2PS;
   if (CheckMpeg2TransportStream(buffer, buffer_size))
-    return CONTAINER_MPEG2TS;
+    return MediaContainerName::kContainerMPEG2TS;
   if (CheckMJpeg(buffer, buffer_size))
-    return CONTAINER_MJPEG;
+    return MediaContainerName::kContainerMJPEG;
   if (CheckDV(buffer, buffer_size))
-    return CONTAINER_DV;
+    return MediaContainerName::kContainerDV;
   if (CheckH261(buffer, buffer_size))
-    return CONTAINER_H261;
+    return MediaContainerName::kContainerH261;
   if (CheckH263(buffer, buffer_size))
-    return CONTAINER_H263;
+    return MediaContainerName::kContainerH263;
   if (CheckH264(buffer, buffer_size))
-    return CONTAINER_H264;
+    return MediaContainerName::kContainerH264;
   if (CheckMpeg4BitStream(buffer, buffer_size))
-    return CONTAINER_MPEG4BS;
+    return MediaContainerName::kContainerMPEG4BS;
   if (CheckVC1(buffer, buffer_size))
-    return CONTAINER_VC1;
+    return MediaContainerName::kContainerVC1;
   if (CheckSrt(buffer, buffer_size))
-    return CONTAINER_SRT;
+    return MediaContainerName::kContainerSRT;
   if (CheckGsm(buffer, buffer_size))
-    return CONTAINER_GSM;
+    return MediaContainerName::kContainerGSM;
 
   // AC3/EAC3 might not start at the beginning of the stream,
   // so scan for a start code.
   int offset = 1;  // No need to start at byte 0 due to First4 check.
   if (AdvanceToStartCode(buffer, buffer_size, &offset, 4, 16, kAc3SyncWord)) {
     if (CheckAc3(buffer + offset, buffer_size - offset))
-      return CONTAINER_AC3;
+      return MediaContainerName::kContainerAC3;
     if (CheckEac3(buffer + offset, buffer_size - offset))
-      return CONTAINER_EAC3;
+      return MediaContainerName::kContainerEAC3;
   }
 
-  return CONTAINER_UNKNOWN;
+  return MediaContainerName::kContainerUnknown;
 }
 
 }  // namespace container_names

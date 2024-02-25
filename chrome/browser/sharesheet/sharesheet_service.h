@@ -61,28 +61,22 @@ class SharesheetService : public KeyedService {
   SharesheetService& operator=(const SharesheetService&) = delete;
 
   // Displays the dialog (aka bubble) for sharing content (or files) with
-  // other applications and targets. |intent| contains the list of the
+  // other applications and targets. `intent` contains the list of the
   // files/content to be shared. If the files to share contains Google
   // Drive hosted document, only drive share action will be shown.
   //
-  // |delivered_callback| is run to signify that the intent has been
+  // `delivered_callback` is run to signify that the intent has been
   // delivered to the target selected by the user (which may then show its own
-  // separate UI, e.g. for Nearby Sharing).
-  // |close_callback| is run to signify that the share flow has finished and the
+  // separate UI, e.g. for Nearby Sharing). `delivered_callback` must be
+  // non-null.
+  // `close_callback` is run to signify that the share flow has finished and the
   // dialog has closed (this includes separate UI, e.g. Nearby Sharing).
   void ShowBubble(content::WebContents* web_contents,
                   apps::IntentPtr intent,
                   LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
-  void ShowBubble(content::WebContents* web_contents,
-                  apps::IntentPtr intent,
-                  bool contains_hosted_document,
-                  LaunchSource source,
-                  DeliveredCallback delivered_callback,
-                  CloseCallback close_callback = base::NullCallback());
   void ShowBubble(apps::IntentPtr intent,
-                  bool contains_hosted_document,
                   LaunchSource source,
                   GetNativeWindowCallback get_native_window_callback,
                   DeliveredCallback delivered_callback,
@@ -112,8 +106,7 @@ class SharesheetService : public KeyedService {
                             const std::u16string& active_action);
   // If the files to share contains a Google Drive hosted document, only the
   // drive share action will be shown.
-  bool HasShareTargets(const apps::IntentPtr& intent,
-                       bool contains_hosted_document);
+  bool HasShareTargets(const apps::IntentPtr& intent);
   Profile* GetProfile();
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
@@ -122,7 +115,6 @@ class SharesheetService : public KeyedService {
   // ==========================================================================
   void ShowBubbleForTesting(gfx::NativeWindow native_window,
                             apps::IntentPtr intent,
-                            bool contains_hosted_document,
                             LaunchSource source,
                             DeliveredCallback delivered_callback,
                             CloseCallback close_callback,
@@ -136,13 +128,11 @@ class SharesheetService : public KeyedService {
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
 
   void PrepareToShowBubble(apps::IntentPtr intent,
-                           bool contains_hosted_document,
                            GetNativeWindowCallback get_native_window_callback,
                            DeliveredCallback delivered_callback,
                            CloseCallback close_callback);
 
-  std::vector<TargetInfo> GetActionsForIntent(const apps::IntentPtr& intent,
-                                              bool contains_hosted_document);
+  std::vector<TargetInfo> GetActionsForIntent(const apps::IntentPtr& intent);
 
   void LoadAppIcons(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,
@@ -175,7 +165,6 @@ class SharesheetService : public KeyedService {
 
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
-  void RecordShareActionMetrics(const std::u16string& target_name);
   // Makes |intent| related UMA recordings.
   void RecordShareDataMetrics(const apps::IntentPtr& intent);
 

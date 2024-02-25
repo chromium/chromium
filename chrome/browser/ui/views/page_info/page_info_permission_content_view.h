@@ -7,7 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/ui/views/media_preview/active_devices_media_coordinator.h"
+#endif
 
 class ChromePageInfoUiDelegate;
 class NonAccessibleImageView;
@@ -31,10 +36,13 @@ class ToggleButton;
 // | Manage button                                                 |
 // *---------------------------------------------------------------*
 class PageInfoPermissionContentView : public views::View, public PageInfoUI {
+  METADATA_HEADER(PageInfoPermissionContentView, views::View)
+
  public:
   PageInfoPermissionContentView(PageInfo* presenter,
                                 ChromePageInfoUiDelegate* ui_delegate,
-                                ContentSettingsType type);
+                                ContentSettingsType type,
+                                content::WebContents* web_contents);
   ~PageInfoPermissionContentView() override;
 
   // PageInfoUI implementations.
@@ -42,9 +50,16 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
                          ChosenObjectInfoList chosen_object_info_list) override;
 
  private:
+  // views::View overrides
+  void ChildPreferredSizeChanged(views::View* child) override;
+
   void OnToggleButtonPressed();
   void OnRememberSettingPressed();
   void PermissionChanged();
+
+  // Adds Media (Camera or Mic) live preview feeds.
+  void MaybeAddMediaPreview(content::WebContents* web_contents,
+                            views::View& preceding_separator);
 
   raw_ptr<PageInfo> presenter_ = nullptr;
   ContentSettingsType type_;
@@ -56,6 +71,11 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   raw_ptr<views::Label> state_label_ = nullptr;
   raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
   raw_ptr<views::Checkbox> remember_setting_ = nullptr;
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  std::optional<ActiveDevicesMediaCoordinator>
+      active_devices_media_preview_coordinator_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_PERMISSION_CONTENT_VIEW_H_

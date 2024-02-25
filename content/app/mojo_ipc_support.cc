@@ -11,8 +11,8 @@
 #include "build/build_config.h"
 #include "content/browser/browser_process_io_thread.h"
 #include "content/browser/startup_data_impl.h"
+#include "content/common/features.h"
 #include "content/common/mojo_core_library_support.h"
-#include "content/public/common/content_features.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 

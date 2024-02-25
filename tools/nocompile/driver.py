@@ -12,6 +12,7 @@ For more info, see:
   http://dev.chromium.org/developers/testing/no-compile-tests
 """
 
+import argparse
 import ast
 import concurrent.futures
 import functools
@@ -22,6 +23,18 @@ import subprocess
 import sys
 import tempfile
 import time
+
+from typing import Any
+from typing import IO
+from typing import Optional
+from typing import Sequence
+from typing import Set
+from typing import Tuple
+from typing import TypedDict
+
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'build'))
+import action_helpers
 
 # Matches lines that start with #if and have the substring TEST in the
 # conditional. Also extracts the comment.  This allows us to search for
@@ -74,6 +87,36 @@ TEST(%s, %s) { }
 NCTEST_TERMINATE_TIMEOUT_SEC = 120
 
 
+class TestResult(TypedDict):
+  """Represents the result of one nocompile test.
+
+  Attributes:
+    cmdline: The executed command line.
+    stdout: A temporary file object containing stdout.
+    name: The name of the test.
+    suite_name: The suite name to use when generating the gunit test result.
+    started_at: A timestamp in seconds since the epoch for when this test was
+      started.
+    aborted_at: A timestamp in seconds since the epoch for when this test was
+      aborted. If the test completed successfully, this value is 0.
+    finished_at: A timestamp in seconds since the epoch for when this test was
+      successfully complete.  If the test is aborted, this value is 0.
+    expectations: A dictionary with the test expectations. See
+      ParseExpectation() for the structure.
+    return_code: The return code of the test process, if not aborted.
+  """
+  cmdline: str
+  stdout: IO[str]
+  stderr: IO[str]
+  name: str
+  suite_name: str
+  started_at: float
+  aborted_at: float
+  finished_at: float
+  expectations: Sequence[re.Pattern]
+  returncode: int
+
+
 def ValidateInput(compiler, parallelism, sourcefile_path, cflags,
                   resultfile_path):
   """Make sure the arguments being passed in are sane."""
@@ -86,7 +129,7 @@ def ValidateInput(compiler, parallelism, sourcefile_path, cflags,
   assert type(resultfile_path) is str
 
 
-def ParseExpectation(expectation_string):
+def ParseExpectation(expectation_string) -> Sequence[re.Pattern]:
   """Extracts expectation definition from the trailing comment on the ifdef.
 
   See the comment on NCTEST_CONFIG_RE for examples of the format we are parsing.
@@ -184,7 +227,7 @@ def ExtractTestConfigs(sourcefile_path, suite_name, resultfile, resultlog):
   return test_configs
 
 
-def RunTest(compiler, tempfile_dir, cflags, config):
+def RunTest(compiler, tempfile_dir, cflags, config) -> TestResult:
   """Runs one negative compile test.
 
   Args:
@@ -195,25 +238,7 @@ def RunTest(compiler, tempfile_dir, cflags, config):
       for a description of the config format.
 
   Returns:
-    A dictionary containing all the information about the started test. The
-    fields in the dictionary are as follows:
-      {
-        'cmdline': The executed command line.
-        'name': The name of the test.
-        'suite_name': The suite name to use when generating the gunit test
-                      result.
-        'started_at': A timestamp in seconds since the epoch for when this test
-                      was started.
-        'aborted_at': A timestamp in seconds since the epoch for when this test
-                      was aborted.  If the test completed successfully,
-                      this value is 0.
-        'finished_at': A timestamp in seconds since the epoch for when this
-                       test was successfully complete.  If the test is aborted,
-                       this value is 0.
-        'expectations': A dictionary with the test expectations. See
-                        ParseExpectation() for the structure.
-        'return_code': The return code of the test process, if not aborted.
-      }
+    A TestResult containing all the information about the started test.
   """
   cmdline = [compiler]
   cmdline.extend(cflags)
@@ -242,18 +267,16 @@ def RunTest(compiler, tempfile_dir, cflags, config):
     returncode = -1
     aborted_at = time.time()
     finished_at = 0
-  return {
-      'cmdline': ' '.join(cmdline),
-      'stdout': test_stdout,
-      'stderr': test_stderr,
-      'name': name,
-      'suite_name': config['suite_name'],
-      'started_at': started_at,
-      'aborted_at': aborted_at,
-      'finished_at': finished_at,
-      'expectations': expectations,
-      'returncode': returncode,
-  }
+  return TestResult(cmdline=' '.join(cmdline),
+                    stdout=test_stdout,
+                    stderr=test_stderr,
+                    name=name,
+                    suite_name=config['suite_name'],
+                    started_at=started_at,
+                    aborted_at=aborted_at,
+                    finished_at=finished_at,
+                    expectations=expectations,
+                    returncode=returncode)
 
 
 def PassTest(resultfile, resultlog, test):
@@ -320,29 +343,52 @@ TEST(%s): Started %f, Ended %f, Total %fs, Extract %fs, Compile %fs, Process %fs
                    total_secs, extract_secs, compile_secs, process_secs))
 
 
-def ExtractTestOutputAndCleanup(test):
+def ExtractTestOutputAndCleanup(test: TestResult) -> Tuple[str, str]:
   """Test output is in temp files. Read those and delete them.
   Returns: A tuple (stderr, stdout).
   """
-  outputs = [None, None]
-  for i, stream_name in ((0, "stdout"), (1, "stderr")):
-    stream = test[stream_name]
-    stream.seek(0)
-    outputs[i] = stream.read()
-    stream.close()
+  def ReadStreamAndClose(stream: IO[str]) -> str:
+    with stream:
+      stream.seek(0)
+      return stream.read()
 
-  return outputs
+  return (ReadStreamAndClose(test['stdout']),
+          ReadStreamAndClose(test['stderr']))
 
 
-def ProcessTestResult(resultfile, resultlog, test):
+def ProcessTestResult(sourcefile_path: str,
+                      resultfile: IO[str],
+                      resultlog: IO[str],
+                      test: TestResult,
+                      includes: Optional[Set[str]] = None) -> None:
   """Interprets and logs the result of a test run by RunTest()
 
   Args:
+    sourcefile_path: Path to the source .cc file derived from the .nc file.
     resultfile: File object for .cc file that results are written to.
     resultlog: File object for the log file.
     test: The dictionary from RunTest() to process.
+    includes: Must either be a set or None. If a set, the driver will scrape
+              stdout for the /showIncludes format and insert any headers found
+              into `includes`.
   """
   (stdout, stderr) = ExtractTestOutputAndCleanup(test)
+
+  if includes is not None:
+    # /showIncludes format:
+    # Note: including file: third_party/libc++/src/include/stdio.h
+    # Note: including file:  third_party/libc++/src/include/__config
+    # Note: including file:   buildtools/third_party/libc++/__config_site
+    # Note: including file: third_party/libc++/src/include/stdint.h
+    INCLUDE_PREFIX = 'Note: including file: '
+    includes.update(
+        map(
+            lambda x: os.path.relpath(x[len(INCLUDE_PREFIX):].strip()),
+            filter(
+                lambda x: x.startswith(INCLUDE_PREFIX),
+                stdout.splitlines(),
+            ),
+        ))
 
   if test['aborted_at'] != 0:
     FailTest(
@@ -377,21 +423,25 @@ def ProcessTestResult(resultfile, resultlog, test):
 
 
 def main():
-  if len(sys.argv) < 6 or sys.argv[5] != '--':
-    print('Usage: %s <compiler> <parallelism> <sourcefile> <resultfile> '
-          '-- <cflags...>' % sys.argv[0])
-    sys.exit(1)
+  parser = argparse.ArgumentParser(prog=sys.argv[0])
+  parser.add_argument('compiler')
+  parser.add_argument('parallelism', type=int)
+  parser.add_argument('sourcefile')
+  parser.add_argument('resultfile')
+  parser.add_argument('--depfile', default='')
+  parser.add_argument('compiler_options', nargs=argparse.REMAINDER)
 
   # Force us into the "C" locale so the compiler doesn't localize its output.
   # In particular, this stops gcc from using smart quotes when in english UTF-8
   # locales.  This makes the expectation writing much easier.
   os.environ['LC_ALL'] = 'C'
 
-  compiler = sys.argv[1]
-  parallelism = int(sys.argv[2])
-  sourcefile_path = sys.argv[3]
-  resultfile_path = sys.argv[4]
-  cflags = sys.argv[6:]
+  args = parser.parse_args()
+  compiler = args.compiler
+  parallelism = args.parallelism
+  sourcefile_path = args.sourcefile
+  resultfile_path = args.resultfile
+  cflags = args.compiler_options
 
   timings = {'started': time.time()}
 
@@ -414,6 +464,8 @@ def main():
     timings['header_written'] = time.time()
     finished_tests = []
 
+    includes = set() if args.depfile else None
+
     with concurrent.futures.ThreadPoolExecutor(
         max_workers=parallelism) as executor:
       finished_tests = executor.map(
@@ -431,7 +483,8 @@ def main():
             sys.stdout.write(stdout)
             sys.stderr.write(stderr)
           continue
-        ProcessTestResult(resultfile, resultlog, test)
+        ProcessTestResult(sourcefile_path, resultfile, resultlog, test,
+                          includes)
       timings['results_processed'] = time.time()
 
     WriteStats(resultlog, suite_name, timings)
@@ -442,10 +495,15 @@ def main():
       with open(resultfile_path, 'w') as fd:
         fd.write(resultfile.getvalue())
 
+      # Even if includes is empty, write a depfile if it was requested.
+      if args.depfile:
+        action_helpers.write_depfile(args.depfile, resultfile_path, includes)
+
     if return_code != 0:
       print("No-compile driver failure with return_code %d. Result log:" %
             return_code)
       print(resultlog.getvalue())
+
     sys.exit(return_code)
 
 

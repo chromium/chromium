@@ -28,6 +28,11 @@ class SpatialNavigationTest : public RenderingTest {
   SpatialNavigationTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
+  void SetUp() override {
+    RenderingTest::SetUp();
+    GetDocument().GetSettings()->SetSpatialNavigationEnabled(true);
+  }
+
   PhysicalRect TopOfVisualViewport() {
     PhysicalRect visual_viewport = RootViewport(&GetFrame());
     visual_viewport.SetY(visual_viewport.Y() - 1);
@@ -1137,26 +1142,7 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
   EXPECT_TRUE(HasRemoteFrame(iframe));
 }
 
-class SpatialNavigationWithFocuslessModeTest
-    : public SpatialNavigationTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SpatialNavigationWithFocuslessModeTest() : use_focusless_mode_(GetParam()) {}
-
-  void SetUp() override {
-    SpatialNavigationTest::SetUp();
-    GetDocument().GetSettings()->SetSpatialNavigationEnabled(true);
-  }
-
- private:
-  ScopedFocuslessSpatialNavigationForTest use_focusless_mode_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SpatialNavigationWithFocuslessModeTest,
-                         ::testing::Bool());
-
-TEST_P(SpatialNavigationWithFocuslessModeTest, PressEnterKeyActiveElement) {
+TEST_F(SpatialNavigationTest, PressEnterKeyActiveElement) {
   SetBodyInnerHTML("<button id='b'>hello</button>");
 
   Element* b = GetDocument().getElementById(AtomicString("b"));
@@ -1185,77 +1171,6 @@ TEST_P(SpatialNavigationWithFocuslessModeTest, PressEnterKeyActiveElement) {
   enter.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(enter);
   EXPECT_FALSE(b->IsActive());
-}
-
-class FocuslessSpatialNavigationSimTest : public SimTest {
- public:
-  FocuslessSpatialNavigationSimTest() : use_focusless_mode_(true) {}
-
-  void SetUp() override {
-    SimTest::SetUp();
-    WebView().GetPage()->GetSettings().SetSpatialNavigationEnabled(true);
-  }
-
-  void SimulateKeyPress(int dom_key) {
-    WebKeyboardEvent event{WebInputEvent::Type::kRawKeyDown,
-                           WebInputEvent::kNoModifiers,
-                           WebInputEvent::GetStaticTimeStampForTests()};
-    event.dom_key = dom_key;
-    WebView().MainFrameWidget()->HandleInputEvent(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()));
-
-    if (dom_key == ui::DomKey::ENTER) {
-      event.SetType(WebInputEvent::Type::kChar);
-      WebView().MainFrameWidget()->HandleInputEvent(
-          WebCoalescedInputEvent(event, ui::LatencyInfo()));
-    }
-
-    event.SetType(WebInputEvent::Type::kKeyUp);
-    WebView().MainFrameWidget()->HandleInputEvent(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()));
-  }
-
-  ScopedFocuslessSpatialNavigationForTest use_focusless_mode_;
-};
-
-// Tests that opening a <select> popup works by pressing enter from
-// "interested" mode, without being focused.
-TEST_F(FocuslessSpatialNavigationSimTest, OpenSelectPopup) {
-  // This test requires PagePopup since we're testing opening the <select> drop
-  // down so skip this test on platforms (i.e. Android) that don't use this.
-  if (!RuntimeEnabledFeatures::PagePopupEnabled())
-    return;
-
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  WebView().MainFrameWidget()->SetFocus(true);
-  WebView().SetIsActive(true);
-
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-          <!DOCTYPE html>
-          <select id="target">
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-          </select>
-      )HTML");
-  Compositor().BeginFrame();
-
-  auto* select = To<HTMLSelectElement>(
-      GetDocument().getElementById(AtomicString("target")));
-  SimulateKeyPress(ui::DomKey::ARROW_DOWN);
-
-  SpatialNavigationController& spat_nav_controller =
-      GetDocument().GetPage()->GetSpatialNavigationController();
-
-  ASSERT_EQ(select, spat_nav_controller.GetInterestedElement());
-  ASSERT_NE(select, GetDocument().ActiveElement());
-  ASSERT_FALSE(select->PopupIsVisible());
-
-  // The enter key should cause the popup to open.
-  SimulateKeyPress(ui::DomKey::ENTER);
-  EXPECT_TRUE(select->PopupIsVisible());
 }
 
 }  // namespace blink

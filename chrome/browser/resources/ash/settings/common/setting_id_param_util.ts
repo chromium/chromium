@@ -9,7 +9,7 @@
 
 import {Router} from '../router.js';
 
-const SETTING_ID_URL_PARAM_NAME: string = 'settingId';
+const SETTING_ID_URL_PARAM_NAME = 'settingId';
 
 /**
  * Retrieves the setting ID saved in the URL's query parameter. Returns null if

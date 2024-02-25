@@ -5,6 +5,11 @@
 #include "content/browser/interest_group/ad_auction_page_data.h"
 
 #include "base/no_destructor.h"
+#include "base/time/time.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
 
@@ -35,18 +40,63 @@ bool AdAuctionPageData::WitnessedAuctionResultForOrigin(
 void AdAuctionPageData::AddAuctionSignalsWitnessForOrigin(
     const url::Origin& origin,
     const std::string& response) {
-  origin_auction_signals_map_[origin].insert(response);
+  header_direct_from_seller_signals_.AddWitnessForOrigin(
+      *GetDecoderFor(origin), origin, response,
+      base::BindOnce(
+          &AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted,
+          base::Unretained(this)));
 }
 
-const std::set<std::string>& AdAuctionPageData::GetAuctionSignalsForOrigin(
-    const url::Origin& origin) const {
-  auto it = origin_auction_signals_map_.find(origin);
-  if (it == origin_auction_signals_map_.end()) {
-    static base::NoDestructor<std::set<std::string>> kEmptySet;
-    return *kEmptySet;
+void AdAuctionPageData::ParseAndFindAdAuctionSignals(
+    const url::Origin& origin,
+    const std::string& ad_slot,
+    HeaderDirectFromSellerSignals::ParseAndFindCompletedCallback callback) {
+  header_direct_from_seller_signals_.ParseAndFind(origin, ad_slot,
+                                                  std::move(callback));
+}
+
+void AdAuctionPageData::AddAuctionAdditionalBidsWitnessForOrigin(
+    const url::Origin& origin,
+    const std::map<std::string, std::vector<std::string>>&
+        nonce_additional_bids_map) {
+  CHECK(!nonce_additional_bids_map.empty());
+
+  std::map<std::string, std::vector<std::string>>&
+      existing_nonce_additional_bids_map =
+          origin_nonce_additional_bids_map_[origin];
+
+  for (const auto& [nonce, additional_bids] : nonce_additional_bids_map) {
+    CHECK(!additional_bids.empty());
+
+    std::vector<std::string>& existing_additional_bids =
+        existing_nonce_additional_bids_map[nonce];
+
+    existing_additional_bids.insert(existing_additional_bids.end(),
+                                    additional_bids.begin(),
+                                    additional_bids.end());
+  }
+}
+
+std::vector<std::string>
+AdAuctionPageData::TakeAuctionAdditionalBidsForOriginAndNonce(
+    const url::Origin& origin,
+    const std::string& nonce) {
+  auto origin_map_it = origin_nonce_additional_bids_map_.find(origin);
+  if (origin_map_it == origin_nonce_additional_bids_map_.end()) {
+    return {};
   }
 
-  return it->second;
+  std::map<std::string, std::vector<std::string>>& nonce_additional_bids_map =
+      origin_map_it->second;
+
+  auto nonce_map_it = nonce_additional_bids_map.find(nonce);
+  if (nonce_map_it == nonce_additional_bids_map.end()) {
+    return {};
+  }
+
+  auto extracted_nonce_and_additional_bids =
+      nonce_additional_bids_map.extract(nonce_map_it);
+  return std::move(extracted_nonce_and_additional_bids.mapped());
 }
 
 void AdAuctionPageData::RegisterAdAuctionRequestContext(
@@ -64,13 +114,33 @@ AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
   return &it->second;
 }
 
+data_decoder::DataDecoder* AdAuctionPageData::GetDecoderFor(
+    const url::Origin& origin) {
+  std::unique_ptr<data_decoder::DataDecoder>& decoder = decoder_map_[origin];
+  if (!decoder) {
+    decoder = std::make_unique<data_decoder::DataDecoder>();
+  }
+  return decoder.get();
+}
+
+void AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted(
+    std::vector<std::string> errors) {
+  for (const std::string& error : errors) {
+    devtools_instrumentation::LogWorkletMessage(
+        *static_cast<RenderFrameHostImpl*>(&page().GetMainDocument()),
+        blink::mojom::ConsoleMessageLevel::kError, error);
+  }
+}
+
 AdAuctionRequestContext::AdAuctionRequestContext(
     url::Origin seller,
     base::flat_map<url::Origin, std::vector<std::string>> group_names,
-    quiche::ObliviousHttpRequest::Context context)
+    quiche::ObliviousHttpRequest::Context context,
+    base::TimeTicks start_time)
     : seller(std::move(seller)),
       group_names(std::move(group_names)),
-      context(std::move(context)) {}
+      context(std::move(context)),
+      start_time(start_time) {}
 AdAuctionRequestContext::AdAuctionRequestContext(
     AdAuctionRequestContext&& other) = default;
 AdAuctionRequestContext::~AdAuctionRequestContext() = default;

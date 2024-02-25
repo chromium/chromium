@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "content/common/content_export.h"
@@ -19,10 +19,7 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/make_credential_request_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace device {
@@ -60,6 +57,36 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
     // kWebContents is for typical cases where Javascript is making a
     // `navigator.credentials` call.
     kWebContents,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class GetAssertionResult {
+    kTimeout = 0,
+    kUserCancelled = 1,
+
+    kWinNativeSuccess = 2,
+    kWinNativeError = 3,
+
+    kTouchIDSuccess = 4,
+    kTouchIDError = 5,
+
+    kChromeOSSuccess = 6,
+    kChromeOSError = 7,
+
+    kPhoneSuccess = 8,
+    kPhoneError = 9,
+
+    kICloudKeychainSuccess = 10,
+    kICloudKeychainError = 11,
+
+    kEnclaveSuccess = 12,
+    kEnclaveError = 13,
+
+    kOtherSuccess = 14,
+    kOtherError = 15,
+
+    kMaxValue = kOtherError,
   };
 
   // Creates a new AuthenticatorCommonImpl. Callers must ensure that this
@@ -118,6 +145,19 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
     kDontCheck,
   };
 
+  void ContinueMakeCredentialAfterRpIdCheck(
+      url::Origin caller_origin,
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      bool is_cross_origin_iframe,
+      blink::mojom::AuthenticatorStatus rp_id_validation_result);
+
+  void ContinueGetAssertionAfterRpIdCheck(
+      url::Origin caller_origin,
+      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      blink::mojom::PaymentOptionsPtr payment_options,
+      bool is_cross_origin_iframe,
+      blink::mojom::AuthenticatorStatus rp_id_validation_result);
+
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
   void StartMakeCredentialRequest(bool allow_skipping_pin_touch);
@@ -130,32 +170,30 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   void DispatchGetAssertionRequest(
       const std::string& authenticator_id,
-      absl::optional<std::vector<uint8_t>> credential_id);
+      std::optional<std::vector<uint8_t>> credential_id);
 
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(
       device::MakeCredentialStatus status_code,
-      absl::optional<device::AuthenticatorMakeCredentialResponse> response_data,
+      std::optional<device::AuthenticatorMakeCredentialResponse> response_data,
       const device::FidoAuthenticator* authenticator);
 
   // Callback to complete the registration process once a decision about
   // whether or not to return attestation data has been made.
   void OnRegisterResponseAttestationDecided(
       AttestationErasureOption attestation_erasure,
-      const bool has_device_public_key_output,
-      const bool device_public_key_included_attestation,
       device::AuthenticatorMakeCredentialResponse response_data,
       bool attestation_permitted);
 
   // Callback to handle the async response from a U2fDevice.
   void OnSignResponse(
       device::GetAssertionStatus status_code,
-      absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
+      std::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
           response_data,
       device::FidoAuthenticator* authenticator);
 
   // Begins a timeout at the beginning of a request.
-  void BeginRequestTimeout(absl::optional<base::TimeDelta> timeout);
+  void BeginRequestTimeout(std::optional<base::TimeDelta> timeout);
 
   // Runs when timer expires and cancels all issued requests to a U2fDevice.
   void OnTimeout();

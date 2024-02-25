@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -53,7 +54,6 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -217,14 +217,14 @@ void FillFrameData(base::trace_event::TracedValue* data,
   }
 }
 
-absl::optional<base::trace_event::MemoryDumpLevelOfDetail>
+std::optional<base::trace_event::MemoryDumpLevelOfDetail>
 StringToMemoryDumpLevelOfDetail(const std::string& str) {
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Detailed)
-    return {base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Background)
-    return {base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kBackground};
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Light)
-    return {base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+    return {base::trace_event::MemoryDumpLevelOfDetail::kLight};
   return {};
 }
 
@@ -254,7 +254,7 @@ bool IsChromeDataSource(const std::string& data_source_name) {
          data_source_name == "track_event";
 }
 
-absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
+std::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     const std::string& tracing_backend,
     perfetto::TraceConfig& perfetto_config) {
   if (tracing_backend == Tracing::TracingBackendEnum::Chrome)
@@ -271,7 +271,7 @@ absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     }
     return perfetto::BackendType::kCustomBackend;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Perfetto SDK build expects track_event data source to be configured via
@@ -578,15 +578,6 @@ std::vector<TracingHandler*> TracingHandler::ForAgentHost(
   return host->HandlersByName<TracingHandler>(Tracing::Metainfo::domainName);
 }
 
-void TracingHandler::SetRenderer(int process_host_id,
-                                 RenderFrameHostImpl* frame_host) {
-  if (!frame_host) {
-    return;
-  }
-  video_consumer_->SetFrameSinkId(
-      frame_host->GetRenderWidgetHost()->GetFrameSinkId());
-}
-
 void TracingHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Tracing::Frontend>(dispatcher->channel());
   Tracing::Dispatcher::wire(dispatcher, this);
@@ -784,7 +775,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
                                                proto_format);
   }
 
-  absl::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
+  std::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
       tracing_backend.value_or(Tracing::TracingBackendEnum::Auto),
       trace_config);
 
@@ -973,6 +964,12 @@ void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
   if (screenshot_enabled) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
+    if (WebContents* wc = host_ ? host_->GetWebContents() : nullptr) {
+      auto* frame_host =
+          static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+      video_consumer_->SetFrameSinkId(
+          frame_host->GetRenderWidgetHost()->GetFrameSinkId());
+    }
     video_consumer_->SetMinAndMaxFrameSize(kMinFrameSize, kMaxFrameSize);
     video_consumer_->StartCapture();
   }
@@ -1009,7 +1006,7 @@ void TracingHandler::RequestMemoryDump(
     return;
   }
 
-  absl::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
+  std::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
       StringToMemoryDumpLevelOfDetail(level_of_detail.value_or(
           Tracing::MemoryDumpLevelOfDetailEnum::Detailed));
 
@@ -1020,8 +1017,8 @@ void TracingHandler::RequestMemoryDump(
   }
 
   auto determinism = deterministic.value_or(false)
-                         ? base::trace_event::MemoryDumpDeterminism::FORCE_GC
-                         : base::trace_event::MemoryDumpDeterminism::NONE;
+                         ? base::trace_event::MemoryDumpDeterminism::kForceGc
+                         : base::trace_event::MemoryDumpDeterminism::kNone;
 
   auto on_memory_dump_finished =
       base::BindOnce(&TracingHandler::OnMemoryDumpFinished,
@@ -1029,7 +1026,7 @@ void TracingHandler::RequestMemoryDump(
 
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
+          base::trace_event::MemoryDumpType::kExplicitlyTriggered,
           *memory_detail, determinism, std::move(on_memory_dump_finished));
 }
 
@@ -1042,13 +1039,21 @@ void TracingHandler::OnMemoryDumpFinished(
 
 void TracingHandler::OnFrameFromVideoConsumer(
     scoped_refptr<media::VideoFrame> frame) {
+  if (!IsTracing()) {
+    return;
+  }
   const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
+  uint64_t frame_sequence = *frame->metadata().frame_sequence;
 
-  base::TimeTicks reference_time = *frame->metadata().reference_time;
+  // This reference_time is an ESTIMATE. It is set by the compositor frame sink
+  // from the `expected_display_time`, which is based on a previously known
+  // frame start PLUS the vsync interval (eg 16.6ms)
+  base::TimeTicks expected_display_time = *frame->metadata().reference_time;
 
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID_AND_TIMESTAMP(
-      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot", 1,
-      reference_time, std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot",
+      frame_sequence, expected_display_time,
+      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
 
   ++number_of_screenshots_from_video_consumer_;
   DCHECK(video_consumer_);
@@ -1145,11 +1150,16 @@ void TracingHandler::ReadyToCommitNavigation(
   if (!did_initiate_recording_)
     return;
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  FillFrameData(data.get(), navigation_request->GetRenderFrameHost(),
-                navigation_request->GetURL());
+  RenderFrameHostImpl* frame_host = navigation_request->GetRenderFrameHost();
+  FillFrameData(data.get(), frame_host, navigation_request->GetURL());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));
+  if (frame_host->IsOutermostMainFrame()) {
+    video_consumer_->SetFrameSinkId(navigation_request->GetRenderFrameHost()
+                                        ->GetRenderWidgetHost()
+                                        ->GetFrameSinkId());
+  }
 }
 
 void TracingHandler::FrameDeleted(int frame_tree_node_id) {
@@ -1183,7 +1193,7 @@ base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
   if (std::string* mode = config_dict.FindString(kRecordModeParam)) {
     config_dict.Set(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
   }
-  if (absl::optional<double> buffer_size =
+  if (std::optional<double> buffer_size =
           config_dict.FindDouble(kTraceBufferSizeInKb)) {
     config_dict.Set(
         kTraceBufferSizeInKb,

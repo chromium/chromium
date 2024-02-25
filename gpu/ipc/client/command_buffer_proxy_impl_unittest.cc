@@ -45,6 +45,7 @@ class TestGpuChannelHost : public GpuChannelHost {
       : GpuChannelHost(0 /* channel_id */,
                        GPUInfo(),
                        GpuFeatureInfo(),
+                       SharedImageCapabilities(),
                        mojo::ScopedMessagePipeHandle(
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}
@@ -83,13 +84,13 @@ class CommandBufferProxyImplTest : public testing::Test {
   std::unique_ptr<CommandBufferProxyImpl> CreateAndInitializeProxy(
       MockCommandBuffer* mock_command_buffer = nullptr) {
     auto proxy = std::make_unique<CommandBufferProxyImpl>(
-        channel_, nullptr /* gpu_memory_buffer_manager */, 0 /* stream_id */,
+        channel_, 0 /* stream_id */,
         base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // The Initialize() call below synchronously requests a new CommandBuffer
     // using the channel's GpuControl interface.  Simulate success, since we're
     // not actually talking to the service in these tests.
-    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _))
+    EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _, _))
         .Times(1)
         .WillOnce(Invoke(
             [&](mojom::CreateCommandBufferParamsPtr params, int32_t routing_id,
@@ -97,7 +98,8 @@ class CommandBufferProxyImplTest : public testing::Test {
                 mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
                 mojo::PendingAssociatedRemote<mojom::CommandBufferClient>
                     client,
-                ContextResult* result, Capabilities* capabilities) -> bool {
+                ContextResult* result, Capabilities* capabilities,
+                GLCapabilities* gl_capabilities) -> bool {
               // There's no real GpuChannel pipe for this endpoint to use, so
               // give it its own dedicated pipe for these tests. This allows the
               // CommandBufferProxyImpl to make calls on its CommandBuffer

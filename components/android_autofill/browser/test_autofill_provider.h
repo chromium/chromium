@@ -13,10 +13,8 @@ namespace autofill {
 
 class TestAutofillProvider : public AutofillProvider {
  public:
-  // Create a instance owned by |web_contents|.
   explicit TestAutofillProvider(content::WebContents* web_contents)
       : AutofillProvider(web_contents) {}
-
   ~TestAutofillProvider() override = default;
 
   // AutofillProvider:
@@ -53,10 +51,9 @@ class TestAutofillProvider : public AutofillProvider {
                                  const FormData& form,
                                  base::TimeTicks timestamp) override {}
   void OnHidePopup(AndroidAutofillManager* manager) override {}
-  void OnServerPredictionsAvailable(FormGlobalId form) override {}
-  void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                 FormSignature form_signature) override {}
-  void Reset(AndroidAutofillManager* manager) override {}
+  void OnServerPredictionsAvailable(AndroidAutofillManager&,
+                                    FormGlobalId form) override {}
+  void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override {}
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 };
 

@@ -4,6 +4,7 @@
 
 #include "ui/gtk/settings_provider_gtk.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "gtk_compat.h"
 #include "ui/gtk/gtk_compat.h"
@@ -13,21 +14,6 @@
 namespace gtk {
 
 namespace {
-
-std::string GetDecorationLayoutFromGtkWindow() {
-  DCHECK(!GtkCheckVersion(4));
-
-  GtkCssContext context = GetStyleContextFromCss("");
-  gtk_style_context_add_class(context, "csd");
-
-  gchar* layout_c = nullptr;
-  GtkStyleContextGetStyle(context, "decoration-button-layout", &layout_c,
-                          nullptr);
-  DCHECK(layout_c);
-  std::string layout(layout_c);
-  g_free(layout_c);
-  return layout;
-}
 
 void ParseActionString(const std::string& value,
                        GtkUi::WindowFrameAction* action) {
@@ -57,17 +43,16 @@ SettingsProviderGtk::FrameActionSettingWatcher::FrameActionSettingWatcher(
       default_action_(default_action) {
   GtkSettings* settings = gtk_settings_get_default();
   std::string notify_setting = "notify::" + setting_name;
-  signal_id_ = g_signal_connect(settings, notify_setting.c_str(),
-                                G_CALLBACK(OnSettingChangedThunk), this);
-  DCHECK(signal_id_);
+  signal_ = ScopedGSignal(
+      settings, notify_setting.c_str(),
+      base::BindRepeating(&FrameActionSettingWatcher::OnSettingChanged,
+                          base::Unretained(this)));
+  CHECK(signal_.Connected());
   OnSettingChanged(settings, nullptr);
 }
 
-SettingsProviderGtk::FrameActionSettingWatcher::~FrameActionSettingWatcher() {
-  if (signal_id_) {
-    g_signal_handler_disconnect(gtk_settings_get_default(), signal_id_);
-  }
-}
+SettingsProviderGtk::FrameActionSettingWatcher::~FrameActionSettingWatcher() =
+    default;
 
 void SettingsProviderGtk::FrameActionSettingWatcher::OnSettingChanged(
     GtkSettings* settings,
@@ -80,13 +65,14 @@ void SettingsProviderGtk::FrameActionSettingWatcher::OnSettingChanged(
 }
 
 SettingsProviderGtk::SettingsProviderGtk(GtkUi* delegate)
-    : delegate_(delegate), signal_id_decoration_layout_(0) {
+    : delegate_(delegate) {
   DCHECK(delegate_);
   GtkSettings* settings = gtk_settings_get_default();
-  signal_id_decoration_layout_ =
-      g_signal_connect(settings, "notify::gtk-decoration-layout",
-                       G_CALLBACK(OnDecorationButtonLayoutChangedThunk), this);
-  DCHECK(signal_id_decoration_layout_);
+  signal_ = ScopedGSignal(
+      settings, "notify::gtk-decoration-layout",
+      base::BindRepeating(&SettingsProviderGtk::OnDecorationButtonLayoutChanged,
+                          base::Unretained(this)));
+  CHECK(signal_.Connected());
   OnDecorationButtonLayoutChanged(settings, nullptr);
 
   frame_action_setting_watchers_.push_back(
@@ -106,12 +92,7 @@ SettingsProviderGtk::SettingsProviderGtk(GtkUi* delegate)
           ui::LinuxUi::WindowFrameAction::kMenu));
 }
 
-SettingsProviderGtk::~SettingsProviderGtk() {
-  if (signal_id_decoration_layout_) {
-    g_signal_handler_disconnect(gtk_settings_get_default(),
-                                signal_id_decoration_layout_);
-  }
-}
+SettingsProviderGtk::~SettingsProviderGtk() = default;
 
 void SettingsProviderGtk::SetWindowButtonOrderingFromGtkLayout(
     const std::string& gtk_layout) {
@@ -125,12 +106,6 @@ void SettingsProviderGtk::OnDecorationButtonLayoutChanged(GtkSettings* settings,
                                                           GParamSpec* param) {
   SetWindowButtonOrderingFromGtkLayout(
       GetGtkSettingsStringProperty(settings, "gtk-decoration-layout"));
-}
-
-void SettingsProviderGtk::OnThemeChanged(GtkSettings* settings,
-                                         GParamSpec* param) {
-  std::string layout = GetDecorationLayoutFromGtkWindow();
-  SetWindowButtonOrderingFromGtkLayout(layout);
 }
 
 }  // namespace gtk

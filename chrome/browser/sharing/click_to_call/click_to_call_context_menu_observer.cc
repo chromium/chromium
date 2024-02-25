@@ -72,13 +72,13 @@ void ClickToCallContextMenuObserver::BuildMenu(
         IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
         l10n_util::GetStringFUTF16(
             IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
-            base::UTF8ToUTF16(devices_[0]->client_name())));
+            base::UTF8ToUTF16(devices_[0].client_name())));
 #else
     proxy_->AddMenuItemWithIcon(
         IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
         l10n_util::GetStringFUTF16(
             IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
-            base::UTF8ToUTF16(devices_[0]->client_name())),
+            base::UTF8ToUTF16(devices_[0].client_name())),
         ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
                                        ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
@@ -111,7 +111,7 @@ void ClickToCallContextMenuObserver::BuildSubMenu() {
     if (command_id > kSubMenuLastDeviceCommandId)
       break;
     sub_menu_model_->AddItem(command_id++,
-                             base::UTF8ToUTF16(device->client_name()));
+                             base::UTF8ToUTF16(device.client_name()));
   }
 }
 
@@ -150,6 +150,6 @@ void ClickToCallContextMenuObserver::SendClickToCallMessage(
   LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),
                           kSharingUiContextMenu, chosen_device_index);
 
-  controller_->OnDeviceSelected(phone_number_, *devices_[chosen_device_index],
+  controller_->OnDeviceSelected(phone_number_, devices_[chosen_device_index],
                                 *entry_point_);
 }

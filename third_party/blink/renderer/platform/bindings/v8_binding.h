@@ -188,35 +188,51 @@ void V8SetReturnValue(const CallbackInfo& info,
 // Convert v8::String to a WTF::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
 // point to avoid repeated conversions.
-inline String ToCoreString(v8::Local<v8::String> value) {
-  return ToBlinkString<String>(value, kExternalize);
+inline String ToCoreString(v8::Isolate* isolate, v8::Local<v8::String> value) {
+  return ToBlinkString<String>(isolate, value, kExternalize);
 }
 
-inline String ToCoreStringWithNullCheck(v8::Local<v8::String> value) {
+inline String ToCoreStringWithNullCheck(v8::Isolate* isolate,
+                                        v8::Local<v8::String> value) {
   if (value.IsEmpty() || value->IsNull())
     return String();
-  return ToCoreString(value);
+  return ToCoreString(isolate, value);
 }
 
 inline String ToCoreStringWithUndefinedOrNullCheck(
+    v8::Isolate* isolate,
     v8::Local<v8::String> value) {
   if (value.IsEmpty())
     return String();
-  return ToCoreString(value);
+  return ToCoreString(isolate, value);
 }
 
-inline AtomicString ToCoreAtomicString(v8::Local<v8::String> value) {
-  return ToBlinkString<AtomicString>(value, kExternalize);
+inline AtomicString ToCoreAtomicString(v8::Isolate* isolate,
+                                       v8::Local<v8::String> value) {
+  return ToBlinkString<AtomicString>(isolate, value, kExternalize);
+}
+
+inline AtomicString ToCoreAtomicString(v8::Isolate* isolate,
+                                       v8::Local<v8::Name> value) {
+  DCHECK(!value.IsEmpty());
+  // TODO(crbug.com/1476064): Support converting `value` when it is a symbol
+  // instead of a string.
+  if (!value->IsString()) {
+    return AtomicString();
+  }
+  return ToBlinkString<AtomicString>(isolate, value.As<v8::String>(),
+                                     kExternalize);
 }
 
 // This method will return a null String if the v8::Value does not contain a
 // v8::String.  It will not call ToString() on the v8::Value. If you want
 // ToString() to be called, please use the TONATIVE_FOR_V8STRINGRESOURCE_*()
 // macros instead.
-inline String ToCoreStringWithUndefinedOrNullCheck(v8::Local<v8::Value> value) {
+inline String ToCoreStringWithUndefinedOrNullCheck(v8::Isolate* isolate,
+                                                   v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsString())
     return String();
-  return ToCoreString(value.As<v8::String>());
+  return ToCoreString(isolate, value.As<v8::String>());
 }
 
 // Convert a string to a V8 string.
@@ -264,12 +280,11 @@ inline v8::Local<v8::Value> V8StringOrNull(v8::Isolate* isolate,
 }
 
 inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
-                                      const ParkableString& string,
-                                      Resource* resource = nullptr) {
+                                      const ParkableString& string) {
   if (string.IsNull())
     return v8::String::Empty(isolate);
   return V8PerIsolateData::From(isolate)->GetStringCache()->V8ExternalString(
-      isolate, string, resource);
+      isolate, string);
 }
 
 inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
@@ -307,25 +322,6 @@ inline bool IsUndefinedOrNull(v8::Local<v8::Value> value) {
 }
 PLATFORM_EXPORT v8::Local<v8::Function> GetBoundFunction(
     v8::Local<v8::Function>);
-
-// FIXME: This will be soon embedded in the generated code.
-template <typename Collection>
-static void IndexedPropertyEnumerator(
-    const v8::PropertyCallbackInfo<v8::Array>& info) {
-  Collection* collection =
-      ToScriptWrappable(info.Holder())->ToImpl<Collection>();
-  int length = collection->length();
-  v8::Local<v8::Array> properties = v8::Array::New(info.GetIsolate(), length);
-  v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
-  for (int i = 0; i < length; ++i) {
-    v8::Local<v8::Integer> integer = v8::Integer::New(info.GetIsolate(), i);
-    bool created;
-    if (!properties->CreateDataProperty(context, i, integer).To(&created))
-      return;
-    DCHECK(created);
-  }
-  V8SetReturnValue(info, properties);
-}
 
 // Freeze a V8 object. The type of the first parameter and the return value is
 // intentionally v8::Value so that this function can wrap ToV8().

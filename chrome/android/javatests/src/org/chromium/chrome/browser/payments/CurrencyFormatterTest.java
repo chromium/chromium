@@ -21,9 +21,7 @@ import org.chromium.url.GURLJavaTestHelper;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * A lightweight unit test for CurrencyFormatter to run on an Android device.
- */
+/** A lightweight unit test for CurrencyFormatter to run on an Android device. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CurrencyFormatterTest {
@@ -33,10 +31,9 @@ public class CurrencyFormatterTest {
         GURLJavaTestHelper.nativeInitializeICU();
     }
 
-    /**
-     * Unicode non-breaking space.
-     */
+    /** Unicode non-breaking space. */
     private static final String NBSP = "\u00A0";
+
     private static final String NarrowNBSP = "\u202F";
 
     private static String longStringOfLength(int len) {
@@ -52,52 +49,62 @@ public class CurrencyFormatterTest {
     public void testMultipleConversions() {
         // Note, all spaces are expected to be unicode non-breaking spaces. Here they are shown as
         // normal spaces.
-        List<Object[]> testCases = Arrays.asList(new Object[][] {
-                {"55.00", "USD", "en-US", "USD", "$55.00"},
-                {"55.00", "USD", "en-CA", "USD", "$55.00"},
-                {"55.00", "USD", "fr-CA", "USD", "55,00 $"},
-                {"55.00", "USD", "fr-FR", "USD", "55,00 $"},
-                {"1234", "USD", "fr-FR", "USD", "1 234,00 $"},
+        List<Object[]> testCases =
+                Arrays.asList(
+                        new Object[][] {
+                            {"55.00", "USD", "en-US", "USD", "$55.00"},
+                            {"55.00", "USD", "en-CA", "USD", "$55.00"},
+                            {"55.00", "USD", "fr-CA", "USD", "55,00 $"},
+                            {"55.00", "USD", "fr-FR", "USD", "55,00 $"},
+                            {"1234", "USD", "fr-FR", "USD", "1 234,00 $"},
+                            {"55.5", "USD", "en-US", "USD", "$55.50"},
+                            {"55", "USD", "en-US", "USD", "$55.00"},
+                            {"-123", "USD", "en-US", "USD", "-$123.00"},
+                            {"-1234", "USD", "en-US", "USD", "-$1,234.00"},
+                            {"0.1234", "USD", "en-US", "USD", "$0.1234"},
+                            {"55.00", "EUR", "en-US", "EUR", "€55.00"},
+                            {"55.00", "EUR", "en-CA", "EUR", "€55.00"},
+                            {"55.00", "EUR", "fr-CA", "EUR", "55,00 €"},
+                            {"55.00", "EUR", "fr-FR", "EUR", "55,00 €"},
+                            {"55.00", "CAD", "en-US", "CAD", "$55.00"},
+                            {"55.00", "CAD", "en-CA", "CAD", "$55.00"},
+                            {"55.00", "CAD", "fr-CA", "CAD", "55,00 $"},
+                            {"55.00", "CAD", "fr-FR", "CAD", "55,00 $"},
+                            {"55", "JPY", "ja-JP", "JPY", "￥55"},
+                            {"55.0", "JPY", "ja-JP", "JPY", "￥55"},
+                            {"55.00", "JPY", "ja-JP", "JPY", "￥55"},
+                            {"55.12", "JPY", "ja-JP", "JPY", "￥55.12"},
+                            {"55.49", "JPY", "ja-JP", "JPY", "￥55.49"},
+                            {"55.50", "JPY", "ja-JP", "JPY", "￥55.5"},
+                            {"55.9999", "JPY", "ja-JP", "JPY", "￥55.9999"},
 
-                {"55.5", "USD", "en-US", "USD", "$55.50"}, {"55", "USD", "en-US", "USD", "$55.00"},
-                {"-123", "USD", "en-US", "USD", "-$123.00"},
-                {"-1234", "USD", "en-US", "USD", "-$1,234.00"},
-                {"0.1234", "USD", "en-US", "USD", "$0.1234"},
+                            // Unofficial ISO 4217 currency code.
+                            {"55.00", "BTX", "en-US", "BTX", "55.00"},
+                            {"-0.00000001", "BTX", "en-US", "BTX", "-0.00000001"},
+                            {"-55.00", "BTX", "fr-FR", "BTX", "-55,00"},
+                            {
+                                "123456789012345678901234567890.123456789012345678901234567890",
+                                "USD",
+                                "fr-FR",
+                                "USD",
+                                "123 456 789 012 345 678 901 234 567 890,123456789 $"
+                            },
+                            {
+                                "123456789012345678901234567890.123456789012345678901234567890",
+                                "USD",
+                                "en-US",
+                                "USD",
+                                "$123,456,789,012,345,678,901,234,567,890.123456789"
+                            },
 
-                {"55.00", "EUR", "en-US", "EUR", "€55.00"},
-                {"55.00", "EUR", "en-CA", "EUR", "€55.00"},
-                {"55.00", "EUR", "fr-CA", "EUR", "55,00 €"},
-                {"55.00", "EUR", "fr-FR", "EUR", "55,00 €"},
-
-                {"55.00", "CAD", "en-US", "CAD", "$55.00"},
-                {"55.00", "CAD", "en-CA", "CAD", "$55.00"},
-                {"55.00", "CAD", "fr-CA", "CAD", "55,00 $"},
-                {"55.00", "CAD", "fr-FR", "CAD", "55,00 $"},
-
-                {"55", "JPY", "ja-JP", "JPY", "￥55"}, {"55.0", "JPY", "ja-JP", "JPY", "￥55"},
-                {"55.00", "JPY", "ja-JP", "JPY", "￥55"},
-                {"55.12", "JPY", "ja-JP", "JPY", "￥55.12"},
-                {"55.49", "JPY", "ja-JP", "JPY", "￥55.49"},
-                {"55.50", "JPY", "ja-JP", "JPY", "￥55.5"},
-                {"55.9999", "JPY", "ja-JP", "JPY", "￥55.9999"},
-
-                // Unofficial ISO 4217 currency code.
-                {"55.00", "BTX", "en-US", "BTX", "55.00"},
-                {"-0.00000001", "BTX", "en-US", "BTX", "-0.00000001"},
-                {"-55.00", "BTX", "fr-FR", "BTX", "-55,00"},
-
-                {"123456789012345678901234567890.123456789012345678901234567890", "USD", "fr-FR",
-                        "USD", "123 456 789 012 345 678 901 234 567 890,123456789 $"},
-                {"123456789012345678901234567890.123456789012345678901234567890", "USD", "en-US",
-                        "USD", "$123,456,789,012,345,678,901,234,567,890.123456789"},
-
-                // Any string of at most 2048 characters can be valid amount currency codes.
-                {"55.00", "", "en-US", "", "55.00"},
-                {"55.00", "ABCDEF", "en-US", "ABCDE\u2026", "55.00"},
-                // Currency code more than 6 character is formatted to first 5 characters and
-                // ellipsis. "\u2026" is unicode for ellipsis.
-                {"55.00", longStringOfLength(2048), "en-US", "AAAAA\u2026", "55.00"},
-        });
+                            // Any string of at most 2048 characters can be valid amount currency
+                            // codes.
+                            {"55.00", "", "en-US", "", "55.00"},
+                            {"55.00", "ABCDEF", "en-US", "ABCDE\u2026", "55.00"},
+                            // Currency code more than 6 character is formatted to first 5
+                            // characters and ellipsis. "\u2026" is unicode for ellipsis.
+                            {"55.00", longStringOfLength(2048), "en-US", "AAAAA\u2026", "55.00"},
+                        });
 
         for (int i = 0; i < testCases.size(); i++) {
             Object[] testCase = testCases.get(i);
@@ -113,13 +120,27 @@ public class CurrencyFormatterTest {
             // To make tests robust against the CLDR data change in terms of space (ASCII
             // space, NBSP and Narrow NBSP), fold NBSP and NarrowNBSP into U+0020.
             String formattedAmount = formatter.format(amount).replace(NBSP, " ");
-            Assert.assertEquals("\"" + currency + "\" \"" + amount + "\" (\"" + locale
-                            + "\" locale) should be formatted into \"" + expectedAmountFormatting
+            Assert.assertEquals(
+                    "\""
+                            + currency
+                            + "\" \""
+                            + amount
+                            + "\" (\""
+                            + locale
+                            + "\" locale) should be formatted into \""
+                            + expectedAmountFormatting
                             + "\"",
-                    expectedAmountFormatting, formattedAmount.replace(NarrowNBSP, " "));
-            Assert.assertEquals("\"" + currency + "\""
-                            + " should be formatted into \"" + expectedCurrencyFormatting + "\"",
-                    expectedCurrencyFormatting, formatter.getFormattedCurrencyCode());
+                    expectedAmountFormatting,
+                    formattedAmount.replace(NarrowNBSP, " "));
+            Assert.assertEquals(
+                    "\""
+                            + currency
+                            + "\""
+                            + " should be formatted into \""
+                            + expectedCurrencyFormatting
+                            + "\"",
+                    expectedCurrencyFormatting,
+                    formatter.getFormattedCurrencyCode());
         }
     }
 }

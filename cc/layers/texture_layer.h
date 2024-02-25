@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,6 @@
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace gpu {
@@ -125,6 +125,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Code path for plugins which supply their own mailbox.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
+  void SetNeedsSetTransferableResource();
 
   // Set or unset HDR metadata.
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
@@ -154,6 +155,10 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     return viz::TransferableResource();
   }
 
+  bool needs_set_resource_for_testing() const {
+    return needs_set_resource_.Read(*this);
+  }
+
  protected:
   explicit TextureLayer(TextureLayerClient* client);
   ~TextureLayer() override;
@@ -171,7 +176,10 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // compositor.
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
 
-  ProtectedSequenceForbidden<raw_ptr<TextureLayerClient>> client_;
+  // Dangling on `mac-rel` in `blink_web_tests`:
+  // `fast/events/touch/touch-handler-iframe-plugin-assert.html`
+  ProtectedSequenceForbidden<raw_ptr<TextureLayerClient, DanglingUntriaged>>
+      client_;
 
   ProtectedSequenceReadable<bool> flipped_;
   ProtectedSequenceReadable<bool> nearest_neighbor_;

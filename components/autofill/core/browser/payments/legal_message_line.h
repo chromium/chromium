@@ -25,6 +25,8 @@ class LegalMessageLine {
     Link(size_t start, size_t end, const std::string& url_spec);
     ~Link();
 
+    bool operator==(const Link& other) const;
+
     gfx::Range range;
     GURL url;
   };
@@ -33,6 +35,8 @@ class LegalMessageLine {
   LegalMessageLine();
   LegalMessageLine(const LegalMessageLine& other);
   virtual ~LegalMessageLine();  // Overridden in TestLegalMessageLine.
+
+  bool operator==(const LegalMessageLine& other) const;
 
   // Parses |legal_message|. Returns false on failure.
   //

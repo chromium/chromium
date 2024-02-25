@@ -34,6 +34,7 @@
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
@@ -92,7 +93,7 @@ class VirtualDesktopHelper
   // last we checked. This is used to tell if the window has moved to a
   // different desktop, and notify listeners. It will only be set if
   // we created |virtual_desktop_helper_|.
-  absl::optional<std::string> workspace_;
+  std::optional<std::string> workspace_;
 
   bool initial_workspace_remembered_ = false;
 
@@ -105,7 +106,9 @@ class VirtualDesktopHelper
 
 VirtualDesktopHelper::VirtualDesktopHelper(const std::string& initial_workspace)
     : base::RefCountedDeleteOnSequence<VirtualDesktopHelper>(
-          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
+          base::ThreadPool::CreateCOMSTATaskRunner(
+              {base::MayBlock(),
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       initial_workspace_(initial_workspace) {}
 
 void VirtualDesktopHelper::Init(HWND hwnd) {
@@ -448,7 +451,7 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
       WINDOWPOS* window_pos = reinterpret_cast<WINDOWPOS*>(l_param);
       views::NonClientView* non_client_view = GetWidget()->non_client_view();
       if (window_pos->flags & SWP_SHOWWINDOW && non_client_view) {
-        non_client_view->Layout();
+        non_client_view->DeprecatedLayoutImmediately();
         non_client_view->SchedulePaint();
       }
       break;

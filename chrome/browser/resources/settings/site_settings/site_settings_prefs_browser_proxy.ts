@@ -10,7 +10,7 @@
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} from './constants.js';
+import type {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} from './constants.js';
 // clang-format on
 
 /**
@@ -103,9 +103,6 @@ export interface SiteException {
   description?: string;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
-  // <if expr="chromeos_ash">
-  showAndroidSmsNote?: boolean;
-  // </if>
 }
 
 /**
@@ -203,8 +200,8 @@ export interface ZoomLevelEntry {
 }
 
 /**
- * TODO(crbug.com/1373962): Remove the origin key from `FileSystemGrant`
- * before the launch of the Persistent Permissions settings page UI.
+ * TODO(crbug.com/1523673): Consider refactoring to remove the origin key from
+ * the `FileSystemGrant` interface.
  */
 export interface FileSystemGrant {
   origin: string;
@@ -247,11 +244,6 @@ export interface SiteSettingsPrefsBrowserProxy {
    *     hidden.
    */
   getCategoryList(origin: string): Promise<ContentSettingsTypes[]>;
-
-  /**
-   * Get the string which describes the current effective cookie setting.
-   */
-  getCookieSettingDescription(): Promise<string>;
 
   /**
    * Gets most recently changed permissions grouped by host and limited to
@@ -534,10 +526,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getCategoryList(origin: string) {
     return sendWithPromise('getCategoryList', origin);
-  }
-
-  getCookieSettingDescription() {
-    return sendWithPromise('getCookieSettingDescription');
   }
 
   getRecentSitePermissions(numSources: number) {

@@ -17,7 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
+#include "net/base/features.h"
 
 namespace first_party_sets {
 
@@ -49,7 +49,9 @@ ThrottleCheckResult FirstPartySetsNavigationThrottle::WillStartRequest() {
                        weak_factory_.GetWeakPtr()));
     // Setup timer
     resume_navigation_timer_.Start(
-        FROM_HERE, features::kFirstPartySetsNavigationThrottleTimeout.Get(),
+        FROM_HERE,
+        net::features::kWaitForFirstPartySetsInitNavigationThrottleTimeout
+            .Get(),
         base::BindOnce(&FirstPartySetsNavigationThrottle::OnTimeOut,
                        weak_factory_.GetWeakPtr()));
 
@@ -81,10 +83,12 @@ FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
   CHECK(service);
-  if (features::kFirstPartySetsNavigationThrottleTimeout.Get().is_zero() ||
-      !features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
-      navigation_handle->GetParentFrameOrOuterDocument() ||
-      service->is_ready()) {
+  if (service->is_ready() ||
+      !base::FeatureList::IsEnabled(
+          net::features::kWaitForFirstPartySetsInit) ||
+      net::features::kWaitForFirstPartySetsInitNavigationThrottleTimeout.Get()
+          .is_zero() ||
+      navigation_handle->GetParentFrameOrOuterDocument()) {
     return nullptr;
   }
   return std::make_unique<FirstPartySetsNavigationThrottle>(navigation_handle,

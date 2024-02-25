@@ -7,35 +7,37 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './collapse_radio_button.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_toggle_button.js';
-import '/shared/settings/privacy_page/secure_dns.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
+import '../privacy_page/secure_dns.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-// <if expr="is_chromeos or chrome_root_store_supported">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-// </if>
-
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../focus_config.js';
+import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {FocusConfig} from '../focus_config.js';
+import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
-import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
+import type {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {getTemplate} from './security_page.html.js';
 
 /**
@@ -47,6 +49,17 @@ export enum SafeBrowsingSetting {
   ENHANCED = 0,
   STANDARD = 1,
   DISABLED = 2,
+}
+
+/**
+ * Enumeration of all HTTPS-First Mode setting states. Must be kept in sync with
+ * the enum of the same name located in:
+ * chrome/browser/ssl/https_first_mode_settings_tracker.h
+ */
+export enum HttpsFirstModeSetting {
+  DISABLED = 0,
+  ENABLED_INCOGNITO = 1,
+  ENABLED_FULL = 2,
 }
 
 export interface SettingsSecurityPageElement {
@@ -83,20 +96,6 @@ export class SettingsSecurityPageElement extends
         notify: true,
       },
 
-      // <if expr="chrome_root_store_supported">
-      /**
-       * Whether we should adjust Manage Certificates links to indicate
-       * support for Chrome Root Store.
-       */
-      showChromeRootStoreCertificates_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('showChromeRootStoreCertificates');
-        },
-      },
-      // </if>
-
       /**
        * Whether the secure DNS setting should be displayed.
        */
@@ -127,6 +126,22 @@ export class SettingsSecurityPageElement extends
       safeBrowsingSettingEnum_: {
         type: Object,
         value: SafeBrowsingSetting,
+      },
+
+      /**
+       * Valid HTTPS-First Mode states.
+       */
+      httpsFirstModeSettingEnum_: {
+        type: Object,
+        value: HttpsFirstModeSetting,
+      },
+
+      enableHttpsFirstModeNewSettings_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableHttpsFirstModeNewSettings');
+        },
       },
 
       enableSecurityKeysSubpage_: {
@@ -171,11 +186,35 @@ export class SettingsSecurityPageElement extends
       },
 
       showDisableSafebrowsingDialog_: Boolean,
+
+      /**
+       * A timestamp that records the last time the user visited this page or
+       * returned to it.
+       */
+      lastFocusTime_: Number,
+
+      /** The total amount of time a user spent on the page in focus. */
+      totalTimeInFocus_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** Latest user interaction type on the security page. */
+      lastInteraction_: {
+        type: SecurityPageInteraction,
+        value: SecurityPageInteraction.NO_INTERACTION,
+      },
+
+      /** Safe browsing state when the page opened. */
+      safeBrowsingStateOnOpen_: SafeBrowsingSetting,
+
+      /** Whether the user is currently on the security page or not. */
+      isRouteSecurity_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
-  // <if expr="chrome_root_store_supported">
-  private showChromeRootStoreCertificates_: boolean;
-  // </if>
   private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
@@ -187,6 +226,13 @@ export class SettingsSecurityPageElement extends
   private showDisableSafebrowsingDialog_: boolean;
   private enableFriendlierSafeBrowsingSettings_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
+  private enableHttpsFirstModeNewSettings_: boolean;
+  private lastFocusTime_: number|undefined;
+  private totalTimeInFocus_: number;
+  private lastInteraction_: SecurityPageInteraction;
+  private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
+  private isRouteSecurity_: boolean;
+  private eventTracker_: EventTracker = new EventTracker();
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -228,28 +274,103 @@ export class SettingsSecurityPageElement extends
       } else if (prefValue === SafeBrowsingSetting.STANDARD) {
         this.$.safeBrowsingStandard.expanded = true;
       }
+
+      this.safeBrowsingStateOnOpen_ = prefValue;
+
+      // The HTTPS-First Mode generated pref should never be set to
+      // ENABLED_INCOGNITO if the feature flag is not enabled.
+      if (!loadTimeData.getBoolean('enableHttpsFirstModeNewSettings')) {
+        assert(
+            this.getPref('generated.https_first_mode_enabled').value !==
+            HttpsFirstModeSetting.ENABLED_INCOGNITO);
+      }
     });
 
     this.registerHelpBubble(
         'kEnhancedProtectionSettingElementId',
         this.$.safeBrowsingEnhanced.getBubbleAnchor(), {anchorPaddingTop: 10});
+
+    // Initialize the last focus time on page load.
+    this.lastFocusTime_ = HatsBrowserProxyImpl.getInstance().now();
   }
 
   /**
    * RouteObserverMixin
    */
   override currentRouteChanged(route: Route) {
-    if (route === routes.SECURITY) {
-      this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
-          SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
-      const queryParams = Router.getInstance().getQueryParameters();
-      const section = queryParams.get('q');
-      if (section === 'enhanced') {
-        this.$.safeBrowsingEnhanced.expanded =
-            !loadTimeData.getBoolean('enableEsbCollapse');
-        this.$.safeBrowsingStandard.expanded = false;
-      }
+    if (route !== routes.SECURITY) {
+      // If the user navigates to other settings page from security page, call
+      // onBeforeUnload_ method to check if the security page survey should be
+      // shown.
+      this.onBeforeUnload_();
+      this.isRouteSecurity_ = false;
+      this.eventTracker_.removeAll();
+      return;
     }
+    this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
+        SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
+    const queryParams = Router.getInstance().getQueryParameters();
+    const section = queryParams.get('q');
+    if (section === 'enhanced') {
+      this.$.safeBrowsingEnhanced.expanded = false;
+      this.$.safeBrowsingStandard.expanded = false;
+    }
+
+    this.eventTracker_.add(window, 'focus', this.onFocus_.bind(this));
+    this.eventTracker_.add(window, 'blur', this.onBlur_.bind(this));
+    this.eventTracker_.add(
+        window, 'beforeunload', this.onBeforeUnload_.bind(this));
+
+    // When the route changes back to the security page, reset the values.
+    this.isRouteSecurity_ = true;
+    this.lastInteraction_ = SecurityPageInteraction.NO_INTERACTION;
+    this.totalTimeInFocus_ = 0;
+    this.lastFocusTime_ = HatsBrowserProxyImpl.getInstance().now();
+  }
+
+  /** Call this function when the user switches to another tab. */
+  private onBlur_() {
+    // If the user is not on the security page, we will not calculate the time
+    // values.
+    if (!this.isRouteSecurity_) {
+      return;
+    }
+    // Calculates the amount of time a user spent on a page for the current
+    // session, from the point when they opened/returned to the page until
+    // they left.
+    const timeSinceLastFocus = HatsBrowserProxyImpl.getInstance().now() -
+        (this.lastFocusTime_ as number);
+
+    this.totalTimeInFocus_ += timeSinceLastFocus;
+    // Set the lastFocusTime_ variable to undefined. This indicates that the
+    // totalTimeInFocus_ variable is up to date.
+    this.lastFocusTime_ = undefined;
+  }
+
+  /** Call this function when the user returns to it from other tabs. */
+  private onFocus_() {
+    // Updates the timestamp.
+    this.lastFocusTime_ = HatsBrowserProxyImpl.getInstance().now();
+  }
+
+  /**
+   * Trigger the securityPageHatsRequest api to potentially start the survey.
+   */
+  private onBeforeUnload_() {
+    // If the user is not on other settings page, we do not send survey.
+    if (!this.isRouteSecurity_) {
+      return;
+    }
+    // If the lastFocusTime_ variable is not undefined, add the time between the
+    // lastFocusTime_ and the current time to the totalTimeInFocus_ variable
+    // because the user unloads the page before they un-focus on the page.
+    if (this.lastFocusTime_ !== undefined) {
+      this.totalTimeInFocus_ +=
+          HatsBrowserProxyImpl.getInstance().now() - this.lastFocusTime_;
+    }
+    HatsBrowserProxyImpl.getInstance().securityPageHatsRequest(
+        this.lastInteraction_, this.safeBrowsingStateOnOpen_,
+        this.totalTimeInFocus_);
   }
 
   /**
@@ -272,6 +393,11 @@ export class SettingsSecurityPageElement extends
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(selected);
       this.recordActionOnRadioChange_(selected);
+      this.interactedWithPage_(selected);
+      this.setPrefValue(
+          'safebrowsing.esb_opt_in_with_friendlier_settings',
+          selected === SafeBrowsingSetting.ENHANCED &&
+              this.enableFriendlierSafeBrowsingSettings_);
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;
@@ -279,6 +405,11 @@ export class SettingsSecurityPageElement extends
       this.updateCollapsedButtons_();
       this.$.safeBrowsingRadioGroup.sendPrefChange();
     }
+  }
+
+  private interactedWithPage_(securityPageInteraction:
+                                  SecurityPageInteraction) {
+    this.lastInteraction_ = securityPageInteraction;
   }
 
   private getDisabledExtendedSafeBrowsing_(): boolean {
@@ -344,6 +475,13 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
+  // Conversion helper for binding Integer pref values as String values.
+  // For ControlledRadioButton elements, the name attribute must be of String
+  // type in order to correctly match for the PrefControlMixin.
+  private getName_(value: number): string {
+    return value.toString();
+  }
+
   private getHttpsFirstModeSubLabel_(): string {
     // If the backing HTTPS-Only Mode preference is enabled, but the
     // generated preference has its user control disabled, then additional
@@ -367,15 +505,17 @@ export class SettingsSecurityPageElement extends
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }
 
-  // <if expr="chrome_root_store_supported">
   private onChromeCertificatesClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   }
-  // </if>
 
   private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));
+  }
+
+  private onV8SettingsClick_() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_JAVASCRIPT_JIT);
   }
 
   private onSecurityKeysClick_() {
@@ -424,12 +564,16 @@ export class SettingsSecurityPageElement extends
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.ENHANCED);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.ENHANCED);
+    this.interactedWithPage_(
+        SecurityPageInteraction.EXPAND_BUTTON_ENHANCED_CLICK);
   }
 
   private onStandardProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.STANDARD);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
+    this.interactedWithPage_(
+        SecurityPageInteraction.EXPAND_BUTTON_STANDARD_CLICK);
   }
 
   // <if expr="is_chromeos">

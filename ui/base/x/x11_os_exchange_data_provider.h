@@ -20,6 +20,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace x11 {
+class Connection;
+}
+
 namespace ui {
 
 class OSExchangeDataProviderX11Test;
@@ -62,8 +66,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
 
   // Overridden from OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
-  void MarkOriginatedFromRenderer() override;
-  bool DidOriginateFromRenderer() const override;
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
+  bool IsRendererTainted() const override;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
@@ -76,7 +81,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const override;
-  bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* pickle) const override;
@@ -133,7 +137,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   gfx::Vector2d drag_image_offset_;
 
   // Our X11 state.
-  raw_ptr<x11::Connection> connection_;
+  raw_ref<x11::Connection> connection_;
   x11::Window x_root_window_;
 
   // In X11, because the IPC parts of drag operations are implemented by

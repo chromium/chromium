@@ -1,0 +1,61 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "WallpaperSearchProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+// WallpaperSearchLoggingData consists of ModelExecutionRequest, Response
+// and Quality data.
+message WallpaperSearchLoggingData {
+  WallpaperSearchRequest request_data = 1;
+  WallpaperSearchResponse response_data = 2;
+  WallpaperSearchQuality quality_data = 3;
+}
+
+message Descriptors {
+  string descriptor_a = 1;
+  string descriptor_b = 2;
+  string descriptor_c = 3;
+  string descriptor_d = 4;
+}
+
+message Image {
+  bytes encoded_image = 1;
+  int64 image_id = 2;
+}
+
+message WallpaperSearchImageQuality {
+  int64 image_id = 1;
+  bool previewed = 2;
+  bool selected = 3;
+  int32 preview_latency_ms = 4;
+}
+
+message WallpaperSearchRequest {
+  reserved 1;
+  Descriptors descriptors = 2;
+}
+
+message WallpaperSearchResponse {
+  reserved 1;
+  repeated Image images = 2;
+}
+
+message WallpaperSearchQuality {
+  int64 session_id = 1;
+  repeated WallpaperSearchImageQuality images_quality = 2;
+  int32 index = 3;
+  UserFeedback user_feedback = 4;
+  bool final_request_in_session = 5;
+  int32 request_latency_ms = 6;
+  int32 complete_latency_ms = 7;
+}

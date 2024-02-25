@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "URLAllowlist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_allowlist": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

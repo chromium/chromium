@@ -5,13 +5,15 @@
 #include "ui/gfx/color_conversions.h"
 
 #include <cmath>
+#include <numeric>
+#include <tuple>
 
+#include "base/numerics/angle_conversions.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace gfx {
 
@@ -21,6 +23,27 @@ namespace {
 constexpr float kD50_x = 0.9642f;
 constexpr float kD50_y = 1.0f;
 constexpr float kD50_z = 0.8251f;
+
+// Evaluate the specified transfer function using point symmetry around the
+// origin. This means that if the transfer function f is valid only for positive
+// numbers, let g be the extended transfer function for all reals, defined as
+// g(x) = sign(x) * f(abs(x)).
+float skcmsTrFnEvalExt(const skcms_TransferFunction* fn, float x) {
+  if (x < 0) {
+    return -skcms_TransferFunction_eval(fn, -x);
+  } else {
+    return skcms_TransferFunction_eval(fn, x);
+  }
+}
+
+// Same as the above but for the pow function.
+float powExt(float x, float p) {
+  if (x < 0) {
+    return -powf(-x, p);
+  } else {
+    return powf(x, p);
+  }
+}
 
 const skcms_Matrix3x3* getXYDZ65toXYZD50matrix() {
   constexpr float kD65_x = 0.3127f;
@@ -42,7 +65,7 @@ const skcms_Matrix3x3* getXYZD50TosRGBLinearMatrix() {
   return &xyzd50_to_srgb_linear;
 }
 
-const skcms_Matrix3x3* getkXYZD65tosRGBMatrix() {
+const skcms_Matrix3x3* getXYZD65tosRGBLinearMatrix() {
   static skcms_Matrix3x3 adapt_XYZD65_to_srgb = skcms_Matrix3x3_concat(
       getXYZD50TosRGBLinearMatrix(), getXYDZ65toXYZD50matrix());
   return &adapt_XYZD65_to_srgb;
@@ -114,6 +137,14 @@ typedef struct {
   float vals[3];
 } skcms_Vector3;
 
+typedef struct {
+  float vals[2];
+} skcms_Vector2;
+
+float dot(const skcms_Vector2& a, const skcms_Vector2& b) {
+  return a.vals[0] * b.vals[0] + a.vals[1] * b.vals[1];
+}
+
 static skcms_Vector3 skcms_Matrix3x3_apply(const skcms_Matrix3x3* m,
                                            const skcms_Vector3* v) {
   skcms_Vector3 dst = {{0, 0, 0}};
@@ -133,35 +164,32 @@ skcms_TransferFunction* getSRGBInverseTransferFunction() {
 std::tuple<float, float, float> ApplyInverseTransferFnsRGB(float r,
                                                            float g,
                                                            float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), b));
+  return std::make_tuple(skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), r),
+                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), g),
+                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
                                                         float g,
                                                         float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, b));
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, r),
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, g),
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
                                                         float g,
                                                         float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, b));
 }
 
 skcms_TransferFunction* getProPhotoInverseTransferFunction() {
@@ -175,9 +203,9 @@ std::tuple<float, float, float> ApplyInverseTransferFnProPhoto(float r,
                                                                float g,
                                                                float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), b));
 }
 
 skcms_TransferFunction* getAdobeRGBInverseTransferFunction() {
@@ -190,18 +218,17 @@ std::tuple<float, float, float> ApplyInverseTransferFnAdobeRGB(float r,
                                                                float g,
                                                                float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
                                                        float g,
                                                        float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, b));
 }
 
 skcms_TransferFunction* getRec2020nverseTransferFunction() {
@@ -214,9 +241,9 @@ std::tuple<float, float, float> ApplyInverseTransferFnRec2020(float r,
                                                               float g,
                                                               float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), b));
 }
 }  // namespace
 
@@ -264,8 +291,118 @@ std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z) {
   return std::make_tuple(l, a, b);
 }
 
+// Projects the color (l,a,b) to be within a polyhedral approximation of the
+// Rec2020 gamut. This is done by finding the maximum value of alpha such that
+// (l, alpha*a, alpha*b) is within that polyhedral approximation.
+std::tuple<float, float, float> OklabGamutMap(float l, float a, float b) {
+  // Constants for the normal vector of the plane formed by white, black, and
+  // the specified vertex of the gamut.
+  const skcms_Vector2 normal_R{{0.409702, -0.912219}};
+  const skcms_Vector2 normal_M{{-0.397919, -0.917421}};
+  const skcms_Vector2 normal_B{{-0.906800, 0.421562}};
+  const skcms_Vector2 normal_C{{-0.171122, 0.985250}};
+  const skcms_Vector2 normal_G{{0.460276, 0.887776}};
+  const skcms_Vector2 normal_Y{{0.947925, 0.318495}};
+
+  // For the triangles formed by white (W) or black (K) with the vertices
+  // of Yellow and Red (YR), Red and Magenta (RM), etc, the constants to be
+  // used to compute the intersection of a line of constant hue and luminance
+  // with that plane.
+  const float c0_YR = 0.091132;
+  const skcms_Vector2 cW_YR{{0.070370, 0.034139}};
+  const skcms_Vector2 cK_YR{{0.018170, 0.378550}};
+  const float c0_RM = 0.113902;
+  const skcms_Vector2 cW_RM{{0.090836, 0.036251}};
+  const skcms_Vector2 cK_RM{{0.226781, 0.018764}};
+  const float c0_MB = 0.161739;
+  const skcms_Vector2 cW_MB{{-0.008202, -0.264819}};
+  const skcms_Vector2 cK_MB{{0.187156, -0.284304}};
+  const float c0_BC = 0.102047;
+  const skcms_Vector2 cW_BC{{-0.014804, -0.162608}};
+  const skcms_Vector2 cK_BC{{-0.276786, 0.004193}};
+  const float c0_CG = 0.092029;
+  const skcms_Vector2 cW_CG{{-0.038533, -0.001650}};
+  const skcms_Vector2 cK_CG{{-0.232572, -0.094331}};
+  const float c0_GY = 0.081709;
+  const skcms_Vector2 cW_GY{{-0.034601, -0.002215}};
+  const skcms_Vector2 cK_GY{{0.012185, 0.338031}};
+
+  const float L = l;
+  const float one_minus_L = 1.0 - L;
+  const skcms_Vector2 ab{{a, b}};
+
+  // Find the planes to intersect with and set the constants based on those
+  // planes.
+  float c0 = 0.f;
+  skcms_Vector2 cW{{0.f, 0.f}};
+  skcms_Vector2 cK{{0.f, 0.f}};
+  if (dot(ab, normal_R) < 0.0) {
+    if (dot(ab, normal_G) < 0.0) {
+      if (dot(ab, normal_C) < 0.0) {
+        c0 = c0_BC;
+        cW = cW_BC;
+        cK = cK_BC;
+      } else {
+        c0 = c0_CG;
+        cW = cW_CG;
+        cK = cK_CG;
+      }
+    } else {
+      if (dot(ab, normal_Y) < 0.0) {
+        c0 = c0_GY;
+        cW = cW_GY;
+        cK = cK_GY;
+      } else {
+        c0 = c0_YR;
+        cW = cW_YR;
+        cK = cK_YR;
+      }
+    }
+  } else {
+    if (dot(ab, normal_B) < 0.0) {
+      if (dot(ab, normal_M) < 0.0) {
+        c0 = c0_RM;
+        cW = cW_RM;
+        cK = cK_RM;
+      } else {
+        c0 = c0_MB;
+        cW = cW_MB;
+        cK = cK_MB;
+      }
+    } else {
+      c0 = c0_BC;
+      cW = cW_BC;
+      cK = cK_BC;
+    }
+  }
+
+  // Perform the intersection.
+  float alpha = 1.f;
+
+  // Intersect with the plane with white.
+  const float w_denom = dot(cW, ab);
+  if (w_denom > 0.f) {
+    const float w_num = c0 * one_minus_L;
+    if (w_num < w_denom) {
+      alpha = std::min(alpha, w_num / w_denom);
+    }
+  }
+
+  // Intersect with the plane with black.
+  const float k_denom = dot(cK, ab);
+  if (k_denom > 0.f) {
+    const float k_num = c0 * L;
+    if (k_num < k_denom) {
+      alpha = std::min(alpha, k_num / k_denom);
+    }
+  }
+
+  // Attenuate the ab coordinate by alpha.
+  return std::make_tuple(L, alpha * a, alpha * b);
+}
+
 std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b) {
-  skcms_Vector3 lab_input{{l / 100.f, a, b}};
+  skcms_Vector3 lab_input{{l, a, b}};
   skcms_Vector3 lms_intermediate =
       skcms_Matrix3x3_apply(getOklabToLMSMatrix(), &lab_input);
   lms_intermediate.vals[0] = lms_intermediate.vals[0] *
@@ -288,28 +425,23 @@ std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
   skcms_Vector3 lms_intermediate =
       skcms_Matrix3x3_apply(getXYZToLMSMatrix(), &xyz_input);
 
-  lms_intermediate.vals[0] = pow(lms_intermediate.vals[0], 1.0f / 3.0f);
-  lms_intermediate.vals[1] = pow(lms_intermediate.vals[1], 1.0f / 3.0f);
-  lms_intermediate.vals[2] = pow(lms_intermediate.vals[2], 1.0f / 3.0f);
+  lms_intermediate.vals[0] = powExt(lms_intermediate.vals[0], 1.0f / 3.0f);
+  lms_intermediate.vals[1] = powExt(lms_intermediate.vals[1], 1.0f / 3.0f);
+  lms_intermediate.vals[2] = powExt(lms_intermediate.vals[2], 1.0f / 3.0f);
 
   skcms_Vector3 lab_output =
       skcms_Matrix3x3_apply(getLMSToOklabMatrix(), &lms_intermediate);
-  return std::make_tuple(lab_output.vals[0] * 100.0f, lab_output.vals[1],
+  return std::make_tuple(lab_output.vals[0], lab_output.vals[1],
                          lab_output.vals[2]);
 }
 
-std::tuple<float, float, float> LchToLab(float l,
-                                         float c,
-                                         absl::optional<float> h) {
-  if (!h.has_value())
-    return std::make_tuple(l, 0, 0);
-
-  return std::make_tuple(l, c * std::cos(gfx::DegToRad(h.value())),
-                         c * std::sin(gfx::DegToRad(h.value())));
+std::tuple<float, float, float> LchToLab(float l, float c, float h) {
+  return std::make_tuple(l, c * std::cos(base::DegToRad(h)),
+                         c * std::sin(base::DegToRad(h)));
 }
 std::tuple<float, float, float> LabToLch(float l, float a, float b) {
   return std::make_tuple(l, std::sqrt(a * a + b * b),
-                         gfx::RadToDeg(atan2f(b, a)));
+                         base::RadToDeg(atan2f(b, a)));
 }
 
 std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
@@ -396,10 +528,26 @@ std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> SRGBToSRGBLegacy(float r, float g, float b) {
+  return std::make_tuple(r * 255.0, g * 255.0, b * 255.0);
+}
+
+std::tuple<float, float, float> SRGBLegacyToSRGB(float r, float g, float b) {
+  return std::make_tuple(r / 255.0, g / 255.0, b / 255.0);
+}
+
+std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z) {
+  skcms_Vector3 xyz_input{{x, y, z}};
+  skcms_Vector3 rgb_result =
+      skcms_Matrix3x3_apply(getXYZD50TosRGBLinearMatrix(), &xyz_input);
+  return ApplyInverseTransferFnsRGB(rgb_result.vals[0], rgb_result.vals[1],
+                                    rgb_result.vals[2]);
+}
+
 std::tuple<float, float, float> XYZD65TosRGBLinear(float x, float y, float z) {
   skcms_Vector3 xyz_input{{x, y, z}};
   skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getkXYZD65tosRGBMatrix(), &xyz_input);
+      skcms_Matrix3x3_apply(getXYZD65tosRGBLinearMatrix(), &xyz_input);
   return std::make_tuple(rgb_result.vals[0], rgb_result.vals[1],
                          rgb_result.vals[2]);
 }
@@ -429,17 +577,31 @@ std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> HSLToSRGB(float h, float s, float l) {
+  // See https://www.w3.org/TR/css-color-4/#hsl-to-rgb
+  if (!s) {
+    return std::make_tuple(l, l, l);
+  }
+
+  auto f = [&h, &l, &s](float n) {
+    float k = fmod(n + h / 30.0f, 12.0);
+    float a = s * std::min(l, 1.0f - l);
+    return l - a * std::max(-1.0f, std::min({k - 3.0f, 9.0f - k, 1.0f}));
+  };
+
+  return std::make_tuple(f(0), f(8), f(4));
+}
+
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
   // See https://www.w3.org/TR/css-color-4/#rgb-to-hsl
-  float max = std::max({r, g, b});
-  float min = std::min({r, g, b});
-  float hue = 0.0f, saturation = 0.0f, ligth = (max + min) / 2.0f;
+  auto [min, max] = std::minmax({r, g, b});
+  float hue = 0.0f, saturation = 0.0f, lightness = std::midpoint(min, max);
   float d = max - min;
 
   if (d != 0.0f) {
-    saturation = (ligth == 0.0f || ligth == 1.0f)
+    saturation = (lightness == 0.0f || lightness == 1.0f)
                      ? 0.0f
-                     : (max - ligth) / std::min(ligth, 1 - ligth);
+                     : (max - lightness) / std::min(lightness, 1 - lightness);
     if (max == r) {
       hue = (g - b) / d + (g < b ? 6.0f : 0.0f);
     } else if (max == g) {
@@ -450,7 +612,24 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
     hue *= 60.0f;
   }
 
-  return std::make_tuple(hue, saturation, ligth);
+  return std::make_tuple(hue, saturation, lightness);
+}
+
+std::tuple<float, float, float> HWBToSRGB(float h, float w, float b) {
+  if (w + b >= 1.0f) {
+    float gray = (w / (w + b));
+    return std::make_tuple(gray, gray, gray);
+  }
+
+  // Leverage HSL to RGB conversion to find HWB to RGB, see
+  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
+  auto [red, green, blue] = HSLToSRGB(h, 1.0f, 0.5f);
+
+  red += w - (w + b) * red;
+  green += w - (w + b) * green;
+  blue += w - (w + b) * blue;
+
+  return std::make_tuple(red, green, blue);
 }
 
 std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
@@ -493,15 +672,18 @@ SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha) {
   return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 
+SkColor4f OklabGamutMapToSkColor4f(float l, float a, float b, float alpha) {
+  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
+  auto [x, y, z] = OklabToXYZD65(l_gm, a_gm, b_gm);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
+}
+
 SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha) {
   auto [x, y, z] = DisplayP3ToXYZD50(r, g, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 
-SkColor4f LchToSkColor4f(float l_input,
-                         float c,
-                         absl::optional<float> h,
-                         float alpha) {
+SkColor4f LchToSkColor4f(float l_input, float c, float h, float alpha) {
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = LabToXYZD50(l, a, b);
   return XYZD50ToSkColor4f(x, y, z, alpha);
@@ -516,44 +698,29 @@ SkColor4f Rec2020ToSkColor4f(float r, float g, float b, float alpha) {
   return XYZD50ToSkColor4f(x, y, z, alpha);
 }
 
-SkColor4f OklchToSkColor4f(float l_input,
-                           float c,
-                           absl::optional<float> h,
-                           float alpha) {
+SkColor4f OklchToSkColor4f(float l_input, float c, float h, float alpha) {
   auto [l, a, b] = LchToLab(l_input, c, h);
   auto [x, y, z] = OklabToXYZD65(l, a, b);
   return XYZD65ToSkColor4f(x, y, z, alpha);
 }
 
+SkColor4f OklchGamutMapToSkColor4f(float l_input,
+                                   float c,
+                                   float h,
+                                   float alpha) {
+  auto [l, a, b] = LchToLab(l_input, c, h);
+  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
+  auto [x, y, z] = OklabToXYZD65(l_gm, a_gm, b_gm);
+  return XYZD65ToSkColor4f(x, y, z, alpha);
+}
+
 SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha) {
-  // See https://www.w3.org/TR/css-color-4/#hsl-to-rgb
-  if (!s) {
-    return SkColor4f{l, l, l, alpha};
-  }
-
-  auto f = [&h, &l, &s](float n) {
-    float k = fmod(n + h / 30.0f, 12.0);
-    float a = s * std::min(l, 1.0f - l);
-    return l - a * std::max(-1.0f, std::min({k - 3.0f, 9.0f - k, 1.0f}));
-  };
-
-  return SkColor4f{f(0), f(8), f(4), alpha};
+  auto [r, g, b] = HSLToSRGB(h, s, l);
+  return SkColor4f{r, g, b, alpha};
 }
 
 SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha) {
-  if (w + b >= 1.0f) {
-    float gray = (w / (w + b));
-    return SkColor4f{gray, gray, gray, alpha};
-  }
-
-  // Leverage HSL to RGB conversion to find HWB to RGB, see
-  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
-  SkColor4f result = HSLToSkColor4f(h, 1.0f, 0.5f, alpha);
-
-  result.fR += w - (w + b) * result.fR;
-  result.fG += w - (w + b) * result.fG;
-  result.fB += w - (w + b) * result.fB;
-
-  return result;
+  auto [red, green, blue] = HWBToSRGB(h, w, b);
+  return SkColor4f{red, green, blue, alpha};
 }
 }  // namespace gfx

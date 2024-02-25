@@ -114,12 +114,12 @@ class CallbackExposingMockOutputStream : public AudioOutputStream {
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Flush, void());
 
-  absl::optional<AudioOutputStream::AudioSourceCallback*> GetCallback() {
+  std::optional<AudioOutputStream::AudioSourceCallback*> GetCallback() {
     return callback_;
   }
 
  private:
-  absl::optional<AudioOutputStream::AudioSourceCallback*> callback_;
+  std::optional<AudioOutputStream::AudioSourceCallback*> callback_;
 };
 
 class MockAudioManager : public AudioManagerBase {

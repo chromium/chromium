@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_TARGETER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_TARGETER_H_
 
+#include <optional>
 #include <queue>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/latency/latency_info.h"
 
@@ -38,13 +38,13 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
   RenderWidgetTargetResult(const RenderWidgetTargetResult&);
   RenderWidgetTargetResult(RenderWidgetHostViewBase* view,
                            bool should_query_view,
-                           absl::optional<gfx::PointF> location,
+                           std::optional<gfx::PointF> location,
                            bool latched_target);
   ~RenderWidgetTargetResult();
 
   raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view = nullptr;
   bool should_query_view = false;
-  absl::optional<gfx::PointF> target_location = absl::nullopt;
+  std::optional<gfx::PointF> target_location = std::nullopt;
   // When |latched_target| is false, we explicitly hit-tested events instead of
   // using a known target.
   bool latched_target = false;
@@ -54,7 +54,7 @@ class RenderWidgetTargeter {
  public:
   using RenderWidgetHostAtPointCallback =
       base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
-                              absl::optional<gfx::PointF>)>;
+                              std::optional<gfx::PointF>)>;
 
   class Delegate {
    public:
@@ -74,7 +74,7 @@ class RenderWidgetTargeter {
         RenderWidgetHostViewBase* target,
         blink::WebInputEvent* event,
         const ui::LatencyInfo& latency,
-        const absl::optional<gfx::PointF>& target_location) = 0;
+        const std::optional<gfx::PointF>& target_location) = 0;
 
     virtual void SetEventsBeingFlushed(bool events_being_flushed) = 0;
 
@@ -152,7 +152,7 @@ class RenderWidgetTargeter {
     ~TargetingRequest();
 
     void RunCallback(RenderWidgetHostViewBase* target,
-                     absl::optional<gfx::PointF> point);
+                     std::optional<gfx::PointF> point);
 
     bool MergeEventIfPossible(const blink::WebInputEvent& event);
     bool IsWebInputEventRequest() const;
@@ -207,7 +207,7 @@ class RenderWidgetTargeter {
   // |target_location|, if
   // set, is the location in |target|'s coordinate space.
   void FoundTarget(RenderWidgetHostViewBase* target,
-                   const absl::optional<gfx::PointF>& target_location,
+                   const std::optional<gfx::PointF>& target_location,
                    TargetingRequest* request);
 
   // Callback when the hit testing timer fires, to resume event processing
@@ -229,7 +229,7 @@ class RenderWidgetTargeter {
     return async_hit_test_timeout_delay_;
   }
 
-  absl::optional<TargetingRequest> request_in_flight_;
+  std::optional<TargetingRequest> request_in_flight_;
   uint32_t last_request_id_ = 0;
   std::queue<TargetingRequest> requests_;
 

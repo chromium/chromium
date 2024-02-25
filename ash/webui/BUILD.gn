@@ -40,6 +40,7 @@ test("ash_webui_unittests") {
     "//ash/webui/shimless_rma/mojom:unit_tests",
     "//ash/webui/shortcut_customization_ui:unit_tests",
     "//ash/webui/shortcut_customization_ui/mojom:unit_tests",
+    "//ash/webui/status_area_internals:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -62,20 +63,13 @@ group("closure_compile") {
   testonly = true
   deps = [
     "//ash/webui/common:closure_compile",
-    "//ash/webui/connectivity_diagnostics:closure_compile",
     "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
-    "//ash/webui/file_manager/resources:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
     "//ash/webui/files_internals:closure_compile",
-    "//ash/webui/firmware_update_ui:closure_compile",
-    "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/multidevice_debug/resources:closure_compile",
-    "//ash/webui/os_feedback_ui:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",
-    "//ash/webui/scanning:closure_compile",
-    "//ash/webui/shimless_rma:closure_compile",
     "//ash/webui/system_apps:closure_compile",
   ]
 }

@@ -39,6 +39,11 @@ enum AuthenticatorStatus {
   OPAQUE_DOMAIN,
   INVALID_PROTOCOL,
   BAD_RELYING_PARTY_ID,
+  BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH,
+  BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE,
+  BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR,
+  BAD_RELYING_PARTY_ID_NO_JSON_MATCH,
+  BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS,
   CANNOT_READ_AND_WRITE_LARGE_BLOB,
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
   FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
@@ -60,6 +65,13 @@ enum AuthenticatorTransport {
   BLE,
   HYBRID,
   INTERNAL,
+};
+
+// See https://w3c.github.io/webauthn/#enum-hints
+enum Hint {
+  SECURITY_KEY,
+  CLIENT_DEVICE,
+  HYBRID,
 };
 
 // Credential information returned by both Authenticator::MakeCredential
@@ -91,10 +103,9 @@ struct UvmEntry {
   uint16 matcher_protection_type;
 };
 
-// The output for the `devicePubKey` extension.
-struct DevicePublicKeyResponse {
-  array<uint8> authenticator_output;
-  array<uint8> signature;
+// The output for the `supplementalPubKeys` extension.
+struct SupplementalPubKeysResponse {
+  array<array<uint8>> signatures;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
@@ -122,6 +133,7 @@ struct MakeCredentialAuthenticatorResponse {
   // so, |prf| contains the value of the `enabled` member.
   bool echo_prf;
   bool prf;
+  PRFValues? prf_results;
 
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain a `credBlob` extension output.
@@ -152,7 +164,7 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_large_blob;
   bool supports_large_blob;
 
-  DevicePublicKeyResponse? device_public_key;
+  SupplementalPubKeysResponse? supplemental_pub_keys;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -169,6 +181,12 @@ struct GetAssertionAuthenticatorResponse {
   // Maximum 64 bytes.
   array<uint8>? user_handle;
 
+  // Webauthn extension related output responses.
+  AuthenticationExtensionsClientOutputs extensions;
+};
+
+// Webauthn credential assertion extensions response values.
+struct AuthenticationExtensionsClientOutputs {
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain an `appid` extension output.
   // If so, |appid_extension| contains the actual value.
@@ -211,7 +229,7 @@ struct GetAssertionAuthenticatorResponse {
   // null if none.
   array<uint8>? get_cred_blob;
 
-  DevicePublicKeyResponse? device_public_key;
+  SupplementalPubKeysResponse? supplemental_pub_keys;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -325,7 +343,9 @@ struct RemoteDesktopClientOverride {
   bool same_origin_with_ancestors;
 };
 
-struct DevicePublicKeyRequest {
+struct SupplementalPubKeysRequest {
+  bool device_scope_requested;
+  bool provider_scope_requested;
   AttestationConveyancePreference attestation;
   array<string> attestation_formats;
 };
@@ -351,6 +371,9 @@ struct PublicKeyCredentialRequestOptions {
   // A list of credentials the relying party knows about and would
   // accept as the signing credential.
   array<PublicKeyCredentialDescriptor> allow_credentials;
+
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  array<Hint> hints;
 
   // Indicates the relying party's need for a user-verifying authenticator.
   UserVerificationRequirement user_verification;
@@ -409,9 +432,9 @@ struct AuthenticationExtensionsClientInputs {
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
 
-  // If present, reflects the contents of the "devicePubKey" extension.
+  // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
-  DevicePublicKeyRequest? device_public_key;
+  SupplementalPubKeysRequest? supplemental_pub_keys;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -484,6 +507,9 @@ struct PublicKeyCredentialCreationOptions {
   // Specify the relying party's authenticator attribute requirements.
   AuthenticatorSelectionCriteria? authenticator_selection;
 
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  array<Hint> hints;
+
   // Specifies whether the RP wants attestation information for the created
   // credential.
   AttestationConveyancePreference attestation;
@@ -492,10 +518,12 @@ struct PublicKeyCredentialCreationOptions {
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
   bool hmac_create_secret;
 
-  // Whether the PRF extension was present. (Evaluation of the PRF at creation
-  // time is never supported currently, owing to a lack of hardware support.)
+  // Whether the PRF extension was present.
   // https://w3c.github.io/webauthn/#prf-extension
   bool prf_enable;
+
+  // Optional PRF input. Cannot have the `id` field set.
+  PRFValues? prf_input;
 
   // The value of the `credentialProtectionPolicy` extension, or UNSPECIFIED if
   // none was provided.
@@ -531,9 +559,9 @@ struct PublicKeyCredentialCreationOptions {
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
 
-  // If present, reflects the contents of the "devicePubKey" extension.
+  // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
-  DevicePublicKeyRequest? device_public_key;
+  SupplementalPubKeysRequest? supplemental_pub_keys;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

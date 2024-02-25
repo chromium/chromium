@@ -9,7 +9,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +31,7 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
                                         std::numeric_limits<uint64_t>::max(),
                                         base::Time());
   WebRequestInfo info(WebRequestInfoInitParams(0, 0, 0, nullptr, request, false,
-                                               false, false, absl::nullopt,
-                                               ukm::kInvalidSourceIdObj));
+                                               false, false, std::nullopt));
   ASSERT_TRUE(info.request_body_data);
   base::Value* value = info.request_body_data->Find(
       extension_web_request_api_constants::kRequestBodyRawKey);

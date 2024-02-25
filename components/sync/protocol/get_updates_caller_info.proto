@@ -15,49 +15,15 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 message GetUpdatesCallerInfo {
-  // This enum was deprecated in M28.  The preferred represenation of this
-  // information is now the GetUpdatesOrigin enum, which is defined in
-  // sync_enums.proto.
-  // TODO(crbug.com/510165): Remove all values except for UNKNOWN and stop
-  // filling the field once the server doesn't depend on it anymore.
+  // This enum was deprecated in M28, and is unused since 2018.
+  // TODO(crbug.com/41188509): Fully remove it.
   enum GetUpdatesSource {
-    UNKNOWN = 0;       // The source was not set by the caller.
-    FIRST_UPDATE = 1;  // First request after browser restart.  Not to
-                       // be confused with "NEW_CLIENT".
-    LOCAL = 2;         // The source of the update was a local change.
-    NOTIFICATION = 3;  // The source of the update was a p2p notification.
-    PERIODIC = 4;      // The source of the update was periodic polling.
-    SYNC_CYCLE_CONTINUATION = 5;  // The source of the update was a
-                                  // continuation of a previous sync cycle.
-                                  // No longer sent as of M24.
-
-    // This value is deprecated and was never used in production.
-    // CLEAR_PRIVATE_DATA = 6;
-
-    NEWLY_SUPPORTED_DATATYPE = 7;  // The client is in configuration mode
-                                   // because it's syncing all datatypes, and
-                                   // support for a new datatype was recently
-                                   // released via a software auto-update.
-    MIGRATION = 8;          // The client is in configuration mode because a
-                            // MIGRATION_DONE error previously returned by the
-                            // server necessitated resynchronization.
-    NEW_CLIENT = 9;         // The client is in configuration mode because the
-                            // user enabled sync for the first time.  Not to be
-                            // confused with FIRST_UPDATE.
-    RECONFIGURATION = 10;   // The client is in configuration mode because the
-                            // user opted to sync a different set of datatypes.
-    DATATYPE_REFRESH = 11;  // A datatype has requested a refresh. This is
-                            // typically used when datatype's have custom
-                            // sync UI, e.g. sessions.
-    RETRY = 13;  // A follow-up GU to pick up updates missed by previous GU.
-    PROGRAMMATIC = 14;  // The client is programmatically enabling/disabling
-                        // a type, typically for error handling purposes.
+    UNKNOWN = 0;
   }
+  optional GetUpdatesSource source = 1 [deprecated = true, default = UNKNOWN];
 
-  required GetUpdatesSource source = 1 [deprecated = true];
-
-  // True only if notifications were enabled for this GetUpdateMessage.
-  // TODO(crbug.com/510165): Move this bool out of GetUpdatesCallerInfo so that
-  // GetUpdatesCallerInfo can eventually be removed.
+  // True if notifications were enabled for this GetUpdateMessage.
+  // Note: Ideally this would be moved out of GetUpdatesCallerInfo, so that
+  // GetUpdatesCallerInfo itself can be removed.
   optional bool notifications_enabled = 2;
 }

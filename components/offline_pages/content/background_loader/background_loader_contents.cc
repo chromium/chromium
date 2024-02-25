@@ -23,6 +23,7 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   // could kill the background offliner while it was running.
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(browser_context_));
+  web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetAudioMuted(true);
   web_contents_->SetDelegate(this);
 }
@@ -62,7 +63,8 @@ bool BackgroundLoaderContents::ShouldSuppressDialogs(
   return true;
 }
 
-bool BackgroundLoaderContents::ShouldFocusPageAfterCrash() {
+bool BackgroundLoaderContents::ShouldFocusPageAfterCrash(
+    content::WebContents* source) {
   // Background page should never be focused.
   return false;
 }
@@ -123,7 +125,7 @@ void BackgroundLoaderContents::RequestMediaAccessPermission(
 
 bool BackgroundLoaderContents::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return false;  // No permissions granted.
 }

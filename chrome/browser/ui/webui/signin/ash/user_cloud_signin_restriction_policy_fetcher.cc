@@ -115,7 +115,7 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
                          kKnownNonEnterprise) {
     // Non Enterprise accounts do not have restrictions.
     std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
-                             /*policy=*/absl::nullopt,
+                             /*policy=*/std::nullopt,
                              /*domain=*/std::string());
     return;
   }
@@ -144,7 +144,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetTokenFailure(
   LOG(ERROR) << "Failed to fetch access token for consumer: "
              << GetConsumerName() << " with error: " << error.ToString();
   std::move(callback_).Run(/*status=*/Status::kGetTokenError,
-                           /*policy=*/absl::nullopt,
+                           /*policy=*/std::nullopt,
                            /*domain=*/std::string());
 }
 
@@ -167,7 +167,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
     // Non Enterprise accounts do not have restrictions.
     DVLOG(1) << "User account is not an Enterprise account";
     std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
-                             /*policy=*/absl::nullopt,
+                             /*policy=*/std::nullopt,
                              /*domain=*/std::string());
   }
 }
@@ -176,7 +176,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Failed to fetch user info: " << error.ToString();
   std::move(callback_).Run(/*status=*/Status::kGetUserInfoError,
-                           /*policy=*/absl::nullopt,
+                           /*policy=*/std::nullopt,
                            /*domain=*/std::string());
 }
 
@@ -203,12 +203,12 @@ void UserCloudSigninRestrictionPolicyFetcher::
   base::UmaHistogramMediumTimes(
       kSecondaryGoogleAccountUsageLatencyHistogramName,
       base::TimeTicks::Now() - policy_fetch_start_time_);
-  absl::optional<std::string> restriction;
+  std::optional<std::string> restriction;
   Status status = Status::kUnknownError;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
-  absl::optional<int> response_code;
+  std::optional<int> response_code;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 

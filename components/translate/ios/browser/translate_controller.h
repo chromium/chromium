@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -131,18 +132,18 @@ class TranslateController : public web::WebFramesManager::Observer,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The current main web frame of `web_state_`, if one exists.
-  web::WebFrame* main_web_frame_ = nullptr;
+  raw_ptr<web::WebFrame> main_web_frame_ = nullptr;
 
   // Used to fetch translate requests. There may be multiple requests in flight.
   std::set<std::unique_ptr<network::SimpleURLLoader>> request_fetchers_;
   // Used to fetch additional scripts needed for translate.
   std::unique_ptr<network::SimpleURLLoader> script_fetcher_;
 
-  Observer* observer_;
-  JSTranslateWebFrameManagerFactory* js_manager_factory_;
+  raw_ptr<Observer> observer_;
+  raw_ptr<JSTranslateWebFrameManagerFactory> js_manager_factory_;
   base::WeakPtrFactory<TranslateController> weak_method_factory_;
 };
 

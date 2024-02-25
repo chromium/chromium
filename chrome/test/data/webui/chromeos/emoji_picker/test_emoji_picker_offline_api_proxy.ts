@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Status, TenorGifResponse} from 'chrome://emoji-picker/emoji_picker.mojom-webui.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {GifSubcategoryData, VisualContent} from 'chrome://emoji-picker/types.js';
+import {EmojiPickerApiProxy, GifSubcategoryData, Status, TenorGifResponse, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
 
-export class TestEmojiPickerApiProxyErrorImpl extends EmojiPickerApiProxyImpl {
+export class TestEmojiPickerApiProxyError extends EmojiPickerApiProxy {
   status: Status = Status.kHttpOk;
   readonly noGifs: TenorGifResponse = {
     next: '',

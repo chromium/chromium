@@ -34,18 +34,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Properties defined here reflect the visible state of the {@link EditorDialog}.
- */
+/** Properties defined here reflect the visible state of the {@link EditorDialog}. */
 public class EditorProperties {
-    /**
-     * Contains information needed by {@link EditorDialogView} to display fields.
-     */
+    /** Contains information needed by {@link EditorDialogView} to display fields. */
     public static class FieldItem extends ListItem {
         public final boolean isFullLine;
 
         public FieldItem(int type, PropertyModel model) {
-            this(type, model, /*isFullLine=*/false);
+            this(type, model, /* isFullLine= */ false);
         }
 
         public FieldItem(int type, PropertyModel model, boolean isFullLine) {
@@ -80,20 +76,27 @@ public class EditorProperties {
     public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
             new ReadableObjectPropertyKey<>("delete_callback");
 
+    public static final WritableBooleanPropertyKey VALIDATE_ON_SHOW =
+            new WritableBooleanPropertyKey("validate_on_show");
+
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
-    /**
-     * This property is temporary way to trigger field error message update process.
-     * It also triggers field focus update.
-     * TODO(crbug.com/1435314): remove this property once fields are updated through MCP.
-     */
-    public static final WritableBooleanPropertyKey FORM_VALID =
-            new WritableBooleanPropertyKey("form_valid");
 
-    public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
-            FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
-            SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE,
-            DELETE_RUNNABLE, VISIBLE, FORM_VALID};
+    public static final PropertyKey[] ALL_KEYS = {
+        EDITOR_TITLE,
+        CUSTOM_DONE_BUTTON_TEXT,
+        FOOTER_MESSAGE,
+        DELETE_CONFIRMATION_TITLE,
+        DELETE_CONFIRMATION_TEXT,
+        SHOW_REQUIRED_INDICATOR,
+        EDITOR_FIELDS,
+        DONE_RUNNABLE,
+        CANCEL_RUNNABLE,
+        ALLOW_DELETE,
+        DELETE_RUNNABLE,
+        VALIDATE_ON_SHOW,
+        VISIBLE
+    };
 
     private EditorProperties() {}
 
@@ -109,9 +112,7 @@ public class EditorProperties {
         int TEXT_INPUT = 2;
     }
 
-    /**
-     * A convenience class for displaying keyed values in a dropdown.
-     */
+    /** A convenience class for displaying keyed values in a dropdown. */
     public static class DropdownKeyValue extends Pair<String, String> {
         public DropdownKeyValue(String key, String value) {
             super(key, value);
@@ -133,31 +134,29 @@ public class EditorProperties {
         }
     }
 
-    /**
-     * Field properties common to every field.
-     */
+    /** Field properties common to every field. */
     public static class FieldProperties {
         public static final WritableObjectPropertyKey<String> LABEL =
                 new WritableObjectPropertyKey<>("label");
-        public static final PropertyModel
-                .WritableObjectPropertyKey<EditorFieldValidator> VALIDATOR =
-                new WritableObjectPropertyKey<>("validator");
+        public static final PropertyModel.WritableObjectPropertyKey<EditorFieldValidator>
+                VALIDATOR = new WritableObjectPropertyKey<>("validator");
         public static final WritableObjectPropertyKey<String> ERROR_MESSAGE =
                 new WritableObjectPropertyKey<>("error_message");
         // TODO(crbug.com/1435314): make this field read-only.
         public static final WritableBooleanPropertyKey IS_REQUIRED =
                 new WritableBooleanPropertyKey("is_required");
+        public static final WritableBooleanPropertyKey FOCUSED =
+                new WritableBooleanPropertyKey("focused");
         // TODO(crbug.com/1435314): make this field read-only.
         public static final WritableObjectPropertyKey<String> VALUE =
                 new WritableObjectPropertyKey<>("value");
 
         public static final PropertyKey[] FIELD_ALL_KEYS = {
-                LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, VALUE};
+            LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE
+        };
     }
 
-    /**
-     * Properties specific for the dropdown fields.
-     */
+    /** Properties specific for the dropdown fields. */
     public static class DropdownFieldProperties {
         public static final ReadableObjectPropertyKey<List<DropdownKeyValue>>
                 DROPDOWN_KEY_VALUE_LIST = new ReadableObjectPropertyKey<>("key_value_list");
@@ -167,17 +166,17 @@ public class EditorProperties {
                 new ReadableObjectPropertyKey<>("hint");
 
         public static final PropertyKey[] DROPDOWN_SPECIFIC_KEYS = {
-                DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT};
+            DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT
+        };
 
         public static final PropertyKey[] DROPDOWN_ALL_KEYS =
-                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                              Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[] ::new);
+                Stream.concat(
+                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                                Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[]::new);
     }
 
-    /**
-     * Properties specific for the text fields.
-     */
+    /** Properties specific for the text fields. */
     public static class TextFieldProperties {
         public static final ReadableIntPropertyKey TEXT_FIELD_TYPE =
                 new ReadableIntPropertyKey("field_type");
@@ -187,15 +186,14 @@ public class EditorProperties {
                 new ReadableObjectPropertyKey<>("formatter");
 
         public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
-                TEXT_FIELD_TYPE,
-                TEXT_SUGGESTIONS,
-                TEXT_FORMATTER,
+            TEXT_FIELD_TYPE, TEXT_SUGGESTIONS, TEXT_FORMATTER,
         };
 
         public static final PropertyKey[] TEXT_ALL_KEYS =
-                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                              Arrays.stream(TEXT_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[] ::new);
+                Stream.concat(
+                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                                Arrays.stream(TEXT_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[]::new);
     }
 
     public static boolean isDropdownField(ListItem fieldItem) {
@@ -204,18 +202,22 @@ public class EditorProperties {
 
     public static @Nullable String getDropdownKeyByValue(
             PropertyModel dropdownField, String value) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
-                .stream()
-                .filter(keyValue -> { return keyValue.getValue().equals(value); })
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
+                .filter(
+                        keyValue -> {
+                            return keyValue.getValue().equals(value);
+                        })
                 .map(DropdownKeyValue::getKey)
                 .findAny()
                 .orElse(null);
     }
 
     public static @Nullable String getDropdownValueByKey(PropertyModel dropdownField, String key) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
-                .stream()
-                .filter(keyValue -> { return keyValue.getKey().equals(key); })
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
+                .filter(
+                        keyValue -> {
+                            return keyValue.getKey().equals(key);
+                        })
                 .map(DropdownKeyValue::getValue)
                 .findAny()
                 .orElse(null);
@@ -244,5 +246,30 @@ public class EditorProperties {
             isValid &= item.model.get(FieldProperties.ERROR_MESSAGE) == null;
         }
         return isValid;
+    }
+
+    public static void scrollToFieldWithErrorMessage(PropertyModel editorModel) {
+        // Check if a field with an error is already focused.
+        ListModel<FieldItem> fields = editorModel.get(EditorProperties.EDITOR_FIELDS);
+        for (FieldItem item : fields) {
+            if (item.model.get(FieldProperties.FOCUSED)
+                    && item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
+                // Hack: Although the field is focused, it may be off screen. Toggle FOCUSED in
+                // order to scroll the field into view.
+                item.model.set(FieldProperties.FOCUSED, false);
+                item.model.set(FieldProperties.FOCUSED, true);
+                return;
+            }
+        }
+
+        // Focus first field with an error.
+        for (FieldItem item : fields) {
+            if (item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
+                item.model.set(FieldProperties.FOCUSED, true);
+                break;
+            }
+            // The field (ex {@link TextFieldView}) is responsible for clearing FOCUSED property
+            // when the field loses focus.
+        }
     }
 }

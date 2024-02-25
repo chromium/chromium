@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.policy;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.policy.PolicyService;
 
@@ -51,6 +52,7 @@ public class PolicyServiceFactory {
     @NativeMethods
     public interface Natives {
         PolicyService getGlobalPolicyService();
+
         PolicyService getProfilePolicyService(Profile profile);
     }
 }

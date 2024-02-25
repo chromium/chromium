@@ -36,16 +36,10 @@ bool TestSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
   return (url != GURL("about:blank"));
 }
 
-bool TestSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool TestSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection,
     CheckBrowseUrlType check_type) {
   NOTIMPLEMENTED();
   return true;

@@ -79,7 +79,7 @@ class DrmWindow {
   // Update the HW cursor bitmap & move to the location if specified.
   // If the bitmap is empty, the cursor is hidden.
   void SetCursor(const std::vector<SkBitmap>& bitmaps,
-                 const absl::optional<gfx::Point>& location,
+                 const std::optional<gfx::Point>& location,
                  base::TimeDelta frame_delay);
 
   // Move the HW cursor to the specified location.
@@ -107,17 +107,15 @@ class DrmWindow {
 
   const gfx::AcceleratedWidget widget_;
 
-  const raw_ptr<DrmDeviceManager, ExperimentalAsh>
-      device_manager_;                                            // Not owned.
-  const raw_ptr<ScreenManager, ExperimentalAsh> screen_manager_;  // Not owned.
+  const raw_ptr<DrmDeviceManager> device_manager_;  // Not owned.
+  const raw_ptr<ScreenManager> screen_manager_;     // Not owned.
 
   // The current bounds of the window.
   gfx::Rect bounds_;
 
   // The controller associated with the current window. This may be nullptr if
   // the window isn't over an active display.
-  raw_ptr<HardwareDisplayController, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
+  raw_ptr<HardwareDisplayController, DanglingUntriaged> controller_ = nullptr;
   std::unique_ptr<DrmOverlayValidator> overlay_validator_;
 
   base::RepeatingTimer cursor_timer_;

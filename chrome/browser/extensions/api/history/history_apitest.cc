@@ -16,6 +16,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -45,7 +46,7 @@ class AddSyncedVisitTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     history::VisitID visit_id = backend->AddSyncedVisit(
-        url_, u"Title", /*hidden=*/false, visit_, absl::nullopt, absl::nullopt);
+        url_, u"Title", /*hidden=*/false, visit_, std::nullopt, std::nullopt);
     EXPECT_NE(visit_id, history::kInvalidVisitID);
     return true;
   }

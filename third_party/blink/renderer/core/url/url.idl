@@ -33,6 +33,8 @@
 ] interface URL {
     [RaisesException] constructor(USVString url, optional USVString base);
 
+    static boolean canParse(USVString url, optional USVString base);
+
     [RaisesException=Setter] stringifier attribute USVString href;
     readonly attribute USVString origin;
     attribute USVString protocol;
@@ -40,7 +42,7 @@
     attribute USVString password;
     attribute USVString host;
     attribute USVString hostname;
-    [SetterCallWith=ScriptState] attribute USVString port;
+    attribute USVString port;
     attribute USVString pathname;
     attribute USVString search;
     [SameObject] readonly attribute URLSearchParams searchParams;

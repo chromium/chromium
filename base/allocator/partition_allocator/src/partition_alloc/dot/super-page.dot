@@ -1,0 +1,94 @@
+digraph G {
+  node[shape=plaintext]
+  edge[style=dashed]
+
+  invisible_a[label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+      <TR>
+        <TD PORT="red" WIDTH="100"></TD>
+        <TD PORT="green" WIDTH="20"></TD>
+        <TD PORT="blue" WIDTH="40"></TD>
+        <TD PORT="gold" WIDTH="300"></TD>
+        <TD PORT="pink" WIDTH="60"></TD>
+      </TR>
+    </TABLE>
+  >]
+  superpage[xlabel="Super Page",label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" WIDTH="10">
+      <TR>
+        <!-- Head Partition Page -->
+        <TD BGCOLOR="darkgrey" HEIGHT="52"></TD>
+        <TD PORT="metadata"></TD>
+        <TD BGCOLOR="darkgrey" WIDTH="18"></TD>
+        <!-- Bitmaps -->
+        <TD WIDTH="100">Bitmaps(?)</TD>
+        <!-- Several Slot Spans -->
+        <TD PORT="red" BGCOLOR="crimson" WIDTH="119">3</TD>
+        <TD PORT="green" BGCOLOR="palegreen" WIDTH="39">1</TD>
+        <TD PORT="blue" BGCOLOR="cornflowerblue" WIDTH="79">2</TD>
+        <TD PORT="gold" BGCOLOR="gold" WIDTH="239">6</TD>
+        <TD PORT="red2" BGCOLOR="crimson" WIDTH="119">3</TD>
+        <TD PORT="pink" BGCOLOR="deeppink" WIDTH="39">1</TD>
+        <TD WIDTH="79">...</TD>
+        <!-- Tail Partition Page -->
+        <TD BGCOLOR="darkgrey" WIDTH="39"></TD>
+      </TR>
+    </TABLE>
+  >]
+  invisible_b[label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+      <TR>
+        <TD PORT="green" WIDTH="30"></TD>
+        <TD PORT="blue" WIDTH="60"></TD>
+        <TD PORT="gold" WIDTH="180"></TD>
+        <TD PORT="red" WIDTH="90"></TD>
+        <TD PORT="pink" WIDTH="90"></TD>
+      </TR>
+    </TABLE>
+  >]
+  metadata_page[xlabel="Metadata",label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+      <TR>
+        <!-- Guard Page Metadata -->
+        <TD BGCOLOR="darkgrey"> </TD>
+        <!-- Bitmaps Offset -->
+        <TD> B? </TD>
+        <!-- Red Slot Span Metadata -->
+        <TD BGCOLOR="crimson">v</TD>
+        <TD BGCOLOR="crimson">+</TD>
+        <TD BGCOLOR="crimson">+</TD>
+        <!-- Green Slot Span Metadata -->
+        <TD BGCOLOR="palegreen">v</TD>
+        <!-- Blue Slot Span Metadata -->
+        <TD BGCOLOR="cornflowerblue">v</TD>
+        <TD BGCOLOR="cornflowerblue">+</TD>
+        <!-- Gold Slot Span Metadata -->
+        <TD BGCOLOR="gold">v</TD>
+        <TD BGCOLOR="gold">+</TD>
+        <TD BGCOLOR="gold">+</TD>
+        <TD BGCOLOR="gold">+</TD>
+        <TD BGCOLOR="gold">+</TD>
+        <TD BGCOLOR="gold">+</TD>
+        <!-- Red Slot Span Metadata -->
+        <TD BGCOLOR="crimson">v</TD>
+        <TD BGCOLOR="crimson">+</TD>
+        <TD BGCOLOR="crimson">+</TD>
+        <!-- Pink Slot Span Metadata -->
+        <TD BGCOLOR="deeppink">v</TD>
+        <!-- etc. -->
+        <TD WIDTH="64">...</TD>
+        <!-- Guard Page Metadata -->
+        <TD BGCOLOR="darkgrey"> </TD>
+      </TR>
+    </TABLE>
+  >]
+
+  invisible_a:red->superpage:red->superpage:red2[color=crimson]
+  superpage:red2->invisible_b:red[color=crimson]
+  invisible_a:green->superpage:green->invisible_b:green[color=palegreen]
+  invisible_a:blue->superpage:blue->invisible_b:blue[color=cornflowerblue]
+  invisible_a:gold->superpage:gold->invisible_b:gold[color=gold]
+  invisible_a:pink->superpage:pink->invisible_b:pink[color=deeppink]
+
+  superpage:metadata->metadata_page[style="",arrowhead=odot]
+}

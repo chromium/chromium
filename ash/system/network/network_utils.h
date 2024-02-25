@@ -5,9 +5,10 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -30,7 +31,8 @@ enum class DetailedViewSection {
   kMobileSection = 1,
   kEthernetSection = 2,
   kDetailedSection = 3,
-  kMaxValue = kDetailedSection
+  kTetherHostsSection = 4,
+  kMaxValue = kTetherHostsSection
 };
 
 enum NetworkDetailedViewListType { LIST_TYPE_NETWORK, LIST_TYPE_VPN };
@@ -43,13 +45,12 @@ ASH_EXPORT void RecordNetworkTypeToggled(
     chromeos::network_config::mojom::NetworkType network_type,
     bool new_state);
 
-// Returns the add esim button (`kQsRevamp` disabled) or add esim entry
-// (`kQsRevamp` enabled) tooltip message id.
+// Returns the add esim entry tooltip message id.
 ASH_EXPORT int GetAddESimTooltipMessageId();
 
 // Returns the subtext to display for a connected network in a portal state.
 // This is used in the network menu, the tooltip, and for a11y.
-ASH_EXPORT absl::optional<std::u16string> GetPortalStateSubtext(
+ASH_EXPORT std::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state);
 
 // Returns true if current network row is disabled.

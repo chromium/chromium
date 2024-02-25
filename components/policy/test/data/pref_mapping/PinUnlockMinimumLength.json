@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PinUnlockMinimumLength": 4
+        },
+        "prefs": {
+          "pin_unlock_minimum_length": {
+            "value": 4
+          }
+        }
+      }
+    ]
+  }
+]

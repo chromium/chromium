@@ -8,11 +8,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.junit.Assert;
 import org.mockito.Mockito;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.policy.PolicyMap;
 import org.chromium.components.policy.PolicyService;
 
@@ -75,7 +75,8 @@ public class PolicyServiceTestSupporter {
         mPolicyUpdated.set(index, false);
         Mockito.doAnswer(invocation -> mPolicyUpdated.set(index, true))
                 .when(mObservers.get(index))
-                .onPolicyUpdated(argThat(actualPrevious -> expectPrevious.isEqual(actualPrevious)),
+                .onPolicyUpdated(
+                        argThat(actualPrevious -> expectPrevious.isEqual(actualPrevious)),
                         argThat(actualCurrent -> expectCurrent.isEqual(actualCurrent)));
     }
 

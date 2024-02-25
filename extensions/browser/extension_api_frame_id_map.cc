@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_api_frame_id_map.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -162,7 +163,7 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
   if (document_id.length() != 32)
     return DocumentId();
 
-  base::StringPiece string_piece(document_id);
+  std::string_view string_piece(document_id);
   uint64_t high = 0;
   uint64_t low = 0;
   if (!base::HexStringToUInt64(string_piece.substr(0, 16), &high) ||
@@ -170,7 +171,7 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
     return DocumentId();
   }
 
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return DocumentId();

@@ -15,7 +15,6 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/view.h"
 
 class ExtensionContextMenuController;
 
@@ -25,9 +24,9 @@ class ExtensionContextMenuController;
 // action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
                           public ToolbarActionViewDelegateViews {
- public:
-  METADATA_HEADER(ToolbarActionView);
+  METADATA_HEADER(ToolbarActionView, views::MenuButton)
 
+ public:
   // Need DragController here because ToolbarActionView could be
   // dragged/dropped.
   class Delegate : public views::DragController {
@@ -90,7 +89,6 @@ class ToolbarActionView : public views::MenuButton,
   void RemovedFromWidget() override;
 
   // ToolbarActionViewDelegateViews:
-  views::View* GetAsView() override;
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::Button* GetReferenceButtonForPopup() override;
   void ShowContextMenuAsFallback() override;

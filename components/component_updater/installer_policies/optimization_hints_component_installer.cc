@@ -120,8 +120,9 @@ OptimizationHintsComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void RegisterOptimizationHintsComponent(ComponentUpdateService* cus) {
-  if (!optimization_guide::features::IsOptimizationHintsEnabled())
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
     return;
+  }
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationHintsComponentInstallerPolicy>());

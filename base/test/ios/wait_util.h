@@ -43,9 +43,8 @@ constexpr TimeDelta kWaitForFileOperationTimeout = Seconds(2);
 
 // Returns true when condition() becomes true, otherwise returns false after
 // |timeout|. Repetitively runs the current NSRunLoop and the current
-// MessageLoop (if |run_message_loop| is true).
-// TODO(crbug.com/1462320): Investigate whether we can always run the
-// message loop.
+// MessageLoop (if |run_message_loop| is true). Passing |run_message_loop| true
+// only makes sense in unit tests.
 [[nodiscard]] bool WaitUntilConditionOrTimeout(TimeDelta timeout,
                                                bool run_message_loop,
                                                ConditionBlock condition);

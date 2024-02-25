@@ -28,4 +28,7 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  }
 }

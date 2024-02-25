@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -160,7 +161,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
   // is not enabled.
   return false;
   {% else %}
-  return context && context->FeatureEnabled(OriginTrialFeature::k{{feature.name}});
+  return context && context->FeatureEnabled(mojom::blink::OriginTrialFeature::k{{feature.name}});
   {% endif %}
 }
 

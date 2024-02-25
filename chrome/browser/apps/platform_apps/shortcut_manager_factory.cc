@@ -38,7 +38,8 @@ AppShortcutManagerFactory::AppShortcutManagerFactory()
 
 AppShortcutManagerFactory::~AppShortcutManagerFactory() = default;
 
-KeyedService* AppShortcutManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppShortcutManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
@@ -48,7 +49,7 @@ KeyedService* AppShortcutManagerFactory::BuildServiceInstanceFor(
   if (!web_app::AreWebAppsEnabled(profile))
     return nullptr;
 
-  return new AppShortcutManager(profile);
+  return std::make_unique<AppShortcutManager>(profile);
 }
 
 bool AppShortcutManagerFactory::ServiceIsCreatedWithBrowserContext() const {

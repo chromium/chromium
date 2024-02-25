@@ -174,7 +174,7 @@ class MEDIA_EXPORT DecoderSelector {
   // Used to keep track of the original failure-to-decode reason so that if
   // playback fails entirely, we have a root cause to point to, rather than
   // failing due to running out of more acceptable decoders.
-  absl::optional<DecoderStatus> decode_failure_reinit_cause_ = absl::nullopt;
+  std::optional<DecoderStatus> decode_failure_reinit_cause_ = std::nullopt;
 
   base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
 };

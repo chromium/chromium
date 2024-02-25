@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
@@ -33,7 +34,7 @@ UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
   // hashing scheme is architecture dependent.
   std::string db_url = GetDatabaseUrlString(url);
   base::MD5Digest digest;
-  base::MD5Sum(db_url.data(), db_url.size(), &digest);
+  base::MD5Sum(base::as_byte_span(db_url), &digest);
   int64_t hash;
   memcpy(&hash, digest.a, sizeof(int64_t));
   return UrlId::FromUnsafeValue(hash);
@@ -41,8 +42,16 @@ UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
 
 bool UkmUrlTable::InitTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_->DoesTableExist(kTableName))
+  if (db_->DoesTableExist(kTableName)) {
+    if (!db_->DoesColumnExist(kTableName, "profile_id")) {
+      // Old versions don't have the profile_id column, we modify the table to
+      // add that field.
+      return db_->Execute(
+          "ALTER TABLE urls "
+          "ADD COLUMN profile_id TEXT");
+    }
     return true;
+  }
 
   static constexpr char kCreateTableQuery[] =
       // clang-format off
@@ -51,7 +60,8 @@ bool UkmUrlTable::InitTable() {
         "url TEXT NOT NULL,"
         "last_timestamp INTEGER NOT NULL,"
         "counter INTEGER,"
-        "title TEXT)";
+        "title TEXT,"
+        "profile_id TEXT)";
   // clang-format on
   return db_->Execute(kCreateTableQuery);
 }
@@ -67,14 +77,16 @@ bool UkmUrlTable::IsUrlInTable(UrlId url_id) {
 
 bool UkmUrlTable::WriteUrl(const GURL& url,
                            UrlId url_id,
-                           base::Time timestamp) {
+                           base::Time timestamp,
+                           const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kWriteQuery[] =
-      "INSERT INTO urls(url_id,url,last_timestamp) VALUES(?,?,?)";
+      "INSERT INTO urls(url_id,url,last_timestamp, profile_id) VALUES(?,?,?,?)";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kWriteQuery));
   statement.BindInt64(0, url_id.GetUnsafeValue());
   statement.BindString(1, database_utils::GurlToDatabaseUrl(url));
   statement.BindTime(2, timestamp);
+  statement.BindString(3, profile_id);
   return statement.Run();
 }
 

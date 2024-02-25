@@ -6,7 +6,6 @@
 
 import argparse
 import hashlib
-import math
 import os
 import struct
 import subprocess
@@ -73,16 +72,11 @@ def _ExtractPartition(objcopy, input_elf, output_elf, partition):
     old_build_id_file = os.path.join(tempdir, 'old_build_id')
     new_build_id_file = os.path.join(tempdir, 'new_build_id')
 
-    # Dump out build-id section and remove original build-id section from
-    # ELF file.
+    # Dump out build-id section.
     subprocess.check_call([
         objcopy,
         '--extract-partition',
         partition,
-        # Note: Not using '--update-section' here as it is not supported
-        # by llvm-objcopy.
-        '--remove-section',
-        build_id_section,
         '--dump-section',
         '{}={}'.format(build_id_section, old_build_id_file),
         input_elf,
@@ -112,15 +106,11 @@ def _ExtractPartition(objcopy, input_elf, output_elf, partition):
     with open(new_build_id_file, 'wb') as f:
       f.write(prefix + _ComputeNewBuildId(build_id, output_elf))
 
-    # Write back the new build-id section.
+    # Update the build-id section.
     subprocess.check_call([
         objcopy,
-        '--add-section',
+        '--update-section',
         '{}={}'.format(build_id_section, new_build_id_file),
-        # Add alloc section flag, or else the section will be removed by
-        # objcopy --strip-all when generating unstripped lib file.
-        '--set-section-flags',
-        '{}={}'.format(build_id_section, 'alloc'),
         temp_elf,
         output_elf,
     ])

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +22,11 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::_;
 
@@ -67,14 +71,14 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
     if (video_frame_out)
       *video_frame_out = video_frame;
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame)
-                           .ToLocalChecked());
+                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame));
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> media_stream_source_;
-  PushableMediaStreamVideoSource* pushable_video_source_;
+  raw_ptr<PushableMediaStreamVideoSource> pushable_video_source_;
 };
 
 // TODO(1153092): Test flakes, likely due to completing before background
@@ -124,7 +128,9 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* sink = CreateUnderlyingSink(script_state);
-  ScriptValue v8_integer = ScriptValue::From(script_state, 0);
+  ScriptValue v8_integer =
+      ScriptValue(script_state->GetIsolate(),
+                  v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not a VideoFrame to the sink should fail.
   DummyExceptionStateForTesting dummy_exception_state;
@@ -167,6 +173,16 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  EXPECT_EQ(!!underlying_sink->gmb_manager(),
+            WebGraphicsContext3DVideoFramePool::
+                IsGpuMemoryBufferReadbackFromTextureEnabled());
 }
 
 }  // namespace blink

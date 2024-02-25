@@ -206,7 +206,7 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
 
-const absl::optional<net::IsolationInfo>& FakeDownloadItem::GetIsolationInfo()
+const std::optional<net::IsolationInfo>& FakeDownloadItem::GetIsolationInfo()
     const {
   return isolation_info_;
 }
@@ -379,7 +379,7 @@ const GURL& FakeDownloadItem::GetTabReferrerUrl() const {
   return dummy_url;
 }
 
-const absl::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
+const std::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
     const {
   NOTREACHED();
   return dummy_origin;
@@ -460,6 +460,16 @@ void FakeDownloadItem::DeleteFile(base::OnceCallback<void(bool)> callback) {
 download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
   return nullptr;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool FakeDownloadItem::IsFromExternalApp() {
+  return false;
+}
+
+bool FakeDownloadItem::IsMustDownload() {
+  return false;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool FakeDownloadItem::IsDangerous() const {
   return is_dangerous_;

@@ -87,7 +87,7 @@ void LinkFragment::RecalculateFont() {
   }
 }
 
-BEGIN_METADATA(LinkFragment, Link)
+BEGIN_METADATA(LinkFragment)
 END_METADATA
 
 }  // namespace views

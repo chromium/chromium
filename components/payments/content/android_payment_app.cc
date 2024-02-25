@@ -25,7 +25,7 @@ AndroidPaymentApp::AndroidPaymentApp(
     std::unique_ptr<AndroidAppDescription> description,
     base::WeakPtr<AndroidAppCommunication> communication,
     content::GlobalRenderFrameHostId frame_routing_id,
-    const absl::optional<base::UnguessableToken>& twa_instance_identifier)
+    const std::optional<base::UnguessableToken>& twa_instance_identifier)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::NATIVE_MOBILE_APP),
       stringified_method_data_(std::move(stringified_method_data)),
       top_level_origin_(top_level_origin),
@@ -186,7 +186,7 @@ bool AndroidPaymentApp::IsPreferred() const {
 
 void AndroidPaymentApp::OnPaymentAppResponse(
     base::WeakPtr<Delegate> delegate,
-    const absl::optional<std::string>& error_message,
+    const std::optional<std::string>& error_message,
     bool is_activity_result_ok,
     const std::string& payment_method_identifier,
     const std::string& stringified_details) {

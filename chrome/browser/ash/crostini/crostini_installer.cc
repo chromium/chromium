@@ -576,7 +576,7 @@ void CrostiniInstaller::OnCrostiniRestartFinished(CrostiniResult result) {
   }
 }
 
-void CrostiniInstaller::OnAvailableDiskSpace(absl::optional<int64_t> bytes) {
+void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // |Cancel()| might be called immediately after |Install()|.

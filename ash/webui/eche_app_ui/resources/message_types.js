@@ -29,6 +29,7 @@
  *    sendStartSignaling: boolean,
  *    disable_stun_server: boolean,
  *    check_android_network_info: boolean,
+ *    process_android_accessibility_tree: boolean
  * }}
  */
 /* #export */ let SystemInfo;
@@ -107,6 +108,8 @@
   STREAM_ACTION: 'stream_action',
   // Message for virtual keyboard state
   IS_VIRTUAL_KEYBOARD_ENABLED: 'is_virtual_keyboard_enabled',
+  // Message for accessibility state
+  IS_ACCESSIBILITY_ENABLED: 'is_accessibility_enabled',
   // Message for Android network info
   ANDROID_NETWORK_INFO: 'android-network-info',
   // Message for changing app stream orientation
@@ -114,12 +117,23 @@
   // Message for notifying Chrome OS about a change in the status of the WebRTC
   // connection.
   CONNECTION_STATUS_CHANGED: 'connection_status_changed',
+  // Enable or disable accessibility tree streaming.
+  ACCESSIBILITY_SET_TREE_STREAMING_ENABLED:
+      'accessibility_set_tree_streaming_enabled',
+  // Enable or disable explore by touch.
+  ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED:
+      'accessibility_set_explore_by_touch_enabled',
   // Message for sending accessibility event data.
   ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
+  // Message for getting the location of text in android.
+  ACCESSIBILITY_REFRESH_WITH_EXTRA_DATA:
+      'accessibility_refresh_with_extra_data',
   // Message for sending actions and their parameters.
   ACCESSIBILITY_PERFORM_ACTION: 'accessibility_perform_action',
   // Message for requesting keyboard layout information.
   KEYBOARD_LAYOUT_REQUEST: 'keyboard_layout_request',
   // Message for sending keyboard layout information.
   KEYBOARD_LAYOUT_INFO: 'keyboard_layout_info',
+  // Message for processing Android device accessibility tree
+  PROCESS_ANDROID_ACCESSIBILITY_TREE: 'process_android_accessibility_tree',
 };

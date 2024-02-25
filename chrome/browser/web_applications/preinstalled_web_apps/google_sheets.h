@@ -9,7 +9,7 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleSheets();
+ExternalInstallOptions GetConfigForGoogleSheets(bool is_standalone_tabbed);
 
 }  // namespace web_app
 

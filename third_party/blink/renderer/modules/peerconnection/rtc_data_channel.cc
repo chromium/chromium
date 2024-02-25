@@ -328,18 +328,18 @@ bool RTCDataChannel::ordered() const {
   return channel()->ordered();
 }
 
-absl::optional<uint16_t> RTCDataChannel::maxPacketLifeTime() const {
+std::optional<uint16_t> RTCDataChannel::maxPacketLifeTime() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (channel()->maxPacketLifeTime())
     return *channel()->maxPacketLifeTime();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<uint16_t> RTCDataChannel::maxRetransmits() const {
+std::optional<uint16_t> RTCDataChannel::maxRetransmits() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (channel()->maxRetransmitsOpt())
     return *channel()->maxRetransmitsOpt();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 String RTCDataChannel::protocol() const {
@@ -352,7 +352,7 @@ bool RTCDataChannel::negotiated() const {
   return channel()->negotiated();
 }
 
-absl::optional<uint16_t> RTCDataChannel::id() const {
+std::optional<uint16_t> RTCDataChannel::id() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (id_.has_value()) {
     return id_;
@@ -360,7 +360,7 @@ absl::optional<uint16_t> RTCDataChannel::id() const {
 
   int id = channel()->id();
   if (id == -1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(id >= 0 && id <= std::numeric_limits<uint16_t>::max());
@@ -410,13 +410,16 @@ String RTCDataChannel::binaryType() const {
 
 void RTCDataChannel::setBinaryType(const String& binary_type,
                                    ExceptionState& exception_state) {
-  if (binary_type == "blob")
-    ThrowNoBlobSupportException(&exception_state);
-  else if (binary_type == "arraybuffer")
+  if (binary_type == "arraybuffer") {
     binary_type_ = kBinaryTypeArrayBuffer;
-  else
-    exception_state.ThrowDOMException(DOMExceptionCode::kTypeMismatchError,
-                                      "Unknown binary type : " + binary_type);
+    return;
+  }
+  if (binary_type == "blob") {
+    // TODO(crbug.com/webrtc/2276): the default is specified as "blob".
+    ThrowNoBlobSupportException(&exception_state);
+    return;
+  }
+  NOTREACHED();
 }
 
 bool RTCDataChannel::ValidateSendLength(size_t length,
@@ -739,7 +742,8 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          {SchedulingPolicy::DisableAggressiveThrottling()});
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()});
 }
 
 }  // namespace blink

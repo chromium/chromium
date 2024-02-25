@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Internals>Services"
+}
+buganizer_public: {
+  component_id: 1455746
 }

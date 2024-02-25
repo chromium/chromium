@@ -8,9 +8,9 @@
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -283,6 +283,21 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
   return true;
 }
 
+// static
+std::string HttpUtil::TimeFormatHTTP(base::Time time) {
+  static constexpr char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
+                                              "Thu", "Fri", "Sat"};
+  static constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr",
+                                             "May", "Jun", "Jul", "Aug",
+                                             "Sep", "Oct", "Nov", "Dec"};
+  base::Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  return base::StringPrintf(
+      "%s, %02d %s %04d %02d:%02d:%02d GMT", kWeekdayName[exploded.day_of_week],
+      exploded.day_of_month, kMonthName[exploded.month - 1], exploded.year,
+      exploded.hour, exploded.minute, exploded.second);
+}
+
 namespace {
 
 // A header string containing any of the following fields will cause
@@ -400,33 +415,25 @@ bool HttpUtil::IsValidHeaderValue(base::StringPiece value) {
 bool HttpUtil::IsNonCoalescingHeader(base::StringPiece name) {
   // NOTE: "set-cookie2" headers do not support expires attributes, so we don't
   // have to list them here.
-  const char* const kNonCoalescingHeaders[] = {
-    "date",
-    "expires",
-    "last-modified",
-    "location",  // See bug 1050541 for details
-    "retry-after",
-    "set-cookie",
-    // The format of auth-challenges mixes both space separated tokens and
-    // comma separated properties, so coalescing on comma won't work.
-    "www-authenticate",
-    "proxy-authenticate",
-    // STS specifies that UAs must not process any STS headers after the first
-    // one.
-    "strict-transport-security"
-  };
+  // As of 2023, using FlatSet here actually makes the lookup slower, and
+  // unordered_set is even slower than that.
+  static constexpr base::StringPiece kNonCoalescingHeaders[] = {
+      "date", "expires", "last-modified",
+      "location",  // See bug 1050541 for details
+      "retry-after", "set-cookie",
+      // The format of auth-challenges mixes both space separated tokens and
+      // comma separated properties, so coalescing on comma won't work.
+      "www-authenticate", "proxy-authenticate",
+      // STS specifies that UAs must not process any STS headers after the first
+      // one.
+      "strict-transport-security"};
 
-  for (const char* header : kNonCoalescingHeaders) {
+  for (const base::StringPiece& header : kNonCoalescingHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header)) {
       return true;
     }
   }
   return false;
-}
-
-bool HttpUtil::IsLWS(char c) {
-  const base::StringPiece kWhiteSpaceCharacters(HTTP_LWS);
-  return kWhiteSpaceCharacters.find(c) != base::StringPiece::npos;
 }
 
 // static
@@ -693,7 +700,7 @@ std::string HttpUtil::AssembleRawHeaders(base::StringPiece input) {
   // Use '\0' as the canonical line terminator. If the input already contained
   // any embeded '\0' characters we will strip them first to avoid interpreting
   // them as line breaks.
-  base::Erase(raw_headers, '\0');
+  std::erase(raw_headers, '\0');
 
   std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
 
@@ -1096,7 +1103,7 @@ bool HttpUtil::ParseAcceptEncoding(const std::string& accept_encoding,
     if (qvalue.empty())
       return false;
     if (qvalue[0] == '1') {
-      if (base::StartsWith("1.000", qvalue)) {
+      if (std::string_view("1.000").starts_with(qvalue)) {
         allowed_encodings->insert(base::ToLowerASCII(encoding));
         continue;
       }

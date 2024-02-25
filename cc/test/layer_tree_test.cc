@@ -181,16 +181,17 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
       TaskGraphRunner* task_graph_runner,
       RenderingStatsInstrumentation* stats_instrumentation,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner)
-      : LayerTreeHostImpl(settings,
-                          host_impl_client,
-                          task_runner_provider,
-                          stats_instrumentation,
-                          task_graph_runner,
-                          AnimationHost::CreateForTesting(ThreadInstance::IMPL),
-                          nullptr,
-                          0,
-                          std::move(image_worker_task_runner),
-                          scheduling_client),
+      : LayerTreeHostImpl(
+            settings,
+            host_impl_client,
+            task_runner_provider,
+            stats_instrumentation,
+            task_graph_runner,
+            AnimationHost::CreateForTesting(ThreadInstance::kImpl),
+            nullptr,
+            0,
+            std::move(image_worker_task_runner),
+            scheduling_client),
         test_hooks_(test_hooks) {}
 
   std::unique_ptr<RasterBufferProvider> CreateRasterBufferProvider() override {
@@ -211,11 +212,6 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
   void WillSendBeginMainFrame() override {
     LayerTreeHostImpl::WillSendBeginMainFrame();
     test_hooks_->WillSendBeginMainFrameOnThread(this);
-  }
-
-  void DidSendBeginMainFrame(const viz::BeginFrameArgs& args) override {
-    LayerTreeHostImpl::DidSendBeginMainFrame(args);
-    test_hooks_->DidSendBeginMainFrameOnThread(this);
   }
 
   void BeginMainFrameAborted(
@@ -263,7 +259,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     return test_hooks_->PrepareToDrawOnThread(this, frame, draw_result);
   }
 
-  absl::optional<SubmitInfo> DrawLayers(FrameData* frame) override {
+  std::optional<SubmitInfo> DrawLayers(FrameData* frame) override {
     auto r = LayerTreeHostImpl::DrawLayers(frame);
     test_hooks_->DrawLayersOnThread(this);
     return r;
@@ -438,14 +434,14 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void OnDeferCommitsChanged(
       bool,
       PaintHoldingReason,
-      absl::optional<PaintHoldingCommitTrigger>) override {}
+      std::optional<PaintHoldingCommitTrigger>) override {}
   void OnCommitRequested() override {}
 
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,
                                ActiveFrameSequenceTrackers) override {}
   std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() override {
-    return nullptr;
+    return test_hooks_->GetBeginMainFrameMetrics();
   }
   std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() override {
     return nullptr;
@@ -461,6 +457,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   }
 
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
 
@@ -484,11 +481,13 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     test_hooks_->WillCommit(commit_state);
   }
 
-  void DidCommit(const base::TimeTicks, const base::TimeTicks) override {
+  void DidCommit(int source_frame_number,
+                 const base::TimeTicks,
+                 const base::TimeTicks) override {
     test_hooks_->DidCommit();
   }
 
-  void DidCommitAndDrawFrame() override {
+  void DidCommitAndDrawFrame(int source_frame_number) override {
     test_hooks_->DidCommitAndDrawFrame();
   }
 
@@ -500,7 +499,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
 
   void DidSubmitCompositorFrame() override {}
   void DidLoseLayerTreeFrameSink() override {}
-  void DidCompletePageScaleAnimation() override {}
+  void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void BeginMainFrameNotExpectedSoon() override {
     test_hooks_->BeginMainFrameNotExpectedSoon();
   }
@@ -728,15 +727,30 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
   if (renderer_type_ == viz::RendererType::kSkiaVk) {
     scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
     init_vulkan = true;
-  } else if (renderer_type_ == viz::RendererType::kSkiaGraphite) {
+  } else if (renderer_type_ == viz::RendererType::kSkiaGraphiteDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
-    // Force the use of Graphite even if disallowed for other reasons e.g. ANGLE
-    // Metal is not enabled on Mac.
-    command_line->AppendSwitch(::switches::kSkiaGraphiteBackend);
+    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
+    // Force the use of Graphite even if disallowed for other reasons e.g.
+    // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
+    // kUseGpuInTests is not set.
+    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
+    command_line->AppendSwitchASCII(
+        ::switches::kSkiaGraphiteBackend,
+        use_gpu ? ::switches::kSkiaGraphiteBackendDawn
+                : ::switches::kSkiaGraphiteBackendDawnSwiftshader);
     init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
+  } else if (renderer_type_ == viz::RendererType::kSkiaGraphiteMetal) {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    // Force the use of Graphite even if disallowed for other reasons.
+    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
+    command_line->AppendSwitchASCII(::switches::kSkiaGraphiteBackend,
+                                    ::switches::kSkiaGraphiteBackendMetal);
+  } else {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kVulkan, features::kSkiaGraphite});
   }
 
   if (init_vulkan) {
@@ -937,7 +951,7 @@ void LayerTreeTest::DoBeginTest() {
   LayerTreeHostSchedulingClient* scheduling_client =
       impl_thread_ ? client_.get() : nullptr;
 
-  animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+  animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
   layer_tree_host_ = LayerTreeHostForTesting::Create(
       this, mode_, client_.get(), scheduling_client, client_.get(),
@@ -1036,7 +1050,7 @@ void LayerTreeTest::RealEndTest() {
     return;
   }
 
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  std::move(quit_closure_).Run();
 }
 
 void LayerTreeTest::DispatchAddNoDamageAnimation(
@@ -1175,7 +1189,9 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
       FROM_HERE,
       base::BindOnce(&LayerTreeTest::DoBeginTest, base::Unretained(this)));
 
-  base::RunLoop().Run();
+  base::RunLoop loop;
+  quit_closure_ = loop.QuitWhenIdleClosure();
+  loop.Run();
   CleanupBeforeDestroy();
   DestroyLayerTreeHost();
 

@@ -52,9 +52,9 @@ class BookmarkEditorView : public BookmarkEditor,
                            public views::ContextMenuController,
                            public ui::SimpleMenuModel::Delegate,
                            public bookmarks::BookmarkModelObserver {
- public:
-  METADATA_HEADER(BookmarkEditorView);
+  METADATA_HEADER(BookmarkEditorView, views::DialogDelegateView)
 
+ public:
   // Type of node in the tree. Public purely for testing.
   typedef ui::TreeNodeWithValue<int64_t> EditorNode;
 

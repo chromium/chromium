@@ -47,12 +47,12 @@ PerformanceEntryType LayoutShift::EntryTypeEnum() const {
 
 void LayoutShift::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.Add("value", value_);
-  builder.Add("hadRecentInput", had_recent_input_);
-  builder.Add("lastInputTime", most_recent_input_timestamp_);
-  builder.Add("sources", ToV8Traits<IDLArray<LayoutShiftAttribution>>::ToV8(
-                             builder.GetScriptState(), sources_)
-                             .ToLocalChecked());
+  builder.AddNumber("value", value_);
+  builder.AddBoolean("hadRecentInput", had_recent_input_);
+  builder.AddNumber("lastInputTime", most_recent_input_timestamp_);
+  builder.AddV8Value("sources",
+                     ToV8Traits<IDLArray<LayoutShiftAttribution>>::ToV8(
+                         builder.GetScriptState(), sources_));
 }
 
 void LayoutShift::Trace(Visitor* visitor) const {

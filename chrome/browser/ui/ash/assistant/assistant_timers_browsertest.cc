@@ -10,10 +10,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -56,13 +56,13 @@ constexpr int kVersion = 1;
     if (!FindVisibleNotificationsByPrefixedId(prefix_).empty()) {             \
       return;                                                                 \
     }                                                                         \
-    MockMessageCenterObserver mock;                                           \
+    MockMessageCenterObserver mock_observer;                                  \
     base::ScopedObservation<MessageCenter, MessageCenterObserver>             \
-        observation_{&mock};                                                  \
+        observation_{&mock_observer};                                         \
     observation_.Observe(MessageCenter::Get());                               \
                                                                               \
     base::RunLoop run_loop;                                                   \
-    EXPECT_CALL(mock, OnNotificationAdded)                                    \
+    EXPECT_CALL(mock_observer, OnNotificationAdded)                           \
         .WillOnce(                                                            \
             testing::Invoke([&run_loop](const std::string& notification_id) { \
               if (!FindVisibleNotificationsByPrefixedId(prefix_).empty())     \
@@ -95,7 +95,8 @@ message_center::Notification* FindVisibleNotificationById(
 std::vector<message_center::Notification*> FindVisibleNotificationsByPrefixedId(
     const std::string& prefix) {
   std::vector<message_center::Notification*> notifications;
-  for (auto* notification : MessageCenter::Get()->GetVisibleNotifications()) {
+  for (message_center::Notification* notification :
+       MessageCenter::Get()->GetVisibleNotifications()) {
     if (base::StartsWith(notification->id(), prefix,
                          base::CompareCase::SENSITIVE)) {
       notifications.push_back(notification);
@@ -109,10 +110,8 @@ message_center::MessageView* FindViewForNotification(
     const message_center::Notification* notification) {
   NotificationListView* notification_list_view =
       FindStatusAreaWidget()
-          ->unified_system_tray()
-          ->message_center_bubble()
-          ->notification_center_view()
-          ->notification_list_view();
+          ->notification_center_tray()
+          ->GetNotificationListView();
 
   // TODO(crbug/1335196): `FindDescendentsOfClass` returning empty list for
   // `NotificationCenterView` even when `MessageView`s exist. Need to

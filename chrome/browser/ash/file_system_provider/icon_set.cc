@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 IconSet::IconSet() = default;
 IconSet::IconSet(const IconSet& icon_set) = default;
@@ -27,5 +26,4 @@ const GURL& IconSet::GetIcon(IconSize size) const {
   return it->second;
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

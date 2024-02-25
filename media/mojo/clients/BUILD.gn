@@ -23,7 +23,9 @@ source_set("clients") {
     # TODO(liberato): can we avoid this?
     "//content/test/*",
     "//third_party/blink/renderer/modules/mediarecorder",
+    "//third_party/blink/renderer/modules/peerconnection:peerconnection",
     "//third_party/blink/renderer/modules/webcodecs",
+    "//third_party/blink/renderer/platform:platform",
   ]
 
   sources = [
@@ -135,6 +137,16 @@ source_set("unit_tests") {
       "//media/mojo/mojom:test_interfaces",
       "//ui/gfx:test_support",
       "//ui/gl",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "win/media_foundation_renderer_client_unittest.cc" ]
+
+    deps += [
+      "//content/public/renderer",
+      "//content/renderer:renderer",
+      "//media",
     ]
   }
 }

@@ -4,10 +4,11 @@
 
 #include "omnibox_triggered_feature_service.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class OmniboxTriggeredFeatureServiceTest : public testing::Test {

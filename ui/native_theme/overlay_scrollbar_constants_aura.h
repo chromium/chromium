@@ -12,6 +12,7 @@ namespace ui {
 
 constexpr int kOverlayScrollbarStrokeWidth = 1;
 constexpr int kOverlayScrollbarThumbWidthPressed = 10;
+constexpr float kOverlayScrollbarIdleThicknessScale = 0.4f;
 
 constexpr base::TimeDelta kOverlayScrollbarFadeDelay = base::Milliseconds(500);
 constexpr base::TimeDelta kOverlayScrollbarFadeDuration =
@@ -19,6 +20,15 @@ constexpr base::TimeDelta kOverlayScrollbarFadeDuration =
 // TODO(bokan): This is still undetermined. crbug.com/652520.
 constexpr base::TimeDelta kOverlayScrollbarThinningDuration =
     base::Milliseconds(200);
+
+// Fluent overlay scrollbar animation times are set to align with the Fluent
+// design language.
+constexpr base::TimeDelta kFluentOverlayScrollbarFadeDelay =
+    base::Milliseconds(750);
+constexpr base::TimeDelta kFluentOverlayScrollbarFadeDuration =
+    base::Milliseconds(100);
+constexpr base::TimeDelta kFluentOverlayScrollbarThinningDuration =
+    base::Milliseconds(100);
 
 }  // namespace ui
 

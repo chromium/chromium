@@ -15,8 +15,11 @@
 #include "base/strings/string_piece.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
+
+using cast_channel::CastDeviceCapability;
+using cast_channel::CastDeviceCapabilitySet;
 
 namespace cast_util {
 
@@ -119,18 +122,24 @@ std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
 constexpr char kReceiverActionTypeCast[] = "cast";
 constexpr char kReceiverActionTypeStop[] = "stop";
 
-base::Value::List CapabilitiesToListValue(uint8_t capabilities) {
+base::Value::List CapabilitiesToListValue(
+    CastDeviceCapabilitySet capabilities) {
   base::Value::List value;
-  if (capabilities & cast_channel::VIDEO_OUT)
+  if (capabilities.Has(CastDeviceCapability::kVideoOut)) {
     value.Append("video_out");
-  if (capabilities & cast_channel::VIDEO_IN)
+  }
+  if (capabilities.Has(CastDeviceCapability::kVideoIn)) {
     value.Append("video_in");
-  if (capabilities & cast_channel::AUDIO_OUT)
+  }
+  if (capabilities.Has(CastDeviceCapability::kAudioOut)) {
     value.Append("audio_out");
-  if (capabilities & cast_channel::AUDIO_IN)
+  }
+  if (capabilities.Has(CastDeviceCapability::kAudioIn)) {
     value.Append("audio_in");
-  if (capabilities & cast_channel::MULTIZONE_GROUP)
+  }
+  if (capabilities.Has(CastDeviceCapability::kMultizoneGroup)) {
     value.Append("multizone_group");
+  }
   return value;
 }
 
@@ -165,7 +174,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateMessageCommon(
     CastInternalMessage::Type type,
     base::Value::Dict payload,
     const std::string& client_id,
-    absl::optional<int> sequence_number = absl::nullopt) {
+    std::optional<int> sequence_number = std::nullopt) {
   base::Value::Dict message;
 
   message.Set("type", base::Value(CastInternalMessageTypeToString(type)));
@@ -279,7 +288,7 @@ std::unique_ptr<CastInternalMessage> CastInternalMessage::From(
     return nullptr;
   }
 
-  absl::optional<int> sequence_number = message.FindInt("sequenceNumber");
+  std::optional<int> sequence_number = message.FindInt("sequenceNumber");
 
   std::string session_id;
   std::string namespace_or_v2_type;
@@ -331,7 +340,7 @@ CastInternalMessage::~CastInternalMessage() = default;
 CastInternalMessage::CastInternalMessage(
     Type type,
     const std::string& client_id,
-    absl::optional<int> sequence_number,
+    std::optional<int> sequence_number,
     const std::string& session_id,
     const std::string& namespace_or_v2_type,
     base::Value message_body)
@@ -504,14 +513,14 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
     const base::Value::Dict& payload,
-    absl::optional<int> sequence_number) {
+    std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kV2Message,
                              payload.Clone(), client_id, sequence_number);
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    absl::optional<int> sequence_number) {
+    std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kLeaveSession,
                              base::Value::Dict(), client_id, sequence_number);
 }
@@ -519,7 +528,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
     base::Value::Dict error,
-    absl::optional<int> sequence_number) {
+    std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kError,
                              std::move(error), client_id, sequence_number);
 }

@@ -22,6 +22,7 @@
 ++++++[push button] name='Image:' labelled-by=[label]
 ++++++++[image]
 ++++++++[static] name='Submit'
+++++[static] name=' '
 ++++[label] label-for=[spin button]
 ++++++[static] name='Number: '
 ++++++[spin button] name='Number:' selectable-text labelled-by=[label] text-input-type:number current=0.000000 minimum=0.000000 maximum=0.000000

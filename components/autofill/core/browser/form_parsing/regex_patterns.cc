@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -22,8 +23,8 @@ namespace {
 // Falls back to the union of all patterns of a the given name in the given
 // pattern source if there are no patterns for the given language.
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
-    base::StringPiece language_code,
+    std::string_view name,
+    std::string_view language_code,
     PatternSource pattern_source) {
   auto* it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
@@ -31,13 +32,13 @@ base::span<const MatchPatternRef> GetMatchPatterns(
   CHECK(it != kPatternMap.end());
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   switch (pattern_source) {
-    case PatternSource::kDefault:
-      return it->second[0];
-    case PatternSource::kExperimental:
-      return it->second[1];
-    case PatternSource::kNextGen:
-      return it->second[2];
     case PatternSource::kLegacy:
+      return it->second[0];
+    case PatternSource::kDefault:
+      return it->second[1];
+    case PatternSource::kExperimental:
+      return it->second[2];
+    case PatternSource::kNextGen:
       return it->second[3];
   }
 #else
@@ -52,51 +53,23 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 
 }  // namespace
 
-PatternSource GetActivePatternSource() {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return PatternSource::kLegacy;
-#else
-  if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))
-    return PatternSource::kLegacy;
-  const std::string& source =
-      features::kAutofillParsingPatternActiveSource.Get();
-  DCHECK(source == "default" || source == "experimental" ||
-         source == "nextgen" || source == "legacy");
-  return source == "default"        ? PatternSource::kDefault
-         : source == "experimental" ? PatternSource::kExperimental
-         : source == "nextgen"      ? PatternSource::kNextGen
-         : source == "legacy"       ? PatternSource::kLegacy
-                                    : PatternSource::kDefault;
-#endif
-}
-
-DenseSet<PatternSource> GetNonActivePatternSources() {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return {};
-#else
-  if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))
-    return {};
-  DenseSet<PatternSource> sources{
-      PatternSource::kLegacy, PatternSource::kDefault,
-      PatternSource::kExperimental, PatternSource::kNextGen};
-  sources.erase(GetActivePatternSource());
-  return sources;
-#endif
+std::optional<PatternSource> GetActivePatternSource() {
+  return HeuristicSourceToPatternSource(GetActiveHeuristicSource());
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
-    absl::optional<LanguageCode> language_code,
+    std::string_view name,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
   return language_code ? GetMatchPatterns(name, **language_code, pattern_source)
                        : GetMatchPatterns(name, "", pattern_source);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    ServerFieldType type,
-    absl::optional<LanguageCode> language_code,
+    FieldType type,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
-  return GetMatchPatterns(FieldTypeToStringPiece(type), language_code,
+  return GetMatchPatterns(FieldTypeToStringView(type), language_code,
                           pattern_source);
 }
 
@@ -116,8 +89,14 @@ MatchingPattern MatchPatternRef::operator*() const {
       .match_field_attributes =
           is_supplementary() ? DenseSet<MatchAttribute>{MatchAttribute::kName}
                              : p.match_field_attributes,
-      .match_field_input_types = p.match_field_input_types,
+      .form_control_types = p.form_control_types,
   };
+}
+
+bool AreMatchingPatternsEqual(PatternSource a,
+                              PatternSource b,
+                              LanguageCode language_code) {
+  return AreMatchingPatternsEqualImpl(a, b, language_code);
 }
 
 }  // namespace autofill

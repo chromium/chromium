@@ -23,10 +23,12 @@ namespace gpu {
 namespace {
 
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
+    SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
@@ -61,7 +63,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, base::span<const uint8_t>());
+                             alpha_type, usage, std::move(debug_label),
+                             base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
@@ -75,7 +78,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, pixel_data);
+                             alpha_type, usage, std::move(debug_label),
+                             pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
@@ -113,10 +117,6 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
-    return false;
-  }
-
   if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
     return false;
   }
@@ -130,7 +130,8 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
   if (gr_context_type != GrContextType::kGL &&
       ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
        (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
     return false;
   }
   constexpr uint32_t kInvalidUsage = SHARED_IMAGE_USAGE_VIDEO_DECODE |
@@ -140,7 +141,8 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) &&
+  if ((usage &
+       (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) &&
       (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES)) {
     return false;
   }
@@ -149,8 +151,10 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     constexpr uint32_t kMetalInvalidUsages =
         SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
-        SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2 |
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU;
+        SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2_READ |
+        SHARED_IMAGE_USAGE_GLES2_WRITE |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+        SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
     if (usage & kMetalInvalidUsages) {
       return false;
     }
@@ -167,6 +171,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
 
@@ -177,14 +182,18 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     return nullptr;
   }
 
-  // EGLImageBacking only supports single-planar textures (so far).
+  // EGLImageBacking can support single-planar and multi-planar textures.
   auto format_info = GetFormatInfo(format);
-  DCHECK_EQ(format_info.size(), 1u);
+  CHECK_EQ(static_cast<int>(format_info.size()), format.NumberOfPlanes());
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size.value(), format_info[0], workarounds_, use_passthrough_,
-      pixel_data);
+      std::move(debug_label), estimated_size.value(), format_info, workarounds_,
+      use_passthrough_, pixel_data);
+}
+
+SharedImageBackingType EGLImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kEGLImage;
 }
 
 }  // namespace gpu

@@ -6,6 +6,9 @@
 import("//build/config/android/config.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
+if (build_with_chromium) {
+  import("//third_party/jni_zero/jni_zero.gni")
+}
 
 # This template creates a set of shared libraries, by linking a single
 # "partitioned" shared library, then splitting it into multiple pieces.
@@ -138,5 +141,19 @@ template("partitioned_shared_library") {
 }
 
 set_defaults("partitioned_shared_library") {
+  configs = default_shared_library_configs
+}
+
+# native_with_jni for partitioned shared libraries - see native_with_jni for
+# details.
+template("partitioned_shared_library_with_jni") {
+  native_with_jni(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    target_type = "partitioned_shared_library"
+    target_type_import = "//build/partitioned_shared_library.gni"
+  }
+}
+set_defaults("partitioned_shared_library_with_jni") {
   configs = default_shared_library_configs
 }

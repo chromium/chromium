@@ -43,14 +43,15 @@ SigninErrorNotifierFactory* SigninErrorNotifierFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* SigninErrorNotifierFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninErrorNotifierFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // If this is during dummy login from tests, suppress the notification.
   if (switches::IsGaiaServicesDisabled())
     return nullptr;
 
   Profile* profile = static_cast<Profile*>(context);
-  return new SigninErrorNotifier(
+  return std::make_unique<SigninErrorNotifier>(
       SigninErrorControllerFactory::GetForProfile(profile), profile);
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using ::ash::network_diagnostics::NetworkDiagnostics;
@@ -100,7 +100,7 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
   }
 
  private:
-  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
 };
 
 TEST(HttpsLatencySamplerTest, NoProblem) {
@@ -115,10 +115,10 @@ TEST(HttpsLatencySamplerTest, NoProblem) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   sampler.MaybeCollect(metric_collect_event.cb());
   diagnostics.ExecuteCallback();
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -152,10 +152,10 @@ TEST(HttpsLatencySamplerTest, FailedRequests) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
   sampler.MaybeCollect(metric_collect_event.cb());
   diagnostics.ExecuteCallback();
-  const absl::optional<MetricData> optional_result =
+  const std::optional<MetricData> optional_result =
       metric_collect_event.result();
 
   ASSERT_TRUE(optional_result.has_value());
@@ -189,11 +189,11 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
 
-  test::TestEvent<absl::optional<MetricData>> metric_collect_events[2];
+  test::TestEvent<std::optional<MetricData>> metric_collect_events[2];
   sampler.MaybeCollect(metric_collect_events[0].cb());
   sampler.MaybeCollect(metric_collect_events[1].cb());
   diagnostics.ExecuteCallback();
-  const absl::optional<MetricData> first_optional_result =
+  const std::optional<MetricData> first_optional_result =
       metric_collect_events[0].result();
 
   ASSERT_TRUE(first_optional_result.has_value());
@@ -215,7 +215,7 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
                 .problem(),
             HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS);
 
-  const absl::optional<MetricData> second_optional_result =
+  const std::optional<MetricData> second_optional_result =
       metric_collect_events[1].result();
 
   ASSERT_TRUE(second_optional_result.has_value());
@@ -252,10 +252,10 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
     const int latency_ms = 1000;
     diagnostics.SetResultProblemLatency(HttpsLatencyProblemMojom::kHighLatency,
                                         latency_ms);
-    test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+    test::TestEvent<std::optional<MetricData>> metric_collect_event;
     sampler.MaybeCollect(metric_collect_event.cb());
     diagnostics.ExecuteCallback();
-    const absl::optional<MetricData> first_optional_result =
+    const std::optional<MetricData> first_optional_result =
         metric_collect_event.result();
 
     ASSERT_TRUE(first_optional_result.has_value());
@@ -283,10 +283,10 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
     const int latency_ms = 5000;
     diagnostics.SetResultProblemLatency(
         HttpsLatencyProblemMojom::kVeryHighLatency, latency_ms);
-    test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+    test::TestEvent<std::optional<MetricData>> metric_collect_event;
     sampler.MaybeCollect(metric_collect_event.cb());
     diagnostics.ExecuteCallback();
-    const absl::optional<MetricData> second_optional_result =
+    const std::optional<MetricData> second_optional_result =
         metric_collect_event.result();
 
     ASSERT_TRUE(second_optional_result.has_value());
@@ -322,11 +322,11 @@ TEST(HttpsLatencySamplerTest, Offline) {
   HttpsLatencySampler sampler(
       std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
   bool callback_called = false;
-  absl::optional<MetricData> metric_data_result;
+  std::optional<MetricData> metric_data_result;
 
   sampler.MaybeCollect(
       base::BindLambdaForTesting([&callback_called, &metric_data_result](
-                                     absl::optional<MetricData> metric_data) {
+                                     std::optional<MetricData> metric_data) {
         callback_called = true;
         metric_data_result = std::move(metric_data);
       }));

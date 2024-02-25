@@ -49,7 +49,7 @@ bool NodeIterator::NodePointer::MoveToNext(Node* root) {
     return true;
   }
   node = NodeTraversal::Next(*node, root);
-  return node;
+  return node != nullptr;
 }
 
 bool NodeIterator::NodePointer::MoveToPrevious(Node* root) {
@@ -60,7 +60,7 @@ bool NodeIterator::NodePointer::MoveToPrevious(Node* root) {
     return true;
   }
   node = NodeTraversal::Previous(*node, root);
-  return node;
+  return node != nullptr;
 }
 
 NodeIterator::NodeIterator(Node* root_node,

@@ -19,6 +19,8 @@ namespace ui {
 // for example in Extensions and in the AccessibilityService.
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Router {
  public:
+  virtual ~AutomationV8Router();
+
   // Throws an invalid argument exception in V8.
   virtual void ThrowInvalidArgumentsException(bool is_fatal = true) const = 0;
 

@@ -1,0 +1,63 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionDelegate.java",
+    "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettings.java",
+    "java/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreference.java",
+  ]
+  resources_package = "org.chromium.components.privacy_sandbox"
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/embedder_support/android:util_java",
+    "//components/prefs/android:java",
+    "//components/strings:components_strings_grd",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/browser_ui/site_settings/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/xml/tracking_protection_preferences.xml" ]
+  deps = [
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/permissions/android:java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}

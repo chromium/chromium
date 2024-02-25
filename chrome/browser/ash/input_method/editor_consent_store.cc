@@ -6,22 +6,15 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
 namespace ash::input_method {
-namespace {
 
-constexpr int kConsentWindowDisplayUpperLimit = 3;
-
-}  // namespace
-
-EditorConsentStore::EditorConsentStore(PrefService* pref_service)
-    : pref_service_(pref_service),
-      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
-  pref_change_registrar_->Init(pref_service_);
-  pref_change_registrar_->Add(
-      ash::prefs::kOrcaEnabled,
-      base::BindRepeating(&EditorConsentStore::OnUserPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+EditorConsentStore::EditorConsentStore(PrefService* pref_service,
+                                       EditorMetricsRecorder* metrics_recorder)
+    : pref_service_(pref_service), metrics_recorder_(metrics_recorder) {
+  InitializePrefChangeRegistrar(pref_service);
 }
 
 EditorConsentStore::~EditorConsentStore() = default;
@@ -48,24 +41,22 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
       current_consent_status == ConsentStatus::kUnset) {
     if (consent_action == ConsentAction::kApproved) {
       SetConsentStatus(ConsentStatus::kApproved);
+      metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
       return;
     }
 
     if (consent_action == ConsentAction::kDeclined) {
       SetConsentStatus(ConsentStatus::kDeclined);
       OverrideUserPref(/*new_pref_value=*/false);
-      return;
+      metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
     }
+  }
+}
 
-    if (consent_action == ConsentAction::kDismissed) {
-      SetConsentStatus(ConsentStatus::kPending);
-      IncrementConsentWindowDismissCount();
-    }
-
-    if (GetConsentWindowDismissCount() >= kConsentWindowDisplayUpperLimit) {
-      SetConsentStatus(ConsentStatus::kImplicitlyDeclined);
-      OverrideUserPref(/*new_pref_value=*/false);
-    }
+void EditorConsentStore::ProcessPromoCardAction(
+    PromoCardAction promo_card_action) {
+  if (promo_card_action == PromoCardAction::kDeclined) {
+    OverrideUserPref(/*new_pref_value=*/false);
   }
 }
 
@@ -74,28 +65,29 @@ void EditorConsentStore::OnUserPrefChanged() {
   // If the user has previously (implicitly) declined the consent status and
   // now switches the toggle on, then reset the consent status.
   if (pref_service_->GetBoolean(ash::prefs::kOrcaEnabled) &&
-      (current_consent_status == ConsentStatus::kImplicitlyDeclined ||
-       current_consent_status == ConsentStatus::kDeclined)) {
+      current_consent_status == ConsentStatus::kDeclined) {
     SetConsentStatus(ConsentStatus::kUnset);
-    ResetConsentWindowDismissCount();
   }
-}
-
-int EditorConsentStore::GetConsentWindowDismissCount() {
-  return pref_service_->GetInteger(prefs::kOrcaConsentWindowDismissCount);
-}
-
-void EditorConsentStore::IncrementConsentWindowDismissCount() {
-  pref_service_->SetInteger(prefs::kOrcaConsentWindowDismissCount,
-                            GetConsentWindowDismissCount() + 1);
-}
-
-void EditorConsentStore::ResetConsentWindowDismissCount() {
-  pref_service_->SetInteger(prefs::kOrcaConsentWindowDismissCount, 0);
 }
 
 void EditorConsentStore::OverrideUserPref(bool new_pref_value) {
   pref_service_->SetBoolean(prefs::kOrcaEnabled, new_pref_value);
+}
+
+void EditorConsentStore::InitializePrefChangeRegistrar(
+    PrefService* pref_service) {
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      ash::prefs::kOrcaEnabled,
+      base::BindRepeating(&EditorConsentStore::OnUserPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EditorConsentStore::SetPrefService(PrefService* pref_service) {
+  pref_service_ = pref_service;
+  pref_change_registrar_.reset();
+  InitializePrefChangeRegistrar(pref_service_);
 }
 
 }  // namespace ash::input_method

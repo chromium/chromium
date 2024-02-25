@@ -55,8 +55,7 @@ base::Value IsolatedWebAppUpdateApplyTask::AsDebugValue() const {
   return base::Value(debug_log_.Clone());
 }
 
-void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(
-    base::expected<void, IsolatedWebAppApplyUpdateCommandError> result) {
+void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(CompletionStatus result) {
   debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", result
                                .transform_error([](const auto& error) {
@@ -64,7 +63,7 @@ void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(
                                })
                                .error_or("Success"));
 
-  std::move(callback_).Run(result);
+  std::move(callback_).Run(std::move(result));
 }
 
 }  // namespace web_app

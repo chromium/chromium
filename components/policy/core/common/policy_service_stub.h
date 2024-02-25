@@ -7,6 +7,7 @@
 
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace policy {
 
@@ -32,7 +33,8 @@ class PolicyServiceStub : public PolicyService {
 
   bool IsInitializationComplete(PolicyDomain domain) const override;
 
-  void RefreshPolicies(base::OnceClosure callback) override;
+  void RefreshPolicies(base::OnceClosure callback,
+                       PolicyFetchReason reason) override;
 
  private:
   const PolicyMap kEmpty_;

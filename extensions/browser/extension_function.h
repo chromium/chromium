@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -23,14 +23,16 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
+#include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
@@ -194,7 +196,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
    private:
     // An action object responsible for handling the sending of the response.
-    absl::optional<RespondNowAction> action_;
+    std::optional<RespondNowAction> action_;
   };
 
   // Helper class for tests to force all ExtensionFunction::user_gesture()
@@ -292,7 +294,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     extension_ = extension;
   }
   const extensions::Extension* extension() const { return extension_.get(); }
-  const std::string& extension_id() const {
+  const extensions::ExtensionId& extension_id() const {
     DCHECK(extension())
         << "extension_id() called without an Extension. If " << name()
         << " is allowed to be called without any Extension then you should "
@@ -332,10 +334,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     response_callback_ = std::move(callback);
   }
 
-  void set_source_context_type(extensions::Feature::Context type) {
+  void set_source_context_type(extensions::mojom::ContextType type) {
     source_context_type_ = type;
   }
-  extensions::Feature::Context source_context_type() const {
+  extensions::mojom::ContextType source_context_type() const {
     return source_context_type_;
   }
 
@@ -349,7 +351,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   void set_worker_id(extensions::WorkerId worker_id) {
     worker_id_ = std::move(worker_id);
   }
-  const absl::optional<extensions::WorkerId>& worker_id() const {
+  const std::optional<extensions::WorkerId>& worker_id() const {
     return worker_id_;
   }
 
@@ -357,6 +359,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     return worker_id_ ? worker_id_->version_id
                       : blink::mojom::kInvalidServiceWorkerVersionId;
   }
+
+  void set_service_worker_keepalive(
+      std::unique_ptr<extensions::ServiceWorkerKeepalive> keepalive) {
+    service_worker_keepalive_ = std::move(keepalive);
+  }
+  // Out-of-line because the release of the keepalive can invoke significant
+  // work.
+  void ResetServiceWorkerKeepalive();
 
   bool is_from_service_worker() const { return worker_id_.has_value(); }
 
@@ -571,14 +581,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   void SendResponseImpl(bool success);
 
   // The arguments to the API. Only non-null if arguments were specified.
-  absl::optional<base::Value::List> args_;
+  std::optional<base::Value::List> args_;
 
   base::ElapsedTimer timer_;
 
   // The results of the API. This should be populated through the Respond()/
   // RespondNow() methods. In legacy implementations, this is set directly, and
   // should be set before calling SendResponse().
-  absl::optional<base::Value::List> results_;
+  std::optional<base::Value::List> results_;
 
   // Any detailed error from the API. This should be populated by the derived
   // class before Run() returns.
@@ -625,8 +635,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
       extensions::functions::UNKNOWN;
 
   // The type of the JavaScript context where this call originated.
-  extensions::Feature::Context source_context_type_ =
-      extensions::Feature::UNSPECIFIED_CONTEXT;
+  extensions::mojom::ContextType source_context_type_ =
+      extensions::mojom::ContextType::kUnspecified;
 
   // The context ID of the browser context where this call originated.
   int context_id_ = extensions::kUnspecifiedContextId;
@@ -637,7 +647,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // Set to the ID of the calling worker if this function was invoked by an
   // extension service worker context.
-  absl::optional<extensions::WorkerId> worker_id_;
+  std::optional<extensions::WorkerId> worker_id_;
+
+  // A keepalive for the associated service worker. Only populated if this was
+  // triggered by an extension service worker. In a unique_ptr instead of an
+  // optional because it's unclear if the pre-allocated memory overhead is
+  // worthwhile (given the number of calls from e.g. webui).
+  std::unique_ptr<extensions::ServiceWorkerKeepalive> service_worker_keepalive_;
 
   // The response type of the function, if the response has been sent.
   std::unique_ptr<ResponseType> response_type_;

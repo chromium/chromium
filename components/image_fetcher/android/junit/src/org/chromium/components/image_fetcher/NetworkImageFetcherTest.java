@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.Bitmap;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +29,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
-/**
- * Test for NetworkImageFetcher.java.
- */
+/** Test for NetworkImageFetcher.java. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NetworkImageFetcherTest {
@@ -40,12 +38,9 @@ public class NetworkImageFetcherTest {
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;
 
-    @Mock
-    ImageFetcherBridge mBridge;
-    @Mock
-    Callback<Bitmap> mBitmapCallback;
-    @Mock
-    Callback<BaseGifImage> mGifCallback;
+    @Mock ImageFetcherBridge mBridge;
+    @Mock Callback<Bitmap> mBitmapCallback;
+    @Mock Callback<BaseGifImage> mGifCallback;
 
     NetworkImageFetcher mImageFetcher;
     Bitmap mBitmap;
@@ -61,21 +56,25 @@ public class NetworkImageFetcherTest {
         mGif = new BaseGifImage(new byte[] {});
         ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            bitmapCallbackCaptor.getValue().onResult(mBitmap);
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            bitmapCallbackCaptor.getValue().onResult(mBitmap);
+                            return null;
+                        })
                 .when(mBridge)
                 .fetchImage(anyInt(), any(), bitmapCallbackCaptor.capture());
 
         ArgumentCaptor<Callback<BaseGifImage>> gifCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            gifCallbackCaptor.getValue().onResult(mGif);
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            gifCallbackCaptor.getValue().onResult(mGif);
+                            return null;
+                        })
                 .when(mBridge)
-                .fetchGif(anyInt(), eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME)),
+                .fetchGif(
+                        anyInt(),
+                        eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME)),
                         gifCallbackCaptor.capture());
     }
 

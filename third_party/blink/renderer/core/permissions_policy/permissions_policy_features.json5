@@ -97,6 +97,11 @@
       permissions_policy_name: "camera",
     },
     {
+      name: "CapturedSurfaceControl",
+      permissions_policy_name: "captured-surface-control",
+      depends_on: ["CapturedSurfaceControl"],
+    },
+    {
       name: "ClientHintDPR",
       permissions_policy_name: "ch-dpr",
     },
@@ -275,7 +280,6 @@
     {
       name: "IdleDetection",
       permissions_policy_name: "idle-detection",
-      depends_on: ["IdleDetection"],
     },
     {
       name: "JoinAdInterestGroup",
@@ -334,6 +338,11 @@
       depends_on: ["PrivateStateTokens"],
     },
     {
+      name: "PublicKeyCredentialsCreate",
+      permissions_policy_name: "publickey-credentials-create",
+      depends_on: ["WebAuthAllowCreateInCrossOriginFrame"],
+    },
+    {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
     },
@@ -379,10 +388,19 @@
       depends_on: ["SmartCard"],
     },
     {
+      name: "SpeakerSelection",
+      permissions_policy_name: "speaker-selection",
+      depends_on: ["SpeakerSelection"],
+    },
+    {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access",
-      depends_on: ["StorageAccessAPI"],
+    },
+    {
+      name: "SubApps",
+      permissions_policy_name: "sub-apps",
+      depends_on: ["DesktopPWAsSubApps"],
     },
     {
       name: "SyncXHR",
@@ -400,18 +418,27 @@
       depends_on: ["WebUSB"],
     },
     {
+      name: "UsbUnrestricted",
+      permissions_policy_name: "usb-unrestricted",
+      depends_on: ["UnrestrictedUsb"],
+    },
+    {
       // Unload is special and can default to being disabled by default based
       // on the DeprecateUnload flag.
       name: "Unload",
       permissions_policy_name: "unload",
       feature_default: "EnableForAll",
-      depends_on: ["PermissionsPolicyUnload"],
     },
     {
       name: "VerticalScroll",
       permissions_policy_name: "vertical-scroll",
       feature_default: "EnableForAll",
       depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "WebPrinting",
+      permissions_policy_name: "web-printing",
+      depends_on: ["WebPrinting"],
     },
     {
       name: "WebShare",
@@ -425,8 +452,8 @@
     },
     {
       name: "WindowManagement",
-      // Parser also accepts "window-management" alias (crbug.com/1328581).
-      permissions_policy_name: "window-placement",
+      // Parser also accepts "window-placement" alias (crbug.com/1328581).
+      permissions_policy_name: "window-management",
     },
   ],
 }

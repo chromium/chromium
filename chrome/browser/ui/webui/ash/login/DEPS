@@ -4,6 +4,7 @@ specific_include_rules = {
   ],
   "oobe_ui\.cc": [
     "+ash/shell.h",
+    "+remoting/host/chromeos:features"
   ],
   # Tests.
   "oobe_display_chooser_browsertest\.cc": [

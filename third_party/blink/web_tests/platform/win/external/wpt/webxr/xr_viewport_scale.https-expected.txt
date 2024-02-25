@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] requestViewportScale applied next frame for inline session - webgl
+  requestViewportScale has no effect
+[PRECONDITION_FAILED] requestViewportScale applied next frame for inline session - webgl2
+  requestViewportScale has no effect
+[PRECONDITION_FAILED] requestViewportScale same frame for inline session - webgl
+  requestViewportScale has no effect
+[PRECONDITION_FAILED] requestViewportScale same frame for inline session - webgl2
+  requestViewportScale has no effect
+[PRECONDITION_FAILED] recommendedViewportScale for inline session - webgl
+  recommendedViewportScale not provided
+[PRECONDITION_FAILED] recommendedViewportScale for inline session - webgl2
+  recommendedViewportScale not provided
+[PRECONDITION_FAILED] recommendedViewportScale for immersive-vr session - webgl
+  recommendedViewportScale not provided
+[PRECONDITION_FAILED] recommendedViewportScale for immersive-vr session - webgl2
+  recommendedViewportScale not provided
+Harness: the test ran to completion.
+

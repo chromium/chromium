@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,12 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
  public:
+  using PresenceDevice =
+      ash::nearby::presence::NearbyPresenceService::PresenceDevice;
   using Payload = nearby::connections::mojom::Payload;
   using PayloadPtr = nearby::connections::mojom::PayloadPtr;
   using ConnectionsStatus = nearby::connections::mojom::Status;
@@ -77,10 +81,10 @@ class NearbyConnectionsManager {
     base::WeakPtr<PayloadStatusListener> GetWeakPtr();
 
     // Note: |upgraded_medium| is passed in for use in metrics, and it is
-    // absl::nullopt if the bandwidth has not upgraded yet or if the upgrade
+    // std::nullopt if the bandwidth has not upgraded yet or if the upgrade
     // status is not known.
     virtual void OnStatusUpdate(PayloadTransferUpdatePtr update,
-                                absl::optional<Medium> upgraded_medium) = 0;
+                                std::optional<Medium> upgraded_medium) = 0;
 
     base::WeakPtrFactory<PayloadStatusListener> weak_ptr_factory_{this};
   };
@@ -129,11 +133,11 @@ class NearbyConnectionsManager {
   // Stops discovery through Nearby Connections.
   virtual void StopDiscovery() = 0;
 
-  // Conntects to remote |endpoint_id| through Nearby Connections.
+  // Connects to remote |endpoint_id| through Nearby Connections.
   virtual void Connect(
       std::vector<uint8_t> endpoint_info,
       const std::string& endpoint_id,
-      absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+      std::optional<std::vector<uint8_t>> bluetooth_mac_address,
       DataUsage data_usage,
       NearbyConnectionCallback callback) = 0;
 
@@ -165,11 +169,11 @@ class NearbyConnectionsManager {
   virtual void ClearIncomingPayloads() = 0;
 
   // Gets the user-readable authentication token for the |endpoint_id|.
-  virtual absl::optional<std::string> GetAuthenticationToken(
+  virtual std::optional<std::string> GetAuthenticationToken(
       const std::string& endpoint_id) = 0;
 
   // Gets the raw authentication token for the |endpoint_id|.
-  virtual absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  virtual std::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) = 0;
 
   // Register a |listener| with for bandwidth upgrades.
@@ -178,6 +182,18 @@ class NearbyConnectionsManager {
 
   // Initiates bandwidth upgrade for |endpoint_id|.
   virtual void UpgradeBandwidth(const std::string& endpoint_id) = 0;
+
+  // Connects to a |remote_presence_device| through Nearby Connections.
+  // TODO(b/306188252): Once ConnectionsDevice is implemented, change to take in
+  // the NearbyDevice base class instead of PresenceDevice.
+  virtual void ConnectV3(PresenceDevice remote_presence_device,
+                         DataUsage data_usage,
+                         NearbyConnectionCallback callback) = 0;
+
+  // Disconnects from a |remote_presence_device| through Nearby Connections.
+  // TODO(b/306188252): Once ConnectionsDevice is implemented, change to take in
+  // the NearbyDevice base class instead of PresenceDevice.
+  virtual void DisconnectV3(PresenceDevice remote_presence_device) = 0;
 
   virtual base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() = 0;
 };

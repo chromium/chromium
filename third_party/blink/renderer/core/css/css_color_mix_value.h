@@ -41,8 +41,8 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
 
   const CSSValue& Color1() const { return *color1_; }
   const CSSValue& Color2() const { return *color2_; }
-  const CSSPrimitiveValue* Percentage1() const { return percentage1_; }
-  const CSSPrimitiveValue* Percentage2() const { return percentage2_; }
+  const CSSPrimitiveValue* Percentage1() const { return percentage1_.Get(); }
+  const CSSPrimitiveValue* Percentage2() const { return percentage2_.Get(); }
   Color::ColorSpace ColorInterpolationSpace() const {
     return color_interpolation_space_;
   }

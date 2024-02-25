@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate_internals") {
+  sources = [
+    "ios_translate_internals_handler.h",
+    "ios_translate_internals_handler.mm",
+    "translate_internals_ui.h",
+    "translate_internals_ui.mm",
+  ]
+  deps = [
+    "//components/language/ios/browser",
+    "//components/translate/core/common",
+    "//components/translate/translate_internals",
+    "//ios/chrome/app/resources:ios_resources",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/translate/model",
+    "//ios/web/public/webui",
+  ]
+}

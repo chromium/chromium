@@ -10,8 +10,9 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AlertDialog;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +24,12 @@ import java.util.Locale;
 public class TestDummyImpl implements TestDummy {
     private static final String TAG = "TestDummyImpl";
 
-    @IntDef({TestCase.EXECUTE_JAVA, TestCase.EXECUTE_NATIVE, TestCase.LOAD_JAVA_RESOURCE,
-            TestCase.LOAD_NATIVE_RESOURCE})
+    @IntDef({
+        TestCase.EXECUTE_JAVA,
+        TestCase.EXECUTE_NATIVE,
+        TestCase.LOAD_JAVA_RESOURCE,
+        TestCase.LOAD_NATIVE_RESOURCE
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface TestCase {
         int EXECUTE_JAVA = 0;
@@ -35,8 +40,7 @@ public class TestDummyImpl implements TestDummy {
 
     @Override
     public void launch(Intent intent, Activity activity) {
-        @TestCase
-        int testCase = intent.getExtras().getInt("test_case");
+        @TestCase int testCase = intent.getExtras().getInt("test_case");
         switch (testCase) {
             case TestCase.EXECUTE_JAVA:
                 executeJava(activity);
@@ -58,6 +62,7 @@ public class TestDummyImpl implements TestDummy {
     @NativeMethods("test_dummy")
     interface Natives {
         int execute();
+
         String loadResource();
     }
 

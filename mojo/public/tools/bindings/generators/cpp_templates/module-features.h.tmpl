@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- from 'cpp_macros.tmpl' import
+  include_guard, namespace_begin, namespace_end, variant_path %}
+
+{%- set header_guard = include_guard('FEATURES', module.path) -%}
+
+{%- macro kythe_annotation(name) %}
+{%- if enable_kythe_annotations %}
+// @generated_from: {{name}}
+{%- endif %}
+{%- endmacro %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/feature_list.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
+
+{%- if export_header %}
+#include "{{export_header}}"
+{%- endif %}
+
+{% if enable_kythe_annotations -%}
+#ifdef KYTHE_IS_RUNNING
+#pragma kythe_inline_metadata "Metadata comment"
+#endif
+{%- endif %}
+
+{{namespace_begin(namespaces_as_array)}}
+{#--- Features -#}
+{%- for feature in features %}
+{%   include "feature_declaration.tmpl" %}
+{%- endfor %}
+{{namespace_end(namespaces_as_array)}}
+
+#endif  // {{header_guard}}

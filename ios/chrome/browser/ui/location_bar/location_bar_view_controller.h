@@ -17,6 +17,7 @@
 @protocol ApplicationCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
+@protocol TextFieldViewContaining;
 
 @protocol LocationBarViewControllerDelegate<NSObject>
 
@@ -56,8 +57,9 @@
 
 @property(nonatomic, assign) BOOL incognito;
 
-// Get and set preferred omnibox position.
-@property(nonatomic, assign) PrefService* prefService;
+// Pref service from the original browser state, used to get and set the
+// preferred omnibox position.
+@property(nonatomic, assign) PrefService* originalPrefService;
 
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,
@@ -89,7 +91,7 @@
 
 // Sets the edit view to use in the editing state. This must be set before the
 // view of this view controller is initialized. This must only be called once.
-- (void)setEditView:(UIView*)editView;
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
 // Sets the badge view to display badges. This must be set before the
 // view of this view controller is initialized. This must only be called once.

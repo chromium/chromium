@@ -37,7 +37,7 @@
 	document.getElementById("addMe").style.display = "inline";
 	document.body.offsetTop;
 	// Insert an RT object between #firstInline and #secondInline. This will
-	// split the ruby run and the ruby base in two; one run and base that
+	// split the ruby column and the ruby base in two; one run and base that
 	// ends with #firstChild, and one run and base that starts with
 	// #secondChild. We now have a first ruby base that ends with an
 	// anonymous block (to contain #firstInline), and a second ruby base
@@ -45,7 +45,7 @@
 	// is fine.
 	document.getElementById("rubyText").style.display = "block";
 	document.body.offsetTop;
-	// Remove the RT object again. This will cause the two ruby runs and
+	// Remove the RT object again. This will cause the two ruby columns and
 	// bases to be merged back into one. There is code that carefully makes
 	// sure that the anonymous block at the end of the first base is merged
 	// with the anonymous block at the start of the next base. This is the

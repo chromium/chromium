@@ -27,8 +27,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "content/common/features.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
@@ -42,10 +44,15 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8-initialization.h"
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
+#define ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
@@ -80,9 +87,20 @@ void SetV8FlagIfHasSwitch(const char* switch_name, const char* v8_flag) {
 std::unique_ptr<base::ThreadPoolInstance::InitParams>
 GetThreadPoolInitParams() {
   constexpr size_t kMaxNumThreadsInForegroundPoolLowerBound = 3;
-  return std::make_unique<base::ThreadPoolInstance::InitParams>(
+  size_t desired_num_threads =
       std::max(kMaxNumThreadsInForegroundPoolLowerBound,
-               content::GetMinForegroundThreadsInRendererThreadPool()));
+               content::GetMinForegroundThreadsInRendererThreadPool());
+  if (base::FeatureList::IsEnabled(base::kThreadPoolCap2)) {
+    // Cap the threadpool to an initial fixed size.
+    // Note: The size can still grow beyond the value set here
+    // when tasks are blocked for a certain period of time.
+    const int max_allowed_workers_per_pool =
+        base::kThreadPoolCapRestrictedCount.Get();
+    desired_num_threads = std::min(
+        desired_num_threads, static_cast<size_t>(max_allowed_workers_per_pool));
+  }
+  return std::make_unique<base::ThreadPoolInstance::InitParams>(
+      desired_num_threads);
 }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -149,28 +167,15 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
                         "--no-liftoff");
 
-#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
   // V8's WASM stack switching support is sufficient to enable JavaScript
   // Promise Integration.
   SetV8FlagIfOverridden(features::kEnableExperimentalWebAssemblyJSPI,
-                        "--experimental-wasm-stack-switching",
-                        "--no-experimental-wasm-stack-switching");
-#endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-
-  SetV8FlagIfOverridden(features::kWebAssemblyGarbageCollection,
-                        "--experimental-wasm-gc", "--no-experimental-wasm-gc");
+                        "--experimental-wasm-jspi",
+                        "--no-experimental-wasm-jspi");
 
   SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
                         "--wasm-lazy-compilation",
                         "--no-wasm-lazy-compilation");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyRelaxedSimd,
-                        "--experimental-wasm-relaxed-simd",
-                        "--no-experimental-wasm-relaxed-simd");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyStringref,
-                        "--experimental-wasm-stringref",
-                        "--no-experimental-wasm-stringref");
 
   SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
                         "--no-wasm-tier-up");
@@ -211,32 +216,11 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    base::CommandLine* const command_line =
-        base::CommandLine::ForCurrentProcess();
-
-    if (command_line->HasSwitch(switches::kEnableCrashpad) ||
-        command_line->HasSwitch(switches::kEnableCrashReporter) ||
-        command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
-      // The trap handler is set as the first chance handler for Crashpad or
-      // Breakpad's signal handler.
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
-    } else if (!command_line->HasSwitch(
-                   switches::kDisableInProcessStackTraces)) {
-      if (base::debug::SetStackDumpFirstChanceCallback(
-              v8::TryHandleWebAssemblyTrapPosix)) {
-        // Crashpad and Breakpad are disabled, but the in-process stack dump
-        // handlers are enabled, so set the callback on the stack dump handlers.
-        v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
-      } else {
-        // As the registration of the callback failed, we don't enable trap
-        // handlers.
-      }
-    } else {
-      // There is no signal handler yet, but it's okay if v8 registers one.
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
-    }
+    // The trap handler is set as the first chance handler for Crashpad's signal
+    // handler.
+    v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
   }
 #endif
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)

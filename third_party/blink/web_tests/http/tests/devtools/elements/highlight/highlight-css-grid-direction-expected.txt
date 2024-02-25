@@ -93,7 +93,7 @@ ltrGrid{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -354,7 +354,7 @@ rtlGrid{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -615,7 +615,7 @@ ltrGridGap{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -882,7 +882,7 @@ rtlGridGap{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [

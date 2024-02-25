@@ -10,7 +10,7 @@
 
 constexpr char kRemoteDebuggingPortSwitch[] = "remote-debugging-port";
 
-absl::optional<uint16_t> GetRemoteDebuggingPort(
+std::optional<uint16_t> GetRemoteDebuggingPort(
     const base::CommandLine& command_line) {
   if (!command_line.HasSwitch(kRemoteDebuggingPortSwitch)) {
     return 0;
@@ -22,7 +22,7 @@ absl::optional<uint16_t> GetRemoteDebuggingPort(
         port_parsed > 65535) {
       LOG(ERROR) << "Invalid value for --remote-debugging-port (must be in the "
                     "range 0-65535).";
-      return absl::nullopt;
+      return std::nullopt;
     }
     return static_cast<uint16_t>(port_parsed);
   }

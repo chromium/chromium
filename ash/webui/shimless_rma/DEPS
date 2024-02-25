@@ -18,3 +18,9 @@ include_rules = [
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/web_package/signed_web_bundles",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h",
+  ],
+}

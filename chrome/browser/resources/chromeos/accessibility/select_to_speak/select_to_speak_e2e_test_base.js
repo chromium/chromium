@@ -53,8 +53,26 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
 
   /**
    * Triggers select-to-speak to read selected text at a keystroke.
+   * @param {AutomationNode?} root The root of the tree upon which selection was
+   *     set, if the presence of a selection should be verified before
+   *     triggering text.
    */
-  triggerReadSelectedText() {
+  async triggerReadSelectedText(root) {
+    while (true && root) {
+      // Wait for some non-empty selection.
+      const focusedNode = await AsyncUtil.getFocus();
+      if (focusedNode && focusedNode.root) {
+        const hasSelectionObjects = focusedNode.root.selectionStartObject &&
+            focusedNode.root.selectionEndObject;
+        const hasTextSelection =
+            focusedNode.textSelStart && focusedNode.textSelEnd;
+        if (hasSelectionObjects || hasTextSelection) {
+          break;
+        }
+      }
+      await this.waitForEvent(
+          root, 'documentSelectionChanged', /*capture=*/ false);
+    }
     assertFalse(this.mockTts.currentlySpeaking());
     assertEquals(this.mockTts.pendingUtterances().length, 0);
     selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(

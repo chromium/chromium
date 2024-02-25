@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NTLMShareAuthenticationEnabled": true
+        },
+        "prefs": {
+          "network_file_shares.ntlm_share_authentication.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

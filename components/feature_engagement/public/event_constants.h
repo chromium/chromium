@@ -39,13 +39,10 @@ extern const char kMediaBackgrounded[];
 // The user opened the Global Media Controls dialog.
 extern const char kGlobalMediaControlsOpened[];
 
-// All the events declared below are the string names of deferred onboarding
-// events for the Focus Mode feature.
-
-// The user has opened a Focus Mode window.
-extern const char kFocusModeOpened[];
-// All conditions for show Focus Mode IPH were met.
-extern const char kFocusModeConditionsMet[];
+// A side panel has been pinned.
+extern const char kSidePanelPinned[];
+// A side panel has been opened from the app menu.
+extern const char kSidePanelFromMenuShown[];
 
 // The side search panel was automatically triggered.
 extern const char kSideSearchAutoTriggered[];
@@ -65,6 +62,9 @@ extern const char kWebUITabStripOpened[];
 // The PWA was installed by the user.
 extern const char kDesktopPwaInstalled[];
 
+// A module's actions were clicked on the NewTabPage.
+extern const char kDesktopNTPModuleUsed[];
+
 // The user entered the special "focus help bubble" accelerator.
 extern const char kFocusHelpBubbleAcceleratorPressed[];
 
@@ -76,10 +76,7 @@ extern const char kFocusHelpBubbleAcceleratorPromoRead[];
 extern const char kBatterySaverDialogShown[];
 
 // The user has opened the high efficiency page action chip
-extern const char kHighEfficiencyDialogShown[];
-
-// The user clicked on the performance menu item
-extern const char kPerformanceMenuItemActivated[];
+extern const char kMemorySaverDialogShown[];
 
 // Extensions menu is opened when any extension has access to the current site.
 extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];
@@ -134,6 +131,9 @@ extern const char kPriceNotificationsUsed[];
 // The user has been shown a default browser promo.
 extern const char kDefaultBrowserPromoShown[];
 
+// The user tapped Remind Me Later on a default browser promo.
+extern const char kDefaultBrowserPromoRemindMeLater[];
+
 // The Password Manager widget promo was triggered.
 extern const char kPasswordManagerWidgetPromoTriggered[];
 
@@ -175,8 +175,11 @@ extern const char kBlueDotPromoOverflowMenuDismissed[];
 // row.
 extern const char kBlueDotPromoSettingsDismissed[];
 
-// The user snoozed the Credential Provider Extension Promo
+// The user snoozed the Credential Provider Extension Promo.
 extern const char kCredentialProviderExtensionPromoSnoozed[];
+
+// The user tapped Remind Me Later on the Docking Promo.
+extern const char kDockingPromoRemindMeLater[];
 
 // The user opened an url from omnibox.
 extern const char kOpenUrlFromOmnibox[];
@@ -193,9 +196,50 @@ extern const char kHistoryOnOverflowMenuUsed[];
 // The share item on the toolbar is used.
 extern const char kShareToolbarItemUsed[];
 
-// The user has met a condition that makes the default browser video promo
-// eligible to be displayed.
-extern const char kDefaultBrowserVideoPromoConditionsMet[];
+// The user has triggered the Lens button in the Omnibox keyboard.
+extern const char kLensButtonKeyboardUsed[];
+
+// The omnibox position choice promo has been shown.
+extern const char kOmniboxPositionPromoShown[];
+
+// The user has triggered Parcel Tracking.
+extern const char kParcelTrackingTriggered[];
+
+// The user has tracked a parcel.
+extern const char kParcelTracked[];
+
+// The user has more than one gesture to refresh a page in iOS. This includes
+// but not limited to re-typing the URL in omnibox and refreshing from context
+// menu.
+extern const char kIOSMultiGestureRefreshUsed[];
+
+// The user has used the pull-to-refresh feature in iOS.
+extern const char kIOSPullToRefreshUsed[];
+
+// The user has tapped "incognito" on the page control in the tab grid.
+extern const char kIOSIncognitoPageControlTapped[];
+
+// The user has swiped right from regular tab grid to the incognito tab grid.
+extern const char kIOSSwipeRightForIncognitoUsed[];
+
+// The user has tapped the toolbar backward/forward button to navigate on a tab.
+extern const char kIOSBackForwardButtonTapped[];
+
+// The user has swiped from the edge to navigate backward or forward on a tab.
+extern const char kIOSSwipeBackForwardUsed[];
+
+// The user has tapped on an adjacent tab in the tab grid.
+extern const char kIOSTabGridAdjacentTabTapped[];
+
+// The user has swipped the toolbar to go to an adjacent tab.
+extern const char kIOSSwipeToolbarToChangeTabUsed[];
+
+// The user has opened the Overflow Menu customization screen.
+extern const char kIOSOverflowMenuCustomizationUsed[];
+
+// The user has used ann Overflow Menu item where customizing the menu could
+// have helped.
+extern const char kIOSOverflowMenuOffscreenItemUsed[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

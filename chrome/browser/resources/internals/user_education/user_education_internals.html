@@ -1,11 +1,20 @@
-<style include="cr-hidden-style cr-shared-style">
+<style include="cr-hidden-style cr-shared-style cr-nav-menu-item-style">
 :host {
   display: flex;
   flex-direction: column;
   height: 100%;
 
+  --iph-section-border-color: var(--google-green-300);
   --main-column-max-width: 680px;
   --side-bar-width: 200px;
+  --tutorials-section-border-color: var(--google-blue-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --iph-section-border-color: var(--google-green-700);
+    --tutorials-section-border-color: var(--google-blue-700);
+  }
 }
 
 cr-toolbar {
@@ -16,6 +25,14 @@ cr-toolbar {
 
 cr-toolbar:not([narrow]) {
   --cr-toolbar-left-spacer-width: var(--side-bar-width);
+}
+
+user-education-internals-card.highlighted {
+  background-color: var(--cr-iph-anchor-highlight-color);
+}
+
+h2 {
+  padding-inline: var(--cr-section-padding);
 }
 
 #cr-container-shadow-top {
@@ -38,6 +55,12 @@ cr-toolbar:not([narrow]) {
   flex: 1;
 }
 
+#left {
+  height: 100%;
+  position: sticky;
+  top: 0;
+}
+
 #sidebar {
   width: var(--side-bar-width);
 }
@@ -50,8 +73,42 @@ cr-toolbar:not([narrow]) {
 }
 
 #content {
-  padding-inline: var(--cr-section-padding);
   width: var(--main-column-max-width);
+}
+
+#tutorials {
+  border-inline-start: 1px solid var(--tutorials-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+#iph {
+  border-inline-start: 1px solid var(--iph-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+user-education-internals-card {
+  padding-block: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
+}
+
+#session {
+  padding-block-start: 0;
+  padding-block-end: var(--cr-section-vertical-padding);
+  margin-block-start: 0;
+  margin-block-end: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
+}
+
+#label h3 {
+  margin-block: 0;
+}
+
+#left h2 {
+  border-bottom: 1px solid var(--cr-separator-color);
+  margin: 0 0 12px 0;
+  padding: 16px;
 }
 
 /* Width is left + --cr-section-padding + main. */
@@ -79,7 +136,19 @@ cr-toolbar:not([narrow]) {
     narrow-threshold="920"></cr-toolbar>
 <div id="container">
   <div id="left" hidden$="[[narrow_]]">
-    <div id="sidebar"></div>
+    <div role="navigation">
+      <iron-location hash="{{hash_}}"></iron-location>
+      <h2>Navigation</h2>
+      <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
+          on-iron-activate="onSelectorActivate_" on-click="onLinkClick_"
+          selected-attribute="selected">
+        <a role="menuitem" href="#tutorials" class="cr-nav-menu-item">
+          Tutorials
+        </a>
+        <a role="menuitem" href="#iph" class="cr-nav-menu-item">
+          Feature Promos
+        </a>
+    </div>
   </div>
   <div id="main">
     <cr-toast id="errorMessageToast" duration="5000">
@@ -89,28 +158,44 @@ cr-toolbar:not([narrow]) {
       <span id="errorMessage">[[featurePromoErrorMessage_]]</span>
     </cr-toast>
     <div id="content">
-      <!-- Use hidden instead of dom-repeat to filter items because:
-          - Updates automatically with filter property.
-          - Doesn't delete the node, so doesn't mess with WebUI IPH demo.
-      -->
-      <h2>Tutorials</h2>
-      <template id="tutorials" is="dom-repeat" items="[[tutorials_]]">
-        <user-education-internals-card
-            id="[[item.internalName]]"
-            hidden$="[[!promoFilter_(item, filter)]]"
-            promo="[[item]]"
-            on-promo-launch="startTutorial_">
-        </user-education-internals-card>
-      </template>
-      <h2>Feature Promos</h2>
-      <template is="dom-repeat" id="promos" items="[[featurePromos_]]">
-        <user-education-internals-card
-            id="[[item.internalName]]"
-            hidden$="[[!promoFilter_(item, filter)]]"
-            promo="[[item]]"
-            on-promo-launch="showFeaturePromo_">
-        </user-education-internals-card>
-      </template>
+      <div id="tutorials">
+        <a name="tutorials"></a>
+        <h2>Tutorials</h2>
+        <template id="tutorials" is="dom-repeat" items="[[tutorials_]]">
+          <user-education-internals-card
+              id="[[item.internalName]]"
+              hidden$="[[!promoFilter_(item, filter)]]"
+              promo="[[item]]"
+              on-promo-launch="startTutorial_">
+          </user-education-internals-card>
+        </template>
+      </div>
+      <div id="iph">
+        <a name="iph"></a>
+        <h2>Feature Promos</h2>
+        <div id="session">
+          <cr-expand-button expanded="{{sessionExpanded_}}">
+            <div id="label"><h3>Session Data</h3></div>
+          </cr-expand-button>
+          <div id="sessionData" hidden="[[!sessionExpanded_]]">
+            <template is="dom-repeat" items="[[sessionData_]]">
+              <p><b>[[item.name]]</b> [[item.value]]</p>
+            </template>
+            <cr-button id="clearSession" on-click="clearSessionData_">
+              Clear Session Data
+            </cr-button>
+          </div>
+        </div>
+        <template is="dom-repeat" id="promos" items="[[featurePromos_]]">
+          <user-education-internals-card
+              id="[[item.internalName]]"
+              hidden$="[[!promoFilter_(item, filter)]]"
+              promo="[[item]]"
+              on-promo-launch="showFeaturePromo_"
+              on-clear-promo-data="clearPromoData_">
+          </user-education-internals-card>
+        </template>
+      </div>
     </div>
   </div>
   <div id="right" hidden$="[[narrow_]]"></div>

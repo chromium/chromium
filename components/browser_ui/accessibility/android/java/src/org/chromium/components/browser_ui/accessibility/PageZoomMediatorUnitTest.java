@@ -21,10 +21,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,14 +62,11 @@ public class PageZoomMediatorUnitTest {
             "Failure in seekbar value method. Expected 1 JNI call but none occurred.";
     private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebContents mWebContentsMock;
+    @Mock private WebContents mWebContentsMock;
 
-    @Mock
-    private HostZoomMapImpl.Natives mHostZoomMapMock;
+    @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
 
     private PropertyModel mModel;
     private PageZoomMediator mMediator;
@@ -76,6 +75,14 @@ public class PageZoomMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, true);
+        testValues.addFieldTrialParamOverride(
+                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
+                "true");
+        FeatureList.setTestValues(testValues);
+
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
 
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
@@ -83,7 +90,6 @@ public class PageZoomMediatorUnitTest {
         mMediator = new PageZoomMediator(mModel);
 
         HostZoomMap.setSystemFontScale(1.0f);
-        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.0);
     }
 
     @Test
@@ -116,22 +122,6 @@ public class PageZoomMediatorUnitTest {
     }
 
     @Test
-    public void testDecreaseZoom_SmallConfiguration_DesktopUserAgent() {
-        // Verify that calling decrease zoom method sends expected value to native code.
-        HostZoomMap.setSystemFontScale(0.85f);
-        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
-        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
-        Assert.assertEquals(
-                CURRENT_ZOOM_FAILURE, 110, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
-        mMediator.handleDecreaseClicked(null);
-        verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 2.22, 1.85);
-        Assert.assertEquals(
-                CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
-    }
-
-    @Test
     public void testIncreaseZoom() {
         // Verify that calling increase zoom method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
@@ -161,38 +151,22 @@ public class PageZoomMediatorUnitTest {
     }
 
     @Test
-    public void testIncreaseZoom_LargeConfiguration_DesktopUserAgent() {
-        // Verify that calling increase zoom method sends expected value to native code.
-        HostZoomMap.setSystemFontScale(1.3f);
-        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
-        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
-        Assert.assertEquals(
-                CURRENT_ZOOM_FAILURE, 55, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
-        mMediator.handleIncreaseClicked(null);
-        verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 0.52, 2.48);
-        Assert.assertEquals(
-                CURRENT_ZOOM_FAILURE, 60, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
-    }
-
-    @Test
-    public void testIncreaseZoom_LargeConfiguration_DesktopUserAgent_RenderOverMaxDisplayValue() {
+    public void testIncreaseZoom_LargeConfiguration_RenderOverMaxDisplayValue() {
         // Verify that calling increase zoom method sends expected value to native code when the OS
-        // font scale and desktop site zoom scale in use could cause the rendered zoom factor value
-        // to overflow beyond the maximum displayed zoom factor value.
-        HostZoomMap.setSystemFontScale(2.0f);
-        when(mHostZoomMapMock.getDesktopSiteZoomScale(mWebContentsMock)).thenReturn(1.1);
+        // font scale in use could cause the rendered zoom factor value to overflow beyond the
+        // maximum displayed zoom factor value.
+        HostZoomMap.setSystemFontScale(2.2f);
+
         // Assume that the currently rendered zoom value is maximum, that is 300% or a zoom factor
         // of 6.03. For the zoom scales defined above, this will be equivalent to a display value of
-        // 300/2/1.1 ~ 137%.
+        // 300/2.2 ~ 137%.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(6.03);
         mMediator.setWebContents(mWebContentsMock);
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 87, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
 
         // A single increase at this point should display the next closest zoom level of 150% (zoom
-        // factor ~ 2.22) with respect to 137%, that is equivalent to a rendered value of 150*2*1.1
+        // factor ~ 2.22) with respect to 137%, that is equivalent to a rendered value of 150*2.2
         // ~ 330% (zoom factor ~ 6.54).
         mMediator.handleIncreaseClicked(null);
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
@@ -210,7 +184,8 @@ public class PageZoomMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
         mMediator.handleSeekBarValueChanged(108);
         verify(mHostZoomMapMock, times(1).description(SEEKBAR_VALUE_FAILURE_NO_JNI))
-                .setZoomLevel(eq(mWebContentsMock),
+                .setZoomLevel(
+                        eq(mWebContentsMock),
                         ArgumentMatchers.doubleThat(argument -> Math.abs(2.51 - argument) <= 0.001),
                         ArgumentMatchers.doubleThat(
                                 argument -> Math.abs(2.51 - argument) <= 0.001));

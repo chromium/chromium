@@ -78,6 +78,10 @@ std::u16string GetManagePasswordsDialogTitleText(
     const url::Origin& password_origin_url,
     bool has_credentials);
 
+// Returns text that is used when manage passwords bubble is used as a
+// confirmation.
+std::u16string GetConfirmationManagePasswordsDialogTitleText(bool is_update);
+
 // Returns an username in the form that should be shown in the bubble.
 std::u16string GetDisplayUsername(const password_manager::PasswordForm& form);
 
@@ -109,6 +113,10 @@ GURL GetGooglePasswordManagerURL(
 void NavigateToManagePasswordsPage(
     Browser* browser,
     password_manager::ManagePasswordsReferrer referrer);
+
+// Navigates to the Password Manager settings page and focuses the account store
+// toggle.
+void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser);
 
 // Navigates to Passwords Checkup page.
 void NavigateToPasswordCheckupPage(Profile* profile);

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] window.self setter throws TypeError if called on non-configurable accessor property
+  assert_throws_js: function "() => { window[key] = 1; }" did not throw
+[FAIL] window.parent setter throws TypeError if called on non-configurable accessor property
+  assert_throws_js: function "() => { window[key] = 1; }" did not throw
+[FAIL] window.origin setter throws TypeError if called on non-configurable accessor property
+  assert_throws_js: function "() => { window[key] = 1; }" did not throw
+[FAIL] window.innerWidth setter throws TypeError if called on non-configurable accessor property
+  assert_throws_js: function "() => { window[key] = 1; }" did not throw
+[FAIL] window.screen setter throws TypeError if called on non-configurable non-writable data property
+  assert_throws_js: function "() => { set.call(window, 2); }" did not throw
+[FAIL] window.length setter throws TypeError if called on non-configurable non-writable data property
+  assert_throws_js: function "() => { set.call(window, 2); }" did not throw
+[FAIL] window.event setter throws TypeError if called on non-configurable non-writable data property
+  assert_throws_js: function "() => { set.call(window, 2); }" did not throw
+[FAIL] window.outerHeight setter throws TypeError if called on non-configurable non-writable data property
+  assert_throws_js: function "() => { set.call(window, 2); }" did not throw
+Harness: the test ran to completion.
+

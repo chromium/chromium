@@ -11,7 +11,7 @@ function init()
 
   newDoc = document.implementation.createDocument("http://www.w3.org/2000/svg", null);
   newDoc.adoptNode(embedElement);
-  embedElement.setAttribute("type", "application/x-blink-test-plugin");
+  embedElement.setAttribute("type", "application/x-webkit-test-webplugin");
 }
 
 document.addEventListener("DOMContentLoaded", init, false);

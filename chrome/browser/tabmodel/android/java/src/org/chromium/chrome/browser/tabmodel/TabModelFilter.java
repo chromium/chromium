@@ -77,10 +77,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         mFilteredObservers.clear();
     }
 
-    /**
-     * @return The {@link TabModel} that the filter is acting on.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    /** Returns the {@link TabModel} that the filter is acting on. */
     public TabModel getTabModel() {
         return mTabModel;
     }
@@ -126,29 +123,17 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         return Collections.unmodifiableList(relatedTabIds);
     }
 
+    // TODO(crbug.com/41496693): This method sort of breaks the encapsulation of TabGroups being a
+    // concept of TabGroupModelFilter and TabModelFilter being generic. We could call it something
+    // like hasRelationship, but at this point there is only one valid implementation of
+    // TabModelFilter and we should fold TabGroupModelFilter into TabModel eventually so breaking
+    // encapsulation to be more clear when adding that groups of size one seems like a reasonable
+    // tradeoff.
     /**
-     * @return An unmodifiable list of {@link Tab}s that are not related to any tabs
+     * @param tab A {@link Tab} to check group membership of.
+     * @return Whether the given {@link Tab} is part of a tab group.
      */
-    @NonNull
-    public final List<Tab> getTabsWithNoOtherRelatedTabs() {
-        List<Tab> tabs = new ArrayList<>();
-        TabModel tabModel = getTabModel();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
-            if (!hasOtherRelatedTabs(tab)) {
-                tabs.add(tab);
-            }
-        }
-        return Collections.unmodifiableList(tabs);
-    }
-
-    /**
-     * Any of the concrete class that defined a relationship between tabs should override this
-     * method. By default, the given {@link Tab} has no related tabs, other than itself.
-     * @param tab A {@link Tab}.
-     * @return Whether the given {@link Tab} has other related tabs that is not itself.
-     */
-    public boolean hasOtherRelatedTabs(Tab tab) {
+    public boolean isTabInTabGroup(Tab tab) {
         return false;
     }
 
@@ -182,14 +167,10 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      */
     protected abstract void selectTab(Tab tab);
 
-    /**
-     * Concrete class requires to define the ordering of each Tab within the filter.
-     */
+    /** Concrete class requires to define the ordering of each Tab within the filter. */
     protected abstract void reorder();
 
-    /**
-     * Concrete class requires to define what to clean up.
-     */
+    /** Concrete class requires to define what to clean up. */
     protected abstract void resetFilterStateInternal();
 
     /**
@@ -274,7 +255,10 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+    public void didAddTab(
+            Tab tab,
+            @TabLaunchType int type,
+            @TabCreationState int creationState,
             boolean markedForSelection) {
         addTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {

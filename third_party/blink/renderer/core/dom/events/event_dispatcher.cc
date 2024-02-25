@@ -27,8 +27,12 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 
+#include <optional>
+
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -46,6 +50,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -195,7 +200,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
 
   if (frame && window) {
-    eventTiming = EventTiming::Create(window, *event_);
+    eventTiming = EventTiming::Create(window, *event_, event_->target());
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -207,34 +212,42 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_click =
       event_->IsMouseEvent() && event_->type() == event_type_names::kClick;
 
-  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
-  if (is_click && event_->isTrusted() && frame) {
-    if (window && frame->IsMainFrame()) {
-      soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-          SoftNavigationHeuristics::From(*window),
-          ToScriptStateForMainWorld(frame));
+  Node* target_node = event_->target() ? event_->target()->ToNode() : nullptr;
+  const bool is_target_body_element =
+      target_node && target_node->IsHTMLElement() &&
+      DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement();
+  const bool is_unfocused_keyboard_event =
+      event_->IsKeyboardEvent() &&
+      (event_->type() == event_type_names::kKeydown ||
+       event_->type() == event_type_names::kKeypress ||
+       event_->type() == event_type_names::kKeyup) &&
+      is_target_body_element;
+
+  std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
+  if ((is_click || is_unfocused_keyboard_event) && event_->isTrusted() &&
+      frame) {
+    if (window &&
+        base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
+      if (SoftNavigationHeuristics* heuristics =
+              SoftNavigationHeuristics::From(*window)) {
+        bool is_new_interaction =
+            is_click || (event_->type() == event_type_names::kKeydown);
+        soft_navigation_scope = heuristics->CreateEventScope(
+            is_unfocused_keyboard_event
+                ? SoftNavigationHeuristics::EventScope::Type::kKeyboard
+                : SoftNavigationHeuristics::EventScope::Type::kClick,
+            is_new_interaction);
+      }
     }
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.
-    DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
-                                         AdTracker::StackType::kBottomAndTop));
-    if (frame->IsAdFrame()) {
+    DCHECK(!is_click || !frame->GetAdTracker() ||
+           !frame->GetAdTracker()->IsAdScriptInStack(
+               AdTracker::StackType::kBottomAndTop));
+    if (is_click && frame->IsAdFrame()) {
       UseCounter::Count(document, WebFeature::kAdClick);
     }
   }
-
-#if DCHECK_IS_ON()
-  // If Mutation Events are disabled, we should never dispatch trusted ones.
-  if (event_->isTrusted() &&
-      (event_->type() == event_type_names::kDOMCharacterDataModified ||
-       event_->type() == event_type_names::kDOMSubtreeModified ||
-       event_->type() == event_type_names::kDOMNodeInserted ||
-       event_->type() == event_type_names::kDOMNodeInsertedIntoDocument ||
-       event_->type() == event_type_names::kDOMNodeRemoved ||
-       event_->type() == event_type_names::kDOMNodeRemovedFromDocument)) {
-    DCHECK(document.SupportsLegacyDOMMutations());
-  }
-#endif
 
   // 6. Let isActivationEvent be true, if event is a MouseEvent object and
   // event's type attribute is "click", and false otherwise.
@@ -266,7 +279,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
 #endif
   DCHECK(event_->target());
   DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
-                                inspector_event_dispatch_event::Data, *event_);
+                                inspector_event_dispatch_event::Data, *event_,
+                                document.GetAgent().isolate());
   EventDispatchHandlingState* pre_dispatch_event_handler_result = nullptr;
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==
@@ -279,9 +293,6 @@ DispatchEventResult EventDispatcher::Dispatch() {
                            pre_dispatch_event_handler_result);
 
   auto result = EventTarget::GetDispatchEventResult(*event_);
-  if (soft_navigation_scope) {
-    soft_navigation_scope->SetResult(result);
-  }
 
   return result;
 }

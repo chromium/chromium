@@ -57,7 +57,7 @@ class Popup {
     } else {
       document.documentElement.setAttribute('hc', 'a0');
     }
-    chrome.extension.sendRequest({updateTabs: true});
+    chrome.runtime.sendMessage({updateTabs: true});
   }
 
   /** @param {number} value */

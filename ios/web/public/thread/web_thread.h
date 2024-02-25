@@ -25,7 +25,7 @@ class WebThreadDelegate;
 // called on the named WebThread.
 #define DCHECK_CURRENTLY_ON(thread_identifier)             \
   DCHECK(::web::WebThread::CurrentlyOn(thread_identifier)) \
-      << ::web::WebThread::GetDCheckCurrentlyOnErrorMessage(thread_identifier)
+      << ::web::WebThread::GetCurrentlyOnErrorMessage(thread_identifier)
 
 // The main entry point to post tasks to the UI thread. Tasks posted with the
 // same `traits` will run in posting order (i.e. according to the
@@ -101,7 +101,7 @@ class WebThread {
   static void SetIOThreadDelegate(WebThreadDelegate* delegate);
 
   // Returns an appropriate error message for when DCHECK_CURRENTLY_ON() fails.
-  static std::string GetDCheckCurrentlyOnErrorMessage(ID expected);
+  static std::string GetCurrentlyOnErrorMessage(ID expected);
 
  private:
   friend class WebThreadImpl;

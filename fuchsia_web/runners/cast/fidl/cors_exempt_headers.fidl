@@ -9,8 +9,8 @@ using fuchsia.web;
 /// Provides a list of header names that should be exempted from CORS preflight
 /// security checks for all Cast apps.
 @discoverable
-protocol CorsExemptHeaderProvider {
-    GetCorsExemptHeaderNames() -> (struct {
+closed protocol CorsExemptHeaderProvider {
+    strict GetCorsExemptHeaderNames() -> (struct {
         header_names vector<vector<uint8>:fuchsia.web.MAX_HEADERS_COUNT>:MAX;
     });
 };

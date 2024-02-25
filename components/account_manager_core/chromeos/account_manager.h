@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
@@ -227,6 +227,18 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
           void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
           callback);
 
+  // Returns the Base16 encoded SHA1 hash for the token stored against
+  // `account_key`. This hash is meant only for debugging purposes and is not
+  // meant be used as a cryptographically secure hash. Do not persist this
+  // outside the user's cryptohome.
+  // Returns an empty string if `account_key` is not available in
+  // `AccountManager`.
+  // TODO(http://b/297484217): Remove this API.
+  void GetTokenHash(const ::account_manager::AccountKey& account_key,
+                    base::OnceCallback<void(const std::string&)> callback);
+
+  base::WeakPtr<AccountManager> GetWeakPtr();
+
  private:
   enum InitializationState {
     kNotStarted,   // Initialize has not been called
@@ -328,7 +340,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns the refresh token for `account_key`, if present. `account_key` must
   // be a Gaia account. Assumes that `AccountManager` initialization
   // (`init_state_`) is complete.
-  absl::optional<std::string> GetRefreshToken(
+  std::optional<std::string> GetRefreshToken(
       const ::account_manager::AccountKey& account_key);
 
   // Returns `url_loader_factory_`. Assumes that `AccountManager` initialization

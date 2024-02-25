@@ -4,10 +4,14 @@
 
 source_set("photos") {
   testonly = true
-  sources = [ "test_photos.mm" ]
+  sources = [
+    "test_photos.mm",
+    "test_photos_service.h",
+    "test_photos_service.mm",
+  ]
   deps = [
     "//base",
-    "//ios/chrome/browser/photos",
+    "//ios/chrome/browser/photos/model",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]
 }

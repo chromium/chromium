@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_BROWSING_CONTEXT_GROUP_SWAP_H_
 #define CONTENT_BROWSER_RENDERER_HOST_BROWSING_CONTEXT_GROUP_SWAP_H_
 
+#include <optional>
+
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -75,7 +76,7 @@ class CONTENT_EXPORT BrowsingContextGroupSwap {
  private:
   BrowsingContextGroupSwap(
       BrowsingContextGroupSwapType type,
-      const absl::optional<ShouldSwapBrowsingInstance>& reason);
+      const std::optional<ShouldSwapBrowsingInstance>& reason);
 
   // Describes the type of browsing context group swap we've decided to make.
   BrowsingContextGroupSwapType type_;
@@ -83,7 +84,7 @@ class CONTENT_EXPORT BrowsingContextGroupSwap {
   // Describes the reason why we've taken that decision in terms understandable
   // by the BackForwardCache metrics. This is null if created using the
   // `CreateDefault()` method.
-  absl::optional<ShouldSwapBrowsingInstance> reason_;
+  std::optional<ShouldSwapBrowsingInstance> reason_;
 };
 
 }  // namespace content

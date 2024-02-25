@@ -17,7 +17,7 @@ const composeCustomResponse = () => {
 };
 
 self.addEventListener('install', e => {
-  e.registerRouter([{
+  e.addRoutes([{
     condition: {
       urlPattern: "/service_worker/direct",
       requestMethod: "GET",
@@ -29,7 +29,38 @@ self.addEventListener('install', e => {
       runningStatus: "not-running",
     },
     source: "network"
+  }, {
+    condition: {
+      urlPattern: "/service_worker/cache_with_name",
+    },
+    source: {cacheName: "test"}
+  }, {
+    condition: {
+      urlPattern: "/service_worker/cache_with_wrong_name",
+    },
+    source: {cacheName: "not_exist"}
+  }, {
+    condition: {
+      urlPattern: "/service_worker/cache_*",
+    },
+    source: "cache"
   }]);
+  caches.open("test").then((c) => {
+    const headers = new Headers();
+    headers.append('Content-Type', 'text/html');
+    headers.append('X-Response-From', 'cache');
+    const options = {
+      status: 200,
+      statusText: 'Custom response from cache',
+      headers
+    };
+    const response = new Response(
+        '[ServiceWorkerStaticRouter] Response from the cache',
+        options);
+    c.put("/service_worker/cache_hit", response.clone());
+    c.put("/service_worker/cache_with_name", response.clone());
+    c.put("/service_worker/cache_with_wrong_name", response.clone());
+  });
   self.skipWaiting();
 });
 

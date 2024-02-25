@@ -197,8 +197,8 @@ class HttpRequest {
     pieces.insert(pieces.end(), {crlf});
 
     std::string request = base::StrCat(pieces);
-    scoped_refptr<net::IOBuffer> base_buffer =
-        base::MakeRefCounted<net::IOBuffer>(request.size());
+    auto base_buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(request.size());
     memcpy(base_buffer->data(), request.data(), request.size());
     request_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         std::move(base_buffer), request.size());
@@ -210,7 +210,7 @@ class HttpRequest {
     if (!CheckNetResultOrDie(result))
       return;
 
-    response_buffer_ = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+    response_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
     result = socket_->Read(
         response_buffer_.get(), kBufferSize,

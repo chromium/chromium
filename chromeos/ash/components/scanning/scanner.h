@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_SCANNING_SCANNER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -53,6 +54,18 @@ struct COMPONENT_EXPORT(SCANNING) Scanner {
 
   // Name to display in a UI.
   std::string display_name;
+
+  // Name of manufacturer.
+  std::string manufacturer;
+
+  // Name of model.
+  std::string model;
+
+  // Uniquely identify a scanner.
+  std::string uuid;
+
+  // List of PDLs that this scanner supports.
+  std::vector<std::string> pdl;
 
   // Map of ScanProtocol to a set of corresponding ScannerDeviceNames that can
   // be used with the lorgnette D-Bus service. Clients are responsible for

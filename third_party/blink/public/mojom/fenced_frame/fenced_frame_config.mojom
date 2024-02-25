@@ -7,6 +7,8 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/schemeful_site.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -23,8 +25,8 @@ enum ReportingDestination {
 // The fenced frame config's "mode" describes a set of functionalities that it
 // should have. (In the future, the concept of a "mode" will be removed, and
 // replaced with individual fields controlling each functionality.)
-// The mode is a function of the API that creates the config. FLEDGE and
-// sharedStorage use kOpaqueAds mode, and the WebIDL FencedFrameConfig()
+// The mode is a function of the API that creates the config. Protected Audience
+// and Shared Storage use kOpaqueAds mode, and the WebIDL FencedFrameConfig()
 // constructor uses kDefault mode.
 // https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
 enum DeprecatedFencedFrameMode {
@@ -39,6 +41,19 @@ enum DeprecatedFencedFrameMode {
 // frame-specific privacy policies.
 enum Opaque {
   kOpaque
+};
+
+// Unlike event-level reporting through reportEvent(), automatic beacons only
+// support a few specified types. Once the event type string is validated in
+// setReportEventDataForAutomaticBeacons(), they are converted into an enum
+// and used as the key in the automatic beacon info mapping stored in the
+// browser.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AutomaticBeaconType {
+  kDeprecatedTopNavigation = 0,
+  kTopNavigationStart = 1,
+  kTopNavigationCommit = 2
 };
 
 union PotentiallyOpaqueURL {
@@ -82,7 +97,7 @@ union PotentiallyOpaqueURNConfigVector {
 };
 
 struct SharedStorageBudgetMetadata {
-  url.mojom.Origin origin;
+  network.mojom.SchemefulSite site;
   double budget_to_charge;
   bool top_navigated;
 };
@@ -90,6 +105,16 @@ struct SharedStorageBudgetMetadata {
 union PotentiallyOpaqueSharedStorageBudgetMetadata {
   SharedStorageBudgetMetadata transparent;
   Opaque opaque;
+};
+
+// Stores information about the frame's parent's permissions policy. Normally
+// this information is inaccessible due to the fenced frame boundary, but this
+// is needed when calculating permissions inheritance. This information will be
+// used to build a copy of the fenced frame's parent's permissions policy.
+struct ParentPermissionsInfo {
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+      parsed_permissions_policy;
+  url.mojom.Origin origin;
 };
 
 // The `FencedFrameConfig` struct is used to transfer a redacted version
@@ -110,9 +135,9 @@ union PotentiallyOpaqueSharedStorageBudgetMetadata {
 //   configs.
 struct FencedFrameConfig {
   // This is the actual URL that will be loaded into the fenced frame when
-  // navigated to. It can be opaque because for the current use cases (FLEDGE,
-  // shared storage), we never want to expose anything about the actual resource
-  // beyond its existence, to the embedder of a fenced frame.
+  // navigated to. It can be opaque because for the current use cases (Protected
+  // Audience, shared storage), we never want to expose anything about the
+  // actual resource beyond its existence, to the embedder of a fenced frame.
   PotentiallyOpaqueURL? mapped_url;
 
   PotentiallyOpaqueSize? container_size;
@@ -142,12 +167,21 @@ struct FencedFrameConfig {
   // concept of a mode to stick around in the future.
   DeprecatedFencedFrameMode mode;
 
-  // APIs like FLEDGE and Shared Storage require specific features to be enabled
-  // in the loaded frame. If an embedder is allowed to set arbitrary permissions
-  // on a fenced frame, it can be used as a fingerprinting channel. Instead,
-  // each API sets a list of feature permissions that a fenced frame needs to
-  // enable to be allowed to load.
+  // APIs like Protected Audience and Shared Storage require specific features
+  // to be enabled in the loaded frame. If an embedder is allowed to set
+  // arbitrary permissions on a fenced frame, it can be used as a fingerprinting
+  // channel. Instead, each API sets a list of feature permissions that a fenced
+  // frame needs to enable to be allowed to load. Only used for fenced frames
+  // with a fixed permissions policy.
   array<PermissionsPolicyFeature> effective_enabled_permissions;
+
+  // Fenced frames with a flexible permissions policy are allowed to inherit
+  // certain permissions policies from their parent. However, a fenced frame's
+  // renderer process doesn't have access to its parent. Instead, we give it
+  // this information through the fenced frame config so that it can calculate
+  // permissions inheritance. Only non-null for non-opaque fenced frames (i.e.
+  // fenced frames whose mode = DeprecatedFencedFrameMode::kDefault).
+  ParentPermissionsInfo? parent_permissions_info;
 };
 
 // The `FencedFrameProperties` struct is used to transfer a redacted version
@@ -189,4 +223,18 @@ struct FencedFrameProperties {
   DeprecatedFencedFrameMode mode;
 
   array<PermissionsPolicyFeature> effective_enabled_permissions;
+
+  // Fenced frames with a flexible permissions policy are allowed to inherit
+  // certain permissions policies from their parent. However, a fenced frame's
+  // renderer process doesn't have access to its parent. Instead, we give it
+  // this information through the fenced frame config so that it can calculate
+  // permissions inheritance. Only non-null for non-opaque fenced frames (i.e.
+  // fenced frames whose mode = DeprecatedFencedFrameMode::kDefault).
+  ParentPermissionsInfo? parent_permissions_info;
+
+  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
+  // (and then access to unpartitioned storage).
+  // Currently false in urn iframes, and in documents cross-origin to the
+  // mapped url in fenced frames.
+  bool can_disable_untrusted_network;
 };

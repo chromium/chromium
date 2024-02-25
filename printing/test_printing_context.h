@@ -6,6 +6,7 @@
 #define PRINTING_TEST_PRINTING_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -14,10 +15,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#endif
 
 namespace printing {
 
@@ -45,7 +42,7 @@ class TestPrintingContext : public PrintingContext {
 #endif
       const PrintSettings&)>;
 
-  TestPrintingContext(Delegate* delegate, bool skip_system_calls);
+  TestPrintingContext(Delegate* delegate, ProcessBehavior process_behavior);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
   ~TestPrintingContext() override;
@@ -56,6 +53,10 @@ class TestPrintingContext : public PrintingContext {
   // indicated device.
   void SetDeviceSettings(const std::string& device_name,
                          std::unique_ptr<PrintSettings> settings);
+
+  // Provide the job ID which should be used once a new document is created.
+  // Only applicable for process behaviors that can make system calls.
+  void SetNewDocumentJobId(int job_id);
 
   // Provide the settings which should be applied to mimic a user's choices
   // during AskUserForSettings().
@@ -82,6 +83,9 @@ class TestPrintingContext : public PrintingContext {
 
   // Enables tests to fail with a failed error.
   void SetNewDocumentFails() { new_document_fails_ = true; }
+  void SetUpdatePrinterSettingsFails() {
+    update_printer_settings_fails_ = true;
+  }
   void SetUseDefaultSettingsFails() { use_default_settings_fails_ = true; }
 
   // Enables tests to fail with a canceled error.
@@ -127,7 +131,7 @@ class TestPrintingContext : public PrintingContext {
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
 
   // Settings to apply to mimic a user's choices in `AskUserForSettings()`.
-  absl::optional<PrintSettings> user_settings_;
+  std::optional<PrintSettings> user_settings_;
 
   // Platform implementations of `PrintingContext` apply PrintSettings to the
   // respective device contexts.  Once the upper printing layers call
@@ -144,6 +148,7 @@ class TestPrintingContext : public PrintingContext {
   bool destination_is_preview_ = false;
 #endif
 
+  bool update_printer_settings_fails_ = false;
   bool use_default_settings_fails_ = false;
   bool ask_user_for_settings_cancel_ = false;
   bool new_document_cancels_ = false;
@@ -151,7 +156,7 @@ class TestPrintingContext : public PrintingContext {
   bool new_document_blocked_by_permissions_ = false;
 #if BUILDFLAG(IS_WIN)
   bool render_page_blocked_by_permissions_ = false;
-  absl::optional<uint32_t> render_page_fail_for_page_number_;
+  std::optional<uint32_t> render_page_fail_for_page_number_;
 #endif
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;
@@ -159,6 +164,10 @@ class TestPrintingContext : public PrintingContext {
   // Called every time `NewDocument()` is called.  Provides a copy of the
   // effective device context settings.
   OnNewDocumentCallback on_new_document_callback_;
+
+  // The job ID to assign once `NewDocument()` is called, if the process
+  // behavior allows for system calls to be made.
+  std::optional<int> new_document_job_id_;
 };
 
 }  // namespace printing

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_LOADER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_LOADER_IMPL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
@@ -15,7 +17,6 @@
 #include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::libassistant {
 
@@ -65,7 +66,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_LOADER) LibassistantLoaderImpl
 
   LoadCallback callback_;
 
-  absl::optional<base::ScopedNativeLibrary> dlc_library_;
+  std::optional<base::ScopedNativeLibrary> dlc_library_;
   std::unique_ptr<EntryPoint> entry_point_;
 
   base::WeakPtrFactory<LibassistantLoaderImpl> weak_factory_{this};

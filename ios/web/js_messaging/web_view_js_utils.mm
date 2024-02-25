@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/crash_logging.h"
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -47,6 +48,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     for (id key in wk_result) {
       NSString* obj_c_string = base::apple::ObjCCast<NSString>(key);
       const std::string path = base::SysNSStringToUTF8(obj_c_string);
+      SCOPED_CRASH_KEY_STRING32("ScriptMessage", "path", path);
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(wk_result[obj_c_string], max_depth - 1);
       if (value) {

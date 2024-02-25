@@ -34,6 +34,7 @@
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -85,8 +86,7 @@ class FakeQuickPairProcessManager
   mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
       fast_pair_data_parser_;
   std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
-  raw_ptr<base::test::SingleThreadTaskEnvironment, ExperimentalAsh>
-      task_environment_;
+  raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   ProcessStoppedCallback on_process_stopped_callback_;
 };
 
@@ -160,8 +160,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
-  raw_ptr<FakeQuickPairProcessManager, DanglingUntriaged | ExperimentalAsh>
-      fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager, DanglingUntriaged> fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
@@ -400,7 +399,8 @@ TEST_F(FastPairDiscoverableScannerImplTest,
 TEST_F(FastPairDiscoverableScannerImplTest, InputDeviceAllowedWhenHIDEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairHID},
+      /*enabled_features=*/{features::kFastPairHID,
+                            floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   nearby::fastpair::Device metadata;
   nearby::fastpair::Status* status = metadata.mutable_status();

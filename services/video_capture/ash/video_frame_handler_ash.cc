@@ -161,20 +161,12 @@ void VideoFrameHandlerAsh::OnFrameAccessHandlerReady(
 }
 
 void VideoFrameHandlerAsh::OnFrameReadyInBuffer(
-    video_capture::mojom::ReadyFrameInBufferPtr buffer,
-    std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+    video_capture::mojom::ReadyFrameInBufferPtr buffer) {
   DCHECK(frame_access_handler_remote_);
   crosapi::mojom::ReadyFrameInBufferPtr crosapi_buffer =
       ToCrosapiBuffer(std::move(buffer), frame_access_handler_remote_);
-  std::vector<crosapi::mojom::ReadyFrameInBufferPtr> crosapi_scaled_buffers;
-  crosapi_scaled_buffers.reserve(scaled_buffers.size());
-  for (auto& b : scaled_buffers) {
-    crosapi_scaled_buffers.push_back(
-        ToCrosapiBuffer(std::move(b), frame_access_handler_remote_));
-  }
 
-  proxy_->OnFrameReadyInBuffer(std::move(crosapi_buffer),
-                               std::move(crosapi_scaled_buffers));
+  proxy_->OnFrameReadyInBuffer(std::move(crosapi_buffer));
 }
 
 void VideoFrameHandlerAsh::OnBufferRetired(int buffer_id) {
@@ -190,8 +182,9 @@ void VideoFrameHandlerAsh::OnFrameDropped(
   proxy_->OnFrameDropped(reason);
 }
 
-void VideoFrameHandlerAsh::OnNewCropVersion(uint32_t crop_version) {
-  proxy_->OnNewCropVersion(crop_version);
+void VideoFrameHandlerAsh::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
+  proxy_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
 }
 
 void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {

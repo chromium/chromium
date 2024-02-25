@@ -6,6 +6,8 @@
  * @fileoverview Logic for panning a braille display within a line of braille
  * content that might not fit on a single display.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {CURSOR_DOTS} from './cursor_dots.js';
 
 export class PanStrategy {
@@ -222,6 +224,96 @@ export class PanStrategy {
 
     // Convert the cells to Unicode braille pattern characters.
     const view = new Uint8Array(translatedContent);
+
+    // Check for a multi-line display and encode with horizontal and vertical
+    // spacing if so.
+    //
+    // We currently insert one column of dots horizontally between cells and two
+    // rows of dots vertically between lines.
+    //
+    // TODO(accessibility): extend this to work with word wrapping below.
+    if (!this.panStrategyWrapped_ && this.displaySize_.rows > 1) {
+      // All known displays have even number of rows and columns.
+      // TODO(accessibility): this check should move elsewhere.
+      if (this.displaySize_.rows % 2 !== 0 ||
+          this.displaySize_.columns % 2 !== 0) {
+        return;
+      }
+
+      // Iterate in two-byte groupings.
+      const horizontalSpacedBraille = [];
+      for (let index = 0; index < translatedContent.byteLength; index += 2) {
+        const first = view[index];
+        const second = view[index + 1];
+
+        // The first cell is always written.
+        horizontalSpacedBraille.push(first);
+
+        // The second cell turns into two cells.
+        // The initial cell has one vertical blank dot column on the left.
+        horizontalSpacedBraille.push(
+            (second & 0b111) << 3 | (second & 0b1000000) << 1);
+
+        // The next cell has one vertical blank dot column on the right.
+        horizontalSpacedBraille.push(
+            (second & 0b111000) >> 3 | (second & 0b10000000) >> 1);
+      }
+
+      // Now, space the lines vertically by inserting two blank dot rows.
+      let spacedBraille = [];
+
+      // Iterate by two cell rows at once.
+      for (let row = 0; row < this.displaySize_.rows; row += 2) {
+        // The first row gets added verbatim.
+        for (let index = 0; index < this.displaySize_.columns; index++) {
+          const rowIndex = row * this.displaySize_.columns + index;
+          spacedBraille.push(horizontalSpacedBraille[rowIndex]);
+        }
+
+        // The second cell row turns into two cell rows: an upper row with
+        // spacing a blank dot row above, and a lower cell row with blank dot
+        // row spacing below. The upper cell row can be pushed below; store the
+        // lower cell row for after.
+        const nextRow = row + 1;
+        const lowerRow = [];
+        for (let index = 0; index < this.displaySize_.columns; index++) {
+          const rowIndex = nextRow * this.displaySize_.columns + index;
+          const value = horizontalSpacedBraille[rowIndex];
+
+          // Downshift the top two dots by two positions.
+          // e.g. dot 1 goes to dot 3, dot 4 to dot 6.
+          let upperRowValue = (value & 0b1001) << 2;
+
+          // Downshift dot 2 to dot 7.
+          upperRowValue |= (value & 0b010) << 5;
+
+          // Downshift dot 5 to dot 8.
+          upperRowValue |= (value & 0b10000) << 3;
+
+          spacedBraille.push(upperRowValue);
+
+          // Lower row.
+          // Upshift the bottom two dots by two positions.
+          // e.g. dot 3 to dot 1, dot 6 to dot 4.
+          let lowerRowValue = (value & 0b100100) >> 2;
+
+          // Upshift dot 7 to dot 2.
+          lowerRowValue |= (value & 0b1000000) >> 5;
+
+          // Upshift dot 8 to dot 5.
+          lowerRowValue |= (value & 0b10000000) >> 3;
+
+          lowerRow.push(lowerRowValue);
+        }
+
+        spacedBraille = spacedBraille.concat(lowerRow);
+      }
+
+      const brailleUint8Array = new Uint8Array(spacedBraille);
+      this.fixedBuffer_ = new ArrayBuffer(brailleUint8Array.length);
+      new Uint8Array(this.fixedBuffer_).set(brailleUint8Array);
+    }
+
     const wrappedBrailleArray = [];
 
     let lastBreak = 0;
@@ -396,3 +488,5 @@ export class PanStrategy {
  * @typedef {{firstRow: number, lastRow: number}}
  */
 PanStrategy.Range;
+
+TestImportManager.exportForTesting(PanStrategy);

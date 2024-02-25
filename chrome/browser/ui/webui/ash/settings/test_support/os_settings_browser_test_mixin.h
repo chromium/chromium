@@ -72,7 +72,7 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
               mojo::PendingReceiver<mojom::OSSettingsBrowserProcess> receiver);
 
    private:
-    absl::optional<mojo::Remote<mojom::OSSettingsDriver>> os_settings_driver_;
+    std::optional<mojo::Remote<mojom::OSSettingsDriver>> os_settings_driver_;
     mojo::ReceiverSet<mojom::OSSettingsBrowserProcess> receivers_;
   };
 

@@ -24,7 +24,7 @@ class DistillerJsRenderFrameObserver : public content::RenderFrameObserver {
   // RenderFrameObserver implementation.
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int32_t world_id) override;
 

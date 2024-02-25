@@ -6,11 +6,13 @@
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/encoding/encoding_util.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -158,7 +160,7 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.g_lag_in_frames = 0;  // Immediate data output for each frame.
 
   // Rate control settings.
-  config_.rc_dropframe_thresh = 0;  // The encoder may not drop any frames.
+  config_.rc_dropframe_thresh = GetEncoderDropFrameThreshold();
   config_.rc_resize_allowed = 0;
   config_.rc_end_usage = VPX_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
@@ -188,9 +190,25 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   // Raise the threshold for considering macroblocks as static.  The default is
   // zero, so this setting makes the encoder less sensitive to motion.  This
   // lowers the probability of needing to utilize more CPU to search for motion
-  // vectors.
-  CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_STATIC_THRESHOLD, 1),
+  // vectors. The value is the same as WebRTC.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+  CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_STATIC_THRESHOLD, 100),
            VPX_CODEC_OK);
+
+  if (cast_config_.codec == Codec::kVideoVp9) {
+    CHECK_EQ(vpx_codec_control(&encoder_, VP9E_SET_TUNE_CONTENT,
+                               VP9E_CONTENT_SCREEN),
+             VPX_CODEC_OK);
+  } else {
+    // A frame may be dropped by the encoder if VP8E_SET_SCREEN_CONTENT_MODE is
+    // configured to 2 ("On with more aggressive rate control"). A frame is
+    // never dropped if it is configured to 1 ("On").
+    const unsigned int screen_content_mode =
+        base::FeatureList::IsEnabled(kCastVideoEncoderFrameDrop) ? 2 : 1;
+    CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_SCREEN_CONTENT_MODE,
+                               screen_content_mode),
+             VPX_CODEC_OK);
+  }
 
   // This cpu_used setting is a trade-off between cpu usage and encoded video
   // quality. The default is zero, with increasingly less CPU to be used as the
@@ -300,7 +318,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   }
 
   // Pull data from the encoder, populating a new EncodedFrame.
-  encoded_frame->frame_id = next_frame_id_++;
+  encoded_frame->frame_id = next_frame_id_;
   const vpx_codec_cx_pkt_t* pkt = NULL;
   vpx_codec_iter_t iter = NULL;
   while ((pkt = vpx_codec_get_cx_data(&encoder_, &iter)) != NULL) {
@@ -325,8 +343,12 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
         static_cast<const uint8_t*>(pkt->data.frame.buf) + pkt->data.frame.sz);
     break;  // Done, since all data is provided in one CX_FRAME_PKT packet.
   }
-  DCHECK(!encoded_frame->data.empty())
-      << "BUG: Encoder must provide data since lagged encoding is disabled.";
+  if (encoded_frame->data.empty()) {
+    // Drop frame.
+    return;
+  }
+  // Increment frame id only if the frame is encoded.
+  next_frame_id_++;
   metrics_provider_->IncrementEncodedFrameCount();
 
   // Compute encoder utilization as the real-world time elapsed divided by the

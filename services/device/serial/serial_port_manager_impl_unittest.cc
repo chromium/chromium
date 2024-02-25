@@ -12,10 +12,12 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -36,14 +38,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::base::test::RunOnceCallback;
-using ::testing::_;
-using ::testing::Invoke;
-using ::testing::Return;
-
 namespace device {
 
 namespace {
+
+using ::base::test::RunOnceCallback;
+using ::base::test::TestFuture;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
 
 const base::FilePath kFakeDevicePath1(FILE_PATH_LITERAL("/dev/fakeserialmojo"));
 const base::FilePath kFakeDevicePath2(FILE_PATH_LITERAL("\\\\COM800\\"));
@@ -112,6 +115,15 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
     task_environment_.RunUntilIdle();
   }
 
+  // Creates a MockBluetoothDevice with the Serial Port Profile service and no
+  // other service UUIDs.
+  std::unique_ptr<MockBluetoothDevice> CreateSerialPortProfileDevice() {
+    auto mock_device = std::make_unique<MockBluetoothDevice>(
+        adapter_.get(), 0, "Test Device", kDeviceAddress, false, false);
+    mock_device->AddUUID(GetSerialPortProfileUUID());
+    return mock_device;
+  }
+
   // Since not all functions need to use a MockBluetoothAdapter, this function
   // is called at the beginning of test cases that do require a
   // MockBluetoothAdapter.
@@ -124,10 +136,7 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
             Invoke(adapter_.get(), &MockBluetoothAdapter::GetConstMockDevices));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
-    auto mock_device = std::make_unique<MockBluetoothDevice>(
-        adapter_.get(), 0, "Test Device", kDeviceAddress, false, false);
-    mock_device->AddUUID(GetSerialPortProfileUUID());
-    adapter_->AddMockDevice(std::move(mock_device));
+    adapter_->AddMockDevice(CreateSerialPortProfileDevice());
 
     auto bluetooth_enumerator =
         std::make_unique<BluetoothSerialDeviceEnumerator>(
@@ -412,6 +421,44 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
         }));
     run_loop.Run();
   }
+}
+
+TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
+  SetupBluetoothEnumerator();
+  mojo::Remote<mojom::SerialPortManager> port_manager;
+  Bind(port_manager.BindNewPipeAndPassReceiver());
+
+  MockSerialPortManagerClient client;
+  port_manager->SetClient(client.BindNewPipeAndPassRemote());
+
+  TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
+  port_manager->GetDevices(get_devices_future.GetCallback());
+  auto port_it =
+      base::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
+        return port->path == base::FilePath::FromASCII(kDeviceAddress);
+      });
+  ASSERT_NE(port_it, get_devices_future.Get().end());
+  EXPECT_EQ((*port_it)->path, base::FilePath::FromASCII(kDeviceAddress));
+  EXPECT_EQ((*port_it)->type, mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
+  const base::UnguessableToken token = (*port_it)->token;
+
+  // Create an updated device with another service UUID. A second RFCOMM port is
+  // created with the same device address but different token.
+  auto updated_device = CreateSerialPortProfileDevice();
+  updated_device->AddUUID(
+      device::BluetoothUUID("25e97ff7-24ce-4c4c-8951-f764a708f7b5"));
+  TestFuture<mojom::SerialPortInfoPtr> port_added_future;
+  EXPECT_CALL(client, OnPortAdded).WillOnce([&](mojom::SerialPortInfoPtr port) {
+    port_added_future.SetValue(std::move(port));
+  });
+  bluetooth_enumerator_->DeviceChangedForTesting(adapter_.get(),
+                                                 updated_device.get());
+  ASSERT_TRUE(port_added_future.Get());
+  EXPECT_NE(port_added_future.Get()->token, token);
+  EXPECT_EQ(port_added_future.Get()->path,
+            base::FilePath::FromASCII(kDeviceAddress));
+  EXPECT_EQ(port_added_future.Get()->type,
+            mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
 }
 
 TEST_F(SerialPortManagerImplTest,

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -57,7 +58,10 @@ class ScrollbarThemeWithMockInvalidation : public ScrollbarThemeOverlayMock {
 }  // namespace
 
 class ScrollableAreaTest : public testing::Test,
-                           public PaintTestConfigurations {};
+                           public PaintTestConfigurations {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollableAreaTest);
 

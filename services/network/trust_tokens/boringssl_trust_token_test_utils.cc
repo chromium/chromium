@@ -5,6 +5,7 @@
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -102,18 +102,18 @@ TestTrustTokenIssuer::TestTrustTokenIssuer(uint8_t num_keys,
   ctx_ = std::move(ctx);
 }
 
-absl::optional<std::string> TestTrustTokenIssuer::Issue(
+std::optional<std::string> TestTrustTokenIssuer::Issue(
     const std::string& issuance_request) const {
   DCHECK(!keys_.empty());
   return IssueUsingKey(issuance_request, keys_.front().key_id);
 }
 
-absl::optional<std::string> TestTrustTokenIssuer::IssueUsingKey(
+std::optional<std::string> TestTrustTokenIssuer::IssueUsingKey(
     const std::string& issuance_request,
     const uint32_t& key_id) const {
   std::string raw_issuance_request;
   if (!base::Base64Decode(issuance_request, &raw_issuance_request)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ScopedBoringsslBytes raw_issuance_response;
   size_t num_tokens_issued;
@@ -128,7 +128,7 @@ absl::optional<std::string> TestTrustTokenIssuer::IssueUsingKey(
           /*public_metadata=*/key_id,
           /*private_metadata=*/kPrivateMetadata,
           /*max_issuance=*/max_issuance_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Base64Encode(raw_issuance_response.as_span());

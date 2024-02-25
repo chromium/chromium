@@ -5,14 +5,15 @@
 #include "chromecast/common/cast_content_client.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_constants.h"
@@ -22,6 +23,7 @@
 #include "components/cast/common/constants.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/media_switches.h"
+#include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -30,7 +32,9 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <optional>
 #include "chromecast/common/media/cast_media_drm_bridge_client.h"
+#include "components/cdm/common/android_cdm_registration.h"
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -139,7 +143,7 @@ std::u16string CastContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::StringPiece CastContentClient::GetDataResource(
+std::string_view CastContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
@@ -202,7 +206,33 @@ void CastContentClient::AddContentDecryptionModules(
     } else {
       DVLOG(1) << "Widevine enabled but no library found";
     }
+#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WIDEVINE)
+    cdm::AddAndroidWidevineCdm(cdms);
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
+#if BUILDFLAG(ENABLE_PLAYREADY)
+    // PlayReady may be supported on the devices. Register it anyway without
+    // any capabilities so that it will be checked the first time it is used.
+    // CdmInfo needs a CdmType, but on Android it is not used as the key system
+    // is supported by MediaDrm. Using a random value as something needs to be
+    // specified, and it must be different than other CdmTypes specified.
+    // (On Android the key system is identified by UUID, and that mapping is
+    // maintained by MediaDrmBridge.)
+    const ::media::CdmType kPlayReadyCdmType{0x86eb6b54497627b0ull,
+                                             0xdd48f67486daf152ull};
+    // TODO(jrummell): Move kChromecastPlayreadyKeySystem from
+    // chromecast/media/base/key_systems_common.h to someplace more accessible.
+    const char kChromecastPlayreadyKeySystem[] = "com.chromecast.playready";
+    cdms->push_back(
+        content::CdmInfo(kChromecastPlayreadyKeySystem,
+                         content::CdmInfo::Robustness::kSoftwareSecure,
+                         std::nullopt, kPlayReadyCdmType));
+    cdms->push_back(
+        content::CdmInfo(kChromecastPlayreadyKeySystem,
+                         content::CdmInfo::Robustness::kHardwareSecure,
+                         std::nullopt, kPlayReadyCdmType));
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
   }
 }

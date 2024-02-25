@@ -69,9 +69,8 @@ class FileManagerPrivateInternalSharesheetHasTargetsFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
-  bool contains_hosted_document_ = false;
 };
 
 // Implements the chrome.fileManagerPrivateInternal.invokeSharesheet method.
@@ -111,10 +110,9 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
   std::vector<std::string> dlp_source_urls_;
-  bool contains_hosted_document_ = false;
 };
 
 }  // namespace extensions

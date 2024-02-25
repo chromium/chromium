@@ -9,9 +9,9 @@
 
 namespace autofill {
 
-TestStrikeDatabase::TestStrikeDatabase() {}
+TestStrikeDatabase::TestStrikeDatabase() = default;
 
-TestStrikeDatabase::~TestStrikeDatabase() {}
+TestStrikeDatabase::~TestStrikeDatabase() = default;
 
 void TestStrikeDatabase::GetProtoStrikes(
     const std::string& key,

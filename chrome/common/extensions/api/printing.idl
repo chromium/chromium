@@ -9,9 +9,11 @@ implemented_in="chrome/browser/extensions/api/printing/printing_api.h"]
 namespace printing {
   dictionary SubmitJobRequest {
     // The print job to be submitted.
-    // The only supported content type is "application/pdf", and the CJT ticket
-    // shouldn't include FitToPageTicketItem, PageRangeTicketItem,
-    // ReverseOrderTicketItem and VendorTicketItem fields since they are
+    // The only supported content type is "application/pdf", and the
+    // <a href="https://developers.google.com/cloud-print/docs/cdd#cjt">Cloud Job Ticket</a>
+    // shouldn't include <code>FitToPageTicketItem</code>,
+    // <code>PageRangeTicketItem</code>, <code>ReverseOrderTicketItem</code>
+    // and <code>VendorTicketItem</code> fields since they are
     // irrelevant for native printing. All other fields must be present.
     printerProvider.PrintJob job;
 
@@ -153,30 +155,32 @@ namespace printing {
   callback GetPrinterInfoCallback = void(GetPrinterInfoResponse response);
 
   interface Functions {
-    // Submits the job for print.
-    // Use the
-    // <a href="https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist">
-    // <code>PrintingAPIExtensionsAllowlist</code></a> to bypass promting
-    // the user to confirm printing.
-    [supportsPromises] static void submitJob(SubmitJobRequest request,
-                                             SubmitJobCallback callback);
+    // Submits the job for printing. If the extension is not listed in
+    // the <a href="https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist">
+    // <code>PrintingAPIExtensionsAllowlist</code></a> policy,
+    // the user is prompted to accept the print job.<br/>
+    // Before Chrome 120, this function did not return a promise.
+    static void submitJob(
+        SubmitJobRequest request,
+        SubmitJobCallback callback);
 
     // Cancels previously submitted job.
     // |jobId|: The id of the print job to cancel. This should be the same id
     // received in a $(ref:SubmitJobResponse).
-    [supportsPromises] static void cancelJob(DOMString jobId,
-                                             CancelJobCallback callback);
+    static void cancelJob(
+        DOMString jobId,
+        CancelJobCallback callback);
 
     // Returns the list of available printers on the device. This includes
     // manually added, enterprise and discovered printers.
-    [supportsPromises] static void getPrinters(GetPrintersCallback callback);
+    static void getPrinters(GetPrintersCallback callback);
 
     // Returns the status and capabilities of the printer in
     // <a href="https://developers.google.com/cloud-print/docs/cdd#cdd">
     // CDD format</a>.
     // This call will fail with a runtime error if no printers with given id are
     // installed.
-    [supportsPromises] static void getPrinterInfo(
+    static void getPrinterInfo(
         DOMString printerId,
         GetPrinterInfoCallback callback);
   };

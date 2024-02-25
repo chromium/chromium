@@ -6,19 +6,19 @@ found in the LICENSE file.
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-<item android:state_selected="false">
-  <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-      android:shape="rectangle"
-      app:surfaceElevation="@dimen/default_elevation_0">
-    <corners android:radius="@dimen/feed_header_background_corner_radius_polished"/>
-  </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
-</item>
-<item android:state_selected="true">
-  <shape android:shape="rectangle">
-    <corners android:radius="@dimen/feed_header_background_corner_radius_polished" />
-    <solid android:color="?attr/colorPrimaryContainer"/>
-  </shape>
-</item>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+  <item android:state_selected="false" >
+    <shape android:shape="rectangle">
+      <!-- This will show the main background color. -->
+      <solid android:color="@android:color/transparent"/>
+    </shape>
+  </item>
+  <item android:state_selected="true" >
+    <shape android:shape="rectangle">
+      <!-- The stroke will show the main background color. -->
+      <stroke android:width="8dp" android:color="@android:color/transparent"/>
+      <solid android:color="@color/color_primary_with_alpha_15"/>
+      <corners android:radius="@dimen/feed_header_background_corner_radius_polished"/>
+    </shape>
+  </item>
 </selector>
-

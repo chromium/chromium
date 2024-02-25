@@ -1,21 +1,36 @@
-<style include="cr-hidden-style">
-  :host-context([chrome-refresh-2023]) #container-parent,
+<style include="cr-hidden-style sp-shared-style">
+  :host-context([chrome-refresh-2023]) #empty-state-container {
+    border-radius: 12px;
+  }
+  .sp-scroller {
+    display: block;
+  }
   :host-context([chrome-refresh-2023]) #empty-state-container {
     margin: 0 8px;
-    border-radius: 16px;
-    display: block;
-  }
-  :host-context([chrome-refresh-2023]) #empty-state-container {
     padding: 20px 0;
   }
-  :host-context([chrome-refresh-2023]) #container {
-    border-radius: 16px;
-    display: block;
+
+  #toolbar-container {
+    width: 100%;
   }
+
+  #flexParent {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
   #container-parent {
     background: var(--background-color);
     height: 100%;
   }
+
+  :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-track {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
   #container {
     background: var(--background-color);
     color: var(--foreground-color);
@@ -24,6 +39,7 @@
     letter-spacing: var(--letter-spacing);
     line-height: var(--line-height);
     padding: 20px;
+    /* max-width should match line width limit in read_anything_constants.h. */
     max-width: 60ch;
     margin: 0 auto;
   }
@@ -45,25 +61,44 @@
   }
   ::selection {
     background: var(--selection-color);
-    color: var(--google-grey-800);
+    color: var(--selection-text-color);
   }
-  @media (prefers-color-scheme: dark) {
-    ::selection {
-      color: var(--google-grey-900);
-    }
+  .current-read-highlight {
+    background-color: var(--current-highlight-bg-color);
   }
+  .previous-read-highlight {
+    color: var(--previous-highlight-color);
+    background-color: transparent;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
 </style>
-<div hidden="[[!isWebUIToolbarVisible_]]">
-  <read-anything-toolbar id="toolbar"></read-anything-toolbar>
-</div>
-<div id="container-parent" hidden="[[!hasContent_]]">
-  <div id="container"></div>
-</div>
-<div id="empty-state-container" hidden="[[hasContent_]]">
-  <sp-empty-state
+<div id="flexParent" on-keydown="onKeyDown_">
+  <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
+    <read-anything-toolbar
+      paused="[[speechPlayngState.paused]]"
+      selected-voice="[[selectedVoice]]"
+      available-voices="[[availableVoices]]"
+      preview-voice-playing="[[previewVoicePlaying]]"
+      on-select-voice="onSelectVoice_"
+      on-preview-voice="onPreviewVoice_"
+      on-voice-menu-close="onVoiceMenuClose_"
+      id="toolbar">
+    </read-anything-toolbar>
+  </div>
+  <div id="container-parent" class="sp-card sp-scroller"
+       hidden="[[!hasContent_]]">
+    <div id="container"></div>
+  </div>
+  <div id="empty-state-container" hidden="[[hasContent_]]">
+    <sp-empty-state
       image-path="[[emptyStateImagePath_]]"
       dark-image-path="[[emptyStateDarkImagePath_]]"
       heading="[[emptyStateHeading_]]"
       body="[[emptyStateSubheading_]]">
-  </sp-empty-state>
+    </sp-empty-state>
+  </div>
 </div>

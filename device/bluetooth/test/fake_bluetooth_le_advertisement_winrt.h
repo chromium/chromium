@@ -5,16 +5,15 @@
 #ifndef DEVICE_BLUETOOTH_TEST_FAKE_BLUETOOTH_LE_ADVERTISEMENT_WINRT_H_
 #define DEVICE_BLUETOOTH_TEST_FAKE_BLUETOOTH_LE_ADVERTISEMENT_WINRT_H_
 
+#include <stdint.h>
 #include <windows.devices.bluetooth.advertisement.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include <stdint.h>
-
+#include <optional>
 #include <string>
 
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -27,10 +26,10 @@ class FakeBluetoothLEAdvertisementWinrt
  public:
   FakeBluetoothLEAdvertisementWinrt();
   FakeBluetoothLEAdvertisementWinrt(
-      absl::optional<std::string> local_name,
-      absl::optional<uint8_t> flags,
+      std::optional<std::string> local_name,
+      std::optional<uint8_t> flags,
       BluetoothDevice::UUIDList advertised_uuids,
-      absl::optional<int8_t> tx_power,
+      std::optional<int8_t> tx_power,
       BluetoothDevice::ServiceDataMap service_data,
       BluetoothDevice::ManufacturerDataMap manufacturer_data);
 
@@ -72,10 +71,10 @@ class FakeBluetoothLEAdvertisementWinrt
               BluetoothLEAdvertisementDataSection*>** section_list) override;
 
  private:
-  absl::optional<std::string> local_name_;
-  absl::optional<uint8_t> flags_;
+  std::optional<std::string> local_name_;
+  std::optional<uint8_t> flags_;
   BluetoothDevice::UUIDList advertised_uuids_;
-  absl::optional<int8_t> tx_power_;
+  std::optional<int8_t> tx_power_;
   BluetoothDevice::ServiceDataMap service_data_;
   BluetoothDevice::ManufacturerDataMap manufacturer_data_;
 };

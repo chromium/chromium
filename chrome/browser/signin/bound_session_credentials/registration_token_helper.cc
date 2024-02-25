@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,7 +16,6 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -48,7 +49,7 @@ RegistrationTokenHelper::CreateForSessionBinding(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     base::StringPiece challenge,
     const GURL& registration_url,
-    base::OnceCallback<void(absl::optional<Result>)> callback) {
+    base::OnceCallback<void(std::optional<Result>)> callback) {
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
       std::string(challenge), registration_url);
@@ -64,7 +65,7 @@ RegistrationTokenHelper::CreateForTokenBinding(
     base::StringPiece client_id,
     base::StringPiece auth_code,
     const GURL& registration_url,
-    base::OnceCallback<void(absl::optional<Result>)> callback) {
+    base::OnceCallback<void(std::optional<Result>)> callback) {
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
       std::string(client_id), std::string(auth_code), registration_url);
@@ -87,7 +88,7 @@ void RegistrationTokenHelper::Start() {
 RegistrationTokenHelper::RegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     HeaderAndPayloadGenerator header_and_payload_generator,
-    base::OnceCallback<void(absl::optional<Result>)> callback)
+    base::OnceCallback<void(std::optional<Result>)> callback)
     : unexportable_key_service_(unexportable_key_service),
       header_and_payload_generator_(std::move(header_and_payload_generator)),
       callback_(std::move(callback)) {}
@@ -97,20 +98,22 @@ void RegistrationTokenHelper::OnKeyGenerated(
         result) {
   if (!result.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
   key_id_ = *result;
 
-  absl::optional<std::string> header_and_payload =
+  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+      *unexportable_key_service_->GetAlgorithm(key_id_);
+  std::optional<std::string> header_and_payload =
       header_and_payload_generator_.Run(
-          *unexportable_key_service_->GetAlgorithm(key_id_),
+          algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(key_id_),
           base::Time::Now());
 
   if (!header_and_payload.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
   header_and_payload_ = std::move(*header_and_payload);
@@ -119,23 +122,30 @@ void RegistrationTokenHelper::OnKeyGenerated(
       key_id_, base::as_bytes(base::make_span(header_and_payload_)),
       kTaskPriority,
       base::BindOnce(&RegistrationTokenHelper::OnDataSigned,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), algorithm));
 }
 
 void RegistrationTokenHelper::OnDataSigned(
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
   if (!result.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
   const std::vector<uint8_t>& signature = *result;
-  std::string registration_token =
-      signin::AppendSignatureToHeaderAndPayload(header_and_payload_, signature);
+  std::optional<std::string> registration_token =
+      signin::AppendSignatureToHeaderAndPayload(header_and_payload_, algorithm,
+                                                signature);
+  if (!registration_token.has_value()) {
+    // TODO(alexilin): Record a histogram.
+    std::move(callback_).Run(std::nullopt);
+    return;
+  }
 
   std::vector<uint8_t> wrapped_key =
       *unexportable_key_service_->GetWrappedKey(key_id_);
 
-  std::move(callback_).Run(
-      Result(key_id_, std::move(wrapped_key), std::move(registration_token)));
+  std::move(callback_).Run(Result(key_id_, std::move(wrapped_key),
+                                  std::move(registration_token).value()));
 }

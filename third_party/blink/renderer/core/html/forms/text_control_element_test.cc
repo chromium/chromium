@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -33,6 +35,7 @@ class TextControlElementTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 
   Persistent<Document> document_;
@@ -114,6 +117,25 @@ TEST_F(TextControlElementTest, DisabledAttributeChangeEditability) {
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadWritePlaintextOnly,
             Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
+}
+
+TEST_F(TextControlElementTest, PlaceholderElement) {
+  EXPECT_EQ(Input().PlaceholderElement(), nullptr);
+  EXPECT_EQ(TextControl().PlaceholderElement(), nullptr);
+
+  Input().setAttribute(html_names::kPlaceholderAttr, g_empty_atom);
+  TextControl().setAttribute(html_names::kPlaceholderAttr, g_empty_atom);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_NE(Input().PlaceholderElement(), nullptr);
+  EXPECT_NE(TextControl().PlaceholderElement(), nullptr);
+
+  Input().removeAttribute(html_names::kPlaceholderAttr);
+  TextControl().removeAttribute(html_names::kPlaceholderAttr);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(Input().PlaceholderElement(), nullptr);
+  EXPECT_EQ(TextControl().PlaceholderElement(), nullptr);
 }
 
 }  // namespace blink

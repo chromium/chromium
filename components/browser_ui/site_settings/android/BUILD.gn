@@ -3,19 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("site_settings_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java" ]
 }
 
 source_set("android") {
   sources = [
-    "features.cc",
-    "features.h",
-    "site_settings_feature_map.cc",
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
@@ -37,7 +32,6 @@ source_set("android") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//url",
-    "//url:gurl_android",
   ]
 }
 
@@ -62,6 +56,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/AllSiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/AutoDarkMetrics.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/BaseSiteSettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorage.java",
@@ -73,7 +68,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/FourStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesActivityHolder.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",
@@ -81,7 +75,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/NfcCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/NotificationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/PermissionInfo.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SettingsNavigationSource.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SharedDictionaryInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java",
@@ -89,10 +82,9 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessSubpageSettings.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessWebsitePreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
@@ -110,9 +102,8 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
-    "//components/browser_ui/accessibility/android:java",
+    "//components/browser_ui/accessibility/android:page_zoom_utils_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:constants_java",
@@ -124,6 +115,7 @@ android_library("java") {
     "//components/content_settings/android:java",
     "//components/embedder_support/android:util_java",
     "//components/location/android:location_java",
+    "//components/permissions/android:core_java",
     "//components/permissions/android:java",
     "//components/prefs/android:java",
     "//components/subresource_filter/android:java",
@@ -134,11 +126,13 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -160,11 +154,11 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/browser_ui/settings/android:test_support_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
@@ -183,9 +177,9 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
@@ -242,7 +236,6 @@ android_resources("java_resources") {
     "java/res/layout/clear_reset_dialog.xml",
     "java/res/layout/clear_storage.xml",
     "java/res/layout/edit_site_dialog_content.xml",
-    "java/res/layout/four_state_cookie_settings_preference.xml",
     "java/res/layout/storage_preferences_view.xml",
     "java/res/layout/tri_state_cookie_settings_preference.xml",
     "java/res/layout/tri_state_site_settings_preference.xml",
@@ -257,7 +250,7 @@ android_resources("java_resources") {
     "java/res/xml/grouped_websites_preferences.xml",
     "java/res/xml/single_website_preferences.xml",
     "java/res/xml/site_settings_preferences.xml",
-    "java/res/xml/site_settings_preferences_with_categories.xml",
+    "java/res/xml/storage_access_settings.xml",
     "java/res/xml/website_preferences.xml",
   ]
 

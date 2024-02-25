@@ -4,17 +4,17 @@
 
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 
 namespace extensions {
 
 bool ChromeKioskDelegate::IsAutoLaunchedKioskApp(const ExtensionId& id) const {
-  if (!ash::KioskAppManager::IsInitialized()) {
+  if (!ash::KioskChromeAppManager::IsInitialized()) {
     return false;
   }
 
-  ash::KioskAppManager::App app_info;
-  return ash::KioskAppManager::Get()->GetApp(id, &app_info) &&
+  ash::KioskChromeAppManager::App app_info;
+  return ash::KioskChromeAppManager::Get()->GetApp(id, &app_info) &&
          app_info.was_auto_launched_with_zero_delay;
 }
 

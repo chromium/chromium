@@ -122,7 +122,7 @@ class VideoConferenceIntegrationTest
   VideoConferenceIntegrationTest() {
     // kOnDeviceSpeechRecognition is to support live caption.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference,
+        {ash::features::kVideoConference, ash::features::kVcStopAllScreenShare,
          ash::features::kOnDeviceSpeechRecognition,
          ash::features::kCameraEffectsSupportedByHardware,
          ash::features::kShowLiveCaptionInVideoConferenceTray},
@@ -247,7 +247,8 @@ class VideoConferenceIntegrationTest
         GetVcTray()->GetBubbleView()->GetViewByID(BubbleViewID::kReturnToApp));
 
     std::vector<ReturnToAppButton*> output;
-    for (auto* button : return_to_app_panel->container_view_->children()) {
+    for (views::View* button :
+         return_to_app_panel->container_view_->children()) {
       output.push_back(static_cast<ReturnToAppButton*>(button));
     }
     return output;
@@ -303,11 +304,11 @@ class VideoConferenceIntegrationTest
   }
 
  protected:
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> mic_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> share_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> camera_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> mic_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> share_bt_ = nullptr;
 
-  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -846,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   //  (3) Register audio_effects_controller again with
   //      OnActiveUserPrefServiceChanged.
   auto* audio_effects_controller = Shell::Get()->audio_effects_controller();
-  VideoConferenceTrayController::Get()->effects_manager().UnregisterDelegate(
+  VideoConferenceTrayController::Get()->GetEffectsManager().UnregisterDelegate(
       audio_effects_controller);
   CrasAudioHandler::Get()->SetNoiseCancellationSupportedForTesting(true);
   audio_effects_controller->OnActiveUserPrefServiceChanged(
@@ -867,8 +868,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   auto* toggle_effects_view = GetVcTray()->GetBubbleView()->GetViewByID(
       BubbleViewID::kToggleEffectsView);
 
-  for (auto* row : toggle_effects_view->children()) {
-    for (auto* tile : row->children()) {
+  for (views::View* row : toggle_effects_view->children()) {
+    for (views::View* tile : row->children()) {
       // Each tile is a button to click on; we want its label.
       views::Label* label = static_cast<views::Label*>(
           tile->GetViewByID(BubbleViewID::kToggleEffectLabel));
@@ -890,7 +891,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   EXPECT_TRUE(found_noise_cancellation_buttion);
 }
 
-IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, StopAllScreenShare) {
+// TODO(crbug.com/1479984): re-enable once the bug is fixed.
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       DISABLED_StopAllScreenShare) {
   // Open a tab.
   content::WebContents* web_contents_1 =
       NavigateTo("/video_conference_demo.html");

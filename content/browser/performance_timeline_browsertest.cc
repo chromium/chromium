@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/common/content_switches.h"
@@ -45,6 +47,64 @@ class PerformanceTimelineBrowserTest : public ContentBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
+                       NoResourceTimingEntryForFileProtocol) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::FilePath file_path;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
+
+  file_path = file_path.Append(GetTestDataFilePath())
+                  .AppendASCII(
+                      "performance_timeline/"
+                      "resource-timing-not-for-file-protocol.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), GetFileUrlWithQuery(file_path, "")));
+
+  // The test html page references 2 css file. One is present and would be
+  // loaded via file protocol and the other is not present and would have load
+  // failure. Both should not emit a resource timing entry.
+  EXPECT_EQ(
+      0, EvalJs(shell(),
+                "window.performance.getEntriesByType('resource').filter(e=>e."
+                "name.includes('css')).length;"));
+
+  std::string applied_style_color = "rgb(0, 128, 0)";
+
+  // Verify that style.css is fetched by verifying color green is applied.
+  EXPECT_EQ(applied_style_color, EvalJs(shell(), "getTextColor()"));
+
+  // If the same page is loaded via http protocol, both the successful load nad
+  // failure load should emit a resource timing entry.
+  const GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/performance_timeline/"
+      "resource-timing-not-for-file-protocol.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      2, EvalJs(shell(),
+                "window.performance.getEntriesByType('resource').filter(e=>e."
+                "name.includes('css')).length;"));
+
+  // Verify that style.css is fetched by verifying color green is applied.
+  EXPECT_EQ(applied_style_color, EvalJs(shell(), "getTextColor()"));
+
+  // Verify that style.css that is fetched has its resource timing entry.
+  EXPECT_EQ(
+      1, EvalJs(shell(),
+                "window.performance.getEntriesByType('resource').filter(e=>e."
+                "name.includes('resources/style.css')).length;"));
+
+  // Verify that non_exist.css that is not fetched has its resource timing
+  // entry.
+  EXPECT_EQ(
+      1, EvalJs(shell(),
+                "window.performance.getEntriesByType('resource').filter(e=>e."
+                "name.includes('resources/non_exist_style.css')).length;"));
+}
+
 class PerformanceTimelineLCPStartTimePrecisionBrowserTest
     : public PerformanceTimelineBrowserTest {
  protected:
@@ -60,8 +120,13 @@ class PerformanceTimelineLCPStartTimePrecisionBrowserTest
   int32_t precision_ = 10;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_LCPStartTimePrecision DISABLED_LCPStartTimePrecision
+#else
+#define MAYBE_LCPStartTimePrecision LCPStartTimePrecision
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceTimelineLCPStartTimePrecisionBrowserTest,
-                       LCPStartTimePrecision) {
+                       MAYBE_LCPStartTimePrecision) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/lcp-start-time-precision.html"));

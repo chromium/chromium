@@ -23,6 +23,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
@@ -50,7 +51,6 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
-#include "components/feed/core/v2/resource_fetcher.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/unread_content_notifier.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -140,7 +140,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        PrefService* profile_prefs,
                        FeedNetwork* feed_network,
                        ImageFetcher* image_fetcher,
-                       ResourceFetcher* resource_fetcher,
                        FeedStore* feed_store,
                        PersistentKeyValueStoreImpl* persistent_key_value_store,
                        TemplateURLService* template_url_service,
@@ -151,7 +150,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       profile_prefs_(profile_prefs),
       feed_network_(feed_network),
       image_fetcher_(image_fetcher),
-      resource_fetcher_(resource_fetcher),
       store_(feed_store),
       persistent_key_value_store_(persistent_key_value_store),
       template_url_service_(template_url_service),
@@ -177,6 +175,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                                    preference_change_callback);
   articles_list_visible_.Init(prefs::kArticlesListVisible, profile_prefs,
                               preference_change_callback);
+  snippets_enabled_by_dse_.Init(prefs::kEnableSnippetsByDse, profile_prefs,
+                                preference_change_callback);
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
   signin_allowed_.Init(
       ::prefs::kSigninAllowed, profile_prefs,
@@ -276,6 +276,10 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
   options.single_feed_entry_point = entry_point;
+  if (!loaded_after_start_ &&
+      base::FeatureList::IsEnabled(kRefreshFeedOnRestart)) {
+    options.refresh_even_when_not_stale = true;
+  }
   task_queue_.AddTask(FROM_HERE,
                       std::make_unique<LoadStreamTask>(
                           options, this,
@@ -324,6 +328,8 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   DCHECK(result.load_type == LoadType::kInitialLoad ||
          result.load_type == LoadType::kManualRefresh);
 
+  loaded_after_start_ = true;
+
   Stream& stream = GetStream(result.stream_type);
   if (result.load_type == LoadType::kManualRefresh)
     UnloadModel(result.stream_type);
@@ -357,7 +363,7 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   // is called bypassing the task queue. In this case WaitForStoreInitialize
   // task is not completed first and the metadata is not populated. Thus, we
   // dont need to track content_lifetime.
-  absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
+  std::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
   if (metadata_populated_) {
     feedstore::Metadata metadata = GetMetadata();
     stream_metadata =
@@ -459,7 +465,7 @@ void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
   }
 }
 
-bool FeedStream::SetMetadata(absl::optional<feedstore::Metadata> metadata) {
+bool FeedStream::SetMetadata(std::optional<feedstore::Metadata> metadata) {
   if (metadata) {
     SetMetadata(std::move(*metadata));
     return true;
@@ -618,7 +624,16 @@ bool FeedStream::IsFeedEnabled() {
 }
 
 bool FeedStream::IsEnabledAndVisible() {
-  return IsArticlesListVisible() && IsFeedEnabled();
+  return IsArticlesListVisible() && IsFeedEnabled() && IsFeedEnabledByDse();
+}
+
+bool FeedStream::IsFeedEnabledByDse() {
+#if BUILDFLAG(IS_ANDROID)
+  if (chrome_info_.is_new_tab_search_engine_url_android_enabled) {
+    return snippets_enabled_by_dse_.GetValue();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 void FeedStream::EnabledPreferencesChanged() {
@@ -727,14 +742,30 @@ void FeedStream::ManualRefresh(SurfaceId surface_id,
 void FeedStream::FetchResource(
     const GURL& url,
     const std::string& method,
-    const std::vector<std::string>& header_name_and_values,
+    const std::vector<std::string>& header_names_and_values,
     const std::string& post_data,
     base::OnceCallback<void(NetworkResponse)> callback) {
-  if (!resource_fetcher_) {
-    return;
+  net::HttpRequestHeaders headers;
+  for (size_t i = 0; i + 1 < header_names_and_values.size(); i += 2) {
+    headers.SetHeader(header_names_and_values[i],
+                      header_names_and_values[i + 1]);
   }
-  resource_fetcher_->Fetch(url, method, header_name_and_values, post_data,
-                           std::move(callback));
+  feed_network_->SendAsyncDataRequest(
+      url, method, headers, post_data, GetAccountInfo(),
+      base::BindOnce(&FeedStream::FetchResourceComplete, base::Unretained(this),
+                     std::move(callback)));
+}
+
+void FeedStream::FetchResourceComplete(
+    base::OnceCallback<void(NetworkResponse)> callback,
+    FeedNetwork::RawResponse response) {
+  MetricsReporter::OnResourceFetched(response.response_info.status_code);
+  NetworkResponse network_response;
+  network_response.status_code = response.response_info.status_code;
+  network_response.response_bytes = std::move(response.response_bytes);
+  network_response.response_header_names_and_values =
+      std::move(response.response_info.response_header_names_and_values);
+  std::move(callback).Run(std::move(network_response));
 }
 
 void FeedStream::ExecuteOperations(
@@ -1006,6 +1037,12 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
             feedwire::DiscoverLaunchResult::INELIGIBLE_DISCOVER_DISABLED};
   }
 
+  if (!IsFeedEnabledByDse()) {
+    return {
+        LoadStreamStatus::kLoadNotAllowedDisabledByDse,
+        feedwire::DiscoverLaunchResult::INELIGIBLE_DISCOVER_DISABLED_BY_DSE};
+  }
+
   if (!delegate_->IsEulaAccepted()) {
     return {LoadStreamStatus::kLoadNotAllowedEulaNotAccepted,
             feedwire::DiscoverLaunchResult::INELIGIBLE_EULA_NOT_ACCEPTED};
@@ -1069,6 +1106,9 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     case StreamKind::kUnknown:
       DLOG(ERROR) << "Unknown stream kind";
       [[fallthrough]];
+    case StreamKind::kSupervisedUser:
+      request_type = NetworkRequestType::kSupervisedFeed;
+      break;
     case StreamKind::kForYou:
       request_type = (load_type != LoadType::kLoadMore)
                          ? NetworkRequestType::kFeedQuery
@@ -1092,11 +1132,8 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
 }
 
 feedwire::ChromeSignInStatus::SignInStatus FeedStream::GetSignInStatus() const {
-  if (IsSyncOn()) {
-    return feedwire::ChromeSignInStatus::SYNCED;
-  }
   if (IsSignedIn()) {
-    return feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC;
+    return feedwire::ChromeSignInStatus::SIGNED_IN;
   }
   if (!IsSigninAllowed()) {
     return feedwire::ChromeSignInStatus::SIGNIN_DISALLOWED_BY_CONFIG;
@@ -1185,6 +1222,8 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.sign_in_status = GetSignInStatus();
 
   result.default_search_engine = GetDefaultSearchEngine();
+
+  result.country = delegate_->GetCountry();
 
   return result;
 }
@@ -1753,13 +1792,9 @@ void FeedStream::CheckDuplicatedContentsOnRefresh() {
   base::flat_set<uint32_t> viewed_content_hashes(
       stream_metadata.viewed_content_hashes().begin(),
       stream_metadata.viewed_content_hashes().end());
-  most_recent_viewed_content_hashes.erase(
-      std::remove_if(most_recent_viewed_content_hashes.begin(),
-                     most_recent_viewed_content_hashes.end(),
-                     [&viewed_content_hashes](uint32_t x) {
-                       return viewed_content_hashes.contains(x);
-                     }),
-      most_recent_viewed_content_hashes.end());
+  base::EraseIf(most_recent_viewed_content_hashes,
+      [&viewed_content_hashes](
+      uint32_t x) { return viewed_content_hashes.contains(x); });
   most_recent_viewed_content_hashes.insert(
       most_recent_viewed_content_hashes.end(),
       stream_metadata.viewed_content_hashes().begin(),

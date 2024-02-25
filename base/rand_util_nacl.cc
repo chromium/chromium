@@ -9,19 +9,22 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 
 namespace base {
 
-void RandBytes(void* output, size_t output_length) {
-  char* output_ptr = static_cast<char*>(output);
-  while (output_length > 0) {
+void RandBytes(span<uint8_t> output) {
+  while (!output.empty()) {
     size_t nread;
-    const int error = nacl_secure_random(output_ptr, output_length, &nread);
+    const int error = nacl_secure_random(output.data(), output.size(), &nread);
     CHECK_EQ(error, 0);
-    CHECK_LE(nread, output_length);
-    output_ptr += nread;
-    output_length -= nread;
+    CHECK_LE(nread, output.size());
+    output = output.subspan(nread);
   }
+}
+
+void RandBytes(void* output, size_t output_length) {
+  RandBytes(make_span(static_cast<uint8_t*>(output), output_length));
 }
 
 }  // namespace base

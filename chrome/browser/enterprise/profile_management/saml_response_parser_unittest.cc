@@ -109,8 +109,7 @@ TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptySAMLResponse) {
 }
 
 TEST_F(SAMLResponseParserTest, RetrievesSpecifiedAttributesWithValidResponse) {
-  std::string encoded_saml_response;
-  base::Base64Encode(kValidSAMLResponse, &encoded_saml_response);
+  std::string encoded_saml_response = base::Base64Encode(kValidSAMLResponse);
   std::string response =
       base::StringPrintf(kHTMLTemplate, encoded_saml_response.c_str());
   base::flat_map<std::string, std::string> attributes;

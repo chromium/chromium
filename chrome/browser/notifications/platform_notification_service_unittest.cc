@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -36,7 +36,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -57,6 +56,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -310,7 +310,7 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
                            history::SOURCE_BROWSED);
 
   // Initially there are no UKM entries.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   EXPECT_EQ(0u, entries.size());
 
@@ -324,7 +324,7 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   recorder_->ExpectEntryMetric(
       entry, kClosedReason,
       static_cast<int>(NotificationDatabaseData::ClosedReason::USER));
@@ -371,7 +371,7 @@ TEST_F(PlatformNotificationServiceTest, IncomingCallWebApp) {
   // installed web app for the provided URL.
   std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();
   const GURL installed_web_app_url = web_app->start_url();
-  const web_app::AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   web_app->SetName("Web App Title");
 
   provider->GetRegistrarMutable().registry().emplace(app_id,
@@ -435,9 +435,9 @@ class PlatformNotificationServiceTest_WebApps
   const PlatformNotificationData kNotificationData =
       CreateDummyNotificationData();
 
-  web_app::AppId installed_app_id;
-  web_app::AppId nested_installed_app_id;
-  web_app::AppId not_installed_app_id;
+  webapps::AppId installed_app_id;
+  webapps::AppId nested_installed_app_id;
+  webapps::AppId not_installed_app_id;
 };
 
 TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_MatchesScope) {
@@ -479,7 +479,7 @@ TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_NotInScope) {
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
   Notification notification = GetDisplayedNotificationForType(
       NotificationHandler::Type::WEB_NON_PERSISTENT);
-  EXPECT_EQ(absl::nullopt, notification.notifier_id().web_app_id);
+  EXPECT_EQ(std::nullopt, notification.notifier_id().web_app_id);
 
   service()->DisplayPersistentNotification(kNotificationId, kOutOfScopeUrl,
                                            kWebAppOrigin, kNotificationData,
@@ -488,7 +488,7 @@ TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_NotInScope) {
                     NotificationHandler::Type::WEB_PERSISTENT));
   notification = GetDisplayedNotificationForType(
       NotificationHandler::Type::WEB_PERSISTENT);
-  EXPECT_EQ(absl::nullopt, notification.notifier_id().web_app_id);
+  EXPECT_EQ(std::nullopt, notification.notifier_id().web_app_id);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -579,14 +579,14 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 
   std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();
   const GURL web_app_url = web_app->start_url();
-  const web_app::AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   web_app->SetName("Web App Title");
 
   IconManagerWriteGeneratedIcons(icon_manager, app_id,
-                                 {{IconPurpose::MONOCHROME,
+                                 {{web_app::IconPurpose::MONOCHROME,
                                    {web_app::icon_size::k16},
                                    {SK_ColorTRANSPARENT}}});
-  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME,
+  web_app->SetDownloadedIconSizes(web_app::IconPurpose::MONOCHROME,
                                   {web_app::icon_size::k16});
 
   provider->GetRegistrarMutable().registry().emplace(app_id,
@@ -595,13 +595,13 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
   base::RunLoop run_loop;
   icon_manager.SetFaviconMonochromeReadCallbackForTesting(
       base::BindLambdaForTesting(
-          [&](const web_app::AppId& cached_app_id) { run_loop.Quit(); }));
+          [&](const webapps::AppId& cached_app_id) { run_loop.Quit(); }));
   icon_manager.Start();
   run_loop.Run();
 
   provider->Start();
 
-  absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
+  std::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
       icon_and_title = service()->FindWebAppIconAndTitle(web_app_url);
 
   ASSERT_TRUE(icon_and_title.has_value());

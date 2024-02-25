@@ -46,7 +46,7 @@ function sendCommand(cmd) {
 }
 
 function makeImageSet(url1x, url2x) {
-  return '-webkit-image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
+  return 'image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
 }
 
 /** Perform all initialization that can be done at DOMContentLoaded time. */
@@ -57,8 +57,6 @@ function initialize() {
   const custodianName = loadTimeData.getString('custodianName');
   localWebApprovalsEnabled =
       loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
-  const localWebApprovalsPreferred =
-      loadTimeData.getBoolean('isLocalWebApprovalsPreferred');
 
   if (custodianName && allowAccessRequests) {
     $('custodians-information').hidden = false;
@@ -105,13 +103,8 @@ function initialize() {
     $('remote-approvals-button').hidden = false;
     if (localWebApprovalsEnabled) {
       $('local-approvals-button').hidden = false;
-      if (localWebApprovalsPreferred) {
-        $('local-approvals-button').classList.add('primary-button');
-        $('remote-approvals-button').classList.add('secondary-button');
-      } else {
-        $('remote-approvals-button').classList.add('primary-button');
-        $('local-approvals-button').classList.add('secondary-button');
-      }
+      $('local-approvals-button').classList.add('primary-button');
+      $('remote-approvals-button').classList.add('secondary-button');
     }
     $('remote-approvals-button').onclick = function(event) {
       $('remote-approvals-button').disabled = true;
@@ -166,9 +159,9 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
   // Hide block reason from the waiting screen.
-  $('block-reason').hidden = true;
-  $('block-reason-show-details-link').hidden = true;
-  $('block-reason-hide-details-link').hidden = true;
+  $('block-reason').style.display = 'none';
+  $('block-reason-show-details-link').style.display = 'none';
+  $('block-reason-hide-details-link').style.display = 'none';
   if (localWebApprovalsEnabled) {
     $('local-approvals-button').hidden = false;
   }

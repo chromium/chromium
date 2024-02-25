@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,7 @@ static const struct UnaryTestData cases[] = {
     {FILE_PATH_LITERAL("`:"), u"`:"},
     {FILE_PATH_LITERAL("{:"), u"{:"},
 #if BUILDFLAG(IS_WIN)
-    {FILE_PATH_LITERAL("\x0143:"), u"\x0143:"},
+    {FILE_PATH_LITERAL("\u0143:"), u"\u0143:"},
 #endif  // BUILDFLAG(IS_WIN)
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
     {FILE_PATH_LITERAL("c:"), u"c:"},
@@ -98,7 +99,7 @@ static const struct UnaryTestData cases[] = {
 
 static const struct UnaryTestData elided_cases[] = {
     {FILE_PATH_LITERAL("spaces are elided.txt                        .exe"),
-     u"spaces are elided.txt\x2026.exe"},
+     u"spaces are elided.txt\u2026.exe"},
 };
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define NET_DNS_DNS_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
@@ -14,7 +15,6 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 
@@ -67,7 +67,7 @@ class NET_EXPORT DnsClient {
   // config, unless it is invalid or has |unhandled_options|.
   //
   // Returns whether or not the effective config changed.
-  virtual bool SetSystemConfig(absl::optional<DnsConfig> system_config) = 0;
+  virtual bool SetSystemConfig(std::optional<DnsConfig> system_config) = 0;
   virtual bool SetConfigOverrides(DnsConfigOverrides config_overrides) = 0;
 
   // If there is a current session, forces replacement with a new current
@@ -90,7 +90,7 @@ class NET_EXPORT DnsClient {
 
   // Returns all preset addresses for the specified endpoint, if any are
   // present in the current effective DnsConfig.
-  virtual absl::optional<std::vector<IPEndPoint>> GetPresetAddrs(
+  virtual std::optional<std::vector<IPEndPoint>> GetPresetAddrs(
       const url::SchemeHostPort& endpoint) const = 0;
 
   // Returns null if the current config is not valid.
@@ -106,11 +106,13 @@ class NET_EXPORT DnsClient {
   // whether secure and insecure transactions are enabled.
   virtual base::Value::Dict GetDnsConfigAsValueForNetLog() const = 0;
 
-  virtual absl::optional<DnsConfig> GetSystemConfigForTesting() const = 0;
+  virtual std::optional<DnsConfig> GetSystemConfigForTesting() const = 0;
   virtual DnsConfigOverrides GetConfigOverridesForTesting() const = 0;
 
   virtual void SetTransactionFactoryForTesting(
       std::unique_ptr<DnsTransactionFactory> factory) = 0;
+  virtual void SetAddressSorterForTesting(
+      std::unique_ptr<AddressSorter> address_sorter) = 0;
 
   // Creates default client.
   static std::unique_ptr<DnsClient> CreateClient(NetLog* net_log);

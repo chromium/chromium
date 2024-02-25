@@ -12,8 +12,11 @@ source_set("memory_pressure") {
     "memory_pressure_voter.h",
     "multi_source_memory_pressure_monitor.cc",
     "multi_source_memory_pressure_monitor.h",
+    "reclaim_target.h",
     "system_memory_pressure_evaluator.cc",
     "system_memory_pressure_evaluator.h",
+    "unnecessary_discard_monitor.cc",
+    "unnecessary_discard_monitor.h",
   ]
 
   deps = [
@@ -61,6 +64,7 @@ source_set("unit_tests") {
     "memory_pressure_level_reporter_unittest.cc",
     "memory_pressure_voter_unittest.cc",
     "multi_source_memory_pressure_monitor_unittest.cc",
+    "unnecessary_discard_monitor_unittest.cc",
   ]
 
   deps = [

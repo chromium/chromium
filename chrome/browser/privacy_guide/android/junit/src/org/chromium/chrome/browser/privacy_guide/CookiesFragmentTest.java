@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -36,25 +39,17 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-/**
- * Robolectric tests of the class {@link CookiesFragment}
- */
+/** Robolectric tests of the class {@link CookiesFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CookiesFragmentTest {
     // TODO(crbug.com/1357003): Use Espresso for view interactions
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PrefService mPrefServiceMock;
-    @Mock
-    private UserPrefs.Natives mUserPrefsNativesMock;
-    @Mock
-    private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefServiceMock;
+    @Mock private UserPrefs.Natives mUserPrefsNativesMock;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
@@ -63,8 +58,6 @@ public class CookiesFragmentTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
-
         mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
@@ -84,16 +77,32 @@ public class CookiesFragmentTest {
         when(mPrefServiceMock.getInteger(PrefNames.COOKIE_CONTROLS_MODE))
                 .thenReturn(cookieControlsMode);
         when(mWebsitePreferenceNativesMock.isContentSettingEnabled(
-                     mProfile, ContentSettingsType.COOKIES))
+                        mProfile, ContentSettingsType.COOKIES))
                 .thenReturn(allowCookies);
 
-        mScenario = FragmentScenario.launchInContainer(
-                CookiesFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment -> {
-            mBlockThirdPartyIncognito =
-                    fragment.getView().findViewById(R.id.block_third_party_incognito);
-            mBlockThirdParty = fragment.getView().findViewById(R.id.block_third_party);
-        });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        CookiesFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof CookiesFragment) {
+                                    ((CookiesFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
+        mScenario.onFragment(
+                fragment -> {
+                    mBlockThirdPartyIncognito =
+                            fragment.getView().findViewById(R.id.block_third_party_incognito);
+                    mBlockThirdParty = fragment.getView().findViewById(R.id.block_third_party);
+                });
     }
 
     @Test(expected = AssertionError.class)
@@ -144,8 +153,10 @@ public class CookiesFragmentTest {
     public void testSelectBlockThirdPartyIncognito_changeCookiesBlock3PIncognitoUserAction() {
         initFragmentWithCookiesState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
         mBlockThirdPartyIncognito.performClick();
-        assertTrue(mActionTester.getActions().contains(
-                "Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito"));
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains("Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito"));
     }
 
     @Test

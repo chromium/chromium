@@ -16,12 +16,12 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/chrome/test/earl_grey/scoped_allow_crash_on_startup.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -64,8 +64,9 @@ NSArray* multitaskingTests() {
     @"testSignInPopUpAccountOnSyncSettings",   // AccountCollectionsTestCase
     @"testAutofillProfileEditing",             // AutofillSettingsTestCase
     @"testAccessibilityOfBlockPopupSettings",  // BlockPopupsTestCase
-    @"testClearCookies",                       // SettingsTestCase
-    @"testAccessibilityOfTranslateSettings",   // TranslateUITestCase
+    // TODO(crbug.com/1485297): Failing on ios-simulator-full-configs.
+    // @"testClearCookies",                       // SettingsTestCase
+    @"testAccessibilityOfTranslateSettings",  // TranslateUITestCase
 
     // UI tests
     @"testActivityServiceControllerPrintAfterRedirectionToUnprintablePage",
@@ -119,7 +120,7 @@ bool IsMockAuthenticationSetUp() {
   // `SetUpMockAuthentication` enables the fake sync server so checking
   // `isFakeSyncServerSetUp` here is sufficient to determine mock authentication
   // state.
-  return [ChromeEarlGreyAppInterface isFakeSyncServerSetUp];
+  return [ChromeEarlGrey isFakeSyncServerSetUp];
 }
 
 void SetUpMockAuthentication() {
@@ -226,6 +227,8 @@ void ResetAuthentication() {
     [ChromeEarlGrey openNewTab];
   }
   _executedTestMethodSetUp = YES;
+
+  [ChromeTestCaseAppInterface blockSigninIPH];
 }
 
 // Tear down called once per test, to close all tabs and menus, and clear the
@@ -322,6 +325,12 @@ void ResetAuthentication() {
       isEqualToString:NSStringFromSelector(selector)];
 }
 
+- (void)triggerRestoreByRestartingApplication {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
 + (void)testForStartup {
   gStartupTest = YES;
 }
@@ -346,6 +355,10 @@ void ResetAuthentication() {
   // where data may be sent to real servers.
   // Remove all identities in FakeChromeIdentityService.
   [ChromeEarlGrey signOutAndClearIdentities];
+  // Make sure any data on the fake sync server is cleared between tests, or
+  // when explicitly resetting app data. This should happen after signout (to
+  // avoid lots of "data was deleted" invalidations arriving on the client).
+  [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGrey tearDownFakeSyncServer];
   // Switch from FakeChromeIdentityService to ChromeIdentityServiceImpl.
   TearDownMockAuthentication();
@@ -413,8 +426,6 @@ void ResetAuthentication() {
                  @"Unable to load custom WebKit");
 
   [[self class] enableMockAuthentication];
-
-  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
 
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.

@@ -10,6 +10,7 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 component("geolocation") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GEOLOCATION_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/network",
     "//google_apis",
@@ -32,6 +33,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":geolocation",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill",

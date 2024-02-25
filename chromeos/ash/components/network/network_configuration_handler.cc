@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -28,7 +29,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -106,7 +106,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   ProfileEntryDeleter(NetworkConfigurationHandler* handler,
                       const std::string& service_path,
                       const std::string& guid,
-                      absl::optional<RemoveConfirmer> remove_confirmer,
+                      std::optional<RemoveConfirmer> remove_confirmer,
                       base::OnceClosure callback,
                       network_handler::ErrorCallback error_callback)
       : owner_(handler),
@@ -132,7 +132,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
 
  private:
   void GetProfileEntriesToDeleteCallback(
-      absl::optional<base::Value::Dict> profile_entries) {
+      std::optional<base::Value::Dict> profile_entries) {
     if (!profile_entries) {
       InvokeErrorCallback(service_path_, std::move(error_callback_),
                           "GetLoadableProfileEntriesFailed");
@@ -227,13 +227,13 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
                                          false /* failed */);
   }
 
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh> owner_;  // Unowned
+  raw_ptr<NetworkConfigurationHandler> owner_;  // Unowned
   std::string service_path_;
   // Non empty if the service has to be removed only from a single profile. This
   // value is the profile path of the profile in question.
   std::string restrict_to_profile_path_;
   std::string guid_;
-  absl::optional<RemoveConfirmer> remove_confirmer_;
+  std::optional<RemoveConfirmer> remove_confirmer_;
   base::OnceClosure callback_;
   network_handler::ErrorCallback error_callback_;
 
@@ -385,7 +385,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
 
 void NetworkConfigurationHandler::RemoveConfiguration(
     const std::string& service_path,
-    absl::optional<RemoveConfirmer> remove_confirmer,
+    std::optional<RemoveConfirmer> remove_confirmer,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   RemoveConfigurationFromProfile(service_path, "", std::move(remove_confirmer),
@@ -406,7 +406,7 @@ void NetworkConfigurationHandler::RemoveConfigurationFromCurrentProfile(
     return;
   }
   RemoveConfigurationFromProfile(service_path, network_state->profile_path(),
-                                 /*remove_confirmer=*/absl::nullopt,
+                                 /*remove_confirmer=*/std::nullopt,
                                  std::move(callback),
                                  std::move(error_callback));
 }
@@ -414,7 +414,7 @@ void NetworkConfigurationHandler::RemoveConfigurationFromCurrentProfile(
 void NetworkConfigurationHandler::RemoveConfigurationFromProfile(
     const std::string& service_path,
     const std::string& profile_path,
-    absl::optional<RemoveConfirmer> remove_confirmer,
+    std::optional<RemoveConfirmer> remove_confirmer,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   // Service.Remove is not reliable. Instead, request the profile entries
@@ -595,11 +595,11 @@ void NetworkConfigurationHandler::SetNetworkProfileCompleted(
 void NetworkConfigurationHandler::GetPropertiesCallback(
     network_handler::ResultCallback callback,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     // Because network services are added and removed frequently, we will see
     // failures regularly, so don't log these.
-    std::move(callback).Run(service_path, absl::nullopt);
+    std::move(callback).Run(service_path, std::nullopt);
     return;
   }
 

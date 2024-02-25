@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
-/**
- * The data to show in the PaymentRequest UI.
- */
+/** The data to show in the PaymentRequest UI. */
 public class PaymentInformation {
     private final ShoppingCart mShoppingCart;
     private final SectionInformation mShippingAddresses;
@@ -23,8 +21,11 @@ public class PaymentInformation {
      * @param contactDetails    The contact details.
      * @param paymentMethods    The payment methods.
      */
-    public PaymentInformation(ShoppingCart shoppingCart, SectionInformation shippingAddresses,
-            SectionInformation shippingOptions, SectionInformation contactDetails,
+    public PaymentInformation(
+            ShoppingCart shoppingCart,
+            SectionInformation shippingAddresses,
+            SectionInformation shippingOptions,
+            SectionInformation contactDetails,
             SectionInformation paymentMethods) {
         mShoppingCart = shoppingCart;
         mShippingAddresses = shippingAddresses;

@@ -11,3 +11,7 @@
   color:  red;
   font-weight: bold;
 }
+
+.error-row {
+  color: 'FF7F7F';
+}

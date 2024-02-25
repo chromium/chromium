@@ -32,36 +32,37 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
  * @see TensorProcessor#process to apply the processor on a {@code TensorBuffer}.
  */
 public class TensorProcessor extends SequentialProcessor<TensorBuffer> {
-    private TensorProcessor(Builder builder) {
-        super(builder);
+  private TensorProcessor(Builder builder) {
+    super(builder);
+  }
+
+  /** The Builder to create an {@link TensorProcessor}, which could be executed later. */
+  public static class Builder extends SequentialProcessor.Builder<TensorBuffer> {
+
+    /**
+     * Creates a Builder to build {@link TensorProcessor}.
+     *
+     * @see #add(TensorOperator) to add an Op.
+     * @see #build() to complete the building process and get a built Processor.
+     */
+    public Builder() {
+      super();
     }
 
-    /** The Builder to create an {@link TensorProcessor}, which could be executed later. */
-    public static class Builder extends SequentialProcessor.Builder<TensorBuffer> {
-        /**
-         * Creates a Builder to build {@link TensorProcessor}.
-         *
-         * @see #add(TensorOperator) to add an Op.
-         * @see #build() to complete the building process and get a built Processor.
-         */
-        public Builder() {
-            super();
-        }
-
-        /**
-         * Adds an {@link TensorOperator} into the Operator chain.
-         *
-         * @param op the Operator instance to be executed then.
-         */
-        public TensorProcessor.Builder add(TensorOperator op) {
-            super.add(op);
-            return this;
-        }
-
-        /** Completes the building process and gets the {@link TensorProcessor} instance. */
-        @Override
-        public TensorProcessor build() {
-            return new TensorProcessor(this);
-        }
+    /**
+     * Adds an {@link TensorOperator} into the Operator chain.
+     *
+     * @param op the Operator instance to be executed then.
+     */
+    public TensorProcessor.Builder add(TensorOperator op) {
+      super.add(op);
+      return this;
     }
+
+    /** Completes the building process and gets the {@link TensorProcessor} instance. */
+    @Override
+    public TensorProcessor build() {
+      return new TensorProcessor(this);
+    }
+  }
 }

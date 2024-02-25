@@ -29,7 +29,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -170,7 +170,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       Profile::FromWebUI(web_ui()));
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
-    absl::optional<BrowsingDataType> data_type =
+    std::optional<BrowsingDataType> data_type =
         browsing_data::GetDataTypeFromDeletionPreference(pref_name);
     CHECK(data_type);
     data_type_vector.push_back(*data_type);
@@ -241,22 +241,6 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
-
-  // Record the circumstances under which passwords are deleted.
-  if (data_types.find(BrowsingDataType::PASSWORDS) != data_types.end()) {
-    static const BrowsingDataType other_types[] = {
-        BrowsingDataType::HISTORY,   BrowsingDataType::DOWNLOADS,
-        BrowsingDataType::CACHE,     BrowsingDataType::COOKIES,
-        BrowsingDataType::FORM_DATA, BrowsingDataType::HOSTED_APPS_DATA,
-    };
-    int checked_other_types = base::ranges::count_if(
-        other_types, [&data_types](BrowsingDataType type) {
-          return data_types.find(type) != data_types.end();
-        });
-    base::UmaHistogramSparse(
-        "History.ClearBrowsingData.PasswordsDeletion.AdditionalDatatypesCount",
-        checked_other_types);
-  }
 
   std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
       scoped_data_deletion;

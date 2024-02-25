@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,7 +31,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -43,7 +45,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -71,6 +72,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 using testing::AllOf;
@@ -139,6 +145,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
 
   // Should not crash by this point.
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateInDefaultContextById) {
+  AttachToBrowserTarget();
+  const base::Value::Dict* result = SendCommandSync("Target.getTargets");
+  const base::Value::List* list = result->FindList("targetInfos");
+  ASSERT_TRUE(list->size() == 1);
+  const std::string context_id =
+      *list->front().GetDict().FindString("browserContextId");
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("browserContextId", context_id);
+  result = SendCommandSync("Target.createTarget", std::move(params));
+  ASSERT_TRUE(result);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -657,8 +678,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   if (entry->GetSSL().certificate) {
     page_subject_name = entry->GetSSL().certificate->subject().common_name;
     page_issuer_name = entry->GetSSL().certificate->issuer().common_name;
-    page_valid_from = entry->GetSSL().certificate->valid_start().ToDoubleT();
-    page_valid_to = entry->GetSSL().certificate->valid_expiry().ToDoubleT();
+    page_valid_from =
+        entry->GetSSL().certificate->valid_start().InSecondsFSinceUnixEpoch();
+    page_valid_to =
+        entry->GetSSL().certificate->valid_expiry().InSecondsFSinceUnixEpoch();
   }
 
   std::string page_certificate_network_error;
@@ -819,13 +842,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
   {
     base::Value::Dict params;
     params.Set("enabled", false);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 0);
+  EXPECT_EQ(manager->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -838,13 +861,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
   {
     base::Value::Dict params;
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
@@ -857,6 +880,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
       "Memory.prepareForLeakDetection"));        // Implemented in content
   EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
   EXPECT_FALSE(SendCommandSync("Storage.getCookies"));
+  EXPECT_FALSE(SendCommandSync("Network.getAllCookies"));
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
 }
 
@@ -931,6 +955,13 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   extensions::ExtensionService* extension_service_;
   extensions::ExtensionRegistry* extension_registry_;
   content::WebContents* background_web_contents_;
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop ExtensionProtocolTestsfrom creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
@@ -1014,7 +1045,7 @@ class WebContentsBarrier {
   WebContentsBarrier(std::initializer_list<Predicate> predicates)
       : predicates_(predicates) {}
 
-  std::vector<content::WebContents*> Await() {
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> Await() {
     if (!IsReady()) {
       base::RunLoop run_loop;
       ready_callback_ = run_loop.QuitClosure();
@@ -1066,8 +1097,8 @@ class WebContentsBarrier {
 
   const std::vector<Predicate> predicates_;
 
-  std::vector<content::WebContents*> ready_web_contents_{predicates_.size(),
-                                                         nullptr};
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      ready_web_contents_{predicates_.size(), nullptr};
   size_t pending_contents_count_{predicates_.size()};
   base::CallbackListSubscription creation_subscription_{
       content::RegisterWebContentsCreationCallback(
@@ -1094,7 +1125,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, TabTargetWithGuestView) {
 
   LaunchApp(extension->id());
 
-  std::vector<content::WebContents*> wcs = barrier.Await();
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
   ASSERT_THAT(wcs, testing::SizeIs(2));
   EXPECT_NE(wcs[0], wcs[1]);
   // Assure host and view have different DevTools hosts.
@@ -1185,19 +1217,9 @@ class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
  public:
   PrivacySandboxAttestationsOverrideTest() = default;
 
-  void SetUpOnMainThread() override {
-    // `PrivacySandboxAttestations` has a member of type
-    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
-    // done after a browser process is created.
-    DevToolsProtocolTest::SetUpOnMainThread();
-    scoped_attestations_ =
-        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
-  }
-
  private:
-  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
-      scoped_attestations_;
+  privacy_sandbox::PrivacySandboxAttestationsMixin
+      privacy_sandbox_attestations_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,

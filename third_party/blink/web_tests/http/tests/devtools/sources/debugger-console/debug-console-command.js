@@ -8,8 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests debug(fn) console command.\n`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function simpleTestFunction()
@@ -48,7 +46,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
         TestRunner.addResult('Script execution paused.');
         TestRunner.addResult(
             'Reason for pause: ' +
-            (reason == SDK.DebuggerModel.BreakReason.DebugCommand ? 'debug command' : 'debugger statement') + '.');
+            (reason ==  Protocol.Debugger.PausedEventReason.DebugCommand ? 'debug command' : 'debugger statement') + '.');
         next();
       }
     }
@@ -67,7 +65,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       await SourcesTestRunner.captureStackTrace(callFrames);
       await ConsoleTestRunner.evaluateInConsolePromise('undebug(' + functionName + ')');
       TestRunner.addResult('Breakpoint removed.');
-      TestRunner.assertEquals(reason, SDK.DebuggerModel.BreakReason.DebugCommand);
+      TestRunner.assertEquals(reason,  Protocol.Debugger.PausedEventReason.DebugCommand);
       SourcesTestRunner.resumeExecution(didResume);
     }
 

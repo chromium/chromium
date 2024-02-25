@@ -8,18 +8,21 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/ipc_message_sender.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/string_source_map.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -37,7 +40,6 @@ class ExtensionConfiguration;
 
 namespace extensions {
 
-class NativeExtensionBindingsSystem;
 class ScriptContext;
 class ScriptContextSet;
 
@@ -84,28 +86,22 @@ class TestIPCMessageSender : public IPCMessageSender {
       SendBindAutomationIPC,
       void(ScriptContext* context,
            mojo::PendingAssociatedRemote<ax::mojom::Automation> remote));
-
-  MOCK_METHOD5(SendOpenMessageChannel,
+  MOCK_METHOD7(
+      SendOpenMessageChannel,
+      void(ScriptContext* script_context,
+           const PortId& port_id,
+           const MessageTarget& target,
+           mojom::ChannelType channel_type,
+           const std::string& channel_name,
+           mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+           mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host));
+  MOCK_METHOD6(SendActivityLogIPC,
                void(ScriptContext* script_context,
-                    const PortId& port_id,
-                    const MessageTarget& target,
-                    ChannelType channel_type,
-                    const std::string& channel_name));
-  MOCK_METHOD2(SendOpenMessagePort,
-               void(int routing_id, const PortId& port_id));
-  MOCK_METHOD3(SendCloseMessagePort,
-               void(int routing_id, const PortId& port_id, bool close_channel));
-  MOCK_METHOD2(SendPostMessageToPort,
-               void(const PortId& port_id, const Message& message));
-  MOCK_METHOD2(SendMessageResponsePending,
-               void(int routing_id, const PortId& port_id));
-  MOCK_METHOD5(SendActivityLogIPC,
-               void(const ExtensionId& extension_id,
+                    const ExtensionId& extension_id,
                     IPCMessageSender::ActivityLogCallType call_type,
                     const std::string& call_name,
                     base::Value::List args,
                     const std::string& extra));
-
   const mojom::RequestParams* last_params() const { return last_params_.get(); }
 
  private:
@@ -115,7 +111,9 @@ class TestIPCMessageSender : public IPCMessageSender {
 // A test harness to instantiate the NativeExtensionBindingsSystem (along with
 // its dependencies) and support adding/removing extensions and ScriptContexts.
 // This is useful for bindings tests that need extensions-specific knowledge.
-class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
+class NativeExtensionBindingsSystemUnittest
+    : public APIBindingTest,
+      public NativeExtensionBindingsSystem::Delegate {
  public:
   NativeExtensionBindingsSystemUnittest();
 
@@ -136,7 +134,7 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
 
   ScriptContext* CreateScriptContext(v8::Local<v8::Context> v8_context,
                                      const Extension* extension,
-                                     Feature::Context context_type);
+                                     mojom::ContextType context_type);
 
   void RegisterExtension(scoped_refptr<const Extension> extension);
 
@@ -158,14 +156,18 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
     allow_unregistered_contexts_ = allow_unregistered_contexts;
   }
 
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
+
  private:
   ExtensionIdSet extension_ids_;
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ScriptContextSet> script_context_set_;
-  std::vector<ScriptContext*> raw_script_contexts_;
+  std::vector<raw_ptr<ScriptContext, VectorExperimental>> raw_script_contexts_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
-  TestIPCMessageSender* ipc_message_sender_ = nullptr;
+  raw_ptr<TestIPCMessageSender, DanglingUntriaged> ipc_message_sender_ =
+      nullptr;
 
   StringSourceMap source_map_;
   TestExtensionsRendererClient renderer_client_;

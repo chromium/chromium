@@ -31,6 +31,9 @@ struct WebPageMetadata {
   // Extracted from a <meta name="application-url" ...> tag if any.
   url.mojom.Url application_url;
 
+  // Extracted from document.title if any.
+  mojo_base.mojom.String16 title;
+
   // Extracted from all <link rel="icon"...> tags and other such tags that
   // specify icons.
   array<WebPageIconInfo> icons;

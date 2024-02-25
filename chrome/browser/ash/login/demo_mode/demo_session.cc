@@ -5,11 +5,16 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
 #include <algorithm>
+#include <optional>
+#include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -19,10 +24,12 @@
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/i18n/string_compare.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -34,8 +41,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -45,8 +52,10 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -57,13 +66,14 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/constants.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,21 +84,30 @@ namespace {
 
 // The splash screen should be removed either when this timeout passes or the
 // screensaver app is shown, whichever comes first.
-constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
+inline constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
 
 // Global DemoSession instance.
 DemoSession* g_demo_session = nullptr;
 
 // Type of demo config forced on for tests.
-absl::optional<DemoSession::DemoModeConfig> g_force_demo_config;
+std::optional<DemoSession::DemoModeConfig> g_force_demo_config;
 
 // Path relative to the path at which offline demo resources are loaded that
 // contains sample photos.
-constexpr char kPhotosPath[] = "media/photos";
+inline constexpr char kPhotosPath[] = "media/photos";
 
 // Path relative to the path at which offline demo resources are loaded that
 // contains splash screen images.
-constexpr char kSplashScreensPath[] = "media/splash_screens";
+inline constexpr char kSplashScreensPath[] = "media/splash_screens";
+
+// Demo Mode app base URL. Used for launching the demo mode app (potentially
+// with URL param).
+inline constexpr char kDemoModeAppUrl[] =
+    "chrome-untrusted://demo-mode-app/index.html";
+
+// Demo Mode app customization model URL param key. Used for passing a
+// serialized JSON model to demo mode app for customization.
+inline constexpr char kDemoModeAppModelParam[] = "model";
 
 // Returns the list of apps normally pinned by Demo Mode policy that shouldn't
 // be pinned if the device is offline.
@@ -117,7 +136,7 @@ void InstallDemoMedia(const base::FilePath& offline_resources_path,
     LOG(ERROR) << "Failed to install demo mode media.";
 }
 
-std::string GetSwitchOrDefault(const base::StringPiece& switch_string,
+std::string GetSwitchOrDefault(std::string_view switch_string,
                                const std::string& default_value) {
   auto* const command_line = base::CommandLine::ForCurrentProcess();
 
@@ -125,11 +144,6 @@ std::string GetSwitchOrDefault(const base::StringPiece& switch_string,
     return command_line->GetSwitchValueASCII(switch_string);
   }
   return default_value;
-}
-
-std::string GetHighlightsAppId() {
-  return GetSwitchOrDefault(switches::kDemoModeHighlightsApp,
-                            extension_misc::kHighlightsAppId);
 }
 
 // If the current locale is not the default one, ensure it is reverted to the
@@ -200,6 +214,67 @@ std::vector<LocaleInfo> GetSupportedLocales() {
     supported_locales.push_back(std::move(locale_info));
   }
   return supported_locales;
+}
+
+void RecordDemoModeDimensions() {
+  SYSLOG(INFO) << "Demo mode country: " << demo_mode::Country();
+  SYSLOG(INFO) << "Demo mode retailer: " << demo_mode::RetailerName();
+  SYSLOG(INFO) << "Demo mode store: " << demo_mode::StoreNumber();
+}
+
+GURL GetDemoDemoAppUrl(const growth::Payload* model) {
+  GURL url(kDemoModeAppUrl);
+
+  if (!model || model->empty()) {
+    return url;
+  }
+
+  std::string payload_string;
+  if (!JSONStringValueSerializer(&payload_string).Serialize(*model) ||
+      payload_string.empty()) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kSerializingDemoModePayloadFail);
+    LOG(ERROR) << "Failed to serialize demo mode payload.";
+    return url;
+  }
+
+  return net::AppendQueryParameter(url, kDemoModeAppModelParam, payload_string);
+}
+
+void LaunchDemoSystemWebApp(const growth::Payload* model) {
+  // SystemWebAppManager won't run this callback if the profile is destroyed,
+  // so we don't need to worry about there being no active user profile
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  ash::SystemAppLaunchParams params;
+  params.url = GetDemoDemoAppUrl(model);
+  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE, params);
+}
+
+const growth::Payload* GetDemoModeAppPayload() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto* campaign =
+      campaigns_manager->GetCampaignBySlot(growth::Slot::kDemoModeApp);
+  if (!campaign) {
+    // No campaign selected. Return early.
+    return nullptr;
+  }
+
+  auto* payload = GetPayloadBySlot(campaign, growth::Slot::kDemoModeApp);
+  return payload;
+}
+
+void TriggerLaunchDemoModeApp() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
+    auto* model = (features::IsGrowthCampaignsInDemoModeEnabled()
+                       ? GetDemoModeAppPayload()
+                       : nullptr);
+    swa_manager->on_apps_synchronized().Post(
+        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp, model));
+  }
 }
 
 }  // namespace
@@ -279,7 +354,7 @@ void DemoSession::SetDemoConfigForTesting(DemoModeConfig demo_config) {
 
 // static
 void DemoSession::ResetDemoConfigForTesting() {
-  g_force_demo_config = absl::nullopt;
+  g_force_demo_config = std::nullopt;
 }
 
 // static
@@ -328,7 +403,7 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
 
 // Static function to default region from VPD.
 static std::string GetDefaultRegion() {
-  const absl::optional<base::StringPiece> region_code =
+  const std::optional<std::string_view> region_code =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kRegionKey);
   if (region_code) {
@@ -395,6 +470,8 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
   registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
   registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeAppVersion, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeResourcesVersion, std::string());
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
@@ -460,11 +537,11 @@ DemoSession::DemoSession()
         session_manager::SessionManager::Get());
     OnSessionStateChanged();
   }
-  ChromeUserManager::Get()->AddSessionStateObserver(this);
+  user_manager::UserManager::Get()->AddSessionStateObserver(this);
 }
 
 DemoSession::~DemoSession() {
-  ChromeUserManager::Get()->RemoveSessionStateObserver(this);
+  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 }
 
 std::vector<CountryCodeAndFullNamePair>
@@ -503,7 +580,7 @@ void DemoSession::InstallDemoResources() {
 }
 
 void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
-    absl::optional<double> keyboard_brightness_percentage) {
+    std::optional<double> keyboard_brightness_percentage) {
   // Map of current keyboard brightness percentage to times needed to call
   // IncreaseKeyboardBrightness to reach max brightness level.
   const base::flat_map<int, int> kTimesToIncreaseKeyboardBrightnessToMax = {
@@ -561,8 +638,9 @@ void DemoSession::OnSessionStateChanged() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case session_manager::SessionState::ACTIVE:
-      if (ShouldRemoveSplashScreen())
+      if (ShouldRemoveSplashScreen()) {
         RemoveSplashScreen();
+      }
 
       // SystemTrayClientImpl may not exist in unit tests.
       if (SystemTrayClientImpl::Get()) {
@@ -571,7 +649,10 @@ void DemoSession::OnSessionStateChanged() {
                 language::prefs::kApplicationLocale);
         SystemTrayClientImpl::Get()->SetLocaleList(GetSupportedLocales(),
                                                    current_locale_iso_code);
+        SYSLOG(INFO) << "Demo mode session current locale: "
+                     << current_locale_iso_code;
       }
+
       RestoreDefaultLocaleForNextSession();
 
       if (chromeos::PowerManagerClient::Get()) {
@@ -586,9 +667,26 @@ void DemoSession::OnSessionStateChanged() {
       if (!components_) {
         components_ = std::make_unique<DemoComponents>(GetDemoConfig());
       }
-      components_->LoadAppComponent(
-          base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
+      if (features::IsGrowthCampaignsInDemoModeEnabled()) {
+        auto* campaigns_manager = growth::CampaignsManager::Get();
+        CHECK(campaigns_manager);
+
+        // `CampaignsManager` is available for loading Growth Campaigns
+        // component. Loads both Demo Mode app component and Growth Campaigns
+        // component before launching the Demo Mode app.
+        base::OnceClosure load_callback =
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr());
+
+        base::RepeatingClosure barrier_closure =
+            base::BarrierClosure(2, std::move(load_callback));
+        components_->LoadAppComponent(barrier_closure);
+        campaigns_manager->LoadCampaigns(barrier_closure);
+      } else {
+        components_->LoadAppComponent(
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
 
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -596,10 +694,26 @@ void DemoSession::OnSessionStateChanged() {
       // Register the device with in the A/A experiment
       RegisterDemoModeAAExperiment();
 
+      // Create the window closer.
+      // TODO(b/302583338) Remove this when the issue with GMSCore gets fixed.
+      if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
+        window_closer_ = std::make_unique<DemoModeWindowCloser>();
+      }
+
+      // TODO(b/292454543): Remove this after issue is resolved.
+      if (InstallAttributes::IsInitialized()) {
+        LOG(WARNING) << "Demo Mode DeviceMode: "
+                     << InstallAttributes::Get()->GetMode();
+        LOG(WARNING) << "Demo Mode domain: "
+                     << InstallAttributes::Get()->GetDomain();
+      }
+
       break;
     default:
       break;
   }
+
+  RecordDemoModeDimensions();
 }
 
 base::FilePath DemoSession::GetDemoAppComponentPath() {
@@ -610,26 +724,22 @@ base::FilePath DemoSession::GetDemoAppComponentPath() {
                          components_->default_app_component_path().value()));
 }
 
-void LaunchDemoSystemWebApp() {
-  // SystemWebAppManager won't run this callback if the profile is destroyed,
-  // so we don't need to worry about there being no active user profile
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  LaunchSystemWebAppAsync(profile, SystemWebAppType::DEMO_MODE);
-}
-
 void DemoSession::OnDemoAppComponentLoaded() {
+  const auto& app_component_version = components_->app_component_version();
+  SYSLOG(INFO) << "Demo mode app component version: "
+               << (app_component_version.has_value()
+                       ? app_component_version.value().GetString()
+                       : "");
   auto error = components_->app_component_error().value_or(
       component_updater::CrOSComponentManager::Error::NOT_FOUND);
+
   if (error != component_updater::CrOSComponentManager::Error::NONE) {
     LOG(WARNING) << "Error loading demo mode app component: "
                  << static_cast<int>(error);
     return;
   }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (auto* swa_manager = SystemWebAppManager::Get(profile)) {
-    swa_manager->on_apps_synchronized().Post(
-        FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
-  }
+
+  TriggerLaunchDemoModeApp();
 }
 
 base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
@@ -655,6 +765,10 @@ void DemoSession::ConfigureAndStartSplashScreen() {
   base::FilePath fallback_path = components_->resources_component_path()
                                      .Append(kSplashScreensPath)
                                      .Append("en-US.jpg");
+  const auto& version = components_->resources_component_version();
+  SYSLOG(INFO) << "Demo mode resources version: "
+               << (version.has_value() ? version.value().GetString() : "");
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetSplashScreenImagePath, localized_image_path,

@@ -10,12 +10,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 
 namespace base {
 
 class NativeUnwinderAndroidMapDelegate;
 class NativeUnwinderAndroidMemoryRegionsMap;
+class NativeUnwinderAndroidMemoryRegionsMapImpl;
 
 // Implementation of unwindstack::Memory that restricts memory access to a stack
 // buffer, used by NativeUnwinderAndroid. While unwinding, only memory accesses
@@ -57,7 +59,8 @@ class NativeUnwinderAndroid : public Unwinder,
   // |map_delegate| is used to manage memory used by libunwindstack. It must
   // outlives this object.
   NativeUnwinderAndroid(uintptr_t exclude_module_with_base_address,
-                        NativeUnwinderAndroidMapDelegate* map_delegate);
+                        NativeUnwinderAndroidMapDelegate* map_delegate,
+                        bool is_java_name_hashing_enabled);
   ~NativeUnwinderAndroid() override;
 
   NativeUnwinderAndroid(const NativeUnwinderAndroid&) = delete;
@@ -75,12 +78,21 @@ class NativeUnwinderAndroid : public Unwinder,
       uintptr_t address) override;
 
  private:
+  unwindstack::DexFiles* GetOrCreateDexFiles(unwindstack::ArchEnum arch);
+
   void EmitDexFrame(uintptr_t dex_pc,
-                    std::vector<Frame>* stack) const;
+                    unwindstack::ArchEnum,
+                    std::vector<Frame>* stack);
+
+  const bool is_java_name_hashing_enabled_;
+  std::unique_ptr<unwindstack::DexFiles> dex_files_;
 
   const uintptr_t exclude_module_with_base_address_;
   raw_ptr<NativeUnwinderAndroidMapDelegate> map_delegate_;
-  const raw_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map_;
+  const raw_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl> memory_regions_map_;
+  // This is a vector (rather than an array) because it gets used in functions
+  // from libunwindstack.
+  const std::vector<std::string> search_libs_ = {"libart.so", "libartd.so"};
 };
 
 }  // namespace base

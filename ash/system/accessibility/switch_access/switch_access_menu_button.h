@@ -22,9 +22,9 @@ class Label;
 namespace ash {
 
 class SwitchAccessMenuButton : public views::Button {
- public:
-  METADATA_HEADER(SwitchAccessMenuButton);
+  METADATA_HEADER(SwitchAccessMenuButton, views::Button)
 
+ public:
   SwitchAccessMenuButton(std::string action_name,
                          const gfx::VectorIcon& icon,
                          int accessible_name_id);
@@ -46,8 +46,8 @@ class SwitchAccessMenuButton : public views::Button {
   std::string action_name_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::ImageView> image_view_;
+  raw_ptr<views::Label> label_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, SwitchAccessMenuButton, views::Button)

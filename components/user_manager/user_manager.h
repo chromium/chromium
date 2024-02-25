@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
 #include "components/user_manager/include_exclude_account_id_filter.h"
@@ -19,13 +20,11 @@ class PrefService;
 
 namespace user_manager {
 
+class MultiUserSignInPolicyController;
+
 namespace internal {
 class ScopedUserManagerImpl;
 }  // namespace internal
-
-// A list pref of the the regular users known on this device, arranged in LRU
-// order, stored in local state.
-USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
 
 enum class UserRemovalReason : int32_t {
   UNKNOWN = 0,
@@ -224,6 +223,18 @@ class USER_MANAGER_EXPORT UserManager {
                             bool browser_restart,
                             bool is_child) = 0;
 
+  // Called when the Profile instance for a user identified by `account_id`
+  // is created. `prefs` should be the one that is owned by Profile.
+  // The 'prefs' must be kept alive until OnUserProfileWillBeDestroyed
+  // for the user is called.
+  // Returns whether actually the prefs are used or not.
+  virtual bool OnUserProfileCreated(const AccountId& account_id,
+                                    PrefService* prefs) = 0;
+
+  // Called just before the Profile for a user identified by `account_id`
+  // will be destroyed.
+  virtual void OnUserProfileWillBeDestroyed(const AccountId& account_id) = 0;
+
   // Switches to active user identified by |account_id|. User has to be logged
   // in.
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;
@@ -258,6 +269,16 @@ class USER_MANAGER_EXPORT UserManager {
   // TODO(b/270040728): Remove this method once internal architecture allows
   // better solution.
   virtual void RemoveUserFromListForRecreation(const AccountId& account_id) = 0;
+
+  // Removes the user from the device in case when user's cryptohome is lost
+  // for some reason to ensure that user is correctly re-created.
+  // Does not trigger user removal notification.
+  // This method is similar to `RemoveUserFromListForRecreation`, but is
+  // triggered at different stage of login process, and when absence of user
+  // directory is not anticipated by the flow. This removes the user from the
+  // list synchronously, so the following function calls should have updated
+  // users.
+  virtual void CleanStaleUserInformationFor(const AccountId& account_id) = 0;
 
   // Returns true if a user with the given account id is found in the persistent
   // list or currently logged in as ephemeral.
@@ -301,18 +322,12 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void UpdateUserAccountData(const AccountId& account_id,
                                      const UserAccountData& account_data) = 0;
 
-  // Returns the display name for user |account_id| if it is known (was
-  // previously set by a |SaveUserDisplayName| call).
-  // Otherwise, returns an empty string.
-  virtual std::u16string GetUserDisplayName(
-      const AccountId& account_id) const = 0;
-
   // Saves user's displayed (non-canonical) email in local state preferences.
   // Ignored If there is no such user.
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
                                     const std::string& display_email) = 0;
 
-  // Returns stored user type or USER_TYPE_REGULAR by default.
+  // Returns stored user type or UserType::kRegular by default.
   virtual UserType GetUserType(const AccountId& account_id) = 0;
 
   // Saves user's type for |user| into local state preferences.
@@ -323,7 +338,7 @@ class USER_MANAGER_EXPORT UserManager {
   // only guest sessions or it's a managed device). This is a secondary / backup
   // mechanism to determine the owner user, prefer relying on device policies or
   // possession of the private key when possible.
-  virtual absl::optional<std::string> GetOwnerEmail() = 0;
+  virtual std::optional<std::string> GetOwnerEmail() = 0;
 
   // Records the identity of the owner user. In the current implementation
   // always stores the email.
@@ -343,6 +358,10 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Returns true if current user is not existing one (hasn't signed in before).
   virtual bool IsCurrentUserNew() const = 0;
+
+  // This method updates "User was added to the device in this session and is
+  // not full initialized yet" flag.
+  virtual void SetIsCurrentUserNew(bool is_new) = 0;
 
   // Returns true if data stored or cached for the current user outside that
   // user's cryptohome (wallpaper, avatar, OAuth token status, display name,
@@ -397,6 +416,9 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const = 0;
 
+  // Returns true if device is enterprise managed.
+  virtual bool IsEnterpriseManaged() const = 0;
+
   virtual void AddObserver(Observer* obs) = 0;
   virtual void RemoveObserver(Observer* obs) = 0;
 
@@ -428,7 +450,8 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsGaiaUserAllowed(const User& user) const = 0;
 
   // Returns true if |user| is allowed depending on device policies.
-  // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
+  // Accepted user types: UserType::kRegular, UserType::kGuest,
+  // UserType::kChild.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
   // Explicitly non-ephemeral accounts are Owner account (on consumer-owned
@@ -449,9 +472,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Actually removes cryptohome.
   virtual void AsyncRemoveCryptohome(const AccountId& account_id) const = 0;
 
-  // Returns true if |account_id| is Stub user.
-  virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
-
   // Returns true if |account_id| is deprecated supervised.
   // TODO(crbug/1155729): Check it is not used anymore and remove it.
   virtual bool IsDeprecatedSupervisedAccountId(
@@ -460,15 +480,15 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
 
+  // Sets affiliation status for the user identified with `account_id`
+  // judging by `user_affiliation_ids` and device affiliation IDs.
+  virtual void SetUserAffiliation(
+      const AccountId& account_id,
+      const base::flat_set<std::string>& user_affiliation_ids) = 0;
+
   // Returns true when the browser has crashed and restarted during the current
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
-
-  // Returns image from resources bundle.
-  virtual const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const = 0;
-
-  // Returns string from resources bundle.
-  virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
 
   // Schedules CheckAndResolveLocale using given task runner and
   // |on_resolved_callback| as reply callback.
@@ -479,6 +499,10 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Returns true if |image_index| is a valid default user image index.
   virtual bool IsValidDefaultUserImageId(int image_index) const = 0;
+
+  // Returns the instance of multi user sign-in policy controller.
+  virtual MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() = 0;
 
   UserType CalculateUserType(const AccountId& account_id,
                              const User* user,

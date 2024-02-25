@@ -99,6 +99,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1559739829547075274">'पीछे की ओर' नेविगेट करें</translation>
 <translation id="1565432156062359693">आगे कोई सूची नहीं है</translation>
 <translation id="1571643229714746283">ChromeVox तैयार है</translation>
+<translation id="1588252353131492116">स्टिकी मोड चालू होने पर, पास थ्रू की सुविधा उपलब्ध नहीं होती है</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">6 बिंदु ब्रेल पर स्विच करें</translation>
 <translation id="161042844686301425">स्यान</translation>
@@ -194,6 +195,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2318372665160196757">मुख्य</translation>
 <translation id="2329324941084714723">टैब पैनल</translation>
 <translation id="2347456970887948350">लिंक</translation>
+<translation id="2363753371702255035">बुलेट पॉइंट</translation>
 <translation id="2365384324219615024">आप आइटम को चालू करने के लिए Enter भी दबा सकते हैं. उदाहरण के लिए, किसी फ़ॉर्म में टेक्स्ट को सबमिट करने के लिए Enter का इस्तेमाल किया जा सकता है. जारी रखने के लिए, Enter दबाएं.</translation>
 <translation id="2381733276052567791">बोली को चालू या बंद पर टॉगल करें</translation>
 <translation id="2390264819538553347">आगे जाने के लिए, enter दबाएं, वापस जाने के लिए, backspace दबाएं.</translation>
@@ -521,6 +523,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
 <translation id="4476183483923481720">नई पंक्ति</translation>
 <translation id="4479068155583208887">फ़ायर ब्रिक</translation>
+<translation id="4481524099194084725">सिस्टम की आवाज़ का इस्तेमाल करें</translation>
 <translation id="4482330759234983253">पिछली टेबल</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="4507332368061453500">मौजूदा आइटम पर क्लिक करके रखें</translation>

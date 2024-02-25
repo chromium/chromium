@@ -97,13 +97,12 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
   std::string unmanaged_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  absl::optional<base::Value> unmanaged_value_ptr =
+  std::optional<base::Value> unmanaged_value_ptr =
       base::JSONReader::Read(unmanaged_json);
   std::map<std::string, std::u16string> expected_unmanaged_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
-           IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+           IDS_MANAGEMENT_NOT_MANAGED_NOTICE, chrome::kManagedUiLearnMoreUrl,
            base::EscapeForHTML(l10n_util::GetStringUTF16(
                IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
       {"extensionReportingSubtitle",
@@ -130,13 +129,12 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
   std::string managed_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  absl::optional<base::Value> managed_value_ptr =
+  std::optional<base::Value> managed_value_ptr =
       base::JSONReader::Read(managed_json);
   std::map<std::string, std::u16string> expected_managed_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
-           IDS_MANAGEMENT_BROWSER_NOTICE,
-           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+           IDS_MANAGEMENT_BROWSER_NOTICE, chrome::kManagedUiLearnMoreUrl,
            base::EscapeForHTML(l10n_util::GetStringUTF16(
                IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT)))},
       {"extensionReportingSubtitle",

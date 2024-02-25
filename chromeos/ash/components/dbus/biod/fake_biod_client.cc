@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,13 +21,11 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -98,7 +98,7 @@ FakeBiodClient::RecordMap ValueToFakeRecords(const base::Value& records_val) {
 int GetNextRecordId(const FakeBiodClient::RecordMap& records) {
   int next_record_unique_id = 1;
   for (const auto& [key, _] : records) {
-    std::vector<base::StringPiece> splitted_str = base::SplitStringPiece(
+    std::vector<std::string_view> splitted_str = base::SplitStringPiece(
         key.value(), "/", base::WhitespaceHandling::TRIM_WHITESPACE,
         base::SplitResult::SPLIT_WANT_NONEMPTY);
     CHECK_EQ(splitted_str.size(), static_cast<size_t>(2));
@@ -392,7 +392,7 @@ void FakeBiodClient::LoadRecords() {
                << fake_biod_db_filepath_;
     return;
   }
-  absl::optional<base::Value> records_json = base::JSONReader::Read(content);
+  std::optional<base::Value> records_json = base::JSONReader::Read(content);
   if (!records_json.has_value()) {
     LOG(ERROR) << "FakeBiod parse failed.";
     return;

@@ -39,7 +39,7 @@ class TestSharesheetController : public sharesheet::SharesheetController {
   }
   bool IsBubbleVisible() const override { return !last_result; }
 
-  absl::optional<::sharesheet::SharesheetResult> last_result;
+  std::optional<::sharesheet::SharesheetResult> last_result;
 };
 
 class NearbyShareDialogUITest : public InProcessBrowserTest {

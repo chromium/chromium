@@ -125,12 +125,24 @@ enum SVCScalabilityMode {
   kL1T1,
   kL1T2,
   kL1T3,
+  kL2T1,
+  kL2T2,
+  kL2T3,
+  kL3T1,
+  kL3T2,
+  kL3T3,
   kL2T1Key,
   kL2T2Key,
   kL2T3Key,
   kL3T1Key,
   kL3T2Key,
   kL3T3Key,
+  kS2T1,
+  kS2T2,
+  kS2T3,
+  kS3T1,
+  kS3T2,
+  kS3T3,
 };
 
 // This mojo enum only list hardware codec supported scalability mode.
@@ -316,7 +328,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Size? source_size;
 
   gfx.mojom.Rect? region_capture_rect;
-  uint32 crop_version;
+  uint32 sub_capture_target_version;
 
   bool copy_required;
 
@@ -342,6 +354,8 @@ struct VideoFrameMetadata {
   bool protected_video;
 
   bool hw_protected;
+
+  bool needs_detiling;
 
   bool is_webgpu_compatible;
 
@@ -377,6 +391,8 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeTicks? receive_time;
 
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
+
+  uint64? frame_sequence;
 };
 
 // This defines a mojo transport format for media::VideoFrame.

@@ -48,6 +48,7 @@ class PermissionPromptBubbleTwoOriginsView
 
  private:
   void CreateFaviconRow();
+  std::u16string CreateWindowTitle() const;
 
   void OnEmbeddingOriginFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& favicon_result);
@@ -60,7 +61,7 @@ class PermissionPromptBubbleTwoOriginsView
    * Returns a string for the link associated with the request in
    * |delegate|. The link is stylized via |link_range| and |link_style|.
    */
-  absl::optional<std::u16string> GetLink(
+  std::optional<std::u16string> GetLink(
       gfx::Range& link_range,
       views::StyledLabel::RangeStyleInfo& link_style);
 

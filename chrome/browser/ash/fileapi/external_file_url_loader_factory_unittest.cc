@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -190,7 +191,7 @@ TEST_F(ExternalFileURLLoaderFactoryTest, RangeHeader) {
   std::string response_body;
   ASSERT_TRUE(mojo::BlockingCopyToString(client.response_body_release(),
                                          &response_body));
-  EXPECT_EQ(base::StringPiece(kExpectedFileContents).substr(3, 3),
+  EXPECT_EQ(std::string_view(kExpectedFileContents).substr(3, 3),
             response_body);
 }
 

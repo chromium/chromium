@@ -61,8 +61,8 @@ class NoAttachEncryptionSettingsMatcher
   std::string Name() const override;
 };
 
-// attachConfigurationFile must be of bool type and true.
-class AttachConfigurationFileMatcher : public RequestValidityMatcherInterface {
+// ConfigurationFileVersion must be of bool type and true.
+class ConfigurationFileVersionMatcher : public RequestValidityMatcherInterface {
  public:
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* listener) const override;
@@ -71,9 +71,29 @@ class AttachConfigurationFileMatcher : public RequestValidityMatcherInterface {
   std::string Name() const override;
 };
 
-// attachConfigurationFile must be absent.
-class NoAttachConfigurationFileMatcher
+// ConfigurationFileVersion must be absent.
+class NoConfigurationFileVersionMatcher
     : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
+// source must be of string type.
+class SourceMatcher : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
+// source must be absent.
+class NoSourceMatcher : public RequestValidityMatcherInterface {
  public:
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* listener) const override;
@@ -248,16 +268,32 @@ class RequestValidityMatcherBuilder {
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a configuration file
-  // request. If need_config_file is false the matcher will ensure the
+  // request. If request_config_file is false the matcher will ensure the
   // request does not request the configuration file.
   static RequestValidityMatcherBuilder<T> CreateConfigurationFileRequestUpload(
-      bool need_config_file) {
+      bool request_config_file) {
     auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
     builder.AppendMatcher(RequestIdMatcher());
-    if (need_config_file) {
-      builder.AppendMatcher(AttachConfigurationFileMatcher());
+    if (request_config_file) {
+      builder.AppendMatcher(ConfigurationFileVersionMatcher());
     } else {
-      builder.AppendMatcher(NoAttachConfigurationFileMatcher());
+      builder.AppendMatcher(NoConfigurationFileVersionMatcher());
+    }
+    return builder;
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying a client automated test
+  // request. If client_automated_test is false the matcher will ensure the
+  // request does not include the field source.
+  static RequestValidityMatcherBuilder<T> CreateSourceRequestUpload(
+      bool client_automated_test) {
+    auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
+    builder.AppendMatcher(RequestIdMatcher());
+    if (client_automated_test) {
+      builder.AppendMatcher(SourceMatcher());
+    } else {
+      builder.AppendMatcher(NoSourceMatcher());
     }
     return builder;
   }
@@ -375,13 +411,22 @@ Matcher<T> IsEncryptionKeyRequestUploadRequestValid(bool need_key = true) {
 }
 
 // Match a configuration file request upload request that is valid. If
-// need_config_file is false, this matcher will ensure the request does not
+// request_config_file is false, this matcher will ensure the request does not
 // request a configuration file.
 template <class T = base::Value::Dict>
 Matcher<T> IsConfigurationFileRequestUploadRequestValid(
-    bool need_config_file = false) {
+    bool request_config_file = false) {
   return RequestValidityMatcherBuilder<T>::CreateConfigurationFileRequestUpload(
-             need_config_file)
+             request_config_file)
+      .Build();
+}
+
+// Match a source upload request that is valid.
+template <class T = base::Value::Dict>
+Matcher<T> IsSourceRequestUploadRequestValid(
+    bool client_automated_test = false) {
+  return RequestValidityMatcherBuilder<T>::CreateSourceRequestUpload(
+             client_automated_test)
       .Build();
 }
 

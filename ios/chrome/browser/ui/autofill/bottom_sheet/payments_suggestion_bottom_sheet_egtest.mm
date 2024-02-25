@@ -8,7 +8,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -29,6 +31,9 @@ namespace {
 
 const char kCreditCardUrl[] = "/credit_card.html";
 const char kFormCardName[] = "CCName";
+const char kFormCardNumber[] = "CCNo";
+const char kFormCardExpirationMonth[] = "CCExpiresMonth";
+const char kFormCardExpirationYear[] = "CCExpiresYear";
 
 using base::test::ios::kWaitForActionTimeout;
 
@@ -58,31 +63,47 @@ BOOL WaitForKeyboardToAppear() {
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   [AutofillAppInterface clearCreditCardStore];
   _lastDigits = [AutofillAppInterface saveLocalCreditCard];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearMockReauthenticationModule];
+
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
   [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSPaymentsBottomSheet);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableVirtualCards);
   return config;
 }
 
 // Matcher for the bottom sheet's "Continue" button.
 id<GREYMatcher> ContinueButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE));
+  return chrome_test_util::StaticTextWithAccessibilityLabelId(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
 }
 
-// Matcher for the bottom sheet's "No Thanks" button.
-id<GREYMatcher> NoThanksButton() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS));
+// Matcher for the bottom sheet's "Use Keyboard" button.
+id<GREYMatcher> UseKeyboardButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
 }
 
 // Matcher for the toolbar's edit button.
@@ -113,9 +134,12 @@ id<GREYMatcher> SubtitleString(const GURL& url) {
 }
 
 id<GREYMatcher> ExpirationDateLabel() {
-  return grey_text(
-      base::SysUTF8ToNSString(autofill::test::NextMonth() + "/" +
-                              autofill::test::NextYear().substr(2)));
+  return grey_text(ExpirationDateNSString());
+}
+
+NSString* ExpirationDateNSString() {
+  return base::SysUTF8ToNSString(autofill::test::NextMonth() + "/" +
+                                 autofill::test::NextYear().substr(2));
 }
 
 #pragma mark - Helper methods
@@ -125,6 +149,48 @@ id<GREYMatcher> ExpirationDateLabel() {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUrl)];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+
+  // Localhost is not considered secure, therefore form security needs to be
+  // overridden for the tests to work. This will allow us to fill the textfields
+  // on the web page.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+}
+
+// Verify credit card infos are filled.
+- (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  // Credit card name.
+  NSString* name = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardName, name];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card number.
+  NSString* number = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NUMBER, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardNumber, number];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration month.
+  NSString* expMonth = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardExpirationMonth, expMonth];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration year.
+  NSString* expYear = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormCardExpirationYear, expYear];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 #pragma mark - Tests
@@ -141,7 +207,25 @@ id<GREYMatcher> ExpirationDateLabel() {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
 
+  // Verify that the credit card is visible to the user.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure the user is seeing 1 card on the bottom sheet.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // No histogram logged because there is only 1 credential shown to the user.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
+      @"Unexpected histogram error for touch to fill credit card selected");
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
 
 // Tests that the Payments Bottom Sheet updates its contents when a new credit
@@ -167,15 +251,54 @@ id<GREYMatcher> ExpirationDateLabel() {
   id<GREYMatcher> localCreditCardEntry = grey_text(_lastDigits);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:localCreditCardEntry];
 
+  // Make sure the user is seeing 2 cards on the bottom sheet.
+  GREYAssertEqual(2, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
   // Select and use the new credit card.
   [[EarlGrey selectElementWithMatcher:serverCreditCardEntry]
       performAction:grey_tap()];
 
+  // Verify that the accessory view (checkmark) is visible.
+  id<GREYMatcher> accessoryView = grey_allOf(
+      grey_kindOfClassName(@"UIImageView"),
+      grey_ancestor(grey_kindOfClassName(@"_UITableCellAccessoryButton")),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:accessoryView]
+      assertWithMatcher:grey_notNil()];
+
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // Verify the CVC requester is visible.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Verification")]
+      assertWithMatcher:grey_notNil()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"Autofill.TouchToFill.CreditCard.SelectedIndex"],
+      @"Unexpected histogram error for touch to fill credit card selected "
+      @"index");
+
+  // TODO(crbug.com/845472): Figure out a way to enter CVC and get the unlocked
+  // card result.
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
-- (void)testOpenPaymentsBottomSheetAfterLongPress {
+// TODO(crbug.com/1479580): Test fails on iPhone simulator only.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
+  DISABLED_testOpenPaymentsBottomSheetAfterLongPress
+#else
+#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
+  testOpenPaymentsBottomSheetAfterLongPress
+#endif
+- (void)MAYBE_testOpenPaymentsBottomSheetAfterLongPress {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone 14 Pro Max 16.4.");
+  }
   [self loadPaymentsPage];
 
   // Open the Payments Bottom Sheet.
@@ -234,18 +357,18 @@ id<GREYMatcher> ExpirationDateLabel() {
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 }
 
-// Verify that the Payments Bottom Sheet "No Thanks" button opens the keyboard.
-// Also checks that the bottom sheet's subtitle and the credit card's expiration
-// appear as expected before dismissing the bottom sheet.
-- (void)testOpenPaymentsBottomSheetTapNoThanksShowKeyboard {
+// Verify that the Payments Bottom Sheet "Use Keyboard" button opens the
+// keyboard. Also checks that the bottom sheet's subtitle and the credit card's
+// expiration appear as expected before dismissing the bottom sheet.
+- (void)testOpenPaymentsBottomSheetTapUseKeyboardShowKeyboard {
   [self loadPaymentsPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
-  id<GREYMatcher> noThanksButton = NoThanksButton();
+  id<GREYMatcher> useKeyboardButton = UseKeyboardButton();
 
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:noThanksButton];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:useKeyboardButton];
 
   // Verify that the subtitle string appears.
   [ChromeEarlGrey
@@ -257,7 +380,8 @@ id<GREYMatcher> ExpirationDateLabel() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ExpirationDateLabel()];
 
   // Dismiss the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:noThanksButton] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
 }
@@ -372,6 +496,62 @@ id<GREYMatcher> ExpirationDateLabel() {
   // Make sure the bottom sheet isn't there.
   [[EarlGrey selectElementWithMatcher:continueButton]
       assertWithMatcher:grey_nil()];
+}
+
+// Verify that tapping outside the Payments Bottom Sheet opens the keyboard.
+- (void)testTapOutsideThePaymentsBottomSheetShowsKeyboard {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Dismiss the bottom sheet by tapping outside.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
+
+  WaitForKeyboardToAppear();
+}
+
+// Tests that both the virtual card and the original card are shown
+// in the Payments Bottom Sheet.
+- (void)testPaymentsBottomSheetShowsVirtualCard {
+  // TODO(b/324870929): This test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails flakily on iPad.");
+  }
+
+  // Add a credit card enrolled in VCN to the Personal Data Manager.
+  NSString* enrolledCardNameAndLastFour =
+      [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
+
+  [self loadPaymentsPage];
+
+  // Trigger autofill.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  // Confirm virtual card is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID([NSString
+                                   stringWithFormat:@"%@ %@",
+                                                    enrolledCardNameAndLastFour,
+                                                    @"Virtual card"])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Confirm original card is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID([NSString
+                                   stringWithFormat:@"%@ %@",
+                                                    enrolledCardNameAndLastFour,
+                                                    ExpirationDateNSString()])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the bottom sheet by tapping outside.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tap()];
 }
 
 @end

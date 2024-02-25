@@ -15,52 +15,41 @@ class PageInfoPermissionsTest : public PlatformTest {
  protected:
   PageInfoPermissionsTest() {}
 
-  ~PageInfoPermissionsTest() override {
-    if (@available(iOS 15.0, *)) {
-      [mediator_ disconnect];
-    }
-  }
+  ~PageInfoPermissionsTest() override { [mediator_ disconnect]; }
 
   void SetUp() override {
     PlatformTest::SetUp();
+    fake_web_state_ = std::make_unique<web::FakeWebState>();
+    web::WebState* web_state_ = fake_web_state_.get();
 
-    if (@available(iOS 15.0, *)) {
-      fake_web_state_ = std::make_unique<web::FakeWebState>();
-      web::WebState* web_state_ = fake_web_state_.get();
+    // Initialize camera state to Allowed but keeps microphone state
+    // NotAccessible.
+    web_state_->SetStateForPermission(web::PermissionStateAllowed,
+                                      web::PermissionCamera);
+    web_state_->SetStateForPermission(web::PermissionStateNotAccessible,
+                                      web::PermissionMicrophone);
 
-      // Initialize camera state to Allowed but keeps microphone state
-      // NotAccessible.
-      web_state_->SetStateForPermission(web::PermissionStateAllowed,
-                                        web::PermissionCamera);
-      web_state_->SetStateForPermission(web::PermissionStateNotAccessible,
-                                        web::PermissionMicrophone);
-
-      mediator_ =
-          [[PageInfoPermissionsMediator alloc] initWithWebState:web_state_];
-    }
+    mediator_ =
+        [[PageInfoPermissionsMediator alloc] initWithWebState:web_state_];
   }
 
-  PageInfoPermissionsMediator* mediator() API_AVAILABLE(ios(15.0)) {
-    return mediator_;
-  }
+  PageInfoPermissionsMediator* mediator() { return mediator_; }
 
   web::WebState* web_state() { return fake_web_state_.get(); }
 
  private:
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  PageInfoPermissionsMediator* mediator_ API_AVAILABLE(ios(15.0));
+  PageInfoPermissionsMediator* mediator_;
 };
 
 // Verifies that `updateStateForPermission:` updates correctly the web state
 // permission.
 TEST_F(PageInfoPermissionsTest, TestUpdateStateForPermission) {
-  if (@available(iOS 15.0, *)) {
-    PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
-    permissionDescription.permission = web::PermissionCamera;
-    permissionDescription.state = web::PermissionStateBlocked;
+  PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
+  permissionDescription.permission = web::PermissionCamera;
+  permissionDescription.state = web::PermissionStateBlocked;
 
-    [mediator() updateStateForPermission:permissionDescription];
-    ASSERT_EQ(web_state()->GetStateForPermission(web::PermissionCamera),
-              web::PermissionStateBlocked);
-  }
+  [mediator() updateStateForPermission:permissionDescription];
+  ASSERT_EQ(web_state()->GetStateForPermission(web::PermissionCamera),
+            web::PermissionStateBlocked);
 }

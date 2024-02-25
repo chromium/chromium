@@ -83,7 +83,7 @@ class CORE_EXPORT TextOffsetMapping final {
     //      LayoutNGBlockFlow {DIV}
     //        ...
     //      LayoutNGBlockFlow (anonymous)
-    //        LayoutNGText "abc"
+    //        LayoutText "abc"
     const LayoutObject* block_in_inline_before_ = nullptr;
     const LayoutObject* first_ = nullptr;
     const LayoutObject* last_ = nullptr;

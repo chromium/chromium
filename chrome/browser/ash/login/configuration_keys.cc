@@ -91,6 +91,9 @@ const char kEnrollmentLocation[] = "enrollmentLocation";
 // values.
 const char kEnrollmentAutoAttributes[] = "enrollmentAutoAttributes";
 
+// String value, contains enrollment token used for Flex Auto Enrollment.
+const char kFlexToken[] = "flexToken";
+
 using ValueType = base::Value::Type;
 
 constexpr struct {
@@ -125,6 +128,7 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kArcTosAutoAccept, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_BOTH},
+    {kFlexToken, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {"desc", ValueType::STRING, ConfigurationHandlerSide::HANDLER_DOC},
     {"testValue", ValueType::STRING, ConfigurationHandlerSide::HANDLER_BOTH},
 };

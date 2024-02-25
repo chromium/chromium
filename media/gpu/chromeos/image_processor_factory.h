@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -24,9 +24,9 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
  public:
   // Callback to pick a valid format from the given |candidates| formats giving
   // preference to |preferred_fourcc| if provided.
-  using PickFormatCB = base::RepeatingCallback<absl::optional<Fourcc>(
+  using PickFormatCB = base::RepeatingCallback<std::optional<Fourcc>(
       const std::vector<Fourcc>& /* candidates */,
-      absl::optional<Fourcc> /* preferred_fourcc */)>;
+      std::optional<Fourcc> /* preferred_fourcc */)>;
 
   // Factory method to create ImageProcessor.
   // Given input and output PortConfig, it tries to find out the most suitable
@@ -38,10 +38,9 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
   static std::unique_ptr<ImageProcessor> Create(
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
-      ImageProcessor::OutputMode output_mode,
       size_t num_buffers,
-      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-      ImageProcessor::ErrorCB error_cb);
+      ImageProcessor::ErrorCB error_cb,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 
   // Factory method to create an ImageProcessor.
   // Unlike Create(), the caller passes a list of supported inputs,
@@ -55,6 +54,7 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
       const gfx::Rect& input_visible_rect,
       const gfx::Size& output_size,
+      VideoFrame::StorageType output_storage_type,
       size_t num_buffers,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       PickFormatCB out_format_picker,

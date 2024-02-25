@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -74,20 +75,20 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   void OnRegistered(
       std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const absl::optional<std::string>& error_msg,
+      const std::optional<std::string>& error_msg,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration);
 
   void OnDidGetRegistration(
       std::unique_ptr<WebServiceWorkerGetRegistrationCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const absl::optional<std::string>& error_msg,
+      const std::optional<std::string>& error_msg,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration);
 
   void OnDidGetRegistrations(
       std::unique_ptr<WebServiceWorkerGetRegistrationsCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const absl::optional<std::string>& error_msg,
-      absl::optional<
+      const std::optional<std::string>& error_msg,
+      std::optional<
           std::vector<blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>>
           infos);
 
@@ -100,7 +101,8 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   // |provider_client_| is implemented by blink::SWContainer and this pointer's
   // nullified when its execution context is destroyed. (|this| is attached to
   // the same context, but could live longer until the context is GC'ed)
-  blink::WebServiceWorkerProviderClient* provider_client_;
+  raw_ptr<blink::WebServiceWorkerProviderClient, DanglingUntriaged>
+      provider_client_;
 
   base::WeakPtrFactory<WebServiceWorkerProviderImpl> weak_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -72,7 +72,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
+              const std::optional<gfx::RRectF>& backdrop_filter_bounds,
               SubtreeCaptureId capture_id,
               gfx::Size subtree_capture_size,
               ViewTransitionElementResourceId resource_id,

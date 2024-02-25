@@ -180,7 +180,7 @@ AuctionDownloader::AuctionDownloader(
                                       MimeTypeToString(mime_type_));
 
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnSendRequest(*resource_request);
+    network_events_delegate_->OnNetworkSendRequest(*resource_request);
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
@@ -192,6 +192,11 @@ AuctionDownloader::AuctionDownloader(
         auto dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", request_id_);
         dict.Add("url", source_url.spec());
+        // Value derived from CDP ResourceType enum:
+        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
+        // TODO: Import the enum strings directly
+        dict.Add("resourceType", "Other");
+        dict.Add("fetchPriorityHint", "auto");
       });
 
   // Abort on redirects.
@@ -236,9 +241,15 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   auto simple_url_loader = std::move(simple_url_loader_);
   std::string allow_fledge;
   std::string auction_allowed;
+  network::URLLoaderCompletionStatus completion_status =
+      network::URLLoaderCompletionStatus(simple_url_loader->NetError());
+
+  if (simple_url_loader->CompletionStatus()) {
+    completion_status = simple_url_loader->CompletionStatus().value();
+  }
+
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnRequestComplete(
-        request_id_, simple_url_loader->CompletionStatus());
+    network_events_delegate_->OnNetworkRequestComplete(completion_status);
   }
 
   if (!body) {
@@ -304,7 +315,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
     std::move(auction_downloader_callback_)
         .Run(std::move(body),
              std::move(simple_url_loader->ResponseInfo()->headers),
-             /*error_msg=*/absl::nullopt);
+             /*error_msg=*/std::nullopt);
   }
 }
 
@@ -332,8 +343,8 @@ void AuctionDownloader::OnResponseStarted(
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
   if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnResponseReceived(final_url,
-                                                 response_head.headers);
+    network_events_delegate_->OnNetworkResponseReceived(final_url,
+                                                        response_head);
   }
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "ResourceReceiveResponse", TRACE_EVENT_SCOPE_THREAD,
@@ -342,6 +353,17 @@ void AuctionDownloader::OnResponseStarted(
         dict.Add("requestId", request_id_);
         if (response_head.headers) {
           dict.Add("statusCode", response_head.headers->response_code());
+          auto header_array = dict.AddArray("headers");
+
+          size_t header_iterator = 0;
+          std::string header_name;
+          std::string header_value;
+          while (response_head.headers->EnumerateHeaderLines(
+              &header_iterator, &header_name, &header_value)) {
+            auto item_dict = header_array.AppendDictionary();
+            item_dict.Add("name", header_name);
+            item_dict.Add("value", header_value);
+          }
         }
         dict.Add("mimeType", response_head.mime_type);
         dict.Add("encodedDataLength", response_head.encoded_data_length);
@@ -371,7 +393,8 @@ void AuctionDownloader::OnResponseStarted(
         }
 
         if (!response_head.response_time.is_null()) {
-          dict.Add("responseTime", response_head.response_time.ToJsTime());
+          dict.Add("responseTime",
+                   response_head.response_time.InMillisecondsFSinceUnixEpoch());
         }
 
         // Only send load timing if it exists, e.g. not a cache hit.

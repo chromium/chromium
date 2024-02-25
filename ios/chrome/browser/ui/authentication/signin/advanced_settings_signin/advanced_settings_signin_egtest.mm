@@ -6,11 +6,12 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "components/bookmarks/common/bookmark_features.h"
-#import "components/bookmarks/common/storage_type.h"
+#import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -18,10 +19,8 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -76,15 +75,12 @@ void WaitForSettingDoneButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings)]) {
-    // When kReplaceSyncPromosWithSignInPromos is enabled, the advanced sync
-    // setup doesn't exist.
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
-    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  }
+  // When kReplaceSyncPromosWithSignInPromos is enabled, the advanced sync
+  // setup view doesn't exist.
+  // All tests in AdvancedSettingsSigninTestCase are for this view.
+  config.features_disabled.push_back(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   return config;
 }
 
@@ -93,8 +89,6 @@ void WaitForSettingDoneButton() {
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey clearBookmarks];
-  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
-  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (void)tearDown {
@@ -113,6 +107,10 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+
+  // This wait is required because, on devices, EG-test may tap on the button
+  // while it is sliding up, which cause the tap to misses the button.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
@@ -166,6 +164,10 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+
+  // This wait is required because, on devices, EG-test may tap on the button
+  // while it is sliding up, which cause the tap to misses the button.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
@@ -177,7 +179,7 @@ void WaitForSettingDoneButton() {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
   // Sign out and clear data from Sync settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];
@@ -215,6 +217,10 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+
+  // This wait is required because, on devices, EG-test may tap on the button
+  // while it is sliding up, which cause the tap to misses the button.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
@@ -226,7 +232,7 @@ void WaitForSettingDoneButton() {
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
 
   // Sign out and keep data from Sync settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];
@@ -282,6 +288,9 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  // This wait is required because, on devices, EG-test may tap on the button
+  // while it is sliding up, which cause the tap to misses the button.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
@@ -354,30 +363,6 @@ void WaitForSettingDoneButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL expectedURL = self.testServer->GetURL("/echo");
-  [ChromeEarlGrey
-      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
-
-  [SigninEarlGrey verifySignedOut];
-}
-
-// Tests interrupting sign-in by opening an URL from another app.
-// Sign-in opened from: bookmark view.
-// Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-- (void)testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
-      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 

@@ -43,7 +43,7 @@ PasswordsPrivateEventRouterFactory::~PasswordsPrivateEventRouterFactory() =
 
 KeyedService* PasswordsPrivateEventRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return PasswordsPrivateEventRouter::Create(context);
+  return new PasswordsPrivateEventRouter(context);
 }
 
 bool PasswordsPrivateEventRouterFactory::

@@ -2,17 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Div popover'
-++++++listBox ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='Listbox role on ul'
-++++++listBox ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='Listbox role on ul'
-++++++details ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++disclosureTriangle ignored invisible
-++++++++++++staticText ignored invisible name='summary/details popover'
+++++++++disclosureTriangle ignored invisible
 ++++++button collapsed name='Button pointing to hidden popover'
 ++++++++staticText name='Button pointing to hidden popover'
 ++++++++++inlineTextBox name='Button pointing to hidden popover'
@@ -20,8 +10,6 @@ rootWebArea
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to hidden popover '
 ++++++++inlineTextBox name='Text input pointing to hidden popover '
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Popover'
 ++++++button name='Hide button pointing to hidden manual'
 ++++++++staticText name='Hide button pointing to hidden manual'
 ++++++++++inlineTextBox name='Hide button pointing to hidden manual'
@@ -29,20 +17,12 @@ rootWebArea
 ++++++++genericContainer
 ++++++staticText name='Email input pointing to hidden manual '
 ++++++++inlineTextBox name='Email input pointing to hidden manual '
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Manual'
 ++++++button name='Button pointing to hint popover'
 ++++++++staticText name='Button pointing to hint popover'
 ++++++++++inlineTextBox name='Button pointing to hint popover'
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Popover=hint'
 ++++++button name='Button pointing to "rich" hint popover'
 ++++++++staticText name='Button pointing to "rich" hint popover'
 ++++++++++inlineTextBox name='Button pointing to "rich" hint popover'
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Popover=hint '
-++++++++link ignored invisible
-++++++++++staticText ignored invisible name='Link'
 ++++++button name='Button pointing to non-popover'
 ++++++++staticText name='Button pointing to non-popover'
 ++++++++++inlineTextBox name='Button pointing to non-popover'
@@ -60,8 +40,6 @@ rootWebArea
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to invalid popover value'
 ++++++++inlineTextBox name='Text input pointing to invalid popover value'
-++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='Invalid popover attribute value'
 ++++++paragraph
 ++++++++staticText name='Showing/visible popovers below'
 ++++++++++inlineTextBox name='Showing/visible popovers below'

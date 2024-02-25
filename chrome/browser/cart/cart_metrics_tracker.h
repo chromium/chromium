@@ -30,7 +30,7 @@ class CartMetricsTracker : public BrowserListObserver,
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  absl::optional<GURL> last_interacted_url_;
+  std::optional<GURL> last_interacted_url_;
 };
 
 #endif  // CHROME_BROWSER_CART_CART_METRICS_TRACKER_H_

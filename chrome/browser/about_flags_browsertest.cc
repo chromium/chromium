@@ -62,13 +62,15 @@ void SimulateTextType(content::WebContents* contents,
                       const char* experiment_id,
                       const char* text) {
   EXPECT_TRUE(content::ExecJs(
-      contents, base::StringPrintf(
-                    "var parent = document.getElementById('%s');"
-                    "var textarea = parent.getElementsByTagName('textarea')[0];"
-                    "textarea.focus();"
-                    "textarea.value = `%s`;"
-                    "textarea.dispatchEvent(new Event('change'));",
-                    experiment_id, text)));
+      contents,
+      base::StringPrintf(
+          "var parent = "
+          "document.querySelector('flags-app').shadowRoot.getElementById('%s');"
+          "var textarea = parent.getElementsByTagName('textarea')[0];"
+          "textarea.focus();"
+          "textarea.value = `%s`;"
+          "textarea.dispatchEvent(new Event('change'));",
+          experiment_id, text)));
 }
 
 void ToggleEnableDropdown(content::WebContents* contents,
@@ -76,14 +78,16 @@ void ToggleEnableDropdown(content::WebContents* contents,
                           bool enable) {
   EXPECT_TRUE(content::ExecJs(
       contents,
-      base::StringPrintf("var k = document.getElementById('%s');"
-                         "var s = "
-                         "k.shadowRoot."
-                         "querySelector('.experiment-enable-disable');"
-                         "s.focus();"
-                         "s.selectedIndex = %d;"
-                         "s.dispatchEvent(new Event('change'));",
-                         experiment_id, enable ? 1 : 0)));
+      base::StringPrintf(
+          "var k = "
+          "document.querySelector('flags-app').shadowRoot.getElementById('%s');"
+          "var s = "
+          "k.shadowRoot."
+          "querySelector('.experiment-enable-disable');"
+          "s.focus();"
+          "s.selectedIndex = %d;"
+          "s.dispatchEvent(new Event('change'));",
+          experiment_id, enable ? 1 : 0)));
 }
 
 std::string GetOriginListText(content::WebContents* contents,
@@ -91,7 +95,9 @@ std::string GetOriginListText(content::WebContents* contents,
   return content::EvalJs(
              contents,
              base::StringPrintf(
-                 "var k = document.getElementById('%s');"
+                 "var k = "
+                 "document.querySelector('flags-app').shadowRoot."
+                 "getElementById('%s');"
                  "var s = "
                  "k.getElementsByClassName('experiment-origin-list-value')[0];"
                  "s.value;",
@@ -104,7 +110,9 @@ bool IsDropdownEnabled(content::WebContents* contents,
   return content::EvalJs(
              contents,
              base::StringPrintf(
-                 "var k = document.getElementById('%s');"
+                 "var k = "
+                 "document.querySelector('flags-app').shadowRoot."
+                 "getElementById('%s');"
                  "var s = "
                  "k.getElementsByClassName('experiment-enable-disable')[0];"
                  "s.value == 'enabled';",
@@ -113,16 +121,20 @@ bool IsDropdownEnabled(content::WebContents* contents,
 }
 
 bool IsFlagPresent(content::WebContents* contents, const char* experiment_id) {
-  return content::EvalJs(contents, base::StringPrintf(
-                                       "var k = document.getElementById('%s');"
-                                       "k != null;",
-                                       experiment_id))
+  return content::EvalJs(contents,
+                         base::StringPrintf("var k = "
+                                            "document.querySelector('flags-app'"
+                                            ").shadowRoot.getElementById('%s');"
+                                            "k != null;",
+                                            experiment_id))
       .ExtractBool();
 }
 
 void WaitForExperimentalFeatures(content::WebContents* contents) {
   ASSERT_TRUE(content::ExecJs(
-      contents, "experimentalFeaturesReadyForTest.then(() => true);"));
+      contents,
+      "var k = document.querySelector('flags-app');"
+      "k.experimentalFeaturesReadyForTesting().then(() => true);"));
 }
 
 const std::vector<flags_ui::FeatureEntry> GetFeatureEntries(
@@ -381,15 +393,17 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, FormRestore) {
   // See https://crbug.com/1038638 for more details.
   EXPECT_TRUE(content::ExecJs(
       contents,
-      base::StringPrintf("var k = document.getElementById('%s');"
-                         "var s = "
-                         "k.shadowRoot."
-                         "querySelector('.experiment-enable-disable');"
-                         "delete s.internal_name;"
-                         "const e = document.createEvent('HTMLEvents');"
-                         "e.initEvent('change', true, true);"
-                         "s.dispatchEvent(e);",
-                         kFlagWithOptionSelectorName),
+      base::StringPrintf(
+          "var k = "
+          "document.querySelector('flags-app').shadowRoot.getElementById('%s');"
+          "var s = "
+          "k.shadowRoot."
+          "querySelector('.experiment-enable-disable');"
+          "delete s.internal_name;"
+          "const e = document.createEvent('HTMLEvents');"
+          "e.initEvent('change', true, true);"
+          "s.dispatchEvent(e);",
+          kFlagWithOptionSelectorName),
       // Execute script in an isolated world to avoid causing a Trusted Types
       // violation due to eval.
       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));

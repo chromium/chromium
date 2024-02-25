@@ -1,2 +1,7 @@
 amraboelkher@chromium.org
-kwlyeo@chromium.org
+sergiyb@chromium.org
+igorcov@chromium.org
+
+# Please add kwlyeo@chromium.org as a reviewer for any uprevs to this library.
+# They are not Chromium committers, hence can't be owners and have no powers to
+# vote on CLs, but should approve all uprevs with a plain old LGTM.

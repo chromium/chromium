@@ -43,14 +43,12 @@ CastAudioManagerAndroid::CastAudioManagerAndroid(
     ::media::AudioLogFactory* audio_log_factory,
     CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    external_service_support::ExternalConnector* connector)
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : ::media::AudioManagerAndroid(std::move(audio_thread), audio_log_factory),
       helper_(this,
               delegate,
               std::move(backend_factory_getter),
-              std::move(media_task_runner),
-              connector) {}
+              std::move(media_task_runner)) {}
 
 CastAudioManagerAndroid::~CastAudioManagerAndroid() = default;
 

@@ -89,6 +89,7 @@ export enum GaMetricDimension {
   IS_TEST_IMAGE = 38,
   DEVICE_PIXEL_RATIO = 39,
   CAMERA_MODULE_ID = 40,
+  WIFI_SECURITY_TYPE = 41,
 }
 
 export enum Ga4MetricDimension {
@@ -118,6 +119,7 @@ export enum Ga4MetricDimension {
   LAUNCH_TYPE = 'launch_type',
   LINE_NO = 'line_no',
   MAXIMIZED = 'maximized',
+  MEMORY_USAGE = 'memory_usage',
   MICROPHONE = 'microphone',
   MIRROR = 'mirror',
   OS_VERSION = 'os_version',
@@ -126,6 +128,8 @@ export enum Ga4MetricDimension {
   RESOLUTION_LEVEL = 'resolution_level',
   SCHEMA_VERSION = 'schema_version',
   SCREEN_RESOLUTION = 'screen_resolution',
+  SESSION_BEHAVIOR = 'session_behavior',
+  SESSION_LENGTH = 'session_length',
   SHOULD_DOWN_SCALE = 'should_down_scale',
   SHOULD_HANDLE_RESULT = 'should_handle_result',
   SHUTTER_TYPE = 'shutter_type',
@@ -135,6 +139,7 @@ export enum Ga4MetricDimension {
   TALL_ORIENTATION = 'tall_orientation',
   TIME_LAPSE_SPEED = 'time_lapse_speed',
   TIMER = 'timer',
+  WIFI_SECURITY_TYPE = 'wifi_security_type',
 }
 
 export type Ga4EventParams =
@@ -286,11 +291,47 @@ function registerGa4EndSessionEvent(): void {
     sendGa4Event({
       name: 'end_session',
       eventParams: {
-        duration: window.performance.now().toFixed(),
+        [Ga4MetricDimension.SESSION_LENGTH]: window.performance.now().toFixed(),
       },
       beacon: true,
     });
   });
+}
+
+export interface MemoryUsageEventDimension {
+  memoryUsage: number;
+  sessionBehavior: number;
+}
+let memoryEventDimensions: MemoryUsageEventDimension|null = null;
+
+/**
+ * Sends a "memory_usage" event when CCA is closed or refreshed.
+ */
+function registerGa4MemoryUsageEvent(): void {
+  window.addEventListener('unload', () => {
+    if (memoryEventDimensions !== null) {
+      const {memoryUsage, sessionBehavior} = memoryEventDimensions;
+      sendGa4Event({
+        name: 'memory_usage',
+        eventParams: {
+          [Ga4MetricDimension.MEMORY_USAGE]: String(memoryUsage),
+          [Ga4MetricDimension.SESSION_BEHAVIOR]: String(sessionBehavior),
+        },
+        beacon: true,
+      });
+    }
+  });
+}
+
+/**
+ * Updates the memory usage and session behavior value which will be sent at the
+ * end of the session.
+ *
+ * @param updatedValue New updated dimensions value to be set.
+ */
+function updateMemoryUsageEventDimensions(
+    updatedValue: MemoryUsageEventDimension): void {
+  memoryEventDimensions = updatedValue;
 }
 
 interface SendGaEventParams {
@@ -312,7 +353,6 @@ function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
     ...gaBaseDimensions,
     ...dimensions,
     [GaMetricDimension.DEVICE_PIXEL_RATIO, getDevicePixelRatio()],
-    [GaMetricDimension.OS_VERSION, getOsVersion()],
     [GaMetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
   ];
   for (const [key, value] of mergedDimensions) {
@@ -323,7 +363,7 @@ function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
 
 interface SendGa4EventParams {
   name: string;
-  eventParams: Record<string, number|string>;
+  eventParams: Ga4EventParams;
   beacon?: boolean;
 }
 
@@ -351,7 +391,6 @@ function sendGa4Event({
     ...eventParams,
     [Ga4MetricDimension.DEVICE_PIXEL_RATIO]: getDevicePixelRatio(),
     [Ga4MetricDimension.LANGUAGE]: navigator.language,
-    [Ga4MetricDimension.OS_VERSION]: getOsVersion(),
     [Ga4MetricDimension.SCHEMA_VERSION]: SCHEMA_VERSION,
     [Ga4MetricDimension.SCREEN_RESOLUTION]: getScreenResolution(),
     // Set '1' here as it's enough for GA4 to generate the metrics for n-day
@@ -403,10 +442,6 @@ function getDevicePixelRatio() {
   return window.devicePixelRatio.toFixed(2);
 }
 
-function getOsVersion() {
-  return navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
-}
-
 function getScreenResolution() {
   const {width, height} = window.screen;
   return `${width}x${height}`;
@@ -424,19 +459,23 @@ export interface GaHelper {
   initGa: typeof initGa;
   initGa4: typeof initGa4;
   registerGa4EndSessionEvent: typeof registerGa4EndSessionEvent;
+  registerGa4MemoryUsageEvent: typeof registerGa4MemoryUsageEvent;
   sendGaEvent: typeof sendGaEvent;
   sendGa4Event: typeof sendGa4Event;
   setGaEnabled: typeof setGaEnabled;
   setGa4Enabled: typeof setGa4Enabled;
   setMeasurementProtocolUrl: typeof setMeasurementProtocolUrl;
+  updateMemoryUsageEventDimensions: typeof updateMemoryUsageEventDimensions;
 }
 export {
   initGa,
   initGa4,
   registerGa4EndSessionEvent,
+  registerGa4MemoryUsageEvent,
   sendGaEvent,
   sendGa4Event,
   setGaEnabled,
   setGa4Enabled,
   setMeasurementProtocolUrl,
+  updateMemoryUsageEventDimensions,
 };

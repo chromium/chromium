@@ -38,7 +38,7 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
 Result UpdatePlatformShortcuts(
     const base::FilePath& web_app_path,
     const std::u16string& old_app_title,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info) {
   return Result::kOk;
 }

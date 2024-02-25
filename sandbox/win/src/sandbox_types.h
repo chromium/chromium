@@ -168,6 +168,9 @@ enum ResultCode : int {
   SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT = 70,
   // Unable to initialize the target configuration.
   SBOX_ERROR_DELEGATE_INITIALIZE_CONFIG = 71,
+  // Failed to disable apphelp in the child's PEB.
+  SBOX_ERROR_DISABLING_APPHELP = 72,
+  // Note: Also update tools/metrics/histograms/enums.xml:LaunchErrorCodes.
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };

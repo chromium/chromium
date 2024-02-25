@@ -1,0 +1,25 @@
+#!/bin/bash
+
+THIS_DIR=$(dirname "$0")
+
+if [[ -n "$JAVA_HOME" ]]; then
+  JAVA="$JAVA_HOME/bin/java"
+elif [[ $(uname) = Linux ]]; then
+  # Chromium bundles Java prebuilts only for Linux.
+  JAVA="$THIS_DIR/../jdk/current/bin/java"
+else
+  JAVA=java
+fi
+
+# Exports list taken from google-java-format.jar/META-INF/MANIFEST.MG
+exec "$JAVA" \
+    -Xms512M \
+    -cp "$THIS_DIR/chromium-overrides.jar:$THIS_DIR/google-java-format.jar" \
+    --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+    --add-exports jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
+    --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
+    --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
+    --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
+    --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+    com.google.googlejavaformat.java.Main \
+    "$@"

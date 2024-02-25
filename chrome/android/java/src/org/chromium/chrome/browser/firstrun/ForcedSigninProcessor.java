@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 
-/**
- * A helper to perform all necessary steps for forced sign in.
- */
+/** A helper to perform all necessary steps for forced sign in. */
 public final class ForcedSigninProcessor {
     /*
      * Only for static usage.
@@ -30,8 +28,9 @@ public final class ForcedSigninProcessor {
     // consider removing the child account.
     public static void checkCanSignIn(final Activity activity, Profile profile) {
         if (IdentityServicesProvider.get().getSigninManager(profile).isForceSigninEnabled()) {
-            ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                    new UserRecoverableErrorHandler.ModalDialog(activity, false));
+            ExternalAuthUtils.getInstance()
+                    .canUseGooglePlayServices(
+                            new UserRecoverableErrorHandler.ModalDialog(activity, false));
         }
     }
 }

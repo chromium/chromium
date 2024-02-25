@@ -10,20 +10,20 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_toggle_button.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {Touchpad} from './input_device_settings_types.js';
@@ -35,7 +35,7 @@ const SettingsPerDeviceTouchpadElementBase =
 
 export class SettingsPerDeviceTouchpadElement extends
     SettingsPerDeviceTouchpadElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-touchpad';
   }
 
@@ -62,7 +62,8 @@ export class SettingsPerDeviceTouchpadElement extends
   }
 
   private onTouchpadListUpdated(
-      newTouchpadList: Touchpad[], oldTouchpadList: Touchpad[]|undefined) {
+      newTouchpadList: Touchpad[],
+      oldTouchpadList: Touchpad[]|undefined): void {
     if (!oldTouchpadList) {
       return;
     }
@@ -73,7 +74,7 @@ export class SettingsPerDeviceTouchpadElement extends
     }
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.touchpads.length - 1;
   }
 }

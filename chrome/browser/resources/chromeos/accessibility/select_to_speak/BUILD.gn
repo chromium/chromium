@@ -7,67 +7,111 @@ import("//build/config/features.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
+group("build") {
+  deps = [ ":copied_files" ]
+}
+
 select_to_speak_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
 
-group("build") {
-  deps = [
-    ":select_to_speak_copied_files",
-    ":ts_build",
-  ]
-}
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
 
 tsc_out_dir = "$target_gen_dir/tsc"
-select_to_speak_tsc_out_dir = "$tsc_out_dir/select_to_speak"
+
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
 
 # Add typescript files to compile here.
-ts_modules = [ "select_to_speak/select_to_speak_main.ts" ]
+ts_modules = [
+  "select_to_speak_main.ts",
+  "metrics_utils.ts",
+  "select_to_speak_constants.ts",
+  "tts_manager.ts",
+  "input_handler.ts",
+  "ui_manager.ts",
+  "prefs_manager.ts",
+  "select_to_speak.ts",
+]
 
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
-  root_dir = "../"
-  in_files = ts_modules
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
-  definitions = []
+  composite = true
+
+  deps = [ "../common:ts_build" ]
+
+  extra_deps = [ ":stage_ts_build" ]
+
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  definitions = [
+    "../definitions/tts.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
+    "../definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+
+  in_files = ts_modules
+
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("select_to_speak_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
-  deps = [ ":ts_build" ]
+  clear_dest_dirs = [ "." ]
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
+  ]
   sources = [
-    "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
-    "input_handler.js",
-    "metrics_utils.js",
-    "prefs_manager.js",
     "select_to_speak-2x.svg",
-    "select_to_speak.js",
-    "select_to_speak_constants.js",
     "sts-icon-128.png",
     "sts-icon-16.png",
     "sts-icon-48.png",
-    "tts_manager.js",
-    "ui_manager.js",
     "unchecked.png",
   ]
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
   rewrite_rules = [
-    rebase_path(select_to_speak_tsc_out_dir, root_build_dir) + ":",
+    rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 source_set("browser_tests") {
@@ -132,85 +176,4 @@ js2gtest("select_to_speak_extjs_tests") {
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    ":input_handler",
-    ":metrics_utils",
-    ":prefs_manager",
-    ":select_to_speak",
-    ":select_to_speak_constants",
-    ":tts_manager",
-    ":ui_manager",
-    "../common:automation_predicate",
-    "../common:automation_util",
-    "../common:closure_shim",
-    "../common:constants",
-    "../common:key_code",
-    "../common:node_navigation_utils",
-    "../common:node_utils",
-    "../common:paragraph_utils",
-    "../common:rect_util",
-    "../common:sentence_utils",
-    "../common:tree_walker",
-    "../common:word_utils",
-  ]
-}
-
-js_library("select_to_speak") {
-  deps = [
-    ":input_handler",
-    ":metrics_utils",
-    ":prefs_manager",
-    ":tts_manager",
-    ":ui_manager",
-    "../common:automation_util",
-    "../common:constants",
-    "../common:node_navigation_utils",
-    "../common:node_utils",
-    "../common:paragraph_utils",
-    "../common:rect_util",
-    "../common:sentence_utils",
-    "../common:word_utils",
-  ]
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-    "$externs_path/clipboard.js",
-    "$externs_path/command_line_private.js",
-    "$externs_path/pending.js",
-    "$externs_path/tts.js",
-  ]
-}
-
-js_library("input_handler") {
-  deps = [ "../common:rect_util" ]
-}
-
-js_library("prefs_manager") {
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("metrics_utils") {
-  deps = [ ":prefs_manager" ]
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "$externs_path/tts.js",
-  ]
-}
-
-js_library("select_to_speak_constants") {
-}
-
-js_library("ui_manager") {
-  deps = [
-    ":prefs_manager",
-    "../common:paragraph_utils",
-  ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("tts_manager") {
-  externs_list = [ "$externs_path/tts.js" ]
 }

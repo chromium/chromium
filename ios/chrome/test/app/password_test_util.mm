@@ -25,4 +25,12 @@ SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet() {
       MakeAndArmForTesting(mock_reauthentication_module);
 }
 
+std::unique_ptr<ScopedFormInputAccessoryReauthModuleOverride>
+SetUpAndReturnMockReauthenticationModuleForFormInputAccessory() {
+  MockReauthenticationModule* mock_reauthentication_module =
+      [[MockReauthenticationModule alloc] init];
+  return ScopedFormInputAccessoryReauthModuleOverride::MakeAndArmForTesting(
+      mock_reauthentication_module);
+}
+
 }  // namespace

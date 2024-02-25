@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
@@ -60,8 +59,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
      */
     static void createForTab(Tab tab) {
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
-        @TabCreationState
-        Integer creationState = ((TabImpl) tab).getCreationState();
+        @TabCreationState Integer creationState = ((TabImpl) tab).getCreationState();
         if (creationState != null) {
             tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabUma(tab, creationState));
         }
@@ -115,7 +113,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     @Override
     public void onShown(Tab tab, @TabSelectionType int selectionType) {
-        long previousTimestampMillis = CriticalPersistedTabData.from(tab).getTimestampMillis();
         long now = SystemClock.elapsedRealtime();
 
         // Do not collect the tab switching data for the first switch to a tab after the cold start
@@ -128,8 +125,9 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
         increaseTabShowCount();
         boolean isOnBrowserStartup = sAllTabsShowCount == 1;
-        boolean performsLazyLoad = mTabCreationState == TabCreationState.FROZEN_FOR_LAZY_LOAD
-                && mLastShownTimestamp == -1;
+        boolean performsLazyLoad =
+                mTabCreationState == TabCreationState.FROZEN_FOR_LAZY_LOAD
+                        && mLastShownTimestamp == -1;
 
         int status;
         if (mRestoreStartedAtMillis == -1 && !performsLazyLoad) {

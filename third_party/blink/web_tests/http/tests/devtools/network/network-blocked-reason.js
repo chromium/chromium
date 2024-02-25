@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that blocked reason is recognized correctly.\n`);
   await TestRunner.showPanel('network');
@@ -11,7 +13,7 @@ import {TestRunner} from 'test_runner';
 
   var requestName;
   var nextStep;
-  SDK.multitargetNetworkManager.setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
 
   function onRequest(event) {
     var request = event.data;
@@ -28,7 +30,7 @@ import {TestRunner} from 'test_runner';
     TestRunner.addResult('Blocked patterns: ' + patterns.join(';'));
     TestRunner.addResult('Request: ' + url);
     var blockedPatterns = patterns.map(p => ({url: p, enabled: true}));
-    SDK.multitargetNetworkManager.setBlockedPatterns(blockedPatterns);
+    SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns(blockedPatterns);
     nextStep = next;
     TestRunner.deprecatedRunAfterPendingDispatches(addScript);
 

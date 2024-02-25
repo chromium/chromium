@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
+#include "third_party/icu/source/common/unicode/uclean.h"
 #include "third_party/icu/source/common/unicode/udata.h"
 #include "third_party/icu/source/common/unicode/utrace.h"
 
@@ -97,21 +98,18 @@ const char kIcuDataFileName[] = "icudtl.dat";
 // See for details: http://userguide.icu-project.org/datetime/timezone
 const char kIcuTimeZoneEnvVariable[] = "ICU_TIMEZONE_FILES_DIR";
 
-// Up-to-date time zone data is expected to be provided by the system as a
+// Up-to-date time zone data MUST be provided by the system as a
 // directory offered to Chromium components at /config/tzdata.  Chromium
-// components should "use" the `tzdata` directory capability, specifying the
-// "/config/tzdata" path.  The capability's "availability" should be set to
-// "required" or "optional" as appropriate - if no data is provided then ICU
-// initialization will (in future silently) fall-back to the (potentially stale)
-// timezone data included in the package.
+// components "use" the `tzdata` directory capability, specifying the
+// "/config/tzdata" path. Chromium components will crash if this capability
+// is not available.
 //
 // TimeZoneDataTest.* tests verify that external timezone data is correctly
 // loaded from the system, to alert developers if the platform and Chromium
 // versions are no longer compatible versions.
+// LINT.IfChange(icu_time_zone_data_path)
 const char kIcuTimeZoneDataDir[] = "/config/tzdata/icu/44/le";
-
-// Path used to receive tzdata via the legacy config-data mechanism.
-const char kLegacyIcuTimeZoneDataDir[] = "/config/data/tzdata/icu/44/le";
+// LINT.ThenChange(//sandbox/policy.fuchsia/sandbox_policy_fuchsia.cc:icu_time_zone_data_path)
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -207,26 +205,11 @@ void InitializeExternalTimeZoneData() {
   // Set the environment variable to override the location used by ICU.
   // Loading can still fail if the directory is empty or its data is invalid.
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-
-  // If the ICU tzdata path exists then do not fall-back to config-data.
-  // TODO(crbug.com/1360077): Remove fall-back once all components are migrated.
-  if (base::PathExists(base::FilePath(g_icu_time_zone_data_dir))) {
-    // If the tzdata directory does not exist then silently fallback to
-    // using the inbuilt (possibly stale) timezone data.
-    if (base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
-      env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
-    }
-
-  } else if (g_icu_time_zone_data_dir == kIcuTimeZoneDataDir &&
-             base::DirectoryExists(
-                 base::FilePath((kLegacyIcuTimeZoneDataDir)))) {
-    // Only fall-back to attempting to load from the legacy config-data path
-    // if `g_icu_time_zone_data_dir` has not been changed by a test.
-    env->SetVar(kIcuTimeZoneEnvVariable, kLegacyIcuTimeZoneDataDir);
-  } else {
-    PLOG(WARNING) << "Could not locate tzdata in config-data. "
-                  << "Using built-in timezone database";
+  if (!base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
+    PLOG(FATAL) << "Could not open directory: '" << g_icu_time_zone_data_dir
+                << "'";
   }
+  env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -407,8 +390,15 @@ PlatformFile GetIcuDataFileHandle(MemoryMappedFile::Region* out_region) {
 }
 
 void ResetGlobalsForTesting() {
+  // Reset ICU library internal state before tearing-down the mapped data
+  // file, or handle.
+  u_cleanup();
+
+  // `g_icudtl_pf` does not actually own the FD once ICU is initialized, so
+  // don't try to close it here.
   g_icudtl_pf = kInvalidPlatformFile;
-  g_icudtl_mapped_file = nullptr;
+  delete std::exchange(g_icudtl_mapped_file, nullptr);
+
 #if BUILDFLAG(IS_FUCHSIA)
   g_icu_time_zone_data_dir = kIcuTimeZoneDataDir;
 #endif  // BUILDFLAG(IS_FUCHSIA)

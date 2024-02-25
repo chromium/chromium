@@ -18,9 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.net.impl.ImplVersion;
 
-/**
- * Test functionality of {@link FakeCronetProvider}.
- */
+/** Test functionality of {@link FakeCronetProvider}. */
 @RunWith(AndroidJUnit4.class)
 public class FakeCronetProviderTest {
     Context mContext;

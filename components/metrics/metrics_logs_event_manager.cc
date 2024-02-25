@@ -22,7 +22,7 @@ MetricsLogsEventManager::ScopedNotifyLogType::ScopedNotifyLogType(
 MetricsLogsEventManager::ScopedNotifyLogType::~ScopedNotifyLogType() {
   DCHECK(instance_exists_);
   if (logs_event_manager_)
-    logs_event_manager_->NotifyLogType(absl::nullopt);
+    logs_event_manager_->NotifyLogType(std::nullopt);
   instance_exists_ = false;
 }
 
@@ -53,7 +53,7 @@ void MetricsLogsEventManager::NotifyLogEvent(LogEvent event,
 }
 
 void MetricsLogsEventManager::NotifyLogType(
-    absl::optional<MetricsLog::LogType> log_type) {
+    std::optional<MetricsLog::LogType> log_type) {
   for (Observer& observer : observers_)
     observer.OnLogType(log_type);
 }

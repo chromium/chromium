@@ -33,10 +33,10 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
   std::unique_ptr<icu::TimeZone> timezone(
       icu::TimeZone::createTimeZone(current_state.timezone().c_str()));
   base::Time current_time =
-      base::Time::FromJavaTime(current_state.time_millis());
-  base::Time usage_timestamp =
-      base::Time::FromJavaTime(current_state.usage_timestamp());
-  absl::optional<usage_time_limit::State> previous_state =
+      base::Time::FromMillisecondsSinceUnixEpoch(current_state.time_millis());
+  base::Time usage_timestamp = base::Time::FromMillisecondsSinceUnixEpoch(
+      current_state.usage_timestamp());
+  std::optional<usage_time_limit::State> previous_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(golden_case.input());
 
   base::Value::Dict policy =

@@ -26,6 +26,8 @@
 #include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/base/test/cocoa_helper.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
@@ -485,6 +487,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     // ui::CocoaTest::TearDown will wait until all NSWindows are destroyed, so
     // be sure to destroy the widget (which will destroy its NSWindow)
     // beforehand.
+    native_widget_mac_ = nullptr;
     widget_.reset();
     ui::CocoaTest::TearDown();
   }
@@ -502,8 +505,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<MockNativeWidgetMac, DanglingUntriaged>
-      native_widget_mac_;  // Weak. Owned by |widget_|.
+  raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Owned by `widget_`.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.
@@ -620,6 +622,8 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them
 // processed.
 class EnterAcceleratorView : public View {
+  METADATA_HEADER(EnterAcceleratorView, View)
+
  public:
   EnterAcceleratorView() { AddAccelerator({ui::VKEY_RETURN, 0}); }
   int count() const { return count_; }
@@ -633,6 +637,9 @@ class EnterAcceleratorView : public View {
  private:
   int count_ = 0;
 };
+
+BEGIN_METADATA(EnterAcceleratorView)
+END_METADATA
 
 BridgedNativeWidgetTest::BridgedNativeWidgetTest() = default;
 
@@ -968,6 +975,7 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
 
   // Prepares a new |window_| and |widget_| for a call to PerformInit().
   void CreateNewWidgetToInit() {
+    native_widget_mac_ = nullptr;
     widget_ = std::make_unique<Widget>();
     native_widget_mac_ = new MockNativeWidgetMac(widget_.get());
   }
@@ -995,6 +1003,7 @@ TEST_F(BridgedNativeWidgetInitTest, InitNotCalled) {
   native_widget_mac_ = native_widget.get();
   EXPECT_FALSE(bridge());
   EXPECT_FALSE(GetNSWindowHost()->GetInProcessNSWindow());
+  native_widget_mac_ = nullptr;
 }
 
 // Tests the shadow type given in InitParams.
@@ -1027,8 +1036,6 @@ TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
   CreateNewWidgetToInit();
   PerformInit();
   EXPECT_TRUE(BridgeWindowHasShadow());  // Preserves shadow.
-
-  widget_.reset();
 }
 
 // Ensure a nil NSTextInputContext is returned when the ui::TextInputClient is

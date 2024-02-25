@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_FAKE_SESSION_MANAGER_CLIENT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void StopSession(login_manager::SessionStopReason reason) override;
   void LoadShillProfile(
       const cryptohome::AccountIdentifier& cryptohome_id) override;
-  void StartDeviceWipe() override;
+  void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override;
   void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) override;
   void ClearForcedReEnrollmentVpd(
@@ -192,6 +192,14 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool GetFlagsForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                        std::vector<std::string>* out_flags_for_user) const;
 
+  // Notify observers about the session stopping.
+  void NotifySessionStopping() const;
+
+  // Configures state key retrieval error used to satisfy
+  // GetServerBackedStateKeys() requests. Only available for
+  // PolicyStorageType::kInMemory.
+  void SetServerBackedStateKeyError(const StateKeyErrorType error_type);
+
   // Sets whether FakeSessionManagerClient should advertise (through
   // |SupportsBrowserRestart|) that it supports restarting Chrome. For example,
   // to apply user-session flags, or to start guest session.
@@ -205,11 +213,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     restart_job_callback_ = std::move(callback);
   }
 
-  const absl::optional<std::vector<std::string>>& restart_job_argv() const {
+  const std::optional<std::vector<std::string>>& restart_job_argv() const {
     return restart_job_argv_;
   }
 
-  absl::optional<RestartJobReason> restart_job_reason() const {
+  std::optional<RestartJobReason> restart_job_reason() const {
     return restart_job_reason_;
   }
 
@@ -346,7 +354,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   const std::string& login_password() const { return login_password_; }
 
-  const absl::optional<std::string>& primary_user_id() const {
+  const std::optional<std::string>& primary_user_id() const {
     return primary_user_id_;
   }
 
@@ -380,11 +388,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   // If restart job was requested, and the client supports restart job, the
   // requested restarted arguments.
-  absl::optional<std::vector<std::string>> restart_job_argv_;
+  std::optional<std::vector<std::string>> restart_job_argv_;
 
   // If restart job was requested, and the client supports restart job, the
   // requested restart reason.
-  absl::optional<RestartJobReason> restart_job_reason_;
+  std::optional<RestartJobReason> restart_job_reason_;
 
   // Callback that will be run, if set, when StopSession() is called.
   base::OnceClosure stop_session_callback_;
@@ -392,7 +400,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
-  std::vector<std::string> server_backed_state_keys_;
+  base::expected<std::vector<std::string>, StateKeyErrorType>
+      server_backed_state_keys_;
 
   std::string psm_device_active_secret_;
 
@@ -452,7 +461,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // Contains last request passed to StartArcInstance
   arc::UpgradeArcContainerRequest last_upgrade_arc_request_;
 
-  raw_ptr<StubDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<StubDelegate> delegate_ = nullptr;
 
   bool session_stopped_ = false;
 
@@ -468,7 +477,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   };
   std::map<cryptohome::AccountIdentifier, FlagsState> flags_for_user_;
 
-  absl::optional<std::string> primary_user_id_;
+  std::optional<std::string> primary_user_id_;
 
   base::flat_map<std::string, std::string> login_screen_storage_;
 

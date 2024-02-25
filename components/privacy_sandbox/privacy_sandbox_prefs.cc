@@ -6,6 +6,7 @@
 
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace privacy_sandbox {
 
@@ -13,7 +14,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxApisEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabledV2, false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1ConsentDecisionMade,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
@@ -28,14 +28,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Unrestricted, false);
 
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxManuallyControlled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxManuallyControlledV2,
-                                false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
   registry->RegisterTimePref(prefs::kPrivacySandboxTopicsDataAccessibleSince,
                              base::Time());
   registry->RegisterListPref(prefs::kPrivacySandboxBlockedTopics);
@@ -58,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, false);
   registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxFirstPartySetsEnabled, true,
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
@@ -70,8 +63,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxAntiAbuseInitialized,
-                                false);
+
+  // Register prefs for tracking protection.
+  tracking_protection::RegisterProfilePrefs(registry);
 }
 
 }  // namespace privacy_sandbox

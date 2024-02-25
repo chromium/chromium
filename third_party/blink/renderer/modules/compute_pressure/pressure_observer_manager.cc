@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
 
 #include "base/notreached.h"
+#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
+#include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -64,8 +66,8 @@ void PressureObserverManager::AddObserver(V8PressureSource::Enum source,
   const PressureClientImpl::State state = client->state();
   if (state == PressureClientImpl::State::kUninitialized) {
     client->set_state(PressureClientImpl::State::kInitializing);
-    EnsureServiceConnection();
-    // Not connected to the services side for `source` yet. Make the binding.
+    EnsureConnection();
+    // Not connected to the browser side for `source` yet. Make the binding.
     pressure_manager_->AddClient(
         client->BindNewPipeAndPassRemote(),
         V8PressureSourceToPressureSource(source),
@@ -109,7 +111,7 @@ void PressureObserverManager::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
-void PressureObserverManager::EnsureServiceConnection() {
+void PressureObserverManager::EnsureConnection() {
   CHECK(GetExecutionContext());
 
   if (pressure_manager_.is_bound()) {
@@ -120,12 +122,11 @@ void PressureObserverManager::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kUserInteraction);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       pressure_manager_.BindNewPipeAndPassReceiver(task_runner));
-  pressure_manager_.set_disconnect_handler(
-      WTF::BindOnce(&PressureObserverManager::OnServiceConnectionError,
-                    WrapWeakPersistent(this)));
+  pressure_manager_.set_disconnect_handler(WTF::BindOnce(
+      &PressureObserverManager::OnConnectionError, WrapWeakPersistent(this)));
 }
 
-void PressureObserverManager::OnServiceConnectionError() {
+void PressureObserverManager::OnConnectionError() {
   for (PressureClientImpl* client : source_to_client_.Values()) {
     // Take a snapshot so as to safely iterate.
     HeapVector<Member<PressureObserver>> observers(client->observers());

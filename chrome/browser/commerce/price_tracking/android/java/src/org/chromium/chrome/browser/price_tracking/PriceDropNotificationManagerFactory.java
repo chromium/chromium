@@ -10,13 +10,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 
-/**
- * A factory class to create a {@link PriceDropNotificationManager}.
- */
+/** A factory class to create a {@link PriceDropNotificationManager}. */
 public class PriceDropNotificationManagerFactory {
     /** Builds a {@link PriceDropNotificationManager} instance. */
     public static PriceDropNotificationManager create() {
-        return new PriceDropNotificationManagerImpl(ContextUtils.getApplicationContext(),
+        return new PriceDropNotificationManagerImpl(
+                ContextUtils.getApplicationContext(),
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
     }
 

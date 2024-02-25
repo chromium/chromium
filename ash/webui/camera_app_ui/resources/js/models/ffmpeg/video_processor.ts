@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../../assert.js';
-import {ClearableAsyncJobQueue} from '../../async_job_queue.js';
+import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';
@@ -294,7 +294,7 @@ class FFMpegVideoProcessor {
 
   private readonly outputDevice: OutputDevice;
 
-  private readonly jobQueue = new ClearableAsyncJobQueue();
+  private readonly jobQueue = new AsyncJobQueue();
 
   /**
    * @param output The output writer.
@@ -381,7 +381,7 @@ class FFMpegVideoProcessor {
         // be called when the runtime is initialized. Note that because the
         // then() function will return the object itself again, using await here
         // would cause an infinite loop.
-        runFFmpeg(config).then(() => resolve());
+        void runFFmpeg(config).then(() => resolve());
       });
     }
     this.jobQueue.push(initFFmpeg);
@@ -390,7 +390,7 @@ class FFMpegVideoProcessor {
   /**
    * Writes a blob with mkv data into the processor.
    */
-  async write(blob: Blob): Promise<void> {
+  write(blob: Blob): void {
     this.jobQueue.push(async () => {
       const buf = await blob.arrayBuffer();
       this.inputDevice.push(new Int8Array(buf));
@@ -404,7 +404,7 @@ class FFMpegVideoProcessor {
    */
   async close(): Promise<void> {
     // Flush and close the input device.
-    this.jobQueue.push(async () => {
+    this.jobQueue.push(() => {
       this.inputDevice.endPush();
     });
     await this.jobQueue.flush();
@@ -423,7 +423,7 @@ class FFMpegVideoProcessor {
   async cancel(): Promise<void> {
     // Clear and make sure there is no pending task.
     await this.jobQueue.clear();
-    this.jobQueue.push(async () => {
+    this.jobQueue.push(() => {
       this.inputDevice.cancel();
       // When input device is cancelled, for some reason calling
       // emscripten_force_exit() will not close the corresponding file

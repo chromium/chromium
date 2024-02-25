@@ -36,9 +36,9 @@
 <translation id="1206619573307042055">محتوای متحرک</translation>
 <translation id="1207086294218137981">عنوان سطح ۴ بعدی وجود ندارد</translation>
 <translation id="1212770441379271564">‏چند میان‌بر بعدی در میان فرمان‌های ChromeVox نیستند، اما برای استفاده بهتر از Chrome خیلی مفید هستند.
-برای پیمایش رو به‌جلو در بین موارد قابل کنش مثل دکمه‌ها و پیوندها، کلید Tab را فشار دهید. برای پیمایش رو به‌عقب، Shift+Tab را فشار دهید.
+برای پیمایش رو به‌جلو در بین موارد کنش‌دار مثل دکمه‌ها و پیوندها، کلید Tab را فشار دهید. برای پیمایش رو به‌عقب، Shift+Tab را فشار دهید.
 برای وارد شدن به کادر نشانی مرورگر Chrome (که omnibox هم گفته می‌شود)، Control + L را فشار دهید.
-برای باز کردن و رفتن به برگه جدید به‌طور خودکار، Control+T را فشار دهید. نشانگر در omnibox قرار خواهد گرفت. 
+برای باز کردن و رفتن به برگه جدید به‌طور خودکار، Control+T را فشار دهید. مکان‌نما در omnibox قرار خواهد گرفت. 
 برای بستن برگه، Control+W را فشار دهید. 
 برای حرکت رو به‌جلو میان برگه‌های باز، از Control+Tab استفاده کنید. 
 برای باز کردن منوی مرورگر Chrome، کلیدهای Alt+F را فشار دهید.</translation>
@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">پیمایش به‌عقب</translation>
 <translation id="1565432156062359693">فهرست بعدی وجود ندارد</translation>
 <translation id="1571643229714746283">‏ChromeVox آماده است</translation>
+<translation id="1588252353131492116">ویژگی عبور هنگام روشن بودن «حالت چسبیده» دردسترس نیست</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">تغییر به بریل ۶ نقطه</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
@@ -162,7 +163,7 @@
 <translation id="2087981446621639008">جزئیات فهرست شرح</translation>
 <translation id="2089387485033699258">fa</translation>
 <translation id="2091933974477985526">کادر نوشتار قابل‌ویرایش قبلی</translation>
-<translation id="2100350898815792233">همه علائم سجاوندی</translation>
+<translation id="2100350898815792233">همه نشانه‌های سجاوندی</translation>
 <translation id="2110480898214777136">بسته‌بندی داخل یک صفحه، کادر گفتگو یا محتوی دیگر از ابتدا تا انتها یا از انتها تا ابتدا</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">کلید دسترسی: <ph name="KEY" /></translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">اصلی</translation>
 <translation id="2329324941084714723">پانل برگه</translation>
 <translation id="2347456970887948350">پیوند</translation>
+<translation id="2363753371702255035">گلوله</translation>
 <translation id="2365384324219615024">‏برای فعال کردن هر مورد، می‌توانید کلید Enter را نیز فشار دهید. برای مثال: برای ارسال نوشتار موجود در فرم، می‌توان از کلید Enter استفاده کرد. برای ادامه، کلید Enter را فشار دهید.</translation>
 <translation id="2381733276052567791">روشن یا خاموش کردن گفتار</translation>
 <translation id="2390264819538553347">‏برای ادامه، enter را فشار دهید، برای برگشتن به عقب، پس‌بر را فشار دهید.</translation>
@@ -316,7 +318,7 @@
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">نشانگر مکانی بعدی</translation>
 <translation id="3096671415663099226">cbo</translation>
-<translation id="309749186376891736">حرکت دادن نشانگر</translation>
+<translation id="309749186376891736">حرکت دادن مکان‌نما</translation>
 <translation id="3103579948980282461">ارغوانی</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">جمع شده</translation>
@@ -356,7 +358,7 @@
 <translation id="3300733168898541351">واگرد</translation>
 <translation id="3307886118343381874">رفتن به انتهای جدول</translation>
 <translation id="3312997241656799641">پیوند بازدید شده بعدی</translation>
-<translation id="3313245066383501820">‏کلید تغییردهنده ChromeVox</translation>
+<translation id="3313245066383501820">‏کلید توصیف‌گر ChromeVox</translation>
 <translation id="3317212938060708859">لغزنده</translation>
 <translation id="3321460131042519426">فعال کردن «قرارگیری متن در کادر»</translation>
 <translation id="3322936298410871309">عنوان قبلی سطح ۱</translation>
@@ -509,12 +511,12 @@
 <translation id="4372435075475052704">حداقل: <ph name="X" /></translation>
 <translation id="4372705107434148843">توقف گفتار</translation>
 <translation id="4376316291247992553">مشاهده گرافیک به‌صورت خط بریل</translation>
-<translation id="437809255587011096">اعلام سبک‌بندی نوشتار</translation>
+<translation id="437809255587011096">اعلام سبک‌پردازی نوشتار</translation>
 <translation id="4378308539633073595">پیمایش به‌جلو</translation>
 <translation id="4384583879834880242">پرسش و پاسخ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">آبی آسمانی پررنگ</translation>
-<translation id="4406249099130339147">بازگویی علائم سجاوندی</translation>
+<translation id="4406249099130339147">بازگویی نشانه‌های سجاوندی</translation>
 <translation id="4432457053224379116">جگری</translation>
 <translation id="4432896207833262240">محتوای علامت‌دار</translation>
 <translation id="4437615272777527928">برای جستجو در منوها، تایپ کنید. برای جابه‌جایی بین نتایج از پیکان‌های بالا و پایین استفاده کنید. برای تنظیم کردن هشتک نوشتار و حرکت کردن بین منوها از پیکان‌های چپ و راست استفاده کنید.</translation>
@@ -548,7 +550,7 @@
 <translation id="4712898966495541134">پایان بخش انتخاب‌شده</translation>
 <translation id="4740661827607246557">فرمان‌های راهنما</translation>
 <translation id="4755857887974653209">‏غیرفعال کردن ChromeVox</translation>
-<translation id="4763480195061959176">ویدئو</translation>
+<translation id="4763480195061959176">ویدیو</translation>
 <translation id="4764692524839457597">پیش‌فرض</translation>
 <translation id="4772771694153161212">زیرخط نیست</translation>
 <translation id="4780458943471935919">پیمایش به صفحه بعد</translation>
@@ -650,7 +652,7 @@
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5402367795255837559">بریل</translation>
 <translation id="5402791055281059602">هشدار کیفیتی</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{نقطه ویرگول}one{# نقطه ویرگول}other{# نقطه ویرگول}}</translation>
+<translation id="5407530583102765689">{COUNT,plural, =1{نقطه‌ویرگول}one{# نقطه‌ویرگول}other{# نقطه‌ویرگول}}</translation>
 <translation id="5420259671171615858">جستجوی منوها</translation>
 <translation id="5435274640623994081">فعال کردن گزارش‌گیری از نماد شنیداری</translation>
 <translation id="5436105723448703439">{COUNT,plural, =1{علامت کوچک‌تر}one{# علامت کوچک‌تر}other{# علامت کوچک‌تر}}</translation>
@@ -806,7 +808,7 @@
 <translation id="6508059270146105198">انتقال نمایشگر بریل به پایین صفحه</translation>
 <translation id="6521550811716689390">بنفش تیره</translation>
 <translation id="6536157907112457272">کتانی</translation>
-<translation id="6540201937398578274">‏در ChromeVox، کلید «جستجو» (Search) کلید تغییردهنده است. اکثر میان‌برهای ChromeVox با کلید «جستجو» شروع می‌شوند. از کلیدهای پیکان نیز برای پیمایش استفاده می‌کنید.</translation>
+<translation id="6540201937398578274">‏در ChromeVox، کلید «جستجو» (Search) کلید توصیف‌گر است. اکثر میان‌برهای ChromeVox با کلید «جستجو» شروع می‌شوند. از کلیدهای پیکان نیز برای پیمایش استفاده می‌کنید.</translation>
 <translation id="6544923685317771506">بژ باز</translation>
 <translation id="6551185905438378412">عاجی</translation>
 <translation id="6561818612645211875">رفتن به شروع ردیف کنونی</translation>
@@ -870,7 +872,7 @@
 <translation id="7041173719775863268">پایان انتخاب</translation>
 <translation id="7043850226734279132">خاکی تیره</translation>
 <translation id="7051308646573997571">مرجانی</translation>
-<translation id="7062635574500127092">سبز دودی</translation>
+<translation id="7062635574500127092">سبزآبی</translation>
 <translation id="7086377898680121060">زیاد کردن روشنایی</translation>
 <translation id="7088743565397416204">برای فعال کردن مورد کانونی‌شده، دو ضربه سریع بزنید</translation>
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
@@ -901,7 +903,7 @@
 <translation id="7248671827512403053">برنامه کاربردی</translation>
 <translation id="725969808843520477">دکمه رادیویی بعدی</translation>
 <translation id="7261612856573623172">صدای سیستم نوشتار به گفتار</translation>
-<translation id="7269119382257320590">بدون علائم سجاوندی</translation>
+<translation id="7269119382257320590">بدون نشانه‌های سجاوندی</translation>
 <translation id="7271278495464744706">توضیحات مفصل را فعال کنید</translation>
 <translation id="7273174640290488576">خالی</translation>
 <translation id="7274770952766771364">مرجع یادداشت</translation>
@@ -983,7 +985,7 @@
 <translation id="7813616274030162878">منوی دسترسی کلیدی</translation>
 <translation id="7839679365527550018">کلمه قبلی</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
-<translation id="7851816175263618915">برخی از علائم سجاوندی</translation>
+<translation id="7851816175263618915">برخی از نشانه‌های سجاوندی</translation>
 <translation id="7871691770940645922">نمایشگر مجازی بریل</translation>
 <translation id="7882421473871500483">قهوه‌ای</translation>
 <translation id="78826985582142166">sldr</translation>
@@ -1119,11 +1121,11 @@
 <translation id="8883850400338911892">ویرایش نشانی وب‏ ۸ نقطه‌ای</translation>
 <translation id="8896479570570613387">آبی بنفش</translation>
 <translation id="8897030325301866860">قلم <ph name="FONT_FAMILY" /></translation>
-<translation id="8898516272131543774">بازگویی علائم سجاوندی حلقه</translation>
+<translation id="8898516272131543774">بازگویی نشانه‌های سجاوندی حلقه</translation>
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8910180774920883033">کنش‌هایی دردسترس است. برای مشاهده، «جستجو+مهار+ش» را فشار دهید</translation>
 <translation id="8937112856099038376">intlnk</translation>
-<translation id="8940925288729953902">کلیدهای تغییردهنده</translation>
+<translation id="8940925288729953902">کلیدهای توصیف‌گر</translation>
 <translation id="8943282376843390568">لیمویی</translation>
 <translation id="8944511129464116546">برخی علامت‌گذاری شده است</translation>
 <translation id="8946628535652548639">ر<ph name="TABLECELLROWINDEX" />س<ph name="TABLECELLCOLUMNINDEX" /></translation>

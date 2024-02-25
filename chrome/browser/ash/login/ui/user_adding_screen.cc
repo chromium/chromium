@@ -4,20 +4,18 @@
 
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 namespace {
@@ -42,7 +40,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
   ~UserAddingScreenImpl() override;
 
   base::ObserverList<UserAddingScreen::Observer>::Unchecked observers_;
-  raw_ptr<LoginDisplayHost, DanglingUntriaged | ExperimentalAsh> display_host_;
+  raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_;
 
   UserAddingScreenInputMethodsController im_controller_;
 };

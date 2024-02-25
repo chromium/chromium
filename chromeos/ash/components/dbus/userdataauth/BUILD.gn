@@ -15,6 +15,7 @@ component("userdataauth") {
   deps = [
     ":userdataauth_proto",
     "//base",
+    "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/common",
@@ -23,26 +24,16 @@ component("userdataauth") {
   ]
 
   sources = [
-    "arc_quota_client.cc",
-    "arc_quota_client.h",
     "cryptohome_misc_client.cc",
     "cryptohome_misc_client.h",
     "cryptohome_pkcs11_client.cc",
     "cryptohome_pkcs11_client.h",
-    "fake_arc_quota_client.cc",
-    "fake_arc_quota_client.h",
     "fake_cryptohome_misc_client.cc",
     "fake_cryptohome_misc_client.h",
     "fake_cryptohome_pkcs11_client.cc",
     "fake_cryptohome_pkcs11_client.h",
-    "fake_install_attributes_client.cc",
-    "fake_install_attributes_client.h",
     "fake_userdataauth_client.cc",
     "fake_userdataauth_client.h",
-    "install_attributes_client.cc",
-    "install_attributes_client.h",
-    "install_attributes_util.cc",
-    "install_attributes_util.h",
     "userdataauth_client.cc",
     "userdataauth_client.h",
   ]
@@ -70,6 +61,7 @@ proto_library("userdataauth_proto") {
     "//third_party/cros_system_api/dbus/cryptohome/UserDataAuth.proto",
     "//third_party/cros_system_api/dbus/cryptohome/auth_factor.proto",
     "//third_party/cros_system_api/dbus/cryptohome/fido.proto",
+    "//third_party/cros_system_api/dbus/cryptohome/recoverable_key_store.proto",
   ]
 
   proto_out_dir = "chromeos/ash/components/dbus/cryptohome"

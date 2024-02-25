@@ -14,6 +14,17 @@
 
 #include "dpf/internal/value_type_helpers.h"
 
+#include <stdint.h>
+
+#include <cmath>
+#include <string>
+
+#include "absl/numeric/int128.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
+#include "dpf/distributed_point_function.pb.h"
+#include "dpf/int_mod_n.h"
 #include "dpf/status_macros.h"
 
 namespace distributed_point_functions {

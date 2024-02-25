@@ -1,0 +1,16 @@
+include_rules = [
+  "+components/endpoint_fetcher",
+  "+components/keyed_service/core/keyed_service.h",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+net/http",
+  "+net/traffic_annotation",
+  "+services/network/public/cpp",
+]
+
+specific_include_rules = {
+  ".*_[a-z]*unittest\.cc": [
+    "+net/base/net_errors.h",
+    "+services/network/test/test_url_loader_factory.h",
+  ],
+}

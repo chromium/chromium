@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -19,10 +20,10 @@
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/platform_sensor_provider_win.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -616,11 +617,11 @@ TEST_F(PlatformSensorAndProviderTestWin, CheckGyroscopeReadingConversion) {
   const SensorReadingSharedBuffer* buffer =
       static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
   EXPECT_THAT(buffer->reading.gyro.x,
-              RoundGyroscopeValue(gfx::DegToRad(x_ang_accel)));
+              RoundGyroscopeValue(base::DegToRad(x_ang_accel)));
   EXPECT_THAT(buffer->reading.gyro.y,
-              RoundGyroscopeValue(gfx::DegToRad(y_ang_accel)));
+              RoundGyroscopeValue(base::DegToRad(y_ang_accel)));
   EXPECT_THAT(buffer->reading.gyro.z,
-              RoundGyroscopeValue(gfx::DegToRad(z_ang_accel)));
+              RoundGyroscopeValue(base::DegToRad(z_ang_accel)));
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }
 

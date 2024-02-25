@@ -4,6 +4,9 @@
 
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
@@ -12,21 +15,23 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/api/accessibility_service_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-absl::optional<base::Value::Dict> LoadManifestOnFileThread(
+std::optional<base::Value::Dict> LoadManifestOnFileThread(
     const base::FilePath& path,
     const base::FilePath::CharType* manifest_filename,
     bool localize) {
@@ -37,7 +42,7 @@ absl::optional<base::Value::Dict> LoadManifestOnFileThread(
   if (!manifest) {
     LOG(ERROR) << "Can't load " << path.Append(manifest_filename).AsUTF8Unsafe()
                << ": " << error;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (localize) {
     // This is only called for Lacros component extensions which are loaded
@@ -78,6 +83,26 @@ EmbeddedA11yManagerLacros::EmbeddedA11yManagerLacros() = default;
 
 EmbeddedA11yManagerLacros::~EmbeddedA11yManagerLacros() = default;
 
+void EmbeddedA11yManagerLacros::ClipboardCopyInActiveGoogleDoc(
+    const std::string& url) {
+  // Get the `Profile` last used (the `Profile` which owns the most
+  // recently focused window). This is the one on which we want to
+  // request speech.
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
+
+  auto event_args(extensions::api::accessibility_service_private::
+                      ClipboardCopyInActiveGoogleDoc::Create(url));
+  std::unique_ptr<extensions::Event> event(new extensions::Event(
+      extensions::events::
+          ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC,
+      extensions::api::accessibility_service_private::
+          ClipboardCopyInActiveGoogleDoc::kEventName,
+      std::move(event_args)));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kEmbeddedA11yHelperExtensionId, std::move(event));
+}
+
 void EmbeddedA11yManagerLacros::Init() {
   CHECK(!chromevox_enabled_observer_)
       << "EmbeddedA11yManagerLacros::Init should only be called once.";
@@ -101,9 +126,25 @@ void EmbeddedA11yManagerLacros::Init() {
   chromeos::LacrosService* impl = chromeos::LacrosService::Get();
   if (impl->IsAvailable<
           crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()) {
-    impl->GetRemote<crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>()
-        ->BindEmbeddedAccessibilityHelperClient(
-            a11y_helper_remote_.BindNewPipeAndPassReceiver());
+    auto& remote = impl->GetRemote<
+        crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>();
+    remote->BindEmbeddedAccessibilityHelperClient(
+        a11y_helper_remote_.BindNewPipeAndPassReceiver());
+    remote->BindEmbeddedAccessibilityHelper(
+        a11y_helper_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  if (impl->GetInterfaceVersion<
+          crosapi::mojom::EmbeddedAccessibilityHelperClient>() >=
+      static_cast<int>(crosapi::mojom::EmbeddedAccessibilityHelperClient::
+                           kFocusChangedMinVersion)) {
+    // Only observe focus highlight pref if the Ash version is able to support
+    // focus highlight enabled changed. Otherwise this just adds overhead.
+    focus_highlight_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
+        crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled,
+        base::BindRepeating(
+            &EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
@@ -136,6 +177,10 @@ void EmbeddedA11yManagerLacros::SpeakSelectedText() {
   }
 }
 
+bool EmbeddedA11yManagerLacros::IsSelectToSpeakEnabled() {
+  return select_to_speak_enabled_;
+}
+
 void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
     base::RepeatingClosure callback) {
   extension_installation_changed_callback_for_test_ = std::move(callback);
@@ -144,6 +189,22 @@ void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
 void EmbeddedA11yManagerLacros::AddSpeakSelectedTextCallbackForTest(
     base::RepeatingClosure callback) {
   speak_selected_text_callback_for_test_ = std::move(callback);
+}
+
+void EmbeddedA11yManagerLacros::AddFocusChangedCallbackForTest(
+    base::RepeatingCallback<void(gfx::Rect)> callback) {
+  focus_changed_callback_for_test_ = std::move(callback);
+}
+
+void EmbeddedA11yManagerLacros::SetReadingModeEnabled(bool enabled) {
+  if (reading_mode_enabled_ != enabled) {
+    reading_mode_enabled_ = enabled;
+    UpdateAllProfiles();
+  }
+}
+
+bool EmbeddedA11yManagerLacros::IsReadingModeEnabled() {
+  return reading_mode_enabled_;
 }
 
 void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
@@ -180,9 +241,11 @@ void EmbeddedA11yManagerLacros::UpdateAllProfiles() {
 }
 
 void EmbeddedA11yManagerLacros::UpdateProfile(Profile* profile) {
-  // Switch Access and Select to Speak share a helper extension which has a
-  // manifest content script to tell Google Docs to annotate the HTML canvas.
-  if (select_to_speak_enabled_ || switch_access_enabled_) {
+  // Switch Access, Select to Speak, and Reading Mode share a helper extension
+  // which has a manifest content script to tell Google Docs to annotate the
+  // HTML canvas.
+  if (select_to_speak_enabled_ || switch_access_enabled_ ||
+      reading_mode_enabled_) {
     MaybeInstallExtension(profile,
                           extension_misc::kEmbeddedA11yHelperExtensionId,
                           extension_misc::kEmbeddedA11yHelperExtensionPath,
@@ -201,10 +264,12 @@ void EmbeddedA11yManagerLacros::UpdateProfile(Profile* profile) {
     MaybeRemoveExtension(profile, extension_misc::kChromeVoxHelperExtensionId);
   }
 
-  PrefService* const pref_service = profile->GetPrefs();
-  CHECK(pref_service);
-  pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
-                           pdf_ocr_always_active_enabled_);
+  if (pdf_ocr_always_active_enabled_.has_value()) {
+    PrefService* const pref_service = profile->GetPrefs();
+    CHECK(pref_service);
+    pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
+                             pdf_ocr_always_active_enabled_.value());
+  }
 }
 
 void EmbeddedA11yManagerLacros::OnChromeVoxEnabledChanged(base::Value value) {
@@ -227,9 +292,23 @@ void EmbeddedA11yManagerLacros::OnSwitchAccessEnabledChanged(
   UpdateAllProfiles();
 }
 
+void EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged(
+    base::Value value) {
+  CHECK(value.is_bool());
+  if (value.GetBool()) {
+    focus_changed_subscription_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->RegisterFocusChangedCallback(base::BindRepeating(
+                &EmbeddedA11yManagerLacros::OnFocusChangedInPage,
+                weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    focus_changed_subscription_ = {};
+  }
+}
+
 void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
-  // TODO(b/289009784): Add browser test to ensure the pref is synced on all
-  // profiles.
+  // TODO(crbug.com/1443346): Add browser test to ensure the pref is synced on
+  // all profiles.
   CHECK(value.is_bool());
   pdf_ocr_always_active_enabled_ = value.GetBool();
   UpdateAllProfiles();
@@ -279,7 +358,7 @@ void EmbeddedA11yManagerLacros::InstallExtension(
     extensions::ComponentLoader* component_loader,
     const base::FilePath& path,
     const std::string& extension_id,
-    absl::optional<base::Value::Dict> manifest) {
+    std::optional<base::Value::Dict> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (component_loader->Exists(extension_id)) {
     // Because this is async and called from another thread, it's possible we
@@ -296,5 +375,15 @@ void EmbeddedA11yManagerLacros::InstallExtension(
   CHECK_EQ(actual_id, extension_id);
   if (extension_installation_changed_callback_for_test_) {
     extension_installation_changed_callback_for_test_.Run();
+  }
+}
+
+void EmbeddedA11yManagerLacros::OnFocusChangedInPage(
+    const content::FocusedNodeDetails& details) {
+  if (a11y_helper_remote_.is_bound()) {
+    a11y_helper_remote_->FocusChanged(details.node_bounds_in_screen);
+  }
+  if (focus_changed_callback_for_test_) {
+    focus_changed_callback_for_test_.Run(details.node_bounds_in_screen);
   }
 }

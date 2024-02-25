@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_SAMPLES_H_
 
 #include <deque>
+#include <optional>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {
@@ -47,7 +47,7 @@ class AmbientLightSampleBuffer {
   // Returns average and std-dev of ambient lux from the buffer (discarding
   // samples that are now too old). |now| must be no earlier than any previously
   // added sample. If there are no valid samples, returns nullopt.
-  absl::optional<AlsAvgStdDev> AverageAmbientWithStdDev(base::TimeTicks now);
+  std::optional<AlsAvgStdDev> AverageAmbientWithStdDev(base::TimeTicks now);
 
   // Returns the number of recorded samples within |horizon| of the last
   // observed time point. |now| must be no earlier than any previously added

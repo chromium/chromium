@@ -25,7 +25,7 @@ class SafeBrowsingSyncObserverImpl : public SafeBrowsingSyncObserver,
   ~SafeBrowsingSyncObserverImpl() override;
 
   // SafeBrowsingSyncObserver:
-  void ObserveSyncStateChanged(Callback callback) override;
+  void ObserveHistorySyncStateChanged(Callback callback) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -33,7 +33,7 @@ class SafeBrowsingSyncObserverImpl : public SafeBrowsingSyncObserver,
 
  private:
   Callback callback_;
-  bool is_sync_feature_enabled_ = false;
+  bool is_history_sync_enabled_ = false;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

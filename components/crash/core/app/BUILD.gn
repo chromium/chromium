@@ -25,10 +25,7 @@ static_library("url_constants") {
 }
 
 source_set("lib") {
-  visibility = [
-    ":*",
-    "//components/crash/content/app:*",
-  ]
+  visibility = [ ":*" ]
 
   sources = [
     "crash_reporter_client.cc",
@@ -49,6 +46,10 @@ source_set("crashpad_handler_main") {
     "//components/gwp_asan/buildflags",
     "//third_party/crashpad/crashpad/handler:handler",
   ]
+
+  if (is_linux || is_chromeos || is_mac) {
+    deps += [ "//components/stability_report" ]
+  }
 
   if (enable_gwp_asan) {
     deps += [ "//components/gwp_asan/crash_handler" ]
@@ -72,11 +73,7 @@ static_library("app") {
     "crashpad.h",
   ]
 
-  if (is_linux || is_chromeos) {
-    sources += [ "crashpad_linux.cc" ]
-  }
-
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
@@ -97,6 +94,11 @@ static_library("app") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
   ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "crashpad_linux.cc" ]
+    data_deps = [ ":chrome_crashpad_handler" ]
+  }
 
   if (is_ios) {
     deps -= [ "//content/public/common:content_descriptors" ]
@@ -121,7 +123,7 @@ static_library("app") {
     ]
   }
 
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 

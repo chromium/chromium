@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,6 +34,23 @@ namespace {
 // Android field trial for controlling types_to_check.
 const char kAndroidFieldExperiment[] = "SafeBrowsingAndroid";
 const char kAndroidTypesToCheckParam[] = "types_to_check";
+
+constexpr char kCanCheckUrlBaseHistogramName[] = "SB2.RemoteCall.CanCheckUrl";
+
+void LogCanCheckUrl(bool can_check_url, CheckBrowseUrlType check_type) {
+  base::UmaHistogramBoolean(kCanCheckUrlBaseHistogramName, can_check_url);
+  std::string metrics_suffix;
+  switch (check_type) {
+    case CheckBrowseUrlType::kHashDatabase:
+      metrics_suffix = ".HashDatabase";
+      break;
+    case CheckBrowseUrlType::kHashRealTime:
+      metrics_suffix = ".HashRealTime";
+      break;
+  }
+  base::UmaHistogramBoolean(kCanCheckUrlBaseHistogramName + metrics_suffix,
+                            can_check_url);
+}
 
 }  // namespace
 
@@ -77,10 +95,7 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDoneWeak(
     const base::WeakPtr<ClientRequest>& req,
     SBThreatType matched_threat_type,
     const ThreatMetadata& metadata) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!req) {
     return;  // Previously canceled
   }
@@ -131,7 +146,7 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
     // By default, we check all types except a few.
     static_assert(
         network::mojom::RequestDestination::kMaxValue ==
-            network::mojom::RequestDestination::kDictionary,
+            network::mojom::RequestDestination::kJson,
         "Decide if new request destination should be skipped on mobile.");
     for (int t_int = 0;
          t_int <=
@@ -191,15 +206,10 @@ bool RemoteSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
          url.SchemeIsWSOrWSS();
 }
 
-bool RemoteSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
-  return true;
-}
-
 bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection,
     CheckBrowseUrlType check_type) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
@@ -209,8 +219,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   }
 
   bool can_check_url = CanCheckUrl(url);
-  // TODO(crbug.com/1444511): Break this histogram down by check_type.
-  UMA_HISTOGRAM_BOOLEAN("SB2.RemoteCall.CanCheckUrl", can_check_url);
+  LogCanCheckUrl(can_check_url, check_type);
   if (!can_check_url) {
     return true;  // Safe, continue right away.
   }
@@ -332,7 +341,10 @@ RemoteSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
     CheckBrowseUrlType check_type) const {
   switch (check_type) {
     case CheckBrowseUrlType::kHashDatabase:
-      return safe_browsing::ThreatSource::REMOTE;
+      return base::FeatureList::IsEnabled(
+                 kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)
+                 ? safe_browsing::ThreatSource::ANDROID_SAFEBROWSING
+                 : safe_browsing::ThreatSource::REMOTE;
     case CheckBrowseUrlType::kHashRealTime:
       return safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME;
   }
@@ -363,8 +375,10 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
 
   // Call back and delete any remaining clients. OnRequestDone() modifies
   // |current_requests_|, so we make a copy first.
-  std::vector<ClientRequest*> to_callback(current_requests_);
-  for (auto* req : to_callback) {
+  std::vector<raw_ptr<ClientRequest, VectorExperimental>> to_callback(
+      current_requests_);
+  for (safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest* req :
+       to_callback) {
     DVLOG(1) << "Stopping: Invoking unfinished req for URL " << req->url();
     req->OnRequestDone(SB_THREAT_TYPE_SAFE, ThreatMetadata());
   }

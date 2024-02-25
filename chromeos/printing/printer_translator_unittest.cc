@@ -6,9 +6,7 @@
 
 #include <string>
 
-#include "base/memory/ptr_util.h"
 #include "base/test/values_test_util.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -44,6 +42,11 @@ Printer CreateGenericPrinter() {
   ret.set_display_name(kName);
   ret.set_description(kDescription);
   ret.set_make_and_model(kMakeAndModel);
+  CupsPrinterStatus cups_printer_status(kHash);
+  cups_printer_status.AddStatusReason(
+      CupsPrinterStatusReason::Reason::kDoorOpen,
+      CupsPrinterStatusReason::Severity::kError);
+  ret.set_printer_status(cups_printer_status);
   return ret;
 }
 
@@ -62,6 +65,24 @@ void CheckGenericPrinterInfo(const Printer& printer,
                         "printerDescription");
   ExpectDictStringValue(printer.make_and_model(), printer_info,
                         "printerMakeAndModel");
+
+  base::Value::Dict printer_status_dict =
+      printer.printer_status().ConvertToValue();
+  const std::string* printer_id = printer_status_dict.FindString("printerId");
+  ASSERT_TRUE(printer_id);
+  EXPECT_EQ(printer.printer_status().GetPrinterId(), *printer_id);
+
+  base::Value::List* status_reasons =
+      printer_status_dict.FindList("statusReasons");
+  ASSERT_TRUE(status_reasons);
+  ASSERT_EQ(1u, status_reasons->size());
+  base::Value::Dict& status_reason_dict = (*status_reasons)[0].GetDict();
+  EXPECT_THAT(status_reason_dict.FindInt("reason"),
+              testing::Optional(static_cast<int>(
+                  CupsPrinterStatusReason::Reason::kDoorOpen)));
+  EXPECT_THAT(status_reason_dict.FindInt("severity"),
+              testing::Optional(
+                  static_cast<int>(CupsPrinterStatusReason::Severity::kError)));
 }
 
 // Check that the corresponding values in |printer_info| match the given URI
@@ -316,66 +337,6 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
   ExpectDictBooleanValue(true, printer_info, "printerPpdReference.autoconf");
 }
 
-TEST(PrinterTranslatorTest, GetCupsPrinterStatusOneReason) {
-  CupsPrinterStatus cups_printer_status("id");
-  cups_printer_status.AddStatusReason(
-      CupsPrinterStatusReason::Reason::kDoorOpen,
-      CupsPrinterStatusReason::Severity::kError);
-
-  base::Value::Dict printer_status_dict =
-      CreateCupsPrinterStatusDictionary(cups_printer_status);
-
-  EXPECT_EQ("id", *printer_status_dict.FindString("printerId"));
-  EXPECT_EQ(cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull(),
-            *printer_status_dict.FindDouble("timestamp"));
-
-  const base::Value::List* status_reasons =
-      printer_status_dict.FindList("statusReasons");
-  ASSERT_TRUE(status_reasons);
-  EXPECT_EQ(1u, status_reasons->size());
-
-  for (const base::Value& status_reason : *status_reasons) {
-    ASSERT_TRUE(status_reason.is_dict());
-    EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kDoorOpen),
-              status_reason.GetDict().FindInt("reason"));
-    EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kError),
-              status_reason.GetDict().FindInt("severity"));
-  }
-}
-
-TEST(PrinterTranslatorTest, GetCupsPrinterStatusTwoReasons) {
-  CupsPrinterStatus cups_printer_status("id");
-  cups_printer_status.AddStatusReason(
-      CupsPrinterStatusReason::Reason::kLowOnPaper,
-      CupsPrinterStatusReason::Severity::kWarning);
-  cups_printer_status.AddStatusReason(
-      CupsPrinterStatusReason::Reason::kPaperJam,
-      CupsPrinterStatusReason::Severity::kError);
-
-  base::Value::Dict printer_status_dict =
-      CreateCupsPrinterStatusDictionary(cups_printer_status);
-
-  EXPECT_EQ("id", *printer_status_dict.FindString("printerId"));
-  EXPECT_EQ(cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull(),
-            *printer_status_dict.FindDouble("timestamp"));
-
-  const base::Value::List* status_reasons =
-      printer_status_dict.FindList("statusReasons");
-  ASSERT_TRUE(status_reasons);
-
-  const auto& status_reasons_list = *status_reasons;
-  ASSERT_EQ(2u, status_reasons_list.size());
-  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kLowOnPaper),
-            status_reasons_list[0].GetDict().FindInt("reason"));
-  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kWarning),
-            status_reasons_list[0].GetDict().FindInt("severity"));
-
-  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kPaperJam),
-            status_reasons_list[1].GetDict().FindInt("reason"));
-  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kError),
-            status_reasons_list[1].GetDict().FindInt("severity"));
-}
-
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
   Printer printer = CreateGenericPrinter();
   printer.set_source(Printer::Source::SRC_USER_PREFS);
@@ -385,6 +346,154 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
   printer.set_source(Printer::Source::SRC_POLICY);
   printer_info = GetCupsPrinterInfo(printer);
   ExpectDictBooleanValue(true, printer_info, "isManaged");
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithoutGuid) {
+  auto printer = base::Value::Dict()
+                     .Set("display_name", "name")
+                     .Set("uri", "ipp://uri")
+                     .SetByDottedPath("ppd_resource.autoconf", true);
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithoutDisplayName) {
+  auto printer = base::Value::Dict()
+                     .Set("guid", "1")
+                     .Set("uri", "ipp://uri")
+                     .SetByDottedPath("ppd_resource.autoconf", true);
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithoutUri) {
+  auto printer = base::Value::Dict()
+                     .Set("guid", "1")
+                     .Set("display_name", "name")
+                     .SetByDottedPath("ppd_resource.autoconf", true);
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithBadUri) {
+  auto printer = base::Value::Dict()
+                     .Set("guid", "1")
+                     .Set("display_name", "name")
+                     .Set("uri", "bad://uri")
+                     .SetByDottedPath("ppd_resource.autoconf", true);
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidPpdResource) {
+  auto printer_without_ppd_resource = base::Value::Dict()
+                                          .Set("guid", "1")
+                                          .Set("display_name", "name")
+                                          .Set("uri", "ipp://uri");
+  auto printer_no_autoconf_and_no_model =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri")
+          .SetByDottedPath("ppd_resource.autoconf", false);
+  auto printer_autoconf_and_model =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri")
+          .SetByDottedPath("ppd_resource.autoconf", true)
+          .SetByDottedPath("ppd_resource.effective_model", "model");
+  auto printer_user_supplied_ppd_and_model =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri")
+          .SetByDottedPath("ppd_resource.effective_model", "model")
+          .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                           "http://ppd-uri");
+
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_without_ppd_resource));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_no_autoconf_and_no_model));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_autoconf_and_model));
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer_user_supplied_ppd_and_model));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithAutoconf) {
+  auto managed_printer = base::Value::Dict()
+                             .Set("guid", "1")
+                             .Set("display_name", "name")
+                             .Set("uri", "ipp://uri:1234")
+                             .SetByDottedPath("ppd_resource.autoconf", true);
+
+  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+
+  ASSERT_TRUE(printer);
+  EXPECT_EQ(printer->id(), "1");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
+  EXPECT_TRUE(printer->ppd_reference().autoconf);
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithModel) {
+  auto managed_printer =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri:1234")
+          .SetByDottedPath("ppd_resource.autoconf", false)
+          .SetByDottedPath("ppd_resource.effective_model", "model");
+
+  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+
+  ASSERT_TRUE(printer);
+  EXPECT_EQ(printer->id(), "1");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
+  EXPECT_FALSE(printer->ppd_reference().autoconf);
+  EXPECT_EQ(printer->ppd_reference().effective_make_and_model, "model");
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithUserSuppliedPpdUri) {
+  auto managed_printer =
+      base::Value::Dict()
+          .Set("guid", "1")
+          .Set("display_name", "name")
+          .Set("uri", "ipp://uri:1234")
+          .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                           "https://ppd-uri");
+
+  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+
+  ASSERT_TRUE(printer);
+  EXPECT_EQ(printer->id(), "1");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
+  EXPECT_FALSE(printer->ppd_reference().autoconf);
+  EXPECT_EQ(printer->ppd_reference().user_supplied_ppd_url, "https://ppd-uri");
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterWithInvalidUserSuppliedPpdUri) {
+  auto printer = base::Value::Dict()
+                     .Set("guid", "1")
+                     .Set("display_name", "name")
+                     .Set("uri", "ipp://uri:1234")
+                     .SetByDottedPath("ppd_resource.user_supplied_ppd_uri",
+                                      "ftp://scheme-not-allowed");
+  EXPECT_FALSE(ManagedPrinterToPrinter(printer));
+}
+
+TEST(PrinterTranslatorTest, ManagedPrinterOptionalFieldsSet) {
+  auto managed_printer = base::Value::Dict()
+                             .Set("guid", "1")
+                             .Set("display_name", "name")
+                             .Set("uri", "ipp://uri:1234")
+                             .Set("description", "desc")
+                             .SetByDottedPath("ppd_resource.autoconf", true);
+
+  std::unique_ptr<Printer> printer = ManagedPrinterToPrinter(managed_printer);
+
+  ASSERT_TRUE(printer);
+  EXPECT_EQ(printer->id(), "1");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://uri:1234");
+  EXPECT_TRUE(printer->ppd_reference().autoconf);
+  EXPECT_EQ(printer->description(), "desc");
 }
 
 }  // namespace chromeos

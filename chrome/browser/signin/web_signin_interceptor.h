@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_WEB_SIGNIN_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
@@ -14,12 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -78,11 +77,29 @@ enum class SigninInterceptionHeuristicOutcome {
   // The interceptor is not triggered if the tab has already been closed.
   kAbortTabClosed = 18,
 
-  kMaxValue = kAbortTabClosed,
+  // Interception succeeded:
+  // Interception happens when the first account signs in to the web and no
+  // account is yet signed in to the Chrome Profile, the prompt suggests signing
+  // in to Chrome.
+  kInterceptChromeSignin = 19,
+
+  // Interception aborted:
+  // The user signed out while the interception was in progress.
+  kAbortSignedOut = 20,
+  // This is not the first account in the identity manager but there is no
+  // primary account.
+  kAbortNotFirstAccountButNoPrimaryAccount = 21,
+
+  kMaxValue = kAbortNotFirstAccountButNoPrimaryAccount,
 };
 
+// Returns whether the heuristic outcome is a success (the signin should be
+// intercepted).
+bool SigninInterceptionHeuristicOutcomeIsSuccess(
+    SigninInterceptionHeuristicOutcome outcome);
+
 // User selection in the interception bubble.
-enum class SigninInterceptionUserChoice { kAccept, kDecline, kGuest };
+enum class SigninInterceptionUserChoice { kAccept, kDecline };
 
 // User action resulting from the interception bubble.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,17 +107,31 @@ enum class SigninInterceptionUserChoice { kAccept, kDecline, kGuest };
 enum class SigninInterceptionResult {
   kAccepted = 0,
   kDeclined = 1,
+  // The user did not interact with the intercept. This will be recoreded if the
+  // browser was closed without any interaction for example.
   kIgnored = 2,
 
   // Used when the bubble was not shown because it's not implemented.
   kNotDisplayed = 3,
 
-  // Accepted to be opened in Guest profile.
-  kAcceptedWithGuest = 4,
+  // Deprecated(10/23): kAcceptedWithGuest = 4,
 
   kAcceptedWithExistingProfile = 5,
 
-  kMaxValue = kAcceptedWithExistingProfile,
+  // The user dismissed the intercept without an explicit Accept or Decline
+  // event, for example by pressing the Escape key.
+  kDismissed = 6,
+
+  kMaxValue = kDismissed,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SigninInterceptionDismissReason {
+  kEscKey = 0,
+  kIdentityPillPressed = 1,
+
+  kMaxValue = kIdentityPillPressed,
 };
 
 // The ScopedWebSigninInterceptionBubbleHandle closes the signin intercept
@@ -111,11 +142,6 @@ class ScopedWebSigninInterceptionBubbleHandle {
   virtual ~ScopedWebSigninInterceptionBubbleHandle() = 0;
 };
 
-// Returns whether the heuristic outcome is a success (the signin should be
-// intercepted).
-bool SigninInterceptionHeuristicOutcomeIsSuccess(
-    SigninInterceptionHeuristicOutcome outcome);
-
 class WebSigninInterceptor {
  public:
   enum class SigninInterceptionType {
@@ -124,7 +150,8 @@ class WebSigninInterceptor {
     kMultiUser,
     kEnterpriseForced,
     kEnterpriseAcceptManagement,
-    kProfileSwitchForced
+    kProfileSwitchForced,
+    kChromeSignin,
   };
 
   // Delegate class responsible for showing the various interception UIs.
@@ -136,7 +163,6 @@ class WebSigninInterceptor {
                        AccountInfo intercepted_account,
                        AccountInfo primary_account,
                        SkColor profile_highlight_color = SkColor(),
-                       bool show_guest_option = false,
                        bool show_link_data_option = false,
                        bool show_managed_disclaimer = false);
 
@@ -148,7 +174,6 @@ class WebSigninInterceptor {
       AccountInfo intercepted_account;
       AccountInfo primary_account;
       SkColor profile_highlight_color;
-      bool show_guest_option;
       bool show_link_data_option;
       bool show_managed_disclaimer;
     };

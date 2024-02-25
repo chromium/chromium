@@ -10,18 +10,17 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
+import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
+import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A class to handle the state of flags for Feed position experiment.
- */
+/** A class to handle the state of flags for Feed position experiment. */
 public class FeedPositionUtils {
     // The key is used to decide whether the user likes to use Feed. Should be consistent with
     // |kFeedUserSegmentationKey| in config.h in components/segmentation_platform/.
@@ -34,10 +33,12 @@ public class FeedPositionUtils {
     // Constants with FeedPositionSegmentationResult in enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({FeedPositionSegmentationResult.UNINITIALIZED,
-            FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER,
-            FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER,
-            FeedPositionSegmentationResult.NUM_ENTRIES})
+    @IntDef({
+        FeedPositionSegmentationResult.UNINITIALIZED,
+        FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER,
+        FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER,
+        FeedPositionSegmentationResult.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FeedPositionSegmentationResult {
         int UNINITIALIZED = 0;
@@ -46,30 +47,24 @@ public class FeedPositionUtils {
         int NUM_ENTRIES = 3;
     }
 
-    /**
-     * Returns whether the pushing down (small) Feed experiment is enabled.
-     */
+    /** Returns whether the pushing down (small) Feed experiment is enabled. */
     public static boolean isFeedPushDownSmallEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_SMALL, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_SMALL, false)
                 && getBehaviourResultFromSegmentation();
     }
 
-    /**
-     * Returns whether the pushing down (large) Feed experiment is enabled.
-     */
+    /** Returns whether the pushing down (large) Feed experiment is enabled. */
     public static boolean isFeedPushDownLargeEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_LARGE, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_LARGE, false)
                 && getBehaviourResultFromSegmentation();
     }
 
-    /**
-     * Returns whether the pulling up Feed experiment is enabled.
-     */
+    /** Returns whether the pulling up Feed experiment is enabled. */
     public static boolean isFeedPullUpEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PULL_UP_FEED, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PULL_UP_FEED, false)
                 && getBehaviourResultFromSegmentation();
     }
 
@@ -94,10 +89,11 @@ public class FeedPositionUtils {
         String targetFeedOrNonFeedUsersParam = getTargetFeedOrNonFeedUsersParam();
         if (targetFeedOrNonFeedUsersParam == null) return true;
 
-        @FeedPositionSegmentationResult
-        int resultEnum = FeedPositionUtils.getSegmentationResult();
-        RecordHistogram.recordEnumeratedHistogram("NewTabPage.FeedPositionSegmentationResult",
-                resultEnum, FeedPositionSegmentationResult.NUM_ENTRIES);
+        @FeedPositionSegmentationResult int resultEnum = FeedPositionUtils.getSegmentationResult();
+        RecordHistogram.recordEnumeratedHistogram(
+                "NewTabPage.FeedPositionSegmentationResult",
+                resultEnum,
+                FeedPositionSegmentationResult.NUM_ENTRIES);
         switch (targetFeedOrNonFeedUsersParam) {
             case "active":
                 return resultEnum == FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
@@ -112,9 +108,10 @@ public class FeedPositionUtils {
      * @return The segmentation result.
      */
     public static @FeedPositionSegmentationResult int getSegmentationResult() {
-        return SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
-                FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
+                        FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
     }
 
     /**
@@ -124,20 +121,25 @@ public class FeedPositionUtils {
     public static void cacheSegmentationResult() {
         SegmentationPlatformService segmentationPlatformService =
                 SegmentationPlatformServiceFactory.getForProfile(
-                        Profile.getLastUsedRegularProfile());
-        segmentationPlatformService.getSelectedSegment(FEED_USER_SEGMENT_KEY, result -> {
-            @FeedPositionSegmentationResult
-            int resultEnum;
-            if (!result.isReady) {
-                resultEnum = FeedPositionSegmentationResult.UNINITIALIZED;
-            } else if (result.selectedSegment
-                    == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-                resultEnum = FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
-            } else {
-                resultEnum = FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER;
-            }
-            SharedPreferencesManager.getInstance().writeInt(
-                    ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER, resultEnum);
-        });
+                        ProfileManager.getLastUsedRegularProfile());
+        PredictionOptions options = new PredictionOptions(/* onDemandExecution= */ false);
+        segmentationPlatformService.getClassificationResult(
+                FEED_USER_SEGMENT_KEY,
+                options,
+                null,
+                result -> {
+                    @FeedPositionSegmentationResult int resultEnum;
+                    if (result.status != PredictionStatus.SUCCEEDED
+                            || result.orderedLabels.isEmpty()) {
+                        resultEnum = FeedPositionSegmentationResult.UNINITIALIZED;
+                    } else if (result.orderedLabels.get(0).equals("FeedUser")) {
+                        resultEnum = FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
+                    } else {
+                        resultEnum = FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER;
+                    }
+                    ChromeSharedPreferences.getInstance()
+                            .writeInt(
+                                    ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER, resultEnum);
+                });
     }
 }

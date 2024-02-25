@@ -4,30 +4,19 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/script_source_location.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
 
-// This struct contains information about a blocking feature's usage, i.e. what feature
-// is used, in what JavaScript file, in what function, at what line and column number.
+// This struct contains detailed information about a WebSchedulerTrackedFeature.
 struct BlockingDetails {
-  // The index of the blocking feature.
-  // See blink::SchedulingPolicy::Feature for the meaning of the individual bits.
+  // The index of WebSchedulerTrackedFeature; the value set must correspond to the
+  // WebSchedulerTrackedFeature enum.
+  // TODO(crbug.com/1522767): Use enum instead of uint32 or have validation to
+  // really avoid unintended messages.
   uint32 feature;
-  // The URL of the JavaScript file where the feature is used. This will be empty when
-  // when a flag is disabled to send this information, and will be null when a feature
-  // is used from C++ in tests.
-  string? url;
-  // The function in the JavaScript file where the feature is used. This will be empty
-  // when a flag is disabled to send this information, and will be null when a feature
-  // is used from C++ in tests, or when a feature is used in anonymous functions.
-  string? function_name;
-  // The line number in JavaScript file where the feature is used. This will be zero
-  // when a flag is disabled to send this information, and when a feature is used from
-  // C++ in tests.
-  uint64 line_number;
-  // The column number in JavaScript file where the feature is used. This will be zero
-  // when a flag is disabled to send this information, and when a feature is used from
-  // C++ in tests.
-  uint64 column_number;
+  // The JavaScript source location of `feature`. This should be null when the
+  // feature doesn't involve source location.
+  ScriptSourceLocation? source;
 };
 
 // This interface defines back-forward cache related methods that will be
@@ -39,8 +28,10 @@ struct BlockingDetails {
 // trigger a renderer kill, depending on policy.
 interface BackForwardCacheControllerHost {
   // Evicts the page from the back/forward cache due to e.g., JavaScript
-  // execution and network request redirect.
-  EvictFromBackForwardCache(RendererEvictionReason reason);
+  // execution and network request redirect. If the reason is kJavaScriptExecution,
+  // `source` should indicate the source location where the script executed. It should
+  // be null otherwise.
+  EvictFromBackForwardCache(RendererEvictionReason reason, ScriptSourceLocation? source);
 
   // Sent by the blink's FrameScheduler when a list of active features
   // the scheduler tracks changes.

@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteAnimationGradientDrawable.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteController.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegate.java",
@@ -20,7 +22,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -31,14 +33,19 @@ android_library("java") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/browsing_data/core:java",
     "//components/embedder_support/android:util_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
@@ -114,6 +121,7 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.quick_delete"
 
   sources = [
+    "android/javatests/src/org/chromium/chrome/browser/quick_delete/QuickDeleteAnimationGradientDrawableRenderTest.java",
     "android/javatests/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridgeTest.java",
     "android/javatests/src/org/chromium/chrome/browser/quick_delete/QuickDeleteControllerTest.java",
     "android/javatests/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateTest.java",
@@ -124,12 +132,12 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/appmenu:java",
@@ -139,7 +147,9 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browsing_data/core:java",
+    "//components/embedder_support/android:content_view_java",
     "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
@@ -148,6 +158,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",

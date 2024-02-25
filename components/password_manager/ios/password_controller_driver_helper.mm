@@ -4,10 +4,11 @@
 
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 
 @implementation PasswordControllerDriverHelper {
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 }
 #pragma mark - Initialization
 

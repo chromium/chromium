@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -19,7 +20,6 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -97,7 +97,7 @@ class CONTENT_EXPORT AuctionProcessManager {
     // in. If it's available immediately, it's returned. If not, nullopt is
     // returned and |callback| will be invoked when it's available. Should not
     // be called if the process hasn't been assigned yet.
-    absl::optional<base::ProcessId> GetPid(
+    std::optional<base::ProcessId> GetPid(
         base::OnceCallback<void(base::ProcessId)> callback);
 
    private:
@@ -235,7 +235,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // PendingRequestQueue is assigned a process, all requests that can use the
   // same process are assigned the same process. This map is used to manage that
   // without searching through the entire queue.
-  using PendingRequestMap = std::map<url::Origin, std::set<ProcessHandle*>>;
+  using PendingRequestMap =
+      std::map<url::Origin, std::set<raw_ptr<ProcessHandle, SetExperimental>>>;
 
   // Contains running processes. Worklet processes are refcounted, and
   // automatically remove themselves from this list when destroyed.

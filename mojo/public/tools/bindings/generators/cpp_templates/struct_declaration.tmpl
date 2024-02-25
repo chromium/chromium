@@ -23,9 +23,9 @@ class {{export_attribute}} {{class_name}} {
 {%-   endif %}
 {%- endfor %}
 
-{%- set num_fields = struct.versions[-1].num_fields %}
-{%- if num_fields > 0 %}
-{%-   set last_field = struct.packed.packed_fields[num_fields - 1] %}
+{%- set num_packed_fields = struct.versions[-1].num_packed_fields %}
+{%- if num_packed_fields > 0 %}
+{%-   set last_field = struct.packed.packed_fields[num_packed_fields - 1] %}
 {%-   set offset = last_field.offset + last_field.size %}
 {%-   set pad = offset|get_pad(8) %}
 {%-   if pad > 0 %}

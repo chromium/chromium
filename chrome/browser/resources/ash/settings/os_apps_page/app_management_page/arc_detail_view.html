@@ -2,6 +2,10 @@
   #noPermissions {
     border-top: none;
   }
+
+  #appDetails {
+    padding-bottom: 12px;
+  }
 </style>
 <div class="permission-list">
   <app-management-pin-to-shelf-item
@@ -53,6 +57,11 @@
       </template>
     </div>
   </div>
+  <app-management-app-language-item
+      class="permission-card-row separated-row"
+      app="[[app_]]"
+      prefs="{{prefs}}">
+  </app-management-app-language-item>
   <app-management-more-permissions-item id="managePermissions"
     hidden$="[[!hasReadOnlyPermissions_]]"
     class="permission-card-row separated-row" app="[[app_]]"
@@ -66,7 +75,7 @@
   <app-management-more-permissions-item id="moreSettings"
       hidden$="[[hasReadOnlyPermissions_]]"
       class="permission-card-row separated-row" app="[[app_]]"
-      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
+      more-permissions-label="[[getAppManagementMorePermissionsLabel_()]]">
   </app-management-more-permissions-item>
   <app-management-supported-links-item
       id="supportedLinksSetting"

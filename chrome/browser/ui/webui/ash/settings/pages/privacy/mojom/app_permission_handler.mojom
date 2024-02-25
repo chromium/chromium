@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.app_permission.mojom;
+
+import "ui/webui/resources/cr_components/app_management/app_management.mojom";
+
+struct App {
+  string id;
+
+  string name;
+
+  app_management.mojom.AppType type;
+
+  map<app_management.mojom.PermissionType,
+      app_management.mojom.Permission> permissions;
+};
+
+// Browser interface.
+interface AppPermissionsHandler {
+  // Binds remote and notifies receiver in Privacy control sensor subpage UI.
+  AddObserver(pending_remote<AppPermissionsObserver> observer);
+
+  // Returns app list.
+  GetApps() => (array<App> apps);
+
+  // While all system apps are allowed to access camera and microphone, only a
+  // few actually do.
+  // The function returns a list of system apps that actually use camera.
+  GetSystemAppsThatUseCamera() => (array<App> apps);
+  // The function returns a list of system apps that actually use microphone.
+  GetSystemAppsThatUseMicrophone() => (array<App> apps);
+
+  // Opens "Chrome Settings" URL for the given permission type.
+  OpenBrowserPermissionSettings(
+    app_management.mojom.PermissionType permission_type);
+
+  // Opens native settings page for the app with id `app_id`.
+  OpenNativeSettings(string app_id);
+
+  // Updates permission of the app specified by the `app_id`.
+  SetPermission(string app_id, app_management.mojom.Permission permission);
+};
+
+// Frontend interface.
+interface AppPermissionsObserver {
+  // The two following functions are used to notify the observers of app
+  // updates.
+  // All kinds of updates for uninstalled apps or apps which are not displayed
+  // in the app management os settings page are sent to the observers using the
+  // `OnAppRemoved` method.
+  OnAppRemoved(string app_id);
+  // If the app is installed, is displayed in the app management os settings
+  // page, and has relevant permission field(s), then `OnAppUpdated` method is
+  // used to notify the observers.
+  OnAppUpdated(App app);
+};

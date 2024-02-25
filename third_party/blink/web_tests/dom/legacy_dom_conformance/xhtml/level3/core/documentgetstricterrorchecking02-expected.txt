@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/documentgetstricterrorchecking02
-Status	failure
-Message	documentgetstricterrorchecking02: assertTrue failed

@@ -99,21 +99,21 @@ mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> Clone(
 //  - neither is nullopt and they both contain equal values
 //
 bool OptionalTrustedParamsEqualsForTesting(
-    const absl::optional<ResourceRequest::TrustedParams>& lhs,
-    const absl::optional<ResourceRequest::TrustedParams>& rhs) {
+    const std::optional<ResourceRequest::TrustedParams>& lhs,
+    const std::optional<ResourceRequest::TrustedParams>& rhs) {
   return (!lhs && !rhs) || (lhs && rhs && lhs->EqualsForTesting(*rhs));
 }
 
 bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
-    const absl::optional<ResourceRequest::WebBundleTokenParams>& lhs,
-    const absl::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
+    const std::optional<ResourceRequest::WebBundleTokenParams>& lhs,
+    const std::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
   return (!lhs && !rhs) ||
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
 }
 
 bool OptionalNetLogInfoEqualsForTesting(
-    const absl::optional<net::NetLogSource>& lhs,
-    const absl::optional<net::NetLogSource>& rhs) {
+    const std::optional<net::NetLogSource>& lhs,
+    const std::optional<net::NetLogSource>& rhs) {
   bool equal_members = lhs && rhs && lhs.value() == rhs.value();
   return (!lhs && !rhs) || equal_members;
 }
@@ -265,15 +265,16 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          originated_from_service_worker ==
              request.originated_from_service_worker &&
          skip_service_worker == request.skip_service_worker &&
-         corb_detachable == request.corb_detachable && mode == request.mode &&
-         target_address_space == request.target_address_space &&
+         mode == request.mode &&
+         required_ip_address_space == request.required_ip_address_space &&
          credentials_mode == request.credentials_mode &&
          redirect_mode == request.redirect_mode &&
          fetch_integrity == request.fetch_integrity &&
          destination == request.destination &&
          request_body == request.request_body &&
          keepalive == request.keepalive &&
-         shared_storage_writable == request.shared_storage_writable &&
+         shared_storage_writable_eligible ==
+             request.shared_storage_writable_eligible &&
          has_user_gesture == request.has_user_gesture &&
          enable_load_timing == request.enable_load_timing &&
          enable_upload_progress == request.enable_upload_progress &&

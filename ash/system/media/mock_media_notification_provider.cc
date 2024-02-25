@@ -14,8 +14,8 @@ MockMediaNotificationProvider::MockMediaNotificationProvider()
     : old_provider_(MediaNotificationProvider::Get()) {
   MediaNotificationProvider::Set(this);
 
-  ON_CALL(*this, GetMediaNotificationListView(_, _, _, _))
-      .WillByDefault([](auto, auto, const auto&, const auto&) {
+  ON_CALL(*this, GetMediaNotificationListView)
+      .WillByDefault([](auto, auto, auto, const auto&) {
         return std::make_unique<views::View>();
       });
 }
@@ -44,8 +44,7 @@ MockMediaNotificationProvider::BuildDeviceSelectorView(
 std::unique_ptr<global_media_controls::MediaItemUIFooter>
 MockMediaNotificationProvider::BuildFooterView(
     const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   return nullptr;
 }
 

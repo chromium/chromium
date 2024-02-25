@@ -6,22 +6,26 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate,
@@ -30,9 +34,6 @@
 @property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
-
-// YES if First Run was completed.
-@property(nonatomic, assign) BOOL completed;
 
 @end
 
@@ -56,7 +57,8 @@
 - (void)start {
   [self presentScreen:[self.screenProvider nextScreenType]];
   void (^completion)(void) = ^{
-    base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kStart);
   };
   [self.navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:self.navigationController
@@ -65,22 +67,19 @@
 }
 
 - (void)stop {
-  void (^completion)(void) = ^{
-  };
-  if (self.completed) {
-    __weak __typeof(self) weakSelf = self;
-    completion = ^{
-      base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
-      WriteFirstRunSentinel();
-      [weakSelf.delegate didFinishPresentingScreens];
-    };
+  if (self.childCoordinator) {
+    // If the child coordinator is not nil, then the FRE is stopped because
+    // Chrome is being shutdown.
+    InterruptibleChromeCoordinator* interruptibleChildCoordinator =
+        base::apple::ObjCCast<InterruptibleChromeCoordinator>(
+            self.childCoordinator);
+    [interruptibleChildCoordinator
+        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
+                 completion:nil];
+    [self.childCoordinator stop];
+    self.childCoordinator = nil;
   }
-
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
-
-  [self.baseViewController dismissViewControllerAnimated:YES
-                                              completion:completion];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _navigationController = nil;
   [super stop];
 }
@@ -93,12 +92,6 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAllScreens {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
-  [self willFinishPresentingScreens];
-}
-
 #pragma mark - Helper
 
 // Presents the screen of certain `type`.
@@ -106,7 +99,11 @@
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
   if (type == kStepsCompleted) {
-    [self willFinishPresentingScreens];
+    // The user went through all screens of the FRE.
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kComplete);
+    WriteFirstRunSentinel();
+    [self.delegate didFinishFirstRun];
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
@@ -132,6 +129,7 @@
                                   delegate:self
                                   firstRun:YES
                              showUserEmail:NO
+                                isOptional:YES
                                accessPoint:signin_metrics::AccessPoint::
                                                ACCESS_POINT_START_PAGE];
     case kTangibleSync:
@@ -146,19 +144,25 @@
                                    browser:self.browser
                                   delegate:self];
     case kChoice:
-      return ios::provider::
-          CreateChoiceCoordinatorForFREWithNavigationController(
-              self.navigationController, self.browser, self);
+      return [[SearchEngineChoiceCoordinator alloc]
+          initForFirstRunWithBaseNavigationController:self.navigationController
+                                              browser:self.browser
+                                     firstRunDelegate:self];
+    case kOmniboxPosition:
+      return [[OmniboxPositionChoiceCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
+    case kDockingPromo:
+      return [[DockingPromoCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kStepsCompleted:
       NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
       break;
   }
   return nil;
-}
-
-- (void)willFinishPresentingScreens {
-  self.completed = YES;
-  [self.delegate willFinishPresentingScreens];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate

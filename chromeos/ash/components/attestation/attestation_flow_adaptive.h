@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+      const std::optional<AttestationFlow::CertProfileSpecificData>&
           profile_specific_data,
       CertificateCallback callback) override;
 
@@ -100,8 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   // initialize.
   std::unique_ptr<ServerProxy> server_proxy_;
   // Owened by either `server_proxy_` or `attestation_flow_factory_`.
-  const raw_ptr<ServerProxy, DanglingUntriaged | ExperimentalAsh>
-      raw_server_proxy_;
+  const raw_ptr<ServerProxy, DanglingUntriaged> raw_server_proxy_;
 
   // `AttestationFlowTypeDecider` object that decides which attestation flow
   // type we can use.

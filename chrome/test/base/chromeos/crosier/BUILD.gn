@@ -6,4 +6,5 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [ "chromeos_test_definition.proto" ]
+  cc_generator_options = "lite=true:"
 }

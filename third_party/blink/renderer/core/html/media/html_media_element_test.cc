@@ -15,9 +15,11 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
@@ -31,6 +33,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
@@ -196,15 +199,15 @@ class TestMediaPlayerObserver final
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 
-  const absl::optional<bool>& received_media_paused_stream_ended() const {
+  const std::optional<bool>& received_media_paused_stream_ended() const {
     return received_media_paused_stream_ended_;
   }
 
-  const absl::optional<bool>& received_muted_status() const {
+  const std::optional<bool>& received_muted_status() const {
     return received_muted_status_type_;
   }
 
-  const absl::optional<OnMetadataChangedResult>&
+  const std::optional<OnMetadataChangedResult>&
   received_metadata_changed_result() const {
     return received_metadata_changed_result_;
   }
@@ -224,11 +227,11 @@ class TestMediaPlayerObserver final
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   bool received_media_playing_{false};
-  absl::optional<bool> received_media_paused_stream_ended_;
-  absl::optional<bool> received_muted_status_type_;
-  absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
+  std::optional<bool> received_media_paused_stream_ended_;
+  std::optional<bool> received_muted_status_type_;
+  std::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
-  absl::optional<bool> received_uses_audio_service_;
+  std::optional<bool> received_uses_audio_service_;
   media_session::mojom::blink::RemotePlaybackMetadataPtr
       received_remote_playback_metadata_;
 };
@@ -411,10 +414,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
                                    is_encrypted_media);
     media_player_observer().WaitUntilReceivedMessage();
     // wait for OnRemotePlaybackMetadataChange() to be called.
-    if (audio_codec != media::AudioCodec::kUnknown ||
-        video_codec != media::VideoCodec::kUnknown) {
       media_player_observer().WaitUntilReceivedMessage();
-    }
   }
 
   bool ReceivedMessageMediaMetadataChanged(
@@ -540,12 +540,14 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_FALSE(WasPlayerDestroyed());
   }
 
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
+
  private:
   TestMediaPlayerObserver& media_player_observer() {
     return media_player_host_.observer();
   }
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   Persistent<HTMLMediaElement> media_;
 
   // Owned by WebMediaStubLocalFrameClient.
@@ -923,7 +925,7 @@ TEST_P(HTMLMediaElementTest, ContextFrozen) {
 }
 
 TEST_P(HTMLMediaElementTest, GcMarkingNoAllocWebTimeRanges) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   auto* thread_state = ThreadState::Current();
   ThreadState::NoAllocationScope no_allocation_scope(thread_state);
   EXPECT_FALSE(thread_state->IsAllocationAllowed());
@@ -1225,9 +1227,17 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
                                                   media_content_type));
 
-  // Send codecs
+  // Send codecs. Video Codec will be ignored since `has_video` is false.
   audio_codec = media::AudioCodec::kAAC;
   video_codec = media::VideoCodec::kH264;
+  NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
+                             media_content_type, is_encrypted_media);
+  EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
+      media_session::mojom::blink::RemotePlaybackMetadata::New(
+          "unknown", WTF::String(media::GetCodecName(audio_codec)), false,
+          false, WTF::String(), is_encrypted_media)));
+
+  has_video = true;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
@@ -1578,6 +1588,44 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithMediaPlayerAttached) {
       mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
 
   EXPECT_FALSE(MediaIsPlaying());
+}
+
+TEST_P(HTMLMediaElementTest, MoveToAnotherDocument) {
+  auto* second_document =
+      dummy_page_holder_->GetDocument().implementation().createHTMLDocument();
+
+  // The second document is not active. When Media() is moved over, it triggers
+  // a call to HTMLMediaElement::ShouldShowControls. This should not violate any
+  // DCHECKs.
+  second_document->body()->AppendChild(Media());
+
+  // Destroying the first document should not cause anything unusual to happen.
+  dummy_page_holder_.reset();
+
+  EXPECT_FALSE(ControlsVisible());
+}
+
+TEST_P(HTMLMediaElementTest, LoadingFailsAfterContextDestruction) {
+  // Ensure the media element throws an error if loading is attempted after V8
+  // memory is purged (which destroys the element's execution context).
+
+  constexpr char kOrigin[] = "https://a.com";
+  SetSecurityOrigin(kOrigin);
+  WaitForPlayer();
+  auto new_dummy_page_holder =
+      CreatePageWithSecurityOrigin(kOrigin, /*is_picture_in_picture=*/false);
+  EXPECT_FALSE(WasPlayerDestroyed());
+
+  LocalFrame* frame = Media()->LocalFrameForPlayer();
+  ASSERT_TRUE(frame);
+  frame->ForciblyPurgeV8Memory();
+  test::RunPendingTasks();
+  EXPECT_TRUE(WasPlayerDestroyed());
+  EXPECT_FALSE(Media()->error());
+
+  Media()->load();
+  test::RunPendingTasks();
+  EXPECT_TRUE(Media()->error());
 }
 
 }  // namespace blink

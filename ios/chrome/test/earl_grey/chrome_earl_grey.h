@@ -41,6 +41,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // will properly synchronize the UI for Earl Grey tests.
 @interface ChromeEarlGreyImpl : BaseEGTestHelperImpl
 
+// Reloads the page without waiting for the page to load.
+- (void)startReloading;
+
 #pragma mark - Test Utilities
 
 // Wait until `matcher` is accessible (not nil) on the device.
@@ -69,6 +72,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Whether the the main application window's rootViewController has a regular
 // vertical and regular horizontal size class.
 - (BOOL)isRegularXRegularSizeClass;
+
+// Stops primes performance metrics logging by calling into the
+// internal framework (should only be used by performance tests)
+- (void)primesStopLogging;
+
+// Takes a snapshot of memory usage by calling into the internal
+// framework (should only be used by performance tests)
+- (void)primesTakeMemorySnapshot:(NSString*)eventName;
 
 #pragma mark - History Utilities (EG2)
 
@@ -191,8 +202,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Sync Utilities (EG2)
 
-// Clears fake sync server data if the server is running.
-- (void)clearSyncServerData;
+- (BOOL)isFakeSyncServerSetUp;
+
+// Undoes the effects of disconnectFakeSyncServerNetwork.
+- (void)connectFakeSyncServerNetwork;
+
+// Forces every request to fail in a way that simulates a network failure.
+- (void)disconnectFakeSyncServerNetwork;
 
 // Signs in with `identity` without sync consent.
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
@@ -227,6 +243,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // real one.
 - (void)tearDownFakeSyncServer;
 
+// Clears fake sync server data if the server is running.
+- (void)clearFakeSyncServerData;
+
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
+- (void)flushFakeSyncServerToDisk;
+
 // Gets the number of entities of the given `type`.
 - (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type [[nodiscard]];
 
@@ -247,9 +271,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                                          title:(const std::string&)title
                      originator_client_item_id:
                          (const std::string&)originator_client_item_id;
-
-// Injects a typed URL to the sync FakeServer.
-- (void)addFakeSyncServerTypedURL:(const GURL&)URL;
 
 // Injects a HISTORY visit to the sync FakeServer.
 - (void)addFakeSyncServerHistoryVisit:(const GURL&)URL;
@@ -303,6 +324,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)openNewTab;
 
 // Simulates opening `url` from another application.
+- (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
 // Simulates opening the add account sign-in flow from the web.
@@ -357,6 +379,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns the number of browsers.
 - (NSUInteger)browserCount [[nodiscard]];
+
+// Returns the number of the realized web states from the existing web states.
+- (NSInteger)realizedWebStatesCount [[nodiscard]];
 
 // Returns the index of active tab in normal (non-incognito) mode.
 - (NSUInteger)indexOfActiveNormalTab;
@@ -570,6 +595,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Induces a GREYAssert if the operation fails.
 - (void)submitWebStateFormWithID:(const std::string&)formID;
 
+// Returns YES if the current WebState contains an element matching `selector`.
+- (BOOL)webStateContainsElement:(ElementSelector*)selector;
+
 // Waits for the current web state to contain `UTF8Text`. If the condition is
 // not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text;
@@ -616,10 +644,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Cache-Control response header says otherwise.
 - (void)purgeCachedWebViewPages;
 
-// Simulators background, killing, and restoring the app within the limitations
-// of EG1, by simply doing a tab grid close all / undo / done.
-- (void)triggerRestoreViaTabGridRemoveAllUndo;
-
 // Returns YES if the current WebState's web view uses the content inset to
 // correctly align the top of the content with the bottom of the top bar.
 - (BOOL)webStateWebViewUsesContentInset;
@@ -662,7 +686,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns cookies as key value pairs, where key is a cookie name and value is a
 // cookie value.
-// A GREYAssert is induced if cookies can not be returned.
+// If cookies can not be returned, returns nil and induces a GREYAssert.
 - (NSDictionary*)cookies;
 
 #pragma mark - Accessibility Utilities (EG2)
@@ -683,17 +707,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if UKM feature is enabled.
 - (BOOL)isUKMEnabled [[nodiscard]];
 
-// Returns YES if kSynthesizedRestoreSessionEnabled feature is enabled.
-- (BOOL)isSynthesizedRestoreSessionEnabled [[nodiscard]];
-
 // Returns YES if kTestFeature is enabled.
 - (BOOL)isTestFeatureEnabled;
 
 // Returns YES if DemographicMetricsReporting feature is enabled.
 - (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
-
-// Returns YES if the SyncEnableHistoryDataType feature is enabled.
-- (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
 
 // Returns YES if the ReplaceSyncPromosWithSignInPromos feature is enabled.
 - (BOOL)isReplaceSyncWithSigninEnabled [[nodiscard]];
@@ -725,9 +743,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
 
-// Returns whether UIButtonConfiguration changes are enabled.
-- (BOOL)isUIButtonConfigurationEnabled;
-
 // Returns whether the bottom omnibox steady state feature is enabled.
 - (BOOL)isBottomOmniboxSteadyStateEnabled;
 
@@ -747,6 +762,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Resets the desktop content setting to its default value.
 - (void)resetDesktopContentSetting;
 
+// Sets the preference value of a content settings type for the original browser
+// state.
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type;
+
 #pragma mark - Keyboard utilities
 
 // The count of key commands registered with the currently active BVC.
@@ -763,12 +783,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.
-- (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
+- (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName;
 
 // Removes the object for `key` in NSUserDefault.
-- (void)removeUserDefaultObjectForKey:(NSString*)key;
+- (void)removeUserDefaultsObjectForKey:(NSString*)key;
+
+// Returns the object for `key` in NSUserDefault.
+- (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
+
+// Commit synchronously the pending user prefs write. Waits until the disk write
+// operation is done.
+- (void)commitPendingUserPrefsWrite;
 
 // Gets the value of a local state pref.
 - (bool)localStateBooleanPref:(const std::string&)prefName;
@@ -791,14 +818,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setStringValue:(const std::string&)value
      forLocalStatePref:(const std::string&)prefName;
 
+// Sets the bool value for the local state pref with `prefName`. Local
+// State contains the preferences that are shared between all browser states.
+- (void)setBoolValue:(BOOL)value forLocalStatePref:(const std::string&)prefName;
+
 // Gets the value of a user pref in the original browser state.
 - (bool)userBooleanPref:(const std::string&)prefName;
 - (int)userIntegerPref:(const std::string&)prefName;
 - (std::string)userStringPref:(const std::string&)prefName;
 
 // Sets the value of a user pref in the original browser state.
+- (void)setStringValue:(NSString*)value
+           forUserPref:(const std::string&)UTF8PrefName;
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
+
+// Returns true if the Preference is currently using its default value,
+// and has not been set by any higher-priority source (even with the same
+// value).
+- (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
+
+// Clears the user pref of `prefName` in the original browser state.
+- (void)clearUserPrefWithName:(const std::string&)prefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.
@@ -871,6 +912,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Clear the watcher list, stopping monitoring.
 - (void)stopWatcher;
 
+#pragma mark - Default Browser Promo Utilities
+
+// Clears default browser promo data to restart capping for the promos.
+- (void)clearDefaultBrowserPromoData;
+
+// Copies a chrome:// URL that doesn't require internet connection.
+- (void)copyURLToPasteBoard;
+
 #pragma mark - ActivitySheet utilities
 
 // Induces a GREYAssert if the activity sheet is not visible.
@@ -893,6 +942,18 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Taps the element with `buttonText` within the activity sheet. A GREYAssert
 // is induced on failure.
 - (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
+#pragma mark - First Run Utilities
+
+// Writes the First Run Sentinel file, used to record that First Run has
+// completed.
+- (void)writeFirstRunSentinel;
+
+// Removes the FirstRun sentinel file.
+- (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
+- (bool)hasFirstRunSentinel;
 
 @end
 

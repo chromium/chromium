@@ -7,7 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_tokenizer.h"
 
 namespace memory_instrumentation {
@@ -53,7 +53,7 @@ Node* GlobalDumpGraph::CreateNode(Process* process_graph, Node* parent) {
 }
 
 PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
-  std::vector<Node*> roots;
+  std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
        base::Reversed(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -63,7 +63,7 @@ PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
 }
 
 PostOrderIterator GlobalDumpGraph::VisitInDepthFirstPostOrder() {
-  std::vector<Node*> roots;
+  std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
        base::Reversed(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -79,7 +79,7 @@ Process::Process(base::ProcessId pid, GlobalDumpGraph* global_graph)
 Process::~Process() {}
 
 Node* Process::CreateNode(MemoryAllocatorDumpGuid guid,
-                          base::StringPiece path,
+                          std::string_view path,
                           bool weak) {
   DCHECK(!path.empty());
 
@@ -90,7 +90,7 @@ Node* Process::CreateNode(MemoryAllocatorDumpGuid guid,
   // already exist on the path to the child.
   Node* current = root_;
   while (tokenizer.GetNext()) {
-    base::StringPiece key = tokenizer.token_piece();
+    std::string_view key = tokenizer.token_piece();
     Node* parent = current;
     current = current->GetChild(key);
     if (!current) {
@@ -114,14 +114,14 @@ Node* Process::CreateNode(MemoryAllocatorDumpGuid guid,
   return current;
 }
 
-Node* Process::FindNode(base::StringPiece path) {
+Node* Process::FindNode(std::string_view path) {
   DCHECK(!path.empty());
 
   std::string path_string(path);
   base::StringTokenizer tokenizer(path_string, "/");
   Node* current = root_;
   while (tokenizer.GetNext()) {
-    base::StringPiece key = tokenizer.token_piece();
+    std::string_view key = tokenizer.token_piece();
     current = current->GetChild(key);
     if (!current)
       return nullptr;
@@ -133,7 +133,7 @@ Node::Node(Process* dump_graph, Node* parent)
     : dump_graph_(dump_graph), parent_(parent), owns_edge_(nullptr) {}
 Node::~Node() {}
 
-Node* Node::GetChild(base::StringPiece name) {
+Node* Node::GetChild(std::string_view name) {
   DCHECK(!name.empty());
   DCHECK_EQ(std::string::npos, name.find('/'));
 
@@ -141,14 +141,14 @@ Node* Node::GetChild(base::StringPiece name) {
   return child == children_.end() ? nullptr : child->second;
 }
 
-void Node::InsertChild(base::StringPiece name, Node* node) {
+void Node::InsertChild(std::string_view name, Node* node) {
   DCHECK(!name.empty());
   DCHECK_EQ(std::string::npos, name.find('/'));
 
   children_.emplace(std::string(name), node);
 }
 
-Node* Node::CreateChild(base::StringPiece name) {
+Node* Node::CreateChild(std::string_view name) {
   Node* new_child = dump_graph_->global_graph()->CreateNode(dump_graph_, this);
   InsertChild(name, new_child);
   return new_child;
@@ -194,7 +194,8 @@ Node::Entry::Entry(std::string value)
 Edge::Edge(Node* source, Node* target, int priority)
     : source_(source), target_(target), priority_(priority) {}
 
-PreOrderIterator::PreOrderIterator(std::vector<Node*> roots)
+PreOrderIterator::PreOrderIterator(
+    std::vector<raw_ptr<Node, VectorExperimental>> roots)
     : to_visit_(std::move(roots)) {}
 PreOrderIterator::PreOrderIterator(PreOrderIterator&& other) = default;
 PreOrderIterator::~PreOrderIterator() {}
@@ -224,7 +225,8 @@ Node* PreOrderIterator::next() {
     }
 
     // Visit all owners of this node.
-    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+    for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
+         base::Reversed(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
 
@@ -235,7 +237,8 @@ Node* PreOrderIterator::next() {
   return nullptr;
 }
 
-PostOrderIterator::PostOrderIterator(std::vector<Node*> roots)
+PostOrderIterator::PostOrderIterator(
+    std::vector<raw_ptr<Node, VectorExperimental>> roots)
     : to_visit_(std::move(roots)) {}
 PostOrderIterator::PostOrderIterator(PostOrderIterator&& other) = default;
 PostOrderIterator::~PostOrderIterator() = default;
@@ -277,7 +280,8 @@ Node* PostOrderIterator::next() {
     }
 
     // Visit all owners of this node.
-    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+    for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
+         base::Reversed(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
   }

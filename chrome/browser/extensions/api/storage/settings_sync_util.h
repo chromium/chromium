@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class Value;
@@ -29,31 +30,27 @@ namespace extensions {
 namespace settings_sync_util {
 
 // Creates a syncer::SyncData object for an extension or app setting.
-syncer::SyncData CreateData(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type);
+syncer::SyncData CreateData(const ExtensionId& extension_id,
+                            const std::string& key,
+                            const base::Value& value,
+                            syncer::ModelType type);
 
 // Creates an "add" sync change for an extension or app setting.
-syncer::SyncChange CreateAdd(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type);
+syncer::SyncChange CreateAdd(const ExtensionId& extension_id,
+                             const std::string& key,
+                             const base::Value& value,
+                             syncer::ModelType type);
 
 // Creates an "update" sync change for an extension or app setting.
-syncer::SyncChange CreateUpdate(
-    const std::string& extension_id,
-    const std::string& key,
-    const base::Value& value,
-    syncer::ModelType type);
+syncer::SyncChange CreateUpdate(const ExtensionId& extension_id,
+                                const std::string& key,
+                                const base::Value& value,
+                                syncer::ModelType type);
 
 // Creates a "delete" sync change for an extension or app setting.
-syncer::SyncChange CreateDelete(
-    const std::string& extension_id,
-    const std::string& key,
-    syncer::ModelType type);
+syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
+                                const std::string& key,
+                                syncer::ModelType type);
 
 // Returns a callback that provides a SyncableService. The function must be
 // called on the UI thread and |type| must be either APP_SETTINGS or

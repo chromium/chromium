@@ -8,9 +8,7 @@ import org.chromium.mojo.system.Core.HandleSignalsState;
 
 import java.io.Closeable;
 
-/**
- * A generic mojo handle.
- */
+/** A generic mojo handle. */
 public interface Handle extends Closeable {
 
     /**
@@ -35,9 +33,7 @@ public interface Handle extends Closeable {
      */
     public boolean isValid();
 
-    /**
-     * Converts this handle into an {@link UntypedHandle}, invalidating this handle.
-     */
+    /** Converts this handle into an {@link UntypedHandle}, invalidating this handle. */
     public UntypedHandle toUntypedHandle();
 
     /**

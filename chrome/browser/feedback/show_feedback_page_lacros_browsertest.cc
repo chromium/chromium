@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
@@ -19,20 +21,6 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
-  void SetUp() override {
-    if (GetAshChromeVersion() < base::Version({118, 0, 5962})) {
-      // For the older ash version without the ash browser window API
-      // support in crosapi::mojom::TestController, we can't verify and close
-      // feedback SWA in ash. Therefore, it still needs to run against the
-      // unique ash.
-      // TODO(crbug/1446083): Remove the unique ash code once ash stable
-      // version >= 118.0.5962.0.
-      StartUniqueAshChrome(
-          {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
-    }
-    InProcessBrowserTest::SetUp();
-  }
-
   void ShowFeedbackPageWithFeedbackSource(chrome::FeedbackSource source) {
     std::string unused;
     chrome::ShowFeedbackPage(browser(), source,
@@ -41,9 +29,7 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
                              /*category_tag=*/unused,
                              /*extra_diagnostics=*/unused,
                              /*autofill_metadata=*/base::Value::Dict());
-    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      VerifyFeedbackPageShownInAsh();
-    }
+    VerifyFeedbackPageShownInAsh();
   }
 
  private:
@@ -55,9 +41,8 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
-      CloseAllAshBrowserWindows();
-    }
+    CloseAllAshBrowserWindows();
+
     InProcessBrowserTest::TearDownOnMainThread();
   }
 };
@@ -139,5 +124,25 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromQuickOffice) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceQuickOffice);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, ShowFeedbackPageFromAI) {
+  base::HistogramTester histogram_tester;
+  std::string unused;
+  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+  if (!capabilities || !base::Contains(*capabilities, "crbug/1501057")) {
+    GTEST_SKIP() << "Unsupported feedback source AI for ash.";
+  }
+
+  // AI flow uses the Chrome feedback dialog instead so no new ash window will
+  // be created.
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict(),
+                           /*ai_metadata=*/base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }

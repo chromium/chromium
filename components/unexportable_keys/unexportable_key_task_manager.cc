@@ -5,6 +5,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -18,13 +19,14 @@
 #include "base/types/expected.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/background_task_type.h"
+#include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_tasks.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace unexportable_keys {
 
@@ -32,8 +34,6 @@ namespace {
 
 constexpr std::string_view kBaseTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult";
-
-enum class TaskType { kGenerateKey, kFromWrappedKey, kSign };
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
 MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
@@ -46,7 +46,7 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
 }
 
 ServiceErrorOr<std::vector<uint8_t>> OptionalToServiceErrorOr(
-    absl::optional<std::vector<uint8_t>> result) {
+    std::optional<std::vector<uint8_t>> result) {
   if (!result) {
     return base::unexpected(ServiceError::kCryptoApiFailed);
   }
@@ -54,30 +54,16 @@ ServiceErrorOr<std::vector<uint8_t>> OptionalToServiceErrorOr(
   return result.value();
 }
 
-std::string GetTaskResultHistogramNameForTaskType(TaskType type) {
-  std::string_view histogram_suffix;
-  switch (type) {
-    case TaskType::kGenerateKey:
-      histogram_suffix = ".GenerateKey";
-      break;
-    case TaskType::kFromWrappedKey:
-      histogram_suffix = ".FromWrappedKey";
-      break;
-    case TaskType::kSign:
-      histogram_suffix = ".Sign";
-      break;
-  }
-  return base::StrCat({kBaseTaskResultHistogramName, histogram_suffix});
-}
-
 template <class CallbackReturnType>
 ServiceErrorOr<CallbackReturnType> ReportResultMetrics(
-    TaskType task_type,
+    BackgroundTaskType task_type,
     ServiceErrorOr<CallbackReturnType> result) {
   ServiceError error_for_metrics =
       result.has_value() ? kNoServiceErrorForMetrics : result.error();
   base::UmaHistogramEnumeration(
-      GetTaskResultHistogramNameForTaskType(task_type), error_for_metrics);
+      base::StrCat({kBaseTaskResultHistogramName,
+                    GetBackgroundTaskTypeSuffixForHistograms(task_type)}),
+      error_for_metrics);
   return result;
 }
 
@@ -86,7 +72,7 @@ ServiceErrorOr<CallbackReturnType> ReportResultMetrics(
 template <class CallbackReturnType>
 base::OnceCallback<void(ServiceErrorOr<CallbackReturnType>)>
 WrapCallbackWithMetrics(
-    TaskType task_type,
+    BackgroundTaskType task_type,
     base::OnceCallback<void(ServiceErrorOr<CallbackReturnType>)> callback) {
   return base::BindOnce(&ReportResultMetrics<CallbackReturnType>, task_type)
       .Then(std::move(callback));
@@ -108,10 +94,6 @@ UnexportableKeyTaskManager::~UnexportableKeyTaskManager() = default;
 // static
 std::unique_ptr<crypto::UnexportableKeyProvider>
 UnexportableKeyTaskManager::GetUnexportableKeyProvider() {
-  static BASE_FEATURE(
-      kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
-      "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
-      base::FEATURE_DISABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(
           kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)) {
     return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
@@ -127,8 +109,8 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     base::OnceCallback<
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
-  auto callback_wrapper =
-      WrapCallbackWithMetrics(TaskType::kGenerateKey, std::move(callback));
+  auto callback_wrapper = WrapCallbackWithMetrics(
+      BackgroundTaskType::kGenerateKey, std::move(callback));
 
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
       GetUnexportableKeyProvider();
@@ -158,8 +140,8 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     base::OnceCallback<
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
-  auto callback_wrapper =
-      WrapCallbackWithMetrics(TaskType::kFromWrappedKey, std::move(callback));
+  auto callback_wrapper = WrapCallbackWithMetrics(
+      BackgroundTaskType::kFromWrappedKey, std::move(callback));
 
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
       GetUnexportableKeyProvider();
@@ -183,7 +165,7 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
   auto callback_wrapper =
-      WrapCallbackWithMetrics(TaskType::kSign, std::move(callback));
+      WrapCallbackWithMetrics(BackgroundTaskType::kSign, std::move(callback));
 
   // TODO(alexilin): convert this to a CHECK().
   if (!signing_key) {

@@ -20,6 +20,7 @@
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"
+#include "ash/login/ui/lock_screen_media_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_camera_timeout_view.h"
@@ -51,6 +52,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -62,6 +64,7 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,21 +106,6 @@ void PressAndReleasePowerButton() {
       PowerButtonController::kIgnorePowerButtonAfterResumeDelay, true /*down*/);
   dispatch_power_button_event_after_delay(
       PowerButtonController::kIgnoreRepeatedButtonUpDelay, false /*down*/);
-}
-
-void SimulateMediaSessionChanged(
-    LockScreenMediaControlsView* media_controls,
-    media_session::mojom::MediaPlaybackState playback_state) {
-  // Simulate media session change.
-  media_controls->MediaSessionChanged(base::UnguessableToken::Create());
-
-  // Create media session information.
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state = playback_state;
-
-  // Simulate media session information change.
-  media_controls->MediaSessionInfoChanged(std::move(session_info));
 }
 
 // Returns sample AuthDisabledData to be used in tests, if the details are not
@@ -167,6 +155,61 @@ class LockContentsViewUnitTest : public LoginTestBase {
               test_api.HasAuthMethod(LoginAuthUserView::AUTH_SMART_LOCK));
   }
 };
+
+class LockContentsMediaViewUnitTest : public LockContentsViewUnitTest,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  LockContentsMediaViewUnitTest() {
+    set_start_session(true);
+    AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
+        AuthEventsRecorder::AuthenticationSurface::kLogin);
+    feature_list_.InitWithFeatureState(media::kGlobalMediaControlsCrOSUpdatedUI,
+                                       UseMediaUpdatedUI());
+  }
+  LockContentsMediaViewUnitTest(LockContentsMediaViewUnitTest&) = delete;
+  LockContentsMediaViewUnitTest& operator=(LockContentsMediaViewUnitTest&) =
+      delete;
+  ~LockContentsMediaViewUnitTest() override = default;
+
+  bool UseMediaUpdatedUI() { return GetParam(); }
+
+  void SimulateMediaSessionChanged(
+      LockContentsViewTestApi& lock_contents,
+      media_session::mojom::MediaPlaybackState playback_state) {
+    // Create media session information.
+    media_session::mojom::MediaSessionInfoPtr session_info(
+        media_session::mojom::MediaSessionInfo::New());
+    session_info->playback_state = playback_state;
+    session_info->is_controllable = true;
+
+    // Simulate media session and media session information change.
+    if (UseMediaUpdatedUI()) {
+      lock_contents.media_view()->MediaSessionChanged(
+          base::UnguessableToken::Create());
+      lock_contents.media_view()->MediaSessionInfoChanged(
+          std::move(session_info));
+    } else {
+      lock_contents.media_controls_view()->MediaSessionChanged(
+          base::UnguessableToken::Create());
+      lock_contents.media_controls_view()->MediaSessionInfoChanged(
+          std::move(session_info));
+    }
+  }
+
+  bool IsMediaViewDrawn(LockContentsViewTestApi& lock_contents) {
+    if (UseMediaUpdatedUI()) {
+      return lock_contents.media_view()->IsDrawn();
+    }
+    return lock_contents.media_controls_view()->IsDrawn();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(GlobalMediaControlsCrOSUpdatedUI,
+                         LockContentsMediaViewUnitTest,
+                         testing::Bool());
 
 TEST_F(LockContentsViewUnitTest, DisplayMode) {
   // Build lock screen with 1 user.
@@ -1063,10 +1106,6 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
 }
 
 TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
-  // Enable the "recover user" button.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCryptohomeRecovery);
-
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
       DataDispatcher(),
@@ -1107,7 +1146,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   views::Button* recover_user_button = buttons[1];
 
   // Expect the ShowGaiaSignin to be called due to button click.
-  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
+  EXPECT_CALL(*client, StartUserRecovery(users()[0].basic_user_info.account_id))
       .Times(1);
 
   // Move mouse to the "Recover user" button and click it.
@@ -1119,7 +1158,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   // The error bubble should be hidden because of the button press.
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 
-  absl::optional<int> reauth_reason =
+  std::optional<int> reauth_reason =
       user_manager::KnownUser(Shell::Get()->local_state())
           .FindReauthReason(users()[0].basic_user_info.account_id);
   EXPECT_EQ(reauth_reason, static_cast<int>(ReauthReason::kForgotPassword));
@@ -1193,45 +1232,6 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
 
   // Verify ShowGaiaSignin is not triggered for other users.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  submit_password();
-  Mock::VerifyAndClearExpectations(client.get());
-}
-
-// Gaia is shown in login on the 4th bad password attempt.
-TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
-  base::test::ScopedFeatureList feature_list;
-  // With recovery feature enabled, the online login is not forced after bad
-  // password attempts.
-  feature_list.InitAndDisableFeature(features::kCryptohomeRecovery);
-
-  // Build lock screen with a single user.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  auto client = std::make_unique<MockLoginScreenClient>();
-  client->set_authenticate_user_callback_result(false);
-
-  auto submit_password = [&]() {
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-    base::RunLoop().RunUntilIdle();
-  };
-
-  // The first n-1 attempts do not trigger ShowGaiaSignin.
-  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1;
-       ++i) {
-    submit_password();
-  }
-  Mock::VerifyAndClearExpectations(client.get());
-
-  // The final attempt triggers ShowGaiaSignin.
-  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
-      .Times(1);
   submit_password();
   Mock::VerifyAndClearExpectations(client.get());
 }
@@ -1829,7 +1829,7 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryBigUser) {
 
   auto is_public_account = [](const LoginUserView* view) -> bool {
     return view->current_user().basic_user_info.type ==
-           user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+           user_manager::UserType::kPublicAccount;
   };
 
   // Case 1: Swap user_view0 (public account user) with primary big user (public
@@ -2269,10 +2269,7 @@ TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {
 
 // Tests that media controls do not show on lock screen when auth is disabled
 // after media session changes to playing.
-TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, DisableAuthAfterMediaSessionChanged) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2285,9 +2282,8 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 
   // Disable auth and media.
   DataDispatcher()->DisableAuthForUser(
@@ -2295,15 +2291,12 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
                        base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
 // Tests that media controls do not show on lock screen when auth is disabled
 // before media session changes to playing.
-TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2320,19 +2313,15 @@ TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
                        base::Time::Now() + base::Hours(8), base::Hours(1),
                        true /*disable_lock_screen_media*/));
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, DisableAuthAllowMediaControls) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2345,9 +2334,8 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 
   // Disable auth, but allow media.
   DataDispatcher()->DisableAuthForUser(
@@ -2355,7 +2343,7 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
       AuthDisabledData(AuthDisabledReason::kTimeWindowLimit,
                        base::Time::Now() + base::Hours(8), base::Hours(1),
                        false /*disable_lock_screen_media*/));
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 }
 
 // Tests parent access dialog showing/hiding and focus behavior.
@@ -2696,7 +2684,7 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
 TEST_F(LockContentsViewUnitTest,
        BacklightRemainsForcedOffAfterFingerprintStateChange) {
   // Enter tablet mode so the power button events force the backlight off.
-  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Show lock screen with one normal user.
   auto* lock = new LockContentsView(
@@ -2719,7 +2707,7 @@ TEST_F(LockContentsViewUnitTest,
   EXPECT_TRUE(
       Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
 
-  Shell::Get()->power_button_controller()->OnTabletModeEnded();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
 }
 
 // Verifies that a fingerprint authentication attempt makes sure the backlights
@@ -2727,7 +2715,7 @@ TEST_F(LockContentsViewUnitTest,
 TEST_F(LockContentsViewUnitTest,
        BacklightIsNotForcedOffAfterFingerprintAuthenticationAttempt) {
   // Enter tablet mode so the power button events force the backlight off.
-  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Show lock screen with one normal user.
   auto* lock = new LockContentsView(
@@ -2749,8 +2737,7 @@ TEST_F(LockContentsViewUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
-
-  Shell::Get()->power_button_controller()->OnTabletModeEnded();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
 }
 
 TEST_F(LockContentsViewUnitTest, RightAndLeftAcceleratorsWithNoUser) {
@@ -2820,7 +2807,7 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
 
   LockContentsViewTestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
-  const auto* const list_user_view = users_list.user_views()[0];
+  const auto* const list_user_view = users_list.user_views()[0].get();
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
   AccountId auth_view_user =
@@ -2854,11 +2841,8 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
             list_user_view->current_user().basic_user_info.account_id);
 }
 
-TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsShownIfMediaPlaying) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest,
+       LockScreenMediaControlsShownIfMediaPlaying) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2870,18 +2854,13 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsShownIfMediaPlaying) {
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Verify media controls are shown.
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2894,34 +2873,37 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
   // Test timer
   auto mock_timer_unique = std::make_unique<base::MockOneShotTimer>();
   base::MockOneShotTimer* mock_timer = mock_timer_unique.get();
-  lock_contents.media_controls_view()->set_timer_for_testing(
-      std::move(mock_timer_unique));
+  if (UseMediaUpdatedUI()) {
+    lock_contents.media_view()->SetSwitchMediaDelayTimerForTesting(
+        std::move(mock_timer_unique));
+  } else {
+    lock_contents.media_controls_view()->set_timer_for_testing(
+        std::move(mock_timer_unique));
+  }
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
+  if (UseMediaUpdatedUI()) {
+    lock_contents.media_view()->MediaSessionChanged(std::nullopt);
+  } else {
+    lock_contents.media_controls_view()->MediaSessionChanged(std::nullopt);
+  }
   mock_timer->Fire();
   base::RunLoop().RunUntilIdle();
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Verify media controls are hidden.
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest,
+TEST_P(LockContentsMediaViewUnitTest,
        MediaControlsHiddenIfScreenLockedWhileMediaPaused) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2933,18 +2915,13 @@ TEST_F(LockContentsViewUnitTest,
 
   // Simulate paused media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPaused);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPaused);
 
   // Verify media controls are hidden.
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, KeepMediaControlsShownWithinDelay) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2956,26 +2933,24 @@ TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping.
-  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
+  if (UseMediaUpdatedUI()) {
+    lock_contents.media_view()->MediaSessionChanged(std::nullopt);
+  } else {
+    lock_contents.media_controls_view()->MediaSessionChanged(std::nullopt);
+  }
 
   // Simulate new media session starting within timer delay.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Verify media controls are shown.
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2986,17 +2961,18 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
   LockContentsViewTestApi lock_contents(contents);
 
   // Simulate no media session on lock screen.
-  lock_contents.media_controls_view()->MediaSessionInfoChanged(nullptr);
+  if (UseMediaUpdatedUI()) {
+    lock_contents.media_view()->MediaSessionInfoChanged(nullptr);
+  } else {
+    lock_contents.media_controls_view()->MediaSessionInfoChanged(nullptr);
+  }
 
   // Verify media controls are hidden.
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, ShowMediaControlsIfPausedAndAlreadyShowing) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest,
+       ShowMediaControlsIfPausedAndAlreadyShowing) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -3008,24 +2984,18 @@ TEST_F(LockContentsViewUnitTest, ShowMediaControlsIfPausedAndAlreadyShowing) {
 
   // Simulate playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session paused.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPaused);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPaused);
 
   // Verify media controls are shown.
-  EXPECT_TRUE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_TRUE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest,
+TEST_P(LockContentsMediaViewUnitTest,
        LockScreenMediaControlsHiddenIfPreferenceDisabled) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Disable user preference for media controls.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -3042,18 +3012,13 @@ TEST_F(LockContentsViewUnitTest,
 
   // Simulate active and playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Verify media controls are hidden.
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 }
 
-TEST_F(LockContentsViewUnitTest, MediaControlsHiddenOnLoginScreen) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
+TEST_P(LockContentsMediaViewUnitTest, MediaControlsHiddenOnLoginScreen) {
   // Build login screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
@@ -3065,16 +3030,19 @@ TEST_F(LockContentsViewUnitTest, MediaControlsHiddenOnLoginScreen) {
 
   // Simulate active and playing media session.
   SimulateMediaSessionChanged(
-      lock_contents.media_controls_view(),
-      media_session::mojom::MediaPlaybackState::kPlaying);
+      lock_contents, media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Verify media controls are hidden on login screen for one user.
-  EXPECT_FALSE(lock_contents.media_controls_view()->IsDrawn());
+  EXPECT_FALSE(IsMediaViewDrawn(lock_contents));
 
   SetUserCount(5);
 
   // Verify that media controls view isn't created for non low-density layouts.
-  EXPECT_EQ(nullptr, lock_contents.media_controls_view());
+  if (UseMediaUpdatedUI()) {
+    EXPECT_EQ(nullptr, lock_contents.media_view());
+  } else {
+    EXPECT_EQ(nullptr, lock_contents.media_controls_view());
+  }
 }
 
 TEST_F(LockContentsViewUnitTest, NoNavigationOrHotseatOnLockScreen) {
@@ -3232,7 +3200,7 @@ TEST_F(LockContentsViewUnitTest,
 
   LockContentsViewTestApi lock_contents(contents);
   ScrollableUsersListView::TestApi users_list(lock_contents.users_list());
-  const auto* const list_user_view = users_list.user_views()[0];
+  const auto* const list_user_view = users_list.user_views()[0].get();
   LoginBigUserView* auth_view = lock_contents.primary_big_view();
 
   AccountId auth_view_user =
@@ -3358,11 +3326,9 @@ TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithNoUsers) {
 }
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
- protected:
-  LockContentsViewWithKioskLicenseTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCryptohomeRecovery);
-  }
+ public:
+  LockContentsViewWithKioskLicenseTest() {}
+
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;
   LockContentsViewWithKioskLicenseTest& operator=(
@@ -3376,8 +3342,13 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     NotifySessionStateChanged(session_manager::SessionState::OOBE);
   }
 
-  void SetNumberOfKioskApps(int number_apps) {
-    std::vector<KioskAppMenuEntry> kiosk_apps(number_apps);
+  void SetNFakeKioskApps(int n) {
+    std::vector<KioskAppMenuEntry> kiosk_apps(
+        n, KioskAppMenuEntry(KioskAppMenuEntry::AppType::kChromeApp,
+                             AccountId::FromUserEmail("fake@email.com"),
+                             /*chrome_app_id=*/"abc123chromeappid",
+                             /*name=*/u"Fake App",
+                             /*icon=*/gfx::ImageSkia()));
     login_shelf_view_->SetKioskApps(kiosk_apps);
   }
 
@@ -3386,8 +3357,8 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     GetSessionControllerClient()->FlushForTest();
   }
 
-  raw_ptr<LoginShelfView, DanglingUntriaged | ExperimentalAsh>
-      login_shelf_view_ = nullptr;  // Unowned.
+  raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
+      nullptr;  // Unowned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3401,18 +3372,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
-  SetNumberOfKioskApps(1);
+  SetNFakeKioskApps(1);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_FALSE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message hidden if device is not with kiosk license and has
@@ -3423,17 +3395,17 @@ TEST_F(LockContentsViewWithKioskLicenseTest, ShouldHideKioskDefaultMessage) {
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
-  SetNumberOfKioskApps(0);
+  SetNFakeKioskApps(0);
 
-  EXPECT_FALSE(test_api.kiosk_default_message());
+  EXPECT_FALSE(lock_contents_view_test_api.kiosk_default_message());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3445,18 +3417,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
-  SetNumberOfKioskApps(0);
+  SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license, no
@@ -3468,18 +3441,19 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with one user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
-  SetNumberOfKioskApps(0);
+  SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3492,23 +3466,25 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   login_shelf_view_->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   // Show login screen with no user.
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
-  LockContentsView* lock_contents_view =
-      LockScreen::TestApi(LockScreen::Get()).contents_view();
-  lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
-  LockContentsViewTestApi test_api(lock_contents_view);
+  LockScreen::TestApi lock_screen_test_api(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_view_test_api(
+      lock_screen_test_api.contents_view());
+  lock_contents_view_test_api.SetKioskLicenseMode(is_kiosk_license_mode);
   SetUserCount(0);
-  SetWidget(CreateWidgetWithContent(lock_contents_view));
+  SetWidget(CreateWidgetWithContent(lock_screen_test_api.contents_view()));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
-  SetNumberOfKioskApps(0);
+  SetNFakeKioskApps(0);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_TRUE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 
-  SetNumberOfKioskApps(1);
+  SetNFakeKioskApps(1);
 
-  EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+  EXPECT_TRUE(lock_contents_view_test_api.kiosk_default_message());
+  EXPECT_FALSE(
+      lock_contents_view_test_api.kiosk_default_message()->GetVisible());
 }
 
 // UMA metrics recorded correctly after the successful login attempt.

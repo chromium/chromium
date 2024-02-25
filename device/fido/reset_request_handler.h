@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
 
   void OnTouch(FidoAuthenticator* authenticator);
   void OnResetComplete(CtapDeviceResponseCode status,
-                       absl::optional<pin::EmptyResponse> response);
+                       std::optional<pin::EmptyResponse> response);
 
   ResetSentCallback reset_sent_callback_;
   FinishedCallback finished_callback_;

@@ -219,6 +219,9 @@ class SeleniumWindowProtocolPart(WindowProtocolPart):
         self.logger.info("Setting window rect")
         self.webdriver.window.rect = rect
 
+    def get_rect(self):
+        self.logger.info("Getting window rect")
+        return self.webdriver.window.rect
 
 class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
@@ -366,7 +369,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(*data), [])
+        return (test.make_result(*data), [])
 
     def do_testharness(self, protocol, url, timeout):
         format_map = {"url": strip_server(url)}

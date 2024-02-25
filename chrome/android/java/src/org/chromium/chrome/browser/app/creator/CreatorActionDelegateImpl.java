@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.creator;
 
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.annotation.StringRes;
 
@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,24 +35,35 @@ import org.chromium.url.GURL;
 public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private static final String TAG = "Cormorant";
 
-    private final Context mActivityContext;
+    private final Activity mActivity;
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
     private final CreatorCoordinator mCreatorCoordinator;
-    private final int mParentID;
+    private final int mParentId;
+    private final BottomSheetController mBottomSheetController;
 
-    public CreatorActionDelegateImpl(Context activityContext, Profile profile,
-            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator, int parentId) {
-        mActivityContext = activityContext;
+    public CreatorActionDelegateImpl(
+            Activity activity,
+            Profile profile,
+            SnackbarManager snackbarManager,
+            CreatorCoordinator creatorCoordinator,
+            int parentId,
+            BottomSheetController bottomSheetController) {
+        mActivity = activity;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mCreatorCoordinator = creatorCoordinator;
-        mParentID = parentId;
+        mParentId = parentId;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
-    public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
-            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
+    public void openSuggestionUrl(
+            int disposition,
+            LoadUrlParams params,
+            boolean inGroup,
+            Runnable onPageLoaded,
+            Callback<VisitResult> onVisitComplete) {
         // Back-of-card actions
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
@@ -60,11 +71,12 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             boolean offTheRecord = (disposition == WindowOpenDisposition.OFF_THE_RECORD);
             if (inGroup) {
                 AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(params);
-                new TabDelegate(offTheRecord)
-                        .createNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentID);
+                new ChromeAsyncTabLauncher(offTheRecord)
+                        .launchNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentId);
 
             } else {
-                new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
+                new ChromeAsyncTabLauncher(offTheRecord)
+                        .launchNewTab(params, TabLaunchType.FROM_LINK, null);
             }
             return;
         } else if (disposition == WindowOpenDisposition.CURRENT_TAB) {
@@ -80,26 +92,42 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
         // TODO(crbug/1399617) Eliminate code duplication with
         //     FeedActionDelegateImpl
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfile);
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            assert ThreadUtils.runningOnUiThread();
-            BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, bookmarkModel, mActivityContext);
-        });
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    BookmarkUtils.addToReadingList(
+                            mActivity,
+                            bookmarkModel,
+                            title,
+                            new GURL(url),
+                            mSnackbarManager,
+                            mProfile,
+                            mBottomSheetController);
+                });
     }
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
-        SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                mActivityContext, signinAccessPoint, null);
+        SyncConsentActivityLauncherImpl.get()
+                .launchActivityForPromoDefaultFlow(mActivity, signinAccessPoint, null);
     }
 
     @Override
-    public void showSignInInterstitial(int signinAccessPoint,
-            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
-        SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroid, DeviceLockActivityLauncherImpl.get(), mBottomSheetController,
-                mProfile, new CormorantBottomSheetStrings(),
-                () -> { showSyncConsentActivity(signinAccessPoint); }, signinAccessPoint);
+    public void showSignInInterstitial(
+            int signinAccessPoint,
+            BottomSheetController mBottomSheetController,
+            WindowAndroid mWindowAndroid) {
+        SigninBottomSheetCoordinator signinCoordinator =
+                new SigninBottomSheetCoordinator(
+                        mWindowAndroid,
+                        DeviceLockActivityLauncherImpl.get(),
+                        mBottomSheetController,
+                        mProfile,
+                        new CormorantBottomSheetStrings(),
+                        () -> {
+                            showSyncConsentActivity(signinAccessPoint);
+                        },
+                        signinAccessPoint);
         signinCoordinator.show();
     }
 

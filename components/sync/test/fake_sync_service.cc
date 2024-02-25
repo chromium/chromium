@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_token_status.h"
 
 namespace syncer {
@@ -109,13 +110,6 @@ base::Time FakeSyncService::GetAuthErrorTime() const {
 bool FakeSyncService::RequiresClientUpgrade() const {
   return false;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool FakeSyncService::IsSyncFeatureDisabledViaDashboard() const {
-  return false;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 void FakeSyncService::DataTypePreconditionChanged(ModelType type) {}
 
 syncer::SyncTokenStatus FakeSyncService::GetSyncTokenStatusForDebugging()
@@ -173,17 +167,32 @@ SyncService::ModelTypeDownloadStatus FakeSyncService::GetDownloadStatusFor(
   return ModelTypeDownloadStatus::kUpToDate;
 }
 
+void FakeSyncService::RecordReasonIfWaitingForUpdates(
+    ModelType type,
+    const std::string& histogram_name) const {}
+
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
-  return HasSyncConsent();
+bool FakeSyncService::SupportsExplicitPassphrasePlatformClient() {
+  return false;
 }
+void FakeSyncService::SendExplicitPassphraseToPlatformClient() {}
 
 void FakeSyncService::Shutdown() {}
 
 void FakeSyncService::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   std::move(cb).Run(ModelTypeSet());
 }
+
+void FakeSyncService::GetLocalDataDescriptions(
+    ModelTypeSet types,
+    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+        callback) {
+  std::move(callback).Run(std::map<ModelType, LocalDataDescription>{});
+}
+
+void FakeSyncService::TriggerLocalDataMigration(ModelTypeSet types) {}
 
 }  // namespace syncer

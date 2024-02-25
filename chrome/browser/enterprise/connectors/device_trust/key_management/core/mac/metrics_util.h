@@ -32,6 +32,8 @@ enum class KeychainOperation {
   kCopy = 1,
   kDelete = 2,
   kUpdate = 3,
+  kExportPublicKey = 4,
+  kSignPayload = 5,
 };
 
 // Logs UMA metrics for the Keychain `operation` failing with `error_code` for

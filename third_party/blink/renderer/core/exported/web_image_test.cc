@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/gfx/geometry/size.h"
@@ -45,8 +46,10 @@ static scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
   return test::ReadFromFile(file_path);
 }
 
-class WebImageTest : public testing::Test,
-                     private ScopedMockOverlayScrollbars {};
+class WebImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(WebImageTest, PNGImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("white-1x1.png");

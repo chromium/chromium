@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("policy") {
+  sources = [
+    "policy_ui.h",
+    "policy_ui.mm",
+    "policy_ui_handler.h",
+    "policy_ui_handler.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/resources/webui:resources",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/strings",
+    "//components/version_info",
+    "//components/version_ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common",
+    "//ios/web/public/webui",
+    "//ui/base",
+  ]
+}

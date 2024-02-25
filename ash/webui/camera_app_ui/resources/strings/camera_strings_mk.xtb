@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Избриши ја страницата <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим на камера</translation>
 <translation id="1153190633558910465">Исклучи мрежа</translation>
-<translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Страницата <ph name="PAGE_NUMBER" /> е избришана</translation>
 <translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
 <translation id="1417314334557041815">Изменете ја страницата <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Движење надесно</translation>
 <translation id="3081586908890909590">Префрли на снимање видео</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Придружете се на „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Врската е копирана</translation>
 <translation id="3354465018370944241">Поставки за фотографија</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Видеото се обработува…</translation>
 <translation id="3789724198583203151">Ротирајте 90 степени спротивно од стрелките на часовникот</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3892148308691398805">Копирај текст</translation>
 <translation id="4060608699153044055">Не може да снимате поради недоволен простор за складирање на уредот. За да започнете со снимање, треба да ослободите простор на вашиот уред.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Паузирај го снимањето</translation>
 <translation id="4121305183798804752">Откриен е документ</translation>
 <translation id="414641094616694804">Камерава не може да ја промени резолуцијата</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
-<translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
 <translation id="428234092390943511">Сликичка на страница</translation>
 <translation id="4349714250734879769">Скалирање рамки од Chrome</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Полна резолуција</translation>
 <translation id="4864143361253542638">Список со скенирани страници</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Копирај ја адресата на линкот <ph name="URL" /></translation>
 <translation id="491895758387112773">Видеоснимање за мултипреноси</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Сооднос на фотографија</translation>
 <translation id="5057360777601936059">Камерата е недостапна во моментов.
         Проверете дали камерата е правилно поврзана.</translation>
+<translation id="5157591164390831335">Откриена е URL-адреса.</translation>
 <translation id="5163387177077603948">Се преместува надесно</translation>
-<translation id="5219374179772385066">Сега е достапен режимот „Забрзано видео“!</translation>
 <translation id="5235304959032763950">16 на 9</translation>
 <translation id="5266635337630551423">Горен лев агол на документот</translation>
 <translation id="5317780077021120954">Зачувај</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Фала за повратните информации за апликацијата „Камера“.
 
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
+<translation id="6519884562954018934">Придружете се на <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6617916774429601017">Прикажи ги сите резолуции</translation>
 <translation id="6631515515009660915">Исклучено е отсликување</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">Текстот е копиран</translation>
 <translation id="7488619942230388918">Снимете GIF-видео</translation>
 <translation id="7557677699350329807">Префрли на следната камера</translation>
+<translation id="7562584071994185503">Копирај го текстот <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="761421184377987513">Се преместува долу лево</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Скалирање рамки од Camera HAL</translation>
 <translation id="8425673304802773841">Навалете надолу</translation>
 <translation id="8428213095426709021">Поставки</translation>
+<translation id="8609951387004618906">Отвори <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Исклучете го звукот на микрофонот. Копчето за исклучување звук е вклучено</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Прегледувај метаподатоци</translation>
+<translation id="874854738381978209">Откриена е Wi-Fi мрежа.</translation>
 <translation id="8815966864175525708">Префрли за фотографирање во портрет</translation>
 <translation id="8828441885228359828">Продолжи со снимање</translation>
 <translation id="8870695351537079478">Не може да се започне со снимање</translation>

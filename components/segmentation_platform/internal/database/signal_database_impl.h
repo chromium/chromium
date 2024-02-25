@@ -8,17 +8,16 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
-#include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -36,7 +35,8 @@ class SignalDatabaseImpl : public SignalDatabase {
   using SignalProtoDb = leveldb_proto::ProtoDatabase<proto::SignalData>;
 
   SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database,
-                     base::Clock* clock);
+                     base::Clock* clock,
+                     scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~SignalDatabaseImpl() override;
 
   // Disallow copy/assign.
@@ -47,13 +47,14 @@ class SignalDatabaseImpl : public SignalDatabase {
   void Initialize(SuccessCallback callback) override;
   void WriteSample(proto::SignalType signal_type,
                    uint64_t name_hash,
-                   absl::optional<int32_t> value,
+                   std::optional<int32_t> value,
                    SuccessCallback callback) override;
   void GetSamples(proto::SignalType signal_type,
                   uint64_t name_hash,
                   base::Time start_time,
                   base::Time end_time,
-                  SamplesCallback callback) override;
+                  EntriesCallback callback) override;
+  const std::vector<DbEntry>* GetAllSamples() override;
   void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
                      base::Time end_time,
@@ -68,9 +69,14 @@ class SignalDatabaseImpl : public SignalDatabase {
                              leveldb_proto::Enums::InitStatus status);
 
   void OnGetSamples(
-      SamplesCallback callback,
+      EntriesCallback callback,
       base::Time start_time,
       base::Time end_time,
+      bool success,
+      std::unique_ptr<std::map<std::string, proto::SignalData>> entries);
+
+  void OnGetAllSamples(
+      SuccessCallback callback,
       bool success,
       std::unique_ptr<std::map<std::string, proto::SignalData>> entries);
 
@@ -92,11 +98,16 @@ class SignalDatabaseImpl : public SignalDatabase {
   // The backing LevelDB proto database.
   std::unique_ptr<SignalProtoDb> database_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // Used for getting current time.
   raw_ptr<base::Clock> clock_;
 
   // Whether or not initialization has been completed.
   bool initialized_{false};
+
+  const bool enable_signal_cache_;
+  std::vector<DbEntry> all_signals_;
 
   // A cache of recently added signals. Used for avoiding collisions between two
   // signals if they end up generating the same signal key, which can happen if

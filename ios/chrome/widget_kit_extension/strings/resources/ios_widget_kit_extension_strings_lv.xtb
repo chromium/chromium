@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1324575488877808473">Atveriet pārlūkprogrammu Chrome, lai šeit skatītu visbiežāk apmeklētās vietnes.</translation>
 <translation id="2513892053093488070">Meklēt ar balsi</translation>
 <translation id="2535710892645968259">Atveriet Chrome dinozaura spēli no bloķēšanas ekrāna.</translation>
 <translation id="2542770169955243077">Chrome dinozaura spēle</translation>
-<translation id="2803429804752388720">Paroļu meklēšana</translation>
 <translation id="2922313168575194078">Droši meklējiet savas saglabātās paroles Google paroļu pārvaldniekā.</translation>
 <translation id="302608144225178783">Atveriet Chrome dinozaura spēli no sākuma ekrāna.</translation>
 <translation id="3296938369177810197">Meklēšana ar balsi</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Meklējiet jaunu saturu vai atveriet visbiežāk apmeklētās vietnes no sava iPad planšetdatora sākumlapas.</translation>
 <translation id="6721566127904256183">Šeit tiks rādītas jūsu visvairāk apmeklētās vietnes.</translation>
 <translation id="6855322554930231468">Meklēšana</translation>
+<translation id="6973491011026415905">Meklēt paroles Google paroļu pārvaldniekā</translation>
 <translation id="7010831364920321713">Meklēšana inkognito režīmā</translation>
 <translation id="7048549665319929185">Meklējiet vai
 ievadiet URL</translation>

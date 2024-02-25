@@ -174,6 +174,24 @@ message RTLookupResponse {
   // When set, represents the realtime API asking the client side detection
   // module to send a ping regardless of the scoring found in CSD models.
   optional ClientSideDetectionType client_side_detection_type = 2;
+
+  // The URL categories associated with the URL in the request. Only populated
+  // for Enterprise Protego and only if categories were found for the URL.
+  repeated string url_categories = 3;
+}
+
+// mirrors google.protobuf.Timestamp
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  optional int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  optional int32 nanos = 2;
 }
 
 // Contains information about a matched URL Filtering rule defined by
@@ -186,4 +204,58 @@ message MatchedUrlNavigationRule {
   optional string rule_name = 2;
   // If the match was due to an URL category, it is found here.
   optional string matched_url_category = 3;
+
+  // Action for matched rule not implemented.
+  reserved 4;
+
+  // This represents text segment in a custom message defined for DLP rule.
+  // For eg: “Please learn more (here)[link] and (here)[link]"
+  // is broken into 4 segments.
+  message CustomRuleMessageSegment {
+    // Required. Text to be displayed in this segment.
+    optional string text = 1;
+
+    // Optional. Link to external resource, such as a company's communication
+    // policy. This is supposed to be hyperlink on text field above.
+    optional string link = 2;
+  }
+
+  message CustomMessage {
+    // Custom message provided by admin during rule creation. Contains text
+    // only.
+    optional string custom_message = 1 [deprecated = true];
+
+    // learn more link provided by admin during rule creation. Contains a single
+    // URL.
+    optional string learn_more_link = 2 [deprecated = true];
+
+    // Custom message containing <a> tags wrapping URLs. This is sanitized HTML
+    // restricted to <a> tags with "href" attribute.
+    optional string custom_message_with_links = 3 [deprecated = true];
+
+    // Ordered list of text segments comprised of plain text and URLs. These
+    // combined represent the custom rule message.
+    repeated CustomRuleMessageSegment message_segments = 4;
+  }
+  // Contains custom interstitial message associated with this rule.
+  optional CustomMessage custom_message = 5;
+
+  message WatermarkMessage {
+    // Custom message provided by admin during rule creation. Contains text
+    // only.
+    optional string watermark_message = 1;
+
+    // Identifier for the user/device that triggered the watermark rule.
+    optional string user_email = 2;
+    optional string obfuscated_device_id = 3;
+
+    // Triggered rule timestamp to be displayed in the watermark for easy admin
+    // investigation.
+    optional Timestamp timestamp = 4;
+  }
+
+  // Contains the watermarking message, provided by Admin during rule creation.
+  // Also includes information about the user for whom the rule was triggered,
+  // and the timestamp of the triggered rule event.
+  optional WatermarkMessage watermark_message = 6;
 }

@@ -4,18 +4,18 @@
 
 #include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::testing {
 
 namespace {
 
-SiteFeatureUsage UsageFromOptionalBool(absl::optional<bool> feature) {
+SiteFeatureUsage UsageFromOptionalBool(std::optional<bool> feature) {
   if (feature.has_value()) {
     return feature.value() ? SiteFeatureUsage::kSiteFeatureInUse
                            : SiteFeatureUsage::kSiteFeatureNotInUse;

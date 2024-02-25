@@ -194,10 +194,11 @@ void CheckIfSolidShape(const SkCanvas& canvas,
 
   bool does_cover_canvas = IsFullQuad(canvas, shape);
   SkBlendMode blendmode = flags.getBlendMode();
-  if (does_cover_canvas && ActsLikeClear(blendmode, flags.getColor4f().fA))
+  if (does_cover_canvas && ActsLikeClear(blendmode, flags.getColor4f().fA)) {
     *is_transparent = true;
-  else if (flags.getAlpha() != 0 || blendmode != SkBlendMode::kSrc)
+  } else if (!flags.isFullyTransparent() || blendmode != SkBlendMode::kSrc) {
     *is_transparent = false;
+  }
 
   if (does_cover_canvas && IsSolidColorPaint(flags)) {
     CalculateSolidColor(flags.getColor4f() /* src_color */,
@@ -217,7 +218,7 @@ bool CheckIfRRectClipCoversCanvas(const SkCanvas& canvas,
 
 }  // namespace
 
-absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
+std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
     const PaintOpBuffer& buffer,
     const gfx::Rect& rect,
     int max_ops_to_analyze,
@@ -266,7 +267,7 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
     const PaintOp& op = *frame.iter;
     PlaybackParams params(nullptr, SkM44(frame.original_ctm));
     switch (op.GetType()) {
-      case PaintOpType::DrawRecord: {
+      case PaintOpType::kDrawRecord: {
         const auto& record_op = static_cast<const DrawRecordOp&>(op);
         stack.emplace_back(PaintOpBuffer::CompositeIterator(
                                record_op.record.buffer(), nullptr),
@@ -275,89 +276,90 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       }
 
       // Any of the following ops result in non solid content.
-      case PaintOpType::DrawDRRect:
-      case PaintOpType::DrawImage:
-      case PaintOpType::DrawImageRect:
-      case PaintOpType::DrawIRect:
-      case PaintOpType::DrawLine:
-      case PaintOpType::DrawOval:
-      case PaintOpType::DrawPath:
-        return absl::nullopt;
+      case PaintOpType::kDrawDRRect:
+      case PaintOpType::kDrawImage:
+      case PaintOpType::kDrawImageRect:
+      case PaintOpType::kDrawIRect:
+      case PaintOpType::kDrawLine:
+      case PaintOpType::kDrawOval:
+      case PaintOpType::kDrawPath:
+      case PaintOpType::kDrawVertices:
+        return std::nullopt;
       // TODO(vmpstr): Add more tests on exceeding max_ops_to_analyze.
-      case PaintOpType::DrawRRect: {
+      case PaintOpType::kDrawRRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return absl::nullopt;
+          return std::nullopt;
         const auto& rrect_op = static_cast<const DrawRRectOp&>(op);
         CheckIfSolidShape(canvas, rrect_op.rrect, rrect_op.flags, &is_solid,
                           &is_transparent, &color);
         break;
       }
-      case PaintOpType::DrawSkottie:
-      case PaintOpType::DrawSlug:
-      case PaintOpType::DrawTextBlob:
+      case PaintOpType::kDrawSkottie:
+      case PaintOpType::kDrawSlug:
+      case PaintOpType::kDrawTextBlob:
       // Anything that has to do a save layer is probably not solid. As it will
       // likely need more than one draw op.
       // TODO(vmpstr): We could investigate handling these.
-      case PaintOpType::SaveLayer:
-      case PaintOpType::SaveLayerAlpha:
+      case PaintOpType::kSaveLayer:
+      case PaintOpType::kSaveLayerAlpha:
       // Complex clips will probably result in non solid color as it might not
       // cover the canvas.
       // TODO(vmpstr): We could investigate handling these.
-      case PaintOpType::ClipPath:
-        return absl::nullopt;
-      case PaintOpType::ClipRRect: {
+      case PaintOpType::kClipPath:
+        return std::nullopt;
+      case PaintOpType::kClipRRect: {
         const auto& rrect_op = static_cast<const ClipRRectOp&>(op);
         bool does_cover_canvas =
             CheckIfRRectClipCoversCanvas(canvas, rrect_op.rrect);
         // If the clip covers the full canvas, we can treat it as if there's no
         // clip at all and continue, otherwise this is no longer a solid color.
         if (!does_cover_canvas)
-          return absl::nullopt;
+          return std::nullopt;
         break;
       }
-      case PaintOpType::DrawRect: {
+      case PaintOpType::kDrawRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return absl::nullopt;
+          return std::nullopt;
         const auto& rect_op = static_cast<const DrawRectOp&>(op);
         CheckIfSolidShape(canvas, rect_op.rect, rect_op.flags, &is_solid,
                           &is_transparent, &color);
         break;
       }
-      case PaintOpType::DrawColor: {
+      case PaintOpType::kDrawColor: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return absl::nullopt;
+          return std::nullopt;
         const auto& color_op = static_cast<const DrawColorOp&>(op);
         CheckIfSolidColor(canvas, color_op.color, color_op.mode, &is_solid,
                           &is_transparent, &color);
         break;
       }
-      case PaintOpType::ClipRect: {
+      case PaintOpType::kClipRect: {
         // SolidColorAnalyzer uses an SkNoDrawCanvas which uses an
         // SkNoPixelsDevice which says (without looking) that the canvas's
         // clip is always a rect.  So, if this clip could result in not
         // a rect, this is no longer solid color.
         const auto& clip_op = static_cast<const ClipRectOp&>(op);
         if (clip_op.op == SkClipOp::kDifference)
-          return absl::nullopt;
+          return std::nullopt;
         op.Raster(&canvas, params);
         break;
       }
 
       // Don't affect the canvas, so ignore.
-      case PaintOpType::Annotate:
-      case PaintOpType::CustomData:
-      case PaintOpType::SetNodeId:
-      case PaintOpType::Noop:
+      case PaintOpType::kAnnotate:
+      case PaintOpType::kCustomData:
+      case PaintOpType::kSetNodeId:
+      case PaintOpType::kNoop:
         break;
 
       // The rest of the ops should only affect our state canvas.
-      case PaintOpType::Concat:
-      case PaintOpType::Scale:
-      case PaintOpType::SetMatrix:
-      case PaintOpType::Restore:
-      case PaintOpType::Rotate:
-      case PaintOpType::Save:
-      case PaintOpType::Translate:
+      case PaintOpType::kConcat:
+      case PaintOpType::kScale:
+      case PaintOpType::kSetMatrix:
+      case PaintOpType::kRestore:
+      case PaintOpType::kRotate:
+      case PaintOpType::kSave:
+      case PaintOpType::kTranslate:
         op.Raster(&canvas, params);
         break;
     }
@@ -368,7 +370,7 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
     return SkColors::kTransparent;
   if (is_solid)
     return color;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace cc

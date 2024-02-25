@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_PLATFORM_DELEGATE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_PLATFORM_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -58,8 +58,8 @@ class PlatformDelegate {
 
     ~ProductMetadata();
 
-    absl::optional<std::string> name = absl::nullopt;
-    absl::optional<std::string> version = absl::nullopt;
+    std::optional<std::string> name = std::nullopt;
+    std::optional<std::string> version = std::nullopt;
 
     bool operator==(const ProductMetadata& other) const;
   };
@@ -67,7 +67,7 @@ class PlatformDelegate {
   // Returns product metadata for a given `file_path`.
   // On Windows, this looks at file metadata.
   // On Mac, it looks for app bundle metadata.
-  virtual absl::optional<ProductMetadata> GetProductMetadata(
+  virtual std::optional<ProductMetadata> GetProductMetadata(
       const base::FilePath& file_path);
 
   struct SigningCertificatesPublicKeys {
@@ -81,13 +81,13 @@ class PlatformDelegate {
 
     // The following fields apply to the leaf certificate.
     bool is_os_verified = false;
-    absl::optional<std::string> subject_name;
+    std::optional<std::string> subject_name;
   };
 
   // Returns the public key SHA256 hashes of the certificates used to sign an
-  // executable file located at `file_path`. Returns absl::nullopt if
+  // executable file located at `file_path`. Returns std::nullopt if
   // unsupported on the current platform.
-  virtual absl::optional<SigningCertificatesPublicKeys>
+  virtual std::optional<SigningCertificatesPublicKeys>
   GetSigningCertificatesPublicKeys(const base::FilePath& file_path);
 };
 

@@ -29,8 +29,11 @@ public abstract class ICronetEngineBuilder {
     public static final int QUIC_OPTIONS = 3;
 
     // Public API methods.
-    public abstract ICronetEngineBuilder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-            boolean includeSubdomains, Date expirationDate);
+    public abstract ICronetEngineBuilder addPublicKeyPins(
+            String hostName,
+            Set<byte[]> pinsSha256,
+            boolean includeSubdomains,
+            Date expirationDate);
 
     public abstract ICronetEngineBuilder addQuicHint(String host, int port, int alternatePort);
 
@@ -99,5 +102,15 @@ public abstract class ICronetEngineBuilder {
 
     public ICronetEngineBuilder setThreadPriority(int priority) {
         return this;
+    }
+
+    /**
+     * Communicates the cronetInitializationRef for use in telemetry/logging, or 0 if the impl does
+     * not support this method.
+     *
+     * <p>Cronet API code with API version level >=31 calls this method shortly after construction.
+     */
+    protected long getLogCronetInitializationRef() {
+        return 0;
     }
 }

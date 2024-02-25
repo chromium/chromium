@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "chrome/test/fuzzing/kombucha_in_process_fuzzer.pb.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -112,6 +112,9 @@ class KombuchaInProcessFuzzer
   ui::Accelerator current_accelerator_;
 
  private:
+  // Cleans the browser once the fuzzing iteration is over. This helps
+  // determinism when trying to reproduce.
+  void CleanInProcessBrowserState();
   // List that enables browser startup with custom features
   base::test::ScopedFeatureList scoped_feature_list_;
 

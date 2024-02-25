@@ -80,10 +80,7 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
 
     int32_t kRouteId =
         static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
-    const SurfaceHandle kFakeSurfaceHandle = 1;
-    SurfaceHandle surface_handle = kFakeSurfaceHandle;
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->surface_handle = surface_handle;
     init_params->share_group_id = MSG_ROUTING_NONE;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
@@ -93,8 +90,10 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
 
     ContextResult result = ContextResult::kFatalFailure;
     Capabilities capabilities;
+    GLCapabilities gl_capabilities;
     CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
-                        GetSharedMemoryRegion(), &result, &capabilities);
+                        GetSharedMemoryRegion(), &result, &capabilities,
+                        &gl_capabilities);
     EXPECT_EQ(result, ContextResult::kSuccess);
 
     auto raster_decoder_state =
@@ -132,7 +131,8 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
 
   ASSERT_TRUE(channel_manager());
   GpuChannel* channel = channel_manager()->EstablishChannel(
-      base::UnguessableToken::Create(), kClientId, kClientTracingId, false);
+      base::UnguessableToken::Create(), kClientId, kClientTracingId, false,
+      gfx::GpuExtraInfo(), /*gpu_memory_buffer_factory=*/nullptr);
   EXPECT_TRUE(channel);
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }

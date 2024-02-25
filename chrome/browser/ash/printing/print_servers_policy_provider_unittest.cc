@@ -6,14 +6,15 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/print_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -49,11 +50,15 @@ class FakePrintServersProvider : public PrintServersProvider {
                         const std::string& allowlist_pref) override {}
   void ClearData() override {}
 
-  absl::optional<std::vector<PrintServer>> GetPrintServers() override {
+  std::optional<std::vector<PrintServer>> GetPrintServers() override {
     return print_servers_;
   }
 
-  void SetPrintServers(absl::optional<std::vector<PrintServer>> print_servers) {
+  base::WeakPtr<PrintServersProvider> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void SetPrintServers(std::optional<std::vector<PrintServer>> print_servers) {
     print_servers_ = print_servers;
     if (observer_) {
       observer_->OnServersChanged(print_servers.has_value(),
@@ -62,8 +67,9 @@ class FakePrintServersProvider : public PrintServersProvider {
   }
 
  private:
-  absl::optional<std::vector<PrintServer>> print_servers_;
+  std::optional<std::vector<PrintServer>> print_servers_;
   raw_ptr<PrintServersProvider::Observer> observer_ = nullptr;
+  base::WeakPtrFactory<FakePrintServersProvider> weak_ptr_factory_{this};
 };
 
 TEST(PrintServersPolicyProvider, UserAndDevicePrintServersAreProvided) {

@@ -371,9 +371,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // For layer tree mode only.
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
   void ClearBackdropFilterBounds();
-  absl::optional<gfx::RRectF> backdrop_filter_bounds() const {
+  std::optional<gfx::RRectF> backdrop_filter_bounds() const {
     return layer_tree_inputs() ? layer_tree_inputs()->backdrop_filter_bounds
-                               : absl::nullopt;
+                               : std::nullopt;
   }
 
   // For layer tree mode only.
@@ -1007,12 +1007,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
     HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kTransparent;
 
-    bool contents_opaque : 1;
-    bool contents_opaque_for_text : 1;
-    bool is_drawable : 1;
-    bool double_sided : 1;
+    bool contents_opaque : 1 = false;
+    bool contents_opaque_for_text : 1 = false;
+    bool is_drawable : 1 = false;
+    bool double_sided : 1 = true;
 
-    SkColor4f background_color;
+    SkColor4f background_color = SkColors::kTransparent;
     TouchActionRegion touch_action_region;
 
     ElementId element_id;
@@ -1038,23 +1038,23 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     float opacity = 1.0f;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
-    bool masks_to_bounds : 1;
+    bool masks_to_bounds : 1 = false;
 
     // If set, disables this layer's rounded corner from triggering a render
     // surface on itself if possible.
-    bool is_fast_rounded_corner : 1;
+    bool is_fast_rounded_corner : 1 = false;
 
-    bool user_scrollable_horizontal : 1;
-    bool user_scrollable_vertical : 1;
+    bool user_scrollable_horizontal : 1 = true;
+    bool user_scrollable_vertical : 1 = true;
 
-    bool trilinear_filtering : 1;
+    bool trilinear_filtering : 1 = false;
 
-    bool hide_layer_and_subtree : 1;
+    bool hide_layer_and_subtree : 1 = false;
 
     // Indicates that this layer will need a scroll property node and that this
     // layer's bounds correspond to the scroll node's bounds (both |bounds| and
     // |scroll_container_bounds|).
-    bool scrollable : 1;
+    bool scrollable : 1 = false;
 
     gfx::PointF position;
     gfx::Transform transform;
@@ -1070,7 +1070,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
     FilterOperations filters;
     FilterOperations backdrop_filters;
-    absl::optional<gfx::RRectF> backdrop_filter_bounds;
+    std::optional<gfx::RRectF> backdrop_filter_bounds;
     float backdrop_filter_quality = 1.0f;
 
     int mirror_count = 0;

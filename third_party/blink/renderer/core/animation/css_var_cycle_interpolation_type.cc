@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -26,6 +26,11 @@ class CycleChecker : public InterpolationType::ConversionChecker {
                bool cycle_detected)
       : property_(property), value_(value), cycle_detected_(cycle_detected) {}
 
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(value_);
+  }
+
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
@@ -35,7 +40,7 @@ class CycleChecker : public InterpolationType::ConversionChecker {
   }
 
   PropertyHandle property_;
-  Persistent<const CSSValue> value_;
+  Member<const CSSValue> value_;
   const bool cycle_detected_;
 };
 
@@ -47,7 +52,7 @@ CSSVarCycleInterpolationType::CSSVarCycleInterpolationType(
 }
 
 static InterpolationValue CreateCycleDetectedValue() {
-  return InterpolationValue(std::make_unique<InterpolableList>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0));
 }
 
 InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
@@ -60,10 +65,10 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   // It is only possible to form a cycle if the value points to something else.
   // This is only possible with var(), or with revert-[layer] which may revert
   // to a value which contains var().
-  if (const auto* declaration =
-          DynamicTo<CSSCustomPropertyDeclaration>(value)) {
-    if (!declaration->Value().NeedsVariableResolution())
+  if (const auto* declaration = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+    if (!declaration->VariableDataValue()->NeedsVariableResolution()) {
       return nullptr;
+    }
   } else if (!value.IsRevertValue() && !value.IsRevertLayerValue()) {
     return nullptr;
   }
@@ -73,7 +78,7 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   PropertyHandle property = GetProperty();
   bool cycle_detected = !css_environment.Resolve(property, &value);
   conversion_checkers.push_back(
-      std::make_unique<CycleChecker>(property, value, cycle_detected));
+      MakeGarbageCollected<CycleChecker>(property, value, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 

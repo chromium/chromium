@@ -214,6 +214,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
           });
       return associated_loader;
     });
+    ON_CALL(*this, GetIsolate).WillByDefault(Return(GetBlinkIsolate()));
     ON_CALL(*this, GetEmbedderOriginString)
         .WillByDefault(
             Return("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/"));
@@ -238,6 +239,8 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (blink::WebPluginContainer*),
               (override));
   MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
+
+  MOCK_METHOD(v8::Isolate*, GetIsolate, (), (override));
 
   MOCK_METHOD(net::SiteForCookies, SiteForCookies, (), (const override));
 
@@ -309,7 +312,9 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(std::unique_ptr<PdfAccessibilityDataHandler>,
               CreateAccessibilityDataHandler,
-              (PdfAccessibilityActionHandler*, PdfAccessibilityImageFetcher*),
+              (PdfAccessibilityActionHandler*,
+               PdfAccessibilityImageFetcher*,
+               blink::WebPluginContainer*),
               (override));
 };
 
@@ -346,10 +351,8 @@ class PdfViewWebPluginWithoutInitializeTest
   static void AddToPluginParams(base::StringPiece name,
                                 base::StringPiece value,
                                 blink::WebPluginParams& params) {
-    params.attribute_names.push_back(
-        blink::WebString::FromUTF8(name.data(), name.size()));
-    params.attribute_values.push_back(
-        blink::WebString::FromUTF8(value.data(), value.size()));
+    params.attribute_names.push_back(blink::WebString::FromUTF8(name));
+    params.attribute_values.push_back(blink::WebString::FromUTF8(value));
   }
 
   void SetUpPlugin(base::StringPiece document_url,
@@ -1773,7 +1776,7 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
       return bookmarks;
     }
 
-    absl::optional<gfx::Size> GetUniformPageSizePoints() override {
+    std::optional<gfx::Size> GetUniformPageSizePoints() override {
       return gfx::Size(1000, 1200);
     }
 

@@ -97,7 +97,7 @@ int BidirectionalStream::Start(const char* url,
   request_info->method = method;
   if (!net::HttpUtil::IsValidHeaderName(request_info->method))
     return -1;
-  request_info->extra_headers.CopyFrom(headers);
+  request_info->extra_headers = headers;
   request_info->end_stream_on_headers = end_of_stream;
   write_end_of_stream_ = end_of_stream;
   PostToNetworkThread(FROM_HERE,
@@ -110,7 +110,8 @@ bool BidirectionalStream::ReadData(char* buffer, int capacity) {
   if (!buffer)
     return false;
   scoped_refptr<net::WrappedIOBuffer> read_buffer =
-      base::MakeRefCounted<net::WrappedIOBuffer>(buffer);
+      base::MakeRefCounted<net::WrappedIOBuffer>(
+          base::make_span(buffer, static_cast<size_t>(capacity)));
 
   PostToNetworkThread(
       FROM_HERE, base::BindOnce(&BidirectionalStream::ReadDataOnNetworkThread,
@@ -125,7 +126,8 @@ bool BidirectionalStream::WriteData(const char* buffer,
     return false;
 
   scoped_refptr<net::WrappedIOBuffer> write_buffer =
-      base::MakeRefCounted<net::WrappedIOBuffer>(buffer);
+      base::MakeRefCounted<net::WrappedIOBuffer>(
+          base::make_span(buffer, static_cast<size_t>(count)));
 
   PostToNetworkThread(
       FROM_HERE,

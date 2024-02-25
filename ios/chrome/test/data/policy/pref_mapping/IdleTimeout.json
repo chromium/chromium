@@ -1,0 +1,47 @@
+[
+    {
+         "os": [
+           "ios"
+         ],
+         "policy_pref_mapping_tests": [
+           {
+             "policies": {
+               "IdleTimeout": 10,
+               "IdleTimeoutActions": []
+             },
+             "policies_settings": {
+               "IdleTimeout": {
+                 "scope": "machine"
+               },
+               "IdleTimeoutActions": {
+                 "scope": "machine"
+               }
+            },
+             "prefs": {
+               "idle_timeout": {
+                 "value": "600000000"
+               }
+             }
+           },
+           {
+             "policies": {
+               "IdleTimeout": 0,
+               "IdleTimeoutActions": []
+             },
+             "policies_settings": {
+               "IdleTimeout": {
+                 "scope": "machine"
+               },
+               "IdleTimeoutActions": {
+                 "scope": "machine"
+               }
+            },
+             "prefs": {
+               "idle_timeout": {
+                 "value": "60000000"
+               }
+             }
+           }
+         ]
+       }
+]

@@ -1,0 +1,38 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  assert 200 == 404
+[FAIL] test_no_such_shadow_root_with_element
+  assert 200 == 404
+[FAIL] test_no_such_shadow_root_with_unknown_shadow_root
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_no_such_shadow_root_with_shadow_root_from_other_window_handle
+  AssertionError: assert 'detached shadow root' == 'no such shadow root'
+[FAIL] test_no_such_shadow_root_with_shadow_root_from_other_frame
+  AssertionError: assert 'detached shadow root' == 'no such shadow root'
+[FAIL] test_invalid_shadow_root_id_argument[True]
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_invalid_shadow_root_id_argument[None]
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_invalid_shadow_root_id_argument[1]
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_invalid_shadow_root_id_argument[shadow_root_id3]
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_invalid_shadow_root_id_argument[shadow_root_id4]
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_find_elements[open-tag name-a]
+  AssertionError: invalid argument (400): invalid argument: invalid locator
+[FAIL] test_find_elements[open-xpath-//a]
+  AssertionError: invalid argument (400): invalid argument: invalid locator
+[FAIL] test_find_elements[closed-css selector-#linkText]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_find_elements[closed-link text-full link text]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_find_elements[closed-partial link text-link text]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_find_elements[closed-tag name-a]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_find_elements[closed-xpath-//a]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_find_elements_in_nested_shadow_root[closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+Harness: the test ran to completion.

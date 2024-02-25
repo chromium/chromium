@@ -16,7 +16,13 @@ void PartBObject::Trace(Visitor* visitor) const {
 fields_require_tracing.cpp:21:1: warning: [blink-gc] Class 'HeapObject' has untraced fields that require tracing.
 void HeapObject::Trace(Visitor* visitor) const {
 ^
-./fields_require_tracing.h:43:5: note: [blink-gc] Untraced field 'm_part' declared here:
+./fields_require_tracing.h:44:5: note: [blink-gc] Untraced field 'm_part' declared here:
     PartObject m_part;
+    ^
+./fields_require_tracing.h:45:5: note: [blink-gc] Untraced field 'm_array1' declared here:
+    Member<HeapObject> m_array1[array_size];
+    ^
+./fields_require_tracing.h:46:5: note: [blink-gc] Untraced field 'm_array2' declared here:
+    std::array<Member<HeapObject>, array_size> m_array2;
     ^
 3 warnings generated.

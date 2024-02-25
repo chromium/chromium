@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -45,6 +45,7 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
+            case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
                 return;
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
@@ -71,13 +72,13 @@ class KeyboardAccessoryIPHUtils {
         final Tracker tracker = getTrackerFromProfile();
         if (tracker == null) return false;
         return tracker.getTriggerState(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE)
-                == TriggerState.HAS_BEEN_DISPLAYED
+                        == TriggerState.HAS_BEEN_DISPLAYED
                 || tracker.getTriggerState(
-                           FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE)
-                == TriggerState.HAS_BEEN_DISPLAYED
+                                FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE)
+                        == TriggerState.HAS_BEEN_DISPLAYED
                 || tracker.getTriggerState(
-                           FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE)
-                == TriggerState.HAS_BEEN_DISPLAYED;
+                                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE)
+                        == TriggerState.HAS_BEEN_DISPLAYED;
     }
 
     /**
@@ -107,8 +108,12 @@ class KeyboardAccessoryIPHUtils {
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      * @param helpText String that should be displayed within the IPH bubble.
      */
-    static void showHelpBubble(String feature, RectProvider rectProvider, Context context,
-            View rootView, @Nullable String helpText) {
+    static void showHelpBubble(
+            String feature,
+            RectProvider rectProvider,
+            Context context,
+            View rootView,
+            @Nullable String helpText) {
         TextBubble helpBubble = createBubble(feature, rectProvider, context, rootView, helpText);
         if (helpBubble != null) helpBubble.show();
     }
@@ -125,35 +130,57 @@ class KeyboardAccessoryIPHUtils {
      */
     static void showHelpBubble(
             String feature, View view, View rootView, @Nullable String helpText) {
-        TextBubble helpBubble = createBubble(
-                feature, new ViewRectProvider(view), view.getContext(), rootView, helpText);
+        TextBubble helpBubble =
+                createBubble(
+                        feature, new ViewRectProvider(view), view.getContext(), rootView, helpText);
         if (helpBubble == null) return;
         // To emphasize which chip is pointed to, set selected to true for the built-in highlight.
         // Prefer ViewHighlighter for views without a LayerDrawable background.
         view.setSelected(true);
-        helpBubble.addOnDismissListener(() -> { view.setSelected(false); });
+        helpBubble.addOnDismissListener(
+                () -> {
+                    view.setSelected(false);
+                });
         helpBubble.show();
     }
 
-    private static TextBubble createBubble(String feature, RectProvider rectProvider,
-            Context context, View rootView, @Nullable String helpText) {
+    private static TextBubble createBubble(
+            String feature,
+            RectProvider rectProvider,
+            Context context,
+            View rootView,
+            @Nullable String helpText) {
         final Tracker tracker = getTrackerFromProfile();
         if (tracker == null) return null;
         if (!tracker.shouldTriggerHelpUI(feature)) return null; // This call records the IPH intent.
         TextBubble helpBubble;
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {
-            helpBubble = new TextBubble(context, rootView, helpText, helpText,
-                    /* showArrow= */ true, rectProvider,
-                    ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+            helpBubble =
+                    new TextBubble(
+                            context,
+                            rootView,
+                            helpText,
+                            helpText,
+                            /* showArrow= */ true,
+                            rectProvider,
+                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         } else {
-            @StringRes
-            int helpTextResourceId = getHelpTextForFeature(feature);
-            helpBubble = new TextBubble(context, rootView, helpTextResourceId, helpTextResourceId,
-                    rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+            @StringRes int helpTextResourceId = getHelpTextForFeature(feature);
+            helpBubble =
+                    new TextBubble(
+                            context,
+                            rootView,
+                            helpTextResourceId,
+                            helpTextResourceId,
+                            rectProvider,
+                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         }
         helpBubble.setDismissOnTouchInteraction(true);
-        helpBubble.addOnDismissListener(() -> { tracker.dismissed(feature); });
+        helpBubble.addOnDismissListener(
+                () -> {
+                    tracker.dismissed(feature);
+                });
         return helpBubble;
     }
 
@@ -162,7 +189,7 @@ class KeyboardAccessoryIPHUtils {
         // incognito profile) instead of always using regular profile. It works correctly now,
         // but it is not safe.
         final Tracker tracker =
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
         if (!tracker.isInitialized()) return null;
         return tracker;
     }
@@ -187,6 +214,8 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
                 return org.chromium.chrome.R.string
                         .autofill_iph_external_account_profile_suggestion;
+            case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
+                return R.string.iph_keyboard_accessory_virtual_card_cvc_fill_feature;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Wide Gamut Color Rendering</title>
+    <link rel="help" href="https://www.w3.org/TR/css-color-4/#predefined-display-p3" title="Colors out of srgb gamut are rendered the same. See crbug.com/1439859">
+    <link rel="author" title="Aaron Krajeski">
+    <style type="text/css">
+      /* See crbug.com/1439859
+          Verify that background-color, text, border, shadow and svg all render
+          the same color for wide-color-gamuts. If the test is passing all that
+          should be rendered is a green rectangle.
+      */
+      :root {
+        --green: color(display-p3 0.118 0.966 0.702);
+      }
+      #wrapper {
+        height: 200px;
+        width: 500px;
+        font: 60px monospace;
+        background-color: var(--green);
+        color: var(--green);
+        border: 10px dashed var(--green);
+        box-shadow: 0px 10px var(--green);
+      }
+      svg rect {
+        fill: var(--green);
+      }
+    </style>
+</head>
+
+<body>
+  <div id="wrapper">Test text
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+      <rect width="40" height="40" />
+    </svg>
+  </div>
+</body>

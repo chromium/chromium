@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -40,43 +42,6 @@
 #include "url/gurl.h"
 
 namespace arc {
-
-// Script for clicking OK button on the selector.
-const char kScriptClickOk[] =
-    "(function() { document.querySelector('#ok-button').click(); })();";
-
-// Script for clicking Cancel button on the selector.
-const char kScriptClickCancel[] =
-    "(function() { document.querySelector('#cancel-button').click(); })();";
-
-// Script for clicking a directory element in the left pane of the selector.
-// %s should be replaced by the target directory name wrapped by double-quotes.
-const char kScriptClickDirectory[] =
-    "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  Array.from(dirs).filter(a => a.innerText === %s)[0].click();"
-    "})();";
-
-// Script for clicking a file element in the right pane of the selector.
-// %s should be replaced by the target file name wrapped by double-quotes.
-const char kScriptClickFile[] =
-    "(function() {"
-    "  var evt = document.createEvent('MouseEvents');"
-    "  evt.initMouseEvent('mousedown', true, false);"
-    "  var files = document.querySelectorAll('#file-list .file');"
-    "  Array.from(files).filter(a => a.getAttribute('file-name') === %s)[0]"
-    "      .dispatchEvent(evt);"
-    "})();";
-
-// Script for querying UI elements (directories and files) shown on the selector.
-const char kScriptGetElements[] =
-    "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  var files = document.querySelectorAll('#file-list .file');"
-    "  return {dirNames: Array.from(dirs, a => a.innerText),"
-    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
-    "})();";
-
 namespace {
 
 constexpr char kRecentAllFakePath[] = "/.fake-entry/recent/all";
@@ -139,15 +104,14 @@ base::FilePath GetInitialFilePath(const mojom::SelectFilesRequestPtr& request) {
   if (!document_path)
     return base::FilePath(kRecentAllFakePath);
 
-  if (document_path->path.empty()) {
-    LOG(ERROR) << "path should at least contain root Document ID.";
+  if (!document_path->root_id.has_value()) {
+    LOG(ERROR) << "root ID is missing; falling back to opening Recent";
     return base::FilePath(kRecentAllFakePath);
   }
 
-  const std::string& root_document_id = document_path->path[0];
   // TODO(niwa): Convert non-root document IDs to the relative path and append.
   return arc::GetDocumentsProviderMountPath(document_path->authority,
-                                            root_document_id);
+                                            document_path->root_id.value());
 }
 
 void BuildFileTypeInfo(const mojom::SelectFilesRequestPtr& request,
@@ -278,13 +242,13 @@ void ArcSelectFilesHandler::SelectFiles(
   }
 }
 
-void ArcSelectFilesHandler::FileSelected(const base::FilePath& path,
+void ArcSelectFilesHandler::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
 
-  const std::string& activity = ConvertFilePathToAndroidActivity(path);
+  const std::string& activity = ConvertFilePathToAndroidActivity(file.path());
   if (!activity.empty()) {
     // The user selected an Android picker activity instead of a file.
     mojom::SelectFilesResultPtr result = mojom::SelectFilesResult::New();
@@ -293,13 +257,11 @@ void ArcSelectFilesHandler::FileSelected(const base::FilePath& path,
     return;
   }
 
-  std::vector<base::FilePath> files;
-  files.push_back(path);
-  FilesSelectedInternal(files, params);
+  FilesSelectedInternal({file}, params);
 }
 
 void ArcSelectFilesHandler::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
+    const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   FilesSelectedInternal(files, params);
@@ -313,7 +275,7 @@ void ArcSelectFilesHandler::FileSelectionCanceled(void* params) {
 }
 
 void ArcSelectFilesHandler::FilesSelectedInternal(
-    const std::vector<base::FilePath>& files,
+    const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   DCHECK(callback_);
 
@@ -321,10 +283,10 @@ void ArcSelectFilesHandler::FilesSelectedInternal(
       file_manager::util::GetFileManagerFileSystemContext(profile_);
 
   std::vector<storage::FileSystemURL> file_system_urls;
-  for (const base::FilePath& file_path : files) {
+  for (const auto& file : files) {
     GURL gurl;
     file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-        profile_, file_path, file_manager::util::GetFileManagerURL(), &gurl);
+        profile_, file.path(), file_manager::util::GetFileManagerURL(), &gurl);
     file_system_urls.push_back(
         file_system_context->CrackURLInFirstPartyContext(gurl));
   }
@@ -339,6 +301,8 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
     mojom::FileSystemHost::OnFileSelectorEventCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   std::string quotedClickTargetName =
       base::GetQuotedJSONString(event->click_target->name.c_str());
   std::string script;
@@ -350,7 +314,9 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
       script = kScriptClickCancel;
       break;
     case mojom::FileSelectorEventType::CLICK_DIRECTORY:
-      script = base::StringPrintf(kScriptClickDirectory,
+      script = base::StringPrintf(isFilesNewDirectoryTreeOn
+                                      ? kScriptClickDirectoryForNewTree
+                                      : kScriptClickDirectory,
                                   quotedClickTargetName.c_str());
       break;
     case mojom::FileSelectorEventType::CLICK_FILE:
@@ -368,8 +334,11 @@ void ArcSelectFilesHandler::GetFileSelectorElements(
     mojom::FileSystemHost::GetFileSelectorElementsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   dialog_holder_->ExecuteJavaScript(
-      kScriptGetElements,
+      isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
+                                : kScriptGetElements,
       base::BindOnce(&OnGetElementsScriptResults, std::move(callback)));
 }
 

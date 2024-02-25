@@ -11,6 +11,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 ui::SelectFileDialog::FileTypeInfo GetFileTypeInfo() {
@@ -65,15 +66,14 @@ void CrostiniFileSelector::SelectFile(
 }
 
 gfx::NativeWindow CrostiniFileSelector::GetBrowserWindow() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 
-void CrostiniFileSelector::FileSelected(const base::FilePath& path,
+void CrostiniFileSelector::FileSelected(const ui::SelectedFileInfo& file,
                                         int index,
                                         void* params) {
-  std::move(selected_callback_).Run(path);
+  std::move(selected_callback_).Run(file.path());
 }
 
 void CrostiniFileSelector::FileSelectionCanceled(void* params) {

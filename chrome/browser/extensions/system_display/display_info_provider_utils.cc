@@ -129,7 +129,7 @@ int GetRotationFromMojomDisplayRotationInfo(
   }
 }
 
-absl::optional<std::string> ValidateDisplayPropertiesInput(
+std::optional<std::string> ValidateDisplayPropertiesInput(
     const std::string& display_id_str,
     const system_display::DisplayProperties& info) {
   int64_t id = GetDisplayId(display_id_str);
@@ -155,7 +155,7 @@ absl::optional<std::string> ValidateDisplayPropertiesInput(
       LOG(WARNING)
           << "Unified mode set with other properties which will be ignored.";
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If mirroring source parameter is specified, no other properties should be
@@ -172,7 +172,7 @@ absl::optional<std::string> ValidateDisplayPropertiesInput(
     return "Invalid rotation.";
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 system_display::DisplayMode GetDisplayModeFromMojo(

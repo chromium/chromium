@@ -29,20 +29,20 @@
 
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_features.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -118,7 +119,7 @@ KleeneValue KleeneAnd(KleeneValue a, KleeneValue b) {
 
 }  // namespace
 
-using device::mojom::blink::DevicePostureType;
+using mojom::blink::DevicePostureType;
 using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 
@@ -230,7 +231,7 @@ KleeneValue MediaQueryEvaluator::Eval(
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node)) {
     return EvalOr(n->Left(), n->Right(), result_flags);
   }
-  if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node)) {
+  if (IsA<MediaQueryUnknownExpNode>(node)) {
     return KleeneValue::kUnknown;
   }
   return EvalFeature(To<MediaQueryFeatureExpNode>(node), result_flags);
@@ -447,10 +448,68 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
       return mode == blink::mojom::DisplayMode::kBorderless;
     case CSSValueID::kTabbed:
       return mode == blink::mojom::DisplayMode::kTabbed;
+    case CSSValueID::kPictureInPicture:
+      return mode == blink::mojom::DisplayMode::kPictureInPicture;
     default:
       NOTREACHED();
       return false;
   }
+}
+
+// WindowShowState is mapped into a CSS media query value `display-state`.
+static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  ui::WindowShowState state = media_values.WindowShowState();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kDisplayState,
+      state);
+
+  switch (value.Id()) {
+    case CSSValueID::kFullscreen:
+      return state == ui::SHOW_STATE_FULLSCREEN;
+    case CSSValueID::kMaximized:
+      return state == ui::SHOW_STATE_MAXIMIZED;
+    case CSSValueID::kMinimized:
+      return state == ui::SHOW_STATE_MINIMIZED;
+    case CSSValueID::kNormal:
+      return state == ui::SHOW_STATE_DEFAULT ||
+             state == ui::SHOW_STATE_INACTIVE || state == ui::SHOW_STATE_NORMAL;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+static bool ResizableMediaFeatureEval(const MediaQueryExpValue& value,
+                                      MediaQueryOperator,
+                                      const MediaValues& media_values) {
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  bool resizable = media_values.Resizable();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kResizable,
+      resizable);
+
+  return (resizable && value.Id() == CSSValueID::kTrue) ||
+         (!resizable && value.Id() == CSSValueID::kFalse);
 }
 
 static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
@@ -1681,9 +1740,9 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
       container, CSSPropertyName(property_name), query_specified);
 
   if (const auto* decl_value =
-          DynamicTo<CSSCustomPropertyDeclaration>(query_value)) {
+          DynamicTo<CSSUnparsedDeclarationValue>(query_value)) {
     CSSVariableData* query_computed =
-        decl_value ? &decl_value->Value() : nullptr;
+        decl_value ? decl_value->VariableDataValue() : nullptr;
     CSSVariableData* computed =
         container->ComputedStyleRef().GetVariableData(property_name);
 

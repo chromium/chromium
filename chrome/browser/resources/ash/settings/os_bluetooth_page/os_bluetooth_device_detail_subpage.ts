@@ -9,25 +9,26 @@
  */
 
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import './os_bluetooth_change_device_name_dialog.js';
 import './os_bluetooth_true_wireless_images.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, getDeviceNameUnsafe, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_device_detail_subpage.html.js';
@@ -44,7 +45,7 @@ enum PageState {
 const SettingsBluetoothDeviceDetailSubpageElementBase =
     RouteOriginMixin(WebUiListenerMixin(I18nMixin((PolymerElement))));
 
-class SettingsBluetoothDeviceDetailSubpageElement extends
+export class SettingsBluetoothDeviceDetailSubpageElement extends
     SettingsBluetoothDeviceDetailSubpageElementBase {
   static get is() {
     return 'os-settings-bluetooth-device-detail-subpage' as const;
@@ -129,7 +130,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addEventListener(
         'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
       this.addFocusConfig(
           routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
@@ -191,11 +192,6 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         DeviceConnectionState.kConnected;
   }
 
-  private getBluetoothStateIcon_(): string {
-    return this.isDeviceConnected_ ? 'os-settings:bluetooth-connected' :
-                                     'os-settings:bluetooth-disabled';
-  }
-
   private getBluetoothConnectDisconnectBtnLabel_(): string {
     return this.isDeviceConnected_ ? this.i18n('bluetoothDisconnect') :
                                      this.i18n('bluetoothConnect');
@@ -215,11 +211,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         this.i18n('bluetoothDeviceDetailDisconnected');
   }
 
-  private getDeviceName_(): string {
-    if (!this.device_) {
-      return '';
-    }
-    return getDeviceName(this.device_);
+  private getDeviceNameUnsafe_(): string {
+    return getDeviceNameUnsafe(this.device_);
   }
 
   private shouldShowConnectDisconnectBtn_(): boolean {
@@ -239,7 +232,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
     (this.parentNode as OsSettingsSubpageElement).pageTitle =
-        getDeviceName(this.device_);
+        getDeviceNameUnsafe(this.device_);
 
     // Special case a where user is still on detail page and has
     // tried to connect to device but failed. The current |pageState_|
@@ -290,11 +283,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return this.i18n('bluetoothDeviceDetailHIDMessageDisconnected');
   }
 
-  private onChangeNameClick_() {
+  private onChangeNameClick_(): void {
     this.shouldShowChangeDeviceNameDialog_ = true;
   }
 
-  private onCloseChangeDeviceNameDialog_() {
+  private onCloseChangeDeviceNameDialog_(): void {
     this.shouldShowChangeDeviceNameDialog_ = false;
   }
 
@@ -303,9 +296,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return '';
     }
 
-    return this.i18n(
+    return loadTimeData.getStringF(
         'bluetoothDeviceDetailChangeDeviceNameBtnA11yLabel',
-        this.getDeviceName_());
+        getDeviceNameUnsafe(this.device_));
   }
 
   private getMultipleBatteryInfoA11yLabel_(): string {
@@ -367,20 +360,22 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
     switch (this.pageState_) {
       case PageState.CONNECTING:
-        return this.i18n(
-            'bluetoothDeviceDetailConnectingA11yLabel', this.getDeviceName_());
+        return loadTimeData.getStringF(
+            'bluetoothDeviceDetailConnectingA11yLabel',
+            getDeviceNameUnsafe(this.device_));
       case PageState.CONNECTED:
-        return this.i18n(
-            'bluetoothDeviceDetailConnectedA11yLabel', this.getDeviceName_());
+        return loadTimeData.getStringF(
+            'bluetoothDeviceDetailConnectedA11yLabel',
+            getDeviceNameUnsafe(this.device_));
       case PageState.CONNECTION_FAILED:
-        return this.i18n(
+        return loadTimeData.getStringF(
             'bluetoothDeviceDetailConnectionFailureA11yLabel',
-            this.getDeviceName_());
+            getDeviceNameUnsafe(this.device_));
       case PageState.DISCONNECTED:
       case PageState.DISCONNECTING:
-        return this.i18n(
+        return loadTimeData.getStringF(
             'bluetoothDeviceDetailDisconnectedA11yLabel',
-            this.getDeviceName_());
+            getDeviceNameUnsafe(this.device_));
       default:
         assertNotReached();
     }
@@ -513,7 +508,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onMouseRowClick_(): void {
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
     } else {
       Router.getInstance().navigateTo(routes.POINTERS);
@@ -521,7 +516,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onKeyboardRowClick_(): void {
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
     } else {
       Router.getInstance().navigateTo(routes.KEYBOARD);
@@ -529,8 +524,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private getForgetA11yLabel_(): string {
-    return this.i18n(
-        'bluetoothDeviceDetailForgetA11yLabel', this.getDeviceName_());
+    return loadTimeData.getStringF(
+        'bluetoothDeviceDetailForgetA11yLabel',
+        getDeviceNameUnsafe(this.device_));
   }
 
   private onForgetButtonClicked_(): void {

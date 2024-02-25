@@ -5,6 +5,7 @@
 #include "extensions/browser/api/feedback_private/log_source_resource.h"
 
 #include "base/lazy_instance.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -21,7 +22,7 @@ ApiResourceManager<LogSourceResource>::GetFactoryInstance() {
 }
 
 LogSourceResource::LogSourceResource(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::unique_ptr<system_logs::SystemLogsSource> source)
     : ApiResource(extension_id), source_(source.release()) {}
 

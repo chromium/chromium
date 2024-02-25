@@ -69,7 +69,7 @@ class ConfirmPasswordChangeDialog : public BasePasswordDialog {
 
   // ui::WebDialogDelegate:
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
+      std::vector<content::WebUIMessageHandler*>* handlers) override;
 
  private:
   std::string scraped_old_password_;

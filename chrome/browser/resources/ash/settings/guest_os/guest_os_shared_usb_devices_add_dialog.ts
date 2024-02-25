@@ -8,17 +8,16 @@
  * fields and clicking add.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import './guest_os_container_select.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 
 import {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
 import {getTemplate} from './guest_os_shared_usb_devices_add_dialog.html.js';
@@ -53,8 +52,8 @@ class GuestOsSharedUsbDevicesAddDialog extends
         type: Object,
         value() {
           return {
-            'vm_name': '',
-            'container_name': '',
+            vm_name: '',
+            container_name: '',
           };
         },
       },
@@ -94,7 +93,7 @@ class GuestOsSharedUsbDevicesAddDialog extends
     this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.dialog.showModal();
     microTask.run(() => {
@@ -119,7 +118,6 @@ class GuestOsSharedUsbDevicesAddDialog extends
     this.browserProxy_.setGuestOsUsbDeviceShared(
         guestId.vm_name, guestId.container_name, device.guid, true);
     this.$.dialog.close();
-    recordSettingChange();
   }
 
   private onReassignCancel_(): void {
@@ -134,7 +132,6 @@ class GuestOsSharedUsbDevicesAddDialog extends
         true);
     this.reassignDevice_ = null;
     this.$.dialog.close();
-    recordSettingChange();
   }
 
   /**

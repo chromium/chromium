@@ -56,7 +56,7 @@ class AppListBubbleAppsPageTest : public AshTestBase {
   // Sorts app list with the specified order. If `wait` is true, wait for the
   // reorder animation to complete. The animation is expected to be aborted if
   // `expect_abort` is set to true.
-  void SortAppList(const absl::optional<AppListSortOrder>& order,
+  void SortAppList(const std::optional<AppListSortOrder>& order,
                    bool wait,
                    bool expect_abort = false) {
     AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
@@ -538,7 +538,7 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
       }));
 
   // Simulate the sort undo by setting the new order to nullopt.
-  SortAppList(absl::nullopt, /*wait=*/false);
+  SortAppList(std::nullopt, /*wait=*/false);
   undo_run_loop.Run();
 
   EXPECT_EQ(event, ax::mojom::Event::kAlert);
@@ -580,7 +580,7 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsWithItemFocused) {
 
   // Simulate the sort undo by setting the new order to nullopt. The focus
   // should be on the search box after undoing the sort.
-  SortAppList(absl::nullopt, /*wait=*/true);
+  SortAppList(std::nullopt, /*wait=*/true);
   EXPECT_TRUE(helper->GetBubbleSearchBoxView()->search_box()->HasFocus());
 }
 

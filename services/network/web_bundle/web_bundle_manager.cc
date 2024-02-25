@@ -60,7 +60,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     int32_t process_id,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    absl::optional<std::string> devtools_request_id,
+    std::optional<std::string> devtools_request_id,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter) {
   Key key = GetKey(web_bundle_token_params, process_id);

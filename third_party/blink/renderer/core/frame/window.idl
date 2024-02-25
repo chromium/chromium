@@ -27,11 +27,13 @@
 // https://html.spec.whatwg.org/C/#the-window-object
 
 // FIXME: explain all uses of [CrossOrigin]
+// NOTE: In the spec, Window inherits from EventTarget. We inject an additional
+// layer to implement window's named properties object.
 [
     ImplementedAs=DOMWindow,
     Global=Window,
     Exposed=Window
-] interface Window : EventTarget {
+] interface Window : WindowProperties {
     // the current browsing context
     // FIXME: The spec uses the WindowProxy type for this and many other attributes.
     [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window window;
@@ -54,9 +56,6 @@
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void maximize();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void minimize();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void restore();
 
     // other browsing contexts
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window frames;
@@ -74,7 +73,10 @@
     [NotEnumerable, CrossOrigin] getter Window (unsigned long index);
 
     // named properties
-    [NotEnumerable, CrossOrigin] getter object (DOMString name);
+    // The spec defines the named getter on the Window interface, but we inject
+    // the named properties object as its own interface that Window inherits
+    // from.
+    // getter object (DOMString name);
 
     // the user agent
     [LogActivity=GetterOnly] readonly attribute Navigator navigator;
@@ -122,8 +124,8 @@
     // browsing context
     [MeasureAs=WindowMove] void moveTo(long x, long y);
     [MeasureAs=WindowMove] void moveBy(long x, long y);
-    [MeasureAs=WindowResize] void resizeTo(long x, long y);
-    [MeasureAs=WindowResize] void resizeBy(long x, long y);
+    [MeasureAs=WindowResize, RaisesException] void resizeTo(long x, long y);
+    [MeasureAs=WindowResize, RaisesException] void resizeBy(long x, long y);
 
     // viewport
     [HighEntropy=Direct, MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;
@@ -169,6 +171,13 @@
     //  0 is straight up; -90 is when the device is rotated 90 clockwise;
     //  90 is when rotated counter clockwise.
     [HighEntropy=Direct, MeasureAs=WindowOrientation, RuntimeEnabled=OrientationEvent] readonly attribute long orientation;
+
+    // Event handler attribute for the pageconceal event.
+    [RuntimeEnabled=PageConcealEvent] attribute EventHandler onpageconceal;
+
+    // Event handler attribute for the pagereveal event.
+    // https://drafts.csswg.org/css-view-transitions-2/#reveal-event
+    [RuntimeEnabled=PageRevealEvent] attribute EventHandler onpagereveal;
 
     // Accessibility Object Model
     // https://github.com/WICG/aom/blob/HEAD/explainer.md

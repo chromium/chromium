@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,14 +124,17 @@ bool TaskManagerView::IsColumnVisible(int column_id) const {
   return tab_table_->IsColumnVisible(column_id);
 }
 
-void TaskManagerView::SetColumnVisibility(int column_id, bool new_visibility) {
+bool TaskManagerView::SetColumnVisibility(int column_id, bool new_visibility) {
   // Check if there is at least 1 visible column before changing the visibility.
   // If this column would be the last column to be visible and its hiding, then
   // prevent this column visibility change. see crbug.com/1320307 for details.
-  if (!new_visibility && tab_table_->visible_columns().size() <= 1)
-    return;
+  if (!new_visibility && tab_table_->visible_columns().size() <= 1) {
+    return false;
+  }
 
+  const bool currently_visible = tab_table_->IsColumnVisible(column_id);
   tab_table_->SetColumnVisibility(column_id, new_visibility);
+  return new_visibility != currently_visible;
 }
 
 bool TaskManagerView::IsTableSorted() const {
@@ -332,7 +335,7 @@ void TaskManagerView::Init() {
 
   // Create the table view.
   auto tab_table = std::make_unique<views::TableView>(
-      nullptr, columns_, views::ICON_AND_TEXT, false);
+      nullptr, columns_, views::TableType::kIconAndText, false);
   tab_table_ = tab_table.get();
   table_model_ = std::make_unique<TaskManagerTableModel>(this);
   tab_table->SetModel(table_model_.get());
@@ -374,7 +377,7 @@ void TaskManagerView::InitAlwaysOnTopState() {
 }
 
 void TaskManagerView::ActivateSelectedTab() {
-  const absl::optional<size_t> active_row =
+  const std::optional<size_t> active_row =
       tab_table_->selection_model().active();
   if (active_row.has_value())
     table_model_->ActivateTask(active_row.value());
@@ -398,7 +401,7 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
 }
 
-BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
+BEGIN_METADATA(TaskManagerView)
 END_METADATA
 
 }  // namespace task_manager

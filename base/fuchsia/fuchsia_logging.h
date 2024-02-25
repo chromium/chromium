@@ -16,7 +16,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 // Use the ZX_LOG family of macros along with a zx_status_t containing a Zircon
 // error. The error value will be decoded so that logged messages explain the
@@ -36,8 +36,17 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 
   ~ZxLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   zx_status_t zx_status_;
+};
+
+class BASE_EXPORT ZxLogMessageFatal final : public ZxLogMessage {
+ public:
+  using ZxLogMessage::ZxLogMessage;
+  [[noreturn]] ~ZxLogMessageFatal() override;
 };
 
 }  // namespace logging
@@ -67,7 +76,7 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 #endif  // DCHECK_IS_ON()
 
 #define ZX_DCHECK(condition, zx_status)         \
-  LAZY_STREAM(ZX_LOG_STREAM(DCHECK, zx_status), \
+  LAZY_STREAM(ZX_LOG_STREAM(DFATAL, zx_status), \
               DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 

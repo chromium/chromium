@@ -41,7 +41,14 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   ~DataPack() override;
 
-#pragma pack(push, 2)
+// Pack Entry and Alias. This removes padding between fields, and alignment
+// requirements, which makes the structs usable for aliasing into the input
+// buffer directly.
+//
+// TODO(davidben): Ideally we would load these structures through memcpy, or
+// a little-endian variant of base/big_endian.h, rather than type-punning
+// pointers. This code currently depends on Chromium disabling strict aliasing.
+#pragma pack(push, 1)
   struct Entry {
     static int CompareById(const void* void_key, const void* void_entry);
 
@@ -160,7 +167,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  absl::optional<base::StringPiece> GetStringPiece(
+  std::optional<base::StringPiece> GetStringPiece(
       uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
@@ -215,9 +222,9 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   std::unique_ptr<DataSource> data_source_;
 
-  raw_ptr<const Entry> resource_table_;
+  raw_ptr<const Entry, AllowPtrArithmetic> resource_table_;
   size_t resource_count_;
-  raw_ptr<const Alias> alias_table_;
+  raw_ptr<const Alias, AllowPtrArithmetic> alias_table_;
   size_t alias_count_;
 
   // Type of encoding for text resources.

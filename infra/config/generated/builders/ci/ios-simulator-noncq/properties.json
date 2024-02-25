@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ios-simulator-noncq/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -64,5 +67,5 @@
     "chromium",
     "ios"
   ],
-  "xcode_build_version": "15a5229h"
+  "xcode_build_version": "15c500b"
 }

@@ -5,20 +5,19 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
-import {DialogType} from '../../common/js/dialog_type.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {fakeDriveVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {VolumeInfo} from '../../background/js/volume_info.js';
+import {EntryList, FakeEntryImpl, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
+import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import {DialogType} from '../../state/state.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
-import {constants} from './constants.js';
+import {ODFS_EXTENSION_ID} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {createFakeAndroidAppListModel} from './fake_android_app_list_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
@@ -58,13 +57,18 @@ let hoge;
 
 // Setup the test components.
 export function setUp() {
-  // Mock chrome APIs.
-  new MockCommandLinePrivate();
-
   // Override VolumeInfo.prototype.resolveDisplayRoot to be sync.
-  VolumeInfoImpl.prototype.resolveDisplayRoot = function(successCallback) {
+  // @ts-ignore: error TS7006: Parameter 'successCallback' implicitly has an
+  // 'any' type.
+  VolumeInfo.prototype.resolveDisplayRoot = function(successCallback) {
+    // @ts-ignore: error TS2341: Property 'fileSystem_' is private and only
+    // accessible within class 'VolumeInfo'.
     this.displayRoot_ = this.fileSystem_.root;
+    // @ts-ignore: error TS2341: Property 'displayRoot_' is private and only
+    // accessible within class 'VolumeInfo'.
     successCallback(this.displayRoot_);
+    // @ts-ignore: error TS2341: Property 'fileSystem_' is private and only
+    // accessible within class 'VolumeInfo'.
     return Promise.resolve(this.fileSystem_.root);
   };
 
@@ -88,8 +92,7 @@ export function testModel() {
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntryImpl(
-          'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
+      new FakeEntryImpl('linux-files-label', RootType.CROSTINI));
 
   const androidAppListModelWithApps =
       createFakeAndroidAppListModel(['android:app1', 'android:app2']);
@@ -107,9 +110,9 @@ export function testModel() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(1)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2)?.label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
   assertEquals(
       'android:app1', /** @type {!NavigationModelAndroidAppItem} */
@@ -121,8 +124,8 @@ export function testModel() {
   // Downloads and Crostini are displayed within My files.
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(2));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(1, myFilesEntryList.getUIChildren().length);
-  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0].name);
+  assertEquals(1, myFilesEntryList.getUiChildren().length);
+  assertEquals('linux-files-label', myFilesEntryList.getUiChildren()[0]?.name);
 
   // Trash is displayed as a root when feature is enabled and should be the last
   // item in the model.
@@ -154,9 +157,9 @@ export function testNoRecentOrLinuxFiles() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1)?.label);
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
-  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
   assertFalse(driveItem.disabled);
 }
 
@@ -166,7 +169,7 @@ export function testNoRecentOrLinuxFiles() {
 export function testDisabledVolumes() {
   const volumeManager = new MockVolumeManager();
   volumeManager.isDisabled = (volume) => {
-    return (volume === VolumeManagerCommon.VolumeType.DRIVE);
+    return (volume === VolumeType.DRIVE);
   };
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -181,10 +184,10 @@ export function testDisabledVolumes() {
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
-  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1)?.label);
 
   const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
-  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertEquals(fakeDriveVolumeId, driveItem.volumeInfo.volumeId);
   assertTrue(driveItem.disabled);
 }
 
@@ -277,23 +280,26 @@ export function testAddAndRemoveVolumes() {
 
   // Mount removable volume 'hoge'.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', '',
-      'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:hoge', '', 'device/path/1'));
 
   assertEquals(4, model.length);
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     const drive = model.item(3);
+    // @ts-ignore: error TS18048: 'drive' is possibly 'undefined'.
     assertEquals('External Drive', drive.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
-        (drive).entry.getUIChildren()[0].volumeInfo.volumeId);
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
+        // type 'FilesAppEntry'.
+        (drive).entry.getUiChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelVolumeItem} */
@@ -303,28 +309,34 @@ export function testAddAndRemoveVolumes() {
   // Mount removable volume 'fuga'. Not a partition, so set a different device
   // path to 'hoge'.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', '',
-      'device/path/2'));
+      VolumeType.REMOVABLE, 'removable:fuga', '', 'device/path/2'));
 
   assertEquals(5, model.length);
   assertEquals(
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(1).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(2)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
     const drive1 = model.item(3);
     const drive2 = model.item(4);
+    // @ts-ignore: error TS18048: 'drive1' is possibly 'undefined'.
     assertEquals('External Drive', drive1.label);
+    // @ts-ignore: error TS18048: 'drive2' is possibly 'undefined'.
     assertEquals('External Drive', drive2.label);
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelFakeItem} */
-        (drive1).entry.getUIChildren()[0].volumeInfo.volumeId);
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
+        // type 'FilesAppEntry'.
+        (drive1).entry.getUiChildren()[0].volumeInfo.volumeId);
     assertEquals(
         'removable:fuga', /** @type {!NavigationModelFakeItem} */
-        (drive2).entry.getUIChildren()[0].volumeInfo.volumeId);
+        // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
+        // type 'FilesAppEntry'.
+        (drive2).entry.getUiChildren()[0].volumeInfo.volumeId);
   } else {
     assertEquals(
         'removable:hoge', /** @type {!NavigationModelVolumeItem} */
@@ -344,12 +356,15 @@ export function testAddAndRemoveVolumes() {
   assertEquals(
       '/shortcut2', /** @type {!NavigationModelShortcutItem} */
       (model.item(1)).entry.fullPath);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(2).label);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
+      fakeDriveVolumeId, /** @type {!NavigationModelVolumeItem} */
       (model.item(3)).volumeInfo.volumeId);
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(4).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(5).label);
   } else {
     assertEquals(
@@ -388,29 +403,26 @@ export function testOrderAndNestItems() {
 
   // Create different volumes.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov1'));
+      VolumeType.PROVIDED, 'provided:prov1'));
   // Set the device paths of the removable volumes to different strings to
   // test the behaviour of two physically separate external devices.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', '',
-      'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:hoge', '', 'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', '',
-      'device/path/2'));
+      VolumeType.REMOVABLE, 'removable:fuga', '', 'device/path/2'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'archive:a-rar'));
+      VolumeType.ARCHIVE, 'archive:a-rar'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.MTP, 'mtp:a-phone'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtp:a-phone'));
+      VolumeType.PROVIDED, 'provided:prov2'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov2'));
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.SMB, 'smb:file-share'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.SMB, 'smb:file-share'));
   // Add ODFS.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:odfs', '', '',
-      constants.ODFS_EXTENSION_ID));
+      VolumeType.PROVIDED, 'provided:odfs', '', '', ODFS_EXTENSION_ID));
 
   const androidAppListModelWithApps =
       createFakeAndroidAppListModel(['android:app1', 'android:app2']);
@@ -445,76 +457,111 @@ export function testOrderAndNestItems() {
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
   assertEquals(15, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('recent-label', model.item(0).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('shortcut', model.item(1).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('shortcut2', model.item(2).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(3).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(4).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:odfs', model.item(5).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('smb:file-share', model.item(6).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:prov1', model.item(7).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('provided:prov2', model.item(8).label);
 
-  if (util.isSinglePartitionFormatEnabled()) {
+  if (isSinglePartitionFormatEnabled()) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(9).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('External Drive', model.item(10).label);
   } else {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('removable:hoge', model.item(9).label);
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     assertEquals('removable:fuga', model.item(10).label);
   }
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('archive:a-rar', model.item(11).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('mtp:a-phone', model.item(12).label);
 
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('android:app1', model.item(13).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals('android:app2', model.item(14).label);
 
   // Check NavigationSection, which defaults to TOP.
   // recent-label.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(0).section);
   // shortcut.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(1).section);
   // shortcut2.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.TOP, model.item(2).section);
 
   // My Files.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.MY_FILES, model.item(3).section);
 
   // My Drive.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.GOOGLE_DRIVE, model.item(4).section);
 
   // ODFS.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ODFS, model.item(5).section);
 
   // SMB and other FSP are grouped together.
   // smb:file-share.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(6).section);
   // provided:prov1.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(7).section);
   // provided:prov2.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.CLOUD, model.item(8).section);
 
   // MTP/Archive/Removable are grouped together.
   // removable:hoge.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(9).section);
   // removable:fuga.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(10).section);
   // archive:a-rar.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(11).section);
   // mtp:a-phone.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.REMOVABLE, model.item(12).section);
 
   // android:app1
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ANDROID_APPS, model.item(13).section);
   // android:app2
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.ANDROID_APPS, model.item(14).section);
 
   const myFilesModel = model.item(3);
   // Re-order again: cast to allow calling this private model function.
+  // @ts-ignore: error TS2339: Property 'orderAndNestItems_' does not exist on
+  // type 'Object'.
   /** @type {!Object} */ (model).orderAndNestItems_();
   // Check if My Files is still in the same position.
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(NavigationSection.MY_FILES, model.item(3).section);
   // Check if My Files model is still the same instance, because DirectoryTree
   // expects it to be the same instance to be able to find it on the tree.
@@ -524,12 +571,11 @@ export function testOrderAndNestItems() {
 /**
  * Tests model with My files enabled.
  */
-export function testMyFilesVolumeEnabled(callback) {
+export async function testMyFilesVolumeEnabled() {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   // Create a downloads folder inside the item.
   const downloadsVolume = volumeManager.volumeInfoList.item(1);
   /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
@@ -541,12 +587,11 @@ export function testMyFilesVolumeEnabled(callback) {
 
   // Create Android 'Play files' volume.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntryImpl(
-          'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
+      new FakeEntryImpl('linux-files-label', RootType.CROSTINI));
 
   // Navigation items built above:
   //  1. My files
@@ -561,7 +606,9 @@ export function testMyFilesVolumeEnabled(callback) {
   model.linuxFilesItem = crostiniFakeItem;
 
   assertEquals(2, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(0).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(1).label);
 
   // Android and Crostini are displayed within My files. And there is no
@@ -569,11 +616,15 @@ export function testMyFilesVolumeEnabled(callback) {
   // the My files volume.
   const myFilesItem = /** @type NavigationModelFakeItem */ (model.item(0));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(2, myFilesEntryList.getUIChildren().length);
-  assertEquals('android_files:droid', myFilesEntryList.getUIChildren()[0].name);
-  assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[1].name);
+  assertEquals(2, myFilesEntryList.getUiChildren().length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+  assertEquals('android_files:droid', myFilesEntryList.getUiChildren()[0].name);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+  assertEquals('linux-files-label', myFilesEntryList.getUiChildren()[1].name);
 
   const reader = myFilesEntryList.createReader();
+  // @ts-ignore: error TS7034: Variable 'foundEntries' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const foundEntries = [];
   reader.readEntries((entries) => {
     for (const entry of entries) {
@@ -581,15 +632,16 @@ export function testMyFilesVolumeEnabled(callback) {
     }
   });
 
-  reportPromise(
-      waitUntil(() => {
-        // Wait for Downloads folder to be read from My files volume.
-        return foundEntries.length >= 1;
-      }).then(() => {
-        assertEquals(foundEntries[0].name, 'Downloads');
-        assertTrue(foundEntries[0].isDirectory);
-      }),
-      callback);
+  await waitUntil(() => {
+    // Wait for Downloads folder to be read from My files volume.
+    return foundEntries.length >= 1;
+  });
+  // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+  // 'any[]' type.
+  assertEquals(foundEntries[0].name, 'Downloads');
+  // @ts-ignore: error TS7005: Variable 'foundEntries' implicitly has an
+  // 'any[]' type.
+  assertTrue(foundEntries[0].isDirectory);
 }
 
 /**
@@ -600,8 +652,7 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   // Create a downloads folder inside the item.
   const downloadsVolume = volumeManager.volumeInfoList.item(1);
   /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
@@ -613,14 +664,14 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
 
   // Create Android 'Play files' volume and set as disabled.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
   volumeManager.isDisabled = (volume) => {
-    return (volume === VolumeManagerCommon.VolumeType.ANDROID_FILES);
+    return (volume === VolumeType.ANDROID_FILES);
   };
 
   // Create Crostini 'Linux files' volume. It should be enabled by default.
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.CROSTINI, 'crostini'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.CROSTINI, 'crostini'));
 
   // Navigation items built above:
   //  1. My files
@@ -634,17 +685,19 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
       directoryModel, androidAppListModel, DialogType.FULL_PAGE);
 
   assertEquals(2, model.length);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(0).label);
+  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
   assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(1).label);
 
   // Android is displayed within My files, and should be disabled.
   const myFilesItem = /** @type {!NavigationModelFakeItem} */ (model.item(0));
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
-  assertEquals(2, myFilesEntryList.getUIChildren().length);
+  assertEquals(2, myFilesEntryList.getUiChildren().length);
   const androidItem =
-      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[0]);
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUiChildren()[0]);
   const crostiniItem =
-      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[1]);
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUiChildren()[1]);
   assertEquals('android_files:droid', androidItem.name);
   assertTrue(androidItem.disabled);
   assertEquals('crostini', crostiniItem.name);
@@ -662,14 +715,14 @@ export function testMultipleUsbPartitionsGrouping() {
 
   // Use same device path so the partitions are grouped.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
-      'partition1', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition1', 'partition1',
+      'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
-      'partition2', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition2', 'partition2',
+      'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition3',
-      'partition3', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition3', 'partition3',
+      'device/path/1'));
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
@@ -678,17 +731,21 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   let groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
+  // 'FilesAppEntry'.
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 
   // Add a 4th partition, which triggers NavigationListModel to recalculate.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition4',
-      'partition4', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition4', 'partition4',
+      'device/path/1'));
 
   // Check that the common root shows 4 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  assertEquals(4, groupedUsbs.entry.getUIChildren().length);
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
+  // 'FilesAppEntry'.
+  assertEquals(4, groupedUsbs.entry.getUiChildren().length);
 
   // Remove the 4th partition, which triggers NavigationListModel to
   // recalculate.
@@ -697,16 +754,20 @@ export function testMultipleUsbPartitionsGrouping() {
   // Check that the common root shows 3 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
+  // 'FilesAppEntry'.
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 
   // Add an extra copy of partition3, which replaces the existing partition3
   // and triggers NavigationListModel to recalculate.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition3',
-      'partition3', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition3', 'partition3',
+      'device/path/1'));
 
   // Check that partition3 is not duplicated.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
   assertEquals('External Drive', groupedUsbs.label);
-  assertEquals(3, groupedUsbs.entry.getUIChildren().length);
+  // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on type
+  // 'FilesAppEntry'.
+  assertEquals(3, groupedUsbs.entry.getUiChildren().length);
 }

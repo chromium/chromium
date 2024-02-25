@@ -18,14 +18,13 @@ enum GPUFeatureName {
     "float32-filterable",
 
     // Non-standard (not currently in the spec).
-    "pipeline-statistics-query",
-    "timestamp-query-inside-passes",
-    "chromium-experimental-dp4a",
-    "chromium-experimental-read-write-storage-texture",
+    "chromium-experimental-timestamp-query-inside-passes",
+    "chromium-experimental-subgroups",
+    "chromium-experimental-subgroup-uniform-control-flow",
 };
 
 [
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] interface GPUSupportedFeatures {
     readonly setlike<DOMString>;

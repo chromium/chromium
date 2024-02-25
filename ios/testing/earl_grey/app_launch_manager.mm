@@ -10,6 +10,7 @@
 #import "base/ios/crb_protocol_observers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/testing/earl_grey/app_launch_argument_generator.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
@@ -176,6 +177,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   XCUIApplication* application = [[XCUIApplication alloc] init];
   application.launchArguments = arguments;
 
+  // Instruct EG to not DYLD_INSERT_LIBRARIES, which can interfere with
+  // Chromium's framework setup.
+  NSMutableDictionary<NSString*, NSString*>* mutableEnv =
+      [application.launchEnvironment mutableCopy];
+  mutableEnv[@"EG_SKIP_INSERT_LIBRARIES"] = @"YES";
+  application.launchEnvironment = [mutableEnv copy];
+
   @try {
     [application launch];
   } @catch (id exception) {
@@ -207,61 +215,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
 - (void)ensureAppLaunchedWithConfiguration:
     (AppLaunchConfiguration)configuration {
-  NSMutableArray<NSString*>* namesToEnable = [NSMutableArray array];
-  NSMutableArray<NSString*>* namesToDisable = [NSMutableArray array];
-  NSMutableArray<NSString*>* variations = [NSMutableArray array];
-
-  for (const auto& feature : configuration.features_enabled) {
-    [namesToEnable addObject:base::SysUTF8ToNSString(feature->name)];
-  }
-
-  for (const auto& feature : configuration.features_disabled) {
-    [namesToDisable addObject:base::SysUTF8ToNSString(feature->name)];
-  }
-
-  for (const variations::VariationID& variation :
-       configuration.variations_enabled) {
-    [variations addObject:[NSString stringWithFormat:@"%d", variation]];
-  }
-
-  for (const variations::VariationID& variation :
-       configuration.trigger_variations_enabled) {
-    [variations addObject:[NSString stringWithFormat:@"t%d", variation]];
-  }
-
-  NSString* enabledString = @"";
-  NSString* disabledString = @"";
-  NSString* variationString = @"";
-  if ([namesToEnable count] > 0) {
-    enabledString = [NSString
-        stringWithFormat:@"--enable-features=%@",
-                         [namesToEnable componentsJoinedByString:@","]];
-  }
-  if ([namesToDisable count] > 0) {
-    disabledString = [NSString
-        stringWithFormat:@"--disable-features=%@",
-                         [namesToDisable componentsJoinedByString:@","]];
-  }
-  if (variations.count > 0) {
-    variationString =
-        [NSString stringWithFormat:@"--force-variation-ids=%@",
-                                   [variations componentsJoinedByString:@","]];
-  }
-
-  NSMutableArray<NSString*>* arguments = [NSMutableArray
-      arrayWithObjects:enabledString, disabledString, variationString, nil];
-
-  for (const std::string& arg : configuration.additional_args) {
-    [arguments addObject:base::SysUTF8ToNSString(arg)];
-  }
+  NSArray<NSString*>* arguments = ArgumentsFromConfiguration(configuration);
 
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];
 
   if ([self appIsLaunched]) {
-    if (@available(iOS 14, *)) {
-      [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
-    }
+    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
 
 #if !TARGET_IPHONE_SIMULATOR
     if (@available(iOS 17, *)) {

@@ -23,8 +23,9 @@ namespace ash {
 // button.
 class ASH_EXPORT KioskAppInstructionBubble
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(KioskAppInstructionBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(KioskAppInstructionBubble);
   KioskAppInstructionBubble(views::View* anchor, ShelfAlignment alignment);
 
   KioskAppInstructionBubble(const KioskAppInstructionBubble&) = delete;
@@ -37,7 +38,7 @@ class ASH_EXPORT KioskAppInstructionBubble
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 };
 
 }  // namespace ash

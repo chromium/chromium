@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -39,6 +40,8 @@ class SizeRangeLayout;
 // The default BoxLayout will use a center alignment for both the main axis and
 // cross axis alignment.
 class ASH_EXPORT TriView : public views::View {
+  METADATA_HEADER(TriView, views::View)
+
  public:
   enum class Orientation {
     HORIZONTAL,
@@ -73,6 +76,8 @@ class ASH_EXPORT TriView : public views::View {
   TriView& operator=(const TriView&) = delete;
 
   ~TriView() override;
+
+  views::BoxLayout* box_layout() { return box_layout_; }
 
   // Set the minimum height for all containers to |height|.
   void SetMinHeight(int height);
@@ -144,7 +149,6 @@ class ASH_EXPORT TriView : public views::View {
   // View:
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
-  const char* GetClassName() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
  private:
@@ -158,14 +162,11 @@ class ASH_EXPORT TriView : public views::View {
 
   // Type spcific layout manager installed on |this|. Responsible for laying out
   // the container Views.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
+  raw_ptr<views::BoxLayout> box_layout_ = nullptr;
 
-  raw_ptr<SizeRangeLayout, ExperimentalAsh> start_container_layout_manager_ =
-      nullptr;
-  raw_ptr<SizeRangeLayout, ExperimentalAsh> center_container_layout_manager_ =
-      nullptr;
-  raw_ptr<SizeRangeLayout, ExperimentalAsh> end_container_layout_manager_ =
-      nullptr;
+  raw_ptr<SizeRangeLayout> start_container_layout_manager_ = nullptr;
+  raw_ptr<SizeRangeLayout> center_container_layout_manager_ = nullptr;
+  raw_ptr<SizeRangeLayout> end_container_layout_manager_ = nullptr;
 
   // In order to detect direct manipulation of child views the
   // ViewHierarchyChanged() event override fails on a DCHECK. However, we need

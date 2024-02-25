@@ -37,7 +37,7 @@ class KeyboardShortcutsInhibitor : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void keyboard_shortcuts_inhibitor_destroy(wl_client* client,

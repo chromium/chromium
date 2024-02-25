@@ -6,24 +6,27 @@ import './passcode_input/passcode_input.js';
 import './error_message/error_message.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {isWindows} from 'chrome://resources/js/platform.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isWindows} from 'chrome://resources/js/platform.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './access_code_cast.html.js';
-import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
+import type {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
+import {AddSinkResultCode, CastDiscoveryMethod} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy, DialogCloseReason} from './browser_proxy.js';
-import {ErrorMessageElement} from './error_message/error_message.js';
-import {PasscodeInputElement} from './passcode_input/passcode_input.js';
+import type {ErrorMessageElement} from './error_message/error_message.js';
+import type {PasscodeInputElement} from './passcode_input/passcode_input.js';
 import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
 
 enum PageState {
@@ -98,6 +101,9 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.router = BrowserProxy.getInstance().callbackRouter;
     this.inputLabel = this.i18n('inputLabel');
     this.isWin = isWindows;
+
+    // Enable dynamic colors for the dialog.
+    ColorChangeUpdater.forDocument().start();
 
     this.createManagedFootnote(
         loadTimeData.getInteger('rememberedDeviceDuration'));

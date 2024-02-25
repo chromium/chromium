@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,7 +72,7 @@ void ChildAccountService::Init() {
   identity_manager_->AddObserver(this);
 
   std::move(check_user_child_status_callback_)
-      .Run(supervised_user_service_->IsSubjectToParentalControls());
+      .Run(supervised_user::IsChildAccount(user_prefs_.get()));
 
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
@@ -127,7 +127,7 @@ base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
 }
 
 void ChildAccountService::SetActive(bool active) {
-  if (!supervised_user_service_->IsSubjectToParentalControls() && !active_) {
+  if (!supervised_user::IsChildAccount(user_prefs_.get()) && !active_) {
     return;
   }
   if (active_ == active) {
@@ -149,7 +149,7 @@ void ChildAccountService::SetActive(bool active) {
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
     bool supervision_status) {
-  if (supervised_user_service_->IsSubjectToParentalControls() !=
+  if (supervised_user::IsChildAccount(user_prefs_.get()) !=
       supervision_status) {
     if (supervision_status) {
       EnableParentalControls(user_prefs_.get());
@@ -189,11 +189,6 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   // This method may get called when the account info isn't complete yet.
   // We deliberately don't check for that, as we are only interested in the
   // child account status.
-
-  if (!supervised_user::IsChildAccountSupervisionEnabled()) {
-    SetSupervisionStatusAndNotifyObservers(false);
-    return;
-  }
 
   // This class doesn't care about browser sync consent.
   CoreAccountId auth_account_id =

@@ -16,8 +16,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 
 class GURL;
@@ -87,7 +87,7 @@ base::FilePath GetManifestResourcesDirectory(Profile* profile);
 // Returns per-app directory name to store manifest resources.
 base::FilePath GetManifestResourcesDirectoryForApp(
     const base::FilePath& web_apps_root_directory,
-    const AppId& app_id);
+    const webapps::AppId& app_id);
 
 base::FilePath GetWebAppsTempDirectory(
     const base::FilePath& web_apps_root_directory);
@@ -118,7 +118,7 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 // accepted.
 std::tuple<std::u16string, size_t /*count*/>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
-                                                 const AppId& app_id);
+                                                 const webapps::AppId& app_id);
 
 // As above, but returns the extensions handled by the app as a vector of
 // strings.
@@ -134,7 +134,7 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
 bool CanUserUninstallWebApp(WebAppManagementTypes sources);
 
 // Extracts app_id from chrome://app-settings/<app-id> URL path.
-AppId GetAppIdFromAppSettingsUrl(const GURL& url);
+webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url);
 
 // Returns whether `url` is in scope `scope`. False if scope is invalid.
 bool IsInScope(const GURL& url, const GURL& scope);
@@ -158,20 +158,6 @@ bool IsMainProfileCheckSkippedForTesting();
 // TODO(crbug.com/1425284): use a better domain name, or maybe use a unique
 // domain for each app.
 constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
-
-// Generates an appropriate path for a new web app profile. This does not create
-// the profile.
-base::FilePath GenerateWebAppProfilePath(const AppId& app_id);
-
-enum class ExperimentalWebAppIsolationMode {
-  kDisabled,
-  kStoragePartition,
-  kProfile,
-};
-
-// Get the experimental web app isolation mode. Prefer using this instead of
-// using the flag directly since this respects the precedence of the flags.
-ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature();
 #endif
 
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =
@@ -185,7 +171,8 @@ enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
   kBrowserCommand = 2,
-  kMaxValue = kBrowserCommand,
+  kSubAppsInstallPrompt = 3,
+  kMaxValue = kSubAppsInstallPrompt,
 };
 
 // When user_display_mode indicates a user preference for opening in
@@ -197,11 +184,18 @@ enum class AppSettingsPageEntryPoint {
 //
 // |is_isolated| overrides browser display mode for Isolated Web Apps because
 // they can't be open as a tab.
+//
+// `is_shortcut_app` overrides the user display mode if `kCrosShortstand`
+// is enabled and `ignore_shortstand` is false.
+// TODO(b/319753599): Migrate chrome os shortcut out of web app system. Should
+// be able to remove all the shortcut related code after migration completion.
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     mojom::UserDisplayMode user_display_mode,
-    bool is_isolated);
+    bool is_isolated,
+    bool is_shortcut_app,
+    bool ignore_shortstand);
 
 apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode);

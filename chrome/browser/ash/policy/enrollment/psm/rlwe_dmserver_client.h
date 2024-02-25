@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_DMSERVER_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
 namespace policy::psm {
 
@@ -34,14 +36,23 @@ enum class RlweResult {
 class RlweDmserverClient {
  public:
   struct ResultHolder final {
-    explicit ResultHolder(
-        RlweResult psm_result,
-        absl::optional<bool> membership_result = absl::nullopt,
-        absl::optional<base::Time> membership_determination_time =
-            absl::nullopt)
-        : psm_result(psm_result),
+    ResultHolder(bool membership_result,
+                 base::Time membership_determination_time)
+        : psm_result(RlweResult::kSuccessfulDetermination),
           membership_result(membership_result),
           membership_determination_time(membership_determination_time) {}
+
+    explicit ResultHolder(AutoEnrollmentDMServerError dm_server_error)
+        : psm_result(dm_server_error.network_error.has_value()
+                         ? RlweResult::kConnectionError
+                         : RlweResult::kServerError),
+          dm_server_error(dm_server_error) {}
+
+    explicit ResultHolder(RlweResult result) : psm_result(result) {
+      CHECK_NE(result, RlweResult::kSuccessfulDetermination);
+      CHECK_NE(result, RlweResult::kConnectionError);
+      CHECK_NE(result, RlweResult::kServerError);
+    }
 
     // Indicate whether an error occurred while executing the PSM protocol.
     bool IsError() const {
@@ -50,11 +61,14 @@ class RlweDmserverClient {
 
     RlweResult psm_result;
 
-    // These fields have values only if `psm_result` value is
-    // `kSuccessfulDetermination`.
+    // The field has value iff `psm_result` value is
+    // `kConnectionError` or `kServerError`.
+    std::optional<AutoEnrollmentDMServerError> dm_server_error;
 
-    absl::optional<bool> membership_result;
-    absl::optional<base::Time> membership_determination_time;
+    // These fields have values iff `psm_result` value is
+    // `kSuccessfulDetermination`.
+    std::optional<bool> membership_result;
+    std::optional<base::Time> membership_determination_time;
   };
 
   // Callback will be triggered after completing the protocol, in case of a

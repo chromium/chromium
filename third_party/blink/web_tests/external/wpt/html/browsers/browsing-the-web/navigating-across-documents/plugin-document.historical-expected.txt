@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-FAIL Same-origin PDFs must not create accessible Document objects assert_throws_dom: function "() => {
-      document.querySelector("iframe").contentWindow.document;
-    }" did not throw
+[FAIL] Same-origin PDFs must not create accessible Document objects
+  assert_throws_dom: function "() => {\n      document.querySelector("iframe").contentWindow.document;\n    }" did not throw
 Harness: the test ran to completion.
 

@@ -9,9 +9,7 @@ import org.chromium.net.UrlRequest;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A {@link ResponseMatcher} that matches {@link UrlRequest}s with a particular URL.
- */
+/** A {@link ResponseMatcher} that matches {@link UrlRequest}s with a particular URL. */
 public class UrlResponseMatcher implements ResponseMatcher {
     private final String mUrl;
     private final FakeUrlResponse mResponse;

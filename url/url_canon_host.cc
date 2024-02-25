@@ -6,67 +6,179 @@
 #include "base/cpu_reduction_experiment.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
+#include "url/url_features.h"
 
 namespace url {
 
 namespace {
 
-// For reference, here's what IE supports:
-// Key: 0 (disallowed: failure if present in the input)
-//      + (allowed either escaped or unescaped, and unmodified)
-//      U (allowed escaped or unescaped but always unescaped if present in
-//         escaped form)
-//      E (allowed escaped or unescaped but always escaped if present in
-//         unescaped form)
-//      % (only allowed escaped in the input, will be unmodified).
-//      I left blank alpha numeric characters.
-//
-//    00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
-//    -----------------------------------------------
-// 0   0  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-// 1   E  E  E  E  E  E  E  E  E  E  E  E  E  E  E  E
-// 2   E  +  E  E  +  E  +  +  +  +  +  +  +  U  U  0
-// 3                                 %  %  E  +  E  0  <-- Those are  : ; < = > ?
-// 4   %
-// 5                                    U  0  U  U  U  <-- Those are  [ \ ] ^ _
-// 6   E                                               <-- That's  `
-// 7                                    E  E  E  U  E  <-- Those are { | } ~ (UNPRINTABLE)
-//
-// NOTE: I didn't actually test all the control characters. Some may be
-// disallowed in the input, but they are all accepted escaped except for 0.
-// I also didn't test if characters affecting HTML parsing are allowed
-// unescaped, e.g. (") or (#), which would indicate the beginning of the path.
-// Surprisingly, space is accepted in the input and always escaped.
-
 // This table lists the canonical version of all characters we allow in the
-// input, with 0 indicating it is disallowed. We use the magic kEscapedHostChar
-// value to indicate that this character should be escaped. We are a little more
-// restrictive than IE, but less restrictive than Firefox.
-//
-// Note that we disallow the % character. We will allow it when part of an
-// escape sequence, of course, but this disallows "%25". Even though IE allows
-// it, allowing it would put us in a funny state. If there was an invalid
-// escape sequence like "%zz", we'll add "%25zz" to the output and fail.
-// Allowing percents means we'll succeed a second time, so validity would change
-// based on how many times you run the canonicalizer. We prefer to always report
-// the same vailidity, so reject this.
+// input, with 0 indicating it is disallowed. We use the magic kEsc value to
+// indicate that this character should be escaped. At present, ' ' (SPACE) and
+// '*' (asterisk) are still non-compliant to the URL Standard. See
+// https://crbug.com/1416013 for details.
 const unsigned char kEsc = 0xff;
+// clang-format off
 const unsigned char kHostCharLookup[0x80] = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 //  ' '   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
-   kEsc,kEsc,kEsc,kEsc,kEsc,  0, kEsc,kEsc,kEsc,kEsc,kEsc, '+',kEsc, '-', '.',  0,
+    kEsc,'!', '"',  0,  '$',  0,  '&', '\'','(', ')', kEsc, '+', ',', '-', '.',  0,
 //   0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',  0 ,kEsc,kEsc,kEsc,  0 ,
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';' , 0,  '=',  0,   0,
 //   @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
-   kEsc, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+     0,  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
 //   P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
-    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '[',  0 , ']',  0 , '_',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '[',  0,  ']',  0,  '_',
 //   `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
-   kEsc, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
 //   p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
-    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',kEsc,kEsc,kEsc,  0 ,  0 };
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{',  0, '}',  '~',  0 };
+// clang-format on
+
+// https://url.spec.whatwg.org/#forbidden-host-code-point
+const uint8_t kForbiddenHost = 0x1;
+
+// TODO(crbug.com/1416006): Merge other lookup tables into this table. That can
+// be probably done after https://crbug.com/1416013 is resolved.
+//
+// This table is currently only used for an opaque-host in non-special URLs.
+const uint8_t kHostCharacterTable[128] = {
+    kForbiddenHost,  // 0x00 (NUL)
+    0,               // 0x01
+    0,               // 0x02
+    0,               // 0x03
+    0,               // 0x04
+    0,               // 0x05
+    0,               // 0x06
+    0,               // 0x07
+    0,               // 0x08
+    kForbiddenHost,  // 0x09 (TAB)
+    kForbiddenHost,  // 0x0A (LF)
+    0,               // 0x0B
+    0,               // 0x0C
+    kForbiddenHost,  // 0x0D (CR)
+    0,               // 0x0E
+    0,               // 0x0F
+    0,               // 0x10
+    0,               // 0x11
+    0,               // 0x12
+    0,               // 0x13
+    0,               // 0x14
+    0,               // 0x15
+    0,               // 0x16
+    0,               // 0x17
+    0,               // 0x18
+    0,               // 0x19
+    0,               // 0x1A
+    0,               // 0x1B
+    0,               // 0x1C
+    0,               // 0x1D
+    0,               // 0x1E
+    0,               // 0x1F
+    kForbiddenHost,  // ' '
+    0,               // '!'
+    0,               // '"'
+    kForbiddenHost,  // '#'
+    0,               // '$'
+    0,               // '%'
+    0,               // '&'
+    0,               // '\''
+    0,               // '('
+    0,               // ')'
+    0,               // '*'
+    0,               // '+'
+    0,               // ','
+    0,               // '-'
+    0,               // '.'
+    kForbiddenHost,  // '/'
+    0,               // '0'
+    0,               // '1'
+    0,               // '2'
+    0,               // '3'
+    0,               // '4'
+    0,               // '5'
+    0,               // '6'
+    0,               // '7'
+    0,               // '8'
+    0,               // '9'
+    kForbiddenHost,  // ':'
+    0,               // ';'
+    kForbiddenHost,  // '<'
+    0,               // '='
+    kForbiddenHost,  // '>'
+    kForbiddenHost,  // '?'
+    kForbiddenHost,  // '@'
+    0,               // 'A'
+    0,               // 'B'
+    0,               // 'C'
+    0,               // 'D'
+    0,               // 'E'
+    0,               // 'F'
+    0,               // 'G'
+    0,               // 'H'
+    0,               // 'I'
+    0,               // 'J'
+    0,               // 'K'
+    0,               // 'L'
+    0,               // 'M'
+    0,               // 'N'
+    0,               // 'O'
+    0,               // 'P'
+    0,               // 'Q'
+    0,               // 'R'
+    0,               // 'S'
+    0,               // 'T'
+    0,               // 'U'
+    0,               // 'V'
+    0,               // 'W'
+    0,               // 'X'
+    0,               // 'Y'
+    0,               // 'Z'
+    kForbiddenHost,  // '['
+    kForbiddenHost,  // '\\'
+    kForbiddenHost,  // ']'
+    kForbiddenHost,  // '^'
+    0,               // '_'
+    0,               // '`'
+    0,               // 'a'
+    0,               // 'b'
+    0,               // 'c'
+    0,               // 'd'
+    0,               // 'e'
+    0,               // 'f'
+    0,               // 'g'
+    0,               // 'h'
+    0,               // 'i'
+    0,               // 'j'
+    0,               // 'k'
+    0,               // 'l'
+    0,               // 'm'
+    0,               // 'n'
+    0,               // 'o'
+    0,               // 'p'
+    0,               // 'q'
+    0,               // 'r'
+    0,               // 's'
+    0,               // 't'
+    0,               // 'u'
+    0,               // 'v'
+    0,               // 'w'
+    0,               // 'x'
+    0,               // 'y'
+    0,               // 'z'
+    0,               // '{'
+    kForbiddenHost,  // '|'
+    0,               // '}'
+    0,               // '~'
+    0,               // 0x7F (DEL)
+};
+// clang-format on
+
+bool IsForbiddenHostCodePoint(uint8_t ch) {
+  return ch <= 0x7F && (kHostCharacterTable[ch] & kForbiddenHost);
+}
 
 // RFC1034 maximum FQDN length.
 constexpr size_t kMaxHostLength = 253;
@@ -189,9 +301,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   }
 
   StackBufferW wide_output;
-  if (!IDNToASCII(url_escaped_host.data(),
-                  url_escaped_host.length(),
-                  &wide_output)) {
+  if (!IDNToASCII(url_escaped_host.view(), &wide_output)) {
     // Some error, give up. This will write some reasonable looking
     // representation of the string to the output.
     AppendInvalidNarrowString(src, 0, src_len, output);
@@ -352,43 +462,110 @@ bool DoHostSubstring(const CHAR* spec,
   return success;
 }
 
-template <typename CHAR, typename UCHAR>
+template <typename CharT>
+bool DoOpaqueHost(const std::basic_string_view<CharT> host,
+                  CanonOutput& output) {
+  // URL Standard: https://url.spec.whatwg.org/#concept-opaque-host-parser
+
+  size_t host_len = host.size();
+
+  for (size_t i = 0; i < host_len; ++i) {
+    char16_t ch = host[i];
+    // The characters '[', ':', and ']', are checked later in
+    // `CanonicalizeIPv6Address` function.
+    if (ch != '[' && ch != ']' && ch != ':' && IsForbiddenHostCodePoint(ch)) {
+      return false;
+    }
+
+    // Implementation note:
+    //
+    // URL Standard: Step 3 in
+    // https://url.spec.whatwg.org/#concept-opaque-host-parser
+    //
+    // > 3. If input contains a U+0025 (%) and the two code points following
+    // > it are not ASCII hex digits, invalid-URL-unit validation error.
+    //
+    // `invalid-URL-unit` is NOT marked as failure. We don't need to consider
+    // step 3 here.
+
+    // URL Standard: Step 4 in
+    // https://url.spec.whatwg.org/#concept-opaque-host-parser
+    //
+    // > 4. Return the result of running UTF-8 percent-encode on input using
+    // > the C0 control percent-encode set.
+    if (IsInC0ControlPercentEncodeSet(ch)) {
+      AppendUTF8EscapedChar(host.data(), &i, host_len, &output);
+    } else {
+      output.push_back(ch);
+    }
+  }
+  return true;
+}
+
+template <typename CHAR, typename UCHAR, CanonMode canon_mode>
 void DoHost(const CHAR* spec,
             const Component& host,
-            CanonOutput* output,
-            CanonHostInfo* host_info) {
+            CanonOutput& output,
+            CanonHostInfo& host_info) {
+  // URL Standard: https://url.spec.whatwg.org/#host-parsing
+
+  // Keep track of output's initial length, so we can rewind later.
+  const int output_begin = output.length();
+
   if (host.is_empty()) {
     // Empty hosts don't need anything.
-    host_info->family = CanonHostInfo::NEUTRAL;
-    host_info->out_host = Component();
+    host_info.family = CanonHostInfo::NEUTRAL;
+    // Carry over the valid empty host for non-special URLs.
+    //
+    // Component(0, 0) should be considered invalid here for historical reasons.
+    //
+    // TODO(crbug.com/1416006): Update the callers so that they don't pass
+    // Component(0, 0) as an invalid `host`.
+    if (host.begin != 0 && host.len == 0) {
+      host_info.out_host = Component(output_begin, 0);
+    } else {
+      host_info.out_host = Component();
+    }
     return;
   }
 
-  // Keep track of output's initial length, so we can rewind later.
-  const int output_begin = output->length();
+  bool success;
+  if constexpr (canon_mode == CanonMode::kSpecialURL) {
+    success = DoHostSubstring<CHAR, UCHAR>(spec, host, &output);
+  } else {
+    // URL Standard: https://url.spec.whatwg.org/#concept-opaque-host-parser
+    success = DoOpaqueHost(host.as_string_view_on(spec), output);
+  }
 
-  if (DoHostSubstring<CHAR, UCHAR>(spec, host, output)) {
+  if (success) {
     // After all the other canonicalization, check if we ended up with an IP
     // address. IP addresses are small, so writing into this temporary buffer
     // should not cause an allocation.
     RawCanonOutput<64> canon_ip;
-    CanonicalizeIPAddress(output->data(),
-                          MakeRange(output_begin, output->length()),
-                          &canon_ip, host_info);
+
+    if constexpr (canon_mode == CanonMode::kSpecialURL) {
+      CanonicalizeIPAddress(output.data(),
+                            MakeRange(output_begin, output.length()), &canon_ip,
+                            &host_info);
+    } else {
+      // Non-special URLs support only IPv6.
+      CanonicalizeIPv6Address(output.data(),
+                              MakeRange(output_begin, output.length()),
+                              canon_ip, host_info);
+    }
 
     // If we got an IPv4/IPv6 address, copy the canonical form back to the
     // real buffer. Otherwise, it's a hostname or broken IP, in which case
     // we just leave it in place.
-    if (host_info->IsIPAddress()) {
-      output->set_length(output_begin);
-      output->Append(canon_ip.data(), canon_ip.length());
+    if (host_info.IsIPAddress()) {
+      output.set_length(output_begin);
+      output.Append(canon_ip.view());
     }
   } else {
     // Canonicalization failed. Set BROKEN to notify the caller.
-    host_info->family = CanonHostInfo::BROKEN;
+    host_info.family = CanonHostInfo::BROKEN;
   }
-
-  host_info->out_host = MakeRange(output_begin, output->length());
+  host_info.out_host = MakeRange(output_begin, output.length());
 }
 
 }  // namespace
@@ -397,19 +574,61 @@ bool CanonicalizeHost(const char* spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
-  CanonHostInfo host_info;
-  DoHost<char, unsigned char>(spec, host, output, &host_info);
-  *out_host = host_info.out_host;
-  return (host_info.family != CanonHostInfo::BROKEN);
+  DCHECK(output);
+  DCHECK(out_host);
+  return CanonicalizeSpecialHost(spec, host, *output, *out_host);
 }
 
 bool CanonicalizeHost(const char16_t* spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
+  DCHECK(output);
+  DCHECK(out_host);
+  return CanonicalizeSpecialHost(spec, host, *output, *out_host);
+}
+
+bool CanonicalizeSpecialHost(const char* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             Component& out_host) {
   CanonHostInfo host_info;
-  DoHost<char16_t, char16_t>(spec, host, output, &host_info);
-  *out_host = host_info.out_host;
+  DoHost<char, unsigned char, CanonMode::kSpecialURL>(spec, host, output,
+                                                      host_info);
+  out_host = host_info.out_host;
+  return (host_info.family != CanonHostInfo::BROKEN);
+}
+
+bool CanonicalizeSpecialHost(const char16_t* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             Component& out_host) {
+  CanonHostInfo host_info;
+  DoHost<char16_t, char16_t, CanonMode::kSpecialURL>(spec, host, output,
+                                                     host_info);
+  out_host = host_info.out_host;
+  return (host_info.family != CanonHostInfo::BROKEN);
+}
+
+bool CanonicalizeNonSpecialHost(const char* spec,
+                                const Component& host,
+                                CanonOutput& output,
+                                Component& out_host) {
+  CanonHostInfo host_info;
+  DoHost<char, unsigned char, CanonMode::kNonSpecialURL>(spec, host, output,
+                                                         host_info);
+  out_host = host_info.out_host;
+  return (host_info.family != CanonHostInfo::BROKEN);
+}
+
+bool CanonicalizeNonSpecialHost(const char16_t* spec,
+                                const Component& host,
+                                CanonOutput& output,
+                                Component& out_host) {
+  CanonHostInfo host_info;
+  DoHost<char16_t, char16_t, CanonMode::kNonSpecialURL>(spec, host, output,
+                                                        host_info);
+  out_host = host_info.out_host;
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
@@ -417,14 +636,34 @@ void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
-  DoHost<char, unsigned char>(spec, host, output, host_info);
+  DCHECK(output);
+  DCHECK(host_info);
+  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
 }
 
 void CanonicalizeHostVerbose(const char16_t* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
-  DoHost<char16_t, char16_t>(spec, host, output, host_info);
+  DCHECK(output);
+  DCHECK(host_info);
+  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
+}
+
+void CanonicalizeSpecialHostVerbose(const char* spec,
+                                    const Component& host,
+                                    CanonOutput& output,
+                                    CanonHostInfo& host_info) {
+  DoHost<char, unsigned char, CanonMode::kSpecialURL>(spec, host, output,
+                                                      host_info);
+}
+
+void CanonicalizeSpecialHostVerbose(const char16_t* spec,
+                                    const Component& host,
+                                    CanonOutput& output,
+                                    CanonHostInfo& host_info) {
+  DoHost<char16_t, char16_t, CanonMode::kSpecialURL>(spec, host, output,
+                                                     host_info);
 }
 
 bool CanonicalizeHostSubstring(const char* spec,
@@ -437,6 +676,22 @@ bool CanonicalizeHostSubstring(const char16_t* spec,
                                const Component& host,
                                CanonOutput* output) {
   return DoHostSubstring<char16_t, char16_t>(spec, host, output);
+}
+
+void CanonicalizeNonSpecialHostVerbose(const char* spec,
+                                       const Component& host,
+                                       CanonOutput& output,
+                                       CanonHostInfo& host_info) {
+  DoHost<char, unsigned char, CanonMode::kNonSpecialURL>(spec, host, output,
+                                                         host_info);
+}
+
+void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
+                                       const Component& host,
+                                       CanonOutput& output,
+                                       CanonHostInfo& host_info) {
+  DoHost<char16_t, char16_t, CanonMode::kNonSpecialURL>(spec, host, output,
+                                                        host_info);
 }
 
 }  // namespace url

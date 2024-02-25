@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -29,11 +30,14 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -44,20 +48,22 @@ import java.util.concurrent.CountDownLatch;
 @Batch(Batch.UNIT_TESTS)
 public class ProfileOAuth2TokenServiceDelegateTest {
     private static final long NATIVE_DELEGATE = 1000L;
-    private static final Account ACCOUNT = AccountUtils.createAccountFromName("test@gmail.com");
+    private static final String EMAIL = "test@gmail.com";
+    private static final CoreAccountInfo CORE_ACCOUNT_INFO =
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL));
+    private static final Account ACCOUNT =
+            AccountUtils.createAccountFromName(CORE_ACCOUNT_INFO.getEmail());
 
-    /**
-     * Class handling GetAccessToken callbacks and providing a blocking {@link
-     * #getToken()}.
-     */
+    /** Class handling GetAccessToken callbacks and providing a blocking {@link #getToken()}. */
     private static class CustomGetAccessTokenCallback
             implements ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {
         private String mToken;
         private final CountDownLatch mTokenRetrievedCountDown = new CountDownLatch(1);
 
         /**
-         * Blocks until the callback is called once and returns the token.
-         * See {@link CountDownLatch#await}
+         * Blocks until the callback is called once and returns the token. See {@link
+         * CountDownLatch#await}
          */
         String getToken() {
             try {
@@ -84,14 +90,13 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
-    public final JniMocker mocker = new JniMocker();
+    @Rule public final JniMocker mocker = new JniMocker();
 
-    @Mock
-    private AccountTrackerService mAccountTrackerServiceMock;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
+    @Mock private AccountTrackerService mAccountTrackerServiceMock;
+
+    @Mock private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
 
     private final CustomGetAccessTokenCallback mTokenCallback = new CustomGetAccessTokenCallback();
 
@@ -113,10 +118,13 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
-        final AccessTokenData expectedToken = mAccountManagerFacade.getAccessToken(ACCOUNT, scope);
+        final AccessTokenData expectedToken =
+                mAccountManagerFacade.getAccessToken(CORE_ACCOUNT_INFO, scope);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mDelegate.getAccessToken(ACCOUNT, scope, mTokenCallback); });
+                () -> {
+                    mDelegate.getAccessToken(CORE_ACCOUNT_INFO, scope, mTokenCallback);
+                });
         Assert.assertEquals(expectedToken.getToken(), mTokenCallback.getToken());
     }
 
@@ -125,10 +133,14 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
-        doReturn(null).when(mAccountManagerFacade).getAccessToken(any(Account.class), anyString());
+        doReturn(null)
+                .when(mAccountManagerFacade)
+                .getAccessToken(any(CoreAccountInfo.class), anyString());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mDelegate.getAccessToken(ACCOUNT, scope, mTokenCallback); });
+                () -> {
+                    mDelegate.getAccessToken(CORE_ACCOUNT_INFO, scope, mTokenCallback);
+                });
         Assert.assertNull(mTokenCallback.getToken());
     }
 
@@ -137,7 +149,9 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com")); });
+                () -> {
+                    Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+                });
     }
 
     @Test
@@ -145,32 +159,41 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name)); });
+                () -> {
+                    Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+                });
     }
 
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            doReturn(new Promise<List<Account>>()).when(mAccountManagerFacade).getAccounts();
-            Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    doReturn(new Promise<List<CoreAccountInfo>>())
+                            .when(mAccountManagerFacade)
+                            .getCoreAccountInfos();
+                    Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+                });
     }
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        doAnswer(invocation -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mAccountTrackerServiceMock)
-                .seedAccountsIfNeeded(any(Runnable.class));
+                .legacySeedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
+                () -> {
+                    mDelegate.legacySeedAndReloadAccountsWithPrimaryAccount(null);
+                });
         verify(mNativeMock)
                 .reloadAllAccountsWithPrimaryAccountAfterSeeding(
                         NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});

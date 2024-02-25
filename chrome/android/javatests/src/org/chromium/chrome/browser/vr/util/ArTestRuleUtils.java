@@ -27,9 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-/**
- * Utility class for interacting with AR-specific rules.
- */
+/** Utility class for interacting with AR-specific rules. */
 public class ArTestRuleUtils extends XrTestRuleUtils {
     private static final String DEFAULT_PLAYBACK_FILEPATH =
             "chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4";
@@ -50,10 +48,14 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
      * @param desc The Description passed to the calling ChromeActivityTestRule's apply() method.
      * @param rule The calling ArTestRule.
      * @param launcher A ChromeLaunchMethod whose launch() contains the code snippet to start Chrome
-     *        in the calling ChromeActivityTestRule's activity type.
+     *     in the calling ChromeActivityTestRule's activity type.
      */
-    public static void evaluateArTestRuleImpl(final Statement base, final Description desc,
-            final ArTestRule rule, final ChromeLaunchMethod launcher) throws Throwable {
+    public static void evaluateArTestRuleImpl(
+            final Statement base,
+            final Description desc,
+            final ArTestRule rule,
+            final ChromeLaunchMethod launcher)
+            throws Throwable {
         // See if the test is annotated with @ArPlaybackFile
         String playbackFilepath = DEFAULT_PLAYBACK_FILEPATH;
         ArPlaybackFile annotation = desc.getAnnotation(ArPlaybackFile.class);
@@ -63,9 +65,11 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
         // Check that the playback file actually exists, and if so, copy it to the location that's
         // hard-coded into the manifest so that ArCore can find and use it.
         File playbackFile = new File(playbackFilepath);
-        Assert.assertTrue("Given AR playback file " + playbackFilepath + " does not exist.",
+        Assert.assertTrue(
+                "Given AR playback file " + playbackFilepath + " does not exist.",
                 playbackFile.exists());
-        Assert.assertFalse("Given AR playback file " + playbackFilepath + " is a directory.",
+        Assert.assertFalse(
+                "Given AR playback file " + playbackFilepath + " is a directory.",
                 playbackFile.isDirectory());
         copyDatasetIfNecessary(playbackFile, new File(PLAYBACK_FILE_LOCATION));
 
@@ -78,34 +82,40 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
      * parameterization.
      *
      * @return An ArrayList of ParameterSets, with each ParameterSet containing a callable to create
-     *         an ArTestRule for a supported ChromeActivity.
+     *     an ArTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
         ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
-        parameters.add(new ParameterSet()
-                               .value(new Callable<ChromeTabbedActivityArTestRule>() {
-                                   @Override
-                                   public ChromeTabbedActivityArTestRule call() {
-                                       return new ChromeTabbedActivityArTestRule();
-                                   }
-                               })
-                               .name("ChromeTabbedActivity"));
-        parameters.add(new ParameterSet()
-                               .value(new Callable<CustomTabActivityArTestRule>() {
-                                   @Override
-                                   public CustomTabActivityArTestRule call() {
-                                       return new CustomTabActivityArTestRule();
-                                   }
-                               })
-                               .name("CustomTabActivity"));
-        parameters.add(new ParameterSet()
-                               .value(new Callable<WebappActivityArTestRule>() {
-                                   @Override
-                                   public WebappActivityArTestRule call() {
-                                       return new WebappActivityArTestRule();
-                                   }
-                               })
-                               .name("WebappActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<ChromeTabbedActivityArTestRule>() {
+                                    @Override
+                                    public ChromeTabbedActivityArTestRule call() {
+                                        return new ChromeTabbedActivityArTestRule();
+                                    }
+                                })
+                        .name("ChromeTabbedActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<CustomTabActivityArTestRule>() {
+                                    @Override
+                                    public CustomTabActivityArTestRule call() {
+                                        return new CustomTabActivityArTestRule();
+                                    }
+                                })
+                        .name("CustomTabActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<WebappActivityArTestRule>() {
+                                    @Override
+                                    public WebappActivityArTestRule call() {
+                                        return new WebappActivityArTestRule();
+                                    }
+                                })
+                        .name("WebappActivity"));
         return parameters;
     }
 
@@ -130,7 +140,6 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
      * Computes the SHA-1 digest of |src|.
      *
      * @param src The File to compute the digest of.
-     *
      * @return A byte array containing the SHA-1 digest of |src|.
      */
     private static byte[] getFileDigest(File src)

@@ -87,14 +87,25 @@ struct GridSpan {
   bool Contains(wtf_size_t line) const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GE(start_line_, 0);
-    DCHECK_GE(end_line_, 0);
+    DCHECK_LT(start_line_, end_line_);
     return line >= static_cast<wtf_size_t>(start_line_) &&
            line <= static_cast<wtf_size_t>(end_line_);
   }
 
+  bool Intersects(GridSpan span) const {
+    DCHECK(IsTranslatedDefinite());
+    DCHECK(span.IsTranslatedDefinite());
+    DCHECK_GE(start_line_, 0);
+    DCHECK_LT(start_line_, end_line_);
+    DCHECK_GE(span.start_line_, 0);
+    DCHECK_LT(span.start_line_, span.end_line_);
+
+    return start_line_ < span.end_line_ && end_line_ >= span.start_line_;
+  }
+
   wtf_size_t IntegerSpan() const {
     DCHECK(IsTranslatedDefinite());
-    DCHECK_GT(end_line_, start_line_);
+    DCHECK_LT(start_line_, end_line_);
     return end_line_ - start_line_;
   }
 
@@ -159,6 +170,22 @@ struct GridSpan {
         GridSpan(start_line_ + offset, end_line_ + offset, kTranslatedDefinite);
   }
 
+  void SetStart(int start_line) {
+    DCHECK_NE(type_, kIndefinite);
+    *this = GridSpan(start_line, end_line_, kTranslatedDefinite);
+  }
+
+  void SetEnd(int end_line) {
+    DCHECK_NE(type_, kIndefinite);
+    *this = GridSpan(start_line_, end_line, kTranslatedDefinite);
+  }
+
+  void Intersect(int start_line, int end_line) {
+    DCHECK_NE(type_, kIndefinite);
+    *this = GridSpan(std::max(start_line_, start_line),
+                     std::min(end_line_, end_line), kTranslatedDefinite);
+  }
+
  private:
   enum GridSpanType { kUntranslatedDefinite, kTranslatedDefinite, kIndefinite };
 
@@ -217,6 +244,8 @@ struct GridArea {
   wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const {
     return Span(track_direction).IntegerSpan();
   }
+
+  void Transpose() { std::swap(columns, rows); }
 
   bool operator==(const GridArea& o) const {
     return columns == o.columns && rows == o.rows;

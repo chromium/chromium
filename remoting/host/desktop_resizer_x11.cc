@@ -4,14 +4,19 @@
 
 #include "remoting/host/desktop_resizer_x11.h"
 
+#include <gio/gio.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -62,6 +67,7 @@ namespace {
 
 constexpr auto kInvalidMode = static_cast<x11::RandR::Mode>(0);
 constexpr auto kDisabledCrtc = static_cast<x11::RandR::Crtc>(0);
+constexpr base::TimeDelta kGnomeWaitTime = base::Seconds(1);
 
 int PixelsToMillimeters(int pixels, int dpi) {
   DCHECK(dpi != 0);
@@ -72,6 +78,44 @@ int PixelsToMillimeters(int pixels, int dpi) {
   // kMillimetersPerInch converts to mm. Multiplication is done first to
   // avoid integer division.
   return static_cast<int>(kMillimetersPerInch * pixels / dpi);
+}
+
+// Returns a physical size in mm that will work well with GNOME's
+// automatic scale-selection algorithm.
+webrtc::DesktopSize CalculateSizeInMmForGnome(
+    const remoting::ScreenResolution& resolution) {
+  int width_mm = PixelsToMillimeters(resolution.dimensions().width(),
+                                     resolution.dpi().x());
+  int height_mm = PixelsToMillimeters(resolution.dimensions().height(),
+                                      resolution.dpi().y());
+
+  // GNOME will, by default, choose an automatic scaling-factor based on the
+  // monitor's physical size (mm) and resolution (pixels). Some versions of
+  // GNOME have a problem when the computed DPI is close to 192. GNOME
+  // calculates the DPI using:
+  // dpi = size_pixels / (size_mm / 25.4)
+  // This is the reverse of PixelsToMillimeters() which should result in
+  // the same values as resolution.dpi() except for any floating-point
+  // truncation errors. GNOME will choose 2x scaling only if both the width and
+  // height DPIs are strictly greater than 192. The problem is that a user might
+  // connect from a 192dpi device and then GNOME's choice of scaling is randomly
+  // subject to rounding errors. If the calculation worked out at exactly
+  // 192dpi, the inequality test would fail and GNOME would choose 1x scaling.
+  // To address this, width_mm/height_mm are decreased slightly (increasing the
+  // calculated DPI) to favor 2x over 1x scaling for 192dpi devices.
+  width_mm--;
+  height_mm--;
+
+  // GNOME treats some pairs of width/height values as untrustworthy and will
+  // always choose 1x scaling for them. These values come from
+  // meta_monitor_has_aspect_as_size() in
+  // https://gitlab.gnome.org/GNOME/mutter/-/blob/main/src/backends/meta-monitor-manager.c
+  constexpr std::pair<int, int> kBadSizes[] = {
+      {16, 9}, {16, 10}, {160, 90}, {160, 100}, {1600, 900}, {1600, 1000}};
+  if (base::Contains(kBadSizes, std::pair(width_mm, height_mm))) {
+    width_mm--;
+  }
+  return {width_mm, height_mm};
 }
 
 // TODO(jamiewalch): Use the correct DPI for the mode: http://crbug.com/172405.
@@ -139,11 +183,10 @@ DesktopResizerX11::DesktopResizerX11()
   if (!has_randr_) {
     return;
   }
-  // Let the server know the client version so it sends us data consistent with
-  // xcbproto's definitions.  We don't care about the returned server version,
-  // so no need to sync.
-  randr_->QueryVersion({x11::RandR::major_version, x11::RandR::minor_version});
   randr_->SelectInput({root_, x11::RandR::NotifyMask::ScreenChange});
+
+  gnome_display_config_.Init();
+  registry_ = TakeGObject(g_settings_new("org.gnome.desktop.interface"));
 }
 
 DesktopResizerX11::~DesktopResizerX11() = default;
@@ -198,10 +241,9 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
                    response->min_height, response->max_height);
     // Additionally impose a minimum size of 640x480, since anything smaller
     // doesn't seem very useful.
-    ScreenResolution actual(
+    result.emplace_back(
         webrtc::DesktopSize(std::max(640, width), std::max(480, height)),
-        webrtc::DesktopVector(kDefaultDPI, kDefaultDPI));
-    result.push_back(actual);
+        preferred.dpi());
   }
   return result;
 }
@@ -400,8 +442,9 @@ void DesktopResizerX11::SetResolutionForOutput(
   // that we have to detach the output from the mode in order to delete the
   // mode and re-create it with the new resolution. The output may also need to
   // be detached from all modes in order to reduce the root window size.
-  HOST_LOG << "Changing desktop size to " << resolution.dimensions().width()
-           << "x" << resolution.dimensions().height();
+  HOST_LOG << "Resizing RANDR Output " << base::to_underlying(output) << " to "
+           << resolution.dimensions().width() << "x"
+           << resolution.dimensions().height();
 
   X11CrtcResizer resizer(resources_.get(), connection_);
 
@@ -433,6 +476,23 @@ void DesktopResizerX11::SetResolutionForOutput(
   // Update |active_crtcs_| with new sizes and offsets.
   resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
   UpdateRootWindow(resizer);
+
+  webrtc::DesktopSize size_mm = CalculateSizeInMmForGnome(resolution);
+  int width_mm = size_mm.width();
+  int height_mm = size_mm.height();
+  HOST_LOG << "Setting physical size in mm: " << width_mm << "x" << height_mm;
+  SetOutputPhysicalSizeInMM(connection_, output, width_mm, height_mm);
+
+  // Check to see if GNOME is using automatic-scaling. If the value is non-zero,
+  // the user prefers a particular scaling, so don't adjust the
+  // text-scaling-factor here.
+  if (g_settings_get_uint(registry_.get(), "scaling-factor") == 0U) {
+    // Start the timer to update the text-scaling-factor. Any previously
+    // started timer will be cancelled.
+    requested_dpi_ = resolution.dpi().x();
+    gnome_delay_timer_.Start(FROM_HERE, kGnomeWaitTime, this,
+                             &DesktopResizerX11::RequestGnomeDisplayConfig);
+  }
 }
 
 x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
@@ -517,6 +577,60 @@ DesktopResizerX11::OutputInfoList DesktopResizerX11::GetDisabledOutputs() {
     }
   }
   return disabled_outputs;
+}
+
+void DesktopResizerX11::RequestGnomeDisplayConfig() {
+  // Unretained() is safe because `this` owns gnome_display_config_ which
+  // cancels callbacks on destruction.
+  gnome_display_config_.GetMonitorsConfig(
+      base::BindOnce(&DesktopResizerX11::OnGnomeDisplayConfigReceived,
+                     base::Unretained(this)));
+}
+
+void DesktopResizerX11::OnGnomeDisplayConfigReceived(
+    GnomeDisplayConfig config) {
+  // Look for an enabled monitor. Disabled monitors have no Mode set - a
+  // monitor can become disabled by being added then removed (using the website
+  // Display options). The Xorg xf86-video-dummy driver has a quirk that, once a
+  // monitor becomes "connected", it stays forever in the connected state, even
+  // if it is later disabled. All connected monitors (enabled or disabled) are
+  // included in the GNOME config.
+
+  // For X11, the calculation of the text-scaling-factor does not depend on
+  // which enabled monitor is chosen here, because GNOME's X11 backend forces
+  // all monitors to have the same scale. However, it makes sense to select
+  // an enabled monitor, since a disabled monitor might not have a reliable
+  // "scale" property returned by GNOME.
+  auto monitor_iter =
+      base::ranges::find_if(config.monitors, [](const auto& entry) {
+        return entry.second.GetCurrentMode() != nullptr;
+      });
+  if (monitor_iter == base::ranges::end(config.monitors)) {
+    LOG(ERROR) << "No enabled monitor found in GNOME config.";
+    return;
+  }
+  const auto& monitor = monitor_iter->second;
+
+  if (monitor.scale == 0) {
+    // This should never happen - avoid division by 0.
+    return;
+  }
+
+  // The GNOME scaling, multiplied by the GNOME text-scaling-factor, will be the
+  // rendered scaling of text. This should be the client's requested DPI divided
+  // by kDefaultDPI.
+  double text_scaling_factor =
+      static_cast<double>(requested_dpi_) / kDefaultDPI / monitor.scale;
+  HOST_LOG << "Target DPI = " << requested_dpi_
+           << ", GNOME scale = " << monitor.scale
+           << ", calculated text-scaling = " << text_scaling_factor;
+
+  if (!g_settings_set_double(registry_.get(), "text-scaling-factor",
+                             text_scaling_factor)) {
+    // Just log a warning - failure is expected if the value falls outside the
+    // interval [0.5, 3.0].
+    LOG(WARNING) << "Failed to set text-scaling-factor.";
+  }
 }
 
 }  // namespace remoting

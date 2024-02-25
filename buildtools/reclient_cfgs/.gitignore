@@ -2,6 +2,4 @@
 /nacl/
 /python/
 /win-cross/
-# TODO(crbug.com/1407557): remove win-cross-experiments
-/win-cross-experiments/
 reproxy.cfg

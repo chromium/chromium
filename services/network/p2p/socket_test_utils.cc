@@ -191,10 +191,6 @@ bool FakeSocket::WasEverUsed() const {
   return true;
 }
 
-bool FakeSocket::WasAlpnNegotiated() const {
-  return false;
-}
-
 net::NextProto FakeSocket::GetNegotiatedProtocol() const {
   return net::kProtoUnknown;
 }

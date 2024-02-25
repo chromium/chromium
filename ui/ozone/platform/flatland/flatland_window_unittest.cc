@@ -11,7 +11,7 @@
 #include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 #include <lib/ui/scenic/cpp/testing/fake_touch_source.h>
 #include <lib/ui/scenic/cpp/testing/fake_view_ref_focused.h>
-#include <lib/ui/scenic/cpp/view_creation_tokens.h>
+#include <lib/zx/channel.h>
 
 #include <memory>
 #include <string>
@@ -20,11 +20,13 @@
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/logging.h"
+#include "base/test/fidl_matchers.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/fuchsia/util/pointer_event_utility.h"
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
+#include "ui/platform_window/fuchsia/view_ref_pair.h"
 
 using ::scenic::FakeGraph;
 using ::scenic::FakeTransform;
@@ -50,23 +52,24 @@ Matcher<FakeGraph> IsWindowGraph(
         parent_viewport_watcher,
     const fuchsia::ui::views::ViewportCreationToken& viewport_creation_token,
     Matcher<std::vector<FakeTransformPtr>> children_transform_matcher) {
-  absl::optional<zx_koid_t> view_token_koid =
+  std::optional<zx_koid_t> view_token_koid =
       base::GetRelatedKoid(viewport_creation_token.value);
   EXPECT_TRUE(view_token_koid.has_value());
-  absl::optional<zx_koid_t> watcher_koid =
+  std::optional<zx_koid_t> watcher_koid =
       base::GetRelatedKoid(parent_viewport_watcher.channel());
   EXPECT_TRUE(watcher_koid.has_value());
 
   return AllOf(
       Field("root_transform", &FakeGraph::root_transform,
-            Pointee(AllOf(Field("translation", &FakeTransform::translation,
-                                FakeTransform::kDefaultTranslation),
-                          Field("scale", &FakeTransform::scale,
-                                FakeTransform::kDefaultScale),
-                          Field("opacity", &FakeTransform::opacity,
-                                FakeTransform::kDefaultOpacity),
-                          Field("children", &FakeTransform::children,
-                                children_transform_matcher)))),
+            Pointee(AllOf(
+                Field("translation", &FakeTransform::translation,
+                      ::base::test::FidlEq(FakeTransform::kDefaultTranslation)),
+                Field("scale", &FakeTransform::scale,
+                      ::base::test::FidlEq(FakeTransform::kDefaultScale)),
+                Field("opacity", &FakeTransform::opacity,
+                      FakeTransform::kDefaultOpacity),
+                Field("children", &FakeTransform::children,
+                      children_transform_matcher)))),
       Field("view", &FakeGraph::view,
             Optional(AllOf(
                 Field("view_token", &FakeView::view_token, view_token_koid),
@@ -82,7 +85,7 @@ Matcher<fuchsia::ui::composition::ViewportProperties> IsViewportProperties(
                true),
       Property("logical_size",
                &fuchsia::ui::composition::ViewportProperties::logical_size,
-               logical_size));
+               ::base::test::FidlEq(logical_size)));
 }
 
 Matcher<FakeTransformPtr> IsViewport(
@@ -92,8 +95,9 @@ Matcher<FakeTransformPtr> IsViewport(
 
   return Pointee(AllOf(
       Field("translation", &FakeTransform::translation,
-            FakeTransform::kDefaultTranslation),
-      Field("scale", &FakeTransform::scale, FakeTransform::kDefaultScale),
+            ::base::test::FidlEq(FakeTransform::kDefaultTranslation)),
+      Field("scale", &FakeTransform::scale,
+            ::base::test::FidlEq(FakeTransform::kDefaultScale)),
       Field("opacity", &FakeTransform::opacity, FakeTransform::kDefaultOpacity),
       Field("children", &FakeTransform::children, IsEmpty()),
       Field("content", &FakeTransform::content,
@@ -111,7 +115,8 @@ Matcher<FakeTransformPtr> IsHitShield() {
             testing::Eq(std::nullopt)),
       // Hit region must be "infinite".
       Field("hit_regions", &FakeTransform::hit_regions,
-            testing::Contains(scenic::kInfiniteHitRegion))));
+            testing::Contains(
+                ::base::test::FidlEq(scenic::kInfiniteHitRegion)))));
 }
 
 }  // namespace
@@ -126,15 +131,19 @@ class FlatlandWindowTest : public ::testing::Test {
   void CreateWindow() {
     EXPECT_FALSE(flatland_window_);
 
-    auto token_pair = scenic::ViewCreationTokenPair::New();
-    viewport_token_ = std::move(token_pair.viewport_token);
+    fuchsia::ui::views::ViewCreationToken view_token;
+    fuchsia::ui::views::ViewportCreationToken viewport_token;
+    auto status =
+        zx::channel::create(0, &viewport_token.value, &view_token.value);
+    CHECK_EQ(ZX_OK, status);
+    viewport_token_ = std::move(viewport_token);
 
     EXPECT_CALL(window_delegate_, OnAcceleratedWidgetAvailable(_))
         .WillOnce(SaveArg<0>(&window_widget_));
 
     PlatformWindowInitProperties properties;
-    properties.view_ref_pair = scenic::ViewRefPair::New();
-    properties.view_creation_token = std::move(token_pair.view_token);
+    properties.view_ref_pair = ViewRefPair::New();
+    properties.view_creation_token = std::move(view_token);
     flatland_window_ = std::make_unique<FlatlandWindow>(
         &window_manager_, &window_delegate_, std::move(properties));
   }
@@ -330,8 +339,12 @@ TEST_F(FlatlandWindowTest, WaitsForNonZeroSizeToAttachSurfaceContent) {
   task_environment_.RunUntilIdle();
 
   // Try attaching the content. It should only be a closure.
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
   EXPECT_TRUE(HasPendingAttachSurfaceContentClosure());
 
   // Setting layout info should trigger the closure and delegate calls.
@@ -363,9 +376,8 @@ TEST_F(FlatlandWindowTest, WaitsForNonZeroSizeToAttachSurfaceContent) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2u, presents_called);
   EXPECT_THAT(fake_flatland_.graph(),
-              IsWindowGraph(
-                  parent_viewport_watcher(), viewport_token_,
-                  Contains(IsViewport(token_pair.view_token, expected_size))));
+              IsWindowGraph(parent_viewport_watcher(), viewport_token_,
+                            Contains(IsViewport(view_token, expected_size))));
 }
 
 // Verify that surface is cleared when the window is disconnected from the
@@ -378,8 +390,12 @@ TEST_F(FlatlandWindowTest, ResetSurfaceOnDisconnect) {
   task_environment_.RunUntilIdle();
 
   // Try attaching the content. It should only be a closure.
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
 
   SetWindowStatus(
       fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY);
@@ -434,8 +450,12 @@ TEST_F(FlatlandWindowTest, SurfaceHasHitTestHitShield) {
   // Spin the loop to propagate layout.
   task_environment_.RunUntilIdle();
 
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
 
   // Show() the window, to trigger creation of the scene graph, including
   // surface and hit shield.
@@ -449,12 +469,12 @@ TEST_F(FlatlandWindowTest, SurfaceHasHitTestHitShield) {
   task_environment_.RunUntilIdle();
 
   // Surface should be accompanied by input shield, in that order.
-  EXPECT_THAT(fake_flatland_.graph(),
-              Field("root_transform", &FakeGraph::root_transform,
-                    Pointee(Field("children", &FakeTransform::children,
-                                  ElementsAre(IsViewport(token_pair.view_token,
-                                                         expected_size),
-                                              IsHitShield())))));
+  EXPECT_THAT(
+      fake_flatland_.graph(),
+      Field("root_transform", &FakeGraph::root_transform,
+            Pointee(Field("children", &FakeTransform::children,
+                          ElementsAre(IsViewport(view_token, expected_size),
+                                      IsHitShield())))));
 }
 
 class ParameterizedViewInsetTest : public FlatlandWindowTest,

@@ -6,6 +6,7 @@
 #define COMPONENTS_OS_CRYPT_ASYNC_COMMON_ENCRYPTOR_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 template <typename DataViewType, typename T>
@@ -69,14 +69,14 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
 
     std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext) const;
-    absl::optional<std::vector<uint8_t>> Decrypt(
+    std::optional<std::vector<uint8_t>> Decrypt(
         base::span<const uint8_t> ciphertext) const;
 
     Key Clone() const;
 
-    // Algorithm. Can only be absl::nullopt if the instance is in the process of
+    // Algorithm. Can only be std::nullopt if the instance is in the process of
     // being serialized to/from mojo.
-    absl::optional<mojom::Algorithm> algorithm_;
+    std::optional<mojom::Algorithm> algorithm_;
     std::vector<uint8_t> key_;
   };
 
@@ -95,12 +95,12 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
 
   // Encrypt a string with the current Encryptor configuration. This can be
   // called on any thread.
-  [[nodiscard]] absl::optional<std::vector<uint8_t>> EncryptString(
+  [[nodiscard]] std::optional<std::vector<uint8_t>> EncryptString(
       const std::string& data) const;
 
   // Decrypt data previously encrypted using `EncryptData`. This can be called
   // on any thread.
-  [[nodiscard]] absl::optional<std::string> DecryptData(
+  [[nodiscard]] std::optional<std::string> DecryptData(
       base::span<const uint8_t> data) const;
 
   // These two APIs are provided for backwards compatibility with OSCrypt. They

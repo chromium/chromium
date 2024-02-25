@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -40,27 +40,34 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   // *num_bytes.
   //
   // On failure or MOJO_RESULT_SHOULD_WAIT, there will be no change to the
-  // handle, and *pending and *num_bytes will be unused.
+  // handle, and *pending will be nulled out.
   static MojoResult BeginWrite(mojo::ScopedDataPipeProducerHandle* handle,
-                               scoped_refptr<NetToMojoPendingBuffer>* pending,
-                               uint32_t* num_bytes);
+                               scoped_refptr<NetToMojoPendingBuffer>* pending);
+
   // Called to indicate the buffer is done being written to. Passes ownership
   // of the pipe back to the caller.
   mojo::ScopedDataPipeProducerHandle Complete(uint32_t num_bytes);
-  char* buffer() { return static_cast<char*>(buffer_); }
+
+  char* buffer() { return buffer_.data(); }
+  uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
+
+  // Equivalent of buffer(), but allows the class to satisfy the requirements
+  // of std::ranges::contiguous_range, and hence allows a span, for example,
+  // to be implicitly constructed from a it.
+  char* data() { return buffer_.data(); }
 
  private:
   friend class base::RefCountedThreadSafe<NetToMojoPendingBuffer>;
   // Takes ownership of the handle.
   NetToMojoPendingBuffer(mojo::ScopedDataPipeProducerHandle handle,
-                         void* buffer);
+                         base::span<char> buffer);
   ~NetToMojoPendingBuffer();
-  mojo::ScopedDataPipeProducerHandle handle_;
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
-  // protected by BackupRefPtr, because the pointer comes either from using
-  // `mmap`, MapViewOfFile or base::AllocPages directly.
-  RAW_PTR_EXCLUSION void* buffer_;
+  mojo::ScopedDataPipeProducerHandle handle_;
+  // `buffer_` is not a raw_span<...> for performance reasons (also, pointee
+  // would never be protected under BackupRefPtr, because the pointer comes
+  // either from using `mmap`, MapViewOfFile or base::AllocPages directly).
+  base::span<char> buffer_;
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and
@@ -70,7 +77,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoIOBuffer
  public:
   // If |offset| is specified then the memory buffer passed to the Net layer
   // will be offset by that many bytes.
-  NetToMojoIOBuffer(NetToMojoPendingBuffer* pending_buffer, int offset = 0);
+  explicit NetToMojoIOBuffer(
+      scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
+      int offset = 0);
 
   NetToMojoIOBuffer(const NetToMojoIOBuffer&) = delete;
   NetToMojoIOBuffer& operator=(const NetToMojoIOBuffer&) = delete;
@@ -90,14 +99,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   //
   // On success, MOJO_RESULT_OK will be returned. The ownership of the given
   // consumer handle will be transferred to the new MojoToNetPendingBuffer that
-  // will be placed into *pending, and the size of the buffer will be in
-  // *num_bytes.
+  // will be placed into *pending.
   //
   // On failure or MOJO_RESULT_SHOULD_WAIT, there will be no change to the
-  // handle, and *pending and *num_bytes will be unused.
+  // handle, and *pending will be nulled out.
   static MojoResult BeginRead(mojo::ScopedDataPipeConsumerHandle* handle,
-                              scoped_refptr<MojoToNetPendingBuffer>* pending,
-                              uint32_t* num_bytes);
+                              scoped_refptr<MojoToNetPendingBuffer>* pending);
 
   // Indicates the buffer is done being read from. The argument is the number
   // of bytes actually read, since net may do partial writes, which will result
@@ -111,22 +118,26 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   // assume that if the buffer_ is null, data was read from the pipe.
   bool IsComplete() const;
 
-  const char* buffer() { return static_cast<const char*>(buffer_); }
+  const char* buffer() const { return buffer_.data(); }
+  uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
+
+  // Equivalent of buffer(), allows conversion to span.
+  const char* data() { return buffer_.data(); }
 
  private:
   friend class base::RefCountedThreadSafe<MojoToNetPendingBuffer>;
 
   // Takes ownership of the handle.
-  explicit MojoToNetPendingBuffer(mojo::ScopedDataPipeConsumerHandle handle,
-                                  const void* buffer);
+  MojoToNetPendingBuffer(mojo::ScopedDataPipeConsumerHandle handle,
+                         base::span<const char> buffer);
   ~MojoToNetPendingBuffer();
 
   mojo::ScopedDataPipeConsumerHandle handle_;
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
-  // protected by BackupRefPtr, because the pointer comes either from using
-  // `mmap`, MapViewOfFile or base::AllocPages directly.
-  RAW_PTR_EXCLUSION const void* buffer_;
+  // `buffer_` is not a raw_span<...> for performance reasons (also, pointee
+  // would never be protected under BackupRefPtr, because the pointer comes
+  // either from using `mmap`, MapViewOfFile or base::AllocPages directly).
+  base::span<const char> buffer_;
 };
 
 // Net side of a Mojo -> Net copy. The data will already be in the
@@ -136,7 +147,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetIOBuffer
  public:
   // |bytes_to_be_read| contains the number of bytes expected to be read by
   // the consumer.
-  MojoToNetIOBuffer(MojoToNetPendingBuffer* pending_buffer,
+  MojoToNetIOBuffer(scoped_refptr<MojoToNetPendingBuffer> pending_buffer,
                     int bytes_to_be_read);
 
  private:

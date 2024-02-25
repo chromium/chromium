@@ -5,7 +5,9 @@
 #include "base/containers/circular_deque.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/copy_only_int.h"
+#include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +45,20 @@ class DestructorCounter {
 
  private:
   raw_ptr<int> counter_;
+};
+
+// This class implements the interface that scoped_refptr expects, but actually
+// just counts the number of reference count changes that are attempted.
+class RefCountChangeCounter {
+ public:
+  void AddRef() { ++ref_count_changes_; }
+
+  void Release() { ++ref_count_changes_; }
+
+  int ref_count_changes() const { return ref_count_changes_; }
+
+ private:
+  int ref_count_changes_ = 0;
 };
 
 }  // namespace
@@ -864,9 +880,7 @@ TEST(CircularDeque, EmplaceFrontBackReturnsReference) {
   EXPECT_EQ(&back, &q.back());
 }
 
-/*
-This test should assert in a debug build. It tries to dereference an iterator
-after mutating the container. Uncomment to double-check that this works.
+// This test tries to dereference an iterator after mutating the container.
 TEST(CircularDeque, UseIteratorAfterMutate) {
   circular_deque<int> q;
   q.push_back(0);
@@ -875,8 +889,32 @@ TEST(CircularDeque, UseIteratorAfterMutate) {
   EXPECT_EQ(0, *old_begin);
 
   q.push_back(1);
-  EXPECT_EQ(0, *old_begin);  // Should DCHECK.
+
+  // This statement is not executed when DCHECKs are disabled.
+  EXPECT_DCHECK_DEATH(*old_begin);
 }
-*/
+
+// This test verifies that a scoped_refptr specifically is moved rather than
+// copied when a circular_deque is resized. It would be extremely inefficient if
+// it was copied in this case.
+TEST(CircularDeque, DoesntChurnRefCount) {
+  static constexpr size_t kCount = 10;
+  RefCountChangeCounter counters[kCount];
+  circular_deque<scoped_refptr<RefCountChangeCounter>> deque;
+  bool checked_capacity = false;
+  for (auto& counter : counters) {
+    deque.push_back(scoped_refptr<RefCountChangeCounter>(&counter));
+    if (!checked_capacity) {
+      // Verify that the deque will have to reallocate.
+      EXPECT_LT(deque.capacity(), kCount);
+      checked_capacity = true;
+    }
+  }
+  // Verify that reallocation has happened.
+  EXPECT_GE(deque.capacity(), kCount);
+  for (const auto& counter : counters) {
+    EXPECT_EQ(1, counter.ref_count_changes());
+  }
+}
 
 }  // namespace base

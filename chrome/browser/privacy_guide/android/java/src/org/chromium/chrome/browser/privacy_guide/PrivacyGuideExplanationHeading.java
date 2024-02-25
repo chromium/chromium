@@ -17,11 +17,13 @@ public class PrivacyGuideExplanationHeading extends LinearLayout {
     public PrivacyGuideExplanationHeading(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        View view = LayoutInflater.from(context).inflate(
-                R.layout.privacy_guide_explanation_heading, this);
+        View view =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.privacy_guide_explanation_heading, this);
 
-        TypedArray styledAttrs = context.obtainStyledAttributes(
-                attrs, R.styleable.PrivacyGuideExplanationHeading, 0, 0);
+        TypedArray styledAttrs =
+                context.obtainStyledAttributes(
+                        attrs, R.styleable.PrivacyGuideExplanationHeading, 0, 0);
 
         TextView title = (TextView) view.findViewById(R.id.title);
         title.setText(styledAttrs.getText(R.styleable.PrivacyGuideExplanationHeading_titleText));

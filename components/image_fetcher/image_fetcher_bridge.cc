@@ -177,7 +177,8 @@ void ImageFetcherBridge::ReportCacheHitTime(
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
-  base::Time start_time = base::Time::FromJavaTime(start_time_millis);
+  base::Time start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(start_time_millis);
   ImageFetcherMetricsReporter::ReportImageLoadFromCacheTimeJava(client_name,
                                                                 start_time);
 }
@@ -189,7 +190,8 @@ void ImageFetcherBridge::ReportTotalFetchTimeFromNative(
     const jlong start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
-  base::Time start_time = base::Time::FromJavaTime(start_time_millis);
+  base::Time start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(start_time_millis);
   ImageFetcherMetricsReporter::ReportTotalFetchFromNativeTimeJava(client_name,
                                                                   start_time);
 }
@@ -266,11 +268,11 @@ void ImageFetcherBridge::OnImageDataFetched(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     const std::string& image_data,
     const RequestMetadata& request_metadata) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_bytes = base::android::ToJavaByteArray(
-      env, reinterpret_cast<const uint8_t*>(image_data.data()),
-      image_data.size());
-  RunObjectCallbackAndroid(callback, j_bytes);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> j_bytes =
+      base::android::ToJavaByteArray(env, image_data);
+
+  base::android::RunObjectCallbackAndroid(callback, j_bytes);
 }
 
 // static
@@ -282,7 +284,7 @@ void ImageFetcherBridge::OnImageFetched(
   if (!image.IsEmpty()) {
     j_bitmap = gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
   }
-  RunObjectCallbackAndroid(callback, j_bitmap);
+  base::android::RunObjectCallbackAndroid(callback, j_bitmap);
 }
 
 }  // namespace image_fetcher

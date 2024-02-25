@@ -15,40 +15,35 @@ import org.chromium.base.test.util.Batch;
 
 import java.nio.charset.Charset;
 
-/**
- * Testing {@link BindingsHelper}.
- */
+/** Testing {@link BindingsHelper}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class BindingsHelperTest {
-    /**
-     * Testing {@link BindingsHelper#utf8StringSizeInBytes(String)}.
-     */
+    /** Testing {@link BindingsHelper#utf8StringSizeInBytes(String)}. */
     @Test
     @SmallTest
     public void testUTF8StringLength() {
         String[] stringsToTest = {
-                "", "a", "hello world", "éléphant", "𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕", "你午饭想吃什么",
-                "你午饭想吃什么\0éléphant",
+            "", "a", "hello world", "éléphant", "𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕", "你午饭想吃什么", "你午饭想吃什么\0éléphant",
         };
         for (String s : stringsToTest) {
-            Assert.assertEquals(s.getBytes(Charset.forName("utf8")).length,
+            Assert.assertEquals(
+                    s.getBytes(Charset.forName("utf8")).length,
                     BindingsHelper.utf8StringSizeInBytes(s));
         }
         Assert.assertEquals(1, BindingsHelper.utf8StringSizeInBytes("\0"));
-        String s = new StringBuilder()
-                           .appendCodePoint(0x0)
-                           .appendCodePoint(0x80)
-                           .appendCodePoint(0x800)
-                           .appendCodePoint(0x10000)
-                           .toString();
+        String s =
+                new StringBuilder()
+                        .appendCodePoint(0x0)
+                        .appendCodePoint(0x80)
+                        .appendCodePoint(0x800)
+                        .appendCodePoint(0x10000)
+                        .toString();
         Assert.assertEquals(10, BindingsHelper.utf8StringSizeInBytes(s));
         Assert.assertEquals(10, s.getBytes(Charset.forName("utf8")).length);
     }
 
-    /**
-     * Testing {@link BindingsHelper#align(int)}.
-     */
+    /** Testing {@link BindingsHelper#align(int)}. */
     @Test
     @SmallTest
     public void testAlign() {

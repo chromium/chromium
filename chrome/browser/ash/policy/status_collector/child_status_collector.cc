@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <limits>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -48,7 +49,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace policy {
@@ -384,7 +384,7 @@ void ChildStatusCollector::FillChildStatusReportRequest(
   anything_reported |= GetAppActivity(status);
 
   if (report_boot_mode_) {
-    absl::optional<std::string> boot_mode =
+    std::optional<std::string> boot_mode =
         StatusCollector::GetBootMode(statistics_provider_);
     if (boot_mode) {
       status->set_boot_mode(*boot_mode);
@@ -430,7 +430,7 @@ bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
 // Make this function fallible when the optional passed in evaluated to
 // nullptr, instead of returning a dummy string.
 void ChildStatusCollector::OnOSVersion(
-    const absl::optional<std::string>& version) {
+    const std::optional<std::string>& version) {
   os_version_ = version.value_or("0.0.0.0");
 }
 

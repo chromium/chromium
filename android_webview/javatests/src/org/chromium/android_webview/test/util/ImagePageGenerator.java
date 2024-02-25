@@ -25,8 +25,9 @@ public class ImagePageGenerator {
         "D+AQAA/9vaUwc", "D/AQEBANNhzkw"
     };
 
-    private static final String IMAGE_PREFIX = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA"
-            + "6fptVAAAAAXNSR0IArs4c6QAAAA1JREFUCB0BAgD9/w";
+    private static final String IMAGE_PREFIX =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA"
+                    + "6fptVAAAAAXNSR0IArs4c6QAAAA1JREFUCB0BAgD9/w";
 
     private static final String IMAGE_SUFFIX = "AAAAASUVORK5CYII=";
 
@@ -47,8 +48,7 @@ public class ImagePageGenerator {
     }
 
     public String getPageSource() {
-        String result =
-                getPageTemplateSource("data:image/png;base64," + getImageSourceNoAdvance());
+        String result = getPageTemplateSource("data:image/png;base64," + getImageSourceNoAdvance());
         if (mAdvance) mIndex += 2;
         return result;
     }
@@ -56,8 +56,8 @@ public class ImagePageGenerator {
     public String getPageUrl(TestWebServer webServer) {
         final String imagePath = "/image_" + mIndex + ".png";
         final String pagePath = "/html_image_" + mIndex + ".html";
-        webServer.setResponseBase64(imagePath, getImageSourceNoAdvance(),
-                CommonResources.getImagePngHeaders(false));
+        webServer.setResponseBase64(
+                imagePath, getImageSourceNoAdvance(), CommonResources.getImagePngHeaders(false));
         if (mAdvance) mIndex += 2;
         return webServer.setResponse(pagePath, getPageTemplateSource(imagePath), null);
     }

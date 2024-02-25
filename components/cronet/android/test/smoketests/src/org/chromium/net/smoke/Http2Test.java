@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -18,22 +20,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.UrlRequest;
 
-/**
- * HTTP2 Tests.
- */
+/** HTTP2 Tests. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class Http2Test {
     private TestSupport.TestServer mServer;
 
-    @Rule
-    public NativeCronetTestRule mRule = new NativeCronetTestRule();
+    @Rule public NativeCronetTestRule mRule = new NativeCronetTestRule();
 
     @Before
     public void setUp() throws Exception {
-        mServer = mRule.getTestSupport().createTestServer(
-                ApplicationProvider.getApplicationContext(), TestSupport.Protocol.HTTP2);
+        mServer =
+                mRule.getTestSupport()
+                        .createTestServer(
+                                ApplicationProvider.getApplicationContext(),
+                                TestSupport.Protocol.HTTP2);
     }
 
     @After
@@ -45,12 +49,18 @@ public class Http2Test {
     @Test
     @SmallTest
     public void testHttp2() throws Exception {
-        mRule.getTestSupport().installMockCertVerifierForTesting(mRule.getCronetEngineBuilder());
+        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            mRule.getTestSupport()
+                    .installMockCertVerifierForTesting(mRule.getCronetEngineBuilder());
+        }
         mRule.initCronetEngine();
         assertThat(mServer.start()).isTrue();
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
-        UrlRequest.Builder requestBuilder = mRule.getCronetEngine().newUrlRequestBuilder(
-                mServer.getSuccessURL(), callback, callback.getExecutor());
+        UrlRequest.Builder requestBuilder =
+                mRule.getCronetEngine()
+                        .newUrlRequestBuilder(
+                                mServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 

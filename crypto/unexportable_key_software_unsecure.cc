@@ -50,7 +50,7 @@ class SoftwareECDSA : public UnexportableSigningKey {
     return CBBToVector(cbb.get());
   }
 
-  absl::optional<std::vector<uint8_t>> SignSlowly(
+  std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
     std::vector<uint8_t> ret(ECDSA_size(key_.get()));
     std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
@@ -69,7 +69,7 @@ class SoftwareProvider : public UnexportableKeyProvider {
  public:
   ~SoftwareProvider() override = default;
 
-  absl::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) override {
     for (auto algo : acceptable_algorithms) {
@@ -78,7 +78,7 @@ class SoftwareProvider : public UnexportableKeyProvider {
       }
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(

@@ -80,7 +80,7 @@ void IOSAddToReadingListInfobarDelegate::InfoBarDismissed() {
 }
 
 bool IOSAddToReadingListInfobarDelegate::Accept() {
-  model_->AddOrReplaceEntry(url_, base::UTF16ToUTF8(title_),
+  model_->AddOrReplaceEntry(url_, base::UTF16ToUTF8(title_.get()),
                             reading_list::ADDED_VIA_CURRENT_APP,
                             base::Minutes(estimated_read_time_));
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state_);

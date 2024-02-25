@@ -33,6 +33,9 @@ class LevelDBScopesTestBase : public testing::Test {
   // deleted off disk.
   void TearDown() override;
 
+  // Destroys the leveldb files.
+  leveldb::Status DestroyDB();
+
   // Ensures that |leveldb_| is destroyed correctly, but doesn't delete the
   // database on disk.
   void CloseScopesAndDestroyLevelDBState();
@@ -94,8 +97,7 @@ class LevelDBScopesTestBase : public testing::Test {
 
   const base::FilePath& DatabaseDirFilePath();
 
- private:
-  void CreateAndSaveLevelDBState();
+  leveldb::Status CreateAndSaveLevelDBState();
 
  protected:
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_;
@@ -111,7 +113,6 @@ class LevelDBScopesTestBase : public testing::Test {
   const std::vector<uint8_t> metadata_prefix_ = {'a'};
   const std::vector<uint8_t> db_prefix_ = {'b'};
 
-  std::unique_ptr<FakeLevelDBFactory> leveldb_factory_;
   scoped_refptr<LevelDBState> leveldb_;
   std::string large_string_;
   LevelDBScopesUndoTask undo_task_buffer_;

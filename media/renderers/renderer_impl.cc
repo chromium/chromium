@@ -70,7 +70,7 @@ class RendererImpl::RendererClientInternal final : public RendererClient {
     DCHECK(type_ == DemuxerStream::VIDEO);
     renderer_->OnVideoOpacityChange(opaque);
   }
-  void OnVideoFrameRateChange(absl::optional<int> fps) override {
+  void OnVideoFrameRateChange(std::optional<int> fps) override {
     DCHECK(type_ == DemuxerStream::VIDEO);
     renderer_->OnVideoFrameRateChange(fps);
   }
@@ -183,8 +183,7 @@ void RendererImpl::SetCdm(CdmContext* cdm_context,
   InitializeAudioRenderer();
 }
 
-void RendererImpl::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+void RendererImpl::SetLatencyHint(std::optional<base::TimeDelta> latency_hint) {
   DVLOG(1) << __func__;
   DCHECK(!latency_hint || (*latency_hint >= base::TimeDelta()));
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -352,10 +351,10 @@ bool RendererImpl::GetWallClockTimes(
 }
 
 bool RendererImpl::HasEncryptedStream() {
-  std::vector<DemuxerStream*> demuxer_streams =
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> demuxer_streams =
       media_resource_->GetAllStreams();
 
-  for (auto* stream : demuxer_streams) {
+  for (media::DemuxerStream* stream : demuxer_streams) {
     if (stream->type() == DemuxerStream::AUDIO &&
         stream->audio_decoder_config().is_encrypted())
       return true;
@@ -973,7 +972,7 @@ void RendererImpl::OnVideoOpacityChange(bool opaque) {
   client_->OnVideoOpacityChange(opaque);
 }
 
-void RendererImpl::OnVideoFrameRateChange(absl::optional<int> fps) {
+void RendererImpl::OnVideoFrameRateChange(std::optional<int> fps) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnVideoFrameRateChange(fps);
 }

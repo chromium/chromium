@@ -155,7 +155,7 @@ void VmoBufferWriterQueue::ResetPositionAndPause() {
     // All packets that were pending will need to be resent. Reset
     // |tail_sysmem_buffer_index| to ensure that these packets are not removed
     // from the queue in ReleaseBuffer().
-    buffer.tail_sysmem_buffer_index = absl::nullopt;
+    buffer.tail_sysmem_buffer_index = std::nullopt;
   }
   input_queue_position_ = 0;
   is_paused_ = true;

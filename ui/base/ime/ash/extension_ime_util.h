@@ -99,10 +99,10 @@ bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
 std::string COMPONENT_EXPORT(UI_BASE_IME_ASH)
     GetComponentIDByInputMethodID(const std::string& input_method_id);
 
-// Returns true if |input_method_id| refers to a CrOS 1P experimental
-// multilingual input method.
+// Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
+// TODO(b/302460634): Remove when no longer needed.
 bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
-    IsExperimentalMultilingual(const std::string& input_method_id);
+    IsCros1pKorean(const std::string& input_method_id);
 
 }  // namespace extension_ime_util
 }  // namespace ash

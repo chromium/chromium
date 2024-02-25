@@ -34,11 +34,11 @@ namespace {
 using TestGetAssertionTaskCallbackReceiver =
     ::device::test::StatusAndValueCallbackReceiver<
         CtapDeviceResponseCode,
-        absl::optional<AuthenticatorGetAssertionResponse>>;
+        std::vector<AuthenticatorGetAssertionResponse>>;
 
 class FidoGetAssertionTaskTest : public testing::Test {
  public:
-  FidoGetAssertionTaskTest() {}
+  FidoGetAssertionTaskTest() = default;
 
   TestGetAssertionTaskCallbackReceiver& get_assertion_callback_receiver() {
     return cb_;
@@ -69,7 +69,7 @@ TEST_F(FidoGetAssertionTaskTest, TestGetAssertionSuccess) {
   get_assertion_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             get_assertion_callback_receiver().status());
-  EXPECT_TRUE(get_assertion_callback_receiver().value());
+  EXPECT_EQ(get_assertion_callback_receiver().value().size(), 1u);
 }
 
 TEST_F(FidoGetAssertionTaskTest, TestU2fSignSuccess) {
@@ -92,7 +92,7 @@ TEST_F(FidoGetAssertionTaskTest, TestU2fSignSuccess) {
   get_assertion_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             get_assertion_callback_receiver().status());
-  EXPECT_TRUE(get_assertion_callback_receiver().value());
+  EXPECT_EQ(get_assertion_callback_receiver().value().size(), 1u);
 }
 
 TEST_F(FidoGetAssertionTaskTest, TestSignSuccessWithFake) {
@@ -122,22 +122,25 @@ TEST_F(FidoGetAssertionTaskTest, TestSignSuccessWithFake) {
   ASSERT_GE(32u + 1u + 4u + 8u,  // Minimal ECDSA signature is 8 bytes
             get_assertion_callback_receiver()
                 .value()
-                ->authenticator_data.SerializeToByteArray()
+                .at(0)
+                .authenticator_data.SerializeToByteArray()
                 .size());
   EXPECT_EQ(0x01,
             get_assertion_callback_receiver()
                 .value()
-                ->authenticator_data.SerializeToByteArray()[32]);  // UP flag
+                .at(0)
+                .authenticator_data.SerializeToByteArray()[32]);  // UP flag
   // Counter starts at zero and is incremented for every sign request.
   EXPECT_EQ(1, get_assertion_callback_receiver()
                    .value()
-                   ->authenticator_data.SerializeToByteArray()[36]);  // counter
+                   .at(0)
+                   .authenticator_data.SerializeToByteArray()[36]);  // counter
 }
 
 TEST_F(FidoGetAssertionTaskTest, TestIncorrectGetAssertionResponse) {
   auto device = MockFidoDevice::MakeCtap();
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorGetAssertion, absl::nullopt);
+      CtapRequestCommand::kAuthenticatorGetAssertion, std::nullopt);
 
   auto task = std::make_unique<GetAssertionTask>(
       device.get(),
@@ -148,7 +151,7 @@ TEST_F(FidoGetAssertionTaskTest, TestIncorrectGetAssertionResponse) {
   get_assertion_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
             get_assertion_callback_receiver().status());
-  EXPECT_FALSE(get_assertion_callback_receiver().value());
+  EXPECT_TRUE(get_assertion_callback_receiver().value().empty());
 }
 
 TEST_F(FidoGetAssertionTaskTest, TestU2fSignRequestWithEmptyAllowedList) {
@@ -168,7 +171,7 @@ TEST_F(FidoGetAssertionTaskTest, TestU2fSignRequestWithEmptyAllowedList) {
   get_assertion_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
             get_assertion_callback_receiver().status());
-  EXPECT_FALSE(get_assertion_callback_receiver().value());
+  EXPECT_TRUE(get_assertion_callback_receiver().value().empty());
 }
 
 // Checks that when device supports both CTAP2 and U2F protocol and when

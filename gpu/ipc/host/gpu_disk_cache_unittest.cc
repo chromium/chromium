@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -25,7 +26,15 @@ const char kCacheValue2[] = "cached value2";
 
 class GpuDiskCacheTest : public testing::Test {
  protected:
-  GpuDiskCacheTest() = default;
+  GpuDiskCacheTest() {
+    // Leak the factory on purpose. In production, the factory is a singleton,
+    // and when a GpuDiskCache object is created, a second reference to it is
+    // added to a globally held Backend object. These instances may leak, by
+    // design, and must have a valid reference to the factory, otherwise raw_ptr
+    // checks will fail. See https://crbug.com/1486674
+    factory_ = new GpuDiskCacheFactory;
+    ANNOTATE_LEAKING_OBJECT_PTR(factory_);
+  }
 
   GpuDiskCacheTest(const GpuDiskCacheTest&) = delete;
   GpuDiskCacheTest& operator=(const GpuDiskCacheTest&) = delete;
@@ -37,10 +46,10 @@ class GpuDiskCacheTest : public testing::Test {
   void InitCache() {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     handle_ =
-        factory_.GetCacheHandle(GpuDiskCacheType::kGlShaders, cache_path());
+        factory_->GetCacheHandle(GpuDiskCacheType::kGlShaders, cache_path());
   }
 
-  GpuDiskCacheFactory* factory() { return &factory_; }
+  GpuDiskCacheFactory* factory() { return factory_.get(); }
 
   void TearDown() override {
     // Run all pending tasks before destroying TaskEnvironment. Otherwise,
@@ -51,7 +60,7 @@ class GpuDiskCacheTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  GpuDiskCacheFactory factory_;
+  raw_ptr<GpuDiskCacheFactory> factory_;
   GpuDiskCacheHandle handle_;
 };
 

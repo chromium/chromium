@@ -7,6 +7,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 
 class MediaSessionLacrosBrowserTest : public InProcessBrowserTest {

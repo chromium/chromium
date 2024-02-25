@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -35,11 +36,9 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -294,7 +293,7 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    absl::optional<blink::mojom::FederatedAuthRequestResult> status_type) {
+    std::optional<blink::mojom::FederatedAuthRequestResult> status_type) {
   if (!status_type) {
     int total = 0;
     for (const auto& [result, count] : federated_auth_counts_)
@@ -309,7 +308,7 @@ int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthUserInfoRequestIssueCount(
-    absl::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
+    std::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
         status_type) {
   if (!status_type) {
     int total = 0;
@@ -440,9 +439,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
 
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
-          absl::nullopt /* initiator_frame_token */,
-          std::string() /* headers */, net::LOAD_NORMAL,
-          false /* skip_service_worker */,
+          std::nullopt /* initiator_frame_token */, std::string() /* headers */,
+          net::LOAD_NORMAL, false /* skip_service_worker */,
           blink::mojom::RequestContextType::HYPERLINK,
           blink::mojom::MixedContentContextType::kBlockable,
           false /* is_form_submission */,
@@ -450,8 +448,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           blink::mojom::ForceHistoryPush::kNo, GURL() /* searchable_form_url */,
           std::string() /* searchable_form_encoding */,
           GURL() /* client_side_redirect_url */,
-          absl::nullopt /* devtools_initiator_info */,
-          nullptr /* trust_token_params */, absl::nullopt /* impression */,
+          std::nullopt /* devtools_initiator_info */,
+          nullptr /* trust_token_params */, std::nullopt /* impression */,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
@@ -480,7 +478,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
 }
 
 void TestRenderFrameHost::SimulateDidChangeOpener(
-    const absl::optional<blink::LocalFrameToken>& opener_frame_token) {
+    const std::optional<blink::LocalFrameToken>& opener_frame_token) {
   DidChangeOpener(opener_frame_token);
 }
 
@@ -548,7 +546,7 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.
   url_loader->CallOnResponseStarted(std::move(response),
-                                    std::move(response_body), absl::nullopt);
+                                    std::move(response_body), std::nullopt);
 }
 
 void TestRenderFrameHost::SimulateCommitProcessed(
@@ -591,13 +589,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
       same_document);
 }
 
-WebBluetoothServiceImpl*
-TestRenderFrameHost::CreateWebBluetoothServiceForTesting(
-    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
-  RenderFrameHostImpl::CreateWebBluetoothService(std::move(receiver));
-  return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void TestRenderFrameHost::CreateHidServiceForTesting(
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
@@ -620,7 +611,7 @@ void TestRenderFrameHost::SendCommitNavigation(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
-    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ControllerServiceWorkerInfoPtr controller,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
@@ -628,8 +619,9 @@ void TestRenderFrameHost::SendCommitNavigation(
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
-    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
-    const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory,
+    const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
@@ -646,7 +638,7 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
     bool has_stale_copy_in_cache,
     int32_t error_code,
     int32_t extended_error_code,
-    const absl::optional<std::string>& error_page_content,
+    const std::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
@@ -676,7 +668,8 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
 
   // Simulate Blink assigning an item and document sequence number to the
   // navigation.
-  params->item_sequence_number = base::Time::Now().ToDoubleT() * 1000000;
+  params->item_sequence_number =
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
   params->document_sequence_number = params->item_sequence_number + 1;
 
   // When the user hits enter in the Omnibox without changing the URL, Blink

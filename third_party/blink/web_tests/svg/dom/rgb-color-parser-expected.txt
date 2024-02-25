@@ -45,7 +45,7 @@ Failed to parse: rgb(%72+e%e,49 7
 Failed to parse: rgb(	55,.
 Failed to parse: rgb(263,%	1-74)e
 Failed to parse: rgb( 64110, (1 
-Failed to parse: rgb( 59%3   725)
+Parsed as rgb(150, 3, 255): rgb( 59%3   725)
 Failed to parse: rgb(6e)-2- 180
 Failed to parse: rgb(,	.579e(( 
 Failed to parse: rgb()(
@@ -144,7 +144,7 @@ Failed to parse: rgb(%72+e%e,49 7
 Failed to parse: rgb(	55,.
 Failed to parse: rgb(263,%	1-74)e
 Failed to parse: rgb( 64110, (1 
-Failed to parse: rgb( 59%3   725)
+Parsed as rgb(150, 3, 255): rgb( 59%3   725)
 Failed to parse: rgb(6e)-2- 180
 Failed to parse: rgb(,	.579e(( 
 Failed to parse: rgb()(
@@ -243,7 +243,7 @@ Failed to parse: rgb(%72+e%e,49 7
 Failed to parse: rgb(	55,.
 Failed to parse: rgb(263,%	1-74)e
 Failed to parse: rgb( 64110, (1 
-Failed to parse: rgb( 59%3   725)
+Parsed as rgb(150, 3, 255): rgb( 59%3   725)
 Failed to parse: rgb(6e)-2- 180
 Failed to parse: rgb(,	.579e(( 
 Failed to parse: rgb()(

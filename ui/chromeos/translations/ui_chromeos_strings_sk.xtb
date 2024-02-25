@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1000498691615767391">Vyberte priečinok, ktorý chcete otvoriť</translation>
+<translation id="1014208178561091457">Súbor <ph name="FILE_NAME" /> sa nepodarilo skopírovať, pretože je šifrovaný.</translation>
 <translation id="1047956942837015229">Prebieha odstraňovanie <ph name="COUNT" /> položiek...</translation>
 <translation id="1049926623896334335">Dokument aplikácie Word</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
 <translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1060368002126861100">Ak chcete otvoriť súbory pomocou aplikácie <ph name="APP_NAME" />, najprv ich presuňte do priečinka so súbormi systému Windows.</translation>
 <translation id="1062407476771304334">Nahradiť</translation>
+<translation id="1119383441774809183">Zobrazovať textové správy</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Anglická (US) programátorská klávesnica s rozložením Dvorak</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba s kvetinami</translation>
 <translation id="1458457385801829801">Odpojiť <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Niekoľko (<ph name="NUMBER_OF_FILES" />) súborov sa nepodarilo skopírovať, pretože sú šifrované.</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
 <translation id="1482884275703521657">Fínska klávesnica</translation>
 <translation id="148466539719134488">Švajčiarska klávesnica</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portugalská klávesnica s americkou klávesnicou s medzinárodným rozložením klávesov</translation>
 <translation id="1629521517399325891">Certifikát používateľa nie je k dispozícii na overenie siete.</translation>
 <translation id="1641780993263690097">Čínska klávesnica Pchin-jin</translation>
-<translation id="1646019627374511909">Súbory (<ph name="NUMBER_OF_ITEMS" />) sa sprístupňujú offline</translation>
 <translation id="164969095109328410">Zariadenie Chrome</translation>
 <translation id="1661207570040737402">Vyčerpali ste celý svoj priestor na spoločnom disku v službe Google Workspace.</translation>
 <translation id="1661867754829461514">Chýba kód PIN</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Nie je k dispozícii</translation>
 <translation id="3254434849914415189">Zvoľte pre súbory <ph name="FILE_TYPE" /> predvolenú aplikáciu:</translation>
 <translation id="3255159654094949700">Arabská klávesnica</translation>
+<translation id="326396468955264502">Niekoľko (<ph name="NUMBER_OF_FILES" />) súborov sa nepodarilo presunúť, pretože sú šifrované.</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3272909651715601089"><ph name="PATH" /> sa nepodarilo otvoriť</translation>
 <translation id="3280431534455935878">Prebieha príprava</translation>
+<translation id="3280719573299097127">Máte pripojenie k meranej sieti. Synchronizácia súborov bola pozastavená.</translation>
 <translation id="3280987981688031357">Vinylová platňa</translation>
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3291218047831493686">Ak chcete zmeniť nastavenie zámky SIM karty, pripojte sa k tejto sieti</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Tabuľka Google</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3486821258960016770">Mongolská klávesnica</translation>
-<translation id="3495304270784461826">Počet chýb: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Pripravuje sa synchronizácia <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
 <translation id="3522708245912499433">Portugalčina</translation>
 <translation id="3523225005467146490">S virtuálnym počítačom <ph name="VM_NAME" /> bol zdieľaný 1 súbor</translation>
 <translation id="3524311639100184459">Upozornenie: Tieto súbory sú dočasné a môžu byť automaticky odstránené na uvoľnenie priestoru na disku.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Priečinok</translation>
+<translation id="3529424493985988200">Podrobnosti vám poskytne správca.</translation>
 <translation id="3548125359243647069">Príliš veľakrát bol zadaný nesprávny kód PIN.</translation>
 <translation id="3549797760399244642">Prejsť na adresu drive.google.com...</translation>
 <translation id="3553048479571901246">Ak chcete otvoriť súbory pomocou aplikácie <ph name="APP_NAME" />, najprv ich skopírujte do priečinka so súbormi systému Windows.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3619593063686672873">Žiadne nedávne videá</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ovládaná správcom, podrobnosti</translation>
+<translation id="36451918667380448">Poskytovateľ mobilnej siete je uzamknutý. Ak potrebujete podporu, kontaktujte svojho poskytovateľa.</translation>
 <translation id="3645233063072417428">Počet presunutých položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Počet vybraných súborov: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Synchronizácia Disku Google je pri používaní mobilných dát v predvolenom nastavení zakázaná.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Kvet gazánie</translation>
 <translation id="4943368462779413526">Futbal</translation>
 <translation id="4961158930123534723">1 priečinok sa zdieľa aplikáciou Parallels Desktop</translation>
+<translation id="4965874878399872778">Kontroluje sa súlad súborov s pravidlami zabezpečenia vašej organizácie…</translation>
 <translation id="496656650103537022">Súbor <ph name="FILE_NAME" /> bol obnovený</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavenie synchronizácie súborov sa nepodarilo dokončiť</translation>
@@ -553,9 +559,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5275973617553375938">Obnovené súbory z Disku Google</translation>
 <translation id="5278111733643988471">Ak chcete túto položku obnoviť, presuňte ju do nového priečinka mimo koša. Pôvodný priečinok <ph name="PARENT_FOLDER_NAME" /> pre túto položku bol odstránený.</translation>
 <translation id="5283101102242354279">Ak chcete zapnúť rozšírenie v režime inkognito:</translation>
-<translation id="5286194356314741248">Prebieha vyhľadávanie</translation>
 <translation id="5288441970121584418">Hamburger</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Presun tohto súboru je blokovaný pravidlami správcu</translation>
 <translation id="5305688511332277257">Žiadne nainštalované</translation>
 <translation id="5317780077021120954">Uložiť</translation>
@@ -632,6 +636,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5838451609423551646">Z výberu boli odstránené všetky položky.</translation>
 <translation id="5838825566232597749">US Workman international – medzinárodná</translation>
 <translation id="5845721951356578987">Zdravotná sestra</translation>
+<translation id="5858478190805449225">Režim šetriča batérie je zapnutý. Skúste to znova, keď bude vypnutý.</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
 <translation id="5861477046012235702">Hráč</translation>
 <translation id="5864471791310927901">Vyhľadanie servera DHCP zlyhalo</translation>
@@ -698,11 +703,13 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="637062427944097960">Tento súbor je otvorený na inej pracovnej ploche. Ak ho chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Iba na čítanie</translation>
 <translation id="6395575651121294044">Počet položiek: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Súbor <ph name="FILE_NAME" /> sa nepodarilo presunúť, pretože je šifrovaný.</translation>
 <translation id="642282551015776456">Tento názov nie je možné použiť na pomenovanie súboru ani priečinka.</translation>
 <translation id="6423031066725912715">Vietnamská klávesnica s rozložením TCVN</translation>
 <translation id="6430271654280079150">Zostáva vám jeden pokus.</translation>
 <translation id="643243556292470964">Odstránené súbory sa teraz presúvajú do koša</translation>
 <translation id="6438480100790416671">Kontroluje sa priestor…</translation>
+<translation id="6451527188465304418">Kontroluje sa súlad súboru s pravidlami zabezpečenia vašej organizácie…</translation>
 <translation id="6485131920355264772">Nepodarilo sa získať informácie o voľnom mieste</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> ovládaná správcom, podrobnosti</translation>
 <translation id="649877868557234318">Rozbaľuje sa súbor <ph name="FILE_NAME" /> do priečinka <ph name="FOLDER_NAME" /></translation>
@@ -710,7 +717,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6503285896705205014">Kopírovanie <ph name="COUNT" /> súborov je blokované pravidlami správcu</translation>
 <translation id="6509122719576673235">Nórčina</translation>
 <translation id="6528513914570774834">Povoliť ostatným používateľom zariadenia pripojiť sa k tejto sieti</translation>
-<translation id="653019979737152879">Prebieha synchronizácia súboru <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Nedávne</translation>
 <translation id="6558280019477628686">Vyskytla sa chyba. Niektoré položky sa nemuseli odstrániť.</translation>
 <translation id="656398493051028875">Prebieha odstraňovanie súboru <ph name="FILENAME" />...</translation>
@@ -844,7 +850,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7553492409867692754">Povoľte aplikáciám pre Linux prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Momentálne ste offline. Synchronizácia súborov bude pokračovať po pripojení k internetu.</translation>
 <translation id="7589661784326793847">Vydržte chvíľu</translation>
-<translation id="7592775719802218421">Súbor <ph name="FILE_NAME" /> sa sprístupňuje offline</translation>
 <translation id="7600126690270271294">Srbská klávesnica</translation>
 <translation id="7603724359189955920">Mriežky</translation>
 <translation id="7627790789328695202">Hops, súbor <ph name="FILE_NAME" /> už existuje. Premenujte ho a skúste to znova.</translation>
@@ -898,7 +903,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Súbory v sekcii Môj disk sa budú automaticky synchronizovať s Chromebookom, aby ste k nim mali prístup aj bez internetového pripojenia.</translation>
 <translation id="7925247922861151263">Kontrola AAA zlyhala</translation>
-<translation id="7925686952655276919">Nepoužívať mobilné dátové prenosy na synchronizáciu</translation>
 <translation id="7928710562641958568">Vysunúť zariadenie</translation>
 <translation id="7933875256234974853">Pripravuje sa synchronizácia súborov na Disku…</translation>
 <translation id="7943385054491506837">Americká klávesnica s rozložením klávesov Colemak</translation>
@@ -921,6 +925,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8087576439476816834">Stiahnuť, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Zdieľané so mnou</translation>
 <translation id="8116072619078571545">Voda s ľadom</translation>
+<translation id="8120392982188717723">Povoliť synchronizáciu v meraných sieťach</translation>
 <translation id="8124093710070495550">Problém so synchronizáciou</translation>
 <translation id="8128733386027980860">Anglická (UK) klávesnica s rozložením Dvorak</translation>
 <translation id="8137331602592933310">Bol s vami zdieľaný súbor <ph name="FILENAME" />. Keďže ho nevlastníte, nemôžete ho odstrániť.</translation>
@@ -928,6 +933,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8147028810663464959">Šírka znaku je Plná</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 chyba.}few{# chyby.}many{# errors.}other{# chýb.}}</translation>
 <translation id="8154842056504218462">Boli vybrané všetky položky.</translation>
 <translation id="8157684860301034423">Nepodarilo sa načítať informácie o aplikácii.</translation>
 <translation id="8175731104491895765">Francúzska (Belgicko) klávesnica</translation>
@@ -961,6 +967,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="83651606385705612">Udeľte virtuálnemu počítaču <ph name="VM_NAME" /> povolenie získavať prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Zlý kľúč WEP</translation>
 <translation id="8372852072747894550">Grécka klávesnica</translation>
+<translation id="8377269993083688872">Šablóny správ</translation>
 <translation id="8386903983509584791">Vyhľadávanie bolo dokončené</translation>
 <translation id="8387733224523483503">Bol extrahovaný súbor <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Rozmery</translation>
@@ -999,7 +1006,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8569764466147087991">Vyberte súbor, ktorý chcete otvoriť</translation>
 <translation id="8577897833047451336">Chorvátska klávesnica</translation>
 <translation id="8578308463707544055">Indonézska klávesnica</translation>
-<translation id="8579285237314169903">Synchronizujú sa položky (počet: <ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
@@ -1012,6 +1018,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8698877009525468705">Tento súbor je dôverný a na základe pravidiel správcu sa naň vzťahujú obmedzenia.</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8713112442029511308">Maltská klávesnica</translation>
+<translation id="8714138378966541668">Uzamknuté poskytovateľom</translation>
 <translation id="8714406895390098252">Bicykel</translation>
 <translation id="8719721339511222681">Bola vybraná položka <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Chorvátčina</translation>
@@ -1019,6 +1026,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8787254343425541995">Povoliť servery proxy pre zdieľané siete</translation>
 <translation id="8790981080411996443">Osoba polievajúca kvety</translation>
 <translation id="8798099450830957504">Predvolené</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 upozornenie.}few{# upozornenia.}many{# warnings.}other{# upozornení.}}</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimovanie zlyhalo, položka existuje: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Španielska (Španielsko) klávesnica</translation>
@@ -1049,7 +1057,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9038620279323455325">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Vyberte iný názov.</translation>
 <translation id="9046895021617826162">Zlyhanie pripojenia</translation>
 <translation id="9065512565307033593">Ak sa vám nepodarí overiť, váš prístup k sieti bude zakázaný.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 upozornenie.}few{<ph name="COUNT" /> upozornenia.}many{<ph name="COUNT" /> warnings.}other{<ph name="COUNT" /> upozornení.}}</translation>
 <translation id="908378762078012445">Ruská fonetická klávesnica (AATSEEL)</translation>
 <translation id="9086302186042011942">Prebieha synchronizácia</translation>
 <translation id="9099674669267916096">Počet strán</translation>

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_MAC_AUTHENTICATOR_MAC_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_MAC_AUTHENTICATOR_MAC_H_
 
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
+#import <string>
 
 // This interface is need to simplify testing as mac authentication happens
 // through free function which is hard to mock.

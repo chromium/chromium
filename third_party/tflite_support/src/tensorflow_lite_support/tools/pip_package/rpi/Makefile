@@ -13,8 +13,9 @@
 # limitations under the License.
 
 # Values: debian:<version>, ubuntu:<version>
-BASE_IMAGE ?= ubuntu:18.04
+BASE_IMAGE ?= ubuntu:20.04
 PYTHON_VERSION ?= 3.9
+NUMPY_VERSION ?= 1.21.2
 
 # Nightly flag for build_arm_pip_package.sh
 NIGHLTY_FLAG ?= --nightly_flag
@@ -46,7 +47,11 @@ help:
 	@echo "make clean        -- remove wheel and deb files"
 
 docker-image:
-	docker build -t $(TAG_IMAGE) --build-arg IMAGE=$(BASE_IMAGE) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) -f $(MAKEFILE_DIR)/Dockerfile.py3 $(MAKEFILE_DIR)/.
+	docker build -t $(TAG_IMAGE) \
+		--build-arg IMAGE=$(BASE_IMAGE) \
+		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+		--build-arg NUMPY_VERSION=$(NUMPY_VERSION) \
+		-f $(MAKEFILE_DIR)/Dockerfile.py3 $(MAKEFILE_DIR)/.
 
 docker-shell: docker-image
 	mkdir -p $(WORKSPACE_DIR)/bazel-ci_build-cache

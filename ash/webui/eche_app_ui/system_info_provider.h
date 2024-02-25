@@ -6,13 +6,17 @@
 #define ASH_WEBUI_ECHE_APP_UI_SYSTEM_INFO_PROVIDER_H_
 
 #include "ash/public/cpp/screen_backlight_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash::eche_app {
 
@@ -29,6 +33,7 @@ extern const char kJsonMeasureLatencyKey[];
 extern const char kJsonSendStartSignalingKey[];
 extern const char kJsonDisableStunServerKey[];
 extern const char kJsonCheckAndroidNetworkInfoKey[];
+extern const char kJsonProcessAndroidAccessibilityTreeKey[];
 
 class SystemInfo;
 
@@ -37,7 +42,7 @@ class SystemInfo;
 class SystemInfoProvider
     : public mojom::SystemInfoProvider,
       public ScreenBacklightObserver,
-      public TabletModeObserver,
+      public display::DisplayObserver,
       public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   explicit SystemInfoProvider(
@@ -79,10 +84,10 @@ class SystemInfoProvider
   // ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
       ash::ScreenBacklightState screen_state) override;
-  // TabletModeObserver overrides.
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
+  // Called when display tablet state transition has completed.
   void SetTabletModeChanged(bool enabled);
 
   // network_config::CrosNetworkConfigObserver overrides:
@@ -96,12 +101,13 @@ class SystemInfoProvider
 
   bool is_different_network_ = false;
   bool android_device_on_cellular_ = false;
+  display::ScopedDisplayObserver display_observer_{this};
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
   mojo::Remote<mojom::SystemInfoObserver> observer_remote_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_receiver_{this};
   std::unique_ptr<SystemInfo> system_info_;
-  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, ExperimentalAsh>
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
   chromeos::network_config::mojom::ConnectionStateType wifi_connection_state_;
 };

@@ -16,7 +16,7 @@ TEST(ChromeGraphProcessorTest, CreateMemoryGraphWithNoneOperation) {
   ChromeGraphProcessor::MemoryDumpMap process_dumps;
 
   base::trace_event::MemoryDumpArgs dump_args = {
-      .level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      .level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(dump_args);
 
   auto* source = pmd.CreateAllocatorDump("test1/test2/test3");
@@ -74,7 +74,7 @@ TEST(ChromeGraphProcessorTest, CreateMemoryGraphWithAllOperations) {
   ChromeGraphProcessor::MemoryDumpMap process_dumps;
 
   base::trace_event::MemoryDumpArgs dump_args = {
-      .level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+      .level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(dump_args);
 
   auto* source = pmd.CreateAllocatorDump("test1/test2/test3");

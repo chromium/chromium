@@ -13,13 +13,15 @@ import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * An interface for items that can be added to an InfoBarContainerLayout.
- */
+/** An interface for items that can be added to an InfoBarContainerLayout. */
 public interface InfoBarUiItem {
     // The infobar priority.
-    @IntDef({InfoBarPriority.CRITICAL, InfoBarPriority.USER_TRIGGERED,
-            InfoBarPriority.PAGE_TRIGGERED, InfoBarPriority.BACKGROUND})
+    @IntDef({
+        InfoBarPriority.CRITICAL,
+        InfoBarPriority.USER_TRIGGERED,
+        InfoBarPriority.PAGE_TRIGGERED,
+        InfoBarPriority.BACKGROUND
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface InfoBarPriority {
         int CRITICAL = 0;
@@ -47,9 +49,7 @@ public interface InfoBarUiItem {
      */
     void setControlsEnabled(boolean state);
 
-    /**
-     * Returns the accessibility text to announce when this infobar is first shown.
-     */
+    /** Returns the accessibility text to announce when this infobar is first shown. */
     CharSequence getAccessibilityText();
 
     /**

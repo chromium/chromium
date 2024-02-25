@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_URL_REQUEST_UTIL_H_
 #define EXTENSIONS_BROWSER_URL_REQUEST_UTIL_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace network {
@@ -48,7 +48,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           const Extension* extension,
                                           const Extension* owner_extension,
                                           const std::string& partition_id,
-                                          base::StringPiece resource_path,
+                                          std::string_view resource_path,
                                           ui::PageTransition page_transition,
                                           bool* allowed);
 

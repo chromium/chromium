@@ -38,7 +38,7 @@ ParseInitializeClientHintsStroage() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kInitializeClientHintsStorage);
 
-  absl::optional<base::Value> maybe_value =
+  std::optional<base::Value> maybe_value =
       base::JSONReader::Read(raw_client_hint_json);
 
   if (!maybe_value || !maybe_value->is_dict()) {
@@ -64,7 +64,7 @@ ParseInitializeClientHintsStroage() {
       continue;
     }
 
-    absl::optional<std::vector<network::mojom::WebClientHintsType>>
+    std::optional<std::vector<network::mojom::WebClientHintsType>>
         maybe_parsed_accept_ch =
             network::ParseClientHintsHeader(entry.second.GetString());
 
@@ -200,7 +200,7 @@ void ClientHints::PersistClientHints(
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_session_model(content_settings::SessionModel::Durable);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
       base::Value(std::move(client_hints_dictionary)), constraints);

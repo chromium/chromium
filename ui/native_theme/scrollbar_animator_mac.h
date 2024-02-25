@@ -128,4 +128,4 @@ class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
 
 }  // namespace ui
 
-#endif  // UI_NATIVE_THEME_OVERLAY_SCROLLBAR_ANIMATOR_MAC_H_
+#endif  // UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_

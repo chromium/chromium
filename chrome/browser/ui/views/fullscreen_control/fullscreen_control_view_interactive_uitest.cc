@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -13,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -26,7 +26,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -120,11 +119,11 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   bool IsPopupCreated() { return GetFullscreenControlHost()->IsPopupCreated(); }
 
   void EnterActiveTabFullscreen() {
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
     delegate->EnterFullscreenModeForTab(
         GetActiveWebContents()->GetPrimaryMainFrame(), {});
-    fullscreen_observer.Wait();
+    waiter.Wait();
     ASSERT_TRUE(delegate->IsFullscreenForTabOrPending(GetActiveWebContents()));
   }
 
@@ -141,7 +140,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   bool EnableKeyboardLock() {
-    absl::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
+    std::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
     return content::RequestKeyboardLock(GetActiveWebContents(),
                                         std::move(codes));
   }

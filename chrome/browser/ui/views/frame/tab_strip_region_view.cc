@@ -16,8 +16,11 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -47,11 +50,18 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/metrics/histogram_functions.h"
+#endif
+
 namespace {
 
 class FrameGrabHandle : public views::View {
+  METADATA_HEADER(FrameGrabHandle, views::View)
+
  public:
-  METADATA_HEADER(FrameGrabHandle);
   gfx::Size CalculatePreferredSize() const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip
     // is full.
@@ -60,7 +70,7 @@ class FrameGrabHandle : public views::View {
   }
 };
 
-BEGIN_METADATA(FrameGrabHandle, views::View)
+BEGIN_METADATA(FrameGrabHandle)
 END_METADATA
 
 bool ShouldShowNewTabButton(const Browser* browser) {
@@ -80,32 +90,30 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       this, views::kCascadingBackgroundColor,
       kColorTabBackgroundInactiveFrameInactive);
 
-  layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   tab_strip_ = tab_strip.get();
   const Browser* browser = tab_strip_->GetBrowser();
 
-  // Add and configure the TabSearchButton.
-  std::unique_ptr<TabSearchButton> tab_search_button;
+  // Add and configure the TabSearchContainer.
+  std::unique_ptr<TabSearchContainer> tab_search_container;
   if (browser && browser->is_type_normal()) {
-    tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);
-    tab_search_button->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
-    tab_search_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
-    tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
-                                   views::LayoutAlignment::kCenter);
+    tab_search_container = std::make_unique<TabSearchContainer>(
+        tab_strip_->controller(), render_tab_search_before_tab_strip_, this);
+    tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
+                                      views::LayoutAlignment::kCenter);
   }
 
-  if (tab_search_button && render_tab_search_before_tab_strip_) {
-    tab_search_button->SetPaintToLayer();
-    tab_search_button->layer()->SetFillsBoundsOpaquely(false);
+  if (tab_search_container && render_tab_search_before_tab_strip_) {
+    tab_search_container->SetPaintToLayer();
+    tab_search_container->layer()->SetFillsBoundsOpaquely(false);
 
-    tab_search_button_ = AddChildView(std::move(tab_search_button));
+    tab_search_container_ = AddChildView(std::move(tab_search_container));
+
     // Inset between the tabsearch and tabstrip should be reduced to account for
     // extra spacing.
-    layout_manager_->SetChildViewIgnoredByLayout(tab_search_button_, true);
+    tab_search_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -136,15 +144,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   }
 
   if (ShouldShowNewTabButton(browser)) {
-    if (features::IsChromeRefresh2023()) {
-      new_tab_button_ = AddChildView(std::make_unique<TabStripControlButton>(
-          tab_strip_,
-          base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                              base::Unretained(tab_strip_)),
-          vector_icons::kAddChromeRefreshIcon));
-      new_tab_button_->SetProperty(views::kElementIdentifierKey,
-                                   kNewTabButtonElementId);
-    } else {
+    features::ChromeRefresh2023NTBVariation ntb_variation =
+        features::GetChromeRefresh2023NTB();
+    if (ntb_variation == features::ChromeRefresh2023NTBVariation::kGM2Full) {
       std::unique_ptr<NewTabButton> new_tab_button =
           std::make_unique<NewTabButton>(
               tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
@@ -155,6 +157,36 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           std::make_unique<views::ViewTargeter>(new_tab_button.get()));
 
       new_tab_button_ = AddChildView(std::move(new_tab_button));
+    } else {
+      // Use the old or new ChromeRefresh icon.
+      const gfx::VectorIcon& icon =
+          (ntb_variation == features::ChromeRefresh2023NTBVariation::
+                                kGM3OldIconNoBackground ||
+           ntb_variation == features::ChromeRefresh2023NTBVariation::
+                                kGM3OldIconWithBackground)
+              ? kAddIcon
+              : vector_icons::kAddChromeRefreshIcon;
+      std::unique_ptr<TabStripControlButton> tab_strip_control_button =
+          std::make_unique<TabStripControlButton>(
+              tab_strip_->controller(),
+              base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                  base::Unretained(tab_strip_)),
+              icon);
+      tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
+                                            kNewTabButtonElementId);
+      // If the variation is one of the settings that requires an opaque
+      // background, add it.
+      if (ntb_variation == features::ChromeRefresh2023NTBVariation::
+                               kGM3OldIconWithBackground ||
+          ntb_variation == features::ChromeRefresh2023NTBVariation::
+                               kGM3NewIconWithBackground) {
+        tab_strip_control_button->SetBackgroundFrameActiveColorId(
+            kColorNewTabButtonCRBackgroundFrameActive);
+        tab_strip_control_button->SetBackgroundFrameInactiveColorId(
+            kColorNewTabButtonCRBackgroundFrameInactive);
+      }
+
+      new_tab_button_ = AddChildView(std::move(tab_strip_control_button));
     }
 
     new_tab_button_->SetTooltipText(
@@ -187,65 +219,23 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     return;
 #endif
 
-  if (browser && tab_search_button &&
+  if (browser && tab_search_container &&
       !WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser) &&
       !render_tab_search_before_tab_strip_) {
-    tab_search_button_ = AddChildView(std::move(tab_search_button));
+    tab_search_container_ = AddChildView(std::move(tab_search_container));
     if (features::IsChromeRefresh2023()) {
-      tab_search_button_->SetProperty(
+      tab_search_container_->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
     } else {
       const gfx::Insets control_padding = gfx::Insets::TLBR(
           0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
 
-      tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
+      tab_search_container_->SetProperty(views::kMarginsKey, control_padding);
     }
   }
 
-  //  If the new tab button or tab search button are positioned over the
-  //  tabstrip, then buttons are rendered to a layer, and the margins are set to
-  //  take up the rest of the space under the buttons.
-  absl::optional<int> tab_strip_right_margin;
-  if (new_tab_button_) {
-    if (render_new_tab_button_over_tab_strip_) {
-      new_tab_button_->SetPaintToLayer();
-      new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
-      // Inset between the tabstrip and new tab button should be reduced to
-      // account for extra spacing.
-      layout_manager_->SetChildViewIgnoredByLayout(new_tab_button_, true);
-
-      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
-                               GetLayoutConstant(TAB_STRIP_PADDING);
-    }
-  }
-
-  absl::optional<int> tab_strip_left_margin;
-  if (tab_search_button_ && render_tab_search_before_tab_strip_) {
-    // The `tab_search_button_` is being laid out manually.
-    CHECK(layout_manager_->IsChildViewIgnoredByLayout(tab_search_button_));
-
-    // Add a margin to the tab_strip_container_ to leave the correct amount of
-    // space for the `tab_search_button_`.
-    gfx::Size tab_search_button_size = tab_search_button_->GetPreferredSize();
-
-    // The TabSearchButton should be 6 pixels from the left and the tabstrip
-    // should have 6 px of padding between it and the tab_search button (not
-    // including the corner radius).
-    tab_strip_left_margin = tab_search_button_size.width() +
-                            GetLayoutConstant(TAB_STRIP_PADDING) +
-                            GetLayoutConstant(TAB_STRIP_PADDING) -
-                            TabStyle::Get()->GetBottomCornerRadius();
-  }
-
-  UpdateButtonBorders();
-
-  if (tab_strip_left_margin.has_value() || tab_strip_right_margin.has_value()) {
-    tab_strip_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, tab_strip_left_margin.value_or(0), 0,
-                          tab_strip_right_margin.value_or(0)));
-  }
+  UpdateTabStripMargin();
 }
 
 TabStripRegionView::~TabStripRegionView() = default;
@@ -264,11 +254,11 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
     return !new_tab_button_->HitTestRect(get_target_rect(new_tab_button_));
   }
 
-  if (render_tab_search_before_tab_strip_ && tab_search_button_ &&
-      tab_search_button_->GetLocalBounds().Intersects(
-          get_target_rect(tab_search_button_))) {
-    return !tab_search_button_->HitTestRect(
-        get_target_rect(tab_search_button_));
+  if (render_tab_search_before_tab_strip_ && tab_search_container_ &&
+      tab_search_container_->GetLocalBounds().Intersects(
+          get_target_rect(tab_search_container_))) {
+    return !tab_search_container_->HitTestRect(
+        get_target_rect(tab_search_container_));
   }
 
   // Perform a hit test against the |tab_strip_container_| to ensure that the
@@ -302,6 +292,13 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
     }
   }
 
+#if BUILDFLAG(IS_WIN)
+  bool rect_in_reserved_space =
+      reserved_grab_handle_space_->GetLocalBounds().Intersects(
+          get_target_rect(reserved_grab_handle_space_));
+  ReportCaptionHitTestInReservedGrabHandleSpace(rect_in_reserved_space);
+#endif
+
   return true;
 }
 
@@ -313,19 +310,19 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
   views::View::Views children;
 
   if (tab_strip_container_) {
-    children.emplace_back(tab_strip_container_);
+    children.emplace_back(tab_strip_container_.get());
   }
 
   if (new_tab_button_) {
-    children.emplace_back(new_tab_button_);
+    children.emplace_back(new_tab_button_.get());
   }
 
-  if (tab_search_button_) {
-    children.emplace_back(tab_search_button_);
+  if (tab_search_container_) {
+    children.emplace_back(tab_search_container_.get());
   }
 
   if (reserved_grab_handle_space_) {
-    children.emplace_back(reserved_grab_handle_space_);
+    children.emplace_back(reserved_grab_handle_space_.get());
   }
 
   return children;
@@ -334,23 +331,30 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 // The TabSearchButton need bounds that overlap the TabStripContainer, which
 // FlexLayout doesn't currently support. Because of this the TSB bounds are
 // manually calculated.
-void TabStripRegionView::Layout() {
-  views::AccessiblePaneView::Layout();
+void TabStripRegionView::Layout(PassKey) {
+  const bool tab_search_container_before_tab_strip =
+      tab_search_container_ && render_tab_search_before_tab_strip_;
+  if (tab_search_container_before_tab_strip) {
+    UpdateTabStripMargin();
+  }
 
-  if (tab_search_button_ && render_tab_search_before_tab_strip_) {
-    const gfx::Size tab_search_button_size =
-        tab_search_button_->GetPreferredSize();
+  LayoutSuperclass<views::AccessiblePaneView>(this);
+
+  if (tab_search_container_before_tab_strip) {
+    const gfx::Size tab_search_container_size =
+        tab_search_container_->GetPreferredSize();
 
     // The TabSearchButton is calculated as controls padding away from the first
     // tab (not including bottom corner radius)
-    const int x =
-        tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
-        GetLayoutConstant(TAB_STRIP_PADDING) - tab_search_button_size.width();
+    const int x = tab_strip_container_->x() +
+                  TabStyle::Get()->GetBottomCornerRadius() -
+                  GetLayoutConstant(TAB_STRIP_PADDING) -
+                  tab_search_container_size.width();
 
     const gfx::Rect tab_search_new_bounds =
-        gfx::Rect(gfx::Point(x, 0), tab_search_button_size);
+        gfx::Rect(gfx::Point(x, 0), tab_search_container_size);
 
-    tab_search_button_->SetBoundsRect(tab_search_new_bounds);
+    tab_search_container_->SetBoundsRect(tab_search_new_bounds);
   }
 
   if (render_new_tab_button_over_tab_strip_ && new_tab_button_) {
@@ -425,6 +429,24 @@ views::View* TabStripRegionView::GetDefaultFocusableChild() {
                          : AccessiblePaneView::GetDefaultFocusableChild();
 }
 
+// static
+void TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(
+    bool in_reserved_grab_handle_space) {
+#if BUILDFLAG(IS_WIN)
+  static bool button_down_previously = false;
+  int primary_mouse_button =
+      ::GetSystemMetrics(SM_SWAPBUTTON) ? VK_RBUTTON : VK_LBUTTON;
+  bool button_down_now =
+      (::GetAsyncKeyState(primary_mouse_button) & 0x8000) != 0;
+  if (button_down_now && !button_down_previously) {
+    base::UmaHistogramBoolean(
+        "Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace",
+        in_reserved_grab_handle_space);
+  }
+  button_down_previously = button_down_now;
+#endif
+}
+
 void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTabList;
 }
@@ -449,17 +471,69 @@ void TabStripRegionView::UpdateButtonBorders() {
   // definitely isn't what we want in the scrolling case, so this naive approach
   // should be improved, likely by taking the scroll state of the tabstrip into
   // account.
+  constexpr int kHorizontalInset = 8;
+  const auto border_insets =
+      gfx::Insets::TLBR(top_inset, 0, bottom_inset,
+                        features::IsChromeRefresh2023() ? 0 : kHorizontalInset);
   if (new_tab_button_) {
-    constexpr int kHorizontalInset = 8;
-    new_tab_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        top_inset, 0, bottom_inset,
-        features::IsChromeRefresh2023() ? 0 : kHorizontalInset)));
+    new_tab_button_->SetBorder(views::CreateEmptyBorder(border_insets));
   }
-  if (tab_search_button_) {
-    tab_search_button_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0)));
+  if (tab_search_container_) {
+    tab_search_container_->tab_search_button()->SetBorder(
+        views::CreateEmptyBorder(border_insets));
+    if (tab_search_container_->tab_organization_button()) {
+      tab_search_container_->tab_organization_button()->SetBorder(
+          views::CreateEmptyBorder(border_insets));
+    }
   }
 }
 
-BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)
+void TabStripRegionView::UpdateTabStripMargin() {
+  //  If the new tab button or tab search button are positioned over the
+  //  tabstrip, then buttons are rendered to a layer, and the margins are set to
+  //  take up the rest of the space under the buttons.
+  std::optional<int> tab_strip_right_margin;
+  if (new_tab_button_) {
+    if (render_new_tab_button_over_tab_strip_) {
+      new_tab_button_->SetPaintToLayer();
+      new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
+      // Inset between the tabstrip and new tab button should be reduced to
+      // account for extra spacing.
+      new_tab_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
+                               GetLayoutConstant(TAB_STRIP_PADDING);
+    }
+  }
+
+  std::optional<int> tab_strip_left_margin;
+  if (tab_search_container_ && render_tab_search_before_tab_strip_) {
+    // The `tab_search_container_` is being laid out manually.
+    tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey);
+
+    // Add a margin to the tab_strip_container_ to leave the correct amount of
+    // space for the `tab_search_container_`.
+    const gfx::Size tab_search_container_size =
+        tab_search_container_->GetPreferredSize();
+
+    // The TabSearchContainer should be 6 pixels from the left and the tabstrip
+    // should have 6 px of padding between it and the tab_search button (not
+    // including the corner radius).
+    tab_strip_left_margin = tab_search_container_size.width() +
+                            GetLayoutConstant(TAB_STRIP_PADDING) +
+                            GetLayoutConstant(TAB_STRIP_PADDING) -
+                            TabStyle::Get()->GetBottomCornerRadius();
+  }
+
+  UpdateButtonBorders();
+
+  if (tab_strip_left_margin.has_value() || tab_strip_right_margin.has_value()) {
+    tab_strip_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, tab_strip_left_margin.value_or(0), 0,
+                          tab_strip_right_margin.value_or(0)));
+  }
+}
+
+BEGIN_METADATA(TabStripRegionView)
 END_METADATA

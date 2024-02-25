@@ -62,11 +62,11 @@ const char kArch[] =
 #elif defined(__powerpc64__)
     "ppc64";
 #elif defined(ARCH_CPU_LOONGARCH32)
-    "loongarch32";
+        "loongarch32";
 #elif defined(ARCH_CPU_LOONGARCH64)
-    "loongarch64";
+        "loongarch64";
 #elif defined(ARCH_CPU_RISCV64)
-    "riscv64";
+        "riscv64";
 #else
 #error "unknown arch"
 #endif
@@ -143,8 +143,8 @@ const char* UpdateQueryParams::GetNaclArch() {
 #elif defined(ARCH_CPU_RISCV64)
   return "riscv64";
 #else
-// NOTE: when adding new values here, please remember to update the
-// comment in the .h file about possible return values from this function.
+  // NOTE: when adding new values here, please remember to update the
+  // comment in the .h file about possible return values from this function.
 #error "You need to add support for your architecture here"
 #endif
 }

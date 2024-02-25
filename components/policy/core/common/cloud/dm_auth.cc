@@ -30,6 +30,11 @@ DMAuth DMAuth::FromEnrollmentToken(const std::string& enrollment_token) {
 }
 
 // static
+DMAuth DMAuth::FromOidcResponse(const std::string& oidc_id_token) {
+  return DMAuth(oidc_id_token, DMAuthTokenType::kOidc);
+}
+
+// static
 DMAuth DMAuth::NoAuth() {
   return {};
 }

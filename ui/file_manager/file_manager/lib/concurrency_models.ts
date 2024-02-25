@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionsProducer, ActionsProducerGen, ConcurrentActionInvalidatedError} from './actions_producer.js';
-import {BaseAction} from './base_store.js';
+import {type ActionsProducer, type ActionsProducerGen, ConcurrentActionInvalidatedError} from './actions_producer.js';
 
 /**
  * Wraps the Actions Producer and enforces the Keep Last concurrency model.
@@ -19,12 +18,12 @@ import {BaseAction} from './base_store.js';
  *
  * @param actionsProducer This will be the `foo` above.
  */
-export function keepLatest<T extends BaseAction, Args extends any[]>(
-    actionsProducer: ActionsProducer<T, Args>): ActionsProducer<T, Args> {
+export function keepLatest<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>): ActionsProducer<Args> {
   // Scope #1: Initial setup.
   let counter = 0;
 
-  async function* wrap(...args: Args): ActionsProducerGen<T> {
+  async function* wrap(...args: Args): ActionsProducerGen {
     // Scope #2: Per-call to the ActionsProducer.
     const actionId = ++counter;
 
@@ -54,14 +53,14 @@ export function keepLatest<T extends BaseAction, Args extends any[]>(
  *
  * If there is no other running AP, then it just starts a new one.
  */
-export function keyedKeepFirst<T extends BaseAction, Args extends any[]>(
-    actionsProducer: ActionsProducer<T, Args>,
-    generateKey: (...args: Args) => string): ActionsProducer<T, Args> {
+export function keyedKeepFirst<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>,
+    generateKey: (...args: Args) => string): ActionsProducer<Args> {
   // Scope #1: Initial setup.
   // Key for the current AP.
   let inFlightKey: string|null = null;
 
-  async function* wrap(...args: Args): ActionsProducerGen<T> {
+  async function* wrap(...args: Args): ActionsProducerGen {
     // Scope #2: Per-call to the ActionsProducer.
     const key = generateKey(...args);
     // One already exists, just leave that finish.
@@ -96,6 +95,46 @@ export function keyedKeepFirst<T extends BaseAction, Args extends any[]>(
 
     // Clear the key if it wasn't invalidated.
     inFlightKey = null;
+  }
+  return wrap;
+}
+
+/**
+ * While the key is the same it cancels the previous pending Actions
+ * Producer (AP).
+ * Note: APs with different keys can happen simultaneously, e.g. `key-2` won't
+ * cancel a pending `key-1`.
+ */
+export function keyedKeepLatest<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>,
+    generateKey: (...args: Args) => string): ActionsProducer<Args> {
+  // Scope #1: Initial setup.
+  let counter = 0;
+  // Key->index map for all in-flight AP.
+  const inFlightKeyToActionId = new Map<string, number>();
+
+  async function* wrap(...args: Args): ActionsProducerGen {
+    // Scope #2: Per-call to the ActionsProducer.
+    const key = generateKey(...args);
+    const actionId = ++counter;
+    inFlightKeyToActionId.set(key, actionId);
+
+    const generator = actionsProducer(...args);
+    for await (const producedAction of generator) {
+      // Scope #3: The generated action.
+      const latestActionId = inFlightKeyToActionId.get(key);
+      if (latestActionId === undefined || actionId < latestActionId) {
+        const error = new ConcurrentActionInvalidatedError(
+            `A new ActionProducer with the same key ${
+                key} is started, invalidate this one.`);
+        await generator.throw(error);
+        // We rely on the above throw to break the loop.
+      }
+      yield producedAction;
+    }
+
+    // If the action producer finishes without being cancelled, remove the key.
+    inFlightKeyToActionId.delete(key);
   }
   return wrap;
 }

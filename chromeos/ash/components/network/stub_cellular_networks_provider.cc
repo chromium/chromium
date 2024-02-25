@@ -172,7 +172,7 @@ bool StubCellularNetworksProvider::AddStubNetworks(
 
     bool is_managed = false;
     if (managed_cellular_pref_handler_) {
-      if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+      if (ash::features::IsSmdsSupportEnabled()) {
         is_managed = managed_cellular_pref_handler_->GetESimMetadata(
                          iccid_eid_pair.first) != nullptr;
       } else {

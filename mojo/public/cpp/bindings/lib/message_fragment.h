@@ -20,7 +20,7 @@ namespace internal {
 
 // Sentinel value used to denote an invalid index and thus a null fragment. Note
 // that we choose a sentinel value over something more explicit like
-// absl::optional because this is used heavily in generated code, so code size
+// std::optional because this is used heavily in generated code, so code size
 // is particularly relevant.
 constexpr size_t kInvalidFragmentIndex = std::numeric_limits<size_t>::max();
 
@@ -87,8 +87,7 @@ class MessageFragment {
   }
 
  private:
-  // Exclude from `raw_ref` rewriter - increases Android binary size by
-  // ~350K.
+  // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
 };
@@ -161,8 +160,7 @@ class MessageFragment<Array_Data<T>> {
   }
 
  private:
-  // Exclude from `raw_ref` rewriter - increases Android binary size by
-  // ~350K.
+  // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
 };

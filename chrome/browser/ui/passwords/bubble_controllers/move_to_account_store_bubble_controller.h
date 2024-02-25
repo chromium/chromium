@@ -33,6 +33,9 @@ class MoveToAccountStoreBubbleController : public PasswordBubbleControllerBase {
   // Returns either a an account avatar or a fallback icon of |size|.
   gfx::Image GetProfileIcon(int size);
 
+  // Returns an email for current profile.
+  std::u16string GetProfileEmail() const;
+
   // Makes a request to the favicon service for the icon of origin url against
   // which the passwords have been submitted.. The request to the favicon store
   // is canceled on destruction of the controller.

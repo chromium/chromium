@@ -159,10 +159,6 @@ bool GetDolbyVisionConfigurations(
     case VideoCodecProfile::DOLBYVISION_PROFILE0:
       DLOG(ERROR) << __func__ << ": Profile 0 unsupported by Media Foundation";
       return false;
-    case VideoCodecProfile::DOLBYVISION_PROFILE4:
-      dolby_vision_profile = L"dvhe.04";
-      dolby_vision_configuration_nalu_type = 62;
-      break;
     case VideoCodecProfile::DOLBYVISION_PROFILE5:
       dolby_vision_profile = L"dvhe.05";
       dolby_vision_configuration_nalu_type = 62;
@@ -272,13 +268,20 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
     RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
                                          reinterpret_cast<UINT8*>(&primaries),
                                          sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));
+
+    if (hdr_metadata.cta_861_3.has_value()) {
+      UINT32 max_luminance_level =
+          hdr_metadata.cta_861_3->max_content_light_level;
+      RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_LUMINANCE_LEVEL,
+                                             max_luminance_level));
+
+      UINT32 max_frame_average_luminance_level =
+          hdr_metadata.cta_861_3->max_frame_average_light_level;
+      RETURN_IF_FAILED(
+          media_type->SetUINT32(MF_MT_MAX_FRAME_AVERAGE_LUMINANCE_LEVEL,
+                                max_frame_average_luminance_level));
+    }
   }
-  base::UmaHistogramEnumeration(
-      "Media.MediaFoundation.VideoColorSpace.TransferID",
-      config.color_space_info().transfer);
-  base::UmaHistogramEnumeration(
-      "Media.MediaFoundation.VideoColorSpace.PrimaryID",
-      config.color_space_info().primaries);
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   if (config.codec() == VideoCodec::kDolbyVision) {

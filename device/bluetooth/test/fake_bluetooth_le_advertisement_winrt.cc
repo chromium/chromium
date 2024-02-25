@@ -116,10 +116,10 @@ FakeBluetoothLEAdvertisementWinrt::FakeBluetoothLEAdvertisementWinrt() =
     default;
 
 FakeBluetoothLEAdvertisementWinrt::FakeBluetoothLEAdvertisementWinrt(
-    absl::optional<std::string> local_name,
-    absl::optional<uint8_t> flags,
+    std::optional<std::string> local_name,
+    std::optional<uint8_t> flags,
     BluetoothDevice::UUIDList advertised_uuids,
-    absl::optional<int8_t> tx_power,
+    std::optional<int8_t> tx_power,
     BluetoothDevice::ServiceDataMap service_data,
     BluetoothDevice::ManufacturerDataMap manufacturer_data)
     : local_name_(std::move(local_name)),

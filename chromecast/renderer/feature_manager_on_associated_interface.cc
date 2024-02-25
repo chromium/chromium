@@ -57,7 +57,7 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
       LOG(ERROR) << __func__ << " failed to receive valid app_id";
     }
     bool allow_insecure_content = false;
-    absl::optional<bool> allow_insecure_content_received =
+    std::optional<bool> allow_insecure_content_received =
         feature->config.FindBool(feature::kKeyAllowInsecureContent);
     if (allow_insecure_content_received) {
       allow_insecure_content = *allow_insecure_content_received;

@@ -6,18 +6,15 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::report::device_metrics {
 
 namespace {
-
-// day_of_week index for Monday in the base::Time::Exploded object.
-constexpr int kMondayDayOfWeekIndex = 1;
 
 template <size_t N>
 int ConvertBitsetToInteger(std::bitset<N> bitset) {
@@ -32,8 +29,7 @@ std::bitset<N> ConvertIntegerToBitset(int val) {
 }  // namespace
 
 ActiveStatus::ActiveStatus(PrefService* local_state)
-    : local_state_(local_state),
-      statistics_provider_(system::StatisticsProvider::GetInstance()) {}
+    : local_state_(local_state) {}
 
 int ActiveStatus::GetValue() const {
   return local_state_->GetInteger(
@@ -45,10 +41,10 @@ void ActiveStatus::SetValue(int val) {
       ash::report::prefs::kDeviceActiveLastKnownChurnActiveStatus, val);
 }
 
-absl::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
+std::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
   if (ts.is_null() || ts == base::Time::UnixEpoch()) {
     LOG(ERROR) << "Cannot calculate new value for invalid ts.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Time::Exploded exploded;
@@ -60,7 +56,7 @@ absl::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
   // Calculate total number of months since January 2000 to current month.
   // e.g. Dec 2022 should return a total of 275 months.
   int new_months_from_inception =
-      ((year - kInceptionYear) * kMonthsInYear) + (month - 1);
+      ((year - kInceptionYear) * utils::kMonthsInYear) + (month - 1);
   int previous_months_from_inception = GetMonthsSinceInception();
 
   // Check |ts| represents a new month than previously reported.
@@ -71,7 +67,7 @@ absl::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
                << previous_months_from_inception;
     LOG(ERROR) << "New months from inception = " << new_months_from_inception;
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Calculate new_active_months since we are in a new month.
@@ -93,15 +89,14 @@ absl::optional<int> ActiveStatus::CalculateNewValue(base::Time ts) const {
   return ConvertBitsetToInteger<kActiveStatusBitSize>(updated_value);
 }
 
-absl::optional<base::Time> ActiveStatus::GetCurrentActiveMonthTimestamp()
-    const {
+std::optional<base::Time> ActiveStatus::GetCurrentActiveMonthTimestamp() const {
   DCHECK_GE(GetMonthsSinceInception(), 0);
 
   int months_from_inception = GetMonthsSinceInception();
-  absl::optional<base::Time> inception_ts = GetInceptionMonthTimestamp();
+  std::optional<base::Time> inception_ts = GetInceptionMonthTimestamp();
   if (!inception_ts.has_value()) {
     LOG(ERROR) << "Failed to get the inception month as timestamp.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int years_from_inception = std::floor(months_from_inception / 12);
@@ -119,25 +114,25 @@ absl::optional<base::Time> ActiveStatus::GetCurrentActiveMonthTimestamp()
 
   if (!success) {
     LOG(ERROR) << "Failed to convert current active month back to timestamp.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return current_active_month_ts;
 }
 
-absl::optional<ChurnCohortMetadata> ActiveStatus::CalculateCohortMetadata(
+std::optional<ChurnCohortMetadata> ActiveStatus::CalculateCohortMetadata(
     base::Time active_ts) const {
   ChurnCohortMetadata metadata;
 
-  absl::optional<int> new_active_status = CalculateNewValue(active_ts);
+  std::optional<int> new_active_status = CalculateNewValue(active_ts);
   if (!new_active_status.has_value()) {
     LOG(ERROR) << "Failed to generate new value. Old Value = " << GetValue();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   metadata.set_active_status_value(new_active_status.value());
 
-  absl::optional<bool> is_first_active = IsFirstActiveInCohort(active_ts);
+  std::optional<bool> is_first_active = IsFirstActiveInCohort(active_ts);
   if (is_first_active.has_value()) {
     metadata.set_is_first_active_in_cohort(is_first_active.value());
   }
@@ -145,19 +140,19 @@ absl::optional<ChurnCohortMetadata> ActiveStatus::CalculateCohortMetadata(
   return metadata;
 }
 
-absl::optional<ChurnObservationMetadata>
+std::optional<ChurnObservationMetadata>
 ActiveStatus::CalculateObservationMetadata(base::Time active_ts,
                                            int period) const {
   DCHECK(period >= 0 && period <= 2) << "Period must be in [0,2] range.";
 
   // Observation metadata is generated if cohort ping was sent for the month.
-  absl::optional<base::Time> cur_active_month_ts =
+  std::optional<base::Time> cur_active_month_ts =
       GetCurrentActiveMonthTimestamp();
   if (cur_active_month_ts.has_value() &&
       !utils::IsSameYearAndMonth(cur_active_month_ts.value(), active_ts)) {
     LOG(ERROR) << "Observation metadata require a current active status value. "
                << "This occurs after successful cohort pinging.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ChurnObservationMetadata metadata;
@@ -167,27 +162,27 @@ ActiveStatus::CalculateObservationMetadata(base::Time active_ts,
   metadata.set_monthly_active_status(is_monthly_active);
   metadata.set_yearly_active_status(is_yearly_active);
 
-  absl::optional<base::Time> first_active_week = GetFirstActiveWeek();
+  std::optional<base::Time> first_active_week = utils::GetFirstActiveWeek();
   if (!first_active_week.has_value()) {
     LOG(ERROR) << "Cannot calculate observation metadata for first active "
                << "during cohort without the first active week.";
     return metadata;
   }
 
-  absl::optional<base::Time> last_month_ts = utils::GetPreviousMonth(active_ts);
-  absl::optional<base::Time> two_months_ago_ts =
+  std::optional<base::Time> last_month_ts = utils::GetPreviousMonth(active_ts);
+  std::optional<base::Time> two_months_ago_ts =
       utils::GetPreviousMonth(last_month_ts.value_or(base::Time()));
-  absl::optional<base::Time> three_months_ago_ts =
+  std::optional<base::Time> three_months_ago_ts =
       utils::GetPreviousMonth(two_months_ago_ts.value_or(base::Time()));
 
   if (!last_month_ts.has_value() || !two_months_ago_ts.has_value() ||
       !three_months_ago_ts.has_value()) {
     LOG(ERROR) << "Failed to calculate observation metadata for period.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Time> month_before_observation_period_start_ts;
-  absl::optional<base::Time> year_before_observation_period_start_ts;
+  std::optional<base::Time> month_before_observation_period_start_ts;
+  std::optional<base::Time> year_before_observation_period_start_ts;
 
   if (period == 0) {
     month_before_observation_period_start_ts = last_month_ts;
@@ -233,149 +228,17 @@ ActiveStatus::CalculateObservationMetadata(base::Time active_ts,
   return metadata;
 }
 
-absl::optional<base::Time> ActiveStatus::GetInceptionMonthTimestamp() const {
+std::optional<base::Time> ActiveStatus::GetInceptionMonthTimestamp() const {
   base::Time inception_ts;
   bool success = base::Time::FromUTCString(
       ActiveStatus::kActiveStatusInceptionDate, &inception_ts);
 
   if (!success) {
     LOG(ERROR) << "Failed to convert kActiveStatusInceptionDate to timestamp.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return inception_ts;
-}
-
-base::Time ActiveStatus::GetFirstMondayFromNewYear(base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-
-  // Only the Year, Month, and Day fields should be set.
-  // All other values such as hour, minute, second should be set to 0.
-  exploded.hour = 0;
-  exploded.minute = 0;
-  exploded.second = 0;
-  exploded.millisecond = 0;
-
-  // day_of_week field is 0 based starting from Sunday.
-  int days_to_first_monday;
-
-  if (kMondayDayOfWeekIndex >= exploded.day_of_week) {
-    // Difference in days between Sunday/Monday to Monday.
-    days_to_first_monday = kMondayDayOfWeekIndex - exploded.day_of_week;
-  } else {
-    // Number of days to get to the next Monday from the current day_of_week.
-    days_to_first_monday =
-        ActiveStatus::kNumberOfDaysInWeek - (exploded.day_of_week - 1);
-  }
-
-  return ts + base::Days(days_to_first_monday);
-}
-
-// The ActivateDate is formatted: YYYY-WW and is generated based on UTC date.
-// Returns the first day of the ISO8601 week.
-absl::optional<base::Time> ActiveStatus::Iso8601DateWeekAsTime(
-    int activate_year,
-    int activate_week_of_year) const {
-  if (activate_year < 0 || activate_week_of_year < 0 ||
-      activate_week_of_year > 53) {
-    LOG(ERROR) << "Invalid year or week of year"
-               << ". Variable activate_year = " << activate_year
-               << ". Variable activate_week_of_year = "
-               << activate_week_of_year;
-    return absl::nullopt;
-  }
-
-  // Get the first monday of the parsed activate date year as a base::Time
-  // object. This will make it easier to add the required number of days to
-  // get the start of the ISO 8601 week standard period.
-  base::Time new_year_ts;
-  std::string new_year_date =
-      "Jan 01 00:00:00 GMT " + base::NumberToString(activate_year);
-  bool success = base::Time::FromUTCString(new_year_date.c_str(), &new_year_ts);
-
-  if (!success) {
-    LOG(ERROR) << "Failed to store new year in base::Time using "
-                  "FromUTCString method.";
-    return absl::nullopt;
-  }
-
-  // ISO 8601 assigns the weeks to 0 if the stored date was
-  // before the first monday of the year.
-  // For example, the first monday of 2020 is Jan 6th, so devices that had
-  // Activated between [Jan 1st, Jan 5th] have activate week of year set to 0.
-  if (activate_week_of_year == 0) {
-    return new_year_ts;
-  }
-
-  base::Time first_monday_of_year = GetFirstMondayFromNewYear(new_year_ts);
-
-  // Get the number of days to the start of a ISO 8601 week standard period
-  // for that year from the years first monday. This is equal to
-  // (activate_week_of_year-1) * 7 days.
-  int days_in_iso_period = 0;
-  days_in_iso_period = (activate_week_of_year - 1) * 7;
-
-  // Add the above two steps to get the start of a ISO 8601 week time.
-  return first_monday_of_year + base::Days(days_in_iso_period);
-}
-
-absl::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
-  absl::optional<base::StringPiece> first_active_week_val =
-      statistics_provider_->GetMachineStatistic(system::kActivateDateKey);
-  std::string first_active_week_str =
-      std::string(first_active_week_val.value_or(kActivateDateKeyNotFound));
-
-  if (first_active_week_str == kActivateDateKeyNotFound) {
-    LOG(ERROR)
-        << "Failed to retrieve ActivateDate VPD field from machine statistics. "
-        << "Leaving |first_active_week_| unset.";
-    return absl::nullopt;
-  }
-
-  // Activate date is formatted: "YYYY-WW"
-  int delimiter_index = first_active_week_str.find('-');
-
-  const int expected_first_active_week_size = 7;
-  const int expected_delimiter_index = 4;
-  if (first_active_week_str.size() != expected_first_active_week_size ||
-      delimiter_index != expected_delimiter_index) {
-    LOG(ERROR) << "ActivateDate was retrieved but is not formatted as YYYY-WW. "
-               << "Received string : " << first_active_week_str;
-    return absl::nullopt;
-  }
-
-  const int expected_year_size = 4;
-  const int expected_weeks_size = 2;
-
-  std::string parsed_year = first_active_week_str.substr(0, expected_year_size);
-  std::string parsed_weeks = first_active_week_str.substr(
-      expected_delimiter_index + 1, expected_weeks_size);
-
-  if (parsed_year.empty() || parsed_weeks.empty()) {
-    LOG(ERROR) << "Failed to parse and convert the first active weeks string "
-               << "year and weeks.";
-    return absl::nullopt;
-  }
-
-  // Convert parsed year and weeks to int.
-  int activate_year, activate_week_of_year;
-  bool success_year = base::StringToInt(parsed_year, &activate_year);
-  bool success_week = base::StringToInt(parsed_weeks, &activate_week_of_year);
-
-  if (!success_year || !success_week) {
-    LOG(ERROR) << "Failed to convert parsed_year or parsed_weeks: "
-               << parsed_year << " and " << parsed_weeks;
-    return absl::nullopt;
-  }
-
-  auto iso8601_ts = Iso8601DateWeekAsTime(activate_year, activate_week_of_year);
-  if (!iso8601_ts.has_value()) {
-    LOG(ERROR) << "Failed to ISO8601 year and week of year as a timestamp.";
-    return absl::nullopt;
-  }
-
-  return iso8601_ts.value();
 }
 
 int ActiveStatus::GetMonthsSinceInception() const {
@@ -405,13 +268,13 @@ bool ActiveStatus::IsDeviceActiveInMonth(int month_idx) const {
       .test(month_idx);
 }
 
-absl::optional<bool> ActiveStatus::IsFirstActiveInCohort(
+std::optional<bool> ActiveStatus::IsFirstActiveInCohort(
     base::Time active_ts) const {
-  auto first_active_week = GetFirstActiveWeek();
+  auto first_active_week = utils::GetFirstActiveWeek();
   if (!first_active_week.has_value()) {
     LOG(ERROR)
         << "First Active Week could not be retrieved correctly from VPD.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Time::Exploded exploded;

@@ -106,7 +106,13 @@ using DragDropTest = AshInteractiveUITestBase;
 
 // Test if the mouse gets moved properly to another display
 // during drag & drop operation.
-TEST_F(DragDropTest, DragDropAcrossMultiDisplay) {
+// TODO(https://crbug.com/1491759): Consistently failing on Chrome OS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DragDropAcrossMultiDisplay DISABLED_DragDropAcrossMultiDisplay
+#else
+#define MAYBE_DragDropAcrossMultiDisplay DragDropAcrossMultiDisplay
+#endif
+TEST_F(DragDropTest, MAYBE_DragDropAcrossMultiDisplay) {
   UpdateDisplay("400x300,400x300");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   auto draggable_view = std::make_unique<DraggableTestView>();

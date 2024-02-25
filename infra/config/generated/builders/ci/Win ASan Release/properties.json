@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Win ASan Release/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -24,7 +27,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_win_clang_asan",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -38,6 +42,12 @@
           "bucket": "ci",
           "builder": "Win ASan Release",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "win-asan-rel",
+          "group": "tryserver.chromium.fuzz"
         }
       ]
     }

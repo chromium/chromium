@@ -76,7 +76,7 @@ class ArcWakeLockBridge : public KeyedService,
   // Returns the WakeLockRequester for |type|, creating one if needed.
   WakeLockRequester* GetWakeLockRequester(device::mojom::WakeLockType type);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;

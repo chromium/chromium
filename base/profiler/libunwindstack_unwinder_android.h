@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/profiler/native_unwinder_android_memory_regions_map.h"
+#include "base/profiler/native_unwinder_android_memory_regions_map_impl.h"
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/JitDebug.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 
 namespace base {
+
 // This unwinder uses the libunwindstack::Unwinder internally to provide the
 // base::Unwinder implementation. This is in contrast to
 // base::NativeUnwinderAndroid, which uses functions from libunwindstack
@@ -42,11 +43,8 @@ class LibunwindstackUnwinderAndroid : public Unwinder {
   unwindstack::JitDebug* GetOrCreateJitDebug(unwindstack::ArchEnum arch);
   unwindstack::DexFiles* GetOrCreateDexFiles(unwindstack::ArchEnum arch);
 
-  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map_;
-  // libunwindstack::Unwinder requires that process_memory be provided as a
-  // std::shared_ptr. Since this is a third_party library this exception to
-  // normal Chromium conventions of not using shared_ptr has to exist here.
-  std::shared_ptr<unwindstack::Memory> process_memory_;
+  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
+      memory_regions_map_;
 
   std::unique_ptr<unwindstack::JitDebug> jit_debug_;
   std::unique_ptr<unwindstack::DexFiles> dex_files_;

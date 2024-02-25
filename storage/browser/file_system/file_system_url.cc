@@ -267,7 +267,10 @@ BucketLocator FileSystemURL::GetBucket() const {
 }
 
 bool FileSystemURL::IsParent(const FileSystemURL& child) const {
-  return IsInSameFileSystem(child) && path().IsParent(child.path());
+  return IsInSameFileSystem(child) &&
+         (path().IsParent(child.path()) ||
+          (VirtualPath::IsRootPath(path()) &&
+           !VirtualPath::IsRootPath(child.path())));
 }
 
 bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {

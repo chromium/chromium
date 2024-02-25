@@ -29,18 +29,20 @@ def _IsEnabled(definition, enabled_features):
 
   already_defined = False
   for a in definition.attribute_list:
-    if a.key == 'EnableIf' or a.key == 'EnableIfNot':
+    if a.key.name == 'EnableIf' or a.key.name == 'EnableIfNot':
       if already_defined:
         raise EnableIfError(
             definition.filename,
             "EnableIf/EnableIfNot attribute may only be set once per field.",
-            definition.lineno)
+            definition.start.line)
       already_defined = True
 
   for attribute in definition.attribute_list:
-    if attribute.key == 'EnableIf' and attribute.value not in enabled_features:
+    if (attribute.key.name == 'EnableIf'
+        and attribute.value.name not in enabled_features):
       return False
-    if attribute.key == 'EnableIfNot' and attribute.value in enabled_features:
+    if (attribute.key.name == 'EnableIfNot'
+        and attribute.value.name in enabled_features):
       return False
   return True
 
@@ -60,15 +62,12 @@ def _FilterDefinition(definition, enabled_features):
   """Filters definitions with a body."""
   if isinstance(definition, ast.Enum):
     _FilterDisabledFromNodeList(definition.enum_value_list, enabled_features)
-  elif isinstance(definition, ast.Interface):
-    _FilterDisabledFromNodeList(definition.body, enabled_features)
   elif isinstance(definition, ast.Method):
     _FilterDisabledFromNodeList(definition.parameter_list, enabled_features)
     _FilterDisabledFromNodeList(definition.response_parameter_list,
                                 enabled_features)
-  elif isinstance(definition, ast.Struct):
-    _FilterDisabledFromNodeList(definition.body, enabled_features)
-  elif isinstance(definition, ast.Union):
+  elif isinstance(definition,
+                  (ast.Interface, ast.Struct, ast.Union, ast.Feature)):
     _FilterDisabledFromNodeList(definition.body, enabled_features)
 
 

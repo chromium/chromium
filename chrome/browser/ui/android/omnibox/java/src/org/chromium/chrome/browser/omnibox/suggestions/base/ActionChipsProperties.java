@@ -14,15 +14,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The properties associated with rendering the ActionChipsView.
- */
+/** The properties associated with rendering the ActionChipsView. */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public @interface ActionChipsProperties {
     /**
-     * ViewType defines a list of Views that are understood by the Carousel.
-     * Views below can be used by any instance of the carousel, guaranteeing that each instance
-     * will look like every other.
+     * ViewType defines a list of Views that are understood by the Carousel. Views below can be used
+     * by any instance of the carousel, guaranteeing that each instance will look like every other.
      */
     @IntDef({ViewType.CHIP})
     @Retention(RetentionPolicy.SOURCE)

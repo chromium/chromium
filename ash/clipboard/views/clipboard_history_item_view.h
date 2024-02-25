@@ -23,8 +23,9 @@ class ClipboardHistoryItem;
 
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
+  METADATA_HEADER(ClipboardHistoryItemView, views::View)
+
  public:
-  METADATA_HEADER(ClipboardHistoryItemView);
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(const base::UnguessableToken& item_id,
                                  const ClipboardHistory* clipboard_history,
@@ -74,8 +75,9 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // clipboard history refresh is enabled, a `ContentsView` observes its sibling
   // `ClipboardHistoryDeleteButton` so that it knows when to clip its contents.
   class ContentsView : public views::View, public views::ViewObserver {
+    METADATA_HEADER(ContentsView, views::View)
+
    public:
-    METADATA_HEADER(ContentsView);
     ContentsView();
     ContentsView(const ContentsView& rhs) = delete;
     ContentsView& operator=(const ContentsView& rhs) = delete;
@@ -159,12 +161,12 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Owned by `ClipboardHistoryControllerImpl`.
   const raw_ptr<const ClipboardHistory> clipboard_history_;
 
-  const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
+  const raw_ptr<views::MenuItemView> container_;
 
   // Owned by the view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> ctrl_v_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
+  raw_ptr<views::View> main_button_ = nullptr;
+  raw_ptr<views::View> ctrl_v_label_ = nullptr;
+  raw_ptr<views::View> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 

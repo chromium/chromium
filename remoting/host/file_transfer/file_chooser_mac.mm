@@ -92,7 +92,7 @@ class FileChooserMac : public FileChooser {
 MacFileChooserOnUiThread::MacFileChooserOnUiThread(
     scoped_refptr<base::SequencedTaskRunner> caller_task_runner,
     base::WeakPtr<FileChooserMac> file_chooser_mac)
-    : delegate_([FileTransferOpenPanelDelegate new]),
+    : delegate_([[FileTransferOpenPanelDelegate alloc] init]),
       caller_task_runner_(std::move(caller_task_runner)),
       file_chooser_mac_(std::move(file_chooser_mac)) {}
 

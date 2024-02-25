@@ -76,7 +76,7 @@ bool TimelineOffset::UpdateOffset(Element* element, CSSValue* value) {
 }
 
 /* static */
-absl::optional<TimelineOffset> TimelineOffset::Create(
+std::optional<TimelineOffset> TimelineOffset::Create(
     Element* element,
     String css_text,
     double default_percent,
@@ -86,7 +86,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
         DOMExceptionCode::kInvalidStateError,
         "Unable to parse TimelineOffset from CSS text with a null effect or "
         "target");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Document& document = element->GetDocument();
@@ -102,12 +102,12 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
 
   if (!value || !range.AtEnd()) {
     ThrowExceptionForInvalidTimelineOffset(exception_state);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (IsA<CSSIdentifierValue>(value)) {
     DCHECK_EQ(CSSValueID::kNormal, To<CSSIdentifierValue>(*value).GetValueID());
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& list = To<CSSValueList>(*value);
@@ -115,7 +115,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   DCHECK(list.length());
   NamedRange range_name = NamedRange::kNone;
   Length offset = Length::Percent(default_percent);
-  absl::optional<String> style_dependent_offset_str;
+  std::optional<String> style_dependent_offset_str;
   if (list.Item(0).IsIdentifierValue()) {
     range_name = To<CSSIdentifierValue>(list.Item(0)).ConvertTo<NamedRange>();
     if (list.length() == 2u) {
@@ -137,7 +137,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
 }
 
 /* static */
-absl::optional<TimelineOffset> TimelineOffset::Create(
+std::optional<TimelineOffset> TimelineOffset::Create(
     Element* element,
     const V8UnionStringOrTimelineRangeOffset* range_offset,
     double default_percent,
@@ -152,7 +152,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
       value->hasRangeName() ? value->rangeName().AsEnum() : NamedRange::kNone;
 
   Length parsed_offset;
-  absl::optional<String> style_dependent_offset_str;
+  std::optional<String> style_dependent_offset_str;
   if (value->hasOffset()) {
     CSSNumericValue* offset = value->offset();
     const CSSPrimitiveValue* css_value =
@@ -163,7 +163,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
       exception_state.ThrowTypeError(
           "CSSNumericValue must be a length or percentage for animation "
           "range.");
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (css_value->IsPx()) {
@@ -225,6 +225,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
       element_resolve_context.RootElementStyle(),
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(),
       element->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 
   return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(

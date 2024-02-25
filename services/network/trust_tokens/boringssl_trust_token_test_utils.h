@@ -6,10 +6,10 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_BORINGSSL_TRUST_TOKEN_TEST_UTILS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 
@@ -33,13 +33,13 @@ class TestTrustTokenIssuer {
 
   // Receives a base64 encoded `issuance_request` and issue a token.
   // https://github.com/WICG/trust-token-api/blob/main/ISSUER_PROTOCOL.md#issuing-tokens
-  absl::optional<std::string> Issue(const std::string& issuance_request) const;
+  std::optional<std::string> Issue(const std::string& issuance_request) const;
 
   // Receives a base64 encoded `issuance_request` and issue a token using the
   // `key_id` received. The `key_id` must be present in the instance's `keys_`.
   // https://github.com/WICG/trust-token-api/blob/main/ISSUER_PROTOCOL.md#issuing-tokens
-  absl::optional<std::string> IssueUsingKey(const std::string& issuance_request,
-                                            const uint32_t& key_id) const;
+  std::optional<std::string> IssueUsingKey(const std::string& issuance_request,
+                                           const uint32_t& key_id) const;
 
   // Receives a base64 binary blob `redemption_request` and completes the
   // redeem crypto protocol.

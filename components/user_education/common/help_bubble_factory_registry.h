@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_FACTORY_REGISTRY_H_
 
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"

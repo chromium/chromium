@@ -20,7 +20,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -657,10 +656,7 @@ IN_PROC_BROWSER_TEST_F(
     notification_data.body = base::UTF8ToUTF16(target_url.spec());
 
     GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
-    content::StoragePartition* storage_partition =
-        browser()->profile()->GetDefaultStoragePartition();
-    content::ServiceWorkerContext* context =
-        storage_partition->GetServiceWorkerContext();
+    content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
     content::WebContentsAddedObserver new_window_observer;
     content::DispatchServiceWorkerNotificationClick(context, scope_url,

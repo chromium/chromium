@@ -75,11 +75,15 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
 
   // Start the tutorial and mark the params used to created it for restarting.
   most_recent_tutorial_id_ = id;
+  if (description->temporary_state_callback) {
+    running_tutorial_->SetState(
+        description->temporary_state_callback.Run(context));
+  }
   running_tutorial_->Start();
 }
 
 bool TutorialService::CancelTutorialIfRunning(
-    absl::optional<TutorialIdentifier> id) {
+    std::optional<TutorialIdentifier> id) {
   if (!running_tutorial_) {
     return false;
   }
@@ -136,6 +140,14 @@ bool TutorialService::RestartTutorial() {
     return false;
   }
 
+  if (running_tutorial_creation_params_->description_
+          ->temporary_state_callback) {
+    running_tutorial_->SetState(
+        running_tutorial_creation_params_->description_
+            ->temporary_state_callback.Run(
+                running_tutorial_creation_params_->context_));
+  }
+
   // Note: if we restart the tutorial, we won't record whether the user pressed
   // the pane focus key to focus the help bubble until the user actually decides
   // they're finished, but we also won't reset the count, so at the end we can
@@ -147,7 +159,7 @@ bool TutorialService::RestartTutorial() {
   return true;
 }
 
-void TutorialService::AbortTutorial(absl::optional<int> abort_step) {
+void TutorialService::AbortTutorial(std::optional<int> abort_step) {
   // For various reasons, we could get called here while e.g. tearing down the
   // interaction sequence. We only want to actually run AbortTutorial() or
   // CompleteTutorial() exactly once, so we won't continue if the tutorial has
@@ -241,7 +253,7 @@ void TutorialService::HideCurrentBubbleIfShowing() {
 }
 
 bool TutorialService::IsRunningTutorial(
-    absl::optional<TutorialIdentifier> id) const {
+    std::optional<TutorialIdentifier> id) const {
   if (!running_tutorial_) {
     return false;
   }

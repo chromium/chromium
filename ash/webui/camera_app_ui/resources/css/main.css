@@ -15,11 +15,14 @@
   --exit-easing: cubic-bezier(0.4, 0, 1, 1);
 
   /* App specific settings */
+  --big-icon: 48px;
   --bottom-line: 44px;
   --default-font-family: 'Google Sans', sans-serif;
   --fixed-width-font-family: 'Cousine', monospace;
   --left-line: 44px;
   --right-line: 50px;
+  --small-icon: 40px;
+  --top-line: 48px;
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
   --border-radius-rounded-with-short-side: 9999999px;
@@ -35,10 +38,6 @@
 
 html {
   height: 100%;  /* Required for printing. */
-}
-
-audio {
-  display: none;
 }
 
 body {
@@ -129,7 +128,7 @@ input[type=radio].icon {
 
 .top-stripe {
   position: absolute;
-  top: 48px;
+  top: var(--top-line);
   transform: translateY(-50%);
 }
 
@@ -161,12 +160,6 @@ body.taking.video #options-group :not(#open-ptz-panel) {
   transform: translateX(50%);
 }
 
-.horizontal-center-stripe {
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-}
-
 .vertical-center-stripe {
   position: absolute;
   top: 50%;
@@ -178,10 +171,6 @@ body.taking.video #options-group :not(#open-ptz-panel) {
 }
 
 .top-stripe.left-stripe {
-  transform: translate(-50%, -50%);
-}
-
-.top-stripe.horizontal-center-stripe {
   transform: translate(-50%, -50%);
 }
 
@@ -204,125 +193,17 @@ body.tablet-landscape .actions-group {
   flex-direction: column-reverse;
 }
 
-body.doc-mode-reviewing #mode-selector {
-  visibility: hidden;
-}
-
-#mode-selector {
-  --fade-padding: 24px;
-  --scrollbar-height: 4px;
-
+mode-selector {
   left: calc(var(--left-line) * 2);
   right: calc(var(--right-line) * 2);
-}
 
-#mode-selector::before,
-#mode-selector::after {
-  /* This is for "fading" effect when window is narrow and the mode selector
-   * overflows, so we use the same color as the background color here. */
-  background: linear-gradient(to right, var(--cros-sys-app_base), transparent);
-  content: '';
-  display: block;
-  height: calc(100% - var(--scrollbar-height));
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: var(--fade-padding);
-  z-index: 2;
-}
-
-#mode-selector::before {
-  left: 0;
-}
-
-#mode-selector::after {
-  right: 0;
-  transform: scaleX(-1);
-}
-
-#modes-group {
-  display: block;
-  overflow: auto;
-  padding: 10px 0;
-  pointer-events: auto;
-  text-align: center;
-  user-select: none;
-  white-space: nowrap;
+  body:is(.taking.video, .should-handle-intent-result, .doc-mode-reviewing) & {
+    display: none;
+  }
 }
 
 :is(#start-takephoto, #recordvideo, #video-snapshot):disabled {
   opacity: 0.38;
-}
-
-#modes-group::-webkit-scrollbar-thumb {
-  background: var(--cros-sys-scrollbar);
-  border-radius: 2px;
-  height: auto;
-  width: auto;
-}
-
-#modes-group::-webkit-scrollbar {
-  height: var(--scrollbar-height);
-  width: auto;
-}
-
-body:is(.taking.video, .should-handle-intent-result) #modes-group {
-  display: none;
-}
-
-#modes-group .mode-item {
-  display: inline-block;
-  font-size: 0; /* Remove space between inline-block. */
-  margin: 0 8px;
-  position: relative;
-}
-
-#modes-group .mode-item.hide {
-  display: none;
-}
-
-#modes-group .mode-item.first {
-  margin-inline-start: var(--fade-padding);
-}
-
-#modes-group .mode-item.last {
-  margin-inline-end: var(--fade-padding);
-}
-
-#modes-group .mode-item input:active {
-  /* Don't scale when active to prevent twitching. See b/197583162. */
-  transform: none;
-}
-
-#modes-group .mode-item:has(input[data-disabled=true]) {
-  opacity: 0.38;
-}
-
-div.mode-item>input {
-  border-radius: 16px/50%;
-}
-
-div.mode-item>span {
-  border-radius: 16px/50%;
-  color: var(--cros-sys-on_surface);
-  display: inline-block;
-  font: var(--cros-button-1-font);
-  padding: 8px 12px;
-  position: relative;
-  z-index: 0;
-}
-
-.mode-item>input {
-  height: 100%;
-  outline-offset: 7px;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
-}
-
-.mode-item>input:checked + span {
-  background: var(--cros-sys-primary);
-  color: var(--cros-sys-inverse_on_surface);
 }
 
 button.shutter {
@@ -360,8 +241,7 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 
 :is(#start-takephoto, #video-snapshot) svg-wrapper {
   color: var(--cros-sys-inverse_surface);
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  --secondary-color: var(--cros-ref-primary100);
+  --secondary-color: var(--cros-sys-white);
 }
 
 :is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:hover::after {
@@ -417,8 +297,7 @@ body.taking #start-takephoto:active {
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
 
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  background: var(--cros-ref-primary100);
+  background: var(--cros-sys-white);
   border-radius: 50%;
   height: var(--size);
   position: relative;
@@ -463,8 +342,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
 }
 
 #recordvideo .white-square {
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  background: var(--cros-ref-primary100);
+  background: var(--cros-sys-white);
   border-radius: 2px;
   height: 0;
   left: 50%;
@@ -516,7 +394,7 @@ body.video.taking #recordvideo {
 }
 
 body:is(:not(.video), .record-type-gif, .record-type-time-lapse) #toggle-mic,
-body:not(.multi-camera) #switch-device {
+body:not(.multi-camera) switch-device-button {
   visibility: hidden;
 }
 
@@ -555,47 +433,7 @@ body.mode-switching:not(.streaming) #camera-mode {
   visibility: visible;
 }
 
-#switch-device {
-  height: var(--big-icon);
-  outline-offset: 8px;
-  width: var(--big-icon);
-}
-
-#switch-device.animate {
-  animation: switch-device-rotate 350ms ease-out;
-}
-
-@keyframes switch-device-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(-180deg);
-  }
-}
-
-body.doc-mode-reviewing #gallery-enter {
-  visibility: hidden;
-}
-
-#gallery-enter {
-  border: 2px var(--cros-sys-primary_container) solid;
-  height: calc(var(--big-icon) - 4px);
-  overflow: hidden;
-  width: calc(var(--big-icon) - 4px);
-}
-
-#gallery-enter>img {
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
-
-#gallery-enter>img:not(.draggable) {
-  pointer-events: none;
-}
-
-body:is(.taking.video, .should-handle-intent-result) #gallery-enter {
+body:is(.taking.video, .should-handle-intent-result, .doc-mode-reviewing) gallery-button {
   display: none;
 }
 
@@ -790,8 +628,6 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 }
 
 #view-camera {
-  --big-icon: 48px;
-  --small-icon: 40px;
   --shutter-vertical-center: 180px;
 
   align-items: center;
@@ -963,8 +799,8 @@ body:not(.custom-video-parameters) #expert-controls>.video-option-row {
 }
 
 #preview-grid-horizontal {
-  border-bottom: 1px solid var(--cros-ref-primary100);
-  border-top: 1px solid var(--cros-ref-primary100);
+  border-bottom: 1px solid var(--cros-sys-white);
+  border-top: 1px solid var(--cros-sys-white);
   height: 100%;
   left: 0;
   position: absolute;
@@ -978,7 +814,7 @@ body.grid #preview-grid {
 }
 
 body.grid.grid-4x4 #preview-grid-horizontal::before {
-  border-bottom: 1px solid var(--cros-ref-primary100);
+  border-bottom: 1px solid var(--cros-sys-white);
   content: '';
   height: 0;
   left: 0;
@@ -1001,8 +837,8 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 }
 
 #preview-grid-vertical {
-  border-inline-end: 1px solid var(--cros-ref-primary100);
-  border-inline-start: 1px solid var(--cros-ref-primary100);
+  border-inline-end: 1px solid var(--cros-sys-white);
+  border-inline-start: 1px solid var(--cros-sys-white);
   bottom: 0;
   left: 50%;
   position: absolute;
@@ -1013,7 +849,7 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 
 body.grid-4x4 #preview-grid-vertical::before {
   border-right:  /* csschecker-disable-line left-right */
-      1px solid var(--cros-ref-primary100);
+      1px solid var(--cros-sys-white);
   bottom: 0;
   content: '';
   left: 0;
@@ -1045,18 +881,12 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
   transition: width 500ms;
 }
 
-#record-time {
-  align-items: center;
-  background-color: var(--cros-sys-base_elevated);
-  border-radius: var(--border-radius-rounded-with-short-side);
-  box-sizing: border-box;
-  display: flex;
-  font: var(--cros-button-2-font);
-  font-variant-numeric: tabular-nums;
-  height: 32px;
-  justify-content: flex-start;
-  padding: 6px 12px;
+record-time-chip {
+  left: 50%;
   pointer-events: none;
+  position: absolute;
+  top: var(--top-line);
+  transform: translate(-50%, -50%);
 }
 
 /*
@@ -1071,55 +901,8 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
   display: none !important;
 }
 
-#record-time .icon {
-  background-color: var(--cros-ref-error40);
-  border-radius: 50%;
-  flex-shrink: 0;
-  height: 6px;
-  width: 6px;
-}
-
-body.recording-ui-paused #record-time .icon,
-body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] {
-  display: none;
-}
-
-#record-time #record-time-msg {
-  color: var(--cros-sys-on_surface);
-  flex-shrink: 0;
-}
-
-#record-time [i18n-text=record_video_paused_msg] {
-  color: var(--cros-sys-on_surface);
-  flex-shrink: 0;
-}
-
-#record-time #record-time-msg {
-  margin-inline-start: 8px;
-}
-
 #spoken_msg {
   opacity: 0;
-}
-
-#tooltip {
-  background: var(--cros-sys-on_surface);
-  border-radius: 2px;
-  color: var(--cros-sys-inverse_on_surface);
-  font: var(--cros-annotation-1-font);
-  left: 0;
-  opacity: 0;
-  padding: 2px 8px;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  white-space: nowrap;
-  z-index: 100;
-}
-
-#tooltip.visible {
-  opacity: 1;
-  transition: opacity 350ms ease-out 1500ms;
 }
 
 #toast {
@@ -1503,7 +1286,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 body.hide-floating-ui-for-testing
-  :is(#nudge, #toast, #tooltip, .custom-toast, .no-document-toast) {
+  :is(#nudge, #toast, text-tooltip, .custom-toast, .no-document-toast) {
   /* TODO(b/289342383): Use CSS layering so we don't need to use !important. */
   display: none !important;
 }

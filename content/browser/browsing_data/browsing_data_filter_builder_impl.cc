@@ -77,7 +77,9 @@ bool MatchesURL(const std::set<url::Origin>& origins,
                 BrowsingDataFilterBuilder::OriginMatchingMode origin_mode,
                 bool is_cross_site_clear_site_data,
                 const GURL& url) {
-  DCHECK(!is_cross_site_clear_site_data);
+  // TODO(https://crbug.com/1420402): Re-enable this check when it is actually
+  // a valid precondition.
+  // DCHECK(!is_cross_site_clear_site_data);
   return MatchesStorageKey(
       origins, registerable_domains, mode, origin_mode,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
@@ -97,7 +99,7 @@ bool MatchesPluginSiteForRegisterableDomainsAndIPs(
     domain_or_ip = site;
 
   return ((mode == BrowsingDataFilterBuilder::Mode::kDelete) ==
-          (domains_and_ips.find(domain_or_ip) != domains_and_ips.end()));
+          (base::Contains(domains_and_ips, domain_or_ip)));
 }
 
 template <typename T>
@@ -111,7 +113,7 @@ base::RepeatingCallback<bool(const T&)> NotReachedFilter() {
 bool StorageKeyInCookiePartitionKeyCollection(
     const blink::StorageKey& storage_key,
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
-  absl::optional<net::CookiePartitionKey> equivalent_cookie_partition_key =
+  std::optional<net::CookiePartitionKey> equivalent_cookie_partition_key =
       storage_key.ToCookiePartitionKey();
   // If cookie partitioning is disabled, this will be nullopt and we can just
   // return true.
@@ -209,7 +211,7 @@ bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
 }
 
 void BrowsingDataFilterBuilderImpl::SetStorageKey(
-    const absl::optional<blink::StorageKey>& storage_key) {
+    const std::optional<blink::StorageKey>& storage_key) {
   storage_key_ = storage_key;
 }
 
@@ -240,7 +242,7 @@ void BrowsingDataFilterBuilderImpl::SetStoragePartitionConfig(
   storage_partition_config_ = storage_partition_config;
 }
 
-absl::optional<StoragePartitionConfig>
+std::optional<StoragePartitionConfig>
 BrowsingDataFilterBuilderImpl::GetStoragePartitionConfig() {
   return storage_partition_config_;
 }

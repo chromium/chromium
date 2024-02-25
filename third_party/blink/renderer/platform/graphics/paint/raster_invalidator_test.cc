@@ -25,8 +25,6 @@ static constexpr gfx::Size kDefaultLayerBounds(18888, 16666);
 class RasterInvalidatorTest : public testing::Test,
                               public PaintTestConfigurations {
  public:
-  RasterInvalidatorTest() = default;
-
   static PropertyTreeState DefaultPropertyTreeState() {
     return PropertyTreeState::Root();
   }
@@ -77,7 +75,7 @@ static bool CheckChunkInvalidation(
     wtf_size_t index,
     PaintInvalidationReason reason,
     const gfx::Vector2dF& layer_offset,
-    const absl::optional<gfx::Rect>& chunk_rect = absl::nullopt,
+    const std::optional<gfx::Rect>& chunk_rect = std::nullopt,
     const MapFunction& mapper = base::DoNothing()) {
   const auto& chunk = chunks[index];
   return ChunkRectToLayer(chunk_rect ? *chunk_rect : chunk.drawable_bounds,
@@ -87,7 +85,7 @@ static bool CheckChunkInvalidation(
 
 MATCHER_P5(ChunkInvalidation, chunks, index, reason, layer_offset, mapper, "") {
   return CheckChunkInvalidation(arg, chunks, index, reason, layer_offset,
-                                absl::nullopt, mapper);
+                                std::nullopt, mapper);
 }
 
 MATCHER_P3(ChunkInvalidation, chunks, index, reason, "") {
@@ -220,14 +218,12 @@ TEST_P(RasterInvalidatorTest, ReorderChunks) {
                                   .Build());
   invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
-  // Invalidated new chunk 2's old (as chunks[{0, 1]) and new
-  // (as new_chunks[{0, 2]) bounds.
   EXPECT_THAT(
       TrackedRasterInvalidations(),
-      ElementsAre(ChunkInvalidation(chunks, 1,
-                                    PaintInvalidationReason::kChunkReordered),
-                  ChunkInvalidation(new_chunks, 2,
-                                    PaintInvalidationReason::kChunkReordered)));
+      ElementsAre(ChunkInvalidation(new_chunks, 2,
+                                    PaintInvalidationReason::kChunkAppeared),
+                  ChunkInvalidation(
+                      chunks, 1, PaintInvalidationReason::kChunkDisappeared)));
   FinishCycle(new_chunks);
 }
 
@@ -253,18 +249,72 @@ TEST_P(RasterInvalidatorTest, ReorderChunkSubsequences) {
                                   .Build());
   invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
-  // Invalidated new chunk 3's old (as chunks[{0, 1] and new
-  // (as new_chunks[{0, 3]) bounds.
-  // Invalidated new chunk 4's new bounds. Didn't invalidate old bounds because
-  // it's the same as the new bounds.
   EXPECT_THAT(
       TrackedRasterInvalidations(),
-      ElementsAre(ChunkInvalidation(chunks, 1,
-                                    PaintInvalidationReason::kChunkReordered),
-                  ChunkInvalidation(new_chunks, 3,
-                                    PaintInvalidationReason::kChunkReordered),
+      ElementsAre(ChunkInvalidation(new_chunks, 3,
+                                    PaintInvalidationReason::kChunkAppeared),
                   ChunkInvalidation(new_chunks, 4,
-                                    PaintInvalidationReason::kChunkReordered)));
+                                    PaintInvalidationReason::kChunkAppeared),
+                  ChunkInvalidation(chunks, 1,
+                                    PaintInvalidationReason::kChunkDisappeared),
+                  ChunkInvalidation(
+                      chunks, 2, PaintInvalidationReason::kChunkDisappeared)));
+  FinishCycle(new_chunks);
+}
+
+TEST_P(RasterInvalidatorTest, ScrollDown) {
+  PaintChunkSubset chunks(
+      TestPaintArtifact().Chunk(10).Chunk(11).Chunk(12).Build());
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  FinishCycle(chunks);
+
+  // Simulate the cull rect moves down on scroll. Chunk(13) appears and
+  // Chunk(10) disappears.
+  invalidator_.SetTracksRasterInvalidations(true);
+  PaintChunkSubset new_chunks(TestPaintArtifact()
+                                  .Chunk(11)
+                                  .IsMovedFromCachedSubsequence()
+                                  .Chunk(12)
+                                  .IsMovedFromCachedSubsequence()
+                                  .Chunk(13)
+                                  .Build());
+  invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  EXPECT_THAT(
+      TrackedRasterInvalidations(),
+      ElementsAre(ChunkInvalidation(new_chunks, 2,
+                                    PaintInvalidationReason::kChunkAppeared),
+                  ChunkInvalidation(
+                      chunks, 0, PaintInvalidationReason::kChunkDisappeared)));
+  FinishCycle(new_chunks);
+}
+
+TEST_P(RasterInvalidatorTest, ScrollUp) {
+  PaintChunkSubset chunks(
+      TestPaintArtifact().Chunk(11).Chunk(12).Chunk(13).Build());
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  FinishCycle(chunks);
+
+  // Simulate the cull rect moves up on scroll. Chunk(10) appears and Chunk(13)
+  // disappears.
+  invalidator_.SetTracksRasterInvalidations(true);
+  PaintChunkSubset new_chunks(TestPaintArtifact()
+                                  .Chunk(10)
+                                  .Chunk(11)
+                                  .IsMovedFromCachedSubsequence()
+                                  .Chunk(12)
+                                  .IsMovedFromCachedSubsequence()
+                                  .Build());
+  invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  EXPECT_THAT(
+      TrackedRasterInvalidations(),
+      ElementsAre(ChunkInvalidation(new_chunks, 0,
+                                    PaintInvalidationReason::kChunkAppeared),
+                  ChunkInvalidation(
+                      chunks, 2, PaintInvalidationReason::kChunkDisappeared)));
   FinishCycle(new_chunks);
 }
 

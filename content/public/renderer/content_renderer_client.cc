@@ -4,6 +4,8 @@
 
 #include "content/public/renderer/content_renderer_client.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "ui/gfx/icc_profile.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -105,7 +108,8 @@ bool ContentRendererClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
 }
 
 blink::ProtocolHandlerSecurityLevel
-ContentRendererClient::GetProtocolHandlerSecurityLevel() {
+ContentRendererClient::GetProtocolHandlerSecurityLevel(
+    const url::Origin& origin) {
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
@@ -133,8 +137,8 @@ bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }
 
-uint64_t ContentRendererClient::VisitedLinkHash(const char* canonical_url,
-                                                size_t length) {
+uint64_t ContentRendererClient::VisitedLinkHash(
+    std::string_view canonical_url) {
   return 0;
 }
 
@@ -251,10 +255,10 @@ bool ContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
 
 void ContentRendererClient::DidSetUserAgent(const std::string& user_agent) {}
 
-absl::optional<::media::AudioRendererAlgorithmParameters>
+std::optional<::media::AudioRendererAlgorithmParameters>
 ContentRendererClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ContentRendererClient::AppendContentSecurityPolicy(

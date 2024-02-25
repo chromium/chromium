@@ -8,10 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/system/sys_info.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace metrics::structured {
 
@@ -80,48 +78,18 @@ Event Event::Clone() const {
     clone.AddMetric(metric.first, metric_value.type,
                     metric_value.value.Clone());
   }
-
-  if (recorded_time_since_boot_.has_value())
-    clone.SetRecordedTimeSinceBoot(recorded_time_since_boot_.value());
-
-  if (IsEventSequenceType() && event_sequence_metadata_.has_value()) {
-    clone.SetEventSequenceMetadata(event_sequence_metadata_.value());
-  }
-
+  clone.recorded_time_since_boot_ = recorded_time_since_boot_;
+  clone.event_sequence_metadata_ = event_sequence_metadata_;
   return clone;
 }
 
-void Event::Record() {
-  // Records uptime if event sequence type and it has not been explicitly set.
-  if (IsEventSequenceType() && !recorded_time_since_boot_.has_value())
-    recorded_time_since_boot_ = base::SysInfo::Uptime();
-
-  StructuredMetricsClient::Get()->Record(std::move(*this));
-}
-
-const std::string& Event::project_name() const {
-  return project_name_;
-}
-
-const std::string& Event::event_name() const {
-  return event_name_;
-}
-
-bool Event::is_event_sequence() const {
-  return is_event_sequence_;
-}
-
-const std::map<std::string, Event::MetricValue>& Event::metric_values() const {
-  return metric_values_;
-}
-
 const Event::EventSequenceMetadata& Event::event_sequence_metadata() const {
-  DCHECK(event_sequence_metadata_.has_value());
+  CHECK(event_sequence_metadata_.has_value());
   return event_sequence_metadata_.value();
 }
 
 const base::TimeDelta Event::recorded_time_since_boot() const {
-  DCHECK(recorded_time_since_boot_.has_value());
+  CHECK(recorded_time_since_boot_.has_value());
   return recorded_time_since_boot_.value();
 }
 
@@ -150,8 +118,9 @@ bool Event::AddMetric(const std::string& metric_name,
       valid = value.is_bool();
       break;
   }
-  if (!valid)
+  if (!valid) {
     return false;
+  }
 
   auto pair =
       metric_values_.emplace(metric_name, MetricValue(type, std::move(value)));

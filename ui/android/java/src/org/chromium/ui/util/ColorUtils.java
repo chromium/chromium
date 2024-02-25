@@ -9,13 +9,12 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
 
-/**
- * Helper functions for working with colors.
- */
+/** Helper functions for working with colors. */
 public class ColorUtils {
     // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
     public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;
@@ -37,10 +36,8 @@ public class ColorUtils {
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    /**
-     * Computes the lightness value in HSL standard for the given color.
-     */
-    public static float getLightnessForColor(int color) {
+    /** Computes the lightness value in HSL standard for the given color. */
+    public static float getLightnessForColor(@ColorInt int color) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -54,7 +51,7 @@ public class ColorUtils {
      * Calculates the contrast between the given color and white, using the algorithm provided by
      * the WCAG v2 in http://www.w3.org/TR/WCAG20/#contrast-ratiodef.
      */
-    private static float getContrastForColor(int color) {
+    private static float getContrastForColor(@ColorInt int color) {
         float bgR = Color.red(color) / 255f;
         float bgG = Color.green(color) / 255f;
         float bgB = Color.blue(color) / 255f;
@@ -66,32 +63,92 @@ public class ColorUtils {
     }
 
     /**
-     * Get a color when overlaid with a different color. Note that colors returned by this method
-     * are always opaque.
+     * @see ColorUtils#overlayColor(int, int, float). Use this when not in an animation.
+     */
+    public static @ColorInt int overlayColor(@ColorInt int baseColor, @ColorInt int overlayColor) {
+        return overlayColor(baseColor, overlayColor, /* fraction= */ 1f);
+    }
+
+    /**
+     * Overlays a likely transparent color with the amount that it is transparent. This effectively
+     * flattens the two colors together into a new opaque color.
+     *
+     * @param baseColor The base, opaque, color that is beneath the overlay.
+     * @param overlayColor The partially transparent color, whose alpha will be used to decide how
+     *     much of an effect it will have when blending.
+     * @param fraction Extra 0 to 1 multiplier for alpha overlay, useful for animations that want to
+     *     animate into a full overlay.
+     * @return A fully opaque color that's the result of blending the two.
+     */
+    public static @ColorInt int overlayColor(
+            @ColorInt int baseColor,
+            @ColorInt int overlayColor,
+            @FloatRange(from = 0f, to = 1f) float fraction) {
+        // Similar to #getColorWithOverlay, this math isn't great for transparent base colors.
+        // Consider using #blendColorsMultiply instead.
+        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // color that's partially transparent.
+        // assert Color.alpha(baseColor) == 255;
+
+        @FloatRange(from = 0f, to = 1f)
+        float alphaAdjustedFraction = Color.alpha(overlayColor) / 255f * fraction;
+        @ColorInt int opaqueOverlayColor = getOpaqueColor(overlayColor);
+        return getColorWithOverlay(baseColor, opaqueOverlayColor, alphaAdjustedFraction);
+    }
+
+    /**
+     * Get a color when overlaid with a different color. Input and output colors should be fully
+     * opaque, as this approach does not work well with transparency.
+     *
      * @param baseColor The base Android color.
      * @param overlayColor The overlay Android color.
      * @param overlayAlpha The alpha |overlayColor| should have on the base color.
      */
-    public static int getColorWithOverlay(int baseColor, int overlayColor, float overlayAlpha) {
-        return getColorWithOverlay(baseColor, overlayColor, overlayAlpha, false);
+    public static @ColorInt int getColorWithOverlay(
+            @ColorInt int baseColor,
+            @ColorInt int overlayColor,
+            @FloatRange(from = 0f, to = 1f) float overlayAlpha) {
+        // Transparency is ignored in the logic below, so assert if anyone is passing a color that's
+        // not fully opaque. This does incur a minor burden on clients that knowingly want to call
+        // this on a partially transparent color, as they have to change the alpha value first.
+        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // color that's partially transparent.
+        // assert Color.alpha(baseColor) == 255;
+        assert Color.alpha(overlayColor) == 255;
+
+        int fromRed = Color.red(baseColor);
+        int toRed = Color.red(overlayColor);
+        int resultRed = Math.round(MathUtils.interpolate(fromRed, toRed, overlayAlpha));
+
+        int fromGreen = Color.green(baseColor);
+        int toGreen = Color.green(overlayColor);
+        int resultGreen = Math.round(MathUtils.interpolate(fromGreen, toGreen, overlayAlpha));
+
+        int fromBlue = Color.blue(baseColor);
+        int toBlue = Color.blue(overlayColor);
+        int resultBlue = Math.round(MathUtils.interpolate(fromBlue, toBlue, overlayAlpha));
+
+        return Color.rgb(resultRed, resultGreen, resultBlue);
     }
 
     /**
      * Darkens the given color to use on the status bar.
+     *
      * @param color Color which should be darkened.
      * @return Color that should be used for Android status bar.
      */
-    public static int getDarkenedColorForStatusBar(int color) {
+    public static @ColorInt int getDarkenedColorForStatusBar(@ColorInt int color) {
         return getDarkenedColor(color, DARKEN_COLOR_FRACTION);
     }
 
     /**
      * Darken a color to a fraction of its current brightness.
+     *
      * @param color The input color.
      * @param darkenFraction The fraction of the current brightness the color should be.
      * @return The new darkened color.
      */
-    public static int getDarkenedColor(int color, float darkenFraction) {
+    public static @ColorInt int getDarkenedColor(@ColorInt int color, float darkenFraction) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         hsv[2] *= darkenFraction;
@@ -99,50 +156,54 @@ public class ColorUtils {
     }
 
     /**
-     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.)
-     * should be used depending on the given background color.
+     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.) should be
+     * used depending on the given background color.
+     *
      * @param backgroundColor The background color value which is being queried.
      * @return Whether light colored elements should be used.
      */
-    public static boolean shouldUseLightForegroundOnBackground(int backgroundColor) {
+    public static boolean shouldUseLightForegroundOnBackground(@ColorInt int backgroundColor) {
         return getContrastForColor(backgroundColor) >= CONTRAST_LIGHT_ITEM_THRESHOLD;
     }
 
     /**
-     * Check which version of the textbox background should be used depending on the given
-     * color.
+     * Check which version of the textbox background should be used depending on the given color.
+     *
      * @param color The color value we are querying for.
      * @return Whether the transparent version of the background should be used.
      */
-    public static boolean shouldUseOpaqueTextboxBackground(int color) {
+    public static boolean shouldUseOpaqueTextboxBackground(@ColorInt int color) {
         return getLightnessForColor(color) > LIGHTNESS_OPAQUE_BOX_THRESHOLD;
     }
 
     /**
      * Returns an opaque version of the given color.
+     *
      * @param color Color for which an opaque version should be returned.
      * @return Opaque version of the given color.
      */
-    public static int getOpaqueColor(int color) {
-        return Color.rgb(Color.red(color), Color.green(color), Color.blue(color));
+    public static @ColorInt int getOpaqueColor(@ColorInt int color) {
+        return color | 0xFF000000;
     }
 
     /**
      * Determine if a theme color is too bright. A theme color is too bright if its luminance is >
      * 0.94.
+     *
      * @param color The color to test.
      * @return True if the theme color is too bright.
      */
-    public static boolean isThemeColorTooBright(int color) {
+    public static boolean isThemeColorTooBright(@ColorInt int color) {
         return ColorUtils.getLightnessForColor(color) > MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
     }
 
     /**
      * Compute a color to use for assets that sit on top of a themed background.
+     *
      * @param themeColor The base theme color.
      * @return A color to use for elements in the foreground (on top of the base theme color).
      */
-    public static int getThemedAssetColor(int themeColor, boolean isIncognito) {
+    public static @ColorInt int getThemedAssetColor(@ColorInt int themeColor, boolean isIncognito) {
         if (ColorUtils.shouldUseLightForegroundOnBackground(themeColor) || isIncognito) {
             // Dark theme.
             return Color.WHITE;
@@ -154,27 +215,44 @@ public class ColorUtils {
     }
 
     /**
-     * Get a color when overlaid with a different color.
-     * @param baseColor The base Android color.
-     * @param overlayColor The overlay Android color.
-     * @param overlayAlpha The alpha |overlayColor| should have on the base color.
-     * @param considerOpacity indicates whether to take color opacity into consideration when
-     * calculating the new color.
+     * Interpolates between two colors, using pre-multiplied alpha values. Tries to not allocate any
+     * new objects or lose any precision unnecessarily.
+     *
+     * @param from The color to start at, when fraction is at zero.
+     * @param to The color to end at, when the fraction is at one.
+     * @param fraction The percent through interpolation that's currently being calculated.
+     * @return The interpolated color value.
      */
-    public static int getColorWithOverlay(
-            int baseColor, int overlayColor, float overlayAlpha, boolean considerOpacity) {
-        int red = (int) MathUtils.interpolate(
-                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
-        int green = (int) MathUtils.interpolate(
-                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
-        int blue = (int) MathUtils.interpolate(
-                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
-        if (considerOpacity) {
-            int alpha = (int) MathUtils.interpolate(
-                    Color.alpha(baseColor), Color.alpha(overlayColor), overlayAlpha);
-            return Color.argb(alpha, red, green, blue);
-        }
-        return Color.rgb(red, green, blue);
+    public static @ColorInt int blendColorsMultiply(
+            @ColorInt int from, @ColorInt int to, @FloatRange(from = 0f, to = 1f) float fraction) {
+        int fromAlpha = Color.alpha(from);
+        int toAlpha = Color.alpha(to);
+        // Alpha can be linearly interpolated. Keep the result as float to increase precision of
+        // the intermediate math. Lastly, this alpha value can be zero, and we're going to divide by
+        // it below. Surprisingly, no special casing is needed. If resultAlpha is zero, this is
+        // because one or both of the from/to alphas are also zero, and the color channel
+        // interpolation is always going to get zero back. Turns out in Java, 0.0f / 0.0f is NaN,
+        // and Math.round special cases this to return 0, which is what we'd want to do anyway.
+        float resultAlpha = MathUtils.interpolate(fromAlpha, toAlpha, fraction);
+
+        // Each rgb channel value is multiplied by source alpha before interpolation. Then it'll be
+        // divided by the result alpha at the end. This is the pre-multiplied alpha approach as
+        // detailed in https://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending.
+        int fromRed = Color.red(from) * fromAlpha;
+        int toRed = Color.red(to) * toAlpha;
+        int resultRed = Math.round(MathUtils.interpolate(fromRed, toRed, fraction) / resultAlpha);
+
+        int fromGreen = Color.green(from) * fromAlpha;
+        int toGreen = Color.green(to) * toAlpha;
+        int resultGreen =
+                Math.round(MathUtils.interpolate(fromGreen, toGreen, fraction) / resultAlpha);
+
+        int fromBlue = Color.blue(from) * fromAlpha;
+        int toBlue = Color.blue(to) * toAlpha;
+        int resultBlue =
+                Math.round(MathUtils.interpolate(fromBlue, toBlue, fraction) / resultAlpha);
+
+        return Color.argb(Math.round(resultAlpha), resultRed, resultGreen, resultBlue);
     }
 
     /**
@@ -185,5 +263,14 @@ public class ColorUtils {
     public static @ColorInt int setAlphaComponent(
             @ColorInt int color, @IntRange(from = 0L, to = 255L) int alpha) {
         return androidx.core.graphics.ColorUtils.setAlphaComponent(color, alpha);
+    }
+
+    /**
+     * Convert the float alpha value into an integer ranging from 0 to 255 to be used in {@link
+     * #setAlphaComponent(int, int)}
+     */
+    public static @ColorInt int setAlphaComponentWithFloat(
+            @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
+        return setAlphaComponent(color, (int) (alpha * 255));
     }
 }

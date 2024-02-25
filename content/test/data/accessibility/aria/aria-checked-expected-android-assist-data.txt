@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="true"}, {role="checkbox"}, {tabindex="0"}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="false"}, {role="checkbox"}, {tabindex="1"}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="mixed"}, {role="checkbox"}, {tabindex="2"}]

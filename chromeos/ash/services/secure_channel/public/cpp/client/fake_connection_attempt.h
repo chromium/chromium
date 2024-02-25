@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -28,9 +29,11 @@ class FakeConnectionAttempt : public ConnectionAttemptImpl {
   // ConnectionAttemptImpl:
   void OnConnectionAttemptFailure(
       mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
-                    mojo::PendingReceiver<mojom::MessageReceiver>
-                        message_receiver_receiver) override;
+  void OnConnection(
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener) override;
 
   void set_on_connection_attempt_failure_callback(base::OnceClosure callback) {
     on_connection_attempt_failure_callback_ = std::move(callback);

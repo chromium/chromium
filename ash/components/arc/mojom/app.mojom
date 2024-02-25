@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 60
+// Next MinVersion: 64
 
 module arc.mojom;
 
@@ -16,6 +16,8 @@ import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 struct InstallationResult {
   string package_name;
   bool success;  // true if app was installed successfully.
+  [MinVersion=62] bool is_launchable_app; // true if the package installed
+                                          // successfully and is launchable.
 };
 
 // Describes application storage.
@@ -99,6 +101,24 @@ enum InstallPriority {
   kLow = 2,
 };
 
+// ARC package locale-related info.
+// NOTE: All locales here are sent as is, and not guaranteed to have correspondent ICU display name
+// translation. Displaying this to user will require special handling.
+struct PackageLocaleInfo {
+  // These are the locales explicitly mentioned by the app to be supported.
+  // Should not be empty.
+  // Please see comment on `selected_locale` on possible differences between
+  // `supported_locales` and `selected_locale`.
+  array<string> supported_locales;
+
+  // Empty string denotes no language has been selected and will default to
+  // System Language. Due to Android-side implementation, this also doesn't
+  // necessarily comply with locales in `supported_locales`.
+  // For example, supported_locales = ["en-US", "ja"], selected_locale can be
+  // "en-SG" or even "fr".
+  string selected_locale;
+};
+
 // Describes ARC package.
 // The list of ArcPackageInfo sent by AppInstance contains all the installed
 // Android packages including ones other than launchable apps (e.g. Google Play
@@ -134,6 +154,12 @@ struct ArcPackageInfo {
   [MinVersion=55] bool preinstalled;
 
   [MinVersion=56] InstallPriority priority;
+
+  // If sent from ARC, null denotes that per-app language is not supported.
+  [MinVersion=60] PackageLocaleInfo? locale_info;
+
+  // True if the package has the Game Controls Opt Out metadata set to true.
+  [MinVersion=61] bool game_controls_opt_out;
 };
 
 // Describes ARC app shortcut.
@@ -412,7 +438,7 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 42
+// Next method ID: 44
 // Deprecated method IDs: 0, 1, 2, 3, 4, 6, 9, 12, 13, 15, 17, 18, 19, 22, 31
 interface AppInstance {
   // Establishes full-duplex communication with the host.
@@ -520,6 +546,10 @@ interface AppInstance {
   // happens) is ignored, and uninstall option should appear in the UI.
   [MinVersion=2] UninstallPackage@5(string package_name);
 
+  // Sends a request to ARC to call AppHost::OnPackageAppListRefreshed and
+  // receive the latest data of a specified app.
+  [MinVersion=60] UpdateAppDetails@42(string package_name);
+
   // Returns Android instance id as it is registered on Google servers. 0 is
   // reserved for the case when Android instance id could not be determined,
   // however this should not normally happen once app instance is connected
@@ -560,4 +590,13 @@ interface AppInstance {
   // declare an app category.
   [MinVersion=53] GetAppCategory@41(string package_name) =>
       (AppCategory category);
+
+  // Sets app locale for |package_name|. Empty |locale_tag| indicates system
+  // language being chosen.
+  // The |locale_tag| is using string as there's no direct representation for
+  // locale (which is based on IETF BCP 47). As for the content of the string,
+  // it's defined by app, so we shouldn't trust the content of this string.
+  // As for the implementation / use case, this will only be passed to Android,
+  // which is then sent back to the app as is.
+  [MinVersion=63] SetAppLocale@43(string package_name, string locale_tag);
 };

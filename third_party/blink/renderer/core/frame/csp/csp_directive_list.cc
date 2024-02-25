@@ -9,7 +9,6 @@
 
 #include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -157,7 +156,7 @@ void ReportViolation(
         ContentSecurityPolicyViolationType::kURLViolation,
     const String& sample = String(),
     const String& sample_prefix = String(),
-    absl::optional<base::UnguessableToken> issue_id = absl::nullopt) {
+    std::optional<base::UnguessableToken> issue_id = std::nullopt) {
   String message = CSPDirectiveListIsReportOnly(csp)
                        ? "[Report Only] " + console_message
                        : console_message;
@@ -575,16 +574,17 @@ void ReportViolationForCheckSource(
                   url_before_redirects);
 }
 
-bool CheckSource(const network::mojom::blink::ContentSecurityPolicy& csp,
-                 ContentSecurityPolicy* policy,
-                 CSPOperativeDirective directive,
-                 const KURL& url,
-                 CSPDirectiveName effective_type,
-                 const KURL& url_before_redirects,
-                 ResourceRequest::RedirectStatus redirect_status,
-                 ReportingDisposition reporting_disposition) {
+CSPCheckResult CheckSource(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    CSPOperativeDirective directive,
+    const KURL& url,
+    CSPDirectiveName effective_type,
+    const KURL& url_before_redirects,
+    ResourceRequest::RedirectStatus redirect_status,
+    ReportingDisposition reporting_disposition) {
   if (!directive.source_list) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
   // If |url| is empty, fall back to the policy URL to ensure that
@@ -593,12 +593,13 @@ bool CheckSource(const network::mojom::blink::ContentSecurityPolicy& csp,
   const KURL& url_to_check =
       url.IsEmpty() ? policy->FallbackUrlForPlugin() : url;
   String suffix = String();
-  if (CSPSourceListAllows(*directive.source_list, *csp.self_origin,
-                          url_to_check, redirect_status)) {
+  CSPCheckResult result = CSPSourceListAllows(
+      *directive.source_list, *csp.self_origin, url_to_check, redirect_status);
+  if (result) {
     // We ignore URL-based allowlists if we're allowing dynamic script
     // injection.
     if (!CheckDynamic(directive.source_list, effective_type)) {
-      return true;
+      return result;
     } else {
       suffix =
           " Note that 'strict-dynamic' is present, so host-based allowlisting "
@@ -611,7 +612,7 @@ bool CheckSource(const network::mojom::blink::ContentSecurityPolicy& csp,
                                   url_before_redirects, suffix);
   }
 
-  return CSPDirectiveListIsReportOnly(csp);
+  return CSPCheckResult(CSPDirectiveListIsReportOnly(csp));
 }
 
 bool AllowDynamicWorker(
@@ -634,7 +635,7 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
     const String& message,
     const String& sample,
     const String& sample_prefix,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   if (!CSPDirectiveListRequiresTrustedTypes(csp))
     return true;
 
@@ -821,7 +822,7 @@ bool CSPDirectiveListShouldDisableWasmEval(
   return true;
 }
 
-bool CSPDirectiveListAllowFromSource(
+CSPCheckResult CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     CSPDirectiveName type,
@@ -851,28 +852,32 @@ bool CSPDirectiveListAllowFromSource(
          type == CSPDirectiveName::WorkerSrc);
 
   if (type == CSPDirectiveName::ObjectSrc) {
-    if (url.ProtocolIsAbout())
-      return true;
+    if (url.ProtocolIsAbout()) {
+      return CSPCheckResult::Allowed();
+    }
   }
 
-  if (type == CSPDirectiveName::WorkerSrc && AllowDynamicWorker(csp))
-    return true;
+  if (type == CSPDirectiveName::WorkerSrc && AllowDynamicWorker(csp)) {
+    return CSPCheckResult::Allowed();
+  }
 
   if (type == CSPDirectiveName::ScriptSrcElem ||
       type == CSPDirectiveName::StyleSrcElem) {
     if (IsMatchingNoncePresent(OperativeDirective(csp, type).source_list,
-                               nonce))
-      return true;
+                               nonce)) {
+      return CSPCheckResult::Allowed();
+    }
   }
 
   if (type == CSPDirectiveName::ScriptSrcElem) {
     if (parser_disposition == kNotParserInserted &&
         CSPDirectiveListAllowDynamic(csp, type)) {
-      return true;
+      return CSPCheckResult::Allowed();
     }
     if (AreAllMatchingHashesPresent(OperativeDirective(csp, type).source_list,
-                                    hashes))
-      return true;
+                                    hashes)) {
+      return CSPCheckResult::Allowed();
+    }
   }
 
   CSPOperativeDirective directive = OperativeDirective(csp, type);
@@ -886,7 +891,7 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
     const String& policy_name,
     bool is_duplicate,
     ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   if (!csp.trusted_types ||
       CSPTrustedTypesAllows(*csp.trusted_types, policy_name, is_duplicate,
                             violation_details)) {

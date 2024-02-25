@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -62,7 +63,7 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
   void OnBrowserListShutdown(BrowserList* browser_list) override;
 
  private:
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<WebStateListObserver> web_state_list_observer_;
   base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
       scoped_observations_;

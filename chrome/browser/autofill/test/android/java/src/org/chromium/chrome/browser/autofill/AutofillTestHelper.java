@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.autofill;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -21,9 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Helper class for testing AutofillProfiles.
- */
+/** Helper class for testing AutofillProfiles. */
 @JNINamespace("autofill")
 public class AutofillTestHelper {
     private final CallbackHelper mOnPersonalDataChangedHelper = new CallbackHelper();
@@ -35,10 +36,11 @@ public class AutofillTestHelper {
     }
 
     void setRequestTimeoutForTesting() {
-        runOnUiThreadBlocking(() -> {
-            PersonalDataManager.setRequestTimeoutForTesting(0);
-            AddressNormalizer.setRequestTimeoutForTesting(0);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    AddressNormalizer.setRequestTimeoutForTesting(0);
+                    SubKeyRequester.setRequestTimeoutForTesting(0);
+                });
     }
 
     void setSyncServiceForTesting() {
@@ -70,8 +72,9 @@ public class AutofillTestHelper {
 
     public String setProfile(final AutofillProfile profile) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        String guid = runOnUiThreadBlockingNoException(
-                () -> PersonalDataManager.getInstance().setProfile(profile));
+        String guid =
+                runOnUiThreadBlockingNoException(
+                        () -> PersonalDataManager.getInstance().setProfile(profile));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
     }
@@ -107,8 +110,9 @@ public class AutofillTestHelper {
 
     public String setCreditCard(final CreditCard card) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        String guid = runOnUiThreadBlockingNoException(
-                () -> PersonalDataManager.getInstance().setCreditCard(card));
+        String guid =
+                runOnUiThreadBlockingNoException(
+                        () -> PersonalDataManager.getInstance().setCreditCard(card));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
     }
@@ -123,10 +127,11 @@ public class AutofillTestHelper {
     public void addServerCreditCard(final CreditCard card, String nickname, int cardIssuer)
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        runOnUiThreadBlocking(()
-                                      -> PersonalDataManager.getInstance()
-                                                 .addServerCreditCardForTestWithAdditionalFields(
-                                                         card, nickname, cardIssuer));
+        runOnUiThreadBlocking(
+                () ->
+                        PersonalDataManager.getInstance()
+                                .addServerCreditCardForTestWithAdditionalFields(
+                                        card, nickname, cardIssuer));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -157,13 +162,14 @@ public class AutofillTestHelper {
      * @param count The use count to assign to the profile. It should be non-negative.
      * @param daysSinceLastUsed The number of days since the profile was last used.
      */
-    public void setProfileUseStatsForTesting(final String guid, final int count,
-            final int daysSinceLastUsed) throws TimeoutException {
+    public void setProfileUseStatsForTesting(
+            final String guid, final int count, final int daysSinceLastUsed)
+            throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         runOnUiThreadBlocking(
-                ()
-                        -> PersonalDataManager.getInstance().setProfileUseStatsForTesting(
-                                guid, count, daysSinceLastUsed));
+                () ->
+                        PersonalDataManager.getInstance()
+                                .setProfileUseStatsForTesting(guid, count, daysSinceLastUsed));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -213,13 +219,14 @@ public class AutofillTestHelper {
      * @param count The use count to assign to the credit card. It should be non-negative.
      * @param daysSinceLastUsed The number of days since the credit card was last used.
      */
-    public void setCreditCardUseStatsForTesting(final String guid, final int count,
-            final int daysSinceLastUsed) throws TimeoutException {
+    public void setCreditCardUseStatsForTesting(
+            final String guid, final int count, final int daysSinceLastUsed)
+            throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         runOnUiThreadBlocking(
-                ()
-                        -> PersonalDataManager.getInstance().setCreditCardUseStatsForTesting(
-                                guid, count, daysSinceLastUsed));
+                () ->
+                        PersonalDataManager.getInstance()
+                                .setCreditCardUseStatsForTesting(guid, count, daysSinceLastUsed));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -272,6 +279,20 @@ public class AutofillTestHelper {
                 () -> PersonalDataManager.getInstance().getDateNDaysAgoForTesting(days));
     }
 
+    public Iban getIban(final String guid) {
+        return runOnUiThreadBlockingNoException(
+                () -> PersonalDataManager.getInstance().getIban(guid));
+    }
+
+    public String addOrUpdateLocalIban(final Iban iban) throws TimeoutException {
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        String guid =
+                runOnUiThreadBlockingNoException(
+                        () -> PersonalDataManager.getInstance().addOrUpdateLocalIban(iban));
+        mOnPersonalDataChangedHelper.waitForCallback(callCount);
+        return guid;
+    }
+
     /**
      * Clears all local and server data, including server cards added via {@link
      * #addServerCreditCard(CreditCard)}}.
@@ -281,10 +302,8 @@ public class AutofillTestHelper {
         runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().clearImageDataForTesting());
         // Clear remaining local profiles and cards.
         for (AutofillProfile profile : getProfilesForSettings()) {
-            if (profile.getIsLocal()) {
-                runOnUiThreadBlocking(
-                        () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
-            }
+            runOnUiThreadBlocking(
+                    () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
         }
         for (CreditCard card : getCreditCardsForSettings()) {
             if (card.getIsLocal()) {
@@ -318,49 +337,87 @@ public class AutofillTestHelper {
     }
 
     /** Creates a virtual credit card. */
-    public static CreditCard createVirtualCreditCard(String name, String number, String month,
-            String year, String network, int iconId, String cardNameForAutofillDisplay,
+    public static CreditCard createVirtualCreditCard(
+            String name,
+            String number,
+            String month,
+            String year,
+            String network,
+            int iconId,
+            String cardNameForAutofillDisplay,
             String obfuscatedLastFourDigits) {
-        return new CreditCard(/* guid= */ "", /* origin= */ "", /* isLocal= */ false,
-                /* isCached= */ false, /* isVirtual= */ true,
-                /* name= */ name, /* number= */ number, /* networkAndLastFourDigits= */ "",
-                /* month= */ month, /* year= */ year,
-                /* basicCardIssuerNetwork =*/network, /* issuerIconDrawableId= */ iconId,
+        return new CreditCard(
+                /* guid= */ "",
+                /* origin= */ "",
+                /* isLocal= */ false,
+                /* isCached= */ false,
+                /* isVirtual= */ true,
+                /* name= */ name,
+                /* number= */ number,
+                /* networkAndLastFourDigits= */ "",
+                /* month= */ month,
+                /* year= */ year,
+                /* basicCardIssuerNetwork= */ network,
+                /* issuerIconDrawableId= */ iconId,
                 /* billingAddressId= */ "",
-                /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+                /* serverId= */ "",
+                /* instrumentId= */ 0,
+                /* cardLabel= */ "",
+                /* nickname= */ "",
                 /* cardArtUrl= */ new GURL(""),
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ cardNameForAutofillDisplay,
-                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
+                /* cvc= */ "");
     }
 
-    public static CreditCard createCreditCard(String name, String number, String month, String year,
-            boolean isLocal, String nameForAutofillDisplay, String obfuscatedLastFourDigits,
-            int iconId, String network) {
-        return new CreditCard(/* guid= */ "",
+    public static CreditCard createCreditCard(
+            String name,
+            String number,
+            String month,
+            String year,
+            boolean isLocal,
+            String nameForAutofillDisplay,
+            String obfuscatedLastFourDigits,
+            int iconId,
+            String network) {
+        return new CreditCard(
+                /* guid= */ "",
                 /* origin= */ "",
-                /* isLocal= */ isLocal, /* isCached= */ false, /* isVirtual= */ false,
+                /* isLocal= */ isLocal,
+                /* isCached= */ false,
+                /* isVirtual= */ false,
                 /* name= */ name,
                 /* number= */ number,
-                /* obfuscatedNumber= */ "", /* month= */ month, year,
-                /* basicCardIssuerNetwork =*/network,
-                /* issuerIconDrawableId= */ iconId, /* billingAddressId= */ "",
-                /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+                /* obfuscatedNumber= */ "",
+                /* month= */ month,
+                year,
+                /* basicCardIssuerNetwork= */ network,
+                /* issuerIconDrawableId= */ iconId,
+                /* billingAddressId= */ "",
+                /* serverId= */ "",
+                /* instrumentId= */ 0,
+                /* cardLabel= */ "",
+                /* nickname= */ "",
                 /* cardArtUrl= */ null,
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
-                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
+                /* cvc= */ "");
     }
 
     private void registerDataObserver() {
         try {
             int callCount = mOnPersonalDataChangedHelper.getCallCount();
-            boolean isDataLoaded = runOnUiThreadBlockingNoException(
-                    ()
-                            -> PersonalDataManager.getInstance().registerDataObserver(
-                                    () -> mOnPersonalDataChangedHelper.notifyCalled()));
+            boolean isDataLoaded =
+                    runOnUiThreadBlockingNoException(
+                            () -> {
+                                return PersonalDataManager.getInstance()
+                                        .registerDataObserver(
+                                                mOnPersonalDataChangedHelper::notifyCalled);
+                            });
             if (isDataLoaded) return;
             mOnPersonalDataChangedHelper.waitForCallback(callCount);
         } catch (TimeoutException e) {

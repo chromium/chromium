@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -12,6 +13,8 @@
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "components/version_info/channel.h"
+#include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -49,7 +52,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
       const base::FilePath::StringPieceType& chrome_test_data_relative_root);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
-  content::RenderFrameHost* OpenApp(const AppId& app_id);
+  content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
+                                    base::StringPiece path = "");
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
       const GURL& url,
@@ -59,6 +63,10 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
 
  private:
   base::test::ScopedFeatureList iwa_scoped_feature_list_;
+  // Various IsolatedWebAppBrowsing tests fail on official builds because
+  // stable channel doesn't enable a required feature.
+  // TODO(b/309153867): Remove this when underlying issue is figured out.
+  extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
@@ -69,7 +77,8 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     const url::Origin& proxy_origin);
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const AppId& app_id);
+                                             const webapps::AppId& app_id,
+                                             base::StringPiece path = "");
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
                   const std::string& iframe_id,
@@ -78,7 +87,7 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
 
 // Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
 // filepath for |IsolatedWebAppLocation|.
-AppId AddDummyIsolatedAppToRegistry(
+webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
@@ -89,16 +98,19 @@ AppId AddDummyIsolatedAppToRegistry(
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
 
+namespace {
 using ::testing::AllOf;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
+}  // namespace
 
-MATCHER_P(IsInDir, directory, "") {
-  *result_listener << "where the directory is " << directory;
-  return arg.DirName() == directory;
+MATCHER_P(IsInIwaRandomDir, profile_directory, "") {
+  *result_listener << "where the profile directory is " << profile_directory;
+  return arg.DirName().DirName() == profile_directory.Append(kIwaDirName) &&
+         arg.BaseName() == base::FilePath(kMainSwbnFileName);
 }
 
 MATCHER_P2(IwaIs, untranslated_name, isolation_data, "") {

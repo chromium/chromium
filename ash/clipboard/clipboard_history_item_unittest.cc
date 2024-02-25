@@ -63,7 +63,8 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
     EXPECT_CALL(callback, Run());
 
     // Update the item's display image. The callback should be run.
-    item.SetDisplayImage(ui::ImageModel::FromImage(gfx::test::CreateImage()));
+    item.SetDisplayImage(
+        ui::ImageModel::FromImage(gfx::test::CreateImage(100, 50)));
 
     // Verify that the display image was, in fact, updated.
     EXPECT_NE(item.display_image().value(),
@@ -80,7 +81,7 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
     // should not be run.
     ClipboardHistoryItem copied_item(item);
     copied_item.SetDisplayImage(
-        ui::ImageModel::FromImage(gfx::test::CreateImage()));
+        ui::ImageModel::FromImage(gfx::test::CreateImage(100, 50)));
   }
 
   {
@@ -93,7 +94,7 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
     // should not be run.
     ClipboardHistoryItem moved_item(std::move(item));
     moved_item.SetDisplayImage(
-        ui::ImageModel::FromImage(gfx::test::CreateImage()));
+        ui::ImageModel::FromImage(gfx::test::CreateImage(100, 50)));
   }
 }
 

@@ -53,6 +53,7 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   void ClickRetryButton();
   void ClickSendFeedbackButton();
   void ClickRunNetworkTestsButton();
+  void TosLoadResult(bool success);
 
   bool metrics_mode() const { return metrics_mode_; }
   bool backup_and_restore_managed() const {
@@ -99,7 +100,7 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   void PostMessageFromNativeHost(const std::string& message) override;
   void CloseChannel(const std::string& error_message) override;
 
-  const raw_ptr<ArcSupportHost, ExperimentalAsh> support_host_;
+  const raw_ptr<ArcSupportHost> support_host_;
 
   std::unique_ptr<extensions::NativeMessageHost> native_message_host_;
   ArcSupportHost::UIPage ui_page_ = ArcSupportHost::UIPage::NO_PAGE;

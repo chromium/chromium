@@ -9,4 +9,8 @@ namespace autofill {
 TestAutofillDriver::TestAutofillDriver() = default;
 TestAutofillDriver::~TestAutofillDriver() = default;
 
+AutofillManager& TestAutofillDriver::GetAutofillManager() {
+  return *autofill_manager_;
+}
+
 }  // namespace autofill

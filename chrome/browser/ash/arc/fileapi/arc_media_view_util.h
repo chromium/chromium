@@ -19,14 +19,14 @@ BASE_DECLARE_FEATURE(kMediaViewFeature);
 // Authority of MediaDocumentsProvider in Android.
 extern const char kMediaDocumentsProviderAuthority[];
 
-// Document IDs of file system roots in MediaDocumentsProvider.
-extern const char kImagesRootDocumentId[];
-extern const char kVideosRootDocumentId[];
-extern const char kAudioRootDocumentId[];
-extern const char kDocumentsRootDocumentId[];
+// Root IDs of file system roots in MediaDocumentsProvider.
+extern const char kImagesRootId[];
+extern const char kVideosRootId[];
+extern const char kAudioRootId[];
+extern const char kDocumentsRootId[];
 
 // Returns an ID of a Media View volume.
-std::string GetMediaViewVolumeId(const std::string& root_document_id);
+std::string GetMediaViewVolumeId(const std::string& root_id);
 
 }  // namespace arc
 

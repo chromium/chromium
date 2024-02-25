@@ -210,7 +210,7 @@ bool ParseHelper(Extension* extension,
 
   const base::Value* permissions = nullptr;
   if (!extension->manifest()->GetList(key, &permissions)) {
-    *error = base::UTF8ToUTF16(errors::kInvalidPermissions);
+    *error = errors::kInvalidPermissions;
     return false;
   }
 

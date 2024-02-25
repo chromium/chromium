@@ -1,9 +1,0 @@
-include_rules = [
-  "+chrome/app/chrome_crash_reporter_client_win.h",
-  "+chrome/install_static/product_install_details.h",
-  "+components/crash",
-  "+components/nacl",
-  "+content/public/app/sandbox_helper_win.h",
-  "+content/public/common/content_switches.h",
-  "+sandbox/win/src",
-]

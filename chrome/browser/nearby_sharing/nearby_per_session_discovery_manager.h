@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_PER_SESSION_DISCOVERY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Handles a single nearby device discovery session. Holds all discovered share
 // targets for the user to choose from and provides callbacks for when they are
@@ -82,7 +82,7 @@ class NearbyPerSessionDiscoveryManager
   void UpdateFurthestDiscoveryProgressIfNecessary(DiscoveryProgress progress);
 
   bool registered_as_send_surface_ = false;
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_sharing_service_;
+  raw_ptr<NearbySharingService> nearby_sharing_service_;
   std::vector<std::unique_ptr<Attachment>> attachments_;
   mojo::Remote<nearby_share::mojom::ShareTargetListener> share_target_listener_;
   mojo::Remote<nearby_share::mojom::TransferUpdateListener>
@@ -97,8 +97,8 @@ class NearbyPerSessionDiscoveryManager
       DiscoveryProgress::kDiscoveryNotAttempted;
 
   // Used for metrics. Tracks the time when StartDiscovery() is called, or
-  // absl::nullopt if never called.
-  absl::optional<base::TimeTicks> discovery_start_time_;
+  // std::nullopt if never called.
+  std::optional<base::TimeTicks> discovery_start_time_;
 
   // Used for metrics. Tracks the total number devices discovered and lost in a
   // given discovery session.

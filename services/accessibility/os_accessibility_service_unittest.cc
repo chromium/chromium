@@ -42,7 +42,7 @@ class FakeAssistiveTechnologyController {
   bool IsBound() { return at_controller_.is_bound(); }
 
  private:
-  raw_ptr<mojom::AccessibilityService, ExperimentalAsh> service_;
+  raw_ptr<mojom::AccessibilityService> service_;
   mojo::Remote<mojom::AssistiveTechnologyController> at_controller_;
 };
 

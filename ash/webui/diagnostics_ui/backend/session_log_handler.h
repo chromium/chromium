@@ -61,13 +61,12 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   void OnSessionLogCreated(const base::FilePath& path, bool success);
-
-  void FileSelectionCanceled(void* params) override;
 
   SessionLogHandler(const SessionLogHandler&) = delete;
   SessionLogHandler& operator=(const SessionLogHandler&) = delete;
@@ -93,7 +92,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   std::unique_ptr<TelemetryLog> telemetry_log_;
   std::unique_ptr<RoutineLog> routine_log_;
   std::unique_ptr<NetworkingLog> networking_log_;
-  const raw_ptr<ash::HoldingSpaceClient, ExperimentalAsh> holding_space_client_;
+  const raw_ptr<ash::HoldingSpaceClient> holding_space_client_;
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::OnceClosure log_created_closure_;

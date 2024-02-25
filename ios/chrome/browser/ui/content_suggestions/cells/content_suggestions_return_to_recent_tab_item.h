@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 
-@protocol ContentSuggestionsGestureCommands;
 @class FaviconAttributes;
 
 // Item containing a Return to Recent Tab Start Surface tile.
@@ -23,9 +22,6 @@
 
 // Subtitle of the most recent tab tile.
 @property(nonatomic, copy) NSString* subtitle;
-
-// Command handler for the accessibility custom actions.
-@property(nonatomic, weak) id<ContentSuggestionsGestureCommands> commandHandler;
 
 @end
 

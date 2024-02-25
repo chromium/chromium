@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_special_key_sends_keydown[EQUALS-expected12]
+  AssertionError: assert ({'code': '', 'ctrl': False, 'key': '=', 'location': 0, 'meta': False, 'shift': False} == {'code': 'NumpadEqual', 'ctrl': False, 'key': '=', 'location': 3, 'meta': False, 'shift': False}
+[FAIL] test_special_key_sends_keydown[PAUSE-expected45]
+  AssertionError: assert ({'code': '', 'ctrl': False, 'key': 'Pause', 'location': 0, 'meta': False, 'shift': False} == {'code': 'Pause', 'ctrl': False, 'key': 'Pause', 'location': 0, 'meta': False, 'shift': False}
+Harness: the test ran to completion.

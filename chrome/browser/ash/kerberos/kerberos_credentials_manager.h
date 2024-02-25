@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_
 #define CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -120,7 +120,7 @@ class KerberosCredentialsManager : public KeyedService,
   // existing account is updated.
   void AddAccountAndAuthenticate(std::string principal_name,
                                  bool is_managed,
-                                 const absl::optional<std::string>& password,
+                                 const std::optional<std::string>& password,
                                  bool remember_password,
                                  const std::string& krb5_conf,
                                  bool allow_existing,
@@ -265,13 +265,13 @@ class KerberosCredentialsManager : public KeyedService,
   void OnTicketExpiryNotificationClick(const std::string& principal_name);
 
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Primary profile, not owned.
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<Profile> primary_profile_ = nullptr;
 
   // Policy service of the primary profile, not owned.
-  raw_ptr<policy::PolicyService, ExperimentalAsh> policy_service_ = nullptr;
+  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
 
   // Called by OnSignalConnected(), puts Kerberos files where GSSAPI finds them.
   std::unique_ptr<KerberosFilesHandler> kerberos_files_handler_;

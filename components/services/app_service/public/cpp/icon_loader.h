@@ -6,12 +6,12 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -50,28 +50,30 @@ class IconLoader {
   IconLoader();
   virtual ~IconLoader();
 
-  // Looks up the IconKey for the given app ID. Return a fake icon key as the
-  // default implementation to simplify the sub class implementation in test
-  // code.
-  virtual absl::optional<IconKey> GetIconKey(const std::string& app_id);
+  // Looks up the IconKey for the given ID (For apps, the ID is the app id. For
+  // shortcut, the ID is the shortcut id.) Return a fake icon key as the default
+  // implementation to simplify the sub class implementation in test code.
+  virtual std::optional<IconKey> GetIconKey(const std::string& id);
 
   // This can return nullptr, meaning that the IconLoader does not track when
   // the icon is no longer actively used by the caller. `callback` may be
   // dispatched synchronously if it's possible to quickly return a result.
+  // This interface can be used to load icon for apps or shortcuts. For apps,
+  // `id` is the app id. For shortcuts, `id` is the shortcut id.
   virtual std::unique_ptr<Releaser> LoadIconFromIconKey(
-      AppType app_type,
-      const std::string& app_id,
+      const std::string& id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) = 0;
 
-  // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
-  // GetIconKey(app_id), etc)". `callback` may be dispatched synchronously if
-  // it's possible to quickly return a result.
-  std::unique_ptr<Releaser> LoadIcon(AppType app_type,
-                                     const std::string& app_id,
+  // Convenience method that calls "LoadIconFromIconKey(id, GetIconKey(app_id),
+  // etc)". `callback` may be dispatched synchronously if it's possible to
+  // quickly return a result.
+  // This interface can be used to load icon for apps or shortcuts. For apps,
+  // `id` is the app id. For shortcuts, `id` is the shortcut id.
+  std::unique_ptr<Releaser> LoadIcon(const std::string& id,
                                      const IconType& icon_type,
                                      int32_t size_hint_in_dip,
                                      bool allow_placeholder_icon,
@@ -87,10 +89,12 @@ class IconLoader {
   // callers, are expected to refer to a Key.
   class Key {
    public:
-    AppType app_type_;
-    std::string app_id_;
+    // The id to indicate which item we want to load icon for. For example,
+    // for apps, the id_ is the app id, for shortcuts, the id_ is the shortcut
+    // id.
+    std::string id_;
     // IconKey fields.
-    uint64_t timeline_;
+    int32_t timeline_;
     int32_t resource_id_;
     uint32_t icon_effects_;
     // Other fields.
@@ -98,8 +102,7 @@ class IconLoader {
     int32_t size_hint_in_dip_;
     bool allow_placeholder_icon_;
 
-    Key(AppType app_type,
-        const std::string& app_id,
+    Key(const std::string& id,
         const IconKey& icon_key,
         IconType icon_type,
         int32_t size_hint_in_dip,

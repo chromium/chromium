@@ -7,19 +7,25 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/glanceables_metrics.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/combobox.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,7 +34,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -47,12 +52,9 @@ constexpr char kClassroomHomePage[] = "https://classroom.google.com/u/0/h";
 }  // namespace
 
 ClassroomBubbleBaseView::ClassroomBubbleBaseView(
-    DetailedViewDelegate* delegate,
     std::unique_ptr<ui::ComboboxModel> combobox_model)
-    : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {
-  auto* layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager
+    : GlanceableTrayChildBubble(/*for_glanceables_container=*/true) {
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                             kInteriorGlanceableBubbleMargin, 0,
                                             kInteriorGlanceableBubbleMargin))
@@ -68,19 +70,20 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
 
   auto* const header_icon =
       header_view_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
-                              base::Unretained(this), GURL(kClassroomHomePage)),
+          base::BindRepeating(&ClassroomBubbleBaseView::OnHeaderIconPressed,
+                              base::Unretained(this)),
           IconButton::Type::kMedium, &kGlanceablesClassroomIcon,
           IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME));
-  header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
+  header_icon->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleHeaderIcon));
 
   combo_box_view_ = header_view_->AddChildView(
-      std::make_unique<views::Combobox>(std::move(combobox_model)));
+      std::make_unique<Combobox>(std::move(combobox_model)));
   combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
-  combo_box_view_->SetSelectedIndex(0);
-  combo_box_view_->SetTooltipTextAndAccessibleName(l10n_util::GetStringUTF16(
+  combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
   combo_box_view_->SetAccessibleDescription(u"");
   combobox_view_observation_.Observe(combo_box_view_);
@@ -132,12 +135,14 @@ void ClassroomBubbleBaseView::CancelUpdates() {
 }
 
 void ClassroomBubbleBaseView::AboutToRequestAssignments() {
+  assignments_requested_time_ = base::TimeTicks::Now();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
   combo_box_view_->SetAccessibleDescription(u"");
 }
 
 void ClassroomBubbleBaseView::OnGetAssignments(
     const std::u16string& list_name,
+    bool initial_update,
     bool success,
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
   const gfx::Size old_preferred_size = GetPreferredSize();
@@ -152,8 +157,9 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
             assignments[i].get(),
-            base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
-                                base::Unretained(this), assignments[i]->link),
+            base::BindRepeating(&ClassroomBubbleBaseView::OnItemViewPressed,
+                                base::Unretained(this), initial_update,
+                                assignments[i]->link),
             /*item_index=*/i, /*last_item_index=*/num_assignments - 1));
   }
   const size_t shown_assignments = list_container_view_->children().size();
@@ -177,15 +183,42 @@ void ClassroomBubbleBaseView::OnGetAssignments(
 
   if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
+
+    if (!initial_update) {
+      GetWidget()->LayoutRootViewIfNecessary();
+      ScrollViewToVisible();
+    }
+  }
+
+  auto* controller = Shell::Get()->glanceables_controller();
+
+  if (initial_update) {
+    RecordClassromInitialLoadTime(
+        /* first_occurrence=*/controller->bubble_shown_count() == 1,
+        base::TimeTicks::Now() - controller->last_bubble_show_time());
+  } else {
+    RecordClassroomChangeLoadTime(
+        success, base::TimeTicks::Now() - assignments_requested_time_);
+  }
+
+  list_shown_start_time_ = base::TimeTicks::Now();
+  first_assignment_list_shown_ = true;
+
+  if (features::IsGlanceablesV2ErrorMessageEnabled()) {
+    if (success) {
+      MaybeDismissErrorMessage();
+    } else {
+      ShowErrorMessage(
+          l10n_util::GetStringUTF16(IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR));
+      error_message()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+    }
   }
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
-  const auto* const client =
-      Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
-  if (client) {
-    client->OpenUrl(url);
-  }
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {
@@ -198,7 +231,20 @@ void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {
   }
 }
 
-BEGIN_METADATA(ClassroomBubbleBaseView, views::View)
+void ClassroomBubbleBaseView::OnItemViewPressed(bool initial_list_selected,
+                                                const GURL& url) {
+  RecordStudentAssignmentPressed(/*default_list=*/initial_list_selected);
+
+  OpenUrl(url);
+}
+
+void ClassroomBubbleBaseView::OnHeaderIconPressed() {
+  RecordClassroomHeaderIconPressed();
+
+  OpenUrl(GURL(kClassroomHomePage));
+}
+
+BEGIN_METADATA(ClassroomBubbleBaseView)
 END_METADATA
 
 }  // namespace ash

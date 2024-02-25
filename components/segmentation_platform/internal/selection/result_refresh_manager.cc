@@ -4,26 +4,40 @@
 
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 
 namespace {
+
+const int kModelInitializationTimeoutMs = 5000;
+
+int GetModelInitializationTimeoutMs() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kSegmentationPlatformModelInitializationDelay,
+      kModelInitializationDelay, kModelInitializationTimeoutMs);
+}
+
 // Checks if the model result supports multi output model.
 bool SupportMultiOutput(SegmentResultProvider::SegmentResult* result) {
   return result && result->result.has_output_config();
 }
 
-// Collects training data after model execution.
-void CollectTrainingData(const Config* config,
-                         ExecutionService* execution_service) {
+// Collects training data.
+void CollectTrainingDataIfNeeded(const Config* config,
+                                 ExecutionService* execution_service) {
   // The execution service and training data collector might be null in testing.
   if (execution_service && execution_service->training_data_collector()) {
     for (const auto& segment : config->segments) {
       execution_service->training_data_collector()->OnDecisionTime(
           segment.first, nullptr,
-          proto::TrainingOutputs::TriggerConfig::PERIODIC);
+          proto::TrainingOutputs::TriggerConfig::PERIODIC, std::nullopt,
+          /*decision_result_update_trigger=*/true);
     }
   }
 }
@@ -40,20 +54,43 @@ ResultRefreshManager::ResultRefreshManager(
 
 ResultRefreshManager::~ResultRefreshManager() = default;
 
-void ResultRefreshManager::RefreshModelResults(
+void ResultRefreshManager::Initialize(
     std::map<std::string, std::unique_ptr<SegmentResultProvider>>
         result_providers,
     ExecutionService* execution_service) {
   result_providers_ = std::move(result_providers);
+  execution_service_ = execution_service;
 
-  for (const auto& config : config_holder_->configs()) {
-    GetCachedResultOrRunModel(config.get(), execution_service);
+  delay_state_ = platform_options_.disable_model_execution_delay
+                     ? DelayState::DELAY_EXECUTED
+                     : DelayState::DELAY_NOT_HIT;
+}
+
+void ResultRefreshManager::RefreshModelResults(bool is_startup) {
+  if (delay_state_ == DelayState::DELAY_NOT_HIT && is_startup) {
+    // Set a delay timeout to execute all the models after the delay
+    // `kModelInitializationTimeoutMs` is hit. This is to get finch seed to load
+    // before model execution.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ResultRefreshManager::RefreshModelResultsInternal,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Milliseconds(GetModelInitializationTimeoutMs()));
+    return;
+  }
+  if (delay_state_ == DelayState::DELAY_EXECUTED) {
+    RefreshModelResultsInternal();
   }
 }
 
-void ResultRefreshManager::GetCachedResultOrRunModel(
-    const Config* config,
-    ExecutionService* execution_service) {
+void ResultRefreshManager::RefreshModelResultsInternal() {
+  delay_state_ = DelayState::DELAY_EXECUTED;
+  for (const auto& config : config_holder_->configs()) {
+    GetCachedResultOrRunModel(config.get());
+  }
+}
+
+void ResultRefreshManager::GetCachedResultOrRunModel(const Config* config) {
   if (!config->auto_execute_and_cache ||
       metadata_utils::ConfigUsesLegacyOutput(config)) {
     return;
@@ -71,45 +108,35 @@ void ResultRefreshManager::GetCachedResultOrRunModel(
   result_options->ignore_db_scores = false;
   result_options->save_results_to_db = true;
 
-  result_options->callback =
-      base::BindOnce(&ResultRefreshManager::OnGetCachedResultOrRunModel,
-                     weak_ptr_factory_.GetWeakPtr(), segment_result_provider,
-                     config, execution_service);
+  result_options->callback = base::BindOnce(
+      &ResultRefreshManager::OnGetCachedResultOrRunModel,
+      weak_ptr_factory_.GetWeakPtr(), segment_result_provider, config);
 
   segment_result_provider->GetSegmentResult(std::move(result_options));
 }
 
-void ResultRefreshManager::OnModelUpdated(proto::SegmentInfo* segment_info,
-                                          ExecutionService* execution_service) {
+void ResultRefreshManager::OnModelUpdated(proto::SegmentInfo* segment_info) {
   const Config* config =
       config_holder_->GetConfigForSegmentId(segment_info->segment_id());
-  if (config->segmentation_key.empty()) {
+  if (config->segmentation_key.empty() ||
+      delay_state_ == DelayState::DELAY_NOT_HIT) {
     return;
   }
-  GetCachedResultOrRunModel(config, execution_service);
+  GetCachedResultOrRunModel(config);
 }
 
 void ResultRefreshManager::OnGetCachedResultOrRunModel(
     SegmentResultProvider* segment_result_provider,
     const Config* config,
-    ExecutionService* execution_service,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   SegmentResultProvider::ResultState result_state = result->state;
 
   // If the model result is available either from database or running the
   // model, update prefs if expired.
-  bool unexpired_score_from_db =
-      (result_state ==
-       SegmentResultProvider::ResultState::kSuccessFromDatabase);
-  bool expired_score_and_run_model =
-      ((result_state ==
-        SegmentResultProvider::ResultState::kTfliteModelScoreUsed) ||
-       (result_state ==
-        SegmentResultProvider::ResultState::kDefaultModelScoreUsed));
+  PredictionStatus status =
+      selection_utils::ResultStateToPredictionStatus(result_state);
 
-  bool success = (unexpired_score_from_db || expired_score_and_run_model);
-
-  if (!success) {
+  if (status != PredictionStatus::kSucceeded) {
     stats::RecordSegmentSelectionFailure(
         *config, stats::GetSuccessOrFailureReason(result_state));
     return;
@@ -122,16 +149,20 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
     return;
   }
 
-  proto::PredictionResult pred_result = result->result;
-  stats::RecordClassificationResultComputed(*config, pred_result);
+  // Recording this even for success case.
+  stats::RecordSegmentSelectionFailure(
+      *config, stats::GetSuccessOrFailureReason(result_state));
+
+  stats::RecordClassificationResultComputed(*config, result->result);
 
   proto::ClientResult client_result =
-      metadata_utils::CreateClientResultFromPredResult(pred_result,
-                                                       base::Time::Now());
-  cached_result_writer_->UpdatePrefsIfExpired(config, client_result,
-                                              platform_options_);
-
-  CollectTrainingData(config, execution_service);
+      metadata_utils::CreateClientResultFromPredResult(
+          std::move(result->result), base::Time::Now());
+  bool is_pref_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config, std::move(client_result), platform_options_);
+  if (is_pref_updated) {
+    CollectTrainingDataIfNeeded(config, execution_service_);
+  }
 }
 
 }  // namespace segmentation_platform

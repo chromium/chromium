@@ -26,9 +26,15 @@ export interface InterceptionParameters {
   primaryProfileColor: string;
   interceptedAccount: AccountInfo;
   primaryAccount: AccountInfo;
-  showGuestOption: boolean;
   useV2Design: boolean;
   showManagedDisclaimer: boolean;
+}
+
+export interface ChromeSigninInterceptionParameters {
+  fullName: string;
+  givenName: string;
+  email: string;
+  pictureUrl: string;
 }
 
 export interface DiceWebSigninInterceptBrowserProxy {
@@ -38,11 +44,12 @@ export interface DiceWebSigninInterceptBrowserProxy {
   // Called when the user cancels the interception.
   cancel(): void;
 
-  // Called when user selects Guest mode.
-  guest(): void;
-
   // Called when the page is loaded.
   pageLoaded(): Promise<InterceptionParameters>;
+
+  // Called when the Chrome Signin promo is loaded.
+  // Returns the user parameters that are expected to be displayed.
+  chromeSigninPageLoaded(): Promise<ChromeSigninInterceptionParameters>;
 
   // Called after the page is loaded, sending the final height of the page in
   // order to set the size of the bubble dynamically.
@@ -59,12 +66,12 @@ export class DiceWebSigninInterceptBrowserProxyImpl implements
     chrome.send('cancel');
   }
 
-  guest() {
-    chrome.send('guest');
-  }
-
   pageLoaded() {
     return sendWithPromise('pageLoaded');
+  }
+
+  chromeSigninPageLoaded(): Promise<ChromeSigninInterceptionParameters> {
+    return sendWithPromise('chromeSigninPageLoaded');
   }
 
   initializedWithHeight(height: number) {

@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
@@ -79,7 +80,7 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
   // it's possible that the state we want to expose and/or emit an event for
   // is not present. This will generate a runtime error.
   bool PlatformSupportsState(AtkStateType atk_state_type) {
-    static absl::optional<int> max_state_type = absl::nullopt;
+    static std::optional<int> max_state_type = std::nullopt;
     if (!max_state_type.has_value()) {
       GEnumClass* enum_class =
           G_ENUM_CLASS(g_type_class_ref(atk_state_type_get_type()));
@@ -93,7 +94,7 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
   // it's possible that the relation type we want to expose and/or emit an event
   // for is not present. This will generate a runtime error.
   bool PlatformSupportsRelation(AtkRelationType atk_relation_type) {
-    static absl::optional<int> max_relation_type = absl::nullopt;
+    static std::optional<int> max_relation_type = std::nullopt;
     if (!max_relation_type.has_value()) {
       GEnumClass* enum_class =
           G_ENUM_CLASS(g_type_class_ref(atk_relation_type_get_type()));
@@ -150,7 +151,7 @@ static void SetStringAttributeOnNode(
     AXNode* ax_node,
     ax::mojom::StringAttribute attribute,
     const char* attribute_value,
-    absl::optional<ax::mojom::Role> role = absl::nullopt) {
+    std::optional<ax::mojom::Role> role = std::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
   new_data.id = ax_node->id();
@@ -163,7 +164,7 @@ static void TestAtkObjectIntAttribute(
     AtkObject* atk_object,
     ax::mojom::IntAttribute mojom_attribute,
     const gchar* attribute_name,
-    absl::optional<ax::mojom::Role> role = absl::nullopt) {
+    std::optional<ax::mojom::Role> role = std::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
   new_data.id = ax_node->id();
@@ -192,7 +193,7 @@ static void TestAtkObjectStringAttribute(
     AtkObject* atk_object,
     ax::mojom::StringAttribute mojom_attribute,
     const gchar* attribute_name,
-    absl::optional<ax::mojom::Role> role = absl::nullopt) {
+    std::optional<ax::mojom::Role> role = std::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
   new_data.id = ax_node->id();
@@ -215,7 +216,7 @@ static void TestAtkObjectBoolAttribute(
     AtkObject* atk_object,
     ax::mojom::BoolAttribute mojom_attribute,
     const gchar* attribute_name,
-    absl::optional<ax::mojom::Role> role = absl::nullopt) {
+    std::optional<ax::mojom::Role> role = std::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
   new_data.id = ax_node->id();

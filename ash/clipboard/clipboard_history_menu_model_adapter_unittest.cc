@@ -245,16 +245,14 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     : public AshTestBase,
       public WithParamInterface<
           std::tuple<ClipboardHistoryControllerShowSource,
-                     /*time_since_menu_shown=*/absl::optional<base::TimeDelta>,
-                     /*time_since_nudge_shown=*/absl::optional<base::TimeDelta>,
-                     /*enable_footer=*/bool,
+                     /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
+                     /*time_since_nudge_shown=*/std::optional<base::TimeDelta>,
                      /*enable_refresh=*/bool>> {
  public:
   ClipboardHistoryMenuModelAdapterMenuItemTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kClipboardHistoryFooter, IsClipboardHistoryFooterEnabled()},
-         {features::kClipboardHistoryLongpress,
+        {{features::kClipboardHistoryLongpress,
           IsClipboardHistoryLongpressEnabled()},
          {chromeos::features::kClipboardHistoryRefresh,
           IsClipboardHistoryRefreshEnabled()},
@@ -295,16 +293,12 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     return std::get<0>(GetParam());
   }
 
-  const absl::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
+  const std::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
     return std::get<1>(GetParam());
   }
 
-  const absl::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
+  const std::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
     return std::get<2>(GetParam());
-  }
-
-  bool IsClipboardHistoryFooterEnabled() const {
-    return std::get<3>(GetParam());
   }
 
   bool IsClipboardHistoryLongpressEnabled() const {
@@ -313,7 +307,7 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
   }
 
   bool IsClipboardHistoryRefreshEnabled() const {
-    return std::get<4>(GetParam());
+    return std::get<3>(GetParam());
   }
 
  private:
@@ -324,14 +318,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ClipboardHistoryMenuModelAdapterMenuItemTest,
                          Combine(ValuesIn(GetClipboardHistoryShowSources()),
                                  /*time_since_menu_shown=*/
-                                 Values(absl::make_optional(base::Days(60)),
-                                        absl::make_optional(base::Days(59)),
-                                        absl::nullopt),
+                                 Values(std::make_optional(base::Days(60)),
+                                        std::make_optional(base::Days(59)),
+                                        std::nullopt),
                                  /*time_since_nudge_shown=*/
-                                 Values(absl::make_optional(base::Seconds(61)),
-                                        absl::make_optional(base::Seconds(60)),
-                                        absl::nullopt),
-                                 /*enable_footer=*/Bool(),
+                                 Values(std::make_optional(base::Seconds(61)),
+                                        std::make_optional(base::Seconds(60)),
+                                        std::nullopt),
                                  /*enable_refresh=*/Bool()));
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
@@ -354,11 +347,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       GetTimeSinceNudgeShown().value_or(base::TimeDelta::Max());
 
   const bool has_header = IsClipboardHistoryRefreshEnabled();
-  const bool has_footer = IsClipboardHistoryFooterEnabled() &&
-                          (IsClipboardHistoryLongpressEnabled() ||
-                           (IsClipboardHistoryRefreshEnabled() &&
-                            ((time_since_menu_shown >= base::Days(60)) ||
-                             (time_since_nudge_shown <= base::Seconds(60)))));
+  const bool has_footer = IsClipboardHistoryLongpressEnabled() ||
+                          (IsClipboardHistoryRefreshEnabled() &&
+                           ((time_since_menu_shown >= base::Days(60)) ||
+                            (time_since_nudge_shown <= base::Seconds(60))));
 
   // Verify the number of items in the menu model.
   size_t expected_menu_item_count = controller->history()->GetItems().size();

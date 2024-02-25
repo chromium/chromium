@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_MOCK_WEB_BUNDLE_PARSER_FACTORY_H_
 #define COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_MOCK_WEB_BUNDLE_PARSER_FACTORY_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/test_support/mock_web_bundle_parser.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
@@ -27,7 +28,7 @@ namespace web_package {
 class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
  public:
   explicit MockWebBundleParserFactory(
-      base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser =
+      base::RepeatingCallback<void(std::optional<GURL>)> on_create_parser =
           base::DoNothing());
 
   MockWebBundleParserFactory(const MockWebBundleParserFactory&) = delete;
@@ -41,12 +42,12 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
   void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
   void WaitUntilParseMetadataCalled(
-      base::OnceCallback<void(absl::optional<uint64_t> offset)> callback);
+      base::OnceCallback<void(std::optional<uint64_t> offset)> callback);
 
   void RunIntegrityBlockCallback(
       mojom::BundleIntegrityBlockPtr integrity_block,
       mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
-  void RunMetadataCallback(absl::optional<uint64_t> expected_metadata_offset,
+  void RunMetadataCallback(std::optional<uint64_t> expected_metadata_offset,
                            mojom::BundleMetadataPtr metadata,
                            mojom::BundleMetadataParseErrorPtr error = nullptr);
   void RunResponseCallback(mojom::BundleResponseLocationPtr expected_parse_args,
@@ -72,7 +73,7 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
  private:
   void GetParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-                 const absl::optional<GURL>& base_url);
+                 const std::optional<GURL>& base_url);
 
   // mojom::WebBundleParserFactory implementation.
   void BindFileDataSource(
@@ -80,10 +81,10 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
       base::File file) override;
   void GetParserForDataSource(
       mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-      const absl::optional<GURL>& base_url,
+      const std::optional<GURL>& base_url,
       mojo::PendingRemote<mojom::BundleDataSource> data_source) override;
 
-  base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser_;
+  base::RepeatingCallback<void(std::optional<GURL>)> on_create_parser_;
   std::unique_ptr<MockWebBundleParser> parser_;
   int parser_creation_count_ = 0;
   bool simulate_parse_integrity_block_crash_ = false;
@@ -92,18 +93,18 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
   mojo::ReceiverSet<mojom::WebBundleParserFactory> receivers_;
   base::OnceClosure wait_parse_integrity_block_callback_;
-  base::OnceCallback<void(absl::optional<uint64_t> offset)>
+  base::OnceCallback<void(std::optional<uint64_t> offset)>
       wait_parse_metadata_callback_;
 
-  absl::optional<std::pair<mojom::BundleIntegrityBlockPtr,
-                           mojom::BundleIntegrityBlockParseErrorPtr>>
-      integrity_block_parse_result_ = absl::nullopt;
-  absl::optional<std::pair<mojom::BundleMetadataPtr,
-                           web_package::mojom::BundleMetadataParseErrorPtr>>
-      metadata_parse_result_ = absl::nullopt;
-  absl::optional<
+  std::optional<std::pair<mojom::BundleIntegrityBlockPtr,
+                          mojom::BundleIntegrityBlockParseErrorPtr>>
+      integrity_block_parse_result_ = std::nullopt;
+  std::optional<std::pair<mojom::BundleMetadataPtr,
+                          web_package::mojom::BundleMetadataParseErrorPtr>>
+      metadata_parse_result_ = std::nullopt;
+  std::optional<
       std::pair<mojom::BundleResponsePtr, mojom::BundleResponseParseErrorPtr>>
-      response_parse_result_ = absl::nullopt;
+      response_parse_result_ = std::nullopt;
 };
 
 }  // namespace web_package

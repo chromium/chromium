@@ -5,9 +5,11 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
 
 try_.defaults.set(
@@ -23,6 +25,7 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
@@ -34,10 +37,21 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "chromeos-amd64-generic-asan-rel",
+    mirrors = [
+        "ci/chromeos-amd64-generic-asan-rel",
+    ],
+    gn_args = "ci/chromeos-amd64-generic-asan-rel",
+)
+
+try_.builder(
     name = "chromeos-amd64-generic-cfi-thin-lto-rel",
     mirrors = [
         "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
     ],
+    # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
+    # when the PFQ has it enabled.
+    gn_args = "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
 )
 
 try_.builder(
@@ -46,6 +60,11 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-dbg",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -55,54 +74,119 @@ try_.builder(
     ),
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a compile only builder for Ash chrome." +
+                       " This builder also build Lacros with alternative toolchain.",
     mirrors = ["ci/chromeos-amd64-generic-rel"],
-    compilator = "chromeos-amd64-generic-rel-compilator",
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-)
-
-try_.compilator_builder(
-    name = "chromeos-amd64-generic-rel-compilator",
-    branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    cores = "8|16",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
 )
 
 try_.orchestrator_builder(
-    name = "chromeos-amd64-generic-siso-rel",
-    description_html = """\
-This builder shadows chromeos-amd64-generic-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating chromeos-amd64-generic-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
+    name = "chromeos-amd64-generic-rel-gtest",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is an Ash chrome builder which only runs gtest." +
+                       " This builder is the default CQ builder for" +
+                       " non-ChromeOS engineers only. See the builder" +
+                       " description for " +
+                       linkify_builder("try", "chromeos-amd64-generic-rel-gtest-and-tast", "chromium") +
+                       " for more information",
+    mirrors = [
+        "ci/chromeos-amd64-generic-rel",
+        "ci/chromeos-amd64-generic-rel-gtest",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+        ],
     ),
-    compilator = "chromeos-amd64-generic-siso-rel-compilator",
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
+    compilator = "chromeos-amd64-generic-rel-gtest-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
-        # TODO(b/294160948): Siso doesn't support cxx actions for lacros.
-        experiment_percentage = 0.01,
+        equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
+        equivalent_builder_percentage = 100,
+        equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
     ),
 )
 
+try_.orchestrator_builder(
+    name = "chromeos-amd64-generic-rel-gtest-and-tast",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is an Ash chrome builder which runs gtest" +
+                       " and Tast tests. This builder is the default CQ" +
+                       " builder for ChromeOS engineers only." +
+                       " For a CL, infra would check the CL’s owner to see" +
+                       " if the owner is a ChromeOS org engineer or not." +
+                       " If the owner is a ChromeOS org engineer, the" +
+                       " default CQ would include this builder which runs" +
+                       " both Tast tests and gtests. Otherwise, the default" +
+                       " CQ would include `chromeos-amd64-generic-rel-gtest`" +
+                       " which only runs gtests. If you encounter unexpected" +
+                       " Tast tests failures, please contact ChromeOS" +
+                       " gardeners for help.",
+    mirrors = [
+        "ci/chromeos-amd64-generic-rel",
+        "ci/chromeos-amd64-generic-rel-gtest",
+        "ci/chromeos-amd64-generic-rel-tast",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-amd64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+    tryjob = try_.job(
+        omit_from_luci_cv = True,
+    ),
+)
+
+CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache"
+
 try_.compilator_builder(
-    name = "chromeos-amd64-generic-siso-rel-compilator",
+    name = "chromeos-amd64-generic-rel-gtest-compilator",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = ".",
+    cores = "16",
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
+try_.compilator_builder(
+    name = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = ".",
+    cores = "16",
+    caches = [
+        swarming.cache(
+            name = CHROMEOS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
     siso_enabled = True,
 )
@@ -112,14 +196,26 @@ try_.builder(
     mirrors = [
         "ci/chromeos-arm-generic-dbg",
     ],
+    gn_args = "ci/chromeos-arm-generic-dbg",
 )
 
 try_.builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm-generic-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-arm-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
     builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+    },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -127,77 +223,124 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
+    gn_args = "ci/chromeos-arm64-generic-rel",
 )
 
-try_.builder(
-    name = "lacros-amd64-generic-rel",
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-gtest",
     branch_selector = branches.selector.CROS_BRANCHES,
+    description_html = "This is a Lacros chrome builder which only runs gtest." +
+                       " This builder is the default CQ builder for" +
+                       " non-ChromeOS engineers only. See the builder" +
+                       " description for " +
+                       linkify_builder("try", "lacros-amd64-generic-rel-gtest-and-tast", "chromium") +
+                       " for more information",
     mirrors = [
         "ci/lacros-amd64-generic-rel",
+        "ci/lacros-amd64-generic-rel-gtest",
     ],
-    builderless = not settings.is_main,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-amd64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    compilator = "lacros-amd64-generic-rel-gtest-compilator",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.builder(
-    name = "lacros-amd64-generic-rel-skylab",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "checkout_lacros_sdk",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "amd64-generic",
-            ],
-        ),
-        build_gs_bucket = "chromium-chromiumos-archive",
-        # TODO(https://crbug.com/1399919): change skylab_upload_location
-        # as a property. Change try builder as CI mirrors
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-try-skylab",
-        ),
+    siso_enabled = True,
+    # TODO(crbug.com/1471166) Enable on CQ.
+    tryjob = try_.job(
+        equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
+        equivalent_builder_percentage = 100,
+        equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
     ),
 )
 
-try_.builder(
-    name = "lacros-amd64-generic-rel-skylab-fyi",
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-gtest-and-tast",
     branch_selector = branches.selector.CROS_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_platform = "chromeos",
-            target_cros_boards = "eve",
-            cros_boards_with_qemu_images = "amd64-generic",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "gs://lacros-amd64-generic-rel-skylab-try",
-        ),
+    description_html = "This is a Lacros chrome builder which runs gtest" +
+                       " and Tast tests. This builder is the default CQ" +
+                       " builder for ChromeOS engineers only." +
+                       " For a CL, infra would check the CL’s owner to see" +
+                       " if the owner is a ChromeOS org engineer or not." +
+                       " If the owner is a ChromeOS org engineer, the" +
+                       " default CQ would include this builder which runs" +
+                       " both Tast tests and gtests. Otherwise, the default" +
+                       " CQ would include `lacros-amd64-generic-rel-gtest`" +
+                       " which only runs gtests. If you encounter unexpected" +
+                       " Tast tests failures, please contact ChromeOS" +
+                       " gardeners for help.",
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+        "ci/lacros-amd64-generic-rel-gtest",
+        "ci/lacros-amd64-generic-rel-tast",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-amd64-generic-rel",
+            "dcheck_always_on",
+        ],
     ),
-    builderless = not settings.is_main,
+    compilator = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+    tryjob = try_.job(
+        omit_from_luci_cv = True,
+    ),
+)
+
+LACROS_SHARED_CACHE = "shared_lacros_amd64_generic_rel_cache"
+
+try_.compilator_builder(
+    name = "lacros-amd64-generic-rel-gtest-compilator",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    description_html = ".",
+    cores = "8",
+    caches = [
+        swarming.cache(
+            name = LACROS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
+try_.compilator_builder(
+    name = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    description_html = ".",
+    cores = "8",
+    caches = [
+        swarming.cache(
+            name = LACROS_SHARED_CACHE,
+            path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
+        ),
+    ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
+try_.builder(
+    name = "lacros-amd64-generic-rel-non-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    mirrors = [
+        "ci/lacros-amd64-generic-rel-non-skylab",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-amd64-generic-rel-non-skylab",
+            "dcheck_always_on",
+        ],
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
 )
 
@@ -207,6 +350,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-lacros-dbg",
     ],
+    gn_args = "ci/chromeos-amd64-generic-lacros-dbg",
 )
 
 try_.builder(
@@ -215,9 +359,31 @@ try_.builder(
     mirrors = [
         "ci/lacros-arm-generic-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-arm-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
     builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+    },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
+)
+
+try_.builder(
+    name = "lacros-arm-generic-rel-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    mirrors = [
+        "ci/lacros-arm-generic-rel-skylab",
+    ],
+    gn_args = "ci/lacros-arm-generic-rel-skylab",
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -226,6 +392,23 @@ try_.builder(
     mirrors = [
         "ci/lacros-arm64-generic-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/lacros-arm64-generic-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    main_list_view = "try",
+)
+
+try_.builder(
+    name = "lacros-arm64-generic-rel-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    mirrors = [
+        "ci/lacros-arm64-generic-rel-skylab",
+    ],
+    gn_args = "ci/lacros-arm64-generic-rel-skylab",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
 )
 
@@ -239,9 +422,20 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-dbg",
+            "no_symbols",
+        ],
+    ),
     builderless = not settings.is_main,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -251,6 +445,40 @@ try_.builder(
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-jacuzzi-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    main_list_view = "try",
+)
+
+try_.builder(
+    name = "chromeos-jacuzzi-rel-skylab",
+    branch_selector = branches.selector.MAIN,
+    description_html = "This is a builder that runs HW test on Skylab." +
+                       " This builder also build Lacros with alternative toolchain.",
+    mirrors = [
+        "ci/chromeos-jacuzzi-rel-skylab",
+    ],
+    gn_args = "ci/chromeos-jacuzzi-rel-skylab",
+    contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
+    main_list_view = "try",
+)
+
+try_.builder(
+    name = "chromeos-octopus-rel-skylab",
+    branch_selector = branches.selector.MAIN,
+    description_html = "This builder builds public image and runs tests on octopus DUTs in the lab.<br/>" +
+                       "This is experimental.",
+    mirrors = [
+        "ci/chromeos-octopus-rel-skylab",
+    ],
+    gn_args = "ci/chromeos-octopus-rel-skylab",
+    contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 
@@ -260,12 +488,8 @@ try_.builder(
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
+    gn_args = "ci/chromeos-octopus-rel",
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
-    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
 )
 
 try_.orchestrator_builder(
@@ -274,61 +498,51 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-rel",
+            "release_try_builder",
+            "no_symbols",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+        ],
+    ),
     compilator = "linux-chromeos-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
-    name = "linux-chromeos-siso-rel",
-    description_html = """\
-This builder shadows linux-chromeos-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-chromeos-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "linux-chromeos-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 20,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-chromeos-siso-rel-compilator",
+    cores = 32,
     main_list_view = "try",
     siso_enabled = True,
 )
 
 try_.builder(
     name = "linux-lacros-dbg",
+    branch_selector = branches.selector.CROS_BRANCHES,
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.
     mirrors = [
         "ci/linux-lacros-dbg",
     ],
+    gn_args = "ci/linux-lacros-dbg",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
@@ -338,44 +552,35 @@ try_.orchestrator_builder(
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-lacros-builder-rel",
+            "release_try_builder",
+            "clang",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
     compilator = "linux-lacros-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
     name = "linux-lacros-rel-compilator",
     branch_selector = branches.selector.CROS_BRANCHES,
-    cores = 32,
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
-    name = "linux-lacros-siso-rel",
-    description_html = """\
-This builder shadows linux-lacros-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-lacros-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-lacros-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "linux-lacros-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 20,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-lacros-siso-rel-compilator",
     cores = 32,
     main_list_view = "try",
     siso_enabled = True,
@@ -389,6 +594,12 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-dbg",
+        ],
+    ),
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -396,6 +607,19 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-annotator-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-annotator-rel",
+            "try_builder",
+            "no_symbols",
+            "also_build_lacros_chrome",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+        ],
+    ),
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -403,55 +627,35 @@ try_.builder(
     mirrors = [
         "ci/linux-cfm-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-cfm-rel",
+            "release_try_builder",
+        ],
+    ),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    siso_enabled = True,
     tryjob = try_.job(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
             "chromeos/ash/components/dbus/chromebox_for_meetings/.+",
             "chromeos/ash/services/chromebox_for_meetings/.+",
             "chrome/browser/ash/chromebox_for_meetings/.+",
-            "chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
-            "chrome/browser/ui/webui/ash/chromebox_for_meetings/.+",
-            "chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
 )
 
 try_.builder(
-    name = "chromeos-amd64-generic-rel-rts",
-    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
+    name = "linux-lacros-rel-dangling-ptr-fyi",
+    description_html = "Dangling ptr check for lacros.",
+    mirrors = [
+        "ci/linux-lacros-rel-dangling-ptr-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-lacros-rel-dangling-ptr-fyi",
+        ],
     ),
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
-)
-
-try_.builder(
-    name = "linux-chromeos-rel-rts",
-    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
-)
-
-try_.builder(
-    name = "linux-lacros-rel-rts",
-    mirrors = builder_config.copy_from("try/linux-lacros-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    execution_timeout = 8 * time.hour,
 )

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-12-x64-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -41,10 +44,7 @@
           "builder": "android-12-x64-rel",
           "project": "chromium"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/code_coverage": {
@@ -52,6 +52,7 @@
       "unit",
       "overall"
     ],
+    "use_clang_coverage": true,
     "use_java_coverage": true
   },
   "$build/flakiness": {
@@ -63,6 +64,15 @@
     "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

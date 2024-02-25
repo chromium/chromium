@@ -45,12 +45,10 @@ class ChromeRenderViewTest : public content::RenderViewTest {
   // Use when overriding CreateContentRendererClient.
   void InitChromeContentRendererClient(ChromeContentRendererClient* client);
 
-  raw_ptr<autofill::TestPasswordAutofillAgent, LeakedDanglingUntriaged>
-      password_autofill_agent_ = nullptr;
-  raw_ptr<autofill::PasswordGenerationAgent, LeakedDanglingUntriaged>
-      password_generation_ = nullptr;
-  raw_ptr<autofill::AutofillAgent, LeakedDanglingUntriaged> autofill_agent_ =
+  raw_ptr<autofill::TestPasswordAutofillAgent> password_autofill_agent_ =
       nullptr;
+  raw_ptr<autofill::PasswordGenerationAgent> password_generation_ = nullptr;
+  raw_ptr<autofill::AutofillAgent> autofill_agent_ = nullptr;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

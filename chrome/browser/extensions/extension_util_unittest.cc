@@ -197,12 +197,14 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
         TestingBrowserProcess::GetGlobal(), &testing_local_state_);
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
-        std::vector<policy::ConfigurationPolicyProvider*>{policy_provider()});
+        std::vector<
+            raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
+            policy_provider()});
     signin_profile_ = testing_profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile, /*prefs=*/nullptr,
         base::UTF8ToUTF16(chrome::kInitialProfile), 0,
         TestingProfile::TestingFactories(),
-        /*is_supervised_profile=*/false, /*is_new_profile=*/absl::nullopt,
+        /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
         std::move(policy_service));
     signin_profile_prefs_ = signin_profile_->GetTestingPrefService();
   }

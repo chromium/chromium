@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -52,7 +52,7 @@ class ShillServiceClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillServiceClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<ShillServiceClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 
@@ -109,11 +109,11 @@ TEST_F(ShillServiceClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::test::TestFuture<absl::optional<base::Value::Dict>>
+  base::test::TestFuture<std::optional<base::Value::Dict>>
       get_properties_result;
   client_->GetProperties(dbus::ObjectPath(kExampleServicePath),
                          get_properties_result.GetCallback());
-  absl::optional<base::Value::Dict> result = get_properties_result.Take();
+  std::optional<base::Value::Dict> result = get_properties_result.Take();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(expected_value, result.value());
 }
@@ -368,10 +368,10 @@ TEST_F(ShillServiceClientTest, RequestTrafficCounters) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Call method.
-  base::test::TestFuture<absl::optional<base::Value>> request_result;
+  base::test::TestFuture<std::optional<base::Value>> request_result;
   client_->RequestTrafficCounters(dbus::ObjectPath(kExampleServicePath),
                                   request_result.GetCallback());
-  absl::optional<base::Value> result = request_result.Take();
+  std::optional<base::Value> result = request_result.Take();
   EXPECT_TRUE(result);
   const base::Value::List& result_list = result.value().GetList();
   EXPECT_EQ(result_list, traffic_counters);

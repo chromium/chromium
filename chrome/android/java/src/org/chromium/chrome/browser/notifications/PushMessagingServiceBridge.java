@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Provides the ability for the PushMessagingServiceImpl to revoke Notifications permission.
@@ -35,8 +35,9 @@ public class PushMessagingServiceBridge {
      * @param appLevelNotificationsEnabled Whether Chrome has app-level Notifications permission.
      */
     public void verify(String origin, String profileId, boolean appLevelNotificationsEnabled) {
-        PushMessagingServiceBridgeJni.get().verifyAndRevokeNotificationsPermission(
-                origin, profileId, appLevelNotificationsEnabled);
+        PushMessagingServiceBridgeJni.get()
+                .verifyAndRevokeNotificationsPermission(
+                        origin, profileId, appLevelNotificationsEnabled);
     }
 
     @NativeMethods

@@ -117,6 +117,17 @@ PromoEvent ToPromoEventEnum(PromoType promo_type, PromoAction promo_action) {
       return PromoEvent::kExpsRejected;
     }
   }
+  if (promo_type == PromoType::kPco) {
+    if (promo_action == PromoAction::kShown) {
+      return PromoEvent::kPcoShown;
+    }
+    if (promo_action == PromoAction::kAccepted) {
+      return PromoEvent::kPcoAccepted;
+    }
+    if (promo_action == PromoAction::kRejected) {
+      return PromoEvent::kPcoRejected;
+    }
+  }
   return PromoEvent::kUnknown;
 }
 
@@ -130,7 +141,7 @@ CompanionMetricsLogger::~CompanionMetricsLogger() {
 }
 
 void CompanionMetricsLogger::RecordOpenTrigger(
-    absl::optional<SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelOpenTrigger> open_trigger) {
   open_trigger_ = open_trigger;
   if (open_trigger.has_value()) {
     base::UmaHistogramEnumeration("Companion.SidePanel.OpenTrigger",
@@ -214,6 +225,10 @@ void CompanionMetricsLogger::OnVisualSuggestionsResult(
       metrics.shoppy_nonsensitive_count, kBucketSpacing);
   visual_suggestions_->results_count =
       ukm::GetExponentialBucketMin(metrics.results_count, kBucketSpacing);
+}
+
+void CompanionMetricsLogger::OnServerSideUrlFilterEvent() {
+  base::UmaHistogramBoolean("Companion.ServerSideUrlFilterEvent", true);
 }
 
 void CompanionMetricsLogger::FlushStats() {

@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Naviger tilbage</translation>
 <translation id="1565432156062359693">Der er ikke flere lister</translation>
 <translation id="1571643229714746283">ChromeVox er klar</translation>
+<translation id="1588252353131492116">Pass-through er ikke tilgængelig, når træg tilstand er aktiveret</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">Skift til 6-punkts braillealfabet</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -189,11 +190,12 @@
 <translation id="2278490101488436824">Stryg til venstre med tre fingre</translation>
 <translation id="2303873575703885770">Aktivér et element</translation>
 <translation id="2305942658236913680">Der er ikke flere overskrifter</translation>
-<translation id="2311237334957139798">Gå til forrige ved granularitet</translation>
+<translation id="2311237334957139798">Gå til forrige ved detaljeniveau</translation>
 <translation id="2314393392395134769">Ikke sænket skrift</translation>
 <translation id="2318372665160196757">Hoved</translation>
 <translation id="2329324941084714723">Fanepanel</translation>
 <translation id="2347456970887948350">Et link</translation>
+<translation id="2363753371702255035">punkttegn</translation>
 <translation id="2365384324219615024">Du kan også trykke på Enter for at aktivere elementer. Enter kan f.eks. bruges til at indsende tekst i en formular. Tryk på Enter for at fortsætte.</translation>
 <translation id="2381733276052567791">Slå tale til eller fra</translation>
 <translation id="2390264819538553347">Tryk på Enter for at gå videre. Tryk på Backspace for at gå tilbage.</translation>
@@ -812,7 +814,7 @@
 <translation id="6561818612645211875">Gå til starten af ​​den aktuelle række</translation>
 <translation id="6563126228219321999">Der er ikke noget ugyldigt element</translation>
 <translation id="6579990219486187401">Lys pink</translation>
-<translation id="6583174818554398774">Gå til næste ved granularitet</translation>
+<translation id="6583174818554398774">Gå til næste ved detaljeniveau</translation>
 <translation id="6584162722998608255">Nu skal du lære, hvordan du bevæger dig rundt på skærmen. Du kan stryge med én finger fra venstre mod højre for at gå til næste element. Prøv det nu for at gå videre til næste trin.</translation>
 <translation id="6609828810966525877">Find flere bevægelser i indlæringstilstanden og Hjælp til Chromebook</translation>
 <translation id="6628427060004938651">Del</translation>
@@ -1055,7 +1057,7 @@
 <translation id="8316881042119029234">Gullighvid</translation>
 <translation id="8326783648485765113">Plænegrøn</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pund}one{# pund-tegn}other{# pund-tegn}}</translation>
-<translation id="8378855320830505539">Område</translation>
+<translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autofuldførelse på linje og på liste</translation>
 <translation id="8394908167088220973">Medie: Afspil/Pause</translation>
 <translation id="8428213095426709021">Indstillinger</translation>

@@ -3,6 +3,12 @@
 # found in the LICENSE file.
 
 # Provides per-crate and overall configuration options to gnrt.
+#
+# Most commonly needed configuration options can be found in the top-level doc
+# comment in //third_party/rust/chromium_crates_io/gnrt_config.toml.  As a
+# fallback, one may also read the doc comments in
+# `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s fields correspond
+# to per-crate options).
 
 [resolve]
 # There is a virtual "sysroot" crate that includes all sysroot libraries as
@@ -35,13 +41,17 @@ extra_kv = { include_coverage = true }
 
 [crate.compiler_builtins]
 # Dependencies of profiler_builtins must have instrumentation disabled
-extra_kv = { include_coverage = false }
+# The build script conditionally generates a file; it's simplest to just paste
+# raw GN into the output. (crbug.com/1470653)
+extra_kv = { include_coverage = false, raw_gn = 'if (current_cpu == "arm64") { build_script_outputs = ["outlined_atomics.rs"] }' }
+
+# compiler_builtins depends on libm on windows crbug.com/1472681
+extra_src_roots = ['../libm']
 
 [crate.core]
 # Dependencies of profiler_builtins must have instrumentation disabled
 extra_kv = { include_coverage = false, immediate_abort = true }
 extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
-extra_input_roots = ['../primitive_docs']
 
 [crate.hashbrown]
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
@@ -75,8 +85,8 @@ extra_kv = { include_coverage = false }
 extra_kv = { include_coverage = false }
 
 [crate.std]
-extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src']
-extra_input_roots = ['../primitive_docs', '../../core/src', '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
+extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src', '../../core/src/primitive_docs.rs']
+extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src', '../../core/src']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']

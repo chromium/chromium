@@ -12,17 +12,16 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
           "--gpu-vendor-id",
           "8086",
           "--gpu-device-id",
           "5912"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "foo_tests",
-        "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
             "gpu": "8086:5912-24.20.100.6286",
@@ -30,6 +29,7 @@
           },
           "idempotent": false
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]

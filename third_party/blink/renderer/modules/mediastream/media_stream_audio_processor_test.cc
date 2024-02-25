@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,10 +25,10 @@
 #include "media/webrtc/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -47,14 +48,14 @@ namespace {
 using MockProcessedCaptureCallback =
     base::MockRepeatingCallback<void(const media::AudioBus& audio_bus,
                                      base::TimeTicks audio_capture_time,
-                                     absl::optional<double> new_volume)>;
+                                     std::optional<double> new_volume)>;
 
 // The number of packets used for testing.
 const int kNumberOfPacketsForTest = 100;
 
 void ReadDataFromSpeechFile(char* data, int length) {
   base::FilePath file;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file));
   file = file.Append(FILE_PATH_LITERAL("media"))
              .Append(FILE_PATH_LITERAL("test"))
              .Append(FILE_PATH_LITERAL("data"))
@@ -116,7 +117,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       EXPECT_CALL(mock_capture_callback, Run(_, _, _))
           .WillRepeatedly([&](const media::AudioBus& processed_audio,
                               base::TimeTicks audio_capture_time,
-                              absl::optional<double> new_volume) {
+                              std::optional<double> new_volume) {
             EXPECT_EQ(audio_capture_time, input_capture_time);
           });
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
@@ -149,11 +150,11 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.echo_canceller.enabled);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    EXPECT_TRUE(config.gain_controller1.enabled);
+    EXPECT_FALSE(config.gain_controller1.enabled);
     EXPECT_TRUE(config.gain_controller2.enabled);
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-    EXPECT_TRUE(config.gain_controller1.enabled);
-    EXPECT_FALSE(config.gain_controller2.enabled);
+    EXPECT_FALSE(config.gain_controller1.enabled);
+    EXPECT_TRUE(config.gain_controller2.enabled);
 #elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
     EXPECT_TRUE(config.gain_controller1.enabled);
     EXPECT_FALSE(config.gain_controller2.enabled);
@@ -168,7 +169,11 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+    EXPECT_FALSE(config.echo_canceller.mobile_mode);
+    EXPECT_FALSE(config.transient_suppression.enabled);
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // Android uses echo cancellation optimized for mobiles, and does not
     // support keytap suppression.
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
@@ -179,6 +184,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
 #endif
   }
 
+  test::TaskEnvironment task_environment_;
   media::AudioParameters params_;
   MockProcessedCaptureCallback mock_capture_callback_;
 };
@@ -414,7 +420,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       EXPECT_CALL(mock_capture_callback_, Run(_, _, _))
           .WillRepeatedly([&](const media::AudioBus& processed_audio,
                               base::TimeTicks audio_capture_time,
-                              absl::optional<double> new_volume) {
+                              std::optional<double> new_volume) {
             EXPECT_EQ(audio_capture_time, pushed_capture_time);
             if (!use_apm) {
               EXPECT_FALSE(new_volume.has_value());
@@ -481,6 +487,7 @@ INSTANTIATE_TEST_SUITE_P(MediaStreamAudioProcessorMultichannelAffectedTests,
 // soon as 10 ms of audio has been received.
 TEST(MediaStreamAudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithShortBuffers) {
+  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
@@ -503,7 +510,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 
@@ -539,6 +546,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // should trigger a comparable number of processing callbacks.
 TEST(MediaStreamAudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithLongBuffers) {
+  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
@@ -561,7 +569,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 
@@ -586,6 +594,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // forwarded directly instead of collecting chunks of 10 ms.
 TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithShortBuffers) {
+  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
@@ -609,7 +618,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 4 / 1000);
   };
 
@@ -631,6 +640,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // greater than 10 ms are delivered in chunks of 10 ms.
 TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithLongBuffers) {
+  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
@@ -654,7 +664,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
   data_bus->Zero();
 
   auto check_audio_length = [&](const media::AudioBus& processed_audio,
-                                base::TimeTicks, absl::optional<double>) {
+                                base::TimeTicks, std::optional<double>) {
     EXPECT_EQ(processed_audio.frames(), output_sample_rate * 10 / 1000);
   };
 
@@ -694,6 +704,7 @@ scoped_refptr<MediaStreamAudioProcessor> CreateAudioProcessorWithProperties(
 }  // namespace
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest, TrueByDefault) {
+  test::TaskEnvironment task_environment;
   blink::AudioProcessingProperties properties;
   EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
 
@@ -704,6 +715,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest, TrueByDefault) {
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenEverythingIsDisabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   EXPECT_FALSE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
@@ -715,6 +727,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.echo_cancellation_type =
@@ -739,6 +752,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenSoftwareEchoCancellationIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.echo_cancellation_type =
@@ -766,6 +780,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenStereoMirroringIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_audio_mirroring = true;
@@ -790,6 +805,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenGainControlIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_auto_gain_control = true;
@@ -821,6 +837,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 // test documents *current* behavior, not *desired* behavior.
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_experimental_echo_cancellation = true;
@@ -843,6 +860,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenNoiseSuppressionIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_noise_suppression = true;
@@ -855,6 +873,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenExperimentalNoiseSuppression) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_experimental_noise_suppression = true;
@@ -867,6 +886,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenHighpassFilterIsEnabled) {
+  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_highpass_filter = true;

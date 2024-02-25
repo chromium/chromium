@@ -22,6 +22,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -43,11 +45,12 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -69,6 +72,54 @@
 namespace arc {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Status of ARC based on device affiliation.
+enum class DeviceAffiliationBasedArcStatus {
+  // ARC allowed on affiliated device
+  kAllowedOnAffiliatedDevice,
+
+  // ARC allowed on unaffiliated device
+  kAllowedOnUnaffiliatedDevice,
+
+  // ARC not allowed on unaffiliated device
+  kDisallowedOnUnaffiliatedDevice,
+
+  kMaxValue = kDisallowedOnUnaffiliatedDevice,
+};
+
+enum class ArcStatus {
+  // ARC disallowed for testing
+  kDisallowedForTesting,
+
+  // ARC is not available
+  kNotAvailable,
+
+  // Non-primary users are not supported in ARC
+  kNonPrimaryUsersNotSupported,
+
+  // ARC is disabled by flag for managed user
+  kDisabledByFlagForManagedUser,
+
+  // ARC is not allowed for the user
+  kDisallowedForUser,
+
+  // Device admin disallowed ARC for unaffiliated user
+  kDisallowedByDevicePolicyRestriction,
+
+  // ARC disallowed for unaffiliated users
+  kDisallowedByUserPolicyRestriction,
+
+  // ARC allowed on affiliated device
+  kAllowedOnAffiliatedDevice,
+
+  // ARC allowed on unaffilated device
+  kAllowedOnUnaffiliatedDevice,
+
+  // ARC allowed
+  kAllowed,
+};
 
 // Contains map of profile to check result of ARC allowed. Contains true if ARC
 // allowed check was performed and ARC is allowed. If map does not contain
@@ -164,11 +215,11 @@ bool IsUnaffiliatedArcAllowed() {
   return true;
 }
 
-bool IsArcAllowedForProfileInternal(const Profile* profile,
-                                    bool should_report_reason) {
+ArcStatus GetArcStatusForProfile(const Profile* profile,
+                                 bool should_report_reason) {
   if (g_disallow_for_testing) {
     VLOG_IF(1, should_report_reason) << "ARC is disallowed for testing.";
-    return false;
+    return ArcStatus::kDisallowedForTesting;
   }
 
   // ARC Kiosk can be enabled even if ARC is not yet supported on the device.
@@ -176,20 +227,20 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   // created.
   if (!IsArcAvailable() && !(IsArcKioskMode() && IsArcKioskAvailable())) {
     VLOG_IF(1, should_report_reason) << "ARC is not available.";
-    return false;
+    return ArcStatus::kNotAvailable;
   }
 
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG_IF(1, should_report_reason)
         << "Non-primary users are not supported in ARC.";
-    return false;
+    return ArcStatus::kNonPrimaryUsersNotSupported;
   }
 
   if (policy_util::IsArcDisabledForEnterprise() &&
       policy_util::IsAccountManaged(profile)) {
     VLOG_IF(1, should_report_reason)
         << "ARC is disabled by flag for managed users.";
-    return false;
+    return ArcStatus::kDisabledByFlagForManagedUser;
   }
 
   // Play Store requires an appropriate application install mechanism. Normal
@@ -200,16 +251,48 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsArcAllowedForUser(user)) {
     VLOG_IF(1, should_report_reason) << "ARC is not allowed for the user.";
-    return false;
+    return ArcStatus::kDisallowedForUser;
   }
 
   if (!user->IsAffiliated() && !IsUnaffiliatedArcAllowed()) {
     VLOG_IF(1, should_report_reason)
         << "Device admin disallowed ARC for unaffiliated users.";
-    return false;
+    return ArcStatus::kDisallowedByDevicePolicyRestriction;
   }
 
-  return true;
+  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
+    if (!user->IsAffiliated() &&
+        !profile->GetPrefs()->GetBoolean(
+            prefs::kUnaffiliatedDeviceArcAllowed) &&
+        policy_util::IsAccountManaged(profile)) {
+      VLOG_IF(1, should_report_reason)
+          << "ARC disallowed for unaffiliated users";
+      return arc::ArcStatus::kDisallowedByUserPolicyRestriction;
+    }
+  }
+
+  // Please add any condition that disallows ARC above this check.
+  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
+    const bool is_arc_allowed_on_unaffiliated_devices =
+        profile->GetPrefs()->GetBoolean(prefs::kUnaffiliatedDeviceArcAllowed);
+    if (user->IsAffiliated() && !is_arc_allowed_on_unaffiliated_devices) {
+      return ArcStatus::kAllowedOnAffiliatedDevice;
+    }
+    if (!user->IsAffiliated() && is_arc_allowed_on_unaffiliated_devices) {
+      return ArcStatus::kAllowedOnUnaffiliatedDevice;
+    }
+  }
+
+  return ArcStatus::kAllowed;
+}
+
+bool IsArcAllowedForProfileInternal(const Profile* profile,
+                                    bool should_report_reason) {
+  const ArcStatus status =
+      GetArcStatusForProfile(profile, should_report_reason);
+  return status == ArcStatus::kAllowed ||
+         status == ArcStatus::kAllowedOnAffiliatedDevice ||
+         status == ArcStatus::kAllowedOnUnaffiliatedDevice;
 }
 
 void ShowContactAdminDialog() {
@@ -223,10 +306,11 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
                          const std::vector<base::FilePath>& paths_to_share) {
   DCHECK(arc::IsArcVmEnabled() || paths_to_share.empty());
   std::vector<base::FilePath> path_list;
+  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
   for (const auto& path : paths_to_share) {
-    if (!guest_os::GuestOsSharePath::GetForProfile(
-             ProfileManager::GetPrimaryUserProfile())
-             ->IsPathShared(arc::kArcVmName, path)) {
+    if (!guest_os::GuestOsSharePath::GetForProfile(profile)->IsPathShared(
+            kArcVmName, path)) {
       path_list.push_back(path);
     }
   }
@@ -235,32 +319,59 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
     return;
   }
 
-  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          kArcVmName);
   if (!vm_info) {
     LOG(WARNING) << "ARCVM not running, cannot share paths";
     std::move(callback).Run(std::vector<GURL>());
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile())
-      ->SharePaths(arc::kArcVmName, vm_info->seneschal_server_handle(),
-                   path_list,
-                   base::BindOnce(
-                       [](ConvertToContentUrlsAndShareCallback callback,
-                          const std::vector<GURL>& content_urls, bool success,
-                          const std::string& failure_reason) {
-                         if (success) {
-                           std::move(callback).Run(content_urls);
-                         } else {
-                           LOG(ERROR) << "Error sharing ARC content URLs: "
-                                      << failure_reason;
-                           std::move(callback).Run(std::vector<GURL>());
-                         }
-                       },
-                       std::move(callback), content_urls));
+  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
+      kArcVmName, vm_info->seneschal_server_handle(), path_list,
+      base::BindOnce(
+          [](ConvertToContentUrlsAndShareCallback callback,
+             const std::vector<GURL>& content_urls, bool success,
+             const std::string& failure_reason) {
+            if (success) {
+              std::move(callback).Run(content_urls);
+            } else {
+              LOG(ERROR) << "Error sharing ARC content URLs: "
+                         << failure_reason;
+              std::move(callback).Run(std::vector<GURL>());
+            }
+          },
+          std::move(callback), content_urls));
 }
 
 }  // namespace
+
+void RecordArcStatusBasedOnDeviceAffiliationUMA(Profile* profile) {
+  if (!policy_util::IsAccountManaged(profile) ||
+      !profile->GetPrefs()->GetBoolean(prefs::kArcEnabled)) {
+    return;
+  }
+
+  switch (GetArcStatusForProfile(profile, /*should_report_reason=*/false)) {
+    case arc::ArcStatus::kAllowedOnAffiliatedDevice:
+      base::UmaHistogramEnumeration(
+          "Arc.Provisioning.DeviceAffiliationAction",
+          arc::DeviceAffiliationBasedArcStatus::kAllowedOnAffiliatedDevice);
+      break;
+    case arc::ArcStatus::kAllowedOnUnaffiliatedDevice:
+      base::UmaHistogramEnumeration(
+          "Arc.Provisioning.DeviceAffiliationAction",
+          arc::DeviceAffiliationBasedArcStatus::kAllowedOnUnaffiliatedDevice);
+      break;
+    case arc::ArcStatus::kDisallowedByUserPolicyRestriction:
+      base::UmaHistogramEnumeration("Arc.Provisioning.DeviceAffiliationAction",
+                                    arc::DeviceAffiliationBasedArcStatus::
+                                        kDisallowedOnUnaffiliatedDevice);
+      break;
+    default:
+      break;
+  }
+}
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
@@ -315,8 +426,8 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   // for ARC kiosk as migration to ext4 should always be triggered.
   // Without this check it fails to start after browser crash as
   // compatibility info is stored in RAM.
-  if (user && (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-               user->GetType() == user_manager::USER_TYPE_ARC_KIOSK_APP)) {
+  if (user && (user->GetType() == user_manager::UserType::kPublicAccount ||
+               user->GetType() == user_manager::UserType::kArcKioskApp)) {
     return false;
   }
 
@@ -418,8 +529,15 @@ bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile) {
   // The preferences are ignorable iff both backup&restore and location services
   // are set by policy.
   const PrefService* prefs = profile->GetPrefs();
-  return prefs->IsManagedPreference(prefs::kArcBackupRestoreEnabled) &&
-         prefs->IsManagedPreference(prefs::kArcLocationServiceEnabled);
+
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    // When PH is enabled, location toggle is no longer ARC specific (applies to
+    // entire ChromeOS);
+    return prefs->IsManagedPreference(prefs::kArcBackupRestoreEnabled);
+  } else {
+    return prefs->IsManagedPreference(prefs::kArcBackupRestoreEnabled) &&
+           prefs->IsManagedPreference(prefs::kArcLocationServiceEnabled);
+  }
 }
 
 bool IsArcOobeOptInActive() {
@@ -539,7 +657,7 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
 bool IsArcStatsReportingEnabled() {
   // Managed guest session users never saw the consent for stats reporting even
   // if the admin forced the pref by a policy.
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 

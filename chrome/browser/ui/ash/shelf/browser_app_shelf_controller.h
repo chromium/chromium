@@ -83,13 +83,13 @@ class BrowserAppShelfController : public apps::BrowserAppInstanceObserver,
   // Updates app-related properties of all the windows containing this app.
   void MaybeUpdateWindowPropertiesForApp(const std::string& app_id);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ref<ash::ShelfModel, ExperimentalAsh> model_;
-  const raw_ref<ChromeShelfItemFactory, ExperimentalAsh> shelf_item_factory_;
-  const raw_ref<ShelfSpinnerController, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile> profile_;
+  const raw_ref<ash::ShelfModel> model_;
+  const raw_ref<ChromeShelfItemFactory> shelf_item_factory_;
+  const raw_ref<ShelfSpinnerController, DanglingUntriaged>
       shelf_spinner_controller_;
 
-  const raw_ref<apps::BrowserAppInstanceRegistry, ExperimentalAsh>
+  const raw_ref<apps::BrowserAppInstanceRegistry>
       browser_app_instance_registry_;
 
   base::ScopedObservation<apps::BrowserAppInstanceRegistry,

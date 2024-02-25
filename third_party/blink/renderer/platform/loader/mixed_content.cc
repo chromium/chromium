@@ -70,6 +70,7 @@ MixedContent::ContextTypeFromRequestContext(
     case mojom::RequestContextType::IFRAME:
     case mojom::RequestContextType::IMAGE_SET:
     case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::JSON:
     case mojom::RequestContextType::LOCATION:
     case mojom::RequestContextType::MANIFEST:
     case mojom::RequestContextType::OBJECT:
@@ -78,6 +79,7 @@ MixedContent::ContextTypeFromRequestContext(
     case mojom::RequestContextType::SCRIPT:
     case mojom::RequestContextType::SERVICE_WORKER:
     case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::RequestContextType::SPECULATION_RULES:
     case mojom::RequestContextType::STYLE:
     case mojom::RequestContextType::SUBRESOURCE:
     case mojom::RequestContextType::SUBRESOURCE_WEBBUNDLE:

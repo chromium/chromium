@@ -103,12 +103,10 @@ class CORE_EXPORT HTMLCanvasElement final
   unsigned width() const { return Size().width(); }
   unsigned height() const { return Size().height(); }
 
-  const gfx::Size& Size() const override { return size_; }
-
   void setWidth(unsigned, ExceptionState&);
   void setHeight(unsigned, ExceptionState&);
 
-  void SetSize(const gfx::Size& new_size);
+  void SetSize(gfx::Size new_size) final;
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(
@@ -177,12 +175,11 @@ class CORE_EXPORT HTMLCanvasElement final
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
 
   bool IsDirty() { return !dirty_rect_.IsEmpty(); }
-  bool IsVisible() const;
 
   void DoDeferredPaintInvalidation();
 
   void PreFinalizeFrame() override;
-  void PostFinalizeFrame(CanvasResourceProvider::FlushReason) override;
+  void PostFinalizeFrame(FlushReason) override;
 
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
 
@@ -197,7 +194,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
@@ -214,6 +211,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void UnregisterContentsLayer(cc::Layer*) override;
 
   // CanvasResourceHost implementation
+  bool IsPageVisible() override;
   void NotifyGpuContextLost() override;
   void SetNeedsCompositingUpdate() override;
   void UpdateMemoryUsage() override;
@@ -224,17 +222,19 @@ class CORE_EXPORT HTMLCanvasElement final
       RasterModeHint hint) override;
   bool IsPrinting() const override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
+  bool IsHibernating() const override;
+  void FlushRecording(FlushReason reason) override;
 
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
 
-  void DisableAcceleration(std::unique_ptr<Canvas2DLayerBridge>
-                               unaccelerated_bridge_used_for_testing = nullptr);
+  void DisableAcceleration(std::unique_ptr<CanvasResourceProvider>
+                               new_provider_for_testing = nullptr);
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
@@ -243,9 +243,10 @@ class CORE_EXPORT HTMLCanvasElement final
                                   viz::ResourceId resource_id) override;
   void Trace(Visitor*) const override;
 
-  void SetResourceProviderForTesting(std::unique_ptr<CanvasResourceProvider>,
-                                     std::unique_ptr<Canvas2DLayerBridge>,
-                                     const gfx::Size&);
+  void SetResourceProviderForTesting(
+      std::unique_ptr<CanvasResourceProvider> provider,
+      std::unique_ptr<Canvas2DLayerBridge> bridge,
+      const gfx::Size& size);
 
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
@@ -297,7 +298,7 @@ class CORE_EXPORT HTMLCanvasElement final
     needs_unbuffered_input_ = value;
   }
 
-  scoped_refptr<StaticBitmapImage> Snapshot(CanvasResourceProvider::FlushReason,
+  scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
                                             SourceDrawingBuffer) const;
 
   // Returns the cc layer containing the contents. It's the cc layer of
@@ -350,11 +351,10 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void Reset();
 
-  std::unique_ptr<Canvas2DLayerBridge> Create2DLayerBridge(
-      RasterMode raster_mode);
+  std::unique_ptr<Canvas2DLayerBridge> Create2DLayerBridge();
   void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
 
-  void SetSurfaceSize(const gfx::Size&);
+  void SetSurfaceSize(gfx::Size);
 
   bool PaintsIntoCanvasBuffer() const;
 
@@ -374,7 +374,7 @@ class CORE_EXPORT HTMLCanvasElement final
       const CanvasContextCreationAttributesCore&);
 
   scoped_refptr<StaticBitmapImage> GetSourceImageForCanvasInternal(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha);
 
@@ -384,8 +384,6 @@ class CORE_EXPORT HTMLCanvasElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
-
-  gfx::Size size_;
 
   Member<CanvasRenderingContext> context_;
   // Used only for WebGL currently.
@@ -409,7 +407,10 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
-  void ReplaceExisting2dLayerBridge(std::unique_ptr<Canvas2DLayerBridge>);
+  void ReplaceExisting2dLayerBridge(
+      std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
+      std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
+          nullptr);
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

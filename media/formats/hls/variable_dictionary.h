@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_HLS_VARIABLE_DICTIONARY_H_
 
 #include <list>
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
@@ -13,7 +14,6 @@
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
 
@@ -45,8 +45,8 @@ class MEDIA_EXPORT VariableDictionary {
   // Attempts to find the value of the given variable in this dictionary.
   // The returned `base::StringPiece` must not outlive this
   // `VariableDictionary`.
-  absl::optional<base::StringPiece> Find(types::VariableName name) const&;
-  absl::optional<base::StringPiece> Find(types::VariableName name) const&& =
+  std::optional<base::StringPiece> Find(types::VariableName name) const&;
+  std::optional<base::StringPiece> Find(types::VariableName name) const&& =
       delete;
 
   // Attempts to define the variable `name` with the given value. If the

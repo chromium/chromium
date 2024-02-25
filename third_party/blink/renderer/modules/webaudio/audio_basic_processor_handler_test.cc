@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_processor.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -63,6 +64,7 @@ class MockProcessorNode final : public AudioNode {
 };
 
 TEST(AudioBasicProcessorHandlerTest, ProcessorFinalization) {
+  test::TaskEnvironment task_environment;
   auto page = std::make_unique<DummyPageHolder>();
   OfflineAudioContext* context = OfflineAudioContext::Create(
       page->GetFrame().DomWindow(), 2, 1, 48000, ASSERT_NO_EXCEPTION);

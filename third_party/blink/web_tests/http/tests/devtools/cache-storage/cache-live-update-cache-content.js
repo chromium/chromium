@@ -5,11 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that cache view updates when the cache is changed.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -22,12 +22,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await ApplicationTestRunner.dumpCacheTree();
   await ApplicationTestRunner.createCache('testCache1');
   await ApplicationTestRunner.dumpCacheTree();
-  var promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, 'updatedForTest');
+  var promise = TestRunner.addSnifferPromise(Application.ServiceWorkerCacheViews.ServiceWorkerCacheView.prototype, 'updatedForTest');
   await ApplicationTestRunner.addCacheEntry('testCache1', 'http://fake.request.com/1', 'OK');
   await promise;
   TestRunner.addResult('Added entry');
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
-  promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, 'updatedForTest');
+  promise = TestRunner.addSnifferPromise(Application.ServiceWorkerCacheViews.ServiceWorkerCacheView.prototype, 'updatedForTest');
   await ApplicationTestRunner.deleteCacheEntry('testCache1', 'http://fake.request.com/1');
   await promise;
   TestRunner.addResult('Deleted entry');

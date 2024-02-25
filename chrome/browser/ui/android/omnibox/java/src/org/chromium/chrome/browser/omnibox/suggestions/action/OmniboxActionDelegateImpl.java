@@ -24,9 +24,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.function.Consumer;
 
-/**
- * Handle the events related to {@link OmniboxAction}.
- */
+/** Handle the events related to {@link OmniboxAction}. */
 public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Context mContext;
     private final @NonNull SettingsLauncher mSettingsLauncher;
@@ -37,10 +35,13 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Supplier<Tab> mTabSupplier;
     private final @Nullable Runnable mOpenQuickDeleteCb;
 
-    public OmniboxActionDelegateImpl(@NonNull Context context, @NonNull Supplier<Tab> tabSupplier,
+    public OmniboxActionDelegateImpl(
+            @NonNull Context context,
+            @NonNull Supplier<Tab> tabSupplier,
             @NonNull SettingsLauncher settingsLauncher,
             @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
-            @NonNull Runnable openIncognitoTabCb, @NonNull Runnable openPasswordSettingsCb,
+            @NonNull Runnable openIncognitoTabCb,
+            @NonNull Runnable openPasswordSettingsCb,
             @NonNull OpenHistoryClustersDelegate openHistoryClustersForQueryCb,
             @Nullable Runnable openQuickDeleteCb) {
         mContext = context;

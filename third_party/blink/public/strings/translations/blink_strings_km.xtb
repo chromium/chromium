@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1012241361789814178">បានផ្អាកកម្មវិធី​ជួសជុលនៅក្នុងផ្ទាំងមួយផ្សេងទៀត សូមចុចដើម្បីប្ដូរទៅផ្ទាំងនោះ។</translation>
 <translation id="1088086359088493902">វិនាទី</translation>
 <translation id="1142001580032786438">បង្ហាញ​ផ្ទាំង​ជ្រើសរើស​សប្តាហ៍</translation>
 <translation id="1171774979989969504">សូមបញ្ចូលអាសយដ្ឋានអ៊ីម៉ែល</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">សូមបញ្ចូលអាសយដ្ឋានអ៊ីម៉ែលដែលមិនទទេ</translation>
 <translation id="1758486001363313524">ផ្សេងទៀត...</translation>
 <translation id="1787192514241997742">រយៈពេល​សរុប៖ <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
 <translation id="1822429046913737220">ព្រឹក/ល្ងាច</translation>
 <translation id="1832974991323546415">ចាក់នៅលើឧបករណ៍ពីចម្ងាយ</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">បាន​ប្តូរ​ទៅការបញ្ចាំង</translation>
 <translation id="2031987842108996681">បណ្ដាញ​ក្រហម</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ត្រូវបានប្រើនៅក្នុងទីតាំងខុសនៅក្នុង '<ph name="INVALIDDOMAIN" />'។</translation>
+<translation id="2068711044993563745">តម្លៃអប្បបរមា (<ph name="MINIMUM" />) ត្រូវតែតូចជាងតម្លៃអតិបរមា (<ph name="MAXIMUM" />)។</translation>
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
 <translation id="2226276347425096477">សូមធ្វើឲ្យអត្ថបទនេះខ្លីទៅ <ph name="MAX_CHARACTERS" /> តួអក្សរ ឫតិចជាងនេះ (ឥឡូវនេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួអក្សរ)។</translation>
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>
 <translation id="2398813069815436052">បានបើក​ប្រអប់។</translation>
 <translation id="245932805758469625">ចំនួន​វិនាទី​នៅ​សល់​សម្រាប់​ការចាក់​វីដេអូ</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">សូមធីកក្នុងប្រអប់នេះប្រសិនបើអ្នកចង់ដំណើរការ។</translation>
 <translation id="2908441821576996758">សូមបញ្ចូលសញ្ញាក្បៀស ដែលបែងចែកបញ្ជីអាសយដ្ឋានអ៊ីម៉ែល។</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">បង្ហាញម៉ឺនុយនៃ​ការពណ៌នា​ជាសំឡេង</translation>
 <translation id="3075154866155599887">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ ប្រអប់បំពេញមិនបានបញ្ចប់ ឬមានកាលបរិច្ឆេទដែលគ្មានសុពលភាព។</translation>
 <translation id="310520048233152454">សូមបញ្ចូល URL។</translation>
 <translation id="3220661731597678625">ជំហានបច្ចុប្បន្ន</translation>
 <translation id="3321030238473337787">ល្បឿន​ចាក់វីដេអូ</translation>
 <translation id="3329013043687509092">កម្រិតពណ៌</translation>
+<translation id="3377518164566272702">អនុញ្ញាតឱ្យប្រើ​មីក្រូហ្វូន និង​កាមេរ៉ា</translation>
 <translation id="3450233048674729344">តម្លៃត្រូវតែតិចជាង ឬស្មើនឹង <ph name="MAXIMUM" />។</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">ចាកចេញ​ពីមុខងារ​រូបក្នុងរូប</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">សូមបន្លាយអត្ថបទនេះឲ្យបាន <ph name="MIN_CHARACTERS" /> តួ ឬច្រើនជាងនេះ (បច្ចុប្បន្ននេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួ)។</translation>
 <translation id="383465348367842624">ផ្នែកដែលនៅពីក្រោយ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="3846214748874656680">ចាកចេញពីអេក្រង់ពេញ</translation>
+<translation id="4031179711345676612">បាន​អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន</translation>
 <translation id="4103419683916926126">មីលីវិនាទី</translation>
 <translation id="4201051445878709314">បង្ហាញខែមុន</translation>
 <translation id="4360991593054037559">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ តម្លៃដែលមានសុពលភាពដែលក្បែរបំផុតគឺ <ph name="VALID_VALUE_LOW" /> និង <ph name="VALID_VALUE_HIGHER" />។</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
+<translation id="4663373278480897665">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
 <translation id="4664250907885839816">ផ្នែកដែលនៅពីមុខ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="4718048029184481307">កំពុងចាក់​នៅក្នុងមុខងារ​រូបក្នុងរូប</translation>
 <translation id="4748357248530471599">បិទ/បើក​អេក្រង់ពេញ​ដែលមាន​ក្បាល​ឆក</translation>
 <translation id="4763480195061959176">វីដេអូ</translation>
+<translation id="4792862212177489858">ចែក​រំលែក​ទីតាំង</translation>
 <translation id="4812940957355064477">សូមបញ្ចូលលេខ។</translation>
 <translation id="4912200001568447310">ធាតុបច្ចុប្បន្ន</translation>
 <translation id="4915360478455618802">បង្ហាញ​ផ្ទាំង​ជ្រើសរើស​ម៉ោង</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> បានជ្រើសរើស</translation>
 <translation id="4992066212339426712">បើកសម្លេង</translation>
 <translation id="49969490063480558">សូមបញ្ចូលផ្នែកមួយនៅខាងក្រោយ '<ph name="ATSIGN" />'។ '<ph name="INVALIDADDRESS" />' មិនពេញលេញទេ។</translation>
+<translation id="5037575921016181960">ពាក្យសម្ងាត់ខ្លាំង</translation>
 <translation id="5090250355906949916">របារ​រំកិល​ពេលវេលា​វីដេអូ</translation>
 <translation id="509897012892853729">បណ្ដាញ​ខៀវ</translation>
 <translation id="5117590920725113268">បង្ហាញខែបន្ទាប់</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ទាញយកមេឌៀ</translation>
 <translation id="698788488269350478">បានពង្រីក។</translation>
 <translation id="6989848892321993519">សូម​សរសេរ​អក្សរ​នេះឲ្យ​បាន​យ៉ាងហោច <ph name="MIN_CHARACTERS" /> តួ ឬ​ច្រើន​ជាងនេះ (បច្ចុប្បន្ននេះ​អ្នកសរសេរតែ 1 តួ)។</translation>
+<translation id="7080893216867146095">បានអនុញ្ញាតឱ្យចែករំលែកទីតាំង</translation>
 <translation id="709897737746224366">សូមផ្គូផ្គងទម្រង់ដែលបានស្នើ។</translation>
 <translation id="7102274145889307184">ទីតាំង​បច្ចុប្បន្ន</translation>
 <translation id="7263440858009898357">សូមជ្រើសរើសធាតុនៅក្នុងបញ្ជី។</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">ផ្សេងទៀត......</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, ចាប់ផ្តើមនៅ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">រូបក្នុងរូប</translation>
+<translation id="918430632320614861">អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន​</translation>
 <translation id="945780513535800434">បានធីក​មួយផ្នែក</translation>
 <translation id="954003015749068518">ចូល​មុខងាររូបក្នុងរូប</translation>
 </translationbundle>

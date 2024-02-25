@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -84,8 +85,8 @@ const Platform* kPlatformsWithReducedUserAgentSupport[] = {
 
 Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
                                 DeviceMetrics* device_metrics) {
-  absl::optional<int> maybe_width = device_metrics_dict.FindInt("width");
-  absl::optional<int> maybe_height = device_metrics_dict.FindInt("height");
+  std::optional<int> maybe_width = device_metrics_dict.FindInt("width");
+  std::optional<int> maybe_height = device_metrics_dict.FindInt("height");
   if (!maybe_width) {
     return Status(kUnknownError,
                   "malformed device width: should be an integer");
@@ -94,17 +95,17 @@ Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
     return Status(kUnknownError,
                   "malformed device height: should be an integer");
   }
-  absl::optional<double> maybe_device_scale_factor =
+  std::optional<double> maybe_device_scale_factor =
       device_metrics_dict.FindDouble("deviceScaleFactor");
   if (!maybe_device_scale_factor) {
     return Status(kUnknownError,
                   "malformed device scale factor: should be a double");
   }
-  absl::optional<bool> touch = device_metrics_dict.FindBool("touch");
+  std::optional<bool> touch = device_metrics_dict.FindBool("touch");
   if (!touch) {
     return Status(kUnknownError, "malformed touch: should be a bool");
   }
-  absl::optional<bool> mobile = device_metrics_dict.FindBool("mobile");
+  std::optional<bool> mobile = device_metrics_dict.FindBool("mobile");
   if (!mobile) {
     return Status(kUnknownError, "malformed mobile: should be a bool");
   }
@@ -115,7 +116,7 @@ Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
 
 Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
                               ClientHints* client_hints) {
-  absl::optional<bool> mobile = client_hints_dict.FindBool("mobile");
+  std::optional<bool> mobile = client_hints_dict.FindBool("mobile");
   if (!mobile.has_value()) {
     return Status(kUnknownError,
                   "malformed clientHints.mobile: should be a boolean");
@@ -147,7 +148,7 @@ Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
     return Status(kUnknownError,
                   "malformed clientHints.bitness: should be a string");
   }
-  absl::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
+  std::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
   if (!wow64.has_value()) {
     return Status(kUnknownError,
                   "malformed clientHints.wow64: should be a boolean");
@@ -213,6 +214,7 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
   tmp_mobile_device.device_metrics = std::move(device_metrics);
 
   // Parsing the client hints
+  ClientHints client_hints;
   if (device->Find("clientHints")) {
     const base::Value::Dict* maybe_client_hints_dict =
         device->FindDict("clientHints");
@@ -220,13 +222,38 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
       return Status(kUnknownError,
                     "malformed clientHints: should be a dictionary");
     }
-    ClientHints client_hints;
     status = ParsePresetClientHints(*maybe_client_hints_dict, &client_hints);
     if (status.IsError()) {
       return status;
     }
-    tmp_mobile_device.client_hints = std::move(client_hints);
+  } else {
+    // Client Hints have to be initialized with some default values.
+    // Otherwise the browser will use its own Client Hints that will most likely
+    // contradict the information in the User Agent.
+    // If device type is "phone" then it is mobile, otherwise it is not.
+    // However if there is no information about device type then we assume that
+    // most likely it is mobile.
+    client_hints.mobile = true;
+    const std::string* maybe_type = device->FindString("type");
+    if (maybe_type && *maybe_type != "phone") {
+      client_hints.mobile = false;
+    }
+    client_hints.brands = std::vector<BrandVersion>();
+    client_hints.full_version_list = std::vector<BrandVersion>();
+    VLOG(logging::LOGGING_INFO)
+        << "No 'clientHints' found. Emulation might be inadequate. "
+        << "Inferring clientHints as: "
+        << "{architecture='" << client_hints.architecture << "'"
+        << ", bitness='" << client_hints.bitness << "'"
+        << ", brands=[]"
+        << ", fullVersionList=[]"
+        << ", mobile=" << std::boolalpha << client_hints.mobile << ", model='"
+        << client_hints.model << "'"
+        << ", platform='" << client_hints.platform << "'"
+        << ", platformVersion='" << client_hints.platform_version << "'"
+        << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
   }
+  tmp_mobile_device.client_hints = std::move(client_hints);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

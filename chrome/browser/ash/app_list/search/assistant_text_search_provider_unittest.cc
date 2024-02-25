@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -23,13 +24,16 @@ namespace {
 
 using ::ash::assistant::AssistantAllowedState;
 
-// Parameterized by feature ProductivityLauncher.
 class AssistantTextSearchProviderTest : public AppListTestBase {
  public:
   AssistantTextSearchProviderTest() {
     auto search_provider = std::make_unique<AssistantTextSearchProvider>();
     search_provider_ = search_provider.get();
     search_controller_.AddProvider(std::move(search_provider));
+
+    // This test suite will be deleted after the Launcher Search IPH is enabled.
+    feature_list_.InitAndDisableFeature(
+        feature_engagement::kIPHLauncherSearchHelpUiFeature);
   }
   AssistantTextSearchProviderTest(const AssistantTextSearchProviderTest&) =
       delete;
@@ -70,8 +74,7 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
   ash::MockAssistantState assistant_state_;
   testing::NiceMock<ash::MockAssistantController> assistant_controller_;
   TestSearchController search_controller_;
-  raw_ptr<AssistantTextSearchProvider, ExperimentalAsh> search_provider_ =
-      nullptr;
+  raw_ptr<AssistantTextSearchProvider> search_provider_ = nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

@@ -4,6 +4,7 @@
 
 #include "sandbox/policy/features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "sandbox/features.h"
@@ -70,24 +71,34 @@ BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
              "WinSboxHighRendererJobMemoryLimits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Emergency "off switch" for closing the KsecDD handle in cryptbase.dll just
-// before sandbox lockdown in renderers.
-BASE_FEATURE(kWinSboxRendererCloseKsecDD,
-             "WinSboxRendererCloseKsecDD",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, only warm up `bcryptprimitives!ProcessPrng` - if disabled warms
-// up `advapi32!RtlGenRandom`.
-BASE_FEATURE(kWinSboxWarmupProcessPrng,
-             "WinSboxWarmupProcessPrng",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, launch the network service within an LPAC sandbox. If disabled,
 // the network service will run inside an App Container.
 BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
              "WinSboxNetworkServiceSandboxIsLPAC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, always launch the renderer process with Code Integrity Guard
+// enabled, regardless of the local policy configuration. If disabled, then
+// policy is respected. This acts as an emergency "off switch" for the
+// deprecation of the RendererCodeIntegrityEnabled policy.
+BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
+             "WinSboxForceRendererCodeIntegrity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, modifies the child's PEB to stop further application of
+// appcompat in the child. Does not affect the browser or unsandboxed
+// processes.
+BASE_FEATURE(kWinSboxZeroAppShim,
+             "WinSboxZeroAppShim",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
+// process, when running on Windows 10 1511 and above. This has no effect if
+// NetworkServiceSandbox feature is disabled, or if using a component or ASAN
+// build. See https://blogs.windows.com/blog/tag/code-integrity-guard/.
+BASE_FEATURE(kNetworkServiceCodeIntegrity,
+             "NetworkServiceCodeIntegrity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -106,6 +117,31 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Enabling the kNetworkServiceSandbox feature automatically enables Spectre
+// variant 2 mitigations in the network service. This can lead to performance
+// regressions, so enabling this feature will turn off the Spectre Variant 2
+// mitigations.
+//
+// On ChromeOS Ash, this overrides the system-wide kSpectreVariant2Mitigation
+// feature above, but not the user-controlled kForceSpectreVariant2Mitigation
+// feature.
+BASE_FEATURE(kForceDisableSpectreVariant2MitigationInNetworkService,
+             "kForceDisableSpectreVariant2MitigationInNetworkService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Increase the renderer sandbox memory limit. As of 2023, there are no limits
+// on macOS, and a 1TiB limit on Windows. There are reports of users bumping
+// into the limit. This increases the limit by 2x compared to the default
+// state. We are not increasing it all the way as on Windows as Linux systems
+// typically ship with overcommit, so there is no "commit limit" to save us
+// from egregious cases as on Windows.
+BASE_FEATURE(kHigherRendererMemoryLimit,
+             "HigherRendererMemoryLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
 // Enables caching compiled sandbox profiles. Only some profiles support this,
 // as controlled by CanCacheSandboxPolicy().
@@ -113,6 +149,23 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
              "CacheMacSandboxProfiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables the renderer on Android to use a separate seccomp policy.
+BASE_FEATURE(kUseRendererProcessPolicy,
+             "UseRendererProcessPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// When enabled, this features restricts a set of syscalls in
+// BaselinePolicyAndroid that are used by RendererProcessPolicy.
+BASE_FEATURE(kRestrictRendererPoliciesInBaseline,
+             "RestrictRendererPoliciesInBaseline",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// When enabled, restrict clone to just flags used by fork and pthread_create on
+// android.
+BASE_FEATURE(kRestrictCloneParameters,
+             "RestrictCloneParameters",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 bool IsNetworkSandboxSupported() {

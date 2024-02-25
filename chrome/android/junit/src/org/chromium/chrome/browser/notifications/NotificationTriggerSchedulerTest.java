@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -22,29 +19,20 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-import java.util.List;
-
-/**
- * Unit tests for NotificationTriggerScheduler.
- */
+/** Unit tests for NotificationTriggerScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NotificationTriggerSchedulerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    private NotificationTriggerScheduler.Natives mNativeMock;
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Captor
-    private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
+    @Mock private NotificationTriggerScheduler.Natives mNativeMock;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
 
     private NotificationTriggerScheduler.Clock mClock;
 
@@ -59,106 +47,6 @@ public class NotificationTriggerSchedulerTest {
 
         mClock = () -> 1415926535;
         mTriggerScheduler = new NotificationTriggerScheduler(mClock);
-    }
-
-    private static long getTimestamp(TaskInfo taskInfo) {
-        final String key = NotificationTriggerBackgroundTask.KEY_TIMESTAMP;
-        return taskInfo.getExtras().getLong(key);
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testSchedule_OnceInFuture() {
-        long timestamp = mClock.currentTimeMillis() + 1000;
-
-        mTriggerScheduler.schedule(timestamp);
-
-        List<TaskInfo> taskInfos = mTaskInfoCaptor.getAllValues();
-        assertEquals(1, taskInfos.size());
-
-        TaskInfo taskInfo = taskInfos.get(0);
-        assertEquals(timestamp, getTimestamp(taskInfo));
-        // See crbug.com/1379251.
-        // assertEquals(timestamp, getScheduledTimestamp(taskInfo).getTriggerAtMs());
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testSchedule_OnceInPast() {
-        long timestamp = mClock.currentTimeMillis() - 1000;
-
-        mTriggerScheduler.schedule(timestamp);
-
-        List<TaskInfo> taskInfos = mTaskInfoCaptor.getAllValues();
-        assertEquals(1, taskInfos.size());
-
-        TaskInfo taskInfo = taskInfos.get(0);
-        assertEquals(timestamp, getTimestamp(taskInfo));
-        // See crbug.com/1379251.
-        // assertEquals(timestamp, getScheduledTimestamp(taskInfo).getTriggerAtMs());
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testSchedule_MultipleTimes() {
-        long now = mClock.currentTimeMillis();
-
-        // Only the first and fourth should schedule a new trigger as the others are ahead of the
-        // currently scheduled trigger timestamp.
-        long[] timestamps = {now + 10000, now + 10000, now + 20000, now + 5000, now + 7000};
-
-        for (long timestamp : timestamps) {
-            mTriggerScheduler.schedule(timestamp);
-        }
-
-        List<TaskInfo> taskInfos = mTaskInfoCaptor.getAllValues();
-        assertEquals(2, taskInfos.size());
-        assertEquals(timestamps[0], getTimestamp(taskInfos.get(0)));
-        assertEquals(timestamps[3], getTimestamp(taskInfos.get(1)));
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testSchedule_ExistingTriggerInPast() {
-        long past = mClock.currentTimeMillis() - 10000;
-        long future = mClock.currentTimeMillis() + 10000;
-
-        mTriggerScheduler.schedule(past);
-        mTriggerScheduler.schedule(future);
-
-        List<TaskInfo> taskInfos = mTaskInfoCaptor.getAllValues();
-        assertEquals(2, taskInfos.size());
-        assertEquals(past, getTimestamp(taskInfos.get(0)));
-        // The first trigger has not been executed yet, scheduling it again.
-        assertEquals(past, getTimestamp(taskInfos.get(1)));
-    }
-
-    @Test
-    public void testCheckAndResetTrigger_WrongTimestamp() {
-        long timestamp = mClock.currentTimeMillis() + 10000;
-
-        mTriggerScheduler.schedule(timestamp);
-
-        assertFalse(mTriggerScheduler.checkAndResetTrigger(timestamp + 1));
-    }
-
-    @Test
-    public void testCheckAndResetTrigger_CorrectTimestamp() {
-        long timestamp = mClock.currentTimeMillis() + 10000;
-
-        mTriggerScheduler.schedule(timestamp);
-
-        assertTrue(mTriggerScheduler.checkAndResetTrigger(timestamp));
-    }
-
-    @Test
-    public void testCheckAndResetTrigger_CorrectTimestampTwice() {
-        long timestamp = mClock.currentTimeMillis() + 10000;
-
-        mTriggerScheduler.schedule(timestamp);
-        mTriggerScheduler.checkAndResetTrigger(timestamp);
-
-        assertFalse(mTriggerScheduler.checkAndResetTrigger(timestamp));
     }
 
     @Test

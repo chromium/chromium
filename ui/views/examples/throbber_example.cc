@@ -8,6 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
@@ -18,6 +20,8 @@ namespace views::examples {
 namespace {
 
 class ThrobberView : public View {
+  METADATA_HEADER(ThrobberView, View)
+
  public:
   ThrobberView() {
     throbber_ = AddChildView(std::make_unique<Throbber>());
@@ -32,7 +36,7 @@ class ThrobberView : public View {
     return gfx::Size(width(), height());
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int diameter = 16;
     throbber_->SetBounds((width() - diameter) / 2, (height() - diameter) / 2,
                          diameter, diameter);
@@ -56,6 +60,9 @@ class ThrobberView : public View {
   raw_ptr<Throbber> throbber_;
   bool is_checked_ = false;
 };
+
+BEGIN_METADATA(ThrobberView)
+END_METADATA
 
 }  // namespace
 

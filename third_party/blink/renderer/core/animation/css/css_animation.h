@@ -25,7 +25,10 @@ class CORE_EXPORT CSSAnimation : public Animation {
   bool IsCSSAnimation() const final { return true; }
 
   void ClearOwningElement() final { owning_element_ = nullptr; }
-  Element* OwningElement() const override { return owning_element_; }
+  Element* OwningElement() const override { return owning_element_.Get(); }
+
+  // Animation effect owner implementation.
+  bool IsEventDispatchAllowed() const override;
 
   const String& animationName() const { return animation_name_; }
   wtf_size_t AnimationIndex() const { return animation_index_; }
@@ -61,8 +64,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // Conditionally updates both boundaries of the animation range.
   // If the corresponding boundary has been explicitly set via WAAPI
   // the new value will be ignored.
-  void SetRange(const absl::optional<TimelineOffset>& range_start,
-                const absl::optional<TimelineOffset>& range_end) override;
+  void SetRange(const std::optional<TimelineOffset>& range_start,
+                const std::optional<TimelineOffset>& range_end) override;
 
   // When set, subsequent changes to animation-<property> no longer affect
   // <property>.

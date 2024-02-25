@@ -35,10 +35,10 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
 
   // IDL exposed interface:
   BluetoothRemoteGATTCharacteristic* characteristic() {
-    return characteristic_;
+    return characteristic_.Get();
   }
   String uuid() { return descriptor_->uuid; }
-  DOMDataView* value() const { return value_; }
+  DOMDataView* value() const { return value_.Get(); }
   ScriptPromise readValue(ScriptState*, ExceptionState&);
   ScriptPromise writeValue(ScriptState*, const DOMArrayPiece&, ExceptionState&);
 
@@ -57,7 +57,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
 
   void ReadValueCallback(ScriptPromiseResolver*,
                          mojom::blink::WebBluetoothResult,
-                         const absl::optional<Vector<uint8_t>>&);
+                         const std::optional<Vector<uint8_t>>&);
 
   void WriteValueCallback(ScriptPromiseResolver*,
                           const Vector<uint8_t>&,

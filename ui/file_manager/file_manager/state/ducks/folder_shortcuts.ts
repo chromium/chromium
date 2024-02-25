@@ -2,58 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
-import {FileKey, State} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {comparePath} from '../../common/js/entry_utils.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {Slice} from '../../lib/base_store.js';
+import type {FileKey, State} from '../../state/state.js';
 import {getEntry} from '../store.js';
 
-/**
- * Actions and reducers for folder shortcuts.
- *
- * Folder shortcuts represent a shortcut for the folders inside Drive.
- */
+import {cacheEntries} from './all_entries.js';
 
-/** Map of actions to reducers for the folder shortcuts slice. */
-export const folderShortcutsReducersMap: ReducersMap<State, Action> = new Map();
+const slice = new Slice<State, State['folderShortcuts']>('folderShortcuts');
+export {slice as folderShortcutsSlice};
 
-/** Action to refresh all folder shortcuts in the store. */
-export interface RefreshFolderShortcutAction extends BaseAction {
-  type: ActionType.REFRESH_FOLDER_SHORTCUT;
-  payload: {
-    /** All folder shortcuts should be provided here. */
-    entries: DirectoryEntry[],
+/** Create action to refresh all folder shortcuts with provided ones. */
+export const refreshFolderShortcut =
+    slice.addReducer('refresh', refreshFolderShortcutReducer);
+
+function refreshFolderShortcutReducer(currentState: State, payload: {
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, payload.entries);
+
+  return {
+    ...currentState,
+    folderShortcuts: payload.entries.map(entry => entry.toURL()),
   };
 }
 
-const refreshFolderShortcutReducer =
-    (currentState: State, payload: RefreshFolderShortcutAction['payload']):
-        State => ({
-          ...currentState,
-          folderShortcuts: payload.entries.map(entry => entry.toURL()),
-        });
+/** Create action to add a folder shortcut. */
+export const addFolderShortcut =
+    slice.addReducer('add', addFolderShortcutReducer);
 
-/**
- * Action factory to refresh all folder shortcuts in the store, all folder
- * shortcuts needs to be provided here because it will replace all existing ones
- * in the store.
- */
-export const refreshFolderShortcut = addReducer(
-    ActionType.REFRESH_FOLDER_SHORTCUT,
-    refreshFolderShortcutReducer as Reducer<State, Action>,
-    folderShortcutsReducersMap);
+function addFolderShortcutReducer(currentState: State, payload: {
+  entry: Entry|FilesAppEntry,
+}): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, [payload.entry]);
 
-
-/** Action to add single folder shortcut in the store. */
-export interface AddFolderShortcutAction extends BaseAction {
-  type: ActionType.ADD_FOLDER_SHORTCUT;
-  payload: {
-    entry: DirectoryEntry,
-  };
-}
-
-function addFolderShortcutReducer(
-    currentState: State, payload: AddFolderShortcutAction['payload']): State {
   const {entry} = payload;
   const key = entry.toURL();
   const {folderShortcuts} = currentState;
@@ -67,7 +52,7 @@ function addFolderShortcutReducer(
     const shortcutEntry = getEntry(currentState, folderShortcuts[i]!);
     // The folder shortcut array is sorted, the new item will be added just
     // before the first larger item.
-    if (util.comparePath(shortcutEntry!, entry) > 0) {
+    if (comparePath(shortcutEntry!, entry) > 0) {
       return {
         ...currentState,
         folderShortcuts: [
@@ -86,24 +71,13 @@ function addFolderShortcutReducer(
   };
 }
 
-/** Action factory to add single folder shortcut in the store. */
-export const addFolderShortcut = addReducer(
-    ActionType.ADD_FOLDER_SHORTCUT,
-    addFolderShortcutReducer as Reducer<State, Action>,
-    folderShortcutsReducersMap);
+/** Create action to remove a folder shortcut. */
+export const removeFolderShortcut =
+    slice.addReducer('remove', removeFolderShortcutReducer);
 
-
-/** Action to remove single folder shortcut from the store. */
-export interface RemoveFolderShortcutAction extends BaseAction {
-  type: ActionType.REMOVE_FOLDER_SHORTCUT;
-  payload: {
-    key: FileKey,
-  };
-}
-
-function removeFolderShortcutReducer(
-    currentState: State,
-    payload: RemoveFolderShortcutAction['payload']): State {
+function removeFolderShortcutReducer(currentState: State, payload: {
+  key: FileKey,
+}): State {
   const {key} = payload;
   const {folderShortcuts} = currentState;
   const isExisted = folderShortcuts.find(k => k === key);
@@ -117,9 +91,3 @@ function removeFolderShortcutReducer(
     folderShortcuts: folderShortcuts.filter(k => k !== key),
   };
 }
-
-/** Action factory to remove single folder shortcut in the store. */
-export const removeFolderShortcut = addReducer(
-    ActionType.REMOVE_FOLDER_SHORTCUT,
-    removeFolderShortcutReducer as Reducer<State, Action>,
-    folderShortcutsReducersMap);

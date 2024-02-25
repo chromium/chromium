@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_SCHEDULER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_scheduler.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -105,20 +105,20 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
   void OnDeviceSyncSchedulingStarted() override;
   void RequestEnrollment(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   void RequestDeviceSync(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   void HandleEnrollmentResult(
       const CryptAuthEnrollmentResult& enrollment_result) override;
   void HandleDeviceSyncResult(
       const CryptAuthDeviceSyncResult& device_sync_result) override;
-  absl::optional<base::Time> GetLastSuccessfulEnrollmentTime() const override;
-  absl::optional<base::Time> GetLastSuccessfulDeviceSyncTime() const override;
+  std::optional<base::Time> GetLastSuccessfulEnrollmentTime() const override;
+  std::optional<base::Time> GetLastSuccessfulDeviceSyncTime() const override;
   base::TimeDelta GetRefreshPeriod() const override;
-  absl::optional<base::TimeDelta> GetTimeToNextEnrollmentRequest()
+  std::optional<base::TimeDelta> GetTimeToNextEnrollmentRequest()
       const override;
-  absl::optional<base::TimeDelta> GetTimeToNextDeviceSyncRequest()
+  std::optional<base::TimeDelta> GetTimeToNextDeviceSyncRequest()
       const override;
   bool IsWaitingForEnrollmentResult() const override;
   bool IsWaitingForDeviceSyncResult() const override;
@@ -134,16 +134,16 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
   void MakeRequest(
       RequestType request_type,
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const absl::optional<std::string>& session_id);
+      const std::optional<std::string>& session_id);
   void HandleResult(
       RequestType request_type,
       bool success,
-      const absl::optional<cryptauthv2::ClientDirective>& new_client_directive);
+      const std::optional<cryptauthv2::ClientDirective>& new_client_directive);
   void HandleInvokeNext(const ::google::protobuf::RepeatedPtrField<
                             cryptauthv2::InvokeNext>& invoke_next_list,
                         const std::string& session_id);
-  absl::optional<base::Time> GetLastSuccessTime(RequestType request_type) const;
-  absl::optional<base::TimeDelta> GetTimeToNextRequest(
+  std::optional<base::Time> GetLastSuccessTime(RequestType request_type) const;
+  std::optional<base::TimeDelta> GetTimeToNextRequest(
       RequestType request_type) const;
   bool IsWaitingForResult(RequestType request_type) const;
   size_t GetNumConsecutiveFailures(RequestType request_type) const;
@@ -168,22 +168,21 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<base::Clock> clock_ = nullptr;
   cryptauthv2::ClientDirective client_directive_;
   base::flat_map<RequestType, std::unique_ptr<base::OneShotTimer>>
       request_timers_;
-  base::flat_map<RequestType, absl::optional<cryptauthv2::ClientMetadata>>
-      pending_requests_{{RequestType::kEnrollment, absl::nullopt},
-                        {RequestType::kDeviceSync, absl::nullopt}};
+  base::flat_map<RequestType, std::optional<cryptauthv2::ClientMetadata>>
+      pending_requests_{{RequestType::kEnrollment, std::nullopt},
+                        {RequestType::kDeviceSync, std::nullopt}};
 
   // Values only non-null while an attempt is in progress, in other words,
   // between Notify*Requested() and Handle*Result().
-  base::flat_map<RequestType, absl::optional<cryptauthv2::ClientMetadata>>
-      current_requests_{{RequestType::kEnrollment, absl::nullopt},
-                        {RequestType::kDeviceSync, absl::nullopt}};
+  base::flat_map<RequestType, std::optional<cryptauthv2::ClientMetadata>>
+      current_requests_{{RequestType::kEnrollment, std::nullopt},
+                        {RequestType::kDeviceSync, std::nullopt}};
 };
 
 }  // namespace device_sync

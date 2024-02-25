@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -76,6 +75,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -220,9 +220,9 @@ class ChromeNewWindowClient::TabRestoreHelper
   }
 
  private:
-  raw_ptr<ChromeNewWindowClient, ExperimentalAsh> delegate_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<sessions::TabRestoreService, ExperimentalAsh> tab_restore_service_;
+  raw_ptr<ChromeNewWindowClient> delegate_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
 
 void ChromeNewWindowClient::NewTab() {
@@ -234,8 +234,15 @@ void ChromeNewWindowClient::NewTab() {
 
   // Display a browser, setting the focus to the location bar after it is shown.
   {
-    chrome::ScopedTabbedBrowserDisplayer displayer(
-        ProfileManager::GetActiveUserProfile());
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    bool is_otr_forced =
+        IncognitoModePrefs::ShouldOpenSubsequentBrowsersInIncognito(
+            *base::CommandLine::ForCurrentProcess(), profile->GetPrefs());
+
+    if (is_otr_forced) {
+      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    }
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
     chrome::NewTab(browser);
   }
@@ -262,8 +269,6 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
     NewWindowForDetachingTabCallback closure) {
-  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
-
   BrowserView* source_view = BrowserView::GetBrowserViewForNativeWindow(
       source_window->GetToplevelWindow());
   if (!source_view) {
@@ -486,11 +491,7 @@ void ChromeNewWindowClient::RestoreTab() {
 }
 
 void ChromeNewWindowClient::ShowKeyboardShortcutViewer() {
-  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
-    ShowShortcutCustomizationApp();
-    return;
-  }
-  ash::ToggleKeyboardShortcutViewer();
+  ShowShortcutCustomizationApp();
 }
 
 void ChromeNewWindowClient::ShowShortcutCustomizationApp() {

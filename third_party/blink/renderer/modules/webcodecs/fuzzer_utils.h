@@ -14,13 +14,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-forward.h"
 
 #include <string>
 
@@ -33,7 +34,7 @@ namespace blink {
 class DOMRectInit;
 class PlaneLayout;
 
-base::ScopedClosureRunner MakeScopedGarbageCollectionRequest();
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(v8::Isolate*);
 
 class FakeFunction : public ScriptFunction::Callable {
  public:
@@ -58,17 +59,27 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
     const wc_fuzzer::ConfigureAudioEncoder& proto);
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedVideoChunk& proto);
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
+    ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto);
 
-AllowSharedBufferSource* MakeAllowSharedBufferSource(
+struct BufferAndSource {
+  UntracedMember<DOMArrayBuffer> buffer;
+  UntracedMember<AllowSharedBufferSource> source;
+};
+
+BufferAndSource MakeAllowSharedBufferSource(
     const wc_fuzzer::AllowSharedBufferSource& proto);
 
 PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto);
 
 DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto);
+
+VideoColorSpaceInit* MakeVideoColorSpaceInit(
+    const wc_fuzzer::VideoColorSpaceInit& proto);
 
 VideoFrame* MakeVideoFrame(
     ScriptState* script_state,
@@ -77,7 +88,8 @@ VideoFrame* MakeVideoFrame(
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
 
-AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto);
+AudioData* MakeAudioData(ScriptState* script_state,
+                         const wc_fuzzer::AudioDataInit& proto);
 
 AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
     const wc_fuzzer::AudioDataCopyToOptions& proto);
@@ -92,9 +104,13 @@ String ToScalabilityMode(wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode mode);
 
 String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode);
 
+String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint);
+
 String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option);
 
 String ToAacFormat(wc_fuzzer::AacFormat format);
+
+String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode);
 
 String ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type);

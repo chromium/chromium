@@ -1,0 +1,50 @@
+owners:
+- ydago@chromium.org
+- file://components/policy/OWNERS
+
+caption: Enterprise profile separation settings
+
+desc: |-
+  This policy controls the behavior of the browser after a managed account signs into the content area.
+
+  This policy overrides <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph>.
+
+  If this policy is set to Suggested, after a managed account sign in, the user will be be asked to continue using a managed profile as if it was enforced. If they refuse, the user may continue their browsing in an unmanaged environment.
+
+  If this policy is set to Enforced, after a managed account sign in, the user will be required to continue using a managed profile. If they refuse, they will be signed out of their account. This enforcement is not affected by the <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME">SigninInterceptionEnabled</ph> policy.
+
+  If this policy is set to Disabled or unset, after a managed account sign in, the user may see a bubble asking them to create a new profile. The bubble can be dismissed and the user may continue their browsing in an unmanaged environment. The bubble is controlled by the <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME">SigninInterceptionEnabled</ph> policy.
+
+  This policy has no effect when set on a machine level.
+
+supported_on:
+- chrome.*:119-
+
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+
+type: int-enum
+
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+  - 2
+
+items:
+- caption: Suggests profile separation
+  name: Suggested
+  value: 0
+- caption: Enforce profile separation
+  name: Enforced
+  value: 1
+- caption: Disables profile separation
+  name: Disabled
+  value: 2
+
+default: null
+example_value: 1
+tags: []

@@ -100,15 +100,16 @@ class FontMatchingMetrics {
   void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      SimpleFontData* resulting_font_data);
+      const SimpleFontData* resulting_font_data);
 
   // Reports a local font was looked up by a name and font description. This
   // only includes lookups where the name is allowed to match PostScript names
   // and full font names, but not family names.
-  void ReportFontLookupByUniqueNameOnly(const AtomicString& name,
-                                        const FontDescription& font_description,
-                                        SimpleFontData* resulting_font_data,
-                                        bool is_loading_fallback = false);
+  void ReportFontLookupByUniqueNameOnly(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      const SimpleFontData* resulting_font_data,
+      bool is_loading_fallback = false);
 
   // Reports a font was looked up by a fallback character, fallback priority,
   // and a font description.
@@ -116,12 +117,12 @@ class FontMatchingMetrics {
       UChar32 fallback_character,
       FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      SimpleFontData* resulting_font_data);
+      const SimpleFontData* resulting_font_data);
 
   // Reports a last-resort fallback font was looked up by a font description.
   void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      SimpleFontData* resulting_font_data);
+      const SimpleFontData* resulting_font_data);
 
   // Reports a generic font family name was matched according to the script and
   // the user's preferences to a font family name.
@@ -170,7 +171,7 @@ class FontMatchingMetrics {
   // nullptr, then the typeface digest will also be saved with its PostScript
   // name in |font_load_postscript_name_|.
   void InsertFontHashIntoMap(IdentifiableTokenKey input_key,
-                             SimpleFontData* font_data,
+                             const SimpleFontData* font_data,
                              TokenToTokenHashMap& hash_map);
 
   // Reports a local font's existence was looked up by a name, but its actual
@@ -193,14 +194,14 @@ class FontMatchingMetrics {
 
   // Get a hash that uniquely represents the font data. Returns 0 if |font_data|
   // is nullptr.
-  int64_t GetHashForFontData(SimpleFontData* font_data);
+  int64_t GetHashForFontData(const SimpleFontData* font_data);
 
   void Initialize();
 
   // Get a token that uniquely represents the typeface's PostScript name. May
   // represent the empty string if no PostScript name was found.
   IdentifiableToken GetPostScriptNameTokenForFontData(
-      SimpleFontData* font_data);
+      const SimpleFontData* font_data);
 
   TokenToTokenHashMap font_lookups_by_unique_or_family_name_;
   TokenToTokenHashMap font_lookups_by_unique_name_only_;

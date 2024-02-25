@@ -187,6 +187,8 @@ template("core_impl_source_set") {
       ]
     }
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     defines = []
     if (invoker.for_shared_library) {
       defines += [ "MOJO_CORE_SHARED_LIBRARY" ]
@@ -253,6 +255,7 @@ if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
   shared_library("shared_library") {
     output_name = "mojo_core"
     sources = [ "mojo_core.cc" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     defines = [ "MOJO_CORE_SHARED_LIBRARY" ]
     deps = [
       ":impl_for_shared_library",
@@ -264,39 +267,6 @@ if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
       deps += [ ":mojo_core_version" ]
     } else {
       configs += [ ":export_only_thunks_api" ]
-    }
-  }
-
-  if (is_chromeos_ash) {
-    if (target_cpu == "arm" || target_cpu == "arm64") {
-      android32_toolchain = "android_clang_arm"
-      android64_toolchain = "android_clang_arm64"
-    } else {
-      android32_toolchain = "android_clang_x86"
-      android64_toolchain = "android_clang_x64"
-    }
-
-    group("shared_libraries_for_arc") {
-      deps = [
-        ":shared_library_arc32",
-        ":shared_library_arc64",
-      ]
-    }
-
-    copy("shared_library_arc32") {
-      sources = [ "${root_build_dir}/${android32_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_build_dir}/libmojo_core_arc32.so" ]
-      deps = [
-        ":shared_library(//build/toolchain/android:${android32_toolchain})",
-      ]
-    }
-
-    copy("shared_library_arc64") {
-      sources = [ "${root_build_dir}/${android64_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_build_dir}/libmojo_core_arc64.so" ]
-      deps = [
-        ":shared_library(//build/toolchain/android:${android64_toolchain})",
-      ]
     }
   }
 

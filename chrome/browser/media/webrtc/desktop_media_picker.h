@@ -32,6 +32,17 @@ class DesktopMediaPicker {
   using DoneCallback = base::OnceCallback<void(content::DesktopMediaID id)>;
 
   struct Params {
+    // Possible sources of the request.
+    enum class RequestSource {
+      kUnknown,
+      kCast,
+      kExtension,
+      kGetDisplayMedia,
+      kScreenshotDataCollector,
+      kArcScreenCapture,
+    };
+
+    explicit Params(RequestSource request_source);
     Params();
     Params(const Params&);
     Params& operator=(const Params&);
@@ -82,11 +93,10 @@ class DesktopMediaPicker {
     // picker.
     blink::mojom::PreferredDisplaySurface preferred_display_surface =
         blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
-    // True if the source of the call is getDisplayMedia(), false if it's
-    // another source, like an extension or ARC. This is useful for UMA that
+    // Indicates the source of the request. This is useful for UMA that
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.
-    bool is_get_display_media_call = false;
+    RequestSource request_source = RequestSource::kUnknown;
   };
 
   // Creates a picker dialog/confirmation box depending on the value of

@@ -76,8 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   bool is_rsa_supported_ = false;
   bool is_ecc_supported_ = false;
 
-  raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
-      attestation_client_;
+  raw_ptr<AttestationClient, DanglingUntriaged> attestation_client_;
   base::WeakPtrFactory<AttestationFeaturesImpl> weak_factory_{this};
 };
 

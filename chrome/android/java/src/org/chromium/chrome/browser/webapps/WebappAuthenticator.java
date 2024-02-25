@@ -130,8 +130,12 @@ public class WebappAuthenticator {
         byte[] keyBytes = key.getEncoded();
         FileOutputStream output = null;
         if (MAC_KEY_BYTE_COUNT != keyBytes.length) {
-            Log.e(TAG, "writeKeyToFile got key encoded bytes length " + keyBytes.length
-                    + "; expected " + MAC_KEY_BYTE_COUNT);
+            Log.e(
+                    TAG,
+                    "writeKeyToFile got key encoded bytes length "
+                            + keyBytes.length
+                            + "; expected "
+                            + MAC_KEY_BYTE_COUNT);
             return false;
         }
 
@@ -174,9 +178,7 @@ public class WebappAuthenticator {
         }
     }
 
-    /**
-     * Generates the authentication encryption key in a background thread (if necessary).
-     */
+    /** Generates the authentication encryption key in a background thread (if necessary). */
     private static SecretKey generateMacKey() {
         if (sKey != null) {
             return sKey;

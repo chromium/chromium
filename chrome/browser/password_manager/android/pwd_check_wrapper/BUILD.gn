@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/ChromeNativePasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckNativeException.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_check/android:password_check_java_enums",
+    "//chrome/browser/password_manager/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.add_username_dialog"
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/FakePasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/FakePasswordCheckControllerFactory.java",
+  ]
+
+  deps = [
+    ":java",
+    "//chrome/browser/password_manager/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/sync/android:sync_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/ChromeNativePasswordCheckControllerTest.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckControllerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_check/android:password_check_java_enums",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/sync/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

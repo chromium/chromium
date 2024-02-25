@@ -92,6 +92,17 @@ class MockAnchorElementMetricsHost
     }
   }
 
+  void ProcessPointerEventUsingMLModel(
+      mojom::blink::AnchorElementPointerEventForMLModelPtr pointer_event)
+      override {}
+
+  void ShouldSkipUpdateDelays(
+      ShouldSkipUpdateDelaysCallback callback) override {
+    // We don't use this mechanism to disable the delay of reports, as the tests
+    // cover the delaying logic.
+    std::move(callback).Run(false);
+  }
+
  public:
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;
@@ -545,7 +556,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementClicked) {
   next_page.Complete("empty");
   ProcessEvents(0);
   // The second page load has no anchor elements and therefore no host is bound.
-  EXPECT_EQ(1u, hosts_.size());
+  ASSERT_EQ(1u, hosts_.size());
   EXPECT_EQ(1u, mock_host->clicks_.size());
 }
 

@@ -6,16 +6,21 @@
 
 #import "base/memory/ref_counted.h"
 #import "base/task/single_thread_task_runner.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
+
+namespace {
+constexpr base::TimeDelta kTestSaveDelay = base::Seconds(2.5);
+}
 
 @implementation TestSessionService
 
 - (instancetype)init {
   return [super
-      initWithTaskRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
+      initWithSaveDelay:kTestSaveDelay
+             taskRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
 }
 
-- (void)saveSession:(__weak SessionIOSFactory*)factory
+- (void)saveSession:(__weak SessionWindowIOSFactory*)factory
           sessionID:(NSString*)sessionID
           directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
@@ -30,8 +35,8 @@
   _saveSessionCallsCount++;
 }
 
-- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
-                              directory:(const base::FilePath&)directory {
+- (SessionWindowIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                                    directory:(const base::FilePath&)directory {
   _loadSessionCallsCount++;
   return [super loadSessionWithSessionID:sessionID directory:directory];
 }

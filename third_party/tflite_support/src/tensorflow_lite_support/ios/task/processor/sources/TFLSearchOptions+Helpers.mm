@@ -16,11 +16,9 @@
 
 @implementation TFLSearchOptions (Helpers)
 
-- (void)copyToCppOptions:
-    (tflite::task::processor::SearchOptions*)cppSearchOptions {
+- (void)copyToCppOptions:(tflite::task::processor::SearchOptions *)cppSearchOptions {
   if (self.indexFile.filePath) {
-    cppSearchOptions->mutable_index_file()->set_file_name(
-        self.indexFile.filePath.UTF8String);
+    cppSearchOptions->mutable_index_file()->set_file_name(self.indexFile.filePath.UTF8String);
   }
   cppSearchOptions->set_max_results(self.maxResults);
 }

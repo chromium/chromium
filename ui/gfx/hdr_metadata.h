@@ -6,10 +6,11 @@
 #define UI_GFX_HDR_METADATA_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "skia/ext/skcolorspace_primaries.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -79,6 +80,22 @@ struct COLOR_SPACE_EXPORT HdrMetadataSmpteSt2086 {
   }
 };
 
+// Nominal diffuse white level (NDWL) metadata.
+struct COLOR_SPACE_EXPORT HdrMetadataNdwl {
+  constexpr HdrMetadataNdwl() = default;
+  constexpr explicit HdrMetadataNdwl(float nits) : nits(nits) {}
+
+  // The number of nits of SDR white. Default to 203 nits from ITU-R BT.2408 and
+  // ISO 22028-5.
+  float nits = 203.f;
+
+  std::string ToString() const;
+
+  bool operator==(const HdrMetadataNdwl& rhs) const { return nits == rhs.nits; }
+
+  bool operator!=(const HdrMetadataNdwl& rhs) const { return !(*this == rhs); }
+};
+
 // HDR metadata for extended range color spaces.
 struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
   constexpr HdrMetadataExtendedRange() = default;
@@ -114,13 +131,16 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
   // Mastering display color volume (MDCV) metadata.
-  absl::optional<HdrMetadataSmpteSt2086> smpte_st_2086;
+  std::optional<HdrMetadataSmpteSt2086> smpte_st_2086;
 
   // Content light level information (CLLI) metadata.
-  absl::optional<HdrMetadataCta861_3> cta_861_3;
+  std::optional<HdrMetadataCta861_3> cta_861_3;
+
+  // The number of nits of SDR white.
+  std::optional<HdrMetadataNdwl> ndwl;
 
   // Brightness points for extended range color spaces.
-  absl::optional<HdrMetadataExtendedRange> extended_range;
+  std::optional<HdrMetadataExtendedRange> extended_range;
 
   HDRMetadata() = default;
   HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
@@ -145,13 +165,13 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // `max_frame_average_light_level` values are not changed (they may stay
   // zero).
   static HDRMetadata PopulateUnspecifiedWithDefaults(
-      const absl::optional<gfx::HDRMetadata>& hdr_metadata);
+      const std::optional<gfx::HDRMetadata>& hdr_metadata);
 
   std::string ToString() const;
 
   bool operator==(const HDRMetadata& rhs) const {
     return cta_861_3 == rhs.cta_861_3 && smpte_st_2086 == rhs.smpte_st_2086 &&
-           extended_range == rhs.extended_range;
+           ndwl == rhs.ndwl && extended_range == rhs.extended_range;
   }
 
   bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }

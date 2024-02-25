@@ -8,6 +8,7 @@
 #include <sddl.h>
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
@@ -103,25 +103,25 @@ base::win::ScopedHandle DuplicateHandle(const base::win::ScopedHandle& handle,
   return base::win::ScopedHandle(dup_handle);
 }
 
-void ExpectSid(const absl::optional<Sid>& sid, WellKnownSid known_sid) {
+void ExpectSid(const std::optional<Sid>& sid, WellKnownSid known_sid) {
   ASSERT_TRUE(sid);
   EXPECT_EQ(*sid, Sid(known_sid));
 }
 
-void AccessCheckError(const absl::optional<AccessCheckResult>& result,
+void AccessCheckError(const std::optional<AccessCheckResult>& result,
                       DWORD expected) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(::GetLastError(), expected);
 }
 
-void AccessCheckStatusError(const absl::optional<AccessCheckResult>& result,
+void AccessCheckStatusError(const std::optional<AccessCheckResult>& result,
                             DWORD expected) {
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result->access_status);
   EXPECT_EQ(::GetLastError(), expected);
 }
 
-void AccessCheckTest(const absl::optional<AccessCheckResult>& result,
+void AccessCheckTest(const std::optional<AccessCheckResult>& result,
                      ACCESS_MASK expected_access) {
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->access_status);
@@ -134,10 +134,10 @@ void AccessCheckTest(T type,
                      ACCESS_MASK generic_write,
                      ACCESS_MASK generic_execute,
                      ACCESS_MASK generic_all) {
-  absl::optional<SecurityDescriptor> sd =
+  std::optional<SecurityDescriptor> sd =
       SecurityDescriptor::FromSddl(kAccessCheckSd);
   ASSERT_TRUE(sd);
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess(
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess(
       /*impersonation=*/true, TOKEN_ADJUST_DEFAULT);
   ASSERT_TRUE(token.has_value());
   AccessCheckTest(sd->AccessCheck(*token, GENERIC_READ, type), generic_read);
@@ -545,10 +545,10 @@ TEST(SecurityDescriptorTest, WriteToHandle) {
 }
 
 TEST(SecurityDescriptorTest, AccessCheck) {
-  absl::optional<SecurityDescriptor> sd =
+  std::optional<SecurityDescriptor> sd =
       SecurityDescriptor::FromSddl(kAccessCheckSd);
   ASSERT_TRUE(sd);
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);
   AccessCheckError(sd->AccessCheck(*token, 1, SecurityObjectType::kFile),
                    ERROR_NO_IMPERSONATION_TOKEN);

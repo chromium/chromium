@@ -73,12 +73,17 @@ class CORE_EXPORT SharedWorkerClientHolder final
   virtual ~SharedWorkerClientHolder() = default;
 
   // Establishes a connection with SharedWorkerHost in the browser process.
+  // `connector_override` is used to force creation of the shared worker on
+  // a custom worker pool instead of the default pool `connector_`.
   void Connect(SharedWorker*,
                MessagePortChannel,
                const KURL&,
                mojo::PendingRemote<mojom::blink::BlobURLToken>,
                mojom::blink::WorkerOptionsPtr options,
-               ukm::SourceId client_ukm_source_id);
+               mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
+               ukm::SourceId client_ukm_source_id,
+               const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+                   connector_override);
 
   void Trace(Visitor* visitor) const override;
 

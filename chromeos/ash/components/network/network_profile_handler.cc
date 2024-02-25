@@ -72,7 +72,7 @@ bool NetworkProfileHandler::HasObserver(NetworkProfileObserver* observer) {
 }
 
 void NetworkProfileHandler::GetManagerPropertiesCallback(
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     LOG(ERROR) << "Error when requesting manager properties.";
     return;

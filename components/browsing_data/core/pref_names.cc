@@ -10,49 +10,6 @@
 
 namespace browsing_data::prefs {
 
-// JSON config to periodically delete some browsing data as specified by
-// the BrowsingDataLifetime policy.
-const char kBrowsingDataLifetime[] =
-    "browser.clear_data.browsing_data_lifetime";
-
-// Boolean set to true while browsing data needs to be deleted per
-// ClearBrowsingDataOnExit policy.
-// TODO (crbug/1026442): Consider setting this pref to true during fast
-// shutdown if the ClearBrowsingDataOnExit policy is set.
-const char kClearBrowsingDataOnExitDeletionPending[] =
-    "browser.clear_data.clear_on_exit_pending";
-
-// List of browsing data, specified by the ClearBrowsingDataOnExit policy, to
-// delete just before browser shutdown.
-const char kClearBrowsingDataOnExitList[] = "browser.clear_data.clear_on_exit";
-
-// Clear browsing data deletion time period.
-const char kDeleteTimePeriod[] = "browser.clear_data.time_period";
-const char kDeleteTimePeriodBasic[] = "browser.clear_data.time_period_basic";
-
-// Clear Browsing Data dialog datatype preferences.
-const char kDeleteBrowsingHistory[] = "browser.clear_data.browsing_history";
-const char kDeleteBrowsingHistoryBasic[] =
-    "browser.clear_data.browsing_history_basic";
-const char kDeleteDownloadHistory[] = "browser.clear_data.download_history";
-const char kDeleteCache[] = "browser.clear_data.cache";
-const char kDeleteCacheBasic[] = "browser.clear_data.cache_basic";
-const char kDeleteCookies[] = "browser.clear_data.cookies";
-const char kDeleteCookiesBasic[] = "browser.clear_data.cookies_basic";
-const char kDeletePasswords[] = "browser.clear_data.passwords";
-const char kDeleteFormData[] = "browser.clear_data.form_data";
-const char kDeleteHostedAppsData[] = "browser.clear_data.hosted_apps_data";
-const char kDeleteSiteSettings[] = "browser.clear_data.site_settings";
-
-// Other Clear Browsing Data preferences.
-const char kLastClearBrowsingDataTime[] =
-  "browser.last_clear_browsing_data_time";
-const char kClearBrowsingDataHistoryNoticeShownTimes[] =
-  "browser.clear_data.history_notice_shown_times";
-const char kLastClearBrowsingDataTab[] = "browser.last_clear_browsing_data_tab";
-const char kPreferencesMigratedToBasic[] =
-    "browser.clear_data.preferences_migrated_to_basic";
-
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kBrowsingDataLifetime);
   registry->RegisterBooleanPref(kClearBrowsingDataOnExitDeletionPending, false);
@@ -62,6 +19,11 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       kDeleteTimePeriodBasic, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      kDeleteTimePeriodV2, -1, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      kDeleteTimePeriodV2Basic, -1,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       kDeleteBrowsingHistory, true,

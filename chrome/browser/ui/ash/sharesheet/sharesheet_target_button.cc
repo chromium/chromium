@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,7 +50,7 @@ SharesheetTargetButton::SharesheetTargetButton(
     PressedCallback callback,
     const std::u16string& display_name,
     const std::u16string& secondary_display_name,
-    const absl::optional<gfx::ImageSkia> icon,
+    const std::optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon,
     bool is_dlp_blocked)
     : Button(std::move(callback)), vector_icon_(vector_icon) {
@@ -76,6 +77,7 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label =
       label_view->AddChildView(std::make_unique<views::Label>(display_name));
+  label->SetID(SharesheetViewID::TARGET_LABEL_VIEW_ID);
   label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
 
   if (chromeos::features::IsJellyEnabled()) {
@@ -167,7 +169,7 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 
-BEGIN_METADATA(SharesheetTargetButton, views::Button)
+BEGIN_METADATA(SharesheetTargetButton)
 END_METADATA
 
 }  // namespace sharesheet

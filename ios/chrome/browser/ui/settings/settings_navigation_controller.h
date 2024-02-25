@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 
@@ -16,11 +17,15 @@ class Browser;
 @protocol BrowsingDataCommands;
 enum class DefaultBrowserPromoSource;
 @protocol ImportDataControllerDelegate;
+@protocol SettingsRootViewControlling;
 @protocol SnackbarCommands;
 @class UserFeedbackData;
+
 namespace password_manager {
 struct CredentialUIEntry;
+enum class PasswordCheckReferrer;
 }  // namespace password_manager
+
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
@@ -39,24 +44,11 @@ extern NSString* const kSettingsDoneButtonId;
 // need to perform some clean up tasks.
 - (void)settingsWasDismissed;
 
-// Asks the delegate for a handler that can be passed into child view
-// controllers when they are created.
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings;
-
-// Asks the delegate for an ApplicationCommands handler that can be passed into
-// child view controllers when they are created.
-- (id<ApplicationCommands>)handlerForApplicationCommands;
-
-// Asks the delegate for a SnackbarCommands handler that can be passed into
-// child view controllers when they are created.
-- (id<SnackbarCommands>)handlerForSnackbarCommands;
-
 @end
 
 // Controller to modify user settings.
 @interface SettingsNavigationController
-    : UINavigationController <ApplicationSettingsCommands, KeyCommandActions>
+    : UINavigationController <SettingsCommands, KeyCommandActions>
 
 // Creates a new SettingsTableViewController and the chrome around it.
 // `browser` is the browser where settings are being displayed and should not be
@@ -142,8 +134,7 @@ extern NSString* const kSettingsDoneButtonId;
     userFeedbackControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
-                    userFeedbackData:(UserFeedbackData*)userFeedbackData
-                             handler:(id<ApplicationCommands>)handler;
+                    userFeedbackData:(UserFeedbackData*)userFeedbackData;
 
 // Creates and displays a new ImportDataTableViewController. `browserState`
 // should not be nil.
@@ -214,11 +205,17 @@ extern NSString* const kSettingsDoneButtonId;
 
 // Creates a new SafetyCheckTableViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
-// should not be nil. `delegate` may be nil.
+// should not be nil. `delegate` may be nil. `displayAsHalfSheet` determines
+// whether the Safety Check will be displayed as a half-sheet, or full-page
+// modal. `referrer` represents where in the
+// app the Safety Check is being requested from.
 + (instancetype)
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
-                                        delegate;
+                                        delegate
+                 displayAsHalfSheet:(BOOL)displayAsHalfSheet
+                           referrer:(password_manager::PasswordCheckReferrer)
+                                        referrer;
 
 // Creates a new PrivacySafeBrowsingViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
@@ -244,6 +241,15 @@ extern NSString* const kSettingsDoneButtonId;
                                delegate:
                                    (id<SettingsNavigationControllerDelegate>)
                                        delegate;
+
+// Creates a new NotificationsViewController and the chrome around it. `browser`
+// is the browser where settings are being displayed and should not be nil.
+// `delegate` may be nil.
++ (instancetype)
+    notificationsSettingsControllerForBrowser:(Browser*)browser
+                                     delegate:
+                                         (id<SettingsNavigationControllerDelegate>)
+                                             delegate;
 
 // Initializes the UINavigationController with `rootViewController`.
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController

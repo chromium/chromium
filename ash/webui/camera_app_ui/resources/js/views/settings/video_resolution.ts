@@ -63,7 +63,8 @@ export class VideoResolutionSettings extends BaseSettings {
           this.menu, '#resolution-label-template',
           util.getLabelFromFacing(facing));
 
-      if (options.length === 1) {
+      if (options.length === 1 &&
+          this.getSupportedConstFpsOptionsLength(options[0]) <= 1) {
         util.addTextItemToMenu(
             this.menu, '#resolution-text-template',
             I18nString.LABEL_NO_RESOLUTION_OPTION);
@@ -75,6 +76,15 @@ export class VideoResolutionSettings extends BaseSettings {
     }
     setupI18nElements(this.menu);
     this.menu.scrollTop = this.menuScrollTop;
+  }
+
+  private getSupportedConstFpsOptionsLength(option: VideoResolutionOption):
+      number {
+    return option.fpsOptions
+        .filter(
+            (fpsOption) => fpsOption.constFps !== null &&
+                SUPPORTED_CONSTANT_FPS.includes(fpsOption.constFps))
+        .length;
   }
 
   private addResolutionItem(
@@ -99,14 +109,13 @@ export class VideoResolutionSettings extends BaseSettings {
     span.setAttribute('aria-label', `${deviceName} ${text}`);
 
     // Currently FPS buttons are only supported on external cameras.
-    const constFpsOptions = option.fpsOptions.filter(
-        (fpsOption) =>
-            SUPPORTED_CONSTANT_FPS.some((fps) => fps === fpsOption.constFps));
+    const constFpsOptionsLength =
+        this.getSupportedConstFpsOptionsLength(option);
     let resolution: Resolution|null = null;
     for (const fps of SUPPORTED_CONSTANT_FPS) {
       const fpsButton =
           dom.getFrom(optionElement, `.fps-${fps}`, HTMLButtonElement);
-      if (constFpsOptions.length <= 1) {
+      if (constFpsOptionsLength <= 1) {
         fpsButton.classList.add('invisible');
         fpsButton.hidden = true;
       } else if (facing === Facing.EXTERNAL) {
@@ -150,17 +159,17 @@ export class VideoResolutionSettings extends BaseSettings {
     input.checked = option.checked;
 
     if (!input.checked) {
-      input.addEventListener('click', (event) => {
+      input.addEventListener('click', async (event) => {
+        event.preventDefault();
         this.focusedDeviceId = deviceId;
         this.menuScrollTop = this.menu.scrollTop;
         if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
-          this.cameraManager.setPrefVideoResolution(
+          await this.cameraManager.setPrefVideoResolution(
               deviceId, assertExists(resolution));
         } else {
-          this.cameraManager.setPrefVideoResolutionLevel(
+          await this.cameraManager.setPrefVideoResolutionLevel(
               deviceId, option.resolutionLevel);
         }
-        event.preventDefault();
       });
     }
     this.menu.appendChild(optionElement);

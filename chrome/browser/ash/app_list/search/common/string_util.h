@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_STRING_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_STRING_UTIL_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -22,7 +22,7 @@ std::string NormalizeId(const std::string& id);
 std::string RemoveAppShortcutLabel(const std::string& id);
 
 // Extracts the Drive ID from the given URL.
-absl::optional<std::string> GetDriveId(const GURL& url);
+std::optional<std::string> GetDriveId(const GURL& url);
 
 }  // namespace app_list
 

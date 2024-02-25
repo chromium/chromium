@@ -16,67 +16,8 @@ namespace {
 using ::assistant::api::GetAssistantSettingsResponse;
 using ::assistant::api::ResponseDetails;
 using ::assistant::api::UpdateAssistantSettingsResponse;
-using assistant_client::VoicelessResponse;
 
 }  // namespace
-
-GetAssistantSettingsResponse ToGetSettingsResponseProto(
-    const assistant_client::VoicelessResponse& voiceless_response) {
-  GetAssistantSettingsResponse proto;
-  auto* details = proto.mutable_response_details();
-  int status = static_cast<int>(voiceless_response.status);
-  if (ResponseDetails::Status_IsValid(status))
-    details->set_status(static_cast<ResponseDetails::Status>(status));
-
-  // Either a serialized |GetSettingsUiResponse| proto or an error message will
-  // be filled in upon success or failure of the GetAssistantSettingsRequest.
-  switch (voiceless_response.status) {
-    case VoicelessResponse::Status::SUCCESS:
-      proto.mutable_get_settings_ui_response()->ParseFromString(
-          voiceless_response.response_proto);
-      break;
-    case VoicelessResponse::Status::COMMUNICATION_ERROR:
-    case VoicelessResponse::Status::NO_RESPONSE_ERROR:
-    case VoicelessResponse::Status::DESERIALIZATION_ERROR:
-    case VoicelessResponse::Status::S3_ERROR:
-      // Sets the error message if the status falls in the category of failure.
-      details->set_error_message(voiceless_response.error_message);
-      break;
-  }
-
-  return proto;
-}
-
-UpdateAssistantSettingsResponse ToUpdateSettingsResponseProto(
-    const VoicelessResponse& voiceless_response) {
-  UpdateAssistantSettingsResponse proto;
-  auto* details = proto.mutable_response_details();
-  int status = static_cast<int>(voiceless_response.status);
-  if (ResponseDetails::Status_IsValid(status)) {
-    // We assume that VoicelessResponse::Status and ResponseDetails::Status is
-    // always synced.
-    details->set_status(static_cast<ResponseDetails::Status>(status));
-  }
-
-  // Either a serialized |UpdateSettingsUiResponse| proto or an error message
-  // will be filled in upon success or failure of the
-  // UpdateAssistantSettingsRequest.
-  switch (voiceless_response.status) {
-    case VoicelessResponse::Status::SUCCESS:
-      proto.mutable_update_settings_ui_response()->ParseFromString(
-          voiceless_response.response_proto);
-      break;
-    case VoicelessResponse::Status::COMMUNICATION_ERROR:
-    case VoicelessResponse::Status::NO_RESPONSE_ERROR:
-    case VoicelessResponse::Status::DESERIALIZATION_ERROR:
-    case VoicelessResponse::Status::S3_ERROR:
-      // Sets the error message if the status falls in the category of failure.
-      details->set_error_message(voiceless_response.error_message);
-      break;
-  }
-
-  return proto;
-}
 
 std::string UnwrapGetAssistantSettingsResponse(
     const GetAssistantSettingsResponse& response,

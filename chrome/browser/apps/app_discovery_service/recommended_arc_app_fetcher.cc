@@ -9,18 +9,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 
 namespace apps {
 
-RecommendedArcAppFetcher::RecommendedArcAppFetcher() = default;
+RecommendedArcAppFetcher::RecommendedArcAppFetcher(Profile* profile)
+    : profile_(profile) {}
 RecommendedArcAppFetcher::~RecommendedArcAppFetcher() = default;
 
 void RecommendedArcAppFetcher::GetApps(ResultCallback callback) {
   // Only one request can ever be made at a time.
   DCHECK(!callback_);
   callback_ = std::move(callback);
-  recommend_apps_fetcher_ = ash::RecommendAppsFetcher::Create(this);
+  recommend_apps_fetcher_ = RecommendAppsFetcher::Create(profile_, this);
   recommend_apps_fetcher_->Start();
 }
 

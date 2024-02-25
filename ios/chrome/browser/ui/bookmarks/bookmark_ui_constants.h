@@ -79,4 +79,9 @@ extern NSString* const kBookmarkCreateNewAccountFolderCellIdentifier;
 // Accessibility identifier for the explanatory label in the empty state.
 extern NSString* const kBookmarkEmptyStateExplanatoryLabelIdentifier;
 
+// Accessibility identifiers for batch upload views.
+extern NSString* const kBookmarksHomeBatchUploadRecommendationItemIdentifier;
+extern NSString* const kBookmarksHomeBatchUploadButtonIdentifier;
+extern NSString* const kBookmarksHomeBatchUploadAlertIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UI_CONSTANTS_H_

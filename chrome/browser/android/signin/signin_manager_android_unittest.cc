@@ -7,25 +7,33 @@
 #include <memory>
 #include <set>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -34,6 +42,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
+
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -54,7 +67,11 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
-  SigninManagerAndroidTest() = default;
+  SigninManagerAndroidTest() {
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
   SigninManagerAndroidTest& operator=(const SigninManagerAndroidTest&) = delete;
@@ -63,9 +80,19 @@ class SigninManagerAndroidTest : public ::testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        BookmarkModelFactory::GetInstance(),
-        BookmarkModelFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactories(
+        {{BookmarkModelFactory::GetInstance(),
+          BookmarkModelFactory::GetDefaultFactory()},
+         {ProfilePasswordStoreFactory::GetInstance(),
+          base::BindRepeating(&password_manager::BuildPasswordStore<
+                              content::BrowserContext,
+                              password_manager::TestPasswordStore>)},
+         {AccountPasswordStoreFactory::GetInstance(),
+          base::BindRepeating(
+              &password_manager::BuildPasswordStoreWithArgs<
+                  content::BrowserContext, password_manager::TestPasswordStore,
+                  password_manager::IsAccountStore>,
+              password_manager::IsAccountStore(true))}});
     profile_ = profile_builder.Build();
 
     background_tracing_manager_ =
@@ -86,6 +113,20 @@ class SigninManagerAndroidTest : public ::testing::Test {
   void TearDown() override { background_tracing_manager_.reset(); }
 
   TestingProfile* profile() { return profile_.get(); }
+
+  password_manager::TestPasswordStore* profile_password_store() {
+    return static_cast<password_manager::TestPasswordStore*>(
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            .get());
+  }
+
+  password_manager::TestPasswordStore* account_password_store() {
+    return static_cast<password_manager::TestPasswordStore*>(
+        AccountPasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            .get());
+  }
 
   // Adds two testing bookmarks to |profile_|.
   bookmarks::BookmarkModel* AddTestBookmarks() {
@@ -114,70 +155,8 @@ class SigninManagerAndroidTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
+  base::test::ScopedFeatureList feature_list_;
 };
-
-// TODO(crbug.com/929456): This test does not actually test anything; the
-// CannedCacheStorageHelper isn't hooked up to observe any deletions. Disabled
-// to allow refactoring of browsing data code.
-TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
-  struct TestCase {
-    std::string worker_url;
-    bool should_be_deleted;
-  } kTestCases[] = {
-      // A Google domain.
-      {"https://google.com/foo/bar", true},
-
-      // A Google domain with long TLD.
-      {"https://plus.google.co.uk/?query_params", true},
-
-      // Youtube.
-      {"https://youtube.com", false},
-
-      // A random domain.
-      {"https://a.b.c.example.com", false},
-
-      // Another Google domain.
-      {"https://www.google.de/worker.html", true},
-
-      // Ports don't matter, only TLDs.
-      {"https://google.com:8444/worker.html", true},
-  };
-
-  // TODO(crbug.com/929456): This helper is not attached anywhere to
-  // be able to observe deletions.
-  // Add service workers.
-  auto helper = base::MakeRefCounted<browsing_data::CannedCacheStorageHelper>(
-      profile()->GetDefaultStoragePartition());
-
-  for (const TestCase& test_case : kTestCases)
-    helper->Add(blink::StorageKey::CreateFirstParty(
-        url::Origin::Create(GURL(test_case.worker_url))));
-
-  ASSERT_EQ(std::size(kTestCases), helper->GetCount());
-
-  // Delete service workers and wait for completion.
-  base::RunLoop run_loop;
-  SigninManagerAndroid::WipeData(profile(),
-                                 false /* only Google service worker caches */,
-                                 run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Test whether the correct service worker caches were deleted.
-  std::set<blink::StorageKey> remaining_cache_storages =
-      helper->GetStorageKeys();
-
-  // TODO(crbug.com/929456): If deleted, the key should not be present.
-  for (const TestCase& test_case : kTestCases) {
-    EXPECT_EQ(test_case.should_be_deleted,
-              base::Contains(remaining_cache_storages,
-                             blink::StorageKey::CreateFromStringForTesting(
-                                 test_case.worker_url)))
-        << test_case.worker_url << " should "
-        << (test_case.should_be_deleted ? "" : "NOT ")
-        << "be deleted, but it was"
-        << (test_case.should_be_deleted ? "NOT" : "") << ".";
-  }
-}
 
 // Tests that wiping all data also deletes bookmarks.
 TEST_F(SigninManagerAndroidTest, DeleteBookmarksWhenWipingAllData) {
@@ -195,4 +174,52 @@ TEST_F(SigninManagerAndroidTest, DontDeleteBookmarksWhenDeletingSWCaches) {
   WipeData(false);
   EXPECT_EQ(num_bookmarks,
             bookmark_model->bookmark_bar_node()->children().size());
+}
+
+TEST_F(SigninManagerAndroidTest, WipePasswordsIfLocalUpmOff) {
+  password_manager::PasswordForm form;
+  form.username_value = u"username";
+  form.password_value = u"password";
+  form.signon_realm = "https://g.com";
+  profile_password_store()->AddLogin(form);
+  ASSERT_FALSE(account_password_store());
+
+  WipeData(/*all_data=*/true);
+
+  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
+}
+
+class SigninManagerAndroidWithLocalUpmTest : public SigninManagerAndroidTest {
+ public:
+  SigninManagerAndroidWithLocalUpmTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SigninManagerAndroidWithLocalUpmTest, DoNotWipePasswordsIfLocalUpmOn) {
+  password_manager::PasswordForm profile_store_form;
+  profile_store_form.username_value = u"username";
+  profile_store_form.password_value = u"password";
+  profile_store_form.signon_realm = "https://local.com";
+  password_manager::PasswordForm account_store_form = profile_store_form;
+  account_store_form.signon_realm = "htts://account.com";
+  profile_password_store()->AddLogin(profile_store_form);
+  ASSERT_TRUE(account_password_store());
+  account_password_store()->AddLogin(account_store_form);
+
+  WipeData(/*all_data=*/true);
+
+  EXPECT_THAT(
+      profile_password_store()->stored_passwords(),
+      UnorderedElementsAre(Pair(profile_store_form.signon_realm, SizeIs(1))));
+  EXPECT_THAT(
+      account_password_store()->stored_passwords(),
+      UnorderedElementsAre(Pair(account_store_form.signon_realm, SizeIs(1))));
 }

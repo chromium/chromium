@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/serial_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -31,14 +31,14 @@ class PaintPreviewTracker {
  public:
   PaintPreviewTracker(
       const base::UnguessableToken& guid,
-      const absl::optional<base::UnguessableToken>& embedding_token,
+      const std::optional<base::UnguessableToken>& embedding_token,
       bool is_main_frame);
   ~PaintPreviewTracker();
 
   // Getters ------------------------------------------------------------------
 
   const base::UnguessableToken& Guid() const { return guid_; }
-  const absl::optional<base::UnguessableToken>& EmbeddingToken() const {
+  const std::optional<base::UnguessableToken>& EmbeddingToken() const {
     return embedding_token_;
   }
   bool IsMainFrame() const { return is_main_frame_; }
@@ -111,7 +111,7 @@ class PaintPreviewTracker {
 
  private:
   const base::UnguessableToken guid_;
-  const absl::optional<base::UnguessableToken> embedding_token_;
+  const std::optional<base::UnguessableToken> embedding_token_;
   const bool is_main_frame_;
 
   // TODO(crbug.com/1155544): Change this to an SkM44.

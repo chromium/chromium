@@ -8,33 +8,33 @@
  * for cursor and touchpad accessibility settings.
  */
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
 
 interface Option {
   name: string;
@@ -218,6 +218,32 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
+       * Whether the face movements mouse cursor and keyboard control feature is
+       * enabled.
+       */
+      isAccessibilityFaceGazeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+        },
+      },
+
+      /**
+       * The maximum size in density-independent pixels of the large mouse
+       * cursor. Note that this has no effect if it is larger than the maximum
+       * set in CursorWindowController.
+       */
+      largeCursorMaxSize_: {
+        type: Number,
+        value() {
+          return loadTimeData.getBoolean(
+                     'isAccessibilityExtraLargeCursorEnabled') ?
+              128 :
+              64;
+        },
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -250,6 +276,8 @@ export class SettingsCursorAndTouchpadPageElement extends
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
+  private isAccessibilityFaceGazeEnabled_: boolean;
+  private readonly largeCursorMaxSize_: number;
 
   constructor() {
     super();
@@ -263,7 +291,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -278,16 +306,21 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.deviceBrowserProxy_.initializePointers();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
+    this.addFocusConfig(
+        routes.MANAGE_FACEGAZE_CURSOR_SETTINGS, '#faceGazeCursorControlButton');
+    this.addFocusConfig(
+        routes.MANAGE_FACEGAZE_FACIAL_EXPRESSIONS_SETTINGS,
+        '#faceGazeFacialExpressionsButton');
   }
 
   /**
    * Note: Overrides RouteOriginMixin implementation
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -298,9 +331,18 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.attemptDeepLink();
   }
 
+  private onFaceGazeCursorSettingsClick_(): void {
+    Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_CURSOR_SETTINGS);
+  }
+
+  private onFaceGazeFacialExpressionsSettingsClick_(): void {
+    Router.getInstance().navigateTo(
+        routes.MANAGE_FACEGAZE_FACIAL_EXPRESSIONS_SETTINGS);
+  }
+
   pointersChanged(
       hasMouse: boolean, hasTouchpad: boolean, hasPointingStick: boolean,
-      isKioskModeActive: boolean) {
+      isKioskModeActive: boolean): void {
     this.$.pointerSubpageButton.hidden =
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   }

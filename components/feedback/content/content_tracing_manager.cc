@@ -103,6 +103,10 @@ void ContentTracingManager::DiscardTraceData(int id) {
   }
 }
 
+base::WeakPtr<TracingManager> ContentTracingManager::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ContentTracingManager::StartTracing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::TracingController::GetInstance()->StartTracing(

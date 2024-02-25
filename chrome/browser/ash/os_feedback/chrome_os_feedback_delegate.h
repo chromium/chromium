@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OS_FEEDBACK_CHROME_OS_FEEDBACK_DELEGATE_H_
 #define CHROME_BROWSER_ASH_OS_FEEDBACK_CHROME_OS_FEEDBACK_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
@@ -15,10 +16,10 @@
 #include "base/time/time.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
+class PrefService;
 
 namespace extensions {
 class FeedbackService;
@@ -34,16 +35,24 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   ChromeOsFeedbackDelegate(const ChromeOsFeedbackDelegate&) = delete;
   ChromeOsFeedbackDelegate& operator=(const ChromeOsFeedbackDelegate&) = delete;
 
+  // Return true if the kUserFeedbackWithLowLevelDebugDataAllowed policy
+  // contains
+  // - "all" or
+  // - "wifi"
+  static bool IsWifiDebugLogsAllowed(const PrefService* prefs);
+
   static ChromeOsFeedbackDelegate CreateForTesting(Profile* profile);
+
   static ChromeOsFeedbackDelegate CreateForTesting(
       Profile* profile,
       scoped_refptr<extensions::FeedbackService> feedback_service);
 
   // OsFeedbackDelegate:
   std::string GetApplicationLocale() override;
-  absl::optional<GURL> GetLastActivePageUrl() override;
-  absl::optional<std::string> GetSignedInUserEmail() const override;
-  absl::optional<std::string> GetLinkedPhoneMacAddress() override;
+  std::optional<GURL> GetLastActivePageUrl() override;
+  std::optional<std::string> GetSignedInUserEmail() const override;
+  std::optional<std::string> GetLinkedPhoneMacAddress() override;
+  bool IsWifiDebugLogsAllowed() const override;
   int GetPerformanceTraceId() override;
   void GetScreenshotPng(GetScreenshotPngCallback callback) override;
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
@@ -74,7 +83,7 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   // operations are pending.
   raw_ptr<Profile> profile_;
   scoped_refptr<extensions::FeedbackService> feedback_service_;
-  absl::optional<GURL> page_url_;
+  std::optional<GURL> page_url_;
   // Used to store system logs that may be needed when sending the report (i.e.,
   // the user opted in to include system logs in the report).
   std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response_;

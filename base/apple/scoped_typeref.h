@@ -5,12 +5,12 @@
 #ifndef BASE_APPLE_SCOPED_TYPEREF_H_
 #define BASE_APPLE_SCOPED_TYPEREF_H_
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/scoped_policy.h"
 
 namespace base::apple {
 
-// ScopedTypeRef<> is patterned after std::unique_ptr<>, but maintains ownership
+// ScopedTypeRef<> is patterned after std::shared_ptr<>, but maintains ownership
 // of a reference to any type that is maintained by Retain and Release methods.
 //
 // The Traits structure must provide the Retain and Release methods for type T.
@@ -40,9 +40,9 @@ namespace base::apple {
 // the ScopedTypeRef<> being initialized is assuming the caller's existing
 // ownership of the object (and should not call Retain in initialization) or if
 // it should not assume this ownership and must create its own (by calling
-// Retain in initialization). This behavior is based on the |policy| parameter,
-// with |ASSUME| for the former and |RETAIN| for the latter. The default policy
-// is to |ASSUME|.
+// Retain in initialization). This behavior is based on the `policy` parameter,
+// with `ASSUME` for the former and `RETAIN` for the latter. The default policy
+// is to `ASSUME`.
 
 template <typename T>
 struct ScopedTypeRefTraits;
@@ -52,67 +52,109 @@ class ScopedTypeRef {
  public:
   using element_type = T;
 
+  // Construction from underlying type
+
   explicit constexpr ScopedTypeRef(
       element_type object = Traits::InvalidValue(),
       base::scoped_policy::OwnershipPolicy policy = base::scoped_policy::ASSUME)
       : object_(object) {
-    if (object_ && policy == base::scoped_policy::RETAIN) {
+    if (object_ != Traits::InvalidValue() &&
+        policy == base::scoped_policy::RETAIN) {
       object_ = Traits::Retain(object_);
     }
   }
 
-  ScopedTypeRef(const ScopedTypeRef<T, Traits>& that) : object_(that.object_) {
-    if (object_) {
+  // The pattern in the four [copy|move] [constructors|assignment operators]
+  // below is that for each of them there is the standard version for use by
+  // scopers wrapping objects of this type, and a templated version to handle
+  // scopers wrapping objects of subtypes. One might think that one could get
+  // away only the templated versions, as their templates should match the
+  // usage, but that doesn't work. Having a templated function that matches the
+  // types of, say, a copy constructor, doesn't count as a copy constructor, and
+  // the compiler's generated copy constructor is incorrect.
+
+  // Copy construction
+
+  ScopedTypeRef(const ScopedTypeRef<T, Traits>& that) : object_(that.get()) {
+    if (object_ != Traits::InvalidValue()) {
       object_ = Traits::Retain(object_);
     }
   }
 
-  // This allows passing an object to a function that takes its superclass.
   template <typename R, typename RTraits>
-  explicit ScopedTypeRef(const ScopedTypeRef<R, RTraits>& that_as_subclass)
-      : object_(that_as_subclass.get()) {
-    if (object_) {
+  ScopedTypeRef(const ScopedTypeRef<R, RTraits>& that) : object_(that.get()) {
+    if (object_ != Traits::InvalidValue()) {
       object_ = Traits::Retain(object_);
     }
   }
 
-  ScopedTypeRef(ScopedTypeRef<T, Traits>&& that) : object_(that.object_) {
-    that.object_ = Traits::InvalidValue();
-  }
-
-  ~ScopedTypeRef() {
-    if (object_) {
-      Traits::Release(object_);
-    }
-  }
+  // Copy assignment
 
   ScopedTypeRef& operator=(const ScopedTypeRef<T, Traits>& that) {
     reset(that.get(), base::scoped_policy::RETAIN);
     return *this;
   }
 
-  // This is to be used only to take ownership of objects that are created
-  // by pass-by-pointer create functions. To enforce this, require that the
-  // object be reset to NULL before this may be used.
-  [[nodiscard]] element_type* InitializeInto() {
-    DCHECK(!object_);
-    return &object_;
+  template <typename R, typename RTraits>
+  ScopedTypeRef& operator=(const ScopedTypeRef<R, RTraits>& that) {
+    reset(that.get(), base::scoped_policy::RETAIN);
+    return *this;
   }
 
-  void reset(const ScopedTypeRef<T, Traits>& that) {
+  // Move construction
+
+  ScopedTypeRef(ScopedTypeRef<T, Traits>&& that) : object_(that.release()) {}
+
+  template <typename R, typename RTraits>
+  ScopedTypeRef(ScopedTypeRef<R, RTraits>&& that) : object_(that.release()) {}
+
+  // Move assignment
+
+  ScopedTypeRef& operator=(ScopedTypeRef<T, Traits>&& that) {
+    reset(that.release(), base::scoped_policy::ASSUME);
+    return *this;
+  }
+
+  template <typename R, typename RTraits>
+  ScopedTypeRef& operator=(ScopedTypeRef<R, RTraits>&& that) {
+    reset(that.release(), base::scoped_policy::ASSUME);
+    return *this;
+  }
+
+  // Resetting
+
+  template <typename R, typename RTraits>
+  void reset(const ScopedTypeRef<R, RTraits>& that) {
     reset(that.get(), base::scoped_policy::RETAIN);
   }
 
   void reset(element_type object = Traits::InvalidValue(),
              base::scoped_policy::OwnershipPolicy policy =
                  base::scoped_policy::ASSUME) {
-    if (object && policy == base::scoped_policy::RETAIN) {
+    if (object != Traits::InvalidValue() &&
+        policy == base::scoped_policy::RETAIN) {
       object = Traits::Retain(object);
     }
-    if (object_) {
+    if (object_ != Traits::InvalidValue()) {
       Traits::Release(object_);
     }
     object_ = object;
+  }
+
+  // Destruction
+
+  ~ScopedTypeRef() {
+    if (object_ != Traits::InvalidValue()) {
+      Traits::Release(object_);
+    }
+  }
+
+  // This is to be used only to take ownership of objects that are created by
+  // pass-by-pointer create functions. To enforce this, require that this object
+  // be empty before use.
+  [[nodiscard]] element_type* InitializeInto() {
+    CHECK_EQ(object_, Traits::InvalidValue());
+    return &object_;
   }
 
   bool operator==(const ScopedTypeRef& that) const {
@@ -123,7 +165,7 @@ class ScopedTypeRef {
     return object_ != that.object_;
   }
 
-  operator element_type() const { return object_; }
+  explicit operator bool() const { return object_ != Traits::InvalidValue(); }
 
   element_type get() const { return object_; }
 

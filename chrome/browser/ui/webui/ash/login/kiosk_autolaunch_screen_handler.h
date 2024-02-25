@@ -12,8 +12,7 @@
 namespace ash {
 
 // Interface between reset screen and its representation.
-class KioskAutolaunchScreenView
-    : public base::SupportsWeakPtr<KioskAutolaunchScreenView> {
+class KioskAutolaunchScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"autolaunch",
                                                        "AutolaunchScreen"};
@@ -24,12 +23,13 @@ class KioskAutolaunchScreenView
   virtual void HandleOnCancel() = 0;
   virtual void HandleOnConfirm() = 0;
   virtual void HandleOnVisible() = 0;
+  virtual base::WeakPtr<KioskAutolaunchScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of KioskAutolaunchScreenActor.
-class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
-                                     public KioskAppManagerObserver,
-                                     public BaseScreenHandler {
+class KioskAutolaunchScreenHandler final : public KioskAutolaunchScreenView,
+                                           public KioskAppManagerObserver,
+                                           public BaseScreenHandler {
  public:
   using TView = KioskAutolaunchScreenView;
 
@@ -46,6 +46,7 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   void HandleOnCancel() override;
   void HandleOnConfirm() override;
   void HandleOnVisible() override;
+  base::WeakPtr<KioskAutolaunchScreenView> AsWeakPtr() override;
 
   // KioskAppManagerObserver:
   void OnKioskAppsSettingsChanged() override;
@@ -62,6 +63,7 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   void UpdateKioskApp();
 
   bool is_visible_ = false;
+  base::WeakPtrFactory<KioskAutolaunchScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

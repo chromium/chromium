@@ -20,7 +20,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests logic in the ShadowAppCompatResources class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAppCompatResources.class})
 public class ShadowAppCompatResourcesTest {
     private static final int DRAWABLE_RES_ID = 34567;
 

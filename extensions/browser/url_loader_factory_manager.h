@@ -23,10 +23,10 @@ class Origin;
 
 namespace extensions {
 
-class ContentScriptTracker;
+class ScriptInjectionTracker;
 
 // This class manages URLLoaderFactory objects that handle network requests that
-// require extension-specific permissions (related to relaxed CORB and CORS).
+// require extension-specific permissions (related to relaxed ORB and CORS).
 //
 // See also https://crbug.com/846346 for motivation for having separate
 // URLLoaderFactory objects for content scripts.
@@ -42,7 +42,7 @@ class URLLoaderFactoryManager {
   // declarations in the extension manifest approach:
   // https://developer.chrome.com/docs/extensions/mv2/content_scripts/#declaratively
   static void WillInjectContentScriptsWhenNavigationCommits(
-      base::PassKey<ContentScriptTracker> pass_key,
+      base::PassKey<ScriptInjectionTracker> pass_key,
       content::NavigationHandle* navigation,
       const std::vector<const Extension*>& extensions);
 
@@ -55,7 +55,7 @@ class URLLoaderFactoryManager {
   // and
   // https://developer.chrome.com/docs/extensions/reference/declarativeContent/#type-RequestContentScript
   static void WillProgrammaticallyInjectContentScript(
-      base::PassKey<ContentScriptTracker> pass_key,
+      base::PassKey<ScriptInjectionTracker> pass_key,
       content::RenderFrameHost* frame,
       const Extension& extension);
 
@@ -90,7 +90,7 @@ class URLLoaderFactoryManager {
   // URLLoaderFactoryParams:         |           |             |
   // - request_initiator_origin_lock |    web    |  extension  |     web
   // - overridden properties?        |    no     |     yes     |  if needed
-  //    - is_corb_enabled            | secure-   |  ext-based  | ext-based for
+  //    - is_orb_enabled             | secure-   |  ext-based  | ext-based for
   //    - ..._access_patterns        |  -default |             | platform apps
   static void OverrideURLLoaderFactoryParams(
       content::BrowserContext* browser_context,

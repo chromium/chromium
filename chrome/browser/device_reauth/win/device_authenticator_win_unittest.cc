@@ -4,9 +4,6 @@
 
 #include "chrome/browser/device_reauth/win/device_authenticator_win.h"
 
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,10 +14,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,10 +27,13 @@
 namespace {
 
 using device_reauth::DeviceAuthenticator;
-using device_reauth::DeviceAuthRequester;
-using password_manager::PasswordAccessAuthenticator;
+using device_reauth::ReauthResult;
 using testing::_;
 using testing::Return;
+
+constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+constexpr char kHistogramName[] =
+    "PasswordManager.ReauthToAccessPasswordInSettings";
 
 class MockSystemAuthenticator : public AuthenticatorWinInterface {
  public:
@@ -50,13 +52,17 @@ class MockSystemAuthenticator : public AuthenticatorWinInterface {
 class DeviceAuthenticatorWinTest : public testing::Test {
  public:
   DeviceAuthenticatorWinTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
+        device_authenticator_params_(
+            kAuthValidityPeriod,
+            device_reauth::DeviceAuthSource::kPasswordManager,
+            kHistogramName) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
-    authenticator_ = DeviceAuthenticatorWin::CreateForTesting(
-        std::move(system_authenticator));
+    authenticator_ = std::make_unique<DeviceAuthenticatorWin>(
+        std::move(system_authenticator), &proxy_, device_authenticator_params_);
   }
 
   DeviceAuthenticatorWin* authenticator() { return authenticator_.get(); }
@@ -68,6 +74,8 @@ class DeviceAuthenticatorWinTest : public testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   ScopedTestingLocalState& local_state() { return testing_local_state_; }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   void ExpectAuthenticationAndSetResult(bool result) {
     EXPECT_CALL(system_authenticator(), AuthenticateUser)
@@ -81,9 +89,11 @@ class DeviceAuthenticatorWinTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<DeviceAuthenticatorWin> authenticator_;
-
+  DeviceAuthenticatorProxy proxy_;
+  std::unique_ptr<DeviceAuthenticatorWin> authenticator_;
   ScopedTestingLocalState testing_local_state_;
+  device_reauth::DeviceAuthParams device_authenticator_params_;
+  base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
@@ -99,8 +109,7 @@ TEST_F(DeviceAuthenticatorWinTest,
 
   // The delay is smaller than kAuthValidityPeriod there shouldn't be
   // another prompt, so the auth should be reported as successful.
-  task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
+  task_environment().FastForwardBy(kAuthValidityPeriod / 2);
 
   EXPECT_CALL(system_authenticator(), AuthenticateUser).Times(0);
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
@@ -120,8 +129,7 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfMoreThan60Seconds) {
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
 
-  task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::kAuthValidityPeriod * 2);
+  task_environment().FastForwardBy(kAuthValidityPeriod * 2);
 
   // The next call to `Authenticate()` should re-trigger an authentication.
   ExpectAuthenticationAndSetResult(false);
@@ -182,6 +190,44 @@ TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometricOrScreenLock) {
   EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 }
 
+TEST_F(DeviceAuthenticatorWinTest, RecordSuccessAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kSuccess,
+                                        1);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, RecordSkippedAuthHistogram) {
+  ExpectAuthenticationAndSetResult(true);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
+                                       1);
+  histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
+                                       1);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, RecordFailAuthHistogram) {
+  ExpectAuthenticationAndSetResult(false);
+
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
+                                        1);
+}
+
 // Verifies that the caching mechanism for BiometricsAvailable works.
 struct TestCase {
   const char* description;
@@ -195,21 +241,21 @@ class DeviceAuthenticatorWinTestAvailability
       public testing::WithParamInterface<TestCase> {};
 
 TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
-  base::HistogramTester histogram_tester;
   TestCase test_case = GetParam();
   SCOPED_TRACE(test_case.description);
   EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
       .WillOnce(testing::WithArg<0>([&test_case](auto callback) {
         std::move(callback).Run(test_case.availability);
       }));
-  authenticator()->CacheIfBiometricsAvailable();
+
+  DeviceAuthenticatorWin::CacheIfBiometricsAvailable(&system_authenticator());
 
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticateWithBiometrics());
   EXPECT_EQ(test_case.expected_result,
             local_state().Get()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);
 }
 

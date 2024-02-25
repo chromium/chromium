@@ -4,7 +4,8 @@
 
 package org.chromium.components.navigation_interception;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -24,8 +25,11 @@ public abstract class InterceptNavigationDelegate {
      * @return true if the navigation should be ignored.
      */
     @CalledByNative
-    public abstract boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-            GURL escapedUrl, boolean hiddenCrossFrame, boolean isSandboxedFrame);
+    public abstract boolean shouldIgnoreNavigation(
+            NavigationHandle navigationHandle,
+            GURL escapedUrl,
+            boolean hiddenCrossFrame,
+            boolean isSandboxedFrame);
 
     /**
      * This method is called for navigations to external protocols in subframes, which on Android
@@ -43,8 +47,11 @@ public abstract class InterceptNavigationDelegate {
      *         subframe to, or null if no action is to be taken.
      */
     @CalledByNative
-    protected GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
-            boolean hasUserGesture, Origin initiatorOrigin) {
+    protected GURL handleSubframeExternalProtocol(
+            GURL escapedUrl,
+            @PageTransition int transition,
+            boolean hasUserGesture,
+            Origin initiatorOrigin) {
         return null;
     }
 

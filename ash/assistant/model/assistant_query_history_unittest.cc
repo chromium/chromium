@@ -12,12 +12,12 @@ namespace ash {
 TEST(AssistantQueryHistory, Empty) {
   AssistantQueryHistory history(10);
   auto it = history.GetIterator();
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Prev());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Prev());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Prev());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Prev());
 }
 
 TEST(AssistantQueryHistory, Full) {
@@ -49,20 +49,20 @@ TEST(AssistantQueryHistory, Full) {
 TEST(AssistantQueryHistory, Add) {
   AssistantQueryHistory history(10);
   auto it = history.GetIterator();
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
   history.Add("Query01");
   history.Add("Query02");
   it = history.GetIterator();
-  EXPECT_EQ(absl::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
   EXPECT_EQ("Query02", it->Prev().value());
   EXPECT_EQ("Query01", it->Prev().value());
   EXPECT_EQ("Query01", it->Prev().value());
   EXPECT_EQ("Query02", it->Next().value());
-  EXPECT_EQ(absl::nullopt, it->Next());
-  EXPECT_EQ(absl::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
+  EXPECT_EQ(std::nullopt, it->Next());
 }
 
 }  // namespace ash

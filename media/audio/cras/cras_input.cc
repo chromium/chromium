@@ -186,12 +186,19 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
       rc = pin_device_ = libcras_client_get_floop_dev_idx_by_client_types(
           client_, client_types);
     } else {
-      rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
+      if (base::FeatureList::IsEnabled(
+              media::kAudioFlexibleLoopbackForSystemLoopback)) {
+        rc = pin_device_ = libcras_client_get_floop_dev_idx_by_client_types(
+            client_, ~(uint32_t)0);
+      } else {
+        rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
+      }
     }
     if (rc < 0) {
       DLOG(WARNING) << "Couldn't find CRAS loopback device "
-                    << (is_loopback_without_chrome_ ? " for flexible loopback."
-                                                    : " for full loopback.");
+                    << (is_loopback_without_chrome_
+                            ? " for non-chrome loopback."
+                            : " for full loopback.");
       ReportStreamOpenResult(
           StreamOpenResult::kCallbackOpenCannotFindLoopbackDevice);
       libcras_client_destroy(client_);

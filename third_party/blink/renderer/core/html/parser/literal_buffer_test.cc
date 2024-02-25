@@ -6,17 +6,20 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
 
 TEST(LiteralBufferTest, Empty) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<16> buf;
   EXPECT_TRUE(buf.IsEmpty());
   EXPECT_EQ(0ul, buf.size());
 }
 
 TEST(LiteralBufferTest, AddAndClear) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<16> buf;
   buf.AddChar('a');
   buf.AddChar('b');
@@ -33,6 +36,7 @@ TEST(LiteralBufferTest, AddAndClear) {
 }
 
 TEST(LiteralBufferTest, AppendLiteral) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<16> lit;
   lit.AddChar('a');
   lit.AddChar('b');
@@ -50,6 +54,7 @@ TEST(LiteralBufferTest, AppendLiteral) {
 }
 
 TEST(LiteralBufferTest, Copy) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<16> lit;
   lit.AddChar('a');
   lit.AddChar('b');
@@ -74,6 +79,7 @@ TEST(LiteralBufferTest, Copy) {
 }
 
 TEST(LiteralBufferTest, Move) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<2> lit;
   lit.AddChar('a');
   lit.AddChar('b');
@@ -89,6 +95,7 @@ TEST(LiteralBufferTest, Move) {
 }
 
 TEST(LiteralBufferTest, Is8BitAppend) {
+  test::TaskEnvironment task_environment;
   UCharLiteralBuffer<16> buf;
   EXPECT_TRUE(buf.Is8Bit());
   buf.AddChar('a');
@@ -100,6 +107,7 @@ TEST(LiteralBufferTest, Is8BitAppend) {
 }
 
 TEST(LiteralBufferTest, Is8BitMove) {
+  test::TaskEnvironment task_environment;
   UCharLiteralBuffer<16> buf;
   buf.AddChar(U'\x01D6');
 
@@ -108,6 +116,7 @@ TEST(LiteralBufferTest, Is8BitMove) {
 }
 
 TEST(LiteralBufferTest, AsString) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<16> buf;
   buf.AddChar('x');
   const String as_string = buf.AsString();
@@ -116,6 +125,7 @@ TEST(LiteralBufferTest, AsString) {
 }
 
 TEST(LiteralBufferTest, AsStringIs8Bit) {
+  test::TaskEnvironment task_environment;
   LCharLiteralBuffer<2> lit;
   lit.AddChar('a');
   lit.AddChar('b');

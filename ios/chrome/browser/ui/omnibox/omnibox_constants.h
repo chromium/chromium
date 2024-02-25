@@ -18,4 +18,22 @@ extern NSString* const
 
 extern NSString* const kOmniboxAutocompleteLabelAccessibilityIdentifier;
 
+// Size of the leading image view.
+extern const CGFloat kOmniboxLeadingImageSize;
+
+// Offset from the leading edge to the image view (used when the image is
+// shown).
+extern const CGFloat kOmniboxLeadingImageViewEdgeOffset;
+
+// Offset from the leading edge to the textfield when no image is shown.
+extern const CGFloat kOmniboxTextFieldLeadingOffsetNoImage;
+
+// Space between the leading button and the textfield when a button is shown.
+extern const CGFloat kOmniboxTextFieldLeadingOffsetImage;
+
+// The offset from the leading edge to the textfield when an image is shown.
+// This is a sum of kOmniboxLeadingImageViewEdgeOffset,
+// kOmniboxLeadingImageSize, and kOmniboxTextFieldLeadingOffsetImage.
+extern const CGFloat kOmniboxEditOffset;
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSTANTS_H_

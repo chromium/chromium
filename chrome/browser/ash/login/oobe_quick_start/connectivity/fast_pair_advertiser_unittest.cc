@@ -8,13 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
+#include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +31,58 @@ using testing::Return;
 
 constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
-const uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
+constexpr uint8_t kFastPairModelIdChromebook[] = {0x30, 0x68, 0x46};
+constexpr uint8_t kFastPairModelIdChromebase[] = {0xe9, 0x31, 0x6c};
+constexpr uint8_t kFastPairModelIdChromebox[] = {0xda, 0xde, 0x43};
+
+struct ModelIdTestCase {
+  chromeos::DeviceType device_type;
+  std::vector<uint8_t> model_id;
+};
+
+const ModelIdTestCase kModelIdsTestCases[] = {
+    {chromeos::DeviceType::kChromebook,
+     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
+                          std::end(kFastPairModelIdChromebook))},
+    {chromeos::DeviceType::kChromebox,
+     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebox),
+                          std::end(kFastPairModelIdChromebox))},
+    {chromeos::DeviceType::kChromebit,
+     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
+                          std::end(kFastPairModelIdChromebook))},
+    {chromeos::DeviceType::kChromebase,
+     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebase),
+                          std::end(kFastPairModelIdChromebase))},
+    {chromeos::DeviceType::kUnknown,
+     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
+                          std::end(kFastPairModelIdChromebook))},
+};
+
+// Sets the simulated device form factor allowing us to verify that the correct
+// Fast Pair model ID is used for each one.
+void SetDeviceType(chromeos::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::DeviceType::kChromebook:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOOK"});
+      break;
+    case chromeos::DeviceType::kChromebox:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOX"});
+      break;
+    case chromeos::DeviceType::kChromebit:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBIT"});
+      break;
+    case chromeos::DeviceType::kChromebase:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBASE"});
+      break;
+    case chromeos::DeviceType::kUnknown:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv({"", ""});
+      break;
+  }
+}
 
 struct RegisterAdvertisementArgs {
   RegisterAdvertisementArgs(
@@ -145,17 +198,20 @@ class FastPairAdvertiserTest : public testing::Test {
 
   void TestExpectedMetrics(
       bool should_succeed,
-      absl::optional<device::BluetoothAdvertisement::ErrorCode> error_code) {
+      std::optional<device::BluetoothAdvertisement::ErrorCode> error_code) {
     expected_total_count_++;
+    QuickStartMetrics::AdvertisingMethod advertising_method =
+        use_pin_authentication_ ? QuickStartMetrics::AdvertisingMethod::kPin
+                                : QuickStartMetrics::AdvertisingMethod::kQrCode;
     histograms_.ExpectTotalCount(
         "QuickStart.FastPairAdvertisementEnded.Duration",
         expected_total_count_);
     histograms_.ExpectBucketCount(
         "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod",
-        fast_pair_advertiser_->advertising_method_, expected_total_count_);
+        advertising_method, expected_total_count_);
     histograms_.ExpectBucketCount(
         "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod",
-        fast_pair_advertiser_->advertising_method_, expected_total_count_);
+        advertising_method, expected_total_count_);
     if (should_succeed) {
       expected_success_count_++;
       histograms_.ExpectBucketCount(
@@ -184,16 +240,11 @@ class FastPairAdvertiserTest : public testing::Test {
                        base::Unretained(this)),
         base::BindOnce(&FastPairAdvertiserTest::OnStartAdvertisingError,
                        base::Unretained(this)),
-        RandomSessionId(), /*use_pin_authentication=*/false);
+        AdvertisingId(), use_pin_authentication_);
     auto service_uuid_list =
         std::make_unique<device::BluetoothAdvertisement::UUIDList>();
     service_uuid_list->push_back(kFastPairServiceUuid);
     EXPECT_EQ(*service_uuid_list, register_args_->service_uuids);
-
-    auto expected_payload = std::vector<uint8_t>(std::begin(kFastPairModelId),
-                                                 std::end(kFastPairModelId));
-    EXPECT_EQ(expected_payload,
-              register_args_->service_data[kFastPairServiceUuid]);
   }
 
   void StopAdvertising() {
@@ -214,8 +265,8 @@ class FastPairAdvertiserTest : public testing::Test {
   bool called_on_stop_advertising() { return called_on_stop_advertising_; }
 
   std::vector<uint8_t> GetManufacturerMetadata(
-      const RandomSessionId& random_id) {
-    return fast_pair_advertiser_->GenerateManufacturerMetadata(random_id);
+      const AdvertisingId& advertising_id) {
+    return fast_pair_advertiser_->GenerateManufacturerMetadata(advertising_id);
   }
 
   void ResetExpectedErrorBucketCount() { expected_error_bucket_count_ = 0; }
@@ -234,6 +285,7 @@ class FastPairAdvertiserTest : public testing::Test {
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   std::unique_ptr<RegisterAdvertisementArgs> register_args_;
   base::HistogramTester histograms_;
+  bool use_pin_authentication_ = false;
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
@@ -241,6 +293,16 @@ class FastPairAdvertiserTest : public testing::Test {
   base::HistogramBase::Count expected_failure_count_ = 0;
   base::HistogramBase::Count expected_error_bucket_count_ = 0;
   base::HistogramBase::Count expected_total_count_ = 0;
+};
+
+class FastPairAdvertiserModelIdsTest
+    : public FastPairAdvertiserTest,
+      public testing::WithParamInterface<ModelIdTestCase> {
+ public:
+  void SetUp() override {
+    SetDeviceType(GetParam().device_type);
+    FastPairAdvertiserTest::SetUp();
+  }
 };
 
 TEST_F(FastPairAdvertiserTest, TestStartAdvertising_Success) {
@@ -281,7 +343,7 @@ TEST_F(FastPairAdvertiserTest, TestStopAdvertising_Success) {
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_TRUE(called_on_stop_advertising());
-  TestExpectedMetrics(/*should_succeed=*/true, /*error_code=*/absl::nullopt);
+  TestExpectedMetrics(/*should_succeed=*/true, /*error_code=*/std::nullopt);
 }
 
 TEST_F(FastPairAdvertiserTest, TestStopAdvertising_Error) {
@@ -315,15 +377,15 @@ TEST_F(FastPairAdvertiserTest, TestAdvertisementReleased) {
 }
 
 TEST_F(FastPairAdvertiserTest, TestGenerateManufacturerMetadata) {
-  RandomSessionId random_id;
-  base::span<const uint8_t, RandomSessionId::kLength> random_id_bytes =
-      random_id.AsBytes();
+  AdvertisingId advertising_id;
+  base::span<const uint8_t, AdvertisingId::kLength> advertising_id_bytes =
+      advertising_id.AsBytes();
   std::vector<uint8_t> manufacturer_metadata =
-      GetManufacturerMetadata(random_id);
+      GetManufacturerMetadata(advertising_id);
 
-  EXPECT_EQ(random_id_bytes.size(), manufacturer_metadata.size());
-  for (size_t i = 0; i < random_id_bytes.size(); i++) {
-    EXPECT_EQ(random_id_bytes[i], manufacturer_metadata[i]);
+  EXPECT_EQ(advertising_id_bytes.size(), manufacturer_metadata.size());
+  for (size_t i = 0; i < advertising_id_bytes.size(); i++) {
+    EXPECT_EQ(advertising_id_bytes[i], manufacturer_metadata[i]);
   }
 }
 
@@ -362,7 +424,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   fast_pair_advertiser_->StartAdvertising(
       base::DoNothing(),
       base::BindLambdaForTesting([&]() { fast_pair_advertiser_.reset(); }),
-      RandomSessionId(), /*use_pin_authentication=*/false);
+      AdvertisingId(), /*use_pin_authentication=*/false);
 
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::
@@ -372,10 +434,10 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   expected_failure_count_++;
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod",
-      quick_start_metrics::AdvertisingMethod::kQrCode, expected_failure_count_);
+      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod",
-      quick_start_metrics::AdvertisingMethod::kQrCode, expected_failure_count_);
+      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementEnded.Succeeded", false,
       expected_failure_count_);
@@ -415,5 +477,17 @@ TEST_F(FastPairAdvertiserTest, TestStopAdvertisingError_DeleteInCallback) {
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
 }
+
+TEST_P(FastPairAdvertiserModelIdsTest, ModelIds) {
+  StartAdvertising();
+  auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
+  std::move(register_args_->callback).Run(fake_advertisement);
+  EXPECT_EQ(GetParam().model_id,
+            register_args_->service_data[kFastPairServiceUuid]);
+}
+
+INSTANTIATE_TEST_SUITE_P(FastPairAdvertiserModelIdsTest,
+                         FastPairAdvertiserModelIdsTest,
+                         testing::ValuesIn(kModelIdsTestCases));
 
 }  // namespace ash::quick_start

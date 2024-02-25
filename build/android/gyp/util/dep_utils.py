@@ -107,6 +107,14 @@ class ClassLookupIndex:
       if lower_search_string in full_class_name.lower():
         matches.extend(self._entries_for(full_class_name))
 
+    # Priority 4: Match parent class when no matches and it's an inner class.
+    if not matches:
+      components = search_string.rsplit('.', 2)
+      if len(components) == 3:
+        package, outer_class, inner_class = components
+        if outer_class[0].isupper() and inner_class[0].isupper():
+          matches.extend(self.match(f'{package}.{outer_class}'))
+
     return matches
 
   def _entries_for(self, class_name) -> List[ClassEntry]:
@@ -226,6 +234,30 @@ class ClassLookupIndex:
                 abs_unprocessed_jar_path))
 
     return full_class_names
+
+
+def GnTargetToBuildFilePath(gn_target: str):
+  """Returns the relative BUILD.gn file path for this target from src root."""
+  assert gn_target.startswith('//'), f'Relative {gn_target} name not supported.'
+  ninja_target_name = gn_target[2:]
+
+  # Remove the colon at the end
+  colon_index = ninja_target_name.find(':')
+  if colon_index != -1:
+    ninja_target_name = ninja_target_name[:colon_index]
+
+  return os.path.join(ninja_target_name, 'BUILD.gn')
+
+
+def CreateAddDepsCommand(gn_target: str, missing_deps: List[str]) -> List[str]:
+  # Normalize chrome_public_apk__java to chrome_public_apk.
+  gn_target = gn_target.split('__', 1)[0]
+
+  build_file_path = GnTargetToBuildFilePath(gn_target)
+  return [
+      'build/gn_editor', 'add', '--quiet', '--file', build_file_path,
+      '--target', gn_target, '--deps'
+  ] + missing_deps
 
 
 def ReplaceGmsPackageIfNeeded(target_name: str) -> str:

@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -21,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -242,16 +244,26 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     const JavaParamRef<jobjectArray>& java_gurls,
     const JavaParamRef<jintArray>& optimization_types,
     jint request_context,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaParamRef<jobject>& java_callback,
+    jbyteArray request_context_metadata_serialized) {
   // Convert GURLs to native.
   std::vector<GURL> urls;
   url::GURLAndroid::JavaGURLArrayToGURLVector(env, java_gurls, &urls);
+
+  proto::RequestContextMetadata* request_context_metadata;
+  int bytes_length = env->GetArrayLength(request_context_metadata_serialized);
+  jbyte* bytes =
+      env->GetByteArrayElements(request_context_metadata_serialized, nullptr);
+  proto::RequestContextMetadata request_context_metadata_deserialized;
+  request_context_metadata_deserialized.ParseFromArray(bytes, bytes_length);
+  request_context_metadata = &request_context_metadata_deserialized;
 
   optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
       urls, JavaIntArrayToOptTypesSet(env, optimization_types),
       static_cast<proto::RequestContext>(request_context),
       base::BindRepeating(&OnOnDemandOptimizationGuideDecision,
-                          ScopedJavaGlobalRef<jobject>(env, java_callback)));
+                          ScopedJavaGlobalRef<jobject>(env, java_callback)),
+      request_context_metadata);
 }
 
 void OptimizationGuideBridge::OnNewPushNotification(

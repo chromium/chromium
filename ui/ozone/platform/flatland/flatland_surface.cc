@@ -31,16 +31,9 @@ std::vector<zx::event> GpuFenceHandlesToZxEvents(
   std::vector<zx::event> events;
   events.reserve(handles.size());
   for (auto& handle : handles) {
-    events.push_back(std::move(handle.owned_event));
+    events.push_back(handle.Release());
   }
   return events;
-}
-
-zx::event DuplicateZxEvent(const zx::event& event) {
-  zx::event result;
-  zx_status_t status = event.duplicate(ZX_RIGHT_SAME_RIGHTS, &result);
-  ZX_DCHECK(status == ZX_OK, status);
-  return result;
 }
 
 // A struct containing Flatland properties for an associated overlay transform.
@@ -66,19 +59,19 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     // gfx::OverlayTransform and Flatland rotate in opposite directions relative
     // to each other, so swap 90 and 270.
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return {
           .translation = {rounded_bounds.x() + rounded_bounds.width(),
                           rounded_bounds.y()},
           .orientation = fuchsia::ui::composition::Orientation::CCW_270_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return {
           .translation = {rounded_bounds.x() + rounded_bounds.width(),
                           rounded_bounds.y() + rounded_bounds.height()},
           .orientation = fuchsia::ui::composition::Orientation::CCW_180_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return {
           .translation = {rounded_bounds.x(),
                           rounded_bounds.y() + rounded_bounds.height()},
@@ -111,8 +104,8 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
 fuchsia::math::SizeU GfxSizeToFuchsiaSize(
     const gfx::Size& size,
     gfx::OverlayTransform plane_transform = gfx::OVERLAY_TRANSFORM_NONE) {
-  if (plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
-      plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+  if (plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
+      plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
     return fuchsia::math::SizeU{static_cast<uint32_t>(size.height()),
                                 static_cast<uint32_t>(size.width())};
   }
@@ -283,8 +276,7 @@ void FlatlandSurface::Present(
   // Keep track of release fences from last present for destructor.
   release_fences_from_last_present_.clear();
   for (auto& fence : release_fences) {
-    release_fences_from_last_present_.push_back(
-        DuplicateZxEvent(fence.owned_event));
+    release_fences_from_last_present_.push_back(fence.Clone().Release());
   }
 
   // Present to Flatland.

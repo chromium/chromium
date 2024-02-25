@@ -7,9 +7,10 @@ package org.chromium.device.usb;
 import android.hardware.usb.UsbConfiguration;
 import android.hardware.usb.UsbDevice;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Exposes android.hardware.usb.UsbDevice as necessary for C++

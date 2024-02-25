@@ -333,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
   // BackForwardCache, because of the opener.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_c));
 
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+      ShouldCreateNewHostForAllFrames()) {
     ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_b->IsInBackForwardCache());
@@ -491,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // BackForwardCache, because of the opener.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_c));
 
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+      ShouldCreateNewHostForAllFrames()) {
     ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_b->IsInBackForwardCache());
@@ -636,23 +638,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithVaryingNavigationSite,
 
   // 5) The page should not be restored from BFCache, and should not log
   // RelatedActiveContents histogram entries.
-  if (!NavigateSameSite() &&
-      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    ExpectNotRestored(
-        {NotRestoredReason::kRelatedActiveContentsExist,
-         NotRestoredReason::kBlocklistedFeatures,
-         NotRestoredReason::kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
-        FROM_HERE);
-  } else {
-    ExpectNotRestored(
-        {NotRestoredReason::kBlocklistedFeatures,
-         NotRestoredReason::kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
-        FROM_HERE);
-  }
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures,
+       NotRestoredReason::kBrowsingInstanceNotSwapped},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
+      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
+      FROM_HERE);
 
   histograms.ExpectTotalCount(
       "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
@@ -705,8 +696,9 @@ IN_PROC_BROWSER_TEST_P(
   // 6) The page should not be restored from BFCache, but it should log
   // RelatedActiveContents metrics because the related active contents
   // count is > 1.
-  if (!NavigateSameSite() &&
-      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (ShouldCreateNewHostForAllFrames() ||
+      (!NavigateSameSite() &&
+       SiteIsolationPolicy::UseDedicatedProcessesForAllSites())) {
     ExpectNotRestored(
         {NotRestoredReason::kRelatedActiveContentsExist,
          NotRestoredReason::kBlocklistedFeatures,
@@ -769,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Navigate to B in the opener.  A1 can't enter the BackForwardCache,
   // because of the popup.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (ShouldCreateNewHostForAllFrames() ||
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
@@ -897,7 +890,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 5) Navigate to B again from A1, now A1 can't enter BackForwardCache because
   // it has related active contents.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (ShouldCreateNewHostForAllFrames() ||
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
   } else {
     ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
@@ -1257,6 +1251,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheStillLoadingBrowserTest,
 
   // 2) Navigate away.
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  rfh_a->DisableUnloadTimerForTesting();
   shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -2106,10 +2101,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "pagehide_storage"));
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
+  EXPECT_TRUE(
+      WaitForLocalStorage(main_frame_3, "pagehide_storage", "dispatched_once"));
+  EXPECT_TRUE(WaitForLocalStorage(main_frame_3, "visibilitychange_storage",
+                                  "dispatched_once"));
 }
 
 // Tests that the history value saved in the renderer is updated correctly when

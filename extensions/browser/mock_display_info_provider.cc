@@ -30,7 +30,7 @@ void MockDisplayInfoProvider::SetDisplayProperties(
   set_info_value_ = properties.ToValue();
   set_info_display_id_ = display_id;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void MockDisplayInfoProvider::EnableUnifiedDesktop(bool enable) {
@@ -82,8 +82,8 @@ void MockDisplayInfoProvider::ShowNativeTouchCalibration(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 native_touch_calibration_success_
-                                    ? absl::nullopt
-                                    : absl::optional<std::string>("failed")));
+                                    ? std::nullopt
+                                    : std::optional<std::string>("failed")));
 }
 
 void MockDisplayInfoProvider::SetMirrorMode(
@@ -91,7 +91,7 @@ void MockDisplayInfoProvider::SetMirrorMode(
     ErrorCallback callback) {
   mirror_mode_ = info.mode;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void MockDisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(

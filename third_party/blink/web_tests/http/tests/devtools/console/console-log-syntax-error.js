@@ -7,7 +7,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that syntax errors are logged into console and doesn't cause browser crash.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('resources/syntax-error.js');
 

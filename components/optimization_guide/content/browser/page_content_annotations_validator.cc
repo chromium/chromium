@@ -43,7 +43,7 @@ void LogLinesToFileOnBackgroundSequence(const base::FilePath& path,
 
 void MaybeLogAnnotationResultToFile(
     const std::vector<BatchAnnotationResult>& results) {
-  absl::optional<base::FilePath> path =
+  std::optional<base::FilePath> path =
       switches::PageContentAnnotationsValidationWriteToFile();
   if (!path) {
     return;
@@ -67,9 +67,7 @@ PageContentAnnotationsValidator::PageContentAnnotationsValidator(
     : annotator_(annotator) {
   DCHECK(annotator);
   for (AnnotationType type : {
-           AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
-           AnnotationType::kTextEmbedding,
        }) {
     if (features::PageContentAnnotationValidationEnabledForType(type)) {
       enabled_annotation_types_.push_back(type);
@@ -94,9 +92,7 @@ PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
 
   bool enabled_for_any_type = false;
   for (AnnotationType type : {
-           AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
-           AnnotationType::kTextEmbedding,
        }) {
     enabled_for_any_type |=
         features::PageContentAnnotationValidationEnabledForType(type);
@@ -119,7 +115,7 @@ void PageContentAnnotationsValidator::Run() {
 // static
 std::vector<std::string> PageContentAnnotationsValidator::BuildInputsForType(
     AnnotationType type) {
-  absl::optional<std::vector<std::string>> cmd_line_input =
+  std::optional<std::vector<std::string>> cmd_line_input =
       switches::PageContentAnnotationsValidationInputForType(type);
   if (cmd_line_input) {
     return *cmd_line_input;

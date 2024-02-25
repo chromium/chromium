@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,14 +19,13 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -47,7 +48,7 @@ class TestOsIntegrationManager : public FakeOsIntegrationManager {
   ~TestOsIntegrationManager() override = default;
 
   // OsIntegrationManager:
-  void InstallOsHooks(const AppId& app_id,
+  void InstallOsHooks(const webapps::AppId& app_id,
                       InstallOsHooksCallback callback,
                       std::unique_ptr<WebAppInstallInfo> web_app_info,
                       InstallOsHooksOptions options) override {
@@ -62,7 +63,7 @@ class TestOsIntegrationManager : public FakeOsIntegrationManager {
                                              std::move(web_app_info), options);
   }
 
-  void UninstallOsHooks(const AppId& app_id,
+  void UninstallOsHooks(const webapps::AppId& app_id,
                         const OsHooksOptions& os_hooks,
                         UninstallOsHooksCallback callback) override {
     if (os_hooks[OsHookType::kRunOnOsLogin]) {
@@ -129,14 +130,15 @@ class RunOnOsLoginCommandTest
   WebAppProvider* provider() { return provider_; }
 
  private:
-  raw_ptr<FakeOsIntegrationManager, DanglingUntriaged> os_integration_manager_;
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeOsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+      nullptr;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
   base::HistogramTester tester;
 
@@ -191,17 +193,17 @@ TEST_P(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
   auto web_app_default2 = test::CreateWebApp(GURL("https:/default2.example/"));
   auto web_app_windowed = test::CreateWebApp(GURL("https://windowed.example/"));
   auto web_app_allowed = test::CreateWebApp(GURL("https://allowed.example/"));
-  const AppId app_id_default = web_app_default->app_id();
-  const AppId app_id_default2 = web_app_default2->app_id();
-  const AppId app_id_windowed = web_app_windowed->app_id();
-  const AppId app_id_allowed = web_app_allowed->app_id();
+  const webapps::AppId app_id_default = web_app_default->app_id();
+  const webapps::AppId app_id_default2 = web_app_default2->app_id();
+  const webapps::AppId app_id_windowed = web_app_windowed->app_id();
+  const webapps::AppId app_id_allowed = web_app_allowed->app_id();
 
   RegisterApp(std::move(web_app_default));
   RegisterApp(std::move(web_app_default2));
   RegisterApp(std::move(web_app_windowed));
   RegisterApp(std::move(web_app_allowed));
 
-  for (const AppId& app_id : {app_id_default2, app_id_allowed}) {
+  for (const webapps::AppId& app_id : {app_id_default2, app_id_allowed}) {
     base::RunLoop loop;
     provider()->command_manager().ScheduleCommand(
         RunOnOsLoginCommand::CreateForSetLoginMode(
@@ -300,7 +302,7 @@ TEST_P(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
 
 TEST_P(RunOnOsLoginCommandTest, RepeatedCallsDoNotCauseRepeatedOSRegistration) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
 
   base::RunLoop loop1;
@@ -322,7 +324,7 @@ TEST_P(RunOnOsLoginCommandTest, RepeatedCallsDoNotCauseRepeatedOSRegistration) {
 
 TEST_P(RunOnOsLoginCommandTest, NotRunDoesNotAtemptOSRegistration) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
 
   base::RunLoop loop;
@@ -340,7 +342,7 @@ TEST_P(RunOnOsLoginCommandTest, NotRunDoesNotAtemptOSRegistration) {
 
 TEST_P(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
   {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
@@ -380,7 +382,7 @@ TEST_P(RunOnOsLoginCommandTest, AbortOnAppNotLocallyInstalled) {
 TEST_P(RunOnOsLoginCommandTest,
        AbortCommandOnAlreadyMatchingRunOnOsLoginState) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
   base::HistogramTester tester;
 
@@ -417,7 +419,7 @@ TEST_P(RunOnOsLoginCommandTest,
 
 TEST_P(RunOnOsLoginCommandTest, AbortCommandOnPolicyBlockedApp) {
   auto web_app = test::CreateWebApp(GURL("https:/default.example/"));
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
   base::HistogramTester tester;
 
@@ -450,7 +452,7 @@ TEST_P(RunOnOsLoginCommandTest, AbortCommandOnPolicyBlockedApp) {
 
 TEST_P(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
   auto web_app = test::CreateWebApp();
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   // Run on OS Login state in the web_app DB is not defined.
   {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
@@ -482,7 +484,7 @@ TEST_P(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
 
 TEST_P(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
   auto web_app = test::CreateWebApp(GURL("https:/default.example/"));
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));

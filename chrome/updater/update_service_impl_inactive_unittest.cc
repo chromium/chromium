@@ -60,7 +60,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
   {
     base::RunLoop run_loop;
     update_service->RunPeriodicTasks(
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+        base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
     run_loop.Run();
   }
   {

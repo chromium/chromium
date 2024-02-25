@@ -14,18 +14,17 @@ import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.widget.ChromeImageView;
 
-/**
- * TabLayout shown in the Horizontal Tab Switcher.
- */
-public class IncognitoToggleTabLayout extends TabLayout implements TabCountObserver {
+/** TabLayout shown in the Horizontal Tab Switcher. */
+public class IncognitoToggleTabLayout extends TabLayout {
     private final TabLayout.Tab mStandardButton;
     private final TabLayout.Tab mIncognitoButton;
     private final ImageView mStandardButtonIcon;
@@ -37,28 +36,31 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
     private final ColorStateList mTabIconSelectedDarkColor;
     private final ColorStateList mIncognitoSelectedColor;
 
+    private final Callback<Integer> mNormalTabCountSupplierObserver;
+
     private TabModelSelector mTabModelSelector;
-    private TabCountProvider mTabCountProvider;
     private TabModelSelectorObserver mTabModelSelectorObserver;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public IncognitoToggleTabLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mTabIconDarkColor = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_tint_list);
-        mTabIconSelectedDarkColor = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_accent1_tint_list);
+        mTabIconDarkColor =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_tint_list);
+        mTabIconSelectedDarkColor =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_icon_color_accent1_tint_list);
         mTabIconLightColor =
                 AppCompatResources.getColorStateList(getContext(), R.color.white_alpha_70);
-        mIncognitoSelectedColor = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_control_color_active_dark);
+        mIncognitoSelectedColor =
+                AppCompatResources.getColorStateList(
+                        getContext(), R.color.default_control_color_active_dark);
 
         mStandardButtonIcon = new ChromeImageView(getContext());
-        mTabSwitcherDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(
-                getContext(), BrandedColorScheme.APP_DEFAULT);
+        mTabSwitcherDrawable =
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        getContext(), BrandedColorScheme.APP_DEFAULT);
         mStandardButtonIcon.setImageDrawable(mTabSwitcherDrawable);
         mStandardButtonIcon.setContentDescription(
                 getResources().getString(R.string.accessibility_tab_switcher_standard_stack));
@@ -72,18 +74,24 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
         mIncognitoButton = newTab().setCustomView(mIncognitoButtonIcon);
         addTab(mIncognitoButton);
 
-        addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                setSelectedModel(mIncognitoButton.isSelected());
-            }
+        addOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        setSelectedModel(mIncognitoButton.isSelected());
+                    }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {}
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {}
+                });
+
+        mNormalTabCountSupplierObserver =
+                (tabCount) -> {
+                    mTabSwitcherDrawable.updateForTabCount(tabCount, /* incognito= */ false);
+                };
     }
 
     /**
@@ -92,42 +100,36 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
     public void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
         if (mTabModelSelector == null) return;
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                setStateBasedOnModel();
-            }
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        setStateBasedOnModel();
+                    }
 
-            @Override
-            public void onTabStateInitialized() {
-                updateTabSwitcherDrawableCount();
-            }
-        };
+                    @Override
+                    public void onTabStateInitialized() {
+                        attachTabCountSupplierObserver();
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         setStateBasedOnModel();
 
         if (mTabModelSelector.isTabStateInitialized()) {
-            updateTabSwitcherDrawableCount();
+            attachTabCountSupplierObserver();
         }
     }
 
-    public void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-        mTabCountProvider.addObserverAndTrigger(this);
-    }
-
-    /**
-     * Update the visual state based on number of normal (non-incognito) tabs present.
-     * @param tabCount The number of normal tabs.
-     */
-    @Override
-    public void onTabCountChanged(int tabCount, boolean isIncognito) {
-        if (!isIncognito) mTabSwitcherDrawable.updateForTabCount(tabCount, isIncognito);
-    }
-
     public void destroy() {
-        if (mTabModelSelector != null) mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-        if (mTabCountProvider != null) mTabCountProvider.removeObserver(this);
+        if (mTabModelSelector != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            TabModel model = mTabModelSelector.getModel(false);
+            // If the tab model is already destroyed the TabModelSelector only has an EmptyTabModel.
+            // Skip removing the observer as otherwise it will assert.
+            if (!(model instanceof EmptyTabModel)) {
+                model.getTabCountSupplier().removeObserver(mNormalTabCountSupplierObserver);
+            }
+        }
     }
 
     private void setStateBasedOnModel() {
@@ -135,18 +137,21 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
         final boolean isIncognitoSelected = mTabModelSelector.isIncognitoSelected();
 
         // Update the selected tab indicator
-        setSelectedTabIndicatorColor(isIncognitoSelected
+        setSelectedTabIndicatorColor(
+                isIncognitoSelected
                         ? mIncognitoSelectedColor.getDefaultColor()
                         : mTabIconSelectedDarkColor.getDefaultColor());
 
         // Update the Tab Switcher (Standard button) tab
         mTabSwitcherDrawable.setTint(
                 isIncognitoSelected ? mTabIconLightColor : mTabIconSelectedDarkColor);
-        ImageViewCompat.setImageTintList(mStandardButtonIcon,
+        ImageViewCompat.setImageTintList(
+                mStandardButtonIcon,
                 isIncognitoSelected ? mTabIconLightColor : mTabIconSelectedDarkColor);
 
         // Update the Incognito tab
-        ImageViewCompat.setImageTintList(mIncognitoButtonIcon,
+        ImageViewCompat.setImageTintList(
+                mIncognitoButtonIcon,
                 isIncognitoSelected ? mIncognitoSelectedColor : mTabIconDarkColor);
 
         // Ensure the tab in tab layout is correctly selected when tab switcher is
@@ -168,21 +173,23 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
         mTabModelSelector.selectModel(incognitoSelected);
 
         if (incognitoSelected) {
-            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.IncognitoClickedIsEmpty",
-                    mTabCountProvider.getTabCount() == 0);
+            Integer tabCount = mTabModelSelector.getCurrentModelTabCountSupplier().get();
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.TabSwitcher.IncognitoClickedIsEmpty",
+                    tabCount == null ? true : tabCount.intValue() == 0);
         }
 
-        final int stackAnnouncementId = incognitoSelected
-                ? R.string.accessibility_tab_switcher_incognito_stack_selected
-                : R.string.accessibility_tab_switcher_standard_stack_selected;
+        final int stackAnnouncementId =
+                incognitoSelected
+                        ? R.string.accessibility_tab_switcher_incognito_stack_selected
+                        : R.string.accessibility_tab_switcher_standard_stack_selected;
         announceForAccessibility(getResources().getString(stackAnnouncementId));
     }
 
-    private void updateTabSwitcherDrawableCount() {
-        final int tabCount = mTabModelSelector.getTabModelFilterProvider()
-                                     .getTabModelFilter(
-                                             /*isIncognito=*/false)
-                                     .getTotalTabCount();
-        mTabSwitcherDrawable.updateForTabCount(tabCount, false);
+    private void attachTabCountSupplierObserver() {
+        mTabModelSelector
+                .getModel(false)
+                .getTabCountSupplier()
+                .addObserver(mNormalTabCountSupplierObserver);
     }
 }

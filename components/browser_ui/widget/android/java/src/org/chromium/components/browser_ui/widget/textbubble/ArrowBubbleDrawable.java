@@ -21,9 +21,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.components.browser_ui.widget.R;
 
-/**
- * A {@link Drawable} that is a bubble with an arrow pointing out of either the top or bottom.
- */
+/** A {@link Drawable} that is a bubble with an arrow pointing out of either the top or bottom. */
 class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     private final Rect mCachedBubblePadding = new Rect();
 
@@ -88,32 +86,24 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
         invalidateSelf();
     }
 
-    /**
-     * @return The spacing needed on the left side of the {@link Drawable} for the arrow to fit.
-     */
+    /** @return The spacing needed on the left side of the {@link Drawable} for the arrow to fit. */
     public int getArrowLeftSpacing() {
         mBubbleDrawable.getPadding(mCachedBubblePadding);
         return mRadiusPx + mCachedBubblePadding.left + mArrowWidthPx / 2;
     }
 
-    /**
-     * @return The spacing needed on the right side of the {@link Drawable} for the arrow to fit.
-     */
+    /** @return The spacing needed on the right side of the {@link Drawable} for the arrow to fit. */
     public int getArrowRightSpacing() {
         mBubbleDrawable.getPadding(mCachedBubblePadding);
         return mRadiusPx + mCachedBubblePadding.right + mArrowWidthPx / 2;
     }
 
-    /**
-     * @return Whether or not the arrow is currently drawing on top of this {@link Drawable}.
-     */
+    /** @return Whether or not the arrow is currently drawing on top of this {@link Drawable}. */
     public boolean isArrowOnTop() {
         return mArrowOnTop;
     }
 
-    /**
-     * @return Whether or not an arrow is currently shown.
-     */
+    /** @return Whether or not an arrow is currently shown. */
     public boolean isShowingArrow() {
         return mShowArrow;
     }
@@ -129,9 +119,7 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
         invalidateSelf();
     }
 
-    /**
-     * @param color The color to make the bubble and arrow.
-     */
+    /** @param color The color to make the bubble and arrow. */
     public void setBubbleColor(@ColorInt int color) {
         DrawableCompat.setTint(mBubbleDrawable, color);
         mArrowPaint.setColor(color);
@@ -182,17 +170,23 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
         if (mIsRoundBubble) {
             mRadiusPx = bounds.height() / 2;
         } else {
-            mRadiusPx = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.text_bubble_corner_radius);
+            mRadiusPx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.text_bubble_corner_radius);
         }
         mBubbleDrawable.setShape(
-                new RoundRectShape(new float[] {mRadiusPx, mRadiusPx, mRadiusPx, mRadiusPx,
-                                           mRadiusPx, mRadiusPx, mRadiusPx, mRadiusPx},
-                        null, null));
+                new RoundRectShape(
+                        new float[] {
+                            mRadiusPx, mRadiusPx, mRadiusPx, mRadiusPx, mRadiusPx, mRadiusPx,
+                            mRadiusPx, mRadiusPx
+                        },
+                        null,
+                        null));
 
         // Calculate the bubble bounds.  Account for the arrow size requiring more space.
         mBubbleDrawable.getPadding(mCachedBubblePadding);
-        mBubbleDrawable.setBounds(bounds.left,
+        mBubbleDrawable.setBounds(
+                bounds.left,
                 bounds.top + (mArrowOnTop ? (mArrowHeightPx - mCachedBubblePadding.top) : 0),
                 bounds.right,
                 bounds.bottom - (mArrowOnTop ? 0 : (mArrowHeightPx - mCachedBubblePadding.bottom)));
@@ -219,8 +213,11 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     public boolean getPadding(Rect padding) {
         mBubbleDrawable.getPadding(padding);
 
-        padding.set(padding.left, Math.max(padding.top, mArrowOnTop ? mArrowHeightPx : 0),
-                padding.right, Math.max(padding.bottom, mArrowOnTop ? 0 : mArrowHeightPx));
+        padding.set(
+                padding.left,
+                Math.max(padding.top, mArrowOnTop ? mArrowHeightPx : 0),
+                padding.right,
+                Math.max(padding.bottom, mArrowOnTop ? 0 : mArrowHeightPx));
         return true;
     }
 }

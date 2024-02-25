@@ -11,45 +11,40 @@ import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
 import android.os.Handler;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * A Java class implementing midi::MidiManagerAndroid functionality.
- */
+/** A Java class implementing midi::MidiManagerAndroid functionality. */
 @JNINamespace("midi")
 class MidiManagerAndroid {
-    /**
-     * Set true when this instance is successfully initialized.
-     */
+    private static final String TAG = "MidiManagerAndroid";
+
+    /** Set true when this instance is successfully initialized. */
     private boolean mIsInitialized;
-    /**
-     * The devices held by this manager.
-     */
+
+    /** The devices held by this manager. */
     private final List<MidiDeviceAndroid> mDevices = new ArrayList<>();
-    /**
-     * The device information instances which are being initialized.
-     */
+
+    /** The device information instances which are being initialized. */
     private final Set<MidiDeviceInfo> mPendingDevices = new HashSet<>();
-    /**
-     * The underlying MidiManager.
-     */
+
+    /** The underlying MidiManager. */
     private final MidiManager mManager;
-    /**
-     * Callbacks will run on the message queue associated with this handler.
-     */
+
+    /** Callbacks will run on the message queue associated with this handler. */
     private final Handler mHandler;
-    /**
-     * The associated midi::MidiDeviceAndroid instance.
-     */
+
+    /** The associated midi::MidiDeviceAndroid instance. */
     private final long mNativeManagerPointer;
 
     /**
@@ -60,13 +55,12 @@ class MidiManagerAndroid {
      */
     private boolean mStopped;
 
-    /**
-     * Checks if Android MIDI is supported on the device.
-     */
+    /** Checks if Android MIDI is supported on the device. */
     @CalledByNative
     static boolean hasSystemFeatureMidi() {
-        return ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_MIDI);
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_MIDI);
     }
 
     /**
@@ -84,10 +78,27 @@ class MidiManagerAndroid {
     private MidiManagerAndroid(long nativeManagerPointer) {
         assert !ThreadUtils.runningOnUiThread();
 
-        mManager = (MidiManager) ContextUtils.getApplicationContext().getSystemService(
-                Context.MIDI_SERVICE);
+        mManager =
+                (MidiManager)
+                        ContextUtils.getApplicationContext().getSystemService(Context.MIDI_SERVICE);
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
         mNativeManagerPointer = nativeManagerPointer;
+    }
+
+    void postOnInitializationFailed() {
+        mHandler.post(
+            new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (MidiManagerAndroid.this) {
+                        if (mStopped) {
+                            return;
+                        }
+                        MidiManagerAndroidJni.get()
+                                .onInitializationFailed(mNativeManagerPointer);
+                    }
+                }
+            });
     }
 
     /**
@@ -97,68 +108,73 @@ class MidiManagerAndroid {
     @CalledByNative
     void initialize() {
         if (mManager == null) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (MidiManagerAndroid.this) {
-                        if (mStopped) {
-                            return;
-                        }
-                        MidiManagerAndroidJni.get().onInitializationFailed(mNativeManagerPointer);
-                    }
-                }
-            });
+            postOnInitializationFailed();
             return;
         }
-        mManager.registerDeviceCallback(new MidiManager.DeviceCallback() {
-            @Override
-            public void onDeviceAdded(MidiDeviceInfo device) {
-                MidiManagerAndroid.this.onDeviceAdded(device);
-            }
+        try {
+            mManager.registerDeviceCallback(
+                new MidiManager.DeviceCallback() {
+                    @Override
+                    public void onDeviceAdded(MidiDeviceInfo device) {
+                        MidiManagerAndroid.this.onDeviceAdded(device);
+                    }
 
-            @Override
-            public void onDeviceRemoved(MidiDeviceInfo device) {
-                MidiManagerAndroid.this.onDeviceRemoved(device);
-            }
-        }, mHandler);
+                    @Override
+                    public void onDeviceRemoved(MidiDeviceInfo device) {
+                        MidiManagerAndroid.this.onDeviceRemoved(device);
+                    }
+                },
+                mHandler);
+        } catch (Throwable t) {
+            // android.media.midi.MidiManager.registerDeviceCallback
+            // may throw RemoteException caused by
+            // SecurityException("too many MIDI listeners ... ")
+            Log.e(TAG, "registerDeviceCallback error", t);
+            postOnInitializationFailed();
+            return;
+        }
         MidiDeviceInfo[] infos = mManager.getDevices();
 
         for (final MidiDeviceInfo info : infos) {
             mPendingDevices.add(info);
             openDevice(info);
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (MidiManagerAndroid.this) {
-                    if (mStopped) {
-                        return;
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (MidiManagerAndroid.this) {
+                            if (mStopped) {
+                                return;
+                            }
+                            if (mPendingDevices.isEmpty() && !mIsInitialized) {
+                                MidiManagerAndroidJni.get()
+                                        .onInitialized(
+                                                mNativeManagerPointer,
+                                                mDevices.toArray(new MidiDeviceAndroid[0]));
+                                mIsInitialized = true;
+                            }
+                        }
                     }
-                    if (mPendingDevices.isEmpty() && !mIsInitialized) {
-                        MidiManagerAndroidJni.get().onInitialized(
-                                mNativeManagerPointer, mDevices.toArray(new MidiDeviceAndroid[0]));
-                        mIsInitialized = true;
-                    }
-                }
-            }
-        });
+                });
     }
 
-    /**
-     * Marks this object as stopped.
-     */
+    /** Marks this object as stopped. */
     @CalledByNative
     synchronized void stop() {
         mStopped = true;
     }
 
     private void openDevice(final MidiDeviceInfo info) {
-        mManager.openDevice(info, new MidiManager.OnDeviceOpenedListener() {
-            @Override
-            public void onDeviceOpened(MidiDevice device) {
-                MidiManagerAndroid.this.onDeviceOpened(device, info);
-            }
-        }, mHandler);
+        mManager.openDevice(
+                info,
+                new MidiManager.OnDeviceOpenedListener() {
+                    @Override
+                    public void onDeviceOpened(MidiDevice device) {
+                        MidiManagerAndroid.this.onDeviceOpened(device, info);
+                    }
+                },
+                mHandler);
     }
 
     /**
@@ -201,8 +217,9 @@ class MidiManagerAndroid {
             }
         }
         if (!mIsInitialized && mPendingDevices.isEmpty()) {
-            MidiManagerAndroidJni.get().onInitialized(
-                    mNativeManagerPointer, mDevices.toArray(new MidiDeviceAndroid[0]));
+            MidiManagerAndroidJni.get()
+                    .onInitialized(
+                            mNativeManagerPointer, mDevices.toArray(new MidiDeviceAndroid[0]));
             mIsInitialized = true;
         }
     }
@@ -210,8 +227,11 @@ class MidiManagerAndroid {
     @NativeMethods
     interface Natives {
         void onInitialized(long nativeMidiManagerAndroid, MidiDeviceAndroid[] devices);
+
         void onInitializationFailed(long nativeMidiManagerAndroid);
+
         void onAttached(long nativeMidiManagerAndroid, MidiDeviceAndroid device);
+
         void onDetached(long nativeMidiManagerAndroid, MidiDeviceAndroid device);
     }
 }

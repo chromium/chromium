@@ -159,7 +159,7 @@ class StableVideoDecoderFactoryProcessLauncher final
   mojo::RemoteSet<media::stable::mojom::StableVideoDecoderFactoryProcess>
       processes_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
-  absl::optional<gpu::GpuFeatureInfo> gpu_feature_info_
+  std::optional<gpu::GpuFeatureInfo> gpu_feature_info_
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // This member holds onto any requests for a StableVideoDecoderFactory until

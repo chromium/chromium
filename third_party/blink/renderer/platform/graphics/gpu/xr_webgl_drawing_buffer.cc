@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -39,7 +41,7 @@ class ScopedPixelLocalStorageInterrupt {
   }
 
  private:
-  blink::DrawingBuffer::Client* const client_;
+  const raw_ptr<blink::DrawingBuffer::Client> client_;
 };
 
 }  // namespace
@@ -54,13 +56,13 @@ namespace blink {
 XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer,
     const gfx::Size& size,
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     GLuint texture_id)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
       size(size),
       texture_id(texture_id),
-      mailbox(mailbox) {}
+      shared_image(std::move(shared_image)) {}
 
 XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   if (base::PlatformThread::CurrentRef() != owning_thread_ref ||
@@ -81,7 +83,7 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   auto* sii = drawing_buffer->drawing_buffer_->ContextProvider()
                   ->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
 }
 
 scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
@@ -489,29 +491,33 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
       drawing_buffer_->client());
   auto* sii = drawing_buffer_->ContextProvider()->SharedImageInterface();
+
+  // These shared images will be imported into textures on the GL context. We
+  // take a read/write access scope whenever the color buffer is used as the
+  // back buffer.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2 |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
-             : viz::SinglePlaneFormat::kRGBX_8888,
-      size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      usage, "XRWebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+  auto client_shared_image = sii->CreateSharedImage(
+      {alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
+              : viz::SinglePlaneFormat::kRGBX_8888,
+       size_, gfx::ColorSpace(), usage, "XRWebGLDrawingBuffer"},
+      gpu::kNullSurfaceHandle);
+  CHECK(client_shared_image);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-  // The shared image is imported into a texture on the GL context. We take a
-  // read/write access scope whenever the color buffer is used as the back
-  // buffer.
-  GLuint texture_id =
-      gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
+      client_shared_image->mailbox().name);
 
   DrawingBuffer::Client* client = drawing_buffer_->client();
   client->DrawingBufferClientRestoreTexture2DBinding();
 
   return base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(), size_,
-                                           mailbox, texture_id);
+                                           std::move(client_shared_image),
+                                           texture_id);
 }
 
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
@@ -655,7 +661,7 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      buffer->mailbox, buffer->produce_sync_token,
+      buffer->shared_image->mailbox(), buffer->produce_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
       /* is_origin_top_left = */ false,
       drawing_buffer_->ContextProviderWeakPtr(),

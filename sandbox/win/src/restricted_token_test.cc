@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <string>
 
+#include <optional>
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
@@ -15,7 +17,6 @@
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -46,8 +47,9 @@ int RunOpenProcessTest(bool unsandboxed,
     return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
-                         runner.process_id(), access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu 0X%08lX",
+                             runner.process_id(), access_mask))
           .c_str());
 }
 
@@ -79,8 +81,9 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
     return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
-                         runner.process_id(), access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu 0X%08lX",
+                             runner.process_id(), access_mask))
           .c_str());
 }
 
@@ -90,15 +93,18 @@ int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  if (result != SBOX_ALL_OK)
+  if (result != SBOX_ALL_OK) {
     return SBOX_TEST_FAILED_SETUP;
+  }
   config->SetLockdownDefaultDacl();
-  if (add_random_sid)
+  if (add_random_sid) {
     config->AddRestrictingRandomSid();
+  }
 
   return runner.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_currentprocess_dup 0x%08X",
-                         access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_currentprocess_dup 0X%08lX",
+                             access_mask))
           .c_str());
 }
 
@@ -116,8 +122,9 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_openprocess(int argc,
   DWORD desired_access = wcstoul(argv[1], nullptr, 0);
   base::win::ScopedHandle process_handle(
       ::OpenProcess(desired_access, false, pid));
-  if (process_handle.IsValid())
+  if (process_handle.is_valid()) {
     return SBOX_TEST_SUCCEEDED;
+  }
 
   return SBOX_TEST_DENIED;
 }
@@ -135,7 +142,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
     return SBOX_TEST_FIRST_ERROR;
   }
   base::win::ScopedHandle process_handle(dup_handle);
-  if (::DuplicateHandle(::GetCurrentProcess(), process_handle.Get(),
+  if (::DuplicateHandle(::GetCurrentProcess(), process_handle.get(),
                         ::GetCurrentProcess(), &dup_handle, desired_access,
                         FALSE, 0)) {
     ::CloseHandle(dup_handle);
@@ -150,7 +157,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
 // Opens a the process token and checks if it's restricted.
 SBOX_TESTS_COMMAND int RestrictedTokenTest_IsRestricted(int argc,
                                                         wchar_t** argv) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess();
   if (!token)
     return SBOX_TEST_FIRST_ERROR;

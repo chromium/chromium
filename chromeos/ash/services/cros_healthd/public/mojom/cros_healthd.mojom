@@ -16,45 +16,12 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojo
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
-import "chromeos/ash/services/cros_healthd/public/mojom/wilco_ec.mojom";
 import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
-// Factory interface which allows remote ends to request implementations of the
-// probe, diagnostics, or event services. Additionally, the browser can send
-// network-related implementations to the cros_healthd daemon.
-//
-// NextMinVersion: 2, NextIndex: 7
-interface CrosHealthdServiceFactory {
-  // Returns a bound interface to the diagnostics service.
-  GetDiagnosticsService@0(pending_receiver<CrosHealthdDiagnosticsService> service);
-  // Returns a bound interface to the event service.
-  GetEventService@1(pending_receiver<CrosHealthdEventService> service);
-  // Returns a bound interface to the probe service.
-  GetProbeService@2(pending_receiver<CrosHealthdProbeService> service);
-  // Sends a bound interface to the Network Health service in Chrome.
-  SendNetworkHealthService@3(
-      pending_remote<
-          chromeos.network_health.mojom.NetworkHealthService> remote);
-  // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
-  // daemon.
-  SendNetworkDiagnosticsRoutines@4(
-      pending_remote<
-          chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
-              network_diagnostics_routines);
-  // TODO(http://b/181133872): Move this service out of this interface
-  // Returns a bound interface to the system service.
-  GetSystemService@5(pending_receiver<CrosHealthdSystemService> service);
-  // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
-  // daemon.
-  [MinVersion=1] SendChromiumDataCollector@6(
-      pending_remote<
-          ash.cros_healthd.internal.mojom.ChromiumDataCollector> remote);
-};
-
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 14, NextIndex: 48
+// NextMinVersion: 15, NextIndex: 49
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -649,8 +616,9 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  [MinVersion=8] RunAudioSetVolumeRoutine@39(uint64 node_id, uint8 volume,
-                                             bool mute_on)
+  [MinVersion=8] DEPRECATED_RunAudioSetVolumeRoutine@39(uint64 node_id,
+                                                        uint8 volume,
+                                                        bool mute_on)
       => (RunRoutineResponse response);
 
   // Requests that the AudioSetGain routine is created and started on the
@@ -667,8 +635,9 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  [MinVersion=8] RunAudioSetGainRoutine@40(uint64 node_id, uint8 gain,
-                                           bool mute_on)
+  [MinVersion=8] DEPRECATED_RunAudioSetGainRoutine@40(uint64 node_id,
+                                                      uint8 gain,
+                                                      bool mute_on)
       => (RunRoutineResponse response);
 
   // Requests that the BluetoothPower routine is created and started on the
@@ -767,6 +736,17 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=13] RunUfsLifetimeRoutine@47() => (RunRoutineResponse response);
+
+  // Requests that the Fan routine is created and started on the
+  // platform. This routine checks whether there is any errors about the audio
+  // driver.
+  // The availability of this routine can be determined by checking that
+  // kFan is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=14] RunFanRoutine@48() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
@@ -900,62 +880,4 @@ interface CrosHealthdProbeService {
   [MinVersion=1] ProbeMultipleProcessInfo@2(array<uint32>? process_ids,
                                             bool ignore_single_process_error)
     => (MultipleProcessResult multiple_process_info);
-};
-
-// Contains data about the current service instance of cros_healthd.
-//
-// NextMinVersion: 1, NextIndex: 2
-[Stable]
-struct ServiceStatus {
-  // Boolean flag if the NetworkHealthService mojo remote has been sent from
-  // Chrome and bound in cros_healthd.
-  bool network_health_bound@0;
-  // Boolean flag if the NetworkDiagnosticsService mojo remote has been sent
-  // from Chrome and bound in cros_healthd.
-  bool network_diagnostics_bound@1;
-};
-
-// Interface to query the status of the cros_healthd service.
-//
-// NextMinVersion: 1, NextIndex: 1
-[Stable]
-interface CrosHealthdSystemService {
-  // Returns the status of the cros_healthd service and external mojo remotes.
-  GetServiceStatus@0() => (ServiceStatus response);
-};
-
-// Wilco EC (embedded controller) interface exposed by the cros_healthd daemon.
-// This is to be used by the wilco_dtc and wilco_dtc_supportd processes to
-// interact with the cros_healthd ec_service, observe EC events, and request
-// telemetry information.
-// ChromeOS wilco_dtc_supportd will use this to capture EC events and telemetry
-// to be communicated to the sandboxed wilco_dtc which uses external,
-// proprietary code to communicate with Dell enterprise telemetry services
-// through the browser.
-// See go/wilco-ec for more information
-//
-// NextMinVersion: 1, NextIndex: 4
-[Stable]
-interface WilcoEcServiceController {
-  // Adds an observer to be notified on EC events. The caller can remove the
-  // observer created by this call by closing their end of the message pipe.
-  //
-  // The request:
-  // * |observer| - EC observer to be added to cros_healthd.
-  AddEcObserver@0(pending_remote<WilcoEcObserver> observer);
-
-  // Returns EC telemetry
-  //
-  // The request:
-  // * |payload_string| - a byte string produced by the wilco_dtc VM.
-  //
-  // The response:
-  // * |response| - a structure containing a byte string and a status code.
-  GetEcTelemetry@1(string payload_string) => (GetEcTelemetryResponse response);
-
-  // Starts the Service.
-  StartEcService@2();
-
-  // Shuts down the Service.
-  ShutdownEcService@3();
 };

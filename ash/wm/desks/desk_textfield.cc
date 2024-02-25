@@ -118,24 +118,24 @@ views::View* DeskTextfield::GetView() {
   return this;
 }
 
-void DeskTextfield::MaybeActivateHighlightedView() {
+void DeskTextfield::MaybeActivateFocusedView() {
   RequestFocus();
 }
 
-void DeskTextfield::MaybeCloseHighlightedView(bool primary_action) {}
+void DeskTextfield::MaybeCloseFocusedView(bool primary_action) {}
 
-void DeskTextfield::MaybeSwapHighlightedView(bool right) {}
+void DeskTextfield::MaybeSwapFocusedView(bool right) {}
 
-void DeskTextfield::OnViewHighlighted() {
+void DeskTextfield::OnFocusableViewFocused() {
   SetShowFocusRing(true);
 }
 
-void DeskTextfield::OnViewUnhighlighted() {
+void DeskTextfield::OnFocusableViewBlurred() {
   SetShowBackground(false);
   SetShowFocusRing(false);
 }
 
-BEGIN_METADATA(DeskTextfield, views::Textfield)
+BEGIN_METADATA(DeskTextfield)
 END_METADATA
 
 }  // namespace ash

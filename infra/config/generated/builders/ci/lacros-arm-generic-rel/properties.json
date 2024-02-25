@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/lacros-arm-generic-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -22,8 +25,7 @@
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "arm-generic",
-                  "jacuzzi"
+                  "arm-generic"
                 ],
                 "target_platform": "chromeos"
               },

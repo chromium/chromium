@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/feature_list.h"

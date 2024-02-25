@@ -56,7 +56,7 @@ void UserCommandArcJob::RunImpl(CallbackWithResult result_callback) {
     // ARC is not enabled for this profile, fail the remote command.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  ResultType::kFailure, absl::nullopt));
+                                  ResultType::kFailure, std::nullopt));
     return;
   }
 
@@ -68,7 +68,7 @@ void UserCommandArcJob::RunImpl(CallbackWithResult result_callback) {
             result == arc::mojom::CommandResultType::IGNORED;
         std::move(result_callback)
             .Run(command_failed ? ResultType::kFailure : ResultType::kSuccess,
-                 absl::nullopt);
+                 std::nullopt);
       },
       std::move(result_callback));
 

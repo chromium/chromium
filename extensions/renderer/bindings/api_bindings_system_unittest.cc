@@ -346,7 +346,7 @@ TEST_F(APIBindingsSystemTest, TestCustomHooks) {
   bool did_call = false;
   auto hook = [](bool* did_call, const APISignature* signature,
                  v8::Local<v8::Context> context,
-                 std::vector<v8::Local<v8::Value>>* arguments,
+                 v8::LocalVector<v8::Value>* arguments,
                  const APITypeReferenceMap& type_refs) {
     *did_call = true;
     APIBindingHooks::RequestResult result(

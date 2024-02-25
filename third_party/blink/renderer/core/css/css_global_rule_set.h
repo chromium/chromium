@@ -36,10 +36,10 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
 
   const RuleFeatureSet& GetRuleFeatureSet() const { return features_; }
   RuleSet* WatchedSelectorsRuleSet() const {
-    return watched_selectors_rule_set_;
+    return watched_selectors_rule_set_.Get();
   }
   RuleSet* DocumentRulesSelectorsRuleSet() const {
-    return document_rules_selectors_rule_set_;
+    return document_rules_selectors_rule_set_.Get();
   }
   bool HasFullscreenUAStyle() const { return has_fullscreen_ua_style_; }
 

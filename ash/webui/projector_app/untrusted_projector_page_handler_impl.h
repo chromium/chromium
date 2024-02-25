@@ -65,15 +65,15 @@ class UntrustedProjectorPageHandlerImpl
   void SendXhr(
       const GURL& url,
       projector::mojom::RequestType method,
-      const absl::optional<std::string>& request_body,
+      const std::optional<std::string>& request_body,
       bool use_credentials,
       bool use_api_key,
-      const absl::optional<base::flat_map<std::string, std::string>>& headers,
-      const absl::optional<std::string>& account_email,
+      const std::optional<base::flat_map<std::string, std::string>>& headers,
+      const std::optional<std::string>& account_email,
       SendXhrCallback callback) override;
   void GetAccounts(GetAccountsCallback callback) override;
   void GetVideo(const std::string& video_file_id,
-                const absl::optional<std::string>& resource_key,
+                const std::optional<std::string>& resource_key,
                 GetVideoCallback callback) override;
 
  protected:
@@ -93,7 +93,7 @@ class UntrustedProjectorPageHandlerImpl
   mojo::Remote<projector::mojom::UntrustedProjectorPage> projector_remote_;
 
   // Primary user pref service.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   ProjectorXhrSender xhr_sender_;
 
   base::WeakPtrFactory<UntrustedProjectorPageHandlerImpl> weak_ptr_factory_{

@@ -48,22 +48,18 @@ class WebRtcMediaRecorderTest
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
-  }
 
-  void MaybeForceDisableEncodeAccelerator(bool disable) {
-    if (!disable)
-      return;
-    // This flag is also used for encoding, https://crbug.com/616640.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableAcceleratedVideoDecode);
+    if (GetParam().disable_accelerator) {
+      command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Start) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Start) {
   MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, StartAndStop) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
@@ -74,7 +70,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, StartAndStop) {
 #define MAYBE_StartAndDataAvailable StartAndDataAvailable
 #endif
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartAndDataAvailable) {
-  MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
@@ -88,17 +83,16 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartAndDataAvailable) {
 #define MAYBE_StartWithTimeSlice StartWithTimeSlice
 #endif
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartWithTimeSlice) {
-  MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartWithTimeSlice(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Resume) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Resume) {
   MakeTypicalCall("testResumeAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
@@ -111,13 +105,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
 #define MAYBE_ResumeAndDataAvailable ResumeAndDataAvailable
 #endif
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_ResumeAndDataAvailable) {
-  MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testResumeAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Pause) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Pause) {
   MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
@@ -127,11 +120,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Pause) {
 #else
 #define MAYBE_PauseStop PauseStop
 #endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, MAYBE_PauseStop) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PauseStop) {
   MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        PausePreventsDataavailableFromBeingFired) {
   MakeTypicalCall("testPausePreventsDataavailableFromBeingFired();",
                   kMediaRecorderHtmlFile);
@@ -143,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #else
 #define MAYBE_IllegalPauseThrowsDOMError IllegalPauseThrowsDOMError
 #endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        MAYBE_IllegalPauseThrowsDOMError) {
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
@@ -154,25 +147,24 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #else
 #define MAYBE_TwoChannelAudioRecording TwoChannelAudioRecording
 #endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        MAYBE_TwoChannelAudioRecording) {
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
-  MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        IllegalStartWhileRecordingThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInRecordingStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        IllegalStartWhilePausedThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInPausedStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
@@ -185,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #else
 #define MAYBE_IllegalRequestDataThrowsDOMError IllegalRequestDataThrowsDOMError
 #endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        MAYBE_IllegalRequestDataThrowsDOMError) {
   MakeTypicalCall("testIllegalRequestDataThrowsDOMError();",
                   kMediaRecorderHtmlFile);
@@ -213,7 +205,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #endif
 
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
-  MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordRemotePeerConnection(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
@@ -231,13 +222,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   AddingTrackToMediaStreamFiresErrorEvent
 #endif
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        MAYBE_AddingTrackToMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testAddingTrackToMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                        RemovingTrackFromMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testRemovingTrackFromMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);

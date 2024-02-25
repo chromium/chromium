@@ -96,28 +96,15 @@ VisibleSelection DOMSelection::GetVisibleSelection() const {
   return Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
 }
 
-bool DOMSelection::IsBaseFirstInSelection() const {
-  return Selection().GetSelectionInDOMTree().IsBaseFirst();
-}
-
-// TODO(tkent): Following four functions based on VisibleSelection should be
-// removed.
-static Position AnchorPosition(const VisibleSelection& selection) {
-  Position anchor =
-      selection.IsBaseFirst() ? selection.Start() : selection.End();
-  return anchor.ParentAnchoredEquivalent();
-}
-
-static Position FocusPosition(const VisibleSelection& selection) {
-  Position focus =
-      selection.IsBaseFirst() ? selection.End() : selection.Start();
-  return focus.ParentAnchoredEquivalent();
+bool DOMSelection::IsAnchorFirstInSelection() const {
+  return Selection().GetSelectionInDOMTree().IsAnchorFirst();
 }
 
 Node* DOMSelection::anchorNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->startContainer();
+    }
     return range->endContainer();
   }
   return nullptr;
@@ -125,8 +112,9 @@ Node* DOMSelection::anchorNode() const {
 
 unsigned DOMSelection::anchorOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->startOffset();
+    }
     return range->endOffset();
   }
   return 0;
@@ -134,8 +122,9 @@ unsigned DOMSelection::anchorOffset() const {
 
 Node* DOMSelection::focusNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->endContainer();
+    }
     return range->startContainer();
   }
   return nullptr;
@@ -143,8 +132,9 @@ Node* DOMSelection::focusNode() const {
 
 unsigned DOMSelection::focusOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->endOffset();
+    }
     return range->startOffset();
   }
   return 0;
@@ -171,7 +161,7 @@ bool DOMSelection::isCollapsed() const {
     return true;
   Node* node = Selection()
                    .ComputeVisibleSelectionInDOMTreeDeprecated()
-                   .Base()
+                   .Anchor()
                    .AnchorNode();
   if (node && node->IsInShadowTree() &&
       DomWindow()->document()->AncestorInThisScope(node)) {
@@ -548,7 +538,7 @@ Range* DOMSelection::PrimaryRangeOrNull() const {
 
 EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   const VisibleSelection& selection = GetVisibleSelection();
-  const Position& anchor = blink::AnchorPosition(selection);
+  const Position& anchor = selection.Anchor().ParentAnchoredEquivalent();
   if (IsSelectionOfDocument() && !anchor.AnchorNode()->IsInShadowTree())
     return FirstEphemeralRangeOf(selection);
 
@@ -556,13 +546,14 @@ EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   if (!anchor_node)  // crbug.com/595100
     return EphemeralRange();
 
-  const Position& focus = FocusPosition(selection);
+  const Position& focus = selection.Focus().ParentAnchoredEquivalent();
   const Position shadow_adjusted_focus =
       Position(ShadowAdjustedNode(focus), ShadowAdjustedOffset(focus));
   const Position shadow_adjusted_anchor =
       Position(anchor_node, ShadowAdjustedOffset(anchor));
-  if (selection.IsBaseFirst())
+  if (selection.IsAnchorFirst()) {
     return EphemeralRange(shadow_adjusted_anchor, shadow_adjusted_focus);
+  }
   return EphemeralRange(shadow_adjusted_focus, shadow_adjusted_anchor);
 }
 

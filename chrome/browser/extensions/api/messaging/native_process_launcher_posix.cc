@@ -55,7 +55,9 @@ bool NativeProcessLauncher::LaunchNativeProcess(
     const base::CommandLine& command_line,
     base::Process* process,
     base::File* read_file,
-    base::File* write_file) {
+    base::File* write_file,
+    // This is only relevant on Windows.
+    bool native_hosts_executables_launch_directly) {
   base::LaunchOptions options;
 
   int read_pipe_fds[2] = {0};

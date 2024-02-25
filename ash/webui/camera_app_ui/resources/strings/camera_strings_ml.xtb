@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">പേജ് <ph name="PAGE_NUMBER" /> ഇല്ലാതാക്കുക</translation>
 <translation id="1113173431709655881">ക്യാമറാ മോഡ്</translation>
 <translation id="1153190633558910465">ഗ്രിഡ് ഓഫാക്കുക</translation>
-<translation id="1175958423215084756">ലിങ്ക് തിരിച്ചറിഞ്ഞു. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">പേജ് <ph name="PAGE_NUMBER" /> ഇല്ലാതാക്കി</translation>
 <translation id="1258009455399840361">ഘടികാരദിശയിൽ 90 ഡിഗ്രി റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-ാമത്തെ പേജ് എഡിറ്റ് ചെയ്യുക</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">വലത്തേക്ക് പാൻ ചെയ്യുക</translation>
 <translation id="3081586908890909590">വീഡിയോ റെക്കോർഡ് ചെയ്യുന്നതിലേക്ക് മാറുക</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" എന്നതിൽ ചേരുക</translation>
 <translation id="3227137524299004712">മൈക്രോഫോൺ</translation>
 <translation id="3240426699337459095">ലിങ്ക് പകർത്തി</translation>
 <translation id="3354465018370944241">ഫോട്ടോ ക്രമീകരണം</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">വീഡിയോ പ്രോസസ് ചെയ്യുന്നു...</translation>
 <translation id="3789724198583203151">എതിർഘടികാരദിശയിൽ 90 ഡിഗ്രി റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="3810838688059735925">വീഡിയോ</translation>
-<translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="4060608699153044055">ഉപകരണത്തിൽ സ്റ്റോറേജ് സ്പെയ്‌സ് കുറവായതിനാൽ നിങ്ങൾക്ക് റെക്കോർഡ് ചെയ്യാനാകില്ല. റെക്കോർഡിംഗ് ആരംഭിക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം സൃഷ്ടിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">റെക്കോർഡ് ചെയ്യൽ തൽക്കാലം നിർത്തുക</translation>
 <translation id="4121305183798804752">ഡോക്യുമെന്റ് കണ്ടെത്തി</translation>
 <translation id="414641094616694804">ഈ ക്യാമറയ്ക്ക് റെസല്യൂഷൻ മാറ്റാനാകില്ല</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
-<translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="428234092390943511">പേജിന്റെ ലഘുചിത്രം</translation>
 <translation id="4349714250734879769">Chrome മുഖേന ഫ്രെയിമുകൾ സ്കെയിൽ ചെയ്യുക</translation>
 <translation id="4383571725254449280">പ്രകടന ലോഗുകൾ പ്രിന്റ് ചെയ്യുക</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">പൂർണ്ണ റെസല്യൂഷൻ</translation>
 <translation id="4864143361253542638">സ്‌കാൻ ചെയ്‌ത പേജുകളുടെ ലിസ്‌റ്റ്</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733"><ph name="URL" /> എന്ന ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="491895758387112773">മൾട്ടിസ്ട്രീം വീഡിയോ റെക്കോർഡിംഗ്</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ഫോട്ടോയുടെ വീക്ഷണ അനുപാതം</translation>
 <translation id="5057360777601936059">നിങ്ങളുടെ ക്യാമറ നിലവിൽ ലഭ്യമല്ല.
         ക്യാമറ ശരിയായി കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടോയെന്ന് പരിശോധിക്കുക.</translation>
+<translation id="5157591164390831335">URL തിരിച്ചറിഞ്ഞു.</translation>
 <translation id="5163387177077603948">വലത് ദിശയിൽ നീങ്ങുന്നു</translation>
-<translation id="5219374179772385066">ടൈം ലാപ്‌സ് മോഡ് ഇപ്പോൾ ലഭ്യമാണ്!</translation>
 <translation id="5235304959032763950">16 അനുപാതം 9</translation>
 <translation id="5266635337630551423">ഡോക്യുമെന്റിന്റെ മുകൾ ഭാഗത്തെ ഇടത് മൂല</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Camera ആപ്പിനെക്കുറിച്ച് ഫീഡ്‌ബാക്ക് നൽകിയതിന് നന്ദി.
 
 നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് ചിത്രത്തെക്കുറിച്ചോ വീഡിയോ നിലവാരത്തെക്കുറിച്ചോ ആണെങ്കിൽ, സാമ്പിൾ ഫോട്ടോയോ വീഡിയോയോ അറ്റാച്ച് ചെയ്‌ത് പ്രശ്‌നം എന്താണെന്ന് വിവരിക്കുക. (ഉദാഹരണത്തിന്, ഫോട്ടോ വളരെ ഇരുണ്ടതാണ് അല്ലെങ്കിൽ വസ്‌തു ഫോക്കസിലല്ല ഉള്ളത്.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> എന്നതിൽ ചേരുക</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6617916774429601017">എല്ലാ റെസൊല്യൂഷനുകളും കാണിക്കുക</translation>
 <translation id="6631515515009660915">മിറർ ചെയ്യൽ ഓഫാക്കുക</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">ടെക്‌സ്റ്റ് പകർത്തി</translation>
 <translation id="7488619942230388918">GIF വീഡിയോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7557677699350329807">അടുത്ത ക്യാമറയിലേക്ക് മാറുക</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> എന്ന ടെക്‌സ്റ്റ് പകർത്തുക</translation>
 <translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
 <translation id="7608223098072244877">4 ബൈ 4</translation>
 <translation id="761421184377987513">താഴെ ഇടത് ദിശയിൽ നീങ്ങുന്നു</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">ക്യാമറ HAL മുഖേന ഫ്രെയിമുകൾ സ്കെയിൽ ചെയ്യുക</translation>
 <translation id="8425673304802773841">താഴേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
+<translation id="8609951387004618906"><ph name="URL" /> തുറക്കുക</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ മാറ്റുക. മ്യൂട്ട് ചെയ്യൽ ഓണാണ്</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8732462232047530626">മെറ്റാഡാറ്റ പ്രിവ്യൂ ചെയ്യൂ</translation>
+<translation id="874854738381978209">വൈഫൈ നെറ്റ്‌വർക്ക് തിരിച്ചറിഞ്ഞു.</translation>
 <translation id="8815966864175525708">പോർട്രെയ്റ്റ് ഫോട്ടോയെടുക്കാൻ സ്വിച്ച് ചെയ്യൂ</translation>
 <translation id="8828441885228359828">റെക്കോർഡ് ചെയ്യൽ പുനരാരംഭിക്കുക</translation>
 <translation id="8870695351537079478">റെക്കോർഡിംഗ് ആരംഭിക്കാനായില്ല</translation>

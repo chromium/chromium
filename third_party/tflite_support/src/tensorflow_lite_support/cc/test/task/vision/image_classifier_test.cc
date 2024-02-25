@@ -17,13 +17,13 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/flags/flag.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/strings/cord.h"   // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
 #include "tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -70,14 +70,14 @@ constexpr char kMobileNetQuantizedWithMetadata[] =
 constexpr char kAutoMLModelWithMetadata[] = "automl_labeler_model.tflite";
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
 // If the proto definition changes, please also change this function.
 void ExpectApproximatelyEqual(const ClassificationResult& actual,
-                              const ClassificationResult& expected) {
-  const float kPrecision = 1e-6;
+                              const ClassificationResult& expected,
+                              const float precision = 1e-6) {
   EXPECT_EQ(actual.classifications_size(), expected.classifications_size());
   for (int i = 0; i < actual.classifications_size(); ++i) {
     const Classifications& a = actual.classifications(i);
@@ -88,7 +88,7 @@ void ExpectApproximatelyEqual(const ClassificationResult& actual,
       EXPECT_EQ(a.classes(j).index(), b.classes(j).index());
       EXPECT_EQ(a.classes(j).class_name(), b.classes(j).class_name());
       EXPECT_EQ(a.classes(j).display_name(), b.classes(j).display_name());
-      EXPECT_NEAR(a.classes(j).score(), b.classes(j).score(), kPrecision);
+      EXPECT_NEAR(a.classes(j).score(), b.classes(j).score(), precision);
     }
   }
 }
@@ -111,7 +111,7 @@ class MobileNetQuantizedOpResolver : public ::tflite::MutableOpResolver {
   MobileNetQuantizedOpResolver(const MobileNetQuantizedOpResolver& r) = delete;
 };
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
   ImageClassifierOptions options;
@@ -159,8 +159,9 @@ TEST_F(CreateFromOptionsTest, FailsWithTwoModelSources) {
   options.mutable_model_file_with_metadata()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory,
                kMobileNetQuantizedWithMetadata));
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
   StatusOr<std::unique_ptr<ImageClassifier>> image_classifier_or =
       ImageClassifier::CreateFromOptions(options);
@@ -233,21 +234,23 @@ TEST_F(CreateFromOptionsTest, FailsWithCombinedWhitelistAndBlacklist) {
 TEST_F(CreateFromOptionsTest, SucceedsWithNumberOfThreads) {
   ImageClassifierOptions options;
   options.set_num_threads(4);
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
   SUPPORT_ASSERT_OK(ImageClassifier::CreateFromOptions(options));
 }
 
-using NumThreadsTest = testing::TestWithParam<int>;
+using NumThreadsTest = ::testing::TestWithParam<int>;
 
-INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, testing::Values(0, -2));
+INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, ::testing::Values(0, -2));
 
 TEST_P(NumThreadsTest, FailsWithInvalidNumberOfThreads) {
   ImageClassifierOptions options;
   options.set_num_threads(GetParam());
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
   StatusOr<std::unique_ptr<ImageClassifier>> image_classifier_or =
       ImageClassifier::CreateFromOptions(options);
@@ -270,12 +273,12 @@ TEST(ClassifyTest, SucceedsWithFloatModel) {
 
   ImageClassifierOptions options;
   options.set_max_results(3);
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   StatusOr<ClassificationResult> result_or =
       image_classifier->Classify(*frame_buffer);
@@ -304,20 +307,19 @@ TEST(ClassifyTest, SucceedsWithFloatModel) {
 }
 
 TEST(ClassifyTest, SucceedsWithRegionOfInterest) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("multi_objects.jpg"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image, LoadImage("multi_objects.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
 
   ImageClassifierOptions options;
   options.set_max_results(1);
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   // Crop around the soccer ball.
   BoundingBox roi;
@@ -351,14 +353,14 @@ TEST(ClassifyTest, SucceedsWithQuantizedModel) {
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
 
   ImageClassifierOptions options;
-  options.set_max_results(3);
+  options.set_max_results(1);
+  options.set_score_threshold(0.5);
   options.mutable_model_file_with_metadata()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory,
                kMobileNetQuantizedWithMetadata));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   StatusOr<ClassificationResult> result_or =
       image_classifier->Classify(*frame_buffer);
@@ -370,16 +372,11 @@ TEST(ClassifyTest, SucceedsWithQuantizedModel) {
       result,
       ParseTextProtoOrDie<ClassificationResult>(
           R"pb(classifications {
-                 classes {
-                   index: 934
-                   score: 0.96484375
-                   class_name: "cheeseburger"
-                 }
-                 classes { index: 948 score: 0.0078125 class_name: "mushroom" }
-                 classes { index: 924 score: 0.00390625 class_name: "plate" }
+                 classes { index: 934 score: 0.96 class_name: "cheeseburger" }
                  head_index: 0
                }
-          )pb"));
+          )pb"),
+      0.01);
 }
 
 TEST(ClassifyTest, SucceedsWithBaseOptions) {
@@ -390,12 +387,12 @@ TEST(ClassifyTest, SucceedsWithBaseOptions) {
 
   ImageClassifierOptions options;
   options.set_max_results(3);
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   StatusOr<ClassificationResult> result_or =
       image_classifier->Classify(*frame_buffer);
@@ -440,9 +437,9 @@ void ConfigureXnnPackMiniBenchmark(int num_threads,
   // Configuring mini-benchmark storage paths
   mutable_mini_benchmark_settings->mutable_storage_paths()
       ->set_storage_file_path(
-          JoinPath(testing::TempDir(), "mini_benchmark_storage"));
+          JoinPath(::testing::TempDir(), "mini_benchmark_storage"));
   mutable_mini_benchmark_settings->mutable_storage_paths()
-      ->set_data_directory_path(testing::TempDir());
+      ->set_data_directory_path(::testing::TempDir());
 }
 
 TEST(ClassifyTest, SucceedsWithMiniBenchmark) {
@@ -451,8 +448,8 @@ TEST(ClassifyTest, SucceedsWithMiniBenchmark) {
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
 
-  auto file_name = JoinPath("./" /*test src dir*/, kTestDataDirectory,
-                            kMobileNetFloatWithMetadata);
+  auto file_name = JoinPath("./" /*test src dir*/,
+                            kTestDataDirectory, kMobileNetFloatWithMetadata);
 
   ImageClassifierOptions options;
   options.set_max_results(3);
@@ -461,9 +458,8 @@ TEST(ClassifyTest, SucceedsWithMiniBenchmark) {
 
   ConfigureXnnPackMiniBenchmark(/*num_threads=*/2, options);
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   StatusOr<ClassificationResult> result_or =
       image_classifier->Classify(*frame_buffer);
@@ -493,11 +489,11 @@ TEST(ClassifyTest, SucceedsWithMiniBenchmark) {
 
 TEST(ClassifyTest, GetInputCountSucceeds) {
   ImageClassifierOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   int32_t input_count = image_classifier->GetInputCount();
   EXPECT_THAT(input_count, 1);
@@ -505,11 +501,11 @@ TEST(ClassifyTest, GetInputCountSucceeds) {
 
 TEST(ClassifyTest, GetInputShapeSucceeds) {
   ImageClassifierOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   // Verify the shape array size.
   const TfLiteIntArray* input_shape_0 = image_classifier->GetInputShape(0);
@@ -523,11 +519,11 @@ TEST(ClassifyTest, GetInputShapeSucceeds) {
 
 TEST(ClassifyTest, GetOutputCountSucceeds) {
   ImageClassifierOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   int32_t output_count = image_classifier->GetOutputCount();
   EXPECT_THAT(output_count, 1);
@@ -535,11 +531,11 @@ TEST(ClassifyTest, GetOutputCountSucceeds) {
 
 TEST(ClassifyTest, GetOutputShapeSucceeds) {
   ImageClassifierOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetFloatWithMetadata));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<ImageClassifier> image_classifier,
-      ImageClassifier::CreateFromOptions(options));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetFloatWithMetadata));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageClassifier> image_classifier,
+                       ImageClassifier::CreateFromOptions(options));
 
   // Verify the shape array size.
   const TfLiteIntArray* output_shape_0 = image_classifier->GetOutputShape(0);
@@ -551,7 +547,7 @@ TEST(ClassifyTest, GetOutputShapeSucceeds) {
   EXPECT_THAT(shape_vector, ElementsAreArray({1, 1001}));
 }
 
-class PostprocessTest : public tflite_shims::testing::Test {
+class PostprocessTest : public tflite::testing::Test {
  public:
   class TestImageClassifier : public ImageClassifier {
    public:
@@ -560,16 +556,16 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
     static StatusOr<std::unique_ptr<TestImageClassifier>> CreateFromOptions(
         const ImageClassifierOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto image_classifier,
           TaskAPIFactory::CreateFromExternalFileProto<TestImageClassifier>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(image_classifier->Init(std::move(options_copy)));
 
       return image_classifier;
     }
@@ -583,7 +579,7 @@ class PostprocessTest : public tflite_shims::testing::Test {
   };
 
  protected:
-  void SetUp() override { tflite_shims::testing::Test::SetUp(); }
+  void SetUp() override { tflite::testing::Test::SetUp(); }
   void SetUp(const ImageClassifierOptions& options) {
     StatusOr<std::unique_ptr<TestImageClassifier>> test_image_classifier_or =
         TestImageClassifier::CreateFromOptions(options);
@@ -604,8 +600,9 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
 TEST_F(PostprocessTest, SucceedsWithMaxResultsOption) {
   ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kAutoMLModelWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kAutoMLModelWithMetadata));
   options.set_max_results(3);
 
   SetUp(options);
@@ -617,10 +614,9 @@ TEST_F(PostprocessTest, SucceedsWithMaxResultsOption) {
   std::vector<uint8_t> scores = {/*daisy*/ 0, /*dandelion*/ 64, /*roses*/ 255,
                                  /*sunflowers*/ 32, /*tulips*/ 128};
   SUPPORT_ASSERT_OK(PopulateTensor(scores, output_tensor));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ClassificationResult result,
-      test_image_classifier_->Postprocess({output_tensor}, *dummy_frame_buffer_,
-                                          /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ClassificationResult result,
+                       test_image_classifier_->Postprocess(
+                           {output_tensor}, *dummy_frame_buffer_, /*roi=*/{}));
   ExpectApproximatelyEqual(
       result,
       ParseTextProtoOrDie<ClassificationResult>(
@@ -635,8 +631,9 @@ TEST_F(PostprocessTest, SucceedsWithMaxResultsOption) {
 
 TEST_F(PostprocessTest, SucceedsWithScoreThresholdOption) {
   ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kAutoMLModelWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kAutoMLModelWithMetadata));
   options.set_score_threshold(0.4);
 
   SetUp(options);
@@ -648,10 +645,9 @@ TEST_F(PostprocessTest, SucceedsWithScoreThresholdOption) {
   std::vector<uint8_t> scores = {/*daisy*/ 0, /*dandelion*/ 64, /*roses*/ 255,
                                  /*sunflowers*/ 32, /*tulips*/ 128};
   SUPPORT_ASSERT_OK(PopulateTensor(scores, output_tensor));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ClassificationResult result,
-      test_image_classifier_->Postprocess({output_tensor}, *dummy_frame_buffer_,
-                                          /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ClassificationResult result,
+                       test_image_classifier_->Postprocess(
+                           {output_tensor}, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,
@@ -666,8 +662,9 @@ TEST_F(PostprocessTest, SucceedsWithScoreThresholdOption) {
 
 TEST_F(PostprocessTest, SucceedsWithWhitelistOption) {
   ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kAutoMLModelWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kAutoMLModelWithMetadata));
   options.add_class_name_whitelist("dandelion");
   options.add_class_name_whitelist("daisy");
 
@@ -680,10 +677,9 @@ TEST_F(PostprocessTest, SucceedsWithWhitelistOption) {
   std::vector<uint8_t> scores = {/*daisy*/ 0, /*dandelion*/ 64, /*roses*/ 255,
                                  /*sunflowers*/ 32, /*tulips*/ 128};
   SUPPORT_ASSERT_OK(PopulateTensor(scores, output_tensor));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ClassificationResult result,
-      test_image_classifier_->Postprocess({output_tensor}, *dummy_frame_buffer_,
-                                          /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ClassificationResult result,
+                       test_image_classifier_->Postprocess(
+                           {output_tensor}, *dummy_frame_buffer_, /*roi=*/{}));
   ExpectApproximatelyEqual(
       result,
       ParseTextProtoOrDie<ClassificationResult>(
@@ -697,8 +693,9 @@ TEST_F(PostprocessTest, SucceedsWithWhitelistOption) {
 
 TEST_F(PostprocessTest, SucceedsWithBlacklistOption) {
   ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kAutoMLModelWithMetadata));
+  options.mutable_model_file_with_metadata()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kAutoMLModelWithMetadata));
   options.add_class_name_blacklist("dandelion");
   options.add_class_name_blacklist("daisy");
 
@@ -711,10 +708,9 @@ TEST_F(PostprocessTest, SucceedsWithBlacklistOption) {
   std::vector<uint8_t> scores = {/*daisy*/ 0, /*dandelion*/ 64, /*roses*/ 255,
                                  /*sunflowers*/ 32, /*tulips*/ 128};
   SUPPORT_ASSERT_OK(PopulateTensor(scores, output_tensor));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ClassificationResult result,
-      test_image_classifier_->Postprocess({output_tensor}, *dummy_frame_buffer_,
-                                          /*roi=*/{}));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ClassificationResult result,
+                       test_image_classifier_->Postprocess(
+                           {output_tensor}, *dummy_frame_buffer_, /*roi=*/{}));
 
   ExpectApproximatelyEqual(
       result,

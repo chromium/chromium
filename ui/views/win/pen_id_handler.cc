@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -50,6 +51,8 @@ class PenIdStatics {
         base::win::HStringReference(RuntimeClass_Windows_UI_Input_PointerPoint)
             .Get(),
         IID_PPV_ARGS(&pointer_point_statics_));
+    TRACE_EVENT_INSTANT0("event", "PenIdStatics::PenIdStatics",
+                         TRACE_EVENT_SCOPE_THREAD);
   }
 
   static PenIdStatics* GetInstance() {
@@ -117,12 +120,12 @@ PenIdHandler::PenIdHandler() {
 
 PenIdHandler::~PenIdHandler() = default;
 
-absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
+std::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
   if (!PenDeviceApiSupported()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> guid = TryGetGuid(pointer_id);
+  std::optional<std::string> guid = TryGetGuid(pointer_id);
   if (guid.has_value()) {
     auto entry = guid_to_id_map_.insert({guid.value(), current_id_});
     if (entry.second) {
@@ -139,34 +142,43 @@ absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
     return transducer_id_to_id_map_[transducer_id];
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
+std::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   // Override pen device statics if in a test.
   const Microsoft::WRL::ComPtr<IPenDeviceStatics> pen_device_statics =
       get_pen_device_statics ? (*get_pen_device_statics)()
                              : PenIdStatics::GetInstance()->PenDeviceStatics();
 
-  // Return absl::nullopt if we are not in a testing environment and the
+  // Return std::nullopt if we are not in a testing environment and the
   // pen device statics haven't loaded or if statics are null.
   if (!pen_device_statics) {
-    return absl::nullopt;
+    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid no statics",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return std::nullopt;
   }
 
   Microsoft::WRL::ComPtr<IPenDevice> pen_device;
   HRESULT hr = pen_device_statics->GetFromPointerId(pointer_id, &pen_device);
   // `pen_device` is null if the pen does not support a unique ID.
   if (FAILED(hr) || !pen_device) {
-    return absl::nullopt;
+    TRACE_EVENT_INSTANT0("event",
+                         "PenIdHandler::TryGetGuid GetFromPointerId failed",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return std::nullopt;
   }
 
   GUID pen_device_guid;
   hr = pen_device->get_PenId(&pen_device_guid);
   if (FAILED(hr)) {
-    return absl::nullopt;
+    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid get_PenId failed",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return std::nullopt;
   }
 
+  TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid successful",
+                       TRACE_EVENT_SCOPE_THREAD);
   return base::WideToUTF8(base::win::WStringFromGUID(pen_device_guid));
 }
 
@@ -180,6 +192,8 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
 
   TransducerId transducer_id;
   if (!pointer_point_statics) {
+    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetTransducerId no statics",
+                         TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
@@ -187,12 +201,18 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
   HRESULT hr =
       pointer_point_statics->GetCurrentPoint(pointer_id, &pointer_point);
   if (hr != S_OK) {
+    TRACE_EVENT_INSTANT0(
+        "event", "PenIdHandler::TryGetTransducerId GetCurrentPoint failed",
+        TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
   ComPtr<IPointerPointProperties> pointer_point_properties;
   hr = pointer_point->get_Properties(&pointer_point_properties);
   if (hr != S_OK) {
+    TRACE_EVENT_INSTANT0(
+        "event", "PenIdHandler::TryGetTransducerId get_Properties failed",
+        TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
@@ -202,6 +222,8 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
                                           HID_USAGE_ID_TSN, &has_tsn);
 
   if (hr != S_OK || !has_tsn) {
+    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetTransducerId no tsn",
+                         TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
@@ -209,6 +231,9 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
       HID_USAGE_PAGE_DIGITIZER, HID_USAGE_ID_TSN, &transducer_id.tsn);
 
   if (hr != S_OK || transducer_id.tsn == TransducerId::kInvalidTSN) {
+    TRACE_EVENT_INSTANT0("event",
+                         "PenIdHandler::TryGetTransducerId invalid tsn",
+                         TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
@@ -218,12 +243,16 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
                                           HID_USAGE_ID_TVID, &has_tvid);
 
   if (hr != S_OK || !has_tvid) {
+    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetTransducerId no tvid",
+                         TRACE_EVENT_SCOPE_THREAD);
     return transducer_id;
   }
 
   hr = pointer_point_properties->GetUsageValue(
       HID_USAGE_PAGE_DIGITIZER, HID_USAGE_ID_TVID, &transducer_id.tvid);
 
+  TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetTransducerId",
+                       TRACE_EVENT_SCOPE_THREAD);
   return transducer_id;
 }
 

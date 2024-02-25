@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
+#include "ash/shell.h"
 #include "ash/utility/layer_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_constants.h"
@@ -19,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -82,6 +84,8 @@ std::unique_ptr<ui::LayerTreeOwner> CreateAnimationLayerOwner(
 void TakeScreenshot(
     aura::Window* root,
     viz::CopyOutputRequest::CopyOutputRequestCallback on_screenshot_taken) {
+  CHECK(root);
+
   auto* screenshot_layer =
       root->GetChildById(kShellWindowId_ScreenAnimationContainer)->layer();
 
@@ -136,6 +140,9 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
   DCHECK(delegate_);
 
+  // Observe root window removals.
+  Shell::Get()->AddShellObserver(this);
+
   screenshot_layers_.resize(desks_util::GetMaxNumberOfDesks());
 }
 
@@ -146,6 +153,8 @@ RootWindowDeskSwitchAnimator::~RootWindowDeskSwitchAnimator() {
   // display is removed.
   if (!attached_sequences().empty())
     StopObservingImplicitAnimations();
+
+  Shell::Get()->RemoveShellObserver(this);
 }
 
 void RootWindowDeskSwitchAnimator::TakeStartingDeskScreenshot() {
@@ -246,10 +255,10 @@ bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   return true;
 }
 
-absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
+std::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
     float scroll_delta_x) {
   if (!starting_desk_screenshot_taken_ || !ending_desk_screenshot_taken_)
-    return absl::nullopt;
+    return std::nullopt;
 
   const float translation_delta_x =
       TouchpadToXTranslation(scroll_delta_x, x_translation_offset_);
@@ -314,7 +323,7 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
                 -kMinDistanceBeforeScreenshotDp;
 
   if (!going_out_of_bounds)
-    return absl::nullopt;
+    return std::nullopt;
 
   // The upcoming desk we need to show will be an adjacent desk to the desk at
   // the visible desk index based on |moving_left|.
@@ -324,7 +333,7 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   if (new_desk_index < 0 ||
       new_desk_index >=
           static_cast<int>(DesksController::Get()->desks().size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return new_desk_index;
@@ -440,6 +449,18 @@ void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
   delegate_->OnDeskSwitchAnimationFinished();
 }
 
+void RootWindowDeskSwitchAnimator::OnRootWindowWillShutdown(
+    aura::Window* root_window) {
+  if (root_window != root_window_) {
+    return;
+  }
+
+  // The root window we are working on is about to go away, so we must not use
+  // it anymore.
+  root_window_ = nullptr;
+  animator_failed_ = true;
+}
+
 ui::Layer* RootWindowDeskSwitchAnimator::GetAnimationLayerForTesting() const {
   return animation_layer_owner_->root();
 }
@@ -459,10 +480,11 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
   // Add the layers on top of everything, so that things that result from desk
   // activation (such as showing and hiding windows, exiting overview mode ...
   // etc.) are not visible to the user.
+  CHECK(root_window_);
   auto* root_layer = root_window_->layer();
   root_layer->Add(animation_layer);
 
-  if (for_remove_) {
+  if (for_remove_ && is_combine_desks_type_) {
     DCHECK(old_windows_layer_tree_owner_);
     auto* old_windows_layer = old_windows_layer_tree_owner_->root();
     DCHECK(old_windows_layer);
@@ -482,44 +504,56 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
 
 void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
+  if (animator_failed_) {
+    delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
+    return;
+  }
+
   if (!copy_result || copy_result->IsEmpty()) {
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
     // (See viz::Surface::ActivateFrame()).
+    base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, false);
     if (++starting_desk_screenshot_retries_ <= kMaxScreenshotRetries) {
       TakeStartingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the starting desk.";
-      NOTREACHED();
-      starting_desk_screenshot_taken_ = true;
+      animator_failed_ = true;
       delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
     }
 
     return;
   }
 
+  base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, true);
   CompleteAnimationPhase1WithLayer(CreateLayerFromCopyOutputResult(
       std::move(copy_result), root_window_size_));
 }
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
+  if (animator_failed_) {
+    delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
+    return;
+  }
+
   if (!copy_result || copy_result->IsEmpty()) {
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
     // (See viz::Surface::ActivateFrame()).
+    base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, false);
     if (++ending_desk_screenshot_retries_ <= kMaxScreenshotRetries) {
       TakeEndingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the ending desk.";
-      NOTREACHED();
-      ending_desk_screenshot_taken_ = true;
+      animator_failed_ = true;
       delegate_->OnEndingDeskScreenshotTaken();
     }
 
     return;
   }
 
+  base::UmaHistogramBoolean(kDeskSwitchScreenshotResultHistogramName, true);
   ui::Layer* ending_desk_screenshot_layer =
       CreateLayerFromCopyOutputResult(std::move(copy_result), root_window_size_)
           .release();

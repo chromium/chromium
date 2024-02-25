@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_DEBUGD_NOTIFICATION_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -31,9 +31,9 @@ class DebugdNotificationHandler : public DebugDaemonClient::Observer {
  private:
   std::unique_ptr<message_center::Notification> CreateNotification();
   void CloseNotification();
-  void OnButtonClick(absl::optional<int> /* button_idx */);
+  void OnButtonClick(std::optional<int> /* button_idx */);
 
-  const raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
+  const raw_ptr<DebugDaemonClient> debug_daemon_client_;
   base::WeakPtrFactory<DebugdNotificationHandler> weak_ptr_factory_{this};
 };
 

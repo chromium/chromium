@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -80,13 +80,15 @@ BASE_FEATURE(kHistoryClustersVisitDeduping,
              "HistoryClustersVisitDeduping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(manukh): Enabled by default in m122; clean up feature code in 2/21/24
+//   when m122 reaches stable.
 BASE_FEATURE(kJourneysIncludeSyncedVisits,
              "JourneysIncludeSyncedVisits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kJourneysPersistCachesToPrefs,
              "JourneysPersistCachesToPrefs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
@@ -99,7 +101,7 @@ BASE_FEATURE(kJourneysNamedNewTabGroups,
 
 BASE_FEATURE(kJourneysZeroStateFiltering,
              "JourneysZeroStateFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 
@@ -113,6 +115,12 @@ const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
 
 BASE_FEATURE(kRenameJourneys,
              "RenameJourneys",
-             enabled_by_default_desktop_only);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Intended to be Enabled by default on Desktop and the flag left here as a
+// killswitch.
+BASE_FEATURE(kSearchesFindUngroupedVisits,
+             "GroupedHistorySearchesFindUngroupedVisits",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace history_clusters

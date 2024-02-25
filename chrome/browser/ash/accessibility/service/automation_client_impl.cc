@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,8 @@ AutomationClientImpl::~AutomationClientImpl() {
       nullptr);
 }
 
-void AutomationClientImpl::Bind(
-    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
-    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
+void AutomationClientImpl::BindAutomation(
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) {
   // Launches the service if it wasn't running yet.
   // Development note (crbug.com/1355633): Using the remote router means
   // extensions don't get a11y events when AutomationClientImpl is bound, so
@@ -34,6 +33,10 @@ void AutomationClientImpl::Bind(
         this);
   }
   automation_remotes_.Add(std::move(automation));
+}
+
+void AutomationClientImpl::BindAutomationClient(
+    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_receivers_.Add(this, std::move(automation_client));
 }
 
@@ -82,7 +85,7 @@ void AutomationClientImpl::DispatchActionResult(
 
 void AutomationClientImpl::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   // TODO(crbug.com/1355633): Send to AccessibilityService.
   // for (auto& remote : automation_remotes_) {
   //   remote->DispatchGetTextLocationDataResult(data, rect);

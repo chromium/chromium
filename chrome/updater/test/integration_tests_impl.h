@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -42,17 +42,28 @@ enum class AppBundleWebCreateMode {
 };
 
 struct AppUpdateExpectation {
-  AppUpdateExpectation(const std::string& app_id,
+  AppUpdateExpectation(const std::string& args,
+                       const std::string& app_id,
                        const base::Version& from_version,
                        const base::Version& to_version,
                        bool is_install,
                        bool should_update,
                        bool allow_rollback,
                        const std::string& target_version_prefix,
-                       const base::FilePath& crx_relative_path);
+                       const std::string& target_channel,
+                       const base::FilePath& crx_relative_path,
+                       bool always_serve_crx = false,
+                       const UpdateService::ErrorCategory error_category =
+                           UpdateService::ErrorCategory::kService,
+                       const int error_code = static_cast<int>(
+                           UpdateService::Result::kUpdateCanceled),
+                       const int event_type = /*EVENT_UPDATE_COMPLETE=*/3,
+                       const std::string& custom_app_response = {},
+                       const std::string& response_status = {});
   AppUpdateExpectation(const AppUpdateExpectation&);
   ~AppUpdateExpectation();
 
+  const std::string args;
   const std::string app_id;
   const base::Version from_version;
   const base::Version to_version;
@@ -60,7 +71,14 @@ struct AppUpdateExpectation {
   const bool should_update;
   const bool allow_rollback;
   const std::string target_version_prefix;
+  const std::string target_channel;
   const base::FilePath crx_relative_path;
+  const bool always_serve_crx;
+  const UpdateService::ErrorCategory error_category;
+  const int error_code;
+  const int event_type;
+  const std::string custom_app_response;
+  const std::string response_status;
 };
 
 // Returns the path to the updater installer program (in the build output
@@ -104,6 +122,10 @@ void ExitTestMode(UpdaterScope scope);
 // Sets the external constants for group policies.
 void SetGroupPolicies(const base::Value::Dict& values);
 
+// Sets platform policies. Platform policy is group policy on Windows, and
+// Managed Preferences on macOS.
+void SetPlatformPolicies(const base::Value::Dict& values);
+
 // Sets whether the machine is in managed state.
 void SetMachineManaged(bool is_managed_device);
 
@@ -120,8 +142,13 @@ void ExpectInstalled(UpdaterScope scope);
 // Installs the updater.
 void Install(UpdaterScope scope);
 
-// Installs the updater and an app.
-void InstallUpdaterAndApp(UpdaterScope scope, const std::string& app_id);
+// Installs the updater and an app via the command line.
+void InstallUpdaterAndApp(UpdaterScope scope,
+                          const std::string& app_id,
+                          bool is_silent_install,
+                          const std::string& tag,
+                          const std::string& child_window_text_to_find,
+                          bool always_launch_cmd);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -166,7 +193,9 @@ void UpdateAll(UpdaterScope scope);
 
 // Invokes the active instance's UpdateService::Install (via RPC) for an
 // app.
-void InstallAppViaService(UpdaterScope scope, const std::string& app_id);
+void InstallAppViaService(UpdaterScope scope,
+                          const std::string& app_id,
+                          const base::Value::Dict& expected_final_values);
 
 void GetAppStates(UpdaterScope updater_scope,
                   const base::Value::Dict& expected_app_states);
@@ -187,10 +216,12 @@ void DeleteUpdaterDirectory(UpdaterScope scope);
 void DeleteActiveUpdaterExecutable(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
-void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
+void Run(UpdaterScope scope,
+         base::CommandLine command_line,
+         int* exit_code = nullptr);
 
 // Returns the path of the Updater executable.
-absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
+std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
@@ -230,6 +261,10 @@ void ExpectRegistered(UpdaterScope scope, const std::string& app_id);
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id);
 
+void ExpectAppTag(UpdaterScope scope,
+                  const std::string& app_id,
+                  const std::string& tag);
+
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version);
@@ -248,7 +283,8 @@ void ExpectLegacyUpdate3WebSucceeds(
     const std::string& app_id,
     AppBundleWebCreateMode app_bundle_web_create_mode,
     int expected_final_state,
-    int expected_error_code);
+    int expected_error_code,
+    bool cancel_when_downloading);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
@@ -273,7 +309,9 @@ int CountDirectoryFiles(const base::FilePath& dir);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
-void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server);
+void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type);
+
+void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
@@ -308,6 +346,7 @@ void ExpectInstallSequence(UpdaterScope scope,
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,
+                              const base::Value::Dict& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps);
 
 void StressUpdateService(UpdaterScope scope);
@@ -318,14 +357,28 @@ void CallServiceUpdate(UpdaterScope updater_scope,
                        bool same_version_update_allowed);
 
 void SetupFakeLegacyUpdater(UpdaterScope scope);
+
 #if BUILDFLAG(IS_WIN)
 void RunFakeLegacyUpdater(UpdaterScope scope);
+
+// Dismiss the installation completion dialog, then wait for the process
+// exit.
+void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+void PrivilegedHelperInstall(UpdaterScope scope);
+void DeleteLegacyUpdater(UpdaterScope scope);
+void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path);
+#endif  // BUILDFLAG(IS_MAC)
+
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);
 
 void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version);
+
+void SetLastChecked(UpdaterScope scope, const base::Time& time);
 
 void ExpectLastChecked(UpdaterScope scope);
 
@@ -347,7 +400,13 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
+// Stores a device management enrollment token and deletes any existing
+// stored device management token (for the already-enrolled state).
+// Requires root permissions.
+void DMPushEnrollmentToken(const std::string& enrollment_token);
+
 void DMDeregisterDevice(UpdaterScope scope);
+
 void DMCleanup(UpdaterScope scope);
 
 void ExpectDeviceManagementRegistrationRequest(

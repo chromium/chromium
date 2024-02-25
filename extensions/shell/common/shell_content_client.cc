@@ -4,7 +4,8 @@
 
 #include "extensions/shell/common/shell_content_client.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/common/constants.h"
@@ -86,7 +87,7 @@ std::u16string ShellContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::StringPiece ShellContentClient::GetDataResource(
+std::string_view ShellContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

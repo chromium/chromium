@@ -7,11 +7,13 @@
 
 #include "ash/system/federated/federated_service_controller.h"
 
+#include "ash/ash_export.h"
+
 namespace ash::federated {
 
 // Test version of FederatedServiceController.
 // Mocks out IsServiceAvailable() to always return true.
-class TestFederatedServiceController
+class ASH_EXPORT TestFederatedServiceController
     : public ash::federated::FederatedServiceController {
  public:
   TestFederatedServiceController() = default;

@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -28,14 +27,13 @@ public class ScrimProperties {
      * An invalid color that can be specified for {@link #BACKGROUND_COLOR}. This will trigger the
      * use of the default color set when the {@link ScrimCoordinator} was constructed.
      */
-    @ColorInt
-    public static final int INVALID_COLOR = Color.TRANSPARENT;
+    @ColorInt public static final int INVALID_COLOR = Color.TRANSPARENT;
 
     /**
-     * The top margin of the scrim. This can be used to shrink the scrim to show items at the
-     * top of the screen.
+     * The top margin of the scrim. This can be used to shrink the scrim to show items at the top of
+     * the screen.
      */
-    public static final ReadableIntPropertyKey TOP_MARGIN = new ReadableIntPropertyKey();
+    public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
 
     /** Whether the scrim should affect the status bar color. */
     public static final ReadableBooleanPropertyKey AFFECTS_STATUS_BAR =
@@ -57,9 +55,7 @@ public class ScrimProperties {
     public static final ReadableObjectPropertyKey<Runnable> CLICK_DELEGATE =
             new ReadableObjectPropertyKey<>();
 
-    /**
-     * The transparency of the scrim. This is an internal property that only the scrim knows about.
-     */
+    /** The transparency of the scrim. This is an internal property that only the scrim knows about. */
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     /**
@@ -96,11 +92,24 @@ public class ScrimProperties {
 
     /** A subset of {@link #ALL_KEYS} that are required to use the scrim. */
     public static final PropertyKey[] REQUIRED_KEYS =
-            new PropertyKey[] {TOP_MARGIN, AFFECTS_STATUS_BAR, ANCHOR_VIEW,
-                    SHOW_IN_FRONT_OF_ANCHOR_VIEW, VISIBILITY_CALLBACK, CLICK_DELEGATE, ALPHA};
+            new PropertyKey[] {
+                TOP_MARGIN,
+                AFFECTS_STATUS_BAR,
+                ANCHOR_VIEW,
+                SHOW_IN_FRONT_OF_ANCHOR_VIEW,
+                VISIBILITY_CALLBACK,
+                CLICK_DELEGATE,
+                ALPHA
+            };
 
     /** All keys used for the scrim, including optional ones (see {@link #REQUIRED_KEYS}). */
-    public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(REQUIRED_KEYS,
-            new PropertyKey[] {BACKGROUND_COLOR, BACKGROUND_DRAWABLE, GESTURE_DETECTOR,
-                    AFFECTS_NAVIGATION_BAR});
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    REQUIRED_KEYS,
+                    new PropertyKey[] {
+                        BACKGROUND_COLOR,
+                        BACKGROUND_DRAWABLE,
+                        GESTURE_DETECTOR,
+                        AFFECTS_NAVIGATION_BAR
+                    });
 }

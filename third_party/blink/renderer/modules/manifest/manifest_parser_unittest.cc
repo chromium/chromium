@@ -7,15 +7,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -64,6 +65,7 @@ class ManifestParserTest : public testing::Test {
   const KURL& DefaultManifestUrl() const { return default_manifest_url; }
 
  private:
+  test::TaskEnvironment task_environment_;
   mojom::blink::ManifestPtr manifest_;
   Vector<String> errors_;
 
@@ -713,19 +715,8 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Parsing fails for 'window-controls-overlay' when WCO flag is disabled.
+  // Do not accept 'window-controls-overlay' as a display mode.
   {
-    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(false);
-    auto& manifest =
-        ParseManifest(R"({ "display": "window-controls-overlay" })");
-    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
-  }
-
-  // Parsing fails for 'window-controls-overlay' when WCO flag is enabled.
-  {
-    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(true);
     auto& manifest =
         ParseManifest(R"({ "display": "window-controls-overlay" })");
     EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
@@ -899,18 +890,8 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Reject 'window-controls-overlay' when WCO flag is disabled.
+  // Accept 'window-controls-overlay'.
   {
-    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(false);
-    auto& manifest = ParseManifest(
-        R"({ "display_override": [ "window-controls-overlay" ] })");
-    EXPECT_TRUE(manifest->display_override.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Accept 'window-controls-overlay' when WCO flag is enabled.
-  {
-    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(true);
     auto& manifest = ParseManifest(
         R"({ "display_override": [ "window-controls-overlay" ] })");
     EXPECT_FALSE(manifest->display_override.empty());
@@ -5859,7 +5840,7 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, PermissionsPolicy) {
+TEST_F(ManifestParserTest, PermissionsPolicyParsesOrigins) {
   auto& manifest = ParseManifest(
       R"({ "permissions_policy": {
                 "geolocation": ["https://example.com"],
@@ -5867,6 +5848,54 @@ TEST_F(ManifestParserTest, PermissionsPolicy) {
         }})");
   EXPECT_EQ(0u, GetErrorCount());
   EXPECT_EQ(2u, manifest->permissions_policy.size());
+  for (const auto& policy : manifest->permissions_policy) {
+    EXPECT_EQ(1u, policy.allowed_origins.size());
+    EXPECT_EQ("https://example.com", policy.allowed_origins[0].Serialize());
+    EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesSelf) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["self"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ("http://foo.com",
+            manifest->permissions_policy[0].self_if_matches->Serialize());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyIgnoresSrc) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["src"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+  EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesNone) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["none"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesWildcard) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["*"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_TRUE(manifest->permissions_policy[0].matches_all_origins);
 }
 
 TEST_F(ManifestParserTest, PermissionsPolicyEmptyOrigin) {
@@ -6523,8 +6552,9 @@ TEST_F(ManifestParserTest, DarkColorOverrideParseRules) {
 TEST_F(ManifestParserTest, TabStripParseRules) {
   using Visibility = mojom::blink::TabStripMemberVisibility;
   {
-    ScopedWebAppTabStripForTest feature(false);
-    // Feature not enabled, should not be parsed.
+    ScopedWebAppTabStripForTest feature1(true);
+    ScopedWebAppTabStripCustomizationsForTest feature2(false);
+    // Tab strip customizations feature not enabled, should not be parsed.
     {
       auto& manifest =
           ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
@@ -6533,13 +6563,14 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     }
   }
   {
-    ScopedWebAppTabStripForTest feature(true);
+    ScopedWebAppTabStripForTest feature1(true);
+    ScopedWebAppTabStripCustomizationsForTest feature2(true);
 
-    // Display mode not 'tabbed', 'tab_strip' should not be parsed.
+    // Display mode not 'tabbed', 'tab_strip' should still be parsed.
     {
       auto& manifest =
           ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
-      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6552,8 +6583,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
 
     // 'tab_strip' object is empty.
     {
-      auto& manifest = ParseManifest(
-          R"({  "display_override": [ "tabbed" ], "tab_strip": {} })");
+      auto& manifest = ParseManifest(R"({  "tab_strip": {} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
@@ -6564,7 +6594,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button are empty objects.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": {}, "new_tab_button": {}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
@@ -6579,7 +6608,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button are invalid.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "something", "new_tab_button": 42} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6592,7 +6620,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Unknown members of 'tab_strip' are ignored.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"unknown": {}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6605,7 +6632,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab with icons and new tab button with url are parsed.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {
             "home_tab": {"icons": [{"src": "foo.jpg"}]},
             "new_tab_button": {"url": "foo"}} })");
@@ -6620,7 +6646,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // New tab button url out of scope.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"new_tab_button": {"url": "https://bar.com"}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
@@ -6633,7 +6658,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab and new tab button set to 'auto'.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "auto", "new_tab_button": "auto"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6646,7 +6670,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab set to 'absent'.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {"home_tab": "absent"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
@@ -6659,7 +6682,6 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
     // Home tab with 'auto' icons and new tab button with 'auto' url.
     {
       auto& manifest = ParseManifest(R"({
-          "display_override": [ "tabbed" ],
           "tab_strip": {
             "home_tab": {"icons": "auto"},
             "new_tab_button": {"url": "auto"}} })");
@@ -6678,7 +6700,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Valid scope patterns are parsed.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "foo"}, {"pathname": "foo/bar/"}]}} })");
@@ -6693,7 +6714,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Reject patterns containing custom regex.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "([a-z]+)/"}, {"pathname": "/foo/([a-z]+)/"}]}} })");
@@ -6708,7 +6728,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Allow patterns with wildcards and named groups.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns":
             [{"pathname": "*"}, {"pathname": ":foo"}, {"pathname": "/foo/*"},
@@ -6726,7 +6745,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Patterns list doesn't contain objects.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns": ["blah", 3]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
@@ -6740,7 +6758,6 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   // Pattern list is empty.
   {
     auto& manifest = ParseManifest(R"({
-        "display_override": [ "tabbed" ],
         "tab_strip": {
           "home_tab": {"scope_patterns": []}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());

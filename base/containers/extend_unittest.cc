@@ -29,8 +29,8 @@ bool operator==(const NonCopyable& a, const NonCopyable& b) {
   return a.c_ == b.c_;
 }
 
-static_assert(std::is_move_constructible<NonCopyable>::value, "");
-static_assert(!std::is_copy_constructible<NonCopyable>::value, "");
+static_assert(std::is_move_constructible_v<NonCopyable>, "");
+static_assert(!std::is_copy_constructible_v<NonCopyable>, "");
 
 struct CopyableMovable {
   bool copied_;

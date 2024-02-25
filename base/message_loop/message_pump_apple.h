@@ -30,18 +30,17 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_APPLE_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_APPLE_H_
 
-#include "base/message_loop/message_pump.h"
-
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(__OBJC__)
 #if BUILDFLAG(IS_IOS)
@@ -75,6 +74,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  TimeTicks AdjustDelayedRunTime(TimeTicks earliest_time,
+                                 TimeTicks run_time,
+                                 TimeTicks latest_time) override;
 
 #if BUILDFLAG(IS_IOS)
   // Some iOS message pumps do not support calling |Run()| to spin the main
@@ -112,7 +114,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void OnDidQuit();
 
   // Accessors for private data members to be used by subclasses.
-  CFRunLoopRef run_loop() const { return run_loop_; }
+  CFRunLoopRef run_loop() const { return run_loop_.get(); }
   int nesting_level() const { return nesting_level_; }
   int run_nesting_level() const { return run_nesting_level_; }
   bool keep_running() const { return keep_running_; }
@@ -145,7 +147,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   class ScopedModeEnabler;
 
   // The maximum number of run loop modes that can be monitored.
-  static constexpr int kNumModes = 4;
+  static constexpr int kNumModes = 3;
 
   // Timer callback scheduled by ScheduleDelayedWork.  This does not do any
   // work, but it signals |work_source_| so that delayed work can be performed
@@ -239,6 +241,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   // Time at which `delayed_work_timer_` is set to fire.
   base::TimeTicks delayed_work_scheduled_at_ = base::TimeTicks::Max();
+  base::TimeDelta delayed_work_leeway_;
 
   // The recursion depth of the currently-executing CFRunLoopRun loop on the
   // run loop's thread.  0 if no run loops are running inside of whatever scope
@@ -269,7 +272,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // determined the loop is not processing a native event but the depth of the
   // stack should match |nesting_level_| at all times. A nullopt is also used
   // as a stand-in during delegateless operation.
-  base::stack<absl::optional<base::MessagePump::Delegate::ScopedDoWorkItem>>
+  base::stack<std::optional<base::MessagePump::Delegate::ScopedDoWorkItem>>
       stack_;
 };
 
@@ -336,7 +339,7 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
   void Detach() override;
 
  private:
-  absl::optional<RunLoop> run_loop_;
+  std::optional<RunLoop> run_loop_;
 };
 
 #else
@@ -427,10 +430,6 @@ BASE_EXPORT bool IsHandlingSendEvent();
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace message_pump_apple
-
-// Tasks posted to the message loop are posted under this mode, as well
-// as kCFRunLoopCommonModes.
-extern const CFStringRef BASE_EXPORT kMessageLoopExclusiveRunLoopMode;
 
 }  // namespace base
 

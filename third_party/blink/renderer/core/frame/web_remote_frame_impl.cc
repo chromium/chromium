@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -155,12 +154,10 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
   // We first convert this to a raw blink::Element*, and manually convert this
   // to an HTMLElement*. That is the only way the IsA<> and To<> casts below
   // will work.
-  DCHECK(IsA<HTMLPortalElement>(frame_owner) ||
-         IsA<HTMLFencedFrameElement>(frame_owner));
+  DCHECK(IsA<HTMLFencedFrameElement>(frame_owner));
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
   ExecutionContext* execution_context = frame_owner->GetExecutionContext();
-  DCHECK(RuntimeEnabledFeatures::PortalsEnabled(execution_context) ||
-         RuntimeEnabledFeatures::FencedFramesEnabled(execution_context));
+  DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(execution_context));
   LocalFrame* host_frame = frame_owner->GetDocument().GetFrame();
   frame->InitializeCoreFrame(
       *host_frame->GetPage(), frame_owner, /*parent=*/nullptr,
@@ -279,8 +276,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   // If this is not a top-level frame, we need to send FrameVisualProperties to
   // the remote renderer process. Some of the properties are inherited from the
   // WebFrameWidget containing this frame, and this is true for regular frames
-  // in the frame tree as well as for portals, which are not in the frame tree;
-  // hence the code to traverse up through FrameOwner.
+  // in the frame tree as well as for fenced frames, which are not in the frame
+  // tree; hence the code to traverse up through FrameOwner.
   WebFrameWidget* ancestor_widget = nullptr;
   if (parent) {
     if (parent->IsWebLocalFrame()) {
@@ -288,11 +285,10 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
           To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
     }
   } else if (owner && owner->IsLocal()) {
-    // Never gets to this point unless |owner| is a <portal> or <fencedframe>
+    // Never gets to this point unless |owner| is a <fencedframe>
     // element.
     HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(owner);
-    DCHECK(owner_element->IsHTMLPortalElement() ||
-           owner_element->IsHTMLFencedFrameElement());
+    DCHECK(owner_element->IsHTMLFencedFrameElement());
     LocalFrame& local_frame =
         owner_element->GetDocument().GetFrame()->LocalFrameRoot();
     ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
@@ -398,9 +394,10 @@ void WebRemoteFrameImpl::SetFrameOwnerProperties(
   GetFrame()->SetFrameOwnerProperties(std::move(owner_properties));
 }
 
-v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
+v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy(
+    v8::Isolate* isolate) const {
   return GetFrame()
-      ->GetWindowProxy(DOMWrapperWorld::MainWorld())
+      ->GetWindowProxy(DOMWrapperWorld::MainWorld(isolate))
       ->GlobalProxyIfNotDetached();
 }
 

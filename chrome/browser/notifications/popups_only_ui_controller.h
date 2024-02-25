@@ -33,8 +33,8 @@ class PopupsOnlyUiController : public message_center::MessageCenterObserver {
   void OnNotificationUpdated(const std::string& notification_id) override;
   void OnNotificationClicked(
       const std::string& notification_id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) override;
   void OnBlockingStateChanged(
       message_center::NotificationBlocker* blocker) override;
 

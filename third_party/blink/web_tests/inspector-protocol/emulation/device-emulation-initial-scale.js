@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`
     Tests that turning on device emulation with a non-1 device pixel ratio sets the
     appropriate initial scale. Page scale is reflected by the innerWidth and

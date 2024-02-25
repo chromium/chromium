@@ -1,8 +1,8 @@
-caption: Use hardware acceleration when available
+caption: Use graphics acceleration when available
 desc: |-
-  Setting the policy to Enabled or leaving it unset turns on hardware acceleration, if available.
+  Setting the policy to Enabled or leaving it unset turns on graphics acceleration, if available.
 
-        Setting the policy to Disabled turns off hardware acceleration.
+        Setting the policy to Disabled turns off graphics acceleration.
 example_value: true
 features:
   dynamic_refresh: false
@@ -10,13 +10,14 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Enable hardware acceleration
+- caption: Enable graphics acceleration
   value: true
-- caption: Disable hardware acceleration
+- caption: Disable graphics acceleration
   value: false
 owners:
 - zmo@chromium.org
 - kbr@chromium.org
+- file://gpu/GRAPHICS_TEAM_OWNERS
 schema:
   type: boolean
 supported_on:

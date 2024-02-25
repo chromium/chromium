@@ -217,12 +217,7 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
   else
     origin = GetSecurityOrigin();
 
-  if (!origin) {
-    // TODO(crbug.com/1419253): Shared storage worklet architecture currently
-    // has a null security origin.
-    CHECK(IsSharedStorageWorkletGlobalScope());
-    return false;
-  }
+  CHECK(origin);
 
   if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
     return true;
@@ -272,7 +267,7 @@ void ExecutionContext::AddConsoleMessageImpl(
     mojom::blink::ConsoleMessageLevel level,
     const String& message,
     bool discard_duplicates,
-    absl::optional<mojom::ConsoleMessageCategory> category) {
+    std::optional<mojom::ConsoleMessageCategory> category) {
   auto* console_message =
       MakeGarbageCollected<ConsoleMessage>(source, level, message);
   if (category)
@@ -359,7 +354,7 @@ ExecutionContext::GetContentSecurityPolicyDelegate() {
   return *csp_delegate_;
 }
 
-scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
+const DOMWrapperWorld* ExecutionContext::GetCurrentWorld() const {
   v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
@@ -373,7 +368,7 @@ scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
 
 ContentSecurityPolicy*
 ExecutionContext::GetContentSecurityPolicyForCurrentWorld() {
-  return GetContentSecurityPolicyForWorld(GetCurrentWorld().get());
+  return GetContentSecurityPolicyForWorld(GetCurrentWorld());
 }
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicyForWorld(
@@ -565,7 +560,8 @@ v8::MicrotaskQueue* ExecutionContext::GetMicrotaskQueue() const {
   return GetAgent()->event_loop()->microtask_queue();
 }
 
-bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
+bool ExecutionContext::FeatureEnabled(
+    mojom::blink::OriginTrialFeature feature) const {
   return origin_trial_context_->IsFeatureEnabled(feature);
 }
 
@@ -573,23 +569,24 @@ bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PermissionsPolicyFeature feature,
     ReportOptions report_option,
     const String& message) {
-  bool should_report;
-  bool enabled = security_context_.IsFeatureEnabled(feature, &should_report);
+  SecurityContext::FeatureStatus status =
+      security_context_.IsFeatureEnabled(feature);
 
-  if (should_report && report_option == ReportOptions::kReportOnFailure) {
+  if (status.should_report &&
+      report_option == ReportOptions::kReportOnFailure) {
     mojom::blink::PolicyDisposition disposition =
-        enabled ? mojom::blink::PolicyDisposition::kReport
-                : mojom::blink::PolicyDisposition::kEnforce;
+        status.enabled ? mojom::blink::PolicyDisposition::kReport
+                       : mojom::blink::PolicyDisposition::kEnforce;
 
-    ReportPermissionsPolicyViolation(feature, disposition, message);
+    ReportPermissionsPolicyViolation(feature, disposition,
+                                     status.reporting_endpoint, message);
   }
-  return enabled;
+  return status.enabled;
 }
 
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PermissionsPolicyFeature feature) const {
-  bool should_report;
-  return security_context_.IsFeatureEnabled(feature, &should_report);
+  return security_context_.IsFeatureEnabled(feature).enabled;
 }
 
 bool ExecutionContext::IsFeatureEnabled(
@@ -602,10 +599,6 @@ bool ExecutionContext::IsFeatureEnabled(
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature,
     PolicyValue threshold_value) const {
-  // The default value for any feature should be true unless restricted by
-  // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
-    return true;
   return security_context_.IsFeatureEnabled(feature, threshold_value).enabled;
 }
 
@@ -626,11 +619,6 @@ bool ExecutionContext::IsFeatureEnabled(
     ReportOptions report_option,
     const String& message,
     const String& source_file) {
-  // The default value for any feature should be true unless restricted by
-  // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
-    return true;
-
   SecurityContext::FeatureStatus status =
       security_context_.IsFeatureEnabled(feature, threshold_value);
   if (status.should_report &&
@@ -670,7 +658,7 @@ ContextType GetContextType(const ExecutionContext& execution_context) {
 
 using WorldType = ExecutionContext::Proto::WorldType;
 WorldType GetWorldType(const ExecutionContext& execution_context) {
-  auto current_world = execution_context.GetCurrentWorld();
+  auto* current_world = execution_context.GetCurrentWorld();
   if (current_world == nullptr) {
     return WorldType::WORLD_UNKNOWN;
   }
@@ -686,7 +674,7 @@ WorldType GetWorldType(const ExecutionContext& execution_context) {
       return WorldType::WORLD_REG_EXP;
     case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
       return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
-    case DOMWrapperWorld::WorldType::kWorker:
+    case DOMWrapperWorld::WorldType::kWorkerOrWorklet:
       return WorldType::WORLD_WORKER;
     case DOMWrapperWorld::WorldType::kShadowRealm:
       return WorldType::WORLD_SHADOW_REALM;
@@ -702,6 +690,11 @@ void ExecutionContext::WriteIntoTrace(
   proto->set_origin(GetSecurityOrigin()->ToString().Utf8());
   proto->set_type(GetContextType(*this));
   proto->set_world_type(GetWorldType(*this));
+}
+
+bool ExecutionContext::CrossOriginIsolatedCapabilityOrDisabledWebSecurity()
+    const {
+  return Agent::IsWebSecurityDisabled() || CrossOriginIsolatedCapability();
 }
 
 }  // namespace blink

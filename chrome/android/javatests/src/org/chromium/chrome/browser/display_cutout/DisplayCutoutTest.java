@@ -9,6 +9,7 @@ import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests the display cutout.
- */
+/** Tests the display cutout. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -38,9 +37,7 @@ public class DisplayCutoutTest {
     public DisplayCutoutTestRule mTestRule =
             new DisplayCutoutTestRule<ChromeActivity>(ChromeActivity.class);
 
-    /**
-     * Test that no safe area is applied when we have viewport fit auto
-     */
+    /** Test that no safe area is applied when we have viewport fit auto */
     @Test
     @LargeTest
     public void testViewportFitAuto() throws TimeoutException {
@@ -52,9 +49,7 @@ public class DisplayCutoutTest {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
-    /**
-     * Test that no safe area is applied when we have viewport fit contain.
-     */
+    /** Test that no safe area is applied when we have viewport fit contain. */
     @Test
     @LargeTest
     public void testViewportFitContain() throws TimeoutException {
@@ -66,9 +61,7 @@ public class DisplayCutoutTest {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
     }
 
-    /**
-     * Test that the safe area is applied when we have viewport fit cover.
-     */
+    /** Test that the safe area is applied when we have viewport fit cover. */
     @Test
     @LargeTest
     public void testViewportFitCover() throws TimeoutException {
@@ -109,8 +102,23 @@ public class DisplayCutoutTest {
     }
 
     /**
-     * Test that no safe area is applied when we have no viewport fit.
+     * Test without Fullscreen to make sure that viewport fit cover does not draw under the cutout.
      */
+    @Test
+    @LargeTest
+    public void testViewportFitCover_NotFullscreen() throws TimeoutException {
+        // Start without entering fullscreen.
+        mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
+        try {
+            mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
+            mTestRule.waitForLayoutInDisplayCutoutMode(
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+        } catch (AssertionError e) {
+            Assert.fail("When not in Fullscreen the Safe Area should not include the cutout!");
+        }
+    }
+
+    /** Test that no safe area is applied when we have no viewport fit. */
     @Test
     @LargeTest
     public void testViewportFitDefault() throws TimeoutException {
@@ -127,9 +135,7 @@ public class DisplayCutoutTest {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
-    /**
-     * Test that the safe area is calculated correctly using the device's dip scale.
-     */
+    /** Test that the safe area is calculated correctly using the device's dip scale. */
     @Test
     @LargeTest
     public void testViewportFitDipScale() throws TimeoutException {
@@ -142,9 +148,7 @@ public class DisplayCutoutTest {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
     }
 
-    /**
-     * Test that the safe area is calculated correctly when using a subframe.
-     */
+    /** Test that the safe area is calculated correctly when using a subframe. */
     @Test
     @LargeTest
     public void testViewportFitSubframe() throws TimeoutException {
@@ -158,9 +162,7 @@ public class DisplayCutoutTest {
         mTestRule.waitForSafeAreaOnSubframe(DisplayCutoutTestRule.TEST_SAFE_AREA_WITH_CUTOUT);
     }
 
-    /**
-     * Test that we do not break if we have cover but no cutout.
-     */
+    /** Test that we do not break if we have cover but no cutout. */
     @Test
     @LargeTest
     public void testViewportFitCoverNoCutout() throws TimeoutException {
@@ -182,16 +184,19 @@ public class DisplayCutoutTest {
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
         final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () -> { return new ObservableSupplierImpl<Integer>(); });
+                        () -> {
+                            return new ObservableSupplierImpl<Integer>();
+                        });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            browserCutoutModeSupplier.set(
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
-            Tab tab = mTestRule.getActivity().getActivityTab();
-            mTestRule.setDisplayCutoutController(
-                    DisplayCutoutTestRule.TestDisplayCutoutController.create(
-                            tab, browserCutoutModeSupplier));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    browserCutoutModeSupplier.set(
+                            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+                    Tab tab = mTestRule.getActivity().getActivityTab();
+                    mTestRule.setDisplayCutoutController(
+                            DisplayCutoutTestRule.TestDisplayCutoutController.create(
+                                    tab, browserCutoutModeSupplier));
+                });
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -200,10 +205,11 @@ public class DisplayCutoutTest {
         mTestRule.waitForLayoutInDisplayCutoutMode(
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            browserCutoutModeSupplier.set(
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    browserCutoutModeSupplier.set(
+                            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
+                });
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);

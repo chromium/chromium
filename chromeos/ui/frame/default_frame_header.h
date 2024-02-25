@@ -5,14 +5,19 @@
 #ifndef CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
 #define CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"  // override
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/frame_color_metrics_helper.h"
 #include "chromeos/ui/frame/frame_header.h"
 
 namespace ash {
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, FrameColors);
+FORWARD_DECLARE_TEST(NonClientFrameViewAshFrameColorTest,
+                     WideFrameInitialColor);
 }  // namespace ash
 
 namespace chromeos {
@@ -33,9 +38,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
 
   ~DefaultFrameHeader() override;
 
-  SkColor active_frame_color_for_testing() { return active_frame_color_; }
-  SkColor inactive_frame_color_for_testing() { return inactive_frame_color_; }
-
   void SetWidthInPixels(int width_in_pixels);
 
   // FrameHeader:
@@ -50,16 +52,25 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, FrameColors);
+  FRIEND_TEST_ALL_PREFIXES(ash::NonClientFrameViewAshFrameColorTest,
+                           WideFrameInitialColor);
 
   // Returns the window of the target widget.
   aura::Window* GetTargetWindow();
 
-  SkColor GetActiveFrameColorForPaintForTest();
+  // This function should be only called once, i.e., one instance of
+  // default_frame_header should own only one `frame_color_metrics_helper_`
+  // throughout its lifetime.
+  void InitializeFrameColorMetricsHelper();
 
   SkColor active_frame_color_ = chromeos::kDefaultFrameColor;
   SkColor inactive_frame_color_ = chromeos::kDefaultFrameColor;
 
   int width_in_pixels_ = -1;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<FrameColorMetricsHelper> frame_color_metrics_helper_;
+#endif
 };
 
 }  // namespace chromeos

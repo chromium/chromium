@@ -46,7 +46,7 @@ const AudioParamDescriptor*
         const String& key) const {
   for (const auto& descriptor : audio_param_descriptors_) {
     if (descriptor->name() == key) {
-      return descriptor;
+      return descriptor.Get();
     }
   }
   return nullptr;

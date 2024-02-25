@@ -19,9 +19,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A class that handles model creation for the Action Chips.
- */
+/** A class that handles model creation for the Action Chips. */
 public class ActionChipsProcessor {
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
@@ -40,16 +38,17 @@ public class ActionChipsProcessor {
         mVisibleActions = new ArrayMap<>();
     }
 
-    public void onUrlFocusChange(boolean hasFocus) {
+    public void onOmniboxSessionStateChange(boolean activated) {
         // Note: do not record any histograms if we did not show Actions.
-        if (hasFocus || mVisibleActions.isEmpty()) {
+        if (activated || mVisibleActions.isEmpty()) {
             return;
         }
 
-        mVisibleActions.forEach((OmniboxAction action, Integer position) -> {
-            var wasValid = action.recordActionShown(position, action == mExecutedAction);
-            OmniboxMetrics.recordOmniboxActionIsValid(wasValid);
-        });
+        mVisibleActions.forEach(
+                (OmniboxAction action, Integer position) -> {
+                    var wasValid = action.recordActionShown(position, action == mExecutedAction);
+                    OmniboxMetrics.recordOmniboxActionIsValid(wasValid);
+                });
 
         OmniboxMetrics.recordOmniboxActionIsUsed(mExecutedAction != null);
         mVisibleActions.clear();
@@ -93,9 +92,7 @@ public class ActionChipsProcessor {
         model.set(ActionChipsProperties.ACTION_CHIPS, modelList);
     }
 
-    /**
-     * Invoke action associated with the ActionChip.
-     */
+    /** Invoke action associated with the ActionChip. */
     private void executeAction(@NonNull OmniboxAction action, int position) {
         mExecutedAction = action;
         mSuggestionHost.onOmniboxActionClicked(action);

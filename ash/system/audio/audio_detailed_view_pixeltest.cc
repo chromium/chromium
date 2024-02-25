@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -15,9 +14,8 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -26,22 +24,33 @@ constexpr uint64_t kInternalMicId = 10003;
 // Pixel tests for the quick settings audio detailed view.
 class AudioDetailedViewPixelTest : public AshTestBase {
  public:
-  AudioDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+  AudioDetailedViewPixelTest() : scoped_features_() {
+    scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
+                                       ::features::kChromeRefreshSecondary2023,
+                                       ::features::kChromeRefresh2023NTB},
+                                      {});
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_F(AudioDetailedViewPixelTest, Basics) {
+  // Pin input and output devices to ensure consistent behavior.
+  auto* audio_handler = CrasAudioHandler::Get();
+  AudioDevice output_device(FakeCrasAudioClient::Get()->node_list()[1]);
+  AudioDevice input_device(FakeCrasAudioClient::Get()->node_list()[5]);
+  audio_handler->SwitchToDevice(output_device, true,
+                                CrasAudioHandler::ACTIVATE_BY_USER);
+  audio_handler->SwitchToDevice(input_device, true,
+                                CrasAudioHandler::ACTIVATE_BY_USER);
+
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());
@@ -51,12 +60,14 @@ TEST_F(AudioDetailedViewPixelTest, Basics) {
       ->ShowAudioDetailedView();
 
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/6, detailed_view));
+      /*revision_number=*/12, detailed_view));
 }
 
 TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
@@ -84,12 +95,14 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
       ->ShowAudioDetailedView();
 
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/0, detailed_view));
+      /*revision_number=*/6, detailed_view));
 }
 
 }  // namespace ash

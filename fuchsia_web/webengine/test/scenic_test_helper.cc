@@ -4,8 +4,8 @@
 
 #include "fuchsia_web/webengine/test/scenic_test_helper.h"
 
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_creation_tokens.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
@@ -30,10 +30,13 @@ void ScenicTestHelper::CreateScenicView(FrameImpl* frame_impl,
   DCHECK(frame_impl);
   frame_impl_ = frame_impl;
 
-  scenic::ViewCreationTokenPair token_pair =
-      scenic::ViewCreationTokenPair::New();
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  ZX_CHECK(status == ZX_OK, status);
   fuchsia::web::CreateView2Args create_view_args;
-  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  create_view_args.set_view_creation_token(std::move(view_token));
   frame->CreateView2(std::move(create_view_args));
 
   base::RunLoop().RunUntilIdle();

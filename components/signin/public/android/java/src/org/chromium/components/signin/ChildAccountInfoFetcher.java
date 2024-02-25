@@ -12,11 +12,12 @@ import android.content.IntentFilter;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -45,20 +46,26 @@ final class ChildAccountInfoFetcher {
         mCoreAccountInfo = coreAccountInfo;
 
         // Register for notifications about flag changes in the future.
-        mAccountFlagsChangedReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                ThreadUtils.assertOnUiThread();
-                Account changedAccount = intent.getParcelableExtra(ACCOUNT_KEY);
-                Log.d(TAG, "Received account flag change broadcast for %s", changedAccount.name);
+        mAccountFlagsChangedReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        ThreadUtils.assertOnUiThread();
+                        Account changedAccount = intent.getParcelableExtra(ACCOUNT_KEY);
+                        Log.d(
+                                TAG,
+                                "Received account flag change broadcast for %s",
+                                changedAccount.name);
 
-                if (mCoreAccountInfo.getEmail().equals(changedAccount.name)) {
-                    fetch();
-                }
-            }
-        };
-        ContextUtils.registerExportedBroadcastReceiver(ContextUtils.getApplicationContext(),
-                mAccountFlagsChangedReceiver, new IntentFilter(ACCOUNT_SERVICES_CHANGED_FILTER),
+                        if (mCoreAccountInfo.getEmail().equals(changedAccount.name)) {
+                            fetch();
+                        }
+                    }
+                };
+        ContextUtils.registerExportedBroadcastReceiver(
+                ContextUtils.getApplicationContext(),
+                mAccountFlagsChangedReceiver,
+                new IntentFilter(ACCOUNT_SERVICES_CHANGED_FILTER),
                 ACCOUNT_CHANGE_PERMISSION);
 
         // Fetch once now to update the status in case it changed before we registered for updates.
@@ -73,22 +80,25 @@ final class ChildAccountInfoFetcher {
 
     private void fetch() {
         Log.d(TAG, "Checking child account status for %s", mCoreAccountInfo.getEmail());
-        AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
-                CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo),
-                this::onChildAccountStatusReady);
+        AccountManagerFacadeProvider.getInstance()
+                .checkChildAccountStatus(mCoreAccountInfo, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         assert mCoreAccountInfo != null;
-        assert (childAccount == null
-                || childAccount.equals(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)))
-            : "childAccount " + childAccount.name + " doesn't match mCoreAccountInfo "
-              + CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo).name;
+        assert (childInfo == null || childInfo.equals(mCoreAccountInfo))
+                : "childAccount "
+                        + childInfo.getEmail()
+                        + " doesn't match mCoreAccountInfo "
+                        + mCoreAccountInfo.getEmail();
 
-        Log.d(TAG, "Setting child account status for %s to %s", mCoreAccountInfo.getEmail(),
+        Log.d(
+                TAG,
+                "Setting child account status for %s to %s",
+                mCoreAccountInfo.getEmail(),
                 isChild);
-        ChildAccountInfoFetcherJni.get().setIsChildAccount(
-                mNativeAccountFetcherService, mCoreAccountInfo.getId(), isChild);
+        ChildAccountInfoFetcherJni.get()
+                .setIsChildAccount(mNativeAccountFetcherService, mCoreAccountInfo.getId(), isChild);
     }
 
     @CalledByNative

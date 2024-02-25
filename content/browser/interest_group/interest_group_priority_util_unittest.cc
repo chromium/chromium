@@ -4,13 +4,13 @@
 
 #include "content/browser/interest_group/interest_group_priority_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"

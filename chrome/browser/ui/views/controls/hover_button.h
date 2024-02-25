@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -30,14 +31,15 @@ class StyledLabel;
 class View;
 }  // namespace views
 
+class HoverButtonController;
 class PageInfoBubbleViewBrowserTest;
 
 // A button taking the full width of its parent that shows a background color
 // when hovered over.
 class HoverButton : public views::LabelButton {
- public:
-  METADATA_HEADER(HoverButton);
+  METADATA_HEADER(HoverButton, views::LabelButton)
 
+ public:
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.
@@ -52,9 +54,8 @@ class HoverButton : public views::LabelButton {
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
   // will vertically center |title|. |secondary_view|, when set, is shown
   // on the opposite side of the button from |icon_view|.
-  // When |resize_row_for_secondary_icon| is false, the button tries to
-  // accommodate the view's preferred size by reducing the top and bottom
-  // insets appropriately up to a value of 0.
+  // When |add_vertical_label_spacing| is false it will not add vertical spacing
+  // to the label wrapper.
   // Warning: |icon_view| must have a fixed size and be correctly set during its
   // constructor for the HoverButton to layout correctly.
   HoverButton(PressedCallback callback,
@@ -62,8 +63,7 @@ class HoverButton : public views::LabelButton {
               const std::u16string& title,
               const std::u16string& subtitle = std::u16string(),
               std::unique_ptr<views::View> secondary_view = nullptr,
-              bool resize_row_for_secondary_view = true,
-              bool secondary_view_can_process_events = false);
+              bool add_vertical_label_spacing = true);
 
   HoverButton(const HoverButton&) = delete;
   HoverButton& operator=(const HoverButton&) = delete;
@@ -82,8 +82,10 @@ class HoverButton : public views::LabelButton {
   // Sets the text style of the title considering the color of the background.
   // Passing |background_color| makes sure that the text color will not be
   // changed to a color that is not readable on the specified background.
+  // Sets the title's enabled color to |color_id|, if present.
   void SetTitleTextStyle(views::style::TextStyle text_style,
-                         SkColor background_color);
+                         SkColor background_color,
+                         std::optional<ui::ColorId> color_id);
 
   // Set the text context and style of the subtitle.
   void SetSubtitleTextStyle(int text_context,
@@ -94,6 +96,10 @@ class HoverButton : public views::LabelButton {
   void SetTooltipAndAccessibleName();
 
   views::StyledLabel* title() const { return title_; }
+
+  PressedCallback& callback(base::PassKey<HoverButtonController>) {
+    return callback_;
+  }
 
  protected:
   // views::MenuButton:
@@ -114,8 +120,12 @@ class HoverButton : public views::LabelButton {
                            NotifyClickExecutesAction);
   FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
                            UpdatesToDisplayCorrectActionTitle);
-  friend class AccountSelectionBubbleViewTest;
+  friend class AccountSelectionViewTestBase;
   friend class PageInfoBubbleViewBrowserTest;
+
+  void OnPressed(const ui::Event& event);
+
+  PressedCallback callback_;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::View> label_wrapper_ = nullptr;
@@ -128,7 +138,10 @@ class HoverButton : public views::LabelButton {
 };
 
 BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
-VIEW_BUILDER_METHOD(SetTitleTextStyle, views::style::TextStyle, SkColor)
+VIEW_BUILDER_METHOD(SetTitleTextStyle,
+                    views::style::TextStyle,
+                    SkColor,
+                    std::optional<ui::ColorId>)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(, HoverButton)

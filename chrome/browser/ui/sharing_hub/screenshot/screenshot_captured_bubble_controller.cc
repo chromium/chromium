@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -36,7 +35,7 @@ void ScreenshotCapturedBubbleController::ShowBubble(
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteImage(*captured_image.ToSkBitmap());
 
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   browser->window()->ShowScreenshotCapturedBubble(&GetWebContents(),
                                                   captured_image);
 }

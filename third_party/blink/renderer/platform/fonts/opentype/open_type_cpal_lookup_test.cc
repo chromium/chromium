@@ -56,7 +56,7 @@ class OpenTypeCpalLookupTest : public FontTestBase {
 TEST_F(OpenTypeCpalLookupTest, NoResultForNonColr) {
   for (auto& palette_use : {OpenTypeCpalLookup::kUsableWithLightBackground,
                             OpenTypeCpalLookup::kUsableWithDarkBackground}) {
-    absl::optional<uint16_t> palette_result =
+    std::optional<uint16_t> palette_result =
         OpenTypeCpalLookup::FirstThemedPalette(non_colr_ahem_typeface_,
                                                palette_use);
     EXPECT_FALSE(palette_result.has_value());
@@ -73,7 +73,7 @@ TEST_F(OpenTypeCpalLookupTest, DarkLightPalettes) {
       {OpenTypeCpalLookup::kUsableWithLightBackground, 2},
       {OpenTypeCpalLookup::kUsableWithDarkBackground, 3}};
   for (auto& expectation : expectations) {
-    absl::optional<uint16_t> palette_result =
+    std::optional<uint16_t> palette_result =
         OpenTypeCpalLookup::FirstThemedPalette(colr_palette_typeface_,
                                                expectation.first);
     EXPECT_TRUE(palette_result.has_value());

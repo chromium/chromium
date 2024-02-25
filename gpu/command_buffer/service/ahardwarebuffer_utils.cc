@@ -33,7 +33,7 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(ahb_handle));
   return VulkanImage::CreateFromGpuMemoryBufferHandle(
-      device_queue, std::move(gmb_handle), size, ToVkFormat(format),
+      device_queue, std::move(gmb_handle), size, ToVkFormatSinglePlanar(format),
       /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
       /*queue_family_index=*/queue_family_index);
 }

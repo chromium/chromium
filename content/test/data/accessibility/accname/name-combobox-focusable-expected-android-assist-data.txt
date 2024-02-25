@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++Spinner text:"English" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {id="test"}, {role="combobox"}, {tabindex="0"}, {title="Choose your language."}]
+++++TextView text:"English" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

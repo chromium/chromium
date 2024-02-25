@@ -31,7 +31,7 @@ namespace content {
 void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
-  const absl::optional<device::fido::mac::AuthenticatorConfig> config =
+  const std::optional<device::fido::mac::AuthenticatorConfig> config =
       GetContentClient()
           ->browser()
           ->GetWebAuthenticationDelegate()
@@ -57,11 +57,6 @@ void IsUVPlatformAuthenticatorAvailable(
 #elif BUILDFLAG(IS_CHROMEOS)
 void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthCrosPlatformAuthenticator)) {
-    std::move(callback).Run(false);
-    return;
-  }
   device::ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
       std::move(callback));
 }

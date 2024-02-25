@@ -11,8 +11,7 @@
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -24,10 +23,12 @@ using AffiliatedRealms =
     base::StrongAlias<class AffiliatedRealmsTag, std::vector<std::string>>;
 using GroupedRealms =
     base::StrongAlias<class GroupedRealmsTag, std::vector<std::string>>;
+using affiliations::Facet;
+using affiliations::FacetURI;
 
-bool IsValidAndroidCredential(PasswordForm* form) {
-  return form->scheme == PasswordForm::Scheme::kHtml &&
-         IsValidAndroidFacetURI(form->signon_realm);
+bool IsValidAndroidCredential(const PasswordForm& form) {
+  return form.scheme == PasswordForm::Scheme::kHtml &&
+         affiliations::IsValidAndroidFacetURI(form.signon_realm);
 }
 
 std::vector<std::string> GetRealmsFromFacets(const FacetURI& original_facet_uri,
@@ -55,17 +56,19 @@ std::vector<std::string> GetRealmsFromFacets(const FacetURI& original_facet_uri,
   return realms;
 }
 
-AffiliatedRealms ProcessAffiliatedFacets(const FacetURI& original_facet_uri,
-                                         const AffiliatedFacets& results,
-                                         bool success) {
+AffiliatedRealms ProcessAffiliatedFacets(
+    const FacetURI& original_facet_uri,
+    const affiliations::AffiliatedFacets& results,
+    bool success) {
   if (!success) {
     return {};
   }
   return AffiliatedRealms(GetRealmsFromFacets(original_facet_uri, results));
 }
 
-GroupedRealms ProcessGroupedFacets(const FacetURI& original_facet_uri,
-                                   const std::vector<GroupedFacets>& results) {
+GroupedRealms ProcessGroupedFacets(
+    const FacetURI& original_facet_uri,
+    const std::vector<affiliations::GroupedFacets>& results) {
   // GetGroupingInfo() returns a group matches for each facet.
   // Asking for only one facet means that it would return only one group (that
   // includes requested realm itself). Therefore, resulting number of groups
@@ -99,7 +102,7 @@ void ProcessAffiliationAndGroupResponse(
 }  // namespace
 
 AffiliatedMatchHelper::AffiliatedMatchHelper(
-    AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   DCHECK(affiliation_service_);
 }
@@ -114,9 +117,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
     return;
   }
 
-  const int kCallsNumber =
-      1 + base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites);
-
+  const int kCallsNumber = 2;
   auto barrier_callback =
       base::BarrierCallback<absl::variant<AffiliatedRealms, GroupedRealms>>(
           kCallsNumber, base::BindOnce(&ProcessAffiliationAndGroupResponse,
@@ -125,24 +126,22 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
   FacetURI facet_uri(
       FacetURI::FromPotentiallyInvalidSpec(observed_form.signon_realm));
   affiliation_service_->GetAffiliationsAndBranding(
-      facet_uri, AffiliationService::StrategyOnCacheMiss::FAIL,
+      facet_uri, affiliations::AffiliationService::StrategyOnCacheMiss::FAIL,
       base::BindOnce(&ProcessAffiliatedFacets, facet_uri)
           .Then(barrier_callback));
 
-  if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    affiliation_service_->GetGroupingInfo(
-        {facet_uri}, base::BindOnce(&ProcessGroupedFacets, facet_uri)
-                         .Then(std::move(barrier_callback)));
-  }
+  affiliation_service_->GetGroupingInfo(
+      {facet_uri}, base::BindOnce(&ProcessGroupedFacets, facet_uri)
+                       .Then(std::move(barrier_callback)));
 }
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    std::vector<std::unique_ptr<PasswordForm>> forms,
-    PasswordFormsOrErrorCallback result_callback) {
+    std::vector<PasswordForm> forms,
+    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
   std::vector<PasswordForm*> android_credentials;
-  for (const auto& form : forms) {
-    if (IsValidAndroidCredential(form.get())) {
-      android_credentials.push_back(form.get());
+  for (auto& form : forms) {
+    if (IsValidAndroidCredential(form)) {
+      android_credentials.push_back(&form);
     }
   }
 
@@ -159,7 +158,7 @@ void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     // making it safe to use base::Unretained(form) below.
     affiliation_service_->GetAffiliationsAndBranding(
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm),
-        AffiliationService::StrategyOnCacheMiss::FAIL,
+        affiliations::AffiliationService::StrategyOnCacheMiss::FAIL,
         base::BindOnce(&AffiliatedMatchHelper::
                            CompleteInjectAffiliationAndBrandingInformation,
                        weak_ptr_factory_.GetWeakPtr(), base::Unretained(form),
@@ -196,7 +195,7 @@ bool AffiliatedMatchHelper::IsValidWebCredential(
 void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
     PasswordForm* form,
     base::OnceClosure barrier_closure,
-    const AffiliatedFacets& results,
+    const affiliations::AffiliatedFacets& results,
     bool success) {
   const FacetURI facet_uri(
       FacetURI::FromPotentiallyInvalidSpec(form->signon_realm));

@@ -13,17 +13,13 @@
 namespace vr {
 
 class Ui;
-class UiBrowserInterface;
 class UiScene;
 struct Model;
 
 // The scene manager creates our scene hierarchy.
 class UiSceneCreator {
  public:
-  UiSceneCreator(UiBrowserInterface* browser,
-                 UiScene* scene,
-                 Ui* ui,
-                 Model* model);
+  UiSceneCreator(UiScene* scene, Ui* ui, Model* model);
 
   UiSceneCreator(const UiSceneCreator&) = delete;
   UiSceneCreator& operator=(const UiSceneCreator&) = delete;
@@ -40,7 +36,6 @@ class UiSceneCreator {
   void CreateWebVrTimeoutScreen();
   void CreateExternalPromptNotifcationOverlay();
 
-  raw_ptr<UiBrowserInterface> browser_;
   raw_ptr<UiScene> scene_;
   raw_ptr<Ui> ui_;
   raw_ptr<Model> model_;

@@ -66,9 +66,8 @@ class AssistantSettingsImpl : public AssistantSettings {
   AssistantController* assistant_controller();
   libassistant::mojom::SettingsController& settings_controller();
 
-  const raw_ptr<ServiceContext, ExperimentalAsh> context_;
-  raw_ptr<libassistant::mojom::SettingsController,
-          DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<ServiceContext> context_;
+  raw_ptr<libassistant::mojom::SettingsController, DanglingUntriaged>
       settings_controller_ = nullptr;
 
   mojo::Remote<libassistant::mojom::SpeakerIdEnrollmentController>

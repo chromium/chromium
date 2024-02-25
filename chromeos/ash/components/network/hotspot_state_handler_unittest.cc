@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -40,6 +42,10 @@ class TestObserver : public HotspotStateHandler::Observer {
 class HotspotStateHandlerTest : public ::testing::Test {
  public:
   void SetUp() override {
+    chromeos::PowerManagerClient::InitializeFake();
+    power_client_ = chromeos::FakePowerManagerClient::Get();
+    chromeos::PowerPolicyController::Initialize(power_client_);
+
     feature_list_.InitAndEnableFeature(features::kHotspot);
 
     if (hotspot_state_handler_ &&
@@ -57,11 +63,13 @@ class HotspotStateHandlerTest : public ::testing::Test {
     network_state_test_helper_.ClearServices();
     hotspot_state_handler_->RemoveObserver(&observer_);
     hotspot_state_handler_.reset();
+    EXPECT_EQ(false, power_client_->policy().system_wake_lock());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  raw_ptr<chromeos::FakePowerManagerClient> power_client_;
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
@@ -132,6 +140,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
 
   EXPECT_EQ(0u, hotspot_state_handler_->GetHotspotActiveClientCount());
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
+  EXPECT_EQ(false, power_client_->policy().system_wake_lock());
 
   // Update tethering status with one active client.
   status_dict.Set(
@@ -147,6 +156,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
 
   EXPECT_EQ(1u, hotspot_state_handler_->GetHotspotActiveClientCount());
   EXPECT_EQ(2u, observer_.hotspot_status_changed_count());
+  EXPECT_EQ(true, power_client_->policy().system_wake_lock());
 
   status_dict.Set(shill::kTetheringStatusStateProperty,
                   shill::kTetheringStateIdle);
@@ -157,6 +167,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
 
   EXPECT_EQ(0u, hotspot_state_handler_->GetHotspotActiveClientCount());
   EXPECT_EQ(3u, observer_.hotspot_status_changed_count());
+  EXPECT_EQ(false, power_client_->policy().system_wake_lock());
 }
 
 }  // namespace ash

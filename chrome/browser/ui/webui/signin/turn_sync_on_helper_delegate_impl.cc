@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -26,14 +28,16 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
+#include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
+#include "components/policy/core/common/policy_utils.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace {
@@ -184,18 +188,20 @@ void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
 void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback,
-    const std::string& signin_restriction) {
+    const policy::ProfileSeparationPolicies& profile_separation_policies) {
   if (!browser_) {
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;
   }
   auto profile_creation_required_by_policy =
-      signin_util::ProfileSeparationEnforcedByPolicy(browser_->profile(),
-                                                     signin_restriction);
+      signin_util::IsProfileSeparationEnforcedByProfile(browser_->profile(),
+                                                        account_info.email) ||
+      signin_util::IsProfileSeparationEnforcedByPolicies(
+          profile_separation_policies);
   bool show_link_data_option = signin_util::
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
-          browser_->profile(), signin_restriction);
-  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+          browser_->profile(), profile_separation_policies);
+  browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       account_info, profile_creation_required_by_policy, show_link_data_option,
 
       base::BindOnce(
@@ -225,12 +231,21 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
             base::BindOnce(&TurnSyncOnHelperDelegateImpl::
                                OnProfileSigninRestrictionsFetched,
                            weak_ptr_factory_.GetWeakPtr(), account_info,
-                           std::move(callback)));
+                           std::move(callback)),
+            policy::utils::IsPolicyTestingEnabled(
+                browser_->profile()->GetPrefs(), chrome::GetChannel())
+                ? browser_->profile()
+                      ->GetPrefs()
+                      ->GetDefaultPrefValue(
+                          prefs::
+                              kUserCloudSigninPolicyResponseFromPolicyTestPage)
+                      ->GetString()
+                : std::string());
     return;
   }
 #endif
   DCHECK(!prompt_for_new_profile);
-  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+  browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       account_info, /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option=*/false,
       base::BindOnce(
@@ -238,9 +253,10 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
              signin::SigninChoice choice) {
             browser->signin_view_controller()->CloseModalSignin();
             // When `show_link_data_option` is false,
-            // `ShowModalEnterpriseConfirmationDialog()` calls back with either
-            // `SIGNIN_CHOICE_CANCEL` or `SIGNIN_CHOICE_NEW_PROFILE`.
-            // The profile is clean here, no need to create a new one.
+            // `ShowModalManagedUserNoticeDialog()` calls back
+            // with either `SIGNIN_CHOICE_CANCEL` or
+            // `SIGNIN_CHOICE_NEW_PROFILE`. The profile is clean here, no
+            // need to create a new one.
             std::move(callback).Run(
                 choice == signin::SigninChoice::SIGNIN_CHOICE_CANCEL
                     ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL

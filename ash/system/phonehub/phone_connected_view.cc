@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/ping_manager.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -116,10 +117,6 @@ void PhoneConnectedView::ChildVisibilityChanged(View* child) {
   }
 }
 
-const char* PhoneConnectedView::GetClassName() const {
-  return "PhoneConnectedView";
-}
-
 phone_hub_metrics::Screen PhoneConnectedView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kPhoneConnected;
 }
@@ -152,5 +149,8 @@ void PhoneConnectedView::OnAppStreamErrorDialogButtonClicked(
   }
   enable_hotspot->icon_button()->NotifyClick(event);
 }
+
+BEGIN_METADATA(PhoneConnectedView)
+END_METADATA
 
 }  // namespace ash

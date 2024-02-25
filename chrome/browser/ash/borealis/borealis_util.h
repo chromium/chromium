@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_UTIL_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;
@@ -45,7 +46,7 @@ extern const char kCompatToolVersionGameMismatch[];
 extern const char kDeviceInformationKey[];
 
 struct CompatToolInfo {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string proton = "None";
   std::string slr = "None";
 };
@@ -59,7 +60,8 @@ bool IsNonGameBorealisApp(const std::string& app_id);
 //
 // TODO(b/288176160): Valve probably shouldn't be doing this, we want a more
 // thorough fix long term.
-bool ShouldHideIrrelevantApp(const std::string& desktop_name);
+bool ShouldHideIrrelevantApp(
+    const guest_os::GuestOsRegistryService::Registration& registration);
 
 // Returns a Steam Game ID parsed from |exec|, or nullopt on failure.
 // These are the numeric "App IDs" described at
@@ -68,20 +70,20 @@ bool ShouldHideIrrelevantApp(const std::string& desktop_name);
 //
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
-absl::optional<int> ParseSteamGameId(std::string exec);
+std::optional<int> ParseSteamGameId(std::string exec);
 
 // Returns the Steam Game ID of the |window|, or nullopt on failure.
 // These are the numeric "App IDs" described at
 // https://partner.steamgames.com/doc/store/application. We use the term
 // "Steam Game ID" here to differentiate from other kinds of "application ID".
-absl::optional<int> SteamGameId(const aura::Window* window);
+std::optional<int> SteamGameId(const aura::Window* window);
 
 // Get the steam app id (a.k.a. STEAM_GAME cardinal) for the app with the
 // given chromeos |app_id|, registered with |profile|, or nullopt if we can't
 // work it out/there isn't one.
 //
 // Works for anonymous apps of the form "borealis_anon:.*xprop.<id>".
-absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id);
+std::optional<int> SteamGameId(Profile* profile, const std::string& app_id);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.
@@ -92,7 +94,7 @@ bool IsExternalURLAllowed(const GURL& url);
 bool GetCompatToolInfo(const std::string& owner_id, std::string* output);
 
 // Parses the output returned by GetCompatToolInfo.
-CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
+CompatToolInfo ParseCompatToolInfo(std::optional<int> game_id,
                                    const std::string& output);
 
 }  // namespace borealis

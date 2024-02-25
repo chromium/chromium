@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -34,6 +35,9 @@ struct Serializer<AssociatedInterfacePtrInfoDataView<Base>,
                         AssociatedInterface_Data* output,
                         Message* message) {
     DCHECK(!input.handle().is_valid() || input.handle().pending_association());
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      input.reset();
+    }
     SerializeAssociatedInterfaceInfo(input.PassHandle(), input.version(),
                                      *message, *output);
   }
@@ -41,6 +45,9 @@ struct Serializer<AssociatedInterfacePtrInfoDataView<Base>,
   static bool Deserialize(AssociatedInterface_Data* input,
                           PendingAssociatedRemote<T>* output,
                           Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      return false;
+    }
     auto handle = DeserializeAssociatedEndpointHandle(input->handle, *message);
     if (!handle.is_valid()) {
       *output = PendingAssociatedRemote<T>();
@@ -61,12 +68,18 @@ struct Serializer<AssociatedInterfaceRequestDataView<Base>,
                         AssociatedEndpointHandle_Data* output,
                         Message* message) {
     DCHECK(!input.handle().is_valid() || input.handle().pending_association());
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      input.reset();
+    }
     SerializeAssociatedEndpoint(input.PassHandle(), *message, *output);
   }
 
   static bool Deserialize(AssociatedEndpointHandle_Data* input,
                           PendingAssociatedReceiver<T>* output,
                           Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      return false;
+    }
     auto handle = DeserializeAssociatedEndpointHandle(*input, *message);
     if (!handle.is_valid())
       *output = PendingAssociatedReceiver<T>();
@@ -83,12 +96,18 @@ struct Serializer<AssociatedInterfaceRequestDataView<T>,
                         AssociatedEndpointHandle_Data* output,
                         Message* message) {
     DCHECK(!input.is_valid() || input.pending_association());
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      input.reset();
+    }
     SerializeAssociatedEndpoint(std::move(input), *message, *output);
   }
 
   static bool Deserialize(AssociatedEndpointHandle_Data* input,
                           ScopedInterfaceEndpointHandle* output,
                           Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      return false;
+    }
     *output = DeserializeAssociatedEndpointHandle(*input, *message);
     return true;
   }
@@ -101,6 +120,9 @@ struct Serializer<InterfacePtrDataView<Base>, PendingRemote<T>> {
   static void Serialize(PendingRemote<T>& input,
                         Interface_Data* output,
                         Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      input.reset();
+    }
     // |PassPipe()| invalidates all state, so capture |version()| first.
     uint32_t version = input.version();
     SerializeInterfaceInfo(input.PassPipe(), version, *message, *output);
@@ -109,6 +131,9 @@ struct Serializer<InterfacePtrDataView<Base>, PendingRemote<T>> {
   static bool Deserialize(Interface_Data* input,
                           PendingRemote<T>* output,
                           Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      return false;
+    }
     *output = PendingRemote<T>(
         DeserializeHandleAs<MessagePipeHandle>(input->handle, *message),
         input->version);
@@ -123,12 +148,18 @@ struct Serializer<InterfaceRequestDataView<Base>, PendingReceiver<T>> {
   static void Serialize(PendingReceiver<T>& input,
                         Handle_Data* output,
                         Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      input.reset();
+    }
     SerializeHandle(ScopedHandle::From(input.PassPipe()), *message, *output);
   }
 
   static bool Deserialize(Handle_Data* input,
                           PendingReceiver<T>* output,
                           Message* message) {
+    if (!GetRuntimeFeature_ExpectEnabled<T>()) {
+      return false;
+    }
     DeserializeHandleAsReceiver(*input, *message, *output->internal_state());
     return true;
   }

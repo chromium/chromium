@@ -21,6 +21,7 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
 
 using value_store::ValueStore;
 
@@ -109,7 +110,7 @@ void GetRegisteredItems(OperationResult* result,
   // Using remove to pass ownership of registered_item dict to
   // |registered_items| (and avoid doing a copy |read.settings()|
   // sub-dictionary).
-  absl::optional<base::Value> registered_items =
+  std::optional<base::Value> registered_items =
       read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items) {
     // If the registered items dictionary cannot be found, assume no items have
@@ -137,7 +138,7 @@ void RegisterItem(OperationResult* result,
     *result = OperationResult::kFailed;
     return;
   }
-  absl::optional<base::Value> registered_items =
+  std::optional<base::Value> registered_items =
       read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items)
     registered_items = base::Value(base::Value::Type::DICT);
@@ -180,10 +181,10 @@ void WriteImpl(OperationResult* result,
     *result = OperationResult::kInvalidKey;
     return;
   }
-  base::Base64Encode(encrypted, &encrypted);
 
-  ValueStore::WriteResult write = store->Set(ValueStore::DEFAULTS, item_id,
-                                             base::Value(std::move(encrypted)));
+  ValueStore::WriteResult write =
+      store->Set(ValueStore::DEFAULTS, item_id,
+                 base::Value(base::Base64Encode(encrypted)));
 
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;
@@ -270,11 +271,11 @@ void DataItem::GetRegisteredValuesForExtension(
     content::BrowserContext* context,
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     RegisteredValuesCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context)->GetExtensionById(
-          extension_id, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension,
                             base::Value::Dict());
@@ -303,7 +304,7 @@ void DataItem::DeleteAllItemsForExtension(
     content::BrowserContext* context,
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::OnceClosure callback) {
   task_runner->PostTaskAndReply(
       FROM_HERE,
@@ -313,7 +314,7 @@ void DataItem::DeleteAllItemsForExtension(
 }
 
 DataItem::DataItem(const std::string& id,
-                   const std::string& extension_id,
+                   const ExtensionId& extension_id,
                    content::BrowserContext* context,
                    ValueStoreCache* value_store_cache,
                    base::SequencedTaskRunner* task_runner,
@@ -329,8 +330,8 @@ DataItem::~DataItem() = default;
 
 void DataItem::Register(WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;
@@ -352,8 +353,8 @@ void DataItem::Register(WriteCallback callback) {
 
 void DataItem::Write(const std::vector<char>& data, WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;
@@ -376,8 +377,8 @@ void DataItem::Write(const std::vector<char>& data, WriteCallback callback) {
 
 void DataItem::Read(ReadCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
     return;
@@ -404,8 +405,8 @@ void DataItem::Read(ReadCallback callback) {
 
 void DataItem::Delete(WriteCallback callback) {
   scoped_refptr<const Extension> extension =
-      ExtensionRegistry::Get(context_)->GetExtensionById(
-          extension_id_, ExtensionRegistry::ENABLED);
+      ExtensionRegistry::Get(context_)->enabled_extensions().GetByID(
+          extension_id_);
   if (!extension) {
     std::move(callback).Run(OperationResult::kUnknownExtension);
     return;

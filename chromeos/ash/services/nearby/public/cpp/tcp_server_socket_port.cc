@@ -29,22 +29,22 @@ uint16_t GenerateRandomPort() {
 
 }  // namespace
 
-absl::optional<TcpServerSocketPort> TcpServerSocketPort::FromInt(int port) {
+std::optional<TcpServerSocketPort> TcpServerSocketPort::FromInt(int port) {
   if (!base::IsValueInRangeForNumericType<uint16_t>(port)) {
     LOG(ERROR) << "TcpServerSocketPort::" << __func__ << ": Port " << port
                << " is not uint16.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TcpServerSocketPort::FromUInt16(static_cast<uint16_t>(port));
 }
 
-absl::optional<TcpServerSocketPort> TcpServerSocketPort::FromUInt16(
+std::optional<TcpServerSocketPort> TcpServerSocketPort::FromUInt16(
     uint16_t port) {
   if (!IsPortInRange(port)) {
     LOG(ERROR) << "TcpServerSocketPort::" << __func__ << ": Port " << port
                << " is not in the range [" << kMin << "," << kMax << "].";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TcpServerSocketPort(port);

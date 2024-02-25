@@ -6,8 +6,9 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_BULK_LEAK_CHECK_SERVICE_ADAPTER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PrefService;
@@ -29,7 +30,8 @@ class BulkLeakCheckServiceAdapter : public SavedPasswordsPresenter::Observer {
   // and then feed it to the |service_| for checking. If |key| is present, it
   // will append |data->Clone()| to each created LeakCheckCredential.
   // Returns whether new check was started.
-  bool StartBulkLeakCheck(const void* key = nullptr,
+  bool StartBulkLeakCheck(LeakDetectionInitiator initiator,
+                          const void* key = nullptr,
                           LeakCheckCredential::Data* data = nullptr);
 
   // This asks |service_| to stop an ongoing check.

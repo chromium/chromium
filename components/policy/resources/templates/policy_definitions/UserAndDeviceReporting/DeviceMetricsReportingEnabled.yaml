@@ -3,7 +3,9 @@ caption: Enable metrics reporting
 desc: |-
   Setting the policy to Enabled has <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> report usage metrics and diagnostic data, including crash reports, back to Google. Setting the policy to Disabled turns off metrics and diagnostic data reporting.
 
-         Leaving the policy unset keeps metrics and diagnostic data reporting off on unmanaged devices and on for managed devices.
+  For managed devices, this policy is enabled by default and sends metrics to Google.
+
+  For unmanaged devices, the user can make the decision to send the metrics.
 device_only: true
 example_value: true
 features:

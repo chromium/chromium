@@ -10,10 +10,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
@@ -36,12 +39,17 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.CurrencyFormatterJni;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.ShoppingSpecifics;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -52,79 +60,39 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImprovedBookmarkRowCoordinatorTest {
-    private static final int CHILD_COUNT = 5;
-    private static final int READING_LIST_CHILD_COUNT = 1;
-
     @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public final JniMocker mJniMocker = new JniMocker();
 
-    private final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/*id=*/2, BookmarkType.READING_LIST);
-    private final BookmarkId mBookmarkId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
-    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/4, BookmarkType.READING_LIST);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    private final BookmarkItem mFolderItem =
-            new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mBookmarkItem = new BookmarkItem(mBookmarkId, "Bookmark",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false, 0);
-    private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
-            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
-    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId, true,
-            false, 0, false, 0);
-
-    @Mock
-    private UrlFormatter.Natives mUrlFormatterJniMock;
-    @Mock
-    private BookmarkImageFetcher mBookmarkImageFetcher;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private Drawable mDrawable;
-    @Mock
-    private Runnable mClickListener;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock
-    private ShoppingService mShoppingService;
+    @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Drawable mDrawable;
+    @Mock private Runnable mClickListener;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private ShoppingService mShoppingService;
+    @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock private ImprovedBookmarkRow mImprovedBookmarkRow;
 
     private Activity mActivity;
-    private ImprovedBookmarkRow mImprovedBookmarkRow;
     private PropertyModel mModel;
     private ImprovedBookmarkRowCoordinator mCoordinator;
 
     @Before
     public void setUp() {
+        doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
-        // Setup UrlFormatter.
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        doAnswer(invocation -> {
-            GURL url = invocation.getArgument(0);
-            return url.getSpec();
-        })
-                .when(mUrlFormatterJniMock)
-                .formatUrlForSecurityDisplay(any(), anyInt());
-
         // Setup BookmarkModel.
-        doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
-        doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
-        doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
-        doReturn(mReadingListItem).when(mBookmarkModel).getBookmarkById(mReadingListId);
-        doReturn(CHILD_COUNT).when(mBookmarkModel).getChildCount(mFolderId);
-        doReturn(READING_LIST_CHILD_COUNT).when(mBookmarkModel).getChildCount(mReadingListFolderId);
+        SharedBookmarkModelMocks.initMocks(mBookmarkModel);
 
         // Setup BookmarkImageFetcher.
-        doCallback(1,
-                (Callback<Pair<Drawable, Drawable>> callback)
-                        -> callback.onResult(new Pair<>(mDrawable, mDrawable)))
+        doCallback(
+                        1,
+                        (Callback<Pair<Drawable, Drawable>> callback) ->
+                                callback.onResult(new Pair<>(mDrawable, mDrawable)))
                 .when(mBookmarkImageFetcher)
                 .fetchFirstTwoImagesForFolder(any(), any());
         doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
@@ -134,16 +102,130 @@ public class ImprovedBookmarkRowCoordinatorTest {
                 .when(mBookmarkImageFetcher)
                 .fetchFaviconForBookmark(any(), any());
 
-        mCoordinator = new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher,
-                mBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+        // Setup CurrencyFormatter.
+        mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
+
+        mCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
+    }
+
+    @Test
+    public void testBookmark_visal() {
+        doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel model = mCoordinator.createBasePropertyModel(URL_BOOKMARK_ID_A);
+
+        assertEquals("Url A", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
+        assertEquals(
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        JUnitTestGURLs.RED_1, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get());
+        assertNull(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testBookmark_compact() {
+        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel model = mCoordinator.createBasePropertyModel(URL_BOOKMARK_ID_A);
+
+        assertEquals("Url A", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
+        assertEquals(
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        JUnitTestGURLs.RED_1, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+    }
+
+    @Test
+    public void testShoppingCoordinator() {
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+
+        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
+        PowerBookmarkMeta meta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
+        doReturn(true)
+                .when(mShoppingService)
+                .isSubscribedFromCache(
+                        PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
+                                specifics));
+        doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_A);
+
+        PropertyModel model = mCoordinator.createBasePropertyModel(URL_BOOKMARK_ID_A);
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
+    }
+
+    @Test
+    public void testShoppingCoordinator_nullWhenShoppingListNotEligible() {
+        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+
+        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
+        PowerBookmarkMeta meta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
+        doReturn(true)
+                .when(mShoppingService)
+                .isSubscribedFromCache(
+                        PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
+                                specifics));
+        doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_A);
+
+        PropertyModel model = mCoordinator.createBasePropertyModel(URL_BOOKMARK_ID_A);
+        assertNull(model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR));
+        assertNull(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
+    }
+
+    @Test
+    public void testFolder_compact() {
+        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        PropertyModel model = mCoordinator.createBasePropertyModel(FOLDER_BOOKMARK_ID_A);
+
+        assertEquals("Folder A (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
+        assertEquals(
+                "Folder A No bookmarks",
+                model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testFolder_compactConversionString() {
+        // Need to be careful when formatting user generating content, https://crbug.com/1509959.
+        BookmarkId folderId = new BookmarkId(100, BookmarkType.NORMAL);
+        BookmarkItem folder =
+                new BookmarkItem(
+                        folderId,
+                        "Folder %M %d %s",
+                        null,
+                        true,
+                        MOBILE_BOOKMARK_ID,
+                        true,
+                        false,
+                        0,
+                        false,
+                        0,
+                        false);
+        when(mBookmarkModel.getBookmarkById(folderId)).thenReturn(folder);
+        PropertyModel model = mCoordinator.createBasePropertyModel(folderId);
+
+        assertEquals("Folder %M %d %s (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
     }
 
     @Test
     public void testFolder_visual() {
         doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mFolderId);
+        PropertyModel model = mCoordinator.createBasePropertyModel(FOLDER_BOOKMARK_ID_A);
 
-        assertEquals("User folder", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertEquals("Folder A", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertNull(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(
+                String.format(
+                        "%s %s", model.get(ImprovedBookmarkRowProperties.TITLE), "No bookmarks"),
+                model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTED));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
@@ -151,78 +233,56 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertTrue(model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        assertEquals(0, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+        assertEquals(
+                new Pair<>(mDrawable, mDrawable),
+                model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());
     }
 
     @Test
-    public void testFolder_compact() {
-        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mFolderId);
-
-        assertEquals("User folder (0)", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-    }
-
-    @Test
-    public void testBookmark_visal() {
+    public void testVisualFolder_readingList() {
         doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
+        PropertyModel model = mCoordinator.createBasePropertyModel(READING_LIST_BOOKMARK_ID);
+        assertFalse(
+                BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, READING_LIST_BOOKMARK_ID));
 
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE));
+        assertEquals(0, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE));
         assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+                new Pair<Drawable, Drawable>(null, null),
+                model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());
     }
 
     @Test
-    public void testBookmark_visal_nullOutImageWhenBound() {
-        doCallback(1, (Callback<Pair<Drawable, Drawable>> callback) -> {})
-                .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
+    public void testBookmark_accountAndLocal() throws Exception {
+        FakeBookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        bookmarkModel.setAreAccountBookmarkFoldersActive(true);
+        mCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        bookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
+        BookmarkId localBookmarkId =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        0,
+                        "local",
+                        new GURL("https://local.com/"));
+        BookmarkId accountBookmarkId =
+                bookmarkModel.addToReadingList(
+                        bookmarkModel.getAccountReadingListFolder(),
+                        "account",
+                        new GURL("https://account.com/"));
 
-        doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
+        PropertyModel model = mCoordinator.createBasePropertyModel(localBookmarkId);
+        assertTrue(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
 
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-    }
-
-    @Test
-    public void testBookmark_compact() {
-        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
-
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-    }
-
-    @Test
-    public void testBookmark_compact_nullOutImageWhenBoun() {
-        doCallback(1, (Callback<Pair<Drawable, Drawable>> callback) -> {})
-                .when(mBookmarkImageFetcher)
-                .fetchFaviconForBookmark(any(), any());
-
-        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
-
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        model = mCoordinator.createBasePropertyModel(accountBookmarkId);
+        assertFalse(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
     }
 }

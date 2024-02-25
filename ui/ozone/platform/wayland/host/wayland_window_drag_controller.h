@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
@@ -63,7 +64,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   WaylandWindowDragController(WaylandConnection* connection,
                               WaylandDataDeviceManager* device_manager,
                               WaylandPointer::Delegate* pointer_delegate,
-                              WaylandTouch::Delegate* touch_delegate);
+                              WaylandTouch::Delegate* touch_delegate,
+                              WaylandKeyboard::Delegate* keyboard_delegate);
   WaylandWindowDragController(const WaylandWindowDragController&) = delete;
   WaylandWindowDragController& operator=(const WaylandWindowDragController&) =
       delete;
@@ -108,7 +110,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     return pointer_grab_owner_;
   }
 
-  absl::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
+  std::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
+
+  const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
 
  private:
   class ExtendedDragSource;
@@ -129,15 +133,20 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void OnDragOffer(std::unique_ptr<WaylandDataOffer> offer) override;
   void OnDragEnter(WaylandWindow* window,
                    const gfx::PointF& location,
+                   base::TimeTicks timestamp,
                    uint32_t serial) override;
-  void OnDragMotion(const gfx::PointF& location) override;
-  void OnDragLeave() override;
-  void OnDragDrop() override;
+  void OnDragMotion(const gfx::PointF& location,
+                    base::TimeTicks timestamp) override;
+  void OnDragLeave(base::TimeTicks timestamp) override;
+  void OnDragDrop(base::TimeTicks timestamp) override;
   const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
-  void OnDataSourceFinish(bool completed) override;
-  void OnDataSourceSend(const std::string& mime_type,
+  void OnDataSourceFinish(WaylandDataSource* source,
+                          base::TimeTicks timestamp,
+                          bool completed) override;
+  void OnDataSourceSend(WaylandDataSource* source,
+                        const std::string& mime_type,
                         std::string* contents) override;
 
   // PlatformEventDispatcher
@@ -152,7 +161,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   void HandleMotionEvent(LocatedEvent* event);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
-  void HandleDropAndResetState();
+  void HandleDropAndResetState(base::TimeTicks timestamp);
   // Registers as the top level PlatformEvent dispatcher and runs a nested
   // RunLoop, which blocks until the DnD session finishes.
   void RunLoop();
@@ -169,8 +178,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Returns the serial for the given |drag_source| if |origin| has the
   // corresponding focus, otherwise return null.
-  absl::optional<wl::Serial> GetSerial(mojom::DragEventSource drag_source,
-                                       WaylandToplevelWindow* origin);
+  std::optional<wl::Serial> GetSerial(mojom::DragEventSource drag_source,
+                                      WaylandToplevelWindow* origin);
 
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
@@ -178,9 +187,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandWindowManager> window_manager_;
   const raw_ptr<WaylandPointer::Delegate> pointer_delegate_;
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
+  const raw_ptr<WaylandKeyboard::Delegate> keyboard_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<mojom::DragEventSource> drag_source_;
+  std::optional<mojom::DragEventSource> drag_source_;
 
   gfx::Vector2d drag_offset_;
 

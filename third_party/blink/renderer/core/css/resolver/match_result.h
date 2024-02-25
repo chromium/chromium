@@ -53,6 +53,7 @@ struct CORE_EXPORT MatchedProperties {
   struct Data {
     unsigned link_match_type : 2;
     unsigned valid_property_filter : 3;
+    unsigned signal : 2;  // CSSSelector::Signal
     CascadeOrigin origin;
     // This is approximately equivalent to the 'shadow-including tree order'.
     // It can be used to evaluate the 'Shadow Tree' criteria. Note that the
@@ -65,6 +66,11 @@ struct CORE_EXPORT MatchedProperties {
     // https://drafts.csswg.org/css-cascade-5/#layer-ordering
     uint16_t layer_order;
     bool is_inline_style;
+    // Fallback styles come from fallback sizing/positioning.
+    // https://drafts.csswg.org/css-anchor-position-1/#fallback
+    bool is_fallback_style;
+    // See CSSSelector::IsInvisible.
+    bool is_invisible;
   };
   Data types_;
 };
@@ -83,8 +89,11 @@ struct AddMatchedPropertiesOptions {
  public:
   unsigned link_match_type = CSSSelector::kMatchAll;
   ValidPropertyFilter valid_property_filter = ValidPropertyFilter::kNoFilter;
+  CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
+  bool is_fallback_style = false;
+  bool is_invisible = false;
 };
 
 class CORE_EXPORT MatchResult {
@@ -172,6 +181,12 @@ class CORE_EXPORT MatchResult {
   bool HasNonUaHighlightPseudoStyles() const {
     return has_non_ua_highlight_pseudo_styles_;
   }
+  void SetHighlightsDependOnSizeContainerQueries() {
+    highlights_depend_on_size_container_queries_ = true;
+  }
+  bool HighlightsDependOnSizeContainerQueries() const {
+    return highlights_depend_on_size_container_queries_;
+  }
 
   bool HasFlag(MatchFlag flag) const {
     return flags_ & static_cast<MatchFlags>(flag);
@@ -193,15 +208,11 @@ class CORE_EXPORT MatchResult {
   // objects were added.
   void Reset();
 
-  const HeapVector<Member<const TreeScope>, 4>& GetTreeScopes() const {
-    return tree_scopes_;
-  }
-
   const TreeScope* CurrentTreeScope() const {
     if (tree_scopes_.empty()) {
       return nullptr;
     }
-    return tree_scopes_.back();
+    return tree_scopes_.back().Get();
   }
 
   const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {
@@ -224,6 +235,7 @@ class CORE_EXPORT MatchResult {
   bool conditionally_affects_animations_{false};
   bool has_non_universal_highlight_pseudo_styles_{false};
   bool has_non_ua_highlight_pseudo_styles_{false};
+  bool highlights_depend_on_size_container_queries_{false};
   MatchFlags flags_{0};
 #if DCHECK_IS_ON()
   CascadeOrigin last_origin_{CascadeOrigin::kNone};

@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,6 +27,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/aggregation_service/features.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -40,7 +43,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -84,10 +86,12 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(
+            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
+                     .Get()))),
         std::move(keyset));
 
-    absl::optional<std::vector<uint8_t>> private_key =
+    std::optional<std::vector<uint8_t>> private_key =
         base::Base64Decode(ReadStringFromFile(
             input_dir_.AppendASCII("private_key.txt"), /*trim=*/true));
     ASSERT_TRUE(private_key);
@@ -122,26 +126,26 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
         expected_cleartext_payloads.GetList().front().GetIfString();
     ASSERT_TRUE(base64_encoded_expected_cleartext_payload);
 
-    absl::optional<AggregatableReportRequest> actual_report;
-
-    actual_report = PrivateAggregationHost::GenerateReportRequest(
-        std::move(contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
-        std::move(debug_details),
-        /*scheduled_report_time=*/base::Time::FromJavaTime(1234486400000),
-        /*report_id=*/
-        base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
-        /*reporting_origin=*/kExampleOrigin, api_identifier,
-        /*context_id=*/absl::nullopt);
-    ASSERT_TRUE(actual_report.has_value());
+    AggregatableReportRequest actual_report =
+        PrivateAggregationHost::GenerateReportRequest(
+            std::move(debug_details),
+            /*scheduled_report_time=*/
+            base::Time::FromMillisecondsSinceUnixEpoch(1234486400000),
+            /*report_id=*/
+            base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+            /*reporting_origin=*/kExampleOrigin, api_identifier,
+            /*context_id=*/std::nullopt,
+            // TODO(alexmt): Generate golden reports for multiple coordinators.
+            /*aggregation_coordinator_origin=*/std::nullopt,
+            std::move(contributions));
 
     base::RunLoop run_loop;
 
     aggregation_service().AssembleReport(
-        std::move(*actual_report),
+        std::move(actual_report),
         base::BindLambdaForTesting(
             [&](AggregatableReportRequest,
-                absl::optional<AggregatableReport> assembled_report,
+                std::optional<AggregatableReport> assembled_report,
                 AggregationService::AssemblyStatus status) {
               EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
               ASSERT_TRUE(assembled_report);
@@ -175,14 +179,14 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
       base::Value::Dict actual_report,
       base::Value::Dict expected_report,
       const std::string& base64_encoded_expected_cleartext_payload) {
-    absl::optional<base::Value> actual_payloads =
+    std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
     if (!actual_payloads) {
       return testing::AssertionFailure() << kKeyAggregationServicePayloads
                                          << " not present in the actual report";
     }
 
-    absl::optional<base::Value> expected_payloads =
+    std::optional<base::Value> expected_payloads =
         expected_report.Extract(kKeyAggregationServicePayloads);
     if (!expected_payloads) {
       return testing::AssertionFailure()
@@ -254,14 +258,14 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
 
     static constexpr char kKeyPayload[] = "payload";
 
-    absl::optional<base::Value> actual_encrypted_payload =
+    std::optional<base::Value> actual_encrypted_payload =
         actual_payload->Extract(kKeyPayload);
     if (!actual_encrypted_payload) {
       return testing::AssertionFailure()
              << kKeyPayload << " not present in the actual report";
     }
 
-    absl::optional<base::Value> expected_encrypted_payload =
+    std::optional<base::Value> expected_encrypted_payload =
         expected_payload->Extract(kKeyPayload);
     if (!expected_encrypted_payload) {
       return testing::AssertionFailure()
@@ -311,7 +315,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   std::vector<uint8_t> DecryptPayload(
       const std::string& base64_encoded_encrypted_payload,
       const std::string& shared_info) {
-    absl::optional<std::vector<uint8_t>> encrypted_payload =
+    std::optional<std::vector<uint8_t>> encrypted_payload =
         base::Base64Decode(base64_encoded_encrypted_payload);
     if (!encrypted_payload) {
       return {};
@@ -402,7 +406,7 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
 
 std::vector<base::FilePath> GetLegacyVersions() {
   base::FilePath input_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &input_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
   input_dir = input_dir.AppendASCII(
       "content/test/data/private_aggregation/aggregatable_report_goldens");
 

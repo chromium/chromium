@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -11,8 +13,8 @@
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 using webrtc::AudioSourceInterface;
@@ -107,6 +109,7 @@ class MediaStreamTrackMetricsTest : public testing::Test {
     return new rtc::RefCountedObject<MockVideoTrackInterface>(id);
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockMediaStreamTrackMetrics> metrics_;
   scoped_refptr<MediaStreamInterface> stream_;
 

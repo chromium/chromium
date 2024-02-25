@@ -3,18 +3,13 @@
 # found in the LICENSE file.
 """Functions used in both v1 and v2 scripts."""
 
+import json
 import os
 import platform
-import re
 import stat
-import subprocess
 
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Tuple
 
-
-# File indicating version of an image downloaded to the host
-_BUILD_ARGS = "buildargs.gn"
-_ARGS_FILE = 'args.gn'
 
 _FILTER_DIR = 'testing/buildbot/filters'
 _SSH_KEYS = os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
@@ -59,40 +54,6 @@ def add_exec_to_file(file: str) -> None:
     """
     file_stat = os.stat(file)
     os.chmod(file, file_stat.st_mode | stat.S_IXUSR)
-
-
-def _add_exec_to_pave_binaries(system_image_dir: str):
-    """Add exec to required pave files.
-
-    The pave files may vary depending if a product-bundle or a prebuilt images
-    directory is being used.
-    Args:
-      system_image_dir: string path to the directory containing the pave files.
-    """
-    pb_files = [
-        'pave.sh',
-        os.path.join(f'host_{get_host_arch()}', 'bootserver')
-    ]
-    image_files = [
-        'pave.sh',
-        os.path.join(f'bootserver.exe.linux-{get_host_arch()}')
-    ]
-    use_pb_files = os.path.exists(os.path.join(system_image_dir, pb_files[1]))
-    for f in pb_files if use_pb_files else image_files:
-        add_exec_to_file(os.path.join(system_image_dir, f))
-
-
-def pave(image_dir: str, target_id: Optional[str])\
-        -> subprocess.CompletedProcess:
-    """"Pave a device using the pave script inside |image_dir|."""
-    _add_exec_to_pave_binaries(image_dir)
-    pave_command = [
-        os.path.join(image_dir, 'pave.sh'), '--authorized-keys',
-        get_ssh_keys(), '-1'
-    ]
-    if target_id:
-        pave_command.extend(['-n', target_id])
-    return subprocess.run(pave_command, check=True, text=True, timeout=300)
 
 
 def parse_host_port(host_port_pair: str) -> Tuple[str, int]:
@@ -164,41 +125,16 @@ def map_filter_file_to_package_file(filter_file: str) -> str:
     return '/pkg/' + filter_file[filter_file.index(_FILTER_DIR):]
 
 
+# TODO(crbug.com/1496426): Rename to get_product_version.
 def get_sdk_hash(system_image_dir: str) -> Tuple[str, str]:
     """Read version of hash in pre-installed package directory.
     Returns:
         Tuple of (product, version) of image to be installed.
-    Raises:
-        VersionNotFoundError: if contents of buildargs.gn cannot be found or the
-        version number cannot be extracted.
     """
 
-    # TODO(crbug.com/1261961): Stop processing buildargs.gn directly.
-    args_file = os.path.join(system_image_dir, _BUILD_ARGS)
-    if not os.path.exists(args_file):
-        args_file = os.path.join(system_image_dir, _ARGS_FILE)
-
-    if not os.path.exists(args_file):
-        raise VersionNotFoundError(
-            f'Dir {system_image_dir} did not contain {_BUILD_ARGS} or '
-            f'{_ARGS_FILE}')
-
-    with open(args_file) as f:
-        contents = f.readlines()
-    if not contents:
-        raise VersionNotFoundError('Could not retrieve %s' % args_file)
-    version_key = 'build_info_version'
-    product_key = 'build_info_product'
-    info_keys = [product_key, version_key]
-    version_info = {}
-    for line in contents:
-        for key in info_keys:
-            match = re.match(r'%s = "(.*)"' % key, line)
-            if match:
-                version_info[key] = match.group(1)
-    if not (version_key in version_info and product_key in version_info):
-        raise VersionNotFoundError(
-            'Could not extract version info from %s. Contents: %s' %
-            (args_file, contents))
-
-    return (version_info[product_key], version_info[version_key])
+    with open(os.path.join(system_image_dir,
+                           'product_bundle.json')) as product:
+        # The product_name in the json file does not match the name of the image
+        # flashed to the device.
+        return (os.path.basename(os.path.normpath(system_image_dir)),
+                json.load(product)['product_version'])

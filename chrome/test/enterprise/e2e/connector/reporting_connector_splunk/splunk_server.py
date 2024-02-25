@@ -68,7 +68,7 @@ class SplunkApiService(Verifyable):
         (datetime.utcnow() - content.timestamp).total_seconds() / 60) + 2)
     searchQuery += ' earliest=-' + str(minutes) + 'm'
     searchQuery += ' device_id="' + content.device_id + '"'
-    searchQuery += ' event="dangerousDownloadEvent"'
+    searchQuery += ' event="badNavigationEvent"'
     # Remove leading and trailing whitespace from the search
     searchQuery = searchQuery.strip()
     print(searchQuery)

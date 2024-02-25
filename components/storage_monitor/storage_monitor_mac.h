@@ -20,8 +20,7 @@ class ImageCaptureDeviceManager;
 
 // This class posts notifications to listeners when a new disk
 // is attached, removed, or changed.
-class StorageMonitorMac : public StorageMonitor,
-                          public base::SupportsWeakPtr<StorageMonitorMac> {
+class StorageMonitorMac final : public StorageMonitor {
  public:
   enum UpdateType {
     UPDATE_DEVICE_ADDED,
@@ -70,6 +69,8 @@ class StorageMonitorMac : public StorageMonitor,
   int pending_disk_updates_ = 0;
 
   std::unique_ptr<ImageCaptureDeviceManager> image_capture_device_manager_;
+
+  base::WeakPtrFactory<StorageMonitorMac> weak_ptr_factory_{this};
 };
 
 }  // namespace storage_monitor

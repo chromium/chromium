@@ -35,7 +35,7 @@ class ZwpPrimarySelectionOffer : public WaylandDataOfferBase {
   base::ScopedFD Receive(const std::string& mime_type) override;
 
  private:
-  // primary_selection_offer_listener callbacks.
+  // zwp_primary_selection_offer_listener callbacks:
   static void OnOffer(void* data,
                       zwp_primary_selection_offer_v1* data_offer,
                       const char* mime_type);

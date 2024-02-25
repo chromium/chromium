@@ -4,9 +4,10 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_RECONCILOR_THROTTLER_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_RECONCILOR_THROTTLER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/signin/public/base/multilogin_parameters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Used for UMA logging, do not remove or reorder values.
 enum class MultiloginRequestType {
@@ -55,7 +56,7 @@ class AccountReconcilorThrottler {
   // Reset for every new request with different parameters.
   float available_requests_bucket_;
   base::TimeTicks last_refill_time_stamp_;
-  absl::optional<signin::MultiloginParameters> last_request_params_;
+  std::optional<signin::MultiloginParameters> last_request_params_;
   size_t consecutive_rejected_requests_ = 0;
 };
 

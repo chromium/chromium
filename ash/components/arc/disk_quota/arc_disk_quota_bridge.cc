@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 namespace arc {
@@ -69,7 +68,7 @@ void IsQuotaSupportedOnArcDiskHome(
       kArcDiskHome,
       base::BindOnce(
           [](ArcDiskQuotaBridge::IsQuotaSupportedCallback callback,
-             absl::optional<bool> reply) {
+             std::optional<bool> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from IsQuotaSupported";
             std::move(callback).Run(reply.value_or(false));
@@ -114,7 +113,7 @@ void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
       user_data_auth::GetArcDiskFeaturesRequest(),
       base::BindOnce(
           [](IsQuotaSupportedCallback callback,
-             absl::optional<user_data_auth::GetArcDiskFeaturesReply> reply) {
+             std::optional<user_data_auth::GetArcDiskFeaturesReply> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from GetArcDiskFeatures call.";
             if (!reply.has_value() || !reply->quota_supported()) {
@@ -141,7 +140,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
       kArcDiskHome, cros_uid,
       base::BindOnce(
           [](GetCurrentSpaceForUidCallback callback, int cros_uid,
-             absl::optional<int64_t> reply) {
+             std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from GetQuotaCurrentSpaceForUid "
                 << "for uid=" << cros_uid;
@@ -165,7 +164,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
       kArcDiskHome, cros_gid,
       base::BindOnce(
           [](GetCurrentSpaceForGidCallback callback, int cros_gid,
-             absl::optional<int64_t> reply) {
+             std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from GetQuotaCurrentSpaceForGid "
                 << "for gid=" << cros_gid;
@@ -187,7 +186,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
       kArcDiskHome, project_id,
       base::BindOnce(
           [](GetCurrentSpaceForProjectIdCallback callback, int project_id,
-             absl::optional<int64_t> reply) {
+             std::optional<int64_t> reply) {
             LOG_IF(ERROR, !reply.has_value())
                 << "Failed to retrieve result from "
                    "GetQuotaCurrentSpaceForProjectId for project_id="
@@ -205,7 +204,7 @@ void ArcDiskQuotaBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
 }
 
 void ArcDiskQuotaBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
-                                            absl::optional<int64_t> reply) {
+                                            std::optional<int64_t> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "spaced::GetFreeDiskSpace failed";
     std::move(callback).Run(nullptr);

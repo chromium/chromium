@@ -321,7 +321,7 @@ class ServiceWorkerHidDelegateObserverNoEventHandlersTest
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -372,7 +372,8 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
       auto& device_added_future = device_added_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(hid_manager_clients[idx], DeviceAdded).WillOnce([&](auto d) {
         device_added_future.SetValue(std::move(d));
       });
@@ -386,7 +387,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceAdded) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -438,7 +439,8 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
       auto& device_removed_future = device_removed_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(hid_manager_clients[idx], DeviceRemoved)
           .WillOnce(
               [&](auto d) { device_removed_future.SetValue(std::move(d)); });
@@ -452,7 +454,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceRemoved) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -504,7 +506,8 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
       auto& device_changed_future = device_changed_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(hid_manager_clients[idx], DeviceChanged)
           .WillOnce(
               [&](auto d) { device_changed_future.SetValue(std::move(d)); });
@@ -519,7 +522,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, DeviceChanged) {
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, OnHidManagerConnectionError) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -539,7 +542,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnHidManagerConnectionError) {
   for (size_t idx = 0; idx < num_workers; ++idx) {
     auto* version = context()->GetLiveVersion(version_ids[idx]);
     ASSERT_NE(version, nullptr);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     EXPECT_EQ(context()
                   ->hid_delegate_observer()
                   ->GetHidServiceForTesting(registrations[idx]->id())
@@ -562,7 +565,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
   ConnectDevice(*device);
 
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -586,7 +589,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
     auto* version = registrations[idx]->GetNewestVersion();
     ASSERT_NE(version, nullptr);
     StartServiceWorker(version);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     hid_connections[idx] =
         OpenDevice(hid_services[idx], device, hid_connection_clients[idx]);
     EXPECT_FALSE(context()
@@ -598,7 +601,8 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
     base::RunLoop run_loop;
     auto origin = url::Origin::Create(origins[idx]);
     EXPECT_CALL(hid_delegate(), GetDeviceInfo).WillOnce(Return(device.get()));
-    EXPECT_CALL(hid_delegate(), HasDevicePermission(_, origin, Ref(*device)))
+    EXPECT_CALL(hid_delegate(),
+                HasDevicePermission(_, nullptr, origin, Ref(*device)))
         .WillOnce(Return(false));
     EXPECT_CALL(hid_delegate(), DecrementConnectionCount(_, origin))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -729,7 +733,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, NoPermissionNotStartWorker) {
   auto device = CreateDeviceWithOneReport();
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
   ConnectDevice(*device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, NoReportsDeviceNotStartWorker) {
@@ -741,12 +745,12 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, NoReportsDeviceNotStartWorker) {
   auto device = CreateDeviceWithNoReports();
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
   ConnectDevice(*device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverTest, ProcessPendingCallback) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
@@ -804,7 +808,7 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, ProcessPendingCallback) {
 TEST_F(ServiceWorkerHidDelegateObserverTest,
        ClearPendingCallbackWhenWorkerStopped) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   for (size_t idx = 0; idx < num_workers; ++idx) {
@@ -873,7 +877,7 @@ TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
 
   auto device = CreateDeviceWithOneReport();
   ConnectDevice(*device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,

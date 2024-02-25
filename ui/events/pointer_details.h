@@ -37,8 +37,8 @@ struct EVENTS_BASE_EXPORT PointerDetails {
                  float radius_y,
                  float force,
                  float twist = 0.0f,
-                 float tilt_x = 0.0f,
-                 float tilt_y = 0.0f,
+                 double tilt_x = 0.0f,
+                 double tilt_y = 0.0f,
                  float tangential_pressure = 0.0f);
   PointerDetails(const PointerDetails& other);
   PointerDetails& operator=(const PointerDetails& other);
@@ -63,8 +63,8 @@ struct EVENTS_BASE_EXPORT PointerDetails {
   // Tilt of a pen/stylus from surface normal as plane angle in degrees, values
   // lie in [-90,90]. A positive tilt_x is to the right and a positive tilt_y
   // is towards the user. 0.0 if unknown.
-  float tilt_x = 0.0;
-  float tilt_y = 0.0;
+  double tilt_x = 0.0;
+  double tilt_y = 0.0;
 
   // The normalized tangential pressure (or barrel pressure), typically set by
   // an additional control of the stylus, which has a range of [-1,1], where 0

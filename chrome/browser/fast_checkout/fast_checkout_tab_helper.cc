@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ void FastCheckoutTabHelper::FetchCapabilities(const GURL& url) {
       return;
     }
     if (!autofill::prefs::IsAutofillProfileEnabled(pref_service) ||
-        !autofill::prefs::IsAutofillCreditCardEnabled(pref_service)) {
+        !autofill::prefs::IsAutofillPaymentMethodsEnabled(pref_service)) {
       return;
     }
 

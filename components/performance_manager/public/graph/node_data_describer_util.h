@@ -25,10 +25,20 @@ std::string MojoEnumToString(T value) {
   return os.str();
 }
 
-// Returns a human-friendly string value computed from |time_ticks|. That string
-// represents the time delta between |time_ticks| and TimeTicks::Now() in the
-// following format: "x hours, y minutes".
+// Returns a human-friendly string representing `delta` in the format "x hr, y
+// min, z sec".
+base::Value TimeDeltaToValue(base::TimeDelta delta);
+
+// Returns a human-friendly string representing the delta between `time_ticks`
+// and TimeTicks::Now() in the format "x hr, y min, z sec".
 base::Value TimeDeltaFromNowToValue(base::TimeTicks time_ticks);
+
+// Returns a human-friendly string representing the delta between the Unix epoch
+// and `time_ticks` (roughly the wall clock time corresponding to `time_ticks`)
+// in the format "yyyy-MM-dd HH:mm:ss". (See
+// https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
+// for pattern details.)
+base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks);
 
 // Converts a string to a base::Value, where null strings go to a null value
 // instead of an empty string.

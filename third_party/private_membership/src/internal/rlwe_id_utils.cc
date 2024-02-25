@@ -30,7 +30,7 @@ namespace rlwe {
 
 ::rlwe::StatusOr<std::string> ComputeBucketStoredEncryptedId(
     const RlwePlaintextId& id, const EncryptedBucketsParameters& params,
-    private_join_and_compute::ECCommutativeCipher* ec_cipher, private_join_and_compute::Context* ctx) {
+    ::private_join_and_compute::ECCommutativeCipher* ec_cipher, ::private_join_and_compute::Context* ctx) {
   if (ec_cipher == nullptr || ctx == nullptr) {
     return absl::InvalidArgumentError(
         "ECCipher and Context should both be non-null.");
@@ -46,7 +46,7 @@ namespace rlwe {
 
 ::rlwe::StatusOr<std::string> ComputeBucketStoredEncryptedId(
     const absl::string_view encrypted_id,
-    const EncryptedBucketsParameters& params, private_join_and_compute::Context* ctx) {
+    const EncryptedBucketsParameters& params, ::private_join_and_compute::Context* ctx) {
   if (ctx == nullptr) {
     return absl::InvalidArgumentError("Context should be non-null.");
   }
@@ -84,7 +84,7 @@ namespace rlwe {
 std::string HashRlwePlaintextId(const RlwePlaintextId& id) {
   // For backward compatibility. We can show that if non_sensitive_id length is
   // 0, it is okay to concatenate without delimiters to make it injective.
-  if (id.non_sensitive_id().length() == 0) {
+  if (id.non_sensitive_id().empty()) {
     return absl::StrCat(0, id.sensitive_id().length(), id.sensitive_id());
   }
   static constexpr char delimiter[] = "/";
@@ -95,7 +95,7 @@ std::string HashRlwePlaintextId(const RlwePlaintextId& id) {
 }
 
 ::rlwe::StatusOr<std::string> HashNonsensitiveIdWithSalt(
-    absl::string_view nsid, HashType hash_type, private_join_and_compute::Context* ctx) {
+    absl::string_view nsid, HashType hash_type, ::private_join_and_compute::Context* ctx) {
   switch (hash_type) {
     case HashType::TEST_HASH_TYPE:
     case HashType::SHA256: {

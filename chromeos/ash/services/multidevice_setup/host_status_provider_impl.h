@@ -82,11 +82,10 @@ class HostStatusProviderImpl : public HostStatusProvider,
   // The latter is necessary to capture users who stay logged in for days.
   void RecordMultiDeviceHostStatus();
 
-  raw_ptr<EligibleHostDevicesProvider, ExperimentalAsh>
-      eligible_host_devices_provider_;
-  raw_ptr<HostBackendDelegate, ExperimentalAsh> host_backend_delegate_;
-  raw_ptr<HostVerifier, ExperimentalAsh> host_verifier_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<EligibleHostDevicesProvider> eligible_host_devices_provider_;
+  raw_ptr<HostBackendDelegate> host_backend_delegate_;
+  raw_ptr<HostVerifier> host_verifier_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   HostStatusWithDevice current_status_and_device_;
   base::RepeatingTimer host_status_metric_timer_;
 };

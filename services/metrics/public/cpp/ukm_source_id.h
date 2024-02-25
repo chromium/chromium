@@ -90,8 +90,16 @@ class METRICS_EXPORT SourceIdObj {
     // Some criteria (e.g. checking if it's a synced extension) will be applied
     // when recording metrics with this type.
     EXTENSION_ID = 12,
+    // Source ID type for service-worker triggered persisted notification
+    // events.
+    // Notification events may occur in the background and an associated URL is
+    // not necessarily present in the browsing history. A new source of this
+    // type and associated events are expected to be recorded within the same
+    // report
+    // interval; it will not be kept in memory between different reports.
+    NOTIFICATION_ID = 13,
 
-    kMaxValue = EXTENSION_ID,
+    kMaxValue = NOTIFICATION_ID,
   };
 
   // Default constructor has the invalid value.

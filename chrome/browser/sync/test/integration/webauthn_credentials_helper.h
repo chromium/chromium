@@ -12,15 +12,19 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
+#include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_pb {
 class SyncEntity;
 class WebauthnCredentialSpecifics;
-}
+}  // namespace sync_pb
 
 namespace webauthn_credentials_helper {
+
+inline constexpr char kTestRpId[] = "example.com";
 
 // Checker to wait until the WEBAUTHN_CREDENTIAL datatype becomes active.
 class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
@@ -42,7 +46,9 @@ class LocalPasskeysChangedChecker : public StatusChangeChecker,
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged() override;
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
 
  private:
   int profile_;
@@ -65,7 +71,9 @@ class LocalPasskeysMatchChecker : public StatusChangeChecker,
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged() override;
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
 
  private:
   const int profile_;
@@ -90,12 +98,45 @@ class ServerPasskeysMatchChecker
   const Matcher matcher_;
 };
 
+// Observes PasskeyModel changes and waits until the specified list of
+// {ChangeType, sync_id} pairs is observed.
+class PasskeyChangeObservationChecker
+    : public StatusChangeChecker,
+      public webauthn::PasskeyModel::Observer {
+ public:
+  using ChangeList = std::vector<
+      std::pair<webauthn::PasskeyModelChange::ChangeType, std::string>>;
+  explicit PasskeyChangeObservationChecker(int profile,
+                                           ChangeList expected_changes);
+  ~PasskeyChangeObservationChecker() override;
+
+  // SingleClientStatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+
+ private:
+  const int profile_;
+  std::vector<webauthn::PasskeyModelChange> changes_observed_;
+  const ChangeList expected_changes_;
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      observation_{this};
+};
+
 class MockPasskeyModelObserver : public webauthn::PasskeyModel::Observer {
  public:
   explicit MockPasskeyModelObserver(webauthn::PasskeyModel* model);
   ~MockPasskeyModelObserver() override;
 
-  MOCK_METHOD(void, OnPasskeysChanged, (), (override));
+  MOCK_METHOD(void,
+              OnPasskeysChanged,
+              (const std::vector<webauthn::PasskeyModelChange>&),
+              (override));
+  MOCK_METHOD(void, OnPasskeyModelShuttingDown, (), (override));
 
  private:
   base::ScopedObservation<webauthn::PasskeyModel,
@@ -103,13 +144,19 @@ class MockPasskeyModelObserver : public webauthn::PasskeyModel::Observer {
       observation_{this};
 };
 
-webauthn::PasskeyModel& GetModel(int profile_idx);
+webauthn::PasskeySyncBridge& GetModel(int profile_idx);
 
 bool AwaitAllModelsMatch();
 
-// Returns a new WebauthnCredentialSpecifics entity with a random sync ID and
-// credential ID, and fixed RP ID and user ID.
+// Returns a new WebauthnCredentialSpecifics entity with a random sync ID,
+// credential ID and user ID, and a fixed RP ID.
 sync_pb::WebauthnCredentialSpecifics NewPasskey();
+
+// Returns a new WebauthnCredentialSpecifics entity shadowing another one. Sync
+// ID and credential ID are random, while user ID and RP ID will match the other
+// credential.
+sync_pb::WebauthnCredentialSpecifics NewShadowingPasskey(
+    const sync_pb::WebauthnCredentialSpecifics& shadowed);
 
 // Tests that a `sync_pb::SyncEntity` has WebauthnCredentialSpecifics with the
 // given `sync_id`. Use with `ServerPasskeysMatchChecker`.
@@ -126,10 +173,52 @@ MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
          expected_display_name;
 }
 
+// Matches a `sync_pb::WebauthnCredentialSpecifics` against another field by
+// field.
+MATCHER_P(PasskeySpecificsEq, expected, "") {
+  return arg.sync_id() == expected.sync_id() &&
+         arg.credential_id() == expected.credential_id() &&
+         arg.rp_id() == expected.rp_id() &&
+         base::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
+                             arg.newly_shadowed_credential_ids().end(),
+                             expected.newly_shadowed_credential_ids().begin(),
+                             expected.newly_shadowed_credential_ids().end()) &&
+         arg.creation_time() == expected.creation_time() &&
+         arg.user_name() == expected.user_name() &&
+         arg.user_display_name() == expected.user_display_name() &&
+         arg.third_party_payments_support() ==
+             expected.third_party_payments_support() &&
+         arg.last_used_time_windows_epoch_micros() ==
+             expected.last_used_time_windows_epoch_micros() &&
+         arg.key_version() == expected.key_version() &&
+         arg.has_private_key() == expected.has_private_key() &&
+         arg.private_key() == expected.private_key() &&
+         arg.has_encrypted() == expected.has_encrypted() &&
+         arg.encrypted() == expected.encrypted();
+}
+
 // Matches the `sync_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
 // `LocalPasskeysMatchChecker`.
 MATCHER_P(PasskeyHasSyncId, expected_sync_id, "") {
   return arg.sync_id() == expected_sync_id;
+}
+
+// Matches the `rp_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
+// `LocalPasskeysMatchChecker`.
+MATCHER_P(PasskeyHasRpId, expected_rp_id, "") {
+  return arg.rp_id() == expected_rp_id;
+}
+
+// Matches the `user_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
+// `LocalPasskeysMatchChecker`.
+MATCHER_P(PasskeyHasUserId, expected_user_id, "") {
+  return arg.user_id() == expected_user_id;
+}
+
+// Matches the `display_name` of a `sync_pb::WebauthnCredentialSpecifics`. Use
+// with `LocalPasskeysMatchChecker`.
+MATCHER_P(PasskeyHasDisplayName, expected_display_name, "") {
+  return arg.user_display_name() == expected_display_name;
 }
 
 }  // namespace webauthn_credentials_helper

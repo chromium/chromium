@@ -48,13 +48,19 @@ public class DisableIfSkipCheck extends SkipCheck {
             }
         }
 
-        for (DisableIf.Device d : AnnotationProcessingUtils.getAnnotations(
-                     method.getMethod(), DisableIf.Device.class)) {
+        for (DisableIf.Device d :
+                AnnotationProcessingUtils.getAnnotations(
+                        method.getMethod(), DisableIf.Device.class)) {
             for (String deviceType : d.type()) {
                 if (deviceTypeApplies(deviceType)) {
-                    Log.i(TAG, "Test " + method.getDeclaringClass().getName() + "#"
-                            + method.getName() + " disabled because of "
-                            + d);
+                    Log.i(
+                            TAG,
+                            "Test "
+                                    + method.getDeclaringClass().getName()
+                                    + "#"
+                                    + method.getName()
+                                    + " disabled because of "
+                                    + d);
                     return true;
                 }
             }
@@ -68,8 +74,7 @@ public class DisableIfSkipCheck extends SkipCheck {
         if (v.supported_abis_includes().isEmpty()) return true;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return Arrays.asList(Build.SUPPORTED_ABIS).contains(
-                    v.supported_abis_includes());
+            return Arrays.asList(Build.SUPPORTED_ABIS).contains(v.supported_abis_includes());
         } else {
             return Build.CPU_ABI.equals(v.supported_abis_includes())
                     || Build.CPU_ABI2.equals(v.supported_abis_includes());
@@ -99,17 +104,18 @@ public class DisableIfSkipCheck extends SkipCheck {
 
         // {@link DisableIf.Build} annotations will be wrapped in a {@link DisableIf.Builds} if
         // there is more than one present on the method.
-        for (DisableIf.Builds buildsAnnotation : AnnotationProcessingUtils.getAnnotations(
-                     method.getMethod(), DisableIf.Builds.class)) {
+        for (DisableIf.Builds buildsAnnotation :
+                AnnotationProcessingUtils.getAnnotations(
+                        method.getMethod(), DisableIf.Builds.class)) {
             buildAnnotationList.addAll(Arrays.asList(buildsAnnotation.value()));
         }
 
         // This will find the {@link DisableIf.Build} annotation when there's exactly one present on
         // the method.
-        buildAnnotationList.addAll(AnnotationProcessingUtils.getAnnotations(
-                method.getMethod(), DisableIf.Build.class));
+        buildAnnotationList.addAll(
+                AnnotationProcessingUtils.getAnnotations(
+                        method.getMethod(), DisableIf.Build.class));
 
         return buildAnnotationList;
     }
 }
-

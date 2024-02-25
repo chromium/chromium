@@ -6,15 +6,13 @@
 
 #include "base/check_op.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 RulesetInstallPref::RulesetInstallPref(RulesetID ruleset_id,
-                                       absl::optional<int> checksum,
+                                       std::optional<int> checksum,
                                        bool ignored)
     : ruleset_id(ruleset_id), checksum(checksum), ignored(ignored) {
   DCHECK_NE(ignored, checksum.has_value());
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

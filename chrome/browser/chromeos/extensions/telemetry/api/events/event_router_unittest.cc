@@ -115,4 +115,96 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
   EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
 }
 
+TEST_F(TelemetryExtensionEventRouterTest, RestrictReceiversForExtension) {
+  constexpr char kExtensionIdOne[] = "TESTEXTENSION1";
+  constexpr char kExtensionIdTwo[] = "TESTEXTENSION2";
+  constexpr crosapi::TelemetryEventCategoryEnum regular_event =
+      crosapi::TelemetryEventCategoryEnum::kAudioJack;
+  constexpr crosapi::TelemetryEventCategoryEnum focus_restriced_event =
+      crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
+
+  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_regular(
+      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+          regular_event, kExtensionIdOne));
+  mojo::Remote<crosapi::TelemetryEventObserver> remote_one_focus_restriced(
+      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+          focus_restriced_event, kExtensionIdOne));
+  mojo::Remote<crosapi::TelemetryEventObserver> remote_two_regular(
+      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+          regular_event, kExtensionIdTwo));
+  mojo::Remote<crosapi::TelemetryEventObserver> remote_two_focus_restriced(
+      GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
+          focus_restriced_event, kExtensionIdTwo));
+
+  ASSERT_TRUE(remote_one_regular.is_bound());
+  ASSERT_TRUE(remote_one_focus_restriced.is_bound());
+  ASSERT_TRUE(remote_two_regular.is_bound());
+  ASSERT_TRUE(remote_two_focus_restriced.is_bound());
+
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdOne,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionRestricted(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdOne,
+                                                              regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdTwo,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionRestricted(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdTwo,
+                                                              regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+
+  GetEventRouter()->RestrictReceiversOfExtension(kExtensionIdOne);
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdOne,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionRestricted(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdOne,
+                                                              regular_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdTwo,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionRestricted(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdTwo,
+                                                              regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+
+  GetEventRouter()->UnrestrictReceiversOfExtension(kExtensionIdOne);
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdOne,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionRestricted(kExtensionIdOne));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdOne,
+                                                              regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdOne, focus_restriced_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(kExtensionIdTwo,
+                                                                regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+  EXPECT_FALSE(GetEventRouter()->IsExtensionRestricted(kExtensionIdTwo));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(kExtensionIdTwo,
+                                                              regular_event));
+  EXPECT_TRUE(GetEventRouter()->IsExtensionAllowedForCategory(
+      kExtensionIdTwo, focus_restriced_event));
+}
+
 }  // namespace chromeos

@@ -1,0 +1,2623 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanAbsent">
+  <int value="0" label="Not Absent"/>
+  <int value="1" label="Absent"/>
+</enum>
+
+<enum name="BooleanAttached">
+  <int value="0" label="Detached"/>
+  <int value="1" label="Attached"/>
+</enum>
+
+<enum name="BootlockboxAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="Write Locked"/>
+  <int value="2" label="Need Power Wash"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<enum name="CertificateFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<enum name="ChapsReinitializingToken">
+  <int value="0" label="Failed to unseal"/>
+  <int value="1" label="Bad authorization data"/>
+  <int value="2" label="Failed to decrypt root key"/>
+  <int value="3" label="Failed to validate"/>
+</enum>
+
+<enum name="ChapsSessionStatus">
+  <int value="-951628800" label="Would Block For Private Objects"/>
+  <int value="0" label="OK"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Host Memory"/>
+  <int value="3" label="Slot Id Invalid"/>
+  <int value="5" label="General Error"/>
+  <int value="6" label="Function Failed"/>
+  <int value="7" label="Arguments Bad"/>
+  <int value="8" label="No Event"/>
+  <int value="9" label="Need To Create Threads"/>
+  <int value="10" label="Cant Lock"/>
+  <int value="16" label="Attribute Read Only"/>
+  <int value="17" label="Attribute Sensitive"/>
+  <int value="18" label="Attribute Type Invalid"/>
+  <int value="19" label="Attribute Value Invalid"/>
+  <int value="27" label="Action Prohibited"/>
+  <int value="32" label="Data Invalid"/>
+  <int value="33" label="Data Len Range"/>
+  <int value="48" label="Device Error"/>
+  <int value="49" label="Device Memory"/>
+  <int value="50" label="Device Removed"/>
+  <int value="64" label="Encrypted Data Invalid"/>
+  <int value="65" label="Encrypted Data Len Range"/>
+  <int value="80" label="Function Canceled"/>
+  <int value="81" label="Function Not Parallel"/>
+  <int value="84" label="Function Not Supported"/>
+  <int value="96" label="Key Handle Invalid"/>
+  <int value="98" label="Key Size Range"/>
+  <int value="99" label="Key Type Inconsistent"/>
+  <int value="100" label="Key Not Needed"/>
+  <int value="101" label="Key Changed"/>
+  <int value="102" label="Key Needed"/>
+  <int value="103" label="Key Indigestible"/>
+  <int value="104" label="Key Function Not Permitted"/>
+  <int value="105" label="Key Not Wrappable"/>
+  <int value="106" label="Key Unextractable"/>
+  <int value="112" label="Mechanism Invalid"/>
+  <int value="113" label="Mechanism Param Invalid"/>
+  <int value="130" label="Object Handle Invalid"/>
+  <int value="144" label="Operation Active"/>
+  <int value="145" label="Operation Not Initialized"/>
+  <int value="160" label="Pin Incorrect"/>
+  <int value="161" label="Pin Invalid"/>
+  <int value="162" label="Pin Len Range"/>
+  <int value="163" label="Pin Expired"/>
+  <int value="164" label="Pin Locked"/>
+  <int value="176" label="Session Closed"/>
+  <int value="177" label="Session Count"/>
+  <int value="179" label="Session Handle Invalid"/>
+  <int value="180" label="Session Parallel Not Supported"/>
+  <int value="181" label="Session Read Only"/>
+  <int value="182" label="Session Exists"/>
+  <int value="183" label="Session Read Only Exists"/>
+  <int value="184" label="Session Read Write So Exists"/>
+  <int value="192" label="Signature Invalid"/>
+  <int value="193" label="Signature Len Range"/>
+  <int value="208" label="Template Incomplete"/>
+  <int value="209" label="Template Inconsistent"/>
+  <int value="224" label="Token Not Present"/>
+  <int value="225" label="Token Not Recognized"/>
+  <int value="226" label="Token Write Protected"/>
+  <int value="240" label="Unwrapping Key Handle Invalid"/>
+  <int value="241" label="Unwrapping Key Size Range"/>
+  <int value="242" label="Unwrapping Key Type Inconsistent"/>
+  <int value="256" label="User Already Logged In"/>
+  <int value="257" label="User Not Logged In"/>
+  <int value="258" label="User Pin Not Initialized"/>
+  <int value="259" label="User Type Invalid"/>
+  <int value="260" label="User Another Already Logged In"/>
+  <int value="261" label="User Too Many Types"/>
+  <int value="272" label="Wrapped Key Invalid"/>
+  <int value="274" label="Wrapped Key Len Range"/>
+  <int value="275" label="Wrapping Key Handle Invalid"/>
+  <int value="276" label="Wrapping Key Size Range"/>
+  <int value="277" label="Wrapping Key Type Inconsistent"/>
+  <int value="288" label="Random Seed Not Supported"/>
+  <int value="289" label="Random No Rng"/>
+  <int value="304" label="Domain Params Invalid"/>
+  <int value="320" label="Curve Not Supported"/>
+  <int value="336" label="Buffer Too Small"/>
+  <int value="352" label="Save State Invalid"/>
+  <int value="368" label="Information Sensitive"/>
+  <int value="384" label="State Unsaveable"/>
+  <int value="400" label="Cryptoki Not Initialized"/>
+  <int value="401" label="Cryptoki Already Initialized"/>
+  <int value="416" label="Mutex Bad"/>
+  <int value="417" label="Mutex Not Locked"/>
+  <int value="432" label="New Pin Mode"/>
+  <int value="433" label="Next Otp"/>
+  <int value="437" label="Exceeded Max Iterations"/>
+  <int value="438" label="Fips Self Test Failed"/>
+  <int value="439" label="Library Load Failed"/>
+  <int value="440" label="Pin Too Weak"/>
+  <int value="441" label="Public Key Invalid"/>
+  <int value="512" label="Function Rejected"/>
+  <int value="513" label="Token Resource Exceeded"/>
+  <int value="514" label="Operation Cancel Failed"/>
+</enum>
+
+<enum name="ChapsTPMAvailability">
+  <int value="0" label="TPM available"/>
+  <int value="1" label="TPM unavailable"/>
+</enum>
+
+<enum name="ChromeOSRevenHwisPermission">
+  <int value="0" label="kPolicySuccess"/>
+  <int value="1" label="kPolicyDenial"/>
+  <int value="2" label="kOptInSuccess"/>
+  <int value="3" label="kOptInDenial"/>
+  <int value="4" label="kError"/>
+</enum>
+
+<enum name="Cr50BoardIdFlags">
+  <int value="-1" label="Unprogrammed (0xffffffff)"/>
+  <int value="127" label="Legacy pre-pvt (0x7f)"/>
+  <int value="32639" label="Pre-pvt (0x7f7f)"/>
+  <int value="32640" label="Prod (0x7f80)"/>
+  <int value="65280" label="Corrected (0xff00)"/>
+</enum>
+
+<enum name="Cr50CrosRlzCodes">
+  <summary>
+    List of RLZ codes of all boards which are using Cr50, the Google security
+    chip. Used by various Cr50 related metrics keeping track of Board ID and RLZ
+    assignments.
+  </summary>
+  <int value="1094926914" label="ACBB (Electro)"/>
+  <int value="1094926916" label="ACBD (Sand)"/>
+  <int value="1094926917" label="ACBE (Santa)"/>
+  <int value="1094926918" label="ACBF (Bruce)"/>
+  <int value="1094993739" label="ADGK (Laser14)"/>
+  <int value="1095520840" label="ALRH (Sion)"/>
+  <int value="1095715654" label="AOKF (Lenovo Akemi)"/>
+  <int value="1095716933" label="AOPE (Jax)"/>
+  <int value="1095784537" label="APXY (Wukong)"/>
+  <int value="1095909961" label="ARBI (Soraka)"/>
+  <int value="1095980364" label="ASUL (Cave)"/>
+  <int value="1095980366" label="ASUN (Basking)"/>
+  <int value="1095980367" label="ASUO (Bob)"/>
+  <int value="1111577921" label="BAUA (Lenovo Treeya)"/>
+  <int value="1111707468" label="BCOL (Ampton)"/>
+  <int value="1111771479" label="BDIW (Sparky360)"/>
+  <int value="1128420697" label="CBUY (Pantheon)"/>
+  <int value="1129075526" label="CLSF (Alan)"/>
+  <int value="1129336916" label="CPPT (Nasher)"/>
+  <int value="1129532502" label="CSLV (Lenovo Laser14-R)"/>
+  <int value="1129597253" label="CTIE (Astronaut)"/>
+  <int value="1129927505" label="CYSQ (Phaser360)"/>
+  <int value="1145193796" label="DBED (Wukong)"/>
+  <int value="1145389384" label="DEAH (Asuka)"/>
+  <int value="1146640980" label="DXZT (Scarlet)"/>
+  <int value="1162629441" label="ELQA (HP Vorticon)"/>
+  <int value="1162826827" label="EOTK (Wukong)"/>
+  <int value="1178752080" label="FBTP (Blacktip360)"/>
+  <int value="1178818131" label="FCVS (Lenovo kodama)"/>
+  <int value="1179734090" label="FQPJ (Karma)"/>
+  <int value="1179736649" label="FQZI (Bigdaddy)"/>
+  <int value="1179862610" label="FSFR (RK3399 Test)"/>
+  <int value="1179862873" label="FSGY (Meep)"/>
+  <int value="1180128843" label="FWVK (Bobba360)"/>
+  <int value="1196055126" label="GJZV (Syndra)"/>
+  <int value="1196378965" label="GOKU (Babymega)"/>
+  <int value="1212568135" label="HFRG (Sona)"/>
+  <int value="1212699214" label="HHRN (Careena)"/>
+  <int value="1213156680" label="HOMH (Sparky)"/>
+  <int value="1213159245" label="HOWM (Nospike)"/>
+  <int value="1213225551" label="HPZO (Snappy)"/>
+  <int value="1213225554" label="HPZR (Chell)"/>
+  <int value="1213352282" label="HRIZ (Whitetip)"/>
+  <int value="1229478471" label="IHZG (Mimrock)"/>
+  <int value="1229870420" label="INUT (Nasher360)"/>
+  <int value="1230326865" label="IULQ (Whitetip)"/>
+  <int value="1245859905" label="JBPA (HP Bloog)"/>
+  <int value="1246124610" label="JFZB (Liara)"/>
+  <int value="1246315352" label="JICX (Lenovo Lick)"/>
+  <int value="1246515784" label="JLRH (Create Kadabra)"/>
+  <int value="1246779985" label="JPZQ (Samsung Kohaku)"/>
+  <int value="1247369291" label="JYXK (Bluebird)"/>
+  <int value="1262568010" label="KABJ (Robo360)"/>
+  <int value="1263291223" label="KLKW (Fleex)"/>
+  <int value="1279349582" label="LASN (Phaser)"/>
+  <int value="1279607114" label="LEAJ (Sentry)"/>
+  <int value="1279607118" label="LEAN (Pyro)"/>
+  <int value="1280264001" label="LOGA (Gru)"/>
+  <int value="1280264007" label="LOGG (Poppy)"/>
+  <int value="1280264008" label="LOGH (Whitetip)"/>
+  <int value="1280920654" label="LYLN (HP Vortininja)"/>
+  <int value="1296124233" label="MAII (Asus Leona)"/>
+  <int value="1296254030" label="MCDN (Dumo)"/>
+  <int value="1296256847" label="MCOO (Sarien)"/>
+  <int value="1297634649" label="MXUY (Aleena)"/>
+  <int value="1312969043" label="NBQS (Nocturne)"/>
+  <int value="1313819972" label="NOMD (Shyvana)"/>
+  <int value="1313883459" label="NPEC (Vayne)"/>
+  <int value="1314212940" label="NULL (not yet assigned)"/>
+  <int value="1330008133" label="OFPE (Kasumi360)"/>
+  <int value="1330337603" label="OKWC (Acer Droid1)"/>
+  <int value="1346851142" label="PGQF (Grabbiter)"/>
+  <int value="1346918722" label="PHYB (Teemo)"/>
+  <int value="1347961935" label="PXDO (Barla)"/>
+  <int value="1363891265" label="QKTA (HP Dratini)"/>
+  <int value="1364805461" label="QYGU (Acer Kled)"/>
+  <int value="1364874584" label="QZUX (Robo)"/>
+  <int value="1380535111" label="RIKG (Blacktip)"/>
+  <int value="1380667970" label="RKRB (Acer Kindred)"/>
+  <int value="1381388877" label="RVRM (Abra)"/>
+  <int value="1397244238" label="SHAN (Lava)"/>
+  <int value="1397571914" label="SMAJ (Kevin)"/>
+  <int value="1397571916" label="SMAL (NautilusLTE)"/>
+  <int value="1397703489" label="SOCA (Akali360)"/>
+  <int value="1413829460" label="TEST (testing label)"/>
+  <int value="1414219090" label="TKER (Orbatrix)"/>
+  <int value="1414224468" label="TKZT (Lenovo Laser-R)"/>
+  <int value="1414353733" label="TMSE (Wukong)"/>
+  <int value="1414354008" label="TMTX (HP Dragonair)"/>
+  <int value="1414547534" label="TPHN (Whitetip)"/>
+  <int value="1414943322" label="TVRZ (Blacktip360)"/>
+  <int value="1430733145" label="UGAY (Kasumi)"/>
+  <int value="1431126357" label="UMAU (NEC Dopefish)"/>
+  <int value="1431460420" label="URZD (Whitetip)"/>
+  <int value="1447581000" label="VHUH (Bobba)"/>
+  <int value="1448498499" label="VVUC (blue)"/>
+  <int value="1464487770" label="WJOZ (HP Blooguard)"/>
+  <int value="1464686165" label="WMVU (Epaulette)"/>
+  <int value="1465408071" label="WXZG (Blacktip)"/>
+  <int value="1481004376" label="XFUX (Lenovo Treeya360)"/>
+  <int value="1482052683" label="XVTK (Acer Gik360)"/>
+  <int value="1482053969" label="XVYQ (Apel)"/>
+  <int value="1482115653" label="XWJE (atlas)"/>
+  <int value="1497913685" label="YHYU (Arcada)"/>
+  <int value="1498237516" label="YMJL (HP Dorp)"/>
+  <int value="1498238293" label="YMMU (DruWL)"/>
+  <int value="1498432325" label="YPCE (Rabbid)"/>
+  <int value="1498829393" label="YVRQ (Asus Helios)"/>
+  <int value="1498956363" label="YXBK (Kench)"/>
+  <int value="1498957124" label="YXED (Babytiger)"/>
+  <int value="1514883656" label="ZKJH (HP Mordin)"/>
+  <int value="1515408205" label="ZSKM (Nautilus)"/>
+  <int value="1515864390" label="ZZAF (Eve)"/>
+  <int value="1515864914" label="ZZCR (Early prod samples)"/>
+</enum>
+
+<enum name="Cr50FlashLogs">
+  <summary>
+    List of currently defined Cr50 flash log event types. The latest and
+    greatest set can be found in
+    https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/main/include/flash_log.h
+    (enum flash_event_type and enum nvmem_failure_type). Note that NVMEM errors
+    are logged as subevents of flash log event 5, we register them offset by
+    200.
+  </summary>
+  <int value="0" label="Start"/>
+  <int value="1" label="Corrupted Log"/>
+  <int value="2" label="I2C Error"/>
+  <int value="3" label="Log Overflow"/>
+  <int value="4" label="Log Lock"/>
+  <int value="6" label="TPM Wipe"/>
+  <int value="7" label="TRNG Stall"/>
+  <int value="8" label="Dcrypto Failure"/>
+  <int value="9" label="AP RO Verification Failure"/>
+  <int value="10" label="FIPS Failure"/>
+  <int value="11" label="Invalid Board Properties"/>
+  <int value="200" label="Nvmem Malloc"/>
+  <int value="201" label="Nvmem Page Header Size Mismatch"/>
+  <int value="202" label="Nvmem Read Underrun"/>
+  <int value="203" label="Nvmem Corrupted Flash"/>
+  <int value="204" label="Nvmem Migration Failure"/>
+  <int value="205" label="Nvmem Legacy Erase Failure"/>
+  <int value="206" label="Nvmem Deleting Too Many Objects"/>
+  <int value="207" label="Nvmem Unexpected Last Obj"/>
+  <int value="208" label="Nvmem Missing Obj"/>
+  <int value="209" label="Nvmem Section Verification"/>
+  <int value="210" label="Nvmem Pre Erase Mismatch"/>
+  <int value="211" label="Nvmem Page List Oveflow"/>
+  <int value="212" label="Nvmem Cipher Error"/>
+  <int value="213" label="Nvmem Corrupted Init"/>
+  <int value="214" label="Nvmem Container Hash Mismatch"/>
+  <int value="215" label="Nvmem Unrecoverable Init Error"/>
+  <int value="216" label="Nvmem Wiped Out"/>
+</enum>
+
+<enum name="Cr50U2FCommands">
+  <summary>List of U2F commands that can be handled by cr50.</summary>
+  <int value="1" label="Register"/>
+  <int value="2" label="Authenticate"/>
+  <int value="3" label="Version"/>
+</enum>
+
+<enum name="CrosCrashCollectorAddWeightResult">
+  <int value="0" label="Good value"/>
+  <int value="1" label="Bad value"/>
+  <int value="2" label="Added weight twice"/>
+  <int value="3" label="Added in wrong method"/>
+</enum>
+
+<enum name="CrosCrashSenderRemoveReason">
+<!-- TotalRemoval should be the total of other values -->
+
+  <int value="0" label="TotalRemoval"/>
+  <int value="1" label="NotOfficialImage"/>
+<!-- NoMetricsConsent is included only for completeness; if we don't have
+metrics consent we also won't be able to send UMA metrics. -->
+
+  <int value="2" label="NoMetricsConsent"/>
+  <int value="3" label="ProcessingFileExists"/>
+  <int value="4" label="LargeMetaFile"/>
+  <int value="5" label="UnparseableMetaFile"/>
+  <int value="6" label="PayloadUnspecified"/>
+  <int value="7" label="PayloadAbsolute"/>
+  <int value="8" label="PayloadNonexistent"/>
+  <int value="9" label="PayloadKindUnknown"/>
+  <int value="10" label="OSVersionTooOld"/>
+  <int value="11" label="OldIncompleteMeta"/>
+  <int value="12" label="FinishedUploading"/>
+  <int value="13" label="AlreadyUploaded"/>
+  <int value="14" label="TooManyRequests"/>
+  <int value="15" label="RetryUploading"/>
+  <int value="16" label="LaCrosVersionTooOld"/>
+</enum>
+
+<enum name="CrosEventEnum">
+  <int value="0" label="ModemManagerCommandSendFailure"/>
+  <int value="1" label="HwWatchdogReboot"/>
+  <int value="2" label="Cras.NoCodecsFoundAtBoot"/>
+  <int value="3" label="Chaps.DatabaseCorrupted"/>
+  <int value="4" label="Chaps.DatabaseRepairFailure"/>
+  <int value="5" label="Chaps.DatabaseCreateFailure"/>
+  <int value="6" label="Attestation.OriginSpecificExhausted"/>
+  <int value="7" label="SpringPowerSupply.Original.High"/>
+  <int value="8" label="SpringPowerSupply.Other.High"/>
+  <int value="9" label="SpringPowerSupply.Original.Low"/>
+  <int value="10" label="SpringPowerSupply.ChargerIdle"/>
+  <int value="11" label="TPM.NonZeroDictionaryAttackCounter"/>
+  <int value="12" label="TPM.EarlyResetDuringCommand"/>
+  <int value="13" label="VeyronEmmcUpgrade.Success"/>
+  <int value="14" label="VeyronEmmcUpgrade.WaitForKernelRollup"/>
+  <int value="15" label="VeyronEmmcUpgrade.WaitForFirmwareRollup"/>
+  <int value="16" label="VeyronEmmcUpgrade.BadEmmcProperties"/>
+  <int value="17" label="VeyronEmmcUpgrade.FailedDiskAccess"/>
+  <int value="18" label="VeyronEmmcUpgrade.FailedWPEnable"/>
+  <int value="19" label="VeyronEmmcUpgrade.SignatureDetected"/>
+  <int value="20" label="Watchdog.StartupFailed"/>
+  <int value="21" label="Vm.VmcStart"/>
+  <int value="22" label="Vm.VmcStartSuccess"/>
+  <int value="23" label="Vm.DiskEraseFailed"/>
+  <int value="24" label="Fingerprint.MCU.Reboot"/>
+  <int value="25" label="Crash.Chrome.CrashesFromKernel"/>
+  <int value="26" label="Crash.Chrome.MissedCrashes"/>
+  <int value="27" label="Crash.Collector.CollectionCount"/>
+  <int value="28" label="Cryptohome.DoubleMountRequest"/>
+  <int value="29" label="SessionManager.SafeModeEnabled"/>
+  <int value="30" label="Crash.Sender.FailedCrashRemoval"/>
+  <int value="31" label="Crash.Sender.AttemptedCrashRemoval"/>
+  <int value="32" label="Chaps.DatabaseOpenedSuccessfully"/>
+  <int value="33" label="Chaps.DatabaseOpenAttempt"/>
+  <int value="34" label="Crostini.OomEvent"/>
+</enum>
+
+<enum name="CrosHibernateAbortReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not enough free memory"/>
+  <int value="2" label="Not enough free disk space"/>
+  <int value="3" label="Update Engine is active"/>
+  <int value="4" label="Hiberimage is not set up"/>
+  <int value="5" label="Prior user logout"/>
+</enum>
+
+<enum name="CrosHibernateCycleEvent">
+  <int value="0" label="SuspendAttempt"/>
+  <int value="1" label="SuspendSuccess"/>
+  <int value="2" label="SuspendFailure"/>
+  <int value="3" label="ResumeAttempt"/>
+  <int value="4" label="ResumeSuccess"/>
+  <int value="5" label="ResumeFailure"/>
+  <int value="6" label="ResumePending"/>
+  <int value="7" label="ResumeSkippedUserMismatch"/>
+</enum>
+
+<enum name="CrosHibernateFileSystemStatus">
+  <int value="0" label="Clean"/>
+  <int value="1" label="Has errors"/>
+</enum>
+
+<enum name="CrosTPMDictionaryAttackResetStatusEnum">
+  <int value="0" label="Reset not necessary"/>
+  <int value="1" label="Reset attempt succeeded"/>
+  <int value="2" label="Reset attempt failed"/>
+  <int value="3" label="TPM owner delegate not allowed to reset"/>
+  <int value="4" label="TPM owner delegate does not exist"/>
+  <int value="5" label="Failed to query dictionary attack counter"/>
+  <int value="6" label="PCR0 in wrong state"/>
+</enum>
+
+<enum name="DetachableBasePairResult">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="ChallengePassed"/>
+  <int value="2" label="ChallengeFailed"/>
+  <int value="3" label="NeedInjectEntropy"/>
+</enum>
+
+<enum name="DetachableBasePendingRWUpdate">
+  <int value="0" label="CommunicationError"/>
+  <int value="1" label="NoUpdate"/>
+  <int value="2" label="CriticalUpdate"/>
+  <int value="3" label="NonCriticalUpdate"/>
+</enum>
+
+<enum name="DetachableBaseROUpdateResult">
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="TransferFailed"/>
+</enum>
+
+<enum name="DetachableBaseRWUpdateResult">
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="TransferFailed"/>
+  <int value="3" label="InvalidKey"/>
+  <int value="4" label="RollbackDisallowed"/>
+</enum>
+
+<enum name="DiscodBurstResult">
+  <int value="0" label="No transition"/>
+  <int value="1" label="WriteBooster enabled"/>
+</enum>
+
+<enum name="DlcService.InstallResult">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success - New install"/>
+  <int value="2" label="Success - Already installed"/>
+  <int value="3" label="Failed to create directory"/>
+  <int value="4" label="Failure reported by Update Engine"/>
+  <int value="5" label="Invalid DLC submitted"/>
+  <int value="6" label="Failed because a reboot is needed"/>
+  <int value="7" label="Failed because Update Engine is busy"/>
+  <int value="8" label="Failed to verify image"/>
+  <int value="9" label="Failed to mount image"/>
+  <int value="10" label="Failed to find image"/>
+</enum>
+
+<enum name="DlcService.UninstallResult">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Invalid DLC submitted"/>
+  <int value="3" label="Failed because Update Engine is busy"/>
+</enum>
+
+<enum name="EmmcLifeUsed">
+  <int value="0" label="Not defined"/>
+  <int value="1" label="0% - 10% device life time used"/>
+  <int value="2" label="10% -20% device life time used"/>
+  <int value="3" label="20% -30% device life time used"/>
+  <int value="4" label="30% - 40% device life time used"/>
+  <int value="5" label="40% - 50% device life time used"/>
+  <int value="6" label="50% - 60% device life time used"/>
+  <int value="7" label="60% - 70% device life time used"/>
+  <int value="8" label="70% - 80% device life time used"/>
+  <int value="9" label="80% - 90% device life time used"/>
+  <int value="10" label="90% - 100% device life time used"/>
+  <int value="11" label="Exceeded its maximum estimated device life time"/>
+</enum>
+
+<enum name="ExpandedApRoVerificationStatus">
+  <int value="-4096" label="Success"/>
+  <int value="20135176" label="SignedWithTestRootKey"/>
+  <int value="33554688" label="SWWPDisabledBlank"/>
+  <int value="33592572" label="SWWPDisabled94FC"/>
+  <int value="33601788" label="SWWPDisabledB8FC"/>
+  <int value="45613312" label="WPSR1IsBlankB8"/>
+  <int value="257578052" label="GSCVDLockedToZZCR444"/>
+  <int value="257578228" label="GSCVDLockedToZZCR4F4"/>
+  <int value="257578340" label="GSCVDLockedToZZCR564"/>
+  <int value="268435456" label="SettingNotProvisioned"/>
+  <int value="285212672" label="NonZeroGbbFlags"/>
+</enum>
+
+<enum name="Exynos5250LotIdEnum">
+  <int value="0" label="Fused device"/>
+  <int value="1" label="Generic unfused device"/>
+  <int value="2" label="Unfused; lot ID NZVPU"/>
+  <int value="3" label="Unfused; lot ID NZVR7"/>
+</enum>
+
+<enum name="FeatureManagementScopeLevel">
+  <int value="0" label="Regular">Device is a regular Chromebook.</int>
+  <int value="1" label="Soft Braned">
+    Device is a Soft Branded Chromebook Plus.
+  </int>
+  <int value="2" label="Hard Braned">
+    Device is a Hard Branded Chromebook Plus.
+  </int>
+</enum>
+
+<enum name="FwupdReturnValue">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Nothing to do"/>
+</enum>
+
+<enum name="GscArvStatus">
+  <int value="0" label="not run"/>
+  <int value="1" label="pass unverified gbb"/>
+  <int value="2" label="fail"/>
+  <int value="3" label="unsupported unknown"/>
+  <int value="4" label="unsupported not triggered"/>
+  <int value="5" label="unsupported triggered"/>
+  <int value="6" label="pass"/>
+  <int value="7" label="in progress"/>
+  <int value="20" label="v2 success"/>
+  <int value="21" label="v2 failed verification"/>
+  <int value="22" label="v2 inconsistent gscvd"/>
+  <int value="23" label="v2 inconsistent keyblock"/>
+  <int value="24" label="v2 inconsistent key"/>
+  <int value="25" label="v2 spi read"/>
+  <int value="26" label="v2 unsupported crypto algorithm"/>
+  <int value="27" label="v2 version mismatch"/>
+  <int value="28" label="v2 out of memory"/>
+  <int value="29" label="v2 internal"/>
+  <int value="30" label="v2 too big"/>
+  <int value="31" label="v2 missing gscvd"/>
+  <int value="32" label="v2 board id mismatch"/>
+  <int value="33" label="v2 setting not provisioned"/>
+  <int value="34" label="v2 unknown"/>
+</enum>
+
+<enum name="HwsecPinWeaverLogReplayResultEnum">
+  <int value="0" label="kSuccess">Succeeded.</int>
+  <int value="1" label="kInvalidLogEntry">
+    Invalid log entry from PinWeaver server (GSC).
+  </int>
+  <int value="2" label="kOperationFailed">
+    Failure to replay pinweaver log entries.
+  </int>
+  <int value="3" label="kRemoveInsertedCredentialsError">
+    Failed to remove re-inserted labels.
+  </int>
+</enum>
+
+<enum name="HwsecPinWeaverSyncOutcomeEnum">
+  <int value="0" label="kStateNotReady">
+    Attempted to sync hash tree but state isn't ready.
+  </int>
+  <int value="1" label="kSuccessAfterLocalReconstruct">
+    Succeeded without needing to perform log replay.
+  </int>
+  <int value="2" label="kGetLogFailed">
+    Failed to get log from PinWeaver server(GSC).
+  </int>
+  <int value="3" label="kLogReplay">
+    Performing log replay: check the ReplayLogResult histogram.
+  </int>
+</enum>
+
+<enum name="HwsecRetryActionEnum">
+  <int value="0" label="kNone">Succeeded.</int>
+  <int value="1" label="kCommunication">Communication failure.</int>
+  <int value="2" label="kSession">Session failure.</int>
+  <int value="3" label="kLater">Retry the action later.</int>
+  <int value="4" label="kReboot">The state that requires reboot.</int>
+  <int value="5" label="kDefend">In the defense mode.</int>
+  <int value="6" label="kUserAuth">User authorization failure.</int>
+  <int value="7" label="kNoRetry">Retrying won't change the outcome.</int>
+  <int value="8" label="kEllipticCurveScalarOutOfRange">
+    The elliptic curve scalar out of range.
+  </int>
+  <int value="9" label="kUserPresence">User presence not detected.</int>
+  <int value="10" label="kSpaceNotFound">
+    The space for this operation is not found.
+  </int>
+  <int value="11" label="kPinWeaverExpired">
+    PinWeaver operation failed due to credential expired.
+  </int>
+  <int value="12" label="kPinWeaverLockedOut">
+    PinWeaver operation failed due to too many attempts as per delay schedule.
+  </int>
+  <int value="13" label="kPinWeaverOutOfSync">
+    PinWeaver operation failed due to out-of-sync root hash.
+  </int>
+</enum>
+
+<enum name="InstallAttributesRestoreResult">
+  <int value="0" label="No device policy"/>
+  <int value="1" label="Success with empty"/>
+  <int value="2" label="Success with enterprise"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<enum name="InstallAttributesStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TPM not owned"/>
+  <int value="2" label="First Install"/>
+  <int value="3" label="Valid"/>
+  <int value="4" label="Invalid"/>
+</enum>
+
+<enum name="IntelMaxMicroArchitecture">
+  <int value="0" label="Pentium"/>
+  <int value="1" label="SSE"/>
+  <int value="2" label="SSE2"/>
+  <int value="3" label="SSE3"/>
+  <int value="4" label="SSSE3"/>
+  <int value="5" label="SSE4.1"/>
+  <int value="6" label="SSE4.2"/>
+  <int value="7" label="AVX"/>
+  <int value="8" label="AVX2"/>
+  <int value="9" label="FMA3"/>
+</enum>
+
+<enum name="InternalStorageCapabilities">
+  <summary>Enum for sparse histogram of capabilities</summary>
+  <int value="0" label="STORAGE_PRESENT"/>
+</enum>
+
+<enum name="MiniDiagResultType">
+  <int value="0" label="Passed"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Aborted"/>
+</enum>
+
+<enum name="MissiveMigrationStatus">
+  <int value="0" label="Not needed"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed to delete source files"/>
+  <int value="3" label="Failed to delete deletion tag file"/>
+  <int value="4" label="Failed to create deletion tag file"/>
+  <int value="5" label="Failed to delete destination files"/>
+  <int value="6" label="Failed to copy"/>
+  <int value="7" label="Destination not exist"/>
+</enum>
+
+<enum name="ModemfwdCheckForWedgedModemResult">
+  <int value="0" label="Modem present"/>
+  <int value="1" label="Modem present after reboot"/>
+  <int value="2" label="Failed to reboot modem"/>
+  <int value="3" label="Modem wedged"/>
+  <int value="4" label="Modem absent after reboot"/>
+</enum>
+
+<enum name="ModemfwdDlcInstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="dlcservice returned InvalidDlc error"/>
+  <int value="3" label="dlcservice returned Allocation error"/>
+  <int value="4" label="dlcservice returned NoImageFound error"/>
+  <int value="5" label="dlcservice returned NeedReboot error"/>
+  <int value="6" label="dlcservice returned Busy error"/>
+  <int value="7" label="Unexpected DLC state"/>
+  <int value="8" label="Timeout waiting for dlcservice"/>
+  <int value="9" label="Timeout waiting for DLC install"/>
+  <int value="10" label="Timeout waiting for INSTALLED state"/>
+  <int value="11" label="Failed on Install"/>
+  <int value="12" label="Failed on GetDlcState"/>
+  <int value="13" label="Unexpected empty DLC id"/>
+</enum>
+
+<enum name="ModemfwdDlcUninstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="dlcservice returned InvalidDlc error"/>
+  <int value="3" label="dlcservice returned Allocation error"/>
+  <int value="4" label="dlcservice returned NoImageFound error"/>
+  <int value="5" label="dlcservice returned NeedReboot error"/>
+  <int value="6" label="dlcservice returned Busy error"/>
+  <int value="7" label="Failed on GetExistingDlcs"/>
+  <int value="8" label="Failed on Purge"/>
+  <int value="9" label="Unexpected empty variant"/>
+</enum>
+
+<enum name="ModemfwdFWInstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Init failure"/>
+  <int value="3" label="Init manifest failure"/>
+  <int value="4" label="Failed to prepare FW file"/>
+  <int value="5" label="Flash failure"/>
+  <int value="6" label="Failure returned by helper"/>
+  <int value="7" label="Init journal failure"/>
+  <int value="8" label="Non LTE SKU"/>
+</enum>
+
+<enum name="ModemfwdFWUpdateLocation">
+  <int value="0" label="rootfs"/>
+  <int value="1" label="DLC"/>
+  <int value="2" label="Fallback to rootfs"/>
+</enum>
+
+<enum name="ModemfwdModemRecoveryState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Skipped"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Failure"/>
+</enum>
+
+<enum name="MountEncryptedEncryptionKeyStatus">
+  <int value="0" label="unknown">Key not loaded yet.</int>
+  <int value="1" label="keyfile">Key loaded from encrypted.key file.</int>
+  <int value="2" label="NeedsFinalization">
+    Key loaded from needs-finalization file.
+  </int>
+  <int value="3" label="Fresh">Freshly generated key.</int>
+</enum>
+
+<enum name="MountEncryptedSystemKeyStatus">
+  <int value="0" label="Unknown">No key loaded yet.</int>
+  <int value="1" label="NVRAMLockbox">Using lockbox salt as system key.</int>
+  <int value="2" label="NVRAMEncstateful">
+    Key in dedicated encstateful NVRAM space.
+  </int>
+  <int value="3" label="FinalizationPending">
+    TPM not ready, obfuscated key on disk.
+  </int>
+  <int value="4" label="Factory">Hard-coded factory key.</int>
+  <int value="5" label="KernelCommandLine">Key from kernel command line.</int>
+  <int value="6" label="ProductUUID">Using product UUID as system key.</int>
+  <int value="7" label="StaticFallback">Using hard-coded fallback key.</int>
+</enum>
+
+<enum name="Platform.BootMode.FirmwareWriteProtect">
+  <int value="0" label="Off"/>
+  <int value="1" label="On"/>
+  <int value="2" label="Zero length range"/>
+  <int value="3" label="Error"/>
+</enum>
+
+<enum name="Platform.BootMode.SwitchStatus">
+  <int value="0" label="Off"/>
+  <int value="1" label="On"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="PlatformTPMHardwareAlerts">
+  <int value="1" label="camo0/breach"/>
+  <int value="2" label="crypto0/dmem_parity"/>
+  <int value="3" label="crypto0/drf_parity"/>
+  <int value="4" label="crypto0/imem_parity"/>
+  <int value="5" label="crypto0/pgm_fault"/>
+  <int value="6" label="dbctrl_cpu0_D_if/bus_err"/>
+  <int value="7" label="dbctrl_cpu0_D_if/update_watchdog"/>
+  <int value="8" label="dbctrl_cpu0_I_if/bus_err"/>
+  <int value="9" label="dbctrl_cpu0_I_if/update_watchdog"/>
+  <int value="10" label="dbctrl_cpu0_S_if/bus_err"/>
+  <int value="11" label="dbctrl_cpu0_S_if/update_watchdog"/>
+  <int value="12" label="dbctrl_ddma0_if/bus_err"/>
+  <int value="13" label="dbctrl_ddma0_if/update_watchdog"/>
+  <int value="14" label="dbctrl_dsps0_if/bus_err"/>
+  <int value="15" label="dbctrl_dsps0_if/update_watchdog"/>
+  <int value="16" label="dbctrl_dusb0_if/bus_err"/>
+  <int value="17" label="dbctrl_dusb0_if/update_watchdog"/>
+  <int value="18" label="fuse0/fuse_defaults"/>
+  <int value="19" label="globalsec/diff_fail"/>
+  <int value="20" label="globalsec/fw0"/>
+  <int value="21" label="globalsec/fw1"/>
+  <int value="22" label="globalsec/fw2"/>
+  <int value="23" label="globalsec/fw3"/>
+  <int value="24" label="globalsec/heartbeat_fail"/>
+  <int value="25" label="globalsec/proc_opcode_hash"/>
+  <int value="26" label="globalsec/sram_parity_scrub"/>
+  <int value="27" label="keymgr0/aes_exec_ctr_max"/>
+  <int value="28" label="keymgr0/aes_hkey"/>
+  <int value="29" label="keymgr0/cert_lookup"/>
+  <int value="30" label="keymgr0/flash_entry"/>
+  <int value="31" label="keymgr0/pw"/>
+  <int value="32" label="keymgr0/sha_exec_ctr_max"/>
+  <int value="33" label="keymgr0/sha_fault"/>
+  <int value="34" label="keymgr0/sha_hkey"/>
+  <int value="35" label="pmu/battery_mon"/>
+  <int value="36" label="pmu/pmu_wdog"/>
+  <int value="37" label="rtc0/rtc_dead"/>
+  <int value="38" label="temp0/max_temp"/>
+  <int value="39" label="temp0/max_temp_diff"/>
+  <int value="40" label="temp0/min_temp"/>
+  <int value="41" label="trng0/out_of_spec"/>
+  <int value="42" label="trng0/timeout"/>
+  <int value="43" label="volt0/volt_err"/>
+  <int value="44" label="xo0/jittery_trim_dis"/>
+</enum>
+
+<enum name="ResourceExhaustedCase">
+  <int value="0" label="No disk space left for data"/>
+  <int value="1" label="No disk space left for metadata"/>
+  <int value="2" label="Cannot write record header"/>
+  <int value="3" label="Cannot write record data"/>
+  <int value="4" label="Cannot pad record"/>
+  <int value="5" label="Cannot write generation"/>
+  <int value="6" label="Cannot write last record digest"/>
+  <int value="7" label="Reserved space not observed"/>
+  <int value="8" label="No memory left for write buffer"/>
+  <int value="9" label="No memory left for encrypted record"/>
+  <int value="10" label="No memory left for read buffer"/>
+  <int value="11" label="No memory for upload data"/>
+  <int value="12" label="Too much data to read"/>
+  <int value="13" label="Disk space exceeded adding file"/>
+</enum>
+
+<enum name="StatefulFormat">
+  <summary>ChromeOS Stateful Partition Format</summary>
+  <int value="0" label="Raw partition"/>
+  <int value="1" label="Logical volume"/>
+</enum>
+
+<enum name="ThinpoolMigrationResult">
+  <summary>Result of stateful partition migration to thinpool</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fsck needed"/>
+  <int value="2" label="Insufficient free space"/>
+  <int value="3" label="Failed to resize the filesystem"/>
+  <int value="4" label="Failed to copy partition header"/>
+  <int value="5" label="Failed to persist thinpool metadata"/>
+  <int value="6" label="Failed to persist LVM metadata"/>
+</enum>
+
+<enum name="TokenManagerStatus">
+  <int value="0" label="Command Success"/>
+  <int value="1" label="Init Stage2 Failed"/>
+  <int value="2" label="Invalid Isolate Credential"/>
+  <int value="3" label="Load Existing Token"/>
+  <int value="4" label="Failed To Load Software Token"/>
+  <int value="5" label="Unknown Path"/>
+  <int value="6" label="Incorrect Old Authorization Data"/>
+  <int value="7" label="Failed To Change Auth Data"/>
+  <int value="8" label="Failed To Write Auth Key Blob"/>
+  <int value="9" label="Failed To Write Auth Data Hash Blob"/>
+  <int value="10" label="Token Not Initialized"/>
+  <int value="11" label="Failed To Decrypt Root Key"/>
+  <int value="12" label="Failed To Encrypt Root Key"/>
+  <int value="13" label="Failed To Write Root Key Blob"/>
+</enum>
+
+<enum name="TPM12CommandOrdinal">
+  <summary>The TPM 1.2 command ordinals.</summary>
+  <int value="10" label="TPM_ORD_OIAP"/>
+  <int value="11" label="TPM_ORD_OSAP"/>
+  <int value="12" label="TPM_ORD_ChangeAuth"/>
+  <int value="13" label="TPM_ORD_TakeOwnership"/>
+  <int value="14" label="TPM_ORD_ChangeAuthAsymStart"/>
+  <int value="15" label="TPM_ORD_ChangeAuthAsymFinish"/>
+  <int value="16" label="TPM_ORD_ChangeAuthOwner"/>
+  <int value="17" label="TPM_ORD_DSAP"/>
+  <int value="18" label="TPM_ORD_CMK_CreateTicket"/>
+  <int value="19" label="TPM_ORD_CMK_CreateKey"/>
+  <int value="20" label="TPM_ORD_Extend"/>
+  <int value="21" label="TPM_ORD_PcrRead"/>
+  <int value="22" label="TPM_ORD_Quote"/>
+  <int value="23" label="TPM_ORD_Seal"/>
+  <int value="24" label="TPM_ORD_Unseal"/>
+  <int value="25" label="TPM_ORD_DirWriteAuth"/>
+  <int value="26" label="TPM_ORD_DirRead"/>
+  <int value="27" label="TPM_ORD_CMK_CreateBlob"/>
+  <int value="28" label="TPM_ORD_CMK_SetRestrictions"/>
+  <int value="29" label="TPM_ORD_CMK_ApproveMA"/>
+  <int value="30" label="TPM_ORD_UnBind"/>
+  <int value="31" label="TPM_ORD_CreateWrapKey"/>
+  <int value="32" label="TPM_ORD_LoadKey"/>
+  <int value="33" label="TPM_ORD_GetPubKey"/>
+  <int value="34" label="TPM_ORD_EvictKey"/>
+  <int value="35" label="TPM_ORD_KeyControlOwner"/>
+  <int value="36" label="TPM_ORD_CMK_ConvertMigration"/>
+  <int value="37" label="TPM_ORD_MigrateKey"/>
+  <int value="40" label="TPM_ORD_CreateMigrationBlob"/>
+  <int value="41" label="TPM_ORD_DAA_Join"/>
+  <int value="42" label="TPM_ORD_ConvertMigrationBlob"/>
+  <int value="43" label="TPM_ORD_AuthorizeMigrationKey"/>
+  <int value="44" label="TPM_ORD_CreateMaintenanceArchive"/>
+  <int value="45" label="TPM_ORD_LoadMaintenanceArchive"/>
+  <int value="46" label="TPM_ORD_KillMaintenanceFeature"/>
+  <int value="47" label="TPM_ORD_LoadManuMaintPub"/>
+  <int value="48" label="TPM_ORD_ReadManuMaintPub"/>
+  <int value="49" label="TPM_ORD_DAA_Sign"/>
+  <int value="50" label="TPM_ORD_CertifyKey"/>
+  <int value="51" label="TPM_ORD_CertifyKey2"/>
+  <int value="60" label="TPM_ORD_Sign"/>
+  <int value="61" label="TPM_ORD_Sealx"/>
+  <int value="62" label="TPM_ORD_Quote2"/>
+  <int value="63" label="TPM_ORD_SetCapability"/>
+  <int value="64" label="TPM_ORD_ResetLockValue"/>
+  <int value="65" label="TPM_ORD_LoadKey2"/>
+  <int value="70" label="TPM_ORD_GetRandom"/>
+  <int value="71" label="TPM_ORD_StirRandom"/>
+  <int value="80" label="TPM_ORD_SelfTestFull"/>
+  <int value="82" label="TPM_ORD_CertifySelfTest"/>
+  <int value="83" label="TPM_ORD_ContinueSelfTest"/>
+  <int value="84" label="TPM_ORD_GetTestResult"/>
+  <int value="90" label="TPM_ORD_Reset"/>
+  <int value="91" label="TPM_ORD_OwnerClear"/>
+  <int value="92" label="TPM_ORD_DisableOwnerClear"/>
+  <int value="93" label="TPM_ORD_ForceClear"/>
+  <int value="94" label="TPM_ORD_DisableForceClear"/>
+  <int value="100" label="TPM_ORD_GetCapabilitySigned"/>
+  <int value="101" label="TPM_ORD_GetCapability"/>
+  <int value="102" label="TPM_ORD_GetCapabilityOwner"/>
+  <int value="110" label="TPM_ORD_OwnerSetDisable"/>
+  <int value="111" label="TPM_ORD_PhysicalEnable"/>
+  <int value="112" label="TPM_ORD_PhysicalDisable"/>
+  <int value="113" label="TPM_ORD_SetOwnerInstall"/>
+  <int value="114" label="TPM_ORD_PhysicalSetDeactivated"/>
+  <int value="115" label="TPM_ORD_SetTempDeactivated"/>
+  <int value="116" label="TPM_ORD_SetOperatorAuth"/>
+  <int value="117" label="TPM_ORD_SetOwnerPointer"/>
+  <int value="120" label="TPM_ORD_CreateEndorsementKeyPair"/>
+  <int value="121" label="TPM_ORD_MakeIdentity"/>
+  <int value="122" label="TPM_ORD_ActivateIdentity"/>
+  <int value="124" label="TPM_ORD_ReadPubek"/>
+  <int value="125" label="TPM_ORD_OwnerReadPubek"/>
+  <int value="126" label="TPM_ORD_DisablePubekRead"/>
+  <int value="127" label="TPM_ORD_CreateRevocableEK"/>
+  <int value="128" label="TPM_ORD_RevokeTrust"/>
+  <int value="129" label="TPM_ORD_OwnerReadInternalPub"/>
+  <int value="130" label="TPM_ORD_GetAuditEvent"/>
+  <int value="131" label="TPM_ORD_GetAuditEventSigned"/>
+  <int value="133" label="TPM_ORD_GetAuditDigest"/>
+  <int value="134" label="TPM_ORD_GetAuditDigestSigned"/>
+  <int value="140" label="TPM_ORD_GetOrdinalAuditStatus"/>
+  <int value="141" label="TPM_ORD_SetOrdinalAuditStatus"/>
+  <int value="150" label="TPM_ORD_Terminate_Handle"/>
+  <int value="151" label="TPM_ORD_Init"/>
+  <int value="152" label="TPM_ORD_SaveState"/>
+  <int value="153" label="TPM_ORD_Startup"/>
+  <int value="154" label="TPM_ORD_SetRedirection"/>
+  <int value="160" label="TPM_ORD_SHA1Start"/>
+  <int value="161" label="TPM_ORD_SHA1Update"/>
+  <int value="162" label="TPM_ORD_SHA1Complete"/>
+  <int value="163" label="TPM_ORD_SHA1CompleteExtend"/>
+  <int value="170" label="TPM_ORD_FieldUpgrade"/>
+  <int value="180" label="TPM_ORD_SaveKeyContext"/>
+  <int value="181" label="TPM_ORD_LoadKeyContext"/>
+  <int value="182" label="TPM_ORD_SaveAuthContext"/>
+  <int value="183" label="TPM_ORD_LoadAuthContext"/>
+  <int value="184" label="TPM_ORD_SaveContext"/>
+  <int value="185" label="TPM_ORD_LoadContext"/>
+  <int value="186" label="TPM_ORD_FlushSpecific"/>
+  <int value="200" label="TPM_ORD_PCR_Reset"/>
+  <int value="204" label="TPM_ORD_NV_DefineSpace"/>
+  <int value="205" label="TPM_ORD_NV_WriteValue"/>
+  <int value="206" label="TPM_ORD_NV_WriteValueAuth"/>
+  <int value="207" label="TPM_ORD_NV_ReadValue"/>
+  <int value="208" label="TPM_ORD_NV_ReadValueAuth"/>
+  <int value="209" label="TPM_ORD_Delegate_UpdateVerification"/>
+  <int value="210" label="TPM_ORD_Delegate_Manage"/>
+  <int value="212" label="TPM_ORD_Delegate_CreateKeyDelegation"/>
+  <int value="213" label="TPM_ORD_Delegate_CreateOwnerDelegation"/>
+  <int value="214" label="TPM_ORD_Delegate_VerifyDelegation"/>
+  <int value="216" label="TPM_ORD_Delegate_LoadOwnerDelegation"/>
+  <int value="219" label="TPM_ORD_Delegate_ReadTable"/>
+  <int value="220" label="TPM_ORD_CreateCounter"/>
+  <int value="221" label="TPM_ORD_IncrementCounter"/>
+  <int value="222" label="TPM_ORD_ReadCounter"/>
+  <int value="223" label="TPM_ORD_ReleaseCounter"/>
+  <int value="224" label="TPM_ORD_ReleaseCounterOwner"/>
+  <int value="230" label="TPM_ORD_EstablishTransport"/>
+  <int value="231" label="TPM_ORD_ExecuteTransport"/>
+  <int value="232" label="TPM_ORD_ReleaseTransportSigned"/>
+  <int value="241" label="TPM_ORD_GetTicks"/>
+  <int value="242" label="TPM_ORD_TickStampBlob"/>
+</enum>
+
+<enum name="TPM1CommandAndResponse">
+<!-- Generated by platform2/hwsec-host-utils/tpm_command_response_decoder.cc -->
+
+  <summary>
+    The first two bytes of value are the command code. The last two bytes are
+    the response code. The label is the what the command and response code
+    represent. The command and response code are defined in the
+    src/include/tcsd_wrap.h and third_party/trousers/src/include/tss/*_error.h.
+  </summary>
+  <int value="0" label="TCSD_ORD_ERROR: tpm: TSS_SUCCESS"/>
+  <int value="65536" label="TCSD_ORD_OPENCONTEXT: tpm: TSS_SUCCESS"/>
+  <int value="77841" label="TCSD_ORD_OPENCONTEXT: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="78083"
+      label="TCSD_ORD_OPENCONTEXT: tsp: TSS_E_CONNECTION_FAILED"/>
+  <int value="131072" label="TCSD_ORD_CLOSECONTEXT: tpm: TSS_SUCCESS"/>
+  <int value="143377" label="TCSD_ORD_CLOSECONTEXT: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="196608" label="TCSD_ORD_FREEMEMORY: tpm: TSS_SUCCESS"/>
+  <int value="262144" label="TCSD_ORD_TCSGETCAPABILITY: tpm: TSS_SUCCESS"/>
+  <int value="327680" label="TCSD_ORD_REGISTERKEY: tpm: TSS_SUCCESS"/>
+  <int value="393216" label="TCSD_ORD_UNREGISTERKEY: tpm: TSS_SUCCESS"/>
+  <int value="458752" label="TCSD_ORD_ENUMREGISTEREDKEYS: tpm: TSS_SUCCESS"/>
+  <int value="524288" label="TCSD_ORD_GETREGISTEREDKEY: tpm: TSS_SUCCESS"/>
+  <int value="589824" label="TCSD_ORD_GETREGISTEREDKEYBLOB: tpm: TSS_SUCCESS"/>
+  <int value="602129"
+      label="TCSD_ORD_GETREGISTEREDKEYBLOB: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="655360"
+      label="TCSD_ORD_GETREGISTEREDKEYBYPUBLICINFO: tpm: TSS_SUCCESS"/>
+  <int value="720896" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TSS_SUCCESS"/>
+  <int value="720897" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_AUTHFAIL"/>
+  <int value="720905" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_FAIL"/>
+  <int value="720908"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_KEYHANDLE"/>
+  <int value="720921"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_BAD_PARAM_SIZE"/>
+  <int value="720924"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_FAILEDSELFTEST"/>
+  <int value="720929" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="720930"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="720934"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="720936"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_BAD_KEY_PROPERTY"/>
+  <int value="720950" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_NOTFIPS"/>
+  <int value="722947"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="725127" label="TCSD_ORD_LOADKEYBYBLOB: tddl: TDDL_E_IOERROR"/>
+  <int value="733201" label="TCSD_ORD_LOADKEYBYBLOB: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="786432" label="TCSD_ORD_LOADKEYBYUUID: tpm: TSS_SUCCESS"/>
+  <int value="798737" label="TCSD_ORD_LOADKEYBYUUID: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="851968" label="TCSD_ORD_EVICTKEY: tpm: TSS_SUCCESS"/>
+  <int value="917504" label="TCSD_ORD_CREATEWRAPKEY: tpm: TSS_SUCCESS"/>
+  <int value="917538"
+      label="TCSD_ORD_CREATEWRAPKEY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="921735" label="TCSD_ORD_CREATEWRAPKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="929809" label="TCSD_ORD_CREATEWRAPKEY: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="983040" label="TCSD_ORD_GETPUBKEY: tpm: TSS_SUCCESS"/>
+  <int value="983041" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_AUTHFAIL"/>
+  <int value="983046" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_DEACTIVATED"/>
+  <int value="983074"
+      label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="983078" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="985091"
+      label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="987271" label="TCSD_ORD_GETPUBKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="991434" label="TCSD_ORD_GETPUBKEY: tcs: TCS_E_KM_LOADFAILED"/>
+  <int value="995345" label="TCSD_ORD_GETPUBKEY: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="1048576" label="TCSD_ORD_MAKEIDENTITY: tpm: TSS_SUCCESS"/>
+  <int value="1052807" label="TCSD_ORD_MAKEIDENTITY: tddl: TDDL_E_IOERROR"/>
+  <int value="1060881" label="TCSD_ORD_MAKEIDENTITY: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="1114112" label="TCSD_ORD_LOGPCREVENT: tpm: TSS_SUCCESS"/>
+  <int value="1179648" label="TCSD_ORD_GETPCREVENT: tpm: TSS_SUCCESS"/>
+  <int value="1245184" label="TCSD_ORD_GETPCREVENTBYPCR: tpm: TSS_SUCCESS"/>
+  <int value="1310720" label="TCSD_ORD_GETPCREVENTLOG: tpm: TSS_SUCCESS"/>
+  <int value="1376256" label="TCSD_ORD_SETOWNERINSTALL: tpm: TSS_SUCCESS"/>
+  <int value="1441792" label="TCSD_ORD_TAKEOWNERSHIP: tpm: TSS_SUCCESS"/>
+  <int value="1441825"
+      label="TCSD_ORD_TAKEOWNERSHIP: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="1443843"
+      label="TCSD_ORD_TAKEOWNERSHIP: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="1507328" label="TCSD_ORD_OIAP: tpm: TSS_SUCCESS"/>
+  <int value="1507351" label="TCSD_ORD_OIAP: tpm: TPM_E_SIZE"/>
+  <int value="1507366" label="TCSD_ORD_OIAP: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="1509378" label="TCSD_ORD_OIAP: tpm: TPM_E_DOING_SELFTEST"/>
+  <int value="1511559" label="TCSD_ORD_OIAP: tddl: TDDL_E_IOERROR"/>
+  <int value="1519633" label="TCSD_ORD_OIAP: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="1572864" label="TCSD_ORD_OSAP: tpm: TSS_SUCCESS"/>
+  <int value="1572887" label="TCSD_ORD_OSAP: tpm: TPM_E_SIZE"/>
+  <int value="1572889" label="TCSD_ORD_OSAP: tpm: TPM_E_BAD_PARAM_SIZE"/>
+  <int value="1572902" label="TCSD_ORD_OSAP: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="1577095" label="TCSD_ORD_OSAP: tddl: TDDL_E_IOERROR"/>
+  <int value="1585169" label="TCSD_ORD_OSAP: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="1638400" label="TCSD_ORD_CHANGEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="1703936" label="TCSD_ORD_CHANGEAUTHOWNER: tpm: TSS_SUCCESS"/>
+  <int value="1703937" label="TCSD_ORD_CHANGEAUTHOWNER: tpm: TPM_E_AUTHFAIL"/>
+  <int value="1716241"
+      label="TCSD_ORD_CHANGEAUTHOWNER: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="1769472" label="TCSD_ORD_CHANGEAUTHASYMSTART: tpm: TSS_SUCCESS"/>
+  <int value="1835008" label="TCSD_ORD_CHANGEAUTHASYMFINISH: tpm: TSS_SUCCESS"/>
+  <int value="1900544" label="TCSD_ORD_TERMINATEHANDLE: tpm: TSS_SUCCESS"/>
+  <int value="1966080" label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TSS_SUCCESS"/>
+  <int value="1966114"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="1966118"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="1970311"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tddl: TDDL_E_IOERROR"/>
+  <int value="2031616" label="TCSD_ORD_EXTEND: tpm: TSS_SUCCESS"/>
+  <int value="2097152" label="TCSD_ORD_PCRREAD: tpm: TSS_SUCCESS"/>
+  <int value="2097190" label="TCSD_ORD_PCRREAD: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2101383" label="TCSD_ORD_PCRREAD: tddl: TDDL_E_IOERROR"/>
+  <int value="2109457" label="TCSD_ORD_PCRREAD: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2162688" label="TCSD_ORD_QUOTE: tpm: TSS_SUCCESS"/>
+  <int value="2174993" label="TCSD_ORD_QUOTE: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2228224" label="TCSD_ORD_DIRWRITEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="2293760" label="TCSD_ORD_DIRREAD: tpm: TSS_SUCCESS"/>
+  <int value="2359296" label="TCSD_ORD_SEAL: tpm: TSS_SUCCESS"/>
+  <int value="2361347" label="TCSD_ORD_SEAL: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="2363527" label="TCSD_ORD_SEAL: tddl: TDDL_E_IOERROR"/>
+  <int value="2424832" label="TCSD_ORD_UNSEAL: tpm: TSS_SUCCESS"/>
+  <int value="2424833" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTHFAIL"/>
+  <int value="2424856" label="TCSD_ORD_UNSEAL: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="2424861" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTH2FAIL"/>
+  <int value="2424865" label="TCSD_ORD_UNSEAL: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="2424866" label="TCSD_ORD_UNSEAL: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="2424870" label="TCSD_ORD_UNSEAL: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2426883" label="TCSD_ORD_UNSEAL: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="2429063" label="TCSD_ORD_UNSEAL: tddl: TDDL_E_IOERROR"/>
+  <int value="2437137" label="TCSD_ORD_UNSEAL: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2490368" label="TCSD_ORD_UNBIND: tpm: TSS_SUCCESS"/>
+  <int value="2490371" label="TCSD_ORD_UNBIND: tpm: TPM_E_BAD_PARAMETER"/>
+  <int value="2490401" label="TCSD_ORD_UNBIND: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="2490402" label="TCSD_ORD_UNBIND: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="2494599" label="TCSD_ORD_UNBIND: tddl: TDDL_E_IOERROR"/>
+  <int value="2498762" label="TCSD_ORD_UNBIND: tcs: TCS_E_KM_LOADFAILED"/>
+  <int value="2502673" label="TCSD_ORD_UNBIND: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2555904" label="TCSD_ORD_CREATEMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
+  <int value="2621440" label="TCSD_ORD_CONVERTMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
+  <int value="2686976"
+      label="TCSD_ORD_AUTHORIZEMIGRATIONKEY: tpm: TSS_SUCCESS"/>
+  <int value="2752512" label="TCSD_ORD_CERTIFYKEY: tpm: TSS_SUCCESS"/>
+  <int value="2756743" label="TCSD_ORD_CERTIFYKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="2764817" label="TCSD_ORD_CERTIFYKEY: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2818048" label="TCSD_ORD_SIGN: tpm: TSS_SUCCESS"/>
+  <int value="2883584" label="TCSD_ORD_GETRANDOM: tpm: TSS_SUCCESS"/>
+  <int value="2883622" label="TCSD_ORD_GETRANDOM: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2891778" label="TCSD_ORD_GETRANDOM: tcs: TSS_E_FAIL"/>
+  <int value="2895889" label="TCSD_ORD_GETRANDOM: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="2949120" label="TCSD_ORD_STIRRANDOM: tpm: TSS_SUCCESS"/>
+  <int value="3014656" label="TCSD_ORD_GETCAPABILITY: tpm: TSS_SUCCESS"/>
+  <int value="3014658" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BADINDEX"/>
+  <int value="3014659"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_PARAMETER"/>
+  <int value="3014666" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_ORDINAL"/>
+  <int value="3014684"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_FAILEDSELFTEST"/>
+  <int value="3014694"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="3014700" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_MODE"/>
+  <int value="3018887" label="TCSD_ORD_GETCAPABILITY: tddl: TDDL_E_IOERROR"/>
+  <int value="3026961" label="TCSD_ORD_GETCAPABILITY: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="3080192" label="TCSD_ORD_GETCAPABILITYSIGNED: tpm: TSS_SUCCESS"/>
+  <int value="3145728" label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TSS_SUCCESS"/>
+  <int value="3145729"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_AUTHFAIL"/>
+  <int value="3145734"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEACTIVATED"/>
+  <int value="3147779"
+      label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="3211263"
+      label="TCSD_ORD_GETCAPABILITYOWNER: Unknown TSS_RESULT 0xffff"/>
+  <int value="3211264"
+      label="TCSD_ORD_CREATEENDORSEMENTKEYPAIR: tpm: TSS_SUCCESS"/>
+  <int value="3276800" label="TCSD_ORD_READPUBEK: tpm: TSS_SUCCESS"/>
+  <int value="3276806" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DEACTIVATED"/>
+  <int value="3276807" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DISABLED"/>
+  <int value="3276808" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DISABLED_CMD"/>
+  <int value="3276835" label="TCSD_ORD_READPUBEK: tpm: TPM_E_NO_ENDORSEMENT"/>
+  <int value="3342335" label="TCSD_ORD_READPUBEK: Unknown TSS_RESULT 0xffff"/>
+  <int value="3342336" label="TCSD_ORD_DISABLEPUBEKREAD: tpm: TSS_SUCCESS"/>
+  <int value="3407872" label="TCSD_ORD_OWNERREADPUBEK: tpm: TSS_SUCCESS"/>
+  <int value="3473408" label="TCSD_ORD_SELFTESTFULL: tpm: TSS_SUCCESS"/>
+  <int value="3538944" label="TCSD_ORD_CERTIFYSELFTEST: tpm: TSS_SUCCESS"/>
+  <int value="3604480" label="TCSD_ORD_CONTINUESELFTEST: tpm: TSS_SUCCESS"/>
+  <int value="3670016" label="TCSD_ORD_GETTESTRESULT: tpm: TSS_SUCCESS"/>
+  <int value="3735552" label="TCSD_ORD_OWNERSETDISABLE: tpm: TSS_SUCCESS"/>
+  <int value="3801088" label="TCSD_ORD_OWNERCLEAR: tpm: TSS_SUCCESS"/>
+  <int value="3866624" label="TCSD_ORD_DISABLEOWNERCLEAR: tpm: TSS_SUCCESS"/>
+  <int value="3932160" label="TCSD_ORD_FORCECLEAR: tpm: TSS_SUCCESS"/>
+  <int value="3997696" label="TCSD_ORD_DISABLEFORCECLEAR: tpm: TSS_SUCCESS"/>
+  <int value="4063232" label="TCSD_ORD_PHYSICALDISABLE: tpm: TSS_SUCCESS"/>
+  <int value="4128768" label="TCSD_ORD_PHYSICALENABLE: tpm: TSS_SUCCESS"/>
+  <int value="4194304"
+      label="TCSD_ORD_PHYSICALSETDEACTIVATED: tpm: TSS_SUCCESS"/>
+  <int value="4259840" label="TCSD_ORD_SETTEMPDEACTIVATED: tpm: TSS_SUCCESS"/>
+  <int value="4325376" label="TCSD_ORD_PHYSICALPRESENCE: tpm: TSS_SUCCESS"/>
+  <int value="4390912" label="TCSD_ORD_FIELDUPGRADE: tpm: TSS_SUCCESS"/>
+  <int value="4456448" label="TCSD_ORD_SETRIDIRECTION: tpm: TSS_SUCCESS"/>
+  <int value="4521984"
+      label="TCSD_ORD_CREATEMAINTENANCEARCHIVE: tpm: TSS_SUCCESS"/>
+  <int value="4587520"
+      label="TCSD_ORD_LOADMAINTENANCEARCHIVE: tpm: TSS_SUCCESS"/>
+  <int value="4653056"
+      label="TCSD_ORD_KILLMAINTENANCEFEATURE: tpm: TSS_SUCCESS"/>
+  <int value="4718592"
+      label="TCSD_ORD_LOADMANUFACTURERMAINTENANCEPUB: tpm: TSS_SUCCESS"/>
+  <int value="4784128"
+      label="TCSD_ORD_READMANUFACTURERMAINTENANCEPUB: tpm: TSS_SUCCESS"/>
+  <int value="4849664" label="TCSD_ORD_DAAJOIN: tpm: TSS_SUCCESS"/>
+  <int value="4915200" label="TCSD_ORD_DAASIGN: tpm: TSS_SUCCESS"/>
+  <int value="4980736" label="TCSD_ORD_SETCAPABILITY: tpm: TSS_SUCCESS"/>
+  <int value="5046272" label="TCSD_ORD_RESETLOCKVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5046278" label="TCSD_ORD_RESETLOCKVALUE: tpm: TPM_E_DEACTIVATED"/>
+  <int value="5046300"
+      label="TCSD_ORD_RESETLOCKVALUE: tpm: TPM_E_FAILEDSELFTEST"/>
+  <int value="5111808" label="TCSD_ORD_PCRRESET: tpm: TSS_SUCCESS"/>
+  <int value="5177344" label="TCSD_ORD_READCOUNTER: tpm: TSS_SUCCESS"/>
+  <int value="5242880" label="TCSD_ORD_CREATECOUNTER: tpm: TSS_SUCCESS"/>
+  <int value="5308416" label="TCSD_ORD_INCREMENTCOUNTER: tpm: TSS_SUCCESS"/>
+  <int value="5373952" label="TCSD_ORD_RELEASECOUNTER: tpm: TSS_SUCCESS"/>
+  <int value="5439488" label="TCSD_ORD_RELEASECOUNTEROWNER: tpm: TSS_SUCCESS"/>
+  <int value="5505024" label="TCSD_ORD_READCURRENTTICKS: tpm: TSS_SUCCESS"/>
+  <int value="5570560" label="TCSD_ORD_TICKSTAMPBLOB: tpm: TSS_SUCCESS"/>
+  <int value="5636096" label="TCSD_ORD_GETCREDENTIAL: tpm: TSS_SUCCESS"/>
+  <int value="5701632"
+      label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TSS_SUCCESS"/>
+  <int value="5701634"
+      label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TPM_E_BADINDEX"/>
+  <int value="5701649"
+      label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TPM_E_NOSPACE"/>
+  <int value="5767168" label="TCSD_ORD_NVWRITEVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5767192" label="TCSD_ORD_NVWRITEVALUE: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="5767228" label="TCSD_ORD_NVWRITEVALUE: tpm: TPM_E_AREA_LOCKED"/>
+  <int value="5832704" label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="5832764"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TPM_E_AREA_LOCKED"/>
+  <int value="5834755"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="5845009"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="5898240" label="TCSD_ORD_NVREADVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5898264" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="5898285" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_BAD_PRESENCE"/>
+  <int value="5963776" label="TCSD_ORD_NVREADVALUEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="5963810"
+      label="TCSD_ORD_NVREADVALUEAUTH: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="5965827"
+      label="TCSD_ORD_NVREADVALUEAUTH: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="5976081"
+      label="TCSD_ORD_NVREADVALUEAUTH: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="6029312" label="TCSD_ORD_ESTABLISHTRANSPORT: tpm: TSS_SUCCESS"/>
+  <int value="6094848" label="TCSD_ORD_EXECUTETRANSPORT: tpm: TSS_SUCCESS"/>
+  <int value="6160384"
+      label="TCSD_ORD_RELEASETRANSPORTSIGNED: tpm: TSS_SUCCESS"/>
+  <int value="6225920"
+      label="TCSD_ORD_SETORDINALAUDITSTATUS: tpm: TSS_SUCCESS"/>
+  <int value="6291456" label="TCSD_ORD_GETAUDITDIGEST: tpm: TSS_SUCCESS"/>
+  <int value="6356992" label="TCSD_ORD_GETAUDITDIGESTSIGNED: tpm: TSS_SUCCESS"/>
+  <int value="6422528" label="TCSD_ORD_SEALX: tpm: TSS_SUCCESS"/>
+  <int value="6488064" label="TCSD_ORD_SETOPERATORAUTH: tpm: TSS_SUCCESS"/>
+  <int value="6553600" label="TCSD_ORD_OWNERREADINTERNALPUB: tpm: TSS_SUCCESS"/>
+  <int value="6619136" label="TCSD_ORD_ENUMREGISTEREDKEYS2: tpm: TSS_SUCCESS"/>
+  <int value="6684672" label="TCSD_ORD_SETTEMPDEACTIVATED2: tpm: TSS_SUCCESS"/>
+  <int value="6750208" label="TCSD_ORD_DELEGATE_MANAGE: tpm: TSS_SUCCESS"/>
+  <int value="6750225" label="TCSD_ORD_DELEGATE_MANAGE: tpm: TPM_E_NOSPACE"/>
+  <int value="6762513"
+      label="TCSD_ORD_DELEGATE_MANAGE: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="6815744"
+      label="TCSD_ORD_DELEGATE_CREATEKEYDELEGATION: tpm: TSS_SUCCESS"/>
+  <int value="6881280"
+      label="TCSD_ORD_DELEGATE_CREATEOWNERDELEGATION: tpm: TSS_SUCCESS"/>
+  <int value="6893585"
+      label="TCSD_ORD_DELEGATE_CREATEOWNERDELEGATION: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="6946816"
+      label="TCSD_ORD_DELEGATE_LOADOWNERDELEGATION: tpm: TSS_SUCCESS"/>
+  <int value="7012352" label="TCSD_ORD_DELEGATE_READTABLE: tpm: TSS_SUCCESS"/>
+  <int value="7024657"
+      label="TCSD_ORD_DELEGATE_READTABLE: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="7077888"
+      label="TCSD_ORD_DELEGATE_UPDATEVERIFICATIONCOUNT: tpm: TSS_SUCCESS"/>
+  <int value="7143424"
+      label="TCSD_ORD_DELEGATE_VERIFYDELEGATION: tpm: TSS_SUCCESS"/>
+  <int value="7208960"
+      label="TCSD_ORD_CREATEREVOCABLEENDORSEMENTKEYPAIR: tpm: TSS_SUCCESS"/>
+  <int value="7274496"
+      label="TCSD_ORD_REVOKEENDORSEMENTKEYPAIR: tpm: TSS_SUCCESS"/>
+  <int value="7340032" label="TCSD_ORD_MAKEIDENTITY2: tpm: TSS_SUCCESS"/>
+  <int value="7405568" label="TCSD_ORD_QUOTE2: tpm: TSS_SUCCESS"/>
+  <int value="7471104" label="TCSD_ORD_CMK_SETRESTRICTIONS: tpm: TSS_SUCCESS"/>
+  <int value="7536640" label="TCSD_ORD_CMK_APPROVEMA: tpm: TSS_SUCCESS"/>
+  <int value="7602176" label="TCSD_ORD_CMK_CREATEKEY: tpm: TSS_SUCCESS"/>
+  <int value="7667712" label="TCSD_ORD_CMK_CREATETICKET: tpm: TSS_SUCCESS"/>
+  <int value="7733248" label="TCSD_ORD_CMK_CREATEBLOB: tpm: TSS_SUCCESS"/>
+  <int value="7798784" label="TCSD_ORD_CMK_CONVERTMIGRATION: tpm: TSS_SUCCESS"/>
+  <int value="7864320" label="TCSD_ORD_FLUSHSPECIFIC: tpm: TSS_SUCCESS"/>
+  <int value="7929856" label="TCSD_ORD_KEYCONTROLOWNER: tpm: TSS_SUCCESS"/>
+  <int value="7995392" label="TCSD_ORD_DSAP: tpm: TSS_SUCCESS"/>
+  <int value="7995394" label="TCSD_ORD_DSAP: tpm: TPM_E_BADINDEX"/>
+  <int value="7995415" label="TCSD_ORD_DSAP: tpm: TPM_E_SIZE"/>
+  <int value="7995430" label="TCSD_ORD_DSAP: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="7999623" label="TCSD_ORD_DSAP: tddl: TDDL_E_IOERROR"/>
+</enum>
+
+<enum name="TPM2CommandAndResponse">
+<!-- Generated by platform2/hwsec-host-utils/tpm_command_response_decoder.cc -->
+
+  <summary>
+    The first two bytes of value are the command code. The last two bytes are
+    the response code. The label is the what the command and response code
+    represent. The command and response code are defined in the
+    platform2/trunks/tpm_generated.h
+  </summary>
+  <int value="18808832" label="TPM_CC_NV_UndefineSpaceSpecial: TPM_RC_SUCCESS"/>
+  <int value="18874368" label="TPM_CC_EvictControl: TPM_RC_SUCCESS"/>
+  <int value="18874517" label="TPM_CC_EvictControl: TPM_RC_SIZE"/>
+  <int value="18874530" label="TPM_CC_EvictControl: TPM_RC_BAD_AUTH"/>
+  <int value="18876696" label="TPM_CC_EvictControl: TPM_RC_REFERENCE_S0"/>
+  <int value="18876706" label="TPM_CC_EvictControl: TPM_RC_RETRY"/>
+  <int value="18903044" label="TPM_CC_EvictControl: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="18911248" label="TPM_CC_EvictControl: SAPI_RC_NO_CONNECTION"/>
+  <int value="18939904" label="TPM_CC_HierarchyControl: TPM_RC_SUCCESS"/>
+  <int value="19005440" label="TPM_CC_NV_UndefineSpace: TPM_RC_SUCCESS"/>
+  <int value="19005602" label="TPM_CC_NV_UndefineSpace: TPM_RC_BAD_AUTH"/>
+  <int value="19005769"
+      label="TPM_CC_NV_UndefineSpace: TPM_RC_NV_AUTHORIZATION"/>
+  <int value="19136512" label="TPM_CC_ChangeEPS: TPM_RC_SUCCESS"/>
+  <int value="19202048" label="TPM_CC_ChangePPS: TPM_RC_SUCCESS"/>
+  <int value="19267584" label="TPM_CC_Clear: TPM_RC_SUCCESS"/>
+  <int value="19333120" label="TPM_CC_ClearControl: TPM_RC_SUCCESS"/>
+  <int value="19398656" label="TPM_CC_ClockSet: TPM_RC_SUCCESS"/>
+  <int value="19464192" label="TPM_CC_HierarchyChangeAuth: TPM_RC_SUCCESS"/>
+  <int value="19464325" label="TPM_CC_HierarchyChangeAuth: TPM_RC_HIERARCHY"/>
+  <int value="19464354" label="TPM_CC_HierarchyChangeAuth: TPM_RC_BAD_AUTH"/>
+  <int value="19492868"
+      label="TPM_CC_HierarchyChangeAuth: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="19501072"
+      label="TPM_CC_HierarchyChangeAuth: SAPI_RC_NO_CONNECTION"/>
+  <int value="19529728" label="TPM_CC_NV_DefineSpace: TPM_RC_SUCCESS"/>
+  <int value="19529890" label="TPM_CC_NV_DefineSpace: TPM_RC_BAD_AUTH"/>
+  <int value="19530057" label="TPM_CC_NV_DefineSpace: TPM_RC_NV_AUTHORIZATION"/>
+  <int value="19530060" label="TPM_CC_NV_DefineSpace: TPM_RC_NV_DEFINED"/>
+  <int value="19532066" label="TPM_CC_NV_DefineSpace: TPM_RC_RETRY"/>
+  <int value="19558404" label="TPM_CC_NV_DefineSpace: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="19566608" label="TPM_CC_NV_DefineSpace: SAPI_RC_NO_CONNECTION"/>
+  <int value="19595264" label="TPM_CC_PCR_Allocate: TPM_RC_SUCCESS"/>
+  <int value="19660800" label="TPM_CC_PCR_SetAuthPolicy: TPM_RC_SUCCESS"/>
+  <int value="19726336" label="TPM_CC_PP_Commands: TPM_RC_SUCCESS"/>
+  <int value="19791872" label="TPM_CC_SetPrimaryPolicy: TPM_RC_SUCCESS"/>
+  <int value="19857408" label="TPM_CC_FieldUpgradeStart: TPM_RC_SUCCESS"/>
+  <int value="19922944" label="TPM_CC_ClockRateAdjust: TPM_RC_SUCCESS"/>
+  <int value="19988480" label="TPM_CC_CreatePrimary: TPM_RC_SUCCESS"/>
+  <int value="19988612" label="TPM_CC_CreatePrimary: TPM_RC_VALUE"/>
+  <int value="19988642" label="TPM_CC_CreatePrimary: TPM_RC_BAD_AUTH"/>
+  <int value="19988802" label="TPM_CC_CreatePrimary: TPM_RC_COMMAND_SIZE"/>
+  <int value="19990808" label="TPM_CC_CreatePrimary: TPM_RC_REFERENCE_S0"/>
+  <int value="19990818" label="TPM_CC_CreatePrimary: TPM_RC_RETRY"/>
+  <int value="20017156" label="TPM_CC_CreatePrimary: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20025360" label="TPM_CC_CreatePrimary: SAPI_RC_NO_CONNECTION"/>
+  <int value="20054016" label="TPM_CC_NV_GlobalWriteLock: TPM_RC_SUCCESS"/>
+  <int value="20119552" label="TPM_CC_GetCommandAuditDigest: TPM_RC_SUCCESS"/>
+  <int value="20185088" label="TPM_CC_NV_Increment: TPM_RC_SUCCESS"/>
+  <int value="20250624" label="TPM_CC_NV_SetBits: TPM_RC_SUCCESS"/>
+  <int value="20316160" label="TPM_CC_NV_Extend: TPM_RC_SUCCESS"/>
+  <int value="20381696" label="TPM_CC_NV_Write: TPM_RC_SUCCESS"/>
+  <int value="20381826" label="TPM_CC_NV_Write: TPM_RC_ATTRIBUTES"/>
+  <int value="20381838" label="TPM_CC_NV_Write: TPM_RC_AUTH_FAIL"/>
+  <int value="20381952" label="TPM_CC_NV_Write: TPM_RC_INITIALIZE"/>
+  <int value="20382022" label="TPM_CC_NV_Write: TPM_RC_NV_RANGE"/>
+  <int value="20382025" label="TPM_CC_NV_Write: TPM_RC_NV_AUTHORIZATION"/>
+  <int value="20384033" label="TPM_CC_NV_Write: TPM_RC_LOCKOUT"/>
+  <int value="20384034" label="TPM_CC_NV_Write: TPM_RC_RETRY"/>
+  <int value="20410372" label="TPM_CC_NV_Write: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20418576" label="TPM_CC_NV_Write: SAPI_RC_NO_CONNECTION"/>
+  <int value="20426901" label="TPM_CC_NV_Write: Resource Manager: TPM_RC_SIZE"/>
+  <int value="20426906"
+      label="TPM_CC_NV_Write: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="20447232" label="TPM_CC_NV_WriteLock: TPM_RC_SUCCESS"/>
+  <int value="20447374" label="TPM_CC_NV_WriteLock: TPM_RC_AUTH_FAIL"/>
+  <int value="20449560" label="TPM_CC_NV_WriteLock: TPM_RC_REFERENCE_S0"/>
+  <int value="20449569" label="TPM_CC_NV_WriteLock: TPM_RC_LOCKOUT"/>
+  <int value="20449570" label="TPM_CC_NV_WriteLock: TPM_RC_RETRY"/>
+  <int value="20475908" label="TPM_CC_NV_WriteLock: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20484112" label="TPM_CC_NV_WriteLock: SAPI_RC_NO_CONNECTION"/>
+  <int value="20492437"
+      label="TPM_CC_NV_WriteLock: Resource Manager: TPM_RC_SIZE"/>
+  <int value="20512768"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_SUCCESS"/>
+  <int value="20512910"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_AUTH_FAIL"/>
+  <int value="20513024"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_INITIALIZE"/>
+  <int value="20515096"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_REFERENCE_S0"/>
+  <int value="20515105"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_LOCKOUT"/>
+  <int value="20515106" label="TPM_CC_DictionaryAttackLockReset: TPM_RC_RETRY"/>
+  <int value="20541444"
+      label="TPM_CC_DictionaryAttackLockReset: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20549640"
+      label="TPM_CC_DictionaryAttackLockReset: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="20549648"
+      label="TPM_CC_DictionaryAttackLockReset: SAPI_RC_NO_CONNECTION"/>
+  <int value="20557963"
+      label="TPM_CC_DictionaryAttackLockReset: Resource Manager:
+             TPM_RC_HANDLE"/>
+  <int value="20557978"
+      label="TPM_CC_DictionaryAttackLockReset: Resource Manager:
+             TPM_RC_INSUFFICIENT"/>
+  <int value="20578304"
+      label="TPM_CC_DictionaryAttackParameters: TPM_RC_SUCCESS"/>
+  <int value="20578446"
+      label="TPM_CC_DictionaryAttackParameters: TPM_RC_AUTH_FAIL"/>
+  <int value="20580641"
+      label="TPM_CC_DictionaryAttackParameters: TPM_RC_LOCKOUT"/>
+  <int value="20606980"
+      label="TPM_CC_DictionaryAttackParameters: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20643840" label="TPM_CC_NV_ChangeAuth: TPM_RC_SUCCESS"/>
+  <int value="20709376" label="TPM_CC_PCR_Event: TPM_RC_SUCCESS"/>
+  <int value="20774912" label="TPM_CC_PCR_Reset: TPM_RC_SUCCESS"/>
+  <int value="20840448" label="TPM_CC_SequenceComplete: TPM_RC_SUCCESS"/>
+  <int value="20905984" label="TPM_CC_SetAlgorithmSet: TPM_RC_SUCCESS"/>
+  <int value="20971520"
+      label="TPM_CC_SetCommandCodeAuditStatus: TPM_RC_SUCCESS"/>
+  <int value="21037056" label="TPM_CC_FieldUpgradeData: TPM_RC_SUCCESS"/>
+  <int value="21102592" label="TPM_CC_IncrementalSelfTest: TPM_RC_SUCCESS"/>
+  <int value="21168128" label="TPM_CC_SelfTest: TPM_RC_SUCCESS"/>
+  <int value="21233664" label="TPM_CC_Startup: TPM_RC_SUCCESS"/>
+  <int value="21299200" label="TPM_CC_Shutdown: TPM_RC_SUCCESS"/>
+  <int value="21364736" label="TPM_CC_StirRandom: TPM_RC_SUCCESS"/>
+  <int value="21364992" label="TPM_CC_StirRandom: TPM_RC_INITIALIZE"/>
+  <int value="21393412" label="TPM_CC_StirRandom: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="21401616" label="TPM_CC_StirRandom: SAPI_RC_NO_CONNECTION"/>
+  <int value="21409943"
+      label="TPM_CC_StirRandom: Resource Manager: TPM_RC_TAG"/>
+  <int value="21430272" label="TPM_CC_ActivateCredential: TPM_RC_SUCCESS"/>
+  <int value="21430404" label="TPM_CC_ActivateCredential: TPM_RC_VALUE"/>
+  <int value="21430414" label="TPM_CC_ActivateCredential: TPM_RC_AUTH_FAIL"/>
+  <int value="21430421" label="TPM_CC_ActivateCredential: TPM_RC_SIZE"/>
+  <int value="21430429" label="TPM_CC_ActivateCredential: TPM_RC_POLICY_FAIL"/>
+  <int value="21430431" label="TPM_CC_ActivateCredential: TPM_RC_INTEGRITY"/>
+  <int value="21430437" label="TPM_CC_ActivateCredential: TPM_RC_BINDING"/>
+  <int value="21430439" label="TPM_CC_ActivateCredential: TPM_RC_ECC_POINT"/>
+  <int value="21432592" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_H0"/>
+  <int value="21432593" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_H1"/>
+  <int value="21432601" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_S1"/>
+  <int value="21432610" label="TPM_CC_ActivateCredential: TPM_RC_RETRY"/>
+  <int value="21458948"
+      label="TPM_CC_ActivateCredential: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="21467152"
+      label="TPM_CC_ActivateCredential: SAPI_RC_NO_CONNECTION"/>
+  <int value="21495808" label="TPM_CC_Certify: TPM_RC_SUCCESS"/>
+  <int value="21495940" label="TPM_CC_Certify: TPM_RC_VALUE"/>
+  <int value="21495954" label="TPM_CC_Certify: TPM_RC_SCHEME"/>
+  <int value="21495967" label="TPM_CC_Certify: TPM_RC_INTEGRITY"/>
+  <int value="21498128" label="TPM_CC_Certify: TPM_RC_REFERENCE_H0"/>
+  <int value="21498129" label="TPM_CC_Certify: TPM_RC_REFERENCE_H1"/>
+  <int value="21498146" label="TPM_CC_Certify: TPM_RC_RETRY"/>
+  <int value="21524484" label="TPM_CC_Certify: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="21532688" label="TPM_CC_Certify: SAPI_RC_NO_CONNECTION"/>
+  <int value="21541003"
+      label="TPM_CC_Certify: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="21541013" label="TPM_CC_Certify: Resource Manager: TPM_RC_SIZE"/>
+  <int value="21541018"
+      label="TPM_CC_Certify: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="21561344" label="TPM_CC_PolicyNV: TPM_RC_SUCCESS"/>
+  <int value="21626880" label="TPM_CC_CertifyCreation: TPM_RC_SUCCESS"/>
+  <int value="21692416" label="TPM_CC_Duplicate: TPM_RC_SUCCESS"/>
+  <int value="21757952" label="TPM_CC_GetTime: TPM_RC_SUCCESS"/>
+  <int value="21823488" label="TPM_CC_GetSessionAuditDigest: TPM_RC_SUCCESS"/>
+  <int value="21889024" label="TPM_CC_NV_Read: TPM_RC_SUCCESS"/>
+  <int value="21889186" label="TPM_CC_NV_Read: TPM_RC_BAD_AUTH"/>
+  <int value="21889280" label="TPM_CC_NV_Read: TPM_RC_INITIALIZE"/>
+  <int value="21889281" label="TPM_CC_NV_Read: TPM_RC_FAILURE"/>
+  <int value="21889346" label="TPM_CC_NV_Read: TPM_RC_COMMAND_SIZE"/>
+  <int value="21889350" label="TPM_CC_NV_Read: TPM_RC_NV_RANGE"/>
+  <int value="21891361" label="TPM_CC_NV_Read: TPM_RC_LOCKOUT"/>
+  <int value="21891362" label="TPM_CC_NV_Read: TPM_RC_RETRY"/>
+  <int value="21917700" label="TPM_CC_NV_Read: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="21925904" label="TPM_CC_NV_Read: SAPI_RC_NO_CONNECTION"/>
+  <int value="21934229" label="TPM_CC_NV_Read: Resource Manager: TPM_RC_SIZE"/>
+  <int value="21934234"
+      label="TPM_CC_NV_Read: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="21954560" label="TPM_CC_NV_ReadLock: TPM_RC_SUCCESS"/>
+  <int value="22020096" label="TPM_CC_ObjectChangeAuth: TPM_RC_SUCCESS"/>
+  <int value="22085632" label="TPM_CC_PolicySecret: TPM_RC_SUCCESS"/>
+  <int value="22085771" label="TPM_CC_PolicySecret: TPM_RC_HANDLE"/>
+  <int value="22085794" label="TPM_CC_PolicySecret: TPM_RC_BAD_AUTH"/>
+  <int value="22087953" label="TPM_CC_PolicySecret: TPM_RC_REFERENCE_H1"/>
+  <int value="22087960" label="TPM_CC_PolicySecret: TPM_RC_REFERENCE_S0"/>
+  <int value="22087970" label="TPM_CC_PolicySecret: TPM_RC_RETRY"/>
+  <int value="22122512" label="TPM_CC_PolicySecret: SAPI_RC_NO_CONNECTION"/>
+  <int value="22130827"
+      label="TPM_CC_PolicySecret: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22151168" label="TPM_CC_Rewrap: TPM_RC_SUCCESS"/>
+  <int value="22216704" label="TPM_CC_Create: TPM_RC_SUCCESS"/>
+  <int value="22216836" label="TPM_CC_Create: TPM_RC_VALUE"/>
+  <int value="22216853" label="TPM_CC_Create: TPM_RC_SIZE"/>
+  <int value="22216854" label="TPM_CC_Create: TPM_RC_SYMMETRIC"/>
+  <int value="22216866" label="TPM_CC_Create: TPM_RC_BAD_AUTH"/>
+  <int value="22216960" label="TPM_CC_Create: TPM_RC_INITIALIZE"/>
+  <int value="22216961" label="TPM_CC_Create: TPM_RC_FAILURE"/>
+  <int value="22217007" label="TPM_CC_Create: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22217026" label="TPM_CC_Create: TPM_RC_COMMAND_SIZE"/>
+  <int value="22217027" label="TPM_CC_Create: TPM_RC_COMMAND_CODE"/>
+  <int value="22219032" label="TPM_CC_Create: TPM_RC_REFERENCE_S0"/>
+  <int value="22219042" label="TPM_CC_Create: TPM_RC_RETRY"/>
+  <int value="22245380" label="TPM_CC_Create: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22253576" label="TPM_CC_Create: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22253584" label="TPM_CC_Create: SAPI_RC_NO_CONNECTION"/>
+  <int value="22261899" label="TPM_CC_Create: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22261909" label="TPM_CC_Create: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22261914"
+      label="TPM_CC_Create: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="22282240" label="TPM_CC_ECDH_ZGen: TPM_RC_SUCCESS"/>
+  <int value="22282372" label="TPM_CC_ECDH_ZGen: TPM_RC_VALUE"/>
+  <int value="22282386" label="TPM_CC_ECDH_ZGen: TPM_RC_SCHEME"/>
+  <int value="22282399" label="TPM_CC_ECDH_ZGen: TPM_RC_INTEGRITY"/>
+  <int value="22282402" label="TPM_CC_ECDH_ZGen: TPM_RC_BAD_AUTH"/>
+  <int value="22282407" label="TPM_CC_ECDH_ZGen: TPM_RC_ECC_POINT"/>
+  <int value="22282496" label="TPM_CC_ECDH_ZGen: TPM_RC_INITIALIZE"/>
+  <int value="22282543" label="TPM_CC_ECDH_ZGen: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22282562" label="TPM_CC_ECDH_ZGen: TPM_RC_COMMAND_SIZE"/>
+  <int value="22282563" label="TPM_CC_ECDH_ZGen: TPM_RC_COMMAND_CODE"/>
+  <int value="22282580" label="TPM_CC_ECDH_ZGen: TPM_RC_NO_RESULT"/>
+  <int value="22284560" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_H0"/>
+  <int value="22284568" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_S0"/>
+  <int value="22284578" label="TPM_CC_ECDH_ZGen: TPM_RC_RETRY"/>
+  <int value="22310916" label="TPM_CC_ECDH_ZGen: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22319120" label="TPM_CC_ECDH_ZGen: SAPI_RC_NO_CONNECTION"/>
+  <int value="22327435"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22327445"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22327450"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="22347776" label="TPM_CC_HMAC: TPM_RC_SUCCESS"/>
+  <int value="22413312" label="TPM_CC_Import: TPM_RC_SUCCESS"/>
+  <int value="22413449" label="TPM_CC_Import: TPM_RC_MODE"/>
+  <int value="22413471" label="TPM_CC_Import: TPM_RC_INTEGRITY"/>
+  <int value="22413568" label="TPM_CC_Import: TPM_RC_INITIALIZE"/>
+  <int value="22413615" label="TPM_CC_Import: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22415618" label="TPM_CC_Import: TPM_RC_OBJECT_MEMORY"/>
+  <int value="22415640" label="TPM_CC_Import: TPM_RC_REFERENCE_S0"/>
+  <int value="22415650" label="TPM_CC_Import: TPM_RC_RETRY"/>
+  <int value="22441988" label="TPM_CC_Import: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22450192" label="TPM_CC_Import: SAPI_RC_NO_CONNECTION"/>
+  <int value="22458517" label="TPM_CC_Import: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22478848" label="TPM_CC_Load: TPM_RC_SUCCESS"/>
+  <int value="22478979" label="TPM_CC_Load: TPM_RC_HASH"/>
+  <int value="22478980" label="TPM_CC_Load: TPM_RC_VALUE"/>
+  <int value="22478986" label="TPM_CC_Load: TPM_RC_TYPE"/>
+  <int value="22478987" label="TPM_CC_Load: TPM_RC_HANDLE"/>
+  <int value="22478997" label="TPM_CC_Load: TPM_RC_SIZE"/>
+  <int value="22478998" label="TPM_CC_Load: TPM_RC_SYMMETRIC"/>
+  <int value="22479002" label="TPM_CC_Load: TPM_RC_INSUFFICIENT"/>
+  <int value="22479007" label="TPM_CC_Load: TPM_RC_INTEGRITY"/>
+  <int value="22479009" label="TPM_CC_Load: TPM_RC_RESERVED_BITS"/>
+  <int value="22479010" label="TPM_CC_Load: TPM_RC_BAD_AUTH"/>
+  <int value="22479104" label="TPM_CC_Load: TPM_RC_INITIALIZE"/>
+  <int value="22479151" label="TPM_CC_Load: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22479170" label="TPM_CC_Load: TPM_RC_COMMAND_SIZE"/>
+  <int value="22479171" label="TPM_CC_Load: TPM_RC_COMMAND_CODE"/>
+  <int value="22479189" label="TPM_CC_Load: TPM_RC_SENSITIVE"/>
+  <int value="22481154" label="TPM_CC_Load: TPM_RC_OBJECT_MEMORY"/>
+  <int value="22481186" label="TPM_CC_Load: TPM_RC_RETRY"/>
+  <int value="22507524" label="TPM_CC_Load: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22515720" label="TPM_CC_Load: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22515728" label="TPM_CC_Load: SAPI_RC_NO_CONNECTION"/>
+  <int value="22524053" label="TPM_CC_Load: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22524055" label="TPM_CC_Load: Resource Manager: TPM_RC_TAG"/>
+  <int value="22524058"
+      label="TPM_CC_Load: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="22544384" label="TPM_CC_Quote: TPM_RC_SUCCESS"/>
+  <int value="22544516" label="TPM_CC_Quote: TPM_RC_VALUE"/>
+  <int value="22544530" label="TPM_CC_Quote: TPM_RC_SCHEME"/>
+  <int value="22573060" label="TPM_CC_Quote: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22581264" label="TPM_CC_Quote: SAPI_RC_NO_CONNECTION"/>
+  <int value="22609920" label="TPM_CC_RSA_Decrypt: TPM_RC_SUCCESS"/>
+  <int value="22610050" label="TPM_CC_RSA_Decrypt: TPM_RC_ATTRIBUTES"/>
+  <int value="22610052" label="TPM_CC_RSA_Decrypt: TPM_RC_VALUE"/>
+  <int value="22610059" label="TPM_CC_RSA_Decrypt: TPM_RC_HANDLE"/>
+  <int value="22610069" label="TPM_CC_RSA_Decrypt: TPM_RC_SIZE"/>
+  <int value="22610070" label="TPM_CC_RSA_Decrypt: TPM_RC_SYMMETRIC"/>
+  <int value="22610076" label="TPM_CC_RSA_Decrypt: TPM_RC_KEY"/>
+  <int value="22610079" label="TPM_CC_RSA_Decrypt: TPM_RC_INTEGRITY"/>
+  <int value="22610082" label="TPM_CC_RSA_Decrypt: TPM_RC_BAD_AUTH"/>
+  <int value="22610085" label="TPM_CC_RSA_Decrypt: TPM_RC_BINDING"/>
+  <int value="22610176" label="TPM_CC_RSA_Decrypt: TPM_RC_INITIALIZE"/>
+  <int value="22610223" label="TPM_CC_RSA_Decrypt: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22610242" label="TPM_CC_RSA_Decrypt: TPM_RC_COMMAND_SIZE"/>
+  <int value="22612240" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_H0"/>
+  <int value="22612248" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_S0"/>
+  <int value="22612258" label="TPM_CC_RSA_Decrypt: TPM_RC_RETRY"/>
+  <int value="22638596" label="TPM_CC_RSA_Decrypt: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22646792"
+      label="TPM_CC_RSA_Decrypt: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22646800" label="TPM_CC_RSA_Decrypt: SAPI_RC_NO_CONNECTION"/>
+  <int value="22655115"
+      label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22655125"
+      label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22655130"
+      label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="22740992" label="TPM_CC_HMAC_Start: TPM_RC_SUCCESS"/>
+  <int value="22806528" label="TPM_CC_SequenceUpdate: TPM_RC_SUCCESS"/>
+  <int value="22872064" label="TPM_CC_Sign: TPM_RC_SUCCESS"/>
+  <int value="22872195" label="TPM_CC_Sign: TPM_RC_HASH"/>
+  <int value="22872196" label="TPM_CC_Sign: TPM_RC_VALUE"/>
+  <int value="22872214" label="TPM_CC_Sign: TPM_RC_SYMMETRIC"/>
+  <int value="22872223" label="TPM_CC_Sign: TPM_RC_INTEGRITY"/>
+  <int value="22872226" label="TPM_CC_Sign: TPM_RC_BAD_AUTH"/>
+  <int value="22872229" label="TPM_CC_Sign: TPM_RC_BINDING"/>
+  <int value="22872320" label="TPM_CC_Sign: TPM_RC_INITIALIZE"/>
+  <int value="22874384" label="TPM_CC_Sign: TPM_RC_REFERENCE_H0"/>
+  <int value="22874392" label="TPM_CC_Sign: TPM_RC_REFERENCE_S0"/>
+  <int value="22874402" label="TPM_CC_Sign: TPM_RC_RETRY"/>
+  <int value="22900740" label="TPM_CC_Sign: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22908936" label="TPM_CC_Sign: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22908944" label="TPM_CC_Sign: SAPI_RC_NO_CONNECTION"/>
+  <int value="22917259" label="TPM_CC_Sign: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22917269" label="TPM_CC_Sign: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22917274"
+      label="TPM_CC_Sign: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="22937600" label="TPM_CC_Unseal: TPM_RC_SUCCESS"/>
+  <int value="22937732" label="TPM_CC_Unseal: TPM_RC_VALUE"/>
+  <int value="22937757" label="TPM_CC_Unseal: TPM_RC_POLICY_FAIL"/>
+  <int value="22937759" label="TPM_CC_Unseal: TPM_RC_INTEGRITY"/>
+  <int value="22937762" label="TPM_CC_Unseal: TPM_RC_BAD_AUTH"/>
+  <int value="22937903" label="TPM_CC_Unseal: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22937922" label="TPM_CC_Unseal: TPM_RC_COMMAND_SIZE"/>
+  <int value="22939920" label="TPM_CC_Unseal: TPM_RC_REFERENCE_H0"/>
+  <int value="22939928" label="TPM_CC_Unseal: TPM_RC_REFERENCE_S0"/>
+  <int value="22939938" label="TPM_CC_Unseal: TPM_RC_RETRY"/>
+  <int value="22966276" label="TPM_CC_Unseal: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22974480" label="TPM_CC_Unseal: SAPI_RC_NO_CONNECTION"/>
+  <int value="22982795" label="TPM_CC_Unseal: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22982805" label="TPM_CC_Unseal: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22982810"
+      label="TPM_CC_Unseal: Resource Manager: TPM_RC_INSUFFICIENT"/>
+  <int value="23068672" label="TPM_CC_PolicySigned: TPM_RC_SUCCESS"/>
+  <int value="23071000" label="TPM_CC_PolicySigned: TPM_RC_REFERENCE_S0"/>
+  <int value="23134208" label="TPM_CC_ContextLoad: TPM_RC_SUCCESS"/>
+  <int value="23199744" label="TPM_CC_ContextSave: TPM_RC_SUCCESS"/>
+  <int value="23265280" label="TPM_CC_ECDH_KeyGen: TPM_RC_SUCCESS"/>
+  <int value="23330816" label="TPM_CC_EncryptDecrypt: TPM_RC_SUCCESS"/>
+  <int value="23396352" label="TPM_CC_FlushContext: TPM_RC_SUCCESS"/>
+  <int value="23396484" label="TPM_CC_FlushContext: TPM_RC_VALUE"/>
+  <int value="23396491" label="TPM_CC_FlushContext: TPM_RC_HANDLE"/>
+  <int value="23396506" label="TPM_CC_FlushContext: TPM_RC_INSUFFICIENT"/>
+  <int value="23396608" label="TPM_CC_FlushContext: TPM_RC_INITIALIZE"/>
+  <int value="23396609" label="TPM_CC_FlushContext: TPM_RC_FAILURE"/>
+  <int value="23396674" label="TPM_CC_FlushContext: TPM_RC_COMMAND_SIZE"/>
+  <int value="23396675" label="TPM_CC_FlushContext: TPM_RC_COMMAND_CODE"/>
+  <int value="23425028" label="TPM_CC_FlushContext: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="23433224"
+      label="TPM_CC_FlushContext: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="23433232" label="TPM_CC_FlushContext: SAPI_RC_NO_CONNECTION"/>
+  <int value="23441547"
+      label="TPM_CC_FlushContext: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="23441559"
+      label="TPM_CC_FlushContext: Resource Manager: TPM_RC_TAG"/>
+  <int value="23527424" label="TPM_CC_LoadExternal: TPM_RC_SUCCESS"/>
+  <int value="23592960" label="TPM_CC_MakeCredential: TPM_RC_SUCCESS"/>
+  <int value="23658496" label="TPM_CC_NV_ReadPublic: TPM_RC_SUCCESS"/>
+  <int value="23658635" label="TPM_CC_NV_ReadPublic: TPM_RC_HANDLE"/>
+  <int value="23658752" label="TPM_CC_NV_ReadPublic: TPM_RC_INITIALIZE"/>
+  <int value="23658818" label="TPM_CC_NV_ReadPublic: TPM_RC_COMMAND_SIZE"/>
+  <int value="23660834" label="TPM_CC_NV_ReadPublic: TPM_RC_RETRY"/>
+  <int value="23687172" label="TPM_CC_NV_ReadPublic: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="23695368"
+      label="TPM_CC_NV_ReadPublic: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="23695376" label="TPM_CC_NV_ReadPublic: SAPI_RC_NO_CONNECTION"/>
+  <int value="23703703"
+      label="TPM_CC_NV_ReadPublic: Resource Manager: TPM_RC_TAG"/>
+  <int value="23724032" label="TPM_CC_PolicyAuthorize: TPM_RC_SUCCESS"/>
+  <int value="23789568" label="TPM_CC_PolicyAuthValue: TPM_RC_SUCCESS"/>
+  <int value="23789890" label="TPM_CC_PolicyAuthValue: TPM_RC_COMMAND_SIZE"/>
+  <int value="23791888" label="TPM_CC_PolicyAuthValue: TPM_RC_REFERENCE_H0"/>
+  <int value="23791906" label="TPM_CC_PolicyAuthValue: TPM_RC_RETRY"/>
+  <int value="23818244" label="TPM_CC_PolicyAuthValue: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="23855104" label="TPM_CC_PolicyCommandCode: TPM_RC_SUCCESS"/>
+  <int value="23920640" label="TPM_CC_PolicyCounterTimer: TPM_RC_SUCCESS"/>
+  <int value="23986176" label="TPM_CC_PolicyCpHash: TPM_RC_SUCCESS"/>
+  <int value="24051712" label="TPM_CC_PolicyLocality: TPM_RC_SUCCESS"/>
+  <int value="24117248" label="TPM_CC_PolicyNameHash: TPM_RC_SUCCESS"/>
+  <int value="24182784" label="TPM_CC_PolicyOR: TPM_RC_SUCCESS"/>
+  <int value="24248320" label="TPM_CC_PolicyTicket: TPM_RC_SUCCESS"/>
+  <int value="24313856" label="TPM_CC_ReadPublic: TPM_RC_SUCCESS"/>
+  <int value="24313987" label="TPM_CC_ReadPublic: TPM_RC_HASH"/>
+  <int value="24313988" label="TPM_CC_ReadPublic: TPM_RC_VALUE"/>
+  <int value="24313993" label="TPM_CC_ReadPublic: TPM_RC_MODE"/>
+  <int value="24313994" label="TPM_CC_ReadPublic: TPM_RC_TYPE"/>
+  <int value="24313995" label="TPM_CC_ReadPublic: TPM_RC_HANDLE"/>
+  <int value="24313996" label="TPM_CC_ReadPublic: TPM_RC_KDF"/>
+  <int value="24314002" label="TPM_CC_ReadPublic: TPM_RC_SCHEME"/>
+  <int value="24314005" label="TPM_CC_ReadPublic: TPM_RC_SIZE"/>
+  <int value="24314006" label="TPM_CC_ReadPublic: TPM_RC_SYMMETRIC"/>
+  <int value="24314015" label="TPM_CC_ReadPublic: TPM_RC_INTEGRITY"/>
+  <int value="24314017" label="TPM_CC_ReadPublic: TPM_RC_RESERVED_BITS"/>
+  <int value="24314022" label="TPM_CC_ReadPublic: TPM_RC_CURVE"/>
+  <int value="24314112" label="TPM_CC_ReadPublic: TPM_RC_INITIALIZE"/>
+  <int value="24314115" label="TPM_CC_ReadPublic: TPM_RC_SEQUENCE"/>
+  <int value="24314178" label="TPM_CC_ReadPublic: TPM_RC_COMMAND_SIZE"/>
+  <int value="24314179" label="TPM_CC_ReadPublic: TPM_RC_COMMAND_CODE"/>
+  <int value="24316176" label="TPM_CC_ReadPublic: TPM_RC_REFERENCE_H0"/>
+  <int value="24316194" label="TPM_CC_ReadPublic: TPM_RC_RETRY"/>
+  <int value="24342532" label="TPM_CC_ReadPublic: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24350728"
+      label="TPM_CC_ReadPublic: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="24350736" label="TPM_CC_ReadPublic: SAPI_RC_NO_CONNECTION"/>
+  <int value="24359051"
+      label="TPM_CC_ReadPublic: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="24359063"
+      label="TPM_CC_ReadPublic: Resource Manager: TPM_RC_TAG"/>
+  <int value="24379392" label="TPM_CC_RSA_Encrypt: TPM_RC_SUCCESS"/>
+  <int value="24510464" label="TPM_CC_StartAuthSession: TPM_RC_SUCCESS"/>
+  <int value="24510594" label="TPM_CC_StartAuthSession: TPM_RC_ATTRIBUTES"/>
+  <int value="24510595" label="TPM_CC_StartAuthSession: TPM_RC_HASH"/>
+  <int value="24510596" label="TPM_CC_StartAuthSession: TPM_RC_VALUE"/>
+  <int value="24510613" label="TPM_CC_StartAuthSession: TPM_RC_SIZE"/>
+  <int value="24510614" label="TPM_CC_StartAuthSession: TPM_RC_SYMMETRIC"/>
+  <int value="24510618" label="TPM_CC_StartAuthSession: TPM_RC_INSUFFICIENT"/>
+  <int value="24510720" label="TPM_CC_StartAuthSession: TPM_RC_INITIALIZE"/>
+  <int value="24510786" label="TPM_CC_StartAuthSession: TPM_RC_COMMAND_SIZE"/>
+  <int value="24510787" label="TPM_CC_StartAuthSession: TPM_RC_COMMAND_CODE"/>
+  <int value="24512771" label="TPM_CC_StartAuthSession: TPM_RC_SESSION_MEMORY"/>
+  <int value="24512802" label="TPM_CC_StartAuthSession: TPM_RC_RETRY"/>
+  <int value="24539140" label="TPM_CC_StartAuthSession: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24547336"
+      label="TPM_CC_StartAuthSession: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="24547344" label="TPM_CC_StartAuthSession: SAPI_RC_NO_CONNECTION"/>
+  <int value="24555671"
+      label="TPM_CC_StartAuthSession: Resource Manager: TPM_RC_TAG"/>
+  <int value="24576000" label="TPM_CC_VerifySignature: TPM_RC_SUCCESS"/>
+  <int value="24641536" label="TPM_CC_ECC_Parameters: TPM_RC_SUCCESS"/>
+  <int value="24707072" label="TPM_CC_FirmwareRead: TPM_RC_SUCCESS"/>
+  <int value="24772608" label="TPM_CC_GetCapability: TPM_RC_SUCCESS"/>
+  <int value="24772762" label="TPM_CC_GetCapability: TPM_RC_INSUFFICIENT"/>
+  <int value="24772864" label="TPM_CC_GetCapability: TPM_RC_INITIALIZE"/>
+  <int value="24772865" label="TPM_CC_GetCapability: TPM_RC_FAILURE"/>
+  <int value="24772930" label="TPM_CC_GetCapability: TPM_RC_COMMAND_SIZE"/>
+  <int value="24772931" label="TPM_CC_GetCapability: TPM_RC_COMMAND_CODE"/>
+  <int value="24801284" label="TPM_CC_GetCapability: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24809480"
+      label="TPM_CC_GetCapability: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="24809488" label="TPM_CC_GetCapability: SAPI_RC_NO_CONNECTION"/>
+  <int value="24817815"
+      label="TPM_CC_GetCapability: Resource Manager: TPM_RC_TAG"/>
+  <int value="24838144" label="TPM_CC_GetRandom: TPM_RC_SUCCESS"/>
+  <int value="24838298" label="TPM_CC_GetRandom: TPM_RC_INSUFFICIENT"/>
+  <int value="24838400" label="TPM_CC_GetRandom: TPM_RC_INITIALIZE"/>
+  <int value="24866820" label="TPM_CC_GetRandom: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24875024" label="TPM_CC_GetRandom: SAPI_RC_NO_CONNECTION"/>
+  <int value="24883351" label="TPM_CC_GetRandom: Resource Manager: TPM_RC_TAG"/>
+  <int value="24903680" label="TPM_CC_GetTestResult: TPM_RC_SUCCESS"/>
+  <int value="24969216" label="TPM_CC_Hash: TPM_RC_SUCCESS"/>
+  <int value="25034752" label="TPM_CC_PCR_Read: TPM_RC_SUCCESS"/>
+  <int value="25034884" label="TPM_CC_PCR_Read: TPM_RC_VALUE"/>
+  <int value="25034906" label="TPM_CC_PCR_Read: TPM_RC_INSUFFICIENT"/>
+  <int value="25035008" label="TPM_CC_PCR_Read: TPM_RC_INITIALIZE"/>
+  <int value="25035074" label="TPM_CC_PCR_Read: TPM_RC_COMMAND_SIZE"/>
+  <int value="25035075" label="TPM_CC_PCR_Read: TPM_RC_COMMAND_CODE"/>
+  <int value="25063428" label="TPM_CC_PCR_Read: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25071624" label="TPM_CC_PCR_Read: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="25071632" label="TPM_CC_PCR_Read: SAPI_RC_NO_CONNECTION"/>
+  <int value="25100288" label="TPM_CC_PolicyPCR: TPM_RC_SUCCESS"/>
+  <int value="25100544" label="TPM_CC_PolicyPCR: TPM_RC_INITIALIZE"/>
+  <int value="25102608" label="TPM_CC_PolicyPCR: TPM_RC_REFERENCE_H0"/>
+  <int value="25102626" label="TPM_CC_PolicyPCR: TPM_RC_RETRY"/>
+  <int value="25128964" label="TPM_CC_PolicyPCR: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25137168" label="TPM_CC_PolicyPCR: SAPI_RC_NO_CONNECTION"/>
+  <int value="25165824" label="TPM_CC_PolicyRestart: TPM_RC_SUCCESS"/>
+  <int value="25231360" label="TPM_CC_ReadClock: TPM_RC_SUCCESS"/>
+  <int value="25296896" label="TPM_CC_PCR_Extend: TPM_RC_SUCCESS"/>
+  <int value="25362432" label="TPM_CC_PCR_SetAuthValue: TPM_RC_SUCCESS"/>
+  <int value="25427968" label="TPM_CC_NV_Certify: TPM_RC_SUCCESS"/>
+  <int value="25428100" label="TPM_CC_NV_Certify: TPM_RC_VALUE"/>
+  <int value="25428107" label="TPM_CC_NV_Certify: TPM_RC_HANDLE"/>
+  <int value="25428114" label="TPM_CC_NV_Certify: TPM_RC_SCHEME"/>
+  <int value="25428130" label="TPM_CC_NV_Certify: TPM_RC_BAD_AUTH"/>
+  <int value="25428294" label="TPM_CC_NV_Certify: TPM_RC_NV_RANGE"/>
+  <int value="25430288" label="TPM_CC_NV_Certify: TPM_RC_REFERENCE_H0"/>
+  <int value="25430306" label="TPM_CC_NV_Certify: TPM_RC_RETRY"/>
+  <int value="25456644" label="TPM_CC_NV_Certify: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25464848" label="TPM_CC_NV_Certify: SAPI_RC_NO_CONNECTION"/>
+  <int value="25493504" label="TPM_CC_EventSequenceComplete: TPM_RC_SUCCESS"/>
+  <int value="25559040" label="TPM_CC_HashSequenceStart: TPM_RC_SUCCESS"/>
+  <int value="25624576" label="TPM_CC_PolicyPhysicalPresence: TPM_RC_SUCCESS"/>
+  <int value="25690112" label="TPM_CC_PolicyDuplicationSelect: TPM_RC_SUCCESS"/>
+  <int value="25755648" label="TPM_CC_PolicyGetDigest: TPM_RC_SUCCESS"/>
+  <int value="25757986" label="TPM_CC_PolicyGetDigest: TPM_RC_RETRY"/>
+  <int value="25784324" label="TPM_CC_PolicyGetDigest: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25792528" label="TPM_CC_PolicyGetDigest: SAPI_RC_NO_CONNECTION"/>
+  <int value="25821184" label="TPM_CC_TestParms: TPM_RC_SUCCESS"/>
+  <int value="25886720" label="TPM_CC_Commit: TPM_RC_SUCCESS"/>
+  <int value="25952256" label="TPM_CC_PolicyPassword: TPM_RC_SUCCESS"/>
+  <int value="26017792" label="TPM_CC_ZGen_2Phase: TPM_RC_SUCCESS"/>
+  <int value="26083328" label="TPM_CC_EC_Ephemeral: TPM_RC_SUCCESS"/>
+</enum>
+
+<enum name="TPMCommandCode">
+  <int value="287" label="TPM_CC_NV_UndefineSpaceSpecial"/>
+  <int value="288" label="TPM_CC_EvictControl"/>
+  <int value="289" label="TPM_CC_HierarchyControl"/>
+  <int value="290" label="TPM_CC_NV_UndefineSpace"/>
+  <int value="292" label="TPM_CC_ChangeEPS"/>
+  <int value="293" label="TPM_CC_ChangePPS"/>
+  <int value="294" label="TPM_CC_Clear"/>
+  <int value="295" label="TPM_CC_ClearControl"/>
+  <int value="296" label="TPM_CC_ClockSet"/>
+  <int value="297" label="TPM_CC_HierarchyChangeAuth"/>
+  <int value="298" label="TPM_CC_NV_DefineSpace"/>
+  <int value="299" label="TPM_CC_PCR_Allocate"/>
+  <int value="300" label="TPM_CC_PCR_SetAuthPolicy"/>
+  <int value="301" label="TPM_CC_PP_Commands"/>
+  <int value="302" label="TPM_CC_SetPrimaryPolicy"/>
+  <int value="303" label="TPM_CC_FieldUpgradeStart"/>
+  <int value="304" label="TPM_CC_ClockRateAdjust"/>
+  <int value="305" label="TPM_CC_CreatePrimary"/>
+  <int value="306" label="TPM_CC_NV_GlobalWriteLock"/>
+  <int value="307" label="TPM_CC_GetCommandAuditDigest"/>
+  <int value="308" label="TPM_CC_NV_Increment"/>
+  <int value="309" label="TPM_CC_NV_SetBits"/>
+  <int value="310" label="TPM_CC_NV_Extend"/>
+  <int value="311" label="TPM_CC_NV_Write"/>
+  <int value="312" label="TPM_CC_NV_WriteLock"/>
+  <int value="313" label="TPM_CC_DictionaryAttackLockReset"/>
+  <int value="314" label="TPM_CC_DictionaryAttackParameters"/>
+  <int value="315" label="TPM_CC_NV_ChangeAuth"/>
+  <int value="316" label="TPM_CC_PCR_Event"/>
+  <int value="317" label="TPM_CC_PCR_Reset"/>
+  <int value="318" label="TPM_CC_SequenceComplete"/>
+  <int value="319" label="TPM_CC_SetAlgorithmSet"/>
+  <int value="320" label="TPM_CC_SetCommandCodeAuditStatus"/>
+  <int value="321" label="TPM_CC_FieldUpgradeData"/>
+  <int value="322" label="TPM_CC_IncrementalSelfTest"/>
+  <int value="323" label="TPM_CC_SelfTest"/>
+  <int value="324" label="TPM_CC_Startup"/>
+  <int value="325" label="TPM_CC_Shutdown"/>
+  <int value="326" label="TPM_CC_StirRandom"/>
+  <int value="327" label="TPM_CC_ActivateCredential"/>
+  <int value="328" label="TPM_CC_Certify"/>
+  <int value="329" label="TPM_CC_PolicyNV"/>
+  <int value="330" label="TPM_CC_CertifyCreation"/>
+  <int value="331" label="TPM_CC_Duplicate"/>
+  <int value="332" label="TPM_CC_GetTime"/>
+  <int value="333" label="TPM_CC_GetSessionAuditDigest"/>
+  <int value="334" label="TPM_CC_NV_Read"/>
+  <int value="335" label="TPM_CC_NV_ReadLock"/>
+  <int value="336" label="TPM_CC_ObjectChangeAuth"/>
+  <int value="337" label="TPM_CC_PolicySecret"/>
+  <int value="338" label="TPM_CC_Rewrap"/>
+  <int value="339" label="TPM_CC_Create"/>
+  <int value="340" label="TPM_CC_ECDH_ZGen"/>
+  <int value="341" label="TPM_CC_HMAC"/>
+  <int value="342" label="TPM_CC_Import"/>
+  <int value="343" label="TPM_CC_Load"/>
+  <int value="344" label="TPM_CC_Quote"/>
+  <int value="345" label="TPM_CC_RSA_Decrypt"/>
+  <int value="347" label="TPM_CC_HMAC_Start"/>
+  <int value="348" label="TPM_CC_SequenceUpdate"/>
+  <int value="349" label="TPM_CC_Sign"/>
+  <int value="350" label="TPM_CC_Unseal"/>
+  <int value="352" label="TPM_CC_PolicySigned"/>
+  <int value="353" label="TPM_CC_ContextLoad"/>
+  <int value="354" label="TPM_CC_ContextSave"/>
+  <int value="355" label="TPM_CC_ECDH_KeyGen"/>
+  <int value="356" label="TPM_CC_EncryptDecrypt"/>
+  <int value="357" label="TPM_CC_FlushContext"/>
+  <int value="359" label="TPM_CC_LoadExternal"/>
+  <int value="360" label="TPM_CC_MakeCredential"/>
+  <int value="361" label="TPM_CC_NV_ReadPublic"/>
+  <int value="362" label="TPM_CC_PolicyAuthorize"/>
+  <int value="363" label="TPM_CC_PolicyAuthValue"/>
+  <int value="364" label="TPM_CC_PolicyCommandCode"/>
+  <int value="365" label="TPM_CC_PolicyCounterTimer"/>
+  <int value="366" label="TPM_CC_PolicyCpHash"/>
+  <int value="367" label="TPM_CC_PolicyLocality"/>
+  <int value="368" label="TPM_CC_PolicyNameHash"/>
+  <int value="369" label="TPM_CC_PolicyOR"/>
+  <int value="370" label="TPM_CC_PolicyTicket"/>
+  <int value="371" label="TPM_CC_ReadPublic"/>
+  <int value="372" label="TPM_CC_RSA_Encrypt"/>
+  <int value="374" label="TPM_CC_StartAuthSession"/>
+  <int value="375" label="TPM_CC_VerifySignature"/>
+  <int value="376" label="TPM_CC_ECC_Parameters"/>
+  <int value="377" label="TPM_CC_FirmwareRead"/>
+  <int value="378" label="TPM_CC_GetCapability"/>
+  <int value="379" label="TPM_CC_GetRandom"/>
+  <int value="380" label="TPM_CC_GetTestResult"/>
+  <int value="381" label="TPM_CC_Hash"/>
+  <int value="382" label="TPM_CC_PCR_Read"/>
+  <int value="383" label="TPM_CC_PolicyPCR"/>
+  <int value="384" label="TPM_CC_PolicyRestart"/>
+  <int value="385" label="TPM_CC_ReadClock"/>
+  <int value="386" label="TPM_CC_PCR_Extend"/>
+  <int value="387" label="TPM_CC_PCR_SetAuthValue"/>
+  <int value="388" label="TPM_CC_NV_Certify"/>
+  <int value="389" label="TPM_CC_EventSequenceComplete"/>
+  <int value="390" label="TPM_CC_HashSequenceStart"/>
+  <int value="391" label="TPM_CC_PolicyPhysicalPresence"/>
+  <int value="392" label="TPM_CC_PolicyDuplicationSelect"/>
+  <int value="393" label="TPM_CC_PolicyGetDigest"/>
+  <int value="394" label="TPM_CC_TestParms"/>
+  <int value="395" label="TPM_CC_Commit"/>
+  <int value="396" label="TPM_CC_PolicyPassword"/>
+  <int value="397" label="TPM_CC_ZGen_2Phase"/>
+  <int value="398" label="TPM_CC_EC_Ephemeral"/>
+  <int value="399" label="TPM_CC_PolicyNvWritten"/>
+  <int value="400" label="TPM_CC_PolicyTemplate"/>
+  <int value="401" label="TPM_CC_CreateLoaded"/>
+  <int value="402" label="TPM_CC_PolicyAuthorizeNV"/>
+  <int value="403" label="TPM_CC_EncryptDecrypt2"/>
+  <int value="404" label="TPM_CC_AC_GetCapability"/>
+  <int value="405" label="TPM_CC_AC_Send"/>
+  <int value="406" label="TPM_CC_Policy_AC_SendSelect"/>
+  <int value="407" label="TPM_CC_CertifyX509"/>
+  <int value="408" label="TPM_CC_ACT_SetTimeout"/>
+  <int value="409" label="TPM_CC_ECC_Encrypt"/>
+  <int value="410" label="TPM_CC_ECC_Decrypt"/>
+  <int value="536903681" label="TPM_CCE_PolicyFidoSigned"/>
+</enum>
+
+<enum name="TPMFirmwareUpdateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success after retry"/>
+  <int value="2" label="Failure but still booting"/>
+</enum>
+
+<enum name="TpmManagerSecretStatus">
+  <summary>
+    The status of the sercrets that tpm manager hold. Each bit field presents
+    the meanings listed below: 1. (0bX0000000): when the flag is set, the device
+    uses TPM2. 2. (0b0XX00000): reserved. 3. (0b000X0000): has owner password.
+    4. (0b0000X000): has endorsement password (TPM2.0 only). 5. (0b00000X00):
+    has lockout password (TPM2.0 only). 6. (0b000000X0): has owner delegate
+    (TPM1.2 only). 7. (0b0000000X): has reset DA premissions.
+  </summary>
+  <int value="0" label="(0b00000000) empty database (TPM1.2)"/>
+  <int value="2" label="(0b00000010) intact database (legacy TPM1.2)"/>
+  <int value="3" label="(0b00000011) intact database (TPM1.2)"/>
+  <int value="19" label="(0b00010011) stale owner auth (TPM1.2)"/>
+  <int value="128" label="(0b10000000) empty database (TPM2.0)"/>
+  <int value="141" label="(0b10001101) intact database (TPM2.0)"/>
+  <int value="157" label="(0b10011101) stale owner auth (TPM2.0)"/>
+</enum>
+
+<enum name="TPMPowerWashResult">
+  <int value="0" label="TPM Clear Success"/>
+  <int value="1" label="TPM Clear Failed"/>
+</enum>
+
+<enum name="TPMResponseCode">
+  <int value="0" label="TPM_RC_SUCCESS"/>
+  <int value="16" label="TPM_RC_PP"/>
+  <int value="30" label="TPM_RC_BAD_TAG"/>
+  <int value="129" label="TPM_RC_ASYMMETRIC"/>
+  <int value="130" label="TPM_RC_ATTRIBUTES"/>
+  <int value="131" label="TPM_RC_HASH"/>
+  <int value="132" label="TPM_RC_VALUE"/>
+  <int value="133" label="TPM_RC_HIERARCHY"/>
+  <int value="135" label="TPM_RC_KEY_SIZE"/>
+  <int value="136" label="TPM_RC_MGF"/>
+  <int value="137" label="TPM_RC_MODE"/>
+  <int value="138" label="TPM_RC_TYPE"/>
+  <int value="139" label="TPM_RC_HANDLE"/>
+  <int value="140" label="TPM_RC_KDF"/>
+  <int value="141" label="TPM_RC_RANGE"/>
+  <int value="142" label="TPM_RC_AUTH_FAIL"/>
+  <int value="143" label="TPM_RC_NONCE"/>
+  <int value="146" label="TPM_RC_SCHEME"/>
+  <int value="149" label="TPM_RC_SIZE"/>
+  <int value="150" label="TPM_RC_SYMMETRIC"/>
+  <int value="151" label="TPM_RC_TAG"/>
+  <int value="152" label="TPM_RC_SELECTOR"/>
+  <int value="154" label="TPM_RC_INSUFFICIENT"/>
+  <int value="155" label="TPM_RC_SIGNATURE"/>
+  <int value="156" label="TPM_RC_KEY"/>
+  <int value="157" label="TPM_RC_POLICY_FAIL"/>
+  <int value="159" label="TPM_RC_INTEGRITY"/>
+  <int value="160" label="TPM_RC_TICKET"/>
+  <int value="161" label="TPM_RC_RESERVED_BITS"/>
+  <int value="162" label="TPM_RC_BAD_AUTH"/>
+  <int value="163" label="TPM_RC_EXPIRED"/>
+  <int value="164" label="TPM_RC_POLICY_CC"/>
+  <int value="165" label="TPM_RC_BINDING"/>
+  <int value="166" label="TPM_RC_CURVE"/>
+  <int value="167" label="TPM_RC_ECC_POINT"/>
+  <int value="256" label="TPM_RC_INITIALIZE"/>
+  <int value="257" label="TPM_RC_FAILURE"/>
+  <int value="259" label="TPM_RC_SEQUENCE"/>
+  <int value="267" label="TPM_RC_PRIVATE"/>
+  <int value="281" label="TPM_RC_HMAC"/>
+  <int value="288" label="TPM_RC_DISABLED"/>
+  <int value="289" label="TPM_RC_EXCLUSIVE"/>
+  <int value="292" label="TPM_RC_AUTH_TYPE"/>
+  <int value="293" label="TPM_RC_AUTH_MISSING"/>
+  <int value="294" label="TPM_RC_POLICY"/>
+  <int value="295" label="TPM_RC_PCR"/>
+  <int value="296" label="TPM_RC_PCR_CHANGED"/>
+  <int value="301" label="TPM_RC_UPGRADE"/>
+  <int value="302" label="TPM_RC_TOO_MANY_CONTEXTS"/>
+  <int value="303" label="TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="304" label="TPM_RC_REBOOT"/>
+  <int value="305" label="TPM_RC_UNBALANCED"/>
+  <int value="322" label="TPM_RC_COMMAND_SIZE"/>
+  <int value="323" label="TPM_RC_COMMAND_CODE"/>
+  <int value="324" label="TPM_RC_AUTHSIZE"/>
+  <int value="325" label="TPM_RC_AUTH_CONTEXT"/>
+  <int value="326" label="TPM_RC_NV_RANGE"/>
+  <int value="327" label="TPM_RC_NV_SIZE"/>
+  <int value="328" label="TPM_RC_NV_LOCKED"/>
+  <int value="329" label="TPM_RC_NV_AUTHORIZATION"/>
+  <int value="330" label="TPM_RC_NV_UNINITIALIZED"/>
+  <int value="331" label="TPM_RC_NV_SPACE"/>
+  <int value="332" label="TPM_RC_NV_DEFINED"/>
+  <int value="336" label="TPM_RC_BAD_CONTEXT"/>
+  <int value="337" label="TPM_RC_CPHASH"/>
+  <int value="338" label="TPM_RC_PARENT"/>
+  <int value="339" label="TPM_RC_NEEDS_TEST"/>
+  <int value="340" label="TPM_RC_NO_RESULT"/>
+  <int value="341" label="TPM_RC_SENSITIVE"/>
+  <int value="395" label="TPM_RC_HANDLE_1"/>
+  <int value="651" label="TPM_RC_HANDLE_2"/>
+  <int value="1163" label="TPM_RC_HANDLE_3"/>
+  <int value="1280" label="VENDOR_RC_SUCCESS"/>
+  <int value="1281" label="VENDOR_RC_BOGUS_ARGS"/>
+  <int value="1282" label="VENDOR_RC_READ_FLASH_FAIL"/>
+  <int value="1283" label="VENDOR_RC_WRITE_FLASH_FAIL"/>
+  <int value="1284" label="VENDOR_RC_REQUEST_TOO_BIG"/>
+  <int value="1285" label="VENDOR_RC_RESPONSE_TOO_BIG"/>
+  <int value="1286" label="VENDOR_RC_INTERNAL_ERROR"/>
+  <int value="1287" label="VENDOR_RC_NOT_ALLOWED"/>
+  <int value="1288" label="VENDOR_RC_NO_SUCH_SUBCOMMAND"/>
+  <int value="1289" label="VENDOR_RC_IN_PROGRESS"/>
+  <int value="1290" label="VENDOR_RC_PASSWORD_REQUIRED"/>
+  <int value="1291" label="VENDOR_RC_NVMEM_LOCKED"/>
+  <int value="1407" label="VENDOR_RC_NO_SUCH_COMMAND"/>
+  <int value="2187" label="TPM_RC_HANDLE_4"/>
+  <int value="2305" label="TPM_RC_CONTEXT_GAP"/>
+  <int value="2306" label="TPM_RC_OBJECT_MEMORY"/>
+  <int value="2307" label="TPM_RC_SESSION_MEMORY"/>
+  <int value="2308" label="TPM_RC_MEMORY"/>
+  <int value="2309" label="TPM_RC_SESSION_HANDLES"/>
+  <int value="2310" label="TPM_RC_OBJECT_HANDLES"/>
+  <int value="2311" label="TPM_RC_LOCALITY"/>
+  <int value="2312" label="TPM_RC_YIELDED"/>
+  <int value="2313" label="TPM_RC_CANCELED"/>
+  <int value="2314" label="TPM_RC_TESTING"/>
+  <int value="2320" label="TPM_RC_REFERENCE_H0"/>
+  <int value="2321" label="TPM_RC_REFERENCE_H1"/>
+  <int value="2322" label="TPM_RC_REFERENCE_H2"/>
+  <int value="2323" label="TPM_RC_REFERENCE_H3"/>
+  <int value="2324" label="TPM_RC_REFERENCE_H4"/>
+  <int value="2325" label="TPM_RC_REFERENCE_H5"/>
+  <int value="2326" label="TPM_RC_REFERENCE_H6"/>
+  <int value="2328" label="TPM_RC_REFERENCE_S0"/>
+  <int value="2329" label="TPM_RC_REFERENCE_S1"/>
+  <int value="2330" label="TPM_RC_REFERENCE_S2"/>
+  <int value="2331" label="TPM_RC_REFERENCE_S3"/>
+  <int value="2332" label="TPM_RC_REFERENCE_S4"/>
+  <int value="2333" label="TPM_RC_REFERENCE_S5"/>
+  <int value="2334" label="TPM_RC_REFERENCE_S6"/>
+  <int value="2336" label="TPM_RC_NV_RATE"/>
+  <int value="2337" label="TPM_RC_LOCKOUT"/>
+  <int value="2338" label="TPM_RC_RETRY"/>
+  <int value="2339" label="TPM_RC_NV_UNAVAILABLE"/>
+  <int value="2431" label="TPM_RC_NOT_USED"/>
+  <int value="2454" label="Session 1: TPM_RC_SYMMETRIC"/>
+  <int value="2461" label="Session 1: TPM_RC_POLICY_FAIL"/>
+  <int value="2466" label="Session 1: TPM_RC_BAD_AUTH"/>
+  <int value="2560" label="TPM_RC_A"/>
+  <int value="2816" label="TPM_RC_B"/>
+  <int value="3072" label="TPM_RC_C"/>
+  <int value="3328" label="TPM_RC_D"/>
+  <int value="3584" label="TPM_RC_E"/>
+  <int value="3840" label="TPM_RC_F"/>
+</enum>
+
+<enum name="TPMResultCodeEnum">
+  <int value="0" label="TPM_SUCCESS"/>
+  <int value="1" label="TPM_E_AUTHFAIL"/>
+  <int value="2" label="TPM_E_BADINDEX"/>
+  <int value="3" label="TPM_E_BAD_PARAMETER"/>
+  <int value="4" label="TPM_E_AUDITFAILURE"/>
+  <int value="5" label="TPM_E_CLEAR_DISABLED"/>
+  <int value="6" label="TPM_E_DEACTIVATED"/>
+  <int value="7" label="TPM_E_DISABLED"/>
+  <int value="8" label="TPM_E_DISABLED_CMD"/>
+  <int value="9" label="TPM_E_FAIL"/>
+  <int value="10" label="TPM_E_BAD_ORDINAL"/>
+  <int value="11" label="TPM_E_INSTALL_DISABLED"/>
+  <int value="12" label="TPM_E_INVALID_KEYHANDLE"/>
+  <int value="13" label="TPM_E_KEYNOTFOUND"/>
+  <int value="14" label="TPM_E_INAPPROPRIATE_ENC"/>
+  <int value="15" label="TPM_E_MIGRATEFAIL"/>
+  <int value="16" label="TPM_E_INVALID_PCR_INFO"/>
+  <int value="17" label="TPM_E_NOSPACE"/>
+  <int value="18" label="TPM_E_NOSRK"/>
+  <int value="19" label="TPM_E_NOTSEALED_BLOB"/>
+  <int value="20" label="TPM_E_OWNER_SET"/>
+  <int value="21" label="TPM_E_RESOURCES"/>
+  <int value="22" label="TPM_E_SHORTRANDOM"/>
+  <int value="23" label="TPM_E_SIZE"/>
+  <int value="24" label="TPM_E_WRONGPCRVAL"/>
+  <int value="25" label="TPM_E_BAD_PARAM_SIZE"/>
+  <int value="26" label="TPM_E_SHA_THREAD"/>
+  <int value="27" label="TPM_E_SHA_ERROR"/>
+  <int value="28" label="TPM_E_FAILEDSELFTEST"/>
+  <int value="29" label="TPM_E_AUTH2FAIL"/>
+  <int value="30" label="TPM_E_BADTAG"/>
+  <int value="31" label="TPM_E_IOERROR"/>
+  <int value="32" label="TPM_E_ENCRYPT_ERROR"/>
+  <int value="33" label="TPM_E_DECRYPT_ERROR"/>
+  <int value="34" label="TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="35" label="TPM_E_NO_ENDORSEMENT"/>
+  <int value="36" label="TPM_E_INVALID_KEYUSAGE"/>
+  <int value="37" label="TPM_E_WRONG_ENTITYTYPE"/>
+  <int value="38" label="TPM_E_INVALID_POSTINIT"/>
+  <int value="39" label="TPM_E_INAPPROPRIATE_SIG"/>
+  <int value="40" label="TPM_E_BAD_KEY_PROPERTY"/>
+  <int value="41" label="TPM_E_BAD_MIGRATION"/>
+  <int value="42" label="TPM_E_BAD_SCHEME"/>
+  <int value="43" label="TPM_E_BAD_DATASIZE"/>
+  <int value="44" label="TPM_E_BAD_MODE"/>
+  <int value="45" label="TPM_E_BAD_PRESENCE"/>
+  <int value="46" label="TPM_E_BAD_VERSION"/>
+  <int value="47" label="TPM_E_NO_WRAP_TRANSPORT"/>
+  <int value="48" label="TPM_E_AUDITFAIL_UNSUCCESSFUL"/>
+  <int value="49" label="TPM_E_AUDITFAIL_SUCCESSFUL"/>
+  <int value="50" label="TPM_E_NOTRESETABLE"/>
+  <int value="51" label="TPM_E_NOTLOCAL"/>
+  <int value="52" label="TPM_E_BAD_TYPE"/>
+  <int value="53" label="TPM_E_INVALID_RESOURCE"/>
+  <int value="54" label="TPM_E_NOTFIPS"/>
+  <int value="55" label="TPM_E_INVALID_FAMILY"/>
+  <int value="56" label="TPM_E_NO_NV_PERMISSION"/>
+  <int value="57" label="TPM_E_REQUIRES_SIGN"/>
+  <int value="58" label="TPM_E_KEY_NOTSUPPORTED"/>
+  <int value="59" label="TPM_E_AUTH_CONFLICT"/>
+  <int value="60" label="TPM_E_AREA_LOCKED"/>
+  <int value="61" label="TPM_E_BAD_LOCALITY"/>
+  <int value="62" label="TPM_E_READ_ONLY"/>
+  <int value="63" label="TPM_E_PER_NOWRITE"/>
+  <int value="64" label="TPM_E_FAMILYCOUNT"/>
+  <int value="65" label="TPM_E_WRITE_LOCKED"/>
+  <int value="66" label="TPM_E_BAD_ATTRIBUTES"/>
+  <int value="67" label="TPM_E_INVALID_STRUCTURE"/>
+  <int value="68" label="TPM_E_KEY_OWNER_CONTROL"/>
+  <int value="69" label="TPM_E_BAD_COUNTER"/>
+  <int value="70" label="TPM_E_NOT_FULLWRITE"/>
+  <int value="71" label="TPM_E_CONTEXT_GAP"/>
+  <int value="72" label="TPM_E_MAXNVWRITES"/>
+  <int value="73" label="TPM_E_NOOPERATOR"/>
+  <int value="74" label="TPM_E_RESOURCEMISSING"/>
+  <int value="75" label="TPM_E_DELEGATE_LOCK"/>
+  <int value="76" label="TPM_E_DELEGATE_FAMILY"/>
+  <int value="77" label="TPM_E_DELEGATE_ADMIN"/>
+  <int value="78" label="TPM_E_TRANSPORT_NOTEXCLUSIVE"/>
+  <int value="79" label="TPM_E_OWNER_CONTROL"/>
+  <int value="80" label="TPM_E_DAA_RESOURCES"/>
+  <int value="81" label="TPM_E_DAA_INPUT_DATA0"/>
+  <int value="82" label="TPM_E_DAA_INPUT_DATA1"/>
+  <int value="83" label="TPM_E_DAA_ISSUER_SETTINGS"/>
+  <int value="84" label="TPM_E_DAA_TPM_SETTINGS"/>
+  <int value="85" label="TPM_E_DAA_STAGE"/>
+  <int value="86" label="TPM_E_DAA_ISSUER_VALIDITY"/>
+  <int value="87" label="TPM_E_DAA_WRONG_W"/>
+  <int value="88" label="TPM_E_BAD_HANDLE"/>
+  <int value="89" label="TPM_E_BAD_DELEGATE"/>
+  <int value="90" label="TPM_E_BADCONTEXT"/>
+  <int value="91" label="TPM_E_TOOMANYCONTEXTS"/>
+  <int value="92" label="TPM_E_MA_TICKET_SIGNATURE"/>
+  <int value="93" label="TPM_E_MA_DESTINATION"/>
+  <int value="94" label="TPM_E_MA_SOURCE"/>
+  <int value="95" label="TPM_E_MA_AUTHORITY"/>
+  <int value="97" label="TPM_E_PERMANENTEK"/>
+  <int value="98" label="TPM_E_BAD_SIGNATURE"/>
+  <int value="99" label="TPM_E_NOCONTEXTSPACE"/>
+  <int value="2048" label="TPM_E_RETRY"/>
+  <int value="2049" label="TPM_E_NEEDS_SELFTEST"/>
+  <int value="2050" label="TPM_E_DOING_SELFTEST"/>
+  <int value="2051" label="TPM_E_DEFEND_LOCK_RUNNING"/>
+</enum>
+
+<enum name="TPMTakeOwnershipResult">
+  <int value="0" label="TPM Take Ownership Success"/>
+  <int value="1" label="TPM Take Ownership Failed"/>
+</enum>
+
+<enum name="TPMVersionFingerprint">
+<!--
+Full version information for the fingerprint enum values:
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000422
+  vendor specific: 042203F20274706D3431FFFFFF
+  version fingerprint: 157181839 095e678f
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000420
+  vendor specific: 0420036F0074706D3431FFFFFF
+  version fingerprint: 305524852 1235f074
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 53544d20
+  tpm_model: ffffffff
+  firmware version: 0000000000000d08
+  vendor specific: 48
+  version fingerprint: 368058567 15f020c7
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000422
+  vendor specific: 042203F20274706D3338FFFFFF
+  version fingerprint: 487001745 1d070e91
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000420
+  vendor specific: 0420036F0074706D3338FFFFFF
+  version fingerprint: 517482723 1ed828e3
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 000000000000062b
+  vendor specific: 062B00F30074706D733135FFFF
+  version fingerprint: 545386023 2081ee27
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000420
+  vendor specific: 0420036F0074706D3335FFFFFF
+  version fingerprint: 639195905 26195b01
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008521
+  vendor specific: 852100E30274706D3738FFFFFF
+  version fingerprint: 847042924 327cd96c
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000628
+  vendor specific: 062800BE0074706D733135FFFF
+  version fingerprint: 987973414 3ae34726
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 57454300
+  tpm_model: ffffffff
+  firmware version: 0000000000000345
+  vendor specific:
+  version fingerprint: 1311411160 4e2a8bd8
+
+  TPM family: 312e3200
+  spec level: 0000000200000002
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000312
+  vendor specific: 0312000900
+  version fingerprint: 1353576267 50adef4b
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008520
+  vendor specific: 852000500074706D3738FFFFFF
+  version fingerprint: 1437720528 55b1dfd0
+
+  TPM family: 312e3200
+  spec level: 0000000200000002
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000009312
+  vendor specific: 9312000F00
+  version fingerprint: 1451134301 567e8d5d
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008520
+  vendor specific: 852000500074706D3439FFFFFF
+  version fingerprint: 1490841853 58dc70fd
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008520
+  vendor specific: 852000500074706D3435FFFFFF
+  version fingerprint: 1716634300 6651c2bc
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008521
+  vendor specific: 852100E30274706D3439FFFFFF
+  version fingerprint: 1733077393 674ca991
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 000000000000041f
+  vendor specific: 041F02C20074706D3332FFFFFF
+  version fingerprint: 1828625721 6cfe9d39
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000422
+  vendor specific: 042203F20274706D3335FFFFFF
+  version fingerprint: 1941011596 73b17c8c
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008521
+  vendor specific: 852100E30274706D3435FFFFFF
+  version fingerprint: 1953654937 74726899
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000008521
+  vendor specific: 852100E30074706D3738FFFFFF
+  version fingerprint: 1973986381 75a8a44d
+
+  TPM family: 312e3200
+  spec level: 0000000200000003
+  manufacturer: 49465800
+  tpm_model: ffffffff
+  firmware version: 0000000000000422
+  vendor specific: 042203F20274706D3332FFFFFF
+  version fingerprint: 2024714959 78aeb2cf
+
+  <=====
+  Google H1 based Security Chip running Cr50 firmware presents itself as a TPM
+  2.0 with the following properties:
+
+  TPM family: 322e3000
+  spec level: 0000000000000074
+  manufacturer: 43524f53
+  tpm_model: 00000001
+  firmware version: 0dc5c85b01a68fe6 *
+  vendor specific: 784347206654504D
+  version fingerprint: 987235505 3ad804b1 *
+
+  * Firmware version and vendor fingerprint fields are different for different
+    versions of Cr50 firmware, all released versions are listed in the enum
+    below
+  =====>
+
+  <=====
+  Google H1D3 based Security Chip running Ti50 firmware presents itself as a TPM
+  2.0 with the following properties:
+
+  TPM family: 322e3000
+  spec level:00000000000000a2
+  manufacturer: 43524f53
+  tpm_model: 00000001
+  firmware version: ff8e5ab88168c00 *
+  vendor specific: 784347206654504D
+  version fingerprint: 885470954 34c736ea *
+
+  * Firmware version and vendor fingerprint fields are different for different
+    versions of Ti50 firmware, all released versions are listed in the enum
+    below
+  =====>
+-->
+
+  <int value="5551419" label="CROS Ti50 0.24.51"/>
+  <int value="13666299" label="CROS Cr50 0.5.6"/>
+  <int value="29785307" label="CROS Cr50 0.1.2"/>
+  <int value="31386678" label="CROS Cr50 0.6.91"/>
+  <int value="46986725" label="CROS Ti50 0.23.3"/>
+  <int value="67287287" label="CROS Cr50 0.4.26 aka 0.6.0"/>
+  <int value="70763054" label="CROS Ti50 0.24.1"/>
+  <int value="79646227" label="CROS Ti50 0.24.60"/>
+  <int value="91611772" label="CROS Cr50 0.4.21"/>
+  <int value="91664959" label="CROS Cr50 0.0.16"/>
+  <int value="113099773" label="CROS Cr50 0.0.23 Eve Flags 0x7f00(prod)"/>
+  <int value="125416236" label="CROS Cr50 0.3.7"/>
+  <int value="137227137" label="CROS Cr50 0.6.92"/>
+  <int value="157181839" label="IFX 9655 rev 41 fw 4.34 build 03f2"/>
+  <int value="189188535" label="CROS Cr50 0.4.19"/>
+  <int value="228456405" label="CROS Cr50 0.3.11"/>
+  <int value="230386903" label="CROS Cr50 0.0.24 Eve Flags 0x7f00(prod)"/>
+  <int value="245471087" label="CROS Cr50 0.4.25"/>
+  <int value="267286010" label="CROS Cr50 0.6.40"/>
+  <int value="276176597" label="CROS Cr50 0.1.0 Flags 0x10(pre-pvt)"/>
+  <int value="297017579" label="CROS Cr50 0.6.60 aka 0.6.80"/>
+  <int value="305524852" label="IFX 9655 rev 41 fw 4.32 build 036f"/>
+  <int value="313962517" label="CROS Cr50 0.3.16"/>
+  <int value="320114594" label="CROS Ti50 0.22.6"/>
+  <int value="337883107" label="CROS Cr50 0.4.20"/>
+  <int value="362940849" label="CROS Ti50 0.24.0"/>
+  <int value="367426829" label="CROS Cr50 0.5.180"/>
+  <int value="368058567" label="STM d08"/>
+  <int value="369007271" label="CROS Ti50 0.23.62"/>
+  <int value="379654202" label="CROS Cr50 0.0.13"/>
+  <int value="399636984" label="CROS Cr50 0.0.18"/>
+  <int value="404096389" label="CROS Cr50 0.5.152"/>
+  <int value="415762088" label="CROS Cr50 0.5.5"/>
+  <int value="431107149" label="CROS Cr50 ro 0.0.11 rw 0.3.22"/>
+  <int value="437666420" label="CROS Cr50 0.6.90"/>
+  <int value="477307208" label="CROS Ti50 0.23.14"/>
+  <int value="477803868" label="CROS Cr50 0.5.112"/>
+  <int value="487001745" label="IFX 9655 rev 38 fw 4.34 build 03f2"/>
+  <int value="498251593" label="CROS Cr50 0.5.4"/>
+  <int value="517482723" label="IFX 9655 rev 38 fw 4.32 build 036f"/>
+  <int value="533446617" label="CROS Cr50 0.5.111"/>
+  <int value="545386023" label="IFX 9670 rev 15 fw 6.43 build 00f3"/>
+  <int value="555754648" label="CROS Ti50 0.23.21"/>
+  <int value="562513455" label="CROS Cr50 0.4.12"/>
+  <int value="563952990" label="CROS Cr50 0.6.51"/>
+  <int value="566085886" label="CROS Cr50 0.5.142"/>
+  <int value="612889790" label="CROS Ti50 0.23.30"/>
+  <int value="618235807" label="CROS Cr50 0.3.18"/>
+  <int value="639195905" label="IFX 9655 rev 35 fw 4.32 build 036f"/>
+  <int value="640048866" label="CROS Cr50 0.4.8"/>
+  <int value="642527504" label="CROS Cr50 0.6.142"/>
+  <int value="679016111" label="CROS Cr50 0.5.60"/>
+  <int value="691364586" label="CROS Cr50 0.0.22 Eve Flags 0xff00(unknown)"/>
+  <int value="704960859" label="CROS Ti50 0.24.3"/>
+  <int value="705140733" label="CROS Cr50 0.6.111"/>
+  <int value="707846933" label="CROS Cr50 0.1.1 Flags 0x10(pre-pvt)"/>
+  <int value="719751295" label="CROS Cr50 0.6.120"/>
+  <int value="726525758" label="CROS Ti50 0.24.71"/>
+  <int value="752842103" label="CROS Cr50 0.0.25 Flags 0x10(pre-pvt)"/>
+  <int value="768578121" label="CROS Ti50 0.23.0"/>
+  <int value="795082093" label="CROS Ti50 0.23.40"/>
+  <int value="795193284" label="CROS Cr50 0.5.171"/>
+  <int value="817381184" label="CROS Cr50 0.5.2"/>
+  <int value="823358270" label="CROS Cr50 0.6.93"/>
+  <int value="832251848" label="CROS Cr50 0.4.18"/>
+  <int value="839444603" label="CROS Cr50 0.3.21"/>
+  <int value="847042924" label="IFX 9645 rev 78 fw 133.33 build 00e3"/>
+  <int value="849048014" label="CROS Cr50 0.6.5"/>
+  <int value="867657196" label="CROS Cr50 0.2.2"/>
+  <int value="868340265" label="CROS Cr50 0.6.151"/>
+  <int value="875174427" label="CROS Ti50 0.0.16"/>
+  <int value="885470954" label="CROS Ti50 0.22.9"/>
+  <int value="887678104" label="CROS Ti50 0.0.14"/>
+  <int value="888846912" label="CROS Cr50 0.6.50"/>
+  <int value="893364096" label="CROS Cr50 0.3.3"/>
+  <int value="894811053" label="CROS Cr50 0.5.100"/>
+  <int value="906276281" label="CROS Ti50 0.0.11"/>
+  <int value="907257449" label="CROS Cr50 0.6.9"/>
+  <int value="921986551" label="CROS Cr50 0.6.70"/>
+  <int value="928190862" label="CROS Cr50 0.0.17"/>
+  <int value="928401938" label="CROS Cr50 ro 0.0.11 rw w0.4.24"/>
+  <int value="946990224" label="CROS Ti50 0.23.71"/>
+  <int value="961500628" label="CROS Cr50 0.5.11"/>
+  <int value="969849518" label="CROS Cr50 0.4.9 Flags 0x10(pre-pvt)"/>
+  <int value="987235505" label="CROS Cr50 0.0.20"/>
+  <int value="987973414" label="IFX 9670 rev 15 fw 6.40 build 00be"/>
+  <int value="1001367086" label="CROS Cr50 0.3.15"/>
+  <int value="1009763914" label="CROS Cr50 0.4.10"/>
+  <int value="1013730596" label="CROS Cr50 0.0.26 Flags 0x10(pre-pvt)"/>
+  <int value="1026059105" label="CROS Cr50 0.3.4"/>
+  <int value="1039624416" label="CROS Cr50 0.3.10"/>
+  <int value="1048372479" label="CROS Cr50 0.6.4"/>
+  <int value="1053975981" label="CROS Cr50 0.5.141"/>
+  <int value="1065916186" label="CROS Cr50 0.0.19"/>
+  <int value="1069046756" label="CROS Cr50 0.5.51"/>
+  <int value="1080347583" label="CROS Cr50 0.6.2"/>
+  <int value="1123680979" label="CROS Cr50 0.3.4 (duplicate)"/>
+  <int value="1131918398" label="CROS Cr50 0.5.160"/>
+  <int value="1184698907" label="CROS Cr50 0.3.23"/>
+  <int value="1190683265" label="CROS Cr50 0.0.14"/>
+  <int value="1204349964" label="CROS Cr50 0.6.3"/>
+  <int value="1242597833" label="CROS Cr50 0.5.190"/>
+  <int value="1243686976" label="CROS Cr50 0.4.17"/>
+  <int value="1249108665" label="CROS Ti50 0.22.7"/>
+  <int value="1257043170" label="CROS Ti50 0.24.13"/>
+  <int value="1267274025" label="CROS Ti50 0.21.0"/>
+  <int value="1277368282" label="CROS Ti50 0.24.62"/>
+  <int value="1290177221" label="CROS Cr50 0.4.6 Flags 0x10(pre-pvt)"/>
+  <int value="1294717337" label="CROS Cr50 0.6.30"/>
+  <int value="1311411160" label="WEC 345"/>
+  <int value="1318849875" label="CROS Cr50 0.6.100"/>
+  <int value="1332366315" label="CROS Cr50 0.5.151"/>
+  <int value="1353576267" label="IFX 9635 fw 3.18 build 0009"/>
+  <int value="1366252830" label="CROS Ti50 0.0.15"/>
+  <int value="1374260250" label="CROS Cr50 0.6.7"/>
+  <int value="1389941253" label="CROS Cr50 0.5.140"/>
+  <int value="1394118225" label="CROS Cr50 0.6.6"/>
+  <int value="1395572841" label="CROS Cr50 0.4.15 Flags 0x10(pre-pvt)"/>
+  <int value="1399809716" label="CROS Ti50 0.24.70"/>
+  <int value="1419460966" label="CROS Cr50 0.6.71"/>
+  <int value="1432238438" label="CROS Cr50 0.5.92"/>
+  <int value="1437720528" label="IFX 9645 rev 78 fw 133.32 build 0050"/>
+  <int value="1440786499" label="CROS Cr50 0.6.72"/>
+  <int value="1451134301" label="IFX 9635 147.18 build 000f"/>
+  <int value="1451860784" label="CROS Cr50 0.6.110"/>
+  <int value="1457492447" label="CROS Cr50 0.6.141"/>
+  <int value="1462683392" label="CROS Ti50 0.24.21"/>
+  <int value="1475426635" label="CROS Ti50 0.24.40"/>
+  <int value="1478323543" label="CROS Cr50 0.5.120"/>
+  <int value="1490841853" label="IFX 9645 rev 49 fw 133.32 build 0050"/>
+  <int value="1514324233" label="CROS Cr50 0.5.1"/>
+  <int value="1517782969" label="CROS Ti50 0.23.51"/>
+  <int value="1520081310" label="CROS Cr50 0.0.22 variant"/>
+  <int value="1521866659" label="CROS Cr50 0.4.13 Flags 0x10(pre-pvt)"/>
+  <int value="1534426482" label="CROS Ti50 0.24.14"/>
+  <int value="1539202511" label="CROS Ti50 0.0.12"/>
+  <int value="1545098279" label="CROS Cr50 0.6.152"/>
+  <int value="1567731004" label="CROS Cr50 0.5.9"/>
+  <int value="1607230944" label="CROS Cr50 0.4.5 Flags 0x10(pre-pvt)"/>
+  <int value="1632371059" label="CROS Cr50 0.0.22"/>
+  <int value="1660111968" label="CROS Cr50 0.6.180"/>
+  <int value="1660841977" label="CROS Cr50 0.6.160"/>
+  <int value="1674290856" label="CROS Cr50 0.6.170"/>
+  <int value="1684843946" label="CROS Ti50 0.23.1"/>
+  <int value="1716634300" label="IFX 9645 rev 45 fw 133.32 build 0050"/>
+  <int value="1716937628" label="CROS Cr50 0.6.190"/>
+  <int value="1717226620" label="CROS Cr50 0.4.14 Flags 0x10(pre-pvt)"/>
+  <int value="1733077393" label="IFX 9645 rev 49 fw 133.33 build 00e3"/>
+  <int value="1734763743" label="CROS Ti50 0.24.12"/>
+  <int value="1758758919" label="CROS Cr50 0.6.130"/>
+  <int value="1769445930" label="CROS Ti50 0.24.30"/>
+  <int value="1774347833" label="CROS Cr50 0.0.15"/>
+  <int value="1777524598" label="CROS Ti50 0.23.60"/>
+  <int value="1787609211" label="CROS Cr50 0.3.26 aka 0.5.0"/>
+  <int value="1797688072" label="CROS Cr50 0.6.150"/>
+  <int value="1799811131" label="CROS Cr50 0.3.9"/>
+  <int value="1800672648" label="CROS Cr50 0.5.30"/>
+  <int value="1805048980" label="CROS Cr50 0.6.140"/>
+  <int value="1820069194" label="CROS Cr50 0.6.10 aka 0.6.20"/>
+  <int value="1828625721" label="IFX 9655 rev 32 fw 4.31 build 02c2"/>
+  <int value="1841636222" label="CROS Cr50 0.5.7"/>
+  <int value="1848357394" label="CROS Cr50 0.4.11 Flags 0x10(pre-pvt)"/>
+  <int value="1861735666" label="CROS Cr50 0.2.1 Flags 0x10(pre-pvt)"/>
+  <int value="1862442392" label="CROS Cr50 0.5.40"/>
+  <int value="1865292977" label="CROS Cr50 0.0.24 aka 0.3.0"/>
+  <int value="1875276519" label="CROS Cr50 0.6.171"/>
+  <int value="1883956482" label="CROS Cr50 0.6.153"/>
+  <int value="1887455524" label="CROS Cr50 0.0.21"/>
+  <int value="1895760793" label="CROS Cr50 0.5.153"/>
+  <int value="1897824456" label="CROS Cr50 0.4.23"/>
+  <int value="1902169266" label="CROS Cr50 0.4.16"/>
+  <int value="1903933708" label="CROS Cr50 0.4.3 Flags 0x10(pre-pvt)"/>
+  <int value="1911169399" label="CROS Ti50 0.23.70"/>
+  <int value="1934507294" label="CROS Ti50 0.0.13"/>
+  <int value="1935803215" label="CROS Cr50 0.3.25"/>
+  <int value="1941011596" label="IFX 9655 rev 35 fw 4.34 build 03f2"/>
+  <int value="1951490249" label="CROS Cr50 0.5.130"/>
+  <int value="1953654937" label="IFX 9645 rev 45 fw 133.33 build 00e3"/>
+  <int value="1994299966" label="CROS Cr50 0.4.27"/>
+  <int value="2024714959" label="IFX 9655 rev 32 fw 4.34 build 03f2"/>
+  <int value="2025600313" label="CROS Cr50 0.5.10 aka 0.5.20"/>
+  <int value="2036182876" label="CROS Cr50 0.3.24"/>
+  <int value="2061474747"
+      label="CROS Cr50 0.2.2 aka 0.4.4 Flags 0x10(pre-pvt)"/>
+  <int value="2077540682" label="CROS Cr50 0.6.73"/>
+  <int value="2088913185" label="CROS Cr50 0.6.8"/>
+  <int value="2104725364" label="CROS Cr50 0.3.20"/>
+  <int value="2109398286" label="CROS Cr50 0.4.7"/>
+  <int value="2127616984" label="CROS Cr50 0.6.1"/>
+  <int value="2128561741" label="CROS Cr50 0.5.93"/>
+  <int value="2128775895" label="CROS Ti50 0.24.61"/>
+</enum>
+
+<enum name="U2FFipsStatus">
+  <int value="0" label="Error"/>
+  <int value="1" label="Not active"/>
+  <int value="2" label="Active"/>
+</enum>
+
+<enum name="WiFiPCIStatus">
+  <int value="0" label="(Bad status) NIC not detected in lspci"/>
+  <int value="1"
+      label="(Bad status) NIC shows in lspci but wlan0 doesnt exist"/>
+  <int value="2"
+      label="(Bad status) NIC shows in lspci, wlan0 present, shill doesn't
+             know"/>
+  <int value="3"
+      label="(Good status) NIC present, wlan0 present, shill knows about
+             wlan0"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

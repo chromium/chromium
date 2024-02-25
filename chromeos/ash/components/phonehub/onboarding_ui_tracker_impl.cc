@@ -69,7 +69,7 @@ void OnboardingUiTrackerImpl::HandleGetStarted(
   if (status == FeatureStatus::kDisabled) {
     multidevice_setup_client_->SetFeatureEnabledState(
         multidevice_setup::mojom::Feature::kPhoneHub,
-        /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
+        /*enabled=*/true, /*auth_token=*/std::nullopt, base::DoNothing());
     util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kOnboardingFlow);
     return;
   }

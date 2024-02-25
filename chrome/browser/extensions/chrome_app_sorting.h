@@ -15,13 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -51,18 +51,18 @@ class ChromeAppSorting : public AppSorting,
   void InitializePageOrdinalMapFromWebApps() override;
   void FixNTPOrdinalCollisions() override;
   void EnsureValidOrdinals(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const syncer::StringOrdinal& suggested_page) override;
-  bool GetDefaultOrdinals(const std::string& extension_id,
+  bool GetDefaultOrdinals(const ExtensionId& extension_id,
                           syncer::StringOrdinal* page_ordinal,
                           syncer::StringOrdinal* app_launch_ordinal) override;
-  void OnExtensionMoved(const std::string& moved_extension_id,
-                        const std::string& predecessor_extension_id,
-                        const std::string& successor_extension_id) override;
+  void OnExtensionMoved(const ExtensionId& moved_extension_id,
+                        const ExtensionId& predecessor_extension_id,
+                        const ExtensionId& successor_extension_id) override;
   syncer::StringOrdinal GetAppLaunchOrdinal(
-      const std::string& extension_id) const override;
+      const ExtensionId& extension_id) const override;
   void SetAppLaunchOrdinal(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const syncer::StringOrdinal& new_app_launch_ordinal) override;
   syncer::StringOrdinal CreateFirstAppLaunchOrdinal(
       const syncer::StringOrdinal& page_ordinal) const override;
@@ -71,18 +71,18 @@ class ChromeAppSorting : public AppSorting,
   syncer::StringOrdinal CreateFirstAppPageOrdinal() const override;
   syncer::StringOrdinal GetNaturalAppPageOrdinal() const override;
   syncer::StringOrdinal GetPageOrdinal(
-      const std::string& extension_id) const override;
-  void SetPageOrdinal(const std::string& extension_id,
+      const ExtensionId& extension_id) const override;
+  void SetPageOrdinal(const ExtensionId& extension_id,
                       const syncer::StringOrdinal& new_page_ordinal) override;
-  void ClearOrdinals(const std::string& extension_id) override;
+  void ClearOrdinals(const ExtensionId& extension_id) override;
   int PageStringOrdinalAsInteger(
       const syncer::StringOrdinal& page_ordinal) const override;
   syncer::StringOrdinal PageIntegerAsStringOrdinal(size_t page_index) override;
-  void SetExtensionVisible(const std::string& extension_id,
+  void SetExtensionVisible(const ExtensionId& extension_id,
                            bool visible) override;
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::WebAppRegistrarObserver:
@@ -93,9 +93,10 @@ class ChromeAppSorting : public AppSorting,
  private:
   // The StringOrdinal is the app launch ordinal and the string is the extension
   // id.
-  typedef std::multimap<
-      syncer::StringOrdinal, std::string,
-    syncer::StringOrdinal::LessThanFn> AppLaunchOrdinalMap;
+  typedef std::multimap<syncer::StringOrdinal,
+                        ExtensionId,
+                        syncer::StringOrdinal::LessThanFn>
+      AppLaunchOrdinalMap;
   // The StringOrdinal is the page ordinal and the AppLaunchOrdinalMap is the
   // contents of that page.
   typedef std::map<
@@ -123,7 +124,7 @@ class ChromeAppSorting : public AppSorting,
     syncer::StringOrdinal page_ordinal;
     syncer::StringOrdinal app_launch_ordinal;
   };
-  typedef std::map<std::string, AppOrdinals> AppOrdinalsMap;
+  using AppOrdinalsMap = std::map<ExtensionId, AppOrdinals>;
 
   // This function returns the lowest ordinal on |page_ordinal| if
   // |return_value| == AppLaunchOrdinalReturn::MIN_ORDINAL, otherwise it returns
@@ -137,16 +138,15 @@ class ChromeAppSorting : public AppSorting,
   // Initialize the |ntp_ordinal_map_| with the page ordinals used by the
   // given extensions or by fetching web apps.
   void InitializePageOrdinalMap(
-      const std::vector<std::string>& extension_or_app_ids);
+      const std::vector<ExtensionId>& extension_or_app_ids);
 
   // Migrates the app launcher and page index values.
-  void MigrateAppIndex(
-      const extensions::ExtensionIdList& extension_ids);
+  void MigrateAppIndex(const ExtensionIdList& extension_ids);
 
   // Called to add a new mapping value for |extension_id| with a page ordinal
   // of |page_ordinal| and a app launch ordinal of |app_launch_ordinal|. This
   // works with valid and invalid StringOrdinals.
-  void AddOrdinalMapping(const std::string& extension_id,
+  void AddOrdinalMapping(const ExtensionId& extension_id,
                          const syncer::StringOrdinal& page_ordinal,
                          const syncer::StringOrdinal& app_launch_ordinal);
 
@@ -157,13 +157,13 @@ class ChromeAppSorting : public AppSorting,
   // |page_ordinal| and a app launch ordinal of |app_launch_ordinal|. If there
   // is not matching map, nothing happens. This works with valid and invalid
   // StringOrdinals.
-  void RemoveOrdinalMapping(const std::string& extension_id,
+  void RemoveOrdinalMapping(const ExtensionId& extension_id,
                             const syncer::StringOrdinal& page_ordinal,
                             const syncer::StringOrdinal& app_launch_ordinal);
 
   // Syncs the extension if needed. It is an error to call this if the
   // extension is not an application.
-  void SyncIfNeeded(const std::string& extension_id);
+  void SyncIfNeeded(const ExtensionId& extension_id);
 
   // Creates the default ordinals.
   void CreateDefaultOrdinals();
@@ -212,7 +212,7 @@ class ChromeAppSorting : public AppSorting,
   bool default_ordinals_created_;
 
   // The set of extensions that don't appear in the new tab page.
-  std::set<std::string> ntp_hidden_extensions_;
+  std::set<ExtensionId> ntp_hidden_extensions_;
 
   // Observe the ExtensionRegistry. The registry is guaranteed to outlive this
   // object, since this is owned by the ExtensionSystem, which depends on the

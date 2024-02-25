@@ -20,7 +20,7 @@ struct ImportedBookmarkEntry;
 class Profile;
 
 namespace autofill {
-class AutofillEntry;
+class AutocompleteEntry;
 }
 
 namespace password_manager {
@@ -84,9 +84,9 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
       TemplateURLService::OwnedTemplateURLVector template_urls,
       bool unique_on_host_and_path);
 
-  // Adds the imported autofill entries to the autofill database.
-  virtual void AddAutofillFormDataEntries(
-      const std::vector<autofill::AutofillEntry>& autofill_entries);
+  // Adds the imported autocomplete entries to the autofill database.
+  virtual void AddAutocompleteFormDataEntries(
+      const std::vector<autofill::AutocompleteEntry>& autocomplete_entries);
 
  protected:
   friend class base::RefCountedThreadSafe<ProfileWriter>;

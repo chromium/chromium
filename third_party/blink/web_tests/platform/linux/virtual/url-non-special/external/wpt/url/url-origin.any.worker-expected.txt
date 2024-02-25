@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> without base
+  assert_equals: origin expected "http://!\\"$&'()*+,-.;=_`{}~" but got "http://!\\"$&'()%2A+,-.;=_`{}~"
+[FAIL] Origin parsing: <blob:ftp://host/path> without base
+  assert_equals: origin expected "null" but got "ftp://host"
+[FAIL] Origin parsing: <blob:ws://example.org/> without base
+  assert_equals: origin expected "null" but got "ws://example.org"
+[FAIL] Origin parsing: <blob:wss://example.org/> without base
+  assert_equals: origin expected "null" but got "wss://example.org"
+[FAIL] Origin parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base
+  assert_equals: origin expected "wss://!\\"$&'()*+,-.;=_`{}~" but got "wss://!\\"$&'()%2A+,-.;=_`{}~"
+Harness: the test ran to completion.
+

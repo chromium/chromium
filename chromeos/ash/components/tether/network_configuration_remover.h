@@ -35,7 +35,7 @@ class NetworkConfigurationRemover {
  private:
   friend class NetworkConfigurationRemoverTest;
 
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
 };
 

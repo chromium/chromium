@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<embed name="plg" type="application/x-blink-deprecated-test-plugin"></embed>
+<p>Test that a plugin can override Node methods of its element. This also means that the plugin
+is instantiated when accessing properties and methods of its owner element.</p>
+<p>Should alert PASS.</p>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function pluginCallback() { alert("PASS") }
+
+    try {
+        plg.normalize();
+    } catch (ex) {
+        alert("Exception: " + ex.description + ". Test plugin was not found");
+    }
+</script>
+</body>
+</html>

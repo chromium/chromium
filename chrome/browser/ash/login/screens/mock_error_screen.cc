@@ -34,4 +34,8 @@ MockErrorScreenView::MockErrorScreenView() = default;
 
 MockErrorScreenView::~MockErrorScreenView() = default;
 
+base::WeakPtr<ErrorScreenView> MockErrorScreenView::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

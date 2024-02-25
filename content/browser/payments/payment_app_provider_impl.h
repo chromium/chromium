@@ -66,6 +66,9 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   void OnClosingOpenedWindow(
       payments::mojom::PaymentEventResponseType reason) override;
 
+  DevToolsBackgroundServicesContextImpl* GetDevTools(
+      const url::Origin& sw_origin);
+
   void InstallPaymentAppForTesting(
       const SkBitmap& app_icon,
       const GURL& sw_js_url,
@@ -78,8 +81,6 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   friend class WebContentsUserData<PaymentAppProviderImpl>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> GetDevTools(
-      const url::Origin& sw_origin);
   void StartServiceWorkerForDispatch(
       int64_t registration_id,
       PaymentEventDispatcher::ServiceWorkerStartCallback callback);

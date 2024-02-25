@@ -12,6 +12,7 @@
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/version.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -28,14 +29,6 @@
 #endif
 
 namespace ui {
-
-namespace {
-
-// The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
-// with a local coordinates bounds.
-constexpr uint32_t kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion = 9;
-
-}  // namespace
 
 WaylandBufferManagerGpu::WaylandBufferManagerGpu()
     : WaylandBufferManagerGpu(base::FilePath()) {}
@@ -86,7 +79,8 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_acquire_fence,
     bool supports_overlays,
     uint32_t supported_surface_augmentor_version,
-    bool supports_single_pixel_buffer) {
+    bool supports_single_pixel_buffer,
+    const base::Version& server_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -113,9 +107,17 @@ void WaylandBufferManagerGpu::Initialize(
   supports_affine_transform_ =
       supported_surface_augmentor_version >=
       AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
+
+  // Clients at version 8 think clip rect is in parent surface's space, while
+  // clients at version 9 or above think it's in local surface's space.
+  // Unfortunately, clipping in version 9 is implemented incorrectly. It has
+  // been fixed in version 10, so use version 10 instead.
   supports_out_of_window_clip_rect_ =
       supported_surface_augmentor_version >=
-      kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion;
+      AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION + 2;
+  // Exo transformation fix landed in https://crrev.com/c/4961473
+  has_transformation_fix_ = server_version.IsValid() &&
+                            server_version >= base::Version("121.0.6113.0");
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
   BindHostInterface(std::move(remote_host));
@@ -312,7 +314,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
           gfx::RectF(bounds_rect), gfx::RectF(1.f, 1.f) /* no crop */, false,
           damage_region, 1.0f /*opacity*/, gfx::OverlayPriorityHint::kNone,
           gfx::RRectF(gfx::RectF(bounds_rect), corners), gfx::ColorSpace(),
-          absl::nullopt),
+          std::nullopt),
       nullptr, buffer_id, surface_scale_factor);
   CommitOverlays(widget, frame_id, data, std::move(overlay_configs));
 }

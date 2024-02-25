@@ -7,7 +7,7 @@ package org.chromium.components.bookmarks;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /** Simple object representing the bookmark id. */
 public class BookmarkId {
@@ -61,8 +61,7 @@ public class BookmarkId {
      */
     public static BookmarkId getBookmarkIdFromString(String s) {
         long id = ROOT_FOLDER_ID;
-        @BookmarkType
-        int type = BookmarkType.NORMAL;
+        @BookmarkType int type = BookmarkType.NORMAL;
         if (TextUtils.isEmpty(s)) return new BookmarkId(id, type);
         char folderTypeChar = s.charAt(0);
         if (isValidBookmarkTypeFromChar(folderTypeChar)) {
@@ -77,17 +76,13 @@ public class BookmarkId {
         return new BookmarkId(id, type);
     }
 
-    /**
-     * @return The id of the bookmark.
-     */
+    /** @return The id of the bookmark. */
     @CalledByNative
     public long getId() {
         return mId;
     }
 
-    /**
-     * Returns the bookmark type: {@link BookmarkType#NORMAL} or {@link BookmarkType#PARTNER}.
-     */
+    /** Returns the bookmark type: {@link BookmarkType#NORMAL} or {@link BookmarkType#PARTNER}. */
     @CalledByNative
     public @BookmarkType int getType() {
         return mType;

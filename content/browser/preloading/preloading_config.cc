@@ -9,8 +9,8 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/common/features.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -29,69 +29,85 @@ namespace {
 constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
     &features::kPreloadingConfig, "preloading_config", R"(
 [{
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "OmniboxSearchPredictor",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "OmniboxMousePredictor",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "PointerDownOnBookmarkBar",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "NoStatePrefetch",
-  "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "MouseHoverOnBookmarkBar",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": 0.611862
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": 0.127634
-}, {
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.035817
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 0.016164
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": 0.013062
-}, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.013000
+  "sampling_likelihood": "0.001587"
 }, {
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.005527
+  "preloading_type": "NoStatePrefetch",
+  "preloading_predictor": "OmniboxDirectURLInput",
+  "sampling_likelihood": "1.000000"
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000157
+  "sampling_likelihood": "0.000037"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": "0.002909"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxMousePredictor",
+  "sampling_likelihood": "0.125768"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxSearchPredictor",
+  "sampling_likelihood": "0.342295"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "OmniboxTouchDownPredirector",
+  "sampling_likelihood": "0.063827"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": "0.000794"
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": "1.000000"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "BackButtonHover",
+  "sampling_likelihood": "0.001920"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "BackGestureNavigation",
+  "sampling_likelihood": "0.028777"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": "0.003114"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseBackButton",
+  "sampling_likelihood": "0.041547"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseHoverOnBookmarkBar",
+  "sampling_likelihood": "0.003222"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseHoverOnNewTabPage",
+  "sampling_likelihood": "0.087301"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "OmniboxDirectURLInput",
+  "sampling_likelihood": "0.001662"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "PointerDownOnBookmarkBar",
+  "sampling_likelihood": "0.014170"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "PointerDownOnNewTabPage",
+  "sampling_likelihood": "0.155139"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": "0.494826"
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": "1.000000"
 }]
 )"};
 
@@ -130,7 +146,7 @@ void PreloadingConfig::ParseConfig() {
   }
   // Throughout parsing the config, if we fail to parse, we silently skip the
   // config and use the default values.
-  absl::optional<base::Value> config_value =
+  std::optional<base::Value> config_value =
       base::JSONReader::Read(kPreloadingConfigParam.Get());
   if (!config_value) {
     return;
@@ -210,11 +226,11 @@ PreloadingConfig::Key PreloadingConfig::Key::FromEnums(
 PreloadingConfig::Entry PreloadingConfig::Entry::FromDict(
     const base::Value::Dict* dict) {
   Entry entry;
-  absl::optional<bool> holdback = dict->FindBool("holdback");
+  std::optional<bool> holdback = dict->FindBool("holdback");
   if (holdback) {
     entry.holdback_ = *holdback;
   }
-  absl::optional<double> sampling_likelihood =
+  std::optional<double> sampling_likelihood =
       dict->FindDouble("sampling_likelihood");
   if (sampling_likelihood) {
     entry.sampling_likelihood_ = *sampling_likelihood;

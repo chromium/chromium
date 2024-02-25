@@ -111,33 +111,6 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
   ~TouchEditable() override {}
 };
 
-// This defines the callback interface for other code to be notified of changes
-// in the state of a TouchEditable.
-class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerDeprecated {
- public:
-  virtual ~TouchEditingControllerDeprecated() {}
-
-  // Creates a TouchEditingControllerDeprecated. Caller owns the returned
-  // object.
-  static TouchEditingControllerDeprecated* Create(TouchEditable* client_view);
-
-  // Notifies the controller that the selection has changed.
-  virtual void SelectionChanged() = 0;
-
-  // Toggles showing/hiding the quick menu.
-  virtual void ToggleQuickMenu() = 0;
-};
-
-class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerFactory {
- public:
-  virtual ~TouchEditingControllerFactory() {}
-
-  static void SetInstance(TouchEditingControllerFactory* instance);
-
-  virtual TouchEditingControllerDeprecated* Create(
-      TouchEditable* client_view) = 0;
-};
-
 }  // namespace ui
 
 #endif  // UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_

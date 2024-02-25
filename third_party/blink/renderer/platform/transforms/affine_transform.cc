@@ -246,7 +246,7 @@ String AffineTransform::ToString(bool as_matrix) const {
   if (IsIdentity())
     return "identity";
 
-  absl::optional<gfx::DecomposedTransform> decomp = ToTransform().Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = ToTransform().Decompose();
   if (!decomp)
     return ToString(true) + " (degenerate)";
 

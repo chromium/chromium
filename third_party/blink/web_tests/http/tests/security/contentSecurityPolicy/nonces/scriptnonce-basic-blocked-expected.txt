@@ -1,9 +1,0 @@
-ALERT: PASS (1/2)
-ALERT: PASS (2/2)
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'nonce-noncynonce'". Either the 'unsafe-inline' keyword, a hash ('sha256-1RpMm8CnZ3w3FNN+LbHHalT1URf5MlDZCUee2MAF0/U='), or a nonce ('nonce-...') is required to enable inline execution.
-
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'nonce-noncynonce'". Either the 'unsafe-inline' keyword, a hash ('sha256-aA5X7j5nr6U308mrny9CeIP0WyoPjaNn/0piYZqVL7I='), or a nonce ('nonce-...') is required to enable inline execution.
-
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'nonce-noncynonce'". Either the 'unsafe-inline' keyword, a hash ('sha256-DnnF++Kbf/s2EyTBk12Rw2Ouq//L7GY5pcHSc6IZe6U='), or a nonce ('nonce-...') is required to enable inline execution.
-
-This tests the effect of a valid script-nonce value. It passes if three console warnings are visible, and the two PASS alerts are executed.

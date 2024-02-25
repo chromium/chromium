@@ -11,7 +11,6 @@ class AuthenticationService;
 class GURL;
 @class MDCSnackbarMessage;
 class PrefService;
-class SyncSetupService;
 @class URLWithTitle;
 
 namespace bookmarks {
@@ -40,7 +39,6 @@ class PrefRegistrySyncable;
                        authenticationService:
                            (AuthenticationService*)authenticationService
                                  syncService:(syncer::SyncService*)syncService
-                            syncSetupService:(SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.

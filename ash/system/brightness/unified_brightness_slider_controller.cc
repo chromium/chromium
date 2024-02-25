@@ -5,12 +5,14 @@
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
@@ -28,7 +30,7 @@ static constexpr double kMinBrightnessPercent = 5.0;
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
     scoped_refptr<UnifiedSystemTrayModel> model,
     views::Button::PressedCallback callback)
-    : model_(model), callback_(callback) {}
+    : model_(model), callback_(std::move(callback)) {}
 
 UnifiedBrightnessSliderController::~UnifiedBrightnessSliderController() =
     default;
@@ -40,10 +42,14 @@ UnifiedBrightnessSliderController::CreateBrightnessSlider() {
 
 std::unique_ptr<UnifiedSliderView>
 UnifiedBrightnessSliderController::CreateView() {
-  DCHECK(!slider_);
-  auto slider =
-      std::make_unique<UnifiedBrightnessView>(this, model_, callback_);
-  slider_ = slider.get();
+#if DCHECK_IS_ON()
+  DCHECK(!created_view_);
+  created_view_ = true;
+#endif
+  // Consuming `callback_` is safe here; `CreateView()` should only be called
+  // once per controller instance per the DCHECK() above.
+  auto slider = std::make_unique<UnifiedBrightnessView>(this, model_,
+                                                        std::move(callback_));
   return slider;
 }
 

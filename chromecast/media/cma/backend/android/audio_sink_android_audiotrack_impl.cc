@@ -37,7 +37,8 @@
 
 #define POST_TASK_TO_CALLER_THREAD(task, ...) \
   caller_task_runner_->PostTask(              \
-      FROM_HERE, base::BindOnce(task, weak_this_, ##__VA_ARGS__));
+      FROM_HERE,                              \
+      base::BindOnce(task, weak_factory_.GetWeakPtr(), ##__VA_ARGS__));
 
 using base::android::JavaParamRef;
 
@@ -56,9 +57,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
     AudioSinkAndroid::Delegate* delegate,
     int num_channels,
     int input_samples_per_second,
-    int audio_track_session_id,
     bool primary,
-    bool is_apk_audio,
     bool use_hw_av_sync,
     const std::string& device_id,
     AudioContentType content_type)
@@ -73,25 +72,13 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
       limiter_volume_multiplier_(1.0f),
       direct_pcm_buffer_address_(nullptr),
       direct_rendering_delay_address_(nullptr),
-      j_audio_sink_audiotrack_impl_(Java_AudioSinkAudioTrackImpl_create(
-          base::android::AttachCurrentThread(),
-          reinterpret_cast<jlong>(this),
-          static_cast<int>(content_type_),
-          num_channels_,
-          input_samples_per_second_,
-          kDirectBufferSize,
-          audio_track_session_id,
-          is_apk_audio,
-          use_hw_av_sync_)),
       feeder_thread_("AudioTrack feeder thread"),
       feeder_task_runner_(nullptr),
       caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      state_(kStateUninitialized),
-      weak_factory_(this) {
+      state_(kStateUninitialized) {
   LOG(INFO) << __func__ << "(" << this << "):"
             << " num_channels_=" << num_channels_
             << " input_samples_per_second_=" << input_samples_per_second_
-            << " audio_track_session_id=" << audio_track_session_id
             << " primary_=" << primary_
             << " use_hw_av_sync_=" << use_hw_av_sync_
             << " device_id_=" << device_id_
@@ -99,14 +86,11 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
   DCHECK(delegate_);
   DCHECK_GT(num_channels_, 0);
   DCHECK_GT(input_samples_per_second_, 0);
-  DCHECK(direct_pcm_buffer_address_);
-  DCHECK(direct_rendering_delay_address_);
 
   base::Thread::Options options;
   options.thread_type = base::ThreadType::kRealtimeAudio;
   feeder_thread_.StartWithOptions(std::move(options));
   feeder_task_runner_ = feeder_thread_.task_runner();
-  weak_this_ = weak_factory_.GetWeakPtr();
 }
 
 AudioSinkAndroidAudioTrackImpl::~AudioSinkAndroidAudioTrackImpl() {
@@ -115,6 +99,26 @@ AudioSinkAndroidAudioTrackImpl::~AudioSinkAndroidAudioTrackImpl() {
   FinalizeOnFeederThread();
   feeder_thread_.Stop();
   feeder_task_runner_ = nullptr;
+}
+
+bool AudioSinkAndroidAudioTrackImpl::Initialize(int audio_track_session_id,
+                                                bool is_apk_audio) {
+  j_audio_sink_audiotrack_impl_ = Java_AudioSinkAudioTrackImpl_create(
+      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+      static_cast<int>(content_type_), num_channels_, input_samples_per_second_,
+      kDirectBufferSize, audio_track_session_id, is_apk_audio, use_hw_av_sync_);
+  if (!j_audio_sink_audiotrack_impl_) {
+    return false;
+  }
+
+  // Below arguments are initialized from AudioSinkAudioTrackImpl Java class by
+  // calling into native APIs of this class.
+  DCHECK(direct_pcm_buffer_address_);
+  DCHECK(direct_rendering_delay_address_);
+
+  LOG(INFO) << __func__ << "(" << this << "):"
+            << " audio_track_session_id=" << audio_track_session_id;
+  return true;
 }
 
 int AudioSinkAndroidAudioTrackImpl::input_samples_per_second() const {
@@ -162,8 +166,10 @@ void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {
   RUN_ON_FEEDER_THREAD(FinalizeOnFeederThread);
   wait_for_eos_task_.Cancel();
 
-  Java_AudioSinkAudioTrackImpl_close(base::android::AttachCurrentThread(),
-                                     j_audio_sink_audiotrack_impl_);
+  if (j_audio_sink_audiotrack_impl_) {
+    Java_AudioSinkAudioTrackImpl_close(base::android::AttachCurrentThread(),
+                                       j_audio_sink_audiotrack_impl_);
+  }
 }
 
 void AudioSinkAndroidAudioTrackImpl::PreventDelegateCalls() {

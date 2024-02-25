@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script type=module>
+    import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+    test(() => {
+      internals.clearUseCounter(document, WebFeature.kObservableConstructor);
+      assert_false(internals.isUseCounted(document, WebFeature.kObservableConstructor));
+      const observable = new Observable(() => {});
+      assert_true(internals.isUseCounted(document, WebFeature.kObservableConstructor));
+    });
+  </script>
+</body>

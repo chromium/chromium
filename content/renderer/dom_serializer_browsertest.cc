@@ -512,9 +512,17 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
+// TODO(crbug.com/1065493): Flaky on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
+  DISABLED_SerializeHTMLDOMWithEntitiesInText
+#else
+#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
+  SerializeHTMLDOMWithEntitiesInText
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test situation of html entities in text when serializing HTML DOM.
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeHTMLDOMWithEntitiesInText) {
+                       MAYBE_SerializeHTMLDOMWithEntitiesInText) {
   // Need to spin up the renderer and also navigate to a file url so that the
   // renderer code doesn't attempt a fork when it sees a load to file scheme
   // from non-file scheme.
@@ -855,8 +863,16 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
   }));
 }
 
+// Flaky on win-asan. See https://crbug.com/1484904
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SubResourceForElementsInNonHTMLNamespace \
+  DISABLED_SubResourceForElementsInNonHTMLNamespace
+#else
+#define MAYBE_SubResourceForElementsInNonHTMLNamespace \
+  SubResourceForElementsInNonHTMLNamespace
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SubResourceForElementsInNonHTMLNamespace) {
+                       MAYBE_SubResourceForElementsInNonHTMLNamespace) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "non_html_namespace.htm");
   GURL file_url = net::FilePathToFileURL(page_file_path);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -170,8 +171,7 @@ void FakeBluetoothGattCharacteristicClient::ReadValue(
     return;
   }
 
-  if (action_extra_requests_.find("ReadValue") !=
-      action_extra_requests_.end()) {
+  if (base::Contains(action_extra_requests_, "ReadValue")) {
     DelayedCallback* delayed = action_extra_requests_["ReadValue"];
     delayed->delay_--;
     std::move(error_callback)
@@ -209,7 +209,7 @@ void FakeBluetoothGattCharacteristicClient::ReadValue(
 void FakeBluetoothGattCharacteristicClient::WriteValue(
     const dbus::ObjectPath& object_path,
     const std::vector<uint8_t>& value,
-    base::StringPiece type_option,
+    std::string_view type_option,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (!authenticated_) {
@@ -244,8 +244,7 @@ void FakeBluetoothGattCharacteristicClient::WriteValue(
   }
 
   DCHECK(heart_rate_control_point_properties_.get());
-  if (action_extra_requests_.find("WriteValue") !=
-      action_extra_requests_.end()) {
+  if (base::Contains(action_extra_requests_, "WriteValue")) {
     DelayedCallback* delayed = action_extra_requests_["WriteValue"];
     delayed->delay_--;
     std::move(error_callback)
@@ -573,7 +572,7 @@ void FakeBluetoothGattCharacteristicClient::DelayedReadValueCallback(
   DCHECK(properties);
 
   properties->value.ReplaceValue(value);
-  std::move(callback).Run(/*error_code=*/absl::nullopt, value);
+  std::move(callback).Run(/*error_code=*/std::nullopt, value);
 }
 
 std::vector<uint8_t>

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_DEVICE_INFO_MANAGER_H_
 #define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_DEVICE_INFO_MANAGER_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -59,7 +59,7 @@ struct DeviceInfo {
   // distinguish between variations of a device which have different branding
   // but the same hardware. Only set for devices with custom-label variants.
   // e.g. "OEM-1".
-  absl::optional<std::string> custom_label_tag;
+  std::optional<std::string> custom_label_tag;
 
   // The user type of the profile currently running. e.g. "unmanaged"
   std::string user_type;

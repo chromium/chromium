@@ -58,4 +58,4 @@ class PrivacyHubHatsTrigger {
 
 }  // namespace ash
 
-#endif
+#endif  // CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_HATS_TRIGGER_H_

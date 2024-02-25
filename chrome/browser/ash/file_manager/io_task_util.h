@@ -19,7 +19,7 @@ namespace io_task {
 void GetFileMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
-    int fields,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
     storage::FileSystemOperation::GetMetadataCallback callback);
 
 // Starts the delete operation via FileSystemOperationRunner.

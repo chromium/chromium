@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -22,13 +22,13 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioData* Create(AudioDataInit*, ExceptionState&);
+  static AudioData* Create(ScriptState*, AudioDataInit*, ExceptionState&);
 
   // Internal constructor for creating from media::AudioDecoder output.
   explicit AudioData(scoped_refptr<media::AudioBuffer>);
 
   // audio_data.idl implementation.
-  explicit AudioData(AudioDataInit*, ExceptionState&);
+  explicit AudioData(ScriptState*, AudioDataInit*, ExceptionState&);
 
   ~AudioData() final;
 
@@ -39,7 +39,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
 
   void close();
 
-  absl::optional<V8AudioSampleFormat> format() const;
+  std::optional<V8AudioSampleFormat> format() const;
   float sampleRate() const;
   uint32_t numberOfFrames() const;
   uint32_t numberOfChannels() const;
@@ -59,7 +59,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
  private:
   scoped_refptr<media::AudioBuffer> data_;
 
-  absl::optional<V8AudioSampleFormat> format_;
+  std::optional<V8AudioSampleFormat> format_;
 
   // Temporary space for converting to float32.
   std::unique_ptr<media::AudioBus> temp_bus_;

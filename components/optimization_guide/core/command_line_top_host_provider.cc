@@ -4,16 +4,17 @@
 
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
 // static
 std::unique_ptr<CommandLineTopHostProvider>
 CommandLineTopHostProvider::CreateIfEnabled() {
-  absl::optional<std::vector<std::string>> top_hosts =
+  std::optional<std::vector<std::string>> top_hosts =
       switches::ParseHintsFetchOverrideFromCommandLine();
   if (top_hosts) {
     // Note: wrap_unique is used because the constructor is private.

@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -25,6 +25,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -32,15 +33,15 @@ namespace {
 
 // List of all mojom::PrefPaths associated with profile prefs, and their
 // corresponding paths in the prefstore.
-base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
+std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kProfilePrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>({
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
           {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
            ::prefs::kAccessibilityPdfOcrAlwaysActive},
-          {mojom::PrefPath::kGeolocationAllowed,
-           ash::prefs::kUserGeolocationAllowed},
+          {mojom::PrefPath::kUserGeolocationAccessLevel,
+           ash::prefs::kUserGeolocationAccessLevel},
           {mojom::PrefPath::kQuickAnswersEnabled,
            quick_answers::prefs::kQuickAnswersEnabled},
           {mojom::PrefPath::kQuickAnswersConsentStatus,
@@ -68,6 +69,10 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
            media_router::prefs::kAccessCodeCastDevices},
           {mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
            media_router::prefs::kAccessCodeCastDeviceAdditionTime},
+          {mojom::PrefPath::kDefaultSearchProviderDataPrefName,
+           DefaultSearchManager::kDefaultSearchProviderDataPrefName},
+          {mojom::PrefPath::kIsolatedWebAppsEnabled,
+           ash::prefs::kIsolatedWebAppsEnabled},
       });
   auto* pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
@@ -76,9 +81,9 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
 
 // List of all mojom::PrefPaths associated with extension controlled prefs,
 // and their corresponding paths in the prefstore.
-base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
+std::string_view GetExtensionPrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kExtensionPrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>(
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>(
           {{mojom::PrefPath::kDockedMagnifierEnabled,
             ash::prefs::kDockedMagnifierEnabled},
            {mojom::PrefPath::kAccessibilityAutoclickEnabled,
@@ -109,8 +114,6 @@ base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
             ash::prefs::kAccessibilitySwitchAccessEnabled},
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
-           {mojom::PrefPath::kProtectedContentDefault,
-            prefs::kProtectedContentDefault},
            {mojom::PrefPath::kProxy, ash::prefs::kProxy}});
   auto* pref_name = kExtensionPrefPathToName.find(path);
   DCHECK(pref_name != kExtensionPrefPathToName.end());
@@ -140,8 +143,8 @@ void PrefsAsh::BindReceiver(mojo::PendingReceiver<mojom::Prefs> receiver) {
 
 void PrefsAsh::GetPref(mojom::PrefPath path, GetPrefCallback callback) {
   const base::Value* value = GetValueForState(GetState(path));
-  std::move(callback).Run(value ? absl::optional<base::Value>(value->Clone())
-                                : absl::nullopt);
+  std::move(callback).Run(value ? std::optional<base::Value>(value->Clone())
+                                : std::nullopt);
 }
 
 void PrefsAsh::GetExtensionPrefWithControl(
@@ -152,7 +155,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
 
   if (!state || !value) {
     // Not a valid prefpath
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             mojom::PrefControlState::kDefaultUnknown);
     return;
   }
@@ -160,7 +163,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
   if (state->pref_source != AshPrefSource::kExtensionControlled) {
     // Not extension controlled
     std::move(callback).Run(
-        absl::optional<base::Value>(value->Clone()),
+        std::optional<base::Value>(value->Clone()),
         mojom::PrefControlState::kNotExtensionControlledPrefPath);
     return;
   }
@@ -180,7 +183,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
     // Lacros could control this.
     pref_control_state = mojom::PrefControlState::kLacrosExtensionControllable;
   }
-  std::move(callback).Run(absl::optional<base::Value>(value->Clone()),
+  std::move(callback).Run(std::optional<base::Value>(value->Clone()),
                           pref_control_state);
 }
 
@@ -264,17 +267,18 @@ void PrefsAsh::OnProfileAdded(Profile* profile) {
   OnPrimaryProfileReady(profile);
 }
 
-absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
+std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kUnknown:
+    case mojom::PrefPath::kProtectedContentDefaultDeprecated:
       LOG(WARNING) << "Unknown pref path: " << path;
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
       return State{local_state_, &local_state_registrar_,
                    AshPrefSource::kNormal,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
-    case mojom::PrefPath::kGeolocationAllowed:
+    case mojom::PrefPath::kUserGeolocationAccessLevel:
     case mojom::PrefPath::kQuickAnswersEnabled:
     case mojom::PrefPath::kQuickAnswersConsentStatus:
     case mojom::PrefPath::kQuickAnswersDefinitionEnabled:
@@ -288,10 +292,12 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kMultitaskMenuNudgeClamshellShownCount:
     case mojom::PrefPath::kMultitaskMenuNudgeClamshellLastShown:
     case mojom::PrefPath::kAccessCodeCastDevices:
-    case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime: {
+    case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime:
+    case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
+    case mojom::PrefPath::kIsolatedWebAppsEnabled: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetProfilePrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -301,7 +307,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetProfilePrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -340,11 +346,10 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityStickyKeysEnabled:
     case mojom::PrefPath::kAccessibilitySwitchAccessEnabled:
     case mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled:
-    case mojom::PrefPath::kProtectedContentDefault:
     case mojom::PrefPath::kProxy: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetExtensionPrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -358,7 +363,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessToGetAllScreensMediaInSessionAllowedForUrls:
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       return State{
           .pref_service = profile_prefs_registrar_->prefs(),
@@ -369,7 +374,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   }
 }
 
-const base::Value* PrefsAsh::GetValueForState(absl::optional<State> state) {
+const base::Value* PrefsAsh::GetValueForState(std::optional<State> state) {
   if (!state) {
     return nullptr;
   }

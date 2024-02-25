@@ -18,7 +18,8 @@ from models import CoverageTestsByPlatform
 from models import ActionType
 from models import CoverageTestsByPlatformSet
 from models import TestId
-from models import TestIdsByPlatformSet
+from models import TestIdsTestNamesByPlatformSet
+from models import TestIdTestNameTuple
 from models import TestPartitionDescription
 from models import TestPlatform
 
@@ -38,7 +39,7 @@ def filter_tests_for_partition(tests: List[CoverageTest],
 
 
 def compare_and_print_tests_to_remove_and_add(
-        existing_tests: TestIdsByPlatformSet,
+        existing_tests: TestIdsTestNamesByPlatformSet,
         required_tests: CoverageTestsByPlatformSet,
         test_partitions: List[TestPartitionDescription],
         default_partition: TestPartitionDescription, add_to_file: bool):
@@ -89,7 +90,8 @@ def compare_and_print_tests_to_remove_and_add(
         tests_to_add: List[CoverageTest] = []
         for test in tests:
             if platforms in existing_tests:
-                existing_test_set = existing_tests[platforms]
+                existing_test_set = set(
+                    [test_id for (test_id, _) in existing_tests[platforms]])
                 if test.id not in existing_test_set:
                     tests_to_add.append(test)
                 else:
@@ -122,10 +124,9 @@ def compare_and_print_tests_to_remove_and_add(
             continue
         filename = default_partition.generate_browsertest_filepath(platforms)
         print_tests(filename, default_tests, default_partition, add_to_file)
-
     # Print out all tests to remove. To keep the algorithm simple the partition
     # is not kept track of.
-    for platforms, test_ids in existing_tests.items():
+    for platforms, test_ids_names in existing_tests.items():
         tests_to_remove = []
         prompt_str = ""
         nice_platform_str = ", ".join(
@@ -133,14 +134,15 @@ def compare_and_print_tests_to_remove_and_add(
         if platforms not in test_ids_to_keep:
             prompt_str = (f"\n\nRemove ALL tests from the file for the "
                           f"platforms [{nice_platform_str}]:\n")
-            tests_to_remove = test_ids
+            tests_to_remove = [test_name for (_, test_name) in test_ids_names]
         else:
             prompt_str = (f"\n\nRemove these tests from the file for the "
                           f"platforms [{nice_platform_str}]:\n")
             tests_to_remove = [
-                test_id for test_id in test_ids
+                test_name for (test_id, test_name) in test_ids_names
                 if test_id not in test_ids_to_keep[platforms]
             ]
+
         if not tests_to_remove:
             continue
         print(f"{prompt_str}{', '.join(tests_to_remove)}")

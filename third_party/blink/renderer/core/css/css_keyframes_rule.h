@@ -67,7 +67,7 @@ class StyleRuleKeyframes final : public StyleRuleBase {
   }
 
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -112,7 +112,7 @@ class CSSKeyframesRule final : public CSSRule {
 
   // For IndexedGetter and CSSRuleList.
   unsigned length() const;
-  CSSKeyframeRule* Item(unsigned index) const;
+  CSSKeyframeRule* Item(unsigned index, bool trigger_use_counters = true) const;
   CSSKeyframeRule* AnonymousIndexedGetter(unsigned index) const;
 
   bool IsVendorPrefixed() const { return is_prefixed_; }

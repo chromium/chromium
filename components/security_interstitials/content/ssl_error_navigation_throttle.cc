@@ -48,14 +48,12 @@ bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
 
 SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
     content::NavigationHandle* navigation_handle,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     SSLErrorNavigationThrottle::HandleSSLErrorCallback
         handle_ssl_error_callback,
     IsInHostedAppCallback is_in_hosted_app_callback,
     ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttpsCallback
         should_ignore_interstitial_because_navigation_defaulted_to_https_callback)
     : content::NavigationThrottle(navigation_handle),
-      ssl_cert_reporter_(std::move(ssl_cert_reporter)),
       handle_ssl_error_callback_(std::move(handle_ssl_error_callback)),
       is_in_hosted_app_callback_(std::move(is_in_hosted_app_callback)),
       should_ignore_interstitial_because_navigation_defaulted_to_https_callback_(
@@ -100,8 +98,7 @@ SSLErrorNavigationThrottle::WillFailRequest() {
   int cert_status = info.cert_status;
   QueueShowInterstitial(std::move(handle_ssl_error_callback_),
                         handle->GetWebContents(), handle->GetNetErrorCode(),
-                        cert_status, info, handle->GetURL(),
-                        std::move(ssl_cert_reporter_));
+                        cert_status, info, handle->GetURL());
   return content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::DEFER);
 }
@@ -130,14 +127,14 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   // through the interstitial will continue the navigation in a regular browser
   // window.
   if (std::move(is_in_hosted_app_callback_).Run(handle->GetWebContents())) {
-    QueueShowInterstitial(
-        std::move(handle_ssl_error_callback_), handle->GetWebContents(),
-        // The navigation handle's net error code will be
-        // net::OK, because the net stack has allowed the
-        // response to proceed. Synthesize a net error from
-        // the cert status instead.
-        net::MapCertStatusToNetError(cert_status), cert_status, info,
-        handle->GetURL(), std::move(ssl_cert_reporter_));
+    QueueShowInterstitial(std::move(handle_ssl_error_callback_),
+                          handle->GetWebContents(),
+                          // The navigation handle's net error code will be
+                          // net::OK, because the net stack has allowed the
+                          // response to proceed. Synthesize a net error from
+                          // the cert status instead.
+                          net::MapCertStatusToNetError(cert_status),
+                          cert_status, info, handle->GetURL());
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::DEFER);
   }
@@ -155,14 +152,12 @@ void SSLErrorNavigationThrottle::QueueShowInterstitial(
     int net_error,
     int cert_status,
     const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter) {
+    const GURL& request_url) {
   // It is safe to call this without posting because SSLErrorHandler will always
   // call ShowInterstitial asynchronously, giving the throttle time to defer the
   // navigation.
   std::move(handle_ssl_error_callback)
       .Run(web_contents, net_error, ssl_info, request_url,
-           std::move(ssl_cert_reporter),
            base::BindOnce(&SSLErrorNavigationThrottle::ShowInterstitial,
                           weak_ptr_factory_.GetWeakPtr(), net_error));
 }

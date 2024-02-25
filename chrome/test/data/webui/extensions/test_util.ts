@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 /** @fileoverview Common utilities for extension ui tests. */
-import {ItemDelegate} from 'chrome://extensions/extensions.js';
+import type {ItemDelegate} from 'chrome://extensions/extensions.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
@@ -19,7 +20,7 @@ export class ClickMock {
    *     expected to be called with.
    * @param returnValue The value to return from the function call.
    */
-  testClickingCalls(
+  async testClickingCalls(
       element: HTMLElement, callName: string, expectedArgs: any[],
       returnValue?: any) {
     const mock = new MockController();
@@ -27,6 +28,11 @@ export class ClickMock {
     mockMethod.returnValue = returnValue;
     MockMethod.prototype.addExpectation.apply(mockMethod, expectedArgs);
     element.click();
+
+    if (element instanceof CrLitElement) {
+      await (element as CrLitElement).updateComplete;
+    }
+
     mock.verifyMocks();
   }
 }
@@ -98,6 +104,7 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   setItemHostAccess(
       _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
   setItemCollectsErrors(_id: string, _collectsErrors: boolean) {}
+  setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
   inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
   openUrl(_url: string) {}
 

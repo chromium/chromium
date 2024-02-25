@@ -10,12 +10,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/vr/browser_renderer_browser_interface.h"
-#include "chrome/browser/vr/input_delegate_for_testing.h"
-#include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/render_info.h"
-#include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/ui_interface.h"
 #include "chrome/browser/vr/ui_test_input.h"
 
@@ -23,25 +19,17 @@ namespace vr {
 
 BrowserRenderer::BrowserRenderer(
     std::unique_ptr<UiInterface> ui,
-    std::unique_ptr<SchedulerDelegate> scheduler_delegate,
     std::unique_ptr<GraphicsDelegate> graphics_delegate,
-    std::unique_ptr<InputDelegate> input_delegate,
-    BrowserRendererBrowserInterface* browser,
     size_t sliding_time_size)
-    : scheduler_delegate_(std::move(scheduler_delegate)),
-      graphics_delegate_(std::move(graphics_delegate)),
-      input_delegate_(std::move(input_delegate)),
-      browser_(browser),
+    : graphics_delegate_(std::move(graphics_delegate)),
       ui_processing_time_(sliding_time_size),
-      ui_controller_update_time_(sliding_time_size),
-      ui_(std::move(ui)) {
-  scheduler_delegate_->SetBrowserRenderer(this);
-}
+      ui_(std::move(ui)) {}
 
 BrowserRenderer::~BrowserRenderer() = default;
 
-void BrowserRenderer::DrawBrowserFrame(base::TimeTicks current_time) {
-  Draw(kUiFrame, current_time, input_delegate_->GetHeadPose());
+void BrowserRenderer::DrawBrowserFrame(base::TimeTicks current_time,
+                                       const gfx::Transform& head_pose) {
+  Draw(kUiFrame, current_time, head_pose);
 }
 
 void BrowserRenderer::DrawWebXrFrame(base::TimeTicks current_time,
@@ -57,9 +45,7 @@ void BrowserRenderer::Draw(FrameType frame_type,
       graphics_delegate_->GetRenderInfo(frame_type, head_pose);
   UpdateUi(render_info, current_time, frame_type);
 
-  graphics_delegate_->InitializeBuffers();
   if (frame_type == kWebXrFrame) {
-    DrawWebXr();
     if (ui_->HasWebXrOverlayElementsToDraw()) {
       DrawWebXrOverlay(render_info);
     }
@@ -67,23 +53,8 @@ void BrowserRenderer::Draw(FrameType frame_type,
     DrawBrowserUi(render_info);
   }
 
-  TRACE_COUNTER2("gpu", "VR UI timing (us)", "scene update",
-                 ui_processing_time_.GetAverage().InMicroseconds(),
-                 "controller",
-                 ui_controller_update_time_.GetAverage().InMicroseconds());
-
-  scheduler_delegate_->SubmitDrawnFrame(frame_type, head_pose);
-}
-
-void BrowserRenderer::DrawWebXr() {
-  TRACE_EVENT0("gpu", __func__);
-  graphics_delegate_->PrepareBufferForWebXr();
-
-  int texture_id;
-  GraphicsDelegate::Transform uv_transform;
-  graphics_delegate_->GetWebXrDrawParams(&texture_id, &uv_transform);
-  ui_->DrawWebXr(texture_id, uv_transform);
-  graphics_delegate_->OnFinishedDrawingBuffer();
+  TRACE_COUNTER1("gpu", "VR UI timing (us)",
+                 ui_processing_time_.GetAverage().InMicroseconds());
 }
 
 void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
@@ -97,67 +68,22 @@ void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
   const auto& webxr_overlay_render_info =
       graphics_delegate_->GetOptimizedRenderInfoForFovs(fovs);
 
-  graphics_delegate_->PrepareBufferForWebXrOverlayElements();
   ui_->DrawWebVrOverlayForeground(webxr_overlay_render_info);
-  graphics_delegate_->OnFinishedDrawingBuffer();
 }
 
 void BrowserRenderer::DrawBrowserUi(const RenderInfo& render_info) {
   TRACE_EVENT0("gpu", __func__);
-  graphics_delegate_->PrepareBufferForBrowserUi();
   ui_->Draw(render_info);
-  graphics_delegate_->OnFinishedDrawingBuffer();
-}
-
-void BrowserRenderer::OnPause() {
-  DCHECK(input_delegate_);
-  input_delegate_->OnPause();
-  scheduler_delegate_->OnPause();
-  ui_->OnPause();
-}
-
-void BrowserRenderer::OnResume() {
-  DCHECK(input_delegate_);
-  scheduler_delegate_->OnResume();
-  input_delegate_->OnResume();
-}
-
-void BrowserRenderer::OnExitPresent() {
-  scheduler_delegate_->OnExitPresent();
-}
-
-void BrowserRenderer::OnTriggerEvent(bool pressed) {
-  input_delegate_->OnTriggerEvent(pressed);
-}
-
-base::WeakPtr<BrowserUiInterface> BrowserRenderer::GetBrowserUiWeakPtr() {
-  return ui_->GetBrowserUiWeakPtr();
-}
-
-void BrowserRenderer::SetUiExpectingActivityForTesting(
-    UiTestActivityExpectation ui_expectation) {
-  DCHECK(ui_test_state_ == nullptr)
-      << "Attempted to set a UI activity expectation with one in progress";
-  ui_test_state_ = std::make_unique<UiTestState>();
-  ui_test_state_->quiescence_timeout_ms =
-      base::Milliseconds(ui_expectation.quiescence_timeout_ms);
 }
 
 void BrowserRenderer::WatchElementForVisibilityStatusForTesting(
-    VisibilityChangeExpectation visibility_expectation) {
-  DCHECK(ui_visibility_state_ == nullptr) << "Attempted to watch a UI element "
-                                             "for visibility changes with one "
-                                             "in progress";
-  ui_visibility_state_ = std::make_unique<UiVisibilityState>();
-  ui_visibility_state_->timeout_ms =
-      base::Milliseconds(visibility_expectation.timeout_ms);
-  ui_visibility_state_->element_to_watch = visibility_expectation.element_name;
-  ui_visibility_state_->expected_visibile = visibility_expectation.visibility;
-}
-
-void BrowserRenderer::SetBrowserRendererBrowserInterfaceForTesting(
-    BrowserRendererBrowserInterface* interface_ptr) {
-  browser_ = interface_ptr;
+    std::optional<UiVisibilityState> visibility_expectation) {
+  DCHECK(!ui_visibility_state_.has_value() ||
+         !visibility_expectation.has_value())
+      << "Attempted to watch a UI element "
+         "for visibility changes with one "
+         "in progress";
+  ui_visibility_state_ = std::move(visibility_expectation);
 }
 
 void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
@@ -170,68 +96,37 @@ void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
   ui_->OnBeginFrame(current_time, render_info.head_pose);
 
   if (ui_->SceneHasDirtyTextures()) {
-    if (!graphics_delegate_->RunInSkiaContext(base::BindOnce(
-            &UiInterface::UpdateSceneTextures, base::Unretained(ui_.get())))) {
-      browser_->ForceExitVr();
-      return;
-    }
+    ui_->UpdateSceneTextures();
   }
-  ReportElementVisibilityStatusForTesting(timing_start);
+  ReportElementVisibilityStatus(timing_start);
 
   base::TimeDelta scene_time = base::TimeTicks::Now() - timing_start;
   // Don't double-count the controller time that was part of the scene time.
   ui_processing_time_.AddSample(scene_time);
 }
 
-void BrowserRenderer::ProcessControllerInputForWebXr(
-    const gfx::Transform& head_pose,
-    base::TimeTicks current_time) {
-  TRACE_EVENT0("gpu", "Vr.ProcessControllerInputForWebXr");
-  DCHECK(input_delegate_);
-  DCHECK(ui_);
-  base::TimeTicks timing_start = base::TimeTicks::Now();
-
-  input_delegate_->UpdateController(head_pose, current_time, true);
-  auto input_event_list = input_delegate_->GetGestures(current_time);
-  ui_->HandleMenuButtonEvents(&input_event_list);
-
-  ui_controller_update_time_.AddSample(base::TimeTicks::Now() - timing_start);
-
-  scheduler_delegate_->AddInputSourceState(
-      input_delegate_->GetInputSourceState());
-}
-
-void BrowserRenderer::ConnectPresentingService(
-    device::mojom::XRRuntimeSessionOptionsPtr options) {
-  scheduler_delegate_->ConnectPresentingService(std::move(options));
-}
-
-base::WeakPtr<BrowserRenderer> BrowserRenderer::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void BrowserRenderer::ReportElementVisibilityStatusForTesting(
+void BrowserRenderer::ReportElementVisibilityStatus(
     const base::TimeTicks& current_time) {
-  if (ui_visibility_state_ == nullptr)
+  if (!ui_visibility_state_.has_value()) {
     return;
+  }
   base::TimeDelta time_since_start =
       current_time - ui_visibility_state_->start_time;
-  if (ui_->GetElementVisibilityForTesting(
-          ui_visibility_state_->element_to_watch) ==
+  if (ui_->GetElementVisibility(ui_visibility_state_->element_to_watch) ==
       ui_visibility_state_->expected_visibile) {
-    ReportElementVisibilityResultForTesting(
-        UiTestOperationResult::kVisibilityMatch);
+    ReportElementVisibilityResult(true);  // IN-TEST
   } else if (time_since_start > ui_visibility_state_->timeout_ms) {
-    ReportElementVisibilityResultForTesting(
-        UiTestOperationResult::kTimeoutNoVisibilityMatch);
+    ReportElementVisibilityResult(false);  // IN-TEST
   }
 }
 
-void BrowserRenderer::ReportElementVisibilityResultForTesting(
-    UiTestOperationResult result) {
-  ui_visibility_state_ = nullptr;
-  browser_->ReportUiOperationResultForTesting(
-      UiTestOperationType::kElementVisibilityStatus, result);
+void BrowserRenderer::ReportElementVisibilityResult(bool result) {
+  // Grab the callback and then destroy 'ui_visibility_state_' to prevent
+  // re-entrant behavior being blocked by having the 'ui_visibility_state_' or
+  // overwriting it and then dropping our callback.
+  auto callback = std::move(ui_visibility_state_->on_visibility_change_result);
+  ui_visibility_state_ = std::nullopt;
+  std::move(callback).Run(result);
 }
 
 }  // namespace vr

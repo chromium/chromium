@@ -4,27 +4,27 @@
 
 #include "chrome/updater/util/unit_test_util.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -39,16 +39,19 @@
 namespace updater::test {
 namespace {
 
-template <typename StringT>
-std::string ToString(const StringT& s) {
-  if constexpr (std::is_same_v<StringT, std::wstring>) {
-    return base::WideToUTF8(s);
-  } else {
-    return s;
-  }
+std::string ToString(const std::string& s) {
+  return s;
+}
+
+std::string ToString(const std::wstring& s) {
+  return base::WideToUTF8(s);
 }
 
 }  // namespace
+
+TEST(UnitTestUtil, ToString) {
+  EXPECT_EQ(ToString("test"), ToString(L"test"));
+}
 
 TEST(UnitTestUtil, Processes) {
   auto print_processes_tester =
@@ -130,7 +133,7 @@ TEST(UnitTestUtil, DISABLED_PrintTestTimeouts) {
 }
 
 TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
-  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(absl::nullopt));
+  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(std::nullopt));
 
   const base::FilePath path_not_found(FILE_PATH_LITERAL("path-not-found"));
   EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(path_not_found));
@@ -170,12 +173,12 @@ TEST(UnitTestUtil, FindProcesses) {
   const base::Process process = base::LaunchProcess(command_line, {});
   ASSERT_TRUE(process.IsValid());
 
-  EXPECT_TRUE(test::WaitFor([&]() { return process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return process.IsRunning(); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
-  EXPECT_TRUE(test::WaitFor([&]() { return !process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return !process.IsRunning(); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 #endif  // BUILDFLAG(IS_WIN)

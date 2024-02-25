@@ -9,10 +9,12 @@
 #include "base/android/jni_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/android/native_j_unittests_jni_headers/SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_jni.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +31,12 @@ namespace safe_browsing {
 namespace {
 
 // This value should be aligned with DEFAULT_CHECK_DELTA_MS in
-// SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.
-constexpr int kExpectedCheckDeltaMs = 10;
+// SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.MockSafetyNetApiHandler.
+constexpr int kExpectedSafetyNetCheckDeltaMs = 10;
+
+// This value should be aligned with DEFAULT_CHECK_DELTA_MICROSECONDS in
+// SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.MockSafeBrowsingApiHandler.
+constexpr int kExpectedSafeBrowsingCheckDeltaMicroseconds = 15;
 
 std::vector<SafetyNetJavaThreatType> GetAllSafetyNetThreatsOfInterest() {
   return {SafetyNetJavaThreatType::UNWANTED_SOFTWARE,
@@ -40,9 +46,9 @@ std::vector<SafetyNetJavaThreatType> GetAllSafetyNetThreatsOfInterest() {
 }
 
 std::vector<SafeBrowsingJavaThreatType> GetAllSafeBrowsingThreatTypes() {
-  return {SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
+  return {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+          SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE,
           SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION,
-          SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
           SafeBrowsingJavaThreatType::BILLING};
 }
 
@@ -56,6 +62,13 @@ SBThreatTypeSet GetAllThreatTypes() {
 
 class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
  public:
+  SafeBrowsingApiHandlerBridgeTest() {
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+         safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck},
+        {});
+  }
+
   void SetUp() override {
     env_ = base::android::AttachCurrentThread();
     ASSERT_THAT(env_, NotNull());
@@ -164,101 +177,264 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         std::move(callback), url, threat_types);
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(callback_executed);
+    EXPECT_EQ(
+        Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_getSafeBrowsingApiUrlCheckTimeObserverResult(
+            env_),
+        kExpectedSafeBrowsingCheckDeltaMicroseconds);
   }
 
-  void CheckHistogramValues(UmaRemoteCallResult expected_result) {
-    histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CheckDelta",
-                                         /*sample=*/kExpectedCheckDeltaMs,
-                                         /*expected_bucket_count=*/1);
+  void CheckSafetyNetApiHistogramValues(UmaRemoteCallResult expected_result) {
+    histogram_tester_.ExpectUniqueSample(
+        "SB2.RemoteCall.CheckDelta",
+        /*sample=*/kExpectedSafetyNetCheckDeltaMs,
+        /*expected_bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.Result",
                                          /*sample=*/expected_result,
                                          /*expected_bucket_count=*/1);
   }
 
+  void CheckSafeBrowsingApiHistogramValues(
+      const std::string& suffix,
+      bool expected_is_available,
+      SafeBrowsingJavaValidationResult expected_validation_result,
+      int expected_lookup_result,
+      std::optional<int> expected_threat_type,
+      std::optional<int> expected_threat_attribute,
+      std::optional<int> expected_threat_attribute_count,
+      std::optional<int> expected_response_status) {
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta",
+        /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta" + suffix,
+        /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.IsAvailable",
+        /*sample=*/expected_is_available,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.IsAvailable" + suffix,
+        /*sample=*/expected_is_available,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult",
+        /*sample=*/expected_validation_result,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult" + suffix,
+        /*sample=*/expected_validation_result,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.LookupResult",
+        /*sample=*/expected_lookup_result,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.GmsSafeBrowsingApi.LookupResult" + suffix,
+        /*sample=*/expected_lookup_result,
+        /*expected_bucket_count=*/1);
+    if (expected_threat_type.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
+          /*sample=*/expected_threat_type.value(),
+          /*expected_bucket_count=*/1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2" + suffix,
+          /*sample=*/expected_threat_type.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
+          /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatType2" + suffix,
+          /*expected_count=*/0);
+    }
+    if (expected_threat_attribute.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute",
+          /*sample=*/expected_threat_attribute.value(),
+          /*expected_bucket_count=*/1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute" + suffix,
+          /*sample=*/expected_threat_attribute.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute",
+          /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute" + suffix,
+          /*expected_count=*/0);
+    }
+    if (expected_threat_attribute_count.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount",
+          /*sample=*/expected_threat_attribute_count.value(),
+          /*expected_bucket_count=*/1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount" + suffix,
+          /*sample=*/expected_threat_attribute_count.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount",
+          /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          "SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount" + suffix,
+          /*expected_count=*/0);
+    }
+    if (expected_response_status.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus",
+          /*sample=*/expected_response_status.value(),
+          /*expected_bucket_count=*/1);
+      histogram_tester_.ExpectUniqueSample(
+          "SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus" + suffix,
+          /*sample=*/expected_response_status.value(),
+          /*expected_bucket_count=*/1);
+      if (expected_response_status.value() ==
+          static_cast<int>(
+              SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME)) {
+        histogram_tester_.ExpectUniqueSample(
+            "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime",
+            /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
+            /*expected_bucket_count=*/1);
+      } else {
+        histogram_tester_.ExpectTotalCount(
+            "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime",
+            /*expected_count=*/0);
+      }
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus",
+          /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus" + suffix,
+          /*expected_count=*/0);
+    }
+  }
+
   raw_ptr<JNIEnv> env_;
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Safe) {
   GURL url("https://example.com");
-  AddSafetyNetBlocklistResponse(url, /*metadata=*/"{}",
-                                GetAllSafetyNetThreatsOfInterest());
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 
   RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
                           /*expected_subresource_filter_match=*/{});
   task_environment_.RunUntilIdle();
 
-  CheckHistogramValues(
-      /*expected_result=*/UmaRemoteCallResult::SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".LocalBlocklist",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(
+          SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
        HashDatabaseUrlCheck_SingleThreatMatch) {
   base::HistogramTester histogram_tester;
   GURL url("https://example.com");
-  // threat_type: 3 is unwanted.
-  std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata,
-                                GetAllSafetyNetThreatsOfInterest());
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 
   RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
                           /*expected_subresource_filter_match=*/{});
 
-  CheckHistogramValues(
-      /*expected_result=*/UmaRemoteCallResult::MATCH);
-}
-
-TEST_F(SafeBrowsingApiHandlerBridgeTest,
-       HashDatabaseUrlCheck_MultipleThreatMatch) {
-  GURL url("https://example.com");
-  std::string metadata =
-      "{\"matches\":[{\"threat_type\":\"4\"}, {\"threat_type\":\"5\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata,
-                                GetAllSafetyNetThreatsOfInterest());
-
-  // Although the URL matches both malware and phishing, the returned
-  // threat type should be malware because the severity of malware
-  // threat is higher.
-  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
-                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE,
-                          /*expected_subresource_filter_match=*/{});
-
-  CheckHistogramValues(
-      /*expected_result=*/UmaRemoteCallResult::MATCH);
+  CheckSafeBrowsingApiHistogramValues(
+      ".LocalBlocklist",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(
+          SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
        HashDatabaseUrlCheck_ThreatMatchWithSubresourceFilter) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com");
-  std::string metadata =
-      "{\"matches\":[{\"threat_type\":\"13\", "
-      "\"sf_absv\":\"enforce\"}]}";
-  AddSafetyNetBlocklistResponse(url, metadata,
-                                {SafetyNetJavaThreatType::SUBRESOURCE_FILTER});
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+      {SafeBrowsingJavaThreatAttribute::CANARY},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+       SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 
   RunHashDatabaseUrlCheck(
-      url, /*threat_types=*/{SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      url, /*threat_types=*/
+      {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_SUBRESOURCE_FILTER},
       /*expected_threat_type=*/SB_THREAT_TYPE_SUBRESOURCE_FILTER,
       /*expected_subresource_filter_match=*/
-      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}});
+      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::WARN}});
 
-  CheckHistogramValues(
-      /*expected_result=*/UmaRemoteCallResult::MATCH);
+  CheckSafeBrowsingApiHistogramValues(
+      ".LocalBlocklist",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(
+          SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION),
+      /*expected_threat_attribute=*/1,
+      /*expected_threat_attribute_count=*/
+      static_cast<int>(SafeBrowsingJavaThreatAttribute::CANARY),
+      /*expected_response_status=*/
+      static_cast<int>(
+          SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
        HashDatabaseUrlCheck_MultipleRequests) {
   GURL unsafe_url("https://unsafe.com");
   GURL safe_url("https://safe.com");
-  std::string metadata_unsafe = "{\"matches\":[{\"threat_type\":\"5\"}]}";
-  std::string metadata_safe = "{}";
-  AddSafetyNetBlocklistResponse(unsafe_url, metadata_unsafe,
-                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
-  AddSafetyNetBlocklistResponse(safe_url, metadata_safe,
-                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
+  AddSafeBrowsingResponse(
+      unsafe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  AddSafeBrowsingResponse(
+      safe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 
   RunHashDatabaseUrlCheck(unsafe_url,
                           /*threat_types=*/{SB_THREAT_TYPE_URL_PHISHING},
@@ -269,29 +445,46 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
                           /*expected_subresource_filter_match=*/{});
 
-  histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CheckDelta",
-                                       /*sample=*/kExpectedCheckDeltaMs,
-                                       /*expected_bucket_count=*/2);
-  histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
-                                      /*sample=*/UmaRemoteCallResult::MATCH,
-                                      /*expected_count=*/1);
-  histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
-                                      /*sample=*/UmaRemoteCallResult::SAFE,
-                                      /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta",
+      /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
+      /*expected_bucket_count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
+      /*sample=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING),
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.GmsSafeBrowsingApi.ThreatType2",
+      /*sample=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
+      /*expected_count=*/1);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
-  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerResult(
-      env_, static_cast<int>(SafetyNetRemoteCallResultStatus::TIMEOUT));
   GURL url("https://example.com");
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
 
   RunHashDatabaseUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
                           /*expected_subresource_filter_match=*/{});
 
-  CheckHistogramValues(
-      /*expected_result=*/UmaRemoteCallResult::TIMEOUT);
+  CheckSafeBrowsingApiHistogramValues(
+      ".LocalBlocklist",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT),
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {
@@ -318,6 +511,18 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_Safe) {
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::NO_THREAT),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
@@ -329,8 +534,21 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
       GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
 
   RunHashRealTimeUrlCheck(url,
-                          /*threat_types=*/GetAllThreatTypes(),
+                          /*threat_types=*/
+                          GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -348,6 +566,16 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/
+      SafeBrowsingJavaValidationResult::INVALID_LOOKUP_RESULT,
+      /*expected_lookup_result=*/invalid_lookup_result,
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -364,6 +592,18 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/
+      SafeBrowsingJavaValidationResult::INVALID_THREAT_TYPE,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/invalid_threat_type,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -383,6 +623,20 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/
+      SafeBrowsingJavaValidationResult::INVALID_THREAT_ATTRIBUTE,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(
+          SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION),
+      /*expected_threat_attribute=*/invalid_attribute,
+      /*expected_threat_attribute_count=*/1,
+      /*expected_response_status=*/
+      static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -401,6 +655,19 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/
+      SafeBrowsingJavaValidationResult::VALID_WITH_UNRECOGNIZED_RESPONSE_STATUS,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(
+          SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/invalid_response_status);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -417,6 +684,16 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::FAILURE),
+      /*expected_threat_type=*/std::nullopt,
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/std::nullopt,
+      /*expected_response_status=*/std::nullopt);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -431,6 +708,13 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url1,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.GmsSafeBrowsingApi.IsAvailable",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult",
+      /*expected_count=*/1);
 
   GURL url2("https://example2.com");
   std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
@@ -442,6 +726,14 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url2,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.GmsSafeBrowsingApi.IsAvailable", /*sample=*/false,
+      /*expected_count=*/1);
+  // No additional histogram because the check doesn't go through SafeBrowsing
+  // API.
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult",
+      /*expected_count=*/1);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
@@ -458,12 +750,205 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  CheckSafeBrowsingApiHistogramValues(
+      ".RealTime",
+      /*expected_is_available=*/true,
+      /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+      /*expected_lookup_result=*/
+      static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+      /*expected_threat_type=*/
+      static_cast<int>(
+          SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION),
+      /*expected_threat_attribute=*/std::nullopt,
+      /*expected_threat_attribute_count=*/0,
+      /*expected_response_status=*/
+      static_cast<int>(
+          SafeBrowsingJavaResponseStatus::FAILURE_NETWORK_UNAVAILABLE));
+}
+
+// Verifies that the callback_id counters are accumulated correctly.
+// Call order: hash database unsafe URL, hash realtime unsafe URL, hash database
+// safe URL, hash realtime safe URL.
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       MultipleRequestsWithDifferentProtocols) {
+  GURL hash_database_unsafe_url("https://hashdatabase.unsafe.com");
+  GURL hash_database_safe_url("https://hashdatabase.safe.com");
+  GURL hash_realtime_unsafe_url("https://hashrealtime.unsafe.com");
+  GURL hash_realtime_safe_url("https://hashrealtime.safe.com");
+  AddSafeBrowsingResponse(
+      hash_database_unsafe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  AddSafeBrowsingResponse(
+      hash_database_safe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  AddSafeBrowsingResponse(
+      hash_realtime_unsafe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+  AddSafeBrowsingResponse(
+      hash_realtime_safe_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  RunHashDatabaseUrlCheck(hash_database_unsafe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashRealTimeUrlCheck(hash_realtime_unsafe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+  RunHashDatabaseUrlCheck(hash_database_safe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashRealTimeUrlCheck(hash_realtime_safe_url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+class SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest
+    : public SafeBrowsingApiHandlerBridgeTest {
+ public:
+  SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {}, {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+             safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_Safe) {
+  GURL url("https://example.com");
+  AddSafetyNetBlocklistResponse(url, /*metadata=*/"{}",
+                                GetAllSafetyNetThreatsOfInterest());
+
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
+  task_environment_.RunUntilIdle();
+
+  CheckSafetyNetApiHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_SingleThreatMatch) {
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com");
+  // threat_type: 3 is unwanted.
+  std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
+
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
+                          /*expected_subresource_filter_match=*/{});
+
+  CheckSafetyNetApiHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_MultipleThreatMatch) {
+  GURL url("https://example.com");
+  std::string metadata =
+      "{\"matches\":[{\"threat_type\":\"4\"}, {\"threat_type\":\"5\"}]}";
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
+
+  // Although the URL matches both malware and phishing, the returned
+  // threat type should be malware because the severity of malware
+  // threat is higher.
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE,
+                          /*expected_subresource_filter_match=*/{});
+
+  CheckSafetyNetApiHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_ThreatMatchWithSubresourceFilter) {
+  GURL url("https://example.com");
+  std::string metadata =
+      "{\"matches\":[{\"threat_type\":\"13\", "
+      "\"sf_absv\":\"enforce\"}]}";
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                {SafetyNetJavaThreatType::SUBRESOURCE_FILTER});
+
+  RunHashDatabaseUrlCheck(
+      url, /*threat_types=*/{SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      /*expected_threat_type=*/SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      /*expected_subresource_filter_match=*/
+      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}});
+
+  CheckSafetyNetApiHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::MATCH);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_MultipleRequests) {
+  GURL unsafe_url("https://unsafe.com");
+  GURL safe_url("https://safe.com");
+  std::string metadata_unsafe = "{\"matches\":[{\"threat_type\":\"5\"}]}";
+  std::string metadata_safe = "{}";
+  AddSafetyNetBlocklistResponse(unsafe_url, metadata_unsafe,
+                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
+  AddSafetyNetBlocklistResponse(safe_url, metadata_safe,
+                                {SafetyNetJavaThreatType::SOCIAL_ENGINEERING});
+
+  RunHashDatabaseUrlCheck(unsafe_url,
+                          /*threat_types=*/{SB_THREAT_TYPE_URL_PHISHING},
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashDatabaseUrlCheck(safe_url,
+                          /*threat_types=*/{SB_THREAT_TYPE_URL_PHISHING},
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "SB2.RemoteCall.CheckDelta",
+      /*sample=*/kExpectedSafetyNetCheckDeltaMs,
+      /*expected_bucket_count=*/2);
+  histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
+                                      /*sample=*/UmaRemoteCallResult::MATCH,
+                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount("SB2.RemoteCall.Result",
+                                      /*sample=*/UmaRemoteCallResult::SAFE,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       HashDatabaseUrlCheck_Timeout) {
+  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerResult(
+      env_, static_cast<int>(SafetyNetRemoteCallResultStatus::TIMEOUT));
+  GURL url("https://example.com");
+
+  RunHashDatabaseUrlCheck(url,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE,
+                          /*expected_subresource_filter_match=*/{});
+
+  CheckSafetyNetApiHistogramValues(
+      /*expected_result=*/UmaRemoteCallResult::TIMEOUT);
 }
 
 // Verifies that the callback_id counters are accumulated correctly.
 // Call order: SafetyNet unsafe URL, SafeBrowsing unsafe URL, SafetyNet safe
 // URL, SafeBrowsing safe URL.
-TEST_F(SafeBrowsingApiHandlerBridgeTest, MultipleRequestsWithDifferentApis) {
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiDisabledTest,
+       MultipleRequestsWithDifferentApis) {
   GURL safetynet_unsafe_url("https://safetynet.unsafe.com");
   GURL safetynet_safe_url("https://safetynet.safe.com");
   GURL safebrowsing_unsafe_url("https://safebrowsing.unsafe.com");
@@ -499,6 +984,99 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, MultipleRequestsWithDifferentApis) {
   RunHashRealTimeUrlCheck(safebrowsing_safe_url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+class SafeBrowsingApiHandlerBridgeNewGmsApiForBrowseUrlDisabledTest
+    : public SafeBrowsingApiHandlerBridgeTest {
+ public:
+  SafeBrowsingApiHandlerBridgeNewGmsApiForBrowseUrlDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck},
+        {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiForBrowseUrlDisabledTest,
+       HashDatabaseUrlCheck_SingleThreatMatch) {
+  GURL url("https://example.com");
+  // threat_type: 3 is unwanted.
+  std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
+
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
+                          /*expected_subresource_filter_match=*/{});
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiForBrowseUrlDisabledTest,
+       HashDatabaseUrlCheck_ThreatMatchWithSubresourceFilter) {
+  GURL url("https://example.com");
+  // Subresource filter is still checked through the new API.
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+      {SafeBrowsingJavaThreatAttribute::CANARY},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+       SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+
+  RunHashDatabaseUrlCheck(
+      url, /*threat_types=*/
+      {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      /*expected_threat_type=*/SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      /*expected_subresource_filter_match=*/
+      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::WARN}});
+}
+
+class SafeBrowsingApiHandlerBridgeNewGmsApiForSubresourceFilterDisabledTest
+    : public SafeBrowsingApiHandlerBridgeTest {
+ public:
+  SafeBrowsingApiHandlerBridgeNewGmsApiForSubresourceFilterDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck},
+        {safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiForSubresourceFilterDisabledTest,
+       HashDatabaseUrlCheck_SingleThreatMatch) {
+  GURL url("https://example.com");
+  // Browse URL is still checked through the new API.
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+
+  RunHashDatabaseUrlCheck(url, /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
+                          /*expected_subresource_filter_match=*/{});
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeNewGmsApiForSubresourceFilterDisabledTest,
+       HashDatabaseUrlCheck_ThreatMatchWithSubresourceFilter) {
+  GURL url("https://example.com");
+  std::string metadata =
+      "{\"matches\":[{\"threat_type\":\"13\", "
+      "\"sf_absv\":\"enforce\"}]}";
+  AddSafetyNetBlocklistResponse(url, metadata,
+                                {SafetyNetJavaThreatType::SUBRESOURCE_FILTER});
+
+  RunHashDatabaseUrlCheck(
+      url, /*threat_types=*/{SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      /*expected_threat_type=*/SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      /*expected_subresource_filter_match=*/
+      {{SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}});
 }
 
 }  // namespace safe_browsing

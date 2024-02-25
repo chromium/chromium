@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_FLOW_TEST_UTIL_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_FLOW_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::ASCIIToUTF16;
 using ::testing::_;
@@ -93,7 +93,7 @@ struct AutofillFlowParams {
   base::RepeatingClosure after_accept = {};
   size_t max_show_tries = 5;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
+  std::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
 }  // namespace internal

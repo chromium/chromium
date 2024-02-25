@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/style/pill_button.h"
@@ -17,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -27,9 +25,7 @@ namespace ash {
 
 class CastDetailedViewTest : public AshTestBase {
  public:
-  CastDetailedViewTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  CastDetailedViewTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -57,7 +53,8 @@ class CastDetailedViewTest : public AshTestBase {
     return views;
   }
 
-  std::vector<views::View*> GetExtraViewsForSink(const std::string& sink_id) {
+  std::vector<raw_ptr<views::View, VectorExperimental>> GetExtraViewsForSink(
+      const std::string& sink_id) {
     return detailed_view_->sink_extra_views_map_[sink_id];
   }
 
@@ -91,12 +88,10 @@ class CastDetailedViewTest : public AshTestBase {
     return detailed_view_->add_access_code_device_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<CastDetailedView, DanglingUntriaged | ExperimentalAsh>
-      detailed_view_ = nullptr;
+  raw_ptr<CastDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
 };
 
 TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
@@ -155,6 +150,16 @@ TEST_F(CastDetailedViewTest, AccessCodeCasting) {
   // The bubble is not closed via the delegate, because it happens via a focus
   // change when the dialog appears.
   EXPECT_EQ(delegate_->close_bubble_call_count(), 0u);
+}
+
+// When the screen is locked, we should not show the access code device button,
+// since this opens a dialog that can't be accessed when the screen is locked.
+TEST_F(CastDetailedViewTest, AccessCodeCastingButtonScreenLocked) {
+  cast_config_.set_access_code_casting_enabled(true);
+  GetSessionControllerClient()->LockScreen();
+  ResetCastDevices();
+  views::View* add_access_code_device = GetAddAccessCodeDeviceView();
+  EXPECT_FALSE(add_access_code_device);
 }
 
 TEST_F(CastDetailedViewTest, ZeroStateView) {
@@ -247,9 +252,10 @@ TEST_F(CastDetailedViewTest, FreezeButton) {
   devices.push_back(device);
   OnDevicesUpdated(devices);
 
-  std::vector<views::View*> views = GetExtraViewsForSink("fake_sink_id_1");
+  std::vector<raw_ptr<views::View, VectorExperimental>> views =
+      GetExtraViewsForSink("fake_sink_id_1");
   ASSERT_EQ(views.size(), 2u);
-  auto* freeze_button = views[0];
+  auto* freeze_button = views[0].get();
   EXPECT_TRUE(views::IsViewClass<PillButton>(freeze_button));
   EXPECT_EQ(freeze_button->GetTooltipText(gfx::Point()), u"Pause casting");
 

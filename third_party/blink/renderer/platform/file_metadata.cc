@@ -31,11 +31,11 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -76,7 +76,7 @@ bool GetFileMetadata(const String& path,
   context.GetBrowserInterfaceBroker().GetInterface(
       host.BindNewPipeAndPassReceiver());
 
-  absl::optional<base::File::Info> file_info;
+  std::optional<base::File::Info> file_info;
   if (!host->GetFileInfo(WebStringToFilePath(path), &file_info) || !file_info)
     return false;
 

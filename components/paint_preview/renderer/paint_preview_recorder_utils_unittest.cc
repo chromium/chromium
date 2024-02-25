@@ -5,6 +5,7 @@
 #include "components/paint_preview/renderer/paint_preview_recorder_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -12,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
@@ -29,9 +31,9 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -57,7 +59,7 @@ namespace {
 cc::PaintRecord AddLink(const std::string& link, const SkRect& rect) {
   cc::PaintRecorder link_recorder;
   cc::PaintCanvas* link_canvas = link_recorder.beginRecording();
-  link_canvas->Annotate(cc::PaintCanvas::AnnotationType::URL, rect,
+  link_canvas->Annotate(cc::PaintCanvas::AnnotationType::kUrl, rect,
                         SkData::MakeWithCString(link.c_str()));
   return link_recorder.finishRecordingAsPicture();
 }
@@ -65,7 +67,7 @@ cc::PaintRecord AddLink(const std::string& link, const SkRect& rect) {
 }  // namespace
 
 TEST(PaintPreviewRecorderUtilsTest, TestParseGlyphs) {
-  auto typeface = SkTypeface::MakeDefault();
+  sk_sp<SkTypeface> typeface = skia::DefaultTypeface();
   SkFont font(typeface);
   std::string unichars_1 = "abc";
   std::string unichars_2 = "efg";
@@ -239,13 +241,13 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
-  absl::optional<SerializedRecording> SerializeAsSkPicture(
-      absl::optional<size_t> max_capture_size,
+  std::optional<SerializedRecording> SerializeAsSkPicture(
+      std::optional<size_t> max_capture_size,
       size_t* serialized_size) {
     auto skp = PaintRecordToSkPicture(recorder.finishRecordingAsPicture(),
                                       &tracker, dimensions);
     if (!skp)
-      return absl::nullopt;
+      return std::nullopt;
 
     canvas = nullptr;
 
@@ -253,30 +255,30 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
       case RecordingPersistence::kFileSystem: {
         base::ScopedTempDir temp_dir;
         if (!temp_dir.CreateUniqueTempDir())
-          return absl::nullopt;
+          return std::nullopt;
 
         base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
         base::File write_file(
             file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
         if (!RecordToFile(std::move(write_file), skp, &tracker,
                           max_capture_size, serialized_size))
-          return absl::nullopt;
+          return std::nullopt;
 
         return {SerializedRecording(file_path)};
       }
 
       case RecordingPersistence::kMemoryBuffer: {
-        absl::optional<mojo_base::BigBuffer> buffer =
+        std::optional<mojo_base::BigBuffer> buffer =
             RecordToBuffer(skp, &tracker, max_capture_size, serialized_size);
         if (!buffer.has_value())
-          return absl::nullopt;
+          return std::nullopt;
 
         return {SerializedRecording(std::move(buffer.value()))};
       }
     }
 
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PaintPreviewTracker tracker;
@@ -285,7 +287,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   cc::PaintRecorder recorder;
 
   // Valid after SetUp() until SerializeAsSkPicture() is called.
-  cc::PaintCanvas* canvas{};
+  raw_ptr<cc::PaintCanvas> canvas = nullptr;
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -309,10 +311,10 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, Roundtrip) {
   ctx.insert(content_id);
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
   for (auto& id : ctx) {
     EXPECT_TRUE(result->ctx.contains(id));
@@ -334,10 +336,10 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, RoundtripWithImage) {
   }
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
 
   SkBitmap bitmap;
@@ -388,10 +390,10 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
   }
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
 
   SkBitmap bitmap;
@@ -431,10 +433,10 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
   }
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
 
   SkBitmap bitmap;
@@ -462,10 +464,10 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
   }
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
 
   SkBitmap bitmap;
@@ -516,11 +518,11 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
   }
 
   size_t out_size = 0;
-  auto recording = SerializeAsSkPicture(absl::nullopt, &out_size);
+  auto recording = SerializeAsSkPicture(std::nullopt, &out_size);
   // The paint worklet needs to be skipped. Just make sure it doesn't crash.
   ASSERT_TRUE(recording.has_value());
 
-  absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
+  std::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
 }
 

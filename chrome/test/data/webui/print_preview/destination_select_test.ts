@@ -2,22 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, getSelectDropdownBackground, IronMeta} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
-const destination_select_test = {
-  suiteName: 'DestinationSelectTest',
-  TestNames: {
-    ChangeIcon: 'change icon',
-  },
-};
-
-Object.assign(window, {destination_select_test: destination_select_test});
-
-suite(destination_select_test.suiteName, function() {
+suite('DestinationSelectTest', function() {
   let destinationSelect: PrintPreviewDestinationSelectElement;
 
   let recentDestinationList: Destination[] = [];
@@ -56,7 +48,7 @@ suite(destination_select_test.suiteName, function() {
     assertEquals(expected, icon);
   }
 
-  test(destination_select_test.TestNames.ChangeIcon, function() {
+  test('change icon', function() {
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 

@@ -270,6 +270,14 @@ class HeadlessDevToolsNavigationControlTest
   void RunDevTooledTest() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    SendCommandSync(devtools_client_, "Page.enable");
+    SendCommandSync(devtools_client_, "Network.enable");
+
+    base::Value::List patterns;
+    patterns.Append(Param("urlPattern", "*"));
+    devtools_client_.SendCommand("Network.setRequestInterception",
+                                 Param("patterns", std::move(patterns)));
+
     devtools_client_.AddEventHandler(
         "Network.requestIntercepted",
         base::BindRepeating(
@@ -281,14 +289,6 @@ class HeadlessDevToolsNavigationControlTest
         base::BindRepeating(
             &HeadlessDevToolsNavigationControlTest::OnFrameStoppedLoading,
             base::Unretained(this)));
-
-    SendCommandSync(devtools_client_, "Page.enable");
-    SendCommandSync(devtools_client_, "Network.enable");
-
-    base::Value::List patterns;
-    patterns.Append(Param("urlPattern", "*"));
-    devtools_client_.SendCommand("Network.setRequestInterception",
-                                 Param("patterns", std::move(patterns)));
 
     devtools_client_.SendCommand(
         "Page.navigate",
@@ -530,7 +530,7 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
 
     CompareToGolden(
         dom_nodes,
@@ -590,14 +590,16 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
 
       // Golden file expects scrollOffsetXY to have fractional part.
       // TODO(kvitekp): Consider updating golden files.
-      if (absl::optional<double> x = node_dict.FindDouble("scrollOffsetX"))
+      if (std::optional<double> x = node_dict.FindDouble("scrollOffsetX")) {
         node_dict.Set("scrollOffsetX", *x);
+      }
 
-      if (absl::optional<double> y = node_dict.FindDouble("scrollOffsetY"))
+      if (std::optional<double> y = node_dict.FindDouble("scrollOffsetY")) {
         node_dict.Set("scrollOffsetY", *y);
+      }
 
       // Merge LayoutTreeNode data into the dom_node dictionary.
-      if (absl::optional<int> layout_node_index =
+      if (std::optional<int> layout_node_index =
               node_dict.FindInt("layoutNodeIndex")) {
         ASSERT_LE(0, *layout_node_index);
         ASSERT_GT(layout_tree_nodes_list->size(),
@@ -617,7 +619,7 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
           node_dict.Set("layoutText", *layout_text);
         }
 
-        if (absl::optional<int> style_index =
+        if (std::optional<int> style_index =
                 layout_tree_node.FindInt("styleIndex")) {
           node_dict.Set("styleIndex", *style_index);
         }

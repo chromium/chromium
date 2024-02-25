@@ -14,11 +14,9 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingValues;
 
-/**
- * A 3-state Allowed/Ask/Blocked radio group Preference used for SiteSettings.
- */
-public class TriStateSiteSettingsPreference
-        extends Preference implements RadioGroup.OnCheckedChangeListener {
+/** A 3-state Allowed/Ask/Blocked radio group Preference used for SiteSettings. */
+public class TriStateSiteSettingsPreference extends Preference
+        implements RadioGroup.OnCheckedChangeListener {
     private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
     private int[] mDescriptionIds;
     private RadioButtonWithDescription mAllowed;
@@ -49,9 +47,7 @@ public class TriStateSiteSettingsPreference
         mDescriptionIds = descriptionIds;
     }
 
-    /**
-     * @return The current checked setting.
-     */
+    /** @return The current checked setting. */
     public @ContentSettingValues int getCheckedSetting() {
         return mSetting;
     }
@@ -89,9 +85,7 @@ public class TriStateSiteSettingsPreference
         if (radioButton != null) radioButton.setChecked(true);
     }
 
-    /**
-     * @param setting The setting to find RadioButton for.
-     */
+    /** @param setting The setting to find RadioButton for. */
     private RadioButtonWithDescription findRadioButton(@ContentSettingValues int setting) {
         if (setting == ContentSettingValues.ALLOW) {
             return mAllowed;

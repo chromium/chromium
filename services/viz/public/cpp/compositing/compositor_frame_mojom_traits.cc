@@ -58,6 +58,15 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
     }
   }
 
+  // Ensure that all region capture bounds are contained within the compositor
+  // frame.
+  gfx::Rect compositor_frame_bounds(out->size_in_pixels());
+  for (const auto& crop_id_and_bounds : out->metadata.capture_bounds.bounds()) {
+    if (!compositor_frame_bounds.Contains(crop_id_and_bounds.second)) {
+      return false;
+    }
+  }
+
   if (!data.ReadResources(&out->resource_list)) {
     viz::SetDeserializationCrashKeyString(
         "Failed read CompositorFrame::resource_list");

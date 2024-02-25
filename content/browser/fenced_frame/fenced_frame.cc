@@ -74,7 +74,7 @@ FencedFrame::~FencedFrame() {
 void FencedFrame::Navigate(
     const GURL& url,
     base::TimeTicks navigation_start_time,
-    const absl::optional<std::u16string>& embedder_shared_storage_context) {
+    const std::optional<std::u16string>& embedder_shared_storage_context) {
   // We don't need guard against a bad message in the case of prerendering since
   // we wouldn't even establish the mojo connection in that case.
   DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
@@ -103,6 +103,31 @@ void FencedFrame::Navigate(
       bad_message::ReceivedBadMessage(
           owner_render_frame_host_->GetProcess(),
           bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
+      return;
+    }
+  }
+
+  // In fenced frames with network disabled, embedder-initiated navigations of
+  // nested fenced frames are not allowed. (This is automatically handled for
+  // nested iframes but not nested fenced frames, because nested fenced frames
+  // have their own partition nonce.)
+  // Note the kFrameTreeRoot traversal, because urn iframes cannot disable
+  // network, so the properties of urn iframes nested inside fenced frames
+  // should be ignored.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    const std::optional<
+        FencedFrameProperties>& embedder_fenced_frame_properties =
+        owner_render_frame_host_->frame_tree_node()->GetFencedFrameProperties(
+            FencedFramePropertiesNodeSource::kFrameTreeRoot);
+    if (embedder_fenced_frame_properties.has_value() &&
+        embedder_fenced_frame_properties->has_disabled_untrusted_network()) {
+      owner_render_frame_host_->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Embedder-initiated navigations of fenced frames are not allowed "
+          "after"
+          " the embedder's network has been disabled.");
+      return;
     }
   }
 
@@ -140,7 +165,7 @@ void FencedFrame::Navigate(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
       content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
-      /*initiator_base_url=*/absl::nullopt,
+      /*initiator_base_url=*/std::nullopt,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",
@@ -148,7 +173,7 @@ void FencedFrame::Navigate(
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
-      /*impression=*/absl::nullopt, initiator_activation_and_ad_status,
+      /*impression=*/std::nullopt, initiator_activation_and_ad_status,
       navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,
@@ -169,10 +194,6 @@ RenderFrameHostImpl* FencedFrame::GetProspectiveOuterDocument() {
   // A fenced frame's outer document is known at initialization, so we could
   // never be in this unattached state.
   return nullptr;
-}
-
-bool FencedFrame::IsPortal() {
-  return false;
 }
 
 FrameTree* FencedFrame::LoadingTree() {
@@ -308,10 +329,6 @@ void FencedFrame::ActivateAndShowRepostFormWarningDialog() {
 
 bool FencedFrame::ShouldPreserveAbortedURLs() {
   return false;
-}
-
-WebContents* FencedFrame::DeprecatedGetWebContents() {
-  return web_contents_;
 }
 
 void FencedFrame::UpdateOverridingUserAgent() {}

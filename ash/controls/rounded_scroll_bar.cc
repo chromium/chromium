@@ -144,12 +144,12 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   }
 
  private:
-  const raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_;
+  const raw_ptr<RoundedScrollBar> scroll_bar_;
   views::Button::ButtonState current_state_ = views::Button::STATE_NORMAL;
 };
 
-RoundedScrollBar::RoundedScrollBar(bool horizontal)
-    : ScrollBar(horizontal),
+RoundedScrollBar::RoundedScrollBar(Orientation orientation)
+    : ScrollBar(orientation),
       thumb_(new Thumb(this)),  // Owned by views hierarchy.
       hide_scrollbar_timer_(
           FROM_HERE,
@@ -192,8 +192,9 @@ bool RoundedScrollBar::OverlapsContent() const {
 
 int RoundedScrollBar::GetThickness() const {
   // Extend the thickness by the insets on the sides of the bar.
-  const int sides = IsHorizontal() ? insets_.top() + insets_.bottom()
-                                   : insets_.left() + insets_.right();
+  const int sides = GetOrientation() == Orientation::kHorizontal
+                        ? insets_.top() + insets_.bottom()
+                        : insets_.left() + insets_.right();
   return thumb_->GetThumbThickness() + sides;
 }
 
@@ -281,7 +282,7 @@ void RoundedScrollBar::OnThumbBoundsChanged() {
   }
 }
 
-BEGIN_METADATA(RoundedScrollBar, ScrollBar)
+BEGIN_METADATA(RoundedScrollBar)
 END_METADATA
 
 }  // namespace ash

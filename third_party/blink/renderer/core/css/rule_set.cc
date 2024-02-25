@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
+#include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -61,6 +63,8 @@ template <class T>
 static void AddRuleToIntervals(const T* value,
                                unsigned position,
                                HeapVector<RuleSet::Interval<T>>& intervals);
+
+static void UnmarkAsCoveredByBucketing(CSSSelector& selector);
 
 static inline ValidPropertyFilter DetermineValidPropertyFilter(
     const AddRuleFlags add_rule_flags,
@@ -128,7 +132,8 @@ RuleData::RuleData(StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
                    const StyleScope* style_scope,
-                   AddRuleFlags add_rule_flags)
+                   AddRuleFlags add_rule_flags,
+                   Vector<unsigned>& bloom_hash_backing)
     : rule_(rule),
       selector_index_(selector_index),
       position_(position),
@@ -142,8 +147,9 @@ RuleData::RuleData(StyleRule* rule,
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
       is_starting_style_((add_rule_flags & kRuleIsStartingStyle) != 0),
-      descendant_selector_identifier_hashes_() {
-  ComputeBloomFilterHashes(style_scope);
+      bloom_hash_size_(0),
+      bloom_hash_pos_(0) {
+  ComputeBloomFilterHashes(style_scope, bloom_hash_backing);
 }
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
@@ -169,10 +175,45 @@ void RuleData::ResetEntirelyCoveredByBucketing() {
   is_entirely_covered_by_bucketing_ = false;
 }
 
-void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope) {
-  SelectorFilter::CollectIdentifierHashes(
-      Selector(), style_scope, descendant_selector_identifier_hashes_,
-      kMaximumIdentifierCount);
+void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
+                                        Vector<unsigned>& bloom_hash_backing) {
+  if (bloom_hash_backing.size() >= 16777216) {
+    // This won't fit into bloom_hash_pos_, so don't collect any hashes.
+    return;
+  }
+  bloom_hash_pos_ = bloom_hash_backing.size();
+  SelectorFilter::CollectIdentifierHashes(Selector(), style_scope,
+                                          bloom_hash_backing);
+
+  // The clamp here is purely for safety; a real rule would never have
+  // as many as 255 descendant selectors.
+  bloom_hash_size_ =
+      std::min<uint32_t>(bloom_hash_backing.size() - bloom_hash_pos_, 255);
+
+  // If we've already got the exact same set of hashes in the vector,
+  // we can simply reuse those, saving a bit of memory and cache space.
+  // We only check the trivial case of a tail match; we could go with
+  // something like a full suffix tree solution, but this is simple and
+  // captures most of the benefits. (It is fairly common, especially with
+  // nesting, to have the same sets of parents in consecutive rules.)
+  if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
+      std::equal(
+          bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
+          bloom_hash_backing.begin() + bloom_hash_pos_,
+          bloom_hash_backing.begin() + bloom_hash_pos_)) {
+    bloom_hash_backing.resize(bloom_hash_pos_);
+    bloom_hash_pos_ -= bloom_hash_size_;
+  }
+}
+
+void RuleData::MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
+                                       Vector<unsigned>& new_backing,
+                                       unsigned new_position) {
+  unsigned new_pos = new_backing.size();
+  new_backing.insert(new_backing.size(), old_backing.data() + bloom_hash_pos_,
+                     bloom_hash_size_);
+  bloom_hash_pos_ = new_pos;
+  position_ = new_position;
 }
 
 void RuleSet::AddToRuleSet(const AtomicString& key,
@@ -183,7 +224,15 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
     // see class comment on RuleMap.
     map.Uncompact();
   }
-  map.Add(key, rule_data);
+  if (!map.Add(key, rule_data)) {
+    // This should really only happen in case of an attack;
+    // we stick it in the universal bucket so that correctness
+    // is preserved, even though the performance will be suboptimal.
+    RuleData rule_data_copy = rule_data;
+    UnmarkAsCoveredByBucketing(rule_data_copy.MutableSelector());
+    AddToRuleSet(universal_rules_, rule_data_copy);
+    return;
+  }
   // Don't call ComputeBloomFilterHashes() here; RuleMap needs that space for
   // group information, and will call ComputeBloomFilterHashes() itself on
   // compaction.
@@ -237,7 +286,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
-        case CSSSelector::kPseudoSpatialNavigationInterest:
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
@@ -246,7 +294,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
         case CSSSelector::kPseudoDetailsContent:
-        case CSSSelector::kPseudoDetailsSummary:
           custom_pseudo_element_name = selector->Value();
           break;
         case CSSSelector::kPseudoPart:
@@ -320,9 +367,6 @@ static const CSSSelector* ExtractBestSelectorValues(
 template <class Func>
 static void MarkAsCoveredByBucketing(CSSSelector& selector,
                                      Func&& should_mark_func) {
-  if (!RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
-    return;
-  }
   for (CSSSelector* s = &selector;;
        ++s) {  // Termination condition within loop.
     if (should_mark_func(*s)) {
@@ -337,6 +381,17 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
     // We could also have taken universal selectors no matter what
     // should_mark_func() says, but again, we consider that not worth it.
 
+    if (s->IsLastInComplexSelector() ||
+        s->Relation() != CSSSelector::kSubSelector) {
+      break;
+    }
+  }
+}
+
+static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
+  for (CSSSelector* s = &selector;;
+       ++s) {  // Termination condition within loop.
+    s->SetCoveredByBucketing(false);
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
       break;
@@ -440,9 +495,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       }
       AddToRuleSet(link_pseudo_class_rules_, rule_data);
       return;
-    case CSSSelector::kPseudoSpatialNavigationInterest:
-      AddToRuleSet(spatial_navigation_interest_class_rules_, rule_data);
-      return;
     case CSSSelector::kPseudoFocus:
       if (bucket_coverage == BucketCoverage::kCompute) {
         MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
@@ -540,7 +592,7 @@ void RuleSet::AddRule(StyleRule* rule,
     return;
   }
   RuleData rule_data(rule, selector_index, rule_count_, style_scope,
-                     add_rule_flags);
+                     add_rule_flags, bloom_hash_backing_);
   ++rule_count_;
   if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
                                             style_scope) ==
@@ -560,9 +612,9 @@ void RuleSet::AddRule(StyleRule* rule,
     // Now the selector will be in two buckets.
     rule_data.ResetEntirelyCoveredByBucketing();
 
-    RuleData visited_dependent(rule, rule_data.SelectorIndex(),
-                               rule_data.GetPosition(), style_scope,
-                               add_rule_flags | kRuleIsVisitedDependent);
+    RuleData visited_dependent(
+        rule, rule_data.SelectorIndex(), rule_data.GetPosition(), style_scope,
+        add_rule_flags | kRuleIsVisitedDependent, bloom_hash_backing_);
     // Since the selector now is in two buckets, we use BucketCoverage::kIgnore
     // to prevent CSSSelector::is_covered_by_bucketing_ from being set.
     FindBestRuleSetAndAdd<BucketCoverage::kIgnore>(
@@ -645,9 +697,14 @@ void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   position_fallback_rules_.push_back(rule);
 }
 
-void RuleSet::AddViewTransitionsRule(StyleRuleViewTransitions* rule) {
+void RuleSet::AddFunctionRule(StyleRuleFunction* rule) {
   need_compaction_ = true;
-  view_transitions_rules_.push_back(rule);
+  function_rules_.push_back(rule);
+}
+
+void RuleSet::AddViewTransitionRule(StyleRuleViewTransition* rule) {
+  need_compaction_ = true;
+  view_transition_rules_.push_back(rule);
 }
 
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
@@ -656,9 +713,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const ContainerQuery* container_query,
                             CascadeLayer* cascade_layer,
                             const StyleScope* style_scope) {
-  for (unsigned i = 0; i < rules.size(); ++i) {
-    StyleRuleBase* rule = rules[i].Get();
-
+  for (StyleRuleBase* rule : rules) {
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
       AddStyleRule(style_rule, medium, add_rule_flags, container_query,
                    cascade_layer, style_scope);
@@ -667,8 +722,9 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddPageRule(page_rule);
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
-        AddChildRules(media_rule->ChildRules(), medium, add_rule_flags,
-                      container_query, cascade_layer, style_scope);
+        AddChildRules(media_rule->ChildRules().RawChildRules(), medium,
+                      add_rule_flags, container_query, cascade_layer,
+                      style_scope);
       }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
       font_face_rule->SetCascadeLayer(cascade_layer);
@@ -692,19 +748,22 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
       counter_style_rule->SetCascadeLayer(cascade_layer);
       AddCounterStyleRule(counter_style_rule);
-    } else if (auto* view_transitions_rule =
-                   DynamicTo<StyleRuleViewTransitions>(rule)) {
-      // TODO(https://crbug.com/1463966): Handle cascade layers for
-      // @view-transitions.
-      AddViewTransitionsRule(view_transitions_rule);
+    } else if (auto* view_transition_rule =
+                   DynamicTo<StyleRuleViewTransition>(rule)) {
+      view_transition_rule->SetCascadeLayer(cascade_layer);
+      AddViewTransitionRule(view_transition_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {
       position_fallback_rule->SetCascadeLayer(cascade_layer);
       AddPositionFallbackRule(position_fallback_rule);
+    } else if (auto* function_rule = DynamicTo<StyleRuleFunction>(rule)) {
+      // TODO(sesse): Set the cascade layer here?
+      AddFunctionRule(function_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
-        AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags,
-                      container_query, cascade_layer, style_scope);
+        AddChildRules(supports_rule->ChildRules().RawChildRules(), medium,
+                      add_rule_flags, container_query, cascade_layer,
+                      style_scope);
       }
     } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
       const ContainerQuery* inner_container_query =
@@ -713,13 +772,14 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
         inner_container_query =
             inner_container_query->CopyWithParent(container_query);
       }
-      AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
-                    inner_container_query, cascade_layer, style_scope);
+      AddChildRules(container_rule->ChildRules().RawChildRules(), medium,
+                    add_rule_flags, inner_container_query, cascade_layer,
+                    style_scope);
     } else if (auto* layer_block_rule = DynamicTo<StyleRuleLayerBlock>(rule)) {
       CascadeLayer* sub_layer =
           GetOrAddSubLayer(cascade_layer, layer_block_rule->GetName());
-      AddChildRules(layer_block_rule->ChildRules(), medium, add_rule_flags,
-                    container_query, sub_layer, style_scope);
+      AddChildRules(layer_block_rule->ChildRules().RawChildRules(), medium,
+                    add_rule_flags, container_query, sub_layer, style_scope);
     } else if (auto* layer_statement_rule =
                    DynamicTo<StyleRuleLayerStatement>(rule)) {
       for (const auto& layer_name : layer_statement_rule->GetNames()) {
@@ -730,11 +790,12 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       if (style_scope) {
         inner_style_scope = inner_style_scope->CopyWithParent(style_scope);
       }
-      AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
-                    container_query, cascade_layer, inner_style_scope);
+      AddChildRules(scope_rule->ChildRules().RawChildRules(), medium,
+                    add_rule_flags, container_query, cascade_layer,
+                    inner_style_scope);
     } else if (auto* starting_style_rule =
                    DynamicTo<StyleRuleStartingStyle>(rule)) {
-      AddChildRules(starting_style_rule->ChildRules(), medium,
+      AddChildRules(starting_style_rule->ChildRules().RawChildRules(), medium,
                     add_rule_flags | kRuleIsStartingStyle, container_query,
                     cascade_layer, style_scope);
     }
@@ -757,7 +818,6 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
                                 CascadeLayer* cascade_layer) {
   TRACE_EVENT0("blink", "RuleSet::addRulesFromSheet");
-
   DCHECK(sheet);
 
   for (const auto& pre_import_layer : sheet->PreImportLayerStatementRules()) {
@@ -770,6 +830,9 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
     StyleRuleImport* import_rule = import_rules[i].Get();
+    if (!import_rule->IsSupported()) {
+      continue;
+    }
     if (!MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
       continue;
     }
@@ -787,101 +850,122 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                 nullptr /* container_query */, cascade_layer, nullptr);
 }
 
-static void MergeBucket(const HeapVector<RuleData>& src,
-                        int offset,
-                        HeapVector<RuleData>* dst) {
+// If there's a reference to the parent selector (implicit or explicit)
+// somewhere in the selector, use that to find the parent StyleRule.
+// If not, it's not relevant what the parent is anyway.
+const StyleRule* FindParentIfUsed(const CSSSelector* selector) {
+  do {
+    if (selector->Match() == CSSSelector::kPseudoClass &&
+        selector->GetPseudoType() == CSSSelector::kPseudoParent) {
+      return selector->ParentRule();
+    }
+    if (selector->SelectorList() && selector->SelectorList()->First()) {
+      const StyleRule* parent =
+          FindParentIfUsed(selector->SelectorList()->First());
+      if (parent != nullptr) {
+        return parent;
+      }
+    }
+  } while (!(selector++)->IsLastInSelectorList());
+  return nullptr;
+}
+
+// Whether we should include the given rule (coming from a RuleSet)
+// in a diff rule set, based on the list on “only_include” (which are
+// the ones that have been modified). This is nominally only a simple
+// membership test, but we also need to take into account nested rules;
+// if a parent rule of ours has been modified, we need to also include
+// this rule.
+static bool IncludeRule(const StyleRule* style_rule,
+                        const HeapHashSet<Member<StyleRule>>& only_include) {
+  if (only_include.Contains(const_cast<StyleRule*>(style_rule))) {
+    return true;
+  }
+  const StyleRule* parent_rule = FindParentIfUsed(style_rule->FirstSelector());
+  if (parent_rule != nullptr) {
+    return IncludeRule(parent_rule, only_include);
+  } else {
+    return false;
+  }
+}
+
+void RuleSet::NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
+                                             const StyleScope* style_scope,
+                                             const RuleSet& old_rule_set,
+                                             RuleData& new_rule_data) {
+  new_rule_data.MovedToDifferentRuleSet(old_rule_set.bloom_hash_backing_,
+                                        bloom_hash_backing_, rule_count_);
+  // We don't bother with container_query_intervals_ and
+  // AddRuleToLayerIntervals() here, since they are not checked in diff
+  // rulesets.
+  AddRuleToIntervals(style_scope, rule_count_, scope_intervals_);
+  ++rule_count_;
+}
+
+void RuleSet::AddFilteredRulesFromOtherBucket(
+    const RuleSet& other,
+    const HeapVector<RuleData>& src,
+    const HeapHashSet<Member<StyleRule>>& only_include,
+    HeapVector<RuleData>* dst) {
+  Seeker<StyleScope> scope_seeker(other.scope_intervals_);
   for (const RuleData& rule_data : src) {
-    dst->push_back(rule_data);
-    dst->back().AdjustPosition(offset);
+    if (IncludeRule(rule_data.Rule(), only_include)) {
+      dst->push_back(rule_data);
+      NewlyAddedFromDifferentRuleSet(rule_data,
+                                     scope_seeker.Seek(rule_data.GetPosition()),
+                                     other, dst->back());
+    }
   }
 }
 
-template <class T>
-static void MergeIntervals(const HeapVector<RuleSet::Interval<T>>& src,
-                           int offset,
-                           HeapVector<RuleSet::Interval<T>>* dst) {
-  if (src.empty() || src[0].start_position != 0) {
-    AddRuleToIntervals<T>(nullptr, offset, *dst);
-  }
-  for (const RuleSet::Interval<T>& interval : src) {
-    AddRuleToIntervals<T>(interval.value.Get(),
-                          interval.start_position + offset, *dst);
-  }
-}
-
-void RuleSet::Merge(const RuleSet& other, LayerMap& layer_mapping) {
-  // All RuleDatas have a position, used for tie-breaking between
-  // rules that otherwise have the same specificity. Since the other
-  // one is taken to come after this, it means we need to adjust
-  // its positions. The minimum possible offset is our own number
-  // of rules, so that's what we use.
-  int offset = rule_count_;
+void RuleSet::AddFilteredRulesFromOtherSet(
+    const RuleSet& other,
+    const HeapHashSet<Member<StyleRule>>& only_include) {
   if (other.rule_count_ > 0) {
-    id_rules_.Merge(other.id_rules_, offset);
-    class_rules_.Merge(other.class_rules_, offset);
-    attr_rules_.Merge(other.attr_rules_, offset);
+    id_rules_.AddFilteredRulesFromOtherSet(other.id_rules_, only_include, other,
+                                           *this);
+    class_rules_.AddFilteredRulesFromOtherSet(other.class_rules_, only_include,
+                                              other, *this);
+    attr_rules_.AddFilteredRulesFromOtherSet(other.attr_rules_, only_include,
+                                             other, *this);
     // NOTE: attr_substring_matchers_ will be rebuilt in CompactRules().
-    tag_rules_.Merge(other.tag_rules_, offset);
-    ua_shadow_pseudo_element_rules_.Merge(other.ua_shadow_pseudo_element_rules_,
-                                          offset);
-    MergeBucket(other.link_pseudo_class_rules_, offset,
-                &link_pseudo_class_rules_);
-    MergeBucket(other.cue_pseudo_rules_, offset, &cue_pseudo_rules_);
-    MergeBucket(other.focus_pseudo_class_rules_, offset,
-                &focus_pseudo_class_rules_);
-    MergeBucket(other.spatial_navigation_interest_class_rules_, offset,
-                &spatial_navigation_interest_class_rules_);
-    MergeBucket(other.focus_visible_pseudo_class_rules_, offset,
-                &focus_visible_pseudo_class_rules_);
-    MergeBucket(other.spatial_navigation_interest_class_rules_, offset,
-                &spatial_navigation_interest_class_rules_);
-    MergeBucket(other.universal_rules_, offset, &universal_rules_);
-    MergeBucket(other.shadow_host_rules_, offset, &shadow_host_rules_);
-    MergeBucket(other.part_pseudo_rules_, offset, &part_pseudo_rules_);
-    MergeBucket(other.slotted_pseudo_element_rules_, offset,
-                &slotted_pseudo_element_rules_);
-    MergeBucket(other.selector_fragment_anchor_rules_, offset,
-                &selector_fragment_anchor_rules_);
-    MergeBucket(other.root_element_rules_, offset, &root_element_rules_);
-    features_.Merge(other.features_);
-    page_rules_.AppendVector(other.page_rules_);
-    font_face_rules_.AppendVector(other.font_face_rules_);
-    font_palette_values_rules_.AppendVector(other.font_palette_values_rules_);
-    font_feature_values_rules_.AppendVector(other.font_feature_values_rules_);
-    keyframes_rules_.AppendVector(other.keyframes_rules_);
-    property_rules_.AppendVector(other.property_rules_);
-    counter_style_rules_.AppendVector(other.counter_style_rules_);
-    position_fallback_rules_.AppendVector(other.position_fallback_rules_);
-    media_query_set_results_.AppendVector(other.media_query_set_results_);
-    has_bucket_for_style_attr_ |= other.has_bucket_for_style_attr_;
-    rule_count_ += other.rule_count_;
+    tag_rules_.AddFilteredRulesFromOtherSet(other.tag_rules_, only_include,
+                                            other, *this);
+    ua_shadow_pseudo_element_rules_.AddFilteredRulesFromOtherSet(
+        other.ua_shadow_pseudo_element_rules_, only_include, other, *this);
+    AddFilteredRulesFromOtherBucket(other, other.link_pseudo_class_rules_,
+                                    only_include, &link_pseudo_class_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.cue_pseudo_rules_,
+                                    only_include, &cue_pseudo_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.focus_pseudo_class_rules_,
+                                    only_include, &focus_pseudo_class_rules_);
+    AddFilteredRulesFromOtherBucket(
+        other, other.focus_visible_pseudo_class_rules_, only_include,
+        &focus_visible_pseudo_class_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.universal_rules_, only_include,
+                                    &universal_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.shadow_host_rules_,
+                                    only_include, &shadow_host_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.part_pseudo_rules_,
+                                    only_include, &part_pseudo_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.slotted_pseudo_element_rules_,
+                                    only_include,
+                                    &slotted_pseudo_element_rules_);
+    AddFilteredRulesFromOtherBucket(
+        other, other.selector_fragment_anchor_rules_, only_include,
+        &selector_fragment_anchor_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.root_element_rules_,
+                                    only_include, &root_element_rules_);
+
+    // We don't care about page_rules_ etc., since having those in a RuleSetDiff
+    // would mark it as unrepresentable anyway.
+
     need_compaction_ = true;
   }
 
-  MergeCascadeLayers(other, offset, layer_mapping);
-  MergeIntervals(other.container_query_intervals_, offset,
-                 &container_query_intervals_);
-  MergeIntervals(other.scope_intervals_, offset, &scope_intervals_);
-}
-
-void RuleSet::MergeCascadeLayers(const RuleSet& other,
-                                 int offset,
-                                 LayerMap& layer_mapping) {
-  if (other.HasCascadeLayers()) {
-    EnsureImplicitOuterLayer()->Merge(*other.implicit_outer_layer_,
-                                      layer_mapping);
-  }
-  if (other.layer_intervals_.empty() ||
-      other.layer_intervals_[0].start_position != 0) {
-    AddRuleToIntervals(implicit_outer_layer_.Get(), offset, layer_intervals_);
-  }
-  for (const RuleSet::Interval<CascadeLayer>& interval :
-       other.layer_intervals_) {
-    auto it = layer_mapping.find(interval.value);
-    DCHECK_NE(it, layer_mapping.end());
-    AddRuleToIntervals<CascadeLayer>(
-        it->value, interval.start_position + offset, layer_intervals_);
-  }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  allow_unsorted_ = true;
+#endif
 }
 
 void RuleSet::AddStyleRule(StyleRule* style_rule,
@@ -899,8 +983,8 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
 
   // Nested rules are taken to be added immediately after their parent rule.
   if (style_rule->ChildRules() != nullptr) {
-    AddChildRules(*style_rule->ChildRules(), medium, add_rule_flags,
-                  container_query, cascade_layer, style_scope);
+    AddChildRules(style_rule->ChildRules()->RawChildRules(), medium,
+                  add_rule_flags, container_query, cascade_layer, style_scope);
   }
 }
 
@@ -912,19 +996,33 @@ CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
   return cascade_layer->GetOrAddSubLayer(name);
 }
 
-void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
-  RuleMap::Extent& rules =
-      buckets.insert(key, RuleMap::Extent()).stored_value->value;
-  if (rules.length == 0) {
-    rules.bucket_number = num_buckets++;
+bool RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
+  RuleMap::Extent* rules = nullptr;
+  if (buckets.IsNull()) {
+    // First insert.
+    buckets = RobinHoodMap<AtomicString, Extent>(8);
+  } else {
+    // See if we can find an existing entry for this key.
+    RobinHoodMap<AtomicString, Extent>::Bucket* bucket = buckets.Find(key);
+    if (bucket != nullptr) {
+      rules = &bucket->value;
+    }
   }
+  if (rules == nullptr) {
+    RobinHoodMap<AtomicString, Extent>::Bucket* bucket = buckets.Insert(key);
+    if (bucket == nullptr) {
+      return false;
+    }
+    rules = &bucket->value;
+    rules->bucket_number = num_buckets++;
+  }
+
   RuleData rule_data_copy = rule_data;
-  if (RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
-    rule_data_copy.ComputeEntirelyCoveredByBucketing();
-  }
-  bucket_number_.push_back(rules.bucket_number);
-  ++rules.length;
+  rule_data_copy.ComputeEntirelyCoveredByBucketing();
+  bucket_number_.push_back(rules->bucket_number);
+  ++rules->length;
   backing.push_back(std::move(rule_data_copy));
+  return true;
 }
 
 void RuleMap::Compact() {
@@ -1008,58 +1106,47 @@ void RuleMap::Uncompact() {
   compacted = false;
 }
 
-// Merge another ruleset into this one (ie., create or extend a superruleset),
-// for increased performance during matching. (It is cheaper to look up
-// in each bucket once, instead of in N smaller rulesets.)
-void RuleMap::Merge(const RuleMap& other, int offset) {
+// See RuleSet::AddFilteredRulesFromOtherSet().
+void RuleMap::AddFilteredRulesFromOtherSet(
+    const RuleMap& other,
+    const HeapHashSet<Member<StyleRule>>& only_include,
+    const RuleSet& old_rule_set,
+    RuleSet& new_rule_set) {
   if (compacted) {
     Uncompact();
   }
   if (other.compacted) {
-    // NOTE: This path is normally not taken.
     for (const auto& [key, extent] : other.buckets) {
-      // Streamlined version of Add() for multiple inserts to the same key.
-      RuleMap::Extent& rules =
-          buckets.insert(key, RuleMap::Extent()).stored_value->value;
-      if (rules.length == 0) {
-        rules.bucket_number = num_buckets++;
-      }
+      Seeker<StyleScope> scope_seeker(old_rule_set.scope_intervals_);
       for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
-        backing.push_back(rule_data);
-        backing.back().AdjustPosition(offset);
-        bucket_number_.push_back(rules.bucket_number);
-        ++rules.length;
+        if (IncludeRule(rule_data.Rule(), only_include)) {
+          Add(key, rule_data);
+          new_rule_set.NewlyAddedFromDifferentRuleSet(
+              rule_data, scope_seeker.Seek(rule_data.GetPosition()),
+              old_rule_set, backing.back());
+        }
       }
     }
   } else {
-    // First combine the buckets, by inserting all the new buckets
-    // into our own map and assigning them new bucket numbers.
-    // This gives us a mapping from old to new bucket numbers
-    // (which we'll need to store temporarily, so we do a heap
-    // allocation). For buckets that already exist (i.e., they are
-    // merged), we need to offset the position within the bucket.
-    std::unique_ptr<RuleMap::Extent[]> extents(
-        new RuleMap::Extent[other.num_buckets]);
-
+    // First make a mapping of bucket number to key.
+    std::unique_ptr<const AtomicString*[]> keys(
+        new const AtomicString*[other.num_buckets]);
     for (const auto& [key, src_extent] : other.buckets) {
-      RuleMap::Extent& dst_extent =
-          buckets.insert(key, RuleMap::Extent()).stored_value->value;
-      if (dst_extent.length == 0) {
-        dst_extent.bucket_number = num_buckets++;
-      }
-      extents[src_extent.bucket_number] = dst_extent;
-      dst_extent.length += src_extent.length;
+      keys[src_extent.bucket_number] = &key;
     }
 
-    // Now that we have the mapping, we can just copy over all the RuleData
-    // and adjust the buckets/positions as we go.
+    // Now that we have the mapping, we can just copy over all the relevant
+    // RuleDatas.
+    Seeker<StyleScope> scope_seeker(old_rule_set.scope_intervals_);
     for (wtf_size_t i = 0; i < other.backing.size(); ++i) {
       const unsigned bucket_number = other.bucket_number_[i];
       const RuleData& rule_data = other.backing[i];
-      const RuleMap::Extent& extent = extents[bucket_number];
-      backing.push_back(rule_data);
-      backing.back().AdjustPosition(offset);
-      bucket_number_.push_back(extent.bucket_number);
+      if (IncludeRule(rule_data.Rule(), only_include)) {
+        Add(*keys[bucket_number], rule_data);
+        new_rule_set.NewlyAddedFromDifferentRuleSet(
+            rule_data, scope_seeker.Seek(rule_data.GetPosition()), old_rule_set,
+            backing.back());
+      }
     }
   }
 }
@@ -1186,7 +1273,6 @@ void RuleSet::CompactRules() {
   focus_pseudo_class_rules_.shrink_to_fit();
   selector_fragment_anchor_rules_.shrink_to_fit();
   focus_visible_pseudo_class_rules_.shrink_to_fit();
-  spatial_navigation_interest_class_rules_.shrink_to_fit();
   universal_rules_.shrink_to_fit();
   shadow_host_rules_.shrink_to_fit();
   part_pseudo_rules_.shrink_to_fit();
@@ -1199,10 +1285,13 @@ void RuleSet::CompactRules() {
   counter_style_rules_.shrink_to_fit();
   position_fallback_rules_.shrink_to_fit();
   layer_intervals_.shrink_to_fit();
-  view_transitions_rules_.shrink_to_fit();
+  view_transition_rules_.shrink_to_fit();
+  bloom_hash_backing_.shrink_to_fit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertRuleListsSorted();
+  if (!allow_unsorted_) {
+    AssertRuleListsSorted();
+  }
 #endif
   need_compaction_ = false;
 }
@@ -1256,7 +1345,6 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(selector_fragment_anchor_rules_));
   DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(spatial_navigation_interest_class_rules_));
   DCHECK(IsRuleListSorted(universal_rules_));
   DCHECK(IsRuleListSorted(shadow_host_rules_));
   DCHECK(IsRuleListSorted(part_pseudo_rules_));
@@ -1272,14 +1360,14 @@ bool RuleSet::DidMediaQueryResultsChange(
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition()) {
-    return implicit_outer_layer_;
+    return implicit_outer_layer_.Get();
   }
   for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
     if (layer_intervals_[i].start_position > rule.GetPosition()) {
-      return layer_intervals_[i - 1].value;
+      return layer_intervals_[i - 1].value.Get();
     }
   }
-  return layer_intervals_.back().value;
+  return layer_intervals_.back().value.Get();
 }
 
 void RuleData::Trace(Visitor* visitor) const {
@@ -1302,7 +1390,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(focus_pseudo_class_rules_);
   visitor->Trace(selector_fragment_anchor_rules_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
-  visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
   visitor->Trace(shadow_host_rules_);
   visitor->Trace(part_pseudo_rules_);
@@ -1311,11 +1398,12 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(font_face_rules_);
   visitor->Trace(font_palette_values_rules_);
   visitor->Trace(font_feature_values_rules_);
-  visitor->Trace(view_transitions_rules_);
+  visitor->Trace(view_transition_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_fallback_rules_);
+  visitor->Trace(function_rules_);
   visitor->Trace(root_element_rules_);
   visitor->Trace(media_query_set_results_);
   visitor->Trace(implicit_outer_layer_);

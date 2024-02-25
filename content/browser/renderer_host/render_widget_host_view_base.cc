@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -16,9 +18,9 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
-#include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -31,8 +33,8 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/page_visibility_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display_util.h"
@@ -55,7 +57,7 @@ RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   DCHECK(!keyboard_locked_);
-  DCHECK(!IsMouseLocked());
+  DCHECK(!IsPointerLocked());
   // We call this here to guarantee that observers are notified before we go
   // away. However, some subclasses may wish to call this earlier in their
   // shutdown process, e.g. to force removal from
@@ -287,7 +289,7 @@ RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
       GetHostFrameSinkManager()->CreateVideoCapturer();
   video_capturer->ChangeTarget(viz::VideoCaptureTarget(GetFrameSinkId()),
-                               /*crop_version=*/0);
+                               /*sub_capture_target_version=*/0);
   return video_capturer;
 }
 
@@ -319,14 +321,14 @@ void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   }
 }
 
-absl::optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
+std::optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
   if (content_background_color_)
     return content_background_color_;
   return default_background_color_;
 }
 
 bool RenderWidgetHostViewBase::IsBackgroundColorOpaque() {
-  absl::optional<SkColor> bg_color = GetBackgroundColor();
+  std::optional<SkColor> bg_color = GetBackgroundColor();
   return bg_color ? SkColorGetA(*bg_color) == SK_AlphaOPAQUE : true;
 }
 
@@ -352,15 +354,16 @@ void RenderWidgetHostViewBase::CopyBackgroundColorIfPresentFrom(
   }
 }
 
-bool RenderWidgetHostViewBase::IsMouseLocked() {
+bool RenderWidgetHostViewBase::IsPointerLocked() {
   return false;
 }
 
-bool RenderWidgetHostViewBase::GetIsMouseLockedUnadjustedMovementForTesting() {
+bool RenderWidgetHostViewBase::
+    GetIsPointerLockedUnadjustedMovementForTesting() {
   return false;
 }
 
-bool RenderWidgetHostViewBase::CanBeMouseLocked() {
+bool RenderWidgetHostViewBase::CanBePointerLocked() {
   return HasFocus();
 }
 
@@ -369,7 +372,7 @@ bool RenderWidgetHostViewBase::AccessibilityHasFocus() {
 }
 
 bool RenderWidgetHostViewBase::LockKeyboard(
-    absl::optional<base::flat_set<ui::DomCode>> codes) {
+    std::optional<base::flat_set<ui::DomCode>> codes) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -400,13 +403,11 @@ void RenderWidgetHostViewBase::WheelEventAck(
 
 void RenderWidgetHostViewBase::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {}
+    blink::mojom::InputEventResultState ack_result) {}
 
 void RenderWidgetHostViewBase::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {}
+    blink::mojom::InputEventResultState ack_result) {}
 
 void RenderWidgetHostViewBase::ForwardTouchpadZoomEventIfNecessary(
     const blink::WebGestureEvent& event,
@@ -491,7 +492,7 @@ RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
   return nullptr;
 }
 
-bool RenderWidgetHostViewBase::RequestStartStylusWriting() {
+bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
   return false;
 }
 
@@ -598,6 +599,10 @@ void RenderWidgetHostViewBase::EnableAutoResize(const gfx::Size& min_size,
   host()->SynchronizeVisualProperties();
 }
 
+bool RenderWidgetHostViewBase::IsAutoResizeEnabled() {
+  return host()->auto_resize_enabled();
+}
+
 void RenderWidgetHostViewBase::DisableAutoResize(const gfx::Size& new_size) {
   // Note that for some subclasses, such as RenderWidgetHostViewAura, setting
   // the view size may trigger the synchronization on the visual properties. As
@@ -656,6 +661,21 @@ void RenderWidgetHostViewBase::OnAutoscrollStart() {
   GetMouseWheelPhaseHandler()->DispatchPendingWheelEndEvent();
 }
 
+DevicePosturePlatformProvider*
+RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
+  if (!host() || !host()->delegate()) {
+    return nullptr;
+  }
+
+  DevicePostureProviderImpl* posture_provider =
+      host()->delegate()->GetDevicePostureProvider();
+  if (!posture_provider) {
+    return nullptr;
+  }
+
+  return posture_provider->platform_provider();
+}
+
 gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSize() {
   return GetViewBounds().size();
 }
@@ -676,7 +696,9 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
   return;
 }
 
-void RenderWidgetHostViewBase::DidNavigateMainFramePreCommit() {}
+void RenderWidgetHostViewBase::OnOldViewDidNavigatePreCommit() {}
+
+void RenderWidgetHostViewBase::OnNewViewDidNavigatePostCommit() {}
 
 void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
     uint32_t frame_token,
@@ -789,8 +811,8 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds,
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (GetTextInputManager()) {
     GetTextInputManager()->ImeCompositionRangeChanged(
         this, range, character_bounds, line_bounds);
@@ -925,7 +947,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   gfx::Transform transform_root_to_original;
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
-  const absl::optional<gfx::PointF> point_in_pixels =
+  const std::optional<gfx::PointF> point_in_pixels =
       transform_root_to_original.InverseMapPoint(
           gfx::ConvertPointToPixels(point, device_scale_factor));
   if (!point_in_pixels.has_value())
@@ -1082,6 +1104,37 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   // visibility metrics.)
   CancelSuccessfulPresentationTimeRequestForHostAndDelegate();
   return;
+}
+
+void RenderWidgetHostViewBase::SetIsFrameSinkIdOwner(bool is_owner) {
+  if (is_frame_sink_id_owner_ == is_owner) {
+    return;
+  }
+
+  is_frame_sink_id_owner_ = is_owner;
+  UpdateFrameSinkIdRegistration();
+}
+
+void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
+  // If Destroy() has been called before we get here, host_ may be null.
+  if (!host() || !host()->delegate() ||
+      !host()->delegate()->GetInputEventRouter()) {
+    return;
+  }
+
+  // Let the page-level input event router know about our frame sink ID
+  // for surface-based hit testing.
+  auto* router = host()->delegate()->GetInputEventRouter();
+  if (is_frame_sink_id_owner_) {
+    if (!router->IsViewInMap(this)) {
+      router->AddFrameSinkIdOwner(GetFrameSinkId(), this);
+    }
+  } else if (router->IsViewInMap(this)) {
+    // Ensure this view is the owner before removing the associated FrameSinkId
+    // from input tracking. Speculative views start as non-owing and will not
+    // register until ownership has been transferred.
+    router->RemoveFrameSinkIdOwner(GetFrameSinkId());
+  }
 }
 
 }  // namespace content

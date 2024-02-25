@@ -79,6 +79,7 @@ class GPU_GLES2_EXPORT WrappedSkImageBackingFactory
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
+  SharedImageBackingType GetBackingType() override;
 
  private:
   scoped_refptr<SharedContextState> context_state_;

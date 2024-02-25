@@ -8,8 +8,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
@@ -40,12 +38,12 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for checking whether the media are paused when unplugging the headset
- */
+/** Tests for checking whether the media are paused when unplugging the headset */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
+})
 public class MediaSessionTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -53,11 +51,13 @@ public class MediaSessionTest {
     private static final String TEST_PATH = "/content/test/data/media/session/media-session.html";
     private static final String VIDEO_ID = "long-video";
 
+    private static final long LONG_TIMEOUT = 5000L;
+    private static final long DEFAULT_POLL_INTERVAL = 50L;
+
     private EmbeddedTestServer mTestServer;
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/1315419")
+    @LargeTest
     public void testPauseOnHeadsetUnplug() throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -74,11 +74,11 @@ public class MediaSessionTest {
     /**
      * Regression test for crbug.com/1108038.
      *
-     * Makes sure the notification info is updated after a navigation from a native page to a site
-     * with media.
+     * <p>Makes sure the notification info is updated after a navigation from a native page to a
+     * site with media.
      */
     @Test
-    @MediumTest
+    @LargeTest
     public void mediaSessionUrlUpdatedAfterNativePageNavigation() throws Exception {
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
@@ -95,30 +95,41 @@ public class MediaSessionTest {
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
         waitForNotificationReady();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MediaNotificationController controller =
-                    MediaNotificationManager.getController(R.id.media_playback_notification);
-            Assert.assertEquals(UrlFormatter.formatUrlForSecurityDisplay(
-                                        videoPageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
-                    controller.mMediaNotificationInfo.origin);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MediaNotificationController controller =
+                            MediaNotificationManager.getController(
+                                    R.id.media_playback_notification);
+                    Assert.assertEquals(
+                            UrlFormatter.formatUrlForSecurityDisplay(
+                                    videoPageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                            controller.mMediaNotificationInfo.origin);
+                });
     }
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     private void waitForNotificationReady() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return MediaNotificationManager.getController(R.id.media_playback_notification) != null;
-        });
+        // Extended timeout to avoid flakiness https://crbug.com/1315419
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return MediaNotificationManager.getController(R.id.media_playback_notification)
+                            != null;
+                },
+                LONG_TIMEOUT,
+                DEFAULT_POLL_INTERVAL);
     }
 
     private void simulateHeadsetUnplug() {
-        Intent i = new Intent(ApplicationProvider.getApplicationContext(),
-                ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
+        Intent i =
+                new Intent(
+                        ApplicationProvider.getApplicationContext(),
+                        ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
         i.setAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         ApplicationProvider.getApplicationContext().startService(i);

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -45,7 +46,7 @@ scoped_refptr<SerializedScriptValue> BuildSerializedScriptValue(
     Transferables& transferables) {
   SerializedScriptValue::SerializeOptions options;
   options.transferables = &transferables;
-  ExceptionState exceptionState(isolate, ExceptionState::kExecutionContext,
+  ExceptionState exceptionState(isolate, ExceptionContextType::kOperationInvoke,
                                 "MessageChannel", "postMessage");
   return SerializedScriptValue::Serialize(isolate, value, options,
                                           exceptionState);
@@ -56,6 +57,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   // More exhaustive tests in web_tests/. This is a sanity check.
   // Build the original ArrayBuffer in a block scope to simulate situations
   // where a buffer may be freed twice.
+  test::TaskEnvironment task_environment;
   mojo::Message mojo_message;
   {
     V8TestingScope scope;
@@ -99,6 +101,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 TEST(BlinkTransferableMessageStructTraitsTest,
      ArrayBufferContentsLazySerializationSucceeds) {
   // More exhaustive tests in web_tests/. This is a sanity check.
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   size_t num_elements = 8;
@@ -152,13 +155,13 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   // More exhaustive tests in web_tests/. This is a sanity check.
   // Build the original ImageBitmap in a block scope to simulate situations
   // where a buffer may be freed twice.
+  test::TaskEnvironment task_environment;
   mojo::Message mojo_message;
   {
     V8TestingScope scope;
     ImageBitmap* image_bitmap = CreateBitmap();
     v8::Local<v8::Value> wrapper =
-        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
-            .ToLocalChecked();
+        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap);
     Transferables transferables;
     transferables.image_bitmaps.push_back(image_bitmap);
     BlinkTransferableMessage msg;
@@ -178,6 +181,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 TEST(BlinkTransferableMessageStructTraitsTest,
      BitmapLazySerializationSucceeds) {
   // More exhaustive tests in web_tests/. This is a sanity check.
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ImageBitmap* original_bitmap = CreateBitmap();
   // The original bitmap's height and width will be 0 after it is transferred.
@@ -185,7 +189,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   size_t original_bitmap_width = original_bitmap->width();
   scoped_refptr<SharedBuffer> original_bitmap_data =
       original_bitmap->BitmapImage()->Data();
-  v8::Local<v8::Value> wrapper = ToV8(original_bitmap, scope.GetScriptState());
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), original_bitmap);
   Transferables transferables;
   transferables.image_bitmaps.push_back(std::move(original_bitmap));
   BlinkTransferableMessage msg;
@@ -216,10 +221,10 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
-    auto sii = std::make_unique<viz::TestSharedImageInterface>();
+    auto sii = base::MakeRefCounted<viz::TestSharedImageInterface>();
     sii_ = sii.get();
     context_provider_ = viz::TestContextProvider::Create(std::move(sii));
-    InitializeSharedGpuContext(context_provider_.get());
+    InitializeSharedGpuContextGLES2(context_provider_.get());
   }
 
   void TearDown() override {
@@ -265,16 +270,15 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
 
 TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
        AcceleratedImageTransferSuccess) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scope.GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalTest)
       ->PostTask(
           FROM_HERE, base::BindLambdaForTesting([&]() {
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
-            v8::Local<v8::Value> wrapper =
-                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
-                                              image_bitmap)
-                    .ToLocalChecked();
+            v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
+                scope.GetScriptState(), image_bitmap);
             Transferables transferables;
             transferables.image_bitmaps.push_back(image_bitmap);
             BlinkTransferableMessage msg;
@@ -313,6 +317,7 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
 
 TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
        AcceleratedImageTransferReceiverCrash) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scope.GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalTest)
@@ -320,10 +325,8 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
           FROM_HERE, base::BindLambdaForTesting([&]() {
             ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
 
-            v8::Local<v8::Value> wrapper =
-                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
-                                              image_bitmap)
-                    .ToLocalChecked();
+            v8::Local<v8::Value> wrapper = ToV8Traits<ImageBitmap>::ToV8(
+                scope.GetScriptState(), image_bitmap);
             Transferables transferables;
             transferables.image_bitmaps.push_back(image_bitmap);
             BlinkTransferableMessage msg;

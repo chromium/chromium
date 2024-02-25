@@ -46,10 +46,10 @@
       <div id="after-screen-body" aria-live="polite"></div>
       <div id="after-screen-buttons">
         <cr-button class="action-button" id="action-button"
-          on-click="onParentApproved_">
+          on-click="onParentApproved">
           $i18n{approveButtonText}
         </cr-button>
-        <cr-button class="decline-button" on-click="onParentDeclined_">
+        <cr-button class="decline-button" on-click="onParentDeclined">
           $i18n{denyButtonText}
         </cr-button>
       </div>
@@ -58,13 +58,13 @@
           button-style="primary"
           label="$i18n{approveButtonText}"
           id="action-button-jelly"
-          on-click="onParentApproved_">
+          on-click="onParentApproved">
         </cros-button>
         <cros-button
           button-style="secondary"
           label="$i18n{denyButtonText}"
           id="deny-button"
-          on-click="onParentDeclined_">
+          on-click="onParentDeclined">
         </cros-button>
       </div>
     </div>

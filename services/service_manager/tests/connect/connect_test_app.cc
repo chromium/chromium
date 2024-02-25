@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -18,7 +19,6 @@
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -26,9 +26,9 @@ namespace {
 
 void OnConnectResult(base::OnceClosure closure,
                      mojom::ConnectResult* out_result,
-                     absl::optional<Identity>* out_resolved_identity,
+                     std::optional<Identity>* out_resolved_identity,
                      mojom::ConnectResult result,
-                     const absl::optional<Identity>& resolved_identity) {
+                     const std::optional<Identity>& resolved_identity) {
   std::move(closure).Run();
   *out_result = result;
   *out_resolved_identity = resolved_identity;
@@ -181,7 +181,7 @@ class ConnectTestApp : public Service,
       const ServiceFilter& filter,
       ConnectToClassAppWithFilterCallback callback) override {
     mojom::ConnectResult result;
-    absl::optional<Identity> resolved_identity;
+    std::optional<Identity> resolved_identity;
     base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
     service_receiver_.GetConnector()->WarmService(
         filter, base::BindOnce(&OnConnectResult, loop.QuitClosure(), &result,

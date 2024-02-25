@@ -232,7 +232,7 @@ void LacrosDataMigrationScreen::PowerChanged(
 }
 
 void LacrosDataMigrationScreen::UpdateLowBatteryStatus() {
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {setSelectedRecentSeaPenImageAction} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+
 import {CurrentAttribution, CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
@@ -75,6 +77,13 @@ export class WallpaperObserver implements WallpaperObserverInterface {
       initialLoadTimeout = null;
     }
     store.dispatch(setSelectedImageAction(currentWallpaper));
+
+    if (currentWallpaper && currentWallpaper.type == WallpaperType.kSeaPen) {
+      store.dispatch(setSelectedRecentSeaPenImageAction(currentWallpaper.key));
+    } else {
+      store.dispatch(setSelectedRecentSeaPenImageAction(null));
+    }
+
     if (currentWallpaper &&
         (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
          currentWallpaper.type == WallpaperType.kDaily ||

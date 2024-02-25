@@ -19,6 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -62,6 +63,8 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
   DependsOn(NetworkContextServiceFactory::GetInstance());
 }
 
+RealTimeUrlLookupServiceFactory::~RealTimeUrlLookupServiceFactory() = default;
+
 std::unique_ptr<KeyedService>
 RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
@@ -69,12 +72,8 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  auto url_loader_factory =
-      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-              profile));
   return std::make_unique<RealTimeUrlLookupService>(
-      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
+      GetURLLoaderFactory(context),
       VerdictCacheManagerFactory::GetForProfile(profile),
       base::BindRepeating(
           &safe_browsing::GetUserPopulationForProfileWithCookieTheftExperiments,
@@ -88,7 +87,27 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(), g_browser_process->variations_service(),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
-          profile));
+          profile),
+      WebUIInfoSingleton::GetInstance());
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+RealTimeUrlLookupServiceFactory::GetURLLoaderFactory(
+    content::BrowserContext* context) const {
+  if (testing_url_loader_factory_) {
+    return testing_url_loader_factory_;
+  }
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto url_loader_factory =
+      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
+          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
+              profile));
+  return network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
+}
+
+void RealTimeUrlLookupServiceFactory::SetURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  testing_url_loader_factory_ = url_loader_factory;
 }
 
 }  // namespace safe_browsing

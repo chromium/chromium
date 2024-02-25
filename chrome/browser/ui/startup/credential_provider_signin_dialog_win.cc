@@ -194,7 +194,7 @@ class CredentialProviderWebUIMessageHandler
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value::Dict();
     }
-    absl::optional<int> exit_code =
+    std::optional<int> exit_code =
         dict_result->FindInt(credential_provider::kKeyExitCode);
 
     if (exit_code && *exit_code != credential_provider::kUiecSuccess) {
@@ -338,7 +338,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override {
+      std::vector<content::WebUIMessageHandler*>* handlers) override {
     // The WebDialogUI will own and delete this message handler.
     DCHECK(!handler_);
     handler_ = new CredentialProviderWebUIMessageHandler(

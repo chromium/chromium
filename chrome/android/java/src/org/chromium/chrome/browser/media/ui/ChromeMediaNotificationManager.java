@@ -16,8 +16,10 @@ public class ChromeMediaNotificationManager {
      * @param notificationInfo information to show in the notification
      */
     public static void show(MediaNotificationInfo notificationInfo) {
-        MediaNotificationManager.show(notificationInfo, () -> {
-            return new ChromeMediaNotificationControllerDelegate(notificationInfo.id);
-        });
+        MediaNotificationManager.show(
+                notificationInfo,
+                () -> {
+                    return new ChromeMediaNotificationControllerDelegate(notificationInfo.id);
+                });
     }
 }

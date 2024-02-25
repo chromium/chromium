@@ -50,7 +50,7 @@ void DownloadShelfContextMenu::RecordCommandsEnabled(
     return;
   }
 
-  for (int command_int = 1; command_int < DownloadCommands::Command::MAX;
+  for (int command_int = 0; command_int <= DownloadCommands::Command::kMaxValue;
        command_int++) {
     if (model->GetIndexOfCommandId(command_int).has_value() &&
         IsCommandIdEnabled(command_int)) {
@@ -201,7 +201,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::DEEP_SCAN:
       id = IDS_DOWNLOAD_MENU_DEEP_SCAN;
       break;
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
       id = IDS_OPEN_DOWNLOAD_NOW;
       break;
     // These commands are not supported on the context menu.
@@ -210,7 +210,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
-    case DownloadCommands::MAX:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
       NOTREACHED();
       break;
   }
@@ -399,8 +399,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetDeepScanningMenuModel(
       GetLabelForCommandId(DownloadCommands::DISCARD));
 
   deep_scanning_menu_model_->AddItem(
-      DownloadCommands::BYPASS_DEEP_SCANNING,
-      GetLabelForCommandId(DownloadCommands::BYPASS_DEEP_SCANNING));
+      DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN,
+      GetLabelForCommandId(DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN));
 
   deep_scanning_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 

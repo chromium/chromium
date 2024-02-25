@@ -32,9 +32,10 @@ HttpsEngagementServiceFactory::HttpsEngagementServiceFactory()
 
 HttpsEngagementServiceFactory::~HttpsEngagementServiceFactory() = default;
 
-KeyedService* HttpsEngagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HttpsEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new HttpsEngagementService();
+  return std::make_unique<HttpsEngagementService>();
 }
 
 bool HttpsEngagementServiceFactory::ServiceIsCreatedWithBrowserContext() const {

@@ -40,6 +40,8 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 
 }  // namespace
 
+extern "C" {
+
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {
   return SymbolWithConfiguration(symbol_name, configuration, true);
@@ -84,12 +86,9 @@ UIImage* MakeSymbolMonochrome(UIImage* symbol) {
 }
 
 UIImage* MakeSymbolMulticolor(UIImage* symbol) {
-  if (@available(iOS 15, *)) {
-    return [symbol
-        imageByApplyingSymbolConfiguration:
-            [UIImageSymbolConfiguration configurationPreferringMulticolor]];
-  }
-  return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  return [symbol
+      imageByApplyingSymbolConfiguration:
+          [UIImageSymbolConfiguration configurationPreferringMulticolor]];
 }
 
 UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors) {
@@ -112,3 +111,14 @@ UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
   return MakeSymbolMulticolor(CustomSymbolWithPointSize(
       symbol_name, kSettingsRootSymbolImagePointSize));
 }
+
+UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(
+    NSString* symbol_name) {
+  return DefaultSymbolWithConfiguration(
+      symbol_name, [UIImageSymbolConfiguration
+                       configurationWithPointSize:kSymbolAccessoryPointSize
+                                           weight:UIImageSymbolWeightRegular
+                                            scale:UIImageSymbolScaleMedium]);
+}
+
+}  // extern "C"

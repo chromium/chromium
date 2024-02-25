@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_list.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -47,6 +48,7 @@ class PresentationReceiverTest : public testing::Test {
         receiver_connection_.InitWithNewPipeAndPassReceiver();
   }
 
+  test::TaskEnvironment task_environment_;
   mojom::blink::PresentationInfo connection_info_;
   mojo::PendingReceiver<mojom::blink::PresentationConnection>
       controller_connection_receiver_;

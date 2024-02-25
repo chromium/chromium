@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
 
@@ -87,44 +88,13 @@ ScopedUnpackState::~ScopedUnpackState() {
   }
 }
 
-ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api,
-                                           GLenum target,
-                                           GLuint new_binding)
-    : api_(api), target_(target) {
-  GLenum get_target = GL_TEXTURE_BINDING_2D;
-  switch (target) {
-    case GL_TEXTURE_2D:
-      get_target = GL_TEXTURE_BINDING_2D;
-      break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      get_target = GL_TEXTURE_BINDING_RECTANGLE_ARB;
-      break;
-    case GL_TEXTURE_EXTERNAL_OES:
-      get_target = GL_TEXTURE_BINDING_EXTERNAL_OES;
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-  GLint old_texture_binding = 0;
-  api->glGetIntegervFn(get_target, &old_texture_binding);
-  old_binding_ = old_texture_binding;
-  if (new_binding) {
-    api_->glBindTextureFn(target_, new_binding);
-  }
-}
-
-ScopedRestoreTexture::~ScopedRestoreTexture() {
-  api_->glBindTextureFn(target_, old_binding_);
-}
-
 GLuint MakeTextureAndSetParameters(
     GLenum target,
     bool framebuffer_attachment_angle,
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
     raw_ptr<gles2::Texture>* texture) {
   gl::GLApi* api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, target);
+  gl::ScopedRestoreTexture scoped_restore(api, target);
 
   GLuint service_id = 0;
   api->glGenTexturesFn(1, &service_id);
@@ -145,6 +115,13 @@ GLuint MakeTextureAndSetParameters(
     *texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
   }
   return service_id;
+}
+
+bool IsTexStorage2DAvailable() {
+  const auto* version_info = gl::g_current_gl_version;
+  const auto& ext = gl::g_current_gl_driver->ext;
+  return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
+         version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
 }
 
 }  // namespace gpu

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
@@ -71,25 +72,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
       uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) override;
   gfx::Range GetAutocorrectRange() override;
-  gfx::Rect GetAutocorrectCharacterBounds() override;
-  gfx::Rect GetTextFieldBounds() override;
   void SetAutocorrectRange(const gfx::Range& range,
                            SetAutocorrectRangeDoneCallback callback) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
   void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                              uint32_t num_char16s_after_cursor) override;
   void ReplaceSurroundingText(uint32_t length_before_selection,
                               uint32_t length_after_selection,
-                              base::StringPiece16 replacement_text) override;
+                              std::u16string_view replacement_text) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(ui::KeyEvent* event) override;
   ui::InputMethod* GetInputMethod() override;
   void ConfirmComposition(bool reset_engine) override;
   bool HasCompositionText() override;
-  std::u16string GetCompositionText() override;
   ukm::SourceId GetClientSourceForMetrics() override;
 
   std::vector<ui::GrammarFragment> get_grammar_fragments() const {

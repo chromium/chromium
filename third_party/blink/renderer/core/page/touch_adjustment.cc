@@ -65,7 +65,7 @@ class SubtargetGeometry {
       : node_(node), quad_(quad) {}
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
-  Node* GetNode() const { return node_; }
+  Node* GetNode() const { return node_.Get(); }
   gfx::QuadF Quad() const { return quad_; }
   gfx::Rect BoundingBox() const {
     return gfx::ToEnclosingRect(quad_.BoundingBox());
@@ -104,8 +104,9 @@ bool NodeRespondsToTapGesture(Node* node) {
     // Tapping on a text field or other focusable item should trigger
     // adjustment, except that iframe elements are hard-coded to support focus
     // but the effect is often invisible so they should be excluded.
-    if (element->IsMouseFocusable() && !IsA<HTMLIFrameElement>(element))
+    if (element->IsFocusable() && !IsA<HTMLIFrameElement>(element)) {
       return true;
+    }
     // Accept nodes that has a CSS effect when touched.
     if (element->ChildrenOrSiblingsAffectedByActive() ||
         element->ChildrenOrSiblingsAffectedByHover())
@@ -128,8 +129,8 @@ bool NodeIsZoomTarget(Node* node) {
 
 bool ProvidesContextMenuItems(Node* node) {
   // This function tries to match the nodes that receive special context-menu
-  // items in ContextMenuController::populate(), and should be kept up to date
-  // with those.
+  // items in ContextMenuController::ShowContextMenu(), and should be kept up
+  // to date with those.
   DCHECK(node->GetLayoutObject() || node->IsShadowRoot());
   if (!node->GetLayoutObject())
     return false;
@@ -142,6 +143,9 @@ bool ProvidesContextMenuItems(Node* node) {
     return true;
   if (node->GetLayoutObject()->IsMedia())
     return true;
+  if (node->GetLayoutObject()->IsSVGImage()) {
+    return true;
+  }
   if (node->GetLayoutObject()->CanBeSelectionLeaf()) {
     // If the context menu gesture will trigger a selection all selectable nodes
     // are valid targets.
@@ -549,8 +553,6 @@ bool FindBestTouchAdjustmentCandidate(
     const gfx::Point& touch_hotspot,
     const gfx::Rect& touch_area,
     const HeapVector<Member<Node>>& nodes) {
-  // TODO(https://crbug.com/1469267): A CHECK here caused failures on Android!
-  DCHECK(touch_area.Contains(touch_hotspot));
   touch_adjustment::NodeFilter node_filter;
   touch_adjustment::AppendSubtargetsForNode append_subtargets_for_node;
 
@@ -581,6 +583,9 @@ PhysicalSize GetHitTestRectForAdjustment(LocalFrame& frame,
   ChromeClient& chrome_client = frame.GetChromeClient();
   float device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;
+  if (frame.GetPage()->InspectorDeviceScaleFactorOverride() != 1) {
+    device_scale_factor = 1;
+  }
 
   float page_scale_factor = frame.GetPage()->PageScaleFactor();
   const PhysicalSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,

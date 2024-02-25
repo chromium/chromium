@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -41,7 +42,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::assistant {
 
@@ -94,7 +94,7 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
   void Stop() override { service_->Unbind(); }
 
  private:
-  raw_ptr<FakeLibassistantService, ExperimentalAsh> service_;
+  raw_ptr<FakeLibassistantService> service_;
 };
 
 class StateObserverMock : public AssistantManagerService::StateObserver {
@@ -157,8 +157,8 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   void CreateAssistantManagerServiceImpl(
-      absl::optional<std::string> s3_server_uri_override = absl::nullopt,
-      absl::optional<std::string> device_id_override = absl::nullopt) {
+      std::optional<std::string> s3_server_uri_override = std::nullopt,
+      std::optional<std::string> device_id_override = std::nullopt) {
     // We can not have 2 instances of |AssistantManagerServiceImpl| at the same
     // time, so we must destroy the old one before creating a new one.
     assistant_manager_service_.reset();
@@ -440,7 +440,7 @@ TEST_F(AssistantManagerServiceImplTest,
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
-  assistant_manager_service()->SetUser(absl::nullopt);
+  assistant_manager_service()->SetUser(std::nullopt);
   RunUntilIdle();
 
   EXPECT_EQ(kNoValue, mojom_service_controller().gaia_id());
@@ -473,7 +473,7 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest,
        ShouldPassDeviceIdOverrideToMojomService) {
   CreateAssistantManagerServiceImpl(
-      /*s3_server_uri_override=*/absl::nullopt, "the-device-id-override");
+      /*s3_server_uri_override=*/std::nullopt, "the-device-id-override");
 
   Start();
   WaitForState(AssistantManagerService::STARTED);

@@ -7,9 +7,9 @@ package org.chromium.base;
 import android.os.Handler;
 import android.os.Process;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeUnchecked;
+import org.jni_zero.JNINamespace;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,15 +23,13 @@ class JavaHandlerThreadHelpers {
     private static JavaHandlerThread testAndGetJavaHandlerThread() {
         final AtomicBoolean taskExecuted = new AtomicBoolean();
         final Object lock = new Object();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    taskExecuted.set(true);
-                    lock.notifyAll();
-                }
-            }
-        };
+        Runnable runnable =
+                () -> {
+                    synchronized (lock) {
+                        taskExecuted.set(true);
+                        lock.notifyAll();
+                    }
+                };
 
         JavaHandlerThread thread =
                 new JavaHandlerThread("base_unittests_java", Process.THREAD_PRIORITY_DEFAULT);

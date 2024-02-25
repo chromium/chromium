@@ -4,14 +4,15 @@
 
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 
-#include "ash/public/cpp/tablet_mode.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
 namespace {
 
 bool IsRestored(views::Widget* widget) {
-  if (TabletMode::Get()->InTabletMode()) {
+  CHECK(widget);
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return !widget->IsMinimized();
   }
   return !widget->IsMinimized() && !widget->IsMaximized() &&
@@ -28,12 +29,17 @@ std::vector<CameraAppWindowStateController::WindowStateType> ToVector(
 
 CameraAppWindowStateController::CameraAppWindowStateController(
     views::Widget* widget)
-    : widget_(widget), window_states_(GetCurrentWindowStates()) {
-  widget_->AddObserver(this);
+    : widget_(widget) {
+  window_states_ = GetCurrentWindowStates();
+  if (widget_) {
+    widget_->AddObserver(this);
+  }
 }
 
 CameraAppWindowStateController::~CameraAppWindowStateController() {
-  widget_->RemoveObserver(this);
+  if (widget_) {
+    widget_->RemoveObserver(this);
+  }
 }
 
 void CameraAppWindowStateController::AddReceiver(
@@ -56,6 +62,9 @@ void CameraAppWindowStateController::GetWindowState(
 }
 
 void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
+  if (!widget_) {
+    return;
+  }
   if (widget_->IsMinimized()) {
     std::move(callback).Run();
     return;
@@ -65,6 +74,9 @@ void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
 }
 
 void CameraAppWindowStateController::Restore(RestoreCallback callback) {
+  if (!widget_) {
+    return;
+  }
   if (IsRestored(widget_)) {
     std::move(callback).Run();
     return;
@@ -74,6 +86,9 @@ void CameraAppWindowStateController::Restore(RestoreCallback callback) {
 }
 
 void CameraAppWindowStateController::Maximize(MaximizeCallback callback) {
+  if (!widget_) {
+    return;
+  }
   if (widget_->IsMaximized()) {
     std::move(callback).Run();
     return;
@@ -83,6 +98,9 @@ void CameraAppWindowStateController::Maximize(MaximizeCallback callback) {
 }
 
 void CameraAppWindowStateController::Fullscreen(FullscreenCallback callback) {
+  if (!widget_) {
+    return;
+  }
   if (widget_->IsFullscreen()) {
     std::move(callback).Run();
     return;
@@ -92,6 +110,9 @@ void CameraAppWindowStateController::Fullscreen(FullscreenCallback callback) {
 }
 
 void CameraAppWindowStateController::Focus(FocusCallback callback) {
+  if (!widget_) {
+    return;
+  }
   if (widget_->IsActive()) {
     std::move(callback).Run();
     return;
@@ -116,6 +137,11 @@ void CameraAppWindowStateController::OnWidgetActivationChanged(
   OnWindowFocusChanged(active);
 }
 
+void CameraAppWindowStateController::OnWidgetDestroying(views::Widget* widget) {
+  widget_->RemoveObserver(this);
+  widget_ = nullptr;
+}
+
 void CameraAppWindowStateController::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
@@ -123,6 +149,7 @@ void CameraAppWindowStateController::OnWidgetBoundsChanged(
 }
 
 void CameraAppWindowStateController::OnWindowStateChanged() {
+  CHECK(widget_);
   auto trigger_callbacks = [](std::queue<base::OnceClosure>* callbacks) {
     while (!callbacks->empty()) {
       std::move(callbacks->front()).Run();
@@ -160,18 +187,21 @@ void CameraAppWindowStateController::OnWindowFocusChanged(bool is_focus) {
 
 base::flat_set<CameraAppWindowStateController::WindowStateType>
 CameraAppWindowStateController::GetCurrentWindowStates() {
+  if (!widget_) {
+    return window_states_;
+  }
   base::flat_set<CameraAppWindowStateController::WindowStateType> states;
   if (widget_->IsMinimized()) {
-    states.insert(WindowStateType::MINIMIZED);
+    states.insert(WindowStateType::kMinimized);
   }
   if (widget_->IsMaximized()) {
-    states.insert(WindowStateType::MAXIMIZED);
+    states.insert(WindowStateType::kMaximized);
   }
   if (widget_->IsFullscreen()) {
-    states.insert(WindowStateType::FULLSCREEN);
+    states.insert(WindowStateType::kFullscreen);
   }
   if (IsRestored(widget_)) {
-    states.insert(WindowStateType::REGULAR);
+    states.insert(WindowStateType::kRegular);
   }
   return states;
 }

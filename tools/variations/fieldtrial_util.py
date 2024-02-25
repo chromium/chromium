@@ -137,11 +137,7 @@ def GenerateArgs(config_path, platform, override_args=None):
   except (IOError, ValueError):
     return []
 
-  platform_studies = fieldtrial_to_struct.ConfigToStudies(
-      # For now, assume we never invert. Can add this as an argument if needed.
-      config,
-      [platform],
-      False)
+  platform_studies = fieldtrial_to_struct.ConfigToStudies(config, [platform])
 
   if override_args is None:
     override_args = []

@@ -12,8 +12,8 @@ namespace blink {
 
 CSSContainerValues::CSSContainerValues(Document& document,
                                        Element& container,
-                                       absl::optional<double> width,
-                                       absl::optional<double> height,
+                                       std::optional<double> width,
+                                       std::optional<double> height,
                                        ContainerStuckPhysical stuck_horizontal,
                                        ContainerStuckPhysical stuck_vertical)
     : MediaValuesDynamic(document.GetFrame()),

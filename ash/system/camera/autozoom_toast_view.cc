@@ -10,10 +10,12 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace ash {
 
@@ -35,9 +37,9 @@ AutozoomToastView::AutozoomToastView(AutozoomToastController* controller)
   label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE));
-  label_->SetFontList(
-      views::style::GetFont(views::style::TextContext::CONTEXT_DIALOG_TITLE,
-                            views::style::TextStyle::STYLE_PRIMARY));
+  label_->SetFontList(views::TypographyProvider::Get().GetFont(
+      views::style::TextContext::CONTEXT_DIALOG_TITLE,
+      views::style::TextStyle::STYLE_PRIMARY));
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE));
 }
@@ -67,5 +69,8 @@ void AutozoomToastView::OnViewBlurred(views::View* observed_view) {
   DCHECK(observed_view == button_);
   controller_->StartAutoCloseTimer();
 }
+
+BEGIN_METADATA(AutozoomToastView)
+END_METADATA
 
 }  // namespace ash

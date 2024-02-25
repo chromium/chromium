@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_canary_checker.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -23,7 +25,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -59,13 +60,13 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void MakeDNSResolveSuccess(const GURL& url) {
     const net::IPEndPoint kFakeIPAddress{
         net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
-    absl::optional<net::AddressList> resolved_addresses =
+    std::optional<net::AddressList> resolved_addresses =
         net::AddressList(kFakeIPAddress);
     auto it = pending_requests_.find(net::HostPortPair::FromURL(url));
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
     it->second->OnComplete(net::OK, resolved_addresses,
-                           /*endpoint_results_with_metadata=*/absl::nullopt);
+                           /*endpoint_results_with_metadata=*/std::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -78,8 +79,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
 
-    it->second->OnComplete(err, /*resolved_addresses=*/absl::nullopt,
-                           /*endpoint_results_with_metadata=*/absl::nullopt);
+    it->second->OnComplete(err, /*resolved_addresses=*/std::nullopt,
+                           /*endpoint_results_with_metadata=*/std::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -107,8 +108,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     }
 
     void OnComplete(net::Error err,
-                    absl::optional<net::AddressList> resolved_addresses,
-                    absl::optional<net::HostResolverEndpointResults>
+                    std::optional<net::AddressList> resolved_addresses,
+                    std::optional<net::HostResolverEndpointResults>
                         endpoint_results_with_metadata) {
       response_client_->OnComplete(err, net::ResolveErrorInfo(),
                                    resolved_addresses,
@@ -180,8 +181,8 @@ TEST_F(PrefetchCanaryCheckerTest, OK) {
   base::HistogramTester histogram_tester;
   GURL probe_url("https://probe-url.com");
   std::unique_ptr<PrefetchCanaryChecker> checker = MakeChecker(probe_url);
-  absl::optional<bool> result = checker->CanaryCheckSuccessful();
-  EXPECT_EQ(result, absl::nullopt);
+  std::optional<bool> result = checker->CanaryCheckSuccessful();
+  EXPECT_EQ(result, std::nullopt);
   // Make sure a cache miss was logged.
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.CanaryChecker.CacheLookupResult.DNS", 2, 1);
@@ -220,7 +221,7 @@ TEST_F(PrefetchCanaryCheckerTest, MultipleStart) {
   // Allow the checker to process and cache the response.
   RunUntilIdle();
 
-  absl::optional<bool> result = checker->CanaryCheckSuccessful();
+  std::optional<bool> result = checker->CanaryCheckSuccessful();
   EXPECT_TRUE(result.value());
   EXPECT_FALSE(checker->IsActive());
 }
@@ -228,8 +229,8 @@ TEST_F(PrefetchCanaryCheckerTest, MultipleStart) {
 TEST_F(PrefetchCanaryCheckerTest, CacheHit) {
   GURL probe_url("https://probe-url.com");
   std::unique_ptr<PrefetchCanaryChecker> checker = MakeChecker(probe_url);
-  absl::optional<bool> result = checker->CanaryCheckSuccessful();
-  EXPECT_EQ(result, absl::nullopt);
+  std::optional<bool> result = checker->CanaryCheckSuccessful();
+  EXPECT_EQ(result, std::nullopt);
 
   RunUntilIdle();
   NetworkContext()->MakeDNSResolveSuccess(probe_url);
@@ -260,7 +261,7 @@ TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
   NetworkContext()->MakeDNSResolveSuccess(probe_url);
   RunUntilIdle();
 
-  absl::optional<bool> result = checker->CanaryCheckSuccessful();
+  std::optional<bool> result = checker->CanaryCheckSuccessful();
   // Make sure result is cached.
   EXPECT_TRUE(result.has_value());
 
@@ -276,7 +277,7 @@ TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
       network::mojom::ConnectionType::CONNECTION_WIFI);
   RunUntilIdle();
   result = checker->CanaryCheckSuccessful();
-  EXPECT_EQ(result, absl::nullopt);
+  EXPECT_EQ(result, std::nullopt);
 
   // Finish the check and make sure the result is cached.
   RunUntilIdle();
@@ -296,7 +297,7 @@ TEST_F(PrefetchCanaryCheckerTest, NetError) {
   NetworkContext()->MakeDNSResolveError(probe_url, net::ERR_FAILED);
   RunUntilIdle();
 
-  absl::optional<bool> result = checker->CanaryCheckSuccessful();
+  std::optional<bool> result = checker->CanaryCheckSuccessful();
   EXPECT_FALSE(result.value());
   EXPECT_FALSE(checker->IsActive());
 
@@ -376,7 +377,7 @@ TEST_F(PrefetchCanaryCheckerTest, Retries) {
   RunUntilIdle();
   EXPECT_EQ(NetworkContext()->NumPendingRequests(), 0u);
   // Make sure the failure was not cached: we're not done with retries.
-  EXPECT_EQ(checker->CanaryCheckSuccessful(), absl::nullopt);
+  EXPECT_EQ(checker->CanaryCheckSuccessful(), std::nullopt);
 
   task_environment()->FastForwardBy(base::Milliseconds(900));
   // There should still be no retry attempted.
@@ -387,7 +388,7 @@ TEST_F(PrefetchCanaryCheckerTest, Retries) {
   RunUntilIdle();
   EXPECT_EQ(NetworkContext()->NumPendingRequests(), 0u);
   // Make sure the failure was not cached: we're not done with retries.
-  EXPECT_EQ(checker->CanaryCheckSuccessful(), absl::nullopt);
+  EXPECT_EQ(checker->CanaryCheckSuccessful(), std::nullopt);
 
   // Exponential backoff: the next retry should go off in 2s.
   task_environment()->FastForwardBy(base::Milliseconds(1900));

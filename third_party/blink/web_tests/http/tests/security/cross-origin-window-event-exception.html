@@ -11,8 +11,8 @@
         
         var frame = document.querySelector('iframe');
         window.onload = function () {
-            shouldThrow("frame.contentWindow.event", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
-            shouldThrow("frame.contentWindow.event = 1;", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
+            shouldThrow("frame.contentWindow.event", '"SecurityError: Failed to read a named property \'event\' from \'Window\': Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
+            shouldThrow("frame.contentWindow.event = 1;", '"SecurityError: Failed to set a named property \'event\' on \'Window\': Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
             finishJSTest();
         };
     </script>

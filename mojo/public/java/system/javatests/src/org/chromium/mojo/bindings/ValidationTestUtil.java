@@ -4,9 +4,9 @@
 
 package org.chromium.mojo.bindings;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,9 +18,7 @@ import java.nio.ByteOrder;
  */
 @JNINamespace("mojo::android")
 public class ValidationTestUtil {
-    /**
-     * Content of a '.data' file.
-     */
+    /** Content of a '.data' file. */
     public static class Data {
         private final ByteBuffer mData;
         private final int mHandlesCount;
@@ -45,9 +43,7 @@ public class ValidationTestUtil {
         }
     }
 
-    /**
-     * Parse a '.data' file.
-     */
+    /** Parse a '.data' file. */
     public static Data parseData(String dataAsString) {
         return ValidationTestUtilJni.get().parseData(dataAsString);
     }

@@ -36,8 +36,9 @@
 #include "ui/gfx/skia_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -101,7 +102,7 @@ class ExtensionActionIconFactoryTest
 
   void WaitForIconUpdate() {
     quit_in_icon_updated_ = true;
-    base::RunLoop().Run();
+    loop_.Run();
     quit_in_icon_updated_ = false;
   }
 
@@ -148,13 +149,12 @@ class ExtensionActionIconFactoryTest
 
   void TearDown() override {
     profile_.reset();  // Get all DeleteSoon calls sent to ui_loop_.
-    base::RunLoop().RunUntilIdle();
   }
 
   // ExtensionActionIconFactory::Observer overrides:
   void OnIconUpdated() override {
     if (quit_in_icon_updated_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_.QuitWhenIdle();
   }
 
   gfx::ImageSkia GetFavicon() {
@@ -174,10 +174,12 @@ class ExtensionActionIconFactoryTest
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
+  base::RunLoop loop_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 };
 

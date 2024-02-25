@@ -48,11 +48,11 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
                              CSSPrimitiveValue::UnitType::kPercentage));
     object_builder.Add("offset", timeline_range_offset);
   } else if (offset_) {
-    object_builder.Add("offset", offset_.value());
+    object_builder.AddNumber("offset", offset_.value());
   } else {
     object_builder.AddNull("offset");
   }
-  object_builder.Add("easing", easing_->ToString());
+  object_builder.AddString("easing", easing_->ToString());
   object_builder.AddString("composite",
                            EffectModel::CompositeOperationToString(composite_));
 }
@@ -87,9 +87,9 @@ bool Keyframe::ResolveTimelineOffset(const TimelineRange& timeline_range,
 
 /* static */
 bool Keyframe::LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b) {
-  absl::optional first =
+  std::optional first =
       a->ComputedOffset().has_value() ? a->ComputedOffset() : a->Offset();
-  absl::optional second =
+  std::optional second =
       b->ComputedOffset().has_value() ? b->ComputedOffset() : b->Offset();
 
   if (first < second) {

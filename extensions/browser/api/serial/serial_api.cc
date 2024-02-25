@@ -16,6 +16,7 @@
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/common/api/serial.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -45,7 +46,7 @@ const char kErrorSerialConnectionNotFound[] = "Serial connection not found.";
 const char kErrorGetControlSignalsFailed[] = "Failed to get control signals.";
 
 template <typename T>
-void SetDefaultOptionalValue(absl::optional<T>& field, const T& value) {
+void SetDefaultOptionalValue(std::optional<T>& field, const T& value) {
   if (!field)
     field = value;
 }
@@ -175,7 +176,7 @@ void SerialConnectFunction::FinishConnect(
     connection->SetConnectionErrorHandler(base::BindOnce(
         [](scoped_refptr<ApiResourceManager<SerialConnection>::ApiResourceData>
                connections,
-           std::string extension_id, int api_resource_id) {
+           ExtensionId extension_id, int api_resource_id) {
           connections->Remove(extension_id, api_resource_id);
         },
         manager->data_, extension_->id(), id));

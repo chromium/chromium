@@ -26,7 +26,7 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "SaveAutofillAddress") {
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());
 }
 
@@ -35,8 +35,9 @@ SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
 views::BubbleDialogDelegate* SaveUpdateAddressProfileIconView::GetBubble()
     const {
   SaveUpdateAddressProfileIconController* controller = GetController();
-  if (!controller)
+  if (!controller) {
     return nullptr;
+  }
 
   if (controller->IsSaveBubble()) {
     return static_cast<autofill::SaveAddressProfileView*>(
@@ -81,7 +82,7 @@ SaveUpdateAddressProfileIconView::GetController() const {
   return SaveUpdateAddressProfileIconController::Get(GetWebContents());
 }
 
-BEGIN_METADATA(SaveUpdateAddressProfileIconView, PageActionIconView)
+BEGIN_METADATA(SaveUpdateAddressProfileIconView)
 END_METADATA
 
 }  // namespace autofill

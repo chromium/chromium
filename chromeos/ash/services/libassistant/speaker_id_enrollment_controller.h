@@ -59,13 +59,13 @@ class SpeakerIdEnrollmentController
   class GetStatusWaiter;
 
   mojo::Receiver<mojom::SpeakerIdEnrollmentController> receiver_{this};
-  const raw_ptr<mojom::AudioInputController, ExperimentalAsh> audio_input_;
+  const raw_ptr<mojom::AudioInputController> audio_input_;
 
   std::unique_ptr<EnrollmentSession> active_enrollment_session_;
   // Contains all pending callbacks for GetSpeakerIdEnrollmentStatus requests.
   AbortableTaskList pending_response_waiters_;
 
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 };
 
 }  // namespace ash::libassistant

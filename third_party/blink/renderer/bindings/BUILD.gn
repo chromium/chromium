@@ -194,14 +194,16 @@ generate_bindings("generate_bindings_all") {
   targets += [ "dictionary" ]
   outputs += generated_dictionary_sources_in_core +
              generated_dictionary_sources_in_modules +
-             generated_dictionary_sources_for_testing_in_core
+             generated_dictionary_sources_for_testing_in_core +
+             generated_dictionary_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_dictionary_sources_in_extensions_chromeos
   }
   targets += [ "enumeration" ]
   outputs += generated_enumeration_sources_in_core +
              generated_enumeration_sources_in_modules +
-             generated_enumeration_sources_for_testing_in_core
+             generated_enumeration_sources_for_testing_in_core +
+             generated_enumeration_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_enumeration_sources_in_extensions_chromeos
   }
@@ -332,12 +334,14 @@ action_with_pydeps("check_generated_file_list") {
     "--kind",
     "dictionary",
   ]
-  file_list += generated_dictionary_sources_for_testing_in_core
+  file_list += generated_dictionary_sources_for_testing_in_core +
+               generated_dictionary_sources_for_testing_in_modules
   file_list += [
     "--kind",
     "enumeration",
   ]
-  file_list += generated_enumeration_sources_for_testing_in_core
+  file_list += generated_enumeration_sources_for_testing_in_core +
+               generated_enumeration_sources_for_testing_in_modules
   file_list += [
     "--kind",
     "interface",

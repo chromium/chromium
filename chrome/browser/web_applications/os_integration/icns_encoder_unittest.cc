@@ -70,14 +70,6 @@ gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
       reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size());
 }
 
-// Matcher used to verify that pixel values are near their expected value on
-// older versions of Mac OS where non-opaque pixels don't always load with their
-// correct pixel values.
-testing::Matcher<uint8_t> ValueIsNear(uint8_t target) {
-  return testing::AllOf(testing::Le(target),
-                        testing::Ge(target < 20 ? 0 : target - 20));
-}
-
 }  // namespace
 
 TEST(IcnsEncoderTest, RoundTrip) {
@@ -116,14 +108,14 @@ TEST(IcnsEncoderTest, RoundTrip) {
   base::apple::ScopedCFTypeRef<CFURLRef> url =
       base::apple::FilePathToCFURL(icon_path);
   base::apple::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, nullptr));
+      CGImageSourceCreateWithURL(url.get(), nullptr));
 
   // And make sure we got back the same images that were written to the file.
-  EXPECT_EQ(3u, CGImageSourceGetCount(source));
-  for (size_t i = 0; i < CGImageSourceGetCount(source); ++i) {
+  EXPECT_EQ(3u, CGImageSourceGetCount(source.get()));
+  for (size_t i = 0; i < CGImageSourceGetCount(source.get()); ++i) {
     base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-        CGImageSourceCreateImageAtIndex(source, i, empty_dict));
-    SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
+        CGImageSourceCreateImageAtIndex(source.get(), i, empty_dict.get()));
+    SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image.get());
     EXPECT_EQ(bitmap.width(), bitmap.height());
     EXPECT_TRUE(bitmap.width() == 32 || bitmap.width() == 48 ||
                 bitmap.width() == 128)

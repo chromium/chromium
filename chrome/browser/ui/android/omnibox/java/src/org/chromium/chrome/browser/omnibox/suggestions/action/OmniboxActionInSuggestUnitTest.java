@@ -38,14 +38,13 @@ import org.chromium.components.omnibox.action.OmniboxActionId;
 
 import java.util.List;
 
-/**
- * Tests for {@link OmniboxActionInSuggest}.
- */
+/** Tests for {@link OmniboxActionInSuggest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OmniboxActionInSuggestUnitTest {
     private static final List<Integer> sKnownActionTypes =
-            List.of(EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
+            List.of(
+                    EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
                     EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE,
                     EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE);
     private static final EntityInfoProto.ActionInfo EMPTY_INFO =
@@ -69,25 +68,28 @@ public class OmniboxActionInSuggestUnitTest {
     public void creation_usesFallbackIconForUnknownActionTypes() {
         for (var kesemActionType : EntityInfoProto.ActionInfo.ActionType.values()) {
             if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
-            var action = new OmniboxActionInSuggest(
-                    0, "hint", "accessibility", kesemActionType.getNumber(), "");
+            var action =
+                    new OmniboxActionInSuggest(
+                            0, "hint", "accessibility", kesemActionType.getNumber(), "");
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
 
     @Test
     public void creation_failsWithNullHint() {
-        assertThrows(AssertionError.class,
-                ()
-                        -> new OmniboxActionInSuggest(
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new OmniboxActionInSuggest(
                                 0, null, "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     @Test
     public void creation_failsWithEmptyHint() {
-        assertThrows(AssertionError.class,
-                ()
-                        -> new OmniboxActionInSuggest(
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new OmniboxActionInSuggest(
                                 0, "", "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
@@ -98,25 +100,34 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void safeCasting_assertsWithWrongClassType() {
-        assertThrows(AssertionError.class,
-                ()
-                        -> OmniboxActionInSuggest.from(new OmniboxAction(
-                                OmniboxActionId.ACTION_IN_SUGGEST, 0, "hint", "accessibility",
-                                null) {
-                    @Override
-                    public void execute(OmniboxActionDelegate d) {}
-                }));
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        OmniboxActionInSuggest.from(
+                                new OmniboxAction(
+                                        OmniboxActionId.ACTION_IN_SUGGEST,
+                                        0,
+                                        "hint",
+                                        "accessibility",
+                                        null) {
+                                    @Override
+                                    public void execute(OmniboxActionDelegate d) {}
+                                }));
     }
 
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
-        OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(0, "hint",
-                "accessibility", EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE, ""));
+        OmniboxActionInSuggest.from(
+                OmniboxActionFactoryImpl.get()
+                        .buildActionInSuggest(
+                                0,
+                                "hint",
+                                "accessibility",
+                                EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE,
+                                ""));
     }
 
-    /**
-     * Create Action in Suggest with a supplied definition.
-     */
+    /** Create Action in Suggest with a supplied definition. */
     private OmniboxAction buildActionInSuggest(
             EntityInfoProto.ActionInfo.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
@@ -129,7 +140,8 @@ public class OmniboxActionInSuggestUnitTest {
         doReturn(true).when(mDelegate).startActivity(any());
 
         buildActionInSuggest(
-                EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, new Intent("Magic Intent Action"))
+                        EntityInfoProto.ActionInfo.ActionType.DIRECTIONS,
+                        new Intent("Magic Intent Action"))
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -138,7 +150,8 @@ public class OmniboxActionInSuggestUnitTest {
 
         assertEquals("Magic Intent Action", intent.getAction());
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
@@ -158,7 +171,8 @@ public class OmniboxActionInSuggestUnitTest {
         verify(mDelegate, times(1)).isIncognito();
 
         // Should not be recorded.
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult"));
 
@@ -183,7 +197,8 @@ public class OmniboxActionInSuggestUnitTest {
 
         verify(mDelegate, times(1)).isIncognito();
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
@@ -203,7 +218,7 @@ public class OmniboxActionInSuggestUnitTest {
         doReturn(true).when(mDelegate).startActivity(any());
 
         buildActionInSuggest(
-                EntityInfoProto.ActionInfo.ActionType.CALL, new Intent(Intent.ACTION_CALL))
+                        EntityInfoProto.ActionInfo.ActionType.CALL, new Intent(Intent.ACTION_CALL))
                 .execute(mDelegate);
 
         verify(mDelegate, times(1)).isIncognito();
@@ -214,7 +229,8 @@ public class OmniboxActionInSuggestUnitTest {
         // requirements.
         assertEquals(Intent.ACTION_DIAL, intent.getAction());
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
@@ -234,7 +250,8 @@ public class OmniboxActionInSuggestUnitTest {
         verify(mDelegate, times(1)).isIncognito();
         verify(mDelegate, times(1)).startActivity(any());
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
@@ -251,10 +268,12 @@ public class OmniboxActionInSuggestUnitTest {
 
         verify(mDelegate, times(1)).isIncognito();
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult"));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));

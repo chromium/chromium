@@ -1,0 +1,23 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ImportBookmarks": false
+        },
+        "prefs": {
+          "import_dialog_bookmarks": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

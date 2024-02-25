@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RestrictSigninToPattern": ".*@google.com"
+        },
+        "prefs": {
+          "google.services.username_pattern": {
+            "location": "local_state",
+            "value": ".*@google.com"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "google.services.username_pattern": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

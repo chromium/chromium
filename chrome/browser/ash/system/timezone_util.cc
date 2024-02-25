@@ -121,8 +121,8 @@ std::u16string GetTimezoneName(const icu::TimeZone& timezone) {
   int min_remainder = minute_offset % 60;
   // Some timezones have a non-integral hour offset. So, we need to use hh:mm
   // form.
-  std::string  offset_str = base::StringPrintf(offset >= 0 ?
-      "UTC+%d:%02d" : "UTC-%d:%02d", hour_offset, min_remainder);
+  std::string offset_str = base::StringPrintf(
+      "UTC%c%d:%02d", offset >= 0 ? '+' : '-', hour_offset, min_remainder);
 
   // TODO(jungshik): When coming up with a better list of timezones, we also
   // have to come up with better 'display' names. One possibility is to list
@@ -170,21 +170,18 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
     return false;
 
   switch (user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kChild:
       return true;
 
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return false;
 
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return CanSetSystemTimezoneFromManagedGuestSession();
-
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
 
       // No default case means the compiler makes sure we handle new types.
   }
@@ -197,7 +194,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 namespace ash {
 namespace system {
 
-absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+std::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
     const std::string& timezone) {
   // Determine region code from timezone id.
   char region[kMaxGeolocationResponseLength];
@@ -207,7 +204,7 @@ absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
                            kMaxGeolocationResponseLength, error);
   // Track failures.
   if (U_FAILURE(error))
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::ToLowerASCII(region);
 }

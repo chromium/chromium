@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/metrics/histogram.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
@@ -163,7 +165,7 @@ struct StructTraits<ash::ime::mojom::BucketedHistogramDataView,
 
   static void SetToNull(base::Histogram** histogram) { *histogram = nullptr; }
 
-  static base::StringPiece name(base::Histogram* histogram) {
+  static std::string_view name(base::Histogram* histogram) {
     return histogram->histogram_name();
   }
 

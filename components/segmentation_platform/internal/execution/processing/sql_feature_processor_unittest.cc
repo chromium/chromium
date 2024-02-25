@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
@@ -72,10 +73,10 @@ class SqlFeatureProcessorTest : public testing::Test {
     // Process the sql query.
     base::RunLoop loop;
     processor->Process(
-        std::move(feature_processor_state_),
+        *feature_processor_state_,
         base::BindOnce(&SqlFeatureProcessorTest::OnProcessingFinishedCallback,
                        base::Unretained(this), loop.QuitClosure(), false,
-                       result));
+                       result, feature_processor_state_->GetWeakPtr()));
     loop.Run();
   }
 
@@ -83,7 +84,7 @@ class SqlFeatureProcessorTest : public testing::Test {
       base::RepeatingClosure closure,
       bool expected_error,
       const SqlFeatureProcessor::IndexedTensors& expected_result,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      base::WeakPtr<FeatureProcessorState> feature_processor_state,
       SqlFeatureProcessor::IndexedTensors result) {
     EXPECT_EQ(expected_error, feature_processor_state->error());
     EXPECT_EQ(expected_result, result);

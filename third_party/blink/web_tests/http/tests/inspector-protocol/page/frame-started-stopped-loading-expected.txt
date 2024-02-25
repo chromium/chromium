@@ -7,8 +7,6 @@ main target: Page.frameStartedLoading
 main target: Page.frameStoppedLoading
 Navigating cross origin
 main target: Page.frameStartedLoading
-child target: Page.frameStartedLoading
-main target: Page.frameStoppedLoading
 child target: Page.frameStoppedLoading
 http://oopif-a.devtools.test:8000/inspector-protocol/resources/empty.html
 Navigating cross origin again
@@ -16,6 +14,7 @@ child target: Page.frameStartedLoading
 child target: Page.frameStoppedLoading
 http://oopif-b.devtools.test:8000/inspector-protocol/resources/empty.html
 Navigating back to in-process
+child target: Page.frameStartedLoading
 main target: Page.frameStoppedLoading
 Navigating main frame to same origin
 main target: Page.frameStartedLoading

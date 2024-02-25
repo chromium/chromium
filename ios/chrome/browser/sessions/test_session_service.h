@@ -15,6 +15,13 @@
 // how many calls to saveSessionWindow have been done.
 @interface TestSessionService : SessionServiceIOS
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
+                       taskRunner:
+                           (const scoped_refptr<base::SequencedTaskRunner>&)
+                               taskRunner NS_UNAVAILABLE;
+
 // If YES, then sessions are saved to disk, otherwise, data is discarded.
 @property(nonatomic, assign) BOOL performIO;
 

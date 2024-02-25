@@ -1,0 +1,766 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AggregatedSearchRankerError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="LoadModelFailed"/>
+  <int value="2" label="CreateGraphFailed"/>
+  <int value="3" label="LoadExamplePreprocessorConfigFailed"/>
+  <int value="4" label="VectorizeFeaturesFailed"/>
+  <int value="5" label="InferenceExecutionFailed"/>
+</enum>
+
+<enum name="AnnotationStorageStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to create new schema"/>
+  <int value="2" label="Failed to migrate schema"/>
+  <int value="3" label="Failed to initialize DB"/>
+  <int value="4" label="Failed to insert in DB"/>
+  <int value="5" label="Failed to remove from DB"/>
+  <int value="6" label="Failed to get all files"/>
+  <int value="7" label="Failed to search by directory"/>
+  <int value="8" label="Failed to find image path"/>
+  <int value="9" label="Failed to prefix search"/>
+</enum>
+
+<enum name="AppInstallResult">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kAlmanacFetchFailed"/>
+  <int value="3" label="kAppDataCorrupted"/>
+  <int value="4" label="kAppProviderNotAvailable"/>
+  <int value="5" label="kAppTypeNotSupported"/>
+</enum>
+
+<enum name="AppListAppMovingType">
+  <int value="0" label="MOVE_BY_DRAG_INTO_FOLDER"/>
+  <int value="1" label="MOVE_BY_DRAG_OUT_OF_FOLDER"/>
+  <int value="2" label="MOVE_INTO_ANOTHER_FOLDER"/>
+  <int value="3" label="REORDER_BY_DRAG_IN_FOLDER"/>
+  <int value="4" label="REORDER_BY_DRAG_IN_TOP_LEVEL"/>
+  <int value="5" label="REORDER_BY_KEYBOARD_IN_FOLDER"/>
+  <int value="6" label="REORDER_BY_KEYBOARD_IN_TOP_LEVEL"/>
+  <int value="7" label="MOVE_BY_KEYBOARD_INTO_FOLDER"/>
+  <int value="8" label="MOVE_BY_KEYBOARD_OUT_OF_FOLDER"/>
+</enum>
+
+<enum name="AppListAppType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Chrome"/>
+  <int value="2" label="Play"/>
+  <int value="3" label="PWA"/>
+</enum>
+
+<enum name="AppListFederatedActions">
+  <int value="0" label="Impression"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="Abandon"/>
+  <int value="3" label="Ignore"/>
+</enum>
+
+<enum name="AppListFederatedInitStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Missing notifier"/>
+  <int value="2" label="Missing controller"/>
+  <int value="3" label="Federated connection failed to establish"/>
+</enum>
+
+<enum name="AppListFederatedReportStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Federated service not available"/>
+  <int value="2" label="Federated service not connected"/>
+</enum>
+
+<enum name="AppListFederatedSearchSessionConclusion">
+  <int value="0" label="Quit"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="AnswerCardSeen"/>
+</enum>
+
+<enum name="AppListFolderOpened">
+  <int value="0" label="Original Folder Design"/>
+  <int value="1" label="Peeking App List Folder Design"/>
+</enum>
+
+<enum name="AppListLaunchedFrom">
+  <int value="1" label="Launched From Grid"/>
+  <int value="2" label="Launched From SuggestionChip"/>
+  <int value="3" label="Launched From Shelf"/>
+  <int value="4" label="Launched From SearchBox"/>
+  <int value="5" label="Launched From RecentApps"/>
+  <int value="6" label="Launched From ContinueSection"/>
+  <int value="7" label="Launched From Quick App Access"/>
+</enum>
+
+<enum name="AppListOrderUpdateEvent">
+  <int value="0" label="Add Item"/>
+  <int value="1" label="Remove Item"/>
+  <int value="2" label="Sync Move Item"/>
+  <int value="3" label="Move Item To Folder"/>
+  <int value="4" label="Move Item To Root"/>
+  <int value="5" label="Revert"/>
+  <int value="6" label="Move Item"/>
+  <int value="7" label="Create Folder"/>
+  <int value="8" label="Rename Folder"/>
+  <int value="9" label="Hide Applist"/>
+  <int value="10" label="Request Sort"/>
+</enum>
+
+<enum name="AppListPageSwitcherSource">
+  <int value="0" label="Touched Indicator"/>
+  <int value="1" label="Clicked Indicator"/>
+  <int value="2" label="Swiped App Grid"/>
+  <int value="3" label="Flung App Grid"/>
+  <int value="4" label="Mousewheel Scroll"/>
+  <int value="5" label="Mousepad Scroll"/>
+  <int value="6" label="Dragged App To Border"/>
+  <int value="7" label="Move App With Keyboard"/>
+  <int value="8" label="Mouse Drag"/>
+</enum>
+
+<enum name="AppListPlayStoreQueryState">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="CANCELED"/>
+  <int value="2" label="ERROR_DEPRECATED"/>
+  <int value="3" label="PLAY_STORE_PROXY_NOT_AVAILABLE"/>
+  <int value="4" label="FAILED_TO_CALL_CANCEL"/>
+  <int value="5" label="FAILED_TO_CALL_FINDAPPS"/>
+  <int value="6" label="REQUEST_HAS_INVALID_PARAMS"/>
+  <int value="7" label="REQUEST_TIMEOUT"/>
+  <int value="8" label="PHONESKY_RESULT_REQUEST_CODE_UNMATCHED"/>
+  <int value="9" label="PHONESKY_RESULT_SESSION_ID_UNMATCHED"/>
+  <int value="10" label="PHONESKY_REQUEST_REQUEST_CODE_UNMATCHED"/>
+  <int value="11" label="PHONESKY_APP_DISCOVERY_NOT_AVAILABLE"/>
+  <int value="12" label="PHONESKY_VERSION_NOT_SUPPORTED"/>
+  <int value="13" label="PHONESKY_UNEXPECTED_EXCEPTION"/>
+  <int value="14" label="PHONESKY_MALFORMED_QUERY"/>
+  <int value="15" label="PHONESKY_INTERNAL_ERROR"/>
+  <int value="16" label="PHONESKY_RESULT_INVALID_DATA"/>
+  <int value="17" label="CHROME_GOT_INVALID_RESULT"/>
+</enum>
+
+<enum name="AppListResultRemovalConfirmation">
+  <int value="0" label="Removal Confirmed"/>
+  <int value="1" label="Removal Canceled"/>
+</enum>
+
+<enum name="AppListSearchAction">
+  <int value="0" label="Impression"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="Abandon"/>
+  <int value="3" label="Ignore"/>
+</enum>
+
+<enum name="AppListSearchCategoryState">
+  <int value="0" label="Not Available"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
+<enum name="AppListSearchResult">
+  <int value="0" label="OMNIBOX_DEPRECATED"/>
+  <int value="1" label="APP_DEPRECATED"/>
+  <int value="2" label="WEBSTORE_DEPRECATED"/>
+  <int value="3" label="SEARCH_WEBSTORE_DEPRECATED"/>
+  <int value="4" label="SEARCH_PEOPLE_DEPRECATED"/>
+  <int value="5" label="SUGGESTION_DEPRECATED"/>
+  <int value="6" label="LauncherSearchProvider (local or drive file)"/>
+  <int value="7" label="Uninstalled App From PlayStore"/>
+  <int value="8" label="Arc++ Instant App"/>
+  <int value="9" label="Answer Card"/>
+  <int value="10" label="Arc++ App Shortcut"/>
+  <int value="11" label="Omnibox, URL What You Typed"/>
+  <int value="12" label="Omnibox, Bookmark"/>
+  <int value="13" label="Omnibox, Recently Visited Website"/>
+  <int value="14" label="Omnibox, Recent Doc In Drive"/>
+  <int value="15" label="Omnibox, Web Query"/>
+  <int value="16" label="OMNIBOX_HISTORY_DEPRECATED"/>
+  <int value="17" label="Arc++ App"/>
+  <int value="18" label="Arc++ Reinstall App"/>
+  <int value="19" label="Internal App"/>
+  <int value="20" label="Extension App"/>
+  <int value="21" label="Crostini App"/>
+  <int value="22" label="Settings Shortcut"/>
+  <int value="23" label="AppDataResult, Person From Contacts"/>
+  <int value="24" label="AppDataResult, Note Document"/>
+  <int value="25" label="Omnibox, Assistant"/>
+  <int value="26" label="Omnibox, Search History"/>
+  <int value="27" label="Omnibox, Search Suggest"/>
+  <int value="28" label="Omnibox, Personalized Suggestion"/>
+  <int value="29" label="Zero State Local File"/>
+  <int value="30" label="Zero State Drive File"/>
+  <int value="31" label="Assistant"/>
+  <int value="32" label="OS Settings"/>
+  <int value="33" label="Plugin VM App"/>
+  <int value="34" label="LaCrOS"/>
+  <int value="35" label="Remote App"/>
+  <int value="36" label="Borealis App"/>
+  <int value="37" label="Help App (default or help)"/>
+  <int value="38" label="Omnibox, Search Suggest Entity"/>
+  <int value="39" label="Omnibox, Navsuggest"/>
+  <int value="40" label="Omnibox, Answer"/>
+  <int value="41" label="Omnibox, Calculator"/>
+  <int value="42" label="Local file search"/>
+  <int value="43" label="Drive file search"/>
+  <int value="44" label="Help App (Updates page)"/>
+  <int value="45" label="Help App (Discover page)"/>
+  <int value="46" label="Keyboard Shortcut"/>
+  <int value="47" label="Open Tab"/>
+  <int value="48" label="None"/>
+  <int value="49" label="Game search"/>
+  <int value="50" label="Personalization"/>
+  <int value="51" label="Bruschetta app"/>
+  <int value="52" label="System Info"/>
+  <int value="53" label="Local image search"/>
+  <int value="54" label="Desks Admin Template"/>
+</enum>
+
+<enum name="AppListShowSource">
+  <int value="0" label="Search Key"/>
+  <int value="1" label="Shelf Button"/>
+  <int value="2" label="Swipe Up From Shelf"/>
+  <int value="3" label="Shown Via Tablet Mode Transition"/>
+  <int value="4" label="Search Key With Shift"/>
+  <int value="5" label="Shelf Button With Shift"/>
+  <int value="6" label="Assistant Entry Point"/>
+  <int value="7" label="Scroll from the shelf"/>
+  <int value="8" label="Browser"/>
+  <int value="9" label="Welcome Tour"/>
+</enum>
+
+<enum name="AppListSortOrder">
+  <int value="0" label="Custom order"/>
+  <int value="1" label="Alphabetical order"/>
+  <int value="2" label="Reverse alphabetical order"/>
+  <int value="3" label="Color order"/>
+</enum>
+
+<enum name="AppListUsageStateByNewUsers">
+  <int value="0" label="LAUNCHER_USED"/>
+  <int value="1" label="LAUNCHER_NOT_USED_BEFORE_DESTRUCTION"/>
+  <int value="2" label="LAUNCHER_NOT_USED_BEFORE_SWITCHING_ACCOUNTS"/>
+</enum>
+
+<enum name="AppListUserEvent">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
+  <int value="0" label="Impression"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="Abandon"/>
+  <int value="3" label="Ignore"/>
+</enum>
+
+<enum name="AppListUserEventError">
+  <int value="0" label="Missing notifier"/>
+  <int value="1" label="Result not found"/>
+  <int value="2" label="Untracked location"/>
+  <int value="3" label="Untyped result"/>
+</enum>
+
+<enum name="AppManagementEntryPoint">
+  <int value="0" label="App list context menu app info (ARC)"/>
+  <int value="1" label="App list context menu app info (Chrome app)"/>
+  <int value="2" label="App list context menu app info (Web App)"/>
+  <int value="3" label="Launcher context menu app info (ARC)"/>
+  <int value="4" label="Launcher context menu app info (Chrome app)"/>
+  <int value="5" label="Launcher context menu app info (Web App)"/>
+  <int value="6" label="App Management main view (ARC)"/>
+  <int value="7" label="App Management main view (Chrome app)"/>
+  <int value="8" label="App Management main view (Web App)"/>
+  <int value="9" label="OS Settings main page"/>
+  <int value="10" label="App Management main view (Plugin VM)"/>
+  <int value="11" label="DBus Service (Plugin VM)"/>
+  <int value="12" label="Notification (Plugin VM)"/>
+  <int value="13" label="App Management main view (Borealis)"/>
+  <int value="14" label="Page info view"/>
+  <int value="15" label="Privacy indicators notification settings button"/>
+  <int value="16" label="Sub Apps install dialog"/>
+</enum>
+
+<enum name="AppManagementUserAction">
+  <int value="0" label="View opened"/>
+  <int value="1" label="More settings and permissions opened"/>
+  <int value="2" label="Uninstall dialog launched"/>
+  <int value="3" label="Pin to shelf turned on"/>
+  <int value="4" label="Pin to shelf turned off"/>
+  <int value="5" label="Notifications turned on"/>
+  <int value="6" label="Notifications turned off"/>
+  <int value="7" label="Location turned on"/>
+  <int value="8" label="Location turned off"/>
+  <int value="9" label="Camera turned on"/>
+  <int value="10" label="Camera turned off"/>
+  <int value="11" label="Microphone turned on"/>
+  <int value="12" label="Microphone turned off"/>
+  <int value="13" label="Contacts turned on"/>
+  <int value="14" label="Contacts turned off"/>
+  <int value="15" label="Storage turned on"/>
+  <int value="16" label="Storage turned off"/>
+  <int value="17" label="Printing turned on"/>
+  <int value="18" label="Printing turned off"/>
+  <int value="19" label="Resize Lock turned on"/>
+  <int value="20" label="Resize Lock turned off"/>
+  <int value="21" label="Preferred App turned on"/>
+  <int value="22" label="Preferred App turned off"/>
+  <int value="23" label="Supported Links list shown"/>
+  <int value="24" label="Overlapping apps dialog shown"/>
+  <int value="25" label="Window mode changed to browser"/>
+  <int value="26" label="Window mode changed to window"/>
+  <int value="27" label="Run on OS Login mode turned on"/>
+  <int value="28" label="Run on OS Login mode turned off"/>
+  <int value="29" label="File Handling turned on"/>
+  <int value="30" label="File Handling turned off"/>
+  <int value="31" label="File Handling overflow shown"/>
+  <int value="32" label="App Store Link clicked"/>
+</enum>
+
+<enum name="AppPreloadServiceWebAppInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid manifest URL"/>
+  <int value="2" label="Network error while downloading manifest"/>
+  <int value="3" label="HTTP response error while downloading manifest"/>
+  <int value="4" label="Empty manifest response"/>
+  <int value="5" label="Web app installation error"/>
+</enum>
+
+<enum name="AppTypeV2">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Android app"/>
+  <int value="2" label="Built-in app"/>
+  <int value="3" label="Linux app"/>
+  <int value="4" label="Chrome app opened in a window"/>
+  <int value="5" label="Chrome app opened in a tab"/>
+  <int value="6" label="Web app in a window"/>
+  <int value="7" label="Web app in a tab"/>
+  <int value="8" label="(Obsolete) Mac OS app"/>
+  <int value="9" label="Plugin VM"/>
+  <int value="10" label="Standalone browser"/>
+  <int value="11" label="Remote app"/>
+  <int value="12" label="Borealis app"/>
+  <int value="13" label="System web app"/>
+  <int value="14" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
+  <int value="15" label="Chrome app opened in Standalone browser"/>
+  <int value="16" label="Browser extension"/>
+  <int value="17" label="Extension opened in Standalone browser"/>
+  <int value="18" label="Chrome apps opened in Standalone browser windows"/>
+  <int value="19" label="Chrome apps opened in Standalone browser tabs"/>
+  <int value="20" label="Web apps opened in Standalone browser windows"/>
+  <int value="21" label="Web apps opened in Standalone browser tabs"/>
+</enum>
+
+<enum name="ArcRestoreState">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success With Memory Pressure"/>
+  <int value="2" label="Success With CPU Usage Rate Limiting"/>
+  <int value="3"
+      label="Success With Memory Pressure and CPU Usage Rate Limiting"/>
+  <int value="4" label="Failed With Memory Pressure"/>
+  <int value="5" label="Failed With CPU Usage Rate Limiting"/>
+  <int value="6"
+      label="Failed With Memory Pressure and CPU Usage Rate Limiting"/>
+  <int value="7" label="Failed With Unknown Reason"/>
+</enum>
+
+<enum name="ChromeOSUICommands">
+<!-- Please put in checks to ensure Command IDs are stable before adding them to this enum. -->
+
+  <int value="0" label="Launch App"/>
+  <int value="1" label="Close"/>
+  <int value="2" label="Toggle Pin"/>
+  <int value="3" label="Open in a pinned tab"/>
+  <int value="4" label="Open in a regular tab"/>
+  <int value="5" label="Open in fullscreen"/>
+  <int value="6" label="Open in window"/>
+  <int value="7" label="Open in a new window"/>
+  <int value="8" label="Open in a new incognito window"/>
+  <int value="20" label="Open in a tabbed window"/>
+  <int value="100" label="Launch New"/>
+  <int value="101" label="Toggle Pin."/>
+  <int value="102" label="Show App Info"/>
+  <int value="103" label="Options"/>
+  <int value="104" label="Uninstall"/>
+  <int value="105" label="Remove From Folder"/>
+  <int value="106" label="Open in New Window"/>
+  <int value="107" label="Open in New Incognito Window"/>
+  <int value="108" label="Install"/>
+  <int value="200" label="Open in a pinned tab."/>
+  <int value="201" label="Open in a regular tab."/>
+  <int value="202" label="Open in fullscreen."/>
+  <int value="203" label="Open in a window"/>
+  <int value="204" label="Open in a tabbed window."/>
+  <int value="500" label="Toggle Auto Hide"/>
+  <int value="501" label="Shelf Alignment Menu"/>
+  <int value="502" label="Shelf Alignment Left"/>
+  <int value="503" label="Shelf Alignment Right"/>
+  <int value="504" label="Shelf Alignment Bottom"/>
+  <int value="505" label="Change Wallpaper"/>
+  <int value="506" label="Personalization Hub"/>
+  <int value="507" label="Hide Continue Section"/>
+  <int value="508" label="Show Continue Section"/>
+</enum>
+
+<enum name="DiscoveryError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error, request failed"/>
+  <int value="2" label="Error, malformed data"/>
+</enum>
+
+<enum name="DriveSearchProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Drive unavailable"/>
+  <int value="2" label="File error"/>
+</enum>
+
+<enum name="DriveZeroStateProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Drive FS not mounted"/>
+  <int value="2" label="No results"/>
+  <int value="3" label="Path location failed"/>
+  <int value="4" label="All files errored"/>
+  <int value="5" label="Drive disabled"/>
+</enum>
+
+<enum name="FileHandlerRegistrationLinuxResult">
+  <summary>Result of registering file handlers for PWA on Linux</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to create temp dir for mimetype file"/>
+  <int value="2" label="Fail to write mimetype file"/>
+  <int value="3"
+      label="Xdg utility returns non zero code for registering mimetype file"/>
+</enum>
+
+<enum name="FileHandlerRegistrationWinResult">
+  <summary>Result of registering file handlers for PWA on Windows</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to create hard link from generic launcher"/>
+  <int value="2" label="Fail to copy from generic launcher"/>
+  <int value="3" label="Fail to add file association"/>
+  <int value="4" label="Fail to delete existing registration"/>
+  <int value="5"
+      label="Fail to delete file associations for existing registration"/>
+</enum>
+
+<enum name="GameProviderSearchStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Disabled by policy"/>
+  <int value="2" label="Empty index"/>
+</enum>
+
+<enum name="HelpAppProviderListSearchResultState">
+  <summary>Possible list search result states in the HelpAppProvider.</summary>
+  <int value="0" label="Search finished with no problems"/>
+  <int value="1" label="Search canceled because no help app icon"/>
+  <int value="2"
+      label="Search canceled because the search backend isn't available"/>
+</enum>
+
+<enum name="IconLoadingMethod">
+  <int value="0" label="Load icon from cache"/>
+  <int value="1" label="Load icon via mojom call"/>
+  <int value="2" label="Load icon via non-mojom call"/>
+</enum>
+
+<enum name="ImageAnnotationWorkerStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to initialize ICA"/>
+  <int value="2" label="Failed to initialize OCR"/>
+  <int value="3" label="Failed to decode image"/>
+  <int value="4" label="Image processing time out"/>
+</enum>
+
+<enum name="ImageContentAnnotatorStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Model Specification Error"/>
+  <int value="2" label="Load Model Error"/>
+  <int value="3" label="Feature Not Supported Error"/>
+  <int value="4" label="Language Not Supported Error"/>
+</enum>
+
+<enum name="ItemSuggestCacheStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Disabled by experiment"/>
+  <int value="2" label="Disabled by policy"/>
+  <int value="3" label="Invalid server URL"/>
+  <int value="4" label="No identity manager"/>
+  <int value="5" label="Google auth error"/>
+  <int value="6" label="Net error"/>
+  <int value="7" label="Response too large"/>
+  <int value="8" label="3xx status"/>
+  <int value="9" label="4xx status"/>
+  <int value="10" label="5xx status"/>
+  <int value="11" label="Empty response"/>
+  <int value="12" label="No results in response"/>
+  <int value="13" label="JSON parse failure"/>
+  <int value="14" label="JSON conversion failure"/>
+  <int value="15" label="Post launch update ignored"/>
+</enum>
+
+<enum name="LauncherContinueSectionResultType">
+  <int value="0" label="Local file"/>
+  <int value="1" label="Drive file"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
+<enum name="LauncherSearchSessionConclusion">
+<!-- Should be kept in sync with LauncherSearchSessionConclusionVariants in
+  tools/metrics/histograms/metadata/apps/histograms.xml.
+-->
+
+  <int value="0" label="Quit"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="AnswerCardSeen"/>
+</enum>
+
+<enum name="LauncherUserAction">
+  <summary>
+    List of actions that represent a launcher workflow that the user can perform
+    within the launcher UI, either in tablet or clamshell mode.
+  </summary>
+  <int value="0" label="App launched from apps grid"/>
+  <int value="1" label="App launched from recent apps"/>
+  <int value="2" label="Search result opened"/>
+  <int value="3" label="App search result opened"/>
+  <int value="4" label="Continue section task opened"/>
+  <int value="5" label="Suggestion chip opened"/>
+</enum>
+
+<enum name="NoteTakingAppLaunchResult">
+  <int value="0" label="Chrome app launched successfully"/>
+  <int value="1" label="Chrome app missing"/>
+  <int value="2" label="Android app launched successfully"/>
+  <int value="3" label="Android not supported by profile"/>
+  <int value="4" label="Android not running"/>
+  <int value="5" label="Couldn't convert path to Android URL"/>
+  <int value="6" label="No app specified"/>
+  <int value="7" label="No apps available"/>
+  <int value="8" label="Web app launched successfully"/>
+  <int value="9" label="Web app missing"/>
+  <int value="10" label="Unable to find an internal display"/>
+</enum>
+
+<enum name="OsSettingsProviderIconLoadStatus">
+  <int value="0" label="No app service proxy"/>
+  <int value="1" label="Bind OnLoadIcon from Constructor"/>
+  <int value="2" label="Bind OnLoadIcon from OnAppUpdate"/>
+  <int value="3" label="Readiness unknown"/>
+  <int value="4" label="Icon key not changed"/>
+  <int value="5" label="Ok from Constructor"/>
+  <int value="6" label="No value from Constructor"/>
+  <int value="7" label="Not standard from Constructor"/>
+  <int value="8" label="Ok from OnAppUpdate"/>
+  <int value="9" label="No value from OnAppUpdate"/>
+  <int value="10" label="Not standard from OnAppUpdate"/>
+  <int value="11" label="Icon exist on Destroyed"/>
+  <int value="12" label="Icon not exist on Destroyed"/>
+  <int value="13" label="OnAppUpdate get called"/>
+</enum>
+
+<enum name="OsSettingsProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="App service unavailable"/>
+  <int value="2" label="No settings icon"/>
+  <int value="3" label="Search handler unavailable"/>
+  <int value="4" label="Hierarchy empty"/>
+  <int value="5" label="No hierarchy"/>
+  <int value="6" label="Settings app not ready"/>
+  <int value="7" label="No app service proxy"/>
+</enum>
+
+<enum name="PersistentProtoReadStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Missing"/>
+  <int value="2" label="Read error"/>
+  <int value="3" label="Parse error"/>
+  <int value="4" label="No-op (unused)"/>
+</enum>
+
+<enum name="PersistentProtoWriteStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Write error"/>
+  <int value="2" label="Serialization error"/>
+</enum>
+
+<enum name="PromiseAppIconType">
+  <int value="0" label="Placeholder icon"/>
+  <int value="1" label="Real app icon"/>
+</enum>
+
+<enum name="PromiseAppLifecycleEvent">
+  <int value="0" label="Promise app created in PromiseAppRegistryCache"/>
+  <int value="1"
+      label="App installation completed successfully and was removed from
+             PromiseAppRegistryCache"/>
+  <int value="2"
+      label="App installation failed (or was cancelled) and was removed from
+             PromiseAppRegistryCache"/>
+  <int value="3" label="Promise icon created in the Launcher"/>
+  <int value="4" label="Promise icon created in the Shelf"/>
+</enum>
+
+<enum name="PromiseAppType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Arc"/>
+  <int value="2" label="Twa"/>
+</enum>
+
+<enum name="ReinstallResponseParseResult">
+  <int value="0" label="Good result."/>
+  <int value="1" label="Timeout."/>
+  <int value="2" label="No acccount"/>
+  <int value="3" label="Null data"/>
+  <int value="4" label="Bundle error."/>
+  <int value="5" label="Unknown error."/>
+</enum>
+
+<enum name="RestoreAction">
+  <int value="0" label="Restore is clicked"/>
+  <int value="1" label="Cancel is clicked"/>
+  <int value="2" label="Notification is closed by the user"/>
+  <int value="3" label="Notification is closed not by the user"/>
+</enum>
+
+<enum name="RestoreResult">
+  <int value="0" label="Finish"/>
+  <int value="1" label="Not finish"/>
+</enum>
+
+<enum name="RestoreSetting">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Always restore"/>
+  <int value="2" label="Ask every time"/>
+  <int value="3" label="Do not restore"/>
+</enum>
+
+<enum name="RestoreTabResult">
+  <int value="0" label="Tabs can be restored"/>
+  <int value="1" label="No restored tabs"/>
+  <int value="2" label="Write error"/>
+</enum>
+
+<enum name="SearchBoxTextMatch">
+  <int value="0" label="No Match"/>
+  <int value="1" label="Prefix Match"/>
+  <int value="2" label="Substring Match"/>
+  <int value="3" label="Autocompleted Without Match"/>
+</enum>
+
+<enum name="SessionRestoreExitResult">
+  <int value="0" label="No Exit"/>
+  <int value="1" label="Has One Service and Did Schedule"/>
+  <int value="2" label="Has One Service and No Schedule"/>
+  <int value="3" label="Is not first service and Did Schedule"/>
+  <int value="4" label="Is not first service and No Schedule"/>
+</enum>
+
+<enum name="SessionRestoreWindowCount">
+  <int value="0" label="No window"/>
+  <int value="1" label="No app window, has normal window"/>
+  <int value="2" label="Has app window, no normal window"/>
+  <int value="3" label="Has app window, has normal window"/>
+</enum>
+
+<enum name="SqlDatabaseStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Failed to create directory"/>
+  <int value="2" label="Failed to open DB"/>
+  <int value="3" label="Failed to initialize meta table"/>
+  <int value="4" label="Failed to set version number"/>
+  <int value="5" label="Failed to migrate schema"/>
+</enum>
+
+<enum name="WebAppCreateShortcutIconLinuxResult">
+  <summary>Result for creating shortcut icon on Linux</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty icon images"/>
+  <int value="2"
+      label="Fail to create temporary directory for writing icon images"/>
+  <int value="3" label="Fail to encode image to PNG"/>
+  <int value="4" label="Created image file is corrupted"/>
+  <int value="5" label="Fail to install icon"/>
+</enum>
+
+<enum name="WebAppCreateShortcutLinuxResult">
+  <summary>Result of creating shortcut for web app on MacOS.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to get shortcut file name"/>
+  <int value="2" label="Fail to get chrome executable path"/>
+  <int value="3" label="Fail to get desktop directory path"/>
+  <int value="4" label="Fail to open desktop directory path"/>
+  <int value="5" label="Fail to open shortcut file path"/>
+  <int value="6" label="Created desktop shortcut file is corrupted"/>
+  <int value="7"
+      label="Fail to create temporary directory for application menu shortcut"/>
+  <int value="8" label="Created directory contents is corrupted"/>
+  <int value="9" label="Created application menu shortcut is corrupted"/>
+  <int value="10" label="Fail to install shortcut in application menu"/>
+</enum>
+
+<enum name="WebAppCreateShortcutMacResult">
+  <summary>Result of creating shortcut for web app on MacOS.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Couldn't find application directory to copy app to."/>
+  <int value="2" label="Fail to localize application"/>
+  <int value="3" label="Fail to get application paths"/>
+  <int value="4"
+      label="Fail to create temporary directory as staging area to write
+             application bundle"/>
+  <int value="5" label="Staging directory does not exist"/>
+  <int value="6" label="Fail to create executable path"/>
+  <int value="7" label="Fail to copy executable path"/>
+  <int value="8" label="Fail to copy plist"/>
+  <int value="9" label="Fail to write PkgInfo File"/>
+  <int value="10" label="Fail to update Plist"/>
+  <int value="11" label="Fail to update display name"/>
+  <int value="12" label="Fail to update icon"/>
+  <int value="13" label="Fail to create parent directory for destination path"/>
+  <int value="14" label="Fail to copy application to destination"/>
+  <int value="15" label="Fail to code sign application"/>
+</enum>
+
+<enum name="WebAppShimSignatureValidationResult">
+  <summary>
+    Result of validating the signature for a web app shim on macOS.
+  </summary>
+  <int value="0" label="Signature is invalid"/>
+  <int value="1" label="The app shim had a valid ad-hoc signature"/>
+  <int value="2" label="The app shim had a valid legacy signature"/>
+  <int value="3"
+      label="Expected an ad-hoc signature, but got a valid legacy signature"/>
+</enum>
+
+<enum name="ZeroStateResultType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unanticipated"/>
+  <int value="2" label="OmniboxSearch"/>
+  <int value="3" label="ZeroStateFile"/>
+  <int value="4" label="DriveQuickAccess"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

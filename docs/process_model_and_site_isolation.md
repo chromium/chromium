@@ -51,12 +51,18 @@ Site Isolation involves:
     and workers from a single web site or origin, even if such documents are in
     iframes.
 * **Browser-Enforced Restrictions**: The privileged browser process can monitor
-    IPC messages from locked processes to limit their actions or access to site
-    data (e.g., using ChildProcessSecurityPolicy::CanAccessDataForOrigin).
+    IPC messages from renderer processes to limit their actions or access to
+    site data (e.g., using ChildProcessSecurityPolicy::CanAccessDataForOrigin).
     This [prevents compromised renderer
     processes](https://chromium.googlesource.com/chromium/src/+/main/docs/security/compromised-renderers.md)
     from asking for cross-site data, using permissions granted to other sites,
-    etc.
+    etc. These restrictions take two main forms:
+  * _"Jail" checks_: Ensure that a process locked to a particular site can only
+      access data belonging to that site. If all processes are locked, this is
+      sufficient protection.
+  * _"Citadel" checks_: Ensure that unlocked processes cannot access data
+      for sites that require a dedicated process. This adds protection in cases
+      where full Site Isolation is not available, such as Android.
 * **Network Response Limitations**: Chromium can ensure that locked renderer
     processes are only allowed to receive sensitive data (e.g., HTML, XML,
     JSON) from their designated site or origin, while still allowing

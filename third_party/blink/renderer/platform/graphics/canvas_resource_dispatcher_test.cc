@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -70,8 +71,7 @@ class CanvasResourceDispatcherTest
  public:
   scoped_refptr<CanvasResource> DispatchOneFrame() {
     scoped_refptr<CanvasResource> canvas_resource =
-        resource_provider_->ProduceCanvasResource(
-            CanvasResourceProvider::FlushReason::kTesting);
+        resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
     auto canvas_resource_extra = canvas_resource;
     dispatcher_->DispatchFrame(
         std::move(canvas_resource), base::TimeTicks(), SkIRect::MakeEmpty(),
@@ -113,6 +113,7 @@ class CanvasResourceDispatcherTest
 
  private:
   scoped_refptr<StaticBitmapImage> PrepareStaticBitmapImage();
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
 };

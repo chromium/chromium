@@ -7,9 +7,7 @@ package org.chromium.chrome.test.util;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 
-/**
- * Utilities for Toolbar unit tests.
- */
+/** Utilities for Toolbar unit tests. */
 public class ToolbarUnitTestUtils {
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
             new LocationBarModel.OfflineStatus() {

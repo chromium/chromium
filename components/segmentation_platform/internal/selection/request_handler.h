@@ -31,7 +31,8 @@ class RequestHandler {
   static std::unique_ptr<RequestHandler> Create(
       const Config& config,
       std::unique_ptr<SegmentResultProvider> result_provider,
-      ExecutionService* execution_service);
+      ExecutionService* execution_service,
+      StorageService* storage_service);
 
   // Fetches raw result for on demand executions.
   virtual void GetPredictionResult(const PredictionOptions& options,

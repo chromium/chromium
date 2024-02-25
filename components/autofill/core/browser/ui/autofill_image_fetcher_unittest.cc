@@ -9,11 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,7 +49,7 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
       base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
           barrier_callback,
       const GURL& url,
-      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
     OnCardArtImageFetched(std::move(barrier_callback), url,
                           fetch_image_request_timestamp, image,
@@ -113,14 +112,16 @@ class AutofillImageFetcherTest : public testing::Test {
     return autofill_image_fetcher_.get();
   }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAutofillImageFetcher> autofill_image_fetcher_;
 };
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
+  base::TimeTicks now = base::TimeTicks::Now();
 
   // The credit card network images cannot be found in the tests, but it should
   // be okay since we don't care what the images are.
@@ -134,8 +135,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
 
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }
@@ -157,7 +159,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
 
   // Advance the time to make the latency values more realistic.
-  test_clock.Advance(base::Milliseconds(200));
+  task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
   autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
@@ -200,8 +202,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   gfx::Image fake_image1 = gfx::test::CreateImage(1, 2);
 
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }
@@ -211,7 +214,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
           1U, std::move(callback));
 
   autofill_image_fetcher()->SimulateOnImageFetched(
-      barrier_callback, fake_url1, AutofillTickClock::NowTicks(), fake_image1);
+      barrier_callback, fake_url1, base::TimeTicks::Now(), fake_image1);
 
   // The received image should be `override_image`, because ResolveCardArtImage
   // should have changed it.
@@ -222,17 +225,16 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
+  base::TimeTicks now = base::TimeTicks::Now();
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   std::map<GURL, gfx::Image> expected_images = {{fake_url1, gfx::Image()}};
 
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }
@@ -247,7 +249,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
 
-  test_clock.Advance(base::Milliseconds(200));
+  task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate failed image fetching (for image with URL) -> expect the
   // callback to be called.
   autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,

@@ -115,7 +115,7 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
     WebLocalFrame* frame = GetMainFrame();
     ASSERT_TRUE(frame);
 
-    WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+    WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
     ASSERT_LE(1U, forms.size());
 
     *form = forms[0];

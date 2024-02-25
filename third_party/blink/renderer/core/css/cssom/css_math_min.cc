@@ -38,17 +38,17 @@ CSSMathMin* CSSMathMin::Create(CSSNumericValueVector values) {
                      final_type);
 }
 
-absl::optional<CSSNumericSumValue> CSSMathMin::SumValue() const {
+std::optional<CSSNumericSumValue> CSSMathMin::SumValue() const {
   auto cur_min = NumericValues()[0]->SumValue();
   if (!cur_min.has_value() || cur_min->terms.size() != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
     if (!child_sum.has_value() || child_sum->terms.size() != 1 ||
         child_sum->terms[0].units != cur_min->terms[0].units) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (child_sum->terms[0].value < cur_min->terms[0].value) {

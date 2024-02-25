@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -32,7 +33,7 @@ TEST_F(LogSourceAccessManagerTest, MaxNumberOfOpenLogSourcesSameExtension) {
 
   LogSourceAccessManager manager(browser_context());
 
-  const std::string extension_id = "extension";
+  const ExtensionId extension_id = "extension";
 
   // Open 10 readers for LOG_SOURCE_MESSAGES from the same extension.
   ReadLogSourceParams messages_params;

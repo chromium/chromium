@@ -165,6 +165,35 @@ void LogOtpInputDialogNewOtpRequested(CardUnmaskChallengeOptionType type);
 // This is used as a helper function for LogOtp methods.
 std::string GetOtpAuthType(CardUnmaskChallengeOptionType type);
 
+// Card unmasking risk-based authentication-related metrics.
+// Risk-based authentication-related events.
+enum class RiskBasedAuthEvent {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // No further authentication is required.
+  kNoAuthenticationRequired = 0,
+  // The user needs to complete further authentication to retrieve the card.
+  kAuthenticationRequired = 1,
+  // The risk-based auth failed because the authentication was cancelled.
+  kAuthenticationCancelled = 2,
+  // The risk-based auth failed due to unexpected errors.
+  kUnexpectedError = 3,
+  kMaxValue = kUnexpectedError
+};
+
+// Logs when a risk-based authentication starts.
+void LogRiskBasedAuthAttempt(CreditCard::RecordType card_type);
+
+// Logs when a risk-based authentication finishes.
+void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
+                            RiskBasedAuthEvent event);
+
+// Logs the roundtrip latency for UnmaskCardRequest sent by risk-based
+// authentication.
+void LogRiskBasedAuthLatency(base::TimeDelta duration,
+                             CreditCard::RecordType card_type);
+
 }  // namespace autofill::autofill_metrics
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_AUTHNTICATION_METRICS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_AUTHENTICATION_METRICS_H_

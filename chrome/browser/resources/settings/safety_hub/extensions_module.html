@@ -1,0 +1,26 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    display: block;
+  }
+  .icon-blue {
+    fill: var(--google-blue-600);
+  }
+
+  /* dark mode */
+  @media (prefers-color-scheme: dark) {
+    .icon-blue {
+      fill: var(--google-blue-300);
+    }
+  }
+</style>
+
+<settings-safety-hub-module header="[[headerString_]]"
+    header-icon="settings20:my_extensions">
+  <div slot="button-container">
+    <cr-button id="reviewButton" on-click="onButtonClick_">
+      $i18n{safetyCheckReview}
+      <iron-icon icon="cr:open-in-new" class="icon-blue" slot="suffix-icon">
+      </iron-icon>
+    </cr-button>
+  </div>
+</settings-safety-hub-module>

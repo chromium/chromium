@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(
       `Tests that Web Inspector's console is not broken if Object is overwritten in the inspected page. Test passes if the expression is evaluated in the console and no errors printed. Bug 101320.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

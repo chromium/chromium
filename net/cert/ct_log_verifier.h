@@ -6,10 +6,10 @@
 #define NET_CERT_CT_LOG_VERIFIER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -35,7 +35,7 @@ class NET_EXPORT CTLogVerifier
   // using |public_key|, which is a DER-encoded SubjectPublicKeyInfo.
   // If |public_key| refers to an unsupported public key, returns NULL.
   // |description| is a textual description of the log.
-  static scoped_refptr<const CTLogVerifier> Create(base::StringPiece public_key,
+  static scoped_refptr<const CTLogVerifier> Create(std::string_view public_key,
                                                    std::string description);
 
   // Returns the log's key ID (RFC6962, Section 3.2)
@@ -75,13 +75,13 @@ class NET_EXPORT CTLogVerifier
   ~CTLogVerifier();
 
   // Performs crypto-library specific initialization.
-  bool Init(base::StringPiece public_key);
+  bool Init(std::string_view public_key);
 
   // Performs the underlying verification using the selected public key. Note
   // that |signature| contains the raw signature data (eg: without any
   // DigitallySigned struct encoding).
-  bool VerifySignature(base::StringPiece data_to_sign,
-                       base::StringPiece signature) const;
+  bool VerifySignature(std::string_view data_to_sign,
+                       std::string_view signature) const;
 
   // Returns true if the signature and hash algorithms in |signature|
   // match those of the log

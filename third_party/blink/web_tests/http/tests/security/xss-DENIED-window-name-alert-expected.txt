@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: SecurityError: Failed to read a named property 'alert' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
 

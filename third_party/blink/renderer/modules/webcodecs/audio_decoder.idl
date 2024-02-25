@@ -7,7 +7,6 @@
 [
     Exposed=(Window,DedicatedWorker),
     SecureContext,
-    RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
 ] interface AudioDecoder : EventTarget {
   // |init| includes an |output| callback for emitting AudioBuffers and an
@@ -26,7 +25,6 @@
 
   // Fires to signal a decrease in decodeQueueSize. Will fire at most once for a
   // given turn of the event loop.
-  [RuntimeEnabled=WebCodecsDequeueEvent]
   attribute EventHandler ondequeue;
 
   // Which state the decoder is in, indicating which methods can be called.

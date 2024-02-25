@@ -4,7 +4,7 @@
 
 #include "ash/events/accessibility_event_rewriter.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
@@ -126,7 +126,12 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   if (event.IsKeyEvent()) {
     const ui::KeyEvent* key_event = event.AsKeyEvent();
     ui::EventRewriterAsh::MutableKeyState state(key_event);
-    event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+
+    // On new rewriter sequence, modifiers are already rewritten before
+    // this rewriter.
+    if (!features::IsKeyboardRewriterFixEnabled()) {
+      event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+    }
 
     // Remove the Search modifier before asking for function keys to be
     // rewritten, then restore the flags. This allows ChromeVox to receive keys
@@ -146,7 +151,7 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (try_rewriting_positional_keys_for_chromevox_) {
       const ui::KeyboardCode remapped_key_code =
           ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-              key_event->code());
+              key_event->code(), key_event->key_code());
       if (remapped_key_code != ui::VKEY_UNKNOWN)
         rewritten_key_event->set_key_code(remapped_key_code);
     }
@@ -155,7 +160,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 
     // Always capture the Search key.
     capture |= rewritten_key_event->IsCommandDown() ||
-               rewritten_key_event->key_code() == ui::VKEY_LWIN;
+               rewritten_key_event->key_code() == ui::VKEY_LWIN ||
+               rewritten_key_event->key_code() == ui::VKEY_RWIN;
 
     // Don't capture tab as it gets consumed by Blink so never comes back
     // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a
@@ -180,7 +186,11 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
   ui::EventRewriterAsh::MutableKeyState state(key_event);
-  event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+  // On new rewriter sequence, modifiers are already rewritten before
+  // this rewriter.
+  if (!features::IsKeyboardRewriterFixEnabled()) {
+    event_rewriter_ash_->RewriteModifierKeys(*key_event, &state);
+  }
   event_rewriter_ash_->RewriteFunctionKeys(*key_event, &state);
 
   std::unique_ptr<ui::Event> rewritten_event;
@@ -211,14 +221,13 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
   }
 
   if (key_event->type() == ui::ET_KEY_PRESSED) {
-    AccessibilityControllerImpl* accessibility_controller =
+    AccessibilityController* accessibility_controller =
         Shell::Get()->accessibility_controller();
 
     if (accessibility_controller->IsPointScanEnabled()) {
       PointScanController* point_scan_controller =
           accessibility_controller->GetPointScanController();
-      absl::optional<gfx::PointF> point =
-          point_scan_controller->OnPointSelect();
+      std::optional<gfx::PointF> point = point_scan_controller->OnPointSelect();
       if (point.has_value()) {
         delegate_->SendPointScanPoint(point.value());
       }
@@ -301,15 +310,15 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
+  AccessibilityController* accessibility_controller =
+      Shell::Get()->accessibility_controller();
   if (send_mouse_events_ &&
       (event.type() == ui::ET_MOUSE_MOVED ||
        event.type() == ui::ET_MOUSE_DRAGGED) &&
-      (Shell::Get()
-           ->accessibility_controller()
-           ->fullscreen_magnifier()
-           .enabled() ||
-       Shell::Get()->accessibility_controller()->docked_magnifier().enabled() ||
-       Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
+      (accessibility_controller->fullscreen_magnifier().enabled() ||
+       accessibility_controller->docked_magnifier().enabled() ||
+       accessibility_controller->spoken_feedback().enabled() ||
+       accessibility_controller->face_gaze().enabled())) {
     delegate_->DispatchMouseEvent(event.Clone());
   }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1012241361789814178">Վրիպազերծիչը դադարեցվել է այլ ներդիրում։ Սեղմեք՝ այդ ներդիր անցնելու համար։</translation>
 <translation id="1088086359088493902">Վայրկյաններ</translation>
 <translation id="1142001580032786438">Ցուցադրել շաբաթվա ընտրիչը</translation>
 <translation id="1171774979989969504">Մուտքագրեք էլ․ հասցե:</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
 <translation id="1758486001363313524">Այլ…</translation>
 <translation id="1787192514241997742">ընդհանուր ժամանակը՝ <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Թույլատրել տեսախցիկի օգտագործումը</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">նվագարկել հեռակա սարքում</translation>
 <translation id="1921819250265091946">օօ</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Հայելապատճենումը միացվեց</translation>
 <translation id="2031987842108996681">Կարմիր կապուղի</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />»-ը սխալ տեղ է դրված «<ph name="INVALIDDOMAIN" />» տիրույթում:</translation>
+<translation id="2068711044993563745">Նվազագույն արժեքը (<ph name="MINIMUM" />) պետք է առավելագույն արժեքից (<ph name="MAXIMUM" />) փոքր լինի։</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2393030564806080191">Գույնի տասնվեցական կոդը</translation>
 <translation id="2398813069815436052">երկխոսության պատուհան է բացվել։</translation>
 <translation id="245932805758469625">տեսանյութի ավարտին մնացած ժամանակը վայրկյաններով</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Նշեք այս վանդակը, եթե ուզում եք շարունակել:</translation>
 <translation id="2908441821576996758">Մուտքագրեք էլփոստի հասցեների ստորակետներով բաժանված ցանկը:</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ՄԲ</translation>
+<translation id="3053226512517284904">ցույց տալ աուդիո նկարագրությունների ընտրացանկը</translation>
 <translation id="3075154866155599887">Մուտքագրեք ճիշտ արժեք: Դաշտը թերի է կամ ամսաթիվը ճիշտ չէ:</translation>
 <translation id="310520048233152454">Մուտքագրեք URL:</translation>
 <translation id="3220661731597678625">ընթացիկ քայլը</translation>
 <translation id="3321030238473337787">Նվագարկման արագություն</translation>
 <translation id="3329013043687509092">Հագեցում</translation>
+<translation id="3377518164566272702">Թույլատրել խոսափողի և տեսախցիկի օգտագործումը</translation>
 <translation id="3450233048674729344">Արժեքը պետք է փոքր կամ հավասար լինի <ph name="MAXIMUM" />-ին:</translation>
 <translation id="3732799496749320381">ամիս</translation>
 <translation id="3754210790023674521">Դուրս գալ «նկար նկարի մեջ» ռեժիմից</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
+<translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4103419683916926126">Միլիվայրկյաններ</translation>
 <translation id="4201051445878709314">Ցուցադրել նախորդ ամիսը</translation>
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
+<translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
 <translation id="4748357248530471599">կտրվածքով տարածքը փոխարկել լիաէկրան ռեժիմի</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Հասանելի դարձնել տեղադրության տվյալները</translation>
 <translation id="4812940957355064477">Մուտքագրեք համար:</translation>
 <translation id="4912200001568447310">ընթացիկ տարրը</translation>
 <translation id="4915360478455618802">Ցուցադրել ժամի ընտրիչը</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Միացնել ձայնը</translation>
 <translation id="49969490063480558">Մուտքագրեք «<ph name="ATSIGN" />» նշանին հաջորդող մասը: «<ph name="INVALIDADDRESS" />» հասցեն թերի է:</translation>
+<translation id="5037575921016181960">Հուսալի գաղտնաբառ</translation>
 <translation id="5090250355906949916">տեսանյութի ժամանակագծի սահիչ</translation>
 <translation id="509897012892853729">Կապույտ կապուղի</translation>
 <translation id="5117590920725113268">Ցուցադրել հաջորդ ամիսը</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ներբեռնել ֆայլը</translation>
 <translation id="698788488269350478">ծավալվեց։</translation>
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
+<translation id="7080893216867146095">Տեղադրության մասին տվյալների փոխանցումը թույլատրված է</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
 <translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Այլ…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, սկսած <ph name="WEEK_START_DATE" />-ից</translation>
 <translation id="916607977885256133">Նկար նկարի մեջ</translation>
+<translation id="918430632320614861">Թույլատրել խսափողի օգտագործումը</translation>
 <translation id="945780513535800434">Մասամբ նշված</translation>
 <translation id="954003015749068518">մտնել «նկար նկարի մեջ» ռեժիմ</translation>
 </translationbundle>

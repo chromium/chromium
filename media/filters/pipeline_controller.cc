@@ -10,12 +10,14 @@
 namespace media {
 
 PipelineController::PipelineController(std::unique_ptr<Pipeline> pipeline,
+                                       PipelineStatusCB started_cb,
                                        SeekedCB seeked_cb,
                                        SuspendedCB suspended_cb,
                                        BeforeResumeCB before_resume_cb,
                                        ResumedCB resumed_cb,
                                        PipelineStatusCB error_cb)
     : pipeline_(std::move(pipeline)),
+      started_cb_(std::move(started_cb)),
       seeked_cb_(std::move(seeked_cb)),
       suspended_cb_(std::move(suspended_cb)),
       before_resume_cb_(std::move(before_resume_cb)),
@@ -163,6 +165,10 @@ bool PipelineController::IsPipelineSuspended() {
 void PipelineController::OnPipelineStatus(State expected_state,
                                           PipelineStatus pipeline_status) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (state_ == State::STARTING) {
+    started_cb_.Run(pipeline_status);
+  }
 
   if (pipeline_status != PIPELINE_OK) {
     error_cb_.Run(pipeline_status);
@@ -384,7 +390,7 @@ void PipelineController::SetVolume(float volume) {
 }
 
 void PipelineController::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   DCHECK(!latency_hint || (*latency_hint >= base::TimeDelta()));
   pipeline_->SetLatencyHint(latency_hint);
 }
@@ -434,7 +440,7 @@ void PipelineController::OnEnabledAudioTracksChanged(
 }
 
 void PipelineController::OnSelectedVideoTrackChanged(
-    absl::optional<MediaTrack::Id> selected_track_id) {
+    std::optional<MediaTrack::Id> selected_track_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   pending_video_track_change_ = true;

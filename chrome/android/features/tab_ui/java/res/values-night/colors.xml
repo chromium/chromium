@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tab Group color picker related colors. These should not be used elsewhere. -->
+    <color name="tab_group_color_picker_blue">@color/tab_group_color_picker_blue_light</color>
+    <color name="tab_group_color_picker_cyan">@color/tab_group_color_picker_cyan_light</color>
+    <color name="tab_group_color_picker_green">@color/tab_group_color_picker_green_light</color>
+    <color name="tab_group_color_picker_grey">@color/tab_group_color_picker_grey_light</color>
+    <color name="tab_group_color_picker_orange">@color/tab_group_color_picker_orange_light</color>
+    <color name="tab_group_color_picker_pink">@color/tab_group_color_picker_pink_light</color>
+    <color name="tab_group_color_picker_purple">@color/tab_group_color_picker_purple_light</color>
+    <color name="tab_group_color_picker_red">@color/tab_group_color_picker_red_light</color>
+    <color name="tab_group_color_picker_yellow">@color/tab_group_color_picker_yellow_light</color>
+</resources>

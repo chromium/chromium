@@ -33,18 +33,9 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   ~AwPermissionManager() override;
 
   // PermissionControllerDelegate implementation.
-  void RequestPermission(
-      blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
   void RequestPermissions(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
@@ -52,9 +43,8 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
@@ -77,22 +67,22 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
-  SubscriptionId SubscribePermissionStatusChange(
+  SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(
+  void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
-  void SetOriginCanReadEnumerateDevicesAudioLabels(const GURL& origin,
+  void SetOriginCanReadEnumerateDevicesAudioLabels(const url::Origin& origin,
                                                    bool audio);
-  void SetOriginCanReadEnumerateDevicesVideoLabels(const GURL& origin,
+  void SetOriginCanReadEnumerateDevicesVideoLabels(const url::Origin& origin,
                                                    bool video);
-  bool ShouldShowEnumerateDevicesAudioLabels(const GURL& origin);
-  bool ShouldShowEnumerateDevicesVideoLabels(const GURL& origin);
-  void ClearEnumerateDevicesCachedPermission(const GURL& origin,
+  bool ShouldShowEnumerateDevicesAudioLabels(const url::Origin& origin);
+  bool ShouldShowEnumerateDevicesVideoLabels(const url::Origin& origin);
+  void ClearEnumerateDevicesCachedPermission(const url::Origin& origin,
                                              bool remove_audio,
                                              bool remove_video);
 
@@ -124,7 +114,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   std::unique_ptr<LastRequestResultCache> result_cache_;
   // Maps origins to whether they can view device labels.
   // The pair is ordered as (Audio, Video).
-  std::map<GURL, std::pair<bool, bool>> enumerate_devices_labels_cache_;
+  std::map<url::Origin, std::pair<bool, bool>> enumerate_devices_labels_cache_;
 
   base::WeakPtrFactory<AwPermissionManager> weak_ptr_factory_{this};
 };

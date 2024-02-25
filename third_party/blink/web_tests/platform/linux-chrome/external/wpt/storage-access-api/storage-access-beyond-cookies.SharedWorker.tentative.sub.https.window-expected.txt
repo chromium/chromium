@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+[FAIL] Verify StorageAccessAPIBeyondCookies for Shared Worker
+Harness: the test ran to completion.

@@ -10,7 +10,6 @@
 
 #include "base/debug/allocation_trace.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/allocation_recorder/crash_handler/payload.h"
 #include "components/allocation_recorder/internal/internal.h"
@@ -66,7 +65,7 @@ StreamDataSourceFactory::~StreamDataSourceFactory() = default;
 
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
 StreamDataSourceFactory::CreateErrorMessage(
-    base::StringPiece error_message) const {
+    std::string_view error_message) const {
   std::string serialized_report;
 
   if (!SerializePayload(CreatePayloadWithProcessingFailures(error_message),

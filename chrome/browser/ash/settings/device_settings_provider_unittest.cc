@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/chrome_paths.h"
@@ -61,6 +62,11 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // Disable owner key migration.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
     provider_ = std::make_unique<DeviceSettingsProvider>(
@@ -222,15 +228,22 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void VerifyPolicyValue(const char* policy_key,
                          const base::Value* ptr_to_expected_value) {
     // The pointer might be null, so check before dereferencing.
-    if (ptr_to_expected_value)
-      EXPECT_EQ(*ptr_to_expected_value, *provider_->Get(policy_key));
-    else
-      EXPECT_EQ(nullptr, provider_->Get(policy_key));
+    const base::Value* value = provider_->Get(policy_key);
+    if (ptr_to_expected_value) {
+      // This prevents tests from crashing if provider returns nullptr.
+      ASSERT_TRUE(value);
+      EXPECT_EQ(*ptr_to_expected_value, *value);
+    } else {
+      EXPECT_EQ(nullptr, value);
+    }
   }
 
   void VerifyPolicyList(const char* policy_key,
                         const base::Value::List& expected_value) {
-    EXPECT_TRUE(provider_->Get(policy_key)->is_list());
+    const base::Value* value = provider_->Get(policy_key);
+    // This prevents tests from crashing if provider returns nullptr.
+    ASSERT_TRUE(value);
+    EXPECT_TRUE(value->is_list());
     EXPECT_EQ(expected_value, provider_->Get(policy_key)->GetList());
   }
 
@@ -436,6 +449,8 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     EXPECT_EQ(expected_value,
               *provider_->Get(kDeviceShowLowDiskSpaceNotification));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   ScopedTestingLocalState local_state_;
 
@@ -1369,6 +1384,86 @@ TEST_F(DeviceSettingsProviderTest, DeviceHindiInscriptLayoutEnabled) {
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(true),
             *provider_->Get(kDeviceHindiInscriptLayoutEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListUnset) {
+  // Device setting must be unset if the policy is not set.
+  VerifyPolicyValue(kDeviceDlcPredownloadList, nullptr);
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListEmpty) {
+  // Device setting must be unset if there are no DLCs to pre download.
+  device_policy_->payload().clear_device_dlc_predownload_list();
+  BuildAndInstallDevicePolicy();
+  VerifyPolicyValue(kDeviceDlcPredownloadList, nullptr);
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListNonempty) {
+  device_policy_->payload()
+      .mutable_device_dlc_predownload_list()
+      ->mutable_value()
+      ->add_entries("scanner_drivers");
+
+  BuildAndInstallDevicePolicy();
+
+  VerifyPolicyList(kDeviceDlcPredownloadList,
+                   base::Value::List().Append("sane-backends-extras-dlc"));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
+  device_policy_->payload()
+      .mutable_device_dlc_predownload_list()
+      ->mutable_value()
+      ->add_entries("scanner_drivers");
+  device_policy_->payload()
+      .mutable_device_dlc_predownload_list()
+      ->mutable_value()
+      ->add_entries("invalid_dlc_name");
+
+  BuildAndInstallDevicePolicy();
+
+  // Device setting must contain only the valid DLCs that can be pre downloaded.
+  VerifyPolicyList(kDeviceDlcPredownloadList,
+                   base::Value::List().Append("sane-backends-extras-dlc"));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
+  device_policy_->payload()
+      .mutable_device_dlc_predownload_list()
+      ->mutable_value()
+      ->add_entries("scanner_drivers");
+  device_policy_->payload()
+      .mutable_device_dlc_predownload_list()
+      ->mutable_value()
+      ->add_entries("scanner_drivers");
+
+  BuildAndInstallDevicePolicy();
+
+  // Device setting must not contain any duplicate values.
+  VerifyPolicyList(kDeviceDlcPredownloadList,
+                   base::Value::List().Append("sane-backends-extras-dlc"));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueSet) {
+  device_policy_->payload()
+      .mutable_deviceextendedautoupdateenabled()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_TRUE(actual_value->GetBool());
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueUnset) {
+  device_policy_->payload().clear_deviceextendedautoupdateenabled();
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_FALSE(actual_value);
 }
 
 }  // namespace ash

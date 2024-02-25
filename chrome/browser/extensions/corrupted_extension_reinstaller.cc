@@ -64,7 +64,7 @@ void CorruptedExtensionReinstaller::RecordPolicyReinstallReason(
 
 void CorruptedExtensionReinstaller::ExpectReinstallForCorruption(
     const ExtensionId& id,
-    absl::optional<PolicyReinstallReason> reason_for_uma,
+    std::optional<PolicyReinstallReason> reason_for_uma,
     mojom::ManifestLocation manifest_location_for_uma) {
   if (base::Contains(expected_reinstalls_, id))
     return;

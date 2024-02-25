@@ -383,8 +383,8 @@ TEST_F(SandboxDirectoryDatabaseTest, TestUpdateModificationTime) {
   EXPECT_EQ(info0.name, info1.name);
   EXPECT_EQ(info0.parent_id, info1.parent_id);
   EXPECT_EQ(info0.data_path, info1.data_path);
-  EXPECT_EQ(floor(info0.modification_time.ToDoubleT()),
-            info1.modification_time.ToDoubleT());
+  EXPECT_EQ(floor(info0.modification_time.InSecondsFSinceUnixEpoch()),
+            info1.modification_time.InSecondsFSinceUnixEpoch());
 
   EXPECT_TRUE(db()->UpdateModificationTime(file_id, base::Time::UnixEpoch()));
   EXPECT_TRUE(db()->GetFileInfo(file_id, &info1));
@@ -392,8 +392,8 @@ TEST_F(SandboxDirectoryDatabaseTest, TestUpdateModificationTime) {
   EXPECT_EQ(info0.parent_id, info1.parent_id);
   EXPECT_EQ(info0.data_path, info1.data_path);
   EXPECT_NE(info0.modification_time, info1.modification_time);
-  EXPECT_EQ(info1.modification_time.ToDoubleT(),
-            floor(base::Time::UnixEpoch().ToDoubleT()));
+  EXPECT_EQ(info1.modification_time.InSecondsFSinceUnixEpoch(),
+            floor(base::Time::UnixEpoch().InSecondsFSinceUnixEpoch()));
 
   EXPECT_FALSE(db()->UpdateModificationTime(999, base::Time::UnixEpoch()));
 }
@@ -412,8 +412,8 @@ TEST_F(SandboxDirectoryDatabaseTest, TestSimpleFileOperations) {
   EXPECT_EQ(info0.parent_id, info1.parent_id);
   EXPECT_EQ(info0.data_path, info1.data_path);
   EXPECT_EQ(info0.name, info1.name);
-  EXPECT_EQ(floor(info0.modification_time.ToDoubleT()),
-            info1.modification_time.ToDoubleT());
+  EXPECT_EQ(floor(info0.modification_time.InSecondsFSinceUnixEpoch()),
+            info1.modification_time.InSecondsFSinceUnixEpoch());
 }
 
 TEST_F(SandboxDirectoryDatabaseTest, TestOverwritingMoveFileSrcDirectory) {

@@ -85,7 +85,7 @@ SpdySessionPool::SpdySessionPool(
     int session_max_queued_capped_frames,
     const spdy::SettingsMap& initial_settings,
     bool enable_http2_settings_grease,
-    const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
+    const std::optional<GreasedHttp2Frame>& greased_http2_frame,
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
     bool go_away_on_ip_change,
@@ -344,11 +344,11 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
         // If socket tags differ, see if session's socket tag can be changed.
         if (!compare_result.is_socket_tag_match) {
           SpdySessionKey old_key = available_session->spdy_session_key();
-          SpdySessionKey new_key(old_key.host_port_pair(),
-                                 old_key.proxy_server(), old_key.privacy_mode(),
-                                 old_key.is_proxy_session(), key.socket_tag(),
-                                 old_key.network_anonymization_key(),
-                                 old_key.secure_dns_policy());
+          SpdySessionKey new_key(
+              old_key.host_port_pair(), old_key.privacy_mode(),
+              old_key.proxy_chain(), old_key.session_usage(), key.socket_tag(),
+              old_key.network_anonymization_key(), old_key.secure_dns_policy(),
+              old_key.disable_cert_verification_network_fetches());
 
           // If there is already a session with |new_key|, skip this one.
           // It will be found in |aliases_| in a future iteration.
@@ -393,9 +393,10 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
                 GetDnsAliasesForSessionKey(*it);
             UnmapKey(*it);
             SpdySessionKey new_pool_alias_key = SpdySessionKey(
-                it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
-                it->is_proxy_session(), key.socket_tag(),
-                it->network_anonymization_key(), it->secure_dns_policy());
+                it->host_port_pair(), it->privacy_mode(), it->proxy_chain(),
+                it->session_usage(), key.socket_tag(),
+                it->network_anonymization_key(), it->secure_dns_policy(),
+                it->disable_cert_verification_network_fetches());
             MapKeyToAvailableSession(new_pool_alias_key, available_session,
                                      std::move(pooled_alias_old_dns_aliases));
             auto old_it = it;
@@ -541,14 +542,27 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
     const base::flat_set<HostPortPair>& servers) {
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
+    bool session_matches = false;
     if (!session)
       continue;
 
-    const ProxyServer& proxy_server =
-        session->spdy_session_key().proxy_server();
-    if (servers.contains(session->host_port_pair()) ||
-        (proxy_server.is_http_like() && !proxy_server.is_http() &&
-         servers.contains(proxy_server.host_port_pair()))) {
+    // If the destination for this session is invalidated, or any of the proxy
+    // hops along the way, make the session go away.
+    if (servers.contains(session->host_port_pair())) {
+      session_matches = true;
+    } else {
+      const ProxyChain& proxy_chain = session->spdy_session_key().proxy_chain();
+
+      for (const ProxyServer& proxy_server : proxy_chain.proxy_servers()) {
+        if (proxy_server.is_http_like() && !proxy_server.is_http() &&
+            servers.contains(proxy_server.host_port_pair())) {
+          session_matches = true;
+          break;
+        }
+      }
+    }
+
+    if (session_matches) {
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.
@@ -608,7 +622,7 @@ void SpdySessionPool::MapKeyToAvailableSession(
     std::set<std::string> dns_aliases) {
   DCHECK(base::Contains(sessions_, session.get()));
   std::pair<AvailableSessionMap::iterator, bool> result =
-      available_sessions_.insert(std::make_pair(key, session));
+      available_sessions_.emplace(key, session);
   CHECK(result.second);
 
   dns_aliases_by_session_key_[key] = std::move(dns_aliases);
@@ -643,7 +657,7 @@ void SpdySessionPool::RemoveAliases(const SpdySessionKey& key) {
 
 SpdySessionPool::WeakSessionList SpdySessionPool::GetCurrentSessions() const {
   WeakSessionList current_sessions;
-  for (auto* session : sessions_) {
+  for (SpdySession* session : sessions_) {
     current_sessions.push_back(session->GetWeakPtr());
   }
   return current_sessions;
@@ -724,7 +738,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
   // potentially be pooled with this one. Because GetPeerAddress()
   // reports the proxy's address instead of the origin server, check
   // to see if this is a direct connection.
-  if (key.proxy_server().is_direct()) {
+  if (key.proxy_chain().is_direct()) {
     IPEndPoint address;
     if (available_session->GetPeerAddress(&address) == OK)
       aliases_.insert(AliasMap::value_type(address, key));

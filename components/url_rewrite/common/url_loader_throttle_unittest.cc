@@ -58,7 +58,7 @@ TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   std::vector<mojom::UrlRequestActionPtr> actions;
   actions.push_back(std::move(rewrite));
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
@@ -109,7 +109,7 @@ TEST_F(URLLoaderThrottleTest, CorsAwareHeaders) {
   std::vector<mojom::UrlRequestActionPtr> actions;
   actions.push_back(std::move(rewrite));
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
@@ -156,7 +156,7 @@ TEST_F(URLLoaderThrottleTest, DataReplacementUrl) {
   std::vector<mojom::UrlRequestActionPtr> actions;
   actions.push_back(std::move(rewrite));
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
@@ -187,7 +187,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsToSameHost) {
       mojom::UrlRequestAction::NewAppendToQuery(std::move(append_query)));
 
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
 
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
@@ -224,7 +224,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsFromDifferentHost) {
       mojom::UrlRequestAction::NewAppendToQuery(std::move(append_query)));
 
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.b.com"});
+  rule->hosts_filter = std::optional<std::vector<std::string>>({"*.b.com"});
   rule->actions = std::move(actions);
 
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
@@ -263,7 +263,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsToDifferentHost) {
 
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
   rule->hosts_filter =
-      absl::optional<std::vector<std::string>>({"*.a.com", "*.b.com"});
+      std::optional<std::vector<std::string>>({"*.a.com", "*.b.com"});
   rule->actions = std::move(actions);
 
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
@@ -318,7 +318,7 @@ TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
 
   {
     mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-    rule->hosts_filter = absl::optional<std::vector<std::string>>({"test.net"});
+    rule->hosts_filter = std::optional<std::vector<std::string>>({"test.net"});
     rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
         mojom::UrlRequestAccessPolicy::kAllow));
     rules->rules.push_back(std::move(rule));

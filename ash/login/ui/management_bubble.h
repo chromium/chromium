@@ -10,12 +10,15 @@
 #include "ash/login/ui/lock_contents_view_constants.h"
 #include "ash/login/ui/login_tooltip_view.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class ManagementBubble : public LoginTooltipView {
+  METADATA_HEADER(ManagementBubble, LoginTooltipView)
+
  public:
   ManagementBubble(const std::u16string& message,
                    base::WeakPtr<views::View> anchor_view);

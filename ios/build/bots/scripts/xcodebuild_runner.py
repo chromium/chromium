@@ -16,7 +16,7 @@ import iossim_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
-import xcode_log_parser
+from xcode_log_parser import XcodeLogParser
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -106,20 +106,21 @@ class LaunchCommand(object):
   def __init__(self,
                egtests_app,
                udid,
-               shards,
+               clones,
                retries,
                readline_timeout,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None,
                test_plugin_service=None,
-               cert_path=None):
+               cert_path=None,
+               erase_simulators=True):
     """Initialize launch command.
 
     Args:
       egtests_app: (EgtestsApp) An egtests_app to run.
       udid: (str) UDID of a device/simulator.
-      shards: (int) A number of shards.
+      clones: (int) A number of simulator clones to run test cases against.
       readline_timeout: (int) Timeout to kill a test process when it doesn't
         have output (in seconds).
       retries: (int) A number of retries.
@@ -127,6 +128,8 @@ class LaunchCommand(object):
         By default it is a current directory.
       env: (dict) Environment variables.
       cert_path: (str) A path for cert to install.
+      erase_simulators: (bool) Whether to erase all simulators before all
+        tests launch or not.
 
     Raises:
       AppNotFoundError: At incorrect egtests_app parameter type.
@@ -136,15 +139,15 @@ class LaunchCommand(object):
           'Parameter `egtests_app` is not EgtestsApp: %s' % egtests_app)
     self.egtests_app = egtests_app
     self.udid = udid
-    self.shards = shards
+    self.clones = clones
     self.readline_timeout = readline_timeout
     self.retries = retries
     self.out_dir = out_dir
     self.use_clang_coverage = use_clang_coverage
     self.env = env
-    self._log_parser = xcode_log_parser.get_parser()
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
+    self.erase_simulators = erase_simulators
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -166,7 +169,7 @@ class LaunchCommand(object):
   def launch(self):
     """Launches tests using xcodebuild."""
     overall_launch_command_result = ResultCollection()
-    shards = self.shards
+    clones = self.clones
     running_tests = set(self.egtests_app.get_all_tests())
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
@@ -175,14 +178,15 @@ class LaunchCommand(object):
         self.test_plugin_service.reset()
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
-        # kill all running simulators to prevent possible memory leaks
-        test_runner.SimulatorTestRunner.kill_simulators()
-        shutdown_all_simulators()
-        shutdown_all_simulators(XTDEVICE_FOLDER)
-        erase_all_simulators()
-        erase_all_simulators(XTDEVICE_FOLDER)
+        if self.erase_simulators:
+          # kill all running simulators to prevent possible memory leaks
+          test_runner.SimulatorTestRunner.kill_simulators()
+          shutdown_all_simulators()
+          shutdown_all_simulators(XTDEVICE_FOLDER)
+          erase_all_simulators()
+          erase_all_simulators(XTDEVICE_FOLDER)
         if self.cert_path:
-          iossim_util.copy_trusted_certificate(self.cert_path, self.uuid)
+          iossim_util.copy_trusted_certificate(self.cert_path, self.udid)
 
         # ideally this should be the last step before running tests, because
         # it boots the simulator.
@@ -190,13 +194,13 @@ class LaunchCommand(object):
 
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
-                                          shards)
+                                          clones)
       # TODO(crbug.com/914878): add heartbeat logging to xcodebuild_runner.
       LOGGER.info('Start test attempt #%d for command [%s]' % (
           attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = self._log_parser.collect_test_results(outdir_attempt, output)
+      result = XcodeLogParser.collect_test_results(outdir_attempt, output)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)
@@ -228,14 +232,14 @@ class LaunchCommand(object):
         break
 
       # If tests are not completed(interrupted or did not start) and there are
-      # >= 20 remaining tests, run them with the same number of shards.
-      # otherwise re-run with shards=1.
+      # >= 20 remaining tests, run them with the same number of clones.
+      # otherwise re-run with clones=1.
       if (not result.crashed
           # If need to re-run less than 20 tests, 1 shard should be enough.
           or (len(running_tests) -
               len(overall_launch_command_result.expected_tests()) <=
               MAXIMUM_TESTS_PER_SHARD_FOR_RERUN)):
-        shards = 1
+        clones = 1
 
     return overall_launch_command_result
 
@@ -259,7 +263,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       release: (bool) Whether this test runner is running for a release build.
       repeat_count: (int) Number of times to run each test (passed to test app).
       retries: (int) A number to retry test run, will re-run only failed tests.
-      shards: (int) A number of shards. Default is 1.
+      clones: (int) A number of clones to run tests against. Default is 1.
       test_cases: (list) List of tests to be included in the test run.
                   None or [] to include all tests.
       test_args: List of strings to pass as arguments to the test when
@@ -285,10 +289,17 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
 
+    # TODO(crbug.com/1486897): For simulators, the record_video_option
+    # is always None right now, because we are still using our own video
+    # plugin. Currently native Xcode15+ video recording is only supported
+    # on iOS17+, but we should aim to migrate to the native solution so
+    # that we don't need to maintain our own.
+    self.record_video_option = kwargs.get('record_video_option')
+
     # initializing test plugin service
     self.test_plugin_service = None
     enabled_plugins = init_plugins_from_args(
-        self.udid, os.path.join(self.out_dir, self.udid), **kwargs)
+        os.path.join(self.out_dir, self.udid), **kwargs)
     if (len(enabled_plugins) > 0):
       LOGGER.info('Number of enabled plugins are greater than 0, initiating' +
                   'test plugin service... Enabled plugins are %s' %
@@ -321,7 +332,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         test_args=self.test_args,
         release=self.release,
         repeat_count=self.repeat_count,
-        host_app_path=self.host_app_path)
+        host_app_path=self.host_app_path,
+        record_video_option=self.record_video_option)
 
   def launch(self):
     """Launches tests using xcodebuild."""
@@ -331,7 +343,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     launch_command = LaunchCommand(
         test_app,
         udid=self.udid,
-        shards=self.shards,
+        clones=self.clones,
         readline_timeout=self.readline_timeout,
         retries=self.retries,
         out_dir=os.path.join(self.out_dir, self.udid),
@@ -429,7 +441,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     test_runner.DeviceTestRunner.__init__(self, app_path, out_dir, **kwargs)
-    self.shards = 1  # For tests on real devices shards=1
+    self.clones = 1  # For tests on real devices clones=1
     self.version = None
     self.platform = None
     self.host_app_path = None
@@ -440,6 +452,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.set_up()
     self.start_time = time.strftime('%Y-%m-%d-%H%M%S', time.localtime())
     self.test_results['path_delimiter'] = '/'
+    self.record_video_option = kwargs.get('record_video_option')
     self.test_plugin_service = None
 
   def set_up(self):

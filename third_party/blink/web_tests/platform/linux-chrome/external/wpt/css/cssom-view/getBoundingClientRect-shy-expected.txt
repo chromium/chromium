@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+[FAIL] Range 0-5 should not include the hyphen.
+  assert_equals: expected 50 but got 25
+[FAIL] Range 1-5 should not include the hyphen.
+  assert_equals: expected 40 but got 20
+[FAIL] Range 0-6 should not include the hyphen.
+  assert_equals: expected 60 but got 30
+[FAIL] Range 1-6 should not include the hyphen.
+  assert_equals: expected 50 but got 25
+[FAIL] Range 0-7 should include the hyphen.
+  assert_equals: expected 70 but got 33.34375
+[FAIL] Range 1-7 should include the hyphen.
+  assert_equals: expected 60 but got 28.34375
+[FAIL] Range 0-8 should include the hyphen.
+  assert_equals: expected 70 but got 33.34375
+[FAIL] Range 0-8 should include only the first hyphen.
+  assert_equals: expected 70 but got 33.34375
+[FAIL] Rendered soft-hyphen should have a width.
+  assert_equals: expected 10 but got 3.34375
+[FAIL] Rendered soft-hyphen in a span should have a width.
+  assert_equals: expected 10 but got 3.34375
+Harness: the test ran to completion.

@@ -1,0 +1,106 @@
+    <style include="cr-shared-style md-select cros-color-overrides">
+      #resolverSelect {
+        width: inherit;
+      }
+
+      #resolverLabel {
+        flex: 1;
+      }
+
+      #privacyPolicy, #networkDefaultDescription {
+        padding: calc(var(--cr-section-padding) / 2) var(--cr-section-padding);
+      }
+
+      /* Style the link appearing within the privacyPolicy's localized
+         content. */
+      #privacyPolicy a {
+        color: var(--cr-link-color);
+      }
+
+      #secureDnsInputContainer {
+        margin-top: calc(var(--cr-section-padding) / 2);
+      }
+
+      :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+        --cr-icon-button-margin-end: 16px;
+        --iron-icon-fill-color: var(--cros-sys-primary);
+      }
+    </style>
+
+    <template is="dom-if" if="[[!shouldShowDialogWhenDisablingDns_]]">
+      <settings-toggle-button
+          id="secureDnsToggle"
+          class="hr"
+          icon="[[getDnsRowIcon_()]]"
+          pref="{{secureDnsToggle_}}"
+          label="$i18n{secureDnsOsSettingsTitle}"
+          sub-label="[[secureDnsDescription_]]"
+          on-change="onToggleChanged_">
+      </settings-toggle-button>
+    </template>
+
+    <template is="dom-if" if="[[shouldShowDialogWhenDisablingDns_]]">
+      <settings-toggle-button
+          id="secureDnsToggle"
+          class="hr"
+          icon="os-settings:privacy-secure-dns"
+          pref="[[secureDnsToggle_]]"
+          label="$i18n{secureDnsOsSettingsTitle}"
+          sub-label="[[secureDnsDescription_]]"
+          on-settings-boolean-control-change="onDnsToggleClick_"
+          no-set-pref>
+      </settings-toggle-button>
+    </template>
+
+    <div id="resolverOptions" hidden="[[!showSecureDnsOptions_]]">
+      <div class="cr-row continuation">
+        <div id="resolverLabel" class="flex cr-padded-text">
+          $i18n{secureDnsSecureDropdownModeDescription}
+        </div>
+
+        <select id="resolverSelect"
+            class="md-select"
+            aria-labelledby="resolverLabel"
+            on-change="onDropdownSelectionChanged_"
+            aria-describedby$="[[networkDefaultAriaDescribedBy_]]">
+          <option value="[[resolverTypeEnum_.AUTOMATIC]]">
+            $i18n{secureDnsAutomaticModeDescription}
+          </option>
+          <option value="[[resolverTypeEnum_.CUSTOM]]">
+            $i18n{secureDnsCustomProviderDescription}
+          </option>
+          <template is="dom-repeat" items="[[resolverOptions_]]">
+            <option data-resolver-type$="[[resolverTypeEnum_.BUILT_IN]]"
+                value="[[index]]">
+              [[item.name]]
+            </option>
+          </template>
+        </select>
+      </div>
+
+      <template is="dom-if" if="[[showPrivacyPolicyDescription_]]" restamp>
+        <localized-link id="privacyPolicy"
+            class="cr-secondary-text"
+            localized-string="[[privacyPolicyString_]]">
+        </localized-link>
+      </template>
+
+      <template is="dom-if" if="[[showNetworkDefaultDescription_]]" restamp>
+        <div id="networkDefaultDescription" class="cr-secondary-text">
+          $i18n{secureDnsSecureDropdownModeNetworkDefaultDescription}
+        </div>
+      </template>
+
+      <div id="secureDnsInputContainer" class="cr-row continuation">
+        <secure-dns-input id="secureDnsInput"
+            value="[[secureDnsInputValue_]]"
+            on-value-update="onSecureDnsInputEvaluated_">
+        </secure-dns-input>
+      </div>
+    </div>
+
+    <template is="dom-if" if="[[showDisableDnsDialog_]]" restamp>
+      <settings-secure-dns-dialog id="warningDialog"
+          on-close="onDisableDnsDialogClosed_" prefs="{{prefs}}">
+      </settings-secure-dns-dialog>
+    </template>

@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -20,7 +21,6 @@
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_impl.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_service_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -164,7 +164,7 @@ class FakeBluetoothLowEnergyScanSessionDelegate
   // BluetoothLowEnergyScanSession::Delegate
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override {}
   void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
                      device::BluetoothDevice* device) override {}
@@ -260,7 +260,7 @@ TEST(BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
       std::move(pattern_value));
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       device::BluetoothLowEnergyScanFilter::Range::kNear, kDeviceFoundTimeout,
-      kDeviceLostTimeout, {pattern}, /*rssi_sampling_period=*/absl::nullopt);
+      kDeviceLostTimeout, {pattern}, /*rssi_sampling_period=*/std::nullopt);
 
   SetupExpectedMockAdvertisementMonitorDbusCalls(
       mock_bus.get(), mock_exported_object.get(), monitor_object_path);

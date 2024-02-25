@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -42,13 +43,13 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_tri_state.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
@@ -87,9 +89,12 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 namespace {
 
@@ -103,48 +108,61 @@ constexpr char kPasswordRe[] =
     "sandi|signum|slaptazodis|kata|passord|haslo|senha|geslo|contrasena|"
     "khau";
 
-static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
-    Element* element) {
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    if (input->type() == input_type_names::kPassword) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
-    }
-    if (input->type() == input_type_names::kNumber) {
-      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
-    }
-    if (input->type() == input_type_names::kTel) {
-      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
-    }
-    if (input->IsTextField()) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-    }
-    return mojom::blink::ContextMenuDataInputFieldType::kOther;
-  } else if (IsA<HTMLTextAreaElement>(element)) {
-    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-  }
-  return mojom::blink::ContextMenuDataInputFieldType::kNone;
-}
-
-void SetInputFieldsData(Element* element, ContextMenuData& data) {
-  data.input_field_type = ComputeInputFieldType(element);
-
+void SetPasswordManagerData(Element* element, ContextMenuData& data) {
   // Uses heuristics (finding 'password' and its short versions and translations
   // in field name and id etc.) to recognize a field intended for password input
-  // of plain text HTML field type, and it is used to set the field
-  // is_password_type_by_heuristics.
+  // of plain text HTML field type or `HasBeenPasswordField` which returns true
+  // due to either server predictions or user's masking of input values. It is
+  // used to set the field is_password_type_by_heuristics.
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     const AtomicString& id = input->GetIdAttribute();
     const AtomicString& name = input->GetNameAttribute();
 
-    DEFINE_STATIC_LOCAL(Persistent<ScriptRegexp>, passwordRegexp,
-                        (MakeGarbageCollected<ScriptRegexp>(
-                            kPasswordRe, kTextCaseUnicodeInsensitive)));
+    auto* isolate = element->GetDocument().GetAgent().isolate();
+    auto* per_isolate_data = V8PerIsolateData::From(isolate);
+    if (!per_isolate_data->GetPasswordRegexp()) {
+      per_isolate_data->SetPasswordRegexp(MakeGarbageCollected<ScriptRegexp>(
+          element->GetDocument().GetAgent().isolate(), kPasswordRe,
+          kTextCaseUnicodeInsensitive));
+    }
 
+    auto* password_regexp = per_isolate_data->GetPasswordRegexp();
     data.is_password_type_by_heuristics =
-        (data.input_field_type ==
-         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
-        (passwordRegexp->Match(id.GetString()) >= 0 ||
-         passwordRegexp->Match(name.GetString()) >= 0);
+        (data.form_control_type == mojom::blink::FormControlType::kInputText ||
+         data.form_control_type == mojom::blink::FormControlType::kInputEmail ||
+         data.form_control_type ==
+             mojom::blink::FormControlType::kInputSearch ||
+         data.form_control_type == mojom::blink::FormControlType::kInputUrl ||
+         data.form_control_type == mojom::blink::FormControlType::kTextArea) &&
+        (password_regexp->Match(id.GetString()) >= 0 ||
+         password_regexp->Match(name.GetString()) >= 0 ||
+         input->HasBeenPasswordField());
+  }
+}
+
+void SetAutofillData(Node* node, ContextMenuData& data) {
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
+    data.form_control_type = form_control->FormControlType();
+    data.field_renderer_id = form_control->GetDomNodeId();
+    if (auto* form = form_control->Form()) {
+      data.form_renderer_id = form->GetDomNodeId();
+    } else {
+      data.form_renderer_id = 0;
+    }
+  }
+  if (auto* html_element =
+          node ? DynamicTo<HTMLElement>(RootEditableElement(*node)) : nullptr) {
+    ContentEditableType content_editable =
+        html_element->contentEditableNormalized();
+    data.is_content_editable_for_autofill =
+        (content_editable == ContentEditableType::kPlaintextOnly ||
+         content_editable == ContentEditableType::kContentEditable) &&
+        !DynamicTo<HTMLFormElement>(node) &&
+        !DynamicTo<HTMLFormControlElement>(node);
+    if (data.is_content_editable_for_autofill) {
+      data.field_renderer_id = html_element->GetDomNodeId();
+      data.form_renderer_id = html_element->GetDomNodeId();
+    }
   }
 }
 
@@ -179,22 +197,6 @@ uint32_t EnumToBitmask(enumType outcome) {
   return 1 << static_cast<uint8_t>(outcome);
 }
 
-absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
-  if (auto* text_control_element =
-          DynamicTo<TextControlElement>(result.InnerNode())) {
-    if (text_control_element->Form() != nullptr)
-      return text_control_element->Form()->UniqueRendererFormId();
-  }
-  return absl::nullopt;
-}
-
-absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
-  if (auto* text_control_element =
-          DynamicTo<TextControlElement>(result.InnerNode())) {
-    return text_control_element->UniqueRendererFormControlId();
-  }
-  return absl::nullopt;
-}
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -776,6 +778,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         ContextMenuData::kCheckableMenuItemChecked;
   }
 
+  if (Document* doc = selected_frame->GetDocument()) {
+    data.is_image_media_plugin_document = doc->IsImageDocument() ||
+                                          doc->IsMediaDocument() ||
+                                          doc->IsPluginDocument();
+  }
   data.referrer_policy = selected_frame->DomWindow()->GetReferrerPolicy();
 
   if (menu_provider_) {
@@ -812,7 +819,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                 selected_frame->GetAttributionSrcLoader();
             attribution_src_loader->CanRegister(result.AbsoluteLinkURL(),
                                                 /*element=*/anchor,
-                                                /*request_id=*/absl::nullopt)) {
+                                                /*request_id=*/std::nullopt)) {
           data.impression = blink::Impression{
               .runtime_features = attribution_src_loader->GetRuntimeFeatures(),
           };
@@ -821,11 +828,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  SetInputFieldsData(result.InnerElement(), data);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
-  data.form_renderer_id = GetFormRendererId(result);
-  data.field_renderer_id = GetFieldRendererId(result);
+
+  SetAutofillData(result.InnerNode(), data);
+  SetPasswordManagerData(result.InnerElement(), data);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||
@@ -838,7 +845,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
 
-  absl::optional<gfx::Point> host_context_menu_location;
+  std::optional<gfx::Point> host_context_menu_location;
   if (selected_web_frame->FrameWidgetImpl()) {
     host_context_menu_location =
         selected_web_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();

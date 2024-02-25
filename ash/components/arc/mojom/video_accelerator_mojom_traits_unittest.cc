@@ -31,7 +31,7 @@ TEST(VideoAcceleratorStructTraitsTest, ConvertVideoFrameLayout) {
   constexpr size_t buffer_addr_align = 128;
   constexpr uint64_t modifier = 0x1234;
 
-  absl::optional<media::VideoFrameLayout> layout =
+  std::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(kFormat, kCodedSize, planes,
                                                 buffer_addr_align, modifier);
   EXPECT_TRUE(layout);

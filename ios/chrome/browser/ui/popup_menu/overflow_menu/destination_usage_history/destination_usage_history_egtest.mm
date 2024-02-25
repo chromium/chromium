@@ -213,11 +213,6 @@ GREYLayoutConstraint* RightConstraint() {
 // 7. Site Information
 // 8. Settings
 - (void)testDefaultCarouselSortOrderDisplayed {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:NO];
 }
@@ -234,11 +229,6 @@ GREYLayoutConstraint* RightConstraint() {
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
 - (void)testDefaultCarouselSortOrderDisplayedOnNTP {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 }
 
@@ -251,11 +241,6 @@ GREYLayoutConstraint* RightConstraint() {
 // 5. Site Information
 // 6. Settings
 - (void)testDefaultCarouselSortOrderDisplayedForIncognito {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [DestinationUsageHistoryCase
@@ -273,11 +258,6 @@ GREYLayoutConstraint* RightConstraint() {
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
 - (void)testDefaultCarouselSortOrderDisplayedOnNTPForIncognito {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [ChromeEarlGrey openNewIncognitoTab];
   [DestinationUsageHistoryCase
       verifyCarouselHasDefaultSortOrderOnNTPForIncognito:YES];
@@ -291,11 +271,6 @@ GREYLayoutConstraint* RightConstraint() {
 // Tests an above-the-fold destination never moves within group (A),
 // regardless of usage.
 - (void)testAboveFoldDestinationNeverPromotes {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   // Tap the above-fold destination, Password Manager, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -311,11 +286,6 @@ GREYLayoutConstraint* RightConstraint() {
 
 // Tests a below-the-fold destination gets promoted.
 - (void)testBelowFoldDestinationPromotes {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   // Tap the below-fold destination, Settings, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -373,11 +343,6 @@ GREYLayoutConstraint* RightConstraint() {
 // Tests a below-the-fold destination is not promoted until the third click
 // for a fresh destination usage history.
 - (void)testNoSwapUntilMinClickCountReached {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Settings tap (no promotion expected after this tap)
@@ -458,11 +423,6 @@ GREYLayoutConstraint* RightConstraint() {
 // initially, and, with enough usage, is promoted to group (A)—the
 // "above-the-fold" destinations.
 - (void)testLastImmediatelyVisibleDestinationPromotes {
-  if (@available(iOS 15.0, *)) {
-  } else {
-    return;
-  }
-
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Downloads tap (no promotion expected after this tap)

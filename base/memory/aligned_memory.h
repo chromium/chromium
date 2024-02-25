@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <bit>
 #include <ostream>
 
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/check.h"
 #include "build/build_config.h"
 
@@ -24,6 +24,8 @@
 // A runtime sized aligned allocation can be created:
 //
 //   float* my_array = static_cast<float*>(AlignedAlloc(size, alignment));
+//   CHECK(reinterpret_cast<uintptr_t>(my_array) % alignment == 0);
+//   memset(my_array, 0, size);  // fills entire object.
 //
 //   // ... later, to release the memory:
 //   AlignedFree(my_array);
@@ -67,7 +69,7 @@ inline bool IsAligned(uintptr_t val, size_t alignment) {
 #if SUPPORTS_BUILTIN_IS_ALIGNED
   return __builtin_is_aligned(val, alignment);
 #else
-  DCHECK(bits::IsPowerOfTwo(alignment)) << alignment << " is not a power of 2";
+  DCHECK(std::has_single_bit(alignment)) << alignment << " is not a power of 2";
   return (val & (alignment - 1)) == 0;
 #endif
 }

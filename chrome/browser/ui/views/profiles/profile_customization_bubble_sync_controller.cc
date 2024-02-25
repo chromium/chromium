@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -17,6 +18,8 @@
 #include "ui/base/ui_base_features.h"
 
 namespace {
+
+const void* const kBrowserUserDataKey = &kBrowserUserDataKey;
 
 void ShowBubble(Browser* browser,
                 views::View* anchor_view,
@@ -41,6 +44,17 @@ void ShowBubble(Browser* browser,
   }
 }
 
+ProfileCustomizationBubbleSyncController* GetCurrentControllerIfExists(
+    Browser* browser) {
+  base::SupportsUserData::Data* data =
+      browser->GetUserData(kBrowserUserDataKey);
+  if (!data) {
+    return nullptr;
+  }
+
+  return static_cast<ProfileCustomizationBubbleSyncController*>(data);
+}
+
 }  // namespace
 
 // static
@@ -56,29 +70,30 @@ void ProfileCustomizationBubbleSyncController::
   // needed.
   if (!anchor_view || !sync_service)
     return;
-  // The controller is owned by itself.
-  auto* controller = new ProfileCustomizationBubbleSyncController(
-      profile, anchor_view, sync_service,
-      ThemeServiceFactory::GetForProfile(profile),
-      base::BindOnce(&ShowBubble, browser, anchor_view),
-      suggested_profile_color);
-  controller->Init();
+
+  auto controller =
+      base::WrapUnique(new ProfileCustomizationBubbleSyncController(
+          browser, anchor_view, sync_service,
+          ThemeServiceFactory::GetForProfile(profile),
+          base::BindOnce(&ShowBubble, browser, anchor_view),
+          suggested_profile_color));
+  SetCurrentControllerAndInit(std::move(controller));
 }
 
 // static
 void ProfileCustomizationBubbleSyncController::
     ApplyColorAndShowBubbleWhenNoValueSyncedForTesting(
-        Profile* profile,
+        Browser* browser,
         views::View* anchor_view,
         syncer::SyncService* sync_service,
         ThemeService* theme_service,
         ShowBubbleCallback show_bubble_callback,
         SkColor suggested_profile_color) {
-  // The controller is owned by itself.
-  auto* controller = new ProfileCustomizationBubbleSyncController(
-      profile, anchor_view, sync_service, theme_service,
-      std::move(show_bubble_callback), suggested_profile_color);
-  controller->Init();
+  auto controller =
+      base::WrapUnique(new ProfileCustomizationBubbleSyncController(
+          browser, anchor_view, sync_service, theme_service,
+          std::move(show_bubble_callback), suggested_profile_color));
+  SetCurrentControllerAndInit(std::move(controller));
 }
 
 // static
@@ -89,18 +104,34 @@ bool ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
   return ProfileCustomizationSyncedThemeWaiter::CanThemeSyncStart(sync_service);
 }
 
+// static
+void ProfileCustomizationBubbleSyncController::SetCurrentControllerAndInit(
+    std::unique_ptr<ProfileCustomizationBubbleSyncController> controller) {
+  Browser* browser = controller->browser_;
+  if (ProfileCustomizationBubbleSyncController* old_controller =
+          GetCurrentControllerIfExists(browser);
+      old_controller) {
+    old_controller->InvokeCallbackAndDeleteItself(Outcome::kAbort);
+  }
+
+  ProfileCustomizationBubbleSyncController* controller_raw = controller.get();
+  browser->SetUserData(kBrowserUserDataKey, std::move(controller));
+  controller_raw->Init();
+}
+
 ProfileCustomizationBubbleSyncController::
     ProfileCustomizationBubbleSyncController(
-        Profile* profile,
+        Browser* browser,
         views::View* anchor_view,
         syncer::SyncService* sync_service,
         ThemeService* theme_service,
         ShowBubbleCallback show_bubble_callback,
         SkColor suggested_profile_color)
-    : theme_service_(theme_service),
+    : browser_(browser),
+      theme_service_(theme_service),
       show_bubble_callback_(std::move(show_bubble_callback)),
       suggested_profile_color_(suggested_profile_color) {
-  CHECK(profile);
+  CHECK(browser);
   CHECK(anchor_view);
   CHECK(sync_service);
   CHECK(theme_service_);
@@ -114,14 +145,21 @@ ProfileCustomizationBubbleSyncController::
           // `theme_waiter_`.
           base::Unretained(this)));
 
-  profile_observation_.Observe(profile);
+  // TODO(b/306593826): stop observing the anchor view as the bubble is no
+  // longer anchored.
   view_observation_.Observe(anchor_view);
 }
 
 ProfileCustomizationBubbleSyncController::
-    ~ProfileCustomizationBubbleSyncController() = default;
+    ~ProfileCustomizationBubbleSyncController() {
+  if (show_bubble_callback_) {
+    std::move(show_bubble_callback_).Run(Outcome::kAbort);
+  }
+}
 
 void ProfileCustomizationBubbleSyncController::Init() {
+  // Verify that the user data has been set before calling `Init()`.
+  CHECK_EQ(browser_->GetUserData(kBrowserUserDataKey), this);
   theme_waiter_->Run();
 }
 
@@ -133,7 +171,7 @@ void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
       bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
                                 !theme_service_->UsingSystemTheme();
       if (using_custom_theme)
-        SkipBubble();
+        InvokeCallbackAndDeleteItself(Outcome::kSkipBubble);
       else
         ApplyDefaultColorAndShowBubble();
       break;
@@ -144,20 +182,14 @@ void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
     case ProfileCustomizationSyncedThemeWaiter::Outcome::
         kSyncPassphraseRequired:
     case ProfileCustomizationSyncedThemeWaiter::Outcome::kTimeout:
-      SkipBubble();
+      InvokeCallbackAndDeleteItself(Outcome::kSkipBubble);
       break;
   }
 }
 
-void ProfileCustomizationBubbleSyncController::OnProfileWillBeDestroyed(
-    Profile* profile) {
-  // This gets called before any keyed services for the profile are destroyed.
-  Abort();  // deletes this
-}
-
 void ProfileCustomizationBubbleSyncController::OnViewIsDeleting(
     views::View* observed_view) {
-  Abort();  // deletes this
+  InvokeCallbackAndDeleteItself(Outcome::kAbort);
 }
 
 void ProfileCustomizationBubbleSyncController::
@@ -168,18 +200,14 @@ void ProfileCustomizationBubbleSyncController::
   } else {
     theme_service_->BuildAutogeneratedThemeFromColor(suggested_profile_color_);
   }
-  std::move(show_bubble_callback_).Run(Outcome::kShowBubble);
-  delete this;
+  InvokeCallbackAndDeleteItself(Outcome::kShowBubble);
 }
 
-void ProfileCustomizationBubbleSyncController::SkipBubble() {
-  std::move(show_bubble_callback_).Run(Outcome::kSkipBubble);
-  delete this;
-}
-
-void ProfileCustomizationBubbleSyncController::Abort() {
-  std::move(show_bubble_callback_).Run(Outcome::kAbort);
-  delete this;
+void ProfileCustomizationBubbleSyncController::InvokeCallbackAndDeleteItself(
+    Outcome outcome) {
+  std::move(show_bubble_callback_).Run(outcome);
+  CHECK_EQ(browser_->GetUserData(kBrowserUserDataKey), this);
+  browser_->RemoveUserData(kBrowserUserDataKey);  // deletes `this`
 }
 
 // Defined in
@@ -199,4 +227,10 @@ void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
   ProfileCustomizationBubbleSyncController::
       ApplyColorAndShowBubbleWhenNoValueSynced(browser, anchor_view,
                                                suggested_profile_color);
+}
+
+// Defined in
+// chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h
+bool IsProfileCustomizationBubbleSyncControllerRunning(Browser* browser) {
+  return GetCurrentControllerIfExists(browser) != nullptr;
 }

@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 #define MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -14,7 +16,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -30,8 +31,6 @@ class PlatformVideoFramePool;
 // different thread. The implementation must be thread-safe.
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
-  using DmabufId = const std::vector<base::ScopedFD>*;
-
   using CreateFrameCB =
       base::RepeatingCallback<CroStatus::Or<scoped_refptr<VideoFrame>>(
           VideoPixelFormat,
@@ -40,11 +39,8 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
           const gfx::Size&,
           bool,
           bool,
+          bool,
           base::TimeDelta)>;
-
-  // Get the identifier of Dmabuf-backed |frame|. Calling this method with the
-  // frames backed by the same Dmabuf should return the same result.
-  static DmabufId GetDmabufId(const VideoFrame& frame);
 
   DmabufVideoFramePool();
   virtual ~DmabufVideoFramePool();
@@ -78,6 +74,9 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // pool is exhausted.
   virtual scoped_refptr<VideoFrame> GetFrame() = 0;
 
+  // Returns the storage type of frames that GetFrame() returns.
+  virtual VideoFrame::StorageType GetFrameStorageType() const = 0;
+
   // Checks whether the pool is exhausted. This happens when the pool reached
   // its maximum size and all frames are in use. Calling GetFrame() when the
   // pool is exhausted will return a nullptr.
@@ -95,8 +94,8 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   virtual void ReleaseAllFrames() = 0;
 
   // Detailed information of the allocated GpuBufferLayout. Only valid after a
-  // successful Initialize() call, otherwise returns absl::nullopt.
-  virtual absl::optional<GpuBufferLayout> GetGpuBufferLayout() = 0;
+  // successful Initialize() call, otherwise returns std::nullopt.
+  virtual std::optional<GpuBufferLayout> GetGpuBufferLayout() = 0;
 
   // Returns true if and only if the pool is a mock pool used for testing.
   virtual bool IsFakeVideoFramePool();

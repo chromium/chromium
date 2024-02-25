@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 2 , harness_status.message = 
+[FAIL] testAudioContext
+  assert_equals: AudioContext should start in suspended state. expected "suspended" but got "running"
+[TIMEOUT] testMultiContextOutput
+  Test timed out
+[NOTRUN] testMultiContextInput
+Harness: the test ran to completion.

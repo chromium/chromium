@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<View
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_alignParentTop="true"
+    android:background="@macro/divider_line_bg_color"
+    android:layout_marginStart="@dimen/tab_resumption_module_divider_margin_start"
+    android:layout_marginEnd="@dimen/tab_resumption_module_divider_margin_end"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp"/>

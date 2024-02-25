@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <set>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -96,7 +97,7 @@ bool TestBrowserDialog::VerifyUi() {
   auto added =
       base::STLSetDifference<views::Widget::Widgets>(widgets_, widgets_before);
   std::string name = GetNonDialogName();
-  base::EraseIf(added, [&](views::Widget* widget) {
+  std::erase_if(added, [&](views::Widget* widget) {
     return !widget->widget_delegate()->AsDialogDelegate() &&
            (name.empty() || widget->GetName() != name);
   });
@@ -127,7 +128,7 @@ bool TestBrowserDialog::VerifyUi() {
 
   auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
   const std::string screenshot_name = base::StrCat(
-      {test_info->test_case_name(), "_", test_info->name(), "_", baseline_});
+      {test_info->test_suite_name(), "_", test_info->name(), "_", baseline_});
 
   if (VerifyPixelUi(dialog_widget, "BrowserUiDialog", screenshot_name) ==
       ui::test::ActionResult::kFailed) {

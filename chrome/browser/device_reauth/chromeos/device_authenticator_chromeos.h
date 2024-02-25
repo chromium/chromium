@@ -7,38 +7,29 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/device_authenticator_common.h"
 
-class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
+class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
  public:
-  // Creates an instance of DeviceAuthenticatorChromeOS for testing purposes
-  // only.
-  static scoped_refptr<DeviceAuthenticatorChromeOS> CreateForTesting(
-      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
+  DeviceAuthenticatorChromeOS(
+      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+      DeviceAuthenticatorProxy* proxy,
+      const device_reauth::DeviceAuthParams& params);
+  ~DeviceAuthenticatorChromeOS() override;
 
   bool CanAuthenticateWithBiometrics() override;
 
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 
-  void Authenticate(device_reauth::DeviceAuthRequester requester,
-                    AuthenticateCallback callback,
-                    bool use_last_valid_auth) override;
-
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
-  void Cancel(device_reauth::DeviceAuthRequester requester) override;
+  void Cancel() override;
 
  private:
-  friend class ChromeDeviceAuthenticatorFactory;
-
-  explicit DeviceAuthenticatorChromeOS(
-      std::unique_ptr<AuthenticatorChromeOSInterface> authenticator);
-  ~DeviceAuthenticatorChromeOS() override;
-
   // Records authentication status and executes |callback| with |success|
   // parameter.
   void OnAuthenticationCompleted(bool success);

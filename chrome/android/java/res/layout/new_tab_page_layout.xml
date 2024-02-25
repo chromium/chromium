@@ -23,13 +23,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ViewStub
-            android:id="@+id/cryptid_holder"
-            android:layout="@layout/new_tab_page_cryptid_holder"
-            android:layout_width="@dimen/cryptid_width_in_logo_wrapper"
-            android:layout_height="@dimen/cryptid_height_in_logo_wrapper"
-            android:layout_gravity="bottom|start" />
-
         <include layout="@layout/logo_view_layout"/>
     </FrameLayout>
 
@@ -63,6 +56,13 @@ found in the LICENSE file.
         android:inflatedId="@+id/tile_grid_placeholder"
         android:layout="@layout/new_tab_page_tile_grid_placeholder" />
 
+    <ViewStub
+        android:id="@+id/home_modules_recycler_view_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/home_modules_recycler_view_layout"
+        android:visibility="gone" />
+
     <!-- Single tab card -->
     <ViewStub
         android:id="@+id/tab_switcher_module_container_stub"
@@ -76,6 +76,15 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/search_resumption_module_margin_top"
         android:layout="@layout/search_resumption_module_layout" />
+
+    <ViewStub
+        android:id="@+id/tab_resumption_module_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mvt_container_top_margin_polish"
+        android:layout_marginLeft="@dimen/mvt_container_lateral_margin_polish"
+        android:layout_marginRight="@dimen/mvt_container_lateral_margin_polish"
+        android:layout="@layout/tab_resumption_module_layout" />
 
     <!-- Spacer for when there is no search provider logo. -->
     <View

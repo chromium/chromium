@@ -92,7 +92,7 @@ std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
 }
 
 std::unique_ptr<views::Widget> CompatModeTestBase::CreateArcWidget(
-    absl::optional<std::string> app_id,
+    std::optional<std::string> app_id,
     bool show) {
   auto widget = CreateWidget(/*show=*/false);
   if (app_id)

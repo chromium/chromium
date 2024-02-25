@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <linux/input-event-codes.h>
 #include <linux/input.h>
 #include <unistd.h>
 
@@ -19,11 +20,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
@@ -32,6 +36,11 @@
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+#include "ui/events/types/event_type.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 
 namespace {
 
@@ -93,7 +102,8 @@ member class=ui::InputDevice id=1
  name="Wacom Intuos5 touch S Pen"
  phys=""
  enabled=0
- suspected_imposter=0
+ suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=056A
  product_id=0026
@@ -443,6 +453,13 @@ class TabletEventConverterEvdevTest : public testing::Test {
     return ev->AsMouseEvent();
   }
 
+  ui::KeyEvent* dispatched_key_event(unsigned index) {
+    DCHECK_GT(dispatched_events_.size(), index);
+    ui::Event* ev = dispatched_events_[index].get();
+    DCHECK(ev->IsKeyEvent());
+    return ev->AsKeyEvent();
+  }
+
   void CheckEvents(struct ExpectedEvent expected_events[],
                    unsigned num_events) {
     ASSERT_EQ(num_events, size());
@@ -464,6 +481,9 @@ class TabletEventConverterEvdevTest : public testing::Test {
   }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+
   const std::unique_ptr<ui::MockTabletCursorEvdev> cursor_;
   const std::unique_ptr<ui::DeviceManager> device_manager_;
   const std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
@@ -765,6 +785,31 @@ TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
   EXPECT_EQ(true, event->IsRightMouseButton());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(TabletEventConverterEvdevTest, TabletButtonPress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
+      CreateDevice(kWacomIntuos5SPen);
+
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_KEY, BTN_0, 1},
+      {{0, 0}, EV_KEY, BTN_0, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  EXPECT_EQ(2u, size());
+
+  ui::KeyEvent* event = dispatched_key_event(0);
+  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+  EXPECT_EQ(ui::VKEY_BUTTON_0, event->key_code());
+  event = dispatched_key_event(1);
+  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::VKEY_BUTTON_0, event->key_code());
+}
+#endif
 
 // Should only get an event if BTN_TOOL received
 TEST_F(TabletEventConverterEvdevTest, CheckStylusFiltering) {

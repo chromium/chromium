@@ -61,6 +61,8 @@ class WithProfilePickerTestHelpers {
   // Gets signin_chrome_sync_dice with appropriate parameters appended:
   // if in dark mode, "color_scheme=dark", and always "flow=promo".
   GURL GetSigninChromeSyncDiceUrl();
+
+  GURL GetChromeReauthURL(const std::string& email);
 };
 
 class ProfilePickerTestBase : public InProcessBrowserTest,

@@ -26,8 +26,9 @@ namespace ash {
 // traffic at OS level (outside the browser).
 class RequestSystemProxyCredentialsView final
     : public views::DialogDelegateView {
+  METADATA_HEADER(RequestSystemProxyCredentialsView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(RequestSystemProxyCredentialsView);
   RequestSystemProxyCredentialsView(
       const std::string& proxy_server,
       bool show_error_label,
@@ -63,9 +64,9 @@ class RequestSystemProxyCredentialsView final
 
   const std::u16string window_title_;
 
-  raw_ptr<views::Textfield, ExperimentalAsh> username_textfield_ = nullptr;
-  raw_ptr<views::Textfield, ExperimentalAsh> password_textfield_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> error_label_ = nullptr;
+  raw_ptr<views::Textfield> username_textfield_ = nullptr;
+  raw_ptr<views::Textfield> password_textfield_ = nullptr;
+  raw_ptr<views::Label> error_label_ = nullptr;
 
   const std::string proxy_server_;
   const bool show_error_label_;

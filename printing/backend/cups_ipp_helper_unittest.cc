@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -41,7 +42,7 @@ MATCHER(EqualsMediaColEntry, "") {
 class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  public:
   // name and value of IPP attribute; needed to fetch localized display name
-  using LocalizationKey = std::pair<base::StringPiece, base::StringPiece>;
+  using LocalizationKey = std::pair<std::string_view, std::string_view>;
 
   MockCupsPrinterWithMarginsAndAttributes() = default;
   ~MockCupsPrinterWithMarginsAndAttributes() override = default;
@@ -54,13 +55,13 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
   // CupsOptionProvider:
-  std::vector<base::StringPiece> GetSupportedOptionValueStrings(
+  std::vector<std::string_view> GetSupportedOptionValueStrings(
       const char* option_name) const override {
     ipp_attribute_t* attr = GetSupportedOptionValues(option_name);
     if (!attr)
-      return std::vector<base::StringPiece>();
+      return std::vector<std::string_view>();
 
-    std::vector<base::StringPiece> strings;
+    std::vector<std::string_view> strings;
     const int size = ippGetCount(attr);
     strings.reserve(size);
     for (int i = 0; i < size; ++i) {
@@ -103,11 +104,11 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
     return localized_name->second.c_str();
   }
 
-  void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
+  void SetSupportedOptions(std::string_view name, ipp_attribute_t* attribute) {
     supported_attributes_[name] = attribute;
   }
 
-  void SetOptionDefault(base::StringPiece name, ipp_attribute_t* attribute) {
+  void SetOptionDefault(std::string_view name, ipp_attribute_t* attribute) {
     default_attributes_[name] = attribute;
   }
 
@@ -121,8 +122,8 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
  private:
-  std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
-  std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
+  std::map<std::string_view, ipp_attribute_t*> supported_attributes_;
+  std::map<std::string_view, ipp_attribute_t*> default_attributes_;
   std::map<LocalizationKey, std::string> localized_strings_;
   raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
@@ -625,8 +626,8 @@ TEST_F(PrintBackendCupsIppHelperTest, IncludePapersWithSizeRanges) {
 
 // Tests that when the media-col-database contains both bordered and borderless
 // versions of a size, CapsAndDefaultsFromPrinter() takes the bordered version
-// and drops the borderless version.
-TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
+// and marks it as having a borderless variant.
+TEST_F(PrintBackendCupsIppHelperTest, HandleBorderlessVariants) {
   PrinterSemanticCapsAndDefaults caps;
 
   printer_->SetMediaColDatabase(
@@ -638,6 +639,7 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_TRUE(caps.papers[0].has_borderless_variant());
 
   printer_->SetMediaColDatabase(
       MakeMediaColDatabase(ipp_, {
@@ -648,6 +650,7 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_TRUE(caps.papers[0].has_borderless_variant());
 
   // If the only available version of a size is borderless, go ahead and use it.
   // Not sure if any actual printers do this, but it's allowed by the IPP spec.
@@ -659,6 +662,20 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_FALSE(caps.papers[0].has_borderless_variant());
+
+  // If the only available versions of a size are bordered, there shouldn't be
+  // a borderless variant.
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 100, 100, 100, 100, {}},
+                                     {21000, 29700, 200, 200, 200, 200, {}},
+                                 }));
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  ASSERT_EQ(1U, caps.papers.size());
+  EXPECT_EQ(gfx::Rect(1000, 1000, 210000 - 1000 - 1000, 297000 - 1000 - 1000),
+            caps.papers[0].printable_area_um());
+  EXPECT_FALSE(caps.papers[0].has_borderless_variant());
 }
 
 // At the time of this writing, there are no media-source or media-type
@@ -1016,6 +1033,42 @@ TEST_F(PrintBackendCupsIppHelperTest,
           EqualsMediaColEntry(),
           {media_info{5800, 20000},
            media_info{5800, 4000, 0, 0, 0, 0, {}, false, 0, true, 100000}}));
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       OverrideUnavailableCanonDefaultMediaType) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"com.canon.unavailable", "stationery"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "com.canon.unavailable"));
+
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "com.canon.unavailable"}, "Unavailable Media"},
+      {{"media-type", "stationery"}, "Plain Paper"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       OverrideUnavailableCanonDefaultMediaTypeStationeryUnavailable) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"com.canon.unavailable", "not.stationery"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "com.canon.unavailable"));
+
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "com.canon.unavailable"}, "Unavailable Media"},
+      {{"media-type", "not.stationery"}, "Not Plain Paper"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(caps.default_media_type.vendor_id, "com.canon.unavailable");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

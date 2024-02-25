@@ -28,12 +28,13 @@
 
 import collections
 import json
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, Literal, NamedTuple, Optional, Set
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.layout_package import json_results_generator
 from blinkpy.web_tests.models.test_failures import FailureImage
 from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.port.base import Port
 
 
 class Artifact(NamedTuple):
@@ -41,18 +42,26 @@ class Artifact(NamedTuple):
     digest: Optional[str] = None
 
 
+# For CLI compatibility, we would like a list of baseline extensions without
+# the leading dot.
+# TODO: Investigate changing the CLI.
+BaselineSuffix = Literal[tuple(ext[1:] for ext in Port.BASELINE_EXTENSIONS)]
+
+
 class WebTestResult:
-    def __init__(self, test_name, result_dict,
-                 artifacts: Dict[str, List[Artifact]]):
+    def __init__(self,
+                 test_name,
+                 result_dict,
+                 artifacts: Optional[Dict[str, List[Artifact]]] = None):
         self._test_name = test_name
         self._result_dict = result_dict
-        self.artifacts = artifacts
+        self.artifacts = artifacts or {}
 
     def __repr__(self):
         return "WebTestResult(test_name=%s, result_dict=%s)" % \
             (repr(self._test_name), repr(self._result_dict))
 
-    def baselines_by_suffix(self) -> Dict[str, List[Artifact]]:
+    def baselines_by_suffix(self) -> Dict[BaselineSuffix, List[Artifact]]:
         baselines = {}
         # Add extensions for mismatches.
         for artifact_name, suffix in [
@@ -67,6 +76,11 @@ class WebTestResult:
 
     def test_name(self):
         return self._test_name
+
+    @property
+    def bugs(self) -> Set[str]:
+        bugs = self._result_dict.get('bugs')
+        return {bug.strip() for bug in bugs.split(',')} if bugs else set()
 
     def did_pass_or_run_as_expected(self):
         return self.did_pass() or self.did_run_as_expected()

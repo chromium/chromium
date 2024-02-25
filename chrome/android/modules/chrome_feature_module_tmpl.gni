@@ -110,6 +110,7 @@ template("chrome_feature_module") {
                              "target_sdk_version",
                              "version_code",
                              "version_name",
+                             "override_target_sdk",
                            ])
     forward_variables_from(_module_desc,
                            [

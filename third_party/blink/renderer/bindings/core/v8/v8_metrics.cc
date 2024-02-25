@@ -155,6 +155,7 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   // must be uninitialized.
   DCHECK_EQ(-1, event.main_thread_incremental.total_wall_clock_duration_in_us);
   DCHECK_LE(-1, event.main_thread_incremental.mark_wall_clock_duration_in_us);
+  DCHECK_LE(-1, event.incremental_marking_start_stop_wall_clock_duration_in_us);
   DCHECK_EQ(-1, event.main_thread_incremental.weak_wall_clock_duration_in_us);
   DCHECK_EQ(-1,
             event.main_thread_incremental.compact_wall_clock_duration_in_us);
@@ -225,6 +226,12 @@ void V8MetricsRecorder::AddMainThreadEvent(
         "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
         base::Microseconds(
             event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+  }
+  if (event.incremental_marking_start_stop_wall_clock_duration_in_us >= 0) {
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Mark.StartStop",
+        base::Microseconds(
+            event.incremental_marking_start_stop_wall_clock_duration_in_us));
   }
 
   // TODO(chromium:1154636): emit the following when they are populated:
@@ -424,25 +431,25 @@ void V8MetricsRecorder::NotifyIsolateDisposal() {
   isolate_ = nullptr;
 }
 
-absl::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
+std::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
 V8MetricsRecorder::GetUkmRecorderAndSourceId(
     v8::metrics::Recorder::ContextId context_id) {
   if (!isolate_)
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   v8::HandleScope handle_scope(isolate_);
   v8::MaybeLocal<v8::Context> maybe_context =
       v8::metrics::Recorder::GetContext(isolate_, context_id);
   if (maybe_context.IsEmpty())
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   ExecutionContext* context =
       ExecutionContext::From(maybe_context.ToLocalChecked());
   if (!context)
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   ukm::UkmRecorder* ukm_recorder = context->UkmRecorder();
   if (!ukm_recorder)
-    return absl::optional<UkmRecorderAndSourceId>();
-  return absl::optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
-                                                context->UkmSourceID());
+    return std::optional<UkmRecorderAndSourceId>();
+  return std::optional<UkmRecorderAndSourceId>(std::in_place, ukm_recorder,
+                                               context->UkmSourceID());
 }
 
 }  // namespace blink

@@ -43,6 +43,11 @@
   <init>();
 }
 
+# Required to remove fields until b/274802355 is resolved.
+-assumevalues class !cr_allowunused,** {
+  final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
+}
+
 # TODO(agrieve): Remove once we start to use Android U SDK.
 -dontwarn android.window.BackEvent
 -dontwarn android.window.OnBackAnimationCallback

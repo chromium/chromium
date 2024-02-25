@@ -4,6 +4,8 @@
 
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
+#include <limits>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -186,6 +188,15 @@ double PlatformSensorFusion::GetMaximumSupportedFrequency() {
                                  pair.second->GetMaximumSupportedFrequency());
   }
   return maximum_frequency;
+}
+
+double PlatformSensorFusion::GetMinimumSupportedFrequency() {
+  double minimum_frequency = std::numeric_limits<double>::infinity();
+  for (const auto& pair : source_sensors_) {
+    minimum_frequency = std::min(minimum_frequency,
+                                 pair.second->GetMinimumSupportedFrequency());
+  }
+  return minimum_frequency;
 }
 
 void PlatformSensorFusion::OnSensorReadingChanged(mojom::SensorType type) {

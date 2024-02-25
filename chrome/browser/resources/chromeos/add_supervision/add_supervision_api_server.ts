@@ -14,17 +14,17 @@ import {AddSupervisionUi, isLocalHostForTesting} from './add_supervision_ui.js';
  * of the normal browser/web-server client/server relationship.
  */
 export class AddSupervisionApiServer extends PostMessageApiServer {
-  private ui_: AddSupervisionUi;
-  private addSupervisionHandler_: AddSupervisionHandlerRemote;
+  private ui: AddSupervisionUi;
+  private addSupervisionHandler: AddSupervisionHandlerRemote;
 
   constructor(
       ui: AddSupervisionUi, webviewElement: Element, targetURL: string,
       originURLPrefix: string) {
     super(webviewElement, targetURL, originURLPrefix);
 
-    this.ui_ = ui;
+    this.ui = ui;
 
-    this.addSupervisionHandler_ = AddSupervisionHandler.getRemote();
+    this.addSupervisionHandler = AddSupervisionHandler.getRemote();
 
     this.registerMethod('logOut', this.logOut.bind(this));
     this.registerMethod(
@@ -45,11 +45,11 @@ export class AddSupervisionApiServer extends PostMessageApiServer {
   }
 
   override onInitializationError() {
-    this.ui_.showErrorPage();
+    this.ui.showErrorPage();
   }
 
   logOut(): void {
-    return this.addSupervisionHandler_.logOut();
+    return this.addSupervisionHandler.logOut();
   }
 
   /**
@@ -57,7 +57,7 @@ export class AddSupervisionApiServer extends PostMessageApiServer {
    * apps installed on the device.
    */
   getInstalledArcApps(): Promise<{packageNames: string[]}> {
-    return this.addSupervisionHandler_.getInstalledArcApps();
+    return this.addSupervisionHandler.getInstalledArcApps();
   }
 
   /**
@@ -67,14 +67,14 @@ export class AddSupervisionApiServer extends PostMessageApiServer {
    * resolve with boolean result indicating whether the dialog was closed.
    */
   requestClose(): Promise<{closed: boolean}> {
-    return this.addSupervisionHandler_.requestClose();
+    return this.addSupervisionHandler.requestClose();
   }
 
   /**
    * Signals to the API that supervision has been enabled for the current user.
    */
   notifySupervisionEnabled(): void {
-    return this.addSupervisionHandler_.notifySupervisionEnabled();
+    return this.addSupervisionHandler.notifySupervisionEnabled();
   }
 
   /**
@@ -84,6 +84,6 @@ export class AddSupervisionApiServer extends PostMessageApiServer {
   setCloseOnEscape(params: any[]): void {
     // Param 0 is a <boolean> that denotes whether the dialog should close.
     const enabled = params[0];
-    return this.addSupervisionHandler_.setCloseOnEscape(enabled);
+    return this.addSupervisionHandler.setCloseOnEscape(enabled);
   }
 }

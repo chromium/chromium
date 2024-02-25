@@ -10,9 +10,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The different types of search engine promo dialogs. */
-@IntDef({SearchEnginePromoType.DONT_SHOW, SearchEnginePromoType.SHOW_SOGOU,
-        SearchEnginePromoType.SHOW_EXISTING, SearchEnginePromoType.SHOW_NEW,
-        SearchEnginePromoType.SHOW_WAFFLE})
+@IntDef({
+    SearchEnginePromoType.DONT_SHOW,
+    SearchEnginePromoType.SHOW_SOGOU,
+    SearchEnginePromoType.SHOW_EXISTING,
+    SearchEnginePromoType.SHOW_NEW,
+    SearchEnginePromoType.SHOW_WAFFLE
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface SearchEnginePromoType {
     int DONT_SHOW = -1;

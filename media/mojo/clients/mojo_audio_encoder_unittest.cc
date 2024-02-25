@@ -159,7 +159,7 @@ TEST_F(MojoAudioEncoderTest, Initialize_Success) {
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
-          absl::optional<AudioEncoder::CodecDescription>) { FAIL(); });
+          std::optional<AudioEncoder::CodecDescription>) { FAIL(); });
 
   auto done_cb = base::BindLambdaForTesting([&, this](EncoderStatus s) {
     EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
@@ -185,7 +185,7 @@ TEST_F(MojoAudioEncoderTest, Initialize_Fail) {
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
-          absl::optional<AudioEncoder::CodecDescription>) { FAIL(); });
+          std::optional<AudioEncoder::CodecDescription>) { FAIL(); });
 
   auto done_cb = base::BindLambdaForTesting([&, this](EncoderStatus s) {
     EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
@@ -265,7 +265,7 @@ TEST_F(MojoAudioEncoderTest, Encode) {
 
         EncodedAudioBuffer output(params, std::move(data), size, capture_time);
 
-        absl::optional<AudioEncoder::CodecDescription> desc;
+        std::optional<AudioEncoder::CodecDescription> desc;
         if (input_number > 0)
           desc.emplace(AudioEncoder::CodecDescription{
               static_cast<uint8_t>(input_number)});
@@ -274,7 +274,7 @@ TEST_F(MojoAudioEncoderTest, Encode) {
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
-          absl::optional<AudioEncoder::CodecDescription> desc) {
+          std::optional<AudioEncoder::CodecDescription> desc) {
         int64_t output_number = ToMilliseconds(output.timestamp);
         EXPECT_EQ(output_number, output_count);
         EXPECT_EQ(output.params.channels(), options.channels);
@@ -338,7 +338,7 @@ TEST_F(MojoAudioEncoderTest, EncodeWithEmptyResult) {
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
-          absl::optional<AudioEncoder::CodecDescription> desc) {
+          std::optional<AudioEncoder::CodecDescription> desc) {
         EXPECT_EQ(output.encoded_data_size, 0u);
         run_loop.QuitWhenIdle();
       });
@@ -389,7 +389,7 @@ TEST_F(MojoAudioEncoderTest, Flush) {
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
-          absl::optional<AudioEncoder::CodecDescription>) { output_count++; });
+          std::optional<AudioEncoder::CodecDescription>) { output_count++; });
 
   mojo_audio_encoder_->Initialize(options, std::move(output_cb),
                                   ValidatingStatusCB());

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Listens for incoming or outgoing transfer updates from Nearby Connections and
 // forwards the transfer progress to the |update_callback|.
@@ -28,7 +29,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
 
   // NearbyConnectionsManager::PayloadStatusListener:
   void OnStatusUpdate(PayloadTransferUpdatePtr update,
-                      absl::optional<Medium> upgraded_medium) override;
+                      std::optional<Medium> upgraded_medium) override;
 
  private:
   struct State {
@@ -68,8 +69,8 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   size_t num_file_attachments_ = 0;
   size_t num_wifi_credentials_attachments_ = 0;
   uint64_t num_first_update_bytes_ = 0;
-  absl::optional<base::TimeTicks> first_update_timestamp_;
-  absl::optional<Medium> last_upgraded_medium_;
+  std::optional<base::TimeTicks> first_update_timestamp_;
+  std::optional<Medium> last_upgraded_medium_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_

@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 
-import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import type {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
@@ -13,15 +13,6 @@ import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js'
 import {prefsTestCases} from './settings_prefs_test_cases.js';
 
 // clang-format on
-
-/** @fileoverview Suite of tests for settings-prefs. */
-/**
- * Creates a deep copy of the object.
- */
-function deepCopy(obj: Object): Object {
-  return JSON.parse(JSON.stringify(obj));
-}
-
 suite('CrSettingsPrefs', function() {
   /**
    * Prefs instance created before each test.
@@ -89,7 +80,7 @@ suite('CrSettingsPrefs', function() {
 
     prefs = document.createElement('settings-prefs');
     document.body.appendChild(prefs);
-    prefs.initialize(fakeApi as unknown as typeof chrome.settingsPrivate);
+    prefs.initialize(fakeApi);
 
     // getAllPrefs is asynchronous, so return the prefs promise.
     return CrSettingsPrefs.initialized;
@@ -119,7 +110,7 @@ suite('CrSettingsPrefs', function() {
     for (const testCase of prefsTestCases) {
       prefs.set(
           'prefs.' + testCase.pref.key + '.value',
-          deepCopy(testCase.nextValues[0]));
+          structuredClone(testCase.nextValues[0]));
     }
     // Check that setPref has been called for the right values.
     assertFakeApiPrefsSet(0);
@@ -131,7 +122,7 @@ suite('CrSettingsPrefs', function() {
       fakeApi.resetResolver('setPref');
       prefs.set(
           'prefs.' + testCase.pref.key + '.value',
-          deepCopy(testCase.nextValues[1]));
+          structuredClone(testCase.nextValues[1]));
       if (testCase.nextValues[0] !== testCase.nextValues[1]) {
         const key1 = (await fakeApi.whenCalled('setPref')).key;
         assertEquals(testCase.pref.key, key1);
@@ -149,7 +140,7 @@ suite('CrSettingsPrefs', function() {
     for (const testCase of prefsTestCases) {
       prefs.set(
           'prefs.' + testCase.pref.key + '.value',
-          deepCopy(testCase.nextValues[0]));
+          structuredClone(testCase.nextValues[0]));
     }
     assertFakeApiPrefsSet(0);
     fakeApi.allowSetPref();

@@ -77,7 +77,9 @@ void ExtensionNotifierController::SetNotifierEnabled(
 
 void ExtensionNotifierController::OnAppImageUpdated(
     const std::string& id,
-    const gfx::ImageSkia& image) {
+    const gfx::ImageSkia& image,
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   observer_->OnIconImageUpdated(
       message_center::NotifierId(message_center::NotifierType::APPLICATION, id),
       image);

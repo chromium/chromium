@@ -91,8 +91,8 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   void OnNotificationClicked(
       const std::string& notification_id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) override;
 
  private:
   friend class MultiDeviceNotificationPresenterTest;
@@ -144,7 +144,7 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   // MultiDevice.Setup.NotificationInteracted histogram.
   bool is_setup_notification_interacted_ = false;
 
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter> message_center_;
 
   // Notification currently showing or
   // Status::kNoNotificationVisible if there isn't one.

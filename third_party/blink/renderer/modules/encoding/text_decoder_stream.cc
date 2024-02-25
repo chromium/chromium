@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -19,7 +21,6 @@
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -64,7 +65,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
                      static_cast<uint32_t>(array_piece.ByteLength()),
                      WTF::FlushBehavior::kDoNotFlush, controller,
                      exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   // Implements the "encode and flush" algorithm.
@@ -73,10 +74,10 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     DecodeAndEnqueue(nullptr, 0u, WTF::FlushBehavior::kDataEOF, controller,
                      exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
@@ -114,9 +115,11 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
       }
     }
 
-    controller->enqueue(script_state_,
-                        ScriptValue::From(script_state_, outputChunk),
-                        exception_state);
+    controller->enqueue(
+        script_state_,
+        ScriptValue(script_state_->GetIsolate(),
+                    V8String(script_state_->GetIsolate(), outputChunk)),
+        exception_state);
   }
 
   static bool EncodingHasBomRemoval(const WTF::TextEncoding& encoding) {

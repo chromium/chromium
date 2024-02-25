@@ -2,76 +2,102 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {EntryLocation} from '../externs/entry_location.js';
-import {State} from '../externs/ts/state.js';
-import {VolumeManager} from '../externs/volume_manager.js';
+import {EntryLocation} from '../background/js/entry_location_impl.js';
+import type {VolumeManager} from '../background/js/volume_manager.js';
+import {installMockChrome} from '../common/js/mock_chrome.js';
+import {RootType} from '../common/js/volume_manager_types.js';
+import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
+import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import {waitDeepEquals} from '../state/for_tests.js';
-import {getEmptyState, getStore, Store} from '../state/store.js';
+import {PropStatus, type State} from '../state/state.js';
+import {getEmptyState, getStore, type Store} from '../state/store.js';
 
 import {SearchContainer} from './search_container.js';
 
+class TestA11yAnnouncer implements A11yAnnounce {
+  messages: string[] = [];
 
-const searchWrapper: HTMLElement = document.createElement('div');
-const optionsContainer: HTMLElement = document.createElement('div');
-const pathContainer: HTMLElement = document.createElement('div');
+  speakA11yMessage(message: string) {
+    this.messages.push(message);
+  }
+}
 
 let store: Store|undefined;
 let searchContainer: SearchContainer|undefined;
+const a11y: TestA11yAnnouncer = new TestA11yAnnouncer();
 
-function setupStore(): Store {
-  const store = getStore();
+/**
+ * Creates a store if necessary. Initializes it to an empty state.
+ */
+function setupStore(): void {
+  if (store === undefined) {
+    store = getStore();
+  }
   store.init(getEmptyState());
-  return store;
+}
+
+/**
+ * Creates a search container if necessary.
+ */
+function setupSearchContainer(): void {
+  if (searchContainer === undefined) {
+    const volumeManager: VolumeManager = {
+      getLocationInfo: (_entry: Entry): EntryLocation => {
+        return new EntryLocation(null, RootType.DOWNLOADS, true, true);
+      },
+    } as unknown as VolumeManager;
+    searchContainer = new SearchContainer(
+        volumeManager, document.querySelector('#search-wrapper') as HTMLElement,
+        document.querySelector('#options-container') as HTMLElement,
+        document.querySelector('#path-container') as HTMLElement, a11y);
+  }
 }
 
 /**
  * Creates new <search-container> element for each test.
  */
 export function setUp() {
-  const root = document.createElement('div');
-  document.body.replaceChildren(root);
-  searchWrapper.innerHTML = getTrustedHTML`
-      <cr-button id="search-button" tabindex="0">
-        <div class="icon"></div>
-      </cr-button>
-      <div id="search-box">
-        <cr-input type="search" disabled placeholder="Search">
-          <cr-button class="clear" slot="suffix" tabindex="0" has-tooltip>
-            <div class="icon"></div>
-          </cr-button>
-        </cr-input>
-      </div>`;
-  root.appendChild(searchWrapper);
-  root.appendChild(optionsContainer);
-  root.appendChild(pathContainer);
+  document.body.innerHTML = getTrustedHTML`
+    <div id="root">
+      <div id="search-wrapper" collapsed>
+        <cr-button id="search-button" tabindex="0">Open</cr-button>
+        <div id="search-box">
+          <cr-input type="search" disabled placeholder="Search">
+            <cr-button class="clear" slot="suffix" tabindex="0" has-tooltip>
+              Search
+            </cr-button>
+          </cr-input>
+        </div>
+        <div id="options-container"></div>
+        <div id="path-container"></div>
+      </div>
+    </div>`;
 
-  store = setupStore();
-  const volumeManager: VolumeManager = {
-    getLocationInfo: (_entry: Entry): EntryLocation => {
-      return new EntryLocation();
-    },
-  } as unknown as VolumeManager;
+  setupStore();
+  setupSearchContainer();
+  installMockChrome({});
+}
 
-  searchContainer = new SearchContainer(
-      volumeManager, searchWrapper, optionsContainer, pathContainer);
+export function tearDown() {
+  // Clears accessibility message from the previous test.
+  a11y.messages = [];
 }
 
 /**
- * Resets flags state.
+ * Checks that manually entering a query (simulated here by setting value and
+ * posint an input event) correctly propagates the state to the store.
  */
-export function tearDown() {
-  loadTimeData.resetForTesting();
-}
-
-export async function testQueryUpdatedV1() {
-  loadTimeData.overrideValues({FILES_SEARCH_V2: false});
+export async function testQueryUpdated() {
+  // Manually open the search container; without this the container is in the
+  // closed state and does not clean up query or option values on close.
+  searchContainer!.openSearch();
 
   // Test 1: Enter a query.
-  const input = searchWrapper.querySelector('cr-input') as CrInputElement;
+  const input = document.querySelector('cr-input') as CrInputElement;
   input.value = 'hello';
   input.dispatchEvent(new Event('input', {
     bubbles: true,
@@ -80,7 +106,7 @@ export async function testQueryUpdatedV1() {
   const want1 = {
     query: 'hello',
     status: undefined,
-    options: undefined,
+    options: getDefaultSearchOptions(),
   };
   await waitDeepEquals(store!, want1, (state: State) => {
     return state.search;
@@ -89,7 +115,7 @@ export async function testQueryUpdatedV1() {
   // Test 2: Clear the query.
   searchContainer!.clear();
   const want2 = {
-    query: '',
+    query: undefined,
     status: undefined,
     options: undefined,
   };
@@ -98,4 +124,56 @@ export async function testQueryUpdatedV1() {
   });
 }
 
-// TODO(b:241868453): Add test for V2
+/**
+ * Checks that store changes correctly result in opening and closing of the
+ * search box.
+ */
+export async function testOpenAndClose() {
+  assertFalse(searchContainer!.isOpen());
+  store!.dispatch(updateSearch({
+    query: 'hello',
+    status: undefined,
+    options: getDefaultSearchOptions(),
+  }));
+  assertTrue(searchContainer!.isOpen());
+  store!.dispatch(clearSearch());
+  assertFalse(searchContainer!.isOpen());
+  // No results appeared so expect just one message about search being closed.
+  assertEquals(1, a11y.messages.length);
+  assertEquals(
+      'Search text cleared, showing all files and folders.', a11y.messages[0]);
+}
+
+export async function testNoResultFoundAnnouncement() {
+  // Start a file search with the query 'hello'.
+  store!.dispatch(updateSearch({
+    query: 'hello',
+    status: undefined,
+    options: getDefaultSearchOptions(),
+  }));
+  // Wait for the store to update its state.
+  const want1 = {
+    query: 'hello',
+    status: undefined,
+    options: getDefaultSearchOptions(),
+  };
+  await waitDeepEquals(store!, want1, (state: State) => {
+    return state.search;
+  });
+  // Fake a successful search.
+  store!.dispatch(updateSearch({
+    query: 'hello',
+    status: PropStatus.SUCCESS,
+    options: getDefaultSearchOptions(),
+  }));
+  const want2 = {
+    query: 'hello',
+    status: PropStatus.SUCCESS,
+    options: getDefaultSearchOptions(),
+  };
+  await waitDeepEquals(store!, want2, (state: State) => {
+    return state.search;
+  });
+  assertEquals(1, a11y.messages.length);
+  assertEquals('There are no results for hello.', a11y.messages[0]);
+}

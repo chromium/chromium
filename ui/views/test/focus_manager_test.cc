@@ -4,6 +4,7 @@
 
 #include "ui/views/test/focus_manager_test.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -42,6 +43,7 @@ void FocusManagerTest::TearDown() {
         widget_focus_change_listener_);
   }
   GetWidget()->Close();
+  contents_view_ = nullptr;
 
   // Flush the message loop to make application verifiers happy.
   RunPendingMessages();
@@ -95,7 +97,8 @@ void FocusManagerTest::RemoveWidgetFocusChangeListener(
   widget_focus_change_listener_ = nullptr;
 }
 
-void FocusManagerTest::SetAccessiblePanes(const std::vector<View*>& panes) {
+void FocusManagerTest::SetAccessiblePanes(
+    const std::vector<raw_ptr<View, VectorExperimental>>& panes) {
   accessible_panes_ = panes;
 }
 

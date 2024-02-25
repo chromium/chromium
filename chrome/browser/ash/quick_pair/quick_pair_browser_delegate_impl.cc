@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +18,7 @@
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/service_process_host.h"
@@ -78,6 +83,32 @@ void QuickPairBrowserDelegateImpl::RequestService(
       std::move(receiver), content::ServiceProcessHost::Options()
                                .WithDisplayName("QuickPair Service")
                                .Pass());
+}
+
+bool QuickPairBrowserDelegateImpl::CompanionAppInstalled(
+    const std::string& app_id) {
+  Profile* profile = GetActiveProfile();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&installed](const apps::AppUpdate& update) {
+        installed = apps_util::IsInstalled(update.Readiness());
+      });
+  return installed;
+}
+
+void QuickPairBrowserDelegateImpl::LaunchCompanionApp(
+    const std::string& app_id) {
+  Profile* profile = GetActiveProfile();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->Launch(app_id, ui::EF_NONE, apps::LaunchSource::kFromChromeInternal);
+}
+
+void QuickPairBrowserDelegateImpl::OpenPlayStorePage(GURL play_store_uri) {
+  Profile* profile = GetActiveProfile();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, play_store_uri,
+                          apps::LaunchSource::kFromChromeInternal);
 }
 
 Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {

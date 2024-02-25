@@ -15,9 +15,6 @@ set -u  # unset variables are quit-worthy errors
 
 PLATFORMS="${1:-win,android}"
 
-SCRIPT_PATH=$(realpath $0)
-REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
-
 COMPILE_DIRS=.
 EDIT_DIRS=.
 SCRATCH_DIR="${HOME}/scratch/"

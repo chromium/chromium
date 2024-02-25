@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_other_context[beforeRequestSent]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: The user aborted a request.
+[FAIL] test_other_context[responseStarted]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: The user aborted a request.
+Harness: the test ran to completion.

@@ -32,7 +32,7 @@ VirtualCardEnrollIconView::VirtualCardEnrollIconView(
                          delegate,
                          "VirtualCardEnroll") {
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }
@@ -41,16 +41,18 @@ VirtualCardEnrollIconView::~VirtualCardEnrollIconView() = default;
 
 views::BubbleDialogDelegate* VirtualCardEnrollIconView::GetBubble() const {
   VirtualCardEnrollBubbleController* controller = GetController();
-  if (!controller)
+  if (!controller) {
     return nullptr;
+  }
 
   return static_cast<autofill::VirtualCardEnrollBubbleViews*>(
       controller->GetVirtualCardEnrollBubbleView());
 }
 
 void VirtualCardEnrollIconView::UpdateImpl() {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return;
+  }
 
   // |controller| may be nullptr due to lazy initialization.
   VirtualCardEnrollBubbleController* controller = GetController();
@@ -70,13 +72,14 @@ const gfx::VectorIcon& VirtualCardEnrollIconView::GetVectorIcon() const {
 VirtualCardEnrollBubbleController* VirtualCardEnrollIconView::GetController()
     const {
   content::WebContents* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
 }
 
-BEGIN_METADATA(VirtualCardEnrollIconView, PageActionIconView)
+BEGIN_METADATA(VirtualCardEnrollIconView)
 END_METADATA
 
 }  // namespace autofill

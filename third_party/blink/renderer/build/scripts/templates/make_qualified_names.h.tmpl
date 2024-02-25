@@ -31,7 +31,7 @@ enum class {{namespace}}Tag {
   // lot, and comparing to 0 saves an instruction on some hardware.
   kUnknown = 0,
 {% for tag in tags|sort(attribute='name') %}
-  {{tag|symbol}},
+  {{tag|tag_symbol}},
 {% endfor %}
 };
 {% endif %}
@@ -56,7 +56,7 @@ std::unique_ptr<const QualifiedName*[]> GetAttrs();
 {% endif %}
 
 {% if generate_tag_enum %}
-{{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifedName({{namespace}}Tag tag);
+{{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifiedName({{namespace}}Tag tag);
 {% endif %}
 
 void Init();

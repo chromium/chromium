@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
@@ -25,7 +26,9 @@ source_set("android") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_check/PasswordsCheckPreferenceProperties.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckComponentUi.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckCoordinator.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckElementPreference.java",
     "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediator.java",
@@ -37,13 +40,13 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android/pwd_check_wrapper:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
@@ -53,14 +56,17 @@ android_library("java") {
     "//chrome/browser/ui/android/signin:java",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
   ]
 
@@ -79,13 +85,18 @@ android_library("javatests") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/sync/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/prefs/android:java",
+    "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -94,6 +105,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -101,7 +113,10 @@ android_library("javatests") {
 }
 
 robolectric_library("junit") {
-  sources = [ "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java" ]
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/safety_check/PasswordsCheckPreferencePropertiesTest.java",
+    "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
@@ -118,10 +133,12 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
 
     # Robolectric needs the full PasswordCheckFactory implementation.
-    "//base:jni_java",
+    "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_check/android/internal:internal_factory_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android/pwd_check_wrapper:java",
+    "//chrome/browser/password_manager/android/pwd_check_wrapper:test_support_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
@@ -130,10 +147,14 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/commerce/core:proto_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -159,5 +180,5 @@ java_cpp_enum("safety_check_enums") {
 }
 
 java_cpp_enum("bulk_leak_check_service_enums") {
-  sources = [ "//components/password_manager/core/browser/bulk_leak_check_service_interface.h" ]
+  sources = [ "//components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h" ]
 }

@@ -1,7 +1,7 @@
 Tests that scheduled pause is cleared after processing event with empty handler.
 
 Call stack:
-    0) executeSomeCode (break-on-set-timeout-with-syntax-error.js:22)
-    1)  (break-on-set-timeout-with-syntax-error.js:37)
+    0) executeSomeCode (break-on-set-timeout-with-syntax-error.js:20)
+    1)  (break-on-set-timeout-with-syntax-error.js:35)
 
 

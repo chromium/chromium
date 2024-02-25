@@ -6,12 +6,12 @@
     package="org.chromium.chrome.stable"
     platformBuildVersionCode="34"
     platformBuildVersionName="14"
-    android:versionCode="OFFSET=20"
+    android:versionCode="OFFSET=21"
     android:versionName="#.#.#.#">
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <application>
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
@@ -70,7 +70,7 @@
       </intent-filter>  # DIFF-ANCHOR: dea53031
     </activity>  # DIFF-ANCHOR: 610e8ccf
     <activity  # DIFF-ANCHOR: b5c66095
-        android:name="org.chromium.chrome.browser.DragAndDropLauncherActivity"
+        android:name="org.chromium.chrome.browser.dragdrop.DragAndDropLauncherActivity"
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleInstancePerTask"
@@ -291,6 +291,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleInstance"
+        android:process=":launch_failed"
         android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
     </activity>  # DIFF-ANCHOR: 060360d2
     <activity  # DIFF-ANCHOR: ecd48344
@@ -514,6 +515,7 @@
       <intent-filter>  # DIFF-ANCHOR: 48f4c2ef
         <category android:name="android.intent.category.XR"/>
       </intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+      <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR" android:value="true"/>
     </activity>  # DIFF-ANCHOR: 5d3091ca
     <activity-alias  # DIFF-ANCHOR: 9da0e5b6
         android:name="com.google.android.apps.chrome.IntentDispatcher"
@@ -978,10 +980,6 @@
         android:isolatedProcess="true"
         android:process=":decoder_service">
     </service>  # DIFF-ANCHOR: 53256720
-    <service  # DIFF-ANCHOR: 064aae37
-        android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
-        android:exported="true">
-    </service>  # DIFF-ANCHOR: 064aae37
     <service  # DIFF-ANCHOR: 6d9cb216
         android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
         android:exported="false">
@@ -1001,13 +999,6 @@
         android:name="org.chromium.chrome.browser.tracing.TracingNotificationService"
         android:exported="false">
     </service>  # DIFF-ANCHOR: c26364a8
-    <service  # DIFF-ANCHOR: 878b448b
-        android:name="org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorService"
-        android:exported="true">
-      <intent-filter>  # DIFF-ANCHOR: 875093ee
-        <action android:name="org.chromium.intent.action.INSTALL_WEB_APK"/>
-      </intent-filter>  # DIFF-ANCHOR: 875093ee
-    </service>  # DIFF-ANCHOR: 878b448b
     <service  # DIFF-ANCHOR: a550decc
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:exported="false"

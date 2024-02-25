@@ -14,7 +14,7 @@ using ArchivableCredentialTest = PlatformTest;
 
 ArchivableCredential* TestCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                    keychainIdentifier:@"keychainIdentifier"
+                                              password:@"qwery123"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
@@ -27,7 +27,7 @@ ArchivableCredential* TestCredential() {
 TEST_F(ArchivableCredentialTest, create) {
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                 keychainIdentifier:@"keychainIdentifier"
+                                           password:@"test"
                                                rank:5
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
@@ -68,8 +68,7 @@ TEST_F(ArchivableCredentialTest, retrieveData) {
       [unarchivedCredential isKindOfClass:[ArchivableCredential class]]);
 
   EXPECT_NSEQ(credential.favicon, unarchivedCredential.favicon);
-  EXPECT_NSEQ(credential.keychainIdentifier,
-              unarchivedCredential.keychainIdentifier);
+  EXPECT_NSEQ(credential.password, unarchivedCredential.password);
   EXPECT_EQ(credential.rank, unarchivedCredential.rank);
   EXPECT_NSEQ(credential.recordIdentifier,
               unarchivedCredential.recordIdentifier);
@@ -88,7 +87,7 @@ TEST_F(ArchivableCredentialTest, equality) {
 
   ArchivableCredential* credentialSameIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
-                                 keychainIdentifier:@"other_keychainIdentifier"
+                                           password:@"Qwerty123!"
                                                rank:credential.rank + 10
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
@@ -99,7 +98,7 @@ TEST_F(ArchivableCredentialTest, equality) {
 
   ArchivableCredential* credentialDiferentIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                 keychainIdentifier:@"keychainIdentifier"
+                                           password:@"123456789"
                                                rank:credential.rank
                                    recordIdentifier:@"other_recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"

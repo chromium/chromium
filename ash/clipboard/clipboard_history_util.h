@@ -6,13 +6,13 @@
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 
 #include <list>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace ui {
@@ -114,7 +114,7 @@ enum class ReorderType {
 
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
-ASH_EXPORT absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+ASH_EXPORT std::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data);
 
 // Returns true if `data` contains the specified `format`.
@@ -138,7 +138,7 @@ ASH_EXPORT bool ContainsFileSystemData(const ui::ClipboardData& data);
 // referenced by `source_list` to reduce memory copies.
 ASH_EXPORT void GetSplitFileSystemData(
     const ui::ClipboardData& data,
-    std::vector<base::StringPiece16>* source_list,
+    std::vector<std::u16string_view>* source_list,
     std::u16string* sources);
 
 // Returns the count of copied files contained by the clipboard data.

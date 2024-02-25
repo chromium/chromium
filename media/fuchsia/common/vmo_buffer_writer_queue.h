@@ -102,7 +102,7 @@ class MEDIA_EXPORT VmoBufferWriterQueue {
 
     // Index of the last buffer in the sysmem buffer collection that was used to
     // send this input buffer. Should be set only when |bytes_left()==0|.
-    absl::optional<size_t> tail_sysmem_buffer_index;
+    std::optional<size_t> tail_sysmem_buffer_index;
   };
 
   class SysmemBuffer;

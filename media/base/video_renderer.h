@@ -5,11 +5,12 @@
 #ifndef MEDIA_BASE_VIDEO_RENDERER_H_
 #define MEDIA_BASE_VIDEO_RENDERER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/time_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -69,7 +70,7 @@ class MEDIA_EXPORT VideoRenderer {
   // media::Renderer::SetLatencyHint().
   // |latency_hint| may be nullopt to indicate the hint has been cleared
   // (restore UA default).
-  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) = 0;
 };
 
 }  // namespace media

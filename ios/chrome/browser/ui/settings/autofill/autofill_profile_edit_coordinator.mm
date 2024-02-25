@@ -9,15 +9,15 @@
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -49,7 +49,7 @@
 @end
 
 @implementation AutofillProfileEditCoordinator {
-  autofill::AutofillProfile _autofillProfile;
+  std::unique_ptr<autofill::AutofillProfile> _autofillProfile;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -64,7 +64,7 @@
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _autofillProfile = profile;
+    _autofillProfile = std::make_unique<autofill::AutofillProfile>(profile);
     _isCountrySelectorPresented = NO;
     _showMigrateToAccountButton = showMigrateToAccountButton;
   }
@@ -81,12 +81,12 @@
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
   std::string countryCode = autofill::data_util::GetCountryCodeWithFallback(
-      _autofillProfile, GetApplicationContext()->GetApplicationLocale());
+      *_autofillProfile, GetApplicationContext()->GetApplicationLocale());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
-          autofillProfile:&_autofillProfile
+          autofillProfile:_autofillProfile.get()
               countryCode:base::SysUTF8ToNSString(countryCode)
         isMigrationPrompt:NO];
 

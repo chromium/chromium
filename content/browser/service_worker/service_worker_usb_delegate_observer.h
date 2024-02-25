@@ -24,7 +24,7 @@ class ServiceWorkerContextCore;
 // ServiceWorkerUsbDelegateObserver's UsbDelegate::Observer methods will be
 // invoked and deliver the device events to the service worker that has a device
 // event handler registered.
-// For more information, please see go/usb-usb-extension-access.
+// For more information, please see go/usb-hid-extension-access.
 class CONTENT_EXPORT ServiceWorkerUsbDelegateObserver
     : public ServiceWorkerDeviceDelegateObserver,
       public UsbDelegate::Observer {

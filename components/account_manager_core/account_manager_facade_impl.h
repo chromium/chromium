@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
       uint32_t remote_version,
-      AccountManager* account_manager_for_tests,
+      base::WeakPtr<AccountManager> account_manager_for_tests,
       base::OnceClosure init_finished = base::DoNothing());
   AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
   AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
@@ -215,8 +214,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   base::ObserverList<Observer> observer_list_;
 
-  raw_ptr<AccountManager, LeakedDanglingUntriaged> account_manager_for_tests_ =
-      nullptr;
+  const base::WeakPtr<AccountManager> account_manager_for_tests_ = nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

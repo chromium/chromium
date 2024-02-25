@@ -26,8 +26,9 @@ class RenderText;
 // the general purpose views::Label class by having less general features (such
 // as selection) and more specific features (such as suggestion answer styling).
 class OmniboxTextView : public views::View {
+  METADATA_HEADER(OmniboxTextView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxTextView);
   explicit OmniboxTextView(OmniboxResultView* result_view);
   OmniboxTextView(const OmniboxTextView&) = delete;
   OmniboxTextView& operator=(const OmniboxTextView&) = delete;

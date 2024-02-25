@@ -12,7 +12,7 @@
   }
 
   #title {
-    color: var(--cros-text-color-primary);
+    color: var(--cros-sys-on_surface);
     font: var(--cros-headline-1-font);
     /* override the default margin for H1. */
     margin: 0;
@@ -36,7 +36,7 @@
 
   #content.fade-bottom::after {
     background: linear-gradient(transparent 0,
-                                var(--cros-bg-color) 100%);
+                                var(--cros-sys-app_base) 100%);
     bottom: 88px;  /* button container + padding */
     content: '';
     height: 20px;
@@ -61,18 +61,7 @@
     padding-inline: 24px;
   }
 
-  :host-context([theme='legacy']) cr-button {
-    border-radius: 16px;
-  }
-
-  :host-context([theme='legacy']) cr-button:focus-visible {
-    /* disable cr-button default keyboard focus style */
-    box-shadow: none;
-    outline: 2px solid var(--cros-focus-ring-color);
-    outline-offset: 2px;
-  }
-
-  :host-context([theme='refresh23']) cr-button {
+  cr-button {
     --active-bg: transparent;
     --active-shadow: none;
     --active-shadow-action: none;
@@ -96,24 +85,21 @@
     box-shadow: none;
   }
 
-  :host-context([theme='refresh23']) cr-button.cancel-button {
+  cr-button.cancel-button {
     background-color: var(--cros-sys-primary_container);
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.cancel-button:hover::part(hoverBackground) {
+  cr-button.cancel-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_subtle);
     display: block;
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.action-button:hover::part(hoverBackground) {
+  cr-button.action-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_prominent);
     display: block;
   }
 
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      cr-button:focus {
+  :host-context(.focus-outline-visible) cr-button:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] `Document.parseHTMLUnsafe(string)` throws.
+  assert_throws_js: function "_ => {\n      var doc = Document.parseHTMLUnsafe("Fail");\n    }" did not throw
+[FAIL] 'Document.parseHTMLUnsafe(null)' throws
+  assert_throws_js: function "_ => {\n      var doc = Document.parseHTMLUnsafe(null);\n    }" did not throw
+[FAIL] 'Document.parseHTMLUnsafe(string)' assigned via default policy (successful HTML transformation).
+  assert_equals: expected "Quack, I want to be a duck!" but got "Hi, I want to be transformed!"
+Harness: the test ran to completion.

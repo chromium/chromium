@@ -20,7 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_BLOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_BLOCK_H_
 
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -34,7 +34,7 @@ class SVGElement;
 //   coordinate space created a containing block. Like other LayoutBlockFlow
 //   objects, LayoutSVGBlock's frameRect() is also in physical coordinates with
 //   flipped blocks direction in the "containing block".
-class LayoutSVGBlock : public LayoutBlockFlow {
+class LayoutSVGBlock : public LayoutNGBlockFlow {
  public:
   explicit LayoutSVGBlock(ContainerNode*);
 
@@ -76,9 +76,9 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || LayoutBlockFlow::IsOfType(type);
+    return true;
   }
 
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
@@ -92,11 +92,6 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   void GetNode() const = delete;
 
   PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
-
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
 };
 
 }  // namespace blink

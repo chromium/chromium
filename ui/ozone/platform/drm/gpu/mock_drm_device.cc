@@ -93,10 +93,6 @@ const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
     {kRotationPropId, "rotation"},
 };
 
-const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
-    {kPlaneCtmId, "PLANE_CTM"},
-};
-
 template <class T>
 uint32_t GetNextId(const std::vector<T>& collection, uint32_t base) {
   uint32_t max = 0;
@@ -174,13 +170,13 @@ uint32_t MockDrmDevice::PlaneProperties::type() const {
   return prop.value()->value;
 }
 
-absl::optional<const DrmDevice::Property*>
+std::optional<const DrmDevice::Property*>
 MockDrmDevice::PlaneProperties::GetProp(uint32_t prop_id) const {
   for (const auto& prop : properties) {
     if (prop.id == prop_id)
       return {&prop};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MockDrmDevice::PlaneProperties::SetProp(uint32_t prop_id, uint32_t value) {
@@ -214,8 +210,6 @@ MockDrmDevice::MockDrmState::CreateStateWithAllProperties() {
 
   // Separately add optional properties that will be used in some tests, but the
   // tests will append the property to the planes on a case-by-case basis.
-  state.property_names.insert(kPlaneOptionalPropertyNames.begin(),
-                              kPlaneOptionalPropertyNames.end());
   state.property_names.insert(kCrtcOptionalPropertyNames.begin(),
                               kCrtcOptionalPropertyNames.end());
 
@@ -897,18 +891,17 @@ bool MockDrmDevice::CommitProperties(
   return true;
 }
 
-bool MockDrmDevice::SetGammaRamp(
-    uint32_t crtc_id,
-    const std::vector<display::GammaRampRGBEntry>& lut) {
+bool MockDrmDevice::SetGammaRamp(uint32_t crtc_id,
+                                 const display::GammaCurve& curve) {
   set_gamma_ramp_count_++;
   return legacy_gamma_ramp_expectation_;
 }
 
-absl::optional<std::string> MockDrmDevice::GetDriverName() const {
+std::optional<std::string> MockDrmDevice::GetDriverName() const {
   return driver_name_;
 }
 
-void MockDrmDevice::SetDriverName(absl::optional<std::string> name) {
+void MockDrmDevice::SetDriverName(std::optional<std::string> name) {
   driver_name_ = name;
 }
 

@@ -10,12 +10,12 @@
 #include <algorithm>
 #include <sstream>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "crypto/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
@@ -409,21 +409,17 @@ bool GCMMessageCryptographer::TransformRecord(Direction direction,
   if (direction == Direction::ENCRYPT)
     maximum_output_length += kAuthenticationTagBytes;
 
-  // WriteInto requires the buffer to finish with a NULL-byte.
-  maximum_output_length += 1;
-
   size_t output_length = 0;
-  uint8_t* raw_output = reinterpret_cast<uint8_t*>(
-      base::WriteInto(output, maximum_output_length.ValueOrDie()));
+  output->resize(maximum_output_length.ValueOrDie());
 
   EVP_AEAD_CTX_TransformFunction* transform_function =
       direction == Direction::ENCRYPT ? EVP_AEAD_CTX_seal : EVP_AEAD_CTX_open;
 
   if (!transform_function(
-          &context, raw_output, &output_length, output->size(),
-          reinterpret_cast<const uint8_t*>(nonce.data()), nonce.size(),
-          reinterpret_cast<const uint8_t*>(input.data()), input.size(),
-          nullptr, 0)) {
+          &context, reinterpret_cast<uint8_t*>(output->data()), &output_length,
+          output->size(), reinterpret_cast<const uint8_t*>(nonce.data()),
+          nonce.size(), reinterpret_cast<const uint8_t*>(input.data()),
+          input.size(), nullptr, 0)) {
     EVP_AEAD_CTX_cleanup(&context);
     return false;
   }

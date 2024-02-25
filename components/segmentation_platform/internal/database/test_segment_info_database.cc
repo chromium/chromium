@@ -4,16 +4,12 @@
 
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
-#include "base/logging.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::test {
 
@@ -33,7 +29,7 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
   for (const auto& pair : segment_infos_) {
     if (pair.second.model_source() != ModelSource::DEFAULT_MODEL_SOURCE &&
         base::Contains(segment_ids, pair.first)) {
-      result->emplace_back(pair);
+      result->emplace_back(pair.first, &pair.second);
     }
   }
   std::move(callback).Run(std::move(result));
@@ -45,34 +41,28 @@ TestSegmentInfoDatabase::GetSegmentInfoForBothModels(
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
     if (base::Contains(segment_ids, pair.first)) {
-      result->emplace_back(pair);
+      result->emplace_back(pair.first, &pair.second);
     }
   }
   return result;
 }
 
-void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
-                                             ModelSource model_source,
-                                             SegmentInfoCallback callback) {
-  std::move(callback).Run(GetCachedSegmentInfo(segment_id, model_source));
-}
-
-absl::optional<SegmentInfo> TestSegmentInfoDatabase::GetCachedSegmentInfo(
+const SegmentInfo* TestSegmentInfoDatabase::GetCachedSegmentInfo(
     SegmentId segment_id,
     ModelSource model_source) {
   for (const auto& pair : segment_infos_) {
     if (segment_id == pair.first &&
         model_source == pair.second.model_source()) {
-      return absl::make_optional(pair.second);
+      return &pair.second;
     }
   }
-  return absl::nullopt;
+  return nullptr;
 }
 
 void TestSegmentInfoDatabase::UpdateSegment(
     SegmentId segment_id,
     ModelSource model_source,
-    absl::optional<proto::SegmentInfo> segment_info,
+    std::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   if (segment_info.has_value()) {
     proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
@@ -94,7 +84,7 @@ void TestSegmentInfoDatabase::UpdateSegment(
 void TestSegmentInfoDatabase::SaveSegmentResult(
     SegmentId segment_id,
     ModelSource model_source,
-    absl::optional<proto::PredictionResult> result,
+    std::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id, model_source);
   if (!result.has_value()) {
@@ -129,7 +119,7 @@ void TestSegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
     }
   }
 
-  absl::optional<proto::TrainingData> result;
+  std::optional<proto::TrainingData> result;
   if (segment_info == nullptr) {
     std::move(callback).Run(result);
     return;

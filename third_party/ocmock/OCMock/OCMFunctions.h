@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2014-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -16,36 +16,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class OCMLocation;
-@class OCClassMockObject;
-@class OCPartialMockObject;
-
 
 #if defined(__cplusplus)
-extern "C" {
+#define OCMOCK_EXTERN extern "C"
+#else
+#define OCMOCK_EXTERN extern
 #endif
 
-BOOL OCMIsObjectType(const char *objCType);
-const char *OCMTypeWithoutQualifiers(const char *objCType);
-BOOL OCMEqualTypesAllowingOpaqueStructs(const char *type1, const char *type2);
 
-Class OCMCreateSubclass(Class kt, void *ref);
-
-void OCMSetIsa(id object, Class kt);
-Class OCMGetIsa(id object);
-
-BOOL OCMIsAliasSelector(SEL selector);
-SEL OCMAliasForOriginalSelector(SEL selector);
-SEL OCMOriginalSelectorForAlias(SEL selector);
-
-void OCMSetAssociatedMockForClass(OCClassMockObject *mock, Class aClass);
-OCClassMockObject *OCMGetAssociatedMockForClass(Class aClass, BOOL includeSuperclasses);
-
-void OCMSetAssociatedMockForObject(OCClassMockObject *mock, id anObject);
-OCPartialMockObject *OCMGetAssociatedMockForObject(id anObject);
-
-void OCMReportFailure(OCMLocation *loc, NSString *description);
-
-#if defined(__cplusplus)
-}
-#endif
+OCMOCK_EXTERN BOOL OCMIsObjectType(const char *objCType);
+OCMOCK_EXTERN BOOL OCMIsSubclassOfMockClass(Class cls);

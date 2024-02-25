@@ -110,7 +110,7 @@ class CryptohomePkcs11ClientImpl : public CryptohomePkcs11Client {
           << "Failed to append protobuf when calling CryptohomePkcs11 method "
           << method_name;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     // Bind with the weak pointer of |this| so the response is not
@@ -145,14 +145,14 @@ class CryptohomePkcs11ClientImpl : public CryptohomePkcs11Client {
     if (!ParseProto(response, &reply_proto)) {
       LOG(ERROR)
           << "Failed to parse reply protobuf from CryptohomePkcs11 method";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(reply_proto);
   }
 
   // D-Bus proxy for cryptohomed, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<CryptohomePkcs11ClientImpl> weak_factory_{this};
 };

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -34,7 +36,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/boot_times_recorder.h"
@@ -73,7 +74,7 @@ using IgnoreUnloadHandlers =
 void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
   // TODO(crbug.com/1205798): Unset SaveSessionState if the restart fails.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     browser->profile()->SaveSessionState();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     auto* session_data_service =
@@ -209,8 +210,8 @@ void SessionEnding() {
 
   // Two different types of hang detection cannot attempt to upload crashes at
   // the same time or they would interfere with each other.
-  absl::optional<ShutdownWatcherHelper> shutdown_watcher;
-  absl::optional<base::WatchHangsInScope> watch_hangs_scope;
+  std::optional<ShutdownWatcherHelper> shutdown_watcher;
+  std::optional<base::WatchHangsInScope> watch_hangs_scope;
   if (base::HangWatcher::IsCrashReportingEnabled()) {
     // TODO(crbug.com/1327000): Migrate away from ShutdownWatcher and its old
     // timing.
@@ -287,7 +288,7 @@ void MarkAsCleanShutdown() {
   std::set<Profile*> pending_profiles;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (ExitTypeService* exit_type_service =
             ExitTypeService::GetInstanceForProfile(browser->profile())) {
       exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
@@ -317,7 +318,7 @@ bool AreAllBrowsersCloseable() {
   }
 
   // Check TabsNeedBeforeUnloadFired().
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->TabsNeedBeforeUnloadFired())
       return false;
   }

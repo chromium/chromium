@@ -8,8 +8,6 @@ source_set("app_store_rating") {
     "app_store_rating_display_handler.mm",
     "app_store_rating_scene_agent.h",
     "app_store_rating_scene_agent.mm",
-    "constants.h",
-    "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
@@ -18,11 +16,11 @@ source_set("app_store_rating") {
     "//components/feature_engagement/public",
     "//components/password_manager/core/browser",
     "//components/prefs",
-    "//components/version_info:channel",
-    "//ios/chrome/browser/default_browser:utils",
-    "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:types",
+    "//components/variations/service:service",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -39,7 +37,7 @@ source_set("features") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/promos_manager/model:features",
   ]
 }
 
@@ -56,13 +54,16 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//components/variations",
+    "//components/variations/service:service",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/default_browser:test_support",
-    "//ios/chrome/browser/default_browser:utils",
-    "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

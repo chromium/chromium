@@ -6,37 +6,25 @@
 
 #include <tuple>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
+#include "base/types/expected.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/pose.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
-
-namespace {
-device::Pose XrPoseToDevicePose(const XrPosef& pose) {
-  gfx::Quaternion orientation{pose.orientation.x, pose.orientation.y,
-                              pose.orientation.z, pose.orientation.w};
-  gfx::Point3F position{pose.position.x, pose.position.y, pose.position.z};
-  return device::Pose{position, orientation};
-}
-}  // namespace
+OpenXrAnchorManager::OpenXrAnchorManager() = default;
 
 OpenXrAnchorManager::~OpenXrAnchorManager() {
   DisposeActiveAnchorCallbacks();
-  for (const auto& it : openxr_anchors_) {
-    DestroyAnchorData(it.second);
+  for (const auto& [_, anchor_space] : openxr_anchors_) {
+    xrDestroySpace(anchor_space);
   }
 }
-
-OpenXrAnchorManager::OpenXrAnchorManager(
-    const OpenXrExtensionHelper& extension_helper,
-    XrSession session,
-    XrSpace mojo_space)
-    : extension_helper_(extension_helper),
-      session_(session),
-      mojo_space_(mojo_space) {}
 
 void OpenXrAnchorManager::AddCreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
@@ -61,7 +49,7 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     const mojom::VRStageParametersPtr& current_stage_parameters,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   for (auto& request : create_anchor_requests_) {
-    absl::optional<XrLocation> anchor_location =
+    std::optional<XrLocation> anchor_location =
         GetXrLocationFromNativeOriginInformation(
             openxr, current_stage_parameters,
             request.GetNativeOriginInformation(),
@@ -71,14 +59,16 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
       continue;
     }
 
-    AnchorId anchor_id = kInvalidAnchorId;
     XrTime display_time = openxr->GetPredictedDisplayTime();
-    anchor_id = CreateAnchor(anchor_location->pose, anchor_location->space,
-                             display_time);
+    XrSpace anchor = CreateAnchor(anchor_location->pose, anchor_location->space,
+                                  display_time);
 
-    if (anchor_id.is_null()) {
+    if (anchor == XR_NULL_HANDLE) {
       request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE, 0);
     } else {
+      AnchorId anchor_id = anchor_id_generator_.GenerateNextId();
+      CHECK(anchor_id);
+      openxr_anchors_.insert({anchor_id, anchor});
       request.TakeCallback().Run(device::mojom::CreateAnchorResult::SUCCESS,
                                  anchor_id.GetUnsafeValue());
     }
@@ -93,60 +83,13 @@ void OpenXrAnchorManager::DisposeActiveAnchorCallbacks() {
   create_anchor_requests_.clear();
 }
 
-AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
-                                           XrSpace space,
-                                           XrTime predicted_display_time) {
-  XrSpatialAnchorMSFT xr_anchor;
-  XrSpatialAnchorCreateInfoMSFT anchor_create_info{
-      XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
-  anchor_create_info.space = space;
-  anchor_create_info.pose = pose;
-  anchor_create_info.time = predicted_display_time;
-
-  DCHECK(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorMSFT);
-  DCHECK(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT);
-  DCHECK(extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT);
-
-  if (XR_FAILED(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorMSFT(
-          session_, &anchor_create_info, &xr_anchor))) {
-    return kInvalidAnchorId;
-  }
-
-  XrSpace anchor_space;
-  XrSpatialAnchorSpaceCreateInfoMSFT space_create_info{
-      XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
-  space_create_info.anchor = xr_anchor;
-  space_create_info.poseInAnchorSpace = PoseIdentity();
-  if (XR_FAILED(
-          extension_helper_->ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
-              session_, &space_create_info, &anchor_space))) {
-    std::ignore =
-        extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT(
-            xr_anchor);
-    return kInvalidAnchorId;
-  }
-
-  AnchorId anchor_id = anchor_id_generator_.GenerateNextId();
-  DCHECK(anchor_id);
-  openxr_anchors_.insert({anchor_id, AnchorData{xr_anchor, anchor_space}});
-  return anchor_id;
-}
-
 XrSpace OpenXrAnchorManager::GetAnchorSpace(AnchorId anchor_id) const {
   DCHECK(anchor_id);
   auto it = openxr_anchors_.find(anchor_id);
   if (it == openxr_anchors_.end()) {
     return XR_NULL_HANDLE;
   }
-  return it->second.space;
-}
-
-void OpenXrAnchorManager::DestroyAnchorData(
-    const AnchorData& anchor_data) const {
-  std::ignore = xrDestroySpace(anchor_data.space);
-  std::ignore =
-      extension_helper_->ExtensionMethods().xrDestroySpatialAnchorMSFT(
-          anchor_data.anchor);
+  return it->second;
 }
 
 void OpenXrAnchorManager::DetachAnchor(AnchorId anchor_id) {
@@ -156,40 +99,47 @@ void OpenXrAnchorManager::DetachAnchor(AnchorId anchor_id) {
     return;
   }
 
-  DestroyAnchorData(it->second);
+  XrSpace anchor_space = it->second;
+  OnDetachAnchor(anchor_space);
+  xrDestroySpace(anchor_space);
   openxr_anchors_.erase(it);
 }
 
 mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
-    XrTime predicted_display_time) const {
+    XrTime predicted_display_time) {
   std::vector<uint64_t> all_anchors_ids(openxr_anchors_.size());
   std::vector<mojom::XRAnchorDataPtr> updated_anchors(openxr_anchors_.size());
 
   uint32_t index = 0;
-  for (const auto& map_entry : openxr_anchors_) {
-    const AnchorId anchor_id = map_entry.first;
-    const XrSpace anchor_space = map_entry.second.space;
+  std::set<AnchorId> deleted_ids;
+  for (const auto& [anchor_id, anchor_space] : openxr_anchors_) {
     all_anchors_ids[index] = anchor_id.GetUnsafeValue();
-
-    XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
-    if (XR_FAILED(xrLocateSpace(anchor_space, mojo_space_,
-                                predicted_display_time, &anchor_from_mojo)) ||
-        !IsPoseValid(anchor_from_mojo.locationFlags)) {
-      updated_anchors[index] =
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt);
+    auto maybe_pose = GetAnchorFromMojom(anchor_space, predicted_display_time);
+    if (maybe_pose.has_value()) {
+      updated_anchors[index] = mojom::XRAnchorData::New(
+          anchor_id.GetUnsafeValue(), maybe_pose.value());
     } else {
+      // Regardless of why it failed, if we still have it tracked, send it up
+      // this frame, but remove it for future frames.
       updated_anchors[index] =
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(),
-                                   XrPoseToDevicePose(anchor_from_mojo.pose));
+          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt);
+      if (maybe_pose.error() == AnchorTrackingErrorType::kPermanent) {
+        deleted_ids.insert(anchor_id);
+      }
     }
     index++;
   }
 
+  for (const auto& id : deleted_ids) {
+    DetachAnchor(id);
+  }
+
+  DVLOG(3) << __func__ << " all_anchor_ids size: " << all_anchors_ids.size();
   return mojom::XRAnchorsData::New(std::move(all_anchors_ids),
                                    std::move(updated_anchors));
 }
 
-absl::optional<OpenXrAnchorManager::XrLocation>
+std::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     OpenXrApiWrapper* openxr,
     const mojom::VRStageParametersPtr& current_stage_parameters,
@@ -200,16 +150,17 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       // Currently unimplemented as only anchors are supported and are never
       // created relative to input sources
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetXrLocationFromReferenceSpace(openxr, current_stage_parameters,
                                              native_origin_information,
                                              native_origin_from_anchor);
+    // TODO: Look into plane data
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // Unsupported for now
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return XrLocation{
           GfxTransformToXrPose(native_origin_from_anchor),
@@ -217,7 +168,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
   }
 }
 
-absl::optional<OpenXrAnchorManager::XrLocation>
+std::optional<OpenXrAnchorManager::XrLocation>
 OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
     OpenXrApiWrapper* openxr,
     const mojom::VRStageParametersPtr& current_stage_parameters,
@@ -228,7 +179,7 @@ OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
   auto type = native_origin_information.get_reference_space_type();
   if (type == device::mojom::XRReferenceSpaceType::kLocalFloor) {
     if (!current_stage_parameters) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     // The offset from the floor to mojo (aka local) is encoded in
     // current_stage_parameters->mojo_from_floor. mojo_from_floor *

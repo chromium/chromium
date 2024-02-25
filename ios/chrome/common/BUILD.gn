@@ -25,20 +25,24 @@ source_set("common") {
   public_deps = [ ":timing" ]
 }
 
-source_set("button_config") {
-  sources = [
-    "button_configuration_util.h",
-    "button_configuration_util.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("constants") {
   sources = [
     "constants.h",
     "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("extension_open_url") {
+  sources = [
+    "extension_open_url.h",
+    "extension_open_url.mm",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
 }
 
 source_set("string_util") {

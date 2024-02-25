@@ -687,7 +687,7 @@
 
 // When deprecating Abseil code, it is sometimes necessary to turn off the
 // warning within Abseil, until the deprecated code is actually removed. The
-// deprecated code can be surrounded with these directives to acheive that
+// deprecated code can be surrounded with these directives to achieve that
 // result.
 //
 // class ABSL_DEPRECATED("Use Bar instead") Foo;
@@ -747,9 +747,52 @@
 #define ABSL_CONST_INIT
 #endif
 
-// These annotations are not available yet due to fear of breaking code.
-#define ABSL_ATTRIBUTE_PURE_FUNCTION
-#define ABSL_ATTRIBUTE_CONST_FUNCTION
+// ABSL_ATTRIBUTE_PURE_FUNCTION
+//
+// ABSL_ATTRIBUTE_PURE_FUNCTION is used to annotate declarations of "pure"
+// functions. A function is pure if its return value is only a function of its
+// arguments. The pure attribute prohibits a function from modifying the state
+// of the program that is observable by means other than inspecting the
+// function's return value. Declaring such functions with the pure attribute
+// allows the compiler to avoid emitting some calls in repeated invocations of
+// the function with the same argument values.
+//
+// Example:
+//
+//  ABSL_ATTRIBUTE_PURE_FUNCTION std::string FormatTime(Time t);
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION [[gnu::pure]]
+#elif ABSL_HAVE_ATTRIBUTE(pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION __attribute__((pure))
+#else
+// If the attribute isn't defined, we'll fallback to ABSL_MUST_USE_RESULT since
+// pure functions are useless if its return is ignored.
+#define ABSL_ATTRIBUTE_PURE_FUNCTION ABSL_MUST_USE_RESULT
+#endif
+
+// ABSL_ATTRIBUTE_CONST_FUNCTION
+//
+// ABSL_ATTRIBUTE_CONST_FUNCTION is used to annotate declarations of "const"
+// functions. A const function is similar to a pure function, with one
+// exception: Pure functions may return value that depend on a non-volatile
+// object that isn't provided as a function argument, while the const function
+// is guaranteed to return the same result given the same arguments.
+//
+// Example:
+//
+//  ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Milliseconds(Duration d);
+#if defined(_MSC_VER) && !defined(__clang__)
+// Put the MSVC case first since MSVC seems to parse const as a C++ keyword.
+#define ABSL_ATTRIBUTE_CONST_FUNCTION ABSL_ATTRIBUTE_PURE_FUNCTION
+#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::const)
+#define ABSL_ATTRIBUTE_CONST_FUNCTION [[gnu::const]]
+#elif ABSL_HAVE_ATTRIBUTE(const)
+#define ABSL_ATTRIBUTE_CONST_FUNCTION __attribute__((const))
+#else
+// Since const functions are more restrictive pure function, we'll fallback to a
+// pure function if the const attribute is not handled.
+#define ABSL_ATTRIBUTE_CONST_FUNCTION ABSL_ATTRIBUTE_PURE_FUNCTION
+#endif
 
 // ABSL_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
 // parameter or implicit object parameter is retained by the return value of the
@@ -800,15 +843,11 @@
 // See also the upstream documentation:
 // https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
 //
-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::trivial_abi)
-#define ABSL_ATTRIBUTE_TRIVIAL_ABI [[clang::trivial_abi]]
-#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
-#elif ABSL_HAVE_ATTRIBUTE(trivial_abi)
-#define ABSL_ATTRIBUTE_TRIVIAL_ABI __attribute__((trivial_abi))
-#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
-#else
+// b/321691395 - This is currently disabled in open-source builds since
+// compiler support differs. If system libraries compiled with GCC are mixed
+// with libraries compiled with Clang, types will have different ideas about
+// their ABI, leading to hard to debug crashes.
 #define ABSL_ATTRIBUTE_TRIVIAL_ABI
-#endif
 
 // ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
 //
@@ -830,6 +869,53 @@
 #define ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
 #define ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#endif
+
+// ABSL_ATTRIBUTE_UNINITIALIZED
+//
+// GCC and Clang support a flag `-ftrivial-auto-var-init=<option>` (<option>
+// can be "zero" or "pattern") that can be used to initialize automatic stack
+// variables. Variables with this attribute will be left uninitialized,
+// overriding the compiler flag.
+//
+// See https://clang.llvm.org/docs/AttributeReference.html#uninitialized
+// and https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#index-uninitialized-variable-attribute
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED [[clang::uninitialized]]
+#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED [[gnu::uninitialized]]
+#elif ABSL_HAVE_ATTRIBUTE(uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED __attribute__((uninitialized))
+#else
+#define ABSL_ATTRIBUTE_UNINITIALIZED
+#endif
+
+// ABSL_ATTRIBUTE_WARN_UNUSED
+//
+// Compilers routinely warn about trivial variables that are unused.  For
+// non-trivial types, this warning is suppressed since the
+// constructor/destructor may be intentional and load-bearing, for example, with
+// a RAII scoped lock.
+//
+// For example:
+//
+// class ABSL_ATTRIBUTE_WARN_UNUSED MyType {
+//  public:
+//   MyType();
+//   ~MyType();
+// };
+//
+// void foo() {
+//   // Warns with ABSL_ATTRIBUTE_WARN_UNUSED attribute present.
+//   MyType unused;
+// }
+//
+// See https://clang.llvm.org/docs/AttributeReference.html#warn-unused and
+// https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Attributes.html#index-warn_005funused-type-attribute
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::warn_unused)
+#define ABSL_ATTRIBUTE_WARN_UNUSED [[gnu::warn_unused]]
+#else
+#define ABSL_ATTRIBUTE_WARN_UNUSED
 #endif
 
 #endif  // ABSL_BASE_ATTRIBUTES_H_

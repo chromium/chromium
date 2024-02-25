@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -98,6 +98,10 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
 // Returns if the given |onc_config| is Cellular type configuration.
 bool IsCellularPolicy(const base::Value::Dict& onc_config);
 
+// Returns true if `onc_config` has any field that is marked as "Recommended".
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool HasAnyRecommendedField(const base::Value::Dict& onc_config);
+
 // Returns the ICCID value from the given |onc_config|, returns nullptr if it
 // is not a Cellular type ONC or no ICCID field is found.
 const std::string* GetIccidFromONC(const base::Value::Dict& onc_config);
@@ -109,10 +113,27 @@ const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config);
 
 // This function returns the SM-DX activation code found in |onc_config|. If
 // both an SM-DP+ activation code and an SM-DS activation code are provided, or
-// if neither are provided, this function returns |absl::nullopt|.
+// if neither are provided, this function returns |std::nullopt|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
+std::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
     const base::Value::Dict& onc_config);
+
+// When this is called, `AreEphemeralNetworkPoliciesEnabled()` will return true
+// until the process is restarted (or
+// ResetEphemeralNetworkPoliciesEnabledForTesting is called).
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetEphemeralNetworkPoliciesEnabled();
+
+// Resets the effect of SetEphemeralNetworkPoliciesEnabled.
+// This is for unittests only - supporting this properly in production code
+// would be difficult (e.g. no DCHECKs that the feature is enabled in posted
+// tasks).
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void ResetEphemeralNetworkPoliciesEnabledForTesting();
+
+// Returns true if ephemeral network policies are enabled.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool AreEphemeralNetworkPoliciesEnabled();
 
 }  // namespace policy_util
 }  // namespace ash

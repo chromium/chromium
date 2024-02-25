@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_DEVICE_TRUST_DEVICE_TRUST_KEY_MANAGER_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_DEVICE_TRUST_DEVICE_TRUST_KEY_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -56,8 +56,8 @@ class DeviceTrustKeyManager {
         trust_level{};
     crypto::SignatureVerifier::SignatureAlgorithm algorithm{};
     std::string spki_bytes{};
-    absl::optional<int> synchronization_response_code = absl::nullopt;
-    absl::optional<PermanentFailure> permanent_failure = absl::nullopt;
+    std::optional<int> synchronization_response_code = std::nullopt;
+    std::optional<PermanentFailure> permanent_failure = std::nullopt;
   };
 
   // Starts the initialization of the manager which includes trying to load the
@@ -76,18 +76,18 @@ class DeviceTrustKeyManager {
   // Asynchronously exports the signing key pair's public key into a string.
   // Invokes `callback` with that string when it is available.
   virtual void ExportPublicKeyAsync(
-      base::OnceCallback<void(absl::optional<std::string>)> callback) = 0;
+      base::OnceCallback<void(std::optional<std::string>)> callback) = 0;
 
   // Asynchronously signs the given string `str` using the signing key pair.
   // Invokes `callback` with the signed data when it is available.
   virtual void SignStringAsync(
       const std::string& str,
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
           callback) = 0;
 
   // Returns KeyMetadata for the currently loaded key. If no key is loaded,
-  // returns absl::nullopt.
-  virtual absl::optional<KeyMetadata> GetLoadedKeyMetadata() const = 0;
+  // returns std::nullopt.
+  virtual std::optional<KeyMetadata> GetLoadedKeyMetadata() const = 0;
 
   // Returns true if the manager hit a permanent failure for which retrying
   // would do no good. Permanent failures will prevent retrying for the lifespan

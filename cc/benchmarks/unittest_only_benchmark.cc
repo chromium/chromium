@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/unittest_only_benchmark_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 

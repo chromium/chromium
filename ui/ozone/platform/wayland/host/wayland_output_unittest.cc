@@ -144,7 +144,8 @@ class WaylandOutputWithAuraOutputManagerTest : public WaylandTestSimple {
   WaylandOutputWithAuraOutputManagerTest()
       : WaylandTestSimple(wl::ServerConfig{
             .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-            .use_aura_output_manager = true}) {}
+            .aura_output_manager_protocol =
+                wl::AuraOutputManagerProtocol::kEnabledV1}) {}
 
   WaylandOutputManager* wayland_output_manager() {
     auto* wayland_output_manager = connection_->wayland_output_manager();

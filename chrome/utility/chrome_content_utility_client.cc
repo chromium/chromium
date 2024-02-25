@@ -19,11 +19,15 @@
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
-#include "components/metrics/call_stack_profile_builder.h"
+#include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ChromeContentUtilityClient::ChromeContentUtilityClient() = default;
 
@@ -93,3 +97,10 @@ void ChromeContentUtilityClient::RegisterIOThreadServices(
     mojo::ServiceFactory& services) {
   return ::RegisterIOThreadServices(services);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+mojo::GenericPendingReceiver
+ChromeContentUtilityClient::InitMojoServiceManager() {
+  return ash::mojo_service_manager::BootstrapServiceManagerInUtilityProcess();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

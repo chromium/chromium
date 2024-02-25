@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -23,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "gin/converter.h"
 #include "net/base/parse_number.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -139,7 +141,7 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
 // `priority_vector`. Returns true on success. Any case where `priorityVector`
 // exists and is an object is considered a success, even if it's empty, or
 // some/all keys in it are mapped to things other than numbers.
-absl::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
+std::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> per_interest_group_data) {
   v8::Local<v8::Value> priority_vector_value;
@@ -150,7 +152,7 @@ absl::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
       !priority_vector_value->IsObject() ||
       // Arrays are considered objects, so check explicitly for them.
       priority_vector_value->IsArray()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   v8::Local<v8::Object> priority_vector_object =
@@ -159,7 +161,7 @@ absl::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
   v8::Local<v8::Array> priority_vector_keys;
   if (!priority_vector_object->GetOwnPropertyNames(v8_helper->scratch_context())
            .ToLocal(&priority_vector_keys)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Put together a list to construct the returned `flat_map` with, since
@@ -229,7 +231,7 @@ ParsePriorityVectorsInPerInterestGroupMap(
 
     v8::Local<v8::Object> per_interest_group_data =
         per_interest_group_data_value.As<v8::Object>();
-    absl::optional<TrustedSignals::Result::PriorityVector> priority_vector =
+    std::optional<TrustedSignals::Result::PriorityVector> priority_vector =
         ParsePriorityVector(v8_helper, per_interest_group_data);
     if (priority_vector) {
       out.emplace(interest_group_name, std::move(*priority_vector));
@@ -271,7 +273,7 @@ v8::Local<v8::Object> CreateObjectFromMap(
 TrustedSignals::Result::Result(
     std::map<std::string, base::flat_map<std::string, double>> priority_vectors,
     std::map<std::string, AuctionV8Helper::SerializedValue> bidder_data,
-    absl::optional<uint32_t> data_version)
+    std::optional<uint32_t> data_version)
     : priority_vectors_(std::move(priority_vectors)),
       bidder_data_(std::move(bidder_data)),
       data_version_(data_version) {}
@@ -279,7 +281,7 @@ TrustedSignals::Result::Result(
 TrustedSignals::Result::Result(
     std::map<std::string, AuctionV8Helper::SerializedValue> render_url_data,
     std::map<std::string, AuctionV8Helper::SerializedValue> ad_component_data,
-    absl::optional<uint32_t> data_version)
+    std::optional<uint32_t> data_version)
     : render_url_data_(std::move(render_url_data)),
       ad_component_data_(std::move(ad_component_data)),
       data_version_(data_version) {}
@@ -327,7 +329,7 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
   result = v8_helper->InsertValue("renderUrl", render_url_v8_object, out);
   DCHECK(result);
 
-  // If there are any ad components, assemble and add an `adComponentRenderUrls`
+  // If there are any ad components, assemble and add an `adComponentRenderURLs`
   // object as well.
   if (!ad_component_render_urls.empty()) {
     v8::Local<v8::Object> ad_components_v8_object = CreateObjectFromMap(
@@ -345,37 +347,82 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
 
 TrustedSignals::Result::~Result() = default;
 
-std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
-    network::mojom::URLLoaderFactory* url_loader_factory,
-    std::set<std::string> interest_group_names,
-    std::set<std::string> bidding_signals_keys,
+GURL TrustedSignals::BuildTrustedBiddingSignalsURL(
     const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
-    absl::optional<uint16_t> experiment_group_id,
-    scoped_refptr<AuctionV8Helper> v8_helper,
-    LoadSignalsCallback load_signals_callback) {
-  DCHECK(!interest_group_names.empty());
-
-  std::unique_ptr<TrustedSignals> trusted_signals =
-      base::WrapUnique(new TrustedSignals(
-          std::move(interest_group_names), std::move(bidding_signals_keys),
-          /*render_urls=*/absl::nullopt,
-          /*ad_component_render_urls=*/absl::nullopt,
-          trusted_bidding_signals_url, std::move(v8_helper),
-          std::move(load_signals_callback)));
-
+    const std::set<std::string>& interest_group_names,
+    const std::set<std::string>& bidding_signals_keys,
+    std::optional<uint16_t> experiment_group_id,
+    const std::string& trusted_bidding_signals_slot_size_param) {
   std::string query_params = base::StrCat(
       {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_),
-       CreateQueryParam("interestGroupNames",
-                        *trusted_signals->interest_group_names_)});
+       CreateQueryParam("keys", bidding_signals_keys),
+       CreateQueryParam("interestGroupNames", interest_group_names)});
+
+  if (experiment_group_id.has_value()) {
+    base::StrAppend(&query_params,
+                    {"&experimentGroupId=",
+                     base::NumberToString(experiment_group_id.value())});
+  }
+  if (!trusted_bidding_signals_slot_size_param.empty()) {
+    base::StrAppend(&query_params,
+                    {"&", trusted_bidding_signals_slot_size_param});
+  }
+  GURL full_signals_url =
+      SetQueryParam(trusted_bidding_signals_url, query_params);
+
+  return full_signals_url;
+}
+
+GURL TrustedSignals::BuildTrustedScoringSignalsURL(
+    const std::string& hostname,
+    const GURL& trusted_scoring_signals_url,
+    const std::set<std::string>& render_urls,
+    const std::set<std::string>& ad_component_render_urls,
+    std::optional<uint16_t> experiment_group_id) {
+  // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
+  std::string query_params = base::StrCat(
+      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+       CreateQueryParam("renderUrls", render_urls),
+       CreateQueryParam("adComponentRenderUrls", ad_component_render_urls)});
   if (experiment_group_id.has_value()) {
     base::StrAppend(&query_params,
                     {"&experimentGroupId=",
                      base::NumberToString(experiment_group_id.value())});
   }
   GURL full_signals_url =
-      SetQueryParam(trusted_bidding_signals_url, query_params);
+      SetQueryParam(trusted_scoring_signals_url, query_params);
+
+  return full_signals_url;
+}
+
+std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        devtools_pending_remote,
+    std::set<std::string> interest_group_names,
+    std::set<std::string> bidding_signals_keys,
+    const std::string& hostname,
+    const GURL& trusted_bidding_signals_url,
+    std::optional<uint16_t> experiment_group_id,
+    const std::string& trusted_bidding_signals_slot_size_param,
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    LoadSignalsCallback load_signals_callback) {
+  DCHECK(!interest_group_names.empty());
+
+  GURL full_signals_url = TrustedSignals::BuildTrustedBiddingSignalsURL(
+      hostname, trusted_bidding_signals_url, interest_group_names,
+      bidding_signals_keys, experiment_group_id,
+      trusted_bidding_signals_slot_size_param);
+
+  std::unique_ptr<TrustedSignals> trusted_signals =
+      base::WrapUnique(new TrustedSignals(
+          std::move(interest_group_names), std::move(bidding_signals_keys),
+          /*render_urls=*/std::nullopt,
+          /*ad_component_render_urls=*/std::nullopt,
+          trusted_bidding_signals_url, std::move(devtools_pending_remote),
+          std::move(v8_helper), std::move(load_signals_callback)));
+
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedBidding",
       full_signals_url.spec().size());
@@ -386,35 +433,29 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
 
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     std::set<std::string> render_urls,
     std::set<std::string> ad_component_render_urls,
     const std::string& hostname,
     const GURL& trusted_scoring_signals_url,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!render_urls.empty());
 
+  GURL full_signals_url = BuildTrustedScoringSignalsURL(
+      hostname, trusted_scoring_signals_url, render_urls,
+      ad_component_render_urls, experiment_group_id);
+
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
-          /*interest_group_names=*/absl::nullopt,
-          /*bidding_signals_keys=*/absl::nullopt, std::move(render_urls),
+          /*interest_group_names=*/std::nullopt,
+          /*bidding_signals_keys=*/std::nullopt, std::move(render_urls),
           std::move(ad_component_render_urls), trusted_scoring_signals_url,
-          std::move(v8_helper), std::move(load_signals_callback)));
+          std::move(auction_network_events_handler), std::move(v8_helper),
+          std::move(load_signals_callback)));
 
-  // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
-  std::string query_params = base::StrCat(
-      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("renderUrls", *trusted_signals->render_urls_),
-       CreateQueryParam("adComponentRenderUrls",
-                        *trusted_signals->ad_component_render_urls_)});
-  if (experiment_group_id.has_value()) {
-    base::StrAppend(&query_params,
-                    {"&experimentGroupId=",
-                     base::NumberToString(experiment_group_id.value())});
-  }
-  GURL full_signals_url =
-      SetQueryParam(trusted_scoring_signals_url, query_params);
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedScoring",
       full_signals_url.spec().size());
@@ -424,11 +465,13 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
 }
 
 TrustedSignals::TrustedSignals(
-    absl::optional<std::set<std::string>> interest_group_names,
-    absl::optional<std::set<std::string>> bidding_signals_keys,
-    absl::optional<std::set<std::string>> render_urls,
-    absl::optional<std::set<std::string>> ad_component_render_urls,
+    std::optional<std::set<std::string>> interest_group_names,
+    std::optional<std::set<std::string>> bidding_signals_keys,
+    std::optional<std::set<std::string>> render_urls,
+    std::optional<std::set<std::string>> ad_component_render_urls,
     const GURL& trusted_signals_url,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        auction_network_events_handler,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback)
     : interest_group_names_(std::move(interest_group_names)),
@@ -437,7 +480,9 @@ TrustedSignals::TrustedSignals(
       ad_component_render_urls_(std::move(ad_component_render_urls)),
       trusted_signals_url_(trusted_signals_url),
       v8_helper_(std::move(v8_helper)),
-      load_signals_callback_(std::move(load_signals_callback)) {
+      load_signals_callback_(std::move(load_signals_callback)),
+      auction_network_events_handler_(
+          std::move(auction_network_events_handler)) {
   DCHECK(v8_helper_);
   DCHECK(load_signals_callback_);
 
@@ -454,19 +499,26 @@ void TrustedSignals::StartDownload(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& full_signals_url) {
   download_start_time_ = base::TimeTicks::Now();
+
+  std::unique_ptr<MojoNetworkEventsDelegate> network_events_delegate;
+
+  if (auction_network_events_handler_.is_valid()) {
+    network_events_delegate = std::make_unique<MojoNetworkEventsDelegate>(
+        std::move(auction_network_events_handler_));
+  }
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, full_signals_url,
       AuctionDownloader::DownloadMode::kActualDownload,
       AuctionDownloader::MimeType::kJson,
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
                      base::Unretained(this)),
-      /*network_events_delegate=*/nullptr);
+      /*network_events_delegate=*/std::move(network_events_delegate));
 }
 
 void TrustedSignals::OnDownloadComplete(
     std::unique_ptr<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   // The downloader's job is done, so clean it up.
   auction_downloader_.reset();
 
@@ -489,13 +541,13 @@ void TrustedSignals::OnDownloadComplete(
 void TrustedSignals::HandleDownloadResultOnV8Thread(
     scoped_refptr<AuctionV8Helper> v8_helper,
     const GURL& signals_url,
-    absl::optional<std::set<std::string>> interest_group_names,
-    absl::optional<std::set<std::string>> bidding_signals_keys,
-    absl::optional<std::set<std::string>> render_urls,
-    absl::optional<std::set<std::string>> ad_component_render_urls,
+    std::optional<std::set<std::string>> interest_group_names,
+    std::optional<std::set<std::string>> bidding_signals_keys,
+    std::optional<std::set<std::string>> render_urls,
+    std::optional<std::set<std::string>> ad_component_render_urls,
     std::unique_ptr<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    absl::optional<std::string> error_msg,
+    std::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
     base::WeakPtr<TrustedSignals> weak_instance,
     base::TimeDelta download_time) {
@@ -543,7 +595,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
 
   scoped_refptr<Result> result;
 
-  absl::optional<uint32_t> maybe_data_version;
+  std::optional<uint32_t> maybe_data_version;
   if (!data_version_string.empty()) {
     maybe_data_version = data_version;
   }
@@ -629,7 +681,7 @@ void TrustedSignals::PostCallbackToUserThread(
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
     base::WeakPtr<TrustedSignals> weak_instance,
     scoped_refptr<Result> result,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   user_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&TrustedSignals::DeliverCallbackOnUserThread,
@@ -638,7 +690,7 @@ void TrustedSignals::PostCallbackToUserThread(
 
 void TrustedSignals::DeliverCallbackOnUserThread(
     scoped_refptr<Result> result,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   std::move(load_signals_callback_)
       .Run(std::move(result), std::move(error_msg));
 }

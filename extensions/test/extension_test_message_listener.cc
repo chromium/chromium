@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
+#include "extensions/common/extension_id.h"
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
@@ -72,7 +73,7 @@ bool ExtensionTestMessageListener::OnTestMessage(
     const std::string& message) {
   // Return immediately if we're already satisfied or it's not the right
   // extension.
-  std::string sender_extension_id;
+  extensions::ExtensionId sender_extension_id;
   if (function->extension())
     sender_extension_id = function->extension_id();
 

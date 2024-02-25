@@ -85,4 +85,15 @@ TEST_F(WebViewWebClientTest, GetUserAgent) {
             web_client->GetUserAgent(web::UserAgentType::DESKTOP));
 }
 
+// Tests that `WebViewWebClientTest::EnableWebInspector` is configurable.
+TEST_F(WebViewWebClientTest, EnableWebInspector) {
+  web::WebClient* web_client = GetWebClient();
+
+  CWVWebView.webInspectorEnabled = NO;
+  EXPECT_FALSE(web_client->EnableWebInspector(/*browser_state=*/nullptr));
+
+  CWVWebView.webInspectorEnabled = YES;
+  EXPECT_TRUE(web_client->EnableWebInspector(/*browser_state=*/nullptr));
+}
+
 }  // namespace ios_web_view

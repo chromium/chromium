@@ -72,7 +72,7 @@ class ASH_EXPORT AmbientTopicQueue {
                     int topic_fetch_size,
                     base::TimeDelta topic_fetch_interval,
                     bool should_split_topics,
-                    std::unique_ptr<Delegate> delegate,
+                    Delegate* delegate,
                     AmbientBackendController* backend_controller);
   AmbientTopicQueue(const AmbientTopicQueue&) = delete;
   AmbientTopicQueue& operator=(const AmbientTopicQueue&) = delete;
@@ -122,7 +122,7 @@ class ASH_EXPORT AmbientTopicQueue {
   const int topic_fetch_size_;
   const base::TimeDelta topic_fetch_interval_;
   const bool should_split_topics_;
-  const std::unique_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate> delegate_;
   const raw_ptr<AmbientBackendController> backend_controller_;
 
   std::queue<AmbientModeTopic> available_topics_;

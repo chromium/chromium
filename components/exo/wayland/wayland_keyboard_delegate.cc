@@ -42,16 +42,19 @@ bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
 
 void WaylandKeyboardDelegate::OnKeyboardEnter(
     Surface* surface,
-    const base::flat_map<ui::DomCode, KeyState>& pressed_keys) {
+    const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
+        pressed_keys) {
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   wl_array keys;
   wl_array_init(&keys);
   for (const auto& entry : pressed_keys) {
-    uint32_t* value =
-        static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
-    DCHECK(value);
-    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second.code);
+    for (const auto& key_state : entry.second) {
+      uint32_t* value =
+          static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
+      DCHECK(value);
+      *value = ui::KeycodeConverter::DomCodeToEvdevCode(key_state.code);
+    }
   }
   wl_keyboard_send_enter(
       keyboard_resource_,

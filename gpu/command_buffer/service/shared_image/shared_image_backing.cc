@@ -18,6 +18,10 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -73,9 +77,10 @@ SharedImageBacking::SharedImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
       format_(format),
       size_(size),
@@ -83,6 +88,7 @@ SharedImageBacking::SharedImageBacking(
       surface_origin_(surface_origin),
       alpha_type_(alpha_type),
       usage_(usage),
+      debug_label_(std::move(debug_label)),
       estimated_size_(estimated_size),
       buffer_usage_(std::move(buffer_usage)) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
@@ -136,15 +142,20 @@ base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
     uint64_t client_tracing_id) {
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(dump_name);
+  auto byte_size = GetEstimatedSizeForMemoryDump();
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  GetEstimatedSizeForMemoryDump());
+                  byte_size);
 
   dump->AddString("type", "", GetName());
   dump->AddString("dimensions", "", size().ToString());
   dump->AddString("format", "", format().ToString());
   dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
+  dump->AddString("debug label", "", debug_label_);
   dump->AddScalar("purgeable", "bool", IsPurgeable());
+#if BUILDFLAG(IS_CHROMEOS)
+  dump->AddScalar("non_exo_size", "bool", IsImportedFromExo() ? 0 : byte_size);
+#endif
 
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process.
@@ -172,11 +183,27 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   // For testing if no context state, then default to SkiaGanesh representation.
-  if (!context_state || context_state->gr_context()) {
+  if (!context_state) {
     return ProduceSkiaGanesh(manager, tracker, context_state);
   }
-  CHECK(context_state->graphite_context());
-  return ProduceSkiaGraphite(manager, tracker, context_state);
+
+  switch (context_state->gr_context_type()) {
+    case gpu::GrContextType::kNone:
+      // `kNone` signifies that the GPU process is being used only for WebGL via
+      // SwiftShader. Skia is not initialized and should never be used in this
+      // case.
+      NOTREACHED_NORETURN();
+    case gpu::GrContextType::kGL:
+    case gpu::GrContextType::kVulkan:
+      return ProduceSkiaGanesh(manager, tracker, context_state);
+    case gpu::GrContextType::kGraphiteMetal:
+    case gpu::GrContextType::kGraphiteDawn:
+      return ProduceSkiaGraphite(manager, tracker, context_state);
+      // NOTE: Do not add a default case to force any new types to be
+      // handled here on addition.
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -200,7 +227,8 @@ std::unique_ptr<DawnImageRepresentation> SharedImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   return nullptr;
 }
 
@@ -236,11 +264,28 @@ SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> SharedImageBacking::ProduceVulkan(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  return nullptr;
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   return nullptr;
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageBacking::UpdateExternalFence(
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 #endif
 
@@ -382,9 +427,10 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -392,6 +438,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
+                         std::move(debug_label),
                          estimated_size,
                          is_thread_safe,
                          std::move(buffer_usage)) {}
@@ -429,6 +476,10 @@ gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
 }
 
 bool SharedImageBacking::IsPurgeable() const {
+  return false;
+}
+
+bool SharedImageBacking::IsImportedFromExo() {
   return false;
 }
 

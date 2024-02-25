@@ -32,7 +32,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/media_session.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -73,6 +72,16 @@ using ::testing::_;
 
 namespace {
 
+typedef base::ScopedObservation<PictureInPictureWindowManager,
+                                PictureInPictureWindowManager::Observer>
+    PictureInPictureWindowManagerdObservation;
+
+class MockPictureInPictureWindowManagerObserver
+    : public PictureInPictureWindowManager::Observer {
+ public:
+  MOCK_METHOD(void, OnEnterPictureInPicture, (), (override));
+};
+
 class MockVideoPictureInPictureWindowController
     : public content::VideoPictureInPictureWindowController {
  public:
@@ -104,7 +113,10 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(PreviousSlide, void());
   MOCK_METHOD0(NextSlide, void());
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
-  MOCK_METHOD0(GetWindowBounds, absl::optional<gfx::Rect>());
+  MOCK_METHOD0(GetWindowBounds, std::optional<gfx::Rect>());
+  MOCK_METHOD0(GetOrigin, std::optional<url::Origin>());
+  MOCK_METHOD1(SetOnWindowCreatedNotifyObserversCallback,
+               void(base::OnceClosure));
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
@@ -404,7 +416,7 @@ class PictureInPicturePixelComparisonBrowserTest
 
   base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
     base::FilePath base_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_dir));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_dir));
     // The path relative to <chromium src> for pixel test data.
     const base::FilePath::StringPieceType kTestDataPath =
         FILE_PATH_LITERAL("chrome/test/data/media/picture-in-picture/");
@@ -574,6 +586,31 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   // Reload page should not crash.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+}
+
+// Tests that when the window is created for picture-in-picture, the callback is
+// called to inform the observers about it.
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       NotifyCallback) {
+  GURL test_page_url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kPictureInPictureWindowSizePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller());
+
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  MockPictureInPictureWindowManagerObserver observer;
+  PictureInPictureWindowManagerdObservation observation{&observer};
+  observation.Observe(picture_in_picture_window_manager);
+  EXPECT_CALL(observer, OnEnterPictureInPicture).Times(1);
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 }
 
 // Tests that when creating a Picture-in-Picture window a size is sent to the
@@ -1656,7 +1693,7 @@ class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
     VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
         command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaSession,SkipAd,MediaSessionSlides");
+                                    "MediaSession,SkipAd");
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService}, {});
   }

@@ -47,8 +47,9 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, content_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
-                are_contents_opaque, opacity, blend_mode, sorting_context_id);
+                gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                are_contents_opaque, opacity, blend_mode, sorting_context_id,
+                /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return state;
 }
 
@@ -82,14 +83,13 @@ class DrawQuadPerfTest : public testing::Test {
       gfx::PointF uv_top_left(0, 0);
       gfx::PointF uv_bottom_right(1, 1);
       SkColor4f background_color = SkColors::kRed;
-      float vertex_opacity[4] = {1.f, 1.f, 1.f, 1.f};
       bool y_flipped = false;
       bool nearest_neighbor = true;
 
       quad->SetNew(shared_state_, rect, rect, needs_blending, resource_id,
                    premultiplied_alpha, uv_top_left, uv_bottom_right,
-                   background_color, vertex_opacity, y_flipped,
-                   nearest_neighbor, /*secure_output_only=*/false,
+                   background_color, y_flipped, nearest_neighbor,
+                   /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);
       quads->push_back(quad);
     }

@@ -1,8 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>Storage>FileSystem"
 }
 team_email: "storage-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456307
+}

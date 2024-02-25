@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -44,10 +45,10 @@ ChromePoliciesValueProvider::~ChromePoliciesValueProvider() {
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetValues() {
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
-  auto policy_conversions = policy::ChromePolicyConversions(std::move(client));
-  return policy_conversions.ToValueDict();
+  return policy::PolicyConversions(
+             std::make_unique<policy::ChromePolicyConversionsClient>(profile_))
+      .UseChromePolicyConversions()
+      .ToValueDict();
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetNames() {
@@ -89,7 +90,8 @@ base::Value::Dict ChromePoliciesValueProvider::GetNames() {
 void ChromePoliciesValueProvider::Refresh() {
   GetPolicyService(profile_)->RefreshPolicies(
       base::BindOnce(&ChromePoliciesValueProvider::OnRefreshPoliciesDone,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      policy::PolicyFetchReason::kUserRequest);
 }
 
 void ChromePoliciesValueProvider::OnRefreshPoliciesDone() {

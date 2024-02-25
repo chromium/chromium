@@ -11,12 +11,11 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/notifications/notification_test_util.h"
@@ -44,7 +43,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -135,12 +133,12 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
         base::FilePath(kTitle1File));
   }
 
-  absl::optional<size_t> FindResourceIndex(const std::u16string& title) {
+  std::optional<size_t> FindResourceIndex(const std::u16string& title) {
     for (size_t i = 0; i < model_->GetRowCount(); ++i) {
       if (title == model_->GetRowTitle(i))
         return i;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:
@@ -155,7 +153,8 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
 
     // Add content/test/data so we can use cross_site_iframe_factory.html
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir.AppendASCII("content/test/data/"));
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, KillTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
 
   // Killing the tab via task manager should remove the row.
-  absl::optional<size_t> tab = FindResourceIndex(MatchTab("title1.html"));
+  std::optional<size_t> tab = FindResourceIndex(MatchTab("title1.html"));
   ASSERT_TRUE(tab.has_value());
   ASSERT_TRUE(model()->GetTabId(tab.value()).is_valid());
   {
@@ -374,12 +373,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTabChanges) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  absl::optional<size_t> extension_tab =
+  std::optional<size_t> extension_tab =
       FindResourceIndex(MatchExtension("Foobar"));
   ASSERT_TRUE(extension_tab.has_value());
   ASSERT_TRUE(model()->GetTabId(extension_tab.value()).is_valid());
 
-  absl::optional<size_t> background_page =
+  std::optional<size_t> background_page =
       FindResourceIndex(MatchExtension("My extension 1"));
   ASSERT_TRUE(background_page.has_value());
   ASSERT_FALSE(model()->GetTabId(background_page.value()).is_valid());
@@ -406,12 +405,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  absl::optional<size_t> extension_tab =
+  std::optional<size_t> extension_tab =
       FindResourceIndex(MatchExtension("Foobar"));
   ASSERT_TRUE(extension_tab.has_value());
   ASSERT_TRUE(model()->GetTabId(extension_tab.value()).is_valid());
 
-  absl::optional<size_t> background_page =
+  std::optional<size_t> background_page =
       FindResourceIndex(MatchExtension("My extension 1"));
   ASSERT_TRUE(background_page.has_value());
   ASSERT_FALSE(model()->GetTabId(background_page.value()).is_valid());
@@ -444,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
 
   // Check that the third entry (main.html) is of type extension and has both
   // a tab contents and an extension.
-  absl::optional<size_t> app_tab =
+  std::optional<size_t> app_tab =
       FindResourceIndex(MatchApp("Packaged App Test"));
   ASSERT_TRUE(app_tab.has_value());
   ASSERT_TRUE(model()->GetTabId(app_tab.value()).is_valid());
@@ -481,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTab) {
 
   // Check that the third entry (main.html) is of type extension and has both
   // a tab contents and an extension.
-  absl::optional<size_t> app_tab =
+  std::optional<size_t> app_tab =
       FindResourceIndex(MatchApp("Packaged App Test"));
   ASSERT_TRUE(app_tab.has_value());
   ASSERT_TRUE(model()->GetTabId(app_tab.value()).is_valid());
@@ -1061,7 +1060,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> subframe_b =
+    std::optional<size_t> subframe_b =
         FindResourceIndex(MatchSubframe("http://b.com/"));
     ASSERT_TRUE(subframe_b.has_value());
     ASSERT_TRUE(model()->GetTabId(subframe_b.value()).is_valid());
@@ -1332,18 +1331,18 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Cross-site iframe factory")));
 
-  absl::optional<size_t> index =
+  std::optional<size_t> index =
       FindResourceIndex(MatchTab("Cross-site iframe factory"));
   ASSERT_TRUE(index.has_value());
   std::vector<size_t> subframe_offsets;
   if (ShouldExpectSubframes()) {
-    absl::optional<size_t> index_b =
+    std::optional<size_t> index_b =
         FindResourceIndex(MatchSubframe("http://b.com/"));
     ASSERT_TRUE(index_b.has_value());
-    absl::optional<size_t> index_c =
+    std::optional<size_t> index_c =
         FindResourceIndex(MatchSubframe("http://c.com/"));
     ASSERT_TRUE(index_c.has_value());
-    absl::optional<size_t> index_d =
+    std::optional<size_t> index_d =
         FindResourceIndex(MatchSubframe("http://d.com/"));
     ASSERT_TRUE(index_d.has_value());
     subframe_offsets = {index_b.value() - index.value(),
@@ -1400,13 +1399,13 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
     // The other tab 2 subframes (b.com and c.com) should join existing
     // subframe processes from tab 1.  Check that the b.com and c.com subframe
     // processes now have two rows each.
-    absl::optional<size_t> subframe_b_index =
+    std::optional<size_t> subframe_b_index =
         FindResourceIndex(MatchSubframe("http://b.com/"));
     ASSERT_TRUE(subframe_b_index.has_value());
-    absl::optional<size_t> subframe_c_index =
+    std::optional<size_t> subframe_c_index =
         FindResourceIndex(MatchSubframe("http://c.com/"));
     ASSERT_TRUE(subframe_c_index.has_value());
-    absl::optional<size_t> subframe_d_index =
+    std::optional<size_t> subframe_d_index =
         FindResourceIndex(MatchSubframe("http://d.com/"));
     ASSERT_TRUE(subframe_d_index.has_value());
     EXPECT_EQ(
@@ -1633,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   // remove the prerender task entry.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> prerender_row =
+    std::optional<size_t> prerender_row =
         FindResourceIndex(MatchPrerender(prerender_gurl.spec()));
     ASSERT_TRUE(prerender_row.has_value());
     ASSERT_TRUE(model()->GetTabId(prerender_row.value()).is_valid());
@@ -1678,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   {
     base::HistogramTester histogram_tester;
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> trigger_row =
+    std::optional<size_t> trigger_row =
         FindResourceIndex(MatchTab("Title Of Awesomeness"));
     ASSERT_TRUE(trigger_row.has_value());
     ASSERT_TRUE(model()->GetTabId(trigger_row.value()).is_valid());
@@ -1727,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::HistogramTester histogram_tester;
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> prerender_row =
+    std::optional<size_t> prerender_row =
         FindResourceIndex(MatchPrerender(prerender_gurl.spec()));
     ASSERT_TRUE(prerender_row.has_value());
     ASSERT_TRUE(model()->GetTabId(prerender_row.value()).is_valid());
@@ -1758,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(
         WaitForTaskManagerRows(1, MatchPrerender(new_prerender_gurl.spec())));
 
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> trigger_row =
+    std::optional<size_t> trigger_row =
         FindResourceIndex(MatchTab("Title Of Awesomeness"));
     ASSERT_TRUE(trigger_row.has_value());
     ASSERT_TRUE(model()->GetTabId(trigger_row.value()).is_valid());
@@ -1876,11 +1875,22 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
       std::make_unique<content::test::FencedFrameTestHelper>();
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class FencedFrameTaskBrowserTestNoTestingConfig
+    : public FencedFrameTaskBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FencedFrameTaskBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 }  // namespace
 
 // Testing that the task manager properly displays fenced frame tasks with
 // re-opening task manager, and with fenced frame navigations.
-IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
+IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTestNoTestingConfig,
+                       ProperlyShowsTasks) {
   ShowTaskManager();
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
 
@@ -1929,7 +1939,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
   // Terminate the fenced frame. The embedder frame remains intact.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> fenced_frame_row =
+    std::optional<size_t> fenced_frame_row =
         FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
     ASSERT_TRUE(fenced_frame_row.has_value());
     ASSERT_TRUE(model()->GetTabId(fenced_frame_row.value()).is_valid());
@@ -1944,7 +1954,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
   {
     helper()->CreateFencedFrame(main_frame, initial_gurl);
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    absl::optional<size_t> embedder_row =
+    std::optional<size_t> embedder_row =
         FindResourceIndex(MatchTab("Title Of Awesomeness"));
     ASSERT_TRUE(embedder_row.has_value());
     ASSERT_TRUE(model()->GetTabId(embedder_row.value()).is_valid());
@@ -2057,7 +2067,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, TaskActivationChangesFocus) {
   // The WebContents of "about:blank" is active.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  const absl::optional<size_t> fenced_frame_task_row =
+  const std::optional<size_t> fenced_frame_task_row =
       FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
   ASSERT_TRUE(fenced_frame_task_row.has_value());
   model()->Activate(fenced_frame_task_row.value());

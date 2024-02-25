@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
@@ -282,7 +283,7 @@ class ObserverList {
     // TODO(crbug.com/1423093): Turn this into a CHECK once very prevalent
     // failures are weeded out.
     if (HasObserver(obs)) {
-      NOTREACHED() << "Observers can only be added once!";
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Observers can only be added once!";
       return;
     }
     observers_count_++;
@@ -342,10 +343,8 @@ class ObserverList {
     // Compact() is only ever called when the last iterator is destroyed.
     DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
 
-    observers_.erase(
-        std::remove_if(observers_.begin(), observers_.end(),
-                       [](const auto& o) { return o.IsMarkedForRemoval(); }),
-        observers_.end());
+    base::EraseIf(observers_,
+                  [](const auto& o) { return o.IsMarkedForRemoval(); });
   }
 
   std::string GetObserversCreationStackString() const {

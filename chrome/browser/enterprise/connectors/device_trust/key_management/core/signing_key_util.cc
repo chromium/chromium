@@ -10,10 +10,24 @@
 
 namespace enterprise_connectors {
 
-scoped_refptr<SigningKeyPair> LoadPersistedKey() {
+LoadedKey::LoadedKey(
+    scoped_refptr<enterprise_connectors::SigningKeyPair> key_pair,
+    LoadPersistedKeyResult result)
+    : key_pair(std::move(key_pair)), result(result) {}
+
+LoadedKey::~LoadedKey() = default;
+
+LoadedKey::LoadedKey(LoadedKey&&) = default;
+LoadedKey& LoadedKey::operator=(LoadedKey&&) = default;
+
+LoadedKey LoadPersistedKey() {
   auto* factory = KeyPersistenceDelegateFactory::GetInstance();
-  DCHECK(factory);
-  return factory->CreateKeyPersistenceDelegate()->LoadKeyPair();
+  CHECK(factory);
+
+  LoadPersistedKeyResult result;
+  auto key_pair = factory->CreateKeyPersistenceDelegate()->LoadKeyPair(
+      KeyStorageType::kPermanent, &result);
+  return LoadedKey(std::move(key_pair), result);
 }
 
 }  // namespace enterprise_connectors

@@ -39,6 +39,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
                         GrSurfaceOrigin surface_origin,
                         SkAlphaType alpha_type,
                         uint32_t usage,
+                        std::string debug_label,
                         scoped_refptr<SharedContextState> context_state,
                         const bool thread_safe);
 

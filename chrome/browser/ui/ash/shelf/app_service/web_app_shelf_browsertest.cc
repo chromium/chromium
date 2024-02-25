@@ -34,19 +34,19 @@
 
 class WebAppShelfBrowserTest : public InProcessBrowserTest {
  public:
-  web_app::AppId InstallTestWebApp(
+  webapps::AppId InstallTestWebApp(
       const GURL& start_url,
       web_app::mojom::UserDisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = user_display_mode;
-    const web_app::AppId app_id =
+    const webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 
-  void PinToShelf(const web_app::AppId& app_id) {
+  void PinToShelf(const webapps::AppId& app_id) {
     ui_test_utils::BrowserChangeObserver observer(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -72,11 +72,11 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   // Outside the scope of any web app:
   const GURL start_d = embedded_test_server()->GetURL("/simple.html");
 
-  const web_app::AppId app_a =
+  const webapps::AppId app_a =
       InstallTestWebApp(start_a, web_app::mojom::UserDisplayMode::kBrowser);
-  const web_app::AppId app_b =
+  const webapps::AppId app_b =
       InstallTestWebApp(start_b, web_app::mojom::UserDisplayMode::kBrowser);
-  const web_app::AppId app_c =
+  const webapps::AppId app_c =
       InstallTestWebApp(start_c, web_app::mojom::UserDisplayMode::kStandalone);
 
   auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());

@@ -13,6 +13,7 @@
 
 #include "base/allocator/early_zone_registration_apple.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
@@ -22,7 +23,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
+#include "base/mac/scoped_sending_event.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,11 +36,14 @@
 #include "base/threading/thread.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/app_shim/app_shim_controller.h"
+#include "chrome/app_shim/app_shim_delegate.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/mac/app_mode_common.h"
+#include "chrome/common/mac/app_shim.mojom.h"
 #include "components/crash/core/app/crashpad.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
@@ -45,23 +53,92 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-// The NSApplication for app shims is a vanilla NSApplication, but sub-class it
-// so that we can DCHECK that we know precisely when it is initialized.
-@interface AppShimApplication : NSApplication
+// The NSApplication for app shims is a vanilla NSApplication, but
+// implements the CrAppProtocol and CrAppControlPrototocol protocols to skip
+// creating an autorelease pool in nested event loops, for example when
+// displaying a context menu.
+@interface AppShimApplication
+    : NSApplication <CrAppProtocol, CrAppControlProtocol>
 @end
 
-@implementation AppShimApplication
+@implementation AppShimApplication {
+  BOOL _handlingSendEvent;
+}
+
+- (BOOL)isHandlingSendEvent {
+  return _handlingSendEvent;
+}
+
+- (void)setHandlingSendEvent:(BOOL)handlingSendEvent {
+  _handlingSendEvent = handlingSendEvent;
+}
+
+- (void)enableScreenReaderCompleteModeAfterDelay:(BOOL)enable {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (enableScreenReaderCompleteMode)
+                                             object:nil];
+  if (enable) {
+    const float kTwoSecondDelay = 2.0;
+    [self performSelector:@selector(enableScreenReaderCompleteMode)
+               withObject:nil
+               afterDelay:kTwoSecondDelay];
+  }
+}
+
+- (void)enableScreenReaderCompleteMode {
+  AppShimDelegate* delegate =
+      base::apple::ObjCCastStrict<AppShimDelegate>(NSApp.delegate);
+  [delegate enableAccessibilitySupport:
+                chrome::mojom::AppShimScreenReaderSupportMode::kComplete];
+}
+
+- (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
+  // This is an undocumented attribute that's set when VoiceOver is turned
+  // on/off or Text To Speech is triggered. In addition, some apps use it to
+  // request accessibility activation.
+  if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
+    // `sonomaAccessibilityRefinementsAreActive` has the same purpose with
+    // BrowserCrApplication. See chrome_browser_application_mac.mm to learn
+    // more.
+    BOOL sonomaAccessibilityRefinementsAreActive =
+        base::mac::MacOSVersion() >= 14'00'00 &&
+        base::FeatureList::IsEnabled(
+            features::kSonomaAccessibilityActivationRefinements);
+    // When there are ATs that want to access this PWA app's accessibility, we
+    // need to notify browser proces to enable accessibility. When ATs no
+    // longer need access to this PWA app's accessibility, we don't want it to
+    // affect the browser in case other PWA apps or the browser itself still
+    // need to use accessbility.
+    if (sonomaAccessibilityRefinementsAreActive) {
+      [self enableScreenReaderCompleteModeAfterDelay:[value boolValue]];
+    } else {
+      if ([value boolValue]) {
+        [self enableScreenReaderCompleteMode];
+      }
+    }
+  }
+  return [super accessibilitySetValue:value forAttribute:attribute];
+}
+
+- (NSAccessibilityRole)accessibilityRole {
+  AppShimDelegate* delegate =
+      base::apple::ObjCCastStrict<AppShimDelegate>(NSApp.delegate);
+  [delegate enableAccessibilitySupport:
+                chrome::mojom::AppShimScreenReaderSupportMode::kPartial];
+  return [super accessibilityRole];
+}
+
 @end
 
 extern "C" {
-
-// |ChromeAppModeStart()| is the point of entry into the framework from the app
-// mode loader. There are cases where the Chromium framework may have changed in
-// a way that is incompatible with an older shim (e.g. change to libc++ library
-// linking). The function name is versioned to provide a way to force shim
-// upgrades if they are launched before an updated version of Chromium can
-// upgrade them; the old shim will not be able to dyload the new
-// ChromeAppModeStart, so it will fall back to the upgrade path. See
+// |ChromeAppModeStart()| is the point of entry into the framework from the
+// app mode loader. There are cases where the Chromium framework may have
+// changed in a way that is incompatible with an older shim (e.g. change to
+// libc++ library linking). The function name is versioned to provide a way
+// to force shim upgrades if they are launched before an updated version of
+// Chromium can upgrade them; the old shim will not be able to dyload the
+// new ChromeAppModeStart, so it will fall back to the upgrade path. See
 // https://crbug.com/561205.
 __attribute__((visibility("default"))) int APP_SHIM_ENTRY_POINT_NAME(
     const app_mode::ChromeAppModeInfo* info);
@@ -69,10 +146,10 @@ __attribute__((visibility("default"))) int APP_SHIM_ENTRY_POINT_NAME(
 }  // extern "C"
 
 int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
-  // The static constructor in //base will have registered PartitionAlloc as the
-  // default zone. Allow the //base instance in the main library to register it
-  // as well. Otherwise we end up passing memory to free() which was allocated
-  // by an unknown zone. See crbug.com/1274236 for details.
+  // The static constructor in //base will have registered PartitionAlloc as
+  // the default zone. Allow the //base instance in the main library to
+  // register it as well. Otherwise we end up passing memory to free() which
+  // was allocated by an unknown zone. See crbug.com/1274236 for details.
   partition_alloc::AllowDoublePartitionAllocZoneRegistration();
 
   base::CommandLine::Init(info->argc, info->argv);
@@ -96,12 +173,21 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     ChromeCrashReporterClient::Create();
     crash_reporter::InitializeCrashpad(true, "app_shim");
 
+    base::PathService::OverrideAndCreateIfNeeded(
+        chrome::DIR_USER_DATA, user_data_dir, /*is_absolute=*/false,
+        /*create=*/false);
+
+    // Initialize features and field trials, either from command line or from
+    // file in user data dir.
+    AppShimController::PreInitFeatureState(
+        *base::CommandLine::ForCurrentProcess());
+
     // Calculate the preferred locale used by Chrome. We can't use
     // l10n_util::OverrideLocaleWithCocoaLocale() because it calls
     // [base::apple::OuterBundle() preferredLocalizations] which gets
     // localizations from the bundle of the running app (i.e. it is equivalent
-    // to [[NSBundle mainBundle] preferredLocalizations]) instead of the target
-    // bundle.
+    // to [[NSBundle mainBundle] preferredLocalizations]) instead of the
+    // target bundle.
     NSArray<NSString*>* preferred_languages = NSLocale.preferredLanguages;
     NSArray<NSString*>* supported_languages =
         base::apple::OuterBundle().localizations;
@@ -139,31 +225,13 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::Thread* io_thread = new base::Thread("CrAppShimIO");
     io_thread->StartWithOptions(std::move(io_thread_options));
 
-    // It's necessary to initialize a FeatureList and call Mojo's InitFeatures()
-    // to ensure we're using the same IPC implementation as the browser.
-    auto feature_list = std::make_unique<base::FeatureList>();
-    if (info->mojo_ipcz_config ==
-        app_mode::MojoIpczConfig::kUseCommandLineFeatures) {
-      const auto& command_line = *base::CommandLine::ForCurrentProcess();
-      feature_list->InitializeFromCommandLine(
-          command_line.GetSwitchValueASCII(switches::kEnableFeatures),
-          command_line.GetSwitchValueASCII(switches::kDisableFeatures));
-
-    } else {
-      const bool mojo_ipcz_enabled =
-          info->mojo_ipcz_config == app_mode::MojoIpczConfig::kEnabled;
-      feature_list->RegisterExtraFeatureOverrides(
-          {{mojo::core::kMojoIpcz,
-            mojo_ipcz_enabled ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
-                              : base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
-    }
-    base::FeatureList::SetInstance(std::move(feature_list));
+    // It's necessary to call Mojo's InitFeatures() to ensure we're using the
+    // same IPC implementation as the browser.
     mojo::core::InitFeatures();
 
-    // Create and start a ThreadPool using default parameters, matching for
-    // example utility processes.
+    // Create a ThreadPool, but don't start it yet until we have fully
+    // initialized base::Feature and field trial support.
     base::ThreadPoolInstance::Create("AppShim");
-    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
 
     // We're using an isolated Mojo connection between the browser and this
     // process, so this process must act as a broker.
@@ -196,6 +264,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     controller_params.app_id = info->app_mode_id;
     controller_params.app_name = base::UTF8ToUTF16(info->app_mode_name);
     controller_params.app_url = GURL(info->app_mode_url);
+    controller_params.io_thread_runner = io_thread->task_runner();
 
     AppShimController controller(controller_params);
     base::RunLoop().Run();

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class UnguessableToken;
@@ -49,13 +49,12 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     explicit TestApi(AppActivityRegistry* registry);
     ~TestApi();
 
-    const absl::optional<AppLimit>& GetAppLimit(const AppId& app_id) const;
-    absl::optional<base::TimeDelta> GetTimeLeft(const AppId& app_id) const;
+    const std::optional<AppLimit>& GetAppLimit(const AppId& app_id) const;
+    std::optional<base::TimeDelta> GetTimeLeft(const AppId& app_id) const;
     void SaveAppActivity();
 
    private:
-    const raw_ptr<AppActivityRegistry, DanglingUntriaged | ExperimentalAsh>
-        registry_;
+    const raw_ptr<AppActivityRegistry, DanglingUntriaged> registry_;
   };
 
   // Interface for the observers interested in the changes of apps state.
@@ -125,16 +124,16 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
   // Web time limit is the time limit set for Chrome browser. It is shared
   // between Chrome and Web apps.
-  const absl::optional<AppLimit>& GetWebTimeLimit() const;
+  const std::optional<AppLimit>& GetWebTimeLimit() const;
 
   AppState GetAppState(const AppId& app_id) const;
 
   // Returns current time limit for the app identified by |app_id|.
   // Will return nullopt if there is no limit set.
-  absl::optional<base::TimeDelta> GetTimeLimit(const AppId& app_id) const;
+  std::optional<base::TimeDelta> GetTimeLimit(const AppId& app_id) const;
 
   // Reporting enablement is set if |enabled| has value.
-  void SetReportingEnabled(absl::optional<bool> enabled);
+  void SetReportingEnabled(std::optional<bool> enabled);
 
   void GenerateHiddenApps(
       enterprise_management::ChildStatusReportRequest* report);
@@ -158,7 +157,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // that app does not have limit set. Does not affect limits of any other app.
   // Returns true if a new app limit is observed.
   bool SetAppLimit(const AppId& app_id,
-                   const absl::optional<AppLimit>& app_limit);
+                   const std::optional<AppLimit>& app_limit);
 
   // Sets the app identified with |app_id| as being always available.
   void SetAppAllowlisted(const AppId& app_id);
@@ -182,11 +181,11 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
  private:
   struct SystemNotification {
-    SystemNotification(absl::optional<base::TimeDelta> app_time_limit,
+    SystemNotification(std::optional<base::TimeDelta> app_time_limit,
                        AppNotification app_notification);
     SystemNotification(const SystemNotification&);
     SystemNotification& operator=(const SystemNotification&);
-    absl::optional<base::TimeDelta> time_limit = absl::nullopt;
+    std::optional<base::TimeDelta> time_limit = std::nullopt;
     AppNotification notification = AppNotification::kUnknown;
   };
 
@@ -206,7 +205,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
     // Checks if |limit| is equal to |another_limit| with exception for the
     // timestamp (that does not indicate that limit changed).
-    bool IsLimitEqual(const absl::optional<AppLimit>& another_limit) const;
+    bool IsLimitEqual(const std::optional<AppLimit>& another_limit) const;
 
     // Contains information about current app state and logged activity.
     AppActivity activity{AppState::kAvailable};
@@ -219,7 +218,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     std::set<base::UnguessableToken> paused_instances;
 
     // Contains information about restriction set for the app.
-    absl::optional<AppLimit> limit;
+    std::optional<AppLimit> limit;
 
     // Timer set up for when the app time limit is expected to be reached and
     // preceding notifications.
@@ -260,7 +259,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   void SetAppActive(const AppId& app_id, base::Time timestamp);
   void SetAppInactive(const AppId& app_id, base::Time timestamp);
 
-  absl::optional<base::TimeDelta> GetTimeLeftForApp(const AppId& app_id) const;
+  std::optional<base::TimeDelta> GetTimeLeftForApp(const AppId& app_id) const;
 
   // Schedules a time limit check for application when it becomes active.
   void ScheduleTimeLimitCheckForApp(const AppId& app_id);
@@ -273,8 +272,8 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // notification has been made.
   bool ShowLimitUpdatedNotificationIfNeeded(
       const AppId& app_id,
-      const absl::optional<AppLimit>& old_limit,
-      const absl::optional<AppLimit>& new_limit);
+      const std::optional<AppLimit>& old_limit,
+      const std::optional<AppLimit>& new_limit);
 
   base::TimeDelta GetWebActiveRunningTime() const;
 
@@ -306,14 +305,13 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // has been updated.
   void AppLimitUpdated(const AppId& app_id);
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Owned by AppTimeController.
-  const raw_ptr<AppServiceWrapper, ExperimentalAsh> app_service_wrapper_;
+  const raw_ptr<AppServiceWrapper> app_service_wrapper_;
 
   // Notification delegate.
-  const raw_ptr<AppTimeNotificationDelegate, ExperimentalAsh>
-      notification_delegate_;
+  const raw_ptr<AppTimeNotificationDelegate> notification_delegate_;
 
   // Observers to be notified about app state changes.
   base::ObserverList<AppStateObserver> app_state_observers_;

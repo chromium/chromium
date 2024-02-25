@@ -41,27 +41,33 @@ import java.lang.annotation.RetentionPolicy;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// clang-format off
 @ParameterizedCommandLineFlags({
-  @Switches(),
-  @Switches("enable-features=" + ChromeFeatureList.CAPTIVE_PORTAL_CERTIFICATE_LIST),
+    @Switches(),
+    @Switches("enable-features=" + ChromeFeatureList.CAPTIVE_PORTAL_CERTIFICATE_LIST),
 })
-// clang-format on
 public class CaptivePortalTest {
     private static final String CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX = "Connect to";
     private static final String SSL_INTERSTITIAL_TITLE = "Privacy error";
     private static final int INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS = 5;
 
     // UMA events copied from ssl_error_handler.h.
-    @IntDef({UMAEvent.HANDLE_ALL, UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_NONOVERRIDABLE,
-            UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE,
-            UMAEvent.SHOW_SSL_INTERSTITIAL_NONOVERRIDABLE,
-            UMAEvent.SHOW_SSL_INTERSTITIAL_OVERRIDABLE, UMAEvent.WWW_MISMATCH_FOUND,
-            UMAEvent.WWW_MISMATCH_URL_AVAILABLE, UMAEvent.WWW_MISMATCH_URL_NOT_AVAILABLE,
-            UMAEvent.SHOW_BAD_CLOCK, UMAEvent.CAPTIVE_PORTAL_CERT_FOUND,
-            UMAEvent.WWW_MISMATCH_FOUND_IN_SAN, UMAEvent.SHOW_MITM_SOFTWARE_INTERSTITIAL,
-            UMAEvent.OS_REPORTS_CAPTIVE_PORTAL, UMAEvent.SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL,
-            UMAEvent.SHOW_LEGACY_TLS_INTERSTITIAL})
+    @IntDef({
+        UMAEvent.HANDLE_ALL,
+        UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_NONOVERRIDABLE,
+        UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE,
+        UMAEvent.SHOW_SSL_INTERSTITIAL_NONOVERRIDABLE,
+        UMAEvent.SHOW_SSL_INTERSTITIAL_OVERRIDABLE,
+        UMAEvent.WWW_MISMATCH_FOUND,
+        UMAEvent.WWW_MISMATCH_URL_AVAILABLE,
+        UMAEvent.WWW_MISMATCH_URL_NOT_AVAILABLE,
+        UMAEvent.SHOW_BAD_CLOCK,
+        UMAEvent.CAPTIVE_PORTAL_CERT_FOUND,
+        UMAEvent.WWW_MISMATCH_FOUND_IN_SAN,
+        UMAEvent.SHOW_MITM_SOFTWARE_INTERSTITIAL,
+        UMAEvent.OS_REPORTS_CAPTIVE_PORTAL,
+        UMAEvent.SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL,
+        UMAEvent.SHOW_LEGACY_TLS_INTERSTITIAL
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UMAEvent {
         int HANDLE_ALL = 0;
@@ -89,16 +95,18 @@ public class CaptivePortalTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        mServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                ApplicationProvider.getApplicationContext(),
-                ServerCertificate.CERT_MISMATCHED_NAME);
+        mServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        ApplicationProvider.getApplicationContext(),
+                        ServerCertificate.CERT_MISMATCHED_NAME);
 
         CaptivePortalHelper.setOSReportsCaptivePortalForTesting(false);
         CaptivePortalHelper.setCaptivePortalCertificateForTesting("sha256/test");
     }
 
-    /** Navigate the tab to an interstitial with a name mismatch error and check if this
-    /*  results in a captive portal interstitial.
+    /**
+     * Navigate the tab to an interstitial with a name mismatch error and check if this /* results
+     * in a captive portal interstitial.
      */
     private void navigateAndCheckCaptivePortalInterstitial() throws Exception {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -110,34 +118,41 @@ public class CaptivePortalTest {
             protected boolean doesTitleMatch(String expectedTitle, String actualTitle) {
                 return actualTitle.indexOf(expectedTitle) == 0;
             }
-        }
-                .waitForTitleUpdate(INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS);
-        Assert.assertEquals(0,
-                ChromeTabUtils.getTitleOnUiThread(tab).indexOf(
-                        CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX));
+        }.waitForTitleUpdate(INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS);
+        Assert.assertEquals(
+                0,
+                ChromeTabUtils.getTitleOnUiThread(tab)
+                        .indexOf(CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX));
     }
 
     @Test
     public void testCaptivePortalCertificateListFeature() throws Exception {
         // Add the SPKI of the root cert to captive portal certificate list.
-        byte[] rootCertSPKI = CertTestUtil.getPublicKeySha256(X509Util.createCertificateFromBytes(
-                CertTestUtil.pemToDer(mServer.getRootCertPemPath())));
+        byte[] rootCertSPKI =
+                CertTestUtil.getPublicKeySha256(
+                        X509Util.createCertificateFromBytes(
+                                CertTestUtil.pemToDer(mServer.getRootCertPemPath())));
         Assert.assertTrue(rootCertSPKI != null);
         CaptivePortalHelper.setCaptivePortalCertificateForTesting(
                 "sha256/" + Base64.encodeToString(rootCertSPKI, Base64.NO_WRAP));
 
         navigateAndCheckCaptivePortalInterstitial();
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.HANDLE_ALL));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting("interstitial.ssl_error_handler",
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "interstitial.ssl_error_handler",
                         UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.CAPTIVE_PORTAL_CERT_FOUND));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.OS_REPORTS_CAPTIVE_PORTAL));
     }
@@ -147,22 +162,28 @@ public class CaptivePortalTest {
         CaptivePortalHelper.setOSReportsCaptivePortalForTesting(true);
         navigateAndCheckCaptivePortalInterstitial();
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.HANDLE_ALL));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting("interstitial.ssl_error_handler",
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "interstitial.ssl_error_handler",
                         UMAEvent.SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.CAPTIVE_PORTAL_CERT_FOUND));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.OS_REPORTS_CAPTIVE_PORTAL));
     }
 
-    /** When CaptivePortalInterstitial feature is disabled, the result of OS captive portal
-     *  APIs should be ignored, and a generic SSL interstitial should be displayed.
+    /**
+     * When CaptivePortalInterstitial feature is disabled, the result of OS captive portal APIs
+     * should be ignored, and a generic SSL interstitial should be displayed.
      */
     @Test
     @CommandLineFlags.Add({"disable-features=CaptivePortalInterstitial"})
@@ -176,16 +197,21 @@ public class CaptivePortalTest {
         new TabTitleObserver(tab, SSL_INTERSTITIAL_TITLE)
                 .waitForTitleUpdate(INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS);
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.HANDLE_ALL));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting("interstitial.ssl_error_handler",
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "interstitial.ssl_error_handler",
                         UMAEvent.SHOW_SSL_INTERSTITIAL_OVERRIDABLE));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.CAPTIVE_PORTAL_CERT_FOUND));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "interstitial.ssl_error_handler", UMAEvent.OS_REPORTS_CAPTIVE_PORTAL));
     }

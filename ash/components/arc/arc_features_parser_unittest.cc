@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/arc_features_parser.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -30,7 +32,9 @@ constexpr const char kValidJson[] = R"json({"features": [
     "unavailable_features": [],
     "properties": {
       "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
-      "ro.build.version.sdk": "25"
+      "ro.build.version.sdk": "30",
+      "ro.build.version.release": "11",
+      "ro.build.fingerprint": "google/hatch/hatch_cheets:foo"
     },
     "play_store_version": "81010860"})json";
 
@@ -46,7 +50,12 @@ constexpr const char kValidJsonWithUnavailableFeature[] =
       }
     ],
     "unavailable_features": ["android.software.location"],
-    "properties": {},
+    "properties": {
+      "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+      "ro.build.version.sdk": "30",
+      "ro.build.version.release": "11",
+      "ro.build.fingerprint": "google/hatch/hatch_cheets:foo"
+    },
     "play_store_version": "81010860"})json";
 
 constexpr const char kValidJsonFeatureEmptyName[] =
@@ -65,7 +74,12 @@ constexpr const char kValidJsonFeatureEmptyName[] =
       }
     ],
     "unavailable_features": ["android.software.home_screen", ""],
-    "properties": {},
+    "properties": {
+      "ro.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+      "ro.build.version.sdk": "30",
+      "ro.build.version.release": "11",
+      "ro.build.fingerprint": "google/hatch/hatch_cheets:foo"
+    },
     "play_store_version": "81010860"})json";
 
 constexpr const char kInvalidJsonWithMissingFields[] =
@@ -81,20 +95,20 @@ constexpr const char kInvalidJsonWithMissingFields[] =
     "invalid_root_third": {}})json";
 
 TEST_F(ArcFeaturesParserTest, ParseEmptyJson) {
-  absl::optional<ArcFeatures> arc_features =
-      ArcFeaturesParser::ParseFeaturesJsonForTesting(base::StringPiece());
-  EXPECT_EQ(arc_features, absl::nullopt);
+  std::optional<ArcFeatures> arc_features =
+      ArcFeaturesParser::ParseFeaturesJsonForTesting(std::string_view());
+  EXPECT_EQ(arc_features, std::nullopt);
 }
 
 TEST_F(ArcFeaturesParserTest, ParseInvalidJson) {
-  absl::optional<ArcFeatures> arc_features =
+  std::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kInvalidJsonWithMissingFields);
-  EXPECT_EQ(arc_features, absl::nullopt);
+  EXPECT_EQ(arc_features, std::nullopt);
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJson) {
-  absl::optional<ArcFeatures> arc_features =
+  std::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(kValidJson);
   auto feature_map = arc_features->feature_map;
   auto unavailable_features = arc_features->unavailable_features;
@@ -102,12 +116,16 @@ TEST_F(ArcFeaturesParserTest, ParseValidJson) {
   auto play_store_version = arc_features->play_store_version;
   EXPECT_EQ(feature_map.size(), 2u);
   EXPECT_EQ(unavailable_features.size(), 0u);
-  EXPECT_EQ(build_props.size(), 2u);
   EXPECT_EQ(play_store_version, "81010860");
+
+  EXPECT_EQ(build_props.release_version, "11");
+  EXPECT_EQ(build_props.sdk_version, "30");
+  EXPECT_EQ(build_props.abi_list, "x86_64,x86,armeabi-v7a,armeabi");
+  EXPECT_EQ(build_props.fingerprint, "google/hatch/hatch_cheets:foo");
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJsonWithUnavailableFeature) {
-  absl::optional<ArcFeatures> arc_features =
+  std::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kValidJsonWithUnavailableFeature);
   auto feature_map = arc_features->feature_map;
@@ -116,15 +134,32 @@ TEST_F(ArcFeaturesParserTest, ParseValidJsonWithUnavailableFeature) {
   auto play_store_version = arc_features->play_store_version;
   EXPECT_EQ(feature_map.size(), 2u);
   EXPECT_EQ(unavailable_features.size(), 1u);
-  EXPECT_EQ(build_props.size(), 0u);
   EXPECT_EQ(play_store_version, "81010860");
 }
 
 TEST_F(ArcFeaturesParserTest, ParseValidJsonWithEmptyFeatureName) {
-  absl::optional<ArcFeatures> arc_features =
+  std::optional<ArcFeatures> arc_features =
       ArcFeaturesParser::ParseFeaturesJsonForTesting(
           kValidJsonFeatureEmptyName);
-  EXPECT_EQ(arc_features, absl::nullopt);
+  EXPECT_EQ(arc_features, std::nullopt);
+}
+
+TEST_F(ArcFeaturesParserTest, ParseValidJsonWithSystemAbiListProperty) {
+  constexpr const char kValidJsonWithSystemAbiList[] = R"json({"features": [],
+    "unavailable_features": [],
+    "properties": {
+      "ro.system.product.cpu.abilist": "x86_64,x86,armeabi-v7a,armeabi",
+      "ro.build.version.sdk": "30",
+      "ro.build.version.release": "11",
+      "ro.build.fingerprint": "google/hatch/hatch_cheets:foo"
+    },
+    "play_store_version": "81010860"})json";
+
+  std::optional<ArcFeatures> arc_features =
+      ArcFeaturesParser::ParseFeaturesJsonForTesting(
+          kValidJsonWithSystemAbiList);
+  EXPECT_EQ(arc_features->build_props.abi_list,
+            "x86_64,x86,armeabi-v7a,armeabi");
 }
 
 }  // namespace

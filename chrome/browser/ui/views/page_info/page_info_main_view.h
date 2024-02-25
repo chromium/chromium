@@ -16,6 +16,7 @@
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -41,6 +42,8 @@ class PageInfoMainView : public views::View,
                          public PageInfoUI,
                          public PermissionToggleRowViewObserver,
                          public ChosenObjectViewObserver {
+  METADATA_HEADER(PageInfoMainView, views::View)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
@@ -48,6 +51,8 @@ class PageInfoMainView : public views::View,
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
   class ContainerView : public views::View {
+    METADATA_HEADER(ContainerView, views::View)
+
    public:
     ContainerView();
 
@@ -68,7 +73,9 @@ class PageInfoMainView : public views::View,
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
+  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
 
+  gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // PermissionToggleRowViewObserver:
@@ -81,6 +88,11 @@ class PageInfoMainView : public views::View,
     return toggle_rows_.size();
   }
 
+  const std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>&
+  GetToggleRowsForTesting() const {
+    return toggle_rows_;
+  }
+
  protected:
   // TODO(olesiamarukhno): Was used for tests, will update it after redesigning
   // moves forward.
@@ -89,10 +101,6 @@ class PageInfoMainView : public views::View,
  private:
   friend class PageInfoBubbleViewDialogBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
-
-  // Ensures the cookie information UI is present, with placeholder information
-  // if necessary.
-  void EnsureCookieInfo();
 
   // Creates a view with vertical box layout that will used a container for
   // other views.
@@ -171,9 +179,11 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<PermissionToggleRowView*> toggle_rows_;
+  std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>
+      toggle_rows_;
 
-  std::vector<ChosenObjectView*> chosen_object_rows_;
+  std::vector<raw_ptr<ChosenObjectView, VectorExperimental>>
+      chosen_object_rows_;
 
   raw_ptr<views::Label> title_ = nullptr;
 

@@ -24,8 +24,9 @@ class RichControlsContainerView;
 // object (e.g. a Bluetooth device, a USB device) that the current site has
 // access to.
 class ChosenObjectView : public views::View {
+  METADATA_HEADER(ChosenObjectView, views::View)
+
  public:
-  METADATA_HEADER(ChosenObjectView);
   explicit ChosenObjectView(std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
                             std::u16string display_name);
   ChosenObjectView(const ChosenObjectView&) = delete;

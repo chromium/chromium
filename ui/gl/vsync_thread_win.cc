@@ -10,20 +10,15 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/vsync_observer.h"
+#include "base/win/windows_version.h"
+#include "ui/gl/direct_composition_support.h"
+#include "ui/gl/gl_features.h"
 
 namespace gl {
 namespace {
 Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
     HMONITOR monitor,
-    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (FAILED(d3d11_device.As(&dxgi_device))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI device";
-    return nullptr;
-  }
-
+    IDXGIDevice* dxgi_device) {
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
     DLOG(ERROR) << "Failed to retrieve DXGI adapter";
@@ -52,18 +47,26 @@ Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
 
 // static
 VSyncThreadWin* VSyncThreadWin::GetInstance() {
-  return base::Singleton<VSyncThreadWin>::get();
+  static VSyncThreadWin* vsync_thread = []() -> VSyncThreadWin* {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device(
+        GetDirectCompositionD3D11Device());
+    if (!d3d11_device) {
+      return nullptr;
+    }
+    Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+    CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
+    return new VSyncThreadWin(std::move(dxgi_device));
+  }();
+  return vsync_thread;
 }
 
-VSyncThreadWin::VSyncThreadWin()
+VSyncThreadWin::VSyncThreadWin(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device)
     : vsync_thread_("GpuVSyncThread"),
       vsync_provider_(gfx::kNullAcceleratedWidget),
-      d3d11_device_(QueryD3D11DeviceObjectFromANGLE()) {
-  DCHECK(d3d11_device_);
-
+      dxgi_device_(std::move(dxgi_device)) {
+  CHECK(dxgi_device_);
   is_suspended_ =
       base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
-
   vsync_thread_.StartWithOptions(
       base::Thread::Options(base::ThreadType::kDisplayCritical));
 }
@@ -115,11 +118,32 @@ void VSyncThreadWin::OnResume() {
 }
 
 void VSyncThreadWin::WaitForVSync() {
-  base::TimeTicks vsync_phase;
+  base::TimeTicks vsync_timebase;
   base::TimeDelta vsync_interval;
+
+  // This is a simplified initial approach to fix crbug.com/1456399
+  // In Windows SV3 builds DWM will operate with per monitor refresh
+  // rates. As a result of this, DwmGetCompositionTimingInfo is no longer
+  // guaranteed to align with the primary monitor but will instead align
+  // with the current highest refresh rate monitor. This can cause issues
+  // in clients which may be waiting on the primary monitor's vblank as
+  // the reported interval may no longer match with the vblank wait.
+  // To work around this discrepancy get the VSync interval directly from
+  // monitor associated with window_ or the primary monitor.
+  //
+  // TODO(wicarr@microsoft.com): Replace build number comparison with
+  // base::win::GetVersion() variant when a post-WIN11_22H2 build has
+  // been added to base::win::Version.
+  static bool use_sv3_workaround =
+      base::win::OSInfo::GetInstance()->version_number().build > 22621 &&
+      base::FeatureList::IsEnabled(
+          features::kUsePrimaryMonitorVSyncIntervalOnSV3);
+
   const bool get_vsync_params_succeeded =
-      vsync_provider_.GetVSyncParametersIfAvailable(&vsync_phase,
-                                                    &vsync_interval);
+      use_sv3_workaround
+          ? vsync_provider_.GetVSyncIntervalIfAvailable(&vsync_interval)
+          : vsync_provider_.GetVSyncParametersIfAvailable(&vsync_timebase,
+                                                          &vsync_interval);
   DCHECK(get_vsync_params_succeeded);
 
   // From Raymond Chen's blog "How do I get a handle to the primary monitor?"
@@ -127,7 +151,7 @@ void VSyncThreadWin::WaitForVSync() {
   const HMONITOR monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
   if (primary_monitor_ != monitor) {
     primary_monitor_ = monitor;
-    primary_output_ = DXGIOutputFromMonitor(monitor, d3d11_device_);
+    primary_output_ = DXGIOutputFromMonitor(monitor, dxgi_device_.Get());
   }
 
   const base::TimeTicks wait_for_vblank_start_time = base::TimeTicks::Now();

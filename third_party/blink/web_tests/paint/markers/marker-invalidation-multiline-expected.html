@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    font-size: 15px;
+  }
+</style>
+
+<div id="markAllSpelling">aaaaaa aaaaaa aaaaaa</div>
+<div id="markNoSpelling">bbbbbb bbbbbb bbbbbb</div>
+
+<script>
+function addSpellingMarker(elem, start, end) {
+    const range = document.createRange();
+    const textNode = elem.firstChild;
+    range.setStart(textNode, start);
+    range.setEnd(textNode, end);
+    if (typeof internals !== 'undefined')
+        internals.setMarker(document, range, 'spelling');
+};
+
+onload = function() {
+    addSpellingMarker(markAllSpelling, 0, 6);
+    addSpellingMarker(markAllSpelling, 14, 20);
+  };
+</script>

@@ -24,6 +24,9 @@ std::string StreamKey(const StreamType& stream_type) {
     return kForYouStreamKey;
   if (stream_type.IsWebFeed())
     return kFollowStreamKey;
+  if (stream_type.IsForSupervisedUser()) {
+    return kSupervisedUserStreamKey;
+  }
   DCHECK(stream_type.IsSingleWebFeed());
   std::string encoding;
   base::Base64UrlEncode(stream_type.GetWebFeedId(),
@@ -41,12 +44,19 @@ std::string StreamKey(const StreamType& stream_type) {
 }
 
 base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
-  if (stream_kind == feed::StreamKind::kForYou)
-    return kForYouStreamKey;
-  if (stream_kind == feed::StreamKind::kFollowing)
-    return kFollowStreamKey;
-  DCHECK(stream_kind == feed::StreamKind::kSingleWebFeed);
-  return kSingleWebFeedStreamKeyPrefix;
+  switch (stream_kind) {
+    case feed::StreamKind::kForYou:
+      return kForYouStreamKey;
+    case feed::StreamKind::kFollowing:
+      return kFollowStreamKey;
+    case feed::StreamKind::kSupervisedUser:
+      return kSupervisedUserStreamKey;
+    case feed::StreamKind::kSingleWebFeed:
+      return kSingleWebFeedStreamKeyPrefix;
+    case feed::StreamKind::kUnknown:
+      NOTREACHED();
+      return kSingleWebFeedStreamKeyPrefix;
+  }
 }
 
 StreamType DecodeSingleWebFeedKeySuffix(
@@ -71,6 +81,9 @@ StreamType StreamTypeFromKey(base::StringPiece id) {
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
+  if (id == kSupervisedUserStreamKey) {
+    return StreamType(feed::StreamKind::kSupervisedUser);
+  }
   if (base::StartsWith(id, kSingleWebFeedStreamKeyPrefix,
                        base::CompareCase::SENSITIVE)) {
     if ((id.size() < (kSingleWebFeedStreamKeyPrefix.size() +
@@ -141,7 +154,7 @@ void SetContentLifetime(
 }
 
 void MaybeUpdateSessionId(Metadata& metadata,
-                          absl::optional<std::string> token) {
+                          std::optional<std::string> token) {
   if (token && metadata.session_id().token() != *token) {
     base::Time expiry_time =
         token->empty()
@@ -151,7 +164,7 @@ void MaybeUpdateSessionId(Metadata& metadata,
   }
 }
 
-absl::optional<Metadata> MaybeUpdateConsistencyToken(
+std::optional<Metadata> MaybeUpdateConsistencyToken(
     const feedstore::Metadata& metadata,
     const feedwire::ConsistencyToken& token) {
   if (token.has_token() && metadata.consistency_token() != token.token()) {
@@ -159,7 +172,7 @@ absl::optional<Metadata> MaybeUpdateConsistencyToken(
     metadata_copy.set_consistency_token(token.token());
     return metadata_copy;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 LocalActionId GetNextActionId(Metadata& metadata) {
@@ -239,11 +252,11 @@ feedstore::DocView CreateDocView(uint64_t docid, base::Time timestamp) {
   return doc_view;
 }
 
-absl::optional<Metadata> SetStreamViewContentHashes(
+std::optional<Metadata> SetStreamViewContentHashes(
     const Metadata& metadata,
     const StreamType& stream_type,
     const feed::ContentHashSet& content_hashes) {
-  absl::optional<Metadata> result;
+  std::optional<Metadata> result;
   if (!(GetViewContentIds(metadata, stream_type) == content_hashes)) {
     result = metadata;
     SetStreamViewContentHashes(*result, stream_type, content_hashes);

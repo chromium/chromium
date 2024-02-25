@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -35,8 +36,10 @@ namespace ui {
 
 namespace {
 
-std::vector<LinuxUiTheme*>& GetLinuxUiThemesImpl() {
-  static base::NoDestructor<std::vector<LinuxUiTheme*>> themes;
+std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>& GetLinuxUiThemesImpl() {
+  static base::NoDestructor<
+      std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
+      themes;
   return *themes;
 }
 
@@ -163,7 +166,8 @@ LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme) {
   }
 }
 
-const std::vector<LinuxUiTheme*>& GetLinuxUiThemes() {
+const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>&
+GetLinuxUiThemes() {
   return GetLinuxUiThemesImpl();
 }
 

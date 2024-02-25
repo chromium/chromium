@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -47,7 +48,29 @@ class Node;
 class CSSPropertyValueSet;
 
 enum ChildrenOnly { kIncludeNode, kChildrenOnly };
-enum IncludeShadowRoots { kNoShadowRoots, kIncludeShadowRoots };
+
+using ShadowRootSet = HeapHashSet<Member<ShadowRoot>>;
+struct ShadowRootInclusion final {
+  STACK_ALLOCATED();
+
+ public:
+  enum class Behavior {
+    // Only serialize shadow roots provided in the include_shadow_roots list.
+    kOnlyProvidedShadowRoots,
+    // Include any open shadow root marked `serializable`.
+    kIncludeAllSerializableShadowRoots,
+    // TODO(crbug.com/1519972): This value is only used for the deprecated
+    // version of getInnerHTML() and can be removed once that is removed.
+    kIncludeAllOpenShadowRoots,
+  };
+
+  ShadowRootInclusion() = default;
+  explicit ShadowRootInclusion(Behavior behavior) : behavior(behavior) {}
+  ~ShadowRootInclusion() = default;
+
+  Behavior behavior{Behavior::kOnlyProvidedShadowRoots};
+  ShadowRootSet include_shadow_roots{};
+};
 
 DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
                                          const String& text);
@@ -62,12 +85,13 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(Document&,
                                                       unsigned fragment_end,
                                                       const String& base_url,
                                                       ParserContentPolicy);
-DocumentFragment* CreateFragmentForInnerOuterHTML(const String&,
-                                                  Element*,
-                                                  ParserContentPolicy,
-                                                  const char* method,
-                                                  bool include_shadow_roots,
-                                                  ExceptionState&);
+DocumentFragment* CreateFragmentForInnerOuterHTML(
+    const String&,
+    Element*,
+    ParserContentPolicy,
+    Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
+    Element::ForceHtml force_html,
+    ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,
     const String& source_mime_type,
@@ -86,13 +110,11 @@ void ReplaceChildrenWithFragment(ContainerNode*,
                                  ExceptionState&);
 void ReplaceChildrenWithText(ContainerNode*, const String&, ExceptionState&);
 
-using ClosedRootsSet = HeapHashSet<Member<ShadowRoot>>;
 CORE_EXPORT String
 CreateMarkup(const Node*,
              ChildrenOnly = kIncludeNode,
              AbsoluteURLs = kDoNotResolveURLs,
-             IncludeShadowRoots = kNoShadowRoots,
-             ClosedRootsSet include_closed_roots = ClosedRootsSet());
+             const ShadowRootInclusion& = ShadowRootInclusion());
 
 CORE_EXPORT String
 CreateMarkup(const Position& start,
@@ -103,31 +125,34 @@ CreateMarkup(const PositionInFlatTree& start,
              const PositionInFlatTree& end,
              const CreateMarkupOptions& options = CreateMarkupOptions());
 
-// Creates a sanitized fragment from the given markup. While the sanitization is
-// done in an isolated document, the final fragment is created in the given
-// document, and should be eventually inserted into the document. Returns null
-// if sanitization fails.
-CORE_EXPORT DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
+// Processes the HTML string and returns a fragment from the given markup
+// stripping out certain security sensitive tags if needed. While this
+// processing happens in an isolated document, the final fragment is created in
+// the given document, and should be eventually inserted into the document.
+// Returns null if this processing fails.
+CORE_EXPORT DocumentFragment*
+CreateStrictlyProcessedFragmentFromMarkupWithContext(Document&,
+                                                     const String& raw_markup,
+                                                     unsigned fragment_start,
+                                                     unsigned fragment_end,
+                                                     const String& base_url);
+
+// Processes the HTML string and strips out certain security sensitive tags if
+// needed.
+// Creates a fragment using the first few parameters, and
+// then re-serializes it with the last few parameters as the return value. The
+// whole process is done in an isolated document.
+// Returns the null string if this processing fails, and otherwise returns the
+// processed markup.
+CORE_EXPORT String CreateStrictlyProcessedMarkupWithContext(
     Document&,
     const String& raw_markup,
     unsigned fragment_start,
     unsigned fragment_end,
-    const String& base_url);
-
-// Creates a sanitized fragment using the first few parameters, and then
-// re-serializes it with the last few parameters as the return value. The whole
-// process is done in an isolated document. Returns the null string if
-// sanitization fails, and otherwise returns the sanitized markup.
-CORE_EXPORT String
-CreateSanitizedMarkupWithContext(Document&,
-                                 const String& raw_markup,
-                                 unsigned fragment_start,
-                                 unsigned fragment_end,
-                                 const String& base_url,
-                                 ChildrenOnly = kIncludeNode,
-                                 AbsoluteURLs = kDoNotResolveURLs,
-                                 IncludeShadowRoots = kNoShadowRoots,
-                                 ClosedRootsSet = ClosedRootsSet());
+    const String& base_url,
+    ChildrenOnly = kIncludeNode,
+    AbsoluteURLs = kDoNotResolveURLs,
+    const ShadowRootInclusion& = ShadowRootInclusion());
 
 void MergeWithNextTextNode(Text*, ExceptionState&);
 

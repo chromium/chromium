@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {FeedHandlerRemote} from 'chrome://new-tab-page/feed.mojom-webui.js';
-import {feedDescriptor, FeedModuleElement, FeedProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {FeedModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {feedDescriptor, FeedProxy} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';

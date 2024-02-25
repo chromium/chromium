@@ -30,6 +30,11 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
     audio_context_manager_->set_clock_for_testing(&clock_);
   }
 
+  void TearDown() override {
+    audio_context_manager_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
   AudioContextManagerImpl* audio_context_manager() {
     return audio_context_manager_;
   }
@@ -41,8 +46,7 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock& clock() { return clock_; }
 
  private:
-  raw_ptr<AudioContextManagerImpl, DanglingUntriaged> audio_context_manager_ =
-      nullptr;
+  raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };

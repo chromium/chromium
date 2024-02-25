@@ -25,8 +25,7 @@ namespace syncer {
 // get through initialization. It often returns null pointers or nonsense
 // values; it is not intended to be used in tests that depend on SyncEngine
 // behavior.
-class FakeSyncEngine : public SyncEngine,
-                       public base::SupportsWeakPtr<FakeSyncEngine> {
+class FakeSyncEngine final : public SyncEngine {
  public:
   static constexpr char kTestBirthday[] = "1";
 
@@ -94,8 +93,6 @@ class FakeSyncEngine : public SyncEngine,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(ModelType type) override;
 
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
-
   const SyncStatus& GetDetailedStatus() const override;
 
   void GetTypesWithUnsyncedData(
@@ -113,6 +110,11 @@ class FakeSyncEngine : public SyncEngine,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
+  void RecordNigoriMemoryUsageAndCountsHistograms() override;
+
+  base::WeakPtr<FakeSyncEngine> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   const bool allow_init_completion_;
@@ -126,6 +128,7 @@ class FakeSyncEngine : public SyncEngine,
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
   bool is_next_poll_time_in_the_past_ = false;
+  base::WeakPtrFactory<FakeSyncEngine> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

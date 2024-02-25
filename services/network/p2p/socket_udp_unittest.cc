@@ -5,6 +5,7 @@
 #include "services/network/p2p/socket_udp.h"
 
 #include <stdint.h>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,8 @@
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
@@ -29,8 +32,11 @@
 #include "services/network/p2p/socket_test_utils.h"
 #include "services/network/p2p/socket_throttler.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
+#include "services/network/throttling/network_conditions.h"
+#include "services/network/throttling/throttling_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 using ::testing::_;
 using ::testing::DeleteArg;
@@ -63,7 +69,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
 class FakeDatagramServerSocket : public net::DatagramServerSocket {
  public:
   typedef std::
-      tuple<net::IPEndPoint, std::vector<uint8_t>, absl::optional<uint64_t>>
+      tuple<net::IPEndPoint, std::vector<uint8_t>, std::optional<uint64_t>>
           UDPPacket;
 
   // P2PSocketUdp destroys a socket on errors so sent packets
@@ -117,7 +123,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
       memcpy(buffer->data(), &*(std::get<1>(incoming_packets_.front())).begin(),
              size);
       *address = std::get<0>(incoming_packets_.front());
-      absl::optional<uint64_t> received_time =
+      std::optional<uint64_t> received_time =
           std::get<2>(incoming_packets_.front());
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
@@ -139,7 +145,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
              net::CompletionOnceCallback callback) override {
     scoped_refptr<net::IOBuffer> buffer(buf);
     std::vector<uint8_t> data_vector(buffer->data(), buffer->data() + buf_len);
-    sent_packets_->push_back(UDPPacket(address, data_vector, absl::nullopt));
+    sent_packets_->push_back(UDPPacket(address, data_vector, std::nullopt));
     return buf_len;
   }
 
@@ -148,6 +154,8 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   int SetSendBufferSize(int32_t size) override { return net::OK; }
 
   int SetDoNotFragment() override { return net::OK; }
+
+  int SetRecvTos() override { return net::OK; }
 
   void SetMsgConfirm(bool confirm) override {}
 
@@ -162,7 +170,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   void AddRecvPacket(
       const net::IPEndPoint& address,
       const std::vector<uint8_t> data,
-      const absl::optional<uint64_t> received_time = absl::nullopt) {
+      const std::optional<uint64_t> received_time = std::nullopt) {
     incoming_packets_.push_back(UDPPacket(address, data, received_time));
   }
 
@@ -175,7 +183,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
       memcpy(recv_buffer_->data(),
              &*std::get<1>(incoming_packets_.front()).begin(), size);
       *recv_address_ = std::get<0>(incoming_packets_.front());
-      absl::optional<uint64_t> received_time =
+      std::optional<uint64_t> received_time =
           std::get<2>(incoming_packets_.front());
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
@@ -224,7 +232,17 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     return net::ERR_NOT_IMPLEMENTED;
   }
 
+  int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override {
+    NOTIMPLEMENTED();
+    return net::ERR_NOT_IMPLEMENTED;
+  }
+
   void DetachFromThread() override { NOTIMPLEMENTED(); }
+
+  net::DscpAndEcn GetLastTos() const override {
+    NOTIMPLEMENTED();
+    return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
+  }
 
  private:
   net::IPEndPoint address_;
@@ -256,7 +274,17 @@ std::unique_ptr<net::DatagramServerSocket> CreateFakeDatagramServerSocket(
 namespace network {
 
 class P2PSocketUdpTest : public testing::Test {
+ public:
+  P2PSocketUdpTest() : P2PSocketUdpTest(std::nullopt) {}
+
  protected:
+  explicit P2PSocketUdpTest(
+      std::optional<base::UnguessableToken> devtools_token)
+      : devtools_token_(devtools_token),
+        net_log_with_source_(
+            net::NetLogWithSource::Make(net::NetLog::Get(),
+                                        net::NetLogSourceType::UDP_SOCKET)) {}
+
   // It is the helper method to get easy access to matcher.
   MOCK_METHOD(void,
               SinglePacketReceptionHelper,
@@ -277,11 +305,11 @@ class P2PSocketUdpTest : public testing::Test {
     // Unpack received batching packets for testing.
     ON_CALL(*fake_client_.get(), DataReceived(_))
         .WillByDefault(
-            [this](const std::vector<network::mojom::P2PReceivedPacketPtr>
-                       packets) {
+            [this](std::vector<network::mojom::P2PReceivedPacketPtr> packets) {
               for (auto& packet : packets) {
                 SinglePacketReceptionHelper(packet->socket_address,
                                             packet->data, packet->timestamp);
+                received_packets_.emplace_back(std::move(packet));
               }
               return;
             });
@@ -289,9 +317,10 @@ class P2PSocketUdpTest : public testing::Test {
     socket_impl_ = std::make_unique<P2PSocketUdp>(
         &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
         &throttler_, TRAFFIC_ANNOTATION_FOR_TESTS,
-        /*net_log=*/nullptr,
+        net_log_with_source_.net_log(),
         base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets_,
-                            nullptr, &fake_clock_));
+                            nullptr, &fake_clock_),
+        devtools_token_);
 
     local_address_ = ParseAddress(kTestLocalIpAddress, kTestPort1);
     socket_impl_->Init(
@@ -310,15 +339,19 @@ class P2PSocketUdpTest : public testing::Test {
     return static_cast<FakeDatagramServerSocket*>(socket_host->socket_.get());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   P2PMessageThrottler throttler_;
   ScopedFakeClock fake_clock_;
   base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets_;
-  raw_ptr<FakeDatagramServerSocket, DanglingUntriaged>
-      socket_;  // Owned by |socket_impl_|.
+  base::circular_deque<mojo::StructPtr<network::mojom::P2PReceivedPacket>>
+      received_packets_;
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<P2PSocketUdp> socket_impl_;
+  raw_ptr<FakeDatagramServerSocket> socket_;  // Owned by |socket_impl_|.
   std::unique_ptr<FakeSocketClient> fake_client_;
+  std::optional<base::UnguessableToken> devtools_token_ = std::nullopt;
+  net::NetLogWithSource net_log_with_source_;
 
   net::IPEndPoint local_address_;
 
@@ -359,6 +392,7 @@ TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
+  socket_ = nullptr;  // Since about to give up `socket_impl_`.
   auto* socket_impl_ptr = socket_impl_.get();
   socket_delegate_.ExpectDestruction(std::move(socket_impl_));
   socket_impl_ptr->Send(packet, P2PPacketInfo(dest1_, options, 0));
@@ -400,7 +434,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
 TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
   // Receive packet from |dest1_|.
   std::vector<uint8_t> request_packet;
-  CreateStunRequest(&request_packet);
+  CreateStunResponse(&request_packet);
 
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
@@ -425,7 +459,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
 TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   // Receive packet from |dest1_|.
   std::vector<uint8_t> request_packet;
-  CreateStunRequest(&request_packet);
+  CreateStunResponse(&request_packet);
 
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
@@ -436,6 +470,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
+  socket_ = nullptr;  // Since about to give up `socket_impl_`.
   auto* socket_impl_ptr = socket_impl_.get();
   socket_delegate_.ExpectDestruction(std::move(socket_impl_));
   socket_impl_ptr->Send(packet, P2PPacketInfo(dest2_, options, 0));
@@ -605,7 +640,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
     std::unique_ptr<P2PSocketUdp> socket_impl(new P2PSocketUdp(
         &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
         &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
-        fake_socket_factory));
+        fake_socket_factory, std::nullopt));
     net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, 0);
     socket_impl->Init(
         local_address, min_port, max_port,
@@ -628,7 +663,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
   std::unique_ptr<P2PSocketUdp> socket_impl(new P2PSocketUdp(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*net_log=*/nullptr, std::move(fake_socket_factory)));
+      /*net_log=*/nullptr, std::move(fake_socket_factory), std::nullopt));
   net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, 0);
 
   auto* socket_impl_ptr = socket_impl.get();
@@ -669,7 +704,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
   std::unique_ptr<P2PSocketUdp> socket_host(new P2PSocketUdp(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*net_log=*/nullptr, std::move(fake_socket_factory)));
+      /*net_log=*/nullptr, std::move(fake_socket_factory), std::nullopt));
   net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, valid_port);
   socket_host->Init(
       local_address, min_port, max_port,
@@ -708,7 +743,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
   auto socket_impl = std::make_unique<P2PSocketUdp>(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
-      std::move(fake_socket_factory));
+      std::move(fake_socket_factory), std::nullopt);
   net::IPEndPoint local_address =
       ParseAddress(kTestLocalIpAddress, invalid_port);
 
@@ -912,6 +947,249 @@ TEST_F(P2PSocketUdpTest, ReceiveBurstPacketsExceedingMaxBatchingBuffering) {
   socket_->FireRecvCallback();
 
   base::RunLoop().RunUntilIdle();
+}
+
+class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
+ public:
+  P2PSocketUdpWithInterceptorTest()
+      : P2PSocketUdpTest(base::UnguessableToken::Create()),
+        throttling_token_(
+            ScopedThrottlingToken::MaybeCreate(net_log_with_source_.source().id,
+                                               devtools_token_)) {}
+
+  void SetUp() override {
+    SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+    P2PSocketUdpTest::SetUp();
+  }
+
+  void TearDown() override {
+    RemoveThrottling();
+    P2PSocketUdpTest::TearDown();
+  }
+
+  void SetNetworkState(bool offline,
+                       double download,
+                       double upload,
+                       base::TimeDelta latency) {
+    std::unique_ptr<NetworkConditions> conditions(new NetworkConditions(
+        offline, latency.InMillisecondsF(), download, upload));
+    ThrottlingController::SetConditions(*devtools_token_,
+                                        std::move(conditions));
+  }
+
+  void RemoveThrottling() {
+    ThrottlingController::SetConditions(*devtools_token_,
+                                        std::unique_ptr<NetworkConditions>());
+  }
+
+  void AdvanceClock(base::TimeDelta delta) {
+    base::TimeDelta now = base::Nanoseconds(fake_clock_.TimeNanos());
+    fake_clock_.SetTimeNanos((now + delta).InNanoseconds());
+    task_environment_.FastForwardBy(delta);
+  }
+
+ protected:
+  std::unique_ptr<network::ScopedThrottlingToken> throttling_token_;
+};
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacket) {
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // Now we should be able to send any data to |dest1_|.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_));
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+
+  AdvanceClock(base::Milliseconds(100));
+
+  ASSERT_EQ(1U, sent_packets_.size());
+  ASSERT_EQ(dest1_, std::get<0>(sent_packets_[0]));
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketOffline) {
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // Now we should be able to send any data to |dest1_|.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  SetNetworkState(true, 1000000, 1000000, base::Milliseconds(0));
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(0U, sent_packets_.size());
+
+  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 1));
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDelayed) {
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // Now we should be able to send any data to |dest1_|.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(1000));
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(0U, sent_packets_.size());
+
+  AdvanceClock(base::Milliseconds(2000));
+  EXPECT_EQ(1U, sent_packets_.size());
+
+  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 1));
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(2U, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketAndRemoveThrottling) {
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // Now we should be able to send any data to |dest1_|.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, sent_packets_.size());
+
+  RemoveThrottling();
+
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(2U, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDropsLongQueue) {
+  // Hardcoded value that matches the details in ThrottlingP2PNetworkInterceptor
+  // until we can configure it.
+  constexpr size_t kMaxQueueLength = 300;
+
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  // Now we should be able to send any data to |dest1_|.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(500);
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  for (int i = 0; i < 500; ++i) {
+    socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+  }
+
+  AdvanceClock(base::Milliseconds(1000));
+  EXPECT_EQ(kMaxQueueLength, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePackets) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  constexpr size_t kNumPackets = P2PSocketUdp::kUdpMaxBatchingRecvPackets;
+  std::vector<std::vector<uint8_t>> packets(kNumPackets);
+  for (size_t i = 0; i < kNumPackets; i++) {
+    CreateRandomPacket(&packets[i]);
+  }
+
+  InSequence s;
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  for (size_t i = 0; i < kNumPackets; i++) {
+    EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, received_packets_.size());
+
+  // Now we should be able to receive any data from |dest1_|.
+  for (size_t i = 0; i < kNumPackets; i++) {
+    socket_->ReceivePacket(dest1_, packets[i]);
+  }
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(kNumPackets + 1U, received_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePacketDelayed) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  InSequence s;
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  AdvanceClock(base::Milliseconds(100));
+
+  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(1000));
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(0);
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+  socket_->ReceivePacket(dest1_, packet);
+
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, received_packets_.size());
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet), _));
+  AdvanceClock(base::Milliseconds(2000));
+  EXPECT_EQ(2U, received_packets_.size());
 }
 
 }  // namespace network

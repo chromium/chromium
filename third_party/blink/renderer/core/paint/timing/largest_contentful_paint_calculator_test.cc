@@ -10,8 +10,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
+#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -101,10 +103,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   void UpdateLargestContentfulPaintCandidate() {
-    GetFrame()
-        .View()
-        ->GetPaintTimingDetector()
-        .UpdateLargestContentfulPaintCandidate();
+    GetFrame().View()->GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void SimulateContentPresentationPromise() {

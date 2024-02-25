@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -107,7 +107,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     Result(GURL signals_url,
            std::unique_ptr<std::string> response_body,
            scoped_refptr<net::HttpResponseHeaders> headers,
-           absl::optional<std::string> error);
+           std::optional<std::string> error);
 
     // The copy constructor is used for internal caching, and for passing
     // results to every pending caller when a coalesced download completes.
@@ -158,8 +158,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     void RunCallbackSync(Result result);
     void RunCallbackAsync(Result result);
 
-    void set_coalesce_iterator(
-        std::list<raw_ptr<Request, DanglingUntriaged>>::iterator it) {
+    void set_coalesce_iterator(std::list<raw_ptr<Request>>::iterator it) {
       DCHECK_EQ(*it, this);
       maybe_coalesce_iterator_ = it;
     }
@@ -178,7 +177,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     // NOTE: This can be nullopt if serving from cache, or if the download
     // already completed -- it will have a value when there is still an
     // outstanding request for `signals_url_`.
-    absl::optional<std::list<raw_ptr<Request, DanglingUntriaged>>::iterator>
+    std::optional<std::list<raw_ptr<Request>>::iterator>
         maybe_coalesce_iterator_;
 
     // Must appear after all other members.
@@ -226,7 +225,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     //
     // This guarantees that none of these raw pointers ever point to destroyed
     // Requests.
-    std::list<raw_ptr<Request, DanglingUntriaged>> requests;
+    std::list<raw_ptr<Request>> requests;
   };
 
   // Called only when the AuctionDownloader loads new signals.
@@ -237,7 +236,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
                            base::TimeTicks start_time,
                            std::unique_ptr<std::string> response_body,
                            scoped_refptr<net::HttpResponseHeaders> headers,
-                           absl::optional<std::string> error);
+                           std::optional<std::string> error);
 
   void OnRequestDestroyed(Request& request);
 

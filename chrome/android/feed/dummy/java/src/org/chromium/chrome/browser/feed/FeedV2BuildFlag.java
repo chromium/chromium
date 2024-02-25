@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-/**
- * Provides the value of the feed_v2_enabled build flag.
- */
+/** Provides the value of the feed_v2_enabled build flag. */
 public class FeedV2BuildFlag {
     public static final boolean IS_AVAILABLE = false;
 }

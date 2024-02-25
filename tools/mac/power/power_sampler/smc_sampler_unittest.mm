@@ -5,13 +5,13 @@
 #include "tools/mac/power/power_sampler/smc_sampler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/smc_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 
 namespace power_sampler {
@@ -25,17 +25,17 @@ class TestSMCReader : public power_metrics::SMCReader {
   TestSMCReader()
       : power_metrics::SMCReader(base::mac::ScopedIOObject<io_object_t>()) {}
 
-  void set_key(SMCKeyIdentifier key, absl::optional<double> value) {
+  void set_key(SMCKeyIdentifier key, std::optional<double> value) {
     keys_[key] = value;
   }
 
   // power_metrics::SMCReader:
-  absl::optional<double> ReadKey(SMCKeyIdentifier identifier) override {
+  std::optional<double> ReadKey(SMCKeyIdentifier identifier) override {
     return keys_[identifier];
   }
 
  private:
-  base::flat_map<SMCKeyIdentifier, absl::optional<double>> keys_;
+  base::flat_map<SMCKeyIdentifier, std::optional<double>> keys_;
 };
 
 }  // namespace
@@ -92,7 +92,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   reader_->set_key(SMCKeyIdentifier::CPUTemperature, 6);
 
   {
-    reader_->set_key(SMCKeyIdentifier::TotalPower, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::TotalPower, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("cpu_package_cpu_power", 2),
@@ -104,7 +104,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   }
 
   {
-    reader_->set_key(SMCKeyIdentifier::CPUPower, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::CPUPower, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
@@ -116,7 +116,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   }
 
   {
-    reader_->set_key(SMCKeyIdentifier::iGPUPower, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::iGPUPower, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
@@ -128,7 +128,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   }
 
   {
-    reader_->set_key(SMCKeyIdentifier::GPU0Power, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::GPU0Power, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
@@ -140,7 +140,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   }
 
   {
-    reader_->set_key(SMCKeyIdentifier::GPU1Power, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::GPU1Power, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),
@@ -152,7 +152,7 @@ TEST_F(SMCSamplerTest, GetSample_IndividualFieldNotAvailable) {
   }
 
   {
-    reader_->set_key(SMCKeyIdentifier::CPUTemperature, absl::nullopt);
+    reader_->set_key(SMCKeyIdentifier::CPUTemperature, std::nullopt);
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());
     EXPECT_THAT(sample,
                 UnorderedElementsAre(std::make_pair("total_power", 1),

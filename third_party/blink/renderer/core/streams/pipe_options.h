@@ -22,7 +22,7 @@ class PipeOptions : public GarbageCollected<PipeOptions> {
   bool PreventClose() const { return prevent_close_; }
   bool PreventAbort() const { return prevent_abort_; }
   bool PreventCancel() const { return prevent_cancel_; }
-  AbortSignal* Signal() const { return signal_; }
+  AbortSignal* Signal() const { return signal_.Get(); }
 
   void Trace(Visitor*) const;
 

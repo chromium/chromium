@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_SERVER_SOCKET_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_lan.h"
 
 namespace base {
@@ -70,15 +70,15 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
   /*==========================================================================*/
   // Accept() helpers: Accept connection from remote TCP socket.
   /*==========================================================================*/
-  void DoAccept(absl::optional<WifiLanSocket::ConnectedSocketParameters>*
+  void DoAccept(std::optional<WifiLanSocket::ConnectedSocketParameters>*
                     connected_socket_parameters,
                 base::WaitableEvent* accept_waitable_event);
   void OnAccepted(
-      absl::optional<WifiLanSocket::ConnectedSocketParameters>*
+      std::optional<WifiLanSocket::ConnectedSocketParameters>*
           connected_socket_parameters,
       base::WaitableEvent* accept_waitable_event,
       int32_t net_result,
-      const absl::optional<net::IPEndPoint>& remote_addr,
+      const std::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);

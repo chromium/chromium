@@ -13,9 +13,7 @@ import android.widget.ImageView;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.components.webapps.R;
 
-/**
- * UI for the zoomed image view used for screenshots in the bottom-sheet UI for PWA installs.
- */
+/** UI for the zoomed image view used for screenshots in the bottom-sheet UI for PWA installs. */
 public class ImageZoomView extends FullscreenAlertDialog {
     public ImageZoomView(Context context, Bitmap bitmap) {
         super(context);

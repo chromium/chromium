@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -113,22 +113,22 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_NONE: {
+      case api::desktop_capture::DesktopCaptureSourceType::kNone: {
         return RespondNow(Error(kInvalidSourceNameError));
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_SCREEN: {
+      case api::desktop_capture::DesktopCaptureSourceType::kScreen: {
         media_types.push_back(DesktopMediaList::Type::kScreen);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_WINDOW: {
+      case api::desktop_capture::DesktopCaptureSourceType::kWindow: {
         media_types.push_back(DesktopMediaList::Type::kWindow);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_TAB: {
+      case api::desktop_capture::DesktopCaptureSourceType::kTab: {
         media_types.push_back(DesktopMediaList::Type::kWebContents);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_AUDIO: {
+      case api::desktop_capture::DesktopCaptureSourceType::kAudio: {
         request_audio = true;
         break;
       }
@@ -150,7 +150,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
       &DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults,
       this, origin, render_frame_host->GetGlobalId());
-  DesktopMediaPickerController::Params picker_params;
+  DesktopMediaPickerController::Params picker_params(
+      DesktopMediaPickerController::Params::RequestSource::kExtension);
   picker_params.web_contents = web_contents;
   picker_params.context = parent_window;
   picker_params.parent = parent_window;

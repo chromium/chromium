@@ -28,9 +28,9 @@
 #include "base/time/time.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/common/user_level_memory_pressure_signal_features.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/browser/user_level_memory_pressure_signal_features.h"
 
 namespace memory_pressure {
 
@@ -39,18 +39,37 @@ constexpr uint64_t k1MB = 1024ull * 1024;
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(1);
 
 // Time interval between measuring total private memory footprint.
+base::TimeDelta MeasurementIntervalFor3GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
+      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      "measurement_interval", kDefaultMeasurementInterval};
+  return kMeasurementInterval.Get();
+}
+
 base::TimeDelta MeasurementIntervalFor4GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &features::kUserLevelMemoryPressureSignalOn4GbDevices,
+      &content::features::kUserLevelMemoryPressureSignalOn4GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
 }
 
 base::TimeDelta MeasurementIntervalFor6GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &features::kUserLevelMemoryPressureSignalOn6GbDevices,
+      &content::features::kUserLevelMemoryPressureSignalOn6GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
+}
+
+// The memory threshold: 738 was selected at around the 99th percentile of
+// the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
+// system memory were 3GB.
+constexpr size_t kMemoryThresholdMBOf3GbDevices = 738;
+
+uint64_t MemoryThresholdParamFor3GbDevices() {
+  static const base::FeatureParam<int> kMemoryThresholdParam{
+      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      "memory_threshold_mb", kMemoryThresholdMBOf3GbDevices};
+  return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
 
 // The memory threshold: 458 was selected at around the 99th percentile of
@@ -60,7 +79,7 @@ constexpr size_t kMemoryThresholdMBOf4GbDevices = 458;
 
 uint64_t MemoryThresholdParamFor4GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
-      &features::kUserLevelMemoryPressureSignalOn4GbDevices,
+      &content::features::kUserLevelMemoryPressureSignalOn4GbDevices,
       "memory_threshold_mb", kMemoryThresholdMBOf4GbDevices};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
@@ -72,7 +91,7 @@ constexpr size_t kMemoryThresholdMBOf6GbDevices = 494;
 
 uint64_t MemoryThresholdParamFor6GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
-      &features::kUserLevelMemoryPressureSignalOn6GbDevices,
+      &content::features::kUserLevelMemoryPressureSignalOn6GbDevices,
       "memory_threshold_mb", kMemoryThresholdMBOf6GbDevices};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
@@ -81,17 +100,24 @@ uint64_t MemoryThresholdParamFor6GbDevices() {
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize() {
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
+  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
-        MemoryThresholdParamFor4GbDevices(), MeasurementIntervalFor4GbDevices(),
-        features::MinUserMemoryPressureIntervalOn4GbDevices());
+        MemoryThresholdParamFor3GbDevices(), MeasurementIntervalFor3GbDevices(),
+        content::features::MinUserMemoryPressureIntervalOn3GbDevices());
     return;
   }
 
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
+  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
+    UserLevelMemoryPressureSignalGenerator::Get().Start(
+        MemoryThresholdParamFor4GbDevices(), MeasurementIntervalFor4GbDevices(),
+        content::features::MinUserMemoryPressureIntervalOn4GbDevices());
+    return;
+  }
+
+  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor6GbDevices(), MeasurementIntervalFor6GbDevices(),
-        features::MinUserMemoryPressureIntervalOn6GbDevices());
+        content::features::MinUserMemoryPressureIntervalOn6GbDevices());
     return;
   }
 
@@ -299,7 +325,7 @@ namespace {
 // TODO(crbug.com/1393283): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
-absl::optional<uint64_t> CalculateProcessMemoryFootprint(
+std::optional<uint64_t> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
   // Get total resident and shared sizes from statm file.
@@ -313,26 +339,26 @@ absl::optional<uint64_t> CalculateProcessMemoryFootprint(
 
   int n = statm_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   line[n] = '\0';
 
   int num_scanned = sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
                            &vm_size_pages, &resident_pages, &shared_pages);
   if (num_scanned != 3)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   n = status_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   line[n] = '\0';
 
   char* swap_line = strstr(line, "VmSwap");
   if (!swap_line)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   num_scanned = sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint);
   if (num_scanned != 1)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   swap_footprint *= 1024;
   return (resident_pages - shared_pages) * page_size + swap_footprint;
@@ -341,7 +367,7 @@ absl::optional<uint64_t> CalculateProcessMemoryFootprint(
 }  // namespace
 
 // static
-absl::optional<uint64_t>
+std::optional<uint64_t>
 UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
     const base::Process& process) {
   // ScopedAllowBlocking is required to use base::File, but /proc/{pid}/status
@@ -361,7 +387,7 @@ UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
       proc_pid_dir.Append("statm"),
       base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   if (!status_file.IsValid() || !statm_file.IsValid())
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   return CalculateProcessMemoryFootprint(statm_file, status_file);
 }

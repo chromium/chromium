@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_VALUES_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_VALUES_MOJOM_TRAITS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -112,7 +113,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     return value.GetDouble();
   }
 
-  static base::StringPiece string_value(const base::Value& value) {
+  static std::string_view string_value(const base::Value& value) {
     return value.GetString();
   }
 

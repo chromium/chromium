@@ -23,6 +23,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
   void RegisterScanner(
       ResponseCallback<device::BluetoothUUID> callback) override;
@@ -30,8 +31,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
                          uint8_t scanner_id) override;
   void StartScan(ResponseCallback<BtifStatus> callback,
                  uint8_t scanner_id,
-                 const ScanSettings& scan_settings,
-                 const absl::optional<ScanFilter>& filters) override;
+                 const std::optional<ScanSettings>& scan_settings,
+                 const std::optional<ScanFilter>& filters) override;
 
   void SetNextScannerUUID(const device::BluetoothUUID& uuid) {
     next_scanner_uuid_ = uuid;

@@ -4,6 +4,7 @@
 
 #include "media/audio/ios/audio_session_manager_ios.h"
 
+#import <AVFAudio/AVFAudio.h>
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
@@ -11,11 +12,24 @@
 
 namespace media {
 
+// Below constant values are taken from :
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/sdk/objc/components/audio/RTCAudioSessionConfiguration.m
+const int kRTCAudioSessionPreferredNumberOfChannels = 1;
+const double kRTCAudioSessionHighPerformanceSampleRate = 48000.0;
+const double kRTCAudioSessionHighPerformanceIOBufferDuration = 0.02;
+
+// static
+AudioSessionManagerIOS& AudioSessionManagerIOS::GetInstance() {
+  static base::NoDestructor<AudioSessionManagerIOS> instance;
+  return *instance;
+}
+
 AudioSessionManagerIOS::AudioSessionManagerIOS() {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
 
   NSError* error = nil;
-  auto options = AVAudioSessionCategoryOptionAllowBluetooth |
+  auto options = AVAudioSessionCategoryOptionDefaultToSpeaker |
+                 AVAudioSessionCategoryOptionAllowBluetooth |
                  AVAudioSessionCategoryOptionAllowBluetoothA2DP |
                  AVAudioSessionCategoryOptionMixWithOthers;
   [audio_session setCategory:AVAudioSessionCategoryPlayAndRecord
@@ -27,6 +41,12 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
           error.localizedDescription);
   }
 
+  [audio_session
+      setPreferredSampleRate:kRTCAudioSessionHighPerformanceSampleRate
+                       error:nil];
+  [audio_session setPreferredIOBufferDuration:
+                     kRTCAudioSessionHighPerformanceIOBufferDuration
+                                        error:nil];
   // Find the desired input port
   NSArray* inputs = [audio_session availableInputs];
   AVAudioSessionPortDescription* builtInMic = nil;
@@ -37,12 +57,25 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
     }
   }
 
-  // Find the desired microphone
-  for (AVAudioSessionDataSourceDescription* source in builtInMic.dataSources) {
-    if ([source.orientation isEqual:AVAudioSessionOrientationFront]) {
-      [builtInMic setPreferredDataSource:source error:nil];
-      [audio_session setPreferredInput:builtInMic error:nil];
-      break;
+  [audio_session setPreferredInput:builtInMic error:nil];
+
+  AVAudioSessionPortDescription* preferredInput =
+      [audio_session preferredInput];
+  if (preferredInput != nil) {
+    NSArray<AVAudioSessionDataSourceDescription*>* dataSources =
+        audio_session.preferredInput.dataSources;
+    AVAudioSessionDataSourceDescription* newDataSource = nil;
+    for (AVAudioSessionDataSourceDescription* dataSource in dataSources) {
+      // Choosing AVAudioSessionOrientationBottom sets the mono channel for a
+      // audio session.
+      if ([dataSource.orientation isEqual:AVAudioSessionOrientationBottom]) {
+        newDataSource = dataSource;
+        break;
+      }
+    }
+
+    if (newDataSource != nil) {
+      [preferredInput setPreferredDataSource:newDataSource error:nil];
     }
   }
 
@@ -73,6 +106,21 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   }
 
   [audio_session setActive:YES error:nil];
+  [audio_session setPreferredInputNumberOfChannels:
+                     kRTCAudioSessionPreferredNumberOfChannels
+                                             error:nil];
+  [audio_session setPreferredOutputNumberOfChannels:
+                     kRTCAudioSessionPreferredNumberOfChannels
+                                              error:nil];
+}
+
+void AudioSessionManagerIOS::SetActive(bool active) {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  if (active) {
+    [audio_session setActive:YES error:nil];
+  } else {
+    [audio_session setActive:NO error:nil];
+  }
 }
 
 bool AudioSessionManagerIOS::HasAudioHardware(bool is_input) {
@@ -113,6 +161,57 @@ std::string AudioSessionManagerIOS::GetDefaultInputDeviceID() {
   return base::SysNSStringToUTF8([currentInput portName]);
 }
 
+double AudioSessionManagerIOS::HardwareSampleRate() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return audio_session.sampleRate;
+}
+
+double AudioSessionManagerIOS::HardwareIOBufferDuration() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return audio_session.IOBufferDuration;
+}
+
+double AudioSessionManagerIOS::HardwareLatency(bool is_input) {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return is_input ? audio_session.inputLatency : audio_session.outputLatency;
+}
+
+long AudioSessionManagerIOS::GetDeviceChannels(bool is_input) {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return is_input ? audio_session.inputNumberOfChannels
+                  : audio_session.outputNumberOfChannels;
+}
+
+float AudioSessionManagerIOS::GetInputGain() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return audio_session.inputGain;
+}
+
+bool AudioSessionManagerIOS::SetInputGain(float volume) {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  if ([audio_session isInputGainSettable] == YES) {
+    BOOL success = [audio_session setInputGain:volume error:nil];
+    return success;
+  }
+  return false;
+}
+
+bool AudioSessionManagerIOS::IsInputMuted() {
+#if defined(__IPHONE_17_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_17_0
+  if (@available(iOS 17.0, *)) {
+    AVAudioApplication* audio_application = [AVAudioApplication sharedInstance];
+    return audio_application.isInputMuted;
+  }
+#endif
+  return false;
+}
+
+bool AudioSessionManagerIOS::IsInputGainSettable() {
+  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
+  return [audio_session isInputGainSettable] == YES;
+}
+
+// private
 void AudioSessionManagerIOS::GetAudioInputDeviceInfo(
     media::AudioDeviceNames* device_names) {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
@@ -147,11 +246,6 @@ void AudioSessionManagerIOS::GetAudioOutputDeviceInfo(
     // counting here since the default device has been abstracted out before.
     device_names->push_front(media::AudioDeviceName::CreateDefault());
   }
-}
-
-int AudioSessionManagerIOS::HardwareSampleRate() {
-  AVAudioSession* audio_session = [AVAudioSession sharedInstance];
-  return static_cast<int>(audio_session.sampleRate);
 }
 
 }  // namespace media

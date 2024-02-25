@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -16,6 +18,8 @@
 
 namespace chromeos {
 
+class EventRouter;
+
 class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
  public:
   class Delegate {
@@ -23,10 +27,12 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
     virtual ~Delegate() = default;
 
     virtual void OnEvent(const extensions::ExtensionId& extension_id,
+                         EventRouter* event_router,
                          crosapi::mojom::TelemetryEventInfoPtr info) = 0;
   };
 
   explicit EventObservationCrosapi(const extensions::ExtensionId& extension_id,
+                                   EventRouter* event_router,
                                    content::BrowserContext* context);
 
   EventObservationCrosapi(const EventObservationCrosapi&) = delete;
@@ -47,6 +53,7 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
   extensions::ExtensionId extension_id_;
   mojo::Receiver<crosapi::mojom::TelemetryEventObserver> receiver_;
   std::unique_ptr<Delegate> delegate_;
+  const raw_ptr<EventRouter> event_router_;
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
 

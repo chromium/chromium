@@ -44,12 +44,16 @@
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
+#include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -464,7 +468,8 @@ bool XMLDocumentParser::ParseDocumentFragment(
     const String& chunk,
     DocumentFragment* fragment,
     Element* context_element,
-    ParserContentPolicy parser_content_policy) {
+    ParserContentPolicy parser_content_policy,
+    ExceptionState* exception_state) {
   if (!chunk.length())
     return true;
 
@@ -480,7 +485,14 @@ bool XMLDocumentParser::ParseDocumentFragment(
 
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
+  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+    parser->exception_copy_ = ExceptionCopy();
+  }
   bool well_formed = parser->AppendFragmentSource(chunk);
+  if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled() && exception_state &&
+      parser->exception_copy_->HadException()) {
+    parser->exception_copy_->ApplyTo(*exception_state);
+  }
 
   // Do not call finish(). Current finish() and doEnd() implementations touch
   // the main Document/loader and can cause crashes in the fragment case.
@@ -900,7 +912,7 @@ static inline void HandleNamespaceAttributes(
       namespace_q_name =
           WTF::g_xmlns_with_colon + ToAtomicString(namespaces[i].prefix);
 
-    absl::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
+    std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
     if (!parsed_name) {
       return;
@@ -942,10 +954,17 @@ static inline void HandleElementAttributes(
       } else {
         const HashMap<AtomicString, AtomicString>::const_iterator it =
             initial_prefix_to_namespace_map.find(attr_prefix);
-        if (it != initial_prefix_to_namespace_map.end())
+        if (it != initial_prefix_to_namespace_map.end()) {
           attr_uri = it->value;
-        else
+        } else if (RuntimeEnabledFeatures::ImprovedXMLErrorsEnabled()) {
+          exception_state.ThrowDOMException(DOMExceptionCode::kNamespaceError,
+                                            "Namespace prefix " + attr_prefix +
+                                                " for attribute " + attr_value +
+                                                " is not declared.");
+          return;
+        } else {
           attr_uri = AtomicString();
+        }
       }
     }
     AtomicString attr_q_name =
@@ -953,7 +972,7 @@ static inline void HandleElementAttributes(
             ? ToAtomicString(attributes[i].localname)
             : attr_prefix + ":" + ToString(attributes[i].localname);
 
-    absl::optional<QualifiedName> parsed_name =
+    std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
     if (!parsed_name) {
       return;
@@ -1022,6 +1041,25 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   QualifiedName q_name(prefix, local_name, adjusted_uri);
   if (!prefix.empty() && adjusted_uri.empty())
     q_name = QualifiedName(g_null_atom, prefix + ":" + local_name, g_null_atom);
+
+  // If we are constructing a custom element, then we must run extra steps as
+  // described in the HTML spec below. This is similar to the steps in
+  // HTMLConstructionSite::CreateElement.
+  // https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token
+  // https://html.spec.whatwg.org/multipage/xhtml.html#parsing-xhtml-documents
+  std::optional<CEReactionsScope> reactions;
+  std::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
+      throw_on_dynamic_markup_insertions;
+  if (RuntimeEnabledFeatures::RunMicrotaskBeforeXmlCustomElementEnabled() &&
+      !parsing_fragment_) {
+    if (auto* definition = HTMLConstructionSite::LookUpCustomElementDefinition(
+            *document_, q_name, is)) {
+      throw_on_dynamic_markup_insertions.emplace(document_);
+      document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+      reactions.emplace();
+    }
+  }
+
   Element* new_element = current_node_->GetDocument().CreateElement(
       q_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
@@ -1039,6 +1077,9 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
 
   SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
   if (exception_state.HadException()) {
+    if (exception_copy_) {
+      exception_copy_->CopyFrom(exception_state);
+    }
     StopParsing();
     return;
   }
@@ -1449,6 +1490,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[2] = '3';
     g_shared_xhtml_entity_result[3] = '8';
     g_shared_xhtml_entity_result[4] = ';';
+    g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
   } else if (number_of_code_units == 1 && utf16_decoded_entity[0] == '<') {
     g_shared_xhtml_entity_result[0] = '&';
@@ -1456,6 +1498,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[2] = '6';
     g_shared_xhtml_entity_result[3] = '0';
     g_shared_xhtml_entity_result[4] = ';';
+    g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
   } else if (number_of_code_units == 2 && utf16_decoded_entity[0] == '<' &&
              utf16_decoded_entity[1] == 0x20D2) {
@@ -1467,6 +1510,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[5] = 0xE2;
     g_shared_xhtml_entity_result[6] = 0x83;
     g_shared_xhtml_entity_result[7] = 0x92;
+    g_shared_xhtml_entity_result[8] = 0;
     entity_length_in_utf8 = 8;
   } else {
     DCHECK_LE(number_of_code_units, 4u);
@@ -1635,7 +1679,7 @@ xmlDocPtr XmlDocPtrForString(Document* document,
   XMLDocumentParserScope scope(document, ErrorFunc, nullptr);
   XMLParserInput input(source);
   return xmlReadMemory(input.Data(), input.size(), url.Latin1().c_str(),
-                       input.Encoding(), XSLT_PARSE_OPTIONS);
+                       input.Encoding(), XSLT_PARSE_OPTIONS | XML_PARSE_HUGE);
 }
 
 OrdinalNumber XMLDocumentParser::LineNumber() const {

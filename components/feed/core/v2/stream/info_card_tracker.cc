@@ -157,13 +157,12 @@ void InfoCardTracker::SetState(int info_card_type,
   // base64 before writing to the prefs store.
   std::string serialized_state;
   state.SerializeToString(&serialized_state);
-  std::string base64_state;
-  base::Base64Encode(serialized_state, &base64_state);
 
   const base::Value::Dict& states =
       profile_prefs_->GetDict(prefs::kInfoCardStates);
   base::Value::Dict updated_states = states.Clone();
-  updated_states.Set(InfoCardTypeToString(info_card_type), base64_state);
+  updated_states.Set(InfoCardTypeToString(info_card_type),
+                     base::Base64Encode(serialized_state));
   profile_prefs_->SetDict(prefs::kInfoCardStates, std::move(updated_states));
 }
 

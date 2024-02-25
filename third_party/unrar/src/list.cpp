@@ -1,6 +1,12 @@
 #include "rar.hpp"
 
-static void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bool Technical,bool Bare);
+static void ListFileHeader(Archive& Arc,
+                           FileHeader& hd,
+                           bool& TitleShown,
+                           bool Verbose,
+                           bool Technical,
+                           bool Bare,
+                           bool DisableNames);
 static void ListSymLink(Archive &Arc);
 static void ListFileAttr(uint A,HOST_SYSTEM_TYPE HostType,wchar *AttrStr,size_t AttrSize);
 static void ListOldSubHeader(Archive &Arc);
@@ -22,9 +28,6 @@ void ListArchive(CommandData *Cmd)
       Cmd->Password.Clean(); // Clean user entered password before processing next archive.
 
     Archive Arc(Cmd);
-#ifdef _WIN_ALL
-    Arc.RemoveSequentialFlag();
-#endif
     if (!Arc.WOpen(ArcName))
       continue;
     bool FileMatched=true;
@@ -39,6 +42,7 @@ void ListArchive(CommandData *Cmd)
         {
           Arc.ViewComment();
           mprintf(L"\n%s: %s",St(MListArchive),Arc.FileName);
+
           mprintf(L"\n%s: ",St(MListDetails));
           uint SetCount=0;
           const wchar *Fmt=Arc.Format==RARFMT14 ? L"RAR 1.4":(Arc.Format==RARFMT15 ? L"RAR 4":L"RAR 5");
@@ -64,6 +68,16 @@ void ListArchive(CommandData *Cmd)
             mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListLock));
           if (Arc.Encrypted)
             mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListEncHead));
+
+          if (!Arc.MainHead.OrigName.empty()) {
+            mprintf(L"\n%s: %s", St(MOrigName), Arc.MainHead.OrigName.c_str());
+          }
+          if (Arc.MainHead.OrigTime.IsSet()) {
+            wchar DateStr[50];
+            Arc.MainHead.OrigTime.GetText(DateStr, ASIZE(DateStr), Technical);
+            mprintf(L"\n%s: %s", St(MOriginalTime), DateStr);
+          }
+
           mprintf(L"\n");
         }
 
@@ -95,7 +109,8 @@ void ListArchive(CommandData *Cmd)
               FileMatched=Cmd->IsProcessFile(Arc.FileHead,NULL,MATCH_WILDSUBPATH,0,NULL,0)!=0;
               if (FileMatched)
               {
-                ListFileHeader(Arc,Arc.FileHead,TitleShown,Verbose,Technical,Bare);
+                ListFileHeader(Arc, Arc.FileHead, TitleShown, Verbose,
+                               Technical, Bare, Cmd->DisableNames);
                 if (!Arc.FileHead.SplitBefore)
                 {
                   TotalUnpSize+=Arc.FileHead.UnpSize;
@@ -108,7 +123,8 @@ void ListArchive(CommandData *Cmd)
               if (FileMatched && !Bare)
               {
                 if (Technical && ShowService)
-                  ListFileHeader(Arc,Arc.SubHead,TitleShown,Verbose,true,false);
+                  ListFileHeader(Arc, Arc.SubHead, TitleShown, Verbose, true,
+                                 false, Cmd->DisableNames);
               }
               break;
           }
@@ -187,31 +203,44 @@ enum LISTCOL_TYPE {
   LCOL_NAME,LCOL_ATTR,LCOL_SIZE,LCOL_PACKED,LCOL_RATIO,LCOL_CSUM,LCOL_ENCR
 };
 
-
-void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bool Technical,bool Bare)
-{
-  wchar *Name=hd.FileName;
-  RARFORMAT Format=Arc.Format;
-
-  if (Bare)
-  {
-    mprintf(L"%s\n",Name);
-    return;
-  }
-
-  if (!TitleShown && !Technical)
-  {
+void ListFileHeader(Archive& Arc,
+                    FileHeader& hd,
+                    bool& TitleShown,
+                    bool Verbose,
+                    bool Technical,
+                    bool Bare,
+                    bool DisableNames) {
+  if (!TitleShown && !Technical && !Bare) {
     if (Verbose)
     {
       mprintf(L"\n%ls",St(MListTitleV));
-      mprintf(L"\n----------- ---------  -------- ----- ---------- -----  --------  ----");
+      if (!DisableNames) {
+        mprintf(
+            L"\n----------- ---------  -------- ----- ---------- -----  "
+            L"--------  ----");
+      }
     }
     else
     {
       mprintf(L"\n%ls",St(MListTitleL));
-      mprintf(L"\n----------- ---------  ---------- -----  ----");
+      if (!DisableNames) {
+        mprintf(L"\n----------- ---------  ---------- -----  ----");
+      }
     }
+    // Must be set even in DisableNames mode to suppress "0 files" output
+    // unless no files are matched.
     TitleShown=true;
+  }
+  if (DisableNames) {
+    return;
+  }
+
+  wchar* Name = hd.FileName;
+  RARFORMAT Format = Arc.Format;
+
+  if (Bare) {
+    mprintf(L"%s\n", Name);
+    return;
   }
 
   wchar UnpSizeText[30],PackSizeText[30];
@@ -304,17 +333,24 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
       mprintf(L"\n%12ls: %ls",St(MListPacked),PackSizeText);
       mprintf(L"\n%12ls: %ls",St(MListRatio),RatioStr);
     }
+    bool WinTitles = false;
+#ifdef _WIN_ALL
+    WinTitles = true;
+#endif
     if (hd.mtime.IsSet())
-      mprintf(L"\n%12ls: %ls",St(MListMtime),DateStr);
+      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListModified : MListMtime),
+              DateStr);
     if (hd.ctime.IsSet())
     {
       hd.ctime.GetText(DateStr,ASIZE(DateStr),true);
-      mprintf(L"\n%12ls: %ls",St(MListCtime),DateStr);
+      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListCreated : MListCtime),
+              DateStr);
     }
     if (hd.atime.IsSet())
     {
       hd.atime.GetText(DateStr,ASIZE(DateStr),true);
-      mprintf(L"\n%12ls: %ls",St(MListAtime),DateStr);
+      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListAccessed : MListAtime),
+              DateStr);
     }
     mprintf(L"\n%12ls: %ls",St(MListAttr),AttrStr);
     if (hd.FileHash.Type==HASH_CRC32)
@@ -370,15 +406,16 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
     {
       mprintf(L"\n%12ls: ",L"Unix owner");
       if (*hd.UnixOwnerName!=0)
-        mprintf(L"%ls:",GetWide(hd.UnixOwnerName));
+        mprintf(L"%ls", GetWide(hd.UnixOwnerName));
+      else if (hd.UnixOwnerNumeric) {
+        mprintf(L"#%d", hd.UnixOwnerID);
+      }
+      mprintf(L":");
       if (*hd.UnixGroupName!=0)
         mprintf(L"%ls",GetWide(hd.UnixGroupName));
-      if ((*hd.UnixOwnerName!=0 || *hd.UnixGroupName!=0) && (hd.UnixOwnerNumeric || hd.UnixGroupNumeric))
-        mprintf(L"  ");
-      if (hd.UnixOwnerNumeric)
-        mprintf(L"#%d:",hd.UnixOwnerID);
-      if (hd.UnixGroupNumeric)
-        mprintf(L"#%d:",hd.UnixGroupID);
+      else if (hd.UnixGroupNumeric) {
+        mprintf(L"#%d", hd.UnixGroupID);
+      }
     }
 
     mprintf(L"\n");

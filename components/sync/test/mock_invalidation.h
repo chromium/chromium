@@ -43,7 +43,7 @@ class MockInvalidation : public SyncInvalidation {
   // The version of this invalidation.  Valid only if !is_unknown_version_.
   const int64_t version_;
 
-  // The payload of this invalidation.  Valid only if !is_unknown_version_.
+  // The payload of this invalidation.
   const std::string payload_;
 };
 

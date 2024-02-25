@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
@@ -25,6 +24,10 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_restore_texture.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
@@ -52,19 +55,6 @@ namespace gpu {
 
 namespace {
 
-bool SupportsVideoFormat(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return true;
-    default:
-      return false;
-  }
-}
-
 size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
@@ -72,49 +62,44 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
       return 2;
     case DXGI_FORMAT_R8_UNORM:
     case DXGI_FORMAT_R8G8_UNORM:
+    case DXGI_FORMAT_R16_UNORM:
+    case DXGI_FORMAT_R16G16_UNORM:
     case DXGI_FORMAT_R8G8B8A8_UNORM:
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return 1;
     default:
-      NOTREACHED() << "Unsupported DXGI format: " << dxgi_format;
-      return 0;
+      NOTREACHED_NORETURN() << "Unsupported DXGI format: " << dxgi_format;
   }
 }
 
-viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
+viz::SharedImageFormat VideoPlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
   viz::SharedImageFormat format;
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
-      // Y plane is accessed as R8 and UV plane is accessed as RG88 in D3D.
-      format = plane == 0 ? viz::SinglePlaneFormat::kR_8
-                          : viz::SinglePlaneFormat::kRG_88;
-      break;
+      // Y plane is accessed as R8 and UV plane is accessed as R8G8 in D3D.
+      return plane == 0 ? viz::SinglePlaneFormat::kR_8
+                        : viz::SinglePlaneFormat::kRG_88;
     case DXGI_FORMAT_P010:
-      format = plane == 0 ? viz::SinglePlaneFormat::kR_16
-                          : viz::SinglePlaneFormat::kRG_1616;
-      break;
+      // Y plane is accessed as R16 and UV plane is accessed as R16G16 in D3D.
+      return plane == 0 ? viz::SinglePlaneFormat::kR_16
+                        : viz::SinglePlaneFormat::kRG_1616;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
-      format = viz::SinglePlaneFormat::kBGRA_8888;
-      break;
+      return viz::SinglePlaneFormat::kBGRA_8888;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
-      format = viz::SinglePlaneFormat::kRGBA_1010102;
-      break;
+      return viz::SinglePlaneFormat::kRGBA_1010102;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      format = viz::SinglePlaneFormat::kRGBA_F16;
-      break;
+      return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED();
-      format = viz::SinglePlaneFormat::kBGRA_8888;
+      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
   }
-  return format;
 }
 
-gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
-                    const gfx::Size& size,
-                    size_t plane) {
+gfx::Size VideoPlaneSize(DXGI_FORMAT dxgi_format,
+                         const gfx::Size& size,
+                         size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
@@ -126,8 +111,7 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return size;
     default:
-      NOTREACHED();
-      return gfx::Size();
+      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
   }
 }
 
@@ -157,13 +141,6 @@ bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
   return true;
 }
 
-bool CanTextureBeUsedByANGLE(
-    const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture) {
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-  d3d11_texture->GetDevice(&d3d11_device);
-  return gl::QueryD3D11DeviceObjectFromANGLE() == d3d11_device;
-}
-
 }  // namespace
 
 D3DImageBacking::GLTextureHolder::GLTextureHolder(
@@ -172,6 +149,26 @@ D3DImageBacking::GLTextureHolder::GLTextureHolder(
     gl::ScopedEGLImage egl_image)
     : texture_passthrough_(std::move(texture_passthrough)),
       egl_image_(std::move(egl_image)) {}
+
+bool D3DImageBacking::GLTextureHolder::BindEGLImageToTexture() {
+  if (!needs_rebind_) {
+    return true;
+  }
+
+  gl::GLApi* const api = gl::g_current_gl_context;
+  gl::ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
+
+  DCHECK_EQ(texture_passthrough_->target(),
+            static_cast<unsigned>(GL_TEXTURE_2D));
+  api->glBindTextureFn(GL_TEXTURE_2D, texture_passthrough_->service_id());
+
+  if (!::gpu::BindEGLImageToTexture(GL_TEXTURE_2D, egl_image_.get())) {
+    return false;
+  }
+
+  needs_rebind_ = false;
+  return true;
+}
 
 void D3DImageBacking::GLTextureHolder::MarkContextLost() {
   if (texture_passthrough_) {
@@ -184,7 +181,7 @@ D3DImageBacking::GLTextureHolder::~GLTextureHolder() = default;
 // static
 scoped_refptr<D3DImageBacking::GLTextureHolder>
 D3DImageBacking::CreateGLTexture(
-    viz::SharedImageFormat format,
+    const GLFormatDesc& gl_format_desc,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
@@ -207,20 +204,6 @@ D3DImageBacking::CreateGLTexture(
   // texture support is disabled.
   api->glTexParameteriFn(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api->glTexParameteriFn(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  // The GL internal format can differ from the underlying swap chain or texture
-  // format e.g. RGBA or RGB instead of BGRA or RED/RG for NV12 texture planes.
-  // See EGL_ANGLE_d3d_texture_client_buffer spec for format restrictions.
-  GLFormatDesc gl_format_desc;
-  if (format.is_multi_plane()) {
-    gl_format_desc =
-        ToGLFormatDesc(format, plane_index, /*use_angle_rgbx_format=*/false);
-  } else {
-    // For legacy multiplanar formats, `format` is already plane format (eg.
-    // RED, RG), so we pass plane_index=0.
-    gl_format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                    /*use_angle_rgbx_format=*/false);
-  }
 
   const EGLint egl_attrib_list[] = {
       EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
@@ -268,20 +251,15 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+    const GLFormatCaps& gl_format_caps,
     bool is_back_buffer) {
   DCHECK(format.is_single_plane());
-  auto gl_texture_holder =
-      CreateGLTexture(format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
-                      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
-  if (!gl_texture_holder) {
-    LOG(ERROR) << "Failed to create GL texture.";
-    return nullptr;
-  }
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), {std::move(gl_texture_holder)},
-      /*dxgi_shared_handle_state=*/nullptr, GL_TEXTURE_2D, /*array_slice=*/0u,
-      /*plane_index=*/0u, std::move(swap_chain), is_back_buffer));
+      "SwapChainBuffer", std::move(d3d11_texture),
+      /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
+      /*array_slice=*/0u, /*plane_index=*/0u, std::move(swap_chain),
+      is_back_buffer));
 }
 
 // static
@@ -293,46 +271,22 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+    const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
     size_t plane_index) {
-  const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
+  const bool has_webgpu_usage = !!(usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
-  // SHARED_IMAGE_USAGE_VIDEO_DECODE means that this is for D3D11VideoDecoder.
-  const bool has_video_decode_usage =
-      !!(usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-  std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders;
-  // Do not cache GL textures in the backing if it could be owned by Dawn, or
-  // the video decoder, since there could be no GL context to MakeCurrent in the
-  // destructor. And the d3d11_texture is created with d3d11 device in ANGLE.
-  if (!dxgi_shared_handle_state && !has_video_decode_usage &&
-      CanTextureBeUsedByANGLE(d3d11_texture)) {
-    for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
-      gfx::Size plane_size = format.GetPlaneSize(plane, size);
-      // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
-      // which is_single_plane(), but the real plane is in plane_index so we
-      // pass that.
-      unsigned plane_id = format.is_single_plane() ? plane_index : plane;
-      // Creating the GL texture doesn't require exclusive access to the
-      // underlying D3D11 texture.
-      scoped_refptr<GLTextureHolder> gl_texture_holder =
-          CreateGLTexture(format, plane_size, color_space, d3d11_texture,
-                          texture_target, array_slice, plane_id);
-      if (!gl_texture_holder) {
-        LOG(ERROR) << "Failed to create GL texture.";
-        return nullptr;
-      }
-      gl_texture_holders.push_back(std::move(gl_texture_holder));
-    }
-  }
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture_holders),
-      std::move(dxgi_shared_handle_state), texture_target, array_slice,
-      plane_index));
+      std::move(debug_label), std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
+      array_slice, plane_index));
   return backing;
 }
 
@@ -343,15 +297,16 @@ D3DImageBacking::CreateFromVideoTexture(
     DXGI_FORMAT dxgi_format,
     const gfx::Size& size,
     uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     unsigned array_slice,
+    const GLFormatCaps& gl_format_caps,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
   CHECK(d3d11_texture);
-  CHECK(SupportsVideoFormat(dxgi_format));
   CHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
 
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
-  const bool has_webgpu_usage = usage & gpu::SHARED_IMAGE_USAGE_WEBGPU;
+  const bool has_webgpu_usage = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                         SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
@@ -360,8 +315,8 @@ D3DImageBacking::CreateFromVideoTexture(
        plane_index++) {
     const auto& mailbox = mailboxes[plane_index];
 
-    const auto plane_format = PlaneFormat(dxgi_format, plane_index);
-    const auto plane_size = PlaneSize(dxgi_format, size, plane_index);
+    const auto plane_format = VideoPlaneFormat(dxgi_format, plane_index);
+    const auto plane_size = VideoPlaneSize(dxgi_format, size, plane_index);
 
     // Shared image does not need to store the colorspace since it is already
     // stored on the VideoFrame which is provided upon presenting the overlay.
@@ -380,11 +335,12 @@ D3DImageBacking::CreateFromVideoTexture(
     // destructor.
     shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        /*gl_texture_holders=*/{}, dxgi_shared_handle_state, kTextureTarget,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "VideoTexture",
+        d3d11_texture, dxgi_shared_handle_state, gl_format_caps, kTextureTarget,
         array_slice, plane_index));
     if (!shared_images[plane_index])
       return {};
+
     shared_images[plane_index]->SetCleared();
   }
 
@@ -399,9 +355,10 @@ D3DImageBacking::D3DImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+    const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
     size_t plane_index,
@@ -414,11 +371,12 @@ D3DImageBacking::D3DImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
       d3d11_texture_(std::move(d3d11_texture)),
-      gl_texture_holders_(std::move(gl_texture_holders)),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
+      gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),
       array_slice_(array_slice),
       plane_index_(plane_index),
@@ -429,18 +387,14 @@ D3DImageBacking::D3DImageBacking(
     d3d11_texture_->GetDevice(&texture_d3d11_device_);
     d3d11_texture_->GetDesc(&d3d11_texture_desc_);
   }
-
-  const bool has_video_decode_usage =
-      !!(usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-  CHECK(has_video_decode_usage || dxgi_shared_handle_state_ ||
-        angle_d3d11_device_ != texture_d3d11_device_ ||
-        !gl_texture_holders_.empty());
 }
 
 D3DImageBacking::~D3DImageBacking() {
   if (!have_context()) {
     for (auto& texture_holder : gl_texture_holders_) {
-      texture_holder->MarkContextLost();
+      if (texture_holder) {
+        texture_holder->MarkContextLost();
+      }
     }
   }
 }
@@ -619,13 +573,14 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
+#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
-#if BUILDFLAG(USE_DAWN)
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
@@ -676,9 +631,16 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 
   return std::make_unique<DawnD3DImageRepresentation>(manager, this, tracker,
                                                       device, backend_type);
-#else
-  return nullptr;
+}
 #endif  // BUILDFLAG(USE_DAWN)
+
+void D3DImageBacking::UpdateExternalFence(
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  if (!write_fence_) {
+    write_fence_ = std::move(external_fence);
+  }
+
+  // TODO(crbug.com/1236801): Handle cases that write_fence_ exists.
 }
 
 std::unique_ptr<VideoDecodeImageRepresentation>
@@ -689,7 +651,7 @@ D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
       manager, this, tracker, device, d3d11_texture_);
 }
 
-std::vector<scoped_refptr<D3DSharedFence>>
+std::vector<scoped_refptr<gfx::D3DSharedFence>>
 D3DImageBacking::GetPendingWaitFences(
     const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
     const wgpu::Device& wait_dawn_device,
@@ -706,7 +668,7 @@ D3DImageBacking::GetPendingWaitFences(
   auto& texture_device_fence = d3d11_signaled_fence_map_[texture_d3d11_device_];
   if (wait_d3d11_device != texture_d3d11_device_ && !texture_device_fence) {
     texture_device_fence =
-        D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
+        gfx::D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
     if (!texture_device_fence) {
       LOG(ERROR) << "Failed to retrieve D3D11 signal fence";
       return {};
@@ -724,11 +686,15 @@ D3DImageBacking::GetPendingWaitFences(
     write_fence_ = texture_device_fence;
   }
 
-  const D3DSharedFence* dawn_signaled_fence =
+#if BUILDFLAG(USE_DAWN)
+  const gfx::D3DSharedFence* dawn_signaled_fence =
       wait_dawn_device ? dawn_signaled_fence_map_[wait_dawn_device.Get()].get()
                        : nullptr;
+#else
+  const gfx::D3DSharedFence* dawn_signaled_fence = nullptr;
+#endif
 
-  auto should_wait_on_fence = [&](D3DSharedFence* wait_fence) -> bool {
+  auto should_wait_on_fence = [&](gfx::D3DSharedFence* wait_fence) -> bool {
     // Skip the wait if it's for the fence last signaled by the Dawn device, or
     // for D3D11 if the fence was issued for the same device since D3D11 uses a
     // single immediate context for issuing commands on a device.
@@ -738,7 +704,7 @@ D3DImageBacking::GetPendingWaitFences(
             wait_d3d11_device != wait_fence->GetD3D11Device());
   };
 
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences;
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences;
   // Always wait for previous write for both read-only or read-write access.
   // Skip the wait if it's for the fence last signaled by the Dawn device, or
   // for D3D11 if the fence was issued for the same device since D3D11 has a
@@ -794,7 +760,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
   descriptor.usage = static_cast<WGPUTextureUsage>(wgpu_usage);
 
   // Defer clearing fences until later to handle Dawn failure to import texture.
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences =
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences =
       GetPendingWaitFences(dawn_d3d11_device, device, write_access);
   for (auto& wait_fence : wait_fences) {
     descriptor.waitFences.push_back(ExternalImageDXGIFenceDescriptor{
@@ -833,14 +799,14 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
       ExternalImageDXGIFenceDescriptor descriptor;
       external_image->EndAccess(texture.Get(), &descriptor);
 
-      scoped_refptr<D3DSharedFence> signaled_fence;
+      scoped_refptr<gfx::D3DSharedFence> signaled_fence;
       if (descriptor.fenceHandle != nullptr) {
         auto& cached_fence = dawn_signaled_fence_map_[device.Get()];
         // Try to reuse the last signaled fence if it's the same fence.
         if (!cached_fence ||
             !cached_fence->IsSameFenceAsHandle(descriptor.fenceHandle)) {
-          cached_fence =
-              D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
+          cached_fence = gfx::D3DSharedFence::CreateFromUnownedHandle(
+              descriptor.fenceHandle);
           DCHECK(cached_fence);
         }
         cached_fence->Update(descriptor.fenceValue);
@@ -874,11 +840,8 @@ bool D3DImageBacking::BeginAccessD3D11(
   if (!ValidateBeginAccess(write_access))
     return false;
 
-  // If read fences or write fence are present, shared handle should be too.
-  CHECK((read_fences_.empty() && !write_fence_) || dxgi_shared_handle_state_);
-
   // Defer clearing fences until later to handle D3D11 failure to synchronize.
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences =
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences =
       GetPendingWaitFences(d3d11_device, /*dawn_device=*/nullptr, write_access);
   for (auto& wait_fence : wait_fences) {
     if (!wait_fence->WaitD3D11(d3d11_device)) {
@@ -910,10 +873,10 @@ void D3DImageBacking::EndAccessD3D11(
   // from another device in GetPendingWaitFences().
   auto& d3d11_signal_fence = d3d11_signaled_fence_map_[d3d11_device];
   if (!is_texture_device && !d3d11_signal_fence) {
-    d3d11_signal_fence = D3DSharedFence::CreateForD3D11(d3d11_device);
+    d3d11_signal_fence = gfx::D3DSharedFence::CreateForD3D11(d3d11_device);
   }
 
-  scoped_refptr<D3DSharedFence> signaled_fence;
+  scoped_refptr<gfx::D3DSharedFence> signaled_fence;
   if (d3d11_signal_fence && d3d11_signal_fence->IncrementAndSignalD3D11()) {
     signaled_fence = d3d11_signal_fence;
   }
@@ -950,7 +913,7 @@ void D3DImageBacking::BeginAccessCommon(bool write_access) {
 }
 
 void D3DImageBacking::EndAccessCommon(
-    scoped_refptr<D3DSharedFence> signaled_fence) {
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence) {
   if (in_write_access_) {
     DCHECK(!write_fence_);
     DCHECK(read_fences_.empty());
@@ -965,8 +928,7 @@ void D3DImageBacking::EndAccessCommon(
 
 void* D3DImageBacking::GetEGLImage() const {
   DCHECK(format().is_single_plane());
-  return !gl_texture_holders_.empty() ? gl_texture_holders_[0]->egl_image()
-                                      : nullptr;
+  return gl_texture_holders_[0] ? gl_texture_holders_[0]->egl_image() : nullptr;
 }
 
 bool D3DImageBacking::PresentSwapChain() {
@@ -976,39 +938,28 @@ bool D3DImageBacking::PresentSwapChain() {
     return false;
   }
 
-  DXGI_PRESENT_PARAMETERS params = {};
-  params.DirtyRectsCount = 0;
-  params.pDirtyRects = nullptr;
+  constexpr UINT kFlags = DXGI_PRESENT_ALLOW_TEARING;
+  constexpr DXGI_PRESENT_PARAMETERS kParams = {};
 
-  UINT flags = DXGI_PRESENT_ALLOW_TEARING;
-
-  HRESULT hr = swap_chain_->Present1(/*interval=*/0, flags, &params);
+  HRESULT hr = swap_chain_->Present1(/*interval=*/0, kFlags, &kParams);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
     return false;
   }
 
-  gl::GLApi* const api = gl::g_current_gl_context;
-  gl::ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
-
   DCHECK(format().is_single_plane());
-  DCHECK_EQ(gl_texture_holders_[0]->texture_passthrough()->target(),
-            static_cast<unsigned>(GL_TEXTURE_2D));
-  api->glBindTextureFn(
-      GL_TEXTURE_2D,
-      gl_texture_holders_[0]->texture_passthrough()->service_id());
 
   // we're rebinding to ensure that underlying D3D11 resource views are
   // recreated in ANGLE.
-  void* egl_image = GetEGLImage();
-  if (!BindEGLImageToTexture(GL_TEXTURE_2D, egl_image)) {
-    return false;
+  if (gl_texture_holders_[0]) {
+    gl_texture_holders_[0]->set_needs_rebind(true);
   }
 
-  TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain::Flush");
+  // Flush device context otherwise present could be deferred.
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+  texture_d3d11_device_->GetImmediateContext(&d3d11_device_context);
+  d3d11_device_context->Flush();
 
-  // Flush device context through ANGLE otherwise present could be deferred.
-  api->glFlushFn();
   return true;
 }
 
@@ -1016,40 +967,65 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                              MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceGLTexturePassthrough");
-  // Lazily create a GL texture if it wasn't provided on initialization.
-  auto gl_texture_holders = gl_texture_holders_;
-  if (gl_texture_holders.empty()) {
-    // If DXGI shared handle is present, the |d3d11_texture_| might belong to a
-    // different device with Graphite so retrieve the ANGLE specific D3D11
-    // texture from the |dxgi_shared_handle_state_|.
-    const bool is_angle_texture = texture_d3d11_device_ == angle_d3d11_device_;
-    CHECK(is_angle_texture || dxgi_shared_handle_state_);
-    auto d3d11_texture =
-        is_angle_texture ? d3d11_texture_
-                         : dxgi_shared_handle_state_->GetOrCreateD3D11Texture(
-                               angle_d3d11_device_);
-    if (!d3d11_texture) {
-      LOG(ERROR) << "Failed to open DXGI shared handle";
+
+  const auto number_of_planes = static_cast<size_t>(format().NumberOfPlanes());
+  std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders(
+      number_of_planes);
+  DCHECK_GE(gl_texture_holders_.size(), number_of_planes);
+
+  // If DXGI shared handle is present, the |d3d11_texture_| might belong to a
+  // different device with Graphite so retrieve the ANGLE specific D3D11
+  // texture from the |dxgi_shared_handle_state_|.
+  const bool is_angle_texture = texture_d3d11_device_ == angle_d3d11_device_;
+  CHECK(is_angle_texture || dxgi_shared_handle_state_);
+  auto d3d11_texture = is_angle_texture
+                           ? d3d11_texture_
+                           : dxgi_shared_handle_state_->GetOrCreateD3D11Texture(
+                                 angle_d3d11_device_);
+  if (!d3d11_texture) {
+    LOG(ERROR) << "Failed to open DXGI shared handle";
+    return nullptr;
+  }
+
+  for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+    auto& holder = gl_texture_holders[plane];
+    if (gl_texture_holders_[plane]) {
+      holder = gl_texture_holders_[plane].get();
+      continue;
+    }
+
+    // The GL internal format can differ from the underlying swap chain or
+    // texture format e.g. RGBA or RGB instead of BGRA or RED/RG for NV12
+    // texture planes. See EGL_ANGLE_d3d_texture_client_buffer spec for format
+    // restrictions.
+    GLFormatDesc gl_format_desc;
+    if (format().is_multi_plane()) {
+      gl_format_desc = gl_format_caps_.ToGLFormatDesc(format(), plane);
+    } else {
+      // For legacy multiplanar formats, `format` is already plane format (eg.
+      // RED, RG), so we pass plane_index=0.
+      gl_format_desc =
+          gl_format_caps_.ToGLFormatDesc(format(), /*plane_index=*/0);
+    }
+
+    gfx::Size plane_size = format().GetPlaneSize(plane, size());
+    // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
+    // which is_single_plane(), but the real plane is in plane_index_ so we
+    // pass that.
+    unsigned plane_id = format().is_single_plane() ? plane_index_ : plane;
+    // Creating the GL texture doesn't require exclusive access to the
+    // underlying D3D11 texture.
+    holder = CreateGLTexture(gl_format_desc, plane_size, color_space(),
+                             d3d11_texture, texture_target_, array_slice_,
+                             plane_id, swap_chain_);
+    if (!holder) {
+      LOG(ERROR) << "Failed to create GL texture for plane: " << plane;
       return nullptr;
     }
-    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-      gfx::Size plane_size = format().GetPlaneSize(plane, size());
-      // For legacy multiplanar formats, format() is plane format (eg. RED, RG)
-      // which is_single_plane(), but the real plane is in plane_index_ so we
-      // pass that.
-      unsigned plane_id = format().is_single_plane() ? plane_index_ : plane;
-      // Creating the GL texture doesn't require exclusive access to the
-      // underlying D3D11 texture.
-      scoped_refptr<GLTextureHolder> gl_texture_holder =
-          CreateGLTexture(format(), plane_size, color_space(), d3d11_texture,
-                          texture_target_, array_slice_, plane_id, swap_chain_);
-      if (!gl_texture_holder) {
-        LOG(ERROR) << "Failed to create GL texture.";
-        return nullptr;
-      }
-      gl_texture_holders.push_back(std::move(gl_texture_holder));
-    }
+    // Cache the gl textures using weak pointers.
+    gl_texture_holders_[plane] = holder->GetWeakPtr();
   }
+
   return std::make_unique<GLTexturePassthroughD3DImageRepresentation>(
       manager, this, tracker, angle_d3d11_device_,
       std::move(gl_texture_holders));
@@ -1069,27 +1045,25 @@ D3DImageBacking::ProduceSkiaGanesh(
                                            this, tracker);
 }
 
+#if BUILDFLAG(SKIA_USE_DAWN)
 std::unique_ptr<SkiaGraphiteImageRepresentation>
 D3DImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-#if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   wgpu::AdapterProperties adapter_properties;
   device.GetAdapter().GetProperties(&adapter_properties);
-  auto dawn_representation = ProduceDawn(manager, tracker, device.Get(),
-                                         adapter_properties.backendType, {});
-  const bool is_yuv_plane =
-      format().is_single_plane() && NumPlanes(d3d11_texture_desc_.Format) > 1;
+  auto dawn_representation =
+      ProduceDawn(manager, tracker, device.Get(),
+                  adapter_properties.backendType, {}, context_state);
+  const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      plane_index_, is_yuv_plane);
-#else
-  NOTREACHED_NORETURN();
-#endif
+      is_yuv_plane, plane_index_);
 }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
 std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
     SharedImageManager* manager,
@@ -1099,13 +1073,13 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
                                                          texture_d3d11_device_);
 }
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 D3DImageBacking::GetDCLayerOverlayImage() {
   if (swap_chain_) {
-    return absl::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
+    return std::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
   }
-  return absl::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
-                                                      array_slice_);
+  return std::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
+                                                     array_slice_);
 }
 
 }  // namespace gpu

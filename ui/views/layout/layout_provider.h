@@ -33,6 +33,8 @@ enum InsetsMetric {
   // The margins around the icon/title of a dialog. The bottom margin is implied
   // by the content insets and the other margins overlap with INSETS_DIALOG.
   INSETS_DIALOG_TITLE,
+  // The margins for the dialog footnote content.
+  INSETS_DIALOG_FOOTNOTE,
   // The margins around the edges of a tooltip bubble.
   INSETS_TOOLTIP_BUBBLE,
   // Padding to add to vector image buttons to increase their click and touch
@@ -198,7 +200,7 @@ class VIEWS_EXPORT LayoutProvider {
   virtual int GetDistanceMetric(int metric) const;
 
   // Returns the TypographyProvider, used to configure text properties such as
-  // font, weight, color, size, and line height. Never null.
+  // font, weight, color, size, and line height.
   virtual const TypographyProvider& GetTypographyProvider() const;
 
   // Returns the actual width to use for a dialog that requires at least

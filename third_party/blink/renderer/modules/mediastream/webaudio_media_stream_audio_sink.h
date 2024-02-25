@@ -47,8 +47,9 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
  public:
   static const int kWebAudioRenderBufferSize;
 
-  explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
-                                        int context_sample_rate);
+  WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
+                               int context_sample_rate,
+                               uint32_t context_buffer_size);
 
   WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
   WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =
@@ -67,16 +68,17 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   void ProvideInput(const WebVector<float*>& audio_data,
                     int number_of_frames) override;
 
-  // Method to allow the unittests to inject its own sink parameters to avoid
-  // query the hardware.
-  // TODO(xians,tommi): Remove and instead offer a way to inject the sink
-  // parameters so that the implementation doesn't rely on the global default
-  // hardware config but instead gets the parameters directly from the sink
-  // (WebAudio in this case). Ideally the unit test should be able to use that
-  // same mechanism to inject the sink parameters for testing.
-  void SetSinkParamsForTesting(const media::AudioParameters& sink_params);
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo);
+
+  struct FifoStats {
+    int overruns = 0;
+    int underruns = 0;
+  };
+
+  void ResetFifoStatsForTesting();
+  const FifoStats& GetFifoStatsForTesting();
+
   // media::AudioConverter::InputCallback implementation.
   // This function is triggered by the above ProvideInput() on the WebAudio
   // audio thread, so it has be called under the protection of |lock_|.
@@ -88,7 +90,6 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   std::unique_ptr<media::AudioFifo> fifo_ GUARDED_BY(lock_);
   bool is_enabled_ GUARDED_BY(lock_);
   media::AudioParameters source_params_ GUARDED_BY(lock_);
-  media::AudioParameters sink_params_ GUARDED_BY(lock_);
 
   // Protects the above variables.
   base::Lock lock_;
@@ -106,6 +107,18 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // No lock protection needed since only accessed in constructor, destructor
   // and OnReadyStateChanged().
   bool track_stopped_;
+
+  // Buffer size of the audio context the sink delivers audio to. Affects how
+  // many public ProvideInput() calls can be received in one batch, and thus
+  // needs to be taken into account when configuring `fifo_`.
+  const uint32_t sink_context_buffer_size_;
+
+  // Parameters at which audio is delivered to the WebAudio graph, i.e. of the
+  // public ProvideInput() call.
+  const media::AudioParameters sink_params_;
+
+  // For testing. Instantiated only if ResetFifoStatsForTesting() is called.
+  std::unique_ptr<FifoStats> fifo_stats_;
 
   // Used to assert that OnData() is only accessed by one thread at a time. We
   // can't use a thread checker since thread may change.

@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_LIGHT_PROBE_H_
 
 #include <memory>
+#include <optional>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -38,13 +38,13 @@ class XRLightProbe : public EventTarget {
     kReflectionFormatRGBA16F = 1
   };
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   XRSpace* probeSpace() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reflectionchange, kReflectionchange)
 
-  absl::optional<gfx::Transform> MojoFromObject() const;
+  std::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
@@ -52,7 +52,7 @@ class XRLightProbe : public EventTarget {
       const device::mojom::blink::XRLightEstimationData* data,
       double timestamp);
 
-  XRLightEstimate* getLightEstimate() { return light_estimate_; }
+  XRLightEstimate* getLightEstimate() { return light_estimate_.Get(); }
   XRCubeMap* getReflectionCubeMap() { return cube_map_.get(); }
 
   XRReflectionFormat ReflectionFormat() const { return reflection_format_; }

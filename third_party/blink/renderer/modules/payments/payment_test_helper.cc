@@ -262,7 +262,7 @@ BuildSecurePaymentConfirmationMethodDataForTest(const V8TestingScope& scope) {
       1, PaymentMethodData::Create());
   method_data[0]->setSupportedMethod("secure-payment-confirmation");
   method_data[0]->setData(ScriptValue(
-      scope.GetIsolate(), spc_request->ToV8Value(scope.GetScriptState())));
+      scope.GetIsolate(), spc_request->ToV8(scope.GetScriptState())));
 
   return method_data;
 }

@@ -10,19 +10,20 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace quick_answers {
 
 // A bubble style view to show QuickAnswer.
 class RichAnswersTranslationView : public RichAnswersView {
- public:
-  METADATA_HEADER(RichAnswersTranslationView);
+  METADATA_HEADER(RichAnswersTranslationView, RichAnswersView)
 
-  explicit RichAnswersTranslationView(
-      const gfx::Rect& anchor_view_bounds,
-      base::WeakPtr<QuickAnswersUiController> controller,
-      const quick_answers::QuickAnswer& result);
+ public:
+  RichAnswersTranslationView(const gfx::Rect& anchor_view_bounds,
+                             base::WeakPtr<QuickAnswersUiController> controller,
+                             const TranslationResult& translation_result);
 
   RichAnswersTranslationView(const RichAnswersTranslationView&) = delete;
   RichAnswersTranslationView& operator=(const RichAnswersTranslationView&) =
@@ -32,6 +33,18 @@ class RichAnswersTranslationView : public RichAnswersView {
 
  private:
   void InitLayout();
+  void AddLanguageTitle(const std::string& locale, bool is_header_view);
+  views::FlexLayoutView* AddLanguageText(const std::string& language_text,
+                                         bool maybe_append_buttons);
+  void AddReadAndCopyButtons(views::View* container_view);
+  void OnReadButtonPressed(const std::string& read_text,
+                           const std::string& locale);
+  void OnCopyButtonPressed(const std::string& copy_text);
+
+  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::WebView> tts_audio_web_view_ = nullptr;
+
+  TranslationResult translation_result_;
 
   base::WeakPtrFactory<RichAnswersTranslationView> weak_factory_{this};
 };

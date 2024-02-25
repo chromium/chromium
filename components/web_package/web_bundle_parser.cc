@@ -5,12 +5,14 @@
 #include "components/web_package/web_bundle_parser.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,7 +25,6 @@
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -94,23 +95,23 @@ bool IsMetadataSection(const std::string& name) {
 // Parses a `section-lengths` CBOR item.
 // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
 //   section-lengths = [* (section-name: tstr, length: uint) ]
-absl::optional<SectionLengths> ParseSectionLengths(
+std::optional<SectionLengths> ParseSectionLengths(
     base::span<const uint8_t> data) {
   cbor::Reader::DecoderError error;
-  absl::optional<cbor::Value> value = cbor::Reader::Read(data, &error);
+  std::optional<cbor::Value> value = cbor::Reader::Read(data, &error);
   if (!value.has_value() || !value->is_array()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const cbor::Value::ArrayValue& array = value->GetArray();
   if (array.size() % 2 != 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SectionLengths result;
   for (size_t i = 0; i < array.size(); i += 2) {
     if (!array[i].is_string() || !array[i + 1].is_unsigned()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     result.emplace_back(array[i].GetString(), array[i + 1].GetUnsigned());
   }
@@ -124,18 +125,18 @@ struct ParsedHeaders {
 
 // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
 //   headers = {* bstr => bstr}
-absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
+std::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     const cbor::Value& headers_value) {
   // |headers_value| of headers must be a map.
   if (!headers_value.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedHeaders result;
 
   for (const auto& item : headers_value.GetMap()) {
     if (!item.first.is_bytestring() || !item.second.is_bytestring()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     base::StringPiece name = item.first.GetBytestringAsString();
     base::StringPiece value = item.second.GetBytestringAsString();
@@ -144,7 +145,7 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     // This matches the requirement in Section 8.1.2 of [RFC7540].
     if (!base::IsStringASCII(name) ||
         base::ranges::any_of(name, base::IsAsciiUpper<char>)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!name.empty() && name[0] == ':') {
@@ -159,7 +160,7 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     // Both name and value must be valid.
     if (!net::HttpUtil::IsValidHeaderName(name) ||
         !net::HttpUtil::IsValidHeaderValue(value)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // headers[name] must not exist, because CBOR maps cannot contain duplicate
@@ -202,7 +203,7 @@ class WebBundleParser::MetadataParser
   MetadataParser(mojo::Remote<mojom::BundleDataSource>& data_source
                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
                  GURL base_url,
-                 absl::optional<uint64_t> offset,
+                 std::optional<uint64_t> offset,
                  ParseMetadataCallback callback)
       : data_source_(data_source),
         base_url_(std::move(base_url)),
@@ -280,7 +281,7 @@ class WebBundleParser::MetadataParser
   }
 
   void ParseWebBundleLength(const uint64_t file_length,
-                            const absl::optional<std::vector<uint8_t>>& data) {
+                            const std::optional<std::vector<uint8_t>>& data) {
     if (!data.has_value()) {
       RunErrorCallback("Error reading bundle length.");
       return;
@@ -321,7 +322,7 @@ class WebBundleParser::MetadataParser
 
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
   void ParseMagicBytes(uint64_t offset_in_stream,
-                       const absl::optional<std::vector<uint8_t>>& data) {
+                       const std::optional<std::vector<uint8_t>>& data) {
     if (!data) {
       RunErrorCallback("Error reading bundle magic bytes.");
       return;
@@ -408,7 +409,7 @@ class WebBundleParser::MetadataParser
 
   void ParseBundleHeader(uint64_t offset_in_stream,
                          uint64_t section_lengths_length,
-                         const absl::optional<std::vector<uint8_t>>& data) {
+                         const std::optional<std::vector<uint8_t>>& data) {
     if (!data) {
       RunErrorCallback("Error reading bundle header.");
       return;
@@ -530,7 +531,7 @@ class WebBundleParser::MetadataParser
 
   void ParseMetadataSection(SectionOffsets::const_iterator section_iter,
                             uint64_t expected_data_length,
-                            const absl::optional<std::vector<uint8_t>>& data) {
+                            const std::optional<std::vector<uint8_t>>& data) {
     if (!data || data->size() != expected_data_length) {
       RunErrorCallback("Error reading section content.");
       return;
@@ -538,7 +539,7 @@ class WebBundleParser::MetadataParser
 
     // Parse the section contents as a CBOR item.
     cbor::Reader::DecoderError error;
-    absl::optional<cbor::Value> section_value =
+    std::optional<cbor::Value> section_value =
         cbor::Reader::Read(*data, &error);
     if (!section_value) {
       RunErrorCallback(std::string("Error parsing section contents as CBOR: ") +
@@ -703,7 +704,7 @@ class WebBundleParser::MetadataParser
 
   const raw_ref<mojo::Remote<mojom::BundleDataSource>> data_source_;
   const GURL base_url_;
-  absl::optional<uint64_t> start_reading_offset_;
+  std::optional<uint64_t> start_reading_offset_;
   ParseMetadataCallback result_callback_;
   ParsingCompleteCallback complete_callback_;
   SectionOffsets section_offsets_;
@@ -756,7 +757,7 @@ class WebBundleParser::ResponseParser
   //   response = [headers: bstr .cbor headers, payload: bstr]
   //   headers = {* bstr => bstr}
   void ParseResponseHeader(uint64_t expected_data_length,
-                           const absl::optional<std::vector<uint8_t>>& data) {
+                           const std::optional<std::vector<uint8_t>>& data) {
     if (!data || data->size() != expected_data_length) {
       RunErrorCallback("Error reading response header.");
       return;
@@ -803,7 +804,7 @@ class WebBundleParser::ResponseParser
       return;
     }
     cbor::Reader::DecoderError error;
-    absl::optional<cbor::Value> headers_value =
+    std::optional<cbor::Value> headers_value =
         cbor::Reader::Read(*headers_bytes, &error);
     if (!headers_value) {
       RunErrorCallback("Cannot parse response headers.");
@@ -901,19 +902,36 @@ WebBundleParser::~WebBundleParser() {
   // Explicitly delete active parsers to avoid potential problems
   // with deletion of them in |active_parsers_|'s dtor and consequently
   // referring to |active_parsers_| in OnParsingComplete().
-  active_parsers_.clear();
+  //
+  // Avoid using container clear method directly on the member variable
+  // since parser destructor can call back to this class OnParsingComplete
+  // method via the complete_callback_. OnParsingComplete would in such
+  // case call erase method on the same container trying to remove an object
+  // from whose destructor it has been called. C++ and //base containers
+  // generally don't support re-entrancy so this would result in undefined
+  // behavior.
+  auto parsers = std::exchange(active_parsers_, {});
+  parsers.clear();
 }
 
 void WebBundleParser::ParseIntegrityBlock(
     ParseIntegrityBlockCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<web_package::IntegrityBlockParser>(data_source_,
                                                           std::move(callback));
   ActivateParser(std::move(parser));
 }
 
-void WebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
+void WebBundleParser::ParseMetadata(std::optional<uint64_t> offset,
                                     ParseMetadataCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<MetadataParser>(data_source_, base_url_,
                                        std::move(offset), std::move(callback));
@@ -923,6 +941,10 @@ void WebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
 void WebBundleParser::ParseResponse(uint64_t response_offset,
                                     uint64_t response_length,
                                     ParseResponseCallback callback) {
+  if (CheckIfClosed()) {
+    return;
+  }
+
   std::unique_ptr<WebBundleSectionParser> parser =
       std::make_unique<ResponseParser>(data_source_, response_offset,
                                        response_length, std::move(callback));
@@ -945,6 +967,25 @@ void WebBundleParser::OnParsingComplete(WebBundleSectionParser* parser,
 
 void WebBundleParser::OnDisconnect() {
   active_parsers_.clear();
+}
+
+void WebBundleParser::Close(CloseCallback parser_closed_callback) {
+  is_closed_ = true;
+  active_parsers_.clear();
+  data_source_->Close(base::BindOnce(&WebBundleParser::OnDataSourceClosed,
+                                     base::Unretained(this),
+                                     std::move(parser_closed_callback)));
+}
+
+void WebBundleParser::OnDataSourceClosed(CloseCallback parser_closed_callback) {
+  std::move(parser_closed_callback).Run();
+}
+
+bool WebBundleParser::CheckIfClosed() {
+  if (is_closed_) {
+    mojo::ReportBadMessage("Attempt to access the closed web bundle parser");
+  }
+  return is_closed_;
 }
 
 }  // namespace web_package

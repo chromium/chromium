@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/try.star", "location_filters_without_defaults")
+load("//lib/try.star", "location_filters_without_defaults", "try_")
 load("//outages/config.star", outages_config = "config")
 
 _MD_HEADER = """\
@@ -44,6 +44,11 @@ These builders are currently disabled due to the cq_disable_experiments outages
 setting. See //infra/config/outages/README.md for more information.
 """ if outages_config.disable_cq_experiments else "")
 
+_MEGA_MODE_HEADER = """\
+These builders run when the "Mega" CQ mode is triggered. This mode runs all the
+builders required in the standard CQ, plus a large amount of optional builders.
+"""
+
 _TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/{project}/builders/{bucket}/{builder}"
 
 def _get_main_config_group_builders(ctx):
@@ -77,12 +82,15 @@ def _normalize_builder(builder):
         experiment_percentage = builder.experiment_percentage,
         includable_only = builder.includable_only,
         location_filters = location_filters,
+        mode_allowlist = builder.mode_allowlist,
+        equivalent_to = proto.clone(builder).equivalent_to,
     )
 
 def _group_builders_by_section(builders):
     required = []
     experimental = []
     optional = []
+    mega = []
 
     for builder in builders:
         builder = _normalize_builder(builder)
@@ -92,6 +100,8 @@ def _group_builders_by_section(builders):
             optional.append(builder)
         elif builder.includable_only:
             continue
+        elif try_.MEGA_CQ_FULL_RUN_NAME in builder.mode_allowlist:
+            mega.append(builder)
         else:
             required.append(builder)
 
@@ -99,6 +109,7 @@ def _group_builders_by_section(builders):
         required = required,
         experimental = experimental,
         optional = optional,
+        mega = mega,
     )
 
 def _codesearch_query(url, *atoms):
@@ -148,6 +159,7 @@ def _generate_cq_builders_md(ctx):
         ("Required builders", _REQUIRED_HEADER, "required"),
         ("Optional builders", _OPTIONAL_HEADER, "optional"),
         ("Experimental builders", _EXPERIMENTAL_HEADER, "experimental"),
+        ("Mega CQ builders", _MEGA_MODE_HEADER, "mega"),
     ):
         builders = getattr(builders_by_section, section)
         if not builders:
@@ -205,6 +217,26 @@ def _generate_cq_builders_md(ctx):
                         title = details.title,
                         url = details.url,
                     ))
+            if getattr(b, "equivalent_to") and b.equivalent_to.name:
+                eq_project, eq_bucket, eq_name = b.equivalent_to.name.split("/")
+                eq_builder_url = _TRY_BUILDER_VIEW_URL.format(
+                    project = eq_project,
+                    bucket = eq_bucket,
+                    builder = eq_name,
+                )
+                lines.append("")
+                s = ("    * Replaced with builder: [{name}]({builder}) \
+when CL owner is in group \
+[{group}](https://chrome-infra-auth.appspot.com/auth/lookup?p={group})".format(
+                    name = eq_name,
+                    builder = eq_builder_url,
+                    group = b.equivalent_to.owner_whitelist_group,
+                ))
+                if b.equivalent_to.percentage != 100:
+                    s = s + (" with percentage {p}".format(
+                        p = b.equivalent_to.percentage,
+                    ))
+                lines.append(s)
 
             lines.append("")
 

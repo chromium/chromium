@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -54,6 +54,8 @@ class StandaloneTrustedVaultBackend
     Delegate& operator=(const Delegate&) = delete;
 
     virtual void NotifyRecoverabilityDegradedChanged() = 0;
+    // Called whenever persisted state changes.
+    virtual void NotifyStateChanged() = 0;
   };
 
   enum class RefreshTokenErrorState {
@@ -70,8 +72,7 @@ class StandaloneTrustedVaultBackend
   // interaction with vault service (such as device registration, keys
   // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
-      const base::FilePath& md5_hashed_file_path,
-      const base::FilePath& deprecated_encrypted_file_path,
+      const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection);
   StandaloneTrustedVaultBackend(const StandaloneTrustedVaultBackend& other) =
@@ -94,7 +95,6 @@ class StandaloneTrustedVaultBackend
   // Otherwise, attempts to download new keys from the server. In case of
   // failure or if current state isn't sufficient it will populate locally
   // available keys regardless of their freshness.
-  // Concurrent calls are not supported.
   void FetchKeys(const CoreAccountInfo& account_info,
                  FetchKeysCallback callback);
 
@@ -108,7 +108,7 @@ class StandaloneTrustedVaultBackend
   bool MarkLocalKeysAsStale(const CoreAccountInfo& account_info);
 
   // Sets/resets |primary_account_|.
-  void SetPrimaryAccount(const absl::optional<CoreAccountInfo>& primary_account,
+  void SetPrimaryAccount(const std::optional<CoreAccountInfo>& primary_account,
                          RefreshTokenErrorState refresh_token_error_state);
 
   // Handles changes of accounts in cookie jar and removes keys for some
@@ -132,12 +132,13 @@ class StandaloneTrustedVaultBackend
 
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
-  absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
+  std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   trusted_vault_pb::LocalDeviceRegistrationInfo
   GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
+  int GetLastKeyVersionForTesting(const std::string& gaia_id);
 
   void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
                                             int version);
@@ -175,7 +176,7 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+  std::optional<TrustedVaultDeviceRegistrationStateForUMA>
   MaybeRegisterDevice();
 
   // Attempts to honor the pending operation stored in
@@ -197,8 +198,16 @@ class StandaloneTrustedVaultBackend
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
                                     TrustedVaultRegistrationStatus status);
 
+  // Invokes |callback| with currently available keys for |gaia_id|.
+  void FulfillFetchKeys(
+      const std::string& gaia_id,
+      FetchKeysCallback callback,
+      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+
+  // Same as above, but takes parameters from |ongoing_fetch_keys|, used when
+  // keys are fetched asynchronously, after keys downloading attempt.
   void FulfillOngoingFetchKeys(
-      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
   // Returns true if the last failed request time imply that upcoming requests
   // should be throttled now (certain amount of time should pass since the last
@@ -214,12 +223,9 @@ class StandaloneTrustedVaultBackend
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
-  void VerifyDeviceRegistrationForUMA(const std::string& gaia_id);
-
   void WriteDataToDisk();
 
-  const base::FilePath md5_hashed_file_path_;
-  const base::FilePath deprecated_encrypted_file_path_;
+  const base::FilePath file_path_;
 
   const std::unique_ptr<Delegate> delegate_;
 
@@ -235,7 +241,7 @@ class StandaloneTrustedVaultBackend
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
-  absl::optional<CoreAccountInfo> primary_account_;
+  std::optional<CoreAccountInfo> primary_account_;
 
   // Error state of refresh token for |primary_account_|.
   RefreshTokenErrorState refresh_token_error_state_ =
@@ -257,28 +263,34 @@ class StandaloneTrustedVaultBackend
     int method_type_hint;
     base::OnceClosure completion_callback;
   };
-  absl::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
+  std::optional<PendingTrustedRecoveryMethod> pending_trusted_recovery_method_;
 
-  // TODO(crbug.com/1413179): introduce a struct for ongoing/deferred
-  // FetchKeys().
-  // Used to plumb FetchKeys() result to the caller.
-  FetchKeysCallback ongoing_fetch_keys_callback_;
+  // Keys fetching is asynchronous when it involves sending request to the
+  // server, this structure encapsulates the data needed to process the response
+  // and allow concurrent key fetches for the same user. Destroying this will
+  // cancel the ongoing request.
+  // Note, that |gaia_id| should match |primary_account_|. It is used only for
+  // verification.
+  struct OngoingFetchKeys {
+    OngoingFetchKeys();
+    OngoingFetchKeys(OngoingFetchKeys&) = delete;
+    OngoingFetchKeys& operator=(OngoingFetchKeys&) = delete;
+    OngoingFetchKeys(OngoingFetchKeys&&);
+    OngoingFetchKeys& operator=(OngoingFetchKeys&&);
+    ~OngoingFetchKeys();
 
-  // Account used in last FetchKeys() call.
-  absl::optional<std::string> ongoing_fetch_keys_gaia_id_;
+    std::string gaia_id;
+    std::vector<FetchKeysCallback> callbacks;
+    std::unique_ptr<TrustedVaultConnection::Request> request;
+  };
+  std::optional<OngoingFetchKeys> ongoing_fetch_keys_;
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_device_registration_request_;
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_keys_downloading_request_;
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_verify_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_get_recoverability_request_;
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_add_recovery_method_request_;
 
@@ -315,7 +327,7 @@ class StandaloneTrustedVaultBackend
     CoreAccountInfo account_info;
     base::OnceCallback<void(bool)> completion_callback;
   };
-  absl::optional<PendingGetIsRecoverabilityDegraded>
+  std::optional<PendingGetIsRecoverabilityDegraded>
       pending_get_is_recoverability_degraded_;
 };
 

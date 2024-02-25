@@ -15,6 +15,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
@@ -47,7 +48,7 @@ class ComplexFeature : public Feature {
   // Feature:
   Availability IsAvailableToContextImpl(
       const Extension* extension,
-      Context context,
+      mojom::ContextType context,
       const GURL& url,
       Platform platform,
       int context_id,

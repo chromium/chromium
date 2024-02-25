@@ -24,8 +24,9 @@ class Label;
 // A piece of the App Info dialog that displays information for a particular
 // profile and app. Panels in the App Info dialog extend this class.
 class AppInfoPanel : public views::View {
+  METADATA_HEADER(AppInfoPanel, views::View)
+
  public:
-  METADATA_HEADER(AppInfoPanel);
   AppInfoPanel(Profile* profile, const extensions::Extension* app);
   AppInfoPanel(const AppInfoPanel&) = delete;
   AppInfoPanel& operator=(const AppInfoPanel&) = delete;

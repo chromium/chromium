@@ -30,8 +30,8 @@ void AddEventInfoFromEventMetricsList(
         scroll_update_metrics->predicted_delta(),
         scroll_update_metrics->last_timestamp(),
         type == EventMetrics::EventType::kFirstGestureScrollUpdate
-            ? AverageLagTracker::EventType::ScrollBegin
-            : AverageLagTracker::EventType::ScrollUpdate);
+            ? AverageLagTracker::EventType::kScrollbegin
+            : AverageLagTracker::EventType::kScrollupdate);
   }
 }
 

@@ -9,38 +9,18 @@ mojom_component("vr_service") {
   output_prefix = "device_vr_service_mojo_bindings"
   macro_prefix = "DEVICE_VR_SERVICE_MOJO_BINDINGS"
 
-  sources = [
-    "vr_service.mojom",
-    "xr_session.mojom",
-  ]
+  sources = [ "vr_service.mojom" ]
 
   public_deps = [
     ":test_mojom",
+    ":xr_common",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
-    "//skia/public/mojom",
     "//ui/display/mojom:mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
-
-  enabled_features = []
-  if (enable_openxr) {
-    enabled_features += [ "enable_openxr" ]
-  }
-
-  if (enable_cardboard) {
-    enabled_features += [ "enable_cardboard" ]
-  }
-
-  if (enable_gvr_services) {
-    enabled_features += [ "enable_gvr_services" ]
-  }
-
-  if (enable_arcore) {
-    enabled_features += [ "enable_arcore" ]
-  }
 
   shared_cpp_typemap = {
     types = [
@@ -79,6 +59,7 @@ mojom_component("isolated_xr_service") {
   public_deps = [
     ":test_mojom",
     ":vr_service",
+    ":xr_common",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -96,6 +77,7 @@ mojom_component("test_mojom") {
   sources = [ "browser_test_interfaces.mojom" ]
 
   public_deps = [
+    ":xr_common",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -117,4 +99,39 @@ component("vr_public_typemaps") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+mojom_component("xr_common") {
+  output_prefix = "device_xr_common_mojo_bindings"
+  macro_prefix = "DEVICE_XR_COMMON_MOJO_BINDINGS"
+
+  sources = [
+    "openxr_interaction_profile_type.mojom",
+    "xr_device.mojom",
+    "xr_session.mojom",
+  ]
+
+  public_deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+
+  enabled_features = []
+  if (enable_openxr) {
+    enabled_features += [ "enable_openxr" ]
+  }
+
+  if (enable_cardboard) {
+    enabled_features += [ "enable_cardboard" ]
+  }
+
+  if (enable_arcore) {
+    enabled_features += [ "enable_arcore" ]
+  }
+
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
 }

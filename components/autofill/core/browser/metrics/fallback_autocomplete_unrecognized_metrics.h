@@ -23,7 +23,7 @@ class AutocompleteUnrecognizedFallbackEventLogger {
   void OnDidShowSuggestions();
 
   // Called when a suggestion triggered from an ac=unrecognized field is filled.
-  void OnDidFillSuggestion();
+  void OnDidFillFormFillingSuggestion();
 
   // Called when context menu was opened on a qualifying field.
   // `address_field_has_ac_unrecognized` indicates if the field that was right

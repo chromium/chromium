@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.app.Activity;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.PostNativeFlag;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -21,15 +20,8 @@ import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
 
-/**
- * A class of helper methods that assist in the restore tabs workflow.
- */
+/** A class of helper methods that assist in the restore tabs workflow. */
 public class RestoreTabsFeatureHelper {
-    public static final PostNativeFlag RESTORE_TABS_PROMO =
-            new PostNativeFlag(ChromeFeatureList.RESTORE_TABS_ON_FRE);
-    public static final BooleanCachedFieldTrialParameter
-            RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT = new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.RESTORE_TABS_ON_FRE, "skip_feature_engagement", false);
     private RestoreTabsController mController;
     private RestoreTabsControllerDelegate mDelegate;
     private RestoreTabsControllerDelegate mDelegateForTesting;
@@ -53,11 +45,14 @@ public class RestoreTabsFeatureHelper {
         }
     }
 
-    /**
-     * Check the criteria for displaying the restore tabs promo.
-     */
-    public void maybeShowPromo(Activity activity, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
+    /** Check the criteria for displaying the restore tabs promo. */
+    public void maybeShowPromo(
+            Activity activity,
+            Profile profile,
+            TabCreatorManager tabCreatorManager,
+            BottomSheetController bottomSheetController,
+            Supplier<Integer> gtsTabListModelSizeSupplier,
+            Callback<Integer> scrollGTSToRestoredTabsCallback) {
         if (profile == null || profile.isOffTheRecord()) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NULL_PROFILE);
@@ -66,8 +61,7 @@ public class RestoreTabsFeatureHelper {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
 
-        if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                && !tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+        if (!tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
             return;
@@ -84,9 +78,10 @@ public class RestoreTabsFeatureHelper {
         // fulfilled, it can be assumed this will be the second time the promo shows. Note that this
         // logic only works for the 2 count max for promo showing. The hasEverTriggered call must be
         // before the shouldTriggerHelpUI call, otherwise it will always return true.
-        int showCount = tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, true)
-                ? 2
-                : 1;
+        int showCount =
+                tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, false)
+                        ? 2
+                        : 1;
         RestoreTabsMetricsHelper.setPromoShownCount(showCount);
 
         // The difference between wouldTriggerHelpUI and shouldTriggerHelpUI is that the latter
@@ -95,10 +90,14 @@ public class RestoreTabsFeatureHelper {
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
         if (hasValidSyncedDevices(sessions)
-                && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                        || tracker.shouldTriggerHelpUI(
-                                FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
-            setDelegate(activity, profile, tabCreatorManager, bottomSheetController);
+                && (tracker.shouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
+            setDelegate(
+                    activity,
+                    profile,
+                    tabCreatorManager,
+                    bottomSheetController,
+                    gtsTabListModelSizeSupplier,
+                    scrollGTSToRestoredTabsCallback);
             mDelegate.showPromo(sessions);
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.SHOWN);
@@ -115,38 +114,52 @@ public class RestoreTabsFeatureHelper {
         }
     }
 
-    private void setDelegate(Activity activity, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
-        mDelegate = (mDelegateForTesting != null)
-                ? mDelegateForTesting
-                : new RestoreTabsControllerDelegate() {
-                      private boolean mWasDismissed;
+    private void setDelegate(
+            Activity activity,
+            Profile profile,
+            TabCreatorManager tabCreatorManager,
+            BottomSheetController bottomSheetController,
+            Supplier<Integer> gtsTabListModelSizeSupplier,
+            Callback<Integer> scrollGTSToRestoredTabsCallback) {
+        mDelegate =
+                (mDelegateForTesting != null)
+                        ? mDelegateForTesting
+                        : new RestoreTabsControllerDelegate() {
+                            private boolean mWasDismissed;
 
-                      @Override
-                      public void showPromo(List<ForeignSession> sessions) {
-                          mController = RestoreTabsControllerFactory.createInstance(
-                                  activity, profile, tabCreatorManager, bottomSheetController);
-                          mController.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
-                      }
+                            @Override
+                            public void showPromo(List<ForeignSession> sessions) {
+                                mController =
+                                        RestoreTabsControllerFactory.createInstance(
+                                                activity,
+                                                profile,
+                                                tabCreatorManager,
+                                                bottomSheetController);
+                                mController.showHomeScreen(
+                                        mForeignSessionHelper, sessions, mDelegate);
+                            }
 
-                      @Override
-                      public void onDismissed() {
-                          assert !mWasDismissed : "Promo should only be dismissed once.";
-                          mWasDismissed = true;
+                            @Override
+                            public void onDismissed() {
+                                assert !mWasDismissed : "Promo should only be dismissed once.";
+                                mWasDismissed = true;
 
-                          if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()) {
-                              TrackerFactory.getTrackerForProfile(profile).dismissed(
-                                      FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
-                          }
+                                TrackerFactory.getTrackerForProfile(profile)
+                                        .dismissed(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
 
-                          destroy();
-                      }
+                                destroy();
+                            }
 
-                      @Override
-                      public BooleanCachedFieldTrialParameter getSkipFeatureEngagementParam() {
-                          return RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT;
-                      }
-                  };
+                            @Override
+                            public int getGTSTabListModelSize() {
+                                return gtsTabListModelSizeSupplier.get();
+                            }
+
+                            @Override
+                            public void scrollGTSToRestoredTabs(int tabListModelSize) {
+                                scrollGTSToRestoredTabsCallback.onResult(tabListModelSize);
+                            }
+                        };
     }
 
     private boolean hasValidSyncedDevices(List<ForeignSession> sessions) {

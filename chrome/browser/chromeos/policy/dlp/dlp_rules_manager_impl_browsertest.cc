@@ -26,8 +26,8 @@ constexpr char kUrlStr1[] = "https://wwww.example.com";
 
 class FakeDlpRulesManager : public DlpRulesManagerImpl {
  public:
-  explicit FakeDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+  explicit FakeDlpRulesManager(PrefService* local_state, Profile* profile)
+      : DlpRulesManagerImpl(local_state, profile) {}
   ~FakeDlpRulesManager() override = default;
 };
 }  // namespace
@@ -46,8 +46,8 @@ class DlpRulesPolicyTest : public InProcessBrowserTest {
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
-    auto new_rules_manager =
-        std::make_unique<FakeDlpRulesManager>(g_browser_process->local_state());
+    auto new_rules_manager = std::make_unique<FakeDlpRulesManager>(
+        g_browser_process->local_state(), Profile::FromBrowserContext(context));
     rules_manager_ = new_rules_manager.get();
     return new_rules_manager;
   }
@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
                                 policy_prefs::kDlpRulesList);
 
     dlp_test_util::DlpRule rule("rule #1", "Block", "testid1");
-    rule.AddSrcUrl(kUrlStr1).AddRestriction(dlp::kScreenshotRestriction,
-                                            dlp::kBlockLevel);
+    rule.AddSrcUrl(kUrlStr1).AddRestriction(
+        data_controls::kRestrictionScreenshot, data_controls::kLevelBlock);
 
     update->Append(rule.Create());
   }

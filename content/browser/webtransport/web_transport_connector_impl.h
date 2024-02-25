@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_
 #define CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webtransport/web_transport_throttle_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -12,7 +14,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
 
@@ -55,7 +56,7 @@ class WebTransportConnectorImpl final
           fingerprints,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
-      absl::optional<network::mojom::WebTransportErrorPtr> error);
+      std::optional<network::mojom::WebTransportErrorPtr> error);
 
   const int process_id_;
   const base::WeakPtr<RenderFrameHostImpl> frame_;

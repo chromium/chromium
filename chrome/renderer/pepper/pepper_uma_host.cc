@@ -59,7 +59,7 @@ std::string HashPrefix(const std::string& histogram) {
   const std::string id_hash =
       base::SHA1HashString(histogram.substr(0, histogram.find('.')));
   DCHECK_EQ(id_hash.length(), base::kSHA1Length);
-  return base::HexEncode(id_hash.c_str(), id_hash.length());
+  return base::HexEncode(id_hash);
 }
 
 }  // namespace

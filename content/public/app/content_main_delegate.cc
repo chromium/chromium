@@ -19,8 +19,8 @@
 
 namespace content {
 
-absl::optional<int> ContentMainDelegate::BasicStartupComplete() {
-  return absl::nullopt;
+std::optional<int> ContentMainDelegate::BasicStartupComplete() {
+  return std::nullopt;
 }
 
 absl::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
@@ -51,7 +51,7 @@ bool ContentMainDelegate::ShouldLockSchemeRegistry() {
   return true;
 }
 
-absl::optional<int> ContentMainDelegate::PreBrowserMain() {
+std::optional<int> ContentMainDelegate::PreBrowserMain() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On LaCrOS, GPU sandbox failures should always be fatal because we control
   // the driver environment on ChromeOS.
@@ -66,7 +66,7 @@ absl::optional<int> ContentMainDelegate::PreBrowserMain() {
         sandbox::policy::switches::kDisableGpuSandbox);
   }
 #endif
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ContentMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
@@ -82,9 +82,9 @@ ContentMainDelegate::CreateVariationsIdsProvider() {
   return nullptr;
 }
 
-absl::optional<int> ContentMainDelegate::PostEarlyInitialization(
+std::optional<int> ContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ContentClient* ContentMainDelegate::CreateContentClient() {

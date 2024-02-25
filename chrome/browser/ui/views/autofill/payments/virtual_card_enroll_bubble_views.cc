@@ -25,6 +25,7 @@
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -39,21 +40,17 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 controller->GetUiModel().accept_action_text);
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 controller->GetUiModel().cancel_action_text);
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
-  SetAcceptCallback(base::BindOnce(
+  SetAcceptCallbackWithClose(base::BindRepeating(
       &VirtualCardEnrollBubbleViews::OnDialogAccepted, base::Unretained(this)));
-
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    SetFootnoteView(CreateLegalMessageView())->SetID(DialogViewId::FOOTNOTE_VIEW);
-  }
 }
 
 VirtualCardEnrollBubbleViews::~VirtualCardEnrollBubbleViews() = default;
@@ -71,9 +68,17 @@ void VirtualCardEnrollBubbleViews::Hide() {
   controller_ = nullptr;
 }
 
-void VirtualCardEnrollBubbleViews::OnDialogAccepted() {
-  if (controller_)
-    controller_->OnAcceptButton();
+bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
+  bool did_switch_to_loading_state = false;
+  if (controller_) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+      SwitchToLoadingState();
+      did_switch_to_loading_state = true;
+    }
+    controller_->OnAcceptButton(did_switch_to_loading_state);
+  }
+  return !did_switch_to_loading_state;
 }
 
 void VirtualCardEnrollBubbleViews::OnDialogDeclined() {
@@ -103,7 +108,8 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetWindowTitle() : std::u16string();
+  return controller_ ? controller_->GetUiModel().window_title
+                     : std::u16string();
 }
 
 void VirtualCardEnrollBubbleViews::WindowClosing() {
@@ -118,11 +124,8 @@ void VirtualCardEnrollBubbleViews::Init() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
 
   // If terms of service on top enabled, add padding between TOS and Buttons
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    set_margins(provider->GetDialogInsetsForContentType(
-        views::DialogContentType::kText, views::DialogContentType::kText));
-  }
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -130,7 +133,7 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   // If applicable, add the explanation label.  Appears above the card
   // info.
-  std::u16string explanation = controller_->GetExplanatoryMessage();
+  std::u16string explanation = controller_->GetUiModel().explanatory_message;
   if (!explanation.empty()) {
     auto* const explanation_label =
         AddChildView(std::make_unique<views::StyledLabel>());
@@ -144,11 +147,12 @@ void VirtualCardEnrollBubbleViews::Init() {
             &VirtualCardEnrollBubbleViews::LearnMoreLinkClicked,
             weak_ptr_factory_.GetWeakPtr()));
 
-    uint32_t offset =
-        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    uint32_t offset = explanation.length() -
+                      controller_->GetUiModel().learn_more_link_text.length();
     explanation_label->AddStyleRange(
-        gfx::Range(offset,
-                   offset + controller_->GetLearnMoreLinkText().length()),
+        gfx::Range(
+            offset,
+            offset + controller_->GetUiModel().learn_more_link_text.length()),
         style_info);
   }
 
@@ -161,13 +165,16 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::MainAxisAlignment::kStart);
 
   const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
-      controller_->GetVirtualCardEnrollmentFields();
+      controller_->GetUiModel().enrollment_fields;
 
   CreditCard card = virtual_card_enrollment_fields.credit_card;
 
   auto* card_image =
       description_view->AddChildView(std::make_unique<views::ImageView>());
-  card_image->SetImage(virtual_card_enrollment_fields.card_art_image);
+  card_image->SetImage(ui::ImageModel::FromImageSkia(
+      virtual_card_enrollment_fields.card_art_image
+          ? *virtual_card_enrollment_fields.card_art_image
+          : gfx::ImageSkia()));
   card_image->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_CARD_IMAGE_TOOLTIP));
 
@@ -198,10 +205,12 @@ void VirtualCardEnrollBubbleViews::Init() {
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY));
 
+  AddChildView(CreateLegalMessageView())
+      ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+
   if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    AddChildView(CreateLegalMessageView())
-        ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
   }
 }
 
@@ -214,27 +223,60 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
   const LegalMessageLines google_legal_message =
-      controller_->GetVirtualCardEnrollmentFields().google_legal_message;
+      controller_->GetUiModel().enrollment_fields.google_legal_message;
   const LegalMessageLines issuser_legal_message =
-      controller_->GetVirtualCardEnrollmentFields().issuer_legal_message;
+      controller_->GetUiModel().enrollment_fields.issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-      google_legal_message, /*user_email=*/absl::nullopt,
-      /*user_avatar=*/absl::nullopt,
+      google_legal_message, /*user_email=*/std::u16string(),
+      /*user_avatar=*/ui::ImageModel(),
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
   if (!issuser_legal_message.empty()) {
     legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message, /*user_email=*/absl::nullopt,
-        /*user_avatar=*/absl::nullopt,
+        issuser_legal_message, /*user_email=*/std::u16string(),
+        /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,
             base::Unretained(this))));
   }
   return legal_message_view;
+}
+
+std::unique_ptr<views::View>
+VirtualCardEnrollBubbleViews::CreateLoadingProgressRow() {
+  auto progress_loading_row = std::make_unique<views::BoxLayoutView>();
+
+  // Set `progress_loading_row` initially hidden because it should only be
+  // visible after the user accepts virtual card enrollment.
+  progress_loading_row->SetVisible(false);
+
+  progress_loading_row->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  progress_loading_row->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  loading_throbber_ =
+      progress_loading_row->AddChildView(std::make_unique<views::Throbber>());
+  loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
+
+  return progress_loading_row;
+}
+
+views::View* VirtualCardEnrollBubbleViews::GetLoadingProgressRowForTesting() {
+  return loading_progress_row_.get();
+}
+
+void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
+  if (loading_progress_row_ == nullptr) {
+    return;
+  }
+  loading_throbber_->Start();
+  loading_progress_row_->SetVisible(true);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogModelChanged();
 }
 
 void VirtualCardEnrollBubbleViews::LearnMoreLinkClicked() {

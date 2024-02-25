@@ -21,12 +21,12 @@
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const std::vector<url::Origin>& origin_list,
-    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
-                            absl::optional<std::string>,
-                            absl::optional<content::SmsFetchFailureType>)>
+    base::OnceCallback<void(std::optional<std::vector<url::Origin>>,
+                            std::optional<std::string>,
+                            std::optional<content::SmsFetchFailureType>)>
         callback) {
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
 
     RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kFeatureDisabled);
@@ -35,7 +35,7 @@ base::OnceClosure FetchRemoteSms(
 
   if (!SharingServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
     RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoSharingService);
     return base::NullCallback();
@@ -50,7 +50,7 @@ base::OnceClosure FetchRemoteSms(
       SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
   return ui_controller->FetchRemoteSms(origin_list, std::move(callback));
 #else
-  std::move(callback).Run(absl::nullopt, absl::nullopt,
+  std::move(callback).Run(std::nullopt, std::nullopt,
                           content::SmsFetchFailureType::kCrossDeviceFailure);
   RecordWebOTPCrossDeviceFailure(
       WebOTPCrossDeviceFailure::kAndroidToAndroidNotSupported);

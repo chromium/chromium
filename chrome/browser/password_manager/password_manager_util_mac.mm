@@ -14,7 +14,7 @@
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -77,29 +77,8 @@ bool AuthenticateUser(std::u16string prompt_string) {
   // authorization and not prompting the user when future requests are made.
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::GetAuthorizationRightsWithPrompt(
-          &rights, prompt, kAuthorizationFlagDestroyRights);
+          &rights, prompt.get(), kAuthorizationFlagDestroyRights);
   return static_cast<bool>(authorization);
-}
-
-std::u16string GetMessageForLoginPrompt(
-    password_manager::ReauthPurpose purpose) {
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::EXPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::IMPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-  }
 }
 
 }  // namespace password_manager_util_mac

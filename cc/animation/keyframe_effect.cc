@@ -141,7 +141,7 @@ void KeyframeEffect::RemoveFromTicking() {
   is_ticking_ = false;
   // Resetting last_tick_time_ here ensures that calling ::UpdateState
   // before ::Animate doesn't start a keyframe model.
-  last_tick_time_ = absl::nullopt;
+  last_tick_time_ = std::nullopt;
   animation_->RemoveFromTicking();
 }
 
@@ -151,7 +151,7 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
 
   // Animate hasn't been called, this happens if an element has been added
   // between the Commit and Draw phases.
-  if (last_tick_time_ == absl::nullopt || awaiting_deletion_) {
+  if (last_tick_time_ == std::nullopt || awaiting_deletion_) {
     start_ready_keyframe_models = false;
   }
 
@@ -251,10 +251,20 @@ void KeyframeEffect::AddKeyframeModel(
       keyframe_models(), [&](const auto& existing_keyframe_model) {
         auto* cc_existing_keyframe_model =
             KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
-        return keyframe_model->TargetProperty() ==
-                   existing_keyframe_model->TargetProperty() &&
-               cc_keyframe_model->group() ==
-                   cc_existing_keyframe_model->group();
+        bool same_group_and_target =
+            keyframe_model->TargetProperty() ==
+                existing_keyframe_model->TargetProperty() &&
+            cc_keyframe_model->group() == cc_existing_keyframe_model->group();
+        // Keyframe models in the same group might target the same property
+        // if one or both is an outgoing animation (i.e. about to be
+        // removed).
+        bool both_active =
+            cc_keyframe_model->affects_active_elements() &&
+            cc_existing_keyframe_model->affects_active_elements();
+        bool both_pending =
+            cc_keyframe_model->affects_pending_elements() &&
+            cc_existing_keyframe_model->affects_pending_elements();
+        return same_group_and_target && (both_active || both_pending);
       }));
 
   if (keyframe_model->TargetProperty() == TargetProperty::SCROLL_OFFSET) {
@@ -354,6 +364,13 @@ void KeyframeEffect::ActivateKeyframeModels() {
   for (auto& keyframe_model : keyframe_models()) {
     auto* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+
+    if (replaced_group_ == cc_keyframe_model->group() &&
+        !cc_keyframe_model->affects_pending_elements()) {
+      CHECK_NE(cc_keyframe_model->group(), KeyframeModel::kInvalidGroup);
+      cc_keyframe_model->ungroup();
+    }
+
     if (cc_keyframe_model->affects_active_elements() !=
         cc_keyframe_model->affects_pending_elements()) {
       keyframe_model_activated = true;
@@ -364,6 +381,8 @@ void KeyframeEffect::ActivateKeyframeModels() {
 
   if (keyframe_model_activated)
     element_animations_->UpdateClientAnimationState();
+
+  replaced_group_.reset();
 
   scroll_offset_animation_was_interrupted_ = false;
 }
@@ -388,7 +407,14 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       GetKeyframeModelById(event.uid.model_id));
   bool dispatched = false;
   switch (event.type) {
-    case AnimationEvent::STARTED:
+    case AnimationEvent::Type::kStarted:
+      if (!keyframe_model) {
+        KeyframeModel* replacement = KeyframeModel::ToCcKeyframeModel(
+            GetKeyframeModel(event.target_property));
+        if (replacement && replacement->group() == event.group_id) {
+          keyframe_model = replacement;
+        }
+      }
       if (keyframe_model && keyframe_model->needs_synchronized_start_time()) {
         keyframe_model->set_needs_synchronized_start_time(false);
         if (!keyframe_model->has_set_start_time())
@@ -397,7 +423,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::FINISHED:
+    case AnimationEvent::Type::kFinished:
       if (keyframe_model) {
         keyframe_model->set_received_finished_event(true);
         dispatched = true;
@@ -410,7 +436,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::ABORTED:
+    case AnimationEvent::Type::kAborted:
       if (keyframe_model) {
         keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED,
                                     event.monotonic_time);
@@ -421,14 +447,14 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       }
       break;
 
-    case AnimationEvent::TAKEOVER:
+    case AnimationEvent::Type::kTakeOver:
       // TODO(crbug.com/1018213): Routing TAKEOVER events is broken.
       // We need to purge KeyframeModels marked for deletion on CT.
       SetNeedsPushProperties();
       dispatched = true;
       break;
 
-    case AnimationEvent::TIME_UPDATED:
+    case AnimationEvent::Type::kTimeUpdated:
       // TIME_UPDATED events are used to synchronize effect time between cc and
       // main thread worklet animations. Keyframe models are not involved in
       // this process.
@@ -638,7 +664,7 @@ void KeyframeEffect::PushNewKeyframeModelsToImplThread(
         !ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
              keyframe_model->curve())
              ->HasSetInitialValue()) {
-      absl::optional<gfx::PointF> current_scroll_offset;
+      std::optional<gfx::PointF> current_scroll_offset;
       // If the scroller was already composited, prefer using its current scroll
       // offset.
       current_scroll_offset = keyframe_effect_impl->ScrollOffsetForAnimation();
@@ -700,7 +726,9 @@ void KeyframeEffect::RemoveKeyframeModelsCompletedOnMainThread(
     element_animations_->SetNeedsPushProperties();
 }
 
-void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
+void KeyframeEffect::PushPropertiesTo(
+    KeyframeEffect* keyframe_effect_impl,
+    std::optional<base::TimeTicks> replaced_start_time) {
   if (!needs_push_properties_)
     return;
   needs_push_properties_ = false;
@@ -729,6 +757,12 @@ void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
   if (!has_any_keyframe_model() &&
       !keyframe_effect_impl->has_any_keyframe_model())
     return;
+
+  if (replaced_start_time) {
+    for (auto& km : keyframe_models()) {
+      km->set_start_time(*replaced_start_time);
+    }
+  }
 
   // Synchronize the main-thread and impl-side keyframe model lists, removing
   // aborted KeyframeModels and pushing any new animations.
@@ -925,7 +959,7 @@ void KeyframeEffect::PromoteStartedKeyframeModels(AnimationEvents* events) {
       else
         start_time = last_tick_time_.value_or(base::TimeTicks());
 
-      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::STARTED,
+      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::Type::kStarted,
                     start_time);
     }
   }
@@ -942,15 +976,15 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
   };
 
   // Non-aborted KeyframeModels are marked for deletion after a corresponding
-  // AnimationEvent::FINISHED event is sent or received. This means that if
-  // we don't have an events vector, we must ensure that non-aborted
+  // AnimationEvent::Type::kFinished event is sent or received. This means that
+  // if we don't have an events vector, we must ensure that non-aborted
   // KeyframeModels have received a finished event before marking them for
   // deletion.
   for (auto& keyframe_model : keyframe_models()) {
     KeyframeModel* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
     if (cc_keyframe_model->run_state() == gfx::KeyframeModel::ABORTED) {
-      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::ABORTED,
+      GenerateEvent(events, *cc_keyframe_model, AnimationEvent::Type::kAborted,
                     monotonic_time);
       // If this is the controlling instance or it has already received finish
       // event, keyframe model can be marked for deletion.
@@ -1014,7 +1048,7 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
         continue;
 
       GenerateEvent(events, *same_group_keyframe_model,
-                    AnimationEvent::FINISHED, monotonic_time);
+                    AnimationEvent::Type::kFinished, monotonic_time);
       MarkForDeletion(same_group_keyframe_model);
     }
   }
@@ -1063,7 +1097,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
     element_animations_->UpdateClientAnimationState();
 }
 
-absl::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
+std::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
   return element_animations_->ScrollOffsetForAnimation();
 }
 
@@ -1071,8 +1105,11 @@ void KeyframeEffect::GenerateEvent(AnimationEvents* events,
                                    const KeyframeModel& keyframe_model,
                                    AnimationEvent::Type type,
                                    base::TimeTicks monotonic_time) {
-  if (!events)
+  // An ungrouped model has been replaced by another model so avoid dispatching
+  // any events from it.
+  if (!events || keyframe_model.group() == KeyframeModel::kInvalidGroup) {
     return;
+  }
 
   AnimationEvent event(type,
                        {animation_->animation_timeline()->id(),
@@ -1098,7 +1135,7 @@ void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
     return;
 
   AnimationEvent takeover_event(
-      AnimationEvent::TAKEOVER,
+      AnimationEvent::Type::kTakeOver,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model.id()},
       keyframe_model.group(), keyframe_model.TargetProperty(), monotonic_time);
@@ -1111,7 +1148,7 @@ void KeyframeEffect::GenerateTakeoverEventForScrollAnimation(
   events->events_.push_back(takeover_event);
 
   AnimationEvent finished_event(
-      AnimationEvent::FINISHED,
+      AnimationEvent::Type::kFinished,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model.id()},
       keyframe_model.group(), keyframe_model.TargetProperty(), monotonic_time);

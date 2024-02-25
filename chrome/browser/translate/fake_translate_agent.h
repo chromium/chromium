@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -37,7 +38,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class FakeTranslateAgent : public translate::mojom::TranslateAgent {
@@ -65,8 +65,8 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
                       translate::TranslateErrors error);
 
   bool called_translate_;
-  absl::optional<std::string> source_lang_;
-  absl::optional<std::string> target_lang_;
+  std::optional<std::string> source_lang_;
+  std::optional<std::string> target_lang_;
   bool called_revert_translation_;
 
  private:

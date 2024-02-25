@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -46,8 +47,10 @@ void ScopedSetRasterScale::SetOrUpdateRasterScale(
 
 void ScopedSetRasterScale::Shutdown() {
   if (window_) {
-    Shell::Get()->raster_scale_controller()->PopRasterScale(window_,
-                                                            raster_scale_);
+    auto* rsc = Shell::Get()->raster_scale_controller();
+    if (rsc) {
+      rsc->PopRasterScale(window_, raster_scale_);
+    }
     window_->RemoveObserver(this);
     window_ = nullptr;
   }
@@ -59,15 +62,26 @@ void ScopedSetRasterScale::OnWindowDestroying(aura::Window* window) {
 }
 
 ScopedPauseRasterScaleUpdates::ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Pause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Pause();
+  }
 }
 
 ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Unpause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Unpause();
+  }
 }
 
 RasterScaleController::RasterScaleController() = default;
-RasterScaleController::~RasterScaleController() = default;
+RasterScaleController::~RasterScaleController() {
+  // Reset raster scales to 1.0 on destruction.
+  for (const auto& [window, _] : window_scales_) {
+    window->SetProperty(aura::client::kRasterScale, 1.0f);
+  }
+}
 
 float RasterScaleController::RasterScaleFromTransform(
     const gfx::Transform& transform) {
@@ -96,7 +110,7 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 
   auto& scales = iter->second;
   DCHECK(base::Contains(scales, raster_scale));
-  auto scale_iter = std::find(scales.begin(), scales.end(), raster_scale);
+  auto scale_iter = base::ranges::find(scales, raster_scale);
   if (scale_iter != scales.end()) {
     scales.erase(scale_iter);
   }
@@ -115,8 +129,6 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 }
 
 float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
-  // TODO(crbug.com/1473882): Consider adding slop threshold for not updating
-  // the raster scale.
   auto iter = window_scales_.find(window);
   if (iter == window_scales_.end() || iter->second.empty()) {
     return 1.0f;
@@ -126,7 +138,7 @@ float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
   for (auto scale : iter->second) {
     raster_scale = std::max(raster_scale, scale);
   }
-  return raster_scale;
+  return std::max(raster_scale, kMinimumRasterScale);
 }
 
 void RasterScaleController::OnWindowDestroying(aura::Window* window) {
@@ -142,8 +154,16 @@ void RasterScaleController::MaybeSetRasterScale(aura::Window* window) {
   }
 
   const float previous_scale = window->GetProperty(aura::client::kRasterScale);
-  const auto current_scale = ComputeRasterScaleForWindow(window);
-  if (current_scale != previous_scale) {
+  const float current_scale = ComputeRasterScaleForWindow(window);
+
+  // Allow updating the raster scale if the relative change is at least the slop
+  // proportion.
+  const bool slop_condition =
+      previous_scale != 0.0 &&
+      std::abs((previous_scale - current_scale) / previous_scale) >=
+          raster_scale_slop_proportion_;
+  if (previous_scale != current_scale &&
+      (slop_condition || current_scale == 1.0f)) {
     window->SetProperty(aura::client::kRasterScale, current_scale);
   }
 }

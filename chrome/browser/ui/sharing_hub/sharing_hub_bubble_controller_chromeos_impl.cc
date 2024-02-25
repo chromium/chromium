@@ -114,7 +114,7 @@ void SharingHubBubbleControllerChromeOsImpl::HideBubble() {
 
 void SharingHubBubbleControllerChromeOsImpl::ShowBubble(
     share::ShareAttempt attempt) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   // Ignore subsequent calls to open the Sharesheet if it already is open. This
   // is especially for the Nearby Share dialog, where clicking outside of it

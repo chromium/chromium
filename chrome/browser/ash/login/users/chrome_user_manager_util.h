@@ -11,8 +11,7 @@
 namespace ash::chrome_user_manager_util {
 
 // Returns true if all `users` are allowed depending on the provided device
-// policies. Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-// USER_TYPE_CHILD.
+// policies. Accepted user types: kRegular, kGuest, kChild.
 // This function only checks against the device policies provided, so it does
 // not depend on CrosSettings or any other policy store.
 bool AreAllUsersAllowed(const user_manager::UserList& users,
@@ -20,8 +19,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
                             device_settings_proto);
 
 // Returns true if `user` is allowed, according to the given constraints.
-// Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
-// USER_TYPE_CHILD.
+// Accepted user types: kRegular, kGuest, kChild.
 bool IsUserAllowed(const user_manager::User& user,
                    bool is_guest_allowed,
                    bool is_user_allowlisted);
@@ -30,6 +28,10 @@ bool IsUserAllowed(const user_manager::User& user,
 // ephemeral user. Note: it assumes the active user exists (ie. at least one
 // user has logged in).
 bool IsManagedGuestSessionOrEphemeralLogin();
+
+// Returns users allowed on login screen.
+user_manager::UserList FindLoginAllowedUsers(
+    const user_manager::UserList& users);
 
 }  // namespace ash::chrome_user_manager_util
 

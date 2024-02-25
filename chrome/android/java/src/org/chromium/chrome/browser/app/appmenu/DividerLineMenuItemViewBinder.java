@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A custom binder used to bind the divider line in app menu.
- */
+/** A custom binder used to bind the divider line in app menu. */
 public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
 
@@ -27,8 +25,9 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getItemViewType(int id) {
-        return (id == R.id.divider_line_id || id == R.id.managed_by_divider_line_id
-                       || id == R.id.quick_delete_divider_line_id)
+        return (id == R.id.divider_line_id
+                        || id == R.id.managed_by_divider_line_id
+                        || id == R.id.quick_delete_divider_line_id)
                 ? DIVIDER_LINE_ITEM_VIEW_TYPE
                 : CustomViewBinder.NOT_HANDLED;
     }
@@ -48,7 +47,8 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-            assert id == R.id.divider_line_id || id == R.id.managed_by_divider_line_id
+            assert id == R.id.divider_line_id
+                    || id == R.id.managed_by_divider_line_id
                     || id == R.id.quick_delete_divider_line_id;
             view.setId(id);
             view.setEnabled(false);
@@ -64,8 +64,9 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     public int getPixelHeight(Context context) {
         int dividerLineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.divider_height);
-        int paddingSize = context.getResources().getDimensionPixelSize(
-                R.dimen.overflow_menu_divider_line_padding);
+        int paddingSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.overflow_menu_divider_line_padding);
         return dividerLineHeight + paddingSize * 2 /* top padding and bottom padding */;
     }
 }

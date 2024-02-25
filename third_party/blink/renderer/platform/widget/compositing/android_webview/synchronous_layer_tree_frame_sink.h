@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,8 +60,8 @@ class SynchronousLayerTreeFrameSinkClient {
   virtual void SubmitCompositorFrame(
       uint32_t layer_tree_frame_sink_id,
       const viz::LocalSurfaceId& local_surface_id,
-      absl::optional<viz::CompositorFrame> frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list) = 0;
+      std::optional<viz::CompositorFrame> frame,
+      std::optional<viz::HitTestRegionList> hit_test_region_list) = 0;
   virtual void SetNeedsBeginFrames(bool needs_begin_frames) = 0;
   virtual void SinkDestroyed() = 0;
 
@@ -124,6 +125,7 @@ class SynchronousLayerTreeFrameSink
   void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 
   // viz::ExternalBeginFrameSourceClient overrides.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -157,10 +159,10 @@ class SynchronousLayerTreeFrameSink
   void DeliverMessages();
 
   const uint32_t layer_tree_frame_sink_id_;
-  SynchronousCompositorRegistry* const registry_;  // Not owned.
+  const raw_ptr<SynchronousCompositorRegistry> registry_;  // Not owned.
 
   // Not owned.
-  SynchronousLayerTreeFrameSinkClient* sync_client_ = nullptr;
+  raw_ptr<SynchronousLayerTreeFrameSinkClient> sync_client_ = nullptr;
 
   // Used to allocate bitmaps in the software Display.
   // TODO(crbug.com/692814): The Display never sends its resources out of
@@ -225,7 +227,7 @@ class SynchronousLayerTreeFrameSink
   // Uses frame_sink_manager_.
   std::unique_ptr<viz::Display> display_;
   // Owned by |display_|.
-  SoftwareOutputSurface* software_output_surface_ = nullptr;
+  raw_ptr<SoftwareOutputSurface> software_output_surface_ = nullptr;
   std::unique_ptr<viz::BeginFrameSource> synthetic_begin_frame_source_;
   std::unique_ptr<viz::ExternalBeginFrameSource> external_begin_frame_source_;
 

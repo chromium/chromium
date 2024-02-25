@@ -6,16 +6,11 @@ source_set("utils") {
   sources = [
     "content_setting_backed_boolean.h",
     "content_setting_backed_boolean.mm",
-    "observable_boolean.h",
     "password_auto_fill_status_manager.h",
     "password_auto_fill_status_manager.mm",
     "password_auto_fill_status_observer.h",
     "password_utils.h",
     "password_utils.mm",
-    "pref_backed_boolean.h",
-    "pref_backed_boolean.mm",
-    "settings_utils.h",
-    "settings_utils.mm",
   ]
   deps = [
     "//base",
@@ -23,6 +18,7 @@ source_set("utils") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -32,23 +28,10 @@ source_set("utils") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_observable_boolean.h",
-    "fake_observable_boolean.mm",
-  ]
-  deps = [ ":utils" ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_setting_backed_boolean_unittest.mm",
-    "pref_backed_boolean_unittest.mm",
-  ]
+  sources = [ "content_setting_backed_boolean_unittest.mm" ]
   deps = [
-    ":test_support",
     ":utils",
     "//base",
     "//components/content_settings/core/browser",
@@ -56,8 +39,9 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/utils:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

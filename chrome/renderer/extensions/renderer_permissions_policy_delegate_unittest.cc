@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -17,6 +19,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,12 +38,14 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
     renderer_client_ = std::make_unique<TestExtensionsRendererClient>();
     ExtensionsRendererClient::Set(renderer_client_.get());
     extension_dispatcher_ = std::make_unique<Dispatcher>(
-        std::make_unique<ChromeExtensionsDispatcherDelegate>());
+        std::make_unique<ChromeExtensionsDispatcherDelegate>(),
+        std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>());
     policy_delegate_ = std::make_unique<RendererPermissionsPolicyDelegate>(
         extension_dispatcher_.get());
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ExtensionsRendererClient> renderer_client_;
   std::unique_ptr<Dispatcher> extension_dispatcher_;

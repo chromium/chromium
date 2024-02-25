@@ -5,7 +5,7 @@
 // no-include-guard-because-multiply-included
 // Multiply-included file, hence no include guard.
 
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "ipc/ipc_message_macros.h"

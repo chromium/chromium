@@ -75,6 +75,7 @@ class WebContentsViewMac : public WebContentsView,
   void RestoreFocus() override;
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
+  void TransferDragSecurityInfo(WebContentsView* view) override;
   gfx::Rect GetViewBounds() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
@@ -90,16 +91,20 @@ class WebContentsViewMac : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+  BackForwardTransitionAnimationManager*
+  GetBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,
+                     const url::Origin& source_origin,
                      blink::DragOperationsMask allowed_operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& cursor_offset,
                      const gfx::Rect& drag_obj_rect,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(ui::mojom::DragOperation operation) override;
+  void UpdateDragOperation(ui::mojom::DragOperation operation,
+                           bool document_is_handling_drag) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
@@ -215,6 +220,12 @@ class WebContentsViewMac : public WebContentsView,
 
   // The id that may be used to look up this NSView.
   const uint64_t ns_view_id_;
+
+  // Bounding rect for the part at the top of the WebContents that is not
+  // covered by window controls when window controls overlay is enabled.
+  // This is cached here in case this rect is set before the web contents has
+  // been attached to a remote view.
+  gfx::Rect window_controls_overlay_bounding_rect_;
 
   // The WebContentsViewCocoa that lives in the NSView hierarchy in this
   // process. This is always non-null, even when the view is being displayed

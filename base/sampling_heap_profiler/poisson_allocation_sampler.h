@@ -8,11 +8,13 @@
 #include <atomic>
 #include <vector>
 
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/subsystem.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
@@ -104,11 +106,10 @@ class BASE_EXPORT PoissonAllocationSampler {
   size_t SamplingInterval() const;
 
   ALWAYS_INLINE void OnAllocation(
-      void* address,
-      size_t,
-      base::allocator::dispatcher::AllocationSubsystem,
-      const char* context);
-  ALWAYS_INLINE void OnFree(void* address);
+      const base::allocator::dispatcher::AllocationNotificationData&
+          allocation_data);
+  ALWAYS_INLINE void OnFree(
+      const base::allocator::dispatcher::FreeNotificationData& free_data);
 
   static PoissonAllocationSampler* Get();
 
@@ -203,7 +204,8 @@ class BASE_EXPORT PoissonAllocationSampler {
   // operations under the lock) as such the SamplesObservers themselves need
   // to be thread-safe and support being invoked racily after
   // RemoveSamplesObserver().
-  std::vector<SamplesObserver*> observers_ GUARDED_BY(mutex_);
+  std::vector<raw_ptr<SamplesObserver, VectorExperimental>> observers_
+      GUARDED_BY(mutex_);
 
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
@@ -217,10 +219,8 @@ class BASE_EXPORT PoissonAllocationSampler {
 };
 
 ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
-    void* address,
-    size_t size,
-    base::allocator::dispatcher::AllocationSubsystem type,
-    const char* context) {
+    const base::allocator::dispatcher::AllocationNotificationData&
+        allocation_data) {
   // The allocation hooks may be installed before the sampler is started. Check
   // if its ever been started first to avoid extra work on the fast path,
   // because it's the most common case.
@@ -229,6 +229,8 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
     return;
   }
+
+  const auto type = allocation_data.allocation_subsystem();
 
   // When sampling is muted for testing, only handle manual calls to
   // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
@@ -249,10 +251,12 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
     return;
   }
 
-  DoRecordAllocation(state, address, size, type, context);
+  DoRecordAllocation(state, allocation_data.address(), allocation_data.size(),
+                     type, allocation_data.type_name());
 }
 
-ALWAYS_INLINE void PoissonAllocationSampler::OnFree(void* address) {
+ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
+    const base::allocator::dispatcher::FreeNotificationData& free_data) {
   // The allocation hooks may be installed before the sampler is started. Check
   // if its ever been started first to avoid extra work on the fast path,
   // because it's the most common case. Note that DoRecordFree still needs to be
@@ -305,6 +309,9 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(void* address) {
   if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
     return;
   }
+
+  void* const address = free_data.address();
+
   if (UNLIKELY(address == nullptr)) {
     return;
   }

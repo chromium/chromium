@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:dizhangg@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<script>
+window.progressElementHorizontalLtrId = 4853;
+window.progressElementHorizontalRtlId = 4854;
+window.progressElementVerticalLtrId = 4855;
+window.progressElementVerticalRtlId = 4856;
+</script>
+
+<progress></progress>
+<progress style="direction: rtl"></progress>
+<progress style="writing-mode: vertical-lr"></progress>
+<progress style="direction: rtl; writing-mode: vertical-lr"></progress>
+
+<script>
+async function waitForRender() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+function assertCount(counterId) {
+  assert_true(internals.isUseCounted(document, counterId), `web feature ${counterId} counted`);
+  internals.clearUseCounter(document, counterId);
+}
+promise_test(async () => {
+  await waitForRender();
+  await waitForRender();
+
+  assertCount(progressElementHorizontalLtrId);
+  assertCount(progressElementHorizontalRtlId);
+  assertCount(progressElementVerticalLtrId);
+  assertCount(progressElementVerticalRtlId);
+}, 'Usecounters for progress element are counting per writing-mode and direction');
+</script>

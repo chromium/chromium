@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -228,7 +228,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   if (test.is_hsts_enabled &&
       test.expected != HttpCredentialType::kConflicting) {
     // HTTP credentials have to be removed.
-    EXPECT_TRUE(current_store.find(http_form.signon_realm)->second.empty());
+    EXPECT_FALSE(current_store.contains(http_form.signon_realm));
 
     // For no matching case https credentials were added and for an equivalent
     // case they already existed.
@@ -257,7 +257,8 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
     password_store->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
 
-    double last_time = (base::Time::Now() - base::Minutes(10)).ToDoubleT();
+    double last_time =
+        (base::Time::Now() - base::Minutes(10)).InSecondsFSinceUnixEpoch();
     if (should_start_clean_up) {
       // Simulate that the clean-up was performed
       // (HttpCredentialCleaner::kCleanUpDelayInDays + 1) days ago.
@@ -267,7 +268,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
       // clean-ups)
       last_time = (base::Time::Now() -
                    base::Days(HttpCredentialCleaner::kCleanUpDelayInDays + 1))
-                      .ToDoubleT();
+                      .InSecondsFSinceUnixEpoch();
     }
 
     TestingPrefServiceSimple prefs;

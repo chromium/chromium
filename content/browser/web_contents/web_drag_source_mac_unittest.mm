@@ -8,6 +8,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest_mac.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -19,6 +20,7 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
 
   WebDragSource* source = [[WebDragSource alloc] initWithHost:nullptr
                                                      dropData:drop_data
+                                                 sourceOrigin:url::Origin()
                                                  isPrivileged:NO];
 
   // Test that asking for the data of an invalidly-escaped URL doesn't throw any

@@ -7,8 +7,8 @@
 import("//build/rust/cargo_crate.gni")
 
 {{#each rules}}
-cargo_crate("{{this.0}}") {
-  {{#with this.1.concrete}}
+{{#with this.detail}}
+cargo_crate("{{../name}}") {
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
   sources = [
@@ -71,15 +71,15 @@ cargo_crate("{{this.0}}") {
   {{/unless}}
   {{#each deps}}
   {{#if @first}}
-    {{#each this.rules}}
-    "{{this}}",
+    {{#each this.packages}}
+    ":{{this.name}}",
     {{/each}}
   ]
   {{else}}
   if ({{this.cond}}) {
-    deps = [
-      {{#each this.rules}}
-      "{{this}}",
+    deps += [
+      {{#each this.packages}}
+      ":{{this.name}}",
       {{/each}}
     ]
   }
@@ -102,7 +102,42 @@ cargo_crate("{{this.0}}") {
   {{#unless extra_kv.skip_build_rs}}
   {{#if build_root}}
   build_root = "{{build_root}}"
-  build_sources = [ "{{build_root}}" ]
+  build_sources = [
+    {{#each build_script_sources}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{#with build_script_inputs}}
+  build_script_inputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#with build_script_outputs}}
+  build_script_outputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#each build_deps}}
+  {{#if @first}}
+  build_deps = [
+    {{#each this.packages}}
+      ":{{this.name}}",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    build_deps += [
+    {{#each this.packages}}
+      ":{{this.name}}",
+    {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
   {{/if}}
   {{/unless}}
   rustenv = [
@@ -117,6 +152,10 @@ cargo_crate("{{this.0}}") {
     {{/if}}
   ]
   output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+
+  {{#with extra_kv.raw_gn}}
+  {{this}}
+  {{/with}}
   {{/with}}
 }
 {{/each}}

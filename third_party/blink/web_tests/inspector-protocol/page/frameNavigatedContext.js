@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var { page, session, dp } = await testRunner.startBlank(`Tests context lifetime events relative to frame's ones.`);
 
   await dp.Runtime.enable();

@@ -26,10 +26,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate
@@ -38,10 +36,8 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 public class PasswordSyncControllerDelegateBridgeTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final long sFakeNativePointer = 4;
 
@@ -51,13 +47,10 @@ public class PasswordSyncControllerDelegateBridgeTest {
     private static final Exception EXPECTED_API_EXCEPTION =
             new ApiException(new Status(EXPECTED_API_ERROR_CODE, ""));
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
-    @Mock
-    private PasswordSyncControllerDelegate mDelegateMock;
+    @Mock private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
+    @Mock private PasswordSyncControllerDelegate mDelegateMock;
 
     private PasswordSyncControllerDelegateBridgeImpl mDelegateBridge;
 
@@ -110,8 +103,10 @@ public class PasswordSyncControllerDelegateBridgeTest {
         assertNotNull(failureCallback.getValue());
         failureCallback.getValue().onResult(EXPECTED_API_EXCEPTION);
         verify(mBridgeJniMock)
-                .onCredentialManagerError(sFakeNativePointer,
-                        AndroidBackendErrorType.EXTERNAL_ERROR, EXPECTED_API_ERROR_CODE);
+                .onCredentialManagerError(
+                        sFakeNativePointer,
+                        AndroidBackendErrorType.EXTERNAL_ERROR,
+                        EXPECTED_API_ERROR_CODE);
     }
 
     @Test

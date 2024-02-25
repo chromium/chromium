@@ -1,25 +1,53 @@
-<!DOCTYPE html>
-<title>backface visibility: hidden does not apply to child pseudo-stacking context descendants, even when animation is present</title>
-<link rel="author" title="Chris Harrelson" href="mailto:chrishtr@chromium.org">
-<link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-property">
-<link rel="help" href="http://www.w3.org/TR/css-transforms-2/#propdef-backface-visibility">
-<link rel="match" href="backface-visibility-hidden-004-ref.html">
+<!doctype html>
+<html class=reftest-wait>
+  <link rel="author" title="Xianzhu Wang" href="mailto:wangxianzhu@chromium.org">
+  <link rel="help" href="https://drafts.csswg.org/css-transforms-2/#propdef-backface-visibility">
+  <link rel="match" href="backface-visibility-hidden-animated-ref.html">
+  <style>
+    @keyframes show-backface {
+      0% { transform: rotateY(60deg); }
+      0.01% { transform: rotateY(180deg); }
+      100% { transform: rotateY(180deg); }
+    }
 
-<p>The test passes if there is a green rectangle and no red</p>
-<style>
+    .flip {
+      animation: 10s linear 0s infinite forwards show-backface;
+      height: 100px;
+      width: 100px;
+      transform: rotateY(60deg);
+      transform-style: preserve-3d;
+    }
 
-  div {
-    width: 100px;
-    height: 100px;
-  }
-  @keyframes spin {
-    from { transform: rotateY(180deg); }
-    to { transform: rotateY(180deg); }
-  }
-  .target {
-    animation: 10000s linear 0s 1 forwards spin;
-  }
-</style>
-<div class=target style="backface-visibility: hidden">
-  <div style="background: green; isolation: isolate"></div>
-</div>
+    #back {
+      background: lightblue;
+      transform: rotateY(180deg);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 200px;
+      backface-visibility: hidden;
+    }
+
+    #posabs {
+      position: absolute;
+      /* This is the only difference from backface-visibility-hidden-animated-001.html. */
+      will-change: transform;
+      bottom: 0;
+      right: 0;
+      background: yellow;
+    }
+  </style>
+  <div id="flip">
+    <div id="back">
+      <i id="posabs">Text</i>
+    </div>
+  </div>
+  <script>
+    onload = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+      flip.classList.add("flip");
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+          document.documentElement.classList.remove("reftest-wait")));
+    }));
+  </script>
+</html>

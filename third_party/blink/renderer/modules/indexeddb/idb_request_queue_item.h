@@ -9,6 +9,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,7 +24,6 @@ class IDBKey;
 class IDBRequest;
 class IDBRequestLoader;
 class IDBValue;
-class WebIDBCursor;
 
 // Queues up a transaction's IDBRequest results for orderly delivery.
 //
@@ -69,12 +69,13 @@ class MODULES_EXPORT IDBRequestQueueItem {
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>,
                       base::OnceClosure on_result_ready);
-  IDBRequestQueueItem(IDBRequest*,
-                      std::unique_ptr<WebIDBCursor>,
-                      std::unique_ptr<IDBKey>,
-                      std::unique_ptr<IDBKey> primary_key,
-                      std::unique_ptr<IDBValue>,
-                      base::OnceClosure on_result_ready);
+  IDBRequestQueueItem(
+      IDBRequest*,
+      mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> pending_cursor,
+      std::unique_ptr<IDBKey>,
+      std::unique_ptr<IDBKey> primary_key,
+      std::unique_ptr<IDBValue>,
+      base::OnceClosure on_result_ready);
   // Asynchronous fetching of multiple results.
   IDBRequestQueueItem(
       IDBRequest*,
@@ -153,7 +154,7 @@ class MODULES_EXPORT IDBRequestQueueItem {
   Vector<std::unique_ptr<IDBValue>> values_;
 
   // The cursor argument to the IDBRequest callback.
-  std::unique_ptr<WebIDBCursor> cursor_;
+  mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> pending_cursor_;
 
   // Asynchronous result collection for get all.
   std::unique_ptr<IDBDatabaseGetAllResultSinkImpl> get_all_sink_;

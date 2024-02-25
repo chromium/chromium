@@ -45,6 +45,8 @@
   // ++++staticText name='This is an h5.' id=11
   // ++heading htmlTag='h6' id=12
   // ++++staticText name='This is an h6.' id=13
+  // ++paragraph htmlTag='p' id=14
+  // ++++staticText name='This is a paragraph.' id=15
   const axTree = {
     rootId: 1,
     nodes: [
@@ -52,7 +54,7 @@
         id: 1,
         role: 'rootWebArea',
         htmlTag: '#document',
-        childIds: [2, 4, 6, 8, 10, 12],
+        childIds: [2, 4, 6, 8, 10, 12, 14],
       },
       {
         id: 2,
@@ -120,12 +122,23 @@
         role: 'staticText',
         name: 'This is an h6.',
       },
+      {
+        id: 14,
+        role: 'paragraph',
+        htmlTag: 'p',
+        childIds: [15],
+      },
+      {
+        id: 15,
+        role: 'staticText',
+        name: 'This is a paragraph.',
+      },
     ],
   };
-  chrome.readingMode.setContentForTesting(axTree, [2, 4, 6, 8, 10, 12]);
+  chrome.readingMode.setContentForTesting(axTree, [2, 4, 6, 8, 10, 12, 14]);
   const expected = '<div><h1>This is an h1.</h1><h2>This is an h2.</h2>' +
-      '<h3>This is an h3.</h3><h4>This is an h4.</h4>' +
-      '<h5>This is an h5.</h5><h6>This is an h6.</h6></div>';
+      '<h3>This is an h3.</h3><h4>This is an h4.</h4><h5>This is an h5.</h5>' +
+      '<h6>This is an h6.</h6><p>This is a paragraph.</p></div>';
   assertContainerInnerHTML(expected);
 
   return result;

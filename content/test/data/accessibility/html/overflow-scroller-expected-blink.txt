@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
+++++++++paragraph
+++++++++++staticText name='Example Paragraph 1'
+++++++++++++inlineTextBox name='Example Paragraph 1'
+++++++++paragraph
+++++++++++staticText name='Example Paragraph 2'
+++++++++++++inlineTextBox name='Example Paragraph 2'

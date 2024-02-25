@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Vrati se nazad</translation>
 <translation id="1565432156062359693">Nema sljedeće liste</translation>
 <translation id="1571643229714746283">ChromeVox je spreman</translation>
+<translation id="1588252353131492116">Prolaz nije dostupan s uključenim ljepljivim načinom rada</translation>
 <translation id="1594072653727561613">mni</translation>
 <translation id="1610130962244179598">Prebaci na brailovo pismo od šest tačaka</translation>
 <translation id="161042844686301425">Cijan</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Glavni</translation>
 <translation id="2329324941084714723">Ploča s karticama</translation>
 <translation id="2347456970887948350">Link</translation>
+<translation id="2363753371702255035">grafička oznaka</translation>
 <translation id="2365384324219615024">Također možete pritisnuti Enter da aktivirate stavke. Naprimjer, Enter možete koristiti da dostavite tekst u obrascu. Da nastavite, pritisnite Enter.</translation>
 <translation id="2381733276052567791">Uključivanje/isključivanje govora</translation>
 <translation id="2390264819538553347">Pritisnite tipku enter da idete dalje; pritisnite tipku backspace da se vratite nazad.</translation>
@@ -980,7 +982,7 @@
 <translation id="7801768143868631306">Savjet: Prevucite ulijevo ili udesno jednim prstom da navigirate.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Sljedeća grupa</translation>
-<translation id="7813616274030162878">Meni prekidača za pristup</translation>
+<translation id="7813616274030162878">Meni Pristupa pomoću prekidača</translation>
 <translation id="7839679365527550018">Prethodna riječ</translation>
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7851816175263618915">Neki znakovi interpunkcije</translation>

@@ -1,0 +1,255 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of magic stack histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ModuleDelegateHost">
+  <variant name="NewTabPage"/>
+  <variant name="StartSurface"/>
+</variants>
+
+<variants name="ModulePosition">
+  <variant name="0"/>
+  <variant name="1"/>
+  <variant name="2"/>
+  <variant name="3"/>
+  <variant name="4"/>
+</variants>
+
+<variants name="ModuleType">
+  <variant name="PriceChange"/>
+  <variant name="SingleTab"/>
+  <variant name="TabResumption"/>
+</variants>
+
+<variants name="ScrollState">
+  <variant name="NotScrolled"/>
+  <variant name="Scrolled"/>
+</variants>
+
+<variants name="ToggleState">
+  <variant name="TurnOffModule"/>
+  <variant name="TurnOnModule"/>
+</variants>
+
+<histogram name="MagicStack.Clank.Settings.{ToggleState}" enum="ModuleType"
+    expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records when a module is activated or deactivated in the configuration page
+    of the magic stack. The resulting histogram, which is enumerated, tallies
+    the total number of these actions across various module types. The histogram
+    is logged whenever the state of a module is toggled in configuration page
+    when the magic stack is customizable, Android-only.
+  </summary>
+  <token key="ToggleState" variants="ToggleState"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.OpenCustomizeSettings"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count that the context menu item to open customize settings
+    is clicked. The histogram is logged on a {ModuleDelegateHost} and is logged
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.RemoveModule"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count that the context menu item to remove a module is
+    clicked. The histogram is logged on a {ModuleDelegateHost} and is logged
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.Shown"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of times that the context menu of a module is shown
+    on the magic stack of a {ModuleDelegateHost}. The histogram is logged on
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click.{ModuleType}.{ModulePosition}"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of the module when the home modules are
+    clicked. The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModulePosition" variants="ModulePosition"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a successful fetching data response. The histogram is logged when
+    showing the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataFailedDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a response of no data to show. The histogram is logged when showing
+    the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when it returns a
+    response after timeout. The histogram is logged when showing the magic stack
+    on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutType"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the types of modules which didn't respond before the timer timeout.
+    The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.FirstModuleShownDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building the first module to the time when the
+    recyclerview becomes visible, i.e., the first highest ranking module returns
+    valid data. The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.ProfileReadyDelayMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the time spent between triggering to show modules and fetch the
+    module list when the profile is ready. The histogram is logged when showing
+    the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.TopImpression"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of times that a module is shown on the magic stack of
+    a {ModuleDelegateHost}. The histogram is logged on Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.NotScrollable"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the total count of times that magic stack is not scrollable. The
+    histogram is logged when showing the magic stack on {ModuleDelegateHost},
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Scrollable.{ScrollState}"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the total count of times that magic stack is scrollable and the
+    number of times it has been scrolled or not. The histogram is logged when
+    showing the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+  <token key="ScrollState" variants="ScrollState"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Segmentation.FetchRankingResultsDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from calling the segmentation API to fetch a ranking to
+    the time when a response returns. The histogram is logged when showing the
+    magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

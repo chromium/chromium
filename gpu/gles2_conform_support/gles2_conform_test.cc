@@ -39,7 +39,7 @@ int RunHelper(base::TestSuite* test_suite) {
 bool RunGLES2ConformTest(const char* path) {
   // Load test expectations, and return early if a test is marked as FAIL.
   base::FilePath src_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &src_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_path);
   base::FilePath test_expectations_path =
       src_path.Append(FILE_PATH_LITERAL("gpu")).
       Append(FILE_PATH_LITERAL("gles2_conform_support")).

@@ -13,22 +13,13 @@ assert(
 
 source_set("content_widget") {
   sources = [
-    "content_widget_view.h",
-    "content_widget_view.mm",
     "content_widget_view_controller.h",
     "content_widget_view_controller.mm",
-    "most_visited_tile_view.h",
-    "most_visited_tile_view.mm",
   ]
 
   deps = [
     "//base",
-    "//ios/chrome/common/app_group",
-    "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/crash_report",
-    "//ios/chrome/common/ntp_tile",
-    "//ios/chrome/common/ui/elements",
-    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
   ]
 
@@ -47,7 +38,7 @@ repack_locales("packed_resources") {
 
   source_patterns = [ "$root_gen_dir/ios/content_widget_extension/ios_content_widget_extension_${branding_path_product}_strings_" ]
 
-  deps = [ "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_chromium_strings" ]
+  deps = [ "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_branded_strings" ]
 }
 
 generate_localizable_strings("system_strings") {
@@ -56,9 +47,12 @@ generate_localizable_strings("system_strings") {
   config_file = "content_widget_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
   packed_locales = locales_as_apple_outputs
-  output_filenames = [ "InfoPlist.strings" ]
+  output_filenames = [
+    "InfoPlist.strings",
+    "Localizable.strings",
+  ]
   deps = [
-    "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_chromium_strings",
+    "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_branded_strings",
     _packed_resources_target,
   ]
 }

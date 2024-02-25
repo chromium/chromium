@@ -10,30 +10,12 @@ BASE_FEATURE(kNewOverflowMenu,
              "NewOverflowMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSmartSortingPriceTrackingDestination,
-             "kSmartSortingPriceTrackingDestination",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNewOverflowMenuShareChromeAction,
-             "kNewOverflowMenuShareChromeAction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOverflowMenuCustomization,
              "OverflowMenuCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewOverflowMenuEnabled() {
-  if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kNewOverflowMenu);
-  }
-  // The new overflow menu isn't available on iOS <= 14 because it relies on
-  // `UISheetPresentationController`, which was introduced in iOS 15.
-  return false;
-}
-
-bool IsNewOverflowMenuShareChromeActionEnabled() {
-  return IsNewOverflowMenuEnabled() &&
-         base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);
+  return base::FeatureList::IsEnabled(kNewOverflowMenu);
 }
 
 bool IsOverflowMenuCustomizationEnabled() {

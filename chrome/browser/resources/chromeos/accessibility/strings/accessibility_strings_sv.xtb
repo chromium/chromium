@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Navigera bakåt</translation>
 <translation id="1565432156062359693">Det finns inga fler listor</translation>
 <translation id="1571643229714746283">ChromeVox har aktiverats</translation>
+<translation id="1588252353131492116">Det går inte att använda pass through-tangenten när låstangentsläget är aktiverat</translation>
 <translation id="1594072653727561613">meny</translation>
 <translation id="1610130962244179598">Byt till punktskrift med sex punkter</translation>
 <translation id="161042844686301425">Cyanblå</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Huvud</translation>
 <translation id="2329324941084714723">Flikpanel</translation>
 <translation id="2347456970887948350">En länk</translation>
+<translation id="2363753371702255035">punkt</translation>
 <translation id="2365384324219615024">Du kan även trycka på Retur för att aktivera objekt. Du kan till exempel trycka på Retur för att skicka text i ett formulär. Tryck på Retur för att fortsätta.</translation>
 <translation id="2381733276052567791">Aktivera och inaktivera tal</translation>
 <translation id="2390264819538553347">Tryck på Retur om du vill fortsätta. Tryck på mellanslag om du vill öppna föregående sida.</translation>
@@ -686,7 +688,7 @@
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5628125749885014029">rubr4</translation>
 <translation id="5632083598315326067">Grafisk symbol</translation>
-<translation id="5648939288050772726">Grattis! Nu kan du grunderna i att använda ChromeVox. Kom ihåg att du kan öppna kommandomenyn för ChromeVox när som helst genom att trycka på söktangenten + punkt. Om du vill veta ännu mer om ChromeVox och Chrome OS kan du läsa följande artiklar.
+<translation id="5648939288050772726">Grattis! Nu kan du grunderna i att använda ChromeVox. Kom ihåg att du kan öppna kommandomenyn för ChromeVox när som helst genom att trycka på söktangenten + punkt. Om du vill veta ännu mer om ChromeVox och ChromeOS kan du läsa följande artiklar.
     Om du är klar med självstudierna kan du använda ChromeVox till att navigera till stängningsknappen och klicka på den.</translation>
 <translation id="5653397561111110475">Använda tillgänglighetsfunktioner för pekskärmen på Chromebook</translation>
 <translation id="5655682562155942719">Hoppkommandon</translation>

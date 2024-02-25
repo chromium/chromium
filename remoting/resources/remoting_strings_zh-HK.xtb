@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">偵測到不相容的通訊協定版本。請確認您兩部電腦使用的都是最新版本的軟件，然後再試一次。</translation>
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="1201402288615127009">下一個</translation>
-<translation id="1296511125400541222">版權所有 2023 Chromium 作者。保留所有權利。</translation>
 <translation id="1297009705180977556">連接至「<ph name="HOSTNAME" />」時發生錯誤</translation>
 <translation id="1450760146488584666">要求的物件不存在。</translation>
 <translation id="1480046233931937785">製作人員名單</translation>
@@ -89,7 +88,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4808503597364150972">請輸入 <ph name="HOSTNAME" /> 的 PIN。</translation>
 <translation id="4812684235631257312">主機</translation>
 <translation id="4867841927763172006">傳送 PrtScn</translation>
-<translation id="4960795469833295568">版權所有 2023 Google LLC。保留所有權利。</translation>
 <translation id="4974476491460646149">「<ph name="HOSTNAME" />」已解除連線</translation>
 <translation id="4985296110227979402">您必須先設定電腦，才能使用遠端存取</translation>
 <translation id="4987330545941822761">Chrome 遠端桌面無法判斷該在本機使用哪個瀏覽器開啟網址。請從下方清單選取瀏覽器。</translation>
@@ -154,6 +152,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="7693372326588366043">重新整理主機清單</translation>
 <translation id="7714222945760997814">報告此問題</translation>
 <translation id="7868137160098754906">請為遠端電腦輸入您的 PIN。</translation>
+<translation id="7881455334687220899">版權所有 2024 Chromium 作者。保留所有權利。</translation>
 <translation id="7895403300744144251">遠端電腦的安全政策不允許從您的帳戶連線。</translation>
 <translation id="7936528439960309876">靠右固定</translation>
 <translation id="7970576581263377361">驗證失敗，請重新登入 Chromium。</translation>
@@ -185,6 +184,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="8747048596626351634">工作階段當機或無法啟動。如果遠端電腦上存在 ~/.chrome-remote-desktop-session 指令碼，請確保該檔案開始執行長期運作的前景程序，例如桌面環境或視窗管理員。</translation>
 <translation id="8804164990146287819">私隱權政策</translation>
 <translation id="8906511416443321782">此主機需要麥克風存取權才能擷取音訊，並將音訊投放至「Chrome 遠端桌面」用戶端。</translation>
+<translation id="9042277333359847053">版權所有 2024 Google LLC。保留所有權利。</translation>
 <translation id="9111855907838866522">您連接咗去遠端裝置。如果要開選單，請用四隻手指㩒一下螢幕。</translation>
 <translation id="9126115402994542723">這部裝置連線至這個主機時，不必再次詢問 PIN。</translation>
 <translation id="916856682307586697">啟動預設的 XSession</translation>

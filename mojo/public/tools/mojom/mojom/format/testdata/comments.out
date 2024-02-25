@@ -1,0 +1,47 @@
+module foo.bar;
+
+import "foo/bar/baz.mojom";  // Import EOL comment.
+
+enum Value {
+  // Preceding enum value comment.
+  kValue = 0,
+
+  // Preceding enum value 2 comment.
+  kValue2 = 1,  // Enum value EOL comment.
+};
+
+// Preceding interface comment.
+interface I {
+  // Preceding method comment.
+  DoAThing(
+      int32 value,
+      uint32 value2,  // Method param EOL comment.
+      string value3);
+
+  // Comments at the end.
+};
+
+// Comments above everything.
+
+// Foo
+[Sync]
+struct Foo {
+  // Bar.
+  string bar;
+
+  // Baz.
+  int32 baz;
+
+  // End.
+};
+
+// Coments after everything.
+// After union.
+[Sync]
+union Foo {
+  array<string> x;  // After field.
+
+  // After union end.
+};
+
+// End of file.

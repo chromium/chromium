@@ -8,6 +8,7 @@ import("//build/config/ui.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("power_save_blocker") {
@@ -32,6 +33,8 @@ source_set("power_save_blocker") {
   ]
 
   sources = [ "power_save_blocker.h" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [ "//services/device/public/mojom" ]
 
@@ -97,6 +100,6 @@ if (is_android) {
       "//services/device:*",
     ]
     sources = java_sources_needing_jni
-    deps = [ "//base:jni_java" ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 }

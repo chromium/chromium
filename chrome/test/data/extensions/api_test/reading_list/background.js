@@ -116,16 +116,24 @@ chrome.test.runTests([
     let query = {title: 'Example'};
     let entries = await readingList.query(query);
     chrome.test.assertEq(entries.length, 2);
+
+    // The times are arbitrary and thus hard to test especially since the
+    // function call is asynchronous. For this reason, we reuse the times from
+    // the entries themselves.
     const expectedResult = [
       {
         'url': 'https://www.example2.com/',
         'title': 'Example',
-        'hasBeenRead': false
+        'hasBeenRead': false,
+        'creationTime': entries[0].creationTime,
+        'lastUpdateTime': entries[0].lastUpdateTime,
       },
       {
         'url': 'https://www.example3.com/',
         'title': 'Example',
-        'hasBeenRead': false
+        'hasBeenRead': false,
+        'creationTime': entries[1].creationTime,
+        'lastUpdateTime': entries[1].lastUpdateTime,
       }
     ];
     chrome.test.assertEq(entries, expectedResult);

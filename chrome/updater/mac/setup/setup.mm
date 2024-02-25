@@ -9,6 +9,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
@@ -42,14 +44,13 @@
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
 
 bool CopyBundle(UpdaterScope scope) {
-  absl::optional<base::FilePath> base_install_dir = GetInstallDirectory(scope);
-  absl::optional<base::FilePath> versioned_install_dir =
+  std::optional<base::FilePath> base_install_dir = GetInstallDirectory(scope);
+  std::optional<base::FilePath> versioned_install_dir =
       GetVersionedInstallDirectory(scope);
   if (!base_install_dir || !versioned_install_dir) {
     LOG(ERROR) << "Failed to get install directory.";
@@ -118,7 +119,7 @@ bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
 // plist, with the specified contents. If not, the plist will be overwritten and
 // the item reloaded. May block.
 bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
-  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  const std::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
   if (!path) {
     VLOG(1) << "Failed to find wake plist path.";
     return false;
@@ -168,13 +169,14 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     }
 
     // Update app registration with LaunchServices.
-    const absl::optional<base::FilePath> install_path =
+    const std::optional<base::FilePath> install_path =
         GetInstallDirectory(scope);
     if (install_path) {
       OSStatus ls_result = LSRegisterURL(
           base::apple::FilePathToCFURL(
               install_path->Append("Current").Append(base::StrCat(
-                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))),
+                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"})))
+              .get(),
           true);
       VLOG_IF(1, ls_result != noErr) << "LSRegisterURL failed: " << ls_result;
     } else {
@@ -226,12 +228,12 @@ int DoSetup(UpdaterScope scope) {
   // Quarantine attribute needs to be removed here as the copied bundle might be
   // given com.apple.quarantine attribute, and the server is attempted to be
   // launched below, Gatekeeper could prompt the user.
-  const absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+  const std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   if (!install_dir) {
     return kErrorFailedToGetInstallDir;
   }
-  if (!RemoveQuarantineAttributes(*install_dir)) {
-    VLOG(1) << "RemoveQuarantineAttributes failed. Gatekeeper may prompt.";
+  if (!PrepareToRunBundle(*install_dir)) {
+    VLOG(1) << "PrepareToRunBundle failed. Gatekeeper may prompt.";
   }
 
   // If there is no Current symlink, create one now.
@@ -248,7 +250,7 @@ int DoSetup(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kSystem) {
-    const absl::optional<base::FilePath> bundle_path =
+    const std::optional<base::FilePath> bundle_path =
         GetUpdaterAppBundlePath(scope);
     if (bundle_path) {
       base::FilePath path =
@@ -272,16 +274,17 @@ int DoSetup(UpdaterScope scope) {
 
 int Setup(UpdaterScope scope) {
   int error = DoSetup(scope);
-  if (error)
+  if (error) {
     CleanAfterInstallFailure(scope);
+  }
   return error;
 }
 
 int PromoteCandidate(UpdaterScope scope) {
-  const absl::optional<base::FilePath> updater_executable_path =
+  const std::optional<base::FilePath> updater_executable_path =
       GetUpdaterExecutablePath(scope);
-  const absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
-  const absl::optional<base::FilePath> bundle_path =
+  const std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+  const std::optional<base::FilePath> bundle_path =
       GetUpdaterAppBundlePath(scope);
   if (!updater_executable_path || !install_dir || !bundle_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
@@ -304,8 +307,9 @@ int PromoteCandidate(UpdaterScope scope) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
-  if (!InstallKeystone(scope))
+  if (!InstallKeystone(scope)) {
     return kErrorFailedToInstallLegacyUpdater;
+  }
 
   return kErrorOk;
 }
@@ -343,10 +347,17 @@ int Uninstall(UpdaterScope scope) {
         base::DeleteFile(launch_agent_dir.Append(base::ToLowerASCII(
             LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
   }
+
+  // Delete the updater's caches. On Mac, this is different from the
+  // install directory.
+  DeleteFolder(GetCacheBaseDirectory(scope));
   // Deleting the install folder is best-effort. Current running processes such
   // as the crash handler process may still write to the updater log file, thus
-  // it is not always possible to delete the data folder.
-  DeleteFolder(GetInstallDirectory(scope));
+  // it is not always possible to delete the log file. Additionally, the log
+  // file is helpful for debugging.
+  if (!DeleteExcept(GetLogFilePath(scope))) {
+    VLOG(0) << "Failed to delete install directory.";
+  }
 
   return exit;
 }

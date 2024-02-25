@@ -56,7 +56,7 @@ void SigninHelperLacros::OnAccountsAvailableAsSecondaryFetched(
 }
 
 void SigninHelperLacros::OnAccountAdded(
-    const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
+    const std::optional<AccountProfileMapper::AddAccountResult>& result) {
   std::string gaia_id;
   if (result.has_value() && result->account.key.account_type() ==
                                 account_manager::AccountType::kGaia) {

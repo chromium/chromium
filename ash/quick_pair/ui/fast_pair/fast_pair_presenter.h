@@ -34,8 +34,10 @@ class FastPairPresenter {
                                  PairingFailedCallback callback) = 0;
   virtual void ShowAssociateAccount(scoped_refptr<Device> device,
                                     AssociateAccountCallback callback) = 0;
-  virtual void ShowCompanionApp(scoped_refptr<Device> device,
-                                CompanionAppCallback callback) = 0;
+  virtual void ShowInstallCompanionApp(scoped_refptr<Device> device,
+                                       CompanionAppCallback callback) = 0;
+  virtual void ShowLaunchCompanionApp(scoped_refptr<Device> device,
+                                      CompanionAppCallback callback) = 0;
   virtual void RemoveNotifications() = 0;
   virtual void ExtendNotification() = 0;
 

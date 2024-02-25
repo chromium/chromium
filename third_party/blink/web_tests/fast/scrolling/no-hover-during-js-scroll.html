@@ -3,7 +3,9 @@
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
 <script src="resources/hover-on-scroll-checker.js"></script>
-
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <style>
   body, html {
     margin: 0;
@@ -42,8 +44,13 @@
   window.onload = async () => {
     promise_test(async () => {
       const postScrollHoverIndex = 3;
+      const scrollAmount = postScrollHoverIndex * elementHeight();
       const scrollCallback = () => {
-        window.scrollTo({top: 150, left: 0});
+        return waitForWindowScrollTo({
+          top: scrollAmount,
+          left: 0,
+          behavior: 'instant'
+        });
       };
       return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
     }, 'JS scroll on the page, no hover update during scrolling, but ' +

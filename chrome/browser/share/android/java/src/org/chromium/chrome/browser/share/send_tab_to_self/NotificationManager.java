@@ -18,9 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -29,8 +30,9 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -72,7 +74,7 @@ public class NotificationManager {
         // If this feature ever supports incognito mode, we need to modify
         // this method to obtain the current profile, rather than the last-used
         // regular profile.
-        final Profile profile = Profile.getLastUsedRegularProfile();
+        final Profile profile = ProfileManager.getLastUsedRegularProfile();
         switch (action) {
             case NOTIFICATION_ACTION_TAP:
                 openUrl(intent.getData());
@@ -107,7 +109,7 @@ public class NotificationManager {
             return false;
         }
         Context context = ContextUtils.getApplicationContext();
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
         manager.cancel(
                 NotificationConstants.GROUP_SEND_TAB_TO_SELF, activeNotification.notificationId);
         return true;
@@ -123,8 +125,12 @@ public class NotificationManager {
      * @return whether the notification was successfully displayed
      */
     @CalledByNative
-    private static boolean showNotification(String guid, @NonNull String url, String title,
-            String deviceName, long timeoutAtMillis,
+    private static boolean showNotification(
+            String guid,
+            @NonNull String url,
+            String title,
+            String deviceName,
+            long timeoutAtMillis,
             Class<? extends BroadcastReceiver> broadcastReceiver) {
         // A notification associated with this Share entry already exists. Don't display a new one.
         if (NotificationSharedPrefManager.findActiveNotification(guid) != null) {
@@ -133,35 +139,44 @@ public class NotificationManager {
 
         // Post notification.
         Context context = ContextUtils.getApplicationContext();
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
 
         int nextId = NotificationSharedPrefManager.getNextNotificationId();
         Uri uri = Uri.parse(url);
-        PendingIntentProvider contentIntent = PendingIntentProvider.getBroadcast(context, nextId,
-                new Intent(context, broadcastReceiver)
-                        .setData(uri)
-                        .setAction(NOTIFICATION_ACTION_TAP)
-                        .putExtra(NOTIFICATION_GUID_EXTRA, guid),
-                0);
-        PendingIntentProvider deleteIntent = PendingIntentProvider.getBroadcast(context, nextId,
-                new Intent(context, broadcastReceiver)
-                        .setData(uri)
-                        .setAction(NOTIFICATION_ACTION_DISMISS)
-                        .putExtra(NOTIFICATION_GUID_EXTRA, guid),
-                0);
+        PendingIntentProvider contentIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        nextId,
+                        new Intent(context, broadcastReceiver)
+                                .setData(uri)
+                                .setAction(NOTIFICATION_ACTION_TAP)
+                                .putExtra(NOTIFICATION_GUID_EXTRA, guid),
+                        0);
+        PendingIntentProvider deleteIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        nextId,
+                        new Intent(context, broadcastReceiver)
+                                .setData(uri)
+                                .setAction(NOTIFICATION_ACTION_DISMISS)
+                                .putExtra(NOTIFICATION_GUID_EXTRA, guid),
+                        0);
         // IDS_SEND_TAB_TO_SELF_NOTIFICATION_CONTEXT_TEXT
         Resources res = context.getResources();
-        String contextText = res.getString(
-                R.string.send_tab_to_self_notification_context_text, uri.getHost(), deviceName);
+        String contextText =
+                res.getString(
+                        R.string.send_tab_to_self_notification_context_text,
+                        uri.getHost(),
+                        deviceName);
         // Build the notification itself.
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.SHARING,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType
                                                 .SEND_TAB_TO_SELF,
-                                        NotificationConstants.GROUP_SEND_TAB_TO_SELF, nextId))
+                                        NotificationConstants.GROUP_SEND_TAB_TO_SELF,
+                                        nextId))
                         .setContentIntent(contentIntent)
                         .setDeleteIntent(deleteIntent)
                         .setContentTitle(title)
@@ -174,9 +189,10 @@ public class NotificationManager {
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
         manager.notify(notification);
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.SEND_TAB_TO_SELF,
-                notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        NotificationUmaTracker.SystemNotificationType.SEND_TAB_TO_SELF,
+                        notification.getNotification());
 
         NotificationSharedPrefManager.addActiveNotification(
                 new NotificationSharedPrefManager.ActiveNotification(nextId, guid));
@@ -185,12 +201,18 @@ public class NotificationManager {
         if (timeoutAtMillis != Long.MAX_VALUE) {
             AlarmManager alarmManager =
                     (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent timeoutIntent = new Intent(context, broadcastReceiver)
-                                           .setData(Uri.parse(url))
-                                           .setAction(NOTIFICATION_ACTION_TIMEOUT)
-                                           .putExtra(NOTIFICATION_GUID_EXTRA, guid);
-            alarmManager.set(AlarmManager.RTC, timeoutAtMillis,
-                    PendingIntent.getBroadcast(context, nextId, timeoutIntent,
+            Intent timeoutIntent =
+                    new Intent(context, broadcastReceiver)
+                            .setData(Uri.parse(url))
+                            .setAction(NOTIFICATION_ACTION_TIMEOUT)
+                            .putExtra(NOTIFICATION_GUID_EXTRA, guid);
+            alarmManager.set(
+                    AlarmManager.RTC,
+                    timeoutAtMillis,
+                    PendingIntent.getBroadcast(
+                            context,
+                            nextId,
+                            timeoutIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(false)));
         }

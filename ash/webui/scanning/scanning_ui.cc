@@ -45,8 +45,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddBoolean("isJellyEnabledForScanningApp",
-                     ash::features::IsJellyEnabledForScanningApp());
 }
 
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
@@ -167,22 +165,14 @@ ScanningUI::ScanningUI(
           kChromeUIScanningAppHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://webui-test "
-      "'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
   accessibility_features_ = std::make_unique<AccessibilityFeatures>();
 
   const auto resources =
       base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_SCANNING_APP_INDEX_HTML);
-
-  html_source->AddResourcePath("scanning.mojom-lite.js",
-                               IDR_SCANNING_MOJO_LITE_JS);
-  html_source->AddResourcePath("file_path.mojom-lite.js",
-                               IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
-  html_source->AddResourcePath("accessibility_features.mojom-lite.js",
-                               IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS);
+  SetUpWebUIDataSource(html_source, resources, IDR_ASH_SCANNING_APP_INDEX_HTML);
 
   AddScanningAppStrings(html_source);
 

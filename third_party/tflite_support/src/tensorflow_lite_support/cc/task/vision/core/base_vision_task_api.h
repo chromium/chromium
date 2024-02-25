@@ -23,7 +23,7 @@ limitations under the License.
 
 #include "absl/memory/memory.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/time/clock.h"     // from @com_google_absl
+#include "absl/time/clock.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
@@ -45,12 +45,11 @@ namespace vision {
 // Base class providing common logic for vision models.
 template <class OutputType>
 class BaseVisionTaskApi
-    : public tflite::task::core::
-          BaseTaskApi<OutputType, const FrameBuffer&, const BoundingBox&> {
+    : public tflite::task::core::BaseTaskApi<OutputType, const FrameBuffer&,
+                                             const BoundingBox&> {
  public:
   explicit BaseVisionTaskApi(std::unique_ptr<core::TfLiteEngine> engine)
-      : tflite::task::core::BaseTaskApi<OutputType,
-                                        const FrameBuffer&,
+      : tflite::task::core::BaseTaskApi<OutputType, const FrameBuffer&,
                                         const BoundingBox&>(std::move(engine)) {
   }
   // BaseVisionTaskApi is neither copyable nor movable.
@@ -74,7 +73,7 @@ class BaseVisionTaskApi
   // already successfully initialized before calling this method.
   virtual absl::Status CheckAndSetInputs() {
     // BaseTaskApi always assume having a single input.
-    ASSIGN_OR_RETURN(preprocessor_,
+    TFLITE_ASSIGN_OR_RETURN(preprocessor_,
                      ::tflite::task::processor::ImagePreprocessor::Create(
                          this->GetTfLiteEngine(), {0}, process_engine_));
     return absl::OkStatus();

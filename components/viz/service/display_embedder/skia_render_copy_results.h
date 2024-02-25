@@ -102,6 +102,39 @@ class CopyOutputResultSkiaRGBA : public CopyOutputResult {
   mutable bool bitmap_created_ = false;
 };
 
+// Context that is responsible for sending a CopyOutputResult once the GPU work
+// that populates the GpuMemoryBuffer has completed.
+class ReadbackContextRGBA {
+ public:
+  ReadbackContextRGBA(base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+                      std::unique_ptr<CopyOutputRequest> request,
+                      const gfx::Rect& result_rect,
+                      const gpu::Mailbox& mailbox,
+                      const gfx::ColorSpace& color_space);
+
+  // Will be called with `ReadbackContextRGBA*`:
+  static void OnMailboxReady(GrGpuFinishedContext context);
+
+  ~ReadbackContextRGBA();
+
+ private:
+  void OnMailboxReadyInternal();
+
+  // Needed to notify `SkiaOutputSurfaceImplOnGpu` that readback has completed.
+  // GPU work is not a readback, but we rely on the same mechanism for nudging
+  // Skia to periodically check for asynchronous event completion.
+  base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
+  // Request that we will send a response to:
+  std::unique_ptr<CopyOutputRequest> request_;
+
+  // Data needed to create a response to `request_`:
+  gfx::Rect result_rect_;
+  gpu::Mailbox mailbox_;
+  gfx::ColorSpace color_space_;
+
+  THREAD_CHECKER(thread_checker_);
+};
+
 class CopyOutputResultSkiaYUV : public CopyOutputResult {
  public:
   CopyOutputResultSkiaYUV(

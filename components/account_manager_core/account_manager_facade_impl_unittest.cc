@@ -159,7 +159,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   void GetPersistentErrorForAccount(
       crosapi::mojom::AccountKeyPtr mojo_account_key,
       GetPersistentErrorForAccountCallback callback) override {
-    absl::optional<AccountKey> account_key =
+    std::optional<AccountKey> account_key =
         FromMojoAccountKey(mojo_account_key);
     DCHECK(account_key.has_value());
     auto it = persistent_errors_.find(account_key.value());
@@ -256,7 +256,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     return show_add_account_dialog_calls_;
   }
 
-  absl::optional<account_manager::AccountAdditionOptions>
+  std::optional<account_manager::AccountAdditionOptions>
   show_add_account_dialog_options() const {
     return show_add_account_dialog_options_;
   }
@@ -271,7 +271,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
  private:
   int show_add_account_dialog_calls_ = 0;
-  absl::optional<account_manager::AccountAdditionOptions>
+  std::optional<account_manager::AccountAdditionOptions>
       show_add_account_dialog_options_;
   int show_reauth_account_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;

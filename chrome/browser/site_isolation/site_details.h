@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/site_instance.h"
 
@@ -23,7 +24,7 @@ struct BrowsingInstanceInfo {
   BrowsingInstanceInfo(const BrowsingInstanceInfo& other);
   ~BrowsingInstanceInfo();
 
-  std::set<content::SiteInstance*> site_instances;
+  std::set<raw_ptr<content::SiteInstance, SetExperimental>> site_instances;
   int proxy_count = 0;
 };
 using BrowsingInstanceMap =

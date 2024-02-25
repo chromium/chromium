@@ -1,0 +1,8 @@
+monorail: {
+  project: "chromium"
+  component: "UI>Browser>Autofill"
+}
+team_email: "chrome-transactions@google.com"
+buganizer_public: {
+  component_id: 1456764
+}

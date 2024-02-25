@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "ash.human_presence_sensor_scren_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowHumanPresenceSensorScreenEnabled": false
+        },
+        "prefs": {
+          "ash.human_presence_sensor_scren_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowHumanPresenceSensorScreenEnabled": true
+        },
+        "prefs": {
+          "ash.human_presence_sensor_scren_oobe_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

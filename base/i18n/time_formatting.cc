@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
@@ -28,10 +30,17 @@
 namespace base {
 namespace {
 
+UDate ToUDate(const Time& time) {
+  // TODO(crbug.com/1392437): Consider using the `...IgnoringNull` variant and
+  // adding a `CHECK(!time.is_null())`; trying to format a null Time as a string
+  // is almost certainly an indication that the caller has made a mistake.
+  return time.InMillisecondsFSinceUnixEpoch();
+}
+
 std::u16string TimeFormat(const icu::DateFormat& formatter, const Time& time) {
   icu::UnicodeString date_string;
 
-  formatter.format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
+  formatter.format(ToUDate(time), date_string);
   return i18n::UnicodeStringToString16(date_string);
 }
 
@@ -41,8 +50,7 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
   icu::UnicodeString time_string;
 
   icu::FieldPosition ampm_field(icu::DateFormat::kAmPmField);
-  formatter->format(
-      static_cast<UDate>(time.ToDoubleT() * 1000), time_string, ampm_field);
+  formatter->format(ToUDate(time), time_string, ampm_field);
   int ampm_length = ampm_field.getEndIndex() - ampm_field.getBeginIndex();
   if (ampm_length) {
     int begin = ampm_field.getBeginIndex();
@@ -55,11 +63,11 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
 }
 
 icu::SimpleDateFormat CreateSimpleDateFormatter(
-    const char* pattern,
+    std::string_view pattern,
     bool generate_pattern = true,
     const icu::Locale& locale = icu::Locale::getDefault()) {
   UErrorCode status = U_ZERO_ERROR;
-  icu::UnicodeString generated_pattern(pattern);
+  icu::UnicodeString generated_pattern(pattern.data(), pattern.length());
 
   if (generate_pattern) {
     // Generate a locale-dependent format pattern. The generator will take
@@ -189,19 +197,84 @@ std::u16string TimeFormatFriendlyDate(const Time& time) {
 }
 
 std::u16string LocalizedTimeFormatWithPattern(const Time& time,
-                                              const char* pattern) {
-  return TimeFormat(CreateSimpleDateFormatter(pattern), time);
+                                              std::string_view pattern) {
+  return TimeFormat(CreateSimpleDateFormatter(std::move(pattern)), time);
 }
 
 std::string UnlocalizedTimeFormatWithPattern(const Time& time,
-                                             const char* pattern,
+                                             std::string_view pattern,
                                              const icu::TimeZone* time_zone) {
   icu::SimpleDateFormat formatter =
-      CreateSimpleDateFormatter(pattern, false, icu::Locale("en_US"));
+      CreateSimpleDateFormatter({}, false, icu::Locale("en_US"));
   if (time_zone) {
     formatter.setTimeZone(*time_zone);
   }
-  return base::UTF16ToUTF8(TimeFormat(formatter, time));
+
+  // Formats `time` according to `pattern`.
+  const auto format_time = [&formatter](const Time& time,
+                                        std::string_view pattern) {
+    formatter.applyPattern(
+        icu::UnicodeString(pattern.data(), pattern.length()));
+    return base::UTF16ToUTF8(TimeFormat(formatter, time));
+  };
+
+  // If `time` has nonzero microseconds, check if the caller requested
+  // microsecond-precision output; this must be handled internally since
+  // `SimpleDateFormat` won't do it.
+  std::string output;
+  if (const int64_t microseconds =
+          time.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+          Time::kMicrosecondsPerMillisecond) {
+    // Adds digits to `output` for each 'S' at the start of `pattern`.
+    const auto format_microseconds = [&output](int64_t mutable_micros,
+                                               std::string_view pattern) {
+      size_t i = 0;
+      for (; i < pattern.length() && pattern[i] == 'S'; ++i) {
+        output += static_cast<char>('0' + mutable_micros / 100);
+        mutable_micros = (mutable_micros % 100) * 10;
+      }
+      return i;
+    };
+
+    // Look for fractional seconds patterns with greater-than-millisecond
+    // precision.
+    bool in_quotes = false;
+    for (size_t i = 0; i < pattern.length();) {
+      if (pattern[i] == '\'') {
+        in_quotes = !in_quotes;
+      } else if (!in_quotes && !pattern.compare(i, 4, "SSSS")) {
+        // Let ICU format everything up through milliseconds.
+        const size_t fourth_s = i + 3;
+        if (i != 0) {
+          output += format_time(time, pattern.substr(0, fourth_s));
+        }
+
+        // Add microseconds digits, then truncate to the remaining pattern.
+        pattern = pattern.substr(
+            fourth_s +
+            format_microseconds(microseconds, pattern.substr(fourth_s)));
+        i = 0;
+        continue;
+      }
+      ++i;
+    }
+  }
+
+  // Format any remaining pattern.
+  if (!pattern.empty()) {
+    output += format_time(time, std::move(pattern));
+  }
+  return output;
+}
+
+std::string TimeFormatAsIso8601(const Time& time) {
+  return UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+                                          icu::TimeZone::getGMT());
+}
+
+std::string TimeFormatHTTP(const Time& time) {
+  return UnlocalizedTimeFormatWithPattern(time, "E, dd MMM yyyy HH:mm:ss O",
+                                          icu::TimeZone::getGMT());
 }
 
 bool TimeDurationFormat(TimeDelta time,
@@ -280,8 +353,8 @@ std::u16string DateIntervalFormat(const Time& begin_time,
                                               status));
 
   icu::FieldPosition pos = 0;
-  UDate start_date = static_cast<UDate>(begin_time.ToDoubleT() * 1000);
-  UDate end_date = static_cast<UDate>(end_time.ToDoubleT() * 1000);
+  UDate start_date = ToUDate(begin_time);
+  UDate end_date = ToUDate(end_time);
   icu::DateInterval interval(start_date, end_date);
   icu::UnicodeString formatted;
   formatter->format(&interval, formatted, pos, status);

@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Spec: https://wicg.github.io/web-preferences-api/
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=WebPreferences
+]
+interface PreferenceManager {
+  readonly attribute PreferenceObject colorScheme;
+  readonly attribute PreferenceObject contrast;
+  readonly attribute PreferenceObject reducedMotion;
+  readonly attribute PreferenceObject reducedTransparency;
+  [RuntimeEnabled=PrefersReducedData] readonly attribute PreferenceObject reducedData;
+};

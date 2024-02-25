@@ -35,7 +35,7 @@
 
 namespace {
 
-static const char kTestRulesetVersion[] = "1.2.3.4";
+constexpr char kTestRulesetVersion[] = "1.2.3.4";
 
 class TestRulesetService : public subresource_filter::RulesetService {
  public:
@@ -289,8 +289,9 @@ TEST_F(SubresourceFilterComponentInstallerTest, InstallerTag) {
                  << ::testing::PrintToString(test_case.ruleset_flavors));
 
     std::vector<subresource_filter::Configuration> configs;
-    for (const auto& ruleset_flavor : test_case.ruleset_flavors)
+    for (const auto& ruleset_flavor : test_case.ruleset_flavors) {
       configs.push_back(CreateConfigUsingRulesetFlavor(ruleset_flavor));
+    }
     subresource_filter::testing::ScopedSubresourceFilterConfigurator
         scoped_configuration(std::move(configs));
 

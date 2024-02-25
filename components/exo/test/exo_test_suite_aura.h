@@ -31,7 +31,7 @@ class ExoTestSuiteAura : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  raw_ptr<gl::GLDisplay, ExperimentalAsh> display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace test

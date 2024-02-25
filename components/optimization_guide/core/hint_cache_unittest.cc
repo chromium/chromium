@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/hint_cache.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -12,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -21,7 +21,6 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -76,9 +75,9 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
   }
 
   void DestroyHintCache() {
+    loaded_hint_ = nullptr;
     hint_cache_.reset();
     optimization_guide_store_.reset();
-    loaded_hint_ = nullptr;
     is_store_initialized_ = false;
     are_component_hints_updated_ = false;
     on_load_hint_callback_called_ = false;
@@ -86,6 +85,8 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
     RunUntilIdle();
   }
+
+  void ResetLoadedHint() { loaded_hint_ = nullptr; }
 
   HintCache* hint_cache() { return hint_cache_.get(); }
 
@@ -136,7 +137,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   proto::Hint CreateHintForURL(
       const GURL& url,
-      absl::optional<int> cache_duration_in_secs = absl::optional<int>()) {
+      std::optional<int> cache_duration_in_secs = std::optional<int>()) {
     proto::Hint hint;
     hint.set_key(url.spec());
     hint.set_key_representation(proto::FULL_URL);
@@ -175,7 +176,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
-  raw_ptr<const proto::Hint, DanglingUntriaged> loaded_hint_;
+  raw_ptr<const proto::Hint> loaded_hint_;
 
   bool is_store_initialized_;
   bool are_component_hints_updated_;
@@ -837,6 +838,7 @@ TEST_P(HintCacheTest, ClearFetchedHints) {
   EXPECT_TRUE(hint_cache()->GetURLKeyedHint(url));
   EXPECT_TRUE(hint_cache()->GetHostKeyedHintIfLoaded(host));
 
+  ResetLoadedHint();
   hint_cache()->ClearFetchedHints();
   EXPECT_FALSE(hint_cache()->GetURLKeyedHint(url));
   EXPECT_FALSE(hint_cache()->GetHostKeyedHintIfLoaded(host));
@@ -915,7 +917,7 @@ TEST_P(HintCacheTest, URLsWithNoURLKeyedHints) {
                             {"host.com"}, {https_url_without_hint});
 
   EXPECT_TRUE(hint_cache()->HasURLKeyedEntryForURL(https_url_with_hint));
-  EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(
+  EXPECT_TRUE(hint_cache()->HasURLKeyedEntryForURL(
       https_url_without_hint_has_fragment));
   EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(file_url));
   EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(chrome_url));
@@ -1082,71 +1084,7 @@ TEST_P(HintCacheTest, RemoveHintsForHosts) {
   EXPECT_TRUE(hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
-class HintCacheUrlKeyedFragmentTest : public HintCacheTest {
- public:
-  HintCacheUrlKeyedFragmentTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kOptimizationGuideHintsURLKeyedCacheDropFragments);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(WithPersistentStore,
-                         HintCacheUrlKeyedFragmentTest,
-                         testing::Values(true, false));
-
-TEST_P(HintCacheUrlKeyedFragmentTest, URLsWithNoURLKeyedHints) {
-  const int kMemoryCacheSize = 5;
-  CreateAndInitializeHintCache(kMemoryCacheSize);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      hint_cache()->CreateUpdateDataForFetchedHints(base::Time());
-  ASSERT_EQ(update_data != nullptr, IsBackedByPersistentStore());
-
-  GURL https_url_without_hint("https://whatever.com/r/nohint");
-  GURL https_url_without_hint_has_fragment("https://whatever.com/r/nohint#123");
-  GURL https_url_with_hint("https://whatever.com/r/hint");
-  GURL https_url_unseen("https://unseen.com/new");
-  GURL file_url("file://dog.png");
-  GURL chrome_url("chrome://dog.png");
-  GURL auth_url("https://username:password@www.example.com/");
-
-  google::protobuf::RepeatedPtrField<proto::Hint> hints;
-  *(hints.Add()) = CreateHintForURL(https_url_with_hint);
-
-  // Only URL-keyed hint included so there are no hints to store within the
-  // update data.
-  EXPECT_FALSE(hint_cache()->ProcessAndCacheHints(
-      &hints, IsBackedByPersistentStore() ? update_data.get() : nullptr));
-
-  // Add the url without hint to the url-keyed cache via UpdateFetchedHints.
-  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
-      std::make_unique<proto::GetHintsResponse>();
-
-  std::string host = "host.com";
-  proto::Hint* hint = get_hints_response->add_hints();
-  hint->set_key_representation(proto::HOST);
-  hint->set_key(host);
-  proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern("page pattern");
-
-  base::Time stored_time = base::Time().Now();
-  UpdateFetchedHintsAndWait(std::move(get_hints_response), stored_time,
-                            {"host.com"}, {https_url_without_hint});
-
-  EXPECT_TRUE(hint_cache()->HasURLKeyedEntryForURL(https_url_with_hint));
-  EXPECT_TRUE(hint_cache()->HasURLKeyedEntryForURL(
-      https_url_without_hint_has_fragment));
-  EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(file_url));
-  EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(chrome_url));
-  EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(auth_url));
-  EXPECT_FALSE(hint_cache()->HasURLKeyedEntryForURL(https_url_unseen));
-}
-
-TEST_P(HintCacheUrlKeyedFragmentTest,
-       URLsWithNoURLKeyedHintsFetchedURLWasFragment) {
+TEST_P(HintCacheTest, URLsWithNoURLKeyedHintsFetchedURLWasFragment) {
   const int kMemoryCacheSize = 5;
   CreateAndInitializeHintCache(kMemoryCacheSize);
 

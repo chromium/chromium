@@ -5,11 +5,11 @@
 #include "mojo/public/cpp/system/wait.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
@@ -25,7 +25,7 @@ using WaitTest = testing::Test;
 using WaitManyTest = testing::Test;
 
 void WriteMessage(const ScopedMessagePipeHandle& handle,
-                  const base::StringPiece& message) {
+                  const std::string_view& message) {
   MojoResult rv = WriteMessageRaw(handle.get(), message.data(),
                                   static_cast<uint32_t>(message.size()),
                                   nullptr, 0, MOJO_WRITE_MESSAGE_FLAG_NONE);

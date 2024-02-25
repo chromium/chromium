@@ -11,14 +11,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Helper Class for GCM UMA Collection.
- */
+/** Helper Class for GCM UMA Collection. */
 public class GcmUma {
     // Keep in sync with the WebPushDeviceState enum in enums.xml.
-    @IntDef({WebPushDeviceState.NOT_IDLE_NOT_HIGH_PRIORITY,
-            WebPushDeviceState.NOT_IDLE_HIGH_PRIORITY, WebPushDeviceState.IDLE_NOT_HIGH_PRIORITY,
-            WebPushDeviceState.IDLE_HIGH_PRIORITY})
+    @IntDef({
+        WebPushDeviceState.NOT_IDLE_NOT_HIGH_PRIORITY,
+        WebPushDeviceState.NOT_IDLE_HIGH_PRIORITY,
+        WebPushDeviceState.IDLE_NOT_HIGH_PRIORITY,
+        WebPushDeviceState.IDLE_HIGH_PRIORITY
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface WebPushDeviceState {
         int NOT_IDLE_NOT_HIGH_PRIORITY = 0;

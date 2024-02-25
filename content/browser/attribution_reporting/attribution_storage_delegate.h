@@ -12,14 +12,18 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
+class EventLevelEpsilon;
 class EventReportWindows;
+class MaxEventLevelReports;
+class TriggerSpecs;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -34,8 +38,6 @@ namespace content {
 
 class AttributionReport;
 class AttributionTrigger;
-class CommonSourceInfo;
-class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports. Users and subclasses must NOT assume
@@ -49,18 +51,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
     base::TimeDelta max;
   };
 
-  struct FakeReport {
-    uint64_t trigger_data;
-    // A placeholder time created to align with `report_time`.
-    base::Time trigger_time;
-    base::Time report_time;
-  };
-
-  // Corresponds to `StoredSource::AttributionLogic` as follows:
-  // `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
-  // empty vector -> `StoredSource::AttributionLogic::kNever`
-  // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
-  using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
+  struct ExceedsChannelCapacityLimit {};
 
   struct NullAggregatableReport {
     base::Time fake_source_time;
@@ -88,14 +79,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // time.
   virtual base::Time GetAggregatableReportTime(
       base::Time trigger_time) const = 0;
-
-  // This limit is used to determine if a source is allowed to schedule
-  // a new report. When a source reaches this limit it is
-  // marked inactive and no new reports will be created for it.
-  // Sources will be checked against this limit after they schedule a new
-  // report.
-  int GetDefaultAttributionsPerSource(
-      attribution_reporting::mojom::SourceType) const;
 
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
@@ -139,7 +122,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // being open, or internet being disconnected. This gives them a noisy
   // report time to help disassociate them from other reports. Returns null if
   // no delay should be applied, e.g. due to debug mode.
-  virtual absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+  virtual std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const = 0;
 
   // Shuffles reports to provide plausible deniability on the ordering of
@@ -155,68 +138,38 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       std::vector<network::TriggerVerification>& verifications) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
-  // source with the given source type and reporting windows, as implemented
-  // by`GetRandomizedResponse()`.Must be in the range [0, 1] and remain constant
+  // source with the given trigger specs, as implemented by
+  // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
-      const attribution_reporting::EventReportWindows& event_report_windows,
-      attribution_reporting::mojom::SourceType,
-      int max_event_level_reports) const = 0;
+      const attribution_reporting::TriggerSpecs&,
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon) const = 0;
+
+  using GetRandomizedResponseResult =
+      base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
 
   // Returns a randomized response for the given source, consisting of zero or
-  // more fake reports. Returns `absl::nullopt` to indicate that the response
-  // should not be randomized.
-  virtual RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source,
-      const attribution_reporting::EventReportWindows& event_report_windows,
-      base::Time source_time,
-      int max_event_level_reports,
-      double randomized_response_rate) = 0;
-
-  // Computes the capacity of the q-ary symmetric channel.
-  virtual double ComputeChannelCapacity(
-      const CommonSourceInfo& source,
-      const attribution_reporting::EventReportWindows& event_report_windows,
-      base::Time source_time,
-      int max_event_level_reports,
-      double randomized_response_rate) = 0;
-
-  virtual base::Time GetExpiryTime(
-      absl::optional<base::TimeDelta> declared_expiry,
-      base::Time source_time,
-      attribution_reporting::mojom::SourceType) = 0;
-
-  virtual absl::optional<base::Time> GetReportWindowTime(
-      absl::optional<base::TimeDelta> declared_window,
-      base::Time source_time) = 0;
-
-  virtual attribution_reporting::EventReportWindows
-  GetDefaultEventReportWindows(
-      attribution_reporting::mojom::SourceType source_type,
-      base::TimeDelta last_report_window) const = 0;
-
-  // Returns the maximum sum of the contributions (values) across all buckets
-  // per source.
-  int64_t GetAggregatableBudgetPerSource() const;
+  // more fake reports. Returns an error if the channel capacity exceeds the
+  // limit.
+  virtual GetRandomizedResponseResult GetRandomizedResponse(
+      attribution_reporting::mojom::SourceType,
+      const attribution_reporting::TriggerSpecs&,
+      attribution_reporting::MaxEventLevelReports,
+      attribution_reporting::EventLevelEpsilon,
+      base::Time source_time) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
 
-  // Sanitizes `trigger_data` according to the data limits for `source_type`.
-  uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               attribution_reporting::mojom::SourceType) const;
-
   // Returns zero or more null aggregatable reports for the given trigger.
   virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
-      absl::optional<base::Time> attributed_source_time) const = 0;
+      std::optional<base::Time> attributed_source_time) const = 0;
 
  protected:
-  uint64_t TriggerDataCardinality(
-      attribution_reporting::mojom::SourceType) const;
-
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

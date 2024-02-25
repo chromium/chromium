@@ -7,7 +7,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
@@ -19,7 +19,7 @@ namespace ash::personalization_app {
 namespace {
 
 ash::UserImageManager* GetUserImageManager(const Profile* profile) {
-  return ash::ChromeUserManager::Get()->GetUserImageManager(
+  return ash::UserImageManagerRegistry::Get()->GetManager(
       GetAccountId(profile));
 }
 

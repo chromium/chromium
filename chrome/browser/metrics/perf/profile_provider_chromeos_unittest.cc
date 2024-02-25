@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -125,17 +126,25 @@ class TestProfileProvider : public ProfileProvider {
   TestProfileProvider& operator=(const TestProfileProvider&) = delete;
 };
 
-template <SampledProfile_TriggerEvent TRIGGER_TYPE>
 void ExpectTwoStoredPerfProfiles(
-    const std::vector<SampledProfile>& stored_profiles) {
+    const std::vector<SampledProfile>& stored_profiles,
+    SampledProfile_TriggerEvent want_trigger_type,
+    ThermalState want_thermal_state_type,
+    int want_speed_limit) {
   ASSERT_EQ(2U, stored_profiles.size());
   // Both profiles must be of the given type and include perf data.
   const SampledProfile& profile1 = stored_profiles[0];
   const SampledProfile& profile2 = stored_profiles[1];
-  EXPECT_EQ(TRIGGER_TYPE, profile1.trigger_event());
+  EXPECT_EQ(want_trigger_type, profile1.trigger_event());
   ASSERT_TRUE(profile1.has_perf_data());
-  EXPECT_EQ(TRIGGER_TYPE, profile2.trigger_event());
+  EXPECT_EQ(want_trigger_type, profile2.trigger_event());
   ASSERT_TRUE(profile2.has_perf_data());
+  // Both profiles must include the given thermal state,
+  EXPECT_EQ(want_thermal_state_type, profile1.thermal_state());
+  EXPECT_EQ(want_thermal_state_type, profile2.thermal_state());
+  // ... and CPU speed limit.
+  EXPECT_EQ(want_speed_limit, profile1.cpu_speed_limit_percent());
+  EXPECT_EQ(want_speed_limit, profile2.cpu_speed_limit_percent());
 
   // We must have received a profile from each of the collectors.
   EXPECT_EQ(100u, profile1.perf_data().timestamp_sec());
@@ -157,6 +166,8 @@ class ProfileProviderTest : public testing::Test {
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
+    test_power_monitor_source_.GenerateThermalThrottlingEvent(
+        base::PowerThermalObserver::DeviceThermalState::kNominal);
 
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
@@ -173,7 +184,7 @@ class ProfileProviderTest : public testing::Test {
   // any member that cares about tasks) to be initialized first and destroyed
   // last.
   content::BrowserTaskEnvironment task_environment_;
-
+  base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
   std::unique_ptr<TestProfileProvider> profile_provider_;
 };
 
@@ -205,8 +216,9 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
   task_environment_.FastForwardBy(kPeriodicCollectionInterval);
   // We should find two profiles, one for each collector.
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
-  ExpectTwoStoredPerfProfiles<SampledProfile::PERIODIC_COLLECTION>(
-      stored_profiles);
+  ExpectTwoStoredPerfProfiles(
+      stored_profiles, SampledProfile::PERIODIC_COLLECTION,
+      THERMAL_STATE_NOMINAL, base::PowerThermalObserver::kSpeedLimitMax);
 
   // Periodic collection is deactivated when user logs out. Simulate a user
   // logout event.
@@ -267,8 +279,9 @@ TEST_F(ProfileProviderTest, SuspendDone) {
   // We should find two profiles, one for each collector.
   std::vector<SampledProfile> stored_profiles;
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
-  ExpectTwoStoredPerfProfiles<SampledProfile::RESUME_FROM_SUSPEND>(
-      stored_profiles);
+  ExpectTwoStoredPerfProfiles(
+      stored_profiles, SampledProfile::RESUME_FROM_SUSPEND,
+      THERMAL_STATE_NOMINAL, base::PowerThermalObserver::kSpeedLimitMax);
 }
 
 TEST_F(ProfileProviderTest, OnSessionRestoreDone_NoUserLoggedIn_NoCollection) {
@@ -300,7 +313,48 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
   // We should find two profiles, one for each collector.
   std::vector<SampledProfile> stored_profiles;
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
-  ExpectTwoStoredPerfProfiles<SampledProfile::RESTORE_SESSION>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::RESTORE_SESSION,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
+}
+
+TEST_F(ProfileProviderTest, ThermalStateChangesAreCaptured) {
+  // Simulate a user log in, which should activate periodic collection for all
+  // collectors.
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
+  test_power_monitor_source_.GenerateThermalThrottlingEvent(
+      base::PowerThermalObserver::DeviceThermalState::kCritical);
+
+  // Run all pending tasks. SetLoggedInState has activated timers for periodic
+  // collection causing timer based pending tasks.
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+  // We should find two profiles, one for each collector.
+  std::vector<SampledProfile> stored_profiles;
+  EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
+  ExpectTwoStoredPerfProfiles(
+      stored_profiles, SampledProfile::PERIODIC_COLLECTION,
+      THERMAL_STATE_CRITICAL, base::PowerThermalObserver::kSpeedLimitMax);
+}
+
+TEST_F(ProfileProviderTest, CpuSpeedChangesAreCaptured) {
+  // Simulate a user log in, which should activate periodic collection for all
+  // collectors.
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
+  test_power_monitor_source_.GenerateSpeedLimitEvent(50);
+
+  // Run all pending tasks. SetLoggedInState has activated timers for periodic
+  // collection causing timer based pending tasks.
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+  // We should find two profiles, one for each collector.
+  std::vector<SampledProfile> stored_profiles;
+  EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
+  ExpectTwoStoredPerfProfiles(stored_profiles,
+                              SampledProfile::PERIODIC_COLLECTION,
+                              THERMAL_STATE_NOMINAL, 50);
 }
 
 // Test profile collection triggered when a jank starts.
@@ -319,7 +373,9 @@ TEST_F(ProfileProviderTest, JankMonitorCallbacks) {
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
 
   EXPECT_EQ(2U, stored_profiles.size());
-  ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::JANKY_TASK,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
 }
 
 // Test throttling of JANKY_TASK collections: no consecutive collections within
@@ -338,7 +394,9 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
   EXPECT_EQ(2U, stored_profiles.size());
-  ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::JANKY_TASK,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
 
   stored_profiles.clear();
 
@@ -369,7 +427,9 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
   EXPECT_EQ(2U, stored_profiles.size());
-  ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::JANKY_TASK,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
 }
 
 // This class enables the jank monitor to test collections triggered by jank
@@ -404,7 +464,9 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_UI) {
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
 
   EXPECT_EQ(2U, stored_profiles.size());
-  ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::JANKY_TASK,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
 }
 
 // Test profile collection triggered by an IO thread jank.
@@ -422,7 +484,9 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_IO) {
   EXPECT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
 
   EXPECT_EQ(2U, stored_profiles.size());
-  ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
+  ExpectTwoStoredPerfProfiles(stored_profiles, SampledProfile::JANKY_TASK,
+                              THERMAL_STATE_NOMINAL,
+                              base::PowerThermalObserver::kSpeedLimitMax);
 }
 
 namespace {

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser_util.h"
@@ -54,7 +55,7 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::ReadBlobBytes(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   BlobReader::Read(  // Read net::kMaxBytesToSniff bytes from the front.
-      browser_context(), blob_uuid,
+      browser_context()->GetBlobRemote(blob_uuid),
       base::BindOnce(
           &FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType,
           this, blob_uuid),
@@ -85,7 +86,7 @@ FileManagerPrivateInternalGetContentMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   using api::file_manager_private_internal::GetContentMetadata::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->blob_uuid.empty()) {
@@ -108,7 +109,7 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ReadBlobSize(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   BlobReader::Read(  // Read net::kMaxBytesToSniff bytes from the front.
-      browser_context(), blob_uuid,
+      browser_context()->GetBlobRemote(blob_uuid),
       base::BindOnce(
           &FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob,
           this, blob_uuid, mime_type, include_images),
@@ -184,8 +185,8 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
   }
 
   if (image && size && !image->type.empty()) {  // Attach thumbnail image.
-    std::string url;
-    base::Base64Encode(base::StringPiece(image->data.data(), size), &url);
+    std::string url =
+        base::Base64Encode(std::string_view(image->data.data(), size));
     url.insert(0, base::StrCat({"data:", image->type, ";base64,"}));
 
     base::Value::Dict media_thumbnail_image;

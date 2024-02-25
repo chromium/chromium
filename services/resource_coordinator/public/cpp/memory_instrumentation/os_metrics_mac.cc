@@ -171,8 +171,7 @@ bool GetDyldRegions(std::vector<VMRegion>* regions) {
             reinterpret_cast<const uuid_command*>(load_cmd);
         // The ID is comprised of the UUID concatenated with the module's "age"
         // value which is always 0.
-        debug_id =
-            base::HexEncode(&uuid_cmd->uuid, sizeof(uuid_cmd->uuid)) + "0";
+        debug_id = base::HexEncode(uuid_cmd->uuid) + "0";
       }
     }
 

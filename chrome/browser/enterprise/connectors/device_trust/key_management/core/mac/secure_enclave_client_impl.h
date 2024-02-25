@@ -28,15 +28,19 @@ class SecureEnclaveClientImpl : public SecureEnclaveClient {
 
   // SecureEnclaveClient:
   base::apple::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() override;
-  base::apple::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) override;
+  base::apple::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(
+      KeyType type,
+      OSStatus* error) override;
   bool UpdateStoredKeyLabel(KeyType current_key_type,
                             KeyType new_key_type) override;
   bool DeleteKey(KeyType type) override;
-  bool GetStoredKeyLabel(KeyType type, std::vector<uint8_t>& output) override;
-  bool ExportPublicKey(SecKeyRef key, std::vector<uint8_t>& output) override;
+  bool ExportPublicKey(SecKeyRef key,
+                       std::vector<uint8_t>& output,
+                       OSStatus* error) override;
   bool SignDataWithKey(SecKeyRef key,
                        base::span<const uint8_t> data,
-                       std::vector<uint8_t>& output) override;
+                       std::vector<uint8_t>& output,
+                       OSStatus* error) override;
   bool VerifySecureEnclaveSupported() override;
 
  private:

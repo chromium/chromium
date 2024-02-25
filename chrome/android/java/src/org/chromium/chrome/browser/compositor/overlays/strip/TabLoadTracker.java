@@ -23,9 +23,7 @@ public class TabLoadTracker {
     private boolean mLoading;
     private boolean mPageLoading;
 
-    /**
-     * The callback object to be notified of when the loading state changes.
-     */
+    /** The callback object to be notified of when the loading state changes. */
     public interface TabLoadTrackerCallback {
         /**
          * Called when the loading state tracked by this tab should visually change.
@@ -44,9 +42,7 @@ public class TabLoadTracker {
         mCallback = callback;
     }
 
-    /**
-     * Called when this tab has started loading.
-     */
+    /** Called when this tab has started loading. */
     public void pageLoadingStarted() {
         if (!mPageLoading) {
             mPageLoading = true;
@@ -55,18 +51,14 @@ public class TabLoadTracker {
         mHandler.removeCallbacks(mPageLoadFinishedRunnable);
     }
 
-    /**
-     * Called when this tab has finished loading.
-     */
+    /** Called when this tab has finished loading. */
     public void pageLoadingFinished() {
         if (!mPageLoading) return;
         mHandler.removeCallbacks(mPageLoadFinishedRunnable);
         mHandler.postDelayed(mPageLoadFinishedRunnable, LOAD_FINISHED_VISUAL_DELAY_MS);
     }
 
-    /**
-     * Called when this tab has started loading resources.
-     */
+    /** Called when this tab has started loading resources. */
     public void loadingStarted() {
         if (!mLoading) {
             mLoading = true;
@@ -75,9 +67,7 @@ public class TabLoadTracker {
         mHandler.removeCallbacks(mLoadFinishedRunnable);
     }
 
-    /**
-     * Called when this tab has finished loading resources.
-     */
+    /** Called when this tab has finished loading resources. */
     public void loadingFinished() {
         if (!mLoading) return;
         mHandler.removeCallbacks(mLoadFinishedRunnable);
@@ -91,19 +81,21 @@ public class TabLoadTracker {
         return mLoading || mPageLoading;
     }
 
-    private Runnable mLoadFinishedRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mLoading = false;
-            mCallback.loadStateChanged(mId);
-        }
-    };
+    private Runnable mLoadFinishedRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    mLoading = false;
+                    mCallback.loadStateChanged(mId);
+                }
+            };
 
-    private Runnable mPageLoadFinishedRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mPageLoading = false;
-            mCallback.loadStateChanged(mId);
-        }
-    };
+    private Runnable mPageLoadFinishedRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    mPageLoading = false;
+                    mCallback.loadStateChanged(mId);
+                }
+            };
 }

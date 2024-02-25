@@ -11,15 +11,17 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -31,24 +33,33 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/request_priority.h"
 #include "net/base/url_util.h"
-#include "net/cert/ct_policy_status.h"
+#include "net/cookies/site_for_cookies.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_request_headers.h"
-#include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
+#include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -63,14 +74,18 @@
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_channel.h"
 #include "net/websockets/websocket_event_interface.h"
+#include "net/websockets/websocket_handshake_response_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace net {
-
-class URLRequest;
+class HttpResponseHeaders;
+class ProxyServer;
+class SSLInfo;
+struct WebSocketHandshakeRequestInfo;
 
 namespace {
 
@@ -136,7 +151,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
 
   void OnFailChannel(const std::string& message,
                      int net_error,
-                     absl::optional<int> response_code) override;
+                     std::optional<int> response_code) override;
 
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override;
@@ -152,7 +167,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     absl::optional<AuthCredentials>* credentials) override;
+                     std::optional<AuthCredentials>* credentials) override;
 
  private:
   void QuitNestedEventLoop();
@@ -210,7 +225,7 @@ void ConnectTestingEventInterface::OnDropChannel(bool was_clean,
 void ConnectTestingEventInterface::OnFailChannel(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   failed_ = true;
   failure_message_ = message;
   QuitNestedEventLoop();
@@ -236,8 +251,8 @@ int ConnectTestingEventInterface::OnAuthRequired(
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const AuthCredentials*)> callback,
-    absl::optional<AuthCredentials>* credentials) {
-  *credentials = absl::nullopt;
+    std::optional<AuthCredentials>* credentials) {
+  *credentials = std::nullopt;
   return OK;
 }
 
@@ -267,7 +282,7 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
 
  protected:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
@@ -275,16 +290,21 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     resolved_proxy_info_.proxy_info = *result;
   }
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {}
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
+
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
 
  private:
   ResolvedProxyInfo resolved_proxy_info_;
@@ -325,7 +345,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                                                   context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
-        isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        /*has_storage_access=*/false, isolation_info, HttpRequestHeaders(),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     event_interface_->WaitForResponse();
     return !event_interface_->failed();
   }
@@ -348,10 +369,22 @@ TEST_F(WebSocketEndToEndTest, BasicSmokeTest) {
   EXPECT_TRUE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
 }
 
+// These test are not compatible with RemoteTestServer because RemoteTestServer
+// doesn't support TYPE_BASIC_AUTH_PROXY.
+// TODO(ricea): Make these tests work. See crbug.com/441711.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_HttpsProxyUnauthedFails DISABLED_HttpsProxyUnauthedFails
+#define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
+#define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
+#else
+#define MAYBE_HttpsProxyUnauthedFails HttpsProxyUnauthedFails
+#define MAYBE_HttpsWssProxyUnauthedFails HttpsWssProxyUnauthedFails
+#define MAYBE_HttpsProxyUsed HttpsProxyUsed
+#endif
+
 // Test for issue crbug.com/433695 "Unencrypted WebSocket connection via
-// authenticated proxy times out"
-// TODO(ricea): Enable this when the issue is fixed.
-TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
+// authenticated proxy times out".
+TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUnauthedFails) {
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                                  base::FilePath());
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
@@ -360,28 +393,23 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
   ASSERT_TRUE(ws_server.StartInBackground());
   ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
-  std::string proxy_config =
-      "https=" + proxy_server.host_port_pair().ToString();
+  ProxyConfig proxy_config;
+  proxy_config.proxy_rules().ParseFromString(
+      "https=" + proxy_server.host_port_pair().ToString());
+  // TODO(https://crbug.com/901896): Don't rely on proxying localhost.
+  proxy_config.proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
+
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
       ConfiguredProxyResolutionService::CreateFixedForTest(
-          proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
   ASSERT_TRUE(proxy_resolution_service);
   context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
+
   EXPECT_FALSE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
-
-// These test are not compatible with RemoteTestServer because RemoteTestServer
-// doesn't support TYPE_BASIC_AUTH_PROXY.
-// TODO(ricea): Make these tests work. See crbug.com/441711.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
-#else
-#define MAYBE_HttpsWssProxyUnauthedFails HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed HttpsProxyUsed
-#endif
 
 TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
@@ -440,7 +468,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
   const TestProxyDelegateWithProxyInfo::ResolvedProxyInfo& info =
       proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
-  EXPECT_TRUE(info.proxy_info.is_http());
+  EXPECT_EQ(info.proxy_info.ToDebugString(),
+            base::StrCat({"PROXY ", proxy_server.host_port_pair().ToString()}));
 }
 
 std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
@@ -514,8 +543,7 @@ TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
   EXPECT_TRUE(ConnectAndWait(ws_url));
   const auto& info = proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
-  EXPECT_TRUE(info.proxy_info.is_http());
-  EXPECT_EQ(info.proxy_info.ToPacString(),
+  EXPECT_EQ(info.proxy_info.ToDebugString(),
             base::StrCat({"PROXY ", proxy_server.host_port_pair().ToString()}));
 }
 
@@ -709,8 +737,7 @@ TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
 // Test that wss connections can use EncryptedClientHello.
 TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kUseDnsHttpsSvcb, features::kEncryptedClientHello}, {});
+  features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
 
   // SpawnedTestServer does not support ECH, while EmbeddedTestServer does not
   // support WebSockets (https://crbug.com/1281277). Until that is fixed, test

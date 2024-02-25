@@ -5,15 +5,18 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -22,8 +25,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -40,15 +43,24 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    absl::optional<std::string> context_id,
+    std::optional<std::string> context_id,
+    std::optional<base::TimeDelta> timeout,
+    std::optional<url::Origin> aggregation_coordinator_origin,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
   EXPECT_EQ(PrivateAggregationBudgetKey::Api::kProtectedAudience,
             api_for_budgeting);
   EXPECT_FALSE(context_id.has_value());
+  EXPECT_FALSE(timeout.has_value());
 
-  receiver_set_.Add(this, std::move(pending_receiver), worklet_origin);
+  // TODO(alexmt): Change once selecting the origin is possible.
+  EXPECT_FALSE(aggregation_coordinator_origin.has_value());
+
+  mojo::ReceiverId receiver_id =
+      receiver_set_.Add(this, std::move(pending_receiver));
+  private_aggregation_worklet_origins_[receiver_id] = std::move(worklet_origin);
+
   return true;
 }
 
@@ -60,33 +72,38 @@ void TestInterestGroupPrivateAggregationManager::ClearBudgetData(
   NOTREACHED();
 }
 
-void TestInterestGroupPrivateAggregationManager::SendHistogramReport(
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-        contributions,
-    blink::mojom::AggregationServiceMode aggregation_mode,
-    blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-  const url::Origin& worklet_origin = receiver_set_.current_context();
+bool TestInterestGroupPrivateAggregationManager::IsDebugModeAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) {
+  return true;
+}
 
-  if (!allow_multiple_calls_per_origin_) {
-    EXPECT_FALSE(base::Contains(private_aggregation_requests_, worklet_origin));
-  }
+void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
+    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+        contribution_ptrs) {
+  const mojo::ReceiverId receiver_id = receiver_set_.current_receiver();
+
+  // Multiple calls to the same receiver are not supported.
+  EXPECT_FALSE(base::Contains(private_aggregation_contributions_, receiver_id));
 
   // Here, we 'unbatch' the contributions into separate requests. This allows
   // for simpler equality checks in testing.
   for (blink::mojom::AggregatableReportHistogramContributionPtr& contribution :
-       contributions) {
-    auction_worklet::mojom::PrivateAggregationRequestPtr request =
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(std::move(contribution)),
-            aggregation_mode, debug_mode_details->Clone());
-    private_aggregation_requests_[worklet_origin].push_back(std::move(request));
+       contribution_ptrs) {
+    private_aggregation_contributions_[receiver_id].push_back(
+        std::move(contribution));
   }
 }
-void TestInterestGroupPrivateAggregationManager::
-    SetDebugModeDetailsOnNullReport(
-        blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-  ADD_FAILURE() << "Null report details are not expected in FLEDGE.";
+
+void TestInterestGroupPrivateAggregationManager::EnableDebugMode(
+    blink::mojom::DebugKeyPtr debug_key) {
+  const mojo::ReceiverId receiver_id = receiver_set_.current_receiver();
+
+  EXPECT_FALSE(base::Contains(private_aggregation_debug_details_, receiver_id));
+
+  private_aggregation_debug_details_[receiver_id] =
+      blink::mojom::DebugModeDetails::New(/*is_enabled=*/true,
+                                          std::move(debug_key));
 }
 
 InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
@@ -100,7 +117,38 @@ TestInterestGroupPrivateAggregationManager::
 std::map<url::Origin, InterestGroupAuctionReporter::PrivateAggregationRequests>
 TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
   base::RunLoop().RunUntilIdle();
-  return std::exchange(private_aggregation_requests_, {});
+
+  std::map<url::Origin,
+           InterestGroupAuctionReporter::PrivateAggregationRequests>
+      private_aggregation_requests_map;
+
+  for (auto& [receiver_id, contributions] :
+       private_aggregation_contributions_) {
+    EXPECT_TRUE(
+        base::Contains(private_aggregation_worklet_origins_, receiver_id));
+    if (!base::Contains(private_aggregation_debug_details_, receiver_id)) {
+      private_aggregation_debug_details_[receiver_id] =
+          blink::mojom::DebugModeDetails::New();
+    }
+
+    InterestGroupAuctionReporter::PrivateAggregationRequests& requests =
+        private_aggregation_requests_map
+            [private_aggregation_worklet_origins_[receiver_id]];
+
+    for (auto& contribution : contributions) {
+      requests.push_back(auction_worklet::mojom::PrivateAggregationRequest::New(
+          auction_worklet::mojom::AggregatableReportContribution::
+              NewHistogramContribution(std::move(contribution)),
+          blink::mojom::AggregationServiceMode::kDefault,
+          private_aggregation_debug_details_[receiver_id]->Clone()));
+    }
+  }
+
+  private_aggregation_contributions_.clear();
+  private_aggregation_debug_details_.clear();
+  private_aggregation_worklet_origins_.clear();
+
+  return private_aggregation_requests_map;
 }
 
 std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
@@ -124,10 +172,10 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
 }
 
 void TestInterestGroupPrivateAggregationManager::Reset() {
-  private_aggregation_requests_.clear();
+  private_aggregation_contributions_.clear();
+  private_aggregation_debug_details_.clear();
   logged_private_aggregation_requests_.clear();
   receiver_set_.Clear();
-  allow_multiple_calls_per_origin_ = false;
 }
 
 }  // namespace content

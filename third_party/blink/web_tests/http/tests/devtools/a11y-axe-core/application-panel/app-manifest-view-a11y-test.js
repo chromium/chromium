@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
+
+import * as Application from 'devtools/panels/application/application.js';
 
 (async function() {
 
@@ -24,7 +26,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   }`;
 
   await TestRunner.showPanel('resources');
-  const manifestView = UI.panels.resources.visibleView;
+  const manifestView = Application.ResourcesPanel.ResourcesPanel.instance().visibleView;
   await manifestView.renderManifest('test_manifest', manifest, [], []);
   await AxeCoreTestRunner.runValidation(manifestView.contentElement);
   TestRunner.completeTest();

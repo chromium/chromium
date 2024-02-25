@@ -13,7 +13,7 @@ class AutocompleteProviderClient;
 class AutocompleteResult;
 
 namespace bookmarks {
-class BookmarkModel;
+class CoreBookmarkModel;
 }  //  namespace bookmarks
 
 // Annotates URL suggestions in the autocomplete result with signals derived
@@ -40,7 +40,7 @@ class BookmarkScoringSignalsAnnotator
   // Not owned. Null when `AutocompleteProviderClient` is null.
   //
   // If null, the annotator does not annotate any suggestions.
-  raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
+  raw_ptr<bookmarks::CoreBookmarkModel> bookmark_model_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_SCORING_SIGNALS_ANNOTATOR_H_

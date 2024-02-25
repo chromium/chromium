@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -65,7 +66,6 @@ class RTree {
              const PayloadFunctor& payload_getter);
 
   // If false, this rtree does not have valid bounds and:
-  //  - GetBoundsOrDie will CHECK.
   //  - Search* will have degraded performance.
   bool has_valid_bounds() const { return has_valid_bounds_; }
 
@@ -88,8 +88,7 @@ class RTree {
   void SearchRefs(const gfx::Rect& query, std::vector<const T*>* results) const;
 
   // Returns the total bounds of all items in this rtree.
-  // if !has_valid_bounds() this function will CHECK.
-  gfx::Rect GetBoundsOrDie() const;
+  std::optional<gfx::Rect> bounds() const;
 
   // Returns respective bounds of all items in this rtree in the order of items.
   // Production code except tracing should not use this method.
@@ -385,9 +384,11 @@ void RTree<T>::SearchRecursiveFallback(
 }
 
 template <typename T>
-gfx::Rect RTree<T>::GetBoundsOrDie() const {
-  CHECK(has_valid_bounds_);
-  return root_.bounds;
+std::optional<gfx::Rect> RTree<T>::bounds() const {
+  if (has_valid_bounds_) {
+    return root_.bounds;
+  }
+  return std::nullopt;
 }
 
 template <typename T>

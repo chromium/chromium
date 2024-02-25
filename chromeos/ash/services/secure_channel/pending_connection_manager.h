@@ -55,7 +55,7 @@ class PendingConnectionManager {
       const ConnectionDetails& connection_details);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash::secure_channel

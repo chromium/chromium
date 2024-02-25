@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Blink>Media"
+}
+buganizer_public: {
+  component_id: 1456094
 }

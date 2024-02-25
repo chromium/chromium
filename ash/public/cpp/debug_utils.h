@@ -10,9 +10,31 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace ui {
+class Layer;
+}  // namespace ui
 
 namespace ash {
 namespace debug {
+
+class ASH_EXPORT DebugWindowHierarchyDelegate {
+ public:
+  virtual ~DebugWindowHierarchyDelegate() = default;
+  virtual std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  GetAdjustedWindowChildren(aura::Window* window) const = 0;
+
+  virtual std::vector<raw_ptr<ui::Layer, VectorExperimental>>
+  GetAdjustedLayerChildren(const ui::Layer* layer) const = 0;
+};
+
+ASH_EXPORT void SetDebugWindowHierarchyDelegate(
+    std::unique_ptr<DebugWindowHierarchyDelegate> delegate);
 
 // Prints all windows layer hierarchy to |out|.
 ASH_EXPORT void PrintLayerHierarchy(std::ostringstream* out);

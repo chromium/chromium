@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests DOMNode.cssPath()\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -141,7 +142,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       TestRunner.completeTest();
       return;
     }
-    var cssPath = Elements.DOMPath.cssPath(entry.node, true);
+    var cssPath = ElementsModule.DOMPath.cssPath(entry.node, true);
     var result = entry.prefix + cssPath;
     TestRunner.addResult(result.replace(/\n/g, '\\n'));
     TestRunner.evaluateInPage('matchingElements(' + JSON.stringify(cssPath) + ')', callback);

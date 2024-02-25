@@ -101,21 +101,9 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
  private:
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
   // NOTE: This function starts cleanup sequence that would call FinishCleanup
   // and delete this object in the end.
   void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
   std::vector<ui::Accelerator> GetAccelerators() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
@@ -145,11 +133,11 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   // Root widget. It is assumed that widget is placed as a full-screen inside
   // LockContainer.
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   // Reference to view owned by widget_.
-  raw_ptr<LayoutWidgetDelegateView, ExperimentalAsh> layout_view_ = nullptr;
+  raw_ptr<LayoutWidgetDelegateView> layout_view_ = nullptr;
   // Reference to dialog view stored in widget_.
-  raw_ptr<OobeWebDialogView, ExperimentalAsh> dialog_view_ = nullptr;
+  raw_ptr<OobeWebDialogView> dialog_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};

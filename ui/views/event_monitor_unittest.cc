@@ -55,12 +55,12 @@ class EventMonitorTest : public WidgetTest {
     generator_->set_target(ui::test::EventGenerator::Target::APPLICATION);
   }
   void TearDown() override {
-    widget_->CloseNow();
+    widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
   }
 
  protected:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
 };

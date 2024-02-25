@@ -13,10 +13,6 @@ static_library("security_interstitial_page") {
     "captive_portal_blocking_page.cc",
     "captive_portal_blocking_page.h",
     "captive_portal_helper.h",
-    "cert_report_helper.cc",
-    "cert_report_helper.h",
-    "certificate_error_report.cc",
-    "certificate_error_report.h",
     "common_name_mismatch_handler.cc",
     "common_name_mismatch_handler.h",
     "connection_help_ui.cc",
@@ -56,8 +52,6 @@ static_library("security_interstitial_page") {
     "ssl_error_navigation_throttle.h",
     "stateful_ssl_host_state_delegate.cc",
     "stateful_ssl_host_state_delegate.h",
-    "unsafe_resource_util.cc",
-    "unsafe_resource_util.h",
     "urls.cc",
     "urls.h",
     "utils.cc",
@@ -87,6 +81,7 @@ static_library("security_interstitial_page") {
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_interstitials/core:core",
+    "//components/security_interstitials/core:insecure_form_util",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/ssl_errors",
     "//components/strings:components_strings_grit",
@@ -102,6 +97,8 @@ static_library("security_interstitial_page") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (enable_captive_portal_detection) {
     sources += [
@@ -132,16 +129,12 @@ static_library("security_interstitial_page") {
 }
 
 proto_library("proto") {
-  sources = [
-    "cert_logger.proto",
-    "ssl_error_assistant.proto",
-  ]
+  sources = [ "ssl_error_assistant.proto" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "certificate_error_report_unittest.cc",
     "security_interstitial_tab_helper_unittest.cc",
     "ssl_error_assistant_unittest.cc",
     "ssl_error_handler_unittest.cc",

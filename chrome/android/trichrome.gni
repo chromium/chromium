@@ -40,6 +40,10 @@ template("trichrome_library_apk_tmpl") {
       !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
   _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
+  if (defined(invoker.version_code)) {
+    _version_code = invoker.version_code
+  }
+
   # Need to apply override explicitly to have it apply to library version.
   if (android_override_version_code != "") {
     _version_code = android_override_version_code
@@ -81,8 +85,13 @@ template("trichrome_library_apk_tmpl") {
     manifest_package = _manifest_package
 
     if (defined(invoker.expected_android_manifest)) {
-      expected_android_manifest_version_code_offset = chrome_version_code
-      expected_android_manifest_library_version_offset = chrome_version_code
+      if (android_64bit_target_cpu) {
+        _version_code_offset = chrome_32_version_code
+      } else {
+        _version_code_offset = chrome_version_code
+      }
+      expected_android_manifest_version_code_offset = _version_code_offset
+      expected_android_manifest_library_version_offset = _version_code_offset
     }
 
     omit_dex = true
@@ -185,14 +194,10 @@ template("trichrome_library_apk_tmpl") {
 # parameters, and is used by SuperSize-archive to create multi-container .size
 # files. This is used to support SuperSize on Trichrome.
 template("write_ssargs_trichrome") {
-  if (defined(invoker.abi_filter)) {
-    _abi_filter = invoker.abi_filter
-  } else {
-    # For backwards compatility.
-    # TODO(huangs): Remove after updating //clank/java/BUILD.gn.
-    _abi_filter = android_app_abi
+  _extra_args = " --abi-filter ${invoker.abi_filter}"
+  if (defined(invoker.symbols_dir)) {
+    _extra_args += " --symbols-dir ${invoker.symbols_dir}"
   }
-  _extra_args = " --abi-filter $_abi_filter"
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
   # files using paths relative to itself. It is expected for |ssargs_path| to

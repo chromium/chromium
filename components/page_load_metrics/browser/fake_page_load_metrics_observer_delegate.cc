@@ -9,11 +9,16 @@
 
 namespace page_load_metrics {
 
+namespace {
+static int g_next_navigation_id_ = 1;
+}
+
 FakePageLoadMetricsObserverDelegate::FakePageLoadMetricsObserverDelegate()
     : user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       page_end_user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       visibility_tracker_(base::DefaultTickClock::GetInstance(),
                           /*is_shown=*/true),
+      navigation_id_(g_next_navigation_id_++),
       navigation_start_(base::TimeTicks::Now()) {}
 FakePageLoadMetricsObserverDelegate::~FakePageLoadMetricsObserverDelegate() =
     default;
@@ -28,22 +33,22 @@ base::TimeTicks FakePageLoadMetricsObserverDelegate::GetNavigationStart()
   return navigation_start_;
 }
 
-absl::optional<base::TimeDelta> TimeDiff(
-    const absl::optional<base::TimeTicks>& time,
+std::optional<base::TimeDelta> TimeDiff(
+    const std::optional<base::TimeTicks>& time,
     const base::TimeTicks& origin) {
   if (!time.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK_GE(time.value(), origin);
   return time.value() - origin;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstForeground() const {
-  return absl::optional<base::TimeDelta>();
+  return std::optional<base::TimeDelta>();
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstBackground() const {
   return TimeDiff(first_background_time_, navigation_start_);
 }
@@ -53,7 +58,7 @@ PrerenderingState FakePageLoadMetricsObserverDelegate::GetPrerenderingState()
   return prerendering_state_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetActivationStart() const {
   return activation_start_;
 }
@@ -104,9 +109,9 @@ FakePageLoadMetricsObserverDelegate::GetPageEndUserInitiatedInfo() const {
   return page_end_user_initiated_info_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToPageEnd() const {
-  return absl::optional<base::TimeDelta>();
+  return std::optional<base::TimeDelta>();
 }
 
 const base::TimeTicks& FakePageLoadMetricsObserverDelegate::GetPageEndTime()
@@ -140,15 +145,15 @@ const NormalizedCLSData& FakePageLoadMetricsObserverDelegate::
   return normalized_cls_data_;
 }
 
-const NormalizedResponsivenessMetrics&
-FakePageLoadMetricsObserverDelegate::GetNormalizedResponsivenessMetrics()
+const ResponsivenessMetricsNormalization&
+FakePageLoadMetricsObserverDelegate::GetResponsivenessMetricsNormalization()
     const {
-  return normalized_responsiveness_metrics_;
+  return responsiveness_metrics_normalization_;
 }
 
-const NormalizedResponsivenessMetrics& FakePageLoadMetricsObserverDelegate::
-    GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const {
-  return normalized_responsiveness_metrics_;
+const ResponsivenessMetricsNormalization& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalResponsivenessMetricsNormalization() const {
+  return responsiveness_metrics_normalization_;
 }
 
 const mojom::InputTiming&
@@ -156,7 +161,7 @@ FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
   return page_input_timing_;
 }
 
-const absl::optional<blink::SubresourceLoadMetrics>&
+const std::optional<blink::SubresourceLoadMetrics>&
 FakePageLoadMetricsObserverDelegate::GetSubresourceLoadMetrics() const {
   return subresource_load_metrics_;
 }
@@ -209,6 +214,18 @@ FakePageLoadMetricsObserverDelegate::GetPreviousUkmSourceIdForSoftNavigation()
 bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()
     const {
   return false;
+}
+
+bool FakePageLoadMetricsObserverDelegate::IsOriginVisit() const {
+  return false;
+}
+
+bool FakePageLoadMetricsObserverDelegate::IsTerminalVisit() const {
+  return false;
+}
+
+int64_t FakePageLoadMetricsObserverDelegate::GetNavigationId() const {
+  return navigation_id_;
 }
 
 void FakePageLoadMetricsObserverDelegate::AddBackForwardCacheRestore(

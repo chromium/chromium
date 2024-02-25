@@ -27,20 +27,16 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
 
   ~RenderViewContextMenuMacCocoa() override;
 
-  // RenderViewContextMenuViewsMac:
+  // RenderViewContextMenu:
   void Show() override;
 
  private:
-  friend class ToolkitDelegateMacCocoa;
-
-  // Cancels the menu.
-  void CancelToolkitMenu();
-
-  // Updates the status and text of the specified context-menu item.
+  // RenderViewContextMenuViewsMac:
+  void CancelToolkitMenu() override;
   void UpdateToolkitMenuItem(int command_id,
                              bool enabled,
                              bool hidden,
-                             const std::u16string& title);
+                             const std::u16string& title) override;
 
   // The Cocoa menu controller for this menu.
   MenuControllerCocoa* __strong menu_controller_;
@@ -49,12 +45,5 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
   // The Cocoa parent view.
   NSView* __weak parent_view_;
 };
-
-// The ChromeSwizzleServicesMenuUpdater filters Services menu items in the
-// contextual menus and elsewhere using swizzling.
-@interface ChromeSwizzleServicesMenuUpdater : NSObject
-// Return filtered entries, for testing.
-+ (void)storeFilteredEntriesForTestingInArray:(NSMutableArray*)array;
-@end
 
 #endif  // CHROME_BROWSER_UI_COCOA_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_MAC_COCOA_H_

@@ -6,13 +6,17 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <string.h>
 #endif
 
-#include <vector>
+#if BUILDFLAG(IS_WIN)
+#include "base/check_op.h"
+#endif
 
 namespace base {
 namespace internal {

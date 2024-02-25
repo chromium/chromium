@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/idle/idle_service.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -18,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
+#include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,11 +29,13 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/idle/idle_pref_names.h"
+#include "components/enterprise/idle/metrics.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -47,11 +49,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/idle_test_utils.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_LINUX)
 
 using base::TestMockTimeTaskRunner;
 using testing::_;
@@ -77,7 +76,8 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
 
 class BrowserCloseWaiter : public BrowserListObserver {
  public:
-  explicit BrowserCloseWaiter(std::set<Browser*> browsers) {
+  explicit BrowserCloseWaiter(
+      std::set<raw_ptr<Browser, SetExperimental>> browsers) {
     BrowserList::AddObserver(this);
     waiting_browsers_ = std::move(browsers);
   }
@@ -95,7 +95,7 @@ class BrowserCloseWaiter : public BrowserListObserver {
 
  private:
   base::RunLoop run_loop_;
-  std::set<Browser*> waiting_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> waiting_browsers_;
 };
 
 }  // namespace
@@ -105,10 +105,19 @@ namespace enterprise_idle {
 class IdleServiceTest : public InProcessBrowserTest {
  public:
   IdleServiceTest() = default;
+  ~IdleServiceTest() override = default;
+
+  void SetUp() override {
+    // Prevent user education from polling idle state.
+    UserEducationServiceFactory::GetInstance()
+        ->disable_idle_polling_for_testing();
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     polling_service().SetTaskRunnerForTest(task_runner_);
+    polling_service().SetPollIntervalForTest(base::Seconds(1));
 
     auto time_provider =
         std::make_unique<testing::NiceMock<MockIdleTimeProvider>>();
@@ -125,6 +134,8 @@ class IdleServiceTest : public InProcessBrowserTest {
 
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownOnMainThread() override {
@@ -143,10 +154,20 @@ class IdleServiceTest : public InProcessBrowserTest {
       // already doing the same thing.
       keep_alive_.reset();
     }
+
+    if (ProfilePicker::IsOpen()) {
+      // `ProfilePicker` prevents browsers from being closed. We need to destroy
+      // `ProfilePicker` first, and then tear down browsers.
+      ProfilePicker::Hide();
+    }
+
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void TearDownInProcessBrowserTestFixture() override { keep_alive_.reset(); }
+  void TearDownInProcessBrowserTestFixture() override {
+    keep_alive_.reset();
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
 
   void SetIdleTimeoutPolicies(
       policy::MockConfigurationPolicyProvider& policy_provider,
@@ -180,7 +201,7 @@ class IdleServiceTest : public InProcessBrowserTest {
 
   int GetBrowserCount(Profile* profile) {
     int count = 0;
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       if (browser->profile() == profile) {
         count++;
       }
@@ -194,16 +215,12 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowser(Browser* browser) {
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
     // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
     // why.
 #else
     ActivateBrowserImpl(browser);
-#endif
-#else
-    ActivateBrowserImpl(browser);
-#endif
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
   }
 
   void ActivateBrowserImpl(Browser* browser) {
@@ -231,6 +248,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   // to 1 minute (the minimum).
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   Profile* profile = browser()->profile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/0);
 
@@ -265,6 +284,21 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   EXPECT_EQ(0, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Check that the idle dialog events are recorded in the histogram.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamples(
+          "Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"),
+      ElementsAre(
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogShown, 1),
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogExpired, 1)));
+  // Check that the success of idle timeout actions is recorded.
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.ShowProfilePicker", true, 1);
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.CloseBrowsers", true, 1);
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.AllActions", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
@@ -495,6 +529,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   Profile* profile = browser()->profile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
@@ -519,6 +555,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
+
   DialogManager::GetInstance()->DismissDialogForTesting();
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -528,6 +565,14 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
+  // Check that the idle dialog events are recorded in the histogram.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamples(
+          "Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"),
+      ElementsAre(
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogShown, 1),
+          base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogDismissedByUser,
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
@@ -603,8 +648,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
-// TODO(crbug.com/1326685): Figure out why this test fails during teardown.
-IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustShowProfilePicker) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
   Profile* profile = browser()->profile();
@@ -628,8 +672,6 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_TRUE(ProfilePicker::IsOpen());
-
-  // Browsers are still open.
   EXPECT_EQ(1, GetBrowserCount(profile));
 }
 

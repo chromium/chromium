@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/strings/grit/components_chromium_strings.h",
+  "+components/strings/grit/components_branded_strings.h",
   "+components/strings/grit/components_strings.h",
   "+components/upload_list",
 ]

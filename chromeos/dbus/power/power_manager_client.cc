@@ -132,7 +132,7 @@ void OnCreateArcTimersDBusMethod(
     DBusMethodCallback<std::vector<PowerManagerClient::TimerId>> callback,
     dbus::Response* response) {
   if (response == nullptr) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -140,7 +140,7 @@ void OnCreateArcTimersDBusMethod(
   dbus::MessageReader array_reader(nullptr);
   if (!reader.PopArray(&array_reader)) {
     POWER_LOG(ERROR) << "No timer ids returned";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -149,7 +149,7 @@ void OnCreateArcTimersDBusMethod(
     int32_t timer_id;
     if (!array_reader.PopInt32(&timer_id)) {
       POWER_LOG(ERROR) << "Failed to pop timer id";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     timer_ids.push_back(timer_id);
@@ -296,7 +296,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
         power_manager::kIncreaseKeyboardBrightnessMethod);
   }
 
-  const absl::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
+  const std::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override {
     return proto_;
   }
@@ -930,7 +930,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
       DBusMethodCallback<double> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
@@ -938,7 +938,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopDouble(&percent)) {
       POWER_LOG(ERROR) << "Error reading response from powerd: "
                        << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(percent);
@@ -949,7 +949,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kGetBacklightsForcedOffMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
@@ -957,7 +957,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopBool(&state)) {
       POWER_LOG(ERROR) << "Error reading response from powerd: "
                        << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(state);
@@ -969,7 +969,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kGetBatterySaverModeState;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -978,7 +978,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
       POWER_LOG(ERROR) << "Error parsing response from "
                        << power_manager::kGetBatterySaverModeState;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(proto);
@@ -989,7 +989,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kGetSwitchStatesMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -998,7 +998,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
       POWER_LOG(ERROR) << "Error parsing response from "
                        << power_manager::kGetSwitchStatesMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(
@@ -1012,7 +1012,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kGetChargeHistoryMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1023,7 +1023,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
       POWER_LOG(ERROR) << "Cannot get charge history from "
                        << power_manager::kGetChargeHistoryMethod
                        << " because it's not initialized yet.";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1032,7 +1032,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
       POWER_LOG(ERROR) << "Error parsing response from "
                        << power_manager::kGetChargeHistoryMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(proto);
@@ -1044,7 +1044,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kGetInactivityDelaysMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1053,7 +1053,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
       POWER_LOG(ERROR) << "Error parsing response from "
                        << power_manager::kGetInactivityDelaysMethod;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(proto);
@@ -1426,10 +1426,10 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Origin thread (i.e. the UI thread in production).
   base::PlatformThreadId origin_thread_id_;
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> power_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> power_manager_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  absl::optional<bool> service_available_;
+  std::optional<bool> service_available_;
 
   // The delay ID obtained from the RegisterSuspendDelay request.
   int32_t suspend_delay_id_ = -1;
@@ -1473,7 +1473,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
   bool last_is_projecting_ = false;
 
   // The last proto received from D-Bus; initially empty.
-  absl::optional<power_manager::PowerSupplyProperties> proto_;
+  std::optional<power_manager::PowerSupplyProperties> proto_;
 
   // The delegate used to manage the power consumption of Chrome's renderer
   // processes.

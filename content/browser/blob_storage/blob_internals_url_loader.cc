@@ -45,7 +45,7 @@ void StartBlobInternalsURLLoader(
   CHECK_EQ(result, MOJO_RESULT_OK);
 
   client->OnReceiveResponse(std::move(resource_response),
-                            std::move(consumer_handle), absl::nullopt);
+                            std::move(consumer_handle), std::nullopt);
   network::URLLoaderCompletionStatus status(net::OK);
   status.encoded_data_length = output.size();
   status.encoded_body_length = output.size();

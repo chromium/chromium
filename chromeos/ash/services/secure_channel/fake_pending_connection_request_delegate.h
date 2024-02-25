@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_REQUEST_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_REQUEST_DELEGATE_H_
 
+#include <optional>
 #include <unordered_map>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -26,7 +26,7 @@ class FakePendingConnectionRequestDelegate
 
   ~FakePendingConnectionRequestDelegate() override;
 
-  const absl::optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
+  const std::optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
       const base::UnguessableToken& request_id);
 
   void set_closure_for_next_delegate_callback(base::OnceClosure closure) {
@@ -40,7 +40,7 @@ class FakePendingConnectionRequestDelegate
       FailedConnectionReason reason) override;
 
   std::unordered_map<base::UnguessableToken,
-                     absl::optional<FailedConnectionReason>,
+                     std::optional<FailedConnectionReason>,
                      base::UnguessableTokenHash>
       request_id_to_failed_connection_reason_map_;
 

@@ -18,6 +18,9 @@ import org.chromium.content_public.browser.WebContents;
  */
 public interface ChromeOriginVerifierFactory {
     /** Creates an {@link OriginVerifier}. */
-    ChromeOriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
-            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils);
+    ChromeOriginVerifier create(
+            String packageName,
+            @CustomTabsService.Relation int relation,
+            @Nullable WebContents webContents,
+            @Nullable ExternalAuthUtils externalAuthUtils);
 }

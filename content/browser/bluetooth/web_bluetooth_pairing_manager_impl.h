@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BLUETOOTH_WEB_BLUETOOTH_PAIRING_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_BLUETOOTH_WEB_BLUETOOTH_PAIRING_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -100,7 +100,7 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
       blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
       device::BluetoothDevice::ConnectCallback callback,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   void OnPinCodeResult(blink::WebBluetoothDeviceId device_id,
                        const BluetoothDelegate::PairPromptResult& result);

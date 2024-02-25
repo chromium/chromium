@@ -9,10 +9,11 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 import android.util.MalformedJsonException;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.StreamUtil;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -77,17 +78,18 @@ public class JsonSanitizer {
                     case STRING:
                         writer.value(sanitizeString(reader.nextString()));
                         break;
-                    case NUMBER: {
-                        // Read the value as a string, then try to parse it first as a long, then as
-                        // a double.
-                        String value = reader.nextString();
-                        try {
-                            writer.value(Long.parseLong(value));
-                        } catch (NumberFormatException e) {
-                            writer.value(Double.parseDouble(value));
+                    case NUMBER:
+                        {
+                            // Read the value as a string, then try to parse it first as a long,
+                            // then as a double.
+                            String value = reader.nextString();
+                            try {
+                                writer.value(Long.parseLong(value));
+                            } catch (NumberFormatException e) {
+                                writer.value(Double.parseDouble(value));
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case BOOLEAN:
                         writer.value(reader.nextBoolean());
                         break;
@@ -122,9 +124,7 @@ public class JsonSanitizer {
         JsonSanitizerJni.get().onSuccess(nativePtr, result);
     }
 
-    /**
-     * Helper class to check nesting depth of JSON expressions.
-     */
+    /** Helper class to check nesting depth of JSON expressions. */
     private static class StackChecker {
         private int mStackDepth;
 
@@ -185,6 +185,7 @@ public class JsonSanitizer {
     @NativeMethods
     interface Natives {
         void onSuccess(long id, String json);
+
         void onError(long id, String error);
     }
 }

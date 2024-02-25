@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -311,8 +311,7 @@ base::Value::Dict ShillClientUnittestBase::CreateExampleServiceProperties() {
   properties.Set(shill::kModeProperty, base::Value(shill::kModeManaged));
   properties.Set(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   const std::string ssid = "testssid";
-  properties.Set(shill::kWifiHexSsid,
-                 base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
+  properties.Set(shill::kWifiHexSsid, base::Value(base::HexEncode(ssid)));
   properties.Set(shill::kSecurityClassProperty,
                  base::Value(shill::kSecurityClassPsk));
   return properties;

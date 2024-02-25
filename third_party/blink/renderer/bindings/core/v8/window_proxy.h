@@ -254,7 +254,7 @@ class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
     kFrameIsDetachedAndV8MemoryIsPurged,
   };
 
-  WindowProxy(v8::Isolate*, Frame&, scoped_refptr<DOMWrapperWorld>);
+  WindowProxy(v8::Isolate*, Frame&, DOMWrapperWorld*);
 
   virtual void Initialize() = 0;
 
@@ -277,7 +277,7 @@ class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
 
  protected:
   // TODO(dcheng): Consider making these private and using getters.
-  const scoped_refptr<DOMWrapperWorld> world_;
+  const Member<DOMWrapperWorld> world_;
   // Note: this used to be a ScopedPersistent, making `global_proxy_` a strong
   // GC root from Blink to v8::Context. When the context was disposed (e.g. when
   // detaching the frame or purging v8), it was important to call `SetPhantom()`

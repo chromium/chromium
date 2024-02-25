@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1012241361789814178">Debuger został wstrzymany na innej karcie. Kliknij, aby się na nią przełączyć.</translation>
 <translation id="1088086359088493902">Sekundy</translation>
 <translation id="1142001580032786438">Pokaż selektor tygodnia</translation>
 <translation id="1171774979989969504">Wprowadź adres e-mail.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Podaj adres e-mail.</translation>
 <translation id="1758486001363313524">Inny...</translation>
 <translation id="1787192514241997742">łączny czas: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Zezwól na używanie kamery</translation>
 <translation id="1822429046913737220">rano/po południu</translation>
 <translation id="1832974991323546415">odtwarzanie na urządzeniu zdalnym</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Przełączono na odbicie lustrzane</translation>
 <translation id="2031987842108996681">Kanał czerwony</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />” występuje w niewłaściwym miejscu w „<ph name="INVALIDDOMAIN" />”.</translation>
+<translation id="2068711044993563745">Wartość minimalna (<ph name="MINIMUM" />) musi być mniejsza niż wartość maksymalna (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2226276347425096477">Skróć ten tekst do maksymalnie <ph name="MAX_CHARACTERS" /> znaków (w tej chwili korzystasz z <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
 <translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
 <translation id="2398813069815436052">okno zostało otwarte.</translation>
 <translation id="245932805758469625">pozostały czas filmu w sekundach</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Zaznacz to pole, jeśli chcesz kontynuować.</translation>
 <translation id="2908441821576996758">Podaj listę adresów e-mail rozdzielonych przecinkami.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">pokaż menu audiodeskrypcji</translation>
 <translation id="3075154866155599887">Wpisz prawidłową wartość. Pole jest niekompletne lub zawiera nieprawidłową datę.</translation>
 <translation id="310520048233152454">Wprowadź adres URL.</translation>
 <translation id="3220661731597678625">bieżący krok</translation>
 <translation id="3321030238473337787">Szybkość odtwarzania</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
+<translation id="3377518164566272702">Zezwól na używanie mikrofonu i kamery</translation>
 <translation id="3450233048674729344">Wartość nie może być większa niż <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Wydłuż ten tekst przynajmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="383465348367842624">Część przed znakiem „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Zamknij pełny ekran</translation>
+<translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
 <translation id="4103419683916926126">Milisekundy</translation>
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
 <translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
+<translation id="4663373278480897665">Zezwolono na dostęp do kamery</translation>
 <translation id="4664250907885839816">Część po znaku „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Odtwarzam w trybie obrazu w obrazie</translation>
 <translation id="4748357248530471599">przełącz z wycięcia w ekranie na tryb pełnoekranowy</translation>
 <translation id="4763480195061959176">film</translation>
+<translation id="4792862212177489858">Udostępnij lokalizację</translation>
 <translation id="4812940957355064477">Wpisz liczbę.</translation>
 <translation id="4912200001568447310">bieżący element</translation>
 <translation id="4915360478455618802">Pokaż selektor godziny</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Wybrano: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Wyłącz wyciszenie</translation>
 <translation id="49969490063480558">Podaj część po znaku „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
+<translation id="5037575921016181960">Silne hasło</translation>
 <translation id="5090250355906949916">pasek czasu odtwarzania filmu</translation>
 <translation id="509897012892853729">Kanał niebieski</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">pobierz multimedia</translation>
 <translation id="698788488269350478">rozwinięto.</translation>
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
+<translation id="7080893216867146095">Udostępnianie lokalizacji dozwolone</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
 <translation id="7102274145889307184">bieżąca lokalizacja</translation>
 <translation id="7263440858009898357">Wybierz element z listy.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Inny...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, początek <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Obraz w obrazie</translation>
+<translation id="918430632320614861">Zezwól na używanie mikrofonu</translation>
 <translation id="945780513535800434">Częściowo zaznaczono</translation>
 <translation id="954003015749068518">włącz tryb obrazu w obrazie</translation>
 </translationbundle>

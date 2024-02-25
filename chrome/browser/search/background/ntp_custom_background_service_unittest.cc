@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -15,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -35,7 +37,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -43,6 +44,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using testing::SaveArg;
 
 class MockNtpCustomBackgroundServiceObserver
     : public NtpCustomBackgroundServiceObserver {
@@ -121,19 +124,10 @@ base::Value::Dict GetBackgroundInfoAsDict(const GURL& background_url,
 }
 
 base::Time GetReferenceTime() {
-  base::Time::Exploded exploded_reference_time;
-  exploded_reference_time.year = 2019;
-  exploded_reference_time.month = 1;
-  exploded_reference_time.day_of_month = 1;
-  exploded_reference_time.day_of_week = 1;
-  exploded_reference_time.hour = 0;
-  exploded_reference_time.minute = 0;
-  exploded_reference_time.second = 0;
-  exploded_reference_time.millisecond = 0;
-
+  static constexpr base::Time::Exploded kReferenceTime = {
+      .year = 2019, .month = 1, .day_of_week = 1, .day_of_month = 1};
   base::Time out_time;
-  EXPECT_TRUE(
-      base::Time::FromLocalExploded(exploded_reference_time, &out_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kReferenceTime, &out_time));
   return out_time;
 }
 
@@ -142,9 +136,8 @@ base::Time GetReferenceTime() {
 class NtpCustomBackgroundServiceTest : public testing::Test {
  public:
   NtpCustomBackgroundServiceTest()
-      : profile_(MakeTestingProfile(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_))),
+      : profile_(
+            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper())),
         mock_theme_service_(static_cast<MockThemeService*>(
             ThemeServiceFactory::GetForProfile(profile_.get()))),
         mock_ntp_background_service_(static_cast<MockNtpBackgroundService*>(
@@ -182,12 +175,12 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
  protected:
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   base::SimpleTestClock clock_;
   MockNtpCustomBackgroundServiceObserver observer_;
   raw_ptr<MockThemeService> mock_theme_service_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NtpCustomBackgroundService> custom_background_service_;
 };
@@ -704,6 +697,10 @@ TEST_F(NtpCustomBackgroundServiceTest, ConfirmBackgroundChanges) {
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
+  // TODO (crbug/1520873): Fix and re-enable or remove if no longer relevant.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   // Turn on Color Extraction feature.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -771,6 +768,34 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
   EXPECT_EQ(
       SK_ColorRED,
       custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
+}
+
+TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomLocalBackgroundColor) {
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      profile().GetTestingPrefService();
+
+  SkColor color = SK_ColorBLUE;
+  EXPECT_CALL(mock_theme_service(), SetUserColorAndBrowserColorVariant)
+      .Times(1)
+      .WillOnce(SaveArg<0>(&color));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
+
+  // Background color will not update if local background is not set.
+  // This is checked by not making another call to ThemeService.
+  custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
+  task_environment_.RunUntilIdle();
+
+  pref_service->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
+
+  // Background color should update.
+  custom_background_service_->UpdateCustomLocalBackgroundColorAsync(image);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(SK_ColorRED, color);
 }
 
 // Most of the color extraction pipeline is tested above. The only thing tested
@@ -1028,4 +1053,30 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageURLsDoNotGetVerified) {
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
+}
+
+TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated);
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      profile().GetTestingPrefService();
+
+  base::Token token = base::Token::CreateRandom();
+  custom_background_service_->SetBackgroundToLocalResourceWithId(token, true);
+  task_environment_.RunUntilIdle();
+
+  // Check that local background image was set.
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_TRUE(base::StartsWith(
+      custom_background->custom_background_url.spec(),
+      chrome::kChromeUIUntrustedNewTabPageUrl + token.ToString() +
+          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename,
+      base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
+  EXPECT_EQ(pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId),
+            token.ToString());
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpCustomBackgroundInspiration));
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  EXPECT_EQ(true, custom_background->is_uploaded_image);
+  EXPECT_TRUE(custom_background->is_inspiration_image);
 }

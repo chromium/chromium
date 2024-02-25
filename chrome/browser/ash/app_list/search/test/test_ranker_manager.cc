@@ -14,7 +14,7 @@
 namespace app_list {
 
 TestRankerManager::TestRankerManager(Profile* profile)
-    : RankerManager(profile, nullptr) {}
+    : RankerManager(profile) {}
 
 TestRankerManager::~TestRankerManager() = default;
 

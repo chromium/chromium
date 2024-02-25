@@ -5,16 +5,17 @@
 #ifndef COMPONENTS_CRONET_NATIVE_NATIVE_METRICS_UTIL_H_
 #define COMPONENTS_CRONET_NATIVE_NATIVE_METRICS_UTIL_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cronet {
 
 namespace native_metrics_util {
 
 // Converts timing metrics stored as TimeTicks into the format expected by the
-// native layer: a absl::optional<Cronet_DateTime> (which may be valueless if
+// native layer: a std::optional<Cronet_DateTime> (which may be valueless if
 // either |ticks| or |start_ticks| is null) -- this is returned via |out|. An
 // out parameter is used because Cronet IDL structs like Cronet_DateTime aren't
 // assignable.
@@ -42,7 +43,7 @@ namespace native_metrics_util {
 void ConvertTime(const base::TimeTicks& ticks,
                  const base::TimeTicks& start_ticks,
                  const base::Time& start_time,
-                 absl::optional<Cronet_DateTime>* out);
+                 std::optional<Cronet_DateTime>* out);
 
 }  // namespace native_metrics_util
 

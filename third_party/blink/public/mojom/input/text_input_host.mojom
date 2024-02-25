@@ -23,7 +23,8 @@ interface TextInputHost {
   GotCharacterIndexAtPoint(uint32 index);
 
   // Reply for GetFirstRectForRange from LocalFrame. It works in the same
-  // manner as GetCharacterIndexAtPoint.
+  // manner as GetCharacterIndexAtPoint. The returned rect is in physical
+  // pixels.
   // [EnableIf=is_mac]
   GotFirstRectForRange(gfx.mojom.Rect rect);
 };

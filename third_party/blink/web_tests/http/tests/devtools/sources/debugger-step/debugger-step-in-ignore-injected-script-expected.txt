@@ -2,5 +2,5 @@ Tests that stepInto doesn't pause in InjectedScriptSource.
 
 Set timer for test function.
 Call stack:
-    0) testFunction (debugger-step-in-ignore-injected-script.js:17)
+    0) testFunction (debugger-step-in-ignore-injected-script.js:16)
 

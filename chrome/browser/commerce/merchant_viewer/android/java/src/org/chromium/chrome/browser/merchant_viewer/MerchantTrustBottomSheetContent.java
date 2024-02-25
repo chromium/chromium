@@ -17,6 +17,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     /** Ratio of the height when in half mode. */
     private static final float HALF_HEIGHT_RATIO = 0.6f;
+
     /** Ratio of the height when in full mode. Used in half-open variation. */
     public static final float FULL_HEIGHT_RATIO = 0.9f;
 
@@ -27,11 +28,12 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
 
-    /**
-     * Creates a new instance.
-     */
-    public MerchantTrustBottomSheetContent(View toolbarView, View contentView,
-            Supplier<Integer> verticalScrollOffset, Runnable backPressHandler) {
+    /** Creates a new instance. */
+    public MerchantTrustBottomSheetContent(
+            View toolbarView,
+            View contentView,
+            Supplier<Integer> verticalScrollOffset,
+            Runnable backPressHandler) {
         mToolbarView = toolbarView;
         mContentView = contentView;
         mVerticalScrollOffset = verticalScrollOffset;

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 
+#include <map>
 #include <tuple>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -140,3 +143,31 @@ SigninUIError::SigninUIError(Type type,
                              const std::string& email,
                              const std::u16string& error_message)
     : type_(type), email_(base::UTF8ToUTF16(email)), message_(error_message) {}
+
+ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
+                                               const std::string& email) {
+  CHECK_NE(error, ReauthUIError::kNone);
+  switch (error) {
+    case ReauthUIError::kNotAllowed:
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY)};
+    case ReauthUIError::kWrongAccount:
+      CHECK(!email.empty());
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE),
+          l10n_util::GetStringFUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY,
+              base::UTF8ToUTF16(email))};
+    case ReauthUIError::kTimeout:
+      return {l10n_util::GetStringUTF16(
+                  IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE),
+              l10n_util::GetStringUTF16(
+                  IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY)};
+    case ReauthUIError::kNone:
+      NOTREACHED_NORETURN();
+  }
+}

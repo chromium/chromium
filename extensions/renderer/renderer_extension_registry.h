@@ -7,12 +7,10 @@
 
 #include <stddef.h>
 
-#include <string>
-
+#include <optional>
 #include "base/synchronization/lock.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -46,14 +44,14 @@ class RendererExtensionRegistry {
   const ExtensionSet* GetMainThreadExtensionSet() const;
 
   // Forwards to the ExtensionSet methods by the same name.
-  bool Contains(const std::string& id) const;
+  bool Contains(const ExtensionId& id) const;
   bool Insert(const scoped_refptr<const Extension>& extension);
-  bool Remove(const std::string& id);
-  std::string GetExtensionOrAppIDByURL(const GURL& url) const;
+  bool Remove(const ExtensionId& id);
+  ExtensionId GetExtensionOrAppIDByURL(const GURL& url) const;
   const Extension* GetExtensionOrAppByURL(const GURL& url,
                                           bool include_guid = false) const;
   const Extension* GetHostedAppByURL(const GURL& url) const;
-  const Extension* GetByID(const std::string& id) const;
+  const Extension* GetByID(const ExtensionId& id) const;
   ExtensionIdSet GetIDs() const;
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
@@ -63,8 +61,8 @@ class RendererExtensionRegistry {
   void SetWorkerActivationToken(const scoped_refptr<const Extension>& extension,
                                 base::UnguessableToken worker_activation_token);
   // Returns the current activation token for worker based extension with
-  // |extension_id|. Returns absl::nullopt otherwise.
-  absl::optional<base::UnguessableToken> GetWorkerActivationToken(
+  // |extension_id|. Returns std::nullopt otherwise.
+  std::optional<base::UnguessableToken> GetWorkerActivationToken(
       const ExtensionId& extension_id) const;
 
  private:

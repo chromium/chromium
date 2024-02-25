@@ -5,13 +5,14 @@
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -27,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "third_party/re2/src/re2/stringpiece.h"
 
 namespace arc {
 
@@ -150,7 +150,7 @@ const VariableResolver BuildVariableResolver(
 // Return the value associated to the first item in |variables| that is not
 // empty.
 std::string ResolveVariableChain(const VariableResolver& resolver,
-                                 std::vector<base::StringPiece> variables) {
+                                 std::vector<std::string_view> variables) {
   for (const auto& variable : variables) {
     // Variables should always be valid and have a mapping in |resolver|.
     DCHECK(resolver.find(variable) != resolver.end());
@@ -163,7 +163,7 @@ std::string ResolveVariableChain(const VariableResolver& resolver,
   return "";
 }
 
-std::vector<base::StringPiece> SplitByColon(base::StringPiece input) {
+std::vector<std::string_view> SplitByColon(std::string_view input) {
   return base::SplitStringPiece(input, ":", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
@@ -172,11 +172,11 @@ std::vector<base::StringPiece> SplitByColon(base::StringPiece input) {
 // replaced with the output of |replacement_getter.Run(capture)|.
 std::string SearchAndReplace(
     const re2::RE2& regex,
-    base::RepeatingCallback<std::string(const re2::StringPiece&)>
+    base::RepeatingCallback<std::string(const std::string_view&)>
         replacement_getter,
-    re2::StringPiece search_input) {
+    std::string_view search_input) {
   std::vector<std::string> output;
-  re2::StringPiece capture;
+  std::string_view capture;
 
   // Loop as long as |regex| matches |search_input|.
   while (re2::RE2::PartialMatch(search_input, regex, &capture)) {
@@ -192,7 +192,7 @@ std::string SearchAndReplace(
     DCHECK(search_input.length() >= prefix_size + capture.length());
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
-    search_input = re2::StringPiece(capture.end(), remaining_size);
+    search_input = std::string_view(capture.end(), remaining_size);
   }
   // Output the remaining |search_input|.
   output.emplace_back(search_input);
@@ -201,7 +201,7 @@ std::string SearchAndReplace(
 
 // Returns a regular expression that matches any one variable in |resolver|.
 std::string ResolverKeyMatcher(const VariableResolver& resolver) {
-  std::vector<base::StringPiece> keys;
+  std::vector<std::string_view> keys;
   for (const auto& item : resolver) {
     keys.emplace_back(item.first);
   }
@@ -230,11 +230,11 @@ void ReplaceVariables(const VariableResolver& resolver,
 
   // Callback to compute values of variable chains matched with |regex|.
   auto chain_resolver = base::BindRepeating(
-      [](const VariableResolver& resolver, const re2::StringPiece& variable) {
+      [](const VariableResolver& resolver, const std::string_view& variable) {
         // Remove the "${" prefix and the "}" suffix from |variable|.
         DCHECK(variable.starts_with("${") && variable.ends_with("}"));
-        const re2::StringPiece chain = variable.substr(2, variable.size() - 3);
-        const std::vector<base::StringPiece> variables = SplitByColon(chain);
+        const std::string_view chain = variable.substr(2, variable.size() - 3);
+        const std::vector<std::string_view> variables = SplitByColon(chain);
 
         const std::string chain_value =
             ResolveVariableChain(resolver, variables);
@@ -248,16 +248,31 @@ void ReplaceVariables(const VariableResolver& resolver,
   configuration = std::move(replaced_configuration);
 }
 
-void RecursivelySearchAndReplaceVariables(
-    const VariableResolver& resolver,
-    base::Value::Dict& managedConfiguration) {
-  for (auto [key, configuration] : managedConfiguration) {
-    if (configuration.is_dict()) {
-      // Recursive call for dictionary values.
-      RecursivelySearchAndReplaceVariables(resolver, configuration.GetDict());
-    } else if (configuration.is_string()) {
-      ReplaceVariables(resolver, configuration.GetString());
-    }
+void ReplaceVariables(const VariableResolver& resolver,
+                      base::Value& configuration);
+
+void ReplaceVariables(const VariableResolver& resolver,
+                      base::Value::Dict& configuration) {
+  for (auto entry : configuration) {
+    ReplaceVariables(resolver, entry.second);
+  }
+}
+
+void ReplaceVariables(const VariableResolver& resolver,
+                      base::Value::List& configuration) {
+  for (auto& entry : configuration) {
+    ReplaceVariables(resolver, entry);
+  }
+}
+
+void ReplaceVariables(const VariableResolver& resolver,
+                      base::Value& configuration) {
+  if (configuration.is_dict()) {
+    ReplaceVariables(resolver, configuration.GetDict());
+  } else if (configuration.is_string()) {
+    ReplaceVariables(resolver, configuration.GetString());
+  } else if (configuration.is_list()) {
+    ReplaceVariables(resolver, configuration.GetList());
   }
 }
 
@@ -285,7 +300,7 @@ void RecursivelyReplaceManagedConfigurationVariables(
     base::Value::Dict& managedConfiguration) {
   const VariableResolver resolver =
       BuildVariableResolver(profile, device_attributes);
-  RecursivelySearchAndReplaceVariables(resolver, managedConfiguration);
+  ReplaceVariables(resolver, managedConfiguration);
 }
 
 }  // namespace arc

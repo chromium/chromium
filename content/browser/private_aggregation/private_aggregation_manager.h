@@ -5,19 +5,16 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
-
-namespace base {
-class Time;
-}
 
 namespace url {
 class Origin;
@@ -39,13 +36,19 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // and processed. However, the receiver is not bound if the `worklet_origin`
   // is not potentially trustworthy or if `context_id` is too long. The return
   // value indicates whether the receiver was accepted. If `context_id` is set,
-  // only one `SendHistogramReport()` call can be made. If none is made by
-  // disconnection, a null report will be sent.
+  // and no `ContributeToHistogram()` calls are made by disconnection, a null
+  // report will still be sent. If `timeout` is set, the report will be sent as
+  // if the pipe closed after the timeout, regardless of when the disconnection
+  // actually happens. `timeout` must be positive if set. If
+  // `aggregation_coordinator_origin` is set, the origin must be on the
+  // allowlist.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      absl::optional<std::string> context_id,
+      std::optional<std::string> context_id,
+      std::optional<base::TimeDelta> timeout,
+      std::optional<url::Origin> aggregation_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 
@@ -60,6 +63,12 @@ class CONTENT_EXPORT PrivateAggregationManager {
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter,
       base::OnceClosure done) = 0;
+
+  // Returns whether debug mode is allowed for a context with the given
+  // parameters. If disallowed, any debug mode details specified over the
+  // PrivateAggregationHost mojo pipe will be ignored.
+  virtual bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
+                                  const url::Origin& reporting_origin) = 0;
 };
 
 }  // namespace content

@@ -4,14 +4,14 @@
 
 #include "net/proxy_resolution/proxy_config_service_ios.h"
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <CFNetwork/CFProxySupport.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
-#include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
+#include "net/base/proxy_chain.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 
 namespace net {
@@ -69,21 +69,20 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   //   kCFNetworkProxiesSOCKSEnable
   //   kCFNetworkProxiesSOCKSProxy
   //   kCFNetworkProxiesSOCKSPort
-  if (GetBoolFromDictionary(config_dict.get(),
-                            kCFNetworkProxiesHTTPEnable,
+  if (GetBoolFromDictionary(config_dict.get(), kCFNetworkProxiesHTTPEnable,
                             false)) {
-    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-        ProxyServer::SCHEME_HTTP, config_dict.get(), kCFNetworkProxiesHTTPProxy,
+    ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+        kCFProxyTypeHTTP, config_dict.get(), kCFNetworkProxiesHTTPProxy,
         kCFNetworkProxiesHTTPPort);
-    if (proxy_server.is_valid()) {
+    if (proxy_chain.IsValid()) {
       proxy_config.proxy_rules().type =
           ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      proxy_config.proxy_rules().proxies_for_http.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().proxies_for_http.SetSingleProxyChain(
+          proxy_chain);
       // Desktop Safari applies the HTTP proxy to http:// URLs only, but
       // Mobile Safari applies the HTTP proxy to https:// URLs as well.
-      proxy_config.proxy_rules().proxies_for_https.SetSingleProxyServer(
-          proxy_server);
+      proxy_config.proxy_rules().proxies_for_https.SetSingleProxyChain(
+          proxy_chain);
     }
   }
 

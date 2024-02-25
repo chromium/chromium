@@ -303,7 +303,7 @@ Decryptor* MojoCdm::GetDecryptor() {
   return decryptor_.get();
 }
 
-absl::optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
+std::optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
   // Can be called on a different thread.
   base::AutoLock auto_lock(lock_);
   DVLOG(2) << __func__ << ": cdm_id="
@@ -358,7 +358,7 @@ void MojoCdm::OnSessionExpirationUpdate(const std::string& session_id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   session_expiration_update_cb_.Run(
-      session_id, base::Time::FromDoubleT(new_expiry_time_sec));
+      session_id, base::Time::FromSecondsSinceUnixEpoch(new_expiry_time_sec));
 }
 
 void MojoCdm::OnSimpleCdmPromiseResult(uint32_t promise_id,

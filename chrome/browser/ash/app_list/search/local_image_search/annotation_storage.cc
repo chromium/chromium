@@ -6,7 +6,10 @@
 
 #include <algorithm>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotations_table.h"
@@ -27,7 +30,31 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
-constexpr int kVersionNumber = 4;
+constexpr int kVersionNumber = 5;
+
+constexpr char kSqlDatabaseUmaTag[] =
+    "Apps.AppList.AnnotationStorage.SqlDatabase.Status";
+
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ErrorStatus {
+  kOk = 0,
+  kFailedToCreateNewSchema = 1,
+  kFailedToMigrateSchema = 2,
+  kFailedToInitializeDb = 3,
+  kFailedToInsertInDb = 4,
+  kFailedToRemoveFromDb = 5,
+  kFailedToGetAllFiles = 6,
+  kFailedToSearchByDirectory = 7,
+  kFailedToFindImagePath = 8,
+  kFailedToPrefixSearch = 9,
+  kMaxValue = kFailedToPrefixSearch,
+};
+
+void LogErrorUma(ErrorStatus status) {
+  base::UmaHistogramEnumeration("Apps.AppList.AnnotationStorage.Status",
+                                status);
+}
 
 // Initializes a new annotation table, returning a schema version number
 // on success. The database implements inverted index.
@@ -38,6 +65,7 @@ int CreateNewSchema(SqlDatabase* db) {
   if (!db || !AnnotationsTable::Create(db) || !DocumentsTable::Create(db) ||
       !InvertedIndexTable::Create(db)) {
     LOG(ERROR) << "Failed to create schema.";
+    LogErrorUma(ErrorStatus::kFailedToCreateNewSchema);
     return 0;
   }
 
@@ -52,6 +80,7 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
   if (!db || !AnnotationsTable::Drop(db) || !DocumentsTable::Drop(db) ||
       !InvertedIndexTable::Drop(db)) {
     LOG(ERROR) << "Failed to drop schema.";
+    LogErrorUma(ErrorStatus::kFailedToMigrateSchema);
     return 0;
   }
 
@@ -62,21 +91,24 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
 
 ImageInfo::ImageInfo(const std::set<std::string>& annotations,
                      const base::FilePath& path,
-                     const base::Time& last_modified)
-    : annotations(annotations), path(path), last_modified(last_modified) {}
+                     const base::Time& last_modified,
+                     int64_t file_size)
+    : annotations(annotations),
+      path(path),
+      last_modified(last_modified),
+      file_size(file_size) {}
 
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
-    const std::string& histogram_tag,
     int current_version_number,
     std::unique_ptr<ImageAnnotationWorker> annotation_worker)
     : annotation_worker_(std::move(annotation_worker)),
       sql_database_(
           std::make_unique<SqlDatabase>(path_to_db,
-                                        histogram_tag,
+                                        kSqlDatabaseUmaTag,
                                         current_version_number,
                                         base::BindRepeating(CreateNewSchema),
                                         base::BindRepeating(MigrateSchema))) {
@@ -85,10 +117,8 @@ AnnotationStorage::AnnotationStorage(
 
 AnnotationStorage::AnnotationStorage(
     const base::FilePath& path_to_db,
-    const std::string& histogram_tag,
     std::unique_ptr<ImageAnnotationWorker> annotation_worker)
     : AnnotationStorage(path_to_db,
-                        histogram_tag,
                         kVersionNumber,
                         std::move(annotation_worker)) {}
 
@@ -98,11 +128,19 @@ void AnnotationStorage::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sql_database_->Initialize()) {
     LOG(ERROR) << "Failed to initialize the db.";
+    LogErrorUma(ErrorStatus::kFailedToInitializeDb);
     return;
   }
   if (annotation_worker_ != nullptr) {
     // Owns `annotation_worker_`.
     annotation_worker_->Initialize(this);
+  }
+  LogErrorUma(ErrorStatus::kOk);
+
+  auto file_info = base::File::Info();
+  if (base::GetFileInfo(sql_database_->GetPathToDb(), &file_info)) {
+    base::UmaHistogramMemoryMB("Apps.AppList.AnnotationStorage.DatabaseSize",
+                               file_info.size / 1024 / 1024);
   }
 }
 
@@ -113,10 +151,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
   int64_t document_id;
   if (!DocumentsTable::InsertOrIgnore(sql_database_.get(), image_info.path,
                                       image_info.last_modified,
-                                      DocumentType::kImage) ||
+                                      image_info.file_size) ||
       !DocumentsTable::GetDocumentId(sql_database_.get(), image_info.path,
                                      document_id)) {
     LOG(ERROR) << "Failed to insert into the db.";
+    LogErrorUma(ErrorStatus::kFailedToInsertInDb);
     return;
   }
 
@@ -129,6 +168,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
         !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
                                     document_id)) {
       LOG(ERROR) << "Failed to insert into the db.";
+      LogErrorUma(ErrorStatus::kFailedToInsertInDb);
       return;
     }
   }
@@ -142,20 +182,22 @@ void AnnotationStorage::Remove(const base::FilePath& image_path) {
       !DocumentsTable::Remove(sql_database_.get(), image_path) ||
       !AnnotationsTable::Prune(sql_database_.get())) {
     LOG(ERROR) << "Failed to remove from the db.";
+    LogErrorUma(ErrorStatus::kFailedToRemoveFromDb);
   }
 }
 
-std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
+std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "GetAllAnnotations";
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name,"
+      "d.last_modified_time, d.file_size "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
-          "ORDER BY a.term, d.file_path";
+          "ORDER BY a.term, d.directory_path, d.file_name";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -167,15 +209,50 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
-             << ", " << time;
-    matched_paths.push_back(
-        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
+    const std::string annotation = statement->ColumnString(0);
+    base::FilePath file_path(statement->ColumnString(1));
+    file_path = file_path.Append(statement->ColumnString(2));
+    const base::Time time = statement->ColumnTime(3);
+    const int64_t file_size = statement->ColumnInt64(4);
+    DVLOG(1) << "Select find: " << annotation << ", " << file_path << ", "
+             << time << ", " << file_size;
+    matched_paths.push_back({{std::move(annotation)},
+                             std::move(file_path),
+                             std::move(time),
+                             file_size});
   }
 
   return matched_paths;
+}
+
+std::vector<base::FilePath> AnnotationStorage::GetAllFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "GetAllFiles";
+
+  std::vector<base::FilePath> documents;
+  if (!DocumentsTable::GetAllFiles(sql_database_.get(), documents)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    LogErrorUma(ErrorStatus::kFailedToGetAllFiles);
+    return {};
+  }
+
+  return documents;
+}
+
+std::vector<base::FilePath> AnnotationStorage::SearchByDirectory(
+    const base::FilePath& directory) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "SearchByDirectory " << directory;
+
+  std::vector<base::FilePath> files;
+  if (!DocumentsTable::SearchByDirectory(sql_database_.get(), directory,
+                                         files)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    LogErrorUma(ErrorStatus::kFailedToSearchByDirectory);
+    return {};
+  }
+
+  return files;
 }
 
 std::vector<ImageInfo> AnnotationStorage::FindImagePath(
@@ -186,11 +263,12 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name,"
+      "d.last_modified_time, d.file_size "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
-          "WHERE d.file_path=? "
+          "WHERE d.directory_path=? AND d.file_name=? "
           "ORDER BY a.term";
   // clang-format on
 
@@ -198,18 +276,24 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
     LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToFindImagePath);
     return {};
   }
-  statement->BindString(0, image_path.value());
+  // Safe on ChromeOS.
+  statement->BindString(0, image_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, image_path.BaseName().AsUTF8Unsafe());
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
-             << ", " << time;
-    matched_paths.push_back(
-        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
+    const std::string annotation = statement->ColumnString(0);
+    const base::Time time = statement->ColumnTime(3);
+    const int64_t file_size = statement->ColumnInt64(4);
+    DVLOG(1) << "Select find: " << annotation << ", " << image_path << ", "
+             << time << ", " << file_size;
+    matched_paths.push_back({{std::move(annotation)},
+                             std::move(image_path),
+                             std::move(time),
+                             file_size});
   }
 
   return matched_paths;
@@ -222,18 +306,19 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT a.term, d.file_path, d.last_modified_time "
+      "SELECT a.term, d.directory_path, d.file_name, d.last_modified_time "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
           "WHERE a.term LIKE ? "
-          "ORDER BY d.file_path";
+          "ORDER BY d.directory_path, d.file_name";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
   if (!statement) {
     LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToPrefixSearch);
     return {};
   }
   statement->BindString(0, base::StrCat({base::UTF16ToUTF8(query_term), "%"}));
@@ -250,13 +335,14 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
       continue;
     }
 
-    const base::FilePath path = base::FilePath(statement->ColumnString(1));
-    const base::Time time = statement->ColumnTime(2);
-    DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << path << ", "
-             << time << " rl: " << relevance;
+    base::FilePath file_path(statement->ColumnString(1));
+    file_path = file_path.Append(statement->ColumnString(2));
+    const base::Time time = statement->ColumnTime(3);
+    DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << file_path
+             << ", " << time << " rl: " << relevance;
 
-    if (matched_paths.empty() || matched_paths.back().file_path != path) {
-      matched_paths.push_back({path, std::move(time), relevance});
+    if (matched_paths.empty() || matched_paths.back().file_path != file_path) {
+      matched_paths.push_back({file_path, std::move(time), relevance});
     } else if (matched_paths.back().relevance < relevance) {
       matched_paths.back().relevance = relevance;
     }
@@ -296,16 +382,21 @@ std::vector<FileSearchResult> AnnotationStorage::Search(
   }
 
   if (results.size() <= max_num_results) {
-    std::sort(results.begin(), results.end(),
-              [](const FileSearchResult& a, const FileSearchResult& b) {
-                return a.relevance > b.relevance;
-              });
+    std::sort(
+        results.begin(), results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          // Sort in descending order by relevance and last_modified, then in
+          // ascending order by file_path
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
   } else {
-    std::partial_sort(results.begin(), results.begin() + max_num_results,
-                      results.end(),
-                      [](const FileSearchResult& a, const FileSearchResult& b) {
-                        return a.relevance > b.relevance;
-                      });
+    std::partial_sort(
+        results.begin(), results.begin() + max_num_results, results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
     results = std::vector<FileSearchResult>(results.begin(),
                                             results.begin() + max_num_results);
   }

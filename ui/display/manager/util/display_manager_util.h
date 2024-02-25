@@ -5,11 +5,11 @@
 #ifndef UI_DISPLAY_MANAGER_UTIL_DISPLAY_MANAGER_UTIL_H_
 #define UI_DISPLAY_MANAGER_UTIL_DISPLAY_MANAGER_UTIL_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
-#include "base/functional/identity.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -45,7 +45,7 @@ std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state);
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
 // on/off state of each corresponding entry in |displays|.
 DISPLAY_MANAGER_EXPORT int GetDisplayPower(
-    const std::vector<DisplaySnapshot*>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power);
 
@@ -74,6 +74,10 @@ bool GetContentProtectionMethods(DisplayConnectionType type,
 // Returns a list of display zooms supported by the given |mode|.
 DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactors(
     const ManagedDisplayMode& mode);
+
+// Returns a list of display zooms supported by the given |display_width|.
+DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+    const int display_width);
 
 // Returns a list of display zooms based on the provided |dsf| of the display.
 // This is useful for displays that have a non unity device scale factors
@@ -131,7 +135,7 @@ DISPLAY_MANAGER_EXPORT void SortDisplayIdList(DisplayIdList* list);
 DISPLAY_MANAGER_EXPORT bool IsDisplayIdListSorted(const DisplayIdList& list);
 
 // Generate sorted DisplayIdList from iterators.
-template <typename Range, typename UnaryOperation = base::identity>
+template <typename Range, typename UnaryOperation = std::identity>
 DisplayIdList GenerateDisplayIdList(Range&& range, UnaryOperation op = {}) {
   DisplayIdList list;
   base::ranges::transform(range, std::back_inserter(list), op);

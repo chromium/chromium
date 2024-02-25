@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permissions dialog. -->
+    <dimen name="large_favicon_size">24dp</dimen>
+    <dimen name="one_time_permission_prompt_padding">24dp</dimen>
+</resources>

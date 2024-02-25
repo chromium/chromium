@@ -41,7 +41,7 @@ void IndexedDBExternalObject::ConvertToMojo(
       }
       case ObjectType::kFileSystemAccessHandle:
         // Contents of token will be filled in later by
-        // IndexedDBDispatcherHost::CreateAllExternalObjects.
+        // IndexedDBBucketContext::CreateAllExternalObjects.
         mojo_objects->push_back(
             blink::mojom::IDBExternalObject::NewFileSystemAccessToken(
                 mojo::NullRemote()));

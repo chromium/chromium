@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/android/shortcut_info.h"
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -11,7 +12,6 @@
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
 #include "shortcut_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -51,7 +51,10 @@ ShareTarget::ShareTarget() {}
 
 ShareTarget::~ShareTarget() {}
 
-ShortcutInfo::ShortcutInfo(const GURL& shortcut_url) : url(shortcut_url) {}
+ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
+    : url(shortcut_url),
+      scope(shortcut_url.GetWithoutFilename()),
+      manifest_id(shortcut_url) {}
 
 ShortcutInfo::ShortcutInfo(const ShortcutInfo& other) = default;
 
@@ -59,15 +62,14 @@ ShortcutInfo::~ShortcutInfo() = default;
 
 // static
 std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
+    const GURL& url,
     const GURL& manifest_url,
     const blink::mojom::Manifest& manifest,
+    const mojom::WebPageMetadata& web_page_metadata,
     const GURL& primary_icon_url,
     bool primary_icon_maskable) {
-  if (blink::IsEmptyManifest(manifest)) {
-    return nullptr;
-  }
-
-  auto shortcut_info = std::make_unique<ShortcutInfo>(GURL());
+  auto shortcut_info = std::make_unique<ShortcutInfo>(url);
+  shortcut_info->UpdateFromWebPageMetadata(web_page_metadata);
   shortcut_info->UpdateFromManifest(manifest);
   shortcut_info->manifest_url = manifest_url;
   shortcut_info->best_primary_icon_url = primary_icon_url;
@@ -112,6 +114,11 @@ std::vector<WebappIcon> ShortcutInfo::GetWebApkIcons() {
 
 void ShortcutInfo::UpdateFromWebPageMetadata(
     const mojom::WebPageMetadata& metadata) {
+  std::u16string title;
+  base::TrimWhitespace(metadata.title, base::TrimPositions::TRIM_ALL, &title);
+  if (!title.empty()) {
+    user_title = title;
+  }
   std::u16string app_name;
   base::TrimWhitespace(metadata.application_name, base::TrimPositions::TRIM_ALL,
                        &app_name);
@@ -120,21 +127,24 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   }
   short_name = user_title;
   name = user_title;
+
   if (!metadata.description.empty()) {
     description = metadata.description;
   }
   if (metadata.application_url.is_valid()) {
     url = metadata.application_url;
-    scope = metadata.application_url;
+    scope = metadata.application_url.GetWithoutFilename();
   }
   if (metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED ||
       metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED_APPLE) {
     display = blink::mojom::DisplayMode::kStandalone;
-    UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
   }
 }
 
 void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
+  if (blink::IsEmptyManifest(manifest)) {
+    return;
+  }
   std::u16string s_name = manifest.short_name.value_or(std::u16string());
   std::u16string f_name = manifest.name.value_or(std::u16string());
   if (!s_name.empty() || !f_name.empty()) {
@@ -144,18 +154,25 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
       short_name = name;
     else if (name.empty())
       name = short_name;
+    user_title = short_name;
   }
-  user_title = short_name;
 
-  description = manifest.description.value_or(std::u16string());
+  if (manifest.description.has_value()) {
+    description = manifest.description.value();
+  }
 
   // Set the url based on the manifest value, if any.
-  if (manifest.start_url.is_valid())
+  if (manifest.start_url.is_valid()) {
     url = manifest.start_url;
+  }
 
-  scope = manifest.scope;
+  if (manifest.scope.is_valid()) {
+    scope = manifest.scope;
+  }
 
-  manifest_id = blink::GetIdFromManifest(manifest);
+  if (manifest.id.is_valid()) {
+    manifest_id = manifest.id;
+  }
 
   // Set the display based on the manifest value, if any.
   if (manifest.display != DisplayMode::kUndefined)
@@ -174,7 +191,6 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   if (display == DisplayMode::kStandalone ||
       display == DisplayMode::kFullscreen ||
       display == DisplayMode::kMinimalUi) {
-    source = SOURCE_ADD_TO_HOMESCREEN_STANDALONE;
     // Set the orientation based on the manifest value, or ignore if the display
     // mode is different from 'standalone', 'fullscreen' or 'minimal-ui'.
     if (manifest.orientation !=
@@ -187,13 +203,13 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
 
   // Set the theme color based on the manifest value, if any.
   theme_color = manifest.has_theme_color
-                    ? absl::make_optional(manifest.theme_color)
-                    : absl::nullopt;
+                    ? std::make_optional(manifest.theme_color)
+                    : std::nullopt;
 
   // Set the background color based on the manifest value, if any.
   background_color = manifest.has_background_color
-                         ? absl::make_optional(manifest.background_color)
-                         : absl::nullopt;
+                         ? std::make_optional(manifest.background_color)
+                         : std::nullopt;
 
   // Set the icon urls based on the icons in the manifest, if any.
   icon_urls.clear();
@@ -247,14 +263,14 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
 
   // Set the dark theme color based on the manifest value, if any.
   dark_theme_color = manifest.has_dark_theme_color
-                         ? absl::make_optional(manifest.dark_theme_color)
-                         : absl::nullopt;
+                         ? std::make_optional(manifest.dark_theme_color)
+                         : std::nullopt;
 
   // Set the dark background color based on the manifest value, if any.
   dark_background_color =
       manifest.has_dark_background_color
-          ? absl::make_optional(manifest.dark_background_color)
-          : absl::nullopt;
+          ? std::make_optional(manifest.dark_background_color)
+          : std::nullopt;
 }
 
 void ShortcutInfo::UpdateBestSplashIcon(
@@ -298,10 +314,6 @@ void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
       display = DisplayMode::kBrowser;
     }
   }
-}
-
-void ShortcutInfo::UpdateSource(const Source new_source) {
-  source = new_source;
 }
 
 }  // namespace webapps

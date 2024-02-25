@@ -8,6 +8,7 @@
 #import "remoting/ios/display/gl_display_handler.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "remoting/client/display/sys_opengl.h"
 #import "remoting/ios/display/eagl_view.h"
 #import "remoting/ios/display/gl_demo_screen.h"
@@ -67,7 +68,7 @@ class Core : public protocol::CursorShapeStub, public GlRendererDelegate {
   base::WeakPtr<Core> GetWeakPtr();
 
  private:
-  remoting::ChromotingClientRuntime* runtime_;
+  raw_ptr<remoting::ChromotingClientRuntime> runtime_;
 
   // Will be std::move'd when GrabFrameConsumer() is called.
   std::unique_ptr<DualBufferFrameConsumer> owned_frame_consumer_;
@@ -243,7 +244,7 @@ base::WeakPtr<remoting::GlDisplayHandler::Core> Core::GetWeakPtr() {
 
 @interface GlDisplayHandler () {
   std::unique_ptr<remoting::GlDisplayHandler::Core> _core;
-  remoting::ChromotingClientRuntime* _runtime;
+  raw_ptr<remoting::ChromotingClientRuntime> _runtime;
 }
 @end
 

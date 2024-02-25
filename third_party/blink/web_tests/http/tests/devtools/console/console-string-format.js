@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ConsoleTestRunner} from 'console_test_runner';
+
+import * as Platform from 'devtools/core/platform/platform.js';
 
 (async function() {
   TestRunner.addResult(`Tests that formatting processes '%' properly in case of missing formatters.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   var params = [
@@ -28,6 +28,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ];
   for (var i = 0; i < params.length; ++i)
     TestRunner.addResult(
-        'String.sprintf(' + params[i].join(', ') + ') = "' + String.sprintf.apply(String, params[i]) + '"');
+        'String.sprintf(' + params[i].join(', ') + ') = "' + Platform.StringUtilities.sprintf.apply(String, params[i]) + '"');
   TestRunner.completeTest();
 })();

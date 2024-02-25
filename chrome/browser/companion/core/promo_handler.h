@@ -44,6 +44,7 @@ class PromoHandler {
   void OnSigninPromo(PromoAction promo_action);
   void OnMsbbPromo(PromoAction promo_action);
   void OnExpsPromo(PromoAction promo_action);
+  void OnPcoPromo(PromoAction promo_action);
   void IncrementPref(const std::string& pref_name);
 
   // Lifetime of the PrefService is bound to profile which outlives the lifetime

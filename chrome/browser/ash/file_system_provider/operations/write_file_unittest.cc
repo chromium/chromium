@@ -22,9 +22,7 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -38,8 +36,8 @@ const int kOffset = 10;
 
 class FileSystemProviderOperationsWriteFileTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsWriteFileTest() {}
-  ~FileSystemProviderOperationsWriteFileTest() override {}
+  FileSystemProviderOperationsWriteFileTest() = default;
+  ~FileSystemProviderOperationsWriteFileTest() override = default;
 
   void SetUp() override {
     MountOptions mount_options(kFileSystemId, "" /* display_name */);
@@ -77,16 +75,16 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  WriteFileRequestedOptions options;
-  ASSERT_TRUE(WriteFileRequestedOptions::Populate(options_as_value->GetDict(),
-                                                  options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFileHandle, options.open_request_id);
-  EXPECT_EQ(kOffset, static_cast<double>(options.offset));
+  auto options =
+      WriteFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFileHandle, options->open_request_id);
+  EXPECT_EQ(kOffset, static_cast<double>(options->offset));
   std::string write_data(kWriteData);
   EXPECT_EQ(std::vector<uint8_t>(write_data.begin(), write_data.end()),
-            options.data);
+            options->data);
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
@@ -148,6 +146,4 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnError) {
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

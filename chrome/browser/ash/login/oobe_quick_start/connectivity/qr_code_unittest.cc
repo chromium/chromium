@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
@@ -46,24 +46,24 @@ class QRCodeTest : public testing::Test {
   QRCodeTest& operator=(const QRCodeTest&) = delete;
 
   void SetUp() override {
-    random_session_id_ = RandomSessionId();
-    qr_code_ = std::make_unique<QRCode>(random_session_id_, kSharedSecret);
+    advertising_id_ = AdvertisingId();
+    qr_code_ = std::make_unique<QRCode>(advertising_id_, kSharedSecret);
   }
 
  protected:
   std::vector<uint8_t> GetQRCodeData() { return qr_code_->GetQRCodeData(); }
 
-  RandomSessionId random_session_id_;
+  AdvertisingId advertising_id_;
   std::unique_ptr<QRCode> qr_code_;
 };
 
 TEST_F(QRCodeTest, GetQRCodeData) {
-  std::string random_session_id = random_session_id_.ToString();
+  std::string advertising_id = advertising_id_.ToString();
   std::string encoded_shared_secret(kSharedSecretBase64);
 
   std::vector<uint8_t> expected_data(std::begin(kBaseUrl), std::end(kBaseUrl));
-  expected_data.insert(expected_data.end(), random_session_id.begin(),
-                       random_session_id.end());
+  expected_data.insert(expected_data.end(), advertising_id.begin(),
+                       advertising_id.end());
   expected_data.insert(expected_data.end(), std::begin(kUrlKeyParam),
                        std::end(kUrlKeyParam));
   expected_data.insert(expected_data.end(), encoded_shared_secret.begin(),

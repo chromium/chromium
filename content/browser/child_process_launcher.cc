@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/launch.h"
 #include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -100,6 +101,7 @@ ChildProcessLauncher::ChildProcessLauncher(
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
+    base::UnsafeSharedMemoryRegion histogram_memory_region,
     bool terminate_on_shutdown)
     : client_(client),
       starting_(true),
@@ -123,7 +125,8 @@ ChildProcessLauncher::ChildProcessLauncher(
 #if BUILDFLAG(IS_ANDROID)
       client_->CanUseWarmUpConnection(),
 #endif
-      std::move(mojo_invitation), process_error_callback, std::move(file_data));
+      std::move(mojo_invitation), process_error_callback, std::move(file_data),
+      std::move(histogram_memory_region));
   helper_->StartLaunchOnClientThread();
 }
 

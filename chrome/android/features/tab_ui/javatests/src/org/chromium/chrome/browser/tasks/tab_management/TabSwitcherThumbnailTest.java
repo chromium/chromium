@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -35,36 +36,37 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
-// clang-format off
-
-/**
- * Tests for the thumbnail view in Grid Tab Switcher.
- */
+/** Tests for the thumbnail view in Grid Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
 @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-@Restriction(
-    {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({
+    UiRestriction.RESTRICTION_TYPE_PHONE,
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
+})
 public class TabSwitcherThumbnailTest {
-    // clang-format on
-    private static final String BASE_PARAMS = "force-fieldtrial-params="
-            + "Study.Group:skip-slow-zooming/false"
-            + "/zooming-min-memory-mb/512/enable_launch_polish/true";
+    private static final String BASE_PARAMS =
+            "force-fieldtrial-params="
+                    + "Study.Group:skip-slow-zooming/false"
+                    + "/zooming-min-memory-mb/512/enable_launch_polish/true";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(
-                    (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected)
-                            -> callback.onResult(null),
-                    Tab.INVALID_TAB_ID, false, false);
+                    (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected) ->
+                            callback.onResult(null),
+                    Tab.INVALID_TAB_ID,
+                    false,
+                    false);
 
     @Before
     public void setUp() {
@@ -74,7 +76,6 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR)
     public void testThumbnailDynamicAspectRatioWhenCaptured_FixedWhenShown() {
         // With this flag bitmap aspect ratios are not applied. Check that the resultant image views
         // still display at the right size.
@@ -122,9 +123,13 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
-                                        mActivityTestRule.getActivity()))),
-                                  withId(R.id.tab_list_view)))
+            onViewWaiting(
+                            allOf(
+                                    isDescendantOfA(
+                                            withId(
+                                                    TabUiTestHelper.getTabSwitcherAncestorId(
+                                                            mActivityTestRule.getActivity()))),
+                                    withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))
                     .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));
@@ -135,8 +140,10 @@ public class TabSwitcherThumbnailTest {
         public static ThumbnailAspectRatioAssertion havingAspectRatioAt(float ratio, int position) {
             return new ThumbnailAspectRatioAssertion(ratio, position);
         }
+
         private int mPosition;
         private float mExpectedRatio;
+
         ThumbnailAspectRatioAssertion(float ratio, int position) {
             mExpectedRatio = ratio;
             mPosition = position;
@@ -163,7 +170,9 @@ public class TabSwitcherThumbnailTest {
         public static ThumbnailHeightAssertion notZeroAt(int position) {
             return new ThumbnailHeightAssertion(position);
         }
+
         private int mPosition;
+
         ThumbnailHeightAssertion(int position) {
             mPosition = position;
         }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources =
@@ -10,14 +11,20 @@ generate_jni("jni_headers") {
 }
 
 android_library("test_support_java") {
+  srcjar_deps = [ ":jni_headers" ]
   testonly = true
-  sources =
-      [ "java/src/org/chromium/components/messages/MessagesTestHelper.java" ]
+  sources = [
+    "java/src/org/chromium/components/messages/MessagesTestHelper.java",
+    "java/src/org/chromium/components/messages/TestMessageDispatcherWrapper.java",
+  ]
   deps = [
+    "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/messages/android:java",
+    "//components/messages/android:manager_java",
     "//components/messages/android/internal:java",
+    "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
@@ -28,9 +35,9 @@ static_library("test_support_cpp") {
     "messages_test_helper.cc",
     "messages_test_helper.h",
   ]
+  public_deps = [ "//ui/android:android" ]
   deps = [
     ":jni_headers",
     "//base",
-    "//ui/android:android",
   ]
 }

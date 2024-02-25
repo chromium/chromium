@@ -1,5 +1,4 @@
-agawronska@chromium.org
-courtneywong@chromium.org
+file://chrome/browser/ash/child_accounts/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

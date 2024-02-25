@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -115,7 +117,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   ImageRecord* LargestPaintedImage() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        .records_manager_.largest_painted_image_.get();
+        .records_manager_.largest_painted_image_.Get();
   }
 
   ImageRecord* ChildFrameLargestImage() {
@@ -132,21 +134,20 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   size_t ContainerTotalSize() {
-    return GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.recorded_images_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.pending_images_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.size_ordered_set_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.images_queued_for_paint_time_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.image_finished_times_.size();
+    size_t result = GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.recorded_images_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.pending_images_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.images_queued_for_paint_time_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.image_finished_times_.size();
+
+    return result;
   }
 
   size_t CountChildFrameRecords() {
@@ -155,24 +156,22 @@ class ImagePaintTimingDetectorTest : public testing::Test,
         .records_manager_.recorded_images_.size();
   }
 
-  void UpdateCandidate() {
-    GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .UpdateMetricsCandidate();
-  }
+  void UpdateCandidate() { GetPaintTimingDetector().UpdateLcpCandidate(); }
 
   void UpdateCandidateForChildFrame() {
-    GetChildPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .UpdateMetricsCandidate();
+    GetChildPaintTimingDetector().UpdateLcpCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {
-    return GetPaintTimingDetector().lcp_details_.largest_image_paint_time_;
+    return GetPaintTimingDetector()
+        .LatestLcpDetailsForTest()
+        .largest_image_paint_time;
   }
 
   uint64_t LargestPaintSize() {
-    return GetPaintTimingDetector().lcp_details_.largest_image_paint_size_;
+    return GetPaintTimingDetector()
+        .LatestLcpDetailsForTest()
+        .largest_image_paint_size;
   }
 
   static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
@@ -271,6 +270,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return To<LocalFrame>(GetFrame()->Tree().FirstChild());
   }
 
+  test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 
@@ -331,7 +331,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
   EXPECT_EQ(1ul, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, false);
 }
@@ -385,14 +385,14 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
+  std::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(true, isMainFrame.value());
-  absl::optional<bool> is_outermost_main_frame =
+  std::optional<bool> is_outermost_main_frame =
       arg_dict.FindBool("isOutermostMainFrame");
   EXPECT_TRUE(is_outermost_main_frame.has_value());
   EXPECT_EQ(true, is_outermost_main_frame.value());
-  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  std::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
   EXPECT_TRUE(is_embedded_frame.has_value());
   EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 8);
@@ -438,14 +438,14 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
+  std::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(false, isMainFrame.value());
-  absl::optional<bool> is_outermost_main_frame =
+  std::optional<bool> is_outermost_main_frame =
       arg_dict.FindBool("isOutermostMainFrame");
   EXPECT_TRUE(is_outermost_main_frame.has_value());
   EXPECT_EQ(false, is_outermost_main_frame.value());
-  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  std::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
   EXPECT_TRUE(is_embedded_frame.has_value());
   EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);
@@ -766,7 +766,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(ContainerTotalSize(), 5u);
+  EXPECT_EQ(ContainerTotalSize(), 4u);
 
   GetDocument()
       .getElementById(AtomicString("parent"))
@@ -1249,23 +1249,22 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_FullViewportImage) {
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
   EXPECT_EQ(1ul, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, true);
 }
 
-TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_Detached_Frame) {
 #if BUILDFLAG(IS_ANDROID)
-  if (RuntimeEnabledFeatures::SolidColorLayersEnabled() ||
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1353921, crbug.com/1414885):
-    // This test is flaky on Android. Fix it.
-    // https://chrome-swarming.appspot.com/task?id=60c68038be22f011
-    // The first EXPECT_EQ(0u, events.size()) below failed.
-    return;
-  }
+// TODO(crbug.com/1353921): This test is flaky on Android. Fix it.
+// https://chrome-swarming.appspot.com/task?id=60c68038be22f011
+// The first EXPECT_EQ(0u, events.size()) below failed.
+#define MAYBE_LargestImagePaint_Detached_Frame \
+  DISABLED_LargestImagePaint_Detached_Frame
+#else
+#define MAYBE_LargestImagePaint_Detached_Frame LargestImagePaint_Detached_Frame
 #endif
 
+TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
   using trace_analyzer::Query;
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(

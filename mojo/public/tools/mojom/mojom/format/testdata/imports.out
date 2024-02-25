@@ -1,0 +1,22 @@
+// Kopiright
+
+module foo.mojom;
+
+import "a.mojom";
+import "e/should/be/reordered.mojom";
+import "i/before/e/when/not/sorted.mojom";
+import "remove/newline/above.mojom";
+
+[EnableIf=is_win]
+import "a/windows.mojom";
+
+[EnableIf=is_mac]
+import "mac.mojom";
+
+[EnableIf=is_android]
+import "z/android.mojom";
+
+// This file is about import ordering.
+
+// But here's a free struct.
+struct Foo {};

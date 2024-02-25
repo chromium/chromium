@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
@@ -73,4 +72,4 @@ class ConsentThrottle : public UrlKeyedDataCollectionConsentHelper::Observer {
 
 }  // namespace unified_consent
 
-#endif  // CHROME_BROWSER_COMPONENTS_UNIFIED_CONSENT_CONSENT_THROTTLE_H_
+#endif  // COMPONENTS_UNIFIED_CONSENT_CONSENT_THROTTLE_H_

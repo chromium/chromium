@@ -28,6 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/named_trigger.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -38,9 +39,9 @@
 namespace blink {
 
 DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
-    : user_timing_mark_fully_loaded_(absl::nullopt),
-      user_timing_mark_fully_visible_(absl::nullopt),
-      user_timing_mark_interactive_(absl::nullopt),
+    : user_timing_mark_fully_loaded_(std::nullopt),
+      user_timing_mark_fully_visible_(std::nullopt),
+      user_timing_mark_interactive_(std::nullopt),
       clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       document_loader_(document_loader),
@@ -73,7 +74,8 @@ void DocumentLoadTiming::NotifyDocumentTimingChanged() {
 
 void DocumentLoadTiming::EnsureReferenceTimesSet() {
   if (reference_wall_time_.is_zero()) {
-    reference_wall_time_ = base::Seconds(clock_->Now().ToDoubleT());
+    reference_wall_time_ =
+        base::Seconds(clock_->Now().InSecondsFSinceUnixEpoch());
   }
   if (reference_monotonic_time_.is_null())
     reference_monotonic_time_ = tick_clock_->NowTicks();
@@ -119,14 +121,16 @@ void DocumentLoadTiming::MarkNavigationStart() {
       GetFrameIdForTracing(GetFrame()), "data", [&](perfetto::TracedValue ctx) {
         WriteNavigationStartDataIntoTracedValue(std::move(ctx));
       });
+  base::trace_event::EmitNamedTrigger("navigation-start");
   NotifyDocumentTimingChanged();
 }
 
 void DocumentLoadTiming::WriteNavigationStartDataIntoTracedValue(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("documentLoaderURL",
-           document_loader_ ? document_loader_->Url().GetString() : "");
+  dict.Add("documentLoaderURL", document_loader_
+                                    ? document_loader_->Url().GetString()
+                                    : g_empty_string);
   dict.Add("isLoadingMainFrame",
            GetFrame() ? GetFrame()->IsMainFrame() : false);
   dict.Add("isOutermostMainFrame",

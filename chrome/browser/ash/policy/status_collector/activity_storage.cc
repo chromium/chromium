@@ -173,8 +173,9 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
 
     const int64_t day_key = LocalTimeToUtcDayStart(start);
     const std::string key = MakeActivityPeriodPrefKey(day_key, activity_id);
-    VLOG(1) << "Add Activity: " << base::Time::FromJavaTime(day_key) << " to "
-            << base::Time::FromJavaTime(day_key + activity);
+    VLOG(1) << "Add Activity: "
+            << base::Time::FromMillisecondsSinceUnixEpoch(day_key) << " to "
+            << base::Time::FromMillisecondsSinceUnixEpoch(day_key + activity);
     const auto previous_activity = activity_times.FindIntByDottedPath(key);
     if (previous_activity.has_value()) {
       activity += previous_activity.value();
@@ -207,7 +208,7 @@ int64_t ActivityStorage::LocalTimeToUtcDayStart(base::Time timestamp) const {
     // is not needed, just keep it as is. timestamp like this cannot be part
     // of an actual activity interval, it only happens as a threshold for
     // activities report.
-    return timestamp.ToJavaTime();
+    return timestamp.InMillisecondsSinceUnixEpoch();
   }
 
   base::Time::Exploded exploded;
@@ -220,7 +221,7 @@ int64_t ActivityStorage::LocalTimeToUtcDayStart(base::Time timestamp) const {
   base::Time out_time;
   bool conversion_success = base::Time::FromUTCExploded(exploded, &out_time);
   DCHECK(conversion_success);
-  return out_time.ToJavaTime();
+  return out_time.InMillisecondsSinceUnixEpoch();
 }
 
 // static
@@ -231,9 +232,7 @@ std::string ActivityStorage::MakeActivityPeriodPrefKey(
   if (activity_id.empty())
     return day_key;
 
-  std::string encoded_activity_id;
-  base::Base64Encode(activity_id, &encoded_activity_id);
-  return day_key + kActivityKeySeparator + encoded_activity_id;
+  return day_key + kActivityKeySeparator + base::Base64Encode(activity_id);
 }
 
 // static

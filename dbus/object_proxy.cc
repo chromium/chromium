@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -297,7 +296,7 @@ void ObjectProxy::Detach() {
   }
   match_rules_.clear();
 
-  for (auto* pending_call : pending_calls_) {
+  for (DBusPendingCall* pending_call : pending_calls_) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
@@ -555,10 +554,10 @@ DBusHandlerResult ObjectProxy::HandleMessageThunk(DBusConnection* connection,
 }
 
 void ObjectProxy::LogMethodCallFailure(
-    const base::StringPiece& interface_name,
-    const base::StringPiece& method_name,
-    const base::StringPiece& error_name,
-    const base::StringPiece& error_message) const {
+    const std::string_view& interface_name,
+    const std::string_view& method_name,
+    const std::string_view& error_name,
+    const std::string_view& error_message) const {
   if (ignore_service_unknown_errors_ &&
       (error_name == kErrorServiceUnknown || error_name == kErrorObjectUnknown))
     return;

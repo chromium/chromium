@@ -16,7 +16,8 @@
 #include "chrome/browser/feature_guide/notifications/internal/utils.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,11 +88,11 @@ class TestScheduler
       queued_params_;
 };
 
-segmentation_platform::SegmentSelectionResult GetSegmentResult() {
-  segmentation_platform::SegmentSelectionResult result;
-  result.is_ready = true;
-  result.segment = segmentation_platform::proto::SegmentId::
-      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+segmentation_platform::ClassificationResult GetClassificationResult() {
+  segmentation_platform::ClassificationResult result(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.ordered_labels.emplace_back(
+      segmentation_platform::kChromeLowUserEngagementUmaName);
   return result;
 }
 
@@ -102,7 +103,9 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {feature_guide::features::kSegmentationModelLowEngagedUsers}, {});
+        {segmentation_platform::features::
+             kSegmentationPlatformLowEngagementFeature},
+        {});
     config_.enabled_features.emplace_back(FeatureType::kIncognitoTab);
     config_.enabled_features.emplace_back(FeatureType::kVoiceSearch);
     config_.notification_deliver_time_delta = base::Days(7);
@@ -126,8 +129,9 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
 };
 
 TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
-  EXPECT_CALL(segmentation_platform_service_, GetSelectedSegment(_, _))
-      .WillOnce(RunOnceCallback<1>(GetSegmentResult()));
+  EXPECT_CALL(segmentation_platform_service_,
+              GetClassificationResult(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(GetClassificationResult()));
 
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   service_->OnSchedulerInitialized(std::set<std::string>());
@@ -158,8 +162,9 @@ TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
 }
 
 TEST_F(FeatureNotificationGuideServiceImplTest, SkipAlreadyScheduledFeatures) {
-  EXPECT_CALL(segmentation_platform_service_, GetSelectedSegment(_, _))
-      .WillOnce(RunOnceCallback<1>(GetSegmentResult()));
+  EXPECT_CALL(segmentation_platform_service_,
+              GetClassificationResult(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(GetClassificationResult()));
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   std::set<std::string> scheduled_guids;
   scheduled_guids.insert("guid_incognito_tab");

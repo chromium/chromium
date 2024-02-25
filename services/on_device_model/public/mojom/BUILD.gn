@@ -1,0 +1,40 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "on_device_model.mojom",
+    "on_device_model_service.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "on_device_model.mojom.ModelAssets"
+          cpp = "::on_device_model::ModelAssets"
+          move_only = true
+        },
+        {
+          mojom = "on_device_model.mojom.AdaptationAssets"
+          cpp = "::on_device_model::AdaptationAssets"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
+        "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
+      ]
+      traits_public_deps =
+          [ "//services/on_device_model/public/cpp:model_assets" ]
+    },
+  ]
+}

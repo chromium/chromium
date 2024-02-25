@@ -6,6 +6,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/crypto_buildflags.h"
 
 typedef WebUIMochaBrowserTest CrComponentsTest;
 
@@ -85,32 +86,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefUtils) {
   // Preload a settings URL, so that the test can access settingsPrivate.
   set_test_loader_host(chrome::kChromeUISettingsHost);
   RunTest("cr_components/settings_pref_util_test.js", "mocha.run()");
-}
-
-typedef WebUIMochaBrowserTest CrComponentsAppManagementTest;
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, PermissionItem) {
-  RunTest("cr_components/app_management/permission_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, FileHandlingItem) {
-  RunTest("cr_components/app_management/file_handling_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, SupportedLinksItem) {
-  RunTest("cr_components/app_management/supported_links_item_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, UninstallButton) {
-  RunTest("cr_components/app_management/uninstall_button_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, WindowModeItem) {
-  RunTest("cr_components/app_management/window_mode_item_test.js",
-          "mocha.run()");
 }
 
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {

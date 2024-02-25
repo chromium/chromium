@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_H_
 
-#include <v8-inspector-protocol.h>
 #include <memory>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -13,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "v8/include/v8-inspector.h"
 
 namespace perfetto::protos::pbzero {
 class BlinkSourceLocation;
@@ -115,6 +115,7 @@ PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation();
 
 // Captures current stack trace from function.
 PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
+    v8::Isolate* isolate,
     v8::Local<v8::Function>);
 
 }  // namespace blink

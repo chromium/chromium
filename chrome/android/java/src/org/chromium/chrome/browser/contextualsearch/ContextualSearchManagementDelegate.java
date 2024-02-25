@@ -24,9 +24,7 @@ public interface ContextualSearchManagementDelegate {
      */
     Activity getActivity();
 
-    /**
-     * Promotes the current Content View Core in the Contextual Search Panel to its own Tab.
-     */
+    /** Promotes the current Content View Core in the Contextual Search Panel to its own Tab. */
     void promoteToTab();
 
     /**
@@ -74,14 +72,10 @@ public interface ContextualSearchManagementDelegate {
      */
     OverlayContentDelegate getOverlayContentDelegate();
 
-    /**
-     * Log the current state of Contextual Search.
-     */
+    /** Log the current state of Contextual Search. */
     void logCurrentState();
 
-    /**
-     * Called when the Contextual Search panel is closed.
-     */
+    /** Called when the Contextual Search panel is closed. */
     void onPanelFinishedShowing();
 
     /**
@@ -97,4 +91,12 @@ public interface ContextualSearchManagementDelegate {
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();
+
+    /**
+     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
+     */
+    void setContextualSearchPromoCardSelection(boolean enabled);
+
+    /** Notifies that a promo card has been shown. */
+    void onPromoShown();
 }

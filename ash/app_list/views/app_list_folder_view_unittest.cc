@@ -11,19 +11,32 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
-class AppListFolderViewTest : public AshTestBase {
+class AppListFolderViewTest : public AshTestBase,
+                              public testing::WithParamInterface<bool> {
  public:
   AppListFolderViewTest() = default;
   ~AppListFolderViewTest() override = default;
+
+  // testing::test:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kCrosWebAppShortcutUiUpdate, true},
+         {features::kSeparateWebAppShortcutBadgeIcon, true}});
+    AshTestBase::SetUp();
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppListFolderViewTest, ScrollViewSizeIsCappedForLargeFolders) {
@@ -85,6 +98,29 @@ TEST_F(AppListFolderViewTest, CloseFolderMakesA11yAnnouncement) {
   announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             "Close folder");
+}
+
+TEST_F(AppListFolderViewTest,
+       ShortcutIconEffectsReflectsOnShorcutItemWithHostBadge) {
+  GetAppListTestHelper()->model()->CreateSingleWebAppShortcutItemFolder(
+      "folder_id", "shortcut_id");
+
+  // Open the app list and open the folder.
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* folder_item_view = apps_grid_view->GetItemViewAt(0);
+  LeftClickOn(folder_item_view);
+  ASSERT_TRUE(helper->IsInFolderView());
+
+  auto* folder_view = helper->GetBubbleFolderView();
+  AppListItemView* item_view = folder_view->items_grid_view()->GetItemViewAt(0);
+
+  AppListItem* item = GetAppListTestHelper()->model()->FindItem("shortcut_id");
+
+  ASSERT_TRUE(helper->IsInFolderView());
+  EXPECT_FALSE(item->GetHostBadgeIcon().isNull());
+  EXPECT_TRUE(item_view->has_host_badge_for_test());
 }
 
 }  // namespace ash

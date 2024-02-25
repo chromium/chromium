@@ -57,7 +57,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   bool IsNeverComposited(content::WebContents* web_contents) override;
   void CloseContents(content::WebContents* source) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
-  bool ShouldFocusPageAfterCrash() override;
+  bool ShouldFocusPageAfterCrash(content::WebContents* source) override;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) override;
@@ -86,7 +86,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
   bool ShouldAllowLazyLoad() override;
 

@@ -87,7 +87,7 @@ NoStatePrefetchLinkManager::~NoStatePrefetchLinkManager() {
   }
 }
 
-absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
+std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
     int launcher_render_frame_id,
@@ -100,7 +100,7 @@ absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
   if (guest_view::GuestViewBase::IsGuest(rfh))
-    return absl::nullopt;
+    return std::nullopt;
 #endif
 
   // Check if the launcher is itself an unswapped prerender.
@@ -112,7 +112,7 @@ absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     // The launcher is a prerender about to be destroyed asynchronously, but
     // its AddLinkRelPrerender message raced with shutdown. Ignore it.
     DCHECK_NE(FINAL_STATUS_USED, no_state_prefetch_contents->final_status());
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto trigger = std::make_unique<LinkTrigger>(
@@ -132,7 +132,7 @@ absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
   // may have been discarded by StartLinkTriggers().
   if (!triggers_.empty() && triggers_.back().get() == trigger_ptr)
     return trigger_ptr->link_trigger_id;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void NoStatePrefetchLinkManager::OnCancelLinkTrigger(int link_trigger_id) {

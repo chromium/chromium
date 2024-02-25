@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
@@ -9,7 +10,6 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -17,83 +17,12 @@ namespace blink {
 
 class DocumentPolicySimTest : public SimTest {
  public:
-  DocumentPolicySimTest()
-      : scoped_document_policy_(true),
-        scoped_document_policy_negotiation_(true) {
-    ResetAvailableDocumentPolicyFeaturesForTest();
-  }
+  DocumentPolicySimTest() { ResetAvailableDocumentPolicyFeaturesForTest(); }
 
  private:
-  ScopedDocumentPolicyForTest scoped_document_policy_;
-  ScopedDocumentPolicyNegotiationForTest scoped_document_policy_negotiation_;
+  ScopedDocumentPolicyNegotiationForTest scoped_document_policy_negotiation_{
+      true};
 };
-
-// When runtime feature DocumentPolicy is not enabled, specifying
-// Document-Policy, Require-Document-Policy and policy attribute
-// should have no effect, i.e.
-// document load should not be blocked even if the required policy and incoming
-// policy are incompatible and calling
-// |Document::IsFeatureEnabled(DocumentPolicyFeature...)| should always return
-// true.
-TEST_F(DocumentPolicySimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
-  ScopedDocumentPolicyForTest sdp(false);
-  ScopedDocumentPolicyNegotiationForTest sdpn(false);
-  ResetAvailableDocumentPolicyFeaturesForTest();
-
-  SimRequest::Params main_params;
-  main_params.response_http_headers = {
-      {"Require-Document-Policy", "lossless-images-max-bpp=1.0"}};
-
-  SimRequest::Params iframe_params;
-  iframe_params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.1"}};
-
-  SimRequest main_resource("https://example.com", "text/html", main_params);
-  SimRequest iframe_resource("https://example.com/foo.html", "text/html",
-                             iframe_params);
-
-  LoadURL("https://example.com");
-  main_resource.Complete(R"(
-    <iframe
-      src="https://example.com/foo.html"
-      policy="lossless-images-max-bpp=1.0">
-    </iframe>
-  )");
-
-  iframe_resource.Finish();
-  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
-  auto* child_window = child_frame->GetFrame()->DomWindow();
-  auto& console_messages = static_cast<frame_test_helpers::TestWebFrameClient*>(
-                               child_frame->Client())
-                               ->ConsoleMessages();
-
-  // Should not receive a console error message caused by document policy
-  // violation blocking document load.
-  EXPECT_TRUE(console_messages.empty());
-
-  EXPECT_EQ(child_window->Url(), KURL("https://example.com/foo.html"));
-
-  EXPECT_FALSE(child_window->document()->IsUseCounted(
-      mojom::WebFeature::kDocumentPolicyCausedPageUnload));
-
-  // lossless-images-max-bpp should be set to inf in main document, i.e. allow
-  // all values.
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
-
-  // lossless-images-max-bpp should be set to inf in child document, i.e. allow
-  // all values.
-  EXPECT_TRUE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
-  EXPECT_TRUE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
-}
 
 // When runtime feature DocumentPolicyNegotiation is not enabled, specifying
 // Require-Document-Policy HTTP header and policy attribute on iframe should
@@ -241,7 +170,7 @@ TEST_F(DocumentPolicySimTest,
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest::Params params;
   params.response_http_headers = {
@@ -261,7 +190,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
@@ -287,7 +216,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
@@ -316,7 +245,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest::Params params;
   params.response_http_headers = {

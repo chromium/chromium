@@ -64,14 +64,10 @@ third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
 ## (5) Merge steps 1-4 in a `chromium/src` CL
 
 Please tag deprecation-devtool-issues@chromium.org for review.
-(Note: this address can't be entered as a reviewer directly on Gerrit.
-Add it on the `cc:` line first, and then after replying, the "chip" for
-that address on the top left corner has a popover menu with a button
-called "Move CC to Reviewer". Click that.)
 
 ## (6) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
-[Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/workflows.md)
+[Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/get_the_code.md)
 `devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
 
 Be sure your local `chromium/src` tree is up to date and includes the patch from (5).
@@ -95,13 +91,12 @@ to your CL from (5), which is ok.
 
 ## (7) Merge step 6 in a `devtools/devtools-frontend` CL
 
-Please tag deprecation-devtool-issues@chromium.org for review. See the note in (5) for how
-to do this.
+Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (8) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
 
-This will be done by the [AutoRoller](https://autoroll.skia.org/r/devtools-frontend-chromium)
-within a few hours.
+This will be done automatically within a few hours, you should see your changes from (7) in
+`chromium/src/third_party/devtools-frontend`.
 
 ## (9) Build Chrome from tip-of-trunk
 

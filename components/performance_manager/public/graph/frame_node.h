@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
@@ -13,11 +15,10 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
@@ -30,10 +31,6 @@ class RenderFrameHostProxy;
 class WorkerNode;
 
 using execution_context_priority::PriorityAndReason;
-
-namespace execution_context_priority {
-class InheritClientPriorityVoter;
-}
 
 // Frame nodes form a tree structure, each FrameNode at most has one parent
 // that is a FrameNode. Conceptually, a FrameNode corresponds to a
@@ -94,6 +91,13 @@ class FrameNode : public Node {
   // lifetime of the frame.
   virtual const FrameNode* GetParentFrameNode() const = 0;
 
+  // Returns the document owning the frame this RenderFrameHost is located in,
+  // which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)).
+  // This method is equivalent to
+  // RenderFrameHost::GetParentOrOuterDocumentOrEmbedder().
+  virtual const FrameNode* GetParentOrOuterDocumentOrEmbedder() const = 0;
+
   // Returns the page node to which this frame belongs. This is a constant over
   // the lifetime of the frame.
   virtual const PageNode* GetPageNode() const = 0;
@@ -114,8 +118,16 @@ class FrameNode : public Node {
   // constant over the lifetime of the frame.
   virtual content::SiteInstanceId GetSiteInstanceId() const = 0;
 
-  // A frame is a main frame if it has no parent FrameNode. This can be
-  // called from any thread.
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::FrameContext GetResourceContext() const = 0;
+
+  // A frame is a main frame if it has no parent FrameNode. This can be called
+  // from any thread.
+  //
+  // Note that a frame can be considered a main frame without being the
+  // outermost frame node. This can happen if this is the main frame of an inner
+  // WebContents (Portal or Guest view), or if this is a <fencedframe>.
   virtual bool IsMainFrame() const = 0;
 
   // Visits the frame nodes that are children of this frame. The iteration is
@@ -168,6 +180,10 @@ class FrameNode : public Node {
   // See FrameNodeObserver::OnIsCurrentChanged.
   virtual bool IsCurrent() const = 0;
 
+  // Returns the current priority of the frame, and the reason for the frame
+  // having that particular priority.
+  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
+
   // Returns true if this frames use of the network is "almost idle", indicating
   // that it is not doing any heavy loading work.
   virtual bool GetNetworkAlmostIdle() const = 0;
@@ -211,13 +227,22 @@ class FrameNode : public Node {
   // Returns true if the frame is audible, false otherwise.
   virtual bool IsAudible() const = 0;
 
-  // Returns the intersection of this frame with the viewport. This is initially
-  // null on node creation and is initialized during layout when the viewport
-  // intersection is first calculated. May only be called for a child frame.
-  virtual const absl::optional<gfx::Rect>& GetViewportIntersection() const = 0;
+  // Returns true if the frame is capturing a media stream (audio or video).
+  virtual bool IsCapturingMediaStream() const = 0;
+
+  // Returns true if the frame intersects with the viewport. This could be false
+  // if the frame is not rendered (display: none) or is scrolled out of view.
+  // This is initially null on node creation and is initialized during layout
+  // when the viewport intersection is first calculated. May only be called for
+  // a child frame, as the main frame is always considered to be intersecting
+  // the viewport.
+  virtual std::optional<bool> IntersectsViewport() const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.
+  //
+  // Note that for the visibility of the page, page mirroring *is* taken into
+  // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
@@ -236,14 +261,6 @@ class FrameNode : public Node {
   // kilobytes. This is an estimate because it is computed by process, and a
   // process can host multiple frames.
   virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
-
- private:
-  friend class execution_context_priority::InheritClientPriorityVoter;
-
-  // Returns the current priority of the frame, and the reason for the frame
-  // having that particular priority.
-  // Note: Do not use, not ready for prime time.
-  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -311,8 +328,11 @@ class FrameNodeObserver {
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
+  // Invoked when the IsCapturingMediaStream property changes.
+  virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) = 0;
+
   // Invoked when a frame's intersection with the viewport changes
-  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when the visibility property changes.
   virtual void OnFrameVisibilityChanged(
@@ -365,7 +385,8 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
+  void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {
   }

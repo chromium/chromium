@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/phonehub/camera_roll_download_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -36,7 +37,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -92,7 +92,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
         payload_id, item_metadata,
         base::BindLambdaForTesting(
             [&](CreatePayloadFilesResult result,
-                absl::optional<secure_channel::mojom::PayloadFilesPtr>
+                std::optional<secure_channel::mojom::PayloadFilesPtr>
                     payload_files) {
               EXPECT_EQ(CreatePayloadFilesResult::kSuccess, result);
               EXPECT_TRUE(payload_files.has_value());
@@ -112,7 +112,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
         payload_id, item_metadata,
         base::BindLambdaForTesting(
             [&](CreatePayloadFilesResult result,
-                absl::optional<secure_channel::mojom::PayloadFilesPtr>
+                std::optional<secure_channel::mojom::PayloadFilesPtr>
                     payload_files) {
               EXPECT_NE(CreatePayloadFilesResult::kSuccess, result);
               EXPECT_FALSE(payload_files.has_value());
@@ -141,12 +141,10 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  const raw_ptr<TestingProfile> profile_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
-  raw_ptr<HoldingSpaceKeyedService, ExperimentalAsh>
-      holding_space_keyed_service_;
+  raw_ptr<HoldingSpaceKeyedService> holding_space_keyed_service_;
   std::unique_ptr<holding_space::ScopedTestMountPoint> downloads_mount_;
 
   std::unique_ptr<CameraRollDownloadManagerImpl> camera_roll_download_manager_;

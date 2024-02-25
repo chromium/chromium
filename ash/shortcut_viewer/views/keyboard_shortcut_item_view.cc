@@ -74,7 +74,7 @@ class KSVSeparatorImageView : public views::ImageView {
     SetImageSize(gfx::Size(kIconSize, kIconSize));
   }
 
-  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;  // Not owned.
+  raw_ptr<ash::ColorProvider> color_provider_;  // Not owned.
 };
 
 // Creates the separator view between bubble views of modifiers and key.
@@ -250,7 +250,7 @@ int KeyboardShortcutItemView::GetHeightForWidth(int w) const {
   return calculated_size_.height();
 }
 
-void KeyboardShortcutItemView::Layout() {
+void KeyboardShortcutItemView::Layout(PassKey) {
   CalculateLayout(width());
   description_label_view_->SetBoundsRect(description_bounds_);
   shortcut_label_view_->SetBoundsRect(shortcut_bounds_);
@@ -339,7 +339,7 @@ void KeyboardShortcutItemView::CalculateLayout(int width) const {
   calculated_size_ = gfx::Size(width, content_height + insets.height());
 }
 
-BEGIN_METADATA(KeyboardShortcutItemView, views::View)
+BEGIN_METADATA(KeyboardShortcutItemView)
 END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

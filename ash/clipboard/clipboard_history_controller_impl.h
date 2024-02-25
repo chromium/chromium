@@ -38,9 +38,12 @@ class Rect;
 
 namespace ash {
 
+class ClipboardHistoryControllerDelegate;
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
+class ClipboardHistoryUrlTitleFetcher;
+class ClipboardImageModelFactory;
 class ClipboardNudgeController;
 class ScopedClipboardHistoryPause;
 enum class LoginStatus;
@@ -72,7 +75,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     kMaxValue = 11
   };
 
-  ClipboardHistoryControllerImpl();
+  explicit ClipboardHistoryControllerImpl(
+      std::unique_ptr<ClipboardHistoryControllerDelegate> delegate);
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
   ClipboardHistoryControllerImpl& operator=(
@@ -143,7 +147,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   }
 
   void set_buffer_restoration_delay_for_test(
-      absl::optional<base::TimeDelta> delay) {
+      std::optional<base::TimeDelta> delay) {
     buffer_restoration_delay_for_test_ = delay;
   }
 
@@ -259,6 +263,18 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when the contextual menu is closed.
   void OnMenuClosed();
 
+  // Either the browser-implemented or test-implemented delegate depending on
+  // whether we are running in an Ash-only test context.
+  const std::unique_ptr<ClipboardHistoryControllerDelegate> delegate_;
+
+  // The browser-implemented image model factory that renders html. This will be
+  // `nullptr` if and only if we are running in an Ash-only test context.
+  const std::unique_ptr<ClipboardImageModelFactory> image_model_factory_;
+
+  // The browser-implemented URL title fetcher. This will be `nullptr` if and
+  // only if we are running in an Ash-only test context.
+  const std::unique_ptr<ClipboardHistoryUrlTitleFetcher> url_title_fetcher_;
+
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;
 
@@ -279,8 +295,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // How the user last caused the `context_menu_` to show.
   crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
-  // Whether a paste is currently being performed.
-  bool currently_pasting_ = false;
+  // Indicates whether the clipboard data has been replaced due to an
+  // in-progress clipboard history paste.
+  bool clipboard_data_replaced_ = false;
 
   // Used to post asynchronous tasks when opening or closing the clipboard
   // history menu. Note that those tasks have data races between each other.
@@ -306,7 +323,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // The delay interval for restoring the clipboard buffer to its original
   // state following a paste event.
-  absl::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
+  std::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
 
   // Called when the first item view is selected after the clipboard history
   // menu opens.

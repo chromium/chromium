@@ -1,0 +1,11 @@
+# Interstitials and reports
+# For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
+per-file safe_browsing_blocking_page*=skrakowi@chromium.org
+per-file threat_details.*=skrakowi@chromium.org
+per-file client_report_util*=skrakowi@chromium.org
+per-file base_ui_manager*=skrakowi@chromium.org
+per-file ui_manager*=skrakowi@chromium.org
+
+# CSD model
+# For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
+per-file client_side_*=andysjlim@chromium.org

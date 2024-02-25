@@ -31,7 +31,7 @@ FakePeripheral::FakePeripheral(FakeCentral* fake_central,
 
 FakePeripheral::~FakePeripheral() = default;
 
-void FakePeripheral::SetName(absl::optional<std::string> name) {
+void FakePeripheral::SetName(std::optional<std::string> name) {
   name_ = std::move(name);
 }
 
@@ -169,7 +169,7 @@ uint16_t FakePeripheral::GetAppearance() const {
   return 0;
 }
 
-absl::optional<std::string> FakePeripheral::GetName() const {
+std::optional<std::string> FakePeripheral::GetName() const {
   return name_;
 }
 
@@ -294,13 +294,13 @@ void FakePeripheral::ConnectToServiceInsecurely(
 
 void FakePeripheral::CreateGattConnection(
     GattConnectionCallback callback,
-    absl::optional<device::BluetoothUUID> service_uuid) {
+    std::optional<device::BluetoothUUID> service_uuid) {
   create_gatt_connection_callbacks_.push_back(std::move(callback));
 
   // TODO(crbug.com/728870): Stop overriding CreateGattConnection once
   // IsGattConnected() is fixed. See issue for more details.
   if (gatt_connected_)
-    return DidConnectGatt(/*error_code=*/absl::nullopt);
+    return DidConnectGatt(/*error_code=*/std::nullopt);
 
   CreateGattConnectionImpl(std::move(service_uuid));
 }
@@ -331,7 +331,7 @@ bool FakePeripheral::IsGattServicesDiscoveryComplete() const {
 }
 
 void FakePeripheral::CreateGattConnectionImpl(
-    absl::optional<device::BluetoothUUID>) {
+    std::optional<device::BluetoothUUID>) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakePeripheral::DispatchConnectionResponse,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -345,7 +345,7 @@ void FakePeripheral::DispatchConnectionResponse() {
 
   if (code == mojom::kHCISuccess) {
     gatt_connected_ = true;
-    DidConnectGatt(/*error_code=*/absl::nullopt);
+    DidConnectGatt(/*error_code=*/std::nullopt);
   } else if (code == mojom::kHCIConnectionTimeout) {
     DidConnectGatt(ERROR_FAILED);
   } else {

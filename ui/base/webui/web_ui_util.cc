@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/i18n/rtl.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,7 +20,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -39,13 +39,11 @@ namespace {
 constexpr float kMaxScaleFactor = 1000.0f;
 
 std::string GetFontFamilyMd() {
-#if !BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kWebUiSystemFont)) {
-    return GetFontFamily();
-  }
-#endif
-
+#if BUILDFLAG(IS_LINUX)
   return "Roboto, " + GetFontFamily();
+#else
+  return GetFontFamily();
+#endif
 }
 
 std::string GetWebUiCssTextDefaults(const std::string& css_template) {
@@ -237,6 +235,28 @@ std::string GetFontSize() {
 
 std::string GetTextDirection() {
   return base::i18n::IsRTL() ? "rtl" : "ltr";
+}
+
+std::string GetLocalizedHtml(base::StringPiece html_template,
+                             const base::Value::Dict& strings) {
+  // Populate $i18n{...} placeholders.
+  ui::TemplateReplacements replacements;
+  ui::TemplateReplacementsFromDictionaryValue(strings, &replacements);
+  std::string output =
+      ui::ReplaceTemplateExpressions(html_template, replacements);
+
+  // Inject data to the UI that will be used to populate loadTimeData upon
+  // initialization.
+  std::string json;
+  JSONStringValueSerializer serializer(&json);
+  serializer.Serialize(strings);
+  output.append("<script>");
+  output.append("var loadTimeDataRaw = ");
+  output.append(json);
+  output.append(";");
+  output.append("</script>");
+
+  return output;
 }
 
 }  // namespace webui

@@ -26,8 +26,8 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
                 && intent.hasExtra(NotificationManager.EXTRA_BLOCKED_STATE)) {
             boolean blockedState =
                     intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
-            NotificationUmaTracker.getInstance().onNotificationPermissionSettingChange(
-                    blockedState);
+            NotificationUmaTracker.getInstance()
+                    .onNotificationPermissionSettingChange(blockedState);
         }
     }
 }

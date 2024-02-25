@@ -57,7 +57,7 @@ class TestObserver : public GpuDataManagerObserver {
 };
 
 static base::Time GetTimeForTesting() {
-  return base::Time::FromDoubleT(1000);
+  return base::Time::FromSecondsSinceUnixEpoch(1000);
 }
 
 static GURL GetDomain1ForTesting() {
@@ -176,7 +176,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuInfoUpdate) {
   EXPECT_FALSE(observer.gpu_info_updated());
 
   gpu::GPUInfo gpu_info;
-  manager->UpdateGpuInfo(gpu_info, absl::nullopt);
+  manager->UpdateGpuInfo(gpu_info, std::nullopt);
   {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
@@ -458,6 +458,28 @@ INSTANTIATE_TEST_SUITE_P(GpuDataManagerImplPrivateTest,
                          ::testing::Values(gpu::DomainGuilt::kKnown,
                                            gpu::DomainGuilt::kUnknown));
 
+TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+}
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+// On Android and ChromeOS, Graphite should fall back to Ganesh/GL.
+TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToGaneshGL) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+}
+#endif
+
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
@@ -475,6 +497,32 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
       switches::kDisableSoftwareRasterizer);
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
+  EXPECT_EQ(expected_mode, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToSwiftShader) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest,
+       FallbackFromGraphiteWithSwiftShaderDisabled) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSoftwareRasterizer);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
@@ -540,7 +588,7 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   // Simulate GPU process initialization completing with Vulkan unavailable.
   gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
       gpu::GpuFeatureType::GPU_FEATURE_TYPE_VULKAN);
-  manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
   // GpuDataManager should update its mode to be GL.
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
@@ -564,7 +612,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   // Simulate GPU process initialization completing with GL unavailable.
   gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
       gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
-  manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
 
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());

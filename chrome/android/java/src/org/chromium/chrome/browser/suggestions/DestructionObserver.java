@@ -9,4 +9,6 @@ package org.chromium.chrome.browser.suggestions;
  * when its owner is destroyed.
  * @see SuggestionsUiDelegate#addDestructionObserver(DestructionObserver)
  */
-public interface DestructionObserver { void onDestroy(); }
+public interface DestructionObserver {
+    void onDestroy();
+}

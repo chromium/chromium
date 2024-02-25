@@ -37,12 +37,11 @@ base::Value::Dict NetLogClearCachedClientCertParams(
     const net::HostPortPair& host,
     const scoped_refptr<net::X509Certificate>& cert,
     bool is_cleared) {
-  base::Value::Dict dict;
-  dict.Set("host", host.ToString());
-  dict.Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
-                                : base::Value(base::Value::List()));
-  dict.Set("is_cleared", is_cleared);
-  return dict;
+  return base::Value::Dict()
+      .Set("host", host.ToString())
+      .Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
+                                : base::Value(base::Value::List()))
+      .Set("is_cleared", is_cleared);
 }
 
 }  // namespace
@@ -81,18 +80,15 @@ SSLClientContext::SSLClientContext(
     SSLConfigService* ssl_config_service,
     CertVerifier* cert_verifier,
     TransportSecurityState* transport_security_state,
-    CTPolicyEnforcer* ct_policy_enforcer,
     SSLClientSessionCache* ssl_client_session_cache,
     SCTAuditingDelegate* sct_auditing_delegate)
     : ssl_config_service_(ssl_config_service),
       cert_verifier_(cert_verifier),
       transport_security_state_(transport_security_state),
-      ct_policy_enforcer_(ct_policy_enforcer),
       ssl_client_session_cache_(ssl_client_session_cache),
       sct_auditing_delegate_(sct_auditing_delegate) {
   CHECK(cert_verifier_);
   CHECK(transport_security_state_);
-  CHECK(ct_policy_enforcer_);
 
   if (ssl_config_service_) {
     config_ = ssl_config_service_->GetSSLContextConfig();

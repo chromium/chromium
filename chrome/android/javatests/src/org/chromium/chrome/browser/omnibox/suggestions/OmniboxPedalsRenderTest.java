@@ -20,6 +20,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
@@ -30,7 +31,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -42,20 +42,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests of the Omnibox Pedals feature.
- */
+/** Tests of the Omnibox Pedals feature. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OmniboxPedalsRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            List.of(new ParameterSet().value(false).name("LiteMode_RegularTab"),
+            List.of(
+                    new ParameterSet().value(false).name("LiteMode_RegularTab"),
                     new ParameterSet().value(true).name("NightMode_RegularTab"));
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -91,7 +90,9 @@ public class OmniboxPedalsRenderTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
+                () -> {
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                });
     }
 
     @AfterClass
@@ -101,9 +102,9 @@ public class OmniboxPedalsRenderTest {
 
     /**
      * Create a dummy pedal suggestion.
+     *
      * @param name The dummy suggestion name.
      * @param id The Omnibox pedal type to be created.
-     *
      * @return a dummy pedal suggestion.
      */
     private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalId int id) {

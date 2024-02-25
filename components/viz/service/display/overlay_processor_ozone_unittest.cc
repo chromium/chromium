@@ -92,6 +92,9 @@ class MockSharedImageInterface : public TestSharedImageInterface {
  public:
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
+
+ protected:
+  ~MockSharedImageInterface() override = default;
 };
 
 }  // namespace
@@ -118,8 +121,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
 
   // Initialize a MockSharedImageInterface that returns a NativePixmap with
   // matching params to the primary plane.
-  std::unique_ptr<MockSharedImageInterface> sii =
-      std::make_unique<MockSharedImageInterface>();
+  scoped_refptr<MockSharedImageInterface> sii =
+      base::MakeRefCounted<MockSharedImageInterface>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
@@ -158,8 +161,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
 
   // Initialize a MockSharedImageInterface that returns a NativePixmap with
   // a different buffer format than that of the primary plane.
-  std::unique_ptr<MockSharedImageInterface> sii =
-      std::make_unique<MockSharedImageInterface>();
+  scoped_refptr<MockSharedImageInterface> sii =
+      base::MakeRefCounted<MockSharedImageInterface>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size, gfx::BufferFormat::R_8);
   EXPECT_CALL(*sii, GetNativePixmap(_)).WillOnce(Return(primary_plane_pixmap));
@@ -192,8 +195,8 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
 
   // Initialize a MockSharedImageInterface that returns a NativePixmap with
   // matching params to the primary plane.
-  std::unique_ptr<MockSharedImageInterface> sii =
-      std::make_unique<::testing::NiceMock<MockSharedImageInterface>>();
+  scoped_refptr<MockSharedImageInterface> sii =
+      base::MakeRefCounted<::testing::NiceMock<MockSharedImageInterface>>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);

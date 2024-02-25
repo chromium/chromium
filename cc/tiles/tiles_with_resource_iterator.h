@@ -8,11 +8,11 @@
 #include <set>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/prioritized_tile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -24,8 +24,10 @@ class PictureLayerTilingSet;
 class CC_EXPORT TilesWithResourceIterator {
  public:
   TilesWithResourceIterator(
-      const std::vector<PictureLayerImpl*>* picture_layers,
-      const std::vector<PictureLayerImpl*>* secondary_picture_layers);
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
+          picture_layers,
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>*
+          secondary_picture_layers);
   TilesWithResourceIterator(const TilesWithResourceIterator&) = delete;
   TilesWithResourceIterator& operator=(const TilesWithResourceIterator&) =
       delete;
@@ -54,16 +56,21 @@ class CC_EXPORT TilesWithResourceIterator {
   PictureLayerTiling* CurrentPictureLayerTiling();
 
   // Iteration occurs over this vector first.
-  const raw_ptr<const std::vector<PictureLayerImpl*>> picture_layers_;
+  const raw_ptr<
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      picture_layers_;
 
   // The secondary set of layers to iterate through, may be null.
-  const raw_ptr<const std::vector<PictureLayerImpl*>> secondary_picture_layers_;
+  const raw_ptr<
+      const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      secondary_picture_layers_;
 
   // Indicates whether `active_layers_` is referencing `picture_layers_` or
   // `secondary_picture_layers_`.
   bool is_active_layers_secondary_layers_ = false;
 
-  raw_ptr<const std::vector<PictureLayerImpl*>> active_layers_;
+  raw_ptr<const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>>
+      active_layers_;
 
   // Index into `active_layers_` the current tile comes from.
   size_t current_picture_layer_index_ = 0;
@@ -73,14 +80,14 @@ class CC_EXPORT TilesWithResourceIterator {
 
   // Iterates over the tiles from the current PictureLayerTiling. If this is
   // not set, the end has been reached.
-  absl::optional<PictureLayerTiling::TileIterator> tile_iterator_;
+  std::optional<PictureLayerTiling::TileIterator> tile_iterator_;
 
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
-  std::set<Tile*> visited_;
+  std::set<raw_ptr<Tile, SetExperimental>> visited_;
 
   // Created when GetCurrentAsPrioritizedTile() is called.
-  absl::optional<PrioritizedTile> prioritized_tile_;
+  std::optional<PrioritizedTile> prioritized_tile_;
 };
 
 }  // namespace cc

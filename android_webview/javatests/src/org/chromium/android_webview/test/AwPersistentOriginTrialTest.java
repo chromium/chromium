@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -28,16 +30,18 @@ import java.util.Map;
 /**
  * Integration test for persistent origin trials in WebView.
  *
- * Due to the difficulty of testing origin trials in the context of webview, this test suite
- * will only contain enough tests to verify that the persistent origin trial components are loaded.
+ * <p>Due to the difficulty of testing origin trials in the context of webview, this test suite will
+ * only contain enough tests to verify that the persistent origin trial components are loaded.
  */
 @Batch(Batch.PER_CLASS)
-@RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-        "enable-features=PersistentOriginTrials"})
-public class AwPersistentOriginTrialTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@CommandLineFlags.Add({
+    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
+    "enable-features=PersistentOriginTrials"
+})
+public class AwPersistentOriginTrialTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -57,9 +61,13 @@ public class AwPersistentOriginTrialTest {
      */
     private static final String PERSISTENT_TRIAL_TOKEN =
             "AzZfd1vKZ0SSGRGk/8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/6upOQ"
-            + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
-            + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+                    + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
+                    + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
     private ShouldInterceptRequestHelper mInterceptRequestHelper;
+
+    public AwPersistentOriginTrialTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -74,20 +82,26 @@ public class AwPersistentOriginTrialTest {
     @After
     public void tearDown() throws Exception {
         // Clean up the stored tokens after tests
-        mActivityTestRule.runOnUiThread(() -> {
-            AwBrowserContext context = mActivityTestRule.getAwBrowserContext();
-            context.clearPersistentOriginTrialStorageForTesting();
-        });
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    AwBrowserContext context = mActivityTestRule.getAwBrowserContext();
+                    context.clearPersistentOriginTrialStorageForTesting();
+                });
     }
 
     @Test
     @SmallTest
     public void testCriticalHeaderCausesRetry() throws Throwable {
         final String requestUrl = "https://example.com/";
-        var headers = Map.of(ORIGIN_TRIAL_HEADER, PERSISTENT_TRIAL_TOKEN,
-                CRITICAL_ORIGIN_TRIAL_HEADER, PERSISTENT_TRIAL_NAME);
-        var body = new ByteArrayInputStream(
-                "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
+        var headers =
+                Map.of(
+                        ORIGIN_TRIAL_HEADER,
+                        PERSISTENT_TRIAL_TOKEN,
+                        CRITICAL_ORIGIN_TRIAL_HEADER,
+                        PERSISTENT_TRIAL_NAME);
+        var body =
+                new ByteArrayInputStream(
+                        "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
         var responseInfo =
                 new WebResourceResponseInfo("text/html", "utf-8", body, 200, "OK", headers);
         mInterceptRequestHelper.setReturnValueForUrl(requestUrl, responseInfo);

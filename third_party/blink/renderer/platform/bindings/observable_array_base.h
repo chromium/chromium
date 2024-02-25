@@ -85,7 +85,7 @@ class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
     return observable_array_exotic_object_.Get();
   }
 
-  v8::MaybeLocal<v8::Object> GetProxyHandlerObject(ScriptState* script_state);
+  v8::Local<v8::Object> GetProxyHandlerObject(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 

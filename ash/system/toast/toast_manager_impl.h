@@ -49,30 +49,31 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // ToastManager overrides:
   void Show(ToastData data) override;
-  void Cancel(const std::string& id) override;
+  void Cancel(std::string_view id) override;
   bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
-      const std::string& id) override;
+      std::string_view id) override;
   bool MaybeActivateHighlightedDismissButtonOnActiveToast(
-      const std::string& id) override;
-  bool IsRunning(const std::string& id) const override;
+      std::string_view id) override;
+  bool IsToastShown(std::string_view id) const override;
+  bool IsToastDismissButtonHighlighted(std::string_view id) const override;
   std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
 
   // ToastOverlay::Delegate overrides:
-  void OnClosed() override;
+  void CloseToast() override;
   void OnToastHoverStateChanged(bool is_hovering) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-
-  const ToastData& GetCurrentToastDataForTesting() const;
 
  private:
   class PausableTimer;
   friend class AutoConnectNotifierTest;
   friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
+  friend class LoginScreenControllerTest;
   friend class ToastManagerImplTest;
   friend class BatterySaverControllerTest;
+  friend class BatteryNotificationTest;
   friend class eche_app::LaunchAppHelperTest;
   friend class video_conference::VideoConferenceIntegrationTest;
 
@@ -107,7 +108,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void Resume() override;
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
-  absl::optional<ToastData> current_toast_data_;
+  std::optional<ToastData> current_toast_data_;
 
   // Used to destroy the currently running toast if its duration is not
   // infinite. Also allows us to persist the toast on hover by pausing this

@@ -19,7 +19,7 @@ GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
                                       const mojom::PlaneStridesPtr& strides) {
-  absl::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
@@ -46,7 +46,7 @@ bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  absl::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
     return false;
   }
@@ -66,12 +66,6 @@ GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
   return base::UnsafeSharedMemoryRegion();
 }
 
-mojo::ScopedSharedBufferHandle
-GpuMemoryBufferTrackerCros::DuplicateAsMojoBuffer() {
-  NOTREACHED() << "Unsupported operation";
-  return mojo::ScopedSharedBufferHandle();
-}
-
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   DCHECK(buffer_);
@@ -87,6 +81,10 @@ GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   gfx::GpuMemoryBufferHandle handle = buffer_->CloneHandle();
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   return handle;
+}
+
+VideoCaptureBufferType GpuMemoryBufferTrackerCros::GetBufferType() {
+  return VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 
 uint32_t GpuMemoryBufferTrackerCros::GetMemorySizeInBytes() {

@@ -1,6 +1,6 @@
 # Omnibox Bug Triage Process
 
-*last update: 2020/04/16*
+*last update: 2024/02/05*
 
 *The current triage process owner is `jdonnelly@`.*
 
@@ -13,11 +13,11 @@ rotation.
 
 Every omnibox bug is triaged, preferably within a week of being filed.  This
 means making the issue clear, marking it as a dup if necessary, revising the
-status, setting a priority, labeling/categorizing as appropriate (or handing off
-to another component), and (possibly) assigning an owner.  The only reason bugs
-should remain untriaged (i.e., *status=Unconfirmed* or *status=Untriaged*) is
+status, setting a priority, Hotlisting as appropriate (or handing off to another
+component), and (possibly) assigning an owner.  The only reason bugs
+should remain untriaged (i.e., *status:new* and not in *Available* Hotlist) is
 because of they need additional information from someone.  These bugs should be
-labeled as such (*Needs=Feedback*, *Needs=Investigation*, or *Needs=TestConfirmation*).
+Hotlisted as *Needs-Feedback* or *Needs-TestConfirmation*.
 
 ### Non-goals
 
@@ -27,21 +27,40 @@ labeled as such (*Needs=Feedback*, *Needs=Investigation*, or *Needs=TestConfirma
 
 ## Process
 
-* Every Monday, Wednesday and Friday, the triage engineer looks over [all
-  *Unconfirmed* and *Untriaged* omnibox bugs (without *Needs=Feedback*)](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component:UI>Browser>Omnibox+status:Unconfirmed,Untriaged+-component:UI>Browser>Omnibox>SecurityIndicators+-Needs=Feedback,Investigation,TestConfirmation&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
-  and triages them.
-* Every week on Tuesday, the triage engineer looks over [all *Unconfirmed* and
-  *Untriaged* bugs filed that aren’t categorized as omnibox yet have relevant
-  terms](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=omnibox+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+box%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+omnibar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+locationbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Clocation+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+addressbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Caddress+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
-  to see if any should be moved to the omnibox component and triaged.  ([This
+### Notes on Monorail to Buganizer migration
+
+Chromium has migrated to Buganizer. Googlers familiar with Monorail
+should read the Quick Start Guide ([go/cob-quick-start](https://goto.google.com/cob-quick-start))
+and save the two Chrome-wide bookmark groups.
+
+The new Component ID for Omnibox is: 73681.
+
+And here are some relevant Hotlist IDs:
+ - 5438642: Available
+ - 5432513: Needs-Bisect
+ - 5433459: Needs-Feedback
+ - 5432926: Needs-TestConfirmation
+
+TODO: Delete this section after 02/2025, after the migration is old news.
+
+### Weekly process
+
+* Every Monday, Wednesday and Friday, the triage engineer looks over
+  [all untriaged omnibox bugs](https://issues.chromium.org/issues?q=componentid:1457180%20-componentid:1456767%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926))
+  and triages them. Untriaged bugs in Buganizer are defined as having
+  *status:new* and are NOT Hotlisted as *Available* or
+  *Needs-(Bisect|Feedback|TestConfirmation)*.
+* Every week on Tuesday, the triage engineer looks over [all untriaged bugs filed that aren’t categorized as omnibox yet have relevant
+  terms](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20"omni%20bar"%20%7C%20locationbar%20%7C%20"location%20bar"%20%7C%20addressbar%20%7C%20"address%20bar"))
+  to see if any should be moved to the omnibox component and triaged.  [This
   scan can be limited to those filed in the last week, i.e., since the last
-  check.](https://bugs.chromium.org/p/chromium/issues/list?colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&x=m&y=releaseblock&cells=ids&q=omnibox%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20box%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20omnibar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20locationbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Clocation%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20addressbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Caddress%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14&can=2&sort=-modified))
+  check.](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20%22omni%20bar%22%20%7C%20locationbar%20%7C%20%22location%20bar%22%20%7C%20addressbar%20%7C%20%22address%20bar%22)%20modified:14d)
 * Every week on Tuesday, the triage engineer should also
-  look over [all bugs with *Needs=Feedback*](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component%3AUI%3EBrowser%3EOmnibox+Needs%3DFeedback+&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
+  look over [all bugs with Hotlist *Needs-Feedback*](https://issues.chromium.org/issues?q=componentid:1457180%20-componentid:1456767%20status:open%20hotlistid:5433459)
   and should take action on those that have been sitting for too long.
-  * If there's been no feedback over a week since the label was added, ping the
-    reporter (or whoever's being asked for feedback) and politely ask them to
-    provide feedback.
+  * If there's been no feedback over a week since the Hotlist was added, ping
+    the reporter (or whoever's being asked for feedback) and politely ask them
+    to provide feedback.
   * If there's been no feedback for over a week since the last ping, and no one
     can reproduce the issue, close it as WontFix.
 * Every week on Thursday, the triage engineer looks over all alerts sent to
@@ -60,20 +79,20 @@ arrangement.
 
 ### Purpose
 
-The purpose of labels, components, and priority are to make it easy for omnibox
-team members to identify bugs at a glance that affect a particular area.  In
-other words, this bug management process is intended to make the team more
+The purpose of components, Hotlists, and priority are to make it easy for
+omnibox team members to identify bugs at a glance that affect a particular area.
+In other words, this bug management process is intended to make the team more
 efficient and provide better visibility for team members to identify what’s
 important to work on in particular areas.
 
 ### Identifying the issue
 
 If the bug isn’t clear, or the desired outcome is unclear, please apply the
-label *Needs-Feedback* and courteously ask for clarification.  This is
+Hotlist *Needs-Feedback* and courteously ask for clarification.  This is
 appropriate both for external bug filers, Chromium developers on other teams,
-or Googlers.  The label is merely an indication that this bug needs information
-from someone outside the team in order to make progress.  It’s also an
-indication that someone on the team needs to follow-up if feedback is not
+or Googlers.  The Hotlist is merely an indication that this bug needs
+information from someone outside the team in order to make progress.  It’s also
+an indication that someone on the team needs to follow-up if feedback is not
 forthcoming.
 
 Often the appropriate request includes a request for chrome://omnibox data;
@@ -81,7 +100,7 @@ Often the appropriate request includes a request for chrome://omnibox data;
 
 Also, if the bug is clear, try to reproduce.  If it cannot be reproduced or you
 lack the necessary setup, either ask the reporter for clarification or add the
-label *Needs-TestConfirmation* as appropriate.
+Hotlist *Needs-TestConfirmation* as appropriate.
 
 Some bugs are feature requests.  Marks these as Feature, not Bug.  It’s likely a
 feature may have been requested before.  Search the bugs database and dup

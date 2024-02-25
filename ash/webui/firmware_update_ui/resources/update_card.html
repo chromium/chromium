@@ -1,4 +1,4 @@
-<style include="firmware-fonts firmware-shared">
+<style include="firmware-shared-fonts firmware-shared">
   #container {
     border-bottom: var(--cr-separator-height) solid var(--cros-separator-color);
     display: flex;
@@ -34,18 +34,18 @@
 <div id="container">
   <div class="update-info">
     <div id="name" class="firmware-name-font" aria-hidden="true">
-      [[computeDeviceName_(update.deviceName)]]
+      [[computeDeviceName(update.deviceName)]]
     </div>
     <div id="version" class="firmware-version-font" aria-hidden="true">
-      <span>[[computeVersionText_(update.deviceVersion)]]</span>
+      <span>[[computeVersionText(update.deviceVersion)]]</span>
       <span id ="priorityText"
-          hidden$="[[!isCriticalUpdate_(update.priority)]]">
+          hidden$="[[!isCriticalUpdate(update.priority)]]">
         [[i18n('criticalUpdate')]]
       </span>
     </div>
   </div>
-  <cr-button id="updateButton" on-click="onUpdateButtonClicked_"
-      disabled="[[disabled]]" aria-label="[[getUpdateButtonA11yLabel_()]]">
+  <cr-button id="updateButton" on-click="onUpdateButtonClicked"
+      disabled="[[disabled]]" aria-label="[[getUpdateButtonA11yLabel()]]">
     [[i18n('updateButton')]]
   </cr-button>
 </div>

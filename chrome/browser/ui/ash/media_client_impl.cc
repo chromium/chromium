@@ -252,8 +252,6 @@ MediaClientImpl::MediaClientImpl()
   // Camera service does not behave in non ChromeOS environment (e.g. testing,
   // linux chromeos).
   if (base::SysInfo::IsRunningOnChromeOS() &&
-      base::FeatureList::IsEnabled(
-          ash::features::kCameraPrivacySwitchNotifications) &&
       media::ShouldUseCrosCameraService()) {
     device_id_to_camera_privacy_switch_state_ =
         media::CameraHalDispatcherImpl::GetInstance()
@@ -288,8 +286,6 @@ MediaClientImpl::~MediaClientImpl() {
   ash::VmCameraMicManager::Get()->RemoveObserver(this);
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
-      base::FeatureList::IsEnabled(
-          ash::features::kCameraPrivacySwitchNotifications) &&
       media::ShouldUseCrosCameraService()) {
     media::CameraHalDispatcherImpl::GetInstance()
         ->RemoveCameraPrivacySwitchObserver(this);

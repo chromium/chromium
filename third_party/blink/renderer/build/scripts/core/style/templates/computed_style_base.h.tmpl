@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, fieldwise_pointer_compare_inherited_old, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -8,9 +8,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_H_
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/member_copy.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
@@ -46,7 +46,8 @@ namespace blink {
 // Forward declaration for diff functions.
 class ComputedStyle;
 
-struct ComputedStyleAccessFlags;
+// Forward declaration for constructor.
+class ComputedStyleBuilderBase;
 
 // Forward declaration of friends:
 {% for property in longhands %}
@@ -56,7 +57,7 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 {% endfor %}
 
 // The generated portion of ComputedStyle. For more info, see the header comment
-// in ComputedStyle.h.
+// in computed_style.h.
 //
 // ComputedStyleBase is a generated class that stores data members or 'fields'
 // used in ComputedStyle. These fields can represent CSS properties or internal
@@ -70,8 +71,8 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 // the root node:
 //
 // ComputedStyleBase (fields: display, vertical-align, ...)
-//  |- StyleSurroundData (fields: padding, border, ...)
-//  |- StyleBoxData (fields: width, height, ...)
+//  |- StyleSurroundData (fields: border-color, left/right/top/bottom, ...)
+//  |- StyleBoxData (fields: width, height, padding, ...)
 //  |- ...
 //  |- StyleRareNonInheritedData (fields: box-shadow, text-overflow, ...)
 //      |- StyleFlexibleBoxData (fields: flex-direction, flex-wrap, ...)
@@ -84,6 +85,9 @@ namespace {{property.namespace}} { class {{property.classname}}; }
 // of all the flex box fields for every ComputedStyleBase. Similarly, when an
 // element inherits from its parent, its ComputedStyleBase can simply share all
 // of its subgroups with the parent's.
+//
+// Most of these groupings are done manually, although there have been some
+// adjustments based on statistics.
 //
 // INTERFACE:
 //
@@ -101,6 +105,7 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endfor %}
 
  public:
+
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -152,9 +157,15 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   }
 
   inline bool InheritedDataShared(const ComputedStyleBase& o) const {
-    return (
-        {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
-    );
+    if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
+      return (
+          {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
+      );
+    } else {
+      return (
+          {{fieldwise_pointer_compare_inherited_old(computed_style)|indent(8)}}
+      );
+    }
   }
 
   inline bool IsSurroundDataSharedWith(const ComputedStyleBase& o) const {
@@ -193,6 +204,20 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   CORE_EXPORT Vector<DebugDiff> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
+  // Find a list of which subgroups listed have changed between this and the
+  // other ComputedStyle(Base); output a list of the changed groups and their
+  // sizes in bytes. This is meant for more precise memory tracking than just
+  // looking at the Oilpan statistics, or for finding out (empirically)
+  // which groups are affected by setting a specific property. It is used
+  // only in the style perftest, not in the normal rendering engine.
+  //
+  // Note that if you change something deep in a subgroup like e.g. a->b->c,
+  // both a->b and a will also be recorded, as they must be modified to get
+  // the pointer in place. The fixed 4- or 8-byte Oilpan header overhead
+  // is not included.
+  Vector<std::pair<String, size_t>>
+  FindChangedGroups(const ComputedStyleBase &other_style) const;
+
   CORE_EXPORT void Trace(Visitor* visitor) const;
   void TraceAfterDispatch(Visitor* visitor) const {
     {% for subgroup in computed_style.subgroups %}
@@ -216,9 +241,7 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   // can instantiate this class.
   ComputedStyleBase();
   ComputedStyleBase(const ComputedStyleBase &initial_style) = default;
-  ComputedStyleBase(const ComputedStyleBase &source_for_noninherited,
-                    const ComputedStyleBase &parent_style,
-                    ComputedStyleAccessFlags &access_);
+  explicit ComputedStyleBase(const ComputedStyleBuilderBase&);
 
   {% for field in computed_style.all_fields|sort(attribute='name') %}
   {% if field.field_template not in ('pointer',) %}
@@ -228,26 +251,27 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endif %}
   {% endfor %}
 
+  struct Data {
+    {% for field in computed_style.fields|rejectattr('requires_tracing') %}
+    {{declare_storage(field)}}
+    {% endfor %}
+  };
+
  private:
   friend class ComputedStyleBuilder;
   friend class ComputedStyleBuilderBase;
 
   // Storage.
   {% for subgroup in computed_style.subgroups %}
-  DataRef<{{subgroup.type_name}}> {{subgroup.member_name}};
+  Member<{{subgroup.type_name}}> {{subgroup.member_name}};
   {% endfor %}
 
-  {% for field in computed_style.fields %}
+  {# Members #}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
   {{declare_storage(field)}}
   {% endfor %}
-};
 
-// Access flags. These are passed to DataRef::Access to ensure that we have
-// a private copy of the relevant DataRef before mutation.
-struct ComputedStyleAccessFlags {
-{% for group in computed_style.all_subgroups|sort(attribute='name') %}
-  bool {{group.member_name}} = false;
-{% endfor %}
+  Data data_;
 };
 
 class ComputedStyleBuilderBase {
@@ -259,30 +283,23 @@ class ComputedStyleBuilderBase {
     kNotAtShadowBoundary,
   };
 
-  {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
+  {% for field in computed_style_builder.all_fields|rejectattr('mutable')|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_public_methods(field)|indent(2)}}
 
   {% endfor %}
 
  protected:
-  ComputedStyleBuilderBase() = default;
-  explicit ComputedStyleBuilderBase(ComputedStyleBase& style) {
-    SetStyleBase(style);
-  }
+  ComputedStyleBuilderBase() = delete;
 
-  void SetStyleBase(ComputedStyleBase& style) {
-    style_ = &style;
+  explicit ComputedStyleBuilderBase(const ComputedStyleBase&);
 
-    // Reset derived flags:
-    {% for field in computed_style_builder.all_fields|selectattr('derived_from')|sort(attribute='name') %}
-    {{derived_flag.reset_expression(field)|indent(2)}}
-    {% endfor %}
-  }
+  ComputedStyleBuilderBase(const ComputedStyleBase &source_for_noninherited,
+                           const ComputedStyleBase &parent_style);
 
   void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);
 
-  {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
+  {% for field in computed_style_builder.all_fields|rejectattr('mutable')|sort(attribute='name') %}
   // {{field.property_name}}
   {{field_templates[field.field_template].decl_protected_methods(field)|indent(2)}}
 
@@ -292,17 +309,50 @@ class ComputedStyleBuilderBase {
     memset(&access_, 0, sizeof(access_));
   }
 
- protected:
-  // Used when constructing ComputedStyleBase, because the constructor may need
-  // to set access flags if allocating new subgroups.
-  ComputedStyleAccessFlags& GetAccessFlagsForConstructor() {
-    return access_;
+ private:
+  friend class ComputedStyleBase;
+
+  // Access flags. These are passed to Access to ensure that we have
+  // a private copy of the relevant group before mutation.
+  mutable struct {
+  {% for group in computed_style.all_subgroups|sort(attribute='name') %}
+    bool {{group.member_name}} = false;
+  {% endfor %}
+  } access_;
+
+  template <typename T>
+  static T* Access(T*& data, bool& access_flag) {
+    if (!access_flag) {
+      access_flag = true;
+      data = data->Copy();
+    }
+    return data;
   }
 
- private:
-  mutable ComputedStyleAccessFlags access_;
+  template <typename T>
+  static T* Access(Member<T>& data, bool& access_flag) {
+    if (!access_flag) {
+      access_flag = true;
+      data = data->Copy();
+    }
+    return data.Get();
+  }
 
-  ComputedStyleBase* style_ = nullptr;
+  {% for subgroup in computed_style.subgroups %}
+  using {{subgroup.type_name}} = ComputedStyleBase::{{subgroup.type_name}};
+  {% endfor %}
+
+  // Storage.
+  {% for subgroup in computed_style.subgroups %}
+  {{subgroup.type_name}}* {{subgroup.member_name}};
+  {% endfor %}
+
+  {# Members #}
+  {% for field in computed_style.fields|selectattr('requires_tracing') %}
+  {{field.type_name}}* {{field.name}};
+  {% endfor %}
+
+  ComputedStyleBase::Data data_;
 };
 
 }  // namespace blink

@@ -8,7 +8,9 @@
 #include <stdint.h>
 #include <wayland-cursor.h>
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -32,6 +33,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -40,6 +42,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
@@ -61,6 +64,15 @@ namespace {
 
 using mojom::CursorType;
 using mojom::DragOperation;
+
+// Wayland compositors usually remove keyboard focus during drag
+// sessions, thus modifier events are not sent, instead they are handled
+// at server side, and clients are indirectly notified through, e.g:
+// wl_data_offer.dnd_actions events.
+// There is an open discussion about being more explicit about this on
+// the spec: https://gitlab.freedesktop.org/wayland/wayland/-/issues/441
+// For now, assume no keyboard modifiers info is available during dnd.
+static constexpr int kWaylandDndModifiers = 0;
 
 bool OverlayStackOrderCompare(const wl::WaylandOverlayConfig& i,
                               const wl::WaylandOverlayConfig& j) {
@@ -170,7 +182,7 @@ void WaylandWindow::SetWindowScale(float new_scale) {
   RequestStateFromClient(state);
 }
 
-absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
+std::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   // Child windows don't store entered outputs. Instead, take the window's
   // root parent window and use its preferred output.
   if (parent_window_) {
@@ -192,7 +204,7 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
           ->wayland_screen()
           ->GetOutputIdMatching(GetBoundsInDIP());
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
@@ -218,7 +230,7 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
     DCHECK(output) << " output " << output_id << " not found!";
     DCHECK(preferred_output) << " output " << preferred_id << " not found!";
     if (!output || !preferred_output) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (output->scale_factor() > preferred_output->scale_factor()) {
@@ -375,6 +387,10 @@ void WaylandWindow::DumpState(std::ostream& out) const {
 }
 
 bool WaylandWindow::SupportsConfigureMinimizedState() const {
+  return false;
+}
+
+bool WaylandWindow::SupportsConfigurePinnedState() const {
   return false;
 }
 
@@ -535,11 +551,6 @@ void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
-  // Wayland compositors always support translucency.
-  return true;
-}
-
 void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   // TODO(crbug.com/1395267): Add window geometry to WaylandWindow::State.
   if ((!frame_insets_px_ && !insets_px) ||
@@ -549,7 +560,7 @@ void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   if (insets_px) {
     frame_insets_px_ = *insets_px;
   } else {
-    frame_insets_px_ = absl::nullopt;
+    frame_insets_px_ = std::nullopt;
   }
 }
 
@@ -640,10 +651,31 @@ EventTargeter* WaylandWindow::GetEventTargeter() {
   return nullptr;
 }
 
+void WaylandWindow::OcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {
+  // Put non-synchronized occlusion state updates into pending occlusion state
+  // as well, to avoid an earlier pending synchronized occlusion state update
+  // being applied later and overwriting a non-synchronized occlusion state that
+  // happened in between. This can only happen if a non-synchronized occlusion
+  // state update is sent after configure is initiated from the server but
+  // before it is finalized (and the pending state is applied). It's also safe
+  // to overwrite the current pending state from a configure, because there's no
+  // happens-before/after guarantees on unsynchronised state setting w.r.t.
+  // configures, so it would be valid for the configure ack's commit to have the
+  // unsynchronised occlusion state set, if that happened after configure but
+  // before the corresponding frame was produced.
+  // TODO(crbug.com/1278648): Remove this once the oldest ash we want to use
+  // supports synchronized occlusion state in configure.
+  SetPendingOcclusionState(occlusion_state);
+}
+
 void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
   NOTREACHED()
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
+
+WaylandWindow::WindowStates::WindowStates() = default;
+WaylandWindow::WindowStates::~WindowStates() = default;
 
 std::string WaylandWindow::WindowStates::ToString() const {
   std::string states = "";
@@ -653,15 +685,38 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_fullscreen) {
     states += "fullscreen ";
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_immersive_fullscreen) {
+    states += "immersive ";
+  }
+  if (is_pinned_fullscreen) {
+    states += "pinned ";
+  }
+  if (is_trusted_pinned_fullscreen) {
+    states += "trusted_pinned ";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_activated) {
     states += "activated ";
+  }
+  if (is_minimized) {
+    states += "minimized ";
+  }
+  if (is_snapped_primary) {
+    states += "snapped_primary ";
+  }
+  if (is_snapped_secondary) {
+    states += "snapped_secondary ";
+  }
+  if (is_floated) {
+    states += "floated ";
   }
   if (states.empty()) {
     states = "<default>";
   } else {
     base::TrimString(states, " ", &states);
   }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   states += "; tiled_edges: ";
   std::string tiled = "";
   if (tiled_edges.left) {
@@ -711,28 +766,29 @@ void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
 
-void WaylandWindow::OnDragEnter(const gfx::PointF& point,
-                                std::unique_ptr<OSExchangeData> data,
-                                int operation) {
+void WaylandWindow::OnDragEnter(const gfx::PointF& point, int operations) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler) {
     return;
   }
-
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(point, std::move(data), operation,
-                            /*modifiers=*/0);
+  drop_handler->OnDragEnter(point, operations, kWaylandDndModifiers);
 }
 
-int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
+void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler) {
+    return;
+  }
+  // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
+  drop_handler->OnDragDataAvailable(std::move(data));
+}
+
+int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operations) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler) {
     return 0;
   }
-
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  return drop_handler->OnDragMotion(point, operation,
-                                    /*modifiers=*/0);
+  return drop_handler->OnDragMotion(point, operations, kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragDrop() {
@@ -740,8 +796,7 @@ void WaylandWindow::OnDragDrop() {
   if (!drop_handler) {
     return;
   }
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop({}, /*modifiers=*/0);
+  drop_handler->OnDragDrop(kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragLeave() {
@@ -806,6 +861,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 #endif
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
+
+  SetDecorationInsets(&properties.frame_insets_px);
 
   if (!OnInitialize(std::move(properties), &state)) {
     return false;
@@ -909,10 +966,15 @@ bool WaylandWindow::IsScreenCoordinatesEnabled() const {
 
 uint32_t WaylandWindow::DispatchEventToDelegate(
     const PlatformEvent& native_event) {
-  bool handled = DispatchEventFromNativeUiEvent(
+  EventResult result = DispatchEventFromNativeUiEvent(
       native_event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                                    base::Unretained(delegate_)));
-  return handled ? POST_DISPATCH_STOP_PROPAGATION : POST_DISPATCH_NONE;
+  if (result == ER_UNHANDLED) {
+    return POST_DISPATCH_NONE;
+  }
+
+  return !!(result & ER_SKIPPED) ? POST_DISPATCH_PERFORM_DEFAULT
+                                 : POST_DISPATCH_STOP_PROPAGATION;
 }
 
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
@@ -970,14 +1032,19 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
 
 bool WaylandWindow::CommitOverlays(
     uint32_t frame_id,
-    int64_t seq,
+    const gfx::FrameData& data,
     std::vector<wl::WaylandOverlayConfig>& overlays) {
   if (overlays.empty()) {
     return true;
   }
 
-  // |overlays| is sorted from bottom to top.
-  std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  // Lacros submits from front to back. A simple reverse can avoid a full sort.
+  std::reverse(overlays.begin(), overlays.end());
+  if (!std::is_sorted(overlays.begin(), overlays.end(),
+                      OverlayStackOrderCompare)) {
+    // |overlays| is sorted from bottom to top.
+    std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  }
 
   // Find the location where z_oder becomes non-negative.
   wl::WaylandOverlayConfig value;
@@ -1005,7 +1072,7 @@ bool WaylandWindow::CommitOverlays(
   if (!wayland_overlay_delegation_enabled_) {
     DCHECK_EQ(overlays.size(), 1u);
     frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
-        frame_id, seq, root_surface(), std::move(*overlays.begin())));
+        frame_id, data, root_surface(), std::move(*overlays.begin())));
     return true;
   }
 
@@ -1064,12 +1131,12 @@ bool WaylandWindow::CommitOverlays(
             root_surface()->use_blending(), gfx::Rect(),
             root_surface()->opacity(), gfx::OverlayPriorityHint::kNone,
             rounded_clip_bounds.value_or(gfx::RRectF()),
-            gfx::ColorSpace::CreateSRGB(), absl::nullopt),
+            gfx::ColorSpace::CreateSRGB(), std::nullopt),
         nullptr, root_surface()->buffer_id(), buffer_scale);
   }
 
   frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
-      frame_id, seq, root_surface(), std::move(root_config),
+      frame_id, data, root_surface(), std::move(root_config),
       std::move(subsurfaces_to_overlays)));
 
   return true;
@@ -1082,7 +1149,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));
 
-  absl::optional<int32_t> shape =
+  std::optional<uint32_t> shape =
+      WaylandCursorShape::ShapeFromType(cursor->type());
+  std::optional<int32_t> zcr_shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
@@ -1090,20 +1159,25 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   if (cursor->type() == CursorType::kNone) {  // Hide the cursor.
     connection_->SetCursorBitmap(
         {}, gfx::Point(), std::ceil(cursor->cursor_image_scale_factor()));
+  } else if (connection_->wayland_cursor_shape() && shape.has_value()) {
+    // Prefer Wayland server-side cursor support, as the compositor knows better
+    // how to draw the cursor.
+    connection_->wayland_cursor_shape()->SetCursorShape(shape.value());
   } else if (cursor->platform_data()) {  // Check for theme-provided cursor.
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
   } else if (connection_->zcr_cursor_shapes() &&
-             shape.has_value()) {  // Check for Wayland server-side cursor
-                                   // support (e.g. exo for lacros).
+             zcr_shape.has_value()) {  // Check for Exo server-side cursor
+                                       // support.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Lacros should not load image assets for default cursors. See
     // `BitmapCursorFactory::GetDefaultCursor()`.
     DCHECK(cursor->bitmaps().empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
-  } else {  // Use client-side bitmap cursors as fallback.
+    connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
+  } else if (!cursor->bitmaps()
+                  .empty()) {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.
     gfx::Point hotspot_in_dips = gfx::ScaleToRoundedPoint(
         cursor->hotspot(), 1.0f / cursor->cursor_image_scale_factor());
@@ -1138,6 +1212,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.raster_scale.has_value()) {
     state.raster_scale = pending_configure_state_.raster_scale.value();
   }
+  if (pending_configure_state_.occlusion_state.has_value()) {
+    state.occlusion_state = pending_configure_state_.occlusion_state.value();
+  }
 
   if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
@@ -1162,7 +1239,17 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
 
 void WaylandWindow::RequestStateFromServer(PlatformWindowDelegate::State state,
                                            int64_t serial) {
-  RequestState(state, serial, /*force=*/false);
+  bool force = false;
+  // Changing the native occlusion state can affect the compositor visibility,
+  // which can affect whether frames are produced. To avoid a bad interaction
+  // with state update throttling and frames not being produced, which could
+  // leave the system not able to apply a new state while also not being able to
+  // produce any frames to clear the previously throttled states, always force
+  // applying the state if the occlusion state changes.
+  if (state.occlusion_state != applied_state_.occlusion_state) {
+    force = true;
+  }
+  RequestState(state, serial, force);
 }
 
 void WaylandWindow::RequestStateFromClient(
@@ -1187,8 +1274,13 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
 
   // Adjust state values if necessary.
   state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
-  state.size_px =
-      gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
+
+  state.size_px = gfx::ScaleToEnclosingRectIgnoringError(state.bounds_dip,
+                                                         state.window_scale)
+                      .size();
+  // This will ensure that if insets at the time of the request changed, a new
+  // frame is produced when the state is applied.
+  state.insets = GetDecorationInsetsInDIP();
 
   StateRequest req{.state = state, .serial = serial};
   if (in_flight_requests_.empty()) {
@@ -1313,8 +1405,23 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
+  auto old_latched_insets = latched_insets_;
+  latched_insets_ = GetDecorationInsetsInDIP();
 
-  if (req.state.bounds_dip.size() != old_state.bounds_dip.size()) {
+  // Update the geometry if the bounds are different or the window scale has
+  // been changed or if the insets have changed since the last latched request.
+  // If geometry is not updated on window scale update, the insets are set in a
+  // wrong way. That is, aura provides insets in pixels, which are converted by
+  // the device scale factor known from the display. It can be different from
+  // the one that the |latch_state_.window_scale| has. As a result, the geometry
+  // is set with wrong values as Wayland requires them to be in DIP.
+  if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
+      req.state.window_scale != old_state.window_scale ||
+      // If insets change that is a geometry change even when the bounds or
+      // scale remain the same. The updated insets may not be known at the time
+      // of the request, hence the need to check this if there are changes in
+      // insets since it latched the last time.
+      old_latched_insets != latched_insets_) {
     SetWindowGeometry(req.state.bounds_dip.size());
   }
   UpdateWindowMask();

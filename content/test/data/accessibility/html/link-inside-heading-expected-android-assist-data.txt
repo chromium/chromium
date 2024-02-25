@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:32.0 style:1 htmlInfo:[{htmlTag="h1"}, {display="block"}]
+++++View textSize:32.0 style:5 fgColor:-16776978 htmlInfo:[{htmlTag="a"}, {display="inline"}, {href="#"}]
+++++++TextView text:"Link In Heading" textSize:32.0 style:5 fgColor:-16776978 htmlInfo:[{htmlTag=""}, {display=""}]

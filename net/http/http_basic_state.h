@@ -29,7 +29,7 @@ class NetLogWithSource;
 class NET_EXPORT_PRIVATE HttpBasicState {
  public:
   HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
-                 bool using_proxy);
+                 bool is_for_get_to_http_proxy);
 
   HttpBasicState(const HttpBasicState&) = delete;
   HttpBasicState& operator=(const HttpBasicState&) = delete;
@@ -43,7 +43,8 @@ class NET_EXPORT_PRIVATE HttpBasicState {
 
   HttpStreamParser* parser() const { return parser_.get(); }
 
-  bool using_proxy() const { return using_proxy_; }
+  // Returns true if this request is a non-tunneled HTTP request via a proxy.
+  bool is_for_get_to_http_proxy() const { return is_for_get_to_http_proxy_; }
 
   // Deletes |parser_| and sets it to NULL.
   void DeleteParser();
@@ -55,7 +56,7 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   scoped_refptr<GrowableIOBuffer> read_buf() const;
 
   // Generates a string of the form "METHOD PATH HTTP/1.1\r\n", based on the
-  // values of request_info_ and using_proxy_.
+  // values of request_info_ and is_for_get_to_http_proxy_.
   std::string GenerateRequestLine() const;
 
   MutableNetworkTrafficAnnotationTag traffic_annotation() {
@@ -82,7 +83,7 @@ class NET_EXPORT_PRIVATE HttpBasicState {
 
   std::unique_ptr<HttpStreamParser> parser_;
 
-  const bool using_proxy_;
+  const bool is_for_get_to_http_proxy_;
 
   GURL url_;
   std::string request_method_;

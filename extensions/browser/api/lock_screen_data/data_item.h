@@ -49,7 +49,7 @@ class DataItem {
       content::BrowserContext* context,
       ValueStoreCache* value_store_cache,
       base::SequencedTaskRunner* task_runner,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       RegisteredValuesCallback callback);
 
   // Clears data item value store for the extension with the provided extension
@@ -57,7 +57,7 @@ class DataItem {
   static void DeleteAllItemsForExtension(content::BrowserContext* context,
                                          ValueStoreCache* value_store_cache,
                                          base::SequencedTaskRunner* task_runner,
-                                         const std::string& extension_id,
+                                         const ExtensionId& extension_id,
                                          base::OnceClosure callback);
 
   // |id| - Data item ID.
@@ -75,7 +75,7 @@ class DataItem {
   // |crypto_key| - Symmetric AES key for encrypting/decrypting data item
   //     content.
   DataItem(const std::string& id,
-           const std::string& extension_id,
+           const ExtensionId& extension_id,
            content::BrowserContext* context,
            ValueStoreCache* value_store_cache,
            base::SequencedTaskRunner* task_runner,
@@ -123,14 +123,14 @@ class DataItem {
   // The ID of the extension that owns the data item.
   ExtensionId extension_id_;
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Cache used to retrieve the values store to which the data item should be
   // saved - the value stores are mapped by the extension ID.
-  raw_ptr<ValueStoreCache, ExperimentalAsh> value_store_cache_;
+  raw_ptr<ValueStoreCache> value_store_cache_;
 
   // Task runner on which value store should be accessed.
-  raw_ptr<base::SequencedTaskRunner, ExperimentalAsh> task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
 
   // They symmetric AES key that should be used to encrypt data item content
   // when the content is written to the storage, and to decrypt item content

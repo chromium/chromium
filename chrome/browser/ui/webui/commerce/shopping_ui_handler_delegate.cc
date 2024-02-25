@@ -7,24 +7,23 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
-
-#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 
 namespace commerce {
 
@@ -37,18 +36,18 @@ ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(
 
 ShoppingUiHandlerDelegate::~ShoppingUiHandlerDelegate() = default;
 
-absl::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
+std::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
   auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<GURL>(web_contents->GetLastCommittedURL());
+  return std::make_optional<GURL>(web_contents->GetLastCommittedURL());
 }
 
 void ShoppingUiHandlerDelegate::ShowInsightsSidePanelUI() {
@@ -81,9 +80,11 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
   GURL url;
   std::u16string title;
   if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
-    const bookmarks::BookmarkNode* other_node = bookmark_model_->other_node();
-    return bookmark_model_->AddNewURL(other_node, other_node->children().size(),
-                                      title, url);
+    const bookmarks::BookmarkNode* parent =
+        commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
+
+    return bookmark_model_->AddNewURL(parent, parent->children().size(), title,
+                                      url);
   }
   return nullptr;
 }

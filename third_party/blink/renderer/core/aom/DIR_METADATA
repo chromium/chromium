@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>Accessibility"
 }
-
 team_email: "chromium-accessibility@chromium.org"
+buganizer_public: {
+  component_id: 1456587
+}

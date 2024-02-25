@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_FEATURES_H_
 #define COMPONENTS_VIZ_COMMON_FEATURES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -12,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // See the following for guidance on adding new viz feature flags:
 // https://cs.chromium.org/chromium/src/components/viz/README.md#runtime-features
@@ -22,6 +22,7 @@ namespace features {
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegateTransforms);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVideoDetectorIgnoreNonVideos);
@@ -63,24 +64,29 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCVDisplayLinkBeginFrameSource);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawPredictedInkPoint);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowBypassRenderPassQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAllowForceMergeRenderPassWithRequireOverlayQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAggressiveFrameCulling);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEagerSurfaceGarbageCollection);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOverrideThrottledFrameRateParams);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRendererAllocatesImages);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBufferQueueImageSetPurgeable);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictSubtree);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAllowLateAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedBitmapToSharedImage);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kADPFBoostTimeout;
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFMidFrameBoost);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
     kADPFMidFrameBoostDurationMultiplier;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFRendererMain);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFAsyncThreadsVerification);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kInvalidateLocalSurfaceIdPreCommit);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictionUnlocksResources);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSingleVideoFrameRateThrottling);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchMainThreadReleaseCallbacks);
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
@@ -106,12 +112,12 @@ VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // BUILDFLAG(IS_WIN)
-VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
+VIZ_COMMON_EXPORT std::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
-VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForDraw();
-VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForClients();
+VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForDraw();
+VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForClients();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldVideoDetectorIgnoreNonVideoFrames();
 VIZ_COMMON_EXPORT bool ShouldOverrideThrottledFrameRateParams();

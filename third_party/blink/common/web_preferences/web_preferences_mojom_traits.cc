@@ -85,7 +85,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.privileged_webgl_extensions_enabled();
   out->webgl_errors_to_console_enabled = data.webgl_errors_to_console_enabled();
   out->hide_scrollbars = data.hide_scrollbars();
-  out->enable_webkit_scrollbar_styling = data.enable_webkit_scrollbar_styling();
+  out->prefers_default_scrollbar_styles =
+      data.prefers_default_scrollbar_styles();
   out->accelerated_2d_canvas_enabled = data.accelerated_2d_canvas_enabled();
   out->canvas_2d_layers_enabled = data.canvas_2d_layers_enabled();
   out->antialiased_2d_canvas_disabled = data.antialiased_2d_canvas_disabled();
@@ -161,12 +162,12 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->text_autosizing_enabled = data.text_autosizing_enabled();
 #if BUILDFLAG(IS_ANDROID)
   out->font_scale_factor = data.font_scale_factor();
+  out->font_weight_adjustment = data.font_weight_adjustment();
+  out->text_size_contrast_factor = data.text_size_contrast_factor();
   out->device_scale_adjustment = data.device_scale_adjustment();
   out->force_enable_zoom = data.force_enable_zoom();
   out->support_deprecated_target_density_dpi =
       data.support_deprecated_target_density_dpi();
-  out->use_legacy_background_size_shorthand_behavior =
-      data.use_legacy_background_size_shorthand_behavior();
   out->wide_viewport_quirk = data.wide_viewport_quirk();
   out->use_wide_viewport = data.use_wide_viewport();
   out->force_zero_layout_height = data.force_zero_layout_height();
@@ -215,6 +216,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.require_transient_activation_for_get_display_media();
   out->require_transient_activation_for_show_file_or_directory_picker =
       data.require_transient_activation_for_show_file_or_directory_picker();
+  out->require_transient_activation_for_html_fullscreen =
+      data.require_transient_activation_for_html_fullscreen();
   out->preferred_color_scheme = data.preferred_color_scheme();
   out->preferred_contrast = data.preferred_contrast();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();
@@ -227,6 +230,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->renderer_wide_named_frame_lookup =
       data.renderer_wide_named_frame_lookup();
   out->modal_context_menu = data.modal_context_menu();
+  out->subapps_apis_require_user_gesture_and_authorization =
+      data.require_transient_activation_and_user_confirmation_for_subapps_api();
   return true;
 }
 

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/views/view.h"
@@ -25,6 +26,8 @@ namespace ash {
 class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
                                                 public views::ViewObserver,
                                                 public gfx::AnimationDelegate {
+  METADATA_HEADER(EcheIconLoadingIndicatorView, views::View)
+
  public:
   explicit EcheIconLoadingIndicatorView(views::View* parent);
   EcheIconLoadingIndicatorView(const EcheIconLoadingIndicatorView&) = delete;
@@ -45,9 +48,9 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  absl::optional<base::TimeTicks> throbber_start_time_;
+  std::optional<base::TimeTicks> throbber_start_time_;
 
-  raw_ptr<views::View, ExperimentalAsh> parent_ = nullptr;  // Unowned.
+  raw_ptr<views::View> parent_ = nullptr;  // Unowned.
 
   base::ScopedObservation<views::View, views::ViewObserver> observed_session_{
       this};

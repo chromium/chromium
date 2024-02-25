@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EduCoexistenceToSVersion": "333024512"
+        },
+        "prefs": {
+          "family_link_user.edu_coexistence_tos_version": {
+            "value": "333024512"
+          }
+        }
+      }
+    ]
+  }
+]

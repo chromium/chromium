@@ -65,7 +65,7 @@ ConstantSourceHandler& ConstantSourceNode::GetConstantSourceHandler() const {
 }
 
 AudioParam* ConstantSourceNode::offset() {
-  return offset_;
+  return offset_.Get();
 }
 
 void ConstantSourceNode::ReportDidCreate() {

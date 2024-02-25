@@ -26,10 +26,7 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
   explicit ExceptionStateScope(ScriptPromiseResolver* resolver)
       : ExceptionState(resolver->script_state_->GetIsolate(),
                        resolver->exception_context_),
-        resolver_(resolver) {
-    CHECK_NE(resolver->exception_context_.GetContext(),
-             ExceptionContext::Context::kEmpty);
-  }
+        resolver_(resolver) {}
   ~ExceptionStateScope() {
     DCHECK(HadException());
     resolver_->Reject(GetException());
@@ -41,25 +38,32 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
 };
 
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      state_(kPending),
-      script_state_(script_state),
-      resolver_(script_state) {
-  if (GetExecutionContext()->IsContextDestroyed()) {
-    state_ = kDetached;
-    resolver_.Clear();
-  }
-}
+    : ScriptPromiseResolver(
+          script_state,
+          ExceptionContext(ExceptionContextType::kUnknown, nullptr, nullptr)) {}
 
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
     const ExceptionContext& exception_context)
-    : ScriptPromiseResolver(script_state) {
-  exception_context_ = exception_context;
-  class_like_name_ = exception_context.GetClassName();
-  property_like_name_ = exception_context.GetPropertyName();
-}
+    : ScriptPromiseResolver(script_state,
+                            exception_context,
+                            Resolver(script_state)) {}
 
+ScriptPromiseResolver::ScriptPromiseResolver(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context,
+    Resolver resolver)
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      resolver_(std::move(resolver)),
+      state_(kPending),
+      script_state_(script_state),
+      exception_context_(exception_context) {
+  if (GetExecutionContext()->IsContextDestroyed()) {
+    state_ = kDetached;
+    resolver_.Clear();
+  }
+  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
+}
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
 
 void ScriptPromiseResolver::Dispose() {
@@ -86,6 +90,26 @@ void ScriptPromiseResolver::Dispose() {
   }
 #endif
   deferred_resolve_task_.Cancel();
+}
+
+void ScriptPromiseResolver::Reject(DOMException* value) {
+  Reject<DOMException>(value);
+}
+
+void ScriptPromiseResolver::Reject(v8::Local<v8::Value> value) {
+  Reject<IDLAny>(value);
+}
+
+void ScriptPromiseResolver::Reject(const ScriptValue& value) {
+  Reject<IDLAny>(value);
+}
+
+void ScriptPromiseResolver::Reject(const char* value) {
+  Reject<IDLString>(value);
+}
+
+void ScriptPromiseResolver::Reject(bool value) {
+  Reject<IDLBoolean>(value);
 }
 
 void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
@@ -146,15 +170,14 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
   probe::WillHandlePromise(GetExecutionContext(), script_state_,
-                           state_ == kResolving, class_like_name_,
-                           property_like_name_);
-  {
-    if (state_ == kResolving) {
-      resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
-    } else {
-      DCHECK_EQ(state_, kRejecting);
-      resolver_.Reject(value_.Get(script_state_->GetIsolate()));
-    }
+                           state_ == kResolving,
+                           exception_context_.GetClassName(),
+                           exception_context_.GetPropertyName(), script_url_);
+  if (state_ == kResolving) {
+    resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
+  } else {
+    DCHECK_EQ(state_, kRejecting);
+    resolver_.Reject(value_.Get(script_state_->GetIsolate()));
   }
   Detach();
 }
@@ -173,7 +196,7 @@ void ScriptPromiseResolver::ResolveOrRejectDeferred() {
     return;
   }
 
-  ScriptState::Scope scope(script_state_);
+  ScriptState::Scope scope(script_state_.Get());
   ResolveOrRejectImmediately();
 }
 

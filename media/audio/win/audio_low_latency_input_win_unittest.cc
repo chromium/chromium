@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
@@ -387,13 +386,8 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenStartAndClose) {
 }
 
 // Test Open(), Start(), Stop(), Close() calling sequence.
-TEST_P(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
-  base::test::ScopedFeatureList feature_list;
-  const bool use_raw_audio = GetParam();
-  use_raw_audio
-      ? feature_list.InitAndEnableFeature(media::kWasapiRawAudioCapture)
-      : feature_list.InitAndDisableFeature(media::kWasapiRawAudioCapture);
   ScopedAudioInputStream ais(
       CreateDefaultAudioInputStream(audio_manager_.get()));
   EXPECT_TRUE(ais->SetAutomaticGainControl(true));
@@ -584,9 +578,6 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamRecordToFile) {
 TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamRecordToFileRAW) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kWasapiRawAudioCapture);
-
   // Name of the output PCM file containing captured data. The output file
   // will be stored in the directory containing 'media_unittests.exe'.
   // Example of full name: \src\build\Debug\out_stereo_10sec_raw.pcm.
@@ -662,9 +653,5 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamResampleToFile) {
     ais.Close();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(WinAudioInputTests,
-                         WinAudioInputTest,
-                         testing::Bool());
 
 }  // namespace media

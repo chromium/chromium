@@ -23,8 +23,8 @@ namespace {
 // Returns the value corresponding to |key| in the dictionary |description|.
 // Returns |default_value| if the dictionary does not contain |key|, the
 // corresponding value is nullptr or it could not be converted to SInt64.
-absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
-                                        CFStringRef key) {
+std::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
+                                       CFStringRef key) {
   CFNumberRef number_ref =
       base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
 
@@ -32,15 +32,15 @@ absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
   if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
     return value;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
-                                       CFStringRef key) {
+std::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
+                                      CFStringRef key) {
   CFBooleanRef boolean =
       base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
   if (!boolean)
-    return absl::nullopt;
+    return std::nullopt;
   return CFBooleanGetValue(boolean);
 }
 
@@ -54,8 +54,9 @@ std::unique_ptr<BatterySampler> BatterySampler::Create() {
   base::mac::ScopedIOObject<io_service_t> power_source(
       IOServiceGetMatchingService(kIOMasterPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
-  if (power_source == IO_OBJECT_NULL)
+  if (!power_source) {
     return nullptr;
+  }
 
   auto get_seconds_since_epoch_fn = []() -> int64_t {
     return (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
@@ -85,7 +86,7 @@ Sampler::DatumNameUnits BatterySampler::GetDatumNameUnits() {
 }
 
 Sampler::Sample BatterySampler::GetSample(base::TimeTicks sample_time) {
-  absl::optional<BatteryData> new_battery_data =
+  std::optional<BatteryData> new_battery_data =
       maybe_get_battery_data_fn_(power_source_.get());
   if (!new_battery_data.has_value())
     return Sample();
@@ -126,30 +127,30 @@ Sampler::Sample BatterySampler::GetSample(base::TimeTicks sample_time) {
 }
 
 // static
-absl::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
+std::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
     io_service_t power_source) {
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
   kern_return_t result = IORegistryEntryCreateCFProperties(
       power_source, dict.InitializeInto(), 0, 0);
   if (result != KERN_SUCCESS) {
     MACH_LOG(ERROR, result) << "IORegistryEntryCreateCFProperties";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<bool> external_connected =
-      GetValueAsBoolean(dict, CFSTR("ExternalConnected"));
-  absl::optional<SInt64> voltage_mv =
-      GetValueAsSInt64(dict, CFSTR(kIOPSVoltageKey));
-  absl::optional<SInt64> current_capacity_mah =
-      GetValueAsSInt64(dict, CFSTR("AppleRawCurrentCapacity"));
-  absl::optional<SInt64> max_capacity_mah =
-      GetValueAsSInt64(dict, CFSTR("AppleRawMaxCapacity"));
-  absl::optional<SInt64> update_time =
-      GetValueAsSInt64(dict, CFSTR("UpdateTime"));
+  std::optional<bool> external_connected =
+      GetValueAsBoolean(dict.get(), CFSTR("ExternalConnected"));
+  std::optional<SInt64> voltage_mv =
+      GetValueAsSInt64(dict.get(), CFSTR(kIOPSVoltageKey));
+  std::optional<SInt64> current_capacity_mah =
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawCurrentCapacity"));
+  std::optional<SInt64> max_capacity_mah =
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawMaxCapacity"));
+  std::optional<SInt64> update_time =
+      GetValueAsSInt64(dict.get(), CFSTR("UpdateTime"));
 
   if (!external_connected.has_value() || !voltage_mv.has_value() ||
       !current_capacity_mah.has_value() || !max_capacity_mah.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BatteryData data{.external_connected = external_connected.value(),
@@ -162,7 +163,7 @@ absl::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
 }
 
 //  static
-absl::optional<BatterySampler::AvgConsumption>
+std::optional<BatterySampler::AvgConsumption>
 BatterySampler::MaybeComputeAvgConsumption(base::TimeDelta duration,
                                            const BatteryData& prev_data,
                                            const BatteryData& new_data) {
@@ -182,7 +183,7 @@ BatterySampler::MaybeComputeAvgConsumption(base::TimeDelta duration,
   int64_t delta_current_consumed_mah =
       prev_current_consumed_mah - new_current_consumed_mah;
   if (delta_current_consumed_mah == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   double avg_voltage_v =
       (new_data.voltage_mv + prev_data.voltage_mv) / (2.0 * 1000.0);

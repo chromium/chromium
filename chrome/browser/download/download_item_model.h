@@ -73,9 +73,9 @@ class DownloadItemModel : public DownloadUIModel,
   bool WasActionedOn() const override;
   void SetActionedOn(bool actioned_on) override;
   bool WasUIWarningShown() const override;
-  void SetWasUIWarningShown(bool should_notify) override;
-  absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
-  void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time) override;
+  void SetWasUIWarningShown(bool was_ui_warning_shown) override;
+  std::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
+  void SetEphemeralWarningUiShownTime(std::optional<base::Time> time) override;
   bool ShouldPreferOpeningInBrowser() override;
   void SetShouldPreferOpeningInBrowser(bool preference) override;
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel() const override;
@@ -121,8 +121,7 @@ class DownloadItemModel : public DownloadUIModel,
                         DownloadCommands::Command command) const override;
   void ExecuteCommand(DownloadCommands* download_commands,
                       DownloadCommands::Command command) override;
-  BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const override;
-  bool ShouldShowTailoredWarning() const override;
+  TailoredWarningType GetTailoredWarningType() const override;
   bool ShouldShowInBubble() const override;
   bool IsEphemeralWarning() const override;
 #endif
@@ -136,6 +135,8 @@ class DownloadItemModel : public DownloadUIModel,
   void DetermineAndSetShouldPreferOpeningInBrowser(
       const base::FilePath& target_path,
       bool is_filetype_handled_safely) override;
+  bool IsEncryptedArchive() const override;
+  bool IsExtensionDownload() const override;
 
   // download::DownloadItem::Observer implementation.
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -145,7 +146,6 @@ class DownloadItemModel : public DownloadUIModel,
  private:
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;
-  bool IsExtensionDownload() const override;
 
   // The DownloadItem that this model represents. Note that DownloadItemModel
   // itself shouldn't maintain any state since there can be more than one

@@ -6,11 +6,12 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_ui_selector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -55,7 +56,8 @@ class PermissionPrompt {
 
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
-    virtual const std::vector<PermissionRequest*>& Requests() = 0;
+    virtual const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+    Requests() = 0;
 
     // Get the single origin for the current set of requests.
     virtual GURL GetRequestingOrigin() const = 0;
@@ -70,6 +72,10 @@ class PermissionPrompt {
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
 
+    // Called to explicitly finalize the request, if
+    // |ShouldFinalizeRequestAfterDecided| returns false.
+    virtual void FinalizeCurrentRequests() = 0;
+
     virtual void OpenHelpCenterLink(const ui::Event& event) = 0;
 
     // This method preemptively ignores a permission request but does not
@@ -79,9 +85,9 @@ class PermissionPrompt {
     virtual void PreIgnoreQuietPrompt() = 0;
 
     // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a
-    // reason as to why the quiet UI needs to be used. Returns `absl::nullopt`
+    // reason as to why the quiet UI needs to be used. Returns `std::nullopt`
     // otherwise.
-    virtual absl::optional<PermissionUiSelector::QuietUiReason>
+    virtual std::optional<PermissionUiSelector::QuietUiReason>
     ReasonForUsingQuietUi() const = 0;
 
     // Notification permission requests might use a quiet UI when the
@@ -152,7 +158,12 @@ class PermissionPrompt {
   virtual PermissionPromptDisposition GetPromptDisposition() const = 0;
 
   // Get the prompt view bounds in screen coordinates.
-  virtual absl::optional<gfx::Rect> GetViewBoundsInScreen() const = 0;
+  virtual std::optional<gfx::Rect> GetViewBoundsInScreen() const = 0;
+
+  // Get whether the permission request is allowed to be finalized as soon a
+  // decision is transmitted. If this returns `false` the delegate should wait
+  // for an explicit |Delegate::FinalizeCurrentRequests()| call to be made.
+  virtual bool ShouldFinalizeRequestAfterDecided() const = 0;
 };
 
 }  // namespace permissions

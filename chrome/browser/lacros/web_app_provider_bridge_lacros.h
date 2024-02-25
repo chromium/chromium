@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_LACROS_WEB_APP_PROVIDER_BRIDGE_LACROS_H_
 #define CHROME_BROWSER_LACROS_WEB_APP_PROVIDER_BRIDGE_LACROS_H_
 
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace crosapi {
 
@@ -36,12 +40,14 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
       const GURL& install_url,
       const GURL& origin_url,
       bool is_renderer_initiated) override;
-  void GetSubAppIds(const web_app::AppId& app_id,
+  void GetSubAppIds(const webapps::AppId& app_id,
                     GetSubAppIdsCallback callback) override;
   void GetSubAppToParentMap(GetSubAppToParentMapCallback callback) override;
   void InstallPreloadWebApp(
       mojom::PreloadWebAppInstallInfoPtr preload_install_info,
       InstallPreloadWebAppCallback callback) override;
+  void LaunchIsolatedWebAppInstaller(
+      const base::FilePath& bundle_path) override;
 
  private:
   static void WebAppInstalledInArcImpl(
@@ -63,7 +69,7 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
       const GURL& origin_url,
       bool is_renderer_initiated,
       Profile* profile);
-  static void GetSubAppIdsImpl(const web_app::AppId& app_id,
+  static void GetSubAppIdsImpl(const webapps::AppId& app_id,
                                GetSubAppIdsCallback callback,
                                Profile* profile);
   static void GetSubAppToParentMapImpl(GetSubAppToParentMapCallback callback,
@@ -71,6 +77,9 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
   static void InstallPreloadWebAppImpl(
       mojom::PreloadWebAppInstallInfoPtr preload_install_info,
       InstallPreloadWebAppCallback callback,
+      Profile* profile);
+  static void LaunchIsolatedWebAppInstallerImpl(
+      const base::FilePath& bundle_path,
       Profile* profile);
 
   mojo::Receiver<mojom::WebAppProviderBridge> receiver_{this};

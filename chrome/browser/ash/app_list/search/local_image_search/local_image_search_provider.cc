@@ -6,11 +6,13 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
@@ -22,7 +24,9 @@ constexpr size_t kMaxNumResults = 3;
 }  // namespace
 
 LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
-    : profile_(profile), thumbnail_loader_(profile) {
+    : SearchProvider(SearchCategory::kImages),
+      profile_(profile),
+      thumbnail_loader_(profile) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -67,7 +71,8 @@ void LocalImageSearchProvider::OnSearchComplete(
   }
 
   SwapResults(&results);
-  // TODO(b/260646344): add to UMA, latency
+  UMA_HISTOGRAM_TIMES("Apps.AppList.LocalImageSearchProvider.Latency",
+                      base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(

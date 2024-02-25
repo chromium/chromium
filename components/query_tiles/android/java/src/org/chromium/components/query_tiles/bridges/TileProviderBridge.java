@@ -4,18 +4,17 @@
 
 package org.chromium.components.query_tiles.bridges;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.TileProvider;
 
 import java.util.List;
 
-/**
- * Bridge to the native query tile service for the given {@link Profile}.
- */
+/** Bridge to the native query tile service for the given {@link Profile}. */
 @JNINamespace("query_tiles")
 public class TileProviderBridge implements TileProvider {
     private long mNativeTileProviderBridge;
@@ -37,8 +36,8 @@ public class TileProviderBridge implements TileProvider {
     @Override
     public void getQueryTiles(String tileId, Callback<List<QueryTile>> callback) {
         if (mNativeTileProviderBridge == 0) return;
-        TileProviderBridgeJni.get().getQueryTiles(
-                mNativeTileProviderBridge, this, tileId, callback);
+        TileProviderBridgeJni.get()
+                .getQueryTiles(mNativeTileProviderBridge, this, tileId, callback);
     }
 
     @Override
@@ -49,8 +48,12 @@ public class TileProviderBridge implements TileProvider {
 
     @NativeMethods
     interface Natives {
-        void getQueryTiles(long nativeTileProviderBridge, TileProviderBridge caller, String tileId,
+        void getQueryTiles(
+                long nativeTileProviderBridge,
+                TileProviderBridge caller,
+                String tileId,
                 Callback<List<QueryTile>> callback);
+
         void onTileClicked(long nativeTileProviderBridge, String tileId);
     }
 }

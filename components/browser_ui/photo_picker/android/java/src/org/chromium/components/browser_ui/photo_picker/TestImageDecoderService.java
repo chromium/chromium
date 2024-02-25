@@ -10,9 +10,7 @@ import android.os.IBinder;
 
 import org.chromium.base.library_loader.LibraryLoader;
 
-/**
- * A service to accept requests to take image file contents and decode them, used for tests.
- */
+/** A service to accept requests to take image file contents and decode them, used for tests. */
 public class TestImageDecoderService extends Service {
     private final ImageDecoder mDecoder = new ImageDecoder();
 

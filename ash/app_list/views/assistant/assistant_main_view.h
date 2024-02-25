@@ -24,9 +24,9 @@ class AssistantViewDelegate;
 class ASH_EXPORT AssistantMainView : public views::View,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver {
- public:
-  METADATA_HEADER(AssistantMainView);
+  METADATA_HEADER(AssistantMainView, views::View)
 
+ public:
   explicit AssistantMainView(AssistantViewDelegate* delegate);
   AssistantMainView(const AssistantMainView&) = delete;
   AssistantMainView& operator=(const AssistantMainView&) = delete;
@@ -44,8 +44,8 @@ class ASH_EXPORT AssistantMainView : public views::View,
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   // Returns the first focusable view or nullptr to defer to views::FocusSearch.
   views::View* FindFirstFocusableView();
@@ -53,12 +53,10 @@ class ASH_EXPORT AssistantMainView : public views::View,
  private:
   void InitLayout();
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 
-  raw_ptr<AssistantDialogPlate, ExperimentalAsh>
-      dialog_plate_;  // Owned by view hierarchy.
-  raw_ptr<AppListAssistantMainStage, ExperimentalAsh>
-      main_stage_;  // Owned by view hierarchy.
+  raw_ptr<AssistantDialogPlate> dialog_plate_;     // Owned by view hierarchy.
+  raw_ptr<AppListAssistantMainStage> main_stage_;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

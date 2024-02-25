@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -44,7 +45,31 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "cc/slim/layer_tree.h"
+#include "content/browser/renderer_host/compositor_impl_android.h"
+#include "ui/android/window_android.h"
+#include "ui/android/window_android_compositor.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/browser_compositor_view_mac.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_IOS)
+#include "content/browser/renderer_host/browser_compositor_ios.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
+#endif  // BUILDFLAG(IS_IOS)
+
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif  // defined(USE_AURA)
 
 namespace content {
 
@@ -253,8 +278,10 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       legend[GetName(spec->GetSiteInstance())] = spec->GetSiteInstance();
   }
 
-  // Traversal 3: Assign names to the proxies and add them to |legend| too.
-  // Typically, only openers should have their names assigned this way.
+  // Traversal 3: Assign names to the SiteInstances within each group's proxies
+  // (which are associated with SiteInstanceGroups instead of SiteInstances) and
+  // add them to |legend| too. Typically, only openers should have their names
+  // assigned this way.
   for (to_explore.push(root); !to_explore.empty();) {
     FrameTreeNode* node = to_explore.top();
     to_explore.pop();
@@ -266,7 +293,16 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     std::vector<SiteInstance*> site_instances;
     for (const auto& proxy_pair :
          node->render_manager()->GetAllProxyHostsForTesting()) {
-      site_instances.push_back(proxy_pair.second->GetSiteInstanceDeprecated());
+      SiteInstanceGroup* group = proxy_pair.second->site_instance_group();
+
+      // Currently, each SiteInstanceGroup only has one SiteInstance in it.
+      // TODO(crbug.com/1195535, yangsharon): Remove when multiple SiteInstances
+      // per group is supported.
+      CHECK_EQ(group->site_instances_for_testing().size(), 1u);
+      for (raw_ptr<SiteInstanceImpl> instance :
+           group->site_instances_for_testing()) {
+        site_instances.push_back(instance);
+      }
     }
     std::sort(site_instances.begin(), site_instances.end(),
               [](SiteInstance* lhs, SiteInstance* rhs) {
@@ -357,8 +393,16 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       // Sort these alphabetically, to avoid hash_map ordering dependency.
       std::vector<std::string> sorted_proxy_hosts;
       for (const auto& proxy_pair : proxy_host_map) {
-        sorted_proxy_hosts.push_back(
-            GetName(proxy_pair.second->GetSiteInstanceDeprecated()));
+        // Get the first SiteInstance from each group, since there's only one
+        // SiteInstance per group.
+        // TODO(crbug.com/1447896, yangsharon): Add support for multiple
+        // SiteInstances per group.
+        auto site_instances_for_testing =
+            proxy_pair.second->site_instance_group()
+                ->site_instances_for_testing();
+        CHECK_EQ(site_instances_for_testing.size(), 1u);
+        SiteInstance* site_instance = *(site_instances_for_testing.begin());
+        sorted_proxy_hosts.push_back(GetName(site_instance));
       }
       std::sort(sorted_proxy_hosts.begin(), sorted_proxy_hosts.end());
       for (std::string& proxy_name : sorted_proxy_hosts) {
@@ -375,10 +419,14 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
   for (auto& legend_entry : legend) {
     SiteInstanceImpl* site_instance =
         static_cast<SiteInstanceImpl*>(legend_entry.second);
-    std::string description = site_instance->GetSiteURL().spec();
+    std::string description =
+        GetUrlWithoutPort(site_instance->GetSiteURL()).spec();
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
+    if (site_instance->GetSiteInfo().is_sandboxed()) {
+      result.append(" (sandboxed)");
+    }
     if (site_instance->group()->active_frame_count() == 0)
       result.append(" (active_frame_count == 0)");
     if (!site_instance->GetProcess()->IsInitializedAndNotDead())
@@ -401,6 +449,12 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
     return base::StringPrintf("%c", 'A' + static_cast<char>(index));
   else
     return base::StringPrintf("Z%d", static_cast<int>(index - 25));
+}
+
+GURL FrameTreeVisualizer::GetUrlWithoutPort(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearPort();
+  return url.ReplaceComponents(replacements);
 }
 
 std::string DepictFrameTree(FrameTreeNode& root) {
@@ -516,11 +570,11 @@ RenderProcessHostBadIpcMessageWaiter::RenderProcessHostBadIpcMessageWaiter(
     : internal_waiter_(render_process_host,
                        "Stability.BadMessageTerminated.Content") {}
 
-absl::optional<bad_message::BadMessageReason>
+std::optional<bad_message::BadMessageReason>
 RenderProcessHostBadIpcMessageWaiter::Wait() {
-  absl::optional<int> internal_result = internal_waiter_.Wait();
+  std::optional<int> internal_result = internal_waiter_.Wait();
   if (!internal_result.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
@@ -587,46 +641,6 @@ void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
 }
 #endif
 
-DropMessageFilter::DropMessageFilter(uint32_t message_class,
-                                     uint32_t drop_message_id)
-    : BrowserMessageFilter(message_class), drop_message_id_(drop_message_id) {}
-
-DropMessageFilter::~DropMessageFilter() = default;
-
-bool DropMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  return message.type() == drop_message_id_;
-}
-
-ObserveMessageFilter::ObserveMessageFilter(uint32_t message_class,
-                                           uint32_t watch_message_id)
-    : BrowserMessageFilter(message_class),
-      watch_message_id_(watch_message_id) {}
-
-ObserveMessageFilter::~ObserveMessageFilter() = default;
-
-void ObserveMessageFilter::Wait() {
-  base::RunLoop loop;
-  quit_closure_ = loop.QuitClosure();
-  loop.Run();
-}
-
-bool ObserveMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  if (message.type() == watch_message_id_) {
-    // Exit the Wait() method if it's being used, but in a fresh stack once the
-    // message is actually handled.
-    if (quit_closure_ && !received_) {
-      base::ThreadPool::PostTask(
-          FROM_HERE, base::BindOnce(&ObserveMessageFilter::QuitWait, this));
-    }
-    received_ = true;
-  }
-  return false;
-}
-
-void ObserveMessageFilter::QuitWait() {
-  std::move(quit_closure_).Run();
-}
-
 UnresponsiveRendererObserver::UnresponsiveRendererObserver(
     WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
@@ -671,6 +685,10 @@ void BeforeUnloadBlockingDelegate::Wait() {
 JavaScriptDialogManager*
 BeforeUnloadBlockingDelegate::GetJavaScriptDialogManager(WebContents* source) {
   return this;
+}
+
+bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported() {
+  return true;
 }
 
 void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
@@ -987,6 +1005,128 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
 
   // Ignore the commit message.
   return false;
+}
+
+// TODO(https://crbug.com/1473319): Use
+// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
+void WaitForCopyableViewInWebContents(WebContents* web_contents) {
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+  // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
+  // renderer to the GPU. However, we want to wait until the Viz process has
+  // received the new `CompositorFrame` so that the previously submitted frame
+  // is available for copy. Waiting for a second frame to be submitted
+  // guarantees this, since the second frame cannot be sent until the first
+  // frame was ACKed by Viz.
+  {
+    MainThreadFrameObserver obs(
+        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    obs.Wait();
+  }
+
+  // `IsSurfaceAvailableForCopy` actually only checks if the browser currently
+  // embeds a surface or not (as opposed to sending a IPC to the GPU). However
+  // if the browser does not embed any surface, we won't be able to issue any
+  // copy requests.
+  ASSERT_TRUE(
+      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
+}
+
+void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
+  base::RunLoop run_loop;
+  auto callback = base::BindOnce(
+      [](base::RepeatingClosure cb, base::TimeTicks presentation_time) {
+        std::move(cb).Run();
+      },
+      run_loop.QuitClosure());
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroidCompositor* compositor =
+      web_contents->GetNativeView()->GetWindowAndroid()->GetCompositor();
+  compositor->PostRequestSuccessfulPresentationTimeForNextFrame(
+      std::move(callback));
+#elif BUILDFLAG(IS_MAC)
+  auto* browser_compositor = GetBrowserCompositorMacForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
+#elif BUILDFLAG(IS_IOS)
+  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
+#elif defined(USE_AURA)
+  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
+                         web_contents->GetRenderWidgetHostView())
+                         ->GetCompositor();
+  compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      std::move(callback));
+#else
+  NOTREACHED();
+#endif
+  run_loop.Run();
+}
+
+void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
+  ui::WindowAndroidCompositor* compositor = window->GetCompositor();
+  cc::slim::LayerTree* layer_tree =
+      static_cast<CompositorImpl*>(compositor)->GetLayerTreeForTesting();
+  layer_tree->SetNeedsRedrawForTesting();
+#elif BUILDFLAG(IS_MAC)
+  auto* browser_compositor = GetBrowserCompositorMacForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()->ScheduleFullRedraw();
+#elif BUILDFLAG(IS_IOS)
+  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()->ScheduleFullRedraw();
+#elif defined(USE_AURA)
+  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
+                         web_contents->GetRenderWidgetHostView())
+                         ->GetCompositor();
+  compositor->ScheduleFullRedraw();
+#endif
+}
+
+namespace {
+
+// Helper to return a 200 OK non-cacheable response for a first request, and
+// redirect the second request to the URL indicated in the query param.
+std::unique_ptr<net::test_server::HttpResponse>
+RedirectToTargetOnSecondNavigation(
+    unsigned int& navigation_counter,
+    const net::test_server::HttpRequest& request) {
+  ++navigation_counter;
+  if (navigation_counter == 1) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HttpStatusCode::HTTP_OK);
+    http_response->AddCustomHeader("Cache-Control",
+                                   "no-store, must-revalidate");
+    return http_response;
+  }
+
+  std::string url_from_query =
+      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
+  http_response->AddCustomHeader("Location", url_from_query);
+  return http_response;
+}
+
+}  // namespace
+
+void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server) {
+  unsigned int navigation_counter = 0;
+  server->RegisterDefaultHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest,
+      "/redirect-on-second-navigation",
+      base::BindRepeating(&RedirectToTargetOnSecondNavigation,
+                          base::OwnedRef(navigation_counter))));
 }
 
 }  // namespace content

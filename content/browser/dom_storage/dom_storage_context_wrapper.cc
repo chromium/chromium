@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
@@ -38,6 +40,7 @@
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -239,7 +242,7 @@ void DOMStorageContextWrapper::Flush() {
 
 void DOMStorageContextWrapper::OpenLocalStorage(
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
@@ -268,7 +271,7 @@ void DOMStorageContextWrapper::BindNamespace(
 
 void DOMStorageContextWrapper::BindStorageArea(
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
@@ -286,7 +289,7 @@ void DOMStorageContextWrapper::BindStorageArea(
 bool DOMStorageContextWrapper::IsRequestValid(
     const StorageType type,
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
   bool host_storage_key_did_not_match = false;
@@ -307,6 +310,22 @@ bool DOMStorageContextWrapper::IsRequestValid(
             host->frame_tree()->GetSessionStorageKey(host->GetStorageKey()) !=
             storage_key;
         break;
+      }
+    }
+    // If the storage keys did not match, but storage access has been granted
+    // and the request was for a first-party storage key on the same origin as
+    // the frame's storage key, we can allow the request to proceed. See:
+    // third_party/blink/renderer/modules/storage_access/README.md
+    if (host_storage_key_did_not_match) {
+      auto* permission_controller =
+          host->GetBrowserContext()->GetPermissionController();
+      blink::mojom::PermissionStatus status =
+          permission_controller->GetPermissionStatusForCurrentDocument(
+              blink::PermissionType::STORAGE_ACCESS_GRANT, host);
+      if (status == blink::mojom::PermissionStatus::GRANTED) {
+        host_storage_key_did_not_match =
+            blink::StorageKey::CreateFirstParty(
+                host->GetStorageKey().origin()) != storage_key;
       }
     }
   }
@@ -371,14 +390,14 @@ void DOMStorageContextWrapper::AddNamespace(
     const std::string& namespace_id,
     SessionStorageNamespaceImpl* session_namespace) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(alive_namespaces_.find(namespace_id) == alive_namespaces_.end());
+  DCHECK(!base::Contains(alive_namespaces_, namespace_id));
   alive_namespaces_[namespace_id] = session_namespace;
 }
 
 void DOMStorageContextWrapper::RemoveNamespace(
     const std::string& namespace_id) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(alive_namespaces_.find(namespace_id) != alive_namespaces_.end());
+  DCHECK(base::Contains(alive_namespaces_, namespace_id));
   alive_namespaces_.erase(namespace_id);
 }
 

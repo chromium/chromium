@@ -13,7 +13,7 @@
 // (high). High priority is used for all accelerators assigned to extensions,
 // which are extensions of the user agent and should (by default) supersede the
 // browser shortcuts.
-constexpr ui::AcceleratorManager::HandlerPriority
+inline constexpr ui::AcceleratorManager::HandlerPriority
     kExtensionAcceleratorPriority = ui::AcceleratorManager::kHighPriority;
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_ACCELERATOR_PRIORITY_H_

@@ -5,8 +5,9 @@
 #ifndef CONTENT_TEST_TEST_PAGE_H_
 #define CONTENT_TEST_TEST_PAGE_H_
 
+#include <optional>
+
 #include "content/browser/renderer_host/page_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -23,12 +24,12 @@ class TestPage : public PageImpl {
 
   ~TestPage() override;
 
-  const absl::optional<GURL>& GetManifestUrl() const override;
+  const std::optional<GURL>& GetManifestUrl() const override;
 
   void UpdateManifestUrl(const GURL& manifest_url) override;
 
  private:
-  absl::optional<GURL> manifest_url_;
+  std::optional<GURL> manifest_url_;
 };
 
 }  // namespace content

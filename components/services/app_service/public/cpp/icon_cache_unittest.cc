@@ -32,8 +32,7 @@ class AppsIconCacheTest : public testing::Test {
 
    private:
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::AppType app_type,
-        const std::string& app_id,
+        const std::string& id,
         const apps::IconKey& icon_key,
         apps::IconType icon_type,
         int32_t size_hint_in_dip,
@@ -65,9 +64,9 @@ class AppsIconCacheTest : public testing::Test {
     int before = fake->NumLoadIconFromIconKeyCalls();
 
     UniqueReleaser releaser;
-    releaser = loader->LoadIcon(
-        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
-        /*size_hint_in_dip=*/1, allow_placeholder_icon, base::DoNothing());
+    releaser = loader->LoadIcon(app_id, apps::IconType::kUncompressed,
+                                /*size_hint_in_dip=*/1, allow_placeholder_icon,
+                                base::DoNothing());
 
     int after = fake->NumLoadIconFromIconKeyCalls();
     HitOrMiss actual_hom = (after == before) ? kHit : kMiss;
@@ -104,8 +103,8 @@ class AppsIconCacheTest : public testing::Test {
     HitOrMiss expect_hom = kHit;
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
-        cache.RemoveIcon(apps::AppType::kWeb, "apricot");
+        cache.RemoveIcon("cherry");
+        cache.RemoveIcon("apricot");
         expect_hom = kMiss;
       } else {
         cache.SweepReleasedIcons();
@@ -118,7 +117,7 @@ class AppsIconCacheTest : public testing::Test {
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
+        cache.RemoveIcon("cherry");
       } else {
         cache.SweepReleasedIcons();
       }
@@ -194,7 +193,7 @@ class AppsIconCacheTest : public testing::Test {
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::AppType::kWeb, "watermelon");
+        cache.RemoveIcon("watermelon");
       } else {
         cache.SweepReleasedIcons();
       }

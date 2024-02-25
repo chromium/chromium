@@ -16,7 +16,7 @@ MockAffiliatedMatchHelper::MockAffiliatedMatchHelper()
     : AffiliatedMatchHelper(nullptr) {}
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper(
-    AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service)
     : AffiliatedMatchHelper(affiliation_service) {}
 
 MockAffiliatedMatchHelper::~MockAffiliatedMatchHelper() = default;
@@ -50,8 +50,8 @@ void MockAffiliatedMatchHelper::
 }
 
 void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    std::vector<std::unique_ptr<PasswordForm>> forms,
-    PasswordFormsOrErrorCallback result_callback) {
+    LoginsResult forms,
+    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
   const std::vector<AffiliationAndBrandingInformation>& information =
       OnInjectAffiliationAndBrandingInformationCalled();
   if (information.empty()) {
@@ -61,9 +61,9 @@ void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
 
   ASSERT_EQ(information.size(), forms.size());
   for (size_t i = 0; i < forms.size(); ++i) {
-    forms[i]->affiliated_web_realm = information[i].affiliated_web_realm;
-    forms[i]->app_display_name = information[i].app_display_name;
-    forms[i]->app_icon_url = information[i].app_icon_url;
+    forms[i].affiliated_web_realm = information[i].affiliated_web_realm;
+    forms[i].app_display_name = information[i].app_display_name;
+    forms[i].app_icon_url = information[i].app_icon_url;
   }
   std::move(result_callback).Run(std::move(forms));
 }

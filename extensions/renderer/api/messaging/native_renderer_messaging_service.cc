@@ -8,22 +8,24 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api_activity_logger.h"
@@ -39,6 +41,7 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -78,67 +81,206 @@ bool ScriptContextIsValid(ScriptContext* script_context) {
 
 }  // namespace
 
+// This class implements the mojo messaging hooks. Since the
+// NativeRendererMessagingService is shared by everything on the same thread
+// we want a separate object so the mojo channels are organized based on
+// their "scope", whether that be a Worker or a Frame.
+class NativeRendererMessagingService::MessagePortScope
+    : public mojom::MessagePort {
+ public:
+  explicit MessagePortScope(
+      base::SafeRef<NativeRendererMessagingService> messaging_service)
+      : messaging_service_(messaging_service) {}
+
+  ~MessagePortScope() override = default;
+
+  // MessagePort overrides:
+  void DispatchDisconnect(const std::string& error) override {
+    auto target_port_id = message_port_dispatchers_.current_context();
+    messaging_service_->DispatchOnDisconnect(
+        messaging_service_->bindings_system_->delegate()->GetScriptContextSet(),
+        target_port_id, error,
+        /*restrict_to_render_frame=*/GetRestrictToRenderFrame());
+  }
+
+  void DeliverMessage(extensions::Message message) override {
+    auto target_port_id = message_port_dispatchers_.current_context();
+    messaging_service_->DeliverMessage(
+        messaging_service_->bindings_system_->delegate()->GetScriptContextSet(),
+        target_port_id, message,
+        /*restrict_to_render_frame=*/GetRestrictToRenderFrame());
+  }
+
+  mojo::ReceiverId AddPort(
+      const PortId& target_port_id,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost>
+          port_host) {
+    auto receiver_id =
+        message_port_dispatchers_.Add(this, std::move(port), target_port_id);
+    CHECK(!base::Contains(message_port_hosts_, target_port_id));
+    auto& bound_port_host = message_port_hosts_[target_port_id] =
+        mojo::AssociatedRemote(std::move(port_host));
+    bound_port_host.set_disconnect_handler(
+        base::BindOnce(&MessagePortScope::PortDisconnected,
+                       base::Unretained(this), target_port_id));
+    return receiver_id;
+  }
+
+  void BindNewMessagePort(
+      const PortId& port_id,
+      mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+          message_port_host_receiver) {
+    mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port_receiver;
+    mojo::PendingAssociatedRemote<mojom::MessagePortHost>
+        message_port_host_remote;
+    message_port_remote =
+        message_port_receiver.InitWithNewEndpointAndPassRemote();
+    message_port_host_receiver =
+        message_port_host_remote.InitWithNewEndpointAndPassReceiver();
+    message_port_dispatchers_.Add(this, std::move(message_port_receiver),
+                                  port_id);
+    CHECK(!base::Contains(message_port_hosts_, port_id));
+    auto& bound_port_host = message_port_hosts_[port_id] =
+        mojo::AssociatedRemote(std::move(message_port_host_remote));
+    bound_port_host.set_disconnect_handler(base::BindOnce(
+        &MessagePortScope::PortDisconnected, base::Unretained(this), port_id));
+  }
+
+  void Remove(mojo::ReceiverId receiver_id, const PortId& target_port_id) {
+    message_port_dispatchers_.Remove(receiver_id);
+    PortDisconnected(target_port_id);
+  }
+
+  void PortDisconnected(const PortId& port_id) {
+    message_port_hosts_.erase(port_id);
+  }
+
+  size_t GetNumHosts() { return message_port_hosts_.size(); }
+
+  base::WeakPtr<MessagePortScope> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  virtual content::RenderFrame* GetRestrictToRenderFrame() { return nullptr; }
+
+  void CloseMessagePort(const PortId& port_id, bool close_channel) {
+    // BFCache can disconnect the mojo pipe but leave the GinPort thinking
+    // it is open.
+    if (!HasPort(port_id)) {
+      return;
+    }
+    GetMessagePortHost(port_id)->ClosePort(close_channel);
+    message_port_hosts_.erase(port_id);
+  }
+
+  bool HasPort(const PortId& port_id) {
+    return base::Contains(message_port_hosts_, port_id);
+  }
+
+  mojom::MessagePortHost* GetMessagePortHost(const PortId& port_id) {
+    auto* result = GetMessagePortHostIfExists(port_id);
+    CHECK(result);
+    return result;
+  }
+
+  mojom::MessagePortHost* GetMessagePortHostIfExists(const PortId& port_id) {
+    auto it = message_port_hosts_.find(port_id);
+    if (it == message_port_hosts_.end()) {
+      return nullptr;
+    }
+    return it->second.get();
+  }
+
+ private:
+  base::SafeRef<NativeRendererMessagingService> messaging_service_;
+  std::map<PortId, mojo::AssociatedRemote<mojom::MessagePortHost>>
+      message_port_hosts_;
+  mojo::AssociatedReceiverSet<mojom::MessagePort, PortId>
+      message_port_dispatchers_;
+  base::WeakPtrFactory<MessagePortScope> weak_ptr_factory_{this};
+};
+
+const void* const kRenderFrameMessagePortsKey = &kRenderFrameMessagePortsKey;
+
+// This class extensions MessagePortScope but associates the storage of
+// the class with UserData on each RenderFrame.
+class NativeRendererMessagingService::RenderFrameMessagePorts
+    : public base::SupportsUserData::Data,
+      public NativeRendererMessagingService::MessagePortScope {
+ public:
+  RenderFrameMessagePorts(
+      base::SafeRef<NativeRendererMessagingService> messaging_service,
+      content::RenderFrame* render_frame)
+      : MessagePortScope(std::move(messaging_service)),
+        render_frame_(render_frame) {}
+  ~RenderFrameMessagePorts() override = default;
+
+  static RenderFrameMessagePorts* GetOrCreate(
+      NativeRendererMessagingService* messaging_service,
+      content::RenderFrame* render_frame) {
+    RenderFrameMessagePorts* per_frame_data =
+        static_cast<RenderFrameMessagePorts*>(
+            render_frame->GetUserData(kRenderFrameMessagePortsKey));
+    if (!per_frame_data) {
+      auto created_data = std::make_unique<RenderFrameMessagePorts>(
+          messaging_service->AsSafeRef(), render_frame);
+      per_frame_data = created_data.get();
+      render_frame->SetUserData(kRenderFrameMessagePortsKey,
+                                std::move(created_data));
+    }
+    return per_frame_data;
+  }
+
+  content::RenderFrame* GetRestrictToRenderFrame() override {
+    return render_frame_;
+  }
+
+ private:
+  // Safe raw ptr since this object is UserData owned by RenderFrame itself.
+  raw_ptr<content::RenderFrame> render_frame_;
+};
+
 NativeRendererMessagingService::NativeRendererMessagingService(
     NativeExtensionBindingsSystem* bindings_system)
     : bindings_system_(bindings_system),
-      one_time_message_handler_(bindings_system) {}
-NativeRendererMessagingService::~NativeRendererMessagingService() = default;
-
-void NativeRendererMessagingService::ValidateMessagePort(
-    ScriptContextSetIterable* context_set,
-    const PortId& port_id,
-    content::RenderFrame* render_frame) {
-  // TODO(devlin): In practice, |render_frame| should never be null here (unlike
-  // in other methods, where it legitimately can), but it can be in testing. It
-  // would be better to fake it somehow, but unfortunately, there's no good way
-  // to have a RenderFrame in a unittest. :(
-  int routing_id =
-      render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
-
-  bool has_port = false;
-  // The base::Unretained() below is safe since ScriptContextSet::ForEach is
-  // synchronous.
-  context_set->ForEach(
-      render_frame,
-      base::BindRepeating(
-          &NativeRendererMessagingService::ValidateMessagePortInContext,
-          base::Unretained(this), port_id, &has_port));
-
-  // A reply is only sent if the port is missing, because the port is assumed to
-  // exist unless stated otherwise.
-  if (!has_port) {
-    bindings_system_->GetIPCMessageSender()->SendCloseMessagePort(
-        routing_id, port_id, false);
-  }
+      one_time_message_handler_(bindings_system) {
+  default_scope_ = std::make_unique<MessagePortScope>(AsSafeRef());
 }
+NativeRendererMessagingService::~NativeRendererMessagingService() = default;
 
 void NativeRendererMessagingService::DispatchOnConnect(
     ScriptContextSetIterable* context_set,
     const PortId& target_port_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info,
-    content::RenderFrame* restrict_to_render_frame) {
+    const TabConnectionInfo& source,
+    const ExternalConnectionInfo& info,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost> port_host,
+    content::RenderFrame* restrict_to_render_frame,
+    ConnectCallback callback) {
   DCHECK(!target_port_id.is_opener);
-  int routing_id = restrict_to_render_frame
-                       ? restrict_to_render_frame->GetRoutingID()
-                       : MSG_ROUTING_NONE;
+  auto scope = GetMessagePortScope(restrict_to_render_frame)->GetWeakPtr();
+  auto receiver_id =
+      scope->AddPort(target_port_id, std::move(port), std::move(port_host));
+
   bool port_created = false;
   context_set->ForEach(
-      info.target_id, restrict_to_render_frame,
+      GenerateHostIdFromExtensionId(info.target_id), restrict_to_render_frame,
       base::BindRepeating(
           &NativeRendererMessagingService::DispatchOnConnectToScriptContext,
           base::Unretained(this), target_port_id, channel_type, channel_name,
-          &source, info, &port_created));
+          std::ref(source), std::ref(info), &port_created));
   // Note: |restrict_to_render_frame| may have been deleted at this point!
 
-  IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
-  if (port_created) {
-    ipc_sender->SendOpenMessagePort(routing_id, target_port_id);
-  } else {
-    ipc_sender->SendCloseMessagePort(routing_id, target_port_id, false);
+  if (!port_created && scope) {
+    scope->Remove(receiver_id, target_port_id);
   }
+
+  // Note: |restrict_to_render_frame| may have been deleted at this point!
+  std::move(callback).Run(port_created);
 }
 
 void NativeRendererMessagingService::DeliverMessage(
@@ -169,7 +311,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
     ScriptContext* script_context,
     const MessageTarget& target,
     const std::string& channel_name,
-    SerializationFormat format) {
+    mojom::SerializationFormat format) {
   if (!ScriptContextIsValid(script_context))
     return gin::Handle<GinPort>();
 
@@ -178,24 +320,30 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
   if (!data)
     return gin::Handle<GinPort>();
 
+  MessagePortScope* scope =
+      GetMessagePortScope(script_context->GetRenderFrame());
   bool is_opener = true;
   gin::Handle<GinPort> port =
       CreatePort(script_context, channel_name,
                  PortId(script_context->context_id(), data->next_port_id++,
                         is_opener, format));
+  mojo::PendingAssociatedRemote<mojom::MessagePort> messsage_port;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost> messsage_port_host;
+  scope->BindNewMessagePort(port->port_id(), messsage_port, messsage_port_host);
 
-  ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
-                                 ? ChannelType::kNative
-                                 : ChannelType::kConnect;
+  mojom::ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
+                                        ? mojom::ChannelType::kNative
+                                        : mojom::ChannelType::kConnect;
   bindings_system_->GetIPCMessageSender()->SendOpenMessageChannel(
-      script_context, port->port_id(), target, channel_type, channel_name);
+      script_context, port->port_id(), target, channel_type, channel_name,
+      std::move(messsage_port), std::move(messsage_port_host));
   return port;
 }
 
 v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -205,40 +353,52 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
       script_context->v8_context(), kCreateIfMissing);
 
+  MessagePortScope* scope =
+      GetMessagePortScope(script_context->GetRenderFrame());
   bool is_opener = true;
 
-  // TODO(crbug.com/248548): Instead of inferring the SerializationFormat from
-  // Message, it'd be better to have the clients pass it directly. This is
+  // TODO(crbug.com/248548): Instead of inferring the mojom::SerializationFormat
+  // from Message, it'd be better to have the clients pass it directly. This is
   // because, in case of `kStructuredCloned` to `kJson` fallback, the format for
   // the ports will also be `kJson`. This is inconsistent with what we do for
-  // ports for long-lived channels where the port's `SerializationFormat` is
-  // always the same as that passed by messaging clients and is independent of
-  // any fallback behavior.
+  // ports for long-lived channels where the port's `mojom::SerializationFormat`
+  // is always the same as that passed by messaging clients and is independent
+  // of any fallback behavior.
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
                  message.format);
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  mojom::MessagePortHost* message_port_host = nullptr;
+  scope->BindNewMessagePort(port_id, message_port, message_port_host_receiver);
+  message_port_host = scope->GetMessagePortHost(port_id);
 
-  return one_time_message_handler_.SendMessage(script_context, port_id, target,
-                                               channel_type, message,
-                                               async_type, response_callback);
+  return one_time_message_handler_.SendMessage(
+      script_context, port_id, target, channel_type, message, async_type,
+      response_callback, message_port_host, std::move(message_port),
+      std::move(message_port_host_receiver));
 }
 
 void NativeRendererMessagingService::PostMessageToPort(
     v8::Local<v8::Context> context,
     const PortId& port_id,
-    int routing_id,
     std::unique_ptr<Message> message) {
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CHECK(script_context);
   if (!ScriptContextIsValid(script_context))
     return;
 
-  bindings_system_->GetIPCMessageSender()->SendPostMessageToPort(port_id,
-                                                                 *message);
+  auto* scope = GetMessagePortScope(script_context->GetRenderFrame());
+  // BFCache can disconnect the mojo pipe but leave the GinPort thinking
+  // it is open.
+  if (!scope->HasPort(port_id)) {
+    return;
+  }
+  scope->GetMessagePortHost(port_id)->PostMessage(*message);
 }
 
 void NativeRendererMessagingService::ClosePort(v8::Local<v8::Context> context,
-                                               const PortId& port_id,
-                                               int routing_id) {
+                                               const PortId& port_id) {
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CHECK(script_context);
 
@@ -253,15 +413,18 @@ void NativeRendererMessagingService::ClosePort(v8::Local<v8::Context> context,
   if (!ScriptContextIsValid(script_context))
     return;
 
-  bool close_channel = true;
-  bindings_system_->GetIPCMessageSender()->SendCloseMessagePort(
-      routing_id, port_id, close_channel);
+  CloseMessagePort(script_context, port_id, /*close_channel=*/true);
 }
 
 gin::Handle<GinPort> NativeRendererMessagingService::CreatePortForTesting(
     ScriptContext* script_context,
     const std::string& channel_name,
-    const PortId& port_id) {
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+        message_port_host_receiver) {
+  BindPortForTesting(script_context, port_id, message_port_remote,  // IN-TEST
+                     message_port_host_receiver);
   return CreatePort(script_context, channel_name, port_id);
 }
 
@@ -277,23 +440,23 @@ bool NativeRendererMessagingService::HasPortForTesting(
   return ContextHasMessagePort(script_context, port_id);
 }
 
-void NativeRendererMessagingService::ValidateMessagePortInContext(
+void NativeRendererMessagingService::BindPortForTesting(
+    ScriptContext* script_context,
     const PortId& port_id,
-    bool* has_port,
-    ScriptContext* script_context) {
-  if (*has_port)
-    return;  // Stop checking if the port was found.
-
-  // No need for |=; we know this is false right now from above.
-  *has_port = ContextHasMessagePort(script_context, port_id);
+    mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+        message_port_host_receiver) {
+  auto* scope = GetMessagePortScope(script_context->GetRenderFrame());
+  scope->BindNewMessagePort(port_id, message_port_remote,
+                            message_port_host_receiver);
 }
 
 void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
     const PortId& target_port_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo* source,
-    const ExtensionMsg_ExternalConnectionInfo& info,
+    const TabConnectionInfo& source,
+    const ExternalConnectionInfo& info,
     bool* port_created,
     ScriptContext* script_context) {
   // If the channel was opened by this same context, ignore it. This should only
@@ -324,8 +487,9 @@ void NativeRendererMessagingService::DeliverMessageToScriptContext(
     const Message& message,
     const PortId& target_port_id,
     ScriptContext* script_context) {
-  if (!ContextHasMessagePort(script_context, target_port_id))
+  if (!ContextHasMessagePort(script_context, target_port_id)) {
     return;
+  }
 
   if (script_context->IsForServiceWorker()) {
     DeliverMessageToWorker(message, target_port_id, script_context);
@@ -364,7 +528,7 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
     bool sender_is_privileged = message.from_privileged_context;
     bool receiver_is_privileged =
         script_context->context_type() ==
-        extensions::Feature::BLESSED_EXTENSION_CONTEXT;
+        extensions::mojom::ContextType::kPrivilegedExtension;
     UserActivationNotificationType notification_type;
     if (sender_is_privileged && receiver_is_privileged) {
       notification_type =
@@ -416,10 +580,10 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     ScriptContext* script_context,
     const PortId& target_port_id,
     const ExtensionId& target_extension_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo* source,
-    const ExtensionMsg_ExternalConnectionInfo& info,
+    const TabConnectionInfo& source,
+    const ExternalConnectionInfo& info,
     const std::string& event_name) {
   v8::Isolate* isolate = script_context->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -437,18 +601,21 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     sender_builder.Set("url", info.source_url.spec());
   if (info.source_origin)
     sender_builder.Set("origin", info.source_origin->Serialize());
-  if (source->frame_id >= 0)
-    sender_builder.Set("frameId", source->frame_id);
-  if (!source->document_id.empty())
-    sender_builder.Set("documentId", source->document_id);
-  if (!source->document_lifecycle.empty())
-    sender_builder.Set("documentLifecycle", source->document_lifecycle);
+  if (source.frame_id >= 0) {
+    sender_builder.Set("frameId", source.frame_id);
+  }
+  if (!source.document_id.empty()) {
+    sender_builder.Set("documentId", source.document_id);
+  }
+  if (!source.document_lifecycle.empty()) {
+    sender_builder.Set("documentLifecycle", source.document_lifecycle);
+  }
 
   const Extension* extension = script_context->extension();
   if (extension) {
-    if (!source->tab.empty() && !extension->is_platform_app()) {
+    if (!source.tab.empty() && !extension->is_platform_app()) {
       sender_builder.Set("tab", content::V8ValueConverter::Create()->ToV8Value(
-                                    source->tab, v8_context));
+                                    source.tab, v8_context));
     }
 
     ExternallyConnectableInfo* externally_connectable =
@@ -468,17 +635,17 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   v8::Local<v8::Object> sender = sender_builder.Build();
 
-  if (channel_type == ChannelType::kSendRequest ||
-      channel_type == ChannelType::kSendMessage) {
+  if (channel_type == mojom::ChannelType::kSendRequest ||
+      channel_type == mojom::ChannelType::kSendMessage) {
     one_time_message_handler_.AddReceiver(script_context, target_port_id,
                                           sender, event_name);
   } else {
-    CHECK(channel_type == ChannelType::kConnect ||
-          channel_type == ChannelType::kNative);
+    CHECK(channel_type == mojom::ChannelType::kConnect ||
+          channel_type == mojom::ChannelType::kNative);
     gin::Handle<GinPort> port =
         CreatePort(script_context, channel_name, target_port_id);
     port->SetSender(v8_context, sender);
-    std::vector<v8::Local<v8::Value>> args = {port.ToV8()};
+    v8::LocalVector<v8::Value> args(isolate, {port.ToV8()});
     bindings_system_->api_system()->event_handler()->FireEventInContext(
         event_name, v8_context, &args, nullptr, JSRunner::ResultCallback());
   }
@@ -586,10 +753,6 @@ gin::Handle<GinPort> NativeRendererMessagingService::CreatePort(
   else
     DCHECK_NE(port_id.context_id, script_context->context_id());
 
-  content::RenderFrame* render_frame = script_context->GetRenderFrame();
-  int routing_id =
-      render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
-
   MessagingPerContextData* data =
       GetPerContextData<MessagingPerContextData>(context, kCreateIfMissing);
   DCHECK(data);
@@ -597,7 +760,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::CreatePort(
 
   gin::Handle<GinPort> port_handle = gin::CreateHandle(
       isolate,
-      new GinPort(context, port_id, routing_id, channel_name,
+      new GinPort(context, port_id, channel_name,
                   bindings_system_->api_system()->event_handler(), this));
 
   v8::Local<v8::Object> port_object = port_handle.ToV8().As<v8::Object>();
@@ -624,6 +787,43 @@ gin::Handle<GinPort> NativeRendererMessagingService::GetPort(
   CHECK(port);
 
   return gin::CreateHandle(isolate, port);
+}
+
+void NativeRendererMessagingService::CloseMessagePort(
+    ScriptContext* script_context,
+    const PortId& port_id,
+    bool close_channel) {
+  auto* scope = GetMessagePortScope(script_context->GetRenderFrame());
+  scope->CloseMessagePort(port_id, close_channel);
+}
+
+NativeRendererMessagingService::MessagePortScope*
+NativeRendererMessagingService::GetMessagePortScope(
+    content::RenderFrame* render_frame) {
+  if (render_frame) {
+    return RenderFrameMessagePorts::GetOrCreate(this, render_frame);
+  }
+  return default_scope_.get();
+}
+
+mojom::MessagePortHost* NativeRendererMessagingService::GetMessagePortHost(
+    ScriptContext* script_context,
+    const PortId& port_id) {
+  return GetMessagePortScope(script_context->GetRenderFrame())
+      ->GetMessagePortHost(port_id);
+}
+
+mojom::MessagePortHost*
+NativeRendererMessagingService::GetMessagePortHostIfExists(
+    ScriptContext* script_context,
+    const PortId& port_id) {
+  return GetMessagePortScope(script_context->GetRenderFrame())
+      ->GetMessagePortHostIfExists(port_id);
+}
+
+base::SafeRef<NativeRendererMessagingService>
+NativeRendererMessagingService::AsSafeRef() {
+  return weak_ptr_factory_.GetSafeRef();
 }
 
 }  // namespace extensions

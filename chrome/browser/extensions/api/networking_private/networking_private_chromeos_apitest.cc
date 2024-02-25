@@ -410,7 +410,7 @@ class NetworkingPrivateChromeOSApiTestAsh
         request,
         base::BindOnce(
             [](std::string* out,
-               absl::optional<::user_data_auth::GetSanitizedUsernameReply>
+               std::optional<::user_data_auth::GetSanitizedUsernameReply>
                    result) {
               CHECK(result.has_value());
               *out = result->sanitized_username();
@@ -740,6 +740,16 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetDeviceStates) {
   manager_test()->AddTechnology("cellular", false /* disabled */);
   manager_test()->SetTechnologyInitializing("cellular", true);
   EXPECT_TRUE(RunNetworkingSubtest("getDeviceStates")) << message_;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
+                       GetDeviceStatesLacros) {
+  if (!SetUpAsh()) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+  EXPECT_TRUE(RunNetworkingSubtest("getDeviceStatesLacros")) << message_;
 }
 #endif
 

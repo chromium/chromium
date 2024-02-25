@@ -45,6 +45,10 @@ void FakeFeaturedClient::HandleSeedFetched(
   }
 
   bool success = responses_.front();
+  if (success) {
+    // We only want to save the safe seed if the response (success) is valid.
+    latest_safe_seed_ = safe_seed;
+  }
   responses_.pop();
   std::move(callback).Run(success);
 }

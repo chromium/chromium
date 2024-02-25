@@ -5,6 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests to ensure network waterfall column updates header height when headers are not visible.\n`);
   await TestRunner.showPanel('network');
@@ -12,7 +15,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
   NetworkTestRunner.recordNetwork();
   TestRunner.addResult('Setting initial large row setting to false');
-  UI.panels.network.networkLogLargeRowsSetting.set(false);
+  Network.NetworkPanel.NetworkPanel.instance().networkLogLargeRowsSetting.set(false);
 
   TestRunner.addResult('Fetching resource');
   await TestRunner.evaluateInPagePromise(`fetch('resources/empty.html?xhr')`);
@@ -22,16 +25,16 @@ import {NetworkTestRunner} from 'network_test_runner';
       request => request.name() === 'empty.html?xhr');
   var xhrNode = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
   TestRunner.addResult('Node rendered showing fetch resource');
-  UI.panels.network.onRequestSelected({data: request});
-  UI.panels.network.showRequestPanel();
+  Network.NetworkPanel.NetworkPanel.instance().onRequestSelected({data: request});
+  Network.NetworkPanel.NetworkPanel.instance().showRequestPanel();
   // Wait for NetworkLogViewColumn.updateRowsSize to update the header height
   await new Promise(window.requestAnimationFrame);
   TestRunner.addResult('Height of waterfall header: ' + NetworkTestRunner.networkWaterfallColumn().headerHeight);
 
   TestRunner.addResult('Setting large row setting to true');
-  UI.panels.network.networkLogLargeRowsSetting.set(true);
+  Network.NetworkPanel.NetworkPanel.instance().networkLogLargeRowsSetting.set(true);
   TestRunner.addResult('Unselecting request from grid');
-  UI.panels.network.hideRequestPanel();
+  Network.NetworkPanel.NetworkPanel.instance().hideRequestPanel();
   // Wait for NetworkLogViewColumn.updateRowsSize to update the header height
   await new Promise(window.requestAnimationFrame);
   TestRunner.addResult('Height of waterfall header: ' + NetworkTestRunner.networkWaterfallColumn().headerHeight);

@@ -135,6 +135,12 @@ def _CreateFile(filename):
     fd.write(contents)
 
 
+# A file is safe to overwrite if it's an empty file we can write to.
+def _IsSafeToOverwrite(path):
+  return os.path.isfile(path) and os.path.getsize(path) == 0 and os.access(
+      path, os.W_OK)
+
+
 def Main():
   files = sys.argv[1:]
   if len(files) < 1:
@@ -149,16 +155,8 @@ def Main():
       print('Unknown file type for %s' % f, file=sys.stderr)
       return 2
 
-    if os.path.exists(f):
+    if os.path.exists(f) and not _IsSafeToOverwrite(f):
       print('A file at path %s already exists' % f, file=sys.stderr)
-      return 2
-
-    # TODO(https://crbug.com/1375793): Remove this check.
-    if _IsIOSFile(f) and f.endswith('.js'):
-      print(
-          'Invalid file type for %s. (Please use \'.ts\' for new iOS scripts.)'
-          % f,
-          file=sys.stderr)
       return 2
 
   for f in files:

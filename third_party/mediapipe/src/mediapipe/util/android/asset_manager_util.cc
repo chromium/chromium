@@ -16,12 +16,13 @@
 
 #include <fstream>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/java/com/google/mediapipe/framework/jni/jni_util.h"
 #include "mediapipe/util/android/file/base/file.h"
 #include "mediapipe/util/android/file/base/filesystem.h"
-#include "absl/log/absl_check.h"
 
 namespace {
 
@@ -57,7 +58,7 @@ bool AssetManager::InitializeFromAssetManager(
   // Finally get the pointer to the AAssetManager using native code.
   asset_manager_ = AAssetManager_fromJava(env, global_asset_manager);
   if (asset_manager_) {
-    LOG(INFO) << "Created global reference to asset manager.";
+    ABSL_LOG(INFO) << "Created global reference to asset manager.";
     return true;
   }
   return false;
@@ -98,7 +99,7 @@ bool AssetManager::InitializeFromActivity(JNIEnv* env, jobject activity,
 
 bool AssetManager::FileExists(const std::string& filename, bool* is_dir) {
   if (!asset_manager_) {
-    LOG(ERROR) << "Asset manager was not initialized from JNI";
+    ABSL_LOG(ERROR) << "Asset manager was not initialized from JNI";
     return false;
   }
 
@@ -135,7 +136,7 @@ bool AssetManager::FileExists(const std::string& filename, bool* is_dir) {
 bool AssetManager::ReadFile(const std::string& filename, std::string* output) {
   ABSL_CHECK(output);
   if (!asset_manager_) {
-    LOG(ERROR) << "Asset manager was not initialized from JNI";
+    ABSL_LOG(ERROR) << "Asset manager was not initialized from JNI";
     return false;
   }
 

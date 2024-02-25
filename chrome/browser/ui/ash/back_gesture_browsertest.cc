@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,9 +16,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 
@@ -85,14 +87,15 @@ class BackGestureBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir.AppendASCII("chrome/test/data/ash/back_gesture"));
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Enter tablet mode.
-    ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-    ASSERT_TRUE(ash::TabletMode::Get()->InTabletMode());
+    ash::TabletModeControllerTestApi().EnterTabletMode();
+    ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   }
 
   content::RenderWidgetHost* GetRenderWidgetHost() {

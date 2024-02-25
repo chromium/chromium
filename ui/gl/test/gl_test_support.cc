@@ -36,7 +36,7 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 
 // static
 GLDisplay* GLTestSupport::InitializeGL(
-    absl::optional<GLImplementationParts> prefered_impl) {
+    std::optional<GLImplementationParts> prefered_impl) {
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;

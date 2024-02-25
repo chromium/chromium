@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace arc {
@@ -60,7 +60,7 @@ class FileStreamForwarderTest : public testing::Test {
 
     context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        /*bucket=*/absl::nullopt, storage::kFileSystemTypeTemporary,
+        /*bucket=*/std::nullopt, storage::kFileSystemTypeTemporary,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce([](const storage::FileSystemURL& root_url,
                           const std::string& name, base::File::Error result) {
@@ -79,7 +79,7 @@ class FileStreamForwarderTest : public testing::Test {
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFileWithData(
-                  context_.get(), url_, test_data_.data(), test_data_.size()));
+                  context_.get(), url_, test_data_));
   }
 
  protected:

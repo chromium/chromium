@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -42,9 +44,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
-/**
- * Verifies URL load parameters set when triggering navigations from the context menu.
- */
+/** Verifies URL load parameters set when triggering navigations from the context menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -68,18 +68,27 @@ public class ContextMenuLoadUrlParamsTest {
     // TabModelSelectorImpl.
     private static class RecordingTabModelSelector extends TabModelSelectorImpl {
         @Override
-        public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
+        public Tab openNewTab(
+                LoadUrlParams loadUrlParams,
+                @TabLaunchType int type,
+                Tab parent,
                 boolean incognito) {
             sOpenNewTabLoadUrlParams = loadUrlParams;
             return super.openNewTab(loadUrlParams, type, parent, incognito);
         }
 
-        public RecordingTabModelSelector(Activity activity, TabCreatorManager tabCreatorManager,
-                TabModelFilterFactory tabModelFilterFactory, int selectorIndex) {
-            super(null, tabCreatorManager, tabModelFilterFactory,
-                    ()
-                            -> NextTabPolicy.HIERARCHICAL,
-                    AsyncTabParamsManagerSingleton.getInstance(), false, ActivityType.TABBED,
+        public RecordingTabModelSelector(
+                OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                TabCreatorManager tabCreatorManager,
+                TabModelFilterFactory tabModelFilterFactory) {
+            super(
+                    profileProviderSupplier,
+                    tabCreatorManager,
+                    tabModelFilterFactory,
+                    () -> NextTabPolicy.HIERARCHICAL,
+                    AsyncTabParamsManagerSingleton.getInstance(),
+                    false,
+                    ActivityType.TABBED,
                     false);
         }
     }
@@ -92,11 +101,15 @@ public class ContextMenuLoadUrlParamsTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
                     @Override
-                    public TabModelSelector buildSelector(Activity activity,
+                    public TabModelSelector buildSelector(
+                            Context context,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
-                        return new RecordingTabModelSelector(activity, tabCreatorManager,
-                                new ChromeTabModelFilterFactory(activity), selectorIndex);
+                            NextTabPolicySupplier nextTabPolicySupplier) {
+                        return new RecordingTabModelSelector(
+                                profileProviderSupplier,
+                                tabCreatorManager,
+                                new ChromeTabModelFilterFactory(context));
                     }
                 });
     }
@@ -109,13 +122,17 @@ public class ContextMenuLoadUrlParamsTest {
     @Before
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { FirstRunStatus.setFirstRunFlowComplete(true); });
+                () -> {
+                    FirstRunStatus.setFirstRunFlowComplete(true);
+                });
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { FirstRunStatus.setFirstRunFlowComplete(false); });
+                () -> {
+                    FirstRunStatus.setFirstRunFlowComplete(false);
+                });
     }
 
     /**
@@ -126,11 +143,14 @@ public class ContextMenuLoadUrlParamsTest {
     @MediumTest
     @Feature({"Browser"})
     public void testOpenInNewTabReferrer() throws TimeoutException {
-        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink",
+        triggerContextMenuLoad(
+                sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLink",
                 R.id.contextmenu_open_in_new_tab);
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertEquals(sActivityTestRule.getTestServer().getURL(HTML_PATH),
+        Assert.assertEquals(
+                sActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
@@ -147,7 +167,9 @@ public class ContextMenuLoadUrlParamsTest {
     @MediumTest
     @Feature({"Browser"})
     public void testOpenInIncognitoTabNoReferrer() throws TimeoutException {
-        triggerContextMenuLoad(sActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink",
+        triggerContextMenuLoad(
+                sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                "testLink",
                 R.id.contextmenu_open_in_incognito_tab);
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
@@ -155,9 +177,7 @@ public class ContextMenuLoadUrlParamsTest {
         Assert.assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
     }
 
-    /**
-     * Verifies that the referrer is stripped from username and password fields.
-     */
+    /** Verifies that the referrer is stripped from username and password fields. */
     @Test
     @MediumTest
     @Feature({"Browser"})
@@ -176,8 +196,12 @@ public class ContextMenuLoadUrlParamsTest {
         sActivityTestRule.loadUrl(url);
         sActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), tab, openerDomId, menuItemId);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                tab,
+                openerDomId,
+                menuItemId);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 }

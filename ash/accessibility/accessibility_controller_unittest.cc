@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 
 #include <string>
 #include <utility>
@@ -63,10 +63,12 @@ class AccessibilityControllerTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition,
-         ::features::kExperimentalAccessibilityColorEnhancementSettings},
-        {});
+        /*enabled_features=*/{media::kLiveCaption,
+                              media::kLiveCaptionSystemWideOnChromeOS,
+                              ash::features::kOnDeviceSpeechRecognition,
+                              ::features::kAccessibilityFaceGaze},
+        /*disabled_feaures=*/{
+            ::features::kAccessibilityDictationKeyboardImprovements});
     AshTestBase::SetUp();
   }
 
@@ -101,6 +103,7 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityCaretHighlightEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCursorColorEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
@@ -179,21 +182,19 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
-  if (::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorCorrectionHasBeenSetup));
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorVisionCorrectionAmount));
-  }
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionHasBeenSetup));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionAmount));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityFaceGazeEnabled));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->autoclick().enabled());
 
@@ -213,7 +214,7 @@ TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetCaretHighlightEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->caret_highlight().enabled());
 
@@ -233,7 +234,7 @@ TEST_F(AccessibilityControllerTest, SetCaretHighlightEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->color_correction().enabled());
 
@@ -269,7 +270,7 @@ TEST_F(AccessibilityControllerTest, SetColorCorrectionEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->cursor_highlight().enabled());
 
@@ -288,8 +289,88 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->cursor_color().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->cursor_color().SetEnabled(true);
+  EXPECT_TRUE(controller->cursor_color().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->cursor_color().SetEnabled(false);
+  EXPECT_FALSE(controller->cursor_color().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, SetFaceGazeEnabled) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->face_gaze().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(true);
+  EXPECT_TRUE(controller->face_gaze().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(false);
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, FaceGazeTrayMenuVisibility) {
+  // Check that when the pref isn't being controlled by any policy will be
+  // visible in the accessibility tray menu despite its value.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+
+  // Check when the value is true and not being controlled by any policy.
+  controller->face_gaze().SetEnabled(true);
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(controller->face_gaze().enabled());
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  // Check when the value is false and not being controlled by any policy.
+  controller->face_gaze().SetEnabled(false);
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+
+  // Check that when the pref is managed and being forced on then it will be
+  // visible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kAccessibilityFaceGazeEnabled,
+      std::make_unique<base::Value>(true));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  // Check that when the pref is managed and only being forced off then it will
+  // be invisible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kAccessibilityFaceGazeEnabled,
+      std::make_unique<base::Value>(false));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_FALSE(controller->IsFaceGazeSettingVisibleInTray());
+}
+
 TEST_F(AccessibilityControllerTest, SetFocusHighlightEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->focus_highlight().enabled());
 
@@ -309,7 +390,7 @@ TEST_F(AccessibilityControllerTest, SetFocusHighlightEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetHighContrastEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->high_contrast().enabled());
 
@@ -329,7 +410,7 @@ TEST_F(AccessibilityControllerTest, SetHighContrastEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetLargeCursorEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->large_cursor().enabled());
 
@@ -353,7 +434,7 @@ TEST_F(AccessibilityControllerTest, LargeCursorTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->large_cursor().SetEnabled(true);
@@ -389,7 +470,7 @@ TEST_F(AccessibilityControllerTest, LargeCursorTrayMenuVisibility) {
 }
 
 TEST_F(AccessibilityControllerTest, SetLiveCaptionEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->live_caption().enabled());
 
@@ -413,7 +494,7 @@ TEST_F(AccessibilityControllerTest, LiveCaptionTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->live_caption().SetEnabled(true);
@@ -447,7 +528,7 @@ TEST_F(AccessibilityControllerTest, HighContrastTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->high_contrast().SetEnabled(true);
@@ -486,7 +567,7 @@ TEST_F(AccessibilityControllerTest, MonoAudioTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->mono_audio().SetEnabled(true);
@@ -525,10 +606,10 @@ TEST_F(AccessibilityControllerTest, DictationTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Required to set the dialog to be true to change the value of the pref from
-  // the |AccessibilityControllerImpl|.
+  // the |AccessibilityController|.
   prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
   // Check when the value is true and not being controlled by any policy.
   controller->dictation().SetEnabled(true);
@@ -567,7 +648,7 @@ TEST_F(AccessibilityControllerTest, CursorHighlightTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->cursor_highlight().SetEnabled(true);
@@ -606,7 +687,7 @@ TEST_F(AccessibilityControllerTest, FullScreenMagnifierTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->fullscreen_magnifier().SetEnabled(true);
@@ -645,7 +726,7 @@ TEST_F(AccessibilityControllerTest, DockedMagnifierTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->docked_magnifier().SetEnabled(true);
@@ -677,7 +758,7 @@ TEST_F(AccessibilityControllerTest, CaretHighlightTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->caret_highlight().SetEnabled(true);
@@ -716,7 +797,7 @@ TEST_F(AccessibilityControllerTest, SelectToSpeakTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->select_to_speak().SetEnabled(true);
@@ -755,7 +836,7 @@ TEST_F(AccessibilityControllerTest, AutoClickTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->autoclick().SetEnabled(true);
@@ -794,7 +875,7 @@ TEST_F(AccessibilityControllerTest, SpokenFeedbackTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
@@ -833,7 +914,7 @@ TEST_F(AccessibilityControllerTest, VirtualKeyboardTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->virtual_keyboard().SetEnabled(true);
@@ -872,7 +953,7 @@ TEST_F(AccessibilityControllerTest, SwitchAccessTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->switch_access().SetEnabled(true);
@@ -911,7 +992,7 @@ TEST_F(AccessibilityControllerTest, ColorCorrectionTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->color_correction().SetEnabled(true);
@@ -951,7 +1032,7 @@ TEST_F(AccessibilityControllerTest, FocusHighlightTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->focus_highlight().SetEnabled(true);
@@ -990,7 +1071,7 @@ TEST_F(AccessibilityControllerTest, StickyKeysTrayMenuVisibility) {
   // visible in the accessibility tray menu despite its value.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->sticky_keys().SetEnabled(true);
@@ -1071,7 +1152,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 }
 
 TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->mono_audio().enabled());
 
@@ -1091,7 +1172,7 @@ TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetSpokenFeedbackEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
@@ -1111,7 +1192,7 @@ TEST_F(AccessibilityControllerTest, SetSpokenFeedbackEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, FeaturesConflictingWithChromeVox) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
   EXPECT_FALSE(controller->sticky_keys().enabled());
@@ -1150,7 +1231,7 @@ TEST_F(AccessibilityControllerTest, FeaturesConflictingWithChromeVox) {
 }
 
 TEST_F(AccessibilityControllerTest, SetStickyKeysEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->sticky_keys().enabled());
 
@@ -1174,7 +1255,7 @@ TEST_F(AccessibilityControllerTest, SetStickyKeysEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetVirtualKeyboardEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->virtual_keyboard().enabled());
 
@@ -1217,7 +1298,7 @@ TEST_F(AccessibilityControllerTest, SetDarkenScreen) {
   ASSERT_FALSE(
       chromeos::FakePowerManagerClient::Get()->backlights_forced_off());
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetDarkenScreen(true);
   EXPECT_TRUE(chromeos::FakePowerManagerClient::Get()->backlights_forced_off());
@@ -1231,7 +1312,7 @@ TEST_F(AccessibilityControllerTest, ShowNotificationOnSpokenFeedback) {
   const std::u16string kChromeVoxEnabledTitle = u"ChromeVox enabled";
   const std::u16string kChromeVoxEnabled =
       u"Press Ctrl + Alt + Z to disable spoken feedback.";
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   // Enabling spoken feedback should show the notification if specified to show
@@ -1263,7 +1344,7 @@ TEST_F(AccessibilityControllerTest,
       u"Press Ctrl + Alt + Z to disable spoken feedback.";
   const std::u16string kBrailleConnectedAndChromeVoxEnabledTitle =
       u"Braille and ChromeVox are enabled";
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_SHOW);
@@ -1299,7 +1380,7 @@ TEST_F(AccessibilityControllerTest,
 }
 
 TEST_F(AccessibilityControllerTest, SelectToSpeakStateChanges) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityObserver observer;
   controller->AddObserver(&observer);
@@ -1326,7 +1407,7 @@ TEST_F(AccessibilityControllerTest,
   const std::u16string kSucceededDescription =
       u"Speech is processed locally and dictation works offline, but some "
       u"voice commands won’t work.";
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   controller->ShowNotificationForDictation(
@@ -1347,7 +1428,7 @@ TEST_F(AccessibilityControllerTest,
   const std::u16string kFailedDescription =
       u"Download will be attempted later. Speech will be sent to Google for "
       u"processing for now.";
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   controller->ShowNotificationForDictation(
@@ -1380,10 +1461,15 @@ TEST_F(AccessibilityControllerTest, AllAccessibilityFeaturesHaveValidNames) {
   }
 }
 
+TEST_F(AccessibilityControllerTest, VerifyFeatureData) {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  EXPECT_TRUE(accessibility_controller->VerifyFeaturesDataForTesting());
+}
+
 // Verifies the behavior of EnableOrToggleDictation without the keyboard
 // improvements feature (current behavior).
 TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
   controller->SetClient(&client);
@@ -1453,7 +1539,7 @@ class AccessibilityControllerDictationKeyboardImprovementsTest
 // improvements feature (new behavior).
 TEST_F(AccessibilityControllerDictationKeyboardImprovementsTest,
        EnableOrToggleDictation) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
   controller->SetClient(&client);
@@ -1555,7 +1641,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(AccessibilityControllerSigninTest, EnableOnLoginScreenAndLogin) {
   constexpr float kMagnifierScale = 4.3f;
 
-  AccessibilityControllerImpl* accessibility =
+  AccessibilityController* accessibility =
       Shell::Get()->accessibility_controller();
   DockedMagnifierController* docked_magnifier =
       Shell::Get()->docked_magnifier_controller();
@@ -1649,7 +1735,7 @@ TEST_P(AccessibilityControllerSigninTest, EnableOnLoginScreenAndLogin) {
 }
 
 TEST_P(AccessibilityControllerSigninTest, SwitchAccessPrefsSyncToSignIn) {
-  AccessibilityControllerImpl* accessibility =
+  AccessibilityController* accessibility =
       Shell::Get()->accessibility_controller();
 
   SessionControllerImpl* session = Shell::Get()->session_controller();

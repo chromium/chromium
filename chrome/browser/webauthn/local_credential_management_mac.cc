@@ -25,23 +25,23 @@ void LocalCredentialManagementMac::HasCredentials(
     base::OnceCallback<void(bool)> callback) {
   Enumerate(
       base::BindOnce(
-          [](absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+          [](std::optional<std::vector<device::DiscoverableCredentialMetadata>>
                  metadata) { return metadata ? !metadata->empty() : false; })
           .Then(std::move(callback)));
 }
 
 void LocalCredentialManagementMac::Enumerate(
     base::OnceCallback<void(
-        absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+        std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
         callback) {
   device::fido::mac::TouchIdCredentialStore credential_store(config_);
-  absl::optional<std::list<device::fido::mac::Credential>> credentials =
-      credential_store.FindResidentCredentials(/*rp_id=*/absl::nullopt);
+  std::optional<std::list<device::fido::mac::Credential>> credentials =
+      credential_store.FindResidentCredentials(/*rp_id=*/std::nullopt);
 
   if (!credentials) {
     // FindResidentCredentials() encountered an error.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
   std::vector<device::DiscoverableCredentialMetadata> credential_metadata;

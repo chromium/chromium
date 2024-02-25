@@ -11,27 +11,25 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/fake_gaia.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -66,6 +64,7 @@ SupervisionMixin::SupervisionMixin(
     : InProcessBrowserTestMixin(&test_mixin_host),
       test_base_(test_base),
       fake_gaia_mixin_(&test_mixin_host),
+      api_mock_setup_mixin_(test_mixin_host, test_base),
       consent_level_(options.consent_level),
       email_(options.email),
       sign_in_mode_(options.sign_in_mode) {}
@@ -78,10 +77,12 @@ SupervisionMixin::SupervisionMixin(
     : InProcessBrowserTestMixin(&test_mixin_host),
       test_base_(test_base),
       fake_gaia_mixin_(&test_mixin_host),
-      embedded_test_server_setup_mixin_(absl::in_place,
+      embedded_test_server_setup_mixin_(std::in_place,
                                         test_mixin_host,
+                                        test_base,
                                         embedded_test_server,
                                         options.embedded_test_server_options),
+      api_mock_setup_mixin_(test_mixin_host, test_base),
       consent_level_(options.consent_level),
       email_(options.email),
       sign_in_mode_(options.sign_in_mode) {}
@@ -115,16 +116,41 @@ void SupervisionMixin::SetUpIdentityTestEnvironment() {
 
 void SupervisionMixin::ConfigureParentalControls(bool is_supervised_profile) {
   if (is_supervised_profile) {
+    SetParentalControlsAccountCapability(true);
     EnableParentalControls(*GetProfile()->GetPrefs());
   } else {
     DisableParentalControls(*GetProfile()->GetPrefs());
   }
 }
 
+void SupervisionMixin::SetParentalControlsAccountCapability(
+    bool is_supervised_profile) {
+  auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(consent_level_);
+  CHECK_EQ(account_info.email, email_);
+  AccountInfo account = identity_manager->FindExtendedAccountInfo(account_info);
+
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_is_subject_to_parental_controls(is_supervised_profile);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
+}
+
 void SupervisionMixin::ConfigureIdentityTestEnvironment() {
-  if (sign_in_mode_ == SignInMode::kSignedOut) {
-    GetIdentityTestEnvironment()->ClearPrimaryAccount();
-    return;
+  switch (sign_in_mode_) {
+    case SignInMode::kSignedOut:
+      GetIdentityTestEnvironment()->ClearPrimaryAccount();
+      return;
+    case SignInMode::kRegular:
+      fake_gaia_mixin_.SetupFakeGaiaForLogin(
+          email_, signin::GetTestGaiaIdForEmail(email_),
+          FakeGaiaMixin::kFakeRefreshToken);
+      break;
+    case SignInMode::kSupervised:
+      fake_gaia_mixin_.SetupFakeGaiaForChildUser(
+          email_, signin::GetTestGaiaIdForEmail(email_),
+          FakeGaiaMixin::kFakeRefreshToken, true);
+      break;
   }
 
   if (!IdentityManagerAlreadyHasPrimaryAccount(
@@ -132,20 +158,37 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
           consent_level_)) {
     // PRE_ tests intentionally leave accounts that are picked up by subsequent
     // test runs.
+
+    // Use the same Gaia id as the one used in the /ListAccounts response from
+    // `FakeGaia`.
+    // Otherwise, the `SigninManager` will find:
+    // - cookie accounts not empty and
+    // - the first account in the cookie doesn't have an equivalent extended
+    //   account info with the same gaia id.
+    // This will lead to clear primary account and removing all accounts.
     AccountInfo account_info =
-        GetIdentityTestEnvironment()->MakeAccountAvailable(email_);
-    GetIdentityTestEnvironment()->SetPrimaryAccount(email_, consent_level_);
+        GetIdentityTestEnvironment()->MakeAccountAvailable(
+            signin::AccountAvailabilityOptionsBuilder()
+                .AsPrimary(consent_level_)
+                .WithGaiaId(FakeGaia::kDefaultGaiaId)
+                .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
+                .Build(email_));
     CHECK(!account_info.account_id.empty());
+  } else {
+    GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   }
 
-  GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   GetIdentityTestEnvironment()->SetAutomaticIssueOfAccessTokens(true);
   ConfigureParentalControls(
       /*is_supervised_profile=*/sign_in_mode_ == SignInMode::kSupervised);
 }
 
 Profile* SupervisionMixin::GetProfile() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ProfileManager::GetActiveUserProfile();
+#else
   return test_base_->browser()->profile();
+#endif
 }
 
 signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
@@ -160,39 +203,11 @@ void SupervisionMixin::SetNextReAuthStatus(
   fake_gaia_mixin_.fake_gaia()->SetNextReAuthStatus(status);
 }
 
-void SupervisionMixin::InitFeatures() {
-  if (embedded_test_server_setup_mixin_.has_value()) {
-    embedded_test_server_setup_mixin_->InitFeatures();
-  }
-}
-
-FamilyFetchedLock::FamilyFetchedLock(
-    InProcessBrowserTestMixinHost& test_mixin_host,
-    raw_ptr<InProcessBrowserTest> test_base)
-    : InProcessBrowserTestMixin(&test_mixin_host), test_base_(test_base) {}
-FamilyFetchedLock::~FamilyFetchedLock() = default;
-
-void FamilyFetchedLock::SetUpOnMainThread() {
-  CHECK(test_base_->browser()->profile())
-      << "Must be called after the profile was initialized.";
-  pref_change_registrar_.Init(test_base_->browser()->profile()->GetPrefs());
-  pref_change_registrar_.Add(
-      std::string(prefs::kSupervisedUserCustodianName),
-      base::BindRepeating(&FamilyFetchedLock::OnDone, base::Unretained(this)));
-}
-void FamilyFetchedLock::TearDownOnMainThread() {
-  pref_change_registrar_.RemoveAll();
-}
-
-// Waits until the preference is ready, if the preference is pending load.
-void FamilyFetchedLock::Wait() {
-  base::RunLoop run_loop;
-  done_ = run_loop.QuitClosure();
-  run_loop.Run();
-}
-
-void FamilyFetchedLock::OnDone() {
-  std::move(done_).Run();
+void SupervisionMixin::SignIn(SignInMode mode) {
+  CHECK_NE(mode, SignInMode::kSignedOut);
+  CHECK_EQ(sign_in_mode_, SignInMode::kSignedOut);
+  sign_in_mode_ = mode;
+  ConfigureIdentityTestEnvironment();
 }
 
 std::ostream& operator<<(std::ostream& stream,

@@ -1,0 +1,79 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "required_client_certificate_for_device": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "RequiredClientCertificateForDevice": [
+            {
+              "cert_profile_id": "cert_profile_id_1",
+              "enable_remote_attestation_check": true,
+              "key_algorithm": "rsa",
+              "name": "Certificate Profile 1",
+              "policy_version": "some_hash",
+              "renewal_period_seconds": 2592000
+            }
+          ]
+        },
+        "prefs": {
+          "required_client_certificate_for_device": {
+            "location": "local_state",
+            "value": [
+              {
+                "cert_profile_id": "cert_profile_id_1",
+                "enable_remote_attestation_check": true,
+                "key_algorithm": "rsa",
+                "name": "Certificate Profile 1",
+                "policy_version": "some_hash",
+                "renewal_period_seconds": 2592000
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Simple value with dynamic protocol",
+        "policies": {
+          "RequiredClientCertificateForUser": [
+            {
+              "cert_profile_id": "cert_profile_id_1",
+              "enable_remote_attestation_check": true,
+              "key_algorithm": "rsa",
+              "name": "Certificate Profile 1",
+              "policy_version": "some_hash",
+              "protocol_version": 2,
+              "renewal_period_seconds": 2592000
+            }
+          ]
+        },
+        "prefs": {
+          "required_client_certificate_for_user": {
+            "value": [
+              {
+                "cert_profile_id": "cert_profile_id_1",
+                "enable_remote_attestation_check": true,
+                "key_algorithm": "rsa",
+                "name": "Certificate Profile 1",
+                "policy_version": "some_hash",
+                "protocol_version": 2,
+                "renewal_period_seconds": 2592000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

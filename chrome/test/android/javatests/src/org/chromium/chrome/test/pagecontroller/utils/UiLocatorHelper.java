@@ -30,21 +30,24 @@ public class UiLocatorHelper {
     // don't lead to slowness due to the checking interval being too coarse.
     static final long UI_CHECK_INTERVAL_MS = DEFAULT_TIMEOUT_MS / 4L;
 
-    private static final ElementConverter<String> CONVERTER_TEXT = object2 -> {
-        return object2.getText();
-    };
+    private static final ElementConverter<String> CONVERTER_TEXT =
+            object2 -> {
+                return object2.getText();
+            };
 
-    private static final ElementConverter<String> CONVERTER_DESC = object2 -> {
-        return object2.getContentDescription();
-    };
+    private static final ElementConverter<String> CONVERTER_DESC =
+            object2 -> {
+                return object2.getContentDescription();
+            };
 
-    private static final ElementConverter<Boolean> CONVERTER_CHECKED = object2 -> {
-        if (object2.isCheckable()) {
-            return object2.isChecked();
-        } else {
-            throw new UiLocationException("Item in " + object2 + " is not checkable.");
-        }
-    };
+    private static final ElementConverter<Boolean> CONVERTER_CHECKED =
+            object2 -> {
+                if (object2.isCheckable()) {
+                    return object2.isChecked();
+                } else {
+                    throw new UiLocationException("Item in " + object2 + " is not checkable.");
+                }
+            };
 
     private final UiDevice mDevice;
     private long mTimeout;
@@ -288,8 +291,12 @@ public class UiLocatorHelper {
             }
             Utils.sleep(UI_CHECK_INTERVAL_MS);
         }
-        throw new UiLocationException("Could not find any objects after " + mTimeout + "ms and "
-                        + attempts + " attempts.",
+        throw new UiLocationException(
+                "Could not find any objects after "
+                        + mTimeout
+                        + "ms and "
+                        + attempts
+                        + " attempts.",
                 locator);
     }
 
@@ -389,7 +396,9 @@ public class UiLocatorHelper {
      * Define a conversion method creates an object from info in a UiObject2 node.
      * @param <T> Type of the object.
      */
-    private static interface ElementConverter<T> { T convert(UiObject2 object2); }
+    private static interface ElementConverter<T> {
+        T convert(UiObject2 object2);
+    }
 
     private <T> T getOneElement(IUi2Locator locator, ElementConverter<T> converter) {
         List<T> all = getAllElements(locator, converter);

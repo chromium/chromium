@@ -79,6 +79,7 @@ class AsyncFileUtil {
 
   using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
+  using GetMetadataFieldSet = FileSystemOperation::GetMetadataFieldSet;
 
   // Creates an AsyncFileUtil instance which performs file operations on local
   // file system. The created instance assumes FileSystemURL::path() has the
@@ -151,7 +152,7 @@ class AsyncFileUtil {
   //
   virtual void GetFileInfo(std::unique_ptr<FileSystemOperationContext> context,
                            const FileSystemURL& url,
-                           int fields,
+                           GetMetadataFieldSet fields,
                            GetFileInfoCallback callback) = 0;
 
   // Reads contents of a directory at |path|.

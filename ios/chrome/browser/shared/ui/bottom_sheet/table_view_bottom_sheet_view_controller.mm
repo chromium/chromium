@@ -8,41 +8,17 @@
 
 namespace {
 
-// Sets a custom radius for the half sheet presentation.
-CGFloat const kHalfSheetCornerRadius = 20;
-
 // Estimated row height for each cell in the table view.
 CGFloat const kTableViewEstimatedRowHeight = 75;
 
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
 
-// TableView's width constraint multiplier in Portrait mode for iPhone only.
-CGFloat const kPortraitIPhoneTableViewWidthMultiplier = 0.95;
-
-// TableView's width constraint multiplier in all mode (except iPhone Portrait).
-CGFloat const kTableViewWidthMultiplier = 0.65;
-
-// Custom height for the gradient view of the bottom sheet.
-CGFloat const kCustomGradientViewHeight = 30;
-
-// Custom detent identifier for when the bottom sheet is minimized.
-NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
-
-// Custom detent identifier for when the bottom sheet is expanded.
-NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
-
 }  // namespace
 
 @interface TableViewBottomSheetViewController () {
   // Table view for the list of suggestions.
   UITableView* _tableView;
-
-  // TableView's width constraint in portrait mode.
-  NSLayoutConstraint* _portraitTableWidthConstraint;
-
-  // TableView's width constraint in landscape mode.
-  NSLayoutConstraint* _landscapeTableWidthConstraint;
 }
 
 @end
@@ -68,37 +44,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)expand:(NSInteger)numberOfRows {
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    // Expand to custom size (only available for iOS 16+).
-    CGFloat fullHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-      [self displayGradientView:tooLarge];
-      return tooLarge ? context.maximumDetentValue : fullHeight;
-    };
-    UISheetPresentationControllerDetent* customDetentExpand =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomExpandedDetentIdentifier
-                              resolver:resolver];
-    NSMutableArray* currentDetents =
-        [presentationController.detents mutableCopy];
-    [currentDetents addObject:customDetentExpand];
-    presentationController.detents = currentDetents;
-    [presentationController animateChanges:^{
-      presentationController.selectedDetentIdentifier =
-          kCustomExpandedDetentIdentifier;
-    }];
-  } else {
-    // Expand to large detent.
-    [presentationController animateChanges:^{
-      presentationController.selectedDetentIdentifier =
-          UISheetPresentationControllerDetentIdentifierLarge;
-    }];
-  }
-
+  [self expandBottomSheet];
   [self selectFirstRow];
 }
 
@@ -134,7 +80,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
   self.customScrollViewBottomInsets = 0;
-  self.customGradientViewHeight = kCustomGradientViewHeight;
 
   [super viewDidLoad];
 
@@ -142,39 +87,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
-  [self createTableViewWidthConstraint:self.view.layoutMarginsGuide];
+  [_tableView.widthAnchor
+      constraintEqualToAnchor:self.primaryActionButton.widthAnchor]
+      .active = YES;
 
-  [self setUpBottomSheet];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-  [self adjustTableViewWidthConstraint];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  // Update the custom detent with the correct initial height when trait
-  // collection changed (for example when the user uses large font).
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    CGFloat bottomSheetHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return bottomSheetHeight;
-    };
-
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:resolver];
-    presentationController.detents = @[ customDetent ];
-    presentationController.selectedDetentIdentifier =
-        kCustomMinimizedDetentIdentifier;
-  }
+  [self setUpBottomSheetDetents];
 }
 
 #pragma mark - UITableViewDelegate
@@ -207,62 +124,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (CGFloat)initialNumberOfVisibleCells {
   return 1;
-}
-
-#pragma mark - Private
-
-// Configures the bottom sheet's appearance and detents.
-- (void)setUpBottomSheet {
-  self.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  if (@available(iOS 16, *)) {
-    CGFloat bottomSheetHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return bottomSheetHeight;
-    };
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:resolver];
-    presentationController.detents = @[ customDetent ];
-    presentationController.selectedDetentIdentifier =
-        kCustomMinimizedDetentIdentifier;
-  } else {
-    presentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-    presentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierMedium;
-  }
-  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-}
-
-// Creates the tableview's width constraints and set their initial active state.
-- (void)createTableViewWidthConstraint:(UILayoutGuide*)margins {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  _portraitTableWidthConstraint = [_tableView.widthAnchor
-      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:
-                                    (idiom == UIUserInterfaceIdiomPad)
-                                        ? kTableViewWidthMultiplier
-                                        : kPortraitIPhoneTableViewWidthMultiplier];
-  _landscapeTableWidthConstraint = [_tableView.widthAnchor
-      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:kTableViewWidthMultiplier];
-  [self adjustTableViewWidthConstraint];
-}
-
-// Change the tableview's width constraint based on the screen's orientation.
-- (void)adjustTableViewWidthConstraint {
-  BOOL isLandscape =
-      UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation);
-  _landscapeTableWidthConstraint.active = isLandscape;
-  _portraitTableWidthConstraint.active = !isLandscape;
 }
 
 @end

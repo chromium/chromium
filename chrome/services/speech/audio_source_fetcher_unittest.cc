@@ -160,7 +160,7 @@ class AudioSourceFetcherImplTest
 
  private:
   base::test::TaskEnvironment task_environment;
-  raw_ptr<MockAudioSourceConsumer, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockAudioSourceConsumer, DanglingUntriaged>
       speech_recognition_recognizer_;
   bool is_server_based_;
 };

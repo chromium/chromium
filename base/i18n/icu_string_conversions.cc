@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -81,7 +82,7 @@ void ToUnicodeCallbackSubstitute(const void* context,
 }
 
 bool ConvertFromUTF16(UConverter* converter,
-                      base::StringPiece16 src,
+                      std::u16string_view src,
                       OnStringConversionError::Type on_error,
                       std::string* encoded) {
   int encoded_max_length = UCNV_GET_MAX_BYTES_FOR_STRING(
@@ -138,7 +139,7 @@ void SetUpErrorHandlerForToUChars(OnStringConversionError::Type on_error,
 
 // Codepage <-> Wide/UTF-16  ---------------------------------------------------
 
-bool UTF16ToCodepage(base::StringPiece16 utf16,
+bool UTF16ToCodepage(std::u16string_view utf16,
                      const char* codepage_name,
                      OnStringConversionError::Type on_error,
                      std::string* encoded) {
@@ -152,7 +153,7 @@ bool UTF16ToCodepage(base::StringPiece16 utf16,
   return ConvertFromUTF16(converter, utf16, on_error, encoded);
 }
 
-bool CodepageToUTF16(base::StringPiece encoded,
+bool CodepageToUTF16(std::string_view encoded,
                      const char* codepage_name,
                      OnStringConversionError::Type on_error,
                      std::u16string* utf16) {
@@ -188,7 +189,7 @@ bool CodepageToUTF16(base::StringPiece encoded,
   return true;
 }
 
-bool ConvertToUtf8AndNormalize(base::StringPiece text,
+bool ConvertToUtf8AndNormalize(std::string_view text,
                                const std::string& charset,
                                std::string* result) {
   result->clear();

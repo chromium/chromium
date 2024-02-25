@@ -31,6 +31,7 @@
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
@@ -158,7 +159,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
     switch (type) {
       case PlatformKeyboardHookTypes::kModifier:
@@ -196,9 +197,6 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
       properties->fetch_buffer_formats_for_gmb_on_gpu = true;
-#if BUILDFLAG(IS_LINUX)
-      properties->supports_vaapi = true;
-#endif
 
       initialised = true;
     }
@@ -224,6 +222,12 @@ class OzonePlatformX11 : public OzonePlatform,
     // Native pixmap support is determined on gpu process via gpu extra info
     // that gets this information from GpuMemoryBufferSupportX11.
     return false;
+  }
+
+  bool IsWindowCompositingSupported() const override {
+    return x11::Connection::Get()
+        ->GetOrCreateVisualManager()
+        .ArgbVisualAvailable();
   }
 
   bool InitializeUI(const InitParams& params) override {

@@ -17,6 +17,7 @@
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
+#import "ios/web/js_features/fullscreen/fullscreen_java_script_feature.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
@@ -79,22 +80,20 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
+      FullscreenJavaScriptFeature::GetInstance(),
       GetFaviconJavaScriptFeature(),
       GetScrollHelperJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
-      WebUIMessagingJavaScriptFeature::GetInstance()};
+      WebUIMessagingJavaScriptFeature::GetInstance(),
+      AnnotationsJavaScriptFeature::GetInstance()};
 
   auto frames_manager_features = WebFramesManagerJavaScriptFeature::
       AllContentWorldFeaturesFromBrowserState(browser_state);
   features.insert(features.end(), frames_manager_features.begin(),
                   frames_manager_features.end());
-
-  if (web::WebPageAnnotationsEnabled()) {
-    features.push_back(AnnotationsJavaScriptFeature::GetInstance());
-  }
 
   return features;
 }

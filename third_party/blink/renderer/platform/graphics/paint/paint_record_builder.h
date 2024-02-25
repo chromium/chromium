@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_RECORD_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_RECORD_BUILDER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -61,8 +63,8 @@ class PLATFORM_EXPORT PaintRecordBuilder final
   }
 
  private:
-  absl::optional<PaintController> own_paint_controller_;
-  PaintController* paint_controller_;
+  std::optional<PaintController> own_paint_controller_;
+  raw_ptr<PaintController> paint_controller_;
   GraphicsContext context_;
 };
 

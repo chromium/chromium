@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Supprimer la page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode caméra</translation>
 <translation id="1153190633558910465">Grille désactivée</translation>
-<translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> supprimée</translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés vers la droite</translation>
 <translation id="1417314334557041815">Modifier la page <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Pano à droite</translation>
 <translation id="3081586908890909590">Passer à l'enregistrement de vidéo</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Rejoindre "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3354465018370944241">Paramètres des photos</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Traitement de la vidéo…</translation>
 <translation id="3789724198583203151">Faire pivoter de 90 degrés vers la gauche</translation>
 <translation id="3810838688059735925">Vidéo</translation>
-<translation id="3892148308691398805">Copier le texte</translation>
 <translation id="4060608699153044055">Vous ne pouvez pas lancer l'enregistrement, car l'espace de stockage de votre appareil est insuffisant. Pour lancer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
 <translation id="414641094616694804">Impossible de modifier la résolution de cet appareil photo</translation>
 <translation id="4176463684765177261">Désactivé</translation>
-<translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="428234092390943511">Vignette de la page</translation>
 <translation id="4349714250734879769">Mise à l'échelle des images par Chrome</translation>
 <translation id="4383571725254449280">Imprimer les journaux concernant les performances</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Haute résolution</translation>
 <translation id="4864143361253542638">Liste des pages numérisées</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Copier l'adresse du lien <ph name="URL" /></translation>
 <translation id="491895758387112773">Enregistrement vidéo sur plusieurs flux</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Format photo</translation>
 <translation id="5057360777601936059">Votre appareil photo est actuellement indisponible.
         Vérifiez qu'il est bien connecté.</translation>
+<translation id="5157591164390831335">URL détectée.</translation>
 <translation id="5163387177077603948">Déplacement vers la droite</translation>
-<translation id="5219374179772385066">Le mode Accéléré est désormais disponible !</translation>
 <translation id="5235304959032763950">Seize neuvièmes</translation>
 <translation id="5266635337630551423">Angle supérieur gauche du document</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Merci de vos commentaires à propos de l'application Appareil photo.
 
 S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exemple de photo ou de vidéo et décrire le problème. (Par exemple, la photo est trop sombre ou le sujet n'est pas net.)</translation>
+<translation id="6519884562954018934">Rejoindre <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6617916774429601017">Afficher toutes les résolutions</translation>
 <translation id="6631515515009660915">Miroir désactivé</translation>
@@ -133,6 +133,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7488619942230388918">Enregistrer une vidéo GIF</translation>
 <translation id="7557677699350329807">Passer à la caméra suivante</translation>
+<translation id="7562584071994185503">Copier le texte <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Suspendu</translation>
 <translation id="7608223098072244877">4 par 4</translation>
 <translation id="761421184377987513">Déplacement vers le bas à gauche</translation>
@@ -155,10 +156,12 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8346544573713510785">Mise à l'échelle des images par l'HAL de la caméra</translation>
 <translation id="8425673304802773841">Incliner</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8609951387004618906">Ouvrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Couper le son du micro. Le son est désormais coupé.</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8732462232047530626">Prévisualiser les métadonnées</translation>
+<translation id="874854738381978209">Réseau Wi-Fi détecté.</translation>
 <translation id="8815966864175525708">Bouton permettant de prendre une photo en mode portrait</translation>
 <translation id="8828441885228359828">Reprendre l'enregistrement</translation>
 <translation id="8870695351537079478">Impossible de démarrer l'enregistrement</translation>

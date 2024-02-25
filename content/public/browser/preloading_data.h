@@ -104,10 +104,18 @@ class CONTENT_EXPORT PreloadingData {
   // Creates a new PreloadingAttempt and returns a pointer associated with the
   // PreloadingAttempt class. Here callers pass the `url_predicate_callback` to
   // verify if the navigated and triggered URLs match based on callers logic.
+  //
+  // `triggering_primary_page_source_id` is a UKM source ID of the page that
+  // triggered preloading. This is used for recording the metrics for user
+  // visible primary pages (Preloading_Attempt_PreviousPrimaryPage) to measure
+  // the impact of PreloadingAttempt on the page user is viewing.
+  // TODO(crbug.com/1330783): Extend this for non-primary page and inner
+  // WebContents preloading attempts.
   virtual PreloadingAttempt* AddPreloadingAttempt(
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
-      PreloadingURLMatchCallback url_match_predicate) = 0;
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id) = 0;
 
   // Creates a new PreloadingPrediction. Same as above `url_predicate_callback`
   // is passed by the caller to verify that both predicted and navigated URLs

@@ -96,7 +96,9 @@ bool AccountId::empty() const {
 bool AccountId::is_valid() const {
   switch (account_type_) {
     case AccountType::GOOGLE:
-      return /* !id_.empty() && */ !user_email_.empty();
+      // TODO(http://b/279005619): Add an additional check for empty account ids
+      // when this bug is fixed.
+      return !user_email_.empty();
     case AccountType::ACTIVE_DIRECTORY:
       return !id_.empty() && !user_email_.empty();
     case AccountType::UNKNOWN:
@@ -239,7 +241,7 @@ std::string AccountId::Serialize() const {
 // static
 bool AccountId::Deserialize(const std::string& serialized,
                             AccountId* account_id) {
-  absl::optional<base::Value> value(base::JSONReader::Read(serialized));
+  std::optional<base::Value> value(base::JSONReader::Read(serialized));
   if (!value || !value->is_dict())
     return false;
 

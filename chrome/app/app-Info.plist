@@ -243,6 +243,8 @@
 	<string>${CHROMIUM_MIN_SYSTEM_VERSION}</string>
 	<key>LSRequiresNativeExecution</key>
 	<true/>
+	<key>NSCameraReactionEffectGesturesEnabledDefault</key>
+	<false/>
 	<key>NSPrincipalClass</key>
 	<string>BrowserCrApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
@@ -416,5 +418,10 @@
 	<string>banner</string>
 	<key>GPUEjectPolicy</key>
 	<string>wait</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

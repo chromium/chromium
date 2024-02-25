@@ -30,6 +30,10 @@ class MediaSession : public media_session::mojom::MediaSession {
   // none is currently available.
   CONTENT_EXPORT static MediaSession* Get(WebContents* contents);
 
+  // Returns the MediaSession associated to this WebContents if it already
+  // exists. Returns null otherwise.
+  CONTENT_EXPORT static MediaSession* GetIfExists(WebContents* contents);
+
   // Returns the source identity for the given BrowserContext.
   CONTENT_EXPORT static const base::UnguessableToken& GetSourceId(
       BrowserContext* browser_context);
@@ -46,6 +50,10 @@ class MediaSession : public media_session::mojom::MediaSession {
 
   CONTENT_EXPORT static const base::UnguessableToken&
   GetRequestIdFromWebContents(WebContents* web_contents);
+
+  // Test method to flush all MediaSessionObservers for synchronization during
+  // tests.  Static so that it can be optimized away outside of tests.
+  CONTENT_EXPORT static void FlushObserversForTesting(WebContents* contents);
 
   // Tell the media session a user action has performed.
   virtual void DidReceiveAction(

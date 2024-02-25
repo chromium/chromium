@@ -272,7 +272,7 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   wait_for_data_loop.Run();
   DCHECK(!tokenizer.has_more());
 
-  absl::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result = base::JSONReader::Read(json);
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->GetDict().contains("traceEvents"));
 }

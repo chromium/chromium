@@ -27,11 +27,11 @@ namespace {
 
 constexpr char kCloudBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
 
-absl::optional<GURL> GetUrlOverride() {
+std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
                                  ->IsCommandLineSwitchSupported()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -44,7 +44,7 @@ absl::optional<GURL> GetUrlOverride() {
       LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -67,8 +67,6 @@ std::string BinaryUploadService::ResultToString(Result result) {
       return "UNAUTHORIZED";
     case Result::FILE_ENCRYPTED:
       return "FILE_ENCRYPTED";
-    case Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
     case Result::TOO_MANY_REQUESTS:
       return "TOO_MANY_REQUESTS";
   }
@@ -231,7 +229,8 @@ void BinaryUploadService::Request::set_printer_type(
 }
 
 void BinaryUploadService::Request::set_password(const std::string& password) {
-  content_analysis_request_.mutable_request_data()->set_password(password);
+  content_analysis_request_.mutable_request_data()->set_decryption_key(
+      password);
 }
 
 void BinaryUploadService::Request::set_reason(
@@ -241,10 +240,8 @@ void BinaryUploadService::Request::set_reason(
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
-
-  std::string token = base::RandBytesAsString(128);
   content_analysis_request_.set_request_token(
-      base::HexEncode(token.data(), token.size()));
+      base::HexEncode(base::RandBytesAsVector(128)));
   return content_analysis_request_.request_token();
 }
 
@@ -302,8 +299,12 @@ GURL BinaryUploadService::Request::tab_url() const {
   return GURL(content_analysis_request_.request_data().tab_url());
 }
 
-const std::string& BinaryUploadService::Request::password() const {
-  return content_analysis_request_.request_data().password();
+base::optional_ref<const std::string> BinaryUploadService::Request::password()
+    const {
+  return content_analysis_request_.request_data().has_decryption_key()
+             ? base::optional_ref(
+                   content_analysis_request_.request_data().decryption_key())
+             : std::nullopt;
 }
 
 enterprise_connectors::ContentAnalysisRequest::Reason

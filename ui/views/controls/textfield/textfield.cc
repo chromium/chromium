@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -55,6 +56,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -70,6 +72,9 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
+#include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
@@ -81,6 +86,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -102,6 +108,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#endif
+
+#if defined(USE_AURA)
+#include "ui/views/touchui/touch_selection_controller_impl.h"
 #endif
 
 namespace views {
@@ -185,17 +195,6 @@ bool IsValidCharToInsert(const char16_t& ch) {
   return (ch >= 0x20 && ch < 0x7F) || ch > 0x9F;
 }
 
-bool CanUseTransparentBackgroundForDragImage() {
-#if BUILDFLAG(IS_OZONE)
-  const auto* const egl_utility =
-      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-  return egl_utility ? egl_utility->IsTransparentBackgroundSupported() : false;
-#else
-  // Other platforms allow this.
-  return true;
-#endif
-}
-
 #if BUILDFLAG(IS_MAC)
 const float kAlmostTransparent = 1.0 / 255.0;
 const float kOpaque = 1.0;
@@ -214,7 +213,7 @@ base::TimeDelta Textfield::GetCaretBlinkInterval() {
 #elif BUILDFLAG(IS_MAC)
   // If there's insertion point flash rate info in NSUserDefaults, use the
   // blink period derived from that.
-  absl::optional<base::TimeDelta> system_value(
+  std::optional<base::TimeDelta> system_value(
       ui::TextInsertionCaretBlinkPeriodFromDefaults());
   if (system_value)
     return *system_value;
@@ -234,6 +233,7 @@ Textfield::Textfield()
       selection_controller_(this) {
   set_context_menu_controller(this);
   set_drag_controller(this);
+  GetViewAccessibility().set_needs_ax_tree_manager(true);
   auto cursor_view = std::make_unique<View>();
   cursor_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   cursor_view->GetViewAccessibility().OverrideIsIgnored(true);
@@ -286,6 +286,10 @@ Textfield::Textfield()
 }
 
 Textfield::~Textfield() {
+  if (HasObserver(this)) {
+    RemoveObserver(this);
+  }
+
   if (GetInputMethod()) {
     // The textfield should have been blurred before destroy.
     DCHECK(this != GetInputMethod()->GetTextInputClient());
@@ -327,6 +331,7 @@ void Textfield::SetTextInputType(ui::TextInputType type) {
     GetInputMethod()->OnTextInputTypeChanged(this);
   OnCaretBoundsChanged();
   OnPropertyChanged(&text_input_type_, kPropertyEffectsPaint);
+  UpdateAfterChange(TextChangeType::kInternal, false);
 }
 
 void Textfield::SetTextInputFlags(int flags) {
@@ -411,8 +416,9 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  return text_color_.value_or(GetColorProvider()->GetColor(
-      style::GetColorId(style::CONTEXT_TEXTFIELD, GetTextStyle())));
+  return text_color_.value_or(
+      GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+          style::CONTEXT_TEXTFIELD, GetTextStyle())));
 }
 
 void Textfield::SetTextColor(SkColor color) {
@@ -486,7 +492,7 @@ void Textfield::SetMinimumWidthInChars(int minimum_width) {
   minimum_width_in_chars_ = minimum_width;
 }
 
-std::u16string Textfield::GetPlaceholderText() const {
+const std::u16string& Textfield::GetPlaceholderText() const {
   return placeholder_text_;
 }
 
@@ -746,7 +752,8 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
   auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
   if (!handled && linux_ui &&
-      linux_ui->GetTextEditCommandsForEvent(event, &commands)) {
+      linux_ui->GetTextEditCommandsForEvent(event, ui::TEXT_INPUT_FLAG_NONE,
+                                            &commands)) {
     for (const auto& command : commands) {
       if (IsTextEditCommandEnabled(command.command())) {
         ExecuteTextEditCommand(command.command());
@@ -928,7 +935,8 @@ bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // Skip any accelerator handling that conflicts with custom keybindings.
   auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (linux_ui && linux_ui->GetTextEditCommandsForEvent(event, &commands)) {
+  if (linux_ui && linux_ui->GetTextEditCommandsForEvent(
+                      event, ui::TEXT_INPUT_FLAG_NONE, &commands)) {
     const auto is_enabled = [this](const auto& command) {
       return IsTextEditCommandEnabled(command.command());
     };
@@ -1030,6 +1038,11 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     if (GetReadOnly())
       node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   }
+  node_data->AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(GetTextDirection() == base::i18n::RIGHT_TO_LEFT
+                               ? ax::mojom::WritingDirection::kRtl
+                               : ax::mojom::WritingDirection::kLtr));
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->AddState(ax::mojom::State::kProtected);
     node_data->SetValue(std::u16string(
@@ -1045,7 +1058,43 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              base::checked_cast<int32_t>(range.start()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
+
+  // TODO(ViewsAX): In order to update the cache whenever the offset changes,
+  // we could set this attribute in Textfield::UpdateCursorViewPosition.
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
+                             GetRenderText()->GetUpdatedDisplayOffset().x());
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  std::u16string ax_value =
+      node_data->GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  // If the accessible value changed since the last time we computed the text
+  // offsets, we need to recompute them.
+  if (::features::IsUiaProviderEnabled() &&
+      (ax_value_used_to_compute_offsets_ != ax_value ||
+       needs_ax_text_offsets_update_)) {
+    GetViewAccessibility().ClearTextOffsets();
+    RefreshAccessibleTextOffsets();
+    ax_value_used_to_compute_offsets_ = ax_value;
+    needs_ax_text_offsets_update_ = false;
+  }
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::RefreshAccessibleTextOffsets() {
+  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  if (GetRenderText()->multiline()) {
+    return;
+  }
+
+  GetViewAccessibility().OverrideCharacterOffsets(
+      ComputeTextOffsets(GetRenderText()));
+
+  WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+  GetViewAccessibility().OverrideWordStarts(boundaries.starts);
+  GetViewAccessibility().OverrideWordEnds(boundaries.ends);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 bool Textfield::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kSetSelection) {
@@ -1092,6 +1141,8 @@ void Textfield::OnPaint(gfx::Canvas* canvas) {
 }
 
 void Textfield::OnFocus() {
+  is_processing_focus_ = true;
+
   // Set focus reason if focused was gained without mouse or touch input.
   if (focus_reason_ == ui::TextInputClient::FOCUS_REASON_NONE)
     focus_reason_ = ui::TextInputClient::FOCUS_REASON_OTHER;
@@ -1107,6 +1158,8 @@ void Textfield::OnFocus() {
     GetInputMethod()->SetFocusedTextInputClient(this);
   UpdateAfterChange(TextChangeType::kNone, true);
   View::OnFocus();
+
+  is_processing_focus_ = false;
 }
 
 void Textfield::OnBlur() {
@@ -1196,7 +1249,7 @@ void Textfield::WriteDragDataForView(View* sender,
 
   SkBitmap bitmap;
   float raster_scale = ScaleFactorForDragFromWidget(GetWidget());
-  SkColor color = CanUseTransparentBackgroundForDragImage()
+  SkColor color = views::Widget::IsWindowCompositingSupported()
                       ? SK_ColorTRANSPARENT
                       : GetBackgroundColor();
   label.Paint(PaintInfo::CreateRootPaintInfo(
@@ -1236,16 +1289,18 @@ bool Textfield::CanStartDragForView(View* sender,
 
 bool Textfield::GetWordLookupDataAtPoint(const gfx::Point& point,
                                          gfx::DecoratedText* decorated_word,
-                                         gfx::Point* baseline_point) {
-  return GetRenderText()->GetWordLookupDataAtPoint(point, decorated_word,
-                                                   baseline_point);
+                                         gfx::Rect* rect) {
+  return GetRenderText()->GetWordLookupDataAtPoint(point, decorated_word, rect);
 }
 
 bool Textfield::GetWordLookupDataFromSelection(
     gfx::DecoratedText* decorated_text,
-    gfx::Point* baseline_point) {
+    gfx::Rect* rect) {
+  if (GetRenderText()->obscured()) {
+    return false;
+  }
   return GetRenderText()->GetLookupDataForRange(GetRenderText()->selection(),
-                                                decorated_text, baseline_point);
+                                                decorated_text, rect);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1620,7 +1675,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
   DoInsertChar(ch);
 
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
-    password_char_reveal_index_ = absl::nullopt;
+    password_char_reveal_index_ = std::nullopt;
     base::TimeDelta duration = GetPasswordRevealDuration(event);
     if (!duration.is_zero()) {
       const size_t change_offset = model_->GetCursorPosition();
@@ -1947,42 +2002,25 @@ bool Textfield::SetCompositionFromExistingText(
 
 #if BUILDFLAG(IS_CHROMEOS)
 gfx::Range Textfield::GetAutocorrectRange() const {
-  return model_->autocorrect_range();
+  // TODO(b/316461955): Implement autocorrect UI for native fields.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Range();
 }
 
 gfx::Rect Textfield::GetAutocorrectCharacterBounds() const {
-  gfx::Range autocorrect_range = model_->autocorrect_range();
-  if (autocorrect_range.is_empty())
-    return gfx::Rect();
-
-  gfx::RenderText* render_text = GetRenderText();
-  const gfx::SelectionModel caret(autocorrect_range, gfx::CURSOR_BACKWARD);
-  gfx::Rect rect;
-  rect = render_text->GetCursorBounds(caret, false);
-
-  ConvertRectToScreen(this, &rect);
-  return rect;
+  // TODO(b/316461955): Implement autocorrect UI for native fields.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Rect();
 }
 
 bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
   if (!range.is_empty()) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kTextField);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
-    if (input_method_manager &&
-        ash::extension_ime_util::IsExperimentalMultilingual(
-            input_method_manager->GetActiveIMEState()
-                ->GetCurrentInputMethod()
-                .id())) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.MultilingualExperiment.Autocorrect.Count",
-          TextInputClient::SubClass::kTextField);
-    }
-#endif
   }
-  return model_->SetAutocorrectRange(range);
+  // TODO(b/316461955): Implement autocorrect UI for native fields.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 
 bool Textfield::AddGrammarFragments(
@@ -2000,8 +2038,8 @@ bool Textfield::AddGrammarFragments(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void Textfield::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {
   gfx::Rect origin = GetContentsBounds();
   ConvertRectToScreen(this, &origin);
   *control_bounds = origin;
@@ -2016,6 +2054,14 @@ void Textfield::SetActiveCompositionForAccessibility(
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
 #endif
+
+////////////////////////////////////////////////////////////////////////////////
+// Textfield, views::ViewObserver overrides:
+void Textfield::OnViewFocused(views::View* observed_view) {
+  observed_view->RemoveObserver(this);
+  observed_view->NotifyAccessibilityEvent(
+      ax::mojom::Event::kTextSelectionChanged, true);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, protected:
@@ -2474,6 +2520,12 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
   }
 }
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::SetNeedsAccessibleTextOffsetsUpdate() {
+  needs_ax_text_offsets_update_ = true;
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, private:
 
@@ -2591,12 +2643,18 @@ void Textfield::UpdateDefaultBorder() {
 }
 
 void Textfield::UpdateSelectionTextColor() {
+  if (!GetWidget()) {
+    return;
+  }
   GetRenderText()->set_selection_color(GetSelectionTextColor());
   OnPropertyChanged(&model_ + kTextfieldSelectionTextColor,
                     kPropertyEffectsPaint);
 }
 
 void Textfield::UpdateSelectionBackgroundColor() {
+  if (!GetWidget()) {
+    return;
+  }
   GetRenderText()->set_selection_background_focused_color(
       GetSelectionBackgroundColor());
   OnPropertyChanged(&model_ + kTextfieldSelectionBackgroundColor,
@@ -2606,7 +2664,7 @@ void Textfield::UpdateSelectionBackgroundColor() {
 void Textfield::UpdateAfterChange(
     TextChangeType text_change_type,
     bool cursor_changed,
-    absl::optional<bool> notify_caret_bounds_changed) {
+    std::optional<bool> notify_caret_bounds_changed) {
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_)
       controller_->ContentsChanged(this, GetText());
@@ -2638,9 +2696,15 @@ void Textfield::UpdateCursorVisibility() {
     StopBlinkingCursor();
 }
 
+bool Textfield::IsMenuShowing() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
 gfx::Rect Textfield::CalculateCursorViewBounds() const {
   gfx::Rect location(GetRenderText()->GetUpdatedCursorBounds());
   location.set_x(GetMirroredXForRect(location));
+  // Shrink the cursor bounds to fit within the view.
+  location.Intersect(GetLocalBounds());
   return location;
 }
 
@@ -2675,7 +2739,7 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
     canvas->DrawStringRectWithFlags(
         GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
         placeholder_text_color_.value_or(
-            GetColorProvider()->GetColor(style::GetColorId(
+            GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
                 style::CONTEXT_TEXTFIELD_PLACEHOLDER,
                 GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY))),
         render_text->display_rect(), placeholder_text_draw_flags);
@@ -2706,8 +2770,21 @@ void Textfield::OnCaretBoundsChanged() {
     touch_selection_controller_->SelectionChanged();
 
   // Screen reader users don't expect notifications about unfocused textfields.
-  if (HasFocus())
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  if (HasFocus()) {
+    // If this control is in the process of receiving focus, even though it
+    // 'HasFocus', the accessibility event to announce that it has focus has not
+    // been fired yet. The kTextSelectionChanged event needs to be fired *after*
+    // the focus event, so we attach our observer which will fire the event
+    // after we finish receiving focus (which includes the accessibility focus
+    // event being fired).
+    if (is_processing_focus_) {
+      if (!HasObserver(this)) {
+        AddObserver(this);
+      }
+    } else {
+      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+    }
+  }
 
   UpdateCursorViewPosition();
 }
@@ -2790,7 +2867,7 @@ bool Textfield::ImeEditingAllowed() const {
   return (t != ui::TEXT_INPUT_TYPE_NONE && t != ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-void Textfield::RevealPasswordChar(absl::optional<size_t> index,
+void Textfield::RevealPasswordChar(std::optional<size_t> index,
                                    base::TimeDelta duration) {
   GetRenderText()->SetObscuredRevealIndex(index);
   SchedulePaint();
@@ -2798,10 +2875,10 @@ void Textfield::RevealPasswordChar(absl::optional<size_t> index,
   UpdateCursorViewPosition();
 
   if (index.has_value()) {
-    password_reveal_timer_.Start(FROM_HERE, duration,
-                                 base::BindOnce(&Textfield::RevealPasswordChar,
-                                                weak_ptr_factory_.GetWeakPtr(),
-                                                absl::nullopt, duration));
+    password_reveal_timer_.Start(
+        FROM_HERE, duration,
+        base::BindOnce(&Textfield::RevealPasswordChar,
+                       weak_ptr_factory_.GetWeakPtr(), std::nullopt, duration));
   }
 }
 
@@ -2810,8 +2887,10 @@ void Textfield::CreateTouchSelectionControllerAndNotifyIt() {
     return;
 
   if (!touch_selection_controller_) {
-    touch_selection_controller_.reset(
-        ui::TouchEditingControllerDeprecated::Create(this));
+#if defined(USE_AURA)
+    touch_selection_controller_ =
+        std::make_unique<TouchSelectionControllerImpl>(this);
+#endif
   }
   if (touch_selection_controller_)
     touch_selection_controller_->SelectionChanged();
@@ -2824,11 +2903,9 @@ void Textfield::OnEditFailed() {
 bool Textfield::ShouldShowCursor() const {
   // Show the cursor when the primary selected range is empty; secondary
   // selections do not affect cursor visibility.
-  // TODO(crbug.com/1434319): The cursor will be entirely hidden if partially
-  // occluded. It would be better if only the occluded part is hidden.
   return HasFocus() && !HasSelection(true) && GetEnabled() && !GetReadOnly() &&
          !drop_cursor_visible_ && GetRenderText()->cursor_enabled() &&
-         GetLocalBounds().Contains(cursor_view_->bounds());
+         !cursor_view_->bounds().IsEmpty();
 }
 
 int Textfield::CharsToDips(int width_in_chars) const {
@@ -3097,10 +3174,10 @@ void Textfield::StopSelectionDragging() {
     ui::RecordTouchSelectionDrag(selection_drag_type_.value());
   }
   selection_dragging_state_ = SelectionDraggingState::kNone;
-  selection_drag_type_ = absl::nullopt;
+  selection_drag_type_ = std::nullopt;
 }
 
-BEGIN_METADATA(Textfield, View)
+BEGIN_METADATA(Textfield)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)

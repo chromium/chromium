@@ -5,24 +5,24 @@
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_ATTRIBUTE_API_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_ATTRIBUTE_API_H_
 
+#include "base/functional/callback_forward.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
-
-using blink::mojom::DeviceAPIService;
-using blink::mojom::DeviceAttributeResultPtr;
 
 namespace device_attribute_api {
 
 void ReportNotAffiliatedError(
-    base::OnceCallback<void(DeviceAttributeResultPtr)> callback);
+    base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)> callback);
 void ReportNotAllowedError(
-    base::OnceCallback<void(DeviceAttributeResultPtr)> callback);
-void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback);
-void GetHostname(DeviceAPIService::GetHostnameCallback callback);
-void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback);
+    base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)> callback);
+void GetDirectoryId(
+    blink::mojom::DeviceAPIService::GetDirectoryIdCallback callback);
+void GetHostname(blink::mojom::DeviceAPIService::GetHostnameCallback callback);
+void GetSerialNumber(
+    blink::mojom::DeviceAPIService::GetSerialNumberCallback callback);
 void GetAnnotatedAssetId(
-    DeviceAPIService::GetAnnotatedAssetIdCallback callback);
+    blink::mojom::DeviceAPIService::GetAnnotatedAssetIdCallback callback);
 void GetAnnotatedLocation(
-    DeviceAPIService::GetAnnotatedLocationCallback callback);
+    blink::mojom::DeviceAPIService::GetAnnotatedLocationCallback callback);
 
 }  // namespace device_attribute_api
 

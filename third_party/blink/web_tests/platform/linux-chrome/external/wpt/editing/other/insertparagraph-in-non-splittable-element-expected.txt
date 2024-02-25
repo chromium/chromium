@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] insertParagraph in button of <div><button>abc</button></div>
+  assert_equals: expected "<div><button><br>abc</button></div>" but got "<div><button><br></button></div><div><button>abc</button></div>"
+[FAIL] insertParagraph in caption of <div><table><caption>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div>
+  assert_equals: expected "<div><table><caption><br>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div>" but got "<div><table><caption><br></caption><caption>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div>"
+[FAIL] insertParagraph in legend of <div><fieldset><legend>abc</legend></fieldset></div>
+  assert_equals: expected "<div><fieldset><legend><br>abc</legend></fieldset></div>" but got "<div><fieldset><legend><br></legend><legend>abc</legend></fieldset></div>"
+[FAIL] insertParagraph in meter of <div><meter max="100" value="50">abc</meter></div>
+  assert_equals: expected "<div><br></div><div><meter max=\"100\" value=\"50\">abc</meter></div>" but got "<div><br><meter max=\"100\" value=\"50\">abc</meter></div>"
+[FAIL] insertParagraph in option of <div><select><option>abc</option></select></div>
+  assert_equals: expected "<div><select><option>abc</option></select></div>" but got "<div><br></div><div><select><option>abc</option></select></div>"
+[FAIL] insertParagraph in table of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div>
+  assert_in_array: value "<div><br><table><tbody><tr><td>abc</td></tr></tbody></table></div>" not in array ["<div><table><tbody><tr><td><br>abc</td></tr></tbody></table></div>", "<div><br></div><div><table><tbody><tr><td>abc</td></tr></tbody></table></div>"]
+Harness: the test ran to completion.

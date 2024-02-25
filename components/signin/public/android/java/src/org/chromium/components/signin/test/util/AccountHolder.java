@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,15 +25,24 @@ import java.util.Set;
  * account, such as its password and set of granted auth tokens.
  */
 public class AccountHolder {
+    // TODO(crbug.com/1462264): Use CoreAcountInfo instead of Account.
     private final Account mAccount;
     private final Map<String, AccessTokenData> mAuthTokens;
     private final Set<String> mFeatures;
+    private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
     private AccountHolder(Account account) {
         assert account != null : "account shouldn't be null!";
         mAccount = account;
         mAuthTokens = new HashMap<>();
         mFeatures = new HashSet<>();
+    }
+
+    private AccountHolder(AccountInfo accountInfo) {
+        this(AccountUtils.createAccountFromName(accountInfo.getEmail()));
+        if (accountInfo != null) {
+            mAccountCapabilities = accountInfo.getAccountCapabilities();
+        }
     }
 
     public Account getAccount() {
@@ -84,26 +95,29 @@ public class AccountHolder {
                 && mAccount.equals(((AccountHolder) that).getAccount());
     }
 
-    /**
-     * Creates an {@link AccountHolder} from email.
-     */
+    /** Creates an {@link AccountHolder} from email. */
     public static AccountHolder createFromEmail(String email) {
         return createFromAccount(AccountUtils.createAccountFromName(email));
     }
 
-    /**
-     * Creates an {@link AccountHolder} from {@link Account}.
-     */
+    /** Creates an {@link AccountHolder} from {@link Account}. */
     public static AccountHolder createFromAccount(Account account) {
         return new AccountHolder(account);
     }
 
-    /**
-     * Creates an {@link AccountHolder} from email and features.
-     */
+    /** Creates an {@link AccountHolder} from account and accountInfo. */
+    public static AccountHolder createFromAccount(AccountInfo accountInfo) {
+        return new AccountHolder(accountInfo);
+    }
+
+    /** Creates an {@link AccountHolder} from email and features. */
     public static AccountHolder createFromEmailAndFeatures(String email, String... features) {
         final AccountHolder accountHolder = createFromEmail(email);
         Collections.addAll(accountHolder.mFeatures, features);
         return accountHolder;
+    }
+
+    public AccountCapabilities getAccountCapabilities() {
+        return mAccountCapabilities;
     }
 }

@@ -23,6 +23,8 @@
 #include <vector>
 
 #include "absl/base/macros.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
@@ -35,7 +37,6 @@
 #include "mediapipe/framework/tool/type_util.h"
 #include "mediapipe/framework/tool/validate_name.h"
 #include "mediapipe/framework/type_map.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -170,8 +171,8 @@ class PacketTypeSetErrorHandler {
 
   // In the const setting produce a FATAL error.
   const PacketType& GetFallback(const absl::string_view tag, int index) const {
-    LOG(FATAL) << "Failed to get tag \"" << tag << "\" index " << index
-               << ".  Unable to defer error due to const specifier.";
+    ABSL_LOG(FATAL) << "Failed to get tag \"" << tag << "\" index " << index
+                    << ".  Unable to defer error due to const specifier.";
     std::abort();
   }
 
@@ -183,8 +184,8 @@ class PacketTypeSetErrorHandler {
   // This function can only be called if HasError() is true.
   const std::vector<std::string>& ErrorMessages() const {
     ABSL_CHECK(missing_) << "ErrorMessages() can only be called if errors have "
-                       "occurred.  Call HasError() before calling this "
-                       "function.";
+                            "occurred.  Call HasError() before calling this "
+                            "function.";
     if (!missing_->initialized_errors) {
       for (const auto& entry : missing_->entries) {
         // Optional entries that were missing are not considered errors.

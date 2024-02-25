@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -20,7 +21,6 @@
 #include "media/formats/common/offset_byte_queue.h"
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mpeg/adts_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

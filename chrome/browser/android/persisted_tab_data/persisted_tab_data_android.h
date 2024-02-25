@@ -10,8 +10,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/tab_android_user_data.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 
 class PersistedTabDataAndroidHelper;
 class PersistedTabDataStorageAndroid;
@@ -34,7 +35,7 @@ class PersistedTabDataAndroid
   // ...
   // - Restore PersistedTabData from disk (if possible). If not there ...
   // - Re-acquire PersistedTabData using the supplier
-  static void From(TabAndroid* tab_android,
+  static void From(base::WeakPtr<TabAndroid> tab_android,
                    const void* user_data_key,
                    SupplierCallback supplier_callback,
                    FromCallback from_callback);
@@ -93,7 +94,7 @@ class PersistedTabDataAndroid
   GetCachedCallbackMap();
 
   static void RunCallbackOnUIThread(
-      TabAndroid* tab_android,
+      base::WeakPtr<TabAndroid> tab_android,
       const void* user_data_key,
       PersistedTabDataAndroid* persisted_tab_data_android);
 
@@ -102,7 +103,7 @@ class PersistedTabDataAndroid
   struct DeferredRequest {
     DeferredRequest();
     ~DeferredRequest();
-    raw_ptr<TabAndroid> tab_android;
+    base::WeakPtr<TabAndroid> tab_android;
     raw_ptr<const void> user_data_key;
     SupplierCallback supplier_callback;
     FromCallback from_callback;

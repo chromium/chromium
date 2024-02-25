@@ -15,6 +15,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -123,6 +124,12 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     CreateServiceErrorCallback error_callback));
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
+  MOCK_METHOD3(CreateLocalGattService,
+               base::WeakPtr<BluetoothLocalGattService>(
+                   const BluetoothUUID& uuid,
+                   bool is_primary,
+                   BluetoothLocalGattService::Delegate* delegate));
+
 #if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD3(SetServiceAllowList,
                void(const UUIDList& uuids,
@@ -135,6 +142,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothLowEnergyScanSession>(
           std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
           base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
+  MOCK_METHOD0(GetSupportedRoles, std::vector<BluetoothRole>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -145,7 +153,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   MOCK_METHOD4(
       ConnectDevice,
       void(const std::string& address,
-           const absl::optional<BluetoothDevice::AddressType>& address_type,
+           const std::optional<BluetoothDevice::AddressType>& address_type,
            ConnectDeviceCallback callback,
            ConnectDeviceErrorCallback error_callback));
 
@@ -181,6 +189,9 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_CONST_METHOD0(IsExtendedAdvertisementsAvailable, bool());
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,

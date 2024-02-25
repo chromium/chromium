@@ -24,9 +24,7 @@ import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for updateWith().
- */
+/** A payment integration test for updateWith(). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestUpdateWithTest {
@@ -37,36 +35,36 @@ public class PaymentRequestUpdateWithTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Lisa Simpson")
-                                  .setCompanyName("Acme Inc.")
-                                  .setStreetAddress("123 Main")
-                                  .setRegion("California")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90210")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555 123-4567")
-                                  .setEmailAddress("lisa@simpson.com")
-                                  .build());
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Maggie Simpson")
-                                  .setCompanyName("Acme Inc.")
-                                  .setStreetAddress("123 Main")
-                                  .setRegion("California")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90210")
-                                  .setCountryCode("Uzbekistan")
-                                  .setPhoneNumber("555 123-4567")
-                                  .setEmailAddress("maggie@simpson.com")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Lisa Simpson")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555 123-4567")
+                        .setEmailAddress("lisa@simpson.com")
+                        .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Maggie Simpson")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("Uzbekistan")
+                        .setPhoneNumber("555 123-4567")
+                        .setEmailAddress("maggie@simpson.com")
+                        .build());
 
         mRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
-    /**
-     * A merchant that calls updateWith() with {} will not cause timeouts in UI.
-     */
+    /** A merchant that calls updateWith() with {} will not cause timeouts in UI. */
     @Test
     @MediumTest
     @Feature({"Payments"})

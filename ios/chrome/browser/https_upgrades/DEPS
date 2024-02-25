@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/prerender",
-  "+ios/chrome/browser/content_settings",
-  "+ios/chrome/browser/metrics",
-]

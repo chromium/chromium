@@ -4,9 +4,9 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_address_map.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/shell.h"
 #include "base/values.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -47,26 +47,29 @@ bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
   const std::string& model_id = mac_address_to_model_id_[mac_address];
 
   if (model_id.empty()) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Can't persist null mac address -> model ID record "
-                       "for mac address: " +
-                           mac_address;
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": Can't persist null mac address -> model ID record "
+           "for mac address: " +
+               mac_address;
     return false;
   }
 
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return false;
   }
 
   ScopedDictPrefUpdate device_address_map_dict(local_state,
                                                kDeviceAddressMapPref);
   if (!device_address_map_dict->Set(mac_address, model_id)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Failed to persist mac address -> model ID record for "
-                       "mac address: " +
-                           mac_address;
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": Failed to persist mac address -> model ID record for "
+           "mac address: " +
+               mac_address;
     return false;
   }
   return true;
@@ -75,23 +78,25 @@ bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {
 bool DeviceAddressMap::EvictMacAddressRecord(const std::string& mac_address) {
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return false;
   }
 
   ScopedDictPrefUpdate device_address_map_dict(local_state,
                                                kDeviceAddressMapPref);
   if (!device_address_map_dict->Remove(mac_address)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Failed to evict mac address -> model ID record from "
-                       "prefs for mac address: " +
-                           mac_address;
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": Failed to evict mac address -> model ID record from "
+           "prefs for mac address: " +
+               mac_address;
     return false;
   }
   return true;
 }
 
-absl::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
+std::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
     const std::string& mac_address) {
   // Lazily load saved records from prefs the first time we get a model ID.
   if (!loaded_records_from_prefs_) {
@@ -101,17 +106,18 @@ absl::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
 
   std::string& saved_model_id = mac_address_to_model_id_[mac_address];
   if (saved_model_id.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return saved_model_id;
 }
 
 bool DeviceAddressMap::HasPersistedRecordsForModelId(
     const std::string& model_id) {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return false;
   }
 
@@ -127,16 +133,17 @@ bool DeviceAddressMap::HasPersistedRecordsForModelId(
 }
 
 void DeviceAddressMap::RefreshCacheForTest() {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   mac_address_to_model_id_.clear();
   LoadPersistedRecordsFromPrefs();
 }
 
 void DeviceAddressMap::LoadPersistedRecordsFromPrefs() {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return;
   }
 

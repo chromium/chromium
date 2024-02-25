@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -33,51 +32,34 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 
-/**
- * Tests for {@link TrustedWebActivityBrowserControlsVisibilityManager}.
- */
+/** Tests for {@link TrustedWebActivityBrowserControlsVisibilityManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
-    @Mock
-    public TabObserverRegistrar mTabObserverRegistrar;
-    @Mock
-    public CustomTabActivityTabProvider mTabProvider;
-    @Mock
-    public TabImpl mTab;
-    @Mock
-    SecurityStateModel.Natives mSecurityStateMocks;
-    @Mock
-    public CustomTabToolbarCoordinator mToolbarCoordinator;
-    @Mock
-    public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
+    @Mock public TabObserverRegistrar mTabObserverRegistrar;
+    @Mock public CustomTabActivityTabProvider mTabProvider;
+    @Mock public Tab mTab;
+    @Mock SecurityStateModel.Natives mSecurityStateMocks;
+    @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
+    @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
 
-    @Mock
-    TrustedWebActivityBrowserControlsVisibilityManager mController;
+    @Mock TrustedWebActivityBrowserControlsVisibilityManager mController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(mSecurityStateMocks);
         when(mTabProvider.getTab()).thenReturn(mTab);
-        CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.build(mTab);
-        criticalPersistedTabData.setParentId(Tab.INVALID_TAB_ID);
-        UserDataHost userDataHost = new UserDataHost();
-        userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
     }
 
-    /**
-     * Browser controls should be shown for pages with certificate errors.
-     */
+    /** Browser controls should be shown for pages with certificate errors. */
     @Test
     public void testDangerousSecurityLevel() {
         mController = buildController(mock(BrowserServicesIntentDataProvider.class));
@@ -87,9 +69,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         assertFalse(getLastCloseButtonVisibility());
     }
 
-    /**
-     * Browser controls should be shown for WebAPKs with 'minimal-ui' display mode.
-     */
+    /** Browser controls should be shown for WebAPKs with 'minimal-ui' display mode. */
     @Test
     public void testMinimalUiDisplayMode() {
         mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
@@ -122,9 +102,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         assertTrue(getLastCloseButtonVisibility());
     }
 
-    /**
-     * Browser controls should not be shown for TWAs while in TWA mode.
-     */
+    /** Browser controls should not be shown for TWAs while in TWA mode. */
     @Test
     public void testTwa() {
         mController = buildController(mock(BrowserServicesIntentDataProvider.class));
@@ -132,9 +110,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
     }
 
-    /**
-     * Browser controls should be shown for TWAs when outside of the TWA's scope.
-     */
+    /** Browser controls should be shown for TWAs when outside of the TWA's scope. */
     @Test
     public void testTwaOutOfScope() {
         mController = buildController(mock(BrowserServicesIntentDataProvider.class));
@@ -150,23 +126,23 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     private BrowserServicesIntentDataProvider buildWebApkIntentDataProvider(
             @DisplayMode.EnumType int displayMode) {
-        WebApkIntentDataProviderBuilder intentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder(
-                        "org.chromium.webapk.abcd", "https://pwa.rocks/");
-        intentDataProviderBuilder.setDisplayMode(displayMode);
-        return intentDataProviderBuilder.build();
+        return new WebApkIntentDataProviderBuilder("org.chromium.webapk.abcd", "https://pwa.rocks/")
+                .setDisplayMode(displayMode)
+                .build();
     }
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(
             BrowserServicesIntentDataProvider intentDataProvider) {
-        return spy(new TrustedWebActivityBrowserControlsVisibilityManager(mTabObserverRegistrar,
-                mTabProvider, mToolbarCoordinator, mCloseButtonVisibilityManager,
-                intentDataProvider));
+        return spy(
+                new TrustedWebActivityBrowserControlsVisibilityManager(
+                        mTabObserverRegistrar,
+                        mTabProvider,
+                        mToolbarCoordinator,
+                        mCloseButtonVisibilityManager,
+                        intentDataProvider));
     }
 
-    /**
-     * Returns the current browser controls state.
-     */
+    /** Returns the current browser controls state. */
     private @BrowserControlsState int getLastBrowserControlsState() {
         ArgumentCaptor<Integer> lastBrowserControlsState = ArgumentCaptor.forClass(Integer.class);
         verify(mToolbarCoordinator, atLeast(0))
@@ -176,9 +152,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
                 : lastBrowserControlsState.getValue();
     }
 
-    /**
-     * Returns the current close button visibility.
-     */
+    /** Returns the current close button visibility. */
     private boolean getLastCloseButtonVisibility() {
         ArgumentCaptor<Boolean> lastCloseButtonVisiblity = ArgumentCaptor.forClass(Boolean.class);
         verify(mCloseButtonVisibilityManager, atLeast(1))

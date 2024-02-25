@@ -30,22 +30,19 @@ class MockSecureEnclaveClient : public SecureEnclaveClient {
               (override));
   MOCK_METHOD(base::apple::ScopedCFTypeRef<SecKeyRef>,
               CopyStoredKey,
-              (KeyType),
+              (KeyType, OSStatus*),
               (override));
   MOCK_METHOD(bool, UpdateStoredKeyLabel, (KeyType, KeyType), (override));
   MOCK_METHOD(bool, DeleteKey, (KeyType), (override));
   MOCK_METHOD(bool,
-              GetStoredKeyLabel,
-              (KeyType, std::vector<uint8_t>&),
-              (override));
-  MOCK_METHOD(bool,
               ExportPublicKey,
-              (SecKeyRef, std::vector<uint8_t>&),
+              (SecKeyRef, std::vector<uint8_t>&, OSStatus*),
               (override));
-  MOCK_METHOD(bool,
-              SignDataWithKey,
-              (SecKeyRef, base::span<const uint8_t>, std::vector<uint8_t>&),
-              (override));
+  MOCK_METHOD(
+      bool,
+      SignDataWithKey,
+      (SecKeyRef, base::span<const uint8_t>, std::vector<uint8_t>&, OSStatus*),
+      (override));
   MOCK_METHOD(bool, VerifySecureEnclaveSupported, (), (override));
 };
 

@@ -77,7 +77,7 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
 
   if (js_value->IsString()) {
     return mojom::blink::RemoteInvocationArgument::NewStringValue(
-        ToCoreString(js_value.As<v8::String>()));
+        ToCoreString(isolate, js_value.As<v8::String>()));
   }
 
   if (js_value->IsNull()) {
@@ -332,7 +332,7 @@ void RemoteObject::RemoteObjectInvokeCallback(
     return;
   }
 
-  String method_name = ToCoreString(info.Data().As<v8::String>());
+  String method_name = ToCoreString(isolate, info.Data().As<v8::String>());
 
   v8::Local<v8::Object> method_cache = GetMethodCache(
       isolate, remote_object->GetWrapper(isolate).ToLocalChecked());

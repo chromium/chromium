@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/drive/file_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -32,11 +32,11 @@ class DriveSearchProvider : public SearchProvider {
   struct FileInfo {
     base::FilePath reparented_path;
     drivefs::mojom::FileMetadataPtr metadata;
-    absl::optional<base::Time> last_accessed;
+    std::optional<base::Time> last_accessed;
 
     FileInfo(const base::FilePath& reparented_path,
              drivefs::mojom::FileMetadataPtr metadata,
-             const absl::optional<base::Time>& last_accessed);
+             const std::optional<base::Time>& last_accessed);
     ~FileInfo();
 
     FileInfo(const FileInfo&) = delete;
@@ -62,7 +62,7 @@ class DriveSearchProvider : public SearchProvider {
       const base::FilePath& path,
       double relevance,
       FileResult::Type type,
-      const absl::optional<std::string>& drive_id);
+      const std::optional<std::string>& drive_id);
 
   // When the query began.
   base::TimeTicks query_start_time_;
@@ -70,10 +70,10 @@ class DriveSearchProvider : public SearchProvider {
   base::TimeTicks results_returned_time_;
 
   std::u16string last_query_;
-  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
+  std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> drive_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<drive::DriveIntegrationService> drive_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveSearchProvider> weak_factory_{this};

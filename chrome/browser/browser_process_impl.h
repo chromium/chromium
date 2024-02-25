@@ -50,6 +50,7 @@ class ChromeMetricsServicesManagerClient;
 class DevToolsAutoOpener;
 class RemoteDebuggingServer;
 class PrefRegistrySimple;
+class SearchEngineChoiceProfileTagger;
 class SecureOriginPrefsObserver;
 class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
@@ -69,6 +70,10 @@ class ChromeExtensionsBrowserClient;
 
 namespace gcm {
 class GCMDriver;
+}
+
+namespace os_crypt_async {
+class OSCryptAsync;
 }
 
 namespace policy {
@@ -220,6 +225,8 @@ class BrowserProcessImpl : public BrowserProcess,
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
 
+  os_crypt_async::OSCryptAsync* os_crypt_async() override;
+
   BuildState* GetBuildState() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -315,7 +322,7 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  scoped_refptr<printing::PrintPreviewDialogController>
+  std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
 
   std::unique_ptr<printing::BackgroundPrintingManager>
@@ -448,6 +455,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 
   BuildState build_state_;
+
+  std::unique_ptr<SearchEngineChoiceProfileTagger>
+      search_engine_choice_profile_tagger_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -458,6 +468,8 @@ class BrowserProcessImpl : public BrowserProcess,
   // breadcrumbs logging is disabled.
   std::unique_ptr<breadcrumbs::ApplicationBreadcrumbsLogger>
       application_breadcrumbs_logger_;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

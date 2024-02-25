@@ -72,7 +72,7 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
   }
 
   mojo::Receiver<mojom::SmbFsDelegate> receiver_;
-  const raw_ptr<SmbFsHost::Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<SmbFsHost::Delegate> delegate_;
 
   base::WeakPtrFactory<SmbFsDelegateImpl> weak_factory_{this};
 };

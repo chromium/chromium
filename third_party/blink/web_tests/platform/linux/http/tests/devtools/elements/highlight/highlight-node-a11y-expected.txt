@@ -92,7 +92,7 @@ button{
     "isKeyboardFocusable": true,
     "accessibleName": "click",
     "accessibleRole": "button",
-    "layoutObjectName": "LayoutNGButton",
+    "layoutObjectName": "LayoutButton",
     "showAccessibilityInfo": true
   }
 }
@@ -188,7 +188,7 @@ input{
     "isKeyboardFocusable": true,
     "accessibleName": "",
     "accessibleRole": "textbox",
-    "layoutObjectName": "LayoutNGTextControlSingleLine",
+    "layoutObjectName": "LayoutTextControlSingleLine",
     "showAccessibilityInfo": true
   }
 }

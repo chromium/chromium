@@ -49,11 +49,11 @@ void FileManagerPrivateCustomBindings::GetFileSystem(
   blink::WebLocalFrame* webframe =
       blink::WebLocalFrame::FrameForContext(context()->v8_context());
   DCHECK(webframe);
-  args.GetReturnValue().Set(
-      blink::WebDOMFileSystem::Create(
-          webframe, blink::kWebFileSystemTypeExternal,
-          blink::WebString::FromUTF8(name), GURL(root_url))
-          .ToV8Value(context()->v8_context()->Global(), isolate));
+  args.GetReturnValue().Set(blink::WebDOMFileSystem::Create(
+                                webframe, blink::kWebFileSystemTypeExternal,
+                                blink::WebString::FromUTF8(name),
+                                GURL(root_url))
+                                .ToV8Value(isolate));
 }
 
 void FileManagerPrivateCustomBindings::GetExternalFileEntry(
@@ -66,7 +66,7 @@ void FileManagerPrivateCustomBindings::GetEntryURL(
   CHECK(args.Length() == 1);
   CHECK(args[0]->IsObject());
   const blink::WebURL& url =
-      blink::WebDOMFileSystem::CreateFileSystemURL(args[0]);
+      blink::WebDOMFileSystem::CreateFileSystemURL(args.GetIsolate(), args[0]);
   args.GetReturnValue().Set(v8_helpers::ToV8StringUnsafe(
       args.GetIsolate(), url.GetString().Utf8().c_str()));
 }

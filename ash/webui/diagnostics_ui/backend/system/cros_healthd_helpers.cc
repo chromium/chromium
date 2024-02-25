@@ -4,9 +4,10 @@
 
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
 
+#include <string_view>
+
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
@@ -35,7 +36,7 @@ using cros_healthd::mojom::TelemetryInfo;
 template <typename TResult, typename TTag>
 bool CheckResponse(const TResult& result,
                    TTag expected_tag,
-                   base::StringPiece type_name) {
+                   std::string_view type_name) {
   if (result.is_null()) {
     LOG(ERROR) << type_name << " not found in croshealthd response.";
     return false;

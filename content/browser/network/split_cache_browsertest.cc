@@ -477,7 +477,13 @@ class SplitCacheContentBrowserTestDisabled
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, SplitCache) {
+// TODO(crbug.com/1486165): Times out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SplitCache DISABLED_SplitCache
+#else
+#define MAYBE_SplitCache SplitCache
+#endif
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 

@@ -85,4 +85,4 @@ class HeadlessModeDevTooledBrowserTest : public HeadlessModeBrowserTest,
 
 }  // namespace headless
 
-#endif  // CHROME_BROWSER_HEADLESS_TEST_HEADLESS_MODEVTOOLED_DE_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_DEVTOOLED_BROWSERTEST_H_

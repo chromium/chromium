@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -17,34 +19,33 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kGhostWindowEnabled, true);
 
   registry->RegisterIntegerPref(
-      kRestoreAppsAndPagesPrefName,
+      prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 bool HasRestorePref(PrefService* prefs) {
-  return prefs->HasPrefPath(kRestoreAppsAndPagesPrefName);
+  return prefs->HasPrefPath(prefs::kRestoreAppsAndPagesPrefName);
 }
 
 bool HasSessionStartupPref(PrefService* prefs) {
-  return prefs->HasPrefPath(prefs::kRestoreOnStartup);
+  return prefs->HasPrefPath(::prefs::kRestoreOnStartup);
 }
 
 bool CanPerformRestore(PrefService* prefs) {
   if (!HasRestorePref(prefs))
     return true;
 
-  return static_cast<RestoreOption>(prefs->GetInteger(
-             kRestoreAppsAndPagesPrefName)) == RestoreOption::kDoNotRestore
-             ? false
-             : true;
+  return static_cast<RestoreOption>(
+             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName)) !=
+         RestoreOption::kDoNotRestore;
 }
 
 void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
   DCHECK(!HasRestorePref(prefs));
 
   if (!HasSessionStartupPref(prefs)) {
-    prefs->SetInteger(kRestoreAppsAndPagesPrefName,
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
     return;
   }
@@ -52,25 +53,26 @@ void SetDefaultRestorePrefIfNecessary(PrefService* prefs) {
   SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(prefs);
   if (session_startup_pref.type == SessionStartupPref::LAST) {
-    prefs->SetInteger(kRestoreAppsAndPagesPrefName,
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
   } else {
-    prefs->SetInteger(kRestoreAppsAndPagesPrefName,
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kDoNotRestore));
   }
 }
 
 void UpdateRestorePrefIfNecessary(PrefService* prefs) {
-  if (!prefs->HasPrefPath(prefs::kRestoreOnStartup))
+  if (!prefs->HasPrefPath(::prefs::kRestoreOnStartup)) {
     return;
+  }
 
   SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(prefs);
   if (session_startup_pref.ShouldRestoreLastSession()) {
-    prefs->SetInteger(kRestoreAppsAndPagesPrefName,
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAlways));
   } else {
-    prefs->SetInteger(kRestoreAppsAndPagesPrefName,
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
   }
 }

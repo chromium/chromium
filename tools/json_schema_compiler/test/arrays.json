@@ -103,13 +103,12 @@
             "name": "nums",
             "type": "array",
             "items": {"type": "integer"}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "anyArray",
@@ -120,13 +119,12 @@
             "name": "anys",
             "type": "array",
             "items": {"type": "any"}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "objectArray",
@@ -140,13 +138,12 @@
               "type": "object",
               "additionalProperties": {"type": "integer"}
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "refArray",
@@ -157,13 +154,12 @@
             "name": "refs",
             "type": "array",
             "items": {"$ref": "Item"}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "justChoices",
@@ -179,13 +175,12 @@
                 "items": {"$ref": "Item"}
               }
             ]
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "choicesArray",
@@ -204,49 +199,44 @@
                 }
               ]
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "returnIntegerArray",
         "type": "function",
         "description": "Returns some integers.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "integers",
-                "type": "array",
-                "items": {"type": "integer"}
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "integers",
+              "type": "array",
+              "items": {"type": "integer"}
+            }
+          ]
+        }
       },
       {
         "name": "returnRefArray",
         "type": "function",
         "description": "Returns some Items.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "refs",
-                "type": "array",
-                "items": {"$ref": "Item"}
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "refs",
+              "type": "array",
+              "items": {"$ref": "Item"}
+            }
+          ]
+        }
       }
     ]
   }

@@ -15,20 +15,18 @@ found in the LICENSE file.
              that looks more like a link.
     'disabled' - button is disabled when the attribute is set.
 -->
-<style>
+<style include="cros-color-overrides">
   :host {
     display: inline-block;
   }
 
-  :host([link]) cr-button {
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    color: var(--cros-link-color);
-    font-weight: 400;
-    margin: 0 -0.57em;
-    min-width: 0;
+  cr-button#button {
+    --cr-button-height: var(--oobe-button-height);
+    border-radius: var(--oobe-button-radius);
+    font-family: var(--oobe-button-font-family);
+    font-size: var(--oobe-button-font-size);
+    font-weight: var(--oobe-button-font-weight);
+    line-height: var(--oobe-button-line-height);
   }
 
   :host([link]) cr-button:focus {
@@ -43,8 +41,7 @@ found in the LICENSE file.
     color: var(--cros-color-disabled);
   }
 </style>
-<cr-button id="button" disabled="[[disabled]]" on-click="onClick_"
+<cr-button id="button" disabled="[[disabled]]" on-click="onClick"
     noink$="[[link]]">
   <slot></slot>
 </cr-button>
-

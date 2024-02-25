@@ -4,6 +4,8 @@
 
 #include "net/cert/do_nothing_ct_verifier.h"
 
+#include <string_view>
+
 #include "net/base/net_errors.h"
 
 namespace net {
@@ -12,12 +14,11 @@ DoNothingCTVerifier::DoNothingCTVerifier() = default;
 DoNothingCTVerifier::~DoNothingCTVerifier() = default;
 
 void DoNothingCTVerifier::Verify(
-    base::StringPiece hostname,
     X509Certificate* cert,
-    base::StringPiece stapled_ocsp_response,
-    base::StringPiece sct_list_from_tls_extension,
+    std::string_view stapled_ocsp_response,
+    std::string_view sct_list_from_tls_extension,
     SignedCertificateTimestampAndStatusList* output_scts,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log) const {
   output_scts->clear();
 }
 

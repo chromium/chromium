@@ -10,6 +10,9 @@
 
 #include <algorithm>
 
+#include "base/command_line.h"
+#include "build/build_config.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
@@ -94,6 +97,14 @@ class EXTBlendFuncExtendedDrawTest : public testing::TestWithParam<bool> {
 
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (!gles2::UsePassthroughCommandDecoder(command_line)) {
+      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      GTEST_SKIP();
+    }
+#endif
+
     GLManager::Options options;
     options.size = gfx::Size(kWidth, kHeight);
     options.force_shader_name_hashing = GetParam();
@@ -256,6 +267,14 @@ TEST_P(EXTBlendFuncExtendedDrawTest, ESSL1FragData) {
 class EXTBlendFuncExtendedES3DrawTest : public EXTBlendFuncExtendedDrawTest {
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (!gles2::UsePassthroughCommandDecoder(command_line)) {
+      // TODO(crbug.com/1157073): remove suppression when passthrough ships.
+      GTEST_SKIP();
+    }
+#endif
+
     GLManager::Options options;
     options.size = gfx::Size(kWidth, kHeight);
     options.context_type = CONTEXT_TYPE_OPENGLES3;

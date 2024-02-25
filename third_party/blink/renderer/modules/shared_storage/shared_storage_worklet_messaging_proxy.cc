@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ SharedStorageWorkletMessagingProxy::SharedStorageWorkletMessagingProxy(
   DCHECK(IsMainThread());
 
   Initialize(/*worker_clients=*/nullptr, /*module_responses_map=*/nullptr,
-             /*thread_startup_data=*/absl::nullopt,
+             SharedStorageWorkletThread::CreateThreadStartupData(),
              std::move(global_scope_creation_params));
 
   PostCrossThreadTask(
@@ -97,7 +97,7 @@ std::unique_ptr<WorkerThread>
 SharedStorageWorkletMessagingProxy::CreateWorkerThread() {
   DCHECK(IsMainThread());
 
-  return std::make_unique<SharedStorageWorkletThread>(WorkletObjectProxy());
+  return SharedStorageWorkletThread::Create(WorkletObjectProxy());
 }
 
 }  // namespace blink

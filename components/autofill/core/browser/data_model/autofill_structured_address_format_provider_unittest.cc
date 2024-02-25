@@ -12,7 +12,7 @@ namespace autofill {
 // Tests that GetPatterns returns an empty string  if no patterns can be found.
 TEST(AutofillStructuredAddressFormatProvider, GetPatternReturnsEmpty) {
   auto* f_pattern_provider = StructuredAddressesFormatProvider::GetInstance();
-  EXPECT_EQ(u"", f_pattern_provider->GetPattern(ServerFieldType::UNKNOWN_TYPE,
+  EXPECT_EQ(u"", f_pattern_provider->GetPattern(FieldType::UNKNOWN_TYPE,
                                                 /*country_code=*/""));
 }
 
@@ -22,27 +22,26 @@ TEST(AutofillStructuredAddressFormatProvider, NonEmptyPatternsForHomeAddress) {
   std::vector<std::string> country_codes = {"BR", "DE", "MX", "ES"};
 
   for (const std::string& country_code : country_codes) {
-    EXPECT_NE(u"",
-              pattern_provider->GetPattern(
-                  ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, country_code));
+    EXPECT_NE(u"", pattern_provider->GetPattern(
+                       FieldType::ADDRESS_HOME_STREET_ADDRESS, country_code));
   }
 
   // If the country code is not provided, there is a default value;
-  EXPECT_NE(u"", pattern_provider->GetPattern(
-                     ServerFieldType::ADDRESS_HOME_STREET_ADDRESS,
-                     /*country_code=*/""));
+  EXPECT_NE(u"",
+            pattern_provider->GetPattern(FieldType::ADDRESS_HOME_STREET_ADDRESS,
+                                         /*country_code=*/""));
 }
 
 // Tests that GetPatterns returns non empty patterns for full name.
 TEST(AutofillStructuredAddressFormatProvider, NonEmptyPatternsForFullName) {
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
-  EXPECT_NE(u"", pattern_provider->GetPattern(ServerFieldType::NAME_FULL,
+  EXPECT_NE(u"", pattern_provider->GetPattern(FieldType::NAME_FULL,
                                               /*country_code=*/""));
 
   StructuredAddressesFormatProvider::ContextInfo info;
   info.name_has_cjk_characteristics = true;
 
-  EXPECT_NE(u"", pattern_provider->GetPattern(ServerFieldType::NAME_FULL,
+  EXPECT_NE(u"", pattern_provider->GetPattern(FieldType::NAME_FULL,
                                               /*country_code=*/"", info));
 }
 

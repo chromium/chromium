@@ -133,7 +133,7 @@ std::unique_ptr<dbus::Response> ServiceProviderTestHelper::CallMethodAndBlock(
                                       base::Unretained(this), &response));
   // Check for a response.
   if (!response)
-    base::RunLoop().Run();
+    loop_.Run();
   // Return response.
   return response;
 }
@@ -159,8 +159,7 @@ void ServiceProviderTestHelper::OnResponse(
     std::unique_ptr<dbus::Response>* out_response,
     std::unique_ptr<dbus::Response> response) {
   *out_response = std::move(response);
-  if (base::RunLoop::IsRunningOnCurrentThread())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  loop_.QuitWhenIdle();
 }
 
 }  // namespace ash

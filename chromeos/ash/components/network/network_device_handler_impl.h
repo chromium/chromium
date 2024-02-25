@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
       std::string support_property_name,
       WifiFeatureSupport* feature_support_to_set,
       const std::string& device_path,
-      absl::optional<base::Value::Dict> properties);
+      std::optional<base::Value::Dict> properties);
 
   // Callback to be called on MAC address source change request failure.
   // The request was called on device with |device_path| path and
@@ -185,8 +185,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // Get the DeviceState for the wifi device, if any.
   const DeviceState* GetWifiDeviceState();
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   bool allow_cellular_sim_lock_ = true;

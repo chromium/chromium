@@ -90,10 +90,9 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override {}
-  bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges GetTiledEdges() const override { return {}; }
+#if BUILDFLAG(IS_LINUX)
+  bool IsTiled() const override { return false; }
 #endif
   int WebAppButtonHeight() const override { return 0; }
 
@@ -382,7 +381,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {
   // Tests the layout of a default chrome window with a tabstrip and no window
   // title.
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(false);
   ExpectWindowIcon(false);
 }
@@ -397,7 +396,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowButtonsOnLeft) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(true, 0);
+  ExpectCaptionButtons(true, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(true);
   ExpectWindowIcon(true);
 }
@@ -419,7 +418,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   AddWindowTitleIcons();
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectWindowIcon(false);
   ExpectWindowTitle();
 }

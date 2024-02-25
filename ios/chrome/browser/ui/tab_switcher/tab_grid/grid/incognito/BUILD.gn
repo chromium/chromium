@@ -11,17 +11,49 @@ source_set("incognito") {
   ]
 
   deps = [
+    ":incognito_grid_mediator_delegate",
+    ":incognito_ui",
     "//base",
-    "//ios/chrome/browser/policy:policy_util",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_consumer",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+  ]
+}
+
+source_set("incognito_ui") {
+  sources = [
+    "incognito_grid_view_controller.h",
+    "incognito_grid_view_controller.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/util",
   ]
 }
 
@@ -32,9 +64,22 @@ source_set("unit_tests") {
 
   deps = [
     ":incognito",
+    "//components/policy/core/common:common_constants",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
+    "//ios/web/public",
   ]
+}
+
+source_set("incognito_grid_mediator_delegate") {
+  sources = [ "incognito_grid_mediator_delegate.h" ]
+
+  deps = [ "//base" ]
 }

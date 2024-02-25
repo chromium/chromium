@@ -10,9 +10,7 @@ namespace ash::multidevice {
 
 // static
 std::string RemoteDevice::GenerateDeviceId(const std::string& public_key) {
-  std::string device_id;
-  base::Base64Encode(public_key, &device_id);
-  return device_id;
+  return base::Base64Encode(public_key);
 }
 
 // static

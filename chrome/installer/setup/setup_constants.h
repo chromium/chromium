@@ -13,7 +13,7 @@ namespace installer {
 
 extern const wchar_t kChromeArchive[];
 extern const wchar_t kChromeCompressedArchive[];
-extern const wchar_t kVisualElements[];
+extern const char kVisualElements[];
 extern const wchar_t kVisualElementsManifest[];
 
 extern const wchar_t kInstallSourceDir[];
@@ -40,7 +40,6 @@ namespace switches {
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
 extern const char kStartupEventHandle[];
-extern const char kUserExperiment[];
 
 extern const char kCleanupForDowngradeOperation[];
 extern const char kCleanupForDowngradeVersion[];

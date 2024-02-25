@@ -15,6 +15,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "components/services/app_service/public/cpp/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
@@ -26,6 +27,7 @@ AppServiceTest::~AppServiceTest() = default;
 void AppServiceTest::SetUp(Profile* profile) {
   app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile);
   app_service_proxy_->ReinitializeForTesting(profile);
+  WaitForAppServiceProxyReady(app_service_proxy_);
 }
 
 void AppServiceTest::UninstallAllApps(Profile* profile) {
@@ -37,27 +39,26 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
         app->readiness = Readiness::kUninstalledByUser;
         apps.push_back(std::move(app));
       });
-  app_service_proxy->AppRegistryCache().OnApps(
-      std::move(apps), AppType::kUnknown,
-      false /* should_notify_initialized */);
+  app_service_proxy->OnApps(std::move(apps), AppType::kUnknown,
+                            false /* should_notify_initialized */);
 }
 
 std::string AppServiceTest::GetAppName(const std::string& app_id) const {
   std::string name;
-  if (!app_service_proxy_)
+  if (!app_service_proxy_) {
     return name;
+  }
   app_service_proxy_->AppRegistryCache().ForOneApp(
       app_id, [&name](const AppUpdate& update) { name = update.Name(); });
   return name;
 }
 
-gfx::ImageSkia AppServiceTest::LoadAppIconBlocking(AppType app_type,
-                                                   const std::string& app_id,
+gfx::ImageSkia AppServiceTest::LoadAppIconBlocking(const std::string& app_id,
                                                    int32_t size_hint_in_dip) {
   base::test::TestFuture<apps::IconValuePtr> future;
-  app_service_proxy_->LoadIcon(
-      app_type, app_id, IconType::kStandard, size_hint_in_dip,
-      /*allow_placeholder_icon=*/false, future.GetCallback());
+  app_service_proxy_->LoadIcon(app_id, IconType::kStandard, size_hint_in_dip,
+                               /*allow_placeholder_icon=*/false,
+                               future.GetCallback());
 
   auto icon = future.Take();
   DCHECK_EQ(IconType::kStandard, icon->icon_type);
@@ -68,6 +69,19 @@ bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,
                                        const gfx::ImageSkia& dst) {
   return gfx::test::AreBitmapsEqual(src.GetRepresentation(1.0f).GetBitmap(),
                                     dst.GetRepresentation(1.0f).GetBitmap());
+}
+
+void WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    return;
+  }
+
+  base::test::TestFuture<void> result;
+  CHECK(proxy->OnReady());
+  proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
+  CHECK(result.Wait());
+#endif
 }
 
 }  // namespace apps

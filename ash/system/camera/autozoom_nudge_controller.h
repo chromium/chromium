@@ -58,7 +58,7 @@ class ASH_EXPORT AutozoomNudgeController : public SystemNudgeController,
   void OnAutozoomControlEnabledChanged(bool enabled) override;
 
   // Owned by ash/Shell.
-  const raw_ptr<AutozoomControllerImpl, ExperimentalAsh> autozoom_controller_;
+  const raw_ptr<AutozoomControllerImpl> autozoom_controller_;
 };
 
 }  // namespace ash

@@ -262,7 +262,7 @@ ForegroundEidGenerator::GetEidPeriodTimestamps(
     const std::vector<cryptauth::BeaconSeed>& scanning_device_beacon_seeds,
     const bool allow_non_current_periods) const {
   base::Time now = clock_->Now();
-  int64_t current_time_ms = now.ToJavaTime();
+  int64_t current_time_ms = now.InMillisecondsSinceUnixEpoch();
 
   std::unique_ptr<cryptauth::BeaconSeed> current_seed =
       GetBeaconSeedForCurrentPeriod(scanning_device_beacon_seeds,

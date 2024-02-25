@@ -20,8 +20,6 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
 
-class GURL;
-
 namespace content {
 struct MediaStreamRequest;
 class RenderFrameHost;
@@ -53,20 +51,16 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
                            gfx::NativeWindow parent);
 
     // SystemWebDialogDelegate
-    ui::ModalType GetDialogModalType() const override;
-    bool CanMaximizeDialog() const override;
-    ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
     void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
     // ui::WebDialogDelegate
-    void GetDialogSize(gfx::Size* size) const override;
     void RequestMediaAccessPermission(
         content::WebContents* web_contents,
         const content::MediaStreamRequest& request,
         content::MediaResponseCallback callback) override;
     bool CheckMediaAccessPermission(
         content::RenderFrameHost* render_frame_host,
-        const GURL& security_origin,
+        const url::Origin& security_origin,
         blink::mojom::MediaStreamType type) override;
 
    private:
@@ -146,6 +140,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   base::FilePath GetFilePathByName(const std::string& name) override;
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
+  void OpenWifiDialog(WifiConfig wifi_config) override;
 
  private:
   base::FilePath GetMyFilesFolder();
@@ -158,7 +153,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void IntializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   base::Time session_start_time_;
 

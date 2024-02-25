@@ -236,10 +236,18 @@ cc_library(
             ":processing_component",
             "//maldoca/pdf_parser:adobe_api_mapper",
             "//maldoca/pdf_parser:pdfium_processor",
+            "@com_google_absl//absl/status",
+            "@com_google_absl//absl/status:statusor",
+            "@com_google_absl//absl/strings",
+            "@com_google_absl//absl/strings:string_view",
         ],
         "//:chrome_build": [
             ":office_processing_component",
             ":processing_component",
+            "@com_google_absl//absl/status",
+            "@com_google_absl//absl/status:statusor",
+            "@com_google_absl//absl/strings",
+            "@com_google_absl//absl/strings:string_view",
         ],
     }),
 )

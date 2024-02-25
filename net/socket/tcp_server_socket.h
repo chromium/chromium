@@ -41,7 +41,7 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   // net::ServerSocket implementation.
   int Listen(const IPEndPoint& address,
              int backlog,
-             absl::optional<bool> ipv6_only) override;
+             std::optional<bool> ipv6_only) override;
   int GetLocalAddress(IPEndPoint* address) const override;
   int Accept(std::unique_ptr<StreamSocket>* socket,
              CompletionOnceCallback callback) override;
@@ -74,6 +74,7 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   std::unique_ptr<TCPSocket> accepted_socket_;
   IPEndPoint accepted_address_;
   bool pending_accept_ = false;
+  bool adopted_opened_socket_ = false;
 };
 
 }  // namespace net

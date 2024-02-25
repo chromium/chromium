@@ -7,11 +7,11 @@
  * component warning the user that resizing a sparse disk cannot be undone.
  * By clicking 'Reserve size', the user agrees to start the operation.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './crostini_disk_resize_confirmation_dialog.html.js';
@@ -32,17 +32,17 @@ class SettingsCrostiniDiskResizeConfirmationDialogElement extends
     return getTemplate();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.getDialog_().showModal();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.getDialog_().cancel();
   }
 
-  private onReserveSizeClick_() {
+  private onReserveSizeClick_(): void {
     this.getDialog_().close();
   }
 

@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_query.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -16,7 +17,6 @@
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -107,7 +107,7 @@ DnsQuery::DnsQuery(uint16_t id,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
 #if DCHECK_IS_ON()
-  absl::optional<std::string> dotted_name =
+  std::optional<std::string> dotted_name =
       dns_names_util::NetworkToDottedName(qname);
   DCHECK(dotted_name && !dotted_name.value().empty());
 #endif  // DCHECK_IS_ON()

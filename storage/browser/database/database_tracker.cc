@@ -112,7 +112,6 @@ DatabaseTracker::DatabaseTracker(
                   ? profile_path_.Append(kIncognitoDatabaseDirectoryName)
                   : profile_path_.Append(kDatabaseDirectoryName)),
       db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 500,
       })),

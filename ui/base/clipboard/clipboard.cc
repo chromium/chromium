@@ -165,7 +165,7 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     ReadData(ui::ClipboardFormatType::WebCustomFormatMap(), data_dst,
              &custom_format_json);
     if (!custom_format_json.empty()) {
-      absl::optional<base::Value> json_val =
+      std::optional<base::Value> json_val =
           base::JSONReader::Read(custom_format_json);
       if (json_val.has_value() && json_val->is_dict()) {
         for (const auto it : json_val->GetDict()) {
@@ -227,86 +227,81 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
   // of byte vectors, and if any of the byte vectors were empty, this would
   // simply early return.
   absl::visit(
-      base::Overloaded {
-        [&](const BitmapData& data) {
-          // Unlike many of the other types, this does not perform an empty
-          // check. Due to a historical quirk of how bitmaps were transferred
-          // between ScopedClipboardWriter and Clipboard, the empty check
-          // mentioned above would never be true for bitmaps.
-          WriteBitmap(data.bitmap);
-        },
-            [&](const HtmlData& data) {
-              if (data.markup.empty()) {
-                return;
-              }
+      base::Overloaded{
+          [&](const BitmapData& data) {
+            // Unlike many of the other types, this does not perform an empty
+            // check. Due to a historical quirk of how bitmaps were transferred
+            // between ScopedClipboardWriter and Clipboard, the empty check
+            // mentioned above would never be true for bitmaps.
+            WriteBitmap(data.bitmap);
+          },
+          [&](const HtmlData& data) {
+            if (data.markup.empty()) {
+              return;
+            }
 
-              if (params.content_type == ClipboardContentType::kUnsanitized) {
-                WriteUnsanitizedHTML(data.markup, data.source_url);
-              } else {
-                WriteHTML(data.markup, data.source_url);
-              }
-            },
-            [&](const RtfData& data) {
-              if (data.data.empty()) {
-                return;
-              }
+            WriteHTML(data.markup, data.source_url);
+          },
+          [&](const RtfData& data) {
+            if (data.data.empty()) {
+              return;
+            }
 
-              WriteRTF(data.data);
-            },
-            [&](const BookmarkData& data) {
-              if (data.title.empty() || data.url.empty()) {
-                return;
-              }
+            WriteRTF(data.data);
+          },
+          [&](const BookmarkData& data) {
+            if (data.title.empty() || data.url.empty()) {
+              return;
+            }
 
-              WriteBookmark(data.title, data.url);
-            },
-            [&](const TextData& data) {
-              if (data.data.empty()) {
-                return;
-              }
+            WriteBookmark(data.title, data.url);
+          },
+          [&](const TextData& data) {
+            if (data.data.empty()) {
+              return;
+            }
 
-              WriteText(data.data);
-            },
-            [&](const WebkitData& data) { WriteWebSmartPaste(); },
-            [&](const RawData& data) {
-              if (data.format.empty() || data.data.empty()) {
-                return;
-              }
+            WriteText(data.data);
+          },
+          [&](const WebkitData& data) { WriteWebSmartPaste(); },
+          [&](const RawData& data) {
+            if (data.data.empty()) {
+              return;
+            }
 
-              WriteData(ClipboardFormatType::Deserialize(data.format),
-                        base::as_bytes(base::make_span(data.data)));
-            },
-            [&](const SvgData& data) {
-              if (data.markup.empty()) {
-                return;
-              }
+            WriteData(data.format, base::as_bytes(base::make_span(data.data)));
+          },
+          [&](const SvgData& data) {
+            if (data.markup.empty()) {
+              return;
+            }
 
-              WriteSvg(data.markup);
-            },
-            [&](const FilenamesData& data) {
-              if (data.text_uri_list.empty()) {
-                return;
-              }
+            WriteSvg(data.markup);
+          },
+          [&](const FilenamesData& data) {
+            if (data.text_uri_list.empty()) {
+              return;
+            }
 
-              WriteFilenames(ui::URIListToFileInfos(data.text_uri_list));
-            },
-            [&](const WebCustomFormatMapData& data) {
-              if (data.data.empty()) {
-                return;
-              }
+            WriteFilenames(ui::URIListToFileInfos(data.text_uri_list));
+          },
+          [&](const WebCustomFormatMapData& data) {
+            if (data.data.empty()) {
+              return;
+            }
 
-              WriteData(ClipboardFormatType::WebCustomFormatMap(),
-                        base::as_bytes(base::make_span(data.data)));
-            },
+            WriteData(ClipboardFormatType::WebCustomFormatMap(),
+                      base::as_bytes(base::make_span(data.data)));
+          },
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-            [&](const EncodedDataTransferEndpointData& data) {
-              if (data.data.empty()) {
-                return;
-              }
+          [&](const EncodedDataTransferEndpointData& data) {
+            if (data.data.empty()) {
+              return;
+            }
 
-              WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
-                        base::as_bytes(base::make_span(data.data)));
-            },
+            WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
+                      base::as_bytes(base::make_span(data.data)));
+          },
 #endif
       },
       params.data);
@@ -314,9 +309,8 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
 
 Clipboard::ObjectMapParams::ObjectMapParams() = default;
 
-Clipboard::ObjectMapParams::ObjectMapParams(Data data,
-                                            ClipboardContentType content_type)
-    : data(std::move(data)), content_type(content_type) {}
+Clipboard::ObjectMapParams::ObjectMapParams(Data data)
+    : data(std::move(data)) {}
 
 Clipboard::ObjectMapParams::ObjectMapParams(const ObjectMapParams& other) =
     default;

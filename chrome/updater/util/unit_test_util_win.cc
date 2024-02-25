@@ -14,8 +14,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,6 +147,28 @@ void SetupCmdExe(UpdaterScope scope,
       SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
       command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr));
   return service.IsValid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
+}
+
+CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
+  CSecurityDesc sd;
+  CDacl dacl;
+  dacl.AddAllowedAce(Sids::System(), accessmask);
+  dacl.AddAllowedAce(Sids::Admins(), accessmask);
+  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
+
+  sd.SetDacl(dacl);
+  sd.MakeAbsolute();
+  return sd;
+}
+
+test::EventHolder CreateEveryoneWaitableEventForTest() {
+  const std::wstring event_name =
+      base::StrCat({base::UTF8ToWide(test::GetTestName()), L" ",
+                    base::NumberToWString(::GetCurrentProcessId())});
+  CSecurityAttributes sa(GetEveryoneDaclSecurityDescriptor(GENERIC_ALL));
+  return {base::WaitableEvent(base::win::ScopedHandle(
+              ::CreateEvent(&sa, FALSE, FALSE, event_name.c_str()))),
+          event_name};
 }
 
 }  // namespace updater

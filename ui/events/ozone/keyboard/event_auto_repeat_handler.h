@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
                        unsigned int scan_code,
                        bool down,
                        bool suppress_auto_repeat,
-                       int device_id);
+                       int device_id,
+                       base::TimeTicks base_timestamp);
   void StopKeyRepeat();
 
   // Configuration for key repeat.
@@ -52,9 +53,24 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   void GetAutoRepeatRate(base::TimeDelta* delay, base::TimeDelta* interval);
 
  private:
+  // Used to rebase repeat timestamp to a given |base_timestamp|. The new
+  // timestamps will compute its timestamp based on the formula:
+  //   |base_timestamp| + (now() - |start_timestamp|
+  // In other words, it will add the delta since the start of the repeat timer
+  // to the given base. This is to get a more accurate representation of the
+  // repeat events from the first key event emitted from the server for lacros.
+  // See https://crbug.com/1499068 for details.
+  struct RebaseTimestamp {
+    base::TimeTicks base_timestamp;
+    base::TimeTicks start_timestamp;
+  };
+
   static constexpr unsigned int kInvalidKey = 0;
 
-  void StartKeyRepeat(unsigned int key, unsigned int scan_code, int device_id);
+  void StartKeyRepeat(unsigned int key,
+                      unsigned int scan_code,
+                      int device_id,
+                      base::TimeTicks base_timestamp);
   void ScheduleKeyRepeat(const base::TimeDelta& delay);
   void OnRepeatTimeout(unsigned int sequence);
   void OnRepeatCommit(unsigned int sequence);
@@ -67,6 +83,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   int repeat_device_id_ = 0;
   base::TimeDelta repeat_delay_;
   base::TimeDelta repeat_interval_;
+  RebaseTimestamp rebase_timestamp_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 

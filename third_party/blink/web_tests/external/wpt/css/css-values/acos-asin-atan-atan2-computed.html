@@ -9,9 +9,7 @@
 <div id="target"></div>
 <script>
 function test_angle_equals(value, expected) {
-  test_math_used(`rotate(${value})`, `rotate(${expected})`,
-	{prop:'transform', base:'none',
-     msg: `${value} should be used-value-equivalent to ${expected}`});
+  test_math_used(value, expected, {type: "angle"});
 }
 // Simple tests
 test_angle_equals('acos(1)', '0deg');
@@ -56,7 +54,9 @@ test_math_used('atan2(1em, -1em)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1ex, -1ex)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1ch, -1ch)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1rem, -1rem)', '135deg', {type:'angle', approx:0.1});
+test_math_used('atan2(1rem + 1px - 1px, -1rem)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1vh, -1vh)', '135deg', {type:'angle', approx:0.1});
+test_math_used('atan2(1vh + 0px, -1vh + 0px)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1vw, -1vw)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1deg, -1deg)', '135deg', {type:'angle', approx:0.1});
 test_math_used('atan2(1grad, -1grad)', '135deg', {type:'angle', approx:0.1});

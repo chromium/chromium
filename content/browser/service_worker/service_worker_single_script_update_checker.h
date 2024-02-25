@@ -132,7 +132,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       Result,
       std::unique_ptr<FailureInfo>,
       std::unique_ptr<PausedState>,
-      const absl::optional<std::string>& sha256_checksum)>;
+      const std::optional<std::string>& sha256_checksum)>;
 
   ServiceWorkerSingleScriptUpdateChecker() = delete;
 
@@ -174,7 +174,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle consumer,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
@@ -219,7 +219,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   void Finish(Result result,
               std::unique_ptr<PausedState> paused_state,
               std::unique_ptr<FailureInfo> failure_info,
-              const absl::optional<std::string>& sha256_checksum);
+              const std::optional<std::string>& sha256_checksum);
 
   const GURL script_url_;
   const bool is_main_script_;

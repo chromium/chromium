@@ -78,7 +78,6 @@ class ZxcvbnDataComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   std::string GetName() const override;
 
-
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 

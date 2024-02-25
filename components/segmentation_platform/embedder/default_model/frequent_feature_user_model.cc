@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,8 +68,6 @@ std::unique_ptr<Config> FrequentFeatureUserModel::GetConfig() {
   config->AddSegmentId(SegmentId::FREQUENT_FEATURE_USER_SEGMENT,
                        std::make_unique<FrequentFeatureUserModel>());
   config->auto_execute_and_cache = true;
-  config->segment_selection_ttl = base::Days(7);
-  config->unknown_selection_ttl = base::Days(7);
   config->is_boolean_segment = true;
 
   return config;
@@ -85,13 +83,18 @@ FrequentFeatureUserModel::GetModelConfig() {
   writer.SetDefaultSegmentationMetadataConfig(kMinSignalCollectionLength,
                                               kSignalStorageLength);
 
-  // Set discrete mapping.
-  writer.AddBooleanSegmentDiscreteMapping(kFrequentFeatureUserKey);
+  writer.AddOutputConfigForBinaryClassifier(
+      0.5,
+      SegmentIdToHistogramVariant(SegmentId::FREQUENT_FEATURE_USER_SEGMENT),
+      kLegacyNegativeLabel);
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{},
+      /*default_ttl=*/7, proto::TimeUnit::DAY);
 
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
 
-  constexpr int kModelVersion = 1;
+  constexpr int kModelVersion = 2;
   return std::make_unique<ModelConfig>(
       std::move(frequent_feature_user_metadata), kModelVersion);
 }
@@ -102,7 +105,7 @@ void FrequentFeatureUserModel::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != kUMAFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -110,12 +113,11 @@ void FrequentFeatureUserModel::ExecuteModelWithInput(
   for (int i = 0; i <= 8; ++i)
     total_non_search_feature += inputs[i];
 
+  float result = (total_non_search_feature > 0 && inputs[9] > 0) ? 1 : 0;
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          ModelProvider::Response(
-              1, (total_non_search_feature > 0 && inputs[9] > 0) ? 1 : 0)));
+      base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }
 
 }  // namespace segmentation_platform

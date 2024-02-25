@@ -9,6 +9,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer_collections.h"
@@ -88,9 +89,6 @@ class SynthesizedClip : private cc::ContentLayerClient {
 
  private:
   // ContentLayerClient implementation.
-  gfx::Rect PaintableRegion() const final {
-    return gfx::Rect(layer_->bounds());
-  }
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const final { return false; }
 
@@ -99,7 +97,7 @@ class SynthesizedClip : private cc::ContentLayerClient {
   gfx::Transform projection_;
   bool rrect_is_local_ = false;
   SkRRect rrect_;
-  absl::optional<Path> path_;
+  std::optional<Path> path_;
   CompositorElementId mask_isolation_id_;
   CompositorElementId mask_effect_id_;
 };
@@ -120,11 +118,14 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   ~PaintArtifactCompositor() override;
 
   struct ViewportProperties {
-    const TransformPaintPropertyNode* overscroll_elasticity_transform = nullptr;
-    const TransformPaintPropertyNode* page_scale = nullptr;
-    const TransformPaintPropertyNode* inner_scroll_translation = nullptr;
-    const ClipPaintPropertyNode* outer_clip = nullptr;
-    const TransformPaintPropertyNode* outer_scroll_translation = nullptr;
+    raw_ptr<const TransformPaintPropertyNode> overscroll_elasticity_transform =
+        nullptr;
+    raw_ptr<const TransformPaintPropertyNode> page_scale = nullptr;
+    raw_ptr<const TransformPaintPropertyNode> inner_scroll_translation =
+        nullptr;
+    raw_ptr<const ClipPaintPropertyNode> outer_clip = nullptr;
+    raw_ptr<const TransformPaintPropertyNode> outer_scroll_translation =
+        nullptr;
   };
 
   // Updates the cc layer list and property trees to match those provided in
@@ -134,17 +135,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
-  //
-  // |anchor_position_scrollers| is the set of scroll nodes whose scroll
-  // offset contributes to any anchor position scroll translation (namely, whose
-  // id is snapshotted in an AnchorPositionScrollData). This is needed only when
-  // ScrollUnification is disabled.
   void Update(
       scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-      const Vector<const TransformPaintPropertyNode*>&
-          anchor_position_scrollers,
       Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
@@ -233,13 +227,15 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   Vector<cc::Layer*> SynthesizedClipLayersForTesting() const;
 
-  void ClearPropertyTreeChangedState();
-
   size_t ApproximateUnsharedMemoryUsage() const;
 
   // Invalidates the scrollbar layer. Returns true if the scrollbar layer is
   // found by `element_id`.
   bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
+
+  // Sets color for solid color scrollbar layer. Returns true if the scrollbar
+  // layer is found by `element_id`.
+  bool SetScrollbarSolidColor(CompositorElementId element_id, SkColor4f color);
 
   bool ShouldAlwaysUpdateOnScroll() const {
     return should_always_update_on_scroll_;
@@ -286,7 +282,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                          const EffectPaintPropertyNode& effect,
                          wtf_size_t layer_index);
 
-  const TransformPaintPropertyNode& NearestScrollTranslationForLayer(
+  const TransformPaintPropertyNode& ScrollTranslationStateForLayer(
       const PendingLayer&);
 
   // if |needs_layer| is false, no cc::Layer is created, |mask_effect_id| is
@@ -333,7 +329,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   scoped_refptr<cc::Layer> root_layer_;
   struct SynthesizedClipEntry {
-    const ClipPaintPropertyNode* key;
+    raw_ptr<const ClipPaintPropertyNode, DanglingUntriaged> key;
     std::unique_ptr<SynthesizedClip> synthesized_clip;
     bool in_use;
   };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/power_utils.h"
@@ -25,7 +26,7 @@ namespace healthd = ash::cros_healthd::mojom;
 constexpr int kMilliampsInAnAmp = 1000;
 
 const std::string GetMetricNameForSourceType(
-    const base::StringPiece source_type) {
+    const std::string_view source_type) {
   if (source_type == "cpu info") {
     return "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.CpuInfo";
   }
@@ -39,7 +40,7 @@ const std::string GetMetricNameForSourceType(
   return "";
 }
 
-void EmitCrosHealthdProbeError(const base::StringPiece source_type,
+void EmitCrosHealthdProbeError(const std::string_view source_type,
                                healthd::ErrorType error_type) {
   const std::string& metric_name = GetMetricNameForSourceType(source_type);
 
@@ -59,7 +60,7 @@ template <typename TResult, typename TTag>
 
 bool CheckResponse(const TResult& result,
                    TTag expected_tag,
-                   base::StringPiece type_name) {
+                   std::string_view type_name) {
   if (result.is_null()) {
     LOG(ERROR) << type_name << "not found in croshealthd response.";
     return false;

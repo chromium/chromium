@@ -4,21 +4,30 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
+#endif
 
 namespace {
 
@@ -36,7 +45,7 @@ bool IsFullScreenMode(Browser* browser) {
   LocationBarView* location_bar = browser_view->GetLocationBarView();
 
   return !location_bar || !location_bar->IsDrawn() ||
-         location_bar->GetWidget()->IsFullscreen();
+         location_bar->GetWidget()->GetTopLevelWidget()->IsFullscreen();
 }
 
 LocationBarView* GetLocationBarView(Browser* browser) {
@@ -70,15 +79,13 @@ bool ShouldIgnorePermissionRequest(
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(permissions::features::kPermissionChip))
-    return false;
-
   // Permission request chip should not be shown if `delegate->Requests()` were
   // requested without a user gesture.
   if (!permissions::PermissionUtil::HasUserGesture(delegate))
     return false;
 
-  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request
@@ -90,23 +97,40 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
 
 bool IsLocationBarDisplayed(Browser* browser) {
   LocationBarView* lbv = GetLocationBarView(browser);
-  return lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
+  return lbv && lbv->IsDrawn() &&
+         !lbv->GetWidget()->GetTopLevelWidget()->IsFullscreen();
 }
 
 bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionQuietChip)) {
-    return false;
-  }
-
-  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==
                    permissions::RequestType::kNotifications ||
                request->request_type() ==
                    permissions::RequestType::kGeolocation;
+      });
+}
+
+bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
+    permissions::PermissionPrompt::Delegate* delegate) {
+  if (!base::FeatureList::IsEnabled(features::kPermissionElement) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    return false;
+  }
+
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
+  return base::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return (request->request_type() ==
+                    permissions::RequestType::kCameraStream ||
+                request->request_type() ==
+                    permissions::RequestType::kMicStream) &&
+               request->IsEmbeddedPermissionElementInitiated();
       });
 }
 
@@ -128,7 +152,11 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
-  if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {
+
+  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
+                                                      delegate);
+  } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {
     return std::make_unique<PermissionPromptChip>(browser, web_contents,
                                                   delegate);
   } else {
@@ -163,7 +191,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreateQuietPrompt(
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     DLOG(WARNING) << "Permission prompt suppressed because the WebContents is "
                      "not attached to any Browser window.";
@@ -179,6 +207,21 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }
+
+#if BUILDFLAG(IS_MAC)
+  // If this is a notification permission request coming from a PWA (or a PWA
+  // associated tab), and this is the first time we show a permission prompt for
+  // this request, try using a OS-native permission prompt. If showing the
+  // prompt fails, it will trigger the view to be recreated for the request, at
+  // which point we end up in the normal code path below.
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+      !delegate->WasCurrentRequestAlreadyDisplayed() &&
+      PermissionPromptNotificationsMac::CanHandleRequest(web_contents,
+                                                         delegate)) {
+    return std::make_unique<PermissionPromptNotificationsMac>(web_contents,
+                                                              delegate);
+  }
+#endif
 
   if (web_app::AppBrowserController::IsWebApp(browser)) {
     return CreatePwaPrompt(browser, web_contents, delegate);

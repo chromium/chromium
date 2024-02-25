@@ -62,15 +62,15 @@ const char* const kTestMDPWhitelist[] = {
 
 // GTest matchers for MemoryDumpRequestArgs arguments.
 MATCHER(IsDetailedDump, "") {
-  return arg.level_of_detail == MemoryDumpLevelOfDetail::DETAILED;
+  return arg.level_of_detail == MemoryDumpLevelOfDetail::kDetailed;
 }
 
 MATCHER(IsLightDump, "") {
-  return arg.level_of_detail == MemoryDumpLevelOfDetail::LIGHT;
+  return arg.level_of_detail == MemoryDumpLevelOfDetail::kLight;
 }
 
 MATCHER(IsBackgroundDump, "") {
-  return arg.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
+  return arg.level_of_detail == MemoryDumpLevelOfDetail::kBackground;
 }
 
 // TODO(ssid): This class is replicated in memory_dump_manager_unittest. Move
@@ -299,8 +299,8 @@ TEST_F(MemoryTracingIntegrationTest, InitializedAfterStartOfTracing) {
   MockMemoryDumpProvider mdp;
   RegisterDumpProvider(&mdp, nullptr, MemoryDumpProvider::Options());
   EXPECT_CALL(mdp, OnMemoryDump(_, _)).Times(1);
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::DETAILED));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 }
 
@@ -341,12 +341,12 @@ TEST_F(MemoryTracingIntegrationTest, TestBackgroundTracingSetup) {
 
   // When requesting non-BACKGROUND dumps the MDP will be invoked.
   EXPECT_CALL(*mdp, OnMemoryDump(IsLightDump(), _));
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::LIGHT));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kLight));
 
   EXPECT_CALL(*mdp, OnMemoryDump(IsDetailedDump(), _));
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::DETAILED));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kDetailed));
 
   ASSERT_TRUE(IsPeriodicDumpingEnabled());
   DisableTracing();
@@ -474,8 +474,8 @@ TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
 
   EnableMemoryInfraTracing();
   EXPECT_FALSE(IsPeriodicDumpingEnabled());
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::BACKGROUND));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kBackground));
   DisableTracing();
 }
 
@@ -514,8 +514,8 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
           run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::DETAILED));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 
   // Now enable tracing again with a different RECORD_ mode. This will cause
@@ -529,8 +529,8 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
       TraceConfig(kMemoryInfraTracingOnly,
                   base::trace_event::RECORD_CONTINUOUSLY),
       TraceLog::RECORDING_MODE);
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
-                                       MemoryDumpLevelOfDetail::DETAILED));
+  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                       MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 }
 

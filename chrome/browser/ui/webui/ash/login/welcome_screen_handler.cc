@@ -33,8 +33,8 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -112,7 +112,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
     builder->Add("welcomeScreenGreetingSubtitle",
                  IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  } else if (features::IsOobeSimonEnabled()) {
+  } else if (features::IsBootAnimationEnabled()) {
     auto product_name =
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
             IDR_CROS_OOBE_PRODUCT_NAME);

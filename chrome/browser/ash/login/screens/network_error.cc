@@ -84,7 +84,7 @@ std::ostream& operator<<(std::ostream& stream,
     case NetworkError::ERROR_STATE_PROXY:
       stream << "Proxy";
       break;
-    case NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT:
+    case NetworkError::ERROR_STATE_LOADING_TIMEOUT:
       stream << "Timeout";
       break;
     case NetworkError::ERROR_STATE_NONE:

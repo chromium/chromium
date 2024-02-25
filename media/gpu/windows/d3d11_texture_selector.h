@@ -89,7 +89,7 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   CopyTextureSelector(VideoPixelFormat pixfmt,
                       DXGI_FORMAT input_dxgifmt,
                       DXGI_FORMAT output_dxgifmt,
-                      absl::optional<gfx::ColorSpace> output_color_space,
+                      std::optional<gfx::ColorSpace> output_color_space,
                       ComD3D11VideoDevice video_device,
                       ComD3D11DeviceContext d3d11_device_context,
                       bool use_shared_handle);
@@ -105,7 +105,7 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   bool WillCopyForTesting() const override;
 
  private:
-  absl::optional<gfx::ColorSpace> output_color_space_;
+  std::optional<gfx::ColorSpace> output_color_space_;
   scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 

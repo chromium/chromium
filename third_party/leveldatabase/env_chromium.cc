@@ -8,6 +8,7 @@
 #include <iterator>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -72,6 +73,11 @@ static const FilePath::CharType kLevelDBTestDirectoryPrefix[] =
 // This name should not be changed or users involved in a crash might not be
 // able to recover data.
 static const char kDatabaseNameSuffixForRebuildDB[] = "__tmp_for_rebuild";
+
+DBFactoryMethod& GetDBFactoryOverride() {
+  static base::NoDestructor<DBFactoryMethod> instance;
+  return *instance;
+}
 
 class ChromiumFileLock : public FileLock {
  public:
@@ -693,20 +699,13 @@ size_t WriteBufferSize(int64_t disk_size) {
           (kDiskMaxBuffSize - kDiskMinBuffSize));
 }
 
-ChromiumEnv::ChromiumEnv() : ChromiumEnv("LevelDBEnv") {}
+ChromiumEnv::ChromiumEnv()
+    : ChromiumEnv(std::make_unique<storage::FilesystemProxy>(
+          storage::FilesystemProxy::UNRESTRICTED,
+          base::FilePath())) {}
 
 ChromiumEnv::ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem)
-    : ChromiumEnv("LevelDBEnv", std::move(filesystem)) {}
-
-ChromiumEnv::ChromiumEnv(const std::string& name)
-    : ChromiumEnv(name,
-                  std::make_unique<storage::FilesystemProxy>(
-                      storage::FilesystemProxy::UNRESTRICTED,
-                      base::FilePath())) {}
-
-ChromiumEnv::ChromiumEnv(const std::string& name,
-                         std::unique_ptr<storage::FilesystemProxy> filesystem)
-    : filesystem_(std::move(filesystem)), name_(name) {
+    : filesystem_(std::move(filesystem)) {
   DCHECK(filesystem_);
 
   size_t max_open_files = base::GetMaxFds();
@@ -1279,7 +1278,7 @@ void DBTracker::MemoryDumpProvider::DumpVisitor(ProcessMemoryDump* pmd,
                      total_usage - cache_usage + cache_usage_pss);
 
   if (pmd->dump_args().level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     db_dump->AddString("name", "", db->name());
   }
 }
@@ -1369,6 +1368,10 @@ void DBTracker::DatabaseDestroyed(TrackedDBImpl* database,
 leveldb::Status OpenDB(const leveldb_env::Options& options,
                        const std::string& name,
                        std::unique_ptr<leveldb::DB>* dbptr) {
+  if (!GetDBFactoryOverride().is_null()) {
+    return GetDBFactoryOverride().Run(options, name, dbptr);
+  }
+
   // For UMA logging purposes we need the block cache to be created outside of
   // leveldb so that the size can be logged and it can be pruned.
   DCHECK(options.block_cache != nullptr);
@@ -1414,6 +1417,10 @@ leveldb::Status OpenDB(const leveldb_env::Options& options,
   return s;
 }
 
+void SetDBFactoryForTesting(DBFactoryMethod factory) {
+  GetDBFactoryOverride() = factory;
+}
+
 leveldb::Status RewriteDB(const leveldb_env::Options& options,
                           const std::string& name,
                           std::unique_ptr<leveldb::DB>* dbptr) {
@@ -1457,12 +1464,12 @@ leveldb::Status RewriteDB(const leveldb_env::Options& options,
   return leveldb_env::OpenDB(options, name, dbptr);
 }
 
-base::StringPiece MakeStringPiece(const leveldb::Slice& s) {
-  return base::StringPiece(s.data(), s.size());
+std::string_view MakeStringView(const leveldb::Slice& s) {
+  return std::string_view(s.data(), s.size());
 }
 
-leveldb::Slice MakeSlice(const base::StringPiece& s) {
-  return leveldb::Slice(s.begin(), s.size());
+leveldb::Slice MakeSlice(std::string_view s) {
+  return leveldb::Slice(s.data(), s.size());
 }
 
 leveldb::Slice MakeSlice(base::span<const uint8_t> s) {

@@ -160,9 +160,6 @@ CastMediaNotificationItem::CastMediaNotificationItem(
                               base::Unretained(this))),
       session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
-  base::UmaHistogramEnumeration(
-      kSourceHistogramName, route.is_local() ? Source::kLocalCastSession
-                                             : Source::kNonLocalCastSession);
 }
 
 CastMediaNotificationItem::~CastMediaNotificationItem() {
@@ -205,13 +202,19 @@ bool CastMediaNotificationItem::RequestMediaRemoting() {
   return false;
 }
 
-absl::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
-    const {
-  return absl::nullopt;
+media_message_center::Source CastMediaNotificationItem::GetSource() const {
+  return route_is_local_ ? media_message_center::Source::kLocalCastSession
+                         : media_message_center::Source::kNonLocalCastSession;
 }
 
-media_message_center::SourceType CastMediaNotificationItem::SourceType() {
+media_message_center::SourceType CastMediaNotificationItem::GetSourceType()
+    const {
   return media_message_center::SourceType::kCast;
+}
+
+std::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
+    const {
+  return std::nullopt;
 }
 
 void CastMediaNotificationItem::OnMediaStatusUpdated(
@@ -264,8 +267,7 @@ void CastMediaNotificationItem::OnRouteUpdated(
     view_->UpdateWithMediaMetadata(metadata_);
 }
 
-void CastMediaNotificationItem::StopCasting(
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+void CastMediaNotificationItem::StopCasting() {
   media_router::MediaRouterFactory::GetApiForBrowserContext(profile_)
       ->TerminateRoute(media_route_id_);
 
@@ -275,7 +277,7 @@ void CastMediaNotificationItem::StopCasting(
       ->NotifyEvent("media_route_stopped_from_gmc");
 
   MediaItemUIMetrics::RecordStopCastingMetrics(
-      media_router::MediaCastMode::PRESENTATION, entry_point);
+      media_router::MediaCastMode::PRESENTATION);
 }
 
 mojo::PendingRemote<media_router::mojom::MediaStatusObserver>

@@ -54,6 +54,18 @@ AuthFactor MakeGaiaAuthFactor() {
   return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
 }
 
+AuthFactor MakeLocalPasswordFactor() {
+  AuthFactorRef ref(cryptohome::AuthFactorType::kPassword,
+                    KeyLabel(kCryptohomeLocalPasswordKeyLabel));
+  return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
+}
+
+AuthFactor MakeLegacyNonPasswordFactor() {
+  AuthFactorRef ref(cryptohome::AuthFactorType::kPassword,
+                    KeyLabel("someLegacyExperimentalFactor"));
+  return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
+}
+
 AuthFactor MakePinAuthFactor() {
   AuthFactorRef ref(cryptohome::AuthFactorType::kPin,
                     KeyLabel(kCryptohomePinLabel));
@@ -169,14 +181,16 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaia) {
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaiaAndPin) {
-  SessionAuthFactors data({MakeGaiaAuthFactor(), MakePinAuthFactor()});
+  SessionAuthFactors data({MakeLegacyNonPasswordFactor(), MakeGaiaAuthFactor(),
+                           MakePinAuthFactor()});
   const AuthFactor* found = data.FindOnlinePasswordFactor();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaAuthFactor());
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithPinAndGaia) {
-  SessionAuthFactors data({MakePinAuthFactor(), MakeGaiaAuthFactor()});
+  SessionAuthFactors data({MakeLegacyNonPasswordFactor(), MakePinAuthFactor(),
+                           MakeGaiaAuthFactor()});
   const AuthFactor* found = data.FindOnlinePasswordFactor();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaAuthFactor());
@@ -185,7 +199,8 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithPinAndGaia) {
 // Check "gaia" is preferred to "legacy-..." keys when searching online password
 // key.
 TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaiaAndLegacy) {
-  SessionAuthFactors data({MakeGaiaAuthFactor(), MakeLegacyAuthFactor(0)});
+  SessionAuthFactors data({MakeLegacyNonPasswordFactor(), MakeGaiaAuthFactor(),
+                           MakeLegacyAuthFactor(0)});
   const AuthFactor* found = data.FindOnlinePasswordFactor();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaAuthFactor());
@@ -260,6 +275,65 @@ TEST(AuthFactorsDataTest, FindRecoveryFactorWithMutlipleFactors) {
   EXPECT_TRUE(factor);
   ASSERT_TRUE(factor);
   EXPECT_EQ(*factor, MakeRecoveryFactor());
+}
+
+TEST(AuthFactorsDataTest, FindLocalPassword) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeLocalPasswordFactor(), MakeRecoveryFactor(),
+                           MakeGaiaAuthFactor()});
+  const AuthFactor* factor = data.FindLocalPasswordFactor();
+  EXPECT_TRUE(factor);
+  ASSERT_TRUE(factor);
+  EXPECT_EQ(*factor, MakeLocalPasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, FindAnyPasswordGaia) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeGaiaAuthFactor(), MakeRecoveryFactor()});
+  const AuthFactor* factor = data.FindAnyPasswordFactor();
+  EXPECT_TRUE(factor);
+  ASSERT_TRUE(factor);
+  EXPECT_EQ(*factor, MakeGaiaAuthFactor());
+}
+
+TEST(AuthFactorsDataTest, FindAnyPasswordLocal) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeLocalPasswordFactor(), MakeRecoveryFactor()});
+  const AuthFactor* factor = data.FindAnyPasswordFactor();
+  EXPECT_TRUE(factor);
+  ASSERT_TRUE(factor);
+  EXPECT_EQ(*factor, MakeLocalPasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, HasSinglePasswordNone) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeRecoveryFactor()});
+  EXPECT_FALSE(data.HasSinglePasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, HasSinglePasswordGaia) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeRecoveryFactor(), MakeGaiaAuthFactor()});
+  EXPECT_TRUE(data.HasSinglePasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, HasSinglePasswordLegacy) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeRecoveryFactor(), MakeLegacyAuthFactor(0)});
+  EXPECT_TRUE(data.HasSinglePasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, HasSinglePasswordLocal) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeRecoveryFactor(), MakeLocalPasswordFactor()});
+  EXPECT_TRUE(data.HasSinglePasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, HasSinglePasswordMultiple) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyNonPasswordFactor(),
+                           MakeRecoveryFactor(), MakeLegacyAuthFactor(0),
+                           MakeLocalPasswordFactor()});
+  EXPECT_FALSE(data.HasSinglePasswordFactor());
 }
 
 }  // namespace ash

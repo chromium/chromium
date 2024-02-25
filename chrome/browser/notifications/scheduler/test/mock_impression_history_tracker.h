@@ -25,7 +25,7 @@ class MockImpressionHistoryTracker : public ImpressionHistoryTracker {
                     const std::string&,
                     const Impression::ImpressionResultMap&,
                     const Impression::CustomData&,
-                    absl::optional<base::TimeDelta> ignore_timeout_duration));
+                    std::optional<base::TimeDelta> ignore_timeout_duration));
   MOCK_METHOD0(AnalyzeImpressionHistory, void());
   MOCK_CONST_METHOD1(GetClientStates,
                      void(std::map<SchedulerClientType, const ClientState*>*));

@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("common") {
+  defines = [ "IS_MIRACLE_PARAMETER_IMPL" ]
+
+  output_name = "miracle_parameter_common"
+
+  sources = [
+    "public/miracle_parameter.cc",
+    "public/miracle_parameter.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "public/miracle_parameter_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -4,6 +4,9 @@
 
 #include "services/network/trust_tokens/sqlite_trust_token_persister.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +17,6 @@
 #include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
 #include "services/network/trust_tokens/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -42,9 +44,9 @@ std::string ToKey(const SuitableTrustTokenOrigin& issuer,
 //
 // The parameters |issuer| and |toplevel| are pointers-to-optionals because
 // SuitableTrustTokenOrigin does not have a default constructor.
-bool FromKey(base::StringPiece key_from_database,
-             absl::optional<SuitableTrustTokenOrigin>* issuer,
-             absl::optional<SuitableTrustTokenOrigin>* toplevel) {
+bool FromKey(std::string_view key_from_database,
+             std::optional<SuitableTrustTokenOrigin>* issuer,
+             std::optional<SuitableTrustTokenOrigin>* toplevel) {
   DCHECK(issuer);
   DCHECK(toplevel);
 
@@ -179,7 +181,7 @@ bool SQLiteTrustTokenPersister::DeleteIssuerConfig(
 
   for (const auto& kv : issuer_data->GetAllCached()) {
     // Creation can fail if the record was corrupted on disk.
-    absl::optional<SuitableTrustTokenOrigin> maybe_key =
+    std::optional<SuitableTrustTokenOrigin> maybe_key =
         SuitableTrustTokenOrigin::Create(GURL(kv.first));
 
     // If the record's key is corrupt, delete the record no matter what, but
@@ -238,7 +240,7 @@ bool SQLiteTrustTokenPersister::DeleteToplevelConfig(
   std::vector<std::string> keys_to_delete;
   for (const auto& kv : toplevel_data->GetAllCached()) {
     // Creation can fail if the record was corrupted on disk.
-    absl::optional<SuitableTrustTokenOrigin> maybe_key =
+    std::optional<SuitableTrustTokenOrigin> maybe_key =
         SuitableTrustTokenOrigin::Create(GURL(kv.first));
 
     // If the record's key is corrupt, delete the record no matter what, but
@@ -266,8 +268,8 @@ bool SQLiteTrustTokenPersister::DeleteIssuerToplevelPairConfig(
   bool data_deleted = false;
   std::vector<std::string> keys_to_delete;
   for (const auto& kv : pair_data->GetAllCached()) {
-    absl::optional<SuitableTrustTokenOrigin> maybe_issuer;
-    absl::optional<SuitableTrustTokenOrigin> maybe_toplevel;
+    std::optional<SuitableTrustTokenOrigin> maybe_issuer;
+    std::optional<SuitableTrustTokenOrigin> maybe_toplevel;
     // If the record's key is corrupt, delete the record no matter what, but
     // don't record the deletion request as having led to data being deleted.
     if (!FromKey(kv.first, &maybe_issuer, &maybe_toplevel)) {
@@ -311,7 +313,7 @@ SQLiteTrustTokenPersister::GetStoredTrustTokenCounts() {
       database_owner_->IssuerData();
 
   for (const auto& kv : data->GetAllCached()) {
-    absl::optional<SuitableTrustTokenOrigin> origin =
+    std::optional<SuitableTrustTokenOrigin> origin =
         SuitableTrustTokenOrigin::Create(GURL(kv.first));
     // The Create call can fail when the SQLite data was corrupted on the disk.
     if (origin) {

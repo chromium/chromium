@@ -9,6 +9,7 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "ui/display/mojom/screen_infos.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
 
 // See public/common/widget/visual_properties.h
 struct VisualProperties {
@@ -17,6 +18,9 @@ struct VisualProperties {
 
   // Whether or not blink should be in auto-resize mode.
   bool auto_resize_enabled = false;
+
+  // Whether or not the widget can be resized.
+  bool resizable = true;
 
   // The minimum size for Blink if auto-resize is enabled.
   gfx.mojom.Size min_size_for_auto_resize;
@@ -64,6 +68,10 @@ struct VisualProperties {
 
   // The display mode. This will be replicated amongst subframes.
   DisplayMode display_mode = DisplayMode.kUndefined;
+
+  // The window show state.
+  ui.mojom.WindowShowState window_show_state
+      = ui.mojom.WindowShowState.SHOW_STATE_DEFAULT;
 
   // This represents the latest capture sequence number requested. When this is
   // incremented, that means the caller wants to synchronize surfaces which

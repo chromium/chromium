@@ -4,7 +4,9 @@
 
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include <memory>
+
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +26,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
-#include "chrome/app/notification_metrics.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -77,6 +78,10 @@ int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  PossiblyDetermineFallbackChromeChannel(argv[0]);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -156,12 +161,13 @@ int ChromeMain(int argc, const char** argv) {
   MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
+  std::unique_ptr<headless::HeadlessModeHandle> headless_mode_handle;
   if (headless::IsHeadlessMode()) {
     if (command_line->GetArgs().size() > 1) {
       LOG(ERROR) << "Multiple targets are not supported in headless mode.";
       return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
     }
-    headless::SetUpCommandLine(command_line);
+    headless_mode_handle = headless::InitHeadlessMode();
   } else {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -179,7 +185,6 @@ int ChromeMain(int argc, const char** argv) {
   // Gracefully exit if the system tried to launch the macOS notification helper
   // app when a user clicked on a notification.
   if (IsAlertsHelperLaunchedViaNotificationAction()) {
-    LogLaunchedViaNotificationAction(NotificationActionSource::kHelperApp);
     return 0;
   }
 #endif

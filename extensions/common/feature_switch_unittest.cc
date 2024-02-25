@@ -25,10 +25,10 @@ class FeatureSwitchTest : public testing::Test {
   FeatureSwitch feature_;
 };
 
-typedef FeatureSwitchTest<FeatureSwitch::DEFAULT_DISABLED>
-    FeatureSwitchDisabledTest;
-typedef FeatureSwitchTest<FeatureSwitch::DEFAULT_ENABLED>
-    FeatureSwitchEnabledTest;
+using FeatureSwitchDisabledTest =
+    FeatureSwitchTest<FeatureSwitch::DEFAULT_DISABLED>;
+using FeatureSwitchEnabledTest =
+    FeatureSwitchTest<FeatureSwitch::DEFAULT_ENABLED>;
 
 }  // namespace
 

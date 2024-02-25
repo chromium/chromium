@@ -13,11 +13,5 @@
   document.getElementById('fullscreen').addEventListener('click', _ => {
     document.getElementById('video').webkitRequestFullscreen();
   });
-
-  if ('HTMLPortalElement' in self) {
-    let portal = document.createElement('portal');
-    portal.src = "picture-in-picture/iframe-content.html";
-    document.body.appendChild(portal);
-  }
 </script>
 </html>

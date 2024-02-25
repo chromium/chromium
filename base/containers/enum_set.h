@@ -8,12 +8,12 @@
 #include <bitset>
 #include <cstddef>
 #include <initializer_list>
+#include <string>
 #include <type_traits>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/cxx20_is_constant_evaluated.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -48,7 +48,7 @@ template <typename E, E MinEnumValue, E MaxEnumValue>
 class EnumSet {
  private:
   static_assert(
-      std::is_enum<E>::value,
+      std::is_enum_v<E>,
       "First template parameter of EnumSet must be an enumeration type");
   using enum_underlying_type = std::underlying_type_t<E>;
 
@@ -106,9 +106,9 @@ class EnumSet {
     Iterator() : enums_(nullptr), i_(kValueCount) {}
     ~Iterator() = default;
 
-    bool operator==(const Iterator& other) const { return i_ == other.i_; }
-
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
+    friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
+      return lhs.i_ == rhs.i_;
+    }
 
     E operator*() const {
       DCHECK(Good());
@@ -152,7 +152,7 @@ class EnumSet {
       return i;
     }
 
-    const raw_ptr<const EnumBitSet, DanglingUntriaged> enums_;
+    const raw_ptr<const EnumBitSet> enums_;
     size_t i_;
   };
 
@@ -161,7 +161,7 @@ class EnumSet {
   ~EnumSet() = default;
 
   constexpr EnumSet(std::initializer_list<E> values) {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       enums_ = bitstring(values);
     } else {
       for (E value : values) {
@@ -170,9 +170,11 @@ class EnumSet {
     }
   }
 
-  // Returns an EnumSet with all possible values.
+  // Returns an EnumSet with all values between kMinValue and kMaxValue, which
+  // also contains undefined enum values if the enum in question has gaps
+  // between kMinValue and kMaxValue.
   static constexpr EnumSet All() {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       if (kValueCount == 0) {
         return EnumSet();
       }
@@ -303,11 +305,9 @@ class EnumSet {
   Iterator end() const { return Iterator(); }
 
   // Returns true iff our set and the given set contain exactly the same values.
-  bool operator==(const EnumSet& other) const { return enums_ == other.enums_; }
+  friend bool operator==(const EnumSet&, const EnumSet&) = default;
 
-  // Returns true iff our set and the given set do not contain exactly the same
-  // values.
-  bool operator!=(const EnumSet& other) const { return enums_ != other.enums_; }
+  std::string ToString() const { return enums_.to_string(); }
 
  private:
   friend constexpr EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
@@ -339,7 +339,7 @@ class EnumSet {
   // can safely remove the constepxr qualifiers from this file, at the cost of
   // some minor optimizations.
   explicit constexpr EnumSet(EnumBitSet enums) : enums_(enums) {
-    if (base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       CHECK(kValueCount <= 64)
           << "Max number of enum values is 64 for constexpr constructor";
     }

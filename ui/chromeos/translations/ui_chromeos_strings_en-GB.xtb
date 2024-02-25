@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1000498691615767391">Select a folder to open</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> could not be copied because it is encrypted.</translation>
 <translation id="1047956942837015229">Deleting <ph name="COUNT" /> items...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1060368002126861100">To open files with <ph name="APP_NAME" />, first move them to the Windows files folder.</translation>
 <translation id="1062407476771304334">Replace</translation>
+<translation id="1119383441774809183">Show text messages</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) with Programmer Dvorak keyboard</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
 <translation id="1439919885608649279">Person with flowers</translation>
 <translation id="1458457385801829801">Eject <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> files could not be copied because they are encrypted.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
 <translation id="148466539719134488">Swiss</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portuguese with US International keyboard</translation>
 <translation id="1629521517399325891">User certificate is not available for network authentication.</translation>
 <translation id="1641780993263690097">Chinese Pinyin</translation>
-<translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
 <translation id="164969095109328410">Chrome device</translation>
 <translation id="1661207570040737402">You’ve used all of your shared drive Google Workspace storage.</translation>
 <translation id="1661867754829461514">PIN missing</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Not available</translation>
 <translation id="3254434849914415189">Choose the default app for <ph name="FILE_TYPE" /> files:</translation>
 <translation id="3255159654094949700">Arabic</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> files could not be moved because they are encrypted.</translation>
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089">Could not open '<ph name="PATH" />'</translation>
 <translation id="3280431534455935878">Preparing</translation>
+<translation id="3280719573299097127">You are on a metered network. File sync has been paused.</translation>
 <translation id="3280987981688031357">Vinyl record</translation>
 <translation id="3290356915286466215">Unsecured</translation>
 <translation id="3291218047831493686">Connect to this network to change SIM lock setting</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3486821258960016770">Mongolian</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Preparing to sync <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3523225005467146490">One folder shared with <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3529424493985988200">Contact your administrator for details.</translation>
 <translation id="3548125359243647069">An incorrect PIN was entered too many times.</translation>
 <translation id="3549797760399244642">Go to drive.google.com...</translation>
 <translation id="3553048479571901246">To open files with <ph name="APP_NAME" />, first copy them to the Windows files folder.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">No recent videos</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, managed by your administrator, details</translation>
+<translation id="36451918667380448">Mobile network provider is locked. Contact your provider for support.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items moved.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> files selected</translation>
 <translation id="3685122418104378273">Google Drive sync is disabled by default, when using mobile data.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4961158930123534723">1 folder shared with Parallels Desktop</translation>
+<translation id="4965874878399872778">Checking files against your organisation's security policies...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restored</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Couldn’t finish setting up file sync</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Recovered files from Google Drive</translation>
 <translation id="5278111733643988471">To restore this item, drag it to a new folder outside the bin. The original folder '<ph name="PARENT_FOLDER_NAME" />' for this item has been deleted.</translation>
 <translation id="5283101102242354279">Turn on an extension in Incognito:</translation>
-<translation id="5286194356314741248">Scanning</translation>
 <translation id="5288441970121584418">Burger</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Moving this file is blocked by administrator policy</translation>
 <translation id="5305688511332277257">None installed</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
+<translation id="5858478190805449225">Battery saver mode on. Try again when battery saver mode is turned off.</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP look-up failed</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">This file opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> could not be moved because it is encrypted.</translation>
 <translation id="642282551015776456">This name may not be used as a file or folder name</translation>
 <translation id="6423031066725912715">Vietnamese with TCVN keyboard</translation>
 <translation id="6430271654280079150">You have 1 remaining attempt.</translation>
 <translation id="643243556292470964">Deleted files are now moved to the bin</translation>
 <translation id="6438480100790416671">Checking storage space…</translation>
+<translation id="6451527188465304418">Checking file against your organisation's security policies...</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">Copying <ph name="COUNT" /> files is blocked by administrator policy</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>
-<translation id="653019979737152879">Syncing <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">An error occurred. Some items may not have been deleted.</translation>
 <translation id="656398493051028875">Deleting "<ph name="FILENAME" />"...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Give Linux apps permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="7555339735447658365">You are currently offline. File sync will resume when you are connected to the Internet</translation>
 <translation id="7589661784326793847">Wait just a sec</translation>
-<translation id="7592775719802218421">Making <ph name="FILE_NAME" /> available offline</translation>
 <translation id="7600126690270271294">Serbian</translation>
 <translation id="7603724359189955920">Grids</translation>
 <translation id="7627790789328695202">Whoops, <ph name="FILE_NAME" /> already exists. Rename it and try again.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Your files in My Drive will sync to your Chromebook automatically so you can access them without an Internet connection.</translation>
 <translation id="7925247922861151263">AAA check failed</translation>
-<translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
 <translation id="7933875256234974853">Preparing to sync Drive files...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Shared with me</translation>
 <translation id="8116072619078571545">Ice water</translation>
+<translation id="8120392982188717723">Allow sync on metered networks</translation>
 <translation id="8124093710070495550">Sync issue</translation>
 <translation id="8128733386027980860">English (UK) with Dvorak keyboard</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" has been shared with you. You cannot delete it because you do not own it.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8147028810663464959">Character width is Full</translation>
 <translation id="8151638057146502721">Configure</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{One error.}other{# errors.}}</translation>
 <translation id="8154842056504218462">Selected all entries.</translation>
 <translation id="8157684860301034423">Failed to retrieve app info.</translation>
 <translation id="8175731104491895765">French (Belgium)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Give <ph name="VM_NAME" /> permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="8372369524088641025">Bad WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
+<translation id="8377269993083688872">Email layouts</translation>
 <translation id="8386903983509584791">Scan completed</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extracted.</translation>
 <translation id="8395901698320285466">Dimensions</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Select a file to open</translation>
 <translation id="8577897833047451336">Croatian</translation>
 <translation id="8578308463707544055">Indonesian</translation>
-<translation id="8579285237314169903">Syncing <ph name="NUMBER_OF_FILES" /> items...</translation>
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">This file is confidential and subject to restrictions by administrator policy.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8713112442029511308">Maltese</translation>
+<translation id="8714138378966541668">Locked by provider</translation>
 <translation id="8714406895390098252">Bicycle</translation>
 <translation id="8719721339511222681">Selected <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Allow proxies for shared networks</translation>
 <translation id="8790981080411996443">Person watering plants</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{One warning.}other{# warnings.}}</translation>
 <translation id="8808686172382650546">Cat</translation>
 <translation id="8810671769985673465">Zipping failed, item exists: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">Spanish (Spain)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
 <translation id="9046895021617826162">Connection failed</translation>
 <translation id="9065512565307033593">If you fail to verify, your network access will be disabled.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 warning.}other{<ph name="COUNT" /> warnings.}}</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9099674669267916096">Page count</translation>

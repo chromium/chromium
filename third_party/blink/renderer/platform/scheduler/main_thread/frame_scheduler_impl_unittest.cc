@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -106,7 +107,7 @@ class TestObject {
   ~TestObject() { ++(*counter_); }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 }  // namespace
@@ -121,7 +122,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalLoading,
     TaskType::kNetworking,
     TaskType::kNetworkingUnfreezable,
-    TaskType::kNetworkingUnfreezableImageLoading,
+    TaskType::kNetworkingUnfreezableRenderBlockingLoading,
     TaskType::kNetworkingControl,
     TaskType::kLowPriorityScriptExecution,
     TaskType::kDOMManipulation,
@@ -168,12 +169,13 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalInputBlocking,
     TaskType::kWakeLock,
     TaskType::kStorage,
+    TaskType::kClipboard,
     TaskType::kWebGPU,
     TaskType::kInternalPostMessageForwarding,
     TaskType::kInternalNavigationCancellation};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 84,
+    static_cast<int>(TaskType::kMaxValue) == 85,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -195,7 +197,6 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
   }
 
   void OnTaskCompleted(base::TimeTicks,
-                       base::TimeTicks,
                        base::TimeTicks) override {}
   const base::UnguessableToken& GetAgentClusterId() const override {
     return base::UnguessableToken::Null();
@@ -207,13 +208,13 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
 
 MATCHER(BlockingDetailsHasCCNS, "Blocking details has CCNS.") {
   bool vector_empty =
-      arg.non_sticky_features_and_js_locations.details_list.empty();
+      arg.non_sticky_features_and_js_locations->details_list.empty();
   bool vector_has_ccns =
-      arg.sticky_features_and_js_locations.details_list.Contains(
+      arg.sticky_features_and_js_locations->details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
               nullptr)) &&
-      arg.sticky_features_and_js_locations.details_list.Contains(
+      arg.sticky_features_and_js_locations->details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
               nullptr));
@@ -227,15 +228,16 @@ MATCHER_P(BlockingDetailsHasWebSocket,
       (handle->GetFeatureAndJSLocationBlockingBFCache() ==
        FeatureAndJSLocationBlockingBFCache(
            SchedulingPolicy::Feature::kWebSocket, nullptr));
-  bool vector_empty = arg.sticky_features_and_js_locations.details_list.empty();
+  bool vector_empty =
+      arg.sticky_features_and_js_locations->details_list.empty();
   return handle_has_web_socket && vector_empty;
 }
 
 MATCHER(BlockingDetailsIsEmpty, "BlockingDetails is empty.") {
   bool non_sticky_vector_empty =
-      arg.non_sticky_features_and_js_locations.details_list.empty();
+      arg.non_sticky_features_and_js_locations->details_list.empty();
   bool sticky_vector_empty =
-      arg.sticky_features_and_js_locations.details_list.empty();
+      arg.sticky_features_and_js_locations->details_list.empty();
   return non_sticky_vector_empty && sticky_vector_empty;
 }
 class FrameSchedulerImplTest : public testing::Test {
@@ -432,6 +434,66 @@ class FrameSchedulerImplTest : public testing::Test {
       task_environment_.FastForwardBy(aligned - now);
   }
 
+  // Post and run tasks with delays of 0ms, 50ms, 100ms, 150ms and 200ms. Stores
+  // run times in `run_times`.
+  void PostAndRunTasks50MsInterval(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      std::vector<base::TimeTicks>* run_times) {
+    for (int i = 0; i < 5; i++) {
+      task_runner->PostDelayedTask(FROM_HERE,
+                                   base::BindOnce(&RecordRunTime, run_times),
+                                   base::Milliseconds(50) * i);
+    }
+    task_environment_.FastForwardBy(base::Seconds(5));
+  }
+
+  // Post and run tasks. Expect no alignment.
+  void PostTasks_ExpectNoAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Seconds(1));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(start, start + base::Milliseconds(50),
+                                     start + base::Milliseconds(100),
+                                     start + base::Milliseconds(150),
+                                     start + base::Milliseconds(200)));
+  }
+
+  // Post and run tasks. Expect 32ms alignment.
+  void PostTasks_Expect32msAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Milliseconds(32));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(start, start + base::Milliseconds(64),
+                                     start + base::Milliseconds(128),
+                                     start + base::Milliseconds(160),
+                                     start + base::Milliseconds(224)));
+  }
+
+  // Post and run tasks. Expect 1 second alignment.
+  void PostTasks_Expect1sAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Seconds(1));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times, testing::ElementsAre(start, start + base::Seconds(1),
+                                                start + base::Seconds(1),
+                                                start + base::Seconds(1),
+                                                start + base::Seconds(1)));
+  }
+
  protected:
   scoped_refptr<MainThreadTaskQueue> throttleable_task_queue() {
     return throttleable_task_queue_;
@@ -532,8 +594,6 @@ class FrameSchedulerImplTest : public testing::Test {
         /*is_web_history_inert_commit=*/false, navigation_type,
         {GetUnreportedTaskTime()});
   }
-
-  base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
 
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -1452,9 +1512,9 @@ TEST_F(FrameSchedulerImplTest, HighestPriorityInputBlockingTaskQueue) {
             TaskPriority::kHighestPriority);
 }
 
-TEST_F(FrameSchedulerImplTest, RenderBlockingImageLoading) {
+TEST_F(FrameSchedulerImplTest, RenderBlockingRenderBlockingLoading) {
   auto render_blocking_task_queue =
-      GetTaskQueue(TaskType::kNetworkingUnfreezableImageLoading);
+      GetTaskQueue(TaskType::kNetworkingUnfreezableRenderBlockingLoading);
   page_scheduler_->SetPageVisible(false);
   EXPECT_EQ(render_blocking_task_queue->GetQueuePriority(),
             TaskPriority::kNormalPriority);
@@ -1570,11 +1630,41 @@ TEST_F(FrameSchedulerImplTest, ComputePriorityForDetachedFrame) {
   frame_scheduler_->ComputePriority(task_queue.get());
 }
 
-TEST_F(FrameSchedulerImplTest,
-       LowPriorityScriptExecutionHasBestEffortPriority) {
-  auto task_queue = GetTaskQueue(TaskType::kLowPriorityScriptExecution);
+class FrameSchedulerImplLowPriorityAsyncScriptExecutionTest
+    : public FrameSchedulerImplTest,
+      public testing::WithParamInterface<std::string> {
+ public:
+  FrameSchedulerImplLowPriorityAsyncScriptExecutionTest()
+      : FrameSchedulerImplTest(
+            features::kLowPriorityAsyncScriptExecution,
+            {{features::kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam
+                  .name,
+              specified_priority()}},
+            {}) {}
 
-  EXPECT_EQ(TaskPriority::kBestEffortPriority, task_queue->GetQueuePriority());
+  std::string specified_priority() { return GetParam(); }
+  TaskPriority GetExpectedPriority() {
+    if (specified_priority() == "high") {
+      return TaskPriority::kHighPriority;
+    } else if (specified_priority() == "low") {
+      return TaskPriority::kLowPriority;
+    } else if (specified_priority() == "best_effort") {
+      return TaskPriority::kBestEffortPriority;
+    }
+    NOTREACHED_NORETURN();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FrameSchedulerImplLowPriorityAsyncScriptExecutionTest,
+                         testing::Values("high", "low", "best_effort"));
+
+TEST_P(FrameSchedulerImplLowPriorityAsyncScriptExecutionTest,
+       LowPriorityScriptExecutionHasBestEffortPriority) {
+  EXPECT_EQ(
+      GetExpectedPriority(),
+      GetTaskQueue(TaskType::kLowPriorityScriptExecution)->GetQueuePriority())
+      << specified_priority();
 }
 
 TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
@@ -2121,7 +2211,7 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
 
   EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(2);
 
-  main_frame_scheduler->OnFirstMeaningfulPaint();
+  main_frame_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
 
   main_frame_scheduler = nullptr;
@@ -2146,7 +2236,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 
     EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
 
-    subframe_scheduler->OnFirstMeaningfulPaint();
+    subframe_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
   }
 
   // Now test for embedded main frames.
@@ -2158,7 +2248,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 
     EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
 
-    subframe_scheduler->OnFirstMeaningfulPaint();
+    subframe_scheduler->OnFirstMeaningfulPaint(base::TimeTicks::Now());
   }
 
   page_scheduler = nullptr;
@@ -2953,190 +3043,121 @@ TEST_F(FrameSchedulerImplTest, ImmediateWebSchedulingTasksAreNotThrottled) {
   EXPECT_THAT(run_times, testing::ElementsAre(start));
 }
 
-class FrameSchedulerImplThrottleForegroundTimersEnabledTest
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplThrottleForegroundTimersEnabledTest()
-      : FrameSchedulerImplTest({features::kThrottleForegroundTimers}, {}) {}
-};
-
-TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       ForegroundPageTimerThrottling) {
-  page_scheduler_->SetPageVisible(true);
-
-  // Snap the time to a multiple of 32ms.
-  FastForwardToAlignedTime(base::Milliseconds(32));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame_scheduler_->GetTaskRunner(
-          TaskType::kJavascriptTimerDelayedLowNesting);
-
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(64),
-                                   start + base::Milliseconds(128),
-                                   start + base::Milliseconds(160),
-                                   start + base::Milliseconds(224)));
-}
-
-// Make sure the normal throttling (1 wake up per second) is applied when the
-// page becomes non-visible
-TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       BackgroundPageTimerThrottling) {
-  page_scheduler_->SetPageVisible(false);
-
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame_scheduler_->GetTaskRunner(
-          TaskType::kJavascriptTimerDelayedLowNesting);
-
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000)));
-}
-
-TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       HiddenAudiblePageTimerThrottling) {
-  page_scheduler_->SetPageVisible(false);
-  page_scheduler_->AudioStateChanged(/*is_audio_playing=*/true);
-
-  // Snap the time to a multiple of 32ms.
-  FastForwardToAlignedTime(base::Milliseconds(32));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame_scheduler_->GetTaskRunner(
-          TaskType::kJavascriptTimerDelayedLowNesting);
-
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(64),
-                                   start + base::Milliseconds(128),
-                                   start + base::Milliseconds(160),
-                                   start + base::Milliseconds(224)));
-}
-
-TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       VisibleCrossOriginFrameThrottling) {
-  std::unique_ptr<FrameSchedulerImpl> cross_origin_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kSubframe);
-  page_scheduler_->SetPageVisible(true);
-  cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
-  const scoped_refptr<base::SingleThreadTaskRunner> cross_origin_task_runner =
-      cross_origin_frame_scheduler->GetTaskRunner(
-          TaskType::kJavascriptTimerDelayedLowNesting);
-
-  cross_origin_frame_scheduler->SetFrameVisible(true);
-  // Snap the time to a multiple of 32ms.
-  FastForwardToAlignedTime(base::Milliseconds(32));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    cross_origin_task_runner->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-        base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(64),
-                                   start + base::Milliseconds(128),
-                                   start + base::Milliseconds(160),
-                                   start + base::Milliseconds(224)));
-}
-
-TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
-       HiddenCrossOriginFrameThrottling) {
-  std::unique_ptr<FrameSchedulerImpl> cross_origin_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kSubframe);
-  page_scheduler_->SetPageVisible(true);
-  cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
-  const scoped_refptr<base::SingleThreadTaskRunner> cross_origin_task_runner =
-      cross_origin_frame_scheduler->GetTaskRunner(
-          TaskType::kJavascriptTimerDelayedLowNesting);
-
-  cross_origin_frame_scheduler->SetFrameVisible(false);
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    cross_origin_task_runner->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-        base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000)));
-}
-
 TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasVeryHighPriority) {
   auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
 
   EXPECT_EQ(TaskPriority::kVeryHighPriority, task_queue->GetQueuePriority());
 }
 
-class FrameSchedulerImplDeleterTaskRunnerEnabledTest
+class FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest
     : public FrameSchedulerImplTest {
  public:
-  FrameSchedulerImplDeleterTaskRunnerEnabledTest()
-      : FrameSchedulerImplTest(
-            {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter},
-            {}) {}
+  FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest()
+      : FrameSchedulerImplTest({features::kThrottleUnimportantFrameTimers},
+                               {}) {}
 };
 
-TEST_F(FrameSchedulerImplDeleterTaskRunnerEnabledTest,
-       DeleteSoonUsesBackupTaskRunner) {
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       VisibleSizeChange_CrossOrigin_ExplicitInit) {
+  LazyInitThrottleableTaskQueue();
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  EXPECT_TRUE(IsThrottled());
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  EXPECT_FALSE(IsThrottled());
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UserActivationChange_CrossOrigin_ExplicitInit) {
+  LazyInitThrottleableTaskQueue();
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  frame_scheduler_->SetHadUserActivation(false);
+  EXPECT_TRUE(IsThrottled());
+  frame_scheduler_->SetHadUserActivation(true);
+  EXPECT_FALSE(IsThrottled());
+  frame_scheduler_->SetHadUserActivation(false);
+  EXPECT_TRUE(IsThrottled());
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UnimportantFrameThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  PostTasks_Expect32msAlignment(task_runner);
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       HiddenCrossOriginFrameThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(false);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  PostTasks_Expect1sAlignment(task_runner);
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       BackgroundPageTimerThrottling) {
+  page_scheduler_->SetPageVisible(false);
+
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(false);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  PostTasks_Expect1sAlignment(task_runner);
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       LargeCrossOriginFrameNoThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  frame_scheduler_->SetHadUserActivation(false);
+
+  PostTasks_ExpectNoAlignment(task_runner);
+}
+
+TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
+       UserActivatedCrossOriginFrameNoThrottling) {
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  frame_scheduler_->SetHadUserActivation(true);
+
+  PostTasks_ExpectNoAlignment(task_runner);
+}
+
+TEST_F(FrameSchedulerImplTest, DeleteSoonUsesBackupTaskRunner) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   int counter = 0;
@@ -3158,26 +3179,7 @@ TEST_F(FrameSchedulerImplDeleterTaskRunnerEnabledTest,
   EXPECT_EQ(2, counter);
 }
 
-enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };
-
-class FrameSchedulerImplTaskRunnerWithCustomDeleterTest
-    : public FrameSchedulerImplTest,
-      public ::testing::WithParamInterface<DeleterTaskRunnerEnabled> {
- public:
-  FrameSchedulerImplTaskRunnerWithCustomDeleterTest() {
-    feature_list_.Reset();
-    if (GetParam() == DeleterTaskRunnerEnabled::kEnabled) {
-      feature_list_.InitWithFeatures(
-          {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter});
-    }
-  }
-};
-
-TEST_P(FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
-       DeleteSoonAfterShutdown) {
+TEST_F(FrameSchedulerImplTest, DeleteSoonAfterShutdown) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   int counter = 0;
@@ -3203,33 +3205,11 @@ TEST_P(FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
 
   std::unique_ptr<TestObject> test_object2 =
       std::make_unique<TestObject>(&counter);
-  TestObject* unowned_test_object2 = test_object2.get();
   task_runner->DeleteSoon(FROM_HERE, std::move(test_object2));
   EXPECT_EQ(counter, 2);
   base::RunLoop().RunUntilIdle();
-
-  // Without the custom task runner, this leaks.
-  if (GetParam() == DeleterTaskRunnerEnabled::kDisabled) {
-    EXPECT_EQ(counter, 2);
-    delete (unowned_test_object2);
-  } else {
-    EXPECT_EQ(counter, 3);
-  }
+  EXPECT_EQ(counter, 3);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
-    testing::Values(DeleterTaskRunnerEnabled::kEnabled,
-                    DeleterTaskRunnerEnabled::kDisabled),
-    [](const testing::TestParamInfo<DeleterTaskRunnerEnabled>& info) {
-      switch (info.param) {
-        case DeleterTaskRunnerEnabled::kEnabled:
-          return "Enabled";
-        case DeleterTaskRunnerEnabled::kDisabled:
-          return "Disabled";
-      }
-    });
 
 }  // namespace frame_scheduler_impl_unittest
 }  // namespace scheduler

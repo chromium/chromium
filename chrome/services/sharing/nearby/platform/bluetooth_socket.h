@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -12,7 +14,6 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
 namespace base {
@@ -74,8 +75,8 @@ class BluetoothSocket : public api::BluetoothSocket {
   // connection, there is no previous owner of that device object, and therefore
   // BluetoothSocket is expected to own it (within |remote_device_|). In this
   // case, |remote_device_ref_| is a reference to |remote_device_|.
-  absl::optional<chrome::BluetoothDevice> remote_device_;
-  const raw_ref<api::BluetoothDevice, ExperimentalAsh> remote_device_ref_;
+  std::optional<chrome::BluetoothDevice> remote_device_;
+  const raw_ref<api::BluetoothDevice> remote_device_ref_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<bluetooth::mojom::Socket> socket_;

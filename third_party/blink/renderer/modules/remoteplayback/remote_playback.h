@@ -27,6 +27,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace media {
+enum class VideoCodec;
+enum class AudioCodec;
+}  // namespace media
+
 namespace blink {
 
 class AvailabilityCallbackWrapper;
@@ -73,9 +78,10 @@ class MODULES_EXPORT RemotePlayback final
   // Starts notifying the page about the changes to the remote playback devices
   // availability via the provided callback. May start the monitoring of remote
   // playback devices if it isn't running yet.
-  ScriptPromise watchAvailability(ScriptState*,
-                                  V8RemotePlaybackAvailabilityCallback*,
-                                  ExceptionState&);
+  ScriptPromiseTyped<IDLLong> watchAvailability(
+      ScriptState*,
+      V8RemotePlaybackAvailabilityCallback*,
+      ExceptionState&);
 
   // Cancels updating the page via the callback specified by its id.
   ScriptPromise cancelWatchAvailability(ScriptState*, int id, ExceptionState&);
@@ -120,6 +126,9 @@ class MODULES_EXPORT RemotePlayback final
   bool RemotePlaybackAvailable() const override;
   void SourceChanged(const WebURL&, bool is_source_supported) override;
   WebString GetPresentationId() override;
+  void MediaMetadataChanged(
+      std::optional<media::VideoCodec> video_codec,
+      std::optional<media::AudioCodec> audio_codec) override;
 
   // RemotePlaybackController implementation.
   void AddObserver(RemotePlaybackObserver*) override;
@@ -162,6 +171,8 @@ class MODULES_EXPORT RemotePlayback final
   // May be called more than once in a row.
   void StopListeningForAvailability();
 
+  void UpdateAvailabilityUrlsAndStartListening();
+
   // Clears bindings after remote playback stops.
   void CleanupConnections();
 
@@ -172,9 +183,14 @@ class MODULES_EXPORT RemotePlayback final
   Member<ScriptPromiseResolver> prompt_promise_resolver_;
   Vector<KURL> availability_urls_;
   bool is_listening_;
+  bool is_background_availability_monitoring_disabled_for_testing_ = false;
 
   String presentation_id_;
   KURL presentation_url_;
+  WebURL source_;
+  bool is_source_supported_ = false;
+  std::optional<media::VideoCodec> video_codec_ = std::nullopt;
+  std::optional<media::AudioCodec> audio_codec_ = std::nullopt;
 
   HeapMojoReceiver<mojom::blink::PresentationConnection, RemotePlayback>
       presentation_connection_receiver_;

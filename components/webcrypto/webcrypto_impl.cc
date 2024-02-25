@@ -580,6 +580,7 @@ void DoUnwrapKey(std::unique_ptr<UnwrapKeyState> passed_state) {
 void DoDeriveBitsReply(std::unique_ptr<DeriveBitsState> state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "DoDeriveBitsReply");
+  state->result.SetWarning(state->status.warning_type());
   CompleteWithBufferOrError(state->status, state->derived_bytes,
                             &state->result);
 }

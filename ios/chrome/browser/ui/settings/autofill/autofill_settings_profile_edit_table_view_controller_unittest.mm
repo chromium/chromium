@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
@@ -35,10 +35,10 @@ namespace {
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
 class AutofillSettingsProfileEditTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     delegate_mock_ = OCMProtocolMock(
         @protocol(AutofillProfileEditTableViewControllerDelegate));
     CreateController();
@@ -49,7 +49,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
     [controller() loadModel];
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
@@ -68,9 +68,6 @@ class AutofillSettingsProfileEditTableViewControllerTest
   void CreateProfileData() {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     [autofill_profile_edit_table_view_controller_
-        setHonorificPrefix:base::SysUTF16ToNSString(profile.GetRawInfo(
-                               autofill::NAME_HONORIFIC_PREFIX))];
-    [autofill_profile_edit_table_view_controller_
         setFullName:base::SysUTF16ToNSString(
                         profile.GetRawInfo(autofill::NAME_FULL))];
     [autofill_profile_edit_table_view_controller_
@@ -83,8 +80,15 @@ class AutofillSettingsProfileEditTableViewControllerTest
         setHomeAddressLine2:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_LINE2))];
     [autofill_profile_edit_table_view_controller_
+        setHomeAddressDependentLocality:
+            base::SysUTF16ToNSString(
+                profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY))];
+    [autofill_profile_edit_table_view_controller_
         setHomeAddressCity:base::SysUTF16ToNSString(profile.GetRawInfo(
                                autofill::ADDRESS_HOME_CITY))];
+    [autofill_profile_edit_table_view_controller_
+        setHomeAddressAdminLevel2:base::SysUTF16ToNSString(profile.GetRawInfo(
+                                      autofill::ADDRESS_HOME_ADMIN_LEVEL2))];
     [autofill_profile_edit_table_view_controller_
         setHomeAddressState:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_STATE))];
@@ -110,11 +114,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
 // Default test case of no addresses or credit cards.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
   TableViewModel* model = [controller() tableViewModel];
-  int rowCnt =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHonorificPrefixes)
-          ? 11
-          : 10;
+  int rowCnt = 10;
 
   EXPECT_EQ(1, [model numberOfSections]);
   EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
@@ -126,7 +126,7 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
  protected:
   AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {}
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
@@ -155,13 +155,13 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     TableViewModel* model = [controller() tableViewModel];
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-    std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
-        expected_values;
+    NSString* countryCode = base::SysUTF16ToNSString(
+        profile.GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
+
+    std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
     for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
       const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-      if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
+      if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {
         continue;
       }
 
@@ -218,7 +218,7 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
@@ -240,11 +240,7 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
 TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
        TestElementsInView) {
   TableViewModel* model = [controller() tableViewModel];
-  int rowCnt =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHonorificPrefixes)
-          ? 13
-          : 12;
+  int rowCnt = 12;
 
   EXPECT_EQ(1, [model numberOfSections]);
   EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);

@@ -69,7 +69,7 @@ class ASH_EXPORT StatusAreaAnimationController
   // are currently disabled.
   std::list<base::ScopedClosureRunner>
       notification_center_tray_item_animation_enablers_;
-  raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_;
+  raw_ptr<NotificationCenterTray> notification_center_tray_;
 
   // Whether the "hide" animation is scheduled to be run.
   bool is_hide_animation_scheduled_ = false;

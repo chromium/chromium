@@ -26,10 +26,14 @@ from .. import localpaths
 from ..ci.tc.github_checks_output import get_gh_checks_outputter, GitHubChecksOutputter
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
+from ..manifest.mputil import max_parallelism
 from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
 
+from ..metadata.yaml.load import load_data_to_dict
+from ..metadata.meta.schema import META_YML_FILENAME, MetaFile
+from ..metadata.webfeatures.schema import WEB_FEATURES_YML_FILENAME, WebFeaturesFile
 
 # The Ignorelist is a two level dictionary. The top level is indexed by
 # error names (e.g. 'TRAILING WHITESPACE'). Each of those then has a map of
@@ -351,7 +355,8 @@ regexps = [item() for item in  # type: ignore
             rules.SpecialPowersRegexp,
             rules.AssertThrowsRegexp,
             rules.PromiseRejectsRegexp,
-            rules.AssertPreconditionRegexp]]
+            rules.AssertPreconditionRegexp,
+            rules.HTMLInvalidSyntaxRegexp]]
 
 
 def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
@@ -431,6 +436,16 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         if timeout_value != "long":
             errors.append(rules.InvalidTimeout.error(path, (timeout_value,)))
 
+    if source_file.content_is_ref_node or source_file.content_is_testharness:
+        for element in source_file.variant_nodes:
+            if "content" not in element.attrib:
+                errors.append(rules.VariantMissing.error(path))
+            else:
+                variant = element.attrib["content"]
+                if is_variant_malformed(variant):
+                    value = f"{path} `<meta name=variant>` 'content' attribute"
+                    errors.append(rules.MalformedVariant.error(path, (value,)))
+
     required_elements: List[Text] = []
 
     testharnessreport_nodes: List[ElementTree.Element] = []
@@ -447,17 +462,6 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         else:
             if len(testharnessreport_nodes) > 1:
                 errors.append(rules.MultipleTestharnessReport.error(path))
-
-        for element in source_file.variant_nodes:
-            if "content" not in element.attrib:
-                errors.append(rules.VariantMissing.error(path))
-            else:
-                variant = element.attrib["content"]
-                if (variant == "" or
-                    variant[0] not in ("?", "#") or
-                    len(variant) == 1 or
-                    (variant[0] == "?" and variant[1] == "#")):
-                    errors.append(rules.MalformedVariant.error(path, (path,)))
 
         required_elements.extend(key for key, value in {"testharness": True,
                                                         "testharnessreport": len(testharnessreport_nodes) > 0,
@@ -539,6 +543,12 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
 
     return errors
 
+
+def is_variant_malformed(variant: str) -> bool:
+    return (variant == "" or variant[0] not in ("?", "#") or
+            len(variant) == 1 or (variant[0] == "?" and variant[1] == "#"))
+
+
 class ASTCheck(metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def rule(self) -> Type[rules.Rule]:
@@ -593,7 +603,7 @@ def check_global_metadata(value: bytes) -> Iterable[Tuple[Type[rules.Rule], Tupl
 
 
 def check_script_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
-    if path.endswith((".worker.js", ".any.js")):
+    if path.endswith((".window.js", ".worker.js", ".any.js")):
         meta_re = js_meta_re
         broken_metadata = broken_js_metadata
     elif path.endswith(".py"):
@@ -604,7 +614,7 @@ def check_script_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rul
 
     done = False
     errors = []
-    for idx, line in enumerate(f):
+    for line_no, line in enumerate(f, 1):
         assert isinstance(line, bytes), line
 
         m = meta_re.match(line)
@@ -612,25 +622,32 @@ def check_script_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rul
             key, value = m.groups()
             if key == b"global":
                 for rule_class, context in check_global_metadata(value):
-                    errors.append(rule_class.error(path, context, idx + 1))
+                    errors.append(rule_class.error(path, context, line_no))
             elif key == b"timeout":
                 if value != b"long":
                     errors.append(rules.UnknownTimeoutMetadata.error(path,
-                                                                     line_no=idx + 1))
-            elif key not in (b"title", b"script", b"variant", b"quic"):
-                errors.append(rules.UnknownMetadata.error(path,
-                                                          line_no=idx + 1))
+                                                                     line_no=line_no))
+            elif key == b"variant":
+                if is_variant_malformed(value.decode()):
+                    value = f"{path} `META: variant=...` value"
+                    errors.append(rules.MalformedVariant.error(path, (value,), line_no))
+            elif key == b"script":
+                if value == b"/resources/testharness.js":
+                    errors.append(rules.MultipleTestharness.error(path, line_no=line_no))
+                elif value == b"/resources/testharnessreport.js":
+                    errors.append(rules.MultipleTestharnessReport.error(path, line_no=line_no))
+            elif key not in (b"title", b"quic"):
+                errors.append(rules.UnknownMetadata.error(path, line_no=line_no))
         else:
             done = True
 
         if done:
             if meta_re.match(line):
-                errors.append(rules.StrayMetadata.error(path, line_no=idx + 1))
+                errors.append(rules.StrayMetadata.error(path, line_no=line_no))
             elif meta_re.search(line):
-                errors.append(rules.IndentedMetadata.error(path,
-                                                           line_no=idx + 1))
+                errors.append(rules.IndentedMetadata.error(path, line_no=line_no))
             elif broken_metadata.search(line):
-                errors.append(rules.BrokenMetadata.error(path, line_no=idx + 1))
+                errors.append(rules.BrokenMetadata.error(path, line_no=line_no))
 
     return errors
 
@@ -649,6 +666,36 @@ def check_ahem_system_font(repo_root: Text, path: Text, f: IO[bytes]) -> List[ru
     errors = []
     if ahem_font_re.search(contents) and not ahem_stylesheet_re.search(contents):
         errors.append(rules.AhemSystemFont.error(path))
+    return errors
+
+
+def check_meta_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
+    if os.path.basename(path) != META_YML_FILENAME:
+        return []
+    try:
+        MetaFile(load_data_to_dict(f))
+    except Exception:
+        return [rules.InvalidMetaFile.error(path)]
+    return []
+
+
+def check_web_features_file(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
+    if os.path.basename(path) != WEB_FEATURES_YML_FILENAME:
+        return []
+    try:
+        web_features_file: WebFeaturesFile = WebFeaturesFile(load_data_to_dict(f))
+    except Exception:
+        return [rules.InvalidWebFeaturesFile.error(path)]
+    errors = []
+    base_dir = os.path.join(repo_root, os.path.dirname(path))
+    files_in_directory = [
+        f for f in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, f))]
+    for feature in web_features_file.features:
+        if isinstance(feature.files, list):
+            for file in feature.files:
+                if not file.match_files(files_in_directory):
+                    errors.append(rules.MissingTestInWebFeaturesFile.error(path, (file)))
+
     return errors
 
 
@@ -677,7 +724,7 @@ def check_all_paths(repo_root: Text, paths: List[Text]) -> List[rules.Error]:
     """
 
     errors = []
-    for paths_fn in all_paths_lints:
+    for paths_fn in all_paths_lints():
         errors.extend(paths_fn(repo_root, paths))
     return errors
 
@@ -836,7 +883,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(**kwargs: Any) -> int:
+def main(venv: Any = None, **kwargs: Any) -> int:
 
     assert logger is not None
     if kwargs.get("json") and kwargs.get("markdown"):
@@ -877,12 +924,7 @@ def lint(repo_root: Text,
     last = None
 
     if jobs == 0:
-        jobs = multiprocessing.cpu_count()
-        if sys.platform == 'win32':
-            # Using too many child processes in Python 3 hits either hangs or a
-            # ValueError exception, and, has diminishing returns. Clamp to 56 to
-            # give margin for error.
-            jobs = min(jobs, 56)
+        jobs = max_parallelism()
 
     with open(os.path.join(repo_root, "lint.ignore")) as f:
         ignorelist, skipped_files = parse_ignorelist(f)
@@ -977,17 +1019,21 @@ def lint(repo_root: Text,
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_mojom_js, check_tentative_directories, check_gitignore_file]
-all_paths_lints = [check_unique_testharness_basenames,
-                   check_unique_case_insensitive_paths]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
-              check_ahem_system_font]
+              check_ahem_system_font, check_meta_file, check_web_features_file]
 
-# Don't break users of the lint that don't have git installed.
-try:
-    subprocess.check_output(["git", "--version"])
-    all_paths_lints += [check_git_ignore]
-except (subprocess.CalledProcessError, FileNotFoundError):
-    print('No git present; skipping .gitignore lint.')
+
+def all_paths_lints() -> Any:
+    paths = [check_unique_testharness_basenames,
+             check_unique_case_insensitive_paths]
+    # Don't break users of the lint that don't have git installed.
+    try:
+        subprocess.check_output(["git", "--version"])
+        paths += [check_git_ignore]
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print('No git present; skipping .gitignore lint.')
+    return paths
+
 
 if __name__ == "__main__":
     args = create_parser().parse_args()

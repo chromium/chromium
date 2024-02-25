@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
@@ -25,6 +26,17 @@ using UrlId = base::IdType64<class UrlIdTag>;
 
 using UkmEventsToMetricsMap =
     base::flat_map<UkmEventHash, base::flat_set<UkmMetricHash>>;
+
+// Represents an UMA metric or user action entry from the signal database.
+struct UmaMetricEntry {
+  proto::SignalType type = proto::SignalType::UNKNOWN_SIGNAL_TYPE;
+  // Hash of the histogram or user action.
+  uint64_t name_hash = 0;
+  // Sample recorded time.
+  base::Time time;
+  // Sample value, always 0 for user actions.
+  int32_t value = 0;
+};
 
 namespace processing {
 

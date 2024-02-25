@@ -6,9 +6,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
@@ -24,19 +28,24 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ClearHostClosure clear_host_callback)
     : ProfileManagementFlowController(host, std::move(clear_host_callback)) {}
 
+base::queue<ProfileManagementFlowController::Step>
+ProfileManagementFlowControllerImpl::RegisterPostIdentitySteps() {
+  return {};
+}
+
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
 
 void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   DCHECK_NE(Step::kPostSignInFlow, current_step());
   DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
-  RegisterStep(
-      Step::kPostSignInFlow,
-      CreatePostSignInStep(signed_in_profile, account_id, std::move(contents)));
+  RegisterStep(Step::kPostSignInFlow,
+               CreatePostSignInStep(signed_in_profile, account_info,
+                                    std::move(contents)));
   SwitchToStep(Step::kPostSignInFlow,
                /*reset_state=*/true, std::move(step_switch_finished_callback));
 }
@@ -44,7 +53,9 @@ void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(
-        StepSwitchFinishedCallback step_switch_finished_callback) {
+        StepSwitchFinishedCallback step_switch_finished_callback,
+        signin_metrics::AccessPoint access_point,
+        base::FilePath profile_path) {
   DCHECK_NE(Step::kAccountSelection, current_step());
   DCHECK_NE(Step::kPostSignInFlow, current_step());
 
@@ -53,35 +64,29 @@ void ProfileManagementFlowControllerImpl::
     RegisterStep(
         Step::kAccountSelection,
         ProfileManagementStepController::CreateForDiceSignIn(
-            host(), CreateDiceSignInProvider(),
+            host(),
+            std::make_unique<ProfilePickerDiceSignInProvider>(
+                host(), access_point, std::move(profile_path)),
             base::BindOnce(
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
                 // Binding as Unretained as `this`
                 // outlives the step controllers.
                 base::Unretained(this))));
   }
-  auto pop_closure = base::BindOnce(
-      &ProfileManagementFlowControllerImpl::SwitchToStep,
-      // Binding as Unretained as `this` outlives the step
-      // controllers.
-      base::Unretained(this), current_step(),
-      /*reset_state=*/false,
-      /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
-      /*pop_step_callback=*/base::OnceClosure());
   SwitchToStep(Step::kAccountSelection,
                /*reset_state=*/step_needs_registration,
                std::move(step_switch_finished_callback),
-               std::move(pop_closure));
+               CreateSwitchToStepPopCallback(current_step()));
 }
 #endif
 
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   return ProfileManagementStepController::CreateForPostSignInFlow(
-      host(), CreateSignedInFlowController(signed_in_profile, account_id,
+      host(), CreateSignedInFlowController(signed_in_profile, account_info,
                                            std::move(contents)));
 }
 
@@ -104,14 +109,16 @@ ProfileManagementFlowControllerImpl::CreateSamlStep(
 
 void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
-  DCHECK(!signin_util::IsForceSigninEnabled());
+  CHECK(!signin_util::IsForceSigninEnabled() ||
+        base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
   DCHECK(signed_in_profile);
   DCHECK_EQ(Step::kAccountSelection, current_step());
 
   Step step;
-  if (account_id.empty()) {
+  // SAML with ForceSignin flow is migrated to the regular Profile Picker flow.
+  if (account_info.IsEmpty() && !signin_util::IsForceSigninEnabled()) {
     step = Step::kFinishSamlSignin;
     DCHECK(!IsStepInitialized(step));
     // The SAML step controller handles finishing the profile setup by itself
@@ -120,7 +127,7 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   } else {
     step = Step::kPostSignInFlow;
     DCHECK(!IsStepInitialized(step));
-    RegisterStep(step, CreatePostSignInStep(signed_in_profile, account_id,
+    RegisterStep(step, CreatePostSignInStep(signed_in_profile, account_info,
                                             std::move(contents)));
   }
 
@@ -135,3 +142,18 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   UnregisterStep(Step::kAccountSelection);
 }
 #endif
+
+void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps() {
+  post_identity_steps_ = RegisterPostIdentitySteps();
+  AdvanceToNextPostIdentityStep();
+}
+
+void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
+  if (post_identity_steps_.empty()) {
+    return;
+  }
+
+  Step next_step = post_identity_steps_.front();
+  post_identity_steps_.pop();
+  SwitchToStep(next_step, /*reset_state=*/true);
+}

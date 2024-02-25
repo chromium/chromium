@@ -6,15 +6,16 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -22,8 +23,8 @@ namespace ash {
 
 namespace {
 
-constexpr AmbientModeTopicSource kTopicSource =
-    AmbientModeTopicSource::kGooglePhotos;
+constexpr personalization_app::mojom::TopicSource kTopicSource =
+    personalization_app::mojom::TopicSource::kGooglePhotos;
 
 constexpr AmbientModeTemperatureUnit kTemperatureUnit =
     AmbientModeTemperatureUnit::kCelsius;
@@ -32,8 +33,8 @@ constexpr char kFakeUrl[] = "chrome://ambient";
 
 constexpr char kFakeDetails[] = "fake-photo-attribution";
 
-constexpr std::array<const char*, 2> kFakeBackupPhotoUrls = {kFakeUrl,
-                                                             kFakeUrl};
+constexpr std::array<const char*, 2> kFakeBackupPhotoUrls = {
+    "http://fake-backup-photo-1.com", "http://fake-backup-photo-2.com"};
 
 AmbientSettings CreateFakeSettings() {
   AmbientSettings settings;
@@ -186,7 +187,7 @@ const char* FakeAmbientBackendControllerImpl::GetTimeOfDayProductName() const {
 
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     bool success,
-    const absl::optional<AmbientSettings>& settings) {
+    const std::optional<AmbientSettings>& settings) {
   if (!pending_fetch_settings_albums_callback_)
     return;
 
@@ -195,7 +196,7 @@ void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
         .Run(settings.value_or(CreateFakeSettings()), CreateFakeAlbums());
   } else {
     std::move(pending_fetch_settings_albums_callback_)
-        .Run(/*settings=*/absl::nullopt, PersonalAlbums());
+        .Run(/*settings=*/std::nullopt, PersonalAlbums());
   }
 }
 
@@ -226,7 +227,7 @@ void FakeAmbientBackendControllerImpl::EnableUpdateSettingsAutoReply(
 }
 
 void FakeAmbientBackendControllerImpl::SetWeatherInfo(
-    absl::optional<WeatherInfo> info) {
+    std::optional<WeatherInfo> info) {
   weather_info_ = std::move(info);
 }
 

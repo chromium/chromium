@@ -111,7 +111,7 @@ TEST(HeadlessClientHintsControllerDelegateTests,
 
 TEST(HeadlessClientHintsControllerDelegateTests, IsJavaScriptAllowed) {
   HeadlessClientHintsControllerDelegate delegate;
-  EXPECT_TRUE(delegate.IsJavaScriptAllowed(GURL::EmptyGURL(), nullptr));
+  EXPECT_TRUE(delegate.IsJavaScriptAllowed(GURL(), nullptr));
 }
 
 TEST(HeadlessClientHintsControllerDelegateTests, GetUserAgentMetadata) {

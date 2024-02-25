@@ -8,9 +8,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -68,7 +71,7 @@ class HTMLSelectListElementTest : public PageTestBase {
 };
 
 // Tests that HtmlSelectListElement::SetAutofillValue() doesn't change the
-// `user_has_edited_the_field_` attribute of the field.
+// `interacted_state_` attribute of the field.
 TEST_F(HTMLSelectListElementTest, SetAutofillValuePreservesEditedState) {
   SetHtmlInnerHTML(
       "<!DOCTYPE HTML><selectlist id='sel'>"
@@ -77,11 +80,11 @@ TEST_F(HTMLSelectListElementTest, SetAutofillValuePreservesEditedState) {
   HTMLSelectListElement* select_list =
       To<HTMLSelectListElement>(GetElementById("sel"));
 
-  select_list->SetUserHasEditedTheField(false);
+  select_list->ClearUserHasEditedTheField();
   select_list->SetAutofillValue("222", WebAutofillState::kAutofilled);
   EXPECT_EQ(select_list->UserHasEditedTheField(), false);
 
-  select_list->SetUserHasEditedTheField(true);
+  select_list->SetUserHasEditedTheField();
   select_list->SetAutofillValue("111", WebAutofillState::kAutofilled);
   EXPECT_EQ(select_list->UserHasEditedTheField(), true);
 }
@@ -180,64 +183,33 @@ TEST_F(HTMLSelectListElementTest, NotifyClientListItemRemove) {
 }
 
 // Test behavior of HTMLSelectListElement::OwnerSelectList() if selectlist uses
-// default parts.
-TEST_F(HTMLSelectListElementTest, OwnerSelectList_Parts) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectlist id='selectlist'>
-    <b>
-      <option>First</option>
-      <option>Second</option>
-    </b>
-    </selectlist>
-  )HTML");
-
-  HTMLSelectListElement* select_list_element =
-      To<HTMLSelectListElement>(GetElementById("selectlist"));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     select_list_element->selectedOption()));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     select_list_element->ButtonPart()));
-}
-
-// Test behavior of HTMLSelectListElement::OwnerSelectList() if selectlist uses
 // custom parts.
 TEST_F(HTMLSelectListElementTest, OwnerSelectList_PartsCustomSlots) {
   SetHtmlInnerHTML(R"HTML(
     <selectlist id='selectlist'>
-      <div behavior="button" slot="button" id="selectlist_button">
+      <button type=selectlist id=selectlist_button>
         Button
-      </div>
-      <div behavior="listbox" slot="listbox" id="selectlist_listbox" popover>
+      </button>
+      <listbox id=selectlist_listbox>
         <b>
           <option id="first_option">First</option>
           <option>Second</option>
         </b>
-      </div>
+      </listbox>
     </selectlist>
   )HTML");
 
   HTMLSelectListElement* select_list_element =
       To<HTMLSelectListElement>(GetElementById("selectlist"));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("selectlist_button")));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("selectlist_listbox")));
-  ASSERT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("first_option")));
-}
-
-// Test behavior of HTMLSelectListElement::OwnerSelectList() when a node which
-// is not a descendant of the selectlist is passed.
-TEST_F(HTMLSelectListElementTest, OwnerSelectList_NotInSelectList) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectlist id='selectlist'>
-      <option>First</option>
-      <option>Second</option>
-    </selectlist>
-    <div id="Other">other</div>
-  )HTML");
-  EXPECT_EQ(nullptr,
-            HTMLSelectListElement::OwnerSelectList(GetElementById("other")));
+  EXPECT_EQ(select_list_element,
+            To<HTMLButtonElement>(GetElementById("selectlist_button"))
+                ->OwnerSelectList());
+  EXPECT_EQ(select_list_element,
+            To<HTMLListboxElement>(GetElementById("selectlist_listbox"))
+                ->OwnerSelectList());
+  EXPECT_EQ(select_list_element,
+            To<HTMLOptionElement>(GetElementById("first_option"))
+                ->OwnerSelectList());
 }
 
 // Test that HTMLSelectListElement::SetSuggestedValue() does not affect
@@ -325,7 +297,7 @@ TEST_F(HTMLSelectListElementTest, SuggestedValueClearedWhenValueSet) {
 Color GetBorderColorForSuggestedOptionPopover(HTMLSelectListElement* element) {
   const ComputedStyle& popover_style =
       element->SuggestedOptionPopoverForTesting()->ComputedStyleRef();
-  return popover_style.BorderTop().GetColor().GetColor();
+  return popover_style.VisitedDependentColor(GetCSSPropertyBorderTopColor());
 }
 
 // Test HTMLSelectListElement preview popover inherits border color from the

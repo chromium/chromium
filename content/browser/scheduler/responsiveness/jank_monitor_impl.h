@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_JANK_MONITOR_IMPL_H_
 
 #include <atomic>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -19,7 +20,6 @@
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/jank_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace responsiveness {
@@ -73,8 +73,8 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
     void DidRunTaskOrEvent(const void* opaque_identifier);
 
     // Checks the jankiness of the target thread. Returns the opaque identifier
-    // of the janky task or absl::nullopt if the current task is not janky.
-    absl::optional<const void*> CheckJankiness();
+    // of the janky task or std::nullopt if the current task is not janky.
+    std::optional<const void*> CheckJankiness();
     void AssertOnTargetThread();
 
    private:
@@ -88,8 +88,8 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
       ~TaskMetadata();
 
       base::TimeTicks execution_start_time;
-      // Not a raw_ptr<...> for performance reasons: based on analysis of
-      // sampling profiler data (JankMonitorImpl::WillRunTaskOrEvent ->
+      // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+      // profiler data (JankMonitorImpl::WillRunTaskOrEvent ->
       // JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent -> emplaces
       // TaskMetadata in a vector).
       RAW_PTR_EXCLUSION const void* identifier;

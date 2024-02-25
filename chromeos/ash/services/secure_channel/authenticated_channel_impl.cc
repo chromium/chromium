@@ -127,6 +127,14 @@ void AuthenticatedChannelImpl::OnMessageReceived(SecureChannel* secure_channel,
   NotifyMessageReceived(feature, payload);
 }
 
+void AuthenticatedChannelImpl::OnNearbyConnectionStateChanged(
+    SecureChannel* secure_channel,
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  DCHECK_EQ(secure_channel_.get(), secure_channel);
+  NotifyNearbyConnectionStateChanged(step, result);
+}
+
 void AuthenticatedChannelImpl::OnMessageSent(SecureChannel* secure_channel,
                                              int sequence_number) {
   DCHECK_EQ(secure_channel_.get(), secure_channel);
@@ -147,7 +155,7 @@ void AuthenticatedChannelImpl::OnMessageSent(SecureChannel* secure_channel,
 
 void AuthenticatedChannelImpl::OnRssiFetched(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback,
-    absl::optional<int32_t> current_rssi) {
+    std::optional<int32_t> current_rssi) {
   mojom::BluetoothConnectionMetadataPtr bluetooth_connection_metadata_ptr;
   if (current_rssi) {
     bluetooth_connection_metadata_ptr =

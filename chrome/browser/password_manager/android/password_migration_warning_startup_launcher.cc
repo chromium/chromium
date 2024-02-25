@@ -7,10 +7,10 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -65,7 +65,7 @@ void PasswordMigrationWarningStartupLauncher::MaybeFetchPasswordsAndShowWarning(
 void PasswordMigrationWarningStartupLauncher::
     OnGetPasswordStoreResultsOrErrorFrom(
         password_manager::PasswordStoreInterface* store,
-        FormsOrError results_or_error) {
+        password_manager::LoginsResultOrError results_or_error) {
   if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     return;

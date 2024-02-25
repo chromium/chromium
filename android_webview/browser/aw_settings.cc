@@ -42,6 +42,7 @@
 #include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -135,6 +136,10 @@ AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
   return mixed_content_mode_;
 }
 
+AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
+  return attribution_behavior_;
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -202,7 +207,6 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateWebkitPreferencesLocked(env, obj);
   UpdateUserAgentLocked(env, obj);
   ResetScrollAndScaleState(env, obj);
-  UpdateFormDataPreferencesLocked(env, obj);
   UpdateRendererPreferencesLocked(env, obj);
   UpdateOffscreenPreRasterLocked(env, obj);
   UpdateWillSuppressErrorStateLocked(env, obj);
@@ -210,6 +214,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateJavaScriptPolicyLocked(env, obj);
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
+  UpdateAttributionBehaviorLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -224,8 +229,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
       Java_AwSettings_getHasUserAgentMetadataOverridesLocked(env, obj);
 
   if (ua_overidden) {
-    std::string ua_string_override =
-        base::android::ConvertJavaStringToUTF8(str);
+    std::string ua_string_override = ConvertJavaStringToUTF8(str);
     std::string ua_default = GetUserAgent();
     blink::UserAgentOverride override_ua_with_metadata;
     override_ua_with_metadata.ua_string_override = ua_string_override;
@@ -238,35 +242,32 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           blink::UserAgentMetadata();
     }
 
-    if (base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint)) {
-      // Generate user-agent client hints in the following three cases:
-      // 1. If user provide the user-agent metadata overrides, we use the
-      // override data to populate the user-agent client hints.
-      // 2. Otherwise, if override user-agent contains default user-agent, we
-      // use system default user-agent metadata to populate the user-agent
-      // client hints.
-      // 3. Finally, if the above two cases don't match, we only populate system
-      // default low-entropy client hints.
-      if (ua_metadata_overridden) {
-        ScopedJavaLocalRef<jobject> java_ua_metadata =
-            Java_AwSettings_getUserAgentMetadataLocked(env, obj);
-        override_ua_with_metadata.ua_metadata_override =
-            FromJavaAwUserAgentMetadata(env, java_ua_metadata);
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kUserOverrides);
-      } else if (base::Contains(ua_string_override, ua_default)) {
-        override_ua_with_metadata.ua_metadata_override =
-            AwClientHintsControllerDelegate::
-                GetUserAgentMetadataOverrideBrand();
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kSystemDefault);
-      } else {
-        override_ua_with_metadata.ua_metadata_override =
-            AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
-                /*only_low_entropy_ch=*/true);
-        LogUserAgentMetadataAvailableType(
-            UserAgentMetadataAvailableType::kSystemDefaultLowEntropyOnly);
-      }
+    // Generate user-agent client hints in the following three cases:
+    // 1. If user provide the user-agent metadata overrides, we use the
+    // override data to populate the user-agent client hints.
+    // 2. Otherwise, if override user-agent contains default user-agent, we
+    // use system default user-agent metadata to populate the user-agent
+    // client hints.
+    // 3. Finally, if the above two cases don't match, we only populate system
+    // default low-entropy client hints.
+    if (ua_metadata_overridden) {
+      ScopedJavaLocalRef<jobject> java_ua_metadata =
+          Java_AwSettings_getUserAgentMetadataLocked(env, obj);
+      override_ua_with_metadata.ua_metadata_override =
+          FromJavaAwUserAgentMetadata(env, java_ua_metadata);
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kUserOverrides);
+    } else if (base::Contains(ua_string_override, ua_default)) {
+      override_ua_with_metadata.ua_metadata_override =
+          AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kSystemDefault);
+    } else {
+      override_ua_with_metadata.ua_metadata_override =
+          AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+              /*only_low_entropy_ch=*/true);
+      LogUserAgentMetadataAvailableType(
+          UserAgentMetadataAvailableType::kSystemDefaultLowEntropyOnly);
     }
 
     // Set overridden user-agent and default client hints metadata if applied.
@@ -317,18 +318,6 @@ void AwSettings::UpdateWillSuppressErrorStateLocked(
 
   bool suppress = Java_AwSettings_getWillSuppressErrorPageLocked(env, obj);
   rvhe->SetWillSuppressErrorPage(suppress);
-}
-
-void AwSettings::UpdateFormDataPreferencesLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!web_contents())
-    return;
-  AwContents* contents = AwContents::FromWebContents(web_contents());
-  if (!contents)
-    return;
-
-  contents->SetSaveFormData(Java_AwSettings_getSaveFormDataLocked(env, obj));
 }
 
 void AwSettings::UpdateRendererPreferencesLocked(
@@ -413,6 +402,29 @@ void AwSettings::UpdateMixedContentModeLocked(
 
   mixed_content_mode_ = static_cast<MixedContentMode>(
       Java_AwSettings_getMixedContentMode(env, obj));
+}
+
+void AwSettings::UpdateAttributionBehaviorLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents()) {
+    return;
+  }
+
+  AttributionBehavior previous = attribution_behavior_;
+  attribution_behavior_ = static_cast<AttributionBehavior>(
+      Java_AwSettings_getAttributionBehavior(env, obj));
+
+  base::UmaHistogramEnumeration("Conversions.AttributionBehavior",
+                                attribution_behavior_);
+
+  // If attribution was previously disabled or has now been disabled, then
+  // we need to update attribution support values in the renderer.
+  if (previous != attribution_behavior_ &&
+      (previous == AwSettings::AttributionBehavior::DISABLED ||
+       attribution_behavior_ == AwSettings::AttributionBehavior::DISABLED)) {
+    web_contents()->UpdateAttributionSupportRenderer();
+  }
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,
@@ -514,8 +526,10 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->allow_universal_access_from_file_urls =
       Java_AwSettings_getAllowUniversalAccessFromFileURLsLocked(env, obj);
 
-  web_prefs->allow_file_access_from_file_urls =
+  allow_file_access_from_file_urls_ =
       Java_AwSettings_getAllowFileAccessFromFileURLsLocked(env, obj);
+  web_prefs->allow_file_access_from_file_urls =
+      allow_file_access_from_file_urls_;
 
   javascript_can_open_windows_automatically_ =
       Java_AwSettings_getJavaScriptCanOpenWindowsAutomaticallyLocked(env, obj);
@@ -562,7 +576,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   bool support_quirks = Java_AwSettings_getSupportLegacyQuirksLocked(env, obj);
   // Please see the corresponding Blink settings for bug references.
   web_prefs->support_deprecated_target_density_dpi = support_quirks;
-  web_prefs->use_legacy_background_size_shorthand_behavior = support_quirks;
   web_prefs->viewport_meta_merge_content_quirk = support_quirks;
   web_prefs->viewport_meta_non_user_scalable_quirk = support_quirks;
   web_prefs->viewport_meta_zero_values_quirk = support_quirks;
@@ -667,6 +680,10 @@ bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
 
 bool AwSettings::GetAllowFileAccess() {
   return allow_file_access_;
+}
+
+bool AwSettings::GetAllowFileAccessFromFileURLs() {
+  return allow_file_access_from_file_urls_;
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

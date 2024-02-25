@@ -451,7 +451,7 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
   # Process the histograms. The descriptions can include HTML tags.
   histograms = {}
   have_errors = False
-  variants_dict, variants_errors = _ExtractVariantsFromXmlTree(tree)
+  variants_dict, variants_errors = ExtractVariantsFromXmlTree(tree)
   have_errors = have_errors or variants_errors
 
   for histogram in xml_utils.IterElementsWithTag(tree, 'histogram'):
@@ -563,7 +563,7 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
   return histograms, have_errors
 
 
-def _ExtractVariantsFromXmlTree(tree):
+def ExtractVariantsFromXmlTree(tree):
   """Extracts all <variants> nodes in the tree into a dictionary.
 
   Args:

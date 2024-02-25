@@ -6,17 +6,63 @@
 #define UI_GFX_X_FUTURE_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace x11 {
 
+class Connection;
 class Event;
+
+class COMPONENT_EXPORT(X11) FutureImpl {
+ public:
+  FutureImpl(Connection* connection,
+             SequenceType sequence,
+             bool generates_reply,
+             const char* request_name_for_tracing);
+
+  void Wait();
+
+  void DispatchNow();
+
+  bool AfterEvent(const Event& event) const;
+
+  void Sync(RawReply* raw_reply, std::unique_ptr<Error>* error);
+
+  void OnResponse(ResponseCallback callback);
+
+  // Update an existing Request with a new handler.  |sequence| must
+  // correspond to a request in the queue that has not already been processed
+  // out-of-order.
+  void UpdateRequestHandler(ResponseCallback callback);
+
+  // Call the response handler for request |sequence| now (out-of-order).  The
+  // response must already have been obtained from a call to
+  // WaitForResponse().
+  void ProcessResponse();
+
+  // Clear the response handler for request |sequence| and take the response.
+  // The response must already have been obtained using WaitForResponse().
+  void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
+
+  SequenceType sequence() const { return sequence_; }
+
+  bool generates_reply() const { return generates_reply_; }
+
+  const char* request_name_for_tracing() const {
+    return request_name_for_tracing_;
+  }
+
+ private:
+  raw_ptr<Connection, DanglingUntriaged> connection_ = nullptr;
+  SequenceType sequence_ = 0;
+  bool generates_reply_ = false;
+  const char* request_name_for_tracing_ = nullptr;
+};
 
 class COMPONENT_EXPORT(X11) FutureBase {
  public:
   FutureBase();
-  explicit FutureBase(std::unique_ptr<Connection::FutureImpl> impl);
+  explicit FutureBase(std::unique_ptr<FutureImpl> impl);
   FutureBase(FutureBase&&);
   FutureBase& operator=(FutureBase&&);
   ~FutureBase();
@@ -33,10 +79,10 @@ class COMPONENT_EXPORT(X11) FutureBase {
   bool AfterEvent(const Event& event) const;
 
  protected:
-  Connection::FutureImpl* impl() { return impl_.get(); }
+  FutureImpl* impl() { return impl_.get(); }
 
  private:
-  std::unique_ptr<Connection::FutureImpl> impl_;
+  std::unique_ptr<FutureImpl> impl_;
 };
 
 // An Future wraps an asynchronous response from the X11 server.  The
@@ -49,7 +95,7 @@ class Future : public FutureBase {
 
   Future() = default;
 
-  explicit Future(std::unique_ptr<Connection::FutureImpl> impl)
+  explicit Future(std::unique_ptr<FutureImpl> impl)
       : FutureBase(std::move(impl)) {
     static_assert(sizeof(Future<Reply>) == sizeof(FutureBase),
                   "Future must not have any members so that it can be sliced "
@@ -58,10 +104,11 @@ class Future : public FutureBase {
 
   // Blocks until we receive the response from the server. Returns the response.
   Response<Reply> Sync() {
-    if (!impl())
+    if (!impl()) {
       return {nullptr, nullptr};
+    }
 
-    Connection::RawReply raw_reply;
+    RawReply raw_reply;
     std::unique_ptr<Error> error;
     impl()->Sync(&raw_reply, &error);
 
@@ -76,14 +123,16 @@ class Future : public FutureBase {
 
   // Installs |callback| to be run when the response is received.
   void OnResponse(Callback callback) {
-    if (!impl())
+    if (!impl()) {
+      std::move(callback).Run({nullptr, nullptr});
       return;
+    }
 
     // This intermediate callback handles the conversion from |raw_reply| to a
     // real Reply object before feeding the result to |callback|.  This means
     // |callback| must be bound as the first argument of the intermediate
     // function.
-    auto wrapper = [](Callback callback, Connection::RawReply raw_reply,
+    auto wrapper = [](Callback callback, RawReply raw_reply,
                       std::unique_ptr<Error> error) {
       std::unique_ptr<Reply> reply;
       if (raw_reply) {
@@ -104,13 +153,14 @@ class Future : public FutureBase {
 // response will only contain an error if there was one.
 template <>
 inline Response<void> Future<void>::Sync() {
-  if (!impl())
+  if (!impl()) {
     return Response<void>{nullptr};
+  }
 
-  Connection::RawReply raw_reply;
+  RawReply raw_reply;
   std::unique_ptr<Error> error;
   impl()->Sync(&raw_reply, &error);
-  DCHECK(!raw_reply);
+  CHECK(!raw_reply);
   return Response<void>(std::move(error));
 }
 
@@ -118,14 +168,16 @@ inline Response<void> Future<void>::Sync() {
 // response argument to |callback| will only contain an error if there was one.
 template <>
 inline void Future<void>::OnResponse(Callback callback) {
-  if (!impl())
+  if (!impl()) {
+    std::move(callback).Run(Response<void>(nullptr));
     return;
+  }
 
   // See Future<Reply>::OnResponse() for an explanation of why
   // this wrapper is necessary.
-  auto wrapper = [](Callback callback, Connection::RawReply reply,
+  auto wrapper = [](Callback callback, RawReply reply,
                     std::unique_ptr<Error> error) {
-    DCHECK(!reply);
+    CHECK(!reply);
     std::move(callback).Run(Response<void>{std::move(error)});
   };
   impl()->OnResponse(base::BindOnce(wrapper, std::move(callback)));

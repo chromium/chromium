@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -113,18 +114,18 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
     const AccountId& account_id,
     const std::string& user_id_hash,
-    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback) {
+    base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback) {
   if (!MaybeRestartToMigrateInternal(
           account_id, user_id_hash,
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     LOG(DFATAL) << "Could not get the original user data dir path.";
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
@@ -143,7 +144,7 @@ void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
     const AccountId& account_id,
     const std::string& user_id_hash,
-    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback,
+    base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback,
     uint64_t required_size) {
   if (required_size > 0) {
     LOG(ERROR) << "Failed due to out of disk: " << required_size;
@@ -155,7 +156,7 @@ void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
       RestartToMigrate(account_id, user_id_hash,
                        user_manager::UserManager::Get()->GetLocalState(),
                        crosapi::browser_util::PolicyInitState::kAfterInit);
-  std::move(callback).Run(result, absl::nullopt);
+  std::move(callback).Run(result, std::nullopt);
 }
 
 bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
@@ -188,8 +189,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       default:
         // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
         // remove this log message or reduce to VLOG(1).
-        if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-                local_state, user_id_hash, true /* print_mode */)) {
+        if (ash::standalone_browser::migrator_util::
+                IsProfileMigrationCompletedForUser(local_state, user_id_hash,
+                                                   true /* print_mode */)) {
           LOG(WARNING) << "Migration was attempted and successfully completed.";
         } else {
           LOG(WARNING) << "Migration was attempted but failed or was skipped.";
@@ -231,9 +233,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   }
 
   // Check if profile migration is enabled. If not immediately return.
-  if (!crosapi::browser_util::
-          IsProfileMigrationEnabledWithUserAndPolicyInitState(
-              user, policy_init_state)) {
+  if (!crosapi::browser_util::IsProfileMigrationEnabled(user,
+                                                        policy_init_state)) {
     if (crosapi::browser_util::IsLacrosEnabledForMigration(user,
                                                            policy_init_state) ||
         base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -260,32 +261,28 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
            "that the migration can be attempted again once migration is "
            "enabled again.";
 
-    // If lacros is not enabled other than reaching the maximum retry count of
-    // profile migration, clear the retry count and
-    // `kProfileMigrationCompletedForUserPref`. This will allow users to retry
-    // profile migration after disabling and re-enabling lacros.
-    ClearMigrationAttemptCountForUser(local_state, user_id_hash);
-    crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
-                                                                 user_id_hash);
+    // If Lacros is disabled clear the retry count and
+    // `kProfileMigrationCompletedForUserPref` so that users may retry profile
+    // migration when re-enabling Lacros.
+    ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
+        local_state, user_id_hash);
+    ash::standalone_browser::migrator_util::
+        ClearProfileMigrationCompletedForUser(local_state, user_id_hash);
     MoveMigrator::ClearResumeStepForUser(local_state, user_id_hash);
     MoveMigrator::ClearResumeAttemptCountForUser(local_state, user_id_hash);
     return false;
   }
 
-  int attempts = GetMigrationAttemptCountForUser(local_state, user_id_hash);
-  // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
-  // log level to VLOG(1).
-  LOG_IF(WARNING, attempts > 0) << "Attempt #" << attempts;
-  if (attempts >= kMaxMigrationAttemptCount) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING) << "Skipping profile migration since migration attemp count = "
-                 << attempts << " has exceeded " << kMaxMigrationAttemptCount;
+  if (ash::standalone_browser::migrator_util::
+          IsMigrationAttemptLimitReachedForUser(local_state, user_id_hash)) {
+    LOG(ERROR) << "Skipping profile migration since maximum migration "
+                  "attempt count has been reached.";
     return false;
   }
 
-  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-          local_state, user_id_hash, true /* print_mode */)) {
+  if (ash::standalone_browser::migrator_util::
+          IsProfileMigrationCompletedForUser(local_state, user_id_hash,
+                                             true /* print_mode */)) {
     LOG(WARNING) << "Profile migration is already completed at version "
                  << crosapi::browser_util::GetDataVer(local_state, user_id_hash)
                         .GetString();
@@ -304,10 +301,11 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
     crosapi::browser_util::PolicyInitState policy_init_state) {
   SetMigrationStep(local_state, MigrationStep::kRestartCalled);
 
-  UpdateMigrationAttemptCountForUser(local_state, user_id_hash);
+  ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
+      local_state, user_id_hash);
 
-  crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
-                                                               user_id_hash);
+  ash::standalone_browser::migrator_util::ClearProfileMigrationCompletedForUser(
+      local_state, user_id_hash);
   crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
       local_state, user_id_hash);
 
@@ -408,9 +406,10 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
 
   switch (result.data_migration_result.kind) {
     case ResultKind::kSucceeded:
-      crosapi::browser_util::SetProfileMigrationCompletedForUser(
-          local_state_, user_id_hash_,
-          crosapi::browser_util::MigrationMode::kMove);
+      ash::standalone_browser::migrator_util::
+          SetProfileMigrationCompletedForUser(
+              local_state_, user_id_hash_,
+              ash::standalone_browser::migrator_util::MigrationMode::kMove);
 
       // Profile migration is marked as completed both when the migration is
       // performed (here) and for a new user without actually performing data
@@ -419,7 +418,8 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
       crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
           local_state_, user_id_hash_);
 
-      ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
+      ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
+          local_state_, user_id_hash_);
       break;
     case ResultKind::kFailed:
       LOG(ERROR) << "Migration failed for some reason. Look at logs from "
@@ -442,7 +442,6 @@ void BrowserDataMigratorImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMigrationStep,
                                 static_cast<int>(MigrationStep::kCheckStep));
-  registry->RegisterDictionaryPref(kMigrationAttemptCountPref);
   // Register prefs for move migration.
   MoveMigrator::RegisterLocalStatePrefs(registry);
 }
@@ -463,35 +462,6 @@ void BrowserDataMigratorImpl::ClearMigrationStep(PrefService* local_state) {
 BrowserDataMigratorImpl::MigrationStep
 BrowserDataMigratorImpl::GetMigrationStep(PrefService* local_state) {
   return static_cast<MigrationStep>(local_state->GetInteger(kMigrationStep));
-}
-
-// static
-void BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  int count = GetMigrationAttemptCountForUser(local_state, user_id_hash);
-  count += 1;
-  ScopedDictPrefUpdate update(local_state, kMigrationAttemptCountPref);
-  base::Value::Dict& dict = update.Get();
-  dict.Set(user_id_hash, count);
-}
-
-// static
-int BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  return local_state->GetDict(kMigrationAttemptCountPref)
-      .FindInt(user_id_hash)
-      .value_or(0);
-}
-
-// static
-void BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  ScopedDictPrefUpdate update(local_state, kMigrationAttemptCountPref);
-  base::Value::Dict& dict = update.Get();
-  dict.Remove(user_id_hash);
 }
 
 }  // namespace ash

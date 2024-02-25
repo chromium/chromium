@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] fieldset with display: run-in
+  assert_equals: display: run-in is not supported expected "run-in" but got "block"
+[FAIL] fieldset with display: ruby-base
+  assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
+[FAIL] fieldset with display: ruby-text
+  assert_equals: expected "7px" but got "752px"
+[FAIL] fieldset with display: ruby-base-container
+  assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
+[FAIL] fieldset with display: ruby-text-container
+  assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
+Harness: the test ran to completion.
+

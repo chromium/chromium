@@ -32,7 +32,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     // empty base::TimeTicks values.
     test_clock_.Advance(base::Seconds(1234));
 
-    sii_ = std::make_unique<viz::TestSharedImageInterface>();
+    sii_ = base::MakeRefCounted<viz::TestSharedImageInterface>();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     copy_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     media_task_runner_handle_ =
@@ -239,10 +239,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   static constexpr uint8_t kUValue = 50;
   static constexpr uint8_t kVValue = 150;
 
-  raw_ptr<uint8_t, DanglingUntriaged> y_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> u_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> v_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged> uv_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> y_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> u_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> v_data_ = nullptr;
+  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> uv_data_ = nullptr;
 
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
@@ -253,7 +253,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   // which requires SingleThreadTaskRunner::CurrentDefaultHandle initialization.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       media_task_runner_handle_;
-  std::unique_ptr<viz::TestSharedImageInterface> sii_;
+  scoped_refptr<viz::TestSharedImageInterface> sii_;
 };
 
 void MaybeCreateHardwareFrameCallback(

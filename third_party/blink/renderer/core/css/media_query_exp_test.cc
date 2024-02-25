@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -170,12 +171,14 @@ const MediaQueryExpNode* UnknownNode(String string) {
 }  // namespace
 
 TEST(MediaQueryExpTest, ValuesType) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(IdentValue(CSSValueID::kTop).IsId());
   EXPECT_TRUE(PxValue(10).IsNumeric());
   EXPECT_TRUE(RatioValue(0, 1).IsRatio());
 }
 
 TEST(MediaQueryExpTest, ValueEquality) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(PxValue(10), PxValue(10));
   EXPECT_EQ(EmValue(10), EmValue(10));
   EXPECT_EQ(IdentValue(CSSValueID::kTop), IdentValue(CSSValueID::kTop));
@@ -202,6 +205,7 @@ TEST(MediaQueryExpTest, ValueEquality) {
 }
 
 TEST(MediaQueryExpTest, ComparisonEquality) {
+  test::TaskEnvironment task_environment;
   auto px1 = PxValue(10.0);
   auto px2 = PxValue(20.0);
 
@@ -212,6 +216,7 @@ TEST(MediaQueryExpTest, ComparisonEquality) {
 }
 
 TEST(MediaQueryExpTest, BoundaryEquality) {
+  test::TaskEnvironment task_environment;
   auto px1 = PxValue(10.0);
   auto px2 = PxValue(20.0);
 
@@ -227,6 +232,7 @@ TEST(MediaQueryExpTest, BoundaryEquality) {
 }
 
 TEST(MediaQueryExpTest, ExpEquality) {
+  test::TaskEnvironment task_environment;
   auto px1 = PxValue(10.0);
   auto px2 = PxValue(20.0);
 
@@ -239,6 +245,7 @@ TEST(MediaQueryExpTest, ExpEquality) {
 }
 
 TEST(MediaQueryExpTest, Serialize) {
+  test::TaskEnvironment task_environment;
   // Boolean feature:
   EXPECT_EQ("color", RightExp("color", NoCmp(InvalidValue())).Serialize());
 
@@ -275,6 +282,7 @@ TEST(MediaQueryExpTest, Serialize) {
 }
 
 TEST(MediaQueryExpTest, SerializeNode) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("width < 10px",
             FeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());
 
@@ -338,6 +346,7 @@ TEST(MediaQueryExpTest, SerializeNode) {
 }
 
 TEST(MediaQueryExpTest, CollectExpressions) {
+  test::TaskEnvironment task_environment;
   MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
   MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
 
@@ -395,6 +404,7 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 }
 
 TEST(MediaQueryExpTest, UnitFlags) {
+  test::TaskEnvironment task_environment;
   // width < 10px
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
             RightExp("width", LtCmp(PxValue(10.0))).GetUnitFlags());
@@ -443,6 +453,7 @@ TEST(MediaQueryExpTest, UnitFlags) {
 }
 
 TEST(MediaQueryExpTest, UtilsNullptrHandling) {
+  test::TaskEnvironment task_environment;
   MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
 
   EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
@@ -457,6 +468,7 @@ TEST(MediaQueryExpTest, UtilsNullptrHandling) {
 }
 
 TEST(MediaQueryExpTest, ResolutionChecks) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(DppxValue(3).IsResolution());
   EXPECT_TRUE(CalcValue("<resolution>", "calc(96dpi)").IsResolution());
 

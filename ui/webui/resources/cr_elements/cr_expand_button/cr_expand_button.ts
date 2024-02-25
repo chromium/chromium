@@ -7,17 +7,17 @@
  * 'cr-expand-button' is a chrome-specific wrapper around a button that toggles
  * between an opened (expanded) and closed state.
  */
-import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
-import {getTemplate} from './cr_expand_button.html.js';
+import {getCss} from './cr_expand_button.css.js';
+import {getHtml} from './cr_expand_button.html.js';
 
 export interface CrExpandButtonElement {
   $: {
@@ -25,16 +25,20 @@ export interface CrExpandButtonElement {
   };
 }
 
-export class CrExpandButtonElement extends PolymerElement {
+export class CrExpandButtonElement extends CrLitElement {
   static get is() {
     return 'cr-expand-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * If true, the button is in the expanded state and will show the icon
@@ -43,9 +47,7 @@ export class CrExpandButtonElement extends PolymerElement {
        */
       expanded: {
         type: Boolean,
-        value: false,
         notify: true,
-        observer: 'onExpandedChange_',
       },
 
       /**
@@ -53,67 +55,63 @@ export class CrExpandButtonElement extends PolymerElement {
        */
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /** A11y text descriptor for this control. */
-      ariaLabel: {
-        type: String,
-        observer: 'onAriaLabelChange_',
-      },
+      ariaLabel: {type: String},
 
-      tabIndex: {
-        type: Number,
-        value: 0,
-      },
-
-      expandIcon: {
-        type: String,
-        value: 'cr:expand-more',
-        observer: 'onIconChange_',
-      },
-
-      collapseIcon: {
-        type: String,
-        value: 'cr:expand-less',
-        observer: 'onIconChange_',
-      },
-
-      expandTitle: String,
-      collapseTitle: String,
-
-      tooltipText_: {
-        type: String,
-        computed: 'computeTooltipText_(expandTitle, collapseTitle, expanded)',
-        observer: 'onTooltipTextChange_',
-      },
+      ariaExpanded_: {type: String},
+      tabIndex: {type: Number},
+      expandIcon: {type: String},
+      collapseIcon: {type: String},
+      expandTitle: {type: String},
+      collapseTitle: {type: String},
+      icon_: {type: String},
     };
   }
 
-  expanded: boolean;
-  disabled: boolean;
-  expandIcon: string;
-  collapseIcon: string;
-  expandTitle: string;
-  collapseTitle: string;
-  private tooltipText_: string;
+  expanded: boolean = false;
+  disabled: boolean = false;
+  protected ariaExpanded_: string = 'false';
+  expandIcon: string = 'cr:expand-more';
+  collapseIcon: string = 'cr:expand-less';
+  expandTitle?: string;
+  collapseTitle?: string;
+  override tabIndex: number = 0;
+  protected icon_: string = '';
 
-  static get observers() {
-    return ['updateAriaExpanded_(disabled, expanded)'];
-  }
-
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('click', this.toggleExpand_);
   }
 
-  private computeTooltipText_(): string {
-    return this.expanded ? this.collapseTitle : this.expandTitle;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('expanded') ||
+        changedProperties.has('expandIcon') ||
+        changedProperties.has('collapseIcon')) {
+      this.icon_ = this.expanded ? this.collapseIcon : this.expandIcon;
+    }
+
+    if (changedProperties.has('expanded') ||
+        changedProperties.has('collapseTitle') ||
+        changedProperties.has('expandTitle')) {
+      this.title =
+          (this.expanded ? this.collapseTitle : this.expandTitle) || '';
+    }
+
+    if (changedProperties.has('expanded')) {
+      this.ariaExpanded_ = this.expanded ? 'true' : 'false';
+    }
   }
 
-  private onTooltipTextChange_() {
-    this.title = this.tooltipText_;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('ariaLabel')) {
+      this.onAriaLabelChange_();
+    }
   }
 
   override focus() {
@@ -130,18 +128,6 @@ export class CrExpandButtonElement extends PolymerElement {
     }
   }
 
-  private onExpandedChange_() {
-    this.updateIcon_();
-  }
-
-  private onIconChange_() {
-    this.updateIcon_();
-  }
-
-  private updateIcon_() {
-    this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
-  }
-
   private toggleExpand_(event: Event) {
     // Prevent |click| event from bubbling. It can cause parents of this
     // elements to erroneously re-toggle this control.
@@ -151,15 +137,6 @@ export class CrExpandButtonElement extends PolymerElement {
     this.scrollIntoViewIfNeeded();
     this.expanded = !this.expanded;
     focusWithoutInk(this.$.icon);
-  }
-
-  private updateAriaExpanded_() {
-    if (this.disabled) {
-      this.$.icon.removeAttribute('aria-expanded');
-    } else {
-      this.$.icon.setAttribute(
-          'aria-expanded', this.expanded ? 'true' : 'false');
-    }
   }
 }
 

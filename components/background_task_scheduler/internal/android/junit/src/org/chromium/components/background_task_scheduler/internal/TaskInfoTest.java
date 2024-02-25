@@ -37,14 +37,16 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testGeneralFields() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
-                                                 .setWindowEndTimeMs(TEST_END_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowEndTimeMs(TEST_END_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
 
         assertEquals(TaskIds.TEST, oneOffTask.getTaskId());
-        assertEquals(TestBackgroundTask.class,
+        assertEquals(
+                TestBackgroundTask.class,
                 BackgroundTaskSchedulerFactoryInternal.getBackgroundTaskFromTaskId(TaskIds.TEST)
                         .getClass());
     }
@@ -52,10 +54,11 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testOneOffExpirationWithinDeadline() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
-                                                 .setWindowEndTimeMs(TEST_END_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowEndTimeMs(TEST_END_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(null, TEST_END_MS, true);
         oneOffTask.getTimingInfo().accept(visitor);
@@ -64,11 +67,12 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testOneOffExpirationWithinTimeWindow() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
-                                                 .setWindowStartTimeMs(TEST_START_MS)
-                                                 .setWindowEndTimeMs(TEST_END_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowStartTimeMs(TEST_START_MS)
+                        .setWindowEndTimeMs(TEST_END_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         CheckTimingInfoVisitor visitor =
                 new CheckTimingInfoVisitor(TEST_START_MS, TEST_END_MS, true);
@@ -78,11 +82,12 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testOneOffExpirationWithinZeroTimeWindow() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
-                                                 .setWindowStartTimeMs(TEST_END_MS)
-                                                 .setWindowEndTimeMs(TEST_END_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowStartTimeMs(TEST_END_MS)
+                        .setWindowEndTimeMs(TEST_END_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(TEST_END_MS, TEST_END_MS, true);
         oneOffTask.getTimingInfo().accept(visitor);
@@ -100,10 +105,11 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testPeriodicExpirationWithInterval() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.PeriodicInfo.create()
-                                                 .setIntervalMs(TEST_END_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.PeriodicInfo.create()
+                        .setIntervalMs(TEST_END_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo periodicTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(TEST_END_MS, null, true);
         periodicTask.getTimingInfo().accept(visitor);
@@ -112,11 +118,12 @@ public class TaskInfoTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testPeriodicExpirationWithIntervalAndFlex() {
-        TaskInfo.TimingInfo timingInfo = TaskInfo.PeriodicInfo.create()
-                                                 .setIntervalMs(TEST_END_MS)
-                                                 .setFlexMs(TEST_FLEX_MS)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.PeriodicInfo.create()
+                        .setIntervalMs(TEST_END_MS)
+                        .setFlexMs(TEST_FLEX_MS)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
         TaskInfo periodicTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         CheckTimingInfoVisitor visitor =
                 new CheckTimingInfoVisitor(TEST_END_MS, TEST_FLEX_MS, true);

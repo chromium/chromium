@@ -17,7 +17,9 @@ namespace media {
 VdaVideoFramePool::VdaVideoFramePool(
     base::WeakPtr<VdaDelegate> vda,
     scoped_refptr<base::SequencedTaskRunner> vda_task_runner)
-    : vda_(std::move(vda)), vda_task_runner_(std::move(vda_task_runner)) {
+    : vda_(std::move(vda)),
+      vda_task_runner_(std::move(vda_task_runner)),
+      vda_frame_storage_type_(vda_->GetFrameStorageType()) {
   DVLOGF(3);
   DETACH_FROM_SEQUENCE(parent_sequence_checker_);
 
@@ -67,8 +69,8 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   // back to the pool.
   frame_pool_ = {};
   max_num_frames_ = 0;
-  layout_ = absl::nullopt;
-  fourcc_ = absl::nullopt;
+  layout_ = std::nullopt;
+  fourcc_ = std::nullopt;
   coded_size_ = gfx::Size();
 
   CroStatus::Or<GpuBufferLayout> status_or_layout =
@@ -115,7 +117,7 @@ void VdaVideoFramePool::OnRequestFramesDone(
 // static
 void VdaVideoFramePool::ImportFrameThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
+    std::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
     scoped_refptr<VideoFrame> frame) {
   DVLOGF(3);
   DCHECK(weak_this);
@@ -163,6 +165,10 @@ scoped_refptr<VideoFrame> VdaVideoFramePool::GetFrame() {
   return wrapped_frame;
 }
 
+VideoFrame::StorageType VdaVideoFramePool::GetFrameStorageType() const {
+  return vda_frame_storage_type_;
+}
+
 bool VdaVideoFramePool::IsExhausted() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
@@ -184,7 +190,7 @@ void VdaVideoFramePool::ReleaseAllFrames() {
   // NOREACHED() for now in order to prevent a DCHECK when this occurs.
 }
 
-absl::optional<GpuBufferLayout> VdaVideoFramePool::GetGpuBufferLayout() {
+std::optional<GpuBufferLayout> VdaVideoFramePool::GetGpuBufferLayout() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
   return layout_;

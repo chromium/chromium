@@ -25,14 +25,14 @@ class FakeHostStatusProvider : public HostStatusProvider {
 
   void SetHostWithStatus(
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device);
+      const std::optional<multidevice::RemoteDeviceRef>& host_device);
 
   // HostStatusProvider:
   HostStatusWithDevice GetHostWithStatus() const override;
 
  private:
   mojom::HostStatus host_status_ = mojom::HostStatus::kNoEligibleHosts;
-  absl::optional<multidevice::RemoteDeviceRef> host_device_;
+  std::optional<multidevice::RemoteDeviceRef> host_device_;
 };
 
 // Test HostStatusProvider::Observer implementation.

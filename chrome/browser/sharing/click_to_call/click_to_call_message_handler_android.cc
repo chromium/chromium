@@ -33,9 +33,6 @@ void ClickToCallMessageHandler::OnMessage(
   bool is_valid_phone_number = IsUrlSafeForClickToCall(phone_url) &&
                                phone_url.GetContent() == phone_number;
 
-  base::UmaHistogramBoolean("Sharing.ClickToCallPhoneNumberValid",
-                            is_valid_phone_number);
-
   // This can happen if a user on an older version of Chrome on their desktop
   // clicks on a tel link that contains url-escaped unsafe characters like #.
   // Another reason might be if the remote sender is using a custom or
@@ -50,7 +47,7 @@ void ClickToCallMessageHandler::OnMessage(
 
 void ClickToCallMessageHandler::HandlePhoneNumber(
     const std::string& phone_number) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_ClickToCallMessageHandler_handleMessage(
       env, base::android::ConvertUTF8ToJavaString(env, phone_number));
 }

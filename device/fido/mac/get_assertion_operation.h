@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionOperation : public Operation {
  private:
   void PromptTouchIdDone(bool success);
   void GenerateResponses(std::list<Credential> credentials, bool has_uv);
-  absl::optional<AuthenticatorGetAssertionResponse> ResponseForCredential(
+  std::optional<AuthenticatorGetAssertionResponse> ResponseForCredential(
       const Credential& credential,
       bool has_uv);
 

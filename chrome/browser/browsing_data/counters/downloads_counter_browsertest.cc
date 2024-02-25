@@ -59,6 +59,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
 
   void TearDownOnMainThread() override {
     history_->RemoveObserver(this);
+    history_ = nullptr;
+    otr_manager_ = nullptr;
+    manager_ = nullptr;
   }
 
   // Adding and removing download items. ---------------------------------------
@@ -106,8 +109,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
       download::DownloadItem::DownloadState state,
       download::DownloadDangerType danger,
       download::DownloadInterruptReason reason) {
-    std::string guid = AddDownloadInternal(
-        state, danger, reason, GURL(), std::string(), false);
+    std::string guid = AddDownloadInternal(state, danger, reason, GURL(),
+                                           std::string(), false);
     guids_to_add_.insert(guid);
     return guid;
   }
@@ -164,32 +167,38 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   void OnDownloadStored(download::DownloadItem* item,
                         const history::DownloadRow& info) override {
     // Ignore any updates on items that we have already processed.
-    if (guids_to_add_.find(item->GetGuid()) == guids_to_add_.end())
+    if (guids_to_add_.find(item->GetGuid()) == guids_to_add_.end()) {
       return;
+    }
 
     // DownloadHistory updates us before the item is actually written on
     // the history thread. Ignore this and wait until the item is actually
     // persisted.
-    if (!DownloadHistory::IsPersisted(item))
+    if (!DownloadHistory::IsPersisted(item)) {
       return;
+    }
 
     guids_to_add_.erase(item->GetGuid());
 
-    if (run_loop_ && guids_to_add_.empty())
+    if (run_loop_ && guids_to_add_.empty()) {
       run_loop_->Quit();
+    }
   }
 
   void OnDownloadsRemoved(const DownloadHistory::IdSet& ids) override {
-    for (uint32_t id : ids)
+    for (uint32_t id : ids) {
       ASSERT_EQ(1u, ids_to_remove_.erase(id));
+    }
 
-    if (run_loop_ && ids_to_remove_.empty())
+    if (run_loop_ && ids_to_remove_.empty()) {
       run_loop_->Quit();
+    }
   }
 
   void WaitForDownloadHistory() {
-    if (guids_to_add_.empty() && ids_to_remove_.empty())
+    if (guids_to_add_.empty() && ids_to_remove_.empty()) {
       return;
+    }
 
     DCHECK(!run_loop_ || !run_loop_->running());
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -228,9 +237,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   // a set of IDs.
   std::set<uint32_t> ids_to_remove_;
 
-  raw_ptr<content::DownloadManager, DanglingUntriaged> manager_;
-  raw_ptr<content::DownloadManager, DanglingUntriaged> otr_manager_;
-  raw_ptr<DownloadHistory, DanglingUntriaged> history_;
+  raw_ptr<content::DownloadManager> manager_ = nullptr;
+  raw_ptr<content::DownloadManager> otr_manager_ = nullptr;
+  raw_ptr<DownloadHistory> history_ = nullptr;
   base::Time time_;
 
   int items_count_;

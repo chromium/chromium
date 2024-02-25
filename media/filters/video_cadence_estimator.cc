@@ -74,6 +74,27 @@ VideoCadenceEstimator::Cadence ConstructCadence(int k, int n) {
   return output;
 }
 
+VideoCadenceEstimator::Cadence ConstructSimpleCadence(
+    double perfect_cadence,
+    base::TimeDelta max_acceptable_drift,
+    base::TimeDelta* time_until_max_drift) {
+  int cadence_value = round(perfect_cadence);
+  if (cadence_value < 0) {
+    return VideoCadenceEstimator::Cadence();
+  }
+  if (cadence_value == 0) {
+    cadence_value = 1;
+  }
+  VideoCadenceEstimator::Cadence result = ConstructCadence(cadence_value, 1);
+
+  // The computation for time_until_max_drift below is equivalent to
+  // time_until_max_drift = render_interval * (max_acceptable_drift /
+  // abs(frame_duration - render_interval))
+  const double error = std::fabs(1.0 - perfect_cadence / cadence_value);
+  *time_until_max_drift = max_acceptable_drift / error;
+  return result;
+}
+
 VideoCadenceEstimator::VideoCadenceEstimator(
     base::TimeDelta minimum_time_until_max_drift)
     : cadence_hysteresis_threshold_(
@@ -90,11 +111,6 @@ void VideoCadenceEstimator::Reset() {
   pending_cadence_.clear();
   cadence_changes_ = render_intervals_cadence_held_ = 0;
   first_update_call_ = true;
-
-  bm_.use_bresenham_cadence_ =
-      base::FeatureList::IsEnabled(media::kBresenhamCadence);
-  bm_.perfect_cadence_.reset();
-  bm_.frame_index_shift_ = 0;
 }
 
 bool VideoCadenceEstimator::UpdateCadenceEstimate(
@@ -110,9 +126,6 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
   } else if (frame_duration_deviation < kConstantFPSFactor * render_interval) {
     is_variable_frame_rate_ = false;
   }
-
-  if (bm_.use_bresenham_cadence_)
-    return UpdateBresenhamCadenceEstimate(render_interval, frame_duration);
 
   // Variable FPS detected, turn off Cadence by force.
   if (is_variable_frame_rate_) {
@@ -182,90 +195,22 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
 
 int VideoCadenceEstimator::GetCadenceForFrame(uint64_t frame_number) const {
   DCHECK(has_cadence());
-  if (bm_.use_bresenham_cadence_) {
-    double cadence = *bm_.perfect_cadence_;
-    auto index = frame_number + bm_.frame_index_shift_;
-    auto result = static_cast<uint64_t>(cadence * (index + 1)) -
-                  static_cast<uint64_t>(cadence * index);
-    DCHECK(frame_number > 0 || result > 0);
-    return result;
-  }
   return cadence_[frame_number % cadence_.size()];
 }
 
-/* List of tests that are expected to fail when media::kBresenhamCadence
-   is enabled.
-   - VideoRendererAlgorithmTest.BestFrameByCadenceOverdisplayedForDrift
-     Reason: Bresenham cadence does not exhibit innate drift.
-   - VideoRendererAlgorithmTest.CadenceCalculations
-     Reason: The test inspects an internal data structures of the current alg.
-   - VideoRendererAlgorithmTest.VariablePlaybackRateCadence
-     Reason: The test assumes that cadence algorithm should fail for playback
-     rate of 3.15. Bresenham alg works fine.
-
-   - VideoCadenceEstimatorTest.CadenceCalculationWithLargeDeviation
-   - VideoCadenceEstimatorTest.CadenceCalculationWithLargeDrift
-   - VideoCadenceEstimatorTest.CadenceCalculations
-   - VideoCadenceEstimatorTest.CadenceHystersisPreventsOscillation
-   - VideoCadenceEstimatorTest.CadenceVariesWithAcceptableDrift
-   - VideoCadenceEstimatorTest.CadenceVariesWithAcceptableGlitchTime
-     Reason: These tests inspects an internal data structures of the current
-     algorithm.
-*/
-bool VideoCadenceEstimator::UpdateBresenhamCadenceEstimate(
+bool VideoCadenceEstimator::HasSimpleCadence(
     base::TimeDelta render_interval,
-    base::TimeDelta frame_duration) {
-  if (is_variable_frame_rate_) {
-    if (bm_.perfect_cadence_.has_value()) {
-      bm_.perfect_cadence_.reset();
-      return true;
-    }
+    base::TimeDelta frame_duration,
+    base::TimeDelta minimum_time_until_max_drift) {
+  if (render_interval.is_zero()) {
     return false;
   }
-
-  if (++render_intervals_cadence_held_ * render_interval <
-      cadence_hysteresis_threshold_) {
-    return false;
-  }
-
-  double current_cadence = bm_.perfect_cadence_.value_or(0.0);
-  double new_cadence = frame_duration / render_interval;
-  DCHECK_GE(new_cadence, 0.0);
-
-  double cadence_relative_diff = std::abs(current_cadence - new_cadence) /
-                                 std::max(current_cadence, new_cadence);
-
-  // Ignore small changes in cadence, as they are most likely just noise,
-  // caused by render_interval flickering on devices having difficulty to decode
-  // and render the video in real time.
-  // TODO(ezemtsov): Consider calculating and using avg. render_interval,
-  // the same way avg. frame duration is used now.
-  constexpr double kCadenceRoundingError = 0.008;
-  if (cadence_relative_diff <= kCadenceRoundingError)
-    return false;
-
-  bm_.perfect_cadence_ = new_cadence;
-  if (render_interval > frame_duration) {
-    // When display refresh rate is lower than the video frame rate,
-    // not all frames can be shown. But we want to make sure that the very
-    // first frame is shown. That's why frame indexes are shifted by this
-    // much to make sure that the cadence sequence always has 1 in the
-    // beginning.
-    bm_.frame_index_shift_ = (render_interval.InMicroseconds() - 1) /
-                             frame_duration.InMicroseconds();
-  } else {
-    // It can be 0 (or anything), but it makes the output look more like
-    // an output of the current cadence algorithm.
-    bm_.frame_index_shift_ = 1;
-  }
-
-  DVLOG(1) << "Cadence switch"
-           << " perfect_cadence: " << new_cadence
-           << " frame_index_shift: " << bm_.frame_index_shift_
-           << " cadence_relative_diff: " << cadence_relative_diff
-           << " cadence_held: " << render_intervals_cadence_held_;
-  render_intervals_cadence_held_ = 0;
-  return true;
+  const double perfect_cadence = frame_duration / render_interval;
+  base::TimeDelta time_until_max_drift;
+  auto cadence = ConstructSimpleCadence(perfect_cadence, render_interval,
+                                        &time_until_max_drift);
+  return !cadence.empty() &&
+         time_until_max_drift >= minimum_time_until_max_drift;
 }
 
 VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
@@ -280,15 +225,8 @@ VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
   // is impossible for us to accumulate drift as large as max_acceptable_drift
   // within minimum_time_until_max_drift.
   if (max_acceptable_drift >= minimum_time_until_max_drift_) {
-    int cadence_value = round(perfect_cadence);
-    if (cadence_value < 0)
-      return Cadence();
-    if (cadence_value == 0)
-      cadence_value = 1;
-    Cadence result = ConstructCadence(cadence_value, 1);
-    const double error = std::fabs(1.0 - perfect_cadence / cadence_value);
-    *time_until_max_drift = max_acceptable_drift / error;
-    return result;
+    return ConstructSimpleCadence(perfect_cadence, max_acceptable_drift,
+                                  time_until_max_drift);
   }
 
   // We want to construct a cadence pattern to approximate the perfect cadence
@@ -330,7 +268,15 @@ VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
     }
   }
 
-  if (!best_n) return Cadence();
+  if (!best_n) {
+    Cadence cadence = ConstructSimpleCadence(
+        perfect_cadence, max_acceptable_drift, time_until_max_drift);
+    if (!cadence.empty() &&
+        *time_until_max_drift >= minimum_time_until_max_drift_) {
+      return cadence;
+    }
+    return Cadence();
+  }
 
   // If we've found a solution.
   Cadence best_result = ConstructCadence(best_k, best_n);
@@ -355,8 +301,6 @@ std::string VideoCadenceEstimator::CadenceToString(
 double VideoCadenceEstimator::avg_cadence_for_testing() const {
   if (!has_cadence())
     return 0.0;
-  if (bm_.use_bresenham_cadence_)
-    return bm_.perfect_cadence_.value();
 
   int sum = std::accumulate(begin(cadence_), end(cadence_), 0);
   return static_cast<double>(sum) / cadence_.size();

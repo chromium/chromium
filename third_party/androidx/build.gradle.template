@@ -12,6 +12,20 @@ repositories {
     mavenCentral()
 }
 
+// We aren't entirely sure how this fixed our problems, but we were seeing
+// gradle errors where it couldn't determine which variants we wanted. The
+// seemingly obvious choice, setting "org.jetbrains.kotlin.platform.type" to
+// "androidJvm" globally did not work (although it did on a per-library basis).
+// See crbug.com/41497313 and crbug.com/1511597 for other prior issues.
+configurations.androidTestCompile {
+    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
+    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
+}
+configurations.compile {
+    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
+    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
+}
+
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
@@ -58,9 +72,10 @@ dependencies {
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // This library version is hard-coded as it does not match the
     // version of the filepath in the snapshot.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.0.0-alpha01'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.0.0-alpha01'
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta04'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta04'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
@@ -74,21 +89,18 @@ dependencies {
     compile 'androidx.window.extensions:extensions:{{androidx_dependency_version}}'
     compile 'androidx.window:window-java:{{androidx_dependency_version}}'
     compile 'androidx.window.sidecar:sidecar:{{androidx_dependency_version}}'
-    compile 'androidx.work:work-runtime:{{androidx_dependency_version}}'
 
     // Those are for use by doubledown libraries.
     compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
     compile 'androidx.annotation:annotation-experimental:{{androidx_dependency_version}}'
     compile 'androidx.emoji:emoji:{{androidx_dependency_version}}'
-    compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
-    compile 'androidx.room:room-runtime:{{androidx_dependency_version}}'
     compile 'androidx.transition:transition:{{androidx_dependency_version}}'
     compile 'androidx.viewpager2:viewpager2:{{androidx_dependency_version}}'
     compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
 
-    String media3Version = '1.0.2'
+    String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"
     compile "androidx.media3:media3-database:${media3Version}"
     compile "androidx.media3:media3-datasource:${media3Version}"

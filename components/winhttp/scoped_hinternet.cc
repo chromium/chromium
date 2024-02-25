@@ -7,6 +7,8 @@
 #include <versionhelpers.h>
 #include <windows.h>
 
+#include <utility>
+
 namespace winhttp {
 
 ScopedHInternet CreateSessionHandle(const wchar_t* user_agent,
@@ -27,5 +29,9 @@ ScopedHInternet CreateSessionHandle(const wchar_t* user_agent,
   }
   return session_handle;
 }
+
+SharedHInternet::SharedHInternet(ScopedHInternet handle)
+    : handle_(std::move(handle)) {}
+SharedHInternet::~SharedHInternet() = default;
 
 }  // namespace winhttp

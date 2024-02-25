@@ -61,14 +61,8 @@ bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
   return true;
 }
 
-bool BaseFormActivityParams::operator==(
-    const BaseFormActivityParams& params) const {
-  return (form_name == params.form_name) &&
-         (unique_form_id == params.unique_form_id) &&
-         (frame_id == params.frame_id) &&
-         (input_missing == params.input_missing) &&
-         (is_main_frame == params.is_main_frame);
-}
+bool BaseFormActivityParams::operator==(const BaseFormActivityParams&) const =
+    default;
 
 bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
                                      FormActivityParams* params) {
@@ -84,7 +78,7 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
   const std::string* field_type = message_body->FindString("fieldType");
   const std::string* type = message_body->FindString("type");
   const std::string* value = message_body->FindString("value");
-  absl::optional<bool> has_user_gesture =
+  std::optional<bool> has_user_gesture =
       message_body->FindBool("hasUserGesture");
   if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
       !has_user_gesture) {

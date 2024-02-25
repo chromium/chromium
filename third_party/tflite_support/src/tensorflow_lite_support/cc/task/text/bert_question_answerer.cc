@@ -15,10 +15,10 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/text/bert_question_answerer.h"
 
-#include "absl/status/status.h"     // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_join.h"  // from @com_google_absl
 #include "absl/strings/str_split.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
@@ -65,17 +65,17 @@ StatusOr<std::unique_ptr<QuestionAnswerer>>
 BertQuestionAnswerer::CreateFromOptions(
     const BertQuestionAnswererOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the duration of this
   // created BertQuestionAnswerer object.
   auto options_copy = absl::make_unique<BertQuestionAnswererOptions>(options);
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto bert_question_answerer,
       core::TaskAPIFactory::CreateFromBaseOptions<BertQuestionAnswerer>(
           &options_copy->base_options(), std::move(resolver)));
-  RETURN_IF_ERROR(
+  TFLITE_RETURN_IF_ERROR(
       bert_question_answerer->InitializeFromMetadata(std::move(options_copy)));
   return std::move(bert_question_answerer);
 }
@@ -111,14 +111,13 @@ StatusOr<std::unique_ptr<QuestionAnswerer>> BertQuestionAnswerer::CreateFromFd(
 
 StatusOr<std::unique_ptr<QuestionAnswerer>>
 BertQuestionAnswerer::CreateBertQuestionAnswererFromFile(
-    const std::string& path_to_model,
-    const std::string& path_to_vocab) {
+    const std::string& path_to_model, const std::string& path_to_vocab) {
   std::unique_ptr<BertQuestionAnswerer> api_to_init;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       api_to_init,
       core::TaskAPIFactory::CreateFromFile<BertQuestionAnswerer>(
           path_to_model,
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
           kNumLiteThreads));
   api_to_init->InitializeBertTokenizer(path_to_vocab);
   return std::move(api_to_init);
@@ -126,16 +125,14 @@ BertQuestionAnswerer::CreateBertQuestionAnswererFromFile(
 
 StatusOr<std::unique_ptr<QuestionAnswerer>>
 BertQuestionAnswerer::CreateBertQuestionAnswererFromBuffer(
-    const char* model_buffer_data,
-    size_t model_buffer_size,
-    const char* vocab_buffer_data,
-    size_t vocab_buffer_size) {
+    const char* model_buffer_data, size_t model_buffer_size,
+    const char* vocab_buffer_data, size_t vocab_buffer_size) {
   std::unique_ptr<BertQuestionAnswerer> api_to_init;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       api_to_init,
       core::TaskAPIFactory::CreateFromBuffer<BertQuestionAnswerer>(
           model_buffer_data, model_buffer_size,
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
           kNumLiteThreads));
   api_to_init->InitializeBertTokenizerFromBinary(vocab_buffer_data,
                                                  vocab_buffer_size);
@@ -144,14 +141,13 @@ BertQuestionAnswerer::CreateBertQuestionAnswererFromBuffer(
 
 StatusOr<std::unique_ptr<QuestionAnswerer>>
 BertQuestionAnswerer::CreateAlbertQuestionAnswererFromFile(
-    const std::string& path_to_model,
-    const std::string& path_to_spmodel) {
+    const std::string& path_to_model, const std::string& path_to_spmodel) {
   std::unique_ptr<BertQuestionAnswerer> api_to_init;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       api_to_init,
       core::TaskAPIFactory::CreateFromFile<BertQuestionAnswerer>(
           path_to_model,
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
           kNumLiteThreads));
   api_to_init->InitializeSentencepieceTokenizer(path_to_spmodel);
   return std::move(api_to_init);
@@ -159,16 +155,14 @@ BertQuestionAnswerer::CreateAlbertQuestionAnswererFromFile(
 
 StatusOr<std::unique_ptr<QuestionAnswerer>>
 BertQuestionAnswerer::CreateAlbertQuestionAnswererFromBuffer(
-    const char* model_buffer_data,
-    size_t model_buffer_size,
-    const char* spmodel_buffer_data,
-    size_t spmodel_buffer_size) {
+    const char* model_buffer_data, size_t model_buffer_size,
+    const char* spmodel_buffer_data, size_t spmodel_buffer_size) {
   std::unique_ptr<BertQuestionAnswerer> api_to_init;
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       api_to_init,
       core::TaskAPIFactory::CreateFromBuffer<BertQuestionAnswerer>(
           model_buffer_data, model_buffer_size,
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
           kNumLiteThreads));
   api_to_init->InitializeSentencepieceTokenizerFromBinary(spmodel_buffer_data,
                                                           spmodel_buffer_size);
@@ -176,16 +170,14 @@ BertQuestionAnswerer::CreateAlbertQuestionAnswererFromBuffer(
 }
 
 std::vector<QaAnswer> BertQuestionAnswerer::Answer(
-    const std::string& context,
-    const std::string& question) {
+    const std::string& context, const std::string& question) {
   // The BertQuestionAnswererer implementation for Preprocess() and
   // Postprocess() never returns errors: just call value().
   return Infer(context, question).value();
 }
 
 absl::Status BertQuestionAnswerer::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const std::string& context,
+    const std::vector<TfLiteTensor*>& input_tensors, const std::string& context,
     const std::string& query) {
   auto* input_tensor_metadatas =
       GetMetadataExtractor()->GetInputTensorMetadata();
@@ -300,11 +292,11 @@ absl::Status BertQuestionAnswerer::Preprocess(
   segment_ids.insert(segment_ids.end(), zeros_to_pad, 0);
 
   // input_ids INT32[1, 384]
-  RETURN_IF_ERROR(PopulateTensor(input_ids, ids_tensor));
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(input_ids, ids_tensor));
   // input_mask INT32[1, 384]
-  RETURN_IF_ERROR(PopulateTensor(input_mask, mask_tensor));
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(input_mask, mask_tensor));
   // segment_ids INT32[1, 384]
-  RETURN_IF_ERROR(PopulateTensor(segment_ids, segment_ids_tensor));
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(segment_ids, segment_ids_tensor));
 
   return absl::OkStatus();
 }
@@ -331,9 +323,9 @@ StatusOr<std::vector<QaAnswer>> BertQuestionAnswerer::Postprocess(
   std::vector<float> start_logits;
 
   // end_logits FLOAT[1, 384]
-  RETURN_IF_ERROR(PopulateVector(end_logits_tensor, &end_logits));
+  TFLITE_RETURN_IF_ERROR(PopulateVector(end_logits_tensor, &end_logits));
   // start_logits FLOAT[1, 384]
-  RETURN_IF_ERROR(PopulateVector(start_logits_tensor, &start_logits));
+  TFLITE_RETURN_IF_ERROR(PopulateVector(start_logits_tensor, &start_logits));
 
   auto start_indices = ReverseSortIndices(start_logits);
   auto end_indices = ReverseSortIndices(end_logits);
@@ -388,7 +380,7 @@ absl::Status BertQuestionAnswerer::InitializeFromMetadata(
         "No input process unit found from metadata.",
         TfLiteSupportStatus::kMetadataInvalidTokenizerError);
   }
-  ASSIGN_OR_RETURN(tokenizer_,
+  TFLITE_ASSIGN_OR_RETURN(tokenizer_,
                    CreateTokenizerFromProcessUnit(tokenizer_process_unit,
                                                   GetMetadataExtractor()));
   return absl::OkStatus();
@@ -400,8 +392,7 @@ void BertQuestionAnswerer::InitializeBertTokenizer(
 }
 
 void BertQuestionAnswerer::InitializeBertTokenizerFromBinary(
-    const char* vocab_buffer_data,
-    size_t vocab_buffer_size) {
+    const char* vocab_buffer_data, size_t vocab_buffer_size) {
   tokenizer_ =
       absl::make_unique<BertTokenizer>(vocab_buffer_data, vocab_buffer_size);
 }
@@ -412,8 +403,7 @@ void BertQuestionAnswerer::InitializeSentencepieceTokenizer(
 }
 
 void BertQuestionAnswerer::InitializeSentencepieceTokenizerFromBinary(
-    const char* spmodel_buffer_data,
-    size_t spmodel_buffer_size) {
+    const char* spmodel_buffer_data, size_t spmodel_buffer_size) {
   tokenizer_ = absl::make_unique<SentencePieceTokenizer>(spmodel_buffer_data,
                                                          spmodel_buffer_size);
 }

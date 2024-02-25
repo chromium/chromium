@@ -46,7 +46,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // |on_auth_complete| is called when the user has been authenticated
   // or when the dialog has been aborted
   explicit AuthenticationDialog(
-      InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+      auth_panel::AuthCompletionCallback on_auth_complete,
       InSessionAuthTokenProvider* auth_token_provider,
       std::unique_ptr<AuthPerformer> auth_performer,
       const AccountId& account_id);
@@ -87,7 +87,10 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // modify the UI appropriately, in case of success we close the dialog.
   void OnAuthFactorValidityChecked(
       std::unique_ptr<UserContext> user_context,
-      absl::optional<AuthenticationError> cryptohome_error);
+      std::optional<AuthenticationError> cryptohome_error);
+
+  // Show an auth error in the UI and mark the password field as invalid.
+  void ShowAuthError();
 
   // Registered as a callback to the Cancel and Close buttons. Calls
   // `NotifyResult` with `success` == false.
@@ -102,14 +105,14 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // and discovering that the auth session is no longer active
   void OnAuthSessionInvalid(bool user_exists,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<AuthenticationError> auth_error);
+                            std::optional<AuthenticationError> auth_error);
 
   // Passed as a callback to `AuthPerformer::StartAuthSession`. Saves the
   // password key label to pass it later to authentication attempts and handles
   // errors from cryptohome
   void OnAuthSessionStarted(bool user_exists,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<AuthenticationError> auth_error);
+                            std::optional<AuthenticationError> auth_error);
 
   raw_ptr<views::Textfield> password_field_;
   raw_ptr<views::Label> invalid_password_label_;
@@ -117,7 +120,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // See implementation of `CancelAuthAttempt` for details.
   bool is_closing_ = false;
 
-  InSessionAuthDialogController::OnAuthComplete on_auth_complete_;
+  auth_panel::AuthCompletionCallback on_auth_complete_;
 
   // Called when user submits an auth factor to check its validity
   std::unique_ptr<AuthPerformer> auth_performer_;

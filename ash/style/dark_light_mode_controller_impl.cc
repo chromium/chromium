@@ -126,8 +126,7 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
   }
 
   // Disable dark mode for Shimless RMA.
-  if (features::IsShimlessRMADarkModeDisabled() &&
-      session_state == session_manager::SessionState::RMA) {
+  if (session_state == session_manager::SessionState::RMA) {
     return false;
   }
 
@@ -223,8 +222,6 @@ void DarkLightModeControllerImpl::OnSessionStateChanged(
     oobe_state_ = OobeDialogState::HIDDEN;
   }
 }
-
-void DarkLightModeControllerImpl::RefreshFeatureState() {}
 
 const char* DarkLightModeControllerImpl::GetFeatureName() const {
   return "DarkLightModeControllerImpl";

@@ -41,18 +41,18 @@ class ElementGeneratorTest(unittest.TestCase):
     GenerateFieldContent('', {'type': 'string16',
                               'default': u'f\u00d8\u00d81a'},
                          None, lines, '  ', {})
-    self.assertEquals(['  L"f\\x00d8" L"\\x00d8" L"1a",'], lines)
+    self.assertEquals(['  u"f\\x00d8" u"\\x00d8" u"1a",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16', 'default': 'foo'},
                          u'b\uc3a5r', lines, '  ', {})
-    self.assertEquals(['  L"b\\xc3a5" L"r",'], lines)
+    self.assertEquals(['  u"b\\xc3a5" u"r",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16'}, None, lines, '  ', {})
     self.assertEquals(['  NULL,'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16'}, u'foo\\u1234', lines, '  ',
                          {})
-    self.assertEquals(['  L"foo\\\\u1234",'], lines)
+    self.assertEquals(['  u"foo\\\\u1234",'], lines)
 
   def testGenerateEnumFieldContent(self):
     lines = [];
@@ -71,13 +71,13 @@ class ElementGeneratorTest(unittest.TestCase):
     lines = []
     GenerateFieldContent('', {
         'type': 'class',
-        'default': 'absl::nullopt'
+        'default': 'std::nullopt'
     }, None, lines, '  ', {})
-    self.assertEquals(['  absl::nullopt,'], lines)
+    self.assertEquals(['  std::nullopt,'], lines)
     lines = []
     GenerateFieldContent('', {
         'type': 'class',
-        'default': 'absl::nullopt'
+        'default': 'std::nullopt'
     }, 'true', lines, '  ', {})
     self.assertEquals(['  true,'], lines)
     lines = []
@@ -161,68 +161,73 @@ class ElementGeneratorTest(unittest.TestCase):
       'b': 'const int b = 5;\n',
     }
     elements_expected = {
-      'elem0': 'const MyType elem0 = {\n'
-               '  5,\n'
-               '  "foo",\n'
-               '  SURE,\n'
-               '  NULL,\n'
-               '  0,\n'
-               '  {0},\n'
-               '  NULL,\n'
-               '  0,\n'
-               '};\n',
-      'elem1': 'const MyType elem1 = {\n'
-               '  -2,\n'
-               '  "bar",\n'
-               '  NOWAY,\n'
-               '  NULL,\n'
-               '  0,\n'
-               '  {0},\n'
-               '  NULL,\n'
-               '  0,\n'
-               '};\n',
-      'elem2': 'const wchar_t* const array_elem2_f3[] = {\n'
-               '  L"bar",\n'
-               '  L"foo",\n'
-               '};\n'
-               'const MyType elem2 = {\n'
-               '  1000,\n'
-               '  "foo_bar",\n'
-               '  MAYBE,\n'
-               '  array_elem2_f3,\n'
-               '  2,\n'
-               '  {0},\n'
-               '  NULL,\n'
-               '  0,\n'
-               '};\n',
-      'elem3': 'const MyType elem3 = {\n'
-               '  1000,\n'
-               '  "foo",\n'
-               '  MAYBE,\n'
-               '  NULL,\n'
-               '  0,\n'
-               '  {\n'
-               '    "test",\n'
-               '  },\n'
-               '  NULL,\n'
-               '  0,\n'
-               '};\n',
-      'elem4': 'const InnerType array_elem4_f5[] = {\n'
-               '  {\n'
-               '    "test0",\n'
-               '    "test1",\n'
-               '  },\n'
-               '};\n'
-               'const MyType elem4 = {\n'
-               '  1000,\n'
-               '  "foo",\n'
-               '  MAYBE,\n'
-               '  NULL,\n'
-               '  0,\n'
-               '  {0},\n'
-               '  array_elem4_f5,\n'
-               '  1,\n'
-               '};\n'
+        'elem0':
+        'const MyType elem0 = {\n'
+        '  5,\n'
+        '  "foo",\n'
+        '  SURE,\n'
+        '  NULL,\n'
+        '  0,\n'
+        '  {0},\n'
+        '  NULL,\n'
+        '  0,\n'
+        '};\n',
+        'elem1':
+        'const MyType elem1 = {\n'
+        '  -2,\n'
+        '  "bar",\n'
+        '  NOWAY,\n'
+        '  NULL,\n'
+        '  0,\n'
+        '  {0},\n'
+        '  NULL,\n'
+        '  0,\n'
+        '};\n',
+        'elem2':
+        'const char16_t* const array_elem2_f3[] = {\n'
+        '  u"bar",\n'
+        '  u"foo",\n'
+        '};\n'
+        'const MyType elem2 = {\n'
+        '  1000,\n'
+        '  "foo_bar",\n'
+        '  MAYBE,\n'
+        '  array_elem2_f3,\n'
+        '  2,\n'
+        '  {0},\n'
+        '  NULL,\n'
+        '  0,\n'
+        '};\n',
+        'elem3':
+        'const MyType elem3 = {\n'
+        '  1000,\n'
+        '  "foo",\n'
+        '  MAYBE,\n'
+        '  NULL,\n'
+        '  0,\n'
+        '  {\n'
+        '    "test",\n'
+        '  },\n'
+        '  NULL,\n'
+        '  0,\n'
+        '};\n',
+        'elem4':
+        'const InnerType array_elem4_f5[] = {\n'
+        '  {\n'
+        '    "test0",\n'
+        '    "test1",\n'
+        '  },\n'
+        '};\n'
+        'const MyType elem4 = {\n'
+        '  1000,\n'
+        '  "foo",\n'
+        '  MAYBE,\n'
+        '  NULL,\n'
+        '  0,\n'
+        '  {0},\n'
+        '  array_elem4_f5,\n'
+        '  1,\n'
+        '};\n'
     }
     expected = ''
     for key, value in description['int_variables'].items():

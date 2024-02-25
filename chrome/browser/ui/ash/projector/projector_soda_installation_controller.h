@@ -61,9 +61,8 @@ class ProjectorSodaInstallationController
   // ash::LocaleChangeObserver:
   void OnLocaleChanged() override;
 
-  const raw_ptr<ash::ProjectorAppClient, ExperimentalAsh> app_client_;
-  const raw_ptr<ash::ProjectorController, ExperimentalAsh>
-      projector_controller_;
+  const raw_ptr<ash::ProjectorAppClient> app_client_;
+  const raw_ptr<ash::ProjectorController> projector_controller_;
 
  private:
   base::ScopedObservation<speech::SodaInstaller,

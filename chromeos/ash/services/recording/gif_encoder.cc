@@ -5,23 +5,60 @@
 #include "chromeos/ash/services/recording/gif_encoder.h"
 
 #include <cmath>
+#include <cstdint>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/recording/color_quantization.h"
 #include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
+#include "chromeos/ash/services/recording/octree_color_quantizer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
-#include "media/base/audio_bus.h"
+#include "chromeos/ash/services/recording/rgb_video_frame.h"
 #include "media/base/video_frame.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace recording {
 
 namespace {
 
+constexpr uint8_t kMaxColorBitDepth = 8;
+
 // The value of the first byte of any extension block, such as the Netscape
 // Extension, and the Graphic Control Extension.
 constexpr uint8_t kExtensionIntroducer = 0x21;
+
+// If building a quantized color palette for a given video frame exceeds the
+// below duration, future palette rebuilds will have to be done asynchronously,
+// potentially every few frames. See `SetQuantizer()` below.
+constexpr base::TimeDelta kMaxDurationForSyncPaletteRebuilds =
+    base::Milliseconds(20);
+
+// If the screen doesn't have any damage, video frames may never be generated.
+// As a result, there can be a large time interval between one frame and the
+// next, in which case the existing color palette might be very stale, and needs
+// to be rebuilt.
+constexpr base::TimeDelta kMaxDurationBetweenSuccessiveFrames =
+    base::Seconds(1);
+
+// The maximum number of frames that can be encoded using an old stale color
+// palette without rebuilding a new one.
+constexpr int kMaxNumFramesWithStaleColorPalette = 20;
+
+// Calculates and returns the color bit depth based on the size of the given
+// `color_palette`. The color bit depth is the least number of bits needed to be
+// able to represent the size of the palette as a binary number.
+uint8_t CalculateColorBitDepth(const ColorTable& color_palette) {
+  DCHECK_LE(color_palette.size(), kMaxNumberOfColorsInPalette);
+
+  uint8_t bit_depth = 1;
+  while ((1u << bit_depth) < color_palette.size()) {
+    ++bit_depth;
+  }
+
+  DCHECK_LE(bit_depth, kMaxColorBitDepth);
+  return bit_depth;
+}
 
 // -----------------------------------------------------------------------------
 // GlobalColorTableFields:
@@ -160,30 +197,38 @@ class GifEncoderCapabilities : public RecordingEncoder::Capabilities {
     // to something smaller than the initial size.
     return false;
   }
+
+  bool SupportsRgbVideoFrame() const override { return true; }
 };
 
 // -----------------------------------------------------------------------------
 
-// Wraps the given `video_frame` pixels in a bitmap and returns it. Note that
-// this does not copy the pixels bytes from `video_frame` to the returned
-// bitmap, and hence the bitmap is safe to access as long as the `video_frame`
-// is alive.
-SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
-  const gfx::Size visible_size = video_frame.visible_rect().size();
-  const SkImageInfo image_info = SkImageInfo::MakeN32(
-      visible_size.width(), visible_size.height(), kPremul_SkAlphaType,
-      video_frame.ColorSpace().ToSkColorSpace());
-
-  SkBitmap bitmap;
-  const uint8_t* pixels =
-      video_frame.visible_data(media::VideoFrame::kARGBPlane);
-  bitmap.installPixels(
-      SkPixmap(image_info, pixels,
-               video_frame.row_bytes(media::VideoFrame::kARGBPlane)));
-  return bitmap;
+QuantizerPaletteData CreateQuantizer(const RgbVideoFrame& rgb_video_frame) {
+  return QuantizerPaletteData(rgb_video_frame, base::TimeTicks::Now());
 }
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// QuantizerPaletteData:
+
+QuantizerPaletteData::QuantizerPaletteData(const RgbVideoFrame& rgb_video_frame,
+                                           base::TimeTicks start_time)
+    : quantizer(OctreeColorQuantizer(rgb_video_frame)) {
+  color_palette.reserve(kMaxNumberOfColorsInPalette);
+  quantizer.ExtractColorPalette(color_palette);
+  duration = base::TimeTicks::Now() - start_time;
+}
+
+QuantizerPaletteData::QuantizerPaletteData(QuantizerPaletteData&&) = default;
+
+QuantizerPaletteData& QuantizerPaletteData::operator=(QuantizerPaletteData&&) =
+    default;
+
+QuantizerPaletteData::~QuantizerPaletteData() = default;
+
+// -----------------------------------------------------------------------------
+// GifEncoder:
 
 // static
 base::SequenceBound<GifEncoder> GifEncoder::Create(
@@ -211,6 +256,9 @@ GifEncoder::GifEncoder(
     const base::FilePath& gif_file_path,
     OnFailureCallback on_failure_callback)
     : RecordingEncoder(std::move(on_failure_callback)),
+      color_palette_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       gif_file_writer_(std::move(drive_fs_quota_delegate),
                        gif_file_path,
                        /*file_io_helper_delegate=*/this),
@@ -225,7 +273,7 @@ void GifEncoder::InitializeVideoEncoder(
   // There can be a maximum of 256 colors in our color palette, and
   // `width * height` pixels.
   color_palette_.reserve(kMaxNumberOfColorsInPalette);
-  pixel_color_indices_.reserve(video_encoder_options.frame_size.GetArea());
+  pixel_color_indices_.resize(video_encoder_options.frame_size.GetArea());
 
   gif_file_writer_.WriteString("GIF89a");  // The GIF header.
   WriteLogicalScreenDescriptor(video_encoder_options.frame_size);
@@ -233,30 +281,49 @@ void GifEncoder::InitializeVideoEncoder(
 }
 
 void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
-  // This bitmap is backed up by the same memory containing the bytes of the
-  // frame. `SkBitmap` makes it more convenient to extract the colors from the
-  // video frame. Once we extract the color palette and pixel color indices from
-  // the `bitmap`, we no longer need it, nor need the video `frame`.
-  const SkBitmap bitmap = WrapVideoFrameInBitmap(*frame);
-  BuildColorPaletteAndPixelIndices(bitmap, color_palette_,
-                                   pixel_color_indices_);
+  NOTREACHED();
+}
 
-  const gfx::Size visible_size = frame->visible_rect().size();
-  DCHECK_EQ(pixel_color_indices_.size(),
-            static_cast<size_t>(visible_size.GetArea()));
-  const auto frame_time =
-      frame->metadata().reference_time.value_or(base::TimeTicks::Now());
+void GifEncoder::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
+  ++frame_count_;
 
-  // We're done with the frame, release it immediately before we spend cycles
-  // doing the encoding and writing to the file. This returns it back to the
-  // video frame buffer pool in Viz, which has a maximum number of in-flight
-  // frames. Releasing the frame as soon as we're done with it helps to avoid
-  // reaching that limit often.
-  frame.reset();
+  const auto frame_time = rgb_video_frame.frame_time();
+
+  // `min_num_frames_before_palette_rebuild_` is initialized to `1`, meaning
+  // that for the very first frame ever, or if it's a fast enough operation on
+  // the current device, that we can build a palette synchronously once every
+  // frame, we do so, and proceed with the rest of encoding.
+  // Otherwise, we can keep using the same color palette that we have without
+  // rebuilding it, until `min_num_frames_before_palette_rebuild_` frames are
+  // received since the last time we built a color palette. At which point, we
+  // send a request to rebuild a new color palette on the
+  // `color_palette_task_runner_` sequence, so as not to block the encoding task
+  // sequence.
+  // Note that we don't allow the duration between any two successive frames to
+  // exceed `kMaxDurationBetweenSuccessiveFrames` without rebuilding the color
+  // palette as it may be very stale.
+  if (min_num_frames_before_palette_rebuild_ == 1) {
+    SetQuantizer(CreateQuantizer(rgb_video_frame));
+  } else if (frame_count_ % min_num_frames_before_palette_rebuild_ == 0 ||
+             (!last_frame_time_.is_null() &&
+              frame_time - last_frame_time_ >=
+                  kMaxDurationBetweenSuccessiveFrames)) {
+    // Note that we have to clone the `rgb_video_frame` as the one we have
+    // here will be disposed once this function returns.
+    color_palette_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&CreateQuantizer, rgb_video_frame.Clone()),
+        base::BindOnce(&GifEncoder::SetQuantizer,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  color_quantizer_.ExtractPixelColorIndices(rgb_video_frame, color_palette_,
+                                            pixel_color_indices_);
+
+  DCHECK_EQ(pixel_color_indices_.size(), rgb_video_frame.num_pixels());
 
   WriteGraphicControlExtension(frame_time);
   const auto color_bit_depth = CalculateColorBitDepth(color_palette_);
-  WriteImageDescriptor(visible_size, color_bit_depth);
+  WriteImageDescriptor(rgb_video_frame, color_bit_depth);
   WriteColorPalette(color_bit_depth);
   lzw_encoder_.EncodeAndWrite(pixel_color_indices_, color_bit_depth);
 
@@ -360,7 +427,7 @@ void GifEncoder::WriteGraphicControlExtension(
   gif_file_writer_.WriteByte(0);
 }
 
-void GifEncoder::WriteImageDescriptor(const gfx::Size& frame_size,
+void GifEncoder::WriteImageDescriptor(const RgbVideoFrame& rgb_video_frame,
                                       uint8_t color_bit_depth) {
   DCHECK_LE(color_bit_depth, kMaxColorBitDepth);
 
@@ -373,8 +440,8 @@ void GifEncoder::WriteImageDescriptor(const gfx::Size& frame_size,
   // The "top" (or Y coordinate) of the frame.
   gif_file_writer_.WriteShort(0);
   // The frame size.
-  gif_file_writer_.WriteShort(frame_size.width());
-  gif_file_writer_.WriteShort(frame_size.height());
+  gif_file_writer_.WriteShort(rgb_video_frame.width());
+  gif_file_writer_.WriteShort(rgb_video_frame.height());
 
   // Write the Image Descriptor bitfields such that we specify that we're using
   // a non-sorted, non-interlaced local color table of size 2 ^ color_bit_depth
@@ -396,9 +463,9 @@ void GifEncoder::WriteColorPalette(uint8_t color_bit_depth) {
   const size_t end = std::min(table_size, color_palette_.size());
   for (size_t i = 0; i < end; ++i) {
     const auto& color = color_palette_[i];
-    gif_file_writer_.WriteByte(SkColorGetR(color));
-    gif_file_writer_.WriteByte(SkColorGetG(color));
-    gif_file_writer_.WriteByte(SkColorGetB(color));
+    gif_file_writer_.WriteByte(color.r);
+    gif_file_writer_.WriteByte(color.g);
+    gif_file_writer_.WriteByte(color.b);
   }
 
   // The color table size that we write to the GIF file has to be a multiple of
@@ -412,6 +479,15 @@ void GifEncoder::WriteColorPalette(uint8_t color_bit_depth) {
     gif_file_writer_.WriteByte(0);
     gif_file_writer_.WriteByte(0);
   }
+}
+
+void GifEncoder::SetQuantizer(QuantizerPaletteData&& quantizer_data) {
+  color_quantizer_ = std::move(quantizer_data.quantizer);
+  color_palette_ = std::move(quantizer_data.color_palette);
+
+  min_num_frames_before_palette_rebuild_ = std::clamp<int>(
+      std::ceil(quantizer_data.duration / kMaxDurationForSyncPaletteRebuilds),
+      1, kMaxNumFramesWithStaleColorPalette);
 }
 
 }  // namespace recording

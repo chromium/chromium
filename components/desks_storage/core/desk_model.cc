@@ -4,14 +4,17 @@
 
 #include "components/desks_storage/core/desk_model.h"
 
+#include <optional>
+#include <string_view>
+
 #include "ash/public/cpp/desk_template.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace desks_storage {
 
@@ -34,7 +37,7 @@ DeskModel::GetTemplateJsonStatus ConvertGetEntryStatusToTemplateJsonStatus(
 
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     GetAllEntriesStatus status,
-    std::vector<const ash::DeskTemplate*> entries)
+    std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries)
     : status(status), entries(std::move(entries)) {}
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     GetAllEntriesResult& other) = default;
@@ -73,7 +76,7 @@ void DeskModel::GetTemplateJson(const base::Uuid& uuid,
 void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
   policy_entries_.clear();
 
-  base::StringPiece raw_json = base::StringPiece(policy_json);
+  std::string_view raw_json = std::string_view(policy_json);
   auto parsed_list = base::JSONReader::ReadAndReturnValueWithError(raw_json);
   if (!parsed_list.has_value())
     return;

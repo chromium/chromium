@@ -5,8 +5,8 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 
-import {CrToastManagerElement, getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
-
+import type {CrToastManagerElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+import { getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on

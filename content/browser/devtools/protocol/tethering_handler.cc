@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -107,8 +108,8 @@ class SocketPump {
   }
 
   void Pump(net::StreamSocket* from, net::StreamSocket* to) {
-    scoped_refptr<net::IOBuffer> buffer =
-        base::MakeRefCounted<net::IOBuffer>(kSocketPumpBufferSize);
+    auto buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(kSocketPumpBufferSize);
     int result =
         from->Read(buffer.get(), kSocketPumpBufferSize,
                    base::BindOnce(&SocketPump::OnRead, base::Unretained(this),
@@ -209,7 +210,7 @@ class BoundSocket {
     port_ = port;
     net::IPEndPoint end_point(net::IPAddress::IPv4Localhost(), port);
     int result =
-        socket_->Listen(end_point, kListenBacklog, /*ipv6_only=*/absl::nullopt);
+        socket_->Listen(end_point, kListenBacklog, /*ipv6_only=*/std::nullopt);
     if (result < 0)
       return false;
 
@@ -289,7 +290,7 @@ TetheringHandler::TetheringImpl::~TetheringImpl() = default;
 
 void TetheringHandler::TetheringImpl::Bind(
     uint16_t port, std::unique_ptr<BindCallback> callback) {
-  if (bound_sockets_.find(port) != bound_sockets_.end()) {
+  if (base::Contains(bound_sockets_, port)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BindCallback::sendFailure, std::move(callback),

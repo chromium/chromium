@@ -10,8 +10,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/web/public/favicon/favicon_status.h"
@@ -23,6 +25,7 @@
 #include "url/gurl.h"
 
 class SessionCertificatePolicyCache;
+@protocol CRWWebViewDownload;
 
 namespace web {
 
@@ -30,6 +33,7 @@ namespace web {
 class FakeWebState : public WebState {
  public:
   FakeWebState();
+  explicit FakeWebState(WebStateID unique_identifier);
   ~FakeWebState() override;
 
   // WebState implementation.
@@ -53,12 +57,10 @@ class FakeWebState : public WebState {
   base::WeakPtr<WebState> GetWeakPtr() override;
   void OpenURL(const OpenURLParams& params) override {}
   void LoadSimulatedRequest(const GURL& url,
-                            NSString* response_html_string) override
-      API_AVAILABLE(ios(15.0));
+                            NSString* response_html_string) override;
   void LoadSimulatedRequest(const GURL& url,
                             NSData* response_data,
-                            NSString* mime_type) override
-      API_AVAILABLE(ios(15.0));
+                            NSString* mime_type) override;
   void Stop() override {}
   const NavigationManager* GetNavigationManager() const override;
   NavigationManager* GetNavigationManager() override;
@@ -71,7 +73,7 @@ class FakeWebState : public WebState {
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   NSString* GetStableIdentifier() const override;
-  SessionID GetUniqueIdentifier() const override;
+  WebStateID GetUniqueIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
   const std::u16string& GetTitle() const override;
@@ -87,7 +89,7 @@ class FakeWebState : public WebState {
   int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   CRWWebViewProxyType GetWebViewProxy() const override;
 
   void AddObserver(WebStateObserver* observer) override;
@@ -99,23 +101,21 @@ class FakeWebState : public WebState {
   bool SetSessionStateData(NSData* data) override;
   NSData* SessionStateData() override;
 
-  PermissionState GetStateForPermission(Permission permission) const override
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const override;
   void SetStateForPermission(PermissionState state,
-                             Permission permission) override
-      API_AVAILABLE(ios(15.0));
+                             Permission permission) override;
   NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
-      const override API_AVAILABLE(ios(15.0));
+      const override;
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
-                           void (^handler)(id<CRWWebViewDownload>)) override
-      API_AVAILABLE(ios(14.5));
+                           void (^handler)(id<CRWWebViewDownload>)) override;
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
   id GetActivityItem() API_AVAILABLE(ios(16.4)) final;
   UIColor* GetThemeColor() final;
+  UIColor* GetUnderPageBackgroundColor() final;
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
@@ -123,7 +123,7 @@ class FakeWebState : public WebState {
   bool HasOpener() const override;
   void SetHasOpener(bool has_opener) override;
   bool CanTakeSnapshot() const override;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) override;
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) override;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override;
   void CloseMediaPresentations() override;
 
@@ -152,6 +152,7 @@ class FakeWebState : public WebState {
   void SetCanTakeSnapshot(bool can_take_snapshot);
   void SetFindInteraction(id<CRWFindInteraction> find_interaction)
       API_AVAILABLE(ios(16));
+  void SetWebViewDownload(id<CRWWebViewDownload> web_view_download);
 
   // Getters for test data.
   // Uses `policy_deciders` to determine whether the navigation corresponding to
@@ -179,11 +180,12 @@ class FakeWebState : public WebState {
   void OnRenderProcessGone();
   void OnBackForwardStateChanged();
   void OnVisibleSecurityStateChanged();
+  void OnDownloadFinished(NSError* error);
 
  private:
-  BrowserState* browser_state_ = nullptr;
+  raw_ptr<BrowserState> browser_state_ = nullptr;
   NSString* stable_identifier_ = nil;
-  const SessionID unique_identifier_;
+  const WebStateID unique_identifier_;
   bool web_usage_enabled_ = true;
   bool is_realized_ = true;
   bool is_loading_ = false;
@@ -211,6 +213,8 @@ class FakeWebState : public WebState {
   PermissionState camera_permission_state_ = PermissionStateNotAccessible;
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
   id<CRWFindInteraction> find_interaction_ API_AVAILABLE(ios(16));
+  id<CRWWebViewDownload> web_view_download_;
+  id<CRWWebViewDownloadDelegate> download_delegate_;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true> observers_;

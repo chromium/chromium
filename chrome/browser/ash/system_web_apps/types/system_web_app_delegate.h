@@ -128,8 +128,9 @@ class SystemWebAppDelegate {
   // the order in go/default-apps.
   virtual bool ShouldShowInLauncher() const;
 
-  // If false, this app will be hidden from the Chrome OS search.
-  virtual bool ShouldShowInSearch() const;
+  // If false, this app will be hidden from both the Chrome OS search and shelf.
+  // If true, this app will be shown in both the ChromeOS search and shelf.
+  virtual bool ShouldShowInSearchAndShelf() const;
 
   // If true, in Ash browser, navigations (e.g. Omnibox URL, anchor link) to
   // this app will open in the app's window instead of the navigation's context
@@ -146,6 +147,9 @@ class SystemWebAppDelegate {
   // If false, the surface of app will can be non-maximizable.
   virtual bool ShouldAllowMaximize() const;
 
+  // If false, the surface of the app can not enter fullscreen.
+  virtual bool ShouldAllowFullscreen() const;
+
   // If true, the App's window will have a tab-strip.
   virtual bool ShouldHaveTabStrip() const;
 
@@ -161,7 +165,7 @@ class SystemWebAppDelegate {
   virtual bool ShouldHandleFileOpenIntents() const;
 
   // Setup information to drive a background task.
-  virtual absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const;
+  virtual std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const;
 
   // Default window bounds of the application.
   virtual gfx::Rect GetDefaultBounds(Browser* browser) const;

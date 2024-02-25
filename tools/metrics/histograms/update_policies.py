@@ -24,13 +24,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 from diff_util import PromptUserToAcceptDiff
 import path_util
 
-import histogram_paths
 import histogram_configuration_model
 
-ENUMS_PATH = histogram_paths.ENUMS_XML
+ENUMS_PATH = 'tools/metrics/histograms/metadata/enterprise/enums.xml'
 POLICY_LIST_PATH = 'components/policy/resources/templates/policies.yaml'
 POLICIES_ENUM_NAME = 'EnterprisePolicies'
-POLICY_ATOMIC_GROUPS_ENUM_NAME = 'PolicyAtomicGroups'
 
 class UserError(Exception):
   def __init__(self, message):
@@ -80,44 +78,6 @@ def UpdatePoliciesHistogramDefinitions(policy_ids, doc):
     policy_enum_node.appendChild(node)
 
 
-def UpdateAtomicGroupsHistogramDefinitions(atomic_group_ids, doc):
-  """Sets the children of <enum name="PolicyAtomicGroups" ...> node in |doc| to
-  values generated from policy ids contained in |policy_templates|.
-
-  Args:
-    atomic_group_ids: A dictionary mapping atomic policy goupr ids to their
-                      names.
-    doc: A minidom.Document object representing parsed histogram definitions
-         XML file.
-  """
-  # Find EnterprisePolicies enum.
-  for enum_node in doc.getElementsByTagName('enum'):
-    if enum_node.attributes['name'].value == POLICY_ATOMIC_GROUPS_ENUM_NAME:
-      atomic_group_enum_node = enum_node
-      break
-  else:
-    raise UserError('No policy atomic group enum node found')
-
-  # Remove existing values.
-  while atomic_group_enum_node.hasChildNodes():
-    atomic_group_enum_node.removeChild(atomic_group_enum_node.lastChild)
-
-  # Add a "Generated from (...)" comment
-  comment = ' Generated from {0} '.format(POLICY_LIST_PATH)
-  atomic_group_enum_node.appendChild(doc.createComment(comment))
-
-  # Add values generated from policy templates.
-  ordered_atomic_groups = [{
-      'id': id,
-      'name': name
-  } for id, name in atomic_group_ids.items() if name]
-  ordered_atomic_groups.sort(key=lambda group: group['id'])
-  for group in ordered_atomic_groups:
-    node = doc.createElement('int')
-    node.attributes['value'] = str(group['id'])
-    node.attributes['label'] = group['name']
-    atomic_group_enum_node.appendChild(node)
-
 def main():
   if len(sys.argv) > 1:
     print('No arguments expected!', file=sys.stderr)
@@ -134,8 +94,6 @@ def main():
 
   UpdatePoliciesHistogramDefinitions(policy_list_content['policies'],
                                      histograms_doc)
-  UpdateAtomicGroupsHistogramDefinitions(policy_list_content['atomic_groups'],
-                                         histograms_doc)
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   if PromptUserToAcceptDiff(xml, new_xml, 'Is the updated version acceptable?'):
     with open(ENUMS_PATH, 'wb') as f:

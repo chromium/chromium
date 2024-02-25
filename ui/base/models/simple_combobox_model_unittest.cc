@@ -18,6 +18,12 @@ TEST(SimpleComboboxModelTest, StringItems) {
   EXPECT_EQ(u"item0", model.GetItemAt(0));
   EXPECT_TRUE(model.IsItemSeparatorAt(1));
   EXPECT_EQ(u"item2", model.GetItemAt(2));
+
+  // Update items.
+  model.UpdateItemList({ui::SimpleComboboxModel::Item(u"item3"),
+                        ui::SimpleComboboxModel::Item(u"item4")});
+  EXPECT_EQ(u"item3", model.GetItemAt(0));
+  EXPECT_EQ(u"item4", model.GetItemAt(1));
 }
 
 TEST(SimpleComboboxModelTest, ComboboxItems) {
@@ -38,6 +44,18 @@ TEST(SimpleComboboxModelTest, ComboboxItems) {
   EXPECT_EQ(u"Text20", model.GetDropDownTextAt(1));
   EXPECT_EQ(u"SecondaryText20", model.GetDropDownSecondaryTextAt(1));
   EXPECT_EQ(20, model.GetIconAt(1).Size().width());
+}
+
+TEST(SimpleComboboxModelTest, GetDefaultIndex) {
+  SimpleComboboxModel model{/*items=*/{}};
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
+
+  ui::SimpleComboboxModel::Item item(u"Text16");
+  model.UpdateItemList(/*items=*/{item});
+  EXPECT_EQ(0u, model.GetDefaultIndex());
+
+  model.UpdateItemList(/*items=*/{});
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
 }
 
 }  // namespace ui

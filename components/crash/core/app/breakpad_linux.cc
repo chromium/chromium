@@ -26,7 +26,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -43,6 +43,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/breakpad_linux_impl.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -52,6 +53,7 @@
 #include "third_party/breakpad/breakpad/src/client/linux/minidump_writer/directory_reader.h"
 #include "third_party/breakpad/breakpad/src/common/linux/linux_libc_support.h"
 #include "third_party/breakpad/breakpad/src/common/memory_allocator.h"
+#include "third_party/lss/linux_syscall_support.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
@@ -62,8 +64,6 @@
 #include "base/android/path_utils.h"
 #include "base/debug/leak_annotations.h"
 #endif
-#include "build/chromeos_buildflags.h"
-#include "third_party/lss/linux_syscall_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/crash/core/app/crash_switches.h"
@@ -71,6 +71,11 @@
 
 #if defined(ADDRESS_SANITIZER)
 #include <ucontext.h>  // for getcontext().
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -246,12 +251,6 @@ void my_uint64tos(char* output, uint64_t i, unsigned i_len) {
   for (unsigned index = i_len; index; --index, i /= 10)
     output[index - 1] = '0' + (i % 10);
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-bool my_isxdigit(char c) {
-  return base::IsAsciiDigit(c) || ((c | 0x20) >= 'a' && (c | 0x20) <= 'f');
-}
-#endif
 
 size_t LengthWithoutTrailingSpaces(const char* str, size_t len) {
   while (len > 0 && str[len - 1] == ' ') {
@@ -1461,11 +1460,8 @@ bool IsValidCrashReportId(const char* buf, size_t bytes_read,
   // See kSuccessMagic in platform2/crash-reporter/chrome_collector.cc.
   return my_strcmp(buf, "_sys_cr_finished") == 0;
 #else
-  for (size_t i = 0; i < bytes_read; ++i) {
-    if (!my_isxdigit(buf[i]))
-      return false;
-  }
-  return true;
+  return base::ranges::all_of(base::span(buf, bytes_read),
+                              base::IsHexDigit<char>);
 #endif
 }
 

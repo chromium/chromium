@@ -62,9 +62,7 @@ enum class SyncTransportDataStartupState {
 std::string GenerateCacheGUID() {
   // Generate a GUID with 128 bits of randomness.
   const int kGuidBytes = 128 / 8;
-  std::string guid;
-  base::Base64Encode(base::RandBytesAsString(kGuidBytes), &guid);
-  return guid;
+  return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
 }
 
 SyncTransportDataStartupState ValidateSyncTransportData(
@@ -131,14 +129,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
   DCHECK(params.host);
   host_ = params.host;
 
-  // The gaia ID in sync prefs was introduced with M81, so having an empty value
-  // is legitimate and should be populated as a one-off migration.
-  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
-  // year).
-  if (prefs_->GetGaiaId().empty()) {
-    prefs_->SetGaiaId(params.authenticated_account_info.gaia);
-  }
-
   const SyncTransportDataStartupState state =
       ValidateSyncTransportData(*prefs_, params.authenticated_account_info);
 
@@ -152,6 +142,10 @@ void SyncEngineImpl::Initialize(InitParams params) {
     prefs_->SetGaiaId(params.authenticated_account_info.gaia);
   }
 
+  // Clear host here to avoid holding a dangling pointer in case the task
+  // outlives the SyncEngineHost. It is safe to clear host here since because
+  // SyncEngineBackend doesn't actually need it.
+  params.host = nullptr;
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
                                 std::move(params),
@@ -201,12 +195,14 @@ void SyncEngineImpl::StartConfiguration() {
 
 void SyncEngineImpl::StartSyncingWithServer() {
   DVLOG(1) << name_ << ": SyncEngineImpl::StartSyncingWithServer called.";
-  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
-  // If there's no known last poll time (e.g. on initial start-up), we treat
-  // this as if a poll just happened.
+  // If there's no known last poll time, that means this is the initial Sync
+  // startup. Treat it as if a poll just happened.
   if (last_poll_time.is_null()) {
     last_poll_time = base::Time::Now();
+    // Note: Persisting this is important to ensure that polling correctly
+    // resumes after a browser restart, even if no poll request happens during
+    // this run.
     prefs_->SetLastPollTime(last_poll_time);
   }
   sync_task_runner_->PostTask(
@@ -326,10 +322,6 @@ void SyncEngineImpl::DisconnectDataType(ModelType type) {
   model_type_connector_->DisconnectDataType(type);
 }
 
-void SyncEngineImpl::SetProxyTabsDatatypeEnabled(bool enabled) {
-  model_type_connector_->SetProxyTabsDatatypeEnabled(enabled);
-}
-
 const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized());
@@ -420,6 +412,9 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
   // there used to be local transport metadata or not.
   bool is_first_time_sync_configure = false;
 
+  // NOTE: Keep this logic consistent with how
+  // SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync()
+  // determines whether transport data exists.
   if (prefs_->GetLastSyncedTime().is_null()) {
     is_first_time_sync_configure = true;
     UpdateLastSyncedTime();
@@ -468,12 +463,10 @@ void SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop(
   host_->OnMigrationNeededForTypes(types);
 }
 
-// TODO(crbugg.com/1404927): replace InvalidatorState with a boolean.
-void SyncEngineImpl::OnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
+void SyncEngineImpl::OnInvalidatorStateChange(bool enabled) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidatorStateChange,
-                                backend_, state));
+                                backend_, enabled));
 }
 
 void SyncEngineImpl::HandleConnectionStatusChangeOnFrontendLoop(
@@ -534,7 +527,6 @@ void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
 bool SyncEngineImpl::IsNextPollTimeInThePast() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
   base::TimeDelta poll_interval = prefs_->GetPollInterval();
   if (last_poll_time.is_null() || poll_interval.is_zero()) {
@@ -556,10 +548,19 @@ void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
+void SyncEngineImpl::RecordNigoriMemoryUsageAndCountsHistograms() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms,
+          backend_));
+}
+
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<ModelTypeSet> interested_data_types =
+  std::optional<ModelTypeSet> interested_data_types =
       sync_invalidations_service_->GetInterestedDataTypes();
 
   // Interested data types must be initialized before handling invalidations to
@@ -614,7 +615,7 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   // are any).
   if (!sync_invalidations_service_->GetFCMRegistrationToken().has_value() ||
       !sync_invalidations_service_->HasListener(this)) {
-    OnInvalidatorStateChange(invalidation::TRANSIENT_INVALIDATION_ERROR);
+    OnInvalidatorStateChange(/*enabled=*/false);
     return;
   }
 
@@ -624,7 +625,7 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
 
   // TODO(crbug.com/1442156): wait for FCM token to be committed before change
   // the state to enabled.
-  OnInvalidatorStateChange(invalidation::INVALIDATIONS_ENABLED);
+  OnInvalidatorStateChange(/*enabled=*/true);
 }
 
 }  // namespace syncer

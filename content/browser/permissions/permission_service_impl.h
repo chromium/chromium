@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
+#include "content/public/browser/permission_request_description.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/origin.h"
@@ -50,6 +51,10 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   // blink::mojom::PermissionService.
   void HasPermission(blink::mojom::PermissionDescriptorPtr permission,
                      PermissionStatusCallback callback) override;
+  void RegisterPageEmbeddedPermissionControl(
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
+      mojo::PendingRemote<blink::mojom::EmbeddedPermissionControlClient> client)
+      override;
   void RequestPageEmbeddedPermission(
       blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
       RequestPageEmbeddedPermissionCallback callback) override;
@@ -73,12 +78,18 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   void RequestPermissionsInternal(
       BrowserContext* browser_context,
       const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       RequestPermissionsCallback callback);
 
   void OnRequestPermissionsResponse(
       int pending_request_id,
       const std::vector<blink::mojom::PermissionStatus>& result);
+
+  void OnPageEmbeddedPermissionControlRegistered(
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
+      bool allow,
+      const mojo::Remote<blink::mojom::EmbeddedPermissionControlClient>&
+          client);
 
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission);

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "reclient")
+load("//lib/builders.star", "builders", "cpu", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -19,6 +19,7 @@ ci.defaults.set(
     shadow_free_space = None,
     shadow_pool = "luci.chromium.try",
     shadow_reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 luci.bucket(
@@ -37,6 +38,7 @@ luci.bucket(
                 # or fix yet.
                 "mdb/chrome-active-sheriffs",
                 "mdb/chrome-gpu",
+                "mdb/bling-engprod",
             ],
             users = [
                 # Allow chrome-release/branch builders on luci.chrome.official.infra
@@ -58,6 +60,7 @@ luci.bucket(
                 # Allow currently-oncall gardeners to pause schedulers.
                 "mdb/chrome-active-sheriffs",
                 "mdb/chrome-gpu",
+                "mdb/bling-engprod",
             ],
         ),
     ],
@@ -71,12 +74,21 @@ luci.bucket(
         luci.binding(
             roles = "role/buildbucket.creator",
             groups = [
+                "mdb/chrome-build-access-sphinx",
                 "mdb/chrome-troopers",
                 "chromium-led-users",
             ],
             users = [
                 ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
                 ci.gpu.SHADOW_SERVICE_ACCOUNT,
+            ],
+        ),
+        # TODO(crbug.com/1501383): Remove this binding after shadow bucket
+        # could inherit the view permission from the actual bucket.
+        luci.binding(
+            roles = "role/buildbucket.reader",
+            groups = [
+                "all",
             ],
         ),
         # Allow ci builders to create invocations in their own builds.
@@ -166,16 +178,24 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
-    ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-bld"),
+    ("fuchsia-arm64-rel-ready", "gardener|p/chrome|arm64", "rel-ready"),
+    ("fuchsia-arm64-nest-sd", "gardener|p/chrome|arm64", "nest-arm"),
+    ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-arm"),
+    ("fuchsia-cast-astro", "gardener|hardware|cast", "ast"),
+    ("fuchsia-cast-nelson", "gardener|hardware|cast", "nsn"),
+    ("fuchsia-cast-sherlock", "gardener|hardware|cast", "sher"),
     ("fuchsia-fyi-arm64-size", "gardener|p/chrome|arm64", "size"),
     ("fuchsia-fyi-astro", "gardener|hardware", "ast"),
     ("fuchsia-fyi-nelson", "gardener|hardware", "nsn"),
     ("fuchsia-fyi-sherlock", "gardener|hardware", "sher"),
+    ("fuchsia-fyi-sherlock-qemu", "gardener|hardware|emu", "sher"),
+    ("fuchsia-smoke-astro", "gardener|hardware|smoke", "ast"),
     ("fuchsia-smoke-nelson", "gardener|hardware|smoke", "nsn"),
     ("fuchsia-smoke-sherlock", "gardener|hardware|smoke", "sher"),
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
+    ("fuchsia-x64-nest-sd", "gardener|p/chrome|x64", "nest-x64"),
 )]
 
 exec("./ci/blink.infra.star")

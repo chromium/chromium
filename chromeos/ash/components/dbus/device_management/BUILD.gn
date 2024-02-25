@@ -1,0 +1,65 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("device_management") {
+  output_name = "ash_dbus_device_management"
+
+  defines = [ "IS_DEVICE_MANAGEMENT_CLIENT_IMPL" ]
+
+  deps = [
+    ":device_management_proto",
+    "//base",
+    "//chromeos/dbus/common",
+    "//components/policy/proto",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_install_attributes_client.cc",
+    "fake_install_attributes_client.h",
+    "install_attributes_client.cc",
+    "install_attributes_client.h",
+    "install_attributes_util.cc",
+    "install_attributes_util.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  configs += [ "//build/config/linux/dbus" ]
+  public_deps = [
+    "//chromeos/dbus/constants",
+    "//dbus",
+    "//dbus:test_support",
+  ]
+  deps = [
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//components/account_id",
+    "//dbus",
+  ]
+  sources = [ "install_attributes_client_unittest.cc" ]
+}
+
+proto_library("device_management_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/device_management/device_management_interface.proto" ]
+  proto_out_dir = "chromeos/ash/components/dbus/device_management"
+}

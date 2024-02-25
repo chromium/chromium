@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title id="device-log-title">$i18n{titleText}</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="device_log_ui.css">
+<if expr="is_chromeos">
+  <link rel="stylesheet" href="chrome://resources/css/os_header.css">
+</if>
+  <script type="module" src="device_log_ui.js"></script>
+</head>
+<body>
+<if expr="is_chromeos">
+  <div class="os-link-container-container" id="os-link-container">
+    <div class="os-link-container">
+      <span class="os-link-icon"></span>
+      $i18nRaw{osLinkContainer}
+    </div>
+  </div>
+</if>
+  <div id="header">
+    <span>$i18n{autoRefreshText}</span>
+  </div>
+  <div id="log-checkbox-container">
+    <button id="log-refresh">$i18n{logRefreshText}</button>
+    <button id="log-clear">$i18n{logClearText}</button>
+    <span>$i18n{logLevelLabel}</span>
+    <select id="log-level-select">
+      <option value="Error">$i18n{logLevelErrorText}</option>
+      <option value="User">$i18n{logLevelUserText}</option>
+      <option value="Event">$i18n{logLevelEventText}</option>
+      <option value="Debug">$i18n{logLevelDebugText}</option>
+    </select>
+    <label>
+      <input id="log-fileinfo" type="checkbox">
+      <span>$i18n{logLevelFileinfoText}</span>
+    </label>
+    <label>
+      <input id="log-timedetail" type="checkbox">
+      <span>$i18n{logLevelTimeDetailText}</span>
+    </label>
+  </div>
+
+  <div id="log-checkbox-container">
+    <button id="log-clear-types">$i18n{logClearTypesText}</button>
+    <label>
+      <input id="log-type-bluetooth" type="checkbox">
+      <span>$i18n{logTypeBluetoothText}</span>
+    </label>
+    <label>
+      <input id="log-type-camera" type="checkbox">
+      <span>$i18n{logTypeCameraText}</span>
+    </label>
+    <label>
+      <input id="log-type-display" type="checkbox">
+      <span>$i18n{logTypeDisplayText}</span>
+    </label>
+    <label>
+      <input id="log-type-extensions" type="checkbox">
+      <span>$i18n{logTypeExtensionsText}</span>
+    </label>
+    <label>
+      <input id="log-type-fido" type="checkbox">
+      <span>$i18n{logTypeFidoText}</span>
+    </label>
+    <label>
+      <input id="log-type-firmware" type="checkbox">
+      <span>$i18n{logTypeFirmwareText}</span>
+    </label>
+    <label>
+      <input id="log-type-geolocation" type="checkbox">
+      <span>$i18n{logTypeGeolocationText}</span>
+    </label>
+    <label>
+      <input id="log-type-hid" type="checkbox">
+      <span>$i18n{logTypeHidText}</span>
+    </label>
+    <label>
+      <input id="log-type-login" type="checkbox">
+      <span>$i18n{logTypeLoginText}</span>
+    </label>
+    <label>
+      <input id="log-type-network" type="checkbox">
+      <span>$i18n{logTypeNetworkText}</span>
+    </label>
+    <label>
+      <input id="log-type-power" type="checkbox">
+      <span>$i18n{logTypePowerText}</span>
+    </label>
+    <label>
+      <input id="log-type-printer" type="checkbox">
+      <span>$i18n{logTypePrinterText}</span>
+    </label>
+    <label>
+      <input id="log-type-serial" type="checkbox">
+      <span>$i18n{logTypeSerialText}</span>
+    </label>
+    <label>
+      <input id="log-type-usb" type="checkbox">
+      <span>$i18n{logTypeUsbText}</span>
+    </label>
+  </div>
+  <div id="log-container"></div>
+</body>
+</html>

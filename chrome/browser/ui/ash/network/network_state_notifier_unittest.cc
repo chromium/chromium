@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +39,7 @@ namespace ash {
 namespace {
 
 const char kWiFi1Guid[] = "wifi1_guid";
+const char kCellular1ServicePath[] = "/service/cellular1";
 const char kCellular1Guid[] = "cellular1_guid";
 const char kCellular1NetworkName[] = "cellular1";
 const char16_t kCellular1NetworkName16[] = u"cellular1";
@@ -65,6 +68,7 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& service_path) override {}
   void ShowCarrierAccountDetail(const std::string& service_path) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowPortalSignin(const std::string& service_path,
                         NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
@@ -96,7 +100,16 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
                                                 local_state_.registry());
 
     network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
+  }
 
+  void TearDown() override {
+    NetworkConnect::Shutdown();
+    network_connect_delegate_.reset();
+    network_handler_test_helper_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  void Init() {
     SetupDefaultShillState();
     base::RunLoop().RunUntilIdle();
 
@@ -105,15 +118,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
     network_connect_delegate_ =
         std::make_unique<NetworkConnectTestDelegate>(std::move(notifier));
-
     NetworkConnect::Initialize(network_connect_delegate_.get());
-  }
-
-  void TearDown() override {
-    NetworkConnect::Shutdown();
-    network_connect_delegate_.reset();
-    network_handler_test_helper_.reset();
-    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
@@ -149,13 +154,12 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetCellularDeviceLocked(bool is_locked) {
+  void SetCellularDeviceLocked(std::string lock_type) {
     ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
 
-    std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
     base::Value::Dict sim_lock_status;
-    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_pin);
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty,
         base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
@@ -186,7 +190,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
         kWiFi1ServicePath, shill::kPassphraseProperty, base::Value("failure"));
 
     // Set up Cellular device, and add a single locked network.
-    const char kCellular1ServicePath[] = "/service/cellular1";
     const char kCellular1Iccid[] = "iccid";
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                            "stub_cellular_device1");
@@ -199,11 +202,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     service_test->SetServiceProperty(
         kCellular1ServicePath, shill::kActivationStateProperty,
         base::Value(shill::kActivationStateActivated));
-    base::Value::Dict sim_lock_status;
-    sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
-    device_test->SetDeviceProperty(
-        kCellularDevicePath, shill::kSIMLockStatusProperty,
-        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
+
     base::Value::List sim_slot_infos;
     base::Value::Dict slot_info_item;
     slot_info_item.Set(shill::kSIMSlotInfoICCID, kCellular1Iccid);
@@ -216,19 +215,20 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<HermesManagerClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HermesManagerClient::TestInterface, DanglingUntriaged>
       hermes_manager_test_;
-  raw_ptr<HermesEuiccClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HermesEuiccClient::TestInterface, DanglingUntriaged>
       hermes_euicc_test_;
   TestSystemTrayClient test_system_tray_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple user_prefs_;
   TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(NetworkStateNotifierTest, WiFiConnectionFailure) {
+  Init();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(nullptr /* profile */);
@@ -240,6 +240,8 @@ TEST_F(NetworkStateNotifierTest, WiFiConnectionFailure) {
 }
 
 TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockPin);
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(nullptr /* profile */);
@@ -247,7 +249,7 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -258,12 +260,14 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
                 l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
   // Clicking the notification should open SIM unlock settings.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_sim_unlock_settings_count());
 }
 
 TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockPin);
   SetupESimNetwork();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
@@ -272,7 +276,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -289,7 +293,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
 
   // Set device locked status to false, this will allow for network connection
   // to succeed.
-  SetCellularDeviceLocked(/*is_locked=*/false);
+  SetCellularDeviceLocked(/*lock_type=*/"");
   NetworkConnect::Get()->ConnectToNetworkId("esim_guidiccid");
   base::RunLoop().RunUntilIdle();
 
@@ -299,4 +303,112 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   EXPECT_FALSE(notification);
 }
 
+TEST_F(NetworkStateNotifierTest,
+       CellularInvalidApnConnectionFailureApnRevampEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+  Init();
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  network_handler_test_helper_->service_test()
+      ->SetErrorForNextConnectionAttempt(shill::kErrorInvalidAPN);
+  network_handler_test_helper_->service_test()->SetServiceProperty(
+      kCellular1ServicePath, shill::kConnectableProperty, base::Value(true));
+  network_handler_test_helper_->service_test()->SetServiceProperty(
+      kCellular1ServicePath, shill::kErrorProperty,
+      base::Value(shill::kErrorInvalidAPN));
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // Failure should spawn a notification.
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Clicking the notification should open the APN subpage.
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
+  EXPECT_EQ(1, test_system_tray_client_.show_apn_subpage_count());
+  EXPECT_EQ(kCellular1Guid,
+            test_system_tray_client_.last_apn_subpage_network_id());
+}
+
+TEST_F(NetworkStateNotifierTest,
+       CellularInvalidApnConnectionFailureApnRevampDisabled) {
+  Init();
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  network_handler_test_helper_->service_test()
+      ->SetErrorForNextConnectionAttempt(shill::kErrorInvalidAPN);
+  network_handler_test_helper_->service_test()->SetServiceProperty(
+      kCellular1ServicePath, shill::kConnectableProperty, base::Value(true));
+  network_handler_test_helper_->service_test()->SetServiceProperty(
+      kCellular1ServicePath, shill::kErrorProperty,
+      base::Value(shill::kErrorInvalidAPN));
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // Failure should spawn a notification.
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_TRUE(notification);
+
+  // Clicking the notification should open the network settings page.
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
+  EXPECT_EQ(0, test_system_tray_client_.show_apn_subpage_count());
+  EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
+  EXPECT_EQ(kCellular1Guid,
+            test_system_tray_client_.last_network_settings_network_id());
+}
+
+TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // Failure should spawn a notification.
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      notification->message(),
+      l10n_util::GetStringFUTF16(
+          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kCellular1NetworkName16,
+          l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED)));
+
+  // Clicking the notification should open network settings page.
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
+  EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
+}
+
+TEST_F(NetworkStateNotifierTest,
+       CellularCarrierLockedSimConnectionFailureFeatureFlagDisable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
+  Init();
+  SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+
+  // with feature flag disabled, failure should not show notification.
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_FALSE(notification);
+}
 }  // namespace ash

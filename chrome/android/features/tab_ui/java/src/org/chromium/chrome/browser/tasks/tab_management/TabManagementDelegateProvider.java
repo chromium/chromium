@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-/**
- * Provider class for {@link TabManagementDelegate}.
- */
+/** Provider class for {@link TabManagementDelegate}. */
 public class TabManagementDelegateProvider {
     private static TabManagementDelegateImpl sTabManagementDelegateImpl;
 
-    /**
-     * Returns {@link TabManagementDelegate} implementation.
-     */
+    /** Returns {@link TabManagementDelegate} implementation. */
     public static TabManagementDelegate getDelegate() {
         if (sTabManagementDelegateImpl == null) {
             sTabManagementDelegateImpl = new TabManagementDelegateImpl();

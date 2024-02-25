@@ -3,7 +3,7 @@ Even though the fixed-position element's container is nonscrollable, it should s
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -13,12 +13,6 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "position": [1, 1],
       "bounds": [285, 285],
       "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
-      "position": [1, 1],
-      "bounds": [285, 800],
       "transform": 1
     },
     {
@@ -32,6 +26,12 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "position": [286, 1],
       "bounds": [15, 285],
       "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
+      "position": [1, 1],
+      "bounds": [285, 800],
       "transform": 1
     },
     {

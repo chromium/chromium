@@ -25,7 +25,7 @@ class RenderFrameObserver : public content::RenderFrameObserver {
   void OnDestruct() override;
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
 

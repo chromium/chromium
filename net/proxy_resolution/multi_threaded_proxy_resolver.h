@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -73,7 +74,7 @@ class NET_EXPORT_PRIVATE MultiThreadedProxyResolverFactory
 
   const size_t max_num_threads_;
 
-  std::set<Job*> jobs_;
+  std::set<raw_ptr<Job, SetExperimental>> jobs_;
 };
 
 }  // namespace net

@@ -9,12 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/base_state.h"
-#include "ash/wm/wm_event.h"
-#include "base/time/time.h"
-#include "ui/display/display.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
+
+class WMEvent;
 
 // ClientControlledState delegates the window state transition and
 // bounds control to the client. Its window state and bounds are

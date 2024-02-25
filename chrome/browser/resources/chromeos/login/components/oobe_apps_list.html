@@ -8,10 +8,10 @@ found in the LICENSE file.
   OOBE polymer element which is used to show a list of recommended apps.
 -->
 
-<style include="cros-color-overrides">
+<style include="cros-color-overrides oobe-common-styles">
   :host {
     --checkbox-column-width: 40px;
-    --checkbox-size: 18px;
+    --checkbox-size: 16px;
   }
 
   #appsListContainer {
@@ -23,9 +23,6 @@ found in the LICENSE file.
   }
 
   #appsList {
-    height: 100%;
-    /* Bug(b/294443311): Add logic to apply bottom border to the container only
-    if there is an overflow. */
     overflow-y: auto;
   }
 
@@ -35,7 +32,7 @@ found in the LICENSE file.
     grid-template-areas:
       '.        .    title       .     '
       'checkbox icon category    .     '
-      '.        .    description expand';
+      '.        .    description .     ';
     grid-auto-flow: column;
     grid-template-columns: var(--checkbox-column-width) 48px 1fr 26px;
     grid-template-rows: 22px 22px auto;
@@ -69,7 +66,7 @@ found in the LICENSE file.
       (var(--checkbox-column-width) - var(--checkbox-size)) / 2 + 4px
     );
     position: absolute;
-    width: 10px;
+    width: 8px;
   }
 
   :host-context(.jelly-enabled) #unselectAll {
@@ -166,71 +163,51 @@ found in the LICENSE file.
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
-  .expand-button {
-    align-items: flex-start;
-    display: flex;
-    grid-area: expand;
-  }
-
-  cr-expand-button {
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-button-margin-end: 0;
-    --cr-expand-button-icon-size: 20px;
-    --cr-expand-button-size: 20px;
-    --cr-section-vertical-padding: 0;
-    height: 20px;
-    width: 20px;
-  }
 </style>
 <div id="appsListContainer">
-  <div id="unselectAll" hidden="[[unselectSymbolHidden_(appsSelected)]]"></div>
+  <div id="unselectAll" hidden="[[unselectSymbolHidden(appsSelected)]]"></div>
   <cr-checkbox
     id="selectAll"
-    checked="{{allSelected_}}"
-    on-change="updateSelection_"
+    checked="{{allSelected}}"
+    on-change="updateSelection"
   >
     <slot name="selectAllTitle"></slot>
   </cr-checkbox>
-  <div id="appsList">
-    <template is="dom-repeat" items="[[appList]]">
-      <div class="app-item">
-        <cr-checkbox
-          id="[[item.package_name]]"
-          checked="{{item.checked}}"
-          class="no-label"
-          aria-description="[[item.title]]"
-          on-change="updateCount_"
-        >
-        </cr-checkbox>
-        <webview
-          role="img"
-          class="app-icon"
-          src="[[getWrappedIcon_(item.icon_url)]]"
-          aria-hidden="true"
-          tabindex="-1"
-          on-contentload="onImageLoaded_"
-        >
-        </webview>
-        <div class="app-title">[[item.title]]</div>
-        <div class="app-tags secondary-text truncated">
-          <ul>
-            <template is="dom-repeat" items="[[item.tags]]">
-              <li>[[item]]</li>
-            </template>
-          </ul>
-        </div>
-        <div class="app-description secondary-text truncated">
-          [[item.description]]
-        </div>
-        <div class="expand-button">
-          <cr-expand-button
-            on-click="onExpandClicked_"
-            aria-label="[[getExpandButtonAriaLabel_(item.title)]]"
+  <div id="appsList" class="scrollable">
+    <div id="scrollContent">
+      <template is="dom-repeat" items="[[appList]]">
+        <div class="app-item">
+          <cr-checkbox
+            id="[[item.package_name]]"
+            checked="{{item.checked}}"
+            class="no-label"
+            aria-description="[[item.title]]"
+            on-change="updateCount"
           >
-          </cr-expand-button>
+          </cr-checkbox>
+          <webview
+            role="img"
+            class="app-icon"
+            src="[[getWrappedIcon(item.icon_url)]]"
+            aria-hidden="true"
+            tabindex="-1"
+            on-contentload="onImageLoaded"
+          >
+          </webview>
+          <div class="app-title">[[item.title]]</div>
+          <div class="app-tags secondary-text truncated">
+            <ul>
+              <template is="dom-repeat" items="[[item.tags]]">
+                <li>[[item]]</li>
+              </template>
+            </ul>
+          </div>
+          <div class="app-description secondary-text">
+            [[item.description]]
+          </div>
+          </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </div>

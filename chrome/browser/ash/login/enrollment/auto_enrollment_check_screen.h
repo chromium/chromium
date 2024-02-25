@@ -14,8 +14,12 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+
+namespace policy {
+class AutoEnrollmentController;
+}  // namespace policy
 
 namespace ash {
 
@@ -84,12 +88,12 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   // Configures the UI to reflect the updated captive portal state.
   // Returns true if a UI change has been made.
-  bool UpdateCaptivePortalState(
+  bool ShowCaptivePortalState(
       NetworkState::PortalState new_captive_portal_state);
 
   // Configures the UI to reflect `new_auto_enrollment_state`. Returns true if
   // and only if a UI change has been made.
-  bool UpdateAutoEnrollmentState(
+  bool ShowAutoEnrollmentState(
       policy::AutoEnrollmentState new_auto_enrollment_state);
 
   // Configures the error screen.
@@ -110,6 +114,10 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // The user requested a connection attempt to be performed.
   void OnConnectRequested();
 
+  // Returns true if the `error` blocks the state determination process and must
+  // be addressed.
+  bool IsBlockingError(const policy::AutoEnrollmentError& error) const;
+
   // Returns true if an error response from the server should cause a network
   // error screen to be displayed and block the wizard from continuing. If false
   // is returned, an error response from the server is treated as "no enrollment
@@ -120,7 +128,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   void ClearState();
 
   base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen> error_screen_;
   base::RepeatingCallback<void(Result result)> exit_callback_;
   raw_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_ =
       nullptr;

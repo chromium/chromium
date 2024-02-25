@@ -43,13 +43,13 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("autocompleteAttribute", field->autocomplete_attribute);
   field_data.Set("labelAttribute", field->label);
   field_data.Set("placeholderAttribute", field->placeholder);
-  field_data.Set("fieldType", field->Type().ToString());
+  field_data.Set("fieldType", field->Type().ToStringView());
   field_data.Set("heuristicType",
-                 AutofillType(field->heuristic_type()).ToString());
-  field_data.Set("serverType", AutofillType(field->server_type()).ToString());
+                 FieldTypeToStringView(field->heuristic_type()));
+  field_data.Set("serverType", FieldTypeToStringView(field->server_type()));
   field_data.Set("serverTypeIsOverride",
                  field->server_type_prediction_is_override());
-  field_data.Set("htmlType", FieldTypeToStringPiece(field->html_type()));
+  field_data.Set("htmlType", FieldTypeToStringView(field->html_type()));
   field_data.Set("section", field->section.ToString());
   field_data.Set("rank", base::NumberToString(field->rank()));
   field_data.Set("rankInSignatureGroup",

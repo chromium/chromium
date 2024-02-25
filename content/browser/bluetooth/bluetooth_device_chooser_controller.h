@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_DEVICE_CHOOSER_CONTROLLER_H_
 #define CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_DEVICE_CHOOSER_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -15,7 +16,6 @@
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace device {
@@ -96,7 +96,7 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
           TestScanDurationSetting::IMMEDIATE_TIMEOUT);
 
   static std::unique_ptr<device::BluetoothDiscoveryFilter> ComputeScanFilter(
-      const absl::optional<
+      const std::optional<
           std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
  private:

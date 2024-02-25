@@ -47,7 +47,7 @@ class DTraceReadTest(unittest.TestCase):
     self.assertEquals(collapser.GetSamplesListForTesting(), [{
         'frames': [
             ('unsymbolized module', '0x21'),
-            ('unsymbolized module', '0x85'),
+            ('unsymbolized module', '+0x85'),
             ('unsymbolized module', '0x37'),
         ],
         'weight':

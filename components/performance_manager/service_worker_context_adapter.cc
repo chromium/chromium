@@ -6,12 +6,14 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace performance_manager {
 
@@ -130,6 +132,13 @@ void ServiceWorkerContextAdapter::UnregisterServiceWorker(
   NOTIMPLEMENTED();
 }
 
+void ServiceWorkerContextAdapter::UnregisterServiceWorkerImmediately(
+    const GURL& scope,
+    const blink::StorageKey& key,
+    ResultCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 content::ServiceWorkerExternalRequestResult
 ServiceWorkerContextAdapter::StartingExternalRequest(
     int64_t service_worker_version_id,
@@ -205,6 +214,12 @@ void ServiceWorkerContextAdapter::StartWorkerForScope(
   NOTIMPLEMENTED();
 }
 
+bool ServiceWorkerContextAdapter::IsLiveStartingServiceWorker(
+    int64_t service_worker_version_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool ServiceWorkerContextAdapter::IsLiveRunningServiceWorker(
     int64_t service_worker_version_id) {
   NOTIMPLEMENTED();
@@ -214,10 +229,13 @@ bool ServiceWorkerContextAdapter::IsLiveRunningServiceWorker(
 service_manager::InterfaceProvider&
 ServiceWorkerContextAdapter::GetRemoteInterfaces(
     int64_t service_worker_version_id) {
-  NOTIMPLEMENTED();
-  static service_manager::InterfaceProvider interface_provider(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  return interface_provider;
+  NOTREACHED_NORETURN();
+}
+
+blink::AssociatedInterfaceProvider&
+ServiceWorkerContextAdapter::GetRemoteAssociatedInterfaces(
+    int64_t service_worker_version_id) {
+  NOTREACHED_NORETURN();
 }
 
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
@@ -235,6 +253,13 @@ void ServiceWorkerContextAdapter::StartServiceWorkerForNavigationHint(
   NOTIMPLEMENTED();
 }
 
+void ServiceWorkerContextAdapter::WarmUpServiceWorker(
+    const GURL& document_url,
+    const blink::StorageKey& key,
+    WarmUpServiceWorkerCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void ServiceWorkerContextAdapter::StopAllServiceWorkersForStorageKey(
     const blink::StorageKey& key) {
   NOTIMPLEMENTED();
@@ -249,10 +274,10 @@ const base::flat_map<int64_t /* version_id */,
                      content::ServiceWorkerRunningInfo>&
 ServiceWorkerContextAdapter::GetRunningServiceWorkerInfos() {
   NOTIMPLEMENTED();
-  static base::flat_map<int64_t /* version_id */,
-                        content::ServiceWorkerRunningInfo>
+  static const base::NoDestructor<
+      base::flat_map<int64_t, content::ServiceWorkerRunningInfo>>
       unused;
-  return unused;
+  return *unused;
 }
 
 void ServiceWorkerContextAdapter::OnRegistrationCompleted(const GURL& scope) {
@@ -340,13 +365,13 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
   size_t removed = it->second.erase(client_uuid);
   if (!removed) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 

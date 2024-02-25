@@ -5,14 +5,13 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
 
+#include <optional>
 #include <vector>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class ExtensionPrefs;
@@ -41,8 +40,8 @@ class DeclarativeNetRequestPrefsHelper {
 
   // Struct that contains the rule ids to disable or enable.
   struct RuleIdsToUpdate {
-    RuleIdsToUpdate(const absl::optional<std::vector<int>>& ids_to_disable,
-                    const absl::optional<std::vector<int>>& ids_to_enable);
+    RuleIdsToUpdate(const std::optional<std::vector<int>>& ids_to_disable,
+                    const std::optional<std::vector<int>>& ids_to_enable);
     RuleIdsToUpdate(RuleIdsToUpdate&&);
     ~RuleIdsToUpdate();
 
@@ -66,7 +65,7 @@ class DeclarativeNetRequestPrefsHelper {
     base::flat_set<int> disabled_rule_ids_after_update;
 
     // Error while updating the disabled rule ids.
-    absl::optional<std::string> error;
+    std::optional<std::string> error;
   };
 
   // Returns the set of disabled rule ids of a static ruleset.

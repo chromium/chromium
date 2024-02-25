@@ -55,6 +55,9 @@ class ASH_EXPORT PhantomWindowController {
   // Returns |maximize_cue_widget_|.
   views::Widget* GetMaximizeCueForTesting() const;
 
+  // Returns |target_bounds_in_screen_|.
+  const gfx::Rect& GetTargetBoundsInScreenForTesting() const;
+
  private:
   // Creates, shows and returns a phantom widget at |bounds|
   // with kShellWindowId_ShelfContainer in |root_window| as a parent.
@@ -71,7 +74,7 @@ class ASH_EXPORT PhantomWindowController {
   void ShowPhantomWidget();
 
   // Window that the phantom window is stacked above.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // Target bounds of |phantom_widget_| in screen coordinates for animation.
   gfx::Rect target_bounds_in_screen_;

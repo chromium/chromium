@@ -23,13 +23,18 @@ class MockWrongHWIDScreen : public WrongHWIDScreen {
   void ExitScreen();
 };
 
-class MockWrongHWIDScreenView : public WrongHWIDScreenView {
+class MockWrongHWIDScreenView final : public WrongHWIDScreenView {
  public:
   MockWrongHWIDScreenView();
   ~MockWrongHWIDScreenView() override;
 
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
+
+  base::WeakPtr<WrongHWIDScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<WrongHWIDScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -49,14 +49,15 @@ void NearbyNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   NearbyNotificationDelegate* delegate =
       GetNotificationDelegate(profile, notification_id);
   if (!delegate) {
-    NS_LOG(VERBOSE) << "Ignoring notification click event for unknown id "
-                    << notification_id;
+    CD_LOG(VERBOSE, Feature::NS)
+        << "Ignoring notification click event for unknown id "
+        << notification_id;
     CloseNearbyNotification(profile, notification_id);
     std::move(completed_closure).Run();
     return;
@@ -74,8 +75,9 @@ void NearbyNotificationHandler::OnClose(Profile* profile,
   NearbyNotificationDelegate* delegate =
       GetNotificationDelegate(profile, notification_id);
   if (!delegate) {
-    NS_LOG(VERBOSE) << "Ignoring notification close event for unknown id "
-                    << notification_id;
+    CD_LOG(VERBOSE, Feature::NS)
+        << "Ignoring notification close event for unknown id "
+        << notification_id;
     std::move(completed_closure).Run();
     return;
   }

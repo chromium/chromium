@@ -9,15 +9,16 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bookmarks {
 
@@ -70,7 +71,7 @@ class TitledUrlIndex {
 
   // Returns a normalized version of the UTF16 string `text`.  If it fails to
   // normalize the string, returns `text` itself as a best-effort.
-  static std::u16string Normalize(const std::u16string& text);
+  static std::u16string Normalize(std::u16string_view text);
 
  private:
   friend class TitledUrlIndexFake;
@@ -93,7 +94,7 @@ class TitledUrlIndex {
 
   // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
   // containing |node| and the matches.
-  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+  std::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       const query_parser::QueryNodeVector& query_nodes,
       const std::vector<std::u16string>& query_terms);

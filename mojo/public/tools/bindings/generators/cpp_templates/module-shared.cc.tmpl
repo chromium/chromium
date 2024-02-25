@@ -17,6 +17,10 @@
 
 #include "{{module.path}}-params-data.h"
 
+{%- if features %}
+#include "{{module.path}}-features.h"
+{%- endif %}
+
 {%- for header in extra_traits_headers %}
 #include "{{header}}"
 {%- endfor %}
@@ -61,6 +65,11 @@ namespace internal {
 {%- endfor %}
 
 }  // namespace internal
+
+{#--- Feature definitions #}
+{%- for feature in features %}
+{%   include "feature_definition.tmpl" %}
+{%- endfor %}
 
 {%- for namespace in namespaces_as_array|reverse %}
 }  // namespace {{namespace}}

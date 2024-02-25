@@ -4,7 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/button_label.js';
 
-import {ButtonLabelElement} from 'chrome://customize-chrome-side-panel.top-chrome/button_label.js';
+import type {ButtonLabelElement} from 'chrome://customize-chrome-side-panel.top-chrome/button_label.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {assertNotStyle, assertStyle} from './test_support.js';

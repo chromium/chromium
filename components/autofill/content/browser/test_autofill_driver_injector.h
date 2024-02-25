@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_DRIVER_INJECTOR_H_
 
+#include <concepts>
+#include <map>
+#include <memory>
+
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -61,11 +66,9 @@ class TestAutofillDriverInjectorBase {
 //    private:
 //     TestAutofillDriverInjector<TestAutofillDriver> autofill_driver_injector_;
 //   };
-template <typename T>
+template <std::derived_from<ContentAutofillDriver> T>
 class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
  public:
-  static_assert(std::is_base_of_v<ContentAutofillDriver, T>);
-
   TestAutofillDriverInjector() = default;
   TestAutofillDriverInjector(const TestAutofillDriverInjector&) = delete;
   TestAutofillDriverInjector& operator=(const TestAutofillDriverInjector&) =
@@ -84,7 +87,7 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
  private:
   // Replaces every newly created production-code ContentAutofillDriver for the
   // given WebContents with a test driver created by
-  // `T(content::RenderFrameHost*, ContentAutofillRouter*)` and sets its
+  // `T(content::RenderFrameHost*, AutofillDriverRouter*)` and sets its
   // AutofillManager to a new `BrowserAutofillManager` with locale "en-US".
   //
   // One challenge is that the ContentAutofillClient may not exist yet at the
@@ -136,17 +139,16 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) override {
       content::RenderFrameHost* rfh = driver.render_frame_host();
-      std::unique_ptr<T> new_driver = CreateDriver(rfh, &factory);
+      std::unique_ptr<T> new_driver = std::make_unique<T>(rfh, &factory);
       owner_->drivers_[rfh] = new_driver.get();
       // This is spectacularly hacky as it relies on an implementation detail of
       // ContentAutofillDriverFactory::DriverForFrame(), which fires this event:
       //
       // DriverForFrame() has just created `driver` and still holds a reference
-      // to the std::unique_ptr<> that owns `driver`. By calling SetDriver(), we
-      // mutate that reference. This looks sketchy, but it is "safe" because
-      // std::[unordered_]map<>::operator[]() does not invalidate references.
-      test_api(factory).SetDriver(driver.render_frame_host(),
-                                  std::move(new_driver));
+      // to the std::unique_ptr<ContentAutofillDriver> that owns `driver`. By
+      // calling ExchangeDriver(), we mutate that reference. This is safe but it
+      // is "safe" because ExchangeDriver() doesn't invalidate references.
+      test_api(factory).ExchangeDriver(rfh, std::move(new_driver));
     }
 
     void OnContentAutofillDriverWillBeDeleted(
@@ -156,15 +158,6 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
     }
 
    private:
-    std::unique_ptr<T> CreateDriver(content::RenderFrameHost* rfh,
-                                    ContentAutofillDriverFactory* factory) {
-      auto* client = ContentAutofillClient::FromWebContents(web_contents());
-      auto driver = std::make_unique<T>(rfh, factory);
-      driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
-          driver.get(), client, "en-US"));
-      return driver;
-    }
-
     raw_ptr<TestAutofillDriverInjector> owner_;
 
     // Observed source. We can't use a ScopedObservation because we use

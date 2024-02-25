@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -30,7 +30,7 @@ namespace device_signals {
 namespace {
 
 // Parses a string value from `class_object` named `property_name`.
-absl::optional<std::string> ParseString(
+std::optional<std::string> ParseString(
     const std::wstring& property_name,
     const ComPtr<IWbemClassObject>& class_object) {
   base::win::ScopedVariant string_variant;
@@ -38,7 +38,7 @@ absl::optional<std::string> ParseString(
                                  string_variant.Receive(), 0, 0);
 
   if (FAILED(hr) || string_variant.type() != VT_BSTR) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Owned by ScopedVariant.
@@ -89,7 +89,7 @@ WmiHotfixesResponse WmiClientImpl::GetInstalledHotfixes() {
       continue;
     }
 
-    absl::optional<std::string> hotfix_id =
+    std::optional<std::string> hotfix_id =
         ParseString(L"HotFixId", class_object);
     if (!hotfix_id.has_value()) {
       response.parsing_errors.push_back(WmiParsingError::kFailedToGetName);

@@ -333,8 +333,6 @@ TEST_F(PropertyRegistryTest, MarkReferencedAtProperty) {
 }
 
 TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistered) {
-  ScopedCSSViewportUnits4ForTest scoped_feature(true);
-
   EXPECT_EQ(
       0u, RegisterProperty("--px", "<length>", "1px")->GetViewportUnitFlags());
   EXPECT_EQ(
@@ -356,8 +354,6 @@ TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistered) {
 }
 
 TEST_F(PropertyRegistryTest, GetViewportUnitFlagsDeclared) {
-  ScopedCSSViewportUnits4ForTest scoped_feature(true);
-
   EXPECT_EQ(0u,
             DeclareProperty("--px", "<length>", "1px")->GetViewportUnitFlags());
   EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic),
@@ -378,8 +374,6 @@ TEST_F(PropertyRegistryTest, GetViewportUnitFlagsDeclared) {
 }
 
 TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistry) {
-  ScopedCSSViewportUnits4ForTest scoped_feature(true);
-
   EXPECT_EQ(0u, Registry().GetViewportUnitFlags());
 
   RegisterProperty("--vh", "<length>", "1vh");

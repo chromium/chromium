@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -49,6 +50,7 @@ void IsApplicationServerKeyValid(PushSubscriptionOptions* output) {
 }
 
 TEST(PushManagerTest, ValidSenderKey) {
+  test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
@@ -70,6 +72,7 @@ inline bool RemovePad(UChar character) {
 }
 
 TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
+  test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   String base64_url =
@@ -89,6 +92,7 @@ TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
 }
 
 TEST(PushManagerTest, InvalidSenderKeyLength) {
+  test::TaskEnvironment task_environment;
   uint8_t sender_key[kMaxKeyLength + 1];
   memset(sender_key, 0, sizeof(sender_key));
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
@@ -106,6 +110,7 @@ TEST(PushManagerTest, InvalidSenderKeyLength) {
 }
 
 TEST(PushManagerTest, InvalidBase64SenderKey) {
+  test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(
@@ -123,6 +128,7 @@ TEST(PushManagerTest, InvalidBase64SenderKey) {
 }
 
 TEST(PushManagerTest, InvalidBase64URLWithPaddingSenderKey) {
+  test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(

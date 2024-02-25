@@ -12,6 +12,7 @@ source_set("test") {
   deps = [
     "//base",
     "//components/origin_trials:common",
+    "//net",
     "//url",
   ]
 }

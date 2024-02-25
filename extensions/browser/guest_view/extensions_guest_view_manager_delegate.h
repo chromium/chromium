@@ -14,6 +14,10 @@ namespace extensions {
 class ExtensionsGuestViewManagerDelegate
     : public guest_view::GuestViewManagerDelegate {
  public:
+  static bool IsGuestAvailableToContextWithFeature(
+      const guest_view::GuestViewBase* guest,
+      const std::string& feature_name);
+
   ExtensionsGuestViewManagerDelegate();
   ~ExtensionsGuestViewManagerDelegate() override;
 
@@ -23,8 +27,11 @@ class ExtensionsGuestViewManagerDelegate
                      base::Value::Dict args,
                      guest_view::GuestViewBase* guest,
                      int instance_id) override;
-  bool IsGuestAvailableToContext(guest_view::GuestViewBase* guest) override;
-  bool IsOwnedByExtension(guest_view::GuestViewBase* guest) override;
+  bool IsGuestAvailableToContext(
+      const guest_view::GuestViewBase* guest) const override;
+  bool IsOwnedByExtension(const guest_view::GuestViewBase* guest) override;
+  bool IsOwnedByControlledFrameEmbedder(
+      const guest_view::GuestViewBase* guest) override;
   void RegisterAdditionalGuestViewTypes(
       guest_view::GuestViewManager* manager) override;
 };

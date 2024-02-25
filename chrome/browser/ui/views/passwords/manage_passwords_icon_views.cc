@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,9 +29,9 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
                          page_action_icon_delegate,
                          "ManagePasswords") {
   // Password icon should not be mirrored in RTL.
-  image()->SetFlipCanvasOnPaintForRTLUI(false);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());
 }
 
@@ -57,7 +58,7 @@ void ManagePasswordsIconViews::UpdateUiForState() {
   // We may be about to automatically pop up a passwords bubble.
   // Force layout of the icon's parent now; the bubble will be incorrectly
   // positioned otherwise, as the icon won't have been drawn into position.
-  parent()->Layout();
+  parent()->DeprecatedLayoutImmediately();
 }
 
 views::BubbleDialogDelegate* ManagePasswordsIconViews::GetBubble() const {
@@ -83,7 +84,7 @@ bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
 
 const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kKeyOpenChromeRefreshIcon
+             ? vector_icons::kPasswordManagerIcon
              : kKeyIcon;
 }
 
@@ -91,7 +92,8 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     const {
   switch (state_) {
     case password_manager::ui::INACTIVE_STATE:
-    case password_manager::ui::CONFIRMATION_STATE:
+    case password_manager::ui::SAVE_CONFIRMATION_STATE:
+    case password_manager::ui::UPDATE_CONFIRMATION_STATE:
     case password_manager::ui::CREDENTIAL_REQUEST_STATE:
     case password_manager::ui::AUTO_SIGNIN_STATE:
     case password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE:
@@ -101,16 +103,21 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
     case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
     case password_manager::ui::PENDING_PASSWORD_STATE:
+    case password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE:
+    case password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
-    case password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE:
+    case password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE:
+    case password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
-    case password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS: {
+    case password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_TOOLTIP_SHARED_NOTIFICATION);
-    }
+    case password_manager::ui::KEYCHAIN_ERROR_STATE:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_TOOLTIP_KEYCHAIN_ERROR);
   }
   NOTREACHED_NORETURN();
 }
@@ -121,5 +128,5 @@ void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(
     PasswordBubbleViewBase::ActivateBubble();
 }
 
-BEGIN_METADATA(ManagePasswordsIconViews, PageActionIconView)
+BEGIN_METADATA(ManagePasswordsIconViews)
 END_METADATA

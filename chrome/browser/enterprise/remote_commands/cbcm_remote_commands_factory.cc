@@ -12,7 +12,6 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"  // nogncheck
 #include "chrome/browser/enterprise/remote_commands/rotate_attestation_credential_job.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -32,8 +31,7 @@ CBCMRemoteCommandsFactory::BuildJobForType(
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (enterprise_connectors::IsDeviceTrustConnectorFeatureEnabled() &&
-      type == enterprise_management::
+  if (type == enterprise_management::
                   RemoteCommand_Type_BROWSER_ROTATE_ATTESTATION_CREDENTIAL) {
     return std::make_unique<RotateAttestationCredentialJob>(
         g_browser_process->browser_policy_connector()

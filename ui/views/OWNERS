@@ -16,10 +16,12 @@ pbos@chromium.org
 pkasting@chromium.org
 robliao@chromium.org
 sky@chromium.org
-tapted@chromium.org
 tluk@chromium.org
 
-# Prefer avi@, ellyjones@, lgrey@, or tapted@ for mac specific changes.
+# For accessibility-related changes.
+dpranke@google.com
+
+# Prefer avi@, ellyjones@, or lgrey@ for mac specific changes.
 per-file *_mac.*=avi@chromium.org
 per-file *_cocoa.*=avi@chromium.org
 per-file *.mm=avi@chromium.org
@@ -29,6 +31,8 @@ per-file *_cocoa.*=lgrey@chromium.org
 per-file *.mm=lgrey@chromium.org
 
 per-file *_win.*=davidbienvenu@chromium.org
+
+per-file *_headless.*=kvitekp@chromium.org
 
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*

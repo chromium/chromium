@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,6 +83,8 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
   auto task_id = io_task_controller_.Add(
       std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kCopy));
   EXPECT_EQ(1, io_task_controller_.wake_lock_counter_for_tests());
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
+  EXPECT_EQ(io_task_controller_.TaskStatuses()[0].get().task_id, task_id);
 
   // Wait for the callbacks posted to the main sequence to finish.
   {
@@ -92,6 +95,8 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
+
+  EXPECT_TRUE(io_task_controller_.TaskStatuses().empty());
 
   // Cancel() should have no effect once a task is completed.
   io_task_controller_.Cancel(task_id);
@@ -131,6 +136,8 @@ TEST_F(IOTaskControllerTest, Cancel) {
 
   auto task_id = io_task_controller_.Add(
       std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kMove));
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
+  EXPECT_EQ(io_task_controller_.TaskStatuses()[0].get().task_id, task_id);
 
   // Cancel should synchronously send a progress status.
   EXPECT_CALL(observer,
@@ -139,6 +146,7 @@ TEST_F(IOTaskControllerTest, Cancel) {
                   Field(&ProgressStatus::task_id, task_id), base_matcher)));
 
   io_task_controller_.Cancel(task_id);
+  EXPECT_TRUE(io_task_controller_.TaskStatuses().empty());
 
   // No more observer notifications should come after Cancel() as the task is
   // deleted.
@@ -177,6 +185,8 @@ TEST_F(IOTaskControllerTest, PauseResume) {
 
   auto task_id = io_task_controller_.Add(
       std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kMove));
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
+  EXPECT_EQ(io_task_controller_.TaskStatuses()[0].get().task_id, task_id);
 
   // Pause should synchronously send a progress status.
   PauseParams pause_params;
@@ -187,6 +197,7 @@ TEST_F(IOTaskControllerTest, PauseResume) {
                             Field(&ProgressStatus::pause_params, pause_params),
                             base_matcher)));
   io_task_controller_.Pause(task_id, pause_params);
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
 
   // ProgressPausedTasks should synchronously send another paused status update.
   EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
@@ -202,6 +213,7 @@ TEST_F(IOTaskControllerTest, PauseResume) {
                   Field(&ProgressStatus::state, State::kInProgress),
                   Field(&ProgressStatus::task_id, task_id), base_matcher)));
   io_task_controller_.Resume(task_id, ResumeParams());
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
 
   // Wait for the task to finish successfully.
   EXPECT_CALL(observer,
@@ -250,8 +262,11 @@ TEST_F(IOTaskControllerTest, CompleteWithError) {
                             Field(&ProgressStatus::state, State::kInProgress),
                             base_matcher)));
 
-  auto task_id = io_task_controller_.Add(
-      std::make_unique<DummyIOTask>(source_urls, dest, OperationType::kMove));
+  auto task_id = io_task_controller_.Add(std::make_unique<DummyIOTask>(
+      source_urls, dest, OperationType::kMove,
+      /*show_notification=*/true, /*progress_succeeds=*/false));
+  EXPECT_FALSE(io_task_controller_.TaskStatuses().empty());
+  EXPECT_EQ(io_task_controller_.TaskStatuses()[0].get().task_id, task_id);
 
   // CompleteWithError should synchronously send a progress status.
   EXPECT_CALL(observer,
@@ -263,6 +278,8 @@ TEST_F(IOTaskControllerTest, CompleteWithError) {
                                    base_matcher)));
   io_task_controller_.CompleteWithError(
       task_id, PolicyError(PolicyErrorType::kDlp, /*blocked_files=*/2));
+
+  EXPECT_TRUE(io_task_controller_.TaskStatuses().empty());
 
   // No more observer notifications should come after CompleteWithError as the
   // task is deleted.

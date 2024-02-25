@@ -4,7 +4,9 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
@@ -13,14 +15,12 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
@@ -56,9 +56,9 @@ crosapi::mojom::ClipboardHistoryDisplayFormat CalculateDisplayFormat(
   }
 }
 
-absl::optional<ui::ImageModel> DetermineDisplayImage(
+std::optional<ui::ImageModel> DetermineDisplayImage(
     const ClipboardHistoryItem& item) {
-  absl::optional<ui::ImageModel> maybe_image;
+  std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
@@ -94,7 +94,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
     const ui::ClipboardData& data) {
   // This code should not be reached if `data` doesn't contain file system data.
   std::u16string sources;
-  std::vector<base::StringPiece16> source_list;
+  std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
@@ -148,23 +148,23 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
   }
 }
 
-absl::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
+std::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
     const ClipboardHistoryItem& item) {
   return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
                  chromeos::clipboard_history::IsUrl(item.display_text())
-             ? absl::make_optional(gfx::ELIDE_MIDDLE)
-             : absl::nullopt;
+             ? std::make_optional(gfx::ELIDE_MIDDLE)
+             : std::nullopt;
 }
 
-absl::optional<size_t> DetermineDisplayTextMaxLines(
+std::optional<size_t> DetermineDisplayTextMaxLines(
     const ClipboardHistoryItem& item) {
   return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
                  chromeos::clipboard_history::IsUrl(item.display_text())
-             ? absl::make_optional(1u)
-             : absl::nullopt;
+             ? std::make_optional(1u)
+             : std::nullopt;
 }
 
-absl::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
+std::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     return chromeos::clipboard_history::GetIconForDescriptor(
         clipboard_history_util::ItemToDescriptor(item));
@@ -172,7 +172,7 @@ absl::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
 
   if (item.display_format() !=
       crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return clipboard_history_util::GetIconForFileClipboardItem(item);

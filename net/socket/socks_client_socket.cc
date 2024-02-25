@@ -130,13 +130,6 @@ bool SOCKSClientSocket::WasEverUsed() const {
   return was_ever_used_;
 }
 
-bool SOCKSClientSocket::WasAlpnNegotiated() const {
-  if (transport_socket_)
-    return transport_socket_->WasAlpnNegotiated();
-  NOTREACHED();
-  return false;
-}
-
 NextProto SOCKSClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();
@@ -364,7 +357,7 @@ int SOCKSClientSocket::DoHandshakeWrite() {
 
   int handshake_buf_len = buffer_.size() - bytes_sent_;
   DCHECK_GT(handshake_buf_len, 0);
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   memcpy(handshake_buf_->data(), &buffer_[bytes_sent_],
          handshake_buf_len);
   return transport_socket_->Write(
@@ -401,7 +394,7 @@ int SOCKSClientSocket::DoHandshakeRead() {
   }
 
   int handshake_buf_len = kReadHeaderSize - bytes_received_;
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   return transport_socket_->Read(
       handshake_buf_.get(), handshake_buf_len,
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));

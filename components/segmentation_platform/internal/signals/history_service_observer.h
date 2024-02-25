@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_SERVICE_OBSERVER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_SERVICE_OBSERVER_H_
 
+#include <optional>
+
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +15,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -26,6 +27,7 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
  public:
   HistoryServiceObserver(history::HistoryService* history_service,
                          StorageService* storage_service,
+                         const std::string& profile_id,
                          base::RepeatingClosure models_refresh_callback);
   // For tests.
   HistoryServiceObserver();
@@ -53,12 +55,13 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
 
   // List of segment IDs that depend on history data, that will be cleared when
   // history is deleted.
-  absl::optional<base::flat_set<proto::SegmentId>> history_based_segments_;
+  std::optional<base::flat_set<proto::SegmentId>> history_based_segments_;
   bool pending_deletion_based_on_history_based_segments_ = false;
 
   base::RepeatingClosure models_refresh_callback_;
   std::unique_ptr<base::CancelableOnceClosure> posted_model_refresh_task_;
 
+  const std::string profile_id_;
   std::unique_ptr<HistoryDelegateImpl> history_delegate_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

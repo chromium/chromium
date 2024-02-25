@@ -13,6 +13,10 @@
 #include "base/time/time.h"
 #include "base/win/registry.h"
 
+namespace content {
+class BrowserTestBase;
+}
+
 namespace registry_util {
 
 // Allows a test to easily override registry hives so that it can start from a
@@ -43,12 +47,16 @@ class RegistryOverrideManager {
   // behavior.
   // Optional return of the registry override path.
   // Calls to these functions must be wrapped in ASSERT_NO_FATAL_FAILURE to
-  // ensure that tests do not proceeed in case of failure to override.
+  // ensure that tests do not proceed in case of failure to override.
+  // HKEY_LOCAL_MACHINE should not be overridden in initialization for tests
+  // that launch sandboxed processes e.g. browser tests. It is safe to use from
+  // within a text fixture, and in unit tests.
   void OverrideRegistry(HKEY override);
   void OverrideRegistry(HKEY override, std::wstring* override_path);
 
  private:
   friend class RegistryOverrideManagerTest;
+  friend class content::BrowserTestBase;
 
   // Keeps track of one override.
   class ScopedRegistryKeyOverride {
@@ -69,6 +77,10 @@ class RegistryOverrideManager {
   // Used for testing only.
   RegistryOverrideManager(const base::Time& timestamp,
                           const std::wstring& test_key_root);
+
+  // Whether or not to allow using the RegistryOverrideManager for HKLM (e.g. in
+  // browser_tests).
+  static void SetAllowHKLMRegistryOverrideForIntegrationTests(bool allow);
 
   base::Time timestamp_;
   std::wstring guid_;

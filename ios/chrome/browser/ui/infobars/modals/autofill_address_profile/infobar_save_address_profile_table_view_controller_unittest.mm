@@ -6,9 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -17,13 +18,13 @@
 
 // Test fixture for testing InfobarSaveAddressProfileTableViewController class.
 class InfobarSaveAddressProfileTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   InfobarSaveAddressProfileTableViewControllerTest()
       : modal_delegate_(OCMProtocolMock(
             @protocol(InfobarSaveAddressProfileModalDelegate))) {}
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[InfobarSaveAddressProfileTableViewController alloc]
         initWithModalDelegate:modal_delegate_];
   }
@@ -80,7 +81,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeNameFullWithHonorificPrefix] :
+        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street"
@@ -96,7 +97,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(true),
       kProfileDataDiffKey : @{
-        [NSNumber numberWithInt:AutofillUITypeNameFullWithHonorificPrefix] :
+        [NSNumber numberWithInt:AutofillUITypeProfileFullName] :
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
@@ -193,10 +194,10 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
   CheckTitleWithId(IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(4, NumberOfItemsInSection(0));
-  CheckTextCellText(
-      @"This address is currently saved to Chrome. To use it across Google "
-      @"products, save it in your Google Account, test@gmail.com.",
-      0, 0);
+  CheckTextCellText(l10n_util::GetNSStringF(
+                        IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
+                        u"test@gmail.com"),
+                    0, 0);
   CheckTextCellText(@"Test", 0, 1);
   CheckTextButtonCellButtonTextWithId(
       IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL, 0, 2);

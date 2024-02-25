@@ -36,7 +36,7 @@ SpeechRecognitionResult* SpeechRecognitionResultList::item(unsigned index) {
   if (index >= results_.size())
     return nullptr;
 
-  return results_[index];
+  return results_[index].Get();
 }
 
 SpeechRecognitionResultList::SpeechRecognitionResultList(

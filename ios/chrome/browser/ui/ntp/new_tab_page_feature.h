@@ -30,13 +30,6 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 // TODO(crbug.com/1262536): Remove this when it is fixed.
 BASE_DECLARE_FEATURE(kEnableNTPViewHierarchyRepair);
 
-// Feature flag to enable checking feed visibility on attention log start.
-BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
-
-// Feature flag to enable refining data source reload reporting when having a
-// very short attention log.
-BASE_DECLARE_FEATURE(kEnableRefineDataSourceReloadReporting);
-
 // Flag to modify the feed header through the server. Enabling this feature on
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kFeedHeaderSettings);
@@ -45,18 +38,14 @@ BASE_DECLARE_FEATURE(kFeedHeaderSettings);
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 
-// Feature flag to enable synthentic capabilities.
-BASE_DECLARE_FEATURE(kEnableFeedSyntheticCapabilities);
-
 // Feature flag to enable sending discover feedback to an updated target
 BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 
-// Feature flag to enable follow management page instant reload when being
-// opened.
-BASE_DECLARE_FEATURE(kEnableFollowManagementInstantReload);
-
 // Feature flag to enable signed out user view demotion.
 BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
+
+// Feature flag to enable ghost cards on the iPad feeds.
+BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 
 #pragma mark - Feature parameters
 
@@ -102,7 +91,7 @@ bool IsDiscoverFeedPreviewEnabled();
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
 
-// Whether the Discover feed top sync promotion is enabled.
+// Whether the sync promo should be shown on top of the feed.
 bool IsDiscoverFeedTopSyncPromoEnabled();
 
 // Returns the feed top sync promo's UI style.
@@ -118,23 +107,12 @@ int FeedSyncPromoAutodismissCount();
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
 
-// YES if enabled checking feed visibility on attention log start.
-bool IsCheckVisibilityOnAttentionLogStartEnabled();
-
-// YES if enabled refining data source reload reporting when having a very short
-// attention log.
-bool IsRefineDataSourceReloadReportingEnabled();
-
 // YES if the Following feed header should not be sticky.
 bool IsStickyHeaderDisabledForFollowingFeed();
 
 // YES if a dot should appear to indicate that there is new content in the
 // Following feed.
 bool IsDotEnabledForNewFollowedContent();
-
-// YES if synthetic capabilities will be used to inform the server of client
-// capabilities.
-bool IsFeedSyntheticCapabilitiesEnabled();
 
 // Returns a custom height for the Following feed header if it is overridden
 // from the server, or returns the default value.
@@ -143,10 +121,10 @@ int FollowingFeedHeaderHeight();
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();
 
-// Yes when enabling follow management page instant reload when being opened.
-bool IsFollowManagementInstantReloadEnabled();
-
-// Yes if the signed out user view demotion is enabled.
+// YES if the signed out user view demotion is enabled.
 bool IsSignedOutViewDemotionEnabled();
+
+// Whether ghost cards are enabled on the iPad feeds.
+bool IsiPadFeedGhostCardsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

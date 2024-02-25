@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
@@ -17,25 +18,29 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/SogouPromoDialog.java",
     "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
     "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenCoordinator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenDelegate.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenMediator.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenProperties.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenView.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenViewBinder.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
   ]
 
-  srcjar_deps = [
-    ":jni_headers",
-    "//components/search_engines:search_engine_type_java",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
@@ -43,14 +48,20 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
     "//components/location/android:location_java",
     "//components/search_engines/android:java",
-    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
+    "//net/android:net_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.search_engines"
@@ -64,19 +75,29 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/search_sogou.xml",
     "java/res/layout/search_engine.xml",
+    "java/res/layout/search_engine_choice_header.xml",
+    "java/res/layout/search_engine_choice_item.xml",
+    "java/res/layout/search_engine_choice_view.xml",
     "java/res/layout/search_engine_recent_title.xml",
+    "java/res/layout/search_engine_with_logo.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_strings_grd",
   ]
 }
 
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.search_engines"
-  sources = [ "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenViewBinderUnitTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -85,9 +106,39 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/search_engines/android:java",
+    "//components/search_engines/android:test_utils_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.search_engines"
+  sources = [ "javatests/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceScreenRenderTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/search_engines/android:java",
+    "//components/search_engines/android:test_utils_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }

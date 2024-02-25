@@ -11,9 +11,7 @@ import android.view.View.OnDragListener;
 import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator.OnDropCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A drag listener for the target view that handles events during drag and drop to Omnibox
- */
+/** A drag listener for the target view that handles events during drag and drop to Omnibox */
 class TargetViewDragListener implements OnDragListener {
     private OnDropCallback mOnDropCallback;
     private PropertyModel mModel;

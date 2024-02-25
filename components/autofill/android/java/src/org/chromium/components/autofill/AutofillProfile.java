@@ -7,8 +7,8 @@ package org.chromium.components.autofill;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,6 @@ import java.util.Map;
 @JNINamespace("autofill")
 public class AutofillProfile {
     private String mGUID;
-    private boolean mIsLocal;
     private @Source int mSource;
     private Map<Integer, ValueWithStatus> mFields;
     private String mLabel;
@@ -51,14 +50,10 @@ public class AutofillProfile {
         }
     }
 
-    /**
-     * Builder for the {@link AutofillProfile}.
-     */
+    /** Builder for the {@link AutofillProfile}. */
     public static final class Builder {
         private String mGUID = "";
-        private boolean mIsLocal = true;
         private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
-        private ValueWithStatus mHonorificPrefix = ValueWithStatus.EMPTY;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
         private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
         private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
@@ -78,24 +73,8 @@ public class AutofillProfile {
             return this;
         }
 
-        public Builder setIsLocal(boolean isLocal) {
-            mIsLocal = isLocal;
-            return this;
-        }
-
         public Builder setSource(@Source int source) {
             mSource = source;
-            return this;
-        }
-
-        public Builder setHonorificPrefix(String honorificPrefix) {
-            mHonorificPrefix =
-                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
-            return this;
-        }
-
-        public Builder setHonorificPrefix(String honorificPrefix, @VerificationStatus int status) {
-            mHonorificPrefix = new ValueWithStatus(honorificPrefix, status);
             return this;
         }
 
@@ -222,9 +201,20 @@ public class AutofillProfile {
         }
 
         public AutofillProfile build() {
-            return new AutofillProfile(mGUID, mIsLocal, mSource, mHonorificPrefix, mFullName,
-                    mCompanyName, mStreetAddress, mRegion, mLocality, mDependentLocality,
-                    mPostalCode, mSortingCode, mCountryCode, mPhoneNumber, mEmailAddress,
+            return new AutofillProfile(
+                    mGUID,
+                    mSource,
+                    mFullName,
+                    mCompanyName,
+                    mStreetAddress,
+                    mRegion,
+                    mLocality,
+                    mDependentLocality,
+                    mPostalCode,
+                    mSortingCode,
+                    mCountryCode,
+                    mPhoneNumber,
+                    mEmailAddress,
                     mLanguageCode);
         }
     }
@@ -234,71 +224,56 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    private static AutofillProfile create(String guid, boolean isLocal, @Source int source,
-            String honorificPrefix, @VerificationStatus int honorificPrefixStatus, String fullName,
-            @VerificationStatus int fullNameStatus, String companyName,
-            @VerificationStatus int companyNameStatus, String streetAddress,
-            @VerificationStatus int streetAddressStatus, String region,
-            @VerificationStatus int regionStatus, String locality,
-            @VerificationStatus int localityStatus, String dependentLocality,
-            @VerificationStatus int dependentLocalityStatus, String postalCode,
-            @VerificationStatus int postalCodeStatus, String sortingCode,
-            @VerificationStatus int sortingCodeStatus, String countryCode,
-            @VerificationStatus int countryCodeStatus, String phoneNumber,
-            @VerificationStatus int phoneNumberStatus, String emailAddress,
-            @VerificationStatus int emailAddressStatus, String languageCode) {
-        return new AutofillProfile(guid, isLocal, source,
-                new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
-                new ValueWithStatus(fullName, fullNameStatus),
-                new ValueWithStatus(companyName, companyNameStatus),
-                new ValueWithStatus(streetAddress, streetAddressStatus),
-                new ValueWithStatus(region, regionStatus),
-                new ValueWithStatus(locality, localityStatus),
-                new ValueWithStatus(dependentLocality, dependentLocalityStatus),
-                new ValueWithStatus(postalCode, postalCodeStatus),
-                new ValueWithStatus(sortingCode, sortingCodeStatus),
-                new ValueWithStatus(countryCode, countryCodeStatus),
-                new ValueWithStatus(phoneNumber, phoneNumberStatus),
-                new ValueWithStatus(emailAddress, emailAddressStatus), languageCode);
+    private AutofillProfile(String guid, @Source int source, String languageCode) {
+        mGUID = guid;
+        mSource = source;
+        mLanguageCode = languageCode;
+        mFields = new HashMap<>();
     }
 
-    private AutofillProfile(String guid, boolean isLocal, @Source int source,
-            ValueWithStatus honorificPrefix, ValueWithStatus fullName, ValueWithStatus companyName,
-            ValueWithStatus streetAddress, ValueWithStatus region, ValueWithStatus locality,
-            ValueWithStatus dependentLocality, ValueWithStatus postalCode,
-            ValueWithStatus sortingCode, ValueWithStatus countryCode, ValueWithStatus phoneNumber,
-            ValueWithStatus emailAddress, String languageCode) {
-        mGUID = guid;
-        mIsLocal = isLocal;
-        mSource = source;
-
-        mFields = new HashMap<>();
-        mFields.put(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
-        mFields.put(ServerFieldType.NAME_FULL, fullName);
-        mFields.put(ServerFieldType.COMPANY_NAME, companyName);
-        mFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
-        mFields.put(ServerFieldType.ADDRESS_HOME_STATE, region);
-        mFields.put(ServerFieldType.ADDRESS_HOME_CITY, locality);
-        mFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
-        mFields.put(ServerFieldType.ADDRESS_HOME_ZIP, postalCode);
-        mFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
-        mFields.put(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
-        mFields.put(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
-        mFields.put(ServerFieldType.EMAIL_ADDRESS, emailAddress);
-
-        mLanguageCode = languageCode;
+    private AutofillProfile(
+            String guid,
+            @Source int source,
+            ValueWithStatus fullName,
+            ValueWithStatus companyName,
+            ValueWithStatus streetAddress,
+            ValueWithStatus region,
+            ValueWithStatus locality,
+            ValueWithStatus dependentLocality,
+            ValueWithStatus postalCode,
+            ValueWithStatus sortingCode,
+            ValueWithStatus countryCode,
+            ValueWithStatus phoneNumber,
+            ValueWithStatus emailAddress,
+            String languageCode) {
+        this(guid, source, languageCode);
+        mFields.put(FieldType.NAME_FULL, fullName);
+        mFields.put(FieldType.COMPANY_NAME, companyName);
+        mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
+        mFields.put(FieldType.ADDRESS_HOME_STATE, region);
+        mFields.put(FieldType.ADDRESS_HOME_CITY, locality);
+        mFields.put(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
+        mFields.put(FieldType.ADDRESS_HOME_ZIP, postalCode);
+        mFields.put(FieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
+        mFields.put(FieldType.ADDRESS_HOME_COUNTRY, countryCode);
+        mFields.put(FieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
+        mFields.put(FieldType.EMAIL_ADDRESS, emailAddress);
     }
 
     /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
     public AutofillProfile(AutofillProfile profile) {
         mGUID = profile.getGUID();
-        mIsLocal = profile.getIsLocal();
         mSource = profile.getSource();
 
         mFields = new HashMap<>(profile.mFields);
 
         mLanguageCode = profile.getLanguageCode();
         mLabel = profile.getLabel();
+    }
+
+    @CalledByNative
+    private int[] getFieldTypes() {
+        return mFields.keySet().stream().mapToInt(i -> i).toArray();
     }
 
     @CalledByNative
@@ -316,7 +291,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public String getInfo(@ServerFieldType int fieldType) {
+    public String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return "";
         }
@@ -324,127 +299,116 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @VerificationStatus int getInfoStatus(@ServerFieldType int fieldType) {
+    public @VerificationStatus int getInfoStatus(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return VerificationStatus.NO_STATUS;
         }
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getHonorificPrefix() {
-        return getInfo(ServerFieldType.NAME_HONORIFIC_PREFIX);
-    }
-
-    private @VerificationStatus int getHonorificPrefixStatus() {
-        return getInfoStatus(ServerFieldType.NAME_HONORIFIC_PREFIX);
-    }
-
     public String getFullName() {
-        return getInfo(ServerFieldType.NAME_FULL);
+        return getInfo(FieldType.NAME_FULL);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getFullNameStatus() {
-        return getInfoStatus(ServerFieldType.NAME_FULL);
+        return getInfoStatus(FieldType.NAME_FULL);
     }
 
     public String getCompanyName() {
-        return getInfo(ServerFieldType.COMPANY_NAME);
+        return getInfo(FieldType.COMPANY_NAME);
     }
 
     @VerificationStatus
     int getCompanyNameStatus() {
-        return getInfoStatus(ServerFieldType.COMPANY_NAME);
+        return getInfoStatus(FieldType.COMPANY_NAME);
     }
 
     public String getStreetAddress() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+        return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getStreetAddressStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+        return getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
 
     public String getRegion() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_STATE);
+        return getInfo(FieldType.ADDRESS_HOME_STATE);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getRegionStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_STATE);
+        return getInfoStatus(FieldType.ADDRESS_HOME_STATE);
     }
 
     public String getLocality() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_CITY);
+        return getInfo(FieldType.ADDRESS_HOME_CITY);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getLocalityStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_CITY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_CITY);
     }
 
     public String getDependentLocality() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+        return getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
 
     private @VerificationStatus int getDependentLocalityStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
 
     public String getPostalCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_ZIP);
+        return getInfo(FieldType.ADDRESS_HOME_ZIP);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getPostalCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_ZIP);
+        return getInfoStatus(FieldType.ADDRESS_HOME_ZIP);
     }
 
     public String getSortingCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
+        return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
     private @VerificationStatus int getSortingCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
+        return getInfoStatus(FieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
+    @CalledByNative
     public String getCountryCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
     private @VerificationStatus int getCountryCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
     public String getPhoneNumber() {
-        return getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
+        return getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
     }
 
     private @VerificationStatus int getPhoneNumberStatus() {
-        return getInfoStatus(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
+        return getInfoStatus(FieldType.PHONE_HOME_WHOLE_NUMBER);
     }
 
     public String getEmailAddress() {
-        return getInfo(ServerFieldType.EMAIL_ADDRESS);
+        return getInfo(FieldType.EMAIL_ADDRESS);
     }
 
     private @VerificationStatus int getEmailAddressStatus() {
-        return getInfoStatus(ServerFieldType.EMAIL_ADDRESS);
+        return getInfoStatus(FieldType.EMAIL_ADDRESS);
     }
 
     @CalledByNative
     public String getLanguageCode() {
         return mLanguageCode;
-    }
-
-    public boolean getIsLocal() {
-        return mIsLocal;
     }
 
     public void setGUID(String guid) {
@@ -459,65 +423,63 @@ public class AutofillProfile {
         mSource = source;
     }
 
-    public void setInfo(@ServerFieldType int fieldType, @Nullable String value) {
+    @CalledByNative
+    public void setInfo(
+            @FieldType int fieldType, @Nullable String value, @VerificationStatus int status) {
         value = value == null ? "" : value;
-        mFields.put(fieldType, new ValueWithStatus(value, VerificationStatus.USER_VERIFIED));
+        mFields.put(fieldType, new ValueWithStatus(value, status));
     }
 
-    public void setHonorificPrefix(String honorificPrefix) {
-        setInfo(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
+    public void setInfo(@FieldType int fieldType, @Nullable String value) {
+        setInfo(fieldType, value, VerificationStatus.USER_VERIFIED);
     }
 
     public void setFullName(String fullName) {
-        setInfo(ServerFieldType.NAME_FULL, fullName);
+        setInfo(FieldType.NAME_FULL, fullName);
     }
 
     public void setCompanyName(String companyName) {
-        setInfo(ServerFieldType.COMPANY_NAME, companyName);
+        setInfo(FieldType.COMPANY_NAME, companyName);
     }
 
     public void setStreetAddress(String streetAddress) {
-        setInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
+        setInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
     }
 
     public void setRegion(String region) {
-        setInfo(ServerFieldType.ADDRESS_HOME_STATE, region);
+        setInfo(FieldType.ADDRESS_HOME_STATE, region);
     }
 
     public void setLocality(String locality) {
-        setInfo(ServerFieldType.ADDRESS_HOME_CITY, locality);
+        setInfo(FieldType.ADDRESS_HOME_CITY, locality);
     }
 
     public void setDependentLocality(String dependentLocality) {
-        setInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
+        setInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
     }
 
     public void setPostalCode(String postalCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_ZIP, postalCode);
+        setInfo(FieldType.ADDRESS_HOME_ZIP, postalCode);
     }
 
     public void setSortingCode(String sortingCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
+        setInfo(FieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
     }
 
     public void setCountryCode(String countryCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
+        setInfo(FieldType.ADDRESS_HOME_COUNTRY, countryCode);
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
+        setInfo(FieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
     }
 
     public void setEmailAddress(String emailAddress) {
-        setInfo(ServerFieldType.EMAIL_ADDRESS, emailAddress);
+        setInfo(FieldType.EMAIL_ADDRESS, emailAddress);
     }
 
     public void setLanguageCode(String languageCode) {
         mLanguageCode = languageCode;
-    }
-
-    public void setIsLocal(boolean isLocal) {
-        mIsLocal = isLocal;
     }
 
     /** Used by ArrayAdapter in credit card settings. */

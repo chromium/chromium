@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -40,7 +41,7 @@ void WebKioskServiceAsh::InstallWebKiosk(
     mojom::WebKioskInstaller::InstallWebKioskCallback callback) {
   if (!GetInstaller()) {
     LOG(WARNING) << "WebKioskInstallController not present";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

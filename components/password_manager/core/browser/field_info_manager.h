@@ -38,16 +38,21 @@ struct FieldInfo {
   // Lowercased field value.
   std::u16string value;
 
+  // Whether the field is likely to be an OTP field, based on its HTML
+  // attributes.
+  bool is_likely_otp;
+
   // The type of the field predicted by the server.
-  autofill::ServerFieldType type = autofill::ServerFieldType::UNKNOWN_TYPE;
+  autofill::FieldType type = autofill::FieldType::UNKNOWN_TYPE;
 
   // Predictions for the form containing the field.
-  absl::optional<FormPredictions> stored_predictions;
+  std::optional<FormPredictions> stored_predictions;
 
   FieldInfo(int driver_id,
             autofill::FieldRendererId field_id,
             std::string signon_realm,
-            std::u16string value);
+            std::u16string value,
+            bool is_likely_otp);
   FieldInfo(const FieldInfo&);
   FieldInfo& operator=(const FieldInfo&);
   ~FieldInfo();
@@ -65,7 +70,7 @@ class FieldInfoManager : public KeyedService {
 
   // Caches |info|.
   void AddFieldInfo(const FieldInfo& new_info,
-                    const absl::optional<FormPredictions>& predictions);
+                    const std::optional<FormPredictions>& predictions);
 
   // Retrieves field info for the given |signon_realm|.
   std::vector<FieldInfo> GetFieldInfo(const std::string& signon_realm);

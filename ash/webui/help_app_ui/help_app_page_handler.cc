@@ -55,10 +55,6 @@ void HelpAppPageHandler::LaunchMicrosoft365Setup() {
   help_app_ui_->delegate()->LaunchMicrosoft365Setup();
 }
 
-void HelpAppPageHandler::MaybeShowDiscoverNotification() {
-  help_app_ui_->delegate()->MaybeShowDiscoverNotification();
-}
-
 void HelpAppPageHandler::MaybeShowReleaseNotesNotification() {
   help_app_ui_->delegate()->MaybeShowReleaseNotesNotification();
 }

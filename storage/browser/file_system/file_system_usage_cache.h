@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -78,12 +79,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
 
   base::File* GetFile(const base::FilePath& file_path);
 
-  bool ReadBytes(const base::FilePath& file_path,
-                 char* buffer,
-                 int64_t buffer_size);
+  bool ReadBytes(const base::FilePath& file_path, base::span<uint8_t> buffer);
   bool WriteBytes(const base::FilePath& file_path,
-                  const char* buffer,
-                  int64_t buffer_size);
+                  base::span<const uint8_t> buffer);
   bool FlushFile(const base::FilePath& file_path);
   void ScheduleCloseTimer();
 

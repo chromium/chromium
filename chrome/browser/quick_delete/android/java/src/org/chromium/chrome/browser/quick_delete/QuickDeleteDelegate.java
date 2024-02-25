@@ -10,19 +10,20 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
+
+import java.util.List;
 
 /**
  * An interface for providing and handling quick-delete operations, such as the browsing data
  * deletion.
  */
 abstract class QuickDeleteDelegate {
-    /**
-     * A data-structure to hold the strings for the Browsing history row in the dialog.
-     */
+    /** A data-structure to hold the strings for the Browsing history row in the dialog. */
     static class DomainVisitsData {
         final String mLastVisitedDomain;
         final int mDomainsCount;
@@ -46,8 +47,9 @@ abstract class QuickDeleteDelegate {
      * @return A boolean indicating whether the user is signed in or not.
      */
     static boolean isSignedIn(@NonNull Profile profile) {
-        return IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                ConsentLevel.SIGNIN);
+        return IdentityServicesProvider.get()
+                .getIdentityManager(profile)
+                .hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
     /**
@@ -58,7 +60,8 @@ abstract class QuickDeleteDelegate {
      */
     static boolean isSyncingHistory(@NonNull Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        return syncService != null && syncService.isSyncFeatureEnabled()
+        return syncService != null
+                && syncService.isSyncFeatureEnabled()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 
@@ -77,4 +80,13 @@ abstract class QuickDeleteDelegate {
     SettingsLauncher getSettingsLauncher() {
         return null;
     }
+
+    /**
+     * Show the Quick Delete animation on the tab list.
+     *
+     * @param onAnimationEnd Runnable that is invoked when the animation is completed.
+     * @param tabs The tabs to fade with the animation. These tabs will get closed after the
+     *     animation is complete.
+     */
+    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {}
 }

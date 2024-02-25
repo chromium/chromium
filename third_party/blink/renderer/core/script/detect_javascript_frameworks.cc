@@ -26,8 +26,7 @@ namespace blink {
 namespace {
 
 constexpr char kGatsbyId[] = "___gatsby";
-constexpr char kNextjsId[] = "__next";
-constexpr char kNextjsData[] = "__NEXT_DATA__";
+constexpr char kNextjsData[] = "next";
 constexpr char kNuxtjsData[] = "__NUXT__";
 constexpr char kSapperData[] = "__SAPPER__";
 constexpr char kVuepressData[] = "__VUEPRESS__";
@@ -57,15 +56,11 @@ bool IsFrameworkIDUsed(Document& document, const AtomicString& framework_id) {
 }
 
 inline void CheckIdMatches(Document& document,
-                           JavaScriptFrameworkDetectionResult& result,
-                           bool& has_nextjs_id) {
+                           JavaScriptFrameworkDetectionResult& result) {
   DEFINE_STATIC_LOCAL(AtomicString, kReactId, ("react-root"));
   if (IsFrameworkIDUsed(document, AtomicString(kGatsbyId))) {
     result.detected_versions[JavaScriptFramework::kGatsby] =
         kNoFrameworkVersionDetected;
-  }
-  if (IsFrameworkIDUsed(document, AtomicString(kNextjsId))) {
-    has_nextjs_id = true;
   }
   if (IsFrameworkIDUsed(document, kReactId)) {
     result.detected_versions[JavaScriptFramework::kReact] =
@@ -100,12 +95,14 @@ inline void CheckPropertyMatches(Element& element,
                                  v8::Local<v8::Context> context,
                                  v8::Isolate* isolate,
                                  JavaScriptFrameworkDetectionResult& result) {
-  v8::Local<v8::Object> v8_element = dom_data_store.Get(&element, isolate);
-  if (v8_element.IsEmpty())
+  v8::Local<v8::Object> v8_element;
+  if (!dom_data_store.Get(isolate, &element).ToLocal(&v8_element)) {
     return;
+  }
   v8::Local<v8::Array> property_names;
-  if (!v8_element->GetOwnPropertyNames(context).ToLocal(&property_names))
+  if (!v8_element->GetOwnPropertyNames(context).ToLocal(&property_names)) {
     return;
+  }
 
   DEFINE_STATIC_LOCAL(AtomicString, vue_string, ("__vue__"));
   DEFINE_STATIC_LOCAL(AtomicString, vue_app_string, ("__vue_app__"));
@@ -119,7 +116,7 @@ inline void CheckPropertyMatches(Element& element,
     if (!property_names->Get(context, i).ToLocal(&key) || !key->IsString()) {
       continue;
     }
-    AtomicString key_value = ToCoreAtomicString(key.As<v8::String>());
+    AtomicString key_value = ToCoreAtomicString(isolate, key.As<v8::String>());
     if (key_value == vue_string || key_value == vue_app_string) {
       result.detected_versions[JavaScriptFramework::kVue] =
           kNoFrameworkVersionDetected;
@@ -140,12 +137,11 @@ inline void CheckPropertyMatches(Element& element,
 inline void CheckGlobalPropertyMatches(
     v8::Local<v8::Context> context,
     v8::Isolate* isolate,
-    JavaScriptFrameworkDetectionResult& result,
-    bool& has_nextjs_id) {
+    JavaScriptFrameworkDetectionResult& result) {
   static constexpr char kVueData[] = "Vue";
   static constexpr char kVue3Data[] = "__VUE__";
   static constexpr char kReactData[] = "React";
-  if (has_nextjs_id && IsFrameworkVariableUsed(context, kNextjsData)) {
+  if (IsFrameworkVariableUsed(context, kNextjsData)) {
     result.detected_versions[JavaScriptFramework::kNext] =
         kNoFrameworkVersionDetected;
   }
@@ -288,11 +284,13 @@ void DetectFrameworkVersions(Document& document,
 
   HTMLMetaElement* generator_meta = nullptr;
 
-  for (HTMLMetaElement& meta_element :
-       Traversal<HTMLMetaElement>::DescendantsOf(*document.head())) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "generator")) {
-      generator_meta = &meta_element;
-      break;
+  if (document.head()) {
+    for (HTMLMetaElement& meta_element :
+         Traversal<HTMLMetaElement>::DescendantsOf(*document.head())) {
+      if (EqualIgnoringASCIICase(meta_element.GetName(), "generator")) {
+        generator_meta = &meta_element;
+        break;
+      }
     }
   }
 
@@ -343,17 +341,17 @@ void TraverseTreeForFrameworks(Document& document,
   v8::TryCatch try_catch(isolate);
   JavaScriptFrameworkDetectionResult result;
   AtomicString detected_ng_version;
-  bool has_nextjs_id = false;
   if (!document.documentElement())
     return;
-  DOMDataStore& dom_data_store = DOMWrapperWorld::MainWorld().DomDataStore();
+  DOMDataStore& dom_data_store =
+      DOMWrapperWorld::MainWorld(isolate).DomDataStore();
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(*document.documentElement())) {
     CheckAttributeMatches(element, result, detected_ng_version);
     CheckPropertyMatches(element, dom_data_store, context, isolate, result);
   }
-  CheckIdMatches(document, result, has_nextjs_id);
-  CheckGlobalPropertyMatches(context, isolate, result, has_nextjs_id);
+  CheckIdMatches(document, result);
+  CheckGlobalPropertyMatches(context, isolate, result);
   DetectFrameworkVersions(document, context, isolate, result,
                           detected_ng_version);
   DCHECK(!try_catch.HasCaught());

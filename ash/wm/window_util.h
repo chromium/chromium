@@ -6,13 +6,18 @@
 #define ASH_WM_WINDOW_UTIL_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/wm_metrics.h"
+#include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/wm/core/window_util.h"
+
+class PrefRegistrySimple;
 
 namespace gfx {
 class Point;
@@ -30,6 +35,8 @@ class View;
 
 namespace ash::window_util {
 
+ASH_EXPORT int GetMiniWindowRoundedCornerRadius();
+
 // See ui/wm/core/window_util.h for ActivateWindow(), DeactivateWindow(),
 // IsActiveWindow() and CanActivateWindow().
 ASH_EXPORT aura::Window* GetActiveWindow();
@@ -44,6 +51,12 @@ ASH_EXPORT bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
 // `windows` that is top-most in terms of z-order. Note that this doesn't take
 // account of the visibility of the windows.
 ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
+
+// Sort the windows in `window_set` according to their stacking order in the
+// window tree. Windows which are descendants of a different root window will be
+// returned in an arbitrary order relative to each-other.
+ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
+    std::set<raw_ptr<aura::Window, SetExperimental>> window_set);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
@@ -106,11 +119,11 @@ ASH_EXPORT bool ShouldExcludeForOverview(const aura::Window* window);
 // by overview and window cycler to avoid showing multiple previews for windows
 // linked by transient and creating items using transient descendants.
 ASH_EXPORT void EnsureTransientRoots(
-    std::vector<aura::Window*>* out_window_list);
+    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list);
 
 // Minimizes a hides list of |windows| without any animations.
 ASH_EXPORT void MinimizeAndHideWithoutAnimation(
-    const std::vector<aura::Window*>& windows);
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
 
 // Returns the RootWindow at |point_in_screen| in virtual screen coordinates.
 // Returns nullptr if the root window does not exist at the given point.
@@ -132,7 +145,7 @@ bool IsAnyWindowDragged();
 
 // Returns the top window on MRU window list, or null if the list is empty.
 aura::Window* GetTopWindow();
-aura::Window* GetTopNonFloatedWindow();
+ASH_EXPORT aura::Window* GetTopNonFloatedWindow();
 
 // Returns the floated window for the active desk if it exists.
 ASH_EXPORT aura::Window* GetFloatedWindowForActiveDesk();
@@ -153,6 +166,13 @@ void SendBackKeyEvent(aura::Window* root_window);
 WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
     aura::Window* window);
 
+// Applies the `transform` to `window` and all of its transient children,
+// except those with `kExcludeFromTransientTreeTransformKey` set to true.
+// Note `transform` is the transform that is applied to `window` and needs to be
+// adjusted for the transient child windows.
+ASH_EXPORT void SetTransform(aura::Window* window,
+                             const gfx::Transform& transform);
+
 // Calculates the bounds of the |transformed_window|. Those bounds are a union
 // of all regular (normal and panel) windows in the |transformed_window|'s
 // transient hierarchy. The returned Rect is in screen coordinates. The returned
@@ -167,8 +187,14 @@ bool ShouldShowForCurrentUser(aura::Window* window);
 
 ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
-// Checks the prefs to see if natural scroll for the touchpad is turned on.
+// TODO(zxdan): Remove this method after all related code being migrated to the
+// new way of getting input device settings. Note: this method is being
+// deprecated. Please use IsNaturalScrollOn(const ui::ScrollEvent&).
 ASH_EXPORT bool IsNaturalScrollOn();
+
+// Checks the device settings to see if natural scroll for the touchpad is
+// turned on.
+ASH_EXPORT bool IsNaturalScrollOn(const ui::ScrollEvent& event);
 
 // The thumbnail window (transformed window for non-minimized state in overview,
 // mirror window for minimized state in overview and alt+tab windows) may need
@@ -178,6 +204,29 @@ ASH_EXPORT bool IsNaturalScrollOn();
 ASH_EXPORT bool ShouldRoundThumbnailWindow(
     views::View* backdrop_view,
     const gfx::RectF& thumbnail_bounds_in_screen);
+
+// Returns the target snap ratio for the given `window` or
+// `chromeos::kDefaultSnapRatio` if the target snap ratio doesn't exist.
+float GetSnapRatioForWindow(aura::Window* window);
+
+// Registers the per-profile preferences for whether faster splitscreen setup is
+// enabled.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Returns true if either `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
+// When this is true, snapping one window will automatically start
+// SplitViewOverviewSession.
+bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
+
+// Returns true if `SplitViewOverviewSession` is created through faster split
+// screen setup, i.e. partial overview is started on the other side of the
+// screen when `window` is snapped.
+bool IsInFasterSplitScreenSetupSession(const aura::Window* window);
+
+// Returns true if overview is in session in clamshell mode and any overview
+// grid is in faster splitview. This is a specific mode during which we don't
+// show the desk bar or save desk buttons.
+bool IsInFasterSplitScreenSetupSession();
 
 }  // namespace ash::window_util
 

@@ -12,6 +12,8 @@ class MetaTable;
 
 namespace content {
 
+class AttributionStorageSql;
+
 // Changes to the SQL database schema or data format must be accompanied by
 // a database migration. This includes new columns, new tables, or changes to
 // existing stored data. Data loss must be avoided during migrations, because
@@ -44,6 +46,7 @@ namespace content {
 // |meta_table| accordingly. Must be called with an open |db|. Returns false on
 // failure.
 [[nodiscard]] bool UpgradeAttributionStorageSqlSchema(
+    AttributionStorageSql& storage,
     sql::Database& db,
     sql::MetaTable& meta_table);
 

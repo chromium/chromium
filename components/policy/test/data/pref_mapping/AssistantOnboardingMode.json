@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.assistant.onboarding_mode": {
+            "default_value": "Default"
+          }
+        }
+      },
+      {
+        "note": "Simple value: Default",
+        "policies": {
+          "AssistantOnboardingMode": "Default"
+        },
+        "prefs": {
+          "settings.assistant.onboarding_mode": {
+            "value": "Default"
+          }
+        }
+      },
+      {
+        "note": "Simple value: Education",
+        "policies": {
+          "AssistantOnboardingMode": "Education"
+        },
+        "prefs": {
+          "settings.assistant.onboarding_mode": {
+            "value": "Education"
+          }
+        }
+      }
+    ]
+  }
+]

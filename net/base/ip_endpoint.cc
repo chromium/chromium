@@ -4,9 +4,10 @@
 
 #include "net/base/ip_endpoint.h"
 
-#include <ostream>
-
 #include <string.h>
+
+#include <optional>
+#include <ostream>
 #include <tuple>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/sys_addrinfo.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
@@ -34,30 +34,30 @@ namespace net {
 namespace {
 
 // Value dictionary keys
-constexpr base::StringPiece kValueAddressKey = "address";
-constexpr base::StringPiece kValuePortKey = "port";
+constexpr std::string_view kValueAddressKey = "address";
+constexpr std::string_view kValuePortKey = "port";
 
 }  // namespace
 
 // static
-absl::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
+std::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value* address_value = dict->Find(kValueAddressKey);
   if (!address_value)
-    return absl::nullopt;
-  absl::optional<IPAddress> address = IPAddress::FromValue(*address_value);
+    return std::nullopt;
+  std::optional<IPAddress> address = IPAddress::FromValue(*address_value);
   if (!address.has_value())
-    return absl::nullopt;
+    return std::nullopt;
   // Expect IPAddress to only allow deserializing valid addresses.
   DCHECK(address.value().IsValid());
 
-  absl::optional<int> port = dict->FindInt(kValuePortKey);
+  std::optional<int> port = dict->FindInt(kValuePortKey);
   if (!port.has_value() ||
       !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return IPEndPoint(address.value(),

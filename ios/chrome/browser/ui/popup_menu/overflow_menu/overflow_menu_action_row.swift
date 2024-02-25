@@ -29,7 +29,6 @@ struct OverflowMenuActionToggleStyle: ToggleStyle {
 }
 
 /// A view that displays an action in the overflow menu.
-@available(iOS 15, *)
 struct OverflowMenuActionRow: View {
   /// Remove some of the default padding on the row, as it is too large by
   /// default.
@@ -40,6 +39,9 @@ struct OverflowMenuActionRow: View {
 
   /// The size of the "N" IPH icon.
   private static let newLabelIconWidth: CGFloat = 15
+
+  // The duration that the view's highlight should persist.
+  private static let highlightDuration: DispatchTimeInterval = .seconds(2)
 
   /// The action for this row.
   @ObservedObject var action: OverflowMenuAction
@@ -54,6 +56,19 @@ struct OverflowMenuActionRow: View {
 
   var body: some View {
     button
+      .listRowBackground(background)
+      .onChange(of: action.highlighted) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
+          action.highlighted = false
+        }
+      }
+      .onAppear {
+        if action.highlighted {
+          DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
+            action.highlighted = false
+          }
+        }
+      }
       .accessibilityIdentifier(action.accessibilityIdentifier)
       .disabled(!action.enabled || action.enterpriseDisabled)
       .if(!isEditing) { view in
@@ -69,7 +84,7 @@ struct OverflowMenuActionRow: View {
           }
         }
       }
-      .if(!action.useSystemRowColoring) { view in
+      .if(!action.useButtonStyling) { view in
         view.accentColor(.textPrimary)
       }
       .listRowSeparatorTint(.overflowMenuSeparator)
@@ -79,22 +94,26 @@ struct OverflowMenuActionRow: View {
   private var rowContent: some View {
     if isEditing {
       HStack {
-        Toggle(isOn: $action.shown.animation()) {}
-          .toggleStyle(OverflowMenuActionToggleStyle())
-          .labelsHidden()
-          .tint(.chromeBlue)
+        Toggle(isOn: $action.shown.animation()) {
+          Text(action.name)
+        }
+        .toggleStyle(OverflowMenuActionToggleStyle())
+        .labelStyle(.iconOnly)
+        .tint(.chromeBlue)
+        .accessibilityRemoveTraits(.isSelected)
         rowIcon
-        name
+        centerTextView
         Spacer()
       }
       .padding([.trailing], Self.editRowEndPadding)
+      .accessibilityElement(children: .combine)
     } else {
       HStack {
         // If there is no icon, the text should be centered.
         if rowIcon == nil {
           Spacer()
         }
-        name
+        centerTextView
         if action.displayNewLabelIcon {
           newLabelIconView
         }
@@ -104,6 +123,15 @@ struct OverflowMenuActionRow: View {
         }
       }
       .padding([.trailing], Self.rowEndPadding)
+    }
+  }
+
+  /// The row's middle text content
+  @ViewBuilder
+  private var centerTextView: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      name
+      subtitle
     }
   }
 
@@ -117,6 +145,7 @@ struct OverflowMenuActionRow: View {
       Button(
         action: {
           metricsHandler?.popupMenuTookAction()
+          metricsHandler?.popupMenuUserSelectedAction()
           action.handler()
         },
         label: {
@@ -124,11 +153,21 @@ struct OverflowMenuActionRow: View {
             .contentShape(Rectangle())
         }
       )
+      .if(action.useButtonStyling) { view in
+        view.buttonStyle(.borderless)
+      }
     }
   }
 
   private var name: some View {
-    Text(action.name).lineLimit(1)
+    Text(action.name).lineLimit(2)
+  }
+
+  @ViewBuilder
+  private var subtitle: some View {
+    if let subtitle = action.subtitle {
+      Text(subtitle).lineLimit(1).font(.caption).foregroundColor(.textTertiary)
+    }
   }
 
   private var rowIcon: OverflowMenuRowIcon? {
@@ -137,6 +176,15 @@ struct OverflowMenuActionRow: View {
         symbolName: symbolName, systemSymbol: action.systemSymbol,
         monochromeSymbol: action.monochromeSymbol)
     }
+  }
+
+  /// The background color for this row.
+  var background: some View {
+    let color =
+      action.highlighted
+      ? Color("destination_highlight_color") : Color(.secondarySystemGroupedBackground)
+    // `.listRowBackground cannot be animated, so apply the animation to the color directly.
+    return color.animation(.default)
   }
 
   // The "N" IPH icon view.

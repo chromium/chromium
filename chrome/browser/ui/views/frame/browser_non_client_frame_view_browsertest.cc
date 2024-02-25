@@ -22,7 +22,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -81,8 +83,7 @@ class BrowserNonClientFrameViewBrowserTest
   // app in a test.
   // TODO: Add tests for non-bookmark hosted apps, as bookmark apps will no
   // longer be hosted apps when BMO ships.
-  void InstallAndLaunchBookmarkApp(
-      absl::optional<GURL> app_url = absl::nullopt) {
+  void InstallAndLaunchBookmarkApp(std::optional<GURL> app_url = std::nullopt) {
     blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
@@ -94,7 +95,7 @@ class BrowserNonClientFrameViewBrowserTest
     web_app::UpdateWebAppInfoFromManifest(manifest, manifest_url,
                                           web_app_info.get());
 
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     app_browser_ = web_app::LaunchWebAppBrowser(profile(), app_id);
     web_contents_ = app_browser_->tab_strip_model()->GetActiveWebContents();
@@ -388,10 +389,10 @@ class SaveCardOfferObserver
   explicit SaveCardOfferObserver(content::WebContents* web_contents) {
     manager_ = autofill::ContentAutofillDriver::GetForRenderFrameHost(
                    web_contents->GetPrimaryMainFrame())
-                   ->autofill_manager()
-                   ->client()
+                   ->GetAutofillManager()
+                   .client()
                    .GetFormDataImporter()
-                   ->credit_card_save_manager_.get();
+                   ->GetCreditCardSaveManager();
     manager_->SetEventObserverForTesting(this);
   }
 

@@ -1,0 +1,61 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Where files are staged for tsc. Only .ts and .d.ts files should be put here.
+ts_root_dir = "$root_gen_dir/ash/webui/media_app_ui/stage_ts"
+
+# Static JS files that have .d.ts files generated for them for consumption by
+# tsc in the staging folder. These are also copied for rollup.
+media_app_unconverted_js_sources = [ "mojo_api_bootstrap.js" ]
+
+# Files converted to TS.
+media_app_converted_ts_sources = [
+  "app_context_test_support.ts",
+  "error_reporter.ts",
+  "launch.ts",
+  "message_types.ts",
+  "mojo_api_bootstrap_untrusted.ts",
+  "piex_module.ts",
+  "piex_module_loader.ts",
+  "receiver.ts",
+]
+
+media_app_mojom_sources = [ "media_app_ui_untrusted.mojom-webui.ts" ]
+
+# Corresponding .js outputs of compiled .ts that are consumed by rollup.
+media_app_compiled_sources =
+    process_file_template(
+        media_app_converted_ts_sources + media_app_mojom_sources,
+        "$root_gen_dir/ash/webui/media_app_ui/tsc/{{source_name_part}}.js")
+
+media_app_static_defs = [
+  "extra_types.d.ts",
+  "media_app.d.ts",
+]
+
+# Definitions corresponding to unconverted JS.
+media_app_defs_for_unconverted_js =
+    process_file_template(media_app_unconverted_js_sources,
+                          "{{source_name_part}}.d.ts")
+
+media_app_definitions_staged =
+    process_file_template(
+        media_app_static_defs + media_app_defs_for_unconverted_js,
+        "$ts_root_dir/{{source_file_part}}")
+
+# Testing .d.ts and .ts files that are staged and consumed by tsc.
+media_app_test_ts = [
+  "driver_api.ts",
+  "driver.ts",
+  "guest_query_receiver.ts",
+  "media_app_guest_ui_browsertest.ts",
+  "media_app_ui_browsertest.ts",
+  "test_worker.ts",
+]
+
+media_app_test_defs = [ "test_api.d.ts" ]
+
+media_app_test_definitions_staged =
+    process_file_template(media_app_test_defs,
+                          "$ts_root_dir/{{source_file_part}}")

@@ -166,14 +166,6 @@ void SVGScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
-bool SVGScriptElement::HasLoadEventHandler() {
-  return EventPath(*this).HasEventListenersInPath(event_type_names::kLoad);
-}
-
-bool SVGScriptElement::HasErrorEventHandler() {
-  return EventPath(*this).HasEventListenersInPath(event_type_names::kError);
-}
-
 ScriptElementBase::Type SVGScriptElement::GetScriptElementType() {
   return ScriptElementBase::Type::kSVGScriptElement;
 }
@@ -204,7 +196,7 @@ V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {
 }
 
 DOMNodeId SVGScriptElement::GetDOMNodeId() {
-  return DOMNodeIds::IdForNode(this);
+  return this->GetDomNodeId();
 }
 
 SVGAnimatedPropertyBase* SVGScriptElement::PropertyFromAttribute(

@@ -4,7 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
-import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import type {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -26,7 +26,8 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
   });
 
   test('UpdatesCrSliderUi', () => {
-    const knobStyle = window.getComputedStyle(element.$.slider.$.knob);
+    const knobStyle =
+        window.getComputedStyle(element.$.slider.$.knob, '::after');
     element.$.slider.value = 200;
     element.$.slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
 
@@ -75,8 +76,63 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
     const anchor = document.createElement('div');
     document.body.appendChild(anchor);
     element.showAt(anchor);
-    assertTrue(element.$.crActionMenu.getDialog().open);
+    assertTrue(element.$.dialog.open);
     element.hide();
-    assertFalse(element.$.crActionMenu.getDialog().open);
+    assertFalse(element.$.dialog.open);
+  });
+
+  test('PositionsCorrectly', () => {
+    const windowHeight = 1000;
+    const dialogWidth = 100;
+    const dialogHeight = 200;
+    const anchorWidth = 50;
+    const anchorHeight = 25;
+    const anchorTop = 300;
+    const anchorLeft = 400;
+
+    // Force some dimensions to testing is more predictable.
+    const anchor = document.createElement('div');
+    anchor.style.position = 'fixed';
+    anchor.style.top = `${anchorTop}px`;
+    anchor.style.height = `${anchorHeight}px`;
+    anchor.style.left = `${anchorLeft}px`;
+    anchor.style.width = `${anchorWidth}px`;
+    element.$.dialog.style.width = `${dialogWidth}px`;
+    element.$.dialog.style.height = `${dialogHeight}px`;
+    window.innerHeight = windowHeight;
+
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+
+    assertEquals(`${anchorTop + anchorHeight}px`, element.$.dialog.style.top);
+    assertEquals(
+        `${anchorLeft + anchorWidth - dialogWidth}px`,
+        element.$.dialog.style.left);
+    element.hide();
+
+    // Test that the top position changes if anchor is near bottom of window.
+    const newAnchorTop = windowHeight;
+    anchor.style.top = `${newAnchorTop}px`;
+    element.showAt(anchor);
+    assertEquals(
+        `${newAnchorTop - dialogHeight}px`, element.$.dialog.style.top);
+  });
+
+  test('HidesWhenClickingOutsideDialog', () => {
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+
+    // Clicks within dialog should do nothing.
+    element.$.dialog.dispatchEvent(
+        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    assertTrue(element.$.dialog.open);
+
+    // Clicking anywhere outside dialog should close the dialog.
+    const externalElement = document.createElement('div');
+    document.body.appendChild(externalElement);
+    externalElement.dispatchEvent(
+        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    assertFalse(element.$.dialog.open);
   });
 });

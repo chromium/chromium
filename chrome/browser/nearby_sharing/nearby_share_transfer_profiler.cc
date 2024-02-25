@@ -5,8 +5,8 @@
 #include "chrome/browser/nearby_sharing/nearby_share_transfer_profiler.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
+#include "components/cross_device/logging/logging.h"
 
 base::TimeDelta ComputeDelta(const base::TimeTicks& start,
                              const base::TimeTicks& end) {
@@ -27,7 +27,8 @@ void NearbyShareTransferProfiler::OnEndpointDiscovered(
   // discovered, and then a new transfer is requested before the endpoint is
   // lost.
   if (sender_data_.contains(endpoint_id)) {
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] rediscovered";
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id << "] rediscovered";
     sender_data_.erase(endpoint_id);
   }
 
@@ -100,9 +101,9 @@ void NearbyShareTransferProfiler::OnConnectionEstablished(
         sender_data_[endpoint_id].discovered_time.value(),
         sender_data_[endpoint_id].connection_established_time.value());
     RecordNearbyShareDiscoveredToConnectionEstablishedDuration(discovery_delta);
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] discovery to first connection established: "
-                 << discovery_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] discovery to first connection established: " << discovery_delta;
   }
 }
 
@@ -110,11 +111,13 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
     const std::string& endpoint_id) {
   // The endpoint must have been discovered, decoded, selected, and connected
   // before an introduction frame can be sent.
-  CHECK(sender_data_.contains(endpoint_id));
-  CHECK(sender_data_[endpoint_id].discovered_time.has_value());
-  CHECK(sender_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(sender_data_[endpoint_id].share_target_selected_time.has_value());
-  CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
+  if (!sender_data_.contains(endpoint_id) ||
+      !sender_data_[endpoint_id].discovered_time.has_value() ||
+      !sender_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !sender_data_[endpoint_id].share_target_selected_time.has_value() ||
+      !sender_data_[endpoint_id].connection_established_time.has_value()) {
+    return;
+  }
 
   // Note: the same receiver can be reused for subsequent shares without
   // triggering the discovery logic.
@@ -135,8 +138,9 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
                      sender_data_[endpoint_id].introduction_sent_time.value());
     // We do not log this to UMA currently, since the user interaction timing
     // will make it unacceptably noisy.
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] decode to introduction sent: " << introduction_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] decode to introduction sent: " << introduction_delta;
   }
   // Compute and log the time delta between when the user selects the endpoint
   // as a share target and when the introduction frame was sent. This provides
@@ -146,23 +150,27 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
       ComputeDelta(sender_data_[endpoint_id].share_target_selected_time.value(),
                    sender_data_[endpoint_id].introduction_sent_time.value());
   RecordNearbyShareInitiatedToSentIntroductionFrameDuration(selection_delta);
-  NS_LOG(INFO) << "Endpoint [" << endpoint_id
-               << "] share target selected to introduction sent: "
-               << selection_delta;
+  CD_LOG(INFO, Feature::NS)
+      << "Endpoint [" << endpoint_id
+      << "] share target selected to introduction sent: " << selection_delta;
 }
 
 void NearbyShareTransferProfiler::OnSendStart(const std::string& endpoint_id) {
   // The endpoint must have been discovered, decoded, selected, connected, and
   // introduced before transfers can be started.
-  CHECK(sender_data_.contains(endpoint_id));
-  CHECK(sender_data_[endpoint_id].discovered_time.has_value());
-  CHECK(sender_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(sender_data_[endpoint_id].share_target_selected_time.has_value());
-  CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
-  CHECK(sender_data_[endpoint_id].introduction_sent_time.has_value());
+  if (!sender_data_.contains(endpoint_id) ||
+      !sender_data_[endpoint_id].discovered_time.has_value() ||
+      !sender_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !sender_data_[endpoint_id].share_target_selected_time.has_value() ||
+      !sender_data_[endpoint_id].connection_established_time.has_value() ||
+      !sender_data_[endpoint_id].introduction_sent_time.has_value()) {
+    return;
+  }
 
   // Transfers should only be started once.
-  CHECK(!sender_data_[endpoint_id].send_start_time.has_value());
+  if (sender_data_[endpoint_id].send_start_time.has_value()) {
+    return;
+  }
   sender_data_[endpoint_id].send_start_time = base::TimeTicks::Now();
 }
 
@@ -199,9 +207,10 @@ void NearbyShareTransferProfiler::OnSendComplete(
           sender_data_[endpoint_id].bandwidth_upgrade_time.value(), now);
       RecordNearbyShareBandwidthUpgradeToAllFilesSentDuration(
           sender_data_[endpoint_id].upgraded_medium.value(), upgrade_delta);
-      NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
-                   << sender_data_[endpoint_id].upgraded_medium.value()
-                   << ") to transfer complete: " << upgrade_delta;
+      CD_LOG(INFO, Feature::NS)
+          << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
+          << sender_data_[endpoint_id].upgraded_medium.value()
+          << ") to transfer complete: " << upgrade_delta;
     }
 
     // Compute and log the time delta between when the sender starts sending
@@ -210,8 +219,9 @@ void NearbyShareTransferProfiler::OnSendComplete(
     base::TimeDelta completion_delta =
         ComputeDelta(sender_data_[endpoint_id].send_start_time.value(), now);
     RecordNearbyShareStartSendFilesToAllFilesSentDuration(completion_delta);
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] file sent to transfer complete: " << completion_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] file sent to transfer complete: " << completion_delta;
 
     // Compute and log the time delta between when the user has selected a
     // receiver and when transfer finishes. This provides insight into the
@@ -221,9 +231,9 @@ void NearbyShareTransferProfiler::OnSendComplete(
     base::TimeDelta total_delta = ComputeDelta(
         sender_data_[endpoint_id].share_target_selected_time.value(), now);
     RecordNearbyShareInitiatedToAllFilesSentDuration(total_delta);
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] share target selected to transfer complete: "
-                 << total_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] share target selected to transfer complete: " << total_delta;
   }
 
   // Reset the endpoint using the current discovery, decode, connection, and
@@ -243,13 +253,16 @@ void NearbyShareTransferProfiler::OnIncomingEndpointDecoded(
     const std::string& endpoint_id,
     bool is_high_visibility) {
   // An endpoint should only be decoded once.
-  CHECK(!receiver_data_.contains(endpoint_id));
+  if (receiver_data_.contains(endpoint_id)) {
+    return;
+  }
   receiver_data_[endpoint_id].endpoint_decoded_time = base::TimeTicks::Now();
 
   // High-visibility endpoints emit different metrics, so save this for later
   // use.
   if (is_high_visibility) {
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] in high-visibility mode";
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id << "] in high-visibility mode";
     receiver_data_[endpoint_id].is_high_visibility = true;
   }
 }
@@ -288,19 +301,24 @@ void NearbyShareTransferProfiler::OnIntroductionFrameReceived(
       receiver_data_[endpoint_id].introduction_received_time.value());
   RecordNearbyShareEndpointDecodedToReceivedIntroductionFrameDuration(
       introduction_delta);
-  NS_LOG(INFO) << "Endpoint [" << endpoint_id
-               << "] decode to introduction received: " << introduction_delta;
+  CD_LOG(INFO, Feature::NS)
+      << "Endpoint [" << endpoint_id
+      << "] decode to introduction received: " << introduction_delta;
 }
 void NearbyShareTransferProfiler::OnTransferAccepted(
     const std::string& endpoint_id) {
   // The endpoint must have been decoded and introduced before a transfer can be
   // accepted.
-  CHECK(receiver_data_.contains(endpoint_id));
-  CHECK(receiver_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(receiver_data_[endpoint_id].introduction_received_time.has_value());
+  if (!receiver_data_.contains(endpoint_id) ||
+      !receiver_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !receiver_data_[endpoint_id].introduction_received_time.has_value()) {
+    return;
+  }
 
   // A transfer can only be accepted once.
-  CHECK(!receiver_data_[endpoint_id].accept_transfer_time.has_value());
+  if (receiver_data_[endpoint_id].accept_transfer_time.has_value()) {
+    return;
+  }
   receiver_data_[endpoint_id].accept_transfer_time = base::TimeTicks::Now();
 }
 
@@ -333,9 +351,10 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
           receiver_data_[endpoint_id].bandwidth_upgrade_time.value(), now);
       RecordNearbyShareBandwidthUpgradeToAllFilesReceivedDuration(
           receiver_data_[endpoint_id].upgraded_medium.value(), upgrade_delta);
-      NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
-                   << receiver_data_[endpoint_id].upgraded_medium.value()
-                   << ") to transfer complete: " << upgrade_delta;
+      CD_LOG(INFO, Feature::NS)
+          << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
+          << receiver_data_[endpoint_id].upgraded_medium.value()
+          << ") to transfer complete: " << upgrade_delta;
     }
 
     // Compute and log the time delta between when the user accepts the transfer
@@ -345,9 +364,9 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
         receiver_data_[endpoint_id].accept_transfer_time.value(), now);
     RecordNearbyShareAcceptedTransferToAllFilesReceivedDuration(
         completion_delta);
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] transfer accepted to transfer complete: "
-                 << completion_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] transfer accepted to transfer complete: " << completion_delta;
 
     // Compute and log the time delta between when the receiver has verified the
     // connection and when the transfer finishes. This provides insight into the
@@ -357,8 +376,9 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
         receiver_data_[endpoint_id].introduction_received_time.value(), now);
     RecordNearbyShareReceivedIntroductionFrameToAllFilesReceivedDuration(
         total_delta);
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                 << "] introduction to transfer complete: " << total_delta;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id
+        << "] introduction to transfer complete: " << total_delta;
   }
 
   // Reset the endpoint since the transfer is complete.
@@ -371,19 +391,32 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
   // An endpoint must either be a sender or a receiver.
   bool is_sender = sender_data_.contains(endpoint_id);
   bool is_receiver = receiver_data_.contains(endpoint_id);
-  CHECK(is_sender != is_receiver);
+
+  if (!is_sender && !is_receiver) {
+    // It is possible for the |endpoint_id| to be in neither |sender_data_| nor
+    // |receiver_data_| if, e.g. the transfer is cancelled just before the
+    // bandwidth upgrade completes.
+    return;
+  }
+
+  // An endpoint cannot be both a sender and a receiver.
+  if (is_sender && is_receiver) {
+    return;
+  }
 
   if (is_sender) {
     // A connection must have been established at this point.
-    CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
+    if (!sender_data_[endpoint_id].connection_established_time.has_value()) {
+      return;
+    }
 
     // Bandwidth upgrades are requested a number of times, so it is possible for
     // more than one upgrade to complete successfully.
     bool is_first_upgrade =
         !sender_data_[endpoint_id].bandwidth_upgrade_time.has_value();
     sender_data_[endpoint_id].upgraded_medium = medium;
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] upgraded bandwidth to "
-                 << medium;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id << "] upgraded bandwidth to " << medium;
 
     // Only log metrics the first time bandwidth upgrade is successful, since
     // subsequent upgrades could pollute these metrics.
@@ -400,9 +433,9 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
           sender_data_[endpoint_id].bandwidth_upgrade_time.value());
       RecordNearbyShareConnectionEstablishedToBandwidthUpgradeDuration(
           medium, upgrade_delta);
-      NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                   << "] connection to bandwidth upgrade (" << medium
-                   << "): " << upgrade_delta;
+      CD_LOG(INFO, Feature::NS) << "Endpoint [" << endpoint_id
+                                << "] connection to bandwidth upgrade ("
+                                << medium << "): " << upgrade_delta;
     }
   } else {
     // Bandwidth upgrades are requested a number of times, so it is possible for
@@ -410,8 +443,8 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
     bool is_first_upgrade =
         !receiver_data_[endpoint_id].bandwidth_upgrade_time.has_value();
     receiver_data_[endpoint_id].upgraded_medium = medium;
-    NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] upgraded bandwidth to "
-                 << medium;
+    CD_LOG(INFO, Feature::NS)
+        << "Endpoint [" << endpoint_id << "] upgraded bandwidth to " << medium;
 
     // Only log metrics the first time bandwidth upgrade is successful, since
     // subsequent upgrades could pollute these metrics.
@@ -423,7 +456,9 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
       // Different upgrade metrics should be logged in high visibility mode.
       if (receiver_data_[endpoint_id].is_high_visibility) {
         // The endpoint must have been decoded at this point.
-        CHECK(receiver_data_[endpoint_id].endpoint_decoded_time.has_value());
+        if (!receiver_data_[endpoint_id].endpoint_decoded_time.has_value()) {
+          return;
+        }
 
         // Compute and log the time delta between when the receiver decodes the
         // incoming endpoint and when the first bandwidth upgrade occurs. This
@@ -435,13 +470,15 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
             receiver_data_[endpoint_id].bandwidth_upgrade_time.value());
         RecordNearbyShareHighVisibilityEndpointDecodedToBandwidthUpgradeDuration(
             medium, upgrade_delta);
-        NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                     << "] decode to bandwidth upgrade (" << medium
-                     << "): " << upgrade_delta;
+        CD_LOG(INFO, Feature::NS)
+            << "Endpoint [" << endpoint_id << "] decode to bandwidth upgrade ("
+            << medium << "): " << upgrade_delta;
       } else {
         // The handshake must have occurred at this point.
-        CHECK(
-            receiver_data_[endpoint_id].paired_key_handshake_time.has_value());
+        if (!receiver_data_[endpoint_id]
+                 .paired_key_handshake_time.has_value()) {
+          return;
+        }
 
         // Compute and log the time delta between when the paired key handshake
         // completes and when the first bandwidth upgrade occurs. This provides
@@ -452,9 +489,10 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
             receiver_data_[endpoint_id].bandwidth_upgrade_time.value());
         RecordNearbyShareNonHighVisibilityPairedKeyCompleteToBandwidthUpgradeDuration(
             medium, handshake_delta);
-        NS_LOG(INFO) << "Endpoint [" << endpoint_id
-                     << "] handshake complete to bandwidth upgrade (" << medium
-                     << "): " << handshake_delta;
+        CD_LOG(INFO, Feature::NS)
+            << "Endpoint [" << endpoint_id
+            << "] handshake complete to bandwidth upgrade (" << medium
+            << "): " << handshake_delta;
       }
     }
   }

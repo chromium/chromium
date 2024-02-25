@@ -392,13 +392,13 @@ bool GetForcedEffectiveConnectionTypeOnCellularOnly(
          kEffectiveConnectionTypeSlow2GOnCellular;
 }
 
-absl::optional<EffectiveConnectionType> GetInitForcedEffectiveConnectionType(
+std::optional<EffectiveConnectionType> GetInitForcedEffectiveConnectionType(
     const std::map<std::string, std::string>& params) {
   if (GetForcedEffectiveConnectionTypeOnCellularOnly(params)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string forced_value = GetForcedEffectiveConnectionTypeString(params);
-  absl::optional<EffectiveConnectionType> ect =
+  std::optional<EffectiveConnectionType> ect =
       GetEffectiveConnectionTypeForName(forced_value);
   DCHECK(forced_value.empty() || ect);
   return ect;
@@ -539,7 +539,7 @@ void NetworkQualityEstimatorParams::SetForcedEffectiveConnectionTypeForTesting(
   forced_effective_connection_type_ = type;
 }
 
-absl::optional<EffectiveConnectionType>
+std::optional<EffectiveConnectionType>
 NetworkQualityEstimatorParams::GetForcedEffectiveConnectionType(
     NetworkChangeNotifier::ConnectionType connection_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -551,7 +551,7 @@ NetworkQualityEstimatorParams::GetForcedEffectiveConnectionType(
       net::NetworkChangeNotifier::IsConnectionCellular(connection_type)) {
     return EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 size_t NetworkQualityEstimatorParams::throughput_min_requests_in_flight()

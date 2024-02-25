@@ -57,9 +57,33 @@ PrefService* FakeQuickPairBrowserDelegate::GetActivePrefService() {
 void FakeQuickPairBrowserDelegate::RequestService(
     mojo::PendingReceiver<mojom::QuickPairService> receiver) {}
 
+bool FakeQuickPairBrowserDelegate::CompanionAppInstalled(
+    const std::string& app_id) {
+  if (auto search = companion_app_installed_.find(app_id);
+      search != companion_app_installed_.end()) {
+    return search->second;
+  }
+  return false;
+}
+
+void FakeQuickPairBrowserDelegate::LaunchCompanionApp(
+    const std::string& app_id) {
+  // Left unimplemented.
+}
+
+void FakeQuickPairBrowserDelegate::OpenPlayStorePage(GURL play_store_uri) {
+  // Left unimplemented.
+}
+
 void FakeQuickPairBrowserDelegate::SetIdentityManager(
     signin::IdentityManager* identity_manager) {
   identity_manager_ = identity_manager;
+}
+
+void FakeQuickPairBrowserDelegate::SetCompanionAppInstalled(
+    const std::string& app_id,
+    bool installed) {
+  companion_app_installed_[app_id] = installed;
 }
 
 }  // namespace ash::quick_pair

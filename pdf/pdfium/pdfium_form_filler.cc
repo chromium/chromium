@@ -20,7 +20,6 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,7 +50,8 @@ PDFiumFormFiller::ScriptOption PDFiumFormFiller::DefaultScriptOption() {
 
 PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
                                    ScriptOption script_option)
-    : engine_in_isolate_scope_factory_(engine), script_option_(script_option) {
+    : engine_in_isolate_scope_factory_(engine, script_option),
+      script_option_(script_option) {
   // Initialize FPDF_FORMFILLINFO member variables.  Deriving from this struct
   // allows the static callbacks to be able to cast the FPDF_FORMFILLINFO in
   // callbacks to ourself instead of maintaining a map of them to
@@ -202,17 +202,15 @@ FPDF_SYSTEMTIME PDFiumFormFiller::Form_GetLocalTime(FPDF_FORMFILLINFO* param) {
   base::Time time = base::Time::Now();
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
-
-  FPDF_SYSTEMTIME rv;
-  rv.wYear = exploded.year;
-  rv.wMonth = exploded.month;
-  rv.wDayOfWeek = exploded.day_of_week;
-  rv.wDay = exploded.day_of_month;
-  rv.wHour = exploded.hour;
-  rv.wMinute = exploded.minute;
-  rv.wSecond = exploded.second;
-  rv.wMilliseconds = exploded.millisecond;
-  return rv;
+  return FPDF_SYSTEMTIME{
+      .wYear = static_cast<unsigned short>(exploded.year),
+      .wMonth = static_cast<unsigned short>(exploded.month),
+      .wDayOfWeek = static_cast<unsigned short>(exploded.day_of_week),
+      .wDay = static_cast<unsigned short>(exploded.day_of_month),
+      .wHour = static_cast<unsigned short>(exploded.hour),
+      .wMinute = static_cast<unsigned short>(exploded.minute),
+      .wSecond = static_cast<unsigned short>(exploded.second),
+      .wMilliseconds = static_cast<unsigned short>(exploded.millisecond)};
 }
 
 // static
@@ -742,10 +740,16 @@ PDFiumFormFiller::EngineInIsolateScope::operator=(EngineInIsolateScope&&) =
 PDFiumFormFiller::EngineInIsolateScope::~EngineInIsolateScope() = default;
 
 PDFiumFormFiller::EngineInIsolateScopeFactory::EngineInIsolateScopeFactory(
-    PDFiumEngine* engine)
-    : engine_(engine), callback_isolate_(v8::Isolate::TryGetCurrent()) {
-  if (callback_isolate_)
-    CHECK_EQ(blink::MainThreadIsolate(), callback_isolate_);
+    PDFiumEngine* engine,
+    ScriptOption script_option)
+    : engine_(engine),
+      callback_isolate_(script_option !=
+                                PDFiumFormFiller::ScriptOption::kNoJavaScript
+                            ? v8::Isolate::TryGetCurrent()
+                            : nullptr) {
+  if (callback_isolate_) {
+    CHECK_EQ(engine_->client_->GetIsolate(), callback_isolate_);
+  }
 }
 
 PDFiumFormFiller::EngineInIsolateScopeFactory::~EngineInIsolateScopeFactory() =

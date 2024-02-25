@@ -7,19 +7,19 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
 namespace ash::quick_start {
 
 class QuickStartConnectivityService;
+class SessionContext;
 
 // A factory class for creating instances of TargetDeviceConnectionBroker.
 // Calling code should use the static Create() method.
 class TargetDeviceConnectionBrokerFactory {
  public:
   static std::unique_ptr<TargetDeviceConnectionBroker> Create(
-      SessionContext session_context,
+      SessionContext* session_context,
       QuickStartConnectivityService* quick_start_connectivity_service);
 
   static void SetFactoryForTesting(
@@ -34,6 +34,7 @@ class TargetDeviceConnectionBrokerFactory {
 
  protected:
   virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+      SessionContext* session_context,
       QuickStartConnectivityService* quick_start_connectivity_service) = 0;
 
  private:

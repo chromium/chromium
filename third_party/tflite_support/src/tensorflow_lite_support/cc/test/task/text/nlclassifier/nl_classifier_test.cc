@@ -17,9 +17,9 @@ limitations under the License.
 
 #include <utility>
 
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/string_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -121,7 +121,8 @@ struct ProtoOptionsTestParam {
 };
 
 std::string GetFullPath(absl::string_view file_name) {
-  return JoinPath("./" /*test src dir*/, kTestDataDirectory, file_name);
+  return JoinPath("./" /*test src dir*/, kTestDataDirectory,
+                  file_name);
 }
 
 class ProtoOptionsTest : public TestWithParam<ProtoOptionsTestParam> {
@@ -162,8 +163,7 @@ TEST_F(ProtoOptionsTest, ClassifySucceedsWithBaseOptions) {
     options.mutable_base_options()->mutable_model_file()->set_file_content(
         contents);
 
-    SUPPORT_ASSERT_OK_AND_ASSIGN(classifier,
-                                 NLClassifier::CreateFromOptions(options));
+    SUPPORT_ASSERT_OK_AND_ASSIGN(classifier, NLClassifier::CreateFromOptions(options));
   }
 
   std::vector<core::Category> positive_results =
@@ -180,8 +180,8 @@ TEST_F(ProtoOptionsTest, ClassifySucceedsWithBaseOptions) {
 
 TEST_F(ProtoOptionsTest, CreationFromIncorrectInputTensor) {
   NLClassifierProtoOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kTestModelPath));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kTestModelPath));
   options.set_input_tensor_name("invalid_tensor_name");
   options.set_input_tensor_index(-1);
 
@@ -200,8 +200,8 @@ TEST_F(ProtoOptionsTest, CreationFromIncorrectInputTensor) {
 
 TEST_F(ProtoOptionsTest, CreationFromIncorrectOutputScoreTensor) {
   NLClassifierProtoOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kTestModelPath));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kTestModelPath));
   options.set_output_score_tensor_name("invalid_tensor_name");
   options.set_output_score_tensor_index(-1);
 
@@ -224,7 +224,7 @@ TEST_F(ProtoOptionsTest, TestInferenceWithRegexTokenizer) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestModelWithRegexTokenizer));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<NLClassifier> classifier,
-                               NLClassifier::CreateFromOptions(options));
+                       NLClassifier::CreateFromOptions(options));
 
   std::vector<core::Category> positive_results =
       classifier->Classify(kPositiveInput);
@@ -277,7 +277,7 @@ TEST_F(ProtoOptionsTest, TestInferenceWithAssociatedLabelBuiltinOps) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestModelWithLabelBuiltInOpsPath));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<NLClassifier> classifier,
-                               NLClassifier::CreateFromOptions(options));
+                       NLClassifier::CreateFromOptions(options));
   std::vector<core::Category> results = classifier->Classify(kInputStr);
   std::vector<core::Category> expected_class = {
       {"Negative", 0.49332118034362793},
@@ -290,16 +290,14 @@ TEST_F(ProtoOptionsTest, TestInferenceWithAssociatedLabelBuiltinOps) {
 // Parameterized test.
 struct ProtoOptionsTestParamToString {
   std::string operator()(
-      const testing::TestParamInfo<ProtoOptionsTestParam>& info) const {
+      const ::testing::TestParamInfo<ProtoOptionsTestParam>& info) const {
     return info.param.description;
   }
 };
 
 NLClassifierProtoOptions CreateProtoOptionsFromTensorName(
-    const char* input_tensor_name,
-    const char* output_score_tensor_name,
-    const char* output_label_tensor_name,
-    const char* model_path) {
+    const char* input_tensor_name, const char* output_score_tensor_name,
+    const char* output_label_tensor_name, const char* model_path) {
   NLClassifierProtoOptions options;
   options.set_input_tensor_name(input_tensor_name);
   options.set_output_score_tensor_name(output_score_tensor_name);
@@ -312,10 +310,8 @@ NLClassifierProtoOptions CreateProtoOptionsFromTensorName(
 }
 
 NLClassifierProtoOptions CreateProtoOptionsFromTensorIndex(
-    const int input_tensor_index,
-    const int output_score_tensor_index,
-    const int output_label_tensor_index,
-    const char* model_path) {
+    const int input_tensor_index, const int output_score_tensor_index,
+    const int output_label_tensor_index, const char* model_path) {
   NLClassifierProtoOptions options;
   options.set_input_tensor_index(input_tensor_index);
   options.set_output_score_tensor_index(output_score_tensor_index);
@@ -456,46 +452,45 @@ TEST_P(ProtoOptionsTest, TestClassify) {
   EXPECT_THAT(results, UnorderedElementsAreArray(expected_class));
 }
 
-INSTANTIATE_TEST_SUITE_P(TestClassify,
-                         ProtoOptionsTest,
+INSTANTIATE_TEST_SUITE_P(TestClassify, ProtoOptionsTest,
                          ValuesIn(ClassifyParams()),
                          ProtoOptionsTestParamToString());
 
 // Tests for struct sNLClassifierOptions.
-class StructOptionsTest : public tflite_shims::testing::Test {};
+class StructOptionsTest : public tflite::testing::Test {};
 
-void AssertStatus(absl::Status status,
-                  absl::StatusCode status_code,
+void AssertStatus(absl::Status status, absl::StatusCode status_code,
                   TfLiteSupportStatus tfls_code) {
   ASSERT_EQ(status.code(), status_code);
   EXPECT_THAT(status.GetPayload(kTfLiteSupportPayload),
-              testing::Optional(absl::Cord(absl::StrCat(tfls_code))));
+              ::testing::Optional(absl::Cord(absl::StrCat(tfls_code))));
 }
 
 TEST_F(StructOptionsTest, TestApiCreationFromBuffer) {
-  std::string model_buffer = LoadBinaryContent(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kTestModelPath)
-          .c_str());
+  std::string model_buffer =
+      LoadBinaryContent(JoinPath("./" /*test src dir*/,
+                                 kTestDataDirectory, kTestModelPath)
+                            .c_str());
   SUPPORT_ASSERT_OK(NLClassifier::CreateFromBufferAndOptions(
       model_buffer.data(), model_buffer.size(), {}, CreateCustomResolver()));
 }
 
 TEST_F(StructOptionsTest, TestApiCreationFromFile) {
-  SUPPORT_ASSERT_OK(NLClassifier::CreateFromFileAndOptions(
-      GetFullPath(kTestModelPath), {}, CreateCustomResolver()));
+  SUPPORT_ASSERT_OK(NLClassifier::CreateFromFileAndOptions(GetFullPath(kTestModelPath),
+                                                   {}, CreateCustomResolver()));
 }
 
 TEST_F(StructOptionsTest, TestApiCreationFromIncorrectInputTensor) {
   NLClassifierOptions options;
   options.input_tensor_index = -1;
   options.input_tensor_name = "I do not exist";
-  AssertStatus(
-      NLClassifier::CreateFromFileAndOptions(
-          JoinPath("./" /*test src dir*/, kTestDataDirectory, kTestModelPath),
-          options, CreateCustomResolver())
-          .status(),
-      absl::StatusCode::kInvalidArgument,
-      TfLiteSupportStatus::kInputTensorNotFoundError);
+  AssertStatus(NLClassifier::CreateFromFileAndOptions(
+                   JoinPath("./" /*test src dir*/,
+                            kTestDataDirectory, kTestModelPath),
+                   options, CreateCustomResolver())
+                   .status(),
+               absl::StatusCode::kInvalidArgument,
+               TfLiteSupportStatus::kInputTensorNotFoundError);
 }
 
 TEST_F(StructOptionsTest, TestApiCreationFromIncorrectOutputScoreTensor) {
@@ -515,10 +510,9 @@ TEST_F(StructOptionsTest, TestInferenceWithRegexTokenizer) {
   options.output_score_tensor_name = "probability";
 
   // The model with regex tokenizer doesn't need any custom ops.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<NLClassifier> classifier,
-      NLClassifier::CreateFromFileAndOptions(
-          GetFullPath(kTestModelWithRegexTokenizer), options));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<NLClassifier> classifier,
+                       NLClassifier::CreateFromFileAndOptions(
+                           GetFullPath(kTestModelWithRegexTokenizer), options));
 
   std::vector<core::Category> positive_results =
       classifier->Classify(kPositiveInput);
@@ -538,9 +532,9 @@ TEST_F(StructOptionsTest, TestInferenceWithBoolOutput) {
   options.output_score_tensor_index = 0;
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<NLClassifier> classifier,
-                               NLClassifier::CreateFromFileAndOptions(
-                                   GetFullPath(kTestModelBoolOutputPath),
-                                   options, CreateCustomResolver()));
+                       NLClassifier::CreateFromFileAndOptions(
+                           GetFullPath(kTestModelBoolOutputPath), options,
+                           CreateCustomResolver()));
   std::vector<core::Category> results = classifier->Classify(kInputStr);
   std::vector<core::Category> expected_class = {
       {"0", 1},
@@ -554,11 +548,10 @@ TEST_F(StructOptionsTest, TestInferenceWithBoolOutput) {
 TEST_F(StructOptionsTest, TestInferenceWithAssociatedLabelCustomOps) {
   NLClassifierOptions options;
   options.output_score_tensor_name = kMetadataOutputScoreTensorName;
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<NLClassifier> classifier,
-      NLClassifier::CreateFromFileAndOptions(
-          GetFullPath(kTestModelWithLabelCustomOpsPath), options,
-          CreateCustomResolver()));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<NLClassifier> classifier,
+                       NLClassifier::CreateFromFileAndOptions(
+                           GetFullPath(kTestModelWithLabelCustomOpsPath),
+                           options, CreateCustomResolver()));
   std::vector<core::Category> results = classifier->Classify(kInputStr);
   std::vector<core::Category> expected_class = {
       {"label0", 255},

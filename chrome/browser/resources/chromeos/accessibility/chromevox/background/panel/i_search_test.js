@@ -14,17 +14,6 @@ ChromeVoxISearchTest = class extends ChromeVoxE2ETest {
     return ['ISearch', 'ISearchHandler'];
   }
 
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ISearch', '/chromevox/background/panel/i_search.js'),
-      importModule('Cursor', '/common/cursors/cursor.js'),
-    ]);
-  }
-
   get linksAndHeadingsDoc() {
     return `
       <p>start</p>

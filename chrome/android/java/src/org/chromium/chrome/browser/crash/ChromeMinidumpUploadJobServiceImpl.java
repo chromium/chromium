@@ -9,9 +9,7 @@ import android.os.PersistableBundle;
 import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobImpl;
 
-/**
- * Class that interacts with the Android JobScheduler to upload minidumps at appropriate times.
- */
+/** Class that interacts with the Android JobScheduler to upload minidumps at appropriate times. */
 public class ChromeMinidumpUploadJobServiceImpl extends ChromeMinidumpUploadJobService.Impl {
     @Override
     protected MinidumpUploadJob createMinidumpUploadJob(PersistableBundle permissions) {

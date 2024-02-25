@@ -12,16 +12,8 @@ namespace feature_engagement {
 namespace {
 
 base::Time GetTime(int year, int month, int day) {
-  base::Time::Exploded exploded_time;
-  exploded_time.year = year;
-  exploded_time.month = month;
-  exploded_time.day_of_month = day;
-  exploded_time.day_of_week = 0;
-  exploded_time.hour = 0;
-  exploded_time.minute = 0;
-  exploded_time.second = 0;
-  exploded_time.millisecond = 0;
-
+  const base::Time::Exploded exploded_time = {
+      .year = year, .month = month, .day_of_month = day};
   base::Time out_time;
   EXPECT_TRUE(base::Time::FromUTCExploded(exploded_time, &out_time));
   return out_time;

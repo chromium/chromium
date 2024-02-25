@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -273,11 +273,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   StartPrefetchingWithPreconnectFallbackForTesting(
       Origin origin,
       const GURL& url,
-      const absl::optional<url::Origin>& initiator_origin);
+      const std::optional<url::Origin>& initiator_origin);
 
  protected:
-  class NoStatePrefetchData
-      : public base::SupportsWeakPtr<NoStatePrefetchData> {
+  class NoStatePrefetchData {
    public:
     struct OrderByExpiryTime;
 
@@ -318,6 +317,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       expiry_time_ = expiry_time;
     }
 
+    base::WeakPtr<NoStatePrefetchData> AsWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
    private:
     const raw_ptr<NoStatePrefetchManager> manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
@@ -335,6 +338,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
     // After this time, this prefetch is no longer fresh, and should be removed.
     base::TimeTicks expiry_time_;
+
+    base::WeakPtrFactory<NoStatePrefetchData> weak_factory_{this};
   };
 
   // Called by a NoStatePrefetchData to signal that the launcher has navigated
@@ -379,7 +384,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       Origin origin,
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace,
       base::WeakPtr<content::PreloadingAttempt> attempt = nullptr);
@@ -410,7 +415,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   CreateNoStatePrefetchContents(
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin);
 
   // Insures the |active_prefetches_| are sorted by increasing expiry time. Call
@@ -521,7 +526,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   int64_t last_recorded_browser_context_network_bytes_ = 0;
 
   // Set of process hosts being prerendered.
-  using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
+  using PrerenderProcessSet =
+      std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>;
   PrerenderProcessSet prerender_process_hosts_;
 
   raw_ptr<const base::TickClock> tick_clock_;

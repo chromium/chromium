@@ -6,162 +6,309 @@ package org.chromium.chrome.browser.search_engines.settings;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-import android.text.format.DateUtils;
+import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
 
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link SearchEngineAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SearchEngineAdapterTest {
-    @Test
-    public void testSortandGetCustomSearchEngine() {
-        long currentTime = System.currentTimeMillis();
-        TemplateUrl dse = new MockTemplateUrl(0, "default", currentTime);
+    public @Rule TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final @Rule JniMocker mJniMocker = new JniMocker();
 
-        MockTemplateUrl prepopulated1 = new MockTemplateUrl(11, "prepopulated1", currentTime);
-        prepopulated1.isPrepopulated = true;
-        prepopulated1.prepopulatedId = 0;
+    private @Mock Profile mProfile;
+    private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
 
-        MockTemplateUrl prepopulated2 = new MockTemplateUrl(12, "prepopulated2", currentTime - 1);
-        prepopulated2.isPrepopulated = true;
-        prepopulated2.prepopulatedId = 1;
-
-        MockTemplateUrl prepopulated3 = new MockTemplateUrl(13, "prepopulated3", currentTime - 2);
-        prepopulated3.isPrepopulated = true;
-        prepopulated3.prepopulatedId = 2;
-
-        MockTemplateUrl custom1 = new MockTemplateUrl(101, "custom_keyword1", currentTime);
-        MockTemplateUrl custom2 = new MockTemplateUrl(102, "custom_keyword2", currentTime - 1);
-        MockTemplateUrl custom3 = new MockTemplateUrl(103, "custom_keyword3", currentTime - 2);
-        MockTemplateUrl custom4 = new MockTemplateUrl(104, "custom_keyword4", currentTime - 3);
-        MockTemplateUrl custom5 = new MockTemplateUrl(105, "custom_keyword5", currentTime - 4);
-
-        ArrayList<TemplateUrl> templateUrls = new ArrayList<>(Arrays.asList(
-                dse, prepopulated1, prepopulated2, prepopulated3, custom1, custom2, custom3));
-
-        List<TemplateUrl> output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom1, custom2,
-                        custom3));
-
-        // Mark one of the custom engines as older than the visible threshold.
-        custom2.updateAgeInDays(3);
-        output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom1, custom3));
-
-        // Mark one of the custom engines as older than the other.
-        custom1.updateAgeInDays(1);
-        output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom3, custom1));
-
-        // Include more than 3 custom serach engines and ensure they're filtered accordingly.
-        templateUrls.add(custom4);
-        templateUrls.add(custom5);
-        output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
-        assertThat(output,
-                contains(prepopulated1, prepopulated2, prepopulated3, dse, custom3, custom4,
-                        custom5));
-
-        // Specify an older custom search engine as default, and ensure it is included as well as
-        // the 3 most recent custom search engines.
-        output = new ArrayList<>(Arrays.asList(
-                prepopulated1, prepopulated2, custom1, custom2, custom3, custom4, custom5));
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, custom2);
-        assertThat(
-                output, contains(prepopulated1, prepopulated2, custom2, custom3, custom4, custom5));
+    @Before
+    public void setUp() {
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
     }
 
     @Test
-    public void testSortandGetCustomSearchEngine_PrepopulateIdOrdering() {
-        long currentTime = System.currentTimeMillis();
-        MockTemplateUrl prepopulated1 = new MockTemplateUrl(11, "prepopulated1", currentTime);
-        prepopulated1.isPrepopulated = true;
-        prepopulated1.prepopulatedId = 3;
+    public void testSortAndFilterUnnecessaryTemplateUrl_PrepopulatedEnginesSorting() {
+        String name = "prepopulated";
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl(name, 1, lastVisitedTime);
+        TemplateUrl p2 = buildMockTemplateUrl(name, 2, lastVisitedTime);
+        TemplateUrl p3 = buildMockTemplateUrl(name, 3, lastVisitedTime);
+        TemplateUrl p4 = buildMockTemplateUrl(name, 4, lastVisitedTime);
 
-        MockTemplateUrl prepopulated2 = new MockTemplateUrl(12, "prepopulated2", currentTime - 1);
-        prepopulated2.isPrepopulated = true;
-        prepopulated2.prepopulatedId = 1;
+        List<TemplateUrl> templateUrls = List.of(p2, p1, p4, p3);
+        TemplateUrl[] expectedSortedUrls = new TemplateUrl[] {p1, p2, p3, p4};
+        TemplateUrl[] expectedNonSortedUrls = new TemplateUrl[] {p2, p1, p4, p3};
 
-        MockTemplateUrl prepopulated3 = new MockTemplateUrl(13, "prepopulated3", currentTime - 2);
-        prepopulated3.isPrepopulated = true;
-        prepopulated3.prepopulatedId = 4;
+        // When computing the list for the new settings in the EEA, don't re-sort prepopulated
+        // engines.
 
-        List<TemplateUrl> templateUrls = Arrays.asList(prepopulated1, prepopulated2, prepopulated3);
+        List<TemplateUrl> modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedNonSortedUrls));
 
-        List<TemplateUrl> output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, prepopulated1);
-        assertThat(output, contains(prepopulated2, prepopulated1, prepopulated3));
+        // In all the other cases (old settings or out of EEA), keep sorting by ID.
 
-        prepopulated1.prepopulatedId = 0;
-        output = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, prepopulated1);
-        assertThat(output, contains(prepopulated1, prepopulated2, prepopulated3));
+        modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedSortedUrls));
+
+        modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedSortedUrls));
+
+        modifiedList = new ArrayList<>(templateUrls);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                p3,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedSortedUrls));
     }
 
-    private static class MockTemplateUrl extends TemplateUrl {
-        public String shortName = "";
-        public int prepopulatedId;
-        public boolean isPrepopulated;
-        public String keyword = "";
-        public long lastVisitedTime;
-        public String url = "https://testurl.com/?searchstuff={searchTerms}";
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_PrePopBeforeCustom() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1, lastVisitedTime);
+        TemplateUrl p2 = buildMockTemplateUrl("prepopulated2", 2, lastVisitedTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
 
-        public MockTemplateUrl(long fakeNativePtr, String keyword, long lastVisitedTime) {
-            super(fakeNativePtr);
-            this.keyword = keyword;
-            this.shortName = keyword;
-            this.lastVisitedTime = lastVisitedTime;
-        }
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, p2));
+        checkSortAndFilterOutput(templateUrls, p1, List.of(p1, p2, c1));
+    }
 
-        @Override
-        public String getShortName() {
-            return shortName;
-        }
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_CustomSortedByRecency() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl c2 = buildMockTemplateUrl("custom2", 0, lastVisitedTime - 1);
+        TemplateUrl c3 = buildMockTemplateUrl("custom3", 0, lastVisitedTime - 2);
 
-        @Override
-        public int getPrepopulatedId() {
-            return prepopulatedId;
-        }
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(c3, c1, c2));
+        checkSortAndFilterOutput(
+                templateUrls, buildMockTemplateUrl("default", 0, 0), List.of(c1, c2, c3));
+    }
 
-        @Override
-        public boolean getIsPrepopulated() {
-            return isPrepopulated;
-        }
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_DefaultCustomSortedUp() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, lastVisitedTime - 5);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl c2 = buildMockTemplateUrl("custom2", 0, lastVisitedTime - 1);
+        TemplateUrl c3 = buildMockTemplateUrl("custom3", 0, lastVisitedTime - 2);
 
-        @Override
-        public String getKeyword() {
-            return keyword;
-        }
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(c3, c1, c2, p1));
+        checkSortAndFilterOutput(templateUrls, c2, List.of(p1, c2, c1, c3));
+    }
 
-        @Override
-        public long getLastVisitedTime() {
-            return lastVisitedTime;
-        }
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_equalInstancesNotReordered() {
+        String name = "prepopulated";
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl(name, 0, lastVisitedTime, 42);
+        TemplateUrl p2 = buildMockTemplateUrl(name, 0, lastVisitedTime, 42);
+        TemplateUrl p3 = buildMockTemplateUrl(name, 0, lastVisitedTime, 42);
 
-        @Override
-        public String getURL() {
-            return url;
-        }
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p2, p1, p3));
+        checkSortAndFilterOutput(templateUrls, p3, List.of(p2, p1, p3));
 
-        void updateAgeInDays(int days) {
-            lastVisitedTime = System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS * days;
-        }
+        // Instead of using the test helper, call the method directly and explicitly compare
+        // identity for the output instead of equality here, as all instances are equal.
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                templateUrls,
+                p3,
+                /* isInEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
+
+        Assert.assertSame(templateUrls.get(0), p2);
+        Assert.assertSame(templateUrls.get(1), p1);
+        Assert.assertSame(templateUrls.get(2), p3);
+    }
+
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_LimitsCustomCount() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, lastVisitedTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl c2 = buildMockTemplateUrl("custom2", 0, lastVisitedTime);
+        TemplateUrl c3 = buildMockTemplateUrl("custom3", 0, lastVisitedTime);
+        TemplateUrl c4 = buildMockTemplateUrl("custom4", 0, lastVisitedTime);
+        TemplateUrl c5 = buildMockTemplateUrl("custom5", 0, lastVisitedTime);
+
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, c2, c3, c4, c5));
+        checkSortAndFilterOutput(templateUrls, p1, List.of(p1, c1, c2, c3));
+    }
+
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_LimitsCustomCountDseNotCounting() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, lastVisitedTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl c2 = buildMockTemplateUrl("custom2", 0, lastVisitedTime);
+        TemplateUrl c3 = buildMockTemplateUrl("custom3", 0, lastVisitedTime);
+        TemplateUrl c4 = buildMockTemplateUrl("custom4", 0, lastVisitedTime);
+        TemplateUrl c5 = buildMockTemplateUrl("custom5", 0, lastVisitedTime);
+
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, c2, c3, c4, c5));
+        checkSortAndFilterOutput(templateUrls, c1, List.of(p1, c1, c2, c3, c4));
+    }
+
+    @Test
+    public void testSortAndFilterUnnecessaryTemplateUrl_RemovesOldCustom() {
+        long recentTime = System.currentTimeMillis();
+        long pastCutoffTime =
+                System.currentTimeMillis() - SearchEngineAdapter.MAX_DISPLAY_TIME_SPAN_MS - 1;
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, pastCutoffTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, recentTime);
+        TemplateUrl c2 = buildMockTemplateUrl("custom2", 0, pastCutoffTime);
+        TemplateUrl c3 = buildMockTemplateUrl("custom3", 0, pastCutoffTime);
+
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, c2, c3));
+        checkSortAndFilterOutput(templateUrls, c3, List.of(p1, c3, c1));
+    }
+
+    /**
+     * Calls {@link SearchEngineAdapter#sortAndFilterUnnecessaryTemplateUrl} twice to verify that
+     * the outputs are consistent. The first time it indicates that the user is in the EEA, and the
+     * second that they are not. Other inputs are kept the same.
+     */
+    private void checkSortAndFilterOutput(
+            List<TemplateUrl> input,
+            TemplateUrl defaultSearchEngine,
+            List<TemplateUrl> expectedOutput) {
+        List<TemplateUrl> modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+
+        modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ true);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+
+        modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ true,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+
+        modifiedList = new ArrayList<>(input);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                modifiedList,
+                defaultSearchEngine,
+                /* isEeaChoiceCountry= */ false,
+                /* shouldShowUpdatedSettings= */ false);
+        assertThat(modifiedList, contains(expectedOutput.toArray()));
+    }
+
+    @Test
+    public void testGetView() {
+        baseTestGetView(/* shouldShowUpdatedSettings= */ false, /* expectLogos= */ false);
+    }
+
+    @Test
+    public void testGetView_WithSecFeature() {
+        baseTestGetView(/* shouldShowUpdatedSettings= */ true, /* expectLogos= */ true);
+    }
+
+    private void baseTestGetView(boolean shouldShowUpdatedSettings, boolean expectLogos) {
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1);
+        TemplateUrl p2 = buildMockTemplateUrl("", 2);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(new ArrayList<>(List.of(p1, p2, c1))).when(mTemplateUrlService).getTemplateUrls();
+        doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        doReturn(false).when(mTemplateUrlService).isEeaChoiceCountry();
+        doReturn(shouldShowUpdatedSettings).when(mTemplateUrlService).shouldShowUpdatedSettings();
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        var adapter =
+                new SearchEngineAdapter(ApplicationProvider.getApplicationContext(), mProfile);
+        adapter.start();
+
+        assertEquals(adapter.getCount(), 4);
+
+        // Checking the data that was used to render the view.
+        assertEquals(adapter.getItemViewType(0), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        verify(p1, never()).getShortName();
+        View v = adapter.getView(0, null, null);
+        verify(p1, atLeastOnce()).getShortName();
+        assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
+        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
+
+        assertEquals(adapter.getItemViewType(1), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        verify(p2, never()).getShortName();
+        v = adapter.getView(1, null, null);
+        verify(p2, atLeastOnce()).getShortName();
+        assertEquals(v.findViewById(R.id.url).getVisibility(), View.GONE); // Because no keyword.
+        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
+
+        assertEquals(adapter.getItemViewType(2), SearchEngineAdapter.VIEW_TYPE_DIVIDER);
+        assertNotNull(adapter.getView(2, null, null));
+
+        assertEquals(adapter.getItemViewType(3), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        verify(c1, never()).getShortName();
+        v = adapter.getView(3, null, null);
+        verify(c1, atLeastOnce()).getShortName();
+        assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
+        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
     }
 }

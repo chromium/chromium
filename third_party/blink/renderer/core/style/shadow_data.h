@@ -68,8 +68,7 @@ class CORE_EXPORT ShadowData {
         style_(style),
         opacity_(opacity) {}
 
-  bool operator==(const ShadowData&) const;
-  bool operator!=(const ShadowData& o) const { return !(*this == o); }
+  bool operator==(const ShadowData&) const = default;
 
   static ShadowData NeutralValue();
 
@@ -82,8 +81,6 @@ class CORE_EXPORT ShadowData {
   ShadowStyle Style() const { return style_; }
   StyleColor GetColor() const { return color_; }
   float Opacity() const { return opacity_; }
-
-  void OverrideColor(Color color) { color_ = StyleColor(color); }
 
   // Outsets needed to adjust a source rectangle to the one cast by this
   // shadow.

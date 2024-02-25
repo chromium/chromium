@@ -185,8 +185,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged> app_service_ = nullptr;
 
   // A keyed service not owned by this class.
   raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged>
@@ -203,7 +202,7 @@ TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWhenReady) {
   apps::AppPtr app = CreateTestApp();
   app->name = kAppTitle;
   app->publisher_id = kAppLaunchUrl;
-  app->icon_key = absl::nullopt;
+  app->icon_key = std::nullopt;
 
   UpdateWebApp(app_service(), app);
   WaitForAppDataChange();
@@ -235,7 +234,7 @@ TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoOnConsecutiveChanges) {
 TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWithIconWhenReady) {
   // Initial app info without icon.
   apps::AppPtr app = CreateTestApp();
-  app->icon_key = absl::nullopt;
+  app->icon_key = std::nullopt;
 
   UpdateWebApp(app_service(), app);
   WaitForAppDataChange();

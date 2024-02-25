@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -27,7 +28,6 @@
 #include "dbus/object_proxy.h"
 #include "dbus/values_util.h"
 #include "net/base/ip_endpoint.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -101,7 +101,7 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
     std::move(error_callback)
         .Run(set_property_error_name_.value(),
              /*error_message=*/std::string());
-    set_property_error_name_ = absl::nullopt;
+    set_property_error_name_ = std::nullopt;
     return;
   }
 
@@ -463,7 +463,7 @@ void FakeShillDeviceClient::SetSimulateInhibitScanning(
 }
 
 void FakeShillDeviceClient::SetPropertyChangeDelay(
-    absl::optional<base::TimeDelta> time_delay) {
+    std::optional<base::TimeDelta> time_delay) {
   property_change_delay_ = time_delay;
 }
 
@@ -584,7 +584,7 @@ void FakeShillDeviceClient::PassStubDeviceProperties(
   const base::Value::Dict* device_properties =
       stub_devices_.FindDict(device_path.value());
   if (!device_properties) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(device_properties->Clone());

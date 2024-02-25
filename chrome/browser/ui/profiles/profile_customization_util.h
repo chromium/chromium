@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -22,14 +23,14 @@ void FinalizeNewProfileSetup(Profile* profile,
 
 // Helper to obtain a profile name derived from the user's identity.
 //
-// Obtains the identity associated with `account_id` from `identity_manager`
-// and caches the computed name, which can be obtained by calling
-// `resolved_profile_name()`. Calling `RunWithProfileName()` also allows
-// providing a callback that will be executed when the name is resolved.
+// Obtains the identity associated with `core_account_info` from
+// `identity_manager`.
+// Calling `RunWithProfileName()` allows providing a callback that will be
+// executed when the name is resolved. The name is never empty.
 class ProfileNameResolver : public signin::IdentityManager::Observer {
  public:
   explicit ProfileNameResolver(signin::IdentityManager* identity_manager,
-                               const CoreAccountId& account_id);
+                               const CoreAccountInfo& core_account_info);
 
   ProfileNameResolver(const ProfileNameResolver&) = delete;
   ProfileNameResolver& operator=(const ProfileNameResolver&) = delete;
@@ -40,26 +41,23 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
   using ScopedInfoFetchTimeoutOverride =
-      base::AutoReset<absl::optional<base::TimeDelta>>;
+      base::AutoReset<std::optional<base::TimeDelta>>;
   // Overrides the timeout allowed for the profile name resolution, before we
   // default to a fallback value.
   static ScopedInfoFetchTimeoutOverride
   CreateScopedInfoFetchTimeoutOverrideForTesting(base::TimeDelta timeout);
 
+  // The profile name is never empty.
   // Note: We are passing the resolved name by copy to protect against the
   // `ProfileNameResolver` being destroyed during the callback, causing the name
   // reference to become invalid.
   using NameResolvedCallback = base::OnceCallback<void(std::u16string)>;
   void RunWithProfileName(NameResolvedCallback callback);
 
-  const std::u16string& resolved_profile_name() const {
-    return resolved_profile_name_;
-  }
-
  private:
   void OnProfileNameResolved(const std::u16string& profile_name);
 
-  const CoreAccountId account_id_;
+  const CoreAccountInfo core_account_info_;
 
   std::u16string resolved_profile_name_;
   base::CancelableOnceClosure extended_account_info_timeout_closure_;

@@ -21,9 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -115,7 +112,7 @@ class BrowserEncodingTest
     }
 
     // Add "Mark of the Web" path with source URL.
-    expected_contents = base::StringPrintf(
+    expected_contents = base::StringPrintfNonConstexpr(
         expected_contents.c_str(), url.spec().length(), url.spec().c_str());
 
     EXPECT_EQ(expected_contents, actual_contents);
@@ -241,6 +238,7 @@ IN_PROC_BROWSER_TEST_F(BrowserEncodingTest, TestEncodingAutoDetect) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   for (size_t i = 0; i < std::size(kTestDatas); ++i) {
+    SCOPED_TRACE(i);
     base::FilePath test_file_path(test_dir_path);
     test_file_path = test_file_path.AppendASCII(kTestDatas[i].test_file_name);
     GURL url =

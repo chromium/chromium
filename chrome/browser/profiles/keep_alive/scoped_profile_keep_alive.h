@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_KEEP_ALIVE_SCOPED_PROFILE_KEEP_ALIVE_H_
 #define CHROME_BROWSER_PROFILES_KEEP_ALIVE_SCOPED_PROFILE_KEEP_ALIVE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 class Profile;
 enum class ProfileKeepAliveOrigin;
@@ -31,16 +31,16 @@ class ScopedProfileKeepAlive {
   ScopedProfileKeepAlive(const ScopedProfileKeepAlive&) = delete;
   ScopedProfileKeepAlive& operator=(const ScopedProfileKeepAlive&) = delete;
 
-  const Profile* profile() { return profile_; }
+  const Profile* profile() { return profile_.get(); }
   ProfileKeepAliveOrigin origin() { return origin_; }
 
  private:
   // Called after the ScopedProfileKeepAlive has been deleted, so this is a
   // static method where we pass parameters manually.
-  static void RemoveKeepAliveOnUIThread(const Profile* profile,
+  static void RemoveKeepAliveOnUIThread(base::WeakPtr<const Profile> profile,
                                         ProfileKeepAliveOrigin origin);
 
-  const raw_ptr<const Profile, DanglingUntriaged> profile_;
+  const base::WeakPtr<const Profile> profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 

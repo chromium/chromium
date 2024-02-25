@@ -25,9 +25,10 @@ class PaymentUIObserver;
 class SecurePaymentConfirmationDialogView
     : public SecurePaymentConfirmationView,
       public views::DialogDelegateView {
- public:
-  METADATA_HEADER(SecurePaymentConfirmationDialogView);
+  METADATA_HEADER(SecurePaymentConfirmationDialogView,
+                  views::DialogDelegateView)
 
+ public:
   class ObserverForTest {
    public:
     virtual void OnDialogClosed() = 0;

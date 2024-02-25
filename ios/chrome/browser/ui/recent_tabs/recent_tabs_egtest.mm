@@ -7,6 +7,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
@@ -14,19 +15,19 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
@@ -49,9 +50,11 @@ using chrome_test_util::RecentTabsDestinationButton;
 
 namespace {
 
-const char kURLOfTestPage[] = "http://testPage";
+const char kPageURL[] = "/test-page.html";
+const char kPageURL2[] = "/test-page2.html";
 const char kHTMLOfTestPage[] =
     "<head><title>TestPageTitle</title></head><body>hello</body>";
+const char kPage2Content[] = "Page 2!";
 NSString* const kTitleOfTestPage = @"TestPageTitle";
 
 // Timeout in seconds to wait for asynchronous sync operations.
@@ -71,7 +74,7 @@ void SignOut() {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 }
 
 // Makes sure at least one tab is opened and opens the recent tab panel.
@@ -103,34 +106,24 @@ id<GREYMatcher> TitleOfTestPage() {
       grey_sufficientlyVisible(), nil);
 }
 
-GURL TestPageURL() {
-  return web::test::HttpServer::MakeUrl(kURLOfTestPage);
-}
-
-// Returns matcher for the history sync screen primary action button.
-id<GREYMatcher> HistorySyncAcceptButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the history sync screen secondary action button.
-id<GREYMatcher> HistorySyncDeclineButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the scrollview inside the history sync screen.
-id<GREYMatcher> HistorySyncScrollViewMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for search action inside the history sync screen scroll view.
-id<GREYAction> HistorySyncScrollSearchAction() {
-  return grey_scrollInDirection(kGREYDirectionDown, 200);
+std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url == kPageURL) {
+    std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(kHTMLOfTestPage);
+    return std::move(http_response);
+  }
+  if (request.relative_url == kPageURL2) {
+    std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(std::string("<body>") + kPage2Content +
+                               "</body>");
+    return std::move(http_response);
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -165,6 +158,8 @@ id<GREYAction> HistorySyncScrollSearchAction() {
       [self isRunningTest:@selector
             (testDelineHistorySyncIfSignedOut_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
+            (testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
             (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
             (testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled
@@ -180,10 +175,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
-  web::test::SetUpSimpleHttpServer(std::map<GURL, std::string>{{
-      TestPageURL(),
-      std::string(kHTMLOfTestPage),
-  }});
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
@@ -193,9 +187,51 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [PolicyAppInterface clearPolicies];
 }
 
-// Tests reopening a closed tab from a regular tab.
-- (void)testOpenCloseTabFromRegular {
-  const GURL testPageURL = TestPageURL();
+// Tests reopening a closed tab from a regular tab with history.
+- (void)testOpenCloseTabFromRegularWithHistory {
+  const GURL testPageURL = self.testServer->GetURL(kPageURL);
+
+  // Open the test page in a new tab.
+  [ChromeEarlGrey loadURL:testPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello"];
+
+  // Open the Recent Tabs panel, check that the test page is not
+  // present.
+  OpenRecentTabsPanel();
+  [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
+      assertWithMatcher:grey_nil()];
+  [self closeRecentTabs];
+
+  // Close the tab containing the test page and wait for the stack view to
+  // appear.
+  [ChromeEarlGrey closeCurrentTab];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Load a URL to avoid being on NTP with no URL.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL2)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage2Content];
+
+  // Open the Recent Tabs panel and check that the test page is present.
+  OpenRecentTabsPanel();
+  [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on the entry for the test page in the Recent Tabs panel and check that
+  // a tab containing the test page was opened.
+  [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(
+                            testPageURL.GetContent())];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+}
+
+// Tests reopening a closed tab from a regular tab with no history.
+- (void)testOpenCloseTabFromRegularNoHistory {
+  const GURL testPageURL = self.testServer->GetURL(kPageURL);
 
   // Open the test page in a new tab.
   [ChromeEarlGrey loadURL:testPageURL];
@@ -228,7 +264,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
       assertWithMatcher:chrome_test_util::OmniboxText(
                             testPageURL.GetContent())];
 
-  [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForMainTabCount:1];
 }
 
 // Tests that tapping "Show Full History" open the history.
@@ -357,25 +393,26 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
@@ -415,21 +452,22 @@ id<GREYAction> HistorySyncScrollSearchAction() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(
@@ -439,6 +477,55 @@ id<GREYAction> HistorySyncScrollSearchAction() {
       @"MSBB consent should not be granted.");
   // Verify that the identity is signed out.
   [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that for a signed in user, after declining twice History Sync, the
+// History Sync is still shown when tapping on the promo action button.
+- (void)testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Open Recent Tabs.
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap on promo button and decline History Sync 3 times.
+  for (int i = 0; i <= 2; i++) {
+    // Tap on "Turn on" button.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityID(
+                           kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                       grey_accessibilityTrait(UIAccessibilityTraitButton),
+                       grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+    // Verify that the History Sync Opt-In screen is shown.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kHistorySyncViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Decline History Sync.
+    [[[EarlGrey selectElementWithMatcher:
+                    chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+           usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+        onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:
+            grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  }
+
+  // Verify that the History Sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGrey
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
 }
 
 // Tests that no promo to sign-in + sync is shown to a user who is signed out
@@ -466,8 +553,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
   OpenRecentTabsPanel();
@@ -482,8 +570,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // Tests that a promo to sync is shown to a signed-in non-syncing user.
 // kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testShowPromoIfSignedIn_SyncToSigninDisabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -491,9 +578,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSyncWithPrimaryAccount
-                           closeButton:NO];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount
+                                         closeButton:NO];
 
   // Accept the promo.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
@@ -511,7 +598,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Recent Tabs.
   OpenRecentTabsPanel();
@@ -539,25 +626,26 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
@@ -574,7 +662,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Recent Tabs
   OpenRecentTabsPanel();
@@ -596,21 +684,22 @@ id<GREYAction> HistorySyncScrollSearchAction() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(
@@ -626,11 +715,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // tab sync.
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kTabs)
-              enabled:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kTabs)
+                          enabled:YES];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -649,16 +736,24 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
 // Tests no promo to sync is shown to a signed-in non-syncing user if sync is
 // disabled by policy.
-- (void)testNoPromoIfSignedInAndSyncDisabledByPolicy {
+// TODO(crbug.com/1487984): Test fails on official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
+  DISABLED_testNoPromoIfSignedInAndSyncDisabledByPolicy
+#else
+#define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
+  testNoPromoIfSignedInAndSyncDisabledByPolicy
+#endif
+- (void)MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -671,8 +766,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
 // Tests no promo is shown to a syncing user with tab sync enabled.
 - (void)testNoPromoIfSyncing {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -686,11 +780,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // Tests a promo is shown to a syncing user who disabled the tab sync toggle.
 // Tapping the promo opens the page to re-enable the toggle.
 - (void)testShowPromoIfSyncingAndDisabledTabs {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kTabs)
-              enabled:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kTabs)
+                          enabled:NO];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -709,7 +801,10 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
+                                   [ChromeEarlGrey
+                                       isReplaceSyncWithSigninEnabled]
+                                       ? IDS_IOS_HISTORY_SYNC_TITLE
+                                       : IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -810,8 +905,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // Tests that the Recent Tabs can be opened while signed in (prevent regression
 // for https://crbug.com/1056613).
 - (void)testOpenWhileSignedIn {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
 }
@@ -856,7 +950,6 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // Tests that the distant session is correctly displayed and tapping on a
 // distant tab correctly open it.
 - (void)testOtherDevicesWithOneDistantSession {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
 
   NSString* sessionName = @"Desktop";
@@ -891,7 +984,11 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   for (NSUInteger i = 0; i < numberOfTabs; ++i) {
     // Check that the session header is displayed.
     NSString* tabName = [NSString stringWithFormat:@"Tab %ld", i];
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(tabName)]
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(tabName),
+                                            grey_ancestor(grey_kindOfClassName(
+                                                @"TableViewURLCell")),
+                                            nil)]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 
@@ -908,7 +1005,6 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
 // Tests that all the distant sessions are correctly displayed.
 - (void)testOtherDevicesWithMultipleDistantSessions {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
 
   NSArray<NSString*>* sessionNames =
@@ -957,7 +1053,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
-  GURL testURL = TestPageURL();
+  const GURL testURL = self.testServer->GetURL(kPageURL);
   [ChromeEarlGrey
       verifyCopyLinkActionWithText:[NSString
                                        stringWithUTF8String:testURL.spec()
@@ -993,7 +1089,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
-  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+  const GURL testPageURL = self.testServer->GetURL(kPageURL);
   [ChromeEarlGrey verifyShareActionWithURL:testPageURL
                                  pageTitle:kTitleOfTestPage];
 }
@@ -1003,7 +1099,7 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 // Opens a new tab and closes it, to make sure it appears as a recently closed
 // tab.
 - (void)loadTestURL {
-  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+  const GURL testPageURL = self.testServer->GetURL(kPageURL);
 
   // Open the test page in a new tab.
   [ChromeEarlGrey loadURL:testPageURL];

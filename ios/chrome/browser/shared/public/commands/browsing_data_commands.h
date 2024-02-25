@@ -9,10 +9,12 @@
 
 #import "base/ios/block_types.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 
 class ChromeBrowserState;
 
+// TODO(crbug.com/325612973) Remove this protocol and rewrite browsing data
+// removal as a keyed service.
 // Protocol for commands that relate to browsing data.
 @protocol BrowsingDataCommands <NSObject>
 

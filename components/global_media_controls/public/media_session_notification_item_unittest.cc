@@ -178,7 +178,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingDoesntMissUpdates) {
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
 
   // The item should be frozen.
   EXPECT_TRUE(item().frozen());
@@ -236,7 +236,7 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 
@@ -297,7 +297,7 @@ TEST_F(MediaSessionNotificationItemTest, UnfreezingWaitsForActions) {
 
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaSessionActionsChanged({});
 
   // The item should be frozen and the view should contain the old data.
@@ -367,7 +367,7 @@ TEST_F(MediaSessionNotificationItemTest,
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
-  item().MediaSessionMetadataChanged(absl::nullopt);
+  item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
 
@@ -508,6 +508,37 @@ TEST_F(MediaSessionNotificationItemTest, GetRemotePlaybackMetadata) {
 
 TEST_F(MediaSessionNotificationItemTest, GetSourceId) {
   EXPECT_EQ(source_id(), *item().GetSourceId());
+}
+
+TEST_F(MediaSessionNotificationItemTest, ShouldShowNotification) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
+
+  media_session::MediaMetadata metadata;
+  metadata.title = u"title";
+  item().MediaSessionMetadataChanged(metadata);
+
+  // Hide uncontrollable sessions.
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  item().MediaSessionInfoChanged(mojo::Clone(session_info));
+  EXPECT_FALSE(item().ShouldShowNotification());
+  session_info->is_controllable = true;
+  item().MediaSessionInfoChanged(mojo::Clone(session_info));
+  EXPECT_TRUE(item().ShouldShowNotification());
+
+  // Hide sessions with Cast presentation.
+  session_info->has_presentation = true;
+  item().MediaSessionInfoChanged(mojo::Clone(session_info));
+  EXPECT_FALSE(item().ShouldShowNotification());
+
+  // Show sessions with Remote Playback presentation.
+  session_info->remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", /* remote_playback_disabled */ false,
+          /* remote_playback_started */ true, "device_friendly_name",
+          /* is_encrypted_media */ false);
+  item().MediaSessionInfoChanged(mojo::Clone(session_info));
+  EXPECT_TRUE(item().ShouldShowNotification());
 }
 
 }  // namespace global_media_controls

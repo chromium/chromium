@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -28,7 +30,7 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
         encode_size_(encode_size),
         is_hardware_encoder_(is_hardware_encoder),
         svc_mode_(svc_mode) {}
-  ~EncoderMetricsHandler() { ReportUKM(); }
+  ~EncoderMetricsHandler() { ReportMetrics(); }
 
   EncoderMetricsHandler(EncoderMetricsHandler&& handler)
       : source_id_(handler.source_id_),
@@ -37,12 +39,12 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
         encode_size_(handler.encode_size_),
         is_hardware_encoder_(handler.is_hardware_encoder_),
         svc_mode_(handler.svc_mode_),
-        report_ukm_(true),
+        report_metrics_(true),
         encoder_status_(handler.encoder_status_),
         num_encoded_frames_(handler.num_encoded_frames_) {
     // Set report ukm is false because the ukm should be reported in the created
     // EncoderMetricsHandler.
-    handler.report_ukm_ = false;
+    handler.report_metrics_ = false;
   }
 
   EncoderMetricsHandler(const EncoderMetricsHandler&) = delete;
@@ -60,11 +62,16 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
   }
 
  private:
-  void ReportUKM() const {
-    if (!report_ukm_) {
+  void ReportMetrics() const {
+    if (!report_metrics_) {
       return;
     }
 
+    ReportUKM();
+    ReportUMA();
+  }
+
+  void ReportUKM() const {
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
     if (!ukm_recorder) {
       return;
@@ -93,8 +100,49 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
           std::max<uint64_t>(1, num_encoded_frames_ / 100 * 100));
     }
     builder.Record(ukm_recorder);
+  }
 
-    // TODO(b/275663480): Report UMAs.
+  base::StringPiece UseCaseStr() const {
+    switch (encoder_use_case_) {
+      case mojom::VideoEncoderUseCase::kCastMirroring:
+        return "CastMirroring";
+      case mojom::VideoEncoderUseCase::kMediaRecorder:
+        return "MediaRecorder";
+      case mojom::VideoEncoderUseCase::kWebCodecs:
+        return "WebCodecs";
+      case mojom::VideoEncoderUseCase::kWebRTC:
+        return "WebRTC";
+    }
+    return "";
+  }
+
+  void ReportUMA() const {
+    const base::StringPiece use_case_str = UseCaseStr();
+    if (use_case_str.empty()) {
+      mojo::ReportBadMessage(base::StrCat(
+          {"Unkown use case",
+           base::NumberToString(static_cast<int>(encoder_use_case_))}));
+    }
+    const std::string uma_prefix =
+        base::StrCat({"Media.VideoEncoder.", use_case_str, ".",
+                      (is_hardware_encoder_ ? "HW" : "SW"), "."});
+
+    base::UmaHistogramEnumeration(
+        base::StrCat({uma_prefix, "Profile"}), codec_profile_,
+        static_cast<VideoCodecProfile>(VIDEO_CODEC_PROFILE_MAX + 1));
+    base::UmaHistogramEnumeration(base::StrCat({uma_prefix, "SVC"}), svc_mode_);
+    base::UmaHistogramCounts10000(base::StrCat({uma_prefix, "Width"}),
+                                  encode_size_.width());
+    base::UmaHistogramCounts10000(base::StrCat({uma_prefix, "Height"}),
+                                  encode_size_.height());
+    base::UmaHistogramCounts1M(base::StrCat({uma_prefix, "Area"}),
+                               encode_size_.GetArea() / 100);
+    base::UmaHistogramEnumeration(base::StrCat({uma_prefix, "Status"}),
+                                  encoder_status_.code());
+    // One million frames is about 9.25 hours in 30 fps. That should be enough
+    // thinking of the encoder is recreated often.
+    base::UmaHistogramCounts1M(base::StrCat({uma_prefix, "Frames"}),
+                               num_encoded_frames_);
   }
 
   const ukm::SourceId source_id_;
@@ -104,7 +152,7 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
   const bool is_hardware_encoder_;
   const SVCScalabilityMode svc_mode_;
 
-  bool report_ukm_ = true;
+  bool report_metrics_ = true;
 
   EncoderStatus encoder_status_ = EncoderStatus::Codes::kOk;
   uint64_t num_encoded_frames_ = 0;

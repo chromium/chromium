@@ -1,11 +1,11 @@
 caption: "Controls whether <ph name=\"UNLOAD_EVENT_NAME\">unload</ph> event \
 handlers can be disabled."
-default: true
+default: false
 desc: "<ph name=\"UNLOAD_EVENT_NAME\">unload</ph> event handlers are being \
 deprecated. Whether they fire depends on the <ph name=\"UNLOAD_EVENT_NAME\"> \
 unload</ph> <ph name=\"PERMISSIONS_POLICY_NAME\">Permissions-Policy</ph>. \
 Currently, they are allowed by policy by default. In the future they will \
-gradually move to being disallowed by default and sites must explictly enable \
+gradually move to being disallowed by default and sites must explicitly enable \
 them using <ph name=\"PERMISSIONS_POLICY_NAME\">Permissions-Policy</ph> \
 headers. This enterprise policy can be used to opt out of this gradual \
 deprecation by forcing the default to remain as enabled.\n\ \
@@ -25,7 +25,11 @@ set <ph name=\"PERMISSIONS_POLICY_NAME\">Permissions-Policy</ph> header will
 stop firing `unload` events.\n\
 \n\
 If this policy is set to true then <ph name=\"UNLOAD_EVENT_NAME\">unload</ph> \
-event handlers will continue to work by default.\n"
+event handlers will continue to work by default.\n\
+\n\
+NOTE: This policy had an incorrectly documented default of `true` in M117. \
+The unload event did and will not change in M117, so this policy has no effect \
+in that version.\n"
 example_value: true
 features:
   dynamic_refresh: true

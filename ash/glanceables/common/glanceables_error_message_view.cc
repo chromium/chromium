@@ -13,8 +13,10 @@
 #include "ash/style/typography.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -26,18 +28,19 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace ash {
 namespace {
 
-constexpr int kErrorMessageViewSize = 40;
-constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(10, 0, 10, 16);
-constexpr gfx::Insets kContainerInsets = gfx::Insets::TLBR(0, 0, 12, 0);
-constexpr gfx::Insets kLabelInsets = gfx::Insets::VH(10, 16);
-
-}  // namespace
-
-namespace ash {
+constexpr int kErrorMessageRoundedCornerRadius = 13;
+constexpr int kErrorMessageViewSize = 34;
+constexpr int kErrorMessageHorizontalMargin = 4;
+constexpr int kErrorMessageBottomMargin = 4;
+constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(8, 4, 8, 10);
+constexpr gfx::Insets kLabelInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 class DismissErrorLabelButton : public views::LabelButton {
+  METADATA_HEADER(DismissErrorLabelButton, views::LabelButton)
+
  public:
   explicit DismissErrorLabelButton(PressedCallback callback)
       : views::LabelButton(std::move(callback)) {
@@ -46,7 +49,7 @@ class DismissErrorLabelButton : public views::LabelButton {
         base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetProperty(views::kMarginsKey, kButtonInsets);
-    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnError);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     label()->SetAutoColorReadabilityEnabled(false);
@@ -54,24 +57,31 @@ class DismissErrorLabelButton : public views::LabelButton {
   ~DismissErrorLabelButton() override = default;
 };
 
+BEGIN_METADATA(DismissErrorLabelButton)
+END_METADATA
+
+}  // namespace
+
 GlanceablesErrorMessageView::GlanceablesErrorMessageView(
     views::Button::PressedCallback callback,
     const std::u16string& error_message) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysError, kErrorMessageViewSize / 2));
-  SetProperty(views::kMarginsKey, kContainerInsets);
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+  SetID(base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView));
 
   const auto* const typography_provider = TypographyProvider::Get();
-
   error_message_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(
               GlanceablesViewId::kGlanceablesErrorMessageLabel))
-          .SetEnabledColorId(cros_tokens::kCrosSysOnError)
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
-              TypographyToken::kCrosButton2))
+              TypographyToken::kCrosAnnotation1))
           .SetLineHeight(typography_provider->ResolveLineHeight(
-              TypographyToken::kCrosButton2))
+              TypographyToken::kCrosAnnotation1))
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetText(error_message)
           .SetProperty(views::kMarginsKey, kLabelInsets)
@@ -86,7 +96,20 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
       std::make_unique<DismissErrorLabelButton>(std::move(callback)));
 }
 
-BEGIN_METADATA(GlanceablesErrorMessageView, views::View)
+void GlanceablesErrorMessageView::UpdateBoundsToContainer(
+    const gfx::Rect& container_bounds) {
+  gfx::Rect preferred_bounds(container_bounds);
+
+  preferred_bounds.Inset(gfx::Insets::TLBR(
+      preferred_bounds.height() - kErrorMessageViewSize -
+          kErrorMessageBottomMargin,
+      kErrorMessageHorizontalMargin, kErrorMessageBottomMargin,
+      kErrorMessageHorizontalMargin));
+
+  SetBoundsRect(preferred_bounds);
+}
+
+BEGIN_METADATA(GlanceablesErrorMessageView)
 END_METADATA
 
 }  // namespace ash

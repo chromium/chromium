@@ -65,16 +65,17 @@ CSSValueID CssIdentifierForFontSizeKeyword(int keyword_size) {
 }
 
 void LogUnimplementedPropertyID(const CSSProperty& property) {
-  DEFINE_STATIC_LOCAL(HashSet<CSSPropertyID>, property_id_set, ());
-  if (property.PropertyID() == CSSPropertyID::kVariable) {
+  if (!DCHECK_IS_ON() || !VLOG_IS_ON(1) ||
+      property.PropertyID() == CSSPropertyID::kVariable) {
     return;
   }
+  DEFINE_STATIC_LOCAL(HashSet<CSSPropertyID>, property_id_set, ());
   if (!property_id_set.insert(property.PropertyID()).is_new_entry) {
     return;
   }
 
-  DLOG(ERROR) << "Blink does not yet implement getComputedStyle for '"
-              << property.GetPropertyName() << "'.";
+  DVLOG(1) << "Blink does not yet implement getComputedStyle for '"
+           << property.GetPropertyName() << "'.";
 }
 
 // Tally counts of animation duration being zero when querying a property on
@@ -85,7 +86,7 @@ void UseCountIfAnimationDurationZero(Document& document,
                                      const ComputedStyle& style,
                                      mojom::blink::WebFeature feature) {
   if (const CSSAnimationData* animation_data = style.Animations()) {
-    for (absl::optional<double> duration : animation_data->DurationList()) {
+    for (std::optional<double> duration : animation_data->DurationList()) {
       if (duration == 0.0) {
         UseCounter::Count(document, feature);
         return;
@@ -116,7 +117,8 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
       element_(element),
       pseudo_element_specifier_(
           CSSSelectorParser::ParsePseudoElement(pseudo_element_name, element)),
-      allow_visited_style_(allow_visited_style) {
+      allow_visited_style_(allow_visited_style),
+      guaranteed_style_clean_(false) {
   pseudo_argument_ =
       PseudoElementHasArguments(pseudo_element_specifier_)
           ? CSSSelectorParser::ParsePseudoElementArgument(pseudo_element_name)
@@ -255,7 +257,12 @@ CSSComputedStyleDeclaration::GetVariables() const {
 }
 
 void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
-    const CSSPropertyName* property_name) const {
+    const CSSPropertyName* property_name,
+    bool for_all_properties) const {
+  if (guaranteed_style_clean_) {
+    return;
+  }
+
   Element* styled_element = StyledElement();
   if (!styled_element) {
     return;
@@ -273,8 +280,9 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
     // style should be in a display:none iframe. If the property we are querying
     // is not layout dependent, we will not update the iframe layout box here.
     bool is_for_layout_dependent_property =
-        property_name && !property_name->IsCustomProperty() &&
-        CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
+        for_all_properties ||
+        (property_name && !property_name->IsCustomProperty() &&
+         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty());
     if (is_for_layout_dependent_property) {
       owner->GetDocument().UpdateStyleAndLayout(
           DocumentUpdateReason::kComputedStyle);
@@ -296,28 +304,31 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
     return;
   }
 
-  document.UpdateStyleAndLayoutTreeForNode(
+  document.UpdateStyleAndLayoutTreeForElement(
       styled_element, DocumentUpdateReason::kComputedStyle);
 }
 
 void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
-    const CSSProperty* property) const {
+    const CSSProperty* property,
+    bool for_all_properties) const {
+  if (guaranteed_style_clean_) {
+    return;
+  }
+
   Element* styled_element = StyledElement();
   if (!styled_element) {
     return;
   }
 
   bool is_for_layout_dependent_property =
-      property && property->IsLayoutDependent(
-                      styled_element->GetComputedStyle(), StyledLayoutObject());
+      for_all_properties || (property && property->IsLayoutDependent(
+                                             styled_element->GetComputedStyle(),
+                                             StyledLayoutObject()));
 
   if (is_for_layout_dependent_property) {
     auto& doc = styled_element->GetDocument();
-    // EditingStyle uses this class with DisallowTransitionScope.
-    if (!doc.Lifecycle().StateTransitionDisallowed() && doc.View()) {
-      doc.UpdateStyleAndLayoutForNode(styled_element,
-                                      DocumentUpdateReason::kJavaScript);
-    }
+    doc.UpdateStyleAndLayoutForNode(styled_element,
+                                    DocumentUpdateReason::kJavaScript);
   }
 }
 
@@ -328,7 +339,8 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
     return nullptr;
   }
 
-  UpdateStyleAndLayoutTreeIfNeeded(&property_name);
+  UpdateStyleAndLayoutTreeIfNeeded(&property_name,
+                                   /*for_all_properties=*/false);
 
   CSSPropertyRef ref(property_name, styled_element->GetDocument());
   if (!ref.IsValid()) {
@@ -336,7 +348,7 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   }
   const CSSProperty& property_class = ref.GetProperty();
 
-  UpdateStyleAndLayoutIfNeeded(&property_class);
+  UpdateStyleAndLayoutIfNeeded(&property_class, /*for_all_properties=*/false);
 
   const ComputedStyle* style = ComputeComputedStyle();
 
@@ -391,8 +403,10 @@ unsigned CSSComputedStyleDeclaration::length() const {
   wtf_size_t variable_count = 0;
 
   if (RuntimeEnabledFeatures::CSSEnumeratedCustomPropertiesEnabled()) {
-    UpdateStyleAndLayoutTreeIfNeeded(nullptr /* property_name */);
-    UpdateStyleAndLayoutIfNeeded(nullptr /* property */);
+    UpdateStyleAndLayoutTreeIfNeeded(nullptr /* property_name */,
+                                     /*for_all_properties=*/false);
+    UpdateStyleAndLayoutIfNeeded(nullptr /* property */,
+                                 /*for_all_properties=*/false);
     variable_count = GetVariableNamesCount();
   }
 
@@ -569,6 +583,23 @@ void CSSComputedStyleDeclaration::SetPropertyInternal(
 void CSSComputedStyleDeclaration::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   CSSStyleDeclaration::Trace(visitor);
+}
+
+CSSComputedStyleDeclaration::ScopedCleanStyleForAllProperties::
+    ScopedCleanStyleForAllProperties(CSSComputedStyleDeclaration* declaration)
+    : declaration_(declaration) {
+  declaration_->UpdateStyleAndLayoutTreeIfNeeded(nullptr,
+                                                 /*for_all_properties=*/true);
+  declaration_->UpdateStyleAndLayoutIfNeeded(nullptr,
+                                             /*for_all_properties=*/true);
+  disallow_scope_.emplace(
+      declaration_->StyledElement()->GetDocument().Lifecycle());
+  declaration_->guaranteed_style_clean_ = true;
+}
+
+CSSComputedStyleDeclaration::ScopedCleanStyleForAllProperties::
+    ~ScopedCleanStyleForAllProperties() {
+  declaration_->guaranteed_style_clean_ = false;
 }
 
 }  // namespace blink

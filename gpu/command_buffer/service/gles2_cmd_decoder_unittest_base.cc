@@ -168,14 +168,6 @@ void GLES2DecoderTestBase::SetUp() {
   InitDecoder(init);
 }
 
-void GLES2DecoderTestBase::AddExpectationsForVertexAttribManager() {
-  for (GLint ii = 0; ii < kNumVertexAttribs; ++ii) {
-    EXPECT_CALL(*gl_, VertexAttrib4f(ii, 0.0f, 0.0f, 0.0f, 1.0f))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-}
-
 GLES2DecoderTestBase::InitState::InitState() = default;
 GLES2DecoderTestBase::InitState::InitState(const InitState& other) = default;
 GLES2DecoderTestBase::InitState& GLES2DecoderTestBase::InitState::operator=(
@@ -279,9 +271,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
         .RetiresOnSaturation();
     EXPECT_CALL(*gl_, BindVertexArrayOES(_)).Times(1).RetiresOnSaturation();
   }
-
-  if (group_->feature_info()->workarounds().init_vertex_attributes)
-    AddExpectationsForVertexAttribManager();
 
   AddExpectationsForBindVertexArrayOES();
 
@@ -2449,9 +2438,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
-  context_ = gl::init::CreateGLContext(
-      nullptr, surface_.get(),
-      GenerateGLContextAttribs(context_creation_attribs_, group_.get()));
+  context_ =
+      gl::init::CreateGLContext(nullptr, surface_.get(),
+                                GenerateGLContextAttribsForDecoder(
+                                    context_creation_attribs_, group_.get()));
   context_->MakeCurrent(surface_.get());
 
   command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();

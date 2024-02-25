@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "profile.mixed_forms_warnings": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "InsecureFormsWarningsEnabled": false
+        },
+        "prefs": {
+          "profile.mixed_forms_warnings": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -7,25 +7,26 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -90,18 +91,31 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
+  void TearDownOnMainThread() override {
+    // Make sure the rules manager does not return a freed files controller.
+    ON_CALL(*mock_rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(nullptr));
+
+    // The files controller must be destroyed before the profile since it's
+    // holding a pointer to it.
+    files_controller_.reset();
+
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
-        std::make_unique<testing::StrictMock<MockDlpRulesManager>>();
+        std::make_unique<testing::StrictMock<MockDlpRulesManager>>(
+            Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
     ON_CALL(*mock_rules_manager_, GetReportingManager)
         .WillByDefault(testing::Return(nullptr));
 
-    files_controller_ =
-        std::make_unique<DlpFilesControllerAsh>(*mock_rules_manager_);
+    files_controller_ = std::make_unique<DlpFilesControllerAsh>(
+        *mock_rules_manager_, Profile::FromBrowserContext(context));
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 
@@ -111,8 +125,7 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
  protected:
   // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
   // this class.
-  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ = nullptr;
 
   std::unique_ptr<DlpFilesControllerAsh> files_controller_ = nullptr;
 
@@ -139,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
 
   // Setup the reporting manager.
   std::vector<DlpPolicyEvent> events;
-  auto reporting_manager = std::make_unique<DlpReportingManager>();
+  auto reporting_manager =
+      std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
       reporting_manager.get(), events,
       base::SequencedTaskRunner::GetCurrentDefault());
@@ -176,14 +190,15 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
 
   ASSERT_EQ(events.size(), 1u);
 
-  auto event_builder = DlpPolicyEventBuilder::Event(
-      kExampleUrl, rule_name, rule_id, DlpRulesManager::Restriction::kFiles,
-      DlpRulesManager::Level::kBlock);
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
+      GURL(kExampleUrl).spec(), rule_name, rule_id,
+      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
 
   event_builder->SetDestinationComponent(data_controls::Component::kOneDrive);
   event_builder->SetContentName(base::FilePath(file_path).BaseName().value());
 
-  EXPECT_THAT(events[0], IsDlpPolicyEvent(event_builder->Create()));
+  EXPECT_THAT(events[0],
+              data_controls::IsDlpPolicyEvent(event_builder->Create()));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,

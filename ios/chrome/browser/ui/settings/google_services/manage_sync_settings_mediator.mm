@@ -7,21 +7,29 @@
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
+#import "base/containers/contains.h"
+#import "base/containers/enum_set.h"
 #import "base/containers/fixed_flat_map.h"
+#import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/model_type.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
-#import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -32,14 +40,15 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/constants.h"
-#import "ios/chrome/browser/sync/enterprise_utils.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/sync/model/enterprise_utils.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
@@ -48,7 +57,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -81,17 +90,10 @@ static const syncer::UserSelectableType kAccountSwitchItems[] = {
     syncer::UserSelectableType::kPayments,
     syncer::UserSelectableType::kPreferences};
 
-// Returns the configuration to be used for the accessory.
-UIImageConfiguration* AccessoryConfiguration() {
-  return [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolAccessoryPointSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-}
-
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 constexpr CGFloat kErrorSymbolPointSize = 22.;
+constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 }  // namespace
 
@@ -106,6 +108,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 @property(nonatomic, strong) TableViewImageItem* encryptionItem;
 // Sync error item.
 @property(nonatomic, strong) TableViewItem* syncErrorItem;
+// Batch upload item.
+@property(nonatomic, strong) SettingsImageDetailTextItem* batchUploadItem;
 // Sign out and turn off sync item.
 @property(nonatomic, strong) TableViewItem* signOutAndTurnOffSyncItem;
 // Returns YES if the sync data items should be enabled.
@@ -123,17 +127,19 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   // Whether Sync State changes should be currently ignored.
   BOOL _ignoreSyncStateChanges;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // Authentication service.
-  AuthenticationService* _authenticationService;
+  raw_ptr<AuthenticationService> _authenticationService;
   // Account manager service to retrieve Chrome identities.
-  ChromeAccountManagerService* _chromeAccountManagerService;
+  raw_ptr<ChromeAccountManagerService> _chromeAccountManagerService;
   // Chrome account manager service observer bridge.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountAccountManagerServiceObserver;
+      _accountManagerServiceObserver;
+  // The pref service.
+  raw_ptr<PrefService> _prefService;
   // Signed-in identity. Note: may be nil while signing out.
   id<SystemIdentity> _signedInIdentity;
 }
@@ -143,6 +149,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+              prefService:(PrefService*)prefService
       initialAccountState:(SyncSettingsAccountState)initialAccountState {
   self = [super init];
   if (self) {
@@ -155,11 +162,12 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                                                                 self);
     _authenticationService = authenticationService;
     _chromeAccountManagerService = accountManagerService;
-    _accountAccountManagerServiceObserver =
+    _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _chromeAccountManagerService);
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
+    _prefService = prefService;
     _initialAccountState = initialAccountState;
   }
   return self;
@@ -171,8 +179,25 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _chromeAccountManagerService = nullptr;
-  _accountAccountManagerServiceObserver.reset();
+  _accountManagerServiceObserver.reset();
+  _prefService = nullptr;
   _signedInIdentity = nil;
+}
+
+- (void)autofillAlertConfirmed:(BOOL)value {
+  _syncService->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kAutofill, value);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
+    // When the auto fill data type is updated, the autocomplete wallet
+    // should be updated too. Autocomplete wallet should not be enabled
+    // when auto fill data type disabled. This behaviour not be
+    // implemented in the UI code. This code can be removed once
+    // either of crbug.com/937234 (move logic to infra layers) or
+    // crbug.com/1435431 (remove the coupling) is fixed.
+    _syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, value);
+  }
 }
 
 #pragma mark - Loads sync data type section
@@ -287,17 +312,18 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         // It's possible that the sync everything pref remains true when a
         // policy change doesn't allow to sync everthing anymore. Fix that here.
         BOOL isSyncingEverything =
-            self.syncSetupService->IsSyncEverythingEnabled();
+            _syncService->GetUserSettings()->IsSyncEverythingEnabled();
         BOOL canSyncEverything = self.allItemsAreSynceable;
         if (isSyncingEverything && !canSyncEverything) {
-          self.syncSetupService->SetSyncEverythingEnabled(NO);
+          _syncService->GetUserSettings()->SetSelectedTypes(
+              false, _syncService->GetUserSettings()->GetSelectedTypes());
         }
         return;
       }
 
       BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
       BOOL shouldSyncEverythingItemBeOn =
-          self.syncSetupService->IsSyncEverythingEnabled();
+          _syncService->GetUserSettings()->IsSyncEverythingEnabled();
       SyncSwitchItem* syncEverythingItem =
           base::apple::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
       BOOL needsUpdate =
@@ -347,14 +373,16 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     syncer::UserSelectableType dataType =
         static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
     BOOL isDataTypeSynced =
-        self.syncSetupService->IsDataTypePreferred(dataType);
+        _syncService->GetUserSettings()->GetSelectedTypes().Has(dataType);
     BOOL isEnabled = self.shouldSyncDataItemEnabled &&
                      ![self isManagedSyncSettingsDataType:dataType];
 
     // kPayments can only be selected if kAutofill is also selected.
     // TODO(crbug.com/1435431): Remove this coupling.
-    if (dataType == syncer::UserSelectableType::kPayments &&
-        !self.syncSetupService->IsDataTypePreferred(
+    if (!base::FeatureList::IsEnabled(
+            syncer::kSyncDecoupleAddressPaymentSettings) &&
+        dataType == syncer::UserSelectableType::kPayments &&
+        !_syncService->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kAutofill)) {
       isEnabled = false;
     }
@@ -366,10 +394,11 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       // cases they may not, e.g. if one of them is disabled by policy. In that
       // case, show the toggle as on if at least one of them is enabled. The
       // toggle should reflect the value of the non-disabled type.
-      isDataTypeSynced = self.syncSetupService->IsDataTypePreferred(
-                             syncer::UserSelectableType::kHistory) ||
-                         self.syncSetupService->IsDataTypePreferred(
-                             syncer::UserSelectableType::kTabs);
+      isDataTypeSynced =
+          _syncService->GetUserSettings()->GetSelectedTypes().Has(
+              syncer::UserSelectableType::kHistory) ||
+          _syncService->GetUserSettings()->GetSelectedTypes().Has(
+              syncer::UserSelectableType::kTabs);
       isEnabled = self.shouldSyncDataItemEnabled &&
                   (![self isManagedSyncSettingsDataType:
                               syncer::UserSelectableType::kHistory] ||
@@ -419,8 +448,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                    kNeedsTrustedVaultKeyForEverything;
   if (hasDisclosureIndicator) {
     self.encryptionItem.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithConfiguration(kChevronForwardSymbol,
-                                                     AccessoryConfiguration())];
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kChevronForwardSymbol)];
     self.encryptionItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
   } else {
@@ -435,8 +464,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   TableViewImageItem* googleActivityControlsItem =
       [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
   googleActivityControlsItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
-                                                   AccessoryConfiguration())];
+      initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                        kExternalLinkSymbol)];
   googleActivityControlsItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   googleActivityControlsItem.title =
@@ -451,8 +480,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   TableViewImageItem* dataFromChromeSyncItem =
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
   dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
-                                                   AccessoryConfiguration())];
+      initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                        kExternalLinkSymbol)];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   dataFromChromeSyncItem.accessibilityIdentifier =
@@ -550,7 +579,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   TableViewModel* model = self.consumer.tableViewModel;
   NSInteger syncDataTypeSectionIndex =
       [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
-  DCHECK_NE(NSNotFound, syncDataTypeSectionIndex);
+  CHECK_NE(NSNotFound, syncDataTypeSectionIndex);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
@@ -604,7 +633,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         [model removeSectionWithIdentifier:SignOutSectionIdentifier];
         self.signOutAndTurnOffSyncItem = nil;
         [self.consumer
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+              deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+            withRowAnimation:NO];
       }
       break;
   }
@@ -624,7 +654,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           ? [model
                 sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
           : [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
-  DCHECK_NE(NSNotFound, previousSection);
+  CHECK_NE(NSNotFound, previousSection);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:previousSection + 1];
 
@@ -652,6 +682,187 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   if (self.forcedSigninEnabled) {
     [model setFooter:[self createForcedSigninFooterItem]
         forSectionWithIdentifier:SignOutSectionIdentifier];
+  }
+}
+
+#pragma mark - Loads batch upload section
+
+- (TableViewTextItem*)batchUploadButtonItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:BatchUploadButtonItemType];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityIdentifier = kBatchUploadAccessibilityIdentifier;
+  return item;
+}
+
+- (NSString*)itemsToUploadRecommendationString {
+  // _localPasswordsToUpload and _localItemsToUpload should be updated by
+  // updateBatchUploadSection before calling this method, which also checks for
+  // the case of having no items to upload, thus this case is not reached here.
+  if (!_localPasswordsToUpload && !_localItemsToUpload) {
+    NOTREACHED();
+  }
+
+  std::u16string userEmail =
+      base::SysNSStringToUTF16(_signedInIdentity.userEmail);
+
+  std::u16string itemsToUploadString;
+  if (_localPasswordsToUpload == 0) {
+    // No passwords, but there are other items to upload.
+    itemsToUploadString = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        l10n_util::GetStringUTF16(
+            IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM),
+        "count", static_cast<int>(_localItemsToUpload), "email", userEmail);
+  } else if (_localItemsToUpload > 0) {
+    // Multiple passwords and items to upload.
+    itemsToUploadString = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        l10n_util::GetStringUTF16(
+            IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM),
+        "count", static_cast<int>(_localPasswordsToUpload), "email", userEmail);
+  } else {
+    // No items, but there are passwords to upload.
+    itemsToUploadString = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        l10n_util::GetStringUTF16(
+            IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM),
+        "count", static_cast<int>(_localPasswordsToUpload), "email", userEmail);
+  }
+  return base::SysUTF16ToNSString(itemsToUploadString);
+}
+
+- (SettingsImageDetailTextItem*)batchUploadRecommendationItem {
+  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
+      initWithType:BatchUploadRecommendationItemType];
+  item.detailText = [self itemsToUploadRecommendationString];
+  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
+                                         kBatchUploadSymbolPointSize);
+  item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityIdentifier =
+      kBatchUploadRecommendationItemAccessibilityIdentifier;
+  return item;
+}
+
+// Loads the batch upload section.
+- (void)loadBatchUploadSection {
+  // Drop the batch upload item from a previous loading.
+  self.batchUploadItem = nil;
+  // Create the batch upload section and item if needed.
+  [self updateBatchUploadSection:NO];
+}
+
+// Fetches the local data descriptions from the sync server, and calls
+// `-[ManageSyncSettingsMediator localDataDescriptionsFetchedWithDescription:]`
+// to process those description.
+- (void)fetchLocalDataDescriptionsForBatchUpload {
+  if (self.syncAccountState != SyncSettingsAccountState::kSignedIn ||
+      !base::FeatureList::IsEnabled(syncer::kSyncEnableBatchUploadLocalData)) {
+    return;
+  }
+
+  // Types that are disabled by policy will be ignored.
+  syncer::ModelTypeSet requestedTypes;
+  for (syncer::UserSelectableType userSelectableType : kAccountSwitchItems) {
+    if (![self isManagedSyncSettingsDataType:userSelectableType]) {
+      requestedTypes.Put(
+          syncer::UserSelectableTypeToCanonicalModelType(userSelectableType));
+    }
+  }
+
+  __weak __typeof__(self) weakSelf = self;
+  _syncService->GetLocalDataDescriptions(
+      requestedTypes,
+      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+                           description) {
+        [weakSelf localDataDescriptionsFetchedWithDescription:description];
+      }));
+}
+
+// Saves the local data description, and update the batch upload section.
+- (void)localDataDescriptionsFetchedWithDescription:
+    (std::map<syncer::ModelType, syncer::LocalDataDescription>)description {
+  self.localPasswordsToUpload = 0;
+  self.localItemsToUpload = 0;
+
+  for (auto& type : description) {
+    if (type.first == syncer::PASSWORDS) {
+      self.localPasswordsToUpload = type.second.item_count;
+      continue;
+    } else {
+      self.localItemsToUpload += type.second.item_count;
+    }
+  }
+  [self updateBatchUploadSection:YES];
+}
+
+// Deletes the batch upload section and notifies the consumer about model
+// changes.
+- (void)removeBatchUploadSection {
+  TableViewModel* model = self.consumer.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]) {
+    return;
+  }
+  NSInteger sectionIndex =
+      [model sectionForSectionIdentifier:BatchUploadSectionIdentifier];
+  [model removeSectionWithIdentifier:BatchUploadSectionIdentifier];
+  self.batchUploadItem = nil;
+
+  // Remove the batch upload section from the table view model.
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+  [self.consumer deleteSections:indexSet withRowAnimation:YES];
+}
+
+// Updates the batch upload section according to data already fetched.
+// `notifyConsummer` if YES, call the consumer to update the table view.
+- (void)updateBatchUploadSection:(BOOL)notifyConsummer {
+  // Batch upload option is not shown if sync is disabled by policy, if the
+  // account is in a persistent error state that requires a user action, or if
+  // there is no local data to offer the batch upload.
+  if (self.syncErrorItem || self.isSyncDisabledByAdministrator ||
+      (!_localPasswordsToUpload && !_localItemsToUpload)) {
+    [self removeBatchUploadSection];
+    return;
+  }
+
+  TableViewModel* model = self.consumer.tableViewModel;
+  DCHECK(![model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
+
+  // During some signout flows, it can happen that the Account section doesn't
+  // exist at this point. In that case, there's nothing to update here.
+  if (![model hasSectionForSectionIdentifier:AccountSectionIdentifier]) {
+    return;
+  }
+
+  NSInteger previousSection =
+      [model sectionForSectionIdentifier:AccountSectionIdentifier];
+  DCHECK_NE(NSNotFound, previousSection);
+  NSInteger batchUploadSectionIndex = previousSection + 1;
+
+  BOOL batchUploadSectionAlreadyExists = self.batchUploadItem;
+  if (!batchUploadSectionAlreadyExists) {
+    // Creates the batch upload section.
+    [model insertSectionWithIdentifier:BatchUploadSectionIdentifier
+                               atIndex:batchUploadSectionIndex];
+    self.batchUploadItem = [self batchUploadRecommendationItem];
+    [model addItem:self.batchUploadItem
+        toSectionWithIdentifier:BatchUploadSectionIdentifier];
+    [model addItem:[self batchUploadButtonItem]
+        toSectionWithIdentifier:BatchUploadSectionIdentifier];
+  } else {
+    // The section already exists, update it.
+    self.batchUploadItem.detailText = [self itemsToUploadRecommendationString];
+    [self.consumer reloadItem:self.batchUploadItem];
+  }
+
+  if (!notifyConsummer) {
+    return;
+  }
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:batchUploadSectionIndex];
+  if (batchUploadSectionAlreadyExists) {
+    // The section should be updated if it already exists.
+    [self.consumer reloadSections:indexSet];
+  } else {
+    [self.consumer insertSections:indexSet];
   }
 }
 
@@ -715,13 +926,28 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     case syncer::UserSelectableType::kExtensions:
     case syncer::UserSelectableType::kApps:
     case syncer::UserSelectableType::kSavedTabGroups:
+    case syncer::UserSelectableType::kSharedTabGroupData:
       NOTREACHED();
       break;
   }
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
   DCHECK(accessibilityIdentifier);
-  if (![self isManagedSyncSettingsDataType:dataType]) {
+
+  BOOL isToggleEnabled = ![self isManagedSyncSettingsDataType:dataType];
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      dataType == syncer::UserSelectableType::kHistory) {
+    // kHistory toggle represents both kHistory and kTabs in this case.
+    // kHistory and kTabs should usually have the same value, but in some
+    // cases they may not, e.g. if one of them is disabled by policy. In that
+    // case, show the toggle as on if at least one of them is enabled. The
+    // toggle should reflect the value of the non-disabled type.
+    isToggleEnabled =
+        ![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                 kHistory] ||
+        ![self isManagedSyncSettingsDataType:syncer::UserSelectableType::kTabs];
+  }
+  if (isToggleEnabled) {
     SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
     switchItem.text = GetNSString(textStringID);
     switchItem.dataType = static_cast<NSInteger>(dataType);
@@ -767,7 +993,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       return !self.disabledBecauseOfSyncError;
     case SyncSettingsAccountState::kSyncing:
     case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      return (!self.syncSetupService->IsSyncEverythingEnabled() ||
+      return (!_syncService->GetUserSettings()->IsSyncEverythingEnabled() ||
               !self.allItemsAreSynceable) &&
              !self.disabledBecauseOfSyncError;
   }
@@ -782,7 +1008,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                  kNeedsTrustedVaultKeyForPasswords &&
          _syncService->GetUserActionableError() !=
              syncer::SyncService::UserActionableError::
-                 kNeedsTrustedVaultKeyForEverything;
+                 kNeedsTrustedVaultKeyForEverything &&
+         _syncService->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 
 - (NSString*)overrideViewControllerTitle {
@@ -799,11 +1026,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 - (SyncSettingsAccountState)syncAccountState {
   // As the manage sync settings mediator is running, the sync account state
   // does not change except only when the user signs out of their account.
-  //  The TransportState::PAUSED can show up temporarily if a signout is
-  //  triggered from another device.
-  if (_syncService->GetAccountInfo().IsEmpty() ||
-      _syncService->GetTransportState() ==
-          syncer::SyncService::TransportState::PAUSED) {
+  if (_syncService->GetAccountInfo().IsEmpty()) {
     return SyncSettingsAccountState::kSignedOut;
   }
   return _initialAccountState;
@@ -822,10 +1045,12 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   }
   [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
+  [self loadBatchUploadSection];
   [self loadSyncDataTypeSection];
   [self loadSignOutAndTurnOffSyncSection];
   [self loadAdvancedSettingsSection];
   [self loadSignOutAndManageAccountsSection];
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -836,10 +1061,12 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     return;
   }
   [self updateSyncErrorsSection:YES];
+  [self updateBatchUploadSection:YES];
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   [self updateEncryptionItem:YES];
   [self updateSignOutSection];
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -866,33 +1093,56 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     [self updateIdentityAccountSection];
     [self updateSyncItemsNotifyConsumer:YES];
     [self updateSyncErrorsSection:YES];
+    [self updateBatchUploadSection:YES];
     [self updateEncryptionItem:YES];
+    [self fetchLocalDataDescriptionsForBatchUpload];
   }
+}
+
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  [self disconnect];
 }
 
 #pragma mark - ManageSyncSettingsServiceDelegate
 
 - (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
   {
+    SyncSwitchItem* syncSwitchItem =
+        base::apple::ObjCCast<SyncSwitchItem>(item);
+    syncSwitchItem.on = value;
+    if (value &&
+        static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType) ==
+            syncer::UserSelectableType::kAutofill &&
+        _syncService->GetUserSettings()->IsUsingExplicitPassphrase() &&
+        base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      [self.commandHandler showAdressesNotEncryptedDialog];
+      return;
+    }
+
     // The notifications should be ignored to get smooth switch animations.
     // Notifications are sent by SyncObserverModelBridge while changing
     // settings.
     base::AutoReset<BOOL> autoReset(&_ignoreSyncStateChanges, YES);
-    SyncSwitchItem* syncSwitchItem =
-        base::apple::ObjCCast<SyncSwitchItem>(item);
-    syncSwitchItem.on = value;
     SyncSettingsItemType itemType =
         static_cast<SyncSettingsItemType>(item.type);
     switch (itemType) {
       case SyncEverythingItemType:
         if ([self.syncEverythingItem
-                isKindOfClass:[TableViewInfoButtonItem class]])
+                isKindOfClass:[TableViewInfoButtonItem class]]) {
           return;
+        }
 
-        self.syncSetupService->SetSyncEverythingEnabled(value);
+        _syncService->GetUserSettings()->SetSelectedTypes(
+            value, _syncService->GetUserSettings()->GetSelectedTypes());
         break;
       case HistoryDataTypeItemType: {
         DCHECK(syncSwitchItem);
+        // Update History Sync decline prefs.
+        value ? history_sync::ResetDeclinePrefs(_prefService)
+              : history_sync::RecordDeclinePrefs(_prefService);
         // Don't try to toggle the managed item.
         if (![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
                                                      kHistory]) {
@@ -920,12 +1170,15 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         DCHECK(syncSwitchItem);
         syncer::UserSelectableType dataType =
             static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
-        if ([self isManagedSyncSettingsDataType:dataType])
+        if ([self isManagedSyncSettingsDataType:dataType]) {
           break;
+        }
 
         _syncService->GetUserSettings()->SetSelectedType(dataType, value);
 
-        if (dataType == syncer::UserSelectableType::kAutofill) {
+        if (!base::FeatureList::IsEnabled(
+                syncer::kSyncDecoupleAddressPaymentSettings) &&
+            dataType == syncer::UserSelectableType::kAutofill) {
           // When the auto fill data type is updated, the autocomplete wallet
           // should be updated too. Autocomplete wallet should not be enabled
           // when auto fill data type disabled. This behaviour not be
@@ -953,12 +1206,16 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       case TypesListHeaderOrFooterType:
       case IdentityAccountItemType:
       case AccountErrorMessageItemType:
+      case BatchUploadButtonItemType:
+      case BatchUploadRecommendationItemType:
         NOTREACHED();
         break;
     }
   }
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
+  // Switching toggles might affect the batch upload recommendation.
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect {
@@ -974,7 +1231,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
         break;
       }
-      [self.syncErrorHandler openPassphraseDialog];
+      [self.syncErrorHandler openPassphraseDialogWithModalPresentation:NO];
       break;
     }
     case GoogleActivityControlsItemType:
@@ -994,7 +1251,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       break;
     }
     case ShowPassphraseDialogErrorItemType:
-      [self.syncErrorHandler openPassphraseDialog];
+      [self.syncErrorHandler openPassphraseDialogWithModalPresentation:YES];
       break;
     case SyncNeedsTrustedVaultKeyErrorItemType:
       [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
@@ -1003,7 +1260,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
     case SignOutAndTurnOffSyncItemType:
-      [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];
+    case SignOutItemType:
+      [self.commandHandler signOutFromTargetRect:cellRect];
       break;
     case ManageGoogleAccountItemType:
       [self.commandHandler showManageYourGoogleAccount];
@@ -1011,8 +1269,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     case ManageAccountsItemType:
       [self.commandHandler showAccountsPage];
       break;
-    case SignOutItemType:
-      [self.commandHandler signOut];
+    case BatchUploadButtonItemType:
+      [self.commandHandler openBulkUpload];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:
@@ -1028,6 +1286,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     case TypesListHeaderOrFooterType:
     case IdentityAccountItemType:
     case AccountErrorMessageItemType:
+    case BatchUploadRecommendationItemType:
       // Nothing to do.
       break;
   }
@@ -1066,13 +1325,13 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
       // Also override the title to be more accurate, if only passwords are
       // being encrypted.
-      if (!self.syncSetupService->IsEncryptEverythingEnabled()) {
+      if (!_syncService->GetUserSettings()->IsEncryptEverythingEnabled()) {
         syncErrorItem.text = GetNSString(IDS_IOS_SYNC_PASSWORDS_ERROR_TITLE);
       }
       break;
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
       syncErrorItem.detailText = GetNSString(
-          self.syncSetupService->IsEncryptEverythingEnabled()
+          _syncService->GetUserSettings()->IsEncryptEverythingEnabled()
               ? IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
               : IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
 
@@ -1115,6 +1374,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   item.text = l10n_util::GetNSString(buttonLabelID);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kSyncErrorButtonIdentifier;
   return item;
 }
 
@@ -1133,7 +1393,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   // Remove the sync error section from the table view model.
   if (notifyConsumer) {
     NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-    [self.consumer deleteSections:indexSet];
+    [self.consumer deleteSections:indexSet withRowAnimation:NO];
   }
 }
 
@@ -1150,7 +1410,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
   // Checks if the sync setup service state has changed from the saved state in
   // the table view model.
-  absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
+  std::optional<SyncSettingsItemType> type = [self syncErrorItemType];
   if (![self needsErrorSectionUpdate:type]) {
     return;
   }
@@ -1172,6 +1432,14 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     // updating it's items.
     errorSectionAlreadyExists = NO;
     [self removeSyncErrorsSection:notifyConsumer];
+  }
+
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      GetAccountErrorUIInfo(_syncService) == nil) {
+    // In some transient states like in SyncService::TransportState::PAUSED,
+    // GetAccountErrorUIInfo returns nil and thus will not be able to fetch the
+    // current error data. In this case, do not update/add the error item.
+    return;
   }
 
   // Create the new sync error item.
@@ -1228,42 +1496,37 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   }
 }
 
-// Returns the sync error item type or absl::nullopt if the item
+// Returns the sync error item type or std::nullopt if the item
 // is not an error.
-- (absl::optional<SyncSettingsItemType>)syncErrorItemType {
+- (std::optional<SyncSettingsItemType>)syncErrorItemType {
   if (self.isSyncDisabledByAdministrator) {
-    return absl::make_optional<SyncSettingsItemType>(
-        SyncDisabledByAdministratorErrorItemType);
+    return SyncDisabledByAdministratorErrorItemType;
   }
   switch (_syncService->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      return absl::make_optional<SyncSettingsItemType>(
-          PrimaryAccountReauthErrorItemType);
+      return PrimaryAccountReauthErrorItemType;
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return absl::make_optional<SyncSettingsItemType>(
-          ShowPassphraseDialogErrorItemType);
+      return ShowPassphraseDialogErrorItemType;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
-      return absl::make_optional<SyncSettingsItemType>(
-          SyncNeedsTrustedVaultKeyErrorItemType);
+      return SyncNeedsTrustedVaultKeyErrorItemType;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
-      return absl::make_optional<SyncSettingsItemType>(
-          SyncTrustedVaultRecoverabilityDegradedErrorItemType);
+      return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns whether the error state has changed since the last update.
-- (BOOL)needsErrorSectionUpdate:(absl::optional<SyncSettingsItemType>)type {
+- (BOOL)needsErrorSectionUpdate:(std::optional<SyncSettingsItemType>)type {
   BOOL hasError = type.has_value();
   return (hasError && !self.syncErrorItem) ||
          (!hasError && self.syncErrorItem) ||

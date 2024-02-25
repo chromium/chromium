@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/tether/active_host.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -23,7 +23,7 @@ namespace {
 
 struct GetActiveHostResult {
   ActiveHost::ActiveHostStatus active_host_status;
-  absl::optional<multidevice::RemoteDeviceRef> remote_device;
+  std::optional<multidevice::RemoteDeviceRef> remote_device;
   std::string tether_network_guid;
   std::string wifi_network_guid;
 
@@ -78,7 +78,7 @@ class ActiveHostTest : public testing::Test {
 
   void OnActiveHostFetched(
       ActiveHost::ActiveHostStatus active_host_status,
-      absl::optional<multidevice::RemoteDeviceRef> active_host,
+      std::optional<multidevice::RemoteDeviceRef> active_host,
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid) {
     get_active_host_results_.push_back(
@@ -96,10 +96,9 @@ class ActiveHostTest : public testing::Test {
     active_host_->GetActiveHost(base::BindOnce(
         &ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
     ASSERT_EQ(1u, get_active_host_results_.size());
-    EXPECT_EQ(
-        (GetActiveHostResult{ActiveHost::ActiveHostStatus::DISCONNECTED,
-                             absl::nullopt, std::string(), std::string()}),
-        get_active_host_results_[0]);
+    EXPECT_EQ((GetActiveHostResult{ActiveHost::ActiveHostStatus::DISCONNECTED,
+                                   std::nullopt, std::string(), std::string()}),
+              get_active_host_results_[0]);
   }
 
   const multidevice::RemoteDeviceRefList test_devices_;
@@ -140,7 +139,7 @@ TEST_F(ActiveHostTest, TestConnecting) {
   EXPECT_EQ(
       (GetActiveHostResult{
           ActiveHost::ActiveHostStatus::CONNECTING,
-          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          std::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "tetherNetworkGuid", std::string()}),
       get_active_host_results_[0]);
 }
@@ -162,7 +161,7 @@ TEST_F(ActiveHostTest, TestConnected) {
   EXPECT_EQ(
       (GetActiveHostResult{
           ActiveHost::ActiveHostStatus::CONNECTED,
-          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          std::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "tetherNetworkGuid", "wifiNetworkGuid"}),
       get_active_host_results_[0]);
 }
@@ -184,7 +183,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
       ActiveHost::ActiveHostChangeInfo(
           ActiveHost::ActiveHostStatus::CONNECTING,
           ActiveHost::ActiveHostStatus::DISCONNECTED,
-          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          std::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "" /* old_active_host_id */,
           "tetherNetworkGuid" /* new_tether_network_guid */,
           "" /* old_tether_network_id */, "" /* new_wifi_network_guid */,
@@ -199,7 +198,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
       ActiveHost::ActiveHostChangeInfo(
           ActiveHost::ActiveHostStatus::CONNECTED,
           ActiveHost::ActiveHostStatus::CONNECTING,
-          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          std::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           test_devices_[0].GetDeviceId(), "tetherNetworkGuid",
           "tetherNetworkGuid", "wifiNetworkGuid",
           "" /* old_wifi_network_guid */),
@@ -210,7 +209,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
   EXPECT_EQ(3u, test_observer_->host_changed_updates().size());
   EXPECT_EQ(ActiveHost::ActiveHostChangeInfo(
                 ActiveHost::ActiveHostStatus::DISCONNECTED,
-                ActiveHost::ActiveHostStatus::CONNECTED, absl::nullopt,
+                ActiveHost::ActiveHostStatus::CONNECTED, std::nullopt,
                 test_devices_[0].GetDeviceId(),
                 "" /* new_tether_network_guid */, "tetherNetworkGuid",
                 "" /* new_wifi_network_guid */, "wifiNetworkGuid"),

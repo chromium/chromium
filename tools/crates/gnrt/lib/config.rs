@@ -5,7 +5,9 @@
 //! Configures gnrt behavior. Types match `gnrt_config.toml` fields. Currently
 //! only used for std bindings.
 
-use std::collections::{BTreeMap, HashMap};
+use crate::group::Group;
+
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use serde::Deserialize;
 
@@ -15,6 +17,8 @@ pub struct BuildConfig {
     pub resolve: ResolveConfig,
     #[serde(rename = "gn")]
     pub gn_config: GnConfig,
+    #[serde(rename = "vet")]
+    pub vet_config: VetConfig,
     /// Configuration that applies to all crates
     #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,
@@ -24,6 +28,20 @@ pub struct BuildConfig {
     pub per_crate_config: BTreeMap<String, CrateConfig>,
 }
 
+impl BuildConfig {
+    /// Combines the global and per-crate `CrateConfig` for a single
+    /// `Vec<String>` entry.
+    pub fn get_combined_set(
+        &self,
+        package_name: &str,
+        entry_getter: impl Fn(&CrateConfig) -> &Vec<String>,
+    ) -> HashSet<&str> {
+        let all: Option<&Vec<String>> = Some(entry_getter(&self.all_config));
+        let per: Option<&Vec<String>> = self.per_crate_config.get(package_name).map(entry_getter);
+        all.into_iter().chain(per).flatten().map(String::as_str).collect()
+    }
+}
+
 /// Configures GN output for this session.
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -31,6 +49,30 @@ pub struct GnConfig {
     /// Path to a handlebars template for an output GN build file. The path is
     /// relative to the config file.
     pub build_file_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing README.chromium files. The
+    /// path is relative to the config file. Only used for
+    /// //third_party/rust crates.
+    #[serde(default)]
+    pub readme_file_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing placeholder crates that we
+    /// don't want to vendor. This is the Cargo.toml file.
+    #[serde(default)]
+    pub removed_cargo_template: std::path::PathBuf,
+    /// Path to a handlebars template for writing placeholder crates that we
+    /// don't want to vendor. This is the src/lib.rs file.
+    #[serde(default)]
+    pub removed_librs_template: std::path::PathBuf,
+}
+
+/// Configures Cargo Vet output for this session.
+#[derive(Clone, Debug, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct VetConfig {
+    /// Path to a handlebars template for writing Cargo Vet's config.toml file.
+    /// The path is relative to the config file. Only used for
+    /// //third_party/rust crates.
+    #[serde(default)]
+    pub config_template: std::path::PathBuf,
 }
 
 /// Influences dependency resolution for a session.
@@ -59,13 +101,79 @@ pub struct CrateConfig {
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.
     pub exclude_deps_in_gn: Vec<String>,
+    /// If true, the build script should not be built or used.
+    #[serde(default)]
+    pub remove_build_rs: bool,
     /// Include rs and input files under these relative paths as part of the
-    /// crate.
+    /// crate. The roots may each be a single file or a directory.
     #[serde(default)]
     pub extra_src_roots: Vec<std::path::PathBuf>,
     /// Include input files under these relative paths as part of the crate.
+    /// The roots may each be a single file or a directory.
     #[serde(default)]
     pub extra_input_roots: Vec<std::path::PathBuf>,
+    /// Include rs and input files under these relative paths as part of the
+    /// crate's build script. The roots may each be a single file or a
+    /// directory.
+    #[serde(default)]
+    pub extra_build_script_src_roots: Vec<std::path::PathBuf>,
+    /// Include input files under these relative paths as part of the crate's
+    /// build script. The roots may each be a single file or a directory.
+    #[serde(default)]
+    pub extra_build_script_input_roots: Vec<std::path::PathBuf>,
     #[serde(default)]
     pub extra_kv: HashMap<String, serde_json::Value>,
+    /// Names of binary targets to include.  This list is empty by default,
+    /// which means that the default generated `BUILD.gn` will only cover
+    /// the library target (if any) of the package.
+    #[serde(default)]
+    pub bin_targets: Vec<String>,
+
+    // Third-party crate settings.
+    #[serde(default)]
+    pub allow_first_party_usage: bool,
+    #[serde(default)]
+    pub build_script_outputs: Vec<std::path::PathBuf>,
+    #[serde(default)]
+    pub group: Option<Group>,
+    #[serde(default)]
+    pub security_critical: Option<bool>,
+    #[serde(default)]
+    pub shipped: Option<bool>,
+    #[serde(default)]
+    pub license: Option<String>,
+    #[serde(default)]
+    pub license_files: Vec<String>,
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_get_combined_set_with_global_and_per_crate_entry() {
+        let all_config =
+            CrateConfig { bin_targets: vec!["foo".to_string()], ..CrateConfig::default() };
+        let crate_config =
+            CrateConfig { bin_targets: vec!["bar".to_string()], ..CrateConfig::default() };
+        let build_config = BuildConfig {
+            all_config,
+            per_crate_config: [("some_crate".to_string(), crate_config)].into_iter().collect(),
+            ..BuildConfig::default()
+        };
+        let combined_set = build_config.get_combined_set("some_crate", |cfg| &cfg.bin_targets);
+        assert_eq!(combined_set.len(), 2);
+        assert!(combined_set.contains("foo"));
+        assert!(combined_set.contains("bar"));
+    }
+
+    #[test]
+    fn test_get_combined_set_with_only_global_entry() {
+        let all_config =
+            CrateConfig { bin_targets: vec!["foo".to_string()], ..CrateConfig::default() };
+        let build_config = BuildConfig { all_config, ..BuildConfig::default() };
+        let combined_set = build_config.get_combined_set("some_crate", |cfg| &cfg.bin_targets);
+        assert_eq!(combined_set.len(), 1);
+        assert!(combined_set.contains("foo"));
+    }
 }

@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_NETWORK_CONTEXT_CLIENT_BASE_IMPL_H_
 #define CONTENT_BROWSER_NETWORK_CONTEXT_CLIENT_BASE_IMPL_H_
 
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context_client.mojom.h"
 
 namespace content {
 

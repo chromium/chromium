@@ -4,14 +4,15 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
+
 (async function() {
   TestRunner.addResult(`Tests DataGrid column auto size calculation.\n`);
-  await TestRunner.loadLegacyModule('data_grid')
 
   function testAutoSize(widths, minPercent, maxPercent) {
     TestRunner.addResult(
         'Auto sizing ' + JSON.stringify(widths) + ', minPercent=' + minPercent + ', maxPercent=' + maxPercent);
-    var result = DataGrid.DataGrid.prototype.autoSizeWidths(widths, minPercent, maxPercent);
+    var result = DataGrid.DataGrid.DataGridImpl.prototype.autoSizeWidths(widths, minPercent, maxPercent);
     TestRunner.addResult('    ' + JSON.stringify(result));
   }
 

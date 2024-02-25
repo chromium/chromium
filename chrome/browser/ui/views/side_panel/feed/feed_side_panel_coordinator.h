@@ -24,8 +24,6 @@ class FeedSidePanelCoordinator
     : public BrowserUserData<FeedSidePanelCoordinator> {
  public:
   explicit FeedSidePanelCoordinator(Browser* browser);
-  FeedSidePanelCoordinator(const FeedSidePanelCoordinator&) = delete;
-  FeedSidePanelCoordinator& operator=(const FeedSidePanelCoordinator&) = delete;
   ~FeedSidePanelCoordinator() override;
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);

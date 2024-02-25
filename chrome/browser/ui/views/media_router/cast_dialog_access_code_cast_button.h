@@ -17,8 +17,9 @@ namespace media_router {
 
 // A button representing to launch the Access code cast dialog.
 class CastDialogAccessCodeCastButton : public HoverButton {
+  METADATA_HEADER(CastDialogAccessCodeCastButton, HoverButton)
+
  public:
-  METADATA_HEADER(CastDialogAccessCodeCastButton);
   explicit CastDialogAccessCodeCastButton(PressedCallback callback);
   CastDialogAccessCodeCastButton(const CastDialogAccessCodeCastButton&) =
       delete;

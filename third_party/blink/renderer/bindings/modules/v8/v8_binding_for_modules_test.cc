@@ -36,12 +36,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -93,7 +97,7 @@ bool InjectKey(ScriptState* script_state,
                const String& key_path) {
   IDBKeyPath idb_key_path(key_path);
   EXPECT_TRUE(idb_key_path.IsValid());
-  ScriptValue key_value = ScriptValue::From(script_state, key);
+  ScriptValue key_value(script_state->GetIsolate(), key->ToV8(script_state));
   return InjectV8KeyIntoV8Value(script_state->GetIsolate(), key_value.V8Value(),
                                 value.V8Value(), idb_key_path);
 }
@@ -223,12 +227,13 @@ std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: "zoo" }
   ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
-                                 .Add("foo", "zoo")
+                                 .AddString("foo", "zoo")
                                  .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo", "zoo");
   CheckKeyPathNullValue(isolate, script_value, "bar");
@@ -237,6 +242,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
 }  // namespace
 
 TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -248,7 +254,30 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
 
+TEST(IDBKeyFromValueAndKeyPathTest, FileLastModifiedDateUseCounterTest) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  FileBackedBlobFactoryTestHelper file_factory_helper(
+      scope.GetExecutionContext());
+  File* file =
+      MakeGarbageCollected<File>(scope.GetExecutionContext(), "/native/path");
+  file_factory_helper.FlushForTesting();
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
+
+  IDBKeyPath idb_key_path("lastModifiedDate");
+  ASSERT_TRUE(idb_key_path.IsValid());
+
+  NonThrowableExceptionState exception_state;
+  ASSERT_TRUE(ScriptValue::To<std::unique_ptr<IDBKey>>(
+      scope.GetIsolate(), wrapper, exception_state, idb_key_path));
+  ASSERT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kIndexedDBFileLastModifiedDate));
+}
+
 TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
@@ -256,13 +285,14 @@ TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
   // object = { foo: { bar: "zee" } }
   ScriptValue script_value =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo.bar", "zee");
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
 
 TEST(IDBKeyFromValue, Number) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "42.0");
@@ -273,6 +303,7 @@ TEST(IDBKeyFromValue, Number) {
 }
 
 TEST(IDBKeyFromValue, Date) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "new Date(123)");
@@ -284,6 +315,7 @@ TEST(IDBKeyFromValue, Date) {
 }
 
 TEST(IDBKeyFromValue, String) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "'abc'");
@@ -292,6 +324,7 @@ TEST(IDBKeyFromValue, String) {
 }
 
 TEST(IDBKeyFromValue, Binary) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Key which is an ArrayBuffer.
@@ -310,6 +343,7 @@ TEST(IDBKeyFromValue, Binary) {
 }
 
 TEST(IDBKeyFromValue, InvalidSimpleKeyTypes) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   const char* cases[] = {
@@ -321,6 +355,7 @@ TEST(IDBKeyFromValue, InvalidSimpleKeyTypes) {
 }
 
 TEST(IDBKeyFromValue, SimpleArrays) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   {
@@ -341,6 +376,7 @@ TEST(IDBKeyFromValue, SimpleArrays) {
 }
 
 TEST(IDBKeyFromValue, NestedArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "[0, ['xyz', Infinity], 'abc']");
@@ -357,6 +393,7 @@ TEST(IDBKeyFromValue, NestedArray) {
 }
 
 TEST(IDBKeyFromValue, CircularArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope,
                          "(() => {"
@@ -368,6 +405,7 @@ TEST(IDBKeyFromValue, CircularArray) {
 }
 
 TEST(IDBKeyFromValue, DeepArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope,
                          "(() => {"
@@ -379,6 +417,7 @@ TEST(IDBKeyFromValue, DeepArray) {
 }
 
 TEST(IDBKeyFromValue, SparseArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope, "[,1]");
   EXPECT_FALSE(key->IsValid());
@@ -393,6 +432,7 @@ TEST(IDBKeyFromValue, SparseArray) {
 }
 
 TEST(IDBKeyFromValue, ShrinkingArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(
       scope,
@@ -405,6 +445,7 @@ TEST(IDBKeyFromValue, ShrinkingArray) {
 }
 
 TEST(IDBKeyFromValue, Exceptions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   const char* cases[] = {
@@ -457,6 +498,7 @@ TEST(IDBKeyFromValue, Exceptions) {
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, Exceptions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue script_value(
       scope.GetIsolate(),
@@ -492,6 +534,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, Exceptions) {
 }
 
 TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
@@ -500,7 +543,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
   // object = { foo: { bar: "zee" }, bad: null }
   ScriptValue script_value =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .AddNull("bad")
           .GetScriptValue();
 
@@ -542,6 +585,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
 }
 
 TEST(InjectIDBKeyTest, ImplicitValues) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   {
@@ -561,11 +605,12 @@ TEST(InjectIDBKeyTest, ImplicitValues) {
 }
 
 TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // object = { foo: "zoo" }
   ScriptValue script_object = V8ObjectBuilder(scope.GetScriptState())
-                                  .Add("foo", "zoo")
+                                  .AddString("foo", "zoo")
                                   .GetScriptValue();
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,
@@ -578,13 +623,14 @@ TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
 }
 
 TEST(InjectIDBKeyTest, SubProperty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
   // object = { foo: { bar: "zee" } }
   ScriptValue script_object =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .GetScriptValue();
 
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
@@ -613,6 +659,7 @@ TEST(InjectIDBKeyTest, SubProperty) {
 }
 
 TEST(DeserializeIDBValueTest, CurrentVersions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -622,8 +669,8 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
 
   ASSERT_TRUE(v8_value->IsObject());
@@ -637,6 +684,7 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
 }
 
 TEST(DeserializeIDBValueTest, FutureV8Version) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -654,13 +702,14 @@ TEST(DeserializeIDBValueTest, FutureV8Version) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   EXPECT_TRUE(v8_value->IsNull());
 }
 
 TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -672,8 +721,8 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(v8_value->IsNumber());
   v8::Local<v8::Number> v8_number = v8_value.As<v8::Number>();
@@ -681,6 +730,7 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
 }
 
 TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -692,8 +742,8 @@ TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo.bar");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(v8_value->IsNumber());
   v8::Local<v8::Number> v8_number = v8_value.As<v8::Number>();

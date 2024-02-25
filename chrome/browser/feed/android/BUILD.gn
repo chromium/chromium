@@ -6,12 +6,11 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//chrome/browser/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubble.java",
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/CardMenuBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/feed/FeedActionDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
@@ -68,7 +67,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderViewBinder.java",
-    "java/src/org/chromium/chrome/browser/feed/sections/StickySectionHeaderView.java",
     "java/src/org/chromium/chrome/browser/feed/sections/ViewVisibility.java",
     "java/src/org/chromium/chrome/browser/feed/signinbottomsheet/SigninBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsCoordinator.java",
@@ -92,7 +90,7 @@ android_library("java") {
   deps = [
     ":feed_java_resources",
     "//base:base_java",
-    "//base:jni_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/browser_controls/android:java",
@@ -117,6 +115,7 @@ android_library("java") {
     "//chrome/browser/xsurface:java",
     "//chrome/browser/xsurface_provider:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java",
@@ -132,7 +131,6 @@ android_library("java") {
     "//components/signin/public/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
-    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:material_design_java",
@@ -145,6 +143,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
     "//ui/android:ui_utils_java",
@@ -163,15 +162,14 @@ android_resources("feed_java_resources") {
     "java/res/color/menu_footer_chip_background_list.xml",
     "java/res/color/tab_layout_text_color_list.xml",
     "java/res/drawable-night/header_title_tab_selected_background_polished.xml",
-    "java/res/drawable/back_to_top_arrow.xml",
     "java/res/drawable/creator_content_unavailable_error_illustration.xml",
     "java/res/drawable/creator_general_error_illustration.xml",
     "java/res/drawable/header_title_section_tab_background.xml",
+    "java/res/drawable/header_title_section_tab_background_polished.xml",
     "java/res/drawable/header_title_tab_selected_background.xml",
     "java/res/drawable/header_title_tab_selected_background_polished.xml",
-    "java/res/drawable/rounded_corners.xml",
+    "java/res/drawable/header_title_tab_selected_ripple.xml",
     "java/res/drawable/web_feed_post_follow_illustration.xml",
-    "java/res/layout/back_to_top_bubble.xml",
     "java/res/layout/creator_content_unavailable_error.xml",
     "java/res/layout/creator_general_error.xml",
     "java/res/layout/feed_management_activity.xml",
@@ -185,7 +183,6 @@ android_resources("feed_java_resources") {
     "java/res/layout/following_empty_state.xml",
     "java/res/layout/new_tab_page_feed_v2_expandable_header.xml",
     "java/res/layout/new_tab_page_multi_feed_header.xml",
-    "java/res/layout/new_tab_page_multi_sticky_feed_header.xml",
     "java/res/layout/new_tab_page_section_tab.xml",
     "java/res/layout/no_connection.xml",
     "java/res/layout/no_content_v2.xml",
@@ -214,6 +211,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceRendererBridge.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImpl.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]
 }
@@ -270,13 +268,11 @@ android_library("javatests") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
     "java/src/org/chromium/chrome/browser/feed/FeedFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedListContentManagerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedLoggingParametersTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayoutTest.java",
-    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedStreamTest.java",
@@ -309,7 +305,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
@@ -328,6 +323,7 @@ robolectric_library("junit") {
     "//chrome/browser/xsurface:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
@@ -357,6 +353,7 @@ robolectric_library("junit") {
     "//third_party/gif_player:gif_player_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
@@ -365,7 +362,6 @@ robolectric_library("junit") {
     "//ui/android:ui_recycler_view_java",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.feed.test"

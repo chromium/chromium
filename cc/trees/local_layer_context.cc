@@ -75,7 +75,7 @@ void LocalLayerContext::OnDeferMainFrameUpdatesChanged(bool) {}
 void LocalLayerContext::OnDeferCommitsChanged(
     bool defer_status,
     PaintHoldingReason reason,
-    absl::optional<PaintHoldingCommitTrigger> trigger) {}
+    std::optional<PaintHoldingCommitTrigger> trigger) {}
 
 void LocalLayerContext::OnCommitRequested() {}
 
@@ -99,14 +99,16 @@ void LocalLayerContext::DidFailToInitializeLayerTreeFrameSink() {}
 
 void LocalLayerContext::WillCommit(const CommitState&) {}
 
-void LocalLayerContext::DidCommit(base::TimeTicks commit_start_time,
+void LocalLayerContext::DidCommit(int source_frame_number,
+                                  base::TimeTicks commit_start_time,
                                   base::TimeTicks commit_finish_time) {}
 
-void LocalLayerContext::DidCommitAndDrawFrame() {}
+void LocalLayerContext::DidCommitAndDrawFrame(int source_frame_number) {}
 
 void LocalLayerContext::DidReceiveCompositorFrameAck() {}
 
-void LocalLayerContext::DidCompletePageScaleAnimation() {}
+void LocalLayerContext::DidCompletePageScaleAnimation(int source_frame_number) {
+}
 
 void LocalLayerContext::DidPresentCompositorFrame(
     uint32_t frame_token,
@@ -131,6 +133,7 @@ void LocalLayerContext::NotifyThroughputTrackerResults(
     CustomTrackerResults results) {}
 
 void LocalLayerContext::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {}
 

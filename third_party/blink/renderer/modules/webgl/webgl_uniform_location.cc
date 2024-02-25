@@ -40,7 +40,7 @@ WebGLProgram* WebGLUniformLocation::Program() const {
   // longer valid.
   if (program_->LinkCount() != link_count_)
     return nullptr;
-  return program_;
+  return program_.Get();
 }
 
 GLint WebGLUniformLocation::Location() const {

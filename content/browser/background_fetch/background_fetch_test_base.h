@@ -89,7 +89,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
   const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // Returns the DevTools context for logging events.
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context();
+  DevToolsBackgroundServicesContextImpl& devtools_context();
 
  protected:
   BrowserTaskEnvironment task_environment_;  // Must be first member.

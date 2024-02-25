@@ -44,11 +44,9 @@ const int kRulesRegistryID = RulesRegistryService::kDefaultRulesRegistryID;
 class RulesRegistryWithCacheTest : public testing::Test {
  public:
   RulesRegistryWithCacheTest()
-      : cache_delegate_(RulesCacheDelegate::Type::kPersistent,
-                        /*log_storage_init_delay=*/false),
+      : cache_delegate_(RulesCacheDelegate::Type::kPersistent),
         registry_(new TestRulesRegistry(profile(),
                                         /*event_name=*/"",
-                                        content::BrowserThread::UI,
                                         &cache_delegate_,
                                         kRulesRegistryID)) {}
 
@@ -235,10 +233,9 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
       RulesCacheDelegate::GetRulesStoredKey(
           event_name, profile()->IsOffTheRecord()));
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent, false);
-  scoped_refptr<RulesRegistry> registry(
-      new TestRulesRegistry(profile(), event_name, content::BrowserThread::UI,
-                            cache_delegate.get(), kRulesRegistryID));
+      RulesCacheDelegate::Type::kPersistent);
+  scoped_refptr<RulesRegistry> registry(new TestRulesRegistry(
+      profile(), event_name, cache_delegate.get(), kRulesRegistryID));
 
   // 1. Test the handling of preferences.
   // Default value is always true.
@@ -301,7 +298,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 
 TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kEphemeral, false);
+      RulesCacheDelegate::Type::kEphemeral);
   base::Value::List value;
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
@@ -325,16 +322,14 @@ TEST_F(RulesRegistryWithCacheTest, RulesStoredFlagMultipleRegistries) {
       RulesCacheDelegate::GetRulesStoredKey(
           event_name2, profile()->IsOffTheRecord()));
   auto cache_delegate1 = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent, false);
-  scoped_refptr<RulesRegistry> registry1(
-      new TestRulesRegistry(profile(), event_name1, content::BrowserThread::UI,
-                            cache_delegate1.get(), kRulesRegistryID));
+      RulesCacheDelegate::Type::kPersistent);
+  scoped_refptr<RulesRegistry> registry1(new TestRulesRegistry(
+      profile(), event_name1, cache_delegate1.get(), kRulesRegistryID));
 
   auto cache_delegate2 = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent, false);
-  scoped_refptr<RulesRegistry> registry2(
-      new TestRulesRegistry(profile(), event_name2, content::BrowserThread::UI,
-                            cache_delegate2.get(), kRulesRegistryID));
+      RulesCacheDelegate::Type::kPersistent);
+  scoped_refptr<RulesRegistry> registry2(new TestRulesRegistry(
+      profile(), event_name2, cache_delegate2.get(), kRulesRegistryID));
 
   // Checkt the correct default values.
   EXPECT_TRUE(cache_delegate1->GetDeclarativeRulesStored(extension1_->id()));
@@ -375,10 +370,9 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
 
   // 2. First run, adding a rule for the extension.
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent, false);
-  scoped_refptr<TestRulesRegistry> registry(
-      new TestRulesRegistry(profile(), "testEvent", content::BrowserThread::UI,
-                            cache_delegate.get(), kRulesRegistryID));
+      RulesCacheDelegate::Type::kPersistent);
+  scoped_refptr<TestRulesRegistry> registry(new TestRulesRegistry(
+      profile(), "testEvent", cache_delegate.get(), kRulesRegistryID));
 
   AddRule(extension1_->id(), kRuleId, registry.get());
 
@@ -388,10 +382,9 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
 
   // 3. Restart the TestRulesRegistry and see the rule still there.
   cache_delegate = std::make_unique<RulesCacheDelegate>(
-      RulesCacheDelegate::Type::kPersistent, false);
-  registry =
-      new TestRulesRegistry(profile(), "testEvent", content::BrowserThread::UI,
-                            cache_delegate.get(), kRulesRegistryID);
+      RulesCacheDelegate::Type::kPersistent);
+  registry = new TestRulesRegistry(profile(), "testEvent", cache_delegate.get(),
+                                   kRulesRegistryID);
 
   // Posted tasks retrieve the stored rule.
   content::RunAllTasksUntilIdle();

@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SystemFeaturesDisableMode": "hidden"
+        },
+        "prefs": {
+          "policy.system_features_disable_mode": {
+            "location": "local_state",
+            "value": "hidden"
+          }
+        }
+      }
+    ]
+  }
+]

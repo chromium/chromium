@@ -102,11 +102,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   void OnChannelConnected(int32_t peer_pid) override;
 
-#if BUILDFLAG(IS_WIN)
-  void OnProcessLaunchedByBroker(base::Process process);
-  void OnDebugExceptionHandlerLaunchedByBroker(bool success);
-#endif
-
   bool Send(IPC::Message* msg);
 
   content::BrowserChildProcessHost* process() { return process_.get(); }
@@ -124,11 +119,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // stub can use it to accept incoming connections even when the Chrome sandbox
   // is enabled.
   net::SocketDescriptor GetDebugStubSocketHandle();
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  // Called when the debug stub port has been selected.
-  void OnDebugStubPortSelected(uint16_t debug_stub_port);
 #endif
 
   bool LaunchSelLdr();
@@ -181,13 +171,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
                     uint64_t file_token_hi,
                     const base::FilePath& file_path,
                     base::File file);
-#if BUILDFLAG(IS_WIN)
-  // Message handler for Windows hardware exception handling.
-  void OnAttachDebugExceptionHandler(const std::string& info,
-                                     IPC::Message* reply_msg);
-  bool AttachDebugExceptionHandler(const std::string& info,
-                                   IPC::Message* reply_msg);
-#endif
 
   // Called when the PPAPI IPC channels to the browser/renderer have been
   // created.
@@ -205,11 +188,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   ppapi::PpapiPermissions permissions_;
 
-#if BUILDFLAG(IS_WIN)
-  // This field becomes true when the broker successfully launched
-  // the NaCl loader.
-  bool process_launched_by_broker_;
-#endif
   // The NaClHostMessageFilter that requested this NaCl process.  We use
   // this for sending the reply once the process has started.
   scoped_refptr<NaClHostMessageFilter> nacl_host_message_filter_;
@@ -218,10 +196,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // sub-process either succeeds or fails to unblock the renderer waiting for
   // the reply. NULL when there is no reply to send.
   raw_ptr<IPC::Message, AcrossTasksDanglingUntriaged> reply_msg_;
-#if BUILDFLAG(IS_WIN)
-  bool debug_exception_handler_requested_;
-  std::unique_ptr<IPC::Message> attach_debug_exception_handler_reply_msg_;
-#endif
 
   // The file path to the manifest is passed to nacl-gdb when it is used to
   // debug the NaCl loader.

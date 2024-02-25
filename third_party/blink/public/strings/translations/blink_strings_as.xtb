@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1012241361789814178">ডিবাগাৰ অন্য এটা টেবত পজ কৰা হৈছে, সেই টেবটোলৈ যাবলৈ ক্লিক কৰক।</translation>
 <translation id="1088086359088493902">ছেকেণ্ড</translation>
 <translation id="1142001580032786438">সপ্তাহ বাছনিকৰ্তা দেখুৱাওক</translation>
 <translation id="1171774979989969504">অনুগ্ৰহ কৰি এটা ইমেইল ঠিকনা দিয়ক।</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">অনুগ্ৰহ কৰি খালী নোহোৱা ইমেইল ঠিকনা দিয়ক৷</translation>
 <translation id="1758486001363313524">অন্য...</translation>
 <translation id="1787192514241997742">মুঠ সময়: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">কেমেৰাৰ অনুমতি দিয়ক</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ৰিম’ট ডিভাইচত প্লে’ কৰক</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">প্ৰতিবিম্বকৰণলৈ সলনি কৰা হ’ল</translation>
 <translation id="2031987842108996681">ৰঙা চেনেল</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'ৰ ভুল স্থানত '<ph name="DOT" />' ব্যৱহাৰ কৰা হৈছে।</translation>
+<translation id="2068711044993563745">ন্যূনতম মানটো (<ph name="MINIMUM" />) সৰ্বোচ্চ মানটোতকৈ (<ph name="MAXIMUM" />) কম হ’বই লাগিব।</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2226276347425096477">অনুগ্ৰহ কৰি এই পাঠ <ph name="MAX_CHARACTERS" />টা বর্ণ বা তাতোকৈ কম সংখ্যক বর্ণৰ ভিতৰত সীমাবদ্ধ কৰক (বর্তমান আপুনি <ph name="CURRENT_LENGTH" />টা বর্ণ ব্যৱহাৰ কৰি আছে)।</translation>
 <translation id="2247351761944213033">সপ্তাহ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্ৰেক <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2393030564806080191">হেক্সাডেচিমেল ৰঙৰ মান</translation>
 <translation id="2398813069815436052">ডায়লগ খোলা হৈছে।</translation>
 <translation id="245932805758469625">ভিডিঅ'টো বাকী থকা ছেকেণ্ডৰ সংখ্যা</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">আপুনি যদি আগবাঢ়িব খোজে তেন্তে এই বাচকটোত চ্চেক চিহ্ন দিয়ক।</translation>
 <translation id="2908441821576996758">কমা-পৃথকীকৃত ইমেইল ঠিকনাৰ সূচী এখন দিয়ক।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এম.বি.</translation>
+<translation id="3053226512517284904">অডিঅ’ৰ বিৱৰণ দেখুৱাওক মেনু</translation>
 <translation id="3075154866155599887">অনুগ্ৰহ কৰি এক মান্য মান দিয়ক এই ক্ষেত্ৰখন অসম্পূৰ্ণ বা ইয়াত অমান্য তাৰিখ আছে।</translation>
 <translation id="310520048233152454">অনুগ্ৰহ কৰি এটা URL দিয়ক।</translation>
 <translation id="3220661731597678625">বৰ্তমানৰ পদক্ষেপ</translation>
 <translation id="3321030238473337787">প্লে’বেকৰ গতিবেগ</translation>
 <translation id="3329013043687509092">সংপৃক্তি</translation>
+<translation id="3377518164566272702">মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতি দিয়ক</translation>
 <translation id="3450233048674729344">মান <ph name="MAXIMUM" />ৰ সমান বা ইয়াতকৈ ডাঙৰ হ’বই লাগিব।</translation>
 <translation id="3732799496749320381">মি.মি.</translation>
 <translation id="3754210790023674521">চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">অনুগ্ৰহ কৰি এই পাঠটো <ph name="MIN_CHARACTERS" />টা বা তাতকৈ অধিক বর্ণ ব্যৱহাৰ কৰি লিখক (বর্তমান আপুনি <ph name="CURRENT_LENGTH" />টা বর্ণ ব্যৱহাৰ কৰি আছে)।</translation>
 <translation id="383465348367842624">’<ph name="ATSIGN" />’ৰ পাছত আহিব লগা অংশ ’<ph name="INVALIDCHARACTER" />’ চিহ্নত অন্তর্ভুক্ত হ’ব নালাগে।</translation>
 <translation id="3846214748874656680">পূৰ্ণষ্ক্রীণৰ পৰা বাহিৰ হওক</translation>
+<translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4103419683916926126">মিলিছেকেণ্ড</translation>
 <translation id="4201051445878709314">পূৰ্বৱৰ্তী মাহটো দেখুৱাওক</translation>
 <translation id="4360991593054037559">অনুগ্ৰহ কৰি এক মান্য মান দিয়ক। নিকটৱর্তী মান্য মান দুটা হৈছে <ph name="VALID_VALUE_LOW" /> আৰু <ph name="VALID_VALUE_HIGHER" />।</translation>
 <translation id="4522570452068850558">সবিশেষ</translation>
+<translation id="4663373278480897665">কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'ৰ পাছত থকা অংশত '<ph name="INVALIDCHARACTER" />' চিহ্নটো থাকিব নালাগে।</translation>
 <translation id="4718048029184481307">চিত্ৰৰ ভিতৰত চিত্ৰ ম'ড-ত প্লে 'কৰি থকা হৈছে</translation>
 <translation id="4748357248530471599">ডিছপ্লে' কাট আউটৰ সম্পূর্ণ স্ক্ৰীন টগ’ল কৰক</translation>
 <translation id="4763480195061959176">ভিডিঅ’</translation>
+<translation id="4792862212177489858">অৱস্থান শ্বেয়াৰ কৰক</translation>
 <translation id="4812940957355064477">অনুগ্রহ কৰি ফ’ন কোনো নম্বৰ দিয়ক।</translation>
 <translation id="4912200001568447310">বৰ্তমানৰ বস্তু</translation>
 <translation id="4915360478455618802">সময় বাছনিকৰ্তাক দেখুৱাওক</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টা বাছনি কৰা হৈছে</translation>
 <translation id="4992066212339426712">আনমিউট কৰক</translation>
 <translation id="49969490063480558">অনুগ্ৰহ কৰি ’<ph name="ATSIGN" />’ৰ পূর্বৰ অংশ দিয়ক। ’<ph name="INVALIDADDRESS" />’ অসম্পূর্ণ হৈছে।</translation>
+<translation id="5037575921016181960">বিশ্বস্ত পাছৱৰ্ড</translation>
 <translation id="5090250355906949916">ভিডিঅ' টাইম স্ক্ৰাবাৰ</translation>
 <translation id="509897012892853729">নীলা চেনেল</translation>
 <translation id="5117590920725113268">পৰৱৰ্তী মাহ দেখুৱাওক</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">মিডিয়া ডাউনল'ড কৰক</translation>
 <translation id="698788488269350478">বিস্তাৰ কৰা হ’ল।</translation>
 <translation id="6989848892321993519">অনুগ্ৰহ কৰি এই পাঠটো <ph name="MIN_CHARACTERS" /> বৰ্ণলৈ বৃদ্ধি কৰক (আপুনি বৰ্তমান ১টা বৰ্ণ ব্যৱহাৰ কৰিছে)।</translation>
+<translation id="7080893216867146095">অৱস্থান শ্বেয়াৰ কৰাৰ অনুমতি আছে</translation>
 <translation id="709897737746224366">অনুগ্ৰহ কৰি অনুৰোধ কৰা ফর্মেটটো মিলাওক।</translation>
 <translation id="7102274145889307184">বৰ্তমানৰ অৱস্থান</translation>
 <translation id="7263440858009898357">অনুগ্ৰহ কৰি সূচীৰ কোনো বস্তু বাছনি কৰক।</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">অন্য...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" />ৰ পৰা</translation>
 <translation id="916607977885256133">চিত্ৰৰ ভিতৰত চিত্ৰ</translation>
+<translation id="918430632320614861">মাইক্ৰ’ফ’নৰ অনুমতি দিয়ক</translation>
 <translation id="945780513535800434">আংশিকভাৱে পৰীক্ষা কৰা হৈছে</translation>
 <translation id="954003015749068518">চিত্ৰৰ ভিতৰত চিত্ৰ আৰম্ভ কৰক</translation>
 </translationbundle>

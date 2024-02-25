@@ -16,6 +16,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
@@ -23,16 +24,14 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A custom binder used to bind the update menu item.
- */
+/** A custom binder used to bind the update menu item. */
 class UpdateMenuItemViewBinder implements CustomViewBinder {
     private static final int UPDATE_ITEM_VIEW_TYPE = 0;
     private final MenuItemState mItemState;
 
-    UpdateMenuItemViewBinder() {
+    UpdateMenuItemViewBinder(Profile profile) {
         super();
-        mItemState = UpdateMenuItemHelper.getInstance().getUiState().itemState;
+        mItemState = UpdateMenuItemHelper.getInstance(profile).getUiState().itemState;
     }
 
     @Override
@@ -78,8 +77,9 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
                 text.setText(model.get(AppMenuItemProperties.TITLE));
             } else {
                 text.setText(mItemState.title);
-                text.setTextColor(AppCompatResources.getColorStateList(
-                        view.getContext(), mItemState.titleColorId));
+                text.setTextColor(
+                        AppCompatResources.getColorStateList(
+                                view.getContext(), mItemState.titleColorId));
             }
         } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
             TextView text = view.findViewById(R.id.menu_item_text);
@@ -121,12 +121,14 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getPixelHeight(Context context) {
-        int textSize = context.getResources().getDimensionPixelSize(
-                R.dimen.overflow_menu_update_min_height);
+        int textSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.overflow_menu_update_min_height);
         int paddingSize =
                 context.getResources().getDimensionPixelSize(R.dimen.overflow_menu_update_padding);
-        int iconSize = AppCompatResources.getDrawable(context, R.drawable.menu_update)
-                               .getIntrinsicHeight();
+        int iconSize =
+                AppCompatResources.getDrawable(context, R.drawable.menu_update)
+                        .getIntrinsicHeight();
 
         return Math.max(textSize, iconSize) + paddingSize * 2 /* top padding and bottom padding */;
     }

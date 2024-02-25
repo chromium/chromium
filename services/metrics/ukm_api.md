@@ -271,7 +271,7 @@ void OnGoatTeleported() {
 
 If the event name in the XML contains a period (`.`), it is replaced with an underscore (`_`) in the method name.
 
-To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see [go/ukm-downsampling](http://go/ukm-downsampling)). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 page loads on average to limit data volume.
+To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling on the Stable and Beta channels (see [go/ukm-downsampling](http://go/ukm-downsampling)). As a rule of thumb, it is recommended that most events be recorded at most once per 100 page loads on average to limit data volume. In addition, if an event type is observed to be spammy, is heavily downsampled, or to account for more than 10% of all recorded UKM events combined on any platform, you will be asked to reduce the event emission frequency.
 
 For data quality purposes, if you have the option to record an event from either the browser process or a renderer process, prefer the former. Because renderer processes are not trusted, events recorded in them are more complex to attribute to the corresponding browser-side navigations using the `DocumentCreated` event (see [go/ukm-readable-guide](http://go/ukm-readable-guide#processing-events-attached-to-blink-document-sources)). Joining using the `DocumentCreated` method also has limitations, such as partial availability of the event due to downsampling, and query performance impacted by the additional join operation.
 
@@ -319,6 +319,22 @@ You should now be seeing "Metrics Collection is ENABLED. MSBB consent is ENABLED
 If you want to test Extension- or App-related UKMs, toggle the corresponding sync consent in `chrome://settings/syncSetup/advanced`.
 
 Trigger your event locally, refresh `chrome://ukm`, then double-check that your events are recorded correctly.
+
+### Enable Console Debugging Messages
+
+If you're encountering issues concerning UKM user consent, recording events, or uploading UKM reports, you can enable console debugging logs by passing the command line flag `--vmodule=*components/ukm*=n` where `n` is the logging level number between 1 and 3, with the convention:
+
+1: Infrequent actions such as changes to user consent, or actions that typically occur once per reporting cycle, e.g. serialization of locally recorded event data into one report and uploading the report to the UKM server.\
+2: Frequent and recurrent actions within each reporting period, such as an event being recorded, or a new browser navigation has occurred.\
+3: Very frequent and possibly spammy actions or checks, such as events being dropped due to disabled recording.
+
+Setting a level `n` enables logging messages at all levels <= `n`.
+
+In case of doubt, or if you need a starting point to debug why `chrome://ukm` isn't showing any data in a local build, you can start with:
+```bash
+./out/Default/chrome --force-enable-metrics-reporting --metrics-upload-interval=300 --vmodule=*components/ukm*=3
+```
+
 
 ## Unit Testing
 

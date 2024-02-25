@@ -8,6 +8,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -340,7 +341,7 @@ template("create_signed_bundle") {
       # rebase_path here unless using Goma RBE and system Xcode (as in that
       # case the system framework are found via a symlink in root_build_dir).
       foreach(_framework, invoker.extra_system_frameworks) {
-        if (use_system_xcode && (use_goma || use_remoteexec)) {
+        if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
           _framework_path = rebase_path(_framework, root_build_dir)
         } else {
           _framework_path = _framework
@@ -501,6 +502,10 @@ template("ios_info_plist") {
 #       if omitted. Will be used to set BUNDLE_IDENTIFIER when generating
 #       the application Info.plist
 #
+#   orderfile_path:
+#       (optional) string, path to an orderfile passed to the linker in order
+#       to improve application launch performance.
+#
 # For more information, see "gn help executable".
 template("ios_app_bundle") {
   _output_name = target_name
@@ -604,6 +609,22 @@ template("ios_app_bundle") {
     visibility = []
     foreach(_variant, _variants) {
       visibility += [ ":${_variant.target_name}" ]
+    }
+
+    if (defined(invoker.orderfile_path)) {
+      orderfile_path = invoker.orderfile_path
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+      ldflags += [
+        "-Wl,-order_file",
+        "-Wl," + rebase_path(orderfile_path, root_build_dir),
+      ]
+
+      if (!defined(inputs)) {
+        inputs = []
+      }
+      inputs += [ orderfile_path ]
     }
 
     if (target_environment == "simulator") {
@@ -1722,7 +1743,7 @@ template("ios_xcuitest_test_runner_bundle") {
              "-o=" + rebase_path(_output_name, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
 
-    if (use_system_xcode && (use_goma || use_remoteexec)) {
+    if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
       deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }
@@ -1755,7 +1776,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     outputs = [ "{{bundle_contents_dir}}/PkgInfo" ]
 
-    if (use_system_xcode && (use_goma || use_remoteexec)) {
+    if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
       public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }

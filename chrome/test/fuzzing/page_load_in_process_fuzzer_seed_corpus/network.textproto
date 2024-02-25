@@ -1,0 +1,8 @@
+
+network_resource {
+  path: "/foo.html"
+  http_status: 200
+  reason: "OK"
+  content_type: "text/html"
+  body: "<html><head><title>Page</title><script type=\"text/javascript\">function greet() {console.log(\"HellOOO\") }</script></head><body onload=\"greet()\"><h1>Hello!</h1></body></html>"
+}

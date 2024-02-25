@@ -35,6 +35,7 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
                           InstanceData::FlushInfo* flush_info,
                           LockedSender* sender,
                           const gpu::Capabilities& capabilities,
+                          const gpu::GLCapabilities& gl_capabilities,
                           SerializedHandle shared_state,
                           gpu::CommandBufferId command_buffer_id);
 
@@ -64,6 +65,7 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
   // gpu::GpuControl implementation:
   void SetGpuControlClient(gpu::GpuControlClient*) override;
   const gpu::Capabilities& GetCapabilities() const override;
+  const gpu::GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -97,6 +99,7 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
   const gpu::CommandBufferId command_buffer_id_;
 
   gpu::Capabilities capabilities_;
+  gpu::GLCapabilities gl_capabilities_;
   State last_state_;
   base::WritableSharedMemoryMapping shared_state_mapping_;
 

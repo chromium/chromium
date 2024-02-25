@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2005-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,17 +14,20 @@
  *  under the License.
  */
 
-#import <OCMock/OCMockObject.h>
+#import "OCMockObject.h"
 
-@interface OCClassMockObject : OCMockObject 
+@interface OCClassMockObject : OCMockObject
 {
-	Class               mockedClass;
-    Class               originalMetaClass;
+    Class mockedClass;
+    Class originalMetaClass;
+    Class classCreatedForNewMetaClass;
 }
 
 - (id)initWithClass:(Class)aClass;
 
 - (Class)mockedClass;
-- (Class)mockObjectClass;  // since -class returns the mockedClass
+- (Class)mockObjectClass; // since -class returns the mockedClass
+
+- (void)assertClassIsSupported:(Class)aClass;
 
 @end

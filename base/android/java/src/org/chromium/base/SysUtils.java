@@ -13,21 +13,19 @@ import android.os.StatFs;
 import android.os.StrictMode;
 import android.util.Log;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.build.BuildConfig;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Exposes system related information about the current device.
- */
+/** Exposes system related information about the current device. */
 @JNINamespace("base::android")
-@MainDex
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
     private static final int ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB = 512;
@@ -44,7 +42,7 @@ public class SysUtils {
 
     private static Boolean sHighEndDiskDevice;
 
-    private SysUtils() { }
+    private SysUtils() {}
 
     /**
      * Return the amount of physical memory on this device in kilobytes.
@@ -73,7 +71,7 @@ public class SysUtils {
                 BufferedReader reader = new BufferedReader(fileReader);
                 try {
                     String line;
-                    for (;;) {
+                    for (; ; ) {
                         line = reader.readLine();
                         if (line == null) {
                             Log.w(TAG, "/proc/meminfo lacks a MemTotal entry?");
@@ -112,7 +110,8 @@ public class SysUtils {
      */
     @CalledByNative
     public static boolean isLowEndDevice() {
-        if (sLowEndDevice == null) {
+        // Do not cache in tests since command-line flags can change.
+        if (sLowEndDevice == null || BuildConfig.IS_FOR_TEST) {
             sLowEndDevice = detectLowEndDevice();
         }
         return sLowEndDevice.booleanValue();
@@ -135,19 +134,18 @@ public class SysUtils {
     @CalledByNative
     public static boolean isCurrentlyLowMemory() {
         ActivityManager am =
-                (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
-        am.getMemoryInfo(info);
-        return info.lowMemory;
-    }
-
-    /**
-     * Resets the cached value, if any.
-     */
-    public static void resetForTesting() {
-        sLowEndDevice = null;
-        sAmountOfPhysicalMemoryKB = null;
+        try {
+            am.getMemoryInfo(info);
+            return info.lowMemory;
+        } catch (SecurityException e) {
+            // Occurs on Redmi devices when called from isolated processes.
+            // https://crbug.com/1480655
+            return false;
+        }
     }
 
     public static boolean hasCamera(final Context context) {
@@ -165,14 +163,14 @@ public class SysUtils {
         }
 
         // If this logic changes, update the comments above base::SysUtils::IsLowEndDevice.
-        sAmountOfPhysicalMemoryKB = detectAmountOfPhysicalMemoryKB();
+        int physicalMemoryKb = amountOfPhysicalMemoryKB();
         boolean isLowEnd = true;
-        if (sAmountOfPhysicalMemoryKB <= 0) {
+        if (physicalMemoryKb <= 0) {
             isLowEnd = false;
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            isLowEnd = sAmountOfPhysicalMemoryKB / 1024 <= ANDROID_O_LOW_MEMORY_DEVICE_THRESHOLD_MB;
+            isLowEnd = physicalMemoryKb / 1024 <= ANDROID_O_LOW_MEMORY_DEVICE_THRESHOLD_MB;
         } else {
-            isLowEnd = sAmountOfPhysicalMemoryKB / 1024 <= ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB;
+            isLowEnd = physicalMemoryKb / 1024 <= ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB;
         }
 
         return isLowEnd;
@@ -206,14 +204,6 @@ public class SysUtils {
             Log.v(TAG, "Cannot get disk data capacity", e);
         }
         return false;
-    }
-
-    public static void setAmountOfPhysicalMemoryKBForTesting(int physicalMemoryKB) {
-        sAmountOfPhysicalMemoryKB = physicalMemoryKB;
-        ResettersForTesting.register(() -> {
-            sLowEndDevice = null;
-            sAmountOfPhysicalMemoryKB = null;
-        });
     }
 
     /**

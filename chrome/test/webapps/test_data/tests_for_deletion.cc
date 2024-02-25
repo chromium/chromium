@@ -27,4 +27,5 @@ IN_PROC_BROWSER_TEST_F(TestName, WAI_TEST_TO_DELETE) {
   helper_.StateChangeA(Animal::kChicken);
   helper_.CheckA(Animal::kChicken);
   helper_.CheckB(Animal::kChicken, Color::kGreen);
+  helper_.CheckA();
 }

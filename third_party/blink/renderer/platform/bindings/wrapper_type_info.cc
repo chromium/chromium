@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 
-#include "third_party/blink/renderer/platform/bindings/custom_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"

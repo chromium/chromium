@@ -6,43 +6,65 @@
 
 dictionary IdentityProviderConfig {
   // URL for the Identity Provider Configuration.
-  required USVString configURL;
-  required USVString clientId;
+  // Not marked as required to allow implementation of registered providers.
+  // See crbug.com/1406698.
+  USVString configURL;
+  // Not marked as required to allow implementation of digital credentials.
+  // See crbug.com/1416939.
+  USVString clientId;
+};
+
+dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmHostedDomain] DOMString hostedDomain;
+  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
 };
 
-// extends the IdentityProviderConfig with mDoc-specific attributes
+// extends the IdentityProviderConfig with DigitalCredential-specific attributes
 partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=WebIdentityMDocs] MDocProvider mdoc;
+  [RuntimeEnabled=WebIdentityDigitalCredentials] DigitalCredentialProvider holder;
 };
 
-dictionary MDocProvider  {
-  // base64-encoded reader HPKE public key.
-  required DOMString readerPublicKey;
+dictionary DigitalCredentialProvider  {
+  // A query selector that is used by wallets to filter credentials for
+  // selection.
+  DigitalCredentialSelector selector;
 
-  // base64-encoded reader certification chain, if the platform requires it.
-  sequence<DOMString> certificates;
+  // An opaque map of parameters sent to wallets upon selection.
+  record<USVString, USVString> params;
 
+  // Alternatively, a provider can also be specified by a protocol and a
+  // request.
+  DOMString protocol;
+  DOMString request;
+  DOMString publicKey;
+};
+
+dictionary DigitalCredentialSelector {
+  // A list of desired formats for the credential.
+  sequence<USVString> format;
+
+  // The top-level type of document (e.g. a passport, driver's license, etc).
+  DOMString doctype;
+
+  // The amount of time the verifier intends to retain the credential.
   // Omitting `retention` implies that the identity information will not be stored.
-  MDocStorageDuration retention;
+  // How long the verifier intends to retent the credential.
+  DigitalCredentialStorageDuration retention;
 
-  required DOMString documentType;
-  required sequence<MDocElement> requestedElements;
+  // The requested fields.
+  sequence<(DigitalCredentialFieldRequirement or DOMString)> fields;
 };
 
-dictionary MDocElement {
-  // As defined in ISO 18013-5 clause 8.
-  [ImplementedAs=elementNamespace]
-  required DOMString _namespace;
+dictionary DigitalCredentialFieldRequirement {
   required DOMString name;
+  DOMString equals;
 };
 
-dictionary MDocStorageDuration {
+dictionary DigitalCredentialStorageDuration {
   // Exactly one of the following must be provided.
   boolean forever;
   long days;

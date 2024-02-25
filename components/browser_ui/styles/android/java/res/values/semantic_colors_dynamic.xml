@@ -20,13 +20,9 @@ found in the LICENSE file.
     <macro name="default_text_color">?attr/colorOnSurface</macro>
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
+    <macro name="default_text_color_on_accent1_container">?attr/colorOnPrimaryContainer</macro>
     <macro name="default_text_color_on_accent2_container">?attr/colorOnSecondaryContainer</macro>
     <macro name="default_text_color_secondary" tools:ignore="UnusedResources">?attr/colorOnSurfaceVariant</macro>
-
-    <macro name="switch_enabled_unchecked_color_dark">?attr/colorOutline</macro>
-    <macro name="switch_enabled_unchecked_color_light">?attr/colorOnSurface</macro>
-    <macro name="switch_track_disabled_color">?attr/colorOnSurface</macro>
-    <macro name="switch_thumb_disabled_color">?attr/colorOnSurfaceInverse</macro>
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
     <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>

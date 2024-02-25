@@ -26,6 +26,10 @@ class ReportingSettings;
 // Class to manage report
 class MetricEventObserverManager {
  public:
+  // Event metric enqueued UMA metrics name.
+  static constexpr char kEventMetricEnqueuedMetricsName[] =
+      "Browser.ERP.MetricsReporting.EventMetricEnqueued";
+
   MetricEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       MetricReportQueue* metric_report_queue,

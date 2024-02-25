@@ -141,7 +141,8 @@ std::vector<uint8_t> WriteUpdatedTargetInfo(const std::vector<AvPair>& av_pairs,
 // undefined and a subsequent operation will set those bits with a parity bit.
 // |key_56| must contain 7 bytes.
 // |key_64| must contain 8 bytes.
-void Splay56To64(const uint8_t* key_56, uint8_t* key_64) {
+void Splay56To64(base::span<const uint8_t, 7> key_56,
+                 base::span<uint8_t, 8> key_64) {
   key_64[0] = key_56[0];
   key_64[1] = key_56[0] << 7 | key_56[1] >> 1;
   key_64[2] = key_56[1] << 6 | key_56[2] >> 2;
@@ -159,8 +160,8 @@ void Create3DesKeysFromNtlmHash(
     base::span<uint8_t, 24> keys) {
   // Put the first 112 bits from |ntlm_hash| into the first 16 bytes of
   // |keys|.
-  Splay56To64(ntlm_hash.data(), keys.data());
-  Splay56To64(ntlm_hash.data() + 7, keys.data() + 8);
+  Splay56To64(ntlm_hash.first<7>(), keys.first<8>());
+  Splay56To64(ntlm_hash.subspan<7, 7>(), keys.subspan<8, 8>());
 
   // Put the next 2x 7 bits in bytes 16 and 17 of |keys|, then
   // the last 2 bits in byte 18, then zero pad the rest of the final key.

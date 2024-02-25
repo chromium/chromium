@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 
 #include <initializer_list>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/stringprintf.h"
@@ -52,7 +53,7 @@ using testing::Pointee;
 
 using HttpHeaders = std::vector<mojom::HttpHeaderPtr>;
 using HttpHeadersInitializerList =
-    std::initializer_list<std::pair<base::StringPiece, base::StringPiece>>;
+    std::initializer_list<std::pair<std::string_view, std::string_view>>;
 
 class MockHttpDelegate : public mojom::HttpDelegate {
  public:
@@ -99,7 +100,7 @@ struct ConsumeAllDataAndCompareWith {
     EXPECT_EQ(data, expected_data);
   }
 
-  base::StringPiece expected_data;
+  std::string_view expected_data;
 };
 
 struct ProduceAllData {
@@ -107,7 +108,7 @@ struct ProduceAllData {
     EXPECT_TRUE(mojo::BlockingCopyFromString(std::string(data), handle));
   }
 
-  base::StringPiece data;
+  std::string_view data;
 };
 
 HttpHeaders HttpHeadersFromInitializerList(
@@ -137,7 +138,7 @@ network::mojom::URLResponseHeadPtr CreateURLResponseHead(
 
 TEST_F(DriveFsHttpClientTest, RequestHandlesRequestData) {
   constexpr char kTestURL[] = "https://drive.google.com";
-  constexpr base::StringPiece kTestRequestData = "Test Request Data";
+  constexpr std::string_view kTestRequestData = "Test Request Data";
   const HttpHeadersInitializerList kTestRequestHeaders = {
       {"Test-Request-Header", "Test-Value"},
   };
@@ -182,7 +183,7 @@ TEST_F(DriveFsHttpClientTest, RequestHandlesRequestData) {
 
 TEST_F(DriveFsHttpClientTest, RequestHandlesResponseData) {
   constexpr char kTestURL[] = "https://drive.google.com";
-  constexpr base::StringPiece kTestResponseData = "Test Response Data";
+  constexpr std::string_view kTestResponseData = "Test Response Data";
   const HttpHeadersInitializerList kTestResponseHeaders = {
       {"Test-Response-Header", "Test-Value"},
   };

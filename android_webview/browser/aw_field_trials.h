@@ -9,6 +9,7 @@
 
 // Responsible for setting up field trials specific to WebView. Currently all
 // functions are stubs, as WebView has no specific field trials.
+// Lifetime: Singleton
 class AwFieldTrials : public variations::PlatformFieldTrials {
  public:
   AwFieldTrials() = default;

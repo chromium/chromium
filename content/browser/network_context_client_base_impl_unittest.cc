@@ -16,6 +16,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -132,7 +133,8 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
 TEST_F(NetworkContextClientBaseTest,
        DISABLED_UploadOneValidFileWithContentUri) {
   base::FilePath image_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.AppendASCII("content")
                    .AppendASCII("test")
                    .AppendASCII("data")

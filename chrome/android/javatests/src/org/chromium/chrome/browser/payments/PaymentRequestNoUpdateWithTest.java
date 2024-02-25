@@ -39,28 +39,30 @@ public class PaymentRequestNoUpdateWithTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Lisa Simpson")
-                                  .setCompanyName("Acme Inc.")
-                                  .setStreetAddress("123 Main")
-                                  .setRegion("California")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90210")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555 123-4567")
-                                  .setEmailAddress("lisa@simpson.com")
-                                  .build());
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Maggie Simpson")
-                                  .setCompanyName("Acme Inc.")
-                                  .setStreetAddress("123 Main")
-                                  .setRegion("California")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90210")
-                                  .setCountryCode("Uzbekistan")
-                                  .setPhoneNumber("555 123-4567")
-                                  .setEmailAddress("maggie@simpson.com")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Lisa Simpson")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555 123-4567")
+                        .setEmailAddress("lisa@simpson.com")
+                        .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Maggie Simpson")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("Uzbekistan")
+                        .setPhoneNumber("555 123-4567")
+                        .setEmailAddress("maggie@simpson.com")
+                        .build());
         mRule.addPaymentAppFactory(AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
@@ -90,7 +92,8 @@ public class PaymentRequestNoUpdateWithTest {
     @Feature({"Payments"})
     public void testNoUpdateWith() throws Throwable {
         mRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithoutCallingUpdateWithWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                "buyWithoutCallingUpdateWithWithMethods([{supportedMethods:"
+                        + " 'https://bobpay.test'}]);",
                 mRule.getReadyToPay());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
         mRule.clickOnShippingAddressSuggestionOptionAndWait(1, mRule.getReadyForInput());

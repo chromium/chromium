@@ -56,11 +56,9 @@
 #include <tchar.h>
 #include <windows.h>
 #include <winioctl.h>
-#include "base/features.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #endif
@@ -403,8 +401,8 @@ class ScopedWorkingDirectory {
 TEST_F(FileUtilTest, MakeAbsoluteFilePathNoResolveSymbolicLinks) {
   FilePath cwd;
   ASSERT_TRUE(GetCurrentDirectory(&cwd));
-  const std::pair<FilePath, absl::optional<FilePath>> kExpectedResults[]{
-      {FilePath(), absl::nullopt},
+  const std::pair<FilePath, std::optional<FilePath>> kExpectedResults[]{
+      {FilePath(), std::nullopt},
       {FilePath("."), cwd},
       {FilePath(".."), cwd.DirName()},
       {FilePath("a/.."), cwd},
@@ -1074,7 +1072,7 @@ TEST_F(FileUtilTest, CreateAndReadRelativeSymlinks) {
   ASSERT_TRUE(ReadSymbolicLink(link_from, &result));
   EXPECT_EQ(filename_link_to.value(), result.value());
 
-  absl::optional<FilePath> absolute_link = ReadSymbolicLinkAbsolute(link_from);
+  std::optional<FilePath> absolute_link = ReadSymbolicLinkAbsolute(link_from);
   ASSERT_TRUE(absolute_link);
   EXPECT_EQ(link_to.value(), absolute_link->value());
 
@@ -1241,7 +1239,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   EXPECT_FALSE(mode & FILE_PERMISSION_READ_BY_USER);
   EXPECT_FALSE(PathIsReadable(file_name));
   // Make sure the file can't be read.
-  EXPECT_EQ(-1, ReadFile(file_name, buffer, kDataSize));
+  EXPECT_EQ(ReadFile(file_name, buffer), std::nullopt);
 
   // Give the read permission.
   EXPECT_TRUE(SetPosixFilePermissions(file_name, FILE_PERMISSION_READ_BY_USER));
@@ -1249,7 +1247,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   EXPECT_TRUE(mode & FILE_PERMISSION_READ_BY_USER);
   EXPECT_TRUE(PathIsReadable(file_name));
   // Make sure the file can be read.
-  EXPECT_EQ(kDataSize, ReadFile(file_name, buffer, kDataSize));
+  EXPECT_EQ(ReadFile(file_name, buffer), kDataSize);
 
   // Delete the file.
   EXPECT_TRUE(DeleteFile(file_name));
@@ -3014,7 +3012,7 @@ TEST_F(FileUtilTest, GetSecureSystemTemp) {
   FilePath secure_system_temp;
   ASSERT_EQ(GetSecureSystemTemp(&secure_system_temp), !!::IsUserAnAdmin());
   if (!::IsUserAnAdmin()) {
-    return;
+    GTEST_SKIP() << "This test must be run by an admin user";
   }
 
   FilePath dir_windows;
@@ -3031,17 +3029,26 @@ TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
   ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
+  EXPECT_TRUE(DeleteFile(temp_dir));
+}
 
 #if BUILDFLAG(IS_WIN)
+TEST_F(FileUtilTest, TempDirectoryParentTest) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
+  FilePath temp_dir;
+  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  EXPECT_TRUE(PathExists(temp_dir));
+
   FilePath expected_parent_dir;
   if (!GetSecureSystemTemp(&expected_parent_dir)) {
     EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
   }
   EXPECT_TRUE(expected_parent_dir.IsParent(temp_dir));
-#endif  // BUILDFLAG(IS_WIN)
-
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(FileUtilTest, CreateNewTemporaryDirInDirTest) {
   FilePath new_dir;
@@ -3403,33 +3410,24 @@ TEST_F(FileUtilTest, ReadFile) {
   std::vector<char> large_buffer(kTestData.size() * 2);
 
   // Read the file with smaller buffer.
-  int bytes_read_small = ReadFile(
-      file_path, &small_buffer[0], static_cast<int>(small_buffer.size()));
-  EXPECT_EQ(static_cast<int>(small_buffer.size()), bytes_read_small);
+  EXPECT_EQ(ReadFile(file_path, small_buffer), small_buffer.size());
   EXPECT_EQ(
       std::string(kTestData.begin(), kTestData.begin() + small_buffer.size()),
       std::string(small_buffer.begin(), small_buffer.end()));
 
   // Read the file with buffer which have exactly same size.
-  int bytes_read_exact = ReadFile(
-      file_path, &exact_buffer[0], static_cast<int>(exact_buffer.size()));
-  EXPECT_EQ(static_cast<int>(kTestData.size()), bytes_read_exact);
+  EXPECT_EQ(ReadFile(file_path, exact_buffer), kTestData.size());
   EXPECT_EQ(kTestData, std::string(exact_buffer.begin(), exact_buffer.end()));
 
   // Read the file with larger buffer.
-  int bytes_read_large = ReadFile(
-      file_path, &large_buffer[0], static_cast<int>(large_buffer.size()));
-  EXPECT_EQ(static_cast<int>(kTestData.size()), bytes_read_large);
+  EXPECT_EQ(ReadFile(file_path, large_buffer), kTestData.size());
   EXPECT_EQ(kTestData, std::string(large_buffer.begin(),
                                    large_buffer.begin() + kTestData.size()));
 
-  // Make sure the return value is -1 if the file doesn't exist.
+  // Make sure the read fails if the file doesn't exist.
   FilePath file_path_not_exist =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ReadFileNotExistTest"));
-  EXPECT_EQ(-1,
-            ReadFile(file_path_not_exist,
-                     &exact_buffer[0],
-                     static_cast<int>(exact_buffer.size())));
+  EXPECT_EQ(ReadFile(file_path_not_exist, exact_buffer), std::nullopt);
 }
 
 TEST_F(FileUtilTest, ReadFileToBytes) {
@@ -3446,7 +3444,7 @@ TEST_F(FileUtilTest, ReadFileToBytes) {
   // Create test file.
   ASSERT_TRUE(WriteFile(file_path, kTestData));
 
-  absl::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
+  std::optional<std::vector<uint8_t>> bytes = ReadFileToBytes(file_path);
   ASSERT_TRUE(bytes.has_value());
   EXPECT_EQ(kTestData, bytes);
 

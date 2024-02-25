@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_SETTINGS_UPDATER_ANDROID_DISPATCHER_BRIDGE_IMPL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_SETTINGS_UPDATER_ANDROID_DISPATCHER_BRIDGE_IMPL_H_
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -30,9 +31,9 @@ class PasswordSettingsUpdaterAndroidDispatcherBridgeImpl
       base::android::ScopedJavaGlobalRef<jobject> receiver_bridge) override;
 
   // PasswordSettingsUpdaterAndroidDispatcherBridge implementation.
-  void GetPasswordSettingValue(absl::optional<SyncingAccount> account,
+  void GetPasswordSettingValue(std::optional<SyncingAccount> account,
                                PasswordManagerSetting setting) override;
-  void SetPasswordSettingValue(absl::optional<SyncingAccount> account,
+  void SetPasswordSettingValue(std::optional<SyncingAccount> account,
                                PasswordManagerSetting setting,
                                bool value) override;
 

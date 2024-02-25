@@ -7,15 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/browser/updater/extension_update_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class FilePath;
@@ -51,23 +51,26 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
   // done.
   void Shutdown();
 
-  std::vector<absl::optional<update_client::CrxComponent>> GetData(
+  void GetData(
       bool install_immediately,
       const ExtensionUpdateDataMap& update_info,
-      const std::vector<std::string>& ids);
+      const std::vector<std::string>& ids,
+      base::OnceCallback<
+          void(const std::vector<std::optional<update_client::CrxComponent>>&)>
+          callback);
 
  private:
   friend class base::RefCounted<UpdateDataProvider>;
   ~UpdateDataProvider();
 
   // This function should be called on the browser UI thread.
-  void RunInstallCallback(const std::string& extension_id,
+  void RunInstallCallback(const ExtensionId& extension_id,
                           const std::string& public_key,
                           const base::FilePath& unpacked_dir,
                           bool install_immediately,
                           UpdateClientCallback update_client_callback);
 
-  void InstallUpdateCallback(const std::string& extension_id,
+  void InstallUpdateCallback(const ExtensionId& extension_id,
                              const std::string& public_key,
                              const base::FilePath& unpacked_dir,
                              bool install_immediately,

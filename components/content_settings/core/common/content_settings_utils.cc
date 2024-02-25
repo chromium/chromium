@@ -39,25 +39,6 @@ ContentSetting ValueToContentSetting(const base::Value& value) {
   return setting;
 }
 
-ContentSettingsPattern URLToSchemefulSitePattern(const GURL& url) {
-  std::string registrable_domain = GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-  auto builder = ContentSettingsPattern::CreateBuilder();
-
-  if (registrable_domain.empty()) {
-    registrable_domain = url.host();
-  } else {
-    builder->WithDomainWildcard();
-  }
-
-  return builder->WithScheme(url.scheme())
-      ->WithHost(registrable_domain)
-      ->WithPathWildcard()
-      ->WithPortWildcard()
-      ->Build();
-}
-
 base::Value ContentSettingToValue(ContentSetting setting) {
   if (setting <= CONTENT_SETTING_DEFAULT ||
       setting >= CONTENT_SETTING_NUM_SETTINGS) {

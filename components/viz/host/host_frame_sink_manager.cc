@@ -4,6 +4,7 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -14,11 +15,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -65,7 +66,16 @@ void HostFrameSinkManager::RegisterFrameSinkId(
   DCHECK(client);
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
-  CHECK(!data.IsFrameSinkRegistered());
+  if (data.IsFrameSinkRegistered()) {
+    // Note that `report_activation` causes dispatch of OnFirstSurfaceActivation
+    // for the first frame associated with each SurfaceId. This means the new
+    // client will receive this notification (if `report_activation` is set)
+    // the next time a new SurfaceId is submitted for this `frame_sink_id`.
+    CHECK_EQ(data.report_activation, report_activation);
+    data.client = client;
+    return;
+  }
+
   DCHECK(!data.has_created_compositor_frame_sink);
   data.client = client;
   data.report_activation = report_activation;
@@ -80,11 +90,13 @@ bool HostFrameSinkManager::IsFrameSinkIdRegistered(
 }
 
 void HostFrameSinkManager::InvalidateFrameSinkId(
-    const FrameSinkId& frame_sink_id) {
+    const FrameSinkId& frame_sink_id,
+    HostFrameSinkClient* client) {
   DCHECK(frame_sink_id.is_valid());
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   CHECK(data.IsFrameSinkRegistered());
+  CHECK_EQ(data.client, client);
 
   const bool destroy_synchronously =
       data.has_created_compositor_frame_sink && data.wait_on_destruction;
@@ -122,6 +134,10 @@ void HostFrameSinkManager::SetFrameSinkDebugLabel(
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
 
+  if (data.debug_label == debug_label) {
+    return;
+  }
+
   data.debug_label = debug_label;
   frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id, debug_label);
 }
@@ -158,7 +174,7 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
-  CreateFrameSink(frame_sink_id, /*bundle_id=*/absl::nullopt,
+  CreateFrameSink(frame_sink_id, /*bundle_id=*/std::nullopt,
                   std::move(receiver), std::move(client));
 }
 
@@ -181,7 +197,7 @@ void HostFrameSinkManager::CreateBundledCompositorFrameSink(
 
 void HostFrameSinkManager::CreateFrameSink(
     const FrameSinkId& frame_sink_id,
-    absl::optional<FrameSinkBundleId> bundle_id,
+    std::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
@@ -390,6 +406,16 @@ void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
   for (HitTestRegionObserver& observer : observers_)
     observer.OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void HostFrameSinkManager::VerifyThreadIdsDoNotBelongToHost(
+    const std::vector<int32_t>& thread_ids,
+    VerifyThreadIdsDoNotBelongToHostCallback callback) {
+  base::flat_set<base::PlatformThreadId> tids(thread_ids.begin(),
+                                              thread_ids.end());
+  std::move(callback).Run(CheckThreadIdsDoNotBelongToCurrentProcess(tids));
+}
+#endif
 
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
     const FrameSinkId& root_sink_id) {

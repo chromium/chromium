@@ -12,6 +12,8 @@ source_set("test_support") {
   sources = [
     "mock_holding_space_client.cc",
     "mock_holding_space_client.h",
+    "mock_holding_space_controller_observer.cc",
+    "mock_holding_space_controller_observer.h",
     "mock_holding_space_model_observer.cc",
     "mock_holding_space_model_observer.h",
   ]

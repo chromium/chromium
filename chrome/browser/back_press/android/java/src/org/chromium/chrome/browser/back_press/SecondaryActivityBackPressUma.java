@@ -11,14 +11,18 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Uma recorder for secondary activity back press handling.
- */
+/** Uma recorder for secondary activity back press handling. */
 public class SecondaryActivityBackPressUma {
-    @IntDef({SecondaryActivity.DOWNLOAD, SecondaryActivity.BOOKMARK, SecondaryActivity.FIRST_RUN,
-            SecondaryActivity.LIGHTWEIGHT_FIRST_RUN, SecondaryActivity.HISTORY,
-            SecondaryActivity.SETTINGS, SecondaryActivity.BOOKMARK_FOLDER_PICKER,
-            SecondaryActivity.NUM_TYPES})
+    @IntDef({
+        SecondaryActivity.DOWNLOAD,
+        SecondaryActivity.BOOKMARK,
+        SecondaryActivity.FIRST_RUN,
+        SecondaryActivity.LIGHTWEIGHT_FIRST_RUN,
+        SecondaryActivity.HISTORY,
+        SecondaryActivity.SETTINGS,
+        SecondaryActivity.BOOKMARK_FOLDER_PICKER,
+        SecondaryActivity.NUM_TYPES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SecondaryActivity {
         int DOWNLOAD = 0;

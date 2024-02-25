@@ -48,10 +48,6 @@ Capabilities required by anything that uses `//base/test` when running in the
 (default) `chromium` test realm. It is the default base fragment for most
 `test()` Components.
 
-The system-wide `config-data` directory capability is routed to tests running in
-the realm so that individual tests may route subdirectories as needed.
-TODO(crbug.com/1360077): Remove this after migrating to the new mechanism.
-
 #### logger.shard.test-cml
 For tests that test logging functionality by providing `fuchsia.logger.Log`.
 
@@ -84,10 +80,6 @@ For tests that need an isolated UI subsystem, that supports the Flatland
 API set.  This allows tests to e.g. run with view-focus unaffected by any
 other tests running concurrently on the device, as well as providing test-only
 functionality such as input-injection support.
-
-#### gfx_test_ui_stack.shard.test-cml
-For tests that need an isolated display subsystem supporting the legacy
-Scenic/GFX APIs.
 
 ### WebEngine Fragments
 The following fragments are specific to WebEngine functionality as documented

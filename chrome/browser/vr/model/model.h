@@ -21,9 +21,6 @@ struct VR_UI_EXPORT Model {
 
   // VR browsing state.
   const ColorScheme& color_scheme() const;
-  bool menu_button_long_pressed = false;
-  float floor_height = 0.0f;
-  bool gvr_input_support = false;
   // WebVR state.
   WebVrModel web_vr;
 

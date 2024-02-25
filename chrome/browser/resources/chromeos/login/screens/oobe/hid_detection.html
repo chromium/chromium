@@ -68,7 +68,7 @@
     [[i18nDynamic(locale, 'hidDetectionInvitation')]]
   </h1>
   <div slot="subtitle" aria-live="polite">
-    [[getPrerequisitesText_(locale, touchscreenDetected_)]]
+    [[getPrerequisitesText(locale, touchscreenDetected_)]]
   </div>
   <div slot="content" class="landscape-header-aligned">
     <div id="hid-touchscreen-entry"
@@ -89,41 +89,41 @@
     <div class="layout vertical hid-selection-entry">
       <div id="hid-mouse-row" class="flex layout horizontal center">
         <paper-spinner-lite class="icon-active"
-            hidden="[[!spinnerIsVisible_(mouseState_)]]" active>
+            hidden="[[!spinnerIsVisible(mouseState)]]" active>
         </paper-spinner-lite>
         <hd-iron-icon id="mouse-icon" alt=""
             icon1x="oobe-20:hid-mouse" icon2x="oobe-40:hid-mouse"
-            hidden="[[spinnerIsVisible_(mouseState_)]]">
+            hidden="[[spinnerIsVisible(mouseState)]]">
         </hd-iron-icon>
         <img id="mouse-tick" alt=""
-            hidden="[[!tickIsVisible_(mouseState_)]]"
+            hidden="[[!tickIsVisible(mouseState)]]"
             src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
         <div id="mouse-label" aria-live="polite" class="flex">
-          [[getMouseLabel_(locale, mouseState_, pointingDeviceName)]]
+          [[getMouseLabel(locale, mouseState, pointingDeviceName)]]
         </div>
       </div>
     </div>
     <div class="layout vertical hid-selection-entry">
       <div id="hid-keyboard-row" class="flex layout horizontal center"
-          on-click="openPinDialog_">
+          on-click="openPinDialog">
         <paper-spinner-lite class="icon-active"
-            hidden="[[!spinnerIsVisible_(keyboardState_)]]" active>
+            hidden="[[!spinnerIsVisible(keyboardState)]]" active>
         </paper-spinner-lite>
         <hd-iron-icon id="keyboard-icon" alt=""
             icon1x="oobe-20:hid-keyboard" icon2x="oobe-40:hid-keyboard"
-            hidden="[[spinnerIsVisible_(keyboardState_)]]">
+            hidden="[[spinnerIsVisible(keyboardState)]]">
         </hd-iron-icon>
         <img id="keyboard-tick" alt=""
-            hidden="[[!tickIsVisible_(keyboardState_)]]"
+            hidden="[[!tickIsVisible(keyboardState)]]"
             src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
         <div id="keyboard-label" aria-live="polite" class="flex">
-          [[getKeyboardLabel_(locale, keyboardState_, keyboardDeviceName)]]
+          [[getKeyboardLabel(locale, keyboardState, keyboardDeviceName)]]
         </div>
       </div>
     </div>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button inverse on-click="onHIDContinueTap_"
+    <oobe-text-button inverse on-click="onHidContinueClick"
         text-key="hidDetectionContinue"
         id="hid-continue-button"
         disabled="[[!continueButtonEnabled]]"></oobe-text-button>
@@ -131,8 +131,8 @@
 </oobe-adaptive-dialog>
 
 <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
-<template  is="dom-if" if="[[!isOobeHidDetectionRevampEnabled_]]">
-  <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
+<template  is="dom-if" if="[[!isOobeHidDetectionRevampEnabled]]">
+  <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed">
     <h1 slot="title">[[pinDialogTitle]]</h1>
     <div slot="content" class="content-padding">
       <div>
@@ -155,16 +155,17 @@
   </oobe-modal-dialog>
 </template>
 
-<template is="dom-if" if="[[isOobeHidDetectionRevampEnabled_]]">
+<template is="dom-if" if="[[isOobeHidDetectionRevampEnabled]]">
   <oobe-modal-dialog id="hid-pin-popup" should-hide-close-button
       should-hide-title-row>
     <div slot="content" class="content-padding">
       <bluetooth-pairing-enter-code-page
           id="hid-pairing-enter-code"
+          class="focus-on-show"
           code="[[pinCode]]"
           num-keys-entered="[[numKeysEnteredPinCode]]"
           device-name="[[keyboardDeviceName]]"
-          on-cancel="onCancel_">
+          on-cancel="onCancel">
       </bluetooth-pairing-enter-code-page>
     </div>
   </oobe-modal-dialog>

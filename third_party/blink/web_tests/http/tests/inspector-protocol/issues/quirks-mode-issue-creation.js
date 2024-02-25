@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, page} = await testRunner.startBlank('Tests that Quirks Mode issues are reported.');
 
   await dp.Audits.enable();

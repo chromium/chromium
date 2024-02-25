@@ -122,7 +122,7 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
   MapEntry* entry = it->value;
   DCHECK(entry->count);
   if (entry->element)
-    return entry->element;
+    return entry->element.Get();
 
   // Iterate to find the node that matches. Nothing will match iff an element
   // with children having duplicate IDs is being removed -- the tree traversal
@@ -203,7 +203,7 @@ Element* TreeOrderedMap::GetCachedFirstElementWithoutAccessingNodeTree(
     return nullptr;
   MapEntry* entry = it->value;
   DCHECK(entry->count);
-  return entry->element;
+  return entry->element.Get();
 }
 
 void TreeOrderedMap::Trace(Visitor* visitor) const {

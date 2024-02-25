@@ -26,6 +26,7 @@
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -34,12 +35,18 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 namespace {
 
+BASE_FEATURE(kNormalMaxItemsInCacheForSoftwareFeature,
+             "NormalMaxItemsInCacheForSoftwareFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The number of entries to keep around in the cache. This limit can be breached
 // if more items are locked. That is, locked items ignore this limit.
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
-const size_t kNormalMaxItemsInCacheForSoftware = 1000;
+MIRACLE_PARAMETER_FOR_INT(GetNormalMaxItemsInCacheForSoftware,
+                          kNormalMaxItemsInCacheForSoftwareFeature,
+                          "NormalMaxItemsInCacheForSoftware",
+                          1000)
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -93,7 +100,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
         image_metadata ? image_metadata->image_type : ImageType::kInvalid;
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         paint_image_.GetSwSkImage().get(),
-        devtools_instrumentation::ScopedImageDecodeTask::kSoftware,
+        devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kSoftware,
         ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
         ImageDecodeCache::ToScopedImageType(image_type));
     SoftwareImageDecodeCache::TaskProcessingResult result =
@@ -160,7 +167,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
-      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
+      max_items_in_cache_(GetNormalMaxItemsInCacheForSoftware()) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -385,7 +392,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   } else {
     // Attempt to find a cached decode to generate a scaled/subrected decode
     // from.
-    absl::optional<CacheKey> candidate_key = FindCachedCandidate(key);
+    std::optional<CacheKey> candidate_key = FindCachedCandidate(key);
 
     SkISize desired_size = gfx::SizeToSkISize(key.target_size());
     const bool should_decode_to_scale =
@@ -493,7 +500,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   return TaskProcessingResult::kFullDecode;
 }
 
-absl::optional<SoftwareImageDecodeCache::CacheKey>
+std::optional<SoftwareImageDecodeCache::CacheKey>
 SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
   auto image_keys_it = frame_key_to_image_keys_.find(key.frame_key());
   // We know that we must have at least our own |entry| in this list, so it
@@ -527,7 +534,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SoftwareImageDecodeCache::UseCacheForDrawImage(
@@ -677,7 +684,7 @@ bool SoftwareImageDecodeCache::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   base::AutoLock lock(lock_);
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name = base::StringPrintf(
         "cc/image_memory/cache_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
@@ -728,22 +735,23 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
   return decoded_images_.size();
 }
 size_t SoftwareImageDecodeCache::GetMaxNumCacheEntriesForTesting() {
-  return kNormalMaxItemsInCacheForSoftware;
+  return GetNormalMaxItemsInCacheForSoftware();
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
     const TargetColorParams& target_color_params,
     const PaintImage& paint_image) {
   const gfx::ColorSpace& target_color_space = target_color_params.color_space;
-  // Decode HDR images to half float when targeting HDR.
-  //
   // TODO(crbug.com/1076568): Once we have access to the display's buffer format
   // via gfx::DisplayColorSpaces, we should also do this for HBD images.
-  if (paint_image.GetContentColorUsage() == gfx::ContentColorUsage::kHDR &&
+  // Do not decode an image to F16 unless the PaintImage reports that its type
+  // is F16. Otherwise, image decode will fail.
+  // https://crbug.com/1488786
+  if (paint_image.GetColorType() == kRGBA_F16_SkColorType &&
+      paint_image.GetContentColorUsage() == gfx::ContentColorUsage::kHDR &&
       target_color_space.IsHDR()) {
     return kRGBA_F16_SkColorType;
   }
-
   return color_type_;
 }
 

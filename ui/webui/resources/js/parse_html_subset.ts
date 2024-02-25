@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from './assert_ts.js';
+import {assert, assertNotReached} from './assert.js';
 
 export interface SanitizeInnerHtmlOpts {
   substitutions?: string[];
@@ -99,14 +99,15 @@ const allowedOptionalAttributes: Map<string, AllowFunction> = new Map([
     },
   ],
   ['tabindex', allowAttribute],
+  ['aria-description', allowAttribute],
   ['aria-hidden', allowAttribute],
   ['aria-label', allowAttribute],
   ['aria-labelledby', allowAttribute],
 ]);
 
 /** Allow-list of tag names in parseHtmlSubset. */
-const allowedTags: Set<string> =
-    new Set(['A', 'B', 'BR', 'DIV', 'EM', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
+const allowedTags: Set<string> = new Set(
+    ['A', 'B', 'I', 'BR', 'DIV', 'EM', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
 
 /** Allow-list of optional tag names in parseHtmlSubset. */
 const allowedOptionalTags: Set<string> = new Set(['IMG', 'LI', 'UL']);

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_message.h"
@@ -23,8 +24,7 @@ using ppapi::host::HostMessageContext;
 namespace content {
 
 // Makes sure that StopEnumerateDevices() is called for each EnumerateDevices().
-class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
-    : public base::SupportsWeakPtr<ScopedEnumerationRequest> {
+class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest final {
  public:
   // |owner| must outlive this object.
   ScopedEnumerationRequest(PepperDeviceEnumerationHostHelper* owner,
@@ -36,7 +36,8 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
           FROM_HERE,
           base::BindOnce(
               &ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
-              AsWeakPtr(), std::vector<ppapi::DeviceRefData>()));
+              weak_ptr_factory_.GetWeakPtr(),
+              std::vector<ppapi::DeviceRefData>()));
       return;
     }
 
@@ -52,7 +53,7 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
     owner->delegate_->EnumerateDevices(
         owner->device_type_,
         base::BindOnce(&ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
-                       AsWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()));
     sync_call_ = false;
   }
 
@@ -69,7 +70,7 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
           FROM_HERE,
           base::BindOnce(
               &ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
-              AsWeakPtr(), devices));
+              weak_ptr_factory_.GetWeakPtr(), devices));
     } else {
       std::move(callback_).Run(devices);
       // This object may have been destroyed at this point.
@@ -79,12 +80,12 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
   PepperDeviceEnumerationHostHelper::Delegate::DevicesOnceCallback callback_;
   bool requested_;
   bool sync_call_;
+  base::WeakPtrFactory<ScopedEnumerationRequest> weak_ptr_factory_{this};
 };
 
 // Makes sure that StopMonitoringDevices() is called for each
 // StartMonitoringDevices().
-class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
-    : public base::SupportsWeakPtr<ScopedMonitoringRequest> {
+class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest {
  public:
   // |owner| must outlive this object.
   ScopedMonitoringRequest(PepperDeviceEnumerationHostHelper* owner,
@@ -119,7 +120,7 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
   bool requested() const { return requested_; }
 
  private:
-  PepperDeviceEnumerationHostHelper* const owner_;
+  const raw_ptr<PepperDeviceEnumerationHostHelper> owner_;
   PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
   bool requested_;
   size_t subscription_id_;

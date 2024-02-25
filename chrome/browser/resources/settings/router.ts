@@ -4,9 +4,10 @@
 
 import './i18n_setup.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Specifies all possible routes in settings.
@@ -16,6 +17,7 @@ export interface SettingsRoutes {
   ACCESSIBILITY: Route;
   ADDRESSES: Route;
   ADVANCED: Route;
+  AI: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
   BASIC: Route;
@@ -36,6 +38,7 @@ export interface SettingsRoutes {
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
   ON_STARTUP: Route;
+  PAGE_CONTENT: Route;
   PASSKEYS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;
@@ -47,6 +50,7 @@ export interface SettingsRoutes {
   PRIVACY_SANDBOX_AD_MEASUREMENT: Route;
   PRIVACY_SANDBOX_FLEDGE: Route;
   PRIVACY_SANDBOX_TOPICS: Route;
+  PRIVACY_SANDBOX_MANAGE_TOPICS: Route;
   RESET: Route;
   RESET_DIALOG: Route;
   SAFETY_CHECK: Route;
@@ -62,6 +66,7 @@ export interface SettingsRoutes {
   SITE_SETTINGS_ALL: Route;
   SITE_SETTINGS_AR: Route;
   SITE_SETTINGS_AUTOMATIC_DOWNLOADS: Route;
+  SITE_SETTINGS_AUTOMATIC_FULLSCREEN: Route;
   SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE: Route;
   SITE_SETTINGS_AUTO_VERIFY: Route;
   SITE_SETTINGS_BACKGROUND_SYNC: Route;
@@ -78,12 +83,14 @@ export interface SettingsRoutes {
   SITE_SETTINGS_LOCAL_FONTS: Route;
   SITE_SETTINGS_MIXEDSCRIPT: Route;
   SITE_SETTINGS_JAVASCRIPT: Route;
+  SITE_SETTINGS_JAVASCRIPT_JIT: Route;
   SITE_SETTINGS_SENSORS: Route;
   SITE_SETTINGS_SOUND: Route;
   SITE_SETTINGS_LOCATION: Route;
   SITE_SETTINGS_MICROPHONE: Route;
   SITE_SETTINGS_MIDI_DEVICES: Route;
   SITE_SETTINGS_FILE_SYSTEM_WRITE: Route;
+  SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS: Route;
   SITE_SETTINGS_NOTIFICATIONS: Route;
   SITE_SETTINGS_PAYMENT_HANDLER: Route;
   SITE_SETTINGS_PDF_DOCUMENTS: Route;
@@ -97,10 +104,12 @@ export interface SettingsRoutes {
   SITE_SETTINGS_VR: Route;
   SITE_SETTINGS_WINDOW_MANAGEMENT: Route;
   SITE_SETTINGS_ZOOM_LEVELS: Route;
+  SITE_SETTINGS_WEB_PRINTING: Route;
   SPELL_CHECK: Route;
   SYNC: Route;
   SYNC_ADVANCED: Route;
   SYSTEM: Route;
+  TRACKING_PROTECTION: Route;
   TRIGGERED_RESET_DIALOG: Route;
 }
 
@@ -261,8 +270,8 @@ export class Router {
   /**
    * Helper function to set the current route and notify all observers.
    */
-  setCurrentRoute(route: Route, queryParameters: URLSearchParams,
-                  isPopstate: boolean) {
+  setCurrentRoute(
+      route: Route, queryParameters: URLSearchParams, isPopstate: boolean) {
     this.recordMetrics(route.path);
 
     const oldRoute = this.currentRoute;
@@ -357,7 +366,8 @@ export class Router {
    * @param removeSearch Whether to strip the 'search' URL
    *     parameter during navigation. Defaults to false.
    */
-  navigateTo(route: Route, dynamicParameters?: URLSearchParams,
+  navigateTo(
+      route: Route, dynamicParameters?: URLSearchParams,
       removeSearch: boolean = false) {
     // The ADVANCED route only serves as a parent of subpages, and should not
     // be possible to navigate to it directly.
@@ -458,7 +468,6 @@ type Constructor<T> = new (...args: any[]) => T;
 export const RouteObserverMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
-
       class RouteObserverMixin extends superClass implements
           RouteObserverMixinInterface {
         override connectedCallback() {

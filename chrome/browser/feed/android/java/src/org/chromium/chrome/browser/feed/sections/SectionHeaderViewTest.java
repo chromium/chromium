@@ -29,14 +29,14 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Test for the WebFeedFollowIntroView class. */
@@ -45,18 +45,13 @@ public final class SectionHeaderViewTest {
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private UserEducationHelper mHelper;
-    @Mock
-    Runnable mScroller;
+    @Mock private Tracker mTracker;
+    @Mock private UserEducationHelper mHelper;
+    @Mock Runnable mScroller;
 
     @Before
     public void setUp() {
@@ -66,8 +61,10 @@ public final class SectionHeaderViewTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Build the class under test, and set up the fake UI.
-        mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
-                R.layout.new_tab_page_multi_feed_header, null, false);
+        mSectionHeaderView =
+                (SectionHeaderView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.new_tab_page_multi_feed_header, null, false);
         ViewGroup contentView = new LinearLayout(mActivity);
         mActivity.setContentView(contentView);
         contentView.addView(mSectionHeaderView);
@@ -104,8 +101,10 @@ public final class SectionHeaderViewTest {
         MarginLayoutParams contentMarginLayoutParams =
                 (MarginLayoutParams) mainContentView.getLayoutParams();
         Assert.assertEquals(
-                mSectionHeaderView.getResources().getDimensionPixelSize(
-                        org.chromium.chrome.browser.feed.R.dimen.feed_header_top_margin),
+                mSectionHeaderView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.feed.R.dimen.feed_header_top_margin),
                 contentMarginLayoutParams.topMargin);
     }
 }

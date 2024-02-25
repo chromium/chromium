@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,7 +30,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -48,6 +49,7 @@ class ServiceWorkerHost;
 class ServiceWorkerObjectHost;
 class ServiceWorkerRegistrationObjectHost;
 class ServiceWorkerVersion;
+struct SubresourceLoaderParams;
 
 // ServiceWorkerContainerHost is the host of a service worker client (a window,
 // dedicated worker, or shared worker) or service worker execution context in
@@ -145,7 +147,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
-  void GetRunningStatus(GetRunningStatusCallback callback) override;
 
   // ServiceWorkerRegistration::Listener overrides.
   void OnVersionAttributesChanged(
@@ -301,7 +302,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // specific than the `top_frame_site` in the storage key, so must be passed
   // separately.
   void UpdateUrls(const GURL& url,
-                  const absl::optional<url::Origin>& top_frame_origin,
+                  const std::optional<url::Origin>& top_frame_origin,
                   const blink::StorageKey& storage_key);
 
   // For service worker clients. Makes this client be controlled by
@@ -350,6 +351,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   mojo::Remote<blink::mojom::ControllerServiceWorker>
   GetRemoteControllerServiceWorker();
 
+  // Get an associated cache storage interface.
+  mojo::PendingRemote<blink::mojom::CacheStorage> GetRemoteCacheStorage();
+
+  // Create a receiver to notice on ServiceWorker running status change.
+  mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
+  GetRunningStatusCallbackReceiver();
+
   // |registration| claims the client (document, dedicated worker when
   // PlzDedicatedWorker is enabled, or shared worker) to be controlled.
   void ClaimedByRegistration(
@@ -386,7 +394,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // For shared worker it is the origin of the document that created the worker.
   // For dedicated worker it is the top-frame origin of the document that owns
   // the worker.
-  absl::optional<url::Origin> top_frame_origin() const {
+  std::optional<url::Origin> top_frame_origin() const {
     return top_frame_origin_;
   }
 
@@ -515,11 +523,18 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void InheritControllerFrom(ServiceWorkerContainerHost& creator_host,
                              const GURL& blob_url);
 
+  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
+  // a matching controller service worker for non-null |container_host|.
+  // Otherwise this returns std::nullopt.
+  static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
+      base::WeakPtr<ServiceWorkerContainerHost> container_host);
+
   base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
  private:
+  class ServiceWorkerRunningStatusObserver;
   friend class ServiceWorkerContainerHostTest;
   friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, Unregister);
@@ -573,6 +588,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       blink::ServiceWorkerStatusCode status);
 
+  // Should be called only when `controller()` is non-null.
+  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
+
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
   void RegistrationComplete(const GURL& script_url,
                             const GURL& scope,
@@ -623,7 +643,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // See comments for the getter functions.
   GURL url_;
-  absl::optional<url::Origin> top_frame_origin_;
+  std::optional<url::Origin> top_frame_origin_;
   blink::StorageKey key_;
 
   // Contains all ServiceWorkerRegistrationObjectHost instances corresponding to
@@ -714,7 +734,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_;
 
   // The type of client.
-  absl::optional<ServiceWorkerClientInfo> client_info_;
+  std::optional<ServiceWorkerClientInfo> client_info_;
 
   // The source id of the client's ExecutionContext, set on response commit.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
@@ -722,6 +742,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // The URL used for service worker scope matching. It is empty except in the
   // case of a service worker client with a blob URL.
   GURL scope_match_url_for_blob_client_;
+
+  // The observer for the running status change.
+  // It is used for notifying the ServiceWorker running status change to
+  // the ServiceWorkerContainerHost in the renderer.
+  std::unique_ptr<ServiceWorkerRunningStatusObserver> running_status_observer_;
 
   // For worker clients only ---------------------------------------------------
 
@@ -744,7 +769,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   base::UnguessableToken fetch_request_window_id_;
 
   // The policy container policies of the client. Set on response commit.
-  absl::optional<PolicyContainerPolicies> policy_container_policies_;
+  std::optional<PolicyContainerPolicies> policy_container_policies_;
 
   // An endpoint connected to the COEP reporter. A clone of this connection is
   // passed to the service worker. Bound on response commit.
@@ -776,6 +801,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   base::WeakPtrFactory<ServiceWorkerContainerHost> weak_factory_{this};
 };
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedWorkerBlobURLFix);
 
 }  // namespace content
 

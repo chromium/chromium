@@ -4,9 +4,10 @@
 
 package org.chromium.components.autofill;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Features;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java accessor for base/feature_list.h state.
@@ -17,12 +18,25 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("autofill::features")
 public class AndroidAutofillFeatures extends Features {
-    public static final String ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME =
-            "AndroidAutofillViewStructureWithFormHierarchyLayer";
+    public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
+            "AndroidAutofillBottomSheetWorkaround";
+    public static final String ANDROID_AUTOFILL_CANCEL_SESSION_ON_NAVIGATION_NAME =
+            "AndroidAutofillCancelSessionOnNavigation";
+    public static final String ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME =
+            "AndroidAutofillPrefillRequestsForLoginForms";
+    public static final String ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME =
+            "AndroidAutofillSupportVisibilityChanges";
+    public static final String ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME =
+            "AndroidAutofillUsePwmPredictionsForOverrides";
 
-    public static final AndroidAutofillFeatures
-            ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER = new AndroidAutofillFeatures(
-                    0, ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND =
+            new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS =
+            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES =
+            new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES =
+            new AndroidAutofillFeatures(3, ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME);
 
     private final int mOrdinal;
 

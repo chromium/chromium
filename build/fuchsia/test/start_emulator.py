@@ -46,6 +46,12 @@ def register_emulator_args(parser: argparse.ArgumentParser,
     femu_args.add_argument('--everlasting',
                            action='store_true',
                            help='If the emulator should be long-living.')
+    femu_args.add_argument(
+        '--device-spec',
+        help='Configure the virtual device to use. They are usually defined in '
+        'the product-bundle/virtual_devices/manifest.json. If this flag is not '
+        'provided or is an empty string, ffx emu will decide the recommended '
+        'spec.')
 
 
 def create_emulator_from_args(

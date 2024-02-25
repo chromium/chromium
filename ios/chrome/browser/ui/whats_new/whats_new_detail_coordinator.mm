@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_screenshot_view_controller.h"
@@ -24,9 +23,6 @@
     UIAdaptivePresentationControllerDelegate,
     ConfirmationAlertActionHandler>
 
-// The view controller used to display a feature or chrome tip.
-@property(nonatomic, strong)
-    WhatsNewDetailViewController* whatsNewDetailViewController;
 // The view controller used to display a screenshot of a feature or chrome tip.
 @property(nonatomic, strong)
     WhatsNewScreenshotViewController* whatsNewScreenshotViewController;
@@ -62,24 +58,10 @@
     _baseNavigationController = navigationController;
     self.item = item;
     self.actionHandler = actionHandler;
-
-    if (IsWhatsNewM116Enabled()) {
-      self.whatsNewScreenshotViewController =
-          [[WhatsNewScreenshotViewController alloc] initWithWhatsNewItem:item];
-      self.whatsNewScreenshotViewController.actionHandler = self;
-      self.whatsNewScreenshotViewController.delegate = self;
-    } else {
-      self.whatsNewDetailViewController = [[WhatsNewDetailViewController alloc]
-              initWithParams:item.bannerImage
-                       title:item.title
-                    subtitle:item.subtitle
-          primaryActionTitle:item.primaryActionTitle
-            instructionSteps:item.instructionSteps
-                        type:item.type
-                learnMoreURL:item.learnMoreURL];
-      self.whatsNewDetailViewController.actionHandler = self.actionHandler;
-      self.whatsNewDetailViewController.delegate = self;
-    }
+    self.whatsNewScreenshotViewController =
+        [[WhatsNewScreenshotViewController alloc] initWithWhatsNewItem:item];
+    self.whatsNewScreenshotViewController.actionHandler = self;
+    self.whatsNewScreenshotViewController.delegate = self;
   }
   return self;
 }
@@ -87,41 +69,24 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (IsWhatsNewM116Enabled()) {
-    [self.baseNavigationController
-        pushViewController:self.whatsNewScreenshotViewController
-                  animated:YES];
-    self.startTime = base::TimeTicks::Now();
-  } else {
-    [self.baseNavigationController
-        pushViewController:self.whatsNewDetailViewController
-                  animated:YES];
-  }
+  [self.baseNavigationController
+      pushViewController:self.whatsNewScreenshotViewController
+                animated:YES];
+  self.startTime = base::TimeTicks::Now();
 
   [super start];
 }
 
 - (void)stop {
-  if (IsWhatsNewM116Enabled()) {
-    if ([self.baseNavigationController.viewControllers
-            containsObject:self.whatsNewScreenshotViewController]) {
-      [self.baseNavigationController
-          popToViewController:self.whatsNewScreenshotViewController
-                     animated:NO];
-      [self.baseNavigationController popViewControllerAnimated:NO];
-      [self logTimeSpentOnDetailView];
-    }
-  } else {
-    if ([self.baseNavigationController.viewControllers
-            containsObject:self.whatsNewDetailViewController]) {
-      [self.baseNavigationController
-          popToViewController:self.whatsNewDetailViewController
-                     animated:NO];
-      [self.baseNavigationController popViewControllerAnimated:NO];
-    }
+  if ([self.baseNavigationController.viewControllers
+          containsObject:self.whatsNewScreenshotViewController]) {
+    [self.baseNavigationController
+        popToViewController:self.whatsNewScreenshotViewController
+                   animated:NO];
+    [self.baseNavigationController popViewControllerAnimated:NO];
+    [self logTimeSpentOnDetailView];
   }
 
-  self.whatsNewDetailViewController = nil;
   self.whatsNewScreenshotViewController = nil;
 
   [super stop];
@@ -129,17 +94,16 @@
 
 #pragma mark - WhatsNewDetailViewDelegate
 
-- (void)dismissWhatsNewDetailView:
-    (WhatsNewDetailViewController*)whatsNewDetailViewController {
-  DCHECK_EQ(self.whatsNewDetailViewController, whatsNewDetailViewController);
+- (void)dismissWhatsNewInstructionsCoordinator:
+    (WhatsNewInstructionsCoordinator*)coordinator {
+  [self dismissOnlyWhatsNewInstructionsCoordinator:coordinator];
   [self dismiss];
 }
 
-- (void)dismissWhatsNewInstructionsCoordinator:
+- (void)dismissOnlyWhatsNewInstructionsCoordinator:
     (WhatsNewInstructionsCoordinator*)coordinator {
   DCHECK_EQ(self.whatsNewInstructionsCoordinator, coordinator);
   [self.whatsNewInstructionsCoordinator stop];
-  [self dismiss];
 }
 
 - (void)dismissWhatsNewScreenshotViewController:
@@ -152,7 +116,8 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.actionHandler didTapActionButton:self.item.type];
+  [self.actionHandler didTapActionButton:self.item.type
+                           primaryAction:self.item.primaryAction];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -185,7 +150,7 @@
 #pragma mark Private
 
 - (void)logTimeSpentOnDetailView {
-  const char* type = WhatsNewTypeToStringM116(self.item.type);
+  const char* type = WhatsNewTypeToString(self.item.type);
   if (!type) {
     return;
   }

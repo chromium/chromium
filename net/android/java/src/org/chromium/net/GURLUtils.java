@@ -6,12 +6,10 @@ package org.chromium.net;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Class to access the GURL library from java.
- */
+/** Class to access the GURL library from java. */
 @JNINamespace("net")
 public final class GURLUtils {
 

@@ -144,7 +144,7 @@ void SiteDataCountingHelper::GetCookiesCallback(
   for (const net::CanonicalCookie& cookie : cookies) {
     if (cookie.CreationDate() >= begin_ && cookie.CreationDate() < end_) {
       GURL url = net::cookie_util::CookieOriginToURL(cookie.Domain(),
-                                                     cookie.IsSecure());
+                                                     cookie.SecureAttribute());
       origins.push_back(url);
     }
   }

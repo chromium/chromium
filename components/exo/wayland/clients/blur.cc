@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {
@@ -185,9 +186,18 @@ void Blur::Run(double sigma_x,
       SkIRect subset;
       SkIPoint offset;
       sk_sp<SkImage> blur_image = content_surfaces.back()->makeImageSnapshot();
-      sk_sp<SkImage> blurred_image = blur_image->makeWithFilter(
-          gr_context_.get(), blur_filter.get(), blur_image->bounds(),
-          blur_image->bounds(), &subset, &offset);
+
+      sk_sp<SkImage> blurred_image;
+      if (gr_context_.get()) {
+        blurred_image = SkImages::MakeWithFilter(
+            gr_context_.get(), blur_image, blur_filter.get(), blur_image->bounds(),
+            blur_image->bounds(), &subset, &offset);
+      } else {
+        blurred_image =
+            SkImages::MakeWithFilter(blur_image, blur_filter.get(), blur_image->bounds(),
+                                     blur_image->bounds(), &subset, &offset);
+      }
+
       SkCanvas* canvas = buffer->sk_surface->getCanvas();
       canvas->save();
       SkSize size = SkSize::Make(size_.width(), size_.height());

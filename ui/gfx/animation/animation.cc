@@ -22,7 +22,7 @@ Animation::RichAnimationRenderMode Animation::rich_animation_rendering_mode_ =
     RichAnimationRenderMode::PLATFORM;
 
 // static
-absl::optional<bool> Animation::prefers_reduced_motion_;
+std::optional<bool> Animation::prefers_reduced_motion_;
 
 Animation::Animation(base::TimeDelta timer_interval)
     : timer_interval_(timer_interval),
@@ -142,11 +142,13 @@ void Animation::UpdatePrefersReducedMotion() {
 
 // static
 bool Animation::PrefersReducedMotion() {
-  // --force-prefers-reduced-motion must always override
-  // |prefers_reduced_motion_|, so check it first.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForcePrefersReducedMotion)) {
+  // --force-prefers-reduced-motion and --force-prefers-no-reduced-motion
+  // must always override |prefers_reduced_motion_|, so check them first.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kForcePrefersReducedMotion)) {
     return true;
+  } else if (command_line->HasSwitch(switches::kForcePrefersNoReducedMotion)) {
+    return false;
   }
 
   if (!prefers_reduced_motion_.has_value())

@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">ਪਿੱਛੇ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="1565432156062359693">ਕੋਈ ਅਗਲੀ ਸੂਚੀ ਨਹੀਂ</translation>
 <translation id="1571643229714746283">ChromeVox ਤਿਆਰ</translation>
+<translation id="1588252353131492116">ਸਥਿਰ ਮੋਡ ਚਾਲੂ ਹੋਣ 'ਤੇ ਪਾਸ-ਥਰੂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">6 ਬਿੰਦੀ ਬ੍ਰੇਲ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">ਮੁੱਖ</translation>
 <translation id="2329324941084714723">ਟੈਬ ਪੈਨਲ</translation>
 <translation id="2347456970887948350">ਇੱਕ ਲਿੰਕ</translation>
+<translation id="2363753371702255035">ਬੁਲੇਟ</translation>
 <translation id="2365384324219615024">ਤੁਸੀਂ ਆਈਟਮਾਂ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Enter ਵੀ ਦਬਾ ਸਕਦੇ ਹੋ। ਉਦਾਹਰਨ ਲਈ, Enter ਨੂੰ ਫ਼ਾਰਮ ਵਿੱਚ ਲਿਖਤ ਸਪੁਰਦ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ, Enter ਦਬਾਓ।</translation>
 <translation id="2381733276052567791">ਬੋਲੀ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="2390264819538553347">ਅੱਗੇ ਵਧਣ ਲਈ, ਐਂਟਰ ਕੁੰਜੀ ਦਬਾਓ; ਵਾਪਸ ਜਾਣ ਲਈ, ਬੈਕਸਪੇਸ ਕੁੰਜੀ ਦਬਾਓ।</translation>
@@ -427,7 +429,7 @@
 <translation id="3783725005098956899">ਲੌਗ ਦਿਖਾਓ</translation>
 <translation id="3801735343383419236">ਸਵੈ-ਮੁਕੰਮਲ ਸੂਚੀ</translation>
 <translation id="3806327402890551732">ਅਗਲੀ ਜਾਂ ਪਿਛਲੀ ਆਈਟਮ 'ਤੇ ਜਾਓ</translation>
-<translation id="3810838688059735925">ਵੀਡਿਓ</translation>
+<translation id="3810838688059735925">ਵੀਡੀਓ</translation>
 <translation id="3813387282697781382">ਹਲਕਾ ਗਾਜਰ</translation>
 <translation id="3816633764618089385">ਅਗਲਾ ਮੀਡੀਆ</translation>
 <translation id="3821689185319271077">ਕੋਈ ਪੁਆਇੰਟਰ ਐਂਕਰ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
@@ -548,7 +550,7 @@
 <translation id="4712898966495541134">ਚੋਣ ਦੀ ਸਮਾਪਤੀ</translation>
 <translation id="4740661827607246557">ਸਹਾਇਤਾ ਕਮਾਂਡਾਂ</translation>
 <translation id="4755857887974653209">ChromeVox ਨੂੰ ਬੰਦ ਕਰੋ</translation>
-<translation id="4763480195061959176">ਵੀਡਿਓ</translation>
+<translation id="4763480195061959176">ਵੀਡੀਓ</translation>
 <translation id="4764692524839457597">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="4772771694153161212">ਕੋਈ ਅੰਡਰਲਾਈਨ ਲਿਖਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4780458943471935919">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>

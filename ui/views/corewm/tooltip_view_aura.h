@@ -19,8 +19,9 @@ namespace views::corewm {
 // TODO(oshima): Consider to use views::Label when the performance issue is
 // resolved.
 class VIEWS_EXPORT TooltipViewAura : public views::View {
+  METADATA_HEADER(TooltipViewAura, views::View)
+
  public:
-  METADATA_HEADER(TooltipViewAura);
   TooltipViewAura();
   TooltipViewAura(const TooltipViewAura&) = delete;
   TooltipViewAura& operator=(const TooltipViewAura&) = delete;
@@ -32,6 +33,8 @@ class VIEWS_EXPORT TooltipViewAura : public views::View {
   void SetFontList(const gfx::FontList& font_list);
   void SetMinLineHeight(int line_height);
   void SetMaxWidth(int width);
+  void SetMaxLines(size_t max_lines);
+  void SetElideBehavior(gfx::ElideBehavior elide_behavior);
 
   // views:View:
   void OnPaint(gfx::Canvas* canvas) override;

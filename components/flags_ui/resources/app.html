@@ -1,0 +1,581 @@
+<style>
+  :host {
+    color: var(--primary-color);
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+    height: 100%;
+
+    --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+
+    --google-blue-300-rgb: 138, 180, 248;
+    --google-blue-300: rgb(var(--google-blue-300-rgb));
+    --google-blue-400: rgb(102, 157, 246);
+    --google-blue-500-rgb: 66, 133, 244;
+    --google-blue-500: rgb(var(--google-blue-500-rgb));
+    --google-blue-600-rgb: 26, 115, 232;
+    --google-blue-600: rgb(var(--google-blue-600-rgb));
+    --google-blue-700: rgb(25, 103, 210);
+    --google-grey-100: rgb(241, 243, 244);
+    --google-grey-200-rgb: 232, 234, 237;
+    --google-grey-200: rgb(var(--google-grey-200-rgb));
+    --google-grey-300: rgb(218, 220, 224);
+    --google-grey-500: rgb(154, 160, 166);
+    --google-grey-700: rgb(95, 99, 104);
+    --google-grey-900-rgb: 32, 33, 36;
+    --google-grey-900: rgb(var(--google-grey-900-rgb));
+    /* --google-grey-900 + 4% white blended together. */
+    --google-grey-900-white-4-percent: #292a2d;
+    --google-red-300: rgb(242, 139, 130);
+    --google-red-700: rgb(197, 34, 31);
+
+    --interactive-color: var(--google-blue-600);
+    --primary-color: var(--google-grey-900);
+    --secondary-color: var(--google-grey-700);
+    --warning-color: var(--google-red-700);
+
+    --focus-shadow-color: rgba(var(--google-blue-600-rgb), 0.4);
+    --input-background: var(--google-grey-100);
+    --link-color: var(--google-blue-700);
+    --separator-color: rgba(0, 0, 0, .06);
+    --toolbar-color: white;
+
+    background: white;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --interactive-color: var(--google-blue-300);
+      --primary-color: var(--google-grey-200);
+      --secondary-color: var(--google-grey-500);
+      --warning-color: var(--google-red-300);
+
+      --focus-shadow-color: rgba(var(--google-blue-300-rgb), 0.4);
+      --input-background: rgba(0, 0, 0, .3);
+      --link-color: var(--google-blue-300);
+      --separator-color: rgba(255, 255, 255, .1);
+      --toolbar-color: var(--google-grey-900-white-4-percent);
+
+      background: var(--google-grey-900);
+    }
+  }
+
+  a {
+    color: var(--link-color);
+    font-size: .8125rem;
+  }
+
+  h1 {
+    color: var(--primary-color);
+    font-size: 1.4625rem;
+    font-weight: 400;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  button {
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  #body-container {
+    flex: 1;
+    /* Force the vertical scrollbar to always be displayed, to avoid UI jumps.
+    */
+    overflow-y: scroll;
+  }
+
+  #flagsTemplate {
+    --side-padding: 20px;
+    box-sizing: border-box;
+    padding: 1rem var(--side-padding) 8px;
+    margin: 0 auto;
+    max-width: calc(700px + 2 * var(--side-padding));
+    width: 100%;
+  }
+
+  :focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-shadow-color);
+    outline: none;
+  }
+
+  @media (forced-colors: active) {
+    :focus-visible {
+      /* Outline is needed for Windows HCM. Color of outline does not matter; it
+        * is overridden by the OS. */
+      box-shadow: none;
+      outline: 2px solid transparent;
+    }
+  }
+
+  #flags-app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #flagsTemplate {
+      background: rgba(255, 255, 255, .04);
+    }
+  }
+
+  .flex {
+    align-self: center;
+    flex: 1 1 auto;
+  }
+
+  .flex-container {
+    display: flex;
+    padding: 8px 1em;
+  }
+
+  #flagsTemplate>.flex-container:first-child {
+    padding: 0;
+  }
+
+  #header {
+    background: var(--toolbar-color);
+    box-shadow: 0 2px 2px 0 var(--shadow-color);
+    box-sizing: border-box;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #header {
+      border-bottom: 1px solid var(--separator-color);
+    }
+  }
+
+  #header .flex-container {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 700px;
+  }
+
+  #header .flex-container .flex:first-child {
+    text-align: left;
+    /* csschecker-disable-line left-right */
+  }
+
+  #header .flex-container .flex:last-child {
+    text-align: right;
+    /* csschecker-disable-line left-right */
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .search-container {
+    margin-inline-end: 8px;
+    position: relative;
+  }
+
+  #search {
+    background: var(--input-background)
+        url(chrome://resources/images/icon_search.svg) no-repeat 8px 50%;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: inherit;
+    font-size: .8125rem;
+    padding: 12px 36px;
+    width: 100%;
+  }
+
+  #search::placeholder {
+    color: rgba(var(--google-grey-900-rgb), .71);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #search {
+      background-image: url(chrome://resources/images/dark/icon_search.svg);
+    }
+
+    #search::placeholder {
+      color: rgba(var(--google-grey-200-rgb), .51);
+    }
+  }
+
+  .clear-search {
+    -webkit-mask-image: url(chrome://resources/images/icon_cancel.svg);
+    -webkit-mask-size: 20px;
+    background: var(--secondary-color);
+    border: 0;
+    display: none;
+    height: 20px;
+    opacity: 0.5;
+    position: absolute;
+    right: 8px;
+    top: calc(50% - 10px);
+    width: 20px;
+  }
+
+  .clear-search:focus {
+    opacity: 1;
+    outline: 0;
+  }
+
+  :host(.searching) .clear-search {
+    display: inline-block;
+  }
+
+  :host(.searching) .blurb-container,
+  :host(.searching) #promos {
+    display: none;
+  }
+
+  .blurb-container {
+    color: var(--primary-color);
+    font-size: .875rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .blurb-warning {
+    color: var(--warning-color);
+    text-transform: uppercase;
+  }
+
+  .screen-reader-only {
+    clip: rect(0, 0, 0, 0);
+    display: inline-block;
+    position: fixed;
+  }
+
+  #promos {
+    color: var(--secondary-color);
+    font-size: .875rem;
+  }
+
+  button:not(.primary) {
+    background: none;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 3px;
+    color: var(--google-blue-600);
+    font-size: .8125rem;
+    padding: 8px 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button:not(.primary) {
+      border-color: var(--google-grey-700);
+      color: var(--google-blue-300);
+    }
+  }
+
+  button:not(.primary):hover {
+    background: rgba(var(--google-blue-500-rgb), .04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button:not(.primary):hover {
+      background: rgba(var(--google-blue-300-rgb), .08);
+    }
+  }
+
+  .tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .tab {
+    color: var(--secondary-color);
+    cursor: pointer;
+    display: block;
+    flex: 1;
+    font-size: 1rem;
+    font-weight: normal;
+    padding: 14px 21px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: color 200ms var(--ease-in-out);
+    user-select: none;
+    width: 50%;
+    z-index: 1;
+  }
+
+  .tab::before {
+    background: currentColor;
+    bottom: 0;
+    content: '';
+    display: block;
+    height: 1px;
+    left: 0;
+    position: absolute;
+    transition: height 200ms var(--ease-in-out);
+    width: 100%;
+  }
+
+  .tabs .tab.selected,
+  .tabs .tab.selected:focus {
+    color: var(--interactive-color);
+  }
+
+  .tabs .tab.selected::before,
+  .tabs .tab.selected:focus::before {
+    height: 2px;
+  }
+
+  html:not(.focus-outline-visible) .tab:focus {
+    outline: 0;
+  }
+
+  .tab-content {
+    display: none;
+    line-height: 25px;
+    /* Bottom padding should be greater than evaluated height of needs-restart
+    */
+    padding-bottom: 100px;
+    position: relative;
+  }
+
+  .tab-content.selected,
+  .tab-content.selected .template {
+    display: block;
+  }
+
+  /* Restart tray. */
+  #needs-restart {
+    background: var(--toolbar-color);
+    bottom: 0;
+    box-shadow: 0 -2px 2px 0 var(--shadow-color);
+    box-sizing: border-box;
+    left: 0;
+    opacity: 0;
+    padding: 16px;
+    position: fixed;
+    transform: translateY(300px);
+    transition: all 225ms var(--ease-in-out);
+    width: 100%;
+    z-index: 10;
+  }
+
+  #needs-restart .flex:last-child {
+    text-align: right;
+    /* csschecker-disable-line left-right */
+  }
+
+  #needs-restart.show {
+    opacity: 1;
+    transform: translate(0);
+  }
+
+  .no-match {
+    margin-top: 75px;
+  }
+
+  .restart-notice {
+    font-size: .9375rem;
+    line-height: 1.4;
+  }
+
+  button.primary {
+    background: var(--link-color);
+    border: 0;
+    border-radius: 3px;
+    color: white;
+    font-size: .875rem;
+    padding: 14px 38px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button.primary {
+      color: var(--google-grey-900);
+    }
+  }
+
+  button.primary:-webkit-any(:active, :hover) {
+    background: var(--google-blue-600);
+  }
+
+  #version {
+    color: var(--secondary-color);
+    text-align: right;
+    /* csschecker-disable-line left-right */
+  }
+
+<if expr="chromeos_lacros or chromeos_ash">
+  #os-flags-link-container {
+    background-image: url(chrome://resources/images/os_flags_app_icon.svg);
+  }
+</if>
+
+  @media (max-width: 360px) {
+    #experiment-reset-all {
+      font-size: .65rem;
+      padding: 2px 8px;
+    }
+
+    #flagsTemplate>.flex-container {
+      flex-direction: column;
+    }
+
+    #version {
+      text-align: initial;
+    }
+
+    button.primary {
+      padding: 8px;
+    }
+
+    #search {
+      padding: 8px 36px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #flagsTemplate>.flex-container:first-child:not('.version') {
+      flex-direction: column;
+      text-align: left;
+      /* csschecker-disable-line left-right */
+    }
+
+    #flagsTemplate>.flex-container:first-child .flex {
+      width: 100%;
+    }
+
+    #needs-restart {
+      padding: 8px 12px;
+    }
+
+    button.primary {
+      padding: 8px 16px;
+    }
+
+    .restart-notice {
+      font-size: .8125rem;
+      padding: 4px;
+    }
+
+    :host(.searching) flags-experiment::part(body) {
+      overflow: visible;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 732px) {
+    #version,
+    .blurb-warning {
+      display: block;
+      margin-bottom: 1rem;
+    }
+  }
+
+  @media (max-height: 400px) {
+    #header {
+      position: relative;
+    }
+
+    #flagsTemplate {
+      padding-top: 1.5rem;
+    }
+  }
+</style>
+<div id="header">
+  <div class="flex-container">
+    <div class="flex search-container">
+      <input type="text" id="search"
+            aria-label="$i18n{search-label}"
+            placeholder="$i18n{search-placeholder}" tabindex="1"
+            autocomplete="off" spellcheck="false">
+      <input type="button" class="clear-search" title="$i18n{clear-search}"
+          tabindex="2">
+    </div>
+    <div class="flex">
+      <button id="experiment-reset-all" tabindex="3">
+          $i18n{reset}
+      </button>
+    </div>
+  </div>
+  <div class="screen-reader-only" id="screen-reader-status-message"
+      role="status"></div>
+</div>
+<div id="body-container" style="visibility:hidden">
+  <div id="flagsTemplate">
+<if expr="chromeos_lacros or chromeos_ash">
+    <div class="os-link-container" id="os-link-container">
+      <span id="os-flags-link-container" class="os-link-icon"></span>
+      <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
+      <a href="#" id="os-link-href" tabindex="4"
+        aria-describedby="os-link-desc">
+        $i18n{os-flags-link}
+      </a>
+      <span aria-hidden="true">$i18n{os-flags-text2}</span>
+    </div>
+</if>
+
+    <div class="flex-container">
+      <div class="flex">
+        <h1 class="section-header-title">$i18n{heading}</h1>
+      </div>
+      <span id="version" class="flex">$i18n{version}</span>
+    </div>
+    <div class="blurb-container">
+      <span class="blurb-warning">$i18n{page-warning}</span>
+      <span>$i18n{page-warning-explanation}</span>
+<if expr="chromeos_ash">
+      <p id="owner-warning">$i18n{owner-warning}</p>
+</if>
+    </div>
+    <p id="promos" hidden>
+      <!-- Those strings are not localized because they only appear in
+          chrome://flags, which is not localized. -->
+      <span id="channel-promo-beta" hidden>
+        Interested in cool new Chrome features? Try our
+        <a href="https://chrome.com/beta">beta channel</a>.
+      </span>
+      <span id="channel-promo-dev" hidden>
+        Interested in cool new Chrome features? Try our
+        <a href="https://chrome.com/dev">dev channel</a>
+      </span>
+    </p>
+    <div id="tabs" class="tabs" role="tablist">
+      <a href="#tab-content-available" id="tab-available" class="tab selected"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel1"
+          tabindex="5">$i18n{available}</a>
+<!-- Unsupported experiments are not shown on iOS -->
+<if expr="not is_ios">
+      <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
+          role="tab"
+          aria-selected="false" aria-controls="panel2"
+          tabindex="-1">$i18n{unavailable}</a>
+</if>
+    </div>
+    <div id="tabpanels">
+      <div id="tab-content-available" class="tab-content selected"
+          role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
+        <!-- Non default experiments. -->
+        <div id="non-default-experiments"></div>
+        <!-- Experiments with default settings. -->
+        <div id="default-experiments"></div>
+        <div class="no-match hidden" role="alert">$i18n{no-results}</div>
+      </div>
+<if expr="not is_ios">
+      <div id="tab-content-unavailable" class="tab-content"
+          role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
+        <div id="unavailable-experiments"></div>
+        <div class="no-match hidden" role="alert">
+          $i18n{no-results}
+        </div>
+      </div>
+</if>
+    </div>
+    <div id="needs-restart">
+      <div class="flex-container">
+        <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
+        <div class="flex">
+<if expr="not is_ios">
+          <button id="experiment-restart-button" class="primary" tabindex="-1">
+            $i18n{relaunch}
+          </button>
+</if>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

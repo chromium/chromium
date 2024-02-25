@@ -219,7 +219,7 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
 }
 #endif  // BUILDFLAG(USE_CUPS_IPP)
 
-absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
+std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   switch (color_model) {
     case mojom::ColorModel::kColor:
     case mojom::ColorModel::kCMYK:
@@ -267,7 +267,7 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
       return false;
     case mojom::ColorModel::kUnknownColorModel:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.
@@ -308,6 +308,7 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   device_name_ = settings.device_name_;
   requested_media_ = settings.requested_media_;
   page_setup_device_units_ = settings.page_setup_device_units_;
+  borderless_ = settings.borderless_;
   media_type_ = settings.media_type_;
   dpi_ = settings.dpi_;
   scale_factor_ = settings.scale_factor_;
@@ -330,6 +331,9 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   pin_value_ = settings.pin_value_;
   client_infos_ = settings.client_infos_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  system_print_dialog_data_ = settings.system_print_dialog_data_.Clone();
+#endif
   return *this;
 }
 
@@ -398,6 +402,7 @@ void PrintSettings::Clear() {
   device_name_.clear();
   requested_media_ = RequestedMedia();
   page_setup_device_units_.Clear();
+  borderless_ = false;
   media_type_.clear();
   dpi_ = gfx::Size();
   scale_factor_ = 1.0f;
@@ -419,6 +424,9 @@ void PrintSettings::Clear() {
   pin_value_.clear();
   client_infos_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  system_print_dialog_data_.clear();
+#endif
 }
 
 void PrintSettings::SetPrinterPrintableArea(

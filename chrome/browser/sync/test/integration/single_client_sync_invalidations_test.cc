@@ -153,7 +153,8 @@ class GetUpdatesFailureChecker : public SingleClientStatusChangeChecker {
         << "\".";
 
     return last_cycle_snapshot.model_neutral_state()
-        .last_download_updates_result.IsActualError();
+               .last_download_updates_result.type() !=
+           syncer::SyncerError::Type::kSuccess;
   }
 };
 

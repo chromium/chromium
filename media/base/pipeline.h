@@ -6,6 +6,7 @@
 #define MEDIA_BASE_PIPELINE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
@@ -16,11 +17,9 @@
 #include "media/base/pipeline_metadata.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/ranges.h"
-#include "media/base/text_track.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/base/waiting.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -59,11 +58,6 @@ class MEDIA_EXPORT Pipeline {
     // Executed whenever the presentation duration changes.
     virtual void OnDurationChange() = 0;
 
-    // Executed whenever a text track is added.
-    // The client is expected to create a TextTrack and call |done_cb|.
-    virtual void OnAddTextTrack(const TextTrackConfig& config,
-                                AddTextTrackDoneCB done_cb) = 0;
-
     // Executed whenever the pipeline is waiting because of |reason|.
     virtual void OnWaiting(WaitingReason reason) = 0;
 
@@ -89,7 +83,7 @@ class MEDIA_EXPORT Pipeline {
     // Executed whenever the video frame rate changes.  |fps| will be unset if
     // the frame rate is unstable.  The duration used for the frame rate is
     // based on wall clock time, not media time.
-    virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
+    virtual void OnVideoFrameRateChange(std::optional<int> fps) = 0;
   };
 
   virtual ~Pipeline() {}
@@ -152,7 +146,7 @@ class MEDIA_EXPORT Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   virtual void OnSelectedVideoTrackChanged(
-      absl::optional<MediaTrack::Id> selected_track_id,
+      std::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
 
   // Signal to the pipeline that there has been a client request to access
@@ -231,7 +225,7 @@ class MEDIA_EXPORT Pipeline {
   // post-decode buffering required to start playback or resume from
   // seek/underflow. A null option indicates the hint is unset and the pipeline
   // can choose its own default.
-  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) = 0;
 
   // Sets whether pitch adjustment should be applied when the playback rate is
   // different than 1.0.

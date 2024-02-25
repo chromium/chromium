@@ -127,11 +127,9 @@ void SyncEngineBackend::OnSyncStatusChanged(const SyncStatus& status) {
   host_.Call(FROM_HERE, &SyncEngineImpl::HandleSyncStatusChanged, status);
 }
 
-void SyncEngineBackend::DoOnInvalidatorStateChange(
-    invalidation::InvalidatorState state) {
+void SyncEngineBackend::DoOnInvalidatorStateChange(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->SetInvalidatorEnabled(state ==
-                                       invalidation::INVALIDATIONS_ENABLED);
+  sync_manager_->SetInvalidatorEnabled(enabled);
 }
 
 void SyncEngineBackend::DoInitialize(
@@ -178,6 +176,8 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
+  args.sync_poll_immediately_on_every_startup =
+      params.sync_poll_immediately_on_every_startup;
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();
@@ -439,7 +439,7 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
 
     contains_valid_model_type = true;
     RecordInvalidationPerModelType(model_type);
-    absl::optional<int64_t> version;
+    std::optional<int64_t> version;
     if (payload_message.has_version()) {
       version = payload_message.version();
     }
@@ -465,6 +465,11 @@ void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   nigori_controller_->GetAllNodes(std::move(callback));
 }
 
+void SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  nigori_controller_->RecordMemoryUsageAndCountsHistograms();
+}
+
 bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_manager_);
@@ -480,14 +485,14 @@ ModelTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
 void SyncEngineBackend::LoadAndConnectNigoriController() {
   // The controller for Nigori is not exposed to the UI thread or the
   // DataTypeManager, so we need to start it here manually.
-  ConfigureContext configure_context;
-  configure_context.authenticated_account_id = authenticated_account_id_;
-  configure_context.cache_guid = sync_manager_->cache_guid();
-  // Always use kFull mode: it is actually not relevant for Nigori and switching
-  // modes harder to detect on this level / can make first sync setup more
-  // complicated.
-  configure_context.sync_mode = SyncMode::kFull;
-  configure_context.configuration_start_time = base::Time::Now();
+  ConfigureContext configure_context = {
+      .authenticated_account_id = authenticated_account_id_,
+      .cache_guid = sync_manager_->cache_guid(),
+      // Always use kFull mode: it is actually not relevant for Nigori and
+      // switching modes harder to detect on this level / can make first sync
+      // setup more complicated.
+      .sync_mode = SyncMode::kFull,
+      .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   sync_manager_->GetModelTypeConnector()->ConnectDataType(

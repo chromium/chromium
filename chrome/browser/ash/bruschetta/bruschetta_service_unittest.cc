@@ -42,8 +42,6 @@ class BruschettaServiceTest : public testing::Test,
 
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kBruschetta}, {});
-
     SetupPrefs();
 
     service_ = std::make_unique<BruschettaService>(&profile_);
@@ -101,7 +99,6 @@ class BruschettaServiceTest : public testing::Test,
     vtpm->Set(prefs::kPolicyVTPMUpdateActionKey, static_cast<int>(action));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BruschettaService> service_;

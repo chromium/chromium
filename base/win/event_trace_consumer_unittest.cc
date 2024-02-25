@@ -16,8 +16,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/win/event_trace_controller.h"
 #include "base/win/event_trace_provider.h"
 #include "base/win/scoped_handle.h"
@@ -81,7 +81,7 @@ EventQueue TestConsumer::events_;
 class EtwTraceConsumerBaseTest : public testing::Test {
  public:
   EtwTraceConsumerBaseTest()
-      : session_name_(StringPrintf(L"TestSession-%d", GetCurrentProcId())) {}
+      : session_name_(L"TestSession-" + NumberToWString(GetCurrentProcId())) {}
 
   void SetUp() override {
     // Cleanup any potentially dangling sessions.

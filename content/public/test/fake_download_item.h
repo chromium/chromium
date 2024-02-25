@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_FAKE_DOWNLOAD_ITEM_H_
 #define CONTENT_PUBLIC_TEST_FAKE_DOWNLOAD_ITEM_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -63,7 +63,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
-  const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
+  const std::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   bool IsDone() const override;
   const std::string& GetETag() const override;
   const std::string& GetLastModifiedTime() const override;
@@ -78,7 +78,7 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
-  const absl::optional<url::Origin>& GetRequestInitiator() const override;
+  const std::optional<url::Origin>& GetRequestInitiator() const override;
   std::string GetSuggestedFilename() const override;
   std::string GetContentDisposition() const override;
   std::string GetOriginalMimeType() const override;
@@ -95,6 +95,10 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetHash() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
+#if BUILDFLAG(IS_ANDROID)
+  bool IsFromExternalApp() override;
+  bool IsMustDownload() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
   download::DownloadDangerType GetDangerType() const override;
@@ -202,7 +206,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool open_when_complete_ = false;
   bool is_dangerous_ = false;
   bool is_insecure_ = false;
-  absl::optional<net::IsolationInfo> isolation_info_;
+  std::optional<net::IsolationInfo> isolation_info_;
   download::DownloadDangerType danger_type_ =
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
   download::DownloadItem::InsecureDownloadStatus insecure_download_status_ =
@@ -211,7 +215,7 @@ class FakeDownloadItem : public download::DownloadItem {
   // The members below are to be returned by methods, which return by reference.
   GURL dummy_url;
   std::string serialized_embedder_download_data;
-  absl::optional<url::Origin> dummy_origin;
+  std::optional<url::Origin> dummy_origin;
   base::FilePath dummy_file_path;
 };
 

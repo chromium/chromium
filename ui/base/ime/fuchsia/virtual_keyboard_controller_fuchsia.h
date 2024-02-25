@@ -6,7 +6,7 @@
 #define UI_BASE_IME_FUCHSIA_VIRTUAL_KEYBOARD_CONTROLLER_FUCHSIA_H_
 
 #include <fidl/fuchsia.input.virtualkeyboard/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <fidl/fuchsia.ui.views/cpp/fidl.h>
 
 #include "base/component_export.h"
 #include "base/fuchsia/fidl_event_handler.h"

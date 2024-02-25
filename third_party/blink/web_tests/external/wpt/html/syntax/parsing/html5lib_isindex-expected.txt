@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL html5lib_isindex.html 579ca96e69c47b3d2ac83f1aa79a450b745d21f3 assert_equals: expected "#document\n| <html>\n|   <head>\n|   <body>\n|     <form>\n|       <hr>\n|       <label>\n|         \"This is a searchable index. Enter search keywords: \"\n|         <input>\n|           name=\"isindex\"\n|       <hr>" but got "#document\n| <html>\n|   <head>\n|   <body>\n|     <isindex>"
-FAIL html5lib_isindex.html cb91f67071d81dd18d7ba9990de8f0f845c375f0 assert_equals: expected "#document\n| <html>\n|   <head>\n|   <body>\n|     <form>\n|       action=\"B\"\n|       <hr>\n|       <label>\n|         \"C\"\n|         <input>\n|           foo=\"D\"\n|           name=\"isindex\"\n|       <hr>" but got "#document\n| <html>\n|   <head>\n|   <body>\n|     <isindex>\n|       action=\"B\"\n|       foo=\"D\"\n|       name=\"A\"\n|       prompt=\"C\""
-FAIL html5lib_isindex.html bd8ac64cc8f1422fac94bbe1c8828c0b51dca3f2 assert_equals: expected "#document\n| <html>\n|   <head>\n|   <body>\n|     <form>" but got "#document\n| <html>\n|   <head>\n|   <body>\n|     <form>\n|       <isindex>"
-Harness: the test ran to completion.
-

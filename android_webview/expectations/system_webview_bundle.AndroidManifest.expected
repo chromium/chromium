@@ -5,7 +5,7 @@
     platformBuildVersionCode="34"
     platformBuildVersionName="14"
     android:isolatedSplits="true"
-    android:versionCode="OFFSET=0"
+    android:versionCode="OFFSET=1"
     android:versionName="#.#.#.#">
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
@@ -15,13 +15,14 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="false"
       android:icon="@$PACKAGE:drawable/icon_webview"
       android:label="Android System WebView"
-      android:multiArch="true">
+      android:multiArch="true"
+      android:use32bitAbi="true">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
         android:exported="false"
@@ -493,5 +494,6 @@
         android:process=":sandboxed_process9"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
+    <uses-library android:name="android.ext.adservices" android:required="false"/>
   </application>
 </manifest>

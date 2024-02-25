@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
@@ -632,7 +633,7 @@ NSBitmapImageRep* ScreenshotNSWindow(NSWindow* window) {
 
 // Test that the colored frames have the correct color when active and inactive.
 // Disabled; https://crbug.com/1322741.
-IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, FrameColor) {
+IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, DISABLED_FrameColor) {
   EXPECT_EQ(NSApp.activationPolicy, NSApplicationActivationPolicyAccessory);
 
   // The hex values indicate an RGB color. When we get the NSColor later, the

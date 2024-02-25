@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -25,7 +26,7 @@ AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
 AXRootObjWrapper::~AXRootObjWrapper() = default;
 
 bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
-  std::vector<views::AXAuraObjWrapper*> children;
+  std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>> children;
   GetChildren(&children);
   return base::Contains(children, child);
 }
@@ -35,7 +36,8 @@ views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
 }
 
 void AXRootObjWrapper::GetChildren(
-    std::vector<views::AXAuraObjWrapper*>* out_children) {
+    std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>>*
+        out_children) {
   aura_obj_cache_->GetTopLevelWindows(out_children);
 }
 

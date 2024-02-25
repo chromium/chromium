@@ -24,7 +24,10 @@ android_library("java") {
 android_library("dependency_provider_impl_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderImpl.java" ]
   deps = [
+    "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//chrome/browser/feed/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/privacy:java",
     "//chrome/browser/xsurface:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -37,13 +40,20 @@ android_library("hooks_public_impl_java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/XSurfaceProcessScopeProviderTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderImplTest.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/XSurfaceProcessScopeProviderTest.java",
+  ]
   deps = [
+    ":dependency_provider_impl_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/privacy:java",
     "//chrome/browser/xsurface:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

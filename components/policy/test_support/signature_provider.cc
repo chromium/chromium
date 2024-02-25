@@ -22,6 +22,9 @@ namespace policy {
 
 namespace {
 
+// TODO(b:314810831, b:325026413): Update the signatures to match the key used
+// for testing defined by PolicyBuilder, or update them to support the
+// PublicKeyVerificationData type included in new_public_key_verification_data.
 constexpr char kSigningKey1[] =
     "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA2c3KzcPqvnJ5HCk3OZkf1"
     "LMO8Ht4dw4FO2U0EmKvpo0zznj4RwUdmKobH1AFWzwZP4CDY2M67MsukE/1Jnbx1QIDAQ"

@@ -38,7 +38,7 @@ void ChromeSitePerProcessTest::SetUpOnMainThread() {
   // Serve from the root so that flash_object.html can load the swf file.
   // Needed for the PluginWithRemoteTopFrame test.
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
   // Add content/test/data for cross_site_iframe_factory.html

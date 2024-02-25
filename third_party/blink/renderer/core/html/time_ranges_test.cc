@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -53,14 +54,17 @@ static std::string ToString(const TimeRanges& ranges) {
 #define ASSERT_RANGE(expected, range) ASSERT_EQ(expected, ToString(*range))
 
 TEST(TimeRangesTest, Empty) {
+  test::TaskEnvironment task_environment;
   ASSERT_RANGE("{ }", MakeGarbageCollected<TimeRanges>());
 }
 
 TEST(TimeRangesTest, SingleRange) {
+  test::TaskEnvironment task_environment;
   ASSERT_RANGE("{ [1,2) }", MakeGarbageCollected<TimeRanges>(1, 2));
 }
 
 TEST(TimeRangesTest, CreateFromWebTimeRanges) {
+  test::TaskEnvironment task_environment;
   blink::WebTimeRanges web_ranges(static_cast<size_t>(2));
   web_ranges[0].start = 0;
   web_ranges[0].end = 1;
@@ -70,6 +74,7 @@ TEST(TimeRangesTest, CreateFromWebTimeRanges) {
 }
 
 TEST(TimeRangesTest, AddOrder) {
+  test::TaskEnvironment task_environment;
   auto* range_a = MakeGarbageCollected<TimeRanges>();
   auto* range_b = MakeGarbageCollected<TimeRanges>();
 
@@ -90,6 +95,7 @@ TEST(TimeRangesTest, AddOrder) {
 }
 
 TEST(TimeRangesTest, OverlappingAdds) {
+  test::TaskEnvironment task_environment;
   auto* ranges = MakeGarbageCollected<TimeRanges>();
 
   ranges->Add(0, 2);
@@ -119,6 +125,7 @@ TEST(TimeRangesTest, OverlappingAdds) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Self) {
+  test::TaskEnvironment task_environment;
   auto* ranges = MakeGarbageCollected<TimeRanges>(0, 2);
 
   ASSERT_RANGE("{ [0,2) }", ranges);
@@ -129,6 +136,7 @@ TEST(TimeRangesTest, IntersectWith_Self) {
 }
 
 TEST(TimeRangesTest, IntersectWith_IdenticalRange) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>(0, 2);
   auto* ranges_b = ranges_a->Copy();
 
@@ -142,6 +150,7 @@ TEST(TimeRangesTest, IntersectWith_IdenticalRange) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Empty) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>(0, 2);
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -155,6 +164,7 @@ TEST(TimeRangesTest, IntersectWith_Empty) {
 }
 
 TEST(TimeRangesTest, IntersectWith_DisjointRanges1) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -174,6 +184,7 @@ TEST(TimeRangesTest, IntersectWith_DisjointRanges1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_DisjointRanges2) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -193,6 +204,7 @@ TEST(TimeRangesTest, IntersectWith_DisjointRanges2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_CompleteOverlap1) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -212,6 +224,7 @@ TEST(TimeRangesTest, IntersectWith_CompleteOverlap1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_CompleteOverlap2) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -231,6 +244,7 @@ TEST(TimeRangesTest, IntersectWith_CompleteOverlap2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps1) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -249,6 +263,7 @@ TEST(TimeRangesTest, IntersectWith_Gaps1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps2) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -268,6 +283,7 @@ TEST(TimeRangesTest, IntersectWith_Gaps2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps3) {
+  test::TaskEnvironment task_environment;
   auto* ranges_a = MakeGarbageCollected<TimeRanges>();
   auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
@@ -288,6 +304,7 @@ TEST(TimeRangesTest, IntersectWith_Gaps3) {
 }
 
 TEST(TimeRangesTest, Nearest) {
+  test::TaskEnvironment task_environment;
   auto* ranges = MakeGarbageCollected<TimeRanges>();
   ranges->Add(0, 2);
   ranges->Add(5, 7);

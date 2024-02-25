@@ -7,9 +7,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace content {
@@ -74,7 +76,11 @@ CONTENT_EXPORT
 // Sets the current operation negotiated by the source and destination,
 // which determines whether or not we should allow the drop. Takes effect the
 // next time |-draggingUpdated:| is called.
-- (void)setCurrentOperation:(NSDragOperation)operation;
+//
+// See mojo method FrameWidget::DragTargetDragEnter() for a discussion of
+// |operation| and |documentOperation|.
+- (void)setCurrentOperation:(ui::mojom::DragOperation)operation
+     documentIsHandlingDrag:(bool)documentIsHandlingDrag;
 
 // Messages to send during the tracking of a drag, usually upon receiving
 // calls from the view system. Communicates the drag messages to WebCore.
@@ -87,7 +93,7 @@ CONTENT_EXPORT
 - (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info
     withWebContentsViewDelegate:
         (content::WebContentsViewDelegate*)webContentsViewDelegate;
-- (void)completeDropAsync:(absl::optional<content::DropData>)dropData
+- (void)completeDropAsync:(std::optional<content::DropData>)dropData
               withContext:(const content::DropContext)context;
 
 // Helper to call WebWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint().
@@ -95,14 +101,17 @@ CONTENT_EXPORT
     GetRenderWidgetHostAtPoint:(const gfx::PointF&)viewPoint
                  transformedPt:(gfx::PointF*)transformedPt;
 
-// Sets |dragStartProcessID_| and |dragStartViewID_|.
-- (void)setDragStartTrackersForProcess:(int)processID;
-- (void)resetDragStartTrackers;
+// Called to indicate that the owning WebContents has initiated a drag.
+- (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi
+                                dropData:(const content::DropData&)dropData;
 
-// Returns whether |targetRWH| is a valid RenderWidgetHost to be dragging
-// over. This enforces that same-page, cross-site drags are not allowed. See
-// https://crbug.com/666858.
-- (bool)isValidDragTarget:(content::RenderWidgetHostImpl*)targetRWH;
+// Called to indicate that, if the owning WebContents has initiated a drag, that
+// drag has ended.
+- (void)endDrag;
+
+- (content::WebContentsViewDragSecurityInfo)dragSecurityInfo;
+- (void)setDragSecurityInfo:
+    (content::WebContentsViewDragSecurityInfo)dragSecurityInfo;
 
 @end
 

@@ -96,7 +96,7 @@ class DeviceCacheImplTest : public testing::Test {
   void AddDevice(bool paired,
                  bool connected,
                  std::string* id_out,
-                 const absl::optional<int8_t> inquiry_rssi = absl::nullopt,
+                 const std::optional<int8_t> inquiry_rssi = std::nullopt,
                  const device::BluetoothDeviceType device_type =
                      device::BluetoothDeviceType::AUDIO,
                  DeviceImageInfo* image_info = nullptr) {
@@ -168,7 +168,7 @@ class DeviceCacheImplTest : public testing::Test {
   }
 
   void ChangeInquiryRssi(const std::string& device_id,
-                         const absl::optional<int8_t> inquiry_rssi) {
+                         const std::optional<int8_t> inquiry_rssi) {
     std::vector<NiceMockDevice>::iterator it = FindDevice(device_id);
     EXPECT_TRUE(it != mock_devices_.end());
 
@@ -183,7 +183,7 @@ class DeviceCacheImplTest : public testing::Test {
     fake_device_name_manager_.SetDeviceNickname(device_id, nickname);
   }
 
-  absl::optional<std::string> GetDeviceNickname(std::string address) {
+  std::optional<std::string> GetDeviceNickname(std::string address) {
     return fake_fast_pair_delegate_.GetDeviceNickname(address);
   }
 
@@ -227,8 +227,10 @@ class DeviceCacheImplTest : public testing::Test {
   }
 
  private:
-  std::vector<const device::BluetoothDevice*> GenerateDevices() {
-    std::vector<const device::BluetoothDevice*> devices;
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+  GenerateDevices() {
+    std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+        devices;
     for (auto& device : mock_devices_)
       devices.push_back(device.get());
     return devices;

@@ -37,7 +37,7 @@ void BufferReleaseFencedRelease(
     int32_t fd) {
   ClientBase::Buffer* buffer = static_cast<ClientBase::Buffer*>(data);
   gfx::GpuFenceHandle release_fence;
-  release_fence.owned_fd = base::ScopedFD(fd);
+  release_fence.Adopt(base::ScopedFD(fd));
   gfx::GpuFence(std::move(release_fence)).Wait();
   buffer->busy = false;
 }

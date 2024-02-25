@@ -21,7 +21,8 @@ void OnOutputThunk(void* decompression_output_refcon,
   VideoToolboxDecompressionSessionImpl* vtdsi =
       static_cast<VideoToolboxDecompressionSessionImpl*>(
           decompression_output_refcon);
-  vtdsi->OnOutputOnAnyThread(source_frame_refcon, status, info_flags,
+  vtdsi->OnOutputOnAnyThread(reinterpret_cast<uintptr_t>(source_frame_refcon),
+                             status, info_flags,
                              base::apple::ScopedCFTypeRef<CVImageBufferRef>(
                                  image_buffer, base::scoped_policy::RETAIN));
 }
@@ -47,7 +48,8 @@ VideoToolboxDecompressionSessionImpl::~VideoToolboxDecompressionSessionImpl() {
 
 bool VideoToolboxDecompressionSessionImpl::Create(
     CMFormatDescriptionRef format,
-    CFMutableDictionaryRef decoder_config) {
+    CFDictionaryRef decoder_config,
+    CFDictionaryRef image_config) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!IsValid());
@@ -56,12 +58,11 @@ bool VideoToolboxDecompressionSessionImpl::Create(
                                                   static_cast<void*>(this)};
 
   OSStatus status = VTDecompressionSessionCreate(
-      kCFAllocatorDefault,
-      format,          // video_format_description
-      decoder_config,  // video_decoder_specification
-      nullptr,         // destination_image_buffer_attributes
-      &callback,       // output_callback
-      session_.InitializeInto());
+      /*allocator=*/kCFAllocatorDefault,
+      /*videoFormatDescription=*/format,
+      /*videoDecoderSpecification=*/decoder_config,
+      /*destinationImageBufferAttributes=*/image_config,
+      /*outputCallback=*/&callback, session_.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "VTDecompressionSessionCreate()";
@@ -81,7 +82,7 @@ void VideoToolboxDecompressionSessionImpl::Invalidate() {
     return;
   }
 
-  VTDecompressionSessionInvalidate(session_);
+  VTDecompressionSessionInvalidate(session_.get());
   session_.reset();
 
   // Drop in-flight OnOutput() tasks. Reassignment of |weak_this_| is safe
@@ -94,7 +95,7 @@ void VideoToolboxDecompressionSessionImpl::Invalidate() {
 bool VideoToolboxDecompressionSessionImpl::IsValid() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return session_;
+  return session_.get();
 }
 
 bool VideoToolboxDecompressionSessionImpl::CanAcceptFormat(
@@ -102,11 +103,12 @@ bool VideoToolboxDecompressionSessionImpl::CanAcceptFormat(
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(session_);
-  return VTDecompressionSessionCanAcceptFormatDescription(session_, format);
+  return VTDecompressionSessionCanAcceptFormatDescription(session_.get(),
+                                                          format);
 }
 
 bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
-                                                       void* context) {
+                                                       uintptr_t context) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(session_);
@@ -115,7 +117,8 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
       kVTDecodeFrame_EnableAsynchronousDecompression;
 
   OSStatus status = VTDecompressionSessionDecodeFrame(
-      session_, sample, decode_flags, context, nullptr);
+      session_.get(), sample, decode_flags, reinterpret_cast<void*>(context),
+      nullptr);
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "VTDecompressionSessionDecodeFrame()";
@@ -126,7 +129,7 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
 }
 
 void VideoToolboxDecompressionSessionImpl::OnOutputOnAnyThread(
-    void* context,
+    uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
@@ -138,7 +141,7 @@ void VideoToolboxDecompressionSessionImpl::OnOutputOnAnyThread(
 }
 
 void VideoToolboxDecompressionSessionImpl::OnOutput(
-    void* context,
+    uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {

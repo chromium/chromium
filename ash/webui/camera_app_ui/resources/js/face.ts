@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof, assertNotReached} from './assert.js';
+import {queuedAsyncCallback} from './async_job_queue.js';
 import * as dom from './dom.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import {Resolution} from './type.js';
@@ -36,9 +37,10 @@ export class FaceOverlay {
 
   private readonly ctx: CanvasRenderingContext2D;
 
-  private readonly orientationListener = () => {
-    this.updateOrientation();
-  };
+  private readonly orientationListener =
+      queuedAsyncCallback('keepLatest', async () => {
+        await this.updateOrientation();
+      });
 
   /**
    * @param activeArraySize The active array size of the device.

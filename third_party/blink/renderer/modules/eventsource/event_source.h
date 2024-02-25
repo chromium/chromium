@@ -138,7 +138,7 @@ class MODULES_EXPORT EventSource final
 
   // The world in which this EventSource was created. We need to store this
   // because EventSource::Connect can be triggered by |connect_timer_|.
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
 };
 
 }  // namespace blink

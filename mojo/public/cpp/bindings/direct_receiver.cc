@@ -155,9 +155,10 @@ void ThreadLocalNode::WatchForIncomingTransfers() {
   for (;;) {
     const IpczResult trap_result =
         ipcz.Trap(local_portal_->value(), &conditions, &OnTrapEvent,
-                  reinterpret_cast<uintptr_t>(context.release()), IPCZ_NO_FLAGS,
+                  reinterpret_cast<uintptr_t>(context.get()), IPCZ_NO_FLAGS,
                   nullptr, nullptr, nullptr);
     if (trap_result == IPCZ_RESULT_OK) {
+      context.release();
       return;
     }
 
@@ -182,6 +183,7 @@ void ThreadLocalNode::OnTrapEvent(const IpczTrapEvent* event) {
   }
 
   weak_node->OnTransferredPortalAvailable();
+  weak_node->WatchForIncomingTransfers();
 }
 
 void ThreadLocalNode::OnTransferredPortalAvailable() {
@@ -206,8 +208,6 @@ void ThreadLocalNode::OnTransferredPortalAvailable() {
       portal, it->second.release().value(), IPCZ_NO_FLAGS, nullptr);
   CHECK_EQ(merge_result, IPCZ_RESULT_OK);
   pending_merges_.erase(it);
-
-  WatchForIncomingTransfers();
 }
 
 }  // namespace mojo::internal

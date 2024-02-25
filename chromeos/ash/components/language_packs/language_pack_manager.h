@@ -5,19 +5,29 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
+#include "ui/base/ime/ash/input_method_util.h"
+
+class PrefService;
 
 namespace ash::language_packs {
 
 // All Language Pack IDs are listed here.
-constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
-constexpr char kTtsFeatureId[] = "LP_ID_TTS";
+inline constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
+inline constexpr char kTtsFeatureId[] = "LP_ID_TTS";
+inline constexpr char kFontsFeatureId[] = "LP_ID_FONT";
 
 // Feature IDs.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -27,7 +37,8 @@ enum class FeatureIdsEnum {
   kUnknown = 0,
   kHandwriting = 1,
   kTts = 2,
-  kMaxValue = kTts,
+  kFonts = 3,
+  kMaxValue = kFonts,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -40,7 +51,9 @@ enum class FeatureSuccessEnum {
   kHandwritingFailure = 3,
   kTtsSuccess = 4,
   kTtsFailure = 5,
-  kMaxValue = kTtsFailure,
+  kFontsSuccess = 6,
+  kFontsFailure = 7,
+  kMaxValue = kFontsFailure,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -89,6 +102,9 @@ struct PackResult {
   // here.
   ErrorCode operation_error;
 
+  // The feature ID of the pack.
+  std::string feature_id;
+
   // The resolved language code that this Pack is associated with.
   // Often this field matches the locale requested by the client, but due to
   // various mappings between languages, regions and variants, it might be
@@ -134,6 +150,17 @@ struct PackSpecPair {
   };
 };
 
+// Returns a static mapping from `PackSpecPair`s to DLC IDs.
+// Internal only, do not use - this function will likely be removed in the
+// future.
+const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds();
+
+// Finds the ID of the DLC corresponding to the given spec.
+// Returns the DLC ID if the DLC exists or std::nullopt otherwise.
+std::optional<std::string> GetDlcIdForLanguagePack(
+    const std::string& feature_id,
+    const std::string& locale);
+
 using OnInstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 using GetPackStateCallback =
@@ -148,6 +175,10 @@ using OnUpdatePacksForOobeCallback =
 // This class manages all Language Packs and their dependencies (called Base
 // Packs) on the device.
 // This is a Singleton and needs to be accessed via Get().
+//
+// Sequencing: This class is sequence-checked so all accesses to it - non-static
+// methods, `Initialise()` and `Shutdown()` - should be done on the same
+// sequence. This may be overly strict, see b/319906094 for more details.
 class LanguagePackManager : public DlcserviceClient::Observer {
  public:
   // Observer of Language Packs.
@@ -161,22 +192,30 @@ class LanguagePackManager : public DlcserviceClient::Observer {
     virtual void OnPackStateChanged(const PackResult& pack_result) = 0;
   };
 
+  // Do not use unless in tests.
+  // Only one `LanguagePackManager` can be instantiated at any time.
+  // Use `GetInstance()` instead to obtain the currently instantiated instance,
+  // likely instantiated by `Initialise()`.
+  LanguagePackManager();
+
   // Disallow copy and assign.
   LanguagePackManager(const LanguagePackManager&) = delete;
   LanguagePackManager& operator=(const LanguagePackManager&) = delete;
 
+  ~LanguagePackManager() override;
+
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
   // TODO(claudiomagni): Check per board.
-  bool IsPackAvailable(const std::string& feature_id,
-                       const std::string& locale);
+  static bool IsPackAvailable(const std::string& feature_id,
+                              const std::string& locale);
 
   // Installs the Language Pack.
   // It takes a callback that will be triggered once the operation is done.
   // A state is passed to the callback.
-  void InstallPack(const std::string& feature_id,
-                   const std::string& locale,
-                   OnInstallCompleteCallback callback);
+  static void InstallPack(const std::string& feature_id,
+                          const std::string& locale,
+                          OnInstallCompleteCallback callback);
 
   // Checks the state of a Language Pack.
   // It takes a callback that will be triggered once the operation is done.
@@ -184,9 +223,9 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // If the state marks the Language Pack as ready, then there's no need to
   // call Install(), otherwise the client should call Install() and not call
   // this method a second time.
-  void GetPackState(const std::string& feature_id,
-                    const std::string& locale,
-                    GetPackStateCallback callback);
+  static void GetPackState(const std::string& feature_id,
+                           const std::string& locale,
+                           GetPackStateCallback callback);
 
   // Features should call this method to indicate that they do not intend to
   // use the Pack again, until they will call |InstallPack()|.
@@ -194,19 +233,22 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // when that will happen.
   // TODO(claudiomagni): Allow callers to force immediate removal. Useful to
   //                     clear space on disk for another language.
-  void RemovePack(const std::string& feature_id,
-                  const std::string& locale,
-                  OnUninstallCompleteCallback callback);
+  static void RemovePack(const std::string& feature_id,
+                         const std::string& locale,
+                         OnUninstallCompleteCallback callback);
 
   // Explicitly installs the base pack for |feature_id|.
-  void InstallBasePack(const std::string& feature_id,
-                       OnInstallBasePackCompleteCallback callback);
+  static void InstallBasePack(const std::string& feature_id,
+                              OnInstallBasePackCompleteCallback callback);
 
   // Installs relevant language packs during OOBE.
   // This method should only be called during OOBE and will do nothing if called
   // outside it.
-  void UpdatePacksForOobe(const std::string& locale,
-                          OnUpdatePacksForOobeCallback callback);
+  static void UpdatePacksForOobe(const std::string& locale,
+                                 OnUpdatePacksForOobeCallback callback);
+
+  // Registers itself as an Observer of all the relevant languages Prefs.
+  void ObservePrefs(PrefService* pref_service);
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
@@ -214,30 +256,53 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  // Must be called before using the class.
-  void Initialize();
+  // Initialises the global instance. This is typically called from
+  // ash_dbus_helper.h's `InitializeDBus()`, which is called from
+  // `ChromeMainDelegate::PostEarlyInitialization()`.
+  // Cannot be called multiple times - `GetInstance()` must return `nullptr`
+  // before this static method is called.
+  // Requires the global `DlcserviceClient` to be initialised.
+  // Do not use this in tests, instantiate a test-local `LanguagePackManager`
+  // instead.
+  static void Initialise();
 
-  // Testing only: called to free up resources since this object should never
-  // be destroyed.
-  void ResetForTesting();
+  // Shuts down the global instance. This is typically called from
+  // ash_dbus_helper.h's `ShutdownDBus()`, which is called from
+  // `ChromeBrowserMainPartsAsh::PostDestroyThreads()`.
+  // Cannot be called multiple times - `GetInstance()` must return a non-null
+  // pointer before this static method is called.
+  // The global `DlcserviceClient` at the time of initialisation must still
+  // exist when this is called.
+  // Do not use this in tests, the destructor of the test-local
+  // `LanguagePackManager` will correctly unset the currently instantiated
+  // instance.
+  static void Shutdown();
 
-  // Returns the global instance..
+  // Returns the currently instantiated instance. This is typically the global
+  // instance, but may be a test-local `LanguagePackManager` during tests.
   static LanguagePackManager* GetInstance();
 
  private:
-  friend base::NoDestructor<LanguagePackManager>;
-
-  // This class should be accessed only via GetInstance();
-  LanguagePackManager();
-  ~LanguagePackManager() override;
+  // Retrieves the list of installed DLCs and updates Packs accordingly.
+  // This function should be called when LPM initializes and then each time
+  // Prefs change.
+  static void CheckAndUpdateDlcsForInputMethods(PrefService* pref_service);
 
   // DlcserviceClient::Observer overrides.
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
   // Notification method called upon change of DLCs state.
-  void NotifyPackStateChanged(const dlcservice::DlcState& dlc_state);
+  void NotifyPackStateChanged(std::string_view feature_id,
+                              std::string_view locale,
+                              const dlcservice::DlcState& dlc_state)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::ObserverList<Observer> observers_;
+  base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer> obs_{
+      this};
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace ash::language_packs

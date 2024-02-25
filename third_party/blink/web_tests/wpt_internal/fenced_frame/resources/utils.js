@@ -80,15 +80,15 @@ async function generateURNFromFledgeRawURL(
 
   const ad_components_list = nested_urls.map((url) => {
     return ad_with_size ?
-      { renderUrl: url, sizeGroup: "group1" } :
-      { renderUrl: url }
+      { renderURL: url, sizeGroup: "group1" } :
+      { renderURL: url }
   });
 
   let interestGroup = {
     name: 'testAd1',
     owner: location.origin,
     biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
-    ads: [{renderUrl: href, bid: 1}],
+    ads: [{renderURL: href, bid: 1}],
     userBiddingSignals: {biddingToken: bidding_token},
     trustedBiddingSignalsKeys: ['key1'],
     adComponents: ad_components_list,
@@ -118,17 +118,17 @@ async function generateURNFromFledgeRawURL(
   let auctionConfig = {
     seller: location.origin,
     interestGroupBuyers: [location.origin],
-    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     resolveToConfig: resolve_to_config
   };
 
   if (requested_size) {
     let decisionUrlParams =
-      new URLSearchParams(auctionConfig.decisionLogicUrl.search);
+      new URLSearchParams(auctionConfig.decisionLogicURL.search);
     decisionUrlParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
-    auctionConfig.decisionLogicUrl.search = decisionUrlParams;
+    auctionConfig.decisionLogicURL.search = decisionUrlParams;
 
     auctionConfig['requestedSize'] = {width: requested_size[0], height: requested_size[1]};
   }
@@ -141,7 +141,11 @@ async function generateURNFromFledgeRawURL(
 // Note: this function, unlike generateURL, is asynchronous and needs to be
 // called with an await operator. @param {string} href - The base url of the
 // page being navigated to @param {string list} keylist - The list of key UUIDs
-// to be used. Note that order matters when extracting the keys
+// to be used. Note that order matters when extracting the keys.
+// Warning: tests that use this function should not be run in parallel
+// because calls to navigator.joinAdInterestGroup on interest groups with the
+// same name and owner can overwrite each other, and as a result, the tests'
+// auctions may use another test's joined interest group.
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
@@ -494,13 +498,17 @@ async function nextValueFromServer(key) {
   }
 }
 
-// Reads the data from the latest automatic beacon sent to the server.
-async function readAutomaticBeaconDataFromServer() {
-  const serverUrl = `${BEACON_URL}`;
-  const response = await fetch(serverUrl);
+// Checks the automatic beacon data server to see if it has received an
+// automatic beacon with a given event type and body.
+async function readAutomaticBeaconDataFromServer(event_type, expected_body) {
+  let serverURL = `${BEACON_URL}`;
+  const response = await fetch(serverURL + "?" + new URLSearchParams({
+    type: event_type,
+    expected_body: expected_body,
+  }));
   if (!response.ok)
-    throw new Error('An error happened in the server');
-    const value = await response.text();
+    throw new Error('An error happened in the server ' + response.status);
+  const value = await response.text();
 
   // The value is not stored in the server.
   if (value === "<Not set>")
@@ -510,11 +518,14 @@ async function readAutomaticBeaconDataFromServer() {
 }
 
 // Convenience wrapper around the above getter that will wait until a value is
-// available on the server.
-async function nextAutomaticBeacon() {
+// available on the server. The server uses a hash of the concatenated event
+// type and beacon data as the key when storing the beacon in the database. To
+// retrieve it, we need to supply the endpoint with both pieces of information.
+async function nextAutomaticBeacon(event_type, expected_body) {
   while (true) {
     // Fetches the test result from the server.
-    const { status, value } = await readAutomaticBeaconDataFromServer();
+    const { status, value } =
+        await readAutomaticBeaconDataFromServer(event_type, expected_body);
     if (!status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 20));

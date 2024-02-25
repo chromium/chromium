@@ -56,6 +56,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   ServiceWorkerFetchDispatcher(blink::mojom::FetchAPIRequestPtr request,
                                network::mojom::RequestDestination destination,
                                const std::string& client_id,
+                               const std::string& resulting_client_id,
                                scoped_refptr<ServiceWorkerVersion> version,
                                base::OnceClosure prepare_callback,
                                FetchCallback fetch_callback,
@@ -88,6 +89,9 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   CreateNetworkURLLoaderFactory(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int frame_tree_node_id);
+
+  static void ForceDisableHighPriorityFetchResponseCallbackForTesting(
+      bool force_disable);
 
   void set_race_network_request_token(base::UnguessableToken token) {
     race_network_request_token_ = token;
@@ -136,6 +140,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
 
   blink::mojom::FetchAPIRequestPtr request_;
   std::string client_id_;
+  std::string resulting_client_id_;
   scoped_refptr<ServiceWorkerVersion> version_;
   const network::mojom::RequestDestination destination_;
   base::OnceClosure prepare_callback_;

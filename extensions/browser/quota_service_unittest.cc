@@ -44,11 +44,13 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
   void GetBucketsForArgs(const base::Value::List& args,
                          BucketList* buckets) override {
     for (const auto& val : args) {
-      absl::optional<int> id = val.GetIfInt();
+      std::optional<int> id = val.GetIfInt();
       ASSERT_TRUE(id.has_value());
-      if (buckets_.find(*id) == buckets_.end())
-        buckets_[*id] = std::make_unique<Bucket>();
-      buckets->push_back(buckets_[*id].get());
+      auto& entry = buckets_[*id];
+      if (!entry) {
+        entry = std::make_unique<Bucket>();
+      }
+      buckets->push_back(entry.get());
     }
   }
 

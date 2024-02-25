@@ -336,8 +336,6 @@ TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetTypeName) {
               std::string("audio"));
   EXPECT_TRUE(DemuxerStream::GetTypeName(DemuxerStream::Type::VIDEO) ==
               std::string("video"));
-  EXPECT_TRUE(DemuxerStream::GetTypeName(DemuxerStream::Type::TEXT) ==
-              std::string("text"));
   EXPECT_TRUE(DemuxerStream::GetTypeName(DemuxerStream::Type::UNKNOWN) ==
               std::string("unknown"));
 }

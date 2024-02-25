@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +16,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -55,11 +56,11 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
       const std::string& serialized_proto,
       const std::string& request_id);
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Cache the last retrieved ICE servers.
-  absl::optional<std::vector<sharing::mojom::IceServerPtr>> ice_server_cache_;
+  std::optional<std::vector<sharing::mojom::IceServerPtr>> ice_server_cache_;
   base::Time ice_server_cache_expiration_;
 
   base::WeakPtrFactory<TachyonIceConfigFetcher> weak_ptr_factory_{this};

@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 
 using chromeos::cdm::mojom::OutputProtection;
 using testing::_;
@@ -23,7 +24,8 @@ using testing::ReturnRef;
 
 constexpr uint64_t kFakeClientId = 1;
 constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
-const display::DisplayMode kDisplayMode{gfx::Size(1366, 768), false, 60.0f};
+const display::DisplayMode kDisplayMode =
+    display::CreateDisplayModeForTest({1366, 768}, false, 60.0f);
 
 namespace chromeos {
 
@@ -52,10 +54,11 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(const std::vector<display::DisplaySnapshot*>&,
-              cached_displays,
-              (),
-              (const));
+  MOCK_METHOD(
+      const std::vector<vector_experimental_raw_ptr<display::DisplaySnapshot>>&,
+      cached_displays,
+      (),
+      (const));
 };
 
 }  // namespace
@@ -87,7 +90,7 @@ class OutputProtectionImplTest : public testing::Test {
     UpdateDisplays(2);
 
     EXPECT_CALL(*delegate_, RegisterClient())
-        .WillOnce(Return(absl::optional<uint64_t>(kFakeClientId)));
+        .WillOnce(Return(std::optional<uint64_t>(kFakeClientId)));
   }
 
   void UpdateDisplays(size_t count) {
@@ -136,7 +139,8 @@ class OutputProtectionImplTest : public testing::Test {
   raw_ptr<MockDisplaySystemDelegate, AcrossTasksDanglingUntriaged>
       delegate_;  // Not owned.
   std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
-  std::vector<display::DisplaySnapshot*> cached_displays_;
+  std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>
+      cached_displays_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -7,17 +7,17 @@ package org.chromium.android_webview.test.services;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.content.Context;
-import android.os.Build;
+import android.content.res.AssetFileDescriptor;
+import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.RequiresApi;
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
+import androidx.javascriptengine.FileDescriptorIOException;
 import androidx.javascriptengine.IsolateStartupParameters;
 import androidx.javascriptengine.IsolateTerminatedException;
 import androidx.javascriptengine.JavaScriptConsoleCallback;
 import androidx.javascriptengine.JavaScriptIsolate;
 import androidx.javascriptengine.JavaScriptSandbox;
-import androidx.javascriptengine.MemoryLimitExceededException;
 import androidx.javascriptengine.SandboxDeadException;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -33,8 +33,11 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -42,12 +45,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Instrumentation test for JavaScriptSandbox.
- */
+/** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 @OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
@@ -78,6 +77,17 @@ public class JsSandboxServiceTest {
         Assert.assertNotEquals(0xfffd, lastChar);
     }
 
+    private static ParcelFileDescriptor writeToTestFile(String fileContent) throws IOException {
+        Context context = ContextUtils.getApplicationContext();
+        File jsFile = File.createTempFile("jse_test", ".js", context.getFilesDir());
+        try (FileOutputStream fos = new FileOutputStream(jsFile)) {
+            fos.write(fileContent.getBytes(StandardCharsets.UTF_8));
+            return ParcelFileDescriptor.open(jsFile, ParcelFileDescriptor.MODE_READ_ONLY);
+        } finally {
+            jsFile.delete();
+        }
+    }
+
     @Test
     @MediumTest
     public void testSimpleJsEvaluation() throws Throwable {
@@ -88,7 +98,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture.get(5, TimeUnit.SECONDS);
 
@@ -106,7 +116,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate()) {
             JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate();
             jsIsolate2.close();
 
@@ -130,8 +140,8 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate();
-             JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate();
+                JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavaScriptAsync(code1);
             String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
             ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavaScriptAsync(code2);
@@ -154,8 +164,8 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate();
-             JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate();
+                JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavaScriptAsync(code1);
             String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
             ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavaScriptAsync(code2);
@@ -178,7 +188,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavaScriptAsync(code1);
             String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
             ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavaScriptAsync(code2);
@@ -199,7 +209,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
             boolean isOfCorrectType = false;
             String error = "";
@@ -282,10 +292,9 @@ public class JsSandboxServiceTest {
     @MediumTest
     @DisabledTest(
             message =
-                    "Enable it back once we have a WebView version to see if the feature is actually supported in that version")
-    public void
-    testFeatureDetection() throws Throwable {
-        Context context = ContextUtils.getApplicationContext();
+                    "Enable it back once we have a WebView version to see if the feature is"
+                            + " actually supported in that version")
+    public void testFeatureDetection() throws Throwable {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(
                         ContextUtils.getApplicationContext());
@@ -300,22 +309,24 @@ public class JsSandboxServiceTest {
     public void testSimpleArrayBuffer() throws Throwable {
         final String provideString = "Hello World";
         final byte[] bytes = provideString.getBytes(StandardCharsets.US_ASCII);
-        final String code = ""
-                + "function ab2str(buf) {"
-                + " return String.fromCharCode.apply(null, new Uint8Array(buf));"
-                + "}"
-                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => {"
-                + " return ab2str(value);"
-                + "});";
+        final String code =
+                ""
+                        + "function ab2str(buf) {"
+                        + " return String.fromCharCode.apply(null, new Uint8Array(buf));"
+                        + "}"
+                        + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => {"
+                        + " return ab2str(value);"
+                        + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
 
             boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
             Assert.assertTrue(provideNamedDataReturn);
@@ -328,26 +339,302 @@ public class JsSandboxServiceTest {
 
     @Test
     @MediumTest
+    public void testEvaluateJSFileAsAfd() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        try (AssetFileDescriptor afd = context.getAssets().openFd("print_hello.js")) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("hello", result);
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateEmptyFileAsAfd() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        try (AssetFileDescriptor afd = context.getAssets().openFd("empty_file.js")) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertTrue(result.isEmpty());
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateJSFileAsPfd() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "function hello() { return 'hello'; } hello();";
+        try (ParcelFileDescriptor pfd = writeToTestFile(fileContent)) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(pfd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("hello", result);
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithNonZeroOffset() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent =
+                "var a = 'hello'; function hello() { if (typeof a != 'undefined') return a; else"
+                        + " return 'bye'} hello();";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Read file from the second line Note that file contains only ascii characters for
+        // testing purposes, hence we can assume the length of the string to be the number of
+        // bytes it contains and calculate offset accordingly.
+        long startOffset = "var a = 'hello'; ".length();
+        try (AssetFileDescriptor afd =
+                new AssetFileDescriptor(pfd, startOffset, pfd.getStatSize() - startOffset)) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("bye", result);
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithNegativeOffsetThrowsError() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "PASS";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Invalid offset
+        long negativeStartOffset = -10;
+        try (AssetFileDescriptor afd =
+                new AssetFileDescriptor(pfd, negativeStartOffset, pfd.getStatSize())) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                try {
+                    resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    Assert.assertTrue(
+                            e.getCause().getClass().equals(IllegalArgumentException.class));
+                }
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithInvalidOffsetThrowsError() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "PASS";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Invalid offset extending beyond end of file.
+        // Note that file contains only ascii characters for testing purposes, hence we
+        // can assume the length of the string to be the number of bytes it contains.
+        long offsetBeyondEof = fileContent.length() + 10;
+        try (AssetFileDescriptor afd =
+                new AssetFileDescriptor(pfd, offsetBeyondEof, fileContent.length())) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                try {
+                    resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    Assert.assertTrue(
+                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                }
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithNegativeLengthThrowsError() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "PASS";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Invalid negative length length.
+        long negativeLength = -10;
+        try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, negativeLength)) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                try {
+                    resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    Assert.assertTrue(
+                            e.getCause().getClass().equals(IllegalArgumentException.class));
+                }
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithFixedLengthEndingBeforeEof() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent =
+                "function hello() { return 'hello' } "
+                        + "function bye() { return 'bye' } "
+                        + "hello(); "
+                        + "bye();";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Read only up to call to `hello();
+        // File contains only ascii characters for testing purposes, hence we can predict the
+        // number of bytes to remove from the end.
+        long length = fileContent.length() - "bye();".length();
+        try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("hello", result);
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testPreSeekedFileIsReadFromBeginning() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "function hello() { return 'hello' } hello();";
+        File jsFile = File.createTempFile("jse_test", ".js", context.getFilesDir());
+        try (FileOutputStream fos = new FileOutputStream(jsFile)) {
+            fos.write(fileContent.getBytes(StandardCharsets.UTF_8));
+            RandomAccessFile access = new RandomAccessFile(jsFile, "r");
+            access.seek(10);
+            try (ParcelFileDescriptor pfd =
+                    ParcelFileDescriptor.open(jsFile, ParcelFileDescriptor.MODE_READ_ONLY)) {
+                ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                        JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+                try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                        JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                    Assume.assumeTrue(
+                            jsSandbox.isFeatureSupported(
+                                    JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                    ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(pfd);
+                    String result = resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.assertEquals("hello", result);
+                }
+            } finally {
+                jsFile.delete();
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateAfdWithFixedLengthEndingAfterEofThrowsError() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileContent = "PASS";
+        ParcelFileDescriptor pfd = writeToTestFile(fileContent);
+        // Declare length beyond EOF.
+        // Note that file contains only ascii characters for testing purposes, hence we
+        // can assume the length of the string to be the number of bytes it contains.
+        long length = fileContent.length() + 10;
+        try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(
+                        jsSandbox.isFeatureSupported(
+                                JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                try {
+                    resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    Assert.assertTrue(
+                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                }
+            }
+        } finally {
+            pfd.close();
+        }
+    }
+
+    @Test
+    @MediumTest
     public void testArrayBufferWasmCompilation() throws Throwable {
         final String success = "success";
         // The bytes of a minimal WebAssembly module, courtesy of v8/test/cctest/test-api-wasm.cc
         final byte[] bytes = {0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
-        final String code = ""
-                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((wasm) => {"
-                + " return WebAssembly.compile(wasm).then((module) => {"
-                + "  new WebAssembly.Instance(module);"
-                + "  return \"success\";"
-                + " });"
-                + "});";
+        final String code =
+                ""
+                        + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((wasm) => {"
+                        + " return WebAssembly.compile(wasm).then((module) => {"
+                        + "  new WebAssembly.Instance(module);"
+                        + "  return \"success\";"
+                        + " });"
+                        + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_WASM_COMPILATION));
 
@@ -369,7 +656,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
 
@@ -383,11 +670,12 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testPromiseReturnLaterResolve() throws Throwable {
-        final String code1 = "var promiseResolve, promiseReject;"
-                + "new Promise(function(resolve, reject){"
-                + "  promiseResolve = resolve;"
-                + "  promiseReject = reject;"
-                + "});";
+        final String code1 =
+                "var promiseResolve, promiseReject;"
+                        + "new Promise(function(resolve, reject){"
+                        + "  promiseResolve = resolve;"
+                        + "  promiseReject = reject;"
+                        + "});";
         final String code2 = "promiseResolve(\"PASS\");";
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
@@ -395,12 +683,12 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
 
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code1);
-            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavaScriptAsync(code2);
+            jsIsolate.evaluateJavaScriptAsync(code2);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
@@ -413,29 +701,24 @@ public class JsSandboxServiceTest {
         final String success = "success";
         // The bytes of a minimal WebAssembly module, courtesy of v8/test/cctest/test-api-wasm.cc
         final byte[] bytes = {0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
-        final String code = ""
-                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => {"
-                + " return android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {"
-                + "  return android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {"
-                + "   return android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {"
-                + "    return android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {"
-                + "     return \"success\";"
-                + "     }, (error) => {"
-                + "     return error.message;"
-                + "    });"
-                + "   });"
-                + "  });"
-                + " });"
-                + "});";
+        final String code =
+                "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => { return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {  return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {   return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {    return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {    "
+                    + " return \"success\";     }, (error) => {     return error.message;    });  "
+                    + " });  }); });});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
 
             jsIsolate.provideNamedData("id-1", bytes);
             jsIsolate.provideNamedData("id-2", bytes);
@@ -452,23 +735,23 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testPromiseEvaluationThrow() throws Throwable {
-        final String provideString = "Hello World";
-        final byte[] bytes = provideString.getBytes(StandardCharsets.US_ASCII);
-        final String code = ""
-                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").catch((error) => {"
-                + " throw new WebAssembly.LinkError('RandomLinkError');"
-                + "});";
+        final String code =
+                ""
+                        + "android.consumeNamedDataAsArrayBuffer(\"id-1\").catch((error) => {"
+                        + " throw new WebAssembly.LinkError('RandomLinkError');"
+                        + "});";
         final String contains = "RandomLinkError";
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
 
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
             try {
@@ -492,7 +775,7 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             jsSandbox.close();
             // Check already running evaluation gets SandboxDeadException
@@ -518,8 +801,7 @@ public class JsSandboxServiceTest {
             // thrown instead.
             jsIsolate.close();
             try {
-                ListenableFuture<String> postCloseResultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(code);
+                jsIsolate.evaluateJavaScriptAsync(code);
                 Assert.fail("Should have thrown.");
             } catch (IllegalStateException e) {
                 // Expected
@@ -562,7 +844,7 @@ public class JsSandboxServiceTest {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
             try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-                 JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(5, TimeUnit.SECONDS);
 
@@ -577,27 +859,28 @@ public class JsSandboxServiceTest {
         final String code = "\"PASS\"";
         final String expected = "PASS";
         final long[] heapSizes = {
-                0,
-                REASONABLE_HEAP_SIZE,
-                REASONABLE_HEAP_SIZE - 1,
-                REASONABLE_HEAP_SIZE + 1,
-                REASONABLE_HEAP_SIZE + 4095,
-                REASONABLE_HEAP_SIZE + 4096,
-                REASONABLE_HEAP_SIZE + 65535,
-                REASONABLE_HEAP_SIZE + 65536,
-                1L << 50,
+            0,
+            REASONABLE_HEAP_SIZE,
+            REASONABLE_HEAP_SIZE - 1,
+            REASONABLE_HEAP_SIZE + 1,
+            REASONABLE_HEAP_SIZE + 4095,
+            REASONABLE_HEAP_SIZE + 4096,
+            REASONABLE_HEAP_SIZE + 65535,
+            REASONABLE_HEAP_SIZE + 65536,
+            1L << 50,
         };
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             for (long heapSize : heapSizes) {
                 IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
                 isolateStartupParameters.setMaxHeapSizeBytes(heapSize);
                 try (JavaScriptIsolate jsIsolate =
-                             jsSandbox.createIsolate(isolateStartupParameters)) {
+                        jsSandbox.createIsolate(isolateStartupParameters)) {
                     ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                     String result = resultFuture.get(5, TimeUnit.SECONDS);
                     Assert.assertEquals(expected, result);
@@ -607,163 +890,6 @@ public class JsSandboxServiceTest {
                             e);
                 }
             }
-        }
-    }
-
-    @Test
-    @LargeTest
-    public void testHeapSizeEnforced() throws Throwable {
-        final long maxHeapSize = REASONABLE_HEAP_SIZE;
-        // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
-        // that we're allocating an array of elements - not bytes. Filling will ensure that the
-        // array is not sparsely allocated.
-        final String oomingCode = ""
-                + "const array = Array(" + maxHeapSize + ").fill(Math.random(), 0);";
-        final String stableCode = "'PASS'";
-        final String stableExpected = "PASS";
-        final String unresolvedCode = "new Promise((resolve, reject) => {/* never resolve */})";
-        Context context = ContextUtils.getApplicationContext();
-
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
-                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
-        try (JavaScriptSandbox jsSandbox = jsSandboxFuture1.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
-            Assume.assumeTrue(
-                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
-            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
-            try (JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate(isolateStartupParameters);
-                 JavaScriptIsolate jsIsolate2 = jsSandbox.createIsolate()) {
-                ListenableFuture<String> earlyUnresolvedResultFuture =
-                        jsIsolate1.evaluateJavaScriptAsync(unresolvedCode);
-                ListenableFuture<String> earlyResultFuture =
-                        jsIsolate1.evaluateJavaScriptAsync(stableCode);
-                ListenableFuture<String> oomResultFuture =
-                        jsIsolate1.evaluateJavaScriptAsync(oomingCode);
-
-                // Wait for jsIsolate2 to fully initialize before using jsIsolate1.
-                jsIsolate2.evaluateJavaScriptAsync(stableCode).get(5, TimeUnit.SECONDS);
-
-                // Check that the heap limit is enforced and that it reports this was the evaluation
-                // that exceeded the limit.
-                try {
-                    // Use a generous timeout for OOM, as it may involve multiple rounds of garbage
-                    // collection.
-                    oomResultFuture.get(60, TimeUnit.SECONDS);
-                    Assert.fail("Should have thrown.");
-                } catch (ExecutionException e) {
-                    if (!(e.getCause() instanceof MemoryLimitExceededException)) {
-                        throw e;
-                    }
-                }
-
-                // Check that the previously submitted (but unresolved) promise evaluation reports a
-                // crash
-                try {
-                    earlyUnresolvedResultFuture.get(5, TimeUnit.SECONDS);
-                    Assert.fail("Should have thrown.");
-                } catch (ExecutionException e) {
-                    if (!(e.getCause() instanceof IsolateTerminatedException)) {
-                        throw e;
-                    }
-                }
-
-                // Check that the previously submitted evaluation which completed before the memory
-                // limit was exceeded, but for which we haven't yet gotten the result, returns its
-                // result just fine.
-                String result = earlyResultFuture.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(stableExpected, result);
-
-                // Check that a totally new evaluation reports a crash
-                ListenableFuture<String> lateResultFuture =
-                        jsIsolate1.evaluateJavaScriptAsync(stableCode);
-                try {
-                    lateResultFuture.get(5, TimeUnit.SECONDS);
-                    Assert.fail("Should have thrown.");
-                } catch (ExecutionException e) {
-                    if (!(e.getCause() instanceof IsolateTerminatedException)) {
-                        throw e;
-                    }
-                }
-
-                // Check that other pre-existing isolates can still be used.
-                ListenableFuture<String> otherIsolateResultFuture =
-                        jsIsolate2.evaluateJavaScriptAsync(stableCode);
-                String otherIsolateResult = otherIsolateResultFuture.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(stableExpected, otherIsolateResult);
-            }
-        }
-    }
-
-    @Test
-    @LargeTest
-    public void testIsolateCreationAfterCrash() throws Throwable {
-        final long maxHeapSize = REASONABLE_HEAP_SIZE;
-        // We need to beat the v8 optimizer to ensure it really allocates the required memory. Note
-        // that we're allocating an array of elements - not bytes. Filling will ensure that the
-        // array is not sparsely allocated.
-        final String oomingCode = ""
-                + "const array = Array(" + maxHeapSize + ").fill(Math.random(), 0);";
-        final String stableCode = "'PASS'";
-        final String stableExpected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
-
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
-                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
-        try (JavaScriptSandbox jsSandbox = jsSandboxFuture1.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
-            Assume.assumeTrue(
-                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
-            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
-            try (JavaScriptIsolate jsIsolate1 = jsSandbox.createIsolate(isolateStartupParameters)) {
-                ListenableFuture<String> oomResultFuture =
-                        jsIsolate1.evaluateJavaScriptAsync(oomingCode);
-
-                // Check that the heap limit is enforced and that it reports this was the evaluation
-                // that exceeded the limit.
-                try {
-                    // Use a generous timeout for OOM, as it may involve multiple rounds of garbage
-                    // collection.
-                    oomResultFuture.get(60, TimeUnit.SECONDS);
-                    Assert.fail("Should have thrown.");
-                } catch (ExecutionException e) {
-                    if (!(e.getCause() instanceof MemoryLimitExceededException)) {
-                        throw e;
-                    }
-                }
-
-                // Check that other isolates can still be created and used (without closing
-                // jsIsolate1).
-                try (JavaScriptIsolate jsIsolate2 =
-                             jsSandbox.createIsolate(isolateStartupParameters)) {
-                    ListenableFuture<String> resultFuture =
-                            jsIsolate2.evaluateJavaScriptAsync(stableCode);
-                    String result = resultFuture.get(5, TimeUnit.SECONDS);
-                    Assert.assertEquals(stableExpected, result);
-                }
-            }
-
-            // Check that other isolates can still be created and used (after closing jsIsolate1).
-            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                ListenableFuture<String> resultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(stableCode);
-                String result = resultFuture.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(stableExpected, result);
-            }
-        }
-
-        // Check that the old sandbox with the "crashed" isolate can be torn down and that a new
-        // sandbox and isolate can be spun up.
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture2 =
-                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
-        try (JavaScriptSandbox jsSandbox = jsSandboxFuture2.get(5, TimeUnit.SECONDS);
-             JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(stableCode);
-            String result = resultFuture.get(5, TimeUnit.SECONDS);
-            Assert.assertEquals(stableExpected, result);
         }
     }
 
@@ -779,24 +905,27 @@ public class JsSandboxServiceTest {
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 // Set up a promise that we can resolve
-                final String goodPromiseCode = ""
-                        + "let ext_resolve;"
-                        + "new Promise((resolve, reject) => {"
-                        + " ext_resolve = resolve;"
-                        + "})";
+                final String goodPromiseCode =
+                        ""
+                                + "let ext_resolve;"
+                                + "new Promise((resolve, reject) => {"
+                                + " ext_resolve = resolve;"
+                                + "})";
                 ListenableFuture<String> goodPromiseFuture =
                         jsIsolate.evaluateJavaScriptAsync(goodPromiseCode);
 
                 // Set up a promise that we can reject
-                final String badPromiseCode = ""
-                        + "let ext_reject;"
-                        + "new Promise((resolve, reject) => {"
-                        + " ext_reject = reject;"
-                        + "})";
+                final String badPromiseCode =
+                        ""
+                                + "let ext_reject;"
+                                + "new Promise((resolve, reject) => {"
+                                + " ext_reject = reject;"
+                                + "})";
                 ListenableFuture<String> badPromiseFuture =
                         jsIsolate.evaluateJavaScriptAsync(badPromiseCode);
 
@@ -808,10 +937,11 @@ public class JsSandboxServiceTest {
 
                 // Trigger the resolve and rejection from another evaluation to ensure the promises
                 // are truly asynchronous.
-                final String triggerCode = ""
-                        + "ext_resolve('I should succeed!');"
-                        + "ext_reject(new Error('I should fail!'));"
-                        + "'DONE'";
+                final String triggerCode =
+                        ""
+                                + "ext_resolve('I should succeed!');"
+                                + "ext_reject(new Error('I should fail!'));"
+                                + "'DONE'";
                 ListenableFuture<String> triggerFuture =
                         jsIsolate.evaluateJavaScriptAsync(triggerCode);
                 String triggerResult = triggerFuture.get(5, TimeUnit.SECONDS);
@@ -823,7 +953,7 @@ public class JsSandboxServiceTest {
 
                 // Check reject
                 try {
-                    String badPromiseResult = badPromiseFuture.get(5, TimeUnit.SECONDS);
+                    badPromiseFuture.get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof EvaluationFailedException)) {
@@ -840,19 +970,22 @@ public class JsSandboxServiceTest {
     public void testArrayBufferSizeEnforced() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         // V8 cannot sparsely allocate array buffers, so no fill required.
-        final String oomingCode = ""
-                + "const bigArray = new Float32Array(new ArrayBuffer(" + (maxHeapSize + 1) + "));"
-                + "'Unreachable'";
-        final String stableCode = ""
-                + "const smallArray = new Float32Array(new ArrayBuffer(100));"
-                + "'PASS'";
+        final String oomingCode =
+                ""
+                        + "const bigArray = new Float32Array(new ArrayBuffer("
+                        + (maxHeapSize + 1)
+                        + "));"
+                        + "'Unreachable'";
+        final String stableCode =
+                "" + "const smallArray = new Float32Array(new ArrayBuffer(100));" + "'PASS'";
         final String stableExpected = "PASS";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
@@ -867,8 +1000,8 @@ public class JsSandboxServiceTest {
                         throw e;
                     }
                     EvaluationFailedException cause = (EvaluationFailedException) e.getCause();
-                    if (!cause.getMessage().startsWith(
-                            "Uncaught RangeError: Array buffer allocation failed")) {
+                    if (!cause.getMessage()
+                            .startsWith("Uncaught RangeError: Array buffer allocation failed")) {
                         throw e;
                     }
                 }
@@ -890,8 +1023,9 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             final long num_doubles = 1024 * 1024;
@@ -907,13 +1041,13 @@ public class JsSandboxServiceTest {
             //
             // We use doubles (rather than bytes) to reduce (heap) Array overheads.
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                final String code = ""
-                        + "this.arrayLength = " + num_doubles + ";"
-                        + "this.obj = {"
-                        + " array: Array(this.arrayLength).fill(Math.random(), 0),"
-                        + " arraybuffer: new Float64Array(new ArrayBuffer(8 * this.arrayLength)),"
-                        + "};"
-                        + "'PASS'";
+                final String code =
+                        ""
+                                + "this.arrayLength = "
+                                + num_doubles
+                                + ";this.obj = { array: Array(this.arrayLength).fill(Math.random(),"
+                                + " 0), arraybuffer: new Float64Array(new ArrayBuffer(8 *"
+                                + " this.arrayLength)),};'PASS'";
                 final String expected = "PASS";
                 for (int i = 0; i < allocationsToTry; i++) {
                     ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
@@ -933,12 +1067,14 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             // There will be named data allocations of approximately memoryUseFactor times the
@@ -951,15 +1087,20 @@ public class JsSandboxServiceTest {
                 for (int i = 0; i < allocationsToTry; i++) {
                     boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-" + i, bytes);
                     Assert.assertTrue(provideNamedDataReturn);
-                    final String code = ""
-                            + "android.consumeNamedDataAsArrayBuffer('id-' + " + i + ")"
-                            + " .then((arrayBuffer) => {"
-                            + "  const len = arrayBuffer.byteLength;"
-                            + "  if (len != " + LARGE_NAMED_DATA_SIZE + ") {"
-                            + "   throw new Error('Bad length ' + len);"
-                            + "  }"
-                            + "  return 'PASS';"
-                            + " })";
+                    final String code =
+                            ""
+                                    + "android.consumeNamedDataAsArrayBuffer('id-' + "
+                                    + i
+                                    + ")"
+                                    + " .then((arrayBuffer) => {"
+                                    + "  const len = arrayBuffer.byteLength;"
+                                    + "  if (len != "
+                                    + LARGE_NAMED_DATA_SIZE
+                                    + ") {"
+                                    + "   throw new Error('Bad length ' + len);"
+                                    + "  }"
+                                    + "  return 'PASS';"
+                                    + " })";
                     final String expected = "PASS";
                     ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                     // Execution time may be unstable if the GC kicks in, so go with 60 seconds.
@@ -984,44 +1125,53 @@ public class JsSandboxServiceTest {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         final byte[] bytes = new byte[LARGE_NAMED_DATA_SIZE];
         final long allocationsToTry = (maxHeapSize / LARGE_NAMED_DATA_SIZE) + 1;
-        final String code = ""
-                + "const allocation_size = " + LARGE_NAMED_DATA_SIZE + ";"
-                + "this.array_buffers = new Array(" + allocationsToTry + ");"
-                + "let i;"
-                + "for (i = 0; i < this.array_buffers.length; i++) {"
-                + " try {"
-                + "  this.array_buffers[i] = new ArrayBuffer(allocation_size);"
-                + " } catch (e) {"
-                + "  if (e instanceof RangeError) {"
-                + "   break;"
-                + "  }"
-                + " }"
-                + "}"
-                + "if (i == this.array_buffers.length) {"
-                + " throw new Error('Expected to run out of memory, but did not');"
-                + "} else if (i == 0) {"
-                + " throw new Error('Could not achieve at least one allocation');"
-                + "}"
-                + "this.array_buffers[0] = null;"
-                + "android.consumeNamedDataAsArrayBuffer('test')"
-                + " .then((arrayBuffer) => {"
-                + "  const len = arrayBuffer.byteLength;"
-                + "  if (len != " + LARGE_NAMED_DATA_SIZE + ") {"
-                + "   throw new Error('Bad length ' + len);"
-                + "  }"
-                + "  return 'PASS';"
-                + " })";
+        final String code =
+                ""
+                        + "const allocation_size = "
+                        + LARGE_NAMED_DATA_SIZE
+                        + ";"
+                        + "this.array_buffers = new Array("
+                        + allocationsToTry
+                        + ");"
+                        + "let i;"
+                        + "for (i = 0; i < this.array_buffers.length; i++) {"
+                        + " try {"
+                        + "  this.array_buffers[i] = new ArrayBuffer(allocation_size);"
+                        + " } catch (e) {"
+                        + "  if (e instanceof RangeError) {"
+                        + "   break;"
+                        + "  }"
+                        + " }"
+                        + "}"
+                        + "if (i == this.array_buffers.length) {"
+                        + " throw new Error('Expected to run out of memory, but did not');"
+                        + "} else if (i == 0) {"
+                        + " throw new Error('Could not achieve at least one allocation');"
+                        + "}"
+                        + "this.array_buffers[0] = null;"
+                        + "android.consumeNamedDataAsArrayBuffer('test')"
+                        + " .then((arrayBuffer) => {"
+                        + "  const len = arrayBuffer.byteLength;"
+                        + "  if (len != "
+                        + LARGE_NAMED_DATA_SIZE
+                        + ") {"
+                        + "   throw new Error('Bad length ' + len);"
+                        + "  }"
+                        + "  return 'PASS';"
+                        + " })";
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
@@ -1043,8 +1193,9 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             // The service code should assume that small allocations have overhead and will cost at
@@ -1055,23 +1206,26 @@ public class JsSandboxServiceTest {
                 // We need to use `new Uint8Array(new ArrayBuffer(1))` instead of `new
                 // Uint8Array(1)` because V8 appears to instead internalize (onto the V8 heap)
                 // smaller directly constructed typed arrays.
-                final String code = ""
-                        + "(function(){"
-                        + " const arrayLength = " + allocations + ";"
-                        + " const buffers = Array(arrayLength);"
-                        + " for (let i = 0; i < arrayLength; i++) {"
-                        + "  try {"
-                        + "   buffers[i] = new Uint8Array(new ArrayBuffer(1));"
-                        + "  } catch (e) {"
-                        + "   if (e instanceof RangeError) {"
-                        + "    return i;"
-                        + "   } else {"
-                        + "    throw e;"
-                        + "   }"
-                        + "  }"
-                        + " }"
-                        + " return 'FAIL';"
-                        + "})()";
+                final String code =
+                        ""
+                                + "(function(){"
+                                + " const arrayLength = "
+                                + allocations
+                                + ";"
+                                + " const buffers = Array(arrayLength);"
+                                + " for (let i = 0; i < arrayLength; i++) {"
+                                + "  try {"
+                                + "   buffers[i] = new Uint8Array(new ArrayBuffer(1));"
+                                + "  } catch (e) {"
+                                + "   if (e instanceof RangeError) {"
+                                + "    return i;"
+                                + "   } else {"
+                                + "    throw e;"
+                                + "   }"
+                                + "  }"
+                                + " }"
+                                + " return 'FAIL';"
+                                + "})()";
                 final String notExpected = "FAIL";
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(60, TimeUnit.SECONDS);
@@ -1083,9 +1237,12 @@ public class JsSandboxServiceTest {
                 // something less than the full limit, but which is still much more than what was
                 // logically requested by the many smaller buffers.
                 final long size = maxHeapSize / 8;
-                final String code = ""
-                        + "const buffer = new Uint8Array(new ArrayBuffer(" + size + "));"
-                        + "'PASS'";
+                final String code =
+                        ""
+                                + "const buffer = new Uint8Array(new ArrayBuffer("
+                                + size
+                                + "));"
+                                + "'PASS'";
                 final String expected = "PASS";
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(10, TimeUnit.SECONDS);
@@ -1105,33 +1262,26 @@ public class JsSandboxServiceTest {
         final byte[] smallBytes = provideString.getBytes(StandardCharsets.US_ASCII);
         // Test that attempting to consume an oversized named data into a new array buffer fails
         // with a RangeError, and a subsequent smaller request succeeds.
-        final String code = ""
-                + "function ab2str(buf) {"
-                + " return String.fromCharCode.apply(null, new Uint8Array(buf));"
-                + "}"
-                + "async function test() {"
-                + " try {"
-                + "  await android.consumeNamedDataAsArrayBuffer('large');"
-                + "  throw new Error('consumption of large named data should not have succeeded');"
-                + " } catch (e) {"
-                + "  if (!(e instanceof RangeError)) {"
-                + "   throw e;"
-                + "  }"
-                + " }"
-                + " const buffer = await android.consumeNamedDataAsArrayBuffer('small');"
-                + " return await ab2str(buffer);"
-                + "}"
-                + "test()";
+        final String code =
+                "function ab2str(buf) { return String.fromCharCode.apply(null, new"
+                    + " Uint8Array(buf));}async function test() { try {  await"
+                    + " android.consumeNamedDataAsArrayBuffer('large');  throw new"
+                    + " Error('consumption of large named data should not have succeeded'); } catch"
+                    + " (e) {  if (!(e instanceof RangeError)) {   throw e;  } } const buffer ="
+                    + " await android.consumeNamedDataAsArrayBuffer('small'); return await"
+                    + " ab2str(buffer);}test()";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
@@ -1160,8 +1310,9 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
             for (int i = 0; i < numIsolates; i++) {
                 try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                     for (int j = 0; j < numNames; j++) {
@@ -1178,17 +1329,16 @@ public class JsSandboxServiceTest {
     @LargeTest
     public void testLargeScriptJsEvaluation() throws Throwable {
         String longString = "a".repeat(2000000);
-        final String code = ""
-                + "let " + longString + " = 0;"
-                + "\"PASS\"";
+        final String code = "" + "let " + longString + " = 0;" + "\"PASS\"";
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(10, TimeUnit.SECONDS);
@@ -1209,8 +1359,9 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(60, TimeUnit.SECONDS);
@@ -1230,8 +1381,9 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 try {
@@ -1255,14 +1407,14 @@ public class JsSandboxServiceTest {
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             IsolateStartupParameters settings = new IsolateStartupParameters();
             settings.setMaxEvaluationReturnSizeBytes(maxSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(settings)) {
                 // Running code that returns greater than `maxSize` number of bytes should throw.
-                final String greaterThanMaxSizeCode = ""
-                        + "'a'.repeat(" + (maxSize + 1) + ");";
+                final String greaterThanMaxSizeCode = "" + "'a'.repeat(" + (maxSize + 1) + ");";
                 ListenableFuture<String> greaterThanMaxSizeResultFuture =
                         jsIsolate.evaluateJavaScriptAsync(greaterThanMaxSizeCode);
                 try {
@@ -1275,8 +1427,7 @@ public class JsSandboxServiceTest {
                 }
 
                 // Running code that returns `maxSize` number of bytes should not throw.
-                final String maxSizeCode = ""
-                        + "'a'.repeat(" + maxSize + ");";
+                final String maxSizeCode = "" + "'a'.repeat(" + maxSize + ");";
                 final String maxSizeExpected = "a".repeat(maxSize);
                 ListenableFuture<String> maxSizeResultFuture =
                         jsIsolate.evaluateJavaScriptAsync(maxSizeCode);
@@ -1284,8 +1435,7 @@ public class JsSandboxServiceTest {
                 Assert.assertEquals(maxSizeExpected, maxSizeResult);
 
                 // Running code that returns less than `maxSize` number of bytes should not throw.
-                final String lessThanMaxSizeCode = ""
-                        + "'a'.repeat(" + (maxSize - 1) + ");";
+                final String lessThanMaxSizeCode = "" + "'a'.repeat(" + (maxSize - 1) + ");";
                 final String lessThanMaxSizeExpected = "a".repeat(maxSize - 1);
                 ListenableFuture<String> lessThanMaxSizeResultFuture =
                         jsIsolate.evaluateJavaScriptAsync(lessThanMaxSizeCode);
@@ -1303,8 +1453,9 @@ public class JsSandboxServiceTest {
         final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             final IsolateStartupParameters settings = new IsolateStartupParameters();
             settings.setMaxEvaluationReturnSizeBytes(maxSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(settings)) {
@@ -1362,8 +1513,9 @@ public class JsSandboxServiceTest {
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-            final ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(
-                    "throw " + ASCII_ESCAPED_JS_UNICODE_TEST_STRING);
+            final ListenableFuture<String> resultFuture =
+                    jsIsolate.evaluateJavaScriptAsync(
+                            "throw " + ASCII_ESCAPED_JS_UNICODE_TEST_STRING);
             try {
                 resultFuture.get(5, TimeUnit.SECONDS);
                 Assert.fail("Should have thrown.");
@@ -1382,15 +1534,14 @@ public class JsSandboxServiceTest {
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
                 JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             // Test evaluation using String
             final ListenableFuture<String> resultFuture =
                     jsIsolate.evaluateJavaScriptAsync(JS_UNICODE_TEST_STRING);
             final String result = resultFuture.get(5, TimeUnit.SECONDS);
-
             Assert.assertEquals(UNICODE_TEST_STRING, result);
-
         }
     }
 
@@ -1404,20 +1555,23 @@ public class JsSandboxServiceTest {
                 JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_CONSOLE_MESSAGING));
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             // Test a small console message
             {
                 final String code = "console.log(" + ASCII_ESCAPED_JS_UNICODE_TEST_STRING + ");";
                 final AtomicReference<String> messageBody = new AtomicReference<String>(null);
                 final CountDownLatch latch = new CountDownLatch(1);
-                jsIsolate.setConsoleCallback(new JavaScriptConsoleCallback() {
-                    @Override
-                    public void onConsoleMessage(JavaScriptConsoleCallback.ConsoleMessage message) {
-                        messageBody.set(message.getMessage());
-                        latch.countDown();
-                    }
-                });
+                jsIsolate.setConsoleCallback(
+                        new JavaScriptConsoleCallback() {
+                            @Override
+                            public void onConsoleMessage(
+                                    JavaScriptConsoleCallback.ConsoleMessage message) {
+                                messageBody.set(message.getMessage());
+                                latch.countDown();
+                            }
+                        });
                 jsIsolate.evaluateJavaScriptAsync(code).get(5, TimeUnit.SECONDS);
 
                 Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
@@ -1431,26 +1585,30 @@ public class JsSandboxServiceTest {
             final int truncationUpperBound = 1024 * 1024;
             for (int byteOffset = 0; byteOffset < 4; byteOffset++) {
                 // \ud83d\udc4b (waving hand sign) is 4 bytes in both UTF-8 and UTF-16.
-                final String longString = "a".repeat(byteOffset)
-                        + "\ud83d\udc4b".repeat(truncationUpperBound / 4 + 1)
-                        + "a".repeat(byteOffset);
+                final String longString =
+                        "a".repeat(byteOffset)
+                                + "\ud83d\udc4b".repeat(truncationUpperBound / 4 + 1)
+                                + "a".repeat(byteOffset);
                 final String code = "console.log('" + longString + "');";
                 final AtomicReference<String> messageBody = new AtomicReference<String>(null);
                 final CountDownLatch latch = new CountDownLatch(1);
-                jsIsolate.setConsoleCallback(new JavaScriptConsoleCallback() {
-                    @Override
-                    public void onConsoleMessage(JavaScriptConsoleCallback.ConsoleMessage message) {
-                        messageBody.set(message.getMessage());
-                        latch.countDown();
-                    }
-                });
+                jsIsolate.setConsoleCallback(
+                        new JavaScriptConsoleCallback() {
+                            @Override
+                            public void onConsoleMessage(
+                                    JavaScriptConsoleCallback.ConsoleMessage message) {
+                                messageBody.set(message.getMessage());
+                                latch.countDown();
+                            }
+                        });
                 jsIsolate.evaluateJavaScriptAsync(code).get(5, TimeUnit.SECONDS);
 
                 Assert.assertTrue(
                         "Timeout with byteOffset " + byteOffset, latch.await(2, TimeUnit.SECONDS));
                 final int messageUtf8ByteLength =
                         messageBody.get().getBytes(StandardCharsets.UTF_8).length;
-                Assert.assertTrue("messageUtf8ByteLength too large with byteOffset " + byteOffset,
+                Assert.assertTrue(
+                        "messageUtf8ByteLength too large with byteOffset " + byteOffset,
                         messageUtf8ByteLength <= truncationUpperBound);
                 assertStringEndsWithValidCodePoint(messageBody.get());
             }
@@ -1466,14 +1624,17 @@ public class JsSandboxServiceTest {
         final ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
-            Assume.assumeTrue(jsSandbox.isFeatureSupported(
-                    JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT));
             final IsolateStartupParameters settings = new IsolateStartupParameters();
             settings.setMaxEvaluationReturnSizeBytes(maxSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(settings)) {
                 for (int byteOffset = 0; byteOffset < 4; byteOffset++) {
-                    final String longString = "a".repeat(byteOffset)
-                            + "\ud83d\udc4b".repeat(maxSize) + "a".repeat(byteOffset);
+                    final String longString =
+                            "a".repeat(byteOffset)
+                                    + "\ud83d\udc4b".repeat(maxSize)
+                                    + "a".repeat(byteOffset);
                     final String code = "throw '" + longString + "';";
                     final ListenableFuture<String> resultFuture =
                             jsIsolate.evaluateJavaScriptAsync(code);
@@ -1481,7 +1642,8 @@ public class JsSandboxServiceTest {
                         resultFuture.get(5, TimeUnit.SECONDS);
                         Assert.fail("Should have thrown with byteOffset " + byteOffset);
                     } catch (ExecutionException e) {
-                        Assert.assertTrue("Bad exception with byteOffset " + byteOffset,
+                        Assert.assertTrue(
+                                "Bad exception with byteOffset " + byteOffset,
                                 e.getCause().getClass().equals(EvaluationFailedException.class));
                         final int messageUtf8ByteLength =
                                 e.getCause().getMessage().getBytes(StandardCharsets.UTF_8).length;

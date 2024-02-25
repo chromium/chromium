@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 
+#include <optional>
 #include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -21,7 +22,7 @@ class ChunkToLayerMapperTest : public testing::Test {
     DEFINE_STATIC_LOCAL(Persistent<FakeDisplayItemClient>, fake_client,
                         (MakeGarbageCollected<FakeDisplayItemClient>()));
     DEFINE_STATIC_LOCAL(
-        absl::optional<PaintChunk::Id>, id,
+        std::optional<PaintChunk::Id>, id,
         (PaintChunk::Id(fake_client->Id(), DisplayItem::kDrawingFirst)));
     PaintChunk chunk(0, 1, *fake_client, *id, state);
     return chunk;

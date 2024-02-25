@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "ash/calendar/calendar_controller.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,18 +22,22 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 using google_apis::RequestSender;
+using google_apis::calendar::CalendarApiCalendarListRequest;
 using google_apis::calendar::CalendarApiEventsRequest;
 using google_apis::calendar::CalendarEventListCallback;
+using google_apis::calendar::CalendarListCallback;
 
 namespace ash {
 namespace {
 
 constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("calendar_get_events", R"(
-        semantics {
-          sender: "Calendar Keyed Service"
-          description:
-            "Fetch calender events."
+       semantics {
+         sender: "Calendar Keyed Service"
+         description:
+            "Fetch a Chrome OS user's Google Calendar calendar list or event "
+            "list in order to display their events in the Quick Settings "
+            "Calendar."
           trigger:
               "Chrome OS system tray calendar view is opened by the user."
           data:
@@ -76,11 +82,11 @@ CalendarKeyedService::CalendarKeyedService(Profile* profile,
 }
 
 CalendarKeyedService::~CalendarKeyedService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread());
 }
 
 void CalendarKeyedService::Initialize() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread());
 
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kCalendarReadOnlyOAuth2Scope);
@@ -113,25 +119,59 @@ void CalendarKeyedService::Shutdown() {
   sender_.reset();
 }
 
-base::OnceClosure CalendarKeyedService::GetEventList(
-    CalendarEventListCallback callback,
-    const base::Time& start_time,
-    const base::Time& end_time) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(callback);
-  DCHECK_LT(start_time, end_time);
+base::OnceClosure CalendarKeyedService::GetCalendarList(
+    CalendarListCallback callback) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK(callback);
 
   if (!sender_) {
-    std::move(callback).Run(google_apis::OTHER_ERROR, nullptr);
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*calendars=*/nullptr);
     return base::DoNothing();
   }
 
-  std::unique_ptr<CalendarApiEventsRequest> request =
+  return sender_->StartRequestWithAuthRetry(
+      std::make_unique<CalendarApiCalendarListRequest>(
+          sender_.get(), url_generator_, std::move(callback)));
+}
+
+base::OnceClosure CalendarKeyedService::GetEventList(
+    CalendarEventListCallback callback,
+    const base::Time start_time,
+    const base::Time end_time) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK(callback);
+  CHECK_LT(start_time, end_time);
+
+  if (!sender_) {
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
+    return base::DoNothing();
+  }
+
+  return sender_->StartRequestWithAuthRetry(
       std::make_unique<CalendarApiEventsRequest>(sender_.get(), url_generator_,
                                                  std::move(callback),
-                                                 start_time, end_time);
+                                                 start_time, end_time));
+}
 
-  return sender_->StartRequestWithAuthRetry(std::move(request));
+base::OnceClosure CalendarKeyedService::GetEventList(
+    CalendarEventListCallback callback,
+    const base::Time start_time,
+    const base::Time end_time,
+    const std::string& calendar_id,
+    const std::string& calendar_color_id) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK(callback);
+  CHECK_LT(start_time, end_time);
+
+  if (!sender_) {
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
+    return base::DoNothing();
+  }
+
+  return sender_->StartRequestWithAuthRetry(
+      std::make_unique<CalendarApiEventsRequest>(
+          sender_.get(), url_generator_, std::move(callback), start_time,
+          end_time, calendar_id, calendar_color_id));
 }
 
 }  // namespace ash

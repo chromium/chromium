@@ -5,10 +5,10 @@
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
@@ -18,11 +18,11 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
@@ -95,8 +95,9 @@ int GetDeviceTypeA11yTextId(const DeviceType device_type) {
 // provided |battery_info|.
 const std::u16string GetDeviceBatteryA11yText(
     const DeviceBatteryInfoPtr& battery_info) {
-  if (!battery_info)
+  if (!battery_info) {
     return std::u16string();
+  }
 
   if (HasMultipleBatteryInfos(battery_info)) {
     std::u16string battery_text;
@@ -104,10 +105,12 @@ const std::u16string GetDeviceBatteryA11yText(
     auto add_battery_text_if_exists =
         [&battery_text](const BatteryPropertiesPtr& battery_properties,
                         int text_id) {
-          if (!battery_properties)
+          if (!battery_properties) {
             return;
-          if (!battery_text.empty())
+          }
+          if (!battery_text.empty()) {
             battery_text = base::StrCat({battery_text, u" "});
+          }
           battery_text = base::StrCat(
               {battery_text,
                l10n_util::GetStringFUTF16(
@@ -183,38 +186,31 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   // populated with one or both of these views. For simplicity, instead of
   // trying to determine which views exist and modifying them, and creating the
   // missing views, we instead clear all of the views and recreate them.
-  if (is_populated())
+  if (is_populated()) {
     Reset();
+  }
 
   const DeviceType& device_type =
       device_properties_->device_properties->device_type;
 
-  AddIconAndLabel(
-      ui::ImageModel::FromVectorIcon(
-          GetDeviceIcon(device_type),
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-              : kColorAshIconColorPrimary),
-      GetPairedDeviceName(device_properties_));
-  if (chromeos::features::IsJellyEnabled()) {
-    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
-                                          *text_label());
-  }
+  AddIconAndLabel(ui::ImageModel::FromVectorIcon(
+                      GetDeviceIcon(device_type),
+                      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)),
+                  GetPairedDeviceName(device_properties_));
+  text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *text_label());
 
   UpdateAccessibleName(device_index, total_device_count);
 
   // Adds an icon to indicate that the device supports profiles or services that
   // are disabled or blocked by enterprise policy.
   if (device_properties->device_properties->is_blocked_by_policy) {
-    AddRightIcon(
-        ui::ImageModel::FromVectorIcon(
-            chromeos::kEnterpriseIcon,
-            chromeos::features::IsJellyEnabled()
-                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                : kColorAshIconColorBlocked,
-            kEnterpriseManagedIconSizeDip),
-        /*icon_size=*/kEnterpriseManagedIconSizeDip);
+    AddRightIcon(ui::ImageModel::FromVectorIcon(
+                     chromeos::kEnterpriseIcon,
+                     static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
+                     kEnterpriseManagedIconSizeDip),
+                 /*icon_size=*/kEnterpriseManagedIconSizeDip);
   }
 
   const DeviceConnectionState& connection_state =
@@ -259,8 +255,9 @@ void BluetoothDeviceListItemView::UpdateAccessibleName(
   const std::u16string battery_text = GetDeviceBatteryA11yText(
       device_properties_->device_properties->battery_info);
 
-  if (!battery_text.empty())
+  if (!battery_text.empty()) {
     a11y_text = base::StrCat({a11y_text, u" ", battery_text});
+  }
 
   SetAccessibleName(a11y_text);
 }
@@ -286,8 +283,9 @@ void BluetoothDeviceListItemView::UpdateMultipleBatteryView(
   // Remove battery view if it is not a multiple battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (sub_row()->children().at(0)->GetClassName() !=
-        BluetoothDeviceListItemMultipleBatteryView::kViewClassName) {
+    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
+        std::string_view(
+            BluetoothDeviceListItemMultipleBatteryView::kViewClassName)) {
       sub_row()->RemoveAllChildViews();
     }
   }
@@ -313,8 +311,8 @@ void BluetoothDeviceListItemView::UpdateSingleBatteryView(
   // Remove battery view if it is not a single battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (sub_row()->children().at(0)->GetClassName() !=
-        BluetoothDeviceListItemBatteryView::kViewClassName) {
+    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
+        std::string_view(BluetoothDeviceListItemBatteryView::kViewClassName)) {
       sub_row()->RemoveAllChildViews();
     }
   }
@@ -337,8 +335,7 @@ void BluetoothDeviceListItemView::UpdateSingleBatteryView(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL);
 }
 
-const char* BluetoothDeviceListItemView::GetClassName() const {
-  return "BluetoothDeviceListItemView";
-}
+BEGIN_METADATA(BluetoothDeviceListItemView)
+END_METADATA
 
 }  // namespace ash

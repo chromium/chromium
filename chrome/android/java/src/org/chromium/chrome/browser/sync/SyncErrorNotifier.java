@@ -17,14 +17,17 @@ import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -39,9 +42,12 @@ import java.lang.annotation.RetentionPolicy;
  * Errors can be fixed by clicking the notification.
  */
 public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
-    @IntDef({NotificationState.REQUIRE_PASSPHRASE,
-            NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS,
-            NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING, NotificationState.HIDDEN})
+    @IntDef({
+        NotificationState.REQUIRE_PASSPHRASE,
+        NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS,
+        NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING,
+        NotificationState.HIDDEN
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface NotificationState {
         int REQUIRE_PASSPHRASE = 0;
@@ -52,10 +58,10 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     private static final String TAG = "SyncUI";
 
-    private @Nullable static SyncErrorNotifier sInstance;
-    private static boolean sInitialized;
+    private static ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
+            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
     private final SyncService mSyncService;
     private final TrustedVaultClient mTrustedVaultClient;
 
@@ -64,23 +70,28 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     private @NotificationState int mNotificationState = NotificationState.HIDDEN;
 
     /**
-     * Returns null if there's no instance of SyncService (Sync disabled via command-line).
+     * Returns null if there's no instance of SyncService for the given {@link Profile} (Sync
+     * disabled via command-line).
      */
-    public static @Nullable SyncErrorNotifier get() {
+    public static @Nullable SyncErrorNotifier getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        if (!sInitialized) {
-            if (SyncServiceFactory.get() != null) {
-                sInstance = new SyncErrorNotifier(
-                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
-                        SyncServiceFactory.get(), TrustedVaultClient.get());
-            }
-            sInitialized = true;
-        }
-        return sInstance;
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        if (syncService == null) return null;
+        return sProfileMap.getForProfile(
+                profile,
+                () -> {
+                    return new SyncErrorNotifier(
+                            BaseNotificationManagerProxyFactory.create(
+                                    ContextUtils.getApplicationContext()),
+                            syncService,
+                            TrustedVaultClient.get());
+                });
     }
 
     @VisibleForTesting
-    public SyncErrorNotifier(NotificationManagerProxy notificationManager, SyncService syncService,
+    public SyncErrorNotifier(
+            BaseNotificationManagerProxy notificationManager,
+            SyncService syncService,
             TrustedVaultClient trustedVaultClient) {
         mNotificationManager = notificationManager;
         mSyncService = syncService;
@@ -106,68 +117,71 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
             return;
         }
 
-        @NotificationState
-        int previousState = mNotificationState;
+        @NotificationState int previousState = mNotificationState;
         mNotificationState = goalState;
         switch (goalState) {
-            case NotificationState.HIDDEN: {
-                mNotificationManager.cancel(NotificationConstants.NOTIFICATION_ID_SYNC);
-                break;
-            }
-            case NotificationState.REQUIRE_PASSPHRASE: {
-                mSyncService.markPassphrasePromptMutedForCurrentProductVersion();
-                showNotification(R.string.sync_error_card_title, R.string.hint_passphrase_required,
-                        createPassphraseIntent());
-                break;
-            }
+            case NotificationState.HIDDEN:
+                {
+                    mNotificationManager.cancel(NotificationConstants.NOTIFICATION_ID_SYNC);
+                    break;
+                }
+            case NotificationState.REQUIRE_PASSPHRASE:
+                {
+                    mSyncService.markPassphrasePromptMutedForCurrentProductVersion();
+                    showNotification(
+                            createPassphraseIntent());
+                    break;
+                }
             case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING: {
-                createTrustedVaultKeyRetrievalIntent().then(
-                        intent
-                        -> {
-                            if (mNotificationState != goalState) {
-                                // State changed in the meantime, throw the intent away.
-                                return;
-                            }
-                            if (mNotificationState
-                                    == NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS) {
-                                showNotification(R.string.password_sync_error_summary,
-                                        R.string.hint_sync_retrieve_keys_for_passwords, intent);
-                            } else {
-                                showNotification(R.string.sync_error_card_title,
-                                        R.string.hint_sync_retrieve_keys_for_everything, intent);
-                            }
-                        },
-                        exception -> {
-                            if (mNotificationState != goalState) {
-                                // State changed in the meantime. Lucky us, because we'd have no
-                                // intent to show the notification :).
-                                return;
-                            }
-                            // We still want to show the trusted vault notification but couldn't
-                            // produce the intent. Just reset the state.
-                            mNotificationState = previousState;
-                            Log.w(TAG, "Error creating key retrieval intent: ", exception);
-                        });
-                break;
-            }
-            default: {
-                assert false;
-                break;
-            }
+            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                {
+                    createTrustedVaultKeyRetrievalIntent()
+                            .then(
+                                    intent -> {
+                                        if (mNotificationState != goalState) {
+                                            // State changed in the meantime, throw the intent away.
+                                            return;
+                                        }
+                                        showNotification(intent);
+                                    },
+                                    exception -> {
+                                        if (mNotificationState != goalState) {
+                                            // State changed in the meantime. Lucky us, because we'd
+                                            // have no intent to show the notification :).
+                                            return;
+                                        }
+                                        // We still want to show the trusted vault notification but
+                                        // couldn't produce the intent. Just reset the state.
+                                        mNotificationState = previousState;
+                                        Log.w(
+                                                TAG,
+                                                "Error creating key retrieval intent: ",
+                                                exception);
+                                    });
+                    break;
+                }
+            default:
+                {
+                    assert false;
+                    break;
+                }
         }
     }
 
     private @NotificationState int computeGoalNotificationState() {
-        if (!mSyncService.isSyncFeatureEnabled()) {
-            // Error notifications are only currently shown to syncing users, even though passphrase
-            // and trusted vault key errors still apply to signed-in users.
-            return NotificationState.HIDDEN;
-        }
-
         if (!mSyncService.isEngineInitialized()) {
             // The notifications expose encryption errors and those can only be detected once the
             // engine is up. In the meantime, don't show anything.
+            return NotificationState.HIDDEN;
+        }
+
+        if (!mSyncService.isSyncFeatureEnabled()
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
+            // Error notifications are only currently shown to syncing users, even though passphrase
+            // and trusted vault key errors still apply to signed-in users.
+            // They are shown to signed-in users as well if SyncShowIdentityErrorsForSignedInUsers
+            // feature flag is enabled.
             return NotificationState.HIDDEN;
         }
 
@@ -185,26 +199,28 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         return NotificationState.HIDDEN;
     }
 
-    /**
-     * Displays the error notification with `title` and `textBody`. Replaces any existing one.
-     */
-    private void showNotification(
-            @StringRes int title, @StringRes int textBody, Intent intentTriggeredOnClick) {
+    /** Displays the error notification with `title` and `textBody`. Replaces any existing one. */
+    private void showNotification(Intent intentTriggeredOnClick) {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
         // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
         PendingIntentProvider pendingIntent =
-                PendingIntentProvider.getActivity(ContextUtils.getApplicationContext(), 0,
-                        intentTriggeredOnClick, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntentProvider.getActivity(
+                        ContextUtils.getApplicationContext(),
+                        0,
+                        intentTriggeredOnClick,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
+        @StringRes int title = getNotificationTitle();
+        @StringRes int textBody = getNotificationText();
         // There is no need to provide a group summary notification because NOTIFICATION_ID_SYNC
         // ensures there's only one sync notification at a time.
         NotificationWrapper notification =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.BROWSER,
                                 new NotificationMetadata(
-                                        NotificationUmaTracker.SystemNotificationType.SYNC, null,
+                                        NotificationUmaTracker.SystemNotificationType.SYNC,
+                                        null,
                                         NotificationConstants.NOTIFICATION_ID_SYNC))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
@@ -216,8 +232,10 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                         .setGroup(NotificationConstants.GROUP_SYNC)
                         .buildWithBigTextStyle(getString(textBody));
         mNotificationManager.notify(notification);
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.SYNC, notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        NotificationUmaTracker.SystemNotificationType.SYNC,
+                        notification.getNotification());
     }
 
     /**
@@ -234,25 +252,85 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         return intent;
     }
 
-    /**
-     * Creates an intent that launches an activity that retrieves the trusted vault key.
-     */
+    /** Creates an intent that launches an activity that retrieves the trusted vault key. */
     private Promise<Intent> createTrustedVaultKeyRetrievalIntent() {
         assert mSyncService.getAccountInfo() != null;
         Promise<Intent> promise = new Promise<Intent>();
         mTrustedVaultClient
                 .createKeyRetrievalIntent(mSyncService.getAccountInfo())
                 // Cf. SyncTrustedVaultProxyActivity as to why use a proxy intent.
-                .then(realIntent
-                        -> promise.fulfill(
-                                SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                        realIntent,
-                                        TrustedVaultUserActionTriggerForUMA.NOTIFICATION)),
+                .then(
+                        realIntent ->
+                                promise.fulfill(
+                                        SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
+                                                realIntent,
+                                                TrustedVaultUserActionTriggerForUMA.NOTIFICATION)),
                         exception -> promise.reject(exception));
         return promise;
     }
 
     private String getString(@StringRes int messageId) {
         return ContextUtils.getApplicationContext().getString(messageId);
+    }
+
+    private @StringRes int getNotificationTitle() {
+        // Check if this is a sync error or an identity error.
+        if (mSyncService.isSyncFeatureEnabled()) {
+            // Sync error messages.
+            switch (mNotificationState) {
+                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+                    return R.string.password_sync_error_summary;
+                case NotificationState.REQUIRE_PASSPHRASE:
+                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                    return R.string.sync_error_card_title;
+                case NotificationState.HIDDEN:
+                default:
+                    assert false;
+            }
+        }
+
+        // Identity error messages.
+        switch (mNotificationState) {
+            case NotificationState.REQUIRE_PASSPHRASE:
+                return R.string.identity_error_message_title_passphrase_required;
+            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                return R.string.identity_error_card_button_verify;
+            case NotificationState.HIDDEN:
+            default:
+                assert false;
+        }
+        return R.string.sync_error_card_title;
+    }
+
+    private @StringRes int getNotificationText() {
+        // Check if this is a sync error or an identity error.
+        if (mSyncService.isSyncFeatureEnabled()) {
+            // Sync error messages.
+            switch (mNotificationState) {
+                case NotificationState.REQUIRE_PASSPHRASE:
+                    return R.string.hint_passphrase_required;
+                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+                    return R.string.hint_sync_retrieve_keys_for_passwords;
+                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                    return R.string.hint_sync_retrieve_keys_for_everything;
+                case NotificationState.HIDDEN:
+                default:
+                    assert false;
+            }
+        }
+
+        // Identity error messages.
+        switch (mNotificationState) {
+            case NotificationState.REQUIRE_PASSPHRASE:
+            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                return R.string.identity_error_message_body;
+            case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+                return R.string.identity_error_message_body_sync_retrieve_keys_for_passwords;
+            case NotificationState.HIDDEN:
+            default:
+                assert false;
+        }
+        return R.string.identity_error_message_body;
     }
 }

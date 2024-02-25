@@ -5,12 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_HOTSPOT_FEATURE_USAGE_METRICS_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_HOTSPOT_FEATURE_USAGE_METRICS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,18 +40,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotFeatureUsageMetrics
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
-  // Return absl::nullopt if device is not managed, true if the feature is
+  // Return std::nullopt if device is not managed, true if the feature is
   // allowed by the policy, false if the feature is prohibited by the policy.
-  absl::optional<bool> IsAccessible() const override;
+  std::optional<bool> IsAccessible() const override;
   bool IsEnabled() const override;
 
   void RecordHotspotEnableAttempt(bool was_enabled_successfully);
 
  private:
-  raw_ptr<EnterpriseManagedMetadataStore, ExperimentalAsh>
-      enterprise_managed_metadata_store_ = nullptr;
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
-      hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<EnterpriseManagedMetadataStore> enterprise_managed_metadata_store_ =
+      nullptr;
+  raw_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_ = nullptr;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
 

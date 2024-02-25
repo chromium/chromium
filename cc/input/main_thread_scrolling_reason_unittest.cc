@@ -14,15 +14,26 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
   EXPECT_EQ("", MainThreadScrollingReason::AsText(0));
   EXPECT_EQ(
       "Has background-attachment:fixed, "
-      "Scrollbar scrolling, "
       "Not opaque for text and LCD text, "
-      "Can't paint scrolling background and LCD text, "
-      "Non fast scrollable region, "
-      "Failed hit test, "
       "No scrolling layer, "
+      "Prefer non-composited scrolling, "
+      "Background needs repaint on scroll",
+      MainThreadScrollingReason::AsText(
+          MainThreadScrollingReason::kRepaintReasons));
+  EXPECT_EQ(
+      "Scrollbar scrolling, "
+      "Non fast scrollable region, "
+      "Failed hit test",
+      MainThreadScrollingReason::AsText(
+          MainThreadScrollingReason::kHitTestReasons));
+  EXPECT_EQ(
+      "Popup scrolling (no threaded input handler), "
       "Wheel event handler region, "
       "Touch event handler region",
-      MainThreadScrollingReason::AsText(0xffffffffu));
+      MainThreadScrollingReason::AsText(
+          MainThreadScrollingReason::kPopupNoThreadedInput |
+          MainThreadScrollingReason::kWheelEventHandlerRegion |
+          MainThreadScrollingReason::kTouchEventHandlerRegion));
 }
 
 }  // namespace cc

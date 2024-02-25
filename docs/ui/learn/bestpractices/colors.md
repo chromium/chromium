@@ -319,7 +319,7 @@ For new UI, **add new, specific color identifiers**. If a mock for a new
 `FooBarMenu` background, don't reuse `kFooBarMenuBackgroundColor` when
 implementing the new menu, as the name will no longer be accurate. Add a
 `kFrobberMenuBackgroundColor` identifier and use that instead. `ui/` code should
-add identifiers to the [`NATIVE_THEME_COLOR_IDS`](https://source.chromium.org/chromium/chromium/src/+/main:ui/native_theme/native_theme_color_id.h;l=10;drc=21c19ce054e99a4361dff61877a4197831b80e6b)
+add identifiers to the [`COLOR_IDS`](https://source.chromium.org/chromium/chromium/src/+/main:ui/color/color_id.h?q=symbol%3A%5CbCOLOR_IDS%5Cb%20case%3Ayes)
 macro; `chrome/` code should typically add to the
 [`NotOverwritableByUserThemeProperty`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/themes/theme_properties.h;l=91;drc=cfa76e5827628eb2104df0e0b55d5d89f4a93eaf)
 enum.

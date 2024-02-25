@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -31,9 +31,9 @@ namespace policy::psm {
 
 // static
 std::unique_ptr<RlweDmserverClientImpl::RlweClient>
-RlweDmserverClientImpl::Create(const psm_rlwe::RlwePlaintextId& plaintext_id) {
-  auto status_or_client = RlweClient::Create(
-      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, {plaintext_id});
+RlweDmserverClientImpl::Create(private_membership::rlwe::RlweUseCase use_case,
+                               const psm_rlwe::RlwePlaintextId& plaintext_id) {
+  auto status_or_client = RlweClient::Create(use_case, {plaintext_id});
   DCHECK(status_or_client.ok()) << status_or_client.status().message();
 
   return std::move(status_or_client).value();
@@ -45,7 +45,9 @@ RlweDmserverClientImpl::RlweDmserverClientImpl(
     const PlaintextId& plaintext_id,
     RlweClientFactory rlwe_client_factory)
     : plaintext_id_(plaintext_id),
-      psm_rlwe_client_(rlwe_client_factory.Run(plaintext_id)),
+      psm_rlwe_client_(
+          rlwe_client_factory.Run(private_membership::rlwe::CROS_DEVICE_STATE,
+                                  plaintext_id)),
       random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       url_loader_factory_(url_loader_factory),
       device_management_service_(device_management_service) {
@@ -77,15 +79,15 @@ bool RlweDmserverClientImpl::IsCheckMembershipInProgress() const {
   return psm_request_job_ != nullptr;
 }
 
-void RlweDmserverClientImpl::RecordErrorAndStop(RlweResult psm_result) {
+void RlweDmserverClientImpl::RecordErrorAndStop(ResultHolder result) {
   // Note that kUMAPsmResult histogram is only using initial enrollment as a
   // suffix until PSM support FRE.
-  base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
+  base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, result.psm_result);
 
   // Stop the current |psm_request_job_|.
   psm_request_job_.reset();
 
-  std::move(on_completion_callback_).Run(ResultHolder(psm_result));
+  std::move(on_completion_callback_).Run(std::move(result));
 }
 
 void RlweDmserverClientImpl::SendRlweOprfRequest() {
@@ -149,12 +151,14 @@ void RlweDmserverClientImpl::OnRlweOprfRequestCompletion(
           << "PSM error: RLWE OPRF request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                -result.net_error);
-      RecordErrorAndStop(RlweResult::kConnectionError);
+      RecordErrorAndStop(
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result));
       return;
     }
     default: {
       LOG(ERROR) << "PSM error: RLWE OPRF request failed due to server error";
-      RecordErrorAndStop(RlweResult::kServerError);
+      RecordErrorAndStop(
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result));
       return;
     }
   }
@@ -249,7 +253,7 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
 
       std::move(on_completion_callback_)
           .Run(ResultHolder(
-              RlweResult::kSuccessfulDetermination, is_member,
+              is_member,
               /*membership_determination_time=*/base::Time::Now()));
       return;
     }
@@ -258,12 +262,14 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
           << "PSM error: RLWE query request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                -result.net_error);
-      RecordErrorAndStop(RlweResult::kConnectionError);
+      RecordErrorAndStop(
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result));
       return;
     }
     default: {
       LOG(ERROR) << "PSM error: RLWE query request failed due to server error";
-      RecordErrorAndStop(RlweResult::kServerError);
+      RecordErrorAndStop(
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result));
       return;
     }
   }
@@ -278,7 +284,7 @@ RlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
           TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
       random_device_id_,
       /*critical=*/true, DMAuth::NoAuth(),
-      /*oauth_token=*/absl::nullopt, url_loader_factory_, std::move(callback));
+      /*oauth_token=*/std::nullopt, url_loader_factory_, std::move(callback));
 }
 
 void RlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {

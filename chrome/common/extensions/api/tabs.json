@@ -52,9 +52,10 @@
           // TODO(kalman): Investigate how this is ending up as -1 (based on window type? a bug?) and whether it should be optional instead.
           "index": {"type": "integer", "minimum": -1, "description": "The zero-based index of the tab within its window."},
           "groupId": {"type": "integer", "minimum": -1, "description": "The ID of the group that the tab belongs to."},
-          "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the tab."},
+          "windowId": {"type": "integer", "minimum": -1, "description": "The ID of the window that contains the tab."},
           "openerTabId": {"type": "integer", "minimum": 0, "optional": true, "description": "The ID of the tab that opened this tab, if any. This property is only present if the opener tab still exists."},
           "selected": {"type": "boolean", "description": "Whether the tab is selected.", "deprecated": "Please use $(ref:tabs.Tab.highlighted)."},
+          "lastAccessed": {"type": "number", "optional": true, "description": "The last time the tab was accessed as the number of milliseconds since epoch."},
           "highlighted": {"type": "boolean", "description": "Whether the tab is highlighted."},
           "active": {"type": "boolean", "description": "Whether the tab is active in its window. Does not necessarily mean the window is focused."},
           "pinned": {"type": "boolean", "description": "Whether the tab is pinned."},
@@ -148,6 +149,10 @@
       "TAB_ID_NONE": {
         "value": -1,
         "description": "An ID that represents the absence of a browser tab."
+      },
+      "TAB_INDEX_NONE": {
+        "value": -1,
+        "description": "An index that represents the absence of a tab index in a tab_strip."
       }
     },
     "functions": [
@@ -172,7 +177,7 @@
       {
         "name": "getCurrent",
         "type": "function",
-        "description": "Gets the tab that this script call is being made from. May be undefined if called from a non-tab context (for example, a background page or popup view).",
+        "description": "Gets the tab that this script call is being made from. Returns <code>undefined</code> if called from a non-tab context (for example, a background page or popup view).",
         "parameters": [],
         "returns_async": {
           "name": "callback",
@@ -826,7 +831,7 @@
       {
         "name": "captureVisibleTab",
         "type": "function",
-        "description": "Captures the visible area of the currently active tab in the specified window. In order to call this method, the extension must have either the <a href='declare_permissions'>&lt;all_urls&gt;</a> permission or the <a href='activeTab'>activeTab</a> permission. In addition to sites that extensions can normally access, this method allows extensions to capture sensitive sites that are otherwise restricted, including chrome:-scheme pages, other extensions' pages, and data: URLs. These sensitive sites can only be captured with the activeTab permission. File URLs may be captured only if the extension has been granted file access.",
+        "description": "Captures the visible area of the currently active tab in the specified window. In order to call this method, the extension must have either the <a href='develop/concepts/declare-permissions'>&lt;all_urls&gt;</a> permission or the <a href='develop/concepts/activeTab'>activeTab</a> permission. In addition to sites that extensions can normally access, this method allows extensions to capture sensitive sites that are otherwise restricted, including chrome:-scheme pages, other extensions' pages, and data: URLs. These sensitive sites can only be captured with the activeTab permission. File URLs may be captured only if the extension has been granted file access.",
         "parameters": [
           {
             "type": "integer",
@@ -856,7 +861,7 @@
         "name": "executeScript",
         "deprecated": "Replaced by $(ref:scripting.executeScript) in Manifest V3.",
         "type": "function",
-        "description": "Injects JavaScript code into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects JavaScript code into a page. For details, see the <a href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to run the script; defaults to the active tab of the current window."},
           {
@@ -884,7 +889,7 @@
         "name": "insertCSS",
         "deprecated": "Replaced by $(ref:scripting.insertCSS) in Manifest V3.",
         "type": "function",
-        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to insert the CSS; defaults to the active tab of the current window."},
           {

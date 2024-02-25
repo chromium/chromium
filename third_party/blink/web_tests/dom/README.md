@@ -34,14 +34,6 @@ Please do not add tests unrelated to DOM standard.
 
     For [Element interface](https://dom.spec.whatwg.org/#interface-element)
 
-*   legacy_dom_conformance/
-
-    See [legacy_dom_conformance/README.md](legacy_dom_conformance/README.md)
-
-*   legacy_mutation_event/
-
-    See [Legacy MutationEvent events](https://w3c.github.io/uievents/#legacy-mutationevent-events)
-
 *   node/
 
     For [Node interface](https://dom.spec.whatwg.org/#interface-node)

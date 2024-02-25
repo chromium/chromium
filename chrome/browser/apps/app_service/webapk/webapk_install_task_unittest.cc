@@ -86,10 +86,10 @@ arc::mojom::WebApkInfoPtr BuildDefaultWebApkInfo(
   return webapk_info;
 }
 
-absl::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
-    const std::string& abi_list) {
+std::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
+    std::string abi_list) {
   arc::ArcFeatures arc_features;
-  arc_features.build_props["ro.product.cpu.abilist"] = abi_list;
+  arc_features.build_props.abi_list = abi_list;
   return arc_features;
 }
 
@@ -181,7 +181,7 @@ class WebApkInstallTaskTest : public testing::Test {
 
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   std::unique_ptr<apps::WebApkTestServer> webapk_test_server_;
-  base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
+  base::RepeatingCallback<std::optional<arc::ArcFeatures>()>
       arc_features_getter_;
 };
 
@@ -567,4 +567,19 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
               testing::ElementsAre(app_id));
   ASSERT_THAT(apps::webapk_prefs::GetUpdateNeededAppIds(profile()),
               testing::ElementsAre(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SingleAbi) {
+  auto arc_features_getter =
+      base::BindRepeating(&GetArcFeaturesWithAbiList, "armeabi-v7a");
+  arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(&arc_features_getter);
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  ASSERT_EQ(last_webapk_request()->android_abi(), "armeabi-v7a");
 }

@@ -5,13 +5,6 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 DictationFocusHandlerTest = class extends DictationE2ETestBase {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule(
-        'FocusHandler', '/accessibility_common/dictation/focus_handler.js');
-  }
-
   /** @return {!FocusHandler} */
   getFocusHandler() {
     return accessibilityCommon.dictation_.focusHandler_;

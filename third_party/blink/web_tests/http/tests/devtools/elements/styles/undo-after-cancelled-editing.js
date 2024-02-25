@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verifies that cancelling property value editing doesn't affect undo stack.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -29,7 +28,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     function addNewProperty(next) {
       var section = ElementsTestRunner.firstMatchedStyleSection();
       var newProperty = section.addNewBlankProperty();
-      newProperty.startEditing();
+      newProperty.startEditingName();
       newProperty.nameElement.textContent = 'color';
       newProperty.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
       newProperty.valueElement.textContent = 'blue';
@@ -40,7 +39,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     async function editProperty(next) {
       treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
       await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
-      treeElement.startEditing();
+      treeElement.startEditingName();
       treeElement.nameElement.textContent = 'color';
       treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 

@@ -25,7 +25,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 // <if expr="_google_chrome">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
@@ -41,10 +41,11 @@ import {Router} from '../router.js';
 // </if>
 
 import {getTemplate} from './about_page.html.js';
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import type {AboutPageBrowserProxy, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxyImpl, UpdateStatus} from './about_page_browser_proxy.js';
 // clang-format off
 // <if expr="_google_chrome and is_macosx">
-import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+import type {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
 // </if>
 // clang-format on
 

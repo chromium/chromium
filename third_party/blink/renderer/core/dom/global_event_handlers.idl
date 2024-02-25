@@ -31,7 +31,7 @@
 interface mixin GlobalEventHandlers {
   attribute EventHandler onabort;
   attribute EventHandler onbeforeinput;
-  [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
+  attribute EventHandler onbeforematch;
   attribute EventHandler onbeforetoggle;
   attribute EventHandler onblur;
   attribute EventHandler oncancel;
@@ -40,7 +40,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onchange;
   attribute EventHandler onclick;
   attribute EventHandler onclose;
-  [RuntimeEnabled=ContentVisibilityAutoStateChangeEvent] attribute EventHandler oncontentvisibilityautostatechange;
+  attribute EventHandler oncontentvisibilityautostatechange;
   attribute EventHandler oncontextlost;
   attribute EventHandler oncontextmenu;
   attribute EventHandler oncontextrestored;
@@ -92,6 +92,8 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onseeking;
   attribute EventHandler onselect;
   attribute EventHandler onslotchange;
+  [RuntimeEnabled=CSSSnapChangedEvent] attribute EventHandler onsnapchanged;
+  [RuntimeEnabled=CSSSnapChangingEvent] attribute EventHandler onsnapchanging;
   //attribute EventHandler onsort;
   attribute EventHandler onstalled;
   attribute EventHandler onsubmit;

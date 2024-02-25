@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
@@ -24,9 +26,16 @@ import org.chromium.ui.modelutil.PropertyModel;
  * as a modal dialog.
  */
 public class ChoiceDialogCoordinator {
+    @VisibleForTesting
+    static final @DialogDismissalCause int SUCCESS_DISMISSAL_CAUSE =
+            DialogDismissalCause.ACTION_ON_CONTENT;
+
+    private final ChoiceScreenCoordinator mContentCoordinator;
     private final ModalDialogManager mModalDialogManager;
-    private final DefaultSearchEngineDialogHelper.Delegate mDelegate;
     private final @Nullable Callback<Boolean> mOnClosedCallback;
+    private final ChoiceScreenDelegate mDelegate;
+
+    private @Nullable PropertyModel mDialogModel;
 
     /**
      * Creates the coordinator that will show a search engine choice dialog.
@@ -42,34 +51,59 @@ public class ChoiceDialogCoordinator {
      *         search engine was selected, or {@code false} if the dialog was dismissed without a
      *         selection.
      */
-    public ChoiceDialogCoordinator(Activity activity,
+    public ChoiceDialogCoordinator(
+            Activity activity,
             DefaultSearchEngineDialogHelper.Delegate delegate,
             @Nullable Callback<Boolean> onClosedCallback) {
         mModalDialogManager = ((ModalDialogManagerHolder) activity).getModalDialogManager();
-        mDelegate = delegate;
         mOnClosedCallback = onClosedCallback;
+        mDelegate =
+                new ChoiceScreenDelegate(delegate, onClosedCallback) {
+                    @Override
+                    void onChoiceMade(String keyword) {
+                        super.onChoiceMade(keyword);
+                        ChoiceDialogCoordinator.this.dismissDialog();
+                    }
+                };
+        mContentCoordinator = buildContentCoordinator(activity, mDelegate);
     }
 
     /** Constructs and shows the dialog. */
     public void show() {
-        mModalDialogManager.showDialog(createDialogPropertyModel(),
+        assert mDialogModel == null;
+        mDialogModel = createDialogPropertyModel(mContentCoordinator.getContentView());
+        mModalDialogManager.showDialog(
+                mDialogModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
-    private PropertyModel createDialogPropertyModel() {
-        return new PropertyModel
-                .Builder(ModalDialogProperties.ALL_KEYS)
-                // TODO(b/280753530): Replace the placeholder UI.
-                .with(ModalDialogProperties.TITLE, "Waffle Dialog")
-                .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                        mDelegate.getSearchEnginesForPromoDialog(SearchEnginePromoType.SHOW_WAFFLE)
-                                        .size()
-                                + " item(s) to display")
+    @VisibleForTesting
+    ChoiceScreenCoordinator buildContentCoordinator(
+            Activity activity, ChoiceScreenDelegate delegate) {
+        return new ChoiceScreenCoordinator(activity, delegate);
+    }
+
+    private void dismissDialog() {
+        assert mDialogModel != null;
+
+        // For non-reentry verification.
+        PropertyModel model = mDialogModel;
+        mDialogModel = null;
+
+        // Will no-op if the dialog was already dismissed.
+        mModalDialogManager.dismissDialog(model, SUCCESS_DISMISSAL_CAUSE);
+    }
+
+    private PropertyModel createDialogPropertyModel(View contentView) {
+        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                .with(ModalDialogProperties.DIALOG_STYLES,
+                .with(
+                        ModalDialogProperties.DIALOG_STYLES,
                         ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG)
-                .with(ModalDialogProperties.CONTROLLER,
+                .with(
+                        ModalDialogProperties.CONTROLLER,
                         new ModalDialogProperties.Controller() {
                             @Override
                             public void onClick(PropertyModel model, @ButtonType int buttonType) {}
@@ -77,13 +111,13 @@ public class ChoiceDialogCoordinator {
                             @Override
                             public void onDismiss(
                                     PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                                // TODO(b/280753530): Implement proper triggering and handling.
-                                if (mOnClosedCallback != null) {
-                                    mOnClosedCallback.onResult(false);
+                                if (dismissalCause != SUCCESS_DISMISSAL_CAUSE) {
+                                    mDelegate.onExitWithoutChoice();
                                 }
                             }
                         })
-                .with(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                .with(
+                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                         // Capture back navigations and suppress them. The user must complete the
                         // screen by interacting with the options presented.
                         // TODO(b/280753530): Instead of fully suppressing it, maybe perform back

@@ -259,4 +259,21 @@ inline internal::ErrorIsMatcher<typename std::decay_t<T>> ErrorIs(T&& matcher) {
         ::testing::TestPartResult::kFatalFailure);                     \
   })
 
+namespace base {
+template <typename T, typename E>
+void PrintTo(const expected<T, E>& expected, ::std::ostream* os) {
+  *os << expected.ToString();
+}
+
+template <typename T>
+void PrintTo(const ok<T>& a, ::std::ostream* os) {
+  *os << a.ToString();
+}
+
+template <typename T>
+void PrintTo(const unexpected<T>& a, ::std::ostream* os) {
+  *os << a.ToString();
+}
+}  // namespace base
+
 #endif  // BASE_TEST_GMOCK_EXPECTED_SUPPORT_H_

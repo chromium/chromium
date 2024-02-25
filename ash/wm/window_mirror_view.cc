@@ -24,8 +24,9 @@ namespace ash {
 namespace {
 
 void EnsureAllChildrenAreVisible(ui::Layer* layer) {
-  for (auto* child : layer->children())
+  for (ui::Layer* child : layer->children()) {
     EnsureAllChildrenAreVisible(child);
+  }
 
   layer->SetVisible(true);
   layer->SetOpacity(1);
@@ -71,7 +72,7 @@ gfx::Size WindowMirrorView::CalculatePreferredSize() const {
                                : GetClientAreaBounds().size();
 }
 
-void WindowMirrorView::Layout() {
+void WindowMirrorView::Layout(PassKey) {
   // If |layer_owner_| hasn't been initialized (|this| isn't on screen), no-op.
   if (!layer_owner_ || !source_)
     return;
@@ -157,7 +158,7 @@ void WindowMirrorView::InitLayerOwner() {
     EnsureAllChildrenAreVisible(mirror_layer);
   }
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 ui::Layer* WindowMirrorView::GetMirrorLayer() {
@@ -181,7 +182,7 @@ gfx::Rect WindowMirrorView::GetClientAreaBounds() const {
   return client_view->ConvertRectToWidget(client_view->GetLocalBounds());
 }
 
-BEGIN_METADATA(WindowMirrorView, views::View)
+BEGIN_METADATA(WindowMirrorView)
 END_METADATA
 
 }  // namespace ash

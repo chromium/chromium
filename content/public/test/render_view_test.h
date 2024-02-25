@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,14 @@
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "v8/include/v8-forward.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <optional>
+
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
+#endif
 
 namespace blink {
 class PageState;
@@ -91,10 +100,10 @@ class RenderViewTest : public testing::Test {
   // Returns a pointer to the main frame.
   blink::WebLocalFrame* GetMainFrame();
   RenderFrame* GetMainRenderFrame();
+  v8::Isolate* Isolate();
 
-  // Executes the given JavaScript in the context of the main frame. The input
-  // is a NULL-terminated UTF-8 string.
-  void ExecuteJavaScriptForTests(const char* js);
+  // Executes the given JavaScript in the context of the main frame.
+  void ExecuteJavaScriptForTests(std::string_view js);
 
   // Executes the given JavaScript and sets the int value it evaluates to in
   // |result|.
@@ -112,13 +121,13 @@ class RenderViewTest : public testing::Test {
 
   // Loads |html| into the main frame as a data: URL and blocks until the
   // navigation is committed.
-  void LoadHTML(const char* html);
+  void LoadHTML(std::string_view html);
 
   // Pretends to load |url| into the main frame, but substitutes |html| for the
   // response body (and does not include any response headers). This can be used
   // instead of LoadHTML for tests that cannot use a data: url (for example if
   // document.location needs to be set to something specific.)
-  void LoadHTMLWithUrlOverride(const char* html, const char* url);
+  void LoadHTMLWithUrlOverride(std::string_view html, std::string_view url);
 
   // Returns the current PageState.
   // In OOPIF enabled modes, this returns a PageState object for the main frame.
@@ -243,7 +252,8 @@ class RenderViewTest : public testing::Test {
   mojo::BinderMap binders_;
 
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  std::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 
  private:

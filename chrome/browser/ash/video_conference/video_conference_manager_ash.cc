@@ -12,6 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/webui/vc_background_ui/url_constants.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -20,8 +22,11 @@
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_wrapper.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
@@ -112,6 +117,15 @@ void VideoConferenceManagerAsh::StopAllScreenShare() {
   for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
     client_wrapper.StopAllScreenShare();
   }
+}
+
+void VideoConferenceManagerAsh::CreateBackgroundImage() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::LaunchSource::kFromShelf;
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::VC_BACKGROUND,
+                               params);
 }
 
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(

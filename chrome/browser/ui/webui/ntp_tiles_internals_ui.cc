@@ -30,6 +30,11 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 namespace {
 
 // The implementation for the chrome://ntp-tiles-internals page.
@@ -103,8 +108,14 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
 ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
-  return ChromeMostVisitedSitesFactory::NewForProfile(
+  auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
       Profile::FromWebUI(web_ui()));
+  // Custom links only exist on Desktop.
+#if !BUILDFLAG(IS_ANDROID)
+  most_visited_sites->EnableCustomLinks(
+      !GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+#endif
+  return most_visited_sites;
 }
 
 PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {

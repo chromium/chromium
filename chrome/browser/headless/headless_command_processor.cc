@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -34,11 +36,12 @@ void ProcessHeadlessCommands(
     command_line->AppendSwitch(switches::kDisableLazyLoading);
   }
 
+  auto keepalive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::HEADLESS_COMMAND, KeepAliveRestartOption::DISABLED);
+
   // Create web contents to run the command processing in.
   content::WebContents::CreateParams create_params(browser_context);
-  create_params.is_never_visible = true;
-  std::unique_ptr<content::WebContents> web_contents(
-      content::WebContents::Create(create_params));
+  auto web_contents = content::WebContents::Create(create_params);
 
   // Navigate web contents to the command processor page.
   GURL handler_url = HeadlessCommandHandler::GetHandlerUrl();
@@ -53,12 +56,15 @@ void ProcessHeadlessCommands(
       web_contents_ptr, std::move(target_url),
       base::BindOnce(
           [](std::unique_ptr<content::WebContents> web_contents,
+             std::unique_ptr<ScopedKeepAlive> keepalive,
              HeadlessCommandHandler::DoneCallback done_callback,
              HeadlessCommandHandler::Result result) {
             web_contents.reset();
+            keepalive.reset();
             std::move(done_callback).Run(result);
           },
-          std::move(web_contents), std::move(done_callback)));
+          std::move(web_contents), std::move(keepalive),
+          std::move(done_callback)));
 }
 
 }  // namespace headless

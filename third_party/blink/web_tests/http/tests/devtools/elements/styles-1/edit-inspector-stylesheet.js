@@ -6,11 +6,11 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that adding a new rule creates inspector stylesheet resource and allows its live editing.\n`);
-  await TestRunner.loadLegacyModule('elements');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
@@ -19,12 +19,12 @@ import {SourcesTestRunner} from 'sources_test_runner';
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', onStylesSelected);
 
   function onStylesSelected(node) {
-    Workspace.workspace.addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
+    Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
     ElementsTestRunner.addNewRule('#inspected', new Function());
   }
 
   function onWorkingCopyCommitted(event) {
-    Workspace.workspace.removeEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
+    Workspace.Workspace.WorkspaceImpl.instance().removeEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
     var uiSourceCode = event.data.uiSourceCode;
     TestRunner.addResult('Inspector stylesheet URL: ' + uiSourceCode.displayName());
     uiSourceCode.requestContent().then(printContent(onContent));

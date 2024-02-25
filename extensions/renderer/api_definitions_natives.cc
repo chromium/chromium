@@ -37,7 +37,7 @@ void ApiDefinitionsNatives::GetExtensionAPIDefinitionsForTest(
     }
   }
   args.GetReturnValue().Set(
-      dispatcher_->v8_schema_registry()->GetSchemas(apis));
+      dispatcher_->v8_schema_registry()->GetSchemas(args.GetIsolate(), apis));
 }
 
 }  // namespace extensions

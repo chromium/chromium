@@ -52,7 +52,7 @@ void GamepadDataFetcherManager::InitializeProvider(GamepadProvider* provider) {
   DCHECK(!provider_);
 
   provider_ = provider;
-  for (auto* it : factories_) {
+  for (device::GamepadDataFetcherFactory* it : factories_) {
     provider_->AddGamepadDataFetcher(it->CreateDataFetcher());
   }
 }

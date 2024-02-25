@@ -2,22 +2,28 @@ In file included from member_in_offheap_class.cpp:5:
 ./member_in_offheap_class.h:14:1: warning: [blink-gc] Class 'OffHeapObject' contains invalid fields.
 class OffHeapObject {
 ^
-./member_in_offheap_class.h:19:5: note: [blink-gc] Member field 'm_obj' in unmanaged class declared here:
+./member_in_offheap_class.h:21:5: note: [blink-gc] Member field 'm_obj' in unmanaged class declared here:
     Member<HeapObject> m_obj; // Must not contain Member.
     ^
-./member_in_offheap_class.h:20:5: note: [blink-gc] Member field 'm_weak' in unmanaged class declared here:
+./member_in_offheap_class.h:22:5: note: [blink-gc] Member field 'm_weak' in unmanaged class declared here:
     WeakMember<HeapObject> m_weak;  // Must not contain WeakMember.
     ^
-./member_in_offheap_class.h:24:1: warning: [blink-gc] Class 'StackObject' contains invalid fields.
+./member_in_offheap_class.h:24:5: note: [blink-gc] Pointer to Member field 'm_ptr' in unmanaged class declared here:
+    Member<HeapObject>* m_ptr;                           // Member may move
+    ^
+./member_in_offheap_class.h:25:5: note: [blink-gc] Pointer to Member field 'm_ref' in unmanaged class declared here:
+    Member<HeapObject>& m_ref;                           // Member may move
+    ^
+./member_in_offheap_class.h:28:1: warning: [blink-gc] Class 'StackObject' contains invalid fields.
 class StackObject {
 ^
-./member_in_offheap_class.h:29:3: note: [blink-gc] Member field 'm_heapVectorMemberOff' to non-GC managed class declared here:
+./member_in_offheap_class.h:36:3: note: [blink-gc] Member field 'm_heapVectorMemberOff' to non-GC managed class declared here:
   HeapVector<Member<OffHeapObject>> m_heapVectorMemberOff;  // NOT OK
   ^
-./member_in_offheap_class.h:32:1: warning: [blink-gc] Class 'DerivedStackObject' contains invalid fields.
+./member_in_offheap_class.h:39:1: warning: [blink-gc] Class 'DerivedStackObject' contains invalid fields.
 class DerivedStackObject : public StackObject {
 ^
-./member_in_offheap_class.h:35:3: note: [blink-gc] Member field 'm_heapVectorMemberOff1' to non-GC managed class declared here:
+./member_in_offheap_class.h:42:3: note: [blink-gc] Member field 'm_heapVectorMemberOff1' to non-GC managed class declared here:
   HeapVector<Member<OffHeapObject>> m_heapVectorMemberOff1;  // NOT OK
   ^
 3 warnings generated.

@@ -12,68 +12,32 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/pairing_host_authenticator.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/session_authz_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
+#include "remoting/protocol/third_party_host_authenticator.h"
 #include "remoting/protocol/token_validator.h"
-#include "remoting/protocol/v2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
 
 NegotiatingHostAuthenticator::NegotiatingHostAuthenticator(
-    const std::string& local_id,
-    const std::string& remote_id,
-    const std::string& local_cert,
-    scoped_refptr<RsaKeyPair> key_pair)
+    std::string_view local_id,
+    std::string_view remote_id,
+    std::unique_ptr<HostAuthenticationConfig> config)
     : NegotiatingAuthenticatorBase(WAITING_MESSAGE),
       local_id_(local_id),
       remote_id_(remote_id),
-      local_cert_(local_cert),
-      local_key_pair_(key_pair) {}
-
-// static
-std::unique_ptr<NegotiatingHostAuthenticator>
-NegotiatingHostAuthenticator::CreateWithSharedSecret(
-    const std::string& local_id,
-    const std::string& remote_id,
-    const std::string& local_cert,
-    scoped_refptr<RsaKeyPair> key_pair,
-    const std::string& shared_secret_hash,
-    scoped_refptr<PairingRegistry> pairing_registry) {
-  std::unique_ptr<NegotiatingHostAuthenticator> result(
-      new NegotiatingHostAuthenticator(local_id, remote_id, local_cert,
-                                       key_pair));
-  result->shared_secret_hash_ = shared_secret_hash;
-  result->pairing_registry_ = pairing_registry;
-  result->AddMethod(Method::SHARED_SECRET_SPAKE2_CURVE25519);
-  result->AddMethod(Method::SHARED_SECRET_SPAKE2_P224);
-  if (pairing_registry.get()) {
-    result->AddMethod(Method::PAIRED_SPAKE2_CURVE25519);
-    result->AddMethod(Method::PAIRED_SPAKE2_P224);
-  }
-  return result;
-}
-
-// static
-std::unique_ptr<NegotiatingHostAuthenticator>
-NegotiatingHostAuthenticator::CreateWithThirdPartyAuth(
-    const std::string& local_id,
-    const std::string& remote_id,
-    const std::string& local_cert,
-    scoped_refptr<RsaKeyPair> key_pair,
-    scoped_refptr<TokenValidatorFactory> token_validator_factory) {
-  std::unique_ptr<NegotiatingHostAuthenticator> result(
-      new NegotiatingHostAuthenticator(local_id, remote_id, local_cert,
-                                       key_pair));
-  result->token_validator_factory_ = token_validator_factory;
-  result->AddMethod(Method::THIRD_PARTY_SPAKE2_CURVE25519);
-  result->AddMethod(Method::THIRD_PARTY_SPAKE2_P224);
-  return result;
+      config_(std::move(config)) {
+  methods_ = config_->GetSupportedMethods();
+  DCHECK(!methods_.empty());
 }
 
 NegotiatingHostAuthenticator::~NegotiatingHostAuthenticator() = default;
@@ -91,7 +55,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   }
 
   std::string method_attr = message->Attr(kMethodAttributeQName);
-  Method method = ParseMethodString(method_attr);
+  Method method = HostAuthenticationConfig::ParseMethodString(method_attr);
 
   // If the host has already chosen a method, it can't be changed by the client.
   if (current_method_ != Method::INVALID && method != current_method_) {
@@ -122,7 +86,8 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     for (const std::string& method_str : base::SplitString(
              supported_methods_attr, std::string(1, kSupportedMethodsSeparator),
              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      Method list_value = ParseMethodString(method_str);
+      Method list_value =
+          HostAuthenticationConfig::ParseMethodString(method_str);
       if (list_value != Method::INVALID &&
           base::Contains(methods_, list_value)) {
         // Found common method.
@@ -181,45 +146,38 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       NOTREACHED();
       break;
 
-    case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
-          base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
-                              local_key_pair_),
-          token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_));
-      std::move(resume_callback).Run();
+    case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519: {
+      DCHECK(config_->session_authz_client_factory);
+      // TODO: b/323068262 - implement intra-session reauth and pass a valid
+      // reauth callback.
+      auto authenticator = std::make_unique<SessionAuthzAuthenticator>(
+          config_->session_authz_client_factory->Create(),
+          base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
+                              remote_id_, config_->local_cert,
+                              config_->key_pair));
+      authenticator->Start(std::move(resume_callback));
+      current_authenticator_ = std::move(authenticator);
       break;
+    }
 
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
       current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
           base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
-                              remote_id_, local_cert_, local_key_pair_),
-          token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_));
+                              remote_id_, config_->local_cert,
+                              config_->key_pair),
+          config_->token_validator_factory->CreateTokenValidator(local_id_,
+                                                                 remote_id_));
       std::move(resume_callback).Run();
       break;
-
-    case Method::PAIRED_SPAKE2_P224: {
-      PairingHostAuthenticator* pairing_authenticator =
-          new PairingHostAuthenticator(
-              pairing_registry_,
-              base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
-                                  local_key_pair_),
-              shared_secret_hash_);
-      current_authenticator_.reset(pairing_authenticator);
-      pairing_authenticator->Initialize(client_id_, preferred_initial_state,
-                                        std::move(resume_callback));
-      break;
-    }
 
     case Method::PAIRED_SPAKE2_CURVE25519: {
       PairingHostAuthenticator* pairing_authenticator =
           new PairingHostAuthenticator(
-              pairing_registry_,
+              config_->pairing_registry,
               base::BindRepeating(&Spake2Authenticator::CreateForHost,
-                                  local_id_, remote_id_, local_cert_,
-                                  local_key_pair_),
-              shared_secret_hash_);
+                                  local_id_, remote_id_, config_->local_cert,
+                                  config_->key_pair),
+              config_->shared_secret_hash);
       current_authenticator_.reset(pairing_authenticator);
       pairing_authenticator->Initialize(client_id_, preferred_initial_state,
                                         std::move(resume_callback));
@@ -228,19 +186,13 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
 
     case Method::SHARED_SECRET_SPAKE2_CURVE25519:
       current_authenticator_ = Spake2Authenticator::CreateForHost(
-          local_id_, remote_id_, local_cert_, local_key_pair_,
-          shared_secret_hash_, preferred_initial_state);
-      std::move(resume_callback).Run();
-      break;
-
-    case Method::SHARED_SECRET_PLAIN_SPAKE2_P224:
-    case Method::SHARED_SECRET_SPAKE2_P224:
-      current_authenticator_ = V2Authenticator::CreateForHost(
-          local_cert_, local_key_pair_, shared_secret_hash_,
-          preferred_initial_state);
+          local_id_, remote_id_, config_->local_cert, config_->key_pair,
+          config_->shared_secret_hash, preferred_initial_state);
       std::move(resume_callback).Run();
       break;
   }
+
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 }  // namespace remoting::protocol

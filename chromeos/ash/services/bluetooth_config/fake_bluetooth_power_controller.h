@@ -22,7 +22,7 @@ class FakeBluetoothPowerController : public BluetoothPowerController {
 
  private:
   // BluetoothPowerController:
-  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothEnabledWithoutPersistence() override;
   void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void SetPrefs(PrefService* logged_in_profile_prefs,
                 PrefService* local_state) override {}
@@ -31,7 +31,7 @@ class FakeBluetoothPowerController : public BluetoothPowerController {
   // enabled on a fresh device.
   bool last_enabled_ = true;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 };
 
 }  // namespace ash::bluetooth_config

@@ -9,9 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -20,15 +20,14 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace autofill {
-namespace data_util {
+namespace autofill::data_util {
 
 using bit_field_type_groups::kAddress;
 using bit_field_type_groups::kEmail;
@@ -179,7 +178,7 @@ size_t StartsWithAny(base::StringPiece16 name,
   for (size_t i = 0; i < prefix_count; i++) {
     buffer.clear();
     base::UTF8ToUTF16(prefixes[i], strlen(prefixes[i]), &buffer);
-    if (base::StartsWith(name, buffer, base::CompareCase::SENSITIVE)) {
+    if (name.starts_with(buffer)) {
       return buffer.size();
     }
   }
@@ -273,20 +272,19 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
   return false;
 }
 
-void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
-  const FieldTypeGroup group =
-      AutofillType(AutofillType(type).GetStorableType()).group();
+void AddGroupToBitmask(uint32_t* group_bitmask, FieldType type) {
+  const FieldTypeGroup group = GroupTypeOfFieldType(type);
   switch (group) {
     case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;
       break;
-    case autofill::FieldTypeGroup::kAddressHome:
+    case autofill::FieldTypeGroup::kAddress:
       *group_bitmask |= kAddress;
       break;
     case autofill::FieldTypeGroup::kEmail:
       *group_bitmask |= kEmail;
       break;
-    case autofill::FieldTypeGroup::kPhoneHome:
+    case autofill::FieldTypeGroup::kPhone:
       *group_bitmask |= kPhone;
       break;
     default:
@@ -315,15 +313,15 @@ bool ContainsPhone(uint32_t groups) {
 uint32_t DetermineGroups(const FormStructure& form) {
   uint32_t group_bitmask = 0;
   for (const auto& field : form) {
-    ServerFieldType type = field->Type().GetStorableType();
+    FieldType type = field->Type().GetStorableType();
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
 }
 
-uint32_t DetermineGroups(const ServerFieldTypeSet& types) {
+uint32_t DetermineGroups(const FieldTypeSet& types) {
   uint32_t group_bitmask = 0;
-  for (const ServerFieldType type : types) {
+  for (const FieldType type : types) {
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
@@ -363,12 +361,11 @@ std::string GetSuffixForProfileFormType(uint32_t bitmask) {
 
 std::string TruncateUTF8(const std::string& data) {
   std::string trimmed_value;
-  base::TruncateUTF8ToByteSize(data, AutofillTable::kMaxDataLength,
-                               &trimmed_value);
+  base::TruncateUTF8ToByteSize(data, kMaxDataLengthForDatabase, &trimmed_value);
   return trimmed_value;
 }
 
-bool IsCreditCardExpirationType(ServerFieldType type) {
+bool IsCreditCardExpirationType(FieldType type) {
   return type == CREDIT_CARD_EXP_MONTH ||
          type == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
          type == CREDIT_CARD_EXP_4_DIGIT_YEAR ||
@@ -548,7 +545,8 @@ bool IsValidCountryCode(const std::string& country_code) {
   if (country_code.size() != 2)
     return false;
 
-  return re2::RE2::FullMatch(country_code, "^[A-Z]{2}$");
+  static const base::NoDestructor<re2::RE2> country_code_regex("^[A-Z]{2}$");
+  return re2::RE2::FullMatch(country_code, *country_code_regex.get());
 }
 
 bool IsValidCountryCode(const std::u16string& country_code) {
@@ -564,5 +562,4 @@ std::string GetCountryCodeWithFallback(const autofill::AutofillProfile& profile,
   return country_code;
 }
 
-}  // namespace data_util
-}  // namespace autofill
+}  // namespace autofill::data_util

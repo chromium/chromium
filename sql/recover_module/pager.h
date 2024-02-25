@@ -29,8 +29,9 @@ class VirtualTable;
 // cursors. Instances are not thread-safe.
 class DatabasePageReader {
  public:
-  // Guaranteed to be an invalid page number.
-  static constexpr int kInvalidPageId = 0;
+  // Guaranteed to be an invalid page number. NB: use `IsValidPageId()` to
+  // validate a page id.
+  static constexpr int kHighestInvalidPageId = 0;
 
   // Minimum database page size supported by SQLite.
   static constexpr int kMinPageSize = 512;
@@ -70,7 +71,7 @@ class DatabasePageReader {
   // ReadPage() was never called.
   const uint8_t* page_data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_NE(page_id_, kInvalidPageId)
+    CHECK(IsValidPageId(page_id_))
         << "Successful ReadPage() required before accessing pager state";
     return page_data_.get();
   }
@@ -86,10 +87,10 @@ class DatabasePageReader {
   // ReadPage() was never called.
   int page_size() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_NE(page_id_, kInvalidPageId)
+    CHECK(IsValidPageId(page_id_))
         << "Successful ReadPage() required before accessing pager state";
-    DCHECK_GE(page_size_, kMinUsablePageSize);
-    DCHECK_LE(page_size_, kMaxPageSize);
+    CHECK_GE(page_size_, kMinUsablePageSize);
+    CHECK_LE(page_size_, kMaxPageSize);
     return page_size_;
   }
 
@@ -99,7 +100,7 @@ class DatabasePageReader {
   // ReadPage() was never called.
   int page_id() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_NE(page_id_, kInvalidPageId)
+    CHECK(IsValidPageId(page_id_))
         << "Successful ReadPage() required before accessing pager state";
     return page_id_;
   }
@@ -122,7 +123,7 @@ class DatabasePageReader {
   //
   // Valid page IDs are positive 32-bit integers.
   static constexpr bool IsValidPageId(int64_t page_id) noexcept {
-    return page_id > kInvalidPageId && page_id <= kMaxPageId;
+    return page_id > kHighestInvalidPageId && page_id <= kMaxPageId;
   }
 
   // Low-level read wrapper. Returns a SQLite error code.
@@ -135,8 +136,8 @@ class DatabasePageReader {
 
  private:
   // Points to the last page successfully read by ReadPage().
-  // Set to kInvalidPageId if the last read was unsuccessful.
-  int page_id_ = kInvalidPageId;
+  // Set to kHighestInvalidPageId if the last read was unsuccessful.
+  int page_id_ = kHighestInvalidPageId;
   // Stores the bytes of the last page successfully read by ReadPage().
   // The content is undefined if the last call to ReadPage() did not succeed.
   const std::unique_ptr<uint8_t[]> page_data_;

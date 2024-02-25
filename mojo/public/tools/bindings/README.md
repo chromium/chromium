@@ -96,7 +96,7 @@ for message parameters.
 | `string`                      | UTF-8 encoded string.
 | `array<T>`                    | Array of any Mojom type *T*; for example, `array<uint8>` or `array<array<string>>`.
 | `array<T, N>`                 | Fixed-length array of any Mojom type *T*. The parameter *N* must be an integral constant.
-| `map<S, T>`                   | Associated array maping values of type *S* to values of type *T*. *S* may be a `string`, `enum`, or numeric type.
+| `map<S, T>`                   | Associated array mapping values of type *S* to values of type *T*. *S* may be a `string`, `enum`, or numeric type.
 | `handle`                      | Generic Mojo handle. May be any type of handle, including a wrapped native platform handle.
 | `handle<message_pipe>`        | Generic message pipe handle.
 | `handle<shared_buffer>`       | Shared buffer handle.
@@ -107,7 +107,7 @@ for message parameters.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
 | *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
 | *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#Associated-Interfaces)
-| *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) are not nullable. All other types are nullable.
+| *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) used to be non-nullable, but they are now nullable. (see https://crbug.com/657632)
 
 ### Modules
 
@@ -197,19 +197,21 @@ interface SampleInterface {
 };
 
 struct AllTheThings {
-  // Note that these types can never be marked nullable!
+  // All the primitive numeric types may be nullable.
   bool boolean_value;
+  bool? maybe_a_bool;
   int8 signed_8bit_value = 42;
-  uint8 unsigned_8bit_value;
-  int16 signed_16bit_value;
-  uint16 unsigned_16bit_value;
-  int32 signed_32bit_value;
-  uint32 unsigned_32bit_value;
-  int64 signed_64bit_value;
-  uint64 unsigned_64bit_value;
-  float float_value_32bit;
-  double float_value_64bit;
-  AnEnum enum_value = AnEnum.kYes;
+  int8? maybe_signed_8bit_value = 42;
+  uint8? maybe_unsigned_8bit_value;
+  int16? maybe_signed_16bit_value;
+  uint16? maybe_unsigned_16bit_value;
+  int32? maybe_signed_32bit_value;
+  uint32? maybe_unsigned_32bit_value;
+  int64? maybe_signed_64bit_value;
+  uint64? maybe_unsigned_64bit_value;
+  float? maybe_float_value_32bit;
+  double? maybe_float_value_64bit;
+  AnEnum? maybe_enum_value = AnEnum.kYes;
 
   // Strings may be nullable.
   string? maybe_a_string_maybe_not;
@@ -230,9 +232,9 @@ struct AllTheThings {
   // Arrays of arrays of arrays... are fine.
   array<array<array<AnEnum>>> this_works_but_really_plz_stop;
 
-  // The element type may be nullable if it's a type which is allowed to be
-  // nullable.
+  // The element type may be nullable unless it's a primitive numeric type.
   array<AllTheThings?> more_maybe_things;
+  // array<int32?> no_primitive_in_array; This doesn't work.
 
   // Fixed-size arrays get some extra validation on the receiving end to ensure
   // that the correct number of elements is always received.
@@ -240,11 +242,13 @@ struct AllTheThings {
 
   // Maps follow many of the same rules as arrays. Key types may be any
   // non-handle, non-collection type, and value types may be any supported
-  // struct field type. Maps may also be nullable.
+  // struct field type. Please note that nullable primitive numeric types
+  // cannot be the key or value. Maps themselves may be nullable.
   map<string, int32> one_map;
   map<AnEnum, string>? maybe_another_map;
   map<StringPair, AllTheThings?>? maybe_a_pretty_weird_but_valid_map;
   map<StringPair, map<int32, array<map<string, string>?>?>?> ridiculous;
+  // map<string?, int32?>; This doesn't work.
 
   // And finally, all handle types are valid as struct fields and may be
   // nullable. Note that interfaces and interface requests (the "Foo" and
@@ -350,6 +354,37 @@ struct Employee {
 
 The effect of nested definitions on generated bindings varies depending on the
 target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
+
+### Features
+
+Features can be declared with a `name` and `default_state` and can be attached
+in mojo to interfaces or methods using the `RuntimeFeature` attribute. If the
+feature is disabled at runtime, the method will crash and the interface will
+refuse to be bound / instantiated. Features cannot be serialized to be sent over
+IPC at this time.
+
+```
+module experimental.mojom;
+
+feature kUseElevators {
+  const string name = "UseElevators";
+  const bool default_state = false;
+}
+
+[RuntimeFeature=kUseElevators]
+interface Elevator {
+  // This interface cannot be bound or called if the feature is disabled.
+}
+
+interface Building {
+  // This method cannot be called if the feature is disabled.
+  [RuntimeFeature=kUseElevators]
+  CallElevator(int floor);
+
+  // This method can be called.
+  RingDoorbell(int volume);
+}
+```
 
 ### Interfaces
 
@@ -461,6 +496,16 @@ interesting attributes supported today.
   string representation as specified by RFC 4122. New UUIDs can be generated
   with common tools such as `uuidgen`.
 
+* **`[RuntimeFeature=feature]`**
+  The `RuntimeFeature` attribute should reference a mojo `feature`. If this
+  feature is enabled (e.g. using `--enable-features={feature.name}`) then the
+  interface behaves entirely as expected. If the feature is not enabled the
+  interface cannot be bound to a concrete receiver or remote - attempting to do
+  so will result in the receiver or remote being reset() to an unbound state.
+  Note that this is a different concept to the build-time `EnableIf` directive.
+  `RuntimeFeature` is currently only supported for C++ bindings and has no
+  effect for, say, Java or TypeScript bindings (see https://crbug.com/1278253).
+
 * **`[EnableIf=value]`**:
   The `EnableIf` attribute is used to conditionally enable definitions when the
   mojom is parsed. If the `mojom` target in the GN file does not include the
@@ -511,6 +556,13 @@ interesting attributes supported today.
   `AllowedContext` attribute to a method is a strong indication that you need
    a detailed security review of your design - please reach out to the security
    team.
+
+* **`[SupportsUrgent]`**:
+  The `SupportsUrgent` attribute is used in conjunction with
+  `mojo::UrgentMessageScope` in Chromium to tag messages as having high
+  priority. The IPC layer notifies the underlying scheduler upon both receiving
+  and processing an urgent message. At present, this attribute only affects
+  channel associated messages in the renderer process.
 
 ## Generated Code For Target Languages
 
@@ -860,7 +912,7 @@ Statement = ModuleStatement | ImportStatement | Definition
 
 ModuleStatement = AttributeSection "module" Identifier ";"
 ImportStatement = "import" StringLiteral ";"
-Definition = Struct Union Interface Enum Const
+Definition = Struct Union Interface Enum Feature Const
 
 AttributeSection = <empty> | "[" AttributeList "]"
 AttributeList = <empty> | NonEmptyAttributeList
@@ -887,7 +939,7 @@ InterfaceBody = <empty>
               | InterfaceBody Const
               | InterfaceBody Enum
               | InterfaceBody Method
-Method = AttributeSection Name Ordinal "(" ParamterList ")" Response ";"
+Method = AttributeSection Name Ordinal "(" ParameterList ")" Response ";"
 ParameterList = <empty> | NonEmptyParameterList
 NonEmptyParameterList = Parameter
                       | Parameter "," NonEmptyParameterList
@@ -924,6 +976,13 @@ NonEmptyEnumValueList = EnumValue | NonEmptyEnumValueList "," EnumValue
 EnumValue = AttributeSection Name
           | AttributeSection Name "=" Integer
           | AttributeSection Name "=" Identifier
+
+; Note: `feature` is a weak keyword and can appear as, say, a struct field name.
+Feature = AttributeSection "feature" Name "{" FeatureBody "}" ";"
+       | AttributeSection "feature" Name ";"
+FeatureBody = <empty>
+           | FeatureBody FeatureField
+FeatureField = AttributeSection TypeSpec Name Default ";"
 
 Const = "const" TypeSpec Name "=" Constant ";"
 

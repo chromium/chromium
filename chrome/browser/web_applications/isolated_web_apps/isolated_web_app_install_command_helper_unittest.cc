@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -14,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -32,12 +33,14 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
@@ -50,9 +53,10 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -124,7 +128,7 @@ auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
                     const GURL& manifest_url,
                     webapps::InstallableStatusCode error_code =
                         webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
-  constexpr int kCallbackArgumentIndex = 2;
+  constexpr int kCallbackArgumentIndex = 1;
 
   return DoAll(
       WithArg<kCallbackArgumentIndex>(
@@ -146,36 +150,6 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 
   return fake_data_retriever;
 }
-
-class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
- public:
-  explicit FakeResponseReaderFactory(
-      base::expected<void, UnusableSwbnFileError> bundle_status)
-      : IsolatedWebAppResponseReaderFactory(
-            nullptr,
-            base::BindRepeating(
-                []() -> std::unique_ptr<
-                         web_package::SignedWebBundleSignatureVerifier> {
-                  return nullptr;
-                })),
-        bundle_status_(std::move(bundle_status)) {}
-
-  void CreateResponseReader(const base::FilePath& web_bundle_path,
-                            const web_package::SignedWebBundleId& web_bundle_id,
-                            bool skip_signature_verification,
-                            Callback callback) override {
-    // Signatures _must_ be verified during installation and update.
-    EXPECT_THAT(skip_signature_verification, IsFalse());
-    if (!bundle_status_.has_value()) {
-      std::move(callback).Run(base::unexpected(bundle_status_.error()));
-    } else {
-      std::move(callback).Run(nullptr);
-    }
-  }
-
- private:
-  base::expected<void, UnusableSwbnFileError> bundle_status_;
-};
 
 class IsolatedWebAppInstallCommandHelperTest : public ::testing::Test {
  public:
@@ -373,8 +347,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       WebAppUrlLoader::Result::kUrlLoaded);
 
-  absl::optional<WebAppUrlLoader::UrlComparison> last_url_comparison =
-      absl::nullopt;
+  std::optional<WebAppUrlLoader::UrlComparison> last_url_comparison =
+      std::nullopt;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* unused_web_contents,
           WebAppUrlLoader::UrlComparison url_comparison) {
@@ -402,7 +376,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       WebAppUrlLoader::Result::kUrlLoaded);
 
-  absl::optional<IsolatedWebAppLocation> location = absl::nullopt;
+  std::optional<IsolatedWebAppLocation> location = std::nullopt;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
@@ -436,7 +410,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperLoadUrlTest,
           ".well-known/_generated_install_page.html"),
       WebAppUrlLoader::Result::kUrlLoaded);
 
-  absl::optional<IsolatedWebAppLocation> location = absl::nullopt;
+  std::optional<IsolatedWebAppLocation> location = std::nullopt;
   url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](const GURL& unused_url, content::WebContents* web_contents,
           WebAppUrlLoader::UrlComparison unused_url_comparison) {
@@ -487,8 +461,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   EXPECT_CALL(*fake_data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  _, /*bypass_service_worker_check=*/IsTrue(), _, _))
+              CheckInstallabilityAndRetrieveManifest(_, _, _))
       .WillOnce(
           ReturnManifest(CreateDefaultManifest(url_info.origin().GetURL()),
                          CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -549,7 +522,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
 }
 
 struct InvalidVersionParam {
-  absl::optional<std::u16string> version;
+  std::optional<std::u16string> version;
   std::string error;
   std::string test_name;
 };
@@ -579,7 +552,7 @@ TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt, std::move(manifest_and_url));
+          /*expected_version=*/std::nullopt, std::move(manifest_and_url));
   EXPECT_THAT(result, ErrorIs(HasSubstr(GetParam().error)));
 }
 
@@ -587,14 +560,14 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     InstallIsolatedWebAppCommandHelperInvalidVersionTest,
     ::testing::Values(
-        InvalidVersionParam{.version = absl::nullopt,
+        InvalidVersionParam{.version = std::nullopt,
                             .error = "`version` is not present",
                             .test_name = "NoVersion"},
         InvalidVersionParam{
             .version = u"\xD801",
             .error = "Failed to convert manifest `version` from UTF16 to UTF8",
             .test_name = "InvalidUtf8"},
-        InvalidVersionParam{.version = u"10",
+        InvalidVersionParam{.version = u"10abc",
                             .error = "Failed to parse `version`",
                             .test_name = "InvalidVersionFormat"}),
     [](const ::testing::TestParamInfo<
@@ -628,7 +601,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt,
+          /*expected_version=*/std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               CreateDefaultManifest(url_info.origin().GetURL()),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -648,7 +621,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt,
+          /*expected_version=*/std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -668,7 +641,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt,
+          /*expected_version=*/std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -688,7 +661,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt,
+          /*expected_version=*/std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -705,12 +678,12 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = absl::nullopt;
-  manifest->short_name = absl::nullopt;
+  manifest->name = std::nullopt;
+  manifest->short_name = std::nullopt;
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/absl::nullopt,
+          /*expected_version=*/std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -727,13 +700,6 @@ class InstallIsolatedWebAppCommandHelperManifestIconsTest
 
   blink::mojom::ManifestPtr CreateManifest() const {
     return CreateDefaultManifest(kSomeTestApplicationUrl);
-  }
-
-  SkBitmap CreateTestBitmap(SkColor color) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(kImageSize, kImageSize);
-    bitmap.eraseColor(color);
-    return bitmap;
   }
 
   blink::Manifest::ImageResource CreateImageResourceForAnyPurpose(
@@ -763,18 +729,20 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   std::map<GURL, std::vector<SkBitmap>> icons = {{
       img_url,
-      {CreateTestBitmap(SK_ColorRED)},
+      {gfx::test::CreateBitmap(kImageSize, SK_ColorRED)},
   }};
 
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {
-      {img_url, net::HttpStatusCode::HTTP_OK},
+  DownloadedIconsHttpResults http_result = {
+      {IconUrlWithSize::CreateForUnspecifiedSize(img_url),
+       net::HttpStatusCode::HTTP_OK},
   };
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(kSomeTestApplicationUrl);
   EXPECT_CALL(*fake_data_retriever,
-              GetIcons(_, UnorderedElementsAre(img_url),
+              GetIcons(_,
+                       UnorderedElementsAre(
+                           IconUrlWithSize::CreateForUnspecifiedSize(img_url)),
                        /*skip_page_favicons=*/true,
                        /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
@@ -786,7 +754,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   ASSERT_OK_AND_ASSIGN(
       auto install_info,
       command_helper->ValidateManifestAndCreateInstallInfo(
-          absl::nullopt,
+          std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(kSomeTestApplicationUrl))));
@@ -825,16 +793,11 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   blink::mojom::ManifestPtr manifest = CreateManifest();
   manifest->icons = {CreateImageResourceForAnyPurpose(img_url)};
 
-  std::map<GURL, std::vector<SkBitmap>> icons = {};
-
-  using HttpStatusCode = int;
-  std::map<GURL, HttpStatusCode> http_result = {};
-
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kAbortedDueToFailure,
-                                   std::move(icons), http_result));
+                                   IconsMap{}, DownloadedIconsHttpResults{}));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
@@ -842,7 +805,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   ASSERT_OK_AND_ASSIGN(
       auto install_info,
       command_helper->ValidateManifestAndCreateInstallInfo(
-          absl::nullopt,
+          std::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(kSomeTestApplicationUrl))));
@@ -854,6 +817,140 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   EXPECT_THAT(
       result,
       ErrorIs(HasSubstr("Error during icon downloading: AbortedDueToFailure")));
+}
+
+struct VerifyRelocationVisitor {
+  explicit VerifyRelocationVisitor(base::FilePath profile_dir,
+                                   base::FilePath source_path)
+      : profile_dir_(std::move(profile_dir)),
+        source_path_(std::move(source_path)) {}
+
+  void operator()(const InstalledBundle& location) {
+    // Check that the bundle was copied to the profile's IWA directory.
+    EXPECT_TRUE(base::PathExists(location.path));
+    EXPECT_TRUE(base::PathExists(source_path_));
+    EXPECT_EQ(location.path.DirName().DirName(),
+              profile_dir_.Append(kIwaDirName));
+    EXPECT_EQ(location.path.BaseName(), base::FilePath(kMainSwbnFileName));
+  }
+
+  void operator()(const DevModeBundle& location) {
+    // Dev mode bundle should not be relocated.
+    EXPECT_EQ(location.path, source_path_);
+    EXPECT_TRUE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeProxy& location) {}
+
+ private:
+  base::FilePath profile_dir_;
+  base::FilePath source_path_;
+};
+
+struct VerifyCleanupVisitor {
+  void operator()(const InstalledBundle& location) {
+    // The copied to profile directory bundles should be deleted on cleanup.
+    EXPECT_FALSE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeBundle& location) {
+    // Dev mode bundle are not copied to the profile dir and because of that
+    // should not be deleted.
+    EXPECT_TRUE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeProxy& location) {}
+};
+
+TEST(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
+  using RelocationResult = base::expected<IsolatedWebAppLocation, std::string>;
+  base::test::TaskEnvironment task_environment;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath profile_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("profile"), &profile_dir));
+
+  // A directory where source files are stored.
+  base::FilePath src_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("src"), &src_dir));
+
+  // Installed bundle case.
+  {
+    base::FilePath src_installed_bundle;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(src_dir, &src_installed_bundle));
+
+    IsolatedWebAppLocation installed_bundle_location =
+        InstalledBundle{.path = src_installed_bundle};
+
+    // Check that relocation works.
+    base::test::TestFuture<RelocationResult> future;
+    CopyLocationToProfileDirectory(profile_dir, installed_bundle_location,
+                                   future.GetCallback());
+    RelocationResult result = future.Take();
+    EXPECT_TRUE(result.has_value());
+    absl::visit(VerifyRelocationVisitor{profile_dir, src_installed_bundle},
+                result.value());
+
+    // Check that cleanup works.
+    base::test::TestFuture<void> cleanup_future;
+    CleanupLocationIfOwned(profile_dir, result.value(),
+                           cleanup_future.GetCallback());
+    ASSERT_TRUE(cleanup_future.Wait());
+    absl::visit(VerifyCleanupVisitor{}, result.value());
+  }
+
+  // Dev mode bundle case.
+  {
+    base::FilePath src_dev_mode_bundle;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(src_dir, &src_dev_mode_bundle));
+
+    IsolatedWebAppLocation dev_mode_location =
+        DevModeBundle{.path = src_dev_mode_bundle};
+
+    // Check that relocation works.
+    base::test::TestFuture<RelocationResult> future;
+    CopyLocationToProfileDirectory(profile_dir, dev_mode_location,
+                                   future.GetCallback());
+    RelocationResult result = future.Take();
+    EXPECT_TRUE(result.has_value());
+    absl::visit(VerifyRelocationVisitor{profile_dir, src_dev_mode_bundle},
+                result.value());
+
+    // Check that cleanup works.
+    base::test::TestFuture<void> cleanup_future;
+    CleanupLocationIfOwned(profile_dir, result.value(),
+                           cleanup_future.GetCallback());
+    ASSERT_TRUE(cleanup_future.Wait());
+    absl::visit(VerifyCleanupVisitor{}, result.value());
+  }
+}
+
+TEST(InstallIsolatedWebAppCommandHelperRelocationTest, CleanupNotOwned) {
+  base::test::TaskEnvironment task_environment;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath profile_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("profile"), &profile_dir));
+
+  // Create a file that is not in the owned IWA directory.
+  base::FilePath bundle_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &bundle_path));
+
+  // Trying to cleanup the location that is not owned.
+  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path};
+  base::test::TestFuture<void> cleanup_future;
+  CleanupLocationIfOwned(profile_dir, location, cleanup_future.GetCallback());
+  ASSERT_TRUE(cleanup_future.Wait());
+
+  // Not owned file should not be deleted.
+  EXPECT_TRUE(base::PathExists(bundle_path));
 }
 
 }  // namespace

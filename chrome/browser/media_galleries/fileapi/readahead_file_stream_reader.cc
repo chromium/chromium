@@ -102,7 +102,7 @@ void ReadaheadFileStreamReader::ReadFromSourceIfNeeded() {
   source_has_pending_read_ = true;
 
   scoped_refptr<net::IOBuffer> buf =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+      base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   int result = source_->Read(
       buf.get(), kBufferSize,
       base::BindOnce(&ReadaheadFileStreamReader::OnFinishReadFromSource,

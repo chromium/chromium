@@ -49,7 +49,7 @@ class DialURLFetcherTest : public testing::Test {
 
  protected:
   MOCK_METHOD(void, OnSuccess, (const std::string&));
-  MOCK_METHOD(void, OnError, (const std::string&, absl::optional<int>));
+  MOCK_METHOD(void, OnError, (const std::string&, std::optional<int>));
 
   base::test::TaskEnvironment environment_;
   network::TestURLLoaderFactory loader_factory_;
@@ -86,7 +86,7 @@ TEST_F(DialURLFetcherTest, FetchFailsOnMissingAppInfo) {
 
   EXPECT_CALL(*this, OnError(HasSubstr(base::NumberToString(
                                  net::ERR_HTTP_RESPONSE_CODE_FAILURE)),
-                             absl::optional<int>(404)));
+                             std::optional<int>(404)));
   loader_factory_.AddResponse(
       url_, std::move(head), "",
       network::URLLoaderCompletionStatus(net::ERR_HTTP_RESPONSE_CODE_FAILURE),

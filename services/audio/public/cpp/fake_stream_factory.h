@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_FAKE_STREAM_FACTORY_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_FAKE_STREAM_FACTORY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 
@@ -86,7 +86,7 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
   mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
 
  private:
-  absl::optional<base::RunLoop> disconnect_loop_;
+  std::optional<base::RunLoop> disconnect_loop_;
 };
 
 static_assert(

@@ -33,7 +33,11 @@ std::unique_ptr<FlossAdminClient> FlossAdminClient::Create() {
 }
 
 constexpr char FlossAdminClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/adminclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/admin/callback/lacros";
+#else
+    "/org/chromium/bluetooth/admin/callback";
+#endif
 
 FlossAdminClient::FlossAdminClient() = default;
 FlossAdminClient::~FlossAdminClient() {
@@ -79,7 +83,7 @@ void FlossAdminClient::HandleCallbackRegistered(DBusResult<uint32_t> result) {
 
 void FlossAdminClient::HandleCallbackUnregistered(DBusResult<bool> result) {
   if (!result.has_value() || *result == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 
@@ -98,10 +102,12 @@ void FlossAdminClient::HandleGetAllowedServices(
 void FlossAdminClient::Init(dbus::Bus* bus,
                             const std::string& service_name,
                             const int adapter_index,
+                            base::Version version,
                             base::OnceClosure on_ready) {
   bus_ = bus;
   admin_path_ = FlossDBusClient::GenerateAdminPath(adapter_index);
   service_name_ = service_name;
+  version_ = version;
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, admin_path_);
@@ -203,7 +209,7 @@ void FlossAdminClient::OnServiceAllowlistChanged(
 
 void FlossAdminClient::OnDevicePolicyEffectChanged(
     const FlossDeviceId& device_id,
-    const absl::optional<PolicyEffect>& effect) {
+    const std::optional<PolicyEffect>& effect) {
   for (auto& observer : observers_) {
     observer.DevicePolicyEffectChanged(device_id, effect);
   }

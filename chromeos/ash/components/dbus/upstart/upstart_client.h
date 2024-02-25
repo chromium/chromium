@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_UPSTART_UPSTART_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_UPSTART_UPSTART_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -64,8 +64,8 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   // (e.g. when the D-Bus connection itself is disconnected).
   using StartJobWithErrorDetailsCallback =
       base::OnceCallback<void(bool success,
-                              absl::optional<std::string> error_name,
-                              absl::optional<std::string> error_message)>;
+                              std::optional<std::string> error_name,
+                              std::optional<std::string> error_message)>;
   virtual void StartJobWithErrorDetails(
       const std::string& job,
       const std::vector<std::string>& upstart_env,

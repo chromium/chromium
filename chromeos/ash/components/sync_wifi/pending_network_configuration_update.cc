@@ -9,7 +9,7 @@ namespace ash::sync_wifi {
 PendingNetworkConfigurationUpdate::PendingNetworkConfigurationUpdate(
     const NetworkIdentifier& id,
     const std::string& change_guid,
-    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
+    const std::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
     int completed_attempts)
     : id_(id),
       change_guid_(change_guid),

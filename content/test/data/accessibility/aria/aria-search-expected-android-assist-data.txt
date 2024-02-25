@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="search"}]
+++++TextView text:"ARIA role search." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

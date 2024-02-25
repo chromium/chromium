@@ -66,7 +66,7 @@ class GeolocationImplTest : public testing::Test {
   void SetUp() override {
     GeolocationProvider::SetInstanceForTesting(&geolocation_provider_);
     geolocation_context_.BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL::EmptyGURL());
+        geolocation_.BindNewPipeAndPassReceiver(), GURL());
   }
 
   void TearDown() override {

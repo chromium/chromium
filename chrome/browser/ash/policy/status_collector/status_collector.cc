@@ -8,7 +8,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -84,12 +84,12 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-absl::optional<std::string> StatusCollector::GetBootMode(
+std::optional<std::string> StatusCollector::GetBootMode(
     ash::system::StatisticsProvider* statistics_provider) {
-  const absl::optional<std::string_view> dev_switch_mode =
+  const std::optional<std::string_view> dev_switch_mode =
       statistics_provider->GetMachineStatistic(ash::system::kDevSwitchBootKey);
   if (!dev_switch_mode) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (dev_switch_mode == ash::system::kDevSwitchBootValueDev) {
@@ -100,7 +100,7 @@ absl::optional<std::string> StatusCollector::GetBootMode(
     return std::string("Verified");
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StatusCollector::StatusCollector(ash::system::StatisticsProvider* provider,
@@ -121,10 +121,10 @@ StatusCollector::GetAutoLaunchedKioskSessionInfo() {
     return nullptr;
   }
 
-  ash::KioskAppManager::App current_app;
+  ash::KioskChromeAppManager::App current_app;
   bool regular_app_auto_launched_with_zero_delay =
-      ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
-                                          &current_app) &&
+      ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
+                                                &current_app) &&
       current_app.was_auto_launched_with_zero_delay;
   bool arc_app_auto_launched_with_zero_delay =
       ash::ArcKioskAppManager::Get()

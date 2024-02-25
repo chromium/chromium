@@ -14,6 +14,7 @@
 #import "base/environment.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_split.h"
@@ -104,7 +105,8 @@ class SystemURLRequestContextGetter : public net::URLRequestContextGetter {
   ~SystemURLRequestContextGetter() override;
 
  private:
-  IOSIOThread* io_thread_;  // Weak pointer, owned by ApplicationContext.
+  raw_ptr<IOSIOThread>
+      io_thread_;  // Weak pointer, owned by ApplicationContext.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
   LeakTracker<SystemURLRequestContextGetter> leak_tracker_;

@@ -17,10 +17,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,18 +31,16 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
+
+// The delay before saving.
+constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
 
 // Fixture Class. Takes care of deleting the directory used to store test data.
 class SessionServiceTest : public PlatformTest {
  public:
-  SessionServiceTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
+  SessionServiceTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   }
 
   SessionServiceTest(const SessionServiceTest&) = delete;
@@ -60,7 +57,8 @@ class SessionServiceTest : public PlatformTest {
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     session_service_ =
-        [[SessionServiceIOS alloc] initWithTaskRunner:task_runner];
+        [[SessionServiceIOS alloc] initWithSaveDelay:kSaveDelay
+                                          taskRunner:task_runner];
   }
 
   void TearDown() override {
@@ -76,9 +74,8 @@ class SessionServiceTest : public PlatformTest {
     for (int i = 0; i < tabs_count; ++i) {
       auto web_state = std::make_unique<web::FakeWebState>();
       web_state->SetNavigationItemCount(1);
-      web_state_list->InsertWebState(i, std::move(web_state),
-                                     WebStateList::INSERT_FORCE_INDEX,
-                                     WebStateOpener());
+      web_state_list->InsertWebState(std::move(web_state),
+                                     WebStateList::InsertionParams::AtIndex(i));
     }
     if (tabs_count > 0)
       web_state_list->ActivateWebStateAt(0);
@@ -108,10 +105,20 @@ class SessionServiceTest : public PlatformTest {
     return base::apple::FilePathToNSString(directory());
   }
 
+  void WaitForBackgroundTaskComplete() {
+    base::RunLoop run_loop;
+    [session_service_ shutdownWithClosure:run_loop.QuitClosure()];
+    run_loop.Run();
+  }
+
+  void WaitForSessionSaveComplete() {
+    task_environment_.FastForwardBy(kSaveDelay);
+    WaitForBackgroundTaskComplete();
+  }
+
  private:
   base::ScopedTempDir scoped_temp_directory_;
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;
@@ -126,8 +133,8 @@ TEST_F(SessionServiceTest, SessionPathForDirectory) {
 
 TEST_F(SessionServiceTest, SaveSessionWindowToPath) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(0);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -138,7 +145,7 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPath) {
   // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
-  base::RunLoop().RunUntilIdle();
+  WaitForBackgroundTaskComplete();
 
   NSFileManager* file_manager = [NSFileManager defaultManager];
   EXPECT_TRUE([file_manager removeItemAtPath:directory_as_nsstring()
@@ -152,8 +159,8 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
                        attributes:nil
                             error:nullptr]);
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(0);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -164,7 +171,7 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
   // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
-  base::RunLoop().RunUntilIdle();
+  WaitForBackgroundTaskComplete();
 
   NSFileManager* file_manager = [NSFileManager defaultManager];
   EXPECT_TRUE([file_manager removeItemAtPath:directory_as_nsstring()
@@ -173,18 +180,18 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
 
 TEST_F(SessionServiceTest, LoadSessionFromDirectoryNoFile) {
   NSString* session_id = [[NSUUID UUID] UUIDString];
-  SessionIOS* session =
+  SessionWindowIOS* session =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
   EXPECT_TRUE(session == nil);
 }
 
-// Tests that the session service doesn't retain the SessionIOSFactory, and that
-// SaveSession will be no-op if the factory is destroyed earlier.
+// Tests that the session service doesn't retain the SessionWindowIOSFactory,
+// and that SaveSession will be no-op if the factory is destroyed earlier.
 TEST_F(SessionServiceTest, SaveExpiredSession) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -193,12 +200,11 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
                      immediately:NO];
   [factory disconnect];
   factory = nil;
-  // Make sure that the delay for saving a session has passed (at least 2.5
-  // seconds)
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2.5));
-  base::RunLoop().RunUntilIdle();
 
-  SessionIOS* session =
+  // Make sure that the delay for saving a session has passed.
+  WaitForSessionSaveComplete();
+
+  SessionWindowIOS* session =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
   EXPECT_FALSE(session);
@@ -206,8 +212,8 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
 
 TEST_F(SessionServiceTest, LoadSessionFromDirectory) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -218,20 +224,19 @@ TEST_F(SessionServiceTest, LoadSessionFromDirectory) {
   // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
-  base::RunLoop().RunUntilIdle();
+  WaitForBackgroundTaskComplete();
 
-  SessionIOS* session =
+  SessionWindowIOS* session_window =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
-  EXPECT_EQ(1u, session.sessionWindows.count);
-  EXPECT_EQ(2u, session.sessionWindows[0].sessions.count);
-  EXPECT_EQ(0u, session.sessionWindows[0].selectedIndex);
+  EXPECT_EQ(2u, session_window.sessions.count);
+  EXPECT_EQ(0u, session_window.selectedIndex);
 }
 
 TEST_F(SessionServiceTest, LoadSessionFromPath) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -242,7 +247,7 @@ TEST_F(SessionServiceTest, LoadSessionFromPath) {
   // Even if `immediately` is YES, the file is created by a task on the task
   // runner passed to SessionServiceIOS initializer (which is the current
   // thread task runner during test). Wait for the task to complete.
-  base::RunLoop().RunUntilIdle();
+  WaitForBackgroundTaskComplete();
 
   NSString* session_path =
       [SessionServiceIOS sessionPathForSessionID:session_id
@@ -255,17 +260,18 @@ TEST_F(SessionServiceTest, LoadSessionFromPath) {
                                                       toPath:renamed_path
                                                        error:nil]);
 
-  SessionIOS* session = [session_service() loadSessionFromPath:renamed_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
-  EXPECT_EQ(2u, session.sessionWindows[0].sessions.count);
-  EXPECT_EQ(0u, session.sessionWindows[0].selectedIndex);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:renamed_path];
+  EXPECT_EQ(2u, session_window.sessions.count);
+  EXPECT_EQ(0u, session_window.selectedIndex);
 }
 
 TEST_F(SessionServiceTest, LoadCorruptedSession) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("corrupted.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
+  SessionWindowIOS* session =
+      [session_service() loadSessionFromPath:session_path];
   EXPECT_TRUE(session == nil);
 }
 
@@ -275,8 +281,9 @@ TEST_F(SessionServiceTest, LoadM57Session) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("session_m57.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:session_path];
+  EXPECT_NSNE(nil, session_window);
 }
 
 // TODO(crbug.com/661633): remove this once M68 has shipped (i.e. once more
@@ -285,8 +292,9 @@ TEST_F(SessionServiceTest, LoadM58Session) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("session_m58.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:session_path];
+  EXPECT_NSNE(nil, session_window);
 }
 
 }  // anonymous namespace

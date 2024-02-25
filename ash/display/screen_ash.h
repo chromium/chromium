@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/screen.h"
 
 namespace display {
@@ -24,7 +25,8 @@ namespace ash {
 
 // Aura implementation of display::Screen. Implemented here to avoid circular
 // dependencies.
-class ASH_EXPORT ScreenAsh : public display::Screen {
+class ASH_EXPORT ScreenAsh : public display::Screen,
+                             public chromeos::PowerManagerClient::Observer {
  public:
   ScreenAsh();
 
@@ -53,6 +55,10 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   display::TabletState GetTabletState() const override;
+
+  // chromeos::PowerManagerClient::Observer overrides:
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
 
   // CreateDisplayManager with a ScreenAsh instance.
   static std::unique_ptr<display::DisplayManager> CreateDisplayManager();

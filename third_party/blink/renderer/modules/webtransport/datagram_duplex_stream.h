@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -42,11 +43,11 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   }
 
   uint32_t maxDatagramSize() const { return max_datagram_size_; }
-  absl::optional<double> incomingMaxAge() const { return incoming_max_age_; }
-  void setIncomingMaxAge(absl::optional<double> max_age);
+  std::optional<double> incomingMaxAge() const { return incoming_max_age_; }
+  void setIncomingMaxAge(std::optional<double> max_age);
 
-  absl::optional<double> outgoingMaxAge() const { return outgoing_max_age_; }
-  void setOutgoingMaxAge(absl::optional<double> max_age);
+  std::optional<double> outgoingMaxAge() const { return outgoing_max_age_; }
+  void setOutgoingMaxAge(std::optional<double> max_age);
 
   int32_t incomingHighWaterMark() const { return incoming_high_water_mark_; }
   void setIncomingHighWaterMark(int32_t high_water_mark);
@@ -67,8 +68,8 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   // condition, so let's choose a conservative value. This will be update when
   // the path migration happens.
   uint32_t max_datagram_size_ = 1024;
-  absl::optional<double> incoming_max_age_;
-  absl::optional<double> outgoing_max_age_;
+  std::optional<double> incoming_max_age_;
+  std::optional<double> outgoing_max_age_;
   int32_t incoming_high_water_mark_ = kDefaultIncomingHighWaterMark;
   int32_t outgoing_high_water_mark_;
 };

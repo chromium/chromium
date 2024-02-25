@@ -5,5 +5,7 @@ include_rules = [
 specific_include_rules = {
   "popup_multiscreen_interactive_uitest\.cc": [
     "+ash/shell.h",
+    "+chrome/browser/ui/views/exclusive_access_bubble_views.h",
+    "+chrome/browser/ui/views/frame/browser_view.h",
   ],
 }

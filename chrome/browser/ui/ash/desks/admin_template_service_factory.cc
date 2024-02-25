@@ -15,12 +15,6 @@ namespace ash {
 // static
 desks_storage::AdminTemplateService* AdminTemplateServiceFactory::GetForProfile(
     Profile* profile) {
-  // Service should not be available if the flag is not enabled.
-  if (!base::FeatureList::IsEnabled(ash::features::kAppLaunchAutomation)) {
-    LOG(WARNING) << "AppLaunchAutomation flag not set!";
-    return nullptr;
-  }
-
   return static_cast<desks_storage::AdminTemplateService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }

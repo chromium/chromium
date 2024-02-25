@@ -41,7 +41,7 @@ WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(
 
   content::WebContents* web_contents = handle->GetWebContents();
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->app_controller()) {
     return nullptr;
   }
@@ -67,7 +67,7 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
   GURL navigation_url = navigation_handle()->GetURL();
 
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::AppBrowserController* app_controller = browser->app_controller();
   DCHECK(app_controller);

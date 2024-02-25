@@ -19,6 +19,7 @@ dictionary MediaTrackSupportedConstraints {
     boolean echoCancellation = true;
     boolean autoGainControl = true;
     boolean noiseSuppression = true;
+    boolean voiceIsolation = true;
     boolean latency = true;
     boolean channelCount = true;
     boolean deviceId = true;
@@ -48,6 +49,8 @@ dictionary MediaTrackSupportedConstraints {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean eyeGazeCorrection = true;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming = true;
 
     // Screen Capture API
     // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksupportedconstraints

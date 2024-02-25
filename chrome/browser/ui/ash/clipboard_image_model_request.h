@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "base/unguessable_token.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace ash {
@@ -72,7 +72,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     TestParams() = delete;
     explicit TestParams(
         RequestStopCallback callback,
-        const absl::optional<bool>& enforce_auto_resize = absl::nullopt);
+        const std::optional<bool>& enforce_auto_resize = std::nullopt);
     TestParams(const TestParams&) = delete;
     TestParams& operator=(const TestParams&) = delete;
     ~TestParams();
@@ -85,7 +85,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     // When set, `enforce_auto_resize` specifies whether the image model request
     // should be rendered in auto resize mode. If `enforce_auto_resize` is
     // true (or false), auto resize mode is always enabled (or disabled).
-    absl::optional<bool> enforce_auto_resize;
+    std::optional<bool> enforce_auto_resize;
   };
 
   // Places `html_markup` on the clipboard and restores the original clipboard
@@ -142,7 +142,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // Returns whether a request with |request_id| is running, or if any request
   // is running if no |request_id| is supplied.
   bool IsRunningRequest(
-      absl::optional<base::UnguessableToken> request_id = absl::nullopt) const;
+      std::optional<base::UnguessableToken> request_id = std::nullopt) const;
 
   // content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* web_contents,
@@ -179,7 +179,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   std::unique_ptr<views::Widget> const widget_;
 
   // Contents view of |widget_|. Owned by |widget_|.
-  const raw_ptr<views::WebView, ExperimentalAsh> web_view_;
+  const raw_ptr<views::WebView> web_view_;
 
   // Unique identifier for this request run. Empty when there are no running
   // requests.
@@ -196,7 +196,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   bool did_stop_loading_ = false;
 
   // Responsible for temporarily replacing contents of the clipboard.
-  absl::optional<ScopedClipboardModifier> scoped_clipboard_modifier_;
+  std::optional<ScopedClipboardModifier> scoped_clipboard_modifier_;
 
   // Callback used to deliver the rendered ImageModel.
   ImageModelCallback deliver_image_model_callback_;

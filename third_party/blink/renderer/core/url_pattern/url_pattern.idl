@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 typedef (USVString or URLPatternInit) URLPatternInput;
+typedef (USVString or URLPatternInit or URLPattern) URLPatternCompatible;
 
 enum URLPatternComponent { "protocol", "username", "password", "hostname",
                            "port", "pathname", "search", "hash" };
@@ -11,10 +12,10 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
 [
   Exposed=(Window,Worker)
 ] interface URLPattern {
-  [RaisesException, Measure]
+  [RaisesException, CallWith=Isolate, Measure]
   constructor(URLPatternInput input, USVString baseURL, optional URLPatternOptions options = {});
 
-  [RaisesException, Measure]
+  [RaisesException, CallWith=Isolate, Measure]
   constructor(optional URLPatternInput input = {}, optional URLPatternOptions options = {});
 
   [RaisesException, CallWith=ScriptState, Measure]
@@ -31,6 +32,8 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   readonly attribute USVString pathname;
   readonly attribute USVString search;
   readonly attribute USVString hash;
+
+  [RuntimeEnabled=URLPatternHasRegExpGroups] readonly attribute boolean hasRegExpGroups;
 
   [RuntimeEnabled=URLPatternCompareComponent, Measure]
   static short compareComponent(URLPatternComponent component,

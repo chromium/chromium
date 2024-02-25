@@ -6,9 +6,10 @@ package org.chromium.android_webview;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 
 /**
@@ -22,8 +23,14 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
     // Callback filesSelectedInChooser() when done.
     @CalledByNative
-    public abstract void runFileChooser(int processId, int renderId, int modeFlags,
-            String acceptTypes, String title, String defaultFilename,  boolean capture);
+    public abstract void runFileChooser(
+            int processId,
+            int renderId,
+            int modeFlags,
+            String acceptTypes,
+            String title,
+            String defaultFilename,
+            boolean capture);
 
     // See //android_webview/docs/how-does-on-create-window-work.md for more details.
     @CalledByNative
@@ -49,7 +56,11 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
     @NativeMethods
     interface Natives {
         // Call in response to a prior runFileChooser call.
-        void filesSelectedInChooser(int processId, int renderId, int modeFlags, String[] filePath,
+        void filesSelectedInChooser(
+                int processId,
+                int renderId,
+                int modeFlags,
+                String[] filePath,
                 String[] displayName);
     }
 }

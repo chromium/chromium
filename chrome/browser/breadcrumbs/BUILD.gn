@@ -54,6 +54,7 @@ if (!is_android) {
       ":breadcrumbs",
       "//chrome/test:test_support",
       "//components/breadcrumbs/core",
+      "//components/breadcrumbs/core:status",
     ]
 
     sources = [ "breadcrumb_manager_tab_helper_desktop_browsertest.cc" ]

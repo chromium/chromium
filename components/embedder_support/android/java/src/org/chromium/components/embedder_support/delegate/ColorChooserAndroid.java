@@ -6,11 +6,12 @@ package org.chromium.components.embedder_support.delegate;
 
 import android.content.Context;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -22,16 +23,23 @@ public class ColorChooserAndroid {
     private final ColorPickerDialog mDialog;
     private final long mNativeColorChooserAndroid;
 
-    private ColorChooserAndroid(long nativeColorChooserAndroid, Context context, int initialColor,
+    private ColorChooserAndroid(
+            long nativeColorChooserAndroid,
+            Context context,
+            int initialColor,
             ColorSuggestion[] suggestions) {
-        OnColorChangedListener listener = new OnColorChangedListener() {
-            @Override
-            public void onColorChanged(int color) {
-                mDialog.dismiss();
-                ColorChooserAndroidJni.get().onColorChosen(
-                        mNativeColorChooserAndroid, ColorChooserAndroid.this, color);
-            }
-        };
+        OnColorChangedListener listener =
+                new OnColorChangedListener() {
+                    @Override
+                    public void onColorChanged(int color) {
+                        mDialog.dismiss();
+                        ColorChooserAndroidJni.get()
+                                .onColorChosen(
+                                        mNativeColorChooserAndroid,
+                                        ColorChooserAndroid.this,
+                                        color);
+                    }
+                };
 
         mNativeColorChooserAndroid = nativeColorChooserAndroid;
         mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
@@ -50,13 +58,17 @@ public class ColorChooserAndroid {
     }
 
     @CalledByNative
-    public static ColorChooserAndroid createColorChooserAndroid(long nativeColorChooserAndroid,
-            WindowAndroid windowAndroid, int initialColor, ColorSuggestion[] suggestions) {
+    public static ColorChooserAndroid createColorChooserAndroid(
+            long nativeColorChooserAndroid,
+            WindowAndroid windowAndroid,
+            int initialColor,
+            ColorSuggestion[] suggestions) {
         if (windowAndroid == null) return null;
         Context windowContext = windowAndroid.getContext().get();
         if (ContextUtils.activityFromContext(windowContext) == null) return null;
-        ColorChooserAndroid chooser = new ColorChooserAndroid(
-                nativeColorChooserAndroid, windowContext, initialColor, suggestions);
+        ColorChooserAndroid chooser =
+                new ColorChooserAndroid(
+                        nativeColorChooserAndroid, windowContext, initialColor, suggestions);
         chooser.openColorChooser();
         return chooser;
     }

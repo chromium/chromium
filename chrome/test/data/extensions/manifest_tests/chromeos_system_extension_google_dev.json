@@ -1,0 +1,15 @@
+{
+  // Key only for development.
+  // See //chrome/common/chromeos/extensions/api/_manifest_features.json
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuyCxGIU0wFFseHCQGv1Me0X0QEz7xbMASwdwBis6eVIy85GufS6n0WdQKLjVIMKK/qupvokhUuaSU5+bN0wbkEriA8wo+APFm0Be4BH/4Xn3bFomLyZNSQsVo9d1uHkWLLlbd6XZLhoXyK4WeZdxQfr3r//gLtkGgUN1EP+Vpjny6tFJeqMtu8Jy+jQowogkTn2uiKrITFh1l44WoFCU32Brf2iUTifOnOmyvgzkgswm7Bg5XSs+sQuOH/00qT17mGGqitNMsUrAH/9Oc+qUzqAr3JNwyJ0y+Klq+1avpvQV+VP5sapGYjQJSeOszPm/Dpjv9AQu2x6anTdA0QRWWwIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "*://googlechromelabs.github.io/*",
+      "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*"
+    ]
+  }
+}

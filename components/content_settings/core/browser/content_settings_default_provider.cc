@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -56,6 +58,8 @@ const char kObsoletePpapiBrokerDefaultPref[] =
     "profile.default_content_setting_values.ppapi_broker";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteFederatedIdentityDefaultPref[] =
+    "profile.default_content_setting_values.fedcm_active_session";
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
@@ -91,9 +95,9 @@ class DefaultRuleIterator : public RuleIterator {
   std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
     is_done_ = true;
-    return std::make_unique<OwnedRule>(ContentSettingsPattern::Wildcard(),
-                                       ContentSettingsPattern::Wildcard(),
-                                       std::move(value_), RuleMetaData{});
+    return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  std::move(value_), RuleMetaData{});
   }
 
  private:
@@ -133,6 +137,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePpapiBrokerDefaultPref, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs,
@@ -163,12 +168,15 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
 
 DefaultProvider::~DefaultProvider() = default;
 
+// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
+// when we call NotifyObservers().
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -201,14 +209,16 @@ bool DefaultProvider::SetWebsiteSetting(
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 
   return true;
 }
 
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record) const {
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record)
     return nullptr;
@@ -222,8 +232,36 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   return std::make_unique<DefaultRuleIterator>(it->second.Clone());
 }
 
+std::unique_ptr<Rule> DefaultProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
+  // The default provider never has off-the-record-specific settings.
+  if (off_the_record) {
+    return nullptr;
+  }
+
+  base::AutoLock lock(lock_);
+  const auto it = default_settings_.find(content_type);
+  if (it == default_settings_.end()) {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  if (it->second.is_none()) {
+    return nullptr;
+  }
+
+  return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
+                                ContentSettingsPattern::Wildcard(),
+                                it->second.Clone(), RuleMetaData{});
+}
+
 void DefaultProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   // TODO(markusheintz): This method is only called when the
   // |DesktopNotificationService| calls |ClearAllSettingsForType| method on the
   // |HostContentSettingsMap|. Don't implement this method yet, otherwise the
@@ -234,7 +272,7 @@ void DefaultProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
   RemoveAllObservers();
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.Reset();
   prefs_ = nullptr;
 }
 
@@ -310,7 +348,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
-                  ContentSettingsPattern::Wildcard(), content_type);
+                  ContentSettingsPattern::Wildcard(), content_type,
+                  /*partition_key=*/nullptr);
 }
 
 base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {
@@ -335,6 +374,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePpapiBrokerDefaultPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
 }
 
 void DefaultProvider::RecordHistogramMetrics() {
@@ -348,6 +388,15 @@ void DefaultProvider::RecordHistogramMetrics() {
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::POPUPS))),
       CONTENT_SETTING_NUM_SETTINGS);
+
+#if BUILDFLAG(USE_BLINK)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::ADS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+#endif
+
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultImagesSetting",
@@ -403,11 +452,6 @@ void DefaultProvider::RecordHistogramMetrics() {
       "ContentSettings.RegularProfile.DefaultAutoplaySetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::AUTOPLAY))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  base::UmaHistogramEnumeration(
-      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting",
-      IntToContentSetting(
-          prefs_->GetInteger(GetPrefName(ContentSettingsType::ADS))),
       CONTENT_SETTING_NUM_SETTINGS);
   base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultSoundSetting",

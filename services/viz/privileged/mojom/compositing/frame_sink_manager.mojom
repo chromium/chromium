@@ -30,8 +30,6 @@ struct RootCompositorFrameSinkParams {
   bool send_swap_size_notifications = false;
   // Disables begin frame rate limiting for the display compositor.
   bool disable_frame_rate_limit = false;
-  // Whether to use variable refresh rates when generating begin frames.
-  bool enable_variable_refresh_rate = false;
 
   [EnableIf=is_android]
   float refresh_rate;
@@ -227,4 +225,13 @@ interface FrameSinkManagerClient {
   // when a surface of the provided |frame_sink_id| activates.
   OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
                       mojo_base.mojom.TimeTicks activation_time);
+
+  // Verifies that |thread_ids| do not belong to the host process. Renderer
+  // processes send their thread ids to the GPU process to be added to the ADPF
+  // session. GPU needs to make sure that they do not belong to the host
+  // process or the GPU process (i.e. itself) before adding the threads to the
+  // ADPF hint session.
+  [EnableIf=is_android]
+  VerifyThreadIdsDoNotBelongToHost(array<int32> thread_ids)
+      => (bool passed_verification);
 };

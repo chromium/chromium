@@ -4,15 +4,15 @@
 
 #include "chrome/browser/autofill/autofill_flow_test_util.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 
-#include "base/time/time.h"
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -121,7 +121,7 @@ struct ShowAutofillPopupParams {
   int num_profile_suggestions = 1;
   size_t max_tries = 5;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
+  std::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
 // A helper function for showing the popup in AutofillFlow().
@@ -220,7 +220,7 @@ struct ShowAutofillPopupParams {
           continue;
         }
       } else if (AssertionResult b = has_preview
-                                         ? ArrowDown({kSuggest, kPreview})
+                                         ? ArrowDown({kPreview, kSuggest})
                                          : ArrowDown({kSuggest});
                  !b) {
         a << "Cannot trigger and select first suggestion by arrow: " << b;
@@ -259,7 +259,7 @@ struct AutofillSuggestionParams {
   int current_index = 0;
   int target_index = 0;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
+  std::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
 // A helper function for selecting a suggestion in AutofillFlow().
@@ -304,8 +304,7 @@ struct AutofillSuggestionParams {
           ->GetView()
           ->GetRenderWidgetHost();
 
-  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
-  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
+  // All attempts to accept Autofill suggestions using keyboard "ENTER"
   // keystrokes will be ignored for the first 500ms after the popup is first
   // shown. This overrides this threshold.
   if (base::WeakPtr<AutofillPopupControllerImpl> controller =
@@ -327,7 +326,7 @@ struct AutofillSuggestionParams {
   if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a) {
     return a;
   }
-  if (!(has_fill ? Enter({kSuggestionsHidden, kFill})
+  if (!(has_fill ? Enter({kFill, kSuggestionsHidden})
                  : Enter({kSuggestionsHidden}))) {
     return AssertionFailure()
            << __func__ << "(): Couldn't accept to " << p.target_index

@@ -16,21 +16,8 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
-
-namespace {
-
-// Converts the padded `total_size_bytes` stored for an origin back to number
-// of entries in `values_mapping`.
-[[nodiscard]] int PaddedBytesToNumEntries(int total_size_bytes) {
-  return total_size_bytes /
-         (storage::kSharedStorageEntryTotalBytesMultiplier *
-          blink::features::kMaxSharedStorageStringLength.Get());
-}
-
-}  // namespace
 
 SharedStorageClearSiteDataTester::SharedStorageClearSiteDataTester(
     StoragePartition* storage_partition)
@@ -49,8 +36,9 @@ void SharedStorageClearSiteDataTester::AddSharedStorageEntry(
 
   base::test::TestFuture<storage::SharedStorageDatabase::OperationResult>
       future;
-  shared_storage_manager->Set(std::move(origin), std::move(key),
-                              std::move(value), future.GetCallback());
+  shared_storage_manager->Set(
+      std::move(origin), std::move(key), std::move(value), future.GetCallback(),
+      storage::SharedStorageDatabase::SetBehavior::kDefault);
   EXPECT_EQ(storage::SharedStorageDatabase::OperationResult::kSet,
             future.Get());
 }
@@ -87,7 +75,7 @@ SharedStorageClearSiteDataTester::GetSharedStorageOrigins() {
   return origins;
 }
 
-int SharedStorageClearSiteDataTester::GetSharedStorageNumEntriesForOrigin(
+int SharedStorageClearSiteDataTester::GetSharedStorageNumBytesForOrigin(
     url::Origin origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -102,13 +90,13 @@ int SharedStorageClearSiteDataTester::GetSharedStorageNumEntriesForOrigin(
 
   for (const auto& info : infos) {
     if (info->storage_key.origin() == origin)
-      return PaddedBytesToNumEntries(info->total_size_bytes);
+      return info->total_size_bytes;
   }
 
   return 0;
 }
 
-int SharedStorageClearSiteDataTester::GetSharedStorageTotalEntries() {
+int SharedStorageClearSiteDataTester::GetSharedStorageTotalBytes() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto* shared_storage_manager =
@@ -120,11 +108,11 @@ int SharedStorageClearSiteDataTester::GetSharedStorageTotalEntries() {
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();
 
-  int num_entries = 0;
+  int num_bytes = 0;
   for (const auto& info : infos)
-    num_entries += PaddedBytesToNumEntries(info->total_size_bytes);
+    num_bytes += info->total_size_bytes;
 
-  return num_entries;
+  return num_bytes;
 }
 
 }  // namespace content

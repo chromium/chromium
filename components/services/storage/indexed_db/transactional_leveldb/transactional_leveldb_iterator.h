@@ -6,13 +6,13 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_ITERATOR_H_
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace leveldb {
@@ -31,7 +31,7 @@ class LevelDBSnapshot;
 //   method is called for every change, and
 // * detaching itself (unloading it's leveldb::Iterator) to reduce memory when
 //   EvictLevelDBIterator is called.
-// Note: the returned base::StringPiece from Key or Value can become
+// Note: the returned std::string_view from Key or Value can become
 // invalidated when EvictLevelDBIterator, OnDatabaseKeyModified, or
 // OnDatabaseRangeModified are called.
 class TransactionalLevelDBIterator {
@@ -44,15 +44,15 @@ class TransactionalLevelDBIterator {
 
   virtual bool IsValid() const;
   virtual leveldb::Status SeekToLast();
-  virtual leveldb::Status Seek(const base::StringPiece& target);
+  virtual leveldb::Status Seek(std::string_view target);
   virtual leveldb::Status Next();
   virtual leveldb::Status Prev();
-  // The returned base::StringPiece can be invalidated when
+  // The returned std::string_view can be invalidated when
   // EvictLevelDBIterator is called.
-  virtual base::StringPiece Key() const;
-  // The returned base::StringPiece can be invalidated when
+  virtual std::string_view Key() const;
+  // The returned std::string_view can be invalidated when
   // EvictLevelDBIterator is called.
-  virtual base::StringPiece Value() const;
+  virtual std::string_view Value() const;
 
   // Evicts the internal leveldb::Iterator, which helps save memory at the
   // performance expense of reloading and seeking later if the iterator is

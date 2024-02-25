@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -68,19 +69,26 @@ MATCHER_P(HasName, name, "") {
 class MockSyncableService : public SyncableService {
  public:
   MOCK_METHOD(void, WaitUntilReadyToSync, (base::OnceClosure done), (override));
-  MOCK_METHOD(absl::optional<syncer::ModelError>,
+  MOCK_METHOD(std::optional<syncer::ModelError>,
               MergeDataAndStartSyncing,
               (ModelType type,
                const SyncDataList& initial_sync_data,
                std::unique_ptr<SyncChangeProcessor> sync_processor),
               (override));
   MOCK_METHOD(void, StopSyncing, (ModelType type), (override));
-  MOCK_METHOD(absl::optional<ModelError>,
+  MOCK_METHOD(std::optional<ModelError>,
               ProcessSyncChanges,
               (const base::Location& from_here,
                const SyncChangeList& change_list),
               (override));
   MOCK_METHOD(SyncDataList, GetAllSyncData, (ModelType type), (const override));
+
+  base::WeakPtr<SyncableService> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockSyncableService> weak_ptr_factory_{this};
 };
 
 class SyncableServiceBasedBridgeTest : public ::testing::Test {
@@ -101,7 +109,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
             [&](ModelType type, const SyncDataList& initial_sync_data,
                 std::unique_ptr<SyncChangeProcessor> sync_processor) {
               start_syncing_sync_processor_ = std::move(sync_processor);
-              return absl::nullopt;
+              return std::nullopt;
             });
   }
 
@@ -119,6 +127,9 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   }
 
   void ShutdownBridge() {
+    // |bridge_| must outlive |start_syncing_sync_processor_|, so reset it
+    // first.
+    start_syncing_sync_processor_.reset();
     bridge_.reset();
     // The mock is still delegating to |real_processor_|, so we reset it too.
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_processor_));
@@ -372,10 +383,10 @@ TEST_F(SyncableServiceBasedBridgeTest,
         change_list.emplace_back(
             FROM_HERE, SyncChange::ACTION_ADD,
             SyncData::CreateLocalData(kClientTag, "title", GetTestSpecifics()));
-        const absl::optional<ModelError> error =
+        const std::optional<ModelError> error =
             sync_processor->ProcessSyncChanges(FROM_HERE, change_list);
         EXPECT_FALSE(error.has_value());
-        return absl::nullopt;
+        return std::nullopt;
       });
 
   InitializeBridge();
@@ -401,7 +412,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalCreation) {
   change_list.emplace_back(
       FROM_HERE, SyncChange::ACTION_ADD,
       SyncData::CreateLocalData(kClientTag, "title", GetTestSpecifics()));
-  const absl::optional<ModelError> error =
+  const std::optional<ModelError> error =
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value());
   EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
@@ -422,7 +433,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalUpdate) {
   change_list.emplace_back(FROM_HERE, SyncChange::ACTION_UPDATE,
                            SyncData::CreateLocalData(
                                kClientTag, "title", GetTestSpecifics("name2")));
-  const absl::optional<ModelError> error =
+  const std::optional<ModelError> error =
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value());
   EXPECT_THAT(GetAllData(),
@@ -443,7 +454,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalDeletion) {
   change_list.emplace_back(FROM_HERE, SyncChange::ACTION_DELETE,
                            SyncData::CreateLocalDelete(kClientTag, kModelType));
 
-  const absl::optional<ModelError> error =
+  const std::optional<ModelError> error =
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value());
   EXPECT_THAT(GetAllData(), IsEmpty());
@@ -469,7 +480,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
   change_list.emplace_back(
       FROM_HERE, SyncChange::ACTION_ADD,
       SyncData::CreateLocalData(kClientTag, "title", GetTestSpecifics()));
-  const absl::optional<ModelError> error =
+  const std::optional<ModelError> error =
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_TRUE(error.has_value());
   EXPECT_THAT(GetAllData(), IsEmpty());

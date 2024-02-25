@@ -3,20 +3,21 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
@@ -34,21 +35,20 @@ class GlanceablesTaskViewPixelTest
     base::Time due_date;
     ASSERT_TRUE(base::Time::FromString("2022-12-21T00:00:00.000Z", &due_date));
 
-    task_ = std::make_unique<GlanceablesTask>(
+    task_ = std::make_unique<api::Task>(
         "task-id", "Task title",
-        /*completed=*/false,
-        has_due_date() ? absl::make_optional(due_date) : absl::nullopt,
-        has_subtasks(),
+        has_due_date() ? std::make_optional(due_date) : std::nullopt,
+        /*completed=*/false, has_subtasks(),
         /*has_email_link=*/false,
-        /*has_notes=*/has_notes());
+        /*has_notes=*/has_notes(), /*updated=*/base::Time());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));
     widget_->SetContentsView(std::make_unique<GlanceablesTaskView>(
-        /*task_list_id=*/"task-list-id", task_.get()));
+        task_.get(), /*mark_as_completed_callback=*/base::DoNothing()));
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();
@@ -75,7 +75,7 @@ class GlanceablesTaskViewPixelTest
   bool has_notes() const { return std::get<3>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_{chromeos::features::kJelly};
-  std::unique_ptr<GlanceablesTask> task_;
+  std::unique_ptr<api::Task> task_;
   std::unique_ptr<views::Widget> widget_;
 };
 

@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/switches.h"
 #include "ui/gl/egl_mock.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
@@ -163,6 +164,98 @@ TEST_F(GpuFenceManagerTest, Destruction) {
 
 #if BUILDFLAG(IS_POSIX)
 
+TEST_F(GpuFenceManagerTest, SmartHandleImplmentation) {
+  if (!base::FeatureList::IsEnabled(features::kUseSmartRefForGPUFenceHandle)) {
+    GTEST_SKIP();
+  }
+  const GLuint kClient1Id = 1;
+  const EGLSyncKHR kDummySync = reinterpret_cast<EGLSyncKHR>(0x2001);
+  const EGLint kFenceFD = dup(1);
+
+  // Creating a new fence creates an underlying native sync object.
+  EXPECT_CALL(*egl_, CreateSyncKHR(_, EGL_SYNC_NATIVE_FENCE_ANDROID, nullptr))
+      .Times(1)
+      .WillOnce(Return(kDummySync))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, Flush()).Times(1).RetiresOnSaturation();
+  EXPECT_TRUE(manager_->CreateGpuFence(kClient1Id));
+  EXPECT_TRUE(manager_->IsValidGpuFence(kClient1Id));
+
+  // Get a GpuFence and its GpuFenceHandle.
+
+  // We use a dup'ed STDOUT as the file descriptor for testing. Since
+  // it will be closed on GpuFence destruction, only return it one time.
+  EXPECT_CALL(*egl_, DupNativeFenceFDANDROID(_, kDummySync))
+      .Times(1)
+      .WillOnce(Return(kFenceFD))
+      .RetiresOnSaturation();
+  gfx::GpuFenceHandle handle;
+  {
+    std::unique_ptr<gfx::GpuFence> gpu_fence =
+        manager_->GetGpuFence(kClient1Id);
+    EXPECT_TRUE(gpu_fence);
+    handle = gpu_fence->GetGpuFenceHandle().Clone();
+  }
+
+  EXPECT_EQ(handle.Peek(), kFenceFD);
+  {
+    gfx::GpuFenceHandle handle2 = handle.Clone();
+
+    EXPECT_EQ(handle2.Peek(), kFenceFD);
+    auto scoped_fence = handle2.Release();
+    // There are multiple references to the same underlying fence so when we
+    // 'Release' the fence will have a different fd number corresponding to a
+    // 'dup'.
+    EXPECT_NE(scoped_fence.get(), kFenceFD);
+  }
+  EXPECT_EQ(handle.Peek(), kFenceFD);
+}
+
+TEST_F(GpuFenceManagerTest, SmartHandleOptimization) {
+  if (!base::FeatureList::IsEnabled(features::kUseSmartRefForGPUFenceHandle)) {
+    GTEST_SKIP();
+  }
+  const GLuint kClient1Id = 1;
+  const EGLSyncKHR kDummySync = reinterpret_cast<EGLSyncKHR>(0x2001);
+  const EGLint kFenceFD = dup(1);
+
+  // Creating a new fence creates an underlying native sync object.
+  EXPECT_CALL(*egl_, CreateSyncKHR(_, EGL_SYNC_NATIVE_FENCE_ANDROID, nullptr))
+      .Times(1)
+      .WillOnce(Return(kDummySync))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, Flush()).Times(1).RetiresOnSaturation();
+  EXPECT_TRUE(manager_->CreateGpuFence(kClient1Id));
+  EXPECT_TRUE(manager_->IsValidGpuFence(kClient1Id));
+
+  // Get a GpuFence and its GpuFenceHandle.
+
+  // We use a dup'ed STDOUT as the file descriptor for testing. Since
+  // it will be closed on GpuFence destruction, only return it one time.
+  EXPECT_CALL(*egl_, DupNativeFenceFDANDROID(_, kDummySync))
+      .Times(1)
+      .WillOnce(Return(kFenceFD))
+      .RetiresOnSaturation();
+  gfx::GpuFenceHandle handle;
+  {
+    std::unique_ptr<gfx::GpuFence> gpu_fence =
+        manager_->GetGpuFence(kClient1Id);
+    EXPECT_TRUE(gpu_fence);
+    handle = gpu_fence->GetGpuFenceHandle().Clone();
+  }
+
+  EXPECT_EQ(handle.Peek(), kFenceFD);
+  gfx::GpuFenceHandle handle2 = handle.Clone();
+  EXPECT_EQ(handle2.Peek(), kFenceFD);
+  // Drop reference in original 'handle'.
+  handle.Reset();
+  EXPECT_TRUE(handle.is_null());
+  EXPECT_EQ(handle.Peek(), -1);
+  // Single reference release optimization returns the original underlying FD.
+  auto scoped_fence = handle2.Release();
+  EXPECT_EQ(scoped_fence.get(), kFenceFD);
+}
+
 TEST_F(GpuFenceManagerTest, GetGpuFence) {
   const GLuint kClient1Id = 1;
   const EGLSyncKHR kDummySync = reinterpret_cast<EGLSyncKHR>(0x2001);
@@ -189,7 +282,7 @@ TEST_F(GpuFenceManagerTest, GetGpuFence) {
   EXPECT_TRUE(gpu_fence);
   const gfx::GpuFenceHandle& handle = gpu_fence->GetGpuFenceHandle();
 
-  EXPECT_EQ(handle.owned_fd.get(), kFenceFD);
+  EXPECT_EQ(handle.Peek(), kFenceFD);
 
   // Removing the fence marks it invalid.
   EXPECT_CALL(*egl_, DestroySyncKHR(_, kDummySync))
@@ -208,7 +301,7 @@ TEST_F(GpuFenceManagerTest, Duplication) {
 
   // Create a handle.
   gfx::GpuFenceHandle handle;
-  handle.owned_fd = base::ScopedFD(kFenceFD);
+  handle.Adopt(base::ScopedFD(kFenceFD));
 
   // Create a duplicate fence object from it.
   EXPECT_CALL(*egl_, CreateSyncKHR(_, EGL_SYNC_NATIVE_FENCE_ANDROID, _))

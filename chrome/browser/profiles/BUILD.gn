@@ -12,10 +12,32 @@ source_set("profiles") {
   sources = [
     "incognito_helpers.cc",
     "incognito_helpers.h",
+    "profile_key.cc",
+    "profile_key.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "profile_android.cc",
+      "profile_android.h",
+      "profile_key_android.cc",
+      "profile_key_android.h",
+    ]
+  }
+
   # Cannot depend on //chrome/browser:browser.
-  deps = [ ":profile" ]
+  deps = []
+  if (is_android) {
+    deps += [
+      "//chrome/browser/profiles/android:jni_headers",
+      "//content/public/browser",
+    ]
+  }
+
+  public_deps = [
+    ":profile",
+    "//components/leveldb_proto",
+  ]
 }
 
 # This target should be very minimal, likely no new sources should be added
@@ -34,13 +56,6 @@ source_set("profile") {
     "refcounted_profile_keyed_service_factory.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "profile_types_ash.cc",
-      "profile_types_ash.h",
-    ]
-  }
-
   public_deps = [ "//base" ]
 
   # Cannot depend on //chrome/browser:browser.
@@ -54,7 +69,9 @@ source_set("profile") {
     "//components/live_caption:constants",
     "//components/media_router/common",
     "//components/pref_registry",
+    "//components/prefs",
     "//components/profile_metrics",
+    "//components/search_engines",
     "//components/sync/service",
     "//components/variations",
     "//content/public/browser",
@@ -62,6 +79,9 @@ source_set("profile") {
   ]
   if (enable_extensions) {
     deps += [ "//extensions/browser" ]
+  }
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
   }
   if (is_chromeos_ash) {
     deps += [

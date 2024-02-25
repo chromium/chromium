@@ -6,12 +6,12 @@
 
 namespace optimization_guide {
 
-MemoryHint::MemoryHint(const absl::optional<base::Time>& expiry_time,
+MemoryHint::MemoryHint(const std::optional<base::Time>& expiry_time,
                        std::unique_ptr<proto::Hint> hint)
     : expiry_time_(expiry_time), hint_(std::move(hint)) {}
 
 MemoryHint::MemoryHint(const base::Time expiry_time, proto::Hint&& hint)
-    : expiry_time_(absl::optional<base::Time>(expiry_time)),
+    : expiry_time_(std::optional<base::Time>(expiry_time)),
       hint_(std::make_unique<proto::Hint>(hint)) {}
 
 MemoryHint::~MemoryHint() = default;

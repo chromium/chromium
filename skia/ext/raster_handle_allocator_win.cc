@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/check_op.h"
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

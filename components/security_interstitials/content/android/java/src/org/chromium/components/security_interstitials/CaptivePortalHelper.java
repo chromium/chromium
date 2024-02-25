@@ -8,10 +8,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,6 +77,7 @@ public class CaptivePortalHelper {
     @NativeMethods
     interface Natives {
         void setCaptivePortalCertificateForTesting(String spkiHash);
+
         void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal);
     }
 }

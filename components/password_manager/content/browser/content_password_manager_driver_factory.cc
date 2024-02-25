@@ -58,10 +58,8 @@ void ContentPasswordManagerDriverFactory::BindPasswordManagerDriver(
   if (!factory)
     return;
 
-  // TODO(crbug.com/1294378): Remove nullptr check once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  if (auto* driver = factory->GetDriverForFrame(render_frame_host))
-    driver->BindPendingReceiver(std::move(pending_receiver));
+  factory->GetDriverForFrame(render_frame_host)
+      ->BindPendingReceiver(std::move(pending_receiver));
 }
 
 ContentPasswordManagerDriver*
@@ -98,18 +96,11 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
   if (navigation->IsSameDocument() || !navigation->HasCommitted()) {
     return;
   }
+  GetDriverForFrame(navigation->GetRenderFrameHost())->DidNavigate();
 
-  // Unbind receiver if the frame is anonymous, noted that anonymous frames are
-  // always iframes.
   if (!navigation->IsInPrimaryMainFrame()) {
-    if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost())) {
-      if (navigation->GetRenderFrameHost()->IsCredentialless()) {
-        driver->UnbindReceiver();
-      }
-    }
     return;
   }
-
   // Clear page specific data after main frame navigation.
   NotifyDidNavigateMainFrame(navigation->IsRendererInitiated(),
                              navigation->GetPageTransition(),
@@ -117,10 +108,9 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
                              password_client_->GetPasswordManager());
   // A committed navigation always has a live RenderFrameHost.
   CHECK(navigation->GetRenderFrameHost()->IsRenderFrameLive());
-  // TODO(crbug.com/1294378): Remove nullptr check once
-  // EnablePasswordManagerWithinFencedFrame is launched.
-  if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost()))
-    driver->GetPasswordAutofillManager()->DidNavigateMainFrame();
+  GetDriverForFrame(navigation->GetRenderFrameHost())
+      ->GetPasswordAutofillManager()
+      ->DidNavigateMainFrame();
 }
 
 void ContentPasswordManagerDriverFactory::RenderFrameDeleted(

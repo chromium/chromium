@@ -6,7 +6,7 @@ source_set("mailto_handler") {
   sources = [ "test_mailto_handler.mm" ]
   deps = [
     "//base",
-    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler/model",
     "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
   ]
 }

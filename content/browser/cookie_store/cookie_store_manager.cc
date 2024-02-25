@@ -4,6 +4,7 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -25,7 +25,7 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -600,6 +600,8 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
         registration_id,
         base::BindOnce(
             [](base::WeakPtr<CookieStoreManager> manager,
+               BrowserContext* browser_context,
+               ContentBrowserClient* content_browser_client,
                const net::CookieChangeInfo& change,
                blink::ServiceWorkerStatusCode find_status,
                scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -609,6 +611,13 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
               DCHECK(registration);
               if (!manager)
                 return;
+
+              if (content_browser_client && !change.cookie.IsPartitioned() &&
+                  !content_browser_client->IsFullCookieAccessAllowed(
+                      browser_context, registration->scope(),
+                      registration->key())) {
+                return;
+              }
 
               // If the change is for a partition cookie, we check that its
               // partition key matches the StorageKey's top-level site.
@@ -639,7 +648,9 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 
               manager->DispatchChangeEvent(std::move(registration), change);
             },
-            weak_factory_.GetWeakPtr(), change));
+            weak_factory_.GetWeakPtr(),
+            service_worker_context_->browser_context(),
+            GetContentClient()->browser(), change));
   }
 }
 
@@ -684,7 +695,8 @@ void CookieStoreManager::DispatchChangeEvent(
 
   scoped_refptr<ServiceWorkerVersion> active_version =
       registration->active_version();
-  if (active_version->running_status() != EmbeddedWorkerStatus::RUNNING) {
+  if (active_version->running_status() !=
+      blink::EmbeddedWorkerStatus::kRunning) {
     active_version->RunAfterStartWorker(
         ServiceWorkerMetrics::EventType::COOKIE_CHANGE,
         base::BindOnce(&CookieStoreManager::DidStartWorkerForChangeEvent,

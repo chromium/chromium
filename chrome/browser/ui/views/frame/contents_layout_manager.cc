@@ -7,13 +7,13 @@
 #include "ui/views/view.h"
 
 ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
-                                             views::View* contents_view)
+                                             views::View* contents_view,
+                                             views::View* watermark_view)
     : devtools_view_(devtools_view),
       contents_view_(contents_view),
-      host_(nullptr) {}
+      watermark_view_(watermark_view) {}
 
-ContentsLayoutManager::~ContentsLayoutManager() {
-}
+ContentsLayoutManager::~ContentsLayoutManager() = default;
 
 void ContentsLayoutManager::SetContentsResizingStrategy(
     const DevToolsContentsResizingStrategy& strategy) {
@@ -42,6 +42,11 @@ void ContentsLayoutManager::Layout(views::View* contents_container) {
   // layout here.
   devtools_view_->SetBoundsRect(host_->GetMirroredRect(new_devtools_bounds));
   contents_view_->SetBoundsRect(host_->GetMirroredRect(new_contents_bounds));
+
+  // Enterprise watermark view is always overlaid, even when empty.
+  if (watermark_view_) {
+    watermark_view_->SetBoundsRect(gfx::Rect(0, 0, width, height));
+  }
 }
 
 gfx::Size ContentsLayoutManager::GetPreferredSize(

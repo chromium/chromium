@@ -6,8 +6,9 @@
 #define EXTENSIONS_COMMON_EXTENSION_URLS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -49,11 +50,10 @@ GURL GetNewWebstoreLaunchURL();
 
 // Returns a url with a utm_source query param value of `utm_source_value`
 // appended.
-GURL AppendUtmSource(const GURL& url,
-                     const base::StringPiece& utm_source_value);
+GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value);
 
-// Returns the URL to the extensions category on the Web Store. This is
-// derived from GetWebstoreLaunchURL().
+// Returns the URL to the extensions category on the old and new Web Store
+// depending on extensions_features::kNewWebstoreURL feature flag.
 std::string GetWebstoreExtensionsCategoryURL();
 
 // Returns the URL prefix for an item in the extension/app gallery. This URL
@@ -63,7 +63,7 @@ std::string GetWebstoreItemDetailURLPrefix();
 
 // Returns the URL used to get webstore data (ratings, manifest, icon URL,
 // etc.) about an extension from the webstore as JSON.
-GURL GetWebstoreItemJsonDataURL(const std::string& extension_id);
+GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id);
 
 // Returns the compile-time constant webstore update url specific to
 // Chrome. Usually you should prefer using GetWebstoreUpdateUrl.
@@ -75,7 +75,7 @@ GURL GetWebstoreUpdateUrl();
 
 // Returns the url to visit to report abuse for the given |extension_id|
 // and |referrer_id|.
-GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
+GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id);
 
 // Returns whether the URL's host matches or is in the same domain as any of the
@@ -96,7 +96,7 @@ bool IsBlocklistUpdateUrl(const GURL& url);
 
 // Returns true if the origin points to an URL used for safebrowsing.
 // TODO(devlin): Update other methods to also take an url::Origin?
-bool IsSafeBrowsingUrl(const url::Origin& origin, base::StringPiece path);
+bool IsSafeBrowsingUrl(const url::Origin& origin, std::string_view path);
 
 }  // namespace extension_urls
 

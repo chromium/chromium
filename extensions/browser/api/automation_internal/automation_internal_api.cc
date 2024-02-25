@@ -26,6 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -34,7 +35,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/common/api/automation_internal.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -68,7 +69,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     const std::string& action_type_string,
     int request_id,
     const base::Value::Dict& additional_properties,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ui::AXActionData* action) {
   AutomationInternalPerformActionFunction::Result validation_error_result;
   validation_error_result.validation_success = false;
@@ -100,28 +101,27 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       action->action = ax::mojom::Action::kFocus;
       break;
     case api::automation::ActionType::kGetImageData: {
-      api::automation_internal::GetImageDataParams get_image_data_params;
-      bool result = api::automation_internal::GetImageDataParams::Populate(
-          additional_properties, get_image_data_params);
-      if (!result) {
+      auto get_image_data_params =
+          api::automation_internal::GetImageDataParams::FromValue(
+              additional_properties);
+      if (!get_image_data_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kGetImageData;
-      action->target_rect = gfx::Rect(0, 0, get_image_data_params.max_width,
-                                      get_image_data_params.max_height);
+      action->target_rect = gfx::Rect(0, 0, get_image_data_params->max_width,
+                                      get_image_data_params->max_height);
       break;
     }
     case api::automation::ActionType::kHitTest: {
-      api::automation_internal::HitTestParams hit_test_params;
-      bool result = api::automation_internal::HitTestParams::Populate(
-          additional_properties, hit_test_params);
-      if (!result) {
+      auto hit_test_params = api::automation_internal::HitTestParams::FromValue(
+          additional_properties);
+      if (!hit_test_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kHitTest;
-      action->target_point = gfx::Point(hit_test_params.x, hit_test_params.y);
+      action->target_point = gfx::Point(hit_test_params->x, hit_test_params->y);
       action->hit_test_event_to_fire = ui::ParseAXEnum<ax::mojom::Event>(
-          hit_test_params.event_to_fire.c_str());
+          hit_test_params->event_to_fire.c_str());
       if (action->hit_test_event_to_fire == ax::mojom::Event::kNone) {
         return success_result;
       }
@@ -161,16 +161,16 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       action->action = ax::mojom::Action::kScrollRight;
       break;
     case api::automation::ActionType::kSetSelection: {
-      api::automation_internal::SetSelectionParams selection_params;
-      bool result = api::automation_internal::SetSelectionParams::Populate(
-          additional_properties, selection_params);
-      if (!result) {
+      auto selection_params =
+          api::automation_internal::SetSelectionParams::FromValue(
+              additional_properties);
+      if (!selection_params) {
         return validation_error_result;
       }
       action->anchor_node_id = automation_node_id;
-      action->anchor_offset = selection_params.anchor_offset;
-      action->focus_node_id = selection_params.focus_node_id;
-      action->focus_offset = selection_params.focus_offset;
+      action->anchor_offset = selection_params->anchor_offset;
+      action->focus_node_id = selection_params->focus_node_id;
+      action->focus_offset = selection_params->focus_offset;
       action->action = ax::mojom::Action::kSetSelection;
       break;
     }
@@ -185,90 +185,82 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       break;
     }
     case api::automation::ActionType::kCustomAction: {
-      api::automation_internal::PerformCustomActionParams
-          perform_custom_action_params;
-      bool result =
-          api::automation_internal::PerformCustomActionParams::Populate(
-              additional_properties, perform_custom_action_params);
-      if (!result) {
+      auto perform_custom_action_params =
+          api::automation_internal::PerformCustomActionParams::FromValue(
+              additional_properties);
+      if (!perform_custom_action_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kCustomAction;
-      action->custom_action_id = perform_custom_action_params.custom_action_id;
+      action->custom_action_id = perform_custom_action_params->custom_action_id;
       break;
     }
     case api::automation::ActionType::kReplaceSelectedText: {
-      api::automation_internal::ReplaceSelectedTextParams
-          replace_selected_text_params;
-      bool result =
-          api::automation_internal::ReplaceSelectedTextParams::Populate(
-              additional_properties, replace_selected_text_params);
-      if (!result) {
+      auto replace_selected_text_params =
+          api::automation_internal::ReplaceSelectedTextParams::FromValue(
+              additional_properties);
+      if (!replace_selected_text_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kReplaceSelectedText;
-      action->value = replace_selected_text_params.value;
+      action->value = replace_selected_text_params->value;
       break;
     }
     case api::automation::ActionType::kSetValue: {
-      api::automation_internal::SetValueParams set_value_params;
-      bool result = api::automation_internal::SetValueParams::Populate(
-          additional_properties, set_value_params);
-      if (!result) {
+      auto set_value_params =
+          api::automation_internal::SetValueParams::FromValue(
+              additional_properties);
+      if (!set_value_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kSetValue;
-      action->value = set_value_params.value;
+      action->value = set_value_params->value;
       break;
     }
     case api::automation::ActionType::kScrollToPoint: {
-      api::automation_internal::ScrollToPointParams scroll_to_point_params;
-      bool result = api::automation_internal::ScrollToPointParams::Populate(
-          additional_properties, scroll_to_point_params);
-      if (!result) {
+      auto scroll_to_point_params =
+          api::automation_internal::ScrollToPointParams::FromValue(
+              additional_properties);
+      if (!scroll_to_point_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kScrollToPoint;
       action->target_point =
-          gfx::Point(scroll_to_point_params.x, scroll_to_point_params.y);
+          gfx::Point(scroll_to_point_params->x, scroll_to_point_params->y);
       break;
     }
     case api::automation::ActionType::kScrollToPositionAtRowColumn: {
-      api::automation_internal::ScrollToPositionAtRowColumnParams params;
-      bool result =
-          api::automation_internal::ScrollToPositionAtRowColumnParams::Populate(
-              additional_properties, params);
-      if (!result) {
+      auto params = api::automation_internal::
+          ScrollToPositionAtRowColumnParams::FromValue(additional_properties);
+      if (!params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kScrollToPositionAtRowColumn;
-      action->row_column = std::pair(params.row, params.column);
+      action->row_column = std::pair(params->row, params->column);
       break;
     }
     case api::automation::ActionType::kSetScrollOffset: {
-      api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
-      bool result = api::automation_internal::SetScrollOffsetParams::Populate(
-          additional_properties, set_scroll_offset_params);
-      if (!result) {
+      auto set_scroll_offset_params =
+          api::automation_internal::SetScrollOffsetParams::FromValue(
+              additional_properties);
+      if (!set_scroll_offset_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kSetScrollOffset;
       action->target_point =
-          gfx::Point(set_scroll_offset_params.x, set_scroll_offset_params.y);
+          gfx::Point(set_scroll_offset_params->x, set_scroll_offset_params->y);
       break;
     }
     case api::automation::ActionType::kGetTextLocation: {
-      api::automation_internal::GetTextLocationDataParams
-          get_text_location_params;
-      bool result =
-          api::automation_internal::GetTextLocationDataParams::Populate(
-              additional_properties, get_text_location_params);
-      if (!result) {
+      auto get_text_location_params =
+          api::automation_internal::GetTextLocationDataParams::FromValue(
+              additional_properties);
+      if (!get_text_location_params) {
         return validation_error_result;
       }
       action->action = ax::mojom::Action::kGetTextLocation;
-      action->start_index = get_text_location_params.start_index;
-      action->end_index = get_text_location_params.end_index;
+      action->start_index = get_text_location_params->start_index;
+      action->end_index = get_text_location_params->end_index;
       break;
     }
     case api::automation::ActionType::kShowTooltip:
@@ -300,9 +292,10 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       break;
     case api::automation::ActionType::kAnnotatePageImages:
     case api::automation::ActionType::kSignalEndOfTest:
+    case api::automation::ActionType::kStitchChildTree:
     case api::automation::ActionType::kInternalInvalidateTree:
     case api::automation::ActionType::kNone:
-      break;
+      break;  // Actions that are only internally used.
   }
   return success_result;
 }
@@ -321,6 +314,28 @@ class AutomationWebContentsObserver
 
   ~AutomationWebContentsObserver() override {
     automation_event_router_observer_.Reset();
+  }
+
+  // Set the accessibility mode for the observed WebContents so that
+  // accessibility events are forwarded to each WebContentsObserver. A reset is
+  // performed if the WebContents already has web accessibility enabled.
+  void EnableOrResetWebContentsAccessibility() {
+    // Force a reset if web accessibility is already enabled to ensure that new
+    // observers of accessibility events get the full accessibility tree from
+    // scratch.
+    const bool need_reset = web_contents()->GetAccessibilityMode().has_mode(
+        ui::AXMode::kWebContents);
+
+    if (!scoped_accessibility_mode_) {
+      scoped_accessibility_mode_ =
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForWebContents(web_contents(),
+                                               ui::kAXModeWebContentsOnly);
+    }
+
+    if (need_reset) {
+      web_contents()->ResetAccessibility();
+    }
   }
 
   // content::WebContentsObserver overrides.
@@ -380,19 +395,12 @@ class AutomationWebContentsObserver
 
   // AutomationEventRouterObserver overrides.
   void AllAutomationExtensionsGone() override {
-    if (!web_contents())
-      return;
-
-    ui::AXMode new_mode = web_contents()->GetAccessibilityMode();
-    uint8_t flags = ui::kAXModeWebContentsOnly.flags();
-    new_mode.set_mode(flags, false);
-    web_contents()->SetAccessibilityMode(std::move(new_mode));
+    scoped_accessibility_mode_.reset();
   }
 
   void ExtensionListenerAdded() override {
-    // This call resets accessibility.
     if (web_contents()) {
-      web_contents()->EnableWebContentsOnlyAccessibilityMode();
+      EnableOrResetWebContentsAccessibility();
 
       // On ChromeOS Ash, the automation api is the native accessibility api.
       // For the purposes of tracking web contents accessibility like other
@@ -463,23 +471,25 @@ class AutomationWebContentsObserver
                           extensions::AutomationEventRouterObserver>
       automation_event_router_observer_{this};
 
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
-absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
+std::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   if (automation_api_delegate->EnableTree(ax_tree_id))
-    return absl::nullopt;
+    return std::nullopt;
 
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
   if (!render_frame_host) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   content::WebContents* contents =
@@ -489,20 +499,21 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
   if (render_frame_host->IsInPrimaryMainFrame()) {
-    contents->EnableWebContentsOnlyAccessibilityMode();
+    AutomationWebContentsObserver::FromWebContents(contents)
+        ->EnableOrResetWebContentsAccessibility();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   using api::automation_internal::EnableTree::Params;
 
-  absl::optional<Params> params = Params::Create(args());
+  std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
-  absl::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
+  std::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
   if (error) {
     return RespondNow(Error(error.value()));
   } else {
@@ -585,10 +596,10 @@ AutomationInternalPerformActionFunction::PerformAction(
 ExtensionFunction::ResponseAction
 AutomationInternalPerformActionFunction::Run() {
   const AutomationInfo* automation_info = AutomationInfo::Get(extension());
-  EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
+  EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->desktop);
 
   using api::automation_internal::PerformAction::Params;
-  absl::optional<Params> params = Params::Create(args());
+  std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int request_id = params->args.request_id.value_or(-1);

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -127,7 +127,7 @@ class CertStoreService : public KeyedService,
       keymanagement::mojom::ChapsSlot slot,
       base::queue<net::ScopedCERTCertificate> cert_queue,
       std::vector<CertDescription> allowed_certs,
-      absl::optional<CertDescription> cert_description) const;
+      std::optional<CertDescription> cert_description) const;
   // Final callback called once all |cert_descriptions| have been processed by
   // BuildAllowedCertDescriptionsRecursively on the given |slot|. May either
   // restart the process to gather certificates on the system slot (when |slot|
@@ -160,7 +160,7 @@ class CertStoreService : public KeyedService,
   void OnUpdatedKeys(std::vector<CertDescription> certificates, bool success);
   void OnArcCertsInstalled(bool need_policy_update, bool success);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<ArcCertInstaller> installer_;
   CertificateCache certificate_cache_;

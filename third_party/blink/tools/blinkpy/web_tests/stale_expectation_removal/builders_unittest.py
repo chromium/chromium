@@ -19,7 +19,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
         test_map = {
             'isolated_scripts': [
                 {
-                    'isolate_name': 'blink_web_tests',
+                    'test': 'blink_web_tests',
                 },
             ],
         }
@@ -40,7 +40,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
         test_map = {
             'isolated_scripts': [
                 {
-                    'isolate_name': 'foo_web_tests',
+                    'test': 'foo_web_tests',
                 },
             ],
         }

@@ -43,9 +43,15 @@ const char kDiffLevelPolicy[] = "chrome-diff-level-and-scope";
 const std::string kUrl1 = "example.com";
 const std::string kUrl2 = "gmail.com";
 const std::string kUrl3 = "google.com";
+
+#if !BUILDFLAG(IS_IOS)
 const std::string kUrl4 = "youtube.com";
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 const std::string kAffiliationId1 = "abc";
 const std::string kAffiliationId2 = "def";
+#endif
 
 // Helper to compare the arguments to an EXPECT_CALL of OnPolicyUpdated() with
 // their expected values.
@@ -534,13 +540,15 @@ TEST_F(PolicyServiceTest, PolicyChangeRegistrar) {
 }
 
 TEST_F(PolicyServiceTest, RefreshPolicies) {
-  EXPECT_CALL(provider0_, RefreshPolicies()).Times(AnyNumber());
-  EXPECT_CALL(provider1_, RefreshPolicies()).Times(AnyNumber());
-  EXPECT_CALL(provider2_, RefreshPolicies()).Times(AnyNumber());
+  EXPECT_CALL(provider0_, RefreshPolicies(testing::_)).Times(AnyNumber());
+  EXPECT_CALL(provider1_, RefreshPolicies(testing::_)).Times(AnyNumber());
+  EXPECT_CALL(provider2_, RefreshPolicies(testing::_)).Times(AnyNumber());
 
   EXPECT_CALL(*this, OnPolicyRefresh()).Times(0);
-  policy_service_->RefreshPolicies(base::BindOnce(
-      &PolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
+  policy_service_->RefreshPolicies(
+      base::BindOnce(&PolicyServiceTest::OnPolicyRefresh,
+                     base::Unretained(this)),
+      PolicyFetchReason::kTest);
   // Let any queued observer tasks run.
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -571,8 +579,10 @@ TEST_F(PolicyServiceTest, RefreshPolicies) {
   // If another RefreshPolicies() call happens while waiting for a previous
   // one to complete, then all providers must refresh again.
   EXPECT_CALL(*this, OnPolicyRefresh()).Times(0);
-  policy_service_->RefreshPolicies(base::BindOnce(
-      &PolicyServiceTest::OnPolicyRefresh, base::Unretained(this)));
+  policy_service_->RefreshPolicies(
+      base::BindOnce(&PolicyServiceTest::OnPolicyRefresh,
+                     base::Unretained(this)),
+      PolicyFetchReason::kTest);
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -2355,57 +2365,4 @@ TEST_F(PolicyServiceTest, PolicyMessages) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PolicyServiceTest, PrecedencePolicy) {
-  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
-  // Initialize affiliation IDs.
-  base::flat_set<std::string> ids;
-  ids.insert(kAffiliationId1);
-
-  // Set policy.
-  std::vector<std::pair<std::string, base::Value>> policies0;
-  policies0.emplace_back("a", base::Value(true));
-  auto policy_bundle0 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                                     std::move(policies0), chrome_namespace);
-  policy_bundle0.Get(chrome_namespace).SetUserAffiliationIds(ids);
-  policy_bundle0.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
-  provider0_.UpdatePolicy(std::move(policy_bundle0));
-
-  std::vector<std::pair<std::string, base::Value>> policies1;
-  policies1.emplace_back("a", base::Value(false));
-  auto policy_bundle1 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                                     std::move(policies1), chrome_namespace);
-  policy_bundle1.Get(chrome_namespace).SetUserAffiliationIds(ids);
-  policy_bundle1.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
-  provider1_.UpdatePolicy(std::move(policy_bundle1));
-
-  // Set precedence policy.
-  std::vector<std::pair<std::string, base::Value>> policies2;
-  policies2.emplace_back(key::kCloudUserPolicyOverridesCloudMachinePolicy,
-                         base::Value(true));
-  auto policy_bundle2 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
-                                     std::move(policies2), chrome_namespace);
-  policy_bundle2.Get(chrome_namespace).SetUserAffiliationIds(ids);
-  policy_bundle2.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
-  provider2_.UpdatePolicy(std::move(policy_bundle2));
-
-  // Verify user cloud policy override machine cloud policy.
-  PolicyMap expected_chrome;
-  expected_chrome.Set("a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  expected_chrome.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
-  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
-  expected_chrome.GetMutable("a")->AddConflictingPolicy(
-      PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                       POLICY_SOURCE_CLOUD, base::Value(false), nullptr));
-  expected_chrome.GetMutable("a")->AddMessage(PolicyMap::MessageType::kWarning,
-                                              IDS_POLICY_CONFLICT_DIFF_VALUE);
-
-  RunUntilIdle();
-  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }  // namespace policy

@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
 
@@ -53,6 +55,8 @@ enum SwipeType {
 
 // Stores last received swipe gesture direction.
 class ThreeFingerSwipeView : public View {
+  METADATA_HEADER(ThreeFingerSwipeView, View)
+
  public:
   // View:
   void OnGestureEvent(ui::GestureEvent* event) override {
@@ -76,6 +80,9 @@ class ThreeFingerSwipeView : public View {
  private:
   SwipeType last_swipe_{SWIPE_NONE};
 };
+
+BEGIN_METADATA(ThreeFingerSwipeView)
+END_METADATA
 
 using ViewMacTest = test::WidgetTest;
 

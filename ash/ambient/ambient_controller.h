@@ -10,24 +10,22 @@
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
-#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
+#include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -53,8 +51,6 @@ namespace ash {
 // Delay for dismissing screensaver preview on mouse move.
 constexpr base::TimeDelta kDismissPreviewOnMouseMoveDelay = base::Seconds(3);
 
-class AmbientAnimationFrameRateController;
-class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
@@ -64,7 +60,6 @@ class AmbientUiSettings;
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
     : public AmbientUiModelObserver,
-      public AmbientBackendModelObserver,
       public ScreenBacklightObserver,
       public SessionObserver,
       public PowerStatus::Observer,
@@ -194,7 +189,9 @@ class ASH_EXPORT AmbientController
 
   AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
 
-  AmbientPhotoCache* ambient_photo_cache() { return photo_cache_.get(); }
+  AmbientAccessTokenController* access_token_controller() {
+    return &access_token_controller_;
+  }
 
   void set_backend_controller_for_testing(
       std::unique_ptr<AmbientBackendController> backend_controller) {
@@ -206,6 +203,18 @@ class ASH_EXPORT AmbientController
   // by `OnLoginLockScreenStateChanged` method as a parameter to pass
   // the correct information to the method.
   enum LockScreenState { kLogin, kLocked, kUnlocked };
+
+  // Tracks the progression of states with `AmbientUiLauncher`.
+  enum class AmbientUiLauncherState {
+    // Waiting for `Initialize()` to finish.
+    kInitializing,
+    // `Initialize()` has completed successfully.
+    kRendering,
+    // After `Finalize()` (not in the middle of launching or rendering an
+    // ambient session).
+    kInactive,
+  };
+
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
@@ -213,19 +222,11 @@ class ASH_EXPORT AmbientController
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
 
   AmbientPhotoController* ambient_photo_controller() {
-    return ambient_photo_controller_.get();
-  }
-
-  AmbientPhotoCache* get_backup_photo_cache_for_testing() {
-    return backup_photo_cache_.get();
+    return ambient_ui_launcher_->GetAmbientPhotoController();
   }
 
   // Hide or close Ambient mode UI.
   void DismissUI();
-
-  // AmbientBackendModelObserver overrides:
-  void OnImagesReady() override;
-  void OnImagesFailed() override;
 
   // Creates and shows a full-screen widget for each root window to show the
   // ambient UI.
@@ -293,22 +294,12 @@ class ASH_EXPORT AmbientController
   // this will return the `sign_in_pref_change_registrar_`.
   PrefChangeRegistrar* GetActivePrefChangeRegistrar();
 
-  AmbientAccessTokenController* access_token_controller_for_testing() {
-    return &access_token_controller_;
-  }
-
   AmbientViewDelegateImpl delegate_{this};
   AmbientUiModel ambient_ui_model_;
 
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
-  std::unique_ptr<AmbientPhotoCache> photo_cache_;
-  std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;
-  std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
-  std::unique_ptr<AmbientAnimationProgressTracker>
-      ambient_animation_progress_tracker_;
-  std::unique_ptr<AmbientAnimationFrameRateController> frame_rate_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;
@@ -321,8 +312,6 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver>
       ambient_ui_model_observer_{this};
-  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      ambient_backend_model_observer_{this};
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_observer_{this};
   base::ScopedObservation<PowerStatus, PowerStatus::Observer>
@@ -335,7 +324,6 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
-  std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -377,6 +365,8 @@ class ASH_EXPORT AmbientController
   // `ash::Shell`.
   bool is_receiving_pretarget_events_ = false;
 
+  AmbientUiLauncherState ui_launcher_state_ = AmbientUiLauncherState::kInactive;
+
   std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
 
   // The policy handler for downloading policy set images. This lives in the
@@ -397,6 +387,7 @@ class ASH_EXPORT AmbientController
       screensaver_images_policy_handler_;
 
   std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;
+  base::CancelableOnceCallback<void(bool)> ui_launcher_init_callback_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

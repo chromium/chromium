@@ -6,7 +6,7 @@ import("//build/config/features.gni")
 
 declare_args() {
   # Certificate transparency is not supported on iOS.
-  is_ct_supported = !is_ios
+  is_ct_supported = use_blink
 
   # Controls whether P2P is exposed by the network service.
   # Optional to reduce avoid having Chrome on iOS depends on

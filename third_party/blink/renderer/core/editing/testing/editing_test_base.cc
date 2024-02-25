@@ -26,7 +26,7 @@ Position EditingTestBase::SetCaretTextToBody(
   const SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
   DCHECK(selection.IsCaret())
       << "|selection_text| should contain a caret marker '|'";
-  return selection.Base();
+  return selection.Anchor();
 }
 
 SelectionInDOMTree EditingTestBase::SetSelectionTextToBody(
@@ -72,7 +72,7 @@ ShadowRoot* EditingTestBase::CreateShadowRootForElementWithIDAndSetInnerHTML(
     const char* shadow_root_content) {
   ShadowRoot& shadow_root =
       scope.getElementById(AtomicString::FromUTF8(host_element_id))
-          ->AttachShadowRootInternal(ShadowRootType::kOpen);
+          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_root_content),
                            ASSERT_NO_EXCEPTION);
   scope.GetDocument().View()->UpdateAllLifecyclePhasesForTest();

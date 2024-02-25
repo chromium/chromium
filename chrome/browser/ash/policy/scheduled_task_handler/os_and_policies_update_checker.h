@@ -120,8 +120,7 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
   UpdateCheckCompletionCallback update_check_completion_cb_;
 
   // Not owned.
-  const raw_ptr<ash::NetworkStateHandler, ExperimentalAsh>
-      network_state_handler_;
+  const raw_ptr<ash::NetworkStateHandler> network_state_handler_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
@@ -137,7 +136,7 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
   base::OneShotTimer timeout_timer_;
 
   // Not owned.
-  const raw_ptr<ash::UpdateEngineClient, ExperimentalAsh> update_engine_client_;
+  const raw_ptr<ash::UpdateEngineClient> update_engine_client_;
 
   base::WeakPtrFactory<OsAndPoliciesUpdateChecker> weak_factory_{this};
 };

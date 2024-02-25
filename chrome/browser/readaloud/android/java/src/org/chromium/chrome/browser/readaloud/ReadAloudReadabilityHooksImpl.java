@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.readaloud;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.HashSet;
 
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
-    public ReadAloudReadabilityHooksImpl(Context context, @Nullable String apiKeyOverride) {}
+    public ReadAloudReadabilityHooksImpl(Context context, Profile profile) {}
 
     @Override
     public boolean isEnabled() {
@@ -18,7 +21,13 @@ public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks 
     }
 
     @Override
-    public void isPageReadable(String url, ReadabilityCallback callback) {
-        return;
+    public void isPageReadable(Tab tab, String url, ReadabilityCallback callback) {}
+
+    @Override
+    public void isPageReadable(String url, ReadabilityCallback callback) {}
+
+    @Override
+    public HashSet<String> getCompatibleLanguages() {
+        return new HashSet<String>();
     }
 }

@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 
   static MessageDispatchContext* current();
 
-  base::OnceCallback<void(base::StringPiece)> GetBadMessageCallback();
+  base::OnceCallback<void(std::string_view)> GetBadMessageCallback();
 
  private:
   raw_ptr<MessageDispatchContext> outer_context_;

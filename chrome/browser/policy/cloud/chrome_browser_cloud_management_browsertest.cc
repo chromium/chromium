@@ -279,18 +279,18 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
           .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::QuitWhenIdle));
     }
 
+    auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
+        DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
+        service_.get(), kClientID,
+        g_browser_process->system_network_context_manager()
+            ->GetSharedURLLoaderFactory());
+    params.auth_data = !enrollment_token.empty()
+                           ? DMAuth::FromEnrollmentToken(enrollment_token)
+                           : DMAuth::NoAuth();
+
     std::unique_ptr<FakeJobConfiguration> config =
         std::make_unique<FakeJobConfiguration>(
-            service_.get(),
-            DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
-            kClientID,
-            /*critical=*/false,
-            !enrollment_token.empty()
-                ? DMAuth::FromEnrollmentToken(enrollment_token)
-                : DMAuth::NoAuth(),
-            /*oauth_token=*/absl::nullopt,
-            g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory(),
+            std::move(params),
             base::BindOnce(
                 &ChromeBrowserCloudManagementServiceIntegrationTest::OnJobDone,
                 base::Unretained(this)),
@@ -319,20 +319,21 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
     EXPECT_CALL(*this, OnJobDone(_, testing::Eq(DM_STATUS_SUCCESS), _, _))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::QuitWhenIdle));
 
-    std::unique_ptr<FakeJobConfiguration> config = std::make_unique<
-        FakeJobConfiguration>(
-        service_.get(),
+    auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
         DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT,
-        kClientID,
-        /*critical=*/false, DMAuth::FromEnrollmentToken(kDMToken),
-        /*oauth_token=*/std::string(),
+        service_.get(), kClientID,
         g_browser_process->system_network_context_manager()
-            ->GetSharedURLLoaderFactory(),
-        base::BindOnce(
-            &ChromeBrowserCloudManagementServiceIntegrationTest::OnJobDone,
-            base::Unretained(this)),
-        /* retry_callback */ base::DoNothing(),
-        /* should_retry_callback */ base::DoNothing());
+            ->GetSharedURLLoaderFactory());
+    params.auth_data = DMAuth::FromEnrollmentToken(kDMToken);
+
+    std::unique_ptr<FakeJobConfiguration> config =
+        std::make_unique<FakeJobConfiguration>(
+            std::move(params),
+            base::BindOnce(
+                &ChromeBrowserCloudManagementServiceIntegrationTest::OnJobDone,
+                base::Unretained(this)),
+            /* retry_callback */ base::DoNothing(),
+            /* should_retry_callback */ base::DoNothing());
 
     std::unique_ptr<DeviceManagementService::Job> job =
         service_->CreateJob(std::move(config));
@@ -602,13 +603,6 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementEnrollmentTest, MAYBE_Test) {
   delegate_.MaybeCheckTotalBrowserCount(1u);
 
   VerifyEnrollmentResult();
-#if BUILDFLAG(IS_MAC)
-  // Verify the last mericis of launch is recorded in
-  // applicationDidFinishNotification.
-  EXPECT_EQ(1u, histogram_tester_
-                    .GetAllSamples("Startup.OSX.DockIconWillFinishBouncing")
-                    .size());
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -19,6 +19,7 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class GetNotificationOptions;
+class Notification;
 class NotificationOptions;
 class NotificationResourcesLoader;
 class ScriptPromiseResolver;
@@ -38,9 +39,10 @@ class ServiceWorkerRegistrationNotifications final
                                         const String& title,
                                         const NotificationOptions* options,
                                         ExceptionState& exception_state);
-  static ScriptPromise getNotifications(ScriptState* script_state,
-                                        ServiceWorkerRegistration& registration,
-                                        const GetNotificationOptions* options);
+  static ScriptPromiseTyped<IDLSequence<Notification>> getNotifications(
+      ScriptState* script_state,
+      ServiceWorkerRegistration& registration,
+      const GetNotificationOptions* options);
 
   ServiceWorkerRegistrationNotifications(ExecutionContext*,
                                          ServiceWorkerRegistration*);

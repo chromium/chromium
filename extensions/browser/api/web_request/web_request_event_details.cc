@@ -53,7 +53,8 @@ WebRequestEventDetails::WebRequestEventDetails(const WebRequestInfo& request,
       render_process_id_(content::ChildProcessHost::kInvalidUniqueID) {
   dict_.Set(keys::kMethodKey, request.method);
   dict_.Set(keys::kRequestIdKey, base::NumberToString(request.id));
-  dict_.Set(keys::kTimeStampKey, base::Time::Now().ToDoubleT() * 1000);
+  dict_.Set(keys::kTimeStampKey,
+            base::Time::Now().InMillisecondsFSinceUnixEpoch());
   dict_.Set(keys::kTypeKey,
             WebRequestResourceTypeToString(request.web_request_type));
   dict_.Set(keys::kUrlKey, request.url.spec());
@@ -81,7 +82,7 @@ WebRequestEventDetails::~WebRequestEventDetails() = default;
 void WebRequestEventDetails::SetRequestBody(WebRequestInfo* request) {
   if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_BODY))
     return;
-  request_body_ = absl::nullopt;
+  request_body_ = std::nullopt;
   if (request->request_body_data) {
     request_body_ = std::move(request->request_body_data);
     request->request_body_data.reset();

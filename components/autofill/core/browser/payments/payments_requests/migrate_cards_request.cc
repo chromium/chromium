@@ -24,7 +24,7 @@ constexpr char kMigrateCardsRequestFormat[] =
 }  // namespace
 
 MigrateCardsRequest::MigrateCardsRequest(
-    const PaymentsClient::MigrationRequestDetails& request_details,
+    const PaymentsNetworkInterface::MigrationRequestDetails& request_details,
     base::span<const MigratableCreditCard> migratable_credit_cards,
     const bool full_sync_enabled,
     MigrateCardsCallback callback)

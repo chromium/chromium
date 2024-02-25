@@ -12,8 +12,8 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "url/gurl.h"
 
 const char kFileURL[] = "file:///home/user/file.txt";

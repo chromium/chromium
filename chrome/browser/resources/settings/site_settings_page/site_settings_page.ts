@@ -8,28 +8,33 @@
  * security site settings.
  */
 
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './unused_site_permissions.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../focus_config.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.js';
-import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
+import {RouteObserverMixin, Router} from '../router.js';
+import type {SafetyHubBrowserProxy, UnusedSitePermissions} from '../safety_hub/safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
-import {CategoryListItem} from './site_settings_list.js';
+import type {CategoryListItem} from './site_settings_list.js';
 import {getTemplate} from './site_settings_page.html.js';
 
 const Id = ContentSettingsTypes;
@@ -42,7 +47,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
   }
   // The following list is ordered alphabetically by |id|. The order in which
   // these appear in the UI is determined elsewhere in this file.
-  const categoryList = [
+  const categoryList: CategoryListItem[] = [
     {
       route: routes.SITE_SETTINGS_ADS,
       id: Id.ADS,
@@ -57,8 +62,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
       id: Id.AUTO_PICTURE_IN_PICTURE,
       label: 'siteSettingsAutoPictureInPicture',
-      // TODO(https://crbug.com/1471051): Use real icon.
-      icon: 'settings:window-management',
+      icon: 'settings:picture-in-picture',
       enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
       disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
       shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
@@ -134,23 +138,22 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsClipboardBlocked',
     },
     {
-      route: routes.COOKIES,
-      id: Id.COOKIES,
-      label: loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-          'thirdPartyCookiesLinkRowLabel' :
-          'siteSettingsCookies',
-      icon: 'settings:cookie',
-      enabledLabel: 'siteSettingsCookiesAllowed',
-      disabledLabel: 'siteSettingsBlocked',
-      otherLabel: 'cookiePageClearOnExit',
-    },
-    {
       route: routes.SITE_SETTINGS_LOCATION,
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
       icon: 'settings:location-on',
       enabledLabel: 'siteSettingsLocationAllowed',
       disabledLabel: 'siteSettingsLocationBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_WEB_PRINTING,
+      id: Id.WEB_PRINTING,
+      label: 'siteSettingsWebPrinting',
+      icon: 'settings:printer',
+      enabledLabel: 'siteSettingsWebPrintingAsk',
+      disabledLabel: 'siteSettingsWebPrintingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_HID_DEVICES,
@@ -183,6 +186,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:code',
       enabledLabel: 'siteSettingsJavascriptAllowed',
       disabledLabel: 'siteSettingsJavascriptBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_JAVASCRIPT_JIT,
+      id: Id.JAVASCRIPT_JIT,
+      label: 'siteSettingsJavascriptJit',
+      icon: 'settings:lock-outline',
+      enabledLabel: 'siteSettingsJavascriptJitAllowed',
+      disabledLabel: 'siteSettingsJavascriptJitBlocked',
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
@@ -226,6 +237,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+      id: Id.AUTOMATIC_FULLSCREEN,
+      label: 'siteSettingsAutomaticFullscreen',
+      icon: 'cr:fullscreen',
+      disabledLabel: 'siteSettingsAutomaticFullscreenBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
       id: Id.LOCAL_FONTS,
       label: 'fonts',
@@ -238,8 +258,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
       icon: 'settings:notifications',
-      enabledLabel: 'siteSettingsAskBeforeSending',
-      disabledLabel: 'siteSettingsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
@@ -305,7 +323,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SITE_DATA,
       label: 'siteDataPageTitle',
       icon: 'settings:database',
-      shouldShow: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
     },
     {
       route: routes.SITE_SETTINGS_SOUND,
@@ -355,8 +372,34 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsZoomLevels',
       icon: 'settings:zoom-in',
     },
+    {
+      route: routes.PERFORMANCE,
+      id: Id.PERFORMANCE,
+      label: 'siteSettingsPerformance',
+      icon: 'settings:performance',
+      enabledLabel: 'siteSettingsPerformanceSublabel',
+      disabledLabel: 'siteSettingsPerformanceSublabel',
+    },
   ];
-
+  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    categoryList.push({
+      route: routes.TRACKING_PROTECTION,
+      id: Id.COOKIES,
+      label: 'trackingProtectionLinkRowLabel',
+      icon: 'settings:visibility-off',
+      enabledLabel: 'siteSettingsCookiesAllowed',
+      disabledLabel: 'siteSettingsBlocked',
+    });
+  } else {
+    categoryList.push({
+      route: routes.COOKIES,
+      id: Id.COOKIES,
+      label: 'thirdPartyCookiesLinkRowLabel',
+      icon: 'settings:cookie',
+      enabledLabel: 'trackingProtectionLinkRowSubLabel',
+      disabledLabel: 'trackingProtectionLinkRowSubLabel',
+    });
+  }
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));
   return categoryItemMap;
 }
@@ -380,7 +423,8 @@ export interface SettingsSiteSettingsPageElement {
   };
 }
 
-const SettingsSiteSettingsPageElementBase = WebUiListenerMixin(PolymerElement);
+const SettingsSiteSettingsPageElementBase =
+    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
 
 export class SettingsSiteSettingsPageElement extends
     SettingsSiteSettingsPageElementBase {
@@ -439,6 +483,7 @@ export class SettingsSiteSettingsPageElement extends
                   Id.AR,
                   Id.VR,
                   Id.IDLE_DETECTION,
+                  Id.WEB_PRINTING,
                   Id.WINDOW_MANAGEMENT,
                   Id.LOCAL_FONTS,
                   Id.AUTO_PICTURE_IN_PICTURE,
@@ -460,6 +505,9 @@ export class SettingsSiteSettingsPageElement extends
               Id.FEDERATED_IDENTITY_API,
               Id.ANTI_ABUSE,
               Id.SITE_DATA,
+              Id.PERFORMANCE,
+              Id.JAVASCRIPT_JIT,
+              Id.AUTOMATIC_FULLSCREEN,
             ]),
           };
         },
@@ -493,6 +541,9 @@ export class SettingsSiteSettingsPageElement extends
           return loadTimeData.getBoolean('enableSafetyHub');
         },
       },
+
+      unusedSitePermissionsHeader_: String,
+      unusedSitePermissionsSubeader_: String,
     };
   }
 
@@ -516,8 +567,12 @@ export class SettingsSiteSettingsPageElement extends
   private noRecentSitePermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private unusedSitePermissionsEnabled_: boolean;
+  private unusedSitePermissionsHeader_: string;
+  private unusedSitePermissionsSubheader_: string;
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   private lists_: {
     all: CategoryListItem[],
@@ -526,6 +581,18 @@ export class SettingsSiteSettingsPageElement extends
     contentBasic: CategoryListItem[],
     contentAdvanced: CategoryListItem[],
   };
+
+  override currentRouteChanged() {
+    if (Router.getInstance().getCurrentRoute() !== routes.SITE_SETTINGS) {
+      return;
+    }
+    // Only record the metrics when the user navigates to the privacy page
+    // that shows the entry point.
+    if (this.showUnusedSitePermissions_) {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
+          SafetyHubEntryPoint.SITE_SETTINGS);
+    }
+  }
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
@@ -542,8 +609,8 @@ export class SettingsSiteSettingsPageElement extends
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
   }
 
-  private onUnusedSitePermissionListChanged_(permissions:
-                                                 UnusedSitePermissions[]) {
+  private async onUnusedSitePermissionListChanged_(
+      permissions: UnusedSitePermissions[]) {
     // The unused site permissions review is shown when there are items to
     // review (provided the feature is enabled). Once visible it remains that
     // way to show completion info, even if the list is emptied.
@@ -551,13 +618,26 @@ export class SettingsSiteSettingsPageElement extends
       return;
     }
 
-    this.showUnusedSitePermissions_ =
-        this.unusedSitePermissionsEnabled_ && permissions.length > 0;
+    this.showUnusedSitePermissions_ = this.unusedSitePermissionsEnabled_ &&
+        permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
+    this.unusedSitePermissionsHeader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsPrimaryLabel', permissions.length);
+    this.unusedSitePermissionsSubheader_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsSecondaryLabel',
+            permissions.length);
   }
 
   /** @return Class for the all site settings link */
   private getClassForSiteSettingsAllLink_(): string {
     return this.noRecentSitePermissions_ ? '' : 'hr';
+  }
+
+  private onSafetyHubButtonClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
+        SafetyHubEntryPoint.SITE_SETTINGS);
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
   }
 }
 

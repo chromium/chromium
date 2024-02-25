@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_FILE_HANDLER_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -28,7 +28,7 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
   ~FakeWebAppFileHandlerManager() override;
 
   const apps::FileHandlers* GetAllFileHandlers(
-      const AppId& app_id) const override;
+      const webapps::AppId& app_id) const override;
 
   bool IsDisabledForTesting() override;
 
@@ -41,14 +41,14 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
   // enabled, not whether this specific file handler should be enabled. If any
   // file handler is enabled, all of them will be.
   void InstallFileHandler(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const GURL& handler,
       const AcceptMap& accept,
-      absl::optional<apps::FileHandler::LaunchType> launch_type,
+      std::optional<apps::FileHandler::LaunchType> launch_type,
       bool enable = true);
 
  private:
-  std::map<AppId, apps::FileHandlers> file_handlers_;
+  std::map<webapps::AppId, apps::FileHandlers> file_handlers_;
 };
 
 }  // namespace web_app

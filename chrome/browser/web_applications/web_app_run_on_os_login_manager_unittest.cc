@@ -27,13 +27,14 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
@@ -70,12 +71,12 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
     // Set up policy before managers are started.
     SetWebAppSettingsPref();
 
-    static_cast<FakeWebAppUiManager*>(&provider_->GetUiManager())
-        ->SetOnLaunchWebAppCallback(base::BindLambdaForTesting(
-            [this](apps::AppLaunchParams params,
-                   LaunchWebAppWindowSetting launch_setting) {
-              launched_apps_.push_back(std::move(params));
-            }));
+    ui_manager_ = static_cast<FakeWebAppUiManager*>(&provider_->GetUiManager());
+    ui_manager_->SetOnLaunchWebAppCallback(base::BindLambdaForTesting(
+        [this](apps::AppLaunchParams params,
+               LaunchWebAppWindowSetting launch_setting) {
+          launched_apps_.push_back(std::move(params));
+        }));
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -100,6 +101,7 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   }
 
   void TearDown() override {
+    ui_manager_ = nullptr;
     provider_->Shutdown();
     WebAppTest::TearDown();
   }
@@ -117,9 +119,10 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
 
   unsigned int notification_count_;
   std::string notification_text_;
+  raw_ptr<FakeWebAppUiManager> ui_manager_ = nullptr;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -157,8 +160,7 @@ class WebAppRunOnOsLoginManagerParameterizedTest
       web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     }
 
-    static_cast<FakeWebAppUiManager*>(&provider_->GetUiManager())
-        ->SetNumWindowsForApp(web_app->app_id(), 0);
+    ui_manager_->SetNumWindowsForApp(web_app->app_id(), 0);
 
     WebAppSyncBridge& sync_bridge = provider_->sync_bridge_unsafe();
     ScopedRegistryUpdate update = sync_bridge.BeginUpdate();
@@ -197,21 +199,17 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
 
     app_id_ = web_app->app_id();
 
-    static_cast<FakeWebAppUiManager*>(&provider_->GetUiManager())
-        ->SetNumWindowsForApp(app_id_, 0);
+    ui_manager_->SetNumWindowsForApp(app_id_, 0);
 
     WebAppSyncBridge& sync_bridge = provider_->sync_bridge_unsafe();
     ScopedRegistryUpdate update = sync_bridge.BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
-  void OpenWindowForTestApp() {
-    static_cast<FakeWebAppUiManager*>(&provider_->GetUiManager())
-        ->SetNumWindowsForApp(app_id_, 1);
-  }
+  void OpenWindowForTestApp() { ui_manager_->SetNumWindowsForApp(app_id_, 1); }
 
  private:
-  AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 TEST_F(WebAppRunOnOsLoginManagerSimpleSettingsTest, SimpleAppStarted) {

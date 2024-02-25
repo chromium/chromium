@@ -47,9 +47,6 @@
 
 namespace base {
 
-// Full declaration is in process_metrics_iocounters.h.
-struct IoCounters;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Minor and major page fault counts since the process creation.
 // Both counts are process-wide, and exclude child processes.
@@ -196,22 +193,7 @@ class BASE_EXPORT ProcessMetrics {
   // measures such as placing DRAM in to self-refresh (also referred to as
   // auto-refresh), place interconnects into lower-power states etc"
   int GetPackageIdleWakeupsPerSecond();
-
-  // Returns "Energy Impact", a synthetic power estimation metric displayed by
-  // macOS in Activity Monitor and the battery menu.
-  int GetEnergyImpact();
 #endif
-
-  // Retrieves accounting information for all I/O operations performed by the
-  // process.
-  // If IO information is retrieved successfully, the function returns true
-  // and fills in the IO_COUNTERS passed in. The function returns false
-  // otherwise.
-  bool GetIOCounters(IoCounters* io_counters) const;
-
-  // Returns the cumulative disk usage in bytes across all threads of the
-  // process since process start.
-  uint64_t GetCumulativeDiskUsageInBytes();
 
 #if BUILDFLAG(IS_POSIX)
   // Returns the number of file descriptors currently open by the process, or
@@ -254,7 +236,7 @@ class BASE_EXPORT ProcessMetrics {
       uint64_t absolute_package_idle_wakeups);
 
   // Queries the port provider if it's set.
-  mach_port_t TaskForPid(ProcessHandle process) const;
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -286,9 +268,10 @@ class BASE_EXPORT ProcessMetrics {
   // And same thing for package idle exit wakeups.
   TimeTicks last_package_idle_wakeups_time_;
   uint64_t last_absolute_package_idle_wakeups_;
-  double last_energy_impact_;
-  // In mach_absolute_time units.
-  uint64_t last_energy_impact_time_;
+
+  // Works around a race condition when combining two task_info() calls to
+  // measure CPU time.
+  TimeDelta last_measured_cpu_;
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -423,6 +406,12 @@ BASE_EXPORT extern const char kProcSelfExe[];
 // Exposed for testing.
 BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
                                   SystemMemoryInfoKB* meminfo);
+
+// Returns the memory committed by the system in KBytes, as from
+// GetSystemCommitCharge(), using data from `meminfo` instead of /proc/meminfo.
+// Exposed for testing.
+BASE_EXPORT size_t
+GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo);
 
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {

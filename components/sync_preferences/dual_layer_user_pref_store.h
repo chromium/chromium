@@ -43,7 +43,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   DualLayerUserPrefStore(
       scoped_refptr<PersistentPrefStore> local_pref_store,
       scoped_refptr<PersistentPrefStore> account_pref_store,
-      const PrefModelAssociatorClient* pref_model_associator_client);
+      scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client);
 
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
@@ -157,8 +157,6 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   bool ShouldGetValueFromAccountStore(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
-  // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
-  // yet.
   bool IsPrefKeyMergeable(const std::string& key) const;
 
   // Produces a "merged" view of `account_value` and `local_value`. In case
@@ -179,6 +177,11 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
                                                    uint32_t flags) const;
 
   // Get all prefs currently present in the account store.
+  // Note that this will also return prefs which can not be queried from the
+  // account store. For example, this method will return prefs requiring history
+  // opt-in even if history sync is disabled. A GetValue() call for such a pref
+  // will not query the account store. Thus it is the role of the callers to
+  // check the history opt-in.
   std::vector<std::string> GetPrefNamesInAccountStore() const;
 
   // Returns whether the user has history sync turned on.
@@ -215,8 +218,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
-  const raw_ptr<const PrefModelAssociatorClient> pref_model_associator_client_ =
-      nullptr;
+  const scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client_;
 };
 
 }  // namespace sync_preferences

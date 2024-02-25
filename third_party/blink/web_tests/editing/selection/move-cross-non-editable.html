@@ -1,0 +1,46 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const NON_EDITABLE = '<span contenteditable="false">Non</span>';
+
+selection_test(
+  [
+    '<div contenteditable>',
+      `Hello|${NON_EDITABLE}${NON_EDITABLE}`,
+    '</div>',
+  ],
+  selection => selection.modify('move', 'right', 'character'),
+  [
+    '<div contenteditable>',
+      `Hello${NON_EDITABLE}|${NON_EDITABLE}`,
+    '</div>',
+  ]);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      `Hello|${NON_EDITABLE}World`,
+    '</div>',
+  ],
+  selection => selection.modify('move', 'right', 'character'),
+  [
+    '<div contenteditable>',
+      `Hello${NON_EDITABLE}|World`,
+    '</div>',
+  ]);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      `Hello${NON_EDITABLE}${NON_EDITABLE}|`,
+    '</div>',
+  ],
+  selection => selection.modify('move', 'left', 'character'),
+  [
+    '<div contenteditable>',
+      `Hello${NON_EDITABLE}|${NON_EDITABLE}`,
+    '</div>',
+  ]);
+</script>

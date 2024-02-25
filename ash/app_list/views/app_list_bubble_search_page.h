@@ -26,9 +26,9 @@ class SearchResultPageDialogController;
 // Contains a scrolling list of search results. Does not include the search box,
 // which is owned by a parent view.
 class ASH_EXPORT AppListBubbleSearchPage : public views::View {
- public:
-  METADATA_HEADER(AppListBubbleSearchPage);
+  METADATA_HEADER(AppListBubbleSearchPage, views::View)
 
+ public:
   AppListBubbleSearchPage(AppListViewDelegate* view_delegate,
                           SearchResultPageDialogController* dialog_controller,
                           SearchBoxView* search_box_view);
@@ -55,7 +55,7 @@ class ASH_EXPORT AppListBubbleSearchPage : public views::View {
 
  private:
   // Owned by view hierarchy.
-  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
+  raw_ptr<AppListSearchView> search_view_ = nullptr;
 
   base::WeakPtrFactory<AppListBubbleSearchPage> weak_factory_{this};
 };

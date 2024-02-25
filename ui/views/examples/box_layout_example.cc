@@ -65,12 +65,14 @@ void BoxLayoutExample::CreateAdditionalControls() {
       base::BindRepeating(&BoxLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
-                                               "End"};
+  constexpr const char* kCrossAxisValues[4] = {"Start", "Center", "End",
+                                               "Stretch"};
   cross_axis_alignment_ = CreateAndAddCombobox(
       u"Cross axis", kCrossAxisValues, std::size(kCrossAxisValues),
       base::BindRepeating(&BoxLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
+  // Select Stretch as the default.
+  cross_axis_alignment_->SetSelectedIndex(3);
 
   between_child_spacing_ = CreateAndAddTextfield(u"Child spacing");
   default_flex_ = CreateAndAddTextfield(u"Default flex");

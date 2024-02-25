@@ -11,9 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class generates thumbnails for a given {@link ThumbnailRequest} by calling the native
@@ -43,14 +44,18 @@ public class ThumbnailGenerator {
         ThreadUtils.assertOnUiThread();
         boolean hasFilePath = !TextUtils.isEmpty(request.getFilePath());
         assert hasFilePath;
-        ThumbnailGeneratorJni.get().retrieveThumbnail(getNativeThumbnailGenerator(),
-                ThumbnailGenerator.this, request.getContentId(), request.getFilePath(),
-                request.getMimeType(), request.getIconSize(), callback);
+        ThumbnailGeneratorJni.get()
+                .retrieveThumbnail(
+                        getNativeThumbnailGenerator(),
+                        ThumbnailGenerator.this,
+                        request.getContentId(),
+                        request.getFilePath(),
+                        request.getMimeType(),
+                        request.getIconSize(),
+                        callback);
     }
 
-    /**
-     * Destroys the native {@link ThumbnailGenerator}.
-     */
+    /** Destroys the native {@link ThumbnailGenerator}. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         if (mNativeThumbnailGenerator == 0) return;
@@ -68,8 +73,11 @@ public class ThumbnailGenerator {
      */
     @CalledByNative
     @VisibleForTesting
-    void onThumbnailRetrieved(@NonNull String contentId, int requestedIconSizePx,
-            @Nullable Bitmap bitmap, ThumbnailGeneratorCallback callback) {
+    void onThumbnailRetrieved(
+            @NonNull String contentId,
+            int requestedIconSizePx,
+            @Nullable Bitmap bitmap,
+            ThumbnailGeneratorCallback callback) {
         // The bitmap returned here is retrieved from the native side. The image decoder there
         // scales down the image (if it is too big) so that one of its sides is smaller than or
         // equal to the required size. We check here that the returned image satisfies this
@@ -83,9 +91,16 @@ public class ThumbnailGenerator {
     @NativeMethods
     interface Natives {
         long init(ThumbnailGenerator caller);
+
         void destroy(long nativeThumbnailGenerator, ThumbnailGenerator caller);
-        void retrieveThumbnail(long nativeThumbnailGenerator, ThumbnailGenerator caller,
-                String contentId, String filePath, String mimeType, int thumbnailSize,
+
+        void retrieveThumbnail(
+                long nativeThumbnailGenerator,
+                ThumbnailGenerator caller,
+                String contentId,
+                String filePath,
+                String mimeType,
+                int thumbnailSize,
                 ThumbnailGeneratorCallback callback);
     }
 }

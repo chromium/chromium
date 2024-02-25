@@ -89,6 +89,13 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   int64_t Integer() const;
   const IDBKey* Key() const;
 
+  // IDBAny is a variant type used to hold the values produced by the |result|
+  // attribute of IDBRequest and (as a convenience) the |source| attribute of
+  // IDBRequest and IDBCursor.
+  // TODO(jsbell): Replace the use of IDBAny for |source| attributes (which are
+  // ScriptWrappable types) using unions per IDL.
+  v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state);
+
  private:
   const Type type_;
 

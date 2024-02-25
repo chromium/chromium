@@ -44,7 +44,8 @@ void AppendCookieToVectorIfMatchAndHasHostPermission(
     const net::CanonicalCookie cookie,
     GetAll::Params::Details* details,
     const Extension* extension,
-    std::vector<Cookie>* match_vector) {
+    std::vector<Cookie>* match_vector,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
   // Ignore any cookie whose domain doesn't match the extension's
   // host permissions.
   GURL cookie_domain_url = cookies_helpers::GetURLFromCanonicalCookie(cookie);
@@ -52,6 +53,11 @@ void AppendCookieToVectorIfMatchAndHasHostPermission(
     return;
   // Filter the cookie using the match filter.
   cookies_helpers::MatchFilter filter(details);
+  // There is an edge case where a getAll call that contains a
+  // partition key parameter but no top_level_site parameter results in a
+  // return of partitioned and non-partitioned cookies. To ensure this is
+  // handled correctly, the CookiePartitionKeyCollection value is set
+  filter.SetCookiePartitionKeyCollection(cookie_partition_key_collection);
   if (filter.MatchesCookie(cookie)) {
     match_vector->push_back(
         cookies_helpers::CreateCookie(cookie, *details->store_id));
@@ -88,7 +94,6 @@ const char* GetStoreIdFromProfile(Profile* profile) {
 Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
                     const std::string& store_id) {
   Cookie cookie;
-
   // A cookie is a raw byte sequence. By explicitly parsing it as UTF-8, we
   // apply error correction, so the string can be safely passed to the renderer.
   cookie.name = base::UTF16ToUTF8(base::UTF8ToUTF16(canonical_cookie.Name()));
@@ -100,7 +105,7 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   cookie.path = base::IsStringUTF8(canonical_cookie.Path())
                     ? canonical_cookie.Path()
                     : std::string();
-  cookie.secure = canonical_cookie.IsSecure();
+  cookie.secure = canonical_cookie.SecureAttribute();
   cookie.http_only = canonical_cookie.IsHttpOnly();
 
   switch (canonical_cookie.SameSite()) {
@@ -120,7 +125,8 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
 
   cookie.session = !canonical_cookie.IsPersistent();
   if (canonical_cookie.IsPersistent()) {
-    double expiration_date = canonical_cookie.ExpiryDate().ToDoubleT();
+    double expiration_date =
+        canonical_cookie.ExpiryDate().InSecondsFSinceUnixEpoch();
     if (canonical_cookie.ExpiryDate().is_max() ||
         !std::isfinite(expiration_date)) {
       expiration_date = std::numeric_limits<double>::max();
@@ -129,6 +135,13 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   }
   cookie.store_id = store_id;
 
+  if (canonical_cookie.PartitionKey()) {
+    std::string top_level_site;
+    CHECK(net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey(),
+                                             top_level_site));
+    cookie.partition_key = extensions::api::cookies::CookiePartitionKey();
+    cookie.partition_key->top_level_site = top_level_site;
+  }
   return cookie;
 }
 
@@ -138,19 +151,18 @@ CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   dict.Set(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
   dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
 
-  CookieStore cookie_store;
-  bool rv = CookieStore::Populate(dict, cookie_store);
-  CHECK(rv);
-  return cookie_store;
+  auto cookie_store = CookieStore::FromValue(dict);
+  CHECK(cookie_store);
+  return std::move(cookie_store).value();
 }
 
 void GetCookieListFromManager(
     network::mojom::CookieManager* manager,
     const GURL& url,
+    const net::CookiePartitionKeyCollection& partition_key_collection,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
-                         net::CookiePartitionKeyCollection::Todo(),
-                         std::move(callback));
+                         partition_key_collection, std::move(callback));
 }
 
 void GetAllCookiesFromManager(
@@ -167,17 +179,19 @@ GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
   DCHECK(!cookie.Domain().empty());
 
   return net::cookie_util::CookieOriginToURL(cookie.Domain(),
-                                             cookie.IsSecure());
+                                             cookie.SecureAttribute());
 }
 
 void AppendMatchingCookiesFromCookieListToVector(
     const net::CookieList& all_cookies,
     GetAll::Params::Details* details,
     const Extension* extension,
-    std::vector<Cookie>* match_vector) {
+    std::vector<Cookie>* match_vector,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
   for (const net::CanonicalCookie& cookie : all_cookies) {
-    AppendCookieToVectorIfMatchAndHasHostPermission(cookie, details, extension,
-                                                    match_vector);
+    AppendCookieToVectorIfMatchAndHasHostPermission(
+        cookie, details, extension, match_vector,
+        cookie_partition_key_collection);
   }
 }
 
@@ -189,8 +203,10 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
   for (const net::CookieWithAccessResult& cookie_with_access_result :
        all_cookies_with_access_result) {
     const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
-    AppendCookieToVectorIfMatchAndHasHostPermission(cookie, details, extension,
-                                                    match_vector);
+    AppendCookieToVectorIfMatchAndHasHostPermission(
+        cookie, details, extension, match_vector,
+        CookiePartitionKeyCollectionFromApiPartitionKey(
+            details->partition_key));
   }
 }
 
@@ -202,12 +218,92 @@ void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
   }
 }
 
+bool ValidateCookieApiPartitionKey(
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key,
+    std::optional<net::CookiePartitionKey>& net_partition_key,
+    std::string& error_message) {
+  if (partition_key && partition_key->top_level_site &&
+      !net::CookiePartitionKey::Deserialize(
+          partition_key->top_level_site.value(), net_partition_key)) {
+    error_message = "Invalid format for partitionKey.topLevelSite.";
+    return false;
+  }
+  return true;
+}
+
+bool CookieMatchesPartitionKeyCollection(
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
+    const net::CanonicalCookie& cookie) {
+  if (!cookie.IsPartitioned()) {
+    return cookie_partition_key_collection.ContainsAllKeys() ||
+           cookie_partition_key_collection.IsEmpty();
+  }
+  return cookie_partition_key_collection.Contains(*cookie.PartitionKey());
+}
+
+bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
+        api_partition_key,
+    const std::optional<net::CookiePartitionKey>& net_partition_key) {
+  if (!api_partition_key.has_value()) {
+    return !net_partition_key.has_value();
+  }
+
+  if (!net_partition_key.has_value()) {
+    return false;
+  }
+
+  // If both keys are present, they both must be serializable for a match.
+  if (!net_partition_key->IsSerializeable() ||
+      !api_partition_key->top_level_site.has_value()) {
+    return false;
+  }
+
+  std::string serialized_net_partition_key;
+  return net::CookiePartitionKey::Serialize(net_partition_key,
+                                            serialized_net_partition_key) &&
+         serialized_net_partition_key ==
+             api_partition_key->top_level_site.value();
+}
+
+net::CookiePartitionKeyCollection
+CookiePartitionKeyCollectionFromApiPartitionKey(
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key) {
+  if (!partition_key) {
+    return net::CookiePartitionKeyCollection();
+  }
+
+  if (!partition_key->top_level_site) {
+    return net::CookiePartitionKeyCollection::ContainsAll();
+  }
+
+  std::optional<net::CookiePartitionKey> net_partition_key;
+  if (!net::CookiePartitionKey::Deserialize(
+          partition_key->top_level_site.value(), net_partition_key)) {
+    return net::CookiePartitionKeyCollection();
+  }
+
+  return net::CookiePartitionKeyCollection::FromOptional(net_partition_key);
+}
+
 MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {
   DCHECK(details_);
 }
 
 bool MatchFilter::MatchesCookie(
     const net::CanonicalCookie& cookie) {
+  if (!CookieMatchesPartitionKeyCollection(cookie_partition_key_collection_,
+                                           cookie)) {
+    return false;
+  }
+  // Confirm there's at least one parameter to check.
+  if (!details_->name && !details_->domain && !details_->path &&
+      !details_->secure && !details_->session && !details_->partition_key) {
+    return true;
+  }
+
   if (details_->name && *details_->name != cookie.Name())
     return false;
 
@@ -217,13 +313,19 @@ bool MatchFilter::MatchesCookie(
   if (details_->path && *details_->path != cookie.Path())
     return false;
 
-  if (details_->secure && *details_->secure != cookie.IsSecure())
+  if (details_->secure && *details_->secure != cookie.SecureAttribute()) {
     return false;
+  }
 
   if (details_->session && *details_->session != !cookie.IsPersistent())
     return false;
 
   return true;
+}
+
+void MatchFilter::SetCookiePartitionKeyCollection(
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
+  cookie_partition_key_collection_ = cookie_partition_key_collection;
 }
 
 bool MatchFilter::MatchesDomain(const std::string& domain) {

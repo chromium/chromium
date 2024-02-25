@@ -29,12 +29,19 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class ContainerNode;
 class Element;
+
+enum class DOMPartsAllowed {
+  kNever,
+  kInsideParseParts,
+  kAlways,
+};
 
 // NOTE: The HTML5 spec uses a backwards (grows downward) stack.  We're using
 // more standard (grows upwards) stack terminology here.
@@ -63,7 +70,7 @@ class HTMLElementStack {
 
   HTMLStackItem* TopStackItem() const {
     DCHECK(top_);
-    return top_;
+    return top_.Get();
   }
 
   HTMLStackItem* OneBelowTop() const;
@@ -116,6 +123,17 @@ class HTMLElementStack {
   bool InTableScope(html_names::HTMLTag tag) const;
   bool InButtonScope(html_names::HTMLTag tag) const;
   bool InSelectScope(html_names::HTMLTag tag) const;
+  bool InParsePartsScope() const {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !parse_parts_count_);
+    return parse_parts_count_;
+  }
+  void SetDOMPartsAllowedState(DOMPartsAllowed state) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    dom_parts_allowed_state_ = state;
+    if (state == DOMPartsAllowed::kAlways) {
+      parse_parts_count_ = 1;
+    }
+  }
 
   bool HasNumberedHeaderElementInScope() const;
 
@@ -139,6 +157,9 @@ class HTMLElementStack {
   void PushRootNodeCommon(HTMLStackItem*);
   void PopCommon();
   void RemoveNonTopCommon(Element*);
+
+  unsigned parse_parts_count_{0};
+  DOMPartsAllowed dom_parts_allowed_state_{DOMPartsAllowed::kInsideParseParts};
 
   Member<HTMLStackItem> top_;
 

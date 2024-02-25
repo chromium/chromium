@@ -6,7 +6,10 @@
 #define BASE_APPLE_SCOPED_NSAUTORELEASE_POOL_H_
 
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 
 namespace base::apple {
@@ -20,12 +23,11 @@ namespace base::apple {
 // pool lower on the stack destroys all pools higher on the stack, which does
 // not mesh well with the existence of C++ objects for each pool.
 //
-// TODO(https://crbug.com/1424190): Enforce stack-only use via the
-// STACK_ALLOCATED annotation.
-//
 // Use this class only in C++ code; use @autoreleasepool in Obj-C(++) code.
 
 class BASE_EXPORT ScopedNSAutoreleasePool {
+  STACK_ALLOCATED();
+
  public:
   ScopedNSAutoreleasePool();
 
@@ -43,11 +45,21 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   void Recycle();
 
  private:
+  // Pushes the autorelease pool and does all required verification.
+  void PushImpl() VALID_CONTEXT_REQUIRED(thread_checker_);
+
+  // Pops the autorelease pool and does all required verification.
+  void PopImpl() VALID_CONTEXT_REQUIRED(thread_checker_);
+
   // This field is not a raw_ptr<> because it is a pointer to an Objective-C
   // object.
   RAW_PTR_EXCLUSION void* autorelease_pool_ GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
+
+#if DCHECK_IS_ON()
+  unsigned long level_ = 0;
+#endif
 };
 
 }  // namespace base::apple

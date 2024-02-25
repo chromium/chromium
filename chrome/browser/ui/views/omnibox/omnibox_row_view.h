@@ -23,8 +23,9 @@ class OmniboxHeaderView;
 //  - Clicking the header doesn't navigate to the match.
 //  - It's the header for multiple matches, it's just painted above this row.
 class OmniboxRowView : public views::View {
+  METADATA_HEADER(OmniboxRowView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxRowView);
   OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view);
 
   // Sets the header that appears above this row. Also shows the header.

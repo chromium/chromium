@@ -259,7 +259,7 @@ class ServiceWorkerUsbDelegateObserverNoEventHandlersTest
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -316,7 +316,8 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
       auto& device_added_future = device_added_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(device_manager_clients[idx], OnDeviceAdded)
           .WillOnce(
               [&](auto d) { device_added_future.SetValue(std::move(d)); });
@@ -330,7 +331,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -386,7 +387,8 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
       auto& device_removed_future = device_removed_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(device_manager_clients[idx], OnDeviceRemoved)
           .WillOnce(
               [&](auto d) { device_removed_future.SetValue(std::move(d)); });
@@ -401,7 +403,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceManagerConnectionError) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -422,7 +424,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceManagerConnectionError) {
   for (size_t idx = 0; idx < num_workers; ++idx) {
     auto* version = context()->GetLiveVersion(version_ids[idx]);
     ASSERT_NE(version, nullptr);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     EXPECT_EQ(context()
                   ->usb_delegate_observer()
                   ->GetUsbServiceForTesting(registrations[idx]->id())
@@ -446,7 +448,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
 
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -468,7 +470,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
     auto* version = registrations[idx]->GetNewestVersion();
     ASSERT_NE(version, nullptr);
     StartServiceWorker(version);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
 
     mojo::Remote<device::mojom::UsbDevice> device;
     usb_services[idx]->GetDevice(device_info->guid,
@@ -484,7 +486,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
     EXPECT_CALL(usb_delegate(), GetDeviceInfo)
         .WillOnce(Return(device_info.get()));
     EXPECT_CALL(usb_delegate(),
-                HasDevicePermission(_, origin, Ref(*device_info)))
+                HasDevicePermission(_, nullptr, origin, Ref(*device_info)))
         .WillOnce(Return(false));
     EXPECT_CALL(mock_device, Close)
         .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -615,12 +617,12 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, NoPermissionNotStartWorker) {
   auto fake_device_info = CreateFakeDevice();
   EXPECT_CALL(usb_delegate(), HasDevicePermission).WillOnce(Return(false));
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
@@ -681,7 +683,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
 TEST_F(ServiceWorkerUsbDelegateObserverTest,
        ClearPendingCallbackWhenWorkerStopped) {
   size_t num_workers = 10;
-  std::vector<const GURL> origins;
+  std::vector<GURL> origins;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   std::vector<int64_t> version_ids;
   for (size_t idx = 0; idx < num_workers; ++idx) {
@@ -754,7 +756,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
   device::MockUsbMojoDevice mock_device;
   auto fake_device_info = CreateFakeDevice();
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,

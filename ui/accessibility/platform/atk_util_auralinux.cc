@@ -17,6 +17,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
@@ -204,9 +205,9 @@ DiscardAtkKeyEvent AtkUtilAuraLinux::HandleAtkKeyEvent(
     AtkKeyEventStruct* key_event) {
   DCHECK(key_event);
 
-  if (!ui::AXPlatformNode::GetAccessibilityMode().has_mode(
-          ui::AXMode::kNativeAPIs))
+  if (!AXPlatform::GetInstance().GetMode().has_mode(AXMode::kNativeAPIs)) {
     return DiscardAtkKeyEvent::Retain;
+  }
 
   GetInstance()->InitializeAsync();
 

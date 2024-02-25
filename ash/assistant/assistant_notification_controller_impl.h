@@ -69,8 +69,8 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   void OnNotificationAdded(const std::string& id) override {}
   void OnNotificationClicked(
       const std::string& id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) override;
   void OnNotificationUpdated(const std::string& notification) override {}
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
@@ -80,7 +80,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   AssistantNotificationExpiryMonitor expiry_monitor_;
 
   // Owned by AssistantService
-  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
+  raw_ptr<assistant::Assistant> assistant_ = nullptr;
 
   const message_center::NotifierId notifier_id_;
 

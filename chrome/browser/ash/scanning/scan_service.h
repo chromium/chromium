@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -103,7 +103,7 @@ class ScanService : public scanning::mojom::ScanService,
   // LorgnetteScannerManager::GetScannerCapabilities().
   void OnScannerCapabilitiesReceived(
       GetScannerCapabilitiesCallback callback,
-      const absl::optional<lorgnette::ScannerCapabilities>& capabilities);
+      const std::optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Receives progress updates after calling LorgnetteScannerManager::Scan().
   // |page_number| indicates the page the |progress_percent| corresponds to.
@@ -117,7 +117,7 @@ class ScanService : public scanning::mojom::ScanService,
   // an existing scanned image instead of being appended.
   void OnPageReceived(const base::FilePath& scan_to_path,
                       const scanning::mojom::FileType file_type,
-                      const absl::optional<uint32_t> page_index_to_replace,
+                      const std::optional<uint32_t> page_index_to_replace,
                       std::string scanned_image,
                       uint32_t page_number);
 
@@ -145,7 +145,7 @@ class ScanService : public scanning::mojom::ScanService,
   bool SendScanRequest(
       const base::UnguessableToken& scanner_id,
       scanning::mojom::ScanSettingsPtr settings,
-      const absl::optional<uint32_t> page_index_to_replace,
+      const std::optional<uint32_t> page_index_to_replace,
       base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>
           completion_callback);
 
@@ -188,10 +188,10 @@ class ScanService : public scanning::mojom::ScanService,
   mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
-  raw_ptr<LorgnetteScannerManager, ExperimentalAsh> lorgnette_scanner_manager_;
+  raw_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;
 
   // The browser context from which scans are initiated.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Indicates whether there was a failure to save scanned images.
   bool page_save_failed_;
@@ -200,7 +200,7 @@ class ScanService : public scanning::mojom::ScanService,
   std::vector<std::string> scanned_images_;
 
   // The time a scan was started. Used in filenames when saving scanned images.
-  base::Time::Exploded start_time_;
+  base::Time start_time_;
 
   // The file paths of the pages scanned in a scan job.
   std::vector<base::FilePath> scanned_file_paths_;
@@ -216,7 +216,7 @@ class ScanService : public scanning::mojom::ScanService,
   bool rotate_alternate_pages_;
 
   // Stores the dots per inch (DPI) of the requested scan.
-  absl::optional<int> scan_dpi_;
+  std::optional<int> scan_dpi_;
 
   // The time at which GetScanners() is called. Used to record the time between
   // a user launching the Scan app and being able to interact with it.

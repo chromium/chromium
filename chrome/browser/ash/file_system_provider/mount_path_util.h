@@ -13,8 +13,7 @@
 
 class Profile;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInterface;
 class ProviderId;
@@ -50,7 +49,7 @@ class FileSystemURLParser {
 
  private:
   storage::FileSystemURL url_;
-  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
+  raw_ptr<ProvidedFileSystemInterface> file_system_;
   base::FilePath file_path_;
 };
 
@@ -74,14 +73,13 @@ class LocalPathParser {
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::FilePath local_path_;
-  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
+  raw_ptr<ProvidedFileSystemInterface> file_system_;
   base::FilePath file_path_;
 };
 
 }  // namespace util
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_MOUNT_PATH_UTIL_H_

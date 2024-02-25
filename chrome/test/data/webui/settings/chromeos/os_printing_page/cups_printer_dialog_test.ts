@@ -4,6 +4,7 @@
 
 import {AddPrinterManuallyDialogElement, AddPrinterManufacturerModelDialogElement, CupsPrintersBrowserProxyImpl, PrinterSetupResult, SettingsCupsAddPrinterDialogElement, SettingsCupsEditPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrSearchableDropDownElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -11,6 +12,8 @@ import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock
 import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {createCupsPrinterInfo} from './cups_printer_test_utils.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
@@ -202,6 +205,47 @@ suite('CupsAddPrinterDialogTests', () => {
     assertFalse(canAddPrinter(dialog, 'Test printer', '-helloworld123.com'));
   });
 
+  test('AddPrinterManuallySuccess', async () => {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
+    // Starts in add manual dialog.
+    const addDialog =
+        dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
+    assertTrue(!!addDialog);
+    flush();
+
+    // Fill the printer dialog with default printer details.
+    fillAddManuallyDialog(addDialog);
+
+    // Make the PPD resolved true so the printer add is successful.
+    cupsPrintersBrowserProxy.setPpdReferenceResolved(true);
+
+    // Attempt to add the printer.
+    const button = addDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '.action-button');
+    assertTrue(!!button);
+    button.click();
+    await cupsPrintersBrowserProxy.whenCalled('addCupsPrinter');
+    await flushTasks();
+
+    // Verify the dialog closes after successful add.
+    const addPrinterDialog =
+        addDialog.shadowRoot!.querySelector('add-printer-dialog');
+    assertTrue(!!addPrinterDialog);
+    const crDialog =
+        addPrinterDialog.shadowRoot!.querySelector<CrDialogElement>(
+            'cr-dialog');
+    assertTrue(!!crDialog);
+    assertFalse(crDialog.open);
+
+    // Record the success to metrics.
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countBoolean(
+            'Printing.CUPS.AddPrinterManuallyResult', true));
+  });
+
   /**
    * Test that clicking on Add opens the model select page.
    */
@@ -236,6 +280,9 @@ suite('CupsAddPrinterDialogTests', () => {
    * message is shown.
    */
   test('GetPrinterInfoFailsGeneralError', async () => {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
     // Starts in add manual dialog.
     const addDialog =
         dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
@@ -267,6 +314,10 @@ suite('CupsAddPrinterDialogTests', () => {
             '#error-container');
     assertTrue(!!errorContainer);
     assertFalse(errorContainer.hidden);
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countBoolean(
+            'Printing.CUPS.AddPrinterManuallyResult', false));
   });
 
   /**
@@ -275,6 +326,9 @@ suite('CupsAddPrinterDialogTests', () => {
    * address field is marked as invalid.
    */
   test('GetPrinterInfoFailsUnreachableError', async () => {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
     // Starts in add manual dialog.
     const addDialog =
         dialog.shadowRoot!.querySelector('add-printer-manually-dialog');
@@ -303,6 +357,10 @@ suite('CupsAddPrinterDialogTests', () => {
             '#printerAddressInput');
     assertTrue(!!printerAddressInput);
     assertTrue(printerAddressInput.invalid);
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countBoolean(
+            'Printing.CUPS.AddPrinterManuallyResult', false));
   });
 
   /**

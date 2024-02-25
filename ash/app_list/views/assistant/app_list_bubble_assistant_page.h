@@ -19,9 +19,9 @@ class AssistantViewDelegate;
 // The assistant page for the app list bubble / clamshell launcher. Similar to
 // AssistantMainView in the fullscreen launcher.
 class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
- public:
-  METADATA_HEADER(AppListBubbleAssistantPage);
+  METADATA_HEADER(AppListBubbleAssistantPage, views::View)
 
+ public:
   explicit AppListBubbleAssistantPage(AssistantViewDelegate* delegate);
   AppListBubbleAssistantPage(const AppListBubbleAssistantPage&) = delete;
   AppListBubbleAssistantPage& operator=(const AppListBubbleAssistantPage&) =
@@ -36,10 +36,10 @@ class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
 
  private:
   // The text and microphone input area. Owned by views hierarchy.
-  raw_ptr<AssistantDialogPlate, ExperimentalAsh> dialog_plate_;
+  raw_ptr<AssistantDialogPlate> dialog_plate_;
 
   // The query and response output area. Owned by views hierarchy.
-  raw_ptr<AppListAssistantMainStage, ExperimentalAsh> main_stage_;
+  raw_ptr<AppListAssistantMainStage> main_stage_;
 };
 
 }  // namespace ash

@@ -25,17 +25,19 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
 EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
     : ActiveScriptWrappable<EditContext>({}),
-      ExecutionContextClient(ExecutionContext::From(script_state)) {
+      execution_context_(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
   UseCounter::Count(GetExecutionContext(), WebFeature::kEditContext);
 
@@ -61,7 +63,11 @@ const AtomicString& EditContext::InterfaceName() const {
 }
 
 ExecutionContext* EditContext::GetExecutionContext() const {
-  return ExecutionContextClient::GetExecutionContext();
+  return execution_context_;
+}
+
+LocalDOMWindow* EditContext::DomWindow() const {
+  return To<LocalDOMWindow>(GetExecutionContext());
 }
 
 bool EditContext::HasPendingActivity() const {
@@ -203,28 +209,16 @@ void EditContext::updateSelection(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateSelection", "start",
                std::to_string(start), "end", std::to_string(end));
 
-  // Following this spec:
-  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
-  if (start > end) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        "The provided start value (" + String::Number(start) +
-            ") is larger than the provided end value (" + String::Number(end) +
-            ").");
-    return;
-  }
-  end = std::min(end, text_.length());
-  start = std::min(start, end);
-  selection_start_ = start;
-  selection_end_ = end;
+  selection_start_ = std::min(start, text_.length());
+  selection_end_ = std::min(end, text_.length());
   if (!has_composition_)
     return;
 
   // There is an active composition so need to set the range of the
   // composition too so that we can commit the string properly.
   if (composition_range_start_ == 0 && composition_range_end_ == 0) {
-    composition_range_start_ = selection_start_;
-    composition_range_end_ = selection_end_;
+    composition_range_start_ = OrderedSelectionStart();
+    composition_range_end_ = OrderedSelectionEnd();
   }
 }
 
@@ -237,9 +231,13 @@ void EditContext::updateCharacterBounds(
                std::to_string(range_start) + ", " +
                    std::to_string(character_bounds.size()));
 
-  character_bounds_.Clear();
+  character_bounds_.clear();
   base::ranges::for_each(character_bounds, [this](const auto& bounds) {
-    auto result_bounds = bounds->ToEnclosingRect();
+    auto result_bounds = gfx::ToEnclosingRect(
+        gfx::RectF(ClampToWithNaNTo0<float>(bounds->x()),
+                   ClampToWithNaNTo0<float>(bounds->y()),
+                   ClampToWithNaNTo0<float>(bounds->width()),
+                   ClampToWithNaNTo0<float>(bounds->height())));
     TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "charBounds",
                  result_bounds.ToString());
     character_bounds_.push_back(result_bounds);
@@ -247,15 +245,23 @@ void EditContext::updateCharacterBounds(
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
+  control_bounds_ = gfx::ToEnclosingRect(
+      gfx::RectF(ClampToWithNaNTo0<float>(control_bounds->x()),
+                 ClampToWithNaNTo0<float>(control_bounds->y()),
+                 ClampToWithNaNTo0<float>(control_bounds->width()),
+                 ClampToWithNaNTo0<float>(control_bounds->height())));
   TRACE_EVENT1("ime", "EditContext::updateControlBounds", "control_bounds",
-               control_bounds->ToEnclosingRect().ToString());
-  control_bounds_ = control_bounds->ToEnclosingRect();
+               control_bounds_.ToString());
 }
 
 void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
+  selection_bounds_ = gfx::ToEnclosingRect(
+      gfx::RectF(ClampToWithNaNTo0<float>(selection_bounds->x()),
+                 ClampToWithNaNTo0<float>(selection_bounds->y()),
+                 ClampToWithNaNTo0<float>(selection_bounds->width()),
+                 ClampToWithNaNTo0<float>(selection_bounds->height())));
   TRACE_EVENT1("ime", "EditContext::updateSelectionBounds", "selection_bounds",
-               selection_bounds->ToEnclosingRect().ToString());
-  selection_bounds_ = selection_bounds->ToEnclosingRect();
+               selection_bounds_.ToString());
 }
 
 void EditContext::updateText(uint32_t start,
@@ -265,16 +271,8 @@ void EditContext::updateText(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateText", "start, end",
                std::to_string(start) + ", " + std::to_string(end), "new_text",
                new_text);
-
-  // Following this spec:
-  // https://html.spec.whatwg.org/C/#dom-textarea/input-setrangetext
   if (start > end) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        "The provided start value (" + String::Number(start) +
-            ") is larger than the provided end value (" + String::Number(end) +
-            ").");
-    return;
+    std::swap(start, end);
   }
   end = std::min(end, text_.length());
   start = std::min(start, end);
@@ -297,7 +295,7 @@ uint32_t EditContext::characterBoundsRangeStart() const {
   return character_bounds_range_start_;
 }
 
-const HeapVector<Member<Element>>& EditContext::attachedElements() {
+const HeapVector<Member<HTMLElement>>& EditContext::attachedElements() {
   return attached_elements_;
 }
 
@@ -354,8 +352,7 @@ bool EditContext::SetComposition(
   if (actual_replacement_range.IsEmpty()) {
     // If no composition range, the current selection will be replaced.
     if (composition_range_start_ == 0 && composition_range_end_ == 0) {
-      actual_replacement_range =
-          WebRange(selection_start_, selection_end_ - selection_start_);
+      actual_replacement_range = GetSelectionOffsets();
     }
     // Otherwise, the current composition range will be replaced.
     else {
@@ -394,6 +391,14 @@ void EditContext::ClearCompositionState() {
   composition_range_end_ = 0;
 }
 
+uint32_t EditContext::OrderedSelectionStart() const {
+  return std::min(selection_start_, selection_end_);
+}
+
+uint32_t EditContext::OrderedSelectionEnd() const {
+  return std::max(selection_start_, selection_end_);
+}
+
 bool EditContext::SetCompositionFromExistingText(
     int composition_start,
     int composition_end,
@@ -406,6 +411,8 @@ bool EditContext::SetCompositionFromExistingText(
   if (composition_start < 0 || composition_end < 0)
     return false;
 
+  CHECK_GT(composition_end, composition_start);
+
   if (!has_composition_) {
     if (!DispatchCompositionStartEvent(""))
       return false;
@@ -416,15 +423,16 @@ bool EditContext::SetCompositionFromExistingText(
   composition_start =
       std::min(composition_start, static_cast<int>(text_.length()));
   composition_end = std::min(composition_end, static_cast<int>(text_.length()));
-  String update_text(text_.Substring(composition_start, composition_end));
+  String update_text(
+      text_.Substring(composition_start, composition_end - composition_start));
   if (composition_range_start_ == 0 && composition_range_end_ == 0) {
     composition_range_start_ = composition_start;
     composition_range_end_ = composition_end;
   }
 
   DispatchTextUpdateEvent(update_text, composition_range_start_,
-                          composition_range_end_, composition_start,
-                          composition_start);
+                          composition_range_end_, selection_start_,
+                          selection_end_);
   DispatchTextFormatEvent(ime_text_spans);
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);
@@ -445,6 +453,7 @@ void EditContext::CancelComposition() {
                           composition_range_end_, selection_start_,
                           selection_end_);
 
+  DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
   DispatchCompositionEndEvent(g_empty_string);
   ClearCompositionState();
 }
@@ -453,11 +462,11 @@ bool EditContext::InsertText(const WebString& text) {
   TRACE_EVENT1("ime", "EditContext::InsertText", "text", text.Utf8());
 
   String update_text(text);
-  text_ = text_.Substring(0, selection_start_) + update_text +
-          text_.Substring(selection_end_);
-  uint32_t update_range_start = selection_start_;
-  uint32_t update_range_end = selection_end_;
-  selection_start_ = selection_start_ + update_text.length();
+  text_ = text_.Substring(0, OrderedSelectionStart()) + update_text +
+          text_.Substring(OrderedSelectionEnd());
+  uint32_t update_range_start = OrderedSelectionStart();
+  uint32_t update_range_end = OrderedSelectionEnd();
+  selection_start_ = OrderedSelectionStart() + update_text.length();
   selection_end_ = selection_start_;
 
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
@@ -470,12 +479,13 @@ void EditContext::DeleteCurrentSelection() {
     return;
 
   StringBuilder stringBuilder;
-  stringBuilder.Append(StringView(text_, 0, selection_start_));
-  stringBuilder.Append(StringView(text_, selection_end_));
+  stringBuilder.Append(StringView(text_, 0, OrderedSelectionStart()));
+  stringBuilder.Append(StringView(text_, OrderedSelectionEnd()));
   text_ = stringBuilder.ToString();
 
-  DispatchTextUpdateEvent(String(), selection_start_, selection_end_,
-                          selection_start_, selection_start_);
+  DispatchTextUpdateEvent(g_empty_string, OrderedSelectionStart(),
+                          OrderedSelectionEnd(), OrderedSelectionStart(),
+                          OrderedSelectionStart());
 
   selection_end_ = selection_start_;
 }
@@ -548,12 +558,12 @@ bool EditContext::CommitText(const WebString& text,
   WebRange actual_replacement_range = replacement_range;
   if (actual_replacement_range.IsEmpty()) {
     if (has_composition_) {
+      CHECK_GE(composition_range_end_, composition_range_start_);
       actual_replacement_range =
           WebRange(composition_range_start_,
                    composition_range_end_ - composition_range_start_);
     } else {
-      actual_replacement_range =
-          WebRange(selection_start_, selection_end_ - selection_start_);
+      actual_replacement_range = GetSelectionOffsets();
     }
   }
 
@@ -566,8 +576,10 @@ bool EditContext::CommitText(const WebString& text,
                           actual_replacement_range.EndOffset(),
                           selection_start_, selection_end_);
   // Fire composition end event.
-  if (!text.IsEmpty() && has_composition_)
+  if (!text.IsEmpty() && has_composition_) {
+    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
+  }
 
   ClearCompositionState();
   return true;
@@ -577,46 +589,85 @@ bool EditContext::FinishComposingText(
     ConfirmCompositionBehavior selection_behavior) {
   TRACE_EVENT0("ime", "EditContext::FinishComposingText");
 
-  String text;
+  int text_length = 0;
   if (has_composition_) {
-    text = text_.Substring(composition_range_start_, composition_range_end_);
-    // Fire composition end event.
+    String text =
+        text_.Substring(composition_range_start_,
+                        composition_range_end_ - composition_range_start_);
+    text_length = text.length();
+    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
   } else {
-    text = text_.Substring(selection_start_, selection_end_);
+    text_length = OrderedSelectionEnd() - OrderedSelectionStart();
   }
 
   if (selection_behavior == kDoNotKeepSelection) {
-    selection_start_ = selection_start_ + text.length();
-    selection_end_ = selection_end_ + text.length();
+    selection_start_ = selection_start_ + text_length;
+    selection_end_ = selection_end_ + text_length;
   }
 
-  // TODO(snianu): also need to fire formatupdate here to remove formats from
-  // the previous compositions?
   ClearCompositionState();
   return true;
 }
 
 void EditContext::ExtendSelectionAndDelete(int before, int after) {
-  TRACE_EVENT1("ime", "EditContext::ExtendSelectionAndDelete", "before, afters",
+  TRACE_EVENT1("ime", "EditContext::ExtendSelectionAndDelete", "before, after",
                std::to_string(before) + ", " + std::to_string(after));
-  String text;
-  before = std::min(before, static_cast<int>(selection_start_));
+  before = std::min(before, static_cast<int>(OrderedSelectionStart()));
   after = std::min(after, static_cast<int>(text_.length()));
-  text_ = text_.Substring(0, selection_start_ - before) +
-          text_.Substring(selection_end_ + after);
-  const uint32_t update_range_start = selection_start_ - before;
-  const uint32_t update_range_end = selection_end_ + after;
-  selection_start_ = selection_start_ - before;
+  text_ = text_.Substring(0, OrderedSelectionStart() - before) +
+          text_.Substring(OrderedSelectionEnd() + after);
+  const uint32_t update_range_start = OrderedSelectionStart() - before;
+  const uint32_t update_range_end = OrderedSelectionEnd() + after;
+  selection_start_ = OrderedSelectionStart() - before;
   selection_end_ = selection_start_;
-  DispatchTextUpdateEvent(text, update_range_start, update_range_end,
+  DispatchTextUpdateEvent(g_empty_string, update_range_start, update_range_end,
                           selection_start_, selection_end_);
 }
 
-void EditContext::AttachElement(Element* element_to_attach) {
+void EditContext::DeleteSurroundingText(int before, int after) {
+  TRACE_EVENT1("ime", "EditContext::DeleteSurroundingText", "before, after",
+               std::to_string(before) + ", " + std::to_string(after));
+  const bool is_backwards_selection = selection_start_ > selection_end_;
+  const uint32_t update_range_start =
+      std::max(OrderedSelectionStart() - before, 0U);
+  const uint32_t update_range_end =
+      std::min(OrderedSelectionEnd() + after, text_.length());
+  selection_end_ =
+      OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start);
+  selection_start_ = update_range_start;
+  CHECK_GE(selection_end_, selection_start_);
+  text_ = text_.Substring(0, update_range_start) +
+          text_.Substring(selection_start_, selection_end_ - selection_start_) +
+          text_.Substring(update_range_end);
+  String update_event_text(
+      text_.Substring(selection_start_, selection_end_ - selection_start_));
+
+  if (is_backwards_selection) {
+    std::swap(selection_start_, selection_end_);
+  }
+
+  DispatchTextUpdateEvent(update_event_text, update_range_start,
+                          update_range_end, selection_start_, selection_end_);
+}
+
+void EditContext::SetSelection(int start, int end) {
+  TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
+               std::to_string(start) + ", " + std::to_string(end));
+
+  selection_start_ = start;
+  selection_end_ = end;
+
+  DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
+                          /*update_range_end=*/0, selection_start_,
+                          selection_end_);
+}
+
+void EditContext::AttachElement(HTMLElement* element_to_attach) {
   if (base::Contains(attached_elements_, element_to_attach,
-                     &Member<Element>::Get))
+                     &Member<HTMLElement>::Get)) {
     return;
+  }
 
   // Currently an EditContext can only have one associated element.
   // However, the spec is written with the expectation that this limit may be
@@ -627,12 +678,20 @@ void EditContext::AttachElement(Element* element_to_attach) {
   CHECK(attached_elements_.empty())
       << "An EditContext can be only be associated with a single element";
 
+  // We assume throughout this class that since EditContext is only associated
+  // with at most one element, it can only have one ExecutionContext. If things
+  // change such that an EditContext can be associated with multiple elements,
+  // the way we manage the ExecutionContext will need to be reworked such
+  // that we return the ExecutionContext of the element that has most recently
+  // received focus.
+  execution_context_ = element_to_attach->GetExecutionContext();
+
   attached_elements_.push_back(element_to_attach);
 }
 
-void EditContext::DetachElement(Element* element_to_detach) {
+void EditContext::DetachElement(HTMLElement* element_to_detach) {
   auto* it = base::ranges::find(attached_elements_, element_to_detach,
-                                &Member<Element>::Get);
+                                &Member<HTMLElement>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);
@@ -641,8 +700,6 @@ void EditContext::DetachElement(Element* element_to_detach) {
 WebTextInputInfo EditContext::TextInputInfo() {
   WebTextInputInfo info;
   // Fetch all the text input info from edit context.
-  // TODO(crbug.com/1197325): Change this to refer to the "view" part of the
-  // EditContext once the EditContext spec adds this feature.
   info.node_id = GetInputMethodController().NodeIdOfFocusedElement();
   info.action = GetInputMethodController().InputActionOfFocusedElement();
   info.input_mode = GetInputMethodController().InputModeOfFocusedElement();
@@ -650,26 +707,14 @@ WebTextInputInfo EditContext::TextInputInfo() {
   info.virtual_keyboard_policy =
       GetInputMethodController().VirtualKeyboardPolicyOfFocusedElement();
   info.value = text();
-  info.flags = TextInputFlags();
-  info.selection_start = selection_start_;
-  info.selection_end = selection_end_;
-  info.composition_start = composition_range_start_;
-  info.composition_end = composition_range_end_;
+  info.flags = GetInputMethodController().TextInputFlags();
+  info.selection_start = OrderedSelectionStart();
+  info.selection_end = OrderedSelectionEnd();
+  if (has_composition_) {
+    info.composition_start = composition_range_start_;
+    info.composition_end = composition_range_end_;
+  }
   return info;
-}
-
-int EditContext::TextInputFlags() const {
-  int flags = 0;
-  // Disable spellcheck & autocorrect for EditContext.
-  flags |= kWebTextInputFlagAutocorrectOff;
-  flags |= kWebTextInputFlagSpellcheckOff;
-
-  // TODO:(snianu) Enable this once the password type
-  // is supported by inputMode attribute.
-  // if (input_mode_ == WebTextInputMode::kPassword)
-  //   flags |= kWebTextInputFlagHasBeenPasswordField;
-
-  return flags;
 }
 
 WebRange EditContext::CompositionRange() const {
@@ -685,7 +730,7 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   TRACE_EVENT1("ime", "EditContext::GetCompositionCharacterBounds", "size",
                std::to_string(character_bounds_.size()));
 
-  bounds.Clear();
+  bounds.clear();
   base::ranges::for_each(
       character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be
@@ -705,29 +750,32 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
                                              gfx::Rect& rect_in_viewport) {
   if (HasValidCompositionBounds()) {
     WebRange range = this->CompositionRange();
+    CHECK_GE(range.StartOffset(), 0);
+    CHECK_GE(range.EndOffset(), 0);
 
     // If the requested range is within the current composition range,
     // we'll use that to provide the result.
     if (base::saturated_cast<int>(location) >= range.StartOffset() &&
         base::saturated_cast<int>(location + length) <= range.EndOffset()) {
+      const size_t start_in_composition = location - range.StartOffset();
+      const size_t end_in_composition = location + length - range.StartOffset();
       if (length == 0) {
-        if (location == character_bounds_.size()) {
+        if (start_in_composition == character_bounds_.size()) {
           // Zero-width rect after the last character in the composition range
           rect_in_viewport =
-              gfx::Rect(character_bounds_[location - 1].right(),
-                        character_bounds_[location - 1].y(), 0,
-                        character_bounds_[location - 1].height());
+              gfx::Rect(character_bounds_[start_in_composition - 1].right(),
+                        character_bounds_[start_in_composition - 1].y(), 0,
+                        character_bounds_[start_in_composition - 1].height());
         } else {
           // Zero-width rect before the next character in the composition range
-          rect_in_viewport = gfx::Rect(character_bounds_[location].x(),
-                                       character_bounds_[location].y(), 0,
-                                       character_bounds_[location].height());
+          rect_in_viewport =
+              gfx::Rect(character_bounds_[start_in_composition].x(),
+                        character_bounds_[start_in_composition].y(), 0,
+                        character_bounds_[start_in_composition].height());
         }
       } else {
-        const int start_in_composition = location - range.StartOffset();
-        const int end_in_composition = location + length - range.StartOffset();
         gfx::Rect rect = character_bounds_[start_in_composition];
-        for (int i = start_in_composition + 1; i < end_in_composition; ++i) {
+        for (size_t i = start_in_composition + 1; i < end_in_composition; ++i) {
           rect.Union(character_bounds_[i]);
         }
 
@@ -771,15 +819,16 @@ bool EditContext::HasValidCompositionBounds() const {
 }
 
 WebRange EditContext::GetSelectionOffsets() const {
-  return WebRange(selection_start_, selection_end_ - selection_start_);
+  return WebRange(OrderedSelectionStart(),
+                  OrderedSelectionEnd() - OrderedSelectionStart());
 }
 
 void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
   ElementRareDataField::Trace(visitor);
   visitor->Trace(attached_elements_);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

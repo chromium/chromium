@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace syncer {
-class DeviceInfo;
 class SyncService;
 }  // namespace syncer
 
@@ -44,9 +44,9 @@ enum class SharingDeviceRegistrationResult;
 // sharing messages to other devices.
 class SharingService : public KeyedService, public syncer::SyncServiceObserver {
  public:
-  using SharingDeviceList = std::vector<std::unique_ptr<syncer::DeviceInfo>>;
+  using SharingDeviceList = std::vector<SharingTargetDeviceInfo>;
   using NotificationActionCallback =
-      base::RepeatingCallback<void(absl::optional<int> button, bool closed)>;
+      base::RepeatingCallback<void(std::optional<int> button, bool closed)>;
 
   enum class State {
     // Device is unregistered with FCM and Sharing is unavailable.
@@ -72,11 +72,11 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   SharingService& operator=(const SharingService&) = delete;
   ~SharingService() override;
 
-  // Returns the device matching |guid|, or nullptr if no match was found.
-  virtual std::unique_ptr<syncer::DeviceInfo> GetDeviceByGuid(
+  // Returns the device matching |guid| or nullopt if no match was found.
+  virtual std::optional<SharingTargetDeviceInfo> GetDeviceByGuid(
       const std::string& guid) const;
 
-  // Returns a list of DeviceInfo that is available to receive messages.
+  // Returns a list of devices that is available to receive messages.
   // All returned devices have the specified |required_feature|.
   virtual SharingDeviceList GetDeviceCandidates(
       sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const;
@@ -92,7 +92,7 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   // run |callback| if it hasn't been executed yet, otherwise it will be a
   // no-op. Returns a null callback if the message is failed to be sent.
   virtual base::OnceClosure SendMessageToDevice(
-      const syncer::DeviceInfo& device,
+      const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,
       SharingMessageSender::ResponseCallback callback);

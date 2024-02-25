@@ -71,7 +71,8 @@ bool TabRestoreServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* TabRestoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TabRestoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return BuildTemplateService(browser_context).release();
+  return BuildTemplateService(browser_context);
 }

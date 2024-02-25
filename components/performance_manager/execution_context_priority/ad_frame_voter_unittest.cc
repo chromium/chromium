@@ -91,7 +91,7 @@ TEST_F(AdFrameVoterTest, SetIsAdFrameTrue) {
   // Create a graph with a single frame. It should not initially be an ad frame.
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame_node = mock_graph.frame;
-  EXPECT_FALSE(frame_node->is_ad_frame());
+  EXPECT_FALSE(frame_node->IsAdFrame());
   EXPECT_EQ(observer().GetVoteCount(), 0u);
   EXPECT_FALSE(
       observer().HasVote(voter_id(), GetExecutionContext(frame_node.get())));
@@ -115,11 +115,11 @@ TEST_F(AdFrameVoterTest, SetIsAdFrameFalse) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame_node = mock_graph.frame;
   mock_graph.frame->SetIsAdFrame(true);
-  EXPECT_TRUE(frame_node->is_ad_frame());
+  EXPECT_TRUE(frame_node->IsAdFrame());
 
   // Unset the frame as an ad. This should invalidate any vote.
   mock_graph.frame->SetIsAdFrame(false);
-  EXPECT_FALSE(frame_node->is_ad_frame());
+  EXPECT_FALSE(frame_node->IsAdFrame());
   EXPECT_EQ(observer().GetVoteCount(), 0u);
   EXPECT_FALSE(
       observer().HasVote(voter_id(), GetExecutionContext(frame_node.get())));

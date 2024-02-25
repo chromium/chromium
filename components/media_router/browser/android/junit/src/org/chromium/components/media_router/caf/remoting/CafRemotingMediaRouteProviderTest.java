@@ -35,20 +35,18 @@ import org.chromium.components.media_router.caf.CreateRouteRequestInfo;
 import org.chromium.components.media_router.caf.MediaRouterTestHelper;
 import org.chromium.components.media_router.caf.ShadowMediaRouter;
 
-/**
- * Robolectric tests for CafRemotingMediaRouteProvider.
- */
+/** Robolectric tests for CafRemotingMediaRouteProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMediaRouter.class},
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowMediaRouter.class},
         // Required to mock final.
         instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})
 public class CafRemotingMediaRouteProviderTest {
     private CafRemotingMediaRouteProvider mProvider;
     private MediaRouterTestHelper mMediaRouterHelper;
-    @Mock
-    private MediaRouteManager mManager;
-    @Mock
-    private RemotingSessionController mSessionController;
+    @Mock private MediaRouteManager mManager;
+    @Mock private RemotingSessionController mSessionController;
 
     @Before
     public void setUp() {
@@ -90,8 +88,16 @@ public class CafRemotingMediaRouteProviderTest {
 
         mProvider.startObservingMediaSinks(sourceId1);
 
-        CreateRouteRequestInfo info = new CreateRouteRequestInfo(mockSource1, sink, presentationId,
-                origin, 1, false, 1, mMediaRouterHelper.getCastRoute());
+        CreateRouteRequestInfo info =
+                new CreateRouteRequestInfo(
+                        mockSource1,
+                        sink,
+                        presentationId,
+                        origin,
+                        1,
+                        false,
+                        1,
+                        mMediaRouterHelper.getCastRoute());
         MediaRoute route = new MediaRoute(sinkId, sourceId1, presentationId);
         assertEquals(route.id, info.routeId);
         mProvider.addRouteForTesting(route, origin, 1, 1, false);
@@ -102,8 +108,8 @@ public class CafRemotingMediaRouteProviderTest {
 
         // `sourceId1` is still being observed, so no media source update.
         mProvider.startObservingMediaSinks(sourceId2);
-        verify(mProvider).updateSessionMediaSourceIfNeeded(
-                any(DiscoveryCallback.class), eq(mockSource2));
+        verify(mProvider)
+                .updateSessionMediaSourceIfNeeded(any(DiscoveryCallback.class), eq(mockSource2));
         verify(mSessionController, never()).updateMediaSource(any(MediaSource.class));
         mProvider.stopObservingMediaSinks(sourceId2);
 
@@ -113,8 +119,8 @@ public class CafRemotingMediaRouteProviderTest {
 
         // Route media source should be updated.
         mProvider.startObservingMediaSinks(sourceId2);
-        verify(mProvider).updateSessionMediaSourceIfNeeded(
-                any(DiscoveryCallback.class), eq(mockSource2));
+        verify(mProvider)
+                .updateSessionMediaSourceIfNeeded(any(DiscoveryCallback.class), eq(mockSource2));
         verify(mSessionController).updateMediaSource(eq(mockSource2));
 
         mProvider.updateRouteMediaSource(route.id, sourceId2);

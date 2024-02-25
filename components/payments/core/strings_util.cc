@@ -17,7 +17,7 @@ std::u16string GetShippingAddressLabelFromAutofillProfile(
     const std::string& locale) {
   // Name, phone number, and country are not included in the shipping address
   // label.
-  static constexpr autofill::ServerFieldType kLabelFields[] = {
+  static constexpr autofill::FieldType kLabelFields[] = {
       autofill::COMPANY_NAME,
       autofill::ADDRESS_HOME_STREET_ADDRESS,
       autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -28,7 +28,7 @@ std::u16string GetShippingAddressLabelFromAutofillProfile(
   };
 
   return profile.ConstructInferredLabel(kLabelFields, std::size(kLabelFields),
-                                        std::size(kLabelFields), locale);
+                                        locale);
 }
 
 std::u16string GetShippingAddressSelectorInfoMessage(

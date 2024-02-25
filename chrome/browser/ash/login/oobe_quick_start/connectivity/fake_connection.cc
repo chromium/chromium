@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "fake_connection.h"
 
 namespace ash::quick_start {
 
@@ -15,7 +16,7 @@ FakeConnection::Factory::~Factory() = default;
 
 std::unique_ptr<Connection> FakeConnection::Factory::Create(
     NearbyConnection* nearby_connection,
-    SessionContext session_context,
+    SessionContext* session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
@@ -28,7 +29,7 @@ std::unique_ptr<Connection> FakeConnection::Factory::Create(
 
 FakeConnection::FakeConnection(
     NearbyConnection* nearby_connection,
-    SessionContext session_context,
+    SessionContext* session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
@@ -47,7 +48,6 @@ void FakeConnection::InitiateHandshake(const std::string& authentication_token,
 }
 
 void FakeConnection::RequestWifiCredentials(
-    int32_t session_id,
     RequestWifiCredentialsCallback callback) {
   wifi_credentials_callback_ = std::move(callback);
 }
@@ -55,6 +55,10 @@ void FakeConnection::RequestWifiCredentials(
 void FakeConnection::WaitForUserVerification(
     AwaitUserVerificationCallback callback) {
   await_user_verification_callback_ = std::move(callback);
+}
+
+void FakeConnection::RequestAccountInfo(RequestAccountInfoCallback callback) {
+  request_account_info_callback_ = std::move(callback);
 }
 
 void FakeConnection::RequestAccountTransferAssertion(
@@ -65,19 +69,23 @@ void FakeConnection::RequestAccountTransferAssertion(
 }
 
 void FakeConnection::SendWifiCredentials(
-    absl::optional<mojom::WifiCredentials> credentials) {
+    std::optional<mojom::WifiCredentials> credentials) {
   CHECK(wifi_credentials_callback_);
   std::move(wifi_credentials_callback_).Run(credentials);
 }
 
 void FakeConnection::VerifyUser(
-    absl::optional<mojom::UserVerificationResponse> response) {
+    std::optional<mojom::UserVerificationResponse> response) {
   CHECK(await_user_verification_callback_);
   std::move(await_user_verification_callback_).Run(response);
 }
 
+void FakeConnection::SendAccountInfo(std::string email) {
+  std::move(request_account_info_callback_).Run(email);
+}
+
 void FakeConnection::SendAccountTransferAssertionInfo(
-    absl::optional<FidoAssertionInfo> assertion_info) {
+    std::optional<FidoAssertionInfo> assertion_info) {
   std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
 }
 

@@ -1,7 +1,5 @@
 include_rules = [
     "+base/containers/flat_map.h",
-    "+base/functional/bind.h",
-    "+base/strings/string_util.h",
     "+base/test",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
@@ -49,14 +47,6 @@ specific_include_rules = {
   "audio_encoder_fuzzer\.cc": [
     "+base/win/scoped_com_initializer.h",
     "+media/gpu/windows/mf_audio_encoder.h",
-  ],
-  "background_readback\.cc": [
-    # TODO(crbug.com/1198375): Remove this temporary exception after migration.
-    "+base/task/bind_post_task.h",
-  ],
-  "video_frame\.cc": [
-    # TODO(crbug.com/1198375): Remove this temporary exception after migration.
-    "+base/task/bind_post_task.h",
   ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",

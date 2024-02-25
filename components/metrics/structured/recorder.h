@@ -11,9 +11,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/metrics/structured/delegating_events_processor.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/events_processor_interface.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/metrics/structured/structured_metrics_validator.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace base {
 class FilePath;
@@ -54,12 +57,8 @@ class Recorder {
     virtual void OnEventRecord(const Event& event) = 0;
     // Called on a call to ProfileAdded.
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
-    // Called on a call to OnReportingStateChanged.
-    virtual void OnReportingStateChanged(bool enabled) = 0;
     // Called when SystemProfile has finished loading
     virtual void OnSystemProfileInitialized() {}
-    // Called on a call to LastKeyRotation.
-    virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
 
   Recorder(const Recorder&) = delete;
@@ -80,13 +79,6 @@ class Recorder {
   // investigate whether initialization can be simplified for Chrome.
   void ProfileAdded(const base::FilePath& profile_path);
 
-  // Returns when the key for |event| was last rotated, in days since epoch.
-  // Returns nullopt if the information is not available.
-  absl::optional<int> LastKeyRotation(const Event& event);
-
-  // Notifies observers that metrics reporting has been enabled or disabled.
-  void OnReportingStateChanged(bool enabled);
-
   // Notifies observers that system profile has been loaded.
   void OnSystemProfileInitialized();
 
@@ -103,6 +95,9 @@ class Recorder {
 
   // Modifies |uma_proto| before the log is sent.
   void OnProvideIndependentMetrics(ChromeUserMetricsExtension* uma_proto);
+
+  // Modifies |event| once after the proto has been built.
+  void OnEventRecorded(StructuredEventProto* event);
 
  private:
   friend class base::NoDestructor<Recorder>;

@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +85,19 @@ public class LaunchMetrics {
             @DisplayMode.EnumType
             int displayMode =
                     (webappInfo == null) ? DisplayMode.UNDEFINED : webappInfo.displayMode();
-            LaunchMetricsJni.get().recordLaunch(
-                    launch.mIsShortcut, launch.mUrl, launch.mSource, displayMode, webContents);
+            LaunchMetricsJni.get()
+                    .recordLaunch(
+                            launch.mIsShortcut,
+                            launch.mUrl,
+                            launch.mSource,
+                            displayMode,
+                            webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
-                WebApkUkmRecorder.recordWebApkLaunch(webappInfo.manifestUrl(),
-                        webappInfo.distributor(), webappInfo.webApkVersionCode(), launch.mSource);
+                WebApkUkmRecorder.recordWebApkLaunch(
+                        webappInfo.manifestId(),
+                        webappInfo.distributor(),
+                        webappInfo.webApkVersionCode(),
+                        launch.mSource);
             }
         }
         sHomeScreenLaunches.clear();
@@ -97,16 +107,15 @@ public class LaunchMetrics {
      * Records metrics about the state of the homepage on launch.
      * @param showHomeButton Whether the home button is shown.
      * @param homepageIsNtp Whether the homepage is set to the NTP.
-     * @param homepageUrl The value of the homepage URL.
+     * @param homepageUrl The homepage GURL.
      */
     public static void recordHomePageLaunchMetrics(
-            boolean showHomeButton, boolean homepageIsNtp, String homepageUrl) {
-        if (homepageUrl == null) {
-            homepageUrl = "";
-            assert !showHomeButton : "Homepage should be disabled for a null URL";
+            boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl) {
+        if (homepageGurl.isEmpty()) {
+            assert !showHomeButton : "Homepage should be disabled for an empty GURL";
         }
-        LaunchMetricsJni.get().recordHomePageLaunchMetrics(
-                showHomeButton, homepageIsNtp, homepageUrl);
+        LaunchMetricsJni.get()
+                .recordHomePageLaunchMetrics(showHomeButton, homepageIsNtp, homepageGurl);
     }
 
     /**
@@ -131,9 +140,14 @@ public class LaunchMetrics {
 
     @NativeMethods
     interface Natives {
-        void recordLaunch(boolean isShortcut, String url, int source,
-                @DisplayMode.EnumType int displayMode, WebContents webContents);
+        void recordLaunch(
+                boolean isShortcut,
+                String url,
+                int source,
+                @DisplayMode.EnumType int displayMode,
+                WebContents webContents);
+
         void recordHomePageLaunchMetrics(
-                boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
+                boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl);
     }
 }

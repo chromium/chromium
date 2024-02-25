@@ -25,7 +25,7 @@ class CryptAuthEnrollerFactoryImpl : public CryptAuthEnrollerFactory {
   std::unique_ptr<CryptAuthEnroller> CreateInstance() override;
 
  private:
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> cryptauth_client_factory_;
+  raw_ptr<CryptAuthClientFactory> cryptauth_client_factory_;
 };
 
 }  // namespace device_sync

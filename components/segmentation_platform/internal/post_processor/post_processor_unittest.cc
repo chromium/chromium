@@ -57,7 +57,7 @@ proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
     int top_k_outputs,
-    absl::optional<float> threshold) {
+    std::optional<float> threshold) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
@@ -156,7 +156,7 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKLessThanElements) {
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/2,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   std::vector<std::string> top_k_labels =
       post_processor.GetClassifierResults(prediction_result);
@@ -170,7 +170,7 @@ TEST(PostProcessorTest, MultiClassClassifierWithTopKEqualToElements) {
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/4,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   std::vector<std::string> top_k_labels =
       post_processor.GetClassifierResults(prediction_result);
@@ -318,7 +318,7 @@ TEST(PostProcessorTest,
       /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
       GetTestOutputConfigForMultiClassClassifier(
           /*top_k-outputs=*/2,
-          /*threshold=*/absl::nullopt),
+          /*threshold=*/std::nullopt),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   ClassificationResult classification_result =
       post_processor.GetPostProcessedClassificationResult(
@@ -369,6 +369,85 @@ TEST(PostProcessorTest, GetRawResult) {
   EXPECT_EQ(pred_result.SerializeAsString(), result.result.SerializeAsString());
   EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
   EXPECT_NEAR(0.1, *result.GetResultForLabel("Output1"), 0.001);
+}
+
+TEST(PostProcessorTest, IsClassificationModel) {
+  proto::PredictionResult pred_result1 = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1, 0.2, 0.3},
+      GetTestOutputConfigForGenericClassifier(),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  EXPECT_FALSE(PostProcessor().IsClassificationResult(pred_result1));
+
+  proto::PredictionResult pred_result2 = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0, 0, 0, 0},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  EXPECT_TRUE(PostProcessor().IsClassificationResult(pred_result2));
+}
+
+TEST(PostProcessorTest, BinaryConfigMissingLabel) {
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1, 0.2, 0.3},
+      GetTestOutputConfigForBinaryClassifier(),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  pred_result.mutable_output_config()
+      ->mutable_predictor()
+      ->mutable_binary_classifier()
+      ->clear_negative_label();
+  ClassificationResult result =
+      PostProcessor().GetPostProcessedClassificationResult(
+          pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(PredictionStatus::kFailed, result.status);
+  EXPECT_TRUE(result.ordered_labels.empty());
+}
+
+TEST(PostProcessorTest, MultiClassClassifierMissingLabels) {
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0, 0, 0, 0},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  pred_result.mutable_output_config()
+      ->mutable_predictor()
+      ->mutable_multi_class_classifier()
+      ->clear_class_labels();
+  ClassificationResult result =
+      PostProcessor().GetPostProcessedClassificationResult(
+          pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(PredictionStatus::kFailed, result.status);
+  EXPECT_TRUE(result.ordered_labels.empty());
+}
+
+TEST(PostProcessorTest, MultiClassClassifierExtraScore) {
+  // Add 5 model scores, but 4 labels.
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0, 0, 0, 0, 0},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  ClassificationResult result =
+      PostProcessor().GetPostProcessedClassificationResult(
+          pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(PredictionStatus::kFailed, result.status);
+  EXPECT_TRUE(result.ordered_labels.empty());
+}
+
+TEST(PostProcessorTest, BinnedClassifier) {
+  auto pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.6}, GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  // Set wrong sorting order for the bin min_range values.
+  pred_result.mutable_output_config()
+      ->mutable_predictor()
+      ->mutable_binned_classifier()
+      ->mutable_bins(0)
+      ->set_min_range(100);
+  ClassificationResult result =
+      PostProcessor().GetPostProcessedClassificationResult(
+          pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(PredictionStatus::kFailed, result.status);
+  EXPECT_TRUE(result.ordered_labels.empty());
 }
 
 }  // namespace segmentation_platform

@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,7 +19,6 @@
 #include "base/win/registry.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
 
@@ -33,7 +34,7 @@ constexpr wchar_t kCSCURegKey[] = L"CU";
 constexpr wchar_t kCSAGRegKey[] = L"AG";
 
 // Helper function for expanding all environment variables in `path`.
-absl::optional<std::wstring> ExpandEnvironmentVariables(
+std::optional<std::wstring> ExpandEnvironmentVariables(
     const std::wstring& path) {
   static const DWORD kMaxBuffer = 32 * 1024;  // Max according to MSDN.
   std::wstring path_expanded;
@@ -50,10 +51,10 @@ absl::optional<std::wstring> ExpandEnvironmentVariables(
     path_len = result;
   } while (path_len < kMaxBuffer);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> GetHexStringRegValue(
+std::optional<std::string> GetHexStringRegValue(
     const base::win::RegKey& key,
     const std::wstring& reg_key_name) {
   DWORD type = REG_NONE;
@@ -66,12 +67,11 @@ absl::optional<std::string> GetHexStringRegValue(
     if (res == ERROR_SUCCESS) {
       // Converting the values to lowercase specifically for CrowdStrike as
       // some of their APIs only accept the lowercase version.
-      return base::ToLowerASCII(
-          base::HexEncode(raw_bytes.data(), raw_bytes.size()));
+      return base::ToLowerASCII(base::HexEncode(raw_bytes));
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -91,24 +91,24 @@ bool ResolvePath(const base::FilePath& file_path,
   return true;
 }
 
-absl::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
+std::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
   base::Process process(
       ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
   if (!process.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DWORD path_len = MAX_PATH;
   wchar_t path_string[MAX_PATH];
   if (!::QueryFullProcessImageName(process.Handle(), 0, path_string,
                                    &path_len)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::FilePath(path_string);
 }
 
-absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
+std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
   base::win::RegKey key;
   auto result = key.Open(HKEY_LOCAL_MACHINE, kCSAgentRegPath,
                          KEY_QUERY_VALUE | KEY_WOW64_64KEY);
@@ -132,7 +132,7 @@ absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::FilePath GetCrowdStrikeZtaFilePath() {

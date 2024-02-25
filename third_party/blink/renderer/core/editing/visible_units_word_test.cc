@@ -59,7 +59,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
   std::string DoMiddleOfWord(const std::string& selection_text) {
     SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
     return GetCaretTextFromBody(
-        MiddleOfWordPosition(selection.Base(), selection.Extent()));
+        MiddleOfWordPosition(selection.Anchor(), selection.Focus()));
   }
 
   // To avoid name conflict in jumbo build, following functions should be here.

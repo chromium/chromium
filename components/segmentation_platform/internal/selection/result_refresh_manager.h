@@ -36,36 +36,48 @@ class ResultRefreshManager {
   ResultRefreshManager(ResultRefreshManager&) = delete;
   ResultRefreshManager& operator=(ResultRefreshManager&) = delete;
 
-  // This refreshes model results. It does the following when result for a
-  // model is required.
+  // This method initialises the class with result providers.
+  void Initialize(std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+                      result_providers,
+                  ExecutionService* execution_service);
+
+  // This refreshes model results. At startup, it refreshes model results after
+  // `kModelInitializationTimeoutMs` delay. It does the following when result
+  // for a model is required.
   // 1. Try to get model result from database.
   // 2. If present in database, update it in prefs if prefs result is invalid or
   // expired.
   // 3. Else, try to get result by running the model and also save computed
   // scores in db and update it in prefs if prefs result is invalid or
   // expired.
-  void RefreshModelResults(
-      std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-          result_providers,
-      ExecutionService* execution_service);
+  void RefreshModelResults(bool is_startup);
 
   // This is triggered when model info is updated. This ensures model execution,
-  // updating prefs and database if required on model update.
-  void OnModelUpdated(proto::SegmentInfo* segment_info,
-                      ExecutionService* execution_service);
+  // updating prefs and database if required on model update. If delay isn't
+  // executed, it won't do anything and wait for RefreshModelResult to execute
+  // the model.
+  void OnModelUpdated(proto::SegmentInfo* segment_info);
 
  private:
+  // Tells about the state of delay before model execution starts.
+  enum DelayState {
+    DELAY_NOT_HIT = 0,   // Delay isn't introduced yet.
+    DELAY_EXECUTED = 1,  // Delay is executed completely.
+  };
+
+  // Method that internally execute all the models one by one and get result for
+  // them.
+  void RefreshModelResultsInternal();
+
   // Gives result for the model based on `run_model`. If `run_model` is false,
   // tries to get the result from database, else tries to get the result by
   // executing model. It also saves to the result to database after model
   // execution.
-  void GetCachedResultOrRunModel(const Config* config,
-                                 ExecutionService* execution_service);
+  void GetCachedResultOrRunModel(const Config* config);
 
   void OnGetCachedResultOrRunModel(
       SegmentResultProvider* segment_result_provider,
       const Config* config,
-      ExecutionService* execution_service,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Configs for all registered clients.
@@ -79,8 +91,13 @@ class ResultRefreshManager {
   // not present or invalid.
   const raw_ptr<CachedResultWriter, DanglingUntriaged> cached_result_writer_;
 
+  // Execution Service
+  raw_ptr<ExecutionService> execution_service_{nullptr};
+
   // Platform options indicating whether to force refresh results or not.
   const PlatformOptions platform_options_;
+
+  DelayState delay_state_{DelayState::DELAY_NOT_HIT};
 
   base::WeakPtrFactory<ResultRefreshManager> weak_ptr_factory_{this};
 };

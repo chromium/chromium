@@ -9,9 +9,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -43,26 +45,55 @@ class MockManagerWithRequests : public MockPermissionManager {
   MOCK_METHOD(
       void,
       RequestPermissionsFromCurrentDocument,
-      (const std::vector<PermissionType>& permission,
-       RenderFrameHost* render_frame_host,
-       bool user_gesture,
+      (RenderFrameHost * render_frame_host,
+       const PermissionRequestDescription& request_description,
        const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
            callback),
       (override));
   MOCK_METHOD(
       void,
       RequestPermissions,
-      (const std::vector<PermissionType>& permission,
-       RenderFrameHost* render_frame_host,
-       const GURL& requesting_origin,
-       bool user_gesture,
+      (RenderFrameHost * render_frame_host,
+       const PermissionRequestDescription& request_description,
        const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
            callback),
       (override));
   MOCK_METHOD(bool,
               IsPermissionOverridable,
-              (PermissionType, const absl::optional<url::Origin>&),
+              (PermissionType, const std::optional<url::Origin>&),
               (override));
+};
+
+class TestPermissionManager : public MockPermissionManager {
+ public:
+  TestPermissionManager() = default;
+  ~TestPermissionManager() override = default;
+
+  PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) override {
+    RenderFrameHost* top_frame = render_frame_host->GetParentOrOuterDocument();
+    GURL url;
+
+    if (top_frame) {
+      url = top_frame->GetLastCommittedOrigin().GetURL();
+    } else {
+      url = render_frame_host->GetLastCommittedOrigin().GetURL();
+    }
+
+    if (override_status_.contains(url)) {
+      return override_status_[url];
+    }
+
+    return PermissionStatus::ASK;
+  }
+
+  void SetPermissionStatus(GURL url, PermissionStatus status) {
+    override_status_[url] = status;
+  }
+
+ private:
+  std::map<GURL, PermissionStatus> override_status_;
 };
 
 // Results are defined based on assumption that same types are queried for
@@ -158,23 +189,19 @@ class PermissionControllerImplTest : public ::testing::Test {
   }
 
   void PermissionControllerRequestPermissionsFromCurrentDocument(
-      const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
     permission_controller()->RequestPermissionsFromCurrentDocument(
-        permission, render_frame_host, user_gesture, std::move(callback));
+        render_frame_host, std::move(request_description), std::move(callback));
   }
 
   void PermissionControllerRequestPermissions(
-      const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      const url::Origin& requested_origin,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
-    permission_controller()->RequestPermissions(permission, render_frame_host,
-                                                requested_origin, user_gesture,
-                                                std::move(callback));
+    permission_controller()->RequestPermissions(
+        render_frame_host, std::move(request_description), std::move(callback));
   }
 
   PermissionStatus GetPermissionStatusForWorker(
@@ -183,6 +210,13 @@ class PermissionControllerImplTest : public ::testing::Test {
       const url::Origin& worker_origin) {
     return permission_controller()->GetPermissionStatusForWorker(
         permission, render_process_host, worker_origin);
+  }
+
+  PermissionStatus GetPermissionStatusForCurrentDocument(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host) {
+    return permission_controller()->GetPermissionStatusForCurrentDocument(
+        permission, render_frame_host);
   }
 
   BrowserContext* browser_context() { return &browser_context_; }
@@ -229,7 +263,7 @@ TEST_F(PermissionControllerImplTest,
     // Expect request permission from current document calls if override are
     // missing.
     if (!test_case.delegated_permissions.empty()) {
-      auto forward_callbacks = testing::WithArg<3>(
+      auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
               base::OnceCallback<void(const std::vector<PermissionStatus>&)>
                   callback) {
@@ -240,17 +274,21 @@ TEST_F(PermissionControllerImplTest,
       if (test_case.expect_death) {
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
-        ON_CALL(*mock_manager(),
-                RequestPermissionsFromCurrentDocument(
-                    testing::ElementsAreArray(test_case.delegated_permissions),
-                    rfh, true, testing::_))
+        ON_CALL(*mock_manager(), RequestPermissionsFromCurrentDocument(
+                                     rfh,
+                                     PermissionRequestDescription(
+                                         test_case.delegated_permissions,
+                                         /*user_gesture*/ true, GURL(kTestUrl)),
+                                     testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(
-            *mock_manager(),
-            RequestPermissionsFromCurrentDocument(
-                testing::ElementsAreArray(test_case.delegated_permissions), rfh,
-                true, testing::_))
+        EXPECT_CALL(*mock_manager(),
+                    RequestPermissionsFromCurrentDocument(
+                        rfh,
+                        PermissionRequestDescription(
+                            test_case.delegated_permissions,
+                            /*user_gesture*/ true, GURL(kTestUrl)),
+                        testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -260,20 +298,23 @@ TEST_F(PermissionControllerImplTest,
     }
 
     if (test_case.expect_death) {
-      ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+      GTEST_FLAG_SET(death_test_style, "threadsafe");
       base::MockCallback<RequestsCallback> callback;
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissionsFromCurrentDocument(
-              kTypesToQuery, rfh,
-              /*user_gesture=*/true, callback.Get()),
+              rfh,
+              PermissionRequestDescription(kTypesToQuery,
+                                           /*user_gesture*/ true),
+              callback.Get()),
           "");
     } else {
       base::MockCallback<RequestsCallback> callback;
       EXPECT_CALL(callback,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissionsFromCurrentDocument(
-          kTypesToQuery, rfh,
-          /*user_gesture=*/true, callback.Get());
+          rfh,
+          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true),
+          callback.Get());
     }
   }
 }
@@ -309,7 +350,7 @@ TEST_F(PermissionControllerImplTest,
 
     // Expect request permission call if override are missing.
     if (!test_case.delegated_permissions.empty()) {
-      auto forward_callbacks = testing::WithArg<4>(
+      auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
               base::OnceCallback<void(const std::vector<PermissionStatus>&)>
                   callback) {
@@ -321,15 +362,20 @@ TEST_F(PermissionControllerImplTest,
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
         ON_CALL(*mock_manager(),
-                RequestPermissions(
-                    testing::ElementsAreArray(test_case.delegated_permissions),
-                    rfh, testing::_, true, testing::_))
+                RequestPermissions(rfh,
+                                   PermissionRequestDescription(
+                                       test_case.delegated_permissions,
+                                       /*user_gesture*/ true, GURL(kTestUrl)),
+                                   testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(*mock_manager(),
-                    RequestPermissions(testing::ElementsAreArray(
-                                           test_case.delegated_permissions),
-                                       rfh, testing::_, true, testing::_))
+        EXPECT_CALL(
+            *mock_manager(),
+            RequestPermissions(rfh,
+                               PermissionRequestDescription(
+                                   test_case.delegated_permissions,
+                                   /*user_gesture*/ true, GURL(kTestUrl)),
+                               testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -339,19 +385,24 @@ TEST_F(PermissionControllerImplTest,
     }
 
     if (test_case.expect_death) {
-      ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+      GTEST_FLAG_SET(death_test_style, "threadsafe");
       base::MockCallback<RequestsCallback> callback;
-      EXPECT_DEATH_IF_SUPPORTED(PermissionControllerRequestPermissions(
-                                    kTypesToQuery, rfh, testing_origin,
-                                    /*user_gesture=*/true, callback.Get()),
-                                "");
+      EXPECT_DEATH_IF_SUPPORTED(
+          PermissionControllerRequestPermissions(
+              rfh,
+              PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
+                                           GURL(kTestUrl)),
+              callback.Get()),
+          "");
     } else {
       base::MockCallback<RequestsCallback> callback;
       EXPECT_CALL(callback,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
-      PermissionControllerRequestPermissions(kTypesToQuery, rfh, testing_origin,
-                                             /*user_gesture=*/true,
-                                             callback.Get());
+      PermissionControllerRequestPermissions(
+          rfh,
+          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
+                                       GURL(kTestUrl)),
+          callback.Get());
     }
   }
 }
@@ -371,11 +422,11 @@ TEST_F(PermissionControllerImplTest,
       kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::DENIED);
 
   base::MockCallback<PermissionStatusCallback> geo_callback;
-  permission_controller()->SubscribePermissionStatusChange(
+  permission_controller()->SubscribeToPermissionStatusChange(
       PermissionType::GEOLOCATION, nullptr, nullptr, kUrl, geo_callback.Get());
 
   base::MockCallback<PermissionStatusCallback> sync_callback;
-  permission_controller()->SubscribePermissionStatusChange(
+  permission_controller()->SubscribeToPermissionStatusChange(
       PermissionType::BACKGROUND_SYNC, nullptr, nullptr, kUrl,
       sync_callback.Get());
 
@@ -481,5 +532,124 @@ TEST_F(PermissionControllerImplTest,
                                          /*render_process_host=*/nullptr,
                                          kTestOrigin));
 }
+
+class PermissionControllerImplWithDelegateTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    std::unique_ptr<TestBrowserContext> browser_context =
+        std::make_unique<TestBrowserContext>();
+
+    std::unique_ptr<TestPermissionManager> permission_manager =
+        std::make_unique<TestPermissionManager>();
+    permission_manager_ = permission_manager.get();
+    browser_context->SetPermissionControllerDelegate(
+        std::move(permission_manager));
+
+    return browser_context;
+  }
+
+  void TearDown() override {
+    permission_manager_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  content::RenderFrameHost* AddChildRFH(
+      content::RenderFrameHost* parent,
+      const GURL& origin,
+      blink::mojom::PermissionsPolicyFeature feature =
+          blink::mojom::PermissionsPolicyFeature::kNotFound) {
+    blink::ParsedPermissionsPolicy frame_policy = {};
+    if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
+      frame_policy.emplace_back(
+          feature,
+          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+              url::Origin::Create(origin))},
+          /*self_if_matches=*/std::nullopt,
+          /*matches_all_origins=*/false,
+          /*matches_opaque_src=*/false);
+    }
+    content::RenderFrameHost* result =
+        content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(
+            "", frame_policy);
+    content::RenderFrameHostTester::For(result)
+        ->InitializeRenderFrameIfNeeded();
+    SimulateNavigation(&result, origin);
+    return result;
+  }
+
+  void SimulateNavigation(content::RenderFrameHost** rfh, const GURL& url) {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(url, *rfh);
+    navigation_simulator->Commit();
+    *rfh = navigation_simulator->GetFinalRenderFrameHost();
+  }
+
+  TestPermissionManager* permission_manager() const {
+    return permission_manager_;
+  }
+
+ private:
+  raw_ptr<TestPermissionManager> permission_manager_;
+};
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
+  const char* kOrigin1 = "https://example.com";
+  const char* kOrigin2 = "https://example-child.com";
+
+  NavigateAndCommit(GURL(kOrigin1));
+  PermissionController* permission_controller =
+      GetBrowserContext()->GetPermissionController();
+  RenderFrameHost* parent = main_rfh();
+
+  ASSERT_TRUE(parent);
+
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, parent));
+
+  content::RenderFrameHost* child_without_policy =
+      AddChildRFH(parent, GURL(kOrigin2));
+  ASSERT_TRUE(child_without_policy);
+
+  // A cross-origin iframe without a permission policy has no access to a
+  // permission-gated functionality.
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, child_without_policy));
+
+  content::RenderFrameHost* child_with_policy =
+      AddChildRFH(parent, GURL(kOrigin2),
+                  blink::mojom::PermissionsPolicyFeature::kGeolocation);
+  ASSERT_TRUE(child_with_policy);
+
+  // The top-level frame has no permission, hence a cross-origin iframe has no
+  // permission as well.
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, child_without_policy));
+
+  permission_manager()->SetPermissionStatus(GURL(kOrigin1),
+                                            PermissionStatus::GRANTED);
+
+  // The top-level frame has granted permission.
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, parent));
+
+  // A cross-origin iframe with a permission policy has full access to a
+  // permission-gated functionality as long as the top-level frame has
+  // permission.
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, child_with_policy));
+
+  // The frame without a permission policy still has no access.
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                PermissionType::GEOLOCATION, child_without_policy));
+}
+#endif
 
 }  // namespace content

@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -70,6 +74,49 @@ void CheckActions(TouchInjector* injector,
     EXPECT_EQ(expect_types[i], injector->actions()[i]->GetType());
     EXPECT_EQ(expect_ids[i], injector->actions()[i]->id());
   }
+}
+
+void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
+                           ArcAppTest& arc_app_test,
+                           const std::string& package_name,
+                           bool is_gc_opt_out,
+                           bool is_game) {
+  auto package = arc::mojom::ArcPackageInfo::New();
+  package->package_name = package_name;
+  package->game_controls_opt_out = is_gc_opt_out;
+  arc_app_test.AddPackage(package->Clone());
+
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(arc::mojom::AppInfo::New(package_name, package_name,
+                                             package_name + ".activiy"))
+      ->app_category = is_game ? arc::mojom::AppCategory::kGame
+                               : arc::mojom::AppCategory::kProductivity;
+  arc_app_test.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  task_environment->RunUntilIdle();
+}
+
+std::u16string GetControlName(ActionType action_type,
+                              std::u16string key_string) {
+  int control_type_id = 0;
+  switch (action_type) {
+    case ActionType::TAP:
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_SINGLE_BUTTON_LABEL;
+      break;
+    case ActionType::MOVE:
+      control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (key_string.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE,
+        l10n_util::GetStringUTF16(control_type_id));
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_TEMPLATE,
+      l10n_util::GetStringUTF16(control_type_id), key_string);
 }
 
 }  // namespace arc::input_overlay

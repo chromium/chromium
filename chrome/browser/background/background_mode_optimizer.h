@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 
@@ -20,14 +19,14 @@ class Browser;
 class BackgroundModeOptimizer : public KeepAliveStateObserver,
                                 BrowserListObserver {
  public:
+  // Creates a new BackgroundModeOptimizer. Can return null if optimizations
+  // are not supported.
+  static std::unique_ptr<BackgroundModeOptimizer> Create();
+
   BackgroundModeOptimizer(const BackgroundModeOptimizer&) = delete;
   BackgroundModeOptimizer& operator=(const BackgroundModeOptimizer&) = delete;
 
   ~BackgroundModeOptimizer() override;
-
-  // Creates a new BackgroundModeOptimizer. Can return null if optimizations
-  // are not supported.
-  static std::unique_ptr<BackgroundModeOptimizer> Create();
 
   // KeepAliveStateObserver implementation
   void OnKeepAliveStateChanged(bool is_keeping_alive) override;
@@ -39,6 +38,7 @@ class BackgroundModeOptimizer : public KeepAliveStateObserver,
  private:
   friend class DummyBackgroundModeOptimizer;
 
+  // Use `Create()` above.
   BackgroundModeOptimizer();
 
   // Calls DoRestart() if the current state of the process allows it.

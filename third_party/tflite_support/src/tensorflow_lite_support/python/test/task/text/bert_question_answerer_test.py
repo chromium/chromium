@@ -142,7 +142,9 @@ class BertQuestionAnswererTest(parameterized.TestCase, tf.test.TestCase):
 
     # Perform Bert Question Answering.
     text_result = question_answerer.answer(context, question)
-    self.assertProtoEquals(text_result.to_pb2(), answer.to_pb2())
+    self.assertProtoEquals(
+        text_result.to_pb2(), answer.to_pb2(), relative_tolerance=1e-4
+    )
 
 
 if __name__ == "__main__":

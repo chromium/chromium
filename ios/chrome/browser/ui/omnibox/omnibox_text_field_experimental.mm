@@ -15,7 +15,6 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
@@ -49,7 +48,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 }  // namespace
 
-@interface OmniboxTextFieldExperimental ()
+@interface OmniboxTextFieldExperimental () <UIGestureRecognizerDelegate>
 
 // Font to use in regular x regular size class. If not set, the regular font is
 // used instead.
@@ -64,6 +63,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 // Length of autocomplete text.
 @property(nonatomic) size_t autocompleteTextLength;
+
+// Tap gesture recognizer for this view.
+@property(nonatomic, strong) UITapGestureRecognizer* tapGestureRecognizer;
 
 @end
 
@@ -95,6 +97,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     self.textAlignment = NSTextAlignmentNatural;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
+    // Prevent the text from overlapping the clear text button.
+    // (crbug.com/1403031)
+    self.textInputView.clipsToBounds = YES;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -103,11 +108,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
     // Force initial layout of internal text label.  Needed for omnibox
     // animations that will otherwise animate the text label from origin {0, 0}.
+    self.font = self.currentFont;
     [super setText:@" "];
 
-    [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                                   initWithTarget:self
-                                           action:@selector(handleTap)]];
+    self.tapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleTap:)];
+    self.tapGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:self.tapGestureRecognizer];
   }
   return self;
 }
@@ -229,6 +237,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return UISemanticContentAttributeUnspecified;
   }
 
+  if (textDirection == NSWritingDirectionNatural) {
+    return self.semanticContentAttribute;
+  }
+
   return textDirection == NSWritingDirectionRightToLeft
              ? UISemanticContentAttributeForceRightToLeft
              : UISemanticContentAttributeForceLeftToRight;
@@ -323,10 +335,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   self.preEditing = true;
 
-  self.defaultTextAttributes = @{
-    NSBackgroundColorAttributeName : self.selectedTextBackgroundColor,
-    NSFontAttributeName : self.currentFont
-  };
+  NSMutableDictionary<NSAttributedStringKey, id>* attributes =
+      self.defaultTextAttributes.mutableCopy;
+  [attributes setValue:self.currentFont forKey:NSFontAttributeName];
+  [attributes setValue:self.selectedTextBackgroundColor
+                forKey:NSBackgroundColorAttributeName];
+  self.defaultTextAttributes = attributes;
 
   self.clearsOnInsertion = true;
 }
@@ -336,10 +350,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.preEditing = false;
   self.clearsOnInsertion = false;
 
-  self.defaultTextAttributes = @{
-    NSFontAttributeName : self.currentFont,
-    NSBackgroundColorAttributeName : UIColor.clearColor
-  };
+  NSMutableDictionary<NSAttributedStringKey, id>* attributes =
+      self.defaultTextAttributes.mutableCopy;
+  [attributes setValue:self.currentFont forKey:NSFontAttributeName];
+  [attributes setValue:UIColor.clearColor
+                forKey:NSBackgroundColorAttributeName];
+  self.defaultTextAttributes = attributes;
 }
 
 #pragma mark - Properties
@@ -443,6 +459,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                                       : [super caretRectForPosition:position];
 }
 
+- (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
+  // Hide the selection UI in pre-edit. UITextField is expected to hide the
+  // selection UI when `clearsOnInsertion` is YES, but this behavior is not
+  // working on iOS 17.
+  if (@available(iOS 17, *)) {
+    if (self.isPreEditing) {
+      return nil;
+    }
+  }
+  return [super selectionRectsForRange:range];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
@@ -475,24 +503,30 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [self setAttributedText:self.attributedText];
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+  if (gestureRecognizer == self.tapGestureRecognizer) {
+    return [self isPreEditing] || [self hasAutocompleteText];
+  }
+  return YES;
+}
+
 #pragma mark - UIResponder
 
 // Triggered on tap gesture recognizer.
-- (void)handleTap {
+- (void)handleTap:(UITapGestureRecognizer*)sender {
   if ([self isPreEditing]) {
     [self exitPreEditState];
-    [super selectAll:self];
-  } else if ([self hasAutocompleteText]) {
-    // Accept selection.
+  }
+  if ([self hasAutocompleteText]) {
     [self acceptAutocompleteText];
-  } else {
-    [self becomeFirstResponder];
-    UIMenuController* menuController = [UIMenuController sharedMenuController];
-    if (menuController.isMenuVisible) {
-      [menuController hideMenu];
-    } else {
-      [menuController showMenuFromView:self rect:self.bounds];
-    }
   }
 }
 
@@ -514,6 +548,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  // TODO(crbug.com/1478261): Improve this short term fix.
+  if (@available(iOS 17.0, *)) {
+    if (action == @selector(undoManager)) {
+      return YES;
+    }
+  }
+
   // If the text is not empty and there is selected text, show copy and cut.
   if ([self textInRange:self.selectedTextRange].length > 0 &&
       (action == @selector(cut:) || action == @selector(copy:))) {
@@ -677,14 +718,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                           modifierFlags:0
                                  action:@selector(forwardKeyCommandRight)];
 
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15, *)) {
-    commandUp.wantsPriorityOverSystemBehavior = YES;
-    commandDown.wantsPriorityOverSystemBehavior = YES;
-    commandLeft.wantsPriorityOverSystemBehavior = YES;
-    commandRight.wantsPriorityOverSystemBehavior = YES;
-  }
-#endif
+  commandUp.wantsPriorityOverSystemBehavior = YES;
+  commandDown.wantsPriorityOverSystemBehavior = YES;
+  commandLeft.wantsPriorityOverSystemBehavior = YES;
+  commandRight.wantsPriorityOverSystemBehavior = YES;
   return @[ commandUp, commandDown, commandLeft, commandRight ];
 }
 

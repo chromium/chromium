@@ -5,6 +5,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
@@ -20,6 +21,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -71,16 +73,25 @@ void ChromeRenderViewTest::SetUp() {
   // RenderFrame doesn't expose its Agent objects, because it has no need to
   // store them directly (they're stored as RenderFrameObserver*).  So just
   // create another set. They destroy themselves in OnDestruct().
-  password_autofill_agent_ = new autofill::TestPasswordAutofillAgent(
-      GetMainRenderFrame(), &associated_interfaces_);
-  password_generation_ = new autofill::PasswordGenerationAgent(
-      GetMainRenderFrame(), password_autofill_agent_, &associated_interfaces_);
-  autofill_agent_ =
-      new AutofillAgent(GetMainRenderFrame(), password_autofill_agent_,
-                        password_generation_, &associated_interfaces_);
+  auto unique_password_autofill_agent =
+      std::make_unique<autofill::TestPasswordAutofillAgent>(
+          GetMainRenderFrame(), &associated_interfaces_);
+  password_autofill_agent_ = unique_password_autofill_agent.get();
+  auto unique_password_generation =
+      std::make_unique<autofill::PasswordGenerationAgent>(
+          GetMainRenderFrame(), password_autofill_agent_.get(),
+          &associated_interfaces_);
+  password_generation_ = unique_password_generation.get();
+  autofill_agent_ = new AutofillAgent(
+      GetMainRenderFrame(), {}, std::move(unique_password_autofill_agent),
+      std::move(unique_password_generation), &associated_interfaces_);
 }
 
 void ChromeRenderViewTest::TearDown() {
+  autofill_agent_ = nullptr;
+  password_generation_ = nullptr;
+  password_autofill_agent_ = nullptr;
+
   base::RunLoop().RunUntilIdle();
 
 #if defined(LEAK_SANITIZER)
@@ -117,7 +128,9 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
       ChromeExtensionsRendererClient::GetInstance();
   ext_client->SetExtensionDispatcherForTest(
       std::make_unique<extensions::Dispatcher>(
-          std::make_unique<ChromeExtensionsDispatcherDelegate>()));
+          std::make_unique<ChromeExtensionsDispatcherDelegate>(),
+          std::vector<
+              std::unique_ptr<extensions::ExtensionsRendererAPIProvider>>()));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

@@ -5,11 +5,12 @@
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -26,7 +27,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -203,12 +203,10 @@ class ManagedConfigurationVariablesBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.
-    auto* const user_manager = new ash::FakeChromeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
-    user_manager->AddUserWithAffiliation(account_id, is_affiliated);
+    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -233,7 +231,7 @@ class ManagedConfigurationVariablesBase {
   void DoTearDown() {
     fake_device_attributes_.reset();
     profile_manager_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   const Profile* profile() { return profile_; }
@@ -245,11 +243,12 @@ class ManagedConfigurationVariablesBase {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 
   ash::system::FakeStatisticsProvider statistics_provider_;
 
@@ -287,7 +286,7 @@ class ManagedConfigurationVariablesAffiliatedTest
     return parameter_.value();
   }
 
-  absl::optional<Parameter> parameter_;
+  std::optional<Parameter> parameter_;
 };
 
 TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
@@ -381,7 +380,8 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   EXPECT_EQ(*dict.FindString(kKey1), kSpecialCharacters);
 }
 
-TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
+TEST_F(ManagedConfigurationVariablesTest,
+       RecursiveValuesAreNotReplacedMoreThanOnce) {
   // Setup a |dict| with asset ID and location variables.
   const std::string kVariable1 =
       base::StringPrintf(kVariablePattern, kDeviceAssetId);
@@ -400,6 +400,27 @@ TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
   // Expect variables are replaced only once without an infinite loop.
   EXPECT_EQ(*dict.FindString(kKey1), kVariable2);
   EXPECT_EQ(*dict.FindString(kKey2), kVariable1);
+}
+
+TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
+  const std::string kVariable1 =
+      base::StringPrintf(kVariablePattern, kDeviceAssetId);
+
+  base::Value::Dict dict = base::Value::Dict().Set(
+      kKey1,
+      base::Value::List().Append(base::Value::Dict().Set(kKey2, kVariable1)));
+
+  device_attributes()->SetFakeDeviceAssetId(kTestDeviceAssetId);
+
+  RecursivelyReplaceManagedConfigurationVariables(profile(),
+                                                  device_attributes(), dict);
+
+  ASSERT_EQ(1U, dict.size());
+  base::Value::List* nestedList = dict.FindList(kKey1);
+  ASSERT_NE(nullptr, nestedList);
+  ASSERT_EQ(1U, nestedList->size());
+  base::Value::Dict& leafDict = (*nestedList)[0].GetDict();
+  ASSERT_EQ(kTestDeviceAssetId, *leafDict.FindString(kKey2));
 }
 
 TEST_P(ManagedConfigurationVariablesAffiliatedTest, ReplacesVariables) {

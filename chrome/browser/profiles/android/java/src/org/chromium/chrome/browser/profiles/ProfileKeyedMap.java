@@ -63,25 +63,24 @@ public class ProfileKeyedMap<T> {
             mData.put(profile, obj);
         }
         if (mProfileManagerObserver == null) {
-            mProfileManagerObserver = new ProfileManager.Observer() {
-                @Override
-                public void onProfileAdded(Profile profile) {}
+            mProfileManagerObserver =
+                    new ProfileManager.Observer() {
+                        @Override
+                        public void onProfileAdded(Profile profile) {}
 
-                @Override
-                public void onProfileDestroyed(Profile destroyedProfile) {
-                    T obj = mData.remove(destroyedProfile);
-                    if (obj == null) return;
-                    if (mDestroyAction != null) mDestroyAction.onResult(obj);
-                }
-            };
+                        @Override
+                        public void onProfileDestroyed(Profile destroyedProfile) {
+                            T obj = mData.remove(destroyedProfile);
+                            if (obj == null) return;
+                            if (mDestroyAction != null) mDestroyAction.onResult(obj);
+                        }
+                    };
             ProfileManager.addObserver(mProfileManagerObserver);
         }
         return obj;
     }
 
-    /**
-     * Destroys this object and all objects currently mapped to Profiles.
-     */
+    /** Destroys this object and all objects currently mapped to Profiles. */
     public void destroy() {
         if (mProfileManagerObserver != null) ProfileManager.removeObserver(mProfileManagerObserver);
         mProfileManagerObserver = null;

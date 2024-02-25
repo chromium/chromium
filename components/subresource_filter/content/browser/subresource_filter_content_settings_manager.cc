@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -72,11 +72,11 @@ void SubresourceFilterContentSettingsManager::AllowlistSite(const GURL& url) {
 }
 
 void SubresourceFilterContentSettingsManager::OnDidShowUI(const GURL& url) {
-  absl::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
   if (!dict)
     dict = CreateMetadataDictWithActivation(true /* is_activated */);
 
-  double now = clock_->Now().ToDoubleT();
+  double now = clock_->Now().InSecondsFSinceUnixEpoch();
   dict->Set(kInfobarLastShownTimeKey, now);
   SetSiteMetadata(url, std::move(dict));
 }
@@ -86,13 +86,14 @@ bool SubresourceFilterContentSettingsManager::ShouldShowUIForSite(
   if (!should_use_smart_ui())
     return true;
 
-  absl::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
   if (!dict)
     return true;
 
-  if (absl::optional<double> last_shown_time =
+  if (std::optional<double> last_shown_time =
           dict->FindDouble(kInfobarLastShownTimeKey)) {
-    base::Time last_shown = base::Time::FromDoubleT(*last_shown_time);
+    base::Time last_shown =
+        base::Time::FromSecondsSinceUnixEpoch(*last_shown_time);
     if (clock_->Now() - last_shown < kDelayBeforeShowingInfobarAgain)
       return false;
   }
@@ -103,14 +104,14 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
     const GURL& url,
     bool is_activated,
     ActivationSource activation_source,
-    absl::optional<base::Value::Dict> additional_data) {
-  absl::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+    std::optional<base::Value::Dict> additional_data) {
+  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
 
   if (!is_activated &&
       ShouldDeleteDataWithNoActivation(dict, activation_source)) {
     // If we are clearing metadata, there should be no additional_data dict.
     DCHECK(!additional_data);
-    SetSiteMetadata(url, absl::nullopt);
+    SetSiteMetadata(url, std::nullopt);
     return;
   }
 
@@ -135,8 +136,8 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
     // time or overwrite existing ads intervention metadata,
     if (dict->FindDouble(kNonRenewingExpiryTime))
       return;
-    double expiry_time =
-        (clock_->Now() + kMaxPersistMetadataDuration).ToDoubleT();
+    double expiry_time = (clock_->Now() + kMaxPersistMetadataDuration)
+                             .InSecondsFSinceUnixEpoch();
     dict->Set(kNonRenewingExpiryTime, expiry_time);
     dict->Set(kNonRenewingLifetimeKey,
               base::TimeDeltaToValue(kMaxPersistMetadataDuration));
@@ -145,26 +146,26 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
   SetSiteMetadata(url, std::move(dict));
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
   base::Value value = settings_map_->GetWebsiteSetting(
       url, GURL(), ContentSettingsType::ADS_DATA, nullptr);
   if (!value.is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::move(value).TakeDict();
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
     const GURL& url,
-    absl::optional<base::Value::Dict> dict) {
+    std::optional<base::Value::Dict> dict) {
   SetSiteMetadata(url, std::move(dict));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     const GURL& url,
-    absl::optional<base::Value::Dict> dict) {
+    std::optional<base::Value::Dict> dict) {
   if (url.is_empty())
     return;
 
@@ -175,10 +176,10 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   base::TimeDelta setting_lifetime = kMaxPersistMetadataDuration;
   base::Time expiry_time = base::Time::Now() + setting_lifetime;
   if (dict && dict->Find(kNonRenewingExpiryTime)) {
-    absl::optional<double> metadata_expiry_time =
+    std::optional<double> metadata_expiry_time =
         dict->FindDouble(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
-    expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+    expiry_time = base::Time::FromSecondsSinceUnixEpoch(*metadata_expiry_time);
 
     // If the lifetime was stored explicitly, we should use that instead of
     // assuming what it was. Users may edit the preferences file directly, so we
@@ -207,7 +208,7 @@ SubresourceFilterContentSettingsManager::CreateMetadataDictWithActivation(
 }
 
 bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
-    const absl::optional<base::Value::Dict>& dict,
+    const std::optional<base::Value::Dict>& dict,
     ActivationSource activation_source) {
   // For the ads intervention dry run experiment we want to make sure that
   // non activated pages get properly tagged for metrics collection. Don't
@@ -219,26 +220,27 @@ bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
   if (!dict)
     return true;
 
-  absl::optional<double> metadata_expiry_time =
+  std::optional<double> metadata_expiry_time =
       dict->FindDouble(kNonRenewingExpiryTime);
 
   if (!metadata_expiry_time)
     return true;
 
-  base::Time expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+  base::Time expiry_time =
+      base::Time::FromSecondsSinceUnixEpoch(*metadata_expiry_time);
   return clock_->Now() > expiry_time;
 }
 
 bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(
     const GURL& url) {
-  absl::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
 
   // If there is no dict, this is metadata V1, absence of metadata
   // implies no activation.
   if (!dict)
     return false;
 
-  absl::optional<bool> site_activation_status = dict->FindBool(kActivatedKey);
+  std::optional<bool> site_activation_status = dict->FindBool(kActivatedKey);
 
   // If there is no explicit site activation status, it is metadata V1:
   // use the presence of metadata as indicative of the site activation.
@@ -249,7 +251,7 @@ bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(
 
 void SubresourceFilterContentSettingsManager::ClearSiteMetadata(
     const GURL& url) {
-  SetSiteMetadata(url, absl::nullopt);
+  SetSiteMetadata(url, std::nullopt);
 }
 
 void SubresourceFilterContentSettingsManager::ClearMetadataForAllSites() {

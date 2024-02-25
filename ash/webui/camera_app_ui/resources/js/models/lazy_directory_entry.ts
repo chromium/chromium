@@ -19,8 +19,7 @@ export async function getMaybeLazyDirectory(
     name: string): Promise<DirectoryAccessEntry> {
   const targetDir =
       await parentDir.getDirectory({name, createIfNotExist: false});
-  return targetDir !== null ? targetDir :
-                              new LazyDirectoryEntry(parentDir, name);
+  return targetDir ?? new LazyDirectoryEntry(parentDir, name);
 }
 
 /**

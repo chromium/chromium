@@ -5,36 +5,16 @@
 
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)
 .text
-.globl	sha1_block_data_order
-.hidden	sha1_block_data_order
-.type	sha1_block_data_order,@function
+.globl	sha1_block_data_order_nohw
+.hidden	sha1_block_data_order_nohw
+.type	sha1_block_data_order_nohw,@function
 .align	16
-sha1_block_data_order:
-.L_sha1_block_data_order_begin:
+sha1_block_data_order_nohw:
+.L_sha1_block_data_order_nohw_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	call	.L000pic_point
-.L000pic_point:
-	popl	%ebp
-	leal	OPENSSL_ia32cap_P-.L000pic_point(%ebp),%esi
-	leal	.LK_XX_XX-.L000pic_point(%ebp),%ebp
-	movl	(%esi),%eax
-	movl	4(%esi),%edx
-	testl	$512,%edx
-	jz	.L001x86
-	movl	8(%esi),%ecx
-	testl	$16777216,%eax
-	jz	.L001x86
-	andl	$268435456,%edx
-	andl	$1073741824,%eax
-	orl	%edx,%eax
-	cmpl	$1342177280,%eax
-	je	.Lavx_shortcut
-	jmp	.Lssse3_shortcut
-.align	16
-.L001x86:
 	movl	20(%esp),%ebp
 	movl	24(%esp),%esi
 	movl	28(%esp),%eax
@@ -43,9 +23,9 @@ sha1_block_data_order:
 	addl	%esi,%eax
 	movl	%eax,104(%esp)
 	movl	16(%ebp),%edi
-	jmp	.L002loop
+	jmp	.L000loop
 .align	16
-.L002loop:
+.L000loop:
 	movl	(%esi),%eax
 	movl	4(%esi),%ebx
 	movl	8(%esi),%ecx
@@ -1392,27 +1372,28 @@ sha1_block_data_order:
 	movl	%ebx,12(%ebp)
 	movl	%edx,%esi
 	movl	%ecx,16(%ebp)
-	jb	.L002loop
+	jb	.L000loop
 	addl	$76,%esp
 	popl	%edi
 	popl	%esi
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	sha1_block_data_order,.-.L_sha1_block_data_order_begin
-.hidden	_sha1_block_data_order_ssse3
-.type	_sha1_block_data_order_ssse3,@function
+.size	sha1_block_data_order_nohw,.-.L_sha1_block_data_order_nohw_begin
+.globl	sha1_block_data_order_ssse3
+.hidden	sha1_block_data_order_ssse3
+.type	sha1_block_data_order_ssse3,@function
 .align	16
-_sha1_block_data_order_ssse3:
+sha1_block_data_order_ssse3:
+.L_sha1_block_data_order_ssse3_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	call	.L003pic_point
-.L003pic_point:
+	call	.L001pic_point
+.L001pic_point:
 	popl	%ebp
-	leal	.LK_XX_XX-.L003pic_point(%ebp),%ebp
-.Lssse3_shortcut:
+	leal	.LK_XX_XX-.L001pic_point(%ebp),%ebp
 	movdqa	(%ebp),%xmm7
 	movdqa	16(%ebp),%xmm0
 	movdqa	32(%ebp),%xmm1
@@ -1464,9 +1445,9 @@ _sha1_block_data_order_ssse3:
 	xorl	%edx,%ebp
 	pshufd	$238,%xmm0,%xmm4
 	andl	%ebp,%esi
-	jmp	.L004loop
+	jmp	.L002loop
 .align	16
-.L004loop:
+.L002loop:
 	rorl	$2,%ebx
 	xorl	%edx,%esi
 	movl	%eax,%ebp
@@ -2369,7 +2350,7 @@ _sha1_block_data_order_ssse3:
 	addl	%edx,%ecx
 	movl	196(%esp),%ebp
 	cmpl	200(%esp),%ebp
-	je	.L005done
+	je	.L003done
 	movdqa	160(%esp),%xmm7
 	movdqa	176(%esp),%xmm6
 	movdqu	(%ebp),%xmm0
@@ -2504,9 +2485,9 @@ _sha1_block_data_order_ssse3:
 	pshufd	$238,%xmm0,%xmm4
 	andl	%ebx,%esi
 	movl	%ebp,%ebx
-	jmp	.L004loop
+	jmp	.L002loop
 .align	16
-.L005done:
+.L003done:
 	addl	16(%esp),%ebx
 	xorl	%edi,%esi
 	movl	%ecx,%ebp
@@ -2619,20 +2600,21 @@ _sha1_block_data_order_ssse3:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	_sha1_block_data_order_ssse3,.-_sha1_block_data_order_ssse3
-.hidden	_sha1_block_data_order_avx
-.type	_sha1_block_data_order_avx,@function
+.size	sha1_block_data_order_ssse3,.-.L_sha1_block_data_order_ssse3_begin
+.globl	sha1_block_data_order_avx
+.hidden	sha1_block_data_order_avx
+.type	sha1_block_data_order_avx,@function
 .align	16
-_sha1_block_data_order_avx:
+sha1_block_data_order_avx:
+.L_sha1_block_data_order_avx_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	call	.L006pic_point
-.L006pic_point:
+	call	.L004pic_point
+.L004pic_point:
 	popl	%ebp
-	leal	.LK_XX_XX-.L006pic_point(%ebp),%ebp
-.Lavx_shortcut:
+	leal	.LK_XX_XX-.L004pic_point(%ebp),%ebp
 	vzeroall
 	vmovdqa	(%ebp),%xmm7
 	vmovdqa	16(%ebp),%xmm0
@@ -2681,9 +2663,9 @@ _sha1_block_data_order_avx:
 	xorl	%edx,%ebp
 	vmovdqa	%xmm6,32(%esp)
 	andl	%ebp,%esi
-	jmp	.L007loop
+	jmp	.L005loop
 .align	16
-.L007loop:
+.L005loop:
 	shrdl	$2,%ebx,%ebx
 	xorl	%edx,%esi
 	vpalignr	$8,%xmm0,%xmm1,%xmm4
@@ -3543,7 +3525,7 @@ _sha1_block_data_order_avx:
 	addl	%edx,%ecx
 	movl	196(%esp),%ebp
 	cmpl	200(%esp),%ebp
-	je	.L008done
+	je	.L006done
 	vmovdqa	160(%esp),%xmm7
 	vmovdqa	176(%esp),%xmm6
 	vmovdqu	(%ebp),%xmm0
@@ -3674,9 +3656,9 @@ _sha1_block_data_order_avx:
 	movl	%esi,%ebp
 	andl	%ebx,%esi
 	movl	%ebp,%ebx
-	jmp	.L007loop
+	jmp	.L005loop
 .align	16
-.L008done:
+.L006done:
 	addl	16(%esp),%ebx
 	xorl	%edi,%esi
 	movl	%ecx,%ebp
@@ -3790,7 +3772,7 @@ _sha1_block_data_order_avx:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	_sha1_block_data_order_avx,.-_sha1_block_data_order_avx
+.size	sha1_block_data_order_avx,.-.L_sha1_block_data_order_avx_begin
 .align	64
 .LK_XX_XX:
 .long	1518500249,1518500249,1518500249,1518500249

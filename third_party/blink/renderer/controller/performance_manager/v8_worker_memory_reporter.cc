@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
@@ -67,17 +68,14 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
 
   // v8::MeasureMemoryDelegate overrides.
   bool ShouldMeasure(v8::Local<v8::Context> context) override { return true; }
-  void MeasurementComplete(
-      const std::vector<std::pair<v8::Local<v8::Context>, size_t>>&
-          context_sizes,
-      size_t unattributed_size) override;
+  void MeasurementComplete(v8::MeasureMemoryDelegate::Result result) override;
 
  private:
   void NotifyMeasurementSuccess(
       std::unique_ptr<V8WorkerMemoryReporter::WorkerMemoryUsage> memory_usage);
   void NotifyMeasurementFailure();
   base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter_;
-  WorkerThread* worker_thread_;
+  raw_ptr<WorkerThread> worker_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool did_notify_ = false;
 };
@@ -92,15 +90,15 @@ WorkerMeasurementDelegate::~WorkerMeasurementDelegate() {
 }
 
 void WorkerMeasurementDelegate::MeasurementComplete(
-    const std::vector<std::pair<v8::Local<v8::Context>, size_t>>& context_sizes,
-    size_t unattributed_size) {
+    v8::MeasureMemoryDelegate::Result result) {
   DCHECK(worker_thread_->IsCurrentThread());
   WorkerOrWorkletGlobalScope* global_scope = worker_thread_->GlobalScope();
   DCHECK(global_scope);
-  DCHECK_LE(context_sizes.size(), 1u);
-  size_t bytes = unattributed_size;
-  for (auto& context_size : context_sizes) {
-    bytes += context_size.second;
+  DCHECK_LE(result.contexts.size(), 1u);
+  DCHECK_LE(result.sizes_in_bytes.size(), 1u);
+  size_t bytes = result.unattributed_size_in_bytes;
+  for (size_t size : result.sizes_in_bytes) {
+    bytes += size;
   }
   auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
   auto memory_usage =

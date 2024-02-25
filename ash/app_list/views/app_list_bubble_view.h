@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -23,6 +24,7 @@ namespace ash {
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
+class AppListBubbleAppsCollectionsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListFolderItem;
@@ -41,6 +43,8 @@ class ViewShadow;
 class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate,
                                      public AppListFolderController {
+  METADATA_HEADER(AppListBubbleView, views::View)
+
  public:
   AppListBubbleView(AppListViewDelegate* view_delegate,
                     ApplicationDragAndDropHost* drag_and_drop_host);
@@ -91,14 +95,13 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list bubble view.
   void UpdateForNewSortingOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure);
 
   // views::View:
-  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;
@@ -115,6 +118,8 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
+  bool HandleFocusMoveAboveSearchResults(
+      const ui::KeyEvent& key_event) override;
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view,
@@ -148,6 +153,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
   AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }
+  AppListBubbleSearchPage* search_page() { return search_page_; }
   AppListFolderView* folder_view_for_test() { return folder_view_; }
 
  private:
@@ -184,7 +190,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Focuses the search box if the view is not hiding.
   void MaybeFocusAndActivateSearchBox();
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
 
@@ -200,20 +206,18 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // The individual views are implementation details and are intentionally not
   // exposed via getters (except for tests).
-  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<AppListBubbleAppsPage, ExperimentalAsh> apps_page_ = nullptr;
-  raw_ptr<AppListBubbleSearchPage, ExperimentalAsh> search_page_ = nullptr;
-  raw_ptr<AppListBubbleAssistantPage, ExperimentalAsh> assistant_page_ =
-      nullptr;
+  raw_ptr<SearchBoxView> search_box_view_ = nullptr;
+  raw_ptr<views::View> separator_ = nullptr;
+  raw_ptr<AppListBubbleAppsPage> apps_page_ = nullptr;
+  raw_ptr<AppListBubbleSearchPage> search_page_ = nullptr;
+  raw_ptr<AppListBubbleAssistantPage> assistant_page_ = nullptr;
+  raw_ptr<AppListBubbleAppsCollectionsPage> apps_collections_page_ = nullptr;
 
   // Lives in this class because it can overlap the search box.
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh> folder_view_ =
-      nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged> folder_view_ = nullptr;
 
   // Used to close an open folder view.
-  raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
-      nullptr;
+  raw_ptr<FolderBackgroundView> folder_background_view_ = nullptr;
 
   // Whether we're showing the folder view. This is different from
   // folder_view_->GetVisible() because the view is "visible" but hidden when

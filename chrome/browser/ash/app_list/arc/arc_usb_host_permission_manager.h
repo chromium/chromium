@@ -65,8 +65,8 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     UsbPermissionRequest(
         const std::string& package_name,
         bool is_scan_request,
-        absl::optional<UsbDeviceEntry> usb_device_entry,
-        absl::optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
+        std::optional<UsbDeviceEntry> usb_device_entry,
+        std::optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
             callback);
     UsbPermissionRequest(UsbPermissionRequest&& other);
     UsbPermissionRequest& operator=(UsbPermissionRequest&& other);
@@ -78,7 +78,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
 
     const std::string& package_name() const { return package_name_; }
     bool is_scan_request() const { return is_scan_request_; }
-    const absl::optional<UsbDeviceEntry>& usb_device_entry() const {
+    const std::optional<UsbDeviceEntry>& usb_device_entry() const {
       return usb_device_entry_;
     }
 
@@ -93,12 +93,15 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     bool is_scan_request_;
     // Device entry of targeting device access request. nullopt if this is a
     // scan device list request.
-    absl::optional<UsbDeviceEntry> usb_device_entry_;
+    std::optional<UsbDeviceEntry> usb_device_entry_;
     // Callback of the device access reqeust. nullopt if this is a scan device
     // list request.
-    absl::optional<RequestPermissionCallback> callback_;
+    std::optional<RequestPermissionCallback> callback_;
   };
 
+  ArcUsbHostPermissionManager(Profile* profile,
+                              ArcAppListPrefs* arc_app_list_prefs,
+                              ArcUsbHostBridge* arc_usb_host_bridge);
   ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;
   ArcUsbHostPermissionManager& operator=(const ArcUsbHostPermissionManager&) =
       delete;
@@ -154,11 +157,8 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   friend class ArcUsbHostPermissionManagerFactory;
   friend class ArcUsbHostPermissionTest;
 
-  ArcUsbHostPermissionManager(Profile* profile,
-                              ArcAppListPrefs* arc_app_list_prefs,
-                              ArcUsbHostBridge* arc_usb_host_bridge);
-
-  static ArcUsbHostPermissionManager* Create(content::BrowserContext* context);
+  static std::unique_ptr<ArcUsbHostPermissionManager> Create(
+      content::BrowserContext* context);
 
   // Restores granted permissions. Called in constructor. Device list scan
   // permission and device access permission for persistent devices will be
@@ -212,9 +212,9 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   // has resolved the current request.
   bool is_permission_dialog_visible_ = false;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  const raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
 };

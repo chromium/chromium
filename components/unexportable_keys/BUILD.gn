@@ -8,7 +8,12 @@ static_library("unexportable_keys") {
     "background_long_task_scheduler.h",
     "background_task.h",
     "background_task_impl.h",
+    "background_task_priority.cc",
     "background_task_priority.h",
+    "background_task_type.cc",
+    "background_task_type.h",
+    "features.cc",
+    "features.h",
     "ref_counted_unexportable_signing_key.cc",
     "ref_counted_unexportable_signing_key.h",
     "service_error.h",
@@ -23,6 +28,8 @@ static_library("unexportable_keys") {
     "unexportable_key_tasks.cc",
     "unexportable_key_tasks.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+
+#include "base/containers/contains.h"
+#include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
 
@@ -31,8 +33,7 @@ WebViewRendererState::~WebViewRendererState() {
 
 bool WebViewRendererState::IsGuest(int render_process_id) const {
   base::AutoLock auto_lock(web_view_partition_id_map_lock_);
-  return web_view_partition_id_map_.find(render_process_id) !=
-         web_view_partition_id_map_.end();
+  return base::Contains(web_view_partition_id_map_, render_process_id);
 }
 
 void WebViewRendererState::AddGuest(int guest_process_id,

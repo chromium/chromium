@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/ui_devtools/devtools_client.h"
@@ -93,7 +93,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   void MakeServer(
       mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
       int result,
-      const absl::optional<net::IPEndPoint>& local_addr);
+      const std::optional<net::IPEndPoint>& local_addr);
 
   // HttpServer::Delegate
   void OnConnect(int connection_id) override;

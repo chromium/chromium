@@ -5,9 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PREFETCH_METRICS_H_
 #define CONTENT_PUBLIC_BROWSER_PREFETCH_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -16,7 +17,7 @@ class RenderFrameHost;
 
 // Holds metrics related to the prefetches requested by a page load.
 struct CONTENT_EXPORT PrefetchReferringPageMetrics {
-  static absl::optional<PrefetchReferringPageMetrics> GetForCurrentDocument(
+  static std::optional<PrefetchReferringPageMetrics> GetForCurrentDocument(
       RenderFrameHost* rfh);
 
   PrefetchReferringPageMetrics() = default;
@@ -39,7 +40,7 @@ struct CONTENT_EXPORT PrefetchReferringPageMetrics {
 // Holds metrics related to page loads that may benefit from prefetches
 // triggered by speculation rules.
 struct CONTENT_EXPORT PrefetchServingPageMetrics {
-  static absl::optional<PrefetchServingPageMetrics> GetForNavigationHandle(
+  static std::optional<PrefetchServingPageMetrics> GetForNavigationHandle(
       NavigationHandle& navigation_handle);
 
   PrefetchServingPageMetrics() = default;
@@ -50,7 +51,7 @@ struct CONTENT_EXPORT PrefetchServingPageMetrics {
       default;
 
   // The |PrefetchStatus| of the prefetch used when serving this page.
-  absl::optional<int> prefetch_status;
+  std::optional<int> prefetch_status;
 
   // Whether or not the prefetch required the use of a private prefetch proxy.
   bool required_private_prefetch_proxy = false;
@@ -61,11 +62,11 @@ struct CONTENT_EXPORT PrefetchServingPageMetrics {
 
   // The time between the prefetch request was sent and the time the response
   // headers were received.
-  absl::optional<base::TimeDelta> prefetch_header_latency;
+  std::optional<base::TimeDelta> prefetch_header_latency;
 
   // The amount of time it took to get the result of the probe. Only set if
   // the probe result was checked.
-  absl::optional<base::TimeDelta> probe_latency;
+  std::optional<base::TimeDelta> probe_latency;
 };
 
 }  // namespace content

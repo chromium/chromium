@@ -18,8 +18,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
   BrowserInitParams& operator=(const BrowserInitParams&) = delete;
 
   // Returns BrowserInitParams which is passed from ash-chrome.
-  // Useful for tests. Production code always needs to go
-  // through BrowserParamsProxy instead.
+  // Useful for tests. This should generally be called only after
+  // BrowserTestBase::SetUp.
+  // Production code always needs to go through BrowserParamsProxy instead.
   static const crosapi::mojom::BrowserInitParams* GetForTests();
 
   // Sets `init_params_` to the provided value.
@@ -28,19 +29,25 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
   static void SetInitParamsForTests(
       crosapi::mojom::BrowserInitParamsPtr init_params);
 
-  // Create Mem FD from `init_params_`. This must be called after `init_params_`
-  // has initialized by calling GetInstance().
+  // Create Mem FD from `init_params_`.
   static base::ScopedFD CreateStartupData();
 
-  static bool disable_crosapi_for_testing() {
-    return disable_crosapi_for_testing_;
-  }
+  // This will always be false in production.
+  static bool IsCrosapiDisabledForTesting();
+
+  // Use sparingly. This should be needed only in exceptional cases. In
+  // particular, Lacros unit_tests and browser_tests have crosapi disabled by
+  // default and don't need to call this.
+  //
+  // This action cannot be undone, so it must be used only by tests that run in
+  // separate processes. (However, crosapi is only enabled in such tests
+  // anyways, hence this is not really a restriction.)
+  //
+  // See also README.md.
+  static void DisableCrosapiForTesting();
 
  private:
   friend base::NoDestructor<BrowserInitParams>;
-
-  // Needs to access |disable_crosapi_for_testing_|.
-  friend class ScopedDisableCrosapiForTesting;
 
   // Needs to access |Get()|.
   friend class BrowserParamsProxy;
@@ -58,13 +65,11 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
   BrowserInitParams();
   ~BrowserInitParams();
 
-  // Tests will set this to |true| which will make all crosapi functionality
-  // unavailable. Should be set from ScopedDisableCrosapiForTesting always.
-  // TODO(https://crbug.com/1131722): Ideally we could stub this out or make
-  // this functional for tests without modifying production code
-  static bool disable_crosapi_for_testing_;
+  static bool IsCrosapiEnabled();
 
-  // Parameters passed from ash-chrome.
+  static std::optional<bool> is_crosapi_enabled_;
+
+  // Parameters passed from ash-chrome (unless crosapi is disabled).
   crosapi::mojom::BrowserInitParamsPtr init_params_;
 };
 

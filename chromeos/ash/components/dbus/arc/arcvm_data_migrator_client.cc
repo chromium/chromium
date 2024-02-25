@@ -75,10 +75,8 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(request);
     proxy_->CallMethod(
-        // Use a longer timeout (3 minutes) than the default (25 seconds)
-        // because this can take long when the migration source has a large
-        // number of files.
-        &method_call, base::Minutes(3).InMilliseconds() /* timeout_ms */,
+        &method_call,
+        kArcVmDataMigratorGetAndroidDataInfoTimeout.InMilliseconds(),
         base::BindOnce(
             &ArcVmDataMigratorClientImpl::OnGetAndroidDataInfoResponse,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -127,14 +125,14 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
   void OnBoolMethod(chromeos::DBusMethodCallback<bool> callback,
                     dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     bool result = false;
     if (!reader.PopBool(&result)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(result);
@@ -143,21 +141,21 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
   void OnGetAndroidDataInfoResponse(GetAndroidDataInfoCallback callback,
                                     dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     arc::data_migrator::GetAndroidDataInfoResponse proto;
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(std::move(proto));
   }
 
   base::ObserverList<Observer> observers_;
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   base::WeakPtrFactory<ArcVmDataMigratorClientImpl> weak_ptr_factory_{this};
 };
 

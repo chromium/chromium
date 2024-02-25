@@ -27,13 +27,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_DOCUMENT_PARSER_H_
 
 #include <libxml/tree.h>
+
 #include <memory>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner_host.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_errors.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -93,7 +96,8 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
       const String&,
       DocumentFragment*,
       Element* parent = nullptr,
-      ParserContentPolicy = kAllowScriptingContent);
+      ParserContentPolicy = kAllowScriptingContent,
+      ExceptionState* exeption_state = nullptr);
 
   // Used by the XMLHttpRequest to check if the responseXML was well formed.
   bool WellFormed() const override { return !saw_error_; }
@@ -237,6 +241,30 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   typedef HashMap<AtomicString, AtomicString> PrefixForNamespaceMap;
   PrefixForNamespaceMap prefix_to_namespace_map_;
   SegmentedString pending_src_;
+
+  // exception_copy_ is used in some cases where we need to pass exceptions
+  // back to callers of XMLDocumentParser methods, but we lose the
+  // ExceptionContext passed in on the stack because we are calling libxml
+  // methods which call back into XMLDocumentParser.
+  class ExceptionCopy {
+   public:
+    void CopyFrom(ExceptionState& state) {
+      had_exception_ = true;
+      message_ = state.Message();
+      code_ = state.Code();
+    }
+    void ApplyTo(ExceptionState& state) {
+      CHECK(had_exception_);
+      state.ThrowException(code_, message_);
+    }
+    bool HadException() { return had_exception_; }
+
+   private:
+    String message_;
+    ExceptionCode code_;
+    bool had_exception_ = false;
+  };
+  std::optional<ExceptionCopy> exception_copy_;
 };
 
 xmlDocPtr XmlDocPtrForString(Document*,

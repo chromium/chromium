@@ -8,13 +8,12 @@
 
 namespace cc {
 
-UIResourceRequest::UIResourceRequest(UIResourceRequestType type,
-                                     UIResourceId id)
+UIResourceRequest::UIResourceRequest(Type type, UIResourceId id)
     : type_(type), id_(id) {
-  DCHECK(type == UI_RESOURCE_DELETE);
+  DCHECK_EQ(type, Type::kDelete);
 }
 
-UIResourceRequest::UIResourceRequest(UIResourceRequestType type,
+UIResourceRequest::UIResourceRequest(Type type,
                                      UIResourceId id,
                                      const UIResourceBitmap& bitmap)
     : type_(type), id_(id), bitmap_(new UIResourceBitmap(bitmap)) {}

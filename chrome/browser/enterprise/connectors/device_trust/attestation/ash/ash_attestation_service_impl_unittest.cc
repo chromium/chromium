@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
@@ -32,7 +33,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -68,21 +68,20 @@ std::string GetSerializedSignedChallenge() {
   return serialized_signed_challenge;
 }
 
-absl::optional<std::string> ParseValueFromResponse(
-    const std::string& response) {
-  absl::optional<base::Value> data = base::JSONReader::Read(
+std::optional<std::string> ParseValueFromResponse(const std::string& response) {
+  std::optional<base::Value> data = base::JSONReader::Read(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
   if (!data || !data->GetDict().FindString("challengeResponse")) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string decoded_response_value;
   if (!base::Base64Decode(*data->GetDict().FindString("challengeResponse"),
                           &decoded_response_value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return decoded_response_value;
@@ -155,11 +154,9 @@ class AshAttestationServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile test_profile_;
-  raw_ptr<ash::attestation::MockTpmChallengeKeySubtle,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::attestation::MockTpmChallengeKeySubtle, DanglingUntriaged>
       mock_challenge_key_subtle_;
-  raw_ptr<ash::attestation::MockTpmChallengeKey,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::attestation::MockTpmChallengeKey, DanglingUntriaged>
       mock_challenge_key_;
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };

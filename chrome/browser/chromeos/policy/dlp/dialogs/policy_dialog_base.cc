@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -66,12 +67,7 @@ PolicyDialogBase::PolicyDialogBase() {
       views::BoxLayout::Orientation::kVertical));
 }
 
-void PolicyDialogBase::SetOnDlpRestrictionCheckedCallback(
-    OnDlpRestrictionCheckedCallback callback) {
-  auto split = base::SplitOnceCallback(std::move(callback));
-  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
-  SetCancelCallback(base::BindOnce(std::move(split.second), false));
-}
+PolicyDialogBase::~PolicyDialogBase() = default;
 
 void PolicyDialogBase::SetupUpperPanel() {
   upper_panel_ = AddChildView(std::make_unique<views::View>());
@@ -171,7 +167,7 @@ views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
   return label;
 }
 
-BEGIN_METADATA(PolicyDialogBase, views::DialogDelegateView)
+BEGIN_METADATA(PolicyDialogBase)
 END_METADATA
 
 }  // namespace policy

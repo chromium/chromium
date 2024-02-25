@@ -133,7 +133,7 @@ mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
         continue;
 
       // A confidence value of 0 or 1 is interpreted as an int and not a double.
-      absl::optional<double> confidence =
+      std::optional<double> confidence =
           word_dict->FindDouble("confidenceScore");
       if (!confidence.has_value() || *confidence < 0.0 || *confidence > 1.0)
         continue;
@@ -217,7 +217,7 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
     if (type_lookup == kAnnotationTypes->end())
       continue;
 
-    const absl::optional<double> score = desc_dict->FindDouble("score");
+    const std::optional<double> score = desc_dict->FindDouble("score");
     if (!score.has_value())
       continue;
 
@@ -265,7 +265,7 @@ mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
 
     std::string icon_type_value = *icon_type;
 
-    const absl::optional<double> score = icon_dict->FindDouble("score");
+    const std::optional<double> score = icon_dict->FindDouble("score");
     if (!score.has_value())
       continue;
 
@@ -383,7 +383,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
         }
       }
 
-      ReportEngineKnown(ocr_engine || desc_engine);
+      ReportEngineKnown(ocr_engine || desc_engine || icon_engine);
     }
 
     // Remove any description OCR data (which is lower quality) if we have
@@ -584,11 +584,9 @@ std::string Annotator::FormatJsonRequest(
   base::Value::List image_request_list;
   for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; ++it) {
     // Re-encode image bytes into base64, which can be represented in JSON.
-    std::string base64_data;
-    base::Base64Encode(
+    std::string base64_data = base::Base64Encode(
         base::StringPiece(reinterpret_cast<const char*>(it->image_bytes.data()),
-                          it->image_bytes.size()),
-        &base64_data);
+                          it->image_bytes.size()));
 
     // TODO(crbug.com/916420): accept and propagate page language info to
     //                         improve OCR accuracy.
@@ -802,10 +800,9 @@ void Annotator::OnServerResponseReceived(
                      weak_factory_.GetWeakPtr(), request_keys));
 }
 
-void Annotator::OnResponseJsonParsed(
-    const std::set<RequestKey>& request_keys,
-    const absl::optional<base::Value> json_data,
-    const absl::optional<std::string>& error) {
+void Annotator::OnResponseJsonParsed(const std::set<RequestKey>& request_keys,
+                                     const std::optional<base::Value> json_data,
+                                     const std::optional<std::string>& error) {
   const bool success = json_data.has_value() && !error.has_value();
   ReportJsonParseSuccess(success);
 
@@ -998,8 +995,8 @@ void Annotator::OnServerLangsResponseReceived(
 }
 
 void Annotator::OnServerLangsResponseJsonParsed(
-    absl::optional<base::Value> json_data,
-    const absl::optional<std::string>& error) {
+    std::optional<base::Value> json_data,
+    const std::optional<std::string>& error) {
   if (!json_data.has_value() || error.has_value()) {
     DVLOG(1) << "Parsing server langs response JSON failed with error: "
              << error.value_or("No reason reported.");

@@ -98,8 +98,22 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!sii) {
     return nullptr;
   }
-  sii->AddReferenceToSharedImage(mailbox_holder.sync_token,
-                                 mailbox_holder.mailbox, usage);
+  // TODO(crbug.com/1494911): Obtain metadata from the original
+  // ClientSharedImage instead once we add the code that allows
+  // ClientSharedImage data to be sent over Mojo.
+  gfx::ColorSpace color_space =
+      sk_image_info.colorSpace()
+          ? gfx::ColorSpace(*(sk_image_info.colorSpace()))
+          : gfx::ColorSpace::CreateSRGB();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->AddReferenceToSharedImage(
+          mailbox_holder.sync_token, mailbox_holder.mailbox,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(
+              sk_image_info.colorType()),
+          gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
+          (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
+                               : kBottomLeft_GrSurfaceOrigin,
+          sk_image_info.alphaType(), usage);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
@@ -107,8 +121,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
 
   auto release_callback = WTF::BindOnce(
       [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-         const gpu::Mailbox& mailbox, const gpu::SyncToken& sync_token,
-         bool is_lost) {
+         scoped_refptr<gpu::ClientSharedImage> shared_image,
+         const gpu::SyncToken& sync_token, bool is_lost) {
         if (is_lost || !context_provider) {
           return;
         }
@@ -116,9 +130,9 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
         if (!sii) {
           return;
         }
-        sii->DestroySharedImage(sync_token, mailbox);
+        sii->DestroySharedImage(sync_token, std::move(shared_image));
       },
-      shared_gpu_context, mailbox_holder.mailbox);
+      shared_gpu_context, std::move(shared_image));
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       mailbox_holder.mailbox, release_token, 0u, sk_image_info,
@@ -281,7 +295,7 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
 
   return CreatePaintImageBuilder()
       .set_texture_backing(texture_backing_, paint_image_content_id_)
-      .set_completion_state(PaintImage::CompletionState::DONE)
+      .set_completion_state(PaintImage::CompletionState::kDone)
       .TakePaintImage();
 }
 
@@ -355,7 +369,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
 
-  if (capabilities.supports_oop_raster) {
+  if (capabilities.gpu_rasterization) {
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
@@ -494,10 +508,9 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
 
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
-  provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0,
-                                SkSamplingOptions(), &paint);
-  return provider->Snapshot(CanvasResourceProvider::FlushReason::kNon2DCanvas,
-                            orientation_);
+  provider->Canvas().drawImage(PaintImageForCurrentFrame(), 0, 0,
+                               SkSamplingOptions(), &paint);
+  return provider->Snapshot(FlushReason::kNon2DCanvas, orientation_);
 }
 
 uint32_t AcceleratedStaticBitmapImage::GetUsage() const {

@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 
-#include "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#include "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -30,7 +31,8 @@ class TestChromeBrowserState;
 // Base class for PassphraseTableViewController tests.
 // Sets up a testing profile and a mock profile sync service, along with the
 // supporting structure they require.
-class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
+class PassphraseTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   PassphraseTableViewControllerTest();
   ~PassphraseTableViewControllerTest() override;
@@ -52,7 +54,7 @@ class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   // Weak, owned by chrome_browser_state_.
-  syncer::MockSyncService* fake_sync_service_;
+  raw_ptr<syncer::MockSyncService> fake_sync_service_;
 
   // Default return values for NiceMock<syncer::MockSyncService>.
   GoogleServiceAuthError default_auth_error_;

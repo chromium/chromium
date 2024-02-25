@@ -47,16 +47,16 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
   void Trace(Visitor*) const override;
 
  protected:
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   ScriptPromiseResolver* GetOpenedPromiseResolver() const {
     DCHECK_EQ(state_, State::kOpening);
-    return opened_resolver_;
+    return opened_resolver_.Get();
   }
 
   ScriptPromiseResolver* GetClosedPromiseResolver() const {
     DCHECK(state_ == State::kOpening || state_ == State::kOpen);
-    return closed_resolver_;
+    return closed_resolver_.Get();
   }
 
   blink::mojom::blink::DirectSocketsService* GetServiceRemote() const {

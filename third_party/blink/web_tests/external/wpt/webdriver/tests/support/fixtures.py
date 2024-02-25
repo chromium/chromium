@@ -108,6 +108,43 @@ async def reset_current_session_if_necessary(caps):
             _current_session = None
 
 
+@pytest.fixture()
+def screen_size(session):
+    """Return the size (width/height) of the screen."""
+    return tuple(session.execute_script("""
+        return [
+            screen.width,
+            screen.height,
+        ];
+        """))
+
+
+@pytest.fixture()
+def available_screen_size(session):
+    """Return the effective available screen size (width/height).
+
+    This is size which excludes any fixed window manager elements like menu
+    bars, and the dock on MacOS.
+    """
+    return tuple(session.execute_script("""
+        return [
+            screen.availWidth,
+            screen.availHeight,
+        ];
+        """))
+
+
+@pytest.fixture()
+def minimal_screen_position(session):
+    """Return the minimal position (x/y) a window can be positioned at."""
+    return tuple(session.execute_script("""
+        return [
+            screen.availLeft,
+            screen.availTop,
+        ];
+        """))
+
+
 @pytest_asyncio.fixture(scope="function")
 async def session(capabilities, configuration):
     """Create and start a session for a test that does not itself test session creation.
@@ -137,8 +174,12 @@ async def session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        # Only resize and reposition if needed to workaround a bug for Chrome:
+        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
+        if _current_session.window.size != defaults.WINDOW_SIZE:
+            _current_session.window.size = defaults.WINDOW_SIZE
+        if _current_session.window.position != defaults.WINDOW_POSITION:
+            _current_session.window.position = defaults.WINDOW_POSITION
 
     # Set default timeouts
     multiplier = configuration["timeout_multiplier"]
@@ -185,8 +226,12 @@ async def bidi_session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        _current_session.window.size = defaults.WINDOW_SIZE
-        _current_session.window.position = defaults.WINDOW_POSITION
+        # Only resize and reposition if needed to workaround a bug for Chrome:
+        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
+        if _current_session.window.size != defaults.WINDOW_SIZE:
+            _current_session.window.size = defaults.WINDOW_SIZE
+        if _current_session.window.position != defaults.WINDOW_POSITION:
+            _current_session.window.position = defaults.WINDOW_POSITION
 
     yield _current_session.bidi_session
 

@@ -200,7 +200,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   int output_mute_changed_count() const { return output_mute_changed_count_; }
 
-  void reset_output_mute_changed_count() { input_mute_changed_count_ = 0; }
+  void reset_output_mute_changed_count() { output_mute_changed_count_ = 0; }
 
   int input_mute_changed_count() const { return input_mute_changed_count_; }
 
@@ -238,6 +238,20 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   int nonchrome_output_stopped_change_count() const {
     return nonchrome_output_stopped_change_count_;
+  }
+
+  int number_of_arc_stream_changed_latest_value() const {
+    return number_of_arc_stream_changed_latest_value_;
+  }
+
+  int number_of_arc_stream_changed_count() const {
+    return number_of_arc_stream_changed_count_;
+  }
+
+  int survey_triggerd_count() const { return survey_triggerd_count_; }
+
+  const CrasAudioHandler::AudioSurvey& survey_triggerd_recv() const {
+    return survey_triggerd_recv_;
   }
 
   TestObserver(const TestObserver&) = delete;
@@ -300,6 +314,21 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   void OnForceRespectUiGainsStateChanged() override {}
 
+  void OnSurveyTriggered(const CrasAudioHandler::AudioSurvey& survey) override {
+    ++survey_triggerd_count_;
+    survey_triggerd_recv_.set_type(survey.type());
+    survey_triggerd_recv_.clear_data();
+
+    for (const auto& it : survey.data()) {
+      survey_triggerd_recv_.AddData(it.first, it.second);
+    }
+  }
+
+  void OnNumberOfArcStreamsChanged(int32_t num) override {
+    ++number_of_arc_stream_changed_count_;
+    number_of_arc_stream_changed_latest_value_ = num;
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -315,6 +344,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int output_stopped_change_count_ = 0;
   int nonchrome_output_stopped_change_count_ = 0;
   int nonchrome_output_started_change_count_ = 0;
+  int number_of_arc_stream_changed_latest_value_ = 0;
+  int number_of_arc_stream_changed_count_ = 0;
+  int survey_triggerd_count_ = 0;
+  CrasAudioHandler::AudioSurvey survey_triggerd_recv_;
 };
 
 class SystemMonitorObserver
@@ -604,8 +637,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
-  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
-      cras_audio_handler_ = nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged> cras_audio_handler_ =
+      nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
@@ -650,8 +683,7 @@ class HDMIRediscoverWaiter {
   }
 
  private:
-  raw_ptr<CrasAudioHandlerTest, ExperimentalAsh>
-      cras_audio_handler_test_;  // not owned
+  raw_ptr<CrasAudioHandlerTest> cras_audio_handler_test_;  // not owned
   int grace_period_duration_in_ms_;
 };
 
@@ -1068,6 +1100,36 @@ TEST_P(CrasAudioHandlerTest, NumberNonChromeOutputs) {
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 2);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
   EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
+}
+
+TEST_P(CrasAudioHandlerTest, NumberArcStreams) {
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  // start at 0.
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 0);
+  // Go up to 1.
+  fake_cras_audio_client()->SetNumberOfArcStreams(1);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 1);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 1);
+  // Go up to 2.
+  fake_cras_audio_client()->SetNumberOfArcStreams(2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 2);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 2);
+  // Stay at 2, no callback expected.
+  fake_cras_audio_client()->SetNumberOfArcStreams(2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 2);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 2);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 2);
+  // Down to 0
+  fake_cras_audio_client()->SetNumberOfArcStreams(0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_latest_value(), 0);
+  EXPECT_EQ(test_observer_->number_of_arc_stream_changed_count(), 3);
+  EXPECT_EQ(cras_audio_handler_->NumberOfArcStreams(), 0);
 }
 
 TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {
@@ -4571,8 +4633,8 @@ TEST_P(CrasAudioHandlerTest, HDMIOutputRediscover) {
   EXPECT_FALSE(cras_audio_handler_->IsOutputMuted());
 }
 
-// This tests the case of output unmuting event is notified after the hdmi
-// output re-discover grace period ends, see crbug.com/512601.
+// This tests the case of output unmuting event is not notified after the hdmi
+// output re-discover grace period ends.
 TEST_P(CrasAudioHandlerTest, HDMIOutputUnplugDuringSuspension) {
   AudioNodeList audio_nodes =
       GenerateAudioNodeList({kInternalSpeaker, kHDMIOutput});
@@ -4606,7 +4668,7 @@ TEST_P(CrasAudioHandlerTest, HDMIOutputUnplugDuringSuspension) {
   EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
 
   // After HDMI re-discover grace period, verify internal speaker is still the
-  // active output and not muted, and unmute event by system is notified.
+  // active output and not muted.
   test_observer_->reset_output_mute_changed_count();
   HDMIRediscoverWaiter waiter(this, grace_period_in_ms);
   waiter.WaitUntilHDMIRediscoverGracePeriodEnd();
@@ -4616,7 +4678,7 @@ TEST_P(CrasAudioHandlerTest, HDMIOutputUnplugDuringSuspension) {
   EXPECT_EQ(kInternalSpeaker->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_FALSE(cras_audio_handler_->IsOutputMuted());
-  EXPECT_EQ(1, test_observer_->output_mute_changed_count());
+  EXPECT_EQ(0, test_observer_->output_mute_changed_count());
 }
 
 TEST_P(CrasAudioHandlerTest, FrontCameraStartStop) {
@@ -5041,12 +5103,10 @@ TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedByAudioPolicy) {
 
     audio_pref_handler_->SetAudioOutputAllowedValue(false);
     EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
-    EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
 
     audio_pref_handler_->SetAudioOutputAllowedValue(true);
     EXPECT_FALSE(cras_audio_handler_->IsOutputMutedByPolicy());
-    EXPECT_FALSE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
   }
 }
@@ -5060,12 +5120,10 @@ TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedBySecurityCurtainMode) {
 
     cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(true);
     EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
-    EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
 
     cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(false);
     EXPECT_FALSE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
-    EXPECT_FALSE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
   }
 }
@@ -5086,7 +5144,6 @@ TEST_P(CrasAudioHandlerTest,
   // The force mute through the policy should still be in effect.
   EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
   EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
-  EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
 }
 
 TEST_P(CrasAudioHandlerTest,
@@ -5105,7 +5162,6 @@ TEST_P(CrasAudioHandlerTest,
   // The force mute through the policy should still be in effect.
   EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
   EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
-  EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
 }
 
 TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
@@ -5435,6 +5491,42 @@ TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionSwitchTest) {
   // speak-on-mute detection in the client.
   cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/false);
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, AudioSurveyDefault) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {"key", "value"}};
+
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate an audio survey gets triggered.
+  fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
+
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
+            CrasAudioHandler::SurveyType::kGeneral);
+  EXPECT_THAT(test_observer_->survey_triggerd_recv().data(),
+              testing::ElementsAre(std::make_pair("key", "value")));
+}
+
+TEST_P(CrasAudioHandlerTest, AudioSurveyBluetooth) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {CrasAudioHandler::kSurveyNameKey,
+       CrasAudioHandler::kSurveyNameBluetooth}};
+
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate an audio survey gets triggered.
+  fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
+
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
+            CrasAudioHandler::SurveyType::kBluetooth);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
 }
 
 }  // namespace ash

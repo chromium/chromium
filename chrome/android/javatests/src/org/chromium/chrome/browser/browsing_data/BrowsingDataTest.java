@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static org.chromium.base.test.util.Matchers.is;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,23 +18,35 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
+import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for browsing data deletion.
- */
+/** Integration tests for browsing data deletion. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.SKIP_LOCAL_UPM_GMS_CORE_VERSION_CHECK_FOR_TESTING,
+})
 @Batch(Batch.PER_CLASS)
 public class BrowsingDataTest {
     private static final String TEST_FILE = "/content/test/data/browsing_data/site_data.html";
@@ -47,6 +61,9 @@ public class BrowsingDataTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
+
     @Before
     public void setUp() throws Exception {
         mTestServer = sActivityTestRule.getTestServer();
@@ -55,10 +72,12 @@ public class BrowsingDataTest {
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    helper::notifyCalled, new int[] {dataType}, timePeriod);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                            .clearBrowsingData(
+                                    helper::notifyCalled, new int[] {dataType}, timePeriod);
+                });
         helper.waitForCallback(0);
     }
 
@@ -66,15 +85,21 @@ public class BrowsingDataTest {
         String[] out = {""};
         BrowsingDataCounterBridge[] counter = {null};
         CallbackHelper helper = new CallbackHelper();
-        BrowsingDataCounterBridge.BrowsingDataCounterCallback callback = (result) -> {
-            if (result.equals("Calculating…")) return;
-            out[0] = result;
-            helper.notifyCalled();
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            counter[0] = new BrowsingDataCounterBridge(
-                    callback, BrowsingDataType.COOKIES, ClearBrowsingDataTab.ADVANCED);
-        });
+        BrowsingDataCounterBridge.BrowsingDataCounterCallback callback =
+                (result) -> {
+                    if (result.equals("Calculating…")) return;
+                    out[0] = result;
+                    helper.notifyCalled();
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    counter[0] =
+                            new BrowsingDataCounterBridge(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    callback,
+                                    BrowsingDataType.COOKIES,
+                                    ClearBrowsingDataTab.ADVANCED);
+                });
         helper.waitForCallback(0);
         // The counter returns a result like "3 sites" or "None".
         if (out[0].equals("None")) return 0;
@@ -93,9 +118,7 @@ public class BrowsingDataTest {
                 sActivityTestRule.getWebContents(), type);
     }
 
-    /**
-     * Test cookies deletion.
-     */
+    /** Test cookies deletion. */
     @Test
     @SmallTest
     public void testCookiesDeleted() throws Exception {
@@ -112,15 +135,18 @@ public class BrowsingDataTest {
         Assert.assertEquals(0, getCookieCount());
     }
 
-    /**
-     * Test site data deletion.
-     */
+    /** Test site data deletion. */
     @Test
     @SmallTest
     public void testSiteDataDeleted() throws Exception {
         // TODO(dullweber): Investigate, why WebSql fails this test.
-        List<String> siteData = Arrays.asList("LocalStorage", "ServiceWorker", "CacheStorage",
-                "FileSystem", "IndexedDb" /*, "WebSql"*/);
+        List<String> siteData =
+                Arrays.asList(
+                        "LocalStorage",
+                        "ServiceWorker",
+                        "CacheStorage",
+                        "FileSystem",
+                        "IndexedDb" /*, "WebSql"*/);
         sActivityTestRule.loadUrl(mUrl);
 
         for (String type : siteData) {
@@ -150,20 +176,73 @@ public class BrowsingDataTest {
         // TODO(roagarwal) : Crashes on BrowsingDataType.SITE_SETTINGS, BrowsingDataType.BOOKMARKS
         // data types.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingDataIncognitoForTesting(
-                    helper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
-                            BrowsingDataType.COOKIES, BrowsingDataType.PASSWORDS,
-                            BrowsingDataType.FORM_DATA},
-                    TimePeriod.LAST_HOUR);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                            .clearBrowsingDataIncognitoForTesting(
+                                    helper::notifyCalled,
+                                    new int[] {
+                                        BrowsingDataType.HISTORY,
+                                        BrowsingDataType.CACHE,
+                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.PASSWORDS,
+                                        BrowsingDataType.FORM_DATA
+                                    },
+                                    TimePeriod.LAST_HOUR);
+                });
         helper.waitForCallback(0);
     }
 
-    /**
-     * Test history deletion.
-     */
+    /** Test that both local and account passwords are deleted. */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION
+    })
+    public void testLocalAndAccountPasswordsDeleted() throws Exception {
+        // Set up a syncing user with one password in each store.
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
+                new FakePasswordStoreAndroidBackendFactoryImpl());
+        PasswordStoreBridge bridge =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> new PasswordStoreBridge());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bridge.insertPasswordCredentialInProfileStore(
+                            new PasswordStoreCredential(
+                                    new GURL("https://site1.com"), "user1", "pwd1"));
+                    bridge.insertPasswordCredentialInAccountStore(
+                            new PasswordStoreCredential(
+                                    new GURL("https://site2.com"), "user2", "pwd2"));
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The profile store should've had one password",
+                            bridge.getPasswordStoreCredentialsCountForProfileStore(),
+                            is(1));
+                    Criteria.checkThat(
+                            "The account store should've had one password",
+                            bridge.getPasswordStoreCredentialsCountForAccountStore(),
+                            is(1));
+                });
+
+        clearBrowsingData(BrowsingDataType.PASSWORDS, TimePeriod.ALL_TIME);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The profile store should be empty",
+                            bridge.getPasswordStoreCredentialsCountForProfileStore(),
+                            is(0));
+                    Criteria.checkThat(
+                            "The account store should be empty",
+                            bridge.getPasswordStoreCredentialsCountForAccountStore(),
+                            is(0));
+                });
+    }
+
+    /** Test history deletion. */
     @Test
     @SmallTest
     public void testHistoryDeleted() throws Exception {

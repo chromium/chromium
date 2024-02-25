@@ -56,6 +56,7 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   void AddObserver(wm::TooltipObserver* observer) override;
   void RemoveObserver(wm::TooltipObserver* observer) override;
+  void SetMaxWidth(int width) override;
 
   // Adjusts `anchor_point` to the bottom left of the cursor.
   static void AdjustToCursor(gfx::Rect* anchor_point);
@@ -106,6 +107,8 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
   raw_ptr<aura::Window> tooltip_window_ = nullptr;
+
+  int max_width_ = kTooltipMaxWidth;
 
   // Observes tooltip state change.
   base::ObserverList<wm::TooltipObserver> observers_;

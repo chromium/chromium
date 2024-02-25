@@ -22,7 +22,7 @@ void SharedClipboardMessageHandlerAndroid::ShowNotification(
   TRACE_EVENT0("sharing",
                "SharedClipboardMessageHandlerAndroid::ShowNotification");
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_SharedClipboardMessageHandler_showNotification(
       env, base::android::ConvertUTF8ToJavaString(env, device_name));
 }

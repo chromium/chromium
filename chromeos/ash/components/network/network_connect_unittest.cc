@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -62,6 +63,7 @@ class MockDelegate : public NetworkConnect::Delegate {
                void(const std::string& error_name,
                     const std::string& network_id));
   MOCK_METHOD1(ShowMobileActivationError, void(const std::string& network_id));
+  MOCK_METHOD0(ShowCarrierUnlockNotification, void());
 };
 
 class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
@@ -207,8 +209,8 @@ class NetworkConnectTest : public testing::Test {
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface> device_test_;
+  raw_ptr<ShillServiceClient::TestInterface> service_test_;
 };
 
 TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {
@@ -303,6 +305,13 @@ TEST_F(NetworkConnectTest, ActivateCellular) {
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
 }
 
+TEST_F(NetworkConnectTest, CarrierUnlock) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  EXPECT_CALL(*mock_delegate_, ShowCarrierUnlockNotification());
+  NetworkConnect::Get()->ShowCarrierUnlockNotification();
+}
+
 TEST_F(NetworkConnectTest, ActivateCellular_Error) {
   EXPECT_CALL(*mock_delegate_, ShowMobileActivationError(kCellular1Guid));
 
@@ -348,6 +357,21 @@ TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimLocked) {
   service_test_->SetServiceProperty(kCellular1ServicePath,
                                     shill::kErrorProperty,
                                     base::Value(shill::kErrorSimLocked));
+  service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimCarrierLocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+
+  EXPECT_CALL(*mock_delegate_, ShowNetworkSettings(kCellular1Guid)).Times(0);
+
+  service_test_->SetServiceProperty(kCellular1ServicePath,
+                                    shill::kErrorProperty,
+                                    base::Value(shill::kErrorSimCarrierLocked));
   service_test_->SetErrorForNextConnectionAttempt(shill::kErrorConnectFailed);
 
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);

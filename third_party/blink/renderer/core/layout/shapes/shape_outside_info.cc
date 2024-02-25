@@ -150,10 +150,11 @@ static bool CheckShapeImageOrigin(Document& document,
 static LogicalRect GetShapeImageMarginRect(
     const LayoutBox& layout_box,
     const LogicalSize& reference_box_logical_size) {
-  LogicalOffset margin_box_origin(
-      -layout_box.MarginStart() - layout_box.BorderAndPaddingLogicalLeft(),
-      -layout_box.MarginBefore() - layout_box.BorderBefore() -
-          layout_box.PaddingBefore());
+  LogicalOffset margin_box_origin(-layout_box.MarginInlineStart() -
+                                      layout_box.BorderAndPaddingLogicalLeft(),
+                                  -layout_box.MarginBlockStart() -
+                                      layout_box.BorderBlockStart() -
+                                      layout_box.PaddingBlockStart());
   LogicalSize margin_rect_size = reference_box_logical_size;
   margin_rect_size.Expand(layout_box.MarginLogicalWidth() +
                               layout_box.BorderAndPaddingLogicalWidth(),
@@ -172,7 +173,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   RespectImageOrientationEnum respect_orientation =
       style_image->ForceOrientationIfNecessary(
-          LayoutObject::ShouldRespectImageOrientation(layout_box_));
+          layout_box_->StyleRef().ImageOrientation());
 
   const DeprecatedLayoutSize& image_size =
       RoundedLayoutSize(style_image->ImageSize(
@@ -183,11 +184,12 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
-                                     ? To<LayoutImage>(layout_box_.Get())
-                                           ->ReplacedContentRect()
-                                           .ToLayoutRect()
-                                     : LayoutRect(LayoutPoint(), image_size);
+  const DeprecatedLayoutRect& image_rect =
+      (layout_box_->IsLayoutImage())
+          ? To<LayoutImage>(layout_box_.Get())
+                ->ReplacedContentRect()
+                .ToLayoutRect()
+          : DeprecatedLayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
@@ -271,7 +273,7 @@ inline LayoutUnit BorderBeforeInWritingMode(const LayoutBox& layout_box,
   }
 
   NOTREACHED();
-  return LayoutUnit(layout_box.BorderBefore());
+  return LayoutUnit(layout_box.BorderBlockStart());
 }
 
 inline LayoutUnit BorderAndPaddingBeforeInWritingMode(
@@ -290,13 +292,13 @@ inline LayoutUnit BorderAndPaddingBeforeInWritingMode(
   }
 
   NOTREACHED();
-  return layout_box.BorderAndPaddingBefore();
+  return layout_box.BorderAndPaddingBlockStart();
 }
 
 LayoutUnit ShapeOutsideInfo::LogicalTopOffset() const {
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginBefore(
+      return -layout_box_->MarginBlockStart(
           layout_box_->ContainingBlock()->Style());
     case CSSBoxType::kBorder:
       return LayoutUnit();
@@ -349,7 +351,8 @@ inline LayoutUnit BorderAndPaddingStartWithStyleForWritingMode(
 LayoutUnit ShapeOutsideInfo::LogicalLeftOffset() const {
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginStart(layout_box_->ContainingBlock()->Style());
+      return -layout_box_->MarginInlineStart(
+          layout_box_->ContainingBlock()->Style());
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:

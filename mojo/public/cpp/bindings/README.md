@@ -713,6 +713,37 @@ ValuePtr value = Value::NewIntValue(42);
 LOG(INFO) << "Value is " << value->get_string_value();  // DCHECK!
 ```
 
+### Features
+
+Mojom `feature` generates a `base::Feature` with the given `name` and
+`default_state` (`true` => `ENABLED_BY_DEFAULT`). The feature can be accessed
+and tested in C++ using the mapped name even if it is not used to mark any
+interfaces or methods.
+
+```mojom
+module experiment.mojom;
+
+// Introduce a new runtime feature flag.
+feature kUseElevator {
+  const string name = "UseElevator";
+  const bool default_state = false;
+};
+```
+
+```cpp
+#include "base/feature_list.h"
+#include "experiment.mojom-features.h"
+
+if (base::FeatureList::IsEnabled(experiment::mojom::kUseElevator)) {
+  LOG(INFO) << "Going up....";
+}
+```
+
+```sh
+./chrome --enable-features=UseElevator
+# Going up....
+```
+
 ### Sending Interfaces Over Interfaces
 
 We know how to create interface pipes and use their Remote and PendingReceiver endpoints
@@ -853,6 +884,72 @@ and this could be used like so:
 mojo::PendingRemote<db::mojom::TableListener> listener;
 TableListenerImpl impl(listener.InitWithNewPipeAndPassReceiver());
 table->AddListener(std::move(listener));
+```
+
+### RuntimeFeature on interfaces
+
+If an interface is marked with a `RuntimeFeature` attribute, and the associated
+feature is disabled, then it is not possible to bind the interface to a
+receiver, and not possible to create a remote to call methods on. Attempts to
+bind remotes or receivers will result in the underlying pipe being `reset()`.
+`SelfOwnedReceivers` will not be created. A compromised process can override
+these checks and might falsely request a disabled interface but a trustworthy
+process will not bind a concrete endpoint to interact with the disabled
+interface.
+
+Note that it remains possible to create and transport generic wrapper
+objects to disabled interfaces - security decisions should be made based on a
+test of the generated feature - or the bound state of a Remote or Receiver.
+
+```mojom
+// Feature controls runtime availability of interface.
+[RuntimeFeature=kUseElevator]
+interface DefaultDenied {
+  GetInt() => (int32 ret);
+};
+
+interface PassesInterfaces {
+  BindPendingRemoteDisabled(pending_remote<DefaultDenied> iface);
+  BindPendingReceiverDisabled(pending_receiver<DefaultDenied> iface);
+};
+```
+
+```C++
+  void BindPendingRemoteDisabled(
+      mojo::PendingRemote<mojom::DefaultDenied> iface) override {
+    mojo::Remote<mojom::DefaultDenied> denied_remote;
+    // Remote will not bind:
+    denied_remote.Bind(std::move(iface));
+    ASSERT_FALSE(denied_remote);
+  }
+  void BindPendingReceiverDisabled(
+      mojo::PendingReceiver<mojom::DefaultDenied> iface) override {
+    std::unique_ptr<DefaultDeniedImpl> denied_impl;
+    // Object can still be created:
+    denied_impl = std::make_unique<DefaultDeniedImpl>(std::move(iface));
+    // But its internal receiver_ will not bind or receive remote calls.
+    ASSERT_FALSE(denied_impl->receiver().is_bound());
+  }
+```
+
+### RuntimeFeature on methods
+
+If a method is marked with a `RuntimeFeature` attribute it is not possible to
+call that method on a remote (attempting to do so will result in a CHECK()),
+and receivers will reject incoming messages at the validation stage, causing
+their linked remote to become disconnected.
+
+```mojom
+// Feature controls runtime availability of interface.
+interface NormalInterface {
+  [RuntimeFeature=related.module.mojom.kFeature]
+  GetInt() => (int32 ret);
+};
+```
+
+```C++
+mojo::Remote<mojom::NormalInterface> remote;
+remote->GetInt();  // CHECKs if kFeature is not enabled.
 ```
 
 ## Other Interface Binding Types
@@ -1176,6 +1273,10 @@ are not absolutely necessary:
 probably never think about while you are coding. It has always been a
 huge pain.
 * Sync calls may lead to deadlocks.
+* Sync web apis are [strongly discouraged](https://www.w3.org/TR/design-principles/#async-by-default).
+* The `[Sync]` annotation does not affect the bindings for the service side
+and therefore does **not** guard against re-entrancy, especially when the
+client is untrusted (e.g. the renderer process).
 
 ### Mojom changes
 
@@ -1399,12 +1500,12 @@ namespace mojo {
 
 template <>
 struct StructTraits<url::mojom::UrlDataView, GURL> {
-  static base::StringPiece url(const GURL& r) {
+  static std::string_view url(const GURL& r) {
     if (r.possibly_invalid_spec().length() > url::kMaxURLChars ||
         !r.is_valid()) {
-      return base::StringPiece();
+      return std::string_view();
     }
-    return base::StringPiece(r.possibly_invalid_spec().c_str(),
+    return std::string_view(r.possibly_invalid_spec().c_str(),
                              r.possibly_invalid_spec().length());
   }
 }  // namespace mojo
@@ -1533,7 +1634,7 @@ to valid getter return types:
 | `pending_receiver<Foo>`      | `mojo::PendingReceiver<Foo>`
 | `pending_associated_remote<Foo>`    | `mojo::PendingAssociatedRemote<Foo>`
 | `pending_associated_receiver<Foo>`    | `mojo::PendingAssociatedReceiver<Foo>`
-| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `base::StringPiece`, and `WTF::String` (Blink).
+| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `std::string_view`, and `WTF::String` (Blink).
 | `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::array<T, N>`, `std::vector<T>`, `WTF::Vector<T>` (Blink), etc.
 | `array<T, N>`                | Similar to the above, but the length of the data must be always the same as `N`.
 | `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, `WTF::HashMap<T>` (Blink), etc.

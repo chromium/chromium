@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (use_blink) {
@@ -55,6 +56,8 @@ if (use_blink) {
       "//storage/browser",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     if (is_android) {
       sources += [
         "android/battery_status_listener_android.cc",
@@ -79,8 +82,8 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//net/android:net_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -131,7 +134,7 @@ source_set("common") {
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/ios:unit_tests",
     "//components/download/internal/background_service/test:test_support",
-    "//ios/chrome/browser/download/background_service:background_service",
+    "//ios/chrome/browser/download/model/background_service:background_service",
   ]
 
   deps = [
@@ -145,6 +148,8 @@ source_set("common") {
   if (use_blink) {
     deps += [ "//storage/browser" ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("storage") {
@@ -170,7 +175,7 @@ source_set("storage") {
     "//components/download/content/factory",
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/test:test_support",
-    "//ios/chrome/browser/download/background_service",
+    "//ios/chrome/browser/download/model/background_service",
   ]
 
   deps = [
@@ -182,6 +187,8 @@ source_set("storage") {
     "//services/network/public/mojom:url_loader_base",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

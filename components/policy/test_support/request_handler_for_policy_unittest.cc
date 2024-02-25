@@ -157,9 +157,10 @@ TEST_F(RequestHandlerForPolicyTest, HandleRequest_Success_NoSignedPolicies) {
       GetDeviceManagementResponse();
 
   ASSERT_EQ(device_management_response.policy_response().responses_size(), 1);
+  const em::PolicyFetchResponse& fetch_response =
+      device_management_response.policy_response().responses(0);
   em::PolicyData policy_data;
-  policy_data.ParseFromString(
-      device_management_response.policy_response().responses(0).policy_data());
+  policy_data.ParseFromString(fetch_response.policy_data());
   EXPECT_EQ(policy_data.policy_type(),
             dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   EXPECT_EQ(policy_data.request_token(), client_info.device_token);
@@ -172,9 +173,23 @@ TEST_F(RequestHandlerForPolicyTest, HandleRequest_Success_NoSignedPolicies) {
   EXPECT_EQ(policy_data.username(), kUsername);
   EXPECT_EQ(policy_data.policy_invalidation_topic(), kPolicyInvalidationTopic);
   EXPECT_FALSE(policy_data.has_public_key_version());
+  EXPECT_TRUE(fetch_response.policy_data_signature().empty());
 }
 
-TEST_F(RequestHandlerForPolicyTest,
+class RequestHandlerForPolicyTestWithParametrizedSignatureType
+    : public RequestHandlerForPolicyTest,
+      public testing::WithParamInterface<
+          em::PolicyFetchRequest::SignatureType> {
+ public:
+  RequestHandlerForPolicyTestWithParametrizedSignatureType() = default;
+  ~RequestHandlerForPolicyTestWithParametrizedSignatureType() override =
+      default;
+  em::PolicyFetchRequest::SignatureType GetSignatureTypeParam() {
+    return GetParam();
+  }
+};
+
+TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,
        HandleRequest_Success_SignedPoliciesWithoutClientKey) {
   ClientStorage::ClientInfo client_info;
   client_info.device_token = kDeviceToken;
@@ -198,7 +213,7 @@ TEST_F(RequestHandlerForPolicyTest,
       device_management_request.mutable_policy_request()->add_requests();
   fetch_request->set_policy_type(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType);
-  fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  fetch_request->set_signature_type(GetSignatureTypeParam());
 
   SetDeviceTokenHeader(kDeviceToken);
   SetPayload(device_management_request);
@@ -228,9 +243,11 @@ TEST_F(RequestHandlerForPolicyTest,
   EXPECT_FALSE(fetch_response.new_public_key_verification_signature_deprecated()
                    .empty());
   EXPECT_TRUE(fetch_response.new_public_key_signature().empty());
+  EXPECT_EQ(fetch_response.policy_data_signature_type(),
+            GetSignatureTypeParam());
 }
 
-TEST_F(RequestHandlerForPolicyTest,
+TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,
        HandleRequest_Success_SignedPoliciesWithClientKey) {
   ClientStorage::ClientInfo client_info;
   client_info.device_token = kDeviceToken;
@@ -254,7 +271,7 @@ TEST_F(RequestHandlerForPolicyTest,
       device_management_request.mutable_policy_request()->add_requests();
   fetch_request->set_policy_type(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType);
-  fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  fetch_request->set_signature_type(GetSignatureTypeParam());
   // Sets client key to a key different than the current key in signature
   // provider (1), to force setting |new_public_key_signature| in the fetch
   // response.
@@ -288,10 +305,13 @@ TEST_F(RequestHandlerForPolicyTest,
   EXPECT_FALSE(fetch_response.new_public_key_verification_signature_deprecated()
                    .empty());
   EXPECT_FALSE(fetch_response.new_public_key_signature().empty());
+  EXPECT_EQ(fetch_response.policy_data_signature_type(),
+            GetSignatureTypeParam());
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(RequestHandlerForPolicyTest, HandleRequest_Success_ExtensionPolicies) {
+TEST_F(RequestHandlerForPolicyTest,
+       HandleRequest_Success_UnsignedExtensionPolicies) {
   ClientStorage::ClientInfo client_info;
   client_info.device_token = kDeviceToken;
   client_info.device_id = kDeviceId;
@@ -366,7 +386,7 @@ TEST_F(RequestHandlerForPolicyTest,
   EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
 }
 
-TEST_F(RequestHandlerForPolicyTest,
+TEST_P(RequestHandlerForPolicyTestWithParametrizedSignatureType,
        HandleRequest_ExtensionsInPublicAccounts_SetCorrectPolicyDataUsername) {
   ClientStorage::ClientInfo client_info;
   client_info.device_token = kDeviceToken;
@@ -395,15 +415,13 @@ TEST_F(RequestHandlerForPolicyTest,
   em::PolicyFetchRequest* extension_request =
       device_management_request.mutable_policy_request()->add_requests();
   extension_request->set_policy_type(dm_protocol::kChromeExtensionPolicyType);
-  extension_request->set_signature_type(
-      enterprise_management::PolicyFetchRequest::SHA1_RSA);
+  extension_request->set_signature_type(GetSignatureTypeParam());
   em::PolicyFetchRequest* public_account_request =
       device_management_request.mutable_policy_request()->add_requests();
   public_account_request->set_policy_type(
       dm_protocol::kChromePublicAccountPolicyType);
   public_account_request->set_settings_entity_id(kPublicAccountEntityId);
-  public_account_request->set_signature_type(
-      enterprise_management::PolicyFetchRequest::SHA1_RSA);
+  public_account_request->set_signature_type(GetSignatureTypeParam());
 
   SetDeviceTokenHeader(kDeviceToken);
   SetPayload(device_management_request);
@@ -422,6 +440,8 @@ TEST_F(RequestHandlerForPolicyTest,
   em::PolicyData extension_policy_data;
   extension_policy_data.ParseFromString(extension_fetch_response.policy_data());
   EXPECT_EQ(extension_policy_data.username(), kPublicAccountEntityId);
+  EXPECT_EQ(extension_fetch_response.policy_data_signature_type(),
+            GetSignatureTypeParam());
 
   const em::PolicyFetchResponse& public_account_fetch_response =
       device_management_response.policy_response().responses(0);
@@ -429,7 +449,15 @@ TEST_F(RequestHandlerForPolicyTest,
   public_account_policy_data.ParseFromString(
       public_account_fetch_response.policy_data());
   EXPECT_EQ(public_account_policy_data.username(), kPublicAccountEntityId);
+  EXPECT_EQ(public_account_fetch_response.policy_data_signature_type(),
+            GetSignatureTypeParam());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+INSTANTIATE_TEST_SUITE_P(
+    SignatureType,
+    RequestHandlerForPolicyTestWithParametrizedSignatureType,
+    testing::Values(em::PolicyFetchRequest::SHA1_RSA,
+                    em::PolicyFetchRequest::SHA256_RSA));
 
 }  // namespace policy

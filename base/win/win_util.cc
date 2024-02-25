@@ -7,19 +7,18 @@
 #include <aclapi.h>
 #include <cfgmgr32.h>
 #include <initguid.h>
-#include <lm.h>
-#include <powrprof.h>
-#include <shobjidl.h>  // Must be before propkey.
-
 #include <inspectable.h>
+#include <lm.h>
 #include <mdmregistration.h>
 #include <objbase.h>
+#include <powrprof.h>
 #include <propkey.h>
 #include <psapi.h>
 #include <roapi.h>
 #include <sddl.h>
 #include <setupapi.h>
 #include <shellscalingapi.h>
+#include <shobjidl.h>  // Must be before propkey.
 #include <signal.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -34,6 +33,8 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -60,7 +61,6 @@
 #include "base/win/shlwapi.h"
 #include "base/win/static_constants.h"
 #include "base/win/windows_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -384,10 +384,10 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
 static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
-  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   if (!token)
     return false;
-  absl::optional<std::wstring> sid_string = token->User().ToSddlString();
+  std::optional<std::wstring> sid_string = token->User().ToSddlString();
   if (!sid_string)
     return false;
   *user_sid = *sid_string;
@@ -526,7 +526,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   // Once this is set, it shouldn't be overridden, and it should be the ultimate
   // return value, so that this method returns the same result whether or not
   // reason is NULL.
-  absl::optional<bool> ret;
+  std::optional<bool> ret;
 
   if (GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
     if (reason) {
@@ -740,7 +740,7 @@ std::wstring GetWindowObjectName(HANDLE handle) {
   return object_name;
 }
 
-bool IsRunningUnderDesktopName(WStringPiece desktop_name) {
+bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   HDESK thread_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
   if (!thread_desktop)
     return false;
@@ -776,28 +776,6 @@ bool IsCurrentSessionRemote() {
 
   return current_session_id != glass_session_id;
 }
-
-#if !defined(OFFICIAL_BUILD)
-bool IsAppVerifierEnabled(const std::wstring& process_name) {
-  RegKey key;
-
-  // Look for GlobalFlag in the IFEO\chrome.exe key. If it is present then
-  // Application Verifier or gflags.exe are configured. Most GlobalFlag
-  // settings are experimentally determined to be incompatible with renderer
-  // code integrity and a safe set is not known so any GlobalFlag entry is
-  // assumed to mean that Application Verifier (or pageheap) are enabled.
-  // The settings are propagated to both 64-bit WOW6432Node versions of the
-  // registry on 64-bit Windows, so only one check is needed.
-  return key.Open(
-             HKEY_LOCAL_MACHINE,
-             (L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File "
-              L"Execution Options\\" +
-              process_name)
-                 .c_str(),
-             KEY_READ | KEY_WOW64_64KEY) == ERROR_SUCCESS &&
-         key.HasValue(L"GlobalFlag");
-}
-#endif  // !defined(OFFICIAL_BUILD)
 
 bool IsAppVerifierLoaded() {
   return GetModuleHandleA(kApplicationVerifierDllName);

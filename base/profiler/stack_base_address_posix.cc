@@ -26,12 +26,12 @@ namespace base {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-absl::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
+std::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
   char line[1024];
   base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
   uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
   if (!fp)
-    return absl::nullopt;
+    return std::nullopt;
   while (fgets(line, sizeof(line), fp.get()) != nullptr) {
     uintptr_t start, end;
     if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
@@ -39,7 +39,7 @@ absl::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
         return end;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif
 
@@ -71,14 +71,14 @@ uintptr_t GetThreadStackBaseAddressImpl(pthread_t pthread_id) {
 
 }  // namespace
 
-absl::optional<uintptr_t> GetThreadStackBaseAddress(PlatformThreadId id,
-                                                    pthread_t pthread_id) {
+std::optional<uintptr_t> GetThreadStackBaseAddress(PlatformThreadId id,
+                                                   pthread_t pthread_id) {
 #if BUILDFLAG(IS_LINUX)
   // We don't currently support Linux; pthread_getattr_np() fails for the main
   // thread after zygote forks. https://crbug.com/1394278. Since we don't
   // support stack profiling at all on Linux, we just return nullopt instead of
   // trying to work around the problem.
-  return absl::nullopt;
+  return std::nullopt;
 #else
   const bool is_main_thread = id == GetCurrentProcId();
   if (is_main_thread) {
@@ -88,7 +88,7 @@ absl::optional<uintptr_t> GetThreadStackBaseAddress(PlatformThreadId id,
     // read or parse the file. So, try to read the maps to get the main thread
     // stack base and cache the result. Other thread base addresses are sourced
     // from pthread state so are cheap to get.
-    static const absl::optional<uintptr_t> main_thread_base_address =
+    static const std::optional<uintptr_t> main_thread_base_address =
         GetAndroidMainThreadStackBaseAddressImpl();
     return main_thread_base_address;
 #elif BUILDFLAG(IS_CHROMEOS)

@@ -48,10 +48,10 @@ bool CheckSendReceiveBufferSize(const UDPSocketOptions* options,
   return true;
 }
 
-absl::optional<network::mojom::blink::RestrictedUDPSocketMode>
+std::optional<network::mojom::blink::RestrictedUDPSocketMode>
 InferUDPSocketMode(const UDPSocketOptions* options,
                    ExceptionState& exception_state) {
-  absl::optional<network::mojom::blink::RestrictedUDPSocketMode> mode;
+  std::optional<network::mojom::blink::RestrictedUDPSocketMode> mode;
   if (options->hasRemoteAddress() && options->hasRemotePort()) {
     mode = network::mojom::RestrictedUDPSocketMode::CONNECTED;
   } else if (options->hasRemoteAddress() || options->hasRemotePort()) {
@@ -284,8 +284,8 @@ void UDPSocket::FinishOpen(
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
         socket_listener,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr) {
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK) {
     auto close_callback = base::BarrierCallback<ScriptValue>(
         /*num_callbacks=*/2, WTF::BindOnce(&UDPSocket::OnBothStreamsClosed,
@@ -326,8 +326,8 @@ void UDPSocket::OnConnectedUDPSocketOpened(
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
         socket_listener,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr) {
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr) {
   FinishOpen(network::mojom::RestrictedUDPSocketMode::CONNECTED,
              std::move(socket_listener), result, local_addr, peer_addr);
 }
@@ -336,10 +336,10 @@ void UDPSocket::OnBoundUDPSocketOpened(
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
         socket_listener,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   FinishOpen(network::mojom::RestrictedUDPSocketMode::BOUND,
              std::move(socket_listener), result, local_addr,
-             /*peer_addr=*/absl::nullopt);
+             /*peer_addr=*/std::nullopt);
 }
 
 void UDPSocket::FailOpenWith(int32_t error) {

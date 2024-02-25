@@ -172,6 +172,7 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 void CdmModule::InitializeCdmModule() {
   DCHECK(initialized_);
   DCHECK(initialize_cdm_module_func_);
+  TRACE_EVENT0("media", "CdmModule::InitializeCdmModule");
   initialize_cdm_module_func_();
 }
 

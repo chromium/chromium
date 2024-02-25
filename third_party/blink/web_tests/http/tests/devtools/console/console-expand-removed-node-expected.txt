@@ -1,8 +1,8 @@
 Tests that removed Elements logged in the Console are properly formatted.
 
 Adding element
-console-expand-removed-node.js:22 <div>…</div>
+console-expand-removed-node.js:23 <div>…</div>
 Removing element
 Expanding element in Console
-console-expand-removed-node.js:22 <div></div>
+console-expand-removed-node.js:23 <div></div>
 

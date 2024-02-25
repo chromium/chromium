@@ -101,6 +101,13 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
+
+  if (base::StartsWith(request.relative_url, download_path()) &&
+      !download_delay_.is_zero()) {
+    VLOG(0) << "Delay download response by: " << download_delay_;
+    response.reset(new net::test_server::DelayedHttpResponse(download_delay_));
+  }
+
   response->set_code(net::HTTP_OK);
   if (base::StartsWith(request.relative_url, device_management_path())) {
     response->set_content_type("application/x-protobuf");

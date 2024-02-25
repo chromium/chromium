@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -95,8 +95,8 @@ em::RemoteCommand GenerateCommandProto(
     base::TimeDelta age_of_command,
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
-    absl::optional<ash::cros_healthd::mojom::DiagnosticRoutineEnum> routine,
-    absl::optional<base::Value::Dict> params) {
+    std::optional<ash::cros_healthd::mojom::DiagnosticRoutineEnum> routine,
+    std::optional<base::Value::Dict> params) {
   em::RemoteCommand command_proto;
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_RUN_DIAGNOSTIC_ROUTINE);
   command_proto.set_command_id(unique_id);
@@ -242,7 +242,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingRoutine) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::Seconds(30),
                            /*terminate_upon_input=*/false,
-                           /*routine=*/absl::nullopt, std::move(params_dict)),
+                           /*routine=*/std::nullopt, std::move(params_dict)),
       em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
@@ -260,7 +260,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingParamDict) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::Seconds(30),
                            /*terminate_upon_input=*/false, kValidRoutineEnum,
-                           /*params=*/absl::nullopt),
+                           /*params=*/std::nullopt),
       em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());

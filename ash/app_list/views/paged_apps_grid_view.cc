@@ -32,6 +32,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -206,7 +207,7 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
   bool is_active_page_ = false;
 
   const bool is_jelly_enabled_;
-  const raw_ptr<PagedAppsGridView, ExperimentalAsh> paged_apps_grid_view_;
+  const raw_ptr<PagedAppsGridView> paged_apps_grid_view_;
 };
 
 PagedAppsGridView::PagedAppsGridView(
@@ -254,8 +255,8 @@ void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
                                              int max_rows_on_first_page,
                                              int max_rows) {
   DCHECK_LE(max_rows_on_first_page, max_rows);
-  const absl::optional<int> first_page_size = TilesPerPage(0);
-  const absl::optional<int> default_page_size = TilesPerPage(1);
+  const std::optional<int> first_page_size = TilesPerPage(0);
+  const std::optional<int> default_page_size = TilesPerPage(1);
 
   max_rows_on_first_page_ = max_rows_on_first_page;
   max_rows_ = max_rows;
@@ -286,7 +287,7 @@ void PagedAppsGridView::OnGestureEvent(ui::GestureEvent* event) {
 ////////////////////////////////////////////////////////////////////////////////
 // views::View:
 
-void PagedAppsGridView::Layout() {
+void PagedAppsGridView::Layout(PassKey) {
   if (ignore_layout())
     return;
 
@@ -449,7 +450,7 @@ void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
                             kMaxAppListAppMovingType);
 }
 
-absl::optional<int> PagedAppsGridView::GetMaxRowsInPage(int page) const {
+std::optional<int> PagedAppsGridView::GetMaxRowsInPage(int page) const {
   return page == 0 ? max_rows_on_first_page_ : max_rows_;
 }
 
@@ -526,7 +527,7 @@ void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
     RecenterItemsContainer();
 }
 
-absl::optional<PagedAppsGridView::VisibleItemIndexRange>
+std::optional<PagedAppsGridView::VisibleItemIndexRange>
 PagedAppsGridView::GetVisibleItemIndexRange() const {
   // Expect that there is no active page transitions. Otherwise, the return
   // value can be obsolete.
@@ -534,14 +535,14 @@ PagedAppsGridView::GetVisibleItemIndexRange() const {
 
   const int selected_page = pagination_model_.selected_page();
   if (selected_page < 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get the selected page's item count.
   const int on_page_item_count = GetNumberOfItemsOnPage(selected_page);
 
   // Return early if the selected page is empty.
   if (!on_page_item_count)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Calculate the index of the first view on the selected page.
   int start_view_index = 0;
@@ -552,20 +553,6 @@ PagedAppsGridView::GetVisibleItemIndexRange() const {
                                start_view_index + on_page_item_count - 1);
 }
 
-base::ScopedClosureRunner PagedAppsGridView::LockAppsGridOpacity() {
-  lock_opacity_ = true;
-
-  base::OnceClosure reset_closure = base::BindOnce(
-      [](base::WeakPtr<PagedAppsGridView> weak_ptr) {
-        if (!weak_ptr)
-          return;
-
-        weak_ptr->lock_opacity_ = false;
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  return base::ScopedClosureRunner(std::move(reset_closure));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // PaginationModelObserver:
 
@@ -573,7 +560,7 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   items_container()->layer()->SetTransform(gfx::Transform());
   if (IsDragging()) {
-    Layout();
+    DeprecatedLayoutImmediately();
     UpdateDropTargetRegion();
     MaybeStartPageFlipTimer(last_drag_point());
   } else {
@@ -590,7 +577,7 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
     } else {
       ClearSelectedView();
     }
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 }
 
@@ -604,12 +591,12 @@ void PagedAppsGridView::TransitionStarting() {
 void PagedAppsGridView::TransitionStarted() {
   if (abs(pagination_model_.transition().target_page -
           pagination_model_.selected_page()) > 1) {
-    Layout();
+    DeprecatedLayoutImmediately();
   }
 
   pagination_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
-  pagination_metrics_tracker_->Start(metrics_util::ForSmoothness(
+  pagination_metrics_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportPaginationSmoothness)));
 }
 
@@ -816,10 +803,10 @@ void PagedAppsGridView::EndAppsGridCardifiedView() {
 
 void PagedAppsGridView::AnimateCardifiedState() {
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout; force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     DCHECK(!ignore_layout_);
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
@@ -848,7 +835,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   for (auto& background_card : background_cards_) {
     reporters.push_back(std::make_unique<ui::AnimationThroughputReporter>(
         background_card->layer()->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             &ReportCardifiedSmoothness, cardified_state_))));
   }
 
@@ -1221,10 +1208,10 @@ void PagedAppsGridView::AnimateOnNudgeRemoved() {
   UpdateTilePadding();
 
   if (GetWidget()) {
-    // Normally Layout() cancels any animations. At this point there may be a
-    // pending Layout(), force it now so that one isn't triggered part way
-    // through the animation. Further, ignore this layout so that the position
-    // isn't reset.
+    // Normally layout cancels any animations. At this point there may be a
+    // pending layout; force it now so that one isn't triggered part way through
+    // the animation. Further, ignore this layout so that the position isn't
+    // reset.
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
   }
@@ -1251,5 +1238,8 @@ void PagedAppsGridView::StackCardsAtBottom() {
     items_container()->layer()->StackAtBottom(background_cards_[i]->layer());
   }
 }
+
+BEGIN_METADATA(PagedAppsGridView)
+END_METADATA
 
 }  // namespace ash

@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelPrope
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.MENU_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SHOULD_SHOW_SHARE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_CURSOR_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
@@ -47,24 +48,24 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder for TabGridDialog.
- */
+/** ViewBinder for TabGridDialog. */
 class TabGridPanelViewBinder {
-    /**
-     * ViewHolder class to get access to all {@link View}s inside the TabGridDialog.
-     */
+    /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGroupUiToolbarView toolbarView;
         public final RecyclerView contentView;
-        @Nullable
-        public TabGridDialogView dialogView;
+        @Nullable public TabGridDialogView dialogView;
+        @Nullable public View shareBar;
 
-        ViewHolder(TabGroupUiToolbarView toolbarView, RecyclerView contentView,
-                @Nullable TabGridDialogView dialogView) {
+        ViewHolder(
+                TabGroupUiToolbarView toolbarView,
+                RecyclerView contentView,
+                @Nullable TabGridDialogView dialogView,
+                @Nullable View shareBar) {
             this.toolbarView = toolbarView;
             this.contentView = contentView;
             this.dialogView = dialogView;
+            this.shareBar = shareBar;
         }
     }
 
@@ -133,7 +134,8 @@ class TabGridPanelViewBinder {
             viewHolder.dialogView.setScrimClickRunnable(model.get(SCRIMVIEW_CLICK_RUNNABLE));
         } else if (IS_DIALOG_VISIBLE == propertyKey) {
             if (model.get(IS_DIALOG_VISIBLE)) {
-                viewHolder.dialogView.resetDialog(viewHolder.toolbarView, viewHolder.contentView);
+                viewHolder.dialogView.resetDialog(
+                        viewHolder.toolbarView, viewHolder.contentView, viewHolder.shareBar);
                 viewHolder.dialogView.showDialog();
             } else {
                 viewHolder.dialogView.hideDialog();
@@ -176,9 +178,11 @@ class TabGridPanelViewBinder {
                 RecyclerView view = viewHolder.contentView;
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
-                    view.post(() -> {
-                        setScrollIndex(model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
-                    });
+                    view.post(
+                            () -> {
+                                setScrollIndex(
+                                        model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
+                            });
                     return;
                 }
                 setScrollIndex(
@@ -200,42 +204,38 @@ class TabGridPanelViewBinder {
         } else if (TITLE_CURSOR_VISIBILITY == propertyKey) {
             viewHolder.toolbarView.setTitleCursorVisibility(model.get(TITLE_CURSOR_VISIBILITY));
         } else if (IS_TITLE_TEXT_FOCUSED == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
-                return;
-            }
+            viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
-                return;
-            }
+            viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.setLeftButtonContentDescription(
-                        model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
-            }
+            viewHolder.toolbarView.setLeftButtonContentDescription(
+                    model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
+        } else if (SHOULD_SHOW_SHARE == propertyKey) {
+            viewHolder.dialogView.updateShouldShowShare(model.get(SHOULD_SHOW_SHARE));
         }
     }
 
-    private static void setScrollIndex(BrowserControlsStateProvider browserControlsStateProvider,
-            RecyclerView view, int index) {
+    private static void setScrollIndex(
+            BrowserControlsStateProvider browserControlsStateProvider,
+            RecyclerView view,
+            int index) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
         int offset = computeOffset(view, layoutManager, browserControlsStateProvider);
         layoutManager.scrollToPositionWithOffset(index, offset);
     }
 
-    private static int computeOffset(RecyclerView view, LinearLayoutManager layoutManager,
+    private static int computeOffset(
+            RecyclerView view,
+            LinearLayoutManager layoutManager,
             BrowserControlsStateProvider browserControlsStateProvider) {
         int width = view.getWidth();
         int height = view.getHeight();
         int cardHeight = 0;
         if (layoutManager instanceof GridLayoutManager) {
             int cardWidth = width / ((GridLayoutManager) layoutManager).getSpanCount();
-            cardHeight = TabUtils.deriveGridCardHeight(
-                    cardWidth, view.getContext(), browserControlsStateProvider);
+            cardHeight =
+                    TabUtils.deriveGridCardHeight(
+                            cardWidth, view.getContext(), browserControlsStateProvider);
         } else {
             // Avoid divide by 0 when there are no tabs.
             if (layoutManager.getItemCount() == 0) return 0;

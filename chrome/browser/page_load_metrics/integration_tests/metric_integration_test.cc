@@ -13,6 +13,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -154,6 +155,18 @@ const ukm::mojom::UkmEntryPtr MetricIntegrationTest::GetEntry() {
   return std::move(kv->second);
 }
 
+std::vector<double> MetricIntegrationTest::GetPageLoadMetricsAsList(
+    base::StringPiece metric_name) {
+  std::vector<double> metrics;
+  for (const ukm::mojom::UkmEntry* entry :
+       ukm_recorder_->GetEntriesByName(ukm::builders::PageLoad::kEntryName)) {
+    if (auto* rs = ukm_recorder_->GetEntryMetric(entry, metric_name)) {
+      metrics.push_back(*rs);
+    }
+  }
+  return metrics;
+}
+
 void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
                                                     int64_t expected_value) {
   ukm::mojom::UkmEntryPtr entry = GetEntry();
@@ -176,6 +189,12 @@ void MetricIntegrationTest::
   for (const auto& kv : merged_entries) {
     EXPECT_FALSE(TestUkmRecorder::EntryHasMetric(kv.second.get(), metric_name));
   }
+}
+
+void MetricIntegrationTest::ExpectUkmEventNotRecorded(
+    base::StringPiece event_name) {
+  auto merged_entries = ukm_recorder().GetMergedEntriesByName(event_name);
+  EXPECT_EQ(merged_entries.size(), 0u);
 }
 
 void MetricIntegrationTest::ExpectUKMPageLoadMetricGreaterThan(
@@ -309,7 +328,7 @@ void MetricIntegrationTest::ExpectMetricInLastUKMUpdateTraceEventNear(
 
   base::Value::Dict arg_dict;
   last_update_event->GetArgAsDict("ukm_page_load_timing_update", &arg_dict);
-  absl::optional<double> metric_value = arg_dict.FindDouble(metric_name);
+  std::optional<double> metric_value = arg_dict.FindDouble(metric_name);
   ASSERT_TRUE(metric_value.has_value());
 
   EXPECT_NEAR(expected_value, *metric_value, epsilon);

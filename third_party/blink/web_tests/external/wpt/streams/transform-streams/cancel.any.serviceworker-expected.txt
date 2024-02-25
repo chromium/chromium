@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] cancelling the readable side should call transformer.cancel()
+  assert_equals: transformer.cancel() should be called with the passed reason expected (object) object "error1: bad things are happening!" but got (undefined) undefined
+[FAIL] cancelling the readable side should reject if transformer.cancel() throws
+  assert_unreached: Should have rejected: readable.cancel() should reject with thrownError Reached unreachable code
+[FAIL] aborting the writable side should call transformer.abort()
+  assert_equals: transformer.abort() should be called with the passed reason expected (object) object "error1: bad things are happening!" but got (undefined) undefined
+[FAIL] aborting the writable side should reject if transformer.cancel() throws
+  assert_unreached: Should have rejected: writable.abort() should reject with thrownError Reached unreachable code
+[FAIL] closing the writable side should reject if a parallel transformer.cancel() throws
+  assert_unreached: Should have rejected: cancelPromise should reject with thrownError Reached unreachable code
+[FAIL] readable.cancel() and a parallel writable.close() should reject if a transformer.cancel() calls controller.error()
+  assert_unreached: Should have rejected: cancelPromise should reject with thrownError Reached unreachable code
+[FAIL] writable.abort() and readable.cancel() should reject if a transformer.cancel() calls controller.error()
+  assert_unreached: Should have rejected: cancelPromise should reject with thrownError Reached unreachable code
+Harness: the test ran to completion.
+

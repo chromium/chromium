@@ -31,6 +31,9 @@ namespace views {
 
 namespace {
 
+// This key indicates that a WebContents is used by a WebView.
+const void* const kIsWebViewContentsKey = &kIsWebViewContentsKey;
+
 // A testing stub that creates web contents.
 WebView::WebContentsCreator* GetCreatorForTesting() {
   static base::NoDestructor<WebView::WebContentsCreator> creator;
@@ -66,14 +69,18 @@ WebView::ScopedWebContentsCreatorForTesting::
 
 WebView::WebView(content::BrowserContext* browser_context) {
   set_suppress_default_focus_handling();
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   SetBrowserContext(browser_context);
 }
 
 WebView::~WebView() {
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
   SetWebContents(nullptr);  // Make sure all necessary tear-down takes place.
   browser_context_ = nullptr;
+}
+
+// static
+bool WebView::IsWebViewContents(const content::WebContents* web_contents) {
+  return web_contents->GetUserData(kIsWebViewContentsKey);
 }
 
 content::WebContents* WebView::GetWebContents(base::Location creator_location) {
@@ -104,6 +111,8 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   // the same hierarchy at a later point in time.
   if (replacement) {
     replacement->SetColorProviderSource(GetWidget());
+    replacement->SetUserData(kIsWebViewContentsKey,
+                             std::make_unique<base::SupportsUserData::Data>());
   }
 
   // web_contents() now returns |replacement| from here onwards.
@@ -292,6 +301,14 @@ void WebView::AddedToWidget() {
   }
 }
 
+void WebView::RemovedFromWidget() {
+  // Immediately clear the accessible parent upon being removed, as it's a
+  // weak reference to an object that is about to be destroyed.
+  if (holder_->native_view()) {
+    holder_->SetParentAccessible(nullptr);
+  }
+}
+
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
   if (web_contents() && !web_contents()->IsCrashed()) {
     content::RenderWidgetHostView* host_view =
@@ -427,7 +444,7 @@ void WebView::AttachWebContentsNativeView() {
   if (bg_color) {
     holder_->SetBackgroundColorWhenClipped(bg_color->color());
   } else {
-    holder_->SetBackgroundColorWhenClipped(absl::nullopt);
+    holder_->SetBackgroundColorWhenClipped(std::nullopt);
   }
 
   holder_->Attach(view_to_attach);
@@ -468,10 +485,12 @@ void WebView::UpdateCrashedOverlayView() {
 }
 
 void WebView::NotifyAccessibilityWebContentsChanged() {
-  content::RenderFrameHost* rfh =
-      web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
-  GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
-                                                 : ui::AXTreeIDUnknown());
+  if (!lock_child_ax_tree_id_override_) {
+    content::RenderFrameHost* rfh =
+        web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
+    GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
+                                                   : ui::AXTreeIDUnknown());
+  }
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 
@@ -513,7 +532,7 @@ void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
   }
 }
 
-BEGIN_METADATA(WebView, View)
+BEGIN_METADATA(WebView)
 END_METADATA
 
 }  // namespace views

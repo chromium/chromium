@@ -8,6 +8,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -20,22 +21,29 @@ class PasswordManager_LeakWarningDialog;
 namespace password_manager::metrics_util {
 
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
-    PasswordAccountStorageUserState user_state) {
+    password_manager::features_util::PasswordAccountStorageUserState
+        user_state) {
   switch (user_state) {
-    case PasswordAccountStorageUserState::kSignedOutUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedOutUser:
       return "SignedOutUser";
-    case PasswordAccountStorageUserState::kSignedOutAccountStoreUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedOutAccountStoreUser:
       return "SignedOutAccountStoreUser";
-    case PasswordAccountStorageUserState::kSignedInUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInUser:
       return "SignedInUser";
-    case PasswordAccountStorageUserState::kSignedInUserSavingLocally:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInUserSavingLocally:
       return "SignedInUserSavingLocally";
-    case PasswordAccountStorageUserState::kSignedInAccountStoreUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSignedInAccountStoreUser:
       return "SignedInAccountStoreUser";
-    case PasswordAccountStorageUserState::
+    case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedInAccountStoreUserSavingLocally:
       return "SignedInAccountStoreUserSavingLocally";
-    case PasswordAccountStorageUserState::kSyncUser:
+    case password_manager::features_util::PasswordAccountStorageUserState::
+        kSyncUser:
       return "SyncUser";
   }
   NOTREACHED();
@@ -43,13 +51,17 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
 }
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
-    PasswordAccountStorageUsageLevel usage_level) {
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        usage_level) {
   switch (usage_level) {
-    case PasswordAccountStorageUsageLevel::kNotUsingAccountStorage:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kNotUsingAccountStorage:
       return "NotUsingAccountStorage";
-    case PasswordAccountStorageUsageLevel::kUsingAccountStorage:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kUsingAccountStorage:
       return "UsingAccountStorage";
-    case PasswordAccountStorageUsageLevel::kSyncing:
+    case password_manager::features_util::PasswordAccountStorageUsageLevel::
+        kSyncing:
       return "Syncing";
   }
   NOTREACHED();
@@ -68,8 +80,9 @@ void LeakDialogMetricsRecorder::LogLeakDialogTypeAndDismissalReason(
                                 reason);
 
   // For UKM, sample the recorded events.
-  if (base::RandDouble() > ukm_sampling_rate_)
+  if (base::RandDouble() > ukm_sampling_rate_) {
     return;
+  }
 
   // The entire event is made up of these two fields, so we can build and
   // record it in one step.
@@ -98,8 +111,9 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    autofill::mojom::SubmissionIndicatorEvent submission_event,
-    absl::optional<PasswordAccountStorageUserState> user_state) {
+    std::optional<
+        password_manager::features_util::PasswordAccountStorageUserState>
+        user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -110,31 +124,17 @@ void LogSaveUIDismissalReason(
         "PasswordManager.SaveUIDismissalReason." + suffix, reason,
         NUM_UI_RESPONSES);
   }
-
-  if (submission_event ==
-      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason",
-        reason, NUM_UI_RESPONSES);
-  }
 }
 
-void LogUpdateUIDismissalReason(
-    UIDismissalReason reason,
-    autofill::mojom::SubmissionIndicatorEvent submission_event) {
+void LogUpdateUIDismissalReason(UIDismissalReason reason) {
   base::UmaHistogramEnumeration("PasswordManager.UpdateUIDismissalReason",
                                 reason, NUM_UI_RESPONSES);
-
-  if (submission_event ==
-      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason",
-        reason, NUM_UI_RESPONSES);
-  }
 }
 
-void LogMoveUIDismissalReason(UIDismissalReason reason,
-                              PasswordAccountStorageUserState user_state) {
+void LogMoveUIDismissalReason(
+    UIDismissalReason reason,
+    password_manager::features_util::PasswordAccountStorageUserState
+        user_state) {
   base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -179,18 +179,6 @@ void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action) {
                                 action, AUTO_SIGNIN_PROMO_ACTION_COUNT);
 }
 
-void LogAccountChooserUserActionOneAccount(AccountChooserUserAction action) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.AccountChooserDialogOneAccount", action,
-      ACCOUNT_CHOOSER_ACTION_COUNT);
-}
-
-void LogAccountChooserUserActionManyAccounts(AccountChooserUserAction action) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.AccountChooserDialogMultipleAccounts", action,
-      ACCOUNT_CHOOSER_ACTION_COUNT);
-}
-
 void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation) {
   switch (mediation) {
@@ -225,12 +213,8 @@ void LogPasswordReuse(int saved_passwords,
                                 PasswordType::PASSWORD_TYPE_COUNT);
 }
 
-void LogPasswordDropdownShown(PasswordDropdownState state,
-                              bool off_the_record) {
+void LogPasswordDropdownShown(PasswordDropdownState state) {
   base::UmaHistogramEnumeration("PasswordManager.PasswordDropdownShown", state);
-
-  base::UmaHistogramBoolean("PasswordManager.DropdownShown.OffTheRecord",
-                            off_the_record);
 }
 
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
@@ -274,7 +258,7 @@ void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
       blocklist_entries_count);
 }
 
-void LogPasswordSettingsReauthResult(ReauthResult result) {
+void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);
 }
@@ -288,9 +272,15 @@ void LogDeleteUndecryptableLoginsReturnValue(
 void LogNewlySavedPasswordMetrics(
     bool is_generated_password,
     bool is_username_empty,
-    PasswordAccountStorageUsageLevel account_storage_usage_level) {
+    password_manager::features_util::PasswordAccountStorageUsageLevel
+        account_storage_usage_level,
+    ukm::SourceId ukm_source_id) {
+  ukm::builders::PasswordManager_NewlySavedPassword ukm_entry_builder(
+      ukm_source_id);
+
   base::UmaHistogramBoolean("PasswordManager.NewlySavedPasswordIsGenerated",
                             is_generated_password);
+  ukm_entry_builder.SetIsPasswordGenerated(is_generated_password);
   std::string suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(
       account_storage_usage_level);
   base::UmaHistogramBoolean(
@@ -300,10 +290,13 @@ void LogNewlySavedPasswordMetrics(
   base::UmaHistogramBoolean(
       "PasswordManager.NewlySavedPasswordHasEmptyUsername.Overall",
       is_username_empty);
+  ukm_entry_builder.SetHasEmptyUsername(is_username_empty);
   base::UmaHistogramBoolean(
       base::StrCat({"PasswordManager.NewlySavedPasswordHasEmptyUsername.",
                     is_generated_password ? "AutoGenerated" : "UserCreated"}),
       is_username_empty);
+
+  ukm_entry_builder.Record(ukm::UkmRecorder::Get());
 }
 
 void LogGenerationDialogChoice(GenerationDialogChoice choice,
@@ -316,6 +309,10 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
     case PasswordGenerationType::kManual:
       base::UmaHistogramEnumeration(
           "KeyboardAccessory.GenerationDialogChoice.Manual", choice);
+      break;
+    case PasswordGenerationType::kTouchToFill:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.TouchToFill.PasswordGeneration.UserChoice", choice);
       break;
   };
 }  // namespace metrics_util
@@ -331,15 +328,9 @@ void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
   }
 }
 
-void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
-                                bool is_under_advanced_protection) {
+void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state) {
   base::UmaHistogramEnumeration("PasswordManager.IsSyncPasswordHashSaved",
                                 state);
-  if (is_under_advanced_protection) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser",
-        state);
-  }
 }
 
 void LogIsPasswordProtected(bool is_password_protected) {
@@ -405,6 +396,36 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
       interaction);
 }
 
+void LogProcessIncomingPasswordSharingInvitationResult(
+    ProcessIncomingPasswordSharingInvitationResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult", result);
+}
+
+void LogGroupedPasswordsResults(
+    const std::vector<password_manager::PasswordForm>& logins) {
+  auto is_grouped_match = [](const password_manager::PasswordForm& form) {
+    return form.match_type ==
+           password_manager::PasswordForm::MatchType::kGrouped;
+  };
+  GroupedPasswordFetchResult result = GroupedPasswordFetchResult::kNoMatches;
+  if (!logins.empty() && base::ranges::all_of(logins, is_grouped_match)) {
+    result = GroupedPasswordFetchResult::kOnlyGroupedMatches;
+  } else if (base::ranges::any_of(logins, is_grouped_match)) {
+    result = GroupedPasswordFetchResult::kBetterMatchesExist;
+  }
+  base::UmaHistogramEnumeration(
+      "PasswordManager.GetLogins.GroupedMatchesStatus", result);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void LogTouchToFillPasswordGenerationTriggerOutcome(
+    TouchToFillPasswordGenerationTriggerOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome", outcome);
+}
+#endif
+
 #if BUILDFLAG(IS_IOS)
 void RecordMigrationToOSCryptLatency(bool success,
                                      base::TimeDelta latency,
@@ -436,6 +457,17 @@ void RecordMigrationToOSCryptStatus(base::TimeTicks migration_start_time,
   base::UmaHistogramEnumeration("PasswordManager.MigrationToOSCrypt", status);
   base::UmaHistogramEnumeration(
       base::StrCat({"PasswordManager.MigrationToOSCrypt.", infix_for_store}),
+      status);
+}
+
+void RecordPasswordNotesMigrationToOSCryptStatus(
+    bool is_account_store,
+    PasswordNotesMigrationToOSCrypt status) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordNotesMigrationToOSCrypt", status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PasswordManager.PasswordNotesMigrationToOSCrypt.",
+                    is_account_store ? "AccountStore" : "ProfileStore"}),
       status);
 }
 #endif  // BUILDFLAG(IS_IOS)

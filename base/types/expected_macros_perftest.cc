@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/types/expected.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
@@ -113,57 +114,66 @@ void BenchmarkLoop(T* driver, ::benchmark::State* state) {
   }
 }
 
-// TODO(https://crbug.com/1404759): Update test-driving scripts to control
+// TODO(https://crbug.com/40251982): Update test-driving scripts to control
 // google_benchmark correctly and parse its output, so that these benchmarks'
 // results are included in bot output.
+
+// Registers a benchmark as a GTest test. This allows using legacy
+// --gtest_filter and --gtest_list_tests.
+// TODO(https://crbug.com/40251982): Clean this up after transitioning to
+// --benchmark_filter and --benchmark_list_tests.
+#define BENCHMARK_WITH_TEST(benchmark_name)      \
+  TEST(ExpectedMacrosPerfTest, benchmark_name) { \
+    BENCHMARK(benchmark_name);                   \
+  }
 
 void BM_ReturnIfError_Ok(::benchmark::State& state) {
   ReturnIfErrorLoop loop(1);
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_ReturnIfError_Ok);
+BENCHMARK_WITH_TEST(BM_ReturnIfError_Ok)
 
 void BM_ReturnIfError_Error(::benchmark::State& state) {
   ReturnIfErrorLoop loop{unexpected(BenchmarkError())};
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_ReturnIfError_Error);
+BENCHMARK_WITH_TEST(BM_ReturnIfError_Error)
 
 void BM_ReturnIfError_Annotate_Ok(::benchmark::State& state) {
   ReturnIfErrorWithAnnotateLoop loop(1);
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_ReturnIfError_Annotate_Ok);
+BENCHMARK_WITH_TEST(BM_ReturnIfError_Annotate_Ok)
 
 void BM_ReturnIfError_Annotate_Error(::benchmark::State& state) {
   ReturnIfErrorWithAnnotateLoop loop{unexpected(BenchmarkError())};
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_ReturnIfError_Annotate_Error);
+BENCHMARK_WITH_TEST(BM_ReturnIfError_Annotate_Error)
 
 void BM_AssignOrReturn_Ok(::benchmark::State& state) {
   AssignOrReturnLoop loop(1);
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_AssignOrReturn_Ok);
+BENCHMARK_WITH_TEST(BM_AssignOrReturn_Ok)
 
 void BM_AssignOrReturn_Error(::benchmark::State& state) {
   AssignOrReturnLoop loop{unexpected(BenchmarkError())};
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_AssignOrReturn_Error);
+BENCHMARK_WITH_TEST(BM_AssignOrReturn_Error)
 
 void BM_AssignOrReturn_Annotate_Ok(::benchmark::State& state) {
   AssignOrReturnAnnotateLoop loop(1);
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_AssignOrReturn_Annotate_Ok);
+BENCHMARK_WITH_TEST(BM_AssignOrReturn_Annotate_Ok)
 
 void BM_AssignOrReturn_Annotate_Error(::benchmark::State& state) {
   AssignOrReturnAnnotateLoop loop{unexpected(BenchmarkError())};
   BenchmarkLoop(&loop, &state);
 }
-BENCHMARK(BM_AssignOrReturn_Annotate_Error);
+BENCHMARK_WITH_TEST(BM_AssignOrReturn_Annotate_Error)
 
 }  // namespace
 }  // namespace base

@@ -158,7 +158,7 @@ ExtensionFunction::ResponseAction EnterpriseRemoteAppsDeleteAppFunction::Run() {
 }
 
 void EnterpriseRemoteAppsDeleteAppFunction::OnResult(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error) {
     Respond(Error(*error));
     return;
@@ -201,7 +201,7 @@ EnterpriseRemoteAppsSortLauncherFunction::Run() {
 }
 
 void EnterpriseRemoteAppsSortLauncherFunction::OnResult(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error) {
     Respond(Error(*error));
     return;
@@ -237,7 +237,7 @@ EnterpriseRemoteAppsSetPinnedAppsFunction::Run() {
 }
 
 void EnterpriseRemoteAppsSetPinnedAppsFunction::OnResult(
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error) {
     Respond(Error(*error));
     return;

@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_TWO_KEYS_ADAPTER_MAP_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -141,8 +141,8 @@ class TwoKeysAdapterMap {
 
     // However, for |secondary_key|, calling EraseByPrimaryKey() can
     // read an uninitialized secondary_key in case it is left uninitialized.
-    // Hence, it is guarded with absl::optional.
-    absl::optional<SecondaryKey> secondary_key;
+    // Hence, it is guarded with std::optional.
+    std::optional<SecondaryKey> secondary_key;
   };
 
   using PrimaryMap = WTF::HashMap<PrimaryKey, std::unique_ptr<Entry>>;

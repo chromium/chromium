@@ -98,7 +98,8 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Point GetDialogPosition(const gfx::Size& size) override {
-    views::View* view = browser_view_layout_->top_container_;
+    // Horizontally places the dialog at the center of the content.
+    views::View* view = browser_view_layout_->contents_container_;
     gfx::Rect rect = view->ConvertRectToWidget(view->GetLocalBounds());
     const int middle_x = rect.x() + rect.width() / 2;
     const int top = browser_view_layout_->dialog_top_y_;
@@ -245,7 +246,7 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
 }
 
 void BrowserViewLayout::SetContentBorderBounds(
-    const absl::optional<gfx::Rect>& region_capture_rect) {
+    const std::optional<gfx::Rect>& region_capture_rect) {
   dynamic_content_border_bounds_ = region_capture_rect;
   LayoutContentBorder();
 }
@@ -300,7 +301,7 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
 
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
-  if (delegate_->IsTabStripVisible()) {
+  if (delegate_->ShouldDrawTabStrip()) {
     // See if the mouse pointer is within the bounds of the TabStripRegionView.
     gfx::Point test_point(point);
     if (ConvertedHitTest(parent, tab_strip_region_view_, &test_point)) {
@@ -392,10 +393,9 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   int top = LayoutTitleBarForWebApp(top_inset);
   if (delegate_->ShouldLayoutTabStrip()) {
     top = LayoutTabStripRegion(top);
-    if (delegate_->IsTabStripVisible()) {
+    if (delegate_->ShouldDrawTabStrip()) {
       tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
-                                      browser_view_->GetMirroredX() +
-                                      delegate_->GetThemeBackgroundXInset());
+                                      browser_view_->GetMirroredX());
     }
     top = LayoutWebUITabStrip(top);
   }
@@ -462,9 +462,9 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
   return gfx::Size();
 }
 
-std::vector<views::View*> BrowserViewLayout::GetChildViewsInPaintOrder(
-    const views::View* host) const {
-  std::vector<views::View*> result =
+std::vector<raw_ptr<views::View, VectorExperimental>>
+BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
+  std::vector<raw_ptr<views::View, VectorExperimental>> result =
       views::LayoutManager::GetChildViewsInPaintOrder(host);
   // Make sure `top_container_` is after `contents_container_` in paint order
   // when this is a window using WindowControlsOverlay, to make sure the window
@@ -532,8 +532,12 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
       web_app_frame_toolbar_->LayoutInContainer(toolbar_bounds);
 
   if (web_app_window_title_) {
-    delegate_->LayoutWebAppWindowTitle(window_title_bounds,
-                                       *web_app_window_title_);
+    if (delegate_->ShouldDrawTabStrip()) {
+      web_app_window_title_->SetVisible(false);
+    } else {
+      delegate_->LayoutWebAppWindowTitle(window_title_bounds,
+                                         *web_app_window_title_);
+    }
   }
 
   return toolbar_bounds.bottom();
@@ -541,7 +545,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
 
 int BrowserViewLayout::LayoutTabStripRegion(int top) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");
-  if (!delegate_->IsTabStripVisible()) {
+  if (!delegate_->ShouldDrawTabStrip()) {
     SetViewVisibility(tab_strip_region_view_, false);
     tab_strip_region_view_->SetBounds(0, 0, 0, 0);
     return top;
@@ -652,12 +656,16 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
     top = (browser_view_ ? browser_view_->y() : 0) +
           immersive_mode_controller_->GetMinimumContentOffset();
   }
-
+  // The content usually starts at the bottom of the infobar. When there is an
+  // extra infobar offset the infobar is shifted down while the content stays.
+  int infobar_top = top;
+  int content_top = infobar_top + infobar_container_->height();
+  infobar_top += delegate_->GetExtraInfobarOffset();
   SetViewVisibility(infobar_container_, IsInfobarVisible());
   infobar_container_->SetBounds(
-      vertical_layout_rect_.x(), top, vertical_layout_rect_.width(),
+      vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
       infobar_container_->GetPreferredSize().height());
-  return top + infobar_container_->height();
+  return content_top;
 }
 
 void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
@@ -902,6 +910,5 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
-  // NOTE: Can't check if the size IsEmpty() since it's always 0-width.
-  return infobar_container_->GetPreferredSize().height() != 0;
+  return !infobar_container_->IsEmpty();
 }

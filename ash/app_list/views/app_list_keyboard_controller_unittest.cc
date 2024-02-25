@@ -83,8 +83,7 @@ class AppListKeyboardControllerTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<AppListTestHelper, DanglingUntriaged | ExperimentalAsh>
-      app_list_test_helper_ = nullptr;
+  raw_ptr<AppListTestHelper, DanglingUntriaged> app_list_test_helper_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(IsInTabletMode,

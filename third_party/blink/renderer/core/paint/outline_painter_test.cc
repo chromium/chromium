@@ -15,7 +15,7 @@ namespace blink {
 using OutlinePainterTest = RenderingTest;
 
 TEST_F(OutlinePainterTest, FocusRingOutset) {
-  const auto* initial_style = ComputedStyle::CreateInitialStyleSingleton();
+  const auto* initial_style = ComputedStyle::GetInitialStyleSingleton();
   ComputedStyleBuilder builder(*initial_style);
   builder.SetOutlineStyle(EBorderStyle::kSolid);
   builder.SetOutlineStyleIsAuto(true);
@@ -41,7 +41,7 @@ TEST_F(OutlinePainterTest, HugeOutlineWidthOffset) {
   )HTML");
   LayoutObject::OutlineInfo info;
   GetLayoutObjectByElementId("target")->OutlineRects(
-      &info, PhysicalOffset(), NGOutlineType::kDontIncludeBlockVisualOverflow);
+      &info, PhysicalOffset(), OutlineType::kDontIncludeBlockInkOverflow);
   const auto& style = GetLayoutObjectByElementId("target")->StyleRef();
   EXPECT_TRUE(style.HasOutline());
   EXPECT_EQ(LayoutUnit::Max().ToInt() * 2,

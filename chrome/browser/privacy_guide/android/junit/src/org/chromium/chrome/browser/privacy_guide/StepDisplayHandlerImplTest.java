@@ -34,34 +34,25 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 /**
- * JUnit tests of the class {@link StepDisplayHandlerImpl}.
- * This test suite can be significantly compressed if @ParameterizedTest from JUnit5 can be used.
+ * JUnit tests of the class {@link StepDisplayHandlerImpl}. This test suite can be significantly
+ * compressed if @ParameterizedTest from JUnit5 can be used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StepDisplayHandlerImplTest {
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private SafeBrowsingBridge.Natives mSBNativesMock;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PrefService mPrefServiceMock;
-    @Mock
-    private UserPrefs.Natives mUserPrefsNativesMock;
-    @Mock
-    private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
+    @Mock private SafeBrowsingBridge.Natives mSBNativesMock;
+    @Mock private SyncService mSyncService;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefServiceMock;
+    @Mock private UserPrefs.Natives mUserPrefsNativesMock;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
 
     private StepDisplayHandler mStepDisplayHandler;
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
@@ -69,7 +60,7 @@ public class StepDisplayHandlerImplTest {
 
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
-        mStepDisplayHandler = new StepDisplayHandlerImpl();
+        mStepDisplayHandler = new StepDisplayHandlerImpl(mProfile);
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {
@@ -84,7 +75,7 @@ public class StepDisplayHandlerImplTest {
         when(mPrefServiceMock.getInteger(PrefNames.COOKIE_CONTROLS_MODE))
                 .thenReturn(cookieControlsMode);
         when(mWebsitePreferenceNativesMock.isContentSettingEnabled(
-                     mProfile, ContentSettingsType.COOKIES))
+                        mProfile, ContentSettingsType.COOKIES))
                 .thenReturn(allowCookies);
     }
 

@@ -17,9 +17,9 @@ limitations under the License.
 
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
-#include "absl/strings/str_split.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
 
@@ -28,8 +28,7 @@ namespace tflite::task::text::clu {
 // IntentRepr
 
 std::string IntentRepr::FullName() const {
-  if (domain_.empty())
-    return name_;
+  if (domain_.empty()) return name_;
   return absl::StrCat(domain_, kNamespaceDelim, name_);
 }
 
@@ -41,19 +40,16 @@ absl::StatusOr<IntentRepr> IntentRepr::CreateFromFullName(
   if (splits.size() > 2) {
     return absl::InternalError(absl::StrCat("invalid argument: ", full_name));
   }
-  if (splits.size() == 2)
-    ret.domain_ = splits[0];
+  if (splits.size() == 2) ret.domain_ = splits[0];
   ret.name_ = splits[splits.size() - 1];
   return ret;
 }
 
-IntentRepr IntentRepr::Create(absl::string_view name,
-                              absl::string_view domain,
+IntentRepr IntentRepr::Create(absl::string_view name, absl::string_view domain,
                               const bool share_across_domains) {
   IntentRepr ret;
   ret.name_ = std::string(name);
-  if (!share_across_domains)
-    ret.domain_ = std::string(domain);
+  if (!share_across_domains) ret.domain_ = std::string(domain);
   return ret;
 }
 

@@ -14,75 +14,127 @@
 
 namespace {
 
+struct BadArg {};
+
+template <typename TagType, typename CallbackType>
+struct TestConversionAndAssignmentImpl {
+  static constexpr bool kSupportsConversion =
+      std::is_convertible_v<TagType, CallbackType>;
+  static constexpr bool kSupportsAssignment =
+      std::is_assignable_v<CallbackType, TagType>;
+  static_assert(kSupportsConversion == kSupportsAssignment);
+
+  static constexpr bool kValue = kSupportsConversion;
+};
+
+template <typename T, typename U>
+constexpr bool TestConversionAndAssignment =
+    TestConversionAndAssignmentImpl<T, U>::kValue;
+
+#define VOID_RETURN_CALLBACK_TAG_TEST(CallbackType, Sig, BadSig, BoundArg)   \
+  static_assert(TestConversionAndAssignment<decltype(base::NullCallback()),  \
+                                            CallbackType<Sig>>);             \
+  static_assert(                                                             \
+      TestConversionAndAssignment<decltype(base::NullCallbackAs<Sig>()),     \
+                                  CallbackType<Sig>>);                       \
+  static_assert(TestConversionAndAssignment<decltype(base::DoNothing()),     \
+                                            CallbackType<Sig>>);             \
+  static_assert(                                                             \
+      TestConversionAndAssignment<decltype(base::DoNothingAs<Sig>()),        \
+                                  CallbackType<Sig>>);                       \
+  static_assert(TestConversionAndAssignment<                                 \
+                decltype(base::DoNothingWithBoundArgs(BoundArg)),            \
+                CallbackType<Sig>>);                                         \
+                                                                             \
+  static_assert(                                                             \
+      !TestConversionAndAssignment<decltype(base::NullCallbackAs<BadSig>()), \
+                                   CallbackType<Sig>>);                      \
+  static_assert(                                                             \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<BadSig>()),    \
+                                   CallbackType<Sig>>);                      \
+  static_assert(TestConversionAndAssignment<                                 \
+                decltype(base::DoNothingWithBoundArgs(BadArg())),            \
+                CallbackType<Sig>>)
+
+#define NON_VOID_RETURN_CALLBACK_TAG_TEST(CallbackType, Sig, BadSig, BoundArg) \
+  static_assert(TestConversionAndAssignment<decltype(base::NullCallback()),    \
+                                            CallbackType<Sig>>);               \
+  static_assert(                                                               \
+      TestConversionAndAssignment<decltype(base::NullCallbackAs<Sig>()),       \
+                                  CallbackType<Sig>>);                         \
+                                                                               \
+  /* Unlike callbacks that return void, callbacks that return non-void      */ \
+  /* should not be implicitly convertible from DoNothingCallbackTag since   */ \
+  /* this would require guessing what the callback should return.           */ \
+  static_assert(!TestConversionAndAssignment<decltype(base::DoNothing()),      \
+                                             CallbackType<Sig>>);              \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<Sig>()),         \
+                                   CallbackType<Sig>>);                        \
+  static_assert(!TestConversionAndAssignment<                                  \
+                decltype(base::DoNothingWithBoundArgs(BoundArg)),              \
+                CallbackType<Sig>>);                                           \
+                                                                               \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::NullCallbackAs<BadSig>()),   \
+                                   CallbackType<Sig>>);                        \
+  static_assert(                                                               \
+      !TestConversionAndAssignment<decltype(base::DoNothingAs<BadSig>()),      \
+                                   CallbackType<Sig>>);                        \
+  static_assert(!TestConversionAndAssignment<                                  \
+                decltype(base::DoNothingWithBoundArgs(BadArg())),              \
+                CallbackType<Sig>>)
+
+VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, void(), void(char), );
+VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, void(int), void(char), 8);
+NON_VOID_RETURN_CALLBACK_TAG_TEST(base::OnceCallback, int(int), char(int), 8);
+
+VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback, void(), void(char), );
+VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback,
+                              void(int),
+                              void(char),
+                              8);
+NON_VOID_RETURN_CALLBACK_TAG_TEST(base::RepeatingCallback,
+                                  int(int),
+                                  char(int),
+                                  8);
+
+#undef VOID_RETURN_CALLBACK_TAG_TEST
+#undef NON_VOID_RETURN_CALLBACK_TAG_TEST
+
 TEST(CallbackHelpersTest, IsBaseCallback) {
   // Check that base::{Once,Repeating}Closures and references to them are
   // considered base::{Once,Repeating}Callbacks.
-  static_assert(base::IsBaseCallback<base::OnceClosure>::value, "");
-  static_assert(base::IsBaseCallback<base::RepeatingClosure>::value, "");
-  static_assert(base::IsBaseCallback<base::OnceClosure&&>::value, "");
-  static_assert(base::IsBaseCallback<const base::RepeatingClosure&>::value, "");
+  static_assert(base::IsBaseCallback<base::OnceClosure>);
+  static_assert(base::IsBaseCallback<base::RepeatingClosure>);
+  static_assert(base::IsBaseCallback<base::OnceClosure&&>);
+  static_assert(base::IsBaseCallback<const base::RepeatingClosure&>);
 
   // Check that base::{Once, Repeating}Callbacks with a given RunType and
   // references to them are considered base::{Once, Repeating}Callbacks.
-  static_assert(base::IsBaseCallback<base::OnceCallback<int(int)>>::value, "");
-  static_assert(base::IsBaseCallback<base::RepeatingCallback<int(int)>>::value,
-                "");
-  static_assert(base::IsBaseCallback<base::OnceCallback<int(int)>&&>::value,
-                "");
-  static_assert(
-      base::IsBaseCallback<const base::RepeatingCallback<int(int)>&>::value,
-      "");
+  static_assert(base::IsBaseCallback<base::OnceCallback<int(int)>>);
+  static_assert(base::IsBaseCallback<base::RepeatingCallback<int(int)>>);
+  static_assert(base::IsBaseCallback<base::OnceCallback<int(int)>&&>);
+  static_assert(base::IsBaseCallback<const base::RepeatingCallback<int(int)>&>);
 
   // Check that POD types are not considered base::{Once, Repeating}Callbacks.
-  static_assert(!base::IsBaseCallback<bool>::value, "");
-  static_assert(!base::IsBaseCallback<int>::value, "");
-  static_assert(!base::IsBaseCallback<double>::value, "");
+  static_assert(!base::IsBaseCallback<bool>);
+  static_assert(!base::IsBaseCallback<int>);
+  static_assert(!base::IsBaseCallback<double>);
 
   // Check that the closely related std::function is not considered a
   // base::{Once, Repeating}Callback.
-  static_assert(!base::IsBaseCallback<std::function<void()>>::value, "");
-  static_assert(!base::IsBaseCallback<const std::function<void()>&>::value, "");
-  static_assert(!base::IsBaseCallback<std::function<void()>&&>::value, "");
-}
-
-TEST(CallbackHelpersTest, IsOnceCallback) {
-  // Check that base::OnceClosures and references to them are considered
-  // base::OnceCallbacks, but base::RepeatingClosures are not.
-  static_assert(base::IsOnceCallback<base::OnceClosure>::value, "");
-  static_assert(!base::IsOnceCallback<base::RepeatingClosure>::value, "");
-  static_assert(base::IsOnceCallback<base::OnceClosure&&>::value, "");
-  static_assert(!base::IsOnceCallback<const base::RepeatingClosure&>::value,
-                "");
-
-  // Check that base::OnceCallbacks with a given RunType and references to them
-  // are considered base::OnceCallbacks, but base::RepeatingCallbacks are not.
-  static_assert(base::IsOnceCallback<base::OnceCallback<int(int)>>::value, "");
-  static_assert(!base::IsOnceCallback<base::RepeatingCallback<int(int)>>::value,
-                "");
-  static_assert(base::IsOnceCallback<base::OnceCallback<int(int)>&&>::value,
-                "");
-  static_assert(
-      !base::IsOnceCallback<const base::RepeatingCallback<int(int)>&>::value,
-      "");
-
-  // Check that POD types are not considered base::OnceCallbacks.
-  static_assert(!base::IsOnceCallback<bool>::value, "");
-  static_assert(!base::IsOnceCallback<int>::value, "");
-  static_assert(!base::IsOnceCallback<double>::value, "");
-
-  // Check that the closely related std::function is not considered a
-  // base::OnceCallback.
-  static_assert(!base::IsOnceCallback<std::function<void()>>::value, "");
-  static_assert(!base::IsOnceCallback<const std::function<void()>&>::value, "");
-  static_assert(!base::IsOnceCallback<std::function<void()>&&>::value, "");
-
-  // Check that the result of BindOnce is a OnceCallback.
-  auto cb = base::BindOnce([](int* count) { ++*count; });
-  static_assert(base::IsOnceCallback<decltype(cb)>::value, "");
+  static_assert(!base::IsBaseCallback<std::function<void()>>);
+  static_assert(!base::IsBaseCallback<const std::function<void()>&>);
+  static_assert(!base::IsBaseCallback<std::function<void()>&&>);
 }
 
 void Increment(int* value) {
   (*value)++;
+}
+
+void IncrementWithRef(int& value) {
+  value++;
 }
 
 TEST(CallbackHelpersTest, ScopedClosureRunnerHasClosure) {
@@ -182,9 +234,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_EmptyCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
   EXPECT_FALSE(split.first);
   EXPECT_FALSE(split.second);
@@ -197,9 +249,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_FirstCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
 
   EXPECT_EQ(0, count);
@@ -218,9 +270,9 @@ TEST(CallbackHelpersTest, SplitOnceCallback_SecondCallback) {
 
   auto split = base::SplitOnceCallback(std::move(cb));
 
-  static_assert(std::is_same<decltype(split),
-                             std::pair<base::OnceCallback<void(int*)>,
-                                       base::OnceCallback<void(int*)>>>::value,
+  static_assert(std::is_same_v<decltype(split),
+                               std::pair<base::OnceCallback<void(int*)>,
+                                         base::OnceCallback<void(int*)>>>,
                 "");
 
   EXPECT_EQ(0, count);
@@ -285,6 +337,19 @@ TEST(CallbackHelpersTest, IgnoreArgs) {
   EXPECT_EQ(2, count);
   std::move(once_int_cb).Run(42);
   EXPECT_EQ(3, count);
+
+  // Ignore only some (one) argument and forward the rest.
+  auto repeating_callback = base::BindRepeating(&Increment);
+  auto repeating_cb_with_extra_arg = base::IgnoreArgs<bool>(repeating_callback);
+  repeating_cb_with_extra_arg.Run(false, &count);
+  EXPECT_EQ(4, count);
+
+  // Ignore two arguments and forward the rest.
+  auto once_callback = base::BindOnce(&Increment);
+  auto once_cb_with_extra_arg =
+      base::IgnoreArgs<char, bool>(repeating_callback);
+  std::move(once_cb_with_extra_arg).Run('d', false, &count);
+  EXPECT_EQ(5, count);
 }
 
 TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
@@ -295,6 +360,33 @@ TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
   base::OnceCallback<void(int)> once_int_cb =
       base::IgnoreArgs<int>(base::OnceClosure());
   EXPECT_FALSE(once_int_cb);
+}
+
+TEST(CallbackHelpersTest, ForwardRepeatingCallbacks) {
+  int count = 0;
+  auto tie_cb =
+      base::ForwardRepeatingCallbacks({base::BindRepeating(&IncrementWithRef),
+                                       base::BindRepeating(&IncrementWithRef)});
+
+  tie_cb.Run(count);
+  EXPECT_EQ(count, 2);
+
+  tie_cb.Run(count);
+  EXPECT_EQ(count, 4);
+}
+
+TEST(CallbackHelpersTest, ReturnValueOnce) {
+  // Check that copyable types are supported.
+  auto string_factory = base::ReturnValueOnce(std::string("test"));
+  static_assert(std::is_same_v<decltype(string_factory),
+                               base::OnceCallback<std::string(void)>>);
+  EXPECT_EQ(std::move(string_factory).Run(), "test");
+
+  // Check that move-only types are supported.
+  auto unique_ptr_factory = base::ReturnValueOnce(std::make_unique<int>(42));
+  static_assert(std::is_same_v<decltype(unique_ptr_factory),
+                               base::OnceCallback<std::unique_ptr<int>(void)>>);
+  EXPECT_EQ(*std::move(unique_ptr_factory).Run(), 42);
 }
 
 }  // namespace

@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- Tests that tickmarks get painted and scrollbar transitions to full mode.
+     -->
+<meta charset="utf-8">
+<meta name="fuzzy" content="0-10;0-10">
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<style>
+  body,
+  html {
+    background-color: green;
+    height: 2000px;
+    margin: 0;
+    width: 2000px;
+  }
+</style>
+<span id="select-target">&nbsp;</span>
+<script>
+  window.onload = async () => {
+    if (!internals) return;
+
+    testRunner.waitUntilDone();
+
+    let range = document.createRange();
+    let elt = document.getElementById('select-target');
+    range.selectNodeContents(elt);
+    internals.addTextMatchMarker(range, 'kActive');
+
+    await waitForCompositorCommit();
+    testRunner.notifyDone();
+  };
+</script>

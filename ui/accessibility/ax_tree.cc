@@ -47,7 +47,7 @@ std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
   return std::accumulate(
       node->children().cbegin(), node->children().cend(),
       std::string(2 * indent, ' ') + node->data().ToString(verbose) + "\n",
-      [indent, verbose](const std::string& str, const auto* child) {
+      [indent, verbose](const std::string& str, const ui::AXNode* child) {
         return str + TreeToStringHelper(child, indent + 1, verbose);
       });
 }
@@ -174,8 +174,8 @@ struct PendingStructureChanges {
         create_node_count(0),
         node_exists(!!node),
         parent_node_id((node && node->parent())
-                           ? absl::make_optional<AXNodeID>(node->parent()->id())
-                           : absl::nullopt),
+                           ? std::make_optional<AXNodeID>(node->parent()->id())
+                           : std::nullopt),
         last_known_data(node ? &node->data() : nullptr) {}
 
   // Returns true if this node has any changes remaining.
@@ -244,7 +244,7 @@ struct PendingStructureChanges {
 
   // Keep track of the parent id for this node as of the last pending
   // update that was processed.
-  absl::optional<AXNodeID> parent_node_id;
+  std::optional<AXNodeID> parent_node_id;
 
   // Keep track of the last known node data for this node.
   // This will be null either when a node does not exist in the tree, or
@@ -318,7 +318,7 @@ struct AXTreeUpdateState {
   }
 
   // Returns the parent node id for the pending node.
-  absl::optional<AXNodeID> GetParentIdForPendingNode(AXNodeID node_id) {
+  std::optional<AXNodeID> GetParentIdForPendingNode(AXNodeID node_id) {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
@@ -427,9 +427,9 @@ struct AXTreeUpdateState {
     ++data->destroy_node_count;
     data->node_exists = false;
     data->last_known_data = nullptr;
-    data->parent_node_id = absl::nullopt;
+    data->parent_node_id = std::nullopt;
     if (pending_root_id == node_id)
-      pending_root_id = absl::nullopt;
+      pending_root_id = std::nullopt;
     return true;
   }
 
@@ -459,9 +459,8 @@ struct AXTreeUpdateState {
   // Increments the number of times the update is expected to
   // create a node with |node_id|.
   // Returns true on success, false on failure when the node will already exist.
-  bool IncrementPendingCreateNodeCount(
-      AXNodeID node_id,
-      absl::optional<AXNodeID> parent_node_id) {
+  bool IncrementPendingCreateNodeCount(AXNodeID node_id,
+                                       std::optional<AXNodeID> parent_node_id) {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
@@ -514,8 +513,7 @@ struct AXTreeUpdateState {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
-    absl::optional<AXNodeID> parent_node_id =
-        GetParentIdForPendingNode(node_id);
+    std::optional<AXNodeID> parent_node_id = GetParentIdForPendingNode(node_id);
     if (parent_node_id) {
       invalidate_unignored_cached_values_ids.insert(*parent_node_id);
     }
@@ -527,7 +525,7 @@ struct AXTreeUpdateState {
 
   // Keeps track of the existing tree's root node id when calculating what
   // changes will occur during an update before the update applies changes.
-  absl::optional<AXNodeID> pending_root_id;
+  std::optional<AXNodeID> pending_root_id;
 
   // Keeps track of whether the root node will need to be created as a new node.
   // This may occur either when the root node does not exist before applying
@@ -575,11 +573,11 @@ struct AXTreeUpdateState {
 
   // Optional copy of the old tree data, only populated when the tree data will
   // need to be updated.
-  absl::optional<AXTreeData> old_tree_data;
+  std::optional<AXTreeData> old_tree_data;
 
   // Optional copy of the updated tree data, used when calculating what changes
   // will occur during an update before the update applies changes.
-  absl::optional<AXTreeData> new_tree_data;
+  std::optional<AXTreeData> new_tree_data;
 
   // Keep track of the pending tree update to help create useful error messages.
   // TODO(crbug.com/1156601) Revert this once we have the crash data we need
@@ -619,7 +617,7 @@ struct AXTree::OrderedSetContent {
       : ordered_set_(ordered_set) {}
   ~OrderedSetContent() = default;
 
-  std::vector<const AXNode*> set_items_;
+  std::vector<raw_ptr<const AXNode, VectorExperimental>> set_items_;
 
   // Some ordered set items may not be associated with an ordered set.
   raw_ptr<const AXNode> ordered_set_;
@@ -630,7 +628,7 @@ struct AXTree::OrderedSetItemsMap {
   ~OrderedSetItemsMap() = default;
 
   // Check if a particular hierarchical level exists in this map.
-  bool HierarchicalLevelExists(absl::optional<int> level) {
+  bool HierarchicalLevelExists(std::optional<int> level) {
     if (items_map_.find(level) == items_map_.end())
       return false;
     return true;
@@ -638,7 +636,7 @@ struct AXTree::OrderedSetItemsMap {
 
   // Add the OrderedSetContent to the corresponding hierarchical level in the
   // map.
-  void Add(absl::optional<int> level,
+  void Add(std::optional<int> level,
            const OrderedSetContent& ordered_set_content) {
     if (!HierarchicalLevelExists(level))
       items_map_[level] = std::vector<OrderedSetContent>();
@@ -653,7 +651,7 @@ struct AXTree::OrderedSetItemsMap {
   //     of being populated.
   //   - All other OrderedSetContent other than the last one on a level
   //     represents a complete ordered set and should not be modified.
-  void AddItemToBack(absl::optional<int> level, const AXNode* item) {
+  void AddItemToBack(std::optional<int> level, const AXNode* item) {
     if (!HierarchicalLevelExists(level))
       return;
 
@@ -680,7 +678,7 @@ struct AXTree::OrderedSetItemsMap {
   void Clear() { items_map_.clear(); }
 
   // Maps a hierarchical level to a list of OrderedSetContent.
-  std::map<absl::optional<int32_t>, std::vector<OrderedSetContent>> items_map_;
+  std::map<std::optional<int32_t>, std::vector<OrderedSetContent>> items_map_;
 };
 
 // static
@@ -809,8 +807,9 @@ void AXTree::Destroy() {
     DestroyNodeAndSubtree(root_.ExtractAsDangling(), nullptr);
   }  // tree_update_in_progress.
 
-  UMA_HISTOGRAM_TIMES("Accessibility.Performance.AXTree.Destroy",
-                      timer.Elapsed());
+  UMA_HISTOGRAM_CUSTOM_TIMES("Accessibility.Performance.AXTree.Destroy2",
+                             timer.Elapsed(), base::Microseconds(1),
+                             base::Seconds(1), 50);
 }
 
 void AXTree::UpdateDataForTesting(const AXTreeData& new_data) {
@@ -840,12 +839,11 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // bad state.
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
-      for (auto* child : node->children()) {
-        bool ignore_offscreen;
-        gfx::RectF child_bounds =
-            RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,
-                                         clip_bounds, skip_container_offset,
-                                         /* allow_recursion = */ false);
+      for (ui::AXNode* child : node->children()) {
+        gfx::RectF child_bounds = RelativeToTreeBoundsInternal(
+            child, gfx::RectF(), /*offscreen=*/nullptr, clip_bounds,
+            skip_container_offset,
+            /*allow_recursion=*/false);
         bounds.Union(child_bounds);
       }
       if (bounds.width() > 0 && bounds.height() > 0) {
@@ -1065,30 +1063,12 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // Accumulates the work that will be required to update the AXTree.
   // This allows us to notify observers of structure changes when the
   // tree is still in a stable and unchanged state.
-  bool has_stale_data = false;
-  if (!ComputePendingChanges(update, &update_state, has_stale_data)) {
-    if (has_stale_data) {
-      // Temporary workaround for crbug.com/1471373.
-      // Toss stale data that was sent for an old AXTree that no longer exists.
-      // TODO(crbug.com/1471373) Remove this workaround and fix properly.
-      // This generally occurs where the old root id == 1 indicating this
-      // update is being applied on top of a new AXTree.
-#if defined(AX_FAIL_FAST_BUILD)
-      LOG(FATAL) << "Stale data received:\n** Pending tree update **\n"
-                 << update_state.pending_tree_update->ToString(
-                        /*verbose*/ false)
-                 << "** Root **\n"
-                 << root() << "\n** AXTreeData **\n"
-                 << data_.ToString() + "\n** AXTree **\n"
-                 << TreeToStringHelper(root_, 0, false).substr(0, 1000);
-#endif
-      return true;
-    }
+  if (!ComputePendingChanges(update, &update_state))
     return false;
-  }
 
   // Log unserialize perf after early returns.
-  SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.Tree.Unserialize");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.Tree.Unserialize2");
 
   // Notify observers of subtrees and nodes that are about to be destroyed or
   // reparented, this must be done before applying any updates to the tree.
@@ -1222,9 +1202,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         // If the tree doesn't exists any more because the root has just been
         // replaced, there is nothing more to clear.
         if (root_) {
-          for (auto* child : cleared_node->children())
+          for (ui::AXNode* child : cleared_node->children()) {
             DestroySubtree(child, &update_state);
-          std::vector<AXNode*> children;
+          }
+          std::vector<raw_ptr<AXNode, VectorExperimental>> children;
           cleared_node->SwapChildren(&children);
           update_state.pending_node_ids.insert(cleared_node->id());
         }
@@ -1427,8 +1408,51 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   for (AXTreeObserver& observer : observers_)
     observer.OnAtomicUpdateFinished(this, root_->id() != old_root_id, changes);
 
+#if DCHECK_IS_ON()
+  CheckTreeConsistency(update);
+#endif
+
   return true;
 }
+
+#if DCHECK_IS_ON()
+void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
+  // Return early if no expected node count was supplied.
+  if (!update.tree_checks || !update.tree_checks->node_count) {
+    return;
+  }
+
+  // Do not check pages with child trees.
+  // Required to pass PDFExtensionAccessibilityTreeDumpTest tests.
+  if (has_plugin_) {
+    return;
+  }
+  for (const auto& node_data : update.nodes) {
+    if (node_data.role == ax::mojom::Role::kEmbeddedObject) {
+      has_plugin_ = true;
+    }
+  }
+  if (has_plugin_) {
+    return;
+  }
+
+  // Return early if the expected node count matches the node ids mapped.
+  if (update.tree_checks->node_count == id_map_.size()) {
+    return;
+  }
+
+  DCHECK(root_);
+  std::ostringstream msg;
+  msg << "After a tree update, there is a tree inconsistency.\n"
+      << "\n* Number of ids mapped: " << id_map_.size()
+      << "\n* Serializer's node count: " << update.tree_checks->node_count
+      << "\n* Slow nodes count: " << root_->GetSubtreeCount()
+      << "\n* AXTreeUpdate: "
+      << TreeToStringHelper(root_, 0, /*verbose*/ false);
+
+  DCHECK(false) << msg.str();
+}
+#endif
 
 AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   DCHECK(!GetTreeUpdateInProgressState());
@@ -1496,8 +1520,7 @@ AXNode* AXTree::CreateNode(AXNode* parent,
 }
 
 bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
-                                   AXTreeUpdateState* update_state,
-                                   bool& has_stale_data) {
+                                   AXTreeUpdateState* update_state) {
   DCHECK_EQ(AXTreePendingStructureStatus::kNotStarted,
             update_state->pending_update_status)
       << "Pending changes have already started being computed.";
@@ -1507,9 +1530,9 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   // The ID of the current root is temporarily stored in `update_state`, but
   // reset after all pending updates have been computed in order to avoid stale
   // data hanging around.
-  base::AutoReset<absl::optional<AXNodeID>> pending_root_id_resetter(
+  base::AutoReset<std::optional<AXNodeID>> pending_root_id_resetter(
       &update_state->pending_root_id,
-      root_ ? absl::make_optional<AXNodeID>(root_->id()) : absl::nullopt);
+      root_ ? std::make_optional<AXNodeID>(root_->id()) : std::nullopt);
 
   if (update.has_tree_data && data_ != update.tree_data) {
     update_state->old_tree_data = data_;
@@ -1594,8 +1617,7 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
       continue;
     bool is_new_root =
         update_state->root_will_be_created && new_data.id == update.root_id;
-    if (!ComputePendingChangesToNode(new_data, is_new_root, update_state,
-                                     has_stale_data)) {
+    if (!ComputePendingChangesToNode(new_data, is_new_root, update_state)) {
       update_state->pending_update_status =
           AXTreePendingStructureStatus::kFailed;
       return false;
@@ -1608,8 +1630,7 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
 
 bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                                          bool is_new_root,
-                                         AXTreeUpdateState* update_state,
-                                         bool& has_stale_data) {
+                                         AXTreeUpdateState* update_state) {
   // Compare every child's index in parent in the update with the existing
   // index in parent.  If the order has changed, invalidate the cached
   // unignored index in parent.
@@ -1629,14 +1650,13 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                   base::StringPrintf(
                       "%d will not be in the tree and is not the new root",
                       new_data.id));
-      has_stale_data = true;
       return false;
     }
 
     // Creation is implicit for new root nodes. If |new_data.id| is already
     // pending for creation, then it must be a duplicate entry in the tree.
     if (!update_state->IncrementPendingCreateNodeCount(new_data.id,
-                                                       absl::nullopt)) {
+                                                       std::nullopt)) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kCreationPending);
       RecordError(
@@ -1820,7 +1840,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
 
   // Now build a new children vector, reusing nodes when possible,
   // and swap it in.
-  std::vector<AXNode*> new_children;
+  std::vector<raw_ptr<AXNode, VectorExperimental>> new_children;
   bool success = CreateNewChildVector(
       node, src.child_ids, &new_children, update_state);
   node->SwapChildren(&new_children);
@@ -1897,8 +1917,9 @@ void AXTree::RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node) {
 
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDeleted(this, node->id());
-  for (auto* child : node->children())
+  for (ui::AXNode* child : node->children()) {
     RecursivelyNotifyNodeDeletedForTreeTeardown(child);
+  }
 }
 
 void AXTree::NotifyNodeHasBeenDeleted(AXNodeID node_id) {
@@ -2249,8 +2270,9 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   id_map_.erase(iter);
   node = nullptr;
 
-  for (auto* child : node_to_delete->children())
+  for (ui::AXNode* child : node_to_delete->children()) {
     DestroyNodeAndSubtree(child, update_state);
+  }
   if (update_state) {
     update_state->pending_node_ids.erase(id);
     update_state->DecrementPendingDestroyNodeCount(id);
@@ -2282,10 +2304,11 @@ void AXTree::DeleteOldChildren(AXNode* node,
   }
 }
 
-bool AXTree::CreateNewChildVector(AXNode* node,
-                                  const std::vector<AXNodeID>& new_child_ids,
-                                  std::vector<AXNode*>* new_children,
-                                  AXTreeUpdateState* update_state) {
+bool AXTree::CreateNewChildVector(
+    AXNode* node,
+    const std::vector<AXNodeID>& new_child_ids,
+    std::vector<raw_ptr<AXNode, VectorExperimental>>* new_children,
+    AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   bool success = true;
   for (size_t i = 0; i < new_child_ids.size(); ++i) {
@@ -2372,13 +2395,13 @@ void AXTree::PopulateOrderedSetItemsMap(
   // this, the set container (e.g. <tree>) will take on the min of the levels
   // of its direct children(e.g. <treeitem>), if the children's levels are
   // defined.
-  absl::optional<int> ordered_set_min_level =
+  std::optional<int> ordered_set_min_level =
       ordered_set->GetHierarchicalLevel();
 
   for (AXNode::UnignoredChildIterator child =
            ordered_set->UnignoredChildrenBegin();
        child != ordered_set->UnignoredChildrenEnd(); ++child) {
-    absl::optional<int> child_level = child->GetHierarchicalLevel();
+    std::optional<int> child_level = child->GetHierarchicalLevel();
     if (child_level) {
       ordered_set_min_level = ordered_set_min_level
                                   ? std::min(child_level, ordered_set_min_level)
@@ -2387,7 +2410,7 @@ void AXTree::PopulateOrderedSetItemsMap(
   }
 
   RecursivelyPopulateOrderedSetItemsMap(original_node, ordered_set, ordered_set,
-                                        ordered_set_min_level, absl::nullopt,
+                                        ordered_set_min_level, std::nullopt,
                                         items_map_to_be_populated);
 
   // If after RecursivelyPopulateOrderedSetItemsMap() call, the corresponding
@@ -2409,8 +2432,8 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
     const AXNode& original_node,
     const AXNode* ordered_set,
     const AXNode* local_parent,
-    absl::optional<int> ordered_set_min_level,
-    absl::optional<int> prev_level,
+    std::optional<int> ordered_set_min_level,
+    std::optional<int> prev_level,
     OrderedSetItemsMap* items_map_to_be_populated) const {
   // For optimization purpose, we want to only populate set items that are
   // direct descendants of |ordered_set|, since we will only be calculating
@@ -2445,7 +2468,7 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
       continue;
     }
 
-    absl::optional<int> curr_level = child->GetHierarchicalLevel();
+    std::optional<int> curr_level = child->GetHierarchicalLevel();
 
     // Add child to |items_map_to_be_populated| if role matches with the role of
     // |ordered_set|. If role of node is kRadioButton, don't add items of other
@@ -2524,12 +2547,15 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
                                             const AXNode* ordered_set) {
   DCHECK(ordered_set);
 
-  // Set items role::kComment and role::kRadioButton are special cases and do
-  // not necessarily need to be contained in an ordered set.
+  // Set items role::kComment and role::kDisclosureTriangleGrouped and
+  // role::kRadioButton are special cases and do not necessarily need to be
+  // contained in an ordered set.
   if (node.GetRole() != ax::mojom::Role::kComment &&
+      node.GetRole() != ax::mojom::Role::kDisclosureTriangleGrouped &&
       node.GetRole() != ax::mojom::Role::kRadioButton &&
-      !node.SetRoleMatchesItemRole(ordered_set) && !node.IsOrderedSet())
+      !node.SetRoleMatchesItemRole(ordered_set) && !node.IsOrderedSet()) {
     return;
+  }
 
   // Find all items within ordered_set and add to |items_map_to_be_populated|.
   OrderedSetItemsMap items_map_to_be_populated;
@@ -2625,7 +2651,7 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
         ordered_set->GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 
     // Cache |ordered_set|'s hierarchical level.
-    absl::optional<int> ordered_set_level = ordered_set->GetHierarchicalLevel();
+    std::optional<int> ordered_set_level = ordered_set->GetHierarchicalLevel();
     if (node_set_size_pos_in_set_info_map_.find(ordered_set->id()) ==
         node_set_size_pos_in_set_info_map_.end()) {
       node_set_size_pos_in_set_info_map_[ordered_set->id()] =
@@ -2655,9 +2681,9 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
   }  // End of iterating over each item in |ordered_set_content|.
 }
 
-absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
+std::optional<int> AXTree::GetPosInSet(const AXNode& node) {
   if (node.IsIgnored()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
@@ -2674,30 +2700,30 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
   }
 
   if (GetTreeUpdateInProgressState())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Only allow this to be called on nodes that can hold PosInSet values,
   // which are defined in the ARIA spec.
   if (!node.IsOrderedSetItem()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const AXNode* ordered_set = node.GetOrderedSet();
   if (!ordered_set)
-    return absl::nullopt;
+    return std::nullopt;
 
   ComputeSetSizePosInSetAndCache(node, ordered_set);
-  absl::optional<int> pos_in_set =
+  std::optional<int> pos_in_set =
       node_set_size_pos_in_set_info_map_[node.id()].pos_in_set;
   if (pos_in_set.has_value() && pos_in_set.value() < 1)
-    return absl::nullopt;
+    return std::nullopt;
 
   return pos_in_set;
 }
 
-absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
+std::optional<int> AXTree::GetSetSize(const AXNode& node) {
   if (node.IsIgnored()) {
-    return absl::nullopt;
+    return std::nullopt;
   };
 
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
@@ -2714,14 +2740,14 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   }
 
   if (GetTreeUpdateInProgressState())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Only allow this to be called on nodes that can hold SetSize values, which
   // are defined in the ARIA spec. However, we allow set-like items to receive
   // SetSize values for internal purposes.
   if ((!node.IsOrderedSetItem() && !node.IsOrderedSet()) ||
       node.IsEmbeddedGroup()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If |node| is an ordered set item-like, find its outerlying ordered set.
@@ -2731,7 +2757,7 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
     ordered_set = node.GetOrderedSet();
 
   if (!ordered_set)
-    return absl::nullopt;
+    return std::nullopt;
 
   // For popup buttons that control a single element, inherit the controlled
   // item's SetSize. Skip this block if the popup button controls itself.
@@ -2743,8 +2769,7 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
         controls_ids[0] != node.id()) {
       const AXNode& controlled_item = *GetFromId(controls_ids[0]);
 
-      absl::optional<int> controlled_item_set_size =
-          GetSetSize(controlled_item);
+      std::optional<int> controlled_item_set_size = GetSetSize(controlled_item);
       node_set_size_pos_in_set_info_map_[node.id()].set_size =
           controlled_item_set_size;
       return controlled_item_set_size;
@@ -2753,10 +2778,10 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
 
   // Compute, cache, then return.
   ComputeSetSizePosInSetAndCache(node, ordered_set);
-  absl::optional<int> set_size =
+  std::optional<int> set_size =
       node_set_size_pos_in_set_info_map_[node.id()].set_size;
   if (set_size.has_value() && set_size.value() < 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   return set_size;
 }
@@ -2800,13 +2825,17 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
     error_ = error_ + "\n";  // Add visual separation between errors.
   error_ = error_ + new_error;
 
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  // Suppress fatal error logging in builds that target fuzzing, as fuzzers
+  // generate invalid trees by design to shake out bugs.
+  is_fatal = false;
+#elif defined(AX_FAIL_FAST_BUILD)
   // In fast-failing-builds, crash immediately with a full message, otherwise
   // rely on AccessibilityFatalError(), which will not crash until multiple
   // errors occur.
   // TODO(accessibility) Make AXTree errors fatal in Canary and Dev builds, as
   // they indicate fundamental problems in part of the engine. They are much
   // less frequent than in the past -- it should not be highimpact on users.
-#if defined(AX_FAIL_FAST_BUILD)
   is_fatal = true;
 #endif
 
@@ -2819,12 +2848,10 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
                 << data_.ToString() + "\n** AXTree **\n"
                 << TreeToStringHelper(root_, 0, false).substr(0, 1000);
 
-  if (is_fatal && !disallow_fail_fast_) {
-    LOG(FATAL) << verbose_error.str();
-  }
+  LOG_IF(FATAL, is_fatal) << verbose_error.str();
 
   // If this is the first error, will dump without crashing in
-  // RenderAccessibilityImpl::OnFatalError().
+  // RenderFrameHostImpl::AccessibilityFatalError().
   static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
       "ax_tree_error", base::debug::CrashKeySize::Size256);
   static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(

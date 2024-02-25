@@ -1,11 +1,13 @@
 # META: timeout=long
 
+# Longer timeout required due to a bug in Chrome:
+# https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
+
 import time
 
 import pytest
 
 from tests.support.asserts import assert_success
-from tests.support.helpers import document_hidden
 
 
 def maximize_window(session):

@@ -35,12 +35,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
@@ -61,14 +61,14 @@ void UnpinApp(const std::string& app_id) {
   ash::ShelfModel::Get()->UnpinAppWithID(app_id);
 }
 
-absl::optional<ash::ShelfItemStatus> ShelfStatus(const std::string& app_id) {
+std::optional<ash::ShelfItemStatus> ShelfStatus(const std::string& app_id) {
   ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
   for (const ash::ShelfItem& item : model->items()) {
     if (item.id.app_id == app_id) {
       return item.status;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string WindowAppId(aura::Window* window) {
@@ -180,24 +180,24 @@ class BrowserAppShelfControllerBrowserTest
   static constexpr char kURL_D[] = "https://d.example.org";
   // Constants are defined here rather than globally because GURL objects cannot
   // be created in a static initialiser.
-  const web_app::AppId kAppId_A = UrlToAppId(kURL_A);
-  const web_app::AppId kAppId_B = UrlToAppId(kURL_B);
-  const web_app::AppId kAppId_C = UrlToAppId(kURL_C);
-  const web_app::AppId kAppId_D = UrlToAppId(kURL_D);
+  const webapps::AppId kAppId_A = UrlToAppId(kURL_A);
+  const webapps::AppId kAppId_B = UrlToAppId(kURL_B);
+  const webapps::AppId kAppId_C = UrlToAppId(kURL_C);
+  const webapps::AppId kAppId_D = UrlToAppId(kURL_D);
 
-  web_app::AppId UrlToAppId(const std::string& start_url) {
-    return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+  webapps::AppId UrlToAppId(const std::string& start_url) {
+    return web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
                                   GURL(start_url));
   }
 
   void SetUpOnMainThread() override {
     crosapi::AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
-    profile_ = ProfileManager::GetActiveUserProfile();
     if (!HasLacrosArgument()) {
       return;
     }
 
-    apps::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb).Await();
+    apps::AppTypeInitializationWaiter(GetAshProfile(), apps::AppType::kWeb)
+        .Await();
 
     auto* registry = AppServiceProxy()->BrowserAppInstanceRegistry();
     ASSERT_NE(registry, nullptr);
@@ -221,22 +221,20 @@ class BrowserAppShelfControllerBrowserTest
     for (const std::string& app_id : app_ids) {
       AppServiceProxy()->UninstallSilently(app_id,
                                            apps::UninstallSource::kShelf);
-      apps::AppReadinessWaiter(profile(), app_id,
+      apps::AppReadinessWaiter(GetAshProfile(), app_id,
                                apps::Readiness::kUninstalledByUser)
           .Await();
     }
   }
 
-  Profile* profile() { return profile_; }
-
   apps::AppServiceProxy* AppServiceProxy() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile());
+    return apps::AppServiceProxyFactory::GetForProfile(GetAshProfile());
   }
 
   void WaitForCondition(const base::Location& from_here,
                         TestConditionWaiter::Condition condition,
                         const std::string& message) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(GetAshProfile());
     TestConditionWaiter(*registry_, proxy->AppRegistryCache(),
                         std::move(condition))
         .Wait(from_here, message);
@@ -252,7 +250,7 @@ class BrowserAppShelfControllerBrowserTest
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
-    apps::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(GetAshProfile(), app_id).Await();
     AppServiceProxy()->AppRegistryCache().ForOneApp(
         app_id, [mode](const apps::AppUpdate& update) {
           EXPECT_EQ(update.AppType(), apps::AppType::kWeb);
@@ -338,8 +336,8 @@ class BrowserAppShelfControllerBrowserTest
     return SelectResult{action_taken, std::move(app_menu_items)};
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<apps::BrowserAppInstanceRegistry, ExperimentalAsh> registry_{nullptr};
+  raw_ptr<apps::BrowserAppInstanceRegistry, DanglingUntriaged> registry_{
+      nullptr};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
@@ -351,10 +349,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     SCOPED_TRACE("initial state");
 
     // StartLacros opens one Ash and one Lacros window.
-    WAIT_FOR(registry_->IsAshBrowserRunning() &&
-             registry_->IsLacrosBrowserRunning());
+    WAIT_FOR(registry_->IsLacrosBrowserRunning());
     EXPECT_EQ(ShelfStatus(kLacrosAppId), ash::STATUS_RUNNING);
-    EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
   const apps::BrowserWindowInstance* lacros =
@@ -372,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     Launch(kAppId_A);
 
     // App A is unpinned, so no new item.
-    EXPECT_EQ(ShelfStatus(kAppId_A), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_A), std::nullopt);
     // App ID of the window is now set to app A, but shelf ID maps to the
     // browser shelf item because there is no pinned item for app A.
     EXPECT_EQ(WindowAppId(lacros->window), kAppId_A);
@@ -450,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     // Close just the app tab.
     Stop(kAppId_D);
 
-    EXPECT_EQ(ShelfStatus(kAppId_D), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_D), std::nullopt);
     EXPECT_EQ(WindowAppId(lacros->window), kLacrosAppId);
     EXPECT_EQ(WindowShelfId(lacros->window), ash::ShelfID(kLacrosAppId));
   }
@@ -465,10 +461,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     SCOPED_TRACE("initial state");
 
     // StartLacros opens one Ash and one Lacros window.
-    WAIT_FOR(registry_->IsAshBrowserRunning() &&
-             registry_->IsLacrosBrowserRunning());
+    WAIT_FOR(registry_->IsLacrosBrowserRunning());
     EXPECT_EQ(ShelfStatus(kLacrosAppId), ash::STATUS_RUNNING);
-    EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
   {
@@ -487,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     // Close the app window.
     Stop(kAppId_A);
 
-    EXPECT_EQ(ShelfStatus(kAppId_A), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_A), std::nullopt);
   }
 
   {
@@ -547,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     // Close the app window.
     Stop(kAppId_D);
 
-    EXPECT_EQ(ShelfStatus(kAppId_D), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_D), std::nullopt);
   }
 }
 

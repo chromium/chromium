@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Smazat stránku <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Režim fotoaparátu</translation>
 <translation id="1153190633558910465">Mřížka vypnuta</translation>
-<translation id="1175958423215084756">Byl zjištěn odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stránka <ph name="PAGE_NUMBER" /> byla smazána</translation>
 <translation id="1258009455399840361">Otočit o 90 stupňů ve směru hodinových ručiček</translation>
 <translation id="1417314334557041815">Upravit stránku <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Posunout doprava</translation>
 <translation id="3081586908890909590">Přepnout na záznam videa</translation>
 <translation id="313467653172006084">30 snímků/s</translation>
+<translation id="3158534262962737808">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Odkaz byl zkopírován</translation>
 <translation id="3354465018370944241">Nastavení fotografií</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Zpracovávání videa…</translation>
 <translation id="3789724198583203151">Otočit o 90 stupňů proti směru hodinových ručiček</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="4060608699153044055">Nahrávat nelze kvůli nedostatku místa v úložišti. Nejprve je třeba v zařízení uvolnit místo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastavit nahrávání</translation>
 <translation id="4121305183798804752">Byl zjištěn dokument</translation>
 <translation id="414641094616694804">Rozlišení této kamery nelze změnit</translation>
 <translation id="4176463684765177261">Vypnuto</translation>
-<translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
 <translation id="428234092390943511">Miniatura stránky</translation>
 <translation id="4349714250734879769">Upravovat měřítko snímků pomocí Chromu</translation>
 <translation id="4383571725254449280">Vytisknout protokoly výkonu</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Plné rozlišení</translation>
 <translation id="4864143361253542638">Seznam naskenovaných stránek</translation>
 <translation id="4890010094662541459">3 × 3</translation>
+<translation id="4892746741161549733">Zkopírovat adresu odkazu <ph name="URL" /></translation>
 <translation id="491895758387112773">Nahrávání videa z více streamů</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Poměr stran fotografie</translation>
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
+<translation id="5157591164390831335">Byla zjištěna adresa URL.</translation>
 <translation id="5163387177077603948">Pohyb doprava</translation>
-<translation id="5219374179772385066">Nově je k dispozici časosběr!</translation>
 <translation id="5235304959032763950">16 : 9</translation>
 <translation id="5266635337630551423">Levý horní roh dokumentu</translation>
 <translation id="5317780077021120954">Uložit</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Děkujeme vám za zpětnou vazbu k aplikaci Fotoaparát.
 
 Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou fotku nebo video a popište, kde je problém. (Například fotka je příliš tmavá nebo objekt není zaostřen.)</translation>
+<translation id="6519884562954018934">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6617916774429601017">Zobrazit všechna rozlišení</translation>
 <translation id="6631515515009660915">Vypnout zrcadlení</translation>
@@ -133,6 +133,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7488619942230388918">Nahrát video GIF</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
+<translation id="7562584071994185503">Zkopírovat text <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7608223098072244877">4 krát 4</translation>
 <translation id="761421184377987513">Pohyb doleva dolů</translation>
@@ -155,10 +156,12 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8346544573713510785">Upravovat měřítko snímků pomocí vrstvy HAL fotoaparátu</translation>
 <translation id="8425673304802773841">Naklonit dolů</translation>
 <translation id="8428213095426709021">Nastavení</translation>
+<translation id="8609951387004618906">Otevřít adresu <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Přepnout ztlumení mikrofonu. Ztlumení je zapnuté</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobrazit náhled metadat</translation>
+<translation id="874854738381978209">Byla zjištěna síť Wi-Fi.</translation>
 <translation id="8815966864175525708">Přepnout na pořízení portrétové fotky</translation>
 <translation id="8828441885228359828">Obnovit nahrávání</translation>
 <translation id="8870695351537079478">Nahrávání se nepodařilo zahájit</translation>

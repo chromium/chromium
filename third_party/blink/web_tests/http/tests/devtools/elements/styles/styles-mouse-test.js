@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as Elements from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that the styles sidebar can be used with a mouse.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style>
@@ -20,7 +22,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   `);
   await new Promise(x => ElementsTestRunner.selectNodeAndWaitForStyles('inspected', x));
 
-  var stylesPane = UI.panels.elements.stylesWidget;
+  var stylesPane = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget;
   var firstRule = stylesPane.sectionBlocks[0].sections[1].propertiesTreeOutline;
   var blueElement = () => firstRule.firstChild().valueElement;
   var colorElement = () => firstRule.firstChild().nameElement;

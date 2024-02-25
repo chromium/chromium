@@ -26,6 +26,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -122,6 +123,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -131,6 +133,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       thread_safe),
       context_state_(std::move(context_state)) {
@@ -200,8 +203,8 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
   }
   context_state_->set_need_context_state_reset(true);
 
-  auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
-                                                    : GrMipMapped::kNo;
+  auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? skgpu::Mipmapped::kYes
+                                                    : skgpu::Mipmapped::kNo;
 
   int num_planes = format().NumberOfPlanes();
   textures_.resize(num_planes);
@@ -264,7 +267,7 @@ bool WrappedSkImageBacking::InitializeWithData(
   textures_.resize(1);
 
   {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     // ScopedCacheUse is used to avoid the empty/invalid client id DCHECKS
     // caused while accessing GrShaderCache. Even though other clients can
     // create shared images, the context used to create the backend texture
@@ -277,7 +280,7 @@ bool WrappedSkImageBacking::InitializeWithData(
           context_state_->gr_context()->createCompressedBackendTexture(
               size().width(), size().height(),
               SkTextureCompressionType::kETC1_RGB8, pixels.data(),
-              pixels.size(), GrMipMapped::kNo, GrProtected::kNo);
+              pixels.size(), skgpu::Mipmapped::kNo, GrProtected::kNo);
     } else {
       auto info = AsSkImageInfo();
       if (pixels.size() != info.computeMinByteSize()) {

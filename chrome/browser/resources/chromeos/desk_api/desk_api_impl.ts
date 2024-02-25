@@ -51,12 +51,33 @@ export class DeskApiImpl implements DeskApi {
     chrome.wmDesksPrivate.switchDesk(deskId, callback);
   }
 
-
   getDeskById(
       deskId: string, callback: chrome.wmDesksPrivate.GetDeskByIdCallback) {
     if (typeof chrome.wmDesksPrivate.getDeskByID !== 'function') {
       throw new Error('getDeskByID is not supported in this version.');
     }
     chrome.wmDesksPrivate.getDeskByID(deskId, callback);
+  }
+
+  addDeskAddedListener(callback: chrome.wmDesksPrivate.DeskAddCallback) {
+    if (!chrome.wmDesksPrivate.OnDeskAdded) {
+      throw new Error('OnDeskAdded is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.OnDeskAdded.addListener(callback);
+  }
+
+
+  addDeskRemovedListener(callback: chrome.wmDesksPrivate.DeskIdCallback) {
+    if (!chrome.wmDesksPrivate.OnDeskRemoved) {
+      throw new Error('OnDeskRemoved is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.OnDeskRemoved.addListener(callback);
+  }
+
+  addDeskSwitchedListener(callback: chrome.wmDesksPrivate.DeskSwitchCallback) {
+    if (!chrome.wmDesksPrivate.OnDeskSwitched) {
+      throw new Error('OnDeskSwitched is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.OnDeskSwitched.addListener(callback);
   }
 }

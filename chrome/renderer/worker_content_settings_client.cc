@@ -18,7 +18,7 @@
 
 WorkerContentSettingsClient::WorkerContentSettingsClient(
     content::RenderFrame* render_frame)
-    : render_frame_id_(render_frame->GetRoutingID()) {
+    : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
   blink::WebLocalFrame* frame = render_frame->GetWebFrame();
   const blink::WebDocument& document = frame->GetDocument();
   if (document.GetSecurityOrigin().IsOpaque() ||
@@ -52,7 +52,7 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
       site_for_cookies_(other.site_for_cookies_),
       top_frame_origin_(other.top_frame_origin_),
       allow_running_insecure_content_(other.allow_running_insecure_content_),
-      render_frame_id_(other.render_frame_id_) {
+      frame_token_(other.frame_token_) {
   other.EnsureContentSettingsManager();
   other.content_settings_manager_->Clone(
       pending_content_settings_manager_.InitWithNewPipeAndPassReceiver());
@@ -78,7 +78,7 @@ void WorkerContentSettingsClient::AllowStorageAccess(
   EnsureContentSettingsManager();
 
   content_settings_manager_->AllowStorageAccess(
-      render_frame_id_,
+      frame_token_,
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
       document_origin_, site_for_cookies_, top_frame_origin_,
@@ -94,7 +94,7 @@ bool WorkerContentSettingsClient::AllowStorageAccessSync(
 
   bool result = false;
   content_settings_manager_->AllowStorageAccess(
-      render_frame_id_,
+      frame_token_,
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
       document_origin_, site_for_cookies_, top_frame_origin_, &result);
@@ -107,37 +107,7 @@ bool WorkerContentSettingsClient::AllowRunningInsecureContent(
   if (!allow_running_insecure_content_ && !allowed_per_settings) {
     EnsureContentSettingsManager();
     content_settings_manager_->OnContentBlocked(
-        render_frame_id_, ContentSettingsType::MIXEDSCRIPT);
-    return false;
-  }
-
-  return true;
-}
-
-bool WorkerContentSettingsClient::AllowScriptFromSource(
-    bool enabled_per_settings,
-    const blink::WebURL& script_url) {
-  bool allow = enabled_per_settings;
-  if (allow && content_setting_rules_) {
-    GURL top_frame_origin_url = top_frame_origin_.GetURL();
-    // Allow DevTools to run worker scripts.
-    if (top_frame_origin_url.SchemeIs(content::kChromeDevToolsScheme))
-      return true;
-    for (const auto& rule : content_setting_rules_->script_rules) {
-      // The primary pattern was already matched in the browser process (see
-      // PageSpecificContentSettings::ReadyToCommitNavigation), so we only need
-      // to match the secondary pattern here.
-      if (rule.secondary_pattern.Matches(script_url)) {
-        allow = rule.GetContentSetting() != CONTENT_SETTING_BLOCK;
-        break;
-      }
-    }
-  }
-
-  if (!allow) {
-    EnsureContentSettingsManager();
-    content_settings_manager_->OnContentBlocked(
-        render_frame_id_, ContentSettingsType::JAVASCRIPT);
+        frame_token_, ContentSettingsType::MIXEDSCRIPT);
     return false;
   }
 

@@ -54,9 +54,14 @@ class LiveCaptionUnavailabilityNotifierTest
         new LiveCaptionUnavailabilityNotifier(*main_rfh(), std::move(receiver));
   }
 
+  void TearDown() override {
+    notifier_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
  private:
   mojo::Remote<media::mojom::MediaFoundationRendererNotifier> remote_;
-  raw_ptr<LiveCaptionUnavailabilityNotifier, DanglingUntriaged> notifier_;
+  raw_ptr<LiveCaptionUnavailabilityNotifier> notifier_ = nullptr;
 };
 
 TEST_F(LiveCaptionUnavailabilityNotifierTest, MediaFoundationRendererCreated) {

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -247,6 +248,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   String frame_file_path_;
   frame_test_helpers::WebViewHelper helper_;
 

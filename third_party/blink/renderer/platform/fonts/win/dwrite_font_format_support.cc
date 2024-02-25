@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -22,7 +23,7 @@ bool DWriteVersionSupportsVariations() {
   // the response is 0 or larger, it means, DWrite was able to determine if this
   // is a variable font or not and Variations are supported.
   static bool variations_supported = []() {
-    auto fm(SkFontMgr::RefDefault());
+    sk_sp<SkFontMgr> fm = skia::DefaultFontMgr();
     sk_sp<SkTypeface> probe_typeface =
         fm->legacyMakeTypeface(nullptr, SkFontStyle());
     if (!probe_typeface)

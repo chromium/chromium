@@ -40,8 +40,6 @@ std::string GetSharedStorageSelectURLDisabledMessage();
 
 std::string GetSharedStorageAddModuleDisabledMessage();
 
-void SetBypassIsSharedStorageAllowed(bool allow);
-
 size_t GetAttachedSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition);
 
@@ -54,7 +52,7 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
                                    const FencedFrameNavigationTarget& target);
 
 [[nodiscard]] network::mojom::OptionalBool AbslToMojomOptionalBool(
-    absl::optional<bool> opt_bool);
+    std::optional<bool> opt_bool);
 
 // In order to use gmock matchers, it's necessary to copy the members of
 // `OperationPtr` into a copyable struct or tuple. We also bundle them with the
@@ -64,7 +62,7 @@ struct SharedStorageWriteOperationAndResult {
       const url::Origin& request_origin,
       std::string key,
       std::string value,
-      absl::optional<bool> ignore_if_present,
+      std::optional<bool> ignore_if_present,
       OperationResult result);
   static SharedStorageWriteOperationAndResult AppendOperation(
       const url::Origin& request_origin,
@@ -80,15 +78,15 @@ struct SharedStorageWriteOperationAndResult {
       OperationResult result);
   SharedStorageWriteOperationAndResult(const url::Origin& request_origin,
                                        OperationType operation_type,
-                                       absl::optional<std::string> key,
-                                       absl::optional<std::string> value,
-                                       absl::optional<bool> ignore_if_present,
+                                       std::optional<std::string> key,
+                                       std::optional<std::string> value,
+                                       std::optional<bool> ignore_if_present,
                                        OperationResult result);
   SharedStorageWriteOperationAndResult(
       const url::Origin& request_origin,
       OperationType operation_type,
-      absl::optional<std::string> key,
-      absl::optional<std::string> value,
+      std::optional<std::string> key,
+      std::optional<std::string> value,
       network::mojom::OptionalBool ignore_if_present,
       OperationResult result);
   SharedStorageWriteOperationAndResult(const url::Origin& request_origin,
@@ -99,20 +97,20 @@ struct SharedStorageWriteOperationAndResult {
   ~SharedStorageWriteOperationAndResult();
   url::Origin request_origin;
   OperationType operation_type;
-  absl::optional<std::string> key;
-  absl::optional<std::string> value;
-  absl::optional<bool> ignore_if_present;
+  std::optional<std::string> key;
+  std::optional<std::string> value;
+  std::optional<bool> ignore_if_present;
   OperationResult result;
 };
 
 bool operator==(const SharedStorageWriteOperationAndResult& a,
                 const SharedStorageWriteOperationAndResult& b);
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramSuccessValue();
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeReportSuccessValue();
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramApiDisabledValue();
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeApiDisabledValue();
 
 base::WeakPtr<TestSharedStorageHeaderObserver>
 CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition);

@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Dynamic content script test extension",
+  "version": "0.1",
+  "description": "Tests scripting.registerContentScripts calls",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "content_scripts": [{
+    "matches": ["*://b.com/*"],
+    "js": ["inject_element.js"],
+    "all_frames": true,
+    "run_at": "document_end"
+  }, {
+    "matches": ["*://nohostperms.com/*"],
+    "js": ["check_title.js"],
+    "run_at": "document_idle"
+  }],
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://a.com/*", "*://b.com/*", "*://hostperms.com/*"]
+}

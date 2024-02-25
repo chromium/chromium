@@ -20,6 +20,12 @@ BASE_FEATURE(kBootCompletedBroadcastFeature,
              "ArcBootCompletedBroadcast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether independent ARC container app killer is enabled to replace
+// the ARC container app killing in TabManagerDelegate.
+BASE_FEATURE(kContainerAppKiller,
+             "ContainerAppKiller",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls experimental Custom Tabs feature for ARC.
 BASE_FEATURE(kCustomTabsExperimentFeature,
              "ArcCustomTabsExperiment",
@@ -41,12 +47,21 @@ BASE_FEATURE(kEnableArcIdleManager,
 const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
     &kEnableArcIdleManager, "ignore_battery_for_test", false};
 
+const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
+    &kEnableArcIdleManager, "delay_ms", 60 * 1000};
+
+const base::FeatureParam<bool> kEnableArcIdleManagerPendingIdleReactivate{
+    &kEnableArcIdleManager, "pending_idle_reactivate", false};
+
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
 // managed by file manager).
 BASE_FEATURE(kEnableArcNearbyShareFuseBox,
              "ArcNearbyShareFuseBox",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to enable support for s2idle in ARCVM.
+BASE_FEATURE(kEnableArcS2Idle, "ArcS2Idle", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable ARCVM /data migration. It does not take effect
 // when kEnableVirtioBlkForData is set, in which case virtio-blk is used for
@@ -98,6 +113,11 @@ BASE_FEATURE(kEnableVirtioBlkForData,
              "ArcEnableVirtioBlkForData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable the multiple-worker feature in virtio-blk disks
+BASE_FEATURE(kEnableVirtioBlkMultipleWorkers,
+             "ArcEnableVirtioBlkMultipleWorkers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow Android apps to access external storage devices
 // like USB flash drives and SD cards.
 BASE_FEATURE(kExternalStorageAccess,
@@ -128,12 +148,6 @@ BASE_FEATURE(kLvmApplicationContainers,
 BASE_FEATURE(kFilePickerExperimentFeature,
              "ArcFilePickerExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether ARCVM can request resourced make more resources available
-// for a currently-active ARCVM game.
-BASE_FEATURE(kGameModeFeature,
-             "ArcGameModeFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -209,12 +223,22 @@ BASE_FEATURE(kOutOfProcessVideoDecoding,
              "OutOfProcessVideoDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Android per-app-language settings will be surfaced in ChromeOS
+// Settings page.
+BASE_FEATURE(kPerAppLanguage,
+             "PerAppLanguage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls ARC picture-in-picture feature. If this is enabled, then Android
 // will control which apps can enter PIP. If this is disabled, then ARC PIP
 // will be disabled.
 BASE_FEATURE(kPictureInPictureFeature,
              "ArcPictureInPicture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kResizeCompat,
+             "ArcResizeCompat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRoundedWindowCompat,
              "ArcRoundedWindowCompat",
@@ -251,17 +275,21 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
 
 // When enabled, CertStoreService will talk to KeyMint instead of Keymaster on
 // ARC-T.
-// When you change the default, you also need to change whether Keymaster
-// or KeyMint is started in ARC. Otherwise, it will not work properly.
 BASE_FEATURE(kSwitchToKeyMintOnT,
              "ArcSwitchToKeyMintOnT",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// On boards that blocks KeyMint at launch, enable this feature to force enable
+// KeyMint.
+BASE_FEATURE(kSwitchToKeyMintOnTOverride,
+             "ArcSwitchToKeyMintOnTOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, ARC will pass install priority to Play in sync install
 // requests.
 BASE_FEATURE(kSyncInstallPriority,
              "ArcSyncInstallPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, touch screen emulation for compatibility is enabled on specific
 // apps.
@@ -269,10 +297,15 @@ BASE_FEATURE(kTouchscreenEmulation,
              "ArcTouchscreenEmulation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, compatibility logic for trackpad scrolling is enabled on
-// specific apps.
-BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
-             "ArcTrackpadScrollTouchscreenEmulation",
+// Controls whether ARC should be enabled on unaffiliated devices on client side
+BASE_FEATURE(kUnaffiliatedDeviceArcRestriction,
+             "UnaffiliatedDeviceArcRestriction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, ARC will not be throttled when there is active audio stream
+// from ARC.
+BASE_FEATURE(kUnthrottleOnActiveAudio,
+             "ArcUnthrottleOnActiveAudio",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARC USB Storage UI feature.
@@ -314,7 +347,7 @@ const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
 
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
-//  min(max_mib, RAM + shift_mib)
+//  min(max_mib, ram_percentage / 100 * RAM + shift_mib)
 // If disabled, memory is sized by concierge which, at the time of writing, uses
 // RAM - 1024 MiB.
 BASE_FEATURE(kVmMemorySize,
@@ -330,6 +363,12 @@ const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
 // INT32_MAX means that ARCVM's memory is not capped.
 const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
                                                   INT32_MAX};
+
+// Controls the percentage of system RAM for calculation of ARCVM size. The
+// default value of 100 means the whole system RAM will be used in ARCM size
+// calculation.
+const base::FeatureParam<int> kVmMemorySizePercentage{&kVmMemorySize,
+                                                      "ram_percentage", 100};
 
 // Controls experimental key to enable pre-ANR handling for BroadcastQueue in
 // ARCVM.
@@ -374,7 +413,7 @@ BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
 // memory pressure is below foreground.
 BASE_FEATURE(kPriorityAppLmkDelay,
              "ArcPriorityAppLmkDelay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the time to wait for inactivity of a high priority app before
 // considering it to be killed. The default value is 5 minutes.
@@ -391,5 +430,5 @@ const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
 // top Android apps from being killed that result in bad user experience.
 BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
              "ArcLmkPerceptibleMinStateUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace arc

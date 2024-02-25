@@ -20,7 +20,7 @@ if (is_apple) {
     sources = [
       "early_zone_registration_apple.cc",
       "early_zone_registration_apple.h",
-      "partition_allocator/shim/early_zone_registration_constants.h",
+      "partition_allocator/src/partition_alloc/shim/early_zone_registration_constants.h",
     ]
 
     deps = [

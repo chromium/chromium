@@ -22,7 +22,7 @@ class PLATFORM_EXPORT ContextLifecycleObserver : public GarbageCollectedMixin {
   void NotifyContextDestroyed();
 
   ContextLifecycleNotifier* GetContextLifecycleNotifier() const {
-    return notifier_;
+    return notifier_.Get();
   }
   void SetContextLifecycleNotifier(ContextLifecycleNotifier*);
 

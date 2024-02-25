@@ -117,6 +117,10 @@ void FilterInstalledAppsForWin(
       base::win::ScopedHString::Create(RuntimeClass_Windows_System_Launcher)
           .get(),
       &launcher_statics);
+  if (FAILED(hr)) {
+    std::move(callback).Run(std::vector<blink::mojom::RelatedApplicationPtr>());
+    return;
+  }
 
   ComPtr<IUriRuntimeClassFactory> url_factory;
   hr = base::win::GetActivationFactory<IUriRuntimeClassFactory,

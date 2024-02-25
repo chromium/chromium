@@ -14,16 +14,21 @@
 
 #include "mediapipe/gpu/gpu_shared_data_internal.h"
 
+#include <memory>
+#include <utility>
+
 #include "absl/base/attributes.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "mediapipe/framework/deps/no_destructor.h"
-#include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gl_context_options.pb.h"
 #include "mediapipe/gpu/graph_support.h"
 
 #if __APPLE__
 #include "mediapipe/gpu/metal_shared_resources.h"
-#include "absl/log/absl_check.h"
 #endif  // __APPLE__
 
 namespace mediapipe {
@@ -74,7 +79,7 @@ GpuResources::StatusOrGpuResources GpuResources::Create() {
 
 GpuResources::StatusOrGpuResources GpuResources::Create(
     PlatformGlContext external_context) {
-  ASSIGN_OR_RETURN(
+  MP_ASSIGN_OR_RETURN(
       std::shared_ptr<GlContext> context,
       GlContext::Create(external_context, kGlContextUseDedicatedThread));
   std::shared_ptr<GpuResources> gpu_resources(
@@ -83,8 +88,25 @@ GpuResources::StatusOrGpuResources GpuResources::Create(
 }
 
 GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context)
+    : gl_key_context_(new GlContextMapType(),
+                      [](auto* map) {
+                        // This flushes all pending jobs in all GL contexts,
+                        // ensuring that all GL contexts not referenced
+                        // elsewhere are destroyed as part of this destructor.
+                        // Failure to do this may cause GL threads to outlast
+                        // this destructor and execute jobs after the
+                        // GpuResources object is destroyed.
+                        for (auto& [key, context] : *map) {
+                          const auto status = std::move(context)->Run(
+                              []() { return absl::OkStatus(); });
+                          ABSL_LOG_IF(ERROR, !status.ok())
+                              << "Failed to flush GlContext jobs: " << status;
+                        }
+                        delete map;
+                      })
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
-    : texture_caches_(std::make_shared<CvTextureCacheManager>()),
+      ,
+      texture_caches_(std::make_shared<CvTextureCacheManager>()),
       gpu_buffer_pool_(
           [tc = texture_caches_](const internal::GpuBufferSpec& spec,
                                  const MultiPoolOptions& options) {
@@ -92,7 +114,7 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context)
           })
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 {
-  gl_key_context_[SharedContextKey()] = gl_context;
+  gl_key_context_->insert({SharedContextKey(), gl_context});
   named_executors_[kGpuExecutorName] =
       std::make_shared<GlContextExecutor>(gl_context.get());
 #if __APPLE__
@@ -104,6 +126,15 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context)
 }
 
 GpuResources::~GpuResources() {
+  // This flushes all pending jobs in all GL contexts,
+  // ensuring that all existing jobs, which may refer GpuResource and kept their
+  // gpu resources (e.g. GpuResources::gpu_buffer_pool_) through a raw pointer,
+  // have finished before kept gpu resources get deleted.
+  for (auto& [key, context] : *gl_key_context_) {
+    const auto status = context->Run([]() { return absl::OkStatus(); });
+    ABSL_LOG_IF(ERROR, !status.ok())
+        << "Failed to flush GlContext jobs: " << status;
+  }
 #if __APPLE__
   // Note: on Apple platforms, this object contains Objective-C objects.
   // The destructor will release them, but ARC must be on.
@@ -111,7 +142,7 @@ GpuResources::~GpuResources() {
 #error This file must be built with ARC.
 #endif
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
-  for (auto& kv : gl_key_context_) {
+  for (auto& kv : *gl_key_context_) {
     texture_caches_->UnregisterTextureCache(kv.second->cv_texture_cache());
   }
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
@@ -129,9 +160,7 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
 #ifndef __EMSCRIPTEN__
   // TODO Allow calculators to request a separate context.
   // For now, allow a few calculators to run in their own context.
-  bool gets_own_context = (node_type == "ImageFrameToGpuBufferCalculator") ||
-                          (node_type == "GpuBufferToImageFrameCalculator") ||
-                          (node_type == "GlSurfaceSinkCalculator");
+  bool gets_own_context = false;
 
   const auto& options =
       node->GetCalculatorState().Options<mediapipe::GlContextOptions>();
@@ -150,8 +179,8 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
 #endif  // !__EMSCRIPTEN__
   node_key_[node_id] = context_key;
 
-  ASSIGN_OR_RETURN(std::shared_ptr<GlContext> context,
-                   GetOrCreateGlContext(context_key));
+  MP_ASSIGN_OR_RETURN(std::shared_ptr<GlContext> context,
+                      GetOrCreateGlContext(context_key));
 
   if (kGlContextUseDedicatedThread) {
     std::string executor_name =
@@ -173,23 +202,24 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
 const std::shared_ptr<GlContext>& GpuResources::gl_context(
     CalculatorContext* cc) {
   if (cc) {
-    auto it = gl_key_context_.find(node_key_[cc->NodeName()]);
-    if (it != gl_key_context_.end()) {
+    auto it = gl_key_context_->find(node_key_[cc->NodeName()]);
+    if (it != gl_key_context_->end()) {
       return it->second;
     }
   }
 
-  return gl_key_context_[SharedContextKey()];
+  return gl_key_context_->at(SharedContextKey());
 }
 
 GlContext::StatusOrGlContext GpuResources::GetOrCreateGlContext(
     const std::string& key) {
-  auto it = gl_key_context_.find(key);
-  if (it == gl_key_context_.end()) {
-    ASSIGN_OR_RETURN(std::shared_ptr<GlContext> new_context,
-                     GlContext::Create(*gl_key_context_[SharedContextKey()],
-                                       kGlContextUseDedicatedThread));
-    it = gl_key_context_.emplace(key, new_context).first;
+  auto it = gl_key_context_->find(key);
+  if (it == gl_key_context_->end()) {
+    MP_ASSIGN_OR_RETURN(
+        std::shared_ptr<GlContext> new_context,
+        GlContext::Create(*gl_key_context_->at(SharedContextKey()),
+                          kGlContextUseDedicatedThread));
+    it = gl_key_context_->emplace(key, new_context).first;
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
     texture_caches_->RegisterTextureCache(it->second->cv_texture_cache());
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
@@ -210,8 +240,10 @@ static std::shared_ptr<GlTextureBuffer> GetGlTextureBufferFromPool(
         &cc->Service(kGpuService).GetObject().gpu_buffer_pool();
     // Note that the "gpu_buffer_pool" serves GlTextureBuffers on non-Apple
     // platforms. TODO: refactor into storage pools.
-    texture_buffer = pool->GetBuffer(width, height, format)
-                         .internal_storage<GlTextureBuffer>();
+    auto texture_buffer_from_pool = pool->GetBuffer(width, height, format);
+    ABSL_CHECK_OK(texture_buffer_from_pool);
+    texture_buffer =
+        texture_buffer_from_pool->internal_storage<GlTextureBuffer>();
   } else {
     texture_buffer = GlTextureBuffer::Create(width, height, format);
   }

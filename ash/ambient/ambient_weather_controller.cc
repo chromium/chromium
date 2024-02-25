@@ -5,6 +5,7 @@
 #include "ash/ambient/ambient_weather_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
@@ -20,9 +21,10 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 namespace {
@@ -79,15 +81,42 @@ AmbientWeatherController::ScopedRefresher::~ScopedRefresher() {
   controller_->OnScopedRefresherDestroyed();
 }
 
-AmbientWeatherController::AmbientWeatherController()
-    : weather_model_(std::make_unique<AmbientWeatherModel>()) {}
+AmbientWeatherController::AmbientWeatherController(
+    SimpleGeolocationProvider* const location_permission_provider)
+    : location_permission_provider_(location_permission_provider),
+      weather_model_(std::make_unique<AmbientWeatherModel>()) {
+  CHECK_NE(location_permission_provider_, nullptr);
+  location_permission_provider_->AddObserver(this);
+}
 
-AmbientWeatherController::~AmbientWeatherController() = default;
+AmbientWeatherController::~AmbientWeatherController() {
+  CHECK_NE(location_permission_provider_, nullptr);
+  location_permission_provider_->RemoveObserver(this);
+}
+
+void AmbientWeatherController::OnGeolocationPermissionChanged(bool enabled) {
+  // When system permission is blocked, stop scheduling new requests and drop
+  // all pending requests. Also clears the weather model cache for privacy
+  // reasons.
+  if (!enabled) {
+    weather_refresh_timer_.Stop();
+    weak_factory_.InvalidateWeakPtrs();
+    ClearAmbientWeatherModel();
+    return;
+  }
+
+  // System permission is granted, resume scheduler if needed.
+  if (num_active_scoped_refreshers_ > 0) {
+    FetchWeather();
+    weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
+                                 &AmbientWeatherController::FetchWeather);
+  }
+}
 
 std::unique_ptr<AmbientWeatherController::ScopedRefresher>
 AmbientWeatherController::CreateScopedRefresher() {
   ++num_active_scoped_refreshers_;
-  if (!weather_refresh_timer_.IsRunning()) {
+  if (!weather_refresh_timer_.IsRunning() && IsGeolocationUsageAllowed()) {
     FetchWeather();
     weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
                                  &AmbientWeatherController::FetchWeather);
@@ -106,7 +135,7 @@ void AmbientWeatherController::FetchWeather() {
 }
 
 void AmbientWeatherController::StartDownloadingWeatherConditionIcon(
-    const absl::optional<WeatherInfo>& weather_info) {
+    const std::optional<WeatherInfo>& weather_info) {
   if (!weather_info) {
     LOG(WARNING) << "No weather info included in the response.";
     return;
@@ -146,6 +175,14 @@ void AmbientWeatherController::OnWeatherConditionIconDownloaded(
     return;
 
   weather_model_->UpdateWeatherInfo(icon, temp_f, show_celsius);
+}
+
+bool AmbientWeatherController::IsGeolocationUsageAllowed() {
+  return location_permission_provider_->IsGeolocationUsageAllowedForSystem();
+}
+
+void AmbientWeatherController::ClearAmbientWeatherModel() {
+  weather_model_->UpdateWeatherInfo(gfx::ImageSkia(), 0.0f, true);
 }
 
 void AmbientWeatherController::OnScopedRefresherDestroyed() {

@@ -37,6 +37,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -187,19 +188,28 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     permissions::PermissionRequestObserver observer(contents);
 
     if (expect_prompt) {
+      // Control will return as soon as the API call is made, and then the
+      // observer will wait for the request to display.
       std::string result =
           content::EvalJs(contents, "geoStartWithAsyncResponse();")
               .ExtractString();
-      EXPECT_TRUE(
-          result == "request-callback-success" ||  // First request.
-          result ==
-              "geoposition-updated");  // May occur when page is not reloaded,
-                                       // lost permission and successfully
-                                       // prompted for it again.
+      if (auto_response == permissions::PermissionRequestManager::DISMISS ||
+          auto_response == permissions::PermissionRequestManager::DENY_ALL) {
+        EXPECT_TRUE(result == "request-callback-error");
+      } else {
+        EXPECT_TRUE(
+            result == "request-callback-success" ||  // First request.
+            result ==
+                "geoposition-updated");  // May occur when page is not reloaded,
+                                         // lost permission and successfully
+                                         // prompted for it again.
+      }
       observer.Wait();
+    } else {
+      // Control will return once one of the callbacks fires.
+      RunScript(render_frame_host_, "geoStartWithSyncResponse()");
     }
 
-    RunScript(render_frame_host_, "geoStartWithSyncResponse()");
     EXPECT_EQ(expect_prompt, observer.request_shown());
   }
 
@@ -258,6 +268,41 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
 
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       OneTimeGrantResetsEmbargoCounter) {
+  auto* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser()
+              ->tab_strip_model()
+              ->GetWebContentsAt(0)
+              ->GetBrowserContext());
+  EXPECT_EQ(0, autoblocker->GetDismissCount(GetGeolocationGurl(),
+                                            ContentSettingsType::GEOLOCATION));
+
+  // Navigate to geolocation page, request geolocation permission, expect prompt
+  // and dismiss it.
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::DISMISS, true);
+
+  // Expect that embargo counter has been incremented.
+  EXPECT_EQ(1, autoblocker->GetDismissCount(GetGeolocationGurl(),
+                                            ContentSettingsType::GEOLOCATION));
+
+  // Refresh.
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
+
+  // Request geolocation permission, expect prompt and grant it once.
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+
+  // Expect the embargo counter has been reset to 0.
+  EXPECT_EQ(0, autoblocker->GetDismissCount(GetGeolocationGurl(),
+                                            ContentSettingsType::GEOLOCATION));
+}
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
                        SameTabForegroundBehaviour) {

@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -42,7 +43,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -199,7 +199,7 @@ class RequestImpl : public TailoredSecurityService::Request {
   // The URL of the API endpoint.
   GURL url_;
   // POST data to be sent with the request (may be empty).
-  absl::optional<std::string> post_data_;
+  std::optional<std::string> post_data_;
 
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
 
@@ -404,14 +404,12 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
   if (!base::FeatureList::IsEnabled(kTailoredSecurityIntegration))
     return;
 
-  bool sync_history_enabled =
-      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory);
-  if (!sync_history_enabled) {
+  if (!HistorySyncEnabledForUser()) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kHistoryNotSynced);
     }
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
     return;
   }
 
@@ -421,12 +419,15 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kSafeBrowsingControlledByPolicy);
     }
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
     return;
   }
 
   if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
     RecordEnabledNotificationResult(
         TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
+    SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
+    return;
   }
 
   if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
@@ -442,6 +443,12 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
       observer.OnSyncNotificationMessageRequest(false);
     }
   }
+}
+
+bool TailoredSecurityService::HistorySyncEnabledForUser() {
+  return sync_service_ &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kHistory);
 }
 
 void TailoredSecurityService::
@@ -495,7 +502,7 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 base::Value::Dict TailoredSecurityService::ReadResponse(Request* request) {
   base::Value::Dict result;
   if (request->GetResponseCode() == net::HTTP_OK) {
-    absl::optional<base::Value> json_value =
+    std::optional<base::Value> json_value =
         base::JSONReader::Read(request->GetResponseBody());
     if (json_value && json_value.value().is_dict())
       result = std::move(json_value->GetDict());
@@ -532,6 +539,13 @@ void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
 
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TailoredSecurityService::SaveRetryState(TailoredSecurityRetryState state) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
+  }
 }
 
 void TailoredSecurityService::SetCanQuery(bool can_query) {

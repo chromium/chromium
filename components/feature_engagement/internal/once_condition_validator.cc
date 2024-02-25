@@ -4,9 +4,11 @@
 
 #include "components/feature_engagement/internal/once_condition_validator.h"
 
+#include <optional>
+
 #include "components/feature_engagement/internal/event_model.h"
+#include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -22,7 +24,7 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
-    uint32_t current_day) const {
+    const TimeProvider& time_provider) const {
   ConditionValidator::Result result(true);
   result.event_model_ready_ok = event_model.IsReady();
 
@@ -39,7 +41,7 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
   result.snooze_expiration_ok =
       !event_model.IsSnoozeDismissed(config.trigger.name) &&
       (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
-       base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
+       time_provider.Now() - base::Days(config.snooze_params.snooze_interval));
 
   result.priority_notification_ok =
       !pending_priority_notification_.has_value() ||
@@ -48,7 +50,8 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
   result.should_show_snooze =
       result.snooze_expiration_ok &&
       event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
-                                 current_day) < config.snooze_params.max_limit;
+                                 time_provider.GetCurrentDay()) <
+          config.snooze_params.max_limit;
 
   return result;
 }
@@ -72,11 +75,11 @@ void OnceConditionValidator::NotifyDismissed(const base::Feature& feature) {
 }
 
 void OnceConditionValidator::SetPriorityNotification(
-    const absl::optional<std::string>& feature) {
+    const std::optional<std::string>& feature) {
   pending_priority_notification_ = feature;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 OnceConditionValidator::GetPendingPriorityNotification() {
   return pending_priority_notification_;
 }
@@ -84,6 +87,10 @@ OnceConditionValidator::GetPendingPriorityNotification() {
 void OnceConditionValidator::AllowMultipleFeaturesForTesting(
     bool allows_multiple_features) {
   allows_multiple_features_ = allows_multiple_features;
+}
+
+void OnceConditionValidator::ResetSession() {
+  shown_features_.clear();
 }
 
 }  // namespace feature_engagement

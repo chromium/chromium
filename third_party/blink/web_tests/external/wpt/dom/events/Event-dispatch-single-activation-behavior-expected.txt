@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test114"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test114"...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test116"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test116"...])
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test125"...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test127"...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <A></A>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test128_link"] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <AREA></AREA>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test129_link"] length 1
+Harness: the test ran to completion.
+

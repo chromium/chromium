@@ -93,10 +93,10 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                             const PaintOpWithFlags& flags_op,
                             const PlaybackParams& params,
                             float alpha);
-  bool SerializeOp(SkCanvas* canvas,
-                   const PaintOp& op,
-                   const PaintFlags* flags_to_serialize,
-                   const PlaybackParams& params);
+  ALWAYS_INLINE bool SerializeOp(SkCanvas* canvas,
+                                 const PaintOp& op,
+                                 const PaintFlags* flags_to_serialize,
+                                 const PlaybackParams& params);
   void Save(SkCanvas* canvas, const PlaybackParams& params);
   void RestoreToCount(SkCanvas* canvas,
                       int count,

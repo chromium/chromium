@@ -32,9 +32,9 @@ fedcm_test(async t => {
   cred_promise = promise_rejects_dom(t, "NetworkError", cred_promise);
 
   let type = await fedcm_get_dialog_type_promise(t);
-  assert_equals("ConfirmIdpSignin", type);
+  assert_equals("ConfirmIdpLogin", type);
 
   window.test_driver.cancel_fedcm_dialog();
   return cred_promise;
-}, "Dismiss IDP signin dialog");
+}, "Dismiss IDP login dialog");
 </script>

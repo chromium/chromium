@@ -42,6 +42,8 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
           goNext();
         } else if (e.data == 'secondaryActionHit') {
           sendSetSecondaryActionEnabled(false);
+        } else if (e.data.type == 'deviceIdFetched') {
+          gaia.chromeOSLogin.receivedDeviceId = e.data.data;
         }
     }
   };
@@ -117,6 +119,13 @@ gaia.chromeOSLogin.backButton = function(show) {
       gaia.chromeOSLogin.parent_webview_url_);
 };
 
+gaia.chromeOSLogin.sendGetDeviceId = function() {
+  var msg = {
+    'method': 'getDeviceId'
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+    gaia.chromeOSLogin.parent_webview_url_);
+};
 
 function goBack() {
   if (!document.getElementById('page2').hidden) {

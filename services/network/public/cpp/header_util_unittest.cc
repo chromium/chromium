@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/header_util.h"
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"

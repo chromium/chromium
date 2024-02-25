@@ -21,12 +21,12 @@ limitations under the License.
 #include <numeric>
 #include <vector>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow/lite/string_util.h"
@@ -66,14 +66,12 @@ tflite::support::StatusOr<T*> AssertAndReturnTypedTensor(
 // type or has not the same number of elements.
 // Note: std::negation is not used because it is from C++17, where the code will
 // be compiled using C++14 in OSS.
-template <
-    typename T,
-    typename = std::enable_if_t<std::is_same<T, std::string>::value == false>>
-inline absl::Status PopulateTensor(const T* data,
-                                   int num_elements,
+template <typename T, typename = std::enable_if_t<
+                          std::is_same<T, std::string>::value == false>>
+inline absl::Status PopulateTensor(const T* data, int num_elements,
                                    TfLiteTensor* tensor) {
   T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t bytes = num_elements * sizeof(T);
   if (tensor->bytes != bytes) {
     return tflite::support::CreateStatusWithPayload(
@@ -95,8 +93,7 @@ inline absl::Status PopulateTensor(const std::vector<T>& data,
 
 template <>
 inline absl::Status PopulateTensor<std::string>(
-    const std::vector<std::string>& data,
-    TfLiteTensor* tensor) {
+    const std::vector<std::string>& data, TfLiteTensor* tensor) {
   if (tensor->type != kTfLiteString) {
     return tflite::support::CreateStatusWithPayload(
         absl::StatusCode::kInternal,
@@ -116,7 +113,7 @@ inline absl::Status PopulateTensor<std::string>(
 template <typename T>
 inline absl::Status PopulateTensor(const T& data, TfLiteTensor* tensor) {
   T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   *v = data;
   return absl::OkStatus();
 }
@@ -136,7 +133,7 @@ template <typename T>
 inline absl::Status PopulateVector(const TfLiteTensor* tensor,
                                    std::vector<T>* data) {
   const T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t num = tensor->bytes / sizeof(tensor->type);
   data->reserve(num);
   for (size_t i = 0; i < num; i++) {
@@ -147,12 +144,10 @@ inline absl::Status PopulateVector(const TfLiteTensor* tensor,
 
 template <>
 inline absl::Status PopulateVector<std::string>(
-    const TfLiteTensor* tensor,
-    std::vector<std::string>* data) {
-  const auto status_or = AssertAndReturnTypedTensor<std::string>(tensor);
-  if (!status_or.ok()) {
-    return status_or.status();
-  }
+    const TfLiteTensor* tensor, std::vector<std::string>* data) {
+  std::string* v;
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
+  (void)v;
   int num = GetStringCount(tensor);
   data->reserve(num);
   for (int i = 0; i < num; i++) {
@@ -166,13 +161,12 @@ inline absl::Status PopulateVector<std::string>(
 // Note: std::negation is not used because it is from C++17, where the code will
 // be compiled using C++14 in OSS.
 template <
-    class TRepeatedField,
-    class T = float,
+    class TRepeatedField, class T = float,
     typename = std::enable_if_t<std::is_same<T, std::string>::value == false>>
 inline absl::Status PopulateVectorToRepeated(const TfLiteTensor* tensor,
                                              TRepeatedField* data) {
   const T* v;
-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
+  TFLITE_ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<T>(tensor));
   size_t num = tensor->bytes / sizeof(tensor->type);
   data->Resize(num, T());
   T* pdata = data->mutable_data();
@@ -243,8 +237,7 @@ int FindTensorIndexByName(
   if (tensor_metadata != nullptr && tensor_metadata->size() == tensors.size()) {
     int index =
         FindTensorIndexByMetadataName(tensor_metadata, metadata_tensor_name);
-    if (index > -1)
-      return index;
+    if (index > -1) return index;
   }
 
   return FindTensorIndexByModelName(tensors, model_tensor_name);

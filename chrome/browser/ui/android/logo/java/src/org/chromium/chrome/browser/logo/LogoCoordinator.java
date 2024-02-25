@@ -36,24 +36,34 @@ public class LogoCoordinator {
      * @param logoView The view that shows the search provider logo.
      * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
-     * @param onCachedLogoRevalidatedRunnable The runnable for when cached logo is revalidated.
      * @param isParentSurfaceShown Whether Start surface homepage or NTP is shown. This value
      *                             is true when this class is used by NTP; while used by Start,
      *                             it's only true on Start homepage.
      * @param visibilityObserver Observer object monitoring logo visibility.
      */
-    public LogoCoordinator(Context context, Callback<LoadUrlParams> logoClickedCallback,
-            LogoView logoView, boolean shouldFetchDoodle, Callback<Logo> onLogoAvailableCallback,
-            Runnable onCachedLogoRevalidatedRunnable, boolean isParentSurfaceShown,
+    public LogoCoordinator(
+            Context context,
+            Callback<LoadUrlParams> logoClickedCallback,
+            LogoView logoView,
+            boolean shouldFetchDoodle,
+            Callback<Logo> onLogoAvailableCallback,
+            boolean isParentSurfaceShown,
             VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/1394983): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mMediator = new LogoMediator(context, logoClickedCallback, mLogoModel, shouldFetchDoodle,
-                onLogoAvailableCallback, onCachedLogoRevalidatedRunnable, isParentSurfaceShown,
-                visibilityObserver, sDefaultGoogleLogo);
+        mMediator =
+                new LogoMediator(
+                        context,
+                        logoClickedCallback,
+                        mLogoModel,
+                        shouldFetchDoodle,
+                        onLogoAvailableCallback,
+                        isParentSurfaceShown,
+                        visibilityObserver,
+                        sDefaultGoogleLogo);
     }
 
     /** @see LogoMediator#initWithNative */
@@ -88,7 +98,8 @@ public class LogoCoordinator {
      * given dimensions (in pixels) with MeasureSpec.EXACTLY.
      */
     public void measureExactlyLogoView(int widthPx) {
-        mLogoView.measure(MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
+        mLogoView.measure(
+                MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(mLogoView.getMeasuredHeight(), MeasureSpec.EXACTLY));
     }
 

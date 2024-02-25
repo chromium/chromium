@@ -13,6 +13,14 @@
 /// This is NOT used for fullscreen.
 - (void)toolbarsHeightChanged;
 
+/// Secondary toolbar is moving above the keyboard, adjust the constraints to
+/// allow this.
+- (void)secondaryToolbarMovedAboveKeyboard;
+
+/// Secondary toolbar is removed from the keyboard, reset to default
+/// constraints.
+- (void)secondaryToolbarRemovedFromKeyboard;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PUBLIC_TOOLBAR_HEIGHT_DELEGATE_H_

@@ -126,23 +126,25 @@ bool CustomElement::ShouldCreateCustomizedBuiltinElement(
 }
 
 static CustomElementDefinition* DefinitionFor(
-    const Document& document,
+    const TreeScope& tree_scope,
     const CustomElementDescriptor desc) {
-  if (CustomElementRegistry* registry = CustomElement::Registry(document))
+  if (CustomElementRegistry* registry = CustomElement::Registry(tree_scope)) {
     return registry->DefinitionFor(desc);
+  }
   return nullptr;
 }
 
 // https://dom.spec.whatwg.org/#concept-create-element
-HTMLElement* CustomElement::CreateCustomElement(Document& document,
+HTMLElement* CustomElement::CreateCustomElement(TreeScope& tree_scope,
                                                 const QualifiedName& tag_name,
                                                 CreateElementFlags flags) {
   DCHECK(ShouldCreateCustomElement(tag_name)) << tag_name;
+  Document& document = tree_scope.GetDocument();
   // 4. Let definition be the result of looking up a custom element
   // definition given document, namespace, localName, and is.
   if (auto* definition = DefinitionFor(
-          document, CustomElementDescriptor(tag_name.LocalName(),
-                                            tag_name.LocalName()))) {
+          tree_scope, CustomElementDescriptor(tag_name.LocalName(),
+                                              tag_name.LocalName()))) {
     DCHECK(definition->Descriptor().IsAutonomous());
     // 6. Otherwise, if definition is non-null, then:
     return definition->CreateElement(document, tag_name, flags);

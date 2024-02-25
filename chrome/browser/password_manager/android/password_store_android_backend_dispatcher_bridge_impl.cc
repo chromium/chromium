@@ -12,12 +12,12 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
-#include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
 
 namespace password_manager {
 
@@ -26,20 +26,18 @@ namespace {
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
 constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
+constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
+constexpr int kGMSCoreVersionWithFewerErrors = 225012000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
-    PasswordStoreAndroidBackendDispatcherBridgeImpl::Account account) {
-  if (absl::holds_alternative<PasswordStoreOperationTarget>(account)) {
-    DCHECK(PasswordStoreOperationTarget::kLocalStorage ==
-           absl::get<PasswordStoreOperationTarget>(account));
+    std::string account) {
+  if (account.empty()) {
+    // TODO(crbug.com/1511194): Ensure java is consistent with C++ in
+    // interpreting the empty string instead of relying on nullptr.
     return nullptr;
   }
   return base::android::ConvertUTF8ToJavaString(
-      base::android::AttachCurrentThread(),
-      absl::get<
-          PasswordStoreAndroidBackendDispatcherBridgeImpl::SyncingAccount>(
-          account)
-          .value());
+      base::android::AttachCurrentThread(), std::move(account));
 }
 
 }  // namespace
@@ -69,6 +67,42 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
       password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid);
 }
 
+bool PasswordStoreAndroidBackendDispatcherBridge::
+    CanUseGetAllLoginsWithBrandingInfoAPI() {
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+  if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >
+      current_gms_core_version) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kUseGMSCoreForBrandingInfo);
+}
+
+bool PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment() {
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+
+  if (current_gms_core_version < kGMSCoreVersionWithFewerErrors) {
+    return false;
+  }
+
+  // Check minimum GMSCore version from Finch in case it was bumped.
+  if (current_gms_core_version <
+      features::kMinimumGMSCoreVersionToRemoveUnenrollment.Get()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(features::kRemoveUPMUnenrollment);
+}
+
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
     PasswordStoreAndroidBackendDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
@@ -88,16 +122,24 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::Init(
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
     JobId job_id,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       GetJavaStringFromAccount(std::move(account)));
 }
 
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::
+    GetAllLoginsWithBrandingInfo(JobId job_id, std::string account) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLoginsWithBrandingInfo(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
     JobId job_id,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAutofillableLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -107,7 +149,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
     JobId job_id,
     const std::string& signon_realm,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -119,7 +161,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::
     GetAffiliatedLoginsForSignonRealm(JobId job_id,
                                       const std::string& signon_realm,
-                                      Account account) {
+                                      std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAffiliatedLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -131,7 +173,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
       PasswordWithLocalDataFromPassword(form);
@@ -145,7 +187,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
       PasswordWithLocalDataFromPassword(form);
@@ -159,7 +201,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sync_pb::PasswordSpecificsData data =
       SpecificsDataFromPassword(form, /*base_password_data=*/{});

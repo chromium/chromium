@@ -158,7 +158,7 @@ void PlatformChannelEndpoint::ProcessLaunchAttempted() {
 
 // static
 PlatformChannelEndpoint PlatformChannelEndpoint::RecoverFromString(
-    base::StringPiece value) {
+    std::string_view value) {
 #if BUILDFLAG(IS_WIN)
   int handle_value = 0;
   if (value.empty() || !base::StringToInt(value, &handle_value)) {

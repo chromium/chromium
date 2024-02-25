@@ -6,12 +6,12 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -63,7 +63,7 @@ class RestoreIOTaskTest : public TrashBaseTest {
 
   std::string GenerateTrashInfoContents(const std::string& restore_path) {
     return base::StrCat({"[Trash Info]\nPath=", restore_path, "\nDeletionDate=",
-                         base::TimeToISO8601(base::Time::UnixEpoch())});
+                         base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
   }
 
  private:

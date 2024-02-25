@@ -48,9 +48,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * View tests for the address accessory sheet.
- */
+/** View tests for the address accessory sheet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AddressAccessorySheetViewTest {
@@ -63,31 +61,46 @@ public class AddressAccessorySheetViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = new AccessorySheetTabItemsModel();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = new AccessorySheetTabItemsModel();
 
-            AccessorySheetCoordinator accessorySheet =
-                    new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
-                                                          R.id.keyboard_accessory_sheet_stub),
-                            null);
-            accessorySheet.setTabs(new KeyboardAccessoryData.Tab[] {new KeyboardAccessoryData.Tab(
-                    "Addresses", null, null, R.layout.address_accessory_sheet,
-                    AccessoryTabType.ADDRESSES, new KeyboardAccessoryData.Tab.Listener() {
-                        @Override
-                        public void onTabCreated(ViewGroup view) {
-                            mView.set((RecyclerView) view);
-                            AccessorySheetTabViewBinder.initializeView(mView.get(), null);
-                            AddressAccessorySheetViewBinder.initializeView(mView.get(), mModel);
-                        }
+                    AccessorySheetCoordinator accessorySheet =
+                            new AccessorySheetCoordinator(
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .findViewById(R.id.keyboard_accessory_sheet_stub),
+                                    null);
+                    accessorySheet.setTabs(
+                            new KeyboardAccessoryData.Tab[] {
+                                new KeyboardAccessoryData.Tab(
+                                        "Addresses",
+                                        null,
+                                        null,
+                                        R.layout.address_accessory_sheet,
+                                        AccessoryTabType.ADDRESSES,
+                                        new KeyboardAccessoryData.Tab.Listener() {
+                                            @Override
+                                            public void onTabCreated(ViewGroup view) {
+                                                mView.set((RecyclerView) view);
+                                                AccessorySheetTabViewBinder.initializeView(
+                                                        mView.get(), null);
+                                                AddressAccessorySheetViewBinder.initializeView(
+                                                        mView.get(), mModel);
+                                            }
 
-                        @Override
-                        public void onTabShown() {}
-                    })});
-            accessorySheet.setHeight(
-                    mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                            R.dimen.keyboard_accessory_sheet_height));
-            accessorySheet.show();
-        });
+                                            @Override
+                                            public void onTabShown() {}
+                                        })
+                            });
+                    accessorySheet.setHeight(
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.keyboard_accessory_sheet_height));
+                    accessorySheet.show();
+                });
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get(), notNullValue()));
     }
 
@@ -101,10 +114,12 @@ public class AddressAccessorySheetViewTest {
     public void testAddingCaptionsToTheModelRendersThem() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.add(
-                    new AccessorySheetDataPiece("Addresses", AccessorySheetDataPiece.Type.TITLE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    "Addresses", AccessorySheetDataPiece.Type.TITLE));
+                });
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         View title = mView.get().findViewById(R.id.tab_title);
@@ -119,24 +134,29 @@ public class AddressAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.add(new AccessorySheetDataPiece(
-                    createInfo(
-                            /*nameFull=*/"Maya J. Park",
-                            /*companyName=*/"",
-                            /*addressHomeLine1=*/"100 Test Str.",
-                            /*addressHomeLine2=*/"",
-                            /*addressHomeZip=*/"14482",
-                            /*addressHomeCity=*/"Potsdam",
-                            /*addressHomeState=*/"CO",
-                            /*addressHomeCountry=*/"France",
-                            /*phoneHomeWholeNumber=*/"+4917802048383",
-                            /*emailAddress=*/"maya.park@googlemail.com", clicked),
-                    AccessorySheetDataPiece.Type.ADDRESS_INFO));
-            mModel.add(new AccessorySheetDataPiece(
-                    new KeyboardAccessoryData.FooterCommand("Manage addresses", null),
-                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    createInfo(
+                                            /* nameFull= */ "Maya J. Park",
+                                            /* companyName= */ "",
+                                            /* addressHomeLine1= */ "100 Test Str.",
+                                            /* addressHomeLine2= */ "",
+                                            /* addressHomeZip= */ "14482",
+                                            /* addressHomeCity= */ "Potsdam",
+                                            /* addressHomeState= */ "CO",
+                                            /* addressHomeCountry= */ "France",
+                                            /* phoneHomeWholeNumber= */ "+4917802048383",
+                                            /* emailAddress= */ "maya.park@googlemail.com",
+                                            clicked),
+                                    AccessorySheetDataPiece.Type.ADDRESS_INFO));
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new KeyboardAccessoryData.FooterCommand(
+                                            "Manage addresses", null),
+                                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
+                });
 
         // Wait until at least one element is rendered. Test devices with small screens will cause
         // the footer to not be created. Instantiating a footer still covers potential crashes.
@@ -166,31 +186,76 @@ public class AddressAccessorySheetViewTest {
         assertThat(clicked.get(), is(true));
     }
 
-    private UserInfo createInfo(String nameFull, String companyName, String addressHomeLine1,
-            String addressHomeLine2, String addressHomeZip, String addressHomeCity,
-            String addressHomeState, String addressHomeCountry, String phoneHomeWholeNumber,
-            String emailAddress, AtomicBoolean clickRecorder) {
+    private UserInfo createInfo(
+            String nameFull,
+            String companyName,
+            String addressHomeLine1,
+            String addressHomeLine2,
+            String addressHomeZip,
+            String addressHomeCity,
+            String addressHomeState,
+            String addressHomeCountry,
+            String phoneHomeWholeNumber,
+            String emailAddress,
+            AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo("", false);
         info.addField(
                 new UserInfoField(nameFull, nameFull, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                companyName, companyName, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                addressHomeLine1, addressHomeLine1, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                addressHomeLine2, addressHomeLine2, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                addressHomeZip, addressHomeZip, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                addressHomeCity, addressHomeCity, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                addressHomeState, addressHomeState, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(addressHomeCountry, addressHomeCountry, "", false,
-                item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(phoneHomeWholeNumber, phoneHomeWholeNumber, "", false,
-                item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(
-                emailAddress, emailAddress, "", false, item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        companyName, companyName, "", false, item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeLine1,
+                        addressHomeLine1,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeLine2,
+                        addressHomeLine2,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeZip,
+                        addressHomeZip,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeCity,
+                        addressHomeCity,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeState,
+                        addressHomeState,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        addressHomeCountry,
+                        addressHomeCountry,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        phoneHomeWholeNumber,
+                        phoneHomeWholeNumber,
+                        "",
+                        false,
+                        item -> clickRecorder.set(true)));
+        info.addField(
+                new UserInfoField(
+                        emailAddress, emailAddress, "", false, item -> clickRecorder.set(true)));
         return info;
     }
 

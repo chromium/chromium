@@ -6,6 +6,7 @@
 #define CC_PAINT_SKOTTIE_MRU_RESOURCE_PROVIDER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
@@ -30,7 +31,7 @@ class CC_PAINT_EXPORT SkottieMRUResourceProvider
   using FrameDataCallback = SkottieWrapper::FrameDataCallback;
 
   SkottieMRUResourceProvider(FrameDataCallback frame_data_cb,
-                             base::StringPiece animation_json);
+                             std::string_view animation_json);
   SkottieMRUResourceProvider(const SkottieMRUResourceProvider&) = delete;
   SkottieMRUResourceProvider& operator=(const SkottieMRUResourceProvider&) =
       delete;

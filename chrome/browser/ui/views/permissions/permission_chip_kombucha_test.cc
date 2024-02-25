@@ -8,13 +8,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
-#include "components/permissions/features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
@@ -52,8 +52,6 @@ class TestQuietNotificationPermissionUiSelector
 class PermissionChipKombuchaTest : public InteractiveBrowserTest {
  public:
   PermissionChipKombuchaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionChip}, {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -99,8 +97,8 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
@@ -109,7 +107,6 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
@@ -118,42 +115,42 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest, PermissionChipClickTest) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
-                  ExecuteJs(kWebContentsElementId, "requestNotification()"),
+                  ExecuteJs(kWebContentsElementId, "requestNotification"),
                   // Make sure the request chip is visible.
-                  WaitForShow(OmniboxChipButton::kChipElementId),
+                  WaitForShow(PermissionChipView::kChipElementId),
                   // Make sure the permission popup bubble is visible.
                   WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-                  PressButton(OmniboxChipButton::kChipElementId),
+                  PressButton(PermissionChipView::kChipElementId),
                   WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
                   // The permission chip is hidden because the permission
                   // request was dismissed instantly after a click.
-                  EnsureNotPresent(OmniboxChipButton::kChipElementId));
+                  EnsureNotPresent(PermissionChipView::kChipElementId));
 }
 
 // Tests that after the second click on the quiet permission chip a permission
 // request will be dismissed and the chip will be hidden.
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
                        QuietPermissionChipClickTest) {
-  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, absl::nullopt);
+  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
-      WaitForShow(OmniboxChipButton::kChipElementId),
+      WaitForShow(PermissionChipView::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
       // The first click - open a permission prompt popup bubble.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       // The second click - hide the permission prompt popup bubble and dismiss
       // a permission request.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      EnsureNotPresent(OmniboxChipButton::kChipElementId));
+      EnsureNotPresent(PermissionChipView::kChipElementId));
 }
 
 // Tests that after the second click on the quietest permission chip a
@@ -161,24 +158,24 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
                        QuietestPermissionChipClickTest) {
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      absl::nullopt);
+                      std::nullopt);
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
-      WaitForShow(OmniboxChipButton::kChipElementId),
+      WaitForShow(PermissionChipView::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
       // The first click - open a permission prompt popup bubble.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       // The second click - hide the permission prompt popup bubble and dismiss
       // a permission request.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      EnsureNotPresent(OmniboxChipButton::kChipElementId));
+      EnsureNotPresent(PermissionChipView::kChipElementId));
 }

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_NETWORK_SERVICE_MEMORY_CACHE_URL_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -43,7 +43,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       scoped_refptr<base::RefCountedBytes> content,
       int64_t encoded_body_length,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key);
+      const std::optional<net::CookiePartitionKey> cookie_partition_key);
 
   ~NetworkServiceMemoryCacheURLLoader() override;
 
@@ -77,7 +77,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -94,7 +94,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
 
-  const absl::optional<std::string> devtools_request_id_;
+  const std::optional<std::string> devtools_request_id_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // The response body to be served.
@@ -105,7 +105,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;
   size_t write_position_ = 0;
 
-  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  std::optional<net::CookiePartitionKey> cookie_partition_key_;
 
   base::WeakPtrFactory<NetworkServiceMemoryCacheURLLoader> weak_ptr_factory_{
       this};

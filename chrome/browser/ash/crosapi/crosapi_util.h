@@ -14,6 +14,9 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/user_manager/user.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -56,7 +59,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<browser_util::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Creates a memory backed file containing the serialized |params|,
@@ -68,7 +71,7 @@ base::ScopedFD CreateStartupData(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    absl::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<browser_util::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Serializes and writes post-login parameters into the given FD.
@@ -78,6 +81,14 @@ bool WritePostLoginData(base::PlatformFile fd,
 
 // Returns the device settings needed for Lacros.
 mojom::DeviceSettingsPtr GetDeviceSettings();
+
+// Returns the CloudPolicyCore for the given user.
+policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
+    const user_manager::User& user);
+
+// Returns the ComponentCloudPolicyService for the given user.
+policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
+    const user_manager::User& user);
 
 }  // namespace browser_util
 }  // namespace crosapi

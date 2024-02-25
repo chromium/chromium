@@ -33,7 +33,7 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,6 +46,8 @@ namespace blink {
 class DOMWrapperWorld;
 class KURL;
 class LocalDOMWindow;
+class LocalWindowProxy;
+class LocalWindowProxyManager;
 class SecurityOrigin;
 
 enum class ExecuteScriptPolicy;
@@ -67,9 +69,7 @@ class CORE_EXPORT ScriptController final
 
   // This returns an initialized window proxy. (If the window proxy is not
   // yet initialized, it's implicitly initialized at the first access.)
-  LocalWindowProxy* WindowProxy(DOMWrapperWorld& world) {
-    return window_proxy_manager_->WindowProxy(world);
-  }
+  LocalWindowProxy* WindowProxy(DOMWrapperWorld& world);
 
   v8::Local<v8::Value> EvaluateMethodInMainWorld(
       v8::Local<v8::Function> function,
@@ -86,8 +86,7 @@ class CORE_EXPORT ScriptController final
 
   // Creates a new isolated world for DevTools with the given human readable
   // |world_name| and returns it id or nullptr on failure.
-  scoped_refptr<DOMWrapperWorld> CreateNewInspectorIsolatedWorld(
-      const String& world_name);
+  DOMWrapperWorld* CreateNewInspectorIsolatedWorld(const String& world_name);
 
   // Disables eval for the main world.
   void DisableEval(const String& error_message);
@@ -117,10 +116,7 @@ class CORE_EXPORT ScriptController final
 
  private:
   bool CanExecuteScript(ExecuteScriptPolicy policy);
-  v8::Isolate* GetIsolate() const {
-    return window_proxy_manager_->GetIsolate();
-  }
-  void EnableEval();
+  v8::Isolate* GetIsolate() const;
 
   // Sets whether eval is enabled for the context corresponding to the given
   // |world|. |error_message| is used only when |allow_eval| is false.

@@ -7,7 +7,6 @@ import {CoverageTestRunner} from 'coverage_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests the coverage export functionality and format.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage');
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
 
   await CoverageTestRunner.startCoverage(true);

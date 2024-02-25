@@ -50,13 +50,17 @@ void ErrorExit(jpeg_common_struct* cinfo) {
 bool JPEGCodec::Encode(const SkPixmap& input,
                        int quality,
                        SkJpegEncoder::Downsample downsample,
-                       std::vector<unsigned char>* output) {
+                       std::vector<unsigned char>* output,
+                       const SkData* xmp_metadata) {
   output->clear();
   VectorWStream dst(output);
 
   SkJpegEncoder::Options options;
   options.fQuality = quality;
   options.fDownsample = downsample;
+  if (xmp_metadata) {
+    options.xmpMetadata = xmp_metadata;
+  }
   return SkJpegEncoder::Encode(&dst, input, options);
 }
 
@@ -172,7 +176,7 @@ bool JPEGCodec::Decode(const unsigned char* input, size_t input_size,
 
   // We set up the normal JPEG error routines, then override error_exit.
   // This must be done before the call to jpeg_create_decompress.
-  CoderErrorMgr errmgr;
+  CoderErrorMgr errmgr = {};
   cinfo->err = jpeg_std_error(&errmgr.pub);
   errmgr.pub.error_exit = ErrorExit;
   // Establish the setjmp return context for ErrorExit to use.

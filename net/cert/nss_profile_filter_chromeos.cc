@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests interception to ensure if subrequest's content is not ready and we continue the renderer does not crash see: crbug.com/785502.`);
 

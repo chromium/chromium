@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_MEMORY_H_
 
 #include <cstddef>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
@@ -14,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -83,10 +83,10 @@ struct ZramMmStat {
   uint32_t pages_compacted;
   // The number of incompressible pages.
   // Start supporting from v4.19.
-  absl::optional<uint64_t> huge_pages;
+  std::optional<uint64_t> huge_pages;
   // The number of huge pages since zram set up.
   // Start supporting from v5.15.
-  absl::optional<uint64_t> huge_pages_since;
+  std::optional<uint64_t> huge_pages_since;
 };
 
 struct ZramBdStat {

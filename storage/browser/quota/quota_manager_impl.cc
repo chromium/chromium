@@ -241,7 +241,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     weak_factory_.InvalidateWeakPtrs();
 
     int64_t quota = desired_storage_key_quota_;
-    absl::optional<int64_t> quota_override_size =
+    std::optional<int64_t> quota_override_size =
         manager()->GetQuotaOverrideForStorageKey(storage_key_);
     if (quota_override_size) {
       quota = *quota_override_size;
@@ -346,7 +346,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   const StorageKey storage_key_;
   // Non-null iff usage info is to be gathered for an individual bucket. If
   // null, usage is gathered for all buckets in the given host/StorageKey.
-  absl::optional<BucketInfo> bucket_info_;
+  std::optional<BucketInfo> bucket_info_;
   QuotaManagerImpl::UsageAndQuotaForDevtoolsCallback callback_;
   const StorageType type_;
   const bool is_unlimited_;
@@ -2020,27 +2020,39 @@ void QuotaManagerImpl::NotifyBucketAccessed(const BucketLocator& bucket,
 
 void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
                                             const BucketLocator& bucket,
-                                            int64_t delta,
+                                            std::optional<int64_t> delta,
                                             base::Time modification_time,
                                             base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
 
+  GetUsageTracker(bucket.type)
+      ->UpdateBucketUsageCache(client_id, bucket, delta);
+  // Return once usage cache is updated for callers waiting for quota changes to
+  // be reflected before querying for usage.
+  std::move(callback).Run();
+
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](BucketLocator bucket, QuotaDatabase* database) {
+          [](BucketLocator bucket, base::Time modification_time,
+             QuotaDatabase* database) {
             DCHECK(database);
-            if (bucket.is_default) {
-              return database->GetBucket(bucket.storage_key, kDefaultBucketName,
-                                         bucket.type);
+            BucketId id = bucket.id;
+            if (!id) {
+              CHECK(bucket.is_default);
+              QuotaErrorOr<BucketInfo> result = database->GetBucket(
+                  bucket.storage_key, kDefaultBucketName, bucket.type);
+              if (!result.has_value()) {
+                return QuotaError::kNotFound;
+              }
+
+              id = result->id;
             }
-            return database->GetBucketById(bucket.id);
+            return database->SetBucketLastModifiedTime(id, modification_time);
           },
-          bucket),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
-                     weak_factory_.GetWeakPtr(), client_id, delta,
-                     modification_time, std::move(callback)));
+          bucket, modification_time),
+      base::DoNothing());
 }
 
 void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
@@ -2092,7 +2104,7 @@ void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
       continue;
     }
 
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(entry->storage_key);
     // If the serialization format changes keys may not deserialize.
     if (!storage_key) {
@@ -2132,7 +2144,7 @@ void QuotaManagerImpl::OnDbError(int error_code) {
   // Start the storage eviction routine on a full disk error.
   if (static_cast<sql::SqliteErrorCode>(error_code) ==
       sql::SqliteErrorCode::kFullDisk) {
-    OnFullDiskError(absl::nullopt);
+    OnFullDiskError(std::nullopt);
     return;
   }
 
@@ -2171,7 +2183,7 @@ void QuotaManagerImpl::OnDbError(int error_code) {
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaManagerImpl::OnFullDiskError(absl::optional<StorageKey> storage_key) {
+void QuotaManagerImpl::OnFullDiskError(std::optional<StorageKey> storage_key) {
   if ((base::TimeTicks::Now() - last_full_disk_eviction_time_) >
       base::Minutes(15)) {
     last_full_disk_eviction_time_ = base::TimeTicks::Now();
@@ -2405,7 +2417,7 @@ void QuotaManagerImpl::SetStoragePressureCallback(
   if (storage_key_for_pending_storage_pressure_callback_.has_value()) {
     storage_pressure_callback_.Run(
         std::move(storage_key_for_pending_storage_pressure_callback_.value()));
-    storage_key_for_pending_storage_pressure_callback_ = absl::nullopt;
+    storage_key_for_pending_storage_pressure_callback_ = std::nullopt;
   }
 }
 
@@ -2417,7 +2429,7 @@ int QuotaManagerImpl::GetOverrideHandleId() {
 void QuotaManagerImpl::OverrideQuotaForStorageKey(
     int handle_id,
     const StorageKey& storage_key,
-    absl::optional<int64_t> quota_size) {
+    std::optional<int64_t> quota_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(quota_size.value_or(0), 0)
       << "negative quota override: " << quota_size.value_or(0);
@@ -2453,11 +2465,11 @@ void QuotaManagerImpl::WithdrawOverridesForHandle(int handle_id) {
   }
 }
 
-absl::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForStorageKey(
+std::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForStorageKey(
     const StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::Contains(devtools_overrides_, storage_key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return devtools_overrides_[storage_key].quota_size;
 }
@@ -2543,7 +2555,7 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
       continue;
     }
 
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(info->storage_key);
     if (!storage_key.has_value()) {
       continue;
@@ -2766,7 +2778,7 @@ void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {
                                             weak_factory_.GetWeakPtr()))));
 }
 
-void QuotaManagerImpl::DidGetSettings(absl::optional<QuotaSettings> settings) {
+void QuotaManagerImpl::DidGetSettings(std::optional<QuotaSettings> settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!settings) {
@@ -2964,40 +2976,6 @@ void QuotaManagerImpl::DidGetBucketForDeletion(
   DeleteBucketDataInternal(result->ToBucketLocator(), AllQuotaClientTypes(),
                            std::move(result_callback));
   return;
-}
-
-void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
-                                            int64_t delta,
-                                            base::Time modification_time,
-                                            base::OnceClosure callback,
-                                            QuotaErrorOr<BucketInfo> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
-
-  if (!result.has_value()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  BucketLocator bucket(result->id, result->storage_key, result->type,
-                       result->is_default());
-  GetUsageTracker(bucket.type)
-      ->UpdateBucketUsageCache(client_type, bucket, delta);
-
-  // Return once usage cache is updated for callers waiting for quota changes to
-  // be reflected before querying for usage.
-  std::move(callback).Run();
-
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(
-          [](BucketId bucket_id, base::Time modified_time,
-             QuotaDatabase* database) {
-            DCHECK(database);
-            return database->SetBucketLastModifiedTime(bucket_id,
-                                                       modified_time);
-          },
-          bucket.id, modification_time),
-      base::DoNothing());
 }
 
 void QuotaManagerImpl::DidGetBucketForUsageAndQuota(

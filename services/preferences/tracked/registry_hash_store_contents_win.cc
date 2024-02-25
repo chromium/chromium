@@ -117,7 +117,7 @@ std::unique_ptr<HashStoreContents> RegistryHashStoreContentsWin::MakeCopy()
   return base::WrapUnique(new RegistryHashStoreContentsWin(*this));
 }
 
-base::StringPiece RegistryHashStoreContentsWin::GetUMASuffix() const {
+std::string_view RegistryHashStoreContentsWin::GetUMASuffix() const {
   return user_prefs::tracked::kTrackedPrefRegistryValidationSuffix;
 }
 

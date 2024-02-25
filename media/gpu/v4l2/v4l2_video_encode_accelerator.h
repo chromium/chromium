@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -24,7 +25,6 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -59,8 +59,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -79,7 +81,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
     // This is valid only if image processor is used. The buffer associated with
     // this index can be reused in Dequeue().
-    absl::optional<size_t> ip_output_buffer_index;
+    std::optional<size_t> ip_output_buffer_index;
   };
 
   // Store all the information of input frame passed to Encode().
@@ -96,7 +98,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
     // This is valid only if image processor is used. This info needs to be
     // propagated to InputRecord.
-    absl::optional<size_t> ip_output_buffer_index;
+    std::optional<size_t> ip_output_buffer_index;
   };
 
   enum {
@@ -197,8 +199,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   void MaybeFlushImageProcessor();
 
   // Change encoding parameters.
-  void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
-                                           uint32_t framerate);
+  void RequestEncodingParametersChangeTask(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size);
 
   // Do several initializations (e.g. set up format) on |encoder_task_runner_|.
   void InitializeTask(const Config& config);
@@ -214,9 +218,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Try to set up the device to the input format we were Initialized() with,
   // or if the device doesn't support it, use one it can support, so that we
   // can later instantiate an ImageProcessor to convert to it. Return
-  // absl::nullopt if no format is supported, otherwise return v4l2_format
+  // std::nullopt if no format is supported, otherwise return v4l2_format
   // adjusted by the driver.
-  absl::optional<struct v4l2_format> NegotiateInputFormat(
+  std::optional<struct v4l2_format> NegotiateInputFormat(
       VideoPixelFormat input_format,
       const gfx::Size& frame_size);
 
@@ -289,7 +293,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   gfx::Rect encoder_input_visible_rect_;
 
   // Layout of device accepted input VideoFrame.
-  absl::optional<VideoFrameLayout> device_input_layout_;
+  std::optional<VideoFrameLayout> device_input_layout_;
 
   // Stands for whether an input buffer is native graphic buffer.
   bool native_input_mode_;

@@ -63,6 +63,10 @@ class CORE_EXPORT SpaceSplitString {
   wtf_size_t size() const { return data_ ? data_->size() : 0; }
   bool IsNull() const { return !data_; }
   const AtomicString& operator[](wtf_size_t i) const { return (*data_)[i]; }
+  Vector<AtomicString, 4>::const_iterator begin() const {
+    return data_->begin();
+  }
+  Vector<AtomicString, 4>::const_iterator end() const { return data_->end(); }
 
  private:
   class CORE_EXPORT Data : public RefCounted<Data> {
@@ -87,6 +91,13 @@ class CORE_EXPORT SpaceSplitString {
     wtf_size_t size() const { return vector_.size(); }
     const AtomicString& operator[](wtf_size_t i) const { return vector_[i]; }
     AtomicString& operator[](wtf_size_t i) { return vector_[i]; }
+
+    Vector<AtomicString, 4>::const_iterator begin() const {
+      return vector_.begin();
+    }
+    Vector<AtomicString, 4>::const_iterator end() const {
+      return vector_.end();
+    }
 
    private:
     explicit Data(const AtomicString&);

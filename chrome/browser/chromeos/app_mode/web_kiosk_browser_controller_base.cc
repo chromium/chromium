@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -20,7 +21,7 @@ namespace chromeos {
 WebKioskBrowserControllerBase::WebKioskBrowserControllerBase(
     web_app::WebAppProvider& provider,
     Browser* browser,
-    web_app::AppId app_id)
+    webapps::AppId app_id)
     : AppBrowserController(browser, std::move(app_id), false),
       provider_(provider) {}
 

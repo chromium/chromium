@@ -12,7 +12,7 @@ PortId::PortId() = default;
 PortId::PortId(const base::UnguessableToken& context_id,
                int port_number,
                bool is_opener,
-               SerializationFormat format)
+               mojom::SerializationFormat format)
     : context_id(context_id),
       port_number(port_number),
       is_opener(is_opener),

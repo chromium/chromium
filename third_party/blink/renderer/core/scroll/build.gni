@@ -15,15 +15,12 @@ blink_core_sources_scroll = [
   "scroll_animator_base.h",
   "scroll_animator_compositor_coordinator.cc",
   "scroll_animator_compositor_coordinator.h",
-  "scroll_customization.cc",
-  "scroll_customization.h",
   "scroll_into_view_util.cc",
   "scroll_into_view_util.h",
   "scroll_snapshot_client.cc",
   "scroll_snapshot_client.h",
   "scroll_start_targets.cc",
   "scroll_start_targets.h",
-  "scroll_state_data.h",
   "scroll_types.h",
   "scrollable_area.cc",
   "scrollable_area.h",
@@ -41,6 +38,8 @@ blink_core_sources_scroll = [
   "scrollbar_theme_overlay_mock.h",
   "smooth_scroll_sequencer.cc",
   "smooth_scroll_sequencer.h",
+  "snap_event.cc",
+  "snap_event.h",
 ]
 
 if (is_android) {

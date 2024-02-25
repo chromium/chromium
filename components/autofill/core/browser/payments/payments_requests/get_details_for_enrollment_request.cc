@@ -18,21 +18,21 @@ const char kGetDetailsForEnrollmentRequestPath[] =
 // The billable service number for the request if the enrollment happens after
 // a local card upload.
 const int kUpstreamEnrollBillableServiceNumber =
-    kUploadCardBillableServiceNumber;
+    kUploadPaymentMethodBillableServiceNumber;
 
 // The billable service number for the request if the enrollment happens after a
 // server card retrieval or in the settings page.
 const int kDownstreamEnrollBillableServiceNumber =
-    kUnmaskCardBillableServiceNumber;
+    kUnmaskPaymentMethodBillableServiceNumber;
 
 }  // namespace
 
 GetDetailsForEnrollmentRequest::GetDetailsForEnrollmentRequest(
-    const PaymentsClient::GetDetailsForEnrollmentRequestDetails&
+    const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
         request_details,
-    base::OnceCallback<
-        void(AutofillClient::PaymentsRpcResult,
-             const PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const PaymentsNetworkInterface::
+                                GetDetailsForEnrollmentResponseDetails&)>
         callback)
     : request_details_(request_details), callback_(std::move(callback)) {}
 

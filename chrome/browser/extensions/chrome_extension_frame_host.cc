@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -12,6 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
@@ -26,7 +28,7 @@ ChromeExtensionFrameHost::ChromeExtensionFrameHost(
 ChromeExtensionFrameHost::~ChromeExtensionFrameHost() = default;
 
 void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {
@@ -77,7 +79,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
 
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
-  std::string extension_id = util::GetExtensionIdFromFrame(render_frame_host);
+  ExtensionId extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
     extension_id = GURL(source).host();
 
@@ -89,6 +91,14 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
           blink::ConsoleMessageLevelToLogSeverity(level),
           render_frame_host->GetRoutingID(),
           render_frame_host->GetProcess()->GetID())));
+}
+
+void ChromeExtensionFrameHost::ContentScriptsExecuting(
+    const base::flat_map<ExtensionId, std::vector<std::string>>&
+        extension_id_to_scripts,
+    const GURL& frame_url) {
+  ActivityLog::GetInstance(web_contents_->GetBrowserContext())
+      ->OnScriptsExecuted(web_contents_, extension_id_to_scripts, frame_url);
 }
 
 }  // namespace extensions

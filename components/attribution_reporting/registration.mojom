@@ -5,15 +5,12 @@
 module attribution_reporting.mojom;
 
 import "components/attribution_reporting/source_registration_time_config.mojom";
+import "components/attribution_reporting/trigger_data_matching.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-struct DebugKey {
-  uint64 value;
-};
 
 // Encapsulates a potentially trustworthy origin. Equivalent to
 // attribution_reporting::SuitableOrigin.
@@ -74,6 +71,23 @@ struct EventReportWindows {
   array<mojo_base.mojom.TimeDelta> end_times;
 };
 
+struct TriggerSpec {
+  EventReportWindows event_report_windows;
+};
+
+// https://wicg.github.io/attribution-reporting-api/#trigger-specs-header
+//
+// The index-list representation here goes against Mojo guidelines, but mirrors
+// the representation of the C++ type of the same name, which was chosen for
+// efficiency and utility as both an in-memory type and an on-disk structure.
+// See https://crrev.com/c/4994870/comment/5071077b_37dae2d1/ for details.
+struct TriggerSpecs {
+  array<TriggerSpec> specs;
+
+  // Keys are trigger data. Values are indices into `specs`.
+  map<uint32, uint8> trigger_data_indices;
+};
+
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -81,24 +95,15 @@ struct SourceRegistration {
   uint64 source_event_id = 0;
 
   // Specifies how long this source is eligible for attribution.
-  mojo_base.mojom.TimeDelta? expiry;
+  mojo_base.mojom.TimeDelta expiry;
 
-  // Optionally specifies how long after source registration an event-level
+  TriggerSpecs trigger_specs;
+
+  // Specifies how long after source registration an aggregatable
   // report can be generated with this source.
-  mojo_base.mojom.TimeDelta? event_report_window;
+  mojo_base.mojom.TimeDelta aggregatable_report_window;
 
-  // Optionally specifies how long after source registration an aggregatable
-  // report can be generated with this source.
-  mojo_base.mojom.TimeDelta? aggregatable_report_window;
-
-  // Optionally specifies a custom set of report windows determining the time
-  // bounds of a report being generated with this source.
-  EventReportWindows? event_report_windows;
-
-  // Optionally specifies how many event-level reports can be generated with
-  // this source, with -1 representing absl::nullopt.
-  //
-  // TODO(crbug.com/657632): Make nullable.
+  // Specifies how many event-level reports can be generated with this source.
   int32 max_event_level_reports;
 
   // Priority for this source.
@@ -106,7 +111,7 @@ struct SourceRegistration {
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
-  DebugKey? debug_key;
+  uint64? debug_key;
 
   FilterData filter_data;
 
@@ -114,13 +119,14 @@ struct SourceRegistration {
 
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
-};
 
-// Deduplication key set by a reporting origin which prevents duplicate triggers
-// from generating multiple attribution reports for a given source.
-struct TriggerDedupKey {
-  // Arbitrary value for deduplication set by the reporting origin.
-  uint64 value;
+  // Controls how trigger data is matched against the source's trigger specs.
+  TriggerDataMatching trigger_data_matching;
+
+  // Controls the epsilon parameter used for obtaining a randomized response for
+  // the containing source registration. Must be greater than or equal to 0.
+  // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
+  double event_level_epsilon;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -138,7 +144,7 @@ struct EventTriggerData {
 
   // Key which allows deduplication against existing attributions for the same
   // source.
-  TriggerDedupKey? dedup_key;
+  uint64? dedup_key;
 
   FilterPair filters;
 };
@@ -146,7 +152,14 @@ struct EventTriggerData {
 struct AggregatableDedupKey {
   // Key which allows deduplication against existing attributions for the same
   // source.
-  TriggerDedupKey? dedup_key;
+  uint64? dedup_key;
+
+  FilterPair filters;
+};
+
+struct AggregatableValues {
+  // A map of aggregation key identifier and the corresponding value.
+  map<string, uint32> values;
 
   FilterPair filters;
 };
@@ -165,12 +178,13 @@ struct TriggerRegistration {
   // header.
   array<AggregatableTriggerData> aggregatable_trigger_data;
 
-  // A map of aggregation key identifier and the corresponding value.
-  map<string, uint32> aggregatable_values;
+  // List of all aggregatable values for matching a contribution value with a
+  // source's aggregation key.
+  array<AggregatableValues> aggregatable_values;
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
-  DebugKey? debug_key;
+  uint64? debug_key;
 
   // List of all aggregatable dedup keys for deduplication against existing
   // aggregatable reports for the same source.
@@ -186,6 +200,10 @@ struct TriggerRegistration {
   // Specifies whether to include source registration time in aggregatable
   // reports.
   SourceRegistrationTimeConfig source_registration_time_config;
+
+  // Specifies the context ID associated with the trigger. The context ID
+  // cannot be empty or longer than 64 bytes.
+  string? trigger_context_id;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

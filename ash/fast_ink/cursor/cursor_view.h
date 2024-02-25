@@ -6,24 +6,18 @@
 #define ASH_FAST_INK_CURSOR_CURSOR_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/fast_ink/fast_ink_view.h"
-#include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-namespace gfx {
-struct PresentationFeedback;
-}
-
 namespace ash {
 
-// CursorView class can be used to display a cursor image with minimal
-// latency/jank and optional motion blur.
+// CursorView class can be used to display cursor images with minimal
+// latency/jank.
 class CursorView : public FastInkView,
                    public ui::CursorController::CursorObserver {
  public:
@@ -33,40 +27,68 @@ class CursorView : public FastInkView,
   ~CursorView() override;
 
   static views::UniqueWidgetPtr Create(const gfx::Point& initial_location,
-                                       bool is_motion_blur_enabled,
                                        aura::Window* container);
 
-  void SetCursorImage(const gfx::ImageSkia& cursor_image,
-                      const gfx::Size& cursor_size,
-                      const gfx::Point& cursor_hotspot);
+  void SetCursorImages(const std::vector<gfx::ImageSkia>& cursor_image,
+                       const gfx::Size& cursor_size,
+                       const gfx::Point& cursor_hotspot);
+  void SetLocation(const gfx::Point& location);
 
   // ui::CursorController::CursorObserver overrides:
   void OnCursorLocationChanged(const gfx::PointF& location) override;
 
- protected:
-  // ash::FastInkView overrides:
-  FastInkHost::PresentationCallback GetPresentationCallback() override;
-
  private:
-  // Paints cursor on the paint thread.
-  class Painter;
-
-  CursorView(const gfx::Point& initial_location, bool is_motion_blur_enabled);
+  CursorView(const gfx::Point& initial_location);
 
   // Initialize CursorView after FaskInkHost is setup.
   void Init();
 
-  // Invoked when a frame is presented.
-  void DidPresentCompositorFrame(const gfx::PresentationFeedback& feedback);
+  // Update cursor animation.
+  void UpdateAnimation();
 
-  // Constants that can be used on any thread.
+  // Advance `cursor_image_index_` to the next frame.
+  void AdvanceFrame();
+
+  // Draw the current cursor.
+  void Draw();
+
+  // Stop the `stationary_timer_`.
+  void OnStationary();
+
+  // Update `cursor_rect_` and `damage_rect_` and draw cursor.
+  void UpdateCursor();
+
   gfx::Transform buffer_to_screen_transform_;
+  float device_scale_factor_ = 1.0f;
 
-  std::unique_ptr<Painter> painter_;
+  gfx::Point cursor_location_;
+  std::vector<gfx::ImageSkia> cursor_images_;
+  int cursor_image_index_ = 0;
 
-  // UI thread state.
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
-  SEQUENCE_CHECKER(ui_sequence_checker_);
+  // Cursor hotspot relative to the origin of cursor image in dp.
+  // It is the single point within the cursor image that is considered to be the
+  // cursor's point of interaction with other elements on the screen
+  gfx::Point cursor_hotspot_;
+
+  // Cursor size in dp.
+  gfx::Size cursor_size_;
+
+  // Cursor image bounds in root window coordinates.
+  gfx::Rect cursor_rect_;
+
+  // Damage rect in root window coordinates.
+  gfx::Rect damage_rect_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  // Timer for cursor's stationary status. The cursor gets into stationary state
+  // after it is not moved for a certain period of time, which is tracked by
+  // this timer.
+  std::optional<base::RetainingOneShotTimer> stationary_timer_;
+
+  // Timer for animated cursor drawing.
+  base::RepeatingTimer animated_cursor_timer_;
+
   base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
 };
 

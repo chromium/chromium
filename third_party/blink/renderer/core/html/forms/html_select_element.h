@@ -83,6 +83,8 @@ class CORE_EXPORT HTMLSelectElement final
   unsigned ListBoxSize() const;
   bool IsMultiple() const { return is_multiple_; }
 
+  void showPicker(ExceptionState&);
+
   bool UsesMenuList() const { return uses_menu_list_; }
 
   void add(const V8UnionHTMLOptGroupElementOrHTMLOptionElement* element,
@@ -143,6 +145,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
+  void ElementInserted(Node& node);
   void OptionInserted(HTMLOptionElement&, bool option_is_selected);
   void OptionRemoved(HTMLOptionElement&);
   IndexedPropertySetterResult AnonymousIndexedSetter(unsigned,
@@ -197,8 +200,21 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
+  // SlottedButton and SlottedDatalist return the first child <button> or
+  // <datalist> in the light dom tree. If this select is in a state where the
+  // <button> or <datalist> won't be rendered, such as a <select multiple>, then
+  // nullptr will be returned.
+  HTMLButtonElement* SlottedButton() const;
+  HTMLDataListElement* SlottedDatalist() const;
+
+  void DefaultEventHandler(Event&) override;
+
  private:
-  const AtomicString& FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
+  const AtomicString& FormControlTypeAsString() const override;
 
   bool MayTriggerVirtualKeyboard() const override;
 
@@ -229,12 +245,10 @@ class CORE_EXPORT HTMLSelectElement final
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void DidRecalcStyle(const StyleRecalcChange) override;
   void AttachLayoutTree(AttachContext&) override;
-  void DetachLayoutTree(bool performing_reattach = false) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   void AppendToFormData(FormData&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void ManuallyAssignSlots() override;
-
-  void DefaultEventHandler(Event&) override;
 
   void SetRecalcListItems();
   void RecalcListItems() const;

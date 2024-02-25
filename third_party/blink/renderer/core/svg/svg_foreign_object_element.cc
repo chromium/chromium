@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -137,7 +137,7 @@ LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
         ancestor->GetLayoutObject()->IsSVGHiddenContainer())
       return nullptr;
   }
-  return MakeGarbageCollected<LayoutNGSVGForeignObject>(this);
+  return MakeGarbageCollected<LayoutSVGForeignObject>(this);
 }
 
 bool SVGForeignObjectElement::SelfHasRelativeLengths() const {

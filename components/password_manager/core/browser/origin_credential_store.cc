@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/url_formatter/elide_url.h"
@@ -37,12 +37,17 @@ UiCredential::UiCredential(const PasswordForm& form,
     : username_(form.username_value),
       password_(form.password_value),
       match_type_(password_manager_util::GetMatchType(form)),
-      last_used_(form.date_last_used) {
-  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+      last_used_(form.date_last_used),
+      is_shared_(form.type == PasswordForm::Type::kReceivedViaSharing),
+      sender_name_(form.sender_name),
+      sender_profile_image_url_(form.sender_profile_image_url),
+      sharing_notification_displayed_(form.sharing_notification_displayed) {
+  auto facet_uri =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
   if (facet_uri.IsValidAndroidFacetURI()) {
     origin_ = affiliated_origin;
     display_name_ = form.app_display_name.empty()
-                        ? SplitByDotAndReverse(facet_uri.android_package_name())
+                        ? facet_uri.GetAndroidPackageDisplayName()
                         : form.app_display_name;
   } else {
     origin_ = url::Origin::Create(form.url);
@@ -63,7 +68,10 @@ bool operator==(const UiCredential& lhs, const UiCredential& rhs) {
   auto tie = [](const UiCredential& cred) {
     return std::make_tuple(std::cref(cred.username()),
                            std::cref(cred.password()), std::cref(cred.origin()),
-                           cred.match_type(), cred.last_used());
+                           cred.match_type(), cred.last_used(),
+                           cred.is_shared(), std::cref(cred.sender_name()),
+                           std::cref(cred.sender_profile_image_url()),
+                           cred.sharing_notification_displayed());
   };
 
   return tie(lhs) == tie(rhs);
@@ -82,11 +90,16 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential) {
       match_type = "PSL match";
       break;
   }
-  return os << "(user: \"" << credential.username() << "\", "
-            << "pwd: \"" << credential.password() << "\", "
-            << "origin: \"" << credential.origin() << "\", " << match_type
-            << ", "
-            << "last_used: " << credential.last_used();
+  return os << "(user: \"" << credential.username() << "\", " << "pwd: \""
+            << credential.password() << "\", " << "origin: \""
+            << credential.origin() << "\", " << match_type << ", "
+            << "last_used: " << credential.last_used() << ", "
+            << "is_shared: " << credential.is_shared() << ", "
+            << "sender_name: " << credential.sender_name() << ", "
+            << "sender_profile_image_url: "
+            << credential.sender_profile_image_url().possibly_invalid_spec()
+            << ", " << "sharing_notification_displayed: "
+            << credential.sharing_notification_displayed();
 }
 
 OriginCredentialStore::OriginCredentialStore(url::Origin origin)
@@ -100,6 +113,16 @@ void OriginCredentialStore::SaveCredentials(
 
 base::span<const UiCredential> OriginCredentialStore::GetCredentials() const {
   return credentials_;
+}
+
+void OriginCredentialStore::SaveUnnotifiedSharedCredentials(
+    std::vector<PasswordForm> credentials) {
+  unnotified_shared_credentials_ = std::move(credentials);
+}
+
+base::span<const PasswordForm>
+OriginCredentialStore::GetUnnotifiedSharedCredentials() const {
+  return unnotified_shared_credentials_;
 }
 
 void OriginCredentialStore::SetBlocklistedStatus(bool is_blocklisted) {

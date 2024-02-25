@@ -22,11 +22,17 @@
   <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS_MID_SENTENCE" desc="The label used for the automatic downloads site settings controls when used mid-sentence.">
     automatic downloads
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN" desc="The label used for the automatic fullscreen site settings controls.">
+    Automatic fullscreen
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN_MID_SENTENCE" desc="The label used for the automatic fullscreen site settings controls when used mid-sentence.">
+    automatic fullscreen
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE" desc="The label used for the auto-picture-in-picture site settings controls.">
-    Auto picture-in-picture
+    Automatic picture-in-picture
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE_MID_SENTENCE" desc="The label used for the auto-picture-in-picture site settings controls when used mid-sentence.">
-    auto picture-in-picture
+    automatic picture-in-picture
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_BACKGROUND_SYNC" desc="The label used for the background sync site settings controls.">
     Background sync
@@ -88,6 +94,9 @@
   <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE" desc="The label used for JavaScript site settings controls when used mid-sentence.">
     javascript
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT" desc="The label for the JavaScript optimizer site settings controls.">
+    V8 optimizer
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOCATION" desc="The label used for geolocation site settings controls." meaning="Geolocation">
     Location
   </message>
@@ -101,10 +110,10 @@
     microphone
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX" desc="The label used for system exclusive messages for MIDI devices site settings controls.">
-    MIDI devices
+    MIDI device control &amp; reprogram
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE" desc="The label used for system exclusive messages for MIDI devices site settings controls when used mid-sentence.">
-    MIDI devices
+    MIDI device control &amp; reprogram
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) site settings controls.">
     Motion sensors
@@ -159,6 +168,12 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE" desc="The label used for the VR site settings controls when used mid-sentence.">
     virtual reality
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page.">
+    Embedded content
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page. Used mid-sentence.">
+    embedded content
   </message>
 
   <!-- Site Settings desktop-only -->
@@ -220,17 +235,23 @@
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
     zoom levels
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING" desc="The label used for the web printing site settings controls.">
+    Advanced printer features
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE" desc="The label used for the web printing site settings controls when used mid-sentence.">
+    advanced printer features
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
     Window management
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
     window management
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page.">
-    Embedded content
+  <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE" desc="The label used for the performance site settings controls.">
+    Performance
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" desc="The name of a Chrome setting. This string also appears as the title of a dialog box and as the title of a Chrome settings page. Used mid-sentence.">
-    embedded content
+  <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL" desc="The sublabel used for the performance site settings controls to manage the exclusion list.">
+    Manage sites that will always stay active and won't have memory freed up from them
   </message>
   </if>
 </grit-part>

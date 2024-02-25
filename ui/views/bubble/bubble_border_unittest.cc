@@ -873,6 +873,7 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
     gfx::Point expected_arrow_position;
     bool expected_arrow_visibility_and_return_value;
     gfx::Rect expected_bubble_bounds;
+    int popup_min_y = 0;
   } test_cases[]{
       // First are using the following scenario:
       //
@@ -1083,6 +1084,15 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
         element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius -
             BubbleBorder::kVisibleArrowBuffer,
         bubble_bounds.width(), bubble_bounds.height()}},
+      {{0, 0},
+       BubbleBorder::Arrow::LEFT_TOP,
+       {bubble_bounds.x(),
+        element_size.height() / 2 - 10 + BubbleBorder::kVisibleArrowBuffer},
+       true,
+       {bubble_bounds.x() + BubbleBorder::kVisibleArrowLength,
+        element_size.height() / 2 - 10, bubble_bounds.width(),
+        bubble_bounds.height()},
+       element_size.height() / 2 - 10},
   };
 
   for (auto test_case : test_cases) {
@@ -1091,7 +1101,8 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
                                BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
     EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-                  {test_case.element_origin, element_size}, bubble_bounds_copy),
+                  {test_case.element_origin, element_size}, bubble_bounds_copy,
+                  test_case.popup_min_y),
               test_case.expected_arrow_visibility_and_return_value);
     EXPECT_EQ(border.visible_arrow(),
               test_case.expected_arrow_visibility_and_return_value);
@@ -1139,7 +1150,7 @@ TEST_F(BubbleBorderTest,
                                BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
     EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-                  element_bounds, test_case.bubble_bounds),
+                  element_bounds, test_case.bubble_bounds, 0),
               test_case.expected_arrow_visibility_and_return_value);
   }
 }

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -104,24 +105,23 @@ void WaylandDragDropTest::SendDndAction(uint32_t action) {
 
 void WaylandDragDropTest::ReadAndCheckData(const std::string& mime_type,
                                            const std::string& expected_data) {
-  PostToServerAndWait(
-      [mime_type, expected_data](wl::TestWaylandServerThread* server) {
-        auto* data_source = server->data_device_manager()->data_source();
-        ASSERT_TRUE(data_source);
+  PostToServerAndWait([mime_type,
+                       expected_data](wl::TestWaylandServerThread* server) {
+    auto* server_data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(server_data_source);
 
-        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        auto read_callback = base::BindOnce(
-            [](std::string expected_data, base::RunLoop* loop,
-               std::vector<uint8_t>&& data) {
-              std::string result(data.begin(), data.end());
-              EXPECT_EQ(expected_data, result);
-              loop->Quit();
-            },
-            std::move(expected_data), &run_loop);
-
-        data_source->ReadData(mime_type, std::move(read_callback));
-        run_loop.Run();
-      });
+    // Data fetching is done asynchronously using wl_display.sync callbacks,
+    // so a nested run loop is required to ensure it is fully and reliably done.
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    server_data_source->ReadData(
+        mime_type, base::BindLambdaForTesting([&run_loop, &expected_data](
+                                                  std::vector<uint8_t>&& data) {
+          std::string result(data.begin(), data.end());
+          EXPECT_EQ(expected_data, result);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  });
 }
 
 void WaylandDragDropTest::SendPointerEnter(
@@ -236,8 +236,9 @@ void WaylandDragDropTest::ScheduleTestTask(base::OnceClosure test_task) {
 }
 
 void WaylandDragDropTest::MaybeRunScheduledTasks() {
-  if (is_task_running_ || scheduled_tasks_.empty())
+  if (is_task_running_ || scheduled_tasks_.empty()) {
     return;
+  }
 
   is_task_running_ = true;
 

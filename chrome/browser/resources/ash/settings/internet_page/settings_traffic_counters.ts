@@ -9,13 +9,13 @@
 
 import './internet_shared.css.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 
 import {Network, TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './settings_traffic_counters.html.js';
@@ -37,7 +37,7 @@ const PB = TB * 1000;
  * fixed to two decimal values.
  */
 function getDataInfoString(totalBytes: bigint): string {
-  let unit: string = 'B';
+  let unit = 'B';
   let dividend = 1;
 
   if (totalBytes >= PB) {
@@ -126,7 +126,7 @@ export class SettingsTrafficCountersElement extends
   /**
    * Loads all the values needed to populate the HTML.
    */
-  load() {
+  load(): void {
     this.populateTrafficCountersAvailable_();
     this.populateDate_();
     this.populateDataUsageValue_();

@@ -42,14 +42,14 @@ void OnSuccess(
   DispatchResult(ValidateResponse(response), std::move(callback));
 }
 
-void OnFailure(ProtoFetcherStatus error,
+void OnFailure(const ProtoFetcherStatus& error,
                PermissionRequestCreator::SuccessCallback callback) {
   DispatchResult(false, std::move(callback));
 }
 
 void OnResponse(
     PermissionRequestCreator::SuccessCallback callback,
-    ProtoFetcherStatus status,
+    const ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::CreatePermissionRequestResponse>
         response) {
   if (!status.IsOk()) {
@@ -61,8 +61,8 @@ void OnResponse(
 
 // Flips order of arguments so that the sole unbound argument will be the
 // request.
-std::unique_ptr<DeferredProtoFetcher<
-    kids_chrome_management::CreatePermissionRequestResponse>>
+std::unique_ptr<
+    ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>>
 FetcherFactory(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

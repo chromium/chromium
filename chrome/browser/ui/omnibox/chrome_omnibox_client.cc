@@ -427,7 +427,7 @@ void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
 void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   const content::WebContents* contents = location_bar_->GetWebContents();
   if (contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(contents);
+    Browser* browser = chrome::FindBrowserWithTab(contents);
     if (browser) {
       // Here we record and take action more directly than
       // chrome::OpenUpdateChromeDialog because that call is intended for use
@@ -477,7 +477,7 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
   location_bar_->set_navigation_params(LocationBar::NavigationParams(
       destination_url, disposition, transition, match_selection_timestamp,
       destination_url_entered_without_scheme,
-      destination_url_entered_with_http_scheme));
+      destination_url_entered_with_http_scheme, match.extra_headers));
 
   if (browser_) {
     auto navigation = chrome::OpenCurrentURL(browser_);
@@ -512,6 +512,10 @@ void ChromeOmniboxClient::OnPopupVisibilityChanged() {
 
 LocationBarModel* ChromeOmniboxClient::GetLocationBarModel() {
   return location_bar_->GetLocationBarModel();
+}
+
+base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {

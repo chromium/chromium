@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -39,7 +40,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "url/gurl.h"
@@ -141,8 +141,8 @@ class FramebustBlockBrowserTest
   }
 
  protected:
-  absl::optional<GURL> clicked_url_;
-  absl::optional<size_t> clicked_index_;
+  std::optional<GURL> clicked_url_;
+  std::optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_;

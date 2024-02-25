@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -27,9 +27,7 @@ class ASH_EXPORT VcEffectState {
  public:
   // Arguments:
   //
-  // `enabled_icon` - The icon displayed, used for all effect types (if
-  //                  non-nullptr). Used for the enabled state if this is for a
-  //                  toggle button.
+  // `icon` - The icon displayed.
   //
   // `label_text` - The text displayed.
   //
@@ -41,40 +39,28 @@ class ASH_EXPORT VcEffectState {
   //
   // `state` - The actual state value. Optional because only certain types of
   //           effects (e.g. set-value) actually need it.
-  VcEffectState(const gfx::VectorIcon* enabled_icon,
+  VcEffectState(const gfx::VectorIcon* icon,
                 const std::u16string& label_text,
                 int accessible_name_id,
-                views::Button::PressedCallback button_callback,
-                absl::optional<int> state_value = absl::nullopt);
+                base::RepeatingClosure button_callback,
+                std::optional<int> state_value = std::nullopt);
 
   VcEffectState(const VcEffectState&) = delete;
   VcEffectState& operator=(const VcEffectState&) = delete;
 
   ~VcEffectState();
 
-  void set_disabled_icon(gfx::VectorIcon const* disabled_icon) {
-    disabled_icon_ = disabled_icon;
-  }
-
-  absl::optional<int> state_value() const { return state_value_; }
-  const gfx::VectorIcon* icon() const { return enabled_icon_; }
-  const gfx::VectorIcon* disabled_icon() const {
-    return disabled_icon_.value_or(nullptr);
-  }
+  std::optional<int> state_value() const { return state_value_; }
+  const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
-  const views::Button::PressedCallback& button_callback() const {
+  const base::RepeatingClosure& button_callback() const {
     return button_callback_;
   }
 
  private:
-  // The icon to be displayed when enabled (for toggle effects) or at all times
-  // for set-value effects.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_icon_;
-
-  // Icon to display when the effect is toggled off. Only used for toggle
-  // effects, which create one `VcEffectState`.
-  absl::optional<gfx::VectorIcon const*> disabled_icon_;
+  // The icon to be displayed.
+  raw_ptr<const gfx::VectorIcon> icon_;
 
   // The text to be displayed.
   std::u16string label_text_;
@@ -86,10 +72,10 @@ class ASH_EXPORT VcEffectState {
   // Callback that's bound to the delegate's `OnEffectActivated` function,
   // with the effect's ID and the actual (integer) value (e.g.
   // kBackgroundBlurMedium) member as arguments.
-  views::Button::PressedCallback button_callback_;
+  base::RepeatingClosure button_callback_;
 
   // The state value.
-  absl::optional<int> state_value_;
+  std::optional<int> state_value_;
 };
 
 // Designates the type of user-adjustments made to this effect.
@@ -135,7 +121,7 @@ class ASH_EXPORT VcHostedEffect {
   // Callback for obtaining the current state of the effect. The callback must
   // have the effect ID bound as an argument.
   using GetEffectStateCallback =
-      base::RepeatingCallback<absl::optional<int>(void)>;
+      base::RepeatingCallback<std::optional<int>(void)>;
 
   // `type` is the type of value adjustment allowed.
   // `get_state_callback` is invoked to obtain the current state of the effect.
@@ -180,8 +166,8 @@ class ASH_EXPORT VcHostedEffect {
   }
   VcEffectsDelegate* delegate() const { return delegate_; }
 
-  absl::optional<int> container_id() const { return container_id_; }
-  void set_container_id(absl::optional<int> id) { container_id_ = id; }
+  std::optional<int> container_id() const { return container_id_; }
+  void set_container_id(std::optional<int> id) { container_id_ = id; }
 
  private:
   // The type of value adjustment of this effect,
@@ -210,10 +196,10 @@ class ASH_EXPORT VcHostedEffect {
   // Optional ID assigned to the outermost container view for this effect's
   // toggle control. For testing only, this facilitates easy lookup of the
   // outermost container that houses the UI controls for this effect.
-  absl::optional<int> container_id_;
+  std::optional<int> container_id_;
 
   // The effects delegate associated with this effect.
-  raw_ptr<VcEffectsDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<VcEffectsDelegate> delegate_ = nullptr;
 };
 
 }  // namespace ash

@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 

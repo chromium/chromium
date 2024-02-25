@@ -24,6 +24,7 @@ class AccessibilityMediaControl : public AXLayoutObject {
   // AXLayoutObject:
   bool InternalSetAccessibilityFocusAction() override;
   bool InternalClearAccessibilityFocusAction() override;
+  bool OnNativeSetValueAction(const String&) final;
 };
 
 }  // namespace blink

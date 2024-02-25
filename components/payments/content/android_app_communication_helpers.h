@@ -6,13 +6,13 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_APP_COMMUNICATION_HELPERS_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom-forward.h"
 #include "components/payments/content/android_app_communication.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -49,7 +49,7 @@ chromeos::payments::mojom::PaymentParametersPtr CreatePaymentParameters(
     const GURL& top_level_origin,
     const GURL& payment_request_origin,
     const std::string& payment_request_id,
-    absl::optional<std::string>* error_message);
+    std::optional<std::string>* error_message);
 
 // Create fake app descriptions for AndroidAppCommunication::GetAppDescriptions
 // interface to support tests.

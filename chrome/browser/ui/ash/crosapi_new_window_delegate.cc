@@ -103,7 +103,7 @@ void CrosapiNewWindowDelegate::WindowObserver::SetWindowID(
     return;
 
   auto* window = crosapi::GetShellSurfaceWindow(window_id_);
-  for (auto* it : windows_committed_prior_to_window_id_) {
+  for (aura::Window* it : windows_committed_prior_to_window_id_) {
     if (window == it) {
       std::move(closure_).Run(window);
       owner_->DestroyWindowObserver();

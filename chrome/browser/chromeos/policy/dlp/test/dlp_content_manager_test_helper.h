@@ -23,9 +23,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace policy {
-
+namespace data_controls {
 class DlpReportingManager;
+}  // namespace data_controls
+
+namespace policy {
 
 // This class is an interface to DlpContentManager and is used in tests to
 // access some of its private methods.
@@ -35,12 +37,12 @@ class DlpContentManagerTestHelper {
   ~DlpContentManagerTestHelper();
 
   void ChangeConfidentiality(content::WebContents* web_contents,
-                             const DlpContentRestrictionSet& restrictions);
+                             DlpContentRestrictionSet restrictions);
 
   // To be called when confidentiality for |web_contents| needs to be changed
   // but without reacting to the change.
   void UpdateConfidentiality(content::WebContents* web_contents,
-                             const DlpContentRestrictionSet& restrictions);
+                             DlpContentRestrictionSet restrictions);
 
   void ChangeVisibility(content::WebContents* web_contents);
 
@@ -58,7 +60,7 @@ class DlpContentManagerTestHelper {
   GetRunningScreenShares() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+  std::optional<DlpContentManagerAsh::VideoCaptureInfo>
   GetRunningVideoCaptureInfo() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -69,11 +71,12 @@ class DlpContentManagerTestHelper {
   void SetScreenShareResumeDelay(base::TimeDelta delay) const;
 
   DlpContentManager* GetContentManager() const;
-  DlpReportingManager* GetReportingManager() const;
+  data_controls::DlpReportingManager* GetReportingManager() const;
 
  private:
   raw_ptr<DlpContentManager, DanglingUntriaged> manager_;
-  raw_ptr<DlpReportingManager, DanglingUntriaged> reporting_manager_;
+  raw_ptr<data_controls::DlpReportingManager, DanglingUntriaged>
+      reporting_manager_;
   raw_ptr<ScopedDlpContentObserverForTesting, DanglingUntriaged>
       scoped_dlp_content_observer_;
 };

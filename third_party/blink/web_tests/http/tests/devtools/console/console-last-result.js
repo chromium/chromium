@@ -5,10 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console exposes last evaluation result as $_.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
 
@@ -24,7 +25,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       ConsoleTestRunner.evaluateInConsole('1+1', step1);
 
       function step1() {
-        Console.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.clearConsole();
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
       }
 

@@ -9,7 +9,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
-#include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
@@ -32,38 +31,6 @@ using ::testing::StrNe;
 namespace borealis {
 
 namespace {
-
-class DiskManagerMock : public BorealisDiskManager {
- public:
-  DiskManagerMock() = default;
-  ~DiskManagerMock() override = default;
-  MOCK_METHOD(void,
-              GetDiskInfo,
-              (base::OnceCallback<
-                  void(base::expected<GetDiskInfoResponse,
-                                      Described<BorealisGetDiskInfoResult>>)>),
-              ());
-  MOCK_METHOD(
-      void,
-      RequestSpace,
-      (uint64_t,
-       base::OnceCallback<void(
-           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-      ());
-  MOCK_METHOD(
-      void,
-      ReleaseSpace,
-      (uint64_t,
-       base::OnceCallback<void(
-           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-      ());
-  MOCK_METHOD(void,
-              SyncDiskSize,
-              (base::OnceCallback<
-                  void(base::expected<BorealisSyncDiskSizeResult,
-                                      Described<BorealisSyncDiskSizeResult>>)>),
-              ());
-};
 
 using CallbackFactory =
     NiceCallbackFactory<void(BorealisStartupResult, std::string)>;
@@ -256,52 +223,12 @@ TEST_F(BorealisTasksTest,
   task_environment_.FastForwardBy(base::Seconds(31));
 }
 
-TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
-  auto disk_mock = std::make_unique<DiskManagerMock>();
-  EXPECT_CALL(*disk_mock, SyncDiskSize(_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(
-                 base::expected<BorealisSyncDiskSizeResult,
-                                Described<BorealisSyncDiskSizeResult>>)>
-                 callback) {
-            std::move(callback).Run(
-                base::unexpected(Described<BorealisSyncDiskSizeResult>(
-                    BorealisSyncDiskSizeResult::kFailedToGetDiskInfo,
-                    "error message")));
-          }));
+class BorealisTasksTestDlcWithRetry
+    : public BorealisTasksTest,
+      public testing::WithParamInterface<std::string> {};
 
-  CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, ""));
-  context_->SetDiskManagerForTesting(std::move(disk_mock));
-  SyncBorealisDisk task;
-  task.Run(context_.get(), callback_factory.BindOnce());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(BorealisTasksTest, SyncBorealisDiskSucceeds) {
-  auto disk_mock = std::make_unique<DiskManagerMock>();
-  EXPECT_CALL(*disk_mock, SyncDiskSize(_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(
-                 base::expected<BorealisSyncDiskSizeResult,
-                                Described<BorealisSyncDiskSizeResult>>)>
-                 callback) {
-            std::move(callback).Run(
-                base::expected<BorealisSyncDiskSizeResult,
-                               Described<BorealisSyncDiskSizeResult>>(
-                    BorealisSyncDiskSizeResult::kNoActionNeeded));
-          }));
-
-  CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, _));
-  context_->SetDiskManagerForTesting(std::move(disk_mock));
-  SyncBorealisDisk task;
-  task.Run(context_.get(), callback_factory.BindOnce());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(BorealisTasksTest, DlcRetries) {
-  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+TEST_P(BorealisTasksTestDlcWithRetry, DlcRetries) {
+  FakeDlcserviceClient()->set_install_error(GetParam());
   base::test::TestFuture<BorealisStartupResult, std::string> result;
 
   MountDlc task;
@@ -312,27 +239,39 @@ TEST_F(BorealisTasksTest, DlcRetries) {
   EXPECT_FALSE(result.IsReady());
 }
 
-class BorealisTasksTestDlc : public BorealisTasksTest,
-                             public testing::WithParamInterface<std::string> {};
+INSTANTIATE_TEST_SUITE_P(BorealisTasksTestDlcRetries,
+                         BorealisTasksTestDlcWithRetry,
+                         testing::Values(dlcservice::kErrorInternal,
+                                         dlcservice::kErrorBusy));
 
-TEST_P(BorealisTasksTestDlc, MountDlcFailsAndCallbackRanWithResults) {
-  FakeDlcserviceClient()->set_install_error(GetParam());
+class BorealisTasksTestDlcWithError
+    : public BorealisTasksTest,
+      public testing::WithParamInterface<
+          std::pair<std::string, BorealisStartupResult>> {};
+
+TEST_P(BorealisTasksTestDlcWithError, MountDlcFailsAndCallbackRanWithResults) {
+  FakeDlcserviceClient()->set_install_error(GetParam().first);
   CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory,
-              Call(BorealisStartupResult::kMountFailed, StrNe("")));
+  EXPECT_CALL(callback_factory, Call(GetParam().second, StrNe("")));
 
   MountDlc task;
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
-INSTANTIATE_TEST_SUITE_P(BorealisTasksTestDlcErrors,
-                         BorealisTasksTestDlc,
-                         testing::Values(dlcservice::kErrorNeedReboot,
-                                         dlcservice::kErrorInvalidDlc,
-                                         dlcservice::kErrorAllocation,
-                                         dlcservice::kErrorNoImageFound,
-                                         "unknown"));
+INSTANTIATE_TEST_SUITE_P(
+    BorealisTasksTestDlcErrors,
+    BorealisTasksTestDlcWithError,
+    testing::Values(std::make_pair(dlcservice::kErrorNeedReboot,
+                                   BorealisStartupResult::kDlcNeedRebootError),
+                    std::make_pair(dlcservice::kErrorInvalidDlc,
+                                   BorealisStartupResult::kDlcUnsupportedError),
+                    std::make_pair(dlcservice::kErrorAllocation,
+                                   BorealisStartupResult::kDlcNeedSpaceError),
+                    std::make_pair(dlcservice::kErrorNoImageFound,
+                                   BorealisStartupResult::kDlcNeedUpdateError),
+                    std::make_pair("unknown",
+                                   BorealisStartupResult::kDlcUnknownError)));
 
 class BorealisTasksTestDiskImage
     : public BorealisTasksTest,

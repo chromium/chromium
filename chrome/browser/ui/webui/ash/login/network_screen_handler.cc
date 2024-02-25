@@ -4,19 +4,14 @@
 
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 
-#include <stddef.h>
-
-#include <utility>
-
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
 namespace ash {
@@ -25,23 +20,7 @@ NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 NetworkScreenHandler::~NetworkScreenHandler() = default;
 
-void NetworkScreenHandler::Show() {
-  // In OOBE all physical network technologies should be enabled, so the user is
-  // able to select any of the available networks on the device. Enabled
-  // technologies should not be changed if network screen is shown outside of
-  // OOBE.
-  // If OOBE is not completed, we assume that the only instance of this object
-  // could be OOBE itself.
-  if (!StartupUtils::IsOobeCompleted()) {
-    TechnologyStateController* controller =
-        NetworkHandler::Get()->technology_state_controller();
-    controller->SetTechnologiesEnabled(NetworkTypePattern::Physical(), true,
-                                       network_handler::ErrorCallback());
-  }
-
-  base::Value::Dict data;
-  data.Set("isDemoModeSetup",
-           DemoSetupController::IsOobeDemoSetupFlowInProgress());
+void NetworkScreenHandler::ShowScreenWithData(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
@@ -55,14 +34,24 @@ void NetworkScreenHandler::ClearErrors() {
 
 void NetworkScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("networkSectionTitle", IDS_NETWORK_SELECTION_TITLE);
-  builder->Add("networkSectionHint", IDS_NETWORK_SELECTION_HINT);
+  builder->AddF("networkSectionTitle", IDS_NETWORK_SELECTION_TITLE,
+                ui::GetChromeOSDeviceName());
+  builder->AddF("networkSectionSubtitle", IDS_NETWORK_SELECTION_SUBTITLE,
+                ui::GetChromeOSDeviceName());
   builder->Add("proxySettingsListItemName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
 
   builder->Add("networkScreenQuickStart",
                IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
+  builder->Add("networkScreenConnectingToWifiTitle",
+               IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
+  builder->Add("networkScreenQuickStartTransferWifiSubtitle",
+               IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
+  builder->AddF("quickStartNetworkNeededSubtitle",
+                IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE,
+                ui::GetChromeOSDeviceName());
 
   ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);
@@ -73,7 +62,7 @@ void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 }
 
 void NetworkScreenHandler::SetQuickStartEnabled() {
-  CallExternalAPI("setQuickStartEnabled");
+  CallExternalAPI("setQuickStartVisible");
 }
 
 }  // namespace ash

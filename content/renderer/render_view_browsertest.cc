@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -16,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -66,7 +68,6 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
@@ -311,7 +312,7 @@ class CommonParamsFrameLoadWaiter : public FrameLoadWaiter {
   }
 
   blink::mojom::CommonNavigationParamsPtr common_params_;
-  const RenderFrameImpl* frame_;
+  raw_ptr<const RenderFrameImpl> frame_;
 };
 
 }  // namespace
@@ -392,18 +393,6 @@ class RenderViewImplTest : public RenderViewTest {
 
     waiter.Wait();
     return waiter.common_params()->Clone();
-  }
-
-  template <class T>
-  typename T::Param ProcessAndReadIPC() {
-    base::RunLoop().RunUntilIdle();
-    const IPC::Message* message =
-        render_thread_->sink().GetUniqueMessageMatching(T::ID);
-    typename T::Param param;
-    EXPECT_TRUE(message);
-    if (message)
-      T::Read(message, &param);
-    return param;
   }
 
 #if BUILDFLAG(IS_OZONE)
@@ -740,7 +729,7 @@ class UpdateTitleLocalFrameHost : public LocalFrameHostInterceptor {
       : LocalFrameHostInterceptor(provider) {}
 
   MOCK_METHOD2(UpdateTitle,
-               void(const absl::optional<::std::u16string>& title,
+               void(const std::optional<::std::u16string>& title,
                     base::i18n::TextDirection title_direction));
 };
 }  // namespace
@@ -770,8 +759,8 @@ TEST_F(RenderViewImplUpdateTitleTest, OnNavigationLoadDataWithBaseURL) {
   commit_params->data_url_as_string =
       "data:text/html,<html><head><title>Data page</title></head></html>";
 
-  const absl::optional<::std::u16string>& title =
-      absl::make_optional(u"Data page");
+  const std::optional<::std::u16string>& title =
+      std::make_optional(u"Data page");
   EXPECT_CALL(*title_mock_frame_host(), UpdateTitle(title, testing::_))
       .Times(1);
   FrameLoadWaiter waiter(frame());
@@ -830,7 +819,6 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
       blink::kWebNavigationTypeFormSubmitted;
   form_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(form_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -850,7 +838,6 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
   popup_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   popup_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyNewForegroundTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(popup_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 }
@@ -865,6 +852,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
       blink::kWebNavigationTypeFormSubmitted,
       blink::kWebNavigationTypeBackForward,
       blink::kWebNavigationTypeReload,
+      blink::kWebNavigationTypeRestore,
       blink::kWebNavigationTypeFormResubmittedBackForward,
       blink::kWebNavigationTypeFormResubmittedReload,
       blink::kWebNavigationTypeOther,
@@ -880,7 +868,6 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
     navigation_info->navigation_policy = blink::kWebNavigationPolicyCurrentTab;
     navigation_info->navigation_type = kNavTypes[i];
 
-    render_thread_->sink().ClearMessages();
     frame()->BeginNavigation(std::move(navigation_info));
     EXPECT_TRUE(frame()->IsURLOpened());
   }
@@ -907,7 +894,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   navigation_info->navigation_policy = blink::kWebNavigationPolicyCurrentTab;
 
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -926,7 +912,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   webui_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   webui_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(webui_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -952,7 +937,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationTypeFormSubmitted;
   data_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(data_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -969,7 +953,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
-      absl::nullopt, absl::nullopt, /*base_url=*/blink::WebURL());
+      std::nullopt, std::nullopt, /*base_url=*/blink::WebURL());
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =
@@ -977,7 +961,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   popup_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyNewForegroundTab;
-  render_thread_->sink().ClearMessages();
   RenderFrameImpl::FromWebFrame(new_web_view->MainFrame())
       ->BeginNavigation(std::move(popup_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
@@ -1128,24 +1111,26 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   widget_params->widget = std::move(blink_widget_receiver);
   widget_params->widget_host = blink_widget_host.Unbind();
 
+  blink::LocalFrameToken frame_token;
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
+      *agent_scheduling_group_, frame_token, routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
       /*web_view=*/nullptr,
       /*previous_frame_token=*/remote_child_frame_token,
-      /*opener_frame_token=*/absl::nullopt,
-      /*parent_frame_token=*/absl::nullopt,
-      /*previous_sibling_frame_token=*/absl::nullopt,
+      /*opener_frame_token=*/std::nullopt,
+      /*parent_frame_token=*/std::nullopt,
+      /*previous_sibling_frame_token=*/std::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state), std::move(widget_params),
       blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
-      CreateStubPolicyContainer());
+      CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
 
   TestRenderFrame* provisional_frame =
-      static_cast<TestRenderFrame*>(RenderFrameImpl::FromRoutingID(routing_id));
+      static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+          WebLocalFrame::FromFrameToken(frame_token)));
   EXPECT_TRUE(provisional_frame);
 
   // Navigate to other page, which triggers the swap in.
@@ -1196,23 +1181,25 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // Do the first step of a remote-to-local transition for the child proxy,
   // which is to create a provisional local frame.
   int routing_id = kProxyRoutingId + 1;
+  blink::LocalFrameToken frame_token;
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
+      *agent_scheduling_group_, frame_token, routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
       /*web_view=*/nullptr, child_remote_frame_token,
-      /*opener_frame_token=*/absl::nullopt,
+      /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/web_frame->GetFrameToken(),
-      /*previous_sibling_frame_token=*/absl::nullopt,
+      /*previous_sibling_frame_token=*/std::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
-      CreateStubPolicyContainer());
+      CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
   {
-    TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(routing_id));
+    TestRenderFrame* provisional_frame =
+        static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+            WebLocalFrame::FromFrameToken(frame_token)));
     EXPECT_TRUE(provisional_frame);
   }
 
@@ -1227,8 +1214,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // thus any subsequent messages (such as OnNavigate) already in flight for it
   // should be dropped.
   {
-    TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(routing_id));
+    TestRenderFrame* provisional_frame =
+        static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+            WebLocalFrame::FromFrameToken(frame_token)));
     EXPECT_FALSE(provisional_frame);
   }
 }
@@ -1840,7 +1828,6 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "virtualkeyboardpolicy=\"auto\"></input>"
       "</body>"
       "</html>");
-  render_thread_->sink().ClearMessages();
   ExecuteJavaScriptForTests(
       "document.getElementById('test1').focus(); "
       "navigator.virtualKeyboard.show();");
@@ -1991,7 +1978,6 @@ TEST_F(RenderViewImplTest, ImeComposition) {
     // TODO(hbono): we should verify messages to be sent from the back-end.
     main_frame_widget()->UpdateTextInputState();
     base::RunLoop().RunUntilIdle();
-    render_thread_->sink().ClearMessages();
 
     if (ime_message->result) {
       // Retrieve the content of this page and compare it with the expected
@@ -2021,7 +2007,6 @@ TEST_F(RenderViewImplTest, OnSetTextDirection) {
       "<div id=\"result\" contenteditable=\"true\"></div>"
       "</body>"
       "</html>");
-  render_thread_->sink().ClearMessages();
 
   static const struct {
     base::i18n::TextDirection direction;
@@ -2618,15 +2603,15 @@ TEST_F(RenderViewImplTest, SetAccessibilityMode) {
   ASSERT_TRUE(GetRenderAccessibilityManager());
   ASSERT_FALSE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly);
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly, 1);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(ui::AXMode::kNone);
+  GetRenderAccessibilityManager()->SetMode(ui::AXMode::kNone, 0);
   ASSERT_TRUE(GetAccessibilityMode().is_mode_off());
   ASSERT_FALSE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeComplete);
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeComplete, 1);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeComplete);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 }
@@ -2638,7 +2623,7 @@ TEST_F(RenderViewImplTest, AccessibilityModeOnClosingConnection) {
   GetRenderAccessibilityManager()->BindReceiver(
       remote.BindNewEndpointAndPassReceiver());
 
-  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly);
+  GetRenderAccessibilityManager()->SetMode(ui::kAXModeWebContentsOnly, 1);
   ASSERT_TRUE(GetAccessibilityMode() == ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(GetRenderAccessibilityManager()->GetRenderAccessibilityImpl());
 
@@ -2693,7 +2678,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   base::RunLoop().RunUntilIdle();
   base::Time after_navigation = base::Time::Now() + base::Days(1);
 
-  base::Time late_nav_reported_start = base::Time::FromDoubleT(
+  base::Time late_nav_reported_start = base::Time::FromSecondsSinceUnixEpoch(
       GetMainFrame()->PerformanceMetricsForReporting().NavigationStart());
   EXPECT_LE(late_nav_reported_start, after_navigation);
 }
@@ -2719,7 +2704,6 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
   // Navigate once, then reload.
   LoadHTML(url_string);
   base::RunLoop().RunUntilIdle();
-  render_thread_->sink().ClearMessages();
 
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL(url_string);
@@ -2744,7 +2728,6 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
   LoadHTML("<div id=pagename>Page C</div>");
   blink::PageState forward_state = GetCurrentPageState();
   base::RunLoop().RunUntilIdle();
-  render_thread_->sink().ClearMessages();
 
   // Go back.
   auto common_params_back = blink::CreateCommonNavigationParams();
@@ -2925,8 +2908,8 @@ class AddMessageToConsoleMockLocalFrameHost : public LocalFrameHostInterceptor {
       blink::mojom::ConsoleMessageLevel log_level,
       const std::u16string& msg,
       uint32_t line_number,
-      const absl::optional<std::u16string>& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override {
+      const std::optional<std::u16string>& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) override {
     if (did_add_message_to_console_callback_) {
       std::move(did_add_message_to_console_callback_).Run(msg);
     }
@@ -3278,6 +3261,63 @@ TEST_F(RenderViewImplTest, OriginTrialEnabled) {
   EXPECT_TRUE(blink::WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
   // Reset the origin trial policy.
   blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
+}
+
+TEST_F(RenderViewImplTest, CollapseSelectionNotChangeFocus) {
+  // https://crbug.com/1343298
+  // Load an test HTML page consisting of an input field.
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<style>"
+      "html, body, input {"
+      "    margin: 0;"
+      "    width:100%;"
+      "    height:100%;"
+      "}"
+      "</style>"
+      "<body>"
+      "<input id=\"test\" value=\"I love Cookie\"></input>"
+      "</body>"
+      "</html>");
+  GetWidgetInputHandler()->SetFocus(blink::mojom::FocusState::kFocused);
+
+  // Send a GestureTap event to change the value of the variable named
+  // is_handle_visible_ of the class named FrameSelection to true
+  WebGestureEvent gesture_event(WebInputEvent::Type::kGestureTap,
+                                WebInputEvent::kNoModifiers,
+                                ui::EventTimeForNow());
+  gesture_event.SetPositionInWidget(gfx::PointF(250, 250));
+  SendWebGestureEvent(gesture_event);
+
+  // Check the input element was focused.
+  int is_input = -1;
+  std::u16string check_active_element_is_input =
+      u"Number(document.activeElement.tagName == 'INPUT')";
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_input,
+                                                 &is_input));
+  EXPECT_EQ(1, is_input);
+
+  // Blur the input element, the active element document should be BODY.
+  ExecuteJavaScriptForTests("document.getElementById('test').blur();");
+
+  int is_body = -1;
+  std::u16string check_active_element_is_body =
+      u"Number(document.activeElement.tagName == 'BODY')";
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_body,
+                                                 &is_body));
+  EXPECT_EQ(1, is_body);
+
+  // Collapse selection, the active element document should be BODY too.
+  auto* frame_widget_input_handler = GetFrameWidgetInputHandler();
+  frame_widget_input_handler->CollapseSelection();
+  base::RunLoop().RunUntilIdle();
+
+  int is_body_again = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_body,
+                                                 &is_body_again));
+  EXPECT_EQ(1, is_body_again);
 }
 
 }  // namespace content

@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -114,7 +114,7 @@ void HTMLTableCellElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kRowspanAttr ||
       params.name == html_names::kColspanAttr) {
-    if (auto* cell = DynamicTo<LayoutNGTableCell>(GetLayoutObject())) {
+    if (auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject())) {
       cell->ColSpanOrRowSpanChanged();
     }
   } else {
@@ -139,12 +139,6 @@ bool HTMLTableCellElement::HasLegalLinkAttribute(
   return (HasTagName(html_names::kTdTag) &&
           name == html_names::kBackgroundAttr) ||
          HTMLTablePartElement::HasLegalLinkAttribute(name);
-}
-
-const QualifiedName& HTMLTableCellElement::SubResourceAttributeName() const {
-  return HasTagName(html_names::kTdTag)
-             ? html_names::kBackgroundAttr
-             : HTMLTablePartElement::SubResourceAttributeName();
 }
 
 const AtomicString& HTMLTableCellElement::Abbr() const {

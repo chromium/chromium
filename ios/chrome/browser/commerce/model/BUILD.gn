@@ -1,0 +1,114 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "price_alert_util.h",
+    "price_alert_util.mm",
+    "shopping_persisted_data_tab_helper.h",
+    "shopping_persisted_data_tab_helper.mm",
+  ]
+  deps = [
+    ":shopping_service",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/payments/core:core",
+    "//components/prefs:prefs",
+    "//components/unified_consent:unified_consent",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web",
+    "//ios/web/public",
+  ]
+}
+
+static_library("shopping_service") {
+  sources = [
+    "shopping_service_factory.h",
+    "shopping_service_factory.mm",
+  ]
+
+  deps = [
+    ":session_proto_db",
+    "//base",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/ios/browser:browser",
+    "//components/keyed_service/ios",
+    "//components/leveldb_proto",
+    "//components/prefs",
+    "//components/variations/service:service",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/power_bookmarks/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/web",
+    "//services/network/public/cpp",
+  ]
+}
+
+static_library("session_proto_db") {
+  sources = [
+    "session_proto_db_factory.h",
+    "session_proto_db_factory.mm",
+  ]
+
+  deps = [
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
+    "//components/keyed_service/ios:ios",
+    "//components/leveldb_proto:leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
+    "//ios/web/public:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_alert_util_unittest.mm",
+    "session_proto_db_factory_unittest.mm",
+    "shopping_persisted_data_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent:unified_consent",
+    "//ios/chrome/browser/commerce/model:session_proto_db",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/model:unit_tests",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public:public",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes:fakes",
+  ]
+}

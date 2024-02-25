@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
@@ -52,7 +53,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     LoaderCallback callback,
     FallbackCallback fallback_callback) {
   if (!signed_exchange_loader_) {
-    std::move(callback).Run({});
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -60,19 +61,19 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
         *signed_exchange_loader_->fallback_url()));
     signed_exchange_loader_ = nullptr;
-    std::move(fallback_callback)
-        .Run(false /* reset_subresource_loader_params */,
-             // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-             net::LoadTimingInfo());
+    // Skip subsequent interceptors and fallback to the network.
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
+        /*factory=*/nullptr, /*subresource_loader_params=*/{}));
     return;
   }
 
   DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
       *signed_exchange_loader_->inner_request_url()));
-  std::move(callback).Run(
+  std::move(callback).Run(NavigationLoaderInterceptor::Result(
       base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
-                         weak_factory_.GetWeakPtr())));
+                         weak_factory_.GetWeakPtr())),
+      /*subresource_loader_params=*/{}));
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
@@ -83,8 +84,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    bool* skip_other_interceptors) {
   DCHECK(!signed_exchange_loader_);
 
   // Navigation ResourceRequests always have non-empty |trusted_params|.

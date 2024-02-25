@@ -23,6 +23,11 @@
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
 
+// The view displayed above titles and subtitles, but under the navigation bar
+// and the image view. Nil if not needed. If needed, must be set before the view
+// is loaded.
+@property(nonatomic, strong) UIView* aboveTitleView;
+
 // The view displayed under titles and subtitles. Nil if not needed.
 // If needed, must be set before the view is loaded.
 @property(nonatomic, strong) UIView* underTitleView;
@@ -54,11 +59,18 @@
 // not set.
 @property(nonatomic, copy) NSString* secondaryActionTextColor;
 
+// The icon for the secondary action. Must be set before the view is loaded.
+@property(nonatomic, strong) UIImage* secondaryActionImage;
+
 // The text for the tertiary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* tertiaryActionString;
 
 // The image. May be updated after the view is loaded.
 @property(nonatomic, strong) UIImage* image;
+
+// When set, this value will be set as the accessibility label for the image
+// view.
+@property(nonatomic, copy) NSString* imageViewAccessibilityLabel;
 
 // Sets the custom spacing at the top if there is no navigation bar. If image is
 // set, the spacing is before the image. Otherwise, the spacing is before the
@@ -87,6 +99,9 @@
 
 // Value to determine whether or not the image's size should be scaled.
 @property(nonatomic) BOOL imageHasFixedSize;
+
+// Always show the image view, regardless of size or orientation. Default is NO.
+@property(nonatomic) BOOL alwaysShowImage;
 
 // Controls if there is a help button in the view. Must be set before the
 // view is loaded.
@@ -122,11 +137,24 @@
 // UIBarButtonSystemItemDone). Must be set before the view is loaded.
 @property(nonatomic, assign) UIBarButtonSystemItem dismissBarButtonSystemItem;
 
+// Sets a custom UIBarButtonItem for the dismiss bar button.
+@property(nonatomic, assign) UIImage* customDismissBarButtonImage;
+
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
 // Sets the custom scroll view bottom insets.
 @property(nonatomic, assign) CGFloat customScrollViewBottomInsets;
+
+// Indicates whether information stack view items should horizontally fill the
+// space.
+@property(nonatomic) BOOL shouldFillInformationStack;
+
+// Bottom margin for the action stack view.
+@property(nonatomic, assign) CGFloat actionStackBottomMargin;
+
+// Button for the primary action string.
+@property(nonatomic, readonly) UIButton* primaryActionButton;
 
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

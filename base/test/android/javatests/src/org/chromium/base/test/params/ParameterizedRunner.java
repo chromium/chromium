@@ -87,19 +87,23 @@ public final class ParameterizedRunner extends Suite {
 
     private void validateOnlyOneClassParameterField() {
         if (getTestClass().getAnnotatedFields(ClassParameter.class).size() > 1) {
-            throw new IllegalParameterArgumentException(String.format(Locale.getDefault(),
-                    "%s class has more than one @ClassParameter, only one is allowed",
-                    getTestClass().getName()));
+            throw new IllegalParameterArgumentException(
+                    String.format(
+                            Locale.getDefault(),
+                            "%s class has more than one @ClassParameter, only one is allowed",
+                            getTestClass().getName()));
         }
     }
 
     private void validateAtLeastOneParameterSetField() {
         if (getTestClass().getAnnotatedFields(ClassParameter.class).isEmpty()
                 && getTestClass().getAnnotatedMethods(UseMethodParameter.class).isEmpty()) {
-            throw new IllegalArgumentException(String.format(Locale.getDefault(),
-                    "%s has no field annotated with @ClassParameter or method annotated with"
-                            + "@UseMethodParameter; it should not use ParameterizedRunner",
-                    getTestClass().getName()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            Locale.getDefault(),
+                            "%s has no field annotated with @ClassParameter or method annotated"
+                                + " with@UseMethodParameter; it should not use ParameterizedRunner",
+                            getTestClass().getName()));
         }
     }
 
@@ -133,8 +137,9 @@ public final class ParameterizedRunner extends Suite {
             classParameterSetList = new ArrayList<>();
             classParameterSetList.add(null);
         } else {
-            classParameterSetList = getParameterSetList(
-                    testClass.getAnnotatedFields(ClassParameter.class).get(0), testClass);
+            classParameterSetList =
+                    getParameterSetList(
+                            testClass.getAnnotatedFields(ClassParameter.class).get(0), testClass);
             validateWidth(classParameterSetList);
         }
 
@@ -143,29 +148,34 @@ public final class ParameterizedRunner extends Suite {
         ParameterizedRunnerDelegateFactory factory = new ParameterizedRunnerDelegateFactory();
         List<Runner> runnersForTestClass = new ArrayList<>();
         for (ParameterSet classParameterSet : classParameterSetList) {
-            BlockJUnit4ClassRunner runner = (BlockJUnit4ClassRunner) factory.createRunner(
-                    testClass, classParameterSet, runnerDelegateClass);
+            BlockJUnit4ClassRunner runner =
+                    (BlockJUnit4ClassRunner)
+                            factory.createRunner(testClass, classParameterSet, runnerDelegateClass);
             runnersForTestClass.add(runner);
         }
         return runnersForTestClass;
     }
 
-    /**
-     * Return an unmodifiable list of ParameterSet through a FrameworkField
-     */
+    /** Return an unmodifiable list of ParameterSet through a FrameworkField */
     private static List<ParameterSet> getParameterSetList(FrameworkField field, TestClass testClass)
             throws IllegalAccessException {
         field.getField().setAccessible(true);
         if (!Modifier.isStatic(field.getField().getModifiers())) {
-            throw new IllegalParameterArgumentException(String.format(Locale.getDefault(),
-                    "ParameterSetList fields must be static, this field %s in %s is not",
-                    field.getName(), testClass.getName()));
+            throw new IllegalParameterArgumentException(
+                    String.format(
+                            Locale.getDefault(),
+                            "ParameterSetList fields must be static, this field %s in %s is not",
+                            field.getName(),
+                            testClass.getName()));
         }
         if (!(field.get(testClass.getJavaClass()) instanceof List)) {
-            throw new IllegalArgumentException(String.format(Locale.getDefault(),
-                    "Fields with @ClassParameter annotations must be an instance of List, "
-                            + "this field %s in %s is not list",
-                    field.getName(), testClass.getName()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            Locale.getDefault(),
+                            "Fields with @ClassParameter annotations must be an instance of List, "
+                                    + "this field %s in %s is not list",
+                            field.getName(),
+                            testClass.getName()));
         }
         @SuppressWarnings("unchecked") // checked above
         List<ParameterSet> result = (List<ParameterSet>) field.get(testClass.getJavaClass());
@@ -182,11 +192,16 @@ public final class ParameterizedRunner extends Suite {
             if (lastSize == -1 || set.size() == lastSize) {
                 lastSize = set.size();
             } else {
-                throw new IllegalParameterArgumentException(String.format(Locale.getDefault(),
-                        "All ParameterSets in a list of ParameterSet must have equal"
-                                + " length. The current ParameterSet (%s) contains %d parameters,"
-                                + " while previous ParameterSet contains %d parameters",
-                        Arrays.toString(set.getValues().toArray()), set.size(), lastSize));
+                throw new IllegalParameterArgumentException(
+                        String.format(
+                                Locale.getDefault(),
+                                "All ParameterSets in a list of ParameterSet must have equal"
+                                        + " length. The current ParameterSet (%s) contains %d"
+                                        + " parameters, while previous ParameterSet contains %d"
+                                        + " parameters",
+                                Arrays.toString(set.getValues().toArray()),
+                                set.size(),
+                                lastSize));
             }
         }
     }
@@ -212,11 +227,13 @@ public final class ParameterizedRunner extends Suite {
     public static class ParameterizedTestInstantiationException extends Exception {
         ParameterizedTestInstantiationException(
                 TestClass testClass, String parameterSetString, Exception e) {
-            super(String.format(
-                          "Test class %s can not be initiated, the provided parameters are %s,"
-                                  + " the required parameter types are %s",
-                          testClass.getJavaClass().toString(), parameterSetString,
-                          Arrays.toString(testClass.getOnlyConstructor().getParameterTypes())),
+            super(
+                    String.format(
+                            "Test class %s can not be initiated, the provided parameters are %s,"
+                                    + " the required parameter types are %s",
+                            testClass.getJavaClass().toString(),
+                            parameterSetString,
+                            Arrays.toString(testClass.getOnlyConstructor().getParameterTypes())),
                     e);
         }
     }

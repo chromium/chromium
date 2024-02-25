@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Test that back/forward navigations report the bfcache status`);
 
@@ -16,7 +16,7 @@
   });`);
 
   // Navigate to Page B.
-  await page.navigate('chrome://version');
+  await page.navigate('resources/empty.html');
 
   const {result: history} = await dp.Page.getNavigationHistory();
 

@@ -124,8 +124,6 @@ class TabHelper : public content::WebContentsObserver,
   void RenderFrameCreated(content::RenderFrameHost* host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* sender) override;
   void DidCloneToNewWebContents(
       content::WebContents* old_web_contents,
       content::WebContents* new_web_contents) override;
@@ -141,11 +139,6 @@ class TabHelper : public content::WebContentsObserver,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
-
-  // Message handlers.
-  void OnContentScriptsExecuting(content::RenderFrameHost* host,
-                                 const ExecutingScriptsMap& extension_ids,
-                                 const GURL& on_url);
 
   // App extensions related methods:
 

@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -40,6 +42,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
@@ -58,6 +61,7 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
@@ -85,9 +89,8 @@ void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
   DCHECK(tracker);
   DCHECK(tracker->IsSyncing());
 
-  std::unique_ptr<syncer::DeviceInfo> device_info =
-      tracker->GetDeviceInfo(client_id);
-  if (device_info.get()) {
+  const syncer::DeviceInfo* device_info = tracker->GetDeviceInfo(client_id);
+  if (device_info) {
     *name = device_info->client_name();
     switch (device_info->form_factor()) {
       case syncer::DeviceInfo::FormFactor::kPhone:
@@ -182,7 +185,7 @@ constexpr UrlIdentity::FormatOptions url_identity_options{
 base::Value::Dict HistoryEntryToValue(
     const BrowsingHistoryService::HistoryEntry& entry,
     BookmarkModel* bookmark_model,
-    Profile* profile,
+    Profile& profile,
     const syncer::DeviceInfoTracker* tracker,
     base::Clock* clock) {
   base::Value::Dict result;
@@ -191,7 +194,7 @@ base::Value::Dict HistoryEntryToValue(
   // UrlIdentity holds a user-identifiable string for a URL. We will display
   // this string to the user.
   std::u16string domain =
-      UrlIdentity::CreateFromUrl(profile, entry.url, allowed_types,
+      UrlIdentity::CreateFromUrl(&profile, entry.url, allowed_types,
                                  url_identity_options)
           .name;
 
@@ -209,12 +212,14 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("fallbackFaviconText",
              base::UTF16ToASCII(favicon::GetFallbackIconText(entry.url)));
 
-  result.Set("time", entry.time.ToJsTime());
+  result.Set("time", entry.time.InMillisecondsFSinceUnixEpoch());
 
   // Pass the timestamps in a list.
   base::Value::List timestamps;
   for (int64_t timestamp : entry.all_timestamps) {
-    timestamps.Append(base::Time::FromInternalValue(timestamp).ToJsTime());
+    timestamps.Append(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp))
+            .InMillisecondsFSinceUnixEpoch());
   }
   result.Set("allTimestamps", std::move(timestamps));
 
@@ -256,16 +261,15 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("deviceType", device_type);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (supervised_user_service &&
-      supervised_user_service->IsURLFilteringEnabled()) {
+  if (supervised_user::IsUrlFilteringEnabled(*profile.GetPrefs())) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForProfile(&profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
-    int filtering_behavior =
+    supervised_user::FilteringBehavior filtering_behavior =
         url_filter->GetFilteringBehaviorForURL(entry.url.GetWithEmptyPath());
     is_blocked_visit = entry.blocked_visit;
-    host_filtering_behavior = filtering_behavior;
+    host_filtering_behavior = static_cast<int>(filtering_behavior);
   }
 #endif
 
@@ -313,7 +317,7 @@ void BrowsingHistoryHandler::OnJavascriptAllowed() {
 void BrowsingHistoryHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
   browsing_history_service_ = nullptr;
-  initial_results_ = absl::nullopt;
+  initial_results_ = std::nullopt;
   deferred_callbacks_.clear();
   query_history_callback_id_.clear();
   remove_visits_callback_.clear();
@@ -347,6 +351,10 @@ void BrowsingHistoryHandler::RegisterMessages() {
       "removeBookmark",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveBookmark,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setLastSelectedTab",
+      base::BindRepeating(&BrowsingHistoryHandler::HandleSetLastSelectedTab,
+                          base::Unretained(this)));
 }
 
 void BrowsingHistoryHandler::StartQueryHistory() {
@@ -367,7 +375,7 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
   if (initial_results_.has_value()) {
     ResolveJavascriptCallback(callback_id, *initial_results_);
-    initial_results_ = absl::nullopt;
+    initial_results_ = std::nullopt;
     return;
   }
 
@@ -464,7 +472,8 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
         continue;
       }
 
-      base::Time visit_time = base::Time::FromJsTime(timestamp.GetDouble());
+      base::Time visit_time =
+          base::Time::FromMillisecondsSinceUnixEpoch(timestamp.GetDouble());
       entry.all_timestamps.insert(visit_time.ToInternalValue());
     }
 
@@ -478,8 +487,7 @@ void BrowsingHistoryHandler::HandleClearBrowsingData(
     const base::Value::List& args) {
   // TODO(beng): This is an improper direct dependency on Browser. Route this
   // through some sort of delegate.
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::ShowClearBrowsingDataDialog(browser);
 }
 
@@ -492,12 +500,21 @@ void BrowsingHistoryHandler::HandleRemoveBookmark(
   bookmarks::RemoveAllBookmarks(model, GURL(url));
 }
 
+void BrowsingHistoryHandler::HandleSetLastSelectedTab(
+    const base::Value::List& args) {
+  const base::Value& last_tab = args[0];
+  Profile* profile = GetProfile();
+  profile->GetPrefs()->SetInteger(history_clusters::prefs::kLastSelectedTab,
+                                  last_tab.GetInt());
+}
+
 void BrowsingHistoryHandler::OnQueryComplete(
     const std::vector<BrowsingHistoryService::HistoryEntry>& results,
     const BrowsingHistoryService::QueryResultsInfo& query_results_info,
     base::OnceClosure continuation_closure) {
   query_history_continuation_ = std::move(continuation_closure);
   Profile* profile = Profile::FromWebUI(web_ui());
+  CHECK(profile);
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
 
@@ -510,7 +527,7 @@ void BrowsingHistoryHandler::OnQueryComplete(
   base::Value::List results_value;
   for (const BrowsingHistoryService::HistoryEntry& entry : results) {
     results_value.Append(
-        HistoryEntryToValue(entry, bookmark_model, profile, tracker, clock_));
+        HistoryEntryToValue(entry, bookmark_model, *profile, tracker, clock_));
   }
 
   base::Value::Dict results_info;

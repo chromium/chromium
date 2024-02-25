@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -31,7 +31,7 @@
   CHECK(IsInactiveTabsAvailable());
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
-    _gridViewController = [[GridViewController alloc] init];
+    _gridViewController = [[InactiveGridViewController alloc] init];
     _gridViewController.theme = GridThemeLight;
     _gridViewController.mode = TabGridModeInactive;
   }
@@ -121,7 +121,7 @@
   CGFloat leftInset = self.view.safeAreaInsets.left;
   CGFloat rightInset = self.view.safeAreaInsets.right;
 
-  _gridViewController.gridView.contentInset =
+  _gridViewController.contentInsets =
       UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
 }
 

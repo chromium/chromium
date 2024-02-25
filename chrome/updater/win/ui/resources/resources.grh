@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROME_UPDATER_WIN_UI_RESOURCES_RESOURCES_GRH_
+#define CHROME_UPDATER_WIN_UI_RESOURCES_RESOURCES_GRH_
+
 // Icons.
 #define IDI_APP 101
 #define IDB_ERROR_ILLUSTRATION 1000
@@ -23,3 +26,13 @@
 #define IDC_INSTALL_STOPPED_TEXT 2017
 #define IDD_YES_NO 2018
 #define IDC_YES_NO_TEXT 2020
+
+// Typelibs.
+#define TYPELIB_UPDATER_IDL_USER               1
+#define TYPELIB_UPDATER_INTERNAL_IDL_USER      2
+#define TYPELIB_UPDATER_LEGACY_IDL_USER        3
+#define TYPELIB_UPDATER_IDL_SYSTEM             4
+#define TYPELIB_UPDATER_INTERNAL_IDL_SYSTEM    5
+#define TYPELIB_UPDATER_LEGACY_IDL_SYSTEM      6
+
+#endif  // CHROME_UPDATER_WIN_UI_RESOURCES_RESOURCES_GRH_

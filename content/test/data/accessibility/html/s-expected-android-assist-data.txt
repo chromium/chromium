@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:16.0 style:8 htmlInfo:[{htmlTag="s"}, {display="inline"}]
+++++++TextView text:"My car is blue." textSize:16.0 style:8 htmlInfo:[{htmlTag=""}, {display=""}]

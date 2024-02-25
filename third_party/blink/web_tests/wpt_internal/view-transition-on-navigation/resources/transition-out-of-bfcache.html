@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
+<html class="reftest-wait">
 <title>View transitions: BFCache navigation helper</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
 <meta name="view-transition" content="same-origin">
 <script src="/common/reftest-wait.js"></script>
-
 <style>
 html { background: red; }
 div {
@@ -18,17 +17,14 @@ div {
   right: 8px;
   view-transition-name: target;
 }
-
 ::view-transition-group(*) {
   animation-duration: 0s;
 }
 </style>
 <div id=target></div>
-
 <script>
 window.onload = () => {
   requestAnimationFrame(() => history.back());
 };
 </script>
-
-
+</html>

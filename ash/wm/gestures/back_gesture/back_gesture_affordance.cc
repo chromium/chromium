@@ -9,11 +9,11 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -117,9 +117,7 @@ class AffordanceView : public views::View {
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
     ripple_flags.setColor(ColorUtil::GetSecondToneColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorActive)));
+        GetColorProvider()->GetColor(kColorAshControlBackgroundColorActive)));
 
     float ripple_radius = 0.f;
     if (state_ == BackGestureAffordance::State::COMPLETING) {
@@ -207,10 +205,9 @@ bool AboveBottomOfSplitViewDivider(const gfx::Point& location, int origin_y) {
 
   const gfx::Rect bounds_of_bottom_snapped_window =
       split_view_controller->GetSnappedWindowBoundsInScreen(
-          IsCurrentScreenOrientationPrimary()
-              ? SplitViewController::SnapPosition::kSecondary
-              : SplitViewController::SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr);
+          IsCurrentScreenOrientationPrimary() ? SnapPosition::kSecondary
+                                              : SnapPosition::kPrimary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
   return bounds_of_bottom_snapped_window.Contains(location) &&
          origin_y < GetSplitViewDividerBoundsInScreen(location).bottom();
 }

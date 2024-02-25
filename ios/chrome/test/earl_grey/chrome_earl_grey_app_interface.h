@@ -86,6 +86,14 @@
 // Programmatically dismisses settings screen.
 + (void)dismissSettings;
 
+// Stops primes performance metrics logging by calling into the
+// internal framework (should only be used by performance tests)
++ (void)primesStopLogging;
+
+// Takes a snapshot of memory usage by calling into the internal
+// framework (should only be used by performance tests)
++ (void)primesTakeMemorySnapshot:(NSString*)eventName;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Selects tab with given index in current mode (incognito or main
@@ -110,6 +118,9 @@
 
 // Returns the number of open browsers.
 + (NSUInteger)browserCount [[nodiscard]];
+
+// Returns the number of the realized web states from the existing web states.
++ (NSInteger)realizedWebStatesCount [[nodiscard]];
 
 // Simulates a backgrounding.
 // If not succeed returns an NSError indicating  why the
@@ -339,9 +350,6 @@
 
 #pragma mark - Sync Utilities (EG2)
 
-// Clears fake sync server data if the server is running.
-+ (void)clearSyncServerData;
-
 // Signs in with `identity` without sync consent.
 + (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
@@ -380,8 +388,22 @@
 // real one.
 + (void)tearDownFakeSyncServer;
 
+// Clears fake sync server data if the server is running.
++ (void)clearFakeSyncServerData;
+
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
++ (void)flushFakeSyncServerToDisk;
+
 // Gets the number of entities of the given `type`.
 + (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type;
+
+// Forces every request to fail in a way that simulates a network failure.
++ (void)disconnectFakeSyncServerNetwork;
+
+// Undoes the effects of disconnectFakeSyncServerNetwork.
++ (void)connectFakeSyncServerNetwork;
 
 // Injects a bookmark into the fake sync server with `URL` and `title`.
 + (void)addFakeSyncServerBookmarkWithURL:(NSString*)URL title:(NSString*)title;
@@ -393,9 +415,6 @@
                                          title:(NSString*)title
                      originator_client_item_id:
                          (NSString*)originator_client_item_id;
-
-// Injects a typed URL to the sync FakeServer.
-+ (void)addFakeSyncServerTypedURL:(NSString*)URL;
 
 // Injects a HISTORY visit to the sync FakeServer.
 + (void)addFakeSyncServerHistoryVisit:(NSURL*)URL;
@@ -501,17 +520,11 @@
 // Returns YES if UKM feature is enabled.
 + (BOOL)isUKMEnabled [[nodiscard]];
 
-// Returns YES if kSynthesizedRestoreSessionEnabled feature is enabled.
-+ (BOOL)isSynthesizedRestoreSessionEnabled [[nodiscard]];
-
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
-
-// Returns YES if the SyncEnableHistoryDataType feature is enabled.
-+ (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
 
 // Returns YES if the ReplaceSyncPromosWithSignInPromos feature is enabled.
 + (BOOL)isReplaceSyncWithSigninEnabled [[nodiscard]];
@@ -543,9 +556,6 @@
 // Returns whether the Web Channels feature is enabled.
 + (BOOL)isWebChannelsEnabled;
 
-// Returns whether UIButtonConfiguration changes are enabled.
-+ (BOOL)isUIButtonConfigurationEnabled;
-
 // Returns whether the bottom omnibox steady state feature is enabled.
 + (BOOL)isBottomOmniboxSteadyStateEnabled;
 
@@ -570,10 +580,13 @@
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.
-+ (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
++ (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName;
 
 // Removes the object for the provided `key` in NSUserDefaults.
-+ (void)removeUserDefaultObjectForKey:(NSString*)key;
++ (void)removeUserDefaultsObjectForKey:(NSString*)key;
+
+// Returns the value for provided key from NSUserDefaults.
++ (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
 
@@ -595,6 +608,13 @@
 // contains the preferences that are shared between all browser states.
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName;
 
+// Sets the value of a string user pref in the original browser state.
++ (void)setStringValue:(NSString*)value forUserPref:(NSString*)prefName;
+
+// Sets the bool value for the local state pref with `prefName`. Local State
+// contains the preferences that are shared between all browser states.
++ (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName;
+
 // Gets the value of a user pref in the original browser state. Returns a
 // base::Value encoded as a JSON string. If the pref was not registered,
 // returns a Value of type NONE.
@@ -605,6 +625,11 @@
 
 // Sets the value of a integer user pref in the original browser state.
 + (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName;
+
+// Returns true if the Preference is currently using its default value,
+// and has not been set by any higher-priority source (even with the same
+// value).
++ (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName;
 
 // Clears the user pref of |prefName|.
 + (void)clearUserPrefWithName:(NSString*)prefName;
@@ -687,19 +712,17 @@
 // Copies a chrome:// URL that doesn't require internet connection.
 + (void)copyURLToPasteBoard;
 
-// Disables default browser promo. If a test needs to check a message drop down
-// in a second window, this needs to be disabled or the popup will kill the
-// message.
-+ (void)disableDefaultBrowserPromo;
-
 #pragma mark - First Run Utilities
 
 // Writes the First Run Sentinel file, used to record that First Run has
 // completed.
 + (void)writeFirstRunSentinel;
 
-// Remove the FirstRun sentinel file.
+// Removes the FirstRun sentinel file.
 + (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
++ (bool)hasFirstRunSentinel;
 
 @end
 

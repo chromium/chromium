@@ -198,10 +198,9 @@ class TaskEnvironment {
 
   // Constructor accepts zero or more traits which customize the testing
   // environment.
-  template <typename... TaskEnvironmentTraits,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTraits,
-                                              TaskEnvironmentTraits...>::value>>
+  template <typename... TaskEnvironmentTraits>
+    requires trait_helpers::AreValidTraits<ValidTraits,
+                                           TaskEnvironmentTraits...>
   NOINLINE explicit TaskEnvironment(TaskEnvironmentTraits... traits)
       : TaskEnvironment(sequence_manager::SequenceManager::PrioritySettings::
                             CreateDefault(),
@@ -397,10 +396,9 @@ class TaskEnvironment {
   static constexpr int kNumForegroundThreadPoolThreads = 4;
 
  protected:
-  template <typename... TaskEnvironmentTraits,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTraits,
-                                              TaskEnvironmentTraits...>::value>>
+  template <typename... TaskEnvironmentTraits>
+    requires trait_helpers::AreValidTraits<ValidTraits,
+                                           TaskEnvironmentTraits...>
   NOINLINE static TaskEnvironment CreateTaskEnvironmentWithPriorities(
       sequence_manager::SequenceManager::PrioritySettings priority_settings,
       TaskEnvironmentTraits... traits) {
@@ -409,10 +407,9 @@ class TaskEnvironment {
 
   // Constructor accepts zero or more traits which customize the testing
   // environment.
-  template <typename... TaskEnvironmentTraits,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTraits,
-                                              TaskEnvironmentTraits...>::value>>
+  template <typename... TaskEnvironmentTraits>
+    requires trait_helpers::AreValidTraits<ValidTraits,
+                                           TaskEnvironmentTraits...>
   NOINLINE explicit TaskEnvironment(
       sequence_manager::SequenceManager::PrioritySettings priority_settings,
       TaskEnvironmentTraits... traits)

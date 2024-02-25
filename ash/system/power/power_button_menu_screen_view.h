@@ -11,6 +11,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/system/power/power_button_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ class PowerButtonMenuCurtainView;
 // and a PowerButtonMenuView to display the menu.
 class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
                                              public display::DisplayObserver {
+  METADATA_HEADER(PowerButtonMenuScreenView, views::View)
+
  public:
   // |show_animation_done| is a callback for when the animation that shows the
   // power menu has finished.
@@ -57,14 +60,11 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   void OnWidgetShown(PowerButtonController::PowerButtonPosition position,
                      double offset_percentage);
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   class PowerButtonMenuBackgroundView;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -79,7 +79,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Lays out the view without animation transform.
   void LayoutWithoutTransform();
 
-  // Helper methods for Layout().
+  // Helper methods for performing layout.
   void LayoutMenuView();
   void LayoutMenuCurtainView();
 
@@ -96,12 +96,10 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Created by PowerButtonMenuScreenView. Owned by views hierarchy. Only
   // power_button_menu_view_ or power_button_menu_curtain_view_ will be
   // available at a time.
-  raw_ptr<PowerButtonMenuView, ExperimentalAsh> power_button_menu_view_ =
-      nullptr;
-  raw_ptr<PowerButtonMenuCurtainView, ExperimentalAsh>
-      power_button_menu_curtain_view_ = nullptr;
+  raw_ptr<PowerButtonMenuView> power_button_menu_view_ = nullptr;
+  raw_ptr<PowerButtonMenuCurtainView> power_button_menu_curtain_view_ = nullptr;
 
-  raw_ptr<PowerButtonMenuBackgroundView, ExperimentalAsh>
+  raw_ptr<PowerButtonMenuBackgroundView>
       power_button_screen_background_shield_ = nullptr;
 
   // The physical display side of power button in landscape primary.

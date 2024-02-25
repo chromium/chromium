@@ -6,8 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_CHAPS_UTIL_H_
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -35,17 +37,6 @@ class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtil {
       uint16_t num_bits,
       crypto::ScopedSECKEYPublicKey* out_public_key,
       crypto::ScopedSECKEYPrivateKey* out_private_key) = 0;
-
-  // Import key and all included certificates from PKCS12 container.
-  // Imported objects will be stored in Chaps.
-  // If some of certificates can not be imported they will be skipped and
-  // Pkcs12ReaderStatusCode::kFailureDuringCertImport error will be logged.
-  // `is_software_backed` specifies whether a hardware-backed or software-backed
-  // storage is used.
-  virtual bool ImportPkcs12Certificate(PK11SlotInfo* slot,
-                                       const std::vector<uint8_t>& pkcs12_data,
-                                       const std::string& password,
-                                       bool is_software_backed) = 0;
 
   using FactoryCallback = base::RepeatingCallback<std::unique_ptr<ChapsUtil>()>;
 

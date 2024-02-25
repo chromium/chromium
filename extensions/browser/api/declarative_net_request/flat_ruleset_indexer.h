@@ -15,8 +15,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct IndexedRule;
 
@@ -31,10 +30,10 @@ class FlatRulesetIndexer {
 
   ~FlatRulesetIndexer();
 
-  // Adds |indexed_rule| to the ruleset.
+  // Adds `indexed_rule` to the ruleset.
   void AddUrlRule(const IndexedRule& indexed_rule);
 
-  // Returns the number of rules added till now.
+  // Returns the number of rules added until now.
   size_t indexed_rules_count() const { return indexed_rules_count_; }
 
   // Finishes the ruleset construction and releases the underlying indexed data
@@ -49,19 +48,38 @@ class FlatRulesetIndexer {
 
   flatbuffers::FlatBufferBuilder builder_;
 
-  // This will consist of |flat::IndexType_count| builders. We use unique_ptr
-  // since UrlPatternIndexBuilder is a non-copyable and non-movable type.
-  const std::vector<std::unique_ptr<UrlPatternIndexBuilder>> index_builders_;
+  // Builders for the ruleset's URL pattern rules that are matched before the
+  // request is initiated. This will consist of `flat::IndexType_count`
+  // builders. We use unique_ptr since UrlPatternIndexBuilder is a non-copyable
+  // and non-movable type.
+  const std::vector<std::unique_ptr<UrlPatternIndexBuilder>>
+      before_request_index_builders_;
 
+  // Builders for the ruleset's URL pattern rules that are matched after the
+  // request's headers have been received.
+  const std::vector<std::unique_ptr<UrlPatternIndexBuilder>>
+      headers_received_index_builders_;
+
+  // The ruleset's indexed rule metadata, containing fields that are not
+  // inherent to URL rules.
   std::vector<flatbuffers::Offset<flat::UrlRuleMetadata>> metadata_;
 
-  std::vector<flatbuffers::Offset<flat::RegexRule>> regex_rules_;
+  // The ruleset's indexed regex rules that are matched before the request is
+  // initiated.
+  std::vector<flatbuffers::Offset<flat::RegexRule>> before_request_regex_rules_;
 
-  size_t indexed_rules_count_ = 0;  // Number of rules indexed till now.
-  bool finished_ = false;           // Whether Finish() has been called.
+  // The ruleset's indexed regex rules that are matched after the request's
+  // headers have been received.
+  std::vector<flatbuffers::Offset<flat::RegexRule>>
+      headers_received_regex_rules_;
+
+  // Number of rules indexed until now.
+  size_t indexed_rules_count_ = 0;
+
+  // Whether Finish() has been called.
+  bool finished_ = false;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FLAT_RULESET_INDEXER_H_

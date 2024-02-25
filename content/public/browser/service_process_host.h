@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_SERVICE_PROCESS_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,20 +16,13 @@
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
-#include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "mojo/public/cpp/system/message_pipe.h"
-#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_path.h"
@@ -128,8 +122,8 @@ class CONTENT_EXPORT ServiceProcessHost {
     Options Pass();
 
     std::u16string display_name;
-    absl::optional<GURL> site;
-    absl::optional<int> child_flags;
+    std::optional<GURL> site;
+    std::optional<int> child_flags;
     std::vector<std::string> extra_switches;
     base::OnceCallback<void(const base::Process&)> process_callback;
 #if BUILDFLAG(IS_WIN)
@@ -210,19 +204,6 @@ class CONTENT_EXPORT ServiceProcessHost {
                      Options options,
                      sandbox::mojom::Sandbox sandbox);
 };
-
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-// DEPRECATED. DO NOT USE THIS. This is a helper for any remaining service
-// launching code which uses an older code path to launch services in a utility
-// process. All new code must use ServiceProcessHost instead of this API.
-void CONTENT_EXPORT LaunchUtilityProcessServiceDeprecated(
-    const std::string& service_name,
-    const std::u16string& display_name,
-    sandbox::mojom::Sandbox sandbox_type,
-    mojo::ScopedMessagePipeHandle service_pipe,
-    base::OnceCallback<void(base::ProcessId)> callback);
-#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
 }  // namespace content
 

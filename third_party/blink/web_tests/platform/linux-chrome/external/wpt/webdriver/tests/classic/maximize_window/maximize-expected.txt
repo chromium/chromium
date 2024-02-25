@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_response_payload
+  assert not True
+[FAIL] test_fully_exit_fullscreen
+  assert not True
+[FAIL] test_restore_from_minimized
+  assert not True
+[FAIL] test_maximize_from_normal_window
+  assert not True
+[FAIL] test_maximize_with_window_already_at_maximum_size
+  assert not True
+[FAIL] test_maximize_twice_is_idempotent
+  assert not True
+Harness: the test ran to completion.

@@ -18,13 +18,13 @@ class PrefService;
 
 namespace segmentation_platform {
 struct Config;
-class ClientResultPrefs;
 
 // PrefsMigrator migrates pref entries for models that support multi output from
 // old prefs to new prefs.
 class PrefsMigrator {
  public:
   PrefsMigrator(PrefService* pref_service,
+                ClientResultPrefs* client_prefs,
                 const std::vector<std::unique_ptr<Config>>& configs);
 
   ~PrefsMigrator();
@@ -45,15 +45,14 @@ class PrefsMigrator {
  private:
   bool IsPrefMigrationRequired(Config* config);
   void UpdateNewPrefs(Config* config,
-                      absl::optional<SelectedSegment> old_result,
-                      absl::optional<proto::ClientResult> new_result);
+                      std::optional<SelectedSegment> old_result,
+                      const proto::ClientResult* new_result);
   void DeleteOldPrefsEntryIfFullyMigrated(
       Config* config,
-      absl::optional<SelectedSegment> old_result);
+      std::optional<SelectedSegment> old_result);
 
   // Configs for all registered clients.
-  const raw_ref<const std::vector<std::unique_ptr<Config>>, ExperimentalAsh>
-      configs_;
+  const raw_ref<const std::vector<std::unique_ptr<Config>>> configs_;
 
   // The underlying pref backed store to read the pref values from before multi
   // output.
@@ -61,7 +60,7 @@ class PrefsMigrator {
 
   // The underlying pref backed store to read the pref values from after multi
   // output support.
-  std::unique_ptr<ClientResultPrefs> new_prefs_;
+  const raw_ptr<ClientResultPrefs> new_prefs_;
 
   base::WeakPtrFactory<PrefsMigrator> weak_ptr_factory_{this};
 };

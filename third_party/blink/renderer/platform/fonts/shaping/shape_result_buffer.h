@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_BUFFER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,9 +27,9 @@ class PLATFORM_EXPORT ShapeResultBuffer {
   ShapeResultBuffer(const ShapeResultBuffer&) = delete;
   ShapeResultBuffer& operator=(const ShapeResultBuffer&) = delete;
 
-  void AppendResult(scoped_refptr<const ShapeResult> result) {
+  void AppendResult(const ShapeResult* result) {
     has_vertical_offsets_ |= result->HasVerticalOffsets();
-    results_.push_back(std::move(result));
+    results_.push_back(result);
   }
 
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
@@ -47,11 +47,9 @@ class PLATFORM_EXPORT ShapeResultBuffer {
                                              TextDirection,
                                              float total_width) const;
 
-  Vector<ShapeResult::RunFontData> GetRunFontData() const;
+  HeapVector<ShapeResult::RunFontData> GetRunFontData() const;
 
   GlyphData EmphasisMarkGlyphData(const FontDescription&) const;
-
-  void ExpandRangeToIncludePartialGlyphs(int* from, int* to) const;
 
  private:
   friend class ShapeResultBloberizer;
@@ -62,7 +60,7 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
   // Empirically, cases where we get more than 50 ShapeResults are extremely
   // rare.
-  Vector<scoped_refptr<const ShapeResult>, 64> results_;
+  HeapVector<Member<const ShapeResult>, 64> results_;
   bool has_vertical_offsets_;
 };
 

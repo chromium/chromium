@@ -15,9 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
-/**
-  * Test suite to ensure that platform settings are translated to CSS appropriately
-  */
+/** Test suite to ensure that platform settings are translated to CSS appropriately */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class CaptioningChangeDelegateTest {
     private static final String DEFAULT_CAPTIONING_PREF_VALUE =
@@ -83,35 +81,42 @@ public class CaptioningChangeDelegateTest {
     @Test
     @SmallTest
     public void testClosedCaptionEdgeAttributeWithDefaults() {
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+        Assert.assertEquals(
+                DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge(null, null));
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+        Assert.assertEquals(
+                DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", null));
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+        Assert.assertEquals(
+                DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", 0));
-        Assert.assertEquals("silver 0.05em 0.05em 0.1em",
+        Assert.assertEquals(
+                "silver 0.05em 0.05em 0.1em",
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge(null, 2));
-        Assert.assertEquals("silver 0.05em 0.05em 0.1em",
+        Assert.assertEquals(
+                "silver 0.05em 0.05em 0.1em",
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("", 2));
-        Assert.assertEquals("red 0.05em 0.05em 0.1em",
+        Assert.assertEquals(
+                "red 0.05em 0.05em 0.1em",
                 CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", 2));
     }
 
-    /**
-     * Verifies that certain system fonts always correspond to the default captioning font.
-     */
+    /** Verifies that certain system fonts always correspond to the default captioning font. */
     @Test
     @SmallTest
     public void testClosedCaptionDefaultFonts() {
-        Assert.assertEquals("Null typeface should return the default font family.",
+        Assert.assertEquals(
+                "Null typeface should return the default font family.",
                 DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getFontFromSystemFont(null));
 
-        Assert.assertEquals("Typeface.DEFAULT should return the default font family.",
+        Assert.assertEquals(
+                "Typeface.DEFAULT should return the default font family.",
                 DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getFontFromSystemFont(Typeface.DEFAULT));
 
-        Assert.assertEquals("Typeface.BOLD should return the default font family.",
+        Assert.assertEquals(
+                "Typeface.BOLD should return the default font family.",
                 DEFAULT_CAPTIONING_PREF_VALUE,
                 CaptioningChangeDelegate.getFontFromSystemFont(Typeface.DEFAULT_BOLD));
     }

@@ -45,7 +45,7 @@ class URLSchemeListPolicyHandlerTest : public testing::Test {
     policies_.Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_CLOUD, std::move(value), nullptr);
   }
-  bool CheckPolicy(const std::string& key, absl::optional<base::Value> value) {
+  bool CheckPolicy(const std::string& key, std::optional<base::Value> value) {
     if (value)
       SetPolicy(key, value.value().Clone());
     return handler_->CheckPolicySettings(policies_, &errors_);
@@ -81,7 +81,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_WrongType) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_NoPolicy) {
   // The policy expects a list. Give it a boolean.
-  EXPECT_TRUE(CheckPolicy(kTestPolicyName, absl::nullopt));
+  EXPECT_TRUE(CheckPolicy(kTestPolicyName, std::nullopt));
   EXPECT_TRUE(errors_.empty());
 }
 

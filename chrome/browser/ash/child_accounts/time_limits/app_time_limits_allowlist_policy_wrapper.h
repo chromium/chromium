@@ -30,7 +30,7 @@ class AppTimeLimitsAllowlistPolicyWrapper {
   std::vector<AppId> GetAllowlistAppList() const;
 
  private:
-  raw_ptr<const base::Value::Dict, ExperimentalAsh> dict_;
+  raw_ptr<const base::Value::Dict> dict_;
 };
 
 }  // namespace app_time

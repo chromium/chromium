@@ -83,11 +83,11 @@ TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
       "<option value='222'>222</option></select>");
   HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("sel"));
 
-  select->SetUserHasEditedTheField(false);
+  select->ClearUserHasEditedTheField();
   select->SetAutofillValue("222", WebAutofillState::kAutofilled);
   EXPECT_EQ(select->UserHasEditedTheField(), false);
 
-  select->SetUserHasEditedTheField(true);
+  select->SetUserHasEditedTheField();
   select->SetAutofillValue("111", WebAutofillState::kAutofilled);
   EXPECT_EQ(select->UserHasEditedTheField(), true);
 }
@@ -675,7 +675,7 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
   auto* green = GetDocument().getElementById(AtomicString("green"));
 
   // Make sure the select is outside the flat tree.
-  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Changing the select rendering should not clear the style recalc root set by

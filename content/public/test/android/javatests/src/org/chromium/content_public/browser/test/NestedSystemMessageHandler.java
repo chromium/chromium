@@ -6,8 +6,9 @@ package org.chromium.content_public.browser.test;
 
 import android.os.Handler;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.test.util.LooperUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,7 +41,9 @@ public class NestedSystemMessageHandler {
     private static boolean dispatchOneMessage() {
         try {
             LooperUtils.runSingleNestedLooperTask();
-        } catch (IllegalArgumentException | IllegalAccessException | SecurityException
+        } catch (IllegalArgumentException
+                | IllegalAccessException
+                | SecurityException
                 | InvocationTargetException e) {
             e.printStackTrace();
             return false;

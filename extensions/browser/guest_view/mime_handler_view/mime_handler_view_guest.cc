@@ -30,6 +30,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -49,7 +50,7 @@ StreamContainer::StreamContainer(
     int tab_id,
     bool embedded,
     const GURL& handler_url,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url)
     : embedded_(embedded),
@@ -375,6 +376,12 @@ bool MimeHandlerViewGuest::IsFullscreenForTabOrPending(
   return is_guest_fullscreen_;
 }
 
+bool MimeHandlerViewGuest::ShouldResumeRequestsForCreatedWindow() {
+  // Not reached due to the use of `CreateCustomWebContents`.
+  NOTREACHED();
+  return true;
+}
+
 bool MimeHandlerViewGuest::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
@@ -444,7 +451,7 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
   const GURL& url = navigation_handle->GetURL();
   if (url.SchemeIs(kExtensionScheme) &&
       url.host_piece() == extension_misc::kPdfExtensionId) {
-    // The unseasoned PDF viewer will navigate to the stream URL (using
+    // The PDF viewer will navigate to the stream URL (using
     // PdfNavigtionThrottle), rather than using it as a subresource.
     return;
   }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 
 #include <stddef.h>
@@ -20,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -74,7 +75,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -212,30 +212,6 @@ void SpinThreads() {
   // directory that contains them has been deleted.
   base::ThreadPoolInstance::Get()->FlushForTesting();
 }
-
-class BrowserCloseObserver : public BrowserListObserver {
- public:
-  explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
-  }
-
-  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
-  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
-
-  ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver implementation.
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_)
-      run_loop_.Quit();
-  }
-
- private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
-  base::RunLoop run_loop_;
-};
 
 }  // namespace
 
@@ -512,7 +488,7 @@ std::string GetExitTypePreferenceFromDisk(Profile* profile) {
   if (!base::ReadFileToString(prefs_path, &prefs))
     return std::string();
 
-  absl::optional<base::Value> value = base::JSONReader::Read(prefs);
+  std::optional<base::Value> value = base::JSONReader::Read(prefs);
   if (!value)
     return std::string();
 
@@ -558,13 +534,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   // regression blocker for https://crbug.com/318527.
   // Need to use this WeakPtr workaround as the browser test harness runs all
   // tasks until idle when tearing down.
-  struct FailsIfCalledWhileOnStack
-      : public base::SupportsWeakPtr<FailsIfCalledWhileOnStack> {
+  struct FailsIfCalledWhileOnStack {
     void Fail() { ADD_FAILURE(); }
+    base::WeakPtrFactory<FailsIfCalledWhileOnStack> weak_ptr_factory{this};
   } fails_if_called_while_on_stack;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FailsIfCalledWhileOnStack::Fail,
-                                fails_if_called_while_on_stack.AsWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(
+          &FailsIfCalledWhileOnStack::Fail,
+          fails_if_called_while_on_stack.weak_ptr_factory.GetWeakPtr()));
 
   // This retry loop reduces flakiness due to the fact that this ultimately
   // tests whether or not a code path hits a timed wait.
@@ -651,8 +629,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   Profile* incognito_profile = incognito_browser->profile();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   url_loader_factory.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
-      incognito_profile, ukm::kInvalidSourceIdObj,
-      false /* is_web_view_request */));
+      incognito_profile, false /* is_web_view_request */));
 
   // Verify that the factory works fine while the profile is still alive.
   // We don't need to test with a real extension URL - it is sufficient to
@@ -1081,22 +1058,22 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
+  TestBrowserClosedWaiter close_waiter(browser);
 
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
+  ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
+  TestBrowserClosedWaiter close_waiter(browser);
 
   browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                 base::Seconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
+  ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }
 

@@ -90,7 +90,7 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
 
   std::unique_ptr<BrowserProcessPlatformPartTestApi>
       browser_process_platform_part_test_api_;
-  raw_ptr<component_updater::FakeCrOSComponentManager, ExperimentalAsh>
+  raw_ptr<component_updater::FakeCrOSComponentManager>
       cros_component_manager_ptr_ = nullptr;
 
   content::NetworkConnectionChangeSimulator connection_change_simulator_;

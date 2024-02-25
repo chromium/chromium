@@ -57,7 +57,6 @@ static_library("sandbox") {
     "src/filesystem_interception.h",
     "src/filesystem_policy.cc",
     "src/filesystem_policy.h",
-    "src/handle_closer.cc",
     "src/handle_closer.h",
     "src/handle_closer_agent.cc",
     "src/handle_closer_agent.h",
@@ -75,12 +74,6 @@ static_library("sandbox") {
     "src/ipc_tags.h",
     "src/job.cc",
     "src/job.h",
-    "src/named_pipe_dispatcher.cc",
-    "src/named_pipe_dispatcher.h",
-    "src/named_pipe_interception.cc",
-    "src/named_pipe_interception.h",
-    "src/named_pipe_policy.cc",
-    "src/named_pipe_policy.h",
     "src/nt_internals.h",
     "src/policy_broker.cc",
     "src/policy_broker.h",
@@ -199,7 +192,6 @@ test("sbox_integration_tests") {
     "src/ipc_leak_test.cc",
     "src/ipc_ping_test.cc",
     "src/lpc_policy_test.cc",
-    "src/named_pipe_policy_test.cc",
     "src/policy_target_test.cc",
     "src/process_delegate_data_test.cc",
     "src/process_mitigations_deathtest.cc",
@@ -210,6 +202,7 @@ test("sbox_integration_tests") {
     "src/process_policy_test.cc",
     "src/restricted_token_test.cc",
     "src/unload_dll_test.cc",
+    "src/zero_appshim_unittest.cc",
     "tests/common/controller.cc",
     "tests/common/test_utils.cc",
     "tests/common/test_utils.h",
@@ -236,9 +229,7 @@ test("sbox_integration_tests") {
 }
 
 group("maybe_set_appcontainer_acls") {
-  # NACL on 32-bit builds this target twice, once for 64-bit and once for 32-bit
-  # so avoid this dep from running twice with the same output in that case.
-  # Additionally, exclude setting ACLs when build is not happening on Windows.
+  # Exclude setting ACLs when build is not happening on Windows.
   if (current_cpu == target_cpu && host_os == "win") {
     deps = [ ":set_appcontainer_acls" ]
   }

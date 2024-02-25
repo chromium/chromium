@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1000498691615767391">Vælg en mappe, som skal åbnes</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> kunne ikke kopieres, fordi den er krypteret.</translation>
 <translation id="1047956942837015229">Sletter <ph name="COUNT" /> elementer...</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Ingen netværk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1060368002126861100">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først flytte dem til mappen med Windows-filer.</translation>
 <translation id="1062407476771304334">Erstat</translation>
+<translation id="1119383441774809183">Se beskeder</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engelsk (USA) med Dvorak-programmeringstastatur</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Del mappe med Parallels Desktop</translation>
 <translation id="1439919885608649279">Person med blomster</translation>
 <translation id="1458457385801829801">Fjern <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> filer kunne ikke kopieres, fordi de er krypteret.</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
 <translation id="1482884275703521657">Finsk</translation>
 <translation id="148466539719134488">Schweizisk</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
 <translation id="1629521517399325891">Brugercertifikatet kan ikke anvendes til netværksgodkendelse.</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer gøres tilgængelige offline</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
 <translation id="1661207570040737402">Du har brugt al din Google Workspace-lagerplads for fællesdrevet.</translation>
 <translation id="1661867754829461514">Pinkode mangler</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Ikke tilgængeligt</translation>
 <translation id="3254434849914415189">Vælg standardappen for <ph name="FILE_TYPE" />-filer:</translation>
 <translation id="3255159654094949700">Arabisk</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> filer kunne ikke flyttes, fordi de er krypteret.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" kunne ikke åbnes</translation>
 <translation id="3280431534455935878">Forbereder</translation>
+<translation id="3280719573299097127">Du er på et forbrugsbaseret netværk. Filsynkronisering er sat på pause.</translation>
 <translation id="3280987981688031357">Vinylplade</translation>
 <translation id="3290356915286466215">Ikke beskyttet</translation>
 <translation id="3291218047831493686">Opret forbindelse til dette netværk for at skifte indstillingen for SIM-lås</translation>
@@ -291,7 +295,7 @@
 <translation id="3353984535370177728">Vælg en mappe, der skal uploades</translation>
 <translation id="3356580349448036450">Fuldført</translation>
 <translation id="3358452157379365236">Guitar</translation>
-<translation id="3368922792935385530">Tilsluttet</translation>
+<translation id="3368922792935385530">Forbundet</translation>
 <translation id="3372635229069101468">Klik på <ph name="BEGIN_BOLD" />Detaljer<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalesisk InScript-tastatur</translation>
 <translation id="338691029516748599">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
 <translation id="3509680540198371098">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="3511705761158917664">Gør klar til synkronisere <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3523225005467146490">1 mappe er delt med <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Advarsel! Disse filer er midlertidige og kan slettes automatisk for at frigøre diskplads.  <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
+<translation id="3529424493985988200">Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="3548125359243647069">Der blev angivet en forkert pinkode for mange gange.</translation>
 <translation id="3549797760399244642">Gå til drive.google.com...</translation>
 <translation id="3553048479571901246">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først kopiere dem til mappen med Windows-filer.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Du har ikke åbnet nogen videoer for nylig</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
+<translation id="36451918667380448">Dette mobilselskabs tjeneste er låst. Kontakt din udbyder for at få hjælp.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> filer er valgt</translation>
 <translation id="3685122418104378273">Synkronisering af Google Drev er som standard deaktiveret, når du bruger mobildata.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Blomst</translation>
 <translation id="4943368462779413526">Amerikansk fodbold</translation>
 <translation id="4961158930123534723">1 mappe blev delt med Parallels Desktop</translation>
+<translation id="4965874878399872778">Tjekker, om filerne overholder din organisations sikkerhedspolitikker…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> er gendannet</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Konfigurationen af filsynkronisering kunne ikke gennemføres</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Gendannede filer fra Google Drev</translation>
 <translation id="5278111733643988471">Hvis du vil gendanne elementet, skal du trække det til en ny mappe uden for papirkurven. Den oprindelige mappe "<ph name="PARENT_FOLDER_NAME" />" for dette element er blevet slettet.</translation>
 <translation id="5283101102242354279">Aktivér en udvidelse i inkognito:</translation>
-<translation id="5286194356314741248">Søger</translation>
 <translation id="5288441970121584418">Burger</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Administratorpolitikken tillader ikke, at du flytter denne fil</translation>
 <translation id="5305688511332277257">Ingen installeret</translation>
 <translation id="5317780077021120954">Gem</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Markeringen af alle elementer blev fjernet.</translation>
 <translation id="5838825566232597749">Internationalt amerikansk Workman</translation>
 <translation id="5845721951356578987">Sygeplejerske</translation>
+<translation id="5858478190805449225">Batterisparefunktion er aktiveret. Prøv igen, når Batterisparefunktion er deaktiveret.</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-opslag mislykkedes</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">Denne fil blev åbnet på en anden computer. Skift til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for at se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> kunne ikke flyttes, fordi den er krypteret.</translation>
 <translation id="642282551015776456">Dette navn kan ikke bruges som fil- eller mappenavn</translation>
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6430271654280079150">Du har 1 forsøg tilbage.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nu til papirkurven</translation>
 <translation id="6438480100790416671">Tjekker lagerplads…</translation>
+<translation id="6451527188465304418">Tjekker, om filen overholder din organisations sikkerhedspolitikker…</translation>
 <translation id="6485131920355264772">Pladsoplysningerne kunne ikke hentes</translation>
 <translation id="6495925982925244349">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, info</translation>
 <translation id="649877868557234318">Pakker <ph name="FILE_NAME" /> ud i <ph name="FOLDER_NAME" /></translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">Administratorpolitikken tillader ikke, at du kopierer <ph name="COUNT" /> filer</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
-<translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
 <translation id="656398493051028875">Slettter "<ph name="FILENAME" />"...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Giv Linux-apps adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du er i øjeblikket offline. Filsynkronisering genoptages, når du har forbindelse til internettet</translation>
 <translation id="7589661784326793847">Vent et øjeblik</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> gøres tilgængelig offline</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Gitre</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> findes allerede. Giv filen et nyt navn, og prøv igen.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Dine filer i Mit drev synkroniseres automatisk med din Chromebook, så du kan få adgang til dem uden en internetforbindelse.</translation>
 <translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
-<translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
 <translation id="7928710562641958568">Skub enheden ud</translation>
 <translation id="7933875256234974853">Forbereder synkronisering af Drev-filer...</translation>
 <translation id="7943385054491506837">Amerikansk (Colemak)</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med mig</translation>
 <translation id="8116072619078571545">Isvand</translation>
+<translation id="8120392982188717723">Tillad synkronisering på forbrugsafregnede netværk</translation>
 <translation id="8124093710070495550">Synkroniseringsproblem</translation>
 <translation id="8128733386027980860">Engelsk (Storbritannien) med Dvorak-tastatur</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" er blevet delt med dig. Du kan ikke slette filen, fordi du ikke ejer den.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8147028810663464959">Tegnbredden er Fuld</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fejl.}one{# fejl.}other{# fejl.}}</translation>
 <translation id="8154842056504218462">Alle elementer er valgt.</translation>
 <translation id="8157684860301034423">Appoplysningerne kunne ikke hentes.</translation>
 <translation id="8175731104491895765">Fransk (Belgien)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Giv <ph name="VM_NAME" /> adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
+<translation id="8377269993083688872">Maillayouts</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ud.</translation>
 <translation id="8395901698320285466">Mål</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Vælg den fil, der skal åbnes</translation>
 <translation id="8577897833047451336">Kroatisk</translation>
 <translation id="8578308463707544055">Indonesisk</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementer synkroniseres...</translation>
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">Denne fil er fortrolig og underlagt begrænsninger i henhold til administratorpolitikken.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8713112442029511308">Maltesisk</translation>
+<translation id="8714138378966541668">Låst af telefonselskabet</translation>
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Tillad proxyer til delte netværk</translation>
 <translation id="8790981080411996443">Person, der vander blomster</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advarsel.}one{# advarsel.}other{# advarsler.}}</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Komprimering mislykkedes, elementet findes: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Spansk (Spanien)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vælg et andet navn.</translation>
 <translation id="9046895021617826162">Forbindelsen mislykkedes</translation>
 <translation id="9065512565307033593">Hvis du ikke verificerer, mister du adgangen til netværket.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advarsel.}one{<ph name="COUNT" /> advarsel.}other{<ph name="COUNT" /> advarsler.}}</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Sideantal</translation>

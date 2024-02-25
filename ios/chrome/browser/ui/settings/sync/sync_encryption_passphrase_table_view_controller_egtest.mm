@@ -6,18 +6,16 @@
 #import "base/ios/ios_util.h"
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -35,8 +33,18 @@ using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
+
 NSString* const kPassphrase = @"hello";
+
+// Depending on whether feature kReplaceSyncPromosWithSignInPromos is enabled,
+// the label ID for the button to enter a passphrase differs.
+int GetInfoBarEnterPassphraseButtonLabelId() {
+  return [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
+             ? IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL
+             : IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON;
 }
+
+}  // namespace
 
 @interface SyncEncryptionPassphraseTestCase : ChromeTestCase
 @end
@@ -48,7 +56,7 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDown];
 }
@@ -59,8 +67,6 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
-  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 // Tests to open the sync passphrase view, and to close it.
@@ -78,10 +84,11 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON)]
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   GetInfoBarEnterPassphraseButtonLabelId())]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
@@ -98,17 +105,16 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [[EarlGrey
-      selectElementWithMatcher:MatchInWindowWithNumber(
-                                   1,
-                                   ButtonWithAccessibilityLabelId(
-                                       IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON))]
+  [[EarlGrey selectElementWithMatcher:
+                 MatchInWindowWithNumber(
+                     1, ButtonWithAccessibilityLabelId(
+                            GetInfoBarEnterPassphraseButtonLabelId()))]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
                                           1, NavigationBarCancelButton())]
@@ -125,7 +131,7 @@ NSString* const kPassphrase = @"hello";
 
 // Tests Sync is on after opening settings from the Infobar and entering the
 // passphrase.
-- (void)testShowAddSyncPassphrphrase {
+- (void)testShowAddSyncPassphrase {
   // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
@@ -139,17 +145,22 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON)]
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   GetInfoBarEnterPassphraseButtonLabelId())]
       performAction:grey_tap()];
 
   // Type and submit the sync passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
   [ChromeEarlGreyUI openSettingsMenu];
-  // Check Sync On label is visible and user is signed in.
+  // Check the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey verifySyncUIEnabled:YES];
+
+  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // Check Sync On label is visible.
+    [SigninEarlGrey verifySyncUIEnabled:YES];
+  }
 }
 @end

@@ -7,11 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -22,7 +24,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -39,6 +40,7 @@ class InterestGroupAuctionReporter;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
+struct DebugReportLockoutAndCooldowns;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback. Most of the
@@ -49,13 +51,18 @@ class PrivateAggregationManager;
 // the code to assign unique tracing IDs is not threadsafe.
 class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
  public:
+  // After each auction, delay the update of interest groups so that data in the
+  // InterestGroupCachingStorage is not invalidated while a page's other
+  // auctions are likely still running.
+  static constexpr base::TimeDelta kPostAuctionInterestGroupUpdateDelay =
+      base::Seconds(3);
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   // Invoked when a FLEDGE auction is complete.
   //
-  // `manually_aborted` is true only if the auction was successfully interrupted
-  //  by the call to Abort().
+  // `aborted_by_script` is true only if the auction was successfully
+  // interrupted by the call to Abort().
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
   //
@@ -76,10 +83,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  sensitive for the renderers to see.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
-      bool manually_aborted,
-      absl::optional<blink::InterestGroupKey> winning_group_id,
-      absl::optional<blink::AdSize> requested_ad_size,
-      absl::optional<blink::AdDescriptor> ad_descriptor,
+      bool aborted_by_script,
+      std::optional<blink::InterestGroupKey> winning_group_id,
+      std::optional<blink::AdSize> requested_ad_size,
+      std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
@@ -91,11 +98,11 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using IsInterestGroupApiAllowedCallback =
       InterestGroupAuction::IsInterestGroupApiAllowedCallback;
 
-  using GetAdAuctionPageDataCallback =
-      base::RepeatingCallback<AdAuctionPageData*()>;
-
   using AreReportingOriginsAttestedCallback =
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
+
+  using AdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
 
   // Creates an entire FLEDGE auction. Single-use object.
   //
@@ -105,6 +112,12 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  `log_private_aggregation_requests_callback` must be safe to call until the
   //  AuctionRunner and any InterestGroupAuctionReporter it returns are
   //  destroyed.
+  //
+  //  `ad_auction_page_data_callback` must remain safe to call for lifetime of
+  //   AuctionRunner. It is permitted to return nullptr, in circumstances where
+  //   the auction is not expected to be able to proceed. The value it returns
+  //   may become invalid upon return to the event loop and therefore should not
+  //   be stored long-term.
   //
   //  `auction_config` is the configuration provided by client JavaScript in the
   //   renderer in order to initiate the auction.
@@ -139,6 +152,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       const blink::AuctionConfig& auction_config,
@@ -148,7 +162,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-      GetAdAuctionPageDataCallback get_page_data_callback,
       AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
@@ -162,10 +175,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   void ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       blink::mojom::AuctionAdConfigField field,
-      const absl::optional<std::string>& json_value) override;
+      const std::optional<std::string>& json_value) override;
   void ResolvedPerBuyerSignalsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<base::flat_map<url::Origin, std::string>>&
+      const std::optional<base::flat_map<url::Origin, std::string>>&
           per_buyer_signals) override;
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
@@ -176,19 +189,21 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig::BuyerCurrencies& buyer_currencies) override;
   void ResolvedDirectFromSellerSignalsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<blink::DirectFromSellerSignals>&
+      const std::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) override;
   void ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<std::string>&
+      const std::optional<std::string>&
           direct_from_seller_signals_header_ad_slot) override;
+  void ResolvedDeprecatedRenderURLReplacementsPromise(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction,
+      const std::vector<blink::AuctionConfig::AdKeywordReplacement>&
+          deprecated_render_url_replacements) override;
   void ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       mojo_base::BigBuffer response) override;
   void ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionIdPtr auction,
-      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-          additional_bids) override;
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction) override;
   void Abort() override;
 
   // Fails the auction, invoking `callback_` and prevents any future calls into
@@ -198,7 +213,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `interest_groups_that_bid` is a list of the interest groups that bid in the
   // auction.
-  void FailAuction(bool manually_aborted,
+  void FailAuction(bool aborted_by_script,
                    blink::InterestGroupSet interest_groups_that_bid =
                        blink::InterestGroupSet());
 
@@ -216,6 +231,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -226,7 +242,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-      GetAdAuctionPageDataCallback get_page_data_callback,
       AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
@@ -236,22 +251,22 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Invoked asynchronously by `auction_` once all interest groups have loaded.
   // Fails the auction if `success` is false. Otherwise, starts the bidding and
-  // scoring phase.
+  // scoring phase if flag kEnableSamplingDebugReports is disabled, or starts
+  // loading cooldown for sending forDebuggingOnly reports if enabled.
   void OnLoadInterestGroupsComplete(bool success);
+
+  // Invoked asynchronously by `interest_group_manager_` once the state of the
+  // cooldown for sending forDebuggingOnly reports have loaded. Only invoked
+  // when flag kEnableSamplingDebugReports is enabled.
+  void OnLoadDebugReportLockoutAndCooldownsComplete(
+      std::optional<DebugReportLockoutAndCooldowns>
+          debug_report_lockout_and_cooldowns);
 
   // Invoked asynchronously by `auction_` once the bidding and scoring phase is
   // complete. Either fails the auction (in which case it records the interest
   // groups that bid) or starts the reporting phase, depending on the value of
   // `success`.
-  void OnBidsGeneratedAndScored(bool success);
-
-  // Invoked asynchronously by `auction_` once an auction started from a server
-  // response has completed. Performs much the same function as
-  // `OnBidsGeneratedAndScored()` but also provides reporting information from
-  // the server response to the `InterestGroupAuctionReporter`, so that the
-  // reporter skips running the worklets and uses the results from the server.
-  void OnServerResponseAuctionComplete(base::TimeTicks start_time,
-                                       bool success);
+  void OnBidsGeneratedAndScored(base::TimeTicks start_time, bool success);
 
   // Invoked asynchronously by `auction_` once the reporting phase has
   // completed. Records `interest_groups_that_bid`. If `success` is false, fails
@@ -271,6 +286,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   void NotifyPromiseResolved(
       const blink::mojom::AuctionAdConfigAuctionId* auction_id,
       blink::AuctionConfig* config);
+
+  // Looks up the decoder from AdAuctionPageData, if that's available.
+  data_decoder::DataDecoder* GetDataDecoder(const url::Origin& origin);
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
@@ -293,7 +311,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // etc. are allowed or not.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
-  GetAdAuctionPageDataCallback get_page_data_callback_;
+  AdAuctionPageDataCallback ad_auction_page_data_callback_;
 
   AreReportingOriginsAttestedCallback attestation_callback_;
 
@@ -318,6 +336,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   InterestGroupAuction auction_;
   State state_ = State::kLoadingGroupsPhase;
+
+  base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };
 
 }  // namespace content

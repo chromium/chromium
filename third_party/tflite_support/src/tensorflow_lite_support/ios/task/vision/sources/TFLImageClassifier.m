@@ -40,7 +40,7 @@
   return self;
 }
 
-- (instancetype)initWithModelPath:(NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString *)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -63,45 +63,40 @@
   return self;
 }
 
-+ (nullable instancetype)imageClassifierWithOptions:
-                             (TFLImageClassifierOptions*)options
-                                              error:(NSError**)error {
++ (nullable instancetype)imageClassifierWithOptions:(TFLImageClassifierOptions *)options
+                                              error:(NSError **)error {
   if (!options) {
-    [TFLCommonUtils
-        createCustomError:error
-                 withCode:TFLSupportErrorCodeInvalidArgumentError
-              description:@"TFLImageClassifierOptions argument cannot be nil."];
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"TFLImageClassifierOptions argument cannot be nil."];
     return nil;
   }
 
   TfLiteImageClassifierOptions cOptions = TfLiteImageClassifierOptionsCreate();
 
-  if (![options.classificationOptions
-          copyToCOptions:&(cOptions.classification_options)
-                   error:error]) {
-    [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                       &(cOptions.classification_options)];
+  if (![options.classificationOptions copyToCOptions:&(cOptions.classification_options)
+                                               error:error]) {
+    [options.classificationOptions
+        deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
     return nil;
   }
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
 
-  TfLiteSupportError* cCreateClassifierError = NULL;
-  TfLiteImageClassifier* cImageClassifier =
+  TfLiteSupportError *cCreateClassifierError = NULL;
+  TfLiteImageClassifier *cImageClassifier =
       TfLiteImageClassifierFromOptions(&cOptions, &cCreateClassifierError);
 
-  [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                     &(cOptions.classification_options)];
+  [options.classificationOptions
+      deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
 
-  // Populate iOS error if TfliteSupportError is not null and afterwards delete
-  // it.
+  // Populate iOS error if TfliteSupportError is not null and afterwards delete it.
   if (![TFLCommonUtils checkCError:cCreateClassifierError toError:error]) {
     TfLiteSupportErrorDelete(cCreateClassifierError);
   }
 
-  // Return nil if classifier evaluates to nil. If an error was generted by the
-  // C layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if classifier evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cImageClassifier) {
     return nil;
   }
@@ -109,16 +104,16 @@
   return [[TFLImageClassifier alloc] initWithImageClassifier:cImageClassifier];
 }
 
-- (nullable TFLClassificationResult*)classifyWithGMLImage:(GMLImage*)image
-                                                    error:(NSError**)error {
+- (nullable TFLClassificationResult *)classifyWithGMLImage:(GMLImage *)image
+                                                     error:(NSError **)error {
   return [self classifyWithGMLImage:image
                    regionOfInterest:CGRectMake(0, 0, image.width, image.height)
                               error:error];
 }
 
-- (nullable TFLClassificationResult*)classifyWithGMLImage:(GMLImage*)image
-                                         regionOfInterest:(CGRect)roi
-                                                    error:(NSError**)error {
+- (nullable TFLClassificationResult *)classifyWithGMLImage:(GMLImage *)image
+                                          regionOfInterest:(CGRect)roi
+                                                     error:(NSError **)error {
   if (!image) {
     [TFLCommonUtils createCustomError:error
                              withCode:TFLSupportErrorCodeInvalidArgumentError
@@ -126,7 +121,7 @@
     return nil;
   }
 
-  TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
+  TfLiteFrameBuffer *cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
@@ -137,7 +132,7 @@
                                    .width = roi.size.width,
                                    .height = roi.size.height};
 
-  TfLiteSupportError* classifyError = NULL;
+  TfLiteSupportError *classifyError = NULL;
   TfLiteClassificationResult *cClassificationResult = TfLiteImageClassifierClassifyWithRoi(
       _imageClassifier, cFrameBuffer, &boundingBox, &classifyError);
 
@@ -152,9 +147,8 @@
     TfLiteSupportErrorDelete(classifyError);
   }
 
-  // Return nil if C result evaluates to nil. If an error was generted by the C
-  // layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if C result evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cClassificationResult) {
     return nil;
   }

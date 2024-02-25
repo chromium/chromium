@@ -186,7 +186,6 @@ class DownloadDeepScanningBrowserTestBase
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kDeepScanningUpdatedUX);
     test_sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
     test_sb_factory_->UseV4LocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(test_sb_factory_.get());
@@ -354,8 +353,8 @@ class DownloadDeepScanningBrowserTestBase
 
   template <typename T>
   void SendFcmMessage(const T& response) {
-    std::string encoded_proto;
-    base::Base64Encode(response.SerializeAsString(), &encoded_proto);
+    std::string encoded_proto =
+        base::Base64Encode(response.SerializeAsString());
     gcm::IncomingMessage gcm_message;
     gcm_message.data["proto"] = encoded_proto;
     binary_fcm_service()->OnMessage("app_id", gcm_message);
@@ -799,9 +798,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "zipfile_two_archives.zip",
+      /*filename*/
+      connectors_machine_scope()
+          ? (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe()
+          : "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -895,9 +898,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "zipfile_two_archives.zip",
+      /*filename*/
+      connectors_machine_scope()
+          ? (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe()
+          : "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -984,12 +991,18 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
+  base::FilePath main_file = DownloadPrefs(browser()->profile())
+                                 .DownloadPath()
+                                 .AppendASCII("zipfile_two_archives.zip");
   enterprise_connectors::test::EventReportValidator validator(client());
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
   validator.ExpectDangerousDownloadEvent(
       /*url*/ url.spec(),
-      /*filename*/ "zipfile_two_archives.zip",
+      /*tab_url*/ url.spec(),
+      /*filename*/
+      connectors_machine_scope() ? main_file.AsUTF8Unsafe()
+                                 : "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/ "",
@@ -1285,9 +1298,10 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "text.htm",
+      /*filename*/ main_file.AsUTF8Unsafe(),
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1298,7 +1312,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt);
 
   SendFcmMessage(response);
   run_loop.Run();
@@ -1355,9 +1370,10 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "text.htm",
+      /*filename*/ main_file.AsUTF8Unsafe(),
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1368,7 +1384,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();
@@ -1391,9 +1408,10 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   // download and move the file to its final destination.
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "text.htm",
+      /*filename*/ main_file.AsUTF8Unsafe(),
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1404,7 +1422,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*result*/ EventResultToString(EventResult::BYPASSED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt);
 
   DownloadItemModel model(item);
   DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
@@ -1461,9 +1480,10 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "text.htm",
+      /*filename*/ main_file.AsUTF8Unsafe(),
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1474,7 +1494,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();
@@ -1562,9 +1583,10 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*tab_url*/ url.spec(),
       /*source*/ "",
       /*destination*/ "",
-      /*filename*/ "text.htm",
+      /*filename*/ main_file.AsUTF8Unsafe(),
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1575,7 +1597,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
-      /*scan_id*/ last_request().request_token());
+      /*scan_id*/ last_request().request_token(),
+      /*content_transfer_method*/ std::nullopt);
 
   SendFcmMessage(response);
   validator_run_loop.Run();

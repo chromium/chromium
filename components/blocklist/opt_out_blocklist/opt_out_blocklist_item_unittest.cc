@@ -5,10 +5,10 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

@@ -30,7 +30,7 @@ class FakeSendTabToSelfSyncService : public SendTabToSelfSyncService {
   FakeSendTabToSelfSyncService() = default;
   ~FakeSendTabToSelfSyncService() override = default;
 
-  absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
+  std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
       const GURL&) override {
     return EntryPointDisplayReason::kOfferFeature;
   }

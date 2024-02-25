@@ -8,7 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that browser won't crash if user evaluates something in the console that would suspend active dom objects (e.g. if user attempts to show an alert) when script execution is paused on a breakpoint and all active dom objects are already suspended.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction() {

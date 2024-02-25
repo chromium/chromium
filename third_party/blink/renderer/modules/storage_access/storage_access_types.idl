@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary StorageAccessTypes {
+    boolean all = false;
+    boolean cookies = false;
+    boolean sessionStorage = false;
+    boolean localStorage = false;
+    boolean indexedDB = false;
+    boolean locks = false;
+    boolean caches = false;
+    boolean getDirectory = false;
+    boolean estimate = false;
+    boolean createObjectURL = false;
+    boolean revokeObjectURL = false;
+    boolean BroadcastChannel = false;
+    boolean SharedWorker = false;
+};

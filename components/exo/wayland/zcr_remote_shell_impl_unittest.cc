@@ -12,13 +12,12 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/bit_cast.h"
 #include "base/functional/bind.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -65,11 +64,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   // test::ExoTestBase:
   void SetUp() override {
-    // We need to enable the flag before `test::ExoTestBase::SetUp()` to make
-    // FloatController instantiated in Shell.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kWindowLayoutMenu);
-
     test::ExoTestBase::SetUp();
 
     ResetEventRecords();
@@ -103,10 +97,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     wl_remote_surface_resource_.reset();
 
     test::ExoTestBase::TearDown();
-  }
-
-  void EnableTabletMode(bool enable) {
-    ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
   std::unique_ptr<ClientControlledShellSurface::Delegate> CreateDelegate() {
@@ -229,7 +219,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*set_use_default_scale_cancellation_since_version=*/0,
       /*has_bounds_change_reason_float=*/true,
   };
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 std::vector<RemoteShellEventType>
     WaylandRemoteShellTest::remote_shell_event_sequence_;
@@ -256,7 +245,7 @@ TEST_F(WaylandRemoteShellTest, TabletTransition) {
 
   // Enable tablet mode.
   ResetEventRecords();
-  EnableTabletMode(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   task_environment()->FastForwardBy(base::Seconds(1));
   task_environment()->RunUntilIdle();
 
@@ -484,6 +473,10 @@ TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
 
 // Test that the desktop focus state event is called with the proper value in
 // response to window focus change.
+// Note that some clients such as ARC T+ rely on the behavior that the desktop
+// focus change event is invoked immediately once focus switches in ash, which
+// means, for example, we must not call `RunLoop::RunUntilIdle()` to wait for
+// the event in this test.
 TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
   auto client_controlled_shell_surface =
       exo::test::ShellSurfaceBuilder(
@@ -580,7 +573,7 @@ TEST_F(WaylandRemoteShellTest, MoveAcrossDisplaysWithDifferentScaleFactors) {
         gfx::ScaleToRoundedSize(max_size_in_dp, device_scale_factor);
 
     const uint scale_factor_value =
-        *reinterpret_cast<const uint*>(&device_scale_factor);
+        base::bit_cast<const uint>(device_scale_factor);
     zcr_remote_shell::remote_surface_set_scale_factor(
         wl_client(), wl_remote_surface(), scale_factor_value);
 

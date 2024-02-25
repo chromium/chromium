@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1012241361789814178">ਡੀਬੱਗਰ ਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ ਵਿੱਚ ਰੋਕਿਆ ਗਿਆ, ਉਸ ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1088086359088493902">ਸਕਿੰਟ</translation>
 <translation id="1142001580032786438">ਹਫ਼ਤਾ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
 <translation id="1171774979989969504">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">ਕਿਰਪਾ ਕਰਰਕੇ ਇੱਕ ਗ਼ੈਰ-ਖਾਲੀ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
 <translation id="1758486001363313524">ਹੋਰ...</translation>
 <translation id="1787192514241997742">ਕੁੱਲ ਸਮਾਂ: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ਰਿਮੋਟ ਡਿਵਾਈਸ 'ਤੇ ਚਲਾਓ</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2031987842108996681">ਲਾਲ ਚੈਨਲ</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ,'<ph name="INVALIDDOMAIN" />' ਵਿੱਚ ਇੱਕ ਗ਼ਲਤ ਪੋਜੀਸ਼ਨ ਤੇ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="2068711044993563745">ਨਿਊਨਤਮ ਮੁੱਲ (<ph name="MINIMUM" />) ਅਧਿਕਤਮ ਮੁੱਲ (<ph name="MAXIMUM" />) ਤੋਂ ਘੱਟ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2226276347425096477">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MAX_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਵਿੱਚ ਛੋਟਾ ਕਰੋ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
 <translation id="2247351761944213033">ਹਫ਼ਤਾ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ਟਰੈਕ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="2393030564806080191">ਛੇ-ਦਸ਼ਮਲਵ ਪ੍ਰਨਾਲੀ ਰੰਗ ਮੁੱਲ</translation>
 <translation id="2398813069815436052">ਵਿੰਡੋ ਖੋਲ੍ਹੀ ਗਈ।</translation>
 <translation id="245932805758469625">ਵੀਡੀਓ ਦੇ ਬਾਕੀ ਸਕਿੰਟ</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">ਜੇਕਰ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਬੌਕਸ ਵਿੱਚ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
 <translation id="2908441821576996758">ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਪਤਿਆਂ ਦੀ ਇੱਕ ਕਾਮਾ ਵੱਖ ਕੀਤੀ ਸੂਚੀ ਦਰਜ ਕਰੋ।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">ਆਡੀਓ ਦੇ ਵਰਣਨ ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="3075154866155599887">ਕਿਰਪਾ ਕਰਕੇ ਵੈਧ ਮੁੱਲ ਦਾਖਲ ਕਰੋ। ਇਹ ਖੇਤਰ ਅਧੂਰਾ ਹੈ ਜਾਂ ਇਸ ਵਿੱਚ ਅਵੈਧ ਤਾਰੀਖ ਹੈ।</translation>
 <translation id="310520048233152454">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ URL ਦਰਜ ਕਰੋ।</translation>
 <translation id="3220661731597678625">ਮੌਜੂਦਾ ਪੜਾਅ</translation>
 <translation id="3321030238473337787">ਪਲੇਬੈਕ ਦੀ ਗਤੀ</translation>
 <translation id="3329013043687509092">ਸੰਤ੍ਰਿਪਤੀ</translation>
+<translation id="3377518164566272702">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="3450233048674729344">ਵੈਲਯੂ <ph name="MAXIMUM" /> ਤੋਂ ਘੱਟ ਜਾਂ ਇਸਦੇ ਬਰਾਬਰ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਦੇ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="3846214748874656680">ਫੁਲਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4103419683916926126">ਮਿਲੀਸਕਿੰਟ</translation>
 <translation id="4201051445878709314">ਪਿਛਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="4360991593054037559">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਵੈਲਯੂ ਦਰਜ ਕਰੋ। ਦੋ ਲਗਭਗ ਵੈਲਯੂਜ <ph name="VALID_VALUE_LOW" /> ਅਤੇ <ph name="VALID_VALUE_HIGHER" /> ਹਨ।</translation>
 <translation id="4522570452068850558">ਵੇਰਵੇ</translation>
+<translation id="4663373278480897665">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="4718048029184481307">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਵਿੱਚ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="4748357248530471599">ਡਿਸਪਲੇ ਕੱਟਆਊਟ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਟੌਗਲ ਕਰੋ</translation>
-<translation id="4763480195061959176">ਵੀਡਿਓ</translation>
+<translation id="4763480195061959176">ਵੀਡੀਓ</translation>
+<translation id="4792862212177489858">ਟਿਕਾਣਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4812940957355064477">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨੰਬਰ ਦਰਜ ਕਰੋ।</translation>
 <translation id="4912200001568447310">ਮੌਜੂਦਾ ਆਈਟਮ</translation>
 <translation id="4915360478455618802">ਸਮਾਂ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="4992066212339426712">ਅਨਮਿਊਟ ਕਰੋ</translation>
 <translation id="49969490063480558">ਕਿਰਪਾ ਕਰਕੇ '<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਦਰਜ ਕਰੋ। '<ph name="INVALIDADDRESS" />' ਅਧੂਰਾ ਹੈ।</translation>
+<translation id="5037575921016181960">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ</translation>
 <translation id="5090250355906949916">ਵੀਡੀਓ ਸਮਾਂ ਸਕਰੱਬਰ</translation>
 <translation id="509897012892853729">ਨੀਲਾ ਚੈਨਲ</translation>
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">ਮੀਡੀਆ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="698788488269350478">ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="6989848892321993519">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ 1 ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
+<translation id="7080893216867146095">ਟਿਕਾਣੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="709897737746224366">ਕਿਰਪਾ ਕਰਕੇ ਬੇਨਤੀ ਕੀਤਾ ਫੌਰਮੈਟ ਮੈਚ ਕਰੋ।</translation>
 <translation id="7102274145889307184">ਮੌਜੂਦਾ ਟਿਕਾਣਾ</translation>
 <translation id="7263440858009898357">ਕਿਰਪਾ ਕਰਕੇ ਸੂਚੀ ਵਿੱਚ ਇੱਕ ਆਈਟਮ ਚੁਣੋ।</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">ਹੋਰ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> ਨੂੰ ਅਰੰਭ</translation>
 <translation id="916607977885256133">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
+<translation id="918430632320614861">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="945780513535800434">ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਨਿਸ਼ਾਨ ਲਗਾਇਆ ਗਿਆ</translation>
 <translation id="954003015749068518">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 </translationbundle>

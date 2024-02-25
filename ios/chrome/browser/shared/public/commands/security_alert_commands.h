@@ -13,10 +13,6 @@
 // autofill these a warning is displayed using the security alert presenter
 - (void)presentSecurityWarningAlertWithText:(NSString*)body;
 
-// Request the presenter to inform the user that a password must be set to use
-// the feature.
-- (void)showSetPasscodeDialog;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SECURITY_ALERT_COMMANDS_H_

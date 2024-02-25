@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICES_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ash/components/audio/audio_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -34,10 +34,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
     ~Observer() override = default;
 
     // Set the input device to use for audio capture.
-    virtual void SetDeviceId(const absl::optional<std::string>& device_id) = 0;
+    virtual void SetDeviceId(const std::optional<std::string>& device_id) = 0;
     // Set the input device to use for hardware based hotword detection.
     virtual void SetHotwordDeviceId(
-        const absl::optional<std::string>& device_id) = 0;
+        const std::optional<std::string>& device_id) = 0;
   };
 
   AudioDevices(CrasAudioHandler* cras_audio_handler, const std::string& locale);
@@ -70,11 +70,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   base::ObserverList<Observer> observers_;
 
   // Owned by |AssistantManagerServiceImpl|.
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
 
   std::string locale_;
-  absl::optional<uint64_t> hotword_device_id_;
-  absl::optional<uint64_t> device_id_;
+  std::optional<uint64_t> hotword_device_id_;
+  std::optional<uint64_t> device_id_;
 
   // Observes changes to the available audio devices, and sends the list of
   // devices to SetAudioDevices().

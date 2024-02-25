@@ -7,21 +7,24 @@
 
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
  public:
-  InSessionAuthDialogControllerImpl() = default;
+  InSessionAuthDialogControllerImpl();
   InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
       delete;
   InSessionAuthDialogControllerImpl& operator=(
       const InSessionAuthDialogControllerImpl&) = delete;
-  ~InSessionAuthDialogControllerImpl() override = default;
+  ~InSessionAuthDialogControllerImpl() override;
 
   // InSessionAuthDialogController overrides
-  void ShowAuthDialog(Reason reason, OnAuthComplete on_auth_complete) override;
+  void ShowAuthDialog(
+      Reason reason,
+      auth_panel::AuthCompletionCallback on_auth_complete) override;
 
   void SetTokenProvider(
       InSessionAuthTokenProvider* auth_token_provider) override;
@@ -33,6 +36,7 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
   // is part of `ash::Shell` and will be destroyed as part of `AshShellInit`
   // before `auth_token_provider`.
   raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
+  std::unique_ptr<views::Widget> dialog_;
 };
 
 }  // namespace ash

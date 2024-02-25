@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
-#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/enterprise/data_controls/component.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;

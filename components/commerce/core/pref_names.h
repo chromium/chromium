@@ -9,15 +9,17 @@ class PrefRegistrySimple;
 
 namespace commerce {
 
-extern const char kCommerceDailyMetricsLastUpdateTime[];
-extern const char kShoppingListBookmarkLastUpdateTime[];
+inline constexpr char kCommerceDailyMetricsLastUpdateTime[] =
+    "commerce_daily_metrics_last_update_time";
+inline constexpr char kShoppingListBookmarkLastUpdateTime[] =
+    "shopping_list_bookmark_last_update_time";
 
 // This setting is primarily for enabling or disabling the shopping list feature
 // in enterprise settings.
-extern const char kShoppingListEnabledPrefName[];
+inline constexpr char kShoppingListEnabledPrefName[] = "shopping_list_enabled";
 
-extern const char kWebAndAppActivityEnabledForShopping[];
-extern const char kPriceEmailNotificationsEnabled[];
+inline constexpr char kPriceEmailNotificationsEnabled[] =
+    "price_tracking.email_notifications_enabled";
 
 // Register preference names for commerce features.
 void RegisterPrefs(PrefRegistrySimple* registry);

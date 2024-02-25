@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
+<html class="reftest-wait">
 <title>View transitions: prerender navigation</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
@@ -10,9 +10,7 @@
 <script src="/common/utils.js"></script>
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <meta name="view-transition" content="same-origin">
-
 <script src="/common/reftest-wait.js"></script>
-
 <style>
 html { background: red; }
 #target {
@@ -25,11 +23,8 @@ html { background: red; }
   view-transition-name: target;
 }
 </style>
-
-<div id=target></div>
-
+<div id="target"></div>
 <script>
-
 const uid = token();
 
 function startTest() {
@@ -54,4 +49,4 @@ async function waitForPrerender() {
 
 onload = waitForPrerender;
 </script>
-
+</html>

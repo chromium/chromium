@@ -8,8 +8,8 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
-#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -37,7 +37,6 @@
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -64,9 +63,11 @@ constexpr int kRecurrentInterstitialDefaultThreshold = 3;
 constexpr int kRecurrentInterstitialDefaultResetTime =
     259200;  // 3 days in seconds
 
-// The default expiration for certificate error and HTTPS-First Mode bypasses is
-// one week.
-const uint64_t kDeltaDefaultExpirationInSeconds = UINT64_C(604800);
+// The default expiration for certificate error bypasses is one week.
+const uint64_t kDefaultCertErrorBypassExpirationInSeconds = UINT64_C(604800);
+
+// The expiration for HTTPS-First Mode bypasses is 15 days.
+const uint64_t kHTTPSFirstModeBypassExpirationInSeconds = UINT64_C(1296000);
 
 // Keys for the per-site error + certificate finger to judgment content
 // settings map.
@@ -85,7 +86,7 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
                                      base::Clock* clock,
                                      int error,
                                      int threshold) {
-  double now = clock->Now().ToJsTime();
+  double now = clock->Now().InMillisecondsFSinceUnixEpoch();
 
   ScopedDictPrefUpdate pref_update(pref_service,
                                    prefs::kRecurrentSSLInterstitial);
@@ -145,8 +146,10 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
   // are more than |threshold| values after the cutoff time.
   const base::Value::List& error_list = *list_value;
   for (size_t i = 0; i < error_list.size(); i++) {
-    if (base::Time::FromJsTime(error_list[i].GetDouble()) >= cutoff_time)
+    if (base::Time::FromMillisecondsSinceUnixEpoch(error_list[i].GetDouble()) >=
+        cutoff_time) {
       return base::MakeStrictNum(error_list.size() - i) >= threshold;
+    }
   }
   return false;
 }
@@ -164,11 +167,7 @@ std::string GetKey(const net::X509Certificate& cert, int error) {
   // Since a security decision will be made based on the fingerprint, Chrome
   // should use the SHA-256 fingerprint for the certificate.
   net::SHA256HashValue fingerprint = cert.CalculateChainFingerprint256();
-  std::string base64_fingerprint;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(fingerprint.data),
-                        sizeof(fingerprint.data)),
-      &base64_fingerprint);
+  std::string base64_fingerprint = base::Base64Encode(fingerprint.data);
   return base::NumberToString(error) + base64_fingerprint;
 }
 
@@ -197,7 +196,7 @@ StatefulSSLHostStateDelegate::StatefulSSLHostStateDelegate(
       https_only_mode_allowlist_(
           host_content_settings_map,
           clock_.get(),
-          base::Seconds(kDeltaDefaultExpirationInSeconds)),
+          base::Seconds(kHTTPSFirstModeBypassExpirationInSeconds)),
       https_only_mode_enforcelist_(host_content_settings_map_, clock_.get()),
       recurrent_interstitial_threshold_for_testing(-1),
       recurrent_interstitial_mode_for_testing(NOT_SET),
@@ -314,7 +313,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(
     return DENIED;
   }
 
-  absl::optional<int> policy_decision =
+  std::optional<int> policy_decision =
       cert_error_dict->FindInt(GetKey(cert, error));
 
   // If a policy decision was successfully retrieved and it's a valid value of
@@ -388,18 +387,31 @@ void StatefulSSLHostStateDelegate::SetHttpsEnforcementForHost(
   }
 }
 
-bool StatefulSSLHostStateDelegate::IsHttpsEnforcedForHost(
-    const std::string& host,
+bool StatefulSSLHostStateDelegate::IsHttpsEnforcedForUrl(
+    const GURL& url,
     content::StoragePartition* storage_partition) {
   bool is_nondefault_storage =
       !storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition();
-  return https_only_mode_enforcelist_.IsEnforcedForHost(host,
-                                                        is_nondefault_storage);
+  return https_only_mode_enforcelist_.IsEnforcedForUrl(url,
+                                                       is_nondefault_storage);
+}
+
+std::set<GURL> StatefulSSLHostStateDelegate::GetHttpsEnforcedHosts(
+    content::StoragePartition* storage_partition) const {
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  return https_only_mode_enforcelist_.GetHosts(is_nondefault_storage);
 }
 
 void StatefulSSLHostStateDelegate::ClearHttpsOnlyModeAllowlist() {
   https_only_mode_allowlist_.ClearAllowlist(base::Time(), base::Time::Max());
+}
+
+void StatefulSSLHostStateDelegate::ClearHttpsEnforcelist() {
+  https_only_mode_enforcelist_.ClearEnforcements(base::Time(),
+                                                 base::Time::Max());
 }
 
 void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
@@ -624,13 +636,13 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
     base::Value::Dict& dict) {
   // Extract the version of the certificate decision structure from the content
   // setting.
-  absl::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
+  std::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
   if (!version) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)
       return nullptr;
 
     dict.Set(kSSLCertDecisionVersionKey, kDefaultSSLCertDecisionVersion);
-    version = absl::make_optional<int>(kDefaultSSLCertDecisionVersion);
+    version = std::make_optional<int>(kDefaultSSLCertDecisionVersion);
   }
 
   // If the version is somehow a newer version than Chrome can handle, there's
@@ -664,7 +676,7 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
 
     expired = true;
     base::Time expiration_time =
-        now + base::Seconds(kDeltaDefaultExpirationInSeconds);
+        now + base::Seconds(kDefaultCertErrorBypassExpirationInSeconds);
     // Unfortunately, JSON (and thus content settings) doesn't support int64_t
     // values, only doubles. Since this mildly depends on precision, it is
     // better to store the value as a string.

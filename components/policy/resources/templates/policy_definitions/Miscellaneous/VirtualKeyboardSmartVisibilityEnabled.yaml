@@ -1,0 +1,28 @@
+caption: Let the on-screen keyboard appear when appropriate.
+default: true
+desc: |-
+  When the policy is set to True or unset, the on-screen keyboard can appear when it predicts that the user is about to use it.
+
+  When the policy to set to False, the on-screen keyboard only appears if the user explicitly taps on an input field or if an application requests it.
+
+  For example, suppose the user uses the virtual keyboard to type their username in a two-stage login screen. When the login screen transitions to the password stage, if the policy is True, the virtual keyboard may remain visible, even though the user did not tap on the password input field. If the policy is False, then the virtual keyboard will disappear.
+
+  This policy does not apply if the virtual keyboard is disabled (e.g. using the <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">TouchVirtualKeyboardEnabled</ph> policy, or if the device is connected to a physical keyboard).
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+  - chrome_os:123-
+items:
+- caption: Show the on-screen keyboard when appropriate.
+  value: true
+- caption: Only show the on-screen keyboard if the user or application requests it.
+  value: false
+owners:
+- shend@chromium.org
+- e14s-eng@google.com
+schema:
+  type: boolean
+tags: []
+type: main

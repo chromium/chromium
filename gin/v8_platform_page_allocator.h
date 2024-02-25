@@ -8,11 +8,11 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-platform.h"
 

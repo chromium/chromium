@@ -39,11 +39,10 @@ namespace blink {
 
 class ShapeClipPathOperation final : public ClipPathOperation {
  public:
-  static scoped_refptr<ShapeClipPathOperation> Create(
-      scoped_refptr<const BasicShape> shape,
-      GeometryBox geometry_box) {
-    return base::AdoptRef(
-        new ShapeClipPathOperation(std::move(shape), geometry_box));
+  ShapeClipPathOperation(scoped_refptr<const BasicShape> shape,
+                         GeometryBox geometry_box)
+      : shape_(std::move(shape)), geometry_box_(geometry_box) {
+    DCHECK(shape_);
   }
 
   const BasicShape* GetBasicShape() const { return shape_.get(); }
@@ -58,12 +57,6 @@ class ShapeClipPathOperation final : public ClipPathOperation {
  private:
   bool operator==(const ClipPathOperation&) const override;
   OperationType GetType() const override { return kShape; }
-
-  explicit ShapeClipPathOperation(scoped_refptr<const BasicShape> shape,
-                                  GeometryBox geometry_box)
-      : shape_(std::move(shape)), geometry_box_(geometry_box) {
-    DCHECK(shape_);
-  }
 
   scoped_refptr<const BasicShape> shape_;
   GeometryBox geometry_box_;

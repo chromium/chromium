@@ -14,6 +14,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -34,8 +37,13 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.webapk.lib.common.WebApkConstants;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests for WebAPK {@link WebappActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -45,8 +53,7 @@ public final class WebApkActivityTest {
     private static final String TEST_WEBAPK_ID =
             WebApkConstants.WEBAPK_ID_PREFIX + TEST_WEBAPK_PACKAGE_NAME;
 
-    @Rule
-    public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
+    @Rule public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
     @Before
     public void setUp() {
@@ -54,9 +61,12 @@ public final class WebApkActivityTest {
 
         // WebAPK is not installed. Ensure that WebappRegistry#unregisterOldWebapps() does not
         // delete the WebAPK's shared preferences.
-        SharedPreferences sharedPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappRegistry.REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
-        sharedPrefs.edit()
+        SharedPreferences sharedPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappRegistry.REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
+        sharedPrefs
+                .edit()
                 .putLong(WebappRegistry.KEY_LAST_CLEANUP, System.currentTimeMillis())
                 .apply();
     }
@@ -70,9 +80,12 @@ public final class WebApkActivityTest {
     @Feature({"WebApk"})
     public void testLaunchAndNavigateOutsideScope() throws Exception {
         WebappActivity webApkActivity =
-                mActivityTestRule.startWebApkActivity(createIntentDataProvider(
-                        getTestServerUrl("scope_a/page_1.html"), getTestServerUrl("scope_a/")));
-        assertEquals(BrowserControlsState.HIDDEN,
+                mActivityTestRule.startWebApkActivity(
+                        createIntentDataProvider(
+                                getTestServerUrl("scope_a/page_1.html"),
+                                getTestServerUrl("scope_a/")));
+        assertEquals(
+                BrowserControlsState.HIDDEN,
                 WebappActivityTestRule.getToolbarShowState(webApkActivity));
 
         // We navigate outside scope and expect CCT toolbar to show on top of WebAPK Activity.
@@ -93,8 +106,10 @@ public final class WebApkActivityTest {
     public void testActivateWebApkLPlus() throws Exception {
         // Launch WebAPK.
         WebappActivity webApkActivity =
-                mActivityTestRule.startWebApkActivity(createIntentDataProvider(
-                        getTestServerUrl("manifest_test_page.html"), getTestServerUrl("/")));
+                mActivityTestRule.startWebApkActivity(
+                        createIntentDataProvider(
+                                getTestServerUrl("manifest_test_page.html"),
+                                getTestServerUrl("/")));
 
         Class<? extends ChromeActivity> mainClass = ChromeTabbedActivity.class;
 
@@ -106,14 +121,36 @@ public final class WebApkActivityTest {
 
         ApplicationTestUtils.waitForActivityState(webApkActivity, Stage.STOPPED);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWebContentsDelegateAndroid tabDelegate =
-                    TabTestUtils.getTabWebContentsDelegate(webApkActivity.getActivityTab());
-            tabDelegate.activateContents();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWebContentsDelegateAndroid tabDelegate =
+                            TabTestUtils.getTabWebContentsDelegate(webApkActivity.getActivityTab());
+                    tabDelegate.activateContents();
+                });
 
         // WebAPK Activity should have been brought back to the foreground.
         ChromeActivityTestRule.waitFor(WebappActivity.class);
+    }
+
+    /** Test a permission dialog can be correctly presented. */
+    @Test
+    @LargeTest
+    @DisabledTest(message = "The test is flaky, see b/324471058.")
+    public void testShowPermissionPrompt() throws TimeoutException {
+        EmbeddedTestServer server = mActivityTestRule.getEmbeddedTestServerRule().getServer();
+        String url = server.getURL("/content/test/data/android/permission_navigation.html");
+        String baseUrl = server.getURL("/content/test/data/android/");
+        WebappActivity activity =
+                mActivityTestRule.startWebApkActivity(createIntentDataProvider(url, baseUrl));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        CriteriaHelper.pollUiThread(
+                () -> PermissionDialogController.getInstance().isDialogShownForTest(),
+                "Permission prompt did not appear in allotted time");
+        Assert.assertEquals(
+                "Only App modal dialog is supported on web apk",
+                activity.getModalDialogManager()
+                        .getPresenterForTest(ModalDialogManager.ModalDialogType.APP),
+                activity.getModalDialogManager().getCurrentPresenterForTest());
     }
 
     private BrowserServicesIntentDataProvider createIntentDataProvider(
@@ -125,8 +162,10 @@ public final class WebApkActivityTest {
     }
 
     private String getTestServerUrl(String relativeUrl) {
-        return mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL(
-                "/chrome/test/data/banners/" + relativeUrl);
+        return mActivityTestRule
+                .getEmbeddedTestServerRule()
+                .getServer()
+                .getURL("/chrome/test/data/banners/" + relativeUrl);
     }
 
     /** Register WebAPK with WebappDataStorage */

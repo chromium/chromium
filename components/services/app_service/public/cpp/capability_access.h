@@ -6,11 +6,11 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_CAPABILITY_ACCESS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -29,10 +29,10 @@ struct COMPONENT_EXPORT(APP_TYPES) CapabilityAccess {
   std::string app_id;
 
   // Whether the app is accessing camera.
-  absl::optional<bool> camera;
+  std::optional<bool> camera;
 
   // Whether the app is accessing microphone.
-  absl::optional<bool> microphone;
+  std::optional<bool> microphone;
 
   // When adding new fields, also update the Merge method and other helpers in
   // components/services/app_service/public/cpp/CapabilityAccessUpdate.*

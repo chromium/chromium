@@ -6,9 +6,6 @@
   {
     "namespace":"dashboardPrivate",
     "description": "none",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "Result",

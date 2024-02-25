@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++Image text:"Img.jpg" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="img"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {id="span-in-img"}]
+++++++TextView text:"Img.jpg" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

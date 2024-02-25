@@ -10,21 +10,13 @@
 namespace storage {
 
 BigIOBuffer::BigIOBuffer(mojo_base::BigBuffer buffer)
-    : net::IOBufferWithSize(nullptr, buffer.size()),
-      buffer_(std::move(buffer)) {
-  data_ = reinterpret_cast<char*>(buffer_.data());
-}
+    : net::IOBuffer(buffer), buffer_(std::move(buffer)) {}
 
 BigIOBuffer::BigIOBuffer(size_t size)
-    : net::IOBufferWithSize(nullptr, size),
-      buffer_(mojo_base::BigBuffer(size)) {
-  data_ = reinterpret_cast<char*>(buffer_.data());
-  DCHECK(data_);
-}
+    : BigIOBuffer(mojo_base::BigBuffer(size)) {}
 
 BigIOBuffer::~BigIOBuffer() {
-  // Must clear `data_` so base class doesn't attempt to delete[] a pointer
-  // it doesn't own.
+  // Must clear `data_` so base class doesn't hold a dangling ptr.
   data_ = nullptr;
   size_ = 0UL;
 }

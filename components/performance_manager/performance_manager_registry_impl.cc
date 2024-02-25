@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -39,6 +40,8 @@ PerformanceManagerRegistryImpl::PerformanceManagerRegistryImpl() {
 
   // The registry should be created after the PerformanceManager.
   DCHECK(PerformanceManager::IsAvailable());
+
+  browser_child_process_watcher_.Initialize();
 }
 
 PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
@@ -133,8 +136,9 @@ void PerformanceManagerRegistryImpl::CreatePageNodeForWebContents(
   DCHECK(tab_helper);
   tab_helper->SetDestructionObserver(this);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPageNodeCreatedForWebContents(web_contents);
+  }
 }
 
 void PerformanceManagerRegistryImpl::SetPageType(
@@ -238,8 +242,9 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   // Notify any observers of the tear down. This lets them unregister things,
   // etc.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBeforePerformanceManagerDestroyed();
+  }
 
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -275,6 +280,9 @@ void PerformanceManagerRegistryImpl::TearDown() {
     render_process_host->RemoveUserData(RenderProcessUserData::UserDataKey());
   }
   render_process_hosts_.clear();
+
+  // Release the browser and utility process nodes.
+  browser_child_process_watcher_.TearDown();
 
   // Tear down PM owned objects. This lets them clear up object registrations,
   // observers, mechanisms, etc.
@@ -312,6 +320,42 @@ void PerformanceManagerRegistryImpl::EnsureProcessNodeForRenderProcessHost(
         RenderProcessUserData::CreateForRenderProcessHost(render_process_host);
     user_data->SetDestructionObserver(this);
   }
+}
+
+ProcessNodeImpl* PerformanceManagerRegistryImpl::GetBrowserProcessNode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_.browser_process_node();
+}
+
+ProcessNodeImpl* PerformanceManagerRegistryImpl::GetBrowserChildProcessNode(
+    BrowserChildProcessHostId id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_.GetChildProcessNode(id);
+}
+
+WorkerNodeImpl* PerformanceManagerRegistryImpl::FindWorkerNodeForToken(
+    const blink::WorkerToken& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [browser_context, worker_watcher] : worker_watchers_) {
+    WorkerNodeImpl* worker_node = worker_watcher->FindWorkerNodeForToken(token);
+    if (worker_node) {
+      return worker_node;
+    }
+  }
+  return nullptr;
+}
+
+WorkerWatcher* PerformanceManagerRegistryImpl::GetWorkerWatcherForTesting(
+    content::BrowserContext* browser_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto it = worker_watchers_.find(browser_context);
+  return it != worker_watchers_.end() ? it->second.get() : nullptr;
+}
+
+BrowserChildProcessWatcher&
+PerformanceManagerRegistryImpl::GetBrowserChildProcessWatcherForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_child_process_watcher_;
 }
 
 void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(

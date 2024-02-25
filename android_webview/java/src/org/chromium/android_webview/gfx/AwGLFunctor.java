@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Manages state associated with the Android render thread and the draw functor
@@ -44,8 +45,8 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public void destroy() {
         assert mRefCount > 0;
-        AwGLFunctorJni.get().removeFromCompositorFrameProducer(
-                mNativeAwGLFunctor, AwGLFunctor.this);
+        AwGLFunctorJni.get()
+                .removeFromCompositorFrameProducer(mNativeAwGLFunctor, AwGLFunctor.this);
         removeReference();
     }
 
@@ -56,8 +57,8 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public long getNativeCompositorFrameConsumer() {
         assert mRefCount > 0;
-        return AwGLFunctorJni.get().getCompositorFrameConsumer(
-                mNativeAwGLFunctor, AwGLFunctor.this);
+        return AwGLFunctorJni.get()
+                .getCompositorFrameConsumer(mNativeAwGLFunctor, AwGLFunctor.this);
     }
 
     @Override
@@ -115,11 +116,17 @@ public class AwGLFunctor implements AwFunctor {
     @NativeMethods
     interface Natives {
         void deleteHardwareRenderer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         void removeFromCompositorFrameProducer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         long getCompositorFrameConsumer(long nativeAwGLFunctor, AwGLFunctor caller);
+
         long getAwDrawGLFunction();
+
         void destroy(long nativeAwGLFunctor);
+
         long create(AwGLFunctor javaProxy);
+
         int getNativeInstanceCount();
     }
 }

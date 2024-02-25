@@ -17,8 +17,6 @@ namespace input_method {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
     : public InputMethodDelegate {
  public:
-  using LanguageNameLocalizationCallback =
-      base::RepeatingCallback<std::u16string(const std::string&)>;
   using GetLocalizedStringCallback =
       base::RepeatingCallback<std::u16string(int)>;
 
@@ -33,21 +31,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
   std::string GetHardwareKeyboardLayouts() const override;
   std::u16string GetLocalizedString(int resource_id) const override;
   void SetHardwareKeyboardLayoutForTesting(const std::string& layout) override;
-  std::u16string GetDisplayLanguageName(
-      const std::string& language_code) const override;
-
-  void set_hardware_keyboard_layout(const std::string& value) {
-    hardware_keyboard_layout_ = value;
-  }
-
-  void set_active_locale(const std::string& value) {
-    active_locale_ = value;
-  }
-
-  void set_get_display_language_name_callback(
-      const LanguageNameLocalizationCallback& callback) {
-    get_display_language_name_callback_ = callback;
-  }
 
   void set_get_localized_string_callback(
       const GetLocalizedStringCallback& callback) {
@@ -56,8 +39,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
 
  private:
   std::string hardware_keyboard_layout_;
-  std::string active_locale_;
-  LanguageNameLocalizationCallback get_display_language_name_callback_;
   GetLocalizedStringCallback get_localized_string_callback_;
 };
 

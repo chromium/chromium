@@ -5,24 +5,25 @@
 /**
  * @fileoverview ChromeVox braille commands.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {EventGenerator} from '../../../common/event_generator.js';
-import {KeyCode} from '../../../common/key_code.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BrailleCommandData} from '../../common/braille/braille_command_data.js';
 import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
-import {Command} from '../../common/command_store.js';
+import {Command} from '../../common/command.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Spannable} from '../../common/spannable.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
-import {ChromeVoxState} from '../chromevox_state.js';
-import {CommandHandlerInterface} from '../command_handler_interface.js';
 import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';
 import {EventSource} from '../event_source.js';
+import {CommandHandlerInterface} from '../input/command_handler_interface.js';
 import {Output} from '../output/output.js';
 import {OutputNodeSpan, OutputSelectionSpan} from '../output/output_types.js';
 import {ChromeVoxPrefs} from '../prefs.js';
@@ -34,23 +35,26 @@ export class BrailleCommandHandler {
   /** @private */
   constructor() {
     /** @private {boolean} */
-    this.enabled_ = true;
+    this.bypassed_ = false;
   }
 
   static init() {
     if (BrailleCommandHandler.instance) {
       throw new Error(
-          'BrailleCommandHandler cannot be instantiated more than once');
+          'BrailleCommandHandler cannot be instantiated more than once.');
     }
     BrailleCommandHandler.instance = new BrailleCommandHandler();
   }
 
   /**
-   * Global setting for the enabled state of this handler.
+   * Global setting for bypassing this handler.
+   *
+   * Used by LearnMode to capture the events and prevent the standard behavior,
+   * in favor of reporting what that behavior would be.
    * @param {boolean} state
    */
-  static setEnabled(state) {
-    BrailleCommandHandler.instance.enabled_ = state;
+  static setBypass(state) {
+    BrailleCommandHandler.instance.bypassed_ = state;
   }
 
   /**
@@ -60,14 +64,15 @@ export class BrailleCommandHandler {
    * @return {boolean} True if evt was processed.
    */
   static onBrailleKeyEvent(evt, content) {
-    if (!BrailleCommandHandler.instance.enabled_) {
+    if (BrailleCommandHandler.instance.bypassed_) {
+      // Prevent any handling of the event when bypassed.
       return true;
     }
 
     EventSource.set(EventSourceType.BRAILLE_KEYBOARD);
 
     // Try to restore to the last valid range.
-    ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+    ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
     // Note: panning within content occurs earlier in event dispatch.
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
@@ -93,12 +98,10 @@ export class BrailleCommandHandler {
       case BrailleKeyCommand.ROUTING:
         const textEditHandler =
             DesktopAutomationInterface.instance.textEditHandler;
-        if (textEditHandler) {
-          textEditHandler.injectInferredIntents([{
-            command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-            textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
-          }]);
-        }
+        textEditHandler?.injectInferredIntents([{
+          command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+          textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
+        }]);
         BrailleCommandHandler.onRoutingCommand_(
             content.text,
             // Cast ok since displayPosition is always defined in this case.
@@ -132,7 +135,7 @@ export class BrailleCommandHandler {
     let selectionSpan = null;
     const selSpans = text.getSpansInstanceOf(OutputSelectionSpan);
     const nodeSpans = text.getSpansInstanceOf(OutputNodeSpan);
-    for (let i = 0, selSpan; selSpan = selSpans[i]; i++) {
+    for (const selSpan of selSpans) {
       if (text.getSpanStart(selSpan) <= position &&
           position < text.getSpanEnd(selSpan)) {
         selectionSpan = selSpan;
@@ -141,11 +144,10 @@ export class BrailleCommandHandler {
     }
 
     let interval;
-    for (let j = 0, nodeSpan; nodeSpan = nodeSpans[j]; j++) {
+    for (const nodeSpan of nodeSpans) {
       const intervals = text.getSpanIntervals(nodeSpan);
-      const tempInterval = intervals.find(function(innerInterval) {
-        return innerInterval.start <= position && position <= innerInterval.end;
-      });
+      const tempInterval = intervals.find(
+          inner => inner.start <= position && position <= inner.end);
       if (tempInterval) {
         actionNodeSpan = nodeSpan;
         interval = tempInterval;
@@ -173,8 +175,7 @@ export class BrailleCommandHandler {
     }
 
     if (actionNode.state.richlyEditable) {
-      const start =
-          interval ? interval.start : text.getSpanStart(selectionSpan);
+      const start = interval?.start ?? text.getSpanStart(selectionSpan);
       const targetPosition = position - start + offset;
       chrome.automation.setDocumentSelection({
         anchorObject: actionNode,
@@ -198,14 +199,14 @@ export class BrailleCommandHandler {
    */
   static onEditCommand_(command) {
     const current = ChromeVoxRange.current;
-    if (ChromeVoxPrefs.isStickyModeOn() || !current || !current.start ||
-        !current.start.node || !current.start.node.state[StateType.EDITABLE]) {
+    if (ChromeVoxPrefs.isStickyModeOn() ||
+        !current?.start?.node?.state[StateType.EDITABLE]) {
       return true;
     }
 
     const textEditHandler = DesktopAutomationInterface.instance.textEditHandler;
     const editable = AutomationUtil.getEditableRoot(current.start.node);
-    if (!editable || !textEditHandler || editable !== textEditHandler.node) {
+    if (!editable || editable !== textEditHandler?.node) {
       return true;
     }
 
@@ -261,3 +262,5 @@ export class BrailleCommandHandler {
 
 /** @type {BrailleCommandHandler} */
 BrailleCommandHandler.instance;
+
+TestImportManager.exportForTesting(BrailleCommandHandler);

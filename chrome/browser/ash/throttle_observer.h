@@ -68,7 +68,7 @@ class ThrottleObserver {
   ObserverStateChangedCallback callback_;
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace ash

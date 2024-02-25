@@ -4,27 +4,32 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "base/hash/hash.h"
+#include "base/i18n/time_formatting.h"
+#include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/prefs/pref_service.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 // static
 OptimizationGuideInternalsUI*
 OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
     content::WebUI* web_ui,
     SetupWebUIDataSourceCallback set_up_data_source_callback) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service)
-    return nullptr;
   return new OptimizationGuideInternalsUI(
       web_ui, std::move(set_up_data_source_callback));
 }
@@ -54,7 +59,9 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
     mojo::PendingRemote<optimization_guide_internals::mojom::Page> page) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  if (!service) {
+    return;
+  }
   OptimizationGuideLogger* optimization_guide_logger =
       service->GetOptimizationGuideLogger();
   optimization_guide_internals_page_handler_ =
@@ -66,13 +73,66 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  if (!service) {
+    return;
+  }
   optimization_guide::PredictionManager* prediction_manager =
       service->GetPredictionManager();
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
       downloaded_models_info =
           prediction_manager->GetDownloadedModelsInfoForWebUI();
   std::move(callback).Run(std::move(downloaded_models_info));
+}
+
+void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
+    RequestLoggedModelQualityClientIdsCallback callback) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  // Get the client ids for the compose and tab organization feature for the
+  // past 28 days to show on chrome://optimization-guide-internals.
+  // TODO(b/308642692): Add other features client id as requested.
+  std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
+      logged_client_ids;
+
+  int64_t client_id = local_state->GetInt64(
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
+
+  // If the client id is zero no client id is set, in that case do nothing.
+  if (client_id == 0) {
+    return;
+  }
+
+  // Initialize time outside to have it change when generating the client ids
+  // for different days.
+  base::Time now = base::Time::Now();
+  // Loop through past 28 days to generate the client ids for compose and
+  // tab_organization features.
+  for (int i = 0; i < 28; ++i) {
+    base::Time day_i = now - base::Days(i);
+
+    // Hash the client id with the date so that it changes everyday for every
+    // feature.
+    int64_t client_id_i_compose =
+        optimization_guide::GetHashedModelQualityClientId(
+            optimization_guide::proto::ModelExecutionFeature::
+                MODEL_EXECUTION_FEATURE_COMPOSE,
+            day_i, client_id);
+
+    int64_t client_id_i_tab_organization =
+        optimization_guide::GetHashedModelQualityClientId(
+            optimization_guide::proto::ModelExecutionFeature::
+                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+            day_i, client_id);
+
+    logged_client_ids.push_back(
+        optimization_guide_internals::mojom::LoggedClientIds::New(
+            client_id_i_compose));
+    logged_client_ids.push_back(
+        optimization_guide_internals::mojom::LoggedClientIds::New(
+            client_id_i_tab_organization));
+  }
+
+  std::move(callback).Run(std::move(logged_client_ids));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OptimizationGuideInternalsUI)

@@ -76,13 +76,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   MOCK_METHOD2(OnSetMute, void(int player_id, bool mute));
   MOCK_METHOD(void, OnRequestMediaRemoting, (int player_id), (override));
 
-  absl::optional<media_session::MediaPosition> GetPosition(
+  std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
     return position_;
   }
 
   void SetPosition(
-      const absl::optional<media_session::MediaPosition>& position) {
+      const std::optional<media_session::MediaPosition>& position) {
     position_ = position;
   }
 
@@ -115,13 +115,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 
   const media_session::mojom::MediaAudioVideoState audio_video_state_;
 
   media::MediaContentType media_content_type_;
 
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 };
 
 }  // anonymous namespace
@@ -161,6 +161,9 @@ class MediaSessionImplServiceRoutingTest
 
   void TearDown() override {
     services_.clear();
+    players_.clear();
+    sub_frame_ = nullptr;
+    main_frame_ = nullptr;
 
     RenderViewHostImplTestHarness::TearDown();
   }
@@ -247,8 +250,8 @@ class MediaSessionImplServiceRoutingTest
     return empty_metadata_.source_title;
   }
 
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> main_frame_;
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> sub_frame_;
+  raw_ptr<TestRenderFrameHost> main_frame_;
+  raw_ptr<TestRenderFrameHost> sub_frame_;
 
   using ServiceMap = std::map<TestRenderFrameHost*,
                               std::unique_ptr<MockMediaSessionServiceImpl>>;
@@ -367,7 +370,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   services_[main_frame_]->EnableAction(MediaSessionAction::kPlay);
 
   observer.WaitForEmptyActions();
-  observer.WaitForEmptyMetadata();
+  observer.WaitForExpectedMetadata(empty_metadata());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
@@ -764,10 +767,8 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   }
 }
 
-// We hide the media metadata from CrOS' media controls by replacing the
-// metadata in the MediaSessionImpl with some placeholder metadata. These
-// changes are gated to only affect ChromeOS, hence why the testing for this is
-// also ChromeOS only.
+// We hide the media metadata only from CrOS' media controls by replacing the
+// metadata in the MediaSessionImpl with some placeholder metadata.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaSessionImplServiceRoutingTest, HideMediaMetadataInCrOS) {
   client_.SetShouldHideMetadata(true);
@@ -990,6 +991,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithEmptyImagesWhenServiceNotPresent) {
+  client_.SetShouldHideMetadata(false);
   StartPlayerForFrame(main_frame_);
   EXPECT_EQ(nullptr, ComputeServiceForRouting());
 
@@ -1005,6 +1007,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithImagesWhenServicePresent) {
+  client_.SetShouldHideMetadata(false);
   CreateServiceForFrame(main_frame_);
   StartPlayerForFrame(main_frame_);
 
@@ -1062,6 +1065,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverWithImagesWhenMultipleServicesPresent) {
+  client_.SetShouldHideMetadata(false);
   CreateServiceForFrame(sub_frame_);
   StartPlayerForFrame(sub_frame_);
 
@@ -1095,6 +1099,43 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   std::vector<media_session::MediaImage> empty_images;
   observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
                                        empty_images);
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverWithImages_HideMetadata) {
+  client_.SetShouldHideMetadata(true);
+
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  std::vector<media_session::MediaImage> expected_images;
+
+  media_session::MediaImage test_image;
+  test_image.src = GURL("https://www.google.com");
+  expected_images.push_back(test_image);
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+
+  blink::mojom::SpecMediaMetadataPtr spec_metadata(
+      blink::mojom::SpecMediaMetadata::New());
+  spec_metadata->artwork.push_back(test_image);
+
+  services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // We hide the image only from CrOS' media controls by replacing the it with a
+  // default image in the MediaSessionImpl.
+  std::vector<media_session::MediaImage> images_with_default;
+  images_with_default.push_back(media_session::MediaImage());
+  observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
+                                       images_with_default);
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  observer.WaitForExpectedImagesOfType(MediaSessionImageType::kArtwork,
+                                       expected_images);
+#endif
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest, StopBehaviourDefault) {
@@ -1190,7 +1231,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, PositionFromServiceCanBeReset) {
 
   observer.WaitForExpectedPosition(expected_position);
 
-  services_[main_frame_]->SetPositionState(absl::nullopt);
+  services_[main_frame_]->SetPositionState(std::nullopt);
 
   EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 
@@ -1302,6 +1343,77 @@ TEST_F(MediaSessionImplServiceRoutingTest, RouteAudioVideoState) {
   }
 }
 
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverWithChaptersWhenServicePresent) {
+  client_.SetShouldHideMetadata(false);
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  std::vector<media_session::ChapterInformation> expected_chapters;
+
+  media_session::MediaImage test_image_1;
+  test_image_1.src = GURL("https://www.google.com");
+  media_session::MediaImage test_image_2;
+  test_image_2.src = GURL("https://www.example.org");
+
+  media_session::ChapterInformation test_chapter_1(
+      /*title=*/u"chapter1", /*startTime=*/base::Seconds(10),
+      /*artwork=*/{test_image_1});
+
+  media_session::ChapterInformation test_chapter_2(
+      /*title=*/u"chapter2", /*startTime=*/base::Seconds(20),
+      /*artwork=*/{test_image_2});
+
+  expected_chapters.push_back(test_chapter_1);
+  expected_chapters.push_back(test_chapter_2);
+
+  media_session::MediaMetadata expected_metadata;
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
+  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
+  expected_metadata.chapters = expected_chapters;
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    observer.WaitForExpectedMetadata(empty_metadata());
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    blink::mojom::SpecMediaMetadataPtr spec_metadata(
+        blink::mojom::SpecMediaMetadata::New());
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
+    spec_metadata->chapterInfo.push_back(test_chapter_1);
+    spec_metadata->chapterInfo.push_back(test_chapter_2);
+
+    services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    ClearPlayersForFrame(main_frame_);
+
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+}
+
 // Test duration duration update throttle behavior for routed service.
 // TODO (jazzhsu): Remove these tests once media session supports livestream.
 class MediaSessionImplServiceRoutingThrottleTest
@@ -1356,13 +1468,20 @@ class MediaSessionImplServiceRoutingFencedFrameTest
     fenced_frame_ = main_frame_->AppendFencedFrame();
   }
 
+  void TearDown() override {
+    inner_fenced_frame_ = nullptr;
+    fenced_frame_ = nullptr;
+
+    MediaSessionImplServiceRoutingTest::TearDown();
+  }
+
   void CreateFencedFrameInSubframe() {
     inner_fenced_frame_ = sub_frame_->AppendFencedFrame();
   }
 
  protected:
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> fenced_frame_;
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> inner_fenced_frame_;
+  raw_ptr<TestRenderFrameHost> fenced_frame_;
+  raw_ptr<TestRenderFrameHost> inner_fenced_frame_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

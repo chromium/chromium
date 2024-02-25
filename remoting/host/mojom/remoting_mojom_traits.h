@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
@@ -35,7 +36,6 @@
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -152,10 +152,10 @@ class StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
     return options.enable_remote_webauthn();
   }
 
-  static absl::optional<uint32_t> clipboard_size(
+  static std::optional<uint32_t> clipboard_size(
       const ::remoting::DesktopEnvironmentOptions& options) {
     if (!options.clipboard_size().has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     size_t clipboard_size = options.clipboard_size().value();
@@ -618,12 +618,12 @@ class StructTraits<remoting::mojom::FileTransferErrorDataView,
     return error.type();
   }
 
-  static absl::optional<int32_t> api_error_code(
+  static std::optional<int32_t> api_error_code(
       const ::remoting::protocol::FileTransfer_Error& error) {
     if (error.has_api_error_code()) {
       return error.api_error_code();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static const std::string& function(
@@ -1169,20 +1169,20 @@ class StructTraits<remoting::mojom::KeyEventDataView,
     return event.lock_states();
   }
 
-  static absl::optional<bool> caps_lock_state(
+  static std::optional<bool> caps_lock_state(
       const ::remoting::protocol::KeyEvent& event) {
     if (event.has_caps_lock_state()) {
       return event.caps_lock_state();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<bool> num_lock_state(
+  static std::optional<bool> num_lock_state(
       const ::remoting::protocol::KeyEvent& event) {
     if (event.has_num_lock_state()) {
       return event.num_lock_state();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static bool Read(remoting::mojom::KeyEventDataView data_view,
@@ -1193,20 +1193,20 @@ template <>
 class StructTraits<remoting::mojom::MouseEventDataView,
                    ::remoting::protocol::MouseEvent> {
  public:
-  static absl::optional<int32_t> x(
+  static std::optional<int32_t> x(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_x()) {
       return event.x();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<int32_t> y(
+  static std::optional<int32_t> y(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_y()) {
       return event.y();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static ::remoting::protocol::MouseEvent::MouseButton button(
@@ -1217,61 +1217,61 @@ class StructTraits<remoting::mojom::MouseEventDataView,
     return ::remoting::protocol::MouseEvent::BUTTON_UNDEFINED;
   }
 
-  static absl::optional<bool> button_down(
+  static std::optional<bool> button_down(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_button_down()) {
       DCHECK(event.has_button());
       return event.button_down();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<float> wheel_delta_x(
+  static std::optional<float> wheel_delta_x(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_wheel_delta_x()) {
       return event.wheel_delta_x();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<float> wheel_delta_y(
+  static std::optional<float> wheel_delta_y(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_wheel_delta_y()) {
       return event.wheel_delta_y();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<float> wheel_ticks_x(
+  static std::optional<float> wheel_ticks_x(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.wheel_ticks_x()) {
       return event.wheel_ticks_x();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<float> wheel_ticks_y(
+  static std::optional<float> wheel_ticks_y(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.wheel_ticks_y()) {
       return event.wheel_ticks_y();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<int32_t> delta_x(
+  static std::optional<int32_t> delta_x(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_delta_x()) {
       return event.delta_x();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  static absl::optional<int32_t> delta_y(
+  static std::optional<int32_t> delta_y(
       const ::remoting::protocol::MouseEvent& event) {
     if (event.has_delta_y()) {
       return event.delta_y();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static bool Read(remoting::mojom::MouseEventDataView data_view,

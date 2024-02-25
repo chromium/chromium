@@ -20,9 +20,9 @@ class TabSliderButton;
 // between the three available capture sources (fullscreen, region, and window).
 // Only a single capture source can be active at any time.
 class ASH_EXPORT CaptureModeSourceView : public views::View {
- public:
-  METADATA_HEADER(CaptureModeSourceView);
+  METADATA_HEADER(CaptureModeSourceView, views::View)
 
+ public:
   CaptureModeSourceView();
   CaptureModeSourceView(const CaptureModeSourceView&) = delete;
   CaptureModeSourceView& operator=(const CaptureModeSourceView&) = delete;
@@ -51,12 +51,12 @@ class ASH_EXPORT CaptureModeSourceView : public views::View {
 
   // Owned by the view hierarchy. Contains fullscreen, region, and window toggle
   // buttons.
-  raw_ptr<TabSlider, ExperimentalAsh> capture_source_switch_;
+  raw_ptr<TabSlider> capture_source_switch_;
 
   // Owned by the `capture_source_switch_`.
-  raw_ptr<TabSliderButton, ExperimentalAsh> fullscreen_toggle_button_;
-  raw_ptr<TabSliderButton, ExperimentalAsh> region_toggle_button_;
-  raw_ptr<TabSliderButton, ExperimentalAsh> window_toggle_button_;
+  raw_ptr<TabSliderButton> fullscreen_toggle_button_;
+  raw_ptr<TabSliderButton> region_toggle_button_;
+  raw_ptr<TabSliderButton> window_toggle_button_;
 };
 
 }  // namespace ash

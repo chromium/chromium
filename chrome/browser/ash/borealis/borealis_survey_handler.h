@@ -37,19 +37,19 @@ class BorealisSurveyHandler
                            GetSurveyDataReturnsCorrectData);
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       lifetime_observation_{this};
   base::WeakPtrFactory<BorealisSurveyHandler> weak_factory_{this};
 
   void CreateNotification(base::flat_map<std::string, std::string> survey_data);
-  absl::optional<int> GetGameId(const std::string& app_id);
+  std::optional<int> GetGameId(const std::string& app_id);
   static base::flat_map<std::string, std::string> GetSurveyData(
       std::string owner_id,
       const std::string app_id,
       std::string window_title,
-      absl::optional<int> game_id);
+      std::optional<int> game_id);
 };
 }  // namespace borealis
 

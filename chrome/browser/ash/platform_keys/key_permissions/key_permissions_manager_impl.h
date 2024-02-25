@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -76,14 +76,13 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     void UpdatePermissionsForKey(std::vector<uint8_t> public_key_spki_der);
     void UpdatePermissionsForKeyWithCorporateFlag(
         std::vector<uint8_t> public_key_spki_der,
-        absl::optional<bool> corporate_usage_allowed,
+        std::optional<bool> corporate_usage_allowed,
         chromeos::platform_keys::Status corporate_usage_retrieval_status);
     void OnKeyPermissionsUpdated(
         chromeos::platform_keys::Status permissions_update_status);
 
     const Mode mode_;
-    const raw_ptr<KeyPermissionsManagerImpl, ExperimentalAsh>
-        key_permissions_manager_;
+    const raw_ptr<KeyPermissionsManagerImpl> key_permissions_manager_;
     base::queue<std::vector<uint8_t>> public_key_spki_der_queue_;
     bool update_started_ = false;
     UpdateCallback callback_;
@@ -152,7 +151,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void OnArcUsageAllowanceForCorporateKeysChanged(bool allowed) override;
 
   void OnGotTokens(
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>> token_ids,
+      const std::vector<chromeos::platform_keys::TokenId> token_ids,
       chromeos::platform_keys::Status status);
 
   // Updates the permissions of the keys residing on |token_id| in chaps. If
@@ -169,13 +168,13 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   void OnKeyPermissionsRetrieved(
       IsKeyAllowedForUsageCallback callback,
-      const absl::optional<std::string>& attribute_value,
+      const std::optional<std::string>& attribute_value,
       chromeos::platform_keys::Status status);
 
   void IsKeyAllowedForUsageWithPermissions(
       IsKeyAllowedForUsageCallback callback,
       KeyUsage usage,
-      absl::optional<std::vector<uint8_t>> serialized_key_permissions,
+      std::optional<std::vector<uint8_t>> serialized_key_permissions,
       chromeos::platform_keys::Status key_attribute_retrieval_status);
 
   // Called when the token is ready and the one-time migration is done.
@@ -198,10 +197,8 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
       key_permissions_in_chaps_updater_;
   // The ARC usage manager delegate for |token_id_|.
   std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate_;
-  raw_ptr<PlatformKeysService, ExperimentalAsh> platform_keys_service_ =
-      nullptr;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_ =
-      nullptr;
+  raw_ptr<PlatformKeysService> platform_keys_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
   base::ScopedObservation<ArcKpmDelegate, ArcKpmDelegate::Observer>
       arc_usage_manager_delegate_observation_{this};
   base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_ptr_factory_{this};

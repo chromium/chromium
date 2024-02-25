@@ -5,11 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_SETTINGS_CONTROLLER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SETTINGS_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom.h"
@@ -51,16 +50,16 @@ class SettingsController : public AssistantClientObserver,
 
   // The settings are being passed in to clearly document when Libassistant
   // must be updated.
-  void UpdateListeningEnabled(absl::optional<bool> listening_enabled);
+  void UpdateListeningEnabled(std::optional<bool> listening_enabled);
   void UpdateAuthenticationTokens(
-      const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
-  void UpdateInternalOptions(const absl::optional<std::string>& locale,
-                             absl::optional<bool> spoken_feedback_enabled,
-                             absl::optional<bool> dark_mode_enabled);
-  void UpdateLocaleOverride(const absl::optional<std::string>& locale);
-  void UpdateDeviceSettings(const absl::optional<std::string>& locale,
-                            absl::optional<bool> hotword_enabled);
-  void UpdateDarkModeEnabledV2(absl::optional<bool> dark_mode_enabled);
+      const std::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
+  void UpdateInternalOptions(const std::optional<std::string>& locale,
+                             std::optional<bool> spoken_feedback_enabled,
+                             std::optional<bool> dark_mode_enabled);
+  void UpdateLocaleOverride(const std::optional<std::string>& locale);
+  void UpdateDeviceSettings(const std::optional<std::string>& locale,
+                            std::optional<bool> hotword_enabled);
+  void UpdateDarkModeEnabledV2(std::optional<bool> dark_mode_enabled);
 
   // Instantiated when Libassistant is started and destroyed when Libassistant
   // is stopped.
@@ -71,14 +70,14 @@ class SettingsController : public AssistantClientObserver,
 
   // Set in |OnAssistantClientCreated| and unset in
   // |OnDestroyingAssistantClient|.
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
-  absl::optional<bool> hotword_enabled_;
-  absl::optional<bool> spoken_feedback_enabled_;
-  absl::optional<bool> dark_mode_enabled_;
-  absl::optional<bool> listening_enabled_;
-  absl::optional<std::string> locale_;
-  absl::optional<std::vector<mojom::AuthenticationTokenPtr>>
+  std::optional<bool> hotword_enabled_;
+  std::optional<bool> spoken_feedback_enabled_;
+  std::optional<bool> dark_mode_enabled_;
+  std::optional<bool> listening_enabled_;
+  std::optional<std::string> locale_;
+  std::optional<std::vector<mojom::AuthenticationTokenPtr>>
       authentication_tokens_;
 
   mojo::Receiver<mojom::SettingsController> receiver_{this};

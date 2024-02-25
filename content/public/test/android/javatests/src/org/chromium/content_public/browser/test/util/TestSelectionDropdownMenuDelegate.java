@@ -19,9 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A placeholder {@link SelectionDropdownMenuDelegate} to be used with tests.
- */
+/** A placeholder {@link SelectionDropdownMenuDelegate} to be used with tests. */
 public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuDelegate {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
@@ -31,8 +29,13 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
     }
 
     @Override
-    public void show(Context context, View rootView, MVCListAdapter.ModelList items,
-            ItemClickListener clickListener, int x, int y) {}
+    public void show(
+            Context context,
+            View rootView,
+            MVCListAdapter.ModelList items,
+            ItemClickListener clickListener,
+            int x,
+            int y) {}
 
     @Override
     public void dismiss() {}
@@ -65,10 +68,17 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
     }
 
     @Override
-    public MVCListAdapter.ListItem getMenuItem(String title, @Nullable String contentDescription,
-            int groupId, int id, @Nullable Drawable startIcon, boolean isIconTintable,
-            boolean groupContainsIcon, boolean enabled,
-            @Nullable View.OnClickListener clickListener, @Nullable Intent intent) {
+    public MVCListAdapter.ListItem getMenuItem(
+            String title,
+            @Nullable String contentDescription,
+            int groupId,
+            int id,
+            @Nullable Drawable startIcon,
+            boolean isIconTintable,
+            boolean groupContainsIcon,
+            boolean enabled,
+            @Nullable View.OnClickListener clickListener,
+            @Nullable Intent intent) {
         return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, new PropertyModel());
     }
 }

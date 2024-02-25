@@ -7,10 +7,10 @@
  * Polymer element lock screen network selection UI.
  */
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/network/network_select.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -66,7 +66,7 @@ Polymer({
 
     // Otherwise, connect.
     this.networkConfig_.startConnect(networkState.guid).then(response => {
-      if (response.result == StartConnectResult.kSuccess) {
+      if (response.result === StartConnectResult.kSuccess) {
         return;
       }
       chrome.send('showNetworkConfig', [networkState.guid]);

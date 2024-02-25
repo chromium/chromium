@@ -48,7 +48,10 @@ public class ColorPickerDialog extends AlertDialog implements OnColorChangedList
      * @param color The initial color to set.
      * @param suggestions The list of suggestions.
      */
-    public ColorPickerDialog(Context context, OnColorChangedListener listener, int color,
+    public ColorPickerDialog(
+            Context context,
+            OnColorChangedListener listener,
+            int color,
             ColorSuggestion[] suggestions) {
         super(context, 0);
 
@@ -67,34 +70,39 @@ public class ColorPickerDialog extends AlertDialog implements OnColorChangedList
 
         // Initialize Set/Cancel buttons
         String positiveButtonText = context.getString(R.string.color_picker_button_set);
-        setButton(BUTTON_POSITIVE, positiveButtonText, new Dialog.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                tryNotifyColorSet(mCurrentColor);
-            }
-        });
+        setButton(
+                BUTTON_POSITIVE,
+                positiveButtonText,
+                new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tryNotifyColorSet(mCurrentColor);
+                    }
+                });
 
         // Note that with the color picker there's not really any such thing as
         // "cancelled".
         // The color picker flow only finishes when we return a color, so we
-        // have to always
-        // return something. The concept of "cancelled" in this case just means
-        // returning
-        // the color that we were initialized with.
+        // have to always return something. The concept of "cancelled" in this case just means
+        // returning the color that we were initialized with.
         String negativeButtonText = context.getString(R.string.color_picker_button_cancel);
-        setButton(BUTTON_NEGATIVE, negativeButtonText, new Dialog.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                tryNotifyColorSet(mInitialColor);
-            }
-        });
+        setButton(
+                BUTTON_NEGATIVE,
+                negativeButtonText,
+                new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tryNotifyColorSet(mInitialColor);
+                    }
+                });
 
-        setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface arg0) {
-                tryNotifyColorSet(mInitialColor);
-            }
-        });
+        setOnCancelListener(
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface arg0) {
+                        tryNotifyColorSet(mInitialColor);
+                    }
+                });
 
         // Initialize main content view
         mContent = inflateView(context, R.layout.color_picker_dialog_content);
@@ -102,12 +110,13 @@ public class ColorPickerDialog extends AlertDialog implements OnColorChangedList
 
         // Initialize More button.
         mMoreButton = (Button) mContent.findViewById(R.id.more_colors_button);
-        mMoreButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAdvancedView();
-            }
-        });
+        mMoreButton.setOnClickListener(
+                new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAdvancedView();
+                    }
+                });
 
         // Initialize advanced color view (hidden initially).
         mAdvancedColorPicker =
@@ -149,9 +158,7 @@ public class ColorPickerDialog extends AlertDialog implements OnColorChangedList
         mAdvancedColorPicker.setColor(mCurrentColor);
     }
 
-    /**
-     * Tries to notify any listeners that the color has been set.
-     */
+    /** Tries to notify any listeners that the color has been set. */
     private void tryNotifyColorSet(int color) {
         if (mListener != null) mListener.onColorChanged(color);
     }

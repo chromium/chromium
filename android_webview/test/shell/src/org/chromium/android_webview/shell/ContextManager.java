@@ -6,8 +6,8 @@ package org.chromium.android_webview.shell;
 
 import android.view.Surface;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /** draw_fn framework side implementation for tests. */
 @JNINamespace("draw_fn")
@@ -47,19 +47,30 @@ public class ContextManager {
 
     // Uses functor from last sync.
     public int[] draw(int width, int height, int scrollX, int scrollY, boolean readbackQuadrants) {
-        return ContextManagerJni.get().draw(
-                mNativeContextManager, width, height, scrollX, scrollY, readbackQuadrants);
+        return ContextManagerJni.get()
+                .draw(mNativeContextManager, width, height, scrollX, scrollY, readbackQuadrants);
     }
 
     @NativeMethods
     interface Natives {
         long getDrawFnFunctionTable(boolean useVulkan);
+
         long init(boolean useVulkan);
+
         void setSurface(long nativeContextManager, Surface surface, int width, int height);
+
         void resizeSurface(long nativeContextManager, int width, int height);
+
         void setOverlaysSurface(long nativeContextManager, Surface surface);
+
         void sync(long nativeContextManager, int functor, boolean applyForceDark);
-        int[] draw(long nativeContextManager, int width, int height, int scrollX, int scrollY,
+
+        int[] draw(
+                long nativeContextManager,
+                int width,
+                int height,
+                int scrollX,
+                int scrollY,
                 boolean readbackQuadrants);
     }
 }

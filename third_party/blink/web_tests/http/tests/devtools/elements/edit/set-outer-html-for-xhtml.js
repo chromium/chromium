@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests DOMAgent.setOuterHTML protocol method against an XHTML document.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   await TestRunner.navigatePromise('resources/set-outer-html-for-xhtml.xhtml');

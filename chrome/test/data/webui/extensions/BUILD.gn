@@ -9,8 +9,6 @@ import("../build_webui_tests.gni")
 assert(enable_extensions, "enable extensions check failed")
 
 build_webui_tests("build") {
-  resource_path_prefix = "extensions"
-
   files = [
     "toolbar_test.ts",
     "activity_log_history_item_test.ts",
@@ -51,6 +49,7 @@ build_webui_tests("build") {
     "test_util.ts",
     "toggle_row_test.ts",
     "url_util_test.ts",
+    "test_extension_hats_browser_proxy.ts",
   ]
 
   if (is_chromeos_ash) {
@@ -67,7 +66,9 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/extensions:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//tools/typescript/definitions:library",
     "//ui/webui/resources/js:build_ts",
   ]
   ts_definitions = [

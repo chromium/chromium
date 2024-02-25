@@ -69,7 +69,7 @@ class CertNodeBuilder {
 
   // Similar to Child, but if the argument is null, then this does not add
   // anything.
-  CertNodeBuilder& ChildIfNotNullopt(absl::optional<base::Value::Dict> child);
+  CertNodeBuilder& ChildIfNotNullopt(std::optional<base::Value::Dict> child);
 
   // Creates a base::Value::Dict representation of the collected information.
   // Only call this once.
@@ -102,7 +102,7 @@ CertNodeBuilder& CertNodeBuilder::Child(base::Value::Dict child) {
 }
 
 CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
-    absl::optional<base::Value::Dict> child) {
+    std::optional<base::Value::Dict> child) {
   if (child)
     return Child(std::move(*child));
   return *this;
@@ -115,6 +115,100 @@ base::Value::Dict CertNodeBuilder::Build() {
   }
   built_ = true;
   return std::move(node_);
+}
+
+std::string HandleOptionalOrError(
+    const x509_certificate_model::OptionalStringOrError& s) {
+  if (absl::holds_alternative<x509_certificate_model::Error>(s))
+    return l10n_util::GetStringUTF8(IDS_CERT_DUMP_ERROR);
+  else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s))
+    return l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
+  return absl::get<std::string>(s);
+}
+
+std::string DialogArgsForCertList(
+    const std::vector<x509_certificate_model::X509CertificateModel>& certs) {
+  std::string data;
+
+  // Certificate information. The keys in this dictionary's general key
+  // correspond to the IDs in the Html page.
+  base::Value::Dict cert_info;
+  const x509_certificate_model::X509CertificateModel& model = certs.front();
+
+  cert_info.Set("isError", !model.is_valid());
+  cert_info.SetByDottedPath(
+      "general.title",
+      l10n_util::GetStringFUTF8(IDS_CERT_INFO_DIALOG_TITLE,
+                                base::UTF8ToUTF16(model.GetTitle())));
+
+  if (model.is_valid()) {
+    // Standard certificate details.
+    const std::string alternative_text =
+        l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
+
+    // Issued to information.
+    cert_info.SetByDottedPath(
+        "general.issued-cn",
+        HandleOptionalOrError(model.GetSubjectCommonName()));
+    cert_info.SetByDottedPath("general.issued-o",
+                              HandleOptionalOrError(model.GetSubjectOrgName()));
+    cert_info.SetByDottedPath(
+        "general.issued-ou",
+        HandleOptionalOrError(model.GetSubjectOrgUnitName()));
+
+    // Issuer information.
+    cert_info.SetByDottedPath(
+        "general.issuer-cn",
+        HandleOptionalOrError(model.GetIssuerCommonName()));
+    cert_info.SetByDottedPath("general.issuer-o",
+                              HandleOptionalOrError(model.GetIssuerOrgName()));
+    cert_info.SetByDottedPath(
+        "general.issuer-ou",
+        HandleOptionalOrError(model.GetIssuerOrgUnitName()));
+
+    // Validity period.
+    base::Time issued, expires;
+    std::string issued_str, expires_str;
+    if (model.GetTimes(&issued, &expires)) {
+      issued_str =
+          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(issued));
+      expires_str =
+          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(expires));
+    } else {
+      issued_str = alternative_text;
+      expires_str = alternative_text;
+    }
+    cert_info.SetByDottedPath("general.issue-date", issued_str);
+    cert_info.SetByDottedPath("general.expiry-date", expires_str);
+    cert_info.SetByDottedPath("general.spki", model.HashSpkiSHA256());
+  }
+
+  // We always have a cert hash. We don't always have a SPKI hash, if the cert
+  // is not valid.
+  cert_info.SetByDottedPath("general.sha256", model.HashCertSHA256());
+
+  // Certificate hierarchy is constructed from bottom up.
+  base::Value::List children;
+  int index = 0;
+  for (const auto& cert : certs) {
+    base::Value::Dict cert_node;
+    cert_node.Set("label", base::Value(cert.GetTitle()));
+    cert_node.SetByDottedPath("payload.index", base::Value(index));
+    // Add the child from the previous iteration.
+    if (!children.empty())
+      cert_node.Set("children", std::move(children));
+
+    // Add this node to the children list for the next iteration.
+    children = base::Value::List();
+    children.Append(std::move(cert_node));
+    ++index;
+  }
+  // Set the last node as the top of the certificate hierarchy.
+  cert_info.Set("hierarchy", std::move(children));
+
+  base::JSONWriter::Write(cert_info, &data);
+
+  return data;
 }
 
 }  // namespace
@@ -203,161 +297,43 @@ gfx::NativeWindow CertificateViewerDialog::GetNativeWebContentsModalDialog() {
 }
 
 CertificateViewerDialog::CertificateViewerDialog(
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> in_certs,
     std::vector<std::string> cert_nicknames) {
-  for (size_t i = 0; i < certs.size(); ++i) {
+  CHECK(!in_certs.empty());
+
+  std::vector<x509_certificate_model::X509CertificateModel> certs;
+  for (size_t i = 0; i < in_certs.size(); ++i) {
     std::string nickname;
-    if (i < cert_nicknames.size())
+    if (i < cert_nicknames.size()) {
       nickname = std::move(cert_nicknames[i]);
-    certs_.emplace_back(std::move(certs[i]), std::move(nickname));
+    }
+    certs.emplace_back(std::move(in_certs[i]), std::move(nickname));
   }
-  // Construct the dialog title from the certificate.
-  title_ = l10n_util::GetStringFUTF16(
-      IDS_CERT_INFO_DIALOG_TITLE, base::UTF8ToUTF16(certs_.front().GetTitle()));
+
+  constexpr gfx::Size kDefaultSize{544, 628};
+  set_can_close(true);
+  set_delete_on_close(false);
+  set_dialog_args(DialogArgsForCertList(certs));
+  set_dialog_modal_type(ui::MODAL_TYPE_NONE);
+  set_dialog_content_url(GURL(chrome::kChromeUICertificateViewerURL));
+  set_dialog_size(kDefaultSize);
+  set_dialog_title(l10n_util::GetStringFUTF16(
+      IDS_CERT_INFO_DIALOG_TITLE, base::UTF8ToUTF16(certs.front().GetTitle())));
+  set_show_dialog_title(true);
+
+  AddWebUIMessageHandler(
+      std::make_unique<CertificateViewerDialogHandler>(this, std::move(certs)));
 }
 
 CertificateViewerDialog::~CertificateViewerDialog() = default;
-
-ui::ModalType CertificateViewerDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
-
-std::u16string CertificateViewerDialog::GetDialogTitle() const {
-  return title_;
-}
-
-GURL CertificateViewerDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUICertificateViewerURL);
-}
-
-void CertificateViewerDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {
-  handlers->push_back(new CertificateViewerDialogHandler(
-      const_cast<CertificateViewerDialog*>(this), &certs_));
-}
-
-void CertificateViewerDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 544;
-  const int kDefaultHeight = 628;
-  size->SetSize(kDefaultWidth, kDefaultHeight);
-}
-
-std::string HandleOptionalOrError(
-    const x509_certificate_model::OptionalStringOrError& s) {
-  if (absl::holds_alternative<x509_certificate_model::Error>(s))
-    return l10n_util::GetStringUTF8(IDS_CERT_DUMP_ERROR);
-  else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s))
-    return l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
-  return absl::get<std::string>(s);
-}
-
-std::string CertificateViewerDialog::GetDialogArgs() const {
-  std::string data;
-
-  // Certificate information. The keys in this dictionary's general key
-  // correspond to the IDs in the Html page.
-  base::Value::Dict cert_info;
-  const x509_certificate_model::X509CertificateModel& model = certs_.front();
-
-  cert_info.Set("isError", !model.is_valid());
-  cert_info.SetByDottedPath(
-      "general.title",
-      l10n_util::GetStringFUTF8(IDS_CERT_INFO_DIALOG_TITLE,
-                                base::UTF8ToUTF16(model.GetTitle())));
-
-  if (model.is_valid()) {
-    // Standard certificate details.
-    const std::string alternative_text =
-        l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
-
-    // Issued to information.
-    cert_info.SetByDottedPath(
-        "general.issued-cn",
-        HandleOptionalOrError(model.GetSubjectCommonName()));
-    cert_info.SetByDottedPath("general.issued-o",
-                              HandleOptionalOrError(model.GetSubjectOrgName()));
-    cert_info.SetByDottedPath(
-        "general.issued-ou",
-        HandleOptionalOrError(model.GetSubjectOrgUnitName()));
-
-    // Issuer information.
-    cert_info.SetByDottedPath(
-        "general.issuer-cn",
-        HandleOptionalOrError(model.GetIssuerCommonName()));
-    cert_info.SetByDottedPath("general.issuer-o",
-                              HandleOptionalOrError(model.GetIssuerOrgName()));
-    cert_info.SetByDottedPath(
-        "general.issuer-ou",
-        HandleOptionalOrError(model.GetIssuerOrgUnitName()));
-
-    // Validity period.
-    base::Time issued, expires;
-    std::string issued_str, expires_str;
-    if (model.GetTimes(&issued, &expires)) {
-      issued_str =
-          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(issued));
-      expires_str =
-          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(expires));
-    } else {
-      issued_str = alternative_text;
-      expires_str = alternative_text;
-    }
-    cert_info.SetByDottedPath("general.issue-date", issued_str);
-    cert_info.SetByDottedPath("general.expiry-date", expires_str);
-  }
-
-  cert_info.SetByDottedPath("general.sha256",
-                            model.HashCertSHA256WithSeparators());
-  cert_info.SetByDottedPath("general.sha1", model.HashCertSHA1WithSeparators());
-
-  // Certificate hierarchy is constructed from bottom up.
-  base::Value::List children;
-  int index = 0;
-  for (const auto& cert : certs_) {
-    base::Value::Dict cert_node;
-    cert_node.Set("label", base::Value(cert.GetTitle()));
-    cert_node.SetByDottedPath("payload.index", base::Value(index));
-    // Add the child from the previous iteration.
-    if (!children.empty())
-      cert_node.Set("children", std::move(children));
-
-    // Add this node to the children list for the next iteration.
-    children = base::Value::List();
-    children.Append(std::move(cert_node));
-    ++index;
-  }
-  // Set the last node as the top of the certificate hierarchy.
-  cert_info.Set("hierarchy", std::move(children));
-
-  base::JSONWriter::Write(cert_info, &data);
-
-  return data;
-}
-
-void CertificateViewerDialog::OnDialogShown(content::WebUI* webui) {
-  webui_ = webui;
-}
-
-void CertificateViewerDialog::OnDialogClosed(const std::string& json_retval) {
-  // Don't |delete this|: owned by the constrained dialog manager.
-}
-
-void CertificateViewerDialog::OnCloseContents(WebContents* source,
-                                              bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool CertificateViewerDialog::ShouldShowDialogTitle() const {
-  return true;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // CertificateViewerDialogHandler
 
 CertificateViewerDialogHandler::CertificateViewerDialogHandler(
     CertificateViewerDialog* dialog,
-    const std::vector<x509_certificate_model::X509CertificateModel>* certs)
-    : dialog_(dialog), certs_(certs) {}
+    std::vector<x509_certificate_model::X509CertificateModel> certs)
+    : dialog_(dialog), certs_(std::move(certs)) {}
 
 CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {
 }
@@ -386,12 +362,11 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
           dialog_->GetNativeWebContentsModalDialog()));
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
-  for (const auto& cert : base::make_span(*certs_).subspan(cert_index)) {
+  for (const auto& cert : base::make_span(certs_).subspan(cert_index)) {
     export_certs.push_back(bssl::UpRef(cert.cert_buffer()));
   }
   ShowCertExportDialog(web_ui()->GetWebContents(), window,
-                       std::move(export_certs),
-                       (*certs_)[cert_index].GetTitle());
+                       std::move(export_certs), certs_[cert_index].GetTitle());
 }
 
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(
@@ -403,7 +378,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
     return;
 
   const x509_certificate_model::X509CertificateModel& model =
-      (*certs_)[cert_index];
+      certs_[cert_index];
 
   CertNodeBuilder contents_builder(IDS_CERT_DETAILS_CERTIFICATE);
 
@@ -423,7 +398,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL));
 
-    absl::optional<base::Value::Dict> details_extensions;
+    std::optional<base::Value::Dict> details_extensions;
     if (!extensions.empty()) {
       CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
       for (const x509_certificate_model::Extension& extension : extensions) {
@@ -476,16 +451,19 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
                    .Payload(model.ProcessRawBitsSignatureWrap())
                    .Build());
   }
-
-  contents_builder.Child(
-      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP)
-          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
-                     .Payload(model.HashCertSHA256WithSeparators())
-                     .Build())
-          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL)
-                     .Payload(model.HashCertSHA1WithSeparators())
-                     .Build())
+  CertNodeBuilder fingerprint_builder =
+      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP);
+  fingerprint_builder.Child(
+      CertNodeBuilder(IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
+          .Payload(model.HashCertSHA256())
           .Build());
+  if (model.is_valid()) {
+    fingerprint_builder.Child(
+        CertNodeBuilder(IDS_CERT_INFO_SHA256_SPKI_FINGERPRINT_LABEL)
+            .Payload(model.HashSpkiSHA256())
+            .Build());
+  }
+  contents_builder.Child(fingerprint_builder.Build());
 
   base::Value::List root_list;
   root_list.Append(CertNodeBuilder(model.GetTitle())
@@ -498,7 +476,8 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
 int CertificateViewerDialogHandler::GetCertificateIndex(
     int requested_index) const {
   int cert_index = requested_index;
-  if (cert_index < 0 || static_cast<size_t>(cert_index) >= certs_->size())
+  if (cert_index < 0 || static_cast<size_t>(cert_index) >= certs_.size()) {
     return -1;
+  }
   return cert_index;
 }

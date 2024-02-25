@@ -18,14 +18,18 @@ declare_args() {
   is_java_debug = is_debug || incremental_install
 }
 
+# Toolchain used to create native libraries for robolectric_binary() targets.
+robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
+
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
 if (is_android || is_chromeos) {
   import("//build/config/android/channel.gni")
-  import("//build/config/chromecast_build.gni")
+  import("//build/config/cast.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
+  import("//build/toolchain/siso.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
 
@@ -63,7 +67,7 @@ if (is_android || is_chromeos) {
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 24
+    default_min_sdk_version = 26
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This
@@ -82,6 +86,13 @@ if (is_android || is_chromeos) {
       android_static_analysis = "on"
     }
   }
+
+  # Our build system no longer supports legacy multidex.
+  min_supported_sdk_version = 21
+
+  assert(
+      default_min_sdk_version >= min_supported_sdk_version,
+      "default_min_sdk_version ($default_min_sdk_version) must be >= min_supported_sdk_version ($min_supported_sdk_version)")
 
   # Avoid typos when setting android_static_analysis in args.gn.
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
@@ -103,11 +114,13 @@ if (is_android || is_chromeos) {
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_toolchain/ndk"
-    default_android_ndk_version = "r25c"
-    default_android_ndk_major_version = 25
+    if (current_cpu == "riscv64") {
+      # Today (2023-08-30) only the canary Android NDK supports RISC-V64.
+      default_android_ndk_root = "//third_party/android_toolchain_canary/ndk"
+    }
+    default_android_ndk_version = "r26b"
   } else {
     assert(defined(default_android_ndk_version))
-    assert(defined(default_android_ndk_major_version))
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
@@ -118,13 +131,6 @@ if (is_android || is_chromeos) {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_version = public_android_sdk_version
     default_android_sdk_build_tools_version = "34.0.0"
-    public_android_sdk = true
-  }
-
-  if (android_sdk_release == "tprivacysandbox") {
-    default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = "TiramisuPrivacySandbox"
-    default_android_sdk_build_tools_version = "33.0.0"
     public_android_sdk = true
   }
 
@@ -161,8 +167,6 @@ if (is_android || is_chromeos) {
 
   if (!defined(android_protoc_bin)) {
     android_protoc_bin = "//third_party/android_protoc/protoc"
-    android_proto_runtime =
-        "//third_party/android_deps:com_google_protobuf_protobuf_javalite_java"
   }
 
   webview_public_framework_dep =
@@ -177,7 +181,6 @@ if (is_android || is_chromeos) {
   declare_args() {
     android_ndk_root = default_android_ndk_root
     android_ndk_version = default_android_ndk_version
-    android_ndk_major_version = default_android_ndk_major_version
 
     # Android API level for 32 bits platforms
     android32_ndk_api_level = default_min_sdk_version
@@ -188,6 +191,10 @@ if (is_android || is_chromeos) {
     if (default_min_sdk_version < 21) {
       # Android did not support 64 bit before API 21.
       android64_ndk_api_level = 21
+    }
+    if (current_cpu == "riscv64" && default_min_sdk_version < 35) {
+      # Android did not support RISC-V64 before API 35.
+      android64_ndk_api_level = 35
     }
 
     android_sdk_root = default_android_sdk_root
@@ -270,8 +277,12 @@ if (is_android || is_chromeos) {
     enable_startup_profiles = false
 
     # The target to use as the system WebView implementation.
-    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-      system_webview_apk_target = "//android_webview:system_webview_64_apk"
+    if (android_64bit_target_cpu) {
+      if (skip_secondary_abi_for_cq) {
+        system_webview_apk_target = "//android_webview:system_webview_64_apk"
+      } else {
+        system_webview_apk_target = "//android_webview:system_webview_32_64_apk"
+      }
     } else {
       system_webview_apk_target = "//android_webview:system_webview_apk"
     }
@@ -304,6 +315,14 @@ if (is_android || is_chromeos) {
 
   assert(!incremental_install || is_java_debug,
          "incremental_install=true && is_java_debug=false is not supported.")
+
+  # We overwrite system_webview_apk_target if it is an alias
+  if (android_64bit_target_cpu) {
+    system_webview_apk_target =
+        string_replace(system_webview_apk_target,
+                       "system_webview_google_apk",
+                       "system_webview_google_32_64_apk")
+  }
 
   # Host stuff -----------------------------------------------------------------
 
@@ -370,15 +389,44 @@ if (is_android || is_chromeos) {
   android_tool_prefix = "$clang_base_path/bin/llvm-"
   android_readelf = "${android_tool_prefix}readobj"
   android_objcopy = "${android_tool_prefix}objcopy"
-  android_gdbserver =
-      "$android_ndk_root/prebuilt/$android_prebuilt_arch/gdbserver/gdbserver"
 
   android_sdk_tools_bundle_aapt2 = "${android_sdk_tools_bundle_aapt2_dir}/aapt2"
 
-  # Actions that use java should add this as an input so that they are rebuilt
-  # when the JDK changes.
-  java_path_for_inputs = "//third_party/jdk/current/bin/java.chromium"
+  _common_inputs_for_jre_jdk = [
+    "//third_party/jdk/current/conf/logging.properties",
+    "//third_party/jdk/current/conf/security/java.security",
+    "//third_party/jdk/current/lib/ct.sym",
+    "//third_party/jdk/current/lib/jrt-fs.jar",
+    "//third_party/jdk/current/lib/jvm.cfg",
+    "//third_party/jdk/current/lib/libawt.so",
+    "//third_party/jdk/current/lib/libawt_headless.so",
+    "//third_party/jdk/current/lib/libawt_xawt.so",
+    "//third_party/jdk/current/lib/libjava.so",
+    "//third_party/jdk/current/lib/libjimage.so",
+    "//third_party/jdk/current/lib/libjli.so",
+    "//third_party/jdk/current/lib/libjsvml.so",
+    "//third_party/jdk/current/lib/libmanagement.so",
+    "//third_party/jdk/current/lib/libmanagement_ext.so",
+    "//third_party/jdk/current/lib/libnet.so",
+    "//third_party/jdk/current/lib/libnio.so",
+    "//third_party/jdk/current/lib/libverify.so",
+    "//third_party/jdk/current/lib/libzip.so",
+    "//third_party/jdk/current/lib/modules",
+    "//third_party/jdk/current/lib/server/classes.jsa",
+    "//third_party/jdk/current/lib/server/libjvm.so",
+    "//third_party/jdk/current/lib/tzdb.dat",
+  ]
 
-  # Toolchain used to create native libraries for robolectric_binary() targets.
-  robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
+  # Actions that use java should add this as inputs so that they are rebuilt
+  # when the JDK changes.
+  java_paths_for_inputs = [
+                            "//third_party/jdk/current/bin/java",
+                            "//third_party/jdk/current/bin/java.chromium",
+                          ] + _common_inputs_for_jre_jdk
+
+  javac_paths_for_inputs =
+      [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
+
+  # TODO(crbug.com/1426605): Remove.
+  use_upstream_errorprone_annotations_threadsafe = true
 }

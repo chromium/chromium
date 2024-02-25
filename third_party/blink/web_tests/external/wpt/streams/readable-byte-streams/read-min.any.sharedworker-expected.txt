@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] ReadableStream with byte source: read({ min }) rejects if min is 0
+  assert_unreached: pull() should not be called Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }) rejects if min is negative
+  assert_unreached: pull() should not be called Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }) rejects if min is larger than view's length (Uint8Array)
+  assert_unreached: pull() should not be called Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }) rejects if min is larger than view's length (Uint16Array)
+  assert_unreached: pull() should not be called Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }) rejects if min is larger than view's length (DataView)
+  assert_unreached: pull() should not be called Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }), then read()
+  assert_equals: first result value byteLength expected 3 but got 2
+[FAIL] ReadableStream with byte source: read({ min }) with a DataView
+  assert_equals: result.value.byteLength expected 3 but got 2
+[FAIL] ReadableStream with byte source: enqueue(), then read({ min })
+  assert_equals: first result value byteLength expected 3 but got 1
+[FAIL] ReadableStream with byte source: read({ min: 3 }) on a 3-byte Uint8Array, then multiple enqueue() up to 3 bytes
+  assert_equals: first result value byteLength expected 3 but got 2
+[FAIL] ReadableStream with byte source: read({ min: 3 }) on a 5-byte Uint8Array, then multiple enqueue() up to 3 bytes
+  assert_equals: first result value byteLength expected 3 but got 2
+[FAIL] ReadableStream with byte source: read({ min: 3 }) on a 5-byte Uint8Array, then multiple enqueue() up to 4 bytes
+  assert_equals: first result value byteLength expected 4 but got 2
+[FAIL] ReadableStream with byte source: read({ min }) when closed before view is filled
+  assert_true: result.done expected true got false
+[FAIL] ReadableStream with byte source: read({ min }) when closed immediately after view is filled
+  assert_equals: result.value byteLength expected 3 but got 2
+[FAIL] ReadableStream with byte source: cancel() with partially filled pending read({ min }) request
+  Cannot read properties of null (reading 'view')
+[FAIL] ReadableStream with byte source: 3 byte enqueue(), then close(), then read({ min }) with 2-element Uint16Array must fail
+  assert_unreached: Should have rejected: read() must fail Reached unreachable code
+[FAIL] ReadableStream with byte source: read({ min }) with 2-element Uint16Array, then 3 byte enqueue(), then close() must fail
+  assert_throws_js: controller.close() must throw function "() => controller.close()" did not throw
+[FAIL] ReadableStream with byte source: tee() with read({ min }) from branch1 and read() from branch2
+  assert_equals: pull() must have been called 2 times expected 2 but got 1
+Harness: the test ran to completion.
+

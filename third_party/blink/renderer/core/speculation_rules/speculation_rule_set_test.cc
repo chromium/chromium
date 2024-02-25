@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/strong_alias.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink.h"
@@ -34,12 +35,14 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -85,6 +88,48 @@ class ListRuleMatcher {
 
  private:
   ::testing::Matcher<const Vector<KURL>&> url_matcher_;
+};
+
+class URLPatternMatcher {
+ public:
+  explicit URLPatternMatcher(v8::Isolate* isolate,
+                             String pattern,
+                             const KURL& base_url) {
+    auto* url_pattern_input = MakeGarbageCollected<V8URLPatternInput>(pattern);
+    url_pattern_ = URLPattern::Create(isolate, url_pattern_input, base_url,
+                                      ASSERT_NO_EXCEPTION);
+  }
+
+  bool MatchAndExplain(URLPattern* pattern,
+                       ::testing::MatchResultListener* listener) const {
+    if (!pattern) {
+      return false;
+    }
+    return MatchAndExplain(*pattern, listener);
+  }
+
+  bool MatchAndExplain(const URLPattern& pattern,
+                       ::testing::MatchResultListener* listener) const {
+    using Component = V8URLPatternComponent::Enum;
+    Component components[] = {Component::kProtocol, Component::kUsername,
+                              Component::kPassword, Component::kHostname,
+                              Component::kPort,     Component::kPathname,
+                              Component::kSearch,   Component::kHash};
+    for (auto component : components) {
+      if (URLPattern::compareComponent(V8URLPatternComponent(component),
+                                       url_pattern_, &pattern) != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(::std::ostream* os) const { *os << url_pattern_->ToString(); }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  Persistent<URLPattern> url_pattern_;
 };
 
 template <typename... Matchers>
@@ -155,12 +200,105 @@ class SpeculationRuleSetTest : public ::testing::Test {
     return static_cast<NullExecutionContext*>(execution_context_.Get());
   }
 
+  auto URLPattern(String pattern,
+                  const KURL& base_url = KURL("https://example.com/")) {
+    return ::testing::MakePolymorphicMatcher(
+        URLPatternMatcher(execution_context_->GetIsolate(), pattern, base_url));
+  }
+
  private:
-  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
   ScopedSpeculationRulesRelativeToDocumentForTest enable_relative_to_{true};
   ScopedPrerender2ForTest enable_prerender2_{true};
+  test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> execution_context_;
 };
+
+// Matches a SpeculationCandidatePtr list with a KURL list (without requiring
+// candidates to be in a specific order).
+template <typename... Matchers>
+auto HasURLs(Matchers&&... urls) {
+  return ::testing::ResultOf(
+      "urls",
+      [](const auto& candidates) {
+        Vector<KURL> urls;
+        base::ranges::transform(
+            candidates.begin(), candidates.end(), std::back_inserter(urls),
+            [](const auto& candidate) { return candidate->url; });
+        return urls;
+      },
+      ::testing::UnorderedElementsAre(urls...));
+}
+
+// Matches a SpeculationCandidatePtr with an Eagerness.
+auto HasEagerness(
+    ::testing::Matcher<blink::mojom::SpeculationEagerness> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "eagerness", &mojom::blink::SpeculationCandidate::eagerness, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a KURL.
+auto HasURL(::testing::Matcher<KURL> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "url", &mojom::blink::SpeculationCandidate::url, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a SpeculationAction.
+auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "action", &mojom::blink::SpeculationCandidate::action, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a SpeculationTargetHint.
+auto HasTargetHint(
+    ::testing::Matcher<mojom::blink::SpeculationTargetHint> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "target_hint",
+      &mojom::blink::SpeculationCandidate::target_browsing_context_name_hint,
+      matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a ReferrerPolicy.
+auto HasReferrerPolicy(
+    ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "referrer", &mojom::blink::SpeculationCandidate::referrer,
+      ::testing::Pointee(::testing::Field(
+          "policy", &mojom::blink::Referrer::policy, matcher))));
+}
+
+auto HasNoVarySearchHint() {
+  return ::testing::Pointee(
+      ::testing::Field("no_vary_search_hint",
+                       &mojom::blink::SpeculationCandidate::no_vary_search_hint,
+                       ::testing::IsTrue()));
+}
+
+auto NVSVariesOnKeyOrder() {
+  return ::testing::AllOf(
+      HasNoVarySearchHint(),
+      ::testing::Pointee(::testing::Field(
+          "no_vary_search_hint",
+          &mojom::blink::SpeculationCandidate::no_vary_search_hint,
+          testing::Pointee(::testing::Field(
+              "vary_on_key_order",
+              &network::mojom::blink::NoVarySearch::vary_on_key_order,
+              ::testing::IsTrue())))));
+}
+
+template <typename... Matchers>
+auto NVSHasNoVaryParams(Matchers&&... params) {
+  return ::testing::ResultOf(
+      "no_vary_params",
+      [](const auto& nvs) {
+        if (!nvs->no_vary_search_hint ||
+            !nvs->no_vary_search_hint->search_variance ||
+            !nvs->no_vary_search_hint->search_variance->is_no_vary_params()) {
+          return Vector<String>();
+        }
+        return nvs->no_vary_search_hint->search_variance->get_no_vary_params();
+      },
+      ::testing::UnorderedElementsAre(params...));
+}
 
 TEST_F(SpeculationRuleSetTest, Empty) {
   auto* rule_set =
@@ -374,13 +512,16 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint_{
       true};
+  ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
       // A rule of incorrect type.
       R"("not an object",)"
 
-      // A rule that doesn't elaborate on its source.
+      // This used to be invalid, but now is, even with no source.
+      // TODO(crbug.com/1517696): Remove this when SpeculationRulesImplictSource
+      // is permanently shipped, so keep the test focused.
       R"({"urls": ["no-source.html"]},)"
 
       // A rule with an unrecognized source.
@@ -447,8 +588,10 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
   // The rule set itself is valid, however many of the individual rules are
   // invalid. So we should have populated a warning message.
   EXPECT_FALSE(rule_set->error_message().empty());
-  EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/no-source.html"),
+                  MatchesListOfURLs("https://example.com/valid.html")));
 }
 
 // Test that only prerender rule can process a "_blank" target hint.
@@ -721,7 +864,7 @@ void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
 }
 
 template <typename F>
-void AssertNoRulesPropagatedToStubSpeculationHost(
+testing::AssertionResult NoRulesPropagatedToStubSpeculationHost(
     DummyPageHolder& page_holder,
     StubSpeculationHost& speculation_host,
     const F& functor,
@@ -733,9 +876,11 @@ void AssertNoRulesPropagatedToStubSpeculationHost(
       WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
                          WTF::Unretained(&speculation_host)));
 
+  bool done_was_called = false;
+
   base::RunLoop run_loop;
-  speculation_host.SetDoneClosure(
-      base::BindLambdaForTesting([]() { NOTREACHED(); }));
+  speculation_host.SetDoneClosure(base::BindLambdaForTesting(
+      [&done_was_called] { done_was_called = true; }));
   {
     auto* script_state = ToScriptStateForMainWorld(&frame);
     v8::MicrotasksScope microtasks_scope(script_state->GetIsolate(),
@@ -749,6 +894,8 @@ void AssertNoRulesPropagatedToStubSpeculationHost(
   run_loop.RunUntilIdle();
 
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+  return done_was_called ? testing::AssertionFailure()
+                         : testing::AssertionSuccess();
 }
 
 TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
@@ -791,9 +938,6 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
 // Tests that prefetch rules are ignored unless SpeculationRulesPrefetchProxy
 // is enabled.
 TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
-  // Overwrite the kSpeculationRulesPrefetchProxy flag.
-  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch{false};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   const String speculation_script =
@@ -860,11 +1004,11 @@ TEST_F(SpeculationRuleSetTest, UseCounter) {
       page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
 }
 
-// Tests that the presence of a speculationrules No-Vary-Search hint is
-// recorded.
-TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
-      true};
+// Test helper method that returns if the No-Vary-Search hint use counter is
+// properly counted during shipping.
+// The use counter also acts as a proxy to check if the No-Vary-Search hint
+// feature is enabled.
+bool NoVarySearchHintUseCounterTestHelper() {
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -879,8 +1023,108 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
       }]})nvs";
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
                                       speculation_script);
-  EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
-      WebFeature::kSpeculationRulesNoVarySearchHint));
+
+  return page_holder.GetDocument().IsUseCounted(
+      WebFeature::kSpeculationRulesNoVarySearchHint);
+}
+
+// Tests that the presence of a speculationrules No-Vary-Search hint is
+// recorded.
+TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
+  {
+    // By default No-Vary-Search hint functionality is enabled without
+    // Origin Trial token.
+    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+        false};
+    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
+        ship_no_vary_search_hint{true};
+    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
+        << "No-Vary-Search hint functionality is enabled "
+           "when shipped and without an Origin Trial token.";
+  }
+  {
+    // By default No-Vary-Search hint is enabled with Origin Trial token.
+    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+        true};
+    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
+        ship_no_vary_search_hint{true};
+    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
+        << "No-Vary-Search hint functionality is enabled "
+           "when shipped and with an Origin Trial token.";
+  }
+  {
+    // No-Vary-Search hint is disabled when
+    // SpeculationRulesNoVarySearchHintControlShipping is set to false and
+    // there is no Origin Trial token.
+    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+        false};
+    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
+        ship_no_vary_search_hint{false};
+    EXPECT_FALSE(NoVarySearchHintUseCounterTestHelper())
+        << "No-Vary-Search hint functionality is "
+           "disabled when unshipped and without "
+           "an Origin Trial token";
+  }
+  {
+    // No-Vary-Search hint is enabled when
+    // SpeculationRulesNoVarySearchHintControlShipping is set to false and
+    // there is an Origin Trial token.
+    ScopedSpeculationRulesNoVarySearchHintShippedByDefaultForTest
+        ship_no_vary_search_hint{false};
+    ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
+        true};
+    EXPECT_TRUE(NoVarySearchHintUseCounterTestHelper())
+        << "No-Vary-Search hint functionality is enabled when unshipped and "
+           "with "
+           "an Origin Trial token";
+  }
+}
+
+// Tests that the document's URL is excluded from candidates.
+TEST_F(SpeculationRuleSetTest, ExcludesFragmentLinks) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetDocument().SetURL(KURL("https://example.com/"));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      String(R"({"prefetch": [
+           {"source": "list", "urls":
+              ["https://example.com/", "#foo", "/b#bar"]}]})"));
+  EXPECT_THAT(
+      speculation_host.candidates(),
+      HasURLs(KURL("https://example.com"), KURL("https://example.com/b#bar")));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&] {
+    page_holder.GetDocument().SetURL(KURL("https://example.com/b"));
+  });
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://example.com")));
+}
+
+// Tests that the document's URL is excluded from candidates, even when its
+// changes do not affect the base URL.
+TEST_F(SpeculationRuleSetTest, ExcludesFragmentLinksWithBase) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetDocument().SetURL(KURL("https://example.com/"));
+  page_holder.GetDocument().head()->setInnerHTML(
+      "<base href=\"https://not-example.com/\">");
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      String(R"({"prefetch": [
+           {"source": "list", "urls":
+              ["https://example.com/#baz", "#foo", "/b#bar"]}]})"));
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://not-example.com/#foo"),
+                      KURL("https://not-example.com/b#bar")));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&] {
+    page_holder.GetDocument().SetURL(KURL("https://example.com/b"));
+  });
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://example.com/#baz"),
+                      KURL("https://not-example.com/#foo"),
+                      KURL("https://not-example.com/b#bar")));
 }
 
 // Tests that rules removed before the task to update speculation candidates
@@ -1249,51 +1493,6 @@ auto Selector(Vector<::testing::Matcher<StyleRule>> style_rule_matchers = {}) {
                               &DocumentRulePredicate::GetStyleRulesForTesting);
 }
 
-class URLPatternMatcher {
- public:
-  explicit URLPatternMatcher(String pattern, const KURL& base_url) {
-    auto* url_pattern_input = MakeGarbageCollected<V8URLPatternInput>(pattern);
-    url_pattern_ =
-        URLPattern::Create(url_pattern_input, base_url, ASSERT_NO_EXCEPTION);
-  }
-
-  bool MatchAndExplain(URLPattern* pattern,
-                       ::testing::MatchResultListener* listener) const {
-    if (!pattern)
-      return false;
-    return MatchAndExplain(*pattern, listener);
-  }
-
-  bool MatchAndExplain(const URLPattern& pattern,
-                       ::testing::MatchResultListener* listener) const {
-    using Component = V8URLPatternComponent::Enum;
-    Component components[] = {Component::kProtocol, Component::kUsername,
-                              Component::kPassword, Component::kHostname,
-                              Component::kPort,     Component::kPathname,
-                              Component::kSearch,   Component::kHash};
-    for (auto component : components) {
-      if (URLPattern::compareComponent(V8URLPatternComponent(component),
-                                       url_pattern_, &pattern) != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  void DescribeTo(::std::ostream* os) const { *os << url_pattern_->ToString(); }
-
-  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
-
- private:
-  Persistent<URLPattern> url_pattern_;
-};
-
-auto URLPattern(String pattern,
-                const KURL& base_url = KURL("https://example.com/")) {
-  return ::testing::MakePolymorphicMatcher(
-      URLPatternMatcher(pattern, base_url));
-}
-
 class StyleRuleMatcher {
  public:
   explicit StyleRuleMatcher(String selector_text)
@@ -1449,9 +1648,9 @@ TEST_F(DocumentRulesTest, ParseHref) {
           MatchesPredicate(Href({URLPattern("/foo#bar")})),
           MatchesPredicate(Href({URLPattern("/foo")})),
           MatchesPredicate(Href({URLPattern("/buzz"), URLPattern("/fizz"),
-                                 URLPattern("https://bar.com")})),
-          MatchesPredicate(Or({Href({URLPattern("https://foo.com")}),
-                               Neg(Href({URLPattern("http://*")}))}))));
+                                 URLPattern("https://bar.com:*")})),
+          MatchesPredicate(Or({Href({URLPattern("https://foo.com:*")}),
+                               Neg(Href({URLPattern("http://*:*")}))}))));
 }
 
 TEST_F(DocumentRulesTest, ParseHref_AllUrlPatternKeys) {
@@ -1466,7 +1665,7 @@ TEST_F(DocumentRulesTest, ParseHref_AllUrlPatternKeys) {
     "hostname": "abc.xyz",
     "baseURL": "https://example.com"
   })");
-  EXPECT_THAT(href_matches, Href({URLPattern("https://abc.xyz:*/*\\?*")}));
+  EXPECT_THAT(href_matches, Href({URLPattern("https://:@abc.xyz:*/*\\?*#")}));
 }
 
 TEST_F(DocumentRulesTest, HrefMatchesWithBaseURL) {
@@ -1530,10 +1729,13 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
       enable_selector_matches{true};
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
+  ScopedSpeculationRulesImplicitSourceForTest enable_implicit_source{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
-      // A rule that doesn't elaborate on its source.
+      // A rule that doesn't elaborate on its source (previously disallowed).
+      // TODO(crbug.com/1517696): Remove this when SpeculationRulesImplictSource
+      // is permanently shipped, so keep the test focused.
       R"({"where": {"and": []}},)"
 
       // A rule with an unrecognized source.
@@ -1651,6 +1853,12 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
         "expects_no_vary_search": 0
         },)"
 
+      // Both "where" and "urls" with implicit source.
+      R"({"urls": ["/"], "where": {"selector_matches": "*"}},)"
+
+      // Neither "where" nor "urls" with implicit source.
+      R"({},)"
+
       // valid document rule.
       R"({"source": "document",
         "where": {"and": [
@@ -1663,11 +1871,14 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
   ASSERT_TRUE(rule_set);
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
-  EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesPredicate(
-                  And({Or({Href({URLPattern("/hello.html")}),
-                           Selector({StyleRuleWithSelectorText(".valid")})}),
-                       Neg(And({Href({URLPattern("https://world.com")})}))}))));
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(
+          MatchesPredicate(And({})),
+          MatchesPredicate(
+              And({Or({Href({URLPattern("/hello.html")}),
+                       Selector({StyleRuleWithSelectorText(".valid")})}),
+                   Neg(And({Href({URLPattern("https://world.com:*")})}))}))));
 }
 
 // Tests that errors of individual rules which cause them to be ignored are
@@ -1884,93 +2095,6 @@ TEST_F(DocumentRulesTest, EvaluateHrefMatches) {
   auto* pass_fail = CreatePredicate(
       R"("href_matches": ["https://foo.com/bar.html?*", "https://bar.com/*"])");
   EXPECT_TRUE(pass_fail->Matches(*link));
-}
-
-// Matches a SpeculationCandidatePtr list with a KURL list (without requiring
-// candidates to be in a specific order).
-template <typename... Matchers>
-auto HasURLs(Matchers&&... urls) {
-  return ::testing::ResultOf(
-      "urls",
-      [](const auto& candidates) {
-        Vector<KURL> urls;
-        base::ranges::transform(
-            candidates.begin(), candidates.end(), std::back_inserter(urls),
-            [](const auto& candidate) { return candidate->url; });
-        return urls;
-      },
-      ::testing::UnorderedElementsAre(urls...));
-}
-
-// Matches a SpeculationCandidatePtr with an Eagerness.
-auto HasEagerness(
-    ::testing::Matcher<blink::mojom::SpeculationEagerness> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "eagerness", &mojom::blink::SpeculationCandidate::eagerness, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a KURL.
-auto HasURL(::testing::Matcher<KURL> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "url", &mojom::blink::SpeculationCandidate::url, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a SpeculationAction.
-auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "action", &mojom::blink::SpeculationCandidate::action, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a SpeculationTargetHint.
-auto HasTargetHint(
-    ::testing::Matcher<mojom::blink::SpeculationTargetHint> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "target_hint",
-      &mojom::blink::SpeculationCandidate::target_browsing_context_name_hint,
-      matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a ReferrerPolicy.
-auto HasReferrerPolicy(
-    ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "referrer", &mojom::blink::SpeculationCandidate::referrer,
-      ::testing::Pointee(::testing::Field(
-          "policy", &mojom::blink::Referrer::policy, matcher))));
-}
-
-auto HasNoVarySearchHint() {
-  return ::testing::Pointee(
-      ::testing::Field("no_vary_search_hint",
-                       &mojom::blink::SpeculationCandidate::no_vary_search_hint,
-                       ::testing::IsTrue()));
-}
-
-auto NVSVariesOnKeyOrder() {
-  return ::testing::AllOf(
-      HasNoVarySearchHint(),
-      ::testing::Pointee(::testing::Field(
-          "no_vary_search_hint",
-          &mojom::blink::SpeculationCandidate::no_vary_search_hint,
-          testing::Pointee(::testing::Field(
-              "vary_on_key_order",
-              &network::mojom::blink::NoVarySearch::vary_on_key_order,
-              ::testing::IsTrue())))));
-}
-
-template <typename... Matchers>
-auto NVSHasNoVaryParams(Matchers&&... params) {
-  return ::testing::ResultOf(
-      "no_vary_params",
-      [](const auto& nvs) {
-        if (!nvs->no_vary_search_hint ||
-            !nvs->no_vary_search_hint->search_variance ||
-            !nvs->no_vary_search_hint->search_variance->is_no_vary_params()) {
-          return Vector<String>();
-        }
-        return nvs->no_vary_search_hint->search_variance->get_no_vary_params();
-      },
-      ::testing::UnorderedElementsAre(params...));
 }
 
 HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {
@@ -2200,7 +2324,7 @@ TEST_F(DocumentRulesTest, LinkInShadowTreeIncluded) {
 
   Document& document = page_holder.GetDocument();
   ShadowRoot& shadow_root =
-      document.body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+      document.body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   auto* shadow_tree_link = AddAnchor(shadow_root, "https://foo.com/bar.html");
   AddAnchor(*document.body(), "https://foo.com/unslotted");
 
@@ -2404,7 +2528,7 @@ TEST_F(DocumentRulesTest, DisconnectedLinkInShadowTree) {
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     div = MakeGarbageCollected<HTMLDivElement>(document);
     ShadowRoot& shadow_root =
-        div->AttachShadowRootInternal(ShadowRootType::kOpen);
+        div->AttachShadowRootForTesting(ShadowRootMode::kOpen);
     link = AddAnchor(shadow_root, "https://foo.com/blah.html");
     document.body()->AppendChild(div);
   });
@@ -2502,8 +2626,8 @@ TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
   const auto& console_message_storage =
       page_holder.GetPage().GetConsoleMessageStorage();
   EXPECT_EQ(console_message_storage.size(), 1u);
-  EXPECT_EQ(console_message_storage.at(0)->Nodes()[0],
-            DOMNodeIds::IdForNode(link_with_disallowed_referrer));
+  EXPECT_THAT(console_message_storage.at(0)->Nodes(),
+              testing::Contains(link_with_disallowed_referrer->GetDomNodeId()));
 }
 
 // Tests that changing the "referrerpolicy" attribute results in the
@@ -2892,7 +3016,7 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
   auto* script_without_selector_matches = InsertSpeculationRules(document, R"(
     {"prefetch": [{"source": "document", "where": {"href_matches": "/foo"}}]}
   )");
-  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
+  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
 
   auto* script_with_irrelevant_selector_matches =
       InsertSpeculationRules(document, R"(
@@ -2901,7 +3025,7 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
       "where": {"selector_matches": "#irrelevant a"}
     }]}
   )");
-  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
+  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
 
   auto* script_with_selector_matches = InsertSpeculationRules(document, R"(
     {"prefetch": [{
@@ -2909,22 +3033,22 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
       "where": {"selector_matches": "#important-section a"}
     }]}
   )");
-  EXPECT_TRUE(important_section->NeedsStyleInvalidation());
+  EXPECT_TRUE(important_section->ChildNeedsStyleRecalc());
 
   page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
+  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
 
   // Test removing SpeculationRuleSets, removing a ruleset should also cause
   // invalidations.
   script_with_selector_matches->remove();
-  EXPECT_TRUE(important_section->NeedsStyleInvalidation());
+  EXPECT_TRUE(important_section->ChildNeedsStyleRecalc());
   page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
 
   script_without_selector_matches->remove();
-  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
+  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
 
   script_with_irrelevant_selector_matches->remove();
-  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
+  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
 }
 
 TEST_F(DocumentRulesTest, BasicStyleInvalidation) {
@@ -2992,11 +3116,11 @@ TEST_F(DocumentRulesTest, IrrelevantDOMChangeShouldNotInvalidateCandidateList) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         unimportant_section->SetIdAttribute(AtomicString("random-section"));
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 }
 
 TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
@@ -3007,7 +3131,7 @@ TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
   Document& document = page_holder.GetDocument();
 
   ShadowRoot& shadow_root =
-      document.body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+      document.body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
@@ -3029,11 +3153,7 @@ TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
                                       speculation_script);
   const auto& candidates = speculation_host.candidates();
-  // TODO(crbug.com/1371522): Having document as the scoping root while matching
-  // 'selector_matches' means no link inside a shadow tree can ever be matched.
-  // If https://github.com/WICG/nav-speculation/pull/241 changes this, update
-  // this expectation.
-  EXPECT_THAT(candidates, HasURLs());
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz")));
 }
 
 TEST_F(DocumentRulesTest, SelectorMatchesWithScopePseudoSelector) {
@@ -3090,23 +3210,23 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_1) {
   )";
   // No update should be sent before running a style update after inserting
   // the rules.
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
         page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
         InsertSpeculationRules(document, speculation_script);
       },
-      IncludesStyleUpdate{false});
+      IncludesStyleUpdate{false}));
   ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
   // The list of candidates is updated after a style update.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() { AddAnchor(*document.body(), "https://bar.com/fizz.html"); },
-      IncludesStyleUpdate{false});
+      IncludesStyleUpdate{false}));
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/fizz.html")));
 
@@ -3116,25 +3236,31 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_1) {
       "where": {"selector_matches": "#important-section a"}
     }]}
   )";
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  // Insert a speculation ruleset with "selector_matches". This will not require
+  // a style update, as adding the ruleset itself will not cause any
+  // invalidations (there are no existing elements that match the selector in
+  // the new ruleset).
+  PropagateRulesToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
         InsertSpeculationRules(document,
                                speculation_script_with_selector_matches);
       },
       IncludesStyleUpdate{false});
-  ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
-  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
+  ASSERT_FALSE(document.NeedsLayoutTreeUpdate());
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/fizz.html")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  // Add two new links. We should not update speculation candidates until we run
+  // UpdateStyle.
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
         AddAnchor(*important_section, "https://foo.com/fizz.html");
         AddAnchor(*unimportant_section, "https://foo.com/buzz.html");
       },
-      IncludesStyleUpdate{false});
+      IncludesStyleUpdate{false}));
   ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
+  // Runs UpdateStyle; new speculation candidates should be sent.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/fizz.html"),
                                   KURL("https://foo.com/fizz.html")));
@@ -3247,10 +3373,10 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_4) {
   // candidates should be sent as style isn't clean. Note: AddAnchor below will
   // queue a microtask before invalidating style (Node::InsertedInto is called
   // before style invalidation).
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() { AddAnchor(*important_section, "https://foo.com/bar"); },
-      IncludesStyleUpdate{false});
+      IncludesStyleUpdate{false}));
   ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
   // Updating style should trigger UpdateSpeculationCandidates.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
@@ -3284,12 +3410,12 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_5) {
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 
   // Changing the link's container's ID will not queue a microtask on its own.
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
         important_section->SetIdAttribute(AtomicString("unimportant-section"));
       },
-      IncludesStyleUpdate{false});
+      IncludesStyleUpdate{false}));
   // After style updates, we should update the list of speculation candidates.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   EXPECT_THAT(candidates, HasURLs());
@@ -3338,7 +3464,7 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle) {
   // stop being rendered. It should trigger an update and be removed from
   // the candidate list.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    important_section->AttachShadowRootInternal(ShadowRootType::kOpen);
+    important_section->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   });
   EXPECT_THAT(candidates, HasURLs());
 }
@@ -3404,12 +3530,12 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle_SelectorMatchesDisabled) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                        CSSValueID::kNone);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     anchor->setHref("https://foo.com/two");
@@ -3448,11 +3574,10 @@ TEST_F(DocumentRulesTest, LinkInsideDisplayLockedElement) {
   });
   EXPECT_THAT(candidates, HasURLs());
 
-  PropagateRulesToStubSpeculationHost(
-      page_holder, speculation_host, [&]() {
-        important_section->RemoveInlineStyleProperty(
-            CSSPropertyID::kContentVisibility);
-      });
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    important_section->RemoveInlineStyleProperty(
+        CSSPropertyID::kContentVisibility);
+  });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 }
 
@@ -3493,19 +3618,19 @@ TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
   });
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->RemoveInlineStyleProperty(
             CSSPropertyID::kContentVisibility);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
@@ -3521,24 +3646,23 @@ TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
   });
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  PropagateRulesToStubSpeculationHost(
-      page_holder, speculation_host, [&]() {
-        important_section->RemoveInlineStyleProperty(
-            CSSPropertyID::kContentVisibility);
-      });
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    important_section->RemoveInlineStyleProperty(
+        CSSPropertyID::kContentVisibility);
+  });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 
   // Scenario 3: Lock important-section, lock links, unlock important-section,
@@ -3550,19 +3674,19 @@ TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
   });
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                       CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->RemoveInlineStyleProperty(
             CSSPropertyID::kContentVisibility);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
@@ -3571,21 +3695,19 @@ TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
   // Scenario 4: Lock links and important-section together, unlock links and
   // important-section together.
 
-  PropagateRulesToStubSpeculationHost(
-      page_holder, speculation_host, [&]() {
-        important_section->SetInlineStyleProperty(
-            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
-        links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
-                                      CSSValueID::kHidden);
-      });
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    important_section->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                              CSSValueID::kHidden);
+    links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                  CSSValueID::kHidden);
+  });
   EXPECT_THAT(candidates, HasURLs());
 
-  PropagateRulesToStubSpeculationHost(
-      page_holder, speculation_host, [&]() {
-        important_section->RemoveInlineStyleProperty(
-            CSSPropertyID::kContentVisibility);
-        links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      });
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    important_section->RemoveInlineStyleProperty(
+        CSSPropertyID::kContentVisibility);
+    links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+  });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 }
 
@@ -3615,16 +3737,16 @@ TEST_F(DocumentRulesTest, DisplayLockedLink) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         anchor->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                        CSSValueID::kHidden);
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         anchor->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      });
+      }));
 }
 
 // Sanity test to make sure things work when display-locked elements are
@@ -3655,19 +3777,19 @@ TEST_F(DocumentRulesTest, DisplayLockedElementWithoutSelectorMatchesEnabled) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/foo")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kVisible);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 }
 
 TEST_F(DocumentRulesTest, AddLinkToDisplayLockedContainer) {
@@ -3695,12 +3817,12 @@ TEST_F(DocumentRulesTest, AddLinkToDisplayLockedContainer) {
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         important_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
   HTMLAnchorElement* anchor = nullptr;
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
@@ -3755,14 +3877,14 @@ TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
   });
   EXPECT_THAT(candidates, HasURLs());
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         // Changing style of the display-locked container should not cause an
         // update.
         important_section->SetInlineStyleProperty(CSSPropertyID::kColor,
                                                   CSSValueID::kDarkviolet);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     important_section->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
@@ -3770,28 +3892,28 @@ TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
   });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz.html")));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         // Changing style of the display-locked container should not cause an
         // update.
         important_section->SetInlineStyleProperty(CSSPropertyID::kColor,
                                                   CSSValueID::kDeepskyblue);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         irrelevant_section->SetInlineStyleProperty(
             CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 
-  AssertNoRulesPropagatedToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
         irrelevant_section->RemoveInlineStyleProperty(
             CSSPropertyID::kContentVisibility);
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-      });
+      }));
 }
 
 // Similar to SpeculationRulesTest.RemoveInMicrotask, but with relevant changes
@@ -3967,6 +4089,7 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
   const KURL kUrl6{"https://example.com/prefetch/document/page2.html"};
   const KURL kUrl7{"https://example.com/prerender/list/page2.html"};
   const KURL kUrl8{"https://example.com/prerender/document/page2.html"};
+  const KURL kUrl9{"https://example.com/prefetch/list/page3.html"};
 
   AddAnchor(*document.body(), kUrl2.GetString());
   AddAnchor(*document.body(), kUrl4.GetString());
@@ -3992,6 +4115,11 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
           {
             "source": "document",
             "where": {"href_matches": "https://example.com/prefetch/document/page2.html"}
+          },
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page3.html"],
+            "eagerness": "immediate"
           }
         ],
         "prerender": [
@@ -4037,9 +4165,11 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl7),
                 HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
-          AllOf(HasURL(kUrl8),
-                HasEagerness(
-                    blink::mojom::SpeculationEagerness::kConservative))));
+          AllOf(
+              HasURL(kUrl8),
+              HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
+          AllOf(HasURL(kUrl9),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager))));
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidUseOfEagerness1) {
@@ -4428,6 +4558,77 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintNoErrorOrWarningMessages) {
     EXPECT_FALSE(rule_set->HasError());
     EXPECT_FALSE(rule_set->HasWarnings());
   }
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsSuccessMetric) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText("{}");
+  document.head()->appendChild(script);
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromScript) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText("{---}");
+  document.head()->appendChild(script);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorInline, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromRequest) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  SpeculationRuleSet* rule_set = SpeculationRuleSet::Parse(
+      SpeculationRuleSet::Source::FromRequest(
+          "{---}", KURL("https://fake.test/sr.json"), 0),
+      document.GetExecutionContext());
+  DocumentSpeculationRules::From(document).AddRuleSet(rule_set);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorFetched, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromBrowserInjection) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  SpeculationRuleSet* rule_set = SpeculationRuleSet::Parse(
+      SpeculationRuleSet::Source::FromBrowserInjected("{---}", KURL()),
+      document.GetExecutionContext());
+  DocumentSpeculationRules::From(document).AddRuleSet(rule_set);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kParseErrorBrowserInjected, 1);
+}
+
+TEST_F(SpeculationRuleSetTest, ImplicitSource) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }, {
+          "urls": ["/bar"]
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesPredicate(Href({URLPattern("/foo")})),
+                          MatchesListOfURLs("https://example.com/bar")));
 }
 
 }  // namespace

@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -159,7 +160,7 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   simple_loader->SetTimeoutDuration(base::Seconds(10));
   content::SimpleURLLoaderTestHelper url_loader_helper;
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, url_loader_helper.GetCallback());
+      url_loader_factory, url_loader_helper.GetCallbackDeprecated());
   url_loader_helper.WaitForCallback();
   if (simple_loader->NetError() != 0) {
     LOG(ERROR) << "Reset account failed with error "
@@ -205,25 +206,36 @@ SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
 
-bool SyncServiceImplHarness::SignInPrimaryAccount() {
-  // TODO(crbug.com/871221): This function should distinguish primary account
-  // (aka sync account) from secondary accounts (content area signin). Let's
-  // migrate tests that exercise transport-only sync to secondary accounts.
+bool SyncServiceImplHarness::SignInPrimaryAccount(
+    signin::ConsentLevel consent_level) {
   DCHECK(!username_.empty());
 
   switch (signin_type_) {
     case SigninType::UI_SIGNIN: {
-      return signin_delegate_->SigninUI(profile_, username_, password_);
+      if (!signin_delegate_->SigninUI(profile_, username_, password_,
+                                      consent_level)) {
+        return false;
+      }
+      break;
     }
 
     case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_);
-      return true;
+      signin_delegate_->SigninFake(profile_, username_, consent_level);
+
+      // TODO(b/1523197): The below checks should also be satisfied for the
+      // above case.
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
+      CHECK(identity_manager->HasPrimaryAccount(consent_level));
+      CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
+      CHECK(!service()->GetAccountInfo().IsEmpty());
+
+      break;
     }
   }
 
-  NOTREACHED();
-  return false;
+
+  return true;
 }
 
 void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
@@ -252,7 +264,7 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
-  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
+  signin_delegate_->SignOutPrimaryAccount(profile_);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -296,7 +308,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  if (!SignInPrimaryAccount()) {
+  if (!SignInPrimaryAccount(signin::ConsentLevel::kSync)) {
     return false;
   }
 
@@ -317,44 +329,17 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   FinishSyncSetup();
 
   if (signin_type_ == SigninType::UI_SIGNIN) {
-    return signin_delegate_->ConfirmSigninUI(profile_);
+    return signin_delegate_->ConfirmSyncUI(profile_);
   }
   return true;
 }
 
 void SyncServiceImplHarness::FinishSyncSetup() {
   sync_blocker_.reset();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-}
-
-void SyncServiceImplHarness::StopSyncServiceAndClearData() {
-  DVLOG(1) << "Requesting stop for service and clearing data.";
-  service()->StopAndClear();
-}
-
-bool SyncServiceImplHarness::EnableSyncFeature() {
-  std::unique_ptr<syncer::SyncSetupInProgressHandle> blocker =
-      service()->GetSetupInProgressHandle();
-  DVLOG(1) << "Requesting start for service";
-  service()->SetSyncFeatureRequested();
-
-  if (!AwaitEngineInitialization()) {
-    LOG(ERROR) << "AwaitEngineInitialization failed.";
-    return false;
-  }
-  DVLOG(1) << "Engine Initialized successfully.";
-
-  blocker.reset();
-  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-
-  if (!AwaitSyncSetupCompletion()) {
-    LOG(FATAL) << "AwaitSyncSetupCompletion failed.";
-    return false;
-  }
-
-  return true;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
@@ -372,7 +357,7 @@ bool SyncServiceImplHarness::AwaitQuiescence(
     return true;
   }
 
-  std::vector<SyncServiceImpl*> services;
+  std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
   for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }
@@ -596,8 +581,8 @@ std::string SyncServiceImplHarness::GetClientInfoString(
     os << ", has_unsynced_items: " << snap.has_remaining_local_changes()
        << ", did_commit: "
        << (snap.model_neutral_state().num_successful_commits == 0 &&
-           snap.model_neutral_state().commit_result.value() ==
-               syncer::SyncerError::SYNCER_OK)
+           snap.model_neutral_state().commit_result.type() ==
+               syncer::SyncerError::Type::kSuccess)
        << ", server conflicts: " << snap.num_server_conflicts()
        << ", num_updates_downloaded : "
        << snap.model_neutral_state().num_updates_downloaded_total

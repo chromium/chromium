@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
   std::map<dbus::ObjectPath, SmsReceivedHandler> sms_received_handlers_;
   std::map<dbus::ObjectPath, std::vector<dbus::ObjectPath>> message_paths_map_;
 
-  absl::optional<DeleteRequest> delete_request_;
+  std::optional<DeleteRequest> delete_request_;
 };
 
 }  // namespace ash

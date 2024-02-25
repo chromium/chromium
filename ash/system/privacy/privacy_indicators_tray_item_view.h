@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 
 namespace gfx {
@@ -28,6 +29,8 @@ class Shelf;
 // is currently accessing camera/microphone.
 class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
                                                  public SessionObserver {
+  METADATA_HEADER(PrivacyIndicatorsTrayItemView, TrayItemView)
+
  public:
   enum AnimationState {
     // No animation is running.
@@ -101,6 +104,7 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   void UpdateVisibility();
 
  private:
+  friend class PrivacyIndicatorsTrayItemViewPixelTest;
   friend class PrivacyIndicatorsTrayItemViewTest;
   friend class CaptureModePrivacyIndicatorsTest;
 
@@ -111,7 +115,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  const char* GetClassName() const override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
@@ -147,12 +150,12 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Record repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
 
-  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> camera_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> microphone_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> screen_share_icon_ = nullptr;
+  raw_ptr<views::ImageView> camera_icon_ = nullptr;
+  raw_ptr<views::ImageView> microphone_icon_ = nullptr;
+  raw_ptr<views::ImageView> screen_share_icon_ = nullptr;
 
   // Keep track of the current screen sharing state.
   bool is_screen_sharing_ = false;
@@ -182,7 +185,7 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   base::Time start_showing_time_;
 
   // Measure animation smoothness metrics for all the animations.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 };
 
 }  // namespace ash

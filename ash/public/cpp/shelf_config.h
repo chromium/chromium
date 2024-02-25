@@ -5,18 +5,18 @@
 #ifndef ASH_PUBLIC_CPP_SHELF_CONFIG_H_
 #define ASH_PUBLIC_CPP_SHELF_CONFIG_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/display/display_observer.h"
@@ -34,8 +34,7 @@ namespace ash {
 
 // Provides layout and drawing config for the Shelf. Note That some of these
 // values could change at runtime.
-class ASH_EXPORT ShelfConfig : public TabletModeObserver,
-                               public SessionObserver,
+class ASH_EXPORT ShelfConfig : public SessionObserver,
                                public AppListControllerObserver,
                                public display::DisplayObserver,
                                public VirtualKeyboardModel::Observer,
@@ -72,14 +71,11 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state);
 
-  // TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnding() override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
@@ -98,6 +94,21 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   // Returns the optimal shelf icon size for the given hotseat density.
   int GetShelfButtonIconSize(HotseatDensity density) const;
+
+  // Returns the shelf shortuct icon size.
+  int GetShelfShortcutIconSize() const;
+
+  // Returns the shelf shortcut icon border size.
+  int GetShelfShortcutIconBorderSize() const;
+
+  // Returns the shelf shortcut host badge icon size.
+  int GetShelfShortcutHostBadgeIconSize() const;
+
+  // Returns the shelf shortcut host badge icon border size.
+  int GetShelfShortcutHostBadgeBorderSize() const;
+
+  // Returns the shelf shortcut bottom right corner radius.
+  int GetShelfShortcutTeardropCornerRadiusSize() const;
 
   // Returns the hotseat height for the given hotseat density.
   // NOTE: This may not match the actual hotseat size, as hotseat may get scaled
@@ -242,8 +253,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Size of the shelf in tablet mode.
   int GetSystemShelfSizeInTabletMode() const;
 
-  // Size of the insets used in tablet mode to allocate space to the shelf.
-  int GetSystemShelfInsetsInTabletMode() const;
+  // Records the UMA of showing the stacked hotseat app bar and returns the size
+  // of the insets used in tablet mode to allocate space to the shelf.
+  int GetTabletModeShelfInsetsAndRecordUMA();
 
   // Minimum size for the inline app bar.
   int GetMinimumInlineAppBarSize() const;
@@ -281,6 +293,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   bool CalculateIsInApp(bool app_list_visible,
                         bool virtual_keyboard_shown) const;
 
+  // Whether an elevated app bar has been rendered (stacked hotseat). This
+  // boolean is used for logging UMA metrics.
+  std::optional<bool> has_shown_elevated_app_bar_;
+
   // Whether tablet mode homecher should use elevated app bar.
   bool elevate_tablet_mode_app_bar_ = false;
 
@@ -316,6 +332,21 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   const int shelf_button_icon_size_;
   const int shelf_button_icon_size_median_;
   const int shelf_button_icon_size_dense_;
+
+  // Size of the shortcut icon.
+  const int shelf_shortcut_icon_size_;
+
+  // Size of the shortcut icon border.
+  const int shelf_shortcut_icon_border_size_;
+
+  // Size of the shortcut host badge icon.
+  const int shelf_shortcut_host_badge_icon_size_;
+
+  // Size of the shortcut host badge border.
+  const int shelf_shortcut_host_badge_border_size_;
+
+  // Size of the bottom right corner radius of a shortcut.
+  const int shelf_shortcut_teardrop_corner_radius_;
 
   // Size allocated for each app button on the shelf.
   const int shelf_button_size_;
@@ -380,7 +411,7 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   std::unique_ptr<ShelfSplitViewObserver> split_view_observer_;
 
   // Receive callbacks from DisplayObserver.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::ObserverList<Observer> observers_;
 };

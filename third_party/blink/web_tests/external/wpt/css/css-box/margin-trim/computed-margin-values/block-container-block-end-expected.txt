@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-FAIL item 1 assert_equals: 
-<item data-expected-margin-bottom="0"></item>
-margin-bottom expected "0" but got "10"
+[FAIL] item 1
+  assert_equals: \n<item data-expected-margin-bottom="0"></item>\nmargin-bottom expected "0" but got "10"
 Harness: the test ran to completion.
 

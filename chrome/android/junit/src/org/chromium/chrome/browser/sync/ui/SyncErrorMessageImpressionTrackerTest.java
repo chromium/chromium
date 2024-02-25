@@ -20,48 +20,30 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Unit tests for SyncErrorMessageImpressionTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SyncErrorMessageImpressionTrackerTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-
-    @Mock
-    private Profile mProfile;
-
-    @Mock
-    private PrefService mPrefService;
-
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
 
     private SharedPreferencesManager mSharedPrefsManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-        mSharedPrefsManager = SharedPreferencesManager.getInstance();
+        mSharedPrefsManager = ChromeSharedPreferences.getInstance();
     }
 
     @After
@@ -80,12 +62,14 @@ public class SyncErrorMessageImpressionTrackerTest {
                 SyncErrorMessageImpressionTracker.MINIMAL_DURATION_BETWEEN_UI_MS);
 
         // Pretend enough time has passed since the last password manager message.
-        final long timeOfPwmMessage = TimeUtils.currentTimeMillis()
-                - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS - 1;
+        final long timeOfPwmMessage =
+                TimeUtils.currentTimeMillis()
+                        - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS
+                        - 1;
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertFalse(SyncErrorMessageImpressionTracker.canShowNow());
+        assertFalse(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 
     @Test
@@ -98,12 +82,13 @@ public class SyncErrorMessageImpressionTrackerTest {
                 SyncErrorMessageImpressionTracker.MINIMAL_DURATION_BETWEEN_UI_MS + 1);
 
         // Pretend not enough time passed since last password manager UI.
-        final long timeOfPwmMessage = TimeUtils.currentTimeMillis()
-                - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS;
+        final long timeOfPwmMessage =
+                TimeUtils.currentTimeMillis()
+                        - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS;
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertFalse(SyncErrorMessageImpressionTracker.canShowNow());
+        assertFalse(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 
     @Test
@@ -117,12 +102,14 @@ public class SyncErrorMessageImpressionTrackerTest {
                 SyncErrorMessageImpressionTracker.MINIMAL_DURATION_BETWEEN_UI_MS + 1);
 
         // Pretend enough time passed since the last password manager error UI.
-        final long timeOfPwmMessage = TimeUtils.currentTimeMillis()
-                - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS - 1;
+        final long timeOfPwmMessage =
+                TimeUtils.currentTimeMillis()
+                        - SyncErrorMessageImpressionTracker.MINIMAL_DURATION_TO_PWM_ERROR_UI_MS
+                        - 1;
 
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertTrue(SyncErrorMessageImpressionTracker.canShowNow());
+        assertTrue(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 }

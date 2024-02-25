@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 
 // Must be included before <atlapp.h>.
-#include "base/win/atl.h"   // NOLINT(build/include_order)
+#include "base/win/atl.h"  // NOLINT(build/include_order)
 
 #include <atlapp.h>
 #include <atlcrack.h>
@@ -27,6 +27,7 @@
 namespace ui {
 class AXFragmentRootWin;
 class AXSystemCaretWin;
+class ViewProp;
 class WindowEventTarget;
 }  // namespace ui
 
@@ -36,29 +37,24 @@ class DirectManipulationBrowserTestBase;
 class DirectManipulationHelper;
 class RenderWidgetHostViewAura;
 
-// Reasons for the existence of this class outlined below:-
+// Reasons for the existence of this class outlined below:
 // 1. Some screen readers expect every tab / every unique web content container
 //    to be in its own HWND with class name Chrome_RenderWidgetHostHWND.
 //    With Aura there is one main HWND which comprises the whole browser window
 //    or the whole desktop. So, we need a fake HWND with the window class as
 //    Chrome_RenderWidgetHostHWND as the root of the accessibility tree for
 //    each tab.
-// 2. There are legacy drivers for trackpads/trackpoints which have special
-//    code for sending mouse wheel and scroll events to the
-//    Chrome_RenderWidgetHostHWND window.
-// 3. Windowless NPAPI plugins like Flash and Silverlight which expect the
-//    container window to have the same bounds as the web page. In Aura, the
-//    default container window is the whole window which includes the web page
-//    WebContents, etc. This causes the plugin mouse event calculations to
-//    fail.
-//    We should look to get rid of this code when all of the above are fixed.
+// 2. Some legacy trackpad/trackpoint drivers have special code for sending
+//    mouse wheel and scroll events to the Chrome_RenderWidgetHostHWND window.
+// We should attempt to remove this code when the above are fixed.
 
 // This class implements a child HWND with the same size as the content area,
 // that delegates its accessibility implementation to the root of the
 // BrowserAccessibilityManager tree. This HWND is hooked up as the parent of
 // the root object in the BrowserAccessibilityManager tree, so when any
 // accessibility client calls ::WindowFromAccessibleObject, they get this
-// HWND instead of the DesktopWindowTreeHostWin.
+// HWND instead of the DesktopWindowTreeHostWin. It also maintains a ViewProp to
+// associate the parent's aura::WindowTreeHost with this HWND for lookup.
 class CONTENT_EXPORT LegacyRenderWidgetHostHWND
     : public ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
                               ATL::CWindow,
@@ -105,8 +101,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
     MESSAGE_HANDLER_EX(WM_HSCROLL, OnScroll)
     MESSAGE_HANDLER_EX(WM_VSCROLL, OnScroll)
     MESSAGE_HANDLER_EX(WM_NCHITTEST, OnNCHitTest)
-    MESSAGE_RANGE_HANDLER(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK,
-                          OnMouseRange)
+    MESSAGE_RANGE_HANDLER(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK, OnMouseRange)
     MESSAGE_HANDLER_EX(WM_NCCALCSIZE, OnNCCalcSize)
     MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
@@ -152,10 +147,14 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   LRESULT OnEraseBkGnd(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnGetObject(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnInput(UINT message, WPARAM w_param, LPARAM l_param);
-  LRESULT OnKeyboardRange(UINT message, WPARAM w_param, LPARAM l_param,
+  LRESULT OnKeyboardRange(UINT message,
+                          WPARAM w_param,
+                          LPARAM l_param,
                           BOOL& handled);
   LRESULT OnMouseLeave(UINT message, WPARAM w_param, LPARAM l_param);
-  LRESULT OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param,
+  LRESULT OnMouseRange(UINT message,
+                       WPARAM w_param,
+                       LPARAM l_param,
                        BOOL& handled);
   LRESULT OnMouseActivate(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnPointer(UINT message, WPARAM w_param, LPARAM l_param);
@@ -183,7 +182,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   Microsoft::WRL::ComPtr<IAccessible> window_accessible_;
 
   // Set to true if we turned on mouse tracking.
-  bool mouse_tracking_enabled_;
+  bool mouse_tracking_enabled_ = false;
 
   raw_ptr<RenderWidgetHostViewAura> host_;
 
@@ -197,12 +196,15 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // call UIA to clean up object references on window destruction.
   // This is important to avoid triggering a cross-thread COM call which could
   // cause re-entrancy during teardown. https://crbug.com/1087553
-  bool did_return_uia_object_;
+  bool did_return_uia_object_ = false;
 
   // This class provides functionality to register the legacy window as a
   // Direct Manipulation consumer. This allows us to support smooth scroll
   // in Chrome on Windows 10.
   std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
+
+  // Instruct aura::WindowTreeHost to use the HWND's parent for lookup.
+  std::unique_ptr<ui::ViewProp> window_tree_host_prop_;
 
   base::WeakPtrFactory<LegacyRenderWidgetHostHWND> weak_factory_{this};
 };

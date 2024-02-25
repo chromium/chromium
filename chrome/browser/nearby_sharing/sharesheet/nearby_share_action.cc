@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -32,6 +35,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -93,7 +100,8 @@ std::vector<std::unique_ptr<Attachment>> CreateTextAttachmentFromIntent(
     text = intent->drive_share_url->spec();
 
   if (text.empty()) {
-    NS_LOG(WARNING) << "Failed to create TextAttachment from sharesheet intent";
+    CD_LOG(WARNING, Feature::NS)
+        << "Failed to create TextAttachment from sharesheet intent";
     return std::vector<std::unique_ptr<Attachment>>();
   }
 
@@ -142,10 +150,18 @@ NearbyShareAction::NearbyShareAction(Profile* profile) : profile_(profile) {}
 NearbyShareAction::~NearbyShareAction() = default;
 
 const std::u16string NearbyShareAction::GetActionName() {
-  return l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
+  return features::IsNameEnabled()
+             ? NearbyShareResourceGetter::GetInstance()
+                   ->GetStringWithFeatureName(IDS_NEARBY_SHARE_FEATURE_NAME_PH)
+             : l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
 }
 
 const gfx::VectorIcon& NearbyShareAction::GetActionIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsNameEnabled()) {
+    return kNearbyShareInternalIcon;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return kNearbyShareIcon;
 }
 

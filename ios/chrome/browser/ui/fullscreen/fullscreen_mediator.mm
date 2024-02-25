@@ -63,6 +63,9 @@ void FullscreenMediator::EnterFullscreen() {
 }
 
 void FullscreenMediator::ExitFullscreen() {
+  if (model_->IsForceFullscreenMode()) {
+    return;
+  }
   // Instruct the model to ignore the remainder of the current scroll when
   // starting this animator.  This prevents the toolbar from immediately being
   // hidden if AnimateModelReset() is called while a scroll view is
@@ -107,7 +110,10 @@ void FullscreenMediator::FullscreenModelToolbarHeightsUpdated(
 void FullscreenMediator::FullscreenModelProgressUpdated(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  StopAnimating(true /* update_model */);
+  // Stops the animation only if there is a current animation running.
+  if (animator_ && animator_.state == UIViewAnimatingStateActive) {
+    StopAnimating(true /* update_model */);
+  }
   for (auto& observer : observers_) {
     observer.FullscreenProgressUpdated(controller_, model_->progress());
   }
@@ -118,7 +124,10 @@ void FullscreenMediator::FullscreenModelProgressUpdated(
 void FullscreenMediator::FullscreenModelEnabledStateChanged(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  StopAnimating(true /* update_model */);
+  // Stops the animation only if there is a current animation running.
+  if (animator_ && animator_.state == UIViewAnimatingStateActive) {
+    StopAnimating(true /* update_model */);
+  }
   for (auto& observer : observers_) {
     observer.FullscreenEnabledStateChanged(controller_, model->enabled());
   }
@@ -140,9 +149,23 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
 void FullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  AnimateWithStyle(model_->progress() >= 0.5
-                       ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
-                       : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  FullscreenAnimatorStyle animatorStyle;
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    AnimateWithStyle(model_->progress() >= 0.5
+                         ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
+                         : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  } else {
+    if (model_->enabled() && model_->is_scrolled_to_bottom() &&
+        AreCGFloatsEqual(model_->progress(), 0.0) &&
+        model_->can_collapse_toolbar()) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    } else if (model_->progress() >= 0.5) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    } else {
+      animatorStyle = FullscreenAnimatorStyle::ENTER_FULLSCREEN;
+    }
+    AnimateWithStyle(animatorStyle);
+  }
 }
 
 void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {

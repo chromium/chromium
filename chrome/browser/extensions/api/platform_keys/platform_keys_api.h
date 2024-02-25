@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace platform_keys {
@@ -29,7 +29,7 @@ extern const char kErrorInvalidX509Cert[];
 
 // Returns a known token if |token_id| is valid and returns nullopt for both
 // empty or unknown |token_id|.
-absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
+std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id);
 
 }  // namespace platform_keys
@@ -52,7 +52,7 @@ class PlatformKeysInternalSelectClientCertificatesFunction
   // will be null.
   void OnSelectedCertificates(
       std::unique_ptr<net::CertificateList> matches,
-      absl::optional<crosapi::mojom::KeystoreError> error);
+      std::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
                              PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
@@ -87,7 +87,7 @@ class PlatformKeysInternalSignFunction : public ExtensionFunction {
   // Called when the signature was generated. If an error occurred,
   // |signature| will be empty.
   void OnSigned(std::vector<uint8_t> signature,
-                absl::optional<crosapi::mojom::KeystoreError> error);
+                std::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
                              PLATFORMKEYSINTERNAL_SIGN)

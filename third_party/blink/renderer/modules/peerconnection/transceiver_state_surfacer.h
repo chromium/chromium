@@ -34,10 +34,7 @@ class MODULES_EXPORT TransceiverStateSurfacer {
   TransceiverStateSurfacer(const TransceiverStateSurfacer&) = delete;
   ~TransceiverStateSurfacer();
 
-  // This is intended to be used for moving the object from the signaling thread
-  // to the main thread and as such has no thread checks. Once moved to the main
-  // this should only be invoked on the main thread.
-  TransceiverStateSurfacer& operator=(TransceiverStateSurfacer&&);
+  TransceiverStateSurfacer& operator=(TransceiverStateSurfacer&&) = delete;
   TransceiverStateSurfacer& operator=(const TransceiverStateSurfacer&) = delete;
 
   bool is_initialized() const { return is_initialized_; }
@@ -58,7 +55,6 @@ class MODULES_EXPORT TransceiverStateSurfacer {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;
   bool is_initialized_;
-  bool states_obtained_;
   blink::WebRTCSctpTransportSnapshot sctp_transport_snapshot_;
   std::vector<blink::RtpTransceiverState> transceiver_states_
       ALLOW_DISCOURAGED_TYPE(

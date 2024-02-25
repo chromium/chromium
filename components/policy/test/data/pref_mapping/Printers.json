@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "Printers": [
+            {
+              "description": "The blue one",
+              "display_name": "Break Room",
+              "manufacturer": "PrtrMfgr",
+              "model": "MegaLazer",
+              "ppd_resource": {
+                "effective_manufacturer": "Printers, Ink",
+                "effective_model": "LaserMaster 2100"
+              },
+              "uri": "ipps://192.168.2.14",
+              "uuid": "aaaa-aaaa-eeee-eeee-1234"
+            }
+          ]
+        },
+        "prefs": {
+          "native_printing.recommended_printers": {
+            "value": [
+              {
+                "description": "The blue one",
+                "display_name": "Break Room",
+                "manufacturer": "PrtrMfgr",
+                "model": "MegaLazer",
+                "ppd_resource": {
+                  "effective_manufacturer": "Printers, Ink",
+                  "effective_model": "LaserMaster 2100"
+                },
+                "uri": "ipps://192.168.2.14",
+                "uuid": "aaaa-aaaa-eeee-eeee-1234"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

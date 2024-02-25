@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include <optional>
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 
@@ -50,7 +50,7 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // during signing.
   //
   // Note: this may take a second or more to run.
-  virtual absl::optional<std::vector<uint8_t>> SignSlowly(
+  virtual std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) = 0;
 };
 
@@ -62,7 +62,7 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // SelectAlgorithm returns which signature algorithm from
   // |acceptable_algorithms| would be used if |acceptable_algorithms| was passed
   // to |GenerateSigningKeySlowly|.
-  virtual absl::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+  virtual std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) = 0;
 
@@ -133,7 +133,7 @@ class CRYPTO_EXPORT VirtualUnexportableSigningKey {
   // during signing.
   //
   // Note: this is expected to be under 10ms.
-  virtual absl::optional<std::vector<uint8_t>> Sign(
+  virtual std::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> data) = 0;
 
   // Deletes the key from storage in the virtual machine. As the virtual machine
@@ -150,7 +150,7 @@ class CRYPTO_EXPORT VirtualUnexportableKeyProvider {
   // SelectAlgorithm returns which signature algorithm from
   // |acceptable_algorithms| would be used if |acceptable_algorithms| was passed
   // to |GenerateSigningKeySlowly|.
-  virtual absl::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+  virtual std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) = 0;
 

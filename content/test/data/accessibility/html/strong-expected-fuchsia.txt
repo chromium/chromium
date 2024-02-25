@@ -1,5 +1,6 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++STATIC_TEXT label='Strong text'
-++++++++UNKNOWN label='Strong text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Strong text'
+++++++++++UNKNOWN label='Strong text'

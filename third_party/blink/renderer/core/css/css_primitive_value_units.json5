@@ -224,7 +224,7 @@
     },
     {
       name: "fr",
-      unit_type: "kFraction",
+      unit_type: "kFlex",
     },
     {
       name: "turn",

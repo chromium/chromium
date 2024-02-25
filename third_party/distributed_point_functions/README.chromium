@@ -1,9 +1,9 @@
 Name: The Incremental Distributed Point Functions library
 Short Name: distributed_point_functions
 URL: https://github.com/google/distributed_point_functions
-Version: 0
-Revision: 95a383908a4b39158ec0dd7da6cfe1088403bc5b
-Date: 2023-01-17
+Version: N/A
+Revision: 2db593b64a99f178f682ef0db222d417c23e5bb5
+Date: 2023-11-16
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -20,7 +20,3 @@ all top-level directories other than dpf/ have been removed as they are unused.
 Second, a .clang-format file has been added to disable automatic code
 formatting. Parts of code/dpf/distributed_point_function_test.cc are also
 adapted for fuzzing in fuzz/dpf_fuzzer.cc.
-
-The source code pulled in depends on "glog/logging.h" which is not accessible
-from chromium. As a workaround, we create a simple glog/logging.h that includes
-the macros needed.

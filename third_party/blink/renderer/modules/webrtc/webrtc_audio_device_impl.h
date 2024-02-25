@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -133,7 +134,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   void AddPlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
   void RemovePlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
 
-  absl::optional<webrtc::AudioDeviceModule::Stats> GetStats() const override;
+  std::optional<webrtc::AudioDeviceModule::Stats> GetStats() const override;
 
  private:
   using CapturerList = std::list<ProcessedLocalAudioSource*>;
@@ -165,7 +166,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Weak reference to the audio callback.
   // The webrtc client defines |audio_transport_callback_| by calling
   // RegisterAudioCallback().
-  webrtc::AudioTransport* audio_transport_callback_;
+  raw_ptr<webrtc::AudioTransport, DanglingUntriaged> audio_transport_callback_;
 
   // Cached value of the current audio delay on the output/renderer side.
   base::TimeDelta output_delay_ GUARDED_BY(lock_);

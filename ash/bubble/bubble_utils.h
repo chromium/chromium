@@ -6,11 +6,11 @@
 #define ASH_BUBBLE_BUBBLE_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/style/ash_color_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 

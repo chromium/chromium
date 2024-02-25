@@ -60,7 +60,7 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
 
     // Initialize the scoring signals if needed.
     if (!match.scoring_signals) {
-      match.scoring_signals = absl::make_optional<ScoringSignals>();
+      match.scoring_signals = std::make_optional<ScoringSignals>();
     }
 
     // Skip this match if it already has history signals.
@@ -70,9 +70,9 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
     }
 
     history::URLRow row;
-    // Return if no URL row found.
+    // Skip this match if no URL row found.
     if (url_db->GetRowForURL(match.destination_url, &row) == 0) {
-      return;
+      continue;
     }
 
     // Populate scoring signals.

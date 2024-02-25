@@ -43,9 +43,11 @@ REPLACEMENTS = {
   'double-conversion': 'base/third_party/double_conversion/BUILD.gn',
   'ffmpeg': 'third_party/ffmpeg/BUILD.gn',
   'flac': 'third_party/flac/BUILD.gn',
+  'flatbuffers': 'third_party/flatbuffers/BUILD.gn',
   'fontconfig': 'third_party/fontconfig/BUILD.gn',
   'freetype': 'build/config/freetype/freetype.gni',
   'harfbuzz-ng': 'third_party/harfbuzz-ng/harfbuzz.gni',
+  'highway' : 'third_party/highway/BUILD.gn',
   'icu': 'third_party/icu/BUILD.gn',
   'jsoncpp' : 'third_party/jsoncpp/BUILD.gn',
   'libaom' : 'third_party/libaom/BUILD.gn',
@@ -54,6 +56,8 @@ REPLACEMENTS = {
   'libevent': 'third_party/libevent/BUILD.gn',
   'libjpeg': 'third_party/libjpeg.gni',
   'libpng': 'third_party/libpng/BUILD.gn',
+  'libsecret' : 'third_party/libsecret/BUILD.gn',
+  'libusb': 'third_party/libusb/BUILD.gn',
   'libvpx': 'third_party/libvpx/BUILD.gn',
   'libwebp': 'third_party/libwebp/BUILD.gn',
   'libxml': 'third_party/libxml/BUILD.gn',
@@ -72,6 +76,7 @@ REPLACEMENTS = {
   'vulkan-SPIRV-Headers' : 'third_party/vulkan-deps/spirv-headers/src/BUILD.gn',
   'vulkan-SPIRV-Tools' : 'third_party/vulkan-deps/spirv-tools/src/BUILD.gn',
   #
+  'vulkan_memory_allocator' : 'third_party/vulkan_memory_allocator/BUILD.gn',
   'woff2': 'third_party/woff2/BUILD.gn',
   'zlib': 'third_party/zlib/BUILD.gn',
 }

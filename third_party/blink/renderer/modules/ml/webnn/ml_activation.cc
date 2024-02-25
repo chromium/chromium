@@ -20,7 +20,7 @@ void MLActivation::Trace(Visitor* visitor) const {
 
 const MLOperator* MLActivation::Operator() const {
   DCHECK(operator_);
-  return operator_;
+  return operator_.Get();
 }
 
 }  // namespace blink

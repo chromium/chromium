@@ -72,7 +72,7 @@ class MockEnterpriseStartupDialog : public EnterpriseStartupDialog {
                void(const std::u16string&));
   MOCK_METHOD2(DisplayErrorMessage,
                void(const std::u16string&,
-                    const absl::optional<std::u16string>&));
+                    const std::optional<std::u16string>&));
   MOCK_METHOD0(IsShowing, bool());
 
   void SetCallback(EnterpriseStartupDialog::DialogResultCallback callback) {

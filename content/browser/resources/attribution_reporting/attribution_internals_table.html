@@ -12,9 +12,15 @@
   table {
     border: 0;
     border-collapse: collapse;
+    /* Per
+     * https://limebrains.com/blog/2021-03-02T13:00-heigh-100-inside-table-td
+     * this forces the header buttons to expand vertically, making them easier
+     * to click on.
+     */
+    height: 1px;
   }
 
-  tbody tr {
+  tbody tr, tfoot tr {
     border-top-color: rgba(0,0,0,.12);
     border-top-style: solid;
     border-top-width: 1px;
@@ -24,35 +30,60 @@
     border: 0;
   }
 
-  table td,
-  table th {
-    padding-inline-end: 16px;
-    padding-inline-start: 16px;
+  tfoot {
+    font-weight: bold;
+  }
+
+  td, th {
+    padding-inline: 16px;
   }
 
   th[aria-sort] {
-    cursor: pointer;
+    padding: 0;
   }
 
-  th[aria-sort]::after {
+  th[aria-sort] button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    height: 100%;
+    outline: none;
+    padding-inline: 16px;
+    height: 100%;
+    width: 100%;
+  }
+
+  th[aria-sort] button:hover {
+    background: rgba(0,0,0,.12);
+  }
+
+  th[aria-sort='none'] button::after {
     content: '⬍';
   }
 
-  th[aria-sort='ascending']::after {
+  th[aria-sort='ascending'] button::after {
     content: '⬆';
   }
 
-  th[aria-sort='descending']::after {
+  th[aria-sort='descending'] button::after {
     content: '⬇';
+  }
+
+  ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .send-error {
     background-color: rgb(250,199,192);
   }
 
-  .debug-url {
-    color: rgb(66,135,245);
-    font-weight: bold;
+  .number {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
 </style>
 <table>
@@ -60,4 +91,7 @@
     <tr></tr>
   </thead>
   <tbody></tbody>
+  <tfoot>
+    <tr><td></td></tr>
+  </tfoot>
 </table>

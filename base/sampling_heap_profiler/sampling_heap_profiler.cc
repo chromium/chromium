@@ -8,8 +8,9 @@
 #include <cmath>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
+#include "base/allocator/dispatcher/tls.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
@@ -37,6 +38,22 @@ namespace base {
 constexpr uint32_t kMaxStackEntries = 256;
 
 namespace {
+
+struct ThreadLocalData {
+  const char* thread_name = nullptr;
+};
+
+ThreadLocalData* GetThreadLocalData() {
+#if USE_LOCAL_TLS_EMULATION()
+  static base::NoDestructor<
+      base::allocator::dispatcher::ThreadLocalStorage<ThreadLocalData>>
+      thread_local_data("sampling_heap_profiler");
+  return thread_local_data->GetThreadLocalData();
+#else
+  static thread_local ThreadLocalData thread_local_data;
+  return &thread_local_data;
+#endif
+}
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 BASE_FEATURE(kAvoidFramePointers,
@@ -82,19 +99,19 @@ const char* GetAndLeakThreadName() {
 }
 
 const char* UpdateAndGetThreadName(const char* name) {
-  static thread_local const char* thread_name;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
   if (name)
-    thread_name = name;
-  if (!thread_name)
-    thread_name = GetAndLeakThreadName();
-  return thread_name;
+    thread_local_data->thread_name = name;
+  if (!thread_local_data->thread_name) {
+    thread_local_data->thread_name = GetAndLeakThreadName();
+  }
+  return thread_local_data->thread_name;
 }
 
 // Checks whether unwinding from this function works.
 [[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
-  void* stack[kMaxStackEntries];
-  size_t frame_count = base::debug::CollectStackTrace(const_cast<void**>(stack),
-                                                      kMaxStackEntries);
+  const void* stack[kMaxStackEntries];
+  size_t frame_count = base::debug::CollectStackTrace(stack, kMaxStackEntries);
   // First frame is the current function and can be found without unwind tables.
   return frame_count > 1 ? StackUnwinder::kDefault
                          : StackUnwinder::kUnavailable;
@@ -186,9 +203,9 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
-                                               size_t max_entries,
-                                               size_t* count) {
+const void** SamplingHeapProfiler::CaptureStackTrace(const void** frames,
+                                                     size_t max_entries,
+                                                     size_t* count) {
   // Skip top frames as they correspond to the profiler itself.
   size_t skip_frames = 3;
   size_t frame_count = 0;
@@ -250,10 +267,10 @@ void SamplingHeapProfiler::SampleAdded(void* address,
 
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
                                               Sample* sample) {
-  void* stack[kMaxStackEntries];
+  const void* stack[kMaxStackEntries];
   size_t frame_count;
   // One frame is reserved for the thread name.
-  void** first_frame =
+  const void** first_frame =
       CaptureStackTrace(stack, kMaxStackEntries - 1, &frame_count);
   DCHECK_LT(frame_count, kMaxStackEntries);
   sample->stack.assign(first_frame, first_frame + frame_count);
@@ -305,6 +322,7 @@ std::vector<const char*> SamplingHeapProfiler::GetStrings() {
 
 // static
 void SamplingHeapProfiler::Init() {
+  GetThreadLocalData();
   PoissonAllocationSampler::Init();
 }
 

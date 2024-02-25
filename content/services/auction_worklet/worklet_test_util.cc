@@ -5,20 +5,22 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace auction_worklet {
 
@@ -26,21 +28,23 @@ const char kJavascriptMimeType[] = "application/javascript";
 const char kJsonMimeType[] = "application/json";
 const char kWasmMimeType[] = "application/wasm";
 
-const char kAllowFledgeHeader[] = "X-Allow-FLEDGE: true";
+const char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 absl::optional<std::string> mime_type,
-                 absl::optional<std::string> charset,
+                 std::optional<std::string> mime_type,
+                 std::optional<std::string> charset,
                  const std::string content,
-                 absl::optional<std::string> headers,
+                 std::optional<std::string> headers,
                  net::HttpStatusCode http_status,
                  network::TestURLLoaderFactory::Redirects redirects) {
   auto head = network::mojom::URLResponseHead::New();
-  if (mime_type)
+  if (mime_type) {
     head->mime_type = *mime_type;
-  if (charset)
+  }
+  if (charset) {
     head->charset = *charset;
+  }
 
   std::string full_headers =
       base::StringPrintf("HTTP/1.1 %d %s\r\n\r\n",
@@ -55,8 +59,9 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
   // in for easier checking of it.
   if (mime_type) {
     std::string content_type_str = *mime_type;
-    if (charset)
+    if (charset) {
       base::StrAppend(&content_type_str, {";charset=", *charset});
+    }
     head->headers->SetHeader(net::HttpRequestHeaders::kContentType,
                              content_type_str);
   }
@@ -69,14 +74,14 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
                            const GURL& url,
                            const std::string content) {
-  AddResponse(url_loader_factory, url, kJavascriptMimeType, absl::nullopt,
+  AddResponse(url_loader_factory, url, kJavascriptMimeType, std::nullopt,
               content);
 }
 
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content) {
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content);
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content);
 }
 
 void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
@@ -85,7 +90,7 @@ void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                               uint32_t data_version) {
   std::string headers = base::StringPrintf("%s\nData-Version: %u",
                                            kAllowFledgeHeader, data_version);
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content,
               headers);
 }
 
@@ -93,17 +98,18 @@ void AddBidderJsonResponse(
     network::TestURLLoaderFactory* url_loader_factory,
     const GURL& url,
     const std::string content,
-    absl::optional<uint32_t> data_version,
-    const absl::optional<std::string>& format_version_string) {
+    std::optional<uint32_t> data_version,
+    const std::optional<std::string>& format_version_string) {
   std::string headers = kAllowFledgeHeader;
-  if (data_version)
+  if (data_version) {
     headers.append(base::StringPrintf("\nData-Version: %u", *data_version));
+  }
   if (format_version_string) {
     headers.append(
-        base::StringPrintf("\nX-Fledge-Bidding-Signals-Format-Version:  %s",
+        base::StringPrintf("\nAd-Auction-Bidding-Signals-Format-Version:  %s",
                            format_version_string->c_str()));
   }
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content,
               headers);
 }
 
@@ -162,6 +168,56 @@ void TestAuctionSharedStorageHost::Clear() {
 
 void TestAuctionSharedStorageHost::ClearObservedRequests() {
   observed_requests_.clear();
+}
+
+TestAuctionNetworkEventsHandler::TestAuctionNetworkEventsHandler() = default;
+TestAuctionNetworkEventsHandler::~TestAuctionNetworkEventsHandler() = default;
+
+void TestAuctionNetworkEventsHandler::OnNetworkSendRequest(
+    const ::network::ResourceRequest& request,
+    ::base::TimeTicks timestamp) {
+  std::string sent_url = "Sent URL: " + request.url.spec();
+  observed_requests_.emplace_back(std::move(sent_url));
+}
+
+void TestAuctionNetworkEventsHandler::OnNetworkResponseReceived(
+    const std::string& request_id,
+    const std::string& loader_id,
+    const ::GURL& request_url,
+    ::network::mojom::URLResponseHeadPtr headers) {
+  std::string received_url = "Received URL: " + request_url.spec();
+  observed_requests_.emplace_back(std::move(received_url));
+}
+
+void TestAuctionNetworkEventsHandler::OnNetworkRequestComplete(
+    const std::string& request_id,
+    const ::network::URLLoaderCompletionStatus& status) {
+  std::string completion_status =
+      "Completion Status: " + net::ErrorToString(status.error_code);
+  observed_requests_.emplace_back(std::move(completion_status));
+}
+
+void TestAuctionNetworkEventsHandler::Clone(
+    mojo::PendingReceiver<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        receiver) {
+  if (receiver.is_valid()) {
+    auction_network_events_handlers_.Add(this, std::move(receiver));
+  }
+}
+
+mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+TestAuctionNetworkEventsHandler::CreateRemote() {
+  mojo::PendingRemote<mojom::AuctionNetworkEventsHandler>
+      auction_network_events_handler_remote;
+
+  Clone(auction_network_events_handler_remote.InitWithNewPipeAndPassReceiver());
+
+  return auction_network_events_handler_remote;
+}
+
+const std::vector<std::string>&
+TestAuctionNetworkEventsHandler::GetObservedRequests() {
+  return observed_requests_;
 }
 
 }  // namespace auction_worklet

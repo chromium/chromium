@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -100,13 +100,13 @@ class NET_EXPORT WebSocketEventInterface {
   // |message| is a human readable string describing the failure. (It may be
   // empty.) |net_error| contains the network error code for the failure, which
   // may be |OK| if the failure was at a higher level. |response_code| contains
-  // the HTTP status code that caused the failure, or |absl::nullopt| if the
+  // the HTTP status code that caused the failure, or |std::nullopt| if the
   // attempt didn't get that far.
   //
   // This function deletes the Channel.
   virtual void OnFailChannel(const std::string& message,
                              int net_error,
-                             absl::optional<int> response_code) = 0;
+                             std::optional<int> response_code) = 0;
 
   // Called when the browser starts the WebSocket Opening Handshake.
   virtual void OnStartOpeningHandshake(
@@ -153,7 +153,7 @@ class NET_EXPORT WebSocketEventInterface {
       scoped_refptr<HttpResponseHeaders> response_headers,
       const IPEndPoint& socket_address,
       base::OnceCallback<void(const AuthCredentials*)> callback,
-      absl::optional<AuthCredentials>* credentials) = 0;
+      std::optional<AuthCredentials>* credentials) = 0;
 
  protected:
   WebSocketEventInterface() = default;

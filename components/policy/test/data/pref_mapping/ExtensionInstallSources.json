@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionInstallSources": [
+            "https://www.corp.monkey.net/*"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_install_sites": {
+            "value": [
+              "https://www.corp.monkey.net/*"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

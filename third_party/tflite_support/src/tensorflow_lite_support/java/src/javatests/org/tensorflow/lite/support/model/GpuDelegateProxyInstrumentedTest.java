@@ -17,7 +17,6 @@ package org.tensorflow.lite.support.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,12 +27,13 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 public final class GpuDelegateProxyInstrumentedTest {
-    @Test
-    public void createGpuDelegateProxyShouldSuccess() {
-        GpuDelegateProxy proxy = GpuDelegateProxy.maybeNewInstance();
 
-        assertThat(proxy).isNotNull();
-        proxy.getNativeHandle();
-        proxy.close();
-    }
+  @Test
+  public void createGpuDelegateProxyShouldSuccess() {
+    GpuDelegateProxy proxy = GpuDelegateProxy.maybeNewInstance();
+
+    assertThat(proxy).isNotNull();
+    proxy.getNativeHandle();
+    proxy.close();
+  }
 }

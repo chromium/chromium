@@ -5,10 +5,14 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_LOADER_H_
 #define CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_LOADER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 
 namespace content {
 // A common interface in between:
@@ -92,7 +96,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   virtual void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) = 0;
+      std::optional<mojo_base::BigBuffer> cached_metadata) = 0;
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
@@ -107,9 +111,24 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
+  // TODO(crbug.com/1523917): remove the function after the spec has been
+  // decided and the implementation is ready.
+  //
+  // Currently, timing info for the ServiceWorker static routing API
+  // has not been decided yet.  To avoid unnecessary confusion, no metrics
+  // are recorded if the fetch handler is not executed. i.e. cache or network
+  // sources are used.
+  bool ShouldAvoidRecordingServiceWorkerTimingInfo();
+  void set_used_router_source_type(
+      network::mojom::ServiceWorkerRouterSourceType type) {
+    used_router_source_type_ = type;
+  }
+
  private:
   FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
   DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
+  std::optional<network::mojom::ServiceWorkerRouterSourceType>
+      used_router_source_type_;
 };
 }  // namespace content
 

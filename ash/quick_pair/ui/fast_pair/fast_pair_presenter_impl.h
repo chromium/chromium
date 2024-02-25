@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_PRESENTER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -14,7 +15,7 @@
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/timer/timer.h"
 
 namespace message_center {
 class MessageCenter;
@@ -61,8 +62,10 @@ class FastPairPresenterImpl : public FastPairPresenter {
                          PairingFailedCallback callback) override;
   void ShowAssociateAccount(scoped_refptr<Device> device,
                             AssociateAccountCallback callback) override;
-  void ShowCompanionApp(scoped_refptr<Device> device,
-                        CompanionAppCallback callback) override;
+  void ShowInstallCompanionApp(scoped_refptr<Device> device,
+                               CompanionAppCallback callback) override;
+  void ShowLaunchCompanionApp(scoped_refptr<Device> device,
+                              CompanionAppCallback callback) override;
   void RemoveNotifications() override;
   void ExtendNotification() override;
 
@@ -101,6 +104,12 @@ class FastPairPresenterImpl : public FastPairPresenter {
       AssociateAccountCallback callback,
       FastPairNotificationDismissReason dismiss_reason);
 
+  void OnCompanionAppInstallClicked(CompanionAppCallback callback);
+  void OnCompanionAppSetupClicked(CompanionAppCallback callback);
+  void OnCompanionAppDismissed(
+      CompanionAppCallback callback,
+      FastPairNotificationDismissReason dismiss_reason);
+
   void OnDiscoveryMetadataRetrieved(scoped_refptr<Device> device,
                                     DiscoveryCallback callback,
                                     DeviceMetadata* device_metadata,
@@ -116,6 +125,31 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            AssociateAccountCallback callback,
                                            DeviceMetadata* device_metadata,
                                            bool has_retryable_error);
+  void OnInstallCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
+                                              CompanionAppCallback callback,
+                                              DeviceMetadata* device_metadata,
+                                              bool has_retryable_error);
+  void OnLaunchCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
+                                             CompanionAppCallback callback,
+                                             DeviceMetadata* device_metadata,
+                                             bool has_retryable_error);
+
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast A timer used to delay displaying the Fast Pair companion app
+  // notification until the Bluetooth device-connected toast is almost or
+  // already auto-dismissed. Only one Fast Pair companion notification is
+  // supported at a time. If a new device with companion app is paired before
+  // the previous notification shows, only the new device's companion
+  // notification will be shown.
+  base::OneShotTimer toast_collision_avoidance_timer_;
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast
+  void ShowInstallCompanionAppDelayed(scoped_refptr<Device> device,
+                                      CompanionAppCallback callback);
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast
+  void ShowLaunchCompanionAppDelayed(scoped_refptr<Device> device,
+                                     CompanionAppCallback callback);
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenterImpl> weak_pointer_factory_{this};

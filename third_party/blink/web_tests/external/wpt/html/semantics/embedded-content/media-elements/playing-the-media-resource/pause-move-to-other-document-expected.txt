@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL paused state when moving to other document assert_false: paused after moving expected false got true
+[FAIL] paused state when moving to other document
+  assert_false: paused after moving expected false got true
 Harness: the test ran to completion.
 

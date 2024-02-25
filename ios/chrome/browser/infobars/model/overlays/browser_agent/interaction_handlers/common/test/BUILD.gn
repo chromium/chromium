@@ -1,0 +1,19 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "mock_infobar_banner_interaction_handler.h",
+    "mock_infobar_banner_interaction_handler.mm",
+    "mock_infobar_modal_interaction_handler.h",
+    "mock_infobar_modal_interaction_handler.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common",
+    "//ios/chrome/browser/overlays/model",
+    "//testing/gmock",
+  ]
+}

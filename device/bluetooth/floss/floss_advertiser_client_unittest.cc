@@ -47,6 +47,10 @@ class FlossAdvertiserClientTest : public testing::Test,
  public:
   FlossAdvertiserClientTest() = default;
 
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
@@ -206,7 +210,7 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
         std::move(*cb).Run(response.get(), nullptr);
       });
 
-  advclient_->Init(bus_.get(), kGattInterface, adapter_index_,
+  advclient_->Init(bus_.get(), kGattInterface, adapter_index_, GetCurrVersion(),
                    base::DoNothing());
   ASSERT_TRUE(!!method_handler_on_advertising_set_started);
   ASSERT_TRUE(!!method_handler_on_advertising_parameters_updated);
@@ -232,8 +236,8 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   base::RunLoop run_loop0;
   advclient_->StartAdvertisingSet(
-      params, adv_data, /*scan_rsp=*/absl::nullopt,
-      /*periodic_params=*/absl::nullopt, /*periodic_data=*/absl::nullopt,
+      params, adv_data, /*scan_rsp=*/std::nullopt,
+      /*periodic_params=*/std::nullopt, /*periodic_data=*/std::nullopt,
       /*duration=*/1,
       /*max_ext_adv_events=*/1,
       base::BindLambdaForTesting([&run_loop0](AdvertiserId adv_id) {

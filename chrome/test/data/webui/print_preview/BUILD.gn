@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "print_preview"
-
   files = [
     "advanced_dialog_test.ts",
     "advanced_item_test.ts",
@@ -23,7 +21,7 @@ build_webui_tests("build") {
     "dpi_settings_test.ts",
     "duplex_settings_test.ts",
     "header_test.ts",
-    "invalid_settings_browsertest.ts",
+    "invalid_settings_test.ts",
     "key_event_test.ts",
     "layout_settings_test.ts",
     "margins_settings_test.ts",
@@ -57,7 +55,7 @@ build_webui_tests("build") {
   ]
 
   if (is_mac || is_win) {
-    files += [ "system_dialog_browsertest.ts" ]
+    files += [ "system_dialog_test.ts" ]
   }
 
   if (is_chromeos) {
@@ -67,11 +65,11 @@ build_webui_tests("build") {
       "destination_dropdown_cros_test.ts",
       "destination_item_test_cros.ts",
       "destination_search_test_chromeos.ts",
-      "destination_select_test_cros.ts",
       "native_layer_cros_stub.ts",
       "pin_settings_test.ts",
       "print_server_store_test.ts",
       "printer_setup_info_cros_test.ts",
+      "printer_status_test.ts",
     ]
   } else {
     files += [

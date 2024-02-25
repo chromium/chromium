@@ -34,6 +34,10 @@ source_set("ozone_demo_lib") {
     "//ui/ozone",
     "//ui/platform_window",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }
 
 executable("ozone_demo") {
@@ -92,4 +96,8 @@ executable("skia_demo") {
     "//ui/gl/init",
     "//ui/ozone",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }

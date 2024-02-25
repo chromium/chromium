@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/containers/span.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/skia_utils_base.h"
@@ -53,10 +54,11 @@ ClipboardIOS::~ClipboardIOS() {
 void ClipboardIOS::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardIOS::GetSource(ClipboardBuffer buffer) const {
+std::optional<DataTransferEndpoint> ClipboardIOS::GetSource(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return std::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
@@ -133,7 +135,10 @@ void ClipboardIOS::ReadAvailableTypes(
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumWebCustomData);
   if (data) {
-    ReadCustomDataTypes([data bytes], [data length], types);
+    ReadCustomDataTypes(
+        base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                   [data length]),
+        types);
   }
 }
 
@@ -266,7 +271,13 @@ void ClipboardIOS::ReadCustomData(ClipboardBuffer buffer,
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumWebCustomData);
   if (data) {
-    ReadCustomDataForType([data bytes], [data length], type, result);
+    if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
+            base::span(reinterpret_cast<const uint8_t*>([data bytes]),
+                       [data length]),
+            type);
+        maybe_result) {
+      *result = std::move(*maybe_result);
+    }
   }
 }
 
@@ -366,22 +377,14 @@ void ClipboardIOS::WriteText(base::StringPiece text) {
   [GetPasteboard() addItems:@[ text_item ]];
 }
 
-void ClipboardIOS::WriteHTML(base::StringPiece markup,
-                             absl::optional<base::StringPiece> source_url) {
-  // We need to mark it as utf-8. (see crbug.com/11957)
-  std::string html_fragment_str("<meta charset='utf-8'>");
-  html_fragment_str += markup;
-  NSString* html = base::SysUTF8ToNSString(html_fragment_str);
-
-  NSDictionary<NSString*, id>* html_item =
-      @{ClipboardFormatType::HtmlType().ToNSString() : html};
-  [GetPasteboard() addItems:@[ html_item ]];
-}
-
-void ClipboardIOS::WriteUnsanitizedHTML(
+void ClipboardIOS::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
+    std::optional<base::StringPiece> /* source_url */) {
+  NSDictionary<NSString*, id>* html_item = @{
+    ClipboardFormatType::HtmlType().ToNSString() :
+        base::SysUTF8ToNSString(markup)
+  };
+  [GetPasteboard() addItems:@[ html_item ]];
 }
 
 void ClipboardIOS::WriteSvg(base::StringPiece markup) {
@@ -442,7 +445,7 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
   base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
-      skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space);
+      skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space.get());
   if (!image) {
     NOTREACHED() << "SkBitmapToUIImageWithColorSpace failed";
     return;

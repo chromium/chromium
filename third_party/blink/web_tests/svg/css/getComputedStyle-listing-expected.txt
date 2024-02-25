@@ -23,15 +23,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-mask-box-image-slice: 0 fill
 -webkit-mask-box-image-source: none
 -webkit-mask-box-image-width: auto
--webkit-mask-clip: border-box
--webkit-mask-composite: source-over
--webkit-mask-image: none
--webkit-mask-origin: border-box
--webkit-mask-position: 0% 0%
 -webkit-mask-position-x: 0%
 -webkit-mask-position-y: 0%
--webkit-mask-repeat: repeat
--webkit-mask-size: auto
 -webkit-print-color-adjust: economy
 -webkit-rtl-ordering: logical
 -webkit-text-combine: none
@@ -161,6 +154,7 @@ display: inline
 dominant-baseline: auto
 dynamic-range-limit: high
 empty-cells: show
+field-sizing: fixed
 fill: rgb(0, 128, 0)
 fill-opacity: 1
 fill-rule: nonzero
@@ -209,6 +203,7 @@ image-orientation: from-image
 image-rendering: auto
 initial-letter: normal
 inline-size: 100px
+inset-area: none
 inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto
@@ -236,6 +231,14 @@ margin-top: 0px
 marker-end: none
 marker-mid: none
 marker-start: none
+mask-clip: border-box
+mask-composite: add
+mask-image: none
+mask-mode: match-source
+mask-origin: border-box
+mask-position: 0% 0%
+mask-repeat: repeat
+mask-size: auto
 mask-type: luminance
 math-depth: 0
 math-shift: normal
@@ -255,7 +258,7 @@ object-view-box: none
 offset-anchor: auto
 offset-distance: 0px
 offset-path: none
-offset-position: auto
+offset-position: normal
 offset-rotate: auto 0deg
 opacity: 1
 order: 0
@@ -292,6 +295,8 @@ popover-show-delay: 0.5s
 position: static
 position-fallback: none
 position-fallback-bounds: normal
+position-try-options: none
+position-try-order: normal
 r: 0px
 resize: none
 right: auto
@@ -343,6 +348,7 @@ table-layout: auto
 text-align: start
 text-align-last: auto
 text-anchor: start
+text-autospace: normal
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)
@@ -357,14 +363,11 @@ text-overflow: clip
 text-rendering: auto
 text-shadow: none
 text-size-adjust: auto
+text-spacing-trim: normal
 text-transform: none
 text-underline-position: auto
 text-wrap: wrap
 timeline-scope: none
-toggle-group: none
-toggle-root: none
-toggle-trigger: none
-toggle-visibility: normal
 top: auto
 touch-action: auto
 transform: none
@@ -383,6 +386,7 @@ vertical-align: baseline
 view-timeline-axis: block
 view-timeline-inset: auto
 view-timeline-name: none
+view-transition-class: none
 view-transition-name: none
 visibility: visible
 white-space-collapse: collapse

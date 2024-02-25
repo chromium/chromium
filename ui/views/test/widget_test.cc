@@ -42,7 +42,7 @@ View* AnyViewMatchingPredicate(View* view, const ViewPredicate& predicate) {
   // always choosing the same View to return out of a set of possible Views.
   // If we didn't do this, client code could accidentally depend on a specific
   // search order.
-  for (auto* child : ShuffledChildren(view)) {
+  for (views::View* child : ShuffledChildren(view)) {
     auto* found = AnyViewMatchingPredicate(child, predicate);
     if (found)
       return found;
@@ -189,6 +189,7 @@ void TestDesktopWidgetDelegate::InitWidget(Widget::InitParams init_params) {
 void TestDesktopWidgetDelegate::WindowClosing() {
   window_closing_count_++;
   widget_ = nullptr;
+  contents_view_ = nullptr;
 }
 
 Widget* TestDesktopWidgetDelegate::GetWidget() {
@@ -277,31 +278,33 @@ void WidgetDestroyedWaiter::OnWidgetDestroyed(Widget* widget) {
   run_loop_.Quit();
 }
 
-WidgetVisibleWaiter::WidgetVisibleWaiter(Widget* widget) : widget_(widget) {}
+WidgetVisibleWaiter::WidgetVisibleWaiter(Widget* widget) {
+  widget_observation_.Observe(widget);
+}
+
 WidgetVisibleWaiter::~WidgetVisibleWaiter() = default;
 
 void WidgetVisibleWaiter::Wait() {
-  if (!widget_->IsVisible()) {
-    widget_observation_.Observe(widget_.get());
+  if (!widget_observation_.GetSource()->IsVisible()) {
     run_loop_.Run();
   }
 }
 
 void WidgetVisibleWaiter::OnWidgetVisibilityChanged(Widget* widget,
                                                     bool visible) {
-  DCHECK_EQ(widget_, widget);
+  if (!run_loop_.running()) {
+    return;
+  }
   if (visible) {
     DCHECK(widget_observation_.IsObservingSource(widget));
-    widget_observation_.Reset();
     run_loop_.Quit();
   }
 }
 
 void WidgetVisibleWaiter::OnWidgetDestroying(Widget* widget) {
-  DCHECK_EQ(widget_, widget);
-  ADD_FAILURE() << "Widget destroying before it became visible!";
-  // Even though the test failed, be polite and remove the observer so we
-  // don't crash with a UAF in the destructor.
+  if (run_loop_.running()) {
+    ADD_FAILURE() << "Widget destroying before it became visible!";
+  }
   DCHECK(widget_observation_.IsObservingSource(widget));
   widget_observation_.Reset();
 }

@@ -60,9 +60,7 @@ test(() => {
     'b2',
   ];
 
-  assert_focus_navigation_forward(elements);
-  elements.reverse();
-  assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Focus should cover assigned nodes of slot, especially for nested slots in slot scope.');
 
 </script>

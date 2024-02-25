@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom-shared.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "ipc/message_filter.h"
@@ -32,7 +32,7 @@ class ChildHistogramFetcherFactoryImpl
 
  private:
   void CreateFetcher(
-      base::WritableSharedMemoryRegion,
+      base::UnsafeSharedMemoryRegion,
       mojo::PendingReceiver<content::mojom::ChildHistogramFetcher>) override;
 };
 

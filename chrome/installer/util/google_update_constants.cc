@@ -36,6 +36,7 @@ const wchar_t kRegCleanInstallRequiredForVersionBelowField[] =
 const wchar_t kRegClientField[] = L"client";
 const wchar_t kRegCommandLineField[] = L"CommandLine";
 const wchar_t kRegCriticalVersionField[] = L"cpv";
+const wchar_t kRegDefaultField[] = L"";
 const wchar_t kRegDidRunField[] = L"dr";
 const wchar_t kRegDowngradeCleanupCommandField[] = L"DowngradeCleanupCommand";
 const wchar_t kRegEulaAceptedField[] = L"eulaaccepted";
@@ -66,7 +67,5 @@ const wchar_t kRegUninstallCmdLine[] = L"UninstallCmdLine";
 const wchar_t kRegUsageStatsField[] = L"usagestats";
 const wchar_t kRegVersionField[] = L"pv";
 const wchar_t kRegWebAccessibleField[] = L"WebAccessible";
-
-const wchar_t kExperimentLabels[] = L"experiment_labels";
 
 }  // namespace google_update

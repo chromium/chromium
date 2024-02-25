@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -42,13 +42,13 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type);
 // Translates |onc_proxy_settings|, which must be a valid ONC ProxySettings
 // dictionary, to a ProxyConfig dictionary (see proxy_config_dictionary.h).
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
+std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
     const base::Value::Dict& onc_proxy_settings);
 
 // Translates |proxy_config_dict|, which must be a valid ProxyConfig dictionary
 // (see proxy_config_dictionary.h) to an ONC ProxySettings dictionary.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
+std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     const base::Value::Dict& proxy_config_dict);
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)

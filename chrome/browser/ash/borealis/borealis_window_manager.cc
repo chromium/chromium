@@ -54,7 +54,7 @@ std::string SteamGameIdToShelfAppId(Profile* profile, unsigned steam_game_id) {
   for (const auto& item :
        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
            ->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
-    absl::optional<int> app_id = ParseSteamGameId(item.second.Exec());
+    std::optional<int> app_id = ParseSteamGameId(item.second.Exec());
     if (app_id && app_id.value() == static_cast<int>(steam_game_id)) {
       return item.first;
     }
@@ -65,7 +65,7 @@ std::string SteamGameIdToShelfAppId(Profile* profile, unsigned steam_game_id) {
 // Return the GuestOS Shelf App ID for the given window.
 std::string ShelfAppId(Profile* profile, const aura::Window* window) {
   // The Steam Game ID is the most reliable method, if known.
-  absl::optional<int> steam_id = SteamGameId(window);
+  std::optional<int> steam_id = SteamGameId(window);
   if (steam_id.has_value()) {
     if (steam_id.value() == kSteamClientGameId) {
       return kClientAppId;

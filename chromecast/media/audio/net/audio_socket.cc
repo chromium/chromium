@@ -175,8 +175,8 @@ bool AudioSocket::SendProto(int type,
       buffer = buffer_pool_->GetBuffer();
     }
     if (!buffer) {
-      buffer =
-          base::MakeRefCounted<net::IOBuffer>(sizeof(uint16_t) + total_size);
+      buffer = base::MakeRefCounted<net::IOBufferWithSize>(sizeof(uint16_t) +
+                                                           total_size);
     }
     ptr = buffer->data();
     base::WriteBigEndian(ptr, static_cast<uint16_t>(total_size));

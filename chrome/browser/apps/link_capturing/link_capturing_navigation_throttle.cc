@@ -10,10 +10,12 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -152,19 +154,20 @@ LinkCapturingNavigationThrottle::MaybeCreate(
     return nullptr;
   }
 
-  // Do not check apps for url if we are already in an app browser.
-  // It is possible that the web contents is not inserted to tab strip
-  // model at this stage (e.g. open url in new tab). So if we cannot
-  // find a browser at this moment, skip the check and this will be handled
-  // in `HandleRequest()`.
-  // This also checks if there is no browser attached to this web-contents yet,
-  // which means this was a middle-mouse-click action, which should not be
-  // captured.
-  // TODO(dmurph): Find a better way to detect middle-clicks.
-  // https://crbug.com/1474984
-  if (web_app::WebAppProvider::GetForWebApps(profile)
-          ->ui_manager()
-          .IsAppAffiliatedWindowOrNone(web_contents)) {
+  // If there is no browser attached to this web-contents yet, this was a
+  // middle-mouse-click action, which should not be captured.
+  // TODO(crbug.com/1474984): Find a better way to detect middle-clicks.
+  if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
+    return nullptr;
+  }
+
+  // Never link capture links that open in a popup window. Popups are closely
+  // associated with the tab that opened them, so the popup should open in the
+  // same (app/non-app) context as its opener.
+  WindowOpenDisposition disposition =
+      GetLinkCapturingSourceDisposition(web_contents);
+  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+      !web_contents->GetLastCommittedURL().is_valid()) {
     return nullptr;
   }
 
@@ -240,13 +243,6 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // When the navigation is initiated in a web page where sending a referrer
-  // is disabled, |previous_url| can be empty. In this case, we should open
-  // it in the desktop browser.
-  if (!starting_url_.is_valid()) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   const GURL& url = handle->GetURL();
   if (!url.is_valid()) {
     DVLOG(1) << "Unexpected URL: " << url << ", opening in Chrome.";
@@ -258,19 +254,6 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  // Check this again, as the tab may have been reparented now.
-  // TODO(dmurph): Find a better way to detect middle clicks.
-  // https://crbug.com/1474984
-  if (web_app::WebAppProvider::GetForWebApps(profile)
-          ->ui_manager()
-          .IsAppAffiliatedWindowOrNone(web_contents)) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   if (!ShouldOverrideUrlIfRedirected(starting_url_, url)) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -278,11 +261,23 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   bool is_navigation_from_link =
       IsNavigateFromNonFormNonContextMenuLink(handle);
 
-  absl::optional<LaunchCallback> launch_link_capture =
+  content::WebContents* web_contents = handle->GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  std::optional<LaunchCallback> launch_link_capture =
       delegate_->CreateLinkCaptureLaunchClosure(profile, web_contents, url,
                                                 is_navigation_from_link);
   if (!launch_link_capture.has_value()) {
     return content::NavigationThrottle::PROCEED;
+  }
+
+  // If this is a prerender navigation that would otherwise launch an app, we
+  // must cancel it. We only want to launch an app once the URL is intentionally
+  // navigated to by the user. We cancel the navigation here so that when the
+  // link is clicked, we'll run NavigationThrottles again. If we leave the
+  // prerendering alive, the activating navigation won't run throttles.
+  if (handle->IsInPrerenderedMainFrame()) {
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
   // Browser & profile keep-alives must be used to keep the browser & profile

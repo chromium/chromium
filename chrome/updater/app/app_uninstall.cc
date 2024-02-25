@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_uninstall.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,8 +33,8 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
@@ -44,7 +45,7 @@
 namespace updater {
 
 std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
-  const absl::optional<base::FilePath> updater_folder_path =
+  const std::optional<base::FilePath> updater_folder_path =
       GetInstallDirectory(scope);
   if (!updater_folder_path) {
     LOG(ERROR) << __func__ << ": failed to get the updater install directory.";
@@ -134,7 +135,6 @@ class AppUninstall : public App {
 
   // These may be null if the global prefs lock wasn't acquired.
   scoped_refptr<GlobalPrefs> global_prefs_;
-  scoped_refptr<PersistedData> persisted_data_;
   scoped_refptr<Configurator> config_;
 };
 
@@ -143,8 +143,6 @@ int AppUninstall::Initialize() {
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
   global_prefs_ = CreateGlobalPrefs(updater_scope());
   if (global_prefs_) {
-    persisted_data_ = base::MakeRefCounted<PersistedData>(
-        updater_scope(), global_prefs_->GetPrefService());
     config_ = base::MakeRefCounted<Configurator>(global_prefs_,
                                                  CreateExternalConstants());
   }
@@ -153,18 +151,24 @@ int AppUninstall::Initialize() {
 
 void AppUninstall::UninstallAll(int reason) {
   update_client::CrxComponent uninstall_data;
-  uninstall_data.ap = persisted_data_->GetAP(kUpdaterAppId);
+  uninstall_data.ap = config_->GetUpdaterPersistedData()->GetAP(kUpdaterAppId);
   uninstall_data.app_id = kUpdaterAppId;
-  uninstall_data.brand = persisted_data_->GetBrandCode(kUpdaterAppId);
+  uninstall_data.brand =
+      config_->GetUpdaterPersistedData()->GetBrandCode(kUpdaterAppId);
   uninstall_data.requires_network_encryption = false;
-  uninstall_data.version = persisted_data_->GetProductVersion(kUpdaterAppId);
+  uninstall_data.version =
+      config_->GetUpdaterPersistedData()->GetProductVersion(kUpdaterAppId);
   if (!uninstall_data.version.IsValid()) {
     // In cases where there is no version in persisted data, fall back to the
     // currently-running version of the updater.
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
-  update_client::UpdateClientFactory(config_)->SendUninstallPing(
-      uninstall_data, reason,
+  update_client::UpdateClientFactory(config_)->SendPing(
+      uninstall_data,
+      {.event_type = update_client::protocol_request::kEventUninstall,
+       .result = 1,
+       .error_code = 0,
+       .extra_code1 = reason},
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
@@ -211,9 +215,9 @@ void AppUninstall::FirstTaskRun() {
   }
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
-    const bool had_apps = persisted_data_->GetHadApps();
+    const bool had_apps = config_->GetUpdaterPersistedData()->GetHadApps();
     const bool should_uninstall =
-        ShouldUninstall(persisted_data_->GetAppIds(),
+        ShouldUninstall(config_->GetUpdaterPersistedData()->GetAppIds(),
                         global_prefs_->CountServerStarts(), had_apps);
     VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
     if (should_uninstall) {

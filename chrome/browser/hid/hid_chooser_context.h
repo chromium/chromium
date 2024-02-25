@@ -7,9 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
-#include "base/unguessable_token.h"
+#include "chrome/browser/hid/web_view_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -80,11 +80,17 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
 
   // HID-specific interface for granting, revoking and checking permissions.
   void GrantDevicePermission(const url::Origin& origin,
-                             const device::mojom::HidDeviceInfo& device);
+                             const device::mojom::HidDeviceInfo& device,
+                             const std::optional<url::Origin>&
+                                 embedding_origin_of_web_view = std::nullopt);
   void RevokeDevicePermission(const url::Origin& origin,
-                              const device::mojom::HidDeviceInfo& device);
+                              const device::mojom::HidDeviceInfo& device,
+                              const std::optional<url::Origin>&
+                                  embedding_origin_of_web_view = std::nullopt);
   bool HasDevicePermission(const url::Origin& origin,
-                           const device::mojom::HidDeviceInfo& device);
+                           const device::mojom::HidDeviceInfo& device,
+                           const std::optional<url::Origin>&
+                               embedding_origin_of_web_view = std::nullopt);
 
   // Returns true if `origin` is allowed to access FIDO reports.
   bool IsFidoAllowedForOrigin(const url::Origin& origin);
@@ -109,6 +115,9 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   void SetHidManagerForTesting(
       mojo::PendingRemote<device::mojom::HidManager> manager,
       device::mojom::HidManager::GetDevicesCallback callback);
+
+  void PermissionForWebViewChanged();
+  void PermissionForWebViewRevoked(const url::Origin& web_view_origin);
 
   base::WeakPtr<HidChooserContext> AsWeakPtr();
 
@@ -150,6 +159,8 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
 
   // Map from device GUID to device info.
   std::map<std::string, device::mojom::HidDeviceInfoPtr> devices_;
+
+  WebViewChooserContext web_view_chooser_context_{this};
 
   mojo::Remote<device::mojom::HidManager> hid_manager_;
   mojo::AssociatedReceiver<device::mojom::HidManagerClient> client_receiver_{

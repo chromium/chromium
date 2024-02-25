@@ -70,7 +70,7 @@ const int kDefaultTabDesktopMediaListUpdatePeriod = 1000;
 
 void HandleCapturedBitmap(
     base::OnceCallback<void(uint32_t, const gfx::ImageSkia&)> reply,
-    absl::optional<uint32_t> last_hash,
+    std::optional<uint32_t> last_hash,
     const SkBitmap& bitmap) {
   gfx::ImageSkia image;
 
@@ -94,8 +94,8 @@ TabDesktopMediaList::TabDesktopMediaList(
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultTabDesktopMediaListUpdatePeriod)),
       web_contents_(web_contents
-                        ? absl::make_optional(web_contents->GetWeakPtr())
-                        : absl::nullopt),
+                        ? std::make_optional(web_contents->GetWeakPtr())
+                        : std::nullopt),
       includable_web_contents_filter_(
           std::move(includable_web_contents_filter)),
       include_chrome_app_windows_(include_chrome_app_windows) {
@@ -144,7 +144,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   }
 
   std::vector<Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile()) {
       browsers.push_back(browser);
@@ -329,7 +329,7 @@ void TabDesktopMediaList::OnPreviewCaptureHandled(
 }
 
 void TabDesktopMediaList::SetPreviewedSource(
-    const absl::optional<content::DesktopMediaID>& id) {
+    const std::optional<content::DesktopMediaID>& id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!(id.has_value() && id.value().is_null()));
 

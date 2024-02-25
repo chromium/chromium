@@ -4,18 +4,20 @@
 
 #include "services/device/geolocation/geolocation_provider_impl.h"
 
+#include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -227,6 +229,30 @@ void GeolocationProviderImpl::OnInternalsUpdated() {
                      EnableAndGetDiagnosticsOnGeolocationThread()));
 }
 
+void GeolocationProviderImpl::OnNetworkLocationRequested(
+    std::vector<mojom::AccessPointDataPtr> request) {
+  CHECK(OnGeolocationThread());
+  if (!diagnostics_enabled_) {
+    return;
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GeolocationProviderImpl::NotifyNetworkLocationRequested,
+                     base::Unretained(this), std::move(request)));
+}
+
+void GeolocationProviderImpl::OnNetworkLocationReceived(
+    mojom::NetworkLocationResponsePtr response) {
+  CHECK(OnGeolocationThread());
+  if (!diagnostics_enabled_) {
+    return;
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GeolocationProviderImpl::NotifyNetworkLocationReceived,
+                     base::Unretained(this), std::move(response)));
+}
+
 void GeolocationProviderImpl::OnInternalsObserverDisconnected(
     mojo::RemoteSetElementId element_id) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
@@ -298,6 +324,22 @@ void GeolocationProviderImpl::NotifyInternalsUpdated(
   }
 }
 
+void GeolocationProviderImpl::NotifyNetworkLocationRequested(
+    std::vector<mojom::AccessPointDataPtr> request) {
+  CHECK(main_task_runner_->BelongsToCurrentThread());
+  for (auto& observer : internals_observers_) {
+    observer->OnNetworkLocationRequested(mojo::Clone(request));
+  }
+}
+
+void GeolocationProviderImpl::NotifyNetworkLocationReceived(
+    mojom::NetworkLocationResponsePtr response) {
+  CHECK(main_task_runner_->BelongsToCurrentThread());
+  for (auto& observer : internals_observers_) {
+    observer->OnNetworkLocationReceived(response.Clone());
+  }
+}
+
 void GeolocationProviderImpl::Init() {
   DCHECK(OnGeolocationThread());
 
@@ -322,6 +364,10 @@ void GeolocationProviderImpl::Init() {
       std::make_unique<PositionCacheImpl>(
           base::DefaultTickClock::GetInstance()),
       base::BindRepeating(&GeolocationProviderImpl::OnInternalsUpdated,
+                          base::Unretained(this)),
+      base::BindRepeating(&GeolocationProviderImpl::OnNetworkLocationRequested,
+                          base::Unretained(this)),
+      base::BindRepeating(&GeolocationProviderImpl::OnNetworkLocationReceived,
                           base::Unretained(this)));
   arbitrator_->SetUpdateCallback(callback);
 }

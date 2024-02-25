@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Test: sandboxed-srcdoc iframe with postMessage from parent</title>
+    </head>
+    <body>
+    <script>
+        const child_response_promise =
+          new Promise(resolve => {
+                window.addEventListener("message", (event) => {
+                  console.log('parent received: ' + event.data);
+                  resolve();
+                });
+          });
+
+        const prerender_handler_promise =
+          new Promise(resolve => {
+               document.onprerenderingchange = () => {
+                 console.log('parent onprerenderingchanged');
+                 resolve();
+               };
+          });
+
+        function createSrcdoc() {
+          const frm = document.createElement('iframe');
+          frm.sandbox = 'allow-scripts';
+          frm.onload = () => {
+              frames[0].postMessage("hello","*");
+          };
+          frm.srcdoc =
+              '<html><body><script>' +
+              '    window.addEventListener("message", (event) => { ' +
+              '        const target = event.source; ' +
+              '        console.log("srcdoc received: " + event.data); ' +
+              '        target.postMessage(event.data + " from srcdoc", "*");' +
+              '    }); ' +
+              'console.log("srcdoc loaded!");' +
+              '</scr' + 'ipt></body></html>';
+            document.body.append(frm);
+        }
+        </script>
+    </body>
+</html>

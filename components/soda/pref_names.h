@@ -16,6 +16,15 @@ extern const char kSodaDeDeConfigPath[];
 extern const char kSodaEsEsConfigPath[];
 extern const char kSodaFrFrConfigPath[];
 extern const char kSodaItItConfigPath[];
+extern const char kSodaHiInConfigPath[];
+extern const char kSodaPtBrConfigPath[];
+extern const char kSodaIdIdConfigPath[];
+extern const char kSodaKoKrConfigPath[];
+extern const char kSodaPlPlConfigPath[];
+extern const char kSodaThThConfigPath[];
+extern const char kSodaTrTrConfigPath[];
+extern const char kSodaZhCnConfigPath[];
+extern const char kSodaZhTwConfigPath[];
 
 extern const char kSodaRegisteredLanguagePacks[];
 }  // namespace prefs

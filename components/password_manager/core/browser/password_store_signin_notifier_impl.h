@@ -38,8 +38,8 @@ class PasswordStoreSigninNotifierImpl
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
  private:
-  // Passes signed-out to |store_|.
-  void NotifySignedOut(const std::string& username, bool primary_account);
+  // Passes the sign-out notification to `reuse_manager_`.
+  void NotifySignedOut(const std::string& username, bool syncing_account);
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 

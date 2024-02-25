@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/automation_client.mojom.h"
 
 namespace ash {
 
@@ -23,19 +24,21 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   AutomationClientImpl& operator=(const AutomationClientImpl&) = delete;
   ~AutomationClientImpl() override;
 
-  void Bind(
-      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
+  void BindAutomation(
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation);
+  void BindAutomationClient(
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client);
+
+  void Disable();
 
  private:
   friend class AccessibilityServiceClientTest;
 
   // The following are called by the Accessibility service, passing information
   // back to the OS.
+  // ax::mojom::AutomationClient:
+  void Enable(EnableCallback callback) override;
   // TODO(crbug.com/1355633): Override from ax::mojom::AutomationClient:
-  using EnableCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
-  void Enable(EnableCallback callback);
-  void Disable();
   void EnableTree(const ui::AXTreeID& tree_id);
   void PerformAction(const ui::AXActionData& data);
 
@@ -54,7 +57,7 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
                             content::BrowserContext* browser_context) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   mojo::AssociatedRemoteSet<ax::mojom::Automation> automation_remotes_;
 
@@ -67,4 +70,4 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_AUTOMATION_CLIENT_IMPL_H_

@@ -7,7 +7,11 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
+
+class TabModel;
 
 namespace ui {
 class WindowAndroid;
@@ -15,15 +19,16 @@ class WindowAndroid;
 
 namespace autofill {
 
-class AutofillSaveCardDelegate;
+class AutofillSaveCardDelegateAndroid;
 struct AutofillSaveCardUiInfo;
 
 // Bridge class owned by ChromeAutofillClient providing an entry point
 // to trigger the save card bottom sheet on Android.
 class AutofillSaveCardBottomSheetBridge {
  public:
-  // The window must not be null.
-  explicit AutofillSaveCardBottomSheetBridge(ui::WindowAndroid* window_android);
+  // The window and tab model must not be null.
+  AutofillSaveCardBottomSheetBridge(ui::WindowAndroid* window_android,
+                                    TabModel* tab_model);
 
   AutofillSaveCardBottomSheetBridge(const AutofillSaveCardBottomSheetBridge&) =
       delete;
@@ -36,7 +41,7 @@ class AutofillSaveCardBottomSheetBridge {
   // Overridden in tests.
   virtual void RequestShowContent(
       const AutofillSaveCardUiInfo& ui_info,
-      std::unique_ptr<AutofillSaveCardDelegate> delegate);
+      std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
 
   // -- JNI calls bridged to AutofillSaveCardDelegate --
   // Called when the UI is shown.
@@ -55,9 +60,11 @@ class AutofillSaveCardBottomSheetBridge {
           java_autofill_save_card_bottom_sheet_bridge);
 
  private:
+  void ResetSaveCardDelegate();
+
   base::android::ScopedJavaGlobalRef<jobject>
       java_autofill_save_card_bottom_sheet_bridge_;
-  std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate_;
+  std::unique_ptr<AutofillSaveCardDelegateAndroid> save_card_delegate_;
 };
 
 }  // namespace autofill

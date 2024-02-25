@@ -29,9 +29,8 @@ static inline bool IsOutOfSync(const base::TimeDelta& timestamp_1,
                                const base::TimeDelta& timestamp_2) {
   // Out of sync of 100ms would be pretty noticeable and we should keep any
   // drift below that.
-  const int64_t kOutOfSyncThresholdInMilliseconds = 100;
-  return std::abs(timestamp_1.InMilliseconds() - timestamp_2.InMilliseconds()) >
-         kOutOfSyncThresholdInMilliseconds;
+  const base::TimeDelta kOutOfSyncThreshold = base::Milliseconds(100);
+  return (timestamp_1 - timestamp_2).magnitude() > kOutOfSyncThreshold;
 }
 
 DecryptingAudioDecoder::DecryptingAudioDecoder(
@@ -282,7 +281,7 @@ void DecryptingAudioDecoder::DeliverFrame(
     std::string key_id =
         scoped_pending_buffer_to_decode->decrypt_config()->key_id();
     std::string log_message =
-        "no key for key ID " + base::HexEncode(key_id.data(), key_id.size()) +
+        "no key for key ID " + base::HexEncode(key_id) +
         "; will resume decoding after new usable key is available";
     DVLOG(1) << __func__ << ": " << log_message;
     MEDIA_LOG(INFO, media_log_) << GetDecoderType() << ": " << log_message;

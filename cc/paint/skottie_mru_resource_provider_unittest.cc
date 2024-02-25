@@ -4,20 +4,20 @@
 
 #include "cc/paint/skottie_mru_resource_provider.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/lottie_test_data.h"
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/modules/skresources/include/SkResources.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,15 +38,15 @@ class FrameDataStub {
  public:
   using FrameData = skresources::ImageAsset::FrameData;
 
-  void SetAssetFrameData(base::StringPiece asset_id,
+  void SetAssetFrameData(std::string_view asset_id,
                          FrameData current_frame_data) {
     asset_to_frame_data_[HashSkottieResourceId(asset_id)] =
         std::move(current_frame_data);
     asset_to_result_[HashSkottieResourceId(asset_id)] =
-        SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
+        SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
   }
 
-  void SetAssetResult(base::StringPiece asset_id,
+  void SetAssetResult(std::string_view asset_id,
                       SkottieWrapper::FrameDataFetchResult current_result) {
     asset_to_result_[HashSkottieResourceId(asset_id)] = current_result;
   }
@@ -62,7 +62,7 @@ class FrameDataStub {
     }
     return asset_to_result_.contains(asset_id)
                ? asset_to_result_.at(asset_id)
-               : SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+               : SkottieWrapper::FrameDataFetchResult::kNoUpdate;
   }
 
  private:
@@ -73,7 +73,7 @@ class FrameDataStub {
 
 class SkottieMRUResourceProviderTest : public ::testing::Test {
  protected:
-  void Init(base::StringPiece animation_json) {
+  void Init(std::string_view animation_json) {
     provider_ = sk_make_sp<SkottieMRUResourceProvider>(
         base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
                             base::Unretained(&frame_data_stub_)),
@@ -102,7 +102,7 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {
   EXPECT_THAT(asset->getFrameData(/*t=*/0).image, Eq(image_1.GetSwSkImage()));
   // The same image should be re-used for the next timestamp.
   frame_data_stub_.SetAssetResult(
-      "test-resource-id", SkottieWrapper::FrameDataFetchResult::NO_UPDATE);
+      "test-resource-id", SkottieWrapper::FrameDataFetchResult::kNoUpdate);
   EXPECT_THAT(asset->getFrameData(/*t=*/0.1).image, Eq(image_1.GetSwSkImage()));
   // Now the new image should be used.
   PaintImage image_2 = CreateBitmapImage(gfx::Size(20, 20));
@@ -189,7 +189,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesMissingAssetDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
@@ -210,7 +210,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 
   Init(R"({
       "assets": [
@@ -229,7 +229,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesIncompleteDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
@@ -250,7 +250,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 
   Init(R"({
       "assets": [
@@ -269,7 +269,7 @@ TEST_F(SkottieMRUResourceProviderTest, HandlesInvalidDimensions) {
           FieldsAre(base::FilePath(FILE_PATH_LITERAL(
                                        "test-resource-path/test-resource-name"))
                         .NormalizePathSeparators(),
-                    Eq(absl::nullopt)))));
+                    Eq(std::nullopt)))));
 }
 
 TEST_F(SkottieMRUResourceProviderTest, GracefullyHandlesInvalidJson) {

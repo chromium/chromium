@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ShowLogoutButtonInTray": true
+        },
+        "prefs": {
+          "show_logout_button_in_tray": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

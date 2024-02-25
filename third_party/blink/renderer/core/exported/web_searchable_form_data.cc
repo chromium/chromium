@@ -47,6 +47,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 // Gets the encoding for the form.
@@ -118,8 +120,8 @@ bool IsSelectInDefaultState(const HTMLSelectElement& select) {
 // attribute.
 bool IsInDefaultState(const HTMLFormControlElement& form_element) {
   if (auto* input = DynamicTo<HTMLInputElement>(form_element)) {
-    if (input->type() == input_type_names::kCheckbox ||
-        input->type() == input_type_names::kRadio) {
+    if (input->FormControlType() == FormControlType::kInputCheckbox ||
+        input->FormControlType() == FormControlType::kInputRadio) {
       return input->Checked() ==
              input->FastHasAttribute(html_names::kCheckedAttr);
     }
@@ -152,9 +154,10 @@ HTMLInputElement* FindSuitableSearchInputElement(const HTMLFormElement& form) {
     if (input && input->willValidate()) {
       // Return nothing if a file upload field or a password field are
       // found.
-      if (input->type() == input_type_names::kFile ||
-          input->type() == input_type_names::kPassword)
+      if (input->FormControlType() == FormControlType::kInputFile ||
+          input->FormControlType() == FormControlType::kInputPassword) {
         return nullptr;
+      }
 
       if (input->IsTextField()) {
         if (text_element) {

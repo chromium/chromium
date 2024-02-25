@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -269,13 +270,7 @@ class ChromeRenderProcessHostTestWithCommandLine
   }
 };
 
-// TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ProcessPerTab DISABLED_ProcessPerTab
-#else
-#define MAYBE_ProcessPerTab ProcessPerTab
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
@@ -305,9 +300,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
 
   // Create a new normal tab with a data URL.  It should be in its own process.
   GURL page1("data:text/html,hello world1");
+  content::TestNavigationObserver navigation_observer1(page1);
+  navigation_observer1.StartWatchingNewWebContents();
   ui_test_utils::TabAddedWaiter add_tab1(browser());
   ::ShowSingletonTab(browser(), page1);
   add_tab1.Wait();
+  navigation_observer1.Wait();
   tab_count++;
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -316,9 +314,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
   // Create another data URL tab.  With Site Isolation, this will require its
   // own process, but without Site Isolation, it can share the previous process.
   GURL page2("data:text/html,hello world2");
+  content::TestNavigationObserver navigation_observer2(page2);
+  navigation_observer2.StartWatchingNewWebContents();
   ui_test_utils::TabAddedWaiter add_tab2(browser());
   ::ShowSingletonTab(browser(), page2);
   add_tab2.Wait();
+  navigation_observer2.Wait();
   tab_count++;
   if (content::AreAllSitesIsolatedForTesting())
     host_count++;
@@ -516,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   DCHECK(devtools);
 
   // DevTools start in a separate process.
-  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect());
+  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect(),
+                                     DevToolsOpenedByAction::kUnknown);
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
@@ -556,7 +558,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   DCHECK(devtools);
 
   // DevTools start in a separate process.
-  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect());
+  DevToolsWindow::OpenDevToolsWindow(devtools, DevToolsToggleAction::Inspect(),
+                                     DevToolsOpenedByAction::kUnknown);
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
@@ -636,8 +639,17 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
     : public ChromeRenderProcessHostTest {
  public:
   ChromeRenderProcessHostBackgroundingTestWithAudio() {
-    // Tests require that each tab has a different process.
-    feature_list_.InitAndEnableFeature(features::kDisableProcessReuse);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+          // Tests require that each tab has a different process.
+          features::kDisableProcessReuse,
+#if BUILDFLAG(IS_MAC)
+          // Tests require that backgrounding processes is possible.
+          features::kMacAllowBackgroundingRenderProcesses,
+#endif
+        },
+        /*disabled_features=*/{});
   }
 
   ChromeRenderProcessHostBackgroundingTestWithAudio(
@@ -659,7 +671,8 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
 
     // Set up the server and get the test pages.
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     embedded_test_server()->ServeFilesFromDirectory(
         test_data_dir.AppendASCII("chrome/test/data/"));
     audio_url_ = embedded_test_server()->GetURL("/extensions/loop_audio.html");
@@ -692,11 +705,10 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
                              bool lhs_backgrounded,
                              const base::Process& rhs,
                              bool rhs_backgrounded) {
-    while (IsProcessBackgrounded(lhs) != lhs_backgrounded ||
-           IsProcessBackgrounded(rhs) != rhs_backgrounded) {
-      base::RunLoop().RunUntilIdle();
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-    }
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return IsProcessBackgrounded(lhs) == lhs_backgrounded &&
+             IsProcessBackgrounded(rhs) == rhs_backgrounded;
+    }));
   }
 
   GURL audio_url_;

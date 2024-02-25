@@ -12,18 +12,18 @@ include_rules = [
     "+base/hash/md5.h",
     "+base/lazy_instance.h",
     "+base/power_monitor/power_observer.h",
-    # TODO(crbug.com/787254): Replace base::SequenceChecker by base::ThreadChecker.
-    "+base/sequence_checker.h",
     # TODO(crbug.com/787254): Replace StringPrintf uses here.
     "+base/strings/stringprintf.h",
     # TODO(crbug.com/787254): Remove the use of base::CurrentThread.
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
+    "+base/unguessable_token.h",
     "+base/values.h",
     "+crypto/openssl_util.h",
     "+components/webrtc/thread_wrapper.h",
     "+media/base",
     "+media/media_buildflags.h",
+    "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
     "+media/mojo/mojom/webrtc_video_perf.mojom-blink.h",
     "+media/video/gpu_video_accelerator_factories.h",
     "+net/third_party/quiche/src/quiche/quic",

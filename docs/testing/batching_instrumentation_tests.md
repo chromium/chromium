@@ -1,37 +1,40 @@
 # Instrumentation Test Batching Guide
 
-## What is test batching?
-Normally, Android Instrumentation tests finish all Activities between tests. In
-Chrome we go even further and run a single test per Instrumentation invocation
-by default, so the entire process also gets killed and restarted between tests.
+## What is Test Batching?
 
-Test batching groups multiple tests into the same Instrumentation invocation,
-and disables the Activity finishing between tests, so you have full control over
-what setup/teardown happens between your tests and can reset to a known-good
-state without restarting Activities, etc. which can save multiple seconds per
-test.
+Outside of Chromium, it is most common to run all tests of a test suite using a
+single `adb shell am instrument` command (a single execution / OS process).
+However, Chromium's test runner runs each test using a separate command, which
+means tests cannot interfere with one another, but also that tests take much
+longer to run. Test batching is a way to make our tests run faster by not
+restarting the process between every test.
 
-## How to Batch a test
+All on-device tests would ideally be annotated with one of:
 
-Add the @Batch annotation to the test class, and ensure that each test within
+* `@Batch(Batch.UNIT_TESTS)`: For tests the do not rely on global application
+  state.
+* `@Batch(Batch.PER_CLASS)`: For test classes where the process does need to be
+  restarted between `@Test`s within the class.
+* `@DoNotBatch(reason="..."`: For tests classes that require the process to be
+  restarted for each test or are infeasible to batch.
+
+Tests that are not annotated are treated as `@DoNotBatch` and are assumed to
+have not yet been assessed.
+
+## How to Batch a Test
+
+Add the `@Batch` annotation to the test class, and ensure that each test within
 the chosen batch doesn't leave behind state that could cause other tests in the
 batch to fail.
 
-All tests in a batch can be run locally using the -A test filter. eg:
-```shell
-out/<dir>/bin/run_chrome_public_test_apk -A Batch=UnitTests
-```
-
-Each test suite is likely to require careful consideration for how to batch the
-tests. For some tests batching won’t be as useful (tests that test Activity
+For some tests, batching won’t be as useful (tests that test Activity
 startup, for example), and tests that test process startup shouldn’t be batched
-at all. For most tests, you’ll want to pick a known starting state for each
-test, and ensure each test resets to that state.
+at all.
 
 If a few tests within a larger batched suite cannot be batched (eg. it tests
 process initialization), you may add the
 [@RequiresRestart](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java;bpv=1;bpt=1;l=19?q=RequiresRestart&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=RequiresRestart&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.RequiresRestart%23b5e85d5c8071e18f350b7f2c5014310bd2cabd0e0d3d176949c991ea18403f55)
-annotation, which will exclude that test from the batch.
+annotation to test methods to exclude them from the batch.
 
 ## Types of Batched tests
 
@@ -44,25 +47,25 @@ use the native library.
 
 Batching Unit Test style tests is usually fairly simple
 ([example](https://chromium-review.googlesource.com/c/chromium/src/+/2216044)).
-It requires adding the "@Batch(Batch.UNIT_TESTS)” annotation, and ensuring no
+It requires adding the `@Batch(Batch.UNIT_TESTS)` annotation, and ensuring no
 global state, like test overrides, persists across tests. Unit Tests should also
 not start the browser process, but may load the native library. Note that even
 with Batched tests, the test fixture (the class) is recreated for each test.
 
 Note that since the browser isn't initialized for unit tests, if you would like
 to take advantage of feature annotations in your test you will have to use
-Features#JUnitProcessor instead of Features#InstrumentationProcessor.
+`Features.JUnitProcessor` instead of `Features.InstrumentationProcessor`.
 
 
 ### [PER_CLASS](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=39?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=PER_CLASS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%23780b702db42a1901f05647fd29f75d443bc4efd2db588848b4aedf826ddf9e21)
 
 This batching type is typically for larger and more complex test suites, and
-will run the suite in its own batch. This will reduce the complexity of managing
-and leaking state from these tests as you only have to think about tests within
-the suite. For smaller and less complex test suites, see Custom below.
+will run the suite in its own batch. This will limit side-effects and reduce
+the complexity of managing state from these tests as you only have to think
+about tests within the suite.
 
-Tests with different @Features annotations (@EnableFeatures and
-@DisableFeatures) will be run in separate batches.
+Tests with different `@Features` annotations (`@EnableFeatures` and
+`@DisableFeatures`) or `@CommandLineFlags` will be run in separate batches.
 
 ### Custom
 
@@ -83,7 +86,17 @@ test causing a different test to fail/flake. I would recommend grouping tests
 semantically to make it easier to understand relationships between the tests and
 which shared state is relevant.
 
-Example command to run all of the tests in a custom batch:
+### Running Test Batches
+
+Run all tests with `@Batch=UnitTests`:
+
+```shell
+out/<dir>/bin/run_chrome_public_unit_test_apk -A Batch=UnitTests
+
+out/<dir>/bin/run_chrome_public_test_apk -A Batch=UnitTests
+```
+
+Run all tests in a custom batch:
 ```shell
 ./tools/autotest.py -C out/Debug BluetoothChooserDialogTest \
 --gtest_filter="*" -A Batch=device_dialog

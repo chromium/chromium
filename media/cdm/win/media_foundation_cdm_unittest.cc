@@ -38,7 +38,8 @@ namespace {
 
 const char kSessionId[] = "session_id";
 const double kExpirationMs = 123456789.0;
-const auto kExpirationTime = base::Time::FromJsTime(kExpirationMs);
+const auto kExpirationTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(kExpirationMs);
 const char kTestUmaPrefix[] = "Media.EME.TestUmaPrefix.";
 
 std::vector<uint8_t> StringToVector(const std::string& str) {

@@ -37,10 +37,10 @@ void HistoryClustersModuleRankingMetricsLogger::SetDisabled(
   }
 }
 
-void HistoryClustersModuleRankingMetricsLogger::SetDismissed(
-    int64_t cluster_id) {
+void HistoryClustersModuleRankingMetricsLogger::SetDismissed(int64_t cluster_id,
+                                                             bool dismissed) {
   if (ranking_metrics_infos_.contains(cluster_id)) {
-    ranking_metrics_infos_[cluster_id].dismissed = true;
+    ranking_metrics_infos_[cluster_id].dismissed = dismissed;
   }
 }
 
@@ -49,6 +49,14 @@ void HistoryClustersModuleRankingMetricsLogger::SetLayoutTypeShown(
     int64_t cluster_id) {
   if (ranking_metrics_infos_.contains(cluster_id)) {
     ranking_metrics_infos_[cluster_id].layout_type = layout_type;
+  }
+}
+
+void HistoryClustersModuleRankingMetricsLogger::SetMarkedAsDone(
+    int64_t cluster_id,
+    bool done) {
+  if (ranking_metrics_infos_.contains(cluster_id)) {
+    ranking_metrics_infos_[cluster_id].markedAsDone = done;
   }
 }
 
@@ -92,6 +100,7 @@ void HistoryClustersModuleRankingMetricsLogger::MaybeRecordRankingMetricsInfo(
   builder.SetDidEngageWithModule(ranking_metrics_info.clicked);
   builder.SetDidDisableModule(ranking_metrics_info.disabled);
   builder.SetDidDismissModule(ranking_metrics_info.dismissed);
+  builder.SetDidMarkAsDone(ranking_metrics_info.markedAsDone);
   builder.SetLayoutTypeShown(
       static_cast<int64_t>(ranking_metrics_info.layout_type));
   builder.Record(ukm::UkmRecorder::Get());

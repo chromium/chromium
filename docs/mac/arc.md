@@ -20,6 +20,18 @@ with the exception of a handful of targets that opt-out.
 For the rest of this document, the term “Objective-C” will be used to mean both
 pure Objective-C as well as Objective-C++.
 
+### What isn’t handled by ARC {#what-isnt}
+
+Be aware that ARC is only used for Objective-C objects (those objects that are a
+subclass of `NSObject`, declared with `@interface` or `@class`). The ownership
+of Core Foundation objects (with names often starting with `CF`, with names
+often ending with `Ref`, and declared using a `typedef` as a pointer to an
+undefined struct) is not handled by ARC, and `ScopedCFTypeRef<>` must be used to
+manage their lifetimes. For documentation on how the lifetime of Core Foundation
+objects works, and when you will need to use a scoper to manage it, see the
+[Memory Management Programming Guide for Core
+Foundation](https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i).
+
 ## The basics of ARC {#basics}
 
 (This is necessarily a simplified explanation; reading ARC
@@ -37,7 +49,7 @@ Objective-C objects are accessed via pointer. The most straightforward way of
 thinking about ARC is that, while in classic manual reference counting, those
 pointers are raw pointers and the programmer is in charge of writing the
 appropriate retain and release messages, with ARC, all pointers to Objective-C
-objects are smart pointers:
+objects are smart pointers, indicated by the following qualifications:
 
 - `__strong` (default): This pointer maintains a strong reference to the object.
   When an object pointer is assigned to it, that object is sent a retain
@@ -50,8 +62,8 @@ objects are smart pointers:
 - `__weak`: This pointer maintains a weak reference to the object which is kept
   alive by other `__strong` references. If the last of the strong references is
   released, and the object is deallocated, this pointer will be set to `nil`.
-- `__unsafe_unretained`: This is a raw pointer (as in C/C++) which maintains a
-  reference to the object but has no other automatic capabilities.
+- `__unsafe_unretained`: This is a raw pointer (as in C/C++) which has no
+  automatic capabilities.
   - Chromium usage note: Do not use this, as it is almost certainly the wrong
     choice. The `PRESUBMIT` will complain.
 
@@ -69,6 +81,47 @@ Because ARC handles all the reference counting, direct message sends of
 automatically inserts them as needed, directed by the ownership annotations.
 Incorrect annotations will cause incorrect reference counting; annotate the code
 correctly to fix issues with the compiler-generated reference counting.
+
+## ARC and C++ standard library containers {#cxx-containers}
+
+The most important interaction between ARC and C++ is that when you instantiate
+a template on an Objective-C type, it [implicitly
+qualifies](https://clang.llvm.org/docs/AutomaticReferenceCounting.html#template-arguments)
+the Objective-C type with `__strong`. For example,
+
+```objectivecpp
+  std::vector<NSWindow*>
+```
+
+is equivalent to
+
+```objectivecpp
+  std::vector<NSWindow* __strong>
+```
+
+and you need to make sure that you understand the implications of taking strong
+references to those `NSWindow`s, even if `__strong` was not explicitly written.
+
+One might therefore want to explicitly qualify with `__weak`. While that is fine
+for some C++ standard library containers, like `std::vector`, one must not use
+`__weak` qualification in any tree or hash-based container, such as `std::map`
+or `std::set`.
+
+First, it's explicitly undefined behavior (UB). Containers that rely on looking
+up a value by either direct comparison or hash comparison rely on the values
+that are currently in the container not changing out underneath it. The main
+feature of `__weak` is that it nils itself out when there are no more strong
+references to it, and that behavior will break comparison-based containers.
+
+Second, at a higher “consider what it means to be a set” level, what would
+happen if you had a set or map where two entries that started out as different
+values now both nilled themselves out? That would break the invariant that there
+be no duplicate entries.
+
+The only C++ standard library containers in which it is safe to put `__weak`
+objects are those that merely move and copy them around, but perform no other
+processing or lookup on them. Arrays, vectors, and lists are fine; sets and maps
+are not.
 
 ## ARC in Chromium {#conventions}
 

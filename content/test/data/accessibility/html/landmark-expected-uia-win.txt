@@ -21,7 +21,7 @@ Document
 ++++Text Name='This is an ARIA complementary landmark.'
 ++Group
 ++++Text Name='This is an ARIA contentinfo landmark.'
-++Group
+++Group Name='Named form'
 ++++Text Name='This is an ARIA form landmark.'
 ++Group
 ++++Text Name='This is an ARIA main landmark.'
@@ -116,6 +116,18 @@ Document
 ++Group
 ++++Group IsControlElement=false
 ++++++Text Name='This should NOT have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
+++Group
+++++Group
+++++++Text Name='This should have complementary role.'
 ++Group
 ++++Group
 ++++++Text Name='This should have complementary role.'

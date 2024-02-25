@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_POST_PROCESSOR_POST_PROCESSING_TEST_UTILS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_POST_PROCESSOR_POST_PROCESSING_TEST_UTILS_H_
 
+#include <optional>
+
 #include "components/segmentation_platform/internal/proto/client_results.pb.h"
 #include "components/segmentation_platform/public/config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
 
 namespace segmentation_platform::test_utils {
 
@@ -16,7 +18,9 @@ proto::OutputConfig GetTestOutputConfigForBinaryClassifier(
 proto::OutputConfig GetTestOutputConfigForBinnedClassifier();
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
     int top_k_outputs,
-    absl::optional<float> threshold);
+    std::optional<float> threshold);
+proto::OutputConfig GetTestOutputConfigForGenericPredictor(
+    const std::vector<std::string>& labels);
 
 std::unique_ptr<Config> CreateTestConfig();
 std::unique_ptr<Config> CreateTestConfig(const std::string& client_key,

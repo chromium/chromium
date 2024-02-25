@@ -11,7 +11,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,7 +45,7 @@ bool IsBookmarkPriceTrackedFromCache(ShoppingService* service,
 ShoppingListContextMenuController::ShoppingListContextMenuController(
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
-    ShoppingListHandler* shopping_list_hander)
+    ShoppingServiceHandler* shopping_list_hander)
     : bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
       shopping_list_hander_(shopping_list_hander) {}
@@ -68,7 +68,7 @@ bool ShoppingListContextMenuController::ExecuteCommand(
     int command_id,
     const bookmarks::BookmarkNode* bookmark_node) {
   switch (command_id) {
-    // Use APIs from ShoppingListHandler for price tracking and untracking
+    // Use APIs from ShoppingServiceHandler for price tracking and untracking
     // because these APIs already have subscription error handling so we don't
     // need to handle it here.
     case IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK:

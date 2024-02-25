@@ -4,6 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/system/system_data_provider.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::diagnostics {
 
@@ -45,7 +45,7 @@ void PopulateBoardName(const healthd::SystemInfo& system_info,
 
 void PopulateMarketingName(const healthd::SystemInfo& system_info,
                            mojom::SystemInfo& out_system_info) {
-  const absl::optional<std::string>& marketing_name =
+  const std::optional<std::string>& marketing_name =
       system_info.os_info->marketing_name;
 
   if (!marketing_name.has_value()) {
@@ -468,7 +468,7 @@ void SystemDataProvider::OnBatteryInfoProbeResponse(
 
 void SystemDataProvider::UpdateBatteryChargeStatus() {
   // Fetch updated data from PowerManagerClient
-  absl::optional<PowerSupplyProperties> properties =
+  std::optional<PowerSupplyProperties> properties =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
 
   // Fetch updated data from CrosHealthd
@@ -508,7 +508,7 @@ void SystemDataProvider::UpdateCpuUsage() {
 }
 
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
-    const absl::optional<PowerSupplyProperties>& power_supply_properties,
+    const std::optional<PowerSupplyProperties>& power_supply_properties,
     healthd::TelemetryInfoPtr info_ptr) {
   mojom::BatteryChargeStatusPtr battery_charge_status =
       mojom::BatteryChargeStatus::New();

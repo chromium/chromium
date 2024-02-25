@@ -90,6 +90,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       const std::string& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
+  uint64_t GetNSViewId() const override;
 #endif  // BUILDFLAG(IS_MAC)
 
   // Notified in response to a CommitPending where there is no content for
@@ -119,9 +120,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
                                  const gfx::Rect& bounds) override {}
   void ClearKeyboardTriggeredTooltip() override {}
   gfx::Rect GetBoundsInRootWindow() override;
-  blink::mojom::PointerLockResult LockMouse(bool) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(bool) override;
-  void UnlockMouse() override;
+  blink::mojom::PointerLockResult LockPointer(bool) override;
+  blink::mojom::PointerLockResult ChangePointerLock(bool) override;
+  void UnlockPointer() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
@@ -157,7 +158,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
  protected:
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
@@ -189,7 +190,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   std::unique_ptr<aura::Window> window_;
 #endif
 
-  absl::optional<DisplayFeature> display_feature_;
+  std::optional<DisplayFeature> display_feature_;
 
   raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
 
@@ -283,7 +284,7 @@ class TestRenderViewHost : public RenderViewHostImpl,
   // RenderViewHostImpl overrides.
   MockRenderProcessHost* GetProcess() const override;
   bool CreateRenderView(
-      const absl::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener) override;
   bool IsTestRenderViewHost() const override;
@@ -304,7 +305,7 @@ class TestRenderViewHost : public RenderViewHostImpl,
   }
 
   // The opener frame route id passed to CreateRenderView().
-  const absl::optional<blink::FrameToken>& opener_frame_token() const {
+  const std::optional<blink::FrameToken>& opener_frame_token() const {
     return opener_frame_token_;
   }
 
@@ -331,7 +332,7 @@ class TestRenderViewHost : public RenderViewHostImpl,
   raw_ptr<int> delete_counter_;
 
   // See opener_frame_token() above.
-  absl::optional<blink::FrameToken> opener_frame_token_;
+  std::optional<blink::FrameToken> opener_frame_token_;
 
   std::unique_ptr<TestPageBroadcast> page_broadcast_;
 };
@@ -366,9 +367,8 @@ class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
   TestRenderFrameHost* main_test_rfh();
 
  private:
-  typedef std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>
-      ScopedSetSupportedScaleFactors;
-  ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent}};
 };
 
 }  // namespace content

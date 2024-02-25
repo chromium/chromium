@@ -5,10 +5,11 @@
 #ifndef MEDIA_GPU_ANDROID_FRAME_INFO_HELPER_H_
 #define MEDIA_GPU_ANDROID_FRAME_INFO_HELPER_H_
 
+#include <optional>
+
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/android/shared_image_video_provider.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class CodecOutputBufferRenderer;
@@ -26,7 +27,7 @@ class MEDIA_GPU_EXPORT FrameInfoHelper {
 
     gfx::Size coded_size;
     gfx::Rect visible_rect;
-    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   };
 
   using FrameInfoReadyCB =

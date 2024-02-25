@@ -2,24 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement, PrintPreviewScalingSettingsElement, ScalingType} from 'chrome://print/print_preview.js';
+import type {PrintPreviewModelElement, PrintPreviewScalingSettingsElement} from 'chrome://print/print_preview.js';
+import {ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
-const scaling_settings_test = {
-  suiteName: 'ScalingSettingsTest',
-  TestNames: {
-    ShowCorrectDropdownOptions: 'show correct dropdown options',
-    SetScaling: 'set scaling',
-    InputNotDisabledOnValidityChange: 'input not disabled on validity change',
-  },
-};
-
-Object.assign(window, {scaling_settings_test: scaling_settings_test});
-
-suite(scaling_settings_test.suiteName, function() {
+suite('ScalingSettingsTest', function() {
   let scalingSection: PrintPreviewScalingSettingsElement;
 
   let model: PrintPreviewModelElement;
@@ -38,7 +28,7 @@ suite(scaling_settings_test.suiteName, function() {
   });
 
   test(
-      scaling_settings_test.TestNames.ShowCorrectDropdownOptions, function() {
+      'ShowCorrectDropdownOptions', function() {
         // Not a PDF document -> No fit to page or fit to paper options.
         const fitToPageOption =
             scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
@@ -109,7 +99,7 @@ suite(scaling_settings_test.suiteName, function() {
 
   // Verifies that setting the scaling value using the dropdown and/or the
   // custom input works correctly.
-  test(scaling_settings_test.TestNames.SetScaling, async () => {
+  test('SetScaling', async () => {
     // Default is 100
     const scalingInput =
         scalingSection.shadowRoot!
@@ -186,8 +176,7 @@ suite(scaling_settings_test.suiteName, function() {
   // Verifies that the input is never disabled when the validity of the
   // setting changes.
   test(
-      scaling_settings_test.TestNames.InputNotDisabledOnValidityChange,
-      async () => {
+      'InputNotDisabledOnValidityChange', async () => {
         const numberSection = scalingSection.shadowRoot!.querySelector(
             'print-preview-number-settings-section')!;
         const input = numberSection.getInput();

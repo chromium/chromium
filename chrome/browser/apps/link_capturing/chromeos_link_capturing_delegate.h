@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_LINK_CAPTURING_DELEGATE_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_LINK_CAPTURING_DELEGATE_H_
 
+#include <optional>
+
+#include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
+#include "components/webapps/common/web_app_id.h"
 
 class GURL;
 class Profile;
@@ -22,29 +27,39 @@ class WebContents;
 
 namespace apps {
 
+struct AppIdsToLaunchForUrl;
+
 class ChromeOsLinkCapturingDelegate
     : public apps::LinkCapturingNavigationThrottle::Delegate {
  public:
   ChromeOsLinkCapturingDelegate();
   ~ChromeOsLinkCapturingDelegate() override;
 
+  // Returns the app id to launch for a navigation, if any. Exposed for testing.
+  static std::optional<std::string> GetLaunchAppId(
+      const AppIdsToLaunchForUrl& app_ids_to_launch,
+      bool is_navigation_from_link,
+      std::optional<webapps::AppId> source_app_id);
+
   // Method intended for testing purposes only.
   // Set clock used for timing to enable manipulation during tests.
-  static void SetClockForTesting(const base::TickClock* tick_clock);
+  static base::AutoReset<const base::TickClock*> SetClockForTesting(
+      const base::TickClock* tick_clock);
+
+  // Override the allowlist of Workspace app IDs, used for tests which can't
+  // install/interact with the real versions of these apps.
+  static base::AutoReset<base::flat_set<std::string>>
+  SetWorkspaceAppAllowlistForTesting(base::flat_set<std::string> allowlist);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
   bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
-  absl::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
+  std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,
                                  const GURL& url,
                                  bool is_navigation_from_link) final;
 
  private:
-  // Used to create a unique timestamped URL to force reload apps.
-  // Points to the base::DefaultTickClock by default.
-  static const base::TickClock* clock_;
-
   base::WeakPtrFactory<ChromeOsLinkCapturingDelegate> weak_factory_{this};
 };
 }  // namespace apps

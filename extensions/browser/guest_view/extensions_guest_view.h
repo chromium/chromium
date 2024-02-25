@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/guest_view/browser/guest_view_message_handler.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -25,25 +26,24 @@ class ExtensionsGuestView : public guest_view::GuestViewMessageHandler,
   // GuestView messages are split between components/ and extensions/.
   // This class implements the interfaces of both layers.
   static void CreateForComponents(
-      int render_process_id,
+      const content::GlobalRenderFrameHostId& frame_id,
       mojo::PendingAssociatedReceiver<guest_view::mojom::GuestViewHost>
           receiver);
   static void CreateForExtensions(
-      int render_process_id,
+      const content::GlobalRenderFrameHostId& frame_id,
       mojo::PendingAssociatedReceiver<extensions::mojom::GuestView> receiver);
 
  private:
-  explicit ExtensionsGuestView(int render_process_id);
+  explicit ExtensionsGuestView(
+      const content::GlobalRenderFrameHostId& frame_id);
 
   // guest_view::GuestViewMessageHandler:
   std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const override;
 
   // mojom::GuestView:
-  void ReadyToCreateMimeHandlerView(int32_t render_frame_id,
-                                    bool success) override;
+  void ReadyToCreateMimeHandlerView(bool success) override;
   void CanExecuteContentScript(
-      int routing_id,
       const std::string& script_id,
       CanExecuteContentScriptCallback callback) override;
 };

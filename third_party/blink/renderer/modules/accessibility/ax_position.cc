@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -190,7 +190,7 @@ const AXPosition AXPosition::FromPosition(
   const Position& parent_anchored_position = position.ToOffsetInAnchor();
   const Node* container_node = parent_anchored_position.AnchorNode();
   DCHECK(container_node);
-  const AXObject* container = ax_object_cache_impl->GetOrCreate(container_node);
+  const AXObject* container = ax_object_cache_impl->Get(container_node);
   if (!container)
     return {};
 
@@ -239,13 +239,13 @@ const AXPosition AXPosition::FromPosition(
     // Convert from a DOM offset that may have uncompressed white space to a
     // character offset.
     //
-    // Note that NGOffsetMapping::GetInlineFormattingContextOf will reject DOM
+    // Note that OffsetMapping::GetInlineFormattingContextOf will reject DOM
     // positions that it does not support, so we don't need to explicitly check
     // this before calling the method.)
     LayoutBlockFlow* formatting_context =
-        NGOffsetMapping::GetInlineFormattingContextOf(parent_anchored_position);
-    const NGOffsetMapping* container_offset_mapping =
-        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+        OffsetMapping::GetInlineFormattingContextOf(parent_anchored_position);
+    const OffsetMapping* container_offset_mapping =
+        formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                            : nullptr;
     if (!container_offset_mapping) {
       // We are unable to compute the text offset in the accessibility tree that
@@ -265,7 +265,7 @@ const AXPosition AXPosition::FromPosition(
     // subtract the text offset of our |container| from the beginning of the
     // same formatting context.
     int container_offset = container->TextOffsetInFormattingContext(0);
-    absl::optional<unsigned> content_offset =
+    std::optional<unsigned> content_offset =
         container_offset_mapping->GetTextContentOffset(
             parent_anchored_position);
     int text_offset = 0;
@@ -310,8 +310,7 @@ const AXPosition AXPosition::FromPosition(
         container->ChildCountIncludingIgnored();
 
     } else {
-      const AXObject* ax_child =
-          ax_object_cache_impl->GetOrCreate(node_after_position);
+      const AXObject* ax_child = ax_object_cache_impl->Get(node_after_position);
       // |ax_child| might be nullptr because not all DOM nodes can have AX
       // objects. For example, the "head" element has no corresponding AX
       // object.
@@ -411,7 +410,7 @@ const AXObject* AXPosition::ChildAfterTreePosition() const {
 int AXPosition::ChildIndex() const {
   if (!IsTextPosition())
     return text_offset_or_child_index_;
-  NOTREACHED() << *this << " should be a tree position.";
+  DUMP_WILL_BE_NOTREACHED_NORETURN() << *this << " should be a tree position.";
   return 0;
 }
 
@@ -454,22 +453,23 @@ int AXPosition::MaxTextOffset() const {
   if (!is_atomic_inline_level && !layout_object->IsText())
     return container_object_->ComputedName().length();
 
-  // TODO(crbug.com/1149171): NGInlineOffsetMappingBuilder does not properly
+  // TODO(crbug.com/1149171): OffsetMappingBuilder does not properly
   // compute offset mappings for empty LayoutText objects. Other text objects
   // (such as some list markers) are not affected.
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
-    if (layout_text->GetText().empty())
+    if (layout_text->HasEmptyText()) {
       return container_object_->ComputedName().length();
+    }
   }
 
   LayoutBlockFlow* formatting_context =
-      NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
-  const NGOffsetMapping* container_offset_mapping =
-      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+      OffsetMapping::GetInlineFormattingContextOf(*layout_object);
+  const OffsetMapping* container_offset_mapping =
+      formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                          : nullptr;
   if (!container_offset_mapping)
     return container_object_->ComputedName().length();
-  const base::span<const NGOffsetMappingUnit> mapping_units =
+  const base::span<const OffsetMappingUnit> mapping_units =
       container_offset_mapping->GetMappingUnitsForNode(*container_node);
   if (mapping_units.empty())
     return container_object_->ComputedName().length();
@@ -812,8 +812,7 @@ const AXPosition AXPosition::AsValidDOMPosition(
     return {};
 
   auto& ax_object_cache_impl = container->AXObjectCache();
-  const AXObject* new_container =
-      ax_object_cache_impl.GetOrCreate(container_node);
+  const AXObject* new_container = ax_object_cache_impl.Get(container_node);
   DCHECK(new_container);
   if (!new_container)
     return {};
@@ -919,9 +918,9 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
                                 affinity_);
   }
 
-  // If NGOffsetMapping supports it, convert from a text offset, which may have
+  // If OffsetMapping supports it, convert from a text offset, which may have
   // white space collapsed, to a DOM offset which should have uncompressed white
-  // space. NGOffsetMapping supports layout text, layout replaced, ruby runs,
+  // space. OffsetMapping supports layout text, layout replaced, ruby columns,
   // list markers, and layout block flow at inline-level, i.e. "display=inline"
   // or "display=inline-block". It also supports out-of-flow elements, which
   // should not be relevant to text positions in the accessibility tree.
@@ -933,12 +932,12 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
       layout_object &&
       ((layout_object->IsInline() && layout_object->IsAtomicInlineLevel()) ||
        layout_object->IsText());
-  const NGOffsetMapping* container_offset_mapping = nullptr;
+  const OffsetMapping* container_offset_mapping = nullptr;
   if (supports_ng_offset_mapping) {
     LayoutBlockFlow* formatting_context =
-        NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
+        OffsetMapping::GetInlineFormattingContextOf(*layout_object);
     container_offset_mapping =
-        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+        formatting_context ? InlineNode::GetOffsetMapping(formatting_context)
                            : nullptr;
   }
 
@@ -1026,7 +1025,7 @@ bool AXPosition::IsIgnoredCharacter(UChar character) {
   }
 }
 
-int AXPosition::GetLeadingIgnoredCharacterCount(const NGOffsetMapping* mapping,
+int AXPosition::GetLeadingIgnoredCharacterCount(const OffsetMapping* mapping,
                                                 const Node* node,
                                                 int container_offset,
                                                 int content_offset) const {
@@ -1070,8 +1069,7 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
       const Node* next_node = &child_node;
       while ((next_node = NodeTraversal::NextIncludingPseudo(*next_node,
                                                              container_node))) {
-        const AXObject* next_object =
-            ax_object_cache_impl->GetOrCreate(next_node);
+        const AXObject* next_object = ax_object_cache_impl->Get(next_node);
         if (next_object && next_object->AccessibilityIsIncludedInTree())
           return next_object;
       }
@@ -1089,7 +1087,7 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
                   *previous_node, container_node)) &&
              previous_node != container_node) {
         const AXObject* previous_object =
-            ax_object_cache_impl->GetOrCreate(previous_node);
+            ax_object_cache_impl->Get(previous_node);
         if (previous_object && previous_object->AccessibilityIsIncludedInTree())
           return previous_object;
       }

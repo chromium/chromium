@@ -145,7 +145,7 @@ FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
 }
 
 void FrameTreeData::SetFirstEligibleToPaint(
-    absl::optional<base::TimeDelta> time_stamp) {
+    std::optional<base::TimeDelta> time_stamp) {
   if (time_stamp.has_value()) {
     // If the ad frame tree hasn't already received an earlier paint
     // eligibility stamp, mark it as eligible to paint. Since multiple frames
@@ -165,7 +165,7 @@ void FrameTreeData::SetFirstEligibleToPaint(
 }
 
 bool FrameTreeData::SetEarliestFirstContentfulPaint(
-    absl::optional<base::TimeDelta> time_stamp) {
+    std::optional<base::TimeDelta> time_stamp) {
   if (!time_stamp.has_value() || time_stamp.value().is_zero())
     return false;
 
@@ -175,6 +175,14 @@ bool FrameTreeData::SetEarliestFirstContentfulPaint(
 
   earliest_first_contentful_paint_ = time_stamp;
   return true;
+}
+
+void FrameTreeData::SetEarliestFirstContentfulPaintSinceTopNavStart(
+    base::TimeDelta time_since_top_nav_start) {
+  if (!earliest_fcp_since_top_nav_start_ ||
+      earliest_fcp_since_top_nav_start_ > time_since_top_nav_start) {
+    earliest_fcp_since_top_nav_start_ = time_since_top_nav_start;
+  }
 }
 
 void FrameTreeData::UpdateFrameVisibility() {

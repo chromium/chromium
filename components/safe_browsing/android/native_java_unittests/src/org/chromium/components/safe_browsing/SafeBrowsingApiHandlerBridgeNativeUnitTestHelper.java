@@ -4,9 +4,10 @@
 
 package org.chromium.components.safe_browsing;
 
+import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.safe_browsing.SafeBrowsingApiBridge.UrlCheckTimeObserver;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,8 +98,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
         private Observer mObserver;
 
-        // Mock time it takes for a lookup request to complete.
-        private static final long DEFAULT_CHECK_DELTA_MS = 10;
+        // Mock time it takes for a lookup request to complete. This value is verified on the native
+        // side.
+        private static final long DEFAULT_CHECK_DELTA_MICROSECONDS = 15;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, UrlCheckDoneValues> sPresetValuesMap = new HashMap<>();
@@ -121,22 +123,36 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             Assert.assertArrayEquals(threatTypes, expectedThreatTypes);
             Assert.assertEquals(protocol, presetValues.mExpectedProtocol);
 
-            mObserver.onUrlCheckDone(callbackId, presetValues.mReturnedLookupResult,
-                    presetValues.mReturnedThreatType, presetValues.mReturnedThreatAttributes,
-                    presetValues.mReturnedResponseStatus, DEFAULT_CHECK_DELTA_MS);
+            mObserver.onUrlCheckDone(
+                    callbackId,
+                    presetValues.mReturnedLookupResult,
+                    presetValues.mReturnedThreatType,
+                    presetValues.mReturnedThreatAttributes,
+                    presetValues.mReturnedResponseStatus,
+                    DEFAULT_CHECK_DELTA_MICROSECONDS);
         }
 
         public static void tearDown() {
             sPresetValuesMap.clear();
         }
 
-        public static void setUrlCheckDoneValues(String uri, int[] expectedThreatTypes,
-                int expectedProtocol, int returnedLookupResult, int returnedThreatType,
-                int[] returnedThreatAttributes, int returnedResponseStatus) {
+        public static void setUrlCheckDoneValues(
+                String uri,
+                int[] expectedThreatTypes,
+                int expectedProtocol,
+                int returnedLookupResult,
+                int returnedThreatType,
+                int[] returnedThreatAttributes,
+                int returnedResponseStatus) {
             Assert.assertFalse(sPresetValuesMap.containsKey(uri));
-            sPresetValuesMap.put(uri,
-                    new UrlCheckDoneValues(expectedThreatTypes, expectedProtocol,
-                            returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+            sPresetValuesMap.put(
+                    uri,
+                    new UrlCheckDoneValues(
+                            expectedThreatTypes,
+                            expectedProtocol,
+                            returnedLookupResult,
+                            returnedThreatType,
+                            returnedThreatAttributes,
                             returnedResponseStatus));
         }
 
@@ -148,9 +164,13 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             public final int[] mReturnedThreatAttributes;
             public final int mReturnedResponseStatus;
 
-            private UrlCheckDoneValues(int[] expectedThreatTypes, int expectedProtocol,
-                    int returnedLookupResult, int returnedThreatType,
-                    int[] returnedThreatAttributes, int returnedResponseStatus) {
+            private UrlCheckDoneValues(
+                    int[] expectedThreatTypes,
+                    int expectedProtocol,
+                    int returnedLookupResult,
+                    int returnedThreatType,
+                    int[] returnedThreatAttributes,
+                    int returnedResponseStatus) {
                 mExpectedThreatTypes = expectedThreatTypes;
                 mExpectedProtocol = expectedProtocol;
                 mReturnedLookupResult = returnedLookupResult;
@@ -161,16 +181,44 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         }
     }
 
+    public static final MockUrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver =
+            new MockUrlCheckTimeObserver();
+
+    public static class MockUrlCheckTimeObserver implements UrlCheckTimeObserver {
+        private long mCapturedUrlCheckTimeDeltaMicros;
+        private boolean mIsOnUrlCheckTimeCalled;
+
+        @Override
+        public void onUrlCheckTime(long urlCheckTimeDeltaMicros) {
+            Assert.assertFalse(
+                    "Url check time should only be logged once.", mIsOnUrlCheckTimeCalled);
+            mCapturedUrlCheckTimeDeltaMicros = urlCheckTimeDeltaMicros;
+            mIsOnUrlCheckTimeCalled = true;
+        }
+
+        public long getCapturedUrlCheckTimeDeltaMicros() {
+            return mCapturedUrlCheckTimeDeltaMicros;
+        }
+
+        public void tearDown() {
+            mCapturedUrlCheckTimeDeltaMicros = 0;
+            mIsOnUrlCheckTimeCalled = false;
+        }
+    }
+
     @CalledByNative
     static void setUp() {
-        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
+                sSafeBrowsingApiUrlCheckTimeObserver);
     }
 
     @CalledByNative
     static void tearDown() {
         MockSafetyNetApiHandler.tearDown();
         MockSafeBrowsingApiHandler.tearDown();
+        sSafeBrowsingApiUrlCheckTimeObserver.tearDown();
         SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
@@ -196,11 +244,26 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setSafeBrowsingApiHandlerResponse(String uri, int[] expectedThreatTypes,
-            int expectedProtocol, int returnedLookupResult, int returnedThreatType,
-            int[] returnedThreatAttributes, int returnedResponseStatus) {
-        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(uri, expectedThreatTypes, expectedProtocol,
-                returnedLookupResult, returnedThreatType, returnedThreatAttributes,
+    static void setSafeBrowsingApiHandlerResponse(
+            String uri,
+            int[] expectedThreatTypes,
+            int expectedProtocol,
+            int returnedLookupResult,
+            int returnedThreatType,
+            int[] returnedThreatAttributes,
+            int returnedResponseStatus) {
+        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(
+                uri,
+                expectedThreatTypes,
+                expectedProtocol,
+                returnedLookupResult,
+                returnedThreatType,
+                returnedThreatAttributes,
                 returnedResponseStatus);
+    }
+
+    @CalledByNative
+    static long getSafeBrowsingApiUrlCheckTimeObserverResult() {
+        return sSafeBrowsingApiUrlCheckTimeObserver.getCapturedUrlCheckTimeDeltaMicros();
     }
 }

@@ -39,12 +39,12 @@ NotifierId::NotifierId(NotifierType type, const std::string& id)
 
 NotifierId::NotifierId(const GURL& origin)
     : NotifierId(origin,
-                 /*title=*/absl::nullopt,
-                 /*web_app_id=*/absl::nullopt) {}
+                 /*title=*/std::nullopt,
+                 /*web_app_id=*/std::nullopt) {}
 
 NotifierId::NotifierId(const GURL& url,
-                       absl::optional<std::u16string> title,
-                       absl::optional<std::string> web_app_id)
+                       std::optional<std::u16string> title,
+                       std::optional<std::string> web_app_id)
     : type(NotifierType::WEB_PAGE),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       catalog_name(ash::NotificationCatalogName::kNone),

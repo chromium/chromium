@@ -73,8 +73,7 @@ const struct {
 
 }  // namespace
 
-bool IsRequestHeaderSafe(const base::StringPiece& key,
-                         const base::StringPiece& value) {
+bool IsRequestHeaderSafe(std::string_view key, std::string_view value) {
   for (const auto* header : kUnsafeHeaders) {
     if (base::EqualsCaseInsensitiveASCII(header, key))
       return false;
@@ -118,7 +117,7 @@ mojom::ReferrerPolicy ParseReferrerPolicy(
     return policy;
   }
 
-  std::vector<base::StringPiece> policy_tokens =
+  std::vector<std::string_view> policy_tokens =
       base::SplitStringPiece(referrer_policy_header, ",", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 

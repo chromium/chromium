@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -26,11 +27,10 @@ namespace preference_helpers {
 
 // Returns a string constant (defined in the API) indicating the level of
 // control this extension has over the specified preference.
-const char* GetLevelOfControl(
-    Profile* profile,
-    const std::string& extension_id,
-    const std::string& browser_pref,
-    bool incognito);
+const char* GetLevelOfControl(Profile* profile,
+                              const ExtensionId& extension_id,
+                              const std::string& browser_pref,
+                              bool incognito);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // As GetLevelOfControl, but additionally considers the ash state of the pref.
@@ -39,7 +39,7 @@ const char* GetLevelOfControl(
 const char* GetLevelOfControlWithAshControlState(
     crosapi::mojom::PrefControlState control_state,
     Profile* profile,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& browser_pref,
     bool incognito);
 

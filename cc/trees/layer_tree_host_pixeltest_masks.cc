@@ -37,7 +37,11 @@ std::vector<RasterTestConfig> const kTestCases = {
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
+#if !BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // service in process and re-enable these tests.
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
+#endif
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
@@ -55,14 +59,12 @@ class MaskContentLayerClient : public ContentLayerClient {
 
   bool FillsBoundsCompletely() const override { return false; }
 
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
-
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
 
     display_list->push<SaveOp>();
-    display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
+    display_list->push<ClipRectOp>(gfx::RectToSkRect(gfx::Rect(bounds_)),
                                    SkClipOp::kIntersect, false);
     SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
@@ -80,7 +82,7 @@ class MaskContentLayerClient : public ContentLayerClient {
     }
 
     display_list->push<RestoreOp>();
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(bounds_));
     display_list->Finalize();
     return display_list;
   }
@@ -188,8 +190,6 @@ class SolidColorEmptyMaskContentLayerClient : public ContentLayerClient {
   ~SolidColorEmptyMaskContentLayerClient() override = default;
 
   bool FillsBoundsCompletely() const override { return false; }
-
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     // Intentionally return a solid color, empty mask display list. This
@@ -439,13 +439,12 @@ class CheckerContentLayerClient : public ContentLayerClient {
       : bounds_(bounds), color_(color), vertical_(vertical) {}
   ~CheckerContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
 
     display_list->push<SaveOp>();
-    display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
+    display_list->push<ClipRectOp>(gfx::RectToSkRect(gfx::Rect(bounds_)),
                                    SkClipOp::kIntersect, false);
     SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
@@ -469,7 +468,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
     }
 
     display_list->push<RestoreOp>();
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(bounds_));
     display_list->Finalize();
     return display_list;
   }
@@ -486,13 +485,12 @@ class CircleContentLayerClient : public ContentLayerClient {
       : bounds_(bounds) {}
   ~CircleContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
 
     display_list->push<SaveOp>();
-    display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
+    display_list->push<ClipRectOp>(gfx::RectToSkRect(gfx::Rect(bounds_)),
                                    SkClipOp::kIntersect, false);
     SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
@@ -508,7 +506,7 @@ class CircleContentLayerClient : public ContentLayerClient {
                          circle_x + radius, circle_y + radius),
         flags);
     display_list->push<RestoreOp>();
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(bounds_));
     display_list->Finalize();
     return display_list;
   }
@@ -696,7 +694,6 @@ class StaticPictureLayer : private ContentLayerClient, public PictureLayer {
         new StaticPictureLayer(std::move(display_list)));
   }
 
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds()); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     return display_list_;
   }
@@ -875,9 +872,13 @@ MaskTestConfig const kTestConfigs[] = {
                    kUseAntialiasing | kForceShaders},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if !BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // service in process and re-enable these tests.
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
+#endif
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 

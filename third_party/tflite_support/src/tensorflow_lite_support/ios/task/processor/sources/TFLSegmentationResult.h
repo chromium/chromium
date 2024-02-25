@@ -23,7 +23,7 @@ NS_SWIFT_NAME(ConfidenceMask)
 /**
  * Confidence masks of size `width` x `height` for any one class.
  */
-@property(nonatomic, readonly) float* mask;
+@property(nonatomic, readonly) float *mask;
 
 /**
  * The width of the mask. This is an intrinsic parameter of the model being
@@ -42,7 +42,7 @@ NS_SWIFT_NAME(ConfidenceMask)
  */
 - (instancetype)initWithWidth:(NSInteger)width
                        height:(NSInteger)height
-                         mask:(float* _Nullable)mask;
+                         mask:(float * _Nullable)mask;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -59,7 +59,7 @@ NS_SWIFT_NAME(CategoryMask)
  * The value of each pixel in this mask represents the class to which the
  * pixel belongs.
  */
-@property(nonatomic, readonly) UInt8* mask;
+@property(nonatomic, readonly) UInt8 *mask;
 
 /**
  * The width of the mask. This is an intrinsic parameter of the model being
@@ -80,15 +80,15 @@ NS_SWIFT_NAME(CategoryMask)
  *
  * @param width Width of the mask.
  * @param height Height of the mask.
- * @param mask Flattened 2D-array of size `width` x `height`, in row major
- * order. The value of each pixel in this mask represents the class to which the
+ * @param mask Flattened 2D-array of size `width` x `height`, in row major order.
+ * The value of each pixel in this mask represents the class to which the
  * pixel belongs.
  *
  * @return An instance of TFLCategoryMask initialized to the specified values.
  */
 - (instancetype)initWithWidth:(NSInteger)width
                        height:(NSInteger)height
-                         mask:(UInt8* _Nullable)mask;
+                         mask:(UInt8 * _Nullable)mask;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -107,18 +107,17 @@ NS_SWIFT_NAME(ColoredLabel)
  * The class name, as provided in the label map packed in the TFLite Model
  * Metadata.
  */
-@property(nonatomic, readonly) NSString* label;
+@property(nonatomic, readonly) NSString *label;
 
 /**
  * The display name, as provided in the label map (if available) packed in
  * the TFLite Model Metadata. See displayNamesLocale in
  * TFLClassificationOptions.
  */
-@property(nonatomic, readonly) NSString* displayName;
+@property(nonatomic, readonly) NSString *displayName;
 
 /**
- * Initializes a new `TFLColoredLabel` with red, gree, blue color components,
- * label and display name.
+ * Initializes a new `TFLColoredLabel` with red, gree, blue color components, label and display name.
  *
  * @param r Red component of the RGB color components.
  * @param g Green component of the RGB color components.
@@ -126,14 +125,13 @@ NS_SWIFT_NAME(ColoredLabel)
  * @param label Class name.
  * @param displayName Display name.
  *
- * @return An instance of TFLColoredLabel initialized with red, gree, blue color
- * components, label and display name.
+ * @return An instance of TFLColoredLabel initialized with red, gree, blue color components, label and display name.
  */
 - (instancetype)initWithRed:(NSUInteger)r
                       green:(NSUInteger)g
                        blue:(NSUInteger)b
-                      label:(NSString*)label
-                displayName:(NSString*)displayName;
+                      label:(NSString *)label
+                displayName:(NSString *)displayName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -152,8 +150,7 @@ NS_SWIFT_NAME(Segmentation)
  * this particular class.
  * This property is mutually exclusive with `categoryMask`.
  */
-@property(nonatomic, nullable, readonly)
-    NSArray<TFLConfidenceMask*>* confidenceMasks;
+@property(nonatomic, nullable, readonly) NSArray<TFLConfidenceMask *> *confidenceMasks;
 
 /**
  * Holds the category mask.
@@ -161,7 +158,7 @@ NS_SWIFT_NAME(Segmentation)
  * pixel belongs.
  * This property is mutually exclusive with `confidenceMasks`.
  */
-@property(nonatomic, nullable, readonly) TFLCategoryMask* categoryMask;
+@property(nonatomic, nullable, readonly) TFLCategoryMask *categoryMask;
 
 /**
  * The list of colored labels for all the supported categories (classes).
@@ -170,38 +167,33 @@ NS_SWIFT_NAME(Segmentation)
  * `colored_labels[i]`, `confidence_masks` indices, i.e. `confidence_masks[i]`
  * is associated with `colored_labels[i]`.
  */
-@property(nonatomic, readonly) NSArray<TFLColoredLabel*>* coloredLabels;
+@property(nonatomic, readonly) NSArray<TFLColoredLabel *> *coloredLabels;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
- * Initializes a new `TFLSegmentation` with an array of confidence masks and an
- * array of colored labels. `categoryMask` is initialized to `nil` as it is
- * mutually exclusive with `confidenceMasks`.
+ * Initializes a new `TFLSegmentation` with an array of confidence masks and an array of colored labels.
+ * `categoryMask` is initialized to `nil` as it is mutually exclusive with `confidenceMasks`.
  *
  * @param confidenceMasks An array of `TFLConfidenceMask` objects.
  * @param coloredLabels An array of `TFLColoredLabel` objects.
  *
- * @return An instance of `TFLSegmentation` initialized with an array of
- * confidence masks and an array of colored labels.
+ * @return An instance of `TFLSegmentation` initialized with an array of confidence masks and an array of colored labels.
  */
-- (instancetype)
-    initWithConfidenceMasks:(NSArray<TFLConfidenceMask*>*)confidenceMasks
-              coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels;
+- (instancetype)initWithConfidenceMasks:(NSArray<TFLConfidenceMask *> *)confidenceMasks
+                          coloredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels;
 
 /**
- * Initializes a new `TFLSegmentation` with a category mask and array of colored
- * labels. `confidenceMasks` is initialized to `nil` as it is mutually exclusive
- * with `categoryMask`.
+ * Initializes a new `TFLSegmentation` with a category mask and array of colored labels.
+ * `confidenceMasks` is initialized to `nil` as it is mutually exclusive with `categoryMask`.
  *
  * @param categoryMask A `TFLCategoryMask` object.
  * @param coloredLabels An array of `TFLColoredLabel` objects.
  *
- * @return An instance of `TFLSegmentation` initialized with a category mask and
- * array of colored labels.
+ * @return An instance of `TFLSegmentation` initialized with a category mask and array of colored labels.
  */
-- (instancetype)initWithCategoryMask:(TFLCategoryMask*)categoryMask
-                       coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels;
+- (instancetype)initWithCategoryMask:(TFLCategoryMask *)categoryMask
+                       coloredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -217,7 +209,7 @@ NS_SWIFT_NAME(SegmentationResult)
  * e.g. instance segmentation models, which may return one segmentation per
  * object.
  */
-@property(nonatomic, readonly) NSArray<TFLSegmentation*>* segmentations;
+@property(nonatomic, readonly) NSArray<TFLSegmentation *> *segmentations;
 
 + (instancetype)new NS_UNAVAILABLE;
 
@@ -226,10 +218,9 @@ NS_SWIFT_NAME(SegmentationResult)
  *
  * @param segmentations An array of `TFLSegmentation` objects.
  *
- * @return An instance of `TFLSegmentationResult` initialized with an array of
- * segmentations.
+ * @return An instance of `TFLSegmentationResult` initialized with an array of segmentations.
  */
-- (instancetype)initWithSegmentations:(NSArray<TFLSegmentation*>*)segmentations;
+- (instancetype)initWithSegmentations:(NSArray<TFLSegmentation *> *)segmentations;
 
 - (instancetype)init NS_UNAVAILABLE;
 

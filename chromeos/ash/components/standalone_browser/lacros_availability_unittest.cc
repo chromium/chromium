@@ -30,7 +30,7 @@ class LacrosAvailabilityTest : public testing::Test {
 };
 
 TEST_F(LacrosAvailabilityTest,
-       DetermineLacrosAvailabilityFromPolicyValueGooglers) {
+       DetermineLacrosAvailabilityFromPolicyValueGoogleCom) {
   const User* const user = AddRegularUser("user@google.com");
 
   // For Googlers, the policy can be ignored by command line flag.
@@ -79,8 +79,60 @@ TEST_F(LacrosAvailabilityTest,
   }
 }
 
+// Same as DetermineLacrosAvailabilityFromPolicyValueGoogleCom except for the
+// user's email address.
 TEST_F(LacrosAvailabilityTest,
-       DetermineLacrosAvailabilityFromPolicyValueNonGooglers) {
+       DetermineLacrosAvailabilityFromPolicyValueManagedChromeCom) {
+  const User* const user = AddRegularUser("user@managedchrome.com");
+
+  // For Googlers, the policy can be ignored by command line flag.
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kLacrosAvailabilityIgnore);
+    EXPECT_EQ(LacrosAvailability::kUserChoice,
+              DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_only"));
+  }
+
+  // If there's no policy value, the choice is left to the user.
+  EXPECT_EQ(LacrosAvailability::kUserChoice,
+            DetermineLacrosAvailabilityFromPolicyValue(user, ""));
+
+  // If the policy value is invalid, the choice is left to the user.
+  EXPECT_EQ(
+      LacrosAvailability::kUserChoice,
+      DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_tertiary"));
+
+  {
+    // Disable LacrosGooglePolicyRollout.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({}, {kLacrosGooglePolicyRollout});
+
+    // For Googlers, if the GooglePolicyRollout feature is disabled, the choice
+    // is left to the user...
+    EXPECT_EQ(LacrosAvailability::kUserChoice,
+              DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_only"));
+
+    // ...unless the policy is that Lacros is explicitly disallowed.
+    EXPECT_EQ(
+        LacrosAvailability::kLacrosDisallowed,
+        DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_disallowed"));
+  }
+
+  {
+    // Enable LacrosGooglePolicyRollout.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({kLacrosGooglePolicyRollout}, {});
+
+    // For Googlers, if the GooglePolicyRollout feature is enabled, the policy
+    // should be respected.
+    EXPECT_EQ(LacrosAvailability::kLacrosOnly,
+              DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_only"));
+  }
+}
+
+TEST_F(LacrosAvailabilityTest,
+       DetermineLacrosAvailabilityFromPolicyValueExternal) {
   const User* const user = AddRegularUser("user@random.com");
 
   // For non-Googlers, the policy can't be ignored by command line flag.

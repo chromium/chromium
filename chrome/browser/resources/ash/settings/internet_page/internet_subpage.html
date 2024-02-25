@@ -25,14 +25,6 @@
     margin-inline-end: 20px;
   }
 
-  #onOff {
-    font-weight: 500;
-  }
-
-  #onOff[on] {
-    color: var(--cros-text-color-prominent);
-  }
-
   .vpn-header {
     margin-bottom: 8px;
     margin-inline-end: 12px;
@@ -80,7 +72,7 @@
 </style>
 <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
   <div class="settings-box first">
-    <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"
+    <div class="primary-toggle start" on$="[[deviceIsEnabled_(deviceState)]]"
         aria-hidden="true">
       [[getOffOnString_(deviceState,
         '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
@@ -231,4 +223,3 @@
     </div>
   </template>
 </template>
-

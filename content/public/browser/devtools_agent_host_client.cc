@@ -40,9 +40,9 @@ bool DevToolsAgentHostClient::AllowUnsafeOperations() {
   return false;
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string DevToolsAgentHostClient::GetTypeForMetrics() {

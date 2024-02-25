@@ -6,10 +6,14 @@
 
 #include <cmath>
 #include <cstdint>
+#include <sstream>
 
+#include "base/files/file_util.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
@@ -42,6 +46,9 @@ static constexpr char kRnnStepOutputProbsNodeName[] = "probs";
 // The sizes of the caches.
 static constexpr size_t kPreQueryEncodingCacheSize = 10;
 static constexpr size_t kRnnStepOutputCacheSize = 20;
+
+// Maximum badword hash file size that will be loaded in bytes.
+static constexpr size_t kBadwordHashFileSizeLimit = 64 * 1024;
 
 std::ostream& operator<<(std::ostream& os,
                          const OnDeviceTailTokenizer::TokenIds& ids) {
@@ -158,19 +165,23 @@ bool OnDeviceTailModelExecutor::Init() {
   num_layer_ = metadata_.lstm_model_params().num_layer();
   embedding_dimension_ = metadata_.lstm_model_params().embedding_dimension();
   vocab_size_ = tokenizer_->vocab_size();
+  LoadBadwordHashSet();
 
   return true;
 }
 
-bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
-                                     const base::FilePath& vocab_filepath,
-                                     const ModelMetadata& metadata) {
+bool OnDeviceTailModelExecutor::Init(
+    const base::FilePath& model_filepath,
+    const base::FilePath& vocab_filepath,
+    const base::FilePath& badword_hashes_filepath,
+    const ModelMetadata& metadata) {
   if (model_filepath.empty() || vocab_filepath.empty()) {
     return false;
   }
 
   model_filepath_ = model_filepath;
   vocab_filepath_ = vocab_filepath;
+  badword_hashes_filepath_ = badword_hashes_filepath;
   metadata_ = metadata;
 
   if (Init()) {
@@ -179,6 +190,7 @@ bool OnDeviceTailModelExecutor::Init(const base::FilePath& model_filepath,
 
   model_filepath_.clear();
   vocab_filepath_.clear();
+  badword_hashes_filepath_.clear();
   return false;
 }
 
@@ -298,6 +310,50 @@ bool OnDeviceTailModelExecutor::EncodePreviousQuery(
 void OnDeviceTailModelExecutor::ResetCaches() {
   prev_query_cache_.Clear();
   rnn_step_cache_.Clear();
+}
+
+void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
+  if (badword_hashes_filepath_.empty()) {
+    return;
+  }
+  std::string content;
+  if (!base::ReadFileToStringWithMaxSize(badword_hashes_filepath_, &content,
+                                         kBadwordHashFileSizeLimit)) {
+    DVLOG(1) << "Failed to read the badword hash file "
+             << badword_hashes_filepath_.LossyDisplayName();
+    return;
+  }
+
+  badword_hashes_.clear();
+  std::string hash_string;
+
+  std::stringstream badword_hash_strings(content);
+  while (std::getline(badword_hash_strings, hash_string)) {
+    if (hash_string.empty()) {
+      break;
+    }
+    uint32_t hash_int;
+    if (base::StringToUint(hash_string, &hash_int)) {
+      badword_hashes_.insert(hash_int);
+    }
+  }
+}
+
+bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string suggestion) {
+  if (badword_hashes_.empty() || suggestion.empty()) {
+    return false;
+  }
+  std::vector<std::string> words =
+      base::SplitString(suggestion, base::kWhitespaceASCII,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const std::string& word : words) {
+    auto hash_value = base::PersistentHash(word);
+    if (badword_hashes_.find(hash_value) != badword_hashes_.end()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void OnDeviceTailModelExecutor::Reset() {
@@ -626,6 +682,10 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
 
     // Remove echo suggestion.
     if (suggestion == input.prefix) {
+      continue;
+    }
+
+    if (IsSuggestionBad(suggestion)) {
       continue;
     }
 

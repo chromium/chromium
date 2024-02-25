@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/magnifier/magnifier_test_utils.h"
+
 #include "base/memory/raw_ptr.h"
 
 #include "ash/shell.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
@@ -33,42 +34,6 @@ gfx::Rect GetBoundsInRoot(const gfx::Rect& bounds_in_screen,
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// TestFocusView:
-
-// A view that contains two buttons positioned at constant bounds with ability
-// to request focus on either one.
-class TestFocusView : public views::WidgetDelegateView {
- public:
-  TestFocusView()
-      : button_1_(AddChildView(std::make_unique<views::LabelButton>())),
-        button_2_(AddChildView(std::make_unique<views::LabelButton>())) {}
-  TestFocusView(const TestFocusView&) = delete;
-  TestFocusView& operator=(const TestFocusView&) = delete;
-  ~TestFocusView() override = default;
-
-  gfx::Size CalculatePreferredSize() const override {
-    return MagnifierFocusTestHelper::kTestFocusViewSize;
-  }
-
-  void Layout() override {
-    // Layout the first button at the top of the view.
-    button_1_->SetBounds(0, 0,
-                         MagnifierFocusTestHelper::kTestFocusViewSize.width(),
-                         MagnifierFocusTestHelper::kButtonHeight);
-
-    // And the second at the other end at the bottom of the view.
-    button_2_->SetBounds(0,
-                         MagnifierFocusTestHelper::kTestFocusViewSize.height() -
-                             MagnifierFocusTestHelper::kButtonHeight,
-                         MagnifierFocusTestHelper::kTestFocusViewSize.width(),
-                         MagnifierFocusTestHelper::kButtonHeight);
-  }
-
-  raw_ptr<views::LabelButton, ExperimentalAsh> button_1_;
-  raw_ptr<views::LabelButton, ExperimentalAsh> button_2_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // TestTextInputView:
 
 // A view that contains a single text field for testing text input events.
@@ -76,6 +41,8 @@ class TestTextInputView : public views::WidgetDelegateView {
  public:
   TestTextInputView() : text_field_(new views::Textfield) {
     text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+    std::string name = "Hello, world";
+    text_field_->SetAccessibleName(base::UTF8ToUTF16(name));
     AddChildView(text_field_.get());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
@@ -90,8 +57,7 @@ class TestTextInputView : public views::WidgetDelegateView {
   void FocusOnTextInput() { text_field_->RequestFocus(); }
 
  private:
-  raw_ptr<views::Textfield, ExperimentalAsh>
-      text_field_;  // owned by views hierarchy.
+  raw_ptr<views::Textfield> text_field_;  // owned by views hierarchy.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,37 +68,6 @@ constexpr int MagnifierFocusTestHelper::kButtonHeight;
 
 // static
 constexpr gfx::Size MagnifierFocusTestHelper::kTestFocusViewSize;
-
-void MagnifierFocusTestHelper::CreateAndShowFocusTestView(
-    const gfx::Point& location) {
-  focus_test_view_ = new TestFocusView;
-  views::Widget* widget = views::Widget::CreateWindowWithContext(
-      focus_test_view_, Shell::GetPrimaryRootWindow(),
-      gfx::Rect(location, MagnifierFocusTestHelper::kTestFocusViewSize));
-  widget->Show();
-}
-
-void MagnifierFocusTestHelper::FocusFirstButton() {
-  DCHECK(focus_test_view_);
-  focus_test_view_->button_1_->RequestFocus();
-}
-
-void MagnifierFocusTestHelper::FocusSecondButton() {
-  DCHECK(focus_test_view_);
-  focus_test_view_->button_2_->RequestFocus();
-}
-
-gfx::Rect MagnifierFocusTestHelper::GetFirstButtonBoundsInRoot() const {
-  DCHECK(focus_test_view_);
-  return GetBoundsInRoot(focus_test_view_->button_1_->GetBoundsInScreen(),
-                         focus_test_view_);
-}
-
-gfx::Rect MagnifierFocusTestHelper::GetSecondButtonBoundsInRoot() const {
-  DCHECK(focus_test_view_);
-  return GetBoundsInRoot(focus_test_view_->button_2_->GetBoundsInScreen(),
-                         focus_test_view_);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // MagnifierTextInputTestHelper:

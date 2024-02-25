@@ -55,7 +55,7 @@ void ProfileListDesktop::RebuildMenu() {
   }
 }
 
-absl::optional<size_t> ProfileListDesktop::MenuIndexFromProfilePath(
+std::optional<size_t> ProfileListDesktop::MenuIndexFromProfilePath(
     const base::FilePath& path) const {
   const size_t menu_count = GetNumberOfItems();
 
@@ -65,7 +65,7 @@ absl::optional<size_t> ProfileListDesktop::MenuIndexFromProfilePath(
       return i;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ProfileListDesktop::ActiveProfilePathChanged(

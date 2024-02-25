@@ -56,7 +56,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
             return;
           }
           notifier_dataset.push_back(NotifierDataset{
-              update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
+              update.AppId() /*app_id*/, update.Name() /*app_name*/,
               update.PublisherId() /*publisher_id*/,
               permission->IsPermissionEnabled()});
         }
@@ -115,7 +115,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
       observed_profile_));
 
   apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
-      ->LoadIcon(apps::AppType::kWeb, app_id, apps::IconType::kStandard,
+      ->LoadIcon(app_id, apps::IconType::kStandard,
                  message_center::kQuickSettingIconSizeInDp,
                  allow_placeholder_icon,
                  base::BindOnce(&PwaNotifierController::OnLoadIcon,

@@ -45,27 +45,26 @@ bool CompareAnimations(const Member<Animation>& left,
 }
 
 V8CSSNumberish* AnimationTimeline::currentTime() {
-  const absl::optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
+  const std::optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
   if (result)
     return MakeGarbageCollected<V8CSSNumberish>(result->InMillisecondsF());
   return nullptr;
 }
 
-absl::optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
-  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? absl::make_optional(AnimationTimeDelta(result.value()))
-                : absl::nullopt;
+std::optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
+  std::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? std::make_optional(AnimationTimeDelta(result.value()))
+                : std::nullopt;
 }
 
-absl::optional<double> AnimationTimeline::CurrentTimeMilliseconds() {
-  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? absl::make_optional(result->InMillisecondsF())
-                : absl::nullopt;
+std::optional<double> AnimationTimeline::CurrentTimeMilliseconds() {
+  std::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? std::make_optional(result->InMillisecondsF()) : std::nullopt;
 }
 
-absl::optional<double> AnimationTimeline::CurrentTimeSeconds() {
-  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? absl::make_optional(result->InSecondsF()) : absl::nullopt;
+std::optional<double> AnimationTimeline::CurrentTimeSeconds() {
+  std::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? std::make_optional(result->InSecondsF()) : std::nullopt;
 }
 
 V8CSSNumberish* AnimationTimeline::duration() {

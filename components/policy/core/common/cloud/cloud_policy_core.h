@@ -24,6 +24,7 @@ class SequencedTaskRunner;
 
 namespace policy {
 
+enum class PolicyFetchReason;
 class CloudPolicyClient;
 class CloudPolicyRefreshScheduler;
 class CloudPolicyService;
@@ -108,9 +109,12 @@ class POLICY_EXPORT CloudPolicyCore {
       std::unique_ptr<RemoteCommandsFactory> factory,
       PolicyInvalidationScope scope);
 
-  // Requests a policy refresh to be performed soon. This may apply throttling,
-  // and the request may not be immediately sent.
-  void RefreshSoon();
+  // Requests a policy refresh to be performed immediately by the `scheduler_`.
+  // This is a no-op if the `scheduler_` is not initialized yet.
+  //
+  // The |reason| parameter will be used to tag the request to DMServer. This
+  // will allow for more targeted monitoring and alerting.
+  void RefreshSoon(PolicyFetchReason reason);
 
   // Starts a refresh scheduler in case none is running yet.
   void StartRefreshScheduler();
@@ -136,7 +140,7 @@ class POLICY_EXPORT CloudPolicyCore {
 
   std::string policy_type_;
   std::string settings_entity_id_;
-  raw_ptr<CloudPolicyStore, AcrossTasksDanglingUntriaged> store_;
+  raw_ptr<CloudPolicyStore> store_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   network::NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   std::unique_ptr<CloudPolicyClient> client_;

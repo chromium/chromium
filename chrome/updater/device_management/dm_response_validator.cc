@@ -169,7 +169,7 @@ void OmahaPolicyValidator::ValidateProxyPolicies(
         base::ToLowerASCII(omaha_settings_.proxy_mode());
     if (!base::Contains(kProxyModeValidValues, proxy_mode)) {
       validation_result.issues.emplace_back(
-          "proxy_mode", PolicyValueValidationIssue::Severity::kError,
+          "proxy_mode", PolicyValueValidationIssue::Severity::kWarning,
           "Unrecognized proxy mode: " + omaha_settings_.proxy_mode());
     }
   }
@@ -336,6 +336,7 @@ bool DMResponseValidator::ValidateSignature(
   const std::string& policy_data = policy_response.policy_data();
   if (!VerifySHA256Signature(policy_data, signature_key,
                              policy_response.policy_data_signature())) {
+    VLOG(1) << "Policy signature validation failed.";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadSignature;
     return false;

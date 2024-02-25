@@ -28,9 +28,6 @@ enum PhoneHubViewID {
   kOnboardingView,
   kOnboardingMainView,
   kOnboardingGetStartedButton,
-  kOnboardingDismissButton,
-  kOnboardingDismissPromptView,
-  kOnboardingDismissAckButton,
 
   // Phone disconnected view and its components.
   kDisconnectedView,

@@ -8,7 +8,7 @@
 
 The Material 3 theme contains color attributes that correspond to the material “color roles.” When we call [`DynamicColors#applyIfAvailable()`](https://github.com/material-components/material-components-android/blob/b70bbc2942bdbd1ea763e72a6b1e561e4813f10c/lib/java/com/google/android/material/color/DynamicColors.java#L211) in [`ChromeBaseAppCompatActivity#onCreate`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java;drc=4d2b5adb556128aab9313fc3851f192c254e09cb;l=218) (or any other activity’s `#onCreate` method), the color role attributes are overridden using colors that are extracted by the system from the user’s wallpaper. Finally, any UI surface that references the color role attributes gets dynamically colored. The color role attributes can be found [here](https://m3.material.io/libraries/mdc-android/color-theming).
 
-Using one of the color attributes, `colorPrimary`, as an example:
+Initially the Activity Theme sets up a mapping of "baseline" colors so that these attributes work on devices before Android S. Once the `DynamicColors#apply...` call is made, this change is applied at runtime. Using one of the color attributes, `colorPrimary`, as an example:
 ```
 ?attr/colorPrimary -> @color/baseline_primary_600 -> #0B57D0
 ```
@@ -28,6 +28,7 @@ Basically, the app UI surfaces need to directly or indirectly reference the colo
 
 Semantic names are used to color the UI components that share the same meaning or role consistently throughout the application. For example, `default_icon_color` can be used almost anywhere to tint a primary icon. A list of common semantic names can be found in [semantic_colors_dynamic.xml](https://source.chromium.org/chromium/chromium/src/+/main:components/browser_ui/styles/android/java/res/values/semantic_colors_dynamic.xml;drc=c83636b34a3e3751c28b3e43af616226f5ea111c). Before we needed to support dynamic colors, semantic names were defined as `@color` resources that could reference other colors. Now that the colors need to reference attributes, it is not possible to continue using `@color`s because Android does not support referencing an `?attr` from a `@color`, so now we use `@macro`s or color state lists.
 
+UX mocks should contains semantic color names, and should be the level of detail eng needs to start implementation. Sometimes the semantic name may not exist in the code base yet, in which case it'll typically need to be mapped to both an adaptive baseline value and a color role attribute. Googlers can view [go/mapping-dynamic-colors-clank-mocks](go/mapping-dynamic-colors-clank-mocks) for more detailed steps of mapping colors from Figma mocks.
 
 #### Macros
 
@@ -53,6 +54,7 @@ Color state lists are defined using the `<selector>` tag and are usually used to
 
 [Surface colors](https://m3.material.io/styles/color/the-color-system/color-roles#c0cdc1ba-7e67-4d6a-b294-218f659ff648) represent `?attr/colorSurface` at different surface levels or elevation values. With the exception of Surface-0 (just route through `?attr/colorSurface`), the rest of the surface colors must be calculated at runtime. This means there is no macro or attribute that can be used to retrieve surface colors. For this reason, there are currently 2 ways to calculate surface colors.
 
+Note: Numeric/elevation surface colors are in the process of being removed or remapped to tone-based surface colors. Minor colors shifts have been applied to Chrome, but the code is currently still using the old numeric/elevation surface color approach.
 
 #### ChromeColors#getSurfaceColor()
 
@@ -81,7 +83,7 @@ Not all colors can or should be dynamic. Some examples are migration-to-dynamic-
 
 ### Migration-to-dynamic-colors-is-work-in-progress
 
-You may notice that there are still semantic colors that are defined as colors and not macros or some random colors being used on some surfaces. If you notice anything like this on a surface you own or maintain, please look at migrating those colors to dynamic colors. Otherwise, you can file a bug using [this link](https://bugs.chromium.org/p/chromium/issues/entry?summary=Issue+Summary&comment=Application+Version+%28from+%22Chrome+Settings+%3E+About+Chrome%22%29%3A+%0DAndroid+Build+Number+%28from+%22Android+Settings+%3E+About+Phone%2FTablet%22%29%3A+%0DDevice%3A+%0D%0DSteps+to+reproduce%3A+%0D%0DObserved+behavior%3A+%0D%0DExpected+behavior%3A+%0D%0DFrequency%3A+%0D%3Cnumber+of+times+you+were+able+to+reproduce%3E+%0D%0DAdditional+comments%3A+%0D&labels=Restrict-View-Google%2COS-Android%2CPri-2%2CHotlist-MaterialNext&cc=skym%40chromium.org).
+The majority of highly visible surfaces in Chrome on Android have been migrated to fully support dynamic colors. However there's also a long tail of surfaces that were not updated. If you notice anything like this on a surface you own or maintain, please look at migrating those colors to dynamic colors. Otherwise, you can file a bug using [this link](https://bugs.chromium.org/p/chromium/issues/entry?summary=Issue+Summary&comment=Application+Version+%28from+%22Chrome+Settings+%3E+About+Chrome%22%29%3A+%0DAndroid+Build+Number+%28from+%22Android+Settings+%3E+About+Phone%2FTablet%22%29%3A+%0DDevice%3A+%0D%0DSteps+to+reproduce%3A+%0D%0DObserved+behavior%3A+%0D%0DExpected+behavior%3A+%0D%0DFrequency%3A+%0D%3Cnumber+of+times+you+were+able+to+reproduce%3E+%0D%0DAdditional+comments%3A+%0D&labels=Restrict-View-Google%2COS-Android%2CPri-2%2CHotlist-MaterialNext&cc=skym%40chromium.org).
 
 
 ### Incognito surfaces

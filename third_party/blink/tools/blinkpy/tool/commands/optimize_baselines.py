@@ -3,14 +3,19 @@
 # found in the LICENSE file.
 
 import functools
+import itertools
 import logging
 import optparse
+from typing import Collection, List, Set, Tuple
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
+from blinkpy.common.net.web_test_results import BaselineSuffix
 from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 
 _log = logging.getLogger(__name__)
+
+OptimizationTask = Tuple[str, str, BaselineSuffix]
 
 
 class OptimizeBaselines(AbstractParallelRebaselineCommand):
@@ -44,7 +49,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         self._successful = True
 
     def execute(self, options, args, tool):
-        self._tool, self._successful = tool, True
+        self._successful = True
         if options.test_name_file:
             tests = self._host_port.tests_from_file(options.test_name_file)
             args.extend(sorted(tests))
@@ -58,8 +63,7 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             _log.error("No port names match '%s'", options.platform)
             return 1
 
-        port = tool.port_factory.get(options=options)
-        test_set = self._get_test_set(port, options, args)
+        test_set = self._get_test_set(options, args)
         if not test_set:
             _log.error('No tests to optimize. Ensure all listed tests exist.')
             return 1
@@ -67,11 +71,8 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         worker_factory = functools.partial(Worker,
                                            port_names=port_names,
                                            options=options)
-        baseline_suffix_list = options.suffixes.split(',')
-        with self._message_pool(worker_factory) as pool:
-            tasks = [(self.name, test_name, suffix) for test_name in test_set
-                     for suffix in baseline_suffix_list]
-            pool.run(tasks)
+        tasks = self._make_tasks(test_set, options.suffixes.split(','))
+        self._run_in_message_pool(worker_factory, tasks)
         if options.check:
             if self._successful:
                 _log.info('All baselines are optimal.')
@@ -81,15 +82,24 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
                              'to fix these issues.')
                 return 2
 
-    def _get_test_set(self, port, options, args):
+    def _make_tasks(
+            self, test_set: Set[str],
+            suffixes: Collection[BaselineSuffix]) -> List[OptimizationTask]:
+        tasks = []
+        for test_name, suffix in itertools.product(sorted(test_set), suffixes):
+            if self._test_can_have_suffix(test_name, suffix):
+                tasks.append((self.name, test_name, suffix))
+        return tasks
+
+    def _get_test_set(self, options, args):
         if options.all_tests:
-            test_set = set(port.tests())
+            test_set = set(self._host_port.tests())
         else:
-            test_set = resolve_test_patterns(port, args)
+            test_set = resolve_test_patterns(self._host_port, args)
         virtual_tests_to_exclude = {
             test
             for test in test_set
-            if port.lookup_virtual_test_base(test) in test_set
+            if self._host_port.lookup_virtual_test_base(test) in test_set
         }
         test_set -= virtual_tests_to_exclude
         return test_set
@@ -115,7 +125,8 @@ class Worker:
             self._port_names,
             check=self._options.check)
 
-    def handle(self, name: str, source: str, test_name: str, suffix: str):
+    def handle(self, name: str, source: str, test_name: str,
+               suffix: BaselineSuffix):
         successful = self._optimizer.optimize(test_name, suffix)
         if self._options.check and not self._options.verbose and successful:
             # Without `--verbose`, do not show optimization logs when a test

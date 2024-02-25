@@ -13,6 +13,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -90,10 +91,6 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size,
 
 PulsingBlockView::~PulsingBlockView() {}
 
-const char* PulsingBlockView::GetClassName() const {
-  return "PulsingBlockView";
-}
-
 void PulsingBlockView::OnStartDelayTimer() {
   background_color_view_->SetPaintToLayer();
   background_color_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -124,5 +121,8 @@ bool PulsingBlockView::FireAnimationTimerForTest() {
   start_delay_timer_.FireNow();
   return true;
 }
+
+BEGIN_METADATA(PulsingBlockView)
+END_METADATA
 
 }  // namespace ash

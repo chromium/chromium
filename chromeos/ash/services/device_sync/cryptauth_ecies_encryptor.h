@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ECIES_ENCRYPTOR_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ECIES_ENCRYPTOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -36,10 +36,9 @@ class CryptAuthEciesEncryptor {
   };
 
   using IdToInputMap = base::flat_map<std::string, PayloadAndKey>;
-  using IdToOutputMap =
-      base::flat_map<std::string, absl::optional<std::string>>;
+  using IdToOutputMap = base::flat_map<std::string, std::optional<std::string>>;
   using SingleInputCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&)>;
+      base::OnceCallback<void(const std::optional<std::string>&)>;
   using BatchCallback = base::OnceCallback<void(const IdToOutputMap&)>;
 
   CryptAuthEciesEncryptor(const CryptAuthEciesEncryptor&) = delete;

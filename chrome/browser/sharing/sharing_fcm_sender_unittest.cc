@@ -94,19 +94,19 @@ class FakeWebPushSender : public WebPushSender {
     vapid_key_ = vapid_key;
     message_ = std::move(message);
     std::move(callback).Run(result_,
-                            absl::make_optional<std::string>(kMessageId));
+                            std::make_optional<std::string>(kMessageId));
   }
 
   const std::string& fcm_token() { return fcm_token_; }
   crypto::ECPrivateKey* vapid_key() { return vapid_key_; }
-  const absl::optional<WebPushMessage>& message() { return message_; }
+  const std::optional<WebPushMessage>& message() { return message_; }
 
   void set_result(SendWebPushMessageResult result) { result_ = result; }
 
  private:
   std::string fcm_token_;
   raw_ptr<crypto::ECPrivateKey, DanglingUntriaged> vapid_key_;
-  absl::optional<WebPushMessage> message_;
+  std::optional<WebPushMessage> message_;
   SendWebPushMessageResult result_;
 };
 
@@ -135,7 +135,7 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
     return nullptr;
   }
 
-  const absl::optional<sync_pb::SharingMessageSpecifics>& specifics() {
+  const std::optional<sync_pb::SharingMessageSpecifics>& specifics() {
     return specifics_;
   }
 
@@ -145,7 +145,7 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
   }
 
  private:
-  absl::optional<sync_pb::SharingMessageSpecifics> specifics_;
+  std::optional<sync_pb::SharingMessageSpecifics> specifics_;
   sync_pb::SharingMessageCommitError::ErrorCode error_code_;
 };
 
@@ -162,10 +162,10 @@ class MockVapidKeyManager : public VapidKeyManager {
 class SharingFCMSenderTest : public testing::Test {
  public:
   void OnMessageSent(SharingSendMessageResult* result_out,
-                     absl::optional<std::string>* message_id_out,
+                     std::optional<std::string>* message_id_out,
                      SharingChannelType* channel_type_out,
                      SharingSendMessageResult result,
-                     absl::optional<std::string> message_id,
+                     std::optional<std::string> message_id,
                      SharingChannelType channel_type) {
     *result_out = result;
     *message_id_out = std::move(message_id);
@@ -176,16 +176,19 @@ class SharingFCMSenderTest : public testing::Test {
   SharingFCMSenderTest()
       : fake_web_push_sender_(new FakeWebPushSender()),
         sync_prefs_(&prefs_, &fake_device_info_sync_service_),
-        sharing_fcm_sender_(base::WrapUnique(fake_web_push_sender_.get()),
-                            &fake_sharing_message_bridge_,
-                            &sync_prefs_,
-                            &vapid_key_manager_,
-                            &fake_gcm_driver_,
-                            &fake_local_device_info_provider_,
-                            &test_sync_service_) {
+        sharing_fcm_sender_(
+            base::WrapUnique(fake_web_push_sender_.get()),
+            &fake_sharing_message_bridge_,
+            &sync_prefs_,
+            &vapid_key_manager_,
+            &fake_gcm_driver_,
+            fake_device_info_sync_service_.GetDeviceInfoTracker(),
+            &fake_local_device_info_provider_,
+            &test_sync_service_) {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
@@ -196,9 +199,6 @@ class SharingFCMSenderTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
 
   SharingFCMSender sharing_fcm_sender_;
-
- private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
 };  // namespace
 
 }  // namespace
@@ -222,7 +222,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
@@ -255,7 +255,7 @@ TEST_F(SharingFCMSenderTest, NoVapidKey) {
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
@@ -283,7 +283,7 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   // Don't set any channels.
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
@@ -321,7 +321,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
@@ -387,7 +387,7 @@ TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
   fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
@@ -463,7 +463,7 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
@@ -511,7 +511,7 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   server_channel.set_auth_secret(kServerAuthSecret);
 
   SharingSendMessageResult result;
-  absl::optional<std::string> message_id;
+  std::optional<std::string> message_id;
   SharingChannelType channel_type;
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();

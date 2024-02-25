@@ -38,15 +38,8 @@ namespace base {
 namespace {
 
 base::Time NoonOnDate(int year, int month, int day) {
-  base::Time::Exploded exploded;
-  exploded.year = year;
-  exploded.month = month;
-  exploded.day_of_week = 0;  // Not correct, but FromExploded permits it
-  exploded.day_of_month = day;
-  exploded.hour = 12;
-  exploded.minute = 0;
-  exploded.second = 0;
-  exploded.millisecond = 0;
+  const base::Time::Exploded exploded = {
+      .year = year, .month = month, .day_of_month = day, .hour = 12};
   base::Time imploded;
   CHECK(base::Time::FromUTCExploded(exploded, &imploded));
   return imploded;

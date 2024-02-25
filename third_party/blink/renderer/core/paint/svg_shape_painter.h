@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_SHAPE_PAINTER_H_
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkPath.h"
 
 namespace blink {
 
@@ -27,7 +27,8 @@ class SVGShapePainter {
   void Paint(const PaintInfo&);
 
  private:
-  void FillShape(GraphicsContext&, const cc::PaintFlags&, SkPathFillType);
+  void PaintShape(const PaintInfo&);
+  void FillShape(GraphicsContext&, const cc::PaintFlags&, WindRule);
   void StrokeShape(GraphicsContext&, const cc::PaintFlags&);
 
   void PaintMarkers(const PaintInfo&);

@@ -4,13 +4,25 @@
 
 #include "components/sessions/ios/ios_serialized_navigation_builder.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "ios/web/public/favicon/favicon_status.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/session/crw_navigation_item_storage.h"
+#include "ios/web/public/session/proto/navigation.pb.h"
+#include "ios/web/public/session/proto/proto_util.h"
 
 namespace sessions {
+namespace {
+
+// Returns a new unique ID valid for a NavigationItem.
+int GetNewNavigationItemUniqueID() {
+  // Create a NavigationItem to reserve a UniqueID.
+  return web::NavigationItem::Create()->GetUniqueID();
+}
+
+}  // anonymous namespace
 
 // static
 SerializedNavigationEntry
@@ -36,19 +48,41 @@ IOSSerializedNavigationBuilder::FromNavigationItem(
 SerializedNavigationEntry
 IOSSerializedNavigationBuilder::FromNavigationStorageItem(
     int index,
-    CRWNavigationItemStorage* item) {
-  // Create a NavigationItem to reserve a UniqueID.
-  auto navigation_item = web::NavigationItem::Create();
+    const web::proto::NavigationItemStorage& item) {
   SerializedNavigationEntry navigation;
-  navigation.index_ = index;
-  navigation.unique_id_ = navigation_item->GetUniqueID();
-  navigation.referrer_url_ = item.referrer.url;
-  navigation.referrer_policy_ = item.referrer.policy;
-  navigation.virtual_url_ = item.virtualURL;
-  navigation.title_ = item.title;
+  navigation.set_index(index);
+  navigation.set_unique_id(GetNewNavigationItemUniqueID());
+  if (item.has_referrer()) {
+    const web::Referrer referrer = web::ReferrerFromProto(item.referrer());
+    navigation.set_referrer_url(referrer.url);
+    navigation.set_referrer_policy(referrer.policy);
+  }
+  navigation.set_virtual_url(
+      item.virtual_url().empty() ? GURL(item.url()) : GURL(item.virtual_url()));
+  navigation.set_title(base::UTF8ToUTF16(item.title()));
+
   // Use reload transition type to avoid incorrect increase for typed count.
-  navigation.transition_type_ = ui::PAGE_TRANSITION_RELOAD;
-  navigation.timestamp_ = item.timestamp;
+  navigation.set_transition_type(ui::PAGE_TRANSITION_RELOAD);
+  navigation.set_timestamp(web::TimeFromProto(item.timestamp()));
+
+  return navigation;
+}
+
+SerializedNavigationEntry
+IOSSerializedNavigationBuilder::FromNavigationStorageItem(
+    int index,
+    CRWNavigationItemStorage* item) {
+  SerializedNavigationEntry navigation;
+  navigation.set_index(index);
+  navigation.set_unique_id(GetNewNavigationItemUniqueID());
+  navigation.set_referrer_url(item.referrer.url);
+  navigation.set_referrer_policy(item.referrer.policy);
+  navigation.set_virtual_url(item.virtualURL);
+  navigation.set_title(item.title);
+
+  // Use reload transition type to avoid incorrect increase for typed count.
+  navigation.set_transition_type(ui::PAGE_TRANSITION_RELOAD);
+  navigation.set_timestamp(item.timestamp);
 
   return navigation;
 }

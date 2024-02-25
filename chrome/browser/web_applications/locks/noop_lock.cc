@@ -13,6 +13,7 @@ namespace web_app {
 
 NoopLockDescription::NoopLockDescription()
     : LockDescription({}, LockDescription::Type::kNoOp) {}
+NoopLockDescription::NoopLockDescription(NoopLockDescription&&) = default;
 NoopLockDescription::~NoopLockDescription() = default;
 
 NoopLock::NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder,

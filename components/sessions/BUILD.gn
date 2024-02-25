@@ -64,12 +64,14 @@ if (!is_ios) {
     public_deps = [
       ":shared",
       "//ios/web",
+      "//ios/web/public/session/proto",
     ]
 
     deps = [
       "//base",
       "//ios/web/common",
       "//ios/web/public/session",
+      "//ios/web/public/session/proto:proto_util",
     ]
   }
 }

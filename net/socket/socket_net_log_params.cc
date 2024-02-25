@@ -17,10 +17,9 @@
 namespace net {
 
 base::Value::Dict NetLogSocketErrorParams(int net_error, int os_error) {
-  base::Value::Dict dict;
-  dict.Set("net_error", net_error);
-  dict.Set("os_error", os_error);
-  return dict;
+  return base::Value::Dict()
+      .Set("net_error", net_error)
+      .Set("os_error", os_error);
 }
 
 void NetLogSocketError(const NetLogWithSource& net_log,
@@ -33,24 +32,19 @@ void NetLogSocketError(const NetLogWithSource& net_log,
 
 base::Value::Dict CreateNetLogHostPortPairParams(
     const HostPortPair* host_and_port) {
-  base::Value::Dict dict;
-  dict.Set("host_and_port", host_and_port->ToString());
-  return dict;
+  return base::Value::Dict().Set("host_and_port", host_and_port->ToString());
 }
 
 base::Value::Dict CreateNetLogIPEndPointParams(const IPEndPoint* address) {
-  base::Value::Dict dict;
-  dict.Set("address", address->ToString());
-  return dict;
+  return base::Value::Dict().Set("address", address->ToString());
 }
 
 base::Value::Dict CreateNetLogAddressPairParams(
     const net::IPEndPoint& local_address,
     const net::IPEndPoint& remote_address) {
-  base::Value::Dict dict;
-  dict.Set("local_address", local_address.ToString());
-  dict.Set("remote_address", remote_address.ToString());
-  return dict;
+  return base::Value::Dict()
+      .Set("local_address", local_address.ToString())
+      .Set("remote_address", remote_address.ToString());
 }
 
 }  // namespace net

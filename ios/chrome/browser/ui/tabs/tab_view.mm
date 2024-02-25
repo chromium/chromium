@@ -6,9 +6,7 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
@@ -16,7 +14,6 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -148,12 +145,6 @@ UIImage* DefaultFaviconImage() {
 - (void)setTitle:(NSString*)title {
   if ([_titleLabel.text isEqualToString:title])
     return;
-  if (base::i18n::GetStringDirection(base::SysNSStringToUTF16(title)) ==
-      base::i18n::RIGHT_TO_LEFT) {
-    _titleLabel.truncateMode = FadeTruncatingHead;
-  } else {
-    _titleLabel.truncateMode = FadeTruncatingTail;
-  }
   _titleLabel.text = title;
   [_closeButton setAccessibilityValue:title];
 }
@@ -274,21 +265,13 @@ UIImage* DefaultFaviconImage() {
 
   UIImage* closeButton =
       DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
-                                    kTabCloseBottomInset, kTabCloseRightInset);
-    buttonConfiguration.image = closeButton;
-    _closeButton.configuration = buttonConfiguration;
-  } else {
-    [_closeButton setImage:closeButton forState:UIControlStateNormal];
-    UIEdgeInsets contentInsets =
-        UIEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
-                         kTabCloseBottomInset, kTabCloseRightInset);
-    SetContentEdgeInsets(_closeButton, contentInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
+                                  kTabCloseBottomInset, kTabCloseRightInset);
+  buttonConfiguration.image = closeButton;
+  _closeButton.configuration = buttonConfiguration;
 
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];
@@ -303,7 +286,6 @@ UIImage* DefaultFaviconImage() {
   // Add fade truncating label.
   _titleLabel = [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
   [_titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [_titleLabel setTextAlignment:NSTextAlignmentNatural];
   [self addSubview:_titleLabel];
 
   CGRect faviconFrame = CGRectMake(0, 0, kFaviconSize, kFaviconSize);

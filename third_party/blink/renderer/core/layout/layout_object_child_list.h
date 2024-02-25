@@ -41,8 +41,8 @@ class LayoutObjectChildList {
   LayoutObjectChildList() : first_child_(nullptr), last_child_(nullptr) {}
   void Trace(Visitor*) const;
 
-  LayoutObject* FirstChild() const { return first_child_; }
-  LayoutObject* LastChild() const { return last_child_; }
+  LayoutObject* FirstChild() const { return first_child_.Get(); }
+  LayoutObject* LastChild() const { return last_child_.Get(); }
 
   void DestroyLeftoverChildren();
 

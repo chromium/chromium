@@ -47,7 +47,7 @@ SessionRestoreDelegate::RestoredTab::RestoredTab(
     bool is_active,
     bool is_app,
     bool is_pinned,
-    const absl::optional<tab_groups::TabGroupId>& group)
+    const std::optional<tab_groups::TabGroupId>& group)
     : contents_(contents),
       is_active_(is_active),
       is_app_(is_app),
@@ -76,6 +76,17 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
     return is_app_;
   // Finally, older tabs should be deferred first.
   return contents_->GetLastActiveTime() > right.contents_->GetLastActiveTime();
+}
+
+void SessionRestoreDelegate::RestoredTab::StartTrackingWebContentsLifetime() {
+  if (tracker_) {
+    return;
+  }
+  tracker_ = base::MakeRefCounted<WebContentsTracker>(contents_);
+}
+
+void SessionRestoreDelegate::RestoredTab::StopTrackingWebContentsLifetime() {
+  tracker_ = nullptr;
 }
 
 // static
@@ -118,4 +129,13 @@ void SessionRestoreDelegate::RestoreTabs(
     performance_manager::policies::ScheduleLoadForRestoredTabs(
         std::move(web_contents_vector));
   }
+}
+
+SessionRestoreDelegate::WebContentsTracker::WebContentsTracker(
+    content::WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
+void SessionRestoreDelegate::WebContentsTracker::WebContentsDestroyed() {
+  // TODO(https://crbug.com/1482502): remove once crash understood.
+  DUMP_WILL_BE_CHECK(false);
 }

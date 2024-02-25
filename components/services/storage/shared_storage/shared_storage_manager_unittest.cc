@@ -181,7 +181,7 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
            std::u16string key,
            std::u16string value,
            base::OnceCallback<void(OperationResult)> callback,
-           SetBehavior behavior = SetBehavior::kDefault) override {
+           SetBehavior behavior) override {
     Run(std::move(callback));
   }
   void Append(url::Origin context_origin,
@@ -215,6 +215,10 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
                base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
+  void BytesUsed(url::Origin context_origin,
+                 base::OnceCallback<void(int)> callback) override {
+    Run(std::move(callback));
+  }
   void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,
                             base::Time begin,
                             base::Time end,
@@ -231,13 +235,13 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
     Run(std::move(callback));
   }
   void MakeBudgetWithdrawal(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       double bits_debit,
       base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
   void GetRemainingBudget(
-      url::Origin context_origin,
+      net::SchemefulSite context_site,
       base::OnceCallback<void(BudgetResult)> callback) override {
     Run(std::move(callback));
   }
@@ -514,7 +518,7 @@ class SharedStorageManagerTest : public testing::Test {
            std::u16string key,
            std::u16string value,
            OperationResult* out_result,
-           SetBehavior behavior = SetBehavior::kDefault) {
+           SetBehavior behavior) {
     DCHECK(out_result);
     DCHECK(GetManager());
     DCHECK(receiver_);
@@ -739,21 +743,29 @@ class SharedStorageManagerTest : public testing::Test {
     return future.Get();
   }
 
-  OperationResult MakeBudgetWithdrawalSync(const url::Origin& context_origin,
-                                           double bits_debit) {
+  int BytesUsedSync(url::Origin context_origin) {
+    DCHECK(GetManager());
+    base::test::TestFuture<int> future;
+    GetManager()->BytesUsed(std::move(context_origin), future.GetCallback());
+    return future.Get();
+  }
+
+  OperationResult MakeBudgetWithdrawalSync(
+      const net::SchemefulSite& context_site,
+      double bits_debit) {
     DCHECK(GetManager());
 
     base::test::TestFuture<OperationResult> future;
-    GetManager()->MakeBudgetWithdrawal(std::move(context_origin), bits_debit,
+    GetManager()->MakeBudgetWithdrawal(std::move(context_site), bits_debit,
                                        future.GetCallback());
     return future.Get();
   }
 
-  BudgetResult GetRemainingBudgetSync(const url::Origin& context_origin) {
+  BudgetResult GetRemainingBudgetSync(const net::SchemefulSite& context_site) {
     DCHECK(GetManager());
 
     base::test::TestFuture<BudgetResult> future;
-    GetManager()->GetRemainingBudget(std::move(context_origin),
+    GetManager()->GetRemainingBudget(std::move(context_site),
                                      future.GetCallback());
     return future.Take();
   }
@@ -774,11 +786,11 @@ class SharedStorageManagerTest : public testing::Test {
         std::move(context_origin), new_creation_time, std::move(callback));
   }
 
-  int GetNumBudgetEntriesSync(url::Origin context_origin) {
+  int GetNumBudgetEntriesSync(net::SchemefulSite context_site) {
     DCHECK(GetManager());
 
     base::test::TestFuture<int> future;
-    GetManager()->GetNumBudgetEntriesForTesting(std::move(context_origin),
+    GetManager()->GetNumBudgetEntriesForTesting(std::move(context_site),
                                                 future.GetCallback());
     return future.Get();
   }
@@ -951,7 +963,9 @@ TEST_F(SharedStorageManagerFromFileTest, CurrentVersion_LoadFromFile) {
             abc_xyz_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   EXPECT_EQ(2, abc_xyz_metadata.length);
+  EXPECT_EQ(46, abc_xyz_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget - 5.3, abc_xyz_metadata.remaining_budget);
+  EXPECT_EQ(46, BytesUsedSync(abc_xyz));
 
   url::Origin growwithgoogle_com =
       url::Origin::Create(GURL("http://growwithgoogle.com"));
@@ -966,6 +980,7 @@ TEST_F(SharedStorageManagerFromFileTest, CurrentVersion_LoadFromFile) {
             growwithgoogle_com_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   EXPECT_EQ(3, growwithgoogle_com_metadata.length);
+  EXPECT_EQ(32, growwithgoogle_com_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.2,
                    growwithgoogle_com_metadata.remaining_budget);
 
@@ -1079,10 +1094,15 @@ TEST_F(SharedStorageManagerFromFileV1NoBudgetTableTest,
           url::Origin::Create(GURL("http://waymo.com")),
           url::Origin::Create(GURL("http://withgoogle.com")), youtube_com));
 
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(chromium_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_com).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(google_org).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(youtube_com).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget,
+      GetRemainingBudgetSync(net::SchemefulSite(chromium_org)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   GetRemainingBudgetSync(net::SchemefulSite(google_com)).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget,
+                   GetRemainingBudgetSync(net::SchemefulSite(google_org)).bits);
+  EXPECT_DOUBLE_EQ(
+      kBitBudget, GetRemainingBudgetSync(net::SchemefulSite(youtube_com)).bits);
 }
 
 class SharedStorageManagerParamTest
@@ -1104,72 +1124,125 @@ TEST_P(SharedStorageManagerParamTest, BasicOperations) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value2"));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value2");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin1, u"key1"));
   EXPECT_EQ(OperationResult::kNotFound, GetSync(kOrigin1, u"key1").result);
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 0);
 }
 
 TEST_P(SharedStorageManagerParamTest, IgnoreIfPresent) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kIgnored, SetSync(kOrigin1, u"key1", u"value2",
                                                SetBehavior::kIgnoreIfPresent));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key2", u"value1"));
   EXPECT_EQ(GetSync(kOrigin1, u"key2").data, u"value1");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet,
             SetSync(kOrigin1, u"key2", u"value2", SetBehavior::kDefault));
   EXPECT_EQ(GetSync(kOrigin1, u"key2").data, u"value2");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 }
 
 TEST_P(SharedStorageManagerParamTest, Append) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"key1", u"value1"));
   std::u16string expected_value = base::StrCat({u"value1", u"value1"});
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, expected_value);
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 12);
 
   EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"key1", u"value1"));
   expected_value = base::StrCat({std::move(expected_value), u"value1"});
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, expected_value);
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 12 + 12);
 }
 
 TEST_P(SharedStorageManagerParamTest, Length) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(0, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 0);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(1, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key2", u"value2"));
   EXPECT_EQ(2, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key2", u"value3"));
   EXPECT_EQ(2, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 
   url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
   EXPECT_EQ(0, LengthSync(kOrigin2));
+  EXPECT_EQ(BytesUsedSync(kOrigin2), 0);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin2, u"key1", u"value1"));
   EXPECT_EQ(1, LengthSync(kOrigin2));
+  EXPECT_EQ(BytesUsedSync(kOrigin2), 8 + 12);
   EXPECT_EQ(2, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 
   EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin2, u"key1"));
   EXPECT_EQ(0, LengthSync(kOrigin2));
+  EXPECT_EQ(BytesUsedSync(kOrigin2), 0);
   EXPECT_EQ(2, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12);
 
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key3", u"value3"));
   EXPECT_EQ(3, LengthSync(kOrigin1));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 8 + 12 + 8 + 12 + 8 + 12);
   EXPECT_EQ(0, LengthSync(kOrigin2));
+  EXPECT_EQ(BytesUsedSync(kOrigin2), 0);
+}
+
+TEST_P(SharedStorageManagerParamTest, BytesUsed) {
+  url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 0);
+
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"a", u""));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2);
+
+  EXPECT_EQ(OperationResult::kIgnored,
+            SetSync(kOrigin1, u"a", u"b", SetBehavior::kIgnoreIfPresent));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2);
+
+  EXPECT_EQ(OperationResult::kSet,
+            SetSync(kOrigin1, u"a", u"cd", SetBehavior::kDefault));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 4);
+
+  EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin1, u"x"));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 4);
+
+  EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"x", u"0"));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 4 + 2 + 2);
+
+  EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"x", u"12"));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 4 + 2 + 2 + 4);
+
+  EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin1, u"a"));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 2 + 4);
+
+  EXPECT_EQ(OperationResult::kSet,
+            SetSync(kOrigin1, u"a", u"value", SetBehavior::kIgnoreIfPresent));
+  EXPECT_EQ(BytesUsedSync(kOrigin1), 2 + 2 + 4 + 2 + 10);
 }
 
 TEST_P(SharedStorageManagerParamTest, Keys) {
@@ -1378,6 +1451,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.budget_result);
   EXPECT_EQ(3, origin1_metadata.length);
+  EXPECT_EQ(8 + 12 + 8 + 12 + 8 + 12, origin1_metadata.bytes_used);
   EXPECT_GT(origin1_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds(),
             0);
@@ -1392,6 +1466,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.budget_result);
   EXPECT_EQ(2, origin2_metadata.length);
+  EXPECT_EQ(8 + 12 + 8 + 12, origin2_metadata.bytes_used);
   EXPECT_GT(origin2_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds(),
             0);
@@ -1407,6 +1482,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kNotFound, origin3_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin3_metadata.budget_result);
   EXPECT_EQ(0, origin3_metadata.length);
+  EXPECT_EQ(0, origin3_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget, origin3_metadata.remaining_budget);
 }
 
@@ -1414,6 +1490,7 @@ TEST_P(SharedStorageManagerParamTest, AdvanceTime_StalePurged) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
   EXPECT_FALSE(FetchOriginsSync().empty());
+  EXPECT_EQ(8 + 12, BytesUsedSync(kOrigin1));
 
   // Initial interval for checking staleness is `kInitialPurgeIntervalHours`
   // hours for this test.
@@ -1428,11 +1505,13 @@ TEST_P(SharedStorageManagerParamTest, AdvanceTime_StalePurged) {
   task_environment_.FastForwardBy(base::Hours(kRecurringPurgeIntervalHours));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
   EXPECT_FALSE(FetchOriginsSync().empty());
+  EXPECT_EQ(8 + 12, BytesUsedSync(kOrigin1));
 
   // We have set the staleness threshold to `kThresholdHours` hours for this
   // test. So `kOrigin1` should now be cleared.
   task_environment_.FastForwardBy(base::Hours(kThresholdHours));
   EXPECT_TRUE(FetchOriginsSync().empty());
+  EXPECT_EQ(0, BytesUsedSync(kOrigin1));
 }
 
 // Synchronously tests budget operations.
@@ -1442,37 +1521,34 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
   // budgets should be returned as the max possible.
-  const url::Origin kOrigin1 =
-      url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
-  const url::Origin kOrigin2 =
-      url::Origin::Create(GURL("http://www.example2.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
+  const net::SchemefulSite kSite1(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
+  const net::SchemefulSite kSite2(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
 
-  // A withdrawal for `kOrigin1` doesn't affect `kOrigin2`.
-  EXPECT_EQ(OperationResult::kSuccess,
-            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  // A withdrawal for `kSite1` doesn't affect `kSite2`.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 
-  // An additional withdrawal for `kOrigin1` at or near the same time as the
+  // An additional withdrawal for `kSite1` at or near the same time as the
   // previous one is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 2.5));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 2.5));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(2, GetTotalNumBudgetEntriesSync());
 
-  // A withdrawal for `kOrigin2` doesn't affect `kOrigin1`.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin2, 3.4));
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  // A withdrawal for `kSite2` doesn't affect `kSite1`.
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite2, 3.4));
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(2, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(2, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(3, GetTotalNumBudgetEntriesSync());
 
   // Advance partway through the lookback window, to the point where the first
@@ -1481,18 +1557,18 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // Remaining budgets continue to take into account the withdrawals above, as
   // they are still within the lookback window.
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5,
-                   GetRemainingBudgetSync(kOrigin1).bits);
+                   GetRemainingBudgetSync(kSite1).bits);
 
-  // An additional withdrawal for `kOrigin1` at a later time from previous ones
+  // An additional withdrawal for `kSite1` at a later time from previous ones
   // is debited appropriately.
-  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kOrigin1, 1.0));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.0));
   EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
-                   GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(3, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin2));
+                   GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(3, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(4, GetTotalNumBudgetEntriesSync());
 
   // Advance further through the lookback window, to the point where the second
@@ -1507,10 +1583,10 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
 
   // After `PurgeStale()` runs via the timer, there will only be the most
   // recent debit left in the budget table.
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin2).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
-  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin2));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.0, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite2).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kSite2));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 }
 
@@ -1522,19 +1598,19 @@ TEST_P(SharedStorageManagerParamTest, ResetBudgetForDevTools) {
   // budgets should be returned as the max possible.
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  const net::SchemefulSite kSite1(kOrigin1);
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
 
   // Make withdrawal.
-  EXPECT_EQ(OperationResult::kSuccess,
-            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
-  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(OperationResult::kSuccess, MakeBudgetWithdrawalSync(kSite1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
 
   // Reset budget.
   EXPECT_EQ(OperationResult::kSuccess, ResetBudgetForDevToolsSync(kOrigin1));
-  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
-  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kSite1).bits);
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kSite1));
   EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
 }
 
@@ -1831,15 +1907,15 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   ASSERT_TRUE(GetManager()->database());
 
   OperationResult result1 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key1", u"value1", &result1);
+  Set(kOrigin1, u"key1", u"value1", &result1, SetBehavior::kDefault);
   GetResult value1;
   Get(kOrigin1, u"key1", &value1);
   OperationResult result2 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key1", u"value2", &result2);
+  Set(kOrigin1, u"key1", u"value2", &result2, SetBehavior::kDefault);
   GetResult value2;
   Get(kOrigin1, u"key1", &value2);
   OperationResult result3 = OperationResult::kSqlError;
-  Set(kOrigin1, u"key2", u"value1", &result3);
+  Set(kOrigin1, u"key2", u"value1", &result3, SetBehavior::kDefault);
   GetResult value3;
   Get(kOrigin1, u"key2", &value3);
   int length1 = -1;
@@ -1944,7 +2020,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   // Add a key for origin1.
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin1, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin1, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 
@@ -1953,7 +2030,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   base::Time time1 = base::Time::Now();
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin2, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin2, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 
@@ -1962,7 +2040,8 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   base::Time time2 = base::Time::Now();
   {
     base::test::TestFuture<OperationResult> future;
-    GetManager()->Set(kOrigin3, u"key1", u"value1", future.GetCallback());
+    GetManager()->Set(kOrigin3, u"key1", u"value1", future.GetCallback(),
+                      SetBehavior::kDefault);
     EXPECT_EQ(OperationResult::kSet, future.Get());
   }
 

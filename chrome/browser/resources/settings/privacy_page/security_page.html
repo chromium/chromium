@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared">
+    <style include="cr-shared-style settings-shared settings-columned-section">
       img {
         width: 100%;
       }
@@ -19,24 +19,6 @@
 
       .bullet-line > div {
         padding-inline-start: var(--cr-radio-button-size);
-      }
-
-      #enhancedProtectionDescContainer {
-        display: flex;
-      }
-
-      #thingsToConsiderContainer {
-        padding-left: 10px;
-      }
-
-      #whenOnContainer {
-        padding-right: 5px;
-      }
-
-      :is(#whenOnContainer, #thingsToConsiderContainer) > .bullet-line {
-        padding-top: 10px;
-        align-items: flex-start;
-        min-height: 30px;
       }
 
       settings-collapse-radio-button:not(:first-of-type) {
@@ -65,8 +47,17 @@
       }
 
       #safeBrowsingEnhanced {
-        --cr-radio-button-unchecked-ripple-color: 
+        --cr-radio-button-unchecked-ripple-color:
             var(--cr-radio-button-checked-ripple-color);
+      }
+
+      #httpsFirstModeSettingHeader .cr-padded-text {
+        padding-block-end: 0;
+      }
+
+      #httpsFirstModeRadioGroup .list-item {
+        padding-block-start: var(--cr-section-vertical-padding);
+        padding-block-end: var(--cr-section-vertical-padding);
       }
     </style>
     <picture>
@@ -127,61 +118,74 @@
             </div>
           </template>
           <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
-            <div id="enhancedProtectionDescContainer"
-              slot="collapse">
-              <div id="whenOnContainer">
-                <div class="">$i18n{safeBrowsingEnhancedWhenOnLabel}</div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:data"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulOne}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:download"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulTwo}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:gshield"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulThree}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings:language"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulFour}
-                  </div>
-                </div>
-                <div class="bullet-line last-collapse-item">
-                  <iron-icon icon="settings20:vpn-key-new"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulFive}
-                  </div>
-                </div>
+            <div id="enhancedProtectionDescContainer" slot="collapse"
+                class="settings-columned-section">
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{safeBrowsingEnhancedWhenOnLabel}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <iron-icon icon="settings20:data" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:download" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:gshield" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulThree}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings:language" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulFour}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:vpn-key-new" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulFive}
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <div id="thingsToConsiderContainer">
-                <div>$i18n{safeBrowsingEnhancedThingsToConsiderLabel}</div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:link"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:account-circle"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
-                  </div>
-                </div>
-                <div class="bullet-line last-collapse-item">
-                  <iron-icon icon="settings:performance"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
-                  </div>
-                </div>
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{safeBrowsingEnhancedThingsToConsiderLabel}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <iron-icon icon="settings20:link"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:account-circle"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings:performance"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
+                    </div>
+                  </li>
+                </ul>
                 <div id="learnMoreLabelContainer" class="cr-secondary-text">
                   $i18nRaw{enhancedProtectionLearnMoreLabel}
                 </div>
@@ -252,12 +256,53 @@
     <div class="cr-row first">
       <h2>$i18n{advancedPageTitle}</h2>
     </div>
-    <settings-toggle-button id="httpsOnlyModeToggle"
-        pref="{{prefs.generated.https_first_mode_enabled}}"
-        label="$i18n{httpsOnlyModeTitle}"
-        sub-label="[[getHttpsFirstModeSubLabel_(
-                       prefs.generated.https_first_mode_enabled.*)]]">
-    </settings-toggle-button>
+    <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]">
+      <settings-toggle-button id="httpsOnlyModeToggle"
+          pref="{{prefs.generated.https_first_mode_enabled}}"
+          label="$i18n{httpsOnlyModeTitle}"
+          sub-label="[[getHttpsFirstModeSubLabel_(
+                         prefs.generated.https_first_mode_enabled.*)]]"
+          numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]">
+      <div id="httpsFirstModeSettingHeader" class="cr-row first">
+        <div class="cr-padded-text">
+          <div>$i18n{httpsFirstModeSectionLabel}</div>
+          <div class="cr-secondary-text">
+            $i18n{httpsFirstModeSectionSubLabel}
+          </div>
+        </div>
+      </div>
+      <div class="list-frame">
+        <settings-radio-group id="httpsFirstModeRadioGroup"
+            pref="{{prefs.generated.https_first_mode_enabled}}">
+          <controlled-radio-button id="httpsFirstModeEnabledFull"
+              name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
+              pref="[[prefs.generated.https_first_mode_enabled]]"
+              label="$i18n{httpsFirstModeEnabledFullLabel}" class="list-item">
+            <div class="cr-secondary-text">
+              $i18n{httpsFirstModeEnabledFullSubLabel}
+            </div>
+          </controlled-radio-button>
+          <controlled-radio-button id="httpsFirstModeEnabledIncognito"
+              name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_INCOGNITO)]]"
+              pref="[[prefs.generated.https_first_mode_enabled]]"
+              label="$i18n{httpsFirstModeEnabledIncognitoLabel}"
+              class="list-item hr">
+            <div class="cr-secondary-text">
+              $i18n{httpsFirstModeEnabledIncognitoSubLabel}</div>
+          </controlled-radio-button>
+          <controlled-radio-button id="httpsFirstModeDisabled"
+              name="[[getName_(httpsFirstModeSettingEnum_.DISABLED)]]"
+              pref="[[prefs.generated.https_first_mode_enabled]]"
+              label="$i18n{httpsFirstModeDisabledLabel}" class="list-item hr">
+            <div class="cr-secondary-text">$i18n{httpsFirstModeDisabledSubLabel}
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
+      </div>
+    </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>
@@ -269,6 +314,13 @@
         </cr-link-row>
     </template>
 </if>
+    <cr-link-row id="v8-setting-link"
+        class="hr"
+        on-click="onV8SettingsClick_"
+        label="$i18n{securityV8LinkTitle}"
+        sub-label="$i18n{securityV8LinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <cr-link-row id="security-keys-subpage-trigger"
           class="hr"
@@ -288,7 +340,6 @@
     </template>
 </if>
 
-<if expr="(use_nss_certs or is_win or is_macosx) and not chrome_root_store_supported">
     <cr-link-row id="manageCertificates"
         class="hr"
 <if expr="not use_nss_certs">
@@ -300,34 +351,13 @@
         label="$i18n{manageCertificates}"
         sub-label="$i18n{manageCertificatesDescription}"
         on-click="onManageCertificatesClick_"></cr-link-row>
-</if>
 
-<if expr="chrome_root_store_supported">
-    <template is="dom-if" if="[[!showChromeRootStoreCertificates_]]">
-      <cr-link-row id="manageCertificates"
-          class="hr"
-          external
-          label="$i18n{manageCertificates}"
-          sub-label="$i18n{manageCertificatesDescription}"
-          on-click="onManageCertificatesClick_"></cr-link-row>
-    </template>
-
-    <template is="dom-if" if="[[showChromeRootStoreCertificates_]]">
-      <cr-link-row id="manageCertificates"
-          class="hr"
-          external
-          label="$i18n{manageDeviceCertificates}"
-          sub-label="$i18n{manageDeviceCertificatesDescription}"
-          on-click="onManageCertificatesClick_"></cr-link-row>
-
-      <cr-link-row id="chromeCertificates"
-          class="hr"
-          external
-          label="$i18n{chromeCertificates}"
-          sub-label="$i18n{chromeCertificatesDescription}"
-          on-click="onChromeCertificatesClick_"></cr-link-row>
-    </template>
-</if>
+    <cr-link-row id="chromeCertificates"
+        class="hr"
+        external
+        label="$i18n{chromeCertificates}"
+        sub-label="$i18n{chromeCertificatesDescription}"
+        on-click="onChromeCertificatesClick_"></cr-link-row>
 
     <cr-link-row id="advanced-protection-program-link"
         class="hr"

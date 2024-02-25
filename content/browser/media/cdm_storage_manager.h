@@ -5,66 +5,148 @@
 #ifndef CONTENT_BROWSER_MEDIA_CDM_STORAGE_MANAGER_H_
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
+#include "content/browser/media/cdm_file_impl.h"
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/cdm_storage_database.h"
-#include "content/browser/media/cdm_storage_host.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cdm_storage_data_model.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
-// CdmStorageHost uses CdmStorageManager to direct database operations to the
-// CdmStorageDatabase. Ownership stays with CdmStorageManager, but a pointer is
-// passed on so that the CdmStorageHost can call CdmStorageManager methods.
-class CONTENT_EXPORT CdmStorageManager {
+class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
+                                         public CdmStorageDataModel {
  public:
-  explicit CdmStorageManager(bool in_memory);
+  explicit CdmStorageManager(const base::FilePath& path);
   CdmStorageManager(const CdmStorageManager&) = delete;
   CdmStorageManager& operator=(const CdmStorageManager&) = delete;
-  ~CdmStorageManager();
+  ~CdmStorageManager() override;
+
+  // media::mojom::CdmStorage implementation.
+  void Open(const std::string& file_name, OpenCallback callback) final;
+
+  // CdmStorageDataModel implementation.
+  void GetUsagePerAllStorageKeys(
+      base::OnceCallback<void(
+          const std::vector<std::pair<blink::StorageKey, uint64_t>>&)> callback)
+      final;
+  void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
+                               base::OnceCallback<void(bool)> callback) final;
 
   void OpenCdmStorage(const CdmStorageBindingContext& binding_context,
                       mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
 
-  void ReadFile(const media::CdmType& cdm_type,
-                const std::string& file_name,
-                CdmStorageHost::ReadFileCallback callback);
+  void ReadFile(
+      const blink::StorageKey& storage_key,
+      const media::CdmType& cdm_type,
+      const std::string& file_name,
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback);
 
-  void WriteFile(const media::CdmType& cdm_type,
+  void WriteFile(const blink::StorageKey& storage_key,
+                 const media::CdmType& cdm_type,
                  const std::string& file_name,
                  const std::vector<uint8_t>& data,
-                 CdmStorageHost::WriteFileCallback callback);
+                 base::OnceCallback<void(bool)> callback);
 
-  void DeleteFile(const media::CdmType& cdm_type,
+  void GetSizeForFile(const blink::StorageKey& storage_key,
+                      const media::CdmType& cdm_type,
+                      const std::string& file_name,
+                      base::OnceCallback<void(uint64_t)> callback);
+
+  void GetSizeForStorageKey(const blink::StorageKey& storage_key,
+                            const base::Time begin,
+                            const base::Time end,
+                            base::OnceCallback<void(uint64_t)> callback);
+
+  void GetSizeForTimeFrame(const base::Time begin,
+                           const base::Time end,
+                           base::OnceCallback<void(uint64_t)> callback);
+
+  void DeleteFile(const blink::StorageKey& storage_key,
+                  const media::CdmType& cdm_type,
                   const std::string& file_name,
-                  CdmStorageHost::DeleteFileCallback callback);
+                  base::OnceCallback<void(bool)> callback);
 
-  // Called when a receiver is disconnected from a CdmStorageHost.
-  //
-  // `host` must be owned by this manager. `host` may be deleted.
-  void OnHostReceiverDisconnect(CdmStorageHost* host,
-                                base::PassKey<CdmStorageHost> pass_key);
+  void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
+                               const base::Time begin,
+                               const base::Time end,
+                               base::OnceCallback<void(bool)> callback);
+
+  void DeleteDataForTimeFrame(const base::Time begin,
+                              const base::Time end,
+                              base::OnceCallback<void(bool)> callback);
+
+  void OnFileReceiverDisconnect(const std::string& name,
+                                const media::CdmType& cdm_type,
+                                const blink::StorageKey& storage_key,
+                                base::PassKey<CdmFileImpl> pass_key);
+
+  bool has_empty_receiver_set() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return receivers_.empty();
+  }
+
+  CdmStorageBindingContext current_context() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return receivers_.current_context();
+  }
 
   bool in_memory() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return in_memory_;
+    return path_.empty();
   }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void DidOpenFile(const blink::StorageKey& storage_key,
+                   const media::CdmType& cdm_type,
+                   const std::string& file_name,
+                   OpenCallback callback,
+                   CdmStorageOpenError error);
+
+  void DidReadFile(
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+      std::optional<std::vector<uint8_t>> data);
+
+  void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
+
+  void DidGetSize(base::OnceCallback<void(uint64_t)> callback,
+                  const std::string& operation,
+                  std::optional<uint64_t> size);
+
+  void DidDelete(base::OnceCallback<void(bool)> callback,
+                 const std::string& operation,
+                 bool success);
+
+  void ReportDatabaseOpenError(CdmStorageOpenError error);
+
+  std::string GetHistogramName(const std::string& operation);
+
+  const base::FilePath path_;
+
   // All file operations are run through this member.
   base::SequenceBound<CdmStorageDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const bool in_memory_;
+  // All receivers for frames and workers whose storage key is `storage_key()`.
+  mojo::ReceiverSet<media::mojom::CdmStorage, CdmStorageBindingContext>
+      receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::flat_map<blink::StorageKey, std::unique_ptr<CdmStorageHost>> hosts_
+  // Keep track of all media::mojom::CdmFile receivers, as each CdmFileImpl
+  // object keeps a reference to `this`. If `this` goes away unexpectedly,
+  // all remaining CdmFile receivers will be closed.
+  std::map<CdmFileIdTwo, std::unique_ptr<CdmFileImpl>> cdm_files_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<CdmStorageManager> weak_factory_{this};

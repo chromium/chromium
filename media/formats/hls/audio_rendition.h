@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_HLS_AUDIO_RENDITION_H_
 
 #include <list>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -16,7 +17,6 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -36,22 +36,22 @@ class MEDIA_EXPORT AudioRendition {
   ~AudioRendition();
 
   // Returns the URI for the media playlist of this rendition.
-  const absl::optional<GURL>& GetUri() const { return uri_; }
+  const std::optional<GURL>& GetUri() const { return uri_; }
 
   // Returns the name of this rendition, which must be unique within the group
   // containing this rendition.
   const std::string& GetName() const { return name_; }
 
   // Returns the language of this rendition.
-  const absl::optional<std::string>& GetLanguage() const { return language_; }
+  const std::optional<std::string>& GetLanguage() const { return language_; }
 
   // Returns an associated language of this rendition.
-  const absl::optional<std::string>& GetAssociatedLanguage() const {
+  const std::optional<std::string>& GetAssociatedLanguage() const {
     return associated_language_;
   }
 
   // Returns a stable identifier for the URI of this rendition.
-  const absl::optional<types::StableId>& GetStableRenditionId() const {
+  const std::optional<types::StableId>& GetStableRenditionId() const {
     return stable_rendition_id_;
   }
 
@@ -62,7 +62,7 @@ class MEDIA_EXPORT AudioRendition {
   }
 
   // Returns channel information for this rendition.
-  const absl::optional<types::AudioChannels>& GetChannels() const {
+  const std::optional<types::AudioChannels>& GetChannels() const {
     return channels_;
   }
 
@@ -71,13 +71,13 @@ class MEDIA_EXPORT AudioRendition {
   bool MayAutoSelect() const { return autoselect_; }
 
  private:
-  absl::optional<GURL> uri_;
+  std::optional<GURL> uri_;
   std::string name_;
-  absl::optional<std::string> language_;
-  absl::optional<std::string> associated_language_;
-  absl::optional<types::StableId> stable_rendition_id_;
+  std::optional<std::string> language_;
+  std::optional<std::string> associated_language_;
+  std::optional<types::StableId> stable_rendition_id_;
   std::vector<std::string> characteristics_;
-  absl::optional<types::AudioChannels> channels_;
+  std::optional<types::AudioChannels> channels_;
   bool autoselect_ = false;
 };
 

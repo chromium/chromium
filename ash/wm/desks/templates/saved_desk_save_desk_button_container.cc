@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -14,6 +14,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -136,7 +137,7 @@ class SavedDeskSaveDeskButtonContainer::
  private:
   base::RepeatingClosure accessibility_state_changed_callback_;
 
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       observation_{this};
 };
 
@@ -158,7 +159,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             &kSaveDeskAsTemplateIcon));
   }
 
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     save_desk_for_later_button_ =
         AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_for_later_callback,
@@ -211,5 +212,8 @@ SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
       return save_desk_for_later_button_;
   }
 }
+
+BEGIN_METADATA(SavedDeskSaveDeskButtonContainer)
+END_METADATA
 
 }  // namespace ash

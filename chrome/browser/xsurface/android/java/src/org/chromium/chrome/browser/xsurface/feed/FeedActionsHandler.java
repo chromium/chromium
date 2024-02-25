@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.xsurface.feed;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 
@@ -29,14 +28,10 @@ public interface FeedActionsHandler {
      */
     default void loadMore() {}
 
-    /**
-     * Sends data back to the server when content is clicked.
-     */
+    /** Sends data back to the server when content is clicked. */
     default void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {}
 
-    /**
-     * Triggers Chrome to send user feedback for this card.
-     */
+    /** Triggers Chrome to send user feedback for this card. */
     default void sendFeedback(Map<String, String> productSpecificDataMap) {}
 
     /**
@@ -48,20 +43,13 @@ public interface FeedActionsHandler {
         return 0;
     }
 
-    /**
-     * Commits a previous requested dismissal denoted by change ID.
-     */
+    /** Commits a previous requested dismissal denoted by change ID. */
     default void commitDismissal(int changeId) {}
 
-    /**
-     * Discards a previous requested dismissal denoted by change ID.
-     */
+    /** Discards a previous requested dismissal denoted by change ID. */
     default void discardDismissal(int changeId) {}
 
-    /**
-     * Interface for handling snackbar exit conditions.
-     */
-
+    /** Interface for handling snackbar exit conditions. */
     public interface SnackbarController {
         @Deprecated
         default void onAction() {}
@@ -87,20 +75,14 @@ public interface FeedActionsHandler {
         default void onDismissNoAction(Runnable actionFinished) {}
     }
 
-    /**
-     * Snackbar dismissal timeout.
-     */
-
+    /** Snackbar dismissal timeout. */
     @IntDef({SnackbarDuration.SHORT, SnackbarDuration.LONG})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SnackbarDuration {
-        /**
-         * SHORT should be used with simple one-line snackbars.
-         */
+        /** SHORT should be used with simple one-line snackbars. */
         int SHORT = 0;
-        /**
-         * LONG should be used with multi-line snackbars that take longer to read.
-         */
+
+        /** LONG should be used with multi-line snackbars that take longer to read. */
         int LONG = 1;
     }
 
@@ -111,7 +93,10 @@ public interface FeedActionsHandler {
      * @param duration Whether to remove the snackbar after a short or long delay.
      * @param controller Handlers for snackbar actions.
      */
-    default void showSnackbar(String text, String actionLabel, @SnackbarDuration int duration,
+    default void showSnackbar(
+            String text,
+            String actionLabel,
+            @SnackbarDuration int duration,
             SnackbarController controller) {}
 
     /**
@@ -121,9 +106,7 @@ public interface FeedActionsHandler {
      */
     default void share(String url, String title) {}
 
-    /**
-     * Opens the settings to manager autoplay.
-     */
+    /** Opens the settings to manager autoplay. */
     default void openAutoplaySettings() {}
 
     /**
@@ -168,8 +151,12 @@ public interface FeedActionsHandler {
      * Types of feeds that can be invalidated. These values must match the privately defined values
      * of InvalidateCacheData.FeedType.
      */
-    @IntDef({FeedIdentifier.UNSPECIFIED, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED,
-            FeedIdentifier.CHANNEL_FEED})
+    @IntDef({
+        FeedIdentifier.UNSPECIFIED,
+        FeedIdentifier.MAIN_FEED,
+        FeedIdentifier.FOLLOWING_FEED,
+        FeedIdentifier.CHANNEL_FEED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FeedIdentifier {
         int UNSPECIFIED = 0;
@@ -226,12 +213,4 @@ public interface FeedActionsHandler {
 
     /** Triggers a manual refresh of the feed. */
     default void triggerManualRefresh() {}
-
-    /**
-     * Returns an ResourceFetcher to fetch the data asynchronously. Null will be returned if it is
-     * unavailable.
-     */
-    default @Nullable ResourceFetcher getAsyncDataFetcher() {
-        return null;
-    }
 }

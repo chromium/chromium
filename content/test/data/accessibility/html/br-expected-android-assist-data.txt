@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"\n" textSize:16.0 style:0 htmlInfo:[{htmlTag="br"}, {display=""}]
+++TextView text:"Text line 1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"Text line 2" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View text:"\n" textSize:16.0 style:0 htmlInfo:[{htmlTag="br"}, {display=""}]
+++++TextView text:"Text line 3" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View text:"\n" textSize:16.0 style:0 htmlInfo:[{htmlTag="br"}, {display=""}]

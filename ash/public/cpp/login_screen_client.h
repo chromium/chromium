@@ -99,6 +99,10 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // so the user does not need to type the account email.
   virtual void ShowGaiaSignin(const AccountId& prefilled_account) = 0;
 
+  // Starts the flow for recovering access to user's home directory.
+  // The value in |account_to_recover| should be non-empty AccountId.
+  virtual void StartUserRecovery(const AccountId& account_to_recover) = 0;
+
   // Show OS-Install screen.
   virtual void ShowOsInstallScreen() = 0;
 

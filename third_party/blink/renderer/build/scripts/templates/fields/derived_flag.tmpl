@@ -1,5 +1,5 @@
 {% import 'templates/fields/base.tmpl' as base %}
-{% from 'templates/fields/field.tmpl' import getter_method_name, setter_expression %}
+{% from 'templates/fields/field.tmpl' import getter_method_name, setter_expression, bitfield_prefix %}
 {% from 'templates/macros.tmpl' import print_if %}
 
 {% macro decl_public_methods(field) %}
@@ -16,16 +16,18 @@ bool CORE_EXPORT {{getter_method_name(field)}}() const;
 
 {% macro define_impl(field, classname) -%}
 bool {{classname}}::{{getter_method_name(field)}}() const {
-  {# Avoid getter_expression, because that macro calls this function
+  {% set raw_field = bitfield_prefix() + field.name %}
+  {# Avoid field.getter_expression, because that macro calls this function
      for derived flags. Note that derived flags are required to be top-level
      fields of ComputedStyle. #}
-  if (!{{field.name}}) {
-    {{field.name}} = 0b10 | (static_cast<unsigned>(static_cast<const ComputedStyle*>(this)->{{field.derived_from}}()) & 1);
+  if (!{{raw_field}}) {
+    {{raw_field}} = 0b10 | (static_cast<unsigned>(static_cast<const ComputedStyle*>(this)->{{field.derived_from}}()) & 1);
   }
-  return {{field.name}} & 1;
+  return {{raw_field}} & 1;
 }
 {%- endmacro %}
 
 {% macro reset_expression(field) -%}
-{{setter_expression(field)}} = 0;
+{% set raw_field = bitfield_prefix() + field.name %}
+{{raw_field}} = 0;
 {%- endmacro %}

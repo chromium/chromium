@@ -93,11 +93,7 @@ repack("resource_pack_strings") {
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
-  if (is_chrome_branded) {
-    sources += [ "${root_gen_dir}/components/strings/components_google_chrome_strings_en-US.pak" ]
-  } else {
-    sources += [ "${root_gen_dir}/components/strings/components_chromium_strings_en-US.pak" ]
-  }
+  sources += [ "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_en-US.pak" ]
 
   deps = [
     "//components/strings",
@@ -372,7 +368,6 @@ component("headless_non_renderer") {
   if (is_mac) {
     sources += [
       "lib/browser/headless_browser_impl_mac.mm",
-      "lib/browser/headless_browser_main_parts_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
       "lib/browser/headless_shell_application_mac.mm",
       "lib/headless_content_main_delegate_mac.mm",
@@ -763,7 +758,6 @@ test("headless_browsertests") {
     "//components/policy/core/browser",
     "//components/security_state/content",
     "//components/version_info",
-    "//content/test:browsertest_support",
     "//content/test:test_support",
     "//gin",
     "//net:test_support",

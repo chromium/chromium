@@ -10,10 +10,8 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom.h"
@@ -21,7 +19,6 @@
 #include "chromeos/ash/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -38,17 +35,16 @@ using ::testing::StrictMock;
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
 
 // Tests if the JSON string contains the given path with the given value.
-#define EXPECT_HAS_PATH_WITH_VALUE(config_string, path, expected_value)    \
-  ({                                                                       \
-    absl::optional<base::Value> config =                                   \
-        base::JSONReader::Read(config_string);                             \
-    ASSERT_TRUE(config.has_value());                                       \
-    ASSERT_TRUE(config->is_dict());                                        \
-    const base::Value* actual = config->GetDict().FindByDottedPath(path);  \
-    base::Value expected = base::Value(expected_value);                    \
-    ASSERT_NE(actual, nullptr)                                             \
-        << "Path '" << path << "' not found in config: " << config_string; \
-    EXPECT_EQ(*actual, expected);                                          \
+#define EXPECT_HAS_PATH_WITH_VALUE(config_string, path, expected_value)        \
+  ({                                                                           \
+    std::optional<base::Value> config = base::JSONReader::Read(config_string); \
+    ASSERT_TRUE(config.has_value());                                           \
+    ASSERT_TRUE(config->is_dict());                                            \
+    const base::Value* actual = config->GetDict().FindByDottedPath(path);      \
+    base::Value expected = base::Value(expected_value);                        \
+    ASSERT_NE(actual, nullptr)                                                 \
+        << "Path '" << path << "' not found in config: " << config_string;     \
+    EXPECT_EQ(*actual, expected);                                              \
   })
 
 std::vector<mojom::AuthenticationTokenPtr> ToVector(
@@ -191,24 +187,15 @@ class AssistantServiceControllerTest : public testing::Test {
     libassistant_factory_.assistant_manager().SetMediaManager(&media_manager_);
 
     // Similuate gRPC heartbeat calls.
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      service_controller().OnServicesStatusChanged(
-          ServicesStatus::ONLINE_BOOTING_UP);
-    }
+    service_controller().OnServicesStatusChanged(
+        ServicesStatus::ONLINE_BOOTING_UP);
     RunUntilIdle();
   }
 
   void SendOnStartFinished() {
     // Similuate gRPC heartbeat calls.
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      service_controller().OnServicesStatusChanged(
-          ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE);
-    } else {
-      auto* device_state_listener =
-          libassistant_factory_.assistant_manager().device_state_listener();
-      ASSERT_NE(device_state_listener, nullptr);
-      device_state_listener->OnStartFinished();
-    }
+    service_controller().OnServicesStatusChanged(
+        ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE);
     RunUntilIdle();
   }
 
@@ -226,9 +213,6 @@ class AssistantServiceControllerTest : public testing::Test {
   SettingsControllerMock& settings_controller_mock() {
     return settings_controller_;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
@@ -359,23 +343,6 @@ TEST_F(AssistantServiceControllerTest,
             service_controller().assistant_client()->assistant_manager());
 }
 
-TEST_F(AssistantServiceControllerTest, ShouldBeNoopWhenCallingStartTwice_V1) {
-  // TODO(b/269803444): Reenable test for LibAssistantV2.
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableLibAssistantV2);
-
-  // Note: This is the preferred behavior for services exposed through mojom.
-  Initialize();
-  Start();
-
-  StateObserverMock observer;
-  AddStateObserver(&observer);
-
-  EXPECT_NO_CALLS(observer, OnStateChanged);
-
-  Start();
-}
-
 TEST_F(AssistantServiceControllerTest, CallingStopTwiceShouldBeANoop) {
   Initialize();
   Stop();
@@ -436,54 +403,6 @@ TEST_F(AssistantServiceControllerTest,
 
   DestroyServiceController();
   RunUntilIdle();
-}
-
-TEST_F(
-    AssistantServiceControllerTest,
-    ShouldCreateButNotPublishAssistantManagerInternalWhenCallingInitialize_V1) {
-  // TODO(b/269803444): Reenable test for LibAssistantV2.
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableLibAssistantV2);
-
-  EXPECT_EQ(nullptr, service_controller().assistant_client());
-
-  Initialize();
-
-  EXPECT_NE(
-      nullptr,
-      service_controller().assistant_client()->assistant_manager_internal());
-}
-
-TEST_F(AssistantServiceControllerTest,
-       ShouldPublishAssistantManagerInternalWhenCallingStart_V1) {
-  // TODO(b/269803444): Reenable test for LibAssistantV2.
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableLibAssistantV2);
-
-  Initialize();
-  Start();
-
-  EXPECT_NE(
-      nullptr,
-      service_controller().assistant_client()->assistant_manager_internal());
-}
-
-TEST_F(AssistantServiceControllerTest,
-       ShouldDestroyAssistantManagerInternalWhenCallingStop_V1) {
-  // TODO(b/269803444): Reenable test for LibAssistantV2.
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableLibAssistantV2);
-
-  Initialize();
-
-  EXPECT_NE(
-      nullptr,
-      service_controller().assistant_client()->assistant_manager_internal());
-
-  Start();
-  Stop();
-
-  EXPECT_EQ(nullptr, service_controller().assistant_client());
 }
 
 TEST_F(AssistantServiceControllerTest,

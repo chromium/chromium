@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_APP_LIST_NOTIFIER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -179,7 +179,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // reported to be visible.
   bool GetContinueSectionVisibility(Location location) const;
 
-  const raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_;
+  const raw_ptr<ash::AppListController> app_list_controller_;
 
   base::ObserverList<Observer> observers_;
 
@@ -203,7 +203,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // The current search query, may be empty.
   std::u16string query_;
   // The most recently launched result.
-  absl::optional<Result> launched_result_;
+  std::optional<Result> launched_result_;
 
   // Special-case for the results at Location::kList. These need to be
   // accumulated until the query changes, rather than set like other result
@@ -212,7 +212,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   //
   // TODO(crbug.com/1216097): This can be removed once SearchResultListView has
   // its notifier calls updated.
-  base::flat_map<std::string, absl::optional<Result>> list_results_;
+  base::flat_map<std::string, std::optional<Result>> list_results_;
 
   base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
 };

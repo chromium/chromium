@@ -36,35 +36,12 @@ struct IsBaseCallbackImpl<OnceCallback<R(Args...)>> : std::true_type {};
 template <typename R, typename... Args>
 struct IsBaseCallbackImpl<RepeatingCallback<R(Args...)>> : std::true_type {};
 
-template <typename T>
-struct IsOnceCallbackImpl : std::false_type {};
-
-template <typename R, typename... Args>
-struct IsOnceCallbackImpl<OnceCallback<R(Args...)>> : std::true_type {};
-
 }  // namespace internal
 
-// IsBaseCallback<T>::value is true when T is any of the Closure or Callback
-// family of types.
+// IsBaseCallback<T> is satisfied if and only if T is an instantiation of
+// base::OnceCallback<Signature> or base::RepeatingCallback<Signature>.
 template <typename T>
-using IsBaseCallback = internal::IsBaseCallbackImpl<std::decay_t<T>>;
-
-// IsOnceCallback<T>::value is true when T is a OnceClosure or OnceCallback
-// type.
-template <typename T>
-using IsOnceCallback = internal::IsOnceCallbackImpl<std::decay_t<T>>;
-
-// SFINAE friendly enabler allowing to overload methods for both Repeating and
-// OnceCallbacks.
-//
-// Usage:
-// template <template <typename> class CallbackType,
-//           ... other template args ...,
-//           typename = EnableIfIsBaseCallback<CallbackType>>
-// void DoStuff(CallbackType<...> cb, ...);
-template <template <typename> class CallbackType>
-using EnableIfIsBaseCallback =
-    std::enable_if_t<IsBaseCallback<CallbackType<void()>>::value>;
+concept IsBaseCallback = internal::IsBaseCallbackImpl<std::decay_t<T>>::value;
 
 namespace internal {
 
@@ -96,7 +73,32 @@ class OnceCallbackHolder final {
   const bool ignore_extra_runs_;
 };
 
+template <typename... Args>
+void ForwardRepeatingCallbacksImpl(
+    std::vector<RepeatingCallback<void(Args...)>> cbs,
+    Args... args) {
+  for (auto& cb : cbs) {
+    if (cb) {
+      cb.Run(std::forward<Args>(args)...);
+    }
+  }
+}
+
 }  // namespace internal
+
+// Wraps the given RepeatingCallbacks and return one RepeatingCallbacks with an
+// identical signature. On invocation of this callback, all the given
+// RepeatingCallbacks will be called with the same arguments. Unbound arguments
+// must be copyable.
+template <typename... Args>
+RepeatingCallback<void(Args...)> ForwardRepeatingCallbacks(
+    std::initializer_list<RepeatingCallback<void(Args...)>>&& cbs) {
+  std::vector<RepeatingCallback<void(Args...)>> v(
+      std::forward<std::initializer_list<RepeatingCallback<void(Args...)>>>(
+          cbs));
+  return BindRepeating(&internal::ForwardRepeatingCallbacksImpl<Args...>,
+                       std::move(v));
+}
 
 // Wraps the given OnceCallback and returns two OnceCallbacks with an identical
 // signature. On first invokation of either returned callbacks, the original
@@ -116,22 +118,45 @@ SplitOnceCallback(OnceCallback<void(Args...)> callback) {
   return std::make_pair(wrapped_once, wrapped_once);
 }
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments. Returns a null callback if `closure` is
-// null.
-template <typename... Args>
-RepeatingCallback<void(Args...)> IgnoreArgs(RepeatingClosure closure) {
-  return closure ? BindRepeating([](Args...) {}).Then(std::move(closure))
-                 : RepeatingCallback<void(Args...)>();
+// Adapts `callback` for use in a context which is expecting a callback with
+// additional parameters. Returns a null callback if `callback` is null.
+//
+// Usage:
+//   void LogError(char* error_message) {
+//     if (error_message) {
+//       cout << "Log: " << error_message << endl;
+//     }
+//   }
+//   base::RepeatingCallback<void(int, char*)> cb =
+//      base::IgnoreArgs<int>(base::BindRepeating(&LogError));
+//   cb.Run(42, nullptr);
+//
+// Note in the example above that the type(s) passed to `IgnoreArgs`
+// represent the additional prepended parameters (those which will be
+// "ignored").
+template <typename... Preargs, typename... Args>
+RepeatingCallback<void(Preargs..., Args...)> IgnoreArgs(
+    RepeatingCallback<void(Args...)> callback) {
+  return callback ? ::base::BindRepeating(
+                        [](RepeatingCallback<void(Args...)> callback,
+                           Preargs..., Args... args) {
+                          std::move(callback).Run(std::forward<Args>(args)...);
+                        },
+                        std::move(callback))
+                  : RepeatingCallback<void(Preargs..., Args...)>();
 }
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments. Returns a null callback if `closure` is
-// null.
-template <typename... Args>
-OnceCallback<void(Args...)> IgnoreArgs(OnceClosure closure) {
-  return closure ? BindOnce([](Args...) {}).Then(std::move(closure))
-                 : OnceCallback<void(Args...)>();
+// As above, but for OnceCallback.
+template <typename... Preargs, typename... Args>
+OnceCallback<void(Preargs..., Args...)> IgnoreArgs(
+    OnceCallback<void(Args...)> callback) {
+  return callback ? ::base::BindOnce(
+                        [](OnceCallback<void(Args...)> callback, Preargs...,
+                           Args... args) {
+                          std::move(callback).Run(std::forward<Args>(args)...);
+                        },
+                        std::move(callback))
+                  : OnceCallback<void(Preargs..., Args...)>();
 }
 
 // ScopedClosureRunner is akin to std::unique_ptr<> for Closures. It ensures
@@ -166,15 +191,15 @@ class BASE_EXPORT ScopedClosureRunner {
 };
 
 // Returns a placeholder type that will implicitly convert into a null callback,
-// similar to how absl::nullopt / std::nullptr work in conjunction with
-// absl::optional and various smart pointer types.
+// similar to how std::nullopt / std::nullptr work in conjunction with
+// std::optional and various smart pointer types.
 constexpr auto NullCallback() {
   return internal::NullCallbackTag();
 }
 
 // Returns a placeholder type that will implicitly convert into a callback that
-// does nothing, similar to how absl::nullopt / std::nullptr work in conjunction
-// with absl::optional and various smart pointer types.
+// does nothing, similar to how std::nullopt / std::nullptr work in conjunction
+// with std::optional and various smart pointer types.
 constexpr auto DoNothing() {
   return internal::DoNothingCallbackTag();
 }
@@ -210,6 +235,20 @@ template <typename... Args>
 constexpr auto DoNothingWithBoundArgs(Args&&... args) {
   return internal::DoNothingCallbackTag::WithBoundArguments(
       std::forward<Args>(args)...);
+}
+
+// Creates a callback that returns `value` when invoked. This helper is useful
+// for implementing factories that return a constant value.
+// Example:
+//
+// void F(base::OnceCallback<Widget()> factory);
+//
+// Widget widget = ...;
+// F(base::ReturnValueOnce(std::move(widget)));
+template <typename T>
+constexpr OnceCallback<T(void)> ReturnValueOnce(T value) {
+  static_assert(!std::is_reference_v<T>);
+  return base::BindOnce([](T value) { return value; }, std::move(value));
 }
 
 // Useful for creating a Closure that will delete a pointer when invoked. Only

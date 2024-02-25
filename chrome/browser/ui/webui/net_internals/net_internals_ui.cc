@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,11 +45,11 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -78,10 +80,10 @@ base::Value::List IPEndpointsToBaseList(
   return resolved_addresses_list;
 }
 
-// This function converts absl::optional<net::HostResolverEndpointResults> to
+// This function converts std::optional<net::HostResolverEndpointResults> to
 // base::Value::List.
 base::Value::List HostResolverEndpointResultsToBaseList(
-    const absl::optional<net::HostResolverEndpointResults>& endpoint_results) {
+    const std::optional<net::HostResolverEndpointResults>& endpoint_results) {
   base::Value::List endpoint_results_list;
 
   if (!endpoint_results) {
@@ -108,13 +110,24 @@ base::Value::List HostResolverEndpointResultsToBaseList(
   return endpoint_results_list;
 }
 
+base::Value::List GetMatchDestList(
+    const std::vector<::network::mojom::RequestDestination>& match_dest) {
+  base::Value::List result =
+      base::Value::List::with_capacity(match_dest.size());
+  for (const auto& item : match_dest) {
+    result.Append(network::RequestDestinationToString(
+        item, network::EmptyRequestDestinationOption::kUseTheEmptyString));
+  }
+  return result;
+}
+
 // This class implements network::mojom::ResolveHostClient.
 class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
  public:
   using Callback = base::OnceCallback<void(
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>&,
-      const absl::optional<net::HostResolverEndpointResults>&,
+      const std::optional<net::AddressList>&,
+      const std::optional<net::HostResolverEndpointResults>&,
       NetInternalsResolveHostClient*)>;
 
   NetInternalsResolveHostClient(
@@ -124,8 +137,8 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &NetInternalsResolveHostClient::OnComplete, base::Unretained(this),
         net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/absl::nullopt,
-        /*endpoint_results_with_metadata=*/absl::nullopt));
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt));
   }
   ~NetInternalsResolveHostClient() override = default;
 
@@ -137,8 +150,8 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     std::move(callback_).Run(resolve_error_info, resolved_addresses,
                              endpoint_results_with_metadata, this);
@@ -194,12 +207,11 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnHSTSAdd(const base::Value::List& list);
   void OnCloseIdleSockets(const base::Value::List& list);
   void OnFlushSocketPools(const base::Value::List& list);
-  void OnResolveHostDone(
-      const std::string& callback_id,
-      const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>&,
-      const absl::optional<net::HostResolverEndpointResults>&,
-      NetInternalsResolveHostClient* dns_lookup_client);
+  void OnResolveHostDone(const std::string& callback_id,
+                         const net::ResolveErrorInfo&,
+                         const std::optional<net::AddressList>&,
+                         const std::optional<net::HostResolverEndpointResults>&,
+                         NetInternalsResolveHostClient* dns_lookup_client);
   void OnClearSharedDictionary(const base::Value::List& list);
   void OnClearSharedDictionaryCacheForIsolationKey(
       const base::Value::List& list);
@@ -448,8 +460,8 @@ void NetInternalsMessageHandler::OnCloseIdleSockets(
 void NetInternalsMessageHandler::OnResolveHostDone(
     const std::string& callback_id,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata,
     NetInternalsResolveHostClient* dns_lookup_client) {
   DCHECK_EQ(dns_lookup_clients_.count(dns_lookup_client), 1u);
@@ -503,6 +515,8 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
   for (const auto& item : dictionaries) {
     base::Value::Dict dict;
     dict.Set("match", item->match);
+    dict.Set("match_dest", GetMatchDestList(item->match_dest));
+    dict.Set("id", item->id);
     dict.Set("dictionary_url", item->dictionary_url.spec());
     dict.Set("response_time", base::TimeFormatHTTP(item->response_time));
     dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));

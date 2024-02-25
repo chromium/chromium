@@ -47,13 +47,14 @@ void FakeUserPolicySigninService::RegisterForPolicyWithAccountId(
     const std::string& username,
     const CoreAccountId& account_id,
     PolicyRegistrationCallback callback) {
-  std::move(callback).Run(dm_token_, client_id_);
+  std::move(callback).Run(dm_token_, client_id_, std::vector<std::string>());
 }
 
 void FakeUserPolicySigninService::FetchPolicyForSignedInUser(
     const AccountId& account_id,
     const std::string& dm_token,
     const std::string& client_id,
+    const std::vector<std::string>& user_affiliation_ids,
     scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory,
     PolicyFetchCallback callback) {
   std::move(callback).Run(true);

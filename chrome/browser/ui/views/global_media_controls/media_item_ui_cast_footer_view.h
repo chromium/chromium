@@ -7,13 +7,20 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/notification_theme.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
+
+namespace {
+class StopCastingButton;
+}
 
 // A footer view attached to MediaItemUIView containing a stop casting button
 // for a cast media item. Currently only used on Chrome OS Ash when
 // media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
 class MediaItemUICastFooterView
     : public global_media_controls::MediaItemUIFooter {
+  METADATA_HEADER(MediaItemUICastFooterView,
+                  global_media_controls::MediaItemUIFooter)
  public:
   explicit MediaItemUICastFooterView(
       base::RepeatingClosure stop_casting_callback,
@@ -28,7 +35,7 @@ class MediaItemUICastFooterView
  private:
   void StopCasting();
 
-  raw_ptr<views::LabelButton> stop_casting_button_;
+  raw_ptr<StopCastingButton> stop_casting_button_;
 
   const base::RepeatingClosure stop_casting_callback_;
 };

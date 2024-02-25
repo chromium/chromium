@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
+import "url/mojom/origin.mojom";
+
+// This struct carries information about origin trial features. It's sent with
+// a RuntimeFeatureState enum (which represents a Blink runtime enabled
+// feature).
+//
+// This struct provides information necessary for the browser to perform
+// security checks (e.g. validating the origin trial token) and update browser
+// side feature states.
+struct OriginTrialFeatureState {
+  // `is_enabled`: true if the Blink Runtime-Enabled Feature is enabled.
+  // false otherwise.
+  bool is_enabled;
+  // `tokens`: contains the raw origin trial token(s) that were registered for
+  // the associated origin trial feature. The browser should validate the tokens
+  // before enabling the corresponding browser features.
+  array<string> tokens;
+};
+
+// The renderer uses this interface to inform the browser about origin trial
+// feature state changes (e.g. an origin trial becomes enabled when an origin
+// token is inserted into the document).
+//
+// The browser will update its copy of runtime feature state
+// (blink::RuntimeFeatureReadContext) and enable the corresponding browser
+// logic required to support the origin trial.
+interface OriginTrialStateHost {
+  // `ApplyFeatureDiffForOriginTrial` is called when an origin trial feature
+  // that opts into browser read/write access has a change in state.
+  //
+  // The browser should validate the origin trial token before changing any
+  // security state.
+  ApplyFeatureDiffForOriginTrial(map<blink.mojom.RuntimeFeature,
+    blink.mojom.OriginTrialFeatureState> origin_trial_features);
+
+  // Enable the trial represented by the |token|, provided the token represents
+  // a persistent origin trial.
+  //
+  // The browser should validate |token| (in case the renderer is compromised).
+  //
+  // The |script_origins| is the list of scripts that could potentially
+  // have injected the token, to allow for third party token validation.
+  EnablePersistentTrial(string token, array<url.mojom.Origin> script_origins);
+};

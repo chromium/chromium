@@ -28,6 +28,7 @@ example_value:
     installation_mode: allowed
     minimum_version_required: 1.0.1
     toolbar_pin: force_pinned
+    file_url_navigation_allowed: true
   bcdefghijklmnopabcdefghijklmnopa:
     allowed_permissions:
     - downloads
@@ -76,6 +77,8 @@ schema:
           type: string
         blocked_permissions:
           $ref: ListOfPermissions
+        file_url_navigation_allowed:
+          type: boolean
         installation_mode:
           enum:
           - blocked

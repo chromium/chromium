@@ -89,7 +89,9 @@ JavaScriptDialogPresenter* FakeWebStateDelegate::GetJavaScriptDialogPresenter(
 
 void FakeWebStateDelegate::ShowRepostFormWarningDialog(
     WebState* source,
+    web::FormWarningType warningType,
     base::OnceCallback<void(bool)> callback) {
+  // TODO(crbug.com/1501150): Handle warningType as well.
   last_repost_form_request_ = std::make_unique<FakeRepostFormRequest>();
   last_repost_form_request_->web_state = source;
   last_repost_form_request_->callback = std::move(callback);
@@ -117,7 +119,9 @@ void FakeWebStateDelegate::HandlePermissionsDecisionRequest(
     NSArray<NSNumber*>* permissions,
     WebStatePermissionDecisionHandler handler) {
   last_requested_permissions_ = permissions;
-  handler(permission_decision_);
+  if (should_handle_permission_decision_) {
+    handler(permission_decision_);
+  }
 }
 
 }  // namespace web

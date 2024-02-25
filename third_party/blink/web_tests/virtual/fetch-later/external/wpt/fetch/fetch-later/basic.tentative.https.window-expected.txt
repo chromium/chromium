@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS fetchLater() cannot be called without request.
-PASS fetchLater()'s return tells the deferred request is not yet sent.
-Harness: the test ran to completion.
-

@@ -46,6 +46,14 @@ source_set("block_swizzler") {
   deps = [ "//base" ]
 }
 
+source_set("protocol_fake") {
+  sources = [
+    "protocol_fake.h",
+    "protocol_fake.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("nserror_support") {
   testonly = true
   sources = [

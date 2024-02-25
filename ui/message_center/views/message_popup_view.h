@@ -22,9 +22,9 @@ class Notification;
 class MESSAGE_CENTER_EXPORT MessagePopupView
     : public views::FocusChangeListener,
       public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(MessagePopupView);
+  METADATA_HEADER(MessagePopupView, views::WidgetDelegateView)
 
+ public:
   MessagePopupView(MessageView* message_view,
                    MessagePopupCollection* popup_collection,
                    bool a11y_feedback_on_init);
@@ -34,6 +34,12 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Update notification contents to |notification|. Virtual for unit testing.
   virtual void UpdateContents(const Notification& notification);
+
+  // Updates the content of the child notification view inside this popup.
+  // Virtual for unit testing.
+  virtual void UpdateContentsForChildNotification(
+      const std::string& notification_id,
+      const Notification& notification);
 
   // Return opacity of the widget.
   float GetOpacity() const;

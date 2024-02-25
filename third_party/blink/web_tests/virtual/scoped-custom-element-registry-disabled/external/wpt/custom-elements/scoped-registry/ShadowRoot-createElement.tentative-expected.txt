@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] ShadowRoot.createElement() for autonomous custom element
+  Illegal constructor
+[FAIL] ShadowRoot.createElementNS() for autonomous custom element
+  Illegal constructor
+[FAIL] ShadowRoot.createElement() for customized built-in element
+  Illegal constructor
+[FAIL] ShadowRoot.createElementNS() for customized built-in element
+  Illegal constructor
+Harness: the test ran to completion.
+

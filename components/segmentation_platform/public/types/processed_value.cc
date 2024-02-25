@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/public/types/processed_value.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 

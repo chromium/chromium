@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,33 +26,29 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAntiPhishingTelemetry,
-             "AntiPhishingTelemetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
+             "AddWarningShownTSToClientSafeBrowsingReport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionModelIsFlatBuffer,
-             "ClientSideDetectionModelIsFlatBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionModelTag,
-             "ClientSideDetectionTag",
+BASE_FEATURE(kClientSideDetectionNotificationPrompt,
+             "ClientSideDetectionNotificationPrompt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionTypeForceRequest,
-             "ClientSideDetectionTypeForceRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports,
+             "CreateNotificationsAcceptedClientSafeBrowsingReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeepScanningUpdatedUX,
-             "SafeBrowsingDeepScanningUpdatedUX",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
+             "CreateWarningShownClientSafeBrowsingReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeepScanningEncryptedArchives,
              "SafeBrowsingDeepScanningEncryptedArchives",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
@@ -64,80 +61,25 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
-BASE_FEATURE(kDownloadBubble,
-             "DownloadBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadBubbleV2,
-             "DownloadBubbleV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEsbIphBubbleAndCollapseSettings,
-             "EsbIphBubbleAndCollapseSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableIph{
-    &kEsbIphBubbleAndCollapseSettings, "EnableEsbIphBubble", true};
-
-const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableCollapse{
-    &kEsbIphBubbleAndCollapseSettings, "EnableEsbSettingCollapse", true};
-
-BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
-             "EvaluateProtectedPasswordLengthMinimum",
+BASE_FEATURE(kEncryptedArchivesMetadata,
+             "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kEvaluateProtectedPasswordLengthMinimumValue{
-    &kEvaluateProtectedPasswordLengthMinimum, "MinimumValue",
-    /*default_value=*/4};
-
-BASE_FEATURE(kExtensionTelemetry,
-             "SafeBrowsingExtensionTelemetry",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
-    &kExtensionTelemetry, "UploadIntervalSeconds",
-    /*default_value=*/3600};
-
-const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval{
-    &kExtensionTelemetry, "NumberOfWritesInInterval",
-    /*default_value=*/1};
+BASE_FEATURE(kEsbDownloadRowPromo,
+             "EsbDownloadRowPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
-             "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
+BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
+             "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryPersistence,
-             "SafeBrowsingExtensionTelemetryPersistence",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryFileData,
-             "SafeBrowsingExtensionTelemetryFileData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFilesToProcess{
-    &kExtensionTelemetryFileData, "MaxFilesToProcess",
-    /*default_value=*/50};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFileSizeBytes{
-    &kExtensionTelemetryFileData, "MaxFileSizeBytes",
-    /*default_value=100KB*/ 100 * 1024};
-
-const base::FeatureParam<int>
-    kExtensionTelemetryFileDataCollectionIntervalSeconds{
-        &kExtensionTelemetryFileData, "CollectionIntervalSeconds",
-        /*default_value=*/7200};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
-    &kExtensionTelemetryFileData, "StartupDelaySeconds",
-    /*default_value=*/300};
 
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
@@ -151,24 +93,25 @@ BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
              "SafeBrowsingExtensionTelemetryReportHostsContactedViaWebsocket",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(
+    kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+    "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
+             "SafeBrowsingExtensionTelemetryTabsApiSignal",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
+             "SafeBrowsingExtensionTelemetryTabsApiSignalCaptureVisibleTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
-             "SafeBrowsingExtensionTelemetryCookiesGetSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal,
-             "SafeBrowsingExtensionTelemetryDeclarativeNetRequestSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions,
              "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFileTypePoliciesTag,
-             "FileTypePoliciesTag",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection,
@@ -186,19 +129,8 @@ BASE_FEATURE(kHashPrefixRealTimeLookups,
 constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     &kHashPrefixRealTimeLookups,
     "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl",
-    /*default_value=*/""};
-
-BASE_FEATURE(kHashRealTimeOverOhttp,
-             "SafeBrowsingHashRealTimeOverOhttp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
-    &kHashRealTimeOverOhttp, "SafeBrowsingHashRealTimeOverOhttpRelayUrl",
-    /*default_value=*/""};
-
-BASE_FEATURE(kImprovedDownloadBubbleWarnings,
-             "ImprovedDownloadBubbleWarnings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+    /*default_value=*/
+    "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
@@ -208,17 +140,37 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMaldocaSkipCheck,
+             "MaldocaSkipCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
     &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
-    /*default_value=*/false};
+// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+#if BUILDFLAG(IS_IOS)
+    /*default_value=*/false
+#else
+    /*default_value=*/true
+#endif
+};
 
 BASE_FEATURE(kNestedArchives,
              "SafeBrowsingArchiveImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
+             "RealTimeUrlFilteringCustomMessage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
@@ -234,13 +186,9 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
-BASE_FEATURE(kRealTimeUrlFilteringForEnterprise,
-             "RealTimeUrlFilteringForEnterprise",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRedInterstitialFacelift,
              "RedInterstitialFacelift",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReferrerChainParameters,
              "SafeBrowsingReferrerChainParameters",
@@ -253,22 +201,29 @@ constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
     &kReferrerChainParameters, "MaximumEventCount",
     /*default_value=*/100};
 
-BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
-             "SafeBrowsingCsbrrNewDownloadTrigger",
+BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
+             "SafeBrowsingAsyncRealTimeCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
-             "SafeBrowsingLookupMechanismExperiment",
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
-    &kSafeBrowsingLookupMechanismExperiment,
-    "UrlLevelValidationForHprtExperimentEnabled",
-    /*default_value=*/true};
+BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
+             "SafeBrowsingNewGmsApiForSubresourceFilterCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/1380507): Fix iOS tests with this enabled.
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
              "SafeBrowsingReferrerChainWithCopyPasteNavigation",
@@ -278,14 +233,13 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
-             "SafeBrowsingSkipImageCssFont",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kSafeBrowsingSkipSubresources,
+             "SafeBrowsingSkipSubResources",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeBrowsingSkipSubresources2,
+             "SafeBrowsingSkipSubResources2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",
@@ -303,13 +257,17 @@ constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
     &kStrictDownloadTimeout, "TimeoutMilliseconds",
     /*default_value=*/7000};
 
+BASE_FEATURE(kSuspiciousSiteDetectionRTLookups,
+             "SuspiciousSiteDetectionRTLookups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTailoredSecurityRetryForSyncUsers,
              "TailoredSecurityRetryForSyncUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTailoredSecurityObserverRetries,
@@ -319,16 +277,11 @@ BASE_FEATURE(kTailoredSecurityObserverRetries,
 
 BASE_FEATURE(kTailoredSecurityIntegration,
              "TailoredSecurityIntegration",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTailoredSecurityUpdatedMessages,
              "TailoredSecurityUpdatedMessages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreatDomDetailsTagAndAttributeFeature,
              "ThreatDomDetailsTagAttributes",
@@ -340,7 +293,7 @@ BASE_FEATURE(kVisualFeaturesSizes,
 
 BASE_FEATURE(kClientSideDetectionModelImageEmbedder,
              "ClientSideDetectionModelImageEmbedder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
              "SafeBrowsingPhishingClassificationESBThreshold",
@@ -349,6 +302,10 @@ BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
 BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
              "SafeBrowsingDailyPhishingReportsLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClientSideDetectionImagesCache,
+             "ClientSideDetectionImagesCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
@@ -366,42 +323,36 @@ constexpr struct {
   bool show_state;
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
-    {&kAntiPhishingTelemetry, false},
+    {&kAddWarningShownTSToClientSafeBrowsingReport, false},
     {&kClientSideDetectionKillswitch, true},
-    {&kClientSideDetectionModelIsFlatBuffer, true},
-    {&kClientSideDetectionTypeForceRequest, true},
+    {&kClientSideDetectionNotificationPrompt, true},
+    {&kCreateNotificationsAcceptedClientSafeBrowsingReports, true},
+    {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
-    {&kDownloadBubble, true},
-    {&kDownloadBubbleV2, true},
     {&kDownloadTailoredWarnings, true},
-    {&kEvaluateProtectedPasswordLengthMinimum, false},
-    {&kExtensionTelemetry, true},
-    {&kExtensionTelemetryCookiesGetAllSignal, true},
-    {&kExtensionTelemetryCookiesGetSignal, true},
-    {&kExtensionTelemetryDeclarativeNetRequestSignal, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
-    {&kExtensionTelemetryFileData, true},
-    {&kExtensionTelemetryPersistence, true},
+    {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},
     {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
+    {&kExtensionTelemetryTabsApiSignal, true},
+    {&kExtensionTelemetryTabsApiSignalCaptureVisibleTab, true},
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
-    {&kFileTypePoliciesTag, true},
     {&kHashPrefixRealTimeLookups, true},
-    {&kHashRealTimeOverOhttp, true},
-    {&kImprovedDownloadBubbleWarnings, true},
     {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
-    {&kRealTimeUrlFilteringForEnterprise, true},
+    {&kRealTimeUrlFilteringCustomMessage, true},
     {&kRedInterstitialFacelift, false},
-    {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
-    {&kSafeBrowsingLookupMechanismExperiment, true},
+    {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
+    {&kSafeBrowsingSkipSubresources, true},
+    {&kSafeBrowsingSkipSubresources2, true},
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
     {&kStrictDownloadTimeout, true},
+    {&kSuspiciousSiteDetectionRTLookups, false},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kTailoredSecurityIntegration, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
@@ -431,44 +382,10 @@ base::Value::List GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
-  param_list.Append(base::GetFieldTrialParamValueByFeature(
-      safe_browsing::kClientSideDetectionModelTag,
-      kClientSideDetectionTagParamName));
-  param_list.Append(kClientSideDetectionModelTag.name);
-  param_list.Append(base::GetFieldTrialParamValueByFeature(
-      kFileTypePoliciesTag, kFileTypePoliciesTagParamName));
-  param_list.Append(kFileTypePoliciesTag.name);
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.Get());
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.name);
 
   return param_list;
-}
-
-std::string GetClientSideDetectionTag() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionModelTag)) {
-    return base::GetFieldTrialParamValueByFeature(
-        safe_browsing::kClientSideDetectionModelTag,
-        kClientSideDetectionTagParamName);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  return "android_1";
-#else
-  return "desktop_1_flatbuffer";
-#endif
-}
-
-std::string GetFileTypePoliciesTag() {
-  if (!base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
-    return "default";
-  }
-  std::string tag_value = base::GetFieldTrialParamValueByFeature(
-      kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
-
-  return tag_value.empty() ? "default" : tag_value;
 }
 
 }  // namespace safe_browsing

@@ -728,7 +728,7 @@ bool TestingLegacySessionStorageDatabase::ReadMap(
     std::u16string key16 =
         base::UTF8ToUTF16(key.substr(map_start_key.length()));
     if (only_keys) {
-      (*result)[key16] = absl::nullopt;
+      (*result)[key16] = std::nullopt;
     } else {
       // Convert the raw data stored in std::string (it->value()) to raw data
       // stored in std::u16string.
@@ -746,7 +746,7 @@ void TestingLegacySessionStorageDatabase::WriteValuesToMap(
     const LegacyDomStorageValuesMap& values,
     leveldb::WriteBatch* batch) {
   for (auto it = values.begin(); it != values.end(); ++it) {
-    const absl::optional<std::u16string>& value = it->second;
+    const std::optional<std::u16string>& value = it->second;
     std::string key = MapKey(map_id, base::UTF16ToUTF8(it->first));
     if (!value.has_value()) {
       batch->Delete(key);

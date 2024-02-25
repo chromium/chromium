@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include <bitset>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -22,7 +23,7 @@ namespace blink {
 struct ScopeProximityTestData {
   const char* html;
   const char* rule;
-  absl::optional<unsigned> proximity;
+  std::optional<unsigned> proximity;
 };
 
 ScopeProximityTestData scope_proximity_test_data[] = {
@@ -172,8 +173,7 @@ TEST_P(ScopeProximityTest, All) {
   while (IsA<StyleRuleScope>(rule)) {
     auto& scope_rule = To<StyleRuleScope>(*rule);
     scope = scope_rule.GetStyleScope().CopyWithParent(scope);
-    const HeapVector<Member<StyleRuleBase>>& child_rules =
-        scope_rule.ChildRules();
+    const StyleRuleBase::ChildRuleVector& child_rules = scope_rule.ChildRules();
     ASSERT_EQ(1u, child_rules.size());
     rule = child_rules[0].Get();
   }
@@ -197,7 +197,7 @@ TEST_P(ScopeProximityTest, All) {
   bool match = checker.Match(context, result);
 
   EXPECT_EQ(param.proximity,
-            match ? absl::optional<unsigned>(result.proximity) : absl::nullopt);
+            match ? std::optional<unsigned>(result.proximity) : std::nullopt);
 }
 
 struct MatchFlagsTestData {
@@ -628,7 +628,7 @@ INSTANTIATE_TEST_SUITE_P(SelectorChecker,
 TEST_P(MatchFlagsShadowTest, Host) {
   MatchFlagsTestData param = GetParam();
 
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id=host>
       <template shadowrootmode="open">
         <div></div>
@@ -905,7 +905,7 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
 }
 
 TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id=host>
       <template shadowrootmode=open>
       </template>

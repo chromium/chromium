@@ -206,7 +206,7 @@ void PepperMediaStreamVideoTrackHost::FrameDeliverer::DeliverFrameOnIO(
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   // The time when this frame is generated is unknown so give a null value to
   // |estimated_capture_time|.
-  new_frame_callback_.Run(std::move(frame), {}, base::TimeTicks());
+  new_frame_callback_.Run(std::move(frame), base::TimeTicks());
 }
 
 PepperMediaStreamVideoTrackHost::PepperMediaStreamVideoTrackHost(
@@ -342,7 +342,6 @@ int32_t PepperMediaStreamVideoTrackHost::SendFrameToTrack(int32_t index) {
 
 void PepperMediaStreamVideoTrackHost::OnVideoFrame(
     scoped_refptr<VideoFrame> video_frame,
-    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(video_frame);
   // TODO(penghuang): Check |frame->end_of_stream()| and close the track.
@@ -433,7 +432,9 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   void StartSourceImpl(
       blink::VideoCaptureDeliverFrameCB frame_callback,
       blink::EncodedVideoFrameCB encoded_frame_callback,
-      blink::VideoCaptureCropVersionCB crop_version_callback) final {
+      blink::VideoCaptureSubCaptureTargetVersionCB
+          sub_capture_target_version_callback,
+      blink::VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) final {
     if (host_) {
       host_->frame_deliverer_ =
           new FrameDeliverer(video_task_runner(), std::move(frame_callback));
@@ -450,14 +451,13 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   }
 
  private:
-  absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override {
+  std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override {
     if (host_) {
-      return absl::optional<media::VideoCaptureFormat>(
-          media::VideoCaptureFormat(
-              host_->plugin_frame_size_, kDefaultOutputFrameRate,
-              ToPixelFormat(host_->plugin_frame_format_)));
+      return std::optional<media::VideoCaptureFormat>(media::VideoCaptureFormat(
+          host_->plugin_frame_size_, kDefaultOutputFrameRate,
+          ToPixelFormat(host_->plugin_frame_format_)));
     }
-    return absl::optional<media::VideoCaptureFormat>();
+    return std::optional<media::VideoCaptureFormat>();
   }
 
   const base::WeakPtr<PepperMediaStreamVideoTrackHost> host_;
@@ -528,8 +528,7 @@ int32_t PepperMediaStreamVideoTrackHost::OnHostMsgConfigure(
 }
 
 void PepperMediaStreamVideoTrackHost::InitBlinkTrack() {
-  std::string source_id;
-  base::Base64Encode(base::RandBytesAsString(64), &source_id);
+  std::string source_id = base::Base64Encode(base::RandBytesAsVector(64));
   blink::WebMediaStreamSource webkit_source;
   auto source = std::make_unique<VideoSource>(weak_factory_.GetWeakPtr());
   blink::MediaStreamVideoSource* const source_ptr = source.get();

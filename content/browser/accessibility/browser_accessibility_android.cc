@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
 #include "base/lazy_instance.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -135,7 +137,7 @@ BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
     return BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
         status);
 
-  ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   int message_id = 0;
 
@@ -532,7 +534,7 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (g_leaf_map.Get().find(this) != g_leaf_map.Get().end()) {
+  if (base::Contains(g_leaf_map.Get(), this)) {
     return g_leaf_map.Get()[this];
   }
 
@@ -650,11 +652,11 @@ std::u16string BrowserAccessibilityAndroid::GetBrailleRoleDescription() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
-  return GetSubstringTextContentUTF16(absl::nullopt);
+  return GetSubstringTextContentUTF16(std::nullopt);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
-    absl::optional<EarlyExitPredicate> predicate) const {
+    std::optional<EarlyExitPredicate> predicate) const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
 
@@ -680,7 +682,7 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     // If the value itself is empty on a progress indicator, then this would
     // suggest it is indeterminate, so add that keyword.
     if (value.empty() && GetRole() == ax::mojom::Role::kProgressIndicator) {
-      content::ContentClient* content_client = content::GetContentClient();
+      ContentClient* content_client = GetContentClient();
       value = content_client->GetLocalizedString(IDS_AX_INDETERMINATE_VALUE);
     }
 
@@ -777,16 +779,14 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
   // Optionally replace entered password text with bullet characters
   // based on a user preference.
   if (IsPasswordField()) {
-    auto* manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-    if (manager->ShouldRespectDisplayedPasswordText()) {
+    if (ui::AccessibilityState::ShouldRespectDisplayedPasswordText()) {
       // In the Chrome accessibility tree, the value of a password node is
       // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
       // true we should try to expose whatever's actually visually displayed,
       // whether that's the actual password or dots or whatever. To do this
       // we rely on the password field's shadow dom.
       value = BrowserAccessibility::GetTextContentUTF16();
-    } else if (!manager->ShouldExposePasswordText()) {
+    } else if (!ui::AccessibilityState::ShouldExposePasswordText()) {
       value = std::u16string(value.size(), ui::kSecurePasswordBullet);
     }
   }
@@ -831,7 +831,7 @@ std::u16string BrowserAccessibilityAndroid::GetDialogModalMessageText() const {
     return GetString16Attribute(ax::mojom::StringAttribute::kDescription);
   }
 
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
   return content_client->GetLocalizedString(IDS_AX_DIALOG_MODAL_OPENED);
 }
 
@@ -875,7 +875,7 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // Count the number of children and selected children.
   int child_count = 0;
@@ -905,7 +905,7 @@ std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
 }
 
 std::u16string BrowserAccessibilityAndroid::GetToggleStateDescription() const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // For checked Toggle buttons and switches, we will return "on", otherwise
   // "off".
@@ -917,14 +917,14 @@ std::u16string BrowserAccessibilityAndroid::GetToggleStateDescription() const {
 
 std::u16string BrowserAccessibilityAndroid::GetCheckboxStateDescription()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   return content_client->GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   int message_id;
   switch (static_cast<ax::mojom::AriaCurrentState>(
@@ -955,7 +955,7 @@ std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
 
 std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // The radio button should have an IntListAttribute of kRadioGroupIds, with
   // a length of the total number of radio buttons in this group. Blink sets
@@ -982,7 +982,7 @@ std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
 }
 
 std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // We consider comboboxes of the form:
   //
@@ -1048,7 +1048,7 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
 
 std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // If a combobox was of an indeterminate form, attempt any special cases here,
   // or return "expanded" as a final option.
@@ -1091,7 +1091,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   if (HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription))
     return GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription);
 
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
 
   // As a special case, if we have a heading level return a string like
   // "heading level 1", etc. - and if the heading consists of a link,
@@ -1238,7 +1238,7 @@ int BrowserAccessibilityAndroid::GetItemIndex() const {
     if (max > min && value >= min && value <= max)
       index = static_cast<int>(((value - min)) * 100 / (max - min));
   } else {
-    absl::optional<int> pos_in_set = GetPosInSet();
+    std::optional<int> pos_in_set = GetPosInSet();
     if (pos_in_set && *pos_in_set > 0)
       index = *pos_in_set - 1;
   }
@@ -1628,7 +1628,7 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
 }
 
 int BrowserAccessibilityAndroid::RowIndex() const {
-  absl::optional<int> pos_in_set = GetPosInSet();
+  std::optional<int> pos_in_set = GetPosInSet();
   if (pos_in_set && pos_in_set > 0)
     return *pos_in_set - 1;
   return node()->GetTableCellRowIndex().value_or(0);
@@ -2014,7 +2014,7 @@ int BrowserAccessibilityAndroid::CountChildrenWithRole(
 
 std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
     const {
-  content::ContentClient* content_client = content::GetContentClient();
+  ContentClient* content_client = GetContentClient();
   int message_id = -1;
 
   if (!IsContentInvalid())

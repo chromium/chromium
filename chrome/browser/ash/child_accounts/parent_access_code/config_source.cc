@@ -78,7 +78,7 @@ void ConfigSource::LoadConfigForUser(const user_manager::User* user) {
 
 void ConfigSource::AddAuthenticator(const base::Value::Dict& dict,
                                     const user_manager::User* user) {
-  absl::optional<AccessCodeConfig> code_config =
+  std::optional<AccessCodeConfig> code_config =
       AccessCodeConfig::FromDictionary(dict);
   if (code_config) {
     config_map_[user->GetAccountId()].push_back(

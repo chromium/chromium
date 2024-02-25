@@ -50,8 +50,7 @@ class WindowedIncognitoObserver {
   bool IncognitoActive() const;
 
  private:
-  raw_ptr<WindowedIncognitoMonitor, ExperimentalAsh>
-      windowed_incognito_monitor_;
+  raw_ptr<WindowedIncognitoMonitor> windowed_incognito_monitor_;
 
   // The number of incognito windows that has been opened when the observer is
   // created.

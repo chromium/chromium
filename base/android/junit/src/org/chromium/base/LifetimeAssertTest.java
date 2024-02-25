@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
-/**
- * junit tests for {@link LifetimeAssert}.
- */
+/** junit tests for {@link LifetimeAssert}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LifetimeAssertTest {
@@ -40,15 +38,16 @@ public class LifetimeAssertTest {
         mTargetRef = mTestClass.mLifetimeAssert.mWrapper;
         mFound = false;
         mHookMessage = null;
-        LifetimeAssert.sTestHook = (ref, msg) -> {
-            if (ref == mTargetRef) {
-                synchronized (mLock) {
-                    mFound = true;
-                    mHookMessage = msg;
-                    mLock.notify();
-                }
-            }
-        };
+        LifetimeAssert.sTestHook =
+                (ref, msg) -> {
+                    if (ref == mTargetRef) {
+                        synchronized (mLock) {
+                            mFound = true;
+                            mHookMessage = msg;
+                            mLock.notify();
+                        }
+                    }
+                };
     }
 
     @After

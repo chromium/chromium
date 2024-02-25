@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 
@@ -101,6 +102,15 @@ class AccountSelectFillData {
   // field the user clicked.
   std::unique_ptr<FillData> GetFillData(const std::u16string& username) const;
 
+  // Returns form information from |forms_| that has id |form_identifier|.
+  // If |is_password_field| == false and |field_identifier| is not equal to
+  // form username_element null is returned. If |is_password_field| == true then
+  // |field_identifier| is ignored. That corresponds to the logic, that
+  // suggestions should be shown on any password fields.
+  const FormInfo* GetFormInfo(autofill::FormRendererId form_identifier,
+                              autofill::FieldRendererId field_identifier,
+                              bool is_password_field) const;
+
   // Clear credentials cache.
   void ResetCache();
 
@@ -116,19 +126,10 @@ class AccountSelectFillData {
   // should be const.
   // Keeps information about last form that was requested in
   // RetrieveSuggestions.
-  mutable const FormInfo* last_requested_form_ = nullptr;
+  mutable raw_ptr<const FormInfo> last_requested_form_ = nullptr;
   // Keeps id of the last requested field if it was password otherwise the empty
   // string.
   autofill::FieldRendererId last_requested_password_field_id_;
-
-  // Returns form information from |forms_| that has id |form_identifier|.
-  // If |is_password_field| == false and |field_identifier| is not equal to
-  // form username_element null is returned. If |is_password_field| == true then
-  // |field_identifier| is ignored. That corresponds to the logic, that
-  // suggestions should be shown on any password fields.
-  const FormInfo* GetFormInfo(autofill::FormRendererId form_identifier,
-                              autofill::FieldRendererId field_identifier,
-                              bool is_password_field) const;
 };
 
 }  // namespace  password_manager

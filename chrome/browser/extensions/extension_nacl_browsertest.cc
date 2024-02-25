@@ -73,34 +73,30 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
     switch (install_type) {
       case INSTALL_TYPE_COMPONENT:
         if (LoadExtensionAsComponent(file_path)) {
-          extension = registry->GetExtensionById(
-              kExtensionId, extensions::ExtensionRegistry::ENABLED);
+          extension = registry->enabled_extensions().GetByID(kExtensionId);
         }
         break;
 
       case INSTALL_TYPE_UNPACKED:
         // Install the extension from a folder so it's unpacked.
         if (LoadExtension(file_path)) {
-          extension = registry->GetExtensionById(
-              kExtensionId, extensions::ExtensionRegistry::ENABLED);
+          extension = registry->enabled_extensions().GetByID(kExtensionId);
         }
         break;
 
       case INSTALL_TYPE_FROM_WEBSTORE:
         // Install native_client.crx from the webstore.
         if (InstallExtensionFromWebstore(file_path, 1)) {
-          extension = registry->GetExtensionById(
-              last_loaded_extension_id(),
-              extensions::ExtensionRegistry::ENABLED);
+          extension = registry->enabled_extensions().GetByID(
+              last_loaded_extension_id());
         }
         break;
 
       case INSTALL_TYPE_NON_WEBSTORE:
         // Install native_client.crx but not from the webstore.
         if (extensions::ExtensionBrowserTest::InstallExtension(file_path, 1)) {
-          extension = registry->GetExtensionById(
-              last_loaded_extension_id(),
-              extensions::ExtensionRegistry::ENABLED);
+          extension = registry->enabled_extensions().GetByID(
+              last_loaded_extension_id());
         }
         break;
     }

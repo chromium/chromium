@@ -40,8 +40,8 @@ namespace crosapi {
 
 namespace {
 void EvaluateStoreResult(base::OnceClosure closure,
-                         const absl::optional<std::string>& expected,
-                         const absl::optional<std::string>& found) {
+                         const std::optional<std::string>& expected,
+                         const std::optional<std::string>& found) {
   ASSERT_EQ(expected, found);
   std::move(closure).Run();
 }
@@ -61,7 +61,7 @@ void EvaluateRetrieveResult(base::OnceClosure closure,
 
 void LoginScreenStorageStoreSuccess(
     ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
-  std::move(callback).Run(/*error_message=*/absl::nullopt);
+  std::move(callback).Run(/*error_message=*/std::nullopt);
 }
 
 void LoginScreenStorageStoreError(
@@ -72,13 +72,13 @@ void LoginScreenStorageStoreError(
 void LoginScreenStorageRetrieveSuccess(
     ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
-  std::move(callback).Run(kData, /*error_message=*/absl::nullopt);
+  std::move(callback).Run(kData, /*error_message=*/std::nullopt);
 }
 
 void LoginScreenStorageRetrieveError(
     ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
-  std::move(callback).Run(/*data=*/absl::nullopt, kError);
+  std::move(callback).Run(/*data=*/std::nullopt, kError);
 }
 }  // namespace
 
@@ -138,7 +138,7 @@ TEST_F(LoginScreenStorageAshTest, StorePersistentDataSuccess) {
       LoginScreenStorageStore(kKey1, EqualsProto(metadata_dbus), kData, _))
       .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
 
-  const absl::optional<std::string>& expected_result = absl::nullopt;
+  const std::optional<std::string>& expected_result = std::nullopt;
 
   base::RunLoop run_loop;
   login_screen_storage_remote_->Store(
@@ -163,7 +163,7 @@ TEST_F(LoginScreenStorageAshTest, StoreNonPersistentDataSuccess) {
       LoginScreenStorageStore(kKey1, EqualsProto(metadata_dbus), kData, _))
       .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
 
-  const absl::optional<std::string>& expected_result = absl::nullopt;
+  const std::optional<std::string>& expected_result = std::nullopt;
 
   base::RunLoop run_loop;
   login_screen_storage_remote_->Store(
@@ -181,7 +181,7 @@ TEST_F(LoginScreenStorageAshTest, StoreForMultipleKeysSuccess) {
               LoginScreenStorageStore(kKey2, _, kData, _))
       .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
 
-  const absl::optional<std::string>& expected_result = absl::nullopt;
+  const std::optional<std::string>& expected_result = std::nullopt;
 
   crosapi::mojom::LoginScreenStorageMetadataPtr metadata_mojo =
       crosapi::mojom::LoginScreenStorageMetadata::New();
@@ -200,7 +200,7 @@ TEST_F(LoginScreenStorageAshTest, StoreError) {
   EXPECT_CALL(session_manager_client_, LoginScreenStorageStore(_, _, kData, _))
       .WillRepeatedly(WithArgs<3>(Invoke(LoginScreenStorageStoreError)));
 
-  const absl::optional<std::string>& expected_result = kError;
+  const std::optional<std::string>& expected_result = kError;
 
   crosapi::mojom::LoginScreenStorageMetadataPtr metadata_mojo =
       crosapi::mojom::LoginScreenStorageMetadata::New();

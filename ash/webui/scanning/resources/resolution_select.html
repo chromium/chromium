@@ -10,7 +10,7 @@
       <template is="dom-repeat" items="[[options]]" as="resolution">
         <option value="[[resolution]]"
             selected$="[[isDefaultOption(resolution)]]">
-          [[getResolutionString_(resolution)]]
+          [[getResolutionString(resolution)]]
         </option>
       </template>
     </select>

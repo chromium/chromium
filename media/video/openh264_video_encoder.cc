@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -21,7 +22,7 @@ namespace media {
 
 namespace {
 
-EProfileIdc ToOpenH264Profile(media::VideoCodecProfile profile) {
+EProfileIdc ToOpenH264Profile(VideoCodecProfile profile) {
   switch (profile) {
     case media::H264PROFILE_BASELINE:
       return PRO_BASELINE;
@@ -34,15 +35,19 @@ EProfileIdc ToOpenH264Profile(media::VideoCodecProfile profile) {
   }
 }
 
-void SetUpOpenH264Params(media::VideoCodecProfile profile,
+void SetUpOpenH264Params(VideoCodecProfile profile,
                          const VideoEncoder::Options& options,
                          const VideoColorSpace& itu_cs,
                          SEncParamExt* params) {
   int threads = GetNumberOfThreadsForSoftwareEncoding(options.frame_size);
-  params->bEnableFrameSkip = false;
+  params->bEnableFrameSkip =
+      base::FeatureList::IsEnabled(kWebCodecsVideoEncoderFrameDrop) &&
+      options.latency_mode == VideoEncoder::LatencyMode::Realtime;
   params->iPaddingFlag = 0;
   params->iComplexityMode = MEDIUM_COMPLEXITY;
-  params->iUsageType = CAMERA_VIDEO_REAL_TIME;
+  params->iUsageType = options.content_hint == VideoEncoder::ContentHint::Screen
+                           ? SCREEN_CONTENT_REAL_TIME
+                           : CAMERA_VIDEO_REAL_TIME;
   params->bEnableDenoise = false;
   params->eSpsPpsIdStrategy = SPS_LISTING;
   params->iMultipleThreadIdc = threads;
@@ -57,7 +62,13 @@ void SetUpOpenH264Params(media::VideoCodecProfile profile,
   if (options.bitrate.has_value()) {
     auto& bitrate = options.bitrate.value();
     params->iRCMode = RC_BITRATE_MODE;
-    params->iTargetBitrate = base::saturated_cast<int>(bitrate.target_bps());
+    if (bitrate.target_bps() != 0) {
+      params->iTargetBitrate = base::saturated_cast<int>(bitrate.target_bps());
+    } else {
+      params->iTargetBitrate =
+          base::saturated_cast<int>(GetDefaultVideoEncodeBitrate(
+              options.frame_size, options.framerate.value_or(30)));
+    }
   } else {
     params->iRCMode = RC_OFF_MODE;
   }
@@ -79,6 +90,17 @@ void SetUpOpenH264Params(media::VideoCodecProfile profile,
                      << GetScalabilityModeName(
                             options.scalability_mode.value());
     }
+  }
+
+  if (options.content_hint == VideoEncoder::ContentHint::Screen &&
+      num_temporal_layers > 2) {
+    // Currently, OpenH264 only supports up to 2 temporal layers for screen
+    // content. Otherwise,
+    // https://github.com/cisco/openh264/blob/6a6cb82eef8e83bc52bafab21e996f5d3e211eb4/codec/encoder/core/src/ref_list_mgr_svc.cpp#L650
+    // triggers an assert.
+    // See https://bugs.webrtc.org/15582 for more details.
+    LOG(ERROR) << "Screen content only supports up to 2 temporal layers.";
+    params->iUsageType = CAMERA_VIDEO_REAL_TIME;
   }
 
   params->iTemporalLayerNum = num_temporal_layers;
@@ -154,6 +176,15 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (codec_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
+    return;
+  }
+
+  if (options.subsampling.value_or(VideoChromaSampling::k420) !=
+          VideoChromaSampling::k420 ||
+      options.bit_depth.value_or(8) != 8) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                      "Unsupported subsampling or bit depth"));
     return;
   }
 
@@ -239,12 +270,17 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
                                                  base::TimeDelta timestamp,
                                                  gfx::ColorSpace color_space) {
   VideoEncoderOutput result;
-  result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.timestamp = timestamp;
-  result.color_space = color_space;
 
-  DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
-  size_t total_chunk_size = frame_info.iFrameSizeInBytes;
+  const size_t total_chunk_size = frame_info.iFrameSizeInBytes;
+  if (total_chunk_size == 0) {
+    // Drop frame.
+    output_cb_.Run(std::move(result), {});
+    return EncoderStatus::Codes::kOk;
+  }
+
+  result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
+  result.color_space = color_space;
   result.data = std::make_unique<uint8_t[]>(total_chunk_size);
   auto* gather_buffer = result.data.get();
 
@@ -279,7 +315,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
   if (!h264_converter_) {
     result.size = total_chunk_size;
 
-    output_cb_.Run(std::move(result), absl::optional<CodecDescription>());
+    output_cb_.Run(std::move(result), std::optional<CodecDescription>());
     return EncoderStatus::Codes::kOk;
   }
 
@@ -296,7 +332,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   result.size = converted_output_size;
 
-  absl::optional<CodecDescription> desc;
+  std::optional<CodecDescription> desc;
   if (config_changed) {
     const auto& config = h264_converter_->GetCurrentConfig();
     desc = CodecDescription();
@@ -364,7 +400,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                         "Can't allocate an I420 frame."));
       return;
     }
-    auto status = ConvertAndScaleFrame(*frame, *i420_frame, conversion_buffer_);
+    auto status = frame_converter_.ConvertAndScale(*frame, *i420_frame);
     if (!status.is_ok()) {
       std::move(done_cb).Run(
           EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)

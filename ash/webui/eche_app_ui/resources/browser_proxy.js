@@ -120,7 +120,7 @@ guestMessagePipe.registerHandler(Message.TEAR_DOWN_SIGNAL, async () => {
 // window.close() doesn't work from the iframe.
 guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
   const info = /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
-  const systemInfoJson = JSON.parse(JSON.stringify(info));
+  const systemInfoJson = structuredClone(info);
   console.log('echeapi browser_proxy.js window.close');
   displayStreamHandler.onStreamStatusChanged(
       ash.echeApp.mojom.StreamStatus.kStreamStatusStopped);
@@ -136,6 +136,11 @@ guestMessagePipe.registerHandler(Message.GET_SYSTEM_INFO, async () => {
 guestMessagePipe.registerHandler(Message.GET_UID, async () => {
   console.log('echeapi browser_proxy.js getUid');
   return /** @type {!UidInfo} */ (await uidGenerator.getUid());
+});
+
+guestMessagePipe.registerHandler(Message.IS_ACCESSIBILITY_ENABLED, async () => {
+  const result = await accessibility.isAccessibilityEnabled();
+  return {result: result.enabled};
 });
 
 // Add Screen Backlight state listener and send state via pipes.
@@ -165,8 +170,37 @@ systemInfoObserverRouter.onAndroidDeviceNetworkInfoChanged.addListener(
       });
     });
 
-accessibilityObserverRouter.performAction.addListener(action => {
-  guestMessagePipe.sendMessage(Message.ACCESSIBILITY_PERFORM_ACTION, action);
+accessibilityObserverRouter.enableAccessibilityTreeStreaming.addListener(
+    (enabled) => {
+      console.log('echeapi browser_proxy.js enableAccessibilityTreeStreaming');
+      guestMessagePipe.sendMessage(
+          Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, {enabled});
+    });
+
+accessibilityObserverRouter.enableExploreByTouch.addListener((enabled) => {
+  console.log('echeapi browser_proxy.js enableExploreByTouch');
+  guestMessagePipe.sendMessage(
+      Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, {enabled});
+});
+
+accessibilityObserverRouter.performAction.addListener((action) => {
+  return new Promise(async (resolve) => {
+    const result = await guestMessagePipe.sendMessage(
+        Message.ACCESSIBILITY_PERFORM_ACTION, action);
+    // It appears as though false is sent as an empty object. Likely due to
+    // proto omitting the value when it is false.
+    const payload = typeof result == 'boolean' ? result : false;
+    // For mojom to understand what to do, a result key is required.
+    resolve({result: payload});
+  });
+});
+
+accessibilityObserverRouter.refreshWithExtraData.addListener((action) => {
+  return new Promise(async (resolve) => {
+    const result = await guestMessagePipe.sendMessage(
+        Message.ACCESSIBILITY_REFRESH_WITH_EXTRA_DATA, action);
+    resolve({result});
+  });
 });
 
 // Add stream action listener and send result via pipes.

@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   void SetPlatformCursor(ui::Cursor* cursor);
 
   // aura::client::CursorShapeClient:
-  absl::optional<ui::CursorData> GetCursorData(
+  std::optional<ui::CursorData> GetCursorData(
       const ui::Cursor& cursor) const override;
 
  private:

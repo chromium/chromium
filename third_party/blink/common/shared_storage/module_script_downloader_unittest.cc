@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -37,8 +37,8 @@ const char kJsonMimeType[] = "application/json";
 
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 absl::optional<std::string> mime_type,
-                 absl::optional<std::string> charset,
+                 std::optional<std::string> mime_type,
+                 std::optional<std::string> charset,
                  const std::string content,
                  net::HttpStatusCode http_status = net::HTTP_OK,
                  network::TestURLLoaderFactory::Redirects redirects =
@@ -171,7 +171,7 @@ TEST_F(ModuleScriptDownloaderTest, UnexpectedMimeType) {
       error_);
 
   // Javascript request, no response type.
-  AddResponse(&url_loader_factory_, url_, absl::nullopt, kUtf8Charset,
+  AddResponse(&url_loader_factory_, url_, std::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
@@ -269,17 +269,17 @@ TEST_F(ModuleScriptDownloaderTest, Charset) {
       error_);
 
   // Null charset should act like UTF-8.
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kAsciiResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kAsciiResponseBody, *body);
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kUtf8ResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kUtf8ResponseBody, *body);
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(

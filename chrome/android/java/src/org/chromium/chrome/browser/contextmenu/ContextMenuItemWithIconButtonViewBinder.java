@@ -24,16 +24,20 @@ class ContextMenuItemWithIconButtonViewBinder extends ContextMenuItemViewBinder 
             final ImageView imageView = view.findViewById(R.id.menu_row_share_icon);
             imageView.setImageDrawable(drawable);
             imageView.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
-            final int padding = view.getResources().getDimensionPixelSize(
-                    R.dimen.context_menu_list_lateral_padding);
+            final int padding =
+                    view.getResources()
+                            .getDimensionPixelSize(R.dimen.context_menu_list_lateral_padding);
             // We don't need extra end padding for the text if the share icon is visible as the icon
             // already has padding.
             view.findViewById(R.id.menu_row_text)
                     .setPaddingRelative(padding, 0, drawable != null ? 0 : padding, 0);
         } else if (propertyKey == BUTTON_CONTENT_DESC) {
             ((ImageView) view.findViewById(R.id.menu_row_share_icon))
-                    .setContentDescription(view.getContext().getString(
-                            R.string.accessibility_menu_share_via, model.get(BUTTON_CONTENT_DESC)));
+                    .setContentDescription(
+                            view.getContext()
+                                    .getString(
+                                            R.string.accessibility_menu_share_via,
+                                            model.get(BUTTON_CONTENT_DESC)));
         } else if (propertyKey == BUTTON_CLICK_LISTENER) {
             view.findViewById(R.id.menu_row_share_icon)
                     .setOnClickListener(model.get(BUTTON_CLICK_LISTENER));

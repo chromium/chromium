@@ -9,6 +9,9 @@
 #include <utility>
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace cc {
 namespace {
@@ -32,13 +35,16 @@ constexpr float kScrollDeltaThreshold = 7.0;
 constexpr float kSlowJankyThreshold = 1.4;
 constexpr float kFastJankyThreshold = 1.2;
 
+float GetMaxDelta(float d1, float d2, float d3) {
+  return std::max(std::abs(d1), std::max(std::abs(d2), std::abs(d3)));
+}
+
 std::pair<float, bool> GetJankyThresholdAndScrollSpeed(float d1,
                                                        float d2,
                                                        float d3) {
   // Maximum displacement in a sequence of 3 frames is used to decide
   // the janky threshold at which the user will start noticing jank.
-  float max_delta =
-      std::max(std::abs(d1), std::max(std::abs(d2), std::abs(d3)));
+  float max_delta = GetMaxDelta(d1, d2, d3);
   float janky_threshold = kSlowJankyThreshold;
   bool slow_scroll = true;
   if (max_delta > kScrollDeltaThreshold) {
@@ -63,7 +69,8 @@ PredictorJankTracker::~PredictorJankTracker() = default;
 void PredictorJankTracker::ReportLatestScrollDelta(
     float next_delta,
     base::TimeTicks next_presentation_ts,
-    base::TimeDelta vsync_interval) {
+    base::TimeDelta vsync_interval,
+    std::optional<EventMetrics::TraceId> trace_id) {
   total_frames_++;
   float d1 = frame_data_.prev_delta_;
   float d2 = frame_data_.cur_delta_;
@@ -72,7 +79,7 @@ void PredictorJankTracker::ReportLatestScrollDelta(
   // Verify no scrolling direction change as we can't compare
   // frames if the user changed their scrolling direction.
   if (!VerifyFramesSameDirection(d1, d2, d3)) {
-    StoreLatestFrameData(next_delta, next_presentation_ts);
+    StoreLatestFrameData(next_delta, next_presentation_ts, trace_id);
     return;
   }
 
@@ -98,46 +105,108 @@ void PredictorJankTracker::ReportLatestScrollDelta(
   bool contains_missed_vsyncs =
       ContainsMissedVSync(next_presentation_ts, vsync_interval);
 
+  bool report_ukm = false;
   if (frame_janky_lower >= janky_threshold) {
-    ReportJankyFrame(frame_janky_lower - janky_threshold,
-                     contains_missed_vsyncs, slow_scroll);
+    ReportJankyFrame(next_delta, frame_janky_lower - janky_threshold,
+                     contains_missed_vsyncs, slow_scroll, trace_id);
+    report_ukm = true;
   }
   if (frame_janky_upper >= janky_threshold) {
-    ReportJankyFrame(frame_janky_upper - janky_threshold,
-                     contains_missed_vsyncs, slow_scroll);
+    ReportJankyFrame(next_delta, frame_janky_upper - janky_threshold,
+                     contains_missed_vsyncs, slow_scroll, trace_id);
+    report_ukm = true;
   }
 
-  if (total_frames_ >= 50) {
+  if (scroll_jank_ukm_reporter_ && report_ukm) {
+    // The max delta can be used to determine if this is a fast or slow scroll.
+    // If this value is > kScrollDeltaThreshold, then the scroll is fast. This
+    // value can also let us know the jank threshold (kSlowJankyThreshold or
+    // kFastJankyThreshold).
+    scroll_jank_ukm_reporter_->set_max_delta(GetMaxDelta(d1, d2, d3));
+  }
+
+  if (total_frames_ >= 64) {
     ReportJankyFramePercentage();
   }
 
-  StoreLatestFrameData(next_delta, next_presentation_ts);
+  StoreLatestFrameData(next_delta, next_presentation_ts, trace_id);
 }
 
-void PredictorJankTracker::ReportJankyFrame(float janky_value,
-                                            bool contains_missed_vsyncs,
-                                            bool slow_scroll) {
+void PredictorJankTracker::ReportJankyFrame(
+    float next_delta,
+    float janky_value,
+    bool contains_missed_vsyncs,
+    bool slow_scroll,
+    std::optional<EventMetrics::TraceId> trace_id) {
   janky_frames_++;
+  if (scroll_jank_ukm_reporter_) {
+    scroll_jank_ukm_reporter_->IncrementPredictorJankyFrames();
+  }
+  TRACE_EVENT_INSTANT(
+      "input.scrolling", "PredictorJankTracker::ReportJankyFrame",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* scroll_data = event->set_scroll_predictor_metrics();
+        {
+          // prev data.
+          auto* values = scroll_data->set_prev_event_frame_value();
+          if (frame_data_.prev_trace_id_) {
+            values->set_event_trace_id(frame_data_.prev_trace_id_->value());
+          }
+          values->set_delta_value_pixels(frame_data_.prev_delta_);
+        }
+        {
+          // cur data.
+          auto* values = scroll_data->set_cur_event_frame_value();
+          if (frame_data_.cur_trace_id_) {
+            values->set_event_trace_id(frame_data_.cur_trace_id_->value());
+          }
+          values->set_delta_value_pixels(frame_data_.cur_delta_);
+        }
+        {
+          // next data.
+          auto* values = scroll_data->set_next_event_frame_value();
+          if (trace_id) {
+            values->set_event_trace_id(trace_id->value());
+          }
+          values->set_delta_value_pixels(next_delta);
+        }
+        scroll_data->set_janky_value_pixels(janky_value);
+        scroll_data->set_has_missed_vsyncs(contains_missed_vsyncs);
+        scroll_data->set_is_slow_scroll(slow_scroll);
+      });
+
+  const int janky_value_percentage = static_cast<int>(janky_value * 100);
   if (contains_missed_vsyncs && slow_scroll) {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.SlowScroll.MissedVsync."
         "FrameAboveJankyThreshold2",
-        static_cast<int>(janky_value * 100), 1, 1500, 50);
+        janky_value_percentage, 1, 1500, 50);
   } else if (contains_missed_vsyncs && !slow_scroll) {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.FastScroll.MissedVsync."
         "FrameAboveJankyThreshold2",
-        static_cast<int>(janky_value * 100), 1, 1500, 50);
+        janky_value_percentage, 1, 1500, 50);
   } else if (slow_scroll) {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.SlowScroll.NoMissedVsync."
         "FrameAboveJankyThreshold2",
-        static_cast<int>(janky_value * 100), 1, 1500, 50);
+        janky_value_percentage, 1, 1500, 50);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Event.Jank.ScrollUpdate.FastScroll.NoMissedVsync."
         "FrameAboveJankyThreshold2",
-        static_cast<int>(janky_value * 100), 1, 2000, 50);
+        janky_value_percentage, 1, 2000, 50);
+  }
+
+  if (scroll_jank_ukm_reporter_) {
+    if (contains_missed_vsyncs) {
+      scroll_jank_ukm_reporter_->set_frame_with_missed_vsync(
+          janky_value_percentage);
+    } else {
+      scroll_jank_ukm_reporter_->set_frame_with_no_missed_vsync(
+          janky_value_percentage);
+    }
   }
 }
 
@@ -159,9 +228,12 @@ bool PredictorJankTracker::ContainsMissedVSync(
 
 void PredictorJankTracker::StoreLatestFrameData(
     float delta,
-    base::TimeTicks presentation_ts) {
+    base::TimeTicks presentation_ts,
+    std::optional<EventMetrics::TraceId> trace_id) {
   frame_data_.prev_delta_ = frame_data_.cur_delta_;
+  frame_data_.prev_trace_id_ = frame_data_.cur_trace_id_;
   frame_data_.cur_delta_ = delta;
+  frame_data_.cur_trace_id_ = trace_id;
   frame_data_.prev_presentation_ts_ = frame_data_.cur_presentation_ts_;
   frame_data_.cur_presentation_ts_ = presentation_ts;
 }
@@ -169,11 +241,14 @@ void PredictorJankTracker::StoreLatestFrameData(
 void PredictorJankTracker::ResetCurrentScrollReporting() {
   frame_data_.prev_delta_ = 0;
   frame_data_.cur_delta_ = 0;
+  if (scroll_jank_ukm_reporter_) {
+    scroll_jank_ukm_reporter_->ResetPredictorMetrics();
+  }
 }
 
 void PredictorJankTracker::ReportJankyFramePercentage() {
   UMA_HISTOGRAM_PERCENTAGE(
-      "Event.Jank.PredictorJankyFramePercentage",
+      "Event.Jank.PredictorJankyFramePercentage2",
       static_cast<int>(100 * (janky_frames_ / total_frames_)));
   total_frames_ = 0;
   janky_frames_ = 0;

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/chromeos_buildflags.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_system.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
@@ -131,10 +131,6 @@ class TestExtensionSystem : public ExtensionSystem {
       in_process_data_decoder_;
 
   scoped_refptr<ContentVerifier> content_verifier_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif
 };
 
 }  // namespace extensions

@@ -34,11 +34,10 @@ class UserAddingScreenInputMethodsController
   void OnUserAddingFinished() override;
 
  private:
-  raw_ptr<UserAddingScreen, DanglingUntriaged | ExperimentalAsh> screen_;
+  raw_ptr<UserAddingScreen, DanglingUntriaged> screen_;
 
   scoped_refptr<input_method::InputMethodManager::State> saved_ime_state_;
-  raw_ptr<user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      active_user_on_show_;
+  raw_ptr<user_manager::User, DanglingUntriaged> active_user_on_show_;
 };
 
 }  // namespace ash

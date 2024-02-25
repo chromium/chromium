@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_RSU_LOOKUP_KEY_UPLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -54,7 +54,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
 
   void GetDataFromCryptohome(bool available);
   void OnRsuDeviceIdReceived(
-      absl::optional<user_data_auth::GetRsuDeviceIdReply> result);
+      std::optional<user_data_auth::GetRsuDeviceIdReply> result);
 
   void OnEnrollmentCertificateUploaded(
       const std::string& uploaded_key,
@@ -64,19 +64,18 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   // Used in tests.
   void SetClock(base::Clock* clock) { clock_ = clock; }
 
-  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> policy_store_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
-  raw_ptr<ash::attestation::EnrollmentCertificateUploader, ExperimentalAsh>
+  raw_ptr<DeviceCloudPolicyStoreAsh> policy_store_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<ash::attestation::EnrollmentCertificateUploader>
       certificate_uploader_;
-  raw_ptr<ash::CryptohomeMiscClient, DanglingUntriaged | ExperimentalAsh>
-      cryptohome_misc_client_;
+  raw_ptr<ash::CryptohomeMiscClient, DanglingUntriaged> cryptohome_misc_client_;
 
   // Whether we need to upload the lookup key right now. By default, it is set
   // to true. Later, it is set to false after first successful upload or finding
   // prefs::kLastRSULookupKeyUploaded to be equal to the current lookup key.
   bool needs_upload_ = true;
 
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   // Timestamp of the last lookup key upload, used for resrticting too frequent
   // usage.
   base::Time last_upload_time_;

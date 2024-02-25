@@ -1,0 +1,197 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by faa BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "about/about_ui.cc",
+    "about/about_ui.h",
+    "autofill_and_password_manager_internals/autofill_internals_ui_ios.h",
+    "autofill_and_password_manager_internals/autofill_internals_ui_ios.mm",
+    "autofill_and_password_manager_internals/internals_ui_handler.h",
+    "autofill_and_password_manager_internals/internals_ui_handler.mm",
+    "autofill_and_password_manager_internals/password_manager_internals_ui_ios.h",
+    "autofill_and_password_manager_internals/password_manager_internals_ui_ios.mm",
+    "crashes_ui.cc",
+    "crashes_ui.h",
+    "download_internals_ui.cc",
+    "download_internals_ui.h",
+    "flags_ui.h",
+    "flags_ui.mm",
+    "inspect/inspect_ui.h",
+    "inspect/inspect_ui.mm",
+    "management/management_ui.h",
+    "management/management_ui.mm",
+    "net_export_coordinator.h",
+    "net_export_coordinator.mm",
+    "ntp_tiles_internals_ui.cc",
+    "ntp_tiles_internals_ui.h",
+    "prefs_internals_ui.cc",
+    "prefs_internals_ui.h",
+    "terms_ui.h",
+    "terms_ui.mm",
+    "ukm_internals_ui.h",
+    "ukm_internals_ui.mm",
+    "user_actions_handler.h",
+    "user_actions_handler.mm",
+    "user_actions_ui.h",
+    "user_actions_ui.mm",
+    "userdefaults_internals_ui.h",
+    "userdefaults_internals_ui.mm",
+    "version_handler.cc",
+    "version_handler.h",
+    "version_ui.h",
+    "version_ui.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:branding_buildflags",
+    "//components/account_id",
+    "//components/autofill/core/browser",
+    "//components/crash/core/browser",
+    "//components/crash/core/common:reporter_running_ios",
+    "//components/download/public/background_service:public",
+    "//components/download/resources/download_internals:resources",
+    "//components/flags_ui",
+    "//components/keyed_service/core",
+    "//components/local_state",
+    "//components/metrics_services_manager",
+    "//components/ntp_tiles",
+    "//components/password_manager/core/browser",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/resources",
+    "//components/strings",
+    "//components/ukm",
+    "//components/ukm/debug:util",
+    "//components/variations/service",
+    "//components/version_info",
+    "//components/version_ui",
+    "//google_apis",
+    "//ios/chrome/app/resources:ios_resources",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/download/model/background_service:background_service",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/flags",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/ntp_tiles/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:terms_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
+    "//ios/chrome/browser/web/model/java_script_console",
+    "//ios/chrome/browser/webui/model",
+    "//ios/chrome/common",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/webui",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("webui_internal") {
+  sources = [
+    "chrome_web_ui_ios_controller_factory.h",
+    "chrome_web_ui_ios_controller_factory.mm",
+    "chrome_web_ui_provider.cc",
+    "omaha_ui.cc",
+    "omaha_ui.h",
+    "signin_internals_ui_ios.cc",
+    "signin_internals_ui_ios.h",
+  ]
+  deps = [
+    ":coordinator",
+    "//components/commerce/ios/browser",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+    "//components/resources",
+    "//components/signin/public/identity_manager",
+    "//components/sync/invalidations",
+    "//components/version_info:channel",
+    "//ios/chrome/app/resources:ios_resources",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/omaha/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/webui/ui_bundled/gcm",
+    "//ios/chrome/browser/webui/ui_bundled/interstitials",
+    "//ios/chrome/browser/webui/ui_bundled/local_state",
+    "//ios/chrome/browser/webui/ui_bundled/net_export",
+    "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals",
+    "//ios/chrome/browser/webui/ui_bundled/policy",
+    "//ios/chrome/browser/webui/ui_bundled/translate_internals",
+    "//ios/chrome/common",
+    "//ios/components/webui:provider",
+    "//ios/components/webui:url_constants",
+    "//ios/components/webui/sync_internals",
+    "//url",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/core/browser",
+    "//ios/web/public/webui",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "inspect/inspect_ui_egtest.mm",
+    "web_ui_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/common",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/webui:url_constants",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "web_ui_test_utils.h",
+    "web_ui_test_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/webui:url_constants",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//url",
+  ]
+}

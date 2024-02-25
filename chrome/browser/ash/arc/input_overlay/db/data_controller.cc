@@ -21,7 +21,7 @@ namespace {
 // Base directory for saving customized data in the user profile.
 constexpr char kPath[] = "google_gio";
 
-absl::optional<base::FilePath> CreateOrGetDirectory(
+std::optional<base::FilePath> CreateOrGetDirectory(
     const base::FilePath& storage_dir) {
   if (base::PathExists(storage_dir)) {
     return storage_dir;
@@ -32,7 +32,7 @@ absl::optional<base::FilePath> CreateOrGetDirectory(
 
   LOG(ERROR) << "Failed to create the base storage directory: "
              << storage_dir.value();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ProtoFileExists(const base::FilePath& file_path) {
@@ -40,12 +40,12 @@ bool ProtoFileExists(const base::FilePath& file_path) {
 }
 
 void CreateEmptyFile(const base::FilePath& file_path) {
-  FILE* file = base::OpenFile(file_path, "wb+");
-  if (file == nullptr) {
-    LOG(ERROR) << "Failed to create file: " << file_path.value();
+  if (FILE* file = base::OpenFile(file_path, "wb+")) {
+    base::CloseFile(file);
     return;
   }
-  base::CloseFile(file);
+
+  LOG(ERROR) << "Failed to create file: " << file_path.value();
 }
 
 }  // namespace
@@ -69,8 +69,7 @@ base::FilePath DataController::GetFilePathFromPackageName(
 
 std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
     base::FilePath file_path) {
-  auto base_path = CreateOrGetDirectory(file_path.DirName());
-  if (!base_path) {
+  if (auto base_path = CreateOrGetDirectory(file_path.DirName()); !base_path) {
     return nullptr;
   }
 

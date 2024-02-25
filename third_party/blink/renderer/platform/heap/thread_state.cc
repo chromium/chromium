@@ -8,7 +8,9 @@
 #include <iostream>
 
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "gin/public/v8_platform.h"
+#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -32,43 +34,33 @@ namespace {
 // lazily.
 class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
  public:
+  BlinkRootsHandler()
+      : v8::EmbedderRootsHandler(v8::EmbedderRootsHandler::RootHandling::
+                                     kDontQueryEmbedderForAnyReference) {}
+
   bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
-    const uint16_t class_id = handle.WrapperClassId();
-    // Stand-alone reference or kCustomWrappableId. Keep as root as
-    // we don't know better.
-    if (class_id != WrapperTypeInfo::kNodeClassId &&
-        class_id != WrapperTypeInfo::kObjectClassId)
-      return true;
-
-    const v8::TracedReference<v8::Object>& traced =
-        handle.template As<v8::Object>();
-    if (ToWrapperTypeInfo(traced)->IsActiveScriptWrappable() &&
-        ToScriptWrappable(traced)->HasPendingActivity()) {
-      return true;
-    }
-
-    return false;
+    NOTREACHED_NORETURN();
   }
 
   // ResetRoot() clears references to V8 wrapper objects in all worlds. It is
   // invoked for references where IsRoot() returned false during young
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
-           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
+    const bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
         ToScriptWrappable(traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
-    // remove it.
+    // remove it. Note that this is even true for the case where a
+    // DOMWrapperWorld and DOMDataStore are already unreachable as the internal
+    // worldmap contains a weak ref that remains valid until the next full GC
+    // call. The weak ref is guaranteed to still be valid because it is only
+    // cleared on full GCs and the `BlinkRootsHandler` is used on minor V8 GCs.
     CHECK(success);
   }
 
   bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
-           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    return DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
+    return DOMDataStore::ClearInlineStorageWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
   }
 };
@@ -153,33 +145,6 @@ ThreadState::~ThreadState() {
   ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
-void ThreadState::SafePoint(StackState stack_state) {
-  DCHECK(IsCreationThread());
-  if (stack_state != ThreadState::StackState::kNoHeapPointers)
-    return;
-
-  if (forced_scheduled_gc_for_testing_) {
-    CollectAllGarbageForTesting(stack_state);
-    forced_scheduled_gc_for_testing_ = false;
-  }
-}
-
-void ThreadState::NotifyGarbageCollection(v8::GCType type,
-                                          v8::GCCallbackFlags flags) {
-  if (flags & v8::kGCCallbackFlagForced) {
-    // Forces a precise GC at the end of the current event loop. This is
-    // required for testing code that cannot use GC internals but rather has
-    // to rely on window.gc(). Only schedule additional GCs if the last GC was
-    // using conservative stack scanning.
-    if (type == v8::kGCTypeScavenge || type == v8::kGCTypeMinorMarkSweep) {
-      forced_scheduled_gc_for_testing_ = true;
-    } else if (type == v8::kGCTypeMarkSweepCompact) {
-      forced_scheduled_gc_for_testing_ =
-          cppgc::subtle::HeapState::PreviousGCWasConservative(heap_handle());
-    }
-  }
-}
-
 void ThreadState::CollectAllGarbageForTesting(StackState stack_state) {
   size_t previous_live_bytes = 0;
   for (size_t i = 0; i < 5; i++) {
@@ -230,8 +195,8 @@ class CustomSpaceStatisticsReceiverImpl final
   base::OnceCallback<void(size_t allocated_node_bytes,
                           size_t allocated_css_bytes)>
       callback_;
-  absl::optional<size_t> node_bytes_;
-  absl::optional<size_t> css_bytes_;
+  std::optional<size_t> node_bytes_;
+  std::optional<size_t> css_bytes_;
 };
 
 }  // anonymous namespace

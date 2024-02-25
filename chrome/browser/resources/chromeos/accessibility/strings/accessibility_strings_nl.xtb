@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Terug navigeren</translation>
 <translation id="1565432156062359693">Geen volgende lijst</translation>
 <translation id="1571643229714746283">ChromeVox klaar</translation>
+<translation id="1588252353131492116">Doorgeven is niet beschikbaar als de sticky modus aanstaat</translation>
 <translation id="1594072653727561613">menu</translation>
 <translation id="1610130962244179598">Overschakelen naar zespuntsbraille</translation>
 <translation id="161042844686301425">Cyaan</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Hoofd</translation>
 <translation id="2329324941084714723">Deelvenster met tabblad</translation>
 <translation id="2347456970887948350">Een link</translation>
+<translation id="2363753371702255035">opsommingsteken</translation>
 <translation id="2365384324219615024">Je kunt ook op Enter drukken om items te activeren. Met Enter kun je bijvoorbeeld tekst in een formulier indienen. Druk op Enter om door te gaan.</translation>
 <translation id="2381733276052567791">Spraak aan- of uitzetten</translation>
 <translation id="2390264819538553347">Druk op Enter om door te gaan. Druk op Backspace om terug te gaan.</translation>
@@ -1067,7 +1069,7 @@
 <translation id="8463645336674919227">Grammaticafout sluiten</translation>
 <translation id="8465573210279050749">verwijder het vorige woord</translation>
 <translation id="847040613207937740">Geen volgend selectievakje</translation>
-<translation id="8473540203671727883">Spreek tekst onder de muisaanwijzer uit</translation>
+<translation id="8473540203671727883">Spreek tekst onder de cursor uit</translation>
 <translation id="8476408756881832830">Afspelen onderbreken wanneer ChromeVox spreekt</translation>
 <translation id="8476508772960940536">vensteroverzicht</translation>
 <translation id="8480873377842220259">Nu gaan we kijken naar de basisnavigatie. Als je Zoeken ingedrukt houdt, kun je met de pijltoetsen over het scherm bewegen. Druk op Zoeken + pijl-rechts om door te gaan.</translation>

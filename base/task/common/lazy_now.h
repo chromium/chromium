@@ -5,10 +5,11 @@
 #ifndef BASE_TASK_COMMON_LAZY_NOW_H_
 #define BASE_TASK_COMMON_LAZY_NOW_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -20,7 +21,7 @@ class TickClock;
 class BASE_EXPORT LazyNow {
  public:
   explicit LazyNow(TimeTicks now);
-  explicit LazyNow(absl::optional<TimeTicks> now, const TickClock* tick_clock);
+  explicit LazyNow(std::optional<TimeTicks> now, const TickClock* tick_clock);
   explicit LazyNow(const TickClock* tick_clock);
   LazyNow(const LazyNow&) = delete;
   LazyNow& operator=(const LazyNow&) = delete;
@@ -33,10 +34,9 @@ class BASE_EXPORT LazyNow {
   bool has_value() const { return !!now_; }
 
  private:
-  absl::optional<TimeTicks> now_;
-  // `tick_clock_` is not a raw_ptr<TickClock> as a performance optimization:
-  // The pointee doesn't need UaF protection (it has the same lifetime as the
-  // theead/sequence).
+  std::optional<TimeTicks> now_;
+  // RAW_PTR_EXCLUSION: The pointee doesn't need UaF protection (it has the same
+  // lifetime as the thread/sequence).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
 };
 

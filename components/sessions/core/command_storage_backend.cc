@@ -9,6 +9,8 @@
 #include <limits>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -45,6 +47,13 @@ constexpr int32_t kFileSignature = 0x53534E53;
 
 // Length (in bytes) of the nonce (used when encrypting).
 constexpr int kNonceLength = 12;
+
+// Kill switch for the change to stop calling `File::Flush()` when appending
+// commands to a file. This can be removed if the change rolls out without
+// causing issues.
+BASE_FEATURE(kFlushAfterAppending,
+             "SessionStorageFlushAfterAppendingCommands",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The file header is the first bytes written to the file,
 // and is used to identify the file as one written by us.
@@ -617,7 +626,7 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
   DeleteLastSession();
 
   // Move current session to last.
-  absl::optional<SessionInfo> new_last_session_info;
+  std::optional<SessionInfo> new_last_session_info;
   if (last_or_current_path_with_valid_marker_) {
     new_last_session_info =
         SessionInfo{*last_or_current_path_with_valid_marker_, timestamp_};
@@ -653,7 +662,9 @@ bool CommandStorageBackend::AppendCommandsToFile(
     }
     commands_written_++;
   }
-  file->Flush();
+  if (base::FeatureList::IsEnabled(kFlushAfterAppending)) {
+    file->Flush();
+  }
   return true;
 }
 
@@ -832,7 +843,7 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
   return true;
 }
 
-absl::optional<CommandStorageBackend::SessionInfo>
+std::optional<CommandStorageBackend::SessionInfo>
 CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
   // at startup, before a file has been opened for writing.
@@ -849,7 +860,7 @@ CommandStorageBackend::FindLastSessionFile() const {
       GetLegacySessionPath(type_, supplied_path_, true);
   if (base::PathExists(legacy_session))
     return SessionInfo{legacy_session, base::Time()};
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CommandStorageBackend::DeleteLastSessionFiles() const {

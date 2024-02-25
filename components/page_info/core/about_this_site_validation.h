@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_
 #define COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_
 
+#include <optional>
+
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace page_info::about_this_site_validation {
 
@@ -37,7 +38,7 @@ enum class AboutThisSiteStatus {
 };
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata);
+    const std::optional<proto::AboutThisSiteMetadata>& metadata);
 
 AboutThisSiteStatus ValidateSource(const proto::Hyperlink& link);
 AboutThisSiteStatus ValidateDescription(

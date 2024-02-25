@@ -120,14 +120,6 @@ class MigrationTest : public SyncTest {
     // Doesn't make sense to migrate commit only types.
     preferred_data_types.RemoveAll(syncer::CommitOnlyTypes());
 
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-      // The "SyncEnableHistoryDataType" feature soft-disables TYPES_URLS: It'll
-      // still be technically registered, but will never actually become active
-      // (due to the controller's GetPreconditionState()). For the purposes of
-      // these tests, consider it not preferred.
-      preferred_data_types.Remove(syncer::TYPED_URLS);
-    }
-
     return preferred_data_types;
   }
 

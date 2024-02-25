@@ -6,11 +6,14 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_NEARBY_INITIATOR_CONNECTION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_base.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {
@@ -64,6 +67,14 @@ class PendingNearbyInitiatorConnectionRequest
   // PendingConnectionRequest<NearbyInitiatorFailureType>:
   void HandleConnectionFailure(
       NearbyInitiatorFailureType failure_detail) override;
+  void HandleBleDiscoveryStateChange(
+      mojom::DiscoveryResult discovery_state,
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+  void HandleNearbyConnectionChange(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
+  void HandleSecureChannelChanged(
+      mojom::SecureChannelState secure_channel_state) override;
 
   // device::BluetoothAdapter::Observer:
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,

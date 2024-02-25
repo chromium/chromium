@@ -164,10 +164,7 @@ void SigninUiDelegateImplLacros::OnAccountAdded(
   if (!browser)
     return;
 
-  ShowTurnSyncOnUI(profile, access_point, promo_action,
-                   is_reauth ? signin_metrics::Reason::kReauthentication
-                             : signin_metrics::Reason::kSigninPrimaryAccount,
-                   account_id,
+  ShowTurnSyncOnUI(profile, access_point, promo_action, account_id,
                    is_reauth
                        ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
                        : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);

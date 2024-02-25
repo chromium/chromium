@@ -19,6 +19,7 @@ using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 using embedder_support::InputStream;
 using net::IOBuffer;
+using net::IOBufferWithSize;
 using testing::_;
 using testing::DoAll;
 using testing::Ge;
@@ -49,7 +50,7 @@ class InputStreamTest : public Test {
 
     std::unique_ptr<InputStream> input_stream(
         new InputStream(counting_jstream));
-    auto buffer = base::MakeRefCounted<IOBuffer>(bytes_requested);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(bytes_requested);
 
     EXPECT_TRUE(input_stream->Read(buffer.get(), bytes_requested, bytes_read));
     return buffer;
@@ -66,7 +67,7 @@ TEST_F(InputStreamTest, ReadEmptyStream) {
   std::unique_ptr<InputStream> input_stream(new InputStream(empty_jstream));
   const int bytes_requested = 10;
   int bytes_read = 0;
-  auto buffer = base::MakeRefCounted<IOBuffer>(bytes_requested);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(bytes_requested);
 
   EXPECT_TRUE(input_stream->Read(buffer.get(), bytes_requested, &bytes_read));
   EXPECT_EQ(0, bytes_read);
@@ -133,7 +134,7 @@ TEST_F(InputStreamTest, DoesNotCrashWhenExceptionThrown) {
 
   const int bytes_requested = 10;
   int bytes_read = 0;
-  auto buffer = base::MakeRefCounted<IOBuffer>(bytes_requested);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(bytes_requested);
   EXPECT_FALSE(input_stream->Read(buffer.get(), bytes_requested, &bytes_read));
   EXPECT_EQ(0, bytes_read);
 

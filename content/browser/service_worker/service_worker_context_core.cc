@@ -21,12 +21,12 @@
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_offline_capability_checker.h"
@@ -49,6 +49,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -195,8 +196,8 @@ class ClearAllServiceWorkersHelper
         context->GetLiveVersions();
     for (const auto& version_itr : live_versions_copy) {
       ServiceWorkerVersion* version(version_itr.second);
-      if (version->running_status() == EmbeddedWorkerStatus::STARTING ||
-          version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+      if (version->running_status() == blink::EmbeddedWorkerStatus::kStarting ||
+          version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
         version->StopWorker(base::DoNothing());
       }
     }
@@ -579,7 +580,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowserContext* browser_context = wrapper_->browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context);
   if (!GetContentClient()->browser()->MayDeleteServiceWorkerRegistration(
           scope, browser_context)) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorDisallowed);
@@ -711,7 +712,7 @@ void ServiceWorkerContextCore::WaitForRegistrationsInitializedForTest() {
 void ServiceWorkerContextCore::AddWarmUpRequest(
     const GURL& document_url,
     const blink::StorageKey& key,
-    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback) {
+    ServiceWorkerContext::WarmUpServiceWorkerCallback callback) {
   const size_t kRequestQueueLength =
       blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
 
@@ -733,28 +734,37 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
   }
 }
 
-absl::optional<ServiceWorkerContextCore::WarmUpRequest>
+std::optional<ServiceWorkerContextCore::WarmUpRequest>
 ServiceWorkerContextCore::PopNextWarmUpRequest() {
   DCHECK(!IsProcessingWarmingUp());
 
   if (warm_up_requests_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (GetWarmedUpServiceWorkerCount(live_versions_) >=
       blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.Get()) {
     warm_up_requests_.clear();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Return the most recent queued request (LIFO order) to prioritize recently
   // added URLs. For example, the recent mouse-hoverd link will have a higher
   // chance to navigate than the previously mouse-hoverd link.
-  absl::optional<ServiceWorkerContextCore::WarmUpRequest> request(
+  std::optional<ServiceWorkerContextCore::WarmUpRequest> request(
       std::move(warm_up_requests_.back()));
   warm_up_requests_.pop_back();
   BeginProcessingWarmingUp();
   return request;
+}
+
+bool ServiceWorkerContextCore::IsWaitingForWarmUp(
+    const blink::StorageKey& key) const {
+  return std::find_if(
+             warm_up_requests_.begin(), warm_up_requests_.end(), [&](auto& it) {
+               const blink::StorageKey& warm_up_request_key = std::get<1>(it);
+               return key == warm_up_request_key;
+             }) != warm_up_requests_.end();
 }
 
 void ServiceWorkerContextCore::RegistrationComplete(
@@ -906,6 +916,9 @@ void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
   observer_list_->Notify(FROM_HERE,
                          &ServiceWorkerContextCoreObserver::OnNewLiveVersion,
                          version_info);
+  for (auto& observer : test_version_observers_) {
+    observer.OnServiceWorkerVersionCreated(version);
+  }
 }
 
 void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
@@ -913,7 +926,7 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   DCHECK(it != live_versions_.end());
   ServiceWorkerVersion* version = it->second;
 
-  if (version->running_status() != EmbeddedWorkerStatus::STOPPED) {
+  if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
     // Notify all observers that this live version is stopped, as it will
     // be removed from |live_versions_|.
     observer_list_->Notify(FROM_HERE,
@@ -1101,6 +1114,20 @@ void ServiceWorkerContextCore::OnMainScriptResponseSet(
       version_id, response.response_time, response.last_modified);
 }
 
+void ServiceWorkerContextCore::OnWindowOpened(const GURL& script_url,
+                                              const GURL& url) {
+  observer_list_->Notify(FROM_HERE,
+                         &ServiceWorkerContextCoreObserver::OnWindowOpened,
+                         script_url, url);
+}
+
+void ServiceWorkerContextCore::OnClientNavigated(const GURL& script_url,
+                                                 const GURL& url) {
+  observer_list_->Notify(FROM_HERE,
+                         &ServiceWorkerContextCoreObserver::OnClientNavigated,
+                         script_url, url);
+}
+
 void ServiceWorkerContextCore::OnControlleeAdded(
     ServiceWorkerVersion* version,
     const std::string& client_uuid,
@@ -1149,24 +1176,24 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
     ServiceWorkerVersion* version) {
   DCHECK_EQ(this, version->context().get());
   switch (version->running_status()) {
-    case EmbeddedWorkerStatus::STOPPED:
+    case blink::EmbeddedWorkerStatus::kStopped:
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
       break;
-    case EmbeddedWorkerStatus::STARTING:
+    case blink::EmbeddedWorkerStatus::kStarting:
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStarting,
                              version->version_id());
       break;
-    case EmbeddedWorkerStatus::RUNNING:
+    case blink::EmbeddedWorkerStatus::kRunning:
       observer_list_->Notify(
           FROM_HERE, &ServiceWorkerContextCoreObserver::OnStarted,
           version->version_id(), version->scope(),
           version->embedded_worker()->process_id(), version->script_url(),
-          version->embedded_worker()->token().value(), version->key());
+          version->worker_host()->token(), version->key());
       break;
-    case EmbeddedWorkerStatus::STOPPING:
+    case blink::EmbeddedWorkerStatus::kStopping:
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
@@ -1177,6 +1204,13 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
 void ServiceWorkerContextCore::OnVersionStateChanged(
     ServiceWorkerVersion* version) {
   DCHECK_EQ(this, version->context().get());
+  if (version->status() == ServiceWorkerVersion::INSTALLED &&
+      version->router_evaluator()) {
+    observer_list_->Notify(
+        FROM_HERE,
+        &ServiceWorkerContextCoreObserver::OnVersionRouterRulesChanged,
+        version->version_id(), version->router_evaluator()->ToString());
+  }
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnVersionStateChanged,
       version->version_id(), version->scope(), version->key(),

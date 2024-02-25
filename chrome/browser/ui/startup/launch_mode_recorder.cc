@@ -49,12 +49,12 @@ OldLaunchMode GetOldLaunchModeSlow();
 #if BUILDFLAG(IS_WIN)
 // Returns the path to the shortcut from which Chrome was launched, or null if
 // not launched via a shortcut.
-absl::optional<const wchar_t*> GetShortcutPath() {
+std::optional<const wchar_t*> GetShortcutPath() {
   STARTUPINFOW si = {sizeof(si)};
   GetStartupInfoW(&si);
   if (!(si.dwFlags & STARTF_TITLEISLINKNAME))
-    return absl::nullopt;
-  return absl::optional<const wchar_t*>(si.lpTitle);
+    return std::nullopt;
+  return std::optional<const wchar_t*>(si.lpTitle);
 }
 
 OldLaunchMode GetOldLaunchModeFast() {
@@ -150,7 +150,7 @@ void RecordOldLaunchMode(OldLaunchMode mode) {
   base::UmaHistogramEnumeration("Launch.Modes", mode);
 #if BUILDFLAG(IS_WIN)
   if (mode == OldLaunchMode::kShortcutTaskbar) {
-    absl::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
+    std::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
     if (installer_pinned.has_value()) {
       base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
                                 installer_pinned.value());
@@ -182,7 +182,7 @@ enum class ArgType { kFile, kProtocol, kInvalid };
 
 // Returns the dir enum defined in base/base_paths_win.h that corresponds to the
 // path of `shortcut_path` if any, nullopt if no match found.
-absl::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
+std::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
   // The windows quick launch path is not localized.
   const std::u16string shortcut(
       base::i18n::ToLower(base::AsStringPiece16(shortcut_path)));
@@ -203,7 +203,7 @@ absl::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
       return path_key;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns kFile if `arg` is a file, kProtocol if it's a protocol, and
@@ -228,15 +228,15 @@ ArgType GetArgType(const std::wstring& arg) {
 // existing process, or ::GetStartupInfoW.
 // Returns the empty string if Chrome wasn't launched from a shortcut.
 // This can be expensive and shouldn't be called from the UI thread.
-absl::optional<std::wstring> GetShortcutPath(
+std::optional<std::wstring> GetShortcutPath(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kSourceShortcut))
     return command_line.GetSwitchValueNative(switches::kSourceShortcut);
   STARTUPINFOW si = {sizeof(si)};
   GetStartupInfoW(&si);
   return si.dwFlags & STARTF_TITLEISLINKNAME
-             ? absl::optional<std::wstring>(si.lpTitle)
-             : absl::nullopt;
+             ? std::optional<std::wstring>(si.lpTitle)
+             : std::nullopt;
 }
 
 #endif  // BUIDFLAG(IS_WIN)
@@ -258,18 +258,23 @@ void OldLaunchModeRecorder::SetLaunchMode(OldLaunchMode mode) {
 
 namespace {
 
-void RecordLaunchMode(absl::optional<LaunchMode> mode) {
-  if (mode.value_or(LaunchMode::kNone) == LaunchMode::kNone)
+void RecordLaunchMode(const base::CommandLine command_line,
+                      std::optional<LaunchMode> mode) {
+  if (mode.value_or(LaunchMode::kNone) == LaunchMode::kNone) {
     return;
+  }
   base::UmaHistogramEnumeration("Launch.Mode2", mode.value());
 #if BUILDFLAG(IS_WIN)
   if (mode == LaunchMode::kShortcutTaskbar) {
-    absl::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
+    std::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
     if (installer_pinned.has_value()) {
       base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
                                 installer_pinned.value());
     }
   }
+  base::UmaHistogramBoolean(
+      "BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher",
+      command_line.HasSwitch(switches::kFromBrowserSwitcher));
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -277,9 +282,9 @@ void RecordLaunchMode(absl::optional<LaunchMode> mode) {
 // Gets LaunchMode from `command_line`, potentially using some functions that
 // might be slow, e.g., involve disk access, and hence, this should not be
 // used on the UI thread.
-absl::optional<LaunchMode> GetLaunchModeSlow(
+std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  absl::optional<std::wstring> shortcut_path = GetShortcutPath(command_line);
+  std::optional<std::wstring> shortcut_path = GetShortcutPath(command_line);
   bool is_app_launch = command_line.HasSwitch(switches::kApp) ||
                        command_line.HasSwitch(switches::kAppId);
   if (!shortcut_path.has_value()) {
@@ -312,7 +317,7 @@ absl::optional<LaunchMode> GetLaunchModeSlow(
   } else {
     if (shortcut_path.value().empty())
       return LaunchMode::kShortcutNoName;
-    absl::optional<int> shortcut_location =
+    std::optional<int> shortcut_location =
         GetShortcutLocation(shortcut_path.value());
     if (!shortcut_location.has_value()) {
       return is_app_launch ? LaunchMode::kWebAppShortcutUnknown
@@ -343,9 +348,9 @@ absl::optional<LaunchMode> GetLaunchModeSlow(
 }
 
 // Computes the launch mode from the command line. If other information is
-// required that is potentially expensive to get, returns absl::nullopt and
+// required that is potentially expensive to get, returns std::nullopt and
 // defers to `GetLaunchModeSlow`.
-absl::optional<LaunchMode> GetLaunchModeFast(
+std::optional<LaunchMode> GetLaunchModeFast(
     const base::CommandLine& command_line) {
   // These are the switches for which there is a 1:1 mapping to a launch mode.
   static constexpr std::pair<const char*, LaunchMode> switch_to_mode[] = {
@@ -356,24 +361,23 @@ absl::optional<LaunchMode> GetLaunchModeFast(
       {switches::kInstallChromeApp, LaunchMode::kNone},
       {switches::kFromInstaller, LaunchMode::kNone},
       {switches::kUninstall, LaunchMode::kNone},
-      {switches::kTryChromeAgain, LaunchMode::kUserExperiment},
       {switches::kNotificationLaunchId, LaunchMode::kWinPlatformNotification},
   };
   for (const auto& [switch_val, mode] : switch_to_mode) {
     if (command_line.HasSwitch(switch_val))
       return mode;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #elif BUILDFLAG(IS_MAC)
-absl::optional<LaunchMode> GetLaunchModeSlow(
+std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<LaunchMode> GetLaunchModeFast(
+std::optional<LaunchMode> GetLaunchModeFast(
     const base::CommandLine& command_line) {
   DiskImageStatus dmg_launch_status =
       IsAppRunningFromReadOnlyDiskImage(nullptr);
@@ -405,13 +409,13 @@ absl::optional<LaunchMode> GetLaunchModeFast(
   return LaunchMode::kMacUndockedDiskLaunch;
 }
 #else  //  !IS_WIN && !IS_MAC
-absl::optional<LaunchMode> GetLaunchModeSlow(
+std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<LaunchMode> GetLaunchModeFast(
+std::optional<LaunchMode> GetLaunchModeFast(
     const base::CommandLine& command_line) {
   return LaunchMode::kOtherOS;
 }
@@ -421,7 +425,8 @@ absl::optional<LaunchMode> GetLaunchModeFast(
 }  // namespace
 
 void ComputeAndRecordLaunchMode(const base::CommandLine& command_line) {
-  ComputeLaunchMode(command_line, base::BindOnce(&RecordLaunchMode));
+  ComputeLaunchMode(command_line,
+                    base::BindOnce(&RecordLaunchMode, command_line));
 }
 
 // Computes the launch mode based on `command_line` and process state. Runs
@@ -429,7 +434,7 @@ void ComputeAndRecordLaunchMode(const base::CommandLine& command_line) {
 // the caller's sequence.
 void ComputeLaunchMode(
     const base::CommandLine& command_line,
-    base::OnceCallback<void(absl::optional<LaunchMode>)> result_callback) {
+    base::OnceCallback<void(std::optional<LaunchMode>)> result_callback) {
   if (auto mode = GetLaunchModeFast(command_line); mode.has_value()) {
     std::move(result_callback).Run(mode);
     return;
@@ -439,11 +444,12 @@ void ComputeLaunchMode(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
           base::BindOnce(&GetLaunchModeSlow, command_line),
           std::move(split.first))) {
-    std::move(split.second).Run(absl::nullopt);
+    std::move(split.second).Run(std::nullopt);
   }
 }
 
-base::OnceCallback<void(absl::optional<LaunchMode>)>
+base::OnceCallback<void(std::optional<LaunchMode>)>
 GetRecordLaunchModeForTesting() {
-  return base::BindOnce(&RecordLaunchMode);
+  return base::BindOnce(&RecordLaunchMode,
+                        base::CommandLine(base::CommandLine::NO_PROGRAM));
 }

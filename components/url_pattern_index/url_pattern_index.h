@@ -9,18 +9,18 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "components/url_pattern_index/uint64_hasher.h"
 #include "components/url_pattern_index/url_pattern.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 class GURL;
@@ -251,7 +251,7 @@ class UrlPatternIndexMatcher {
   raw_ptr<const flat::UrlPatternIndex> flat_index_;
 
   // The number of rules in this index. Mutable since this is lazily computed.
-  mutable absl::optional<size_t> rules_count_;
+  mutable std::optional<size_t> rules_count_;
 };
 
 // Returns whether the `rule` is considered "generic". A generic rule is one

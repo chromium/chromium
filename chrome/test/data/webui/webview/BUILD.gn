@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("../build_webui_tests.gni")
+
+assert(!is_chromeos_lacros)
+
+build_webui_tests("build") {
+  ts_definitions = [
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+
+  files = [
+    "webview_basic_test.ts",
+    "webview_content_script_test.ts",
+  ]
+}

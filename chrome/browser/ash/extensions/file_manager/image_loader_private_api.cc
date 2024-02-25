@@ -110,10 +110,8 @@ std::string ReadMojoHandleToDataUrl(mojo::PlatformHandle&& handle) {
   if (!net::MatchesMimeType("image/*", mime_type)) {
     return std::string();
   }
-  return MakeThumbnailDataUrlOnThreadPool(
-      mime_type,
-      base::make_span(reinterpret_cast<const uint8_t*>(contents.c_str()),
-                      contents.size()));
+  return MakeThumbnailDataUrlOnThreadPool(mime_type,
+                                          base::as_byte_span(contents));
 }
 
 }  // namespace
@@ -137,7 +135,7 @@ ImageLoaderPrivateGetDriveThumbnailFunction::
 ExtensionFunction::ResponseAction
 ImageLoaderPrivateGetDriveThumbnailFunction::Run() {
   using extensions::api::image_loader_private::GetDriveThumbnail::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -174,12 +172,12 @@ ImageLoaderPrivateGetDriveThumbnailFunction::Run() {
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
               &ImageLoaderPrivateGetDriveThumbnailFunction::GotThumbnail, this),
-          absl::nullopt));
+          std::nullopt));
   return RespondLater();
 }
 
 void ImageLoaderPrivateGetDriveThumbnailFunction::GotThumbnail(
-    const absl::optional<std::vector<uint8_t>>& data) {
+    const std::optional<std::vector<uint8_t>>& data) {
   if (!data) {
     Respond(WithArguments(""));
     return;
@@ -202,7 +200,7 @@ ImageLoaderPrivateGetPdfThumbnailFunction::
 ExtensionFunction::ResponseAction
 ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
   using extensions::api::image_loader_private::GetPdfThumbnail::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -293,7 +291,7 @@ ExtensionFunction::ResponseAction
 ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::Run() {
   using extensions::api::image_loader_private::
       GetArcDocumentsProviderThumbnail::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =

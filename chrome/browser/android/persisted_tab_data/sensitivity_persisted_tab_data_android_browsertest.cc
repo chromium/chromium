@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -40,6 +41,7 @@ class SensitivityPersistedTabDataAndroidBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     PersistedTabDataAndroid::OnDeferredStartup();
+    content::RunAllTasksUntilIdle();
   }
 
   content::WebContents* web_contents() {
@@ -149,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
                        TestOnPageContentAnnotatedSensitivePage) {
   const GURL sensitive_url =
       embedded_test_server()->GetURL("localhost", kSensitiveRelUrl);
-  content::NavigateToURL(web_contents(), sensitive_url);
+  // TODO: handle return value.
+  std::ignore = content::NavigateToURL(web_contents(), sensitive_url);
 
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid* sptda =
@@ -165,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
                        TestOnPageContentAnnotatedNonSensitivePage) {
   const GURL non_sensitive_url =
       embedded_test_server()->GetURL("localhost", kNonSensitiveRelUrl);
-  content::NavigateToURL(web_contents(), non_sensitive_url);
+  // TODO: handle return value.
+  std::ignore = content::NavigateToURL(web_contents(), non_sensitive_url);
 
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid* sptda =
@@ -187,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   const GURL non_sensitive_url2 =
       embedded_test_server()->GetURL("localhost", kNonSensitiveRelUrl2);
 
-  content::NavigateToURL(web_contents(), sensitive_url);
+  // TODO: handle return value.
+  std::ignore = content::NavigateToURL(web_contents(), sensitive_url);
   TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
   SensitivityPersistedTabDataAndroid* sptda =
       new SensitivityPersistedTabDataAndroid(tab_android);

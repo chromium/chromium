@@ -7,15 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
-
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -103,7 +103,7 @@ class APIRequestHandler {
                        const std::string& error,
                        mojom::ExtraResponseDataPtr extra_data = nullptr);
   void CompleteRequest(int request_id,
-                       const std::vector<v8::Local<v8::Value>>& response,
+                       const v8::LocalVector<v8::Value>& response,
                        const std::string& error);
 
   // Invalidates any requests that are associated with |context|.
@@ -135,13 +135,13 @@ class APIRequestHandler {
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
 
-    v8::Isolate* isolate;
+    raw_ptr<v8::Isolate> isolate;
     v8::Global<v8::Context> context;
     std::string method_name;
 
     std::unique_ptr<AsyncResultHandler> async_handler;
 
-    // Note: We can't use absl::optional here for derived Token instances.
+    // Note: We can't use std::optional here for derived Token instances.
     std::unique_ptr<InteractionProvider::Token> user_gesture_token;
   };
 
@@ -182,14 +182,15 @@ class APIRequestHandler {
 
   // The exception handler for the bindings system; guaranteed to be valid
   // during this object's lifetime.
-  ExceptionHandler* const exception_handler_;
+  const raw_ptr<ExceptionHandler> exception_handler_;
 
   // The response validator used to check the responses for resolved requests.
   // Null if response validation is disabled.
   std::unique_ptr<APIResponseValidator> response_validator_;
 
   // Outlives |this|.
-  const InteractionProvider* const interaction_provider_;
+  const raw_ptr<const InteractionProvider, DanglingUntriaged>
+      interaction_provider_;
 };
 
 }  // namespace extensions

@@ -229,4 +229,49 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
                  @"Incorrect number of infobars.");
 }
+
+// Tests that the Infobar doesn't dismiss the keyboard when it is triggered
+// while the omnibox is focused.
+- (void)testInfobarWithOmniboxFocused {
+  // Open a new tab and navigate to the test page.
+  const GURL testURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  GREYAssert(app.keyboards.count > 0, @"The keyboard is not shown");
+
+  // Infobar Message
+  NSString* infoBarMessage = @"TestInfoBar";
+
+  // Add a test infobar to the current tab. Verify that the infobar is present
+  // in the model and that the infobar view is visible on screen.
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:infoBarMessage],
+                 @"Failed to add infobar to test tab.");
+
+  GREYAssert(app.keyboards.count > 0, @"The keyboard was dismissed");
+
+  VerifyTestInfoBarVisibleForCurrentTab(false, infoBarMessage);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
+
+  // Cancel the omnibox focus. It should dismiss the keyboard and show the
+  // infobar.
+  if ([ChromeEarlGrey isCompactWidth]) {
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(chrome_test_util::CancelButton(),
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Typing Shield")]
+        performAction:grey_tap()];
+  }
+  GREYAssert(app.keyboards.count == 0, @"The keyboard is still visible");
+  VerifyTestInfoBarVisibleForCurrentTab(true, infoBarMessage);
+}
+
 @end

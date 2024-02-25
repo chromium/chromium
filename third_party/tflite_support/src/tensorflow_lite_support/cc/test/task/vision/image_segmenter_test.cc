@@ -17,13 +17,13 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/flags/flag.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
-#include "absl/strings/cord.h"   // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
 #include "tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -99,8 +99,8 @@ constexpr float kGoldenMaskTolerance = 1e-2;
 constexpr int kGoldenMaskMagnificationFactor = 10;
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
 // Checks that the two provided `Segmentation` protos are equal.
@@ -137,12 +137,12 @@ class DeepLabOpResolver : public ::tflite::MutableOpResolver {
   DeepLabOpResolver(const DeepLabOpResolver& r) = delete;
 };
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   SUPPORT_ASSERT_OK(ImageSegmenter::CreateFromOptions(
       options, absl::make_unique<DeepLabOpResolver>()));
@@ -160,8 +160,8 @@ class DeepLabOpResolverMissingOps : public ::tflite::MutableOpResolver {
 
 TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   auto image_segmenter_or = ImageSegmenter::CreateFromOptions(
       options, absl::make_unique<DeepLabOpResolverMissingOps>());
@@ -177,10 +177,10 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
 
 TEST_F(CreateFromOptionsTest, FailsWithTwoModelSources) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
-  options.mutable_base_options()->mutable_model_file()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   StatusOr<std::unique_ptr<ImageSegmenter>> image_segmenter_or =
       ImageSegmenter::CreateFromOptions(options);
@@ -212,8 +212,8 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
 
 TEST_F(CreateFromOptionsTest, FailsWithUnspecifiedOutputType) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   options.set_output_type(ImageSegmenterOptions::UNSPECIFIED);
 
   auto image_segmenter_or = ImageSegmenter::CreateFromOptions(options);
@@ -230,21 +230,21 @@ TEST_F(CreateFromOptionsTest, FailsWithUnspecifiedOutputType) {
 TEST_F(CreateFromOptionsTest, SucceedsWithNumberOfThreads) {
   ImageSegmenterOptions options;
   options.set_num_threads(4);
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   SUPPORT_ASSERT_OK(ImageSegmenter::CreateFromOptions(options));
 }
 
-using NumThreadsTest = testing::TestWithParam<int>;
+using NumThreadsTest = ::testing::TestWithParam<int>;
 
-INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, testing::Values(0, -2));
+INSTANTIATE_TEST_SUITE_P(Default, NumThreadsTest, ::testing::Values(0, -2));
 
 TEST_P(NumThreadsTest, FailsWithInvalidNumberOfThreads) {
   ImageSegmenterOptions options;
   options.set_num_threads(GetParam());
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   StatusOr<std::unique_ptr<ImageSegmenter>> image_segmenter_or =
       ImageSegmenter::CreateFromOptions(options);
@@ -263,21 +263,21 @@ TEST_P(NumThreadsTest, FailsWithInvalidNumberOfThreads) {
 TEST(SegmentTest, SucceedsWithCategoryMask) {
   // Load input and build frame buffer.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("segmentation_input_rotation0.jpg"));
+                       LoadImage("segmentation_input_rotation0.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
   // Load golden mask output.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData golden_mask,
-                               LoadImage("segmentation_golden_rotation0.png"));
+                       LoadImage("segmentation_golden_rotation0.png"));
 
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSegmenter> image_segmenter,
-                               ImageSegmenter::CreateFromOptions(options));
+                       ImageSegmenter::CreateFromOptions(options));
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SegmentationResult result,
-                               image_segmenter->Segment(*frame_buffer));
+                       image_segmenter->Segment(*frame_buffer));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -301,24 +301,23 @@ TEST(SegmentTest, SucceedsWithCategoryMask) {
 
 TEST(SegmentTest, SucceedsWithOrientation) {
   // Load input and build frame buffer with kRightBottom orientation.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ImageData rgb_image, LoadImage("segmentation_input_rotation90_flop.jpg"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
+                       LoadImage("segmentation_input_rotation90_flop.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height},
       FrameBuffer::Orientation::kRightBottom);
   // Load golden mask output.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      ImageData golden_mask,
-      LoadImage("segmentation_golden_rotation90_flop.png"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData golden_mask,
+                       LoadImage("segmentation_golden_rotation90_flop.png"));
 
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSegmenter> image_segmenter,
-                               ImageSegmenter::CreateFromOptions(options));
+                       ImageSegmenter::CreateFromOptions(options));
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SegmentationResult result,
-                               image_segmenter->Segment(*frame_buffer));
+                       image_segmenter->Segment(*frame_buffer));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -342,21 +341,21 @@ TEST(SegmentTest, SucceedsWithOrientation) {
 TEST(SegmentTest, SucceedsWithBaseOptions) {
   // Load input and build frame buffer.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData rgb_image,
-                               LoadImage("segmentation_input_rotation0.jpg"));
+                       LoadImage("segmentation_input_rotation0.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
       rgb_image.pixel_data,
       FrameBuffer::Dimension{rgb_image.width, rgb_image.height});
   // Load golden mask output.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData golden_mask,
-                               LoadImage("segmentation_golden_rotation0.png"));
+                       LoadImage("segmentation_golden_rotation0.png"));
 
   ImageSegmenterOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSegmenter> image_segmenter,
-                               ImageSegmenter::CreateFromOptions(options));
+                       ImageSegmenter::CreateFromOptions(options));
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SegmentationResult result,
-                               image_segmenter->Segment(*frame_buffer));
+                       image_segmenter->Segment(*frame_buffer));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -378,7 +377,7 @@ TEST(SegmentTest, SucceedsWithBaseOptions) {
   ImageDataFree(&golden_mask);
 }
 
-class PostprocessTest : public tflite_shims::testing::Test {
+class PostprocessTest : public tflite::testing::Test {
  public:
   class TestImageSegmenter : public ImageSegmenter {
    public:
@@ -387,16 +386,16 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
     static StatusOr<std::unique_ptr<TestImageSegmenter>> CreateFromOptions(
         const ImageSegmenterOptions& options) {
-      RETURN_IF_ERROR(SanityCheckOptions(options));
+      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
       auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
 
-      ASSIGN_OR_RETURN(
+      TFLITE_ASSIGN_OR_RETURN(
           auto image_segmenter,
           TaskAPIFactory::CreateFromExternalFileProto<TestImageSegmenter>(
               &options_copy->model_file_with_metadata()));
 
-      RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
+      TFLITE_RETURN_IF_ERROR(image_segmenter->Init(std::move(options_copy)));
 
       return image_segmenter;
     }
@@ -410,7 +409,7 @@ class PostprocessTest : public tflite_shims::testing::Test {
   };
 
  protected:
-  void SetUp() override { tflite_shims::testing::Test::SetUp(); }
+  void SetUp() override { tflite::testing::Test::SetUp(); }
   void SetUp(const ImageSegmenterOptions& options) {
     StatusOr<std::unique_ptr<TestImageSegmenter>> test_image_segmenter_or =
         TestImageSegmenter::CreateFromOptions(options);
@@ -430,7 +429,7 @@ class PostprocessTest : public tflite_shims::testing::Test {
     confidence_scores.resize(/*width*/ 257 *
                              /*height*/ 257 *
                              /*classes*/ 21);
-    RETURN_IF_ERROR(PopulateTensor(confidence_scores, output_tensor));
+    TFLITE_RETURN_IF_ERROR(PopulateTensor(confidence_scores, output_tensor));
 
     return output_tensor;
   }
@@ -462,18 +461,18 @@ class PostprocessTest : public tflite_shims::testing::Test {
 
 TEST_F(PostprocessTest, SucceedsWithCategoryMask) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   std::unique_ptr<FrameBuffer> frame_buffer =
       CreateFromRgbaRawBuffer(/*input=*/nullptr, {});
 
   SetUp(options);
   ASSERT_TRUE(test_image_segmenter_ != nullptr) << init_status_;
   SUPPORT_ASSERT_OK_AND_ASSIGN(const TfLiteTensor* output_tensor,
-                               FillAndGetOutputTensor());
+                       FillAndGetOutputTensor());
   SUPPORT_ASSERT_OK_AND_ASSIGN(SegmentationResult result,
-                               test_image_segmenter_->Postprocess(
-                                   {output_tensor}, *frame_buffer, /*roi=*/{}));
+                       test_image_segmenter_->Postprocess(
+                           {output_tensor}, *frame_buffer, /*roi=*/{}));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -488,8 +487,8 @@ TEST_F(PostprocessTest, SucceedsWithCategoryMask) {
 
 TEST_F(PostprocessTest, SucceedsWithCategoryMaskAndOrientation) {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   // Frame buffer with kRightBottom orientation.
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbaRawBuffer(
       /*input=*/nullptr, {}, FrameBuffer::Orientation::kRightBottom);
@@ -497,10 +496,10 @@ TEST_F(PostprocessTest, SucceedsWithCategoryMaskAndOrientation) {
   SetUp(options);
   ASSERT_TRUE(test_image_segmenter_ != nullptr) << init_status_;
   SUPPORT_ASSERT_OK_AND_ASSIGN(const TfLiteTensor* output_tensor,
-                               FillAndGetOutputTensor());
+                       FillAndGetOutputTensor());
   SUPPORT_ASSERT_OK_AND_ASSIGN(SegmentationResult result,
-                               test_image_segmenter_->Postprocess(
-                                   {output_tensor}, *frame_buffer, /*roi=*/{}));
+                       test_image_segmenter_->Postprocess(
+                           {output_tensor}, *frame_buffer, /*roi=*/{}));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -516,18 +515,18 @@ TEST_F(PostprocessTest, SucceedsWithCategoryMaskAndOrientation) {
 TEST_F(PostprocessTest, SucceedsWithConfidenceMask) {
   ImageSegmenterOptions options;
   options.set_output_type(ImageSegmenterOptions::CONFIDENCE_MASK);
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   std::unique_ptr<FrameBuffer> frame_buffer =
       CreateFromRgbaRawBuffer(/*input=*/nullptr, {});
 
   SetUp(options);
   ASSERT_TRUE(test_image_segmenter_ != nullptr) << init_status_;
   SUPPORT_ASSERT_OK_AND_ASSIGN(const TfLiteTensor* output_tensor,
-                               FillAndGetOutputTensor());
+                       FillAndGetOutputTensor());
   SUPPORT_ASSERT_OK_AND_ASSIGN(SegmentationResult result,
-                               test_image_segmenter_->Postprocess(
-                                   {output_tensor}, *frame_buffer, /*roi=*/{}));
+                       test_image_segmenter_->Postprocess(
+                           {output_tensor}, *frame_buffer, /*roi=*/{}));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);
@@ -548,8 +547,8 @@ TEST_F(PostprocessTest, SucceedsWithConfidenceMask) {
 TEST_F(PostprocessTest, SucceedsWithConfidenceMaskAndOrientation) {
   ImageSegmenterOptions options;
   options.set_output_type(ImageSegmenterOptions::CONFIDENCE_MASK);
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
   // Frame buffer with kRightBottom orientation.
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbaRawBuffer(
       /*input=*/nullptr, {}, FrameBuffer::Orientation::kRightBottom);
@@ -557,10 +556,10 @@ TEST_F(PostprocessTest, SucceedsWithConfidenceMaskAndOrientation) {
   SetUp(options);
   ASSERT_TRUE(test_image_segmenter_ != nullptr) << init_status_;
   SUPPORT_ASSERT_OK_AND_ASSIGN(const TfLiteTensor* output_tensor,
-                               FillAndGetOutputTensor());
+                       FillAndGetOutputTensor());
   SUPPORT_ASSERT_OK_AND_ASSIGN(SegmentationResult result,
-                               test_image_segmenter_->Postprocess(
-                                   {output_tensor}, *frame_buffer, /*roi=*/{}));
+                       test_image_segmenter_->Postprocess(
+                           {output_tensor}, *frame_buffer, /*roi=*/{}));
 
   EXPECT_EQ(result.segmentation_size(), 1);
   const Segmentation& segmentation = result.segmentation(0);

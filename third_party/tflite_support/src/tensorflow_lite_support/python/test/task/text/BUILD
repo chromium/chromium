@@ -1,7 +1,6 @@
 # Placeholder for internal Python strict test compatibility macro.
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//visibility:private"],
     licenses = ["notice"],  # Apache 2.0
 )
@@ -14,6 +13,7 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:regex_embedding_with_metadata",
         "//tensorflow_lite_support/cc/test/testdata/task/text:universal_sentence_encoder_qa",
     ],
+    tags = ["not_run:arm"],
     deps = [
         # build rule placeholder: numpy dep,
         # build rule placeholder: tensorflow dep,
@@ -35,6 +35,7 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/text:test_searchers",
         "//tensorflow_lite_support/cc/test/testdata/task/text:universal_sentence_encoder_qa",
     ],
+    tags = ["not_run:arm"],
     deps = [
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
@@ -71,6 +72,7 @@ py_test(
     data = [
         "//tensorflow_lite_support/cc/test/testdata/task/text:bert_nl_classifier_models",
     ],
+    tags = ["not_run:arm"],
     deps = [
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",
@@ -105,6 +107,7 @@ py_test(
     data = [
         "//tensorflow_lite_support/cc/test/testdata/task/text:bert_clu_annotator_with_metadata",
     ],
+    tags = ["not_run:arm"],
     deps = [
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/core:base_options",

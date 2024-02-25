@@ -180,11 +180,7 @@ bool AndroidCacheDatabase::CreateDatabase(const base::FilePath& db_name) {
   //
   // The db doesn't store too much data, so we don't need that big a page
   // size or cache.
-  //
-  // The database is open in exclusive mode. Nobody else should be accessing the
-  // database while we're running, and this will give somewhat improved perf.
-  sql::Database connection(
-      {.exclusive_locking = true, .page_size = 2048, .cache_size = 32});
+  sql::Database connection({.page_size = 2048, .cache_size = 32});
 
   if (!connection.Open(db_name_)) {
     LOG(ERROR) << connection.GetErrorMessage();

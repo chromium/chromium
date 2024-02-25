@@ -6,15 +6,15 @@
 // frames has occurred.
 async function waitUntilAfterNextLayout() {
   let frameCount = 2;
-    return new Promise(resolve => {
-        const handleFrame = () => {
-        if (--frameCount <= 0)
-            resolve();
-        else
-            requestAnimationFrame(handleFrame);
-        };
+  return new Promise(resolve => {
+    const handleFrame = () => {
+      if (--frameCount <= 0)
+        resolve();
+      else
         requestAnimationFrame(handleFrame);
-    });
+    };
+    requestAnimationFrame(handleFrame);
+  });
 };
 
 async function observeUntilNumEntries(n, opts) {
@@ -45,4 +45,41 @@ async function waitForNumLayoutShiftEntries(num) {
     score: entry.value,
     hadRecentInput: entry.hadRecentInput,
   }));
+}
+
+const getLcp = async (resource) => {
+  return await new Promise(resolve => {
+    const observer = new PerformanceObserver((list) => {
+      const entries = list.getEntries().filter(e => e.url.includes(resource));
+      if (entries.length > 0) {
+        resolve(entries[entries.length - 1].startTime)
+      }
+    });
+    observer.observe({ type: "largest-contentful-paint", buffered: true });
+  })
+}
+
+
+const getRequestStart = (name) =>
+  getResourceTimingEntry(name).requestStart;
+
+const getResponseEnd = (name) =>
+  getResourceTimingEntry(name).responseEnd;
+
+const getStartTime = (name) =>
+  getResourceTimingEntry(name).startTime;
+
+
+const getResourceTimingEntry = (name) => {
+  return performance.getEntriesByType('resource').filter(
+    e => e.name.includes(name))[0];
+}
+
+const addImageWithUrl = async (url) => {
+  await new Promise(resolve => {
+    const img = document.createElement('img');
+    img.addEventListener('load', resolve);
+    img.src = url;
+    document.body.appendChild(img);
+  });
 }

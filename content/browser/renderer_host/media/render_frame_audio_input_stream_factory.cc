@@ -65,7 +65,7 @@ void EnumerateOutputDevices(MediaStreamManager* media_stream_manager,
                             MediaDevicesManager::EnumerationCallback cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   MediaDevicesManager::BoolDeviceTypes device_types;
-  device_types[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)] = true;
+  device_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] = true;
   media_stream_manager->media_devices_manager()->EnumerateDevices(
       device_types, std::move(cb));
 }
@@ -76,7 +76,7 @@ void TranslateDeviceId(const std::string& device_id,
                        const MediaDeviceEnumeration& device_array) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   for (const auto& device_info :
-       device_array[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
+       device_array[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]) {
     if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, device_id,
                                       device_info.device_id)) {
       cb.Run(device_info.device_id);
@@ -93,7 +93,7 @@ void GotSaltAndOrigin(
                             bool has_access)> cb,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   bool access = MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
-      MediaDeviceType::MEDIA_AUDIO_OUTPUT, process_id, frame_id);
+      MediaDeviceType::kMediaAudioOuput, process_id, frame_id);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(cb), salt_and_origin, access));
 }

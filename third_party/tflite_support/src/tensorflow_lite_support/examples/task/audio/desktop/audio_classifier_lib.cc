@@ -19,7 +19,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -34,16 +34,14 @@ namespace task {
 namespace audio {
 
 tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
-    const std::string& wav_file,
-    uint32_t* buffer_size,
-    uint32_t* offset,
+    const std::string& wav_file, uint32_t* buffer_size, uint32_t* offset,
     std::vector<float>* wav_data) {
   std::string contents = ReadFile(wav_file);
 
   uint32 decoded_sample_count;
   uint16 decoded_channel_count;
   uint32 decoded_sample_rate;
-  RETURN_IF_ERROR(DecodeLin16WaveAsFloatVector(
+  TFLITE_RETURN_IF_ERROR(DecodeLin16WaveAsFloatVector(
       contents, wav_data, offset, &decoded_sample_count, &decoded_channel_count,
       &decoded_sample_rate));
 
@@ -57,8 +55,7 @@ tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
 }
 
 tflite::support::StatusOr<ClassificationResult> Classify(
-    const std::string& model_path,
-    const std::string& wav_file,
+    const std::string& model_path, const std::string& wav_file,
     bool use_coral) {
   AudioClassifierOptions options;
   options.mutable_base_options()->mutable_model_file()->set_file_name(
@@ -69,19 +66,19 @@ tflite::support::StatusOr<ClassificationResult> Classify(
         ->mutable_tflite_settings()
         ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
   }
-  ASSIGN_OR_RETURN(std::unique_ptr<AudioClassifier> classifier,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<AudioClassifier> classifier,
                    AudioClassifier::CreateFromOptions(options));
 
   // `wav_data` holds data loaded from the file and needs to outlive `buffer`.
   std::vector<float> wav_data;
   uint32_t offset = 0;
   uint32_t buffer_size = classifier->GetRequiredInputBufferSize();
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       AudioBuffer buffer,
       LoadAudioBufferFromFile(wav_file, &buffer_size, &offset, &wav_data));
 
   auto start_classify = std::chrono::steady_clock::now();
-  ASSIGN_OR_RETURN(ClassificationResult result, classifier->Classify(buffer));
+  TFLITE_ASSIGN_OR_RETURN(ClassificationResult result, classifier->Classify(buffer));
   auto end_classify = std::chrono::steady_clock::now();
   std::string delegate = use_coral ? "Coral Edge TPU" : "CPU";
   const auto duration_ms =
@@ -101,8 +98,7 @@ void Display(const ClassificationResult& result, float score_threshold) {
     std::cout << absl::StrFormat("\nHead[%d]: %s\n", i, head.head_name());
     for (int j = 0; j < head.classes_size(); j++) {
       const auto& category = head.classes(j);
-      if (category.score() < score_threshold)
-        continue;
+      if (category.score() < score_threshold) continue;
       std::cout << absl::StrFormat("\tcategory[%s]: %.5f\t",
                                    category.class_name(), category.score());
       if (!category.display_name().empty()) {

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ios/web/public/favicon/favicon_url.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"

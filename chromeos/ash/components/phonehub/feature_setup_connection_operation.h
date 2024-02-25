@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_SETUP_CONNECTION_OPERATION_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_SETUP_CONNECTION_OPERATION_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -70,8 +70,8 @@ class FeatureSetupConnectionOperation {
 
   void NotifyFeatureSetupConnectionStatusChanged(Status new_status);
 
-  absl::optional<Status> current_status_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  std::optional<Status> current_status_;
+  const raw_ptr<Delegate> delegate_;
   base::OnceClosure destructor_callback_;
 };
 

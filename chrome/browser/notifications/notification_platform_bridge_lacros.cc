@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_lacros.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,7 @@
 #include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -39,6 +40,10 @@ crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
       return crosapi::mojom::NotificationType::kProgress;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
       // TYPE_CUSTOM exists only within ash.
+      NOTREACHED();
+      return crosapi::mojom::NotificationType::kSimple;
+    case message_center::NOTIFICATION_TYPE_CONVERSATION:
+      // TYPE_CONVERSATION is not currently supported for Lacros.
       NOTREACHED();
       return crosapi::mojom::NotificationType::kSimple;
   }
@@ -71,6 +76,18 @@ crosapi::mojom::FullscreenVisibility ToMojo(
   }
 }
 
+crosapi::mojom::SettingsButtonHandler ToMojo(
+    message_center::SettingsButtonHandler settings_button_handler) {
+  switch (settings_button_handler) {
+    case message_center::SettingsButtonHandler::NONE:
+      return crosapi::mojom::SettingsButtonHandler::kNone;
+    case message_center::SettingsButtonHandler::INLINE:
+      return crosapi::mojom::SettingsButtonHandler::kInline;
+    case message_center::SettingsButtonHandler::DELEGATE:
+      return crosapi::mojom::SettingsButtonHandler::kDelegate;
+  }
+}
+
 crosapi::mojom::NotificationPtr ToMojo(
     const message_center::Notification& notification,
     const ui::ColorProvider* color_provider) {
@@ -96,8 +113,8 @@ crosapi::mojom::NotificationPtr ToMojo(
   }
   for (const auto& item : notification.items()) {
     auto mojo_item = crosapi::mojom::NotificationItem::New();
-    mojo_item->title = item.title;
-    mojo_item->message = item.message;
+    mojo_item->title = item.title();
+    mojo_item->message = item.message();
     mojo_note->items.push_back(std::move(mojo_item));
   }
   mojo_note->progress = std::clamp(notification.progress(), -1, 100);
@@ -114,7 +131,15 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->accessible_name = notification.accessible_name();
   mojo_note->fullscreen_visibility =
       ToMojo(notification.fullscreen_visibility());
-  mojo_note->accent_color = notification.accent_color();
+  if (notification.accent_color_id().has_value()) {
+    // Colors have to be resolved in lacros since color ids are not guaranteed
+    // to be stable across the process boundary.
+    mojo_note->accent_color =
+        color_provider->GetColor(*notification.accent_color_id());
+  } else {
+    // TODO(b/308208767): Remove when this isn't used anymore.
+    mojo_note->accent_color = notification.accent_color();
+  }
 
   mojo_note->notifier_id = crosapi::mojom::NotifierId::New();
   mojo_note->notifier_id->type = ToMojo(notification.notifier_id().type);
@@ -122,6 +147,15 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->notifier_id->url = notification.notifier_id().url;
   mojo_note->notifier_id->title = notification.notifier_id().title;
   mojo_note->notifier_id->profile_id = notification.notifier_id().profile_id;
+
+  const std::optional<base::FilePath>& image_path =
+      notification.rich_notification_data().image_path;
+  if (image_path.has_value()) {
+    mojo_note->image_path = image_path;
+  }
+
+  mojo_note->settings_button_handler =
+      ToMojo(notification.rich_notification_data().settings_button_handler);
 
   return mojo_note;
 }
@@ -167,7 +201,7 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
 
   void OnNotificationButtonClicked(
       uint32_t button_index,
-      const absl::optional<::std::u16string>& reply) override {
+      const std::optional<::std::u16string>& reply) override {
     bridge_delegate_->HandleNotificationButtonClicked(
         notification_id_, base::checked_cast<int>(button_index), reply);
   }
@@ -239,6 +273,14 @@ void NotificationPlatformBridgeLacros::Close(
 
 void NotificationPlatformBridgeLacros::GetDisplayed(
     Profile* profile,
+    GetDisplayedNotificationsCallback callback) const {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);
+}
+
+void NotificationPlatformBridgeLacros::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
     GetDisplayedNotificationsCallback callback) const {
   NOTIMPLEMENTED();
   std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);

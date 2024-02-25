@@ -34,7 +34,7 @@ std::string HostStatusToString(mojom::HostStatus status) {
 MultiDeviceSetupClient::HostStatusWithDevice
 MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
   return HostStatusWithDevice{mojom::HostStatus::kNoEligibleHosts,
-                              absl::nullopt /* host_device */};
+                              std::nullopt /* host_device */};
 }
 
 // static
@@ -56,7 +56,6 @@ MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap(
       MultiDeviceSetupClient::FeatureStatesMap{
           {mojom::Feature::kBetterTogetherSuite, default_value},
           {mojom::Feature::kInstantTethering, default_value},
-          {mojom::Feature::kMessages, default_value},
           {mojom::Feature::kSmartLock, default_value},
           {mojom::Feature::kPhoneHub, default_value},
           {mojom::Feature::kPhoneHubNotifications, default_value},
@@ -65,7 +64,7 @@ MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap(
           {mojom::Feature::kEche, default_value},
           {mojom::Feature::kPhoneHubCameraRoll, default_value}};
 
-  DCHECK(map.size() == static_cast<int32_t>(mojom::Feature::kMaxValue) + 1);
+  DCHECK(map.size() == static_cast<int32_t>(mojom::Feature::kMaxValue));
   return map;
 }
 

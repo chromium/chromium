@@ -4,10 +4,10 @@
 
 #include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -52,7 +52,8 @@ void PendingWriteStore::WritePairedDevice(
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return;
   }
 
@@ -61,10 +62,10 @@ void PendingWriteStore::WritePairedDevice(
   size_t fp_info_size = fast_pair_info.ByteSizeLong();
   uint8_t fp_info_bytes[fp_info_size];
   if (!fast_pair_info.SerializeToArray(fp_info_bytes, fp_info_size)) {
-    QP_LOG(WARNING) << __func__
-                    << ": couldn't serialize fast pair info of device "
-                    << "with mac address " << mac_address
-                    << ". Not writing this device to PendingWrite list.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": couldn't serialize fast pair info of device "
+        << "with mac address " << mac_address
+        << ". Not writing this device to PendingWrite list.";
     return;
   }
 
@@ -78,7 +79,8 @@ PendingWriteStore::GetPendingWrites() {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return list;
   }
 
@@ -108,7 +110,7 @@ PendingWriteStore::GetPendingWrites() {
     } else {
       std::vector<uint8_t> fp_info_bytes;
       if (!base::HexStringToBytes(fp_info_str, &fp_info_bytes)) {
-        QP_LOG(WARNING)
+        CD_LOG(WARNING, Feature::FP)
             << __func__ << ": fast pair info of "
             << "PendingWrite with mac address " << item.first
             << " not perfectly parsed into bytes from a hex-encoded string. "
@@ -118,7 +120,7 @@ PendingWriteStore::GetPendingWrites() {
       // Create fast pair info from byte buffer.
       if (!fast_pair_info.ParseFromArray(fp_info_bytes.data(),
                                          fp_info_bytes.size())) {
-        QP_LOG(WARNING)
+        CD_LOG(WARNING, Feature::FP)
             << __func__ << ": failed to parse Fast Pair Info of "
             << " PendingWrite with mac address " << item.first
             << " from bytes to type nearby::fastpair::FastPairInfo. "
@@ -137,7 +139,8 @@ void PendingWriteStore::OnPairedDeviceSaved(const std::string& mac_address) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return;
   }
 
@@ -150,7 +153,8 @@ void PendingWriteStore::DeletePairedDevice(const std::string& mac_address,
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return;
   }
   ScopedDictPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
@@ -163,7 +167,8 @@ PendingWriteStore::GetPendingDeletes() {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return list;
   }
 
@@ -181,7 +186,8 @@ void PendingWriteStore::OnPairedDeviceDeleted(const std::string& mac_address) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return;
   }
 
@@ -194,7 +200,8 @@ void PendingWriteStore::OnPairedDeviceDeleted(
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No user pref service available.";
     return;
   }
 
@@ -204,8 +211,8 @@ void PendingWriteStore::OnPairedDeviceDeleted(
       pref_service->GetDict(kFastPairPendingDeletesPref).Clone();
   for (const auto item : result) {
     if (item.second == hex_account_key) {
-      QP_LOG(INFO) << __func__
-                   << ": Successfully removed pending delete from prefs.";
+      CD_LOG(INFO, Feature::FP)
+          << __func__ << ": Successfully removed pending delete from prefs.";
       update->Remove(item.first);
     }
   }

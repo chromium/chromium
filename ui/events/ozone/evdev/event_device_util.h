@@ -31,6 +31,10 @@ static inline void EvdevSetUint64Bit(uint64_t* data, int bit) {
   data[bit / EVDEV_INT64_BITS] |= ((uint64_t)1 << (bit % EVDEV_INT64_BITS));
 }
 
+static inline void EvdevClearBit(unsigned long* data, int bit) {
+  data[bit / EVDEV_LONG_BITS] &= ~(1UL << (bit % EVDEV_LONG_BITS));
+}
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_UTIL_H_

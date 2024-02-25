@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/style/style_image_computed_css_value_builder.h"
 
 namespace blink {
 
@@ -55,12 +57,13 @@ ImageResourceContent* StyleImageSet::CachedImage() const {
 }
 
 CSSValue* StyleImageSet::CssValue() const {
-  return image_set_value_;
+  return image_set_value_.Get();
 }
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
                                           bool allow_visited_style) const {
-  return image_set_value_->ComputedCSSValue(style, allow_visited_style);
+  return StyleImageComputedCSSValueBuilder(style, allow_visited_style)
+      .Build(image_set_value_);
 }
 
 bool StyleImageSet::CanRender() const {
@@ -81,6 +84,16 @@ bool StyleImageSet::ErrorOccurred() const {
 
 bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
   return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
+}
+
+IntrinsicSizingInfo StyleImageSet::GetNaturalSizingInfo(
+    float multiplier,
+    RespectImageOrientationEnum respect_orientation) const {
+  if (best_fit_image_) {
+    return best_fit_image_->GetNaturalSizingInfo(multiplier,
+                                                 respect_orientation);
+  }
+  return IntrinsicSizingInfo::None();
 }
 
 gfx::SizeF StyleImageSet::ImageSize(

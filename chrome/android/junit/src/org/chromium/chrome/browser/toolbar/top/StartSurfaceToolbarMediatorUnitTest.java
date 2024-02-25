@@ -52,6 +52,9 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -60,9 +63,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
@@ -77,9 +79,6 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -93,48 +92,27 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mIncognitoTabModel;
-    @Mock
-    Runnable mDismissedCallback;
-    @Mock
-    View.OnClickListener mOnClickListener;
-    @Mock
-    IdentityDiscController mIdentityDiscController;
-    @Mock
-    private Resources mMockResources;
-    @Mock
-    private Drawable mDrawable;
-    @Mock
-    Drawable.ConstantState mMockConstantState;
-    @Mock
-    Callback<IPHCommandBuilder> mMockIdentityIPHCallback;
-    @Mock
-    Tab mMockIncognitoTab;
-    @Mock
-    MenuButtonCoordinator mMenuButtonCoordinator;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    Tracker mTracker;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private LogoView mLogoView;
-    @Mock
-    LogoBridge.Natives mLogoBridge;
-    @Mock
-    private Callback<Boolean> mFinishedShowingCallback;
-    @Captor
-    private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserver;
-    @Captor
-    private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserver;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mIncognitoTabModel;
+    @Mock Runnable mDismissedCallback;
+    @Mock View.OnClickListener mOnClickListener;
+    @Mock IdentityDiscController mIdentityDiscController;
+    @Mock private Resources mMockResources;
+    @Mock private Drawable mDrawable;
+    @Mock Drawable.ConstantState mMockConstantState;
+    @Mock Callback<IPHCommandBuilder> mMockIdentityIPHCallback;
+    @Mock Tab mMockIncognitoTab;
+    @Mock MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private Profile mProfile;
+    @Mock Tracker mTracker;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private LogoView mLogoView;
+    @Mock LogoBridge.Natives mLogoBridge;
+    @Mock private Callback<Boolean> mFinishedShowingCallback;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserver;
+    @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserver;
 
     private ButtonDataImpl mButtonData;
 
@@ -157,12 +135,32 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE, false)
                         .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE, false)
                         .build();
-        mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, "", false, null, true,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
-        ButtonDataImpl disabledButtonData = new ButtonDataImpl(
-                false, null, null, "", false, null, true, AdaptiveToolbarButtonVariant.UNKNOWN);
+        mButtonData =
+                new ButtonDataImpl(
+                        false,
+                        mDrawable,
+                        mOnClickListener,
+                        "",
+                        false,
+                        null,
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        0,
+                        false);
+        ButtonDataImpl disabledButtonData =
+                new ButtonDataImpl(
+                        false,
+                        null,
+                        null,
+                        "",
+                        false,
+                        null,
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        0,
+                        false);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
         when(mLogoBridge.init(any(), any())).thenReturn(1L);
@@ -173,7 +171,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 .getForStartSurface(StartSurfaceState.SHOWN_HOMEPAGE, LayoutType.START_SURFACE);
         doReturn(disabledButtonData)
                 .when(mIdentityDiscController)
-                .getForStartSurface(not(eq(StartSurfaceState.SHOWN_HOMEPAGE)),
+                .getForStartSurface(
+                        not(eq(StartSurfaceState.SHOWN_HOMEPAGE)),
                         not(eq(LayoutType.START_SURFACE)));
 
         mMockConstantState = mock(Drawable.ConstantState.class);
@@ -197,6 +196,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     @Test
     public void testShowAndHideHomePage() {
+        boolean isLogoMovedDownForSurfacePolish =
+                ChromeFeatureList.sSurfacePolish.isEnabled()
+                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
         createMediator(false);
 
         doReturn(0).when(mIncognitoTabModel).getCount();
@@ -210,7 +212,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
+        if (!isLogoMovedDownForSurfacePolish) {
+            assertTrue(mMediator.isLogoVisibleForTesting());
+        }
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
@@ -221,7 +225,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
+        if (!isLogoMovedDownForSurfacePolish) {
+            assertTrue(mMediator.isLogoVisibleForTesting());
+        }
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
@@ -275,13 +281,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     @Test
     public void testSwitchBetweenHomePageAndTabSwitcher() {
+        boolean isLogoMovedDownForSurfacePolish =
+                ChromeFeatureList.sSurfacePolish.isEnabled()
+                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
         createMediator(false);
 
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
+        if (!isLogoMovedDownForSurfacePolish) {
+            assertTrue(mMediator.isLogoVisibleForTesting());
+        }
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
@@ -300,7 +311,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
+        if (!isLogoMovedDownForSurfacePolish) {
+            assertTrue(mMediator.isLogoVisibleForTesting());
+        }
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
@@ -360,6 +373,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     @Test
     public void enableDisableSearchEngineHaveLogo() {
+        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(false);
         createMediator(false);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         mMediator.onStartSurfaceStateChanged(
@@ -385,10 +399,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
-        mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescription=*/"description",
-                /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
-                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
+        mButtonData.setButtonSpec(
+                new ButtonSpec(
+                        mDrawable,
+                        mOnClickListener,
+                        /* onLongClickListener= */ null,
+                        /* contentDescription= */ "description",
+                        /* supportsTinting= */ false,
+                        /* iphCommandBuilder= */ null,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* actionChipLabelResId= */ Resources.ID_NULL,
+                        0,
+                        false));
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -399,10 +421,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
         Drawable testDrawable2 = mock(Drawable.class);
         doReturn(mMockConstantState).when(testDrawable2).getConstantState();
         doReturn(testDrawable2).when(mMockConstantState).newDrawable();
-        mButtonData.setButtonSpec(new ButtonSpec(testDrawable2, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescription=*/"description",
-                /*supportsTinting=*/false, /*iphCommandBuilder=*/null,
-                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
+        mButtonData.setButtonSpec(
+                new ButtonSpec(
+                        testDrawable2,
+                        mOnClickListener,
+                        /* onLongClickListener= */ null,
+                        /* contentDescription= */ "description",
+                        /* supportsTinting= */ false,
+                        /* iphCommandBuilder= */ null,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* actionChipLabelResId= */ Resources.ID_NULL,
+                        0,
+                        false));
         mMediator.updateIdentityDisc(mButtonData);
         assertEquals(testDrawable2, mPropertyModel.get(IDENTITY_DISC_IMAGE));
 
@@ -425,8 +455,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        mTabModelSelectorObserver.getValue().onTabModelSelected(
-                mock(TabModel.class), mock(TabModel.class));
+        mTabModelSelectorObserver
+                .getValue()
+                .onTabModelSelected(mock(TabModel.class), mock(TabModel.class));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
     }
 
@@ -441,10 +472,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
         IPHCommandBuilder iphCommandBuilder =
                 new IPHCommandBuilder(mMockResources, "IdentityDisc", 0, 0)
                         .setOnDismissCallback(mDismissedCallback);
-        mButtonData.setButtonSpec(new ButtonSpec(mDrawable, mOnClickListener,
-                /*onLongClickListener*/ null, /*contentDescription=*/"",
-                /*supportsTinting=*/false, /*iphCommandBuilder=*/iphCommandBuilder,
-                AdaptiveToolbarButtonVariant.UNKNOWN, /*actionChipLabelResId=*/Resources.ID_NULL));
+        mButtonData.setButtonSpec(
+                new ButtonSpec(
+                        mDrawable,
+                        mOnClickListener,
+                        /* onLongClickListener= */ null,
+                        /* contentDescription= */ "",
+                        /* supportsTinting= */ false,
+                        /* iphCommandBuilder= */ iphCommandBuilder,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* actionChipLabelResId= */ Resources.ID_NULL,
+                        0,
+                        false));
 
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -478,28 +517,15 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testNewTabButtonWithAccessibilityOnAndContinuationOn() {
+    public void testNewTabButtonWithAccessibilityOn() {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
 
-        createMediator(false, true);
+        createMediator(false);
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is enabled, new tab
         // button shouldn't show on homepage.
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
-    }
-
-    @Test
-    public void testNewTabButtonWithAccessibilityOnAndContinuationOff() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-
-        createMediator(false, false);
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-
-        // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is disabled, new tab
-        // button should show on homepage.
-        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
     }
 
     @Test
@@ -520,7 +546,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
+    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testLogoLoadOrDestroy() {
         createMediator(false);
         assertFalse(mMediator.isLogoVisibleForTesting());
@@ -537,28 +563,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
-    public void testNotShowLogoWhenStartSurfaceDisabledFeedImprovementIsOn() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
-        createMediator(false);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_TABSWITCHER, true, LayoutType.TAB_SWITCHER);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-        verify(mLogoBridge, times(0)).destroy(eq(1L), any());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertFalse(mMediator.isLogoVisibleForTesting());
     }
 
     @Test
@@ -607,46 +611,45 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testUpdateStartSurfaceToolbarBackgroundColor() {
         assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
-        createMediator(/*hideIncognitoSwitchWhenNoTabs =*/
-                false, /*isTabGroupsAndroidContinuationEnabled= */ false);
-        @ColorInt
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, false);
+        createMediator(/* hideIncognitoSwitchWhenNoTabs= */ false);
+        @ColorInt int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, false);
         assertEquals(backgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
 
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         @ColorInt
-        int newBackgroundColor = ChromeColors.getSurfaceColor(mActivity,
-                org.chromium.chrome.browser.toolbar.R.dimen
-                        .home_surface_background_color_elevation);
+        int newBackgroundColor =
+                ChromeColors.getSurfaceColor(
+                        mActivity,
+                        org.chromium.chrome.browser.toolbar.R.dimen
+                                .home_surface_background_color_elevation);
         assertEquals(newBackgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
-        createMediator(hideIncognitoSwitchWhenNoTabs, false);
-    }
-
-    private void createMediator(
-            boolean hideIncognitoSwitchWhenNoTabs, boolean isTabGroupsAndroidContinuationEnabled) {
         boolean shouldCreateLogoInToolbar =
-                (!ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
-                        || SharedPreferencesManager.getInstance().readBoolean(
-                                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true))
-                && !(ChromeFeatureList.sSurfacePolish.isEnabled()
+                !(ChromeFeatureList.sSurfacePolish.isEnabled()
                         && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue());
-        mMediator = new StartSurfaceToolbarMediator(mActivity, mPropertyModel,
-                mMockIdentityIPHCallback, hideIncognitoSwitchWhenNoTabs, mMenuButtonCoordinator,
-                mIdentityDiscController,
-                ()
-                        -> mIdentityDiscController.getForStartSurface(
-                                mMediator.getOverviewModeStateForTesting(),
-                                mMediator.getLayoutTypeForTesting()),
-                /*isTabToGtsFadeAnimationEnabled=*/false, isTabGroupsAndroidContinuationEnabled,
-                ()
-                        -> false,
-                /*logoClickedCallback=*/null,
-                /*isRefactorEnabled=*/false, /*shouldFetchDoodle=*/false, shouldCreateLogoInToolbar,
-                mFinishedShowingCallback, /*ToolbarColorObserverManager=*/null);
+        mMediator =
+                new StartSurfaceToolbarMediator(
+                        mActivity,
+                        mPropertyModel,
+                        mMockIdentityIPHCallback,
+                        hideIncognitoSwitchWhenNoTabs,
+                        mMenuButtonCoordinator,
+                        mIdentityDiscController,
+                        () ->
+                                mIdentityDiscController.getForStartSurface(
+                                        mMediator.getOverviewModeStateForTesting(),
+                                        mMediator.getLayoutTypeForTesting()),
+                        /* isTabToGtsFadeAnimationEnabled= */ false,
+                        () -> false,
+                        /* logoClickedCallback= */ null,
+                        /* isRefactorEnabled= */ false,
+                        /* shouldFetchDoodle= */ false,
+                        shouldCreateLogoInToolbar,
+                        mFinishedShowingCallback,
+                        /* ToolbarColorObserverManager= */ null);
 
         mMediator.onLogoViewReady(mLogoView);
         mMediator.initLogoWithNative();

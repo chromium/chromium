@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_utils.h"
@@ -258,7 +257,7 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Round down to closest multiple of 4 to ensure correct channel alignment.
-  frames = base::bits::AlignDown(frames, 4);
+  frames = base::bits::AlignDownDeprecatedDoNotUse(frames, 4);
 
   // Acquire running_lock_ for the scope of this fill call to
   // prevent the source callback from closing the output stream
@@ -305,7 +304,6 @@ CastAudioOutputStream::CastAudioOutputStream(
     : volume_(1.0),
       audio_thread_state_(AudioOutputState::kClosed),
       audio_manager_(audio_manager),
-      connector_(audio_manager_->GetConnector()),
       audio_params_(audio_params),
       device_id_(IsValidDeviceId(device_id_or_group_id)
                      ? device_id_or_group_id
@@ -314,7 +312,6 @@ CastAudioOutputStream::CastAudioOutputStream(
       use_mixer_service_(use_mixer_service),
       audio_weak_factory_(this) {
   DCHECK(audio_manager_);
-  DCHECK(connector_);
   DETACH_FROM_THREAD(audio_thread_checker_);
   DVLOG(1) << __func__ << " " << this << " created from group_id=" << group_id_
            << " with audio_params=" << audio_params_.AsHumanReadableString();
@@ -350,26 +347,20 @@ bool CastAudioOutputStream::Open() {
   DVLOG(1) << this << ": " << __func__
            << ", session_id=" << application_session_id;
 
-  // Connect to the Multiroom interface and fetch the current info.
-  connector_->BindInterface(chromecast::mojom::kChromecastServiceName,
-                            multiroom_manager_.BindNewPipeAndPassReceiver());
-  multiroom_manager_.set_disconnect_handler(base::BindOnce(
-      &CastAudioOutputStream::OnGetMultiroomInfo, audio_weak_this_, "error",
-      chromecast::mojom::MultiroomInfo::New()));
-  multiroom_manager_->GetMultiroomInfo(
-      application_session_id,
-      base::BindOnce(&CastAudioOutputStream::OnGetMultiroomInfo,
-                     audio_weak_this_, application_session_id));
+  if (!use_mixer_service_) {
+    cma_wrapper_ = std::make_unique<CmaAudioOutputStream>(
+        audio_params_, audio_params_.GetBufferDuration(), device_id_,
+        audio_manager_->GetCmaBackendFactory());
+    POST_TO_CMA_WRAPPER(Initialize, application_session_id);
+  } else {
+    DCHECK(!(audio_params_.effects() & ::media::AudioParameters::MULTIZONE));
+
+    mixer_service_wrapper_ =
+        std::make_unique<MixerServiceWrapper>(audio_params_, device_id_);
+  }
 
   audio_thread_state_ = AudioOutputState::kOpened;
 
-  // Always return success on the audio thread even though we are unsure at this
-  // point if the backend has opened successfully. Errors will be reported via
-  // the AudioSourceCallback after Start() has been issued.
-  //
-  // Failing early is convenient for falling back to other audio stream types,
-  // but Cast does not need the fallback, so it is alright to fail late with a
-  // callback.
   return true;
 }
 
@@ -415,13 +406,6 @@ void CastAudioOutputStream::Start(AudioSourceCallback* source_callback) {
   audio_thread_state_ = AudioOutputState::kStarted;
   metrics::CastMetricsHelper::GetInstance()->LogTimeToFirstAudio();
 
-  if (!cma_wrapper_ && !mixer_service_wrapper_) {
-    // Opening hasn't finished yet, run this Start() later.
-    pending_start_ = base::BindOnce(&CastAudioOutputStream::Start,
-                                    base::Unretained(this), source_callback);
-    return;
-  }
-
   // |cma_wrapper_| and |mixer_service_wrapper_| cannot be both active.
   DCHECK(!(cma_wrapper_ && mixer_service_wrapper_));
 
@@ -439,8 +423,6 @@ void CastAudioOutputStream::Stop() {
   if (audio_thread_state_ != AudioOutputState::kStarted)
     return;
   audio_thread_state_ = AudioOutputState::kOpened;
-  pending_start_.Reset();
-  pending_volume_.Reset();
 
   // |cma_wrapper_| and |mixer_service_wrapper_| cannot be both active.
   DCHECK(!(cma_wrapper_ && mixer_service_wrapper_));
@@ -482,11 +464,6 @@ void CastAudioOutputStream::SetVolume(double volume) {
   DVLOG(2) << this << ": " << __func__ << "(" << volume << ")";
   volume_ = volume;
 
-  if (!cma_wrapper_ && !mixer_service_wrapper_) {
-    pending_volume_ = base::BindOnce(&CastAudioOutputStream::SetVolume,
-                                     base::Unretained(this), volume);
-    return;
-  }
   DCHECK(!(cma_wrapper_ && mixer_service_wrapper_));
 
   if (cma_wrapper_) {
@@ -499,44 +476,6 @@ void CastAudioOutputStream::SetVolume(double volume) {
 void CastAudioOutputStream::GetVolume(double* volume) {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   *volume = volume_;
-}
-
-void CastAudioOutputStream::OnGetMultiroomInfo(
-    const std::string& application_session_id,
-    chromecast::mojom::MultiroomInfoPtr multiroom_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
-  DCHECK(multiroom_info);
-  LOG(INFO) << __FUNCTION__ << ": " << this
-            << " session_id=" << application_session_id
-            << ", multiroom=" << multiroom_info->multiroom
-            << ", audio_channel=" << multiroom_info->audio_channel;
-
-  // Close the MultiroomManager message pipe so that a connection error does
-  // not trigger a second call to this function.
-  multiroom_manager_.reset();
-  if (audio_thread_state_ == AudioOutputState::kPendingClose)
-    return;
-
-  const std::string& device_id = (multiroom_info->output_device_id.empty()
-                                      ? device_id_
-                                      : multiroom_info->output_device_id);
-  if (!use_mixer_service_) {
-    cma_wrapper_ = std::make_unique<CmaAudioOutputStream>(
-        audio_params_, audio_params_.GetBufferDuration(), device_id,
-        audio_manager_->GetCmaBackendFactory());
-    POST_TO_CMA_WRAPPER(Initialize, application_session_id,
-                        std::move(multiroom_info));
-  } else {
-    DCHECK(!(audio_params_.effects() & ::media::AudioParameters::MULTIZONE));
-
-    mixer_service_wrapper_ =
-        std::make_unique<MixerServiceWrapper>(audio_params_, device_id);
-  }
-
-  if (pending_start_)
-    std::move(pending_start_).Run();
-  if (pending_volume_)
-    std::move(pending_volume_).Run();
 }
 
 }  // namespace media

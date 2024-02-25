@@ -12,18 +12,6 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule('LiveRegions', '/chromevox/background/live_regions.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
     globalThis.TreeChangeType = chrome.automation.TreeChangeType;
@@ -309,11 +297,11 @@ AX_TEST_F(
       let clicks = 0;
       div.addEventListener('click', () => {
         clicks++;
-        if (clicks == 1) {
+        if (clicks === 1) {
           input.value = 'bb';
           input.selectionStart = 2;
           input.selectionEnd = 2;
-        } else if (clicks == 2) {
+        } else if (clicks === 2) {
           input.value = 'bba';
           input.selectionStart = 3;
           input.selectionEnd = 3;

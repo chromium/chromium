@@ -154,7 +154,7 @@ DigitalAssetLinksHandler::~DigitalAssetLinksHandler() = default;
 
 void DigitalAssetLinksHandler::OnURLLoadComplete(
     std::string relationship,
-    absl::optional<std::vector<std::string>> fingerprints,
+    std::optional<std::vector<std::string>> fingerprints,
     std::map<std::string, std::set<std::string>> target_values,
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
@@ -192,7 +192,7 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
 
 void DigitalAssetLinksHandler::OnJSONParseResult(
     std::string relationship,
-    absl::optional<std::vector<std::string>> fingerprints,
+    std::optional<std::vector<std::string>> fingerprints,
     std::map<std::string, std::set<std::string>> target_values,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
@@ -274,14 +274,14 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationshipForWebApk(
     const std::string& manifest_url,
     RelationshipCheckResultCallback callback) {
   return CheckDigitalAssetLinkRelationship(
-      web_domain, "delegate_permission/common.query_webapk", absl::nullopt,
+      web_domain, "delegate_permission/common.query_webapk", std::nullopt,
       {{"namespace", {"web"}}, {"site", {manifest_url}}}, std::move(callback));
 }
 
 bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
     const url::Origin& web_domain,
     const std::string& relationship,
-    absl::optional<std::vector<std::string>> fingerprints,
+    std::optional<std::vector<std::string>> fingerprints,
     const std::map<std::string, std::set<std::string>>& target_values,
     RelationshipCheckResultCallback callback) {
   GURL request_url = GetUrlForAssetLinks(web_domain);

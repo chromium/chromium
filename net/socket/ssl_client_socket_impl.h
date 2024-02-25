@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -32,7 +32,6 @@
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -91,9 +90,8 @@ class SSLClientSocketImpl : public SSLClientSocket,
   int GetLocalAddress(IPEndPoint* address) const override;
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
-  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;
   void GetSSLCertRequestInfo(
@@ -153,7 +151,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   static ssl_verify_result_t VerifyCertCallback(SSL* ssl, uint8_t* out_alert);
   ssl_verify_result_t VerifyCert();
   ssl_verify_result_t HandleVerifyResult();
-  int CheckCTCompliance();
+  int CheckCTRequirements();
 
   // Callback from the SSL layer that indicates the remote server is requesting
   // a certificate for this client.
@@ -164,7 +162,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // Returns a session cache key for this socket.
   SSLClientSessionCache::Key GetSessionCacheKey(
-      absl::optional<IPAddress> dest_ip_addr) const;
+      std::optional<IPAddress> dest_ip_addr) const;
 
   // Returns true if renegotiations are allowed.
   bool IsRenegotiationAllowed() const;
@@ -255,7 +253,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   const raw_ptr<SSLClientContext> context_;
 
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
-  base::TimeTicks start_cert_verification_time_;
 
   // Result from Cert Verifier.
   int cert_verification_result_;
@@ -294,11 +291,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   int signature_result_;
   std::vector<uint8_t> signature_;
-
-  // pinning_failure_log contains a message produced by
-  // TransportSecurityState::CheckPublicKeyPins in the event of a
-  // pinning failure. It is a (somewhat) human-readable string.
-  std::string pinning_failure_log_;
 
   // True if PKP is bypassed due to a local trust anchor.
   bool pkp_bypassed_ = false;

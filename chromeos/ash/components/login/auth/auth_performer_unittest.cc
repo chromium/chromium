@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -50,7 +50,8 @@ void ReplyAsSuccess(
     UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
   ::user_data_auth::AuthenticateAuthFactorReply reply;
   reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
-  reply.add_authorized_for(user_data_auth::AUTH_INTENT_DECRYPT);
+  reply.mutable_auth_properties()->add_authorized_for(
+      user_data_auth::AUTH_INTENT_DECRYPT);
   std::move(callback).Run(reply);
 }
 
@@ -92,6 +93,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
                    UserDataAuthClient::StartAuthSessionCallback callback) {
         ::user_data_auth::StartAuthSessionReply reply;
         reply.set_auth_session_id("123");
+        reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
         auto* factor = reply.add_auth_factors();
         factor->set_label("legacy-0");
@@ -103,7 +105,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -113,6 +115,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
   EXPECT_TRUE(user_exists);
   ASSERT_TRUE(user_context);
   EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_EQ(user_context->GetBroadcastId(), "broadcast");
   EXPECT_TRUE(user_context->GetAuthFactorsData().FindOnlinePasswordFactor());
 }
 
@@ -121,13 +124,14 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
   // Arrange: user is kiosk, and cryptohome replies with a key that has no
   // |type| set.
-  context_ = std::make_unique<UserContext>(user_manager::USER_TYPE_KIOSK_APP,
+  context_ = std::make_unique<UserContext>(user_manager::UserType::kKioskApp,
                                            AccountId());
   EXPECT_CALL(mock_client_, StartAuthSession(_, _))
       .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
                    UserDataAuthClient::StartAuthSessionCallback callback) {
         ::user_data_auth::StartAuthSessionReply reply;
         reply.set_auth_session_id("123");
+        reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
         auto* factor = reply.add_auth_factors();
         factor->set_label("legacy-0");
@@ -139,7 +143,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -149,6 +153,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
   EXPECT_TRUE(user_exists);
   ASSERT_TRUE(user_context);
   EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_EQ(user_context->GetBroadcastId(), "broadcast");
   EXPECT_TRUE(user_context->GetAuthFactorsData().FindKioskFactor());
 }
 
@@ -160,7 +165,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
   *context_->GetKey() = Key("secret");
   context_->GetKey()->SetLabel("gaia");
   // Simulate the already started auth session.
-  context_->SetAuthSessionId("123");
+  context_->SetAuthSessionIds("123", "broadcast");
 
   AuthPerformer performer(&mock_client_);
 
@@ -174,7 +179,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -188,7 +193,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
 TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
   SetupUserWithLegacyPasswordFactor(context_.get());
   // Simulate the already started auth session.
-  context_->SetAuthSessionId("123");
+  context_->SetAuthSessionIds("123", "broadcast");
 
   // PIN knowledge key in user context.
   *context_->GetKey() =
@@ -208,7 +213,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
             ReplyAsKeyMismatch(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -222,7 +227,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
 TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
   SetupUserWithLegacyPasswordFactor(context_.get());
   // Simulate the already started auth session.
-  context_->SetAuthSessionId("123");
+  context_->SetAuthSessionIds("123", "broadcast");
 
   AuthPerformer performer(&mock_client_);
 
@@ -238,7 +243,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("legacy-0", "secret", std::move(context_),
@@ -251,12 +256,12 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
 TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   SetupUserWithLegacyPasswordFactor(context_.get());
   // Simulate the already started auth session.
-  context_->SetAuthSessionId("123");
+  context_->SetAuthSessionIds("123", "broadcast");
 
   AuthPerformer performer(&mock_client_);
 
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("gaia", "secret", std::move(context_),
@@ -272,13 +277,14 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
 TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
   SetupUserWithLegacyPasswordFactor(context_.get());
   // Simulate the already started auth session.
-  context_->SetAuthSessionId("123");
+  context_->SetAuthSessionIds("123", "broadcast");
 
   // Add a pin factor to session auth factors.
   cryptohome::AuthFactorRef pin_factor_ref(cryptohome::AuthFactorType::kPin,
                                            cryptohome::KeyLabel("pin"));
   cryptohome::AuthFactor pin_factor(
       std::move(pin_factor_ref), cryptohome::AuthFactorCommonMetadata(),
+      cryptohome::PinMetadata::CreateWithoutSalt(),
       cryptohome::PinStatus{.auth_locked = false});
   context_->SetSessionAuthFactors(SessionAuthFactors({std::move(pin_factor)}));
 
@@ -295,7 +301,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>>
+                         std::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPin("1234", "pin-salt", std::move(context_),

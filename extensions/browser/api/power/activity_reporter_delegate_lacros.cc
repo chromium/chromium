@@ -23,7 +23,7 @@ crosapi::mojom::Power* GetPowerApi() {
 // error, or nullopt on success.
 // |min_version| is the minimum version of the ash implementation of
 // crosapi::mojom::Power necessary to run a specific API method.
-absl::optional<std::string> ValidateCrosapi(int min_version) {
+std::optional<std::string> ValidateCrosapi(int min_version) {
   if (!chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Power>()) {
     return kUnsupportedByAsh;
   }
@@ -34,7 +34,7 @@ absl::optional<std::string> ValidateCrosapi(int min_version) {
     return kUnsupportedByAsh;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -45,15 +45,15 @@ ActivityReporterDelegateLacros::ActivityReporterDelegateLacros() = default;
 
 ActivityReporterDelegateLacros::~ActivityReporterDelegateLacros() = default;
 
-absl::optional<std::string> ActivityReporterDelegateLacros::ReportActivity()
+std::optional<std::string> ActivityReporterDelegateLacros::ReportActivity()
     const {
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       ValidateCrosapi(crosapi::mojom::Power::kReportActivityMinVersion);
   if (error.has_value()) {
     return error;
   }
   GetPowerApi()->ReportActivity();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace extensions

@@ -112,6 +112,9 @@ std::u16string GetShillErrorString(const std::string& error,
   if (error == shill::kErrorSimLocked) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
   }
+  if (error == shill::kErrorSimCarrierLocked) {
+    return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED);
+  }
   if (error == shill::kErrorNotRegistered) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED);
   }

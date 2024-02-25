@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
-import {str} from '../../../../common/js/util.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {constants} from '../../constants.js';
+import {str} from '../../../../common/js/translations.js';
+import {RootType} from '../../../../common/js/volume_manager_types.js';
+import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from '../../constants.js';
 
 import {getTemplate} from './shared_with_crostini_pluginvm_banner.html.js';
 import {StateBanner} from './state_banner.js';
@@ -43,18 +37,18 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
    */
   override allowedVolumes() {
     return [
-      {root: VolumeManagerCommon.RootType.DOWNLOADS},
-      {root: VolumeManagerCommon.RootType.REMOVABLE},
-      {root: VolumeManagerCommon.RootType.ANDROID_FILES},
-      {root: VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT},
-      {root: VolumeManagerCommon.RootType.COMPUTER},
-      {root: VolumeManagerCommon.RootType.DRIVE},
-      {root: VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT},
-      {root: VolumeManagerCommon.RootType.SHARED_DRIVE},
-      {root: VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME},
-      {root: VolumeManagerCommon.RootType.CROSTINI},
-      {root: VolumeManagerCommon.RootType.ARCHIVE},
-      {root: VolumeManagerCommon.RootType.SMB},
+      {root: RootType.DOWNLOADS},
+      {root: RootType.REMOVABLE},
+      {root: RootType.ANDROID_FILES},
+      {root: RootType.COMPUTERS_GRAND_ROOT},
+      {root: RootType.COMPUTER},
+      {root: RootType.DRIVE},
+      {root: RootType.SHARED_DRIVES_GRAND_ROOT},
+      {root: RootType.SHARED_DRIVE},
+      {root: RootType.DRIVE_SHARED_WITH_ME},
+      {root: RootType.CROSTINI},
+      {root: RootType.ARCHIVE},
+      {root: RootType.SMB},
     ];
   }
 
@@ -80,14 +74,13 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
         this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
     const button = this.shadowRoot!.querySelector<HTMLButtonElement>(
         'cr-button[slot="extra-button"]')!;
-    if (context.type ===
-        (constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM)) {
+    if (context.type === (DEFAULT_CROSTINI_VM + PLUGIN_VM)) {
       text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM');
       button.setAttribute(
           'href', 'chrome://os-settings/app-management/pluginVm/sharedPaths');
       return;
     }
-    if (context.type === constants.PLUGIN_VM) {
+    if (context.type === PLUGIN_VM) {
       text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM');
       button.setAttribute(
           'href', 'chrome://os-settings/app-management/pluginVm/sharedPaths');

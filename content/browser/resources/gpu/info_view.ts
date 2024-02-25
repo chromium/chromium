@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
+import type {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
 import {VulkanInfo} from './vulkan_info.js';
 
@@ -312,7 +312,7 @@ const kSections = {
   workarounds: ['Driver Bug Workarounds', 'ul'],
   problems: ['Problems Detected', 'ul'],
   angleFeatures: ['ANGLE Features', 'ul'],
-  dawnInfo: ['DAWN Info', 'ul'],
+  dawnInfo: ['Dawn Info', 'ul'],
   clientInfo: ['Version Information', 'div'],
   basicInfo: ['Driver Information', 'div'],
   compositorInfo: ['Compositor Information', 'div'],
@@ -892,14 +892,14 @@ export class InfoViewElement extends CustomElement {
         infoEl = createHeading('h3', '-', infoString);
         inProcessingToggles = false;
       } else if (infoString.startsWith('[')) {
-        // e.g. [Default Toggle Names]
+        // e.g. [Enabled Toggle Names]
         infoEl = createHeading('h4', '-', {
           className: 'dawn-info-header',
           textContent: infoString,
         });
 
         if (infoString === '[WebGPU Status]' ||
-            infoString === '[Default Supported Features]') {
+            infoString === '[Adapter Supported Features]') {
           inProcessingToggles = false;
         } else {
           inProcessingToggles = true;

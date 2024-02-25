@@ -1,6 +1,7 @@
 import collections
 import math
 import sys
+from urllib.parse import urlparse
 
 import webdriver
 
@@ -57,7 +58,16 @@ def cleanup_session(session):
         or fullscreened state.
         """
         if session.capabilities.get("setWindowRect"):
-            session.window.size = defaults.WINDOW_SIZE
+            # Only restore if needed to workaround a bug for Chrome:
+            # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
+            if (
+                session.capabilities.get("browserName") != "chrome" or
+                session.window.size != defaults.WINDOW_SIZE
+                or document_hidden(session)
+                or is_fullscreen(session)
+                or is_maximized(session)
+            ):
+                session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
     def _restore_windows(session):
@@ -151,10 +161,7 @@ def center_point(element):
 
 
 def document_hidden(session):
-    """Polls for the document to become hidden."""
-    def hidden(session):
-        return session.execute_script("return document.hidden")
-    return Poll(session, timeout=3, raises=None).until(hidden)
+    return session.execute_script("return document.hidden")
 
 
 def document_location(session):
@@ -207,27 +214,24 @@ def is_fullscreen(session):
         """)
 
 
-def screen_size(session):
-    """Returns the available width/height size of the screen."""
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth,
-            screen.availHeight,
-        ];
-        """))
+def is_maximized(session):
+    dimensions = session.execute_script("""
+        return {
+            availWidth: screen.availWidth,
+            availHeight: screen.availHeight,
+            windowWidth: window.outerWidth,
+            windowHeight: window.outerHeight,
+        }
+        """)
 
-
-def available_screen_size(session):
-    """
-    Returns the effective available screen width/height size,
-    excluding any fixed window manager elements.
-    """
-    return tuple(session.execute_script("""
-        return [
-            screen.availWidth - screen.availLeft,
-            screen.availHeight - screen.availTop,
-        ];
-        """))
+    return (
+        # The maximized window can still have a border attached which would
+        # cause its dimensions to exceed the whole available screen.
+        dimensions["windowWidth"] >= dimensions["availWidth"] and
+        dimensions["windowHeight"] >= dimensions["availHeight"] and
+        # Only return true if the window is not in fullscreen mode
+        not is_fullscreen(session)
+    )
 
 
 def filter_dict(source, d):
@@ -247,6 +251,11 @@ def filter_supported_key_events(all_events, expected):
         events = [filter_dict(e, expected[0]) for e in events]
 
     return (events, expected)
+
+
+def get_origin_from_url(url):
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
 
 
 def wait_for_new_handle(session, handles_before):

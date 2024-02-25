@@ -28,6 +28,7 @@ GpuChannelHost::GpuChannelHost(
     int channel_id,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_thread_(io_task_runner
@@ -40,8 +41,8 @@ GpuChannelHost::GpuChannelHost(
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
       shared_image_interface_(
           this,
-          static_cast<int32_t>(
-              GpuChannelReservedRoutes::kSharedImageInterface)),
+          static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface),
+          shared_image_capabilities),
       image_decode_accelerator_proxy_(
           this,
           static_cast<int32_t>(
@@ -174,6 +175,15 @@ int32_t GpuChannelHost::GenerateRouteID() {
   return next_route_id_.GetNext();
 }
 
+void GpuChannelHost::CreateGpuMemoryBuffer(
+    const gfx::Size& size,
+    const viz::SharedImageFormat& format,
+    gfx::BufferUsage buffer_usage,
+    gfx::GpuMemoryBufferHandle* buffer_handle) {
+  GetGpuChannel().CreateGpuMemoryBuffer(size, format, buffer_usage,
+                                        buffer_handle);
+}
+
 void GpuChannelHost::GetGpuMemoryBufferHandleInfo(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle* handle,
@@ -192,9 +202,10 @@ void GpuChannelHost::TerminateGpuProcessForTesting() {
   GetGpuChannel().TerminateForTesting();
 }
 
-std::unique_ptr<ClientSharedImageInterface>
+scoped_refptr<ClientSharedImageInterface>
 GpuChannelHost::CreateClientSharedImageInterface() {
-  return std::make_unique<ClientSharedImageInterface>(&shared_image_interface_);
+  return base::MakeRefCounted<ClientSharedImageInterface>(
+      &shared_image_interface_, this);
 }
 
 GpuChannelHost::~GpuChannelHost() = default;
@@ -205,6 +216,29 @@ GpuChannelHost::ConnectionTracker::~ConnectionTracker() = default;
 
 void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
   is_connected_.store(false);
+  NotifyGpuChannelLost();
+}
+
+void GpuChannelHost::ConnectionTracker::AddObserver(
+    GpuChannelLostObserver* obs) {
+  AutoLock lock(channel_obs_lock_);
+  observer_list_.AddObserver(obs);
+  DCHECK(!observer_list_.empty());
+}
+
+void GpuChannelHost::ConnectionTracker::RemoveObserver(
+    GpuChannelLostObserver* obs) {
+  AutoLock lock(channel_obs_lock_);
+  observer_list_.RemoveObserver(obs);
+}
+
+void GpuChannelHost::ConnectionTracker::NotifyGpuChannelLost() {
+  AutoLock lock(channel_obs_lock_);
+  for (auto& observer : observer_list_) {
+    observer.OnGpuChannelLost();
+  }
+  observer_list_.Clear();
+  DCHECK(observer_list_.empty());
 }
 
 GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo() = default;
@@ -247,6 +281,14 @@ bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
 void GpuChannelHost::Listener::OnChannelError() {
   AutoLock lock(lock_);
   channel_ = nullptr;
+}
+
+void GpuChannelHost::AddObserver(GpuChannelLostObserver* obs) {
+  connection_tracker_->AddObserver(obs);
+}
+
+void GpuChannelHost::RemoveObserver(GpuChannelLostObserver* obs) {
+  connection_tracker_->RemoveObserver(obs);
 }
 
 }  // namespace gpu

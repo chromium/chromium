@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
@@ -49,7 +50,8 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
     return session_restore_events_;
   }
 
-  const std::set<content::WebContents*>& tabs_restoring() const {
+  const std::set<raw_ptr<content::WebContents, SetExperimental>>&
+  tabs_restoring() const {
     return tabs_restoring_;
   }
 
@@ -72,7 +74,7 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
 
  private:
   std::vector<SessionRestoreEvent> session_restore_events_;
-  std::set<content::WebContents*> tabs_restoring_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> tabs_restoring_;
 };
 
 class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
@@ -90,7 +92,7 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     SetContents(CreateRestoredWebContents());
     restored_tabs_.emplace_back(web_contents(), false, false, false,
-                                absl::nullopt);
+                                std::nullopt);
   }
 
   void TearDown() override {
@@ -179,7 +181,7 @@ TEST_F(SessionRestoreObserverTest, SequentialSessionRestores) {
     different_test_contents.emplace_back(CreateRestoredWebContents());
     content::WebContents* test_contents = different_test_contents.back().get();
     std::vector<RestoredTab> restored_tabs{
-        RestoredTab(test_contents, false, false, false, absl::nullopt)};
+        RestoredTab(test_contents, false, false, false, std::nullopt)};
 
     SessionRestore::NotifySessionRestoreStartedLoadingTabs();
     SessionRestore::OnWillRestoreTab(test_contents);
@@ -204,7 +206,7 @@ TEST_F(SessionRestoreObserverTest, ConcurrentSessionRestores) {
   std::vector<RestoredTab> another_restored_tabs;
   auto test_contents = CreateRestoredWebContents();
   another_restored_tabs.emplace_back(test_contents.get(), false, false, false,
-                                     absl::nullopt);
+                                     std::nullopt);
 
   SessionRestore::NotifySessionRestoreStartedLoadingTabs();
   SessionRestore::OnWillRestoreTab(web_contents());

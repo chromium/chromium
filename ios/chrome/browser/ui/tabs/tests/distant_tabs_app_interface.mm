@@ -7,8 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/sync_device_info/device_info.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "url/gurl.h"
@@ -65,6 +65,7 @@ synced_sessions::DistantSession& CreateDistantSession(
         CreateDistantTabWithTitleAndURL(
             base::SysNSStringToUTF8(fakeDistantTab.title),
             GURL(base::SysNSStringToUTF8(fakeDistantTab.URL)), distantSession);
+    distantTab->last_active_time = modifiedTime;
     distantSession.tabs.push_back(std::move(distantTab));
   }
 

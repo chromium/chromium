@@ -4,6 +4,9 @@
 
 #include "ui/base/interaction/interaction_sequence.h"
 
+#include <list>
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -104,7 +107,7 @@ struct InteractionSequence::SubsequenceData {
   Builder builder;
   SubsequenceCondition condition;
   std::unique_ptr<InteractionSequence> sequence;
-  absl::optional<bool> result;
+  std::optional<bool> result;
   AbortedData aborted_data;
 };
 
@@ -270,7 +273,8 @@ InteractionSequence::StepBuilder::SetElementName(
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
     StepContext context) {
   DCHECK(context != StepContext(ElementContext()));
-  DCHECK(!step_->uses_named_element());
+  DCHECK(context == StepContext(ContextMode::kAny) ||
+         !step_->uses_named_element());
   step_->context = context;
   if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
     step_->in_any_context = *mode == ContextMode::kAny;
@@ -384,8 +388,8 @@ InteractionSequence::StepBuilder::SetDescription(
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::FormatDescription(
     const base::StringPiece& format_string) {
-  step_->description =
-      base::StringPrintf(format_string.data(), step_->description.c_str());
+  step_->description = base::StringPrintfNonConstexpr(
+      format_string.data(), step_->description.c_str());
   return *this;
 }
 
@@ -528,8 +532,8 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       if (reason == AbortedReason::kSubsequenceFailed) {
         for (const auto& data : next_step()->subsequence_data) {
           aborted_data.subsequence_failures.emplace_back(
-              data.result == false ? absl::make_optional(data.aborted_data)
-                                   : absl::nullopt);
+              data.result == false ? std::make_optional(data.aborted_data)
+                                   : std::nullopt);
         }
       }
     }
@@ -538,6 +542,16 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
     aborted_data.element_id = current_step_->id;
     aborted_data.element = SafeElementReference(current_step_->element);
     aborted_data.step_description = current_step_->description;
+    if (reason == AbortedReason::kElementHiddenDuringStep && next_step()) {
+      // This may be due to the next step failing to happen, so store the next
+      // step as well as a convenience (if present).
+      AbortedData waiting_for;
+      waiting_for.step_index = aborted_data.step_index + 1;
+      waiting_for.step_type = next_step()->type;
+      waiting_for.element_id = next_step()->id;
+      waiting_for.step_description = next_step()->description;
+      aborted_data.subsequence_failures.emplace_back(std::move(waiting_for));
+    }
   }
   return aborted_data;
 }
@@ -1100,7 +1114,7 @@ void InteractionSequence::StageNextStep() {
         } else {
           // This subsequence cannot run, so clear it out.
           subsequence_data.sequence.reset();
-          subsequence_data.result = absl::nullopt;
+          subsequence_data.result = std::nullopt;
         }
       }
       if (!found) {
@@ -1387,6 +1401,18 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
       }
       ++i;
     }
+  } else if (data.aborted_reason ==
+                 InteractionSequence::AbortedReason::kElementHiddenDuringStep &&
+             !data.subsequence_failures.empty() &&
+             data.subsequence_failures[0].has_value()) {
+    const auto& next_step = data.subsequence_failures[0].value();
+    *os << "; while waiting for { step " << next_step.step_index << " (";
+    if (next_step.step_description.empty()) {
+      *os << next_step.step_type;
+    } else {
+      *os << next_step.step_description;
+    }
+    *os << "); id " << next_step.element_id << " }";
   }
 }
 

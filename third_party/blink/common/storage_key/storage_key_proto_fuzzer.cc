@@ -29,7 +29,7 @@ DEFINE_PROTO_FUZZER(const storage_key_proto::StorageKey& storage_key_proto) {
     blink::StorageKey storage_key = Convert(storage_key_proto);
 
     // General serialization test.
-    absl::optional<blink::StorageKey> maybe_storage_key =
+    std::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(storage_key.Serialize());
     assert(storage_key == maybe_storage_key.value());
 

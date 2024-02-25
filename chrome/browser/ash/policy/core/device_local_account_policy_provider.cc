@@ -75,13 +75,15 @@ bool DeviceLocalAccountPolicyProvider::IsFirstPolicyLoadComplete(
   return IsInitializationComplete(domain);
 }
 
-void DeviceLocalAccountPolicyProvider::RefreshPolicies() {
+void DeviceLocalAccountPolicyProvider::RefreshPolicies(
+    PolicyFetchReason reason) {
   DeviceLocalAccountPolicyBroker* broker = GetBroker();
   if (broker && broker->core()->service()) {
     waiting_for_policy_refresh_ = true;
     broker->core()->service()->RefreshPolicy(
         base::BindOnce(&DeviceLocalAccountPolicyProvider::ReportPolicyRefresh,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr()),
+        reason);
   } else {
     UpdateFromBroker();
   }

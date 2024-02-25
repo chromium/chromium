@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_WEB_CONTENTS_FRAME_TRACKER_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_WEB_CONTENTS_FRAME_TRACKER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +25,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -46,12 +47,11 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     virtual ~Context() = default;
 
     // Get bounds of the attached screen, if any.
-    virtual absl::optional<gfx::Rect> GetScreenBounds() = 0;
+    virtual std::optional<gfx::Rect> GetScreenBounds() = 0;
 
-    // While the DOM always has a FrameSinkId, we may want to capture
-    // a different frame sink ID overlaying the DOM content that represents
-    // what we actually want to capture.
-    virtual viz::FrameSinkId GetFrameSinkIdForCapture() = 0;
+    // Get the capture target that we should use. This may be different from the
+    // frame sink target associated with the DOM.
+    virtual WebContentsImpl::CaptureTarget GetCaptureTarget() = 0;
 
     // Capturer count handling is tricky in testing, since setting it
     // on the web contents uses a view even though the view may not be
@@ -122,23 +122,31 @@ class CONTENT_EXPORT WebContentsFrameTracker final
 
   void SetWebContentsAndContextFromRoutingId(const GlobalRenderFrameHostId& id);
 
-  // Start/stop cropping.
+  // Start/stop cropping or restricting a tab-caputre video track.
   //
   // Must only be called on the UI thread.
   //
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // Non-empty |target| sets (or changes) the target, and |type| determines
+  // which type of sub-capture mutation is expected.
   //
-  // |crop_version| must be incremented by at least one for each call.
-  // By including it in frame's metadata, Viz informs Blink what was the
-  // latest invocation of cropTo() before a given frame was produced.
+  // Empty |target| reverts the capture to its original state.
+  // In that case, |type| is not generally useful, and is ignored. It can
+  // be expected to match the method called from JS - cropTo() or restrictTo().
+  //
+  // |sub_capture_target_version| must be incremented by at least one for each
+  // call. By including it in frame's metadata, Viz informs Blink what was the
+  // latest invocation of cropTo() or restrictTo() before a given frame was
+  // produced.
   //
   // The callback reports success/failure. The callback may be called on an
   // arbitrary sequence, so the caller is responsible for re-posting it
   // to the desired target sequence as necessary.
-  void Crop(const base::Token& crop_id,
-            uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+  void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
 
   // WebContents are retrieved on the UI thread normally, from the render IDs,
   // so this method is provided for tests to set the web contents directly.
@@ -164,6 +172,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // the capture scale override, if necessary.
   float DetermineMaxScaleOverride();
 
+  // Return the right VideoCaptureSubTarget based on whether which sub-capture
+  // has been applied, if any.
+  viz::VideoCaptureSubTarget DeriveSubTarget() const;
+
   // The maximum capture scale override.
   static const float kMaxCaptureScaleOverride;
 
@@ -173,34 +185,41 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // The task runner to be used for device callbacks.
   const scoped_refptr<base::SequencedTaskRunner> device_task_runner_;
 
-  // Owned by FrameSinkVideoCaptureDevice. This will be valid for the life of
-  // WebContentsFrameTracker because the WebContentsFrameTracker deleter task
-  // will be posted to the UI thread before the MouseCursorOverlayController
-  // deleter task.
+  // Owned by FrameSinkVideoCaptureDevice.  This may only be accessed on the
+  // UI thread. This is not guaranteed to be valid and must be checked before
+  // use.
+  // https://crbug.com/1480152
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<MouseCursorOverlayController, AcrossTasksDanglingUntriaged>
-      cursor_controller_ = nullptr;
+  const base::WeakPtr<MouseCursorOverlayController> cursor_controller_;
 #endif
 
   // We may not have a frame sink ID target at all times.
   std::unique_ptr<Context> context_;
   viz::FrameSinkId target_frame_sink_id_;
-  base::Token crop_id_;
   gfx::NativeView target_native_view_ = gfx::NativeView();
+
+  struct SubCaptureTargetInfo {
+    SubCaptureTargetInfo(media::mojom::SubCaptureTargetType type,
+                         base::Token token)
+        : type(type), token(token) {}
+    media::mojom::SubCaptureTargetType type;
+    base::Token token;
+  };
+  std::optional<SubCaptureTargetInfo> sub_capture_target_;
 
   // Indicates whether the WebContents's capturer count needs to be
   // decremented.
   bool is_capturing_ = false;
 
-  // Whenever the crop-target of a stream changes, the associated crop-version
-  // is incremented. This value is used in frames' metadata so as to allow
-  // other modules (mostly Blink) to see which frames are cropped to the
-  // old/new specified crop-target.
+  // Whenever the crop-target of a stream changes, the associated
+  // sub-capture-target-version is incremented. This value is used in frames'
+  // metadata so as to allow other modules (mostly Blink) to see which frames
+  // are cropped to the old/new specified crop-target.
   //
   // The value 0 is used before any crop-target is assigned. (Note that by
   // cropping and then uncropping, values other than 0 can also be associated
   // with an uncropped track.)
-  uint32_t crop_version_ = 0;
+  uint32_t sub_capture_target_version_ = 0;
 
   // Scale multiplier used for the captured content when HiDPI capture mode is
   // active. A value of 1.0 means no override, using the original unmodified
@@ -225,10 +244,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   float max_capture_scale_override_ = kMaxCaptureScaleOverride;
 
   // The last reported content size, if any.
-  absl::optional<gfx::Size> content_size_;
+  std::optional<gfx::Size> content_size_;
 
   // The last received video capture feedback, if any.
-  absl::optional<media::VideoCaptureFeedback> capture_feedback_;
+  std::optional<media::VideoCaptureFeedback> capture_feedback_;
 
   // The consumer-requested capture size, set in |WillStartCapturingWebContents|
   // to indicate the preferred frame size from the video frame consumer. Note

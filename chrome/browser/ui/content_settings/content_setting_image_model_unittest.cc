@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -11,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
@@ -41,16 +42,13 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/cookie_access_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -83,7 +81,7 @@ class TestQuietNotificationPermissionUiSelector
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
   }
 
   bool IsPermissionRequestSupported(
@@ -105,8 +103,7 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
          // Enable all sensors just to avoid hardcoding the expected messages
          // to the motion sensor-specific ones.
          features::kGenericSensorExtraClasses},
-        {permissions::features::kBlockRepeatedNotificationPermissionPrompts,
-         permissions::features::kPermissionQuietChip});
+        {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
   }
 
   ContentSettingImageModelTest(const ContentSettingImageModelTest&) = delete;
@@ -217,8 +214,8 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      origin, "A=B", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame())
@@ -650,82 +647,6 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconVisibility) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ContentSettingImageModelTest, NotificationsPrompt) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  profile->GetPrefs()->SetBoolean(prefs::kEnableQuietNotificationPermissionUi,
-                                  true);
-
-  auto content_setting_image_model =
-      ContentSettingImageModel::CreateForContentType(
-          ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_);
-  WaitForBubbleToBeShown();
-  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_NE(0, content_setting_image_model->explanatory_string_id());
-  manager_->Accept();
-  EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
-  content_setting_image_model->Update(web_contents());
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-}
-
-TEST_F(ContentSettingImageModelTest, NotificationsPromptCrowdDeny) {
-  auto content_setting_image_model =
-      ContentSettingImageModel::CreateForContentType(
-          ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_permission_ui_selector_for_testing(
-      std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::PermissionUiSelector::QuietUiReason::
-              kTriggeredByCrowdDeny));
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_);
-  WaitForBubbleToBeShown();
-  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
-  manager_->Accept();
-}
-
-TEST_F(ContentSettingImageModelTest, NotificationsPromptAbusive) {
-  auto content_setting_image_model =
-      ContentSettingImageModel::CreateForContentType(
-          ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_permission_ui_selector_for_testing(
-      std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::PermissionUiSelector::QuietUiReason::
-              kTriggeredDueToAbusiveRequests));
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_);
-  WaitForBubbleToBeShown();
-  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
-  manager_->Accept();
-}
-
-TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
-  auto content_setting_image_model =
-      ContentSettingImageModel::CreateForContentType(
-          ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_permission_ui_selector_for_testing(
-      std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::PermissionUiSelector::QuietUiReason::
-              kTriggeredDueToAbusiveContent));
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request_);
-  WaitForBubbleToBeShown();
-  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
-  manager_->Accept();
-}
-
 TEST_F(ContentSettingImageModelTest, StorageAccess) {
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
@@ -741,7 +662,12 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://example.com")), CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  }
 
   // Add a blocked permission.
   content_settings->OnTwoSitePermissionChanged(
@@ -749,8 +675,13 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://foo.com")), CONTENT_SETTING_BLOCK);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(),
-            &vector_icons::kBlockedBadgeIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessOffIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(),
+              &vector_icons::kBlockedBadgeIcon);
+  }
 
   // Change permission to be allowed. E.g. through PageInfo.
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -759,7 +690,12 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  }
 
   // Reset permissions.
   map->SetContentSettingDefaultScope(

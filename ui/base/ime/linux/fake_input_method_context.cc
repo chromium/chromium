@@ -33,8 +33,8 @@ void FakeInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
     const gfx::Range& selection_range,
-    const absl::optional<GrammarFragment>& fragment,
-    const absl::optional<AutocorrectInfo>& autocorrect) {}
+    const std::optional<GrammarFragment>& fragment,
+    const std::optional<AutocorrectInfo>& autocorrect) {}
 
 VirtualKeyboardController*
 FakeInputMethodContext::GetVirtualKeyboardController() {

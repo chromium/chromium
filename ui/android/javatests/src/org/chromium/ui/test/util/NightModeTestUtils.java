@@ -13,16 +13,13 @@ import org.chromium.base.test.params.ParameterSet;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Helper methods to be used in tests to specify night mode state.
- */
+/** Helper methods to be used in tests to specify night mode state. */
 public class NightModeTestUtils {
-    /**
-     * {@link ParameterProvider} used for parameterized test that provides the night mode state.
-     */
+    /** {@link ParameterProvider} used for parameterized test that provides the night mode state. */
     public static class NightModeParams implements ParameterProvider {
         private static List<ParameterSet> sNightModeParams =
-                Arrays.asList(new ParameterSet().value(false).name("NightModeDisabled"),
+                Arrays.asList(
+                        new ParameterSet().value(false).name("NightModeDisabled"),
                         new ParameterSet().value(true).name("NightModeEnabled"));
 
         @Override
@@ -36,19 +33,21 @@ public class NightModeTestUtils {
      * @param nightModeEnabled Whether night mode should be enabled.
      */
     public static void setUpNightModeForBlankUiTestActivity(boolean nightModeEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            AppCompatDelegate.setDefaultNightMode(nightModeEnabled
-                            ? AppCompatDelegate.MODE_NIGHT_YES
-                            : AppCompatDelegate.MODE_NIGHT_NO);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                            nightModeEnabled
+                                    ? AppCompatDelegate.MODE_NIGHT_YES
+                                    : AppCompatDelegate.MODE_NIGHT_NO);
+                });
     }
 
-    /**
-     * Resets the night mode state for {@link BlankUiTestActivity}.
-     */
+    /** Resets the night mode state for {@link BlankUiTestActivity}. */
     public static void tearDownNightModeForBlankUiTestActivity() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                });
     }
 }

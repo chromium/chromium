@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RelaunchWindow": {
+            "entries": [
+              {
+                "duration_mins": 240,
+                "start": {
+                  "hour": 2,
+                  "minute": 15
+                }
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "browser.relaunch_window": {
+            "location": "local_state",
+            "value": {
+              "entries": [
+                {
+                  "duration_mins": 240,
+                  "start": {
+                    "hour": 2,
+                    "minute": 15
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+]

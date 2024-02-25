@@ -119,8 +119,7 @@ class NetworkChangeManagerClient
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  raw_ptr<net::NetworkChangeNotifierPassive, ExperimentalAsh>
-      network_change_notifier_;
+  raw_ptr<net::NetworkChangeNotifierPassive> network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
   mojo::RemoteSet<crosapi::mojom::NetworkChangeObserver>
       lacros_network_change_observers_;

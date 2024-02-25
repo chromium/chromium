@@ -53,9 +53,9 @@ enum class PageActionPageEvent {
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {
- public:
-  METADATA_HEADER(PageActionIconView);
+  METADATA_HEADER(PageActionIconView, IconLabelBubbleView)
 
+ public:
   class Delegate {
    public:
     // Gets the opacity to use for the ink highlight.
@@ -146,6 +146,9 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // Invoked prior to executing the command.
   virtual void OnExecuting(ExecuteSource execute_source) = 0;
+
+  // Invoked after executing the command.
+  virtual void DidExecute(ExecuteSource execute_source) {}
 
   // Invoked after the icon is pressed.
   virtual void OnPressed(bool activated) {}

@@ -18,9 +18,21 @@ namespace viz {
 // 1. aura::Window capture by use of SubtreeCaptureId.
 // 2. Element level capture by use of SubtreeCaptureId.
 // 3. Region level capture by use of a RegionCaptureCropId.
-// 4. Entire frame sink (e.g. tab capture) by use of absl::monostate.
+// 4. Entire tab capture (e.g. tab capture) by use of absl::monostate.
 using VideoCaptureSubTarget =
     absl::variant<absl::monostate, SubtreeCaptureId, RegionCaptureCropId>;
+
+inline bool IsEntireTabCapture(const VideoCaptureSubTarget& sub_target) {
+  return absl::holds_alternative<absl::monostate>(sub_target);
+}
+
+inline bool IsSubtreeCapture(const VideoCaptureSubTarget& sub_target) {
+  return absl::holds_alternative<SubtreeCaptureId>(sub_target);
+}
+
+inline bool IsRegionCapture(const VideoCaptureSubTarget& sub_target) {
+  return absl::holds_alternative<RegionCaptureCropId>(sub_target);
+}
 
 // All of the information necessary to select a target for capture.
 // If constructed, the |frame_sink_id| must be valid and |sub_target|
@@ -45,14 +57,8 @@ struct VIZ_COMMON_EXPORT VideoCaptureTarget {
   VideoCaptureTarget& operator=(const VideoCaptureTarget& other);
   VideoCaptureTarget& operator=(VideoCaptureTarget&& other);
 
-  inline bool operator==(const VideoCaptureTarget& other) const {
-    return frame_sink_id == other.frame_sink_id &&
-           sub_target == other.sub_target;
-  }
-
-  inline bool operator!=(const VideoCaptureTarget& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const VideoCaptureTarget&,
+                         const VideoCaptureTarget&) = default;
 
   // The target frame sink id. Must be valid.
   FrameSinkId frame_sink_id;

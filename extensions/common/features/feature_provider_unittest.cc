@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
@@ -17,6 +18,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +63,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       mojom::ContextType::kUnspecified, GURL(),
                                        kUnspecifiedContextId, TestContextData())
                 .result());
 
@@ -71,7 +73,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
   EXPECT_EQ(Feature::INVALID_TYPE,
             feature
                 ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       mojom::ContextType::kUnspecified, GURL(),
                                        kUnspecifiedContextId, TestContextData())
                 .result());
 
@@ -81,7 +83,7 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
   EXPECT_EQ(Feature::NOT_PRESENT,
             feature
                 ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       mojom::ContextType::kUnspecified, GURL(),
                                        kUnspecifiedContextId, TestContextData())
                 .result());
 }
@@ -118,9 +120,9 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   const Feature* feature = provider->GetFeature("power");
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
-                ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL(), kUnspecifiedContextId,
-                                       TestContextData())
+                ->IsAvailableToContext(app.get(),
+                                       mojom::ContextType::kUnspecified, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
                 .result());
 
   // A permission only available to allowlisted extensions returns availability
@@ -132,9 +134,9 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
-                ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL(), kUnspecifiedContextId,
-                                       TestContextData())
+                ->IsAvailableToContext(app.get(),
+                                       mojom::ContextType::kUnspecified, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
                 .result());
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -143,16 +145,16 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_PRESENT,
             feature
-                ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL(), kUnspecifiedContextId,
-                                       TestContextData())
+                ->IsAvailableToContext(app.get(),
+                                       mojom::ContextType::kUnspecified, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
                 .result());
 }
 
 TEST(FeatureProviderTest, GetChildren) {
   FeatureProvider provider;
 
-  auto add_feature = [&provider](base::StringPiece name,
+  auto add_feature = [&provider](std::string_view name,
                                  bool no_parent = false) {
     auto feature = std::make_unique<SimpleFeature>();
     feature->set_name(name);
@@ -186,8 +188,8 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
 
   auto delegated_availability_check =
       [&](const std::string& api_full_name, const Extension* extension,
-          Feature::Context context, const GURL& url, Feature::Platform platform,
-          int context_id, bool check_developer_mode,
+          mojom::ContextType context, const GURL& url,
+          Feature::Platform platform, int context_id, bool check_developer_mode,
           const ContextData& context_data) { return false; };
   map.emplace(kDelegatedFeatureName,
               base::BindLambdaForTesting(delegated_availability_check));

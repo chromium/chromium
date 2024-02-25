@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,11 +15,11 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -32,15 +33,19 @@ class AttributionSqlQueryPlanTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    std::unique_ptr<AttributionStorage> storage =
-        std::make_unique<AttributionStorageSql>(
-            temp_directory_.GetPath(),
-            std::make_unique<ConfigurableStorageDelegate>());
 
-    // Make sure lazy initialization happens by adding a record to the db, but
-    // then ensure the database is closed so the sqlite_dev_shell can read it.
-    storage->StoreSource(SourceBuilder().Build());
-    storage.reset();
+    {
+      std::unique_ptr<AttributionStorage> storage =
+          std::make_unique<AttributionStorageSql>(
+              temp_directory_.GetPath(),
+              std::make_unique<ConfigurableStorageDelegate>());
+
+      // Make sure lazy initialization happens by adding a record to the db, but
+      // then ensure the database is closed so the sqlite_dev_shell can read it.
+      auto result = storage->StoreSource(SourceBuilder().Build());
+      ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
+    }
+
     explainer_ = std::make_unique<SqlQueryPlanExplainer>(
         temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions")));
   }
@@ -48,7 +53,7 @@ class AttributionSqlQueryPlanTest : public testing::Test {
   // Helper method to make tests as readable as possible.
   base::expected<SqlQueryPlan, SqlQueryPlanExplainer::Error> GetPlan(
       std::string query,
-      absl::optional<SqlFullScanReason> reason = absl::nullopt) {
+      std::optional<SqlFullScanReason> reason = std::nullopt) {
     return explainer_->GetPlan(std::move(query), reason);
   }
 
@@ -97,8 +102,9 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteVestigialConversionSql) {
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountSourcesSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kCountSourcesSql),
-              ValueIs(UsesIndex("active_sources_by_source_origin")));
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kCountActiveSourcesFromSourceOriginSql),
+      ValueIs(UsesIndex("active_sources_by_source_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDedupKeySql) {

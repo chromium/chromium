@@ -47,8 +47,8 @@ def Fix(line):
     if result:
       line = result.group(1)
   # For Android tests:
-  if line[:2] == 'I ':
-    result = re.search('I.*run_tests_on_device\([^\)]+\)\s+(.*)',
+  if line[:2] == 'I ' or line[:2] == 'E ':
+    result = re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)',
                        line)
     if result:
       line = result.group(1)
@@ -144,16 +144,16 @@ def Run():
             name.startswith('content_browsertests')) and '(with patch)' in name:
           s_name = name
 
-      bb_command = [
-          'bb',
-          'log',
-          builder['id'],
-          '\"%s\"' % s_name,
-      ]
-      bb_command_expanded = ' '.join(bb_command)
-      # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
-      output = os.popen(bb_command_expanded).readlines()
-      ParseLog('\n'.join(output))
+          bb_command = [
+              'bb',
+              'log',
+              builder['id'],
+              '\"%s\"' % s_name,
+          ]
+          bb_command_expanded = ' '.join(bb_command)
+          # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
+          output = os.popen(bb_command_expanded).readlines()
+          ParseLog('\n'.join(output))
       if not output:
         print('No content_browsertests (with patch) step found')
         continue

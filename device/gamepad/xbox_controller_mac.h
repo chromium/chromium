@@ -157,7 +157,10 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // Send an Xbox One rumble packet to the device, where |strong_magnitude| and
   // |weak_magnitude| are values in the range [0,255] that represent the
   // vibration intensity for the strong and weak rumble motors.
-  void WriteXboxOneRumble(uint8_t strong_magnitude, uint8_t weak_magnitude);
+  void WriteXboxOneRumble(uint8_t strong_magnitude,
+                          uint8_t weak_magnitude,
+                          uint8_t left_trigger,
+                          uint8_t right_trigger);
 
   // Send an Xbox One packet to the device acknowledging that the Xbox button
   // was pressed or released. |sequence_number| must match the value in the

@@ -5,10 +5,10 @@
 import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './connectors_tabs.html.js';
 import {DeviceTrustConnectorElement} from './device_trust_connector.js';
+import {ManagedClientCertificateElement} from './managed_client_certificate.js';
 
 interface ConnectorTab {
   // Title used as the tab button's text.
@@ -25,11 +25,18 @@ interface ConnectorTab {
 
 // Set of all connector tabs. Adding a new entry here will make it automatically
 // show in the UI.
-const connectorTabs: ConnectorTab[] = [{
-  title: 'Device Trust',
-  directive: DeviceTrustConnectorElement.is,
-  isEnabled: loadTimeData.getBoolean('deviceTrustConnectorEnabled'),
-}];
+const connectorTabs: ConnectorTab[] = [
+  {
+    title: 'Device Trust',
+    directive: DeviceTrustConnectorElement.is,
+    isEnabled: true,
+  },
+  {
+    title: 'Managed Client Certificate',
+    directive: ManagedClientCertificateElement.is,
+    isEnabled: true,
+  },
+];
 
 class ConnectorsTabsElement extends CustomElement {
   static get is() {

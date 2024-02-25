@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,10 +41,10 @@ class COMPONENT_EXPORT(HPS) FakeHumanPresenceDBusClient
 
   // Methods for co-ordinating GetResultHpsNotify calls in tests.
 
-  void set_hps_notify_result(absl::optional<hps::HpsResultProto> result) {
+  void set_hps_notify_result(std::optional<hps::HpsResultProto> result) {
     hps_notify_result_ = result;
   }
-  void set_hps_sense_result(absl::optional<hps::HpsResultProto> result) {
+  void set_hps_sense_result(std::optional<hps::HpsResultProto> result) {
     hps_sense_result_ = result;
   }
 
@@ -73,8 +74,8 @@ class COMPONENT_EXPORT(HPS) FakeHumanPresenceDBusClient
   void Reset();
 
  private:
-  absl::optional<hps::HpsResultProto> hps_notify_result_;
-  absl::optional<hps::HpsResultProto> hps_sense_result_;
+  std::optional<hps::HpsResultProto> hps_notify_result_;
+  std::optional<hps::HpsResultProto> hps_sense_result_;
   int hps_notify_count_ = 0;
   int hps_sense_count_ = 0;
   int enable_hps_notify_count_ = 0;

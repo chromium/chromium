@@ -33,9 +33,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton,
       public display::DisplayObserver {
- public:
-  METADATA_HEADER(FrameSizeButton);
+  METADATA_HEADER(FrameSizeButton, views::FrameCaptionButton)
 
+ public:
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
 
   FrameSizeButton(const FrameSizeButton&) = delete;
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void StateChanged(views::Button::ButtonState old_state) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // right.
   bool in_snap_mode_ = false;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::WeakPtrFactory<FrameSizeButton> weak_factory_{this};
 };

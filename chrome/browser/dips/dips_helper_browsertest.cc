@@ -58,19 +58,6 @@ using testing::Pair;
 using testing::Optional;
 using testing::Pair;
 
-namespace {
-
-// Histogram names
-constexpr char kTimeToInteraction[] =
-    "Privacy.DIPS.TimeFromStorageToInteraction.Block3PC";
-constexpr char kTimeToStorage[] =
-    "Privacy.DIPS.TimeFromInteractionToStorage.Block3PC";
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kTimeToInteraction_OTR_Block3PC[] =
-    "Privacy.DIPS.TimeFromStorageToInteraction.OffTheRecord_Block3PC";
-#endif
-}  // namespace
-
 class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
                                  public testing::WithParamInterface<bool> {
  protected:
@@ -175,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
   GURL url_b = embedded_test_server()->GetURL("b.test", "/title1.html");
   const std::string kIframeId = "test";  // defined in iframe_blank.html
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   // The top-level page is on a.test.
@@ -193,11 +180,11 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   observer_a.Wait();
 
   // User interaction is recorded for a.test (the top-level frame).
-  absl::optional<StateValue> state_a =
+  std::optional<StateValue> state_a =
       GetDIPSState(GetDipsService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_a->user_interaction_times->first);
+  EXPECT_EQ(std::make_optional(time), state_a->user_interaction_times->first);
 
   // Update the top-level page to have an iframe pointing to b.test.
   ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId, url_b));
@@ -208,8 +195,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   content::WaitForHitTestData(iframe);
 
   // Click on the b.test iframe.
-  base::Time frame_interaction_time =
-      time + DIPSBounceDetector::kTimestampUpdateInterval;
+  base::Time frame_interaction_time = time + kDIPSTimestampUpdateInterval;
   SetDIPSTime(frame_interaction_time);
   UserActivationObserver observer_b(web_contents, iframe);
 
@@ -227,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   state_a = GetDIPSState(GetDipsService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
-  EXPECT_EQ(absl::make_optional(frame_interaction_time),
+  EXPECT_EQ(std::make_optional(frame_interaction_time),
             state_a->user_interaction_times->second);
 
   // The iframe site doesn't have any state.
@@ -237,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        MultipleUserInteractionsRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   SetDIPSTime(time);
@@ -254,33 +240,31 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   observer1.Wait();
 
   // One instance of user interaction is recorded.
-  absl::optional<StateValue> state_1 =
+  std::optional<StateValue> state_1 =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state_1.has_value());
   EXPECT_FALSE(state_1->site_storage_times.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_1->user_interaction_times->first);
+  EXPECT_EQ(std::make_optional(time), state_1->user_interaction_times->first);
   EXPECT_EQ(state_1->user_interaction_times->first,
             state_1->user_interaction_times->second);
 
-  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
-              base::Seconds(10));
+  SetDIPSTime(time + kDIPSTimestampUpdateInterval + base::Seconds(10));
   UserActivationObserver observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer_2.Wait();
 
   // A second, different, instance of user interaction is recorded for the same
   // site.
-  absl::optional<StateValue> state_2 =
+  std::optional<StateValue> state_2 =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state_2.has_value());
   EXPECT_FALSE(state_2->site_storage_times.has_value());
   EXPECT_NE(state_2->user_interaction_times->second,
             state_2->user_interaction_times->first);
-  EXPECT_EQ(absl::make_optional(time), state_2->user_interaction_times->first);
-  EXPECT_EQ(
-      absl::make_optional(time + DIPSBounceDetector::kTimestampUpdateInterval +
-                          base::Seconds(10)),
-      state_2->user_interaction_times->second);
+  EXPECT_EQ(std::make_optional(time), state_2->user_interaction_times->first);
+  EXPECT_EQ(std::make_optional(time + kDIPSTimestampUpdateInterval +
+                               base::Seconds(10)),
+            state_2->user_interaction_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
@@ -295,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
   GURL url_b = https_server.GetURL("b.test", "/title1.html");
   const std::string kIframeId = "test";  // defined in iframe_blank.html
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   // The top-level page is on a.test, containing an iframe pointing at b.test.
@@ -320,12 +304,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   observer.Wait();
 
   // Nothing recorded for a.test (the top-level frame).
-  absl::optional<StateValue> state_a =
+  std::optional<StateValue> state_a =
       GetDIPSState(GetDipsService(web_contents), url_a);
   EXPECT_FALSE(state_a.has_value());
   // Nothing recorded for b.test (the iframe), since we don't record non main
   // frame URLs to DIPS State.
-  absl::optional<StateValue> state_b =
+  std::optional<StateValue> state_b =
       GetDIPSState(GetDipsService(web_contents), url_b);
   EXPECT_FALSE(state_b.has_value());
 }
@@ -344,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   GURL image_url =
       https_server.GetURL("b.test", "/set-cookie?foo=bar;Secure;SameSite=None");
   content::WebContents* web_contents = GetActiveWebContents();
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   SetDIPSTime(time);
   // Set SameSite=None cookie on b.test.
@@ -392,18 +376,18 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
   ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
 
   // One instance of site storage is recorded.
-  absl::optional<StateValue> state_1 =
+  std::optional<StateValue> state_1 =
       GetDIPSState(GetDipsService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_1.has_value());
   EXPECT_FALSE(state_1->user_interaction_times.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_1->site_storage_times->first);
+  EXPECT_EQ(std::make_optional(time), state_1->site_storage_times->first);
   EXPECT_EQ(state_1->site_storage_times->second,
             state_1->site_storage_times->first);
 
@@ -413,225 +397,15 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
 
   // A second, different, instance of site storage is recorded for the same
   // site.
-  absl::optional<StateValue> state_2 =
+  std::optional<StateValue> state_2 =
       GetDIPSState(GetDipsService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_2.has_value());
   EXPECT_FALSE(state_2->user_interaction_times.has_value());
   EXPECT_NE(state_2->site_storage_times->second,
             state_2->site_storage_times->first);
-  EXPECT_EQ(absl::make_optional(time), state_2->site_storage_times->first);
-  EXPECT_EQ(absl::make_optional(time + base::Seconds(10)),
+  EXPECT_EQ(std::make_optional(time), state_2->site_storage_times->first);
+  EXPECT_EQ(std::make_optional(time + base::Seconds(10)),
             state_2->site_storage_times->second);
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
-  base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromDoubleT(1);
-  content::WebContents* web_contents = GetActiveWebContents();
-
-  SetDIPSTime(time);
-  // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-  // Wait until we can click.
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-
-  SetDIPSTime(time + base::Seconds(10));
-  UserActivationObserver observer(web_contents,
-                                  web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 1);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-  histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       Histograms_StorageThenClick_Incognito) {
-// TODO(crbug.com/1380410): Enable this test on Android once the logic to
-// create an Incognito browser without regard to platform is public.
-#if !BUILDFLAG(IS_ANDROID)
-  base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromDoubleT(1);
-  Browser* browser = CreateIncognitoBrowser();
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  // Make our helper methods use the incognito WebContents.
-  OverrideActiveWebContents(web_contents);
-  DIPSWebContentsObserver::FromWebContents(web_contents)
-      ->SetClockForTesting(test_clock());
-  SetDIPSTime(time);
-  // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-  // Wait until we can click.
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToInteraction_OTR_Block3PC, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-
-  SetDIPSTime(time + base::Seconds(10));
-  UserActivationObserver observer(web_contents,
-                                  web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  // Incognito Mode defaults to blocking third-party cookies.
-  histograms.ExpectTotalCount(kTimeToInteraction_OTR_Block3PC, 1);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-  histograms.ExpectUniqueTimeSample(kTimeToInteraction_OTR_Block3PC,
-                                    base::Seconds(10), 1);
-#endif
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
-  base::HistogramTester histograms;
-  base::Time time = base::Time::FromDoubleT(1);
-  content::WebContents* web_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, embedded_test_server()->GetURL("b.test", "/title1.html")));
-  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  content::WaitForHitTestData(frame);  // wait until we can click.
-  SetDIPSTime(time);
-  UserActivationObserver click_observer(web_contents, frame);
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  click_observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-
-  // Write a cookie now that the click has been handled.
-  SetDIPSTime(time + base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame,
-                                            CookieAccessDetails::Type::kChange);
-  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  cookie_observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 1);
-  histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(10), 1);
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       Histograms_MultipleStoragesThenClick) {
-  base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromDoubleT(1);
-  content::WebContents* web_contents = GetActiveWebContents();
-
-  SetDIPSTime(time);
-  // Navigating to this URL sets a cookie.
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-  WaitOnStorage(GetDipsService(web_contents));
-
-  // Navigate to the URL, setting the cookie again.
-  SetDIPSTime(time + base::Seconds(3));
-  ASSERT_TRUE(NavigateToURLAndWaitForCookieWrite(url));
-  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  // Wait until we can click.
-  content::WaitForHitTestData(frame);
-  WaitOnStorage(GetDipsService(web_contents));
-
-  // Verify both cookie writes were recorded.
-  absl::optional<StateValue> state =
-      GetDIPSState(GetDipsService(web_contents), url);
-  ASSERT_TRUE(state.has_value());
-  EXPECT_NE(state->site_storage_times->first,
-            state->site_storage_times->second);
-  EXPECT_EQ(absl::make_optional(time), state->site_storage_times->first);
-  EXPECT_EQ(absl::make_optional(time + base::Seconds(3)),
-            state->site_storage_times->second);
-  EXPECT_FALSE(state->user_interaction_times.has_value());
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-
-  SetDIPSTime(time + base::Seconds(10));
-  UserActivationObserver observer(web_contents, frame);
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 1);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-  // Unlike for TimeToStorage metrics, we want to know the time from the
-  // first site storage, not the most recent, so the reported time delta
-  // should be 10 seconds (not 7).
-  histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       Histograms_MultipleClicksThenStorage) {
-  base::HistogramTester histograms;
-  GURL url = embedded_test_server()->GetURL("b.test", "/title1.html");
-  base::Time time = base::Time::FromDoubleT(1);
-  content::WebContents* web_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
-  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  content::WaitForHitTestData(frame);  // Wait until we can click.
-
-  // Click once.
-  SetDIPSTime(time);
-  UserActivationObserver click_observer1(web_contents, frame);
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  click_observer1.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  // Click a second time.
-  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
-              base::Seconds(3));
-  UserActivationObserver click_observer_2(web_contents, frame);
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  click_observer_2.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  // Verify both clicks were recorded.
-  absl::optional<StateValue> state =
-      GetDIPSState(GetDipsService(web_contents), url);
-  ASSERT_TRUE(state.has_value());
-  EXPECT_NE(state->user_interaction_times->first,
-            state->user_interaction_times->second);
-  EXPECT_EQ(absl::make_optional(time), state->user_interaction_times->first);
-  EXPECT_EQ(
-      absl::make_optional(time + DIPSBounceDetector::kTimestampUpdateInterval +
-                          base::Seconds(3)),
-      state->user_interaction_times->second);
-  EXPECT_FALSE(state->site_storage_times.has_value());
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 0);
-
-  // Write a cookie now that both clicks have been handled.
-  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
-              base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame,
-                                            CookieAccessDetails::Type::kChange);
-  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  cookie_observer.Wait();
-  WaitOnStorage(GetDipsService(web_contents));
-
-  histograms.ExpectTotalCount(kTimeToInteraction, 0);
-  histograms.ExpectTotalCount(kTimeToStorage, 1);
-  // Unlike for TimeToInteraction metrics, we want to know the time from the
-  // most recent user interaction, not the first, so the reported time delta
-  // should be 7 seconds (not 10).
-  histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(7), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
@@ -649,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   observer.Wait();
 
   // Verify it was added.
-  absl::optional<StateValue> state_initial =
+  std::optional<StateValue> state_initial =
       GetDIPSState(GetDipsService(web_contents), GURL("http://a.test"));
   ASSERT_TRUE(state_initial.has_value());
   ASSERT_TRUE(state_initial->user_interaction_times.has_value());
@@ -672,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   run_loop.Run();
 
   // Verify that the user interaction has been cleared from the DIPS DB.
-  absl::optional<StateValue> state_final =
+  std::optional<StateValue> state_final =
       GetDIPSState(GetDipsService(web_contents), GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
 }
@@ -746,6 +520,32 @@ IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateTest) {
                             GURL("http://c.test"));
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->user_interaction_times.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PRE_PrepopulateOTRTest) {
+  ASSERT_EQ(dips_service, nullptr);  // Verify that DIPS is off.
+  // Simulate the user typing the URL to visit the page, which will record site
+  // engagement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("c.test", "/title1.html"), 1));
+  FlushLossyWebsiteSettings();
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateOTRTest) {
+  ASSERT_NE(dips_service, nullptr);  // Verify that DIPS is on.
+  // Even though there was previous site engagement in the regular profile, the
+  // DIPS storage should not be prepopulated with a user interaction timestamp
+  // in the OTR profile.
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      /*user_gesture=*/true));
+
+  DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile())
+      ->WaitForInitCompleteForTesting();
+  std::optional<StateValue> state = GetDIPSState(
+      DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile()),
+      GURL("http://c.test"));
+  EXPECT_FALSE(state.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest,
@@ -822,7 +622,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                            ->storage();
 
   for (int i = 0; i < 10; i++) {
-    const base::Time bounce_time = base::Time::FromDoubleT(i + 1);
+    const base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(i + 1);
     SetDIPSTime(bounce_time);
     LOG(INFO) << "*** i=" << i << " ***";
     // Make b.test statefully bounce.
@@ -837,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
     EndRedirectChain();
 
     // Verify the bounces were recorded.
-    absl::optional<StateValue> b_state =
+    std::optional<StateValue> b_state =
         GetDIPSState(GetDipsService(web_contents), GURL("http://b.test"));
     ASSERT_TRUE(b_state.has_value());
     ASSERT_THAT(b_state->site_storage_times,
@@ -898,18 +698,18 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EndRedirectChain();
 
   // Verify the bounces were recorded. b.test:
-  absl::optional<StateValue> state =
+  std::optional<StateValue> state =
       GetDIPSState(GetDipsService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(old_bounce_time, old_bounce_time)));
-  ASSERT_EQ(state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(state->user_interaction_times, std::nullopt);
   // c.test:
   state = GetDIPSState(GetDipsService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(recent_bounce_time, recent_bounce_time)));
-  ASSERT_EQ(state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(state->user_interaction_times, std::nullopt);
 
   // Remove browsing data for the past hour. This should include c.test but not
   // b.test.
@@ -978,19 +778,19 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   EndRedirectChain();
 
   // Verify the bounces through b.test and c.test were recorded.
-  absl::optional<StateValue> b_state =
+  std::optional<StateValue> b_state =
       GetDIPSState(GetDipsService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(b_state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(b_state->user_interaction_times, std::nullopt);
 
-  absl::optional<StateValue> c_state =
+  std::optional<StateValue> c_state =
       GetDIPSState(GetDipsService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(c_state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(c_state->user_interaction_times, std::nullopt);
 
   // Open b.test in a new tab.
   auto new_tab = OpenInNewTab(
@@ -1019,8 +819,14 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
                   .has_value());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SitesInDestroyedTabsAreNotExempt \
+  DISABLED_SitesInDestroyedTabsAreNotExempt
+#else
+#define MAYBE_SitesInDestroyedTabsAreNotExempt SitesInDestroyedTabsAreNotExempt
+#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       SitesInDestroyedTabsAreNotExempt) {
+                       MAYBE_SitesInDestroyedTabsAreNotExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
   DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
@@ -1040,12 +846,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EndRedirectChain();
 
   // Verify the bounce through b.test was recorded.
-  absl::optional<StateValue> b_state =
+  std::optional<StateValue> b_state =
       GetDIPSState(GetDipsService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(b_state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(b_state->user_interaction_times, std::nullopt);
 
   // Open b.test in a new tab.
   auto new_tab = OpenInNewTab(
@@ -1091,12 +897,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EndRedirectChain();
 
   // Verify the bounce through c.test was recorded.
-  absl::optional<StateValue> c_state =
+  std::optional<StateValue> c_state =
       GetDIPSState(GetDipsService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
-  ASSERT_EQ(c_state->user_interaction_times, absl::nullopt);
+  ASSERT_EQ(c_state->user_interaction_times, std::nullopt);
 
   // Open c.test on a new tab in a new window/profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1104,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
       FILE_PATH_LITERAL("OtherProfile"));
   Browser* new_browser = chrome::OpenEmptyWindow(
       &profiles::testing::CreateProfileSync(profile_manager, profile_path));
-  chrome::NewTab(new_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GURL("http://c.test")));
 
   // Trigger the DIPS timer which would delete tracker data.

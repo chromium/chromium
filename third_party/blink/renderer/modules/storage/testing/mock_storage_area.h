@@ -58,11 +58,11 @@ class MockStorageArea : public mojom::blink::StorageArea {
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> observer) override;
   void Put(const Vector<uint8_t>& key,
            const Vector<uint8_t>& value,
-           const absl::optional<Vector<uint8_t>>& client_old_value,
+           const std::optional<Vector<uint8_t>>& client_old_value,
            const String& source,
            PutCallback callback) override;
   void Delete(const Vector<uint8_t>& key,
-              const absl::optional<Vector<uint8_t>>& client_old_value,
+              const std::optional<Vector<uint8_t>>& client_old_value,
               const String& source,
               DeleteCallback callback) override;
   void DeleteAll(

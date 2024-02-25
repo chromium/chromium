@@ -82,10 +82,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   mojom::ServiceState state_ = mojom::ServiceState::kStopped;
 
   // Called during |Initialize| to apply boot configuration.
-  raw_ptr<mojom::SettingsController, ExperimentalAsh> settings_controller_ =
-      nullptr;
+  raw_ptr<mojom::SettingsController> settings_controller_ = nullptr;
 
-  const raw_ref<LibassistantFactory, ExperimentalAsh> libassistant_factory_;
+  const raw_ref<LibassistantFactory> libassistant_factory_;
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;

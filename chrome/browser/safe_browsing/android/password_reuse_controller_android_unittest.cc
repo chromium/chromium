@@ -17,6 +17,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace safe_browsing {
 
 using ReusedPasswordAccountType = safe_browsing::LoginReputationClientRequest::
@@ -68,6 +72,12 @@ TEST_F(PasswordReuseControllerAndroidTest, ClickedClose) {
 }
 
 TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   MockOnWarningDone empty_callback;
   ReusedPasswordAccountType password_type;
 
@@ -124,6 +134,67 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
 
   delete controller;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonTextOnAutomotive) {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+  MockOnWarningDone empty_callback;
+  ReusedPasswordAccountType password_type;
+
+  PasswordReuseControllerAndroid* controller =
+      MakeController(nullptr, password_type, empty_callback.Get());
+
+  {
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+  {
+    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+  {
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(true);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+  {
+    ReusedPasswordAccountType empty_reused_password;
+    controller->SetReusedPasswordAccountTypeForTesting(empty_reused_password);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+  {
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+
+  delete controller;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordReuseControllerAndroidTest, WebContentDestroyed) {
   base::HistogramTester histograms;

@@ -12,6 +12,15 @@
 
 #include "ui/accessibility/ax_base_export.h"
 
+namespace ax::mojom {
+class AXModeDataView;
+}
+
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}
+
 namespace ui {
 
 class AX_BASE_EXPORT AXMode {
@@ -69,8 +78,8 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kLabelImages = 1 << 6;
 
   // The accessibility tree will contain enough information to export
-  // an accessible PDF.
-  static constexpr uint32_t kPDF = 1 << 7;
+  // an accessible PDF when printing to PDF.
+  static constexpr uint32_t kPDFPrinting = 1 << 7;
 
   // The PDF renderer process will run OCR to extract text from an inaccessible
   // PDF and add it to the accessibility tree.
@@ -88,33 +97,33 @@ class AX_BASE_EXPORT AXMode {
   constexpr AXMode(uint32_t flags, uint32_t experimental_flags)
       : flags_(flags), experimental_flags_(experimental_flags) {}
 
-  bool has_mode(uint32_t flag) const { return (flags_ & flag) == flag; }
+  constexpr bool has_mode(uint32_t flag) const {
+    return (flags_ & flag) == flag;
+  }
 
-  void set_mode(uint32_t flag, bool value) {
+  constexpr void set_mode(uint32_t flag, bool value) {
     flags_ = value ? (flags_ | flag) : (flags_ & ~flag);
   }
 
-  uint32_t flags() const { return flags_; }
+  constexpr uint32_t flags() const { return flags_; }
 
-  uint32_t experimental_flags() const { return experimental_flags_; }
+  constexpr uint32_t experimental_flags() const { return experimental_flags_; }
 
-  bool operator==(AXMode rhs) const {
-    return flags_ == rhs.flags_ &&
-           experimental_flags_ == rhs.experimental_flags_;
-  }
+  constexpr bool is_mode_off() const { return !flags_ && !experimental_flags_; }
 
-  bool is_mode_off() const { return flags_ == 0; }
-
-  bool operator!=(AXMode rhs) const {
-    return flags_ != rhs.flags_ ||
-           experimental_flags_ != rhs.experimental_flags_;
-  }
-
-  AXMode& operator|=(const AXMode& rhs) {
+  constexpr AXMode& operator|=(const AXMode& rhs) {
     flags_ |= rhs.flags_;
     experimental_flags_ |= rhs.experimental_flags_;
     return *this;
   }
+
+  constexpr AXMode& operator&=(const AXMode& rhs) {
+    flags_ &= rhs.flags_;
+    experimental_flags_ &= rhs.experimental_flags_;
+    return *this;
+  }
+
+  constexpr AXMode operator~() const { return {~flags_, ~experimental_flags_}; }
 
   bool HasExperimentalFlags(uint32_t experimental_flag) const;
   void SetExperimentalFlags(uint32_t experimental_flag, bool value);
@@ -140,6 +149,25 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_MAX
   };
 
+  // IMPORTANT!
+  // These values are written to logs. Do not renumber or delete
+  // existing items; add new entries to the end of the list.
+  enum class BundleHistogramValue {
+    // The unnamed bucket is a catch all for modes that do not match one of the
+    // named sets.
+    kUnnamed = 0,
+    // See static constants below for a description of each context.
+    kBasic = 1,
+    kWebContentsOnly = 2,
+    kComplete = 3,
+    kCompleteNoHTML = 4,
+    kFormControls = 5,
+
+    // This must always be the last enum. It's okay for its value to
+    // increase, but none of the other enum values may change.
+    kMaxValue = 5
+  };
+
   // Experimental Flags
   // These are currently defined separately from existing flags to avoid
   // making temporary changes to the defined enums until they are ready
@@ -148,32 +176,55 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kExperimentalFormControls = 1 << 0;
   static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
 
+ private:
+  friend struct mojo::StructTraits<ax::mojom::AXModeDataView, ui::AXMode>;
+
   uint32_t flags_ = 0U;
   uint32_t experimental_flags_ = 0U;
 };
 
+constexpr bool operator==(const AXMode& lhs, const AXMode& rhs) {
+  return lhs.flags() == rhs.flags() &&
+         lhs.experimental_flags() == rhs.experimental_flags();
+}
+
+constexpr bool operator!=(const AXMode& lhs, const AXMode& rhs) {
+  return lhs.flags() != rhs.flags() ||
+         lhs.experimental_flags() != rhs.experimental_flags();
+}
+
+constexpr AXMode operator|(const AXMode& lhs, const AXMode& rhs) {
+  return {lhs.flags() | rhs.flags(),
+          lhs.experimental_flags() | rhs.experimental_flags()};
+}
+
+constexpr AXMode operator&(const AXMode& lhs, const AXMode& rhs) {
+  return {lhs.flags() & rhs.flags(),
+          lhs.experimental_flags() & rhs.experimental_flags()};
+}
+
 // Used when an AT that only require basic accessibility information, such as
 // a dictation tool, is present.
-static constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
+inline constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
                                      AXMode::kWebContents);
 
 // Used when complete accessibility access is desired but a third-party AT is
 // not present.
-static constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
+inline constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
                                                AXMode::kInlineTextBoxes |
                                                AXMode::kScreenReader |
                                                AXMode::kHTML);
 
 // Used when an AT that requires full accessibility access, such as a screen
 // reader, is present.
-static constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
+inline constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |
                                         AXMode::kScreenReader | AXMode::kHTML);
 
 // Similar to kAXModeComplete, used when an AT that requires full accessibility
 // access, but does not need all HTML properties or attributes.
-static constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
+inline constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
                                               AXMode::kWebContents |
                                               AXMode::kInlineTextBoxes |
                                               AXMode::kScreenReader);
@@ -182,10 +233,12 @@ static constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
 // Some third password managers require kHTML.
 // TODO (aldietz): investigate what is needed by password managers in kHTML and
 // see if that may be folded into kAXModeBasic.
-static constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
+inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
                                                 AXMode::kWebContents |
                                                 AXMode::kHTML,
                                             AXMode::kExperimentalFormControls);
+
+// If adding a new named set of mode flags, please update BundleHistogramValue.
 
 // For debugging, test assertions, etc.
 AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,

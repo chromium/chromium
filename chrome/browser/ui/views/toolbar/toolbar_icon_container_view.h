@@ -20,9 +20,9 @@
 // A general view container for any type of toolbar icons.
 class ToolbarIconContainerView : public views::View,
                                  public views::ViewObserver {
- public:
-  METADATA_HEADER(ToolbarIconContainerView);
+  METADATA_HEADER(ToolbarIconContainerView, views::View)
 
+ public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnHighlightChanged() = 0;
@@ -47,9 +47,6 @@ class ToolbarIconContainerView : public views::View,
   void RemoveObserver(const Observer* obs);
 
   views::View* main_item() { return main_item_; }
-
-  void SetIconColor(SkColor icon_color);
-  SkColor GetIconColor() const;
 
   bool GetHighlighted() const;
 
@@ -111,13 +108,10 @@ class ToolbarIconContainerView : public views::View,
   // hierarchy.
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> main_item_ = nullptr;
 
-  // Override for the icon color. If not set, |kColorToolbarButtonIcon| is used.
-  absl::optional<SkColor> icon_color_;
-
   // Points to the child buttons that we know are currently highlighted.
   // TODO(pbos): Consider observing buttons leaving our hierarchy and removing
   // them from this set.
-  std::set<const views::Button*> highlighted_buttons_;
+  std::set<raw_ptr<const views::Button, SetExperimental>> highlighted_buttons_;
 
   RoundRectBorder border_{this};
 

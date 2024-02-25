@@ -4,13 +4,12 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for base::Features listed in {@link ContactsPickerFeatureList}
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for base::Features listed in {@link ContactsPickerFeatureList} */
 @JNINamespace("browser_ui")
 public final class ContactsPickerFeatureMap extends FeatureMap {
     private static final ContactsPickerFeatureMap sInstance = new ContactsPickerFeatureMap();
@@ -18,16 +17,12 @@ public final class ContactsPickerFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private ContactsPickerFeatureMap() {}
 
-    /**
-     * @return the singleton ContactsPickerFeatureMap.
-     */
+    /** @return the singleton ContactsPickerFeatureMap. */
     public static ContactsPickerFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

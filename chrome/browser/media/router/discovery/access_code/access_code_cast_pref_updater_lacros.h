@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_LACROS_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_LACROS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_router {
 // Pref updater for AccessCodeCasting for Lacros. It uses the Prefs
@@ -50,11 +51,11 @@ class AccessCodeCastPrefUpdaterLacros : public AccessCodeCastPrefUpdater {
   void UpdateDevicesDictForTest(const MediaSinkInternal& sink) override;
 
  private:
-  // Prefs API returns a absl::optional<base::Value> but
+  // Prefs API returns a std::optional<base::Value> but
   // AccessCodeCastPrefUpdater needs a base::Value::Dict.
   void PrefServiceCallbackAdapter(
       base::OnceCallback<void(base::Value::Dict)> on_get_dict_callback,
-      absl::optional<base::Value> pref_value);
+      std::optional<base::Value> pref_value);
 
   base::WeakPtrFactory<AccessCodeCastPrefUpdaterLacros> weak_ptr_factory_{this};
 };

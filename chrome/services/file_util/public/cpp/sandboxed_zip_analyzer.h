@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/types/optional_ref.h"
 #include "chrome/services/file_util/public/cpp/temporary_file_getter.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -27,12 +28,13 @@ class SandboxedZipAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
+  using WrappedFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
   // Factory function for creating SandboxedZipAnalyzers with the appropriate
   // deleter.
   static std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
   CreateAnalyzer(const base::FilePath& zip_file,
-                 const std::string& password,
+                 base::optional_ref<const std::string> password,
                  ResultCallback callback,
                  mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -47,7 +49,7 @@ class SandboxedZipAnalyzer {
  private:
   SandboxedZipAnalyzer(
       const base::FilePath& zip_file,
-      const std::string& password,
+      base::optional_ref<const std::string> password,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -55,7 +57,7 @@ class SandboxedZipAnalyzer {
   void ReportFileFailure(safe_browsing::ArchiveAnalysisResult reason);
 
   // Starts the utility process and sends it a file analyze request.
-  void AnalyzeFile(base::File file);
+  void AnalyzeFile(WrappedFilePtr file);
 
   // The response containing the file analyze results.
   void AnalyzeFileDone(const safe_browsing::ArchiveAnalyzerResults& results);
@@ -67,7 +69,7 @@ class SandboxedZipAnalyzer {
   const base::FilePath file_path_;
 
   // The password to use for encrypted entries.
-  const std::string password_;
+  const std::optional<std::string> password_;
 
   // Callback invoked on the UI thread with the file analyze results.
   ResultCallback callback_;
@@ -76,6 +78,9 @@ class SandboxedZipAnalyzer {
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
   TemporaryFileGetter temp_file_getter_;
+
+  // Task runner for blocking file operations
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   base::WeakPtrFactory<SandboxedZipAnalyzer> weak_ptr_factory_{this};
 };

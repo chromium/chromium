@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
+#include "remoting/base/is_google_email.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/host_config.h"
@@ -28,9 +29,9 @@ namespace remoting {
 namespace {
 
 // The maximum size of the configuration file. "1MB ought to be enough" for any
-// reasonable configuration we will ever need. 1MB is low enough to make
-// the probability of out of memory situation fairly low. OOM is still possible
-// and we will crash if it occurs.
+// reasonable configuration we will ever need. 1MB is low enough to make the
+// probability of out of memory situation fairly low. OOM is still possible and
+// we will crash if it occurs.
 const size_t kMaxConfigFileSize = 1024 * 1024;
 
 // The host configuration file name.
@@ -56,17 +57,25 @@ const char kUnprivilegedConfigFileSecurityDescriptor[] =
 // Configuration keys.
 
 // The configuration keys that cannot be specified in UpdateConfig().
-const char* const kReadonlyKeys[] = {kHostIdConfigPath, kHostOwnerConfigPath,
-                                     kHostOwnerEmailConfigPath,
-                                     kXmppLoginConfigPath};
+const char* const kReadonlyKeys[] = {
+    kHostIdConfigPath, kHostOwnerConfigPath, kServiceAccountConfigPath,
+    kDeprecatedXmppLoginConfigPath, kDeprecatedHostOwnerEmailConfigPath};
 
 // The configuration keys whose values may be read by GetConfig().
 const char* const kUnprivilegedConfigKeys[] = {kHostIdConfigPath,
-                                               kXmppLoginConfigPath};
+                                               kServiceAccountConfigPath,
+                                               kDeprecatedXmppLoginConfigPath};
 
-// Reads and parses the configuration file up to |kMaxConfigFileSize| in
-// size.
+// Reads and parses the configuration file up to |kMaxConfigFileSize| in size.
 bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
+  // ReadConfig is called in cases where no config file is expected to be
+  // present so check to see if a file exists before attempting to read and
+  // parse it.
+  if (!base::PathExists(filename)) {
+    LOG(INFO) << "'" << filename.value() << "' does not exist, skipping read.";
+    return false;
+  }
+
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(filename, &file_content,
                                          kMaxConfigFileSize)) {
@@ -74,16 +83,13 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
     return false;
   }
 
-  // Parse the JSON configuration, expecting it to contain a dictionary.
-  absl::optional<base::Value> value =
-      base::JSONReader::Read(file_content, base::JSON_ALLOW_TRAILING_COMMAS);
-
-  if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse '" << filename.value() << "'.";
+  std::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
+  if (!config.has_value()) {
+    LOG(ERROR) << "Config file: '" << filename.value() << "' is empty.";
     return false;
   }
 
-  config_out = std::move(*value).TakeDict();
+  config_out = std::move(*config);
   return true;
 }
 
@@ -145,48 +151,51 @@ bool MoveConfigFileFromTemp(const base::FilePath& filename) {
 }
 
 // Writes the configuration file up to |kMaxConfigFileSize| in size.
-bool WriteConfig(const std::string& content) {
-  if (content.length() > kMaxConfigFileSize) {
+bool WriteConfig(const base::Value::Dict& config) {
+  std::string config_json = HostConfigToJson(config);
+  if (config_json.length() > kMaxConfigFileSize) {
+    LOG(ERROR) << "Config is larger than the max size: " << kMaxConfigFileSize;
     return false;
   }
 
-  // Extract the configuration data that the user will verify.
-  absl::optional<base::Value> config_value = base::JSONReader::Read(content);
-  if (!config_value || !config_value->is_dict()) {
+  // Ensure the required fields are present.
+  if (!config.FindString(kHostIdConfigPath)) {
+    LOG(ERROR) << "Config is missing " << kHostIdConfigPath;
     return false;
   }
-
-  base::Value::Dict& config_dict = config_value->GetDict();
-
-  std::string* email;
-  if (!(email = config_dict.FindString(kHostOwnerEmailConfigPath)) &&
-      !(email = config_dict.FindString(kHostOwnerConfigPath)) &&
-      !(email = config_dict.FindString(kXmppLoginConfigPath))) {
+  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
+  if (!host_owner) {
+    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
     return false;
   }
-  std::string* host_id = config_dict.FindString(kHostIdConfigPath);
-  std::string* host_secret_hash =
-      config_dict.FindString(kHostSecretHashConfigPath);
-  if (!host_id || !host_secret_hash) {
+  if (!config.FindString(kHostSecretHashConfigPath) &&
+      !IsGoogleEmail(*host_owner)) {
+    // PIN authentication is not needed for Google hosts so we only want to
+    // fail if a secret_hash value isn't present for a non-Google host.
+    LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
     return false;
   }
-
-  // Extract the unprivileged fields from the configuration.
-  base::Value::Dict unprivileged_config_dict;
-  for (const char* key : kUnprivilegedConfigKeys) {
-    if (std::string* value = config_dict.FindString(key)) {
-      unprivileged_config_dict.Set(key, std::move(*value));
-    }
+  if (!config.FindString(kServiceAccountConfigPath) &&
+      !config.FindString(kDeprecatedXmppLoginConfigPath)) {
+    LOG(ERROR) << "Config is missing " << kServiceAccountConfigPath << " and "
+               << kDeprecatedXmppLoginConfigPath;
+    return false;
   }
-  std::string unprivileged_config_str;
-  base::JSONWriter::Write(unprivileged_config_dict, &unprivileged_config_str);
 
   // Write the full configuration file to a temporary location.
   base::FilePath full_config_file_path =
       remoting::GetConfigDir().Append(kConfigFileName);
   if (!WriteConfigFileToTemp(full_config_file_path,
-                             kConfigFileSecurityDescriptor, content)) {
+                             kConfigFileSecurityDescriptor, config_json)) {
     return false;
+  }
+
+  // Extract the unprivileged fields from the configuration.
+  base::Value::Dict unprivileged_config;
+  for (const char* key : kUnprivilegedConfigKeys) {
+    if (const std::string* value = config.FindString(key)) {
+      unprivileged_config.Set(key, *value);
+    }
   }
 
   // Write the unprivileged configuration file to a temporary location.
@@ -194,7 +203,7 @@ bool WriteConfig(const std::string& content) {
       remoting::GetConfigDir().Append(kUnprivilegedConfigFileName);
   if (!WriteConfigFileToTemp(unprivileged_config_file_path,
                              kUnprivilegedConfigFileSecurityDescriptor,
-                             unprivileged_config_str)) {
+                             HostConfigToJson(unprivileged_config))) {
     return false;
   }
 
@@ -342,24 +351,24 @@ DaemonController::State DaemonControllerDelegateWin::GetState() {
   return ConvertToDaemonState(status.dwCurrentState);
 }
 
-absl::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
+std::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
   base::FilePath config_dir = remoting::GetConfigDir();
 
   // Read the unprivileged part of host configuration.
   base::Value::Dict config;
   if (!ReadConfig(config_dir.Append(kUnprivilegedConfigFileName), config)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return config;
 }
 
 void DaemonControllerDelegateWin::UpdateConfig(
-    base::Value::Dict config,
+    base::Value::Dict updated_config,
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
   for (size_t i = 0; i < std::size(kReadonlyKeys); ++i) {
-    if (config.Find(kReadonlyKeys[i])) {
+    if (updated_config.Find(kReadonlyKeys[i])) {
       LOG(ERROR) << "Cannot update config: '" << kReadonlyKeys[i]
                  << "' is read only.";
       InvokeCompletionCallback(std::move(done), false);
@@ -368,19 +377,17 @@ void DaemonControllerDelegateWin::UpdateConfig(
   }
   // Get the old config.
   base::FilePath config_dir = remoting::GetConfigDir();
-  base::Value::Dict config_old;
-  if (!ReadConfig(config_dir.Append(kConfigFileName), config_old)) {
+  base::Value::Dict config;
+  if (!ReadConfig(config_dir.Append(kConfigFileName), config)) {
     InvokeCompletionCallback(std::move(done), false);
     return;
   }
 
-  // Merge items from the given config into the old config.
-  config_old.Merge(std::move(config));
+  // Merge items from the new config into the existing config.
+  config.Merge(std::move(updated_config));
 
   // Write the updated config.
-  std::string config_updated_str;
-  base::JSONWriter::Write(config_old, &config_updated_str);
-  bool result = WriteConfig(config_updated_str);
+  bool result = WriteConfig(config);
 
   InvokeCompletionCallback(std::move(done), result);
 }
@@ -428,10 +435,6 @@ void DaemonControllerDelegateWin::SetConfigAndStart(
     return;
   }
 
-  // Set the configuration.
-  std::string config_str;
-  base::JSONWriter::Write(config, &config_str);
-
   // Determine the config directory path and create it if necessary.
   base::FilePath config_dir = remoting::GetConfigDir();
   if (!base::CreateDirectory(config_dir)) {
@@ -440,7 +443,8 @@ void DaemonControllerDelegateWin::SetConfigAndStart(
     return;
   }
 
-  if (!WriteConfig(config_str)) {
+  // Set the configuration.
+  if (!WriteConfig(config)) {
     InvokeCompletionCallback(std::move(done), false);
     return;
   }

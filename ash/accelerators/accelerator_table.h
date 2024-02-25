@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -68,6 +69,9 @@ struct DeprecatedAcceleratorData {
 
   // The ID of the localized new shortcut key.
   int new_shortcut_id;
+
+  // The replacement of the deprecated accelerator.
+  ui::Accelerator replacement;
 
   // Specifies whether the deprecated accelerator is still enabled to do its
   // associated action.

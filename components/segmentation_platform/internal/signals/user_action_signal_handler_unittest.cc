@@ -54,7 +54,7 @@ TEST_F(UserActionSignalHandlerTest, UserActionsAreRecorded) {
   // Fire a registered user action. It should be recorded.
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION, kExpectedHash,
-                          Eq(absl::nullopt), _));
+                          Eq(std::nullopt), _));
   base::RecordComputedActionAt(kExpectedUserAction, base::TimeTicks::Now());
 
   // Fire an unrelated user action. It should be ignored.
@@ -62,7 +62,7 @@ TEST_F(UserActionSignalHandlerTest, UserActionsAreRecorded) {
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kUnrelatedUserAction),
-                          Eq(absl::nullopt), _))
+                          Eq(std::nullopt), _))
       .Times(0);
   base::RecordComputedActionAt(kUnrelatedUserAction, base::TimeTicks::Now());
 }
@@ -75,7 +75,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
-                          Eq(absl::nullopt), _))
+                          Eq(std::nullopt), _))
       .Times(0);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
@@ -84,7 +84,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
-                          Eq(absl::nullopt), _))
+                          Eq(std::nullopt), _))
       .Times(1);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
@@ -93,7 +93,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
-                          Eq(absl::nullopt), _))
+                          Eq(std::nullopt), _))
       .Times(0);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
@@ -102,7 +102,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   EXPECT_CALL(*signal_database_,
               WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
-                          Eq(absl::nullopt), _))
+                          Eq(std::nullopt), _))
       .Times(1);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 }

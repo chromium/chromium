@@ -7,6 +7,8 @@
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -16,14 +18,19 @@
 
 namespace game_mode {
 
+namespace {
+
 using GameMode = ash::ResourcedClient::GameMode;
 
-inline const char* TimeInGameModeHistogramName(GameMode mode) {
-  if (mode == GameMode::BOREALIS)
-    return "GameMode.TimeInGameMode.Borealis";
-  DCHECK(mode == GameMode::ARC);
-  return "GameMode.TimeInGameMode.Arc";
-}
+typedef base::RepeatingCallback<void(GameMode, ash::WindowState*)>
+    NotifySetGameModeCallback;
+
+}  // namespace
+
+inline constexpr char kTimeInGameModeHistogramName[] =
+    "GameMode.TimeInGameMode.Borealis";
+inline constexpr char kGameModeResultHistogramName[] =
+    "GameMode.Result.Borealis";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -33,16 +40,11 @@ enum class GameModeResult {
   kMaxValue = kFailed,
 };
 
-inline const char* GameModeResultHistogramName(GameMode mode) {
-  if (mode == GameMode::BOREALIS)
-    return "GameMode.Result.Borealis";
-  DCHECK(mode == GameMode::ARC);
-  return "GameMode.Result.Arc";
-}
-
-// When a Borealis or ARC game app game enters full screen, game mode is
+// When a Borealis game app game enters full screen, game mode is
 // enabled. Game Mode is actually enabled as a result of multiple sets of
-// criteria being fulfilled, each checked in sequence.
+// criteria being fulfilled, each checked in sequence. The GameModeController
+// additionally exposes an Observer interface which allows clients to subscribe
+// to changes in the game mode state.
 //
 // When one criteria set is met, a new criteria object is constructed which
 // is responsible for checking the next criteria, and is owned by the prior
@@ -55,15 +57,12 @@ inline const char* GameModeResultHistogramName(GameMode mode) {
 // -----------------------------------------------------------------------------
 // GameModeController      Window is focused
 // WindowTracker *         Window is fullscreen    Window is destroyed
-// ArcGameModeCriteria **  ARC app is game
-// GameModeEnabler ***     None
+// GameModeEnabler **      None
 //
 // (x) Indicates the responsible criteria object makes itself inactive and
 //     discards its child criteria, if any.
 // *   WindowTracker is responsible for determining the type of window
-// **  ArcGameModeCriteria is not constructed for Borealis windows. Instead, a
-//     GameModeEnabler is constructed directly.
-// *** GameModeEnabler starts game mode on construction, and stops game mode on
+// **  GameModeEnabler starts game mode on construction, and stops game mode on
 //     destruction.
 //
 // More concretely, this is the logical flow:
@@ -89,32 +88,18 @@ class GameModeController : public aura::client::FocusChangeObserver {
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // Represents game mode trigger criteria which, when destroyed, cause game
-  // mode to be turned off.
-  class GameModeCriteria {
+  // Maintains GameMode in an ON state until destroyed.
+  class GameModeEnabler {
    public:
-    virtual ~GameModeCriteria() = default;
-
-    virtual GameMode mode() const = 0;
-  };
-
-  // Maintains GameMode in an ON state until destroyed. This is a special case
-  // of GameModeCriteria which is always true.
-  class GameModeEnabler : public GameModeCriteria {
-   public:
-    // `signal_resourced` indicates resourced will be notified of the game mode
-    // state. Metrics on the amount of time spent in game mode are recorded
-    // by the GameModeEnabler regardless of resourced signaling, which allows
-    // A/B testing of the effect of optimizations on time spent playing the
-    // game.
-    GameModeEnabler(GameMode mode, bool signal_resourced);
-    ~GameModeEnabler() override;
-
-    GameMode mode() const override;
+    // |window_state| indicates the window which currently meets the criteria to
+    // enable game mode.
+    GameModeEnabler(ash::WindowState* window_state,
+                    NotifySetGameModeCallback notify_set_game_mode_callback);
+    ~GameModeEnabler();
 
    private:
-    static void OnSetGameMode(absl::optional<GameMode> refresh_of,
-                              absl::optional<GameMode> previous);
+    static void OnSetGameMode(std::optional<GameMode> refresh_of,
+                              std::optional<GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.
@@ -122,17 +107,20 @@ class GameModeController : public aura::client::FocusChangeObserver {
     base::RepeatingTimer timer_;
     base::ElapsedTimer began_;
 
-    const GameMode mode_;
-    const bool signal_resourced_;
-  };
+    // Not owned. |window_state_| is observed by the WindowTracker which owns
+    // this GameModeEnabler, and this enabler will always be destroyed before
+    // the window is destroyed.
+    const raw_ptr<ash::WindowState> window_state_;
 
-  static GameMode ModeOfWindow(aura::Window* window);
+    const NotifySetGameModeCallback notify_set_game_mode_callback_;
+  };
 
   class WindowTracker : public ash::WindowStateObserver,
                         public aura::WindowObserver {
    public:
     WindowTracker(ash::WindowState* window_state,
-                  std::unique_ptr<WindowTracker> previous_focused);
+                  std::unique_ptr<WindowTracker> previous_focused,
+                  NotifySetGameModeCallback notify_set_game_mode_callback);
     ~WindowTracker() override;
 
     // Overridden from WindowObserver
@@ -150,11 +138,24 @@ class GameModeController : public aura::client::FocusChangeObserver {
         window_state_observer_{this};
     base::ScopedObservation<aura::Window, aura::WindowObserver>
         window_observer_{this};
-    std::unique_ptr<GameModeCriteria> game_mode_criteria_;
+    std::unique_ptr<GameModeEnabler> game_mode_enabler_;
+    const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
+
+  // Observer class which subscribes to changes in the GameMode state.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSetGameMode(GameMode game_mode,
+                               ash::WindowState* window_state) = 0;
+  };
+
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
+  void NotifySetGameMode(GameMode game_mode, ash::WindowState* window_state);
 
  private:
   std::unique_ptr<WindowTracker> focused_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace game_mode

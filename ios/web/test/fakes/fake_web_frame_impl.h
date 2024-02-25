@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "ios/web/js_messaging/web_frame_internal.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
@@ -103,9 +104,9 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // When set to true, will force calls to CallJavaScriptFunction to fail with
   // timeout.
   bool force_timeout_ = false;
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
-  JavaScriptContentWorld* last_received_content_world_;
+  raw_ptr<JavaScriptContentWorld> last_received_content_world_;
   base::RepeatingClosure call_java_script_function_callback_;
 };
 

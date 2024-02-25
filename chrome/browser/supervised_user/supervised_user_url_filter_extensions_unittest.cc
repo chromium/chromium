@@ -11,6 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,16 +24,18 @@ class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  public:
   SupervisedUserURLFilterExtensionsTest() {
     filter_.SetDefaultFilteringBehavior(
-        supervised_user::SupervisedUserURLFilter::BLOCK);
+        supervised_user::FilteringBehavior::kBlock);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   // Test with the real method for url extensions support.
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
-          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
-          /*delegate=*/nullptr);
+          pref_service_,
+          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
 };
 
 TEST_F(SupervisedUserURLFilterExtensionsTest,
@@ -62,16 +67,16 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   GURL new_webstore_url("https://chromewebstore.google.com/");
 
   filter_.SetDefaultFilteringBehavior(
-      supervised_user::SupervisedUserURLFilter::BLOCK);
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+      supervised_user::FilteringBehavior::kBlock);
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(new_webstore_url));
 
   // Set explicit host rules to block those website, and make sure the
@@ -83,15 +88,15 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   hosts["chromewebstore.google.com"] = false;
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetDefaultFilteringBehavior(
-      supervised_user::SupervisedUserURLFilter::ALLOW);
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+      supervised_user::FilteringBehavior::kAllow);
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter_.GetFilteringBehaviorForURL(new_webstore_url));
 }

@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
+import "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom";
+import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
+import "third_party/blink/public/mojom/locks/lock_manager.mojom";
+import "third_party/blink/public/mojom/worker/shared_worker_connector.mojom";
+
+// A LocalDOMWindow with a third-party StorageKey in the renderer can bind this
+// on a RenderFrameHost in the browser to access storage for the first-party
+// StorageKey for the same origin. Binding must be refused if the Storage Access
+// permission was not granted. The interface can be bound multiple times, once
+// per call to requestStorageAccess. For more see:
+// third_party/blink/renderer/modules/storage_access/README.md
+interface StorageAccessHandle {
+
+  // Binds an IDBFactory with access to first-party storage.
+  BindIndexedDB(pending_receiver<IDBFactory> receiver);
+
+  // Binds a LockManager with access to first-party locks.
+  BindLocks(pending_receiver<LockManager> receiver);
+
+  // Binds a CacheStorage with access to first-party caches.
+  BindCaches(pending_receiver<CacheStorage> receiver);
+
+  // Returns an error or a non-null report with access to first-party files.
+  // TODO(crbug.com/1327821): Use expected type when available.
+  GetDirectory() =>
+      (FileSystemAccessError result,
+       pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
+  // Returns estimated quota usage for first-party storage.
+  // TODO(crbug.com/1500556): These should never be negative so consider uint64.
+  Estimate() => (int64 current_usage, int64 current_quota, bool success);
+
+  // Binds a BlobURLStore with access to first-party storage.
+  BindBlobStorage(pending_associated_receiver<BlobURLStore> receiver);
+
+  // Binds a BroadcastChannelProvider with access to first-party channels.
+  BindBroadcastChannel(pending_associated_receiver<BroadcastChannelProvider> receiver);
+
+  // Binds a SharedWorkerConnector with access to first-party workers.
+  BindSharedWorker(pending_receiver<SharedWorkerConnector> receiver);
+};

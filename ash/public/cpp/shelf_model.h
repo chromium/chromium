@@ -49,7 +49,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
     }
 
    private:
-    raw_ptr<ShelfModel, ExperimentalAsh> model_ = nullptr;
+    raw_ptr<ShelfModel> model_ = nullptr;
   };
 
   // Some classes in ash have the ability to insert an item into the ShelfModel,
@@ -62,13 +62,16 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // implicit dependency from //ash on //chrome and make it explicit.
   class ShelfItemFactory {
    public:
-    // Creates an |item| and a |delegate| for a given |app_id|. Returns false on
-    // failure. |item| and |delegate| are output parameters, only populated on
-    // success.
-    virtual bool CreateShelfItemForAppId(
-        const std::string& app_id,
-        ShelfItem* item,
-        std::unique_ptr<ShelfItemDelegate>* delegate) = 0;
+    // Creates a shelf item for an app..
+    virtual std::unique_ptr<ShelfItem> CreateShelfItemForApp(
+        const ash::ShelfID& app_id,
+        ash::ShelfItemStatus status,
+        ash::ShelfItemType shelf_item_type,
+        const std::u16string& title) = 0;
+
+    // Creates a shelf item delegate for a given `app_id`.
+    virtual std::unique_ptr<ShelfItemDelegate> CreateShelfItemDelegateForAppId(
+        const std::string& app_id) = 0;
   };
 
   ShelfModel();
@@ -235,8 +238,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   ShelfItems items_;
 
   // This pointer must outlive this class.
-  raw_ptr<ShelfItemFactory, DanglingUntriaged | ExperimentalAsh>
-      shelf_item_factory_ = nullptr;
+  raw_ptr<ShelfItemFactory, DanglingUntriaged> shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.

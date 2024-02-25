@@ -31,7 +31,7 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController,
  private:
   // BluetoothPowerController:
   void SetBluetoothEnabledState(bool enabled) override;
-  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothEnabledWithoutPersistence() override;
   void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void SetPrefs(PrefService* primary_profile_prefs,
                 PrefService* local_state) override;
@@ -65,12 +65,12 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController,
 
   // The state the adapter should be set to once it is available. This is set if
   // SetAdapterState() is called before the adapter is available.
-  absl::optional<bool> pending_adapter_enabled_state_;
+  std::optional<bool> pending_adapter_enabled_state_;
 
-  raw_ptr<PrefService, ExperimentalAsh> primary_profile_prefs_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> primary_profile_prefs_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

@@ -5,17 +5,25 @@
 #include "net/http/proxy_fallback.h"
 
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
 
-NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
+NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
                                        bool is_for_ip_protection) {
   *final_error = error;
-
-  if (proxy.is_quic()) {
+  auto proxy_servers = proxy_chain.proxy_servers();
+  bool has_quic_proxy = std::any_of(
+      proxy_servers.begin(), proxy_servers.end(),
+      [](const ProxyServer& proxy_server) { return proxy_server.is_quic(); });
+  if (!proxy_chain.is_direct() && has_quic_proxy) {
+    // The whole chain should be QUIC.
+    for (const auto& proxy_server : proxy_servers) {
+      CHECK(proxy_server.is_quic());
+    }
     switch (error) {
       case ERR_QUIC_PROTOCOL_ERROR:
       case ERR_QUIC_HANDSHAKE_FAILED:

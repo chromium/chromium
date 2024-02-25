@@ -39,7 +39,31 @@ gfx::Image DeepCopyImage(const gfx::Image& image) {
 
 }  // namespace
 
+NotificationItem::NotificationItem(const std::u16string& title,
+                                   const std::u16string& message,
+                                   ui::ImageModel icon)
+    : title_(title), message_(message) {
+  if (icon.IsEmpty()) {
+    return;
+  }
+
+  icon_.emplace(std::move(icon));
+}
+
+NotificationItem::NotificationItem(const NotificationItem& other) = default;
+
+NotificationItem::NotificationItem() = default;
+
+NotificationItem::~NotificationItem() = default;
+
+NotificationItem& NotificationItem::operator=(const NotificationItem& other) =
+    default;
+
 ButtonInfo::ButtonInfo(const std::u16string& title) : title(title) {}
+
+ButtonInfo::ButtonInfo(const gfx::VectorIcon* vector_icon,
+                       const std::u16string& accessible_name)
+    : vector_icon(vector_icon), accessible_name(accessible_name) {}
 
 ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
 

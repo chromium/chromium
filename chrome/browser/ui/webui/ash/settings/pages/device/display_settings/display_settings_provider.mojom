@@ -1,0 +1,111 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+// Type of the display settings. Do not change the order since they are used
+// for metrics. Keep in sync with the DisplaySettingsType enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsType {
+  kResolution = 0,
+  kRefreshRate,
+  kScaling,
+  kOrientation,
+  kOverscan,
+  kNightLight,
+  kNightLightSchedule,
+  kDisplayPage,
+  kMirrorMode,
+  kUnifiedMode,
+  kPrimaryDisplay,
+};
+
+// Available option of the display night light schedule. Do not change the
+// order since they are used for metrics. Keep in sync with the
+// DisplaySettingsNightLightScheduleOption enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsNightLightScheduleOption {
+  kNever = 0,
+  kSunsetToSunrise,
+  kCustom,
+};
+
+// Available option of the display orientation. Do not change the
+// order since they are used for metrics. Keep in sync with the
+// DisplaySettingsOrientationOption enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsOrientationOption {
+  kAuto = 0,
+  k0Degree,
+  k90Degree,
+  k180Degree,
+  k270Degree,
+};
+
+// Value of the display settings.
+struct DisplaySettingsValue {
+  // Whether the display is an internal display. This is optional since some
+  // settings like toggling mirror mode apply to both internal and external
+  // displays. In that case, this property will not be provided.
+  bool? is_internal_display;
+
+  // The id of the display. This is optional since we mostly don't need the
+  // display id for histogram recording purpose. Only for default display
+  // settings performance metrics, this is necessary to identify the time
+  // elapsed when users change settings, otherwise those metrics will not
+  // be recorded.
+  int64? display_id;
+
+  // The orientation of the display. This is available only when display
+  // orientation is changed.
+  DisplaySettingsOrientationOption? orientation;
+
+  // The night light status of the display. This is available only when
+  // display night light status is changed.
+  bool? night_light_status;
+
+  // The night light schedule of the display. This is available only when
+  // display night light schedule is changed.
+  DisplaySettingsNightLightScheduleOption? night_light_schedule;
+
+  // The mirror mode status of the display. This is available only when
+  // display mirror mode status is changed.
+  bool? mirror_mode_status;
+
+  // The unified mode status of the display. This is available only when
+  // display unified mode status is changed.
+  bool? unified_mode_status;
+};
+
+// Implemented by clients that wish to be notified when the tablet mode is
+// changed.
+interface TabletModeObserver {
+  // OnTabletModeChanged calls are triggered when display mode has changed
+  // between clamshell mode and tablet mode.
+  OnTabletModeChanged(bool is_tablet_mode);
+};
+
+// Implemented by clients that wish to be notified when display configuration
+// changes.
+interface DisplayConfigurationObserver {
+  // OnDisplayConfigurationChanged calls are triggered when display
+  // configuration has changed.
+  OnDisplayConfigurationChanged();
+};
+
+// Interface display related OS settings.
+interface DisplaySettingsProvider {
+  // Registers an observer for tablet mode changes and returns tablet mode
+  // initial state.
+  ObserveTabletMode(pending_remote<TabletModeObserver> observer) =>
+    (bool is_tablet_mode);
+
+  // Registers an observer for display configuration changes.
+  ObserveDisplayConfiguration(
+    pending_remote<DisplayConfigurationObserver> observer);
+
+  // Record metrics when clients request to change display settings.
+  RecordChangingDisplaySettings(DisplaySettingsType type,
+    DisplaySettingsValue value);
+};

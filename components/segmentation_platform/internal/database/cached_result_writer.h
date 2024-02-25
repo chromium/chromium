@@ -5,16 +5,13 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_WRITER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_WRITER_H_
 
-#include <string>
-
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/client_results.pb.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
-#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 struct Config;
@@ -25,8 +22,7 @@ class ClientResultPrefs;
 // results for the  client after model execution inorder to update it in prefs.
 class CachedResultWriter {
  public:
-  CachedResultWriter(std::unique_ptr<ClientResultPrefs> prefs,
-                     base::Clock* clock);
+  CachedResultWriter(ClientResultPrefs* prefs, base::Clock* clock);
 
   ~CachedResultWriter();
 
@@ -35,9 +31,10 @@ class CachedResultWriter {
   CachedResultWriter& operator=(CachedResultWriter&) = delete;
 
   // Updates the prefs only if the previous result in the pref is expired or
-  // unavailable or `force_refresh_results` is set as true.
-  void UpdatePrefsIfExpired(const Config* config,
-                            const proto::ClientResult& client_result,
+  // unavailable or `force_refresh_results` is set as true. Returns true if
+  // prefs was updated.
+  bool UpdatePrefsIfExpired(const Config* config,
+                            proto::ClientResult client_result,
                             const PlatformOptions& platform_options);
 
   // Marks the result as used by client. Does not change the result. Should be
@@ -63,10 +60,10 @@ class CachedResultWriter {
 
   // Updates the supplied `client_result` as new result for the client in prefs.
   void UpdateNewClientResultToPrefs(const Config* config,
-                                    const proto::ClientResult& client_result);
+                                    proto::ClientResult client_result);
 
   // Helper class to read/write results to the prefs.
-  std::unique_ptr<ClientResultPrefs> result_prefs_;
+  const raw_ptr<ClientResultPrefs> result_prefs_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

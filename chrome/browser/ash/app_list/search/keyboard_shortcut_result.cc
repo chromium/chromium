@@ -6,12 +6,14 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shell.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
@@ -22,7 +24,6 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +69,7 @@ constexpr bool kUseAcronymMatcher = true;
 
 // The icon labels used by the shortcuts app can be found here:
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.cc;l=125.
-absl::optional<int> GetStringIdForIconCode(IconCode icon_code) {
+std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
   switch (icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutPower:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER;
@@ -148,7 +149,7 @@ absl::optional<int> GetStringIdForIconCode(IconCode icon_code) {
 }
 
 std::u16string GetAccessibleStringForIcon(IconCode icon_code) {
-  const absl::optional<int> icon_code_string_id =
+  const std::optional<int> icon_code_string_id =
       GetStringIdForIconCode(icon_code);
   CHECK(icon_code_string_id.has_value());
 
@@ -162,9 +163,22 @@ std::u16string GetAccessibleStringForKey(const std::u16string& key_string) {
       IDS_SHORTCUT_CUSTOMIZATION_ARIA_LABEL_FOR_A_KEY, key_string);
 }
 
+bool IsModifierKey(ui::KeyboardCode keycode) {
+  switch (keycode) {
+    case ui::KeyboardCode::VKEY_COMMAND:
+    case ui::KeyboardCode::VKEY_LMENU:
+    case ui::KeyboardCode::VKEY_RCONTROL:
+    case ui::KeyboardCode::VKEY_CONTROL:
+    case ui::KeyboardCode::VKEY_SHIFT:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
-absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
+std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     KeyboardCode keyboard_code) {
   switch (keyboard_code) {
     case (KeyboardCode::VKEY_BROWSER_BACK):
@@ -240,15 +254,15 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE):
       return IconCode::kKeyboardShortcutMicrophone;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 // This map matches the `keyToIconNameMap` of the shortcuts app frontend:
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/resources/js/input_key.ts;l=30.
-absl::optional<ash::SearchResultTextItem::IconCode>
-KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
-  static constexpr auto kIconCodes = base::MakeFixedFlatMap<base::StringPiece16,
+std::optional<ash::SearchResultTextItem::IconCode>
+KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
+  static constexpr auto kIconCodes = base::MakeFixedFlatMap<std::u16string_view,
                                                             IconCode>(
       {{u"ArrowDown", IconCode::kKeyboardShortcutDown},
        {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
@@ -291,7 +305,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
 
   auto* it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -336,7 +350,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
       // The delimiter "+ " is neither an icon nor iconified text.
       text_vector.push_back(CreateStringTextItem(u" + "));
     } else {
-      const absl::optional<IconCode> icon_code =
+      const std::optional<IconCode> icon_code =
           GetIconCodeFromKeyboardCode(shortcut_key_codes[index]);
       if (icon_code) {
         // Placeholder general case 1:
@@ -385,12 +399,16 @@ void KeyboardShortcutResult::PopulateTextVector(
   key_codes.push_back(accelerator.key_code());
 
   for (auto key_code : key_codes) {
-    const absl::optional<IconCode> icon_code =
+    const std::optional<IconCode> icon_code =
         GetIconCodeFromKeyboardCode(key_code);
+    bool use_alternative_styling = IsModifierKey(key_code);
     if (icon_code) {
       // The KeyboardCode has a corresponding IconCode, and therefore an
       // icon image is supported by the front-end.
-      text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+      ash::SearchResultTextItem result_item =
+          CreateIconCodeTextItem(icon_code.value());
+      result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+      text_vector->push_back(result_item);
       accessible_strings.push_back(
           GetAccessibleStringForIcon(icon_code.value()));
     } else {
@@ -401,7 +419,11 @@ void KeyboardShortcutResult::PopulateTextVector(
       // All keys including modifiers should be displayed in lower case.
       const std::u16string key_string =
           base::ToLowerASCII(ash::GetStringForKeyboardCode(key_code));
-      text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+      ash::SearchResultTextItem result_item =
+          CreateIconifiedTextTextItem(key_string);
+
+      result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+      text_vector->push_back(result_item);
       accessible_strings.push_back(GetAccessibleStringForKey(key_string));
     }
   }
@@ -432,14 +454,22 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
       case ash::mojom::TextAcceleratorPartType::kKey:
       case ash::mojom::TextAcceleratorPartType::kModifier:
         const auto icon_code = GetIconCodeByKeyString(part->text);
+        bool use_alternative_styling =
+            part->type == ash::mojom::TextAcceleratorPartType::kModifier;
         if (icon_code) {
-          text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+          ash::SearchResultTextItem result_item =
+              CreateIconCodeTextItem(icon_code.value());
+          result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+          text_vector->push_back(result_item);
           accessible_strings.push_back(
               GetAccessibleStringForIcon(icon_code.value()));
         } else {
           // All keys including modifiers should be displayed in lower case.
           const std::u16string key_string = base::ToLowerASCII(part->text);
-          text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+          ash::SearchResultTextItem result_item =
+              CreateIconifiedTextTextItem(key_string);
+          result_item.SetAlternateIconAndTextStyling(use_alternative_styling);
+          text_vector->push_back(result_item);
           accessible_strings.push_back(GetAccessibleStringForKey(key_string));
         }
         break;
@@ -510,14 +540,25 @@ void KeyboardShortcutResult::PopulateTextVectorWithTwoShortcuts(
   }
 }
 
+void KeyboardShortcutResult::PopulateTextVectorForNoShortcut(
+    TextVector* text_vector,
+    std::vector<std::u16string>& accessible_strings) {
+  std::vector<ash::mojom::TextAcceleratorPartPtr> text_parts;
+  text_parts.push_back(ash::mojom::TextAcceleratorPart::New(
+      l10n_util::GetStringUTF16(
+          IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED),
+      ash::mojom::TextAcceleratorPartType::kPlainText));
+  PopulateTextVectorWithTextParts(text_vector, accessible_strings, text_parts);
+}
+
 KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
     : profile_(profile) {
   set_id(base::StrCat({kKeyboardShortcutScheme,
-                       base::NumberToString(data.description_message_id)}));
+                       base::NumberToString(data.description_message_id())}));
   set_relevance(relevance);
-  SetTitle(data.description);
+  SetTitle(data.description());
   SetResultType(ResultType::kKeyboardShortcut);
   SetMetricsType(ash::KEYBOARD_SHORTCUT);
   SetDisplayType(DisplayType::kList);
@@ -531,26 +572,26 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);
 
-  // Process |data.keyboard_shortcut_codes| to create:
+  // Process |data.keyboard_shortcut_codes()| to create:
   //   1. A vector of information for the KSV text.
   //   2. The accessible name.
 
   std::vector<std::u16string> replacement_strings;
   std::vector<std::u16string> accessible_names;
-  const size_t shortcut_key_codes_size = data.shortcut_key_codes.size();
+  const size_t shortcut_key_codes_size = data.shortcut_key_codes().size();
   replacement_strings.reserve(shortcut_key_codes_size);
   accessible_names.reserve(shortcut_key_codes_size);
   bool has_invalid_dom_key = false;
 
-  for (ui::KeyboardCode key_code : data.shortcut_key_codes) {
+  for (ui::KeyboardCode key_code : data.shortcut_key_codes()) {
     // Get the string for the |DomKey|.
     std::u16string dom_key_string = ash::GetStringForKeyboardCode(key_code);
 
     // See ash/shortcut_viewer/views/keyboard_shortcut_item_view.cc for details
     // on why this is necessary.
     const bool dont_remap_position =
-        data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
-        data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
+        data.description_message_id() == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
+        data.description_message_id() == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
     if (dont_remap_position) {
       dom_key_string = ash::GetStringForKeyboardCode(
           key_code, /*remap_positional_key=*/false);
@@ -578,8 +619,8 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
     // |shortcut_message_id| should never be used if the shortcut is not
     // supported on the current keyboard layout.
     shortcut_message_id = -1;
-  } else if (data.shortcut_message_id) {
-    shortcut_message_id = *data.shortcut_message_id;
+  } else if (data.shortcut_message_id()) {
+    shortcut_message_id = *data.shortcut_message_id();
   } else {
     // Automatically determine the shortcut message based on the number of
     // replacement strings.
@@ -618,10 +659,10 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
     accessible_string = l10n_util::GetStringFUTF16(
         shortcut_message_id, accessible_names, /*offsets=*/nullptr);
     text_vector = CreateTextVectorFromTemplateString(
-        template_string, replacement_strings, data.shortcut_key_codes);
+        template_string, replacement_strings, data.shortcut_key_codes());
   }
 
-  SetAccessibleName(data.description + u", " + details() + u", " +
+  SetAccessibleName(data.description() + u", " + details() + u", " +
                     accessible_string);
   SetKeyboardShortcutTextVector(text_vector);
 }
@@ -630,11 +671,14 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     Profile* profile,
     const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
     : profile_(profile) {
-  // The ID needs to be unique among all results. The action is an ID uniquely
-  // mapped to an accelerator action.
-  set_id(base::StrCat(
-      {kKeyboardShortcutScheme,
-       base::NumberToString(search_result->accelerator_layout_info->action)}));
+  accelerator_action_ =
+      base::NumberToString(search_result->accelerator_layout_info->action);
+  accelerator_category_ = base::NumberToString(
+      static_cast<int>(search_result->accelerator_layout_info->category));
+  // The ID needs to be unique among all results. The combination of action and
+  // its category uniquely identifies a shortcut.
+  set_id(base::StrCat({kKeyboardShortcutScheme, accelerator_action_, "/",
+                       accelerator_category_}));
   set_relevance(search_result->relevance_score);
   SetTitle(search_result->accelerator_layout_info->description);
   SetResultType(ResultType::kKeyboardShortcut);
@@ -658,7 +702,8 @@ KeyboardShortcutResult::KeyboardShortcutResult(
 
   switch (search_result->accelerator_infos.size()) {
     case 0:
-      // Mo match found.
+      // No shortcut assigned case:
+      PopulateTextVectorForNoShortcut(&text_vector, accessible_strings);
       break;
     case 1:
       // Only one shortcut for the accelerator.
@@ -680,14 +725,14 @@ KeyboardShortcutResult::KeyboardShortcutResult(
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 
 void KeyboardShortcutResult::Open(int event_flags) {
-  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
+  // Pass the action and category of the selected shortcuts to the app so that
+  // the same shortcuts will be displayed in the app.
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
+    chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
+                                         accelerator_category_);
+  } else {
     chrome::ShowShortcutCustomizationApp(profile_);
-    return;
   }
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,
-                apps::LaunchSource::kFromAppListQuery, nullptr);
 }
 
 double KeyboardShortcutResult::CalculateRelevance(

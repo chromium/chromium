@@ -29,12 +29,11 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
@@ -44,8 +43,7 @@ const V8PrivateProperty::SymbolKey kPrivatePropertyMessageEventCachedData;
 
 static inline bool IsValidSource(EventTarget* source) {
   return !source || source->ToDOMWindow() || source->ToMessagePort() ||
-         source->ToServiceWorker() || source->ToPortalHost() ||
-         IsA<HTMLPortalElement>(source->ToNode());
+         source->ToServiceWorker();
 }
 
 size_t MessageEvent::SizeOfExternalMemoryInBytes() {
@@ -344,11 +342,12 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeBlob:
-      value = ToV8(data_as_blob_, script_state);
+      value = ToV8Traits<Blob>::ToV8(script_state, data_as_blob_);
       break;
 
     case MessageEvent::kDataTypeArrayBuffer:
-      value = ToV8(data_as_array_buffer_, script_state);
+      value =
+          ToV8Traits<DOMArrayBuffer>::ToV8(script_state, data_as_array_buffer_);
       break;
   }
 
@@ -435,7 +434,10 @@ v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
     case kDataTypeArrayBuffer:
       V8PrivateProperty::GetSymbol(isolate,
                                    kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper, ToV8(data_as_array_buffer_, wrapper, isolate));
+          .Set(wrapper,
+               ToV8Traits<DOMArrayBuffer>::ToV8(
+                   ScriptState::From(wrapper->GetCreationContextChecked()),
+                   data_as_array_buffer_));
       break;
   }
 

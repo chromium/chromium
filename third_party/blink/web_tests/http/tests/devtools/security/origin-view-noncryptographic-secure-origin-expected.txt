@@ -1,7 +1,7 @@
 Tests that the panel shows the correct text for non-cryptographic secure origins
 
 Panel on origin view:
-<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -22,7 +22,7 @@ test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>

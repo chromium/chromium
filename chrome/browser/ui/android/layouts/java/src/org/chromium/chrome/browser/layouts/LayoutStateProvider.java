@@ -9,9 +9,7 @@ package org.chromium.chrome.browser.layouts;
  * changes.
  */
 public interface LayoutStateProvider {
-    /**
-     * An observer that is notified when the {@link Layout} state changes.
-     */
+    /** An observer that is notified when the {@link Layout} state changes. */
     interface LayoutStateObserver {
         /**
          * Called when Layout starts showing.
@@ -26,8 +24,6 @@ public interface LayoutStateProvider {
          */
         default void onFinishedShowing(@LayoutType int layoutType) {}
 
-        // TODO(crbug.com/1108496): Reiterate to see whether the showToolbar and delayAnimation
-        // param is needed.
         /**
          * Called when Layout starts hiding.
          * @param layoutType LayoutType of the started hiding Layout.
@@ -39,13 +35,6 @@ public interface LayoutStateProvider {
          * @param layoutType LayoutType of the finished hiding Layout.
          */
         default void onFinishedHiding(@LayoutType int layoutType) {}
-
-        /**
-         * Called when a layout wants to hint that a new tab might be selected soon. This is not
-         * called every time a tab is selected.
-         * @param tabId The id of the tab that might be selected soon.
-         */
-        default void onTabSelectionHinted(int tabId) {}
     }
 
     /**
@@ -86,9 +75,7 @@ public interface LayoutStateProvider {
      */
     void removeObserver(LayoutStateObserver listener);
 
-    /**
-     * Returns the ID of the next layout to show or {@code LayoutType.NONE} if one isn't set.
-     */
+    /** Returns the ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
     @LayoutType
     int getNextLayoutType();
 }

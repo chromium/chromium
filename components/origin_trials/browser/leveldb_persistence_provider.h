@@ -30,6 +30,7 @@ class Origin;
 
 namespace origin_trials {
 
+using SiteOriginsMap = base::flat_map<SiteKey, base::flat_set<url::Origin>>;
 using OriginTrialMap =
     base::flat_map<url::Origin, base::flat_set<PersistedTrialToken>>;
 
@@ -44,13 +45,15 @@ class LevelDbPersistenceProvider : public OriginTrialsPersistenceProvider {
  public:
   // Multiple value return type for async building of the cache.
   struct DbLoadResult {
-    DbLoadResult(std::unique_ptr<OriginTrialMap> new_map,
+    DbLoadResult(std::unique_ptr<OriginTrialMap> new_origin_trial_map,
                  std::unique_ptr<ProtoKeyVector> keys_to_delete,
-                 std::unique_ptr<OriginTrialMap> entries_to_update);
+                 std::unique_ptr<OriginTrialMap> entries_to_update,
+                 std::unique_ptr<SiteOriginsMap> new_site_origins_map);
     ~DbLoadResult();
-    std::unique_ptr<OriginTrialMap> result_map;
+    std::unique_ptr<OriginTrialMap> result_origin_trial_map;
     std::unique_ptr<ProtoKeyVector> expired_keys;
     std::unique_ptr<OriginTrialMap> updated_entries;
+    std::unique_ptr<SiteOriginsMap> result_site_origins_map;
   };
 
   LevelDbPersistenceProvider(
@@ -67,6 +70,8 @@ class LevelDbPersistenceProvider : public OriginTrialsPersistenceProvider {
   // |origin_trials::OriginTrialsPersistenceProvider|
   base::flat_set<PersistedTrialToken> GetPersistentTrialTokens(
       const url::Origin& origin) override;
+  SiteOriginTrialTokens GetPotentialPersistentTrialTokens(
+      const url::Origin& origin) override;
   void SavePersistentTrialTokens(
       const url::Origin& origin,
       const base::flat_set<PersistedTrialToken>& tokens) override;
@@ -79,6 +84,7 @@ class LevelDbPersistenceProvider : public OriginTrialsPersistenceProvider {
       leveldb_proto::ProtoDatabase<origin_trials_pb::TrialTokenDbEntries>>
       db_;
   std::unique_ptr<OriginTrialMap> trial_status_cache_;
+  std::unique_ptr<SiteOriginsMap> site_origins_map_;
 
   // Used to report total load time
   base::TimeTicks database_load_start_;
@@ -110,6 +116,10 @@ class LevelDbPersistenceProvider : public OriginTrialsPersistenceProvider {
   // This merge ensures that any cached token and partition information is
   // preserved after the load result is applied.
   void MergeCacheIntoLoadResult(DbLoadResult& result);
+
+  // Updates the in-memory map of SiteKeys to origins within the
+  // `trial_status_cache_`.
+  void UpdateSiteToOriginsMap(const url::Origin& origin, bool insert);
 };
 
 }  // namespace origin_trials

@@ -60,8 +60,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   // DevToolsDomainHandler implementation.
-  void SetRenderer(int process_host_id,
-                   RenderFrameHostImpl* frame_host) override;
   void WillInitiatePrerender(FrameTreeNode* ftn);
 
   void Wire(UberDispatcher* dispatcher) override;

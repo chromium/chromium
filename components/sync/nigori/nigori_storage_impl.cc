@@ -40,28 +40,28 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   }
 }
 
-absl::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
+std::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::PathExists(path_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string encrypted_data;
   if (!base::ReadFileToString(path_, &encrypted_data)) {
     DLOG(ERROR) << "Failed to read NigoriLocalData from file.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string serialized_data;
   if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
     DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   sync_pb::NigoriLocalData data;
   if (!data.ParseFromString(serialized_data)) {
     DLOG(ERROR) << "Failed to parse NigoriLocalData.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return data;
 }

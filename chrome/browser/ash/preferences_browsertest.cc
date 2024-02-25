@@ -175,10 +175,8 @@ class PreferencesTest : public LoginManagerTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<system::InputDeviceSettings::FakeInterface, ExperimentalAsh>
-      input_settings_;
-  raw_ptr<input_method::FakeImeKeyboard, DanglingUntriaged | ExperimentalAsh>
-      keyboard_;
+  raw_ptr<system::InputDeviceSettings::FakeInterface> input_settings_;
+  raw_ptr<input_method::FakeImeKeyboard, DanglingUntriaged> keyboard_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

@@ -72,6 +72,10 @@ void Channel::Unpause(bool flush) { NOTREACHED(); }
 
 void Channel::Flush() { NOTREACHED(); }
 
+void Channel::SetUrgentMessageObserver(UrgentMessageObserver* observer) {
+  // Ignored for non-mojo channels.
+}
+
 void Channel::WillConnect() {
   did_start_connect_ = true;
 }

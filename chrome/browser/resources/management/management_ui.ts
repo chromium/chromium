@@ -19,9 +19,11 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // clang-format off
-import {Application, BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementBrowserProxyImpl, ReportingType, ThreatProtectionInfo} from './management_browser_proxy.js';
+import type {Application, BrowserReportingResponse, Extension, ManagementBrowserProxy, ThreatProtectionInfo} from './management_browser_proxy.js';
+import { ManagementBrowserProxyImpl, ReportingType} from './management_browser_proxy.js';
 // <if expr="is_chromeos">
-import {DeviceReportingResponse, DeviceReportingType} from './management_browser_proxy.js';
+import type {DeviceReportingResponse} from './management_browser_proxy.js';
+import { DeviceReportingType} from './management_browser_proxy.js';
 // </if>
 import {getTemplate} from './management_ui.html.js';
 // clang-format on
@@ -317,9 +319,17 @@ class ManagementUiElement extends ManagementUiElementBase {
         return 'management:usb';
       case DeviceReportingType.LEGACY_TECH:
         return 'management:legacy-tech';
+      case DeviceReportingType.WEBSITE_INFO_AND_ACTIVITY:
+        return 'management:web';
       default:
         return 'cr:computer';
     }
+  }
+
+  private getDeviceReportingHtmlContent_(response: DeviceReportingResponse):
+      TrustedHTML {
+    return this.i18nAdvanced(
+        response.messageId, {substitutions: response.messageParams});
   }
   // </if>
 

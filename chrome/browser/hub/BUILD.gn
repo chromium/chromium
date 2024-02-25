@@ -1,0 +1,140 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/DisplayButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/DrawableButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/FullButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColorScheme.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubContainerView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationListener.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunner.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutConstants.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutDependencyHolder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
+    "android/java/src/org/chromium/chrome/browser/hub/LoadHint.java",
+    "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneHubController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneLookup.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneManager.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library_factory("factory_java") {
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  sources = [
+    "internal/android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.hub"
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/DrawableButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimControllerUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageViewUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimatorRenderTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

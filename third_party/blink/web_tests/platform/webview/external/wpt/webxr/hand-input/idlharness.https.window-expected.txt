@@ -1,0 +1,56 @@
+This is a testharness.js-based test.
+[FAIL] XRHand interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface object length
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface object name
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface: iterable<XRHandJoint, XRJointSpace>
+  Cannot read properties of undefined (reading 'prototype')
+[FAIL] XRHand interface: attribute size
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRHand interface: operation get(XRHandJoint)
+  assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+[FAIL] XRJointSpace interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface object length
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface object name
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointSpace interface: attribute jointName
+  assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+[FAIL] XRJointPose interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface object length
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface object name
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRJointPose interface: attribute radius
+  assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+[FAIL] XRFrame interface: operation getJointPose(XRJointSpace, XRSpace)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: operation fillJointRadii(sequence<XRJointSpace>, Float32Array)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: operation fillPoses(sequence<XRSpace>, XRSpace, Float32Array)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRInputSource interface: attribute hand
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+Harness: the test ran to completion.

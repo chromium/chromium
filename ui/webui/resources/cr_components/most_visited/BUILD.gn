@@ -14,7 +14,6 @@ mojom("mojom") {
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-  use_typescript_sources = true
   webui_module_path = "chrome://resources/cr_components/most_visited/"
 }
 

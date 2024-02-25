@@ -10,16 +10,20 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,7 +55,6 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -75,9 +78,13 @@ const int kMaxSpdyFrameChunkSize = (16 * 1024) - 9;
 // specification. A session is always created with this initial window size.
 const int32_t kDefaultInitialWindowSize = 65535;
 
-// Maximum number of concurrent streams we will create, unless the server
-// sends a SETTINGS frame with a different value.
-const size_t kInitialMaxConcurrentStreams = 100;
+// The default maximum number of concurrent streams we will create, unless the
+// server sends a SETTINGS frame with a different value.
+const size_t kDefaultInitialMaxConcurrentStreams = 100;
+
+// Used to override kDefaultInitialMaxConcurrentStreams.
+NET_EXPORT BASE_DECLARE_FEATURE(kH2InitialMaxConcurrentStreamsOverride);
+NET_EXPORT extern const base::FeatureParam<int> kH2InitialMaxConcurrentStreams;
 
 // If more than this many bytes have been read or more than that many
 // milliseconds have passed, return ERR_IO_PENDING from ReadLoop.
@@ -309,13 +316,11 @@ class NET_EXPORT SpdySession
 
   // Returns true if |new_hostname| can be pooled into an existing connection to
   // |old_hostname| associated with |ssl_info|.
-  static bool CanPool(
-      TransportSecurityState* transport_security_state,
-      const SSLInfo& ssl_info,
-      const SSLConfigService& ssl_config_service,
-      const std::string& old_hostname,
-      const std::string& new_hostname,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+  static bool CanPool(TransportSecurityState* transport_security_state,
+                      const SSLInfo& ssl_info,
+                      const SSLConfigService& ssl_config_service,
+                      std::string_view old_hostname,
+                      std::string_view new_hostname);
 
   // Create a new SpdySession.
   // |spdy_session_key| is the host/port that this session connects to, privacy
@@ -334,7 +339,7 @@ class NET_EXPORT SpdySession
               int session_max_queued_capped_frames,
               const spdy::SettingsMap& initial_settings,
               bool enable_http2_settings_grease,
-              const absl::optional<SpdySessionPool::GreasedHttp2Frame>&
+              const std::optional<SpdySessionPool::GreasedHttp2Frame>&
                   greased_http2_frame,
               bool http2_end_stream_with_data_frame,
               bool enable_priority_update,
@@ -387,7 +392,7 @@ class NET_EXPORT SpdySession
   // TODO(wtc): rename this function and the Net.SpdyIPPoolDomainMatch
   // histogram because this function does more than verifying domain
   // authentication now.
-  bool VerifyDomainAuthentication(const std::string& domain) const;
+  bool VerifyDomainAuthentication(std::string_view domain) const;
 
   // Pushes the given producer into the write queue for
   // |stream|. |stream| is guaranteed to be activated before the
@@ -485,9 +490,6 @@ class NET_EXPORT SpdySession
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;
-
-  // Returns true if ALPN was negotiated for the underlying socket.
-  bool WasAlpnNegotiated() const;
 
   // Returns the protocol negotiated via ALPN for the underlying socket.
   NextProto GetNegotiatedProtocol() const;
@@ -625,7 +627,7 @@ class NET_EXPORT SpdySession
   using PendingStreamRequestQueue =
       base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
   using ActiveStreamMap = std::map<spdy::SpdyStreamId, SpdyStream*>;
-  using CreatedStreamSet = std::set<SpdyStream*>;
+  using CreatedStreamSet = std::set<raw_ptr<SpdyStream, SetExperimental>>;
 
   enum AvailabilityState {
     // The session is available in its socket pool and can be used
@@ -1043,7 +1045,7 @@ class NET_EXPORT SpdySession
   PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
 
   // Map from stream id to all active streams.  Streams are active in the sense
-  // that they have a consumer (typically SpdyNetworkTransaction and regardless
+  // that they have a consumer (typically HttpNetworkTransaction and regardless
   // of whether or not there is currently any ongoing IO) or there are still
   // network events incoming even though the consumer has already gone away
   // (cancellation).
@@ -1108,7 +1110,7 @@ class NET_EXPORT SpdySession
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame. See
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-  const absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
+  const std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
 
   // If set, the HEADERS frame carrying a request without body will not have the
   // END_STREAM flag set.  The stream will be closed by a subsequent empty DATA

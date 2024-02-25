@@ -105,7 +105,7 @@ class CORE_EXPORT DocumentInit final {
   LocalDOMWindow* GetWindow() const { return window_; }
 
   DocumentInit& WithToken(const DocumentToken& token);
-  const DocumentToken& GetToken() const;
+  const std::optional<DocumentToken>& GetToken() const;
 
   DocumentInit& WithAgent(Agent& agent);
   Agent& GetAgent() const;
@@ -156,9 +156,7 @@ class CORE_EXPORT DocumentInit final {
   bool is_initial_empty_document_ = false;
   String mime_type_;
   LocalDOMWindow* window_ = nullptr;
-  // Mutable because the token is lazily-generated on demand if no token is
-  // explicitly set.
-  mutable absl::optional<DocumentToken> token_;
+  std::optional<DocumentToken> token_;
   ExecutionContext* execution_context_ = nullptr;
   KURL url_;
   Document* owner_document_ = nullptr;

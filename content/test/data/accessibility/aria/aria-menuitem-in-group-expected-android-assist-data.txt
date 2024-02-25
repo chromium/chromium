@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="group"}]
+++++MenuItem textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="menuitem"}, {tabindex="0"}]
+++++++TextView text:"Menu item" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

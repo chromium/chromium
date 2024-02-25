@@ -13,9 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-/**
- * Unit tests for {@link AutocompleteState}.
- */
+/** Unit tests for {@link AutocompleteState}. */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class AutocompleteStateUnitTest {
     @Test
@@ -28,55 +26,79 @@ public class AutocompleteStateUnitTest {
 
     @Test
     public void testIsForwardTyped() {
-        assertTrue(new AutocompleteState("abc", "de", 3, 3)
-                           .isForwardTypedFrom(new AutocompleteState("ab", "c", 2, 2)));
-        assertTrue(new AutocompleteState("abcd", "e", 4, 4)
-                           .isForwardTypedFrom(new AutocompleteState("ab", "c", 2, 2)));
+        assertTrue(
+                new AutocompleteState("abc", "de", 3, 3)
+                        .isForwardTypedFrom(new AutocompleteState("ab", "c", 2, 2)));
+        assertTrue(
+                new AutocompleteState("abcd", "e", 4, 4)
+                        .isForwardTypedFrom(new AutocompleteState("ab", "c", 2, 2)));
 
-        assertFalse(new AutocompleteState("abc", "de", 3, 3)
-                            .isForwardTypedFrom(new AutocompleteState("abc", "", 3, 3)));
-        assertFalse(new AutocompleteState("abc", "de", 3, 3)
-                            .isForwardTypedFrom(new AutocompleteState("abcd", "e", 4, 4)));
+        assertFalse(
+                new AutocompleteState("abc", "de", 3, 3)
+                        .isForwardTypedFrom(new AutocompleteState("abc", "", 3, 3)));
+        assertFalse(
+                new AutocompleteState("abc", "de", 3, 3)
+                        .isForwardTypedFrom(new AutocompleteState("abcd", "e", 4, 4)));
     }
 
     @Test
     public void testGetBackwardDeletedTextFrom() {
-        assertEquals("c",
+        assertEquals(
+                "c",
                 new AutocompleteState("ab", "", 2, 2)
                         .getBackwardDeletedTextFrom(new AutocompleteState("abc", "d", 3, 3)));
         // A string is not seen as backward deleted from itself.
-        assertEquals(null,
+        assertEquals(
+                null,
                 new AutocompleteState("ab", "", 2, 2)
                         .getBackwardDeletedTextFrom(new AutocompleteState("ab", "d", 2, 2)));
         // Reversed.
-        assertEquals(null,
+        assertEquals(
+                null,
                 new AutocompleteState("abc", "", 3, 3)
                         .getBackwardDeletedTextFrom(new AutocompleteState("ab", "d", 2, 2)));
         // Selection not valid.
-        assertNull(new AutocompleteState("ab", "", 2, 2)
-                           .getBackwardDeletedTextFrom(new AutocompleteState("abc", "d", 2, 3)));
-        assertNull(new AutocompleteState("ab", "", 2, 3)
-                           .getBackwardDeletedTextFrom(new AutocompleteState("abc", "d", 2, 2)));
+        assertNull(
+                new AutocompleteState("ab", "", 2, 2)
+                        .getBackwardDeletedTextFrom(new AutocompleteState("abc", "d", 2, 3)));
+        assertNull(
+                new AutocompleteState("ab", "", 2, 3)
+                        .getBackwardDeletedTextFrom(new AutocompleteState("abc", "d", 2, 2)));
     }
 
-    private void verifyReuseAutocompleteText(AutocompleteState s1, AutocompleteState s2,
-            boolean expectedRetVal, String expectedAutocompleteText) {
+    private void verifyReuseAutocompleteText(
+            AutocompleteState s1,
+            AutocompleteState s2,
+            boolean expectedRetVal,
+            String expectedAutocompleteText) {
         assertEquals(expectedRetVal, s2.reuseAutocompleteTextIfPrefixExtension(s1));
         assertEquals(expectedAutocompleteText, s2.getAutocompleteText());
     }
 
     @Test
     public void testReuseAutocompleteText() {
-        verifyReuseAutocompleteText(new AutocompleteState("ab", "cd", 2, 2),
-                new AutocompleteState("abc", "", 3, 3), true, "d");
-        verifyReuseAutocompleteText(new AutocompleteState("ab", "dc", 2, 2),
-                new AutocompleteState("ab", "", 2, 2), true, "dc");
+        verifyReuseAutocompleteText(
+                new AutocompleteState("ab", "cd", 2, 2),
+                new AutocompleteState("abc", "", 3, 3),
+                true,
+                "d");
+        verifyReuseAutocompleteText(
+                new AutocompleteState("ab", "dc", 2, 2),
+                new AutocompleteState("ab", "", 2, 2),
+                true,
+                "dc");
 
         // The new state cannot reuse autocomplete text.
-        verifyReuseAutocompleteText(new AutocompleteState("ab", "dc", 2, 2),
-                new AutocompleteState("abc", "a", 3, 3), false, "a");
+        verifyReuseAutocompleteText(
+                new AutocompleteState("ab", "dc", 2, 2),
+                new AutocompleteState("abc", "a", 3, 3),
+                false,
+                "a");
         // There is no autocomplete text to start with.
-        verifyReuseAutocompleteText(new AutocompleteState("ab", "", 2, 2),
-                new AutocompleteState("ab", "a", 3, 3), false, "a");
+        verifyReuseAutocompleteText(
+                new AutocompleteState("ab", "", 2, 2),
+                new AutocompleteState("ab", "a", 3, 3),
+                false,
+                "a");
     }
 }

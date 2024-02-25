@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_no_such_element_with_shadow_root
+  assert 500 == 404
+Harness: the test ran to completion.

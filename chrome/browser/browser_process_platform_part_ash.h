@@ -14,17 +14,21 @@
 
 class BrowserProcessPlatformPartTestApi;
 class Profile;
+class ScopedKeepAlive;
+
+namespace app_list {
+class EssentialSearchManager;
+}  // namespace app_list
 
 namespace ash {
 class AccountManagerFactory;
 class AshProxyMonitor;
 class BrowserContextFlusher;
 class ChromeSessionManager;
-class ChromeUserManager;
 class InSessionPasswordChangeManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
-class TimeZoneResolver;
+class UserImageManagerRegistry;
 
 namespace system {
 class AutomaticRebootManager;
@@ -37,9 +41,11 @@ class SystemClock;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
-}
+}  // namespace policy
 
-class ScopedKeepAlive;
+namespace user_manager {
+class UserManager;
+}  // namespace user_manager
 
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
  public:
@@ -54,8 +60,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   void InitializeAutomaticRebootManager();
   void ShutdownAutomaticRebootManager();
 
-  void InitializeChromeUserManager();
-  void DestroyChromeUserManager();
+  void InitializeUserManager();
+  void DestroyUserManager();
 
   void InitializeDeviceDisablingManager();
   void ShutdownDeviceDisablingManager();
@@ -101,7 +107,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
     return session_manager_.get();
   }
 
-  ash::ChromeUserManager* user_manager() { return chrome_user_manager_.get(); }
+  user_manager::UserManager* user_manager() { return user_manager_.get(); }
 
   ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
@@ -118,9 +124,15 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   ash::AshProxyMonitor* ash_proxy_monitor() { return ash_proxy_monitor_.get(); }
 
-  ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
+  app_list::EssentialSearchManager* essential_search_manager() {
+    return essential_search_manager_.get();
+  }
 
-  ash::TimeZoneResolver* GetTimezoneResolver();
+  ash::InSessionPasswordChangeManager* in_session_password_change_manager() {
+    return in_session_password_change_manager_.get();
+  }
+
+  ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
 
   // Overridden from BrowserProcessPlatformPartBase:
   void StartTearDown() override;
@@ -130,10 +142,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   void DestroySystemClock();
 
   ash::AccountManagerFactory* GetAccountManagerFactory();
-
-  ash::InSessionPasswordChangeManager* in_session_password_change_manager() {
-    return in_session_password_change_manager_.get();
-  }
 
   static void EnsureFactoryBuilt();
 
@@ -158,7 +166,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   std::unique_ptr<ash::system::AutomaticRebootManager>
       automatic_reboot_manager_;
 
-  std::unique_ptr<ash::ChromeUserManager> chrome_user_manager_;
+  std::unique_ptr<user_manager::UserManager> user_manager_;
+
+  std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
 
   std::unique_ptr<ash::system::DeviceDisablingManagerDefaultDelegate>
       device_disabling_manager_delegate_;
@@ -167,7 +177,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   std::unique_ptr<ash::system::TimeZoneResolverManager>
       timezone_resolver_manager_;
-  std::unique_ptr<ash::TimeZoneResolver> timezone_resolver_;
 
   std::unique_ptr<ash::system::SystemClock> system_clock_;
 
@@ -180,6 +189,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       cros_component_manager_;
 
   std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
+
+  std::unique_ptr<app_list::EssentialSearchManager> essential_search_manager_;
 
   std::unique_ptr<ash::InSessionPasswordChangeManager>
       in_session_password_change_manager_;

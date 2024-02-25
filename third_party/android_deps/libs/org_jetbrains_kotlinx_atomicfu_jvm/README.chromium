@@ -1,0 +1,15 @@
+Name: atomicfu
+Short Name: atomicfu-jvm
+URL: https://github.com/Kotlin/kotlinx.atomicfu
+Version: 0.23.2
+License: Apache Version 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+AtomicFU utilities
+
+Local Modifications:
+No modifications.

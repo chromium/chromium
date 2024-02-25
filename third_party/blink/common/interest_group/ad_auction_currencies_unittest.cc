@@ -23,13 +23,13 @@ TEST(AdAuctionCurrenciesTest, VerifyAdCurrencyCode) {
       VerifyAdCurrencyCode(AdCurrency::From("ABC"), AdCurrency::From("CBA")));
   EXPECT_TRUE(
       VerifyAdCurrencyCode(AdCurrency::From("ABC"), AdCurrency::From("ABC")));
-  EXPECT_TRUE(VerifyAdCurrencyCode(AdCurrency::From("ABC"), absl::nullopt));
-  EXPECT_TRUE(VerifyAdCurrencyCode(absl::nullopt, AdCurrency::From("ABC")));
-  EXPECT_TRUE(VerifyAdCurrencyCode(absl::nullopt, absl::nullopt));
+  EXPECT_TRUE(VerifyAdCurrencyCode(AdCurrency::From("ABC"), std::nullopt));
+  EXPECT_TRUE(VerifyAdCurrencyCode(std::nullopt, AdCurrency::From("ABC")));
+  EXPECT_TRUE(VerifyAdCurrencyCode(std::nullopt, std::nullopt));
 }
 
 TEST(AdAuctionCurrenciesTest, PrintableAdCurrency) {
-  EXPECT_EQ(kUnspecifiedAdCurrency, PrintableAdCurrency(absl::nullopt));
+  EXPECT_EQ(kUnspecifiedAdCurrency, PrintableAdCurrency(std::nullopt));
   EXPECT_EQ("USD", PrintableAdCurrency(AdCurrency::From("USD")));
 }
 

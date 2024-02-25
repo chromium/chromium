@@ -60,11 +60,10 @@ AppInfoHeaderPanel::AppInfoHeaderPanel(Profile* profile,
   CreateControls();
 }
 
-AppInfoHeaderPanel::~AppInfoHeaderPanel() {
-}
+AppInfoHeaderPanel::~AppInfoHeaderPanel() {}
 
 void AppInfoHeaderPanel::OnIconUpdated(extensions::ChromeAppIcon* icon) {
-  app_icon_view_->SetImage(icon->image_skia());
+  app_icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon->image_skia()));
 }
 
 void AppInfoHeaderPanel::CreateControls() {
@@ -121,8 +120,8 @@ bool AppInfoHeaderPanel::CanShowAppInWebStore() const {
   // Also hide Shared Modules because they are automatically installed
   // by Chrome when dependent Apps are installed.
   return app_->from_webstore() && !app_->was_installed_by_default() &&
-      !app_->is_shared_module();
+         !app_->is_shared_module();
 }
 
-BEGIN_METADATA(AppInfoHeaderPanel, AppInfoPanel)
+BEGIN_METADATA(AppInfoHeaderPanel)
 END_METADATA

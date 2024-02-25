@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -60,6 +62,11 @@ PermissionDelegationMode GetPermissionDelegationMode(
   }
   return PermissionDelegationMode::kDelegated;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr const char* kIsFileURLHistogram =
+    "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
+#endif
 }  // namespace
 
 // The returned strings must match any Field Trial configs for the Permissions
@@ -78,7 +85,7 @@ PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
                       : PermissionRequestGestureType::NO_GESTURE;
 }
 
-absl::optional<blink::mojom::PermissionsPolicyFeature>
+std::optional<blink::mojom::PermissionsPolicyFeature>
 PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
   PermissionType permission_type;
   bool success =
@@ -86,7 +93,7 @@ PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
   DCHECK(success);
   return success
              ? blink::PermissionTypeToPermissionsPolicyFeature(permission_type)
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 bool PermissionUtil::GetPermissionType(ContentSettingsType type,
@@ -158,6 +165,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::AR:
       *out = PermissionType::AR;
       break;
+    case ContentSettingsType::SMART_CARD_DATA:
+      *out = PermissionType::SMART_CARD;
+      break;
     case ContentSettingsType::STORAGE_ACCESS:
       *out = PermissionType::STORAGE_ACCESS_GRANT;
       break;
@@ -178,6 +188,15 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       break;
     case ContentSettingsType::DISPLAY_CAPTURE:
       *out = PermissionType::DISPLAY_CAPTURE;
+      break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      *out = PermissionType::CAPTURED_SURFACE_CONTROL;
+      break;
+    case ContentSettingsType::WEB_PRINTING:
+      *out = PermissionType::WEB_PRINTING;
+      break;
+    case ContentSettingsType::SPEAKER_SELECTION:
+      *out = PermissionType::SPEAKER_SELECTION;
       break;
     default:
       return false;
@@ -204,6 +223,7 @@ bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
     case ContentSettingsType::BLUETOOTH_SCANNING:
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
     case ContentSettingsType::HID_GUARD:
+    case ContentSettingsType::SMART_CARD_GUARD:
       return true;
     default:
       return false;
@@ -215,6 +235,7 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
     case ContentSettingsType::GEOLOCATION:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA:
+    case ContentSettingsType::SMART_CARD_DATA:
       return base::FeatureList::IsEnabled(
           permissions::features::kOneTimePermission);
     default:
@@ -238,7 +259,10 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   if (web_contents->GetOrCreateWebPreferences()
           .allow_universal_access_from_file_urls &&
       render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, true);
     return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  } else {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, false);
   }
 #endif
 
@@ -297,6 +321,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::VR;
     case PermissionType::AR:
       return ContentSettingsType::AR;
+    case PermissionType::SMART_CARD:
+      return ContentSettingsType::SMART_CARD_DATA;
     case PermissionType::STORAGE_ACCESS_GRANT:
       return ContentSettingsType::STORAGE_ACCESS;
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
@@ -309,6 +335,12 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::LOCAL_FONTS;
     case PermissionType::DISPLAY_CAPTURE:
       return ContentSettingsType::DISPLAY_CAPTURE;
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
+      return ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+    case PermissionType::WEB_PRINTING:
+      return ContentSettingsType::WEB_PRINTING;
+    case PermissionType::SPEAKER_SELECTION:
+      return ContentSettingsType::SPEAKER_SELECTION;
     case PermissionType::NUM:
       break;
   }
@@ -398,7 +430,7 @@ bool PermissionUtil::IsPermissionBlockedInPartition(
 GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
                                         const GURL& requesting_origin,
                                         const GURL& embedding_origin) {
-  absl::optional<GURL> override_origin =
+  std::optional<GURL> override_origin =
       PermissionsClient::Get()->OverrideCanonicalOrigin(requesting_origin,
                                                         embedding_origin);
   if (override_origin)
@@ -414,7 +446,8 @@ GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
 }
 
 bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
-  const std::vector<permissions::PermissionRequest*>& requests =
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>& requests =
       delegate->Requests();
   return std::any_of(
       requests.begin(), requests.end(),
@@ -423,4 +456,38 @@ bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
                permissions::PermissionRequestGestureType::GESTURE;
       });
 }
+
+bool PermissionUtil::CanPermissionRequestIgnoreStatus(
+    const PermissionRequestData& request,
+    content::PermissionStatusSource source) {
+  if (!request.embedded_permission_element_initiated) {
+    return false;
+  }
+
+  switch (source) {
+    case content::PermissionStatusSource::KILL_SWITCH:
+    case content::PermissionStatusSource::FEATURE_POLICY:
+    case content::PermissionStatusSource::FENCED_FRAME:
+    case content::PermissionStatusSource::INSECURE_ORIGIN:
+    case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
+      return false;
+    case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
+    case content::PermissionStatusSource::MULTIPLE_IGNORES:
+    case content::PermissionStatusSource::RECENT_DISPLAY:
+    case content::PermissionStatusSource::UNSPECIFIED:
+      return true;
+  }
+
+  NOTREACHED();
+}
+
+// static
+bool PermissionUtil::DoesPlatformSupportChip() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return true;
+#endif
+}
+
 }  // namespace permissions

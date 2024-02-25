@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp } = await testRunner.startURL('resources/shadow-dom-link.html',
     'Tests DOM.getContentQuads method with text nodes inside shadow DOM.');
 

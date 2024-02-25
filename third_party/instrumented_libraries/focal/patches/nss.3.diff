@@ -1,0 +1,58 @@
+diff --git a/lib/freebl/freebl.gyp b/lib/freebl/freebl.gyp
+index 9bfbb87..c5061d6 100644
+--- a/nss/lib/freebl/freebl.gyp
++++ b/nss/lib/freebl/freebl.gyp
+@@ -238,8 +238,6 @@
+           'defines!': [
+             'FREEBL_NO_DEPEND',
+             'FREEBL_LOWHASH',
+-            'USE_HW_AES',
+-            'INTEL_GCM',
+           ],
+           'conditions': [
+             [ 'target_arch=="x64"', {
+@@ -471,16 +469,10 @@
+           [ 'target_arch=="x64"', {
+             'defines': [
+               'MP_IS_LITTLE_ENDIAN',
+-              'NSS_BEVAND_ARCFOUR',
+-              'MPI_AMD64',
+-              'MP_ASSEMBLY_MULTIPLY',
+-              'NSS_USE_COMBA',
+             ],
+           }],
+           [ 'target_arch=="x64"', {
+             'defines': [
+-              'USE_HW_AES',
+-              'INTEL_GCM',
+             ],
+           }],
+           [ 'target_arch=="ia32"', {
+diff --git a/lib/freebl/freebl_base.gypi b/lib/freebl/freebl_base.gypi
+index 3a0a16a..472db32 100644
+--- a/nss/lib/freebl/freebl_base.gypi
++++ b/nss/lib/freebl/freebl_base.gypi
+@@ -69,10 +69,6 @@
+       'conditions': [
+         [ 'target_arch=="x64"', {
+           'sources': [
+-            'arcfour-amd64-gas.s',
+-            'mpi/mpi_amd64.c',
+-            'mpi/mpi_amd64_gas.s',
+-            'mpi/mp_comba.c',
+           ],
+         }],
+         [ 'target_arch=="ia32"', {
+diff --git a/lib/freebl/unix_urandom.c b/lib/freebl/unix_urandom.c
+index 720fa80..5f167ed 100644
+--- a/nss/lib/freebl/unix_urandom.c
++++ b/nss/lib/freebl/unix_urandom.c
+@@ -32,7 +32,7 @@ RNG_SystemRNG(void *dest, size_t maxLen)
+     size_t fileBytes = 0;
+     unsigned char *buffer = dest;
+ 
+-#if defined(__OpenBSD__) || (defined(__FreeBSD__) && __FreeBSD_version >= 1200000) || (defined(LINUX) && defined(__GLIBC__) && ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 25))))
++#if 0
+     int result;
+ 
+     while (fileBytes < maxLen) {

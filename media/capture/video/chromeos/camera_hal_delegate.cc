@@ -98,8 +98,13 @@ class LocalCameraClientObserver : public CameraClientObserver {
     camera_hal_delegate_->SetCameraModule(std::move(camera_module));
   }
 
+  bool WaitForCameraModuleReadyForTesting() override {
+    return camera_hal_delegate_
+        ->WaitForCameraModuleReadyForTesting();  // IN-TEST
+  }
+
  private:
-  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
 };
 
 // ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.
@@ -301,7 +306,22 @@ bool CameraHalDelegate::Init() {
 }
 
 CameraHalDelegate::~CameraHalDelegate() {
+  std::vector<CameraClientObserver*> observers;
+  for (auto& client_observer : local_client_observers_) {
+    observers.emplace_back(client_observer.get());
+  }
+  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+  dispatcher->RemoveClientObservers(observers);
+  local_client_observers_.clear();
+
+  if (ipc_task_runner_) {
+    ipc_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                       base::Unretained(this)));
+  }
   camera_hal_ipc_thread_.Stop();
+
   power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               std::move(power_manager_client_proxy_));
@@ -338,22 +358,6 @@ void CameraHalDelegate::SetCameraModule(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
                      base::Unretained(this), std::move(camera_module)));
-}
-
-void CameraHalDelegate::Reset() {
-  if (ipc_task_runner_) {
-    ipc_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                       base::Unretained(this)));
-  }
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
@@ -696,9 +700,12 @@ VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
   auto camera_id = GetCameraIdFromDeviceId(device_descriptor.device_id);
   if (!vcd_delegate_map_->HasVCDDelegate(camera_id) ||
       vcd_delegate_map_->Get(camera_id)->HasDeviceClient() == 0) {
-    auto cleanup_callback = base::BindPostTaskToCurrentDefault(
+    // Don't post |cleanup_callback| to any thread, otherwise there will be a
+    // race condition if |CreateDevice| is scheduled during the cleanup of the
+    // same device.
+    auto cleanup_callback =
         base::BindOnce(&VideoCaptureDeviceDelegateMap::Erase,
-                       vcd_delegate_map_->GetWeakPtr(), camera_id));
+                       vcd_delegate_map_->GetWeakPtr(), camera_id);
     auto delegate = std::make_unique<VideoCaptureDeviceChromeOSDelegate>(
         std::move(task_runner_for_screen_observer), device_descriptor, this,
         std::move(cleanup_callback));
@@ -958,6 +965,13 @@ void CameraHalDelegate::TorchModeStatusChange(
     cros::mojom::TorchModeStatus new_status) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   // Do nothing here as we don't care about torch mode status.
+}
+
+bool CameraHalDelegate::WaitForCameraModuleReadyForTesting() {
+  if (camera_module_has_been_set_.IsSignaled()) {
+    return true;
+  }
+  return camera_module_has_been_set_.TimedWait(base::Seconds(10));
 }
 
 }  // namespace media

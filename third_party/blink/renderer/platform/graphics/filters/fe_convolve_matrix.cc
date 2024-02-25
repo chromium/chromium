@@ -143,7 +143,7 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   auto kernel = std::make_unique<SkScalar[]>(num_elements);
   for (int i = 0; i < num_elements; ++i)
     kernel[i] = SkFloatToScalar(kernel_matrix_[num_elements - 1 - i]);
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MatrixConvolutionPaintFilter>(
       kernel_size, kernel.get(), gain, bias, target, tile_mode, convolve_alpha,
       std::move(input), base::OptionalToPtr(crop_rect));

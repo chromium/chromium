@@ -5,6 +5,8 @@
 #include "base/values.h"
 
 #include <cmath>
+#include <memory>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <utility>
@@ -14,7 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/cxx20_erase_vector.h"
-#include "base/cxx20_to_address.h"
+#include "base/containers/map_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -24,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -230,17 +231,17 @@ const char* Value::GetTypeName(Value::Type type) {
   return kTypeNames[static_cast<size_t>(type)];
 }
 
-absl::optional<bool> Value::GetIfBool() const {
-  return is_bool() ? absl::make_optional(GetBool()) : absl::nullopt;
+std::optional<bool> Value::GetIfBool() const {
+  return is_bool() ? std::make_optional(GetBool()) : std::nullopt;
 }
 
-absl::optional<int> Value::GetIfInt() const {
-  return is_int() ? absl::make_optional(GetInt()) : absl::nullopt;
+std::optional<int> Value::GetIfInt() const {
+  return is_int() ? std::make_optional(GetInt()) : std::nullopt;
 }
 
-absl::optional<double> Value::GetIfDouble() const {
-  return (is_int() || is_double()) ? absl::make_optional(GetDouble())
-                                   : absl::nullopt;
+std::optional<double> Value::GetIfDouble() const {
+  return (is_int() || is_double()) ? std::make_optional(GetDouble())
+                                   : std::nullopt;
 }
 
 const std::string* Value::GetIfString() const {
@@ -420,29 +421,26 @@ void Value::Dict::Merge(Dict dict) {
 
 const Value* Value::Dict::Find(StringPiece key) const {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
-
-  auto it = storage_.find(key);
-  return it != storage_.end() ? it->second.get() : nullptr;
+  return FindPtrOrNull(storage_, key);
 }
 
 Value* Value::Dict::Find(StringPiece key) {
-  auto it = storage_.find(key);
-  return it != storage_.end() ? it->second.get() : nullptr;
+  return FindPtrOrNull(storage_, key);
 }
 
-absl::optional<bool> Value::Dict::FindBool(StringPiece key) const {
+std::optional<bool> Value::Dict::FindBool(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfBool() : absl::nullopt;
+  return v ? v->GetIfBool() : std::nullopt;
 }
 
-absl::optional<int> Value::Dict::FindInt(StringPiece key) const {
+std::optional<int> Value::Dict::FindInt(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfInt() : absl::nullopt;
+  return v ? v->GetIfInt() : std::nullopt;
 }
 
-absl::optional<double> Value::Dict::FindDouble(StringPiece key) const {
+std::optional<double> Value::Dict::FindDouble(StringPiece key) const {
   const Value* v = Find(key);
-  return v ? v->GetIfDouble() : absl::nullopt;
+  return v ? v->GetIfDouble() : std::nullopt;
 }
 
 const std::string* Value::Dict::FindString(StringPiece key) const {
@@ -605,12 +603,12 @@ bool Value::Dict::Remove(StringPiece key) {
   return storage_.erase(key) > 0;
 }
 
-absl::optional<Value> Value::Dict::Extract(StringPiece key) {
+std::optional<Value> Value::Dict::Extract(StringPiece key) {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
 
   auto it = storage_.find(key);
   if (it == storage_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   Value v = std::move(*it->second);
   storage_.erase(it);
@@ -643,20 +641,20 @@ Value* Value::Dict::FindByDottedPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindByDottedPath(path));
 }
 
-absl::optional<bool> Value::Dict::FindBoolByDottedPath(StringPiece path) const {
+std::optional<bool> Value::Dict::FindBoolByDottedPath(StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfBool() : absl::nullopt;
+  return v ? v->GetIfBool() : std::nullopt;
 }
 
-absl::optional<int> Value::Dict::FindIntByDottedPath(StringPiece path) const {
+std::optional<int> Value::Dict::FindIntByDottedPath(StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfInt() : absl::nullopt;
+  return v ? v->GetIfInt() : std::nullopt;
 }
 
-absl::optional<double> Value::Dict::FindDoubleByDottedPath(
+std::optional<double> Value::Dict::FindDoubleByDottedPath(
     StringPiece path) const {
   const Value* v = FindByDottedPath(path);
-  return v ? v->GetIfDouble() : absl::nullopt;
+  return v ? v->GetIfDouble() : std::nullopt;
 }
 
 const std::string* Value::Dict::FindStringByDottedPath(StringPiece path) const {
@@ -837,7 +835,7 @@ Value::Dict&& Value::Dict::SetByDottedPath(StringPiece path, List&& value) && {
   return std::move(*this);
 }
 
-absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
+std::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   DCHECK(!path.empty());
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
 
@@ -853,9 +851,9 @@ absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   StringPiece next_key = path.substr(0, dot_index);
   auto* next_dict = FindDict(next_key);
   if (!next_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<Value> extracted =
+  std::optional<Value> extracted =
       next_dict->ExtractByDottedPath(path.substr(dot_index + 1));
   if (extracted && next_dict->empty()) {
     Remove(next_key);
@@ -943,36 +941,36 @@ size_t Value::List::size() const {
 }
 
 Value::List::iterator Value::List::begin() {
-  return iterator(base::to_address(storage_.begin()),
-                  base::to_address(storage_.end()));
+  return iterator(std::to_address(storage_.begin()),
+                  std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::begin() const {
-  return const_iterator(base::to_address(storage_.begin()),
-                        base::to_address(storage_.end()));
+  return const_iterator(std::to_address(storage_.begin()),
+                        std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::cbegin() const {
-  return const_iterator(base::to_address(storage_.cbegin()),
-                        base::to_address(storage_.cend()));
+  return const_iterator(std::to_address(storage_.cbegin()),
+                        std::to_address(storage_.cend()));
 }
 
 Value::List::iterator Value::List::end() {
-  return iterator(base::to_address(storage_.begin()),
-                  base::to_address(storage_.end()),
-                  base::to_address(storage_.end()));
+  return iterator(std::to_address(storage_.begin()),
+                  std::to_address(storage_.end()),
+                  std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::end() const {
-  return const_iterator(base::to_address(storage_.begin()),
-                        base::to_address(storage_.end()),
-                        base::to_address(storage_.end()));
+  return const_iterator(std::to_address(storage_.begin()),
+                        std::to_address(storage_.end()),
+                        std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::cend() const {
-  return const_iterator(base::to_address(storage_.cbegin()),
-                        base::to_address(storage_.cend()),
-                        base::to_address(storage_.cend()));
+  return const_iterator(std::to_address(storage_.cbegin()),
+                        std::to_address(storage_.cend()),
+                        std::to_address(storage_.cend()));
 }
 
 Value::List::reverse_iterator Value::List::rend() {
@@ -1035,31 +1033,31 @@ void Value::List::clear() {
 
 Value::List::iterator Value::List::erase(iterator pos) {
   auto next_it = storage_.erase(storage_.begin() + (pos - begin()));
-  return iterator(base::to_address(storage_.begin()), base::to_address(next_it),
-                  base::to_address(storage_.end()));
+  return iterator(std::to_address(storage_.begin()), std::to_address(next_it),
+                  std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::erase(const_iterator pos) {
   auto next_it = storage_.erase(storage_.begin() + (pos - begin()));
-  return const_iterator(base::to_address(storage_.begin()),
-                        base::to_address(next_it),
-                        base::to_address(storage_.end()));
+  return const_iterator(std::to_address(storage_.begin()),
+                        std::to_address(next_it),
+                        std::to_address(storage_.end()));
 }
 
 Value::List::iterator Value::List::erase(iterator first, iterator last) {
   auto next_it = storage_.erase(storage_.begin() + (first - begin()),
                                 storage_.begin() + (last - begin()));
-  return iterator(base::to_address(storage_.begin()), base::to_address(next_it),
-                  base::to_address(storage_.end()));
+  return iterator(std::to_address(storage_.begin()), std::to_address(next_it),
+                  std::to_address(storage_.end()));
 }
 
 Value::List::const_iterator Value::List::erase(const_iterator first,
                                                const_iterator last) {
   auto next_it = storage_.erase(storage_.begin() + (first - begin()),
                                 storage_.begin() + (last - begin()));
-  return const_iterator(base::to_address(storage_.begin()),
-                        base::to_address(next_it),
-                        base::to_address(storage_.end()));
+  return const_iterator(std::to_address(storage_.begin()),
+                        std::to_address(next_it),
+                        std::to_address(storage_.end()));
 }
 
 Value::List Value::List::Clone() const {
@@ -1177,9 +1175,9 @@ Value::List&& Value::List::Append(List&& value) && {
 Value::List::iterator Value::List::Insert(const_iterator pos, Value&& value) {
   auto inserted_it =
       storage_.insert(storage_.begin() + (pos - begin()), std::move(value));
-  return iterator(base::to_address(storage_.begin()),
-                  base::to_address(inserted_it),
-                  base::to_address(storage_.end()));
+  return iterator(std::to_address(storage_.begin()),
+                  std::to_address(inserted_it),
+                  std::to_address(storage_.end()));
 }
 
 size_t Value::List::EraseValue(const Value& value) {

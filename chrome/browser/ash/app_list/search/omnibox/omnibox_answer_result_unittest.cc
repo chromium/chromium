@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 
+#include <optional>
+
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/json/json_reader.h"
@@ -15,7 +17,6 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list::test {
 namespace {
@@ -113,7 +114,7 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
       "              \"t\": [{ \"t\": \"-5°C\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 42 } } } "
       "] }";
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(
       SuggestionAnswer::ParseAnswer(value->GetDict(), kWeatherType, &answer));
@@ -174,7 +175,7 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
       "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 6 } } } "
       "] }";
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(
       SuggestionAnswer::ParseAnswer(value->GetDict(), kWeatherType, &answer));
@@ -243,7 +244,7 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
       "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }] } }, "
       "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }] } } "
       "] }";
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), kDictionaryType,
                                             &answer));

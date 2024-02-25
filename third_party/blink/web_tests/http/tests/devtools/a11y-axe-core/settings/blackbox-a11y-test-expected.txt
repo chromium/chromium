@@ -6,7 +6,7 @@ aXe violations: []
 
 
 Running: testPatternList
-Added a pattern in the list: test*
+Added a pattern in the list: /node_modules/|/bower_components/,test*
 aXe violations: []
 
 

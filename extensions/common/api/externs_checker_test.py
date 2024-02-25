@@ -35,7 +35,7 @@ class ExternsCheckerTest(unittest.TestCase):
     self.assertEquals('b', results[0].items[0])
     self.assertEquals(
         'To update the externs, run:\n'
-        ' src/ $ python tools/json_schema_compiler/compiler.py b --root=. '
+        ' src/ $ python3 tools/json_schema_compiler/compiler.py b --root=. '
         '--generator=externs > 2',
         results[0].long_text)
 
@@ -51,7 +51,7 @@ class ExternsCheckerTest(unittest.TestCase):
     self.assertTrue('c' in results[0].items)
     self.assertEquals(
         'To update the externs, run:\n'
-        ' src/ $ python tools/json_schema_compiler/compiler.py <source_file> '
+        ' src/ $ python3 tools/json_schema_compiler/compiler.py <source_file> '
         '--root=. --generator=externs > <output_file>',
         results[0].long_text)
 

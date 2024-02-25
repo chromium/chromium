@@ -12,10 +12,10 @@ using device::mojom::blink::SensorType;
 
 namespace blink {
 
-absl::optional<Vector<double>> OrientationSensor::quaternion() {
+std::optional<Vector<double>> OrientationSensor::quaternion() {
   reading_dirty_ = false;
   if (!hasReading())
-    return absl::nullopt;
+    return std::nullopt;
   const auto& quat = GetReading().orientation_quat;
   return Vector<double>({quat.x, quat.y, quat.z, quat.w});
 }

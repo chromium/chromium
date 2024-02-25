@@ -71,6 +71,7 @@
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   [self.firstRunCoordinator stop];
+  self.firstRunCoordinator = nil;
 
   [sceneState removeObserver:self];
   self.presentingSceneState = nil;
@@ -161,7 +162,8 @@
   _firstRunUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
 
-  FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
+  FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
+      initForBrowserState:self.mainBrowser->GetBrowserState()];
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.presentingInterface.viewController
@@ -182,14 +184,11 @@
 
 #pragma mark - FirstRunCoordinatorDelegate
 
-- (void)willFinishPresentingScreens {
+- (void)didFinishFirstRun {
   DCHECK(self.appState.initStage == InitStageFirstRun);
   _firstRunUIBlocker.reset();
-
   [self.firstRunCoordinator stop];
-}
-
-- (void)didFinishPresentingScreens {
+  self.firstRunCoordinator = nil;
   [self.appState queueTransitionToNextInitStage];
 }
 

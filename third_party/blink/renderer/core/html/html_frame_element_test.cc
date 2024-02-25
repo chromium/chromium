@@ -10,10 +10,13 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
-class HTMLFrameElementTest : public testing::Test {};
+class HTMLFrameElementTest : public testing::Test {
+  test::TaskEnvironment task_environment_;
+};
 
 // Test that the correct container policy is constructed on a frame element.
 // Frame elements do not have any container-policy related attributes, but the

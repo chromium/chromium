@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
     return all_assignments_to_one_group_;
   }
 
-  bool ShouldStudyUseLowEntropy() const;
+  bool AllowsHighEntropy() const;
 
   // Returns the entropy provider that should be used to select a group for
   // this study.

@@ -51,8 +51,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   base::WeakPtr<MediaItemManager> GetWeakPtr() override;
 
  private:
-  // Called to display an item in an existing dialog.
-  void ShowAndObserveItem(const std::string& id);
+  // Finds and shows the media item UI for the given id in an existing dialog,
+  // and returns whether it is shown.
+  bool ShowMediaItemUI(const std::string& id);
 
   // Looks up an item from any source.  Returns null if not found.
   base::WeakPtr<media_message_center::MediaNotificationItem> GetItem(

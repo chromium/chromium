@@ -15,9 +15,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/android/favicon_fetcher.h"
-#include "chrome/browser/supervised_user/jni_headers/WebsiteParentApproval_jni.h"
+#include "chrome/browser/supervised_user/website_parent_approval_jni_headers/WebsiteParentApproval_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -47,7 +48,8 @@ bool WebsiteParentApproval::IsLocalApprovalSupported() {
 void WebsiteParentApproval::RequestLocalApproval(
     content::WebContents* web_contents,
     const GURL& url,
-    base::OnceCallback<void(AndroidLocalWebApprovalFlowOutcome)> callback) {
+    base::OnceCallback<void(AndroidLocalWebApprovalFlowOutcome)> callback,
+    Profile& profile) {
   if (!GetOnCompletionCallback()->is_null()) {
     // There is a pending operation in progress. This is
     // possible if for example the user clicks the request approval button in
@@ -65,7 +67,8 @@ void WebsiteParentApproval::RequestLocalApproval(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_WebsiteParentApproval_requestLocalApproval(
       env, window_android->GetJavaObject(),
-      url::GURLAndroid::FromNativeGURL(env, url));
+      url::GURLAndroid::FromNativeGURL(env, url),
+      ProfileAndroid::FromProfile(&profile)->GetJavaObject());
 }
 
 void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
@@ -95,5 +98,5 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
 
   faviconFetcher->FetchFavicon(
       url, true, min_source_size_in_pixel, desired_size_in_pixel,
-      base::android::ScopedJavaGlobalRef(on_favicon_fetched_callback));
+      base::android::ScopedJavaGlobalRef<jobject>(on_favicon_fetched_callback));
 }

@@ -116,6 +116,7 @@ static_library("devtools") {
     "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/privileged/mojom/compositing",
     "//third_party/blink/public:buildflags",
     "//ui/events:dom_keycode_converter",
@@ -140,8 +141,10 @@ static_library("devtools") {
       "//components/keep_alive_registry",
       "//components/keyed_service/content",
       "//components/language/core/browser",
+      "//components/metrics/structured:structured_events",
       "//components/pref_registry",
       "//components/prefs",
+      "//components/search_engines:search_engines",
       "//components/sessions",
       "//components/signin/public/identity_manager:identity_manager",
       "//components/sync/service",
@@ -156,11 +159,17 @@ static_library("devtools") {
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/shell_dialogs",
+      "//ui/views/controls/webview",
     ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/constants" ]
+    }
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
     }
     sources += [
+      "aida_client.cc",
+      "aida_client.h",
       "chrome_devtools_manager_delegate.cc",
       "chrome_devtools_manager_delegate.h",
       "chrome_devtools_session.cc",
@@ -228,6 +237,8 @@ static_library("devtools") {
       "serialize_host_descriptions.h",
       "url_constants.cc",
       "url_constants.h",
+      "visual_logging.cc",
+      "visual_logging.h",
     ]
     if (enable_service_discovery) {
       sources += [
@@ -313,11 +324,17 @@ static_library("test_support") {
       "//chrome/browser/ui",
       "//content/public/browser",
       "//content/test:test_support",
+      "//net",
+      "//net/traffic_annotation:test_support",
     ]
 
     sources += [
+      "device/adb/mock_adb_server.cc",
+      "device/adb/mock_adb_server.h",
       "devtools_window_testing.cc",
       "devtools_window_testing.h",
     ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 }

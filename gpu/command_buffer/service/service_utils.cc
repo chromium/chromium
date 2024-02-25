@@ -13,10 +13,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 
@@ -32,27 +35,21 @@ namespace {
 bool GetUintFromSwitch(const base::CommandLine* command_line,
                        const base::StringPiece& switch_string,
                        uint32_t* value) {
-  if (!command_line->HasSwitch(switch_string))
+  if (!command_line->HasSwitch(switch_string)) {
     return false;
+  }
   std::string switch_value(command_line->GetSwitchValueASCII(switch_string));
   return base::StringToUint(switch_value, value);
 }
 
 }  // namespace
 
-gl::GLContextAttribs GenerateGLContextAttribs(
+gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     const ContextCreationAttribs& attribs_helper,
     const ContextGroup* context_group) {
-  return GenerateGLContextAttribs(attribs_helper,
-                                  context_group->use_passthrough_cmd_decoder());
-}
-
-gl::GLContextAttribs GenerateGLContextAttribs(
-    const ContextCreationAttribs& attribs_helper,
-    bool use_passthrough_cmd_decoder) {
   gl::GLContextAttribs attribs;
   attribs.gpu_preference = attribs_helper.gpu_preference;
-  if (use_passthrough_cmd_decoder) {
+  if (context_group->use_passthrough_cmd_decoder()) {
     attribs.bind_generates_resource = attribs_helper.bind_generates_resource;
     attribs.webgl_compatibility_context =
         IsWebGLContextType(attribs_helper.context_type);
@@ -91,6 +88,32 @@ gl::GLContextAttribs GenerateGLContextAttribs(
     attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;
   }
+
+  return attribs;
+}
+
+gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
+    bool use_passthrough_cmd_decoder) {
+  gl::GLContextAttribs attribs;
+  if (use_passthrough_cmd_decoder) {
+    attribs.bind_generates_resource = false;
+
+    // Always use the global texture and semaphore share group for the
+    // passthrough command decoder
+    attribs.global_texture_share_group = true;
+    attribs.global_semaphore_share_group = true;
+
+    attribs.robust_resource_initialization = true;
+    attribs.robust_buffer_access = true;
+  }
+
+  bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;
+  if (features::UseGles2ForOopR() && use_passthrough_cmd_decoder) {
+    force_es2_context = true;
+  }
+
+  attribs.client_major_es_version = force_es2_context ? 2 : 3;
+  attribs.client_minor_es_version = 0;
 
   return attribs;
 }
@@ -159,6 +182,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       base::FeatureList::IsEnabled(features::kWebGPUService);
   gpu_preferences.enable_unsafe_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
+  gpu_preferences.enable_webgpu_developer_features =
+      command_line->HasSwitch(switches::kEnableWebGPUDeveloperFeatures);
   gpu_preferences.use_webgpu_adapter = ParseWebGPUAdapterName(command_line);
   gpu_preferences.use_webgpu_power_preference =
       ParseWebGPUPowerPreference(command_line);
@@ -186,7 +211,12 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   }
   gpu_preferences.gr_context_type = ParseGrContextType(command_line);
-  gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
+  // ParseGrContextType checks Vulkan setting as well, so only parse Vulkan
+  // implementation name if gr_context_type is kVulkan.
+  gpu_preferences.use_vulkan =
+      gpu_preferences.gr_context_type == GrContextType::kVulkan
+          ? ParseVulkanImplementationName(command_line)
+          : VulkanImplementationName::kNone;
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Vulkan Surface is not used on Fuchsia.
@@ -203,21 +233,17 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
 }
 
 GrContextType ParseGrContextType(const base::CommandLine* command_line) {
-  if (base::FeatureList::IsEnabled(features::kSkiaGraphite) ||
-      command_line->HasSwitch(switches::kSkiaGraphiteBackend)) {
+  if (features::IsSkiaGraphiteEnabled(command_line)) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    if (value.empty() || value == switches::kSkiaGraphiteBackendDawn) {
+    if (value.empty() ||
+        base::StartsWith(value, switches::kSkiaGraphiteBackendDawn)) {
       return GrContextType::kGraphiteDawn;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)
-    if (
-#if BUILDFLAG(IS_IOS)
-        value.empty() ||
-#endif  // BUILDFLAG(IS_IOS)
-        value == switches::kSkiaGraphiteBackendMetal) {
+    if (value == switches::kSkiaGraphiteBackendMetal) {
       return GrContextType::kGraphiteMetal;
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
@@ -233,8 +259,7 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
-  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
-      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
     return VulkanImplementationName::kForcedNative;
   }
 #endif
@@ -329,4 +354,21 @@ bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds) {
 }
 
 }  // namespace gles2
+
+#if BUILDFLAG(IS_MAC)
+void SetMacOSSpecificTextureTargetFromCurrentGLImplementation() {
+  // On MacOS, the default texture target for native GpuMemoryBuffers is
+  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
+  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
+  // it's necessary to use GL_TEXTURE_2D instead.
+  // TODO(crbug.com/1056312): The proper behavior is to check the config
+  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace gpu

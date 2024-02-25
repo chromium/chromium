@@ -23,15 +23,19 @@ to propagate policies for all users (including non-managed ones):
 
 **Linux** Policies can be set via files in specific directories:
 
-The base directory is `/etc/chromium/policies` for Chromium builds,
- `/etc/opt/chrome/policies/` for official Chrome builds.
+The base directory is:
+
+- `/etc/chromium/policies` for Chromium builds,
+- `/etc/opt/chrome/policies/` for official Chrome builds,
+- `/etc/opt/chrome_for_testing/policies/` for official Chrome for Testing builds.
+
 The base directory contains two subdirectories: `managed/` for mandatory
 policies and `recommended/` for recommended policies. All files inside these
 directories are treated as JSON files containing policies.
 
 On these systems it is also possible to set machine-wide cloud-based policies.
 
-** ChromeOS **
+**ChromeOS**
 
 ChromeOS devices can be either cloud-managed or Active Directory managed
 ([AdManagement](https://support.google.com/chrome/a?p=ad)).
@@ -56,7 +60,7 @@ the whole device.
 ## Device policies
 
 Device policies are defined in the [chrome_device_policy proto file](https://cs.chromium.org/chromium/src/components/policy/proto/chrome_device_policy.proto).
-They are also mentioned in the [policy templates file](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)
+They are also mentioned in the [policy templates files](https://cs.chromium.org/chromium/src/components/policy/resources/templates/)
 with `'device_only': True` for documentation purposes.
 
 Device policies are applied to all users on the device (and even if no user
@@ -70,7 +74,7 @@ or its wrapper [CrosSettings](https://cs.chromium.org/chromium/src/chrome/browse
 
 ## User policies
 
-User policies are defined in the [policy templates file](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json);
+User policies are defined in the [policy templates files](https://cs.chromium.org/chromium/src/components/policy/resources/templates/);
 only entries without `'device_only': True` are user policies.
 
 User policies are bound to user accounts, so a personal account on
@@ -111,14 +115,18 @@ See the [adding new policies guide](add_new_policy.md#adding-a-new-policy).
 
 ## Policy Ownership
 
+Policy owners can be individuals, references to OWNERS files, or Google Group
+aliases.
+
 Each policy has two or more owners to minimize the risk of becoming orphaned
 when the author moves away from it.
-
-Policy owners can either be individuals or references to OWNERS files. At least
-one of the owners listed for a policy needs to be an individual, preferably one
-with a chromium.org or google.com account. This is to ensure that some external
-organizations like the translators team can more easily reach out in case of
-questions.
+At least one of the owners listed for a policy needs to be an individual,
+preferably one with a chromium.org or google.com account. This is to ensure
+that some external organizations like the translators team can more easily
+reach out in case of questions.
+At least one of the owners should be a reference to an OWNERS file or a Google
+Group. OWNERS files are preferred to groups since groups can have restricted
+access rights.
 
 ### Responsibilities of the Policy Ownership
 

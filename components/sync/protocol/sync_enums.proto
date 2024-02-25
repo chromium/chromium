@@ -98,9 +98,7 @@ message SyncEnums {
     // DEPRECATED_AUTH_EXPIRED = 4;
     // DEPRECATED_USER_NOT_ACTIVATED = 5;
     // DEPRECATED_AUTH_INVALID = 6;
-    // A clear of the user data is pending (e.g. initiated by privacy request).
-    // The client should come back later.
-    CLEAR_PENDING = 7;
+    // DEPRECATED_CLEAR_PENDING = 7;
     // A transient error occurred (e.g. a backend timeout). The client should
     // try again later.
     TRANSIENT_ERROR = 8;

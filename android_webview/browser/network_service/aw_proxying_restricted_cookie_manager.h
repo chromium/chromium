@@ -5,9 +5,11 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_RESTRICTED_COOKIE_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_RESTRICTED_COOKIE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 
@@ -47,6 +49,7 @@ class AwProxyingRestrictedCookieManager
                     const url::Origin& top_frame_origin,
                     bool has_storage_access,
                     network::mojom::CookieManagerGetOptionsPtr options,
+                    bool is_ad_tagged,
                     GetAllForUrlCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& url,
@@ -75,6 +78,7 @@ class AwProxyingRestrictedCookieManager
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
                         bool get_version_shared_memory,
+                        bool is_ad_tagged,
                         GetCookiesStringCallback callback) override;
 
   void CookiesEnabledFor(const GURL& url,
@@ -85,29 +89,29 @@ class AwProxyingRestrictedCookieManager
 
   // This one is internal.
   bool AllowCookies(const GURL& url,
-                    const net::SiteForCookies& site_for_cookies) const;
+                    const net::SiteForCookies& site_for_cookies,
+                    bool has_storage_access) const;
 
  private:
   AwProxyingRestrictedCookieManager(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_restricted_cookie_manager,
       bool is_service_worker,
-      int process_id,
-      int frame_id);
+      const std::optional<const content::GlobalRenderFrameHostToken>&
+          global_frame_token);
 
   static void CreateAndBindOnIoThread(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_rcm,
       bool is_service_worker,
-      int process_id,
-      int frame_id,
+      const std::optional<const content::GlobalRenderFrameHostToken>&
+          global_frame_token,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
   mojo::Remote<network::mojom::RestrictedCookieManager>
       underlying_restricted_cookie_manager_;
   bool is_service_worker_;
-  int process_id_;
-  int frame_id_;
+  std::optional<const content::GlobalRenderFrameHostToken> global_frame_token_;
 
   base::WeakPtrFactory<AwProxyingRestrictedCookieManager> weak_factory_{this};
 };

@@ -4,13 +4,14 @@
 
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
@@ -87,12 +88,12 @@ void FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithId(
   DecrementDevicesConnectedCount();
 }
 
-absl::optional<blink::WebBluetoothDeviceId>
+std::optional<blink::WebBluetoothDeviceId>
 FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithAddress(
     const std::string& device_address) {
   auto device_address_iter = device_address_to_id_map_.find(device_address);
   if (device_address_iter == device_address_to_id_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   blink::WebBluetoothDeviceId device_id = device_address_iter->second;
   auto device_id_iter = device_id_to_connection_map_.find(device_id);
@@ -101,7 +102,7 @@ FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithAddress(
   CHECK(device_address_to_id_map_.erase(device_address));
   device_id_to_connection_map_.erase(device_id);
   DecrementDevicesConnectedCount();
-  return absl::make_optional(device_id);
+  return std::make_optional(device_id);
 }
 
 void FrameConnectedBluetoothDevices::CloseConnectionsToDevicesNotInList(

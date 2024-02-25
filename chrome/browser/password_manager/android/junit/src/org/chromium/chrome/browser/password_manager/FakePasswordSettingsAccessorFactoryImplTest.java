@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 @Batch(Batch.PER_CLASS)
 public class FakePasswordSettingsAccessorFactoryImplTest {
     FakePasswordSettingsAccessorFactoryImpl mFakePasswordSettingsAccessorFactoryImpl;
+
     @Before
     public void setUp() {
         mFakePasswordSettingsAccessorFactoryImpl = new FakePasswordSettingsAccessorFactoryImpl();
@@ -27,8 +28,9 @@ public class FakePasswordSettingsAccessorFactoryImplTest {
 
     @Test
     public void testCreateAccessor() {
-        assertTrue(mFakePasswordSettingsAccessorFactoryImpl.createAccessor()
-                           instanceof FakePasswordSettingsAccessor);
+        assertTrue(
+                mFakePasswordSettingsAccessorFactoryImpl.createAccessor()
+                        instanceof FakePasswordSettingsAccessor);
     }
 
     @Test

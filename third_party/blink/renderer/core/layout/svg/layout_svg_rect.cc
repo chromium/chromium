@@ -27,92 +27,99 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
-LayoutSVGRect::LayoutSVGRect(SVGRectElement* node)
-    : LayoutSVGShape(node, kSimple), use_path_fallback_(false) {}
+namespace {
+
+bool GeometryPropertiesChanged(const ComputedStyle& old_style,
+                               const ComputedStyle& new_style) {
+  return old_style.X() != new_style.X() || old_style.Y() != new_style.Y() ||
+         old_style.Width() != new_style.Width() ||
+         old_style.Height() != new_style.Height() ||
+         old_style.Rx() != new_style.Rx() || old_style.Ry() != new_style.Ry();
+}
+
+}  // namespace
+
+LayoutSVGRect::LayoutSVGRect(SVGRectElement* node) : LayoutSVGShape(node) {}
 
 LayoutSVGRect::~LayoutSVGRect() = default;
 
-void LayoutSVGRect::UpdateShapeFromElement() {
+void LayoutSVGRect::StyleDidChange(StyleDifference diff,
+                                   const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutSVGShape::StyleDidChange(diff, old_style);
+
+  if (old_style && GeometryPropertiesChanged(*old_style, StyleRef())) {
+    SetNeedsShapeUpdate();
+  }
+}
+
+gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
   NOT_DESTROYED();
 
-  decorated_bounding_box_ = gfx::RectF();
-  use_path_fallback_ = false;
+  // Reset shape state.
+  ClearPath();
+  SetGeometryType(GeometryType::kEmpty);
 
   const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = StyleRef();
-  fill_bounding_box_.set_origin(
-      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
-  gfx::Vector2dF size = VectorForLengthPair(
-      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  const gfx::PointF origin =
+      PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
+  const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                                  viewport_resolver, style);
   // Spec: "A negative value is an error." gfx::SizeF() clamps negative
   // width/height to 0.
-  fill_bounding_box_.set_size(gfx::SizeF(size.x(), size.y()));
+  const gfx::RectF bounding_box(origin, gfx::SizeF(size.x(), size.y()));
 
   // Spec: "A value of zero disables rendering of the element."
-  if (!fill_bounding_box_.IsEmpty()) {
-    // Fallback to LayoutSVGShape and path-based hit detection if the rect
-    // has rounded corners or a non-scaling or non-simple stroke.
-    // However, only use LayoutSVGShape bounding-box calculations for the
-    // non-scaling stroke case, since the computation below should be accurate
-    // for the other cases.
-    if (HasNonScalingStroke()) {
-      LayoutSVGShape::UpdateShapeFromElement();
-      use_path_fallback_ = true;
-      return;
-    }
-    gfx::Vector2dF radii =
+  if (!bounding_box.IsEmpty()) {
+    const gfx::Vector2dF radii =
         VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
-    if (radii.x() > 0 || radii.y() > 0 || !DefinitelyHasSimpleStroke()) {
+    const bool has_radii = radii.x() > 0 || radii.y() > 0;
+    SetGeometryType(has_radii ? GeometryType::kRoundedRectangle
+                              : GeometryType::kRectangle);
+
+    // If this is a rounded rectangle, we'll need a Path.
+    if (GetGeometryType() != GeometryType::kRectangle) {
       CreatePath();
-      use_path_fallback_ = true;
     }
   }
+  return bounding_box;
+}
 
-  if (!use_path_fallback_)
-    ClearPath();
-
-  decorated_bounding_box_ = CalculateStrokeBoundingBox();
+bool LayoutSVGRect::CanUseStrokeHitTestFastPath() const {
+  // Non-scaling-stroke needs special handling.
+  if (HasNonScalingStroke()) {
+    return false;
+  }
+  // We can compute intersections with simple, continuous strokes on
+  // regular rectangles without using a Path.
+  return GetGeometryType() == GeometryType::kRectangle &&
+         DefinitelyHasSimpleStroke();
 }
 
 bool LayoutSVGRect::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
   NOT_DESTROYED();
-  // The optimized code below does not support the cases that we set
-  // use_path_fallback_ in UpdateShapeFromElement().
-  if (use_path_fallback_)
+  if (!CanUseStrokeHitTestFastPath()) {
+    EnsurePath();
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
-
-  const gfx::PointF& point = location.TransformedPoint();
-  const float half_stroke_width = StrokeWidth() / 2;
-  const float half_width = fill_bounding_box_.width() / 2;
-  const float half_height = fill_bounding_box_.height() / 2;
-
-  const gfx::PointF fill_bounding_box_center =
-      gfx::PointF(fill_bounding_box_.x() + half_width,
-                  fill_bounding_box_.y() + half_height);
-  const float abs_delta_x = std::abs(point.x() - fill_bounding_box_center.x());
-  const float abs_delta_y = std::abs(point.y() - fill_bounding_box_center.y());
-
-  if (!(abs_delta_x <= half_width + half_stroke_width &&
-        abs_delta_y <= half_height + half_stroke_width))
-    return false;
-
-  return (half_width - half_stroke_width <= abs_delta_x) ||
-         (half_height - half_stroke_width <= abs_delta_y);
+  }
+  return location.IntersectsStroke(fill_bounding_box_, StrokeWidth());
 }
 
 bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
                                                const WindRule fill_rule) const {
   NOT_DESTROYED();
-  if (use_path_fallback_)
+  if (GetGeometryType() != GeometryType::kRectangle) {
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
-  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
+  }
+  return location.Intersects(fill_bounding_box_);
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

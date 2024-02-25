@@ -13,10 +13,10 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
@@ -179,9 +180,7 @@ CaptureLabelView::CaptureLabelView(
 
   capture_mode_util::SetHighlightBorder(
       this, kCaptureLabelRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
   shadow_->SetRoundedCornerRadius(kCaptureLabelRadius);
 }
@@ -209,7 +208,7 @@ void CaptureLabelView::UpdateIconAndText() {
   CaptureModeController* controller = CaptureModeController::Get();
   const CaptureModeSource source = controller->source();
   const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
-  const bool in_tablet_mode = TabletModeController::Get()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   // Depending on the current state, only one of the two views
   // `capture_button_container_` or `label_` can be visible at a time.
@@ -265,8 +264,10 @@ void CaptureLabelView::UpdateIconAndText() {
 
   const bool label_visibility = !text.empty();
   label_->SetVisible(label_visibility);
-  if (label_visibility)
+  if (label_visibility && (label_->GetText() != text)) {
     label_->SetText(text);
+    capture_mode_util::TriggerAccessibilityAlertSoon(base::UTF16ToUTF8(text));
+  }
 }
 
 bool CaptureLabelView::ShouldHandleEvent() {
@@ -325,7 +326,7 @@ void CaptureLabelView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   shadow_->SetContentBounds(layer()->bounds());
 }
 
-void CaptureLabelView::Layout() {
+void CaptureLabelView::Layout(PassKey) {
   gfx::Rect label_bounds = GetLocalBounds();
   capture_button_container_->SetBoundsRect(label_bounds);
 
@@ -334,7 +335,7 @@ void CaptureLabelView::Layout() {
 
   // This is necessary to update the focus ring, which is a child view of
   // `this`.
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
 gfx::Size CaptureLabelView::CalculatePreferredSize() const {
@@ -383,7 +384,7 @@ void CaptureLabelView::FadeInAndOutCounter(int counter_value) {
 
   label_->SetVisible(true);
   label_->SetText(base::FormatNumber(counter_value));
-  Layout();
+  DeprecatedLayoutImmediately();
 
   // The counter should be initially fully transparent and scaled down 80%.
   ui::Layer* layer = label_->layer();
@@ -463,7 +464,7 @@ void CaptureLabelView::OnCountDownAnimationFinished() {
   std::move(countdown_finished_callback_).Run();  // `this` is destroyed here.
 }
 
-BEGIN_METADATA(CaptureLabelView, views::View)
+BEGIN_METADATA(CaptureLabelView)
 END_METADATA
 
 }  // namespace ash

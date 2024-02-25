@@ -1,9 +1,8 @@
 Name: libgav1
 Short Name: libgav1
 URL: https://chromium.googlesource.com/codecs/libgav1/
-Version: 0
-Date: Thursday July 06 2023
-Revision: df0023cc95b8e606a2fd243522d823401ef86637
+Version: N/A
+Revision: d2f84e499e046281c4ded2d24d9186e2c54c01d8
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -23,5 +22,5 @@ Please follow these steps to update libgav1 src code
 
   Use the generated commit message for the roll.
 
-2. Update Date and Commit in README.chromium:
+2. Update Commit in README.chromium:
   go run update_readme.go

@@ -12,7 +12,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +51,8 @@ class RequestSenderTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
 
+  std::unique_ptr<TestingPrefServiceSimple> pref_ =
+      std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<TestConfigurator> config_;
   std::unique_ptr<RequestSender> request_sender_;
 
@@ -69,7 +73,8 @@ RequestSenderTest::RequestSenderTest()
 RequestSenderTest::~RequestSenderTest() = default;
 
 void RequestSenderTest::SetUp() {
-  config_ = base::MakeRefCounted<TestConfigurator>();
+  RegisterPersistedDataPrefs(pref_->registry());
+  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   request_sender_ = std::make_unique<RequestSender>(config_);
 
   std::vector<GURL> urls;
@@ -99,8 +104,9 @@ void RequestSenderTest::RunThreads() {
 }
 
 void RequestSenderTest::Quit() {
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 void RequestSenderTest::RequestSenderComplete(int error,

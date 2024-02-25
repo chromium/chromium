@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -55,7 +56,7 @@ class ExtensionGarbageCollectorUnitTest : public ExtensionServiceTestBase {
 TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
   feature_list_.InitAndDisableFeature(
       extensions_features::kExtensionsZipFileInstalledInProfileDir);
-  const std::string kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
+  const ExtensionId kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
   InitPluginService();
   InitializeGoodInstalledExtensionService();
@@ -98,7 +99,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest,
        CleanupUnpackedOnStartup_DeleteWhenNoLongerInstalled) {
   feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsZipFileInstalledInProfileDir);
-  const std::string kExtensionId = "lckcjklfapeiadkadngidmocpbkemckm";
+  const ExtensionId kExtensionId = "lckcjklfapeiadkadngidmocpbkemckm";
 
   InitPluginService();
   InitializeGoodInstalledExtensionService();
@@ -131,7 +132,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest,
        CleanupUnpackedOnStartup_DoNotDeleteWhenStillInstalled) {
   feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsZipFileInstalledInProfileDir);
-  const std::string kExtensionId = "lckcjklfapeiadkadngidmocpbkemckm";
+  const ExtensionId kExtensionId = "lckcjklfapeiadkadngidmocpbkemckm";
 
   InitPluginService();
   InitializeGoodInstalledExtensionService();
@@ -165,7 +166,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest,
 // Test that garbage collection doesn't delete anything while a crx is being
 // installed.
 TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
-  const std::string kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
+  const ExtensionId kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
   InitPluginService();
   InitializeGoodInstalledExtensionService();

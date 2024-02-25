@@ -10,10 +10,13 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
+#include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync/service/sync_service.h"
@@ -147,12 +150,31 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     }
   }
 
-  auto* browser =
-      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
+  // `SearchEngineChoiceDialogService` may need to suppress this dialog to avoid
+  // dialog conflicts and too frequent promos.
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  if (search_engine_choice_dialog_service &&
+      !search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
+    base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
+                                  SettingsPrivacySandboxPromptHelperEvent::
+                                      kSearchEngineChoiceDialogShown);
+    return;
+  }
 
-  // If a sign-in dialog is being currently displayed, the prompt should
-  // not be shown to avoid conflict.
-  if (browser->signin_view_controller()->ShowsModalDialog()) {
+  auto* browser =
+      chrome::FindBrowserWithTab(navigation_handle->GetWebContents());
+
+  // If a sign-in dialog is being currently displayed or is about to be
+  // displayed, the prompt should not be shown to avoid conflict.
+  bool signin_dialog_showing =
+      browser->signin_view_controller()->ShowsModalDialog();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  signin_dialog_showing =
+      signin_dialog_showing ||
+      IsProfileCustomizationBubbleSyncControllerRunning(browser);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (signin_dialog_showing) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kSigninDialogShown);
@@ -171,16 +193,29 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     }
   }
 
-  const bool is_window_too_small = !CanWindowFitPrivacySandboxPrompt(browser);
+  // The PrivacySandbox prompt can always fit inside a normal tabbed window due
+  // to its minimum width, so checking the height is enough here. Other non
+  // normal tabbed browsers will be exlcuded in a later check.
+  const bool is_window_height_too_small =
+      !CanWindowHeightFitPrivacySandboxPrompt(browser);
   base::UmaHistogramBoolean("Settings.PrivacySandbox.DialogWindowTooSmall",
-                            is_window_too_small);
-  // If the windows size is too small, it is difficult to read or interrupt with
-  // the dialog. The dialog is blocking modal, that is why we want to prevent it
-  // from showing if there isn't enough space.
-  if (is_window_too_small) {
+                            is_window_height_too_small);
+  // If the windows height is too small, it is difficult to read or interact
+  // with the dialog. The dialog is blocking modal, that is why we want to
+  // prevent it from showing if there isn't enough space.
+  if (is_window_height_too_small) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kWindowTooSmall);
+    return;
+  }
+
+  // Avoid showing the prompt on popups, pip, anything that isn't a normal
+  // browser.
+  if (browser->type() != Browser::TYPE_NORMAL) {
+    base::UmaHistogramEnumeration(
+        kPrivacySandboxPromptHelperEventHistogram,
+        SettingsPrivacySandboxPromptHelperEvent::kNonNormalBrowser);
     return;
   }
 

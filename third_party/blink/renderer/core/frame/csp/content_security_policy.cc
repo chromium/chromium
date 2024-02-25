@@ -26,14 +26,15 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -197,7 +198,7 @@ ContentSecurityPolicy::ContentSecurityPolicy()
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) {}
 
 bool ContentSecurityPolicy::IsBound() {
-  return delegate_;
+  return delegate_ != nullptr;
 }
 
 void ContentSecurityPolicy::BindToDelegate(
@@ -559,7 +560,7 @@ String ContentSecurityPolicy::WasmEvalDisabledErrorMessage() const {
 }
 
 namespace {
-absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
+std::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     mojom::blink::RequestContextType context) {
   switch (context) {
     case mojom::blink::RequestContextType::AUDIO:
@@ -571,6 +572,7 @@ absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::BEACON:
     case mojom::blink::RequestContextType::EVENT_SOURCE:
     case mojom::blink::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::JSON:
     case mojom::blink::RequestContextType::PING:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::SUBRESOURCE:
@@ -614,6 +616,11 @@ absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::PREFETCH:
       return CSPDirectiveName::DefaultSrc;
 
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
+      // If speculation rules ever supports <script src>, then it will probably
+      // be necessary to use ScriptSrcElem in such cases.
+      return CSPDirectiveName::ScriptSrc;
+
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:
@@ -621,7 +628,7 @@ absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::PLUGIN:
     case mojom::blink::RequestContextType::UNSPECIFIED:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -665,9 +672,10 @@ bool AllowResourceHintRequestForPolicy(
   // Check default-src with the given reporting disposition, to allow reporting
   // if needed.
   return CSPDirectiveListAllowFromSource(
-      csp, policy, CSPDirectiveName::DefaultSrc, url, url_before_redirects,
-      redirect_status, reporting_disposition, nonce, integrity_metadata,
-      parser_disposition);
+             csp, policy, CSPDirectiveName::DefaultSrc, url,
+             url_before_redirects, redirect_status, reporting_disposition,
+             nonce, integrity_metadata, parser_disposition)
+      .IsAllowed();
 }
 }  // namespace
 
@@ -688,10 +696,6 @@ bool ContentSecurityPolicy::AllowRequest(
   // executing "Does resource hint request violate policy?" on request and
   // policy.
   if (context == mojom::blink::RequestContextType::PREFETCH) {
-    if (!RuntimeEnabledFeatures::ResourceHintsLeastRestrictiveCSPEnabled()) {
-      return true;
-    }
-
     return base::ranges::all_of(policies_, [&](const auto& policy) {
       return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                      policy->header->type) ||
@@ -702,7 +706,7 @@ bool ContentSecurityPolicy::AllowRequest(
     });
   }
 
-  absl::optional<CSPDirectiveName> type =
+  std::optional<CSPDirectiveName> type =
       GetDirectiveTypeFromRequestContextType(context);
 
   if (!type)
@@ -760,18 +764,25 @@ bool ContentSecurityPolicy::AllowFromSource(
     }
   }
 
-  bool is_allowed = true;
+  CSPCheckResult result = CSPCheckResult::Allowed();
   for (const auto& policy : policies_) {
     if (!CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                 policy->header->type)) {
       continue;
     }
-    is_allowed &= CSPDirectiveListAllowFromSource(
+    result &= CSPDirectiveListAllowFromSource(
         *policy, this, type, url, url_before_redirects, redirect_status,
         reporting_disposition, nonce, hashes, parser_disposition);
   }
 
-  return is_allowed;
+  if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
+    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
+  }
+  if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
+    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
+  }
+
+  return result.IsAllowed();
 }
 
 bool ContentSecurityPolicy::AllowBaseURI(const KURL& url) {
@@ -847,7 +858,7 @@ bool ContentSecurityPolicy::AllowTrustedTypePolicy(
     const String& policy_name,
     bool is_duplicate,
     AllowTrustedTypePolicyDetails& violation_details,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   bool is_allowed = true;
   violation_details = AllowTrustedTypePolicyDetails::kAllowed;
   for (const auto& policy : policies_) {
@@ -876,7 +887,7 @@ bool ContentSecurityPolicy::AllowTrustedTypeAssignmentFailure(
     const String& message,
     const String& sample,
     const String& sample_prefix,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   bool allow = true;
   for (const auto& policy : policies_) {
     allow &= CSPDirectiveListAllowTrustedTypeAssignmentFailure(
@@ -1036,7 +1047,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
 
   // Step 4. Set violation’s status to the HTTP status code for the resource
   // associated with violation’s global object. [spec text]
-  absl::optional<uint16_t> status_code = delegate->GetStatusCode();
+  std::optional<uint16_t> status_code = delegate->GetStatusCode();
   if (status_code)
     init->setStatusCode(*status_code);
 
@@ -1113,7 +1124,7 @@ void ContentSecurityPolicy::ReportViolation(
     Element* element,
     const String& source,
     const String& source_prefix,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   DCHECK(violation_type == kURLViolation || blocked_url.IsEmpty());
 
   // TODO(crbug.com/1279745): Remove/clarify what this block is about.
@@ -1318,13 +1329,29 @@ bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
       ExperimentalContentSecurityPolicyFeaturesEnabled();
 }
 
+bool ContentSecurityPolicy::IsStrictPolicyEnforced() const {
+  return base::ranges::any_of(policies_, [](const auto& policy) {
+    return !CSPDirectiveListIsReportOnly(*policy) &&
+           CSPDirectiveListIsObjectRestrictionReasonable(*policy) &&
+           CSPDirectiveListIsBaseRestrictionReasonable(*policy) &&
+           CSPDirectiveListIsScriptRestrictionReasonable(*policy);
+  });
+}
+
+bool ContentSecurityPolicy::RequiresTrustedTypes() const {
+  return base::ranges::any_of(policies_, [](const auto& policy) {
+    return !CSPDirectiveListIsReportOnly(*policy) &&
+           CSPDirectiveListRequiresTrustedTypes(*policy);
+  });
+}
+
 // static
 bool ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
     const ExecutionContext* context) {
   if (!context)
     return false;
 
-  return ShouldBypassMainWorldDeprecated(context->GetCurrentWorld().get());
+  return ShouldBypassMainWorldDeprecated(context->GetCurrentWorld());
 }
 
 // static

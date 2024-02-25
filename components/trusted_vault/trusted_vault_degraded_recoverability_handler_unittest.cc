@@ -53,7 +53,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                int last_trusted_vault_key_version,
                const SecureBoxPublicKey& authentication_factor_public_key,
                AuthenticationFactorType authentication_factor_type,
-               absl::optional<int> authentication_factor_type_hint,
+               std::optional<int> authentication_factor_type_hint,
                RegisterAuthenticationFactorCallback callback),
               (override));
   MOCK_METHOD(std::unique_ptr<Request>,
@@ -74,6 +74,11 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
               DownloadIsRecoverabilityDegraded,
               (const CoreAccountInfo& account_info,
                IsRecoverabilityDegradedCallback callback),
+              (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadAuthenticationFactorsRegistrationState,
+              (const CoreAccountInfo& account_info,
+               DownloadAuthenticationFactorsRegistrationStateCallback callback),
               (override));
 };
 

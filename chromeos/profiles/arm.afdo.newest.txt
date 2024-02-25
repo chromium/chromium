@@ -1,1 +1,1 @@
-chromeos-chrome-arm-none-118-5938.4-1692617964-benchmark-118.0.5972.0-r1-redacted.afdo.xz
+chromeos-chrome-arm-none-122-6167.14-1704114038-benchmark-122.0.6222.0-r1-redacted.afdo.xz

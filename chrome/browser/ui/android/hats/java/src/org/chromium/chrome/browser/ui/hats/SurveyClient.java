@@ -4,42 +4,34 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
-import android.content.Context;
+import android.app.Activity;
 
-import java.util.List;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
-/**
- * SurveyClient created in charged to show survey.
- */
+import java.util.Map;
+
+/** SurveyClient created in charged to show survey. */
 public interface SurveyClient {
     /**
-     * Show survey in the given context.
+     * Show survey in the given activity.
+     * @param activity Activity the survey will be showing.
+     * @param lifecycleDispatcher LifecycleDispatcher of the given activity.
      */
-    void showSurvey(Context context);
+    void showSurvey(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher);
 
     /**
-     * Show the survey in the given context, with the input PSD data.
+     * Show the survey in the given activity, with the input PSD data.
+     *
+     * @param activity              Activity the survey will be showing.
+     * @param lifecycleDispatcher   LifecycleDispatcher of the given activity.
+     * @param surveyPsdBitValues    PSD string values matching the order of {@link
+     *                              SurveyConfig#mPsdBitDataFields}.
      * @param surveyPsdStringValues PSD string values matching the order of {@link
-     *         SurveyConfig#mPsdStringDataFields}.
-     * @param surveyPsdBitValues PSD string values matching the order of {@link
-     *         SurveyConfig#mPsdBitDataFields}.
+     *                              SurveyConfig#mPsdStringDataFields}.
      */
     void showSurvey(
-            Context context, List<String> surveyPsdStringValues, List<Boolean> surveyPsdBitValues);
-
-    /**
-     * Interface representing the survey invitation UI responsible to show the survey to the user.
-     * Client features wanting to customize the survey presentation can override this interface.
-     */
-    public interface SurveyUiDelegate {
-        /**
-         * Called by SurveyClient when the survey is downloaded and ready to present. When survey
-         * is shown, the two given runnable can be used to notify SurveyClient the outcome of
-         * the survey invitation.
-         *
-         * @param onSurveyAccepted Callback to run when survey invitation is accepted.
-         * @param onSurveyDeclined Callback to run when survey invitation is declined.
-         */
-        void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined);
-    }
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Map<String, Boolean> surveyPsdBitValues,
+            Map<String, String> surveyPsdStringValues);
 }

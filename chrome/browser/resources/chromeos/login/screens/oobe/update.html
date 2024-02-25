@@ -23,11 +23,10 @@ found in the LICENSE file.
     overflow: hidden;
     width: 380px;
   }
-
   :host-context(.jelly-enabled) .slide-view {
-    /* TODO(b/289793104): Define new size for the carousel/slide. */
     border: none;
     border-radius: 20px;
+    height: 360px;
   }
 
   #checkingAnimation {
@@ -53,11 +52,11 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="cellular-permission-back" inverse
-        on-click="onBackClicked_"></oobe-back-button>
+        on-click="onBackClicked"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="cellular-permission-next" inverse
-        on-click="onNextClicked_"></oobe-next-button>
+        on-click="onNextClicked"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog footer-shrinkable id="checking-for-updates-dialog"
@@ -97,7 +96,7 @@ found in the LICENSE file.
   <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
       class="slide-view" slot="content">
     <oobe-slide is-warning>
-      <iron-icon slot="slide-img"  icon="oobe-illos:update-charge-illo"
+      <iron-icon slot="slide-img" icon="oobe-illos:update-charge-illo"
           class="illustration-jelly">
       </iron-icon>
       <div slot="title">
@@ -110,8 +109,8 @@ found in the LICENSE file.
   </div>
   <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
       slot="content">
-    <oobe-carousel slide-duration-in-seconds=5
-        auto-transition="[[getAutoTransition_(uiStep, autoTransition)]]"
+    <oobe-carousel
+        auto-transition="[[getAutoTransition(uiStep, autoTransition)]]"
         slide-label="slideLabel"
         selected-button-label="slideSelectedButtonLabel"
         unselected-button-label="slideUnselectedButtonLabel">
@@ -119,9 +118,9 @@ found in the LICENSE file.
         <iron-icon slot="slide-img" icon="oobe-illos:update-no-waiting-illo"
             class="illustration-jelly">
         </iron-icon>
-        <div slot="title">[[getUpdateSlideTitle_(locale, isOptOutEnabled)]]
+        <div slot="title">[[getUpdateSlideTitle(locale, isOptOutEnabled)]]
         </div>
-        <div slot="text">[[getUpdateSlideText_(locale, isOptOutEnabled)]]
+        <div slot="text">[[getUpdateSlideText(locale, isOptOutEnabled)]]
         </div>
       </oobe-slide>
       <oobe-slide slot="slides">
@@ -183,6 +182,6 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="opt-out-info-next" class="focus-on-show" inverse
-        on-click="onOptOutInfoNext_"></oobe-next-button>
+        on-click="onOptOutInfoNext"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

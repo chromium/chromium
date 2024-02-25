@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,8 +81,8 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(
   // properly on all platforms, and since it's not clear that we actually want
   // to support this anyway, turn it off for now.  Note that direct calls into
   // `GetAllowedCaptureLevel(..., PrefService)` will miss this check.
-  // TODO(crbug.com/1410382): Consider turning this back on.
-  if (PictureInPictureWindowManager::IsChildWebContents(
+  if (!base::FeatureList::IsEnabled(media::kDocumentPictureInPictureCapture) &&
+      PictureInPictureWindowManager::IsChildWebContents(
           capturer_web_contents)) {
     return AllowedScreenCaptureLevel::kDisallowed;
   }

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "VpnConfigAllowed": false
+        },
+        "prefs": {
+          "vpn_config_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

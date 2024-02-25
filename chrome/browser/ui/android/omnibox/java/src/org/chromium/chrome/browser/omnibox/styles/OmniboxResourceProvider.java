@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.util.SparseArray;
@@ -12,11 +13,11 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 /** Provides resources specific to Omnibox. */
@@ -45,16 +47,13 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull Drawable getDrawable(Context context, @DrawableRes int res) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        ConstantState constantState = cacheResources ? sDrawableCache.get(res, null) : null;
+        ConstantState constantState = sDrawableCache.get(res, null);
         if (constantState != null) {
             return constantState.newDrawable(context.getResources());
         }
 
         Drawable drawable = AppCompatResources.getDrawable(context, res);
-        if (cacheResources) {
-            sDrawableCache.put(res, drawable.getConstantState());
-        }
+        sDrawableCache.put(res, drawable.getConstantState());
         return drawable;
     }
 
@@ -66,24 +65,22 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull String getString(Context context, @StringRes int res, Object... args) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        String string = cacheResources ? sStringCache.get(res, null) : null;
+        String string = sStringCache.get(res, null);
         if (string == null) {
             string = context.getResources().getString(res);
-            if (cacheResources) {
-                sStringCache.put(res, string);
-            }
+            sStringCache.put(res, string);
         }
 
         return args.length == 0
                 ? string
-                : String.format(context.getResources().getConfiguration().getLocales().get(0),
-                        string, args);
+                : String.format(
+                        context.getResources().getConfiguration().getLocales().get(0),
+                        string,
+                        args);
     }
 
     /**
-     * Clears the drawable cache to avoid, e.g. caching a now incorrectly colored drawable
-     * resource.
+     * Clears the drawable cache to avoid, e.g. caching a now incorrectly colored drawable resource.
      */
     public static void invalidateDrawableCache() {
         sDrawableCache.clear();
@@ -91,6 +88,38 @@ public class OmniboxResourceProvider {
 
     public static SparseArray<ConstantState> getDrawableCacheForTesting() {
         return sDrawableCache;
+    }
+
+    public static void disableCachesForTesting() {
+        sDrawableCache =
+                new SparseArray<>() {
+                    @Override
+                    public ConstantState get(int key) {
+                        return null;
+                    }
+
+                    @Override
+                    public ConstantState get(int key, ConstantState valueIfKeyNotFound) {
+                        return valueIfKeyNotFound;
+                    }
+                };
+        sStringCache =
+                new SparseArray<>() {
+                    @Override
+                    public String get(int key) {
+                        return null;
+                    }
+
+                    @Override
+                    public String get(int key, String valueIfKeyNotFound) {
+                        return valueIfKeyNotFound;
+                    }
+                };
+    }
+
+    public static void reenableCachesForTesting() {
+        sDrawableCache = new SparseArray<>();
+        sStringCache = new SparseArray<>();
     }
 
     public static SparseArray<String> getStringCacheForTesting() {
@@ -107,9 +136,9 @@ public class OmniboxResourceProvider {
      */
     public static Drawable resolveAttributeToDrawable(
             Context context, @BrandedColorScheme int brandedColorScheme, int attributeResId) {
-        Context wrappedContext = maybeWrapContext(context, brandedColorScheme);
-        @DrawableRes
-        int resourceId = resolveAttributeToDrawableRes(wrappedContext, attributeResId);
+        Context wrappedContext =
+                maybeWrapContextForIncognitoColorScheme(context, brandedColorScheme);
+        @DrawableRes int resourceId = resolveAttributeToDrawableRes(wrappedContext, attributeResId);
         return getDrawable(wrappedContext, resourceId);
     }
 
@@ -277,9 +306,10 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int brandedColorScheme) {
         // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
         // are ignored as they don't change the result.
-        final @ColorInt int color = brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.suggestion_url_color_incognito)
-                : SemanticColorUtils.getDefaultTextColorLink(context);
+        final @ColorInt int color =
+                brandedColorScheme == BrandedColorScheme.INCOGNITO
+                        ? context.getColor(R.color.suggestion_url_color_incognito)
+                        : SemanticColorUtils.getDefaultTextColorLink(context);
         return color;
     }
 
@@ -358,24 +388,6 @@ public class OmniboxResourceProvider {
     }
 
     /**
-     * Wraps the context if necessary to force dark resources for incognito.
-     *
-     * @param context The {@link Context} to be wrapped.
-     * @param brandedColorScheme Current color scheme.
-     * @return Context with resources appropriate to the {@link BrandedColorScheme}.
-     */
-    private static Context maybeWrapContext(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        // Only wraps the context in case of incognito.
-        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            return NightModeUtils.wrapContextWithNightModeConfig(
-                    context, R.style.Theme_Chromium_TabbedMode, /*nightMode=*/true);
-        }
-
-        return context;
-    }
-
-    /**
      * Resolves the attribute based on the current theme.
      *
      * @param context The {@link Context} used to retrieve resources.
@@ -389,78 +401,56 @@ public class OmniboxResourceProvider {
         return themeRes.resourceId;
     }
 
-    /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
-    public static @Px int getSideSpacing(@NonNull Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_side_spacing,
-                        R.dimen.omnibox_suggestion_side_spacing_smaller,
-                        R.dimen.omnibox_suggestion_side_spacing_smallest));
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
+    public static @Px int getDropdownSideSpacing(@NonNull Context context) {
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return getSideSpacing(context)
+                + context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
     }
 
-    /** Get the top margin for a suggestion that is the beginning of a group. */
-    public static int getSuggestionGroupTopMargin(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_group_vertical_margin,
-                        R.dimen.omnibox_suggestion_group_vertical_smaller_margin,
-                        R.dimen.omnibox_suggestion_group_vertical_smallest_margin));
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
+    public static @Px int getSideSpacing(@NonNull Context context) {
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
     /** Get the top padding for the MV carousel. */
-    public static @Px int getCarouselTopPadding(Context context) {
+    public static @Px int getMostVisitedCarouselTopPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_carousel_suggestion_padding);
+            return context.getResources()
+                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
         }
 
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_carousel_suggestion_padding_smaller,
-                        R.dimen.omnibox_carousel_suggestion_padding_smallest,
-                        R.dimen.omnibox_carousel_suggestion_padding_smaller));
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller);
     }
 
     /** Get the bottom padding for the MV carousel. */
-    public static @Px int getCarouselBottomPadding(Context context) {
+    public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_carousel_suggestion_padding);
+            return context.getResources()
+                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
         }
 
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
-                        R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
-                        R.dimen.omnibox_carousel_suggestion_padding));
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
     }
 
     /** Get the top margin for first suggestion in the omnibox with "active color" enabled. */
     public static @Px int getActiveOmniboxTopSmallMargin(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_list_active_top_small_margin,
-                        R.dimen.omnibox_suggestion_list_active_top_smaller_margin,
-                        R.dimen.omnibox_suggestion_list_active_top_small_margin));
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_active_top_small_margin);
     }
 
     /** Gets the start padding for a header suggestion. */
     public static @Px int getHeaderStartPadding(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_padding_start_modern,
-                        R.dimen.omnibox_suggestion_header_padding_start_modern_smaller,
-                        R.dimen.omnibox_suggestion_header_padding_start_modern_smallest));
-    }
-
-    /** Gets the top padding for a header suggestion. */
-    public static int getHeaderTopPadding(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_padding_top,
-                        R.dimen.omnibox_suggestion_header_padding_top_smaller,
-                        R.dimen.omnibox_suggestion_header_padding_top_smallest));
-    }
-
-    /** Returns the min height of the header view. */
-    public static int getHeaderMinHeight(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_height_modern_phase2,
-                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smaller,
-                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest));
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
     }
 
     /**
@@ -472,10 +462,8 @@ public class OmniboxResourceProvider {
             return 0;
         }
 
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.location_bar_status_view_left_space_width,
-                        R.dimen.location_bar_status_view_left_space_width_bigger,
-                        R.dimen.location_bar_status_view_left_space_width_bigger));
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.location_bar_status_view_left_space_width_bigger);
     }
 
     /**
@@ -487,40 +475,83 @@ public class OmniboxResourceProvider {
             return 0;
         }
 
-        return context.getResources().getDimensionPixelSize(
-                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                        ? R.dimen.toolbar_url_focus_height_increase_active_color
-                        : R.dimen.toolbar_url_focus_height_increase_no_active_color);
+        return context.getResources()
+                .getDimensionPixelSize(
+                        OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                                ? R.dimen.toolbar_url_focus_height_increase_active_color
+                                : R.dimen.toolbar_url_focus_height_increase_no_active_color);
     }
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
     public static @Px int getToolbarSidePadding(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        ? OmniboxResourceProvider.selectMarginDimen(context,
-                                R.dimen.toolbar_edge_padding_modern,
-                                R.dimen.toolbar_edge_padding_modern_smaller,
-                                R.dimen.toolbar_edge_padding)
-                        : R.dimen.toolbar_edge_padding);
+        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+    }
+
+    /**
+     * Returns the amount of pixels for the toolbar's side padding when the omnibox is pinned on the
+     * top of the screen in both the start surface and NTP.
+     */
+    public static @Px int getToolbarSidePaddingForStartSurfaceOrNtp(Context context) {
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.toolbar_edge_padding_modern_polish);
     }
 
     /** Return the width of the Omnibox Suggestion decoration icon. */
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
-        return context.getResources().getDimensionPixelSize(
-                (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        && OmniboxFeatures.shouldShowSmallBottomMargin())
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
+        Context wrappedContext = maybeReplaceContextForSmallTabletWindow(context);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                && wrappedContext == context) {
+            return context.getResources()
+                    .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_modern);
+        }
+
+        return context.getResources()
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
     }
 
-    /** */
-    public static @DimenRes int selectMarginDimen(
-            Context context, @DimenRes int regular, @DimenRes int smaller, @DimenRes int smallest) {
-        if (OmniboxFeatures.shouldShowSmallestMargins(context)) {
-            return smallest;
-        } else if (OmniboxFeatures.shouldShowSmallerMargins(context)) {
-            return smaller;
+    /**
+     * Wraps the context if necessary to force dark resources for incognito.
+     *
+     * @param context The {@link Context} to be wrapped.
+     * @param brandedColorScheme Current color scheme.
+     * @return Context with resources appropriate to the {@link BrandedColorScheme}.
+     */
+    private static Context maybeWrapContextForIncognitoColorScheme(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        // Only wraps the context in case of incognito.
+        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
+            return NightModeUtils.wrapContextWithNightModeConfig(
+                    context, R.style.Theme_Chromium_TabbedMode, /* nightMode= */ true);
         }
-        return regular;
+
+        return context;
+    }
+
+    /**
+     * Replace the given context with a new one where smallestScreenWidthDp is set to the current
+     * screen width, if: 1. The tablet revamp is enabled and the current device is a tablet 2. The
+     * current window width is narrower than 600dp. The returned context can be used to retrieve
+     * resources appropriate for a smaller minimum screen size. If 1 and 2 aren't true, the original
+     * context is returned.
+     *
+     * @param context The context to replace.
+     */
+    @VisibleForTesting
+    static Context maybeReplaceContextForSmallTabletWindow(Context context) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            return context;
+        }
+
+        Configuration existingConfig = context.getResources().getConfiguration();
+        if (existingConfig.screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
+            return context;
+        }
+
+        Configuration newConfig = new Configuration(existingConfig);
+        newConfig.smallestScreenWidthDp = existingConfig.screenWidthDp;
+
+        return context.createConfigurationContext(newConfig);
     }
 }

@@ -106,7 +106,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void DEPRECATED_ExtensionGenerateKey(
       mojom::KeystoreType keystore,
       mojom::KeystoreSigningAlgorithmPtr algorithm,
-      const absl::optional<std::string>& extension_id,
+      const std::optional<std::string>& extension_id,
       DEPRECATED_ExtensionGenerateKeyCallback callback) override;
   // DEPRECATED, use `Sign` instead.
   void DEPRECATED_ExtensionSign(
@@ -166,7 +166,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       const ash::attestation::TpmChallengeKeyResult& result);
   static void DidGetKeyStores(
       GetKeyStoresCallback callback,
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
+      const std::vector<chromeos::platform_keys::TokenId>
           platform_keys_token_ids,
       chromeos::platform_keys::Status status);
   static void DidSelectClientCertificates(
@@ -189,7 +189,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                       std::vector<uint8_t> signature,
                       chromeos::platform_keys::Status status);
   static void DidGetKeyTags(GetKeyTagsCallback callback,
-                            absl::optional<bool> corporate,
+                            std::optional<bool> corporate,
                             chromeos::platform_keys::Status status);
   static void DidAddKeyTags(AddKeyTagsCallback callback,
                             chromeos::platform_keys::Status status);
@@ -197,12 +197,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
   // constructor.
-  const raw_ptr<ash::platform_keys::PlatformKeysService, ExperimentalAsh>
+  const raw_ptr<ash::platform_keys::PlatformKeysService>
       fixed_platform_keys_service_ = nullptr;
   // Can be nullptr, should not be used directly, use GetKeyPermissions()
   // instead. Stores a pointer to a specific KeyPermissionsService if it was
   // specified in constructor.
-  const raw_ptr<ash::platform_keys::KeyPermissionsService, ExperimentalAsh>
+  const raw_ptr<ash::platform_keys::KeyPermissionsService>
       fixed_key_permissions_service_ = nullptr;
 
   // Container to keep outstanding challenges alive. The challenges should be

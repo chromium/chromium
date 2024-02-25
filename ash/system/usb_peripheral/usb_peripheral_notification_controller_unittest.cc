@@ -133,7 +133,7 @@ TEST_F(UsbPeripheralNotificationControllerTest,
   ASSERT_TRUE(notification);
 
   // Click the notification to close it.
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 
   // Resend the notification, but expect it not to show after being clicked.
   EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);

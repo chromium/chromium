@@ -4,16 +4,43 @@
 
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/geolocation_access_level.h"
+#include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::privacy_hub_metrics {
+namespace {
+
+const auto kGeolocationAccessLevels = {
+    GeolocationAccessLevel::kDisallowed,
+    GeolocationAccessLevel::kAllowed,
+    GeolocationAccessLevel::kOnlyAllowedForSystem,
+};
+
+}  // namespace
 
 using Sensor = SensorDisabledNotificationDelegate::Sensor;
 
-TEST(PrivacyHubMetricsTest, EnableFromNotification) {
+class PrivacyHubMetricsTest : public AshTestBase {
+ public:
+  PrivacyHubMetricsTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PrivacyHubMetricsTest, EnableFromNotification) {
   const base::HistogramTester histogram_tester;
 
+  // Test Microphone and Camera:
   for (const bool enabled : {true, false}) {
     histogram_tester.ExpectBucketCount(
         kPrivacyHubCameraEnabledFromNotificationHistogram, enabled, 0);
@@ -26,40 +53,23 @@ TEST(PrivacyHubMetricsTest, EnableFromNotification) {
     LogSensorEnabledFromNotification(Sensor::kMicrophone, enabled);
     histogram_tester.ExpectBucketCount(
         kPrivacyHubMicrophoneEnabledFromNotificationHistogram, enabled, 1);
-
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubGeolocationEnabledFromNotificationHistogram, enabled, 0);
-    LogSensorEnabledFromNotification(Sensor::kLocation, enabled);
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubGeolocationEnabledFromNotificationHistogram, enabled, 1);
   }
+
+  // Test Location:
+  // Notification dismissal is not recorded for location access level change.
+  LogSensorEnabledFromNotification(Sensor::kLocation, false);
+  for (auto access_level : kGeolocationAccessLevels) {
+    histogram_tester.ExpectBucketCount(
+        kPrivacyHubGeolocationAccessLevelChangedFromNotification, access_level,
+        0);
+  }
+  LogSensorEnabledFromNotification(Sensor::kLocation, true);
+  histogram_tester.ExpectBucketCount(
+      kPrivacyHubGeolocationAccessLevelChangedFromNotification,
+      GeolocationAccessLevel::kAllowed, 1);
 }
 
-TEST(PrivacyHubMetricsTest, EnableFromSettings) {
-  const base::HistogramTester histogram_tester;
-
-  for (const bool enabled : {true, false}) {
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubCameraEnabledFromSettingsHistogram, enabled, 0);
-    LogSensorEnabledFromSettings(Sensor::kCamera, enabled);
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubCameraEnabledFromSettingsHistogram, enabled, 1);
-
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubMicrophoneEnabledFromSettingsHistogram, enabled, 0);
-    LogSensorEnabledFromSettings(Sensor::kMicrophone, enabled);
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubMicrophoneEnabledFromSettingsHistogram, enabled, 1);
-
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubGeolocationEnabledFromSettingsHistogram, enabled, 0);
-    LogSensorEnabledFromSettings(Sensor::kLocation, enabled);
-    histogram_tester.ExpectBucketCount(
-        kPrivacyHubGeolocationEnabledFromSettingsHistogram, enabled, 1);
-  }
-}
-
-TEST(PrivacyHubMetricsTest, OpenFromNotification) {
+TEST_F(PrivacyHubMetricsTest, OpenFromNotification) {
   const base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(

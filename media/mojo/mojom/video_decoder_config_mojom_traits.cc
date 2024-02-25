@@ -47,7 +47,7 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
   if (!input.ReadColorSpaceInfo(&color_space))
     return false;
 
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  std::optional<gfx::HDRMetadata> hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
 

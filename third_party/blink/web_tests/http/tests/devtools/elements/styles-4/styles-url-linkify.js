@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Tests that URLs are linked to and completed correctly. Bugs 51663, 53171, 62643, 72373, 79905\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="local"></div>

@@ -8,11 +8,12 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,10 +55,17 @@ class KeyboardAccessoryProperties {
             ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
 
     static PropertyModel.Builder defaultModelBuilder() {
-        return new PropertyModel
-                .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
-                        BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, OBFUSCATED_CHILD_AT_CALLBACK,
-                        SHOW_SWIPING_IPH, HAS_SUGGESTIONS, ANIMATION_LISTENER)
+        return new PropertyModel.Builder(
+                        DISABLE_ANIMATIONS_FOR_TESTING,
+                        BAR_ITEMS,
+                        VISIBLE,
+                        SKIP_CLOSING_ANIMATION,
+                        BOTTOM_OFFSET_PX,
+                        SHEET_OPENER_ITEM,
+                        OBFUSCATED_CHILD_AT_CALLBACK,
+                        SHOW_SWIPING_IPH,
+                        HAS_SUGGESTIONS,
+                        ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
@@ -71,27 +79,31 @@ class KeyboardAccessoryProperties {
      * It can hold an {@link Action}s that defines a callback and a recording type.
      */
     static class BarItem {
-        /**
-         * This type is used to infer which type of view will represent this item.
-         */
-        @IntDef({Type.ACTION_BUTTON, Type.SUGGESTION, Type.TAB_LAYOUT})
+        /** This type is used to infer which type of view will represent this item. */
+        @IntDef({Type.ACTION_BUTTON, Type.SUGGESTION, Type.TAB_LAYOUT, Type.ACTION_CHIP})
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
             int ACTION_BUTTON = 0;
             int SUGGESTION = 1;
             int TAB_LAYOUT = 2;
+            int ACTION_CHIP = 3;
         }
+
         private @Type int mType;
         private final @Nullable Action mAction;
+        private final @StringRes int mCaptionId;
 
         /**
          * Creates a new item. An item must have a type and can have an action.
+         *
          * @param type A {@link Type}.
          * @param action An {@link Action}.
+         * @param caption A {@link StringRes} to describe the bar item.
          */
-        BarItem(@Type int type, @Nullable Action action) {
+        BarItem(@Type int type, @Nullable Action action, @StringRes int captionId) {
             mType = type;
             mAction = action;
+            mCaptionId = captionId;
         }
 
         /**
@@ -112,6 +124,16 @@ class KeyboardAccessoryProperties {
             return mAction;
         }
 
+        /**
+         * If applicable, returns the caption id of this bar item.
+         *
+         * @return A {@link StringRes}.
+         */
+        @StringRes
+        int getCaptionId() {
+            return mCaptionId;
+        }
+
         @Override
         public String toString() {
             String typeName = "BarItem(" + mType + ")"; // Fallback. We shouldn't crash.
@@ -125,10 +147,14 @@ class KeyboardAccessoryProperties {
                 case Type.TAB_LAYOUT:
                     typeName = "TAB_LAYOUT";
                     break;
+                case Type.ACTION_CHIP:
+                    typeName = "ACTION_CHIP";
+                    break;
             }
             return typeName + ": " + mAction;
         }
     }
+
     /**
      * This {@link BarItem} is used to render Autofill suggestions into the accessory bar.
      * For that, it needs (in addition to an {@link Action}) the held {@link AutofillSuggestion}.
@@ -144,7 +170,7 @@ class KeyboardAccessoryProperties {
          * @param action An {@link Action}.
          */
         AutofillBarItem(AutofillSuggestion suggestion, Action action) {
-            super(Type.SUGGESTION, action);
+            super(Type.SUGGESTION, action, 0);
             mSuggestion = suggestion;
         }
 
@@ -180,7 +206,7 @@ class KeyboardAccessoryProperties {
         private final SheetOpenerCallbacks mSheetOpenerCallbacks;
 
         SheetOpenerBarItem(SheetOpenerCallbacks sheetOpenerCallbacks) {
-            super(Type.TAB_LAYOUT, null);
+            super(Type.TAB_LAYOUT, null, 0);
             mSheetOpenerCallbacks = sheetOpenerCallbacks;
         }
 

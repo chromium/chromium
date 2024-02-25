@@ -163,8 +163,8 @@ feedwire::Request CreateFeedQueryRequest(
   }
 
   feed_request.add_client_capability(Capability::READ_LATER);
-
-  if (base::FeatureList::IsEnabled(kCormorant)) {
+  // Cormorant is only enabled for en.* locales
+  if (feed::IsCormorantEnabledForLocale(request_metadata.country)) {
     feed_request.add_client_capability(Capability::OPEN_WEB_FEED_COMMAND);
   }
 
@@ -183,6 +183,14 @@ feedwire::Request CreateFeedQueryRequest(
 
   if (base::FeatureList::IsEnabled(kSyntheticCapabilities)) {
     feed_request.add_client_capability(Capability::SYNTHETIC_CAPABILITIES);
+  }
+
+  if (base::FeatureList::IsEnabled(kFeedSportsCard)) {
+    feed_request.add_client_capability(Capability::SPORTS_IN_GAME_UPDATE);
+  }
+
+  if (base::FeatureList::IsEnabled(kFeedDynamicColors)) {
+    feed_request.add_client_capability(Capability::DYNAMIC_COLORS);
   }
 
   switch (request_metadata.tab_group_enabled_state) {

@@ -1,10 +1,11 @@
 caption: Show the <ph name="PRODUCT_NAME">Google Cast</ph> toolbar icon
+default: false
 desc: |-
   Setting the policy to Enabled displays the Cast toolbar icon on the toolbar or the overflow menu, and users can't remove it.
 
-        Setting the policy to Disabled or leaving it unset lets users pin or remove the icon through its contextual menu.
+  Setting the policy to Disabled or leaving it unset lets users pin or remove the icon through its contextual menu.
 
-        If the policy <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME">EnableMediaRouter</ph> is set to Disabled, then this policy's value has no effect, and the toolbar icon doesn't appear.
+  If the policy <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME">EnableMediaRouter</ph> is set to Disabled, then this policy's value has no effect, and the toolbar icon doesn't appear.
 example_value: false
 features:
   dynamic_refresh: false

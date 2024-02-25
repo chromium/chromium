@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
@@ -36,7 +36,7 @@ constexpr char kAccumulatedUsagePref[] =
 // Used as a callback to DemoModeResourcesRemover::AttemptRemoval - it records
 // the result of the attempt to `result_out`.
 void RecordRemovalResult(
-    absl::optional<DemoModeResourcesRemover::RemovalResult>* result_out,
+    std::optional<DemoModeResourcesRemover::RemovalResult>* result_out,
     DemoModeResourcesRemover::RemovalResult result) {
   *result_out = result;
 }
@@ -61,8 +61,7 @@ class DemoModeResourcesRemoverTest : public testing::Test {
     demo_resources_path_ =
         demo_mode_test_helper_->GetPreinstalledDemoResourcesPath();
 
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     DemoModeResourcesRemover::RegisterLocalStatePrefs(local_state_.registry());
   }
@@ -114,38 +113,37 @@ class DemoModeResourcesRemoverTest : public testing::Test {
   };
 
   void AddAndLogInUser(TestUserType type, DemoModeResourcesRemover* remover) {
-    FakeChromeUserManager* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
     user_manager::User* user = nullptr;
     switch (type) {
       case TestUserType::kRegular:
-        user =
-            user_manager->AddUser(AccountId::FromUserEmail("fake_user@test"));
+        user = fake_user_manager_->AddUser(
+            AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kRegularSecond:
-        user =
-            user_manager->AddUser(AccountId::FromUserEmail("fake_user_1@test"));
+        user = fake_user_manager_->AddUser(
+            AccountId::FromUserEmail("fake_user_1@test"));
         break;
       case TestUserType::kGuest:
-        user = user_manager->AddGuestUser();
+        user = fake_user_manager_->AddGuestUser();
         break;
       case TestUserType::kPublicAccount:
-        user = user_manager->AddPublicAccountUser(
+        user = fake_user_manager_->AddPublicAccountUser(
             AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kKiosk:
-        user = user_manager->AddKioskAppUser(
+        user = fake_user_manager_->AddKioskAppUser(
             AccountId::FromUserEmail("fake_user@test"));
         break;
       case TestUserType::kDerelictDemoKiosk:
-        user = user_manager->AddKioskAppUser(user_manager::DemoAccountId());
+        user =
+            fake_user_manager_->AddKioskAppUser(user_manager::DemoAccountId());
         break;
     }
 
     ASSERT_TRUE(user);
 
-    user_manager->LoginUser(user->GetAccountId());
-    user_manager->SwitchActiveUser(user->GetAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
     remover->ActiveUserChanged(user);
   }
 
@@ -172,7 +170,8 @@ class DemoModeResourcesRemoverTest : public testing::Test {
  private:
   base::FilePath demo_resources_path_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 class ManagedDemoModeResourcesRemoverTest
@@ -292,7 +291,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemoval) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kEnterpriseEnrolled,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -310,7 +309,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemovalResourcesNonExistent) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -328,7 +327,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemovalInDemoSession) {
   install_attributes_->Get()->SetDemoMode();
   demo_mode_test_helper_->InitializeSession();
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -346,12 +345,12 @@ TEST_F(DemoModeResourcesRemoverTest, ConcurrentRemovalAttempts) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result_1;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result_1;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result_1));
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result_2;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result_2;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result_2));
@@ -380,7 +379,7 @@ TEST_F(DemoModeResourcesRemoverTest, RepeatedRemovalAttempt) {
 
   EXPECT_FALSE(DemoModeResourcesExist());
 
-  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
+  std::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));

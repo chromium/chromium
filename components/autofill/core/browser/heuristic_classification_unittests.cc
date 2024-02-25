@@ -113,9 +113,14 @@
 //    }
 //  }
 
+#include <iomanip>
+#include <sstream>
 #include <string_view>
+
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -132,6 +137,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -206,8 +213,7 @@ void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
 
     // Determine the type assigned to the field by the heuristic classification.
     std::string heuristic_type =
-        AutofillType(form_structure.field(i)->Type().GetStorableType())
-            .ToString();
+        FieldTypeToString(form_structure.field(i)->Type().GetStorableType());
 
     // Record metrics on the divergence between tester and heuristics.
     if (fields_in_scope_.contains(tester_type)) {
@@ -276,7 +282,7 @@ base::Value ResultAnalyzer::GetResult() {
 const base::FilePath& GetInputDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data")
@@ -328,14 +334,11 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* label = field_dict.FindString("label_attr")) {
     field.label = base::UTF8ToUTF16(*label);
   }
-  if (const std::string* type = field_dict.FindString("type_attr")) {
-    if (*type == "select") {
-      field.form_control_type = "select-one";
-    } else if (*type == "input") {
-      field.form_control_type = "text";
-    } else {
-      field.form_control_type = *type;
-    }
+  field.form_control_type = FormControlType::kInputText;
+  if (const std::string* json_type = field_dict.FindString("type_attr")) {
+    std::string type = *json_type == "select" ? "select-one" : *json_type;
+    field.form_control_type = autofill::StringToFormControlTypeDiscouraged(
+        type, /*fallback=*/autofill::FormControlType::kInputText);
   }
   if (const std::string* autocomplete =
           field_dict.FindString("autocomplete_attr")) {
@@ -353,8 +356,17 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.role = FormFieldData::RoleAttribute::kOther;
   field.origin = form_data.main_frame_origin;
   field.host_frame = form_data.host_frame;
-  field.host_form_id = form_data.unique_renderer_id;
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.host_form_id = form_data.renderer_id;
+  field.renderer_id = test::MakeFieldRendererId();
+  if (const base::Value::List* options =
+          field_dict.FindList("select_options")) {
+    for (const base::Value& option : *options) {
+      const base::Value::Dict& option_dict = option.GetDict();
+      field.options.push_back(SelectOption{
+          .value = base::UTF8ToUTF16(*option_dict.FindString("value")),
+          .content = base::UTF8ToUTF16(*option_dict.FindString("label"))});
+    }
+  }
   return field;
 }
 
@@ -365,7 +377,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   form_data.url = GURL(site_url);
   form_data.main_frame_origin = url::Origin::Create(form_data.url);
   form_data.host_frame = test::MakeLocalFrameToken();
-  form_data.unique_renderer_id = test::MakeFormRendererId();
+  form_data.renderer_id = test::MakeFormRendererId();
 
   const base::Value::List* fields = form_dict.FindList("fields");
   if (!fields) {
@@ -394,8 +406,10 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 // syntax (https://jqlang.github.io/jq/)
 [[nodiscard]] AssertionResult ClassifyFieldsOfSite(
     base::Value::Dict& site,
+    const GeoIpCountryCode& client_country,
     LanguageCode page_language,
-    ResultAnalyzer& result_analyzer) {
+    ResultAnalyzer& result_analyzer,
+    LogManager* log_manager) {
   const std::string* site_url = site.FindString("site_url");
   if (!site_url) {
     return AssertionFailure() << "Missing attribute 'site_url' in" << site;
@@ -416,37 +430,69 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     }
     FormStructure form_structure(form_data);
     form_structure.set_current_page_language(page_language);
-    form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+    form_structure.DetermineHeuristicTypes(client_country, nullptr,
+                                           log_manager);
     result_analyzer.AnalyzeClassification(form_structure, form.GetDict());
   }
   return AssertionSuccess();
 }
 
+// Creates a textual description of the statistics. This is good for a quick
+// view in the delta for an EXPECT_EQ().
+[[nodiscard]] std::string SummarizeStatistics(
+    const base::Value::Dict& json_file) {
+  std::ostringstream result;
+
+  const base::Value::Dict* stats = json_file.FindDict("stats");
+  if (!stats) {
+    return std::string();
+  }
+
+  auto summarize_sub_section = [](const std::string& caption,
+                                  const base::Value::Dict& dict) {
+    std::ostringstream result;
+    result << caption << ": Fraction matches " << std::fixed
+           << std::setprecision(2)
+           << (*dict.FindDouble("fraction_machtes") * 100.0) << "%, "
+           << "Matches: " << *dict.FindInt("matches") << ", "
+           << "Mismatches: " << *dict.FindInt("mismatches") << std::endl;
+    return result.str();
+  };
+
+  if (const auto* high_level_stats = stats->FindDict("high_level_stats");
+      high_level_stats) {
+    result << summarize_sub_section("Summary", *high_level_stats);
+  }
+  if (const auto* per_type_stats = stats->FindDict("per_type_stats");
+      per_type_stats) {
+    for (const auto it : *per_type_stats) {
+      result << summarize_sub_section(it.first, it.second.GetDict());
+    }
+  }
+
+  return result.str();
+}
+
 class HeuristicClassificationTests
     : public testing::Test,
       public testing::WithParamInterface<base::FilePath> {
+ public:
+  void SetUp() override;
+
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  LogRouter log_router_;
+  std::unique_ptr<LogManager> log_manager_;
 };
 
-TEST_P(HeuristicClassificationTests, EndToEnd) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {// This is always enabled to classify autocomplete=invalid fields.
-       features::kAutofillPredictionsForAutocompleteUnrecognized,
-       // Support for new field types.
-       features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillEnableSupportForAdminLevel2,
-       features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForLandmark,
-       features::kAutofillEnableSupportForApartmentNumbers,
-       features::kAutofillEnableDependentLocalityParsing,
-       features::kAutofillEnableExpirationDateImprovements,
-       // Allow local heuristics to take precedence.
-       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete},
-      /*disabled_features=*/{});
+void HeuristicClassificationTests::SetUp() {
+  if (base::FeatureList::IsEnabled(features::test::kAutofillLogToTerminal)) {
+    log_router_.LogToTerminal();
+  }
+  log_manager_ = LogManager::Create(&log_router_, base::NullCallback());
+}
 
+TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::FilePath input_file = GetParam();
   SCOPED_TRACE(::testing::Message() << input_file);
 
@@ -455,11 +501,13 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ASSERT_TRUE(base::ReadFileToString(input_file, &input_json_text));
 
   // Convert to JSON dictionary.
-  absl::optional<base::Value> opt_json_file =
+  std::optional<base::Value> opt_json_file =
       base::JSONReader::Read(input_json_text);
   ASSERT_TRUE(opt_json_file);
   base::Value::Dict* json_file = opt_json_file->GetIfDict();
   ASSERT_TRUE(json_file);
+
+  std::string old_stats = SummarizeStatistics(*json_file);
 
   base::Value::Dict* config = json_file->FindDict("config");
   ASSERT_TRUE(config);
@@ -470,6 +518,46 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, *country);
+
+  std::vector<base::test::FeatureRef> enabled_features = {
+      // Support for new field types.
+      features::kAutofillUseI18nAddressModel,
+      features::kAutofillEnableSupportForBetweenStreets,
+      features::kAutofillEnableSupportForAdminLevel2,
+      features::kAutofillEnableSupportForAddressOverflow,
+      features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+      features::kAutofillEnableSupportForLandmark,
+      features::kAutofillEnableSupportForApartmentNumbers,
+      features::kAutofillEnableDependentLocalityParsing,
+      features::kAutofillEnableExpirationDateImprovements,
+      features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+      features::kAutofillEnableParsingOfStreetLocation,
+      features::kAutofillEnableRationalizationEngineForMX,
+      // Allow local heuristics to take precedence.
+      features::kAutofillLocalHeuristicsOverrides,
+      // Other improvements.
+      features::kAutofillEnableZipOnlyAddressForms,
+      features::kAutofillDefaultToCityAndNumber,
+      features::kAutofillPreferLabelsInSomeCountries,
+      features::kAutofillEnableCacheForRegexMatching};
+  std::vector<base::test::FeatureRef> disabled_features = {};
+
+  auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
+    if (value) {
+      enabled_features.push_back(feature);
+    } else {
+      disabled_features.push_back(feature);
+    }
+  };
+
+  std::vector<std::string> structured_fields_disable_address_lines = {"BR",
+                                                                      "MX"};
+  init_feature_to_value(
+      features::kAutofillStructuredFieldsDisableAddressLines,
+      base::Contains(structured_fields_disable_address_lines, *country));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 
   // Configure page language.
   const std::string* language = config->FindString("language");
@@ -492,15 +580,18 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ResultAnalyzer result_analyzer(std::move(fields_in_scope));
   for (base::Value& site : *sites) {
     ASSERT_TRUE(site.is_dict());
-    ASSERT_TRUE(
-        ClassifyFieldsOfSite(site.GetDict(), page_language, result_analyzer));
+    ASSERT_TRUE(ClassifyFieldsOfSite(site.GetDict(), GeoIpCountryCode(*country),
+                                     page_language, result_analyzer,
+                                     log_manager_.get()));
   }
 
   // Update statistics
   json_file->Set("stats", result_analyzer.GetResult());
 
+  std::string new_stats = SummarizeStatistics(*json_file);
+
   // Serialize the result.
-  absl::optional<std::string> output_json_text =
+  std::optional<std::string> output_json_text =
       base::WriteJsonWithOptions(*opt_json_file, base::OPTIONS_PRETTY_PRINT);
   ASSERT_TRUE(output_json_text);
 
@@ -514,6 +605,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
     LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
     EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
   }
+
+  EXPECT_EQ(old_stats, new_stats);
 
   // Too large inputs crash the test.
   if (input_json_text.size() < 20000) {

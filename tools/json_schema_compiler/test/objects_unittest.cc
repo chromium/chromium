@@ -30,7 +30,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
-    absl::optional<test::api::objects::ObjectParam::Params> params(
+    std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ((size_t) 2, params->info.strings.size());
@@ -49,7 +49,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
-    absl::optional<test::api::objects::ObjectParam::Params> params(
+    std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
@@ -57,7 +57,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
-  info.state = test::api::objects::FIRST_STATE_FOO;
+  info.state = test::api::objects::FirstState::kFoo;
   base::Value::List results =
       test::api::objects::ReturnsObject::Results::Create(info);
   ASSERT_EQ(1u, results.size());
@@ -69,7 +69,7 @@ TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
-  object.state = test::api::objects::FIRST_STATE_BAR;
+  object.state = test::api::objects::FirstState::kBar;
   base::Value::List results = test::api::objects::OnObjectFired::Create(object);
   ASSERT_EQ(1u, results.size());
 
@@ -82,7 +82,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   std::vector<objects_movable::MovablePod> pods;
   {
     objects_movable::MovablePod pod;
-    pod.foo = objects_movable::FOO_BAR;
+    pod.foo = objects_movable::Foo::kBar;
     pod.str = "str1";
     pod.num = 42;
     pod.b = true;
@@ -90,7 +90,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   }
   {
     objects_movable::MovablePod pod;
-    pod.foo = objects_movable::FOO_BAZ;
+    pod.foo = objects_movable::Foo::kBaz;
     pod.str = "str2";
     pod.num = 45;
     pod.b = false;
@@ -104,11 +104,11 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
 
   objects_movable::MovableParent parent2(std::move(parent));
   ASSERT_EQ(2u, parent2.pods.size());
-  EXPECT_EQ(objects_movable::FOO_BAR, parent2.pods[0].foo);
+  EXPECT_EQ(objects_movable::Foo::kBar, parent2.pods[0].foo);
   EXPECT_EQ("str1", parent2.pods[0].str);
   EXPECT_EQ(42, parent2.pods[0].num);
   EXPECT_TRUE(parent2.pods[0].b);
-  EXPECT_EQ(objects_movable::FOO_BAZ, parent2.pods[1].foo);
+  EXPECT_EQ(objects_movable::Foo::kBaz, parent2.pods[1].foo);
   EXPECT_EQ("str2", parent2.pods[1].str);
   EXPECT_EQ(45, parent2.pods[1].num);
   EXPECT_FALSE(parent2.pods[1].b);
@@ -125,7 +125,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   {
     objects_movable::MovableParent parent_with_pod_choice;
     objects_movable::MovablePod pod;
-    pod.foo = objects_movable::FOO_BAZ;
+    pod.foo = objects_movable::Foo::kBaz;
     pod.str = "str";
     pod.num = 10;
     pod.b = false;
@@ -137,7 +137,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   EXPECT_TRUE(parent2.blob.additional_properties.empty());
   EXPECT_FALSE(parent2.choice.as_string);
   ASSERT_TRUE(parent2.choice.as_movable_pod);
-  EXPECT_EQ(objects_movable::FOO_BAZ, parent2.choice.as_movable_pod->foo);
+  EXPECT_EQ(objects_movable::Foo::kBaz, parent2.choice.as_movable_pod->foo);
   EXPECT_EQ("str", parent2.choice.as_movable_pod->str);
   EXPECT_EQ(10, parent2.choice.as_movable_pod->num);
   EXPECT_FALSE(parent2.choice.as_movable_pod->b);

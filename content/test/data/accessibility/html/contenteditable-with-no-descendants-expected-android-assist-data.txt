@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"label" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="label"}, {contenteditable=""}]
+++View text:"description" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-describedby="description"}, {contenteditable=""}]
+++View text:"title" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {contenteditable=""}, {title="title"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}, {id="description"}]
+++++TextView text:"description" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

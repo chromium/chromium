@@ -30,7 +30,7 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
   void OnEvent(ui::Event* event) override;
 
  private:
-  raw_ptr<SystemModalContainerEventFilterDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<SystemModalContainerEventFilterDelegate> delegate_;
 };
 
 }  // namespace ash

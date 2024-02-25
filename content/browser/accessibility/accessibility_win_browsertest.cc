@@ -36,8 +36,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
 #include "content/public/browser/ax_inspect_factory.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -46,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -184,16 +183,8 @@ void AccessibilityWinBrowserTest::SetUpInputField(
 void AccessibilityWinBrowserTest::SetUpScrollableInputField(
     Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
   ASSERT_NE(nullptr, input_text);
-  LoadInitialAccessibilityTreeFromHtml(
-      std::string(
-          R"HTML(<!DOCTYPE html>
-          <html>
-          <body>
-            <input type="text" style="width: 150px;" value=")HTML") +
-      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
-          </body>
-          </html>)HTML"));
 
+  LoadScrollableInputField("text");
   SetUpInputFieldHelper(input_text);
 }
 
@@ -202,16 +193,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputField(
 void AccessibilityWinBrowserTest::SetUpScrollableInputTypeSearchField(
     Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
   ASSERT_NE(nullptr, input_text);
-  LoadInitialAccessibilityTreeFromHtml(
-      std::string(
-          R"HTML(<!DOCTYPE html>
-          <html>
-          <body>
-            <input type="search" style="width: 150px;" value=")HTML") +
-      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
-          </body>
-          </html>)HTML"));
-
+  LoadScrollableInputField("search");
   SetUpInputFieldHelper(input_text);
 }
 
@@ -667,7 +649,8 @@ class AccessibilityWinBrowserTest::AccessibleChecker {
   void SetExpectedState(LONG expected_state);
 
  private:
-  typedef std::vector<AccessibleChecker*> AccessibleCheckerVector;
+  typedef std::vector<raw_ptr<AccessibleChecker, VectorExperimental>>
+      AccessibleCheckerVector;
 
   void CheckAccessibleName(IAccessible* accessible);
   void CheckAccessibleRole(IAccessible* accessible);
@@ -2350,8 +2333,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_TRUE(found);
 
   // Remove all accessibility modes.
-  content::BrowserAccessibilityStateImpl::GetInstance()
-      ->RemoveAccessibilityModeFlags(ui::kAXModeComplete);
+  content::BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
 
   // Ensure accessibility is not enabled before we begin the test.
   EXPECT_TRUE(content::BrowserAccessibilityStateImpl::GetInstance()

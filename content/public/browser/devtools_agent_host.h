@@ -53,6 +53,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   static const char kTypeDedicatedWorker[];
   static const char kTypeSharedWorker[];
   static const char kTypeServiceWorker[];
+  static const char kTypeWorklet[];
   static const char kTypeSharedStorageWorklet[];
   static const char kTypeBrowser[];
   static const char kTypeGuest[];
@@ -182,12 +183,6 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Starts inspecting element at position (|x|, |y|) in the frame
   // represented by |frame_host|.
   virtual void InspectElement(RenderFrameHost* frame_host, int x, int y) = 0;
-
-  using GetUniqueFormControlIdCallback = base::OnceCallback<void(uint64_t)>;
-  // Resolves a backendNodeId to a form control ID.
-  virtual void GetUniqueFormControlId(
-      int node_id,
-      GetUniqueFormControlIdCallback callback) = 0;
 
   // Returns the unique id of the agent.
   virtual std::string GetId() = 0;

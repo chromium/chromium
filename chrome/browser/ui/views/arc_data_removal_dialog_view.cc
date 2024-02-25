@@ -41,8 +41,9 @@ constexpr int kArcAppIconSize = 48;
 class DataRemovalConfirmationDialog : public views::DialogDelegateView,
                                       public AppIconLoaderDelegate,
                                       public ArcSessionManagerObserver {
+  METADATA_HEADER(DataRemovalConfirmationDialog, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(DataRemovalConfirmationDialog);
   DataRemovalConfirmationDialog(
       Profile* profile,
       DataRemovalConfirmationCallback confirm_data_removal);
@@ -52,19 +53,22 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
   ~DataRemovalConfirmationDialog() override;
 
   // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   // ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
  private:
   // UI hierarchy owned.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
 
   std::unique_ptr<AppServiceAppIconLoader> icon_loader_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   DataRemovalConfirmationCallback confirm_callback_;
 };
@@ -132,7 +136,9 @@ DataRemovalConfirmationDialog::~DataRemovalConfirmationDialog() {
 
 void DataRemovalConfirmationDialog::OnAppImageUpdated(
     const std::string& app_id,
-    const gfx::ImageSkia& image) {
+    const gfx::ImageSkia& image,
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   DCHECK(!image.isNull());
   DCHECK_EQ(image.width(), kArcAppIconSize);
   DCHECK_EQ(image.height(), kArcAppIconSize);
@@ -143,12 +149,13 @@ void DataRemovalConfirmationDialog::OnAppImageUpdated(
 void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {
   // Close dialog on ARC++ OptOut. In this case data is automatically removed
   // and current dialog is no longer needed.
-  if (enabled)
+  if (enabled) {
     return;
+  }
   CancelDialog();
 }
 
-BEGIN_METADATA(DataRemovalConfirmationDialog, views::DialogDelegateView)
+BEGIN_METADATA(DataRemovalConfirmationDialog)
 END_METADATA
 
 }  // namespace
@@ -156,9 +163,10 @@ END_METADATA
 void ShowDataRemovalConfirmationDialog(
     Profile* profile,
     DataRemovalConfirmationCallback callback) {
-  if (!g_current_data_removal_confirmation)
+  if (!g_current_data_removal_confirmation) {
     g_current_data_removal_confirmation =
         new DataRemovalConfirmationDialog(profile, std::move(callback));
+  }
 }
 
 bool IsDataRemovalConfirmationDialogOpenForTesting() {

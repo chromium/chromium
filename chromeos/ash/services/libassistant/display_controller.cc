@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/libassistant/util.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 
 namespace ash::libassistant {
@@ -44,7 +45,7 @@ class DisplayController::EventObserver : public DisplayConnectionObserver {
   }
 
  private:
-  const raw_ptr<DisplayController, ExperimentalAsh> parent_;
+  const raw_ptr<DisplayController> parent_;
 };
 
 DisplayController::DisplayController(

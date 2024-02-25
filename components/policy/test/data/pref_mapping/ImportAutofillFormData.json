@@ -1,0 +1,23 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ImportAutofillFormData": false
+        },
+        "prefs": {
+          "import_dialog_autofill_form_data": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

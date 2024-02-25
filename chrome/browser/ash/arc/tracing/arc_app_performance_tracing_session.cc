@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
+#include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,33 +33,76 @@ constexpr auto kTargetFrameTime = base::Seconds(1) / kTargetFps;
 // any commit for |kIdleThresholdFrames| frames.
 constexpr uint64_t kIdleThresholdFrames = 10;
 
+double CalcVSyncError(const base::TimeDelta& frame_delta) {
+  // Calculate the number of display frames passed between two updates.
+  // Ideally we should have one frame for target FPS. In case the app drops
+  // frames, the number of dropped frames would be accounted. The result is
+  // fractional part of target frame interval |kTargetFrameTime| and is less
+  // or equal half of it.
+  const uint64_t display_frames_passed =
+      base::ClampRound<uint64_t>(frame_delta / kTargetFrameTime);
+  // Calculate difference from the ideal commit time, that should happen with
+  // equal delay for each display frame.
+  const base::TimeDelta vsync_error =
+      frame_delta - display_frames_passed * kTargetFrameTime;
+  return (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
+}
+
+double CalcJanksPerMinute(const std::deque<int64_t>& presents,
+                          const base::TimeDelta& duration) {
+  int jank_count = 0;
+  ArcGraphicsJankDetector jank_detector(base::BindRepeating(
+      [](int* out_count, const base::Time& timestamp) { (*out_count)++; },
+      &jank_count));
+
+  // Feed minimum samples into detector to obtain sampling rate.
+  for (const auto& ts_usec : presents) {
+    jank_detector.OnSample(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ts_usec)));
+    if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive) {
+      break;
+    }
+  }
+  if (jank_detector.stage() != ArcGraphicsJankDetector::Stage::kActive) {
+    LOG(ERROR) << "Jank detector was not able to determine rate";
+    return 0;
+  }
+
+  // Detected rate, now we can feed all presents to detector to find janks.
+  jank_detector.SetPeriodFixed(jank_detector.period());
+  for (const auto& ts_usec : presents) {
+    jank_detector.OnSample(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ts_usec)));
+  }
+  return jank_count / (duration.InSecondsF() / 60.0);
+}
+
 }  // namespace
 
 ArcAppPerformanceTracingSession::ArcAppPerformanceTracingSession(
-    ArcAppPerformanceTracing* owner)
-    : owner_(owner), window_(owner->active_window()) {
-  DCHECK(owner_);
+    aura::Window* window,
+    TicksNowCallback ticks_now_callback)
+    : window_(window), ticks_now_callback_(std::move(ticks_now_callback)) {
   DCHECK(window_);
+  DCHECK(ticks_now_callback_);
 }
 
 ArcAppPerformanceTracingSession::~ArcAppPerformanceTracingSession() {
   // Discard any active tracing if any.
-  Stop();
+  Stop(std::nullopt);
 }
 
-ArcAppPerformanceTracingCustomSession*
-ArcAppPerformanceTracingSession::AsCustomSession() {
-  return nullptr;
-}
-
-void ArcAppPerformanceTracingSession::ScheduleInternal(
+void ArcAppPerformanceTracingSession::Schedule(
     bool detect_idles,
     const base::TimeDelta& start_delay,
-    const base::TimeDelta& tracing_period) {
-  DCHECK(!tracing_active_);
+    const base::TimeDelta& tracing_period,
+    DoneCallback on_done) {
+  DCHECK(!tracing_active());
+  DCHECK(!HasPresentFrames());
   DCHECK(!tracing_timer_.IsRunning());
   detect_idles_ = detect_idles;
   tracing_period_ = tracing_period;
+  on_done_ = std::move(on_done);
   if (start_delay.is_zero()) {
     Start();
     return;
@@ -66,9 +112,10 @@ void ArcAppPerformanceTracingSession::ScheduleInternal(
                                       base::Unretained(this)));
 }
 
-void ArcAppPerformanceTracingSession::StopAndAnalyzeInternal() {
-  DCHECK(tracing_active_);
-  Analyze(base::TimeTicks::Now() - tracing_start_);
+void ArcAppPerformanceTracingSession::Finish() {
+  DCHECK(tracing_active());
+  DCHECK(HasPresentFrames());
+  Analyze(ticks_now_callback_.Run() - tracing_start_);
 }
 
 void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
@@ -76,20 +123,16 @@ void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
   // |scoped_surface_| might be already reset in case window is destroyed
   // first.
   DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
-  Stop();
-}
-
-void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
-  HandleCommit(base::Time::Now());
+  Stop(std::nullopt);
 }
 
 void ArcAppPerformanceTracingSession::FireTimerForTesting() {
   tracing_timer_.FireNow();
 }
 
-void ArcAppPerformanceTracingSession::OnCommitForTesting(
-    const base::Time& timestamp) {
-  HandleCommit(timestamp);
+base::TimeDelta ArcAppPerformanceTracingSession::timer_delay_for_testing()
+    const {
+  return tracing_timer_.GetCurrentDelay();
 }
 
 void ArcAppPerformanceTracingSession::Start() {
@@ -97,8 +140,8 @@ void ArcAppPerformanceTracingSession::Start() {
 
   VLOG(1) << "Start tracing.";
 
-  frame_deltas_.clear();
-  last_commit_timestamp_ = base::Time();
+  frame_times_.clear();
+  frames_.emplace();
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
@@ -109,7 +152,7 @@ void ArcAppPerformanceTracingSession::Start() {
       std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
 
   // Schedule result analyzing at the end of tracing.
-  tracing_start_ = base::TimeTicks::Now();
+  tracing_start_ = last_active_time_ = ticks_now_callback_.Run();
   if (!tracing_period_.is_zero()) {
     // |tracing_period_| is passed to be able to correctly compare expectations
     // in unit tests.
@@ -121,89 +164,104 @@ void ArcAppPerformanceTracingSession::Start() {
   tracing_active_ = true;
 }
 
-void ArcAppPerformanceTracingSession::Stop() {
-  tracing_active_ = false;
-  tracing_timer_.Stop();
-  scoped_surface_.reset();
+bool ArcAppPerformanceTracingSession::HasPresentFrames() const {
+  return frames_.has_value();
 }
 
-void ArcAppPerformanceTracingSession::HandleCommit(
-    const base::Time& timestamp) {
+void ArcAppPerformanceTracingSession::Stop(
+    const std::optional<PerfTraceResult>& result) {
+  VLOG(1) << "Stop tracing.";
+  tracing_active_ = false;
+  frames_.reset();
+  tracing_timer_.Stop();
+  scoped_surface_.reset();
+  if (on_done_) {
+    std::move(on_done_).Run(result);
+  }
+}
+
+bool ArcAppPerformanceTracingSession::DetectIdle() {
+  if (!detect_idles_) {
+    return false;
+  }
+
+  const auto now = ticks_now_callback_.Run();
+  const auto delta = now - last_active_time_;
+
+  const uint64_t display_frames_passed =
+      static_cast<uint64_t>(delta / kTargetFrameTime);
+
+  last_active_time_ = now;
+  return display_frames_passed >= kIdleThresholdFrames;
+}
+
+void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (last_commit_timestamp_.is_null()) {
-    last_commit_timestamp_ = timestamp;
+  if (DetectIdle()) {
+    Stop(std::nullopt);
     return;
   }
 
-  const base::TimeDelta frame_delta = timestamp - last_commit_timestamp_;
-  last_commit_timestamp_ = timestamp;
-
-  if (detect_idles_) {
-    const uint64_t display_frames_passed =
-        base::ClampRound<uint64_t>(frame_delta / kTargetFrameTime);
-    if (display_frames_passed >= kIdleThresholdFrames) {
-      // Idle is detected, try the next time.
-      Stop();
-      OnTracingFailed();
-      return;
-    }
-  }
-
-  frame_deltas_.emplace_back(frame_delta);
+  frame_times_.emplace_back(ticks_now_callback_.Run());
+  frames_->ListenForPresent(surface);
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
-  // No more data is needed, stop active tracing.
-  Stop();
+  const auto& presents = frames_->presents();
+  const size_t num_presents = presents.size(),
+               num_frame_times = frame_times_.size();
 
-  if (frame_deltas_.empty() || tracing_period <= base::TimeDelta()) {
-    OnTracingFailed();
+  if (num_frame_times < 2 || tracing_period <= base::TimeDelta() ||
+      DetectIdle()) {
+    LOG(ERROR) << "Failed to meet minimum requirements to analyze tracing";
+    Stop(std::nullopt);
     return;
-  }
-
-  // Check last commit timestamp if we are in idle at this moment.
-  if (detect_idles_) {
-    const base::TimeDelta last_frame_delta =
-        base::Time::Now() - last_commit_timestamp_;
-    if (last_frame_delta >= kTargetFrameTime * kIdleThresholdFrames) {
-      // Current idle state is detected, try next time.
-      OnTracingFailed();
-      return;
-    }
   }
 
   VLOG(1) << "Analyze tracing.";
 
+  std::vector<base::TimeDelta> commit_deltas, present_deltas;
+  PerfTraceResult result;
+  commit_deltas.reserve(num_frame_times - 1);
   double vsync_error_deviation_accumulator = 0;
-  for (const auto& frame_delta : frame_deltas_) {
-    // Calculate the number of display frames passed between two updates.
-    // Ideally we should have one frame for target FPS. In case the app drops
-    // frames, the number of dropped frames would be accounted. The result is
-    // fractional part of target frame interval |kTargetFrameTime| and is less
-    // or equal half of it.
-    const uint64_t display_frames_passed =
-        base::ClampRound<uint64_t>(frame_delta / kTargetFrameTime);
-    // Calculate difference from the ideal commit time, that should happen with
-    // equal delay for each display frame.
-    const base::TimeDelta vsync_error =
-        frame_delta - display_frames_passed * kTargetFrameTime;
-    vsync_error_deviation_accumulator +=
-        (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
+  for (auto fitr = frame_times_.begin() + 1; fitr != frame_times_.end();
+       fitr++) {
+    const auto frame_delta = *fitr - *(fitr - 1);
+    commit_deltas.push_back(frame_delta);
+    vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
   }
-  const double commit_deviation =
-      sqrt(vsync_error_deviation_accumulator / frame_deltas_.size());
+  result.commit_deviation =
+      sqrt(vsync_error_deviation_accumulator / commit_deltas.size());
 
-  std::sort(frame_deltas_.begin(), frame_deltas_.end());
+  // Number of presents could be zero if display-less device (e.g. Chromebox),
+  // in this case skip calculating present metrics with less than two frames.
+  result.present_deviation = result.perceived_fps = result.janks_per_minute = 0;
+  if (num_presents > 1) {
+    present_deltas.reserve(num_presents - 1);
+    vsync_error_deviation_accumulator = 0;
+    for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
+      const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
+      present_deltas.push_back(frame_delta);
+      vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
+    }
+    result.present_deviation =
+        sqrt(vsync_error_deviation_accumulator / present_deltas.size());
+    result.perceived_fps = num_presents / tracing_period.InSecondsF();
+    if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
+      result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
+    }
+  }
+
+  std::sort(commit_deltas.begin(), commit_deltas.end());
   // Get 10% and 90% indices.
-  const size_t lower_position = frame_deltas_.size() / 10;
-  const size_t upper_position = frame_deltas_.size() - 1 - lower_position;
-  const double render_quality =
-      frame_deltas_[lower_position] / frame_deltas_[upper_position];
+  const size_t lower_position = commit_deltas.size() / 10;
+  const size_t upper_position = commit_deltas.size() - 1 - lower_position;
+  result.render_quality =
+      commit_deltas[lower_position] / commit_deltas[upper_position];
+  result.fps = commit_deltas.size() / tracing_period.InSecondsF();
 
-  const double fps = frame_deltas_.size() / tracing_period.InSecondsF();
-
-  OnTracingDone(fps, commit_deviation, render_quality);
+  Stop(result);
 }
 
 }  // namespace arc

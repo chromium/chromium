@@ -4,6 +4,8 @@
 
 #include "sandbox/policy/win/sandbox_policy_feature_test.h"
 
+#include "sandbox/policy/features.h"
+
 namespace sandbox {
 namespace policy {
 
@@ -34,20 +36,17 @@ TokenLevel SandboxFeatureTest::GetExpectedInitialTokenLevel() {
 MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
   // Mitigation flags are set on the policy regardless of the OS version
   ::sandbox::MitigationFlags flags =
-      ::sandbox::MITIGATION_HEAP_TERMINATE |
       ::sandbox::MITIGATION_BOTTOM_UP_ASLR | ::sandbox::MITIGATION_DEP |
       ::sandbox::MITIGATION_DEP_NO_ATL_THUNK |
       ::sandbox::MITIGATION_EXTENSION_POINT_DISABLE |
-      ::sandbox::MITIGATION_SEHOP |
-      ::sandbox::MITIGATION_NONSYSTEM_FONT_DISABLE |
-      ::sandbox::MITIGATION_IMAGE_LOAD_NO_REMOTE |
+      ::sandbox::MITIGATION_FSCTL_DISABLED |
+      ::sandbox::MITIGATION_HEAP_TERMINATE |
       ::sandbox::MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
+      ::sandbox::MITIGATION_IMAGE_LOAD_NO_REMOTE |
+      ::sandbox::MITIGATION_KTM_COMPONENT |
+      ::sandbox::MITIGATION_NONSYSTEM_FONT_DISABLE |
       ::sandbox::MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
-      ::sandbox::MITIGATION_KTM_COMPONENT;
-
-#if !defined(NACL_WIN64)
-  flags = flags | ::sandbox::MITIGATION_WIN32K_DISABLE;
-#endif
+      ::sandbox::MITIGATION_SEHOP | ::sandbox::MITIGATION_WIN32K_DISABLE;
 
   return flags;
 }

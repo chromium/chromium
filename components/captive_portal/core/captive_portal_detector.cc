@@ -65,8 +65,9 @@ void CaptivePortalDetector::StartProbe(
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   simple_loader_->SetAllowHttpErrorResults(true);
-  network::SimpleURLLoader::BodyAsStringCallback callback = base::BindOnce(
-      &CaptivePortalDetector::OnSimpleLoaderComplete, base::Unretained(this));
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback =
+      base::BindOnce(&CaptivePortalDetector::OnSimpleLoaderComplete,
+                     base::Unretained(this));
   state_ = State::kProbe;
   simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       loader_factory_, std::move(callback));

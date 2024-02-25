@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/token.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -23,13 +24,6 @@ using guest_view::GuestViewManagerDelegate;
 
 namespace guest_view_internal = extensions::api::guest_view_internal;
 
-namespace {
-// Kill switch for the fix for crbug.com/769461.
-BASE_FEATURE(kPreciseGuestViewOwnerAtCreation,
-             "PreciseGuestViewOwnerAtCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
-
 namespace extensions {
 
 GuestViewInternalCreateGuestFunction::GuestViewInternalCreateGuestFunction() =
@@ -39,7 +33,7 @@ GuestViewInternalCreateGuestFunction::~GuestViewInternalCreateGuestFunction() =
     default;
 
 ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
-  absl::optional<guest_view_internal::CreateGuest::Params> params =
+  std::optional<guest_view_internal::CreateGuest::Params> params =
       guest_view_internal::CreateGuest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -57,22 +51,28 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
     return RespondNow(Error("Guest views can only be embedded in web content"));
   }
 
+  // The renderer identifies the window which owns the guest view element. We
+  // consider this the most likely owner for the guest view. It is possible,
+  // however, for the guest to be embedded in another same-process frame upon
+  // attachment.
+  const int sender_process_id = render_frame_host()->GetProcess()->GetID();
+
   content::RenderFrameHost* owner_rfh = nullptr;
-  if (base::FeatureList::IsEnabled(kPreciseGuestViewOwnerAtCreation)) {
-    // The renderer identifies the window which owns the guest view element. We
-    // consider this the most likely owner for the guest view. It is possible,
-    // however, for the guest to be embedded in another same-process frame upon
-    // attachment.
-    const int sender_process_id = render_frame_host()->GetProcess()->GetID();
-    owner_rfh = content::RenderFrameHost::FromID(sender_process_id,
-                                                 params->owner_routing_id);
-    if (!owner_rfh) {
-      // If the renderer can't determine the owner at creation, fall back to
-      // assuming the main frame.
-      owner_rfh = render_frame_host()->GetMainFrame();
+  auto token = base::Token::FromString(params->owner_frame_token);
+  if (token) {
+    auto unguessable_token =
+        base::UnguessableToken::Deserialize(token->high(), token->low());
+    if (unguessable_token) {
+      owner_rfh = content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(
+              sender_process_id,
+              blink::LocalFrameToken(unguessable_token.value())));
     }
-  } else {
-    // The old behaviour was to assume the main frame is the owner.
+  }
+
+  if (!owner_rfh) {
+    // If the renderer can't determine the owner at creation, fall back to
+    // assuming the main frame.
     owner_rfh = render_frame_host()->GetMainFrame();
   }
 
@@ -105,7 +105,7 @@ GuestViewInternalDestroyUnattachedGuestFunction::
 
 ExtensionFunction::ResponseAction
 GuestViewInternalDestroyUnattachedGuestFunction::Run() {
-  absl::optional<guest_view_internal::DestroyUnattachedGuest::Params> params =
+  std::optional<guest_view_internal::DestroyUnattachedGuest::Params> params =
       guest_view_internal::DestroyUnattachedGuest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -125,7 +125,7 @@ GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
 GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() = default;
 
 ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
-  absl::optional<guest_view_internal::SetSize::Params> params =
+  std::optional<guest_view_internal::SetSize::Params> params =
       guest_view_internal::SetSize::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GuestViewBase* guest =

@@ -34,7 +34,7 @@ namespace {
 // Helper method to convert base::TimeTicks to double.
 // Returns double milliseconds if the input value is resolved or
 // std::numeric_limits<double>::quiet_NaN() otherwise.
-double ToMilliseconds(absl::optional<base::TimeTicks> time_ticks) {
+double ToMilliseconds(std::optional<base::TimeTicks> time_ticks) {
   if (!time_ticks) {
     return std::numeric_limits<double>::quiet_NaN();
   }
@@ -79,9 +79,9 @@ class AnimationHostTest : public AnimationTimelinesTest {
 // animation_unittest.cc.
 
 TEST_F(AnimationHostTest, SyncTimelinesAddRemove) {
-  TestHostClient host_client(ThreadInstance::MAIN);
+  TestHostClient host_client(ThreadInstance::kMain);
   AnimationHost* host = host_client.host();
-  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  TestHostClient host_impl_client(ThreadInstance::kImpl);
   AnimationHost* host_impl = host_impl_client.host();
 
   const int timeline_id = AnimationIdProvider::NextTimelineId();
@@ -112,9 +112,9 @@ TEST_F(AnimationHostTest, SyncTimelinesAddRemove) {
 }
 
 TEST_F(AnimationHostTest, ImplOnlyTimeline) {
-  TestHostClient host_client(ThreadInstance::MAIN);
+  TestHostClient host_client(ThreadInstance::kMain);
   AnimationHost* host = host_client.host();
-  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  TestHostClient host_impl_client(ThreadInstance::kImpl);
   AnimationHost* host_impl = host_impl_client.host();
 
   const int timeline_id1 = AnimationIdProvider::NextTimelineId();
@@ -552,9 +552,9 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimationSmooth) {
 }
 
 TEST_F(AnimationHostTest, PushPropertiesToImpl) {
-  TestHostClient host_client(ThreadInstance::MAIN);
+  TestHostClient host_client(ThreadInstance::kMain);
   AnimationHost* host = host_client.host();
-  TestHostClient host_impl_client(ThreadInstance::IMPL);
+  TestHostClient host_impl_client(ThreadInstance::kImpl);
   AnimationHost* host_impl = host_impl_client.host();
 
   host->SetHasCanvasInvalidation(true);

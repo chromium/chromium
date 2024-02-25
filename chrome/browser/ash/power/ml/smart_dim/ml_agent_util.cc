@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {
@@ -54,14 +54,14 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
   const base::Value::Dict& root_dict = root.GetDict();
   const std::string* metrics_model_name_value =
       root_dict.FindString("metrics_model_name");
-  const absl::optional<double> dim_threshold_value =
+  const std::optional<double> dim_threshold_value =
       root_dict.FindDouble("threshold");
-  const absl::optional<int> expected_feature_size_value =
+  const std::optional<int> expected_feature_size_value =
       root_dict.FindInt("expected_feature_size");
 
   if (!metrics_model_name_value || *metrics_model_name_value == "" ||
-      dim_threshold_value == absl::nullopt ||
-      expected_feature_size_value == absl::nullopt) {
+      dim_threshold_value == std::nullopt ||
+      expected_feature_size_value == std::nullopt) {
     DVLOG(1) << "metadata_json missing expected field(s).";
     return false;
   }

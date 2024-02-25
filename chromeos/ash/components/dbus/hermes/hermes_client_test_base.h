@@ -47,7 +47,8 @@ class HermesClientTestBase : public testing::Test {
   using MethodCallResult = std::pair<std::unique_ptr<dbus::Response>,
                                      std::unique_ptr<dbus::ErrorResponse>>;
   std::deque<MethodCallResult> pending_method_call_results_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 }  // namespace ash

@@ -1,0 +1,36 @@
+{
+  "phases": {
+    "ninja": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_remoteexec": true,
+        "use_siso": false
+      }
+    },
+    "siso_native": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_siso": true
+      }
+    },
+    "siso_reproxy": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    }
+  }
+}

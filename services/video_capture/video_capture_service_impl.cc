@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/device_factory_impl.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/testing_controls_impl.h"
 #include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
@@ -40,11 +41,12 @@
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace video_capture {
 
@@ -107,7 +109,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       this};
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Intended usage of this class is to create viz::Gpu in utility process and
 // connect to viz::GpuClient of browser process, which will call to Gpu service.
 // Also, this class holds the viz::ContextProvider to listen and monitor Gpu
@@ -129,6 +131,11 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
           .SetGpuMemoryBufferManager(viz_gpu_->GetGpuMemoryBufferManager());
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
+          media::VideoCaptureGpuChannelHost::GetInstance()
+              .GetGpuMemoryBufferManager());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   ~VizGpuContextProvider() override {
@@ -178,12 +185,10 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
 
     scoped_refptr<viz::ContextProvider> context_provider =
         base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-            std::move(gpu_channel_host), viz_gpu_->GetGpuMemoryBufferManager(),
-            0 /* stream ID */, gpu::SchedulingPriority::kNormal,
-            gpu::kNullSurfaceHandle,
+            std::move(gpu_channel_host), 0 /* stream ID */,
+            gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
             GURL(std::string("chrome://gpu/VideoCapture")),
             false /* automatic flushes */, false /* support locking */,
-            false /* support grcontext */,
             gpu::SharedMemoryLimits::ForMailboxContext(),
             gpu::ContextCreationAttribs(),
             viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
@@ -208,7 +213,8 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   scoped_refptr<viz::ContextProvider> context_provider_;
   base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldUseVCDFromAsh() {
@@ -231,9 +237,20 @@ bool ShouldUseVCDFromAsh() {
 
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    bool create_system_monitor)
     : receiver_(this, std::move(receiver)),
-      ui_task_runner_(std::move(ui_task_runner)) {}
+      ui_task_runner_(std::move(ui_task_runner)) {
+  if (create_system_monitor && !base::SystemMonitor::Get()) {
+    system_monitor_ = std::make_unique<base::SystemMonitor>();
+  }
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(
+          features::kCameraMonitoringInVideoCaptureService)) {
+    InitializeDeviceMonitor();
+  }
+#endif
+}
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -289,14 +306,19 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  {
+#else
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     if (!viz_gpu_context_provider_) {
       viz_gpu_context_provider_ =
           std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
     }
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
@@ -378,6 +400,20 @@ void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
   video_source_provider_.reset();
 }
 
+void VideoCaptureServiceImpl::InitializeDeviceMonitor() {
+#if BUILDFLAG(IS_MAC)
+  CHECK(base::FeatureList::IsEnabled(
+      features::kCameraMonitoringInVideoCaptureService));
+  if (video_capture_device_monitor_mac_) {
+    return;
+  }
+  video_capture_device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_VISIBLE}));
+  video_capture_device_monitor_mac_->StartMonitoring();
+#endif
+}
+
 #if BUILDFLAG(IS_WIN)
 void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
   LazyInitializeDeviceFactory();
@@ -385,7 +421,7 @@ void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 void VideoCaptureServiceImpl::SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu) {
   viz_gpu_ = std::move(viz_gpu);
 }

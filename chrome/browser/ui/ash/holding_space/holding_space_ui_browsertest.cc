@@ -12,12 +12,14 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "ash/root_window_controller.h"
@@ -25,9 +27,11 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
+#include "ash/system/notification_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -39,6 +43,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_locale.h"
 #include "base/uuid.h"
@@ -54,11 +59,13 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -74,6 +81,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -91,7 +99,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -102,6 +109,7 @@ using ::testing::Conditional;
 using ::testing::Eq;
 using ::testing::Matches;
 using ::testing::Optional;
+using ::testing::Property;
 
 // Matchers --------------------------------------------------------------------
 
@@ -129,29 +137,12 @@ std::string GetAccessibleName(const views::View* view) {
   return a11y_name;
 }
 
-// Returns all holding space item types.
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
-  return types;
-}
-
 // Flushes the message loop by posting a task and waiting for it to run.
 void FlushMessageLoop() {
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
-}
-
-// Performs a click on `view` with optional `flags`.
-void Click(const views::View* view, int flags = ui::EF_NONE) {
-  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.set_flags(flags);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-  event_generator.ClickLeftButton();
 }
 
 // Performs a double click on `view`.
@@ -239,60 +230,6 @@ void MouseDrag(const views::View* from,
   std::move(after_release_callback).Run();
 }
 
-// Moves mouse to `view` over `count` number of events.
-void MoveMouseTo(const views::View* view, size_t count = 1u) {
-  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
-}
-
-// Performs a press and release of the specified `key_code` with `flags`.
-void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
-  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.PressAndReleaseKey(key_code, flags);
-}
-
-// Performs a right click on `view` with the specified `flags`.
-void RightClick(const views::View* view, int flags = ui::EF_NONE) {
-  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-  event_generator.set_flags(flags);
-  event_generator.ClickRightButton();
-}
-
-// Selects the menu item with the specified command ID. Returns the selected
-// menu item if successful, `nullptr` otherwise.
-views::MenuItemView* SelectMenuItemWithCommandId(
-    HoldingSpaceCommandId command_id) {
-  auto* menu_controller = views::MenuController::GetActiveInstance();
-  if (!menu_controller)
-    return nullptr;
-
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-  auto* const first_selected_menu_item = menu_controller->GetSelectedMenuItem();
-  if (!first_selected_menu_item)
-    return nullptr;
-
-  auto* selected_menu_item = first_selected_menu_item;
-  do {
-    if (selected_menu_item->GetCommand() == static_cast<int>(command_id))
-      return selected_menu_item;
-
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-    selected_menu_item = menu_controller->GetSelectedMenuItem();
-
-    // It is expected that context menus loop selection traversal. If the
-    // currently `selected_menu_item` is the `first_selected_menu_item` then the
-    // context menu has been completely traversed.
-  } while (selected_menu_item != first_selected_menu_item);
-
-  // If this LOC is reached the menu has been completely traversed without
-  // finding a menu item for the desired `command_id`.
-  return nullptr;
-}
-
 // Waits for the specified `label` to have the desired `text`.
 void WaitForText(views::Label* label, const std::u16string& text) {
   if (label->GetText() == text)
@@ -307,16 +244,6 @@ void WaitForText(views::Label* label, const std::u16string& text) {
 }
 
 // Mocks -----------------------------------------------------------------------
-
-class MockActivationChangeObserver : public wm::ActivationChangeObserver {
- public:
-  MOCK_METHOD(void,
-              OnWindowActivated,
-              (wm::ActivationChangeObserver::ActivationReason reason,
-               aura::Window* gained_active,
-               aura::Window* lost_active),
-              (override));
-};
 
 class MockDownloadControllerClient
     : public crosapi::mojom::DownloadControllerClient {
@@ -434,8 +361,8 @@ class DropSenderView : public views::WidgetDelegateView,
     widget->Init(std::move(params));
   }
 
-  absl::optional<std::vector<ui::FileInfo>> filenames_data_;
-  absl::optional<base::Pickle> file_system_sources_data_;
+  std::optional<std::vector<ui::FileInfo>> filenames_data_;
+  std::optional<base::Pickle> file_system_sources_data_;
 };
 
 // DropTargetView --------------------------------------------------------------
@@ -476,7 +403,10 @@ class DropTargetView : public views::WidgetDelegateView {
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-    EXPECT_TRUE(event.data().GetFilename(&copied_file_path_));
+    std::vector<ui::FileInfo> files;
+    EXPECT_TRUE(event.data().GetFilenames(&files));
+    ASSERT_EQ(1u, files.size());
+    copied_file_path_ = files[0].path;
     output_drag_op = ui::mojom::DragOperation::kCopy;
   }
 
@@ -496,35 +426,41 @@ class DropTargetView : public views::WidgetDelegateView {
   base::FilePath copied_file_path_;
 };
 
+// NextMainFrameWaiter ---------------------------------------------------------
+
+// A helper class that waits until the next main frame is processed.
+class NextMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
+    observation_.Observe(compositor);
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running());
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
+      this};
+};
+
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
 
-// Base class for holding space UI browser tests.
-class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
+class HoldingSpaceUiBrowserTest : public HoldingSpaceUiBrowserTestBase {
  public:
   HoldingSpaceUiBrowserTest() {
     // TODO(crbug.com/1382945): Parameterize.
     scoped_feature_list_.InitAndDisableFeature(
         features::kHoldingSpacePredictability);
-  }
-
-  // HoldingSpaceBrowserTestBase:
-  void SetUpOnMainThread() override {
-    HoldingSpaceBrowserTestBase::SetUpOnMainThread();
-
-    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-    // The holding space tray will not show until the user has added a file to
-    // holding space. Holding space UI browser tests don't need to assert that
-    // behavior since it is already asserted in ash_unittests. As a convenience,
-    // add and remove a holding space item so that the holding space tray will
-    // already be showing during test execution.
-    ASSERT_FALSE(test_api().IsShowingInShelf());
-    RemoveItem(AddDownloadFile());
-    ASSERT_TRUE(test_api().IsShowingInShelf());
-
-    // Confirm that holding space model has been emptied for test execution.
-    ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
   }
 
  private:
@@ -577,7 +513,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
     // Cache a reference to preview layers.
     const ui::Layer* previews_container_layer =
         test_api().GetPreviewsTrayIcon()->layer()->children()[0];
-    const std::vector<ui::Layer*>& preview_layers =
+    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& preview_layers =
         previews_container_layer->children();
 
     // Iterate over the layers for each preview.
@@ -689,19 +625,12 @@ class HoldingSpaceUiDragAndDropBrowserTest
     return GetStorageLocationFlags() & flag;
   }
 
-  raw_ptr<DropSenderView, ExperimentalAsh> drop_sender_view_ = nullptr;
-  raw_ptr<DropTargetView, ExperimentalAsh> drop_target_view_ = nullptr;
+  raw_ptr<DropSenderView, DanglingUntriaged> drop_sender_view_ = nullptr;
+  raw_ptr<DropTargetView, DanglingUntriaged> drop_target_view_ = nullptr;
 };
 
-// Flaky on ChromeOS bots: crbug.com/1338054
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragAndDrop DISABLED_DragAndDrop
-#else
-#define MAYBE_DragAndDrop DragAndDrop
-#endif
 // Verifies that drag-and-drop of holding space items works.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
-                       MAYBE_DragAndDrop) {
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -715,7 +644,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(1u, download_chips.size());
 
   PerformDragAndDrop(/*from=*/download_chips[0], /*to=*/target());
-  EXPECT_EQ(download_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(download_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -736,7 +665,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(3u, pinned_file_chips.size());
 
   PerformDragAndDrop(/*from=*/pinned_file_chips.back(), /*to=*/target());
-  EXPECT_EQ(pinned_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(pinned_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -753,22 +682,15 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(1u, screen_capture_views.size());
 
   PerformDragAndDrop(/*from=*/screen_capture_views[0], /*to=*/target());
-  EXPECT_EQ(screenshot_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(screenshot_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
   ASSERT_FALSE(test_api().IsShowing());
 }
 
-// Disabled due to flakiness. http://crbug.com/1261364
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragAndDropToPin DISABLED_DragAndDropToPin
-#else
-#define MAYBE_DragAndDropToPin DragAndDropToPin
-#endif
 // Verifies that drag-and-drop to pin holding space items works.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
-                       MAYBE_DragAndDropToPin) {
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -799,7 +721,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 1u);
           ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[0]->file_path(), file_paths[0]);
+          ASSERT_EQ(items[0]->file().file_path, file_paths[0]);
           run_loop.Quit();
         });
 
@@ -841,9 +763,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 2u);
           ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[0]->file_path(), file_paths[1]);
+          ASSERT_EQ(items[0]->file().file_path, file_paths[1]);
           ASSERT_EQ(items[1]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[1]->file_path(), file_paths[2]);
+          ASSERT_EQ(items[1]->file().file_path, file_paths[2]);
           run_loop.Quit();
         });
 
@@ -946,8 +868,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, PinAndUnpinItems) {
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Add an item of every type. For downloads, also add an in-progress item.
-  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     AddItem(GetProfile(), type, CreateFile());
+  }
   AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload, CreateFile(),
           HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
@@ -1009,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, PinAndUnpinItems) {
   // context menu, still without de-selecting the in-progress download. Because
   // the selection contains items which are not in-progress and at least one of
   // those items are unpinned, the selection should be pin-able.
-  Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
+  test::Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPinItem));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -1086,8 +1009,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Populate holding space with items of all types.
-  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     AddItem(GetProfile(), type, CreateFile());
+  }
 
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -1113,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
 
   // Add a download item to the selection and show the context menu.
   ViewDrawnWaiter().Wait(download_chips.front());
-  Click(download_chips.front(), ui::EF_CONTROL_DOWN);
+  test::Click(download_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -1125,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_FALSE(views::MenuController::GetActiveInstance());
 
   // Unselect the pinned item and right click show the context menu.
-  Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
+  test::Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -1168,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
 
   // Select a screen capture item and show the context menu.
   ViewDrawnWaiter().Wait(screen_capture_views.front());
-  Click(screen_capture_views.front());
+  test::Click(screen_capture_views.front());
   RightClick(screen_capture_views.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -1207,13 +1131,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
     // Select all visible download items.
     for (views::View* download_chip : download_chips) {
       ViewDrawnWaiter().Wait(download_chip);
-      Click(download_chip, ui::EF_CONTROL_DOWN);
+      test::Click(download_chip, ui::EF_CONTROL_DOWN);
     }
 
     // Select all visible screen capture items.
     for (views::View* screen_capture_view : screen_capture_views) {
       ViewDrawnWaiter().Wait(screen_capture_view);
-      Click(screen_capture_view, ui::EF_CONTROL_DOWN);
+      test::Click(screen_capture_view, ui::EF_CONTROL_DOWN);
     }
 
     // Show the context menu. There should be a `kRemoveItem` command.
@@ -1244,8 +1168,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
       EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
           .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
             ASSERT_EQ(items.size(), item_ids.size());
-            for (const HoldingSpaceItem* item : items)
+            for (const HoldingSpaceItem* item : items) {
               ASSERT_TRUE(base::Contains(item_ids, item->id()));
+            }
             run_loop.Quit();
           });
 
@@ -1295,11 +1220,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
   // so move the mouse and wait for the pin button to be drawn. Note that the
   // mouse is moved over multiple events to ensure that the appropriate mouse
   // enter event is also generated.
-  MoveMouseTo(pinned_file_chip, /*count=*/10);
+  test::MoveMouseTo(pinned_file_chip, /*count=*/10);
   auto* pin_btn = pinned_file_chip->GetViewByID(kHoldingSpaceItemPinButtonId);
   ViewDrawnWaiter().Wait(pin_btn);
 
-  Click(pin_btn);
+  test::Click(pin_btn);
 
   pinned_file_chips = test_api().GetPinnedFileChips();
   ASSERT_EQ(kNumPinnedItems - 1, pinned_file_chips.size());
@@ -1321,7 +1246,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
   ASSERT_TRUE(previews_tray_icon);
   ASSERT_TRUE(previews_tray_icon->layer());
   ASSERT_EQ(1u, previews_tray_icon->layer()->children().size());
-  auto* previews_container_layer = previews_tray_icon->layer()->children()[0];
+  auto* previews_container_layer =
+      previews_tray_icon->layer()->children()[0].get();
   EXPECT_FALSE(previews_tray_icon->GetVisible());
 
   // After pinning a file, we should have a single preview in the tray icon.
@@ -2061,10 +1987,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
   const DownloadTypeToUse download_type_to_use_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<testing::NiceMock<content::MockDownloadManager>, ExperimentalAsh>
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>, DanglingUntriaged>
       download_manager_ = nullptr;
-  raw_ptr<content::DownloadManagerDelegate, ExperimentalAsh>
-      download_manager_delegate_ = nullptr;
+  raw_ptr<content::DownloadManagerDelegate> download_manager_delegate_ =
+      nullptr;
   base::ObserverList<content::DownloadManager::Observer>::Unchecked
       download_manager_observers_;
   testing::NiceMock<MockDownloadControllerClient> download_controller_client_;
@@ -2113,6 +2039,19 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Verify the existence of a single download chip.
   std::vector<views::View*> download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(download_chips.size(), 1u);
+
+  // Wait for the download chip to be drawn with an indeterminate progress ring
+  // animation.
+  NextMainFrameWaiter(Shell::GetPrimaryRootWindow()->GetHost()->compositor())
+      .Wait();
+  EXPECT_THAT(
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(
+              ProgressIndicatorAnimationRegistry::AsAnimationKey(
+                  HoldingSpaceController::Get()->model()->GetItem(
+                      test_api().GetHoldingSpaceItemId(download_chips[0])))),
+      Property(&ProgressRingAnimation::type,
+               Eq(ProgressRingAnimation::Type::kIndeterminate)));
 
   // Cache pointers to the `primary_label` and `secondary_label`.
   auto* primary_label = static_cast<views::Label*>(
@@ -2501,7 +2440,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // selected and its underlying download is in-progress, the context menu
   // should contain a "Cancel" command.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  Click(in_progress_download_chip);
+  test::Click(in_progress_download_chip);
   RightClick(in_progress_download_chip);
   ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kCancelItem));
 
@@ -2566,7 +2505,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should contain a visible primary action for "Pin".
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  test::MoveMouseTo(completed_download_chip, /*count=*/10);
   auto* primary_action_container = completed_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   auto* primary_action_cancel =
@@ -2580,7 +2519,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible primary action for
   // "Cancel".
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  test::MoveMouseTo(in_progress_download_chip, /*count=*/10);
   primary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   primary_action_cancel =
@@ -2613,7 +2552,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
         ASSERT_EQ(items[0]->id(), in_progress_download_id);
         run_loop.Quit();
       });
-  Click(primary_action_container);
+  test::Click(primary_action_container);
   run_loop.Run();
 
   // Verify that there is now only a single download chip.
@@ -2741,7 +2680,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // selected and its underlying download is completed, the context menu should
   // contain a "Remove" command.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  Click(completed_download_chip);
+  test::Click(completed_download_chip);
   RightClick(completed_download_chip);
   ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
 
@@ -2867,7 +2806,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // selected and its underlying download is in-progress, the context menu
   // should contain a "Pause" or "Resume" command.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  Click(in_progress_download_chip);
+  test::Click(in_progress_download_chip);
   RightClick(in_progress_download_chip);
   ASSERT_TRUE(SelectMenuItemWithCommandId(GetPauseOrResumeCommandId()));
 
@@ -2882,12 +2821,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -2935,7 +2873,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should not contain a visible secondary action.
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  test::MoveMouseTo(completed_download_chip, /*count=*/10);
   ASSERT_FALSE(completed_download_chip
                    ->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId)
                    ->GetVisible());
@@ -2943,7 +2881,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible secondary action for
   // either "Pause" or "Resume", depending on test parameterization.
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  test::MoveMouseTo(in_progress_download_chip, /*count=*/10);
   auto* secondary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemSecondaryActionContainerId);
   auto* secondary_action_pause =
@@ -2967,15 +2905,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // updated in the holding space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
-  Click(secondary_action_container);
+  test::Click(secondary_action_container);
   run_loop.Run();
 
   // Verify that there are still two download chips.
@@ -3098,8 +3035,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
   MessagePopupAnimationWaiter(ash::Shell::GetPrimaryRootWindowController()
                                   ->shelf()
                                   ->GetStatusAreaWidget()
-                                  ->unified_system_tray()
-                                  ->GetMessagePopupCollection())
+                                  ->notification_center_tray()
+                                  ->popup_collection())
       .Wait();
 
   // Verify that the screen recording appears in holding space UI.
@@ -3192,7 +3129,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceSuggestionUiBrowserTest, RemoveSuggestion) {
 
   // Select two suggestion chips and open context menu.
   ASSERT_FALSE(views::MenuController::GetActiveInstance());
-  Click(suggestion_chips.front(), ui::EF_CONTROL_DOWN);
+  test::Click(suggestion_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(suggestion_chips[1], ui::EF_CONTROL_DOWN);
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -3200,7 +3137,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceSuggestionUiBrowserTest, RemoveSuggestion) {
   auto* menu_item =
       SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem);
   ASSERT_TRUE(menu_item);
-  Click(menu_item);
+  test::Click(menu_item);
   WaitForSuggestionsInModel(
       model, /*expected_suggestions=*/{
           {HoldingSpaceItem::Type::kLocalSuggestion, file_paths[0]}});
@@ -3213,7 +3150,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceSuggestionUiBrowserTest, RemoveSuggestion) {
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
   menu_item = SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem);
   ASSERT_TRUE(menu_item);
-  Click(menu_item);
+  test::Click(menu_item);
 
   // There should not be any suggestion item view left.
   EXPECT_EQ(test_api().GetSuggestionChips().size(), 0u);

@@ -9,13 +9,13 @@
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internals.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h"
 #include "third_party/blink/renderer/core/testing/internals.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -37,6 +37,7 @@ v8::Local<v8::Array> EvaluateScriptForArray(V8TestingScope& scope,
 }
 
 TEST(NativeValueTraitsImplTest, IDLInterface) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
   Internals* internals = NativeValueTraits<Internals>::NativeValue(
@@ -49,6 +50,7 @@ TEST(NativeValueTraitsImplTest, IDLInterface) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLRecord) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
@@ -112,7 +114,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             .As<v8::Proxy>();
 
     ExceptionState exception_state_from_proxy(
-        scope.GetIsolate(), ExceptionState::kExecutionContext,
+        scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
         "NativeValueTraitsImplTest", "IDLRecordTest");
     const auto& record_from_proxy =
         NativeValueTraits<IDLRecord<IDLString, IDLLong>>::NativeValue(
@@ -209,6 +211,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLSequence) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::Array> v8_array = v8::Array::New(scope.GetIsolate());
@@ -325,13 +328,14 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLBigint) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::BigInt> v8_bigint = v8::BigInt::New(scope.GetIsolate(), 123);
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_bigint, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }
@@ -350,7 +354,7 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_string, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }
@@ -365,7 +369,7 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     NonThrowableExceptionState exception_state;
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_object, exception_state);
-    absl::optional<absl::uint128> val = bigint.ToUInt128();
+    std::optional<absl::uint128> val = bigint.ToUInt128();
     ASSERT_TRUE(val.has_value());
     EXPECT_EQ(*val, 123u);
   }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2021 Unicode, Inc.
+<!-- Copyright © 1991-2023 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
 SPDX-License-Identifier: Unicode-DFS-2016
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
@@ -718,81 +718,6 @@ annotations.
 		<annotation cp="♭" type="tts">flat</annotation>
 		<annotation cp="♯">dièse | diesis | music | note | sharp</annotation>
 		<annotation cp="♯" type="tts">sharp</annotation>
-		<annotation cp="🥹">angry | cry | face holding back tears | proud | resist | sad</annotation> <!-- 1F979 -->
-		<annotation cp="🥹" type="tts">face holding back tears</annotation>
-		<annotation cp="🧌">fairy tale | fantasy | monster | troll</annotation> <!-- 1F9CC -->
-		<annotation cp="🧌" type="tts">troll</annotation>
-		<annotation cp="🩻">bones | doctor | medical | skeleton | x-ray</annotation> <!-- 1FA7B -->
-		<annotation cp="🩻" type="tts">x-ray</annotation>
-		<annotation cp="🩼">cane | crutch | disability | hurt | mobility aid | stick</annotation> <!-- 1FA7C -->
-		<annotation cp="🩼" type="tts">crutch</annotation>
-		<annotation cp="🪩">dance | disco | glitter | mirror ball | party</annotation> <!-- 1FAA9 -->
-		<annotation cp="🪩" type="tts">mirror ball</annotation>
-		<annotation cp="🪪">credentials | ID | identification card | license | security</annotation> <!-- 1FAAA -->
-		<annotation cp="🪪" type="tts">identification card</annotation>
-		<annotation cp="🪫">electronic | low battery | low energy</annotation> <!-- 1FAAB -->
-		<annotation cp="🪫" type="tts">low battery</annotation>
-		<annotation cp="🪬">amulet | Fatima | hamsa | hand | Mary | Miriam | protection</annotation> <!-- 1FAAC -->
-		<annotation cp="🪬" type="tts">hamsa</annotation>
-		<annotation cp="🪷">Buddhism | flower | Hinduism | India | lotus | purity | Vietnam</annotation> <!-- 1FAB7 -->
-		<annotation cp="🪷" type="tts">lotus</annotation>
-		<annotation cp="🪸">coral | ocean | reef</annotation> <!-- 1FAB8 -->
-		<annotation cp="🪸" type="tts">coral</annotation>
-		<annotation cp="🪹">empty nest | nesting</annotation> <!-- 1FAB9 -->
-		<annotation cp="🪹" type="tts">empty nest</annotation>
-		<annotation cp="🪺">nest with eggs | nesting</annotation> <!-- 1FABA -->
-		<annotation cp="🪺" type="tts">nest with eggs</annotation>
-		<annotation cp="🫃">belly | bloated | full | pregnant | pregnant man</annotation> <!-- 1FAC3 -->
-		<annotation cp="🫃" type="tts">pregnant man</annotation>
-		<annotation cp="🫄">belly | bloated | full | pregnant | pregnant person</annotation> <!-- 1FAC4 -->
-		<annotation cp="🫄" type="tts">pregnant person</annotation>
-		<annotation cp="🫅">monarch | noble | person with crown | regal | royalty</annotation> <!-- 1FAC5 -->
-		<annotation cp="🫅" type="tts">person with crown</annotation>
-		<annotation cp="🫗">drink | empty | glass | pouring liquid | spill</annotation> <!-- 1FAD7 -->
-		<annotation cp="🫗" type="tts">pouring liquid</annotation>
-		<annotation cp="🫘">beans | food | kidney | legume</annotation> <!-- 1FAD8 -->
-		<annotation cp="🫘" type="tts">beans</annotation>
-		<annotation cp="🫙">condiment | container | empty | jar | sauce | store</annotation> <!-- 1FAD9 -->
-		<annotation cp="🫙" type="tts">jar</annotation>
-		<!-- Generated lines from Emoji Data v14, using GenerateCldrData.java -->
-		<annotation cp="🫠">disappear | dissolve | liquid | melt | melting face</annotation> <!-- 1FAE0 -->
-		<annotation cp="🫠" type="tts">melting face</annotation>
-		<annotation cp="🫡">OK | salute | saluting face | sunny | troops | yes</annotation> <!-- 1FAE1 -->
-		<annotation cp="🫡" type="tts">saluting face</annotation>
-		<annotation cp="🫢">amazement | awe | disbelief | embarrass | face with open eyes and hand over mouth | scared | surprise</annotation> <!-- 1FAE2 -->
-		<annotation cp="🫢" type="tts">face with open eyes and hand over mouth</annotation>
-		<annotation cp="🫣">captivated | face with peeking eye | peep | stare</annotation> <!-- 1FAE3 -->
-		<annotation cp="🫣" type="tts">face with peeking eye</annotation>
-		<annotation cp="🫤">disappointed | face with diagonal mouth | meh | skeptical | unsure</annotation> <!-- 1FAE4 -->
-		<annotation cp="🫤" type="tts">face with diagonal mouth</annotation>
-		<annotation cp="🫥">depressed | disappear | dotted line face | hide | introvert | invisible</annotation> <!-- 1FAE5 -->
-		<annotation cp="🫥" type="tts">dotted line face</annotation>
-		<annotation cp="🫦">anxious | biting lip | fear | flirting | nervous | uncomfortable | worried</annotation> <!-- 1FAE6 -->
-		<annotation cp="🫦" type="tts">biting lip</annotation>
-		<annotation cp="🫧">bubbles | burp | clean | soap | underwater</annotation> <!-- 1FAE7 -->
-		<annotation cp="🫧" type="tts">bubbles</annotation>
-		<annotation cp="🫰">expensive | hand with index finger and thumb crossed | heart | love | money | snap</annotation> <!-- 1FAF0 -->
-		<annotation cp="🫰" type="tts">hand with index finger and thumb crossed</annotation>
-		<annotation cp="🫱">hand | right | rightward | rightwards hand</annotation> <!-- 1FAF1 -->
-		<annotation cp="🫱" type="tts">rightwards hand</annotation>
-		<annotation cp="🫲">hand | left | leftward | leftwards hand</annotation> <!-- 1FAF2 -->
-		<annotation cp="🫲" type="tts">leftwards hand</annotation>
-		<annotation cp="🫳">dismiss | drop | palm down hand | shoo</annotation> <!-- 1FAF3 -->
-		<annotation cp="🫳" type="tts">palm down hand</annotation>
-		<annotation cp="🫴">beckon | catch | come | offer | palm up hand</annotation> <!-- 1FAF4 -->
-		<annotation cp="🫴" type="tts">palm up hand</annotation>
-		<annotation cp="🫵">index pointing at the viewer | point | you</annotation> <!-- 1FAF5 -->
-		<annotation cp="🫵" type="tts">index pointing at the viewer</annotation>
-		<annotation cp="🫶">heart hands | love</annotation> <!-- 1FAF6 -->
-		<annotation cp="🫶" type="tts">heart hands</annotation>
-		<annotation cp="🛝">amusement park | play | playground slide</annotation> <!-- 1F6DD -->
-		<annotation cp="🛝" type="tts">playground slide</annotation>
-		<annotation cp="🛞">circle | tire | turn | wheel</annotation> <!-- 1F6DE -->
-		<annotation cp="🛞" type="tts">wheel</annotation>
-		<annotation cp="🛟">float | life preserver | life saver | rescue | ring buoy | safety</annotation> <!-- 1F6DF -->
-		<annotation cp="🛟" type="tts">ring buoy</annotation>
-		<annotation cp="🟰">equality | heavy equals sign | math</annotation> <!-- 1F7F0 -->
-		<annotation cp="🟰" type="tts">heavy equals sign</annotation>
 		<annotation cp="😀">face | grin | grinning face</annotation>
 		<annotation cp="😀" type="tts">grinning face</annotation>
 		<annotation cp="😃">face | grinning face with big eyes | mouth | open | smile</annotation>
@@ -813,6 +738,9 @@ annotations.
 		<annotation cp="🙂" type="tts">slightly smiling face</annotation>
 		<annotation cp="🙃">face | upside-down</annotation>
 		<annotation cp="🙃" type="tts">upside-down face</annotation>
+		<!-- Generated lines from Emoji Data v14, using GenerateCldrData.java -->
+		<annotation cp="🫠">disappear | dissolve | liquid | melt | melting face</annotation> <!-- 1FAE0 -->
+		<annotation cp="🫠" type="tts">melting face</annotation>
 		<annotation cp="😉">face | wink | winking face</annotation>
 		<annotation cp="😉" type="tts">winking face</annotation>
 		<annotation cp="😊">blush | eye | face | smile | smiling face with smiling eyes</annotation>
@@ -853,11 +781,17 @@ annotations.
 		<annotation cp="🤗" type="tts">smiling face with open hands</annotation>
 		<annotation cp="🤭">face with hand over mouth | whoops</annotation>
 		<annotation cp="🤭" type="tts">face with hand over mouth</annotation>
+		<annotation cp="🫢">amazement | awe | disbelief | embarrass | face with open eyes and hand over mouth | scared | surprise</annotation> <!-- 1FAE2 -->
+		<annotation cp="🫢" type="tts">face with open eyes and hand over mouth</annotation>
+		<annotation cp="🫣">captivated | face with peeking eye | peep | stare</annotation> <!-- 1FAE3 -->
+		<annotation cp="🫣" type="tts">face with peeking eye</annotation>
 		<annotation cp="🤫">quiet | shush | shushing face</annotation>
 		<annotation cp="🤫" type="tts">shushing face</annotation>
 		<annotation cp="🤔">face | thinking</annotation>
 		<annotation cp="🤔" type="tts">thinking face</annotation>
-		<annotation cp="🤐">face | mouth | zipper | zipper-mouth face</annotation>
+		<annotation cp="🫡">OK | salute | saluting face | sunny | troops | yes</annotation> <!-- 1FAE1 -->
+		<annotation cp="🫡" type="tts">saluting face</annotation>
+		<annotation cp="🤐">face | mouth | zip | zipper | zipper-mouth face</annotation>
 		<annotation cp="🤐" type="tts">zipper-mouth face</annotation>
 		<annotation cp="🤨">distrust | face with raised eyebrow | skeptic</annotation>
 		<annotation cp="🤨" type="tts">face with raised eyebrow</annotation>
@@ -867,6 +801,8 @@ annotations.
 		<annotation cp="😑" type="tts">expressionless face</annotation>
 		<annotation cp="😶">face | face without mouth | mouth | quiet | silent</annotation>
 		<annotation cp="😶" type="tts">face without mouth</annotation>
+		<annotation cp="🫥">depressed | disappear | dotted line face | hide | introvert | invisible</annotation> <!-- 1FAE5 -->
+		<annotation cp="🫥" type="tts">dotted line face</annotation>
 		<annotation cp="😶‍🌫">absentminded | face in clouds | face in the fog | head in clouds</annotation> <!-- 1F636 200D 1F32B FE0F: face in clouds -->
 		<annotation cp="😶‍🌫" type="tts">face in clouds</annotation>
 		<annotation cp="😏">face | smirk | smirking face</annotation>
@@ -881,6 +817,14 @@ annotations.
 		<annotation cp="😮‍💨" type="tts">face exhaling</annotation>
 		<annotation cp="🤥">face | lie | lying face | pinocchio</annotation>
 		<annotation cp="🤥" type="tts">lying face</annotation>
+		<!-- Generated lines from Emoji Data v15, using GenerateCldrData.java -->
+		<annotation cp="🫨">earthquake | face | shaking | shock | vibrate</annotation> <!-- 1FAE8 -->
+		<annotation cp="🫨" type="tts">shaking face</annotation>
+		<!-- Generated lines from Emoji Data v15.1, using GenerateCldrData.java -->
+		<annotation cp="🙂‍↔">head shaking horizontally | no | shake</annotation> <!-- 1F642 200D 2194 -->
+		<annotation cp="🙂‍↔" type="tts">head shaking horizontally</annotation>
+		<annotation cp="🙂‍↕">head shaking vertically | nod | yes</annotation> <!-- 1F642 200D 2195 -->
+		<annotation cp="🙂‍↕" type="tts">head shaking vertically</annotation>
 		<annotation cp="😌">face | relieved</annotation>
 		<annotation cp="😌" type="tts">relieved face</annotation>
 		<annotation cp="😔">dejected | face | pensive</annotation>
@@ -929,6 +873,8 @@ annotations.
 		<annotation cp="🧐" type="tts">face with monocle</annotation>
 		<annotation cp="😕">confused | face | meh</annotation>
 		<annotation cp="😕" type="tts">confused face</annotation>
+		<annotation cp="🫤">disappointed | face with diagonal mouth | meh | skeptical | unsure</annotation> <!-- 1FAE4 -->
+		<annotation cp="🫤" type="tts">face with diagonal mouth</annotation>
 		<annotation cp="😟">face | worried</annotation>
 		<annotation cp="😟" type="tts">worried face</annotation>
 		<annotation cp="🙁">face | frown | slightly frowning face</annotation>
@@ -945,6 +891,8 @@ annotations.
 		<annotation cp="😳" type="tts">flushed face</annotation>
 		<annotation cp="🥺">begging | mercy | pleading face | puppy eyes</annotation>
 		<annotation cp="🥺" type="tts">pleading face</annotation>
+		<annotation cp="🥹">angry | cry | face holding back tears | proud | resist | sad</annotation> <!-- 1F979 -->
+		<annotation cp="🥹" type="tts">face holding back tears</annotation>
 		<annotation cp="😦">face | frown | frowning face with open mouth | mouth | open</annotation>
 		<annotation cp="😦" type="tts">frowning face with open mouth</annotation>
 		<annotation cp="😧">anguished | face</annotation>
@@ -1031,8 +979,6 @@ annotations.
 		<annotation cp="🙉" type="tts">hear-no-evil monkey</annotation>
 		<annotation cp="🙊">evil | face | forbidden | monkey | speak | speak-no-evil monkey</annotation>
 		<annotation cp="🙊" type="tts">speak-no-evil monkey</annotation>
-		<annotation cp="💋">kiss | kiss mark | lips</annotation>
-		<annotation cp="💋" type="tts">kiss mark</annotation>
 		<annotation cp="💌">heart | letter | love | mail</annotation>
 		<annotation cp="💌" type="tts">love letter</annotation>
 		<annotation cp="💘">arrow | cupid | heart with arrow</annotation>
@@ -1061,6 +1007,8 @@ annotations.
 		<annotation cp="❤‍🩹" type="tts">mending heart</annotation>
 		<annotation cp="❤">heart | red heart</annotation>
 		<annotation cp="❤" type="tts">red heart</annotation>
+		<annotation cp="🩷">cute | heart | like | love | pink</annotation> <!-- 1FA77 -->
+		<annotation cp="🩷" type="tts">pink heart</annotation>
 		<annotation cp="🧡">orange | orange heart</annotation>
 		<annotation cp="🧡" type="tts">orange heart</annotation>
 		<annotation cp="💛">yellow | yellow heart</annotation>
@@ -1069,14 +1017,20 @@ annotations.
 		<annotation cp="💚" type="tts">green heart</annotation>
 		<annotation cp="💙">blue | blue heart</annotation>
 		<annotation cp="💙" type="tts">blue heart</annotation>
+		<annotation cp="🩵">cyan | heart | light blue | light blue heart | teal</annotation> <!-- 1FA75 -->
+		<annotation cp="🩵" type="tts">light blue heart</annotation>
 		<annotation cp="💜">purple | purple heart</annotation>
 		<annotation cp="💜" type="tts">purple heart</annotation>
 		<annotation cp="🤎">brown | heart</annotation>
 		<annotation cp="🤎" type="tts">brown heart</annotation>
 		<annotation cp="🖤">black | black heart | evil | wicked</annotation>
 		<annotation cp="🖤" type="tts">black heart</annotation>
+		<annotation cp="🩶">gray | grey heart | heart | silver | slate</annotation> <!-- 1FA76 -->
+		<annotation cp="🩶" type="tts">grey heart</annotation>
 		<annotation cp="🤍">heart | white</annotation>
 		<annotation cp="🤍" type="tts">white heart</annotation>
+		<annotation cp="💋">kiss | kiss mark | lips</annotation>
+		<annotation cp="💋" type="tts">kiss mark</annotation>
 		<annotation cp="💯">100 | full | hundred | hundred points | score</annotation>
 		<annotation cp="💯" type="tts">hundred points</annotation>
 		<annotation cp="💢">anger symbol | angry | comic | mad</annotation>
@@ -1091,8 +1045,6 @@ annotations.
 		<annotation cp="💨" type="tts">dashing away</annotation>
 		<annotation cp="🕳">hole</annotation>
 		<annotation cp="🕳" type="tts">hole</annotation>
-		<annotation cp="💣">bomb | comic</annotation>
-		<annotation cp="💣" type="tts">bomb</annotation>
 		<annotation cp="💬">balloon | bubble | comic | dialog | speech</annotation>
 		<annotation cp="💬" type="tts">speech balloon</annotation>
 		<annotation cp="👁‍🗨">balloon | bubble | eye | eye in speech bubble | speech | witness</annotation>
@@ -1115,6 +1067,18 @@ annotations.
 		<annotation cp="✋" type="tts">raised hand</annotation>
 		<annotation cp="🖖">finger | hand | spock | vulcan | vulcan salute</annotation>
 		<annotation cp="🖖" type="tts">vulcan salute</annotation>
+		<annotation cp="🫱">hand | right | rightward | rightwards hand</annotation> <!-- 1FAF1 -->
+		<annotation cp="🫱" type="tts">rightwards hand</annotation>
+		<annotation cp="🫲">hand | left | leftward | leftwards hand</annotation> <!-- 1FAF2 -->
+		<annotation cp="🫲" type="tts">leftwards hand</annotation>
+		<annotation cp="🫳">dismiss | drop | palm down hand | shoo</annotation> <!-- 1FAF3 -->
+		<annotation cp="🫳" type="tts">palm down hand</annotation>
+		<annotation cp="🫴">beckon | catch | come | offer | palm up hand</annotation> <!-- 1FAF4 -->
+		<annotation cp="🫴" type="tts">palm up hand</annotation>
+		<annotation cp="🫷">high five | leftward | leftwards pushing hand | push | refuse | stop | wait</annotation> <!-- 1FAF7 -->
+		<annotation cp="🫷" type="tts">leftwards pushing hand</annotation>
+		<annotation cp="🫸">high five | push | refuse | rightward | rightwards pushing hand | stop | wait</annotation> <!-- 1FAF8 -->
+		<annotation cp="🫸" type="tts">rightwards pushing hand</annotation>
 		<annotation cp="👌">hand | OK</annotation>
 		<annotation cp="👌" type="tts">OK hand</annotation>
 		<annotation cp="🤌">fingers | hand gesture | interrogation | pinched | sarcastic</annotation>
@@ -1125,6 +1089,8 @@ annotations.
 		<annotation cp="✌" type="tts">victory hand</annotation>
 		<annotation cp="🤞">cross | crossed fingers | finger | hand | luck</annotation>
 		<annotation cp="🤞" type="tts">crossed fingers</annotation>
+		<annotation cp="🫰">expensive | hand with index finger and thumb crossed | heart | love | money | snap</annotation> <!-- 1FAF0 -->
+		<annotation cp="🫰" type="tts">hand with index finger and thumb crossed</annotation>
 		<annotation cp="🤟">hand | ILY | love-you gesture</annotation>
 		<annotation cp="🤟" type="tts">love-you gesture</annotation>
 		<annotation cp="🤘">finger | hand | horns | rock-on | sign of the horns</annotation>
@@ -1143,6 +1109,8 @@ annotations.
 		<annotation cp="👇" type="tts">backhand index pointing down</annotation>
 		<annotation cp="☝">finger | hand | index | index pointing up | point | up</annotation>
 		<annotation cp="☝" type="tts">index pointing up</annotation>
+		<annotation cp="🫵">index pointing at the viewer | point | you</annotation> <!-- 1FAF5 -->
+		<annotation cp="🫵" type="tts">index pointing at the viewer</annotation>
 		<annotation cp="👍">+1 | hand | thumb | thumbs up | up</annotation>
 		<annotation cp="👍" type="tts">thumbs up</annotation>
 		<annotation cp="👎">-1 | down | hand | thumb | thumbs down</annotation>
@@ -1159,6 +1127,8 @@ annotations.
 		<annotation cp="👏" type="tts">clapping hands</annotation>
 		<annotation cp="🙌">celebration | gesture | hand | hooray | raised | raising hands</annotation>
 		<annotation cp="🙌" type="tts">raising hands</annotation>
+		<annotation cp="🫶">heart hands | love</annotation> <!-- 1FAF6 -->
+		<annotation cp="🫶" type="tts">heart hands</annotation>
 		<annotation cp="👐">hand | open | open hands</annotation>
 		<annotation cp="👐" type="tts">open hands</annotation>
 		<annotation cp="🤲">palms up together | prayer</annotation>
@@ -1207,6 +1177,8 @@ annotations.
 		<annotation cp="👅" type="tts">tongue</annotation>
 		<annotation cp="👄">lips | mouth</annotation>
 		<annotation cp="👄" type="tts">mouth</annotation>
+		<annotation cp="🫦">anxious | biting lip | fear | flirting | nervous | uncomfortable | worried</annotation> <!-- 1FAE6 -->
+		<annotation cp="🫦" type="tts">biting lip</annotation>
 		<annotation cp="👶">baby | young</annotation>
 		<annotation cp="👶" type="tts">baby</annotation>
 		<annotation cp="🧒">child | gender-neutral | unspecified gender | young</annotation>
@@ -1311,17 +1283,17 @@ annotations.
 		<annotation cp="👨‍🎓" type="tts">man student</annotation>
 		<annotation cp="👩‍🎓">graduate | student | woman</annotation>
 		<annotation cp="👩‍🎓" type="tts">woman student</annotation>
-		<annotation cp="🧑‍🏫">instructor | professor | teacher</annotation>
+		<annotation cp="🧑‍🏫">instructor | lecturer | professor | teacher</annotation>
 		<annotation cp="🧑‍🏫" type="tts">teacher</annotation>
-		<annotation cp="👨‍🏫">instructor | man | professor | teacher</annotation>
+		<annotation cp="👨‍🏫">instructor | lecturer | man | professor | teacher</annotation>
 		<annotation cp="👨‍🏫" type="tts">man teacher</annotation>
-		<annotation cp="👩‍🏫">instructor | professor | teacher | woman</annotation>
+		<annotation cp="👩‍🏫">instructor | lecturer | professor | teacher | woman</annotation>
 		<annotation cp="👩‍🏫" type="tts">woman teacher</annotation>
-		<annotation cp="🧑‍⚖">judge | justice | scales</annotation>
+		<annotation cp="🧑‍⚖">judge | justice | law | scales</annotation>
 		<annotation cp="🧑‍⚖" type="tts">judge</annotation>
-		<annotation cp="👨‍⚖">judge | justice | man | scales</annotation>
+		<annotation cp="👨‍⚖">judge | justice | law | man | scales</annotation>
 		<annotation cp="👨‍⚖" type="tts">man judge</annotation>
-		<annotation cp="👩‍⚖">judge | justice | scales | woman</annotation>
+		<annotation cp="👩‍⚖">judge | justice | law | scales | woman</annotation>
 		<annotation cp="👩‍⚖" type="tts">woman judge</annotation>
 		<annotation cp="🧑‍🌾">farmer | gardener | rancher</annotation>
 		<annotation cp="🧑‍🌾" type="tts">farmer</annotation>
@@ -1389,7 +1361,7 @@ annotations.
 		<annotation cp="👨‍🚀" type="tts">man astronaut</annotation>
 		<annotation cp="👩‍🚀">astronaut | rocket | woman</annotation>
 		<annotation cp="👩‍🚀" type="tts">woman astronaut</annotation>
-		<annotation cp="🧑‍🚒">firefighter | firetruck</annotation>
+		<annotation cp="🧑‍🚒">fire | firefighter | firetruck</annotation>
 		<annotation cp="🧑‍🚒" type="tts">firefighter</annotation>
 		<annotation cp="👨‍🚒">firefighter | firetruck | man</annotation>
 		<annotation cp="👨‍🚒" type="tts">man firefighter</annotation>
@@ -1421,6 +1393,8 @@ annotations.
 		<annotation cp="👷‍♂" type="tts">man construction worker</annotation>
 		<annotation cp="👷‍♀">construction | woman | worker</annotation>
 		<annotation cp="👷‍♀" type="tts">woman construction worker</annotation>
+		<annotation cp="🫅">monarch | noble | person with crown | regal | royalty</annotation> <!-- 1FAC5 -->
+		<annotation cp="🫅" type="tts">person with crown</annotation>
 		<annotation cp="🤴">prince</annotation>
 		<annotation cp="🤴" type="tts">prince</annotation>
 		<annotation cp="👸">fairy tale | fantasy | princess</annotation>
@@ -1450,6 +1424,10 @@ annotations.
 		<annotation cp="👰‍♀" type="tts">woman with veil</annotation>
 		<annotation cp="🤰">pregnant | woman</annotation>
 		<annotation cp="🤰" type="tts">pregnant woman</annotation>
+		<annotation cp="🫃">belly | bloated | full | pregnant | pregnant man</annotation> <!-- 1FAC3 -->
+		<annotation cp="🫃" type="tts">pregnant man</annotation>
+		<annotation cp="🫄">belly | bloated | full | pregnant | pregnant person</annotation> <!-- 1FAC4 -->
+		<annotation cp="🫄" type="tts">pregnant person</annotation>
 		<annotation cp="🤱">baby | breast | breast-feeding | nursing</annotation>
 		<annotation cp="🤱" type="tts">breast-feeding</annotation>
 		<annotation cp="👩‍🍼">baby | feeding | nursing | woman</annotation> <!-- 1F469 200D 1F37C -->
@@ -1460,11 +1438,11 @@ annotations.
 		<annotation cp="🧑‍🍼" type="tts">person feeding baby</annotation>
 		<annotation cp="👼">angel | baby | face | fairy tale | fantasy</annotation>
 		<annotation cp="👼" type="tts">baby angel</annotation>
-		<annotation cp="🎅">celebration | Christmas | claus | father | santa | Santa Claus</annotation>
+		<annotation cp="🎅">celebration | Christmas | claus | father | santa</annotation>
 		<annotation cp="🎅" type="tts">Santa Claus</annotation>
-		<annotation cp="🤶">celebration | Christmas | claus | mother | Mrs. | Mrs. Claus</annotation>
+		<annotation cp="🤶">celebration | Christmas | claus | mother | Mrs.</annotation>
 		<annotation cp="🤶" type="tts">Mrs. Claus</annotation>
-		<annotation cp="🧑‍🎄">Claus, christmas | mx claus</annotation> <!-- 1F9D1 200D 1F384 -->
+		<annotation cp="🧑‍🎄">christmas | claus | mx claus</annotation> <!-- 1F9D1 200D 1F384 -->
 		<annotation cp="🧑‍🎄" type="tts">mx claus</annotation>
 		<annotation cp="🦸">good | hero | heroine | superhero | superpower</annotation>
 		<annotation cp="🦸" type="tts">superhero</annotation>
@@ -1520,6 +1498,8 @@ annotations.
 		<annotation cp="🧟‍♂" type="tts">man zombie</annotation>
 		<annotation cp="🧟‍♀">undead | walking dead | woman zombie</annotation>
 		<annotation cp="🧟‍♀" type="tts">woman zombie</annotation>
+		<annotation cp="🧌">fairy tale | fantasy | monster | troll</annotation> <!-- 1F9CC -->
+		<annotation cp="🧌" type="tts">troll</annotation>
 		<annotation cp="💆">face | massage | person getting massage | salon</annotation>
 		<annotation cp="💆" type="tts">person getting massage</annotation>
 		<annotation cp="💆‍♂">face | man | man getting massage | massage</annotation>
@@ -1706,8 +1686,6 @@ annotations.
 		<annotation cp="💏" type="tts">kiss</annotation>
 		<annotation cp="💑">couple | couple with heart | love</annotation>
 		<annotation cp="💑" type="tts">couple with heart</annotation>
-		<annotation cp="👪">family</annotation>
-		<annotation cp="👪" type="tts">family</annotation>
 		<annotation cp="🗣">face | head | silhouette | speak | speaking</annotation>
 		<annotation cp="🗣" type="tts">speaking head</annotation>
 		<annotation cp="👤">bust | bust in silhouette | silhouette</annotation>
@@ -1716,6 +1694,16 @@ annotations.
 		<annotation cp="👥" type="tts">busts in silhouette</annotation>
 		<annotation cp="🫂">goodbye | hello | hug | people hugging | thanks</annotation>
 		<annotation cp="🫂" type="tts">people hugging</annotation>
+		<annotation cp="👪">family</annotation>
+		<annotation cp="👪" type="tts">family</annotation>
+		<annotation cp="🧑‍🧑‍🧒">family: adult, adult, child</annotation> <!-- 1F9D1 200D 1F9D1 200D 1F9D2 -->
+		<annotation cp="🧑‍🧑‍🧒" type="tts">family: adult, adult, child</annotation>
+		<annotation cp="🧑‍🧑‍🧒‍🧒">family: adult, adult, child, child</annotation> <!-- 1F9D1 200D 1F9D1 200D 1F9D2 200D 1F9D2 -->
+		<annotation cp="🧑‍🧑‍🧒‍🧒" type="tts">family: adult, adult, child, child</annotation>
+		<annotation cp="🧑‍🧒">family: adult, child</annotation> <!-- 1F9D1 200D 1F9D2 -->
+		<annotation cp="🧑‍🧒" type="tts">family: adult, child</annotation>
+		<annotation cp="🧑‍🧒‍🧒">family: adult, child, child</annotation> <!-- 1F9D1 200D 1F9D2 200D 1F9D2 -->
+		<annotation cp="🧑‍🧒‍🧒" type="tts">family: adult, child, child</annotation>
 		<annotation cp="👣">clothing | footprint | footprints | print</annotation>
 		<annotation cp="👣" type="tts">footprints</annotation>
 		<annotation cp="🦰">ginger | red hair | redhead</annotation>
@@ -1766,6 +1754,10 @@ annotations.
 		<annotation cp="🐆" type="tts">leopard</annotation>
 		<annotation cp="🐴">face | horse</annotation>
 		<annotation cp="🐴" type="tts">horse face</annotation>
+		<annotation cp="🫎">animal | antlers | elk | mammal | moose</annotation> <!-- 1FACE -->
+		<annotation cp="🫎" type="tts">moose</annotation>
+		<annotation cp="🫏">animal | ass | burro | donkey | mammal | mule | stubborn</annotation> <!-- 1FACF -->
+		<annotation cp="🫏" type="tts">donkey</annotation>
 		<annotation cp="🐎">equestrian | horse | racehorse | racing</annotation>
 		<annotation cp="🐎" type="tts">horse</annotation>
 		<annotation cp="🦄">face | unicorn</annotation>
@@ -1848,7 +1840,7 @@ annotations.
 		<annotation cp="🦦" type="tts">otter</annotation>
 		<annotation cp="🦨">skunk | stink</annotation>
 		<annotation cp="🦨" type="tts">skunk</annotation>
-		<annotation cp="🦘">Australia | joey | jump | kangaroo | marsupial</annotation>
+		<annotation cp="🦘">joey | jump | kangaroo | marsupial</annotation>
 		<annotation cp="🦘" type="tts">kangaroo</annotation>
 		<annotation cp="🦡">badger | honey badger | pester</annotation>
 		<annotation cp="🦡" type="tts">badger</annotation>
@@ -1890,6 +1882,14 @@ annotations.
 		<annotation cp="🦚" type="tts">peacock</annotation>
 		<annotation cp="🦜">bird | parrot | pirate | talk</annotation>
 		<annotation cp="🦜" type="tts">parrot</annotation>
+		<annotation cp="🪽">angelic | aviation | bird | flying | mythology | wing</annotation> <!-- 1FABD -->
+		<annotation cp="🪽" type="tts">wing</annotation>
+		<annotation cp="🐦‍⬛">bird | black | crow | raven | rook</annotation> <!-- 1F426 200D 2B1B -->
+		<annotation cp="🐦‍⬛" type="tts">black bird</annotation>
+		<annotation cp="🪿">bird | fowl | goose | honk | silly</annotation> <!-- 1FABF -->
+		<annotation cp="🪿" type="tts">goose</annotation>
+		<annotation cp="🐦‍🔥">fantasy | firebird | phoenix | rebirth | reincarnation</annotation> <!-- 1F426 200D 1F525 -->
+		<annotation cp="🐦‍🔥" type="tts">phoenix</annotation>
 		<annotation cp="🐸">face | frog</annotation>
 		<annotation cp="🐸" type="tts">frog</annotation>
 		<annotation cp="🐊">crocodile</annotation>
@@ -1928,6 +1928,10 @@ annotations.
 		<annotation cp="🐙" type="tts">octopus</annotation>
 		<annotation cp="🐚">shell | spiral</annotation>
 		<annotation cp="🐚" type="tts">spiral shell</annotation>
+		<annotation cp="🪸">coral | ocean | reef</annotation> <!-- 1FAB8 -->
+		<annotation cp="🪸" type="tts">coral</annotation>
+		<annotation cp="🪼">burn | invertebrate | jelly | jellyfish | marine | ouch | stinger</annotation> <!-- 1FABC -->
+		<annotation cp="🪼" type="tts">jellyfish</annotation>
 		<annotation cp="🐌">snail</annotation>
 		<annotation cp="🐌" type="tts">snail</annotation>
 		<annotation cp="🦋">butterfly | insect | pretty</annotation>
@@ -1950,7 +1954,7 @@ annotations.
 		<annotation cp="🕷" type="tts">spider</annotation>
 		<annotation cp="🕸">spider | web</annotation>
 		<annotation cp="🕸" type="tts">spider web</annotation>
-		<annotation cp="🦂">scorpio | Scorpio | scorpion | zodiac</annotation>
+		<annotation cp="🦂">Scorpio | scorpion | zodiac</annotation>
 		<annotation cp="🦂" type="tts">scorpion</annotation>
 		<annotation cp="🦟">disease | fever | malaria | mosquito | pest | virus</annotation>
 		<annotation cp="🦟" type="tts">mosquito</annotation>
@@ -1966,6 +1970,8 @@ annotations.
 		<annotation cp="🌸" type="tts">cherry blossom</annotation>
 		<annotation cp="💮">flower | white flower</annotation>
 		<annotation cp="💮" type="tts">white flower</annotation>
+		<annotation cp="🪷">Buddhism | flower | Hinduism | lotus | purity</annotation> <!-- 1FAB7 -->
+		<annotation cp="🪷" type="tts">lotus</annotation>
 		<annotation cp="🏵">plant | rosette</annotation>
 		<annotation cp="🏵" type="tts">rosette</annotation>
 		<annotation cp="🌹">flower | rose</annotation>
@@ -1980,6 +1986,8 @@ annotations.
 		<annotation cp="🌼" type="tts">blossom</annotation>
 		<annotation cp="🌷">flower | tulip</annotation>
 		<annotation cp="🌷" type="tts">tulip</annotation>
+		<annotation cp="🪻">bluebonnet | flower | hyacinth | lavender | lupine | snapdragon</annotation> <!-- 1FABB -->
+		<annotation cp="🪻" type="tts">hyacinth</annotation>
 		<annotation cp="🌱">seedling | young</annotation>
 		<annotation cp="🌱" type="tts">seedling</annotation>
 		<annotation cp="🪴">boring | grow | house | nurturing | plant | potted plant | useless</annotation>
@@ -2006,6 +2014,12 @@ annotations.
 		<annotation cp="🍂" type="tts">fallen leaf</annotation>
 		<annotation cp="🍃">blow | flutter | leaf | leaf fluttering in wind | wind</annotation>
 		<annotation cp="🍃" type="tts">leaf fluttering in wind</annotation>
+		<annotation cp="🪹">empty nest | nesting</annotation> <!-- 1FAB9 -->
+		<annotation cp="🪹" type="tts">empty nest</annotation>
+		<annotation cp="🪺">nest with eggs | nesting</annotation> <!-- 1FABA -->
+		<annotation cp="🪺" type="tts">nest with eggs</annotation>
+		<annotation cp="🍄">mushroom | toadstool</annotation>
+		<annotation cp="🍄" type="tts">mushroom</annotation>
 		<annotation cp="🍇">fruit | grape | grapes</annotation>
 		<annotation cp="🍇" type="tts">grapes</annotation>
 		<annotation cp="🍈">fruit | melon</annotation>
@@ -2016,6 +2030,8 @@ annotations.
 		<annotation cp="🍊" type="tts">tangerine</annotation>
 		<annotation cp="🍋">citrus | fruit | lemon</annotation>
 		<annotation cp="🍋" type="tts">lemon</annotation>
+		<annotation cp="🍋‍🟩">citrus | fruit | lime | tropical</annotation> <!-- 1F34B 200D 1F7E9 -->
+		<annotation cp="🍋‍🟩" type="tts">lime</annotation>
 		<annotation cp="🍌">banana | fruit</annotation>
 		<annotation cp="🍌" type="tts">banana</annotation>
 		<annotation cp="🍍">fruit | pineapple</annotation>
@@ -2068,12 +2084,18 @@ annotations.
 		<annotation cp="🧄" type="tts">garlic</annotation>
 		<annotation cp="🧅">flavoring | onion</annotation>
 		<annotation cp="🧅" type="tts">onion</annotation>
-		<annotation cp="🍄">mushroom | toadstool</annotation>
-		<annotation cp="🍄" type="tts">mushroom</annotation>
 		<annotation cp="🥜">food | nut | peanut | peanuts | vegetable</annotation>
 		<annotation cp="🥜" type="tts">peanuts</annotation>
+		<annotation cp="🫘">beans | food | kidney | legume</annotation> <!-- 1FAD8 -->
+		<annotation cp="🫘" type="tts">beans</annotation>
 		<annotation cp="🌰">chestnut | plant</annotation>
 		<annotation cp="🌰" type="tts">chestnut</annotation>
+		<annotation cp="🫚">beer | ginger root | root | spice</annotation> <!-- 1FADA -->
+		<annotation cp="🫚" type="tts">ginger root</annotation>
+		<annotation cp="🫛">beans | edamame | legume | pea | pod | vegetable</annotation> <!-- 1FADB -->
+		<annotation cp="🫛" type="tts">pea pod</annotation>
+		<annotation cp="🍄‍🟫">brown mushroom | food | fungus | nature | vegetable</annotation> <!-- 1F344 200D 1F7EB -->
+		<annotation cp="🍄‍🟫" type="tts">brown mushroom</annotation>
 		<annotation cp="🍞">bread | loaf</annotation>
 		<annotation cp="🍞" type="tts">bread</annotation>
 		<annotation cp="🥐">bread | breakfast | croissant | food | french | roll</annotation>
@@ -2242,6 +2264,8 @@ annotations.
 		<annotation cp="🥂" type="tts">clinking glasses</annotation>
 		<annotation cp="🥃">glass | liquor | shot | tumbler | whisky</annotation>
 		<annotation cp="🥃" type="tts">tumbler glass</annotation>
+		<annotation cp="🫗">drink | empty | glass | pouring liquid | spill</annotation> <!-- 1FAD7 -->
+		<annotation cp="🫗" type="tts">pouring liquid</annotation>
 		<annotation cp="🥤">cup with straw | juice | soda</annotation>
 		<annotation cp="🥤" type="tts">cup with straw</annotation>
 		<annotation cp="🧋">bubble | milk | pearl | tea</annotation>
@@ -2262,6 +2286,8 @@ annotations.
 		<annotation cp="🥄" type="tts">spoon</annotation>
 		<annotation cp="🔪">cooking | hocho | kitchen knife | knife | tool | weapon</annotation>
 		<annotation cp="🔪" type="tts">kitchen knife</annotation>
+		<annotation cp="🫙">condiment | container | empty | jar | sauce | store</annotation> <!-- 1FAD9 -->
+		<annotation cp="🫙" type="tts">jar</annotation>
 		<annotation cp="🏺">amphora | Aquarius | cooking | drink | jug | zodiac</annotation>
 		<annotation cp="🏺" type="tts">amphora</annotation>
 		<annotation cp="🌍">Africa | earth | Europe | globe | globe showing Europe-Africa | world</annotation>
@@ -2386,9 +2412,11 @@ annotations.
 		<annotation cp="♨" type="tts">hot springs</annotation>
 		<annotation cp="🎠">carousel | horse</annotation>
 		<annotation cp="🎠" type="tts">carousel horse</annotation>
-		<annotation cp="🎡">amusement park | ferris | wheel</annotation>
+		<annotation cp="🛝">amusement park | play | playground slide | theme park</annotation> <!-- 1F6DD -->
+		<annotation cp="🛝" type="tts">playground slide</annotation>
+		<annotation cp="🎡">amusement park | ferris | theme park | wheel</annotation>
 		<annotation cp="🎡" type="tts">ferris wheel</annotation>
-		<annotation cp="🎢">amusement park | coaster | roller</annotation>
+		<annotation cp="🎢">amusement park | coaster | roller | theme park</annotation>
 		<annotation cp="🎢" type="tts">roller coaster</annotation>
 		<annotation cp="💈">barber | haircut | pole</annotation>
 		<annotation cp="💈" type="tts">barber pole</annotation>
@@ -2482,6 +2510,8 @@ annotations.
 		<annotation cp="🛢" type="tts">oil drum</annotation>
 		<annotation cp="⛽">diesel | fuel | fuelpump | gas | pump | station</annotation>
 		<annotation cp="⛽" type="tts">fuel pump</annotation>
+		<annotation cp="🛞">circle | tire | turn | wheel</annotation> <!-- 1F6DE -->
+		<annotation cp="🛞" type="tts">wheel</annotation>
 		<annotation cp="🚨">beacon | car | light | police | revolving</annotation>
 		<annotation cp="🚨" type="tts">police car light</annotation>
 		<annotation cp="🚥">horizontal traffic light | light | signal | traffic</annotation>
@@ -2494,6 +2524,8 @@ annotations.
 		<annotation cp="🚧" type="tts">construction</annotation>
 		<annotation cp="⚓">anchor | ship | tool</annotation>
 		<annotation cp="⚓" type="tts">anchor</annotation>
+		<annotation cp="🛟">float | life preserver | life saver | rescue | ring buoy | safety</annotation> <!-- 1F6DF -->
+		<annotation cp="🛟" type="tts">ring buoy</annotation>
 		<annotation cp="⛵">boat | resort | sailboat | sea | yacht</annotation>
 		<annotation cp="⛵" type="tts">sailboat</annotation>
 		<annotation cp="🛶">boat | canoe</annotation>
@@ -2808,14 +2840,14 @@ annotations.
 		<annotation cp="🪀" type="tts">yo-yo</annotation>
 		<annotation cp="🪁">fly | kite | soar</annotation>
 		<annotation cp="🪁" type="tts">kite</annotation>
+		<annotation cp="🔫">gun | handgun | pistol | revolver | tool | water | weapon</annotation>
+		<annotation cp="🔫" type="tts">water pistol</annotation>
 		<annotation cp="🎱">8 | ball | billiard | eight | game | pool 8 ball</annotation>
 		<annotation cp="🎱" type="tts">pool 8 ball</annotation>
 		<annotation cp="🔮">ball | crystal | fairy tale | fantasy | fortune | tool</annotation>
 		<annotation cp="🔮" type="tts">crystal ball</annotation>
 		<annotation cp="🪄">magic | magic wand | witch | wizard</annotation>
 		<annotation cp="🪄" type="tts">magic wand</annotation>
-		<annotation cp="🧿">bead | charm | evil-eye | nazar | nazar amulet | talisman</annotation>
-		<annotation cp="🧿" type="tts">nazar amulet</annotation>
 		<annotation cp="🎮">controller | game | video game</annotation>
 		<annotation cp="🎮" type="tts">video game</annotation>
 		<annotation cp="🕹">game | joystick | video game</annotation>
@@ -2830,6 +2862,8 @@ annotations.
 		<annotation cp="🧸" type="tts">teddy bear</annotation>
 		<annotation cp="🪅">celebration | party | piñata</annotation>
 		<annotation cp="🪅" type="tts">piñata</annotation>
+		<annotation cp="🪩">dance | disco | glitter | mirror ball | party</annotation> <!-- 1FAA9 -->
+		<annotation cp="🪩" type="tts">mirror ball</annotation>
 		<annotation cp="🪆">doll | nesting | nesting dolls | russia</annotation>
 		<annotation cp="🪆" type="tts">nesting dolls</annotation>
 		<annotation cp="♠">card | game | spade suit</annotation>
@@ -2902,6 +2936,8 @@ annotations.
 		<annotation cp="👙" type="tts">bikini</annotation>
 		<annotation cp="👚">clothing | woman | woman’s clothes</annotation>
 		<annotation cp="👚" type="tts">woman’s clothes</annotation>
+		<annotation cp="🪭">cooling | dance | fan | flutter | folding hand fan | hot | shy</annotation> <!-- 1FAAD -->
+		<annotation cp="🪭" type="tts">folding hand fan</annotation>
 		<annotation cp="👛">clothing | coin | purse</annotation>
 		<annotation cp="👛" type="tts">purse</annotation>
 		<annotation cp="👜">bag | clothing | handbag | purse</annotation>
@@ -2930,6 +2966,8 @@ annotations.
 		<annotation cp="🩰" type="tts">ballet shoes</annotation>
 		<annotation cp="👢">boot | clothing | shoe | woman | woman’s boot</annotation>
 		<annotation cp="👢" type="tts">woman’s boot</annotation>
+		<annotation cp="🪮">Afro | comb | hair | pick</annotation> <!-- 1FAAE -->
+		<annotation cp="🪮" type="tts">hair pick</annotation>
 		<annotation cp="👑">clothing | crown | king | queen</annotation>
 		<annotation cp="👑" type="tts">crown</annotation>
 		<annotation cp="👒">clothing | hat | woman | woman’s hat</annotation>
@@ -3006,6 +3044,10 @@ annotations.
 		<annotation cp="🥁" type="tts">drum</annotation>
 		<annotation cp="🪘">beat | conga | drum | long drum | rhythm</annotation>
 		<annotation cp="🪘" type="tts">long drum</annotation>
+		<annotation cp="🪇">instrument | maracas | music | percussion | rattle | shake</annotation> <!-- 1FA87 -->
+		<annotation cp="🪇" type="tts">maracas</annotation>
+		<annotation cp="🪈">fife | flute | music | pipe | recorder | woodwind</annotation> <!-- 1FA88 -->
+		<annotation cp="🪈" type="tts">flute</annotation>
 		<annotation cp="📱">cell | mobile | phone | telephone</annotation>
 		<annotation cp="📱" type="tts">mobile phone</annotation>
 		<annotation cp="📲">arrow | cell | mobile | mobile phone with arrow | phone | receive</annotation>
@@ -3020,6 +3062,8 @@ annotations.
 		<annotation cp="📠" type="tts">fax machine</annotation>
 		<annotation cp="🔋">battery</annotation>
 		<annotation cp="🔋" type="tts">battery</annotation>
+		<annotation cp="🪫">electronic | low battery | low energy</annotation> <!-- 1FAAB -->
+		<annotation cp="🪫" type="tts">low battery</annotation>
 		<annotation cp="🔌">electric | electricity | plug</annotation>
 		<annotation cp="🔌" type="tts">electric plug</annotation>
 		<annotation cp="💻">computer | laptop | pc | personal</annotation>
@@ -3040,7 +3084,7 @@ annotations.
 		<annotation cp="💾" type="tts">floppy disk</annotation>
 		<annotation cp="💿">CD | computer | disk | optical</annotation>
 		<annotation cp="💿" type="tts">optical disk</annotation>
-		<annotation cp="📀">Blu-ray | computer | disk | dvd | DVD | optical</annotation>
+		<annotation cp="📀">Blu-ray | computer | disk | DVD | optical</annotation>
 		<annotation cp="📀" type="tts">dvd</annotation>
 		<annotation cp="🧮">abacus | calculation</annotation>
 		<annotation cp="🧮" type="tts">abacus</annotation>
@@ -3242,9 +3286,9 @@ annotations.
 		<annotation cp="🗡" type="tts">dagger</annotation>
 		<annotation cp="⚔">crossed | swords | weapon</annotation>
 		<annotation cp="⚔" type="tts">crossed swords</annotation>
-		<annotation cp="🔫">gun | handgun | pistol | revolver | tool | water | weapon</annotation>
-		<annotation cp="🔫" type="tts">water pistol</annotation>
-		<annotation cp="🪃">australia | boomerang | rebound | repercussion</annotation>
+		<annotation cp="💣">bomb | comic</annotation>
+		<annotation cp="💣" type="tts">bomb</annotation>
+		<annotation cp="🪃">boomerang | rebound | repercussion</annotation>
 		<annotation cp="🪃" type="tts">boomerang</annotation>
 		<annotation cp="🏹">archer | arrow | bow | bow and arrow | Sagittarius | zodiac</annotation>
 		<annotation cp="🏹" type="tts">bow and arrow</annotation>
@@ -3268,6 +3312,8 @@ annotations.
 		<annotation cp="🦯" type="tts">white cane</annotation>
 		<annotation cp="🔗">link</annotation>
 		<annotation cp="🔗" type="tts">link</annotation>
+		<annotation cp="⛓‍💥">break | breaking | broken chain | chain | cuffs | freedom</annotation> <!-- 26D3 200D 1F4A5 -->
+		<annotation cp="⛓‍💥" type="tts">broken chain</annotation>
 		<annotation cp="⛓">chain | chains</annotation>
 		<annotation cp="⛓" type="tts">chains</annotation>
 		<annotation cp="🪝">catch | crook | curve | ensnare | hook | selling point</annotation>
@@ -3300,8 +3346,12 @@ annotations.
 		<annotation cp="💊" type="tts">pill</annotation>
 		<annotation cp="🩹">adhesive bandage | bandage</annotation>
 		<annotation cp="🩹" type="tts">adhesive bandage</annotation>
+		<annotation cp="🩼">cane | crutch | disability | hurt | mobility aid | stick</annotation> <!-- 1FA7C -->
+		<annotation cp="🩼" type="tts">crutch</annotation>
 		<annotation cp="🩺">doctor | heart | medicine | stethoscope</annotation>
 		<annotation cp="🩺" type="tts">stethoscope</annotation>
+		<annotation cp="🩻">bones | doctor | medical | skeleton | x-ray</annotation> <!-- 1FA7B -->
+		<annotation cp="🩻" type="tts">x-ray</annotation>
 		<annotation cp="🚪">door</annotation>
 		<annotation cp="🚪" type="tts">door</annotation>
 		<annotation cp="🛗">accessibility | elevator | hoist | lift</annotation>
@@ -3342,6 +3392,8 @@ annotations.
 		<annotation cp="🪣" type="tts">bucket</annotation>
 		<annotation cp="🧼">bar | bathing | cleaning | lather | soap | soapdish</annotation>
 		<annotation cp="🧼" type="tts">soap</annotation>
+		<annotation cp="🫧">bubbles | burp | clean | soap | underwater</annotation> <!-- 1FAE7 -->
+		<annotation cp="🫧" type="tts">bubbles</annotation>
 		<annotation cp="🪥">bathroom | brush | clean | dental | hygiene | teeth | toothbrush</annotation>
 		<annotation cp="🪥" type="tts">toothbrush</annotation>
 		<annotation cp="🧽">absorbing | cleaning | porous | sponge</annotation>
@@ -3358,10 +3410,16 @@ annotations.
 		<annotation cp="🪦" type="tts">headstone</annotation>
 		<annotation cp="⚱">ashes | death | funeral | urn</annotation>
 		<annotation cp="⚱" type="tts">funeral urn</annotation>
+		<annotation cp="🧿">bead | charm | evil-eye | nazar | nazar amulet | talisman</annotation>
+		<annotation cp="🧿" type="tts">nazar amulet</annotation>
+		<annotation cp="🪬">amulet | Fatima | hamsa | hand | Mary | Miriam | protection</annotation> <!-- 1FAAC -->
+		<annotation cp="🪬" type="tts">hamsa</annotation>
 		<annotation cp="🗿">face | moai | moyai | statue</annotation>
 		<annotation cp="🗿" type="tts">moai</annotation>
 		<annotation cp="🪧">demonstration | picket | placard | protest | sign</annotation>
 		<annotation cp="🪧" type="tts">placard</annotation>
+		<annotation cp="🪪">credentials | ID | identification card | license | security</annotation> <!-- 1FAAA -->
+		<annotation cp="🪪" type="tts">identification card</annotation>
 		<annotation cp="🏧">ATM | ATM sign | automated | bank | teller</annotation>
 		<annotation cp="🏧" type="tts">ATM sign</annotation>
 		<annotation cp="🚮">litter | litter bin | litter in bin sign</annotation>
@@ -3482,6 +3540,8 @@ annotations.
 		<annotation cp="🕎" type="tts">menorah</annotation>
 		<annotation cp="🔯">dotted six-pointed star | fortune | star</annotation>
 		<annotation cp="🔯" type="tts">dotted six-pointed star</annotation>
+		<annotation cp="🪯">khanda | religion | Sikh</annotation> <!-- 1FAAF -->
+		<annotation cp="🪯" type="tts">khanda</annotation>
 		<annotation cp="♈">Aries | ram | zodiac</annotation>
 		<annotation cp="♈" type="tts">Aries</annotation>
 		<annotation cp="♉">bull | ox | Taurus | zodiac</annotation>
@@ -3528,11 +3588,11 @@ annotations.
 		<annotation cp="⏪" type="tts">fast reverse button</annotation>
 		<annotation cp="⏮">arrow | last track button | previous scene | previous track | triangle</annotation>
 		<annotation cp="⏮" type="tts">last track button</annotation>
-		<annotation cp="🔼">arrow | button | red | upwards button</annotation>
+		<annotation cp="🔼">arrow | button | upwards button</annotation>
 		<annotation cp="🔼" type="tts">upwards button</annotation>
 		<annotation cp="⏫">arrow | double | fast up button</annotation>
 		<annotation cp="⏫" type="tts">fast up button</annotation>
-		<annotation cp="🔽">arrow | button | down | downwards button | red</annotation>
+		<annotation cp="🔽">arrow | button | down | downwards button</annotation>
 		<annotation cp="🔽" type="tts">downwards button</annotation>
 		<annotation cp="⏬">arrow | double | down | fast down button</annotation>
 		<annotation cp="⏬" type="tts">fast down button</annotation>
@@ -3552,10 +3612,13 @@ annotations.
 		<annotation cp="🔆" type="tts">bright button</annotation>
 		<annotation cp="📶">antenna | antenna bars | bar | cell | mobile | phone</annotation>
 		<annotation cp="📶" type="tts">antenna bars</annotation>
+		<annotation cp="🛜">computer | internet | network | wi-fi | wifi | wireless</annotation> <!-- 1F6DC -->
+		<annotation cp="🛜" type="tts">wireless</annotation>
 		<annotation cp="📳">cell | mobile | mode | phone | telephone | vibration</annotation>
 		<annotation cp="📳" type="tts">vibration mode</annotation>
 		<annotation cp="📴">cell | mobile | off | phone | telephone</annotation>
 		<annotation cp="📴" type="tts">mobile phone off</annotation>
+		<!-- End Generated lines from Emoji Data v15, using GenerateCldrData.java -->
 		<annotation cp="♀">female sign | woman</annotation>
 		<annotation cp="♀" type="tts">female sign</annotation>
 		<annotation cp="♂">male sign | man</annotation>
@@ -3570,6 +3633,8 @@ annotations.
 		<annotation cp="➖" type="tts">minus</annotation>
 		<annotation cp="➗">÷ | divide | division | math | sign</annotation>
 		<annotation cp="➗" type="tts">divide</annotation>
+		<annotation cp="🟰">equality | heavy equals sign | math</annotation> <!-- 1F7F0 -->
+		<annotation cp="🟰" type="tts">heavy equals sign</annotation>
 		<annotation cp="♾">forever | infinity | unbounded | universal</annotation>
 		<annotation cp="♾" type="tts">infinity</annotation>
 		<annotation cp="‼">! | !! | bangbang | double exclamation mark | exclamation | mark</annotation>

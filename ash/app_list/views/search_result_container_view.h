@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -31,6 +32,8 @@ namespace ash {
 class ASH_EXPORT SearchResultContainerView : public views::View,
                                              public views::ViewObserver,
                                              public ui::ListModelObserver {
+  METADATA_HEADER(SearchResultContainerView, views::View)
+
  public:
   class Delegate {
    public:
@@ -107,7 +110,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // search result containers that appear in the search results UI before this
   // container.
   // Returns the animation info for this container.
-  virtual absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
+  virtual std::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info);
 
   // Appends search result IDs of the search results shown by the container
@@ -133,9 +136,6 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   // Returns whether an update is currently scheduled for this container.
   bool UpdateScheduled();
-
-  // Overridden from views::View:
-  const char* GetClassName() const override;
 
   // Functions to allow derivative classes to add/remove observed result views.
   void AddObservedResultView(SearchResultBaseView* result_view);
@@ -188,18 +188,18 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // Updates UI with model. Returns the number of visible results.
   virtual int DoUpdate() = 0;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   size_t num_results_ = 0;
 
   // If true, left/right key events will traverse this container
   bool horizontally_traversable_ = false;
 
-  raw_ptr<SearchModel::SearchResults, ExperimentalAsh> results_ =
+  raw_ptr<SearchModel::SearchResults> results_ =
       nullptr;  // Owned by SearchModel.
 
   // view delegate for notifications.
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   // Whether the container is observing search result model, and updating when
   // results in the model change.

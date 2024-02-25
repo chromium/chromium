@@ -4,16 +4,18 @@
 
 // https://www.w3.org/TR/webnn/
 
-enum MLOperandType {
+enum MLOperandDataType {
   "float32",
   "float16",
   "int32",
   "uint32",
+  "int64",
+  "uint64",
   "int8",
   "uint8"
 };
 
 dictionary MLOperandDescriptor {
-  required MLOperandType type;
+  required MLOperandDataType dataType;
   sequence<[EnforceRange] unsigned long> dimensions;
 };

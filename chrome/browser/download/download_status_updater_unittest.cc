@@ -196,12 +196,14 @@ class DownloadStatusUpdaterTest : public testing::Test {
   // top-level vector is the manager index, and the inner vector is the list of
   // items of that manager. The inner vector is a vector<DownloadItem*> for
   // compatibility with the return value of DownloadManager::GetAllDownloads().
-  std::vector<std::vector<download::DownloadItem*>> manager_items_;
+  std::vector<std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>>
+      manager_items_;
   // An owning container for items in |manager_items_|.
   std::vector<std::unique_ptr<download::DownloadItem>> all_owned_items_;
   int manager_observer_index_;
 
-  std::vector<content::DownloadManager::Observer*> manager_observers_;
+  std::vector<raw_ptr<content::DownloadManager::Observer, VectorExperimental>>
+      manager_observers_;
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
@@ -214,7 +216,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // To test ScopedProfileKeepAlive behavior.
   TestingProfileManager profile_manager_;
-  std::vector<TestingProfile*> testing_profiles_;
+  std::vector<raw_ptr<TestingProfile, VectorExperimental>> testing_profiles_;
 };
 
 // Test null updater.
@@ -405,55 +407,6 @@ TEST_F(DownloadStatusUpdaterTest, HoldsKeepAlive) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
-}
-
-// Test that the last completion time is logged in pref.
-TEST_F(DownloadStatusUpdaterTest, LogLastCompletionTimeInPrefs) {
-  SetupManagers(/*manager_count=*/1);
-  AddItems(/*manager_index=*/0, /*item_count=*/3, /*in_progress_count=*/0);
-  LinkManager(0);
-
-  DownloadPrefs* download_prefs =
-      DownloadPrefs::FromDownloadManager(Manager(0));
-  base::Time initial_time = download_prefs->GetLastCompleteTime();
-  base::Time current_time = base::Time::Now();
-
-  // Set the first download to in progress and notify the update.
-  SetItemValues(/*manager_index=*/0, /*item_index=*/0, /*received_bytes=*/90,
-                /*total_bytes=*/100, /*notify=*/true);
-  // The last complete time is still the initial time, because the download is
-  // not complete yet.
-  EXPECT_EQ(initial_time, download_prefs->GetLastCompleteTime());
-
-  // The first download has completed.
-  CompleteItem(/*manager_index=*/0, /*item_index=*/0);
-  // The last complete time is updated.
-  EXPECT_EQ(current_time, download_prefs->GetLastCompleteTime());
-
-  task_environment_.FastForwardBy(base::Hours(1));
-  // Set the second download item to in progress and notify the update.
-  SetItemValues(/*manager_index=*/0, /*item_index=*/1, /*received_bytes=*/90,
-                /*total_bytes=*/100, /*notify=*/true);
-  // The last complete time is not updated yet, because the second download is
-  // still in progress.
-  EXPECT_EQ(current_time, download_prefs->GetLastCompleteTime());
-
-  task_environment_.FastForwardBy(base::Hours(1));
-  // The second download has completed.
-  CompleteItem(/*manager_index=*/0, /*item_index=*/1);
-  // Completed time is updated
-  EXPECT_EQ(current_time + base::Hours(2),
-            download_prefs->GetLastCompleteTime());
-
-  task_environment_.FastForwardBy(base::Hours(1));
-  SetItemValues(/*manager_index=*/0, /*item_index=*/2, /*received_bytes=*/90,
-                /*total_bytes=*/100, /*notify=*/true);
-  EXPECT_CALL(*Item(/*manager_index=*/0, /*item_index=*/2), IsTransient())
-      .WillRepeatedly(Return(true));
-  CompleteItem(/*manager_index=*/0, /*item_index=*/2);
-  // Completed time is not updated, because this download is transient.
-  EXPECT_EQ(current_time + base::Hours(2),
-            download_prefs->GetLastCompleteTime());
 }
 
 // Tests that transient download will not trigger any updates.

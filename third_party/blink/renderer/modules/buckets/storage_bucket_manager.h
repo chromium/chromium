@@ -39,8 +39,9 @@ class MODULES_EXPORT StorageBucketManager final
                      const String& name,
                      const StorageBucketOptions* options,
                      ExceptionState& exception_state);
-  ScriptPromise keys(ScriptState* script_state,
-                     ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<IDLString>> keys(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
   ScriptPromise Delete(ScriptState* script_state,
                        const String& name,
                        ExceptionState& exception_state);
@@ -59,7 +60,7 @@ class MODULES_EXPORT StorageBucketManager final
                const String& name,
                mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
                mojom::blink::BucketError error);
-  void DidGetKeys(ScriptPromiseResolver* resolver,
+  void DidGetKeys(ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
                   const Vector<String>& keys,
                   bool success);
   void DidDelete(ScriptPromiseResolver* resolver, bool success);

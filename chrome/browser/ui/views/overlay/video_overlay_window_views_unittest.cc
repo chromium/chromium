@@ -7,9 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,20 +24,64 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace {
 
 constexpr gfx::Size kMinWindowSize(200, 100);
 
+// Reported minimum bubble size for the setting view.  The pip window should be
+// larger than this when the setting view is shown.
+constexpr gfx::Size kBubbleSize(300, 200);
+
+// Size that's big enough to accommodate a `kBubbleSize`-sized bubble without
+// being further adjusted upwards for margin.
+constexpr gfx::Size kSizeBigEnoughForBubble(400, 300);
+
 }  // namespace
+
+using testing::_;
+using ::testing::Return;
+
+// Mock of AutoPipSettingOverlayView. Used for injection during tests.
+class MockOverlayView : public AutoPipSettingOverlayView {
+ public:
+  explicit MockOverlayView(views::View* anchor_view)
+      : AutoPipSettingOverlayView(base::DoNothing(),
+                                  GURL{"https://example.com"},
+                                  gfx::Rect(),
+                                  anchor_view,
+                                  views::BubbleBorder::Arrow::FLOAT) {}
+  MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
+
+  void SetWantsEvent(bool wants_event) { wants_event_ = wants_event; }
+
+  bool WantsEvent(const gfx::Point& point_in_screen) override {
+    // Consume any event we're given.  The goal is to make sure we're given the
+    // opportunity to take an event.
+    return wants_event_;
+  }
+
+  gfx::Size GetBubbleSize() const override {
+    // Return something that's bigger than the minimum.
+    return kBubbleSize;
+  }
+
+ private:
+  bool wants_event_ = false;
+};
 
 class TestVideoPictureInPictureWindowController
     : public content::VideoPictureInPictureWindowController {
@@ -64,7 +114,9 @@ class TestVideoPictureInPictureWindowController
   void ToggleCamera() override {}
   void HangUp() override {}
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
-  absl::optional<gfx::Rect> GetWindowBounds() override { return absl::nullopt; }
+  std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
+  std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
+  void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 
  private:
   raw_ptr<content::WebContents> web_contents_;
@@ -76,6 +128,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   VideoOverlayWindowViewsTest() = default;
   // ChromeViewsTestBase:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        media::kPictureInPictureOcclusionTracking);
     display::Screen::SetScreenInstance(&test_screen_);
 
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
@@ -97,9 +151,16 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
     overlay_window_ = VideoOverlayWindowViews::Create(&pip_window_controller_);
+    overlay_window_->set_overlay_view_cb_for_testing(
+        base::BindRepeating(&VideoOverlayWindowViewsTest::GetOverlayViewImpl,
+                            base::Unretained(this)));
+
     // On some platforms, OnNativeWidgetMove is invoked on creation.
     WaitForMove();
     overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
+
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(overlay_window_.get()));
   }
 
   void TearDown() override {
@@ -122,6 +183,16 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     return pip_window_controller_;
   }
 
+  MockOverlayView* SetOverlayView() {
+    std::unique_ptr<MockOverlayView> mock_overlay_view =
+        std::make_unique<MockOverlayView>(
+            overlay_window().window_background_view_for_testing());
+    overlay_view_ = std::move(mock_overlay_view);
+    return overlay_view_.get();
+  }
+
+  ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
+
  protected:
   void WaitForMove() {
     task_environment()->FastForwardBy(
@@ -129,7 +200,13 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
         base::Milliseconds(1));
   }
 
+  void DestroyOverlayWindow() { overlay_window_.reset(); }
+
  private:
+  std::unique_ptr<AutoPipSettingOverlayView> GetOverlayViewImpl() {
+    return std::move(overlay_view_);
+  }
+
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
@@ -137,7 +214,14 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
 
   display::test::TestScreen test_screen_;
 
+  // Overlay view that we'll send to the window.  May be null.
+  std::unique_ptr<MockOverlayView> overlay_view_;
+
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
   std::unique_ptr<VideoOverlayWindowViews> overlay_window_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(VideoOverlayWindowViewsTest, InitialWindowSize_Square) {
@@ -381,7 +465,8 @@ TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
 // With pillarboxing, the close button doesn't cover the video area. Make sure
 // hovering the button doesn't get handled like normal mouse exit events
 // causing the controls to hide.
-TEST_F(VideoOverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
+// TODO(http://crbug/1509791): Fix and re-enable.
+TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
   overlay_window().UpdateNaturalSize({10, 400});
   WaitForMove();
 
@@ -421,6 +506,8 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   // When the play/pause controls are visible, closing via the close button
   // should pause the video.
   overlay_window().SetPlayPauseButtonVisibility(true);
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
   EXPECT_CALL(pip_window_controller(), Close(true));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
@@ -431,6 +518,8 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   EXPECT_CALL(pip_window_controller(), Close(false));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(nullptr);
 }
 
 TEST_F(VideoOverlayWindowViewsTest, PauseOnWidgetCloseWhenPauseAvailable) {
@@ -466,7 +555,8 @@ TEST_F(VideoOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
             overlay_window().video_layer_for_testing()->size());
 }
 
-TEST_F(VideoOverlayWindowViewsTest, ControlsAreHiddenDuringMove) {
+// TODO(http://crbug/1509791): Fix and re-enable.
+TEST_F(VideoOverlayWindowViewsTest, DISABLED_ControlsAreHiddenDuringMove) {
   // Set the initial position.
   overlay_window().SetBounds({0, 0, 100, 100});
   WaitForMove();
@@ -505,4 +595,112 @@ TEST_F(VideoOverlayWindowViewsTest,
 
   // Only the last one should have any effect.
   EXPECT_FALSE(overlay_window().AreControlsVisible());
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayViewIsSizedCorrectly) {
+  // Set the bound of the window before showing it, to make sure the size
+  // propagates to the overlay view.  We use the larger-than-bubble size so that
+  // it should be an exact match.  If it were too small, then the overlay window
+  // might have to be even larger than we request to fit the bubble.
+
+  // Setting the overlay view before show should be sufficient for it to take
+  // effect when shown.
+  auto* overlay_view = SetOverlayView();
+  overlay_window().ShowInactive();
+  // Do this after showing it, else the window will size to a default size,
+  // rather than the bounds we request.
+  const gfx::Rect bounds(gfx::Point(0, 0), kSizeBigEnoughForBubble);
+  overlay_window().UpdateNaturalSize(bounds.size());
+  overlay_window().SetBounds(bounds);
+  EXPECT_TRUE(overlay_view->GetVisible());
+  EXPECT_EQ(overlay_view->bounds(), bounds);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayViewCanBeClicked) {
+  // Make sure that the overlay view is z-ordered to get input events.
+  auto* overlay_view = SetOverlayView();
+  overlay_view->SetWantsEvent(true);
+
+  // Add a button!
+  base::MockRepeatingCallback<void(const ui::Event&)> cb;
+  auto* button = overlay_view->AddChildView(
+      std::make_unique<views::LabelButton>(cb.Get()));
+  button->SetBounds(0, 0, 50, 50);
+
+  // Show the window and click the button.
+  overlay_window().ShowInactive();
+  EXPECT_CALL(cb, Run(_));
+  event_generator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  event_generator()->ClickLeftButton();
+
+  // Clear the callback since `cb` is going away.  Note that `DoNothing()`
+  // doesn't work here because type inference fails.
+  button->SetCallback(base::BindRepeating([](const ui::Event&) {}));
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayWindowBlocksInput) {
+  // Make sure that the playback controls don't receive input events while the
+  // overlay view is visible.
+  auto* overlay_view = SetOverlayView();
+  overlay_view->SetWantsEvent(true);
+  overlay_window().ShowInactive();
+
+  // When the play/pause controls are visible, closing via the close button
+  // should pause the video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  EXPECT_CALL(pip_window_controller(), Close(true)).Times(0);
+  event_generator()->MoveMouseTo(
+      overlay_window().GetCloseControlsBounds().CenterPoint());
+  event_generator()->ClickLeftButton();
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayWindowFitsInMinimumSize) {
+  auto* overlay_view = SetOverlayView();
+  overlay_window().ShowInactive();
+
+  // The window size should be strictly greater than the bubble size so that
+  // there's some nonzero margin.
+  auto window_min_size = overlay_window().GetMinimumSize();
+  auto bubble_min_size = overlay_view->GetBubbleSize();
+  EXPECT_GT(window_min_size.width(), bubble_min_size.width());
+  EXPECT_GT(window_min_size.height(), bubble_min_size.height());
+
+  // When the overlay view is hidden, the minimum size should return to normal.
+  overlay_view->SetVisible(false);
+  EXPECT_EQ(overlay_window().GetMinimumSize(), kMinWindowSize);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayWindowStopsBlockingInput) {
+  auto* overlay_view = SetOverlayView();
+  overlay_window().ShowInactive();
+
+  // Make sure that the overlay window blocks input, when the overlay view does
+  // not want events.
+  const auto close_controls_center_point =
+      overlay_window().GetCloseControlsBounds().CenterPoint();
+  overlay_view->SetWantsEvent(false);
+  EXPECT_FALSE(overlay_window().ControlsHitTestContainsPoint(
+      close_controls_center_point));
+
+  // Make sure that the overlay window stops blocking input, when the overlay
+  // view wants event.
+  overlay_view->SetWantsEvent(true);
+  EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
+      close_controls_center_point));
+}
+
+TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
+  overlay_window().ShowInactive();
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+
+  // Check that the PictureInPictureOcclusionTracker is observing the
+  // VideoOverlayWindowViews.
+  EXPECT_TRUE(base::Contains(tracker->GetPictureInPictureWidgetsForTesting(),
+                             &overlay_window()));
+
+  // Check that it's no longer observed when the widget is destroyed.
+  DestroyOverlayWindow();
+  EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
 }

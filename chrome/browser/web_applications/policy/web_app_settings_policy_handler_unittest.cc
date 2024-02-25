@@ -64,6 +64,27 @@ const char kWebAppSettingDefaultConfiguration_MissingManifestId[] = R"([
   }
 ])";
 
+const char kWebAppSettingForceUnregistration_WildCardManifestId[] = R"([
+  {
+    "manifest_id": "*",
+    "force_unregister_os_integration": true
+  }
+])";
+
+const char kWebAppSetting_InvalidForceUnregisterValue[] = R"([
+  {
+    "manifest_id": "https://windowed.example/",
+    "force_unregister_os_integration": "invalid"
+  }
+])";
+
+const char kWebAppSetting_ValidForceUnregisterValue[] = R"([
+  {
+    "manifest_id": "https://abc.example/",
+    "force_unregister_os_integration": true
+  }
+])";
+
 base::Value ReturnPolicyValueFromJson(base::StringPiece policy) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
@@ -81,7 +102,8 @@ TEST(WebAppSettingsPolicyHandlerTest, CheckPolicySettings_ValidPatterns) {
 
   auto valid_configs = {kWebAppSettingWithDefaultConfiguration_Blocked,
                         kWebAppSettingWithDefaultConfiguration_Allowed,
-                        kWebAppSettingNoDefaultConfiguration};
+                        kWebAppSettingNoDefaultConfiguration,
+                        kWebAppSetting_ValidForceUnregisterValue};
 
   for (const char* config : valid_configs) {
     policy::PolicyErrorMap errors;
@@ -131,6 +153,47 @@ TEST(WebAppSettingsPolicyHandlerTest, CheckPolicySettings_MissingManifestId) {
              ReturnPolicyValueFromJson(
                  kWebAppSettingDefaultConfiguration_MissingManifestId),
              nullptr);
+
+  EXPECT_FALSE(handler.CheckPolicySettings(policy, &errors));
+  EXPECT_FALSE(errors.empty());
+  EXPECT_FALSE(errors.GetErrors(policy::key::kWebAppSettings).empty());
+}
+
+TEST(WebAppSettingsPolicyHandlerTest,
+     CheckPolicySettings_ManifestWildCardForceUnregistration) {
+  policy::Schema chrome_schema =
+      policy::Schema::Wrap(policy::GetChromeSchemaData());
+  WebAppSettingsPolicyHandler handler(chrome_schema);
+
+  policy::PolicyErrorMap errors;
+  policy::PolicyMap policy;
+
+  policy.Set(policy::key::kWebAppSettings, policy::POLICY_LEVEL_MANDATORY,
+             policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+             ReturnPolicyValueFromJson(
+                 kWebAppSettingForceUnregistration_WildCardManifestId),
+             nullptr);
+
+  EXPECT_FALSE(handler.CheckPolicySettings(policy, &errors));
+  EXPECT_FALSE(errors.empty());
+  EXPECT_FALSE(errors.GetErrors(policy::key::kWebAppSettings).empty());
+}
+
+TEST(WebAppSettingsPolicyHandlerTest,
+     CheckPolicySettings_InvalidForceUnregistration) {
+  policy::Schema chrome_schema =
+      policy::Schema::Wrap(policy::GetChromeSchemaData());
+  WebAppSettingsPolicyHandler handler(chrome_schema);
+
+  policy::PolicyErrorMap errors;
+  policy::PolicyMap policy;
+
+  policy.Set(
+      policy::key::kWebAppSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+      ReturnPolicyValueFromJson(kWebAppSetting_InvalidForceUnregisterValue),
+      nullptr);
 
   EXPECT_FALSE(handler.CheckPolicySettings(policy, &errors));
   EXPECT_FALSE(errors.empty());

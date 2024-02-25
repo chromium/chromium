@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient", "xcode")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
+load("//lib/gn_args.star", "gn_args")
+load("//lib/xcode.star", "xcode")
 
 luci.bucket(
     name = "webrtc.fyi",
@@ -72,6 +74,15 @@ builder(
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "strip_debug_info",
+        ],
+    ),
 )
 
 builder(
@@ -96,6 +107,13 @@ builder(
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
 )
 
 builder(
@@ -119,6 +137,14 @@ builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "arm64",
+        ],
     ),
 )
 
@@ -189,8 +215,16 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -206,8 +240,15 @@ builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+        ],
     ),
 )
 
@@ -225,6 +266,7 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
@@ -245,8 +287,16 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+        ],
     ),
     os = os.MAC_ANY,
 )
@@ -263,8 +313,15 @@ builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+        ],
     ),
     os = os.MAC_ANY,
 )
@@ -283,6 +340,7 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
@@ -304,8 +362,18 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "no_com_init_hooks",
+            "chrome_with_codecs",
+        ],
     ),
     os = os.WINDOWS_DEFAULT,
 )
@@ -322,8 +390,17 @@ builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-webrtc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "no_com_init_hooks",
+            "chrome_with_codecs",
+        ],
     ),
     os = os.WINDOWS_DEFAULT,
 )
@@ -342,13 +419,14 @@ builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.WINDOWS_DEFAULT,
 )
 
-# Builders run on the default Win OS version offered
+# Builders run on the default Mac OS version offered
 # in the Chrome infra however the tasks will be sharded
 # to swarming bots with appropriate OS using swarming
 # dimensions.
@@ -368,8 +446,20 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    os = os.MAC_ANY,
-    xcode = xcode.x14main,
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "ios_device",
+            "arm64",
+            "ios_google_cert",
+            "ios_disable_code_signing",
+            "release_builder",
+            "reclient",
+            "ios_build_chrome_false",
+        ],
+    ),
+    os = os.MAC_DEFAULT,
+    xcode = xcode.xcode_default,
 )
 
 builder(
@@ -388,6 +478,16 @@ builder(
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    os = os.MAC_ANY,
-    xcode = xcode.x14main,
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+            "ios_build_chrome_false",
+        ],
+    ),
+    os = os.MAC_DEFAULT,
+    xcode = xcode.xcode_default,
 )

@@ -6,10 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
+#include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -28,8 +28,8 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIConnectorsInternalsHost);
 
   source->AddBoolean("isOtr", profile->IsOffTheRecord());
-  source->AddBoolean("deviceTrustConnectorEnabled",
-                     IsDeviceTrustConnectorFeatureEnabled());
+  source->AddBoolean("canDeleteDeviceTrustKey",
+                     utils::CanDeleteDeviceTrustKey());
 
   webui::SetupWebUIDataSource(
       source,

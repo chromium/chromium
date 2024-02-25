@@ -13,11 +13,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 
 namespace mojo {
 
@@ -162,6 +164,7 @@ class SharedRemoteBase
 
    private:
     friend struct RemoteWrapperDeleter;
+    friend class base::DeleteHelper<RemoteWrapper>;
 
     ~RemoteWrapper() = default;
 
@@ -184,9 +187,7 @@ class SharedRemoteBase
       if (!task_runner_->RunsTasksInCurrentSequence()) {
         // NOTE: This is only called when there are no more references to
         // |this|, so binding it unretained is both safe and necessary.
-        task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&RemoteWrapper::DeleteOnCorrectThread,
-                                      base::Unretained(this)));
+        task_runner_->DeleteSoon(FROM_HERE, this);
       } else {
         delete this;
       }
@@ -311,6 +312,10 @@ class SharedRemote {
   // affected and will retain their reference to the original Remote.
   void Bind(PendingRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> bind_task_runner) {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      remote_.reset();
+      return;
+    }
     if (bind_task_runner && pending_remote) {
       remote_ = SharedRemoteBase<Remote<Interface>>::Create(
           std::move(pending_remote), std::move(bind_task_runner));
@@ -325,6 +330,9 @@ class SharedRemote {
   // `bind_task_runner` and returning the other end as a PendingReceiver.
   PendingReceiver<Interface> BindNewPipeAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner = nullptr) {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return PendingReceiver<Interface>();
+    }
     PendingRemote<Interface> remote;
     auto receiver = remote.InitWithNewPipeAndPassReceiver();
     Bind(std::move(remote), std::move(bind_task_runner));

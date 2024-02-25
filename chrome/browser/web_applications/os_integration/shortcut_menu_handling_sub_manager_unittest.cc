@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -151,7 +152,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     return item_infos;
   }
 
-  web_app::AppId InstallWebAppWithShortcutMenuIcons(
+  webapps::AppId InstallWebAppWithShortcutMenuIcons(
       ShortcutsMenuIconBitmaps shortcuts_menu_icons) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -161,7 +162,8 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     info->shortcuts_menu_icon_bitmaps = shortcuts_menu_icons;
     info->shortcuts_menu_item_infos =
         CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -171,18 +173,18 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
  protected:
   WebAppProvider& provider() { return *provider_; }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
@@ -213,7 +215,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -294,7 +296,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -307,10 +309,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -332,7 +331,8 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
                       num_menu_items);
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(icon_bitmaps);
+  const webapps::AppId& app_id =
+      InstallWebAppWithShortcutMenuIcons(icon_bitmaps);
 
   // Create a single WebAppShortcutsMenuItemInfo.
   WebAppShortcutsMenuItemInfo shortcut_info;
@@ -376,10 +376,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
   }
 
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -408,7 +405,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -420,10 +417,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
-    base::test::TestFuture<void> future;
-    provider().scheduler().SynchronizeOsIntegration(app_id,
-                                                    future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    test::SynchronizeOsIntegration(profile(), app_id);
   }
 
   auto state =
@@ -471,7 +465,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -508,7 +502,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 
 TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
        EmptyDataDoesNotRegisterShortcutsMenu) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcutMenuIcons(ShortcutsMenuIconBitmaps());
 
   auto state =
@@ -540,7 +534,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
                                   icon_size::k256};
   const std::vector<SkColor> colors = {SK_ColorBLUE, SK_ColorBLUE,
                                        SK_ColorBLUE};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -597,7 +591,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
   const int num_menu_items = 2;
   const std::vector<int> sizes = {icon_size::k32, icon_size::k48};
   const std::vector<SkColor> colors = {SK_ColorCYAN, SK_ColorCYAN};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -636,7 +630,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
                                           icon_size::k256};
   const std::vector<SkColor> updated_colors = {SK_ColorYELLOW, SK_ColorYELLOW,
                                                SK_ColorYELLOW};
-  const AppId& updated_app_id =
+  const webapps::AppId& updated_app_id =
       InstallWebAppWithShortcutMenuIcons(MakeIconBitmaps(
           {{IconPurpose::ANY, updated_sizes, updated_colors},
            {IconPurpose::MASKABLE, updated_sizes, updated_colors},
@@ -672,6 +666,108 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
   } else {
     ASSERT_FALSE(updated_os_integration_state.has_shortcut_menus());
   }
+}
+
+TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
+       ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_WIN)
+  const std::wstring app_user_model_id =
+      web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+          app_user_model_id));
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
+       ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // Shortcuts menu should should still be registered with the OS.
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#else
+  ASSERT_FALSE(
+      OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
+#endif  // BUILDFLAG(IS_WIN)
+  scoped_supress.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(

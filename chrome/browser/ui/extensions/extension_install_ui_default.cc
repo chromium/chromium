@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -38,7 +37,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #else
 #include "chrome/common/url_constants.h"
-#include "content/public/browser/notification_service.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

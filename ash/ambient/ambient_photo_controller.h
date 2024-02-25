@@ -6,12 +6,12 @@
 #define ASH_AMBIENT_AMBIENT_PHOTO_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
-#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/model/ambient_topic_queue.h"
@@ -27,14 +27,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
 namespace ash {
+
+class AmbientAccessTokenController;
+class AmbientBackupPhotoDownloader;
 
 // Class to handle photos in ambient mode.
 //
@@ -107,10 +110,10 @@ namespace ash {
 // set.
 class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
  public:
-  AmbientPhotoController(AmbientPhotoCache& photo_cache,
-                         AmbientPhotoCache& backup_photo_cache,
-                         AmbientViewDelegate& view_delegate,
-                         AmbientPhotoConfig photo_config);
+  AmbientPhotoController(
+      AmbientViewDelegate& view_delegate,
+      AmbientPhotoConfig photo_config,
+      std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
 
   AmbientPhotoController(const AmbientPhotoController&) = delete;
   AmbientPhotoController& operator=(const AmbientPhotoController&) = delete;
@@ -118,8 +121,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   ~AmbientPhotoController() override;
 
   // Start/stop updating the screen contents.
-  void StartScreenUpdate(
-      std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
+  void StartScreenUpdate();
   void StopScreenUpdate();
   bool IsScreenUpdateActive() const;
 
@@ -142,7 +144,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   friend std::ostream& operator<<(std::ostream& os, State state);
 
   // Initialize variables.
-  void Init(std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
+  void Init();
 
   void ScheduleFetchBackupImages();
 
@@ -170,7 +172,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   void OnAllPhotoRawDataAvailable(bool from_downloading);
 
-  void OnPhotoRawDataSaved(bool from_downloading);
+  void SaveCurrentPhotoToCache();
 
   void DecodePhotoRawData(bool from_downloading,
                           bool is_related_image,
@@ -191,9 +193,15 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   void FetchBackupImagesForTesting();
 
+  void set_image_codec_for_testing(
+      data_decoder::mojom::ImageCodec image_codec) {
+    image_codec_ = image_codec;
+  }
+
   // Kicks off preparation of the next topic.
   void StartPreparingNextTopic();
 
+  const std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate_;
   std::unique_ptr<AmbientTopicQueue> ambient_topic_queue_;
   AmbientBackendModel ambient_backend_model_;
 
@@ -229,8 +237,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // Backoff to resume fetch images.
   net::BackoffEntry resume_fetch_image_backoff_;
 
-  const raw_ptr<AmbientPhotoCache> photo_cache_;
-  const raw_ptr<AmbientPhotoCache> backup_photo_cache_;
+  const raw_ptr<AmbientAccessTokenController> access_token_controller_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -250,8 +257,14 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // behavior.
   bool is_actively_preparing_topic_ = false;
 
+  data_decoder::mojom::ImageCodec image_codec_ =
+      data_decoder::mojom::ImageCodec::kDefault;
+
   base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
       scoped_view_delegate_observation_{this};
+
+  std::vector<std::unique_ptr<AmbientBackupPhotoDownloader>>
+      active_backup_image_downloads_;
 
   base::WeakPtrFactory<AmbientPhotoController> weak_factory_{this};
 };

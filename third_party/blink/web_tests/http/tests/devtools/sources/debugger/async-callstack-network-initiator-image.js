@@ -7,11 +7,11 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Components from 'devtools/ui/legacy/components/utils/utils.js';
+
 (async function() {
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -31,7 +31,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
     var initiatorInfo =
         NetworkTestRunner.networkLog().initiatorInfoForRequest(event.data);
-    var element = new Components.Linkifier().linkifyScriptLocation(
+    var element = new Components.Linkifier.Linkifier().linkifyScriptLocation(
         TestRunner.mainTarget, initiatorInfo.scriptId, initiatorInfo.url, initiatorInfo.lineNumber,
         initiatorInfo.columnNumber - 1);
     // Linkified script locations may contain an unresolved live locations.

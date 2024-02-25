@@ -7,11 +7,11 @@ import './advanced_settings_dialog.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {Settings} from '../data/model.js';
+import type {Destination} from '../data/destination.js';
+import type {Settings} from '../data/model.js';
 
 import {getTemplate} from './advanced_options_settings.html.js';
 

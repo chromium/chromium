@@ -49,16 +49,6 @@ std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
   return java_script_features_;
 }
 
-NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
-    BrowserState* browser_state) const {
-  return early_page_script_for_all_frames_ ?: @"";
-}
-
-NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
-    BrowserState* browser_state) const {
-  return early_page_script_for_main_frame_ ?: @"";
-}
-
 void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
   plugin_not_supported_text_ = text;
 }
@@ -68,23 +58,13 @@ void FakeWebClient::SetJavaScriptFeatures(
   java_script_features_ = features;
 }
 
-void FakeWebClient::SetEarlyPageScriptForAllFrames(
-    NSString* page_script_for_all_frames) {
-  early_page_script_for_all_frames_ = [page_script_for_all_frames copy];
-}
-
-void FakeWebClient::SetEarlyPageScriptForMainFrame(
-    NSString* page_script_for_main_frame) {
-  early_page_script_for_main_frame_ = [page_script_for_main_frame copy];
-}
-
 void FakeWebClient::PrepareErrorPage(
     WebState* web_state,
     const GURL& url,
     NSError* error,
     bool is_post,
     bool is_off_the_record,
-    const absl::optional<net::SSLInfo>& info,
+    const std::optional<net::SSLInfo>& info,
     int64_t navigation_id,
     base::OnceCallback<void(NSString*)> callback) {
   net::CertStatus cert_status = info.has_value() ? info.value().cert_status : 0;
@@ -94,6 +74,10 @@ void FakeWebClient::PrepareErrorPage(
 
 UIView* FakeWebClient::GetWindowedContainer() {
   return GetAnyKeyWindow().rootViewController.view;
+}
+
+bool FakeWebClient::EnableWebInspector(web::BrowserState* browser_state) const {
+  return true;
 }
 
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,

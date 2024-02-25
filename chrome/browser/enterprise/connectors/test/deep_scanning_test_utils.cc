@@ -43,6 +43,7 @@ EventReportValidator::~EventReportValidator() {
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -53,9 +54,11 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier) {
+    const std::string& expected_profile_identifier,
+    const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -66,6 +69,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   results_[expected_filename] = expected_result;
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
+  content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -81,6 +85,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
 
 void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -91,7 +96,8 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     int64_t expected_content_size,
     const std::string& expected_result,
     const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier) {
+    const std::string& expected_profile_identifier,
+    const std::optional<std::string>& expected_content_transfer_method) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
@@ -100,6 +106,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -108,6 +115,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
   content_size_ = expected_content_size;
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
+  content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
@@ -119,6 +127,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
 void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -130,9 +139,10 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const absl::optional<std::string>& expected_scan_id) {
+    const std::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -161,6 +171,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
 
 void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::string& expected_filename,
@@ -168,13 +179,15 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_trigger,
     const ContentAnalysisResponse::Result& expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
-    absl::optional<int64_t> expected_content_size,
+    std::optional<int64_t> expected_content_size,
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const std::string& expected_scan_id) {
+    const std::string& expected_scan_id,
+    const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   dlp_verdicts_[expected_filename] = expected_dlp_verdict;
@@ -186,6 +199,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
+  content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -201,6 +215,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_source,
     const std::string& expected_destination,
     const std::vector<std::string>& expected_filenames,
@@ -212,7 +227,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::vector<std::string>& expected_results,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const std::vector<std::string>& expected_scan_ids) {
+    const std::vector<std::string>& expected_scan_ids,
+    const std::optional<std::string>& expected_content_transfer_method) {
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
     dlp_verdicts_[expected_filenames[i]] = expected_dlp_verdicts[i];
@@ -222,6 +238,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
@@ -229,6 +246,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   content_size_ = expected_content_size;
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
+  content_transfer_method_ = expected_content_transfer_method;
 
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
@@ -242,6 +260,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 void EventReportValidator::
     ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -254,9 +273,11 @@ void EventReportValidator::
         const std::string& expected_result,
         const std::string& expected_profile_username,
         const std::string& expected_profile_identifier,
-        const std::string& expected_scan_id) {
+        const std::string& expected_scan_id,
+        const std::optional<std::string>& expected_content_transfer_method) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -268,6 +289,7 @@ void EventReportValidator::
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
+  content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -280,7 +302,7 @@ void EventReportValidator::
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
-        threat_type_ = absl::nullopt;
+        threat_type_ = std::nullopt;
         dlp_verdicts_[expected_filename] = expected_dlp_verdict;
         ValidateReport(&report);
         if (!done_closure_.is_null()) {
@@ -292,6 +314,7 @@ void EventReportValidator::
 void EventReportValidator::
     ExpectSensitiveDataEventAndDangerousDeepScanningResult(
         const std::string& expected_url,
+        const std::string& expected_tab_url,
         const std::string& expected_source,
         const std::string& expected_destination,
         const std::string& expected_filename,
@@ -307,6 +330,7 @@ void EventReportValidator::
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   source_ = expected_source;
   destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -341,6 +365,7 @@ void EventReportValidator::
 
 void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_url,
+    const std::string& expected_tab_url,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_threat_type,
@@ -352,6 +377,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  tab_url_ = expected_tab_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   threat_type_ = expected_threat_type;
   mimetypes_ = expected_mimetypes;
@@ -440,21 +466,25 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
   // The event should match the expected values.
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTabUrl, tab_url_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
                 destination_);
   ValidateFilenameMappedAttributes(event);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
   // `content_size_` needs a conversion since int64 are strings in base::Value.
-  absl::optional<std::string> size =
+  std::optional<std::string> size =
       content_size_.has_value()
-          ? absl::optional<std::string>(base::NumberToString(*content_size_))
-          : absl::nullopt;
+          ? std::optional<std::string>(base::NumberToString(*content_size_))
+          : std::nullopt;
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize, size);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyThreatType,
                 threat_type_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUnscannedReason,
                 unscanned_reason_);
+  ValidateField(event,
+                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod,
+                content_transfer_method_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
   ValidateField(event, RealtimeReportingClient::kKeyProfileIdentifier,
@@ -470,7 +500,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
 void EventReportValidator::ValidateFederatedOrigin(
     const base::Value::Dict* value) {
-  absl::optional<bool> is_federated =
+  std::optional<bool> is_federated =
       value->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsFederated);
   const std::string* federated_origin =
       value->FindString(SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin);
@@ -556,25 +586,46 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
         << "Expected no file name but found "
         << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
   } else {
-    const std::string* filename =
-        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
-    ASSERT_TRUE(filename);
-    ASSERT_TRUE(base::Contains(filenames_and_hashes_, *filename))
-        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName;
+    ASSERT_TRUE(
+        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+
+    std::string filename =
+        *(value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    std::string filenames;
+    for (const auto& fh : filenames_and_hashes_) {
+      filenames += fh.first + "; ";
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
+    // If filename is not found as expected, try the filename without path.
+    if (!base::Contains(filenames_and_hashes_, filename)) {
+      for (const auto& fh : filenames_and_hashes_) {
+        filenames += fh.first + "; ";
+        if (base::FilePath(fh.first).BaseName().AsUTF8Unsafe() == filename) {
+          filename = fh.first;  // filename has full path now.
+        }
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
+        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName
+        << "\nActual filename: " << filename << "\nExpected one filename in: { "
+        << filenames << "}";
     ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  results_[*filename]);
+                  results_[filename]);
     ValidateField(value,
                   SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
-                  filenames_and_hashes_[*filename]);
-    if (scan_ids_.count(*filename)) {
+                  filenames_and_hashes_[filename]);
+    if (scan_ids_.count(filename)) {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    scan_ids_[*filename]);
+                    scan_ids_[filename]);
     } else {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    absl::optional<std::string>());
+                    std::optional<std::string>());
     }
-    if (dlp_verdicts_.count(*filename)) {
-      ValidateDlpVerdict(value, dlp_verdicts_[*filename]);
+    if (dlp_verdicts_.count(filename)) {
+      ValidateDlpVerdict(value, dlp_verdicts_[filename]);
     }
   }
 }
@@ -582,10 +633,12 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<std::string>& expected_value) {
+    const std::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
     ASSERT_EQ(*value->FindString(field_key), expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << value->FindString(field_key)
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, value->FindString(field_key))
         << "Field " << field_key << " should not be populated. It has value "
@@ -596,12 +649,14 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<std::u16string>& expected_value) {
+    const std::optional<std::u16string>& expected_value) {
   const std::string* s = value->FindString(field_key);
   if (expected_value.has_value()) {
     const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
     ASSERT_EQ(actual_string_value, expected_value.value())
-        << "Mismatch in field " << field_key;
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << actual_string_value
+        << "\nExpected value: " << expected_value.value();
   } else {
     ASSERT_EQ(nullptr, s) << "Field " << field_key
                           << " should not be populated. It has value "
@@ -612,17 +667,21 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<int>& expected_value) {
+    const std::optional<int>& expected_value) {
   ASSERT_EQ(value->FindInt(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindInt(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<bool>& expected_value) {
+    const std::optional<bool>& expected_value) {
   ASSERT_EQ(value->FindBool(field_key), expected_value)
-      << "Mismatch in field " << field_key;
+      << "Mismatch in field " << field_key
+      << "\nActual value: " << value->FindBool(field_key).value()
+      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ExpectNoReport() {

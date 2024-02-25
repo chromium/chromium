@@ -46,7 +46,6 @@ class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
   HttpsState GetHttpsState() const override;
   ResourceFetcher* Fetcher() override;
   void ExceptionThrown(ErrorEvent* error_event) override;
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr issue) override;
   void AddInspectorIssue(AuditsIssue issue) override;
   EventTarget* ErrorEventTarget() override;
   FrameOrWorkerScheduler* GetScheduler() override;

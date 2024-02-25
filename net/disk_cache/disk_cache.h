@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -108,20 +108,25 @@ CreateCacheBackend(net::CacheType type,
                    net::NetLog* net_log,
                    BackendResultCallback callback);
 
+// Note: this is permitted to return nullptr when things are in process of
+// shutting down.
+using ApplicationStatusListenerGetter =
+    base::RepeatingCallback<base::android::ApplicationStatusListener*()>;
+
 #if BUILDFLAG(IS_ANDROID)
-// Similar to the function above, but takes an |app_status_listener| which is
-// used to listen for when the Android application status changes, so we can
-// flush the cache to disk when the app goes to the background.
-NET_EXPORT BackendResult CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    scoped_refptr<BackendFileOperationsFactory> file_operations,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    BackendResultCallback callback,
-    base::android::ApplicationStatusListener* app_status_listener);
+// Similar to the function above, but takes an |app_status_listener_getter|
+// which is used to listen for when the Android application status changes, so
+// we can flush the cache to disk when the app goes to the background.
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   BackendResultCallback callback,
+                   ApplicationStatusListenerGetter app_status_listener_getter);
 #endif
 
 // Variant of the above that calls |post_cleanup_callback| once all the I/O
@@ -626,7 +631,7 @@ class BackendFileOperations {
     // Returns the next file in the directory, if any. Returns nullopt if there
     // are no further files (including the error case). The path of the
     // returned entry should be a full path.
-    virtual absl::optional<FileEnumerationEntry> Next() = 0;
+    virtual std::optional<FileEnumerationEntry> Next() = 0;
 
     // Returns true if we've found an error during traversal.
     virtual bool HasError() const = 0;
@@ -657,7 +662,7 @@ class BackendFileOperations {
                            base::File::Error* error) = 0;
 
   // Returns information about the given path.
-  virtual absl::optional<base::File::Info> GetFileInfo(
+  virtual std::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) = 0;
 
   // Creates an object that can be used to enumerate files in the specified
@@ -724,7 +729,7 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
                    base::File::Error* error) override;
-  absl::optional<base::File::Info> GetFileInfo(
+  std::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) override;
   std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) override;

@@ -57,7 +57,8 @@ class CSSDefaultStyleSheets final
 
   bool EnsureDefaultStyleSheetsForElement(const Element&);
   bool EnsureDefaultStyleSheetsForPseudoElement(PseudoId);
-  void EnsureDefaultStyleSheetForFullscreen();
+  void EnsureDefaultStyleSheetForFullscreen(const Element& element);
+  void RebuildFullscreenRuleSetIfMediaQueriesChanged(const Element& element);
   bool EnsureDefaultStyleSheetForForcedColors();
 
   RuleSet* DefaultHtmlStyle() { return default_html_style_.Get(); }
@@ -66,6 +67,7 @@ class CSSDefaultStyleSheets final
   RuleSet* DefaultHtmlQuirksStyle() { return default_html_quirks_style_.Get(); }
   RuleSet* DefaultPrintStyle() { return default_print_style_.Get(); }
   RuleSet* DefaultViewSourceStyle();
+  RuleSet* DefaultJSONDocumentStyle();
   RuleSet* DefaultForcedColorStyle() {
     return default_forced_color_style_.Get();
   }
@@ -132,7 +134,6 @@ class CSSDefaultStyleSheets final
     kMathML,
     kSVG,
     kMediaControls,  // Not exactly a namespace
-    kFullscreen,
   };
   void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
                                     NamespaceType type);
@@ -147,6 +148,7 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_pseudo_element_style_;
   Member<RuleSet> default_media_controls_style_;
   Member<RuleSet> default_fullscreen_style_;
+  Member<RuleSet> default_json_document_style_;
   // If new RuleSets are added, make sure to add a new check in
   // VerifyUniversalRuleCount() as universal rule buckets are performance
   // sensitive. At least if the added UA styles are matched against all elements
@@ -157,6 +159,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> svg_style_sheet_;
   Member<StyleSheetContents> mathml_style_sheet_;
   Member<StyleSheetContents> media_controls_style_sheet_;
+  Member<StyleSheetContents> permission_element_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> selectlist_style_sheet_;

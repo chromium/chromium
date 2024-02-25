@@ -5,44 +5,38 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_LIST_ITEM_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_LIST_ITEM_H_
 
-#include "base/memory/raw_ptr.h"
-#include "ui/views/view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace arc::input_overlay {
-
-class Action;
-class DisplayOverlayController;
-class EditLabels;
-class NameTag;
 
 // ActionViewListItem shows in EditingList and is associated with each of
 // Action.
 // ----------------------------
 // | |Name tag|        |keys| |
 // ----------------------------
+class ActionViewListItem : public ActionEditView {
+  METADATA_HEADER(ActionViewListItem, ActionEditView)
 
-class ActionViewListItem : public views::View {
  public:
   ActionViewListItem(DisplayOverlayController* controller, Action* action);
   ActionViewListItem(const ActionViewListItem&) = delete;
   ActionViewListItem& operator=(const ActionViewListItem&) = delete;
   ~ActionViewListItem() override;
 
-  void OnActionInputBindingUpdated();
-  void OnActionNameUpdated();
-
-  Action* action() const { return action_; }
+  void PerformPulseAnimation();
 
  private:
   friend class EditLabelTest;
 
-  void Init();
+  // ActionEditView:
+  void ClickCallback() override;
 
-  raw_ptr<DisplayOverlayController> controller_;
-  raw_ptr<Action, DanglingUntriaged> action_;
-
-  raw_ptr<EditLabels> labels_view_ = nullptr;
-  raw_ptr<NameTag> name_tag_ = nullptr;
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnFocus() override;
 };
 
 }  // namespace arc::input_overlay

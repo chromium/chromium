@@ -6,19 +6,21 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PAGE_NODE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "base/types/token_type.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -28,6 +30,18 @@ class FrozenFrameAggregatorAccess;
 class PageAggregatorAccess;
 class PageLoadTrackerAccess;
 class SiteDataAccess;
+class TabConnectednessAccess;
+
+// The starting state of various boolean properties of the PageNode.
+enum class PagePropertyFlag {
+  kIsVisible,  // initializes PageNode::IsVisible()
+  kMin = kIsVisible,
+  kIsAudible,            // initializes PageNode::IsAudible()
+  kHasPictureInPicture,  // initializes PageNode::HasPictureInPicture()
+  kMax = kHasPictureInPicture,
+};
+using PagePropertyFlags = base::
+    EnumSet<PagePropertyFlag, PagePropertyFlag::kMin, PagePropertyFlag::kMax>;
 
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
@@ -39,13 +53,18 @@ class PageNodeImpl
   using PageAggregatorDataStorage =
       InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 16>;
 
+  // A unique token to identify the PageNode and its associated WebContents for
+  // the lifetime of the browser. Most node types use an existing unique
+  // identifier for this (eg. FrameNode uses content::GlobalRenderFrameHostId,
+  // WorkerNode uses blink::WorkerToken) but WebContents has no id to use.
+  using PageToken = base::TokenType<class PageTokenTag>;
+
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
 
   PageNodeImpl(const WebContentsProxy& contents_proxy,
                const std::string& browser_context_id,
                const GURL& visible_url,
-               bool is_visible,
-               bool is_audible,
+               PagePropertyFlags initial_properties,
                base::TimeTicks visibility_change_time,
                PageState page_state);
 
@@ -54,15 +73,49 @@ class PageNodeImpl
 
   ~PageNodeImpl() override;
 
+  // Partial PageNode implementation:
+  const std::string& GetBrowserContextID() const override;
+  resource_attribution::PageContext GetResourceContext() const override;
+  EmbeddingType GetEmbeddingType() const override;
+  PageType GetType() const override;
+  bool IsFocused() const override;
+  bool IsVisible() const override;
+  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
+  bool IsAudible() const override;
+  std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
+  bool HasPictureInPicture() const override;
+  LoadingState GetLoadingState() const override;
+  ukm::SourceId GetUkmSourceID() const override;
+  LifecycleState GetLifecycleState() const override;
+  bool IsHoldingWebLock() const override;
+  bool IsHoldingIndexedDBLock() const override;
+  int64_t GetNavigationID() const override;
+  const std::string& GetContentsMimeType() const override;
+  base::TimeDelta GetTimeSinceLastNavigation() const override;
+  const GURL& GetMainFrameUrl() const override;
+  uint64_t EstimateMainFramePrivateFootprintSize() const override;
+  bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
+  const WebContentsProxy& GetContentsProxy() const override;
+  const std::optional<freezing::FreezingVote>& GetFreezingVote() const override;
+  PageState GetPageState() const override;
+  uint64_t EstimateResidentSetSize() const override;
+  uint64_t EstimatePrivateFootprintSize() const override;
+
   // Returns the web contents associated with this page node. It is valid to
   // call this function on any thread but the weak pointer must only be
   // dereferenced on the UI thread.
   const WebContentsProxy& contents_proxy() const;
 
+  // Returns the unique token for the page node. This function can be called
+  // from any thread.
+  const PageToken& page_token() const { return page_token_; }
+
   void SetType(PageType type);
   void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
+  void SetHasPictureInPicture(bool has_picture_in_picture);
   void SetLoadingState(LoadingState loading_state);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated();
@@ -74,47 +127,11 @@ class PageNodeImpl
                                       const GURL& url,
                                       const std::string& contents_mime_type);
 
-  // Returns 0 if no navigation has happened, otherwise returns the time since
-  // the last navigation commit.
-  base::TimeDelta TimeSinceLastNavigation() const;
-
-  // Returns the time since the last visibility change, it should always have a
-  // value since we set the visibility property when we create a
-  // page node.
-  base::TimeDelta TimeSinceLastVisibilityChange() const;
-
-  // Returns the time since the last audible change, or nullopt if the node has
-  // never been audible. If the node was audible on creation, returns the
-  // creation time.
-  absl::optional<base::TimeDelta> TimeSinceLastAudibleChange() const;
-
-  // Returns the current main frame node (if there is one), otherwise returns
-  // any of the potentially multiple main frames that currently exist. If there
-  // are no main frames at the moment, returns nullptr.
-  FrameNodeImpl* GetMainFrameNodeImpl() const;
-
   // Accessors.
-  const std::string& browser_context_id() const;
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
-  EmbeddingType embedding_type() const;
-  PageType type() const;
-  bool is_focused() const;
-  bool is_visible() const;
-  bool is_audible() const;
-  LoadingState loading_state() const;
-  ukm::SourceId ukm_source_id() const;
-  LifecycleState lifecycle_state() const;
-  bool is_holding_weblock() const;
-  bool is_holding_indexeddb_lock() const;
+  FrameNodeImpl* main_frame_node() const;
   const base::flat_set<FrameNodeImpl*>& main_frame_nodes() const;
-  const GURL& main_frame_url() const;
-  int64_t navigation_id() const;
-  const std::string& contents_mime_type() const;
-  bool had_form_interaction() const;
-  bool had_user_edits() const;
-  const absl::optional<freezing::FreezingVote>& freezing_vote() const;
-  PageState page_state() const;
 
   // Invoked to set/clear the opener of this page.
   void SetOpenerFrameNode(FrameNodeImpl* opener);
@@ -126,7 +143,7 @@ class PageNodeImpl
   void ClearEmbedderFrameNodeAndEmbeddingType();
 
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
-  void set_freezing_vote(absl::optional<freezing::FreezingVote> freezing_vote);
+  void set_freezing_vote(std::optional<freezing::FreezingVote> freezing_vote);
   void set_page_state(PageState page_state);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
@@ -149,15 +166,8 @@ class PageNodeImpl
     SetHadUserEdits(had_user_edits);
   }
 
-  base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread() {
-    // TODO(siggi): Validate thread context.
-    return weak_this_;
-  }
-
-  base::WeakPtr<PageNodeImpl> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Accessors to some of the NodeAttachedData:
   std::unique_ptr<NodeAttachedData>& GetSiteData(
@@ -167,6 +177,10 @@ class PageNodeImpl
   std::unique_ptr<NodeAttachedData>& GetPageLoadTrackerData(
       base::PassKey<PageLoadTrackerAccess>) {
     return page_load_tracker_data_;
+  }
+  std::unique_ptr<NodeAttachedData>& GetTabConnectednessData(
+      base::PassKey<TabConnectednessAccess>) {
+    return tab_connectedness_data_;
   }
   FrozenFrameDataStorage& GetFrozenFrameData(
       base::PassKey<FrozenFrameAggregatorAccess>) {
@@ -209,39 +223,12 @@ class PageNodeImpl
  private:
   friend class PageNodeImplDescriber;
 
-  // PageNode implementation.
-  PageState GetPageState() const override;
-  const std::string& GetBrowserContextID() const override;
+  // Partial PageNode implementation:
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
-  EmbeddingType GetEmbeddingType() const override;
-  PageType GetType() const override;
-  bool IsFocused() const override;
-  bool IsVisible() const override;
-  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
-  bool IsAudible() const override;
-  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
-      const override;
-  LoadingState GetLoadingState() const override;
-  ukm::SourceId GetUkmSourceID() const override;
-  LifecycleState GetLifecycleState() const override;
-  bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
-  int64_t GetNavigationID() const override;
-  const std::string& GetContentsMimeType() const override;
-  base::TimeDelta GetTimeSinceLastNavigation() const override;
   const FrameNode* GetMainFrameNode() const override;
   bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
-  const GURL& GetMainFrameUrl() const override;
-  uint64_t EstimateMainFramePrivateFootprintSize() const override;
-  bool HadFormInteraction() const override;
-  bool HadUserEdits() const override;
-  const WebContentsProxy& GetContentsProxy() const override;
-  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
-      const override;
-  uint64_t EstimateResidentSetSize() const override;
-  uint64_t EstimatePrivateFootprintSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -256,6 +243,9 @@ class PageNodeImpl
 
   // The WebContentsProxy associated with this page.
   const WebContentsProxy contents_proxy_;
+
+  // The unique token that identifies this PageNode for the life of the browser.
+  const PageToken page_token_;
 
   // The main frame nodes of this page. There can be more than one main frame
   // in a page, among other reasons because during main frame navigation, the
@@ -272,7 +262,7 @@ class PageNodeImpl
 
   // The last time at which the audible property changed, or nullopt if the node
   // has never been audible.
-  absl::optional<base::TimeTicks> audible_change_time_
+  std::optional<base::TimeTicks> audible_change_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last time at which a main frame navigation was committed.
@@ -336,6 +326,12 @@ class PageNodeImpl
   ObservedProperty::NotifiesOnlyOnChanges<bool,
                                           &PageNodeObserver::OnIsAudibleChanged>
       is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Whether or not the page is displaying content in picture-in-picture. Driven
+  // by browser instrumentation. Initialized on construction.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnHasPictureInPictureChanged>
+      has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
@@ -383,8 +379,8 @@ class PageNodeImpl
   // Page::GetFreezingVote for a description of the different values this can
   // take.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      absl::optional<freezing::FreezingVote>,
-      absl::optional<freezing::FreezingVote>,
+      std::optional<freezing::FreezingVote>,
+      std::optional<freezing::FreezingVote>,
       &PageNodeObserver::OnFreezingVoteChanged>
       freezing_vote_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The state of this page.
@@ -400,6 +396,10 @@ class PageNodeImpl
 
   // Storage for SiteDataNodeData user data.
   std::unique_ptr<NodeAttachedData> site_data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Storage for TabConnectednessDecorator user data.
+  std::unique_ptr<NodeAttachedData> tab_connectedness_data_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for FrozenFrameAggregator user data.

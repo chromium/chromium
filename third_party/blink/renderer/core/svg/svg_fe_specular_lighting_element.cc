@@ -96,7 +96,7 @@ bool SVGFESpecularLightingElement::SetFilterEffectAttribute(
         specular_exponent_->CurrentValue()->Value());
 
   if (const auto* light_element = SVGFELightElement::FindLightElement(*this)) {
-    absl::optional<bool> light_source_update =
+    std::optional<bool> light_source_update =
         light_element->SetLightSourceAttribute(specular_lighting, attr_name);
     if (light_source_update)
       return *light_source_update;

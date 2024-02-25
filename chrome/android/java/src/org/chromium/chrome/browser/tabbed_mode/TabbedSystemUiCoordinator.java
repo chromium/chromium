@@ -32,13 +32,16 @@ public class TabbedSystemUiCoordinator {
      * @param layoutManagerSupplier {@link LayoutManager} associated with the containing activity.
      * @param mFullscreenManager The {@link FullscreenManager} used for containing activity
      */
-    public TabbedSystemUiCoordinator(Window window, TabModelSelector tabModelSelector,
+    public TabbedSystemUiCoordinator(
+            Window window,
+            TabModelSelector tabModelSelector,
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager mFullscreenManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
-            mNavigationBarColorController = new TabbedNavigationBarColorController(
-                    window, tabModelSelector, layoutManagerSupplier, mFullscreenManager);
+            mNavigationBarColorController =
+                    new TabbedNavigationBarColorController(
+                            window, tabModelSelector, layoutManagerSupplier, mFullscreenManager);
         }
     }
 

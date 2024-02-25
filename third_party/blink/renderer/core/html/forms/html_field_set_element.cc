@@ -33,23 +33,32 @@
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
-bool WillReattachChildLayoutObject(const Node& parent) {
+bool WillReattachChildLayoutObject(const Element& parent) {
   for (const Node* child = LayoutTreeBuilderTraversal::FirstChild(parent);
        child; child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    if (child->NeedsReattachLayoutTree())
+    if (child->NeedsReattachLayoutTree()) {
       return true;
-    if (child->ChildNeedsReattachLayoutTree() && child->GetComputedStyle() &&
-        child->GetComputedStyle()->Display() == EDisplay::kContents &&
-        WillReattachChildLayoutObject(*child))
-      return true;
+    }
+    const auto* element = DynamicTo<Element>(child);
+    if (!element || !element->ChildNeedsReattachLayoutTree()) {
+      continue;
+    }
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->Display() == EDisplay::kContents &&
+          WillReattachChildLayoutObject(*element)) {
+        return true;
+      }
+    }
   }
   return false;
 }
@@ -116,15 +125,11 @@ void HTMLFieldSetElement::DisabledAttributeChanged() {
 }
 
 void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
-  if (RuntimeEnabledFeatures::NonReentrantFieldSetDisableEnabled()) {
-    ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
-    // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
-    // we only invalidate this element's own disabled state and do not traverse
-    // the descendants.
-    HTMLFormControlElement::DisabledAttributeChanged();
-  } else {
-    HTMLFormControlElement::AncestorDisabledStateWasChanged();
-  }
+  ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
+  // Do not re-enter HTMLFieldSetElement::DisabledAttributeChanged(), so that
+  // we only invalidate this element's own disabled state and do not traverse
+  // the descendants.
+  HTMLFormControlElement::DisabledAttributeChanged();
 }
 
 void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
@@ -143,21 +148,26 @@ void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
     focused_element->blur();
 }
 
-bool HTMLFieldSetElement::SupportsFocus() const {
-  return HTMLElement::SupportsFocus() && !IsDisabledFormControl();
+bool HTMLFieldSetElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  return HTMLElement::SupportsFocus(update_behavior) &&
+         !IsDisabledFormControl();
 }
 
-const AtomicString& HTMLFieldSetElement::FormControlType() const {
+FormControlType HTMLFieldSetElement::FormControlType() const {
+  return FormControlType::kFieldset;
+}
+
+const AtomicString& HTMLFieldSetElement::FormControlTypeAsString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, fieldset, ("fieldset"));
   return fieldset;
 }
 
 LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
-  return MakeGarbageCollected<LayoutNGFieldset>(this);
+  return MakeGarbageCollected<LayoutFieldset>(this);
 }
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
-  if (const auto* ng_fieldset = DynamicTo<LayoutNGFieldset>(GetLayoutBox())) {
+  if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
     if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox())
       return content;
   }
@@ -178,13 +188,10 @@ HTMLCollection* HTMLFieldSetElement::elements() {
 }
 
 bool HTMLFieldSetElement::IsDisabledFormControl() const {
-  if (RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
-    // The fieldset element itself should never be considered disabled, it is
-    // only supposed to affect its descendants:
-    // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-disabled
-    return false;
-  }
-  return HTMLFormControlElement::IsDisabledFormControl();
+  // The fieldset element itself should never be considered disabled, it is
+  // only supposed to affect its descendants:
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-disabled
+  return false;
 }
 
 // <fieldset> should never be considered disabled, but should still match the
@@ -192,10 +199,7 @@ bool HTMLFieldSetElement::IsDisabledFormControl() const {
 // set or not. See here for context:
 // https://github.com/whatwg/html/issues/5886#issuecomment-1582410112
 bool HTMLFieldSetElement::MatchesEnabledPseudoClass() const {
-  if (RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
-    return !IsActuallyDisabled();
-  }
-  return HTMLFormControlElement::MatchesEnabledPseudoClass();
+  return !IsActuallyDisabled();
 }
 
 }  // namespace blink

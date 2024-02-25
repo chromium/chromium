@@ -9,7 +9,7 @@
   <release seq="1">
     <includes>
       <!-- Features specific to app_shell. -->
-      <include name="IDR_SHELL_EXTENSION_API_FEATURES" file="common\api\_api_features.json" type="BINDATA" />
+      <include name="IDR_SHELL_EXTENSION_API_FEATURES" file="common\api\_api_features.json" type="BINDATA" compress="gzip"/>
     </includes>
   </release>
 </grit>

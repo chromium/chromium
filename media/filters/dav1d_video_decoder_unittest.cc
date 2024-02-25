@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
-#include "media/base/mock_media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
@@ -39,7 +39,8 @@ MATCHER(ContainsDecoderErrorLog, "") {
 class Dav1dVideoDecoderTest : public testing::Test {
  public:
   Dav1dVideoDecoderTest()
-      : decoder_(std::make_unique<Dav1dVideoDecoder>(&media_log_)),
+      : decoder_(std::make_unique<Dav1dVideoDecoder>(
+            std::make_unique<NullMediaLog>())),
         i_frame_buffer_(ReadTestDataFile("av1-I-frame-320x240")) {}
 
   Dav1dVideoDecoderTest(const Dav1dVideoDecoderTest&) = delete;
@@ -187,8 +188,6 @@ class Dav1dVideoDecoderTest : public testing::Test {
 
   MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
-  testing::StrictMock<MockMediaLog> media_log_;
-
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<Dav1dVideoDecoder> decoder_;
 
@@ -278,8 +277,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_LargerWidth) {
 // Decode a VP9 frame which should trigger a decoder error.
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_Error) {
   Initialize();
-  EXPECT_MEDIA_LOG(ContainsDecoderErrorLog());
-  DecodeSingleFrame(ReadTestDataFile("vp9-I-frame-320x240"));
+  EXPECT_FALSE(
+      DecodeSingleFrame(ReadTestDataFile("vp9-I-frame-320x240")).is_ok());
 }
 
 // Test resetting when decoder has initialized but not decoded.

@@ -7,9 +7,11 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,7 +33,8 @@ namespace ash::personalization_app {
 class PersonalizationAppThemeProviderImpl
     : public PersonalizationAppThemeProvider,
       public ash::ColorModeObserver,
-      public ui::ColorProviderSourceObserver {
+      public ui::ColorProviderSourceObserver,
+      public ash::system::TimezoneSettings::Observer {
  public:
   explicit PersonalizationAppThemeProviderImpl(content::WebUI* web_ui);
 
@@ -58,12 +61,17 @@ class PersonalizationAppThemeProviderImpl
 
   void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;
 
-  void SetColorScheme(ColorScheme color_scheme) override;
+  void SetColorScheme(ash::style::mojom::ColorScheme color_scheme) override;
 
   void SetStaticColor(SkColor static_color) override;
 
+  void EnableGeolocationForSystemServices() override;
+
   void IsColorModeAutoScheduleEnabled(
       IsColorModeAutoScheduleEnabledCallback callback) override;
+
+  void IsGeolocationEnabledForSystemServices(
+      IsGeolocationEnabledForSystemServicesCallback callback) override;
 
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
@@ -78,11 +86,20 @@ class PersonalizationAppThemeProviderImpl
   void GenerateSampleColorSchemes(
       GenerateSampleColorSchemesCallback callback) override;
 
+  // ash::system::TimezoneSettings::Observer
+  void TimezoneChanged(const icu::TimeZone& timezone) override;
+
  private:
   bool IsColorModeAutoScheduleEnabled();
 
   // Notify webUI the current state of color mode auto scheduler.
   void NotifyColorModeAutoScheduleChanged();
+
+  bool IsGeolocationEnabledForSystemServices();
+
+  // Notify webUI the current state of system geolocation permission. Needed for
+  // the color mode auto scheduler.
+  void NotifyGeolocationPermissionChanged();
 
   void OnColorSchemeChanged();
 
@@ -112,6 +129,11 @@ class PersonalizationAppThemeProviderImpl
   base::ScopedObservation<ui::ColorProviderSource,
                           ui::ColorProviderSourceObserver>
       color_provider_source_observer_{this};
+
+  // Timezone Settings notifies when the timezone is changed.
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_settings_observer_{this};
 
   mojo::Remote<ash::personalization_app::mojom::ThemeObserver>
       theme_observer_remote_;

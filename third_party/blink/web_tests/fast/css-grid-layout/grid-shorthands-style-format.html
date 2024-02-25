@@ -11,7 +11,7 @@
 
     debug("Test grid-column shorthand");
     item.style.gridColumn = "1";
-    shouldBeEqualToString("item.style.gridColumn", "1 / auto");
+    shouldBeEqualToString("item.style.gridColumn", "1");
     item.style.gridColumn = "1 / 3";
     shouldBeEqualToString("item.style.gridColumn", "1 / 3");
     item.style.gridColumn = "1 / span 2";
@@ -25,7 +25,7 @@
 
     debug("Test grid-row shorthand");
     item.style.gridRow = "1";
-    shouldBeEqualToString("item.style.gridRow", "1 / auto");
+    shouldBeEqualToString("item.style.gridRow", "1");
     item.style.gridRow = "1 / 3";
     shouldBeEqualToString("item.style.gridRow", "1 / 3");
     item.style.gridRow = "1 / span 2";
@@ -39,19 +39,19 @@
 
     debug("Test grid-area shorthand");
     item.style.gridArea = "1";
-    shouldBeEqualToString("item.style.gridArea", "1 / auto / auto / auto");
+    shouldBeEqualToString("item.style.gridArea", "1");
     item.style.gridArea = "1 / 3";
-    shouldBeEqualToString("item.style.gridArea", "1 / 3 / auto / auto");
+    shouldBeEqualToString("item.style.gridArea", "1 / 3");
     item.style.gridArea = "1 / span 2";
-    shouldBeEqualToString("item.style.gridArea", "1 / span 2 / auto / auto");
+    shouldBeEqualToString("item.style.gridArea", "1 / span 2");
     item.style.gridArea = "foo / foo";
-    shouldBeEqualToString("item.style.gridArea", "foo / foo / foo / foo");
+    shouldBeEqualToString("item.style.gridArea", "foo");
     item.style.gridArea = "foo / bar";
-    shouldBeEqualToString("item.style.gridArea", "foo / bar / foo / bar");
+    shouldBeEqualToString("item.style.gridArea", "foo / bar");
     item.style.gridArea = "2 foo / span 3 bar";
-    shouldBeEqualToString("item.style.gridArea", "2 foo / span 3 bar / auto / auto");
+    shouldBeEqualToString("item.style.gridArea", "2 foo / span 3 bar");
     item.style.gridArea = "1 / 2 / 3";
-    shouldBeEqualToString("item.style.gridArea", "1 / 2 / 3 / auto");
+    shouldBeEqualToString("item.style.gridArea", "1 / 2 / 3");
     item.style.gridArea = "1 / 3 / 2 / 4";
     shouldBeEqualToString("item.style.gridArea", "1 / 3 / 2 / 4");
     item.style.gridArea = "1 / span 2 / 1 / span 2";

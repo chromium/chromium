@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
 
@@ -14,7 +15,7 @@ namespace content {
 
 // Holds an instance |PrefetchServingPageMetrics| for its associated
 // |NavigationHandle|.
-class PrefetchServingPageMetricsContainer
+class CONTENT_EXPORT PrefetchServingPageMetricsContainer
     : public NavigationHandleUserData<PrefetchServingPageMetricsContainer> {
  public:
   ~PrefetchServingPageMetricsContainer() override;
@@ -27,9 +28,8 @@ class PrefetchServingPageMetricsContainer
   // Setters that set the metrics in |serving_page_metrics_|.
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   void SetRequiredPrivatePrefetchProxy(bool required_private_prefetch_proxy);
-  void SetSameTabAsPrefetchingTab(bool same_tab_as_prefetching_tab);
   void SetPrefetchHeaderLatency(
-      const absl::optional<base::TimeDelta>& prefetch_header_latency);
+      const std::optional<base::TimeDelta>& prefetch_header_latency);
   void SetProbeLatency(const base::TimeDelta& probe_latency);
 
   PrefetchServingPageMetrics& GetServingPageMetrics() {

@@ -7,7 +7,6 @@
 // associated with any Chrome browser windows. See the <a
 // href="https://github.com/GoogleChrome/chrome-app-samples/tree/master/samples/window-state">
 // Window State Sample</a> for a demonstration of these options.
-[modernised_enums]
 namespace app.window {
 
   // Previously named Bounds.
@@ -448,9 +447,10 @@ namespace app.window {
     // window with the same id. If you need to open a window with an id at a
     // location other than the remembered default, you can create it hidden,
     // move it to the desired location, then show it.
-    [supportsPromises] static void create(DOMString url,
-                                          optional CreateWindowOptions options,
-                                          optional CreateWindowCallback callback);
+    static void create(
+        DOMString url,
+        optional CreateWindowOptions options,
+        optional CreateWindowCallback callback);
 
     // Returns an $(ref:AppWindow) object for the
     // current script context (ie JavaScript 'window' object). This can also be

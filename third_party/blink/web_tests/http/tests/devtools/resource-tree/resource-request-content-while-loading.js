@@ -10,7 +10,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(
       `Tests resource content is correctly loaded if Resource.requestContent was called before network request was finished. https://bugs.webkit.org/show_bug.cgi?id=90153\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   TestRunner.addSniffer(SDK.ResourceTreeModel.ResourceTreeFrame.prototype, 'addRequest', requestAdded, true);

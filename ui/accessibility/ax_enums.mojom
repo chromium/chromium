@@ -112,8 +112,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 5
-// Next value: 210
+// Next version: 6
+// Next value: 211
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -162,6 +162,7 @@ enum Role {
   kDialog = 35,
   kDirectory = 36,
   kDisclosureTriangle = 37,
+  [MinVersion=5] kDisclosureTriangleGrouped = 210,
   // --------------------------------------------------------------
   // DPub Roles:
   // https://www.w3.org/TR/dpub-aam-1.0/#mapping_role_table
@@ -303,7 +304,7 @@ enum Role {
   // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
   kPortal = 138,
-  kPre = 139,
+  kPreDeprecated = 139,
   kProgressIndicator = 140,
   kRadioButton = 141,
   kRadioGroup = 142,
@@ -384,8 +385,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 4
-// Next value: 40
+// Next version: 5
+// Next value: 41
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -489,6 +490,13 @@ enum Action {
   kSignalEndOfTest = 32,
   kShowTooltip = 33,
 
+  // Joins the current tree with another tree by adding the latter as a child
+  // tree at a particular node.
+  //
+  // The closest example in HTML is an iframe, but this action extends the same
+  // functionality to all accessibility nodes.
+  [MinVersion=4] kStitchChildTree = 40,
+
   [MinVersion=1] kStartDuckingMedia = 35,
   [MinVersion=1] kStopDuckingMedia = 36,
   [MinVersion=1] kSuspendMedia = 37,
@@ -563,19 +571,22 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 4
-// Next value: 36
+// Next version: 5
+// Next value: 38
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
   kAccessKey = 1,
   kAppId = 2,
+  // Deprecated - Do not use.
   // AriaInvalidValue is deprecated. Spelling and Grammar errors are stored
   // using markers and invalid state in general is stored using invalidState.
-  kAriaInvalidValue = 3,
+  kAriaInvalidValueDeprecated = 3,
   kAutoComplete = 4,
   [MinVersion=2] kAriaBrailleLabel = 33,
   [MinVersion=2] kAriaBrailleRoleDescription = 34,
+  [MinVersion=4] kAriaNotificationId = 36,
+  [MinVersion=4] kAriaNotificationMessage = 37,
   kCheckedStateDescription = 5,
   kChildTreeId = 6,
   kChildTreeNodeAppId = 7,
@@ -615,8 +626,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 3
-// Next value: 64
+// Next version: 4
+// Next value: 66
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -747,10 +758,11 @@ enum IntAttribute {
   kPreviousFocusId = 57,
   kNextFocusId = 58,
 
+  // Deprecated - Do not use.
   // For indicating what functions can be performed when a dragged object
   // is released on the drop target.
   // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  kDropeffect = 59,
+  kDropeffectDeprecated = 59,
 
   // The DOMNodeID from Blink. Currently only populated when using
   // the accessibility tree for PDF exporting. Warning, this is totally
@@ -762,6 +774,10 @@ enum IntAttribute {
   [MinVersion=1] kIsPopup = 61,
   [MinVersion=2] kNextWindowFocusId = 62,
   [MinVersion=2] kPreviousWindowFocusId = 63,
+
+  // ARIA notification options.
+  [MinVersion=3] kAriaNotificationInterrupt = 64,
+  [MinVersion=3] kAriaNotificationPriority = 65,
 };
 
 // Next version: 2
@@ -857,9 +873,10 @@ enum BoolAttribute {
   // Indicates whether this node supports text location.
   kSupportsTextLocation = 15,
 
+  // Deprecated - Do not use.
   // Indicates whether this node can be grabbed for drag-and-drop operation.
   // Note: aria-grabbed is deprecated in WAI-ARIA 1.1.
-  kGrabbed = 16,
+  kGrabbedDeprecated = 16,
 
   // Indicates whether this node causes a hard line-break
   // (e.g. block level elements, or <br>)
@@ -871,8 +888,8 @@ enum BoolAttribute {
   // True if the node has any ARIA attributes set.
   kHasAriaAttribute = 19,
 
-  // OBSOLETE - Do no use.
-  OBSOLETE_kTouchPassthrough = 20,
+  // Deprecated - Do not use.
+  kTouchPassthroughDeprecated = 20,
 
   // A hint to clients that the node is long clickable.
   [MinVersion=1] kLongClickable = 21,
@@ -1442,4 +1459,15 @@ enum Dropeffect {
   kLink,
   kMove,
   kPopup,
+};
+
+enum AriaNotificationInterrupt {
+  kNone,
+  kAll,
+  kPending,
+};
+
+enum AriaNotificationPriority {
+  kNone,
+  kImportant,
 };

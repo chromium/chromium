@@ -103,7 +103,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
 
   void RunPendingTasks() { task_runner_->RunPendingTasks(); }
 
-  void ProvideRssi(absl::optional<int32_t> rssi) {
+  void ProvideRssi(std::optional<int32_t> rssi) {
     RunPendingTasks();
 
     std::vector<ash::secure_channel::mojom::ConnectionCreationDetail>
@@ -177,7 +177,7 @@ TEST_F(ProximityAuthProximityMonitorImplTest, IsUnlockAllowed_UnknownRssi) {
   monitor_->Start();
 
   ProvideRssi(0);
-  ProvideRssi(absl::nullopt);
+  ProvideRssi(std::nullopt);
 
   EXPECT_FALSE(monitor_->IsUnlockAllowed());
 }

@@ -228,8 +228,6 @@ bool PolicyLoaderLacros::IsMainUserManaged() {
 bool PolicyLoaderLacros::IsMainUserAffiliated() {
   const enterprise_management::PolicyData* policy =
       policy::PolicyLoaderLacros::main_user_policy_data();
-  const chromeos::BrowserParamsProxy* init_params =
-      chromeos::BrowserParamsProxy::Get();
 
   // To align with `DeviceLocalAccountUserBase::IsAffiliated()`, a device local
   // account user is always treated as affiliated.
@@ -237,12 +235,10 @@ bool PolicyLoaderLacros::IsMainUserAffiliated() {
     return true;
   }
 
+  const auto& device_ids = PolicyLoaderLacros::device_affiliation_ids();
   if (policy && !policy->user_affiliation_ids().empty() &&
-      init_params->DeviceProperties() &&
-      init_params->DeviceProperties()->device_affiliation_ids.has_value()) {
+      !device_ids.empty()) {
     const auto& user_ids = policy->user_affiliation_ids();
-    const auto& device_ids =
-        init_params->DeviceProperties()->device_affiliation_ids.value();
     return policy::IsAffiliated({user_ids.begin(), user_ids.end()},
                                 {device_ids.begin(), device_ids.end()});
   }
@@ -260,6 +256,30 @@ void PolicyLoaderLacros::set_main_user_policy_data_for_testing(
     const enterprise_management::PolicyData& policy_data) {
   *MainUserPolicyDataStorage() = policy_data;
   g_is_main_user_managed_ = IsManaged(policy_data);
+}
+
+// static
+const std::vector<std::string> PolicyLoaderLacros::device_affiliation_ids() {
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (!init_params->DeviceProperties()) {
+    return {};
+  }
+  if (!init_params->DeviceProperties()->device_affiliation_ids.has_value()) {
+    return {};
+  }
+  return init_params->DeviceProperties()->device_affiliation_ids.value();
+}
+
+// static
+const std::string PolicyLoaderLacros::device_dm_token() {
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (!init_params->DeviceProperties()) {
+    return std::string();
+  }
+
+  return init_params->DeviceProperties()->device_dm_token;
 }
 
 }  // namespace policy

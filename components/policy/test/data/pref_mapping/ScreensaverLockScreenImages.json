@@ -1,0 +1,51 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "default_value": [],
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenImages": [
+            "https://example.com/1.jpg",
+            "https://example.com/2.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "user_profile",
+            "value": [
+              "https://example.com/1.jpg",
+              "https://example.com/2.jpg"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenImages": [
+            "https://example.com/1.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "user_profile",
+            "value": [
+              "https://example.com/1.jpg"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

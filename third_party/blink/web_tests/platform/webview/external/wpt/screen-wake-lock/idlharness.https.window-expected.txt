@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: "error: Action set_permission failed"
+[FAIL] WakeLockSentinel must be primary interface of sentinel
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+[FAIL] Stringification of sentinel
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+[FAIL] WakeLockSentinel interface: sentinel must inherit property "released" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+[FAIL] WakeLockSentinel interface: sentinel must inherit property "type" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+[FAIL] WakeLockSentinel interface: sentinel must inherit property "release()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+[FAIL] WakeLockSentinel interface: sentinel must inherit property "onrelease" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: sentinel is not defined"
+Harness: the test ran to completion.

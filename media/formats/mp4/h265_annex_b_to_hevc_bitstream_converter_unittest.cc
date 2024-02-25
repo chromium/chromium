@@ -17,7 +17,7 @@ namespace {
 
 std::vector<uint8_t> ReadTestFile(std::string name) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.Append(FILE_PATH_LITERAL(
                          "media/formats/mp4/h265_annex_b_fuzz_corpus"))
              .AppendASCII(name);

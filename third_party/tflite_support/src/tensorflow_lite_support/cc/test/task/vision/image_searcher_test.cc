@@ -18,11 +18,11 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/flags/flag.h"       // from @com_google_absl
-#include "absl/status/status.h"    // from @com_google_absl
-#include "absl/strings/cord.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/cord.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -66,8 +66,8 @@ constexpr char kMobileNetV3Searcher[] =
     "mobilenet_v3_small_100_224_searcher.tflite";
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
 // Checks that the two provided `SearchResult`  protos are equal, with a
@@ -84,12 +84,13 @@ void ExpectApproximatelyEqual(const SearchResult& actual,
   }
 }
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithStandaloneIndex) {
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
   options.mutable_search_options()->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
@@ -99,8 +100,9 @@ TEST_F(CreateFromOptionsTest, SucceedsWithStandaloneIndex) {
 
 TEST_F(CreateFromOptionsTest, SucceedsWithMetadataIndex) {
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Searcher));
   options.mutable_embedding_options()->set_l2_normalize(true);
 
   SUPPORT_ASSERT_OK(ImageSearcher::CreateFromOptions(options));
@@ -127,8 +129,9 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
 
 TEST_F(CreateFromOptionsTest, FailsWithMissingIndex) {
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
 
   StatusOr<std::unique_ptr<ImageSearcher>> image_searcher_or =
@@ -148,8 +151,9 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingIndex) {
 
 TEST_F(CreateFromOptionsTest, FailsWithQuantization) {
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
   options.mutable_embedding_options()->set_quantize(true);
   options.mutable_search_options()->mutable_index_file()->set_file_name(
@@ -170,8 +174,9 @@ TEST_F(CreateFromOptionsTest, FailsWithQuantization) {
 
 TEST_F(CreateFromOptionsTest, FailsWithInvalidMaxResults) {
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
   options.mutable_search_options()->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
@@ -192,13 +197,14 @@ TEST_F(CreateFromOptionsTest, FailsWithInvalidMaxResults) {
 TEST(SearchTest, SucceedsWithStandaloneIndex) {
   // Create Searcher.
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
   options.mutable_search_options()->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSearcher> searcher,
-                               ImageSearcher::CreateFromOptions(options));
+                       ImageSearcher::CreateFromOptions(options));
   // Load image.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
@@ -206,7 +212,7 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search(*frame_buffer));
+                       searcher->Search(*frame_buffer));
   ImageDataFree(&image);
 
   // Check results.
@@ -223,11 +229,12 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
 TEST(SearchTest, SucceedsWithMetadataIndex) {
   // Create Searcher.
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Searcher));
   options.mutable_embedding_options()->set_l2_normalize(true);
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSearcher> searcher,
-                               ImageSearcher::CreateFromOptions(options));
+                       ImageSearcher::CreateFromOptions(options));
   // Load image.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
@@ -235,7 +242,7 @@ TEST(SearchTest, SucceedsWithMetadataIndex) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search(*frame_buffer));
+                       searcher->Search(*frame_buffer));
   ImageDataFree(&image);
 
   // Check results.
@@ -252,14 +259,15 @@ TEST(SearchTest, SucceedsWithMetadataIndex) {
 TEST(SearchTest, SucceedsWithMaxResults) {
   // Create Searcher.
   ImageSearcherOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
-      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Embedder));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Embedder));
   options.mutable_embedding_options()->set_l2_normalize(true);
   options.mutable_search_options()->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
   options.mutable_search_options()->set_max_results(2);
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageSearcher> searcher,
-                               ImageSearcher::CreateFromOptions(options));
+                       ImageSearcher::CreateFromOptions(options));
   // Load image.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
@@ -267,7 +275,7 @@ TEST(SearchTest, SucceedsWithMaxResults) {
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               searcher->Search(*frame_buffer));
+                       searcher->Search(*frame_buffer));
   ImageDataFree(&image);
 
   // Check results.

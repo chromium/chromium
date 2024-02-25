@@ -274,10 +274,10 @@ int SSLConnectJob::DoTransportConnect() {
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   // If this is an ECH retry, connect to the same server as before.
-  absl::optional<TransportConnectJob::EndpointResultOverride>
+  std::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
   if (ech_retry_configs_) {
-    DCHECK(ssl_client_context()->config().EncryptedClientHelloEnabled());
+    DCHECK(ssl_client_context()->config().ech_enabled);
     DCHECK(endpoint_result_);
     endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
@@ -333,8 +333,6 @@ int SSLConnectJob::DoTunnelConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TUNNEL_CONNECT_COMPLETE;
-  scoped_refptr<HttpProxySocketParams> http_proxy_params =
-      params_->GetHttpProxyConnectionParams();
   nested_connect_job_ = std::make_unique<HttpProxyConnectJob>(
       priority(), socket_tag(), common_connect_job_params(),
       params_->GetHttpProxyConnectionParams(), this, &net_log());
@@ -388,6 +386,8 @@ int SSLConnectJob::DoSSLConnect() {
   endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
 
   SSLConfig ssl_config = params_->ssl_config();
+  ssl_config.ignore_certificate_errors =
+      *common_connect_job_params()->ignore_certificate_errors;
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
   ssl_config.privacy_mode = params_->privacy_mode();
   // We do the fallback in both cases here to ensure we separate the effect of
@@ -397,7 +397,7 @@ int SSLConnectJob::DoSSLConnect() {
       disable_legacy_crypto_with_fallback_ ||
       !ssl_client_context()->config().InsecureHashesInTLSHandshakesEnabled();
 
-  if (ssl_client_context()->config().EncryptedClientHelloEnabled()) {
+  if (ssl_client_context()->config().ech_enabled) {
     if (ech_retry_configs_) {
       ssl_config.ech_config_list = *ech_retry_configs_;
     } else if (endpoint_result_) {
@@ -449,9 +449,9 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   // control and experiment group.
   const bool is_ech_capable =
       endpoint_result_ && !endpoint_result_->metadata.ech_config_list.empty();
+  const bool ech_enabled = ssl_client_context()->config().ech_enabled;
 
-  if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED &&
-      ssl_client_context()->config().EncryptedClientHelloEnabled()) {
+  if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED && ech_enabled) {
     // We used ECH, and the server could not decrypt the ClientHello. However,
     // it was able to handshake with the public name and send authenticated
     // retry configs. If this is not the first time around, retry the connection
@@ -464,21 +464,16 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     ech_retry_configs_ = ssl_socket_->GetECHRetryConfigs();
     net_log().AddEvent(
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
-          base::Value::Dict dict;
-          dict.Set("bytes", NetLogBinaryValue(*ech_retry_configs_));
-          return dict;
+          return base::Value::Dict().Set(
+              "bytes", NetLogBinaryValue(*ech_retry_configs_));
         });
 
-    // TODO(https://crbug.com/1091403): Add histograms for how often this
-    // happens.
     ResetStateForRestart();
     next_state_ = GetInitialState(params_->GetConnectionType());
     return OK;
   }
 
-  const std::string& host = params_->host_and_port().host();
-  if (is_ech_capable &&
-      base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+  if (is_ech_capable && ech_enabled) {
     // These values are persisted to logs. Entries should not be renumbered
     // and numeric values should never be reused.
     enum class ECHResult {
@@ -531,14 +526,6 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         SSLConnectionStatusToVersion(ssl_info.connection_status);
     UMA_HISTOGRAM_ENUMERATION("Net.SSLVersion", version,
                               SSL_CONNECTION_VERSION_MAX);
-    if (IsGoogleHost(host)) {
-      // Google hosts all support TLS 1.2, so any occurrences of TLS 1.0 or TLS
-      // 1.1 will be from an outdated insecure TLS MITM proxy, such as some
-      // antivirus configurations. TLS 1.0 and 1.1 are deprecated, so record
-      // these to see how prevalent they are. See https://crbug.com/896013.
-      UMA_HISTOGRAM_ENUMERATION("Net.SSLVersionGoogle", version,
-                                SSL_CONNECTION_VERSION_MAX);
-    }
 
     uint16_t cipher_suite =
         SSLConnectionStatusToCipherSuite(ssl_info.connection_status);

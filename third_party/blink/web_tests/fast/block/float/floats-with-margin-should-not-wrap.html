@@ -23,7 +23,8 @@
         testRunner.dumpAsText();
 
     var rect = document.getElementById('container').getBoundingClientRect();
-    var height = rect.bottom - rect.top;
+    // Reversing the zoom effect
+    var height = (rect.bottom - rect.top)*2/3;
 
     if (height == 20)
         str = 'PASS, the three blocks are all on the same line';

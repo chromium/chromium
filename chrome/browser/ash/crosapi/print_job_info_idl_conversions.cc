@@ -20,28 +20,28 @@ namespace {
 idl::ColorMode ColorModeProtoToIdl(proto::PrintSettings_ColorMode color_proto) {
   switch (color_proto) {
     case proto::PrintSettings_ColorMode_BLACK_AND_WHITE:
-      return idl::COLOR_MODE_BLACK_AND_WHITE;
+      return idl::ColorMode::kBlackAndWhite;
     case proto::PrintSettings_ColorMode_COLOR:
-      return idl::COLOR_MODE_COLOR;
+      return idl::ColorMode::kColor;
     default:
       NOTREACHED();
   }
-  return idl::COLOR_MODE_BLACK_AND_WHITE;
+  return idl::ColorMode::kBlackAndWhite;
 }
 
 idl::DuplexMode DuplexModeProtoToIdl(
     proto::PrintSettings_DuplexMode duplex_proto) {
   switch (duplex_proto) {
     case proto::PrintSettings_DuplexMode_ONE_SIDED:
-      return idl::DUPLEX_MODE_ONE_SIDED;
+      return idl::DuplexMode::kOneSided;
     case proto::PrintSettings_DuplexMode_TWO_SIDED_LONG_EDGE:
-      return idl::DUPLEX_MODE_TWO_SIDED_LONG_EDGE;
+      return idl::DuplexMode::kTwoSidedLongEdge;
     case proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE:
-      return idl::DUPLEX_MODE_TWO_SIDED_SHORT_EDGE;
+      return idl::DuplexMode::kTwoSidedShortEdge;
     default:
       NOTREACHED();
   }
-  return idl::DUPLEX_MODE_ONE_SIDED;
+  return idl::DuplexMode::kOneSided;
 }
 
 idl::MediaSize MediaSizeProtoToIdl(const proto::MediaSize& media_size_proto) {
@@ -67,43 +67,45 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
   switch (print_job_source_proto) {
     case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW:
     case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO:
-      return idl::PRINT_JOB_SOURCE_PRINT_PREVIEW;
+      return idl::PrintJobSource::kPrintPreview;
     case proto::PrintJobInfo_PrintJobSource_ARC:
-      return idl::PRINT_JOB_SOURCE_ANDROID_APP;
+      return idl::PrintJobSource::kAndroidApp;
     case proto::PrintJobInfo_PrintJobSource_EXTENSION:
-      return idl::PRINT_JOB_SOURCE_EXTENSION;
+      return idl::PrintJobSource::kExtension;
+    case proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP:
+      return idl::PrintJobSource::kIsolatedWebApp;
     default:
       NOTREACHED();
   }
-  return idl::PRINT_JOB_SOURCE_PRINT_PREVIEW;
+  return idl::PrintJobSource::kPrintPreview;
 }
 
 idl::PrintJobStatus PrintJobStatusProtoToIdl(
     proto::PrintJobInfo_PrintJobStatus print_job_status_proto) {
   switch (print_job_status_proto) {
     case proto::PrintJobInfo_PrintJobStatus_FAILED:
-      return idl::PRINT_JOB_STATUS_FAILED;
+      return idl::PrintJobStatus::kFailed;
     case proto::PrintJobInfo_PrintJobStatus_CANCELED:
-      return idl::PRINT_JOB_STATUS_CANCELED;
+      return idl::PrintJobStatus::kCanceled;
     case proto::PrintJobInfo_PrintJobStatus_PRINTED:
-      return idl::PRINT_JOB_STATUS_PRINTED;
+      return idl::PrintJobStatus::kPrinted;
     default:
       NOTREACHED();
   }
-  return idl::PRINT_JOB_STATUS_FAILED;
+  return idl::PrintJobStatus::kFailed;
 }
 
 idl::PrinterSource PrinterSourceProtoToIdl(
     proto::Printer_PrinterSource printer_source_proto) {
   switch (printer_source_proto) {
     case proto::Printer_PrinterSource_USER:
-      return idl::PRINTER_SOURCE_USER;
+      return idl::PrinterSource::kUser;
     case proto::Printer_PrinterSource_POLICY:
-      return idl::PRINTER_SOURCE_POLICY;
+      return idl::PrinterSource::kPolicy;
     default:
       NOTREACHED();
   }
-  return idl::PRINTER_SOURCE_USER;
+  return idl::PrinterSource::kUser;
 }
 
 idl::Printer PrinterProtoToIdl(const proto::Printer& printer_proto) {
@@ -118,37 +120,37 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
     proto::PrintJobInfo_PrinterErrorCode error_code_proto) {
   switch (error_code_proto) {
     case proto::PrintJobInfo_PrinterErrorCode_NO_ERROR:
-      return api::printing::PRINTER_STATUS_AVAILABLE;
+      return api::printing::PrinterStatus::kAvailable;
     case proto::PrintJobInfo_PrinterErrorCode_PAPER_JAM:
-      return api::printing::PRINTER_STATUS_PAPER_JAM;
+      return api::printing::PrinterStatus::kPaperJam;
     case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_PAPER:
-      return api::printing::PRINTER_STATUS_OUT_OF_PAPER;
+      return api::printing::PrinterStatus::kOutOfPaper;
     case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_INK:
-      return api::printing::PRINTER_STATUS_OUT_OF_INK;
+      return api::printing::PrinterStatus::kOutOfInk;
     case proto::PrintJobInfo_PrinterErrorCode_DOOR_OPEN:
-      return api::printing::PRINTER_STATUS_DOOR_OPEN;
+      return api::printing::PrinterStatus::kDoorOpen;
     case proto::PrintJobInfo_PrinterErrorCode_PRINTER_UNREACHABLE:
-      return api::printing::PRINTER_STATUS_UNREACHABLE;
+      return api::printing::PrinterStatus::kUnreachable;
     case proto::PrintJobInfo_PrinterErrorCode_TRAY_MISSING:
-      return api::printing::PRINTER_STATUS_TRAY_MISSING;
+      return api::printing::PrinterStatus::kTrayMissing;
     case proto::PrintJobInfo_PrinterErrorCode_OUTPUT_FULL:
-      return api::printing::PRINTER_STATUS_OUTPUT_FULL;
+      return api::printing::PrinterStatus::kOutputFull;
     case proto::PrintJobInfo_PrinterErrorCode_STOPPED:
-      return api::printing::PRINTER_STATUS_STOPPED;
+      return api::printing::PrinterStatus::kStopped;
     case proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED:
     case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
     case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
-      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+      return api::printing::PrinterStatus::kGenericIssue;
     case proto::PrintJobInfo_PrinterErrorCode_EXPIRED_CERTIFICATE:
-      return api::printing::PRINTER_STATUS_EXPIRED_CERTIFICATE;
+      return api::printing::PrinterStatus::kExpiredCertificate;
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+      return api::printing::PrinterStatus::kGenericIssue;
   }
-  return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+  return api::printing::PrinterStatus::kGenericIssue;
 }
 
 }  // namespace

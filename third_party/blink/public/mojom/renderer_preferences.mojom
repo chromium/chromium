@@ -29,7 +29,7 @@ struct RendererPreferences {
   bool use_autohinter = false;
 
   // Whether embedded bitmap strikes in fonts should be used.
-  // Current only used by Linux.
+  // Currently only used by Linux.
   bool use_bitmaps = false;
 
   // The type of subpixel rendering to use for text.
@@ -40,6 +40,13 @@ struct RendererPreferences {
   // Whether subpixel positioning should be used, permitting fractional X
   // positions for glyphs.  Currently only used by Linux.
   bool use_subpixel_positioning = false;
+
+  // Gamma correction and contrast values for glyph rendering. Currently
+  // only used by Windows.
+  [EnableIf=is_win]
+  float text_contrast = 0.5;
+  [EnableIf=is_win]
+  float text_gamma = 0.0;
 
   // The color of the focus ring.
   uint32 focus_ring_color = 0xFFE59700;
@@ -93,10 +100,6 @@ struct RendererPreferences {
   uint16 webrtc_udp_max_port = 0;
 
   array<string> webrtc_local_ips_allowed_urls;
-
-  // Whether WebRTC peer connections are allowed to use legacy versions of the
-  // TLS/DTLS protocols.
-  bool webrtc_allow_legacy_tls_protocols = false;
 
   // The user agent given to WebKit when it requests one and the user agent is
   // being overridden for the current navigation.

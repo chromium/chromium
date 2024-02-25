@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Xoá trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Chế độ camera</translation>
 <translation id="1153190633558910465">Tắt lưới</translation>
-<translation id="1175958423215084756">Phát hiện thấy đường liên kết. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Đã xoá trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xoay 90 độ theo chiều kim đồng hồ</translation>
 <translation id="1417314334557041815">Chỉnh sửa trang <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Xoay phải</translation>
 <translation id="3081586908890909590">Chuyển sang quay video</translation>
 <translation id="313467653172006084">30 khung hình/giây</translation>
+<translation id="3158534262962737808">Kết nối với "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3240426699337459095">Đã sao chép đường liên kết</translation>
 <translation id="3354465018370944241">Cài đặt ảnh</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Đang xử lý video...</translation>
 <translation id="3789724198583203151">Xoay 90 độ ngược chiều kim đồng hồ</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="4060608699153044055">Bạn không thể quay video vì thiết bị sắp hết dung lượng lưu trữ. Để bắt đầu quay video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Tạm dừng quay</translation>
 <translation id="4121305183798804752">Đã phát hiện tài liệu</translation>
 <translation id="414641094616694804">Máy ảnh này không thể thay đổi độ phân giải</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
-<translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
 <translation id="428234092390943511">Hình thu nhỏ của trang</translation>
 <translation id="4349714250734879769">Điều chỉnh tỷ lệ khung hình bằng Chrome</translation>
 <translation id="4383571725254449280">In nhật ký hiệu suất</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Độ phân giải đầy đủ</translation>
 <translation id="4864143361253542638">Danh sách trang đã quét</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Sao chép địa chỉ đường liên kết <ph name="URL" /></translation>
 <translation id="491895758387112773">Quay video phát trực tuyến đa luồng</translation>
 <translation id="495170559598752135">Tác vụ</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Tỷ lệ khung hình ảnh</translation>
 <translation id="5057360777601936059">Máy ảnh của bạn hiện chưa sẵn sàng.
         Vui lòng kiểm tra xem máy ảnh có được kết nối đúng cách không.</translation>
+<translation id="5157591164390831335">Đã phát hiện URL.</translation>
 <translation id="5163387177077603948">Đang di chuyển theo hướng sang phải</translation>
-<translation id="5219374179772385066">Hiện đã có chế độ Tua nhanh thời gian!</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Góc trên cùng bên trái của tài liệu</translation>
 <translation id="5317780077021120954">Lưu</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Cảm ơn bạn đã cung cấp ý kiến phản hồi về ứng dụng Máy ảnh.
 
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
+<translation id="6519884562954018934">Kết nối với <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6617916774429601017">Hiện mọi độ phân giải</translation>
 <translation id="6631515515009660915">Tắt gương</translation>
@@ -133,11 +133,12 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="7450541714075000668">Đã sao chép văn bản</translation>
 <translation id="7488619942230388918">Quay video dạng GIF</translation>
 <translation id="7557677699350329807">Chuyển sang máy ảnh tiếp theo</translation>
+<translation id="7562584071994185503">Sao chép văn bản <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="761421184377987513">Đang di chuyển theo hướng xuống dưới và sang trái</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
-<translation id="7658239707568436148">Hủy</translation>
+<translation id="7658239707568436148">Huỷ</translation>
 <translation id="7670511624014457267">60 khung hình/giây</translation>
 <translation id="7671804233658741790">Góc dưới cùng bên phải của tài liệu</translation>
 <translation id="7684446460490665873">Quay video ở chế độ tua nhanh thời gian</translation>
@@ -155,10 +156,12 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8346544573713510785">Điều chỉnh tỷ lệ khung hình bằng lớp trừu tượng phần cứng (HAL) cho máy ảnh</translation>
 <translation id="8425673304802773841">Xoay xuống</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
+<translation id="8609951387004618906">Mở <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>
+<translation id="874854738381978209">Đã phát hiện mạng Wi-Fi.</translation>
 <translation id="8815966864175525708">Chuyển sang chụp ảnh chân dung</translation>
 <translation id="8828441885228359828">Tiếp tục quay</translation>
 <translation id="8870695351537079478">Không thể bắt đầu quay</translation>

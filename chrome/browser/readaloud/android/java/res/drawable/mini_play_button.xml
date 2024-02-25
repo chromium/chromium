@@ -7,9 +7,9 @@ found in the LICENSE file.
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/primary_gray_rounded"/>
     <item
-        android:drawable="@drawable/ic_play_arrow_white_24dp"
-        android:left="12dp"
-        android:top="12dp"
-        android:right="12dp"
-        android:bottom="12dp"/>
+        android:drawable="@drawable/play_arrow_32"
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp"/>
 </layer-list>

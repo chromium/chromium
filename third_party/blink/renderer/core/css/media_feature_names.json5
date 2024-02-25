@@ -26,6 +26,7 @@
     "device-height",
     "device-width",
     "display-mode",
+    "display-state",
     "inline-size",
     "max-color",
     "max-color-index",
@@ -75,5 +76,6 @@
     "stuck",
     "inverted-colors",
     "scripting",
+    "resizable",
   ],
 }

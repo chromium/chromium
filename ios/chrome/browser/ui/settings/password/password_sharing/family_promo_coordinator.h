@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PROMO_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 
 @protocol FamilyPromoCoordinatorDelegate;
 
@@ -13,9 +14,13 @@
 // Family.
 @interface FamilyPromoCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
+- (instancetype)initWithFamilyPromoType:(FamilyPromoType)familyPromoType
+                     baseViewController:(UIViewController*)viewController
+                                browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Delegate handling coordinator dismissal.
 @property(nonatomic, weak) id<FamilyPromoCoordinatorDelegate> delegate;

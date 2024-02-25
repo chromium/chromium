@@ -1,5 +1,0 @@
-include_rules = [
-  # Do not depend on chrome (use a delegate instead).
-  "-chrome",
-  "+ui/webui",
-]

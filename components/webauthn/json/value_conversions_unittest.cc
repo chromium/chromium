@@ -5,14 +5,17 @@
 #include "components/webauthn/json/value_conversions.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -22,8 +25,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace webauthn {
@@ -31,6 +32,8 @@ namespace {
 
 using blink::mojom::AuthenticationExtensionsClientInputs;
 using blink::mojom::AuthenticationExtensionsClientInputsPtr;
+using blink::mojom::AuthenticationExtensionsClientOutputs;
+using blink::mojom::AuthenticationExtensionsClientOutputsPtr;
 using blink::mojom::CommonCredentialInfo;
 using blink::mojom::CommonCredentialInfoPtr;
 using blink::mojom::GetAssertionAuthenticatorResponse;
@@ -43,6 +46,23 @@ using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::RemoteDesktopClientOverride;
 using blink::mojom::RemoteDesktopClientOverridePtr;
+
+// kUpdateRobolectricTests can be set to cause these tests to print out values
+// that can be used in `Fido2ApiTestHelper.java`. This is needed whenever the
+// Mojo structures for responses in `authenticator.mojom` are updated.
+constexpr bool kUpdateRobolectricTests = false;
+
+void PrintJava(const char* name, base::span<const uint8_t> data) {
+  fprintf(stderr, "private static final byte[] %s = new byte[] {", name);
+  for (size_t i = 0; i < data.size(); i++) {
+    const uint8_t byte = data[i];
+    if (i) {
+      fprintf(stderr, ", ");
+    }
+    fprintf(stderr, "%d", byte < 128 ? byte : byte - 0x80);
+  }
+  fprintf(stderr, "};\n");
+}
 
 std::vector<uint8_t> ToByteVector(base::StringPiece in) {
   const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
@@ -81,6 +101,9 @@ std::vector<device::PublicKeyCredentialDescriptor> GetCredentialList() {
 TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialCreationOptionsToValue) {
   // Exercise all supported fields.
+  auto prf_values = blink::mojom::PRFValues::New(
+      std::nullopt, std::vector<uint8_t>({1, 2, 3, 4}),
+      std::vector<uint8_t>{5, 6, 7, 8});
   auto options = PublicKeyCredentialCreationOptions::New(
       device::PublicKeyCredentialRpEntity(kRpId, kRpName),
       device::PublicKeyCredentialUserEntity(kUserId, kUserName,
@@ -91,9 +114,12 @@ TEST(WebAuthenticationJSONConversionTest,
           device::AuthenticatorAttachment::kPlatform,
           device::ResidentKeyRequirement::kRequired,
           device::UserVerificationRequirement::kRequired),
+      /*hints=*/std::vector<blink::mojom::Hint>(),
       device::AttestationConveyancePreference::kDirect,
       /*hmac_create_secret=*/true,
-      /*prf_enable=*/true, blink::mojom::ProtectionPolicy::UV_REQUIRED,
+      /*prf_enable=*/true,
+      /*prf_input=*/std::move(prf_values),
+      blink::mojom::ProtectionPolicy::UV_REQUIRED,
       /*enforce_protection_policy=*/true,
       /*appid_exclude=*/kAppId,
       /*cred_props=*/true, device::LargeBlobSupport::kRequired,
@@ -103,8 +129,11 @@ TEST(WebAuthenticationJSONConversionTest,
       blink::mojom::RemoteDesktopClientOverride::New(
           url::Origin::Create(GURL(kOrigin)),
           /*same_origin_with_ancestors=*/true),
-      // TODO(crbug.com/1356340): support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+      blink::mojom::SupplementalPubKeysRequest::New(
+          /*device_scope_requested=*/true,
+          /*provider_scope_requested=*/true,
+          device::AttestationConveyancePreference::kDirect,
+          std::vector<std::string>({"a", "b", "c"})));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -112,14 +141,14 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialRequestOptionsToValue) {
   std::vector<blink::mojom::PRFValuesPtr> prf_values;
   prf_values.emplace_back(blink::mojom::PRFValues::New(
-      absl::nullopt, std::vector<uint8_t>({1, 2, 3, 4}), absl::nullopt));
+      std::nullopt, std::vector<uint8_t>({1, 2, 3, 4}), std::nullopt));
   prf_values.emplace_back(blink::mojom::PRFValues::New(
       std::vector<uint8_t>({1, 2, 3}), std::vector<uint8_t>({4, 5, 6}),
       std::vector<uint8_t>({7, 8, 9})));
@@ -127,7 +156,9 @@ TEST(WebAuthenticationJSONConversionTest,
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
       /*is_conditional=*/false, kChallenge, kTimeout, kRpId,
-      GetCredentialList(), device::UserVerificationRequirement::kRequired,
+      GetCredentialList(),
+      /*hints=*/std::vector<blink::mojom::Hint>(),
+      device::UserVerificationRequirement::kRequired,
       AuthenticationExtensionsClientInputs::New(
           kAppId,
           std::vector<device::CableDiscoveryData>{
@@ -144,8 +175,11 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::RemoteDesktopClientOverride::New(
               url::Origin::Create(GURL(kOrigin)),
               /*same_origin_with_ancestors=*/true),
-          // TODO: support devicePubKey in JSON when it's stable.
-          /*device_public_key=*/nullptr));
+          blink::mojom::SupplementalPubKeysRequest::New(
+              /*device_scope_requested=*/true,
+              /*provider_scope_requested=*/true,
+              device::AttestationConveyancePreference::kDirect,
+              std::vector<std::string>({"a", "b", "c"}))));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -153,7 +187,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"rpId":"example.test","userVerification":"required"})");
+      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"rpId":"example.test","userVerification":"required"})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -215,7 +249,17 @@ TEST(WebAuthenticationJSONConversionTest,
     "credBlob": true,
     "credProps": { "rk": true },
     "hmacCreateSecret": true,
-    "largeBlob": { "supported": true }
+    "largeBlob": { "supported": true },
+    "prf": {
+      "enabled": true,
+      "results": {
+        "first": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "second": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE"
+      }
+    },
+    "supplementalPubKeys": {
+      "signatures": ["ABCD", "EFGH"]
+    }
   },
   "id": "dGVzdCBpZA",
   "rawId": "dGVzdCBpZA",
@@ -240,6 +284,22 @@ TEST(WebAuthenticationJSONConversionTest,
       MakeCredentialResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
 
+  if (kUpdateRobolectricTests) {
+    PrintJava("TEST_SERIALIZED_CREDMAN_MAKE_CREDENTIAL_RESPONSE",
+              blink::mojom::MakeCredentialAuthenticatorResponse::Serialize(
+                  &response));
+  }
+
+  auto prf_values = blink::mojom::PRFValues::New(
+      std::nullopt,
+      std::vector<uint8_t>({
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      }),
+      std::vector<uint8_t>({
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      }));
   auto expected = MakeCredentialAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,
                                 kAuthenticatorData),
@@ -247,14 +307,16 @@ TEST(WebAuthenticationJSONConversionTest,
       std::vector<device::FidoTransportProtocol>{
           device::FidoTransportProtocol::kUsbHumanInterfaceDevice},
       /*echo_hmac_create_secret=*/true, /*hmac_create_secret=*/true,
-      /*echo_prf=*/false, /*prf=*/false, /*echo_cred_blob=*/true,
+      /*echo_prf=*/true, /*prf=*/true, /*prf_results=*/std::move(prf_values),
+      /*echo_cred_blob=*/true,
       /*cred_blob=*/true, /*public_key_der=*/kPublicKey,
       /*public_key_algo=*/-7,
       /*echo_cred_props=*/true, /*has_cred_props_rk=*/true,
       /*cred_props_rk=*/true, /*echo_large_blob=*/true,
       /*supports_large_blob=*/true,
-      // TODO: support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+      /*supplemental_pub_keys=*/
+      blink::mojom::SupplementalPubKeysResponse::New(
+          std::vector<std::vector<uint8_t>>({{0, 16, 131}, {16, 81, 135}})));
 
   EXPECT_EQ(response->info, expected->info);
   EXPECT_EQ(response->authenticator_attachment,
@@ -265,6 +327,8 @@ TEST(WebAuthenticationJSONConversionTest,
             expected->echo_hmac_create_secret);
   EXPECT_EQ(response->hmac_create_secret, expected->hmac_create_secret);
   EXPECT_EQ(response->echo_prf, expected->prf);
+  EXPECT_EQ(response->prf_results->first, expected->prf_results->first);
+  EXPECT_EQ(response->prf_results->second, expected->prf_results->second);
   EXPECT_EQ(response->echo_cred_blob, expected->echo_cred_blob);
   EXPECT_EQ(response->cred_blob, expected->cred_blob);
   EXPECT_EQ(response->public_key_der, expected->public_key_der);
@@ -281,6 +345,11 @@ TEST(WebAuthenticationJSONConversionTest,
 
 TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseOptionalFields) {
+  // TODO(https://crbug.com/1454841): Remove this.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
   // Test both that `null` is an error, and that omitting the field works, for
   // the sole optional field, `authenticatorAttachment`.
   constexpr char kJsonWithNull[] = R"({
@@ -337,6 +406,10 @@ TEST(WebAuthenticationJSONConversionTest,
 
 TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseEasyAccessorFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
   constexpr char kJson[] = R"({
     "rawId":"Lnc6JGTv2WBS05AsZB6xdg",
     "authenticatorAttachment":"platform",
@@ -465,6 +538,15 @@ TEST(WebAuthenticationJSONConversionTest,
     "largeBlob": {
       "blob": "dGVzdCBsYXJnZSBibG9i",
       "written": true
+    },
+    "prf": {
+      "results": {
+        "first": "mZ0wKXvFA3ule4G8-CezRxvoP4Bn9vuLZD0Ka80JTH0",
+        "second": "zfLUaH8wtbWPmGOYySfBjNehFIvhUZQduKXlOH6c9EI"
+      }
+    },
+    "supplementalPubKeys": {
+      "signatures": ["ABCD", "EFGH"]
     }
   },
   "id": "dGVzdCBpZA",
@@ -488,41 +570,76 @@ TEST(WebAuthenticationJSONConversionTest,
       GetAssertionResponseFromValue(*value, JSONUser::kAndroid);
   ASSERT_TRUE(response) << error;
 
+  if (kUpdateRobolectricTests) {
+    PrintJava(
+        "TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE ",
+        blink::mojom::GetAssertionAuthenticatorResponse::Serialize(&response));
+  }
+
   auto expected = GetAssertionAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,
                                 kAuthenticatorData),
       device::AuthenticatorAttachment::kCrossPlatform, kSignature, kUserHandle,
-      /*echo_appid_extension=*/true, /*appid_extension=*/true,
+      AuthenticationExtensionsClientOutputs::New(
+          /*echo_appid_extension=*/true, /*appid_extension=*/true,
 #if BUILDFLAG(IS_ANDROID)
-      /*echo_user_verification_methods=*/false,
-      /*user_verification_methods=*/absl::nullopt,
+          /*echo_user_verification_methods=*/false,
+          /*user_verification_methods=*/std::nullopt,
 #endif
-      /*echo_prf=*/false, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
-      /*echo_large_blob=*/true,
-      /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
-      /*large_blob_written=*/true,
-      /*get_cred_blob=*/kCredBlob,
-      // TODO: support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+          /*echo_prf=*/true, /*prf_results=*/nullptr,
+          /*prf_not_evaluated=*/false,
+          /*echo_large_blob=*/true,
+          /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
+          /*large_blob_written=*/true,
+          /*get_cred_blob=*/kCredBlob,
+          /*supplemental_pub_keys=*/
+          blink::mojom::SupplementalPubKeysResponse::New(
+              std::vector<std::vector<uint8_t>>(
+                  {{0, 16, 131}, {16, 81, 135}}))));
+  static const uint8_t expected_prf_first[32] = {
+      0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
+      0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,
+      0xfb, 0x8b, 0x64, 0x3d, 0x0a, 0x6b, 0xcd, 0x09, 0x4c, 0x7d,
+  };
+  static const uint8_t expected_prf_second[32] = {
+      0xcd, 0xf2, 0xd4, 0x68, 0x7f, 0x30, 0xb5, 0xb5, 0x8f, 0x98, 0x63,
+      0x98, 0xc9, 0x27, 0xc1, 0x8c, 0xd7, 0xa1, 0x14, 0x8b, 0xe1, 0x51,
+      0x94, 0x1d, 0xb8, 0xa5, 0xe5, 0x38, 0x7e, 0x9c, 0xf4, 0x42,
+  };
 
   EXPECT_EQ(response->info, expected->info);
   EXPECT_EQ(response->authenticator_attachment,
             expected->authenticator_attachment);
   EXPECT_EQ(response->signature, expected->signature);
   EXPECT_EQ(response->user_handle, expected->user_handle);
-  EXPECT_EQ(response->echo_appid_extension, expected->echo_appid_extension);
-  EXPECT_EQ(response->appid_extension, expected->appid_extension);
-  EXPECT_EQ(response->echo_prf, expected->echo_prf);
-  EXPECT_EQ(response->prf_results, expected->prf_results);
-  EXPECT_EQ(response->prf_not_evaluated, expected->prf_not_evaluated);
-  EXPECT_EQ(response->echo_large_blob, expected->echo_large_blob);
-  EXPECT_EQ(response->large_blob, expected->large_blob);
-  EXPECT_EQ(response->echo_large_blob_written,
-            expected->echo_large_blob_written);
-  EXPECT_EQ(response->large_blob_written, expected->large_blob_written);
-  EXPECT_EQ(response->get_cred_blob, expected->get_cred_blob);
+  EXPECT_EQ(response->extensions->echo_appid_extension,
+            expected->extensions->echo_appid_extension);
+  EXPECT_EQ(response->extensions->appid_extension,
+            expected->extensions->appid_extension);
+  EXPECT_EQ(response->extensions->echo_prf, expected->extensions->echo_prf);
+  ASSERT_TRUE(response->extensions->prf_results);
+  EXPECT_TRUE(base::ranges::equal(response->extensions->prf_results->first,
+                                  expected_prf_first));
+  ASSERT_TRUE(response->extensions->prf_results->second);
+  EXPECT_TRUE(base::ranges::equal(*response->extensions->prf_results->second,
+                                  expected_prf_second));
+  EXPECT_EQ(response->extensions->prf_not_evaluated,
+            expected->extensions->prf_not_evaluated);
+  EXPECT_EQ(response->extensions->echo_large_blob,
+            expected->extensions->echo_large_blob);
+  EXPECT_EQ(response->extensions->large_blob, expected->extensions->large_blob);
+  EXPECT_EQ(response->extensions->echo_large_blob_written,
+            expected->extensions->echo_large_blob_written);
+  EXPECT_EQ(response->extensions->large_blob_written,
+            expected->extensions->large_blob_written);
+  EXPECT_EQ(response->extensions->get_cred_blob,
+            expected->extensions->get_cred_blob);
+  EXPECT_EQ(response->extensions->supplemental_pub_keys,
+            expected->extensions->supplemental_pub_keys);
   // Produce a failure even if the list above is missing any fields. But this
-  // will not print any meaningful error.
+  // will not print any meaningful error. `prf_values` has to be cleared
+  // because a pointer comparison will be performed for it.
+  response->extensions->prf_results = nullptr;
   EXPECT_EQ(response, expected);
 }
 
@@ -563,6 +680,11 @@ TEST(WebAuthenticationJSONConversionTest,
   }
 
   {
+    // TODO(https://crbug.com/1454841): Remove this.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
     // ... but not for remote-desktop
     auto [response, error] =
         GetAssertionResponseFromValue(*value, JSONUser::kRemoteDesktop);

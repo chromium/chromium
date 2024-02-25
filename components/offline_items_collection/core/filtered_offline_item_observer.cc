@@ -54,7 +54,7 @@ void FilteredOfflineItemObserver::OnItemRemoved(const ContentId& id) {
 
 void FilteredOfflineItemObserver::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   auto it = observers_.find(item.id);
   if (it == observers_.end())
     return;

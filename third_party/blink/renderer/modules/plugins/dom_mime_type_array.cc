@@ -59,14 +59,14 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
         DomWindow(), *GetPluginData()->Mimes()[index]);
   }
 
-  return dom_mime_types_[index];
+  return dom_mime_types_[index].Get();
 }
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
   if (should_return_fixed_plugin_data_) {
     for (const auto& mimetype : dom_mime_types_) {
       if (mimetype->type() == property_name)
-        return mimetype;
+        return mimetype.Get();
     }
     return nullptr;
   }
